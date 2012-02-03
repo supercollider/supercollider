@@ -1,29 +1,45 @@
-# from http://websvn.kde.org/trunk/KDE/kdeedu/cmake/modules/FindReadline.cmake
-# http://websvn.kde.org/trunk/KDE/kdeedu/cmake/modules/COPYING-CMAKE-SCRIPTS
-# --> BSD licensed
-#
-# GNU Readline library finder
-if(READLINE_INCLUDE_DIR AND READLINE_LIBRARY AND NCURSES_LIBRARY)
-  set(READLINE_FOUND TRUE)
-else(READLINE_INCLUDE_DIR AND READLINE_LIBRARY AND NCURSES_LIBRARY)
-  FIND_PATH(READLINE_INCLUDE_DIR readline/readline.h
-    /usr/include/readline
-  )
-  
-# 2008-04-22 The next clause used to read like this:
-#
-#  FIND_LIBRARY(READLINE_LIBRARY NAMES readline)
-#        FIND_LIBRARY(NCURSES_LIBRARY NAMES ncurses )
-#        include(FindPackageHandleStandardArgs)
-#        FIND_PACKAGE_HANDLE_STANDARD_ARGS(Readline DEFAULT_MSG NCURSES_LIBRARY READLINE_INCLUDE_DIR READLINE_LIBRARY )
-#
-# I was advised to modify it such that it will find an ncurses library if
-# required, but not if one was explicitly given, that is, it allows the
-# default to be overridden. PH 
+find_path(READLINE_INCLUDE_DIR readline/readline.h)
+find_library(READLINE_LIBRARY NAMES readline)
 
-  FIND_LIBRARY(READLINE_LIBRARY NAMES readline)
-        include(FindPackageHandleStandardArgs)
-        FIND_PACKAGE_HANDLE_STANDARD_ARGS(Readline DEFAULT_MSG READLINE_INCLUDE_DIR READLINE_LIBRARY )
+if (READLINE_INCLUDE_DIR AND READLINE_LIBRARY)
+  set (READLINE_FOUND TRUE)
+endif ()
 
-  MARK_AS_ADVANCED(READLINE_INCLUDE_DIR READLINE_LIBRARY)
-endif(READLINE_INCLUDE_DIR AND READLINE_LIBRARY AND NCURSES_LIBRARY)
+if (READLINE_INCLUDE_DIR AND EXISTS "${READLINE_INCLUDE_DIR}/readline/readline.h")
+  file(STRINGS "${READLINE_INCLUDE_DIR}/readline/readline.h"
+               READLINE_MAJOR_VERSION
+       REGEX "^#define RL_VERSION_MAJOR.*$")
+  file(STRINGS "${READLINE_INCLUDE_DIR}/readline/readline.h"
+               READLINE_MINOR_VERSION
+       REGEX "^#define RL_VERSION_MINOR.*$")
+
+  string(REGEX REPLACE "^.*RL_VERSION_MAJOR.*([0-9]+).*$"
+                       "\\1"
+                       READLINE_MAJOR_VERSION
+                       "${READLINE_MAJOR_VERSION}")
+  string(REGEX REPLACE "^.*RL_VERSION_MINOR.*([0-9]+).*$"
+                       "\\1"
+                       READLINE_MINOR_VERSION
+                       "${READLINE_MINOR_VERSION}")
+
+  if(READLINE_MAJOR_VERSION)
+    set(READLINE_VERSION "${READLINE_MAJOR_VERSION}.${READLINE_MINOR_VERSION}")
+  else()
+    set(READLINE_VERSION "(unknown)")
+  endif()
+endif ()
+
+if (READLINE_FOUND)
+  if (Readline_FIND_VERSION VERSION_GREATER READLINE_VERSION)
+    message(STATUS "Found version ${READLINE_VERSION} of GNU Readline at ${READLINE_LIBRARY}, but version ${Readline_FIND_VERSION} required")
+    unset(READLINE_FOUND)
+  else()
+    if (NOT READLINE_FIND_QUIETLY)
+      message(STATUS "Found GNU Readline version ${READLINE_VERSION}: ${READLINE_LIBRARY}")
+    endif ()
+  endif ()
+else ()
+  if (READLINE_FIND_REQUIRED)
+    message(FATAL_ERROR "Could not find GNU Readline")
+  endif ()
+endif ()
