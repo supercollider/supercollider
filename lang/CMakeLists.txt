@@ -249,7 +249,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
 
-target_link_libraries(libsclang ${PTHREADS_LIBRARY} supercollider_boost_thread)
+target_link_libraries(libsclang ${PTHREADS_LIBRARY} boost_thread)
 
 if(SC_QT)
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
