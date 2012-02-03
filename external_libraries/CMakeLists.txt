@@ -53,30 +53,10 @@ endif()
 
 add_library(boost_thread STATIC ${boost_thread_src} ${boost_thread_platform})
 
-add_library(supercollider_boost_thread SHARED ${boost_thread_src} ${boost_thread_platform})
-target_link_libraries(supercollider_boost_thread ${PTHREADS_LIBRARY})
-
 if(LTO)
-	set_property(TARGET boost_thread supercollider_boost_thread
+	set_property(TARGET boost_thread
 				APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-	set_property(TARGET boost_thread supercollider_boost_thread
+	set_property(TARGET boost_thread
 				APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
-endif()
-
-
-if(APPLE)
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-	install(TARGETS supercollider_boost_thread
-			LIBRARY DESTINATION "${scappauxresourcesdir}/../MacOS"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-elseif(WIN32)
-	install(TARGETS supercollider_boost_thread
-			DESTINATION "SuperCollider"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-else()
-	install(TARGETS supercollider_boost_thread
-			LIBRARY DESTINATION "lib"
-			RUNTIME DESTINATION "bin"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
