@@ -97,6 +97,12 @@ void QcCanvas::customEvent( QEvent *e )
   }
 }
 
+void QcCanvas::changeEvent ( QEvent * e )
+{
+  if(e->type() == QEvent::PaletteChange)
+    refresh();
+}
+
 void QcCanvas::resizeEvent( QResizeEvent * )
 {
   _resize = true;
