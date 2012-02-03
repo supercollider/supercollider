@@ -26,14 +26,17 @@ ServerMeterView{
 		server = aserver;
 
 		view = CompositeView(parent, Rect(leftUp.x,leftUp.y, viewWidth, height) );
-		try { view.palette = \QPalette.asClass.new.windowText_(Color.grey(0.6)) };
 		view.onClose_({ this.stop });
 		innerView = CompositeView(view, Rect(10,25, viewWidth, height) );
 		innerView.addFlowLayout(0@0, gapWidth@gapWidth);
 
 		// dB scale
 		UserView(innerView, Rect(0,0,meterWidth,195)).drawFunc_({
-			Pen.color = Color.white;
+			try {
+				Pen.color = \QPalette.asClass.new.windowText;
+			} {
+				Pen.color = Color.white;
+			};
 			Pen.font = Font.sansSerif(10).boldVariant;
 			Pen.stringCenteredIn("0", Rect(0, 0, meterWidth, 12));
 			Pen.stringCenteredIn("-80", Rect(0, 170, meterWidth, 12));
@@ -43,27 +46,28 @@ ServerMeterView{
 			// ins
 			StaticText(view, Rect(10, 5, 100, 15))
 				.font_(Font.sansSerif(10).boldVariant)
-				.stringColor_(Color.white)
 				.string_("Inputs");
 			inmeters = Array.fill( numIns, { arg i;
 				var comp;
 				comp = CompositeView(innerView, Rect(0,0,meterWidth,195)).resize_(5);
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
 					.font_(Font.sansSerif(9).boldVariant)
-					.stringColor_(Color.white)
 					.string_(i.asString);
 				levelIndic = LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
 					.drawsPeak_(true)
 					.numTicks_(9)
 					.numMajorTicks_(3);
-				try{ levelIndic.background = Color.grey(0.3) };
 			});
 		});
 
 		if((numIns > 0) && (numOuts > 0)){
 			// divider
 			UserView(innerView, Rect(0,0,meterWidth,180)).drawFunc_({
-				Pen.color = Color.white;
+				try {
+					Pen.color = \QPalette.asClass.new.windowText;
+				} {
+					Pen.color = Color.white;
+				};
 				Pen.line(((meterWidth + gapWidth) * 0.5)@0, ((meterWidth + gapWidth) * 0.5)@180);
 				Pen.stroke;
 			});
@@ -73,26 +77,22 @@ ServerMeterView{
 		(numOuts > 0).if({
 			StaticText(view, Rect(10 + if(numIns > 0 , ((numIns + 2) * (meterWidth + gapWidth)), 0), 5, 100, 15))
 				.font_(Font.sansSerif(10).boldVariant)
-				.stringColor_(Color.white)
 				.string_("Outputs");
 			outmeters = Array.fill( numOuts, { arg i;
 				var comp;
 				comp = CompositeView(innerView, Rect(0,0,meterWidth,195));
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
 					.font_(Font.sansSerif(9).boldVariant)
-					.stringColor_(Color.white)
 					.string_(i.asString);
 				levelIndic = LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
 					.drawsPeak_(true)
 					.numTicks_(9)
 					.numMajorTicks_(3);
-				try{ levelIndic.background = Color.grey(0.3) }
 			});
 		});
 
 		this.setSynthFunc(inmeters, outmeters);
 		this.start;
-
 	}
 
 	setSynthFunc{
@@ -228,7 +228,6 @@ ServerMeter{
 		window = Window.new(server.name ++ " levels (dBFS)",
 							Rect(5, 305, ServerMeterView.getWidth(numIns,numOuts), ServerMeterView.height),
 							false);
-		window.view.background = Color.grey(0.4);
 
 		meterView = ServerMeterView(server, window, 0@0, numIns, numOuts);
 		meterView.view.keyDownAction_({ arg view, char, modifiers;
