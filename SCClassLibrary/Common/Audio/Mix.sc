@@ -30,7 +30,7 @@ NumChannels {
 					chan.at(0)
 				} {
 					if(mixdown) {
-						Mix.ar(chan)
+						Mix.new(chan)
 					} {
 						chan.at(0)
 					}
