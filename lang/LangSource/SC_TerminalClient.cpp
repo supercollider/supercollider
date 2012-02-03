@@ -38,12 +38,14 @@
 # include <sys/param.h>
 # include <sys/poll.h>
 # include <unistd.h>
-# ifdef HAVE_READLINE
-#   include <readline/readline.h>
-#   include <readline/history.h>
-#   include <signal.h>
-# endif
 #endif
+
+#ifdef HAVE_READLINE
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <signal.h>
+#endif
+
 
 #include <string.h>
 #include <time.h>
@@ -484,6 +486,16 @@ static int sc_rl_mainstop(int i1, int i2)
 	return 0;
 }
 
+/*
+// Completion from sclang dictionary TODO
+char ** sc_rl_completion (const char *text, int start, int end);
+char ** sc_rl_completion (const char *text, int start, int end){
+	char **matches = (char **)NULL;
+	printf("sc_rl_completion(%s, %i, %i)\n", text, start, end);
+	return matches;
+}
+*/
+
 int SC_TerminalClient::readlineRecompile(int i1, int i2)
 {
 	static_cast<SC_TerminalClient*>(SC_LanguageClient::instance())->sendSignal(sig_recompile);
@@ -518,10 +530,8 @@ void SC_TerminalClient::readlineCmdLine( char *cmdLine )
 	}
 }
 
-void *SC_TerminalClient::readlineFunc( void *arg )
+void SC_TerminalClient::readlineInit()
 {
-	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(arg);
-
 	// Setup readline
 	rl_readline_name = "sclang";
 	rl_basic_word_break_characters = " \t\n\"\\'`@><=;|&{}().";
@@ -530,6 +540,8 @@ void *SC_TerminalClient::readlineFunc( void *arg )
 	rl_bind_key(CTRL('x'), &readlineRecompile);
 	rl_callback_handler_install( "sc3> ", &readlineCmdLine );
 
+	// FIXME: Implement the code below on Windows
+#ifndef _WIN32
 	// Set our handler for SIGINT that will clear the line instead of terminating.
 	// NOTE: We prevent readline from setting its own signal handlers,
 	// to not override ours.
@@ -538,6 +550,16 @@ void *SC_TerminalClient::readlineFunc( void *arg )
 	memset( &sact, 0, sizeof(struct sigaction) );
 	sact.sa_handler = &sc_rl_signalhandler;
 	sigaction( SIGINT, &sact, 0 );
+#endif
+}
+
+#ifndef _WIN32
+
+void *SC_TerminalClient::readlineFunc( void *arg )
+{
+	readlineInit();
+
+	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(arg);
 
 	fd_set fds;
 	FD_ZERO(&fds);
@@ -567,16 +589,47 @@ void *SC_TerminalClient::readlineFunc( void *arg )
 
 	return NULL;
 }
-/*
-// Completion from sclang dictionary TODO
-char ** sc_rl_completion (const char *text, int start, int end);
-char ** sc_rl_completion (const char *text, int start, int end){
-	char **matches = (char **)NULL;
-	printf("sc_rl_completion(%s, %i, %i)\n", text, start, end);
-	return matches;
+
+#else
+
+void *SC_TerminalClient::readlineFunc( void *arg )
+{
+	readlineInit();
+
+	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(arg);
+
+	HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
+	HANDLE hnds[] = { client->mQuitInputEvent, hStdIn };
+
+	bool shouldRun = true;
+	while (shouldRun) {
+		DWORD result = WaitForMultipleObjects( 2, hnds, false, INFINITE );
+
+		if( result == WAIT_FAILED ) {
+			postfl("readline: wait error.\n");
+			client->onQuit(1);
+			break;
+		}
+
+		int hIndex = result - WAIT_OBJECT_0;
+
+		if( hIndex == 0 ) {
+			postfl("readline: quit requested.\n");
+			break;
+		}
+
+		if( hIndex == 1 ) {
+			rl_callback_read_char();
+		}
+	}
+
+	postfl("readline: stopped.\n");
+
+	return NULL;
 }
-*/
-#endif
+#endif // !_WIN32
+
+#endif // HAVE_READLINE
 
 #ifndef _WIN32
 
@@ -746,36 +799,31 @@ void SC_TerminalClient::initInput()
 {
 
 #ifndef _WIN32
-
 	if( pipe( mInputCtlPipe ) == -1 ) {
 		postfl("Error creating pipe for input thread control:\n%s\n", strerror(errno));
 		quit(1);
 	}
-
-#ifdef HAVE_READLINE
-
-	if (strcmp(gIdeName, "none") == 0) {
-		// Other clients (emacs, vim, ...) won't want to interact through rl
-		mUseReadline = true;
-		return;
-	}
-
-#endif
-
-	if( fcntl( STDIN_FD, F_SETFL, O_NONBLOCK ) == -1 ) {
-		postfl("Error setting up non-blocking pipe reading:\n%s\n", strerror(errno));
-		quit(1);
-	}
-
-#else // !_WIN32
-
+#else
 	mQuitInputEvent = CreateEvent( NULL, false, false, NULL );
 	if( mQuitInputEvent == NULL ) {
 		postfl("Error creating event for input thread control.\n");
 		quit(1);
 	}
-	postfl("Created input thread control event.\n");
+#endif
 
+#ifdef HAVE_READLINE
+	if (strcmp(gIdeName, "none") == 0) {
+		// Other clients (emacs, vim, ...) won't want to interact through rl
+		mUseReadline = true;
+		return;
+	}
+#endif
+
+#ifndef _WIN32
+	if( fcntl( STDIN_FD, F_SETFL, O_NONBLOCK ) == -1 ) {
+		postfl("Error setting up non-blocking pipe reading:\n%s\n", strerror(errno));
+		quit(1);
+	}
 #endif // !_WIN32
 }
 
