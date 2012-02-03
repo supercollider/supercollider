@@ -26,7 +26,7 @@ QView : QObject {
   // window actions
   var <toFrontAction, <endFrontAction;
   // hooks
-  var <onClose;
+  var <onClose, <onResize, <onMove;
 
   *initClass {
     hSizePolicy = [1,2,3,1,2,3,1,2,3];
@@ -441,6 +441,16 @@ QView : QObject {
     this.setEventHandler( 9 /* QEvent::FocusOut */, \focusOutEvent );
   }
 
+  onMove_ { arg aFunction;
+    onMove = aFunction;
+    this.setEventHandler( 13 /* QEvent::Move */, \moveEvent );
+  }
+
+  onResize_ { arg aFunction;
+    onResize = aFunction;
+    this.setEventHandler( 14 /* QEvent::Resize */, \resizeEvent );
+  }
+
   onClose_ { arg func;
     this.manageFunctionConnection( onClose, func, 'destroyed()', false );
     onClose = func;
@@ -574,6 +584,9 @@ QView : QObject {
 
   focusInEvent { focusGainedAction.value(this) }
   focusOutEvent { focusLostAction.value(this) }
+
+  moveEvent { onMove.value(this) }
+  resizeEvent { onResize.value(this) }
 
   keyDownEvent { arg char, modifiers, unicode, keycode, spontaneous;
     modifiers = QKeyModifiers.toCocoa(modifiers);
