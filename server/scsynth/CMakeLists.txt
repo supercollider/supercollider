@@ -131,11 +131,17 @@ endif()
 
 set (FINAL_BUILD 0) # disable final build for scsynth
 
+if (LIBSCSYNTH)
+	set (LIBSCSYNTH_TYPE SHARED)
+else()
+	set (LIBSCSYNTH_TYPE STATIC)
+endif()
+
 if (FINAL_BUILD)
 	CREATE_FINAL_FILE(libscsynth_final.cpp ${scsynth_sources})
-	add_library(libscsynth STATIC libscsynth_final.cpp)
+	add_library(libscsynth ${LIBSCSYNTH_TYPE} libscsynth_final.cpp)
 else()
-	add_library(libscsynth STATIC ${scsynth_sources})
+	add_library(libscsynth ${LIBSCSYNTH_TYPE} ${scsynth_sources})
 endif()
 
 set_property(TARGET libscsynth
@@ -183,10 +189,12 @@ endif()
 
 
 set_property(TARGET libscsynth PROPERTY OUTPUT_NAME scsynth)
-# These two properties are ABI version info, not sc version:
-set_property(TARGET libscsynth PROPERTY VERSION     1.0.0)
-set_property(TARGET libscsynth PROPERTY SOVERSION   1)
 
+if (LIBSCSYNTH)
+	# These two properties are ABI version info, not sc version:
+	set_property(TARGET libscsynth PROPERTY VERSION     1.0.0)
+	set_property(TARGET libscsynth PROPERTY SOVERSION   1)
+endif()
 
 if (FFTW3F_FOUND)
 	target_link_libraries(libscsynth ${FFTW3F_LIBRARY})
@@ -212,20 +220,27 @@ if(LTO)
                  APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
-#TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
+if (LIBSCSYNTH)
+	set(INSTALL_TARGETS scsynth libscsynth)
+else()
+	set(INSTALL_TARGETS scsynth)
+endif()
 
 if(APPLE)
+	# TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
 	# determines the app name and app install location (scappbundlename, scappdir):
 	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-	install(TARGETS scsynth
+	install(TARGETS ${INSTALL_TARGETS}
 			RUNTIME DESTINATION "${scappauxresourcesdir}"
+			LIBRARY DESTINATION "${scappauxresourcesdir}"
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
 elseif(WIN32)
-	install(TARGETS scsynth
+	install(TARGETS ${INSTALL_TARGETS}
 			DESTINATION "SuperCollider"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 else()
-	install(TARGETS scsynth
+	install(TARGETS ${INSTALL_TARGETS}
 			RUNTIME DESTINATION "bin"
+			LIBRARY DESTINATION "lib"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
