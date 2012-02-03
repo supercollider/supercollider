@@ -41,9 +41,9 @@ QcKnob::QcKnob() :
   setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
 }
 
-void QcKnob::setValue( float val )
+void QcKnob::setValue( double val )
 {
-  _value = qBound( 0.f, val, 1.f );
+  _value = qBound( 0.0, val, 1.0 );
   update();
 }
 
@@ -59,7 +59,9 @@ void QcKnob::mousePressEvent( QMouseEvent *e )
 void QcKnob::mouseMoveEvent( QMouseEvent *e )
 {
   if( _mode == 0 ) {
-      setValue( value( e->pos() ) );
+      double val = value( e->pos() );
+      if( !(val < 0.0 && _value > 0.5) && !(val > 1.0 && _value < 0.5) )
+        setValue( value( e->pos() ) );
       Q_EMIT( action() );
   }
   else {
@@ -111,17 +113,19 @@ void QcKnob::paintEvent( QPaintEvent * )
 
   p.save(); // groove & value indicator rotation
 
-  p.rotate( -250.f );
+  double range = 300.0;
 
-  float valAng = _value * -320.f;
+  p.rotate( - 90 - range * 0.5 );
+
+  double valAng = - _value * range;
 
   if( _centered ) {
-    float min = qMin( valAng, -160.f );
-    float max = qMax( valAng, -160.f );
+    double min = qMin( valAng, -range * 0.5 );
+    double max = qMax( valAng, -range * 0.5 );
 
     pen.setColor( cGroove );
     p.setPen( pen );
-    p.drawArc( r, -320.f * 16.f, (min + 320.f) * 16.f );
+    p.drawArc( r, -range * 16.f, (min + range) * 16.f );
     p.drawArc( r, max * 16.f, -max * 16.f );
 
     pen.setColor( plt.color(QPalette::WindowText) );
@@ -131,7 +135,7 @@ void QcKnob::paintEvent( QPaintEvent * )
   else {
     pen.setColor( cGroove );
     p.setPen( pen );
-    p.drawArc( r, -320.f * 16.f, (valAng + 320.f) * 16.f );
+    p.drawArc( r, -range * 16.f, (valAng + range) * 16.f );
 
     pen.setColor( plt.color(QPalette::WindowText) );
     p.setPen( pen );
@@ -140,7 +144,7 @@ void QcKnob::paintEvent( QPaintEvent * )
 
   p.restore(); // groove & value indicator rotation
 
-  p.rotate( 20 - valAng );
+  p.rotate( (360.0 - range) * 0.5 - valAng );
 
   QLineF line( 0, 0.05, 0, 0.55 );
   pen.setColor(cVal);
@@ -150,10 +154,11 @@ void QcKnob::paintEvent( QPaintEvent * )
   p.drawLine( line );
 }
 
-float QcKnob::value( const QPoint &pt )
+double QcKnob::value( const QPoint &pt )
 {
-  float angle = QLineF( rect().center(), pt ).angle();
-  if( angle > 270.f ) angle -= 290;
-  else angle += 70;
-  return (320.f - angle) / 320.f;
+  double angle = QLineF( rect().center(), pt ).angle();
+
+  if( angle > 270.0 ) angle -= 270.0;
+  else angle += 90;
+  return (330 - angle) / 300.0;
 }
