@@ -192,7 +192,15 @@ SynthDef(...).add;
 
 section::"Rest" events
 
-The convention to include a rest in the middle of an event pattern is to set the code::\freq:: key to a link::Classes/Symbol::. Commonly this is code::\rest::, but a backslash by itself is enough to suppress the note on the server. Ligeti's "touches bloquees" technique could be written this way (see link::Tutorials/A-Practical-Guide/PG_06e_Language_Control:: for an explanation of the conditional link::Classes/Pif::):
+Beginning with version 3.5, rests may be indicated using the link::Classes/Rest:: class. Advantages:
+
+list::
+## Rests may be given in any Pbind key-value pair. (Previously, rests could be indicated only in \type, \degree, \note, \midinote or \freq.)
+## A rest have a duration, e.g. code::Rest(0.5)::, and used in a duration stream (\dur or \delta).
+## Addresses some problems with the former convention (to be discussed in brief below).
+::
+
+Ligeti's "touches bloquées" technique could be written this way (see link::Tutorials/A-Practical-Guide/PG_06e_Language_Control:: for an explanation of the conditional link::Classes/Pif::):
 
 code::
 (
@@ -203,9 +211,9 @@ var	pitches = Pseries(0, Pconst(24, Pwhite(1, 3, inf)), inf).asStream.all,
 
 p = Pbind(
 	\arpeg, Pseq(pitches[ .. pitches.size - 2] ++ pitches.reverse[ .. pitches.size - 2], inf),
-		// if the note is found in the mask array, replace it with \rest
+		// if the note is found in the mask array, replace it with Rest
 		// then that note does not sound
-	\note, Pif(Pfunc { |event| mask.includes(event[\arpeg]) }, \rest, Pkey(\arpeg)),
+	\note, Pif(Pfunc { |event| mask.includes(event[\arpeg]) }, Rest, Pkey(\arpeg)),
 	\octave, 4,
 	\dur, 0.125
 ).play;
@@ -213,6 +221,8 @@ p = Pbind(
 
 p.stop;
 ::
+
+Prior to 3.5, the convention to include a rest in the middle of an event pattern is to set the code::\freq:: key to a link::Classes/Symbol::. Commonly this is code::\rest::, but a backslash by itself is enough to suppress the note on the server. (This usage is still supported in 3.5, but not recommended.)
 
 If it's the code::\freq:: key that determines whether the event as a rest or not, why does it work to use it with code::\note::? As noted, keys like code::\degree::, code::\note::, and code::\midinote:: are automatically converted into frequency. The math operations that perform the conversion preserve Symbols intact -- e.g., code::\rest + 1 == \rest:: . So the code::\rest:: value is passed all the way through the chain of conversions so that code::\freq:: in the event ends up receiving code::\rest::.
 
