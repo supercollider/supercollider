@@ -5,11 +5,6 @@
 #  SNDFILE_LIBRARIES   - List of libraries when using libsndfile.
 #  SNDFILE_FOUND       - True if libsndfile found.
 
-if(SNDFILE_INCLUDE_DIR)
-    # Already in cache, be silent
-    set(SNDFILE_FIND_QUIETLY TRUE)
-endif(SNDFILE_INCLUDE_DIR)
-
 if(NO_LIBSNDFILE)
 	#if(NOT SNDFILE_FIND_QUIETLY)
 	#	message(STATUS "FindSndfile: sndfile deactivated (NO_LIBSNDFILE)")
@@ -18,6 +13,9 @@ if(NO_LIBSNDFILE)
 	set(SNDFILE_INCLUDE_DIR "nowhere")  # for onceonly check above
 	set(SNDFILE_LIBRARIES "")
 	add_definitions("-DNO_LIBSNDFILE")
+elseif (SNDFILE_INCLUDE_DIR AND SNDFILE_LIBRARY)
+	set(SNDFILE_LIBRARIES ${SNDFILE_LIBRARY})
+	set(SNDFILE_FOUND TRUE)
 elseif (APPLE)
 	set(SNDFILE_FOUND TRUE)
 	set(SNDFILE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/libsndfile/)
@@ -36,8 +34,8 @@ else()
 	# Handle the QUIETLY and REQUIRED arguments and set SNDFILE_FOUND to TRUE if
 	# all listed variables are TRUE.
 	include(FindPackageHandleStandardArgs)
-	find_package_handle_standard_args(SNDFILE DEFAULT_MSG
-		SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY)
+	find_package_handle_standard_args(Sndfile DEFAULT_MSG
+		SNDFILE_LIBRARY SNDFILE_INCLUDE_DIR)
 
 	if(SNDFILE_FOUND)
 		set(SNDFILE_LIBRARIES ${SNDFILE_LIBRARY})
