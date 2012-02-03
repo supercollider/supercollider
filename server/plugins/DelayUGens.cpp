@@ -7228,7 +7228,8 @@ static void DelTapWr_first(DelTapWr *unit, int inNumSamples)
 
 		uint32 remain = bufSamples - unroll;
 		Clear(remain, bufData + unroll);
-	}
+	} else
+		Clear(bufSamples, bufData);
 #else
 	Clear(bufSamples, bufData);
 #endif
