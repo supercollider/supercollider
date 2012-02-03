@@ -15,14 +15,8 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
 endif()
 
-if(APPLE)
-	# apple bundles a crappy old readline so we say no even though it is usually detectable
-	set(READLINE_FOUND false)
-elseif(WIN32)
-	set(READLINE_FOUND false)
-else()
-	find_package(Readline)
-endif()
+find_package(Readline 5.0)
+
 find_package(Sndfile)
 
 set(sclang_sources
