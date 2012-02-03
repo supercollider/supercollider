@@ -16,7 +16,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 if(APPLE)
-	# apple bundles an old nongpl readline so we say no even though it is usually detectable
+	# apple bundles a crappy old readline so we say no even though it is usually detectable
 	set(READLINE_FOUND false)
 elseif(WIN32)
 	set(READLINE_FOUND false)
