@@ -233,16 +233,10 @@ struct MaxLocalBufs : public Unit
 };
 
 struct SetBuf : public Unit
-{
-	float m_fbufnum;
-	SndBuf *m_buf;
-};
+{};
 
 struct ClearBuf : public Unit
-{
-	float m_fbufnum;
-	SndBuf *m_buf;
-};
+{};
 
 struct DelTapWr : public Unit
 {
@@ -334,9 +328,7 @@ extern "C"
 	void MaxLocalBufs_Ctor(MaxLocalBufs *unit);
 
 	void SetBuf_Ctor(SetBuf *unit);
-	void SetBuf_next(SetBuf *unit, int inNumSamples);
 	void ClearBuf_Ctor(ClearBuf *unit);
-	void ClearBuf_next(ClearBuf *unit, int inNumSamples);
 
 	void BufDelayN_Ctor(BufDelayN *unit);
 	void BufDelayN_next(BufDelayN *unit, int inNumSamples);
@@ -770,11 +762,11 @@ void MaxLocalBufs_Ctor(MaxLocalBufs *unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-void SetBuf_next(SetBuf *unit, int inNumSamples)
+void SetBuf_Ctor(SetBuf *unit)
 {
-	GET_BUF
-	if (!bufData) {
+	OUT0(0) = 0.f;
+	CTOR_GET_BUF
+	if (!buf || !buf->data) {
 		if(unit->mWorld->mVerbosity > -2){
 			Print("SetBuf: no valid buffer\n");
 		}
@@ -787,46 +779,26 @@ void SetBuf_next(SetBuf *unit, int inNumSamples)
 
 	int j = 3;
 	for(int i=offset; i<end; ++j, ++i) {
-		bufData[i] = (float)IN0(j);
+		buf->data[i] = IN0(j);
 	}
-
-}
-
-void SetBuf_Ctor(SetBuf *unit)
-{
-	unit->m_fbufnum = -1.f;
-	SETCALC(SetBuf_next);
-	OUT0(0) = 0.f;
-	SetBuf_next(unit, 0);
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-void ClearBuf_next(ClearBuf *unit, int inNumSamples)
+void ClearBuf_Ctor(ClearBuf *unit)
 {
-	GET_BUF
-	if (!bufData) {
+	OUT0(0) = 0.f;
+	CTOR_GET_BUF
+
+	if (!buf || !buf->data) {
 		if(unit->mWorld->mVerbosity > -2){
 			Print("ClearBuf: no valid buffer\n");
 		}
 		return;
 	}
-	int n = unit->m_buf->samples;
 
-	//bzero(unit->m_buf->data, unit->m_buf->samples * sizeof(float));
-	for (int i=0; i<n; ++i) {
-		bufData[i] = 0.f;
-	}
-}
-
-void ClearBuf_Ctor(ClearBuf *unit)
-{
-	unit->m_fbufnum = -1.f;
-	SETCALC(ClearBuf_next);
-	OUT0(0) = 0.f;
-	ClearBuf_next(unit, 0);
+	Clear(buf->samples, buf->data);
 }
 
 
