@@ -78,6 +78,7 @@ QtGUI {
   *hLayout { ^QHLayout }
   *vLayout { ^QVLayout }
   *gridLayout { ^QGridLayout }
+  *stackLayout { ^QStackLayout }
 
   *pen { ^QPen }
 
