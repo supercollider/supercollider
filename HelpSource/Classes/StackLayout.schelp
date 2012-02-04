@@ -1,0 +1,114 @@
+CLASS:: StackLayout
+summary:: A layout that stacks views on top of each other
+categories:: GUI>Layout
+related:: Guides/GUI-Layout-Management
+redirect:: implClass
+
+DESCRIPTION::
+
+note:: StackLayout is only implemented in strong::Qt GUI:: ::
+
+StackLayout manages several views stacked into the same space. It has two modes: it can either switch the view that is visible, hiding the others, or it can keep all of them visible, switching the one that is on top.
+
+The second mode is useful for example for overlaying a view with a UserView, on which you can then draw additional information. If you still want to be able to interact with the view below using the mouse, you can make the one above ignore the mouse using link::Classes/View#-acceptsMouse::. See the link::#examples#example:: below.
+
+Views can be added to the layout immediately at link::#*new#construction::, or you can link::#-add#add:: or link::#-insert#insert:: them after. To remove a view, you simply call link::Classes/View#-remove::.
+
+You can change the current view (the one visible / on top) using link::#-index::, while link::#-numViews:: tells you how many views are managed by the layout.
+
+To switch between the two modes use link::#-mode::.
+
+note::
+Unlike other layouts, StackLayout can not contain another layout, but only subclasses of View.
+::
+
+
+CLASSMETHODS::
+
+PRIVATE:: key
+PRIVATE:: qtClass
+
+METHOD:: new
+
+    Creates a StackLayout and fills it with the items given as arguments. The last view becomes the current one, i.e. visible and on top of others.
+
+    argument:: items
+    A sequence of Views.
+
+    discussion::
+
+    In the example below, the button will switch between the three text editing areas:
+code::
+(
+var stack;
+w = Window().layout_( VLayout(
+    Button().states_([["One"],["Two"],["Three"]]).action_({ |b| stack.index = b.value }),
+    stack = StackLayout(
+        TextView().string_("This is a chunk of text..."),
+        TextView().string_("...and this is another..."),
+        TextView().string_("...and another.")
+    ).index_(0)
+)).front;
+)
+::
+
+INSTANCEMETHODS::
+
+METHOD:: add
+    Adds a view at the last index. This does not affect the current link::#-index::.
+
+    argument:: view
+    A View.
+
+METHOD:: insert
+    Inserts a view at the specific index. This does not affect the current link::#-index::.
+
+    argument:: view
+    A View.
+
+    argument:: index
+    An integer. If it is less than 0 or more than link::#-numViews::, the view will always be inserted as last.
+
+METHOD:: numViews
+    The number of views managed by the layout.
+
+METHOD:: index
+    Sets or gets the index of the current view. The current view is placed on top of others, and if link::#-mode:: is 0, all the others are hidden.
+
+METHOD:: mode
+    Sets or gets the current mode: in mode 0, the layout only displays the current view; in mode 1, the layout displays all the views. In both modes, the current view will be placed on top of others.
+
+    See also: link::#-index::.
+
+    argument:: value
+        0 or 1. Instead of an integer you can also use symbols \stackOne or \stackAll.
+    returns::
+        0 or 1.
+
+EXAMPLES::
+
+Overlaying a TextView with a UserView to do additional drawing on top, while still allowing the interaction with the text:
+
+code::
+(
+var text, canvas;
+text = TextView().string_("Hello world!").keyDownAction_({canvas.refresh});
+canvas = UserView().acceptsMouse_(false).drawFunc_({
+    var b = canvas.bounds();
+    var str = text.string;
+    Pen.translate( b.center.x, b.center.y );
+    Pen.fillColor = text.palette.baseText.alpha_(0.1);
+    str.do { |c|
+        var x = 40.0.rand + 10.0;
+        var r = c.asString.bounds.center_(0@0);
+        Pen.push;
+        Pen.rotate( 1.0.rand );
+        Pen.translate( rand2(-0.3,0.3) * b.width, rand2(-0.3,0.3) * b.width );
+        Pen.scale( x, x );
+        Pen.stringCenteredIn(c.asString, r);
+        Pen.pop;
+    }
+}).refresh;
+w=Window().layout_( StackLayout( text, canvas ).mode_(\stackAll) ).front;
+)
+::

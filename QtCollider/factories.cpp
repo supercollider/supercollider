@@ -58,6 +58,7 @@ void loadFactories () {
   QC_ADD_FACTORY( QcHBoxLayout );
   QC_ADD_FACTORY( QcVBoxLayout );
   QC_ADD_FACTORY( QcGridLayout );
+  QC_ADD_FACTORY( QcStackLayout );
 }
 
 } // namespace QtCollider
