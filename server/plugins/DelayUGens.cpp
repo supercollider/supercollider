@@ -323,7 +323,6 @@ extern "C"
 
 	void LocalBuf_Ctor(LocalBuf *unit);
 	void LocalBuf_Dtor(LocalBuf *unit);
-	void LocalBuf_next(LocalBuf *unit, int inNumSamples);
 
 	void MaxLocalBufs_Ctor(MaxLocalBufs *unit);
 
@@ -733,9 +732,6 @@ void LocalBuf_Dtor(LocalBuf *unit)
 		unit->mParent->localBufNum =  unit->mParent->localBufNum - 1;
 	}
 }
-
-// dummy for unit size.
-void LocalBuf_next(LocalBuf *unit, int inNumSamples) {}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
