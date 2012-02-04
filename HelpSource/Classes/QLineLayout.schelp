@@ -8,9 +8,9 @@ The two subclasses - QHLayout and QVLayout - distribute views in a horizontal or
 
 subsection:: Fine tuning
 
-Each item can be assigned a stretch factor and an alignment flag to fine tune how its size and position are managed. This can be done at layout link::#*new#construction::, when an item is added with link::#-add:: method or for an already contained item with link::#-setStretch:: and link::#-setAlignment:: methods.
+Each item can be assigned a strong::stretch factor:: and an strong::alignment:: flag to fine tune how its size and position are managed. This can be done at layout link::#*new#construction::, when an item is link::#-add#added:: or link::#-insert#inserted:: or for an already present item with link::#-setStretch:: and link::#-setAlignment:: methods.
 
-Stretch factor only affects distribution in the direction of the layout (vertical or horizontal). All items have a stretch factor of 0 by default, so only their own preferences will determine space distribution. As soon as an item is assigned a stretch factor higher than 0, the space will be redistributed according to proportions of stretch factors.
+The strong::stretch factor:: only affects distribution in the direction of the layout (vertical or horizontal). All items have a stretch factor of 0 by default, so only their own preferences will determine space distribution. As soon as an item is assigned a stretch factor higher than 0, the space will be redistributed according to proportions of stretch factors.
 
 subsection:: Leaving empty space
 
@@ -27,8 +27,15 @@ METHOD:: new
 Create a QLineLayout and immediately fill it with items given as arguments.
 
 argument:: items
-A sequence of items that the layout will distribute in the given order. An item can be a QView, a QLayout, nil (for stretchable empty space) or an Integer (for fixed-size empty space). You can assign stretch factor and/or alignment to an item by wrapping it into an array, followed by pairs of ('stretch', factor) and/or ('align', flag). 'stretch' and 'align' may be abbreviated with 's' and 'a'. Simplified syntax for placing key-value pairs into an array comes handy. If the item is nil only the stretch parameter will have effect; if the item is an integer none of the parameters will have any effect. For example:
+Each item can be a strong::QView::, a strong::QLayout::, strong::nil:: (for stretchable empty space) or an strong::Integer:: (for fixed-size empty space).
 
+discussion::
+
+You can assign a strong::stretch factor:: and/or strong::alignment:: to an item by wrapping it into an array, followed by pairs of ('stretch', factor) and/or ('align', flag). 'stretch' and 'align' may be abbreviated with 's' and 'a'. Simplified syntax for placing key-value pairs into an array comes handy (see link::Reference/Syntax-Shortcuts#creating_arrays_with_key-value_pairs::, and the example below).
+
+If the item is a stretchable empty space (nil) alignment will have no effect; if the item is a fixed-size empty space (an Integer), it is unaffected by both the stretch factor and alignment.
+
+Example:
 code::
 w = Window.new;
 w.layout = QVLayout(
@@ -47,13 +54,36 @@ METHOD:: add
 Add an item to the right or the bottom end of the line, for QHLayout and QVLayout respectively.
 
 argument:: item
-The item can be a QView, a QLayout, an Integer (specifying amount in pixels of empty space) or nil (for stretchable empty space). If the item is nil the align argument will have no effect; if the item is an Integer none of the other arguments will have any effect.
+The item can be a strong::QView::, a strong::QLayout::, an strong::Integer:: (specifying amount in pixels of empty space) or strong::nil:: (for stretchable empty space).
 
 argument:: stretch
 An integer stretch factor.
 
 argument:: align
 A symbol expressing the alignment.
+
+discussion::
+If the item is a stretchable empty space (nil) the align argument will have no effect; if the item is a fixed-size empty space (an Integer) both stretch and align arguments will have no effect.
+
+
+METHOD:: insert
+Insert an item at a specific position.
+
+argument:: item
+The item can be a strong::QView::, a strong::QLayout::, an strong::Integer:: (specifying amount in pixels of empty space) or strong::nil:: (for stretchable empty space).
+
+argument:: index
+The integer position among current items at which to insert the new item. If index is smaller than 0 or larger than the current amount of items, the new item will always be added to the end of the line.
+
+argument:: stretch
+An integer stretch factor.
+
+argument:: align
+A symbol expressing the alignment.
+
+discussion::
+If the item is a stretchable empty space (nil) the align argument will have no effect; if the item is a fixed-size empty space (an Integer) both stretch and align arguments will have no effect.
+
 
 
 METHOD:: setStretch
