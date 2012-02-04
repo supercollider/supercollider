@@ -27,7 +27,7 @@ namespace nova {
 
 struct cpu_time_info
 {
-    static const int size = 64;
+    static const int size = 512; // 700 ms at 128 samples 96kHz, 6.9 s at 512 samples 44.1kHz
 
     cpu_time_info(void):
         index(size - 1), buffer(size, 0.f)
