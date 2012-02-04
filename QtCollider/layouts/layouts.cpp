@@ -24,6 +24,7 @@
 QC_DECLARE_QOBJECT_FACTORY(QcHBoxLayout);
 QC_DECLARE_QOBJECT_FACTORY(QcVBoxLayout);
 QC_DECLARE_QOBJECT_FACTORY(QcGridLayout);
+QC_DECLARE_QOBJECT_FACTORY(QcStackLayout);
 
 void QcGridLayout::addItem( const VariantList &dataList )
 {

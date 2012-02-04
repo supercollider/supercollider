@@ -41,7 +41,7 @@ QLineLayout : QLayout {
     this.invokeMethod( \addItem, [[item, stretch, QAlignment(align)]], true );
   }
 
-  insert { arg item, index, stretch = 0, align;
+  insert { arg item, index=0, stretch = 0, align;
     this.invokeMethod( \insertItem, [[item, index, stretch, QAlignment(align)]], true );
   }
 
@@ -178,5 +178,32 @@ QGridLayout : QLayout {
 
   setMinColumnWidth { arg column, width;
     this.invokeMethod( \setMinColumnWidth, [column, width] );
+  }
+}
+
+QStackLayout : QLayout
+{
+  *qtClass { ^'QcStackLayout' }
+
+  *new { arg ...views; ^super.new([views]) }
+
+  add { arg view; this.invokeMethod( \addWidget, view ) }
+
+  insert { arg view, index=0; this.invokeMethod( \insertWidget, [index, view] ) }
+
+  index { ^this.getProperty(\currentIndex) }
+  index_ { arg value; this.setProperty(\currentIndex, value) }
+
+  numViews { ^this.getProperty(\count) }
+
+  mode { ^this.getProperty(\stackingMode) }
+  mode_ { arg value;
+    value = value.switch(
+      \stackOne, 0,
+      \stackAll, 1,
+      value
+    );
+    value = value.clip(0, 1).asInteger;
+    this.setProperty(\stackingMode, value)
   }
 }
