@@ -41,6 +41,10 @@ QLineLayout : QLayout {
     this.invokeMethod( \addItem, [[item, stretch, QAlignment(align)]], true );
   }
 
+  insert { arg item, index, stretch = 0, align;
+    this.invokeMethod( \insertItem, [[item, index, stretch, QAlignment(align)]], true );
+  }
+
   setStretch { arg item, stretch;
     this.invokeMethod( \setStretch, [item, stretch], true );
   }
