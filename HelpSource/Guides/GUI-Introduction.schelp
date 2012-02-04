@@ -107,8 +107,8 @@ note::
 Layouts are currently implemented strong::only in Qt GUI::. The following example will not work in other GUI kits.
 code::
 w = Window.new("GUI Introduction").layout_(
-	QVLayout(
-		QHLayout( Button(), TextField(), Button() ),
+	VLayout(
+		HLayout( Button(), TextField(), Button() ),
 		TextView()
 	)
 ).front;

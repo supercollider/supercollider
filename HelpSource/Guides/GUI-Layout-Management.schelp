@@ -1,7 +1,7 @@
 title:: Layout Management
 summary:: Using layout classes to manage distribution of child views within parents
 categories:: GUI>Layout
-related:: Classes/QLayout, Classes/QLineLayout, Classes/QGridLayout
+related:: Classes/HLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout
 
 The purpose of layouts is to distribute the amount of space given to the view on which they are installed among the children of that view. Each subclass of QLayout has a specific pattern of space distribution (a line, a 2D grid, etc.). See their documentation for details.
 
@@ -11,13 +11,13 @@ note::
 While layouts can form a hierachy on their own, in terms of view hierarchy all views managed by those layouts are direct children of the view on which the top layout is installed.
 ::
 
-The following is an example of a QVLayout, organizing a series of TextFields in a vertical line, and its last item is a QHLayout, organizing a series of Buttons in a horizontal line.
+The following is an example of a VLayout, organizing a series of TextFields in a vertical line, and its last item is a HLayout, organizing a series of Buttons in a horizontal line.
 
 code::
 w = Window(bounds:Rect(200,200,200,200)).layout_(
-	QVLayout(
+	VLayout(
 		TextField(), TextField(), TextField(),
-		QHLayout( Button(), Button(), Button() )
+		HLayout( Button(), Button(), Button() )
 	)
 ).front;
 ::
@@ -37,12 +37,12 @@ Items managed by a layout may be given unequal parts of space, proportional to t
 
 A layout may also affect space distribution up the layout hierarchy - it will define its own constraints and preferences according to its distribution pattern as well as the sum of constraints and preferences of its items. Ultimately, this means that the user's ability to resize a window will be limited by size constraints determined on the basis of window's contents.
 
-For example: in a QHLayout (a layout organizing items in a horizontal line) containing a Button and a TextField, the Button will be given a fixed amount of width according to the text it displays, while the TextField will be given all the width that is left. The other Button in the example code below will occupy all the width of the window, since there is no other item competing for that particular space. Note that both Button and TextField have an instrinsically fixed height and so their height never changes when resizing the window. The size constraints also limit the minimum size that the window can be resized to.
+For example: in a HLayout (a layout organizing items in a horizontal line) containing a Button and a TextField, the Button will be given a fixed amount of width according to the text it displays, while the TextField will be given all the width that is left. The other Button in the example code below will occupy all the width of the window, since there is no other item competing for that particular space. Note that both Button and TextField have an instrinsically fixed height and so their height never changes when resizing the window. The size constraints also limit the minimum size that the window can be resized to.
 
 code::
 w = Window.new(bounds:Rect(100,100,300,80)).layout_(
-	QVLayout (
-		QHLayout(
+	VLayout (
+		HLayout(
 			Button().states_([["Super"]]),
 			TextField().string_("Collider")
 		),
@@ -59,7 +59,7 @@ Layouts typically allow the user to override their default distribution policy b
 
 code::
 w = Window.new(bounds:Rect(100,100,400,80)).layout_(
-	QHLayout(
+	HLayout(
 		[Button().states_([["Super"]]), stretch:1],
 		TextField().string_("Collider")
 	)
@@ -72,7 +72,7 @@ Intrinsic size constraints of a view may also be overriden by the user by explic
 
 code::
 w = Window.new(bounds:Rect(100,100,300,300)).layout_(
-	QVLayout(
+	VLayout(
 		TextField().string_("Super").minHeight_(80),
 		TextField().string_("Collider").maxWidth_(150)
 	)
@@ -85,7 +85,7 @@ The combination of size constraints and preferences of all items in a layout hie
 
 code::
 w = Window.new.layout_(
-	QHLayout(
+	HLayout(
 		[Button.new.states_([["Super"]]), align:\bottom],
 		TextView(),
 		[Button.new.states_([["Collider"]]), align:\top]
@@ -94,10 +94,14 @@ w = Window.new.layout_(
 ::
 
 
-section:: How view and layout hierachies affect each other
+section:: View vs. layout hierachies
 
-A layout starts to operate on the space that a view occupies from the moment it is installed on that view on. However, it will not automatically affect child views that where created before the layout was. For views to be managed by a layout they have to be created as children of a view after the layout has been installed on it, or they have to be explicitely inserted into the layout via layout's constructor or its instance methods for this purpose. These two ways are explained in the next two paragraphs.
+A layout starts to operate on the space that a view occupies from the moment it is installed on that view on. However, it will not automatically affect child views that where created before the layout was. For views to be managed by a layout they have to be created as children of a view after the layout has been installed on it, or they have to be explicitely inserted into the layout via layout's constructor or its instance methods for this purpose.
 
-When a view is created with another view as parent it will implicitely become subject to the management of the parent's layout - it will be inserted into the layout in some default way. However, layouts like QGridLayout have a complex space distribution pattern and so you will need to use their dedicated methods to specify exactly what place in the layout's distribution pattern a view will occupy, which is explained in the next paragraph.
+subsection:: View constructed with a parent
+
+When a view is created with another view as parent it will implicitely become subject to the management of the parent's layout - it will be inserted into the layout in some default way. However, layouts like link::Classes/GridLayout:: have a complex space distribution pattern and so you will need to use their dedicated methods to specify exactly what place in the layout's distribution pattern a view will occupy.
+
+subsection:: View explicitely inserted into a layout
 
 A view can also be constructed with no parent given; after it is explicitely inserted into a layout via the layout's constructor or an instance method, it will automatically become a child of the view on which the layout is or will be installed. In case the layout occupies place directly in another layout, the view will become a child of the view on wich the topmost layout is installed.

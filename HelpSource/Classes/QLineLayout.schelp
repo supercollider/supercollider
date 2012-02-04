@@ -1,10 +1,10 @@
 CLASS:: QLineLayout
 summary:: Superclass of layouts that distribute views in a line
-categories:: GUI>Layout
-related:: Guides/GUI-Layout-Management
+categories:: GUI>Kits>Qt
+related:: Classes/HLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
 DESCRIPTION::
-The two subclasses - QHLayout and QVLayout - distribute views in a horizontal or vertical line, respectively.
+This is an abstract superclass of link::Classes/HLayout:: and link::Classes/VLayout:: which distribute views in a horizontal or vertical line, respectively.
 
 subsection:: Fine tuning
 
@@ -24,10 +24,10 @@ PRIVATE:: parse
 
 METHOD:: new
 
-Create a QLineLayout and immediately fill it with items given as arguments.
+Create a link::Classes/HLayout:: or a link::Classes/VLayout:: and immediately fill it with items given as arguments. (Note that QLineLayout is an abstract class and can not be instantiated, but HLayout and VLayout inherit this constructor).
 
 argument:: items
-Each item can be a strong::QView::, a strong::QLayout::, strong::nil:: (for stretchable empty space) or an strong::Integer:: (for fixed-size empty space).
+Each item can be a strong::view::, a strong::layout::, strong::nil:: (for stretchable empty space) or an strong::Integer:: (for fixed-size empty space).
 
 discussion::
 
@@ -38,7 +38,7 @@ If the item is a stretchable empty space (nil) alignment will have no effect; if
 Example:
 code::
 w = Window.new;
-w.layout = QVLayout(
+w.layout = VLayout(
 	[Button().states_([["Foo"]]), stretch:1, align:\bottomLeft],
 	20,
 	[TextView().string_("Bar\nBar\nBar\n"), s:3],
@@ -51,10 +51,10 @@ w.front;
 INSTANCEMETHODS::
 
 METHOD:: add
-Add an item to the right or the bottom end of the line, for QHLayout and QVLayout respectively.
+Add an item to the right or the bottom end of the line, for HLayout and VLayout respectively.
 
 argument:: item
-The item can be a strong::QView::, a strong::QLayout::, an strong::Integer:: (specifying amount in pixels of empty space) or strong::nil:: (for stretchable empty space).
+The item can be a strong::view::, a strong::layout::, an strong::Integer:: (specifying amount in pixels of empty space) or strong::nil:: (for stretchable empty space).
 
 argument:: stretch
 An integer stretch factor.
@@ -70,7 +70,7 @@ METHOD:: insert
 Insert an item at a specific position.
 
 argument:: item
-The item can be a strong::QView::, a strong::QLayout::, an strong::Integer:: (specifying amount in pixels of empty space) or strong::nil:: (for stretchable empty space).
+The item can be a strong::view::, a strong::layout::, an strong::Integer:: (specifying amount in pixels of empty space) or strong::nil:: (for stretchable empty space).
 
 argument:: index
 The integer position among current items at which to insert the new item. If index is smaller than 0 or larger than the current amount of items, the new item will always be added to the end of the line.
@@ -90,40 +90,22 @@ METHOD:: setStretch
 Set stretch factor of an item contained in the layout.
 
 argument:: item
-A QView or QLayout managed by the layout.
+A view or layout managed by this layout, or an Integer index of an item.
 
 argument:: stretch
 An integer stretch factor.
 
-
-METHOD:: setStretchAt
-Set stretch factor of an item contained in the layout at given index.
-
-argument:: index
-An integer position of an item in the layout.
-
-argument:: stretch
-An integer stretch factor.
 
 
 METHOD:: setAlignment
 Set alignment of an item contained in the layout.
 
 argument:: item
-A QView or a QLayout managed by the layout.
+A view or a layout managed by this layout, or an Integer index of an item.
 
 argument:: align
 A symbol expressing the alignment.
 
-
-METHOD:: setAlignmentAt
-Set alignment of an item contained in the layout at given index.
-
-argument:: index
-An integer position of an item in the layout.
-
-argument:: align
-A symbol expressing the alignment.
 
 EXAMPLES::
 
@@ -131,12 +113,12 @@ Try resizing the window created by the following code.
 
 code::
 w = Window.new;
-w.layout = QVLayout(
-	QTextView(),
-	QHLayout(
-		QButton().states_([["Foo"]]),
-		[QTextField().string_("Bar"), stretch:1],
-		[QTextField().string_("BarBarBar"), stretch:4]
+w.layout = VLayout(
+	TextView().string_("Foo\nBar\nFoo\nBar\nFoo"),
+	HLayout(
+		Button().states_([["Foo"]]),
+		[TextField().string_("Bar"), stretch:1],
+		[TextField().string_("BarBarBar"), stretch:4]
 	)
 );
 w.front;
