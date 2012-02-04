@@ -988,14 +988,38 @@ void LFNoise0_next(LFNoise0 *unit, int inNumSamples)
 	RPUT
 }
 
+void LFNoise0_next_1(LFNoise0 *unit, int inNumSamples)
+{
+	assert(inNumSamples == 1);
+	float freq = ZIN0(0);
+	float level = unit->mLevel;
+	int32 counter = unit->mCounter;
+
+	if (counter<=0) {
+		counter = (int32)(unit->mRate->mSampleRate / sc_max(freq, .001f));
+		counter = sc_max(1, counter);
+		RGET
+		level = frand2(s1,s2,s3);
+		unit->mLevel = level;
+		RPUT
+	}
+	ZOUT0(0) = level;
+	counter -= 1;
+	unit->mCounter = counter;
+}
+
+
 void LFNoise0_Ctor(LFNoise0* unit)
 {
-	SETCALC(LFNoise0_next);
+	if (BUFLENGTH == 1)
+		SETCALC(LFNoise0_next_1);
+	else
+		SETCALC(LFNoise0_next);
 
 	unit->mCounter = 0;
 	unit->mLevel = 0.f;
 
-	LFNoise0_next(unit, 1);
+	LFNoise0_next_1(unit, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
