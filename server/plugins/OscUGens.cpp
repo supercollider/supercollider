@@ -2194,7 +2194,7 @@ void VOsc_Ctor(VOsc *unit)
 
 	float nextbufpos = ZIN0(0);
 	unit->m_bufpos = nextbufpos;
-	int bufnum = floor(nextbufpos);
+	int bufnum = sc_floor(nextbufpos);
 	World *world = unit->mWorld;
 
 	VOSC_GET_BUF_UNLOCKED
@@ -2235,9 +2235,8 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 	World *world = unit->mWorld;
 
 	if (bufdiff == 0.f) {
-		float level = cur - floor(cur);
-
-		uint32 bufnum = (int)floor(cur);
+		float level = cur - sc_floor(cur);
+		uint32 bufnum = (int)sc_floor(cur);
 
 		VOSC_GET_BUF
 
@@ -2268,26 +2267,26 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 		int donesmps = 0;
 		int remain = inNumSamples;
 		while (remain) {
-			float level = cur - (float)floor(cur);
+			float level = cur - sc_floor(cur);
 
 			float cut;
 			if (bufdiff > 0.) {
-				cut = sc_min(nextbufpos, (float)floor(cur+1.f));
+				cut = sc_min(nextbufpos, sc_floor(cur+1.f));
 			} else {
-				cut = sc_max(nextbufpos, ceil(cur-1.f));
+				cut = sc_max(nextbufpos, sc_ceil(cur-1.f));
 			}
 
 			float sweepdiff = cut - cur;
 			if (cut == nextbufpos) nsmps = remain;
 			else {
 				float sweep = (float)inNumSamples / bufdiff;
-				nsmps = (int)floor(sweep * sweepdiff + 0.5f) - donesmps;
+				nsmps = (int)sc_floor(sweep * sweepdiff + 0.5f) - donesmps;
 				nsmps = sc_clip(nsmps, 1, remain);
 			}
 
 			float slope = sweepdiff / (float)nsmps;
 
-			int32 bufnum = (int32)floor(cur);
+			int32 bufnum = (int32)sc_floor(cur);
 
 			VOSC_GET_BUF
 
@@ -2331,7 +2330,7 @@ void VOsc3_Ctor(VOsc3 *unit)
 
 	float nextbufpos = ZIN0(0);
 	unit->m_bufpos = nextbufpos;
-	int32 bufnum = (int32)floor(nextbufpos);
+	int32 bufnum = (int32)sc_floor(nextbufpos);
 	World *world = unit->mWorld;
 
 	VOSC_GET_BUF
