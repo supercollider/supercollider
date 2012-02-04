@@ -219,8 +219,11 @@ public:
     QcLayout<QGridLayout>::setColumnStretch( column, factor );
   }
   Q_INVOKABLE void setAlignment( int r, int c, int a ) {
-    itemAtPosition(r,c)->setAlignment( (Qt::Alignment) a );
-    update();
+    QLayoutItem *item = itemAtPosition(r,c);
+    if(item) {
+      item->setAlignment( (Qt::Alignment) a );
+      update();
+    }
   }
   Q_INVOKABLE void setAlignment( QObjectProxy *p, int a ) {
     QWidget *w = qobject_cast<QWidget*>( p->object() );
