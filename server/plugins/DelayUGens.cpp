@@ -224,7 +224,6 @@ struct Pluck : public FeedbackDelay, CubicInterpolationUnit
 
 struct LocalBuf : public Unit
 {
-	float m_fbufnum;
 	SndBuf *m_buf;
 };
 
@@ -700,24 +699,21 @@ void LocalBuf_Ctor(LocalBuf *unit)
 
 	int offset =  unit->mWorld->mNumSndBufs;
 	int bufnum =  parent->localBufNum;
+	float fbufnum;
 
 	if (parent->localBufNum >= parent->localMaxBufNum) {
-		unit->m_fbufnum = -1.f;
-		if(unit->mWorld->mVerbosity > -2){
+		fbufnum = -1.f;
+		if(unit->mWorld->mVerbosity > -2)
 			printf("warning: LocalBuf tried to allocate too many local buffers.\n");
-		}
-
 	} else {
-
-		unit->m_fbufnum = (float) (bufnum + offset);
+		fbufnum = (float) (bufnum + offset);
 		unit->m_buf =  parent->mLocalSndBufs + bufnum;
 		parent->localBufNum = parent->localBufNum + 1;
 
 		LocalBuf_allocBuffer(unit, unit->m_buf, (int)IN0(0), (int)IN0(1));
 	}
 
-	OUT0(0) = unit->m_fbufnum;
-
+	OUT0(0) = fbufnum;
 }
 
 void LocalBuf_Dtor(LocalBuf *unit)
@@ -729,7 +725,7 @@ void LocalBuf_Dtor(LocalBuf *unit)
 		RTFree(unit->mWorld, unit->mParent->mLocalSndBufs);
 		unit->mParent->localMaxBufNum = 0;
 	} else {
-		unit->mParent->localBufNum =  unit->mParent->localBufNum - 1;
+		unit->mParent->localBufNum = unit->mParent->localBufNum - 1;
 	}
 }
 
