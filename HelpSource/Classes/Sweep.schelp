@@ -65,5 +65,30 @@ b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 )
 
 b.free
+
 ::
 
+Sweep can be used as a resettable link::Classes/Phasor:: or link::Classes/Line:: - one that can start, pause, resume and stop. To get a resettable link::Classes/XLine:: behavior change the code::linlin:: to code::linexp:: in the SynthDef below.
+code::
+(
+SynthDef(\lineReset, {|start= 0, end= 1, dur= 1, t_trig= 1, run= 1|
+	var phasor= (Sweep.ar(t_trig, 1/dur*run)).linlin(0, 1, start, end, \minmax);
+	phasor.poll;
+	Out.ar(0, SinOsc.ar(phasor, 0, 0.2));
+}).add;
+)
+a= Synth(\lineReset, [\start, 400, \end, 800, \dur, 2])
+a.set(\t_trig, 1)
+a.set(\run, 0)
+a.set(\run, 1)
+a.set(\t_trig, 1)
+a.free
+
+//shorter duration and downwardsÉ
+a= Synth(\lineReset, [\start, 1000, \end, 500, \dur, 0.5])
+a.set(\t_trig, 1)
+a.set(\run, 0)
+a.set(\run, 1)
+a.set(\t_trig, 1)
+a.free
+::
