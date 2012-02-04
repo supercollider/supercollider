@@ -762,7 +762,7 @@ int prArrayPutSeries(struct VMGlobals *g, int numArgsPushed)
 
 	int first  = IsInt(b) ? slotRawInt(b) : 0;
 	int last   = IsInt(d) ? slotRawInt(d) : size - 1;
-	int second = IsInt(c) ? slotRawInt(c) : (first < last ? slotRawInt(b) + 1 : slotRawInt(b) - 1);
+	int second = IsInt(c) ? slotRawInt(c) : (first < last ? first + 1 : first - 1);
 
 	int step = second - first;
 
