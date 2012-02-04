@@ -198,6 +198,16 @@ QView : QObject {
     ^this.getProperty( \focus );
   }
 
+  acceptsMouse {
+    _QWidget_AcceptsMouse
+    ^this.primitiveFailed;
+  }
+
+  acceptsMouse_ { arg bool;
+    _QWidget_SetAcceptsMouse
+    ^this.primitiveFailed;
+  }
+
   focusColor_ { arg color;
     this.setProperty(\focusColor, color);
   }
