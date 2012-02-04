@@ -71,9 +71,11 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const int kTextBufSize = 65536;
+
 class SC_UdpInPort : public SC_ComPort
 {
-protected:
+	char buf[kTextBufSize];
 	struct sockaddr_in mReplySockAddr;
 	virtual ReplyFunc GetReplyFunc();
 
@@ -90,17 +92,17 @@ public:
 
 class SC_UdpCustomInPort : public SC_ComPort
 {
-protected:
+	char buf[kTextBufSize];
 	struct sockaddr_in mReplySockAddr;
 	virtual ReplyFunc GetReplyFunc();
 	boost::atomic<bool> mRunning;
-	
+
 public:
 	SC_UdpCustomInPort(int inPortNum);
 	~SC_UdpCustomInPort();
-	
+
 	int PortNum() const { return mPortNum; }
-	
+
 	void* Run();
 };
 
@@ -138,7 +140,6 @@ public:
         virtual void* Run();
 };
 
-const int kTextBufSize = 8192;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 

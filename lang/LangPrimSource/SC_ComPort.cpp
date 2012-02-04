@@ -209,8 +209,7 @@ SC_ComPort::~SC_ComPort()
 #endif
 }
 
-void* com_thread_func(void* arg);
-void* com_thread_func(void* arg)
+static void* com_thread_func(void* arg)
 {
     SC_CmdPort *thread = (SC_CmdPort*)arg;
     void* result = thread->Run();
@@ -355,7 +354,6 @@ ReplyFunc SC_UdpInPort::GetReplyFunc()
 
 void* SC_UdpInPort::Run()
 {
-	char buf[kTextBufSize];
 	OSC_Packet *packet = 0;
 
 	//printf("SC_UdpInPort::Run\n"); fflush(stdout);
@@ -392,7 +390,6 @@ ReplyFunc SC_UdpCustomInPort::GetReplyFunc()
 
 void* SC_UdpCustomInPort::Run()
 {
-	char buf[kTextBufSize];
 	OSC_Packet *packet = 0;
 
 	const int fd = mSocket;
