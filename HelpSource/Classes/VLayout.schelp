@@ -1,0 +1,13 @@
+CLASS:: VLayout
+summary:: A layout that distributes views in a vertical line
+categories:: GUI>Layout
+related:: Classes/HLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
+redirect:: implClass
+
+DESCRIPTION::
+See documentation of superclass link::Classes/QLineLayout:: for details.
+
+CLASSMETHODS::
+
+PRIVATE:: key
+PRIVATE:: layoutClass

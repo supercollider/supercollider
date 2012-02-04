@@ -1,7 +1,7 @@
 CLASS:: StackLayout
 summary:: A layout that stacks views on top of each other
 categories:: GUI>Layout
-related:: Guides/GUI-Layout-Management
+related:: Classes/HLayout, Classes/VLayout, Classes/GridLayout, Guides/GUI-Layout-Management
 redirect:: implClass
 
 DESCRIPTION::
@@ -33,7 +33,7 @@ METHOD:: new
     Creates a StackLayout and fills it with the items given as arguments. The last view becomes the current one, i.e. visible and on top of others.
 
     argument:: items
-    A sequence of Views.
+    A sequence of strong::views::. Unlike other layouts, StackLayout can not contain another layout.
 
     discussion::
 

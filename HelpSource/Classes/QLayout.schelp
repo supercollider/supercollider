@@ -1,10 +1,10 @@
 Class:: QLayout
 summary:: Superclass of all GUI layouts
-categories:: GUI>Layout
-related:: Guides/GUI-Layout-Management
+categories:: GUI>Kits>Qt
+related:: Classes/HLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
 description::
-QLayout is the abstract superclass of all layouts. Any layout can be installed on a view with the view's link::Classes/QView#-layout#'layout':: setter method. See link::Guides/GUI-Layout-Management:: for details of operation common to all layouts.
+Layout is the abstract superclass of all layouts. Any layout can be installed on a view with the view's link::Classes/View#-layout#'layout':: setter method. See link::Guides/GUI-Layout-Management:: for details of operation common to all layouts.
 
 
 InstanceMethods::
@@ -28,7 +28,7 @@ Examples::
 
 code::
 w = Window.new;
-w.layout = QHLayout( QTextView().string_("One"), QTextView().string_("Two") );
+w.layout = HLayout( TextView().string_("One"), TextView().string_("Two") );
 w.layout.spacing = 20;
 w.layout.margins = [10, 30, 10, 30];
 w.front;
