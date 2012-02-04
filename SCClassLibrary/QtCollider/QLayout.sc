@@ -49,13 +49,9 @@ QLineLayout : QLayout {
     this.invokeMethod( \setStretch, [item, stretch], true );
   }
 
-  setStretchAt { arg index, stretch; this.setStretch( index, stretch ); }
-
   setAlignment { arg item, align;
     this.invokeMethod( \setAlignment, [item, QAlignment(align)], true );
   }
-
-  setAlignmentAt { arg index, align; this.setAlignment( index, align ); }
 }
 
 QHLayout : QLineLayout {
@@ -161,11 +157,11 @@ QGridLayout : QLayout {
   }
 
   setAlignment { arg item, align;
-    this.invokeMethod( \setAlignment, [item, QAlignment(align)], true );
-  }
+    var args = if( item.class === Point )
+      { [item.y, item.x, QAlignment(align)] }
+      { [item, QAlignment(align)] };
 
-  setAlignmentAt { arg row, column, align;
-    this.invokeMethod( \setAlignment, [row, column, QAlignment(align)], true );
+    this.invokeMethod( \setAlignment, args, true );
   }
 
   minRowHeight { arg row; ^this.invokeMethod( \minRowHeight, row ); }
