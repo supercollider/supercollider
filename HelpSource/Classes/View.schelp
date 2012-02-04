@@ -444,6 +444,16 @@ METHOD:: hasFocus
 
 	returns:: A Boolean, stating whether the view currently has the keyboard focus.
 
+METHOD:: acceptsMouse
+    note:: Only in Qt GUI ::
+
+    Sets or gets whether the view responds to mouse interaction. If code::false::, the view will be completely transparent for mouse and interaction will be possible with any view under.
+
+    Defaults to code::true::.
+
+    argument::
+        A Boolean.
+
 METHOD:: acceptsMouseOver
 	If this is a top view, this variable defines whether the view and all its children receive mouse-over events. The default is code::false::.
 

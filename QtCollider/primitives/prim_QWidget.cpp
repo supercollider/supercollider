@@ -160,6 +160,32 @@ QC_LANG_PRIMITIVE( QWidget_SetGlobalEventEnabled, 2, PyrSlot *r, PyrSlot *a, VMG
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( QWidget_SetAcceptsMouse, 1,  PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
+  QWidgetProxy *proxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
+  QWidget *w = proxy->widget();
+  if( !w ) return errNone;
+
+  bool accept = IsTrue(a);
+  w->setAttribute( Qt::WA_TransparentForMouseEvents, !accept );
+
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QWidget_AcceptsMouse, 1,  PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
+  QWidgetProxy *proxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
+  QWidget *w = proxy->widget();
+  if( !w ) return errNone;
+
+  bool accept = !w->testAttribute( Qt::WA_TransparentForMouseEvents );
+  SetBool(r, accept);
+
+  return errNone;
+}
+
 void defineQWidgetPrimitives()
 {
   LangPrimitiveDefiner definer;
@@ -172,6 +198,8 @@ void defineQWidgetPrimitives()
   definer.define<QWidget_SetAlwaysOnTop>();
   definer.define<QWidget_StartDrag>();
   definer.define<QWidget_SetGlobalEventEnabled>();
+  definer.define<QWidget_AcceptsMouse>();
+  definer.define<QWidget_SetAcceptsMouse>();
 }
 
 } // namespace QtCollider
