@@ -76,11 +76,12 @@ note:: This classes are only implemented in Qt GUI! ::
 
 table::
 ## strong::Class::      || strong::Description::
-## QLayout              || The abstract base class for all layouts.
+## QLayout              || The abstract base class of all layouts.
 ## QLineLayout          || The abstract base class of layouts that arrange items in a line.
-## QHLayout             || A layout that arranges items in horizontal line.
-## QVLayout             || A layout that arranges items in vertical line.
-## QGridLayout          || A layout that arranges items in a 2 dimensional grid.
+## HLayout              || A layout that arranges items in horizontal line.
+## VLayout              || A layout that arranges items in vertical line.
+## GridLayout           || A layout that arranges items in a 2 dimensional grid.
+## StackLayout          || A layout that stacks items on top of each other.
 ::
 
 section:: Other GUI classes
