@@ -321,6 +321,7 @@ PlusFreqScope {
 
 PlusFreqScopeWindow {
 	classvar <scopeOpen;
+
 	var <scope, <window;
 
 	*new { arg width=522, height=300, busNum=0, scopeColor, bgColor;
@@ -477,5 +478,12 @@ PlusFreqScopeWindow {
 			}).front;
 			^super.newCopyArgs(scope, window)
 		});
+	}
+
+	*server {
+		^PlusFreqScope.server
+	}
+	*server_ {|aServer|
+		^PlusFreqScope.server_(aServer)
 	}
 }
