@@ -2145,14 +2145,15 @@ void Slew_next(Slew* unit, int inNumSamples)
 {
 	//printf("Slew_next_a\n");
 
+	float sampleDur = unit->mRate->mSampleDur;
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	float upf = ZIN0(1) * unit->mRate->mSampleDur;
-	float dnf = 0.f - ZIN0(2) * unit->mRate->mSampleDur;
+	float upf = ZIN0(1) * sampleDur;
+	float dnf = 0.f - ZIN0(2) * sampleDur;
 	float level = unit->mLevel;
 	LOOP1(inNumSamples,
 		float slope = ZXP(in) - level;
-		level += sc_clip(slope,dnf,upf);
+		level += sc_clip(slope, dnf, upf);
 		ZXP(out) = level;
 	);
 	unit->mLevel = level;
