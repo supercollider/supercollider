@@ -105,6 +105,11 @@ METHOD:: hasBorder
 
     Defaults to strong::true::.
 
+SUBSECTION:: Actions
+
+METHOD:: action
+
+    Sets or gets the object to be evaluated when the user moves the scrollbars, or when link::#-visibleOrigin:: is set.
 
 EXAMPLES::
 

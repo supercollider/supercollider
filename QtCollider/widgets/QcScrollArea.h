@@ -46,6 +46,10 @@ class QcScrollArea : public QScrollArea, public QcHelper
   Q_PROPERTY( bool hasBorder READ dummyBool WRITE setHasBorder );
   Q_PROPERTY( QRectF innerBounds READ innerBounds );
   Q_PROPERTY( QPointF visibleOrigin READ visibleOrigin WRITE setVisibleOrigin );
+
+  Q_SIGNALS:
+    void scrolled();
+
   public:
     QcScrollArea();
     Q_INVOKABLE void setWidget( QObjectProxy * );
