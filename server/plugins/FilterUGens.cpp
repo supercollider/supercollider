@@ -322,7 +322,6 @@ extern "C"
 	void Lag_next(Lag *unit, int inNumSamples);
 	void Lag_Ctor(Lag* unit);
 
-	void Lag2_next(Lag2 *unit, int inNumSamples);
 	void Lag2_Ctor(Lag2* unit);
 
 	void Lag3_next(Lag3 *unit, int inNumSamples);
@@ -674,7 +673,7 @@ void LagUD_Ctor(LagUD* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Lag2_next(Lag2 *unit, int inNumSamples)
+static void Lag2_next_k(Lag2 *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -707,14 +706,60 @@ void Lag2_next(Lag2 *unit, int inNumSamples)
 	unit->m_y1b = zapgremlins(y1b);
 }
 
+static void Lag2_next_i(Lag2 *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+
+	float y1a = unit->m_y1a;
+	float y1b = unit->m_y1b;
+	float b1 = unit->m_b1;
+
+	LOOP1(inNumSamples,
+			float y0a = ZXP(in);
+			y1a = y0a + b1 * (y1a - y0a);
+			y1b = y1a + b1 * (y1b - y1a);
+			ZXP(out) = y1b;
+	);
+	unit->m_y1a = zapgremlins(y1a);
+	unit->m_y1b = zapgremlins(y1b);
+}
+
+static void Lag2_next_1_i(Lag2 *unit, int inNumSamples)
+{
+	float y1a = unit->m_y1a;
+	float y1b = unit->m_y1b;
+	float b1 = unit->m_b1;
+
+	float y0a = ZIN0(0);
+	y1a = y0a + b1 * (y1a - y0a);
+	y1b = y1a + b1 * (y1b - y1a);
+	ZOUT0(0) = y1b;
+
+	unit->m_y1a = zapgremlins(y1a);
+	unit->m_y1b = zapgremlins(y1b);
+}
+
 void Lag2_Ctor(Lag2* unit)
 {
-	SETCALC(Lag2_next);
+	switch (INRATE(1)) {
+	case calc_FullRate:
+	case calc_BufRate:
+		SETCALC(Lag2_next_k);
+		break;
+
+	default:
+		if (BUFLENGTH == 1)
+			SETCALC(Lag2_next_1_i);
+		else
+			SETCALC(Lag2_next_i);
+		break;
+	}
 
 	unit->m_lag = 0.f;
 	unit->m_b1 = 0.f;
 	unit->m_y1a = unit->m_y1b = ZIN0(0);
-	Lag2_next(unit, 1);
+	Lag2_next_k(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
