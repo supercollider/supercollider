@@ -142,6 +142,7 @@ QScrollCanvas : QObject {
 QScrollView : QAbstractScroll {
   var <canvas;
   var <hasBorder=true;
+  var actionConnected=false;
 
   *new { arg parent, bounds;
     ^super.new( parent, bounds ).initQScrollView;
@@ -171,11 +172,18 @@ QScrollView : QAbstractScroll {
 
   visibleOrigin_ { arg point;
     this.setProperty( \visibleOrigin, point );
+    this.doAction;
   }
 
   canvas_ { arg view;
     canvas = view;
     this.invokeMethod( \setWidget, view, true );
+  }
+
+  action_ { arg handler;
+    action = handler;
+    if(actionConnected.not) { this.connectMethod( 'scrolled()', \doAction ) };
+    actionConnected = true;
   }
 
   initQScrollView {
