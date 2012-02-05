@@ -1,295 +1,118 @@
-/****************************************************************************
-**
-** Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
-** All rights reserved.
-** Contact: Nokia Corporation (qt-info@nokia.com)
-**
-** This file is part of the QtGui module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:LGPL$
-** GNU Lesser General Public License Usage
-** This file may be used under the terms of the GNU Lesser General Public
-** License version 2.1 as published by the Free Software Foundation and
-** appearing in the file LICENSE.LGPL included in the packaging of this
-** file. Please review the following information to ensure the GNU Lesser
-** General Public License version 2.1 requirements will be met:
-** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
-**
-** In addition, as a special exception, Nokia gives you certain additional
-** rights. These rights are described in the Nokia Qt LGPL Exception
-** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU General
-** Public License version 3.0 as published by the Free Software Foundation
-** and appearing in the file LICENSE.GPL included in the packaging of this
-** file. Please review the following information to ensure the GNU General
-** Public License version 3.0 requirements will be met:
-** http://www.gnu.org/copyleft/gpl.html.
-**
-** Other Usage
-** Alternatively, this file may be used in accordance with the terms and
-** conditions contained in a signed written agreement between you and Nokia.
-**
-**
-**
-**
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+/************************************************************************
+*
+* Copyright 2012 Jakob Leben (jakob.leben@gmail.com)
+*
+* Copyright (C) 2011 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* Contact: Nokia Corporation (qt-info@nokia.com)
+*
+* This file is part of SuperCollider Qt GUI.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+************************************************************************/
 
-#include "qstackedlayout.h"
-#include "qlayout_p.h"
+#include "stack_layout.hpp"
 
-#include <qlist.h>
-#include <qwidget.h>
-#include "private/qlayoutengine_p.h"
+#include <QWidget>
 
-QT_BEGIN_NAMESPACE
+QC_DECLARE_QOBJECT_FACTORY(QcStackLayout);
 
-class QStackedLayoutPrivate : public QLayoutPrivate
+QcStackLayout::QcStackLayout() :
+  _index(-1),
+  _mode(StackOne),
+  _gotParent(false)
+{}
+
+QcStackLayout::QcStackLayout( const VariantList &items ) :
+  _index(-1),
+  _mode(StackOne),
+  _gotParent(false)
 {
-    Q_DECLARE_PUBLIC(QStackedLayout)
-public:
-    QStackedLayoutPrivate() : index(-1), stackingMode(QStackedLayout::StackOne) {}
-    QList<QLayoutItem *> list;
-    int index;
-    QStackedLayout::StackingMode stackingMode;
-};
-
-/*!
-    \class QStackedLayout
-
-    \brief The QStackedLayout class provides a stack of widgets where
-    only one widget is visible at a time.
-
-    \ingroup geomanagement
-
-    QStackedLayout can be used to create a user interface similar to
-    the one provided by QTabWidget. There is also a convenience
-    QStackedWidget class built on top of QStackedLayout.
-
-    A QStackedLayout can be populated with a number of child widgets
-    ("pages"). For example:
-
-    \snippet doc/src/snippets/qstackedlayout/main.cpp 0
-    \codeline
-    \snippet doc/src/snippets/qstackedlayout/main.cpp 2
-    \snippet doc/src/snippets/qstackedlayout/main.cpp 3
-
-    QStackedLayout provides no intrinsic means for the user to switch
-    page. This is typically done through a QComboBox or a QListWidget
-    that stores the titles of the QStackedLayout's pages. For
-    example:
-
-    \snippet doc/src/snippets/qstackedlayout/main.cpp 1
-
-    When populating a layout, the widgets are added to an internal
-    list. The indexOf() function returns the index of a widget in that
-    list. The widgets can either be added to the end of the list using
-    the addWidget() function, or inserted at a given index using the
-    insertWidget() function. The removeWidget() function removes the
-    widget at the given index from the layout. The number of widgets
-    contained in the layout, can be obtained using the count()
-    function.
-
-    The widget() function returns the widget at a given index
-    position. The index of the widget that is shown on screen is given
-    by currentIndex() and can be changed using setCurrentIndex(). In a
-    similar manner, the currently shown widget can be retrieved using
-    the currentWidget() function, and altered using the
-    setCurrentWidget() function.
-
-    Whenever the current widget in the layout changes or a widget is
-    removed from the layout, the currentChanged() and widgetRemoved()
-    signals are emitted respectively.
-
-    \sa QStackedWidget, QTabWidget
-*/
-
-/*!
-    \fn void QStackedLayout::currentChanged(int index)
-
-    This signal is emitted whenever the current widget in the layout
-    changes.  The \a index specifies the index of the new current
-    widget, or -1 if there isn't a new one (for example, if there
-    are no widgets in the QStackedLayout)
-
-    \sa currentWidget(), setCurrentWidget()
-*/
-
-/*!
-    \fn void QStackedLayout::widgetRemoved(int index)
-
-    This signal is emitted whenever a widget is removed from the
-    layout. The widget's \a index is passed as parameter.
-
-    \sa removeWidget()
-*/
-
-/*!
-    \fn QWidget *QStackedLayout::widget()
-    \internal
-*/
-
-/*!
-    Constructs a QStackedLayout with no parent.
-
-    This QStackedLayout must be installed on a widget later on to
-    become effective.
-
-    \sa addWidget(), insertWidget()
-*/
-QStackedLayout::QStackedLayout()
-    : QLayout(*new QStackedLayoutPrivate, 0, 0)
-{
+  Q_FOREACH(QVariant var, items.data) {
+    QObjectProxy *p = var.value<QObjectProxy*>();
+    if(!p) return;
+    QWidget *w = qobject_cast<QWidget*>( p->object() );
+    if(w) addWidget(w);
+  }
 }
 
-/*!
-    Constructs a new QStackedLayout with the given \a parent.
-
-    This layout will install itself on the \a parent widget and
-    manage the geometry of its children.
-*/
-QStackedLayout::QStackedLayout(QWidget *parent)
-    : QLayout(*new QStackedLayoutPrivate, 0, parent)
+QcStackLayout::~QcStackLayout()
 {
+  qDeleteAll(_list);
 }
 
-/*!
-    Constructs a new QStackedLayout and inserts it into
-    the given \a parentLayout.
-*/
-QStackedLayout::QStackedLayout(QLayout *parentLayout)
-    : QLayout(*new QStackedLayoutPrivate, parentLayout, 0)
+int QcStackLayout::addWidget(QWidget *widget)
 {
+  return insertWidget(_list.count(), widget);
 }
 
-/*!
-    Destroys this QStackedLayout. Note that the layout's widgets are
-    \e not destroyed.
-*/
-QStackedLayout::~QStackedLayout()
+int QcStackLayout::insertWidget(int index, QWidget *widget)
 {
-    Q_D(QStackedLayout);
-    qDeleteAll(d->list);
-}
-
-/*!
-    Adds the given \a widget to the end of this layout and returns the
-    index position of the \a widget.
-
-    If the QStackedLayout is empty before this function is called,
-    the given \a widget becomes the current widget.
-
-    \sa insertWidget(), removeWidget(), setCurrentWidget()
-*/
-int QStackedLayout::addWidget(QWidget *widget)
-{
-    Q_D(QStackedLayout);
-    return insertWidget(d->list.count(), widget);
-}
-
-/*!
-    Inserts the given \a widget at the given \a index in this
-    QStackedLayout. If \a index is out of range, the widget is
-    appended (in which case it is the actual index of the \a widget
-    that is returned).
-
-    If the QStackedLayout is empty before this function is called, the
-    given \a widget becomes the current widget.
-
-    Inserting a new widget at an index less than or equal to the current index
-    will increment the current index, but keep the current widget.
-
-    \sa addWidget(), removeWidget(), setCurrentWidget()
-*/
-int QStackedLayout::insertWidget(int index, QWidget *widget)
-{
-    Q_D(QStackedLayout);
     addChildWidget(widget);
-    index = qMin(index, d->list.count());
+    index = qMin(index, _list.count());
     if (index < 0)
-        index = d->list.count();
-    QWidgetItem *wi = QLayoutPrivate::createWidgetItem(this, widget);
-    d->list.insert(index, wi);
+        index = _list.count();
+    QWidgetItem *wi = new QWidgetItem( widget );
+    _list.insert(index, wi);
     invalidate();
-    if (d->index < 0) {
+    if (_index < 0) {
         setCurrentIndex(index);
     } else {
-        if (index <= d->index)
-            ++d->index;
-        if (d->stackingMode == StackOne)
+        if (index <= _index)
+            ++_index;
+        if (_mode == StackOne)
             widget->hide();
         widget->lower();
     }
     return index;
 }
 
-/*!
-    \reimp
-*/
-QLayoutItem *QStackedLayout::itemAt(int index) const
+QLayoutItem *QcStackLayout::itemAt(int index) const
 {
-    Q_D(const QStackedLayout);
-    return d->list.value(index);
+    return _list.value(index);
 }
 
-// Code that enables proper handling of the case that takeAt() is
-// called somewhere inside QObject destructor (can't call hide()
-// on the object then)
-
-class QtFriendlyLayoutWidget : public QWidget
+QLayoutItem *QcStackLayout::takeAt(int index)
 {
-public:
-    inline bool wasDeleted() const { return d_ptr->wasDeleted; }
-};
-
-static bool qt_wasDeleted(const QWidget *w) { return static_cast<const QtFriendlyLayoutWidget*>(w)->wasDeleted(); }
-
-
-/*!
-    \reimp
-*/
-QLayoutItem *QStackedLayout::takeAt(int index)
-{
-    Q_D(QStackedLayout);
-    if (index <0 || index >= d->list.size())
+    if (index < 0 || index >= _list.size())
         return 0;
-    QLayoutItem *item = d->list.takeAt(index);
-    if (index == d->index) {
-        d->index = -1;
-        if ( d->list.count() > 0 ) {
-            int newIndex = (index == d->list.count()) ? index-1 : index;
+    QLayoutItem *item = _list.takeAt(index);
+    if (index == _index) {
+        _index = -1;
+        if ( _list.count() > 0 ) {
+            int newIndex = (index == _list.count()) ? index-1 : index;
             setCurrentIndex(newIndex);
-        } else {
-            emit currentChanged(-1);
         }
-    } else if (index < d->index) {
-        --d->index;
+    } else if (index < _index) {
+        --_index;
     }
-    emit widgetRemoved(index);
-    if (item->widget() && !qt_wasDeleted(item->widget()))
+    if (item->widget())
         item->widget()->hide();
     return item;
 }
 
-/*!
-    \property QStackedLayout::currentIndex
-    \brief the index position of the widget that is visible
-
-    The current index is -1 if there is no current widget.
-
-    \sa currentWidget(), indexOf()
-*/
-void QStackedLayout::setCurrentIndex(int index)
+void QcStackLayout::setCurrentIndex(int index)
 {
-    Q_D(QStackedLayout);
     QWidget *prev = currentWidget();
     QWidget *next = widget(index);
     if (!next || next == prev)
         return;
+
+    _index = index;
+
+    if(!parent()) return;
 
     bool reenableUpdates = false;
     QWidget *parent = parentWidget();
@@ -302,11 +125,10 @@ void QStackedLayout::setCurrentIndex(int index)
     QWidget *fw = parent ? parent->window()->focusWidget() : 0;
     if (prev) {
         prev->clearFocus();
-        if (d->stackingMode == StackOne)
+        if (_mode == StackOne)
             prev->hide();
     }
 
-    d->index = index;
     next->raise();
     next->show();
 
@@ -337,99 +159,58 @@ void QStackedLayout::setCurrentIndex(int index)
     }
     if (reenableUpdates)
         parent->setUpdatesEnabled(true);
-    emit currentChanged(index);
 }
 
-int QStackedLayout::currentIndex() const
+int QcStackLayout::currentIndex() const
 {
-    Q_D(const QStackedLayout);
-    return d->index;
+    return _index;
 }
 
-
-/*!
-    \fn void QStackedLayout::setCurrentWidget(QWidget *widget)
-
-    Sets the current widget to be the specified \a widget. The new
-    current widget must already be contained in this stacked layout.
-
-    \sa setCurrentIndex(), currentWidget()
- */
-void QStackedLayout::setCurrentWidget(QWidget *widget)
+void QcStackLayout::setCurrentWidget(QWidget *widget)
 {
     int index = indexOf(widget);
     if (index == -1) {
-        qWarning("QStackedLayout::setCurrentWidget: Widget %p not contained in stack", widget);
+        qWarning("QcStackLayout::setCurrentWidget: Widget %p not contained in stack", widget);
         return;
     }
     setCurrentIndex(index);
 }
 
-
-/*!
-    Returns the current widget, or 0 if there are no widgets in this
-    layout.
-
-    \sa currentIndex(), setCurrentWidget()
-*/
-QWidget *QStackedLayout::currentWidget() const
+QWidget *QcStackLayout::currentWidget() const
 {
-    Q_D(const QStackedLayout);
-    return d->index >= 0 ? d->list.at(d->index)->widget() : 0;
+    return _index >= 0 ? _list.at(_index)->widget() : 0;
 }
 
-/*!
-    Returns the widget at the given \a index, or 0 if there is no
-    widget at the given position.
-
-    \sa currentWidget(), indexOf()
-*/
-QWidget *QStackedLayout::widget(int index) const
+QWidget *QcStackLayout::widget(int index) const
 {
-    Q_D(const QStackedLayout);
-     if (index < 0 || index >= d->list.size())
+     if (index < 0 || index >= _list.size())
         return 0;
-    return d->list.at(index)->widget();
+    return _list.at(index)->widget();
 }
 
-/*!
-    \property QStackedLayout::count
-    \brief the number of widgets contained in the layout
-
-    \sa currentIndex(), widget()
-*/
-int QStackedLayout::count() const
+int QcStackLayout::count() const
 {
-    Q_D(const QStackedLayout);
-    return d->list.size();
+    return _list.size();
 }
 
-
-/*!
-    \reimp
-*/
-void QStackedLayout::addItem(QLayoutItem *item)
+void QcStackLayout::addItem(QLayoutItem *item)
 {
     QWidget *widget = item->widget();
     if (widget) {
         addWidget(widget);
         delete item;
     } else {
-        qWarning("QStackedLayout::addItem: Only widgets can be added");
+        qWarning("QcStackLayout::addItem: Only widgets can be added");
     }
 }
 
-/*!
-    \reimp
-*/
-QSize QStackedLayout::sizeHint() const
+QSize QcStackLayout::sizeHint() const
 {
-    Q_D(const QStackedLayout);
     QSize s(0, 0);
-    int n = d->list.count();
+    int n = _list.count();
 
     for (int i = 0; i < n; ++i)
-        if (QWidget *widget = d->list.at(i)->widget()) {
+        if (QWidget *widget = _list.at(i)->widget()) {
             QSize ws(widget->sizeHint());
             if (widget->sizePolicy().horizontalPolicy() == QSizePolicy::Ignored)
                 ws.setWidth(0);
@@ -440,97 +221,98 @@ QSize QStackedLayout::sizeHint() const
     return s;
 }
 
-/*!
-    \reimp
-*/
-QSize QStackedLayout::minimumSize() const
+static QSize smartMinSize(const QSize &sizeHint, const QSize &minSizeHint,
+                                 const QSize &minSize, const QSize &maxSize,
+                                 const QSizePolicy &sizePolicy)
 {
-    Q_D(const QStackedLayout);
     QSize s(0, 0);
-    int n = d->list.count();
+
+    if (sizePolicy.horizontalPolicy() != QSizePolicy::Ignored) {
+        if (sizePolicy.horizontalPolicy() & QSizePolicy::ShrinkFlag)
+            s.setWidth(minSizeHint.width());
+        else
+            s.setWidth(qMax(sizeHint.width(), minSizeHint.width()));
+    }
+
+    if (sizePolicy.verticalPolicy() != QSizePolicy::Ignored) {
+        if (sizePolicy.verticalPolicy() & QSizePolicy::ShrinkFlag) {
+            s.setHeight(minSizeHint.height());
+        } else {
+            s.setHeight(qMax(sizeHint.height(), minSizeHint.height()));
+        }
+    }
+
+    s = s.boundedTo(maxSize);
+    if (minSize.width() > 0)
+        s.setWidth(minSize.width());
+    if (minSize.height() > 0)
+        s.setHeight(minSize.height());
+
+    return s.expandedTo(QSize(0,0));
+}
+
+QSize QcStackLayout::minimumSize() const
+{
+    QSize s(0, 0);
+    int n = _list.count();
 
     for (int i = 0; i < n; ++i)
-        if (QWidget *widget = d->list.at(i)->widget())
-            s = s.expandedTo(qSmartMinSize(widget));
+        if (QWidget *w = _list.at(i)->widget())
+            s = s.expandedTo(
+              smartMinSize(w->sizeHint(), w->minimumSizeHint(),
+                            w->minimumSize(), w->maximumSize(),
+                            w->sizePolicy()));
     return s;
 }
 
-/*!
-    \reimp
-*/
-void QStackedLayout::setGeometry(const QRect &rect)
+void QcStackLayout::setGeometry(const QRect &rect)
 {
-    Q_D(QStackedLayout);
-    switch (d->stackingMode) {
+    switch (_mode) {
     case StackOne:
         if (QWidget *widget = currentWidget())
             widget->setGeometry(rect);
         break;
     case StackAll:
-        if (const int n = d->list.count())
+        if (const int n = _list.count())
             for (int i = 0; i < n; ++i)
-                if (QWidget *widget = d->list.at(i)->widget())
+                if (QWidget *widget = _list.at(i)->widget())
                     widget->setGeometry(rect);
         break;
     }
 }
 
-/*!
-    \enum QStackedLayout::StackingMode
-    \since 4.4
-
-    This enum specifies how the layout handles its child widgets
-    regarding their visibility.
-
-    \value StackOne
-           Only the current widget is visible. This is the default.
-
-    \value StackAll
-           All widgets are visible. The current widget is merely raised.
-*/
-
-
-/*!
-    \property QStackedLayout::stackingMode
-    \brief determines the way visibility of child widgets are handled.
-    \since 4.4
-
-    The default value is StackOne. Setting the property to StackAll
-    allows you to make use of the layout for overlay widgets
-    that do additional drawing on top of other widgets, for example,
-    graphical editors.
-*/
-
-QStackedLayout::StackingMode QStackedLayout::stackingMode() const
+QcStackLayout::StackingMode QcStackLayout::stackingMode() const
 {
-    Q_D(const QStackedLayout);
-    return d->stackingMode;
+    return _mode;
 }
 
-void QStackedLayout::setStackingMode(StackingMode stackingMode)
+void QcStackLayout::setStackingMode(StackingMode stackingMode)
 {
-    Q_D(QStackedLayout);
-    if (d->stackingMode == stackingMode)
+    if (_mode == stackingMode)
         return;
-    d->stackingMode = stackingMode;
+    _mode = stackingMode;
 
-    const int n = d->list.count();
+    if( !parent() ) return;
+
+    const int n = _list.count();
     if (n == 0)
         return;
 
-    switch (d->stackingMode) {
-    case StackOne:
-        if (const int idx = currentIndex())
+    switch (_mode) {
+    case StackOne: {
+        const int idx = currentIndex();
+        if ( idx >= 0 )
             for (int i = 0; i < n; ++i)
-                if (QWidget *widget = d->list.at(i)->widget())
+                if (QWidget *widget = _list.at(i)->widget())
                     widget->setVisible(i == idx);
         break;
+    }
     case StackAll: { // Turn overlay on: Make sure all widgets are the same size
         QRect geometry;
         if (const QWidget *widget = currentWidget())
             geometry = widget->geometry();
         for (int i = 0; i < n; ++i)
-            if (QWidget *widget = d->list.at(i)->widget()) {
+            if (QWidget *widget = _list.at(i)->widget()) {
                 if (!geometry.isNull())
                     widget->setGeometry(geometry);
                 widget->setVisible(true);
@@ -540,4 +322,38 @@ void QStackedLayout::setStackingMode(StackingMode stackingMode)
     }
 }
 
-QT_END_NAMESPACE
+void QcStackLayout::invalidate()
+{
+  QObject *p = parent();
+
+  if(p && !_gotParent) {
+    _gotParent = true;
+
+    const int n = _list.count();
+    if (n == 0)
+        return;
+
+    switch (_mode) {
+    case StackOne: {
+        const int idx = currentIndex();
+        if ( idx >= 0 )
+            for (int i = 0; i < n; ++i)
+                if (QWidget *widget = _list.at(i)->widget())
+                    widget->setVisible(i == idx);
+        break;
+    }
+    case StackAll: {
+        const int idx = currentIndex();
+        if (idx >= 0)
+            if (QWidget *widget = _list.at(idx)->widget())
+                widget->raise();
+        for (int i = 0; i < n; ++i)
+            if (QWidget *widget = _list.at(i)->widget())
+                widget->setVisible(true);
+        break;
+    }
+    }
+  }
+
+  QLayout::invalidate();
+}
