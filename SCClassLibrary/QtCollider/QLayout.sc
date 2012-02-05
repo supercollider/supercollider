@@ -183,14 +183,14 @@ QStackLayout : QLayout
 
   *new { arg ...views; ^super.new([views]) }
 
-  add { arg view; this.invokeMethod( \addWidget, view ) }
+  add { arg view; this.insert(view, -1) }
 
-  insert { arg view, index=0; this.invokeMethod( \insertWidget, [index, view] ) }
+  insert { arg view, index = 0; this.invokeMethod( \insertWidget, [index, view] ) }
 
   index { ^this.getProperty(\currentIndex) }
   index_ { arg value; this.setProperty(\currentIndex, value) }
 
-  numViews { ^this.getProperty(\count) }
+  count { ^this.getProperty(\count) }
 
   mode { ^this.getProperty(\stackingMode) }
   mode_ { arg value;

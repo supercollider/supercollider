@@ -252,30 +252,4 @@ public:
   }
 };
 
-class QcStackLayout : public QcLayout<QStackedLayout>
-{
-  Q_OBJECT
-  Q_PROPERTY( VariantList margins READ margins WRITE setMargins )
-  Q_PROPERTY( int count READ count )
-public:
-  QcStackLayout() {}
-  Q_INVOKABLE QcStackLayout( const VariantList &items ) {
-    Q_FOREACH(QVariant var, items.data) {
-      QObjectProxy *p = var.value<QObjectProxy*>();
-      if(!p) return;
-      QWidget *w = qobject_cast<QWidget*>( p->object() );
-      if(w) QStackedLayout::addWidget(w);
-    }
-    setCurrentIndex(count()-1);
-  }
-  Q_INVOKABLE void addWidget( QObjectProxy *proxy ) {
-    QWidget *w = qobject_cast<QWidget*>( proxy->object() );
-    if( w ) QStackedLayout::addWidget(w);
-  }
-  Q_INVOKABLE void insertWidget( int index, QObjectProxy *proxy ) {
-    QWidget *w = qobject_cast<QWidget*>( proxy->object() );
-    if( w ) QStackedLayout::insertWidget(index, w);
-  }
-};
-
 #endif
