@@ -128,6 +128,10 @@
 /* Unlike the preview TLSF versions, now they are statics */
 #define BLOCK_ALIGN (sizeof(void *) * 2)
 
+// adapted for supercollider: align by 32 bytes, sufficient for avx instructions
+#undef  BLOCK_ALIGN
+#define BLOCK_ALIGN 32
+
 #define MAX_FLI		(30)
 #define MAX_LOG2_SLI	(5)
 #define MAX_SLI		(1 << MAX_LOG2_SLI)     /* MAX_SLI = 2^MAX_LOG2_SLI */
