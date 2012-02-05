@@ -24,7 +24,7 @@ MultiTap  {
 		RecordBuf.ar(in,bufnum,0.0, run: -1.0);
 		sampleRate = BufSampleRate.kr(bufnum);
 
-		^Mix.arFill(timesArray.size,{ arg i;
+		^Mix.fill(timesArray.size,{ arg i;
 			PlayBuf.ar(in.numChannels,
 					bufnum, -1.0,1.0,
 					timesArray.at(i) * sampleRate,
@@ -47,7 +47,7 @@ GrainTap {
 		pchRatio = pchRatio * BufRateScale.kr(bufnum);
 
 
-		^Mix.arFill( howMany ? ,{ arg i;
+		^Mix.fill( howMany ? ,{ arg i;
 			PlayBuf.ar(buf.numChannels,
 					bufnum,1.0,1.0,
 					loop: 1)
