@@ -88,7 +88,10 @@ QC_DECLARE_QWIDGET_FACTORY(QcScrollArea);
 
 QcScrollArea::QcScrollArea()
 {
-
+  connect( horizontalScrollBar(), SIGNAL(actionTriggered(int)),
+           this, SIGNAL(scrolled()) );
+  connect( verticalScrollBar(), SIGNAL(actionTriggered(int)),
+           this, SIGNAL(scrolled()) );
 }
 
 void QcScrollArea::setWidget( QObjectProxy *proxy )
