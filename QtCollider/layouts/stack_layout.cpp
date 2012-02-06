@@ -324,34 +324,41 @@ void QcStackLayout::setStackingMode(StackingMode stackingMode)
 
 void QcStackLayout::invalidate()
 {
-  QObject *p = parent();
+  QWidget *pw = parentWidget();
 
-  if(p && !_gotParent) {
+  if(pw && !_gotParent) {
     _gotParent = true;
 
     const int n = _list.count();
     if (n == 0)
         return;
 
+    QWidget *cw = currentWidget();
+
     switch (_mode) {
     case StackOne: {
-        const int idx = currentIndex();
-        if ( idx >= 0 )
+        if(cw)
             for (int i = 0; i < n; ++i)
                 if (QWidget *widget = _list.at(i)->widget())
-                    widget->setVisible(i == idx);
+                    widget->setVisible(widget == cw);
         break;
     }
     case StackAll: {
-        const int idx = currentIndex();
-        if (idx >= 0)
-            if (QWidget *widget = _list.at(idx)->widget())
-                widget->raise();
         for (int i = 0; i < n; ++i)
             if (QWidget *widget = _list.at(i)->widget())
                 widget->setVisible(true);
         break;
     }
+    }
+
+    // NOTE: re-order the widgets after setting visibility, since the latter
+    // may affect the order itself (at least on Mac OS X)
+    if(cw) {
+      for (int i = 0; i < n; ++i) {
+        QWidget * w = _list.at(i)->widget();
+        if( w && w != cw )
+            w->lower();
+      }
     }
   }
 
