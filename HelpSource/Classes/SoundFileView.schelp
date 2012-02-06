@@ -1,0 +1,617 @@
+class:: SoundFileView
+redirect:: implClass
+summary:: Sound file display
+categories:: GUI>Views
+related:: Classes/SoundFile
+
+
+DESCRIPTION::
+
+A sound file viewer with numerous options.
+
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+
+INSTANCEMETHODS::
+
+SUBSECTION:: Data
+
+METHOD:: soundfile
+
+    argument::
+        An Instance of SoundFile to display.
+
+
+METHOD:: read
+
+    Reads a section of the link::#-soundfile:: and displays it in the view. For large files, you may want to use readWithTask instead.
+
+    note:: In Qt GUI, the 'block' argument has no effect; the display resolution is infinite. ::
+
+    argument:: startFrame
+        The beginning of the section, in frames.
+
+    argument:: frames
+        The size of the section, in frames.
+
+    argument:: block
+        The block size - visual resolution of the display. An Integer of the form 2**n.
+
+    argument:: closeFile
+        If true, closes the SoundFile after reading.
+
+
+METHOD:: readFile
+
+    Reads a section of an open instance of SoundFile, and displays it in the view. For large files, you may want to use the method readWithTask instead.
+
+    note:: In Qt GUI, the 'block' argument has no effect; the display resolution is infinite. ::
+
+    argument:: soundfile
+        An open instance of SoundFile.
+
+    argument:: startFrame
+        The beginning of the section, in frames.
+
+    argument:: frames
+        The size of the section, in frames.
+
+    argument:: block
+        The block size - visual resolution of the display. An Integer of the form 2**n.
+
+    argument:: closeFile
+        If true, closes the SoundFile after reading.
+
+METHOD:: readWithTask
+
+    Reads a section of the link::#-soundfile:: asynchronously (in the background), updating the link::#-readProgress:: along the way. If the code::showProgress:: argument is code::true::, a SoundFileViewProgressWindow opens to show the progress.
+
+    note:: In Qt GUI:
+        The 'block' argument has no effect; the display resolution is infinite.
+        The 'showProgress' argument has no effect; the view always displays reading progress within itself.
+    ::
+
+    argument:: startFrame
+        The beginning of the section, in frames.
+
+    argument:: frames
+        The size of the section, in frames.
+
+    argument:: block
+        The block size - visual resolution of the display. An Integer of the form 2**n.
+
+    argument:: doneAction
+        An optional function to be evaluated on completion.
+
+    argument:: showProgress
+        Whether to open a progress window. Defaults to code::true::.
+
+
+METHOD:: readFileWithTask
+
+    Reads a section of an open instance of SoundFile asynchronously (in the background), updating the link::#-readProgress:: along the way. If the code::showProgress:: argument is code::true::, a SoundFileViewProgressWindow opens to show the progress.
+
+    note:: In Qt GUI:
+        The 'block' argument has no effect; the display resolution is infinite.
+        The 'showProgress' argument has no effect; the view always displays reading progress within itself.
+    ::
+
+    argument:: soundfile
+        An open instance of SoundFile.
+
+    argument:: startFrame
+        The beginning of the section, in frames.
+
+    argument:: frames
+        The size of the section, in frames.
+
+    argument:: block
+        The block size - visual resolution of the display. An Integer of the form 2**n.
+
+    argument:: doneAction
+        An optional function to be evaluated on completion.
+
+    argument:: showProgress
+        Whether to open a progress window. Defaults to code::true::.
+
+METHOD:: startFrame
+
+    The beginning of the displayed section of the soundfile, in frames.
+
+METHOD:: numFrames
+
+    The size of the displayed section of the soundfile, in frames.
+
+METHOD:: readProgress
+
+     The reading progress, updated periodically when reading a soundfile using link::#-readWithTask:: or link::#-readFileWithTask::.
+
+
+SUBSECTION:: Display
+
+METHOD:: viewFrames
+
+    The amount of currently visible frames in the view.
+
+METHOD:: zoom
+
+    Zooms by a factor relative to current zoom.
+
+    argument::
+        A Float.
+
+METHOD:: zoomToFrac
+
+    Zooms to a specific scale.
+
+    argument::
+        A Float.
+
+METHOD:: zoomAllOut
+
+    Zooms to the link::#-currentSelection#current selection::.
+
+METHOD:: zoomSelection
+
+    Zooms to a specific selection.
+
+    argument::
+        The index of the selection; an Integer between 0 an 63.
+
+METHOD:: scrollPos
+
+    The scrolling position of the view, as a fraction of the total scrolling range.
+
+    returns::
+        A Float in the range of 0.0 to 1.0.
+
+METHOD:: scrollTo
+
+    Scrolls to a fraction of the total scrolling range.
+
+    argument::
+        A Float in the range of 0.0 to 1.0.
+
+METHOD:: scroll
+
+    Scrolls by a fraction of the visible range.
+
+    argument::
+        A Float.
+
+METHOD:: scrollToStart
+
+    Scrolls to the beginning.
+
+METHOD:: scrollToEnd
+
+    Scrolls to the end.
+
+
+SUBSECTION:: Selection
+
+METHOD:: selections
+
+    All the selections.
+
+    returns:: An array of 64 arrays of start frames and sizes: [ [ start0, size0 ] , [ start1, size1 ], ... ].
+
+METHOD:: selection
+
+    The selection at index.
+
+    returns::
+        An Array of the form code::[start, size]::, where start and size denote frames.
+
+METHOD:: setSelection
+
+    Sets the selection at index.
+
+    argument:: index
+        An Integer between 0 an 63.
+
+    argument:: selection
+        An Array of the form code::[start, size]::, where start and size are Integers and denote frames.
+
+METHOD:: currentSelection
+
+    The index of the current selection
+
+    argument::
+        An integer between 0 an 63.
+
+METHOD:: selectionStart
+
+    The start frame of a selection.
+
+    argument:: index
+        The index of the selection; an Integer between 0 an 63.
+
+    returns::
+        An Integer.
+
+METHOD:: setSelectionStart (index, frame)
+
+    Sets the start frame of a selection.
+
+    argument:: index
+        The index of the selection; an Integer between 0 an 63.
+
+    argument:: frame
+        The starting frame of the selection, an Integer.
+
+METHOD:: selectionSize
+
+    The size of a selection.
+
+    argument:: index
+        The index of the selection; an Integer between 0 an 63.
+
+    returns::
+        An Integer.
+
+METHOD:: setSelectionSize
+
+    Sets the size of a selection.
+
+    argument:: index
+        The index of the selection; an Integer between 0 an 63.
+
+    argument:: frames
+        The size in frames of the selection, an Integer.
+
+METHOD:: selectionStartTime
+
+    The start of a selection in seconds.
+
+    argument:: index
+        The index of the selection; an Integer between 0 an 63.
+
+    returns::
+        A Float.
+
+METHOD:: selectionDuration
+
+    The size of a selection in seconds.
+
+    argument:: index
+        The index of the selection; an Integer between 0 an 63.
+
+    returns::
+        A Float.
+
+METHOD:: selectAll
+
+    Sets a selection to span the whole data range.
+
+    argument:: index
+        The index of the selection; an Integer between 0 an 63.
+
+
+METHOD:: selectNone
+
+    Sets the size of a selectino to 0.
+
+    argument:: index
+        The index of the selection; an Integer between 0 an 63.
+
+METHOD:: setSelectionColor
+
+    Sets the color of a selection.
+
+    argument:: index
+        The index of the selection; an Integer between 0 an 63.
+
+    argument:: color
+        A Color.
+
+METHOD:: setEditableSelectionStart
+
+    Sets whether the start point of a selection can be edited.
+
+    argument:: index
+        The index of the selection; an Integer between 0 an 63.
+
+    argument:: editable
+        A Boolean.
+
+METHOD:: setEditableSelectionSize (index, bool)
+
+    Whether the end point of a selection can be edited.
+
+    argument:: index
+        The index of the selection; an Integer between 0 an 63.
+
+    argument:: editable
+        A Boolean.
+
+METHOD:: readSelection
+
+    note:: Not in Qt GUI ::
+
+    Read the data within a selection.
+
+    argument:: block
+        The block size - visual resolution of the display. An Integer of the form 2**n.
+
+    argument:: closeFile
+        If true, closes the SoundFile after reading.
+
+METHOD:: readSelectionWithTask
+
+    note:: Not in Qt GUI ::
+
+    Read the data within the current selection asynchronously (in the background), showing the progress in a separate window.
+
+
+SUBSECTION:: Appearance
+
+METHOD:: gridOn
+
+    Whether the grid is displayed. Defaults to code::true::.
+
+    argument::
+        A Boolean.
+
+METHOD:: gridResolution
+
+    The resolution of the grid.
+
+    argument::
+        An instance of Float.
+
+METHOD:: gridOffset
+
+    Sets the grid offset.
+
+    argument::
+        An integer.
+
+METHOD:: gridColor
+
+    The color of the grid.
+
+    argument::
+        A Color.
+
+METHOD:: drawsWaveForm
+
+    Whether the data is displayed. Defaults to code::true::.
+
+    argument::
+        A Boolean.
+
+METHOD:: timeCursorOn
+
+    Whether the time cursor is displayed. Defaults to code::false::.
+
+    argument::
+        A Boolean.
+
+METHOD:: timeCursorPosition
+
+    The position of the time cursor in frames.
+
+    argument::
+        An Integer.
+
+METHOD:: timeCursorColor
+
+    The color of the time cursor.
+
+    argument::
+        A Color.
+
+
+SUBSECTION:: Actions
+
+METHOD:: action
+
+    The object to be evaluated whenever the user interacts with the view.
+
+METHOD:: metaAction
+
+    The object to be evaluated on Ctrl + click.
+
+
+SUBSECTION:: Internal Methods
+
+    The following methods are usually not used directly.
+
+METHOD:: data
+
+    The display data.
+
+    argument::
+        An Array.
+
+METHOD:: setData
+
+    Sets the display data.
+
+    argument:: arr
+        The data, an instance of Array.
+
+    argument:: block
+        The block size - visual resolution of the display. An Integer of the form 2**n.
+
+    argument:: startframe
+        An integer.
+
+    argument:: channels
+        An integer.
+
+    argument:: samplerate
+        An integer. Defaults to 44100.
+
+METHOD:: elasticMode
+
+    ???
+
+EXAMPLES::
+
+SUBSECTION:: Basic example
+
+code::
+(
+w = Window.new("soundfile test", Rect(200, 200, 800, 400));
+a = SoundFileView.new(w, Rect(20,20, 700, 60));
+
+f = SoundFile.new;
+f.openRead("sounds/a11wlk01.wav");
+f.inspect;
+
+a.soundfile = f;
+a.read(0, f.numFrames);
+a.elasticMode = true;
+
+a.timeCursorOn = true;
+a.timeCursorColor = Color.red;
+a.timeCursorPosition = 2050;
+a.drawsWaveForm = true;
+a.gridOn = true;
+a.gridResolution = 0.2;
+
+w.front;
+)
+::
+
+SUBSECTION:: Step by step examples
+
+code::
+( // make a simple SoundFileView
+w = Window.new("soundfile test", Rect(10, 700, 750, 100));
+w.front;
+a = SoundFileView.new(w, Rect(20,20, 700, 60));
+
+f = SoundFile.new;
+f.openRead("sounds/a11wlk01.wav");
+// f.inspect;
+
+a.soundfile = f;            // set soundfile
+a.read(0, f.numFrames);     // read in the entire file.
+a.refresh;                  // refresh to display the file.
+)
+
+// reading file
+a.read(0, f.numFrames / 2).refresh; // read first half
+a.read.refresh;                     // read entire file by default
+a.read(f.numFrames / 2).refresh;    // read second half
+a.read(0, -1).refresh;              // -1 also reads entire file, like buffer.
+
+// block sets visual resolution of waveform, default is 64.
+// i.e. the view keeps peak values for each block of e.g. 64 samples
+// rather than the entire waveform.
+a.read(0, -1, block: 32).refresh;
+a.read(0, -1, block: 24).refresh;
+a.read(0, -1, block: 16).refresh;
+
+// for longer files, you can use:
+a.readWithTask;
+
+// zoom is relative
+a.zoom(0.2).refresh;
+a.zoom(2).refresh;
+a.zoom(2).refresh;
+a.zoomToFrac(0.5); // zoom to half file size
+a.zoomAllOut;
+
+a.gridOn = true;            // time grid, 1 second by default,
+a.gridResolution = 0.2;     // or set resolution in seconds
+a.gridColor = Color.cyan;   // color is changeable.
+a.gridOffset_(0.1);         // not sure if this is working?
+
+a.timeCursorOn = true;          // a settable cursor
+a.timeCursorPosition = 2050;    // position is in frames.
+a.timeCursorColor = Color.white;
+
+// toggle drawing on/off
+a.drawsWaveForm = false;
+a.drawsWaveForm = true;
+
+// these methods should return view properties:
+a.gridOn
+a.gridResolution
+a.gridColor
+a.timeCursorOn
+a.timeCursorPosition
+a.timeCursorColor
+
+// Selections: multiple selections are supported.
+// e.g. use selection 0:
+a.setSelectionColor(0, Color.red);  // set...( index, value )
+a.selectionStart(0);                // at index
+a.setSelectionStart(0, 12345);
+a.setSelectionSize(0, 12345);
+
+a.setSelectionStart(0, 1234);
+a.selectionStart(0);
+
+// now selection 1
+a.setSelectionColor(1, Color.white);
+a.setSelectionStart(1, 1234).setSelectionSize(1, 1234 * 2);
+a.selectionStart(1);
+a.setSelectionStart(0, 12345);
+
+// the current selection gets changed when click/dragging in view.
+a.currentSelection;     // index of current selection;
+a.currentSelection_(1); // switch current selection - try click/drag white now.
+a.currentSelection;
+
+a.selections.size;      // 64 selections
+a.selections[0];
+a.selections[1];
+a.selections;
+
+// setSelection (index, selection);
+a.setSelection(0, [234, 2345]);
+a.selection(1); // returns [start, size].
+
+
+a.elasticMode = true;   // not sure if this is working yet?
+
+(       // mouseUpAction
+a.mouseUpAction = {
+    ("mouseUp, current selection is now:"
+        + a.selections[a.currentSelection]).postln;
+};
+)
+// lock selection 0:
+a.currentSelection_(0);
+a.setEditableSelectionStart(0, false);
+a.setEditableSelectionSize(0, false);
+
+
+// unlock selection 0:
+a.setEditableSelectionStart(0, true);
+a.setEditableSelectionSize(0, true);
+
+a.selectionStartTime(0);
+a.selectionDuration(0);
+
+
+a.setSelectionStart(0, 12345);
+a.setSelectionSize(0, 12345);
+a.readSelection.refresh;
+a.readSelection(16).refresh;    // in higher resolution
+a.read.refresh;                 // go back to entire file.
+
+
+a.dataNumSamples;   // visual data have this many points
+a.data.plot;
+a.setData(a.data.reverse);
+
+
+a.zoom(0.25);       // scrolling is normalized
+a.scrollTo(0.5);    //
+a.scrollTo(0.6);    //
+a.scroll(12);       // scroll is in viewFrames.
+
+a.zoom(4);
+
+w.close;
+
+::
