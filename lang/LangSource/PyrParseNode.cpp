@@ -2895,10 +2895,16 @@ void compileWhileMsg(PyrCallNodeBase2* node)
 		whileByteCodeLen = byteCodeLength(whileByteCodes);
 		compileAndFreeByteCodes(whileByteCodes);
 
-		exprByteCodeLen = byteCodeLength(exprByteCodes);
-		compileJump(opcJumpIfFalsePushNil, exprByteCodeLen + 3);
-
-		compileAndFreeByteCodes(exprByteCodes);
+		if (exprByteCodes) {
+			exprByteCodeLen = byteCodeLength(exprByteCodes);
+			compileJump(opcJumpIfFalsePushNil, exprByteCodeLen + 3);
+			compileAndFreeByteCodes(exprByteCodes);
+		} else {
+			exprByteCodeLen = 1;
+			compileJump(opcJumpIfFalsePushNil, exprByteCodeLen + 3);
+			// opcJumpBak does a drop..
+			compileOpcode(opPushSpecialValue, opsvNil);
+		}
 
 		compileJump(opcJumpBak, exprByteCodeLen + whileByteCodeLen + 4);
 
