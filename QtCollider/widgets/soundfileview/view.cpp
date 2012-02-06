@@ -29,6 +29,7 @@
 
 #include <climits>
 #include <cmath>
+#include <cstring>
 
 QC_DECLARE_QWIDGET_FACTORY(QcWaveform);
 
@@ -80,7 +81,7 @@ QcWaveform::~QcWaveform()
 
 void QcWaveform::load( const QString& filename )
 {
-  qcDebugMsg( 1, "QcWaveform::load()" );
+  qcDebugMsg( 1, "QcWaveform::load( filename )" );
 
   SF_INFO new_info;
   memset( &new_info, 0, sizeof(SF_INFO) );
@@ -97,7 +98,7 @@ void QcWaveform::load( const QString& filename )
 
 void QcWaveform::load( const QString& filename, int beg, int dur )
 {
-  qcDebugMsg( 1, "QcWaveform::load( beg, dur )" );
+  qcDebugMsg( 1, "QcWaveform::load( filename, beg, dur )" );
 
   SF_INFO new_info;
   memset( &new_info, 0, sizeof(SF_INFO) );
@@ -110,6 +111,51 @@ void QcWaveform::load( const QString& filename, int beg, int dur )
   }
 
   doLoad( new_sf, new_info, beg, dur );
+}
+
+void QcWaveform::load( const QVector<double> & data, int offset, int ch, int sr )
+{
+  qcDebugMsg( 1, "QcWaveform::load( data, offset, channels )" );
+
+  if( ch < 1 ) {
+    qcWarningMsg( "QSoundFileView: invalid number of channels!" );
+    return;
+  }
+
+  int ns = data.count();
+  int nf = ns / ch;
+
+  if( nf * ch != ns ) {
+    qcWarningMsg( "QSoundFileView: size of data not a multiple of channel count!" );
+    return;
+  }
+
+  if( offset < 0 || nf - offset < 1 ) {
+    qcWarningMsg( "QSoundFileView: invalid range of data!" );
+    return;
+  }
+
+  SF_INFO new_info;
+  memset( &new_info, 0, sizeof(SF_INFO) );
+  new_info.channels = ch;
+  new_info.samplerate = sr;
+
+  delete _cache;
+  if( sf ) sf_close( sf );
+
+  sf = 0;
+  sfInfo = new_info;
+
+  _beg = _rangeBeg = 0;
+  _dur = _rangeDur = _rangeEnd = nf - offset;
+
+  updateFPP();
+
+  _cache = new SoundCacheStream();
+  connect( _cache, SIGNAL(loadingDone()), this, SIGNAL(loadingDone()) );
+  connect( _cache, SIGNAL(loadingDone()), this, SLOT(redraw()) );
+
+  _cache->load( data, _rangeDur, offset, ch );
 }
 
 void QcWaveform::doLoad( SNDFILE *new_sf, const SF_INFO &new_info, sf_count_t beg, sf_count_t dur )
@@ -570,7 +616,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
   QPainter p( pix );
 
-  if( !sf || !_cache || !_cache->ready() ) return;
+  if( !_cache || !_cache->ready() ) return;
 
   // check for sane situation:
   if( f_beg < _rangeBeg || f_beg + f_dur > _rangeEnd ) return;
@@ -588,17 +634,24 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   }
 
   // data source - choose according to horiz. zoom (data-display resolution)
+  bool canUseCache = _fpp < 1.0 ? _cache->fpu() == 1.0 : _fpp >= _cache->fpu();
+
   SoundStream *soundStream;
   SoundFileStream sfStream;
 
-  if( _fpp > 1.0 ? (_fpp < _cache->fpu()) : _cache->fpu() > 1.0 ) {
-    qcDebugMsg( 1, QString("use file") );
+  if( canUseCache ) {
+    qcDebugMsg( 2, QString("using cache") );
+    soundStream = _cache;
+  }
+  else if( sf ) {
+    qcDebugMsg( 2, QString("using file") );
     soundStream = &sfStream;
     sfStream.load( sf, sfInfo, i_beg, i_count );
   }
   else {
-    qcDebugMsg( 1, QString("use cache") );
-    soundStream = _cache;
+    qcWarningMsg( "QSoundFileView: can't paint waveform: view resolution exceeds data cache resolution,"
+                  " and soundfile is not given." );
+    return;
   }
 
   // geometry

@@ -133,6 +133,10 @@ bool SoundFileStream::displayData
 
   short min = SHRT_MAX;
   short max = SHRT_MIN;
+
+  double D_SHRT_MAX = (double) SHRT_MAX;
+  double D_SHRT_MIN = (double) SHRT_MIN;
+
   int i;
   for( i = 0; i < bufferSize; ++i ) {
     int data_pos = floor(f_pos);
@@ -179,8 +183,8 @@ bool SoundFileStream::displayData
 
     minBuffer[i] = min;
     maxBuffer[i] = max;
-    minRMS[i] = avg - stdDev;
-    maxRMS[i] = avg + stdDev;
+    minRMS[i] = std::max(D_SHRT_MIN, std::min(D_SHRT_MAX, avg - stdDev ));
+    maxRMS[i] = std::max(D_SHRT_MIN, std::min(D_SHRT_MAX, avg + stdDev ));
 
     f_pos = f_pos1;
     min = maxBuffer[i];
