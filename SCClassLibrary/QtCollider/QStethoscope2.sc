@@ -80,7 +80,7 @@ QStethoscope2 {
       cycleSlider = QSlider().orientation_(\horizontal).value_(cycleSpec.unmap(cycle));
       yZoomSlider = QSlider().orientation_(\vertical).value_(yZoom);
 
-      rateMenu = QPopUpMenu().items_(["AUDIO","CONTROL"]).enabled_(singleBus);
+      rateMenu = QPopUpMenu().items_(["Audio","Control"]).enabled_(singleBus);
       idxNumBox = QNumberBox().decimals_(0).step_(1).scroll_step_(1).enabled_(singleBus);
       chNumBox = QNumberBox().decimals_(0).step_(1).scroll_step_(1)
         .clipLo_(1).clipHi_(128).enabled_(singleBus);
@@ -91,7 +91,7 @@ QStethoscope2 {
         chNumBox.value_(bus.numChannels);
       };
 
-      styleMenu = QPopUpMenu().items_(["TRACKS","MIX","X/Y"]);
+      styleMenu = QPopUpMenu().items_(["Tracks","Overlay","X/Y"]);
 
       // LAYOUT
 
@@ -101,7 +101,7 @@ QStethoscope2 {
       chNumBox.minWidth = gizmo;
       chNumBox.maxWidth = gizmo;
 
-      view.layout = QVLayout(
+      view.layout =
         QGridLayout()
           .add(
             QHLayout(
@@ -110,13 +110,12 @@ QStethoscope2 {
               chNumBox.minWidth_(35),
               nil,
               styleMenu
-            ).margins_(0).spacing_(1), 0, 0
+            ).margins_(0).spacing_(2), 0, 0
           )
           .add(scopeView,1,0)
-          .add(yZoomSlider,1,1)
-          .add(cycleSlider,2,0)
-          .margins_(0).spacing_(0)
-      ).margins_([5,0,0,0]).spacing_(1);
+          .add(yZoomSlider.maxWidth_(15), 1,1)
+          .add(cycleSlider.maxHeight_(15), 2,0)
+          .margins_(2).spacing_(2);
 
       // ACTIONS
 
