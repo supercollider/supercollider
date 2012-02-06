@@ -123,8 +123,7 @@ Signal[float] : FloatArray {
 
 	play { arg loop=false, mul=0.2, numChannels=1, server;
 		var buf;
-		buf = Buffer.alloc(server ? Server.default, this.size, numChannels);
-		buf.sendCollection(this, 0, 0.1, { buf.play(loop, mul); });
+		buf = Buffer.sendCollection(server ? Server.default, this, numChannels, -1, { buf.play(loop, mul); });
 		^buf
 	}
 

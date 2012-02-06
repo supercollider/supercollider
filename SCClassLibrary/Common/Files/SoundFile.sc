@@ -405,7 +405,7 @@ SoundFile {
 				rawData = FloatArray.newClear(numFrames * numChannels);
 				this.readData(rawData);
 				server.sync;
-				buffer.sendCollection(rawData);
+				buffer.sendCollection(rawData, wait: -1);
 			}
 		};
 		^buffer
