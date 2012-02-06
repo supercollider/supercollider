@@ -140,7 +140,7 @@ ServerMeterView{
 							var rmsValue  = msg.at(baseIndex + 1);
 							var meter = inmeters.at(channel);
 							if (meter.isClosed.not) {
-								meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1);
+								meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1, \min);
 								meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
 							}
 						}
@@ -162,7 +162,7 @@ ServerMeterView{
 							var rmsValue  = msg.at(baseIndex + 1);
 							var meter = outmeters.at(channel);
 							if (meter.isClosed.not) {
-								meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1);
+								meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1, \min);
 								meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
 							}
 						}
