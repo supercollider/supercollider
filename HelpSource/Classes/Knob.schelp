@@ -1,0 +1,167 @@
+class:: Knob
+redirect:: implClass
+summary:: A rotary controller view
+categories:: GUI>Views
+related:: Classes/Slider, Classes/Slider2D
+
+DESCRIPTION::
+
+Knob displays a value from 0.0 to 1.0 in rotary fashon, and allows to control it with either circular or linear mouse motion.
+
+It also displays the deviation of the value from either 0.0 or 0.5, which you can choose using link::#-centered::.
+
+To switch between the mouse interaction modes, use link::#-mode::.
+
+The amount by which the value changes at interaction can be fine-tuned using link::#-step::, link::#-keystep::, link::#-shift_scale::, link::#-ctrl_scale::, and link::#-alt_scale::
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+METHOD:: defaultMode
+
+    The default link::#-mode:: for newly created Knobs.
+
+
+INSTANCEMETHODS::
+
+
+SUBSECTION:: Data
+
+METHOD:: value
+
+    The displayed value.
+
+    argument::
+        A Number in the range of 0.0 to 1.0.
+
+METHOD:: valueAction
+
+    Sets the value and triggeres link::#-action::.
+
+METHOD:: increment
+    Increments the value by link::#-keystep:: multiplied by the argument.
+
+    argument::
+        A Number.
+
+METHOD:: decrement
+    Decrements the value by link::#-keystep:: multiplied by the argument.
+
+    argument:: factor
+        A Number.
+
+
+SUBSECTION:: Interaction
+
+METHOD:: mode
+
+    The way value is controlled with respect to mouse movement after clicking on the view:
+    list::
+    ## code::\round:: - value follows circular movement
+    ## code::\horiz:: - value follows linear movement in horizontal direction
+    ## code::\vert:: - value follows linear movement in vertical direction
+    ::
+
+    Defaults to code::\round::.
+
+    Argument::
+        One of the symbols listed above.
+
+METHOD:: keystep
+
+    The amount by which the value is incremented/decremented when pressing a relevant key.
+
+    Defaults to 0.01;
+
+    Argument::
+        A Number.
+
+METHOD:: step
+
+    The amount by which the value is incremented/decremented using the mouse in 'horizontal' and 'vertical' link::#-mode#modes::.
+
+    Argument::
+        A Number.
+
+METHOD:: shift_scale
+    The factor by which link::#-step:: or link::#-keystep:: is multiplied when used at mouse or keyboard interaction while the Shift key is pressed.
+
+    argument::
+        A Float.
+
+METHOD:: ctrl_scale
+    The factor by which link::#-step:: or link::#-keystep:: is multiplied when used at mouse or keyboard interaction while the Ctrl key is pressed.
+
+    argument::
+        A Float.
+
+METHOD:: alt_scale
+    The factor by which link::#-step:: or link::#-keystep:: is multiplied when used at mouse or keyboard interaction while the Alt key is pressed.
+
+    argument::
+        A Float.
+
+
+
+SUBSECTION:: Appearance
+
+METHOD:: centered
+
+    Whether the deviation of value will be displayed in relation to 0.0 or 0.5 (e.g. as in a panning controller);
+
+    Argument::
+        A Boolean.
+
+METHOD:: color
+
+    The colors used by the Knob to draw the following elements:
+
+    list::
+    ## the main Knob color
+    ## the value indicator
+    ## the deviation indicator
+    ## the background of the deviation indicator
+    ::
+
+    Argument::
+        An Array of four Colors in the order listed above.
+
+
+SUBSECTION:: Actions
+
+METHOD:: action
+    The action object evaluated whenever the user interacts with the Knob using the mouse or the keyboard.
+
+METHOD:: defaultKeyDownAction
+
+    Implements the default effects of key presses as follows:
+
+    table::
+    ## strong::Key::   || strong::Effect::
+    ## r               || valueAction_(1.0.rand)
+    ## n               || valueAction_(0)
+    ## x               || valueAction_(1)
+    ## c               || valueAction_(0.5)
+    ## ]               || increment
+    ## [               || decrement
+    ## up arrow        || increment
+    ## down arrow      || decrement
+    ## right arrow     || increment
+    ## left arrow      || decrement
+    ::
+
+    See also: link::#-keystep::, link::#-shift_scale::, link::#-ctrl_scale::, link::#-alt_scale::.
+
+SUBSECTION:: Drag and drop
+
+METHOD:: defaultGetDrag
+    returns::
+        The link::#-value::.
+
+METHOD:: defaultCanReceiveDrag
+    returns::
+        True if the current drag data is a Number.
+
+METHOD:: defaultReceiveDrag
+    Sets link::#-valueAction:: to the current drag data.
