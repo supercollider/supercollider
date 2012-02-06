@@ -291,8 +291,6 @@ Signal[float] : FloatArray {
 	performBinaryOpOnSignal { arg aSelector, aNumber, adverb;
 		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
 	}
-	performBinaryOpOnComplex { arg aSelector, aComplex; ^aComplex.perform(aSelector, this.asComplex) }
-	performBinaryOpOnSimpleNumber { arg aSelector, aSimpleNumber; ^aSimpleNumber.perform(aSelector, this) }
 }
 
 Wavetable[float] : FloatArray {
