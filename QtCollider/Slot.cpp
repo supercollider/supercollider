@@ -629,8 +629,17 @@ void QtCollider::Variant::setData( PyrSlot *slot )
     {
       PyrObject *obj = slotRawObject(slot);
       PyrClass *klass = obj->classptr;
+      unsigned char format = obj->obj_format;
 
-      if( isKindOfSlot( slot, class_String ) ) {
+      if( format == obj_double || format == obj_float ) {
+        _type = qMetaTypeId< QVector<double> >();
+        _ptr = new QVector<double>( toNumericVector<double>(obj) );
+      }
+      else if( format == obj_int32 || format == obj_int16 || format == obj_int8 ) {
+        _type = qMetaTypeId< QVector<int> >();
+        _ptr = new QVector<int>( toNumericVector<int>(obj) );
+      }
+      else if( isKindOfSlot( slot, class_String ) ) {
         _type = QMetaType::QString;
         _ptr = new QString( toString(slot) );
       }

@@ -21,6 +21,8 @@
 
 #include "view.hpp"
 
+#include <cstring>
+
 SoundCacheStream::SoundCacheStream()
 : SoundStream ( 0, 0.0, 0.0 ),
   _caches(0),
@@ -45,6 +47,55 @@ SoundCacheStream::~SoundCacheStream()
     _loader->wait();
   }
   delete [] _caches;
+}
+
+void SoundCacheStream::load( const QVector<double> & data, int nf, int offset, int ch )
+{
+  if( _loader->isRunning() ) {
+    _loader->terminate();
+    _loader->wait();
+  }
+
+  _ready = false;
+  _loading = true;
+  _loadProgress = 0;
+
+  delete [] _caches;
+
+  _ch = ch;
+  _beg = _dataOffset = 0;
+  _dur = _dataSize = nf;
+  _fpu = 1.0;
+
+  _caches = new SoundCache [ch];
+
+  for( int c = 0; c < ch; ++c )
+  {
+    short *min = _caches[c].min = new short [nf];
+    short *max = _caches[c].max = new short [nf];
+    float *sum = _caches[c].sum = new float [nf];
+    float *sum2 = _caches[c].sum2 = new float [nf];
+
+    //qcWarningMsg(QString("%1").arg((unsigned long)_caches[i].min));
+    //qcWarningMsg(QString("%1").arg((unsigned long)_caches[i].max));
+    //qcWarningMsg(QString("%1").arg((unsigned long)_caches[i].sum));
+    //qcWarningMsg(QString("%1").arg((unsigned long)_caches[i].sum2));
+
+    int s = c + (offset * ch);
+    for( int f = 0; f < nf; ++f, s += ch )
+    {
+      double val = std::max(-1.0, std::min(1.0, data[s])) * SHRT_MAX;
+      min[f] = val;
+      sum[f] = val;
+      sum2[f] = val * val;
+    }
+    memcpy( max, min, nf * sizeof(short) );
+  }
+
+  _loadProgress = 100;
+  _loading = false;
+  _ready = true;
+  Q_EMIT( loadingDone() );
 }
 
 void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, sf_count_t dur,
@@ -110,6 +161,10 @@ bool SoundCacheStream::displayData
 
   short min = SHRT_MAX;
   short max = SHRT_MIN;
+
+  double D_SHRT_MAX = (double) SHRT_MAX;
+  double D_SHRT_MIN = (double) SHRT_MIN;
+
   int i;
   for( i = 0; i < bufferSize; ++i ) {
     int f = floor(cache_pos); // first frame
@@ -158,8 +213,8 @@ bool SoundCacheStream::displayData
 
     minBuffer[i] = min;
     maxBuffer[i] = max;
-    minRMS[i] = avg - stdDev;
-    maxRMS[i] = avg + stdDev;
+    minRMS[i] = std::max(D_SHRT_MIN, std::min(D_SHRT_MAX, avg - stdDev ));
+    maxRMS[i] = std::max(D_SHRT_MIN, std::min(D_SHRT_MAX, avg + stdDev ));
 
     // assure continuity from pixel to pixel
     min = maxBuffer[i];

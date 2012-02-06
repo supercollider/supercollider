@@ -77,6 +77,15 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( bool drawsWaveform READ drawsWaveform WRITE setDrawsWaveform );
 
 public:
+  Q_INVOKABLE void load( const QString& filename );
+
+  // NOTE: Using int instead of sf_count_t for accessibility from SC language.
+  Q_INVOKABLE void load( const QString& filename, int beginning, int duration );
+
+  Q_INVOKABLE void load( const QVector<double> & data, int offset = 0,
+                         int channels = 1, int samplerate = 44100 );
+
+public:
 
   struct Selection {
     Selection() : start(0), size(0), editable(true), color(QColor(0,0,150)) {}
@@ -89,9 +98,6 @@ public:
   QcWaveform( QWidget * parent = 0 );
   ~QcWaveform();
 
-  Q_INVOKABLE void load( const QString& filename );
-  // NOTE: Using int instead of sf_count_t for accessibility from SC language.
-  Q_INVOKABLE void load( const QString& filename, int beginning, int duration );
   float loadProgress();
   sf_count_t startFrame() { return _rangeBeg; }
   sf_count_t frames() { return _rangeDur; }
@@ -312,6 +318,7 @@ class SoundCacheStream : public QObject, public SoundStream
 public:
   SoundCacheStream();
   ~SoundCacheStream();
+  void load( const QVector<double> & data, int frames, int offset, int channels );
   void load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, sf_count_t dur,
              int maxFramesPerUnit, int maxRawFrames );
   inline double fpu() { return _fpu; }
