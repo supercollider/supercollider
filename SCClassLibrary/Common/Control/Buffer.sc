@@ -225,7 +225,7 @@ Buffer {
 	}
 
 	// send a Collection to a buffer one UDP sized packet at a time
-	*sendCollection { arg server, collection, numChannels = 1, wait = 0.0, action;
+	*sendCollection { arg server, collection, numChannels = 1, wait = -1, action;
 		var buffer = this.new(server, ceil(collection.size / numChannels), numChannels);
 		forkIfNeeded {
 			buffer.alloc;
@@ -238,21 +238,26 @@ Buffer {
 	sendCollection { arg collection, startFrame = 0, wait = -1, action;
 		var collstream, collsize, bundsize;
 
-		collstream = CollStream.new;
-		collstream.collection = collection;
-		collsize = collection.size;
+		if(collection.isSequenceableCollection
+		and: { startFrame.isNumber and: { wait.isNumber } }) {
+			collstream = CollStream.new;
+			collstream.collection = collection;
+			collsize = collection.size;
 
-		if ( collsize > ((numFrames - startFrame) * numChannels),
+			if ( collsize > ((numFrames - startFrame) * numChannels),
 				{ "Collection larger than available number of Frames".warn });
 
-		this.streamCollection(collstream, collsize, startFrame * numChannels, wait, action);
+			this.streamCollection(collstream, collsize, startFrame * numChannels, wait, action);
+		} {
+			MethodError("Invalid arguments to Buffer:sendCollection", this).throw;
+		};
 	}
 
 	// called internally
 	streamCollection { arg collstream, collsize, startFrame = 0, wait = -1, action;
 		var bundsize, pos;
 		{
-			// wait = -1 sends each packet when the previous has arrived
+			// wait = -1 allows an OSC roundtrip between packets
 			// wait = 0 might not be safe in a high traffic situation
 			// maybe okay with tcp
 			pos = collstream.pos;
