@@ -90,7 +90,7 @@ public:
         return rt_pool.get_max_size();
     }
 
-    void construct(pointer p, const T& val)
+    void construct(pointer p, const T& val = T())
     {
         new(p) T(val);
     }
