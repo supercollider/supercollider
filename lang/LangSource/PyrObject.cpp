@@ -2485,20 +2485,14 @@ PyrMethod* newPyrMethod()
 
 void freePyrSlot(PyrSlot *slot)
 {
-	if (NotNil(slot)) {
-		PyrObject *obj;
-		if (IsSym(slot))
-				obj = (PyrObject*)slotRawSymbol(slot); // i don't want to know, what this means
-		else if (IsObj(slot))
-				obj = slotRawObject(slot);
-		else
-				assert(false);
+	if (IsObj(slot)) {
+		PyrObject *obj = slotRawObject(slot);
 
 		if (obj && obj->IsPermanent()) {
 			// don't deallocate these
-			if (obj != slotRawObject(&o_emptyarray) && obj != slotRawObject(&o_onenilarray) && obj != slotRawObject(&o_argnamethis)) {
+			if (obj != slotRawObject(&o_emptyarray) && obj != slotRawObject(&o_onenilarray) && obj != slotRawObject(&o_argnamethis))
 				pyr_pool_runtime->Free((void*)obj);
-			}
+
 			SetNil(slot);
 		}
 	}
