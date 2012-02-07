@@ -61,7 +61,7 @@ struct SIMD_Unit:
 			return value != parent->in0(index);
 		}
 
-#if __cplusplus < 199711L
+#if __cplusplus <= 199711L
 		nova::detail::scalar_ramp_argument<float> slope(const SIMD_Unit * parent)
 #else
 		decltype(nova::slope_argument(0.f, 0.f)) slope(const SIMD_Unit * parent)
