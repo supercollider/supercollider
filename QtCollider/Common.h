@@ -31,6 +31,7 @@
 #include <QWaitCondition>
 #include <QVector>
 
+#include <SCBase.h>
 #include <PyrSymbol.h>
 #include <PyrObject.h>
 
@@ -129,6 +130,17 @@ namespace QtCollider {
 #define class_QLayout s_QLayout->u.classobj
 #define class_QTreeViewItem s_QTreeViewItem->u.classobj
 
+#define DECLARE_SYMBOL( SYM ) \
+  struct symbol_##SYM { \
+    static PyrSymbol * get() { static PyrSymbol *sym = getsym(#SYM); return sym; } \
+  };
+
+#define SC_SYM( SYM ) symbol_##SYM::get()
+
+#define SC_CLASS( SYM ) SC_SYM(SYM)->u.classobj
+
+  DECLARE_SYMBOL(Gradient);
+  DECLARE_SYMBOL(HiliteGradient);
 }
 
 #endif //_SC_QT_COMMON_H

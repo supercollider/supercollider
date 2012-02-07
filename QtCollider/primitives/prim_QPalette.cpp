@@ -90,7 +90,6 @@ QC_LANG_PRIMITIVE( QPalette_SetColor, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QPalette *p = QPALETTE_FROM_OBJECT(slotRawObject(r));
 
-  if( !isKindOfSlot( a, class_Color ) ) return errWrongType;
   QColor color( Slot::toColor(a) );
 
   if(NotInt(a+1)) return errWrongType;
