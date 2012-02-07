@@ -396,11 +396,12 @@ SCDocHTMLRenderer : SCDocRenderer {
                     file.write("<code class='code prettyprint lang-sc'>"++this.autoLinkClasses(this.escapeSpecialChars(node.text))++"</code>");
                 });
             },
-            'formula', {
+            'math', {
+                // uses MathJax to typeset TeX math
                 if(node.display == \block, {
-                    file.write("<pre class='formula'>"++this.escapeSpecialChars(node.text)++"</pre>\n");
+                    file.write("<span class='math'>\\[\n"++this.escapeSpecialChars(node.text)++"\n\\]\n</span>");
                 }, {
-                    file.write("<code class='formula'>"++this.escapeSpecialChars(node.text)++"</code>");
+                    file.write("<span class='math'>\\("++this.escapeSpecialChars(node.text)++"\\)</span>");
                 });
             },
             'image', {
@@ -577,6 +578,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         f.write("<script src='" ++ baseDir ++ "/docmap.js' type='text/javascript'></script>");
         f.write("<script src='" ++ baseDir ++ "/prettify.js' type='text/javascript'></script>");
         f.write("<script src='" ++ baseDir ++ "/lang-sc.js' type='text/javascript'></script>");
+        f.write("<script src='" ++ baseDir ++ "/MathJax/MathJax.js?config=TeX-AMS_HTML,scmathjax' type='text/javascript'></script>");
         f.write("<script type='text/javascript'>var helpRoot='"++baseDir++"';</script>");
         f.write("</head>");
 
