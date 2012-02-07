@@ -350,25 +350,54 @@ QSizeF Slot::toSize( PyrSlot *slot )
   return QSizeF( w, h );
 }
 
-QColor Slot::toColor( PyrSlot *slot )
-{
-  if( !isKindOfSlot( slot, class_Color) )
-    return QColor();
+namespace QtCollider {
+namespace Slot {
 
-  PyrSlot *slots = slotRawObject(slot)->slots;
+QColor asColor( PyrObject *obj )
+{
+  PyrSlot *slots = obj->slots;
 
   float r,g,b,a;
   r = g = b = a = 0.f;
   int err;
   err = slotFloatVal(slots+0, &r);
-  if (err) return err;
+  if (err) return QColor();
   err = slotFloatVal(slots+1, &g);
-  if (err) return err;
+  if (err) return QColor();
   err = slotFloatVal(slots+2, &b);
-  if (err) return err;
+  if (err) return QColor();
   err = slotFloatVal(slots+3, &a);
-  if (err) return err;
+  if (err) return QColor();
   return QColor( r*255, g*255, b*255, a*255 );
+}
+
+}
+}
+
+QColor Slot::toColor( PyrSlot *slot )
+{
+  if( NotObj(slot) ) return QColor();
+
+  PyrObject *obj = slotRawObject(slot);
+  PyrClass *klass = obj->classptr;
+
+  if( klass == class_Color )
+    return asColor(obj);
+
+  if( klass == SC_CLASS(Gradient) || klass == SC_CLASS(HiliteGradient) )
+  {
+    qcWarningMsg("WARNING: Gradient and HiliteGradient are not supported yet."
+      " Using the average gradient color instead.");
+
+    QColor c1( toColor(obj->slots+0) );
+    QColor c2( toColor(obj->slots+1) );
+    QColor mix( (c1.red() + c2.red()) / 2,
+                (c1.green() + c2.green()) / 2,
+                (c1.blue() + c2.blue()) / 2 );
+    return mix;
+  }
+
+  return QColor();
 }
 
 QFont Slot::toFont( PyrSlot *slot )
@@ -515,6 +544,7 @@ QVariant Slot::toVariant( PyrSlot *slot )
     case tagObj :
     {
       PyrObject *obj = slotRawObject(slot);
+      PyrClass *klass = obj->classptr;
       unsigned char format = obj->obj_format;
 
       if( format == obj_double || format == obj_float )
@@ -535,7 +565,10 @@ QVariant Slot::toVariant( PyrSlot *slot )
       else if( isKindOfSlot( slot, class_Size ) ) {
         return QVariant( toSize(slot) );
       }
-      else if( isKindOfSlot( slot, class_Color) ) {
+      else if( klass == class_Color ||
+        klass == SC_CLASS(Gradient) ||
+        klass == SC_CLASS(HiliteGradient) )
+      {
         return QVariant::fromValue<QColor>( toColor(slot) );
       }
       else if( isKindOfSlot( slot, class_QFont ) ) {
@@ -594,6 +627,9 @@ void QtCollider::Variant::setData( PyrSlot *slot )
       break;
     case tagObj :
     {
+      PyrObject *obj = slotRawObject(slot);
+      PyrClass *klass = obj->classptr;
+
       if( isKindOfSlot( slot, class_String ) ) {
         _type = QMetaType::QString;
         _ptr = new QString( toString(slot) );
@@ -610,7 +646,10 @@ void QtCollider::Variant::setData( PyrSlot *slot )
         _type = QMetaType::QSizeF;
         _ptr = new QSizeF( toSize(slot) );
       }
-      else if( isKindOfSlot( slot, class_Color) ) {
+      else if( klass == class_Color ||
+        klass == SC_CLASS(Gradient) ||
+        klass == SC_CLASS(HiliteGradient) )
+      {
         _type = QMetaType::QColor;
         _ptr = new QColor( toColor(slot) );
       }
