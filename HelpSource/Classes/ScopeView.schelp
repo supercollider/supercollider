@@ -1,0 +1,209 @@
+CLASS:: ScopeView
+redirect:: implClass
+summary:: A buffer plotting view.
+categories:: GUI>Views
+related:: Classes/Stethoscope, Classes/FreqScopeView, Classes/FreqScope
+
+DESCRIPTION::
+
+ScopeView is mainly intended to support the implementation of link::Classes/Stethoscope:: (an oscilloscope), link::Classes/FreqScopeView:: (a basic frequency spectrum plotting view) and link::Classes/FreqScope:: (a frequency spectrum analyzer tool).
+
+It is optimized to efficiently perform frequent plotting of the contents of a link::Classes/Buffer:: into which a link::Classes/ScopeOut:: UGen is writing. It will periodically poll the buffer for data and update the plot, as long as the ScopeOut UGen is writing into it; the buffer will not be plotted otherwise.
+
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+
+INSTANCEMETHODS::
+
+METHOD:: bufnum
+    The number of the Buffer to plot.
+
+    As soon as a valid buffer number is set and a link::Classes/ScopeOut:: UGen is writing into it, the view starts periodically plotting the buffer. If the ScopeOut UGen stops writing, or an invalid buffer number is set, the plotting will pause.
+
+    argument::
+        An integer.
+
+METHOD:: style
+    The plotting style:
+    list::
+    ## 0 = the channels are vertically spaced
+    ## 1 = the channels are overlayed
+    ## 2 = lissajou; the first two channels are used for 2D plotting (as streams of x and y coordinates).
+    ::
+
+    argument::
+        One of the above Integers.
+
+METHOD:: xZoom
+    The scaling factor on the horizontal axis.
+
+    argument::
+        A Float.
+
+METHOD:: yZoom
+    The scaling factor on the vertical axis.
+
+    argument::
+        A Float.
+
+METHOD:: x
+    The horizontal offset.
+    argument::
+        A Float.
+
+METHOD:: y
+    The vertical offset.
+    argument::
+        A Float.
+
+METHOD:: waveColors
+    The colors used to plot each of the channels.
+
+    argument::
+        An Array of Colors, one per channel.
+
+EXAMPLES::
+
+SUBSECTION:: A step-by-step example
+
+code::
+// execute these in succession
+(
+s = Server.internal;
+s.boot;
+)
+(
+f = Buffer.alloc(s,1024,2);
+b = Bus.audio(s,1);
+
+w=Window.new.front;
+c = ScopeView(w.view,w.view.bounds.insetAll(10,10,10,10));
+c.bufnum = f.bufnum;
+)
+(
+// listening to the bus, using ScopeOut to write it to the buffer
+a=SynthDef("monoscope", { arg bus, bufnum;
+                var z;
+                z = In.ar(bus,2);
+                // ScopeOut writes the audio to the buffer
+                ScopeOut.ar(z, bufnum);
+            }).play(
+                RootNode(s),
+                [\bus,b.index, \bufnum, f.bufnum] ,
+                \addToTail // make sure it goes after what you are scoping
+            );
+
+// making noise onto the buffer
+d=SynthDef("noise", { arg bus;
+                var z;
+                z = LFSaw.ar(SinOsc.kr(0.1).range(300,1000),[0,1]*pi) * 0.1;
+                Out.ar(bus, z);
+            }).play(
+                s,
+                [\bus,b.index]
+            );
+)
+
+c.style = 0 // vertically spaced
+c.style = 1 // overlapped
+c.style = 2 // x/y
+
+(
+//remember to free your stuff when finished
+a.free;
+d.free;
+f.free;
+b.free;
+w.close;
+)
+::
+
+SUBSECTION:: An interactive example with sound
+
+This explains all the options:
+
+code::
+(
+
+s = Server.internal;
+s.waitForBoot({ 
+
+    var func, sdef1, sdef2, syn1, syn2,startButton ;
+    f = Buffer.alloc(s,1024,2);
+    b = Bus.audio(s,1);
+
+    w=Window("Scope", Rect(150, SCWindow.screenBounds.height-500,790,400)).front;
+    c = ScopeView(w,Rect(10,10,380,380)); // this is SCScope
+    c.bufnum = f.bufnum;
+
+    v=CompositeView(w,Rect(400,10,380,380)).background_(Color.rand(0.7));
+    v.decorator = n = FlowLayout(v.bounds, margin: 0@0, gap: 5@5);
+
+    a = StaticText(v, Rect(20, 70, 90, 20)).string_(" xZoom = 1").background_(Color.rand);
+    m = Slider(v, Rect(20, 60, 285, 20)).background_(a.background).action_({func.value}).value_(0.5);
+    d = StaticText(v, Rect(20, 70, 90, 20)).string_(" yZoom = 1").background_(Color.rand);
+    g = Slider(v, Rect(20, 60, 285, 20)).background_(d.background).action_({func.value}).value_(0.5);
+
+    h = StaticText(v, Rect(20, 70, 90, 20)).string_(" x = 0").background_(Color.rand);
+    i = Slider(v, Rect(20, 60, 285, 20)).background_(h.background).action_({func.value}).value_(0.5);
+
+    Button(v, Rect(0,0,380, 20))
+        .states_([["waveColors = [ Color.rand, ... ]",Color.black,Color.rand]])
+        .action_({c.waveColors = [Color.rand,Color.rand]});
+
+    Button(v, Rect(0,0,380, 20))
+        .states_([[" background = Color.rand(0.1,0.3) ",Color.black,Color.rand]])
+        .action_({c.background = Color.rand(0.1,0.3) });
+
+    t= Button(v, Rect(0,0,380, 20))
+        .states_([["Current style is 0",Color.black,Color.rand],
+            ["Current style is 1",Color.black,Color.rand],
+            ["Current style is 2",Color.black,Color.rand]])
+        .action_({func.value});
+
+    func={
+        c.xZoom = ([0.25, 10, \exp, 1/8, 1].asSpec.map(m.value)); a.string = " xZoom = %".format(c.xZoom);
+        c.yZoom = ([0.25, 10, \exp, 1/8, 1].asSpec.map(g.value)); d.string = " yZoom = %".format(c.yZoom);
+        c.x = ([ -1024,1024, \linear, 1/8, 1].asSpec.map(i.value)); h.string = " x = %".format(c.x);
+//      c.y = ([-1,1, \linear, 1/16, 1].asSpec.map(k.value)); j.string = " y = %".format(c.y);
+        c.style=t.value
+        };
+
+    startButton = Button.new(v, Rect(0,0,380, 50))
+        .states_([["Start Sound",Color.black,Color.green],["Stop Sound",Color.black,Color.red]]).action_({});
+
+
+    startButton.action_{
+        (startButton.value==1).if{
+    syn1=SynthDef("test1", { arg bus, bufnum;
+                    var z;
+                    z = In.ar(bus,2);
+                    // ScopeOut writes the audio to the buffer
+                    ScopeOut.ar(z, bufnum);
+                    Out.ar(0,z);
+                }).play(
+                    RootNode(s),
+                    [\bus,b.index, \bufnum, f.bufnum] ,
+                    \addToTail // make sure it goes after what you are scoping
+                );
+
+    // making noise onto the buffer
+    syn2=SynthDef("test2", { arg bus;
+                    var z;
+                    z = PMOsc.ar([300,250],*SinOsc.ar([0.027,0.017])*pi) * 0.1;
+                    Out.ar(bus, z);
+                }).play(s,[\bus,b.index]);
+
+
+
+        }{syn1.free; syn2.free};
+
+    };
+    w.onClose={syn1.free; syn2.free; b.free; f.free};
+    CmdPeriod.doOnce({w.close});
+})
+)
+::
