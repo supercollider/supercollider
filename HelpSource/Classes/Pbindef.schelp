@@ -6,7 +6,9 @@ related:: Classes/Pdef, Classes/Pbind
 description::
 Pbindef keeps a reference to a Pbind in which single keys can be replaced, combining link::Classes/PbindProxy:: and link::Classes/Pdef::. It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.
 
-the difference to Pdef is that it allows to incrementally change the elementary patterns (patternpairs) of a Pbind - also of an already existing Pbind inside a Pdef.
+the difference to Pdef is that it allows to incrementally change the elementary patterns (patternpairs) of a Pbind - also of an already existing Pbind inside a Pdef. 
+
+Pbindef and Pdef use the same global collection, while Pdef and Pdefn use separate ones.
 
 Pbindef inherits most methods from link::Classes/Pdef::. Overview: link::Overviews/JITLib::
 
