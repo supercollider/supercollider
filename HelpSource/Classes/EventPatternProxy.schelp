@@ -23,7 +23,7 @@ method::source
 set the source (a pattern). If a quantization is given, schedule this change to the next beat ( strong::pattern_::(..) is equivalent)
 
 method::clear
-set the source to nil
+set the source to nil and stop playing
 
 method::quant
 get or set the quantization value. can be an array [quant, phase, offset, outset]
