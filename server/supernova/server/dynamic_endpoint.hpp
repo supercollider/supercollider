@@ -131,16 +131,13 @@ public:
     boost::asio::ip::address address() const
     {
         using namespace std; // For memcpy.
-        if (type_.family_ == AF_INET)
-        {
+        if (type_.family_ == AF_INET) {
             return boost::asio::ip::address_v4(
                 boost::asio::detail::socket_ops::network_to_host_long(
                     data_.v4.sin_addr.s_addr));
-        }
-        else
-        {
+        } else {
             boost::asio::ip::address_v6::bytes_type bytes;
-            memcpy(bytes.elems, data_.v6.sin6_addr.s6_addr, 16);
+            memcpy(bytes.data(), data_.v6.sin6_addr.s6_addr, 16);
             return boost::asio::ip::address_v6(bytes, data_.v6.sin6_scope_id);
         }
     }
