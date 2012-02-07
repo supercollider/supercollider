@@ -1,0 +1,339 @@
+CLASS:: TabletView
+redirect:: implClass
+summary:: A view responding to Wacom tablet
+categories:: GUI>Views
+related:: Classes/TabletSlider2D
+
+DESCRIPTION::
+
+An otherwise featureless view that receives extended wacom tablet data. It can also be used with a normal mouse but with less resolution.
+
+note::
+TabletView is not implemented in Qt GUI, and is only available in other GUI kits on Mac OS X.
+
+To use it in SwingOSC, install the JNI library:
+
+code:: $ cp JNITablet/build/libJNITablet.jnilib /Library/Java/Extensions/ ::
+
+or make a symbolic link:
+
+code:: $ ln -s <absolutePathToSwingOSC>/JNITablet/build/libJNITablet.jnilib /Library/Java/Extensions/ ::
+::
+
+strong::Drag-and-drop:: returns and accepts a Point, describing the current x and y value.
+
+The default link::Classes/View#-action#action:: is triggered when dragging the mouse inside the view.
+
+All the strong::mouse actions:: ( link::Classes/View#-action#action::, link::Classes/View#-mouseDownAction#mouseDownAction::, and link::Classes/View#-mouseUpAction#mouseUpAction:: ) receive the following arguments:
+
+table::
+
+## view || the view
+
+## x || subpixel location in view
+
+## y || subpixel location in view
+
+## pressure || 0..1
+
+## tiltX || -1 (max. left) ... +1 (max. right)
+
+## tiltY || -1 (max. down) ... +1 (max. up)
+
+## deviceID || All tablet-pointer events generated in the period between the device entering and leaving tablet proximity have the same device ID. Therefore, when working with multiple tablets / mice, you can match actions by looking at the deviceID.
+
+## buttonNumber || 0 left, 1 right, 2 middle wheel click. see also buttonMask below.
+
+## clickCount || double click, triple click ... most relevant for the mouseDown, but still valid for the dragged and mouseUp
+
+## absoluteZ || the wheel on the side of some mice
+
+## rotation || in degrees. Used for example on the "4d mouse", and the "art marker". Note: on Mac OS X 10.4.11 using an Intuos3 tablet with Art Marker, the returned value must be multiplied by 1024 to actually obtain degrees (bug?).
+
+::
+
+These additional arguments are only delivered in SwingOSC:
+
+table::
+
+## absoluteX || the absolute horizontal pen position on tablet (in tablet-native high-resolution)
+
+## absoluteY || the absolute vertical pen position on tablet (in tablet-native high-resolution)
+
+## buttonMask || a flag mask of all buttons on the pen / tablet. you can extract each button's state using a bitAnd: buttonMask.bitAnd( 1 << n ) where n = 0, 1, 2, ...
+
+## tanPressure || Tangential pressure is also known as barrel pressure.
+
+::
+
+note::
+If using a mouse (even a wacom) rather than a pen, the x and y will be integer pixel values, rather than subpixel floats.  Wacom stylus devices have higher resolution than the screen.  Pressure will be 1 for mouse down, 0 for mouse up.
+::
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+INSTANCEMETHODS::
+
+METHOD:: proximityAction
+    note:: Only in SwingOSC GUI ::
+
+    The action will be called with the following arguments:
+
+table::
+
+## view || true to indicate that a pointing device is entering the proximity of its tablet and false when it is leaving it.
+
+## entering || true to indicate that a pointing device is entering the proximity of its tablet and false when it is leaving it.
+
+## deviceID || All tablet-pointer events generated in the period between the device entering and leaving tablet proximity have the same device ID. Therefore, when working with multiple tablets / mice, you can match actions by looking at the deviceID.
+
+## pointingDeviceTypes ||
+0 NSUnknownPointingDevice
+1 NSPenPointingDevice
+2 NSCursorPointingDevice
+3 NSEraserPointingDevice
+
+## systemTabletID || If multiple tablets are connected to the system, the system-tablet ID is incremented for each subsequent one. If there is only one tablet device, its system-tablet ID is zero.
+
+## pointingDeviceID || This index is significant for multimode (or Dual Tracking) tablets that support multiple concurrent pointing devices; the index is incremented for each pointing device that comes into proximity. Otherwise, zero is always returned.
+
+## tabletID || Returns the USB model identifier of the tablet device associated with the receiver.
+
+## uniqueID || Also known as tool ID, this is a unique number recorded in the chip inside every pointing device. The unique ID makes it possible to assign a specific pointing device to a specific tablet.
+::
+
+
+
+
+EXAMPLES::
+
+SUBSECTION:: Basic use
+
+code::
+(
+w = Window.new;
+t = TabletView(w,Rect(40,40,300,300));
+t.background = Color.white;
+w.acceptsMouseOver = true;
+w.front;
+
+f = { arg what, x, y, pressure, tiltx, tilty, deviceID, buttonNumber, clickCount,
+    absoluteZ, rotation, absoluteX, absoluteY, buttonMask, tanPressure;
+    ("%: x %  y %  press %  tiltx %  tilty %  clicks %  absX %  absY %  absZ %  rota %  mask %\n")
+    .postf(
+        what, x.round( 0.01 ), y.round( 0.01 ), pressure.round( 0.01 ),
+        tiltx.round( 0.01 ), tilty.round( 0.01 ), clickCount, absoluteX, absoluteY, absoluteZ,
+        rotation.round( 0.01 ), buttonMask
+    );
+};
+
+t.mouseDownAction   = { arg view ... params; f.value( "down", *params )};
+t.action            = { arg view ... params; f.value( "drag", *params )};
+t.mouseUpAction     = { arg view ... params; f.value( "up  ", *params )};
+t.mouseOverAction   = { arg view ... params; f.value( "over", *params )};
+)
+::
+
+SUBSECTION:: A sound example
+
+code::
+s.boot
+
+(
+SynthDef("help-2DTabletSlider", {
+    arg freq = 440, int1 = 5, int2 = -5, ffreqInterval = 0, rq = 0.4, gate = 0.0;
+    var p,c,d,f;
+    c=LFNoise1.kr(0.1,0.45,0.55);
+    d=LFNoise1.kr(0.1,0.45,0.55);
+    f=LFNoise1.kr(0.1,2);
+    p=Pulse.ar([ freq * int1.midiratio + f , freq, freq * int2.midiratio - f],
+        [c,d,c], 0.2);
+    Out.ar(0,
+        RLPF.ar(Mix.ar(p),freq * ffreqInterval.midiratio,rq)
+            * EnvGen.kr(Env.adsr, gate, gate)
+    )
+},[0.1,0.1,0.1,0.1,0.1,nil]).send(s);
+)
+
+(
+var w, v,freq,int,synth;
+synth = Synth("help-2DTabletSlider");
+w = Window.new.front;
+
+freq = ControlSpec(100,3000,\exp);
+int = ControlSpec(-48,48,\linear,1);
+
+v = TabletView(w,Rect(10,10,380,380));
+v.background = Color.blue.alpha_(0.2);
+v.action = { arg view,x,y,pressure,tiltx,tilty;
+    synth.set(
+        \int1, int.map(x),
+        \int2, int.map(y),
+        \ffreqInterval, int.map(pressure),
+        \gate, pressure.postln
+    );
+};
+
+v.mouseDownAction = { arg view,x,y,pressure;
+    synth.set(
+        \freq , rrand(30,80).midicps,
+        \gate, pressure.postln
+    )
+};
+v.mouseUpAction = { arg view,x,y,pressure;
+    synth.set( \gate, 0.postln )
+};
+)
+::
+
+SUBSECTION:: Detecting proximity
+
+note:: Only in SwingOSC GUI ::
+
+code::
+(
+w = JSCWindow.new;
+t = JSCTabletView(w,Rect(40,40,300,300));
+t.background = Color.white;
+w.acceptsMouseOver = true;
+w.front;
+
+t.proximityAction = { arg view, entering, deviceID, pointingDeviceType,
+    systemTabletID, pointingDeviceID, tabletID, uniqueID;
+
+    var what = if( entering, "enter", "exit " );
+    ("%: deviceID %  pointingDeviceType %  systemTabletID % pointingDeviceID %  tabletID %  uniqueID %\n")
+    .postf(
+        what, deviceID, pointingDeviceType, systemTabletID,
+        pointingDeviceID, tabletID, uniqueID
+    );
+};
+)
+::
+
+SUBSECTION:: JSCTabletView is a also a user view
+
+note:: Only in SwingOSC GUI ::
+
+code::
+(
+var x = 150, y = 150, pressure = 0, tiltx = 0, tilty = 0, rota = 0, colr = Color.white;
+
+w = JSCWindow.new;
+t = JSCTabletView( w,Rect( 40, 40, 300, 300 ));
+t.background = Color.white;
+w.front;
+
+f = { arg view, argX, argY, argPressure, argTiltX, argTiltY, deviceID, buttonNumber,
+            clickCount, absZ, argRota;
+    x = argX; y = argY; pressure = argPressure;
+    tiltx = argTiltX; tilty = argTiltY;
+    rota    = argRota * 1024; // * 1024 for Art Marker...
+    view.refresh;
+};
+t.drawFunc = { arg view;
+    JPen.fillColor = colr;
+    JPen.fillRect( view.bounds.moveTo( 0, 0 ));
+    JPen.translate( x, y );
+    JPen.width = pressure * 10 + 0.5;
+    JPen.rotate( rota * pi / 180 );
+    JPen.skew( tiltx, tilty );
+    JPen.strokeOval( Rect( -100, -100, 200, 200 ));
+    JPen.line( -100 @ 0, 100 @ 0 );
+    JPen.line( 0 @ -100, 0 @ 100 );
+    JPen.stroke;
+};
+
+t.mouseDownAction = f;
+t.action = f;
+t.mouseUpAction = f;
+t.proximityAction = { arg view, entering, deviceID, pointingDeviceType;
+    colr = if( entering, { Color.hsv( pointingDeviceType / 4, 0.5, 1.0 )}, Color.white );
+    view.refresh;
+};
+)
+::
+
+Here's a variation: make the above example respond only to a particular pen tools. For this, you need a pen that fires proximity actions and you need to know the pen's uniqueID (see link::#-proximityAction::). For example, my Art Marker has ID 127926421:
+
+code::
+(
+var filterUniqueID = 127926421; // put your own ID here
+var filterDeviceID = -1;
+var fProx, fAction;
+fProx = t.proximityAction;
+t.proximityAction = { arg view, entering, deviceID, pointingDeviceType,
+                        systemTabletID, pointingDeviceID, tabletID, uniqueID;
+    if( uniqueID == filterUniqueID, {
+        filterDeviceID = deviceID; // now t.action only reacts to events from this deviceID
+        fProx.value( view, entering, deviceID, pointingDeviceType );
+    });
+};
+fAction = t.action;
+f = { arg view, x, y, pressure, tiltX, tiltY, deviceID, buttonNumber,
+            clickCount, absZ, rota;
+    if( deviceID == filterDeviceID, {
+        fAction.value( view, x, y, pressure, tiltX, tiltY, deviceID, buttonNumber,
+                clickCount, absZ, rota );
+    });
+};
+t.mouseDownAction = f;
+t.action = f;
+t.mouseUpAction = f;
+)
+::
+
+SUBSECTION:: An example using 'curcial' library
+
+code::
+(
+Instr([\minimoog,\loose],{ arg freq=440,int1=5,int2 = -5,
+            ffreqInterval=0,rq=0.4,gate=0.0;
+    var p,c,d,f;
+    c=LFNoise1.kr(0.1,0.45,0.55);
+    d=LFNoise1.kr(0.1,0.45,0.55);
+    f=LFNoise1.kr(0.1,2);
+    p=Pulse.ar([ freq * int1.midiratio + f , freq, freq * int2.midiratio - f],
+            [c,d,c],0.2);
+
+    RLPF.ar(Mix.ar(p),freq * ffreqInterval.midiratio,rq)
+        * EnvGen.kr(Env.adsr, gate, Latch.kr(gate,gate))
+
+},#[
+    nil,
+    [[-48,48,\linear,1]],
+    [[-48,48,\linear,1]],
+    [[-48,48,\linear,1]]
+]);
+
+p = Patch.new([ 'minimoog', 'loose' ],[
+    nil,nil,nil,nil,nil,
+    KrNumberEditor(0.0,\gate) // override the default control
+]);
+
+Sheet({ arg f;
+    var v,freq,int;
+    freq = ControlSpec(100,3000,\exp);
+    int = [-48,48,\linear,1].asSpec;
+
+    p.topGui(f);
+    v = TabletView(f,Rect(0,0,200,200));
+    v.background = Color.white;
+    v.action = { arg view,x,y,pressure,tiltx,tilty;
+        p.args.at(1).value_( int.map( x / 200 ) ).changed;
+        p.args.at(2).value_( int.map( y / 200 ) ).changed;
+        p.args.at(3).value_( int.map( pressure ) ).changed;
+    };
+    v.mouseDownAction = { arg view,x,y,pressure;
+        p.args.at(0).value_( rrand(30,80).midicps ).changed;
+        p.args.at(5).value_( pressure ).changed;
+    };
+    v.mouseUpAction = { arg view,x,y,pressure;
+        p.args.at(5).value_( 0.0 ).changed;
+    };
+});
+
+)
+::
