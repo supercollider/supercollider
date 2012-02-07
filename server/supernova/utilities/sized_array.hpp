@@ -124,7 +124,10 @@ public:
 #ifdef BOOST_HAS_RVALUE_REFS
     explicit sized_array(sized_array && arg)
     {
-        operator=(arg);
+        data_ = arg.data_;
+        size_ = arg.size();
+        arg.data_ = 0;
+        arg.size_ = 0;
     }
 
     /** move assignment */
