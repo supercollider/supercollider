@@ -6,6 +6,8 @@ related:: Classes/Pdef
 description::
 Pdefn provides an interface to its superclass link::Classes/PatternProxy::, keeping a reference to a stream that can be replaced while playing. One pattern may be used in many streams in different places. A change in the pattern definition propagates through all streams.
 
+Pdef and Pdefn use separate global collections.
+
 code::
 Pdefn(key)	//returns the instance
 Pdefn(key, pat)	//defines the pattern and returns the instance, like Pdef, Tdef and Ndef.

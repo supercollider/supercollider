@@ -6,6 +6,8 @@ related:: Classes/Pdefn, Classes/PdefGui
 description::
 Pdef is a class that provides an interface to its superclass link::Classes/EventPatternProxy::, keeping a reference to a stream that can be replaced while playing. One pattern may be used in many streams in different places. A change in the pattern definition propagates through all streams.
 
+Pdef and Pdefn use separate global collections.
+
 code::
 Pdef(key)	//returns the instance
 Pdef(key, pat)	//stores the pattern and returns the instance, like Tdef and Ndef.
