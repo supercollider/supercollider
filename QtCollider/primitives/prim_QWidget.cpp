@@ -138,8 +138,9 @@ QC_LANG_PRIMITIVE( QWidget_StartDrag, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g ) 
 
   mime->setData( "application/supercollider", QByteArray() );
 
-  if( isKindOfSlot( data, class_Color ) )
-    mime->setColorData( QVariant(Slot::toColor(data)) );
+  QColor color( Slot::toColor(data) );
+  if( color.isValid() )
+    mime->setColorData( QVariant(color) );
 
   if( !str.isEmpty() )
     mime->setText( str );
