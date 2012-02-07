@@ -112,6 +112,7 @@ link            V                            x        x
 anchor          V                            x        x
 emphasis        V                            x        x
 teletype        V                            x        x
+math            V                            x        x
 strong          V                            x        x
 soft            V                            x        x
 image           V                            x        x
@@ -365,6 +366,22 @@ sensationally morbid or disgusting acts"
 The result looks like this:
 Hello I'm a geek footnote::
 According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs sensationally morbid or disgusting acts"
+::
+
+subsection:: Mathematics
+Mathematics can be entered in TeX syntax using the code::math\:::: tag. Example:
+code::
+This is inline math::2\pi:: and below is block display math:
+math::
+1\over\sqrt{x^\pi}
+\::
+::
+
+Renders:
+
+This is inline math::2\pi:: and below is block display math:
+math::
+1\over\sqrt{x^\pi}
 ::
 
 subsection:: Document types
