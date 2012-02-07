@@ -184,7 +184,7 @@ SCDocParser {
                 'classtree::',          simpleTag,
 
                 'code::',               modalRangeTag,
-                'formula::',            modalRangeTag,
+                'math::',               modalRangeTag,
                 'emphasis::',           modalRangeTag,
                 'teletype::',           modalRangeTag,
                 'strong::',             modalRangeTag,
