@@ -212,7 +212,7 @@ public:
         return size_type(-1) / sizeof(T);
     }
 
-    void construct(pointer p, const T& val)
+    void construct(pointer p, const T& val = T())
     {
         ::new(p) T(val);
     }
