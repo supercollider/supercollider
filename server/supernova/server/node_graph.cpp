@@ -38,8 +38,7 @@ void node_graph::add_node(server_node * n, node_position_constraint const & cons
 
     assert(inserted.second == true); /* node id already present (should be checked earlier)! */
 
-    switch (position)
-    {
+    switch (position) {
     case before:
     case after: {
         abstract_group * parent = node->parent_;
