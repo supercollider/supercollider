@@ -23,12 +23,16 @@ QStethoscope2 {
 
   *new {
     arg server, numChannels = 2, index = 0, bufsize = 4096,
-        cycle = 1024, rate = \audio, view;
+        zoom = 1.0, rate = \audio, view, bufnum;
 
     var bus = Bus(rate, index, numChannels, server);
     if(server.isNil) {server = Server.default};
 
-    ^super.new.initQStethoscope( server, view, bus, bufsize, cycle );
+    if (bufnum.notNil)
+      { ("QStethoscope2: the 'bufnum' argument ignored."
+        + "A shared-memory scope buffer is always allocated internally.").warn };
+
+    ^super.new.initQStethoscope( server, view, bus, bufsize, 1024 * zoom.asFloat.reciprocal );
   }
 
   initQStethoscope { arg server_, parent, bus_, bufsize_, cycle_;
@@ -50,7 +54,7 @@ QStethoscope2 {
     cycleSpec = ControlSpec( 64, maxBufSize, \exponential );
     yZoomSpec = ControlSpec( 0.125, 16, \exponential );
     cycle = cycleSpec.constrain(cycle_);
-    yZoom = yZoomSpec.unmap(1.0);
+    yZoom = 1.0;
 
     smallSize = Size(250,250);
     largeSize = Size(500,500);
@@ -78,7 +82,7 @@ QStethoscope2 {
       scopeView.canFocus = true;
 
       cycleSlider = QSlider().orientation_(\horizontal).value_(cycleSpec.unmap(cycle));
-      yZoomSlider = QSlider().orientation_(\vertical).value_(yZoom);
+      yZoomSlider = QSlider().orientation_(\vertical).value_(yZoomSpec.unmap(yZoom));
 
       rateMenu = QPopUpMenu().items_(["Audio","Control"]).enabled_(singleBus);
       idxNumBox = QNumberBox().decimals_(0).step_(1).scroll_step_(1).enabled_(singleBus);
@@ -120,7 +124,7 @@ QStethoscope2 {
       // ACTIONS
 
       cycleSlider.action = { |me| setCycle.value(cycleSpec.map(me.value)) };
-      yZoomSlider.action = { |me| setYZoom.value(me.value) };
+      yZoomSlider.action = { |me| setYZoom.value(yZoomSpec.map(me.value)) };
       idxNumBox.action = { |me| setIndex.value(me.value) };
       chNumBox.action = { |me| setNumChannels.value(me.value) };
       rateMenu.action = { |me| setRate.value(me.value) };
@@ -141,7 +145,7 @@ QStethoscope2 {
 
     setYZoom = { arg val;
       yZoom = val;
-      scopeView.yZoom = yZoomSpec.map(val);
+      scopeView.yZoom = val;
     };
 
     // NOTE: assuming a single Bus
@@ -289,7 +293,7 @@ QStethoscope2 {
     if(window.notNil) { win = window; window = nil; { win.close }.defer; };
   }
 
-  setProperties { arg numChannels, index, bufsize=4096, zoom, rate;
+  setProperties { arg numChannels, index, bufsize, zoom, rate;
       var new_bus;
       var isRunning = running;
 
@@ -315,22 +319,20 @@ QStethoscope2 {
         };
       };
       if(bufsize.notNil) { maxBufSize = max(bufsize, 128) };
-      if(zoom.notNil) { yZoom = yZoomSpec.constrain(zoom) };
 
       // set other vars related to args
 
       busSpec = if(bus.rate === \audio) {aBusSpec} {cBusSpec};
       cycleSpec = ControlSpec( 64, maxBufSize, \exponential );
-      cycle = cycleSpec.constrain(cycle);
+      if(zoom.notNil)
+        { cycle = cycleSpec.constrain( 1024 * zoom.asFloat.reciprocal ) };
 
       // update GUI
 
-      yZoomSlider.value = yZoom;
       cycleSlider.value = cycleSpec.unmap(cycle);
       rateMenu.value_(if(bus.rate === \audio){0}{1}).enabled_(true);
       idxNumBox.clipLo_(busSpec.minval).clipHi_(busSpec.maxval).value_(bus.index).enabled_(true);
       chNumBox.value_(bus.numChannels).enabled_(true);
-      scopeView.yZoom = yZoomSpec.map(yZoom);
 
       if (isRunning) {this.run};
   }
@@ -415,13 +417,17 @@ QStethoscope2 {
     cycleSlider.value = cycleSpec.unmap(val);
   }
 
+  xZoom_ { arg val; this.cycle = 1024 * val.asFloat.reciprocal }
+  xZoom { ^(1024 * cycle.reciprocal) }
+
+  zoom { ^this.xZoom }
+  zoom_ { arg val; this.xZoom_(val ? 1) }
+
   // [0, 1] -> [0.125, 16] y scaling factor
   yZoom_ { arg val;
-    setYZoom.value(val);
-    yZoomSlider.value = val;
+    setYZoom.value( yZoomSpec.constrain(val) );
+    yZoomSlider.value = yZoomSpec.unmap(val);
   }
-
-  zoom_ { arg val; this.xZoom_(val ? 1) }
 
   style_ { arg val;
     setStyle.value(val);
