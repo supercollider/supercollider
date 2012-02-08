@@ -49,7 +49,8 @@ x = {|freq=440, amp=0.6| MoogFF.ar(PinkNoise.ar(amp), freq).dup}.play;
 (
 p = Pbind(
 	\type, \set,	// This tells it we'll be setting parameters of an existing node...
-	\id, x.nodeID,	// ...and this tells it whose parameters we'll be setting
+	\id, x.nodeID,	// ...this tells it whose parameters we'll be setting
+	\args, #[\freq, \amp],  // and this tells it which parameters to set
 	\freq, Pwhite(100, 1000),
 	\dur, 0.2,
 	\amp, Pseq((1,0.99 .. 0.1), inf)
@@ -59,6 +60,8 @@ p = Pbind(
 p.stop
 x.free
 ::
+
+For more details on the code::\set:: event type, see its description in Chapter 8, link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters##Event Types and Parameters:: of the Practical Guide To Patterns.
 
 subsection::SynthDef variant support
 
