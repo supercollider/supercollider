@@ -2525,6 +2525,7 @@ void compileIfNilMsg(PyrCallNodeBase2* node, bool flag)
 	PyrParseNode* arg1 = node->mArglist;
 
 	if (numArgs < 2) {
+		COMPILENODE(arg1, &dummy, false);
 		compileTail();
 		compileOpcode(opSendSpecialMsg, numArgs);
 		compileByte(opmIf);
