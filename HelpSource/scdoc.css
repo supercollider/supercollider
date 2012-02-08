@@ -297,18 +297,6 @@ pre.code {
 
 }
 
-code.formula, pre.formula {
-    font-family: monospace;
-    font-size: 10pt;
-    font-weight: normal;
-    color: #333;
-}
-
-pre.formula {
-    padding: 0.5em;
-    text-align: center;
-}
-
 .image {
     text-align: center;
     margin: 2em;

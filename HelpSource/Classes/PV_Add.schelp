@@ -7,7 +7,7 @@ Description::
 
 Complex addition:
 
-formula::
+code::
 
 RealA + RealB, ImagA + ImagB
 

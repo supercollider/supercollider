@@ -7,7 +7,7 @@ Description::
 
 Complex Multiplication:
 
-formula::
+code::
 
 (RealA * RealB) - (ImagA * ImagB),
 (ImagA * RealB) + (RealA * ImagB)

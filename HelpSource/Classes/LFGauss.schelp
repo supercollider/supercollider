@@ -6,7 +6,7 @@ description::
 A non-band-limited gaussian function oscillator. Output ranges from strong::minval:: to 1.
 
 LFGauss implements the formula:
-formula::
+code::
 f(x) = exp(squared(x - iphase) / (-2.0 * squared(width)))
 ::
 where x is to vary in the range -1 to 1 over the period dur. strong::minval:: is the initial value at -1.
