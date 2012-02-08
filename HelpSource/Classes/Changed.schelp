@@ -16,7 +16,7 @@ threshold
 
 discussion::
 Implements the formula:
-formula::
+code::
 out(i) = abs(in(i) - in(i-1)) > thresh
 ::
 

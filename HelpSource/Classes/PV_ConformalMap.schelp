@@ -7,7 +7,7 @@ Description::
 
 Applies the conformal mapping
 
-formula::
+code::
 
 z → (z - a) / (1 - za*)
 
@@ -20,13 +20,13 @@ the UGen.
 Makes a transformation of the complex plane so the output is full of
 phase vocoder artifacts but may be musically fun. Usually keep
 
-formula::
+code::
 |a| < 1
 ::
 but
 you can of course try bigger values to make it really noisy.
 
-formula::
+code::
 a = 0
 ::
 should

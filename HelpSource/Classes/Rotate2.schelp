@@ -11,11 +11,11 @@ an axis. Rotate2 does an equal power rotation so it also works well on
 stereo sounds. It takes two audio inputs (x, y) and an angle control
 (pos). It outputs two channels (x, y). It computes this:
 
-formula::
+code::
 xout = cos(angle) * xin + sin(angle) * yin;
 ::
 
-formula::
+code::
 yout = cos(angle) * yin - sin(angle) * xin;
 ::
 

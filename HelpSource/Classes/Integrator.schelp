@@ -7,7 +7,7 @@ Description::
 
 Integrates an input signal with a leak. The formula implemented is:
 
-formula::
+code::
 out(0) = in(0) + (coef * out(-1))
 ::
 

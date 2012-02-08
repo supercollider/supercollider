@@ -10,7 +10,7 @@ When  code::in::  crosses to greater than
 code::hi:: , output 1, then when signal crosses lower
 than  code::lo::  output 0. Uses the formula:
 
-formula::
+code::
 
 if (out == 1, { if (in < lo, { out = 0.0 }) }, { if (in > hi, { out = 1.0 }) }).
 

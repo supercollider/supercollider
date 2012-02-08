@@ -107,7 +107,7 @@ argument::a
 Parameter for Lehmer random number generator perturbed by
 Xenakis as in
 
-formula::
+code::
 ((old*a)+c)%1.0
 ::
 

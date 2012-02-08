@@ -361,7 +361,7 @@ method:: hypotApx
 Hypotenuse approximation. Returns an approximation of the square root of the sum of the squares of x and y.
 discussion::
 The formula used is :
-formula::
+code::
 abs(x) + abs(y) - ((sqrt(2) - 1) * min(abs(x), abs(y)))
 ::
 hypotApx is used to implement Complex method magnitudeApx.

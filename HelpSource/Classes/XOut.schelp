@@ -10,7 +10,7 @@ Send signal to a bus, crossfading with previous contents.
 code::xfade::  is a level for the crossfade between what
 is on the bus and what you are sending. The algorithm is equivalent to this:
 
-formula::
+code::
 bus_signal = (input_signal * xfade) + (bus_signal * (1 - xfade));
 ::
 
