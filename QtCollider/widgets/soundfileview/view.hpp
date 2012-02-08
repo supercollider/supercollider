@@ -22,8 +22,8 @@
 #ifndef QC_SOUND_FILE_VIEW_H
 #define QC_SOUND_FILE_VIEW_H
 
-#include "../Common.h"
-#include "../QcHelper.h"
+#include "../../Common.h"
+#include "../../QcHelper.h"
 
 #include <sndfile.h>
 
@@ -48,33 +48,6 @@ struct SoundCache {
   short *max;
   float *sum;
   float *sum2;
-};
-
-class QcSoundFileView : public QWidget
-{
-  friend class QcWaveform;
-
-  Q_OBJECT
-
-
-public:
-  QcSoundFileView();
-  Q_INVOKABLE void load( const QString& filename );
-
-private Q_SLOTS:
-  void onPosSliderChanged( int value );
-  void onZoomSliderChanged( int value );
-private Q_SLOTS:
-  void updateTimeScrollBar();
-  void updateZoomScrollBar();
-
-private:
-  QcWaveform *waveform;
-  QVBoxLayout *layout;
-  QScrollBar *timeScrollBar;
-  QSlider *zoomScrollBar;
-
-  double hScrollMultiplier;
 };
 
 class QcWaveform : public QWidget, public QcHelper {
