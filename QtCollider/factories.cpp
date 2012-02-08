@@ -48,7 +48,6 @@ void loadFactories () {
   QC_ADD_FACTORY( QcScrollArea );
   QC_ADD_FACTORY( QcSlider );
   QC_ADD_FACTORY( QcSlider2D );
-  QC_ADD_FACTORY( QcSoundFileView );
   QC_ADD_FACTORY( QcWaveform );
   QC_ADD_FACTORY( QcTextEdit );
   QC_ADD_FACTORY( QcTreeWidget );
