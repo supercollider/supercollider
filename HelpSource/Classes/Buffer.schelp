@@ -125,7 +125,7 @@ code::
 // read a soundfile
 s.boot;
 p = Help.dir +/+ "sounds/a11wlk01.wav";
-b = Buffer.read(p);
+b = Buffer.read(s, p);
 
 // now play it
 (
