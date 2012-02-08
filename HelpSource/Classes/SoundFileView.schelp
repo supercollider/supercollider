@@ -129,8 +129,40 @@ METHOD:: readProgress
 
      The reading progress, updated periodically when reading a soundfile using link::#-readWithTask:: or link::#-readFileWithTask::.
 
+METHOD:: data
 
-SUBSECTION:: Display
+    Gets the display data, or sets custom data instead of a sound file.
+
+    note:: In Qt and SwingOSC it is not possible to get the data. ::
+
+    In Cocoa and SwingOSC, setting this property is equivalent to link::#-setData:: with number of channels and sample rate of the current link::#-soundfile:: (if any), while in Qt it always assumes 1 channel and sample rate of 44100 Hz. Use link::#-setData:: instead if you want more control.
+
+    argument::
+        An Array of Floats; multiple channel data should be interleaved.
+
+METHOD:: setData
+
+    Sets custom display data instead of a sound file, interpreting it using specified number of channels and sample rate.
+
+    note:: In Qt GUI, the 'block' argument has no effect; the display resolution is infinite. ::
+
+    argument:: arr
+        An Array of Floats; multiple channel data should be interleaved.
+
+    argument:: block
+        The block size - visual resolution of the display. An Integer of the form 2**n.
+
+    argument:: startframe
+        An integer.
+
+    argument:: channels
+        An integer.
+
+    argument:: samplerate
+        An integer.
+
+
+SUBSECTION:: Navigation
 
 METHOD:: viewFrames
 
@@ -347,7 +379,7 @@ METHOD:: readSelectionWithTask
     Read the data within the current selection asynchronously (in the background), showing the progress in a separate window.
 
 
-SUBSECTION:: Appearance
+SUBSECTION:: Display
 
 METHOD:: gridOn
 
@@ -405,6 +437,9 @@ METHOD:: timeCursorColor
     argument::
         A Color.
 
+METHOD:: elasticMode
+
+    ???
 
 SUBSECTION:: Actions
 
@@ -416,40 +451,6 @@ METHOD:: metaAction
 
     The object to be evaluated on Ctrl + click.
 
-
-SUBSECTION:: Internal Methods
-
-    The following methods are usually not used directly.
-
-METHOD:: data
-
-    The display data.
-
-    argument::
-        An Array.
-
-METHOD:: setData
-
-    Sets the display data.
-
-    argument:: arr
-        The data, an instance of Array.
-
-    argument:: block
-        The block size - visual resolution of the display. An Integer of the form 2**n.
-
-    argument:: startframe
-        An integer.
-
-    argument:: channels
-        An integer.
-
-    argument:: samplerate
-        An integer. Defaults to 44100.
-
-METHOD:: elasticMode
-
-    ???
 
 EXAMPLES::
 
