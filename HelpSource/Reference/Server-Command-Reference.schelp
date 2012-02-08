@@ -898,8 +898,8 @@ table::
     ::
 ::
 Fills a buffer with a series of chebyshev polynomials, which can be defined as:
-formula::
-cheby(n) = amplitude  * cos(n * acos(x))
+code::
+cheby(n) = amplitude * cos(n * acos(x))
 ::
 The first float value specifies the amplitude for n = 1, the second float value specifies the amplitude for n = 2, and so on. To eliminate a DC offset when used as a waveshaper, the wavetable is offset so that the center value is zero.
 ::

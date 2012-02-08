@@ -8,7 +8,7 @@ Description::
 
 A two pole resonant filter with zeroes at
 
-formula::
+code::
 z = ±1
 ::
 

@@ -8,7 +8,7 @@ Description::
 
 Chorusing wavetable lookup oscillator. Produces sum of two signals at
 
-formula::
+code::
 (freq ± (beats / 2)).
 ::
 

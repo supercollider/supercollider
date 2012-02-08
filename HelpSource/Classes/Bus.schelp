@@ -14,7 +14,7 @@ Bus objects should not be created or modified within a link::Classes/SynthDef::.
 
 Note::
 The lowest code::n:: bus indices are reserved for hardware output and input, where
-formula::
+code::
 n = server.options.numOutputBusChannels + server.options.numInputBusChannels
 ::
 definitionlist::
