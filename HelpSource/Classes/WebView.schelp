@@ -1,0 +1,115 @@
+class:: WebView
+redirect:: implClass
+summary:: Web page display and browser
+categories:: GUI>Views
+
+DESCRIPTION::
+
+WebView displays web pages and provides all the standard browsing functionality.
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+METHOD:: clearCache
+
+  Clears all the memory caches, so that link::#-reload#reloading:: a page is ensured to reload all the resources.
+
+
+INSTANCEMETHODS::
+
+
+SUBSECTION:: Navigation
+
+METHOD:: url
+
+    Gets the current URL, or navigates to a new one.
+
+METHOD:: reload
+
+    Reloads the current page.
+
+METHOD:: back
+
+    Navigates to the previous page in history.
+
+METHOD:: forward
+
+    Navigates to the next page in history.
+
+METHOD:: findText
+
+    Finds and selects the next instance of given text on the current page. When the given text changes, the search starts anew.
+
+    Argument:: string
+        The text to find; a String.
+
+    Argument:: reverse
+        Whether to search in reverse direction; a Boolean.
+
+
+SUBSECTION:: Data
+
+METHOD:: html
+
+    Gets or sets the displayed html content.
+
+    Argument::
+        A String.
+
+METHOD:: plainText
+
+    Tries to extract plain text from the displayed content, and returns it.
+    Returns:: A String.
+
+METHOD:: title
+
+    The title of the current page.
+    Returns:: A String.
+
+METHOD:: selectedText
+
+    The currently selected text.
+    Returns:: A String.
+
+
+SUBSECTION:: Behavior and appearance
+
+METHOD:: enterInterpretsSelection
+    Whether pressing Ctrl+Return or Ctrl+Enter while some text is selected should evaluate the selection as SuperCollider code.
+    Argument::
+        A Boolean.
+
+METHOD:: setFontFamily
+    Sets a specific font family to be used in place of a CSS-specified generic font family.
+    Argument:: generic
+        The CSS generic font family to assign a font to; one of the following symbols: code::\standard, \fixed, \serif, \sansSerif, \cursive, \fantasy::.
+    Argument:: specific
+        A font family name to be assigned to the generic family; a String.
+
+
+SUBSECTION:: Actions
+
+METHOD:: onLoadFinished
+    Sets the object to be evaluated when a page has loaded successfully, passing the view as the argument.
+
+METHOD:: onLoadFailed
+    Sets the object to be evaluated when a page has failed to load, passing the view as the argument.
+
+METHOD:: onLinkActivated
+    Sets the object to be evaluated when the user triggers a link, passing the view and the URL of the link (as String) as the arguments.
+
+    When this is set to other than nil, WebView will stop handling links altogether. Setting this to nil will restore WebView link handling again.
+
+METHOD:: onReload
+    Sets the object to be evaluated whenever a page reload is requested, passing the view and the URL to be reloaded (as String) as the arguments.
+
+    When this is set to other than nil, WebView will do nothing on reload requests. Setting this to nil will restore WebView reload handling again.
+
+
+SUBSECTION:: JavaScript
+
+METHOD:: evaluateJavaScript
+    Evaluates the given JavaScript code in the context of the current page.
+    Argument::
+        A String.
