@@ -1,0 +1,241 @@
+CLASS:: Stethoscope
+redirect:: implClass
+summary:: An oscilloscope
+categories:: GUI>Interfaces
+related:: Classes/ScopeView, Classes/FreqScope
+
+DESCRIPTION::
+
+Stethoscope provides a complete oscilloscope GUI. It displays a window containing a bus-plotting link::Classes/ScopeView:: and an interface to configure the plotting and choose among the buses.
+
+SUBSECTION:: Creation by message .scope
+
+Several classes provide a convenient 'scope' method that creates a Stethoscope to display their data. See for example: link::Classes/Server#-scope::, link::Classes/Bus#-scope::, link::Classes/Function#-scope::.
+
+SUBSECTION:: Keyboard shortcuts
+
+The following keyboard shortcuts may be used when focused on the Stethoscope display:
+
+table::
+## strong::Shortcut:: || strong::Action::
+## J || one channel back
+## K || switch rate (audio vs. control)
+## L || one channel forward
+## O || jump to first hardware output channel and adjust numChannels to hardware
+## I || jump to first hardware input channel and adjust numChannels to hardware
+## space || run, if not running already
+## . (period) || stop
+## M || toggle screen size
+## + / - || zoom horizontally
+## * / _ || zoom vertically
+## S || change style between parallel and overlay
+## Shift+S || change style to lissajou
+## Shift+A || allocate buffer size so it fills the screen (to next power of two) (this can be dangerous, might crash)
+::
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+METHOD:: new
+
+    Create a Stethoscope, either as a window, or placed on a given parent view.
+
+    argument:: server
+        In Qt GUI: any local Server (internal or another process on the same machine).
+        In other GUI kits: must be Server.internal.
+    argument:: numChannels
+        An integer. Default value is 2.
+    argument:: index
+        The offset index. An Integer. Default is nil.
+    argument:: bufsize
+        The size of the analysis buffer. Default is 4096.
+    argument:: zoom
+        Horizontal maginification of the displayed wave. Default is 1.
+    argument:: rate
+        \audio or \control. Default is \audio.
+    argument:: view
+        The optional parent view. Default is nil. If nil, then it will open in its own Window.
+    argument:: bufnum
+        The id number of the Buffer to analyze. Default value is nil. If nil, then a Buffer of size bufSize is allocated.
+
+    discussion:
+    Example:
+code::
+Server.default = s = Server.internal
+s.boot
+{SinOsc.ar([330,440], 0, 0.4)}.play;
+SCStethoscope(s,2);
+::
+
+METHOD:: ugenScopes
+
+    Returns an array of the running ugen scopes.
+
+code::
+Server.default = s = Server.internal
+s.boot
+{[SinOsc.ar.scope,WhiteNoise.ar(0.5).scope]*0.1}.scope(2);
+SCStethoscope.ugenScopes; // returns the ugen scopes
+::
+
+METHOD:: defaultServer
+
+        SCStethoscope's default server. Returns Server.internal
+
+
+METHOD:: isValidServer (aServer)
+
+        Tests if a server is a valid server. Returns a n instanc of Boolean;
+        aServer - An instance of Server.
+
+METHOD:: tileBounds
+
+        A utility used by Ugen : scope to tile scope windows.
+
+
+
+INSTANCEMETHODS::
+
+METHOD:: ugenScopes
+
+    Returns an array of the running UGen scopes, just like the class method link::#*ugenScopes::.
+
+
+SUBSECTION:: Data
+
+METHOD:: server
+    The server on which the scope operates.
+
+METHOD:: rate
+    Whether to operate on audio or control busses.
+    argument::
+        One of the two symbols: code::\audio:: or code::\control::.
+
+METHOD:: index
+    The starting index of the busses to scope.
+    argument::
+        An Integer.
+
+METHOD:: numChannels
+    The amount of adjacent busses to scope (from link::#-index:: on).
+    argument::
+        An Integer.
+
+METHOD:: bufsize
+    The size of the scope buffer.
+
+
+SUBSECTION:: Display
+
+METHOD:: window
+    The (parent) Window of the scope.
+
+METHOD:: size
+    Sets the width and the height of the scope window.
+    argument::
+        An Integer (the window is square).
+
+METHOD:: toggleSize
+
+    Toggle between small and large size.
+
+METHOD:: zoom
+    A synonym for link::#-xZoom::.
+
+METHOD:: xZoom
+    Zoom horizontally by the given factor.
+    argument::
+        A Float.
+
+METHOD:: yZoom
+
+    Zoom vertically by by the given factor.
+    argument::
+        A Float.
+
+METHOD:: style
+    The plotting style:
+    list::
+    ## 0 = the channels are vertically spaced
+    ## 1 = the channels are overlayed
+    ## 2 = lissajou; the first two channels are used for 2D plotting (as streams of x and y coordinates).
+    ::
+
+    argument::
+        One of the above Integers.
+
+
+SUBSECTION:: Operation
+
+METHOD:: run
+
+    Starts the scope, if not already running.
+
+METHOD:: quit
+
+    Closes the window, and cleans up any used synths and buffers.
+
+SUBSECTION:: Convenience
+
+METHOD:: setProperties (numChannels, index, bufsize, zoom, rate)
+
+    Sets several properties at once: link::#-numChannels::, link::#-index::, link::#-bufsize::, link::#-zoom::, and link::#-rate::.
+
+
+
+EXAMPLES::
+
+SUBSECTION:: A step-by-step example
+code::
+(
+Server.default = Server.internal;
+s = Server.default;
+s.boot;
+)
+(
+{
+    SinOsc.ar([225, 450, 900], 0, 0.2)
+    + LPF.ar(
+        LFPulse.ar(226 * [1, 2, 5],[0,0.1,0.1],0.2, 0.2),
+        MouseX.kr(20, 10000, 1)
+        )
+}.scope;
+)
+
+// server.scope only changes the properies explicitly given:
+
+s.scope(numChannels:5);
+s.scope(index:12);
+s.scope(zoom:4);
+s.scope(index:0);
+
+s.scopeWindow.size = 600;
+s.scopeWindow.size = 222;
+
+// scoping buses:
+
+a = Bus.audio(s, 4);
+{ WhiteNoise.ar(0.2.dup(4)) }.play(s, a);
+
+a.scope;
+
+c = Bus.control(s, 3);
+{ WhiteNoise.kr(1.dup(4) * MouseX.kr) }.play(s, c);
+
+c.scope;
+
+// note that scoping control rate buses shows block size interpolation (this is due to the
+// fact that ScopeOut.kr doesn't work yet.)
+::
+
+SUBSECTION:: Embedded use
+You can pass your own view in to add a stethoscope to it:
+
+code::
+w = Window.new("my own scope", Rect(20, 20, 400, 500));
+w.view.decorator = FlowLayout(w.view.bounds);
+c = Stethoscope.new(s, view:w.view);
+w.onClose = { c.free }; // don't forget this
+w.front;
+::
