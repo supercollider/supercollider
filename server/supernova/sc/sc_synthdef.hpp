@@ -84,12 +84,14 @@ public:
 #ifdef BOOST_HAS_RVALUE_REFS
         unit_spec_t(unit_spec_t && rhs):
             name(std::move(rhs.name)), rate(rhs.rate), special_index(rhs.special_index),
-            input_specs(std::move(rhs.input_specs)), output_specs(std::move(rhs.output_specs))
+            input_specs(std::move(rhs.input_specs)), output_specs(std::move(rhs.output_specs)),
+            buffer_mapping(std::move(rhs.buffer_mapping)), prototype(rhs.prototype)
         {}
 
         unit_spec_t(unit_spec_t const & rhs):
             name(rhs.name), rate(rhs.rate), special_index(rhs.special_index),
-            input_specs(rhs.input_specs), output_specs(rhs.output_specs)
+            input_specs(rhs.input_specs), output_specs(rhs.output_specs),
+            buffer_mapping(rhs.buffer_mapping), prototype(rhs.prototype)
         {}
 #endif
         string name;
