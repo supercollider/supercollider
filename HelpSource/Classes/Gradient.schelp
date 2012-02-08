@@ -3,6 +3,10 @@ summary:: A linear color fade between two colors
 categories:: GUI>Accessories
 related:: Classes/Color, Classes/HiliteGradient
 
+description::
+
+note:: The use of Gradient is strong::not supported yet in Qt GUI::. When Gradient is used in place of Color, the average gradient color will be used instead. ::
+
 classmethods::
 
 method:: new

@@ -6,6 +6,8 @@ related:: Classes/Color, Classes/Gradient
 description::
 A linear color fade between an outside and an inside color.
 
+note:: The use of HiliteGradient is strong::not supported yet in Qt GUI::. When HiliteGradient is used in place of Color, the average gradient color will be used instead. ::
+
 classmethods::
 
 method:: new
