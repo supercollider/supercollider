@@ -844,6 +844,23 @@ void handle_unhandled_message(received_message const & msg)
     log_printf("unhandled message: %s\n", msg.AddressPattern());
 }
 
+static bool node_position_sanity_check(node_position_constraint const & constraint)
+{
+    switch (constraint.second) {
+    case head:
+    case tail:
+    case insert: {
+        server_node * target = constraint.first;
+        if (!target->is_group()) {
+            log_printf("Invalid position constraint (target: %d, addAction: %d)\n", target->id(), constraint.second);
+            return false;
+        }
+    }
+    }
+
+    return true;
+}
+
 sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
 {
     if (!check_node_id(node_id))
@@ -854,6 +871,9 @@ sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
         return NULL;
 
     node_position_constraint pos = make_pair(target, node_position(action));
+    if (!node_position_sanity_check(pos))
+        return NULL;
+
     abstract_synth * synth = instance->add_synth(name, node_id, pos);
     if (!synth)
         log_printf("Cannot create synth (synthdef: %s, node id: %d)\n", name, node_id);
@@ -1026,6 +1046,8 @@ void handle_g_new(received_message const & msg)
             continue;
 
         node_position_constraint pos = make_pair(target, node_position(action));
+        if (!node_position_sanity_check(pos))
+            continue;
 
         instance->add_group(node_id, pos);
         last_generated = node_id;
@@ -2851,6 +2873,8 @@ void insert_parallel_group(int node_id, int action, int target_id)
         return;
 
     node_position_constraint pos = make_pair(target, node_position(action));
+    if (!node_position_sanity_check(pos))
+        return;
 
     instance->add_parallel_group(node_id, pos);
     last_generated = node_id;
@@ -2860,8 +2884,7 @@ void handle_p_new(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    while(!args.Eos())
-    {
+    while(!args.Eos()) {
         osc::int32 id, action, target;
         args >> id >> action >> target;
 
