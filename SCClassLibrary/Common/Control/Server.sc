@@ -433,6 +433,11 @@ Server {
 
 						ServerQuit.run(this);
 
+						if (serverInterface.notNil) {
+							serverInterface.disconnect;
+							serverInterface = nil;
+						};
+
 						AppClock.sched(5.0, {
 							// still down after 5 seconds, assume server is really dead
 							// if you explicitly shut down the server then newAllocators
