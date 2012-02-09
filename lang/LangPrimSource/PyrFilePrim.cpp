@@ -33,6 +33,8 @@ Primitives for File i/o.
 #include "ReadWriteMacros.h"
 #include "SCBase.h"
 #include "SC_DirUtils.h"
+#include "sc_popen.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
@@ -1267,7 +1269,6 @@ int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
 
 ////////
 
-#ifndef SC_WIN32
 int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
@@ -1292,14 +1293,14 @@ int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
 	mode[slotRawString(c)->size] = 0;
 
-	file = popen(commandLine, mode);
+	pid_t pid;
+	file = sc_popen(commandLine, &pid, mode);
 	free(commandLine);
 	if (file) {
 		SetPtr(&pfile->fileptr, file);
-		SetTrue(a);
+		SetInt(a, pid);
 	} else {
 		SetNil(a);
-		SetFalse(a);
 	}
 	return errNone;
 }
@@ -1307,21 +1308,25 @@ int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
+	PyrSlot *b;
 	PyrFile *pfile;
 	FILE *file;
+	pid_t pid;
 
-	a = g->sp;
+	a = g->sp - 1;
+	b = g->sp;
 	pfile = (PyrFile*)slotRawObject(a);
 	file = (FILE*)slotRawPtr(&pfile->fileptr);
 	if (file == NULL) return errNone;
+	pid = (pid_t) slotRawInt(b);
+
 	SetPtr(&pfile->fileptr, NULL);
-	int perr = pclose(file);
+	int perr = sc_pclose(file, pid);
 	SetInt(a, perr);
 	if (perr == -1)
 		return errFailed;
 	return errNone;
 }
-#endif
 
 ////////
 
@@ -1945,10 +1950,8 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_SFSeek", prSFSeek, 3, 0);
 	definePrimitive(base, index++, "_SFHeaderInfoString", prSFHeaderInfoString, 1, 0);
 
-#ifndef SC_WIN32
 	definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);
-	definePrimitive(base, index++, "_PipeClose", prPipeClose, 1, 0);
-#endif
+	definePrimitive(base, index++, "_PipeClose", prPipeClose, 2, 0);
 
 	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);
 	definePrimitive(base, index++, "_FileMTime", prFileMTime, 2, 0);
