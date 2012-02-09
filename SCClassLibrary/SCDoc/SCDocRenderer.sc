@@ -310,34 +310,36 @@ SCDocHTMLRenderer : SCDocRenderer {
                     };
                 };
 
-                file.write("<div class='method'>");
+                if(node.children.size > 0) {
+                    file.write("<div class='method'>");
 
-                collectedArgs = [];
-                do_children.();
+                    collectedArgs = [];
+                    do_children.();
 
-                if(collectedArgs.notEmpty) {
-                    file.write("<h4>Arguments:</h4>\n");
-                    file.write("<table class='arguments'>\n");
-                    collectedArgs.do {|a|
-                        file.write("<tr><td class='argumentname'>"+a.text+"<td class='argumentdesc'>");
-                        a.children.do {|e| this.renderHTMLSubTree(file,e,false) };
+                    if(collectedArgs.notEmpty) {
+                        file.write("<h4>Arguments:</h4>\n");
+                        file.write("<table class='arguments'>\n");
+                        collectedArgs.do {|a|
+                            file.write("<tr><td class='argumentname'>"+a.text+"<td class='argumentdesc'>");
+                            a.children.do {|e| this.renderHTMLSubTree(file,e,false) };
+                        };
+                        file.write("</table>");
                     };
-                    file.write("</table>");
-                };
 
-                n = parser.findNode(\returns, node.children);
-                if(n.tag.notNil) {
-                    file.write("<h4>Returns:</h4>\n<div class='returnvalue'>");
-                    n.children.do {|e| this.renderHTMLSubTree(file,e,false) };
+                    n = parser.findNode(\returns, node.children);
+                    if(n.tag.notNil) {
+                        file.write("<h4>Returns:</h4>\n<div class='returnvalue'>");
+                        n.children.do {|e| this.renderHTMLSubTree(file,e,false) };
+                        file.write("</div>");
+                    };
+
+                    n = parser.findNode(\discussion, node.children);
+                    if(n.tag.notNil) {
+                        file.write("<h4>Discussion:</h4>\n");
+                        n.children.do {|e| this.renderHTMLSubTree(file,e,false) };
+                    };
                     file.write("</div>");
-                };
-
-                n = parser.findNode(\discussion, node.children);
-                if(n.tag.notNil) {
-                    file.write("<h4>Discussion:</h4>\n");
-                    n.children.do {|e| this.renderHTMLSubTree(file,e,false) };
-                };
-                file.write("</div>");
+                }
             },
             'argument', {
                 collectedArgs = collectedArgs.add(node);
