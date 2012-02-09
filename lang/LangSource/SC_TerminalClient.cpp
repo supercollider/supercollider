@@ -538,10 +538,8 @@ void *SC_TerminalClient::readlineFunc( void *arg )
 	rl_readline_name = "sclang";
 	rl_basic_word_break_characters = " \t\n\"\\'`@><=;|&{}().";
 	//rl_attempted_completion_function = sc_rl_completion;
-	rl_bind_key(0x02, &sc_rl_mainstop);
+	rl_bind_key(CTRL('t'), &sc_rl_mainstop);
 	rl_bind_key(CTRL('x'), &readlineRecompile);
-	// TODO 0x02 is ctrl-B;
-	// ctrl-. would be nicer but keycode not working here (plain "." is 46 (0x2e))
 	rl_callback_handler_install( "sc3> ", &readlineCmdLine );
 
 	// Set our handler for SIGINT that will clear the line instead of terminating.
