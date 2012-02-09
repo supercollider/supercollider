@@ -39,14 +39,15 @@ If a Server has been booted from the command line you must call code::initTree::
 
 subsection:: Local vs. Internal
 
-In general, when working with a single machine one will probably be using one of two Server objects which are created at startup and stored in the class variables local and internal. By default two GUI windows are created to control these.
+In general, when working with a single machine one will probably be using one of two Server objects which are created at startup and stored in the class variables link::#*local:: and link::#*internal::. In SuperCollider.app (OSX), two GUI windows are created to control these. Use link::#-makeGui:: to create a GUI window manually.
 
 The difference between the two is that the local server runs as a separate application with its own address space, and the internal server runs within the same space as the language/client app.
 
-The internal server has the advantage of being able to access shared memory, thus allowing for things like scope windows (see below) and link::Classes/SharedIn:: / link::Classes/SharedOut::.
-It also minimizes messaging latency.
+Both local and internal server supports link::#-scope#scoping::, and local server also supports link::Classes/Bus#synchronous_control_bus_methods#synchronous bus access::.
 
-The local server, and any other server apps running on your local machine, have the advantage that if the language app crashes, it (and thus possibly your piece) will continue to run. It is thus an inherently more robust arrangement.
+There is generally no benefit in using the internal server.
+
+The local server, and any other server apps running on your local machine, have the advantage that if the language app crashes, it (and thus possibly your piece) will continue to run. It is thus an inherently more robust arrangement. But note that even if the synths on the server continue to run, any language-side sequencing and control will terminate if the language app crashes.
 
 subsection:: The default Server
 
