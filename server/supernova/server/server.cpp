@@ -283,4 +283,10 @@ void realtime_engine_functor::init_thread(void)
     name_current_thread(0);
 }
 
+void realtime_engine_functor::log_(const char * str)
+{
+    instance->log_printf(str);
+}
+
+
 } /* namespace nova */

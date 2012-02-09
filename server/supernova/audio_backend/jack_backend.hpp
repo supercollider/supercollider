@@ -97,6 +97,7 @@ public:
         /* initialize callbacks */
         jack_set_thread_init_callback (client, jack_thread_init_callback, this);
         jack_set_process_callback (client, jack_process_callback, this);
+        jack_set_xrun_callback(client, jack_xrun_callback, this);
         jack_on_info_shutdown(client, (JackInfoShutdownCallback)jack_on_info_shutdown_callback, NULL);
 
         /* register ports */
@@ -248,6 +249,18 @@ private:
         std::cerr << "Jack server was shut down: " << reason << std::endl;
         std::cerr << "Exiting ..." << std::endl;
         exit(0); // TODO: later we may want to call a function
+    }
+
+    static int jack_xrun_callback(void * arg)
+    {
+        return static_cast<jack_backend*>(arg)->handle_xrun();
+    }
+
+    int handle_xrun(void)
+    {
+        time_is_synced = false;
+        engine_functor::log_("Jack: xrun detected - resyncing clock\n");
+        return 0;
     }
 
     int perform(jack_nframes_t frames)
