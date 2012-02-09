@@ -214,6 +214,11 @@ foreach (plugin ${plugins})
     endif()
 endforeach()
 
+foreach (plugin ${supernova_plugins})
+    if (WIN32)
+        target_link_libraries(${plugin} ws2_32)
+    endif()
+endforeach()
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(X11 REQUIRED)
