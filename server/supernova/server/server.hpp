@@ -47,6 +47,7 @@ struct realtime_engine_functor
     static inline void sync_clock(void);
     static void init_thread(void);
     static inline void run_tick(void);
+    static void log_(const char *);
 };
 
 extern class nova_server * instance;
