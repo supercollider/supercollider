@@ -20,6 +20,8 @@ OSXPlatform : UnixPlatform
 	}
 
 	startup {
+		Server.program = "exec %/scsynth".format(String.scDir.shellQuote);
+
 		if(Platform.ideName == "scapp") {
 			Document.implementationClass.startup;
 		};
