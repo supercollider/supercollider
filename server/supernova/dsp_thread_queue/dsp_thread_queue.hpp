@@ -521,8 +521,14 @@ private:
 
     void wait_for_end(void)
     {
-        while (node_count.load(boost::memory_order_acquire) != 0)
-        {} // busy-wait for helper threads to finish
+        int count = 0;
+        while (node_count.load(boost::memory_order_acquire) != 0) {
+            ++count;
+            if (count == 1000000) {
+                std::printf("nova::dsp_queue_interpreter::run_item: possible lookup detected\n");
+                abort();
+            }
+        } // busy-wait for helper threads to finish
     }
 
     HOT int run_next_item(thread_count_t index)
