@@ -228,6 +228,11 @@ public:
         return jack_client_max_real_time_priority(client);
     }
 
+    int realtime_priority(void) const
+    {
+        return jack_client_real_time_priority(client);
+    }
+
 private:
     static void jack_thread_init_callback(void * arg)
     {
