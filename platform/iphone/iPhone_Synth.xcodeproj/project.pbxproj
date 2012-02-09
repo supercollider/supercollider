@@ -11,6 +11,8 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		3939A12814E35A5800ADDAE2 /* SC_Reply.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3939A12714E35A5800ADDAE2 /* SC_Reply.cpp */; };
+		3939A12E14E35A8700ADDAE2 /* SC_Reply.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3939A12714E35A5800ADDAE2 /* SC_Reply.cpp */; };
 		770903C60F50A468005C05DC /* iscsynthAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 770903C20F50A468005C05DC /* iscsynthAppDelegate.m */; };
 		770903C70F50A468005C05DC /* iSCSynthController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 770903C40F50A468005C05DC /* iSCSynthController.mm */; };
 		770903C80F50A468005C05DC /* iscsynthmain.m in Sources */ = {isa = PBXBuildFile; fileRef = 770903C50F50A468005C05DC /* iscsynthmain.m */; };
@@ -162,6 +164,7 @@
 		1D6058910D05DD3D006BFB54 /* iscsynth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iscsynth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		3939A12714E35A5800ADDAE2 /* SC_Reply.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Reply.cpp; sourceTree = "<group>"; };
 		770903C10F50A468005C05DC /* iscsynthAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iscsynthAppDelegate.h; sourceTree = "<group>"; };
 		770903C20F50A468005C05DC /* iscsynthAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iscsynthAppDelegate.m; sourceTree = "<group>"; };
 		770903C30F50A468005C05DC /* iSCSynthController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iSCSynthController.h; sourceTree = "<group>"; };
@@ -581,6 +584,7 @@
 				777249810EABE96E00732A1C /* SC_AllocPool.cpp */,
 				777249820EABE96E00732A1C /* SC_DirUtils.cpp */,
 				777249830EABE96E00732A1C /* sc_popen.cpp */,
+				3939A12714E35A5800ADDAE2 /* SC_Reply.cpp */,
 				777249840EABE96E00732A1C /* SC_Sem.cpp */,
 				777249850EABE96E00732A1C /* SC_StandAloneInfo_Darwin.cpp */,
 				777249860EABE96E00732A1C /* SC_StringBuffer.cpp */,
@@ -911,6 +915,7 @@
 				77476EA512FDE652007449B3 /* PV_UGens.cpp in Sources */,
 				7796FF7C148D8D12003E89BB /* Makefile in Sources */,
 				7796FF7D148D8D12003E89BB /* tlsf.c in Sources */,
+				3939A12814E35A5800ADDAE2 /* SC_Reply.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -972,6 +977,7 @@
 				772C0F0212DA1043009C0126 /* FFTInterfaceTable.cpp in Sources */,
 				772C0F0312DA1047009C0126 /* PartitionedConvolution.cpp in Sources */,
 				7759953912FDE0C900603187 /* SC_fftlib.cpp in Sources */,
+				3939A12E14E35A8700ADDAE2 /* SC_Reply.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
