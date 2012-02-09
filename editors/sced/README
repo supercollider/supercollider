@@ -8,10 +8,53 @@ Installation
 ============
 
 To install sced via cmake, configure the build directory with
-`cmake -DSC_ED=yes'
+`cmake -DSC_ED=ON'
+
+The most recent sced is for gedit version 3, but an older version for gedit 2
+is also installed.
+
+When installing into /usr/local (which is the default), gedit won't find
+the plugin since it only looks in /usr. To fix this, simply symlink
+the plugin-files to ~/.local/share/gedit/plugins/:
+
+  $ mkdir -p ~/.local/share/gedit/plugins
+  $ cd ~/.local/share/gedit/plugins
+  $ ln -sf /usr/local/lib/gedit/plugins/supercollider.plugin .
+  $ ln -sf /usr/local/lib/gedit/plugins/supercollider.py .
+
+OSX
+===
+
+Sced works fine for gedit3 on OSX, if you follow these instructions:
+
+Copy or symlink supercollider.plugin and supercollider.py from
+<build>/Install/lib/gedit/plugins/ into ~/.local/share/gedit/plugins/
+
+Place wrapper-scripts for sclang and scsynth into /usr/local/bin.
+For sclang:
+
+  #!/bin/sh
+  cd /full/path/to/SuperCollider.app/Contents/Resources
+  exec ./sclang $*
+
+And for scsynth:
+
+  #!/bin/sh
+  cd /full/path/to/SuperCollider.app/Contents/Resources
+  exec ./scsynth $*
+
+You need to make the scripts executable:
+
+  $ chmod +x sclang
+  $ chmod +x scsynth
 
 Usage
 =====
+
+To enable sced, open gedit's preferences and go to the Plugins tab and
+check the SuperCollider plugin checkbox. You only need to do this once.
+
+When sced is enabled, you activate it with the menu Tools>SuperCollider mode
 
 The menu items describe themselves. You're going to use the Ctrl+E shortcut
 a lot. By default, this command evaluates the current line of code. If you
