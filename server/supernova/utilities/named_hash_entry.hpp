@@ -141,7 +141,7 @@ public:
             if (lookup_result.second)
                 return *lookup_result.first;
 
-            nonrecursive_rw_mutex::unique_lock lock(mutex);
+            boost::unique_lock<nova::nonrecursive_rw_mutex> lock(mutex);
             lookup_result = symbol_lookup(str);
             if (lookup_result.second)
                 return *lookup_result.first;
