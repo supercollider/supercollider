@@ -1,5 +1,4 @@
 set(simple_tests
-    approximation_test.cpp
     buffer_manager_test.cpp
     callback_interpreter_system.cpp
     memory-pool_test.cpp
@@ -15,7 +14,6 @@ set(simple_tests
     sized_array_test.cpp
     sndfile_backend_test.cpp
     static_pool_test.cpp
-    ticket_scheduler_test.cpp
     timetag_test.cpp
 )
 
