@@ -334,12 +334,7 @@ Server {
 		named = IdentityDictionary.new;
 		set = Set.new;
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
-		Platform.switch(\windows, {
-			program = "scsynth.exe";
-		}, {
-			internal = Server.new(\internal, NetAddr.new);
-			program = "cd % && exec ./scsynth".format(String.scDir.quote);
-		});
+		internal = Server.new(\internal, NetAddr.new);
 	}
 
 	*fromName { arg name;
