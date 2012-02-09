@@ -214,13 +214,12 @@ void thread_init_functor::operator()(int thread_index)
 {
     name_current_thread(thread_index);
 
-    if (rt)
-    {
+    if (rt) {
         bool success = true;
 #ifdef NOVA_TT_PRIORITY_RT
 
 #ifdef JACK_BACKEND
-        int priority = instance->max_realtime_priority();
+        int priority = instance->realtime_priority();
         if (priority < 0)
             success = false;
 #else
