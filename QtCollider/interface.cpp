@@ -63,9 +63,9 @@ void QtCollider::init() {
 #endif
 
     static int qcArgc = 1;
-    static char qcArg0[] = "";
-    static char *qcArgv[1];
-    qcArgv[0] = qcArg0;
+    static char qcArg0[] = "SuperCollider";
+    static char *qcArgv[1] = {qcArg0};
+
     QcApplication *qcApp = new QcApplication( qcArgc, qcArgv );
 
     qcApp->setQuitOnLastWindowClosed( false );
