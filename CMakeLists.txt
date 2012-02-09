@@ -182,9 +182,7 @@ option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
 
 option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
 
-if(NOT WIN32)
-	option(SCLANG_SERVER "Build with internal server." ON)
-endif()
+option(SCLANG_SERVER "Build with internal server." ON)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	option(SC_WII "Build sclang with WII support" ON)

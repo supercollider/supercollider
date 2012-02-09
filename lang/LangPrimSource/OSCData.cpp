@@ -990,7 +990,7 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 #elif !defined(_WIN32)
 		options.mSharedMemoryID = getpid();
 #else
-		options.mSharedMemoryID = GetCurrentProcessId()
+		options.mSharedMemoryID = GetCurrentProcessId();
 #endif
 
 		gInternalSynthServer.mWorld = World_New(&options);
