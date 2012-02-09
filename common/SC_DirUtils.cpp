@@ -370,6 +370,7 @@ void sc_GetUserConfigDirectory(char *str, int size)
 	if (xdg_config_home) {
 		strncpy(str, xdg_config_home, size);
 		sc_AppendToPath(str, size, "SuperCollider");
+		return;
 	}
 
 #if defined(__linux__) || defined(__freebsd__)
