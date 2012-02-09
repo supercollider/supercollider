@@ -141,8 +141,7 @@ public:
     void run(void)
     {
         bool run_tick = interpreter.init_tick();
-        if (likely(run_tick))
-        {
+        if (likely(run_tick)) {
             wake_threads();
             interpreter.tick_master();
         }
