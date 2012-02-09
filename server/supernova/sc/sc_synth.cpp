@@ -225,7 +225,7 @@ void sc_synth::run(void)
 
 extern spin_lock log_guard;
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && !defined(__APPLE__)
 #define thread_local __thread
 #endif
 
