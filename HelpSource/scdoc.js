@@ -31,6 +31,7 @@ function readCookie(name) {
 }
 */
 
+var storage;
 var sidetoc;
 var toc;
 var menubar;
@@ -57,7 +58,7 @@ function popOutTOC(original_toc, p0) {
         p0.style.display = "";
         sidetoc = null;
         allItems = toc.getElementsByTagName("ul")[0].getElementsByTagName("li");
-        sessionStorage.popToc = "no";
+        storage.popToc = "no";
         return false;
     }
     var x = document.createElement("div");
@@ -69,7 +70,7 @@ function popOutTOC(original_toc, p0) {
     sidetoc = t;
     allItems = t.getElementsByTagName("ul")[0].getElementsByTagName("li");
     resize_handler();
-    sessionStorage.popToc = "yes";
+    storage.popToc = "yes";
 }
 
 function resize_handler() {
@@ -465,8 +466,11 @@ function fixTOC() {
 
     addInheritedMethods();
 
-    if(sessionStorage == undefined)
-        sessionStorage = {};
+    if('localStorage' in window) {
+        storage = window.localStorage;
+    } else {
+        storage = {};
+    }
 
     var openMenu;
     var inMenu = false;
@@ -584,7 +588,7 @@ function fixTOC() {
         }
         t.insertBefore(p,t.firstChild);
         resize_handler();
-        if(sessionStorage.popToc == "yes") {
+        if(storage.popToc == "yes") {
             popOutTOC(t,a);
         }
     }

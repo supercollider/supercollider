@@ -29,6 +29,7 @@
 #include <QTimer>
 #include <QEventLoop>
 #include <QDir>
+#include <QWebSettings>
 
 #ifdef Q_WS_X11
 # include <X11/Xlib.h>
@@ -73,6 +74,9 @@ void QtCollider::init() {
     qcApp->setStyle( new QtCollider::Style::StyleImpl( new QPlastiqueStyle ) );
 
     gSystemPalette = qcApp->palette();
+
+    // Enable javascript localStorage for WebViews
+    QWebSettings::globalSettings()->setAttribute( QWebSettings::LocalStorageEnabled, true );
 
     // NOTE: Qt may tamper with the C language locale, affecting POSIX number-string conversions.
     // Revert the locale to default:
