@@ -30,10 +30,8 @@
 #include "utilities/sized_array.hpp"
 
 
-namespace nova
-{
-namespace detail
-{
+namespace nova   {
+namespace detail {
 
 template <typename sample_type, typename io_sample_type, bool blocking, bool managed_memory = true>
 class audio_delivery_helper:
@@ -129,6 +127,53 @@ protected:
         output_samples.resize(output_channels);
         std::generate(input_samples.begin(), input_samples.end(), boost::bind(calloc_aligned<sample_type>, frames));
         std::generate(output_samples.begin(), output_samples.end(), boost::bind(calloc_aligned<sample_type>, frames));
+    }
+
+    void fetch_inputs(const float ** inputs, size_t frames, int input_channels)
+    {
+        if (is_multiple_of_vectorsize(frames)) {
+            for (uint16_t i = 0; i != input_channels; ++i) {
+                if (is_aligned(inputs[i]))
+                    nova::copyvec_simd(input_samples[i].get(), inputs[i], frames);
+                else
+                    nova::copyvec(input_samples[i].get(), inputs[i], frames);
+                inputs[i] += frames;
+            }
+        } else {
+            for (uint16_t i = 0; i != input_channels; ++i) {
+                nova::copyvec(input_samples[i].get(), inputs[i], frames);
+                inputs[i] += frames;
+            }
+        }
+    }
+
+    void deliver_outputs(float ** outputs, size_t frames, int output_channels)
+    {
+        if (is_multiple_of_vectorsize(frames)) {
+            for (uint16_t i = 0; i != output_channels; ++i) {
+                if (is_aligned(outputs[i]))
+                    nova::copyvec_simd(outputs[i], output_samples[i].get(), frames);
+                else
+                    nova::copyvec(outputs[i], output_samples[i].get(), frames);
+                outputs[i] += frames;
+            }
+        } else {
+            for (uint16_t i = 0; i != output_channels; ++i) {
+                nova::copyvec(outputs[i], output_samples[i].get(), frames);
+                outputs[i] += frames;
+            }
+        }
+    }
+
+    static bool is_aligned(const void * arg)
+    {
+        size_t mask = sizeof(vec<float>::size) * sizeof(float) * 8 - 1;
+        return !((size_t)arg & mask);
+    }
+
+    static bool is_multiple_of_vectorsize(size_t count)
+    {
+        return !(count & (vec<float>::objects_per_cacheline - 1));
     }
 
     sized_array<aligned_storage_ptr<sample_type, managed_memory>,
