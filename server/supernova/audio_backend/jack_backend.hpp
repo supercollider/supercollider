@@ -284,7 +284,7 @@ private:
 
         jack_nframes_t processed = 0;
         while (processed != frames) {
-            super::fetch_inputs(inputs, blocksize_, input_channels);
+            super::fetch_inputs((const float**)inputs, blocksize_, input_channels);
             engine_functor::run_tick();
             super::deliver_outputs(outputs, blocksize_, output_channels);
             processed += blocksize_;
