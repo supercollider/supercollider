@@ -36,14 +36,6 @@
 #define SC_AUDIO_API_COREAUDIOIPHONE	5
 #define SC_AUDIO_API_ANDROIDJNI 6
 
-#ifdef _WIN32
-# ifndef SC_INNERSC
-#  define SC_AUDIO_API SC_AUDIO_API_PORTAUDIO
-# else
-#  define SC_AUDIO_API SC_AUDIO_API_INNERSC_VST
-# endif
-#endif
-
 #ifdef SC_ANDROID
 #define SC_AUDIO_API SC_AUDIO_API_ANDROIDJNI
 #endif
@@ -53,7 +45,9 @@
 #endif
 
 #ifndef SC_AUDIO_API
-# ifdef __APPLE__ 
+# if defined(_WIN32)
+#  define SC_AUDIO_API SC_AUDIO_API_PORTAUDIO
+# elif defined(__APPLE__)
 #  define SC_AUDIO_API SC_AUDIO_API_COREAUDIO
 # else
 #  error SC_AUDIO_API undefined, cannot determine audio backend
