@@ -410,11 +410,24 @@ link::Classes/ServerBoot:: and link::Classes/ServerQuit:: provide similar functi
 subsection:: GUI methods
 
 method:: makeGui
-Create and show the server window
+Create and show the server window. The window responds to a number of keyboard shortcuts:
+table::
+## strong::key:: || strong::action::
+## teletype::n:: || Post a representation of this Server's current node tree to the post window. (See link::#-queryAllNodes::)
+## teletype::N:: || As 'n' above but include controls.
+## teletype::l:: || Show input/output level meters. (See link::#-meter::)
+## teletype::p:: || Show graphical view of the node tree. (See link::#-plotTree::)
+## (space) || Boot server if not already booted. (See link::#-boot::)
+## teletype::s:: || Show scope window. (See link::#-scope::)
+## teletype::f:: || Show frequency analyzer window. (See link::#-freqscope::)
+## teletype::d:: || Toggle dumping of OSC messages.
+## teletype::m:: || Toggle mute.
+## teletype::0:: || Reset volume to 0 db.
+::
+
 
 method:: scope
 Open a scope window showing the output of the Server.
-This only works with the internal server.
 see link::Classes/Stethoscope:: for further details.
 
 argument:: numChannels
@@ -429,7 +442,7 @@ argument:: rate
 whether to display audio or control rate buses (either \audio or \control)
 
 method:: freqscope
-Show frequency analyzer window. This only works with the internal server.
+Show frequency analyzer window.
 
 method:: meter
 Show input/output level meters.
