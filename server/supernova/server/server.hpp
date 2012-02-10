@@ -35,7 +35,7 @@
 #include "../../common/server_shm.hpp"
 
 #ifdef PORTAUDIO_BACKEND
-#include "audio_backend/portaudio.hpp"
+#include "audio_backend/portaudio_backend.hpp"
 #elif defined(JACK_BACKEND)
 #include "audio_backend/jack_backend.hpp"
 #endif
