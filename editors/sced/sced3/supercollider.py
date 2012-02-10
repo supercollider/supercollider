@@ -37,12 +37,8 @@ scui_str = """<ui>
         <menuitem action="ScedRecord"/>
         <separator/>
         <menuitem action="ScedServerGUI"/>
-        <menuitem action="ScedServerMeter"/>
         <menuitem action="ScedStartServer"/>
         <menuitem action="ScedStopServer"/>
-        <separator/>
-        <menuitem action="ScedStartSwingOSC"/>
-        <menuitem action="ScedStopSwingOSC"/>
         <separator/>
         <menuitem action="ScedFindHelp"/>
         <menuitem action="ScedBrowseHelp"/>
@@ -53,6 +49,8 @@ scui_str = """<ui>
         <menuitem action="ScedBrowseClass"/>
         <menuitem action="ScedInspectObject"/>
         <menuitem action="ScedOpenDevFile"/>
+        <separator/>
+        <menuitem action="ScedFrontWindows"/>
         <separator/>
         <menuitem action="ScedRestartInterpreter"/>
         <menuitem action="ScedRecompile"/>
@@ -384,11 +382,11 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
              _("Find and open help file"),
              self.on_find_help),
 
-            ("ScedBrowseHelp", None, _("Browse Help"), None,
+            ("ScedBrowseHelp", None, _("Browse Help"), "<control><alt>U",
              _("Browse help by categories"),
              self.on_browse_help),
 
-            ("ScedSearchHelp", None, _("Search Help"), "<control><alt>U",
+            ("ScedSearchHelp", None, _("Search Help"), None,
              _("Search for help"),
              self.on_search_help),
 
@@ -436,17 +434,9 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
              _("Show GUI for default server"),
              self.on_server_gui),
 
-            ("ScedServerMeter", None, _("Show level meters"), None,
-             _("Show level meters for default server"),
-             self.on_server_meter),
-
-            ("ScedStartSwingOSC", None, _("Start SwingOSC GUI Server"), None,
-             _("Start the SwingOSC GUI server"),
-             self.on_start_swingosc),
-
-            ("ScedStopSwingOSC", None, _("Stop SwingOSC GUI Server"), None,
-             _("Stop the SwingOSC GUI server"),
-             self.on_stop_swingosc),
+            ("ScedFrontWindows", None, _("Raise all windows"), "<alt>W",
+             _("Raise all windows"),
+             self.on_front_windows),
         ]
 
         toggle_entries = [
@@ -590,13 +580,6 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
     def on_server_gui(self, action, data=None):
         self.__lang.evaluate("Server.default.makeGui;", silent=True)
 
-    def on_server_meter(self, action, data=None):
-        self.__lang.evaluate("Server.default.meter;", silent=True)
+    def on_front_windows(self, action, data=None):
+        self.__lang.evaluate("Window.allWindows.do(_.front);", silent=True)
 
-    def on_start_swingosc(self, action, data=None):
-        # FIXME: make these actions possible only if interpreter is running and okay
-        self.__lang.evaluate("SwingOSC.default.boot;GUI.swing;", silent=False)
-
-    def on_stop_swingosc(self, action, data=None):
-        # FIXME: make these actions possible only if interpreter is running and okay
-        self.__lang.evaluate("SwingOSC.default.quit;", silent=False)
