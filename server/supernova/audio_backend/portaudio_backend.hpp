@@ -235,61 +235,13 @@ private:
 
         unsigned long processed = 0;
         while (processed != frames) {
-//             printf("perform %d %d\n", frames, processed);
-            fetch_inputs(inputs, blocksize_);
+            super::fetch_inputs(inputs, blocksize_, input_channels);
             engine_functor::run_tick();
-            deliver_outputs(outputs, blocksize_);
+            super::deliver_outputs(outputs, blocksize_, output_channels);
             processed += blocksize_;
         }
 
         return paContinue;
-    }
-
-    void fetch_inputs(const float ** inputs, size_t frames)
-    {
-        if (is_multiple_of_vectorsize(frames)) {
-            for (uint16_t i = 0; i != input_channels; ++i) {
-                if (is_aligned(inputs[i]))
-                    copyvec_simd(super::input_samples[i].get(), inputs[i], frames);
-                else
-                    copyvec(super::input_samples[i].get(), inputs[i], frames);
-                inputs[i] += blocksize_;
-            }
-        } else {
-            for (uint16_t i = 0; i != input_channels; ++i) {
-                copyvec(super::input_samples[i].get(), inputs[i], frames);
-                inputs[i] += blocksize_;
-            }
-        }
-    }
-
-    void deliver_outputs(float ** outputs, size_t frames)
-    {
-        if (is_multiple_of_vectorsize(frames)) {
-            for (uint16_t i = 0; i != output_channels; ++i) {
-                if (is_aligned(outputs[i]))
-                    copyvec_simd(outputs[i], super::output_samples[i].get(), frames);
-                else
-                    copyvec(outputs[i], super::output_samples[i].get(), frames);
-                outputs[i] += blocksize_;
-            }
-        } else {
-            for (uint16_t i = 0; i != output_channels; ++i) {
-                copyvec(outputs[i], super::output_samples[i].get(), frames);
-                outputs[i] += blocksize_;
-            }
-        }
-    }
-
-    static bool is_aligned(const void * arg)
-    {
-        size_t mask = sizeof(vec<float>::size) * sizeof(float) * 8 - 1;
-        return !((size_t)arg & mask);
-    }
-
-    static bool is_multiple_of_vectorsize(size_t count)
-    {
-        return !(count & (vec<float>::objects_per_cacheline - 1));
     }
 
     static int pa_process(const void *input, void *output, unsigned long frame_count,
