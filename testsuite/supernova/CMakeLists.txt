@@ -32,7 +32,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 
-
+find_package(Sndfile REQUIRED)
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
@@ -46,6 +46,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/external_libraries/
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
+					${SNDFILE_INCLUDE_DIR}
                     )
 
 
@@ -58,7 +59,7 @@ foreach(test ${simple_tests})
   target_link_libraries(${test_name} boost_thread boost_system boost_test)
   target_link_libraries(${test_name} oscpack tlsf)
   target_link_libraries(${test_name} ${PTHREADS_LIBRARY})
-  target_link_libraries(${test_name} ${SNDFILE})
+  target_link_libraries(${test_name} ${SNDFILE_LIBRARIES})
   target_link_libraries(${test_name} libsupernova)
 
   if(APPLE)
