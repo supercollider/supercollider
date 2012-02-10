@@ -287,5 +287,12 @@ void realtime_engine_functor::log_(const char * str)
     instance->log_printf(str);
 }
 
+void realtime_engine_functor::log_printf_(const char * fmt, ...)
+{
+    va_list vargs;
+    va_start(vargs, fmt);
+    instance->log_printf(fmt, vargs);
+}
+
 
 } /* namespace nova */
