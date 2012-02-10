@@ -95,6 +95,7 @@ if (JACK)
                  APPEND
                  PROPERTY COMPILE_DEFINITIONS JACK_BACKEND)
     target_link_libraries(libsupernova ${JACK})
+    include_directories(${JACK_INCLUDE_DIRS})
 endif()
 
 find_package(Sndfile)
