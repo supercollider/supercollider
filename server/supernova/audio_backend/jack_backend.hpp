@@ -28,8 +28,6 @@
 #include <jack/jack.h>
 #include <jack/thread.h>
 
-#include "nova-tt/name_thread.hpp"
-#include "nova-tt/thread_affinity.hpp"
 #include "utilities/branch_hints.hpp"
 
 #include "audio_backend_common.hpp"
