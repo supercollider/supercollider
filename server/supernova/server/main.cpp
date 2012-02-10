@@ -137,6 +137,20 @@ void start_audio_backend(server_arguments const & args)
     instance->start_dsp_threads();
 }
 
+#elif defined(PORTAUDIO_BACKEND)
+
+void start_audio_backend(server_arguments const & args)
+{
+    bool success = instance->open_stream(args.hw_name, args.input_channels, args.hw_name, args.output_channels,
+        args.samplerate, args.blocksize, args.blocksize);
+
+    if (!success)
+        exit(1);
+
+    instance->prepare_backend();
+    instance->activate_audio();
+    instance->start_receive_thread();
+}
 
 #else
 

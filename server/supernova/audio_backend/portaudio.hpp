@@ -1,5 +1,5 @@
 //  portaudio backend
-//  Copyright (C) 2006, 2007, 2008 Tim Blechmann
+//  Copyright (C) 2006, 2007, 2008, 2012 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -19,117 +19,190 @@
 #ifndef _PORTAUDIO_HPP
 #define _PORTAUDIO_HPP
 
-#include "audio_backend.hpp"
+#include <cstdio>
 
-#include "portaudiocpp/PortAudioCpp.hxx"
-
+#include "portaudio.h"
 #ifdef HAVE_PORTAUDIO_CONFIG_H
 #include "portaudio/portaudio_config.h"
 #endif /* HAVE_PORTAUDIO_CONFIG_H */
 
-namespace nova
-{
-/** \brief class containing the static portaudio data
+#include "audio_backend_common.hpp"
+#include "utilities/branch_hints.hpp"
+
+
+namespace nova {
+
+/** \brief portaudio backend for supernova
  *
- *  \ingroup kernel
  *  */
-template <typename engine_functor>
+template <typename engine_functor,
+          typename sample_type = float,
+          bool blocking = false>
 class portaudio_backend:
-    public audio_backend<dsp_cb>,
-    private portaudio::AutoSystem,
-    private engine_functor
+    public detail::audio_delivery_helper<sample_type, float, blocking, false>,
+    public detail::audio_settings_basic,
+    protected engine_functor
 {
-    typedef nova::audio_backend<dsp_cb> audio_backend;
+    typedef detail::audio_delivery_helper<sample_type, float, blocking, false> super;
 
 public:
-    portaudio_backend(void)
+    portaudio_backend(void):
+        stream(NULL), blocksize_(0)
     {
+        int err = Pa_Initialize();
+        report_error(err, true);
+
+
+        list_devices();
+
 #ifdef PA_HAVE_JACK
-        PaJack_SetClientName("Nova");
+        PaJack_SetClientName("SuperNova");
 #endif
     }
 
     ~portaudio_backend(void)
     {
-        free_buffers();
+        if (audio_is_active())
+            deactivate_audio();
+
+        close_stream();
+
+        int err = Pa_Terminate();
+        report_error(err);
     }
 
-    device_list list_devices(void)
+    uint32_t get_audio_blocksize(void) const
     {
-        device_list devs;
+        return blocksize_;
+    }
 
-        portaudio::System & sys = portaudio::System::instance();
-
-        for (portaudio::System::DeviceIterator it = sys.devicesBegin(); it != sys.devicesEnd(); ++it)
-        {
-            portaudio::Device & dev = *it;
-
-            devs.push_back(Device(dev.index(), dev.name(), dev.maxInputChannels(), dev.maxOutputChannels(),
-                                  uint(dev.defaultSampleRate()), dev.defaultLowInputLatency(), dev.defaultHighInputLatency(),
-                                  dev.defaultLowOutputLatency(), dev.defaultHighOutputLatency()));
+private:
+    static void report_error(int err, bool throw_exception = false)
+    {
+        if (err < 0) {
+            engine_functor::log_printf_("PortAudio error: %s\n", Pa_GetErrorText( err ));
+            if (throw_exception)
+                throw std::runtime_error("PortAudio error");
         }
-        return devs;
     }
 
-
-    void open_audio_stream(Device const & indevice, uint inchans, Device const & outdevice, uint outchans,
-                                         uint samplerate)
+public:
+    static void list_devices(void)
     {
-        assert(!stream.get());
+        int device_number = Pa_GetDeviceCount();
+        if (device_number < 0)
+            report_error(device_number);
 
-        inchannels = inchans;
-        outchannels = outchans;
-
-        portaudio::System & sys = portaudio::System::instance();
-
-        assert(inchans <= indevice.inchannels);
-        portaudio::DirectionSpecificStreamParameters inParams(sys.deviceByIndex(indevice.apiIndex), inchannels, portaudio::FLOAT32,
-                                                              false, sys.deviceByIndex(indevice.apiIndex).defaultLowInputLatency(), NULL);
-
-        assert(outchans <= outdevice.outchannels);
-        portaudio::DirectionSpecificStreamParameters outParams(sys.deviceByIndex(outdevice.apiIndex), outchannels, portaudio::FLOAT32,
-                                                               false, sys.deviceByIndex(outdevice.apiIndex).defaultLowOutputLatency(), NULL);
-
-        portaudio::StreamParameters params(inParams, outParams, samplerate, 64, paClipOff);
-
-        params.isSupported();
-
-        stream.reset(new portaudio::MemFunCallbackStream<portaudio_backend>(params, *this, &portaudio_backend::perform));
-        allocate_buffers(inchannels, outchannels, 64);
-
-#if 0
-//#ifdef HAVE_PORTAUDIO_ALSA
-        assert(not stream->isOpen());
-
-        if (sys.deviceByIndex(indevice.apiIndex).hostApi().index() == paALSA or
-            sys.deviceByIndex(outdevice.apiIndex).hostApi().index() == paALSA)
-            PaAlsa_EnableRealtimeScheduling(stream->paStream(), 1);
-#endif
+        printf("Available Audio Devices:\n");
+        for (int i = 0; i != device_number; ++i) {
+            const PaDeviceInfo * device_info = Pa_GetDeviceInfo(i);
+            if (device_info) {
+                printf("%d: %s (%d inputs, %d outputs)\n", i, device_info->name,
+                       device_info->maxInputChannels, device_info->maxOutputChannels);
+            }
+        }
+        printf("\n");
     }
 
-    void close_audio_stream(void)
+    static bool match_device (std::string const & device_name, int & r_device_index)
     {
-        if(stream->isActive())
-            deactivate();
+        int device_number = Pa_GetDeviceCount();
+        if (device_number < 0)
+            report_error(device_number);
 
-        assert(!stream->isActive());
-
-        stream->close();
-        stream.reset();
+        for (int i = 0; i != device_number; ++i) {
+            const PaDeviceInfo * device_info = Pa_GetDeviceInfo(i);
+            if (std::string(device_info->name) == device_name) {
+                r_device_index = i;
+                return true;
+            }
+        }
+        return false;
     }
 
-    void activate()
+    bool open_stream(std::string const & input_device, unsigned int inchans,
+                     std::string const & output_device, unsigned int outchans,
+                     unsigned int samplerate, unsigned int pa_blocksize, unsigned int blocksize)
+    {
+        int input_device_index, output_device_index;
+        if (!match_device(input_device, input_device_index) || !match_device(output_device, output_device_index))
+            return false;
+
+        PaStreamParameters in_parameters, out_parameters;
+
+        in_parameters.channelCount = inchans;
+        in_parameters.device = input_device_index;
+        in_parameters.sampleFormat = paFloat32 | paNonInterleaved;
+        in_parameters.suggestedLatency = Pa_GetDeviceInfo(in_parameters.device)->defaultLowInputLatency;
+        in_parameters.hostApiSpecificStreamInfo = NULL;
+
+        out_parameters.channelCount = outchans;
+        out_parameters.device = output_device_index;
+        out_parameters.sampleFormat = paFloat32 | paNonInterleaved;
+        out_parameters.suggestedLatency = Pa_GetDeviceInfo(out_parameters.device)->defaultLowOutputLatency;
+        out_parameters.hostApiSpecificStreamInfo = NULL;
+
+        PaError supported = Pa_IsFormatSupported(&in_parameters, &out_parameters, samplerate);
+        report_error(supported);
+        if (supported != 0)
+            return false;
+
+        callback_initialized = false;
+        blocksize_ = blocksize;
+        PaError opened = Pa_OpenStream(&stream, &in_parameters, &out_parameters,
+                                       samplerate, pa_blocksize, paNoFlag,
+                                       &portaudio_backend::pa_process, this);
+
+        report_error(opened);
+
+        if (opened != paNoError)
+            return false;
+
+        input_channels = inchans;
+        super::input_samples.resize(inchans);
+        output_channels = outchans;
+        super::output_samples.resize(outchans);
+        samplerate_ = samplerate;
+        return true;
+    }
+
+    void close_stream(void)
+    {
+        if (stream == NULL)
+            return;
+
+        deactivate_audio();
+
+        int err = Pa_CloseStream(stream);
+        report_error(err);
+        stream = NULL;
+    }
+
+    void activate_audio()
     {
         assert(stream);
-        audio_backend::activate();
-        stream->start();
+        int err = Pa_StartStream(stream);
+        report_error(err);
     }
 
-    void deactivate()
+    bool audio_is_active(void)
     {
-        assert(stream);
-        stream->stop();
-        audio_backend::deactivate();
+        int is_active = Pa_IsStreamActive(stream);
+        if (is_active == 1)
+            return true;
+        if (is_active == 0)
+            return false;
+
+        report_error(is_active);
+        return false;
+    }
+
+    void deactivate_audio()
+    {
+        if (audio_is_active()) {
+            PaError err = Pa_StopStream(stream);
+            report_error(err);
+        }
     }
 
     bool audiostream_ready(void)
@@ -137,105 +210,98 @@ public:
         return stream;
     }
 
-    /** \brief deliver data to dac */
-    /* @{ */
-    virtual void deliver_dac_output(const_restricted_sample_ptr source, uint channel, uint frames)
-    {
-        if (likely(channel < out_samples.size()))
-            addvec_simd(out_samples[channel], source, audio_backend::dacblocksize);
-    }
-
-    virtual void deliver_dac_output_64(const_restricted_sample_ptr source, uint channel)
-    {
-        if (likely(channel < out_samples.size()))
-            addvec_simd<64>(out_samples[channel], source);
-    }
-
-    /* @} */
-
-    virtual void zero_dac_output(uint channel, uint frames)
-    {
-        if (likely(channel < out_samples.size()))
-            zerovec_simd(out_samples[channel], audio_backend::dacblocksize);
-    }
-
-    /** \brief fetch data from adc */
-    /* @{ */
-    virtual void fetch_adc_input(restricted_sample_ptr destination, uint channel, uint frames)
-    {
-        if (likely(channel < in_samples.size()))
-            copyvec_simd(destination, in_samples[channel], audio_backend::dacblocksize);
-        else
-            zerovec_simd(destination, audio_backend::dacblocksize);
-    }
-
-    virtual void fetch_adc_input_64(restricted_sample_ptr destination, uint channel)
-    {
-        if (likely(channel < in_samples.size()))
-            copyvec_simd_mp<64>(destination, in_samples[channel]);
-        else
-            zerovec_simd_mp<64>(destination);
-    }
-    /* @} */
-
 private:
-    int perform(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,
+    int perform(const void *inputBuffer, void *outputBuffer, unsigned long frames,
                 const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags)
     {
-        engine_functor::init_tick();
+        if (unlikely(!callback_initialized)) {
+            engine_functor::init_thread();
+            engine_functor::sync_clock();
+            callback_initialized = true;
+        }
+
+        if (statusFlags & (paInputOverflow | paInputUnderflow | paOutputOverflow | paOutputUnderflow))
+            engine_functor::sync_clock();
+
+        const float * inputs[input_channels];
         float * const *in = static_cast<float * const *>(inputBuffer);
-        for (uint i = 0; i != inchannels; ++i)
-        {
-            sample * hostbuffer = in[i];
-            sample * inbuffer = in_samples[i];
-            copyvec_simd_mp<64>(inbuffer, hostbuffer);
-        }
+        for (uint16_t i = 0; i != input_channels; ++i)
+            inputs[i] = in[i];
 
-        engine_functor::run_tick();
-
+        float * outputs[output_channels];
         float **out = static_cast<float **>(outputBuffer);
-        for (uint i = 0; i != outchannels; ++i)
-        {
-            sample * hostbuffer = out[i];
-            sample * outbuffer = out_samples[i];
-            copyvec_simd_mp<64>(hostbuffer, outbuffer);
-            zerovec_simd_mp<64>(outbuffer);
+        for (uint16_t i = 0; i != output_channels; ++i)
+            outputs[i] = out[i];
+
+        unsigned long processed = 0;
+        while (processed != frames) {
+//             printf("perform %d %d\n", frames, processed);
+            fetch_inputs(inputs, blocksize_);
+            engine_functor::run_tick();
+            deliver_outputs(outputs, blocksize_);
+            processed += blocksize_;
         }
+
         return paContinue;
     }
 
-    /** \brief allocate io buffers */
-    void allocate_buffers(uint inchannels, uint outchannels, uint framesPerBuffer)
+    void fetch_inputs(const float ** inputs, size_t frames)
     {
-        free_buffers();
-
-        audio_backend::dacblocksize = framesPerBuffer;
-        in_samples.resize(inchannels);
-        out_samples.resize(outchannels);
-
-        for (uint i = 0; i != inchannels; ++i)
-            in_samples[i] = calloc_aligned<sample>(audio_backend::dacblocksize);
-
-        for (uint i = 0; i != outchannels; ++i)
-            out_samples[i] = calloc_aligned<sample>(audio_backend::dacblocksize);
+        if (is_multiple_of_vectorsize(frames)) {
+            for (uint16_t i = 0; i != input_channels; ++i) {
+                if (is_aligned(inputs[i]))
+                    copyvec_simd(super::input_samples[i].get(), inputs[i], frames);
+                else
+                    copyvec(super::input_samples[i].get(), inputs[i], frames);
+                inputs[i] += blocksize_;
+            }
+        } else {
+            for (uint16_t i = 0; i != input_channels; ++i) {
+                copyvec(super::input_samples[i].get(), inputs[i], frames);
+                inputs[i] += blocksize_;
+            }
+        }
     }
 
-    /** \brief free io buffers */
-    void free_buffers(void)
+    void deliver_outputs(float ** outputs, size_t frames)
     {
-        for (uint i = 0; i != in_samples.size(); ++i)
-            free_aligned(in_samples[i]);
-
-        for (uint i = 0; i != out_samples.size(); ++i)
-            free_aligned(out_samples[i]);
+        if (is_multiple_of_vectorsize(frames)) {
+            for (uint16_t i = 0; i != output_channels; ++i) {
+                if (is_aligned(outputs[i]))
+                    copyvec_simd(outputs[i], super::output_samples[i].get(), frames);
+                else
+                    copyvec(outputs[i], super::output_samples[i].get(), frames);
+                outputs[i] += blocksize_;
+            }
+        } else {
+            for (uint16_t i = 0; i != output_channels; ++i) {
+                copyvec(outputs[i], super::output_samples[i].get(), frames);
+                outputs[i] += blocksize_;
+            }
+        }
     }
 
-    std::valarray<sample*> in_samples;
-    std::valarray<sample*> out_samples;
+    static bool is_aligned(const void * arg)
+    {
+        size_t mask = sizeof(vec<float>::size) * sizeof(float) * 8 - 1;
+        return !((size_t)arg & mask);
+    }
 
-    typedef portaudio::MemFunCallbackStream<portaudio_backend> PaCbStream;
-    scoped_ptr<PaCbStream> stream;
-    unsigned short inchannels, outchannels;
+    static bool is_multiple_of_vectorsize(size_t count)
+    {
+        return !(count & (vec<float>::objects_per_cacheline - 1));
+    }
+
+    static int pa_process(const void *input, void *output, unsigned long frame_count,
+                          const PaStreamCallbackTimeInfo *time_info, PaStreamCallbackFlags status_flags, void * user_data)
+    {
+        portaudio_backend * self = static_cast<portaudio_backend*>(user_data);
+        return self->perform(input, output, frame_count, time_info, status_flags);
+    }
+
+    PaStream *stream;
+    uint32_t blocksize_;
+    bool callback_initialized;
 };
 
 } /* namespace nova */
