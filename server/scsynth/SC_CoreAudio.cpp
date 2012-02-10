@@ -45,9 +45,7 @@
 #include "SC_Win32Utils.h"
 #endif
 
-#ifndef SC_INNERSC
 int64 gStartupOSCTime = -1;
-#endif //ifndef SC_INNERSC
 
 void sc_SetDenormalFlags();
 
@@ -542,9 +540,8 @@ bool SC_AudioDriver::Start()
 	mPrevSampleTime = 0.;
 
 	World_Start(mWorld);
-#ifndef SC_INNERSC
+
 	gStartupOSCTime = oscTimeNow();
-#endif //SC_INNERSC
 
 	return DriverStart();
 }
@@ -2641,182 +2638,3 @@ bool SC_PortAudioDriver::DriverStop()
 }
 
 #endif // SC_AUDIO_API_PORTAUDIO
-
-
-#if SC_AUDIO_API == SC_AUDIO_API_INNERSC_VST
-
-// =====================================================================
-// SC_VSTAudioDriver (VST)
-
-
-SC_VSTAudioDriver::SC_VSTAudioDriver(struct World *inWorld)
-		: SC_AudioDriver(inWorld)
-{
-  mIsStreaming = false;
-  // init big rsrc
-}
-
-SC_VSTAudioDriver::~SC_VSTAudioDriver()
-{
-  // close small rsrc (stream)
-  // close big rsrc
-}
-
-void SC_VSTAudioDriver::Callback( const void *input, void *output,
-            unsigned long frameCount, const VstTimeInfo* timeInfo )
-{
-    World *world = mWorld;
-
-//    (void) frameCount, timeInfo, statusFlags; // suppress unused parameter warnings
-
-	try {
-    int64 oscTime = 0; // $$$todo FIXME -> PortAudioTimeToHostTime( mStream, timeInfo.outputBufferDacTime );
-		mOSCbuftime = oscTime;
-
-		mFromEngine.Free();
-		mToEngine.Perform();
-		mOscPacketsToEngine.Perform();
-
-		int numInputs = mInputChannelCount;
-		int numOutputs = mOutputChannelCount;
-		const float **inBuffers = (const float**)input;
-		float **outBuffers = (float**)output;
-
-		int numSamples = NumSamplesPerCallback();
-		int bufFrames = mWorld->mBufLength;
-		int numBufs = numSamples / bufFrames;
-
-		float *inBuses = mWorld->mAudioBus + mWorld->mNumOutputs * bufFrames;
-		float *outBuses = mWorld->mAudioBus;
-		int32 *inTouched = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
-		int32 *outTouched = mWorld->mAudioBusTouched;
-
-		int minInputs = std::min<size_t>(numInputs, mWorld->mNumInputs);
-		int minOutputs = std::min<size_t>(numOutputs, mWorld->mNumOutputs);
-
-		int bufFramePos = 0;
-
-		int64 oscInc = mOSCincrement;
-		double oscToSamples = mOSCtoSamples;
-
-		// main loop
-		for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames) {
-			int32 bufCounter = mWorld->mBufCounter;
-			int32 *tch;
-			// copy+touch inputs
-			tch = inTouched;
-			for (int k = 0; k < minInputs; ++k) {
-				const float *src = inBuffers[k] + bufFramePos;
-				float *dst = inBuses + k * bufFrames;
-				for (int n = 0; n < bufFrames; ++n)
-          *dst++ = *src++;
-				*tch++ = bufCounter;
-			}
-			// run engine
-			//int64 schedTime;
-			//int64 nextTime = oscTime + oscInc;
-			//while ((schedTime = mScheduler.NextTime()) <= nextTime) {
-			//	world->mSampleOffset = (int)((double)(schedTime - oscTime) * oscToSamples);
-			//	SC_ScheduledEvent event = mScheduler.Remove();
-			//	event.Perform();
-			//	world->mSampleOffset = 0;
-			//}
-      // hack for now, schedule events as soon as they arrive
-
-      int64 schedTime;
-      int64 nextTime = oscTime + oscInc;
-      while ((schedTime = mScheduler.NextTime()) != kMaxInt64) {
-        world->mSampleOffset = 0;
-				SC_ScheduledEvent event = mScheduler.Remove();
-				event.Perform();
-				world->mSampleOffset = 0;
-			}
-			World_Run(world);
-			// copy touched outputs
-			tch = outTouched;
-			for (int k = 0; k < minOutputs; ++k) {
-				float *dst = outBuffers[k] + bufFramePos;
-				if (*tch++ == bufCounter) {
-					float *src = outBuses + k * bufFrames;
-					for (int n = 0; n < bufFrames; ++n)
-            *dst++ = *src++;
-  			}
-        else {
-					for (int n = 0; n < bufFrames; ++n)
-            *dst++ = 0.0f;
-				}
-			}
-			// update buffer time
-			mOSCbuftime = nextTime;
-		}
-	} catch (std::exception& exc) {
-		scprintf("SC_PortAudioDriver: exception in real time: %s\n", exc.what());
-	} catch (...) {
-		scprintf("SC_PortAudioDriver: unknown exception in real time\n");
-	}
-
-	//double cpuUsage = (double)Pa_GetStreamCpuLoad(mStream);
-  double cpuUsage = 0.0; // $$$todo fix fix. user will check load in host
-	mAvgCPU = mAvgCPU + 0.1 * (cpuUsage - mAvgCPU);
-	if (cpuUsage > mPeakCPU || --mPeakCounter <= 0)
-	{
-		mPeakCPU = cpuUsage;
-		mPeakCounter = mMaxPeakCounter;
-	}
-	mAudioSync.Signal();
-  //return paContinue;
-}
-
-
-// ====================================================================
-// NOTE: for now, in lieu of a mechanism that passes generic options to
-// the platform driver, we rely on the PortAudio default device environment variables
-bool SC_VSTAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
-{
-  // should init the driver and write the num of samples per callback
-  // and the sample rate in the supplied addresses
-
-  // this should open the resources (and return true if successful), but not
-  // really start the streaming... (this is the resp of DriverStart())
-  return true;
-}
-
-bool SC_VSTAudioDriver::DriverStart()
-{
-  return true;
-}
-
-bool SC_VSTAudioDriver::DriverStop()
-{
-  mIsStreaming = false;
-  return true;
-}
-
-int32 server_timeseed()
-{
-	static int32 count = 0;
-	struct timeval tv;
-  double us = timeGetTime( )*1000;
-  int sec = us/1000000;
-  int usec = us-sec*1000000;
-	return (int32)sec ^ (int32)usec ^ count--;
-}
-
-static inline int64 GetCurrentOSCTime()
-{
-  #pragma message("check where GetCurrentOSCTime( ) is called and try to defer that somewhere where VstTimeInfo is available")
-  //$$$todo fixme
-  return 0;
-}
-
-
-int64 oscTimeNow()
-{
-	return GetCurrentOSCTime();
-}
-
-void initializeScheduler()
-{
-}
-
-#endif // SC_AUDIO_API_INNERSC_VST
