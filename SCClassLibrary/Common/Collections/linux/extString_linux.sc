@@ -1,6 +1,6 @@
 + String {
-	runInTerminal {
-		("xterm -hold -e" + this).systemCmd;
+	runInTerminal {|shell="sh"|
+		("xterm -hold -T 'SuperCollider runInTerminal' -e" + shell + "-c" + this.shellQuote).unixCmd;
 	}
 
 	openOS {
