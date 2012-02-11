@@ -200,6 +200,7 @@ if(READLINE_FOUND)
 	set_property(TARGET libsclang
 		APPEND
 		PROPERTY COMPILE_DEFINITIONS HAVE_READLINE)
+	include_directories(${READLINE_INCLUDE_DIR})
 	target_link_libraries(libsclang ${READLINE_LIBRARY})
 endif(READLINE_FOUND)
 
