@@ -419,7 +419,15 @@ Despite the fact that the method is called 'unixCmd', strong::it does work in Wi
 ::
 
 method::unixCmd
-Execute the String on the command line using the Bourne shell (sh). Returns the pid of the newly created process (use Integer.pidRunning to test if a pid is alive). action is a Function that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process. postOutput is a Boolean that controls whether or not the output of the process is displayed in the post window.
+Execute a unix command asynchronously using the standard shell (sh).
+argument:: action
+A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
+argument:: postOutput
+A link::Classes/Boolean:: that controls whether or not the output of the process is displayed in the post window.
+returns::
+An link::Classes/Integer:: - the pid of the newly created process. Use link::Classes/Integer#-pidRunning:: to test if a process is alive.
+discussion::
+Example:
 code::
 "ls Help".unixCmd;
 "echo one; sleep 1; echo two; sleep 1".unixCmd { |res, pid| [\done, res, pid].postln };
@@ -433,12 +441,17 @@ code::
 ::
 
 method::systemCmd
-Executes a unix command synchronously.
+Executes a unix command synchronously using the standard shell (sh).
 
 returns:: Error code of the unix command
 
 method::runInTerminal
-Execute the String in a new terminal window. (The string is incorporated into a temporary script file and executed using a shell. "/usr/bash" is the default shell used but you can optionally specify which shell to use as an argument.)
+Execute the String in a new terminal window (asynchronously).
+argument::shell
+The shell used to execute the string.
+discussion::
+note:: On OSX, the string is incorporated into a temporary script file and executed using the shell. ::
+Example:
 code::
 "echo ---------Hello delightful SuperCollider user----------".runInTerminal;
 ::
