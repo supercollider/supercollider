@@ -213,12 +213,12 @@ ServerShmInterface {
 	}
 
 	setControlBusValue {
-		_ServerShmInterface_getControlBusValue
+		_ServerShmInterface_setControlBusValue
 		^this.primitiveFailed
 	}
 
 	setControlBusValues {
-		_ServerShmInterface_getControlBusValues
+		_ServerShmInterface_setControlBusValues
 		^this.primitiveFailed
 	}
 }
