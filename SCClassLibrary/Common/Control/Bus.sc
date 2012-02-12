@@ -126,9 +126,9 @@ Bus {
 			error ("Bus-getSynchronous only works for control-rate busses");
 		} {
 			if (values.size == 1) {
-				server.getControlBusValue(index, values[0])
+				server.setControlBusValue(index, values[0])
 			} {
-				server.getControlBusValues(index, values)
+				server.setControlBusValues(index, values)
 			}
 		}
 	}
