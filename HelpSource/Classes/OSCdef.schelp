@@ -76,7 +76,7 @@ Get this OSCdef's key.
 returns:: Usually a link::Classes/Symbol::.
 
 METHOD:: free
-Clears this MIDIdef from the global collection and deactivates it.
+Clears this OSCdef from the global collection and deactivates it.
 
 
 EXAMPLES::
