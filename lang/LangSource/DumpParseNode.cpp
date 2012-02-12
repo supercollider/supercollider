@@ -18,10 +18,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifdef SC_WIN32
-# define snprintf _snprintf
-# define PATH_MAX _MAX_PATH
-#endif
 #include "SCBase.h"
 #include "PyrParseNode.h"
 #include "PyrLexer.h"
@@ -32,6 +28,13 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <ctype.h>
+
+#ifdef _WIN32
+# define snprintf _snprintf
+# define PATH_MAX _MAX_PATH
+#endif
+
+
 extern int textpos;
 
 void dumpNodeList(PyrParseNode *node)
