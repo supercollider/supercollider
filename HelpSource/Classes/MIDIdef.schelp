@@ -81,6 +81,8 @@ A convenience method to create a new MIDIdef which responds to MIDI program chan
 
 returns:: An instance of MIDIdef which responds to MIDI program change messages.
 
+METHOD:: freeAll
+Clears and deactivates all MIDIdefs from the global collection.
 
 INSTANCEMETHODS::
 private:: addToAll, printOn
@@ -107,4 +109,7 @@ MIDIIn.doNoteOnAction(1, 1, 64, 64); // spoof a note on
 MIDIIn.doControlAction(1, 1, 1, 64); // spoof a cc
 MIDIIn.doControlAction(1, 1, 9, 64);
 MIDIIn.doControlAction(1, 10, 1, 64);
+
+MIDIdef(\test1).free; // free one def
+MIDIdef.freeAll;      // free all registered MIDIdefs
 ::
