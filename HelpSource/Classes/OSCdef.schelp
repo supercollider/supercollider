@@ -66,6 +66,8 @@ An optional link::Classes/Array:: composed of instances of link::Classes/Integer
 
 returns:: An instance of OSCdef.
 
+METHOD:: freeAll
+Clears and deactivates all OSCdefs from the global collection.
 
 INSTANCEMETHODS::
 private:: addToAll, printOn
@@ -112,6 +114,7 @@ OSCdef(\test).add(f = {\foo.postln}); // add another func
 m.sendMsg("/chat", "Hello App 1");
 OSCdef(\test).clear; // remove all functions
 m.sendMsg("/chat", "Hello App 1");
+OSCdef(\test).free;  // unregister OSCdef
 
 
 //////// Use an argTemplate for finer grained matching
@@ -120,4 +123,6 @@ s.boot;
 x = Synth(\default);
 OSCdef(\watchForXEnd, { 'ended!'.postln }, '/n_end', s.addr, nil, [x.nodeID]).oneShot;
 x.release(3);
+
+
 ::
