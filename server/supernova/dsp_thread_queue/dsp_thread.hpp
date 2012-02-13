@@ -233,11 +233,11 @@ private:
             if (err)
                 throw std::logic_error("Cannot set stack of DSP helper thread");
 
-            pthread_t thread;
-            err = pthread_create(&thread, &attr, dsp_thread::run_static, &thread);
+            pthread_t thread_id;
+            err = pthread_create(&thread_id, &attr, dsp_thread::run_static, &thread);
             if (err)
                 throw std::runtime_error("Cannot create DSP helper thread");
-            thread_group_.push_back(thread);
+            thread_group_.push_back(thread_id);
             pthread_attr_destroy(&attr);
         }
     }
