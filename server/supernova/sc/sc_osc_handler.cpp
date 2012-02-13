@@ -2547,10 +2547,20 @@ void b_gen_nrt_1(movable_array<char> & message, nova_endpoint const & endpoint)
 {
     sc_msg_iter msg(message.size(), (char*)message.data());
 
-    int index = msg.geti();
-    const char * generator = (const char*)msg.gets4();
-    if (!generator)
+    char nextTag = msg.nextTag();
+    if (nextTag != 'i') {
+        printf("/b_gen handler: invalid buffer index type %c\n", nextTag);
         return;
+    }
+    int index = msg.geti();
+
+    const char * generator = (const char*)msg.gets4();
+    if (!generator) {
+        if (nextTag += 'i') {
+            printf("/b_gen handler: invalid bufgen name\n");
+            return;
+        }
+    }
 
     sample * free_buf = sc_factory->buffer_generate(index, generator, msg);
     cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(b_gen_rt_2<realtime>, index, free_buf, endpoint));
