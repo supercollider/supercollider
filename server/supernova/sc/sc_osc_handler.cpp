@@ -2545,7 +2545,11 @@ void b_gen_nrt_3(uint32_t index, sample * free_buf, nova_endpoint const & endpoi
 template <bool realtime>
 void b_gen_nrt_1(movable_array<char> & message, nova_endpoint const & endpoint)
 {
-    sc_msg_iter msg(message.size(), (char*)message.data());
+    const char * data = (char*)message.data();
+    const char * msg_data = OSCstrskip(data); // skip address
+    size_t diff = msg_data - data;
+
+    sc_msg_iter msg(message.size() - diff, msg_data);
 
     char nextTag = msg.nextTag();
     if (nextTag != 'i') {
@@ -2582,7 +2586,7 @@ void b_gen_nrt_3(uint32_t index, sample * free_buf, nova_endpoint const & endpoi
 template <bool realtime>
 void handle_b_gen(received_message const & msg, size_t msg_size, nova_endpoint const & endpoint)
 {
-    movable_array<char> cmd (msg_size, msg.TypeTags()-1);
+    movable_array<char> cmd (msg_size, msg.AddressPattern());
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_gen_nrt_1<realtime>, cmd, endpoint));
 }
 
