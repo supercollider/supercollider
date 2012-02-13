@@ -32,9 +32,10 @@
 #endif
 
 #include "dsp_thread_queue.hpp"
+#include "../utilities/malloc_aligned.hpp"
+#include "nova-tt/mlock.hpp"
 
-namespace nova
-{
+namespace nova {
 
 using boost::uint16_t;
 
@@ -68,10 +69,26 @@ class dsp_thread:
     typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
 
 public:
-    dsp_thread(dsp_queue_interpreter & interpreter, uint16_t index,
+    dsp_thread(dsp_queue_interpreter & interpreter, uint16_t index, size_t stack_size,
                thread_init_functor const & thread_init = thread_init_functor()):
-        interpreter(interpreter), stop(false), index(index), thread_init_functor(thread_init)
-    {}
+        thread_init_functor(thread_init), interpreter(interpreter), stop(false), index(index), stack_ (NULL)
+    {
+        if (stack_size) {
+                stack_ = malloc_aligned<char>(stack_size);
+            if (stack_ == NULL)
+                throw std::bad_alloc();
+            // touch stack to avoid page faults
+            for (int i = 0; i != stack_size; ++i)
+                stack_[i] = 0;
+            mlock(stack_, stack_size);
+        }
+    }
+
+    ~dsp_thread(void)
+    {
+        if (stack_)
+            free_aligned(stack_);
+    }
 
     /** thread function
      * */
@@ -79,8 +96,7 @@ public:
     {
         thread_init_functor::operator()(index);
 
-        for (;;)
-        {
+        for (;;) {
             cycle_sem.wait();
             if (unlikely(stop.load(boost::memory_order_acquire)))
                 return;
@@ -88,6 +104,14 @@ public:
             interpreter.tick(index);
         }
     }
+
+    static void * run_static(void* arg)
+    {
+        dsp_thread * self = static_cast<dsp_thread*>(arg);
+        self->run();
+        return NULL;
+    }
+
     void terminate(void)
     {
         stop.store(true, boost::memory_order_release);
@@ -99,11 +123,18 @@ public:
         cycle_sem.post();
     }
 
+
+    char * stack(void)
+    {
+        return stack_;
+    }
+
 private:
     semaphore cycle_sem;
     dsp_queue_interpreter & interpreter;
     boost::atomic<bool> stop;
     uint16_t index;
+    char * stack_;
 };
 
 /** \brief container for all dsp threads
@@ -170,10 +201,62 @@ public:
     }
 
 private:
+#if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
+    // we can set the stack
+    static const int stack_size = 524288;
+    struct thread_group
+    {
+        void push_back(pthread_t t)
+        {
+            thread_group_.push_back(t);
+        }
+
+        void join_all(void)
+        {
+            foreach(pthread_t & thread, thread_group_) {
+                void * ret;
+                int err = pthread_join(thread, &ret);
+                if (err)
+                    printf("Error when joining helper thread\n");
+            }
+        }
+
+        std::vector<pthread_t> thread_group_;
+    };
+
+    void start_threads_impl(void)
+    {
+        foreach(dsp_thread & thread, threads) {
+            pthread_attr_t attr;
+            pthread_attr_init(&attr);
+            int err = pthread_attr_setstack(&attr, thread.stack(), stack_size);
+            if (err)
+                throw std::logic_error("Cannot set stack of DSP helper thread");
+
+            pthread_t thread;
+            err = pthread_create(&thread, &attr, dsp_thread::run_static, &thread);
+            if (err)
+                throw std::runtime_error("Cannot create DSP helper thread");
+            thread_group_.push_back(thread);
+            pthread_attr_destroy(&attr);
+        }
+    }
+#else
+    static const int stack_size = 0;
+    typedef boost::thread_group thread_group;
+
+    void start_threads_impl(void)
+    {
+        foreach(dsp_thread & thread, threads)
+            thread_group_.create_thread(boost::bind(&dsp_thread::run, boost::ref(thread)));
+    }
+
+#endif
+
     void set_dsp_thread_count(thread_count_t count, thread_init_functor const & init_functor)
     {
         for (thread_count_t i = 1; i != count; ++i)
-            threads.push_back(new dsp_thread(interpreter, i, init_functor));
+            threads.push_back(new dsp_thread(interpreter, i, stack_size, init_functor));
         assert(threads.size() == std::size_t(count-1));
     }
 
@@ -182,8 +265,7 @@ public:
     /* @{ */
     void start_threads(void)
     {
-        foreach(dsp_thread & thread, threads)
-            thread_group_.create_thread(boost::bind(&dsp_thread::run, boost::ref(thread)));
+        start_threads_impl();
     }
 
     void terminate_threads(void)
@@ -206,8 +288,7 @@ private:
     dsp_queue_interpreter interpreter;
 
     boost::ptr_vector<dsp_thread> threads; /* container of dsp threads */
-
-    boost::thread_group thread_group_;
+    thread_group thread_group_;
 };
 
 } /* namespace nova */
