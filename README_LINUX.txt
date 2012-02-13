@@ -166,24 +166,13 @@ If you want to build without it configure cmake like this:
 Building a Debian package
 ------------------------------------------------------------------------
 
-In our SVN we have debian packaging rules. These were designed on Ubuntu
-but we believe they should work on most common debian systems - please
-let us know if you have any issues with this way of building:
+The most up-to-date debian packaging rules are maintained by the 
+Debian Multimedia team. Repository (with debian/ folder):
 
-  cd SuperCollider3    # (or wherever your SC source is)
-  svn co https://supercollider.svn.sourceforge.net/svnroot/supercollider/packages/ubuntu/ debian
-  debuild
+  http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
 
-Eventually, some .deb packages will be put in the parent folder, and can
-then be installed just like any other Debian package. For example:
-
-  dpkg -i ../supercollider*.deb
-
-(Note: the packages supercollider-scel*.deb, supercollider-scvim*.deb,
-supercollider-sced*.deb, represent the different editor integrations:
-emacs, vim, gedit. You might not want to install all of those, but
-choose your preferred editor.)
-
+At time of writing they support 3.4.x, but we expect updates once 3.5
+is available.
 
 ------------------------------------------------------------------------
 running scsynth (standalone)
