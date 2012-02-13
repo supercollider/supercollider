@@ -701,64 +701,21 @@ void *SC_TerminalClient::pipeFunc( void *arg )
 void *SC_TerminalClient::pipeFunc( void *arg )
 {
 	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(arg);
-
 	SC_StringBuffer stack;
 	HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
-	HANDLE hnds[] = { client->mQuitInputEvent, hStdIn };
-
-	bool shouldRun = true;
-	while (shouldRun) {
-		DWORD result = WaitForMultipleObjects( 2, hnds, false, INFINITE );
-
-		if( result == WAIT_FAILED ) {
-			postfl("pipe-in: wait error.\n");
+	char buf[256];
+	while(1) {
+		DWORD n;
+		BOOL ok = ReadFile( hStdIn, &buf, 256, &n, NULL );
+		if(ok) {
+			client->pushCmdLine( stack, buf, n );
+		}
+		else {
+			postfl("pipe-in: ERROR (ReadFile): %i\n", GetLastError());
 			client->onQuit(1);
 			break;
 		}
-
-		int hIndex = result - WAIT_OBJECT_0;
-
-		if( hIndex == 0 ) {
-			postfl("pipe-in: quit requested.\n");
-			break;
-		}
-
-		if( hIndex == 1 ) {
-			DWORD nAvail;
-			if (!PeekNamedPipe(hStdIn, NULL, 0, NULL, &nAvail, NULL)) {
-				DWORD err =  GetLastError();
-				if( err == ERROR_BROKEN_PIPE ) {
-					postfl("pipe-in: Pipe has been ended. Quitting.\n");
-					client->onQuit(0);
-				}
-				else {
-					postfl("pipe-in: Error trying to peek stdin (%Li). Quitting.\n", err);
-					client->onQuit(1);
-				}
-				break;
-			}
-
-			while (nAvail > 0)
-			{
-				char buf[256];
-				DWORD nRead = sc_min(256, nAvail);
-				if (!ReadFile(hStdIn, buf, nRead, &nRead, NULL)) {
-					postfl("pipe-in: Error trying to read stdin (%Li). Quitting.\n", GetLastError());
-					client->onQuit(1);
-					shouldRun = false;
-					break;
-				}
-				else if (nRead > 0) {
-					client->pushCmdLine( stack, buf, nRead );
-				}
-
-				nAvail -= nRead;
-			}
-		}
 	}
-
-	postfl("pipe-in: stopped.\n");
-
 	return NULL;
 }
 
@@ -841,6 +798,12 @@ void SC_TerminalClient::startInput()
 
 void SC_TerminalClient::endInput()
 {
+	// NOTE: On Windows, there is no way to safely interrupt
+	// the pipe-reading thread. So just quit and let it die.
+
+#ifdef _WIN32
+	if (mUseReadline) {
+#endif
 	// wake up the input thread in case it is waiting
 	// for input to be processed
 	lockInput();
@@ -849,21 +812,21 @@ void SC_TerminalClient::endInput()
 	unlockInput();
 
 #ifndef _WIN32
-	postfl("main: sending quit command to input thread.\n");
 	char c = 'q';
 	ssize_t bytes = write( mInputCtlPipe[1], &c, 1 );
-	if( bytes < 1 ) { postfl("WARNING: could not send quit command to input thread.\n"); }
-
+	if( bytes < 1 )
+		postfl("WARNING: could not send quit command to input thread.\n");
 #else
-	postfl("main: signalling input thread quit event\n");
 	SetEvent( mQuitInputEvent );
 #endif
 
-	postfl("main: stopped, waiting for input thread to join...\n");
-
+	postfl("main: waiting for input thread to join...\n");
 	pthread_join( mInputThread, NULL );
 
-	postfl("main: input thread joined.\n");
+#ifdef _WIN32
+	} // if (mUseReadline)
+#endif
+	postfl("main: quitting...\n");
 }
 
 void SC_TerminalClient::cleanupInput()
