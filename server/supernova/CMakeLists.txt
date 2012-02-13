@@ -1,10 +1,13 @@
-find_package(FFTW3f)
+if(NOT APPLE)
+    find_package(FFTW3f)
 
-if (FFTW3F_FOUND)
-  add_definitions("-DSC_FFT_FFTW")
-  include_directories (${FFTW3F_INCLUDE_DIR})
-else()
-  message(SEND_ERROR "Cannot find libfftw3f")
+    if (FFTW3F_FOUND)
+        add_definitions("-DSC_FFT_FFTW")
+        include_directories (${FFTW3F_INCLUDE_DIR})
+    else()
+        message(SEND_ERROR "Cannot find libfftw3f")
+    endif()
+
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
@@ -33,6 +36,9 @@ include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
                     )
 
+if(APPLE)
+    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/libsndfile)
+endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface
                     ${CMAKE_SOURCE_DIR}/include/server
