@@ -140,9 +140,9 @@ c = Array.fill(q, { arg i;
 	b;
 });
 
-5.do{ arg i; c[0].add(Slider(c[0], Rect(10, i * 30 + 10, 150, 25)).value_(1.0.rand)) };
-5.do{ arg i; c[1].add(Slider(c[1], Rect(i * 30 + 10, 10, 25, 150)).value_(1.0.rand)) };
-c[2].add(Slider2D(c[2], Rect(10, 10, 155, 150)).x_(1.0.rand).y_(1.0.rand));
+5.do{ arg i; Slider(c[0], Rect(10, i * 30 + 10, 150, 25)).value_(1.0.rand) };
+5.do{ arg i; Slider(c[1], Rect(i * 30 + 10, 10, 25, 150)).value_(1.0.rand) };
+Slider2D(c[2], Rect(10, 10, 155, 150)).x_(1.0.rand).y_(1.0.rand);
 
 p = c.at(0); // previous
 p.visible = true; // show first one
