@@ -381,6 +381,8 @@ void scfft_doifft(scfft * f)
 
 void scfft_destroy(scfft *f, SCFFT_Allocator & alloc)
 {
+	if (f == NULL)
+		return;
 #if SC_FFT_FFTW
 	fftwf_destroy_plan(f->plan);
 #endif
