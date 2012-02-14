@@ -368,10 +368,10 @@ String[char] : RawArray {
 	resolveRelative {
 		var path, caller;
 		caller = thisMethod.getBackTrace.caller.functionDef;
-		if(caller == Interpreter.findMethod(\interpretPrintCmdLine), {
-			path = thisProcess.nowExecutingPath;
-		}, {
+		if(caller.isKindOf(Method) && (caller != Interpreter.findMethod(\interpretPrintCmdLine)), {
 			path = caller.filenameSymbol.asString;
+		}, {
+			path = thisProcess.nowExecutingPath;
 		});
 		if(this[0] == thisProcess.platform.pathSeparator, {^this});
 		if(path.isNil) { Error("can't resolve relative to an unsaved file").throw};
