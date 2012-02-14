@@ -14,16 +14,14 @@ classmethods::
 
 method::ar, kr
 
-argument::trig
+argument::in
 
 The input signal.
 
 
-argument::reset
+argument::trig
 
-Trigger. Resets the output value to the current input value. A
-trigger happens when the signal changes from non-positive to
-positive.
+Resets the output value to the current input value. A trigger happens when the signal changes from non-positive to positive.
 
 
 Examples::
