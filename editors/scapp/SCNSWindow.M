@@ -26,6 +26,9 @@
  */
 
 #import "SCNSWindow.h"
+#include <pthread.h>
+#import "PyrSymbolTable.h"
+#import "PyrLexer.h"
 extern pthread_mutex_t gLangMutex;
 
 @implementation SCNSWindow
