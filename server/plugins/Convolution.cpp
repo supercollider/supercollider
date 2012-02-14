@@ -250,7 +250,7 @@ void Convolution_next(Convolution *unit, int numSamples)
 	float *overlap= unit->m_overlapbuf+unit->m_pos;
 
 	for (int i=0; i<numSamples; ++i)
-		*++output = *++out + *++overlap;
+		ZXP(output) = *out++ + *overlap++;
 }
 
 
