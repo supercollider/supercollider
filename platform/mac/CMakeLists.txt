@@ -111,7 +111,7 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCDialog.mm
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCGraphView.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCImage.M
-	${CMAKE_SOURCE_DIR}/editors/scapp/SCNSWindow.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCNSWindow.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCService.mm
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCSoundFileView.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCTextView.M
@@ -154,6 +154,7 @@ set(objcpp_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/MyDocument.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/RendezvousClient.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCCocoaView.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCNSWindow.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCGraphView.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCImage.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCService.mm
@@ -169,7 +170,6 @@ set(objcpp_sources
 set(objc_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/GetStringFromUser.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/HTMLRenderer.m
-	${CMAKE_SOURCE_DIR}/editors/scapp/SCNSWindow.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/TabletEvents.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/TextFinder.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/SMLAdvancedFindController.m
