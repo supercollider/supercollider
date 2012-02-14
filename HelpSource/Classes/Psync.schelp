@@ -3,6 +3,23 @@ summary:: synchronise and limit pattern duration
 related:: Classes/Pfindur
 categories:: Streams-Patterns-Events>Patterns>Repetition
 
+Description::
+
+Psync behaves somewhat like link::Classes/Pfindur:: -- it has a teletype::maxdur:: argument that limits the total duration of the event stream.
+
+The difference is in what happens if the event pattern stops on its own before teletype::maxdur:: is reached. If the total duration of the event pattern is shorter than the given maximum duration:
+
+list::
+## Pfindur simply ends: no further time manipulation.
+## Psync inserts a rest to round the total duration up to the nearest multiple of the given teletype::quant::.
+::
+
+table::
+## strong::Pbind's natural duration:: || code::Pfindur(16, Pbind(....)):: strong::behavior:: || code::Psync(Pbind(....), 4, 16):: strong::behavior::
+## 6 beats || Pfindur plays only 6 beats || Psync rounds up to 8 beats (adds a two-beat rest)
+## 18 beats || Pfindur cuts off after 16 beats || Psync cuts off after 16 beats
+::
+
 ClassMethods::
 
 method::new
