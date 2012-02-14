@@ -20,6 +20,8 @@ table::
 ## 18 beats || Pfindur cuts off after 16 beats || Psync cuts off after 16 beats
 ::
 
+teletype::maxdur:: may be omitted. If the Pbind stops by itself, the rest will be inserted according to teletype::quant::, but the total duration will be unlimited.
+
 ClassMethods::
 
 method::new
@@ -28,8 +30,10 @@ argument::pattern
 a pattern that returns events.
 
 argument::quant
+rounding factor for total duration (effectively a "bar length")
 
 argument::maxdur
+maximum duration
 
 argument::tolerance
 difference threshhold that a pattern must exceed max to be ended.
