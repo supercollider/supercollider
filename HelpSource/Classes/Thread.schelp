@@ -12,6 +12,13 @@ It is wise not to fiddle with the source code for this class; see the warnings i
 method:: thisThread
 The global pseudo-variable code::thisThread:: always returns the enclosing thread running the given code. A Thread is aware of its own attached clock and associated beats and seconds timing, and has an individual random number seed and exception handler.
 
+code::
+// example
+thisThread.beats;
+thisThread.seconds;
+thisThread.clock;
+::
+
 classMethods::
 
 method::new
@@ -34,23 +41,16 @@ defaults to 64 depth call stack.
 instanceMethods::
 
 method::beats
-Get or set the elapsed beats (logical time) of the thread
+Get or set the elapsed beats (logical time) of the thread.
 
 method::seconds
 Get or set the elapsed seconds (logical time) of the thread.
 
 method::clock
-Get or set the thread's clock
+Get or set the thread's clock.
 
 method::isPlaying
-Returns:: true if it is playing
-
-code::
-// example
-thisThread.beats;
-thisThread.seconds;
-thisThread.clock;
-::
+Returns:: true if it is playing.
 
 method::state
 
@@ -66,7 +66,7 @@ subsection::Seeding the random number generator
 see also: link::Reference/randomSeed::
 
 method::randSeed
-Set the random number generator seed using a single integer
+Set the random number generator seed using a single integer.
 discussion::
 Example:
 code::
