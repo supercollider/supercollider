@@ -1,9 +1,4 @@
 /*
- *  SCSoundFileView.h
- *  xSC3lang
- *
- *  Created by jan truetzschler on 4/12/06.
- *  Copyright (c) 2006 jan truetzschler. All rights reserved.
 
 	SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
