@@ -256,7 +256,7 @@ void Convolution_next(Convolution *unit, int numSamples)
 
 
 //include local buffer test in one place
-static SndBuf * ConvGetBuffer(Unit * unit, uint32 bufnum)
+static SndBuf * ConvGetBuffer(Unit * unit, uint32 bufnum, const char * ugenName, int inNumSamples)
 {
 	SndBuf *buf;
 	World *world = unit->mWorld;
@@ -264,19 +264,30 @@ static SndBuf * ConvGetBuffer(Unit * unit, uint32 bufnum)
 	if (bufnum >= world->mNumSndBufs) {
 		int localBufNum = bufnum - world->mNumSndBufs;
 		Graph *parent = unit->mParent;
-		if(localBufNum <= parent->localMaxBufNum) {
+		if (localBufNum <= parent->localMaxBufNum) {
 			buf = parent->mLocalSndBufs + localBufNum;
 		} else {
-			if(unit->mWorld->mVerbosity > -1){ Print("ConvolutionX UGen Buffer Number error: invalid buffer number: %i.\n", bufnum); }
-			SETCALC(*ClearUnitOutputs);
-			unit->mDone = true;
-			return NULL;
+			if (unit->mWorld->mVerbosity > -1)
+				Print("%s: invalid buffer number (%d).\n", ugenName, bufnum);
+			goto handle_failure;
 		}
 	} else {
 		buf = world->mSndBufs + bufnum;
 	}
 
+	if (buf->data == NULL) {
+		if (unit->mWorld->mVerbosity > -1)
+			Print("%s: uninitialized buffer (%i).\n", ugenName, bufnum);
+		goto handle_failure;
+	}
+
 	return buf;
+
+handle_failure:
+	SETCALC(*ClearUnitOutputs);
+	ClearUnitOutputs(unit, inNumSamples);
+	unit->mDone = true;
+	return NULL;
 }
 
 
@@ -297,7 +308,7 @@ void Convolution2_Ctor(Convolution2 *unit)
 	//if (bufnum >= world->mNumSndBufs) bufnum = 0;
 	//	SndBuf *buf = world->mSndBufs + bufnum;
 
-	SndBuf *buf = ConvGetBuffer(unit,bufnum);
+	SndBuf *buf = ConvGetBuffer(unit, bufnum, "Convolution2", 1);
 
 	if(buf) {
 		if ( unit->m_insize <= 0 ) // if smaller than zero, equal to size of buffer
@@ -420,7 +431,9 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 		//if (bufnum >= world->mNumSndBufs) bufnum = 0;
 		//SndBuf *buf = world->mSndBufs + bufnum;
 
-		SndBuf *buf = ConvGetBuffer(unit,(uint32)ZIN0(1));
+		SndBuf *buf = ConvGetBuffer(unit,(uint32)ZIN0(1), "Convolution2", numSamples);
+		if (!buf)
+			return;
 		LOCK_SNDBUF_SHARED(buf);
 
 		memcpy(unit->m_fftbuf2, buf->data, insize);
@@ -622,7 +635,7 @@ void Convolution2L_Ctor(Convolution2L *unit)
 
 	World *world = unit->mWorld;
 
-	SndBuf *buf = ConvGetBuffer(unit,bufnum);
+	SndBuf *buf = ConvGetBuffer(unit, bufnum, "Convolution2L", 1);
 
 	if(buf) {
 		SCWorld_Allocator alloc(ft, unit->mWorld);
@@ -727,7 +740,9 @@ void Convolution2L_next(Convolution2L *unit, int numSamples)
 
 		uint32 bufnum = (int)ZIN0(1);
 		World *world = unit->mWorld;
-		SndBuf *buf = ConvGetBuffer(unit,bufnum);
+		SndBuf *buf = ConvGetBuffer(unit, bufnum, "Convolution2L", numSamples);
+		if (!buf)
+			return;
 
 		//float fbufnum  = ZIN0(1);
 		//		//int log2n2 = unit->m_log2n;
@@ -953,7 +968,7 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 
 	World *world = unit->mWorld;
 
-	SndBuf *buf = ConvGetBuffer(unit,bufnumL);
+	SndBuf *buf = ConvGetBuffer(unit, bufnumL, "StereoConvolution2L", 1);
 
 	if (buf) {
 		LOCK_SNDBUF_SHARED(buf);
@@ -968,9 +983,10 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 		//in place transform for now
 		//rffts(unit->m_fftbuf2[0], log2n, 1, cosTable[log2n]);
 		scfft_dofft(unit->m_scfft2[0]);
-	}
+	} else
+		return;
 
-	buf = ConvGetBuffer(unit,bufnumR);
+	buf = ConvGetBuffer(unit, bufnumR, "StereoConvolution2L", 1);
 	if (buf) {
 		LOCK_SNDBUF(buf);
 
@@ -1063,8 +1079,11 @@ void StereoConvolution2L_next(StereoConvolution2L *unit, int wrongNumSamples)
 		//printf("bufnum %i \n", bufnum);
 		World *world = unit->mWorld;
 
-		SndBuf *bufL = ConvGetBuffer(unit,bufnumL);
-		SndBuf *bufR = ConvGetBuffer(unit,bufnumR);
+		SndBuf *bufL = ConvGetBuffer(unit, bufnumL, "StereoConvolution2L", numSamples);
+		SndBuf *bufR = ConvGetBuffer(unit, bufnumR, "StereoConvolution2L", numSamples);
+
+		if (!bufL || !bufL)
+			return;
 
 		//	if (bufnumL >= world->mNumSndBufs) bufnumL = 0;
 		//		SndBuf *bufL = world->mSndBufs + bufnumL;
@@ -1271,7 +1290,7 @@ void Convolution3_Ctor(Convolution3 *unit)
 	World *world = unit->mWorld;
 	//if (bufnum >= world->mNumSndBufs) bufnum = 0;
 	//SndBuf *buf = world->mSndBufs + bufnum;
-	SndBuf *buf = ConvGetBuffer(unit,bufnum);
+	SndBuf *buf = ConvGetBuffer(unit, bufnum, "Convolution3", 1);
 
 	if (buf) {
 		if ( unit->m_insize <= 0 ) // if smaller than zero, equal to size of buffer
@@ -1331,7 +1350,7 @@ void Convolution3_next_a(Convolution3 *unit)
 		uint32 bufnum = (int)fbufnum;
 		// 			printf("bufnum %i \n", bufnum);
 		World *world = unit->mWorld;
-		SndBuf *buf = ConvGetBuffer(unit,bufnum);
+		SndBuf *buf = ConvGetBuffer(unit, bufnum, "Convolution3", numSamples);
 		LOCK_SNDBUF_SHARED(buf);
 
 		//if (bufnum >= world->mNumSndBufs) bufnum = 0;
@@ -1394,7 +1413,9 @@ void Convolution3_next_k(Convolution3 *unit)
 		uint32 bufnum = (int)fbufnum;
 		// 			printf("bufnum %i \n", bufnum);
 		World *world = unit->mWorld;
-		SndBuf *buf= ConvGetBuffer(unit,bufnum);
+		SndBuf *buf= ConvGetBuffer(unit, bufnum, "Convolution3", 1);
+		if (!buf)
+			return;
 		LOCK_SNDBUF_SHARED(buf);
 
 		//if (bufnum >= world->mNumSndBufs) bufnum = 0;
