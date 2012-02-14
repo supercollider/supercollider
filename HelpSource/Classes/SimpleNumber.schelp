@@ -265,7 +265,7 @@ method:: excess
 Returns the difference of the receiver and its clipped form.
 discussion::
 code::
-(a - clip2(a,b)).
+(a - clip2(a,b))
 ::
 
 subsection:: testing
@@ -646,6 +646,8 @@ argument::outMin
 output minimum
 argument::outMax
 output maximum
+argument::curve
+0 (linear) <0 (concave, negatively curved) >0 (convex, positively curved)
 argument::clip
 nil (don't clip)
 \max (clip ceiling)
@@ -673,6 +675,8 @@ argument::outMin
 output minimum
 argument::outMax
 output maximum
+argument::curve
+0 (linear) <0 (concave, negatively curved) >0 (convex, positively curved)
 argument::clip
 nil (don't clip)
 \max (clip ceiling)
