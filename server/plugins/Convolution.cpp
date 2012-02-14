@@ -386,6 +386,8 @@ void Convolution2_Ctor(Convolution2 *unit)
 			unit->mDone = true;
 			//SETCALC(Convolution2_next2);
 		}
+	} else {
+		unit->m_scfft2 = unit->m_scfft1 = unit->m_scfftR = NULL;
 	}
 }
 
@@ -692,6 +694,8 @@ void Convolution2L_Ctor(Convolution2L *unit)
 		unit->m_prevtrig = 0.f;
 
 		SETCALC(Convolution2L_next);
+	} else {
+		unit->m_scfft1 = unit->m_scfft2 = unit->m_scfft3 = unit->m_scfftR = unit->m_scfftR2 = NULL;
 	}
 }
 
