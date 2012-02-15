@@ -20,6 +20,8 @@ method::ar, kr
 argument::buf
 Buffer number.
 
+note:: The buffers provided to any of the BufDelay units must be one channel. If you want to delay a multichannel signal, you must provide as many separate (one-channel) buffers as there are input channels.::
+
 argument::in
 The input signal.
 
@@ -45,6 +47,22 @@ z = Decay.ar(Dust.ar(1,0.5), 0.3, WhiteNoise.ar);
 BufDelayC.ar(b.bufnum, z, 0.2, 1, z); // input is mixed with delay via the add input
 }.play
 )
+
+b.free;
+
+
+// multichannel
+
+// two channels, two buffers
+b = Buffer.allocConsecutive(2, s, 32768, 1);
+
+a = { |bufs = #[0, 1]|
+	var sig = SinOsc.ar([440, 880]) * Decay2.kr(Impulse.kr([2, 4]), 0.01, 0.15);
+	sig + BufDelayC.ar(bufs, sig, delaytime: 0.125)
+}.play(args: [bufs: b]);
+
+a.free;
+b.do(_.free);
 
 ::
 
