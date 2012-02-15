@@ -250,7 +250,7 @@ void Convolution_next(Convolution *unit, int numSamples)
 	float *overlap= unit->m_overlapbuf+unit->m_pos;
 
 	for (int i=0; i<numSamples; ++i)
-		ZXP(output) = *out++ + *overlap++;
+		ZXP(output) = out[i] + overlap[i];
 }
 
 
@@ -506,7 +506,7 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 	unit->m_prevtrig = curtrig;
 
 	for (int i=0; i<numSamples; ++i)
-		*++output = *++out + *++overlap;
+		ZXP(output) = out[i] + overlap[i];
 }
 
 
@@ -903,7 +903,7 @@ void Convolution2L_next(Convolution2L *unit, int numSamples)
 	unit->m_prevtrig = curtrig;
 
 	for (int i=0; i<numSamples; ++i)
-		*++output = *++out + *++overlap;
+		ZXP(output) = out[i] + overlap[i];
 }
 
 /** basically the same as Convolution2L, but takes a stereo buffer to convolve with and outputs a stereo signal */
@@ -1279,8 +1279,8 @@ void StereoConvolution2L_next(StereoConvolution2L *unit, int wrongNumSamples)
 	unit->m_prevtrig = curtrig;
 
 	for (int i=0; i<numSamples; ++i) {
-		*++outputL = *++outL + *++overlapL;
-		*++outputR = *++outR + *++overlapR;
+		ZXP(outputL) = outL[i] + overlapL[i];
+		ZXP(outputR) = outR[i] + overlapR[i];
 	}
 }
 
@@ -1438,7 +1438,7 @@ void Convolution3_next_k(Convolution3 *unit)
 		pout[ind] = pout[ind] + pin[i]*input;
 	}
 
-	float *output = ZOUT(0);
+	float *output = OUT(0);
 	*output = pout[pos];
 
 	if ( ++pos > size )
