@@ -57,6 +57,8 @@ endif()
 #############################################
 # Compiler flags etc
 
+add_definitions(-DWIN32_LEAN_AND_MEAN)
+
 if (${CMAKE_COMPILER_IS_GNUCXX})
 	exec_program(${CMAKE_CXX_COMPILER} ARGS -dumpversion OUTPUT_VARIABLE _gcc_version)
 
