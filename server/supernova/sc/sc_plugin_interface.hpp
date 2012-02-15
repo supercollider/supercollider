@@ -30,7 +30,7 @@
 #include "SC_World.h"
 
 #include <boost/scoped_array.hpp>
-#include <boost/thread/pthread/mutex.hpp>
+#include <boost/thread/mutex.hpp>
 
 namespace nova
 {
