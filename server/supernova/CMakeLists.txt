@@ -89,13 +89,22 @@ if (DL)
     target_link_libraries(libsupernova ${DL})
 endif()
 
-find_library(JACK NAMES jack)
-if (JACK)
-    set_property(TARGET libsupernova supernova
-                 APPEND
-                 PROPERTY COMPILE_DEFINITIONS JACK_BACKEND)
-    target_link_libraries(libsupernova ${JACK})
-    include_directories(${JACK_INCLUDE_DIRS})
+if (WIN32 OR APPLE)
+    find_package(Portaudio)
+    if(NOT PORTAUDIO_FOUND)
+        message(FATAL_ERROR "Portaudio missing")
+    endif()
+    add_definitions(-DPORTAUDIO_BACKEND ${PORTAUDIO_DEFINITIONS})
+    include_directories(${PORTAUDIO_INCLUDE_DIRS})
+else()
+    find_library(JACK NAMES jack)
+    if (JACK)
+        set_property(TARGET libsupernova supernova
+                    APPEND
+                    PROPERTY COMPILE_DEFINITIONS JACK_BACKEND)
+        target_link_libraries(libsupernova ${JACK})
+        include_directories(${JACK_INCLUDE_DIRS})
+    endif()
 endif()
 
 find_package(Sndfile)
