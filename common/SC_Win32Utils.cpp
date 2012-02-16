@@ -22,6 +22,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <cstdlib>
 #include <sys/timeb.h>
 #include <time.h>
 
@@ -63,7 +64,7 @@ void win32_gettimeofday(timeval* tv, void*)
 
 void win32_GetHomeFolder(char* homeFolder, int bufLen)
 {
-  char homeFolder_[_MAX_PATH];
+  char homeFolder_[MAX_PATH];
   const char *h = 0;
   if (!(h = ::getenv("home")))
     h = ::getenv("HOME");
