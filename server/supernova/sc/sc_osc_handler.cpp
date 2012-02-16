@@ -28,6 +28,10 @@
 
 #include "SC_OSC_Commands.h"
 
+#ifdef _WIN32
+#include "malloc.h" // for alloca
+#endif
+
 namespace nova {
 
 using namespace std;
