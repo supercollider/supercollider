@@ -35,6 +35,7 @@
 #include "SC_Samp.h"
 #include "SC_Prototypes.h"
 #include "SC_Errors.h"
+#include "SC_Unit.h"
 #include "clz.h"
 #include "SC_fftlib.h"
 #include "../../common/SC_SndFileHelpers.hpp"
@@ -397,10 +398,10 @@ void clear_outputs(Unit *unit, int samples)
 
     if ((samples & 15) == 0)
         for (size_t i=0; i!=outputs; ++i)
-            nova::zerovec_simd(OUT(i), samples);
+            nova::zerovec_simd(unit->mOutBuf[i], samples);
     else
         for (size_t i=0; i!=outputs; ++i)
-            nova::zerovec(OUT(i), samples);
+            nova::zerovec(unit->mOutBuf[i], samples);
 }
 
 void node_end(struct Node * node)
