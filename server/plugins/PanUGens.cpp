@@ -1667,12 +1667,12 @@ PluginLoad(Pan)
 	DefineSimpleUnit(Pan2);
 	DefineSimpleUnit(Pan4);
 	DefineSimpleUnit(LinPan2);
-	DefineSimpleUnit(Balance2);
+	DefineSimpleCantAliasUnit(Balance2);
 	DefineSimpleUnit(Rotate2);
 	DefineSimpleUnit(XFade2);
 	DefineSimpleUnit(LinXFade2);
 	DefineSimpleUnit(PanB);
-	DefineSimpleUnit(PanB2);
+	DefineSimpleCantAliasUnit(PanB2);
 	DefineSimpleUnit(BiPanB2);
 	DefineDtorCantAliasUnit(PanAz);
 	DefineSimpleCantAliasUnit(DecodeB2);
