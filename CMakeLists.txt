@@ -204,6 +204,11 @@ else()
 	option(SC_PSYCOLLIDER "Build PsyCollider" OFF)
 endif()
 
+if(WIN32)
+    option(SC_WIN_DEP_DIRS
+        "A list of directories where dependencies will be searched for when packaging.")
+endif()
+
 if(CMAKE_COMPILER_IS_GNUCXX)
     option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines, requires gcc-4.3 or higher).")
     option(LTO "Use GCC's link time optimizer' (experimental).")
@@ -265,8 +270,8 @@ add_subdirectory(external_libraries)
 add_subdirectory(server)
 add_subdirectory(lang)
 add_subdirectory(bindings)
-add_subdirectory(platform)
 add_subdirectory(editors)
+add_subdirectory(platform)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
     install(DIRECTORY include/common include/plugin_interface include/server include/lang
@@ -445,17 +450,6 @@ set_directory_properties(
 add_subdirectory(testsuite)
 
 #############################################
-# win32 install support
-
-if(WIN32)
-	install(FILES
-		${FFTW3F_LIBRARY} ${SNDFILE_LIBRARY} ${PTHREADS_LIBRARY}
-		${PORTAUDIO_LIBRARIES} ${READLINE_LIBRARY}
-		DESTINATION "SuperCollider"
-		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-endif()
-
-#############################################
 # CPack support
 
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
@@ -471,10 +465,11 @@ if(APPLE)
 	set(CPACK_DMG_DS_STORE "${CMAKE_SOURCE_DIR}/package/ds_store")
 	set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/package/background.png")
 	set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/platform/mac/Resources/SCcube.icns")
-elseif(WIN32)
-	set(CPACK_MONOLITHIC_INSTALL 1)
 endif()
-include(CPack)
+
+if(NOT WIN32) # We define a custom 'package' target in platform/windows/CMakeLists.txt
+    include(CPack)
+endif()
 
 #############################################
 # hide advanced variables
