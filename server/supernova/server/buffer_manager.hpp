@@ -37,6 +37,7 @@ struct buffer_wrapper
 {
     typedef std::size_t size_t;
     typedef float sample_t;
+    typedef uint32_t uint;
 
     buffer_wrapper(void):
         data(0), frames_(0), channels_(0), sample_rate_(0)
