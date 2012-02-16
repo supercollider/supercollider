@@ -131,6 +131,8 @@ namespace detail {
 typedef portaudio_backend<realtime_engine_functor, float, false> audio_backend;
 #elif defined(JACK_BACKEND)
 typedef jack_backend<realtime_engine_functor, float, false> audio_backend;
+#else
+#error "no audio backend selected"
 #endif
 
 } // detail
