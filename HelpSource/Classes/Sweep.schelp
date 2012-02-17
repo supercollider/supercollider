@@ -84,7 +84,7 @@ a.set(\run, 1)
 a.set(\t_trig, 1)
 a.free
 
-//shorter duration and downwards…
+//shorter duration and downwards...
 a= Synth(\lineReset, [\start, 1000, \end, 500, \dur, 0.5])
 a.set(\t_trig, 1)
 a.set(\run, 0)

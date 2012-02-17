@@ -17,4 +17,4 @@ private::initClass, prSetDefaultFont, prSetSyntaxColorTheme, prDefaultUsesAutoIn
 
 InstanceMethods::
 
-private::prUsesAutoInOutdent_, prIsEditable_, prSetTitle, prGetTitle, prGetFileName, prSetFileName, prGetBounds, prSetBounds, prBalanceParens, prclose, prinsertText, prinitByIndex, prGetLastIndex, propen, prinitByString, prSetBackgroundColor, prGetBackgroundColor, prSetSelectedBackgroundColor, prGetSelectedBackgroundColor, prSelectLine
+private::prUsesAutoInOutdent_, prIsEditable_, prSetTitle, prGetTitle, prGetFileName, prSetFileName, prGetBounds, prSetBounds, prBalanceParens, prclose, prinsertText, prinitByIndex, prGetLastIndex, propen, prinitByString, prSetBackgroundColor, prGetBackgroundColor, prSetSelectedBackgroundColor, prGetSelectedBackgroundColor, prSelectLine, prSetFont
