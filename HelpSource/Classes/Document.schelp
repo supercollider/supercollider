@@ -822,3 +822,17 @@ fork({
 }, AppClock)
 )
 ::
+
+Changing the default look of documents can be done with the help of the link::#*initAction:: method. Run the following example once. Afterwards all newly created documents will have a dark grey background. To make this change happen every time you start supercollider, put the code inside your startup.scd file (and optionally wrap it in a code::{}.defer(0.1):: ).
+code::
+(
+Document.listener.background = Color.red;	//a special color for post document
+Document.listener.bounds = Rect(1, 461, 620, 567);	//move and resize post document
+Document.initAction = {|doc|			//function to run for every new document
+	doc.background = Color.grey(0.1, 0.9);
+	doc.bounds = Rect(0, 119, 1280, 659);
+	doc.selectedBackground = Color(0.4, 0.05, 0.18);
+	doc.stringColor = Color.grey(0.9);
+};
+)
+::
