@@ -55,8 +55,7 @@ public:
 
       w = qobject_cast<QWIDGET*>(obj);
       if( !w ) {
-        qcErrorMsg( QString("No appropriate constructor found for '%1'.")
-          .arg( QWIDGET::staticMetaObject.className() ) );
+        qcNoConstructorMsg( QcObjectFactory<QWIDGET>::metaObject(), 8, &arg[2] );
         return 0;
       }
     }
