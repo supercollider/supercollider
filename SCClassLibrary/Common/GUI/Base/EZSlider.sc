@@ -95,8 +95,10 @@ EZSlider : EZGui {
 			this.value_(initVal);
 		};
 		
-		labelView.mouseDownAction = {|view, x, y, modifiers, buttonNumber, clickCount|
-			if(clickCount == 2, {this.editSpec});
+		if (labelView.notNil) {
+			labelView.mouseDownAction = {|view, x, y, modifiers, buttonNumber, clickCount|
+				if(clickCount == 2, {this.editSpec});
+			}
 		};
 		
 		this.prSetViewParams;
