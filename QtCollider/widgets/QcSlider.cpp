@@ -22,79 +22,50 @@
 #include "QcSlider.h"
 #include "../QcWidgetFactory.h"
 
-#include <QApplication>
+#include <QMouseEvent>
+#include <QKeyEvent>
 
 QC_DECLARE_QWIDGET_FACTORY(QcSlider);
 
 QcSlider::QcSlider() :
   QtCollider::Style::Client(this),
-  lastVal(0),
-  bDoAction( false ),
+  _value(0.0),
+  _step(0.1),
   _hndLen(20)
 {
-  setRange(0, 10000);
-  setStep( 0.01 );
-  lastVal = sliderPosition();
+  setFocusPolicy( Qt::StrongFocus );
+  setOrientation( Qt::Vertical );
+}
 
-  if(orientation() == Qt::Horizontal)
-    setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-  else
-    setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding );
-
-  connect( this, SIGNAL(actionTriggered( int )),
-           this, SLOT(action( int )));
+void QcSlider::setValue( double val )
+{
+  _value = qBound(0.0, val, 1.0);
+  update();
 }
 
 void  QcSlider::increment( double factor )
 {
-  QSlider::setValue( QSlider::singleStep() * factor + QSlider::value() );
+  setValue( _step * factor + _value );
+  update();
 }
 
 void  QcSlider::decrement( double factor )
 {
-  QSlider::setValue( QSlider::singleStep() * (-factor) + QSlider::value() );
-}
-
-void QcSlider::action( int act )
-{
-  if( sliderPosition() != lastVal )
-  {
-      if( act < 5 ) {
-        float step = singleStep();
-        bool modified = modifyStep( &step );
-
-        if( modified ) {
-          if( act == QAbstractSlider::SliderSingleStepAdd ||
-              act == QAbstractSlider::SliderPageStepAdd )
-            setSliderPosition( lastVal + step );
-          else
-            setSliderPosition( lastVal - step );
-        }
-      }
-      lastVal = sliderPosition();
-      Q_EMIT( action() );
-  }
-}
-
-void QcSlider::setStep( float fStep )
-{
-  int iStep = fStep * 10000;
-  setSingleStep( iStep );
-  setPageStep( iStep );
+  setValue( - _step * factor + _value );
+  update();
 }
 
 void QcSlider::setOrientation( int i )
 {
-  Qt::Orientation ort = (Qt::Orientation) i;
+  _ort = (Qt::Orientation) i;
 
-  QSlider::setOrientation(ort);
-
-  if(orientation() == Qt::Horizontal)
+  if(_ort == Qt::Horizontal)
     setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
   else
     setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
 
   updateGeometry();
+  update();
 }
 
 QSize QcSlider::sizeHint() const
@@ -111,4 +82,97 @@ QSize QcSlider::minimumSizeHint() const
     return QSize(_hndLen + 10, 20);
   else
     return QSize(20, _hndLen + 10);
+}
+
+void QcSlider::mousePressEvent ( QMouseEvent *e )
+{
+  setValue( valueAt(e->pos()) );
+  update();
+  Q_EMIT( action() );
+}
+
+void QcSlider::mouseMoveEvent ( QMouseEvent *e )
+{
+  if( !e->buttons() ) return;
+
+  setValue( valueAt(e->pos()) );
+  update();
+  Q_EMIT( action() );
+}
+
+void QcSlider::paintEvent( QPaintEvent *e )
+{
+  using namespace QtCollider::Style;
+  using QtCollider::Style::RoundRect;
+
+  QPainter p(this);
+  const QPalette &plt = palette();
+
+  p.save();
+  p.setRenderHint( QPainter::Antialiasing, true );
+
+  QRect rGroove = rect();
+
+  // draw groove
+  RoundRect shGroove( rGroove, 2 );
+  QColor baseColor( grooveColor() );
+  drawSunken( &p, plt, shGroove, baseColor, hasFocus() ? focusColor() : QColor() );
+
+  // geometry
+  QRect rHandle( thumbRect() );
+
+  // draw handle
+  RoundRect shHandle( rHandle, 2 );
+  drawRaised( &p, plt, shHandle, plt.color(QPalette::Button).lighter(105) );
+
+  p.restore();
+
+    // draw marker
+  QPen pen(plt.color(QPalette::ButtonText));
+  pen.setWidth(2);
+  p.setPen(pen);
+  if(_ort == Qt::Horizontal) {
+    qreal center = rHandle.center().x() + 1;
+    QLine line( center, rHandle.top() + 3, center, rHandle.bottom() - 2 );
+    p.drawLine(line);
+    pen.setColor(plt.color(QPalette::Light));
+  } else {
+    qreal center = rHandle.center().y() + 1;
+    QLine line( rHandle.left() + 3, center, rHandle.right() - 2, center );
+    p.drawLine(line);
+    pen.setColor(plt.color(QPalette::Light));
+  }
+}
+
+QRect QcSlider::thumbRect ()
+{
+  using namespace QtCollider::Style;
+
+  QRect contRect( sunkenContentsRect(rect()) );
+
+  QRect r;
+  if( _ort == Qt::Horizontal ) {
+    int pos = _value * (contRect.width() - _hndLen);
+    r.setX( pos + contRect.left() );
+    r.setY( contRect.top() );
+    r.setSize( QSize( _hndLen, contRect.height() ) );
+  }
+  else {
+    int pos = _value * (contRect.height() - _hndLen);
+    r.setX( contRect.left() );
+    r.setY( contRect.bottom() - pos - _hndLen + 1 );
+    r.setSize( QSize( contRect.width(), _hndLen ) );
+  }
+  return r;
+}
+
+double QcSlider::valueAt( const QPoint &pos )
+{
+  using namespace QtCollider::Style;
+
+  QRect contRect( sunkenContentsRect(rect()) );
+  if (_ort == Qt::Horizontal)
+    return xValue( pos.x(), contRect, QSize(_hndLen, 0) );
+  else
+    return yValue( pos.y(), contRect, QSize(0, _hndLen) );
 }

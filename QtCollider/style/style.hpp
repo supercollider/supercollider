@@ -28,14 +28,8 @@ public:
 
   virtual void polish ( QPalette & );
 
-  virtual QRect subControlRect ( QStyle::ComplexControl, const QStyleOptionComplex *,
-                                QStyle::SubControl, const QWidget * = 0 ) const;
-
   virtual void drawControl ( ControlElement, const QStyleOption *,
                              QPainter *, const QWidget * = 0 ) const;
-
-  virtual void drawComplexControl ( QStyle::ComplexControl, const QStyleOptionComplex *,
-                                    QPainter *, const QWidget * = 0 ) const;
 
   QColor color( ColorRole role ) {
     Q_ASSERT(role < ColorRoleCount);
@@ -75,14 +69,6 @@ struct Client {
 private:
   QColor _colors[ColorRoleCount];
   QWidget *_widget;
-};
-
-namespace Slider
-{
-  QRect sc_groove ( const QStyleOption *opt, const QcSlider * );
-  QRect sc_handle ( const QStyleOptionSlider *opt, const QcSlider * );
-
-  void cc_draw ( const QStyleOptionSlider *, QPainter *, const QcSlider * );
 };
 
 } // namespace QtCollider

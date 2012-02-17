@@ -86,7 +86,6 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/layouts/stack_layout.cpp
   ${QT_COLLIDER_DIR}/style/ProxyStyle.cpp
   ${QT_COLLIDER_DIR}/style/style.cpp
-  ${QT_COLLIDER_DIR}/style/slider_style.cpp
 )
 
 if(QT_COLLIDER_LANG_CLIENT)
