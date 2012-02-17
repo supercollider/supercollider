@@ -60,7 +60,7 @@ method::shutdown
 Called after SuperCollider is quit or the class library is about to be re-compiled.
 
 discussion::
-This will quit all audio link::Classes/Server:: instances, perform a platform specific shutdown (e.g. on Mac OS X, the HID service is released), finally Process' shutdown method is called, resulting successive calls to UI.shutdown, NetAddr.disconnectAll, File.closeAll, and Archive.write. To register your own shutdown code, use a call like this:
+This will quit all audio link::Classes/Server:: instances, perform a platform specific shutdown (e.g. on Mac OS X, the HID service is released), finally Process' shutdown method is called, resulting in successive calls to UI.shutdown, NetAddr.disconnectAll, File.closeAll, and Archive.write. To register your own shutdown code, use a call like this:
 
 code::
 ShutDown.add({ "Good bye!!".postln });
