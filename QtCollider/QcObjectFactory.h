@@ -48,6 +48,28 @@ public:
   virtual QObjectProxy *newInstance( PyrObject *, QtCollider::Variant arg[10] ) = 0;
 };
 
+static void qcNoConstructorMsg( const QMetaObject *metaObject, int argc, QtCollider::Variant *argv )
+{
+  QString str = QString("No appropriate constructor found for %1 (")
+    .arg( metaObject->className() );
+
+  for (int i = 0; i < argc; ++i) {
+    int t_id = argv[i].type();
+
+    if (t_id != QMetaType::Void)
+    {
+      if (i > 0) str += ", ";
+      str += QMetaType::typeName(t_id);
+    }
+    else
+      break;
+  }
+
+  str += ")";
+
+  qcErrorMsg( str );
+}
+
 template <class QOBJECT> class QcObjectFactory : public QcAbstractFactory
 {
 public:
@@ -78,8 +100,7 @@ public:
 
       qObject = qobject_cast<QOBJECT*>(obj);
       if( !qObject ) {
-        qcErrorMsg( QString("No appropriate constructor found for '%1'.")
-          .arg( QOBJECT::staticMetaObject.className() ) );
+        qcNoConstructorMsg( metaObject(), 10, arg );
         return 0;
       }
     }
