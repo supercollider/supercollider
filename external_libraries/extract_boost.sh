@@ -1,10 +1,11 @@
 #!/bin/sh
-# shell script to extract subset of boost, that is required for supernova
+# shell script to extract subset of boost
 #
 # run from the root of the supercollider repository
+#
+# required argument: root of the boost source tree
 
-# root of the boost source tree
-BOOST_ROOT=/home/tim/boost_1_48_0/
+BOOST_ROOT=$1
 
 bcp --boost=${BOOST_ROOT} \
 	--scan common/*pp \
