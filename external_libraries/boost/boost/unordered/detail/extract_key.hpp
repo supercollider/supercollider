@@ -51,25 +51,17 @@ namespace detail {
             return v;
         }
 
-#if BOOST_UNORDERED_USE_RV_REF
-        static key_type const& extract(BOOST_RV_REF(key_type) v)
-        {
-            return v;
-        }
-#endif
-
         static no_key extract()
         {
             return no_key();
         }
         
-#if defined(BOOST_UNORDERED_STD_FORWARD_MOVE)
+#if defined(BOOST_UNORDERED_VARIADIC_MOVE)
         template <class... Args>
         static no_key extract(Args const&...)
         {
             return no_key();
         }
-
 #else
         template <class Arg>
         static no_key extract(Arg const&)
@@ -106,13 +98,6 @@ namespace detail {
             return v;
         }
 
-        // TODO: Why does this cause errors?
-        //
-        //static key_type const& extract(BOOST_RV_REF(key_type) v)
-        //{
-        //    return v;
-        //}
-
         template <class Second>
         static key_type const& extract(std::pair<key_type, Second> const& v)
         {
@@ -126,7 +111,7 @@ namespace detail {
             return v.first;
         }
 
-#if defined(BOOST_UNORDERED_STD_FORWARD_MOVE)
+#if defined(BOOST_UNORDERED_VARIADIC_MOVE)
         template <class Arg1, class... Args>
         static key_type const& extract(key_type const& k,
             Arg1 const&, Args const&...)
@@ -165,7 +150,7 @@ namespace detail {
         }
 #endif
 
-#if defined(BOOST_UNORDERED_STD_FORWARD_MOVE)
+#if defined(BOOST_UNORDERED_VARIADIC_MOVE)
 
 #define BOOST_UNORDERED_KEY_FROM_TUPLE(namespace_)                          \
         template <typename T2>                                              \

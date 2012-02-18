@@ -17,8 +17,35 @@
 //        enhanced with contributions from Terje Slettebo,
 //        with additional fixes and suggestions from Gennaro Prota,
 //        Beman Dawes, Dave Abrahams, Daryle Walker, Peter Dimov,
-//        Alexander Nasonov, Antony Polukhin and other Boosters
-// when:  November 2000, March 2003, June 2005, June 2006, March 2011
+//        Alexander Nasonov, Antony Polukhin, Justin Viiret, Michael Hofmann,
+//        Cheng Yang, Matthew Bradbury, David W. Birdsall and other Boosters
+// when:  November 2000, March 2003, June 2005, June 2006, March 2011 - 2012
+
+#include <boost/config.hpp>
+#if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_WSTRING)
+#define BOOST_LCAST_NO_WCHAR_T
+#endif
+
+#if (defined(__MINGW32__) || defined(__MINGW64__)) && (__GNUC__ == 4) \
+ && ((__GNUC_MINOR__ == 4) || (__GNUC_MINOR__ == 5)) && defined(__STRICT_ANSI__) \
+ && !defined(BOOST_LCAST_NO_WCHAR_T)
+
+// workaround for a mingw bug
+// http://sourceforge.net/tracker/index.php?func=detail&aid=2373234&group_id=2435&atid=102435
+#include <_mingw.h>
+#if (__GNUC_MINOR__ == 4)
+extern "C" {
+_CRTIMP int __cdecl swprintf(wchar_t * __restrict__ , const wchar_t * __restrict__ , ...);
+_CRTIMP int __cdecl vswprintf(wchar_t * __restrict__ , const wchar_t * __restrict__ , ...);
+}
+#endif
+#if (__GNUC_MINOR__ == 5)
+extern "C" {
+_CRTIMP int __cdecl swprintf(wchar_t * __restrict__ , const wchar_t * __restrict__ , ...);
+_CRTIMP int __cdecl vswprintf(wchar_t * __restrict__ , const wchar_t * __restrict__ , va_list);
+}
+#endif
+#endif
 
 #include <climits>
 #include <cstddef>
@@ -29,7 +56,6 @@
 #include <typeinfo>
 #include <exception>
 #include <cmath>
-#include <boost/config.hpp>
 #include <boost/limits.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/throw_exception.hpp>
@@ -46,8 +72,12 @@
 #include <boost/static_assert.hpp>
 #include <boost/detail/lcast_precision.hpp>
 #include <boost/detail/workaround.hpp>
-#include <cwchar>
-
+#if !defined(__SUNPRO_CC)
+#include <boost/container/container_fwd.hpp>
+#endif // !defined(__SUNPRO_CC)
+#ifndef BOOST_NO_CWCHAR
+#   include <cwchar>
+#endif
 
 #ifndef BOOST_NO_STD_LOCALE
 #   include <locale>
@@ -62,10 +92,6 @@
 #include <strstream>
 #else
 #include <sstream>
-#endif
-
-#if defined(BOOST_NO_STRINGSTREAM) || defined(BOOST_NO_STD_WSTRING)
-#define BOOST_LCAST_NO_WCHAR_T
 #endif
 
 #ifdef BOOST_NO_TYPEID
@@ -145,6 +171,14 @@ namespace boost
     {
         typedef CharT type;
     };
+
+#if !defined(__SUNPRO_CC)
+    template<class CharT, class Traits, class Alloc>
+    struct stream_char< ::boost::container::basic_string<CharT,Traits,Alloc> >
+    {
+        typedef CharT type;
+    };
+#endif // !defined(__SUNPRO_CC)
 #endif
 
 #ifndef BOOST_LCAST_NO_WCHAR_T
@@ -259,6 +293,25 @@ namespace boost
             typedef Traits type;
         };
 
+#if !defined(__SUNPRO_CC)
+        template<class CharT, class Traits, class Alloc, class Source>
+        struct deduce_char_traits< CharT
+                                 , ::boost::container::basic_string<CharT,Traits,Alloc>
+                                 , Source
+                                 >
+        {
+            typedef Traits type;
+        };
+
+        template<class CharT, class Target, class Traits, class Alloc>
+        struct deduce_char_traits< CharT
+                                 , Target
+                                 , ::boost::container::basic_string<CharT,Traits,Alloc>
+                                 >
+        {
+            typedef Traits type;
+        };
+
         template<class CharT, class Traits, class Alloc1, class Alloc2>
         struct deduce_char_traits< CharT
                                  , std::basic_string<CharT,Traits,Alloc1>
@@ -267,6 +320,34 @@ namespace boost
         {
             typedef Traits type;
         };
+
+        template<class CharT, class Traits, class Alloc1, class Alloc2>
+        struct deduce_char_traits< CharT
+                                 , ::boost::container::basic_string<CharT,Traits,Alloc1>
+                                 , ::boost::container::basic_string<CharT,Traits,Alloc2>
+                                 >
+        {
+            typedef Traits type;
+        };
+
+        template<class CharT, class Traits, class Alloc1, class Alloc2>
+        struct deduce_char_traits< CharT
+                                 , ::boost::container::basic_string<CharT,Traits,Alloc1>
+                                 , std::basic_string<CharT,Traits,Alloc2>
+                                 >
+        {
+            typedef Traits type;
+        };
+
+        template<class CharT, class Traits, class Alloc1, class Alloc2>
+        struct deduce_char_traits< CharT
+                                 , std::basic_string<CharT,Traits,Alloc1>
+                                 , ::boost::container::basic_string<CharT,Traits,Alloc2>
+                                 >
+        {
+            typedef Traits type;
+        };
+#endif // !defined(__SUNPRO_CC)
 #endif
     }
 
@@ -550,11 +631,12 @@ namespace boost
             --end;
             value = 0;
 
-            if ( *end < czero || *end >= czero + 10 || begin > end)
+            if (begin > end || *end < czero || *end >= czero + 10)
                 return false;
             value = *end - czero;
             --end;
             T multiplier = 1;
+            bool multiplier_overflowed = false;
 
 #ifndef BOOST_LEXICAL_CAST_ASSUME_C_LOCALE
             std::locale loc;
@@ -577,12 +659,17 @@ namespace boost
                     for(;end>=begin; --end)
                     {
                         if (remained) {
-                            T const new_sub_value = multiplier * 10 * (*end - czero);
+                            T const multiplier_10 = multiplier * 10;
+                            if (multiplier_10 / 10 != multiplier) multiplier_overflowed = true;
+
+                            T const dig_value = *end - czero;
+                            T const new_sub_value = multiplier_10 * dig_value;
 
                             if (*end < czero || *end >= czero + 10
                                     /* detecting overflow */
-                                    || new_sub_value/10 != multiplier * (*end - czero)
+                                    || (dig_value && new_sub_value / dig_value != multiplier_10)
                                     || static_cast<T>((std::numeric_limits<T>::max)()-new_sub_value) < value
+                                    || (multiplier_overflowed && dig_value)
                                     )
                                 return false;
 
@@ -620,12 +707,17 @@ namespace boost
             {
                 while ( begin <= end )
                 {
-                    T const new_sub_value = multiplier * 10 * (*end - czero);
+                    T const multiplier_10 = multiplier * 10;
+                    if (multiplier_10 / 10 != multiplier) multiplier_overflowed = true;
+
+                    T const dig_value = *end - czero;
+                    T const new_sub_value = multiplier_10 * dig_value;
 
                     if (*end < czero || *end >= czero + 10
                             /* detecting overflow */
-                            || new_sub_value/10 != multiplier * (*end - czero)
+                            || (dig_value && new_sub_value / dig_value != multiplier_10)
                             || static_cast<T>((std::numeric_limits<T>::max)()-new_sub_value) < value
+                            || (multiplier_overflowed && dig_value)
                             )
                         return false;
 
@@ -648,8 +740,9 @@ namespace boost
             , const CharT opening_brace, const CharT closing_brace)
         {
             using namespace std;
-            const wchar_t minus = lcast_char_constants<wchar_t>::minus;
-            const wchar_t plus = lcast_char_constants<wchar_t>::plus;
+            if (begin == end) return false;
+            const CharT minus = lcast_char_constants<CharT>::minus;
+            const CharT plus = lcast_char_constants<CharT>::plus;
             const int inifinity_size = 8;
 
             bool has_minus = false;
@@ -705,6 +798,26 @@ namespace boost
                                , L"NAN", L"nan"
                                , L"INFINITY", L"infinity"
                                , L'(', L')');
+        }
+#endif
+#ifndef BOOST_NO_CHAR16_T
+        template <class T>
+        bool parse_inf_nan(const char16_t* begin, const char16_t* end, T& value)
+        {
+            return parse_inf_nan_impl(begin, end, value
+                               , u"NAN", u"nan"
+                               , u"INFINITY", u"infinity"
+                               , u'(', u')');
+        }
+#endif
+#ifndef BOOST_NO_CHAR32_T
+        template <class T>
+        bool parse_inf_nan(const char32_t* begin, const char32_t* end, T& value)
+        {
+            return parse_inf_nan_impl(begin, end, value
+                               , U"NAN", U"nan"
+                               , U"INFINITY", U"infinity"
+                               , U'(', U')');
         }
 #endif
 
@@ -827,7 +940,7 @@ namespace boost
             CharT const thousands_sep = grouping_size ? np.thousands_sep() : 0;
             CharT const decimal_point = np.decimal_point();
             bool found_grouping = false;
-            unsigned int last_grouping_pos = grouping_size - 1;
+            std::string::size_type last_grouping_pos = grouping_size - 1;
 #else
             CharT const decimal_point = lcast_char_constants<CharT>::c_decimal_separator;
 #endif
@@ -1147,7 +1260,7 @@ namespace boost
                 bool const result = !(stream << input).fail();
                 start = stringbuffer.pbase();
                 finish = stringbuffer.pptr();
-                return result && (start != finish);
+                return result;
             }
 
             template <class T>
@@ -1257,6 +1370,15 @@ namespace boost
                 return true;
             }
 
+#if !defined(__SUNPRO_CC)
+            template<class Alloc>
+            bool operator<<(::boost::container::basic_string<CharT,Traits,Alloc> const& str)
+            {
+                start = const_cast<CharT*>(str.data());
+                finish = start + str.length();
+                return true;
+            }
+#endif // !defined(__SUNPRO_CC)
             bool operator<<(bool value)
             {
                 CharT const czero = lcast_char_constants<CharT>::zero;
@@ -1310,9 +1432,11 @@ namespace boost
 
 /************************************ HELPER FUNCTIONS FOR OPERATORS >> ( ... ) ********************************/
         private:
+
             template <typename Type>
             bool shr_unsigned(Type& output)
             {
+                if (start == finish) return false;
                 CharT const minus = lcast_char_constants<CharT>::minus;
                 CharT const plus = lcast_char_constants<CharT>::plus;
                 bool has_minus = false;
@@ -1347,6 +1471,7 @@ namespace boost
             template <typename Type>
             bool shr_signed(Type& output)
             {
+                if (start == finish) return false;
                 CharT const minus = lcast_char_constants<CharT>::minus;
                 CharT const plus = lcast_char_constants<CharT>::plus;
                 typedef BOOST_DEDUCED_TYPENAME make_unsigned<Type>::type utype;
@@ -1436,7 +1561,7 @@ namespace boost
             }
 
 /************************************ OPERATORS >> ( ... ) ********************************/
-        public:
+            public:
             bool operator>>(unsigned short& output)             { return shr_unsigned(output); }
             bool operator>>(unsigned int& output)               { return shr_unsigned(output); }
             bool operator>>(unsigned long int& output)          { return shr_unsigned(output); }
@@ -1449,11 +1574,19 @@ namespace boost
 #elif defined(BOOST_HAS_MS_INT64)
             bool operator>>(unsigned __int64& output)           { return shr_unsigned(output); }
             bool operator>>(__int64& output)                    { return shr_signed(output); }
-
 #endif
-            bool operator>>(CharT& output)                      { return shr_xchar(output); }
+            bool operator>>(char& output)                       { return shr_xchar(output); }
             bool operator>>(unsigned char& output)              { return shr_xchar(output); }
             bool operator>>(signed char& output)                { return shr_xchar(output); }
+#if !defined(BOOST_LCAST_NO_WCHAR_T) && !defined(BOOST_NO_INTRINSIC_WCHAR_T)
+            bool operator>>(wchar_t& output)                    { return shr_xchar(output); }
+#endif
+#ifndef BOOST_NO_CHAR16_T
+            bool operator>>(char16_t& output)                   { return shr_xchar(output); }
+#endif
+#ifndef BOOST_NO_CHAR32_T
+            bool operator>>(char32_t& output)                   { return shr_xchar(output); }
+#endif
 #ifdef BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
             bool operator>>(std::string& str)                   { str.assign(start, finish); return true; }
 #   ifndef BOOST_LCAST_NO_WCHAR_T
@@ -1462,6 +1595,10 @@ namespace boost
 #else
             template<class Alloc>
             bool operator>>(std::basic_string<CharT,Traits,Alloc>& str) { str.assign(start, finish); return true; }
+#if !defined(__SUNPRO_CC)
+            template<class Alloc>
+            bool operator>>(::boost::container::basic_string<CharT,Traits,Alloc>& str) { str.assign(start, finish); return true; }
+#endif // !defined(__SUNPRO_CC)
 #endif
             /*
              * case "-0" || "0" || "+0" :   output = false; return true;
@@ -1597,7 +1734,13 @@ namespace boost
         {
             BOOST_STATIC_CONSTANT(bool, value = true );
         };
-
+#if !defined(__SUNPRO_CC)
+        template<typename CharT, typename Traits, typename Alloc>
+        struct is_stdstring< ::boost::container::basic_string<CharT, Traits, Alloc> >
+        {
+            BOOST_STATIC_CONSTANT(bool, value = true );
+        };
+#endif // !defined(__SUNPRO_CC)
         template<typename T>
         struct is_char_or_wchar
         {
@@ -1697,6 +1840,19 @@ namespace boost
         {
             BOOST_STATIC_CONSTANT(bool, value = true );
         };
+#if !defined(__SUNPRO_CC)
+        template<typename CharT, typename Traits, typename Alloc>
+        struct is_char_array_to_stdstring< ::boost::container::basic_string<CharT, Traits, Alloc>, CharT* >
+        {
+            BOOST_STATIC_CONSTANT(bool, value = true );
+        };
+
+        template<typename CharT, typename Traits, typename Alloc>
+        struct is_char_array_to_stdstring< ::boost::container::basic_string<CharT, Traits, Alloc>, const CharT* >
+        {
+            BOOST_STATIC_CONSTANT(bool, value = true );
+        };
+#endif // !defined(__SUNPRO_CC)
 
 #if (defined _MSC_VER)
 # pragma warning( push )
@@ -1725,6 +1881,24 @@ namespace boost
                     deduce_char_traits<char_type,Target,Source>::type traits;
 
                 typedef BOOST_DEDUCED_TYPENAME remove_pointer<src >::type removed_ptr_t;
+
+                // is_char_types_match variable value can be computed via
+                // sizeof(char_type) == sizeof(removed_ptr_t). But when
+                // removed_ptr_t is an incomplete type or void*, compilers
+                // produce warnings or errors.
+                const bool is_char_types_match =
+                (::boost::type_traits::ice_or<
+                    ::boost::type_traits::ice_and<
+                        ::boost::type_traits::ice_eq<sizeof(char_type), sizeof(char) >::value,
+                        ::boost::type_traits::ice_or<
+                            ::boost::is_same<char, removed_ptr_t>::value,
+                            ::boost::is_same<unsigned char, removed_ptr_t>::value,
+                            ::boost::is_same<signed char, removed_ptr_t>::value
+                        >::value
+                    >::value,
+                    is_same<char_type, removed_ptr_t>::value
+                >::value);
+
                 const bool requires_stringbuf =
                         !(
                              ::boost::type_traits::ice_or<
@@ -1733,10 +1907,7 @@ namespace boost
                                  ::boost::type_traits::ice_and<
                                      is_pointer<src >::value,
                                      is_char_or_wchar<removed_ptr_t >::value,
-                                     ::boost::type_traits::ice_eq<
-                                        sizeof(char_type),
-                                        sizeof(removed_ptr_t)
-                                     >::value
+                                     is_char_types_match
                                  >::value
                              >::value
                         );
@@ -2014,7 +2185,7 @@ namespace boost
 
 // Copyright Kevlin Henney, 2000-2005.
 // Copyright Alexander Nasonov, 2006-2010.
-// Copyright Antony Polukhin, 2011.
+// Copyright Antony Polukhin, 2011-2012.
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at

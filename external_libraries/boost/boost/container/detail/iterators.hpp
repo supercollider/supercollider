@@ -11,8 +11,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_CONTAINERS_DETAIL_ITERATORS_HPP
-#define BOOST_CONTAINERS_DETAIL_ITERATORS_HPP
+#ifndef BOOST_CONTAINER_DETAIL_ITERATORS_HPP
+#define BOOST_CONTAINER_DETAIL_ITERATORS_HPP
 
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
@@ -21,8 +21,9 @@
 #include "config_begin.hpp"
 #include <boost/container/detail/workaround.hpp>
 #include <boost/move/move.hpp>
+#include <boost/container/allocator/allocator_traits.hpp>
 
-#ifdef BOOST_CONTAINERS_PERFECT_FORWARDING
+#ifdef BOOST_CONTAINER_PERFECT_FORWARDING
 #include <boost/container/detail/variadic_templates_tools.hpp>
 #include <boost/container/detail/stored_ref.hpp>
 #else
@@ -368,7 +369,7 @@ class repeat_iterator
    {  return m_num - other.m_num;   }
 };
 
-template <class T, class E, class Difference /*= std::ptrdiff_t*/>
+template <class T, class EmplaceFunctor, class Difference /*= std::ptrdiff_t*/>
 class emplace_iterator
   : public std::iterator
       <std::random_access_iterator_tag, T, Difference, const T*, const T &>
@@ -377,7 +378,7 @@ class emplace_iterator
 
    public:
    typedef Difference difference_type;
-   explicit emplace_iterator(E&e)
+   explicit emplace_iterator(EmplaceFunctor&e)
       :  m_num(1), m_pe(&e){}
 
    emplace_iterator()
@@ -453,12 +454,13 @@ class emplace_iterator
    const T* operator->() const
    { return &(dereference()); }
 
-   void construct_in_place(T* ptr)
-   {  (*m_pe)(ptr);  }
+   template<class A>
+   void construct_in_place(A &a, T* ptr)
+   {  (*m_pe)(a, ptr);  }
 
    private:
    difference_type m_num;
-   E *            m_pe;
+   EmplaceFunctor *            m_pe;
 
    void increment()
    { --m_num; }
@@ -485,54 +487,54 @@ class emplace_iterator
    {  return difference_type(m_num - other.m_num);   }
 };
 
-#ifdef BOOST_CONTAINERS_PERFECT_FORWARDING
+#ifdef BOOST_CONTAINER_PERFECT_FORWARDING
 
-template<class T, class ...Args>
+template<class ...Args>
 struct emplace_functor
 {
-   typedef typename containers_detail::build_number_seq<sizeof...(Args)>::type index_tuple_t;
+   typedef typename container_detail::build_number_seq<sizeof...(Args)>::type index_tuple_t;
 
    emplace_functor(Args&&... args)
       : args_(args...)
    {}
 
-   void operator()(T *ptr)
-   {  emplace_functor::inplace_impl(ptr, index_tuple_t());  }
+   template<class A, class T>
+   void operator()(A &a, T *ptr)
+   {  emplace_functor::inplace_impl(a, ptr, index_tuple_t());  }
 
-   template<int ...IdxPack>
-   void inplace_impl(T* ptr, const containers_detail::index_tuple<IdxPack...>&)
-   {  ::new(ptr) T(containers_detail::stored_ref<Args>::forward(containers_detail::get<IdxPack>(args_))...); }
+   template<class A, class T, int ...IdxPack>
+   void inplace_impl(A &a, T* ptr, const container_detail::index_tuple<IdxPack...>&)
+   {
+      allocator_traits<A>::construct
+         (a, ptr, container_detail::stored_ref<Args>::forward
+          (container_detail::get<IdxPack>(args_))...);
+   }
 
-   containers_detail::tuple<Args&...> args_;
+   container_detail::tuple<Args&...> args_;
 };
 
 #else
 
-template<class T>
-struct emplace_functor
-{
-   emplace_functor()
-   {}
-   void operator()(T *ptr)
-   {  new(ptr) T();  }
-};
-
 #define BOOST_PP_LOCAL_MACRO(n)                                                        \
-   template <class T, BOOST_PP_ENUM_PARAMS(n, class P) >                               \
+   BOOST_PP_EXPR_IF(n, template <)                                                     \
+      BOOST_PP_ENUM_PARAMS(n, class P)                                                 \
+         BOOST_PP_EXPR_IF(n, >)                                                        \
    struct BOOST_PP_CAT(BOOST_PP_CAT(emplace_functor, n), arg)                          \
    {                                                                                   \
       BOOST_PP_CAT(BOOST_PP_CAT(emplace_functor, n), arg)                              \
-         ( BOOST_PP_ENUM(n, BOOST_CONTAINERS_PP_PARAM_LIST, _) )                       \
-      :  BOOST_PP_ENUM(n, BOOST_CONTAINERS_AUX_PARAM_INIT, _) {}                       \
+         ( BOOST_PP_ENUM(n, BOOST_CONTAINER_PP_PARAM_LIST, _) )                       \
+      BOOST_PP_EXPR_IF(n, :) BOOST_PP_ENUM(n, BOOST_CONTAINER_PP_PARAM_INIT, _){}    \
                                                                                        \
-      void operator()(T *ptr)                                                          \
+      template<class A, class T>                                                       \
+      void operator()(A &a, T *ptr)                                                    \
       {                                                                                \
-         new(ptr)T (BOOST_PP_ENUM(n, BOOST_CONTAINERS_PP_MEMBER_FORWARD, _));          \
+         allocator_traits<A>::construct                                                \
+            (a, ptr BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_MEMBER_FORWARD, _) );\
       }                                                                                \
-      BOOST_PP_REPEAT(n, BOOST_CONTAINERS_AUX_PARAM_DEFINE, _)                         \
+      BOOST_PP_REPEAT(n, BOOST_CONTAINER_PP_PARAM_DEFINE, _)                         \
    };                                                                                  \
    //!
-#define BOOST_PP_LOCAL_LIMITS (1, BOOST_CONTAINERS_MAX_CONSTRUCTOR_PARAMETERS)
+#define BOOST_PP_LOCAL_LIMITS (0, BOOST_CONTAINER_MAX_CONSTRUCTOR_PARAMETERS)
 #include BOOST_PP_LOCAL_ITERATE()
 
 #endif
@@ -542,5 +544,5 @@ struct emplace_functor
 
 #include <boost/container/detail/config_end.hpp>
 
-#endif   //#ifndef BOOST_CONTAINERS_DETAIL_ITERATORS_HPP
+#endif   //#ifndef BOOST_CONTAINER_DETAIL_ITERATORS_HPP
 

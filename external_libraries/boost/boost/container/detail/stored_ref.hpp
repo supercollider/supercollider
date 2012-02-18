@@ -8,8 +8,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_CONTAINERS_DETAIL_STORED_REF_HPP
-#define BOOST_CONTAINERS_DETAIL_STORED_REF_HPP
+#ifndef BOOST_CONTAINER_DETAIL_STORED_REF_HPP
+#define BOOST_CONTAINER_DETAIL_STORED_REF_HPP
 
 #include "config_begin.hpp"
 #include <boost/container/detail/workaround.hpp>
@@ -18,7 +18,7 @@
 
 namespace boost{
 namespace container{
-namespace containers_detail{
+namespace container_detail{
 
 template<class T>
 struct stored_ref
@@ -79,7 +79,7 @@ struct stored_ref<T&>
    {  return t; }
 };
 
-}  //namespace containers_detail{
+}  //namespace container_detail{
 }  //namespace container{
 }  //namespace boost{
 
@@ -89,4 +89,4 @@ struct stored_ref<T&>
 
 #include <boost/container/detail/config_end.hpp>
 
-#endif   //BOOST_CONTAINERS_DETAIL_STORED_REF_HPP
+#endif   //BOOST_CONTAINER_DETAIL_STORED_REF_HPP

@@ -174,13 +174,13 @@ namespace boost { namespace unordered { namespace iterator_detail {
         }
 
         iterator& operator++() {
-            node_ = node_ = static_cast<node_pointer>(node_->next_);
+            node_ = static_cast<node_pointer>(node_->next_);
             return *this;
         }
 
         iterator operator++(int) {
             iterator tmp(node_);
-            node_ = node_ = static_cast<node_pointer>(node_->next_);
+            node_ = static_cast<node_pointer>(node_->next_);
             return tmp;
         }
 
@@ -242,7 +242,7 @@ namespace boost { namespace unordered { namespace iterator_detail {
 
         c_iterator operator++(int) {
             c_iterator tmp(node_);
-            node_ = node_ = static_cast<node_pointer>(node_->next_);
+            node_ = static_cast<node_pointer>(node_->next_);
             return tmp;
         }
 

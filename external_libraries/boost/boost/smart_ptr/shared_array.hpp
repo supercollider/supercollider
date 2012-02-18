@@ -131,6 +131,11 @@ public:
         pn.swap(other.pn);
     }
 
+    void * _internal_get_deleter( boost::detail::sp_typeinfo const & ti ) const
+    {
+        return pn.get_deleter( ti );
+    }
+
 private:
 
     T * px;                     // contained pointer
@@ -156,6 +161,11 @@ template<class T> inline bool operator<(shared_array<T> const & a, shared_array<
 template<class T> void swap(shared_array<T> & a, shared_array<T> & b) // never throws
 {
     a.swap(b);
+}
+
+template< class D, class T > D * get_deleter( shared_array<T> const & p )
+{
+    return static_cast< D * >( p._internal_get_deleter( BOOST_SP_TYPEID(D) ) );
 }
 
 } // namespace boost

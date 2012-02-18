@@ -127,8 +127,8 @@ T sinpx(T z)
 //
 // tgamma(z), with Lanczos support:
 //
-template <class T, class Policy, class L>
-T gamma_imp(T z, const Policy& pol, const L& l)
+template <class T, class Policy, class Lanczos>
+T gamma_imp(T z, const Policy& pol, const Lanczos& l)
 {
    BOOST_MATH_STD_USING
 
@@ -178,13 +178,13 @@ T gamma_imp(T z, const Policy& pol, const L& l)
    }
    else
    {
-      result *= L::lanczos_sum(z);
+      result *= Lanczos::lanczos_sum(z);
       BOOST_MATH_INSTRUMENT_VARIABLE(result);
       BOOST_MATH_INSTRUMENT_VARIABLE(tools::log_max_value<T>());
       if(z * log(z) > tools::log_max_value<T>())
       {
          // we're going to overflow unless this is done with care:
-         T zgh = (z + static_cast<T>(L::g()) - boost::math::constants::half<T>());
+         T zgh = (z + static_cast<T>(Lanczos::g()) - boost::math::constants::half<T>());
          BOOST_MATH_INSTRUMENT_VARIABLE(zgh);
          if(log(zgh) * z / 2 > tools::log_max_value<T>())
             return policies::raise_overflow_error<T>(function, "Result of tgamma is too large to represent.", pol);
@@ -199,7 +199,7 @@ T gamma_imp(T z, const Policy& pol, const L& l)
       }
       else
       {
-         T zgh = (z + static_cast<T>(L::g()) - boost::math::constants::half<T>());
+         T zgh = (z + static_cast<T>(Lanczos::g()) - boost::math::constants::half<T>());
          BOOST_MATH_INSTRUMENT_VARIABLE(zgh);
          BOOST_MATH_INSTRUMENT_VARIABLE(pow(zgh, z - boost::math::constants::half<T>()));
          BOOST_MATH_INSTRUMENT_VARIABLE(exp(zgh));
@@ -212,8 +212,8 @@ T gamma_imp(T z, const Policy& pol, const L& l)
 //
 // lgamma(z) with Lanczos support:
 //
-template <class T, class Policy, class L>
-T lgamma_imp(T z, const Policy& pol, const L& l, int* sign = 0)
+template <class T, class Policy, class Lanczos>
+T lgamma_imp(T z, const Policy& pol, const Lanczos& l, int* sign = 0)
 {
 #ifdef BOOST_MATH_INSTRUMENT
    static bool b = false;
@@ -274,10 +274,10 @@ T lgamma_imp(T z, const Policy& pol, const L& l, int* sign = 0)
    else
    {
       // regular evaluation:
-      T zgh = static_cast<T>(z + L::g() - boost::math::constants::half<T>());
+      T zgh = static_cast<T>(z + Lanczos::g() - boost::math::constants::half<T>());
       result = log(zgh) - 1;
       result *= z - 0.5f;
-      result += log(L::lanczos_sum_expG_scaled(z));
+      result += log(Lanczos::lanczos_sum_expG_scaled(z));
    }
 
    if(sign)
@@ -447,8 +447,8 @@ T lgamma_imp(T z, const Policy& pol, const lanczos::undefined_lanczos& l, int*si
 // This helper calculates tgamma(dz+1)-1 without cancellation errors,
 // used by the upper incomplete gamma with z < 1:
 //
-template <class T, class Policy, class L>
-T tgammap1m1_imp(T dz, Policy const& pol, const L& l)
+template <class T, class Policy, class Lanczos>
+T tgammap1m1_imp(T dz, Policy const& pol, const Lanczos& l)
 {
    BOOST_MATH_STD_USING
 
@@ -460,7 +460,7 @@ T tgammap1m1_imp(T dz, Policy const& pol, const L& l)
          mpl::greater<precision_type, mpl::int_<113> >
       >,
       typename mpl::if_<
-         is_same<L, lanczos::lanczos24m113>,
+         is_same<Lanczos, lanczos::lanczos24m113>,
          mpl::int_<113>,
          mpl::int_<0>
       >::type,
@@ -612,13 +612,13 @@ T full_igamma_prefix(T a, T z, const Policy& pol)
 // Compute (z^a)(e^-z)/tgamma(a)
 // most if the error occurs in this function:
 //
-template <class T, class Policy, class L>
-T regularised_gamma_prefix(T a, T z, const Policy& pol, const L& l)
+template <class T, class Policy, class Lanczos>
+T regularised_gamma_prefix(T a, T z, const Policy& pol, const Lanczos& l)
 {
    BOOST_MATH_STD_USING
-   T agh = a + static_cast<T>(L::g()) - T(0.5);
+   T agh = a + static_cast<T>(Lanczos::g()) - T(0.5);
    T prefix;
-   T d = ((z - a) - static_cast<T>(L::g()) + T(0.5)) / agh;
+   T d = ((z - a) - static_cast<T>(Lanczos::g()) + T(0.5)) / agh;
 
    if(a < 1)
    {
@@ -646,7 +646,7 @@ T regularised_gamma_prefix(T a, T z, const Policy& pol, const L& l)
    else if((fabs(d*d*a) <= 100) && (a > 150))
    {
       // special case for large a and a ~ z.
-      prefix = a * boost::math::log1pmx(d, pol) + z * static_cast<T>(0.5 - L::g()) / agh;
+      prefix = a * boost::math::log1pmx(d, pol) + z * static_cast<T>(0.5 - Lanczos::g()) / agh;
       prefix = exp(prefix);
    }
    else
@@ -688,7 +688,7 @@ T regularised_gamma_prefix(T a, T z, const Policy& pol, const L& l)
          prefix = pow(z / agh, a) * exp(amz);
       }
    }
-   prefix *= sqrt(agh / boost::math::constants::e<T>()) / L::lanczos_sum_expG_scaled(a);
+   prefix *= sqrt(agh / boost::math::constants::e<T>()) / Lanczos::lanczos_sum_expG_scaled(a);
    return prefix;
 }
 //
@@ -1092,11 +1092,11 @@ T gamma_incomplete_imp(T a, T x, bool normalised, bool invert,
 //
 // Ratios of two gamma functions:
 //
-template <class T, class Policy, class L>
-T tgamma_delta_ratio_imp_lanczos(T z, T delta, const Policy& pol, const L&)
+template <class T, class Policy, class Lanczos>
+T tgamma_delta_ratio_imp_lanczos(T z, T delta, const Policy& pol, const Lanczos&)
 {
    BOOST_MATH_STD_USING
-   T zgh = z + L::g() - constants::half<T>();
+   T zgh = z + Lanczos::g() - constants::half<T>();
    T result;
    if(fabs(delta) < 10)
    {
@@ -1107,7 +1107,7 @@ T tgamma_delta_ratio_imp_lanczos(T z, T delta, const Policy& pol, const L&)
       result = pow(zgh / (zgh + delta), z - constants::half<T>());
    }
    result *= pow(constants::e<T>() / (zgh + delta), delta);
-   result *= L::lanczos_sum(z) / L::lanczos_sum(T(z + delta));
+   result *= Lanczos::lanczos_sum(z) / Lanczos::lanczos_sum(T(z + delta));
    return result;
 }
 //

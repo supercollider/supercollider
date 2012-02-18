@@ -1,15 +1,15 @@
 //
-// detail/timer_op.hpp
-// ~~~~~~~~~~~~~~~~~~~
+// detail/wait_op.hpp
+// ~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2011 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2012 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#ifndef BOOST_ASIO_DETAIL_TIMER_OP_HPP
-#define BOOST_ASIO_DETAIL_TIMER_OP_HPP
+#ifndef BOOST_ASIO_DETAIL_WAIT_OP_HPP
+#define BOOST_ASIO_DETAIL_WAIT_OP_HPP
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1200)
 # pragma once
@@ -24,7 +24,7 @@ namespace boost {
 namespace asio {
 namespace detail {
 
-class timer_op
+class wait_op
   : public operation
 {
 public:
@@ -32,7 +32,7 @@ public:
   boost::system::error_code ec_;
 
 protected:
-  timer_op(func_type func)
+  wait_op(func_type func)
     : operation(func)
   {
   }
@@ -44,4 +44,4 @@ protected:
 
 #include <boost/asio/detail/pop_options.hpp>
 
-#endif // BOOST_ASIO_DETAIL_TIMER_OP_HPP
+#endif // BOOST_ASIO_DETAIL_WAIT_OP_HPP

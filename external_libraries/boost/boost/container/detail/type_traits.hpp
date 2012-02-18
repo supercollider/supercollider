@@ -12,8 +12,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_CONTAINERS_CONTAINER_DETAIL_TYPE_TRAITS_HPP
-#define BOOST_CONTAINERS_CONTAINER_DETAIL_TYPE_TRAITS_HPP
+#ifndef BOOST_CONTAINER_CONTAINER_DETAIL_TYPE_TRAITS_HPP
+#define BOOST_CONTAINER_CONTAINER_DETAIL_TYPE_TRAITS_HPP
 
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
@@ -25,7 +25,7 @@
 
 namespace boost {
 namespace container { 
-namespace containers_detail {
+namespace container_detail {
 
 struct nat{};
 
@@ -194,10 +194,10 @@ struct remove_ref_const
    typedef typename remove_const< typename remove_reference<T>::type >::type type;
 };
 
-} // namespace containers_detail
+} // namespace container_detail
 }  //namespace container { 
 }  //namespace boost {
 
 #include <boost/container/detail/config_end.hpp>
 
-#endif   //#ifndef BOOST_CONTAINERS_CONTAINER_DETAIL_TYPE_TRAITS_HPP
+#endif   //#ifndef BOOST_CONTAINER_CONTAINER_DETAIL_TYPE_TRAITS_HPP

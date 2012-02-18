@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // (C) Copyright John Maddock 2000.
-// (C) Copyright Ion Gaztanaga 2005-2009.
+// (C) Copyright Ion Gaztanaga 2005-2011.
 //
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -40,25 +40,25 @@ struct remove_reference<T&>
 template<class T>
 struct is_reference
 {
-   enum {  value = false   };
+   static const bool value = false;
 };
 
 template<class T>
 struct is_reference<T&>
 {
-   enum {  value = true   };
+   static const bool value = true;
 };
 
 template<class T>
 struct is_pointer
 {
-   enum {  value = false   };
+   static const bool value = false;
 };
 
 template<class T>
 struct is_pointer<T*>
 {
-   enum {  value = true   };
+   static const bool value = true;
 };
 
 template <typename T>
@@ -93,6 +93,30 @@ template <class T>
 struct add_const_reference<T&>
 {  typedef T& type;   };
 
+template<class T>
+struct remove_const
+{
+   typedef T type;
+};
+
+template<class T>
+struct remove_const<const T>
+{
+   typedef T type;
+};
+
+template<class T>
+struct remove_volatile
+{
+   typedef T type;
+};
+
+template<class T>
+struct remove_volatile<volatile T>
+{
+   typedef T type;
+};
+
 template <typename T, typename U>
 struct is_same
 {
@@ -116,7 +140,6 @@ struct is_same
 }  //namespace interprocess { 
 }  //namespace boost {
 
-#endif   //#ifndef BOOST_INTERPROCESS_DETAIL_TYPE_TRAITS_HPP
-
 #include <boost/interprocess/detail/config_end.hpp>
 
+#endif   //#ifndef BOOST_INTERPROCESS_DETAIL_TYPE_TRAITS_HPP

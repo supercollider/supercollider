@@ -2,7 +2,7 @@
 // detail/config.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2011 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2012 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -12,6 +12,7 @@
 #define BOOST_ASIO_DETAIL_CONFIG_HPP
 
 #include <boost/config.hpp>
+#include <boost/version.hpp>
 
 // Default to a header-only implementation. The user must specifically request
 // separate compilation by defining either BOOST_ASIO_SEPARATE_COMPILATION or
@@ -154,6 +155,27 @@
 # endif // defined(__GNUC__)
 #endif // !defined(BOOST_ASIO_DISABLE_STD_ATOMIC)
 
+// Standard library support for chrono. Some standard libraries (such as the
+// libstdc++ shipped with gcc 4.6) provide monotonic_clock as per early C++0x
+// drafts, rather than the eventually standardised name of steady_clock.
+#if !defined(BOOST_ASIO_DISABLE_STD_CHRONO)
+# if defined(__GNUC__)
+#  if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)) || (__GNUC__ > 4)
+#   if defined(__GXX_EXPERIMENTAL_CXX0X__)
+#    define BOOST_ASIO_HAS_STD_CHRONO
+#    define BOOST_ASIO_HAS_STD_CHRONO_MONOTONIC_CLOCK
+#   endif // defined(__GXX_EXPERIMENTAL_CXX0X__)
+#  endif // ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6)) || (__GNUC__ > 4)
+# endif // defined(__GNUC__)
+#endif // !defined(BOOST_ASIO_DISABLE_STD_CHRONO)
+
+// Boost support for chrono.
+#if !defined(BOOST_ASIO_DISABLE_BOOST_CHRONO)
+# if (BOOST_VERSION >= 104700)
+#  define BOOST_ASIO_HAS_BOOST_CHRONO
+#   endif // (BOOST_VERSION >= 104700)
+#endif // !defined(BOOST_ASIO_DISABLE_BOOST_CHRONO)
+
 // Windows: target OS version.
 #if defined(BOOST_WINDOWS) || defined(__CYGWIN__)
 # if !defined(_WIN32_WINNT) && !defined(_WIN32_WINDOWS)
@@ -288,6 +310,15 @@
 #  define BOOST_ASIO_HAS_WINDOWS_RANDOM_ACCESS_HANDLE 1
 # endif // defined(BOOST_ASIO_HAS_IOCP)
 #endif // !defined(BOOST_ASIO_DISABLE_WINDOWS_RANDOM_ACCESS_HANDLE)
+
+// Windows: object handles.
+#if !defined(BOOST_ASIO_DISABLE_WINDOWS_OBJECT_HANDLE)
+# if defined(BOOST_WINDOWS) || defined(__CYGWIN__)
+#  if !defined(UNDER_CE)
+#   define BOOST_ASIO_HAS_WINDOWS_OBJECT_HANDLE 1
+#  endif // !defined(UNDER_CE)
+# endif // defined(BOOST_WINDOWS) || defined(__CYGWIN__)
+#endif // !defined(BOOST_ASIO_DISABLE_WINDOWS_OBJECT_HANDLE)
 
 // Windows: OVERLAPPED wrapper.
 #if !defined(BOOST_ASIO_DISABLE_WINDOWS_OVERLAPPED_PTR)

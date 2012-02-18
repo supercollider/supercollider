@@ -10,8 +10,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_CONTAINERS_CONTAINER_DETAIL_MPL_HPP
-#define BOOST_CONTAINERS_CONTAINER_DETAIL_MPL_HPP
+#ifndef BOOST_CONTAINER_CONTAINER_DETAIL_MPL_HPP
+#define BOOST_CONTAINER_CONTAINER_DETAIL_MPL_HPP
 
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
@@ -21,7 +21,7 @@
 
 namespace boost {
 namespace container { 
-namespace containers_detail {
+namespace container_detail {
 
 template <class T, T val>
 struct integral_constant
@@ -34,6 +34,7 @@ template< bool C_ >
 struct bool_ : integral_constant<bool, C_>
 {
    static const bool value = C_;
+   operator bool() const { return bool_::value; }
 };
 
 typedef bool_<true>        true_;
@@ -147,9 +148,13 @@ struct ls_zeros<1>
    static const std::size_t value = 0;
 };
 
-}  //namespace containers_detail { 
+template <typename T> struct unvoid { typedef T type; };
+template <> struct unvoid<void> { struct type { }; };
+template <> struct unvoid<const void> { struct type { }; };
+
+}  //namespace container_detail { 
 }  //namespace container { 
 }  //namespace boost {
 
-#endif   //#ifndef BOOST_CONTAINERS_CONTAINER_DETAIL_MPL_HPP
+#endif   //#ifndef BOOST_CONTAINER_CONTAINER_DETAIL_MPL_HPP
 

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2006-2009
+// (C) Copyright Ion Gaztanaga 2006-2011
 // (C) Copyright Markus Schoepflin 2007
 // (C) Copyright Bryce Lelbach 2010
 //

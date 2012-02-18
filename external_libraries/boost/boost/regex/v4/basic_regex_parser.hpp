@@ -200,9 +200,9 @@ void basic_regex_parser<charT, traits>::fail(regex_constants::error_type error_c
    if(error_code != regex_constants::error_empty)
    {
       if((start_pos != 0) || (end_pos != (m_end - m_base)))
-         message += "  The error occured while parsing the regular expression fragment: '";
+         message += "  The error occurred while parsing the regular expression fragment: '";
       else
-         message += "  The error occured while parsing the regular expression: '";
+         message += "  The error occurred while parsing the regular expression: '";
       if(start_pos != end_pos)
       {
          message += std::string(m_base + start_pos, m_base + position);

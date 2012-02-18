@@ -2,7 +2,7 @@
 // detail/impl/socket_ops.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2011 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2012 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -465,6 +465,10 @@ int connect(socket_type s, const socket_addr_type* addr,
         &msghdr::msg_namelen, s, addr, addrlen), ec);
   if (result == 0)
     ec = boost::system::error_code();
+#if defined(__linux__)
+  else if (ec == boost::asio::error::try_again)
+    ec = boost::asio::error::no_buffer_space;
+#endif // defined(__linux__)
   return result;
 }
 

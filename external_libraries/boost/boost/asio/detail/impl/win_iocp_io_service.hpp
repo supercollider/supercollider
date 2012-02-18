@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_io_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2011 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2012 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -87,7 +87,7 @@ void win_iocp_io_service::remove_timer_queue(
 template <typename Time_Traits>
 void win_iocp_io_service::schedule_timer(timer_queue<Time_Traits>& queue,
     const typename Time_Traits::time_type& time,
-    typename timer_queue<Time_Traits>::per_timer_data& timer, timer_op* op)
+    typename timer_queue<Time_Traits>::per_timer_data& timer, wait_op* op)
 {
   // If the service has been shut down we silently discard the timer.
   if (::InterlockedExchangeAdd(&shutdown_, 0) != 0)

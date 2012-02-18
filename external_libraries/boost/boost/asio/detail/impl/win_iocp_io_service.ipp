@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_io_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2011 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2012 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -148,7 +148,7 @@ size_t win_iocp_io_service::run(boost::system::error_code& ec)
 {
   if (::InterlockedExchangeAdd(&outstanding_work_, 0) == 0)
   {
-    stop();
+    InterlockedExchange(&stopped_, 1);
     ec = boost::system::error_code();
     return 0;
   }
@@ -166,7 +166,7 @@ size_t win_iocp_io_service::run_one(boost::system::error_code& ec)
 {
   if (::InterlockedExchangeAdd(&outstanding_work_, 0) == 0)
   {
-    stop();
+    InterlockedExchange(&stopped_, 1);
     ec = boost::system::error_code();
     return 0;
   }
@@ -180,7 +180,7 @@ size_t win_iocp_io_service::poll(boost::system::error_code& ec)
 {
   if (::InterlockedExchangeAdd(&outstanding_work_, 0) == 0)
   {
-    stop();
+    InterlockedExchange(&stopped_, 1);
     ec = boost::system::error_code();
     return 0;
   }
@@ -198,7 +198,7 @@ size_t win_iocp_io_service::poll_one(boost::system::error_code& ec)
 {
   if (::InterlockedExchangeAdd(&outstanding_work_, 0) == 0)
   {
-    stop();
+    InterlockedExchange(&stopped_, 1);
     ec = boost::system::error_code();
     return 0;
   }

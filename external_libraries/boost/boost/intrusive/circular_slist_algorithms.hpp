@@ -63,7 +63,7 @@ class circular_slist_algorithms
 
    //! <b>Effects</b>: Constructs an non-used list element, putting the next
    //!   pointer to null:
-   //!  <tt>NodeTraits::get_next(this_node) == 0</tt>
+   //!  <tt>NodeTraits::get_next(this_node) == node_ptr()</tt>
    //! 
    //! <b>Complexity</b>: Constant 
    //! 
@@ -74,9 +74,9 @@ class circular_slist_algorithms
    //! 
    //! <b>Effects</b>: Returns true is "this_node" is the only node of a circular list:
    //!  or it's a not inserted node:
-   //!  <tt>return !NodeTraits::get_next(this_node) || NodeTraits::get_next(this_node) == this_node</tt>
+   //!  <tt>return node_ptr() == NodeTraits::get_next(this_node) || NodeTraits::get_next(this_node) == this_node</tt>
    //! 
-   //! <b>Complexity</b>: Constant 
+   //! <b>Complexity</b>: Constant
    //! 
    //! <b>Throws</b>: Nothing.
    static bool unique(const_node_ptr this_node);
@@ -137,7 +137,7 @@ class circular_slist_algorithms
    //! <b>Complexity</b>: Constant 
    //! 
    //! <b>Throws</b>: Nothing.
-   static void init_header(node_ptr this_node)
+   static void init_header(const node_ptr &this_node)
    {  NodeTraits::set_next(this_node, this_node);  } 
 
    //! <b>Requires</b>: this_node and prev_init_node must be in the same circular list.
@@ -149,7 +149,7 @@ class circular_slist_algorithms
    //! <b>Complexity</b>: Linear to the number of elements between prev_init_node and this_node.
    //! 
    //! <b>Throws</b>: Nothing.
-   static node_ptr get_previous_node(node_ptr prev_init_node, node_ptr this_node)
+   static node_ptr get_previous_node(const node_ptr &prev_init_node, const node_ptr &this_node)
    {  return base_t::get_previous_node(prev_init_node, this_node);   }
 
    //! <b>Requires</b>: this_node must be in a circular list or be an empty circular list.
@@ -159,7 +159,7 @@ class circular_slist_algorithms
    //! <b>Complexity</b>: Linear to the number of elements in the circular list.
    //! 
    //! <b>Throws</b>: Nothing.
-   static node_ptr get_previous_node(node_ptr this_node)
+   static node_ptr get_previous_node(const node_ptr & this_node)
    {  return base_t::get_previous_node(this_node, this_node); }
 
    //! <b>Requires</b>: this_node must be in a circular list or be an empty circular list.
@@ -169,7 +169,7 @@ class circular_slist_algorithms
    //! <b>Complexity</b>: Linear to the number of elements in the circular list.
    //! 
    //! <b>Throws</b>: Nothing.
-   static node_ptr get_previous_previous_node(node_ptr this_node)
+   static node_ptr get_previous_previous_node(const node_ptr & this_node)
    {  return get_previous_previous_node(this_node, this_node); }
 
    //! <b>Requires</b>: this_node and prev_prev_init_node must be in the same circular list.
@@ -181,7 +181,7 @@ class circular_slist_algorithms
    //! <b>Complexity</b>: Linear to the number of elements in the circular list.
    //! 
    //! <b>Throws</b>: Nothing.
-   static node_ptr get_previous_previous_node(node_ptr prev_prev_init_node, node_ptr this_node)
+   static node_ptr get_previous_previous_node(const node_ptr & prev_prev_init_node, const node_ptr & this_node)
    {
       node_ptr p = prev_prev_init_node;
       node_ptr p_next = NodeTraits::get_next(p);
@@ -202,7 +202,7 @@ class circular_slist_algorithms
    //! <b>Complexity</b>: Linear 
    //! 
    //! <b>Throws</b>: Nothing.
-   static std::size_t count(const_node_ptr this_node) 
+   static std::size_t count(const const_node_ptr & this_node) 
    {
       std::size_t result = 0;
       const_node_ptr p = this_node;
@@ -220,7 +220,7 @@ class circular_slist_algorithms
    //! <b>Complexity</b>: Linear to the number of elements in the circular list 
    //! 
    //! <b>Throws</b>: Nothing.
-   static void unlink(node_ptr this_node)
+   static void unlink(const node_ptr & this_node)
    {
       if(NodeTraits::get_next(this_node))
          base_t::unlink_after(get_previous_node(this_node));
@@ -233,7 +233,7 @@ class circular_slist_algorithms
    //! <b>Complexity</b>: Linear to the number of elements in the circular list. 
    //! 
    //! <b>Throws</b>: Nothing.
-   static void link_before (node_ptr nxt_node, node_ptr this_node)
+   static void link_before (const node_ptr & nxt_node, const node_ptr & this_node)
    {  base_t::link_after(get_previous_node(nxt_node), this_node);   }
 
    //! <b>Requires</b>: this_node and other_node must be nodes inserted
@@ -246,7 +246,7 @@ class circular_slist_algorithms
    //! <b>Complexity</b>: Linear to number of elements of both lists 
    //! 
    //! <b>Throws</b>: Nothing.
-   static void swap_nodes(node_ptr this_node, node_ptr other_node)
+   static void swap_nodes(const node_ptr & this_node, const node_ptr & other_node)
    {
       if (other_node == this_node)
          return;
@@ -284,7 +284,7 @@ class circular_slist_algorithms
    //! <b>Throws</b>: Nothing.
    //! 
    //! <b>Complexity</b>: This function is linear to the contained elements.
-   static void reverse(node_ptr p)
+   static void reverse(const node_ptr & p)
    {
       node_ptr i = NodeTraits::get_next(p), e(p); 
       for (;;) {
@@ -303,18 +303,18 @@ class circular_slist_algorithms
    //! <b>Throws</b>: Nothing.
    //! 
    //! <b>Complexity</b>: Linear to the number of elements plus the number moved positions.
-   static node_ptr move_backwards(node_ptr p, std::size_t n)
+   static node_ptr move_backwards(const node_ptr & p, std::size_t n)
    {
       //Null shift, nothing to do
-      if(!n) return node_ptr(0);
+      if(!n) return node_ptr();
       node_ptr first  = NodeTraits::get_next(p);
 
       //count() == 1 or 2, nothing to do
       if(NodeTraits::get_next(first) == p)
-         return node_ptr(0);
+         return node_ptr();
 
       bool end_found = false;
-      node_ptr new_last(0);
+      node_ptr new_last = node_ptr();
 
       //Now find the new last node according to the shift count.
       //If we find p before finding the new last node
@@ -327,7 +327,7 @@ class circular_slist_algorithms
             //Shortcut the shift with the modulo of the size of the list
             n %= i;
             if(!n)
-               return node_ptr(0);
+               return node_ptr();
             i = 0;
             //Unlink p and continue the new first node search
             first = NodeTraits::get_next(p);
@@ -355,14 +355,14 @@ class circular_slist_algorithms
    //! <b>Throws</b>: Nothing.
    //! 
    //! <b>Complexity</b>: Linear to the number of elements plus the number moved positions.
-   static node_ptr move_forward(node_ptr p, std::size_t n)
+   static node_ptr move_forward(const node_ptr & p, std::size_t n)
    {
       //Null shift, nothing to do
-      if(!n) return node_ptr(0);
+      if(!n) return node_ptr();
       node_ptr first  = node_traits::get_next(p);
 
       //count() == 1 or 2, nothing to do
-      if(node_traits::get_next(first) == p) return node_ptr(0);
+      if(node_traits::get_next(first) == p) return node_ptr();
 
       //Iterate until p is found to know where the current last node is.
       //If the shift count is less than the size of the list, we can also obtain
@@ -381,7 +381,7 @@ class circular_slist_algorithms
          //Shortcut the shift with the modulo of the size of the list
          std::size_t new_before_last_pos = (distance - (n % distance))% distance;
          //If the shift is a multiple of the size there is nothing to do
-         if(!new_before_last_pos)   return node_ptr(0);
+         if(!new_before_last_pos)   return node_ptr();
          
          for( new_last = p
             ; new_before_last_pos--

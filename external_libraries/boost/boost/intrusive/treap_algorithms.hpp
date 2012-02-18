@@ -19,6 +19,7 @@
 #include <boost/intrusive/intrusive_fwd.hpp>
 
 #include <boost/intrusive/detail/assert.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/detail/utilities.hpp>
 #include <boost/intrusive/detail/tree_algorithms.hpp>
 #include <algorithm>
@@ -82,7 +83,7 @@ class treap_algorithms
       remove_on_destroy(const remove_on_destroy&);
       remove_on_destroy& operator=(const remove_on_destroy&);
       public:
-      remove_on_destroy(node_ptr header, node_ptr z)
+      remove_on_destroy(const node_ptr & header, const node_ptr & z)
          :  header_(header), z_(z), remove_it_(true)
       {}
       ~remove_on_destroy()
@@ -106,7 +107,7 @@ class treap_algorithms
       rerotate_on_destroy& operator=(const rerotate_on_destroy&);
 
       public:
-      rerotate_on_destroy(node_ptr header, node_ptr p, std::size_t &n)
+      rerotate_on_destroy(const node_ptr & header, const node_ptr & p, std::size_t &n)
          :  header_(header), p_(p), n_(n), remove_it_(true)
       {}
 
@@ -143,17 +144,16 @@ class treap_algorithms
 
    typedef detail::tree_algorithms<NodeTraits>  tree_algorithms;
 
-   static node_ptr uncast(const_node_ptr ptr)
-   {
-      return node_ptr(const_cast<node*>(::boost::intrusive::detail::boost_intrusive_get_pointer(ptr)));
-   }
+   static node_ptr uncast(const const_node_ptr & ptr)
+   {  return pointer_traits<node_ptr>::const_cast_from(ptr);  }
+
    /// @endcond
 
    public:
-   static node_ptr begin_node(const_node_ptr header)
+   static node_ptr begin_node(const const_node_ptr & header)
    {  return tree_algorithms::begin_node(header);   }
 
-   static node_ptr end_node(const_node_ptr header)
+   static node_ptr end_node(const const_node_ptr & header)
    {  return tree_algorithms::end_node(header);   }
 
    //! This type is the information that will be
@@ -177,7 +177,7 @@ class treap_algorithms
    //! <b>Complexity</b>: Constant. 
    //! 
    //! <b>Throws</b>: Nothing.
-   static void swap_tree(node_ptr header1, node_ptr header2)
+   static void swap_tree(const node_ptr & header1, const node_ptr & header2)
    {  return tree_algorithms::swap_tree(header1, header2);  }
 
    //! <b>Requires</b>: node1 and node2 can't be header nodes
@@ -195,7 +195,7 @@ class treap_algorithms
    //!   node1 and node2 are not equivalent according to the ordering rules.
    //!
    //!Experimental function
-   static void swap_nodes(node_ptr node1, node_ptr node2)
+   static void swap_nodes(const node_ptr & node1, const node_ptr & node2)
    {
       if(node1 == node2)
          return;
@@ -219,7 +219,7 @@ class treap_algorithms
    //!   node1 and node2 are not equivalent according to the ordering rules.
    //!
    //!Experimental function
-   static void swap_nodes(node_ptr node1, node_ptr header1, node_ptr node2, node_ptr header2)
+   static void swap_nodes(const node_ptr & node1, const node_ptr & header1, const node_ptr & node2, const node_ptr & header2)
    {  tree_algorithms::swap_nodes(node1, header1, node2, header2);  }
 
    //! <b>Requires</b>: node_to_be_replaced must be inserted in a tree
@@ -238,7 +238,7 @@ class treap_algorithms
    //!   the node, since no rebalancing and comparison is needed.
    //!
    //!Experimental function
-   static void replace_node(node_ptr node_to_be_replaced, node_ptr new_node)
+   static void replace_node(const node_ptr & node_to_be_replaced, const node_ptr & new_node)
    {
       if(node_to_be_replaced == new_node)
          return;
@@ -261,7 +261,7 @@ class treap_algorithms
    //!   the node, since no rebalancing or comparison is needed.
    //!
    //!Experimental function
-   static void replace_node(node_ptr node_to_be_replaced, node_ptr header, node_ptr new_node)
+   static void replace_node(const node_ptr & node_to_be_replaced, const node_ptr & header, const node_ptr & new_node)
    {  tree_algorithms::replace_node(node_to_be_replaced, header, new_node);  }
 
    //! <b>Requires</b>: node is a tree node but not the header.
@@ -272,7 +272,7 @@ class treap_algorithms
    //! 
    //! <b>Throws</b>: If "pcomp" throws, strong guarantee
    template<class NodePtrPriorityCompare>
-   static void unlink(node_ptr node, NodePtrPriorityCompare pcomp)
+   static void unlink(const node_ptr & node, NodePtrPriorityCompare pcomp)
    {
       node_ptr x = NodeTraits::get_parent(node);
       if(x){
@@ -295,7 +295,7 @@ class treap_algorithms
    //!   only be used for more unlink_leftmost_without_rebalance calls.
    //!   This function is normally used to achieve a step by step
    //!   controlled destruction of the tree.
-   static node_ptr unlink_leftmost_without_rebalance(node_ptr header)
+   static node_ptr unlink_leftmost_without_rebalance(const node_ptr & header)
    {  return tree_algorithms::unlink_leftmost_without_rebalance(header);   }
 
    //! <b>Requires</b>: node is a node of the tree or an node initialized
@@ -306,7 +306,7 @@ class treap_algorithms
    //! <b>Complexity</b>: Constant time.
    //! 
    //! <b>Throws</b>: Nothing.
-   static bool unique(const_node_ptr node)
+   static bool unique(const const_node_ptr & node)
    {  return tree_algorithms::unique(node);  }
 
    //! <b>Requires</b>: node is a node of the tree but it's not the header.
@@ -316,7 +316,7 @@ class treap_algorithms
    //! <b>Complexity</b>: Linear time.
    //! 
    //! <b>Throws</b>: Nothing.
-   static std::size_t count(const_node_ptr node)
+   static std::size_t count(const const_node_ptr & node)
    {  return tree_algorithms::count(node);   }
 
    //! <b>Requires</b>: header is the header node of the tree.
@@ -326,7 +326,7 @@ class treap_algorithms
    //! <b>Complexity</b>: Linear time.
    //! 
    //! <b>Throws</b>: Nothing.
-   static std::size_t size(const_node_ptr header)
+   static std::size_t size(const const_node_ptr & header)
    {  return tree_algorithms::size(header);   }
 
    //! <b>Requires</b>: p is a node from the tree except the header.
@@ -336,7 +336,7 @@ class treap_algorithms
    //! <b>Complexity</b>: Average constant time.
    //! 
    //! <b>Throws</b>: Nothing.
-   static node_ptr next_node(node_ptr p)
+   static node_ptr next_node(const node_ptr & p)
    {  return tree_algorithms::next_node(p); }
 
    //! <b>Requires</b>: p is a node from the tree except the leftmost node.
@@ -346,7 +346,7 @@ class treap_algorithms
    //! <b>Complexity</b>: Average constant time.
    //! 
    //! <b>Throws</b>: Nothing.
-   static node_ptr prev_node(node_ptr p)
+   static node_ptr prev_node(const node_ptr & p)
    {  return tree_algorithms::prev_node(p); }
 
    //! <b>Requires</b>: node must not be part of any tree.
@@ -358,7 +358,7 @@ class treap_algorithms
    //! <b>Throws</b>: Nothing.
    //!
    //! <b>Nodes</b>: If node is inserted in a tree, this function corrupts the tree.
-   static void init(node_ptr node)
+   static void init(const node_ptr & node)
    {  tree_algorithms::init(node);  }
 
    //! <b>Requires</b>: node must not be part of any tree.
@@ -371,7 +371,7 @@ class treap_algorithms
    //! <b>Throws</b>: Nothing.
    //!
    //! <b>Nodes</b>: If node is inserted in a tree, this function corrupts the tree.
-   static void init_header(node_ptr header)
+   static void init_header(const node_ptr & header)
    {
       tree_algorithms::init_header(header);
    }
@@ -385,7 +385,7 @@ class treap_algorithms
    //! 
    //! <b>Throws</b>: If "pcomp" throws, strong guarantee.
    template<class NodePtrPriorityCompare>
-   static node_ptr erase(node_ptr header, node_ptr z, NodePtrPriorityCompare pcomp)
+   static node_ptr erase(const node_ptr & header, const node_ptr & z, NodePtrPriorityCompare pcomp)
    {
       rebalance_for_erasure(header, z, pcomp);
       tree_algorithms::erase(header, z);
@@ -398,13 +398,13 @@ class treap_algorithms
    //!   take a node_ptr and shouldn't throw.
    //!
    //! <b>Effects</b>: First empties target tree calling 
-   //!   <tt>void disposer::operator()(node_ptr)</tt> for every node of the tree
+   //!   <tt>void disposer::operator()(const node_ptr &)</tt> for every node of the tree
    //!    except the header.
    //!    
    //!   Then, duplicates the entire tree pointed by "source_header" cloning each
-   //!   source node with <tt>node_ptr Cloner::operator()(node_ptr)</tt> to obtain 
+   //!   source node with <tt>node_ptr Cloner::operator()(const node_ptr &)</tt> to obtain 
    //!   the nodes of the target tree. If "cloner" throws, the cloned target nodes
-   //!   are disposed using <tt>void disposer(node_ptr)</tt>.
+   //!   are disposed using <tt>void disposer(const node_ptr &)</tt>.
    //! 
    //! <b>Complexity</b>: Linear to the number of element of the source tree plus the.
    //!   number of elements of tree target tree when calling this function.
@@ -412,7 +412,7 @@ class treap_algorithms
    //! <b>Throws</b>: If cloner functor throws. If this happens target nodes are disposed.
    template <class Cloner, class Disposer>
    static void clone
-      (const_node_ptr source_header, node_ptr target_header, Cloner cloner, Disposer disposer)
+      (const const_node_ptr & source_header, const node_ptr & target_header, Cloner cloner, Disposer disposer)
    {
       tree_algorithms::clone(source_header, target_header, cloner, disposer);
    }
@@ -421,7 +421,7 @@ class treap_algorithms
    //!   taking a node_ptr parameter and shouldn't throw.
    //!
    //! <b>Effects</b>: Empties the target tree calling 
-   //!   <tt>void disposer::operator()(node_ptr)</tt> for every node of the tree
+   //!   <tt>void disposer::operator()(const node_ptr &)</tt> for every node of the tree
    //!    except the header.
    //! 
    //! <b>Complexity</b>: Linear to the number of element of the source tree plus the.
@@ -429,7 +429,7 @@ class treap_algorithms
    //! 
    //! <b>Throws</b>: If cloner functor throws. If this happens target nodes are disposed.
    template<class Disposer>
-   static void clear_and_dispose(node_ptr header, Disposer disposer)
+   static void clear_and_dispose(const node_ptr & header, Disposer disposer)
    {  tree_algorithms::clear_and_dispose(header, disposer); }
 
    //! <b>Requires</b>: "header" must be the header node of a tree.
@@ -446,7 +446,7 @@ class treap_algorithms
    //! <b>Throws</b>: If "comp" throws.
    template<class KeyType, class KeyNodePtrCompare>
    static node_ptr lower_bound
-      (const_node_ptr header, const KeyType &key, KeyNodePtrCompare comp)
+      (const const_node_ptr & header, const KeyType &key, KeyNodePtrCompare comp)
    {  return tree_algorithms::lower_bound(header, key, comp);  }
 
    //! <b>Requires</b>: "header" must be the header node of a tree.
@@ -462,7 +462,7 @@ class treap_algorithms
    //! <b>Throws</b>: If "comp" throws.
    template<class KeyType, class KeyNodePtrCompare>
    static node_ptr upper_bound
-      (const_node_ptr header, const KeyType &key, KeyNodePtrCompare comp)
+      (const const_node_ptr & header, const KeyType &key, KeyNodePtrCompare comp)
    {  return tree_algorithms::upper_bound(header, key, comp);  }
 
    //! <b>Requires</b>: "header" must be the header node of a tree.
@@ -478,7 +478,7 @@ class treap_algorithms
    //! <b>Throws</b>: If "comp" throws.
    template<class KeyType, class KeyNodePtrCompare>
    static node_ptr find
-      (const_node_ptr header, const KeyType &key, KeyNodePtrCompare comp)
+      (const const_node_ptr & header, const KeyType &key, KeyNodePtrCompare comp)
    {  return tree_algorithms::find(header, key, comp);  }
 
    //! <b>Requires</b>: "header" must be the header node of a tree.
@@ -496,7 +496,7 @@ class treap_algorithms
    //! <b>Throws</b>: If "comp" throws.
    template<class KeyType, class KeyNodePtrCompare>
    static std::pair<node_ptr, node_ptr> equal_range
-      (const_node_ptr header, const KeyType &key, KeyNodePtrCompare comp)
+      (const const_node_ptr & header, const KeyType &key, KeyNodePtrCompare comp)
    {  return tree_algorithms::equal_range(header, key, comp);  }
 
    //! <b>Requires</b>: "h" must be the header node of a tree.
@@ -516,7 +516,7 @@ class treap_algorithms
    //! <b>Throws</b>: If "comp" throw or "pcomp" throw.
    template<class NodePtrCompare, class NodePtrPriorityCompare>
    static node_ptr insert_equal_upper_bound
-      (node_ptr h, node_ptr new_node, NodePtrCompare comp, NodePtrPriorityCompare pcomp)
+      (const node_ptr & h, const node_ptr & new_node, NodePtrCompare comp, NodePtrPriorityCompare pcomp)
    {
       insert_commit_data commit_data;
       tree_algorithms::insert_equal_upper_bound_check(h, new_node, comp, commit_data);
@@ -541,7 +541,7 @@ class treap_algorithms
    //! <b>Throws</b>: If "comp" throws.
    template<class NodePtrCompare, class NodePtrPriorityCompare>
    static node_ptr insert_equal_lower_bound
-      (node_ptr h, node_ptr new_node, NodePtrCompare comp, NodePtrPriorityCompare pcomp)
+      (const node_ptr & h, const node_ptr & new_node, NodePtrCompare comp, NodePtrPriorityCompare pcomp)
    {
       insert_commit_data commit_data;
       tree_algorithms::insert_equal_lower_bound_check(h, new_node, comp, commit_data);
@@ -569,7 +569,7 @@ class treap_algorithms
    //! <b>Throws</b>: If "comp" throw or "pcomp" throw.
    template<class NodePtrCompare, class NodePtrPriorityCompare>
    static node_ptr insert_equal
-      (node_ptr h, node_ptr hint, node_ptr new_node, NodePtrCompare comp, NodePtrPriorityCompare pcomp)
+      (const node_ptr & h, const node_ptr & hint, const node_ptr & new_node, NodePtrCompare comp, NodePtrPriorityCompare pcomp)
    {
       insert_commit_data commit_data;
       tree_algorithms::insert_equal_check(h, hint, new_node, comp, commit_data);
@@ -597,7 +597,7 @@ class treap_algorithms
    //! tree invariants might be broken.
    template<class NodePtrPriorityCompare>
    static node_ptr insert_before
-      (node_ptr header, node_ptr pos, node_ptr new_node, NodePtrPriorityCompare pcomp)
+      (const node_ptr & header, const node_ptr & pos, const node_ptr & new_node, NodePtrPriorityCompare pcomp)
    {
       insert_commit_data commit_data;
       tree_algorithms::insert_before_check(header, pos, commit_data);
@@ -623,7 +623,7 @@ class treap_algorithms
    //! tree invariants are broken. This function is slightly faster than
    //! using "insert_before".
    template<class NodePtrPriorityCompare>
-   static void push_back(node_ptr header, node_ptr new_node, NodePtrPriorityCompare pcomp)
+   static void push_back(const node_ptr & header, const node_ptr & new_node, NodePtrPriorityCompare pcomp)
    {
       insert_commit_data commit_data;
       tree_algorithms::push_back_check(header, commit_data);
@@ -648,7 +648,7 @@ class treap_algorithms
    //! tree invariants are broken. This function is slightly faster than
    //! using "insert_before".
    template<class NodePtrPriorityCompare>
-   static void push_front(node_ptr header, node_ptr new_node, NodePtrPriorityCompare pcomp)
+   static void push_front(const node_ptr & header, const node_ptr & new_node, NodePtrPriorityCompare pcomp)
    {
       insert_commit_data commit_data;
       tree_algorithms::push_front_check(header, commit_data);
@@ -691,7 +691,7 @@ class treap_algorithms
    //!   if no more objects are inserted or erased from the set.
    template<class KeyType, class KeyNodePtrCompare, class KeyNodePtrPrioCompare>
    static std::pair<node_ptr, bool> insert_unique_check
-      (const_node_ptr header,  const KeyType &key
+      (const const_node_ptr & header,  const KeyType &key
       ,KeyNodePtrCompare comp, KeyNodePtrPrioCompare pcomp
       ,insert_commit_data &commit_data)
    {
@@ -743,7 +743,7 @@ class treap_algorithms
    //!   if no more objects are inserted or erased from the set.
    template<class KeyType, class KeyNodePtrCompare, class KeyNodePtrPrioCompare>
    static std::pair<node_ptr, bool> insert_unique_check
-      (const_node_ptr header,  node_ptr hint, const KeyType &key
+      (const const_node_ptr & header, const node_ptr & hint, const KeyType &key
       ,KeyNodePtrCompare comp, KeyNodePtrPrioCompare pcomp, insert_commit_data &commit_data)
    {
       std::pair<node_ptr, bool> ret =
@@ -771,7 +771,7 @@ class treap_algorithms
    //!   previously executed to fill "commit_data". No value should be inserted or
    //!   erased between the "insert_check" and "insert_commit" calls.
    static void insert_unique_commit
-      (node_ptr header, node_ptr new_node, const insert_commit_data &commit_data)
+      (const node_ptr & header, const node_ptr & new_node, const insert_commit_data &commit_data)
    {
       tree_algorithms::insert_unique_commit(header, new_node, commit_data);
       rebalance_after_insertion_commit(header, new_node, commit_data.rotations);
@@ -784,7 +784,7 @@ class treap_algorithms
    //! <b>Complexity</b>: Logarithmic.
    //! 
    //! <b>Throws</b>: Nothing.
-   static node_ptr get_header(node_ptr n)
+   static node_ptr get_header(const node_ptr & n)
    {  return tree_algorithms::get_header(n);   }
 
    /// @cond
@@ -797,13 +797,13 @@ class treap_algorithms
    //! <b>Complexity</b>: Constant.
    //! 
    //! <b>Throws</b>: Nothing.
-   static bool is_header(const_node_ptr p)
+   static bool is_header(const const_node_ptr & p)
    {
       return tree_algorithms::is_header(p);
    }
 
    template<class NodePtrPriorityCompare>
-   static void rebalance_for_erasure(node_ptr header, node_ptr z, NodePtrPriorityCompare pcomp)
+   static void rebalance_for_erasure(const node_ptr & header, const node_ptr & z, NodePtrPriorityCompare pcomp)
    {
       std::size_t n = 0;
       rerotate_on_destroy rb(header, z, n);
@@ -826,7 +826,7 @@ class treap_algorithms
 
    template<class NodePtrPriorityCompare>
    static void rebalance_check_and_commit
-      (node_ptr h, node_ptr new_node, NodePtrPriorityCompare pcomp, insert_commit_data &commit_data)
+      (const node_ptr & h, const node_ptr & new_node, NodePtrPriorityCompare pcomp, insert_commit_data &commit_data)
    {
       rebalance_after_insertion_check(h, commit_data.node, new_node, pcomp, commit_data.rotations);
       //No-throw
@@ -837,9 +837,10 @@ class treap_algorithms
 
    template<class Key, class KeyNodePriorityCompare>
    static void rebalance_after_insertion_check
-      ( const_node_ptr header, const_node_ptr upnode, const Key &k
+      (const const_node_ptr &header, const const_node_ptr & up, const Key &k
       , KeyNodePriorityCompare pcomp, std::size_t &num_rotations)
    {
+      const_node_ptr upnode(up);
       //First check rotations since pcomp can throw
       num_rotations = 0;
       std::size_t n = 0;
@@ -850,7 +851,7 @@ class treap_algorithms
       num_rotations = n;
    }
 
-   static void rebalance_after_insertion_commit(node_ptr header, node_ptr p, std::size_t n)
+   static void rebalance_after_insertion_commit(const node_ptr & header, const node_ptr & p, std::size_t n)
    {
       // Now execute n rotations
       for( node_ptr p_parent = NodeTraits::get_parent(p)
@@ -867,7 +868,7 @@ class treap_algorithms
    }
 
    template<class NodePtrPriorityCompare>
-   static bool check_invariant(const_node_ptr header, NodePtrPriorityCompare pcomp)
+   static bool check_invariant(const const_node_ptr & header, NodePtrPriorityCompare pcomp)
    {
       node_ptr beg = begin_node(header);
       node_ptr end = end_node(header);

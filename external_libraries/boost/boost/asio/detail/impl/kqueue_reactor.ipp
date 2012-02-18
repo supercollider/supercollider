@@ -2,7 +2,7 @@
 // detail/impl/kqueue_reactor.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2011 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2012 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2005 Stefan Arentz (stefan at soze dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -28,8 +28,8 @@
 
 #if defined(__NetBSD__)
 # define BOOST_ASIO_KQUEUE_EV_SET(ev, ident, filt, flags, fflags, data, udata) \
-    EV_SET(ev, ident, filt, flags, fflags, \
-      data, reinterpret_cast<intptr_t>(udata))
+    EV_SET(ev, ident, filt, flags, fflags, data, \
+      reinterpret_cast<intptr_t>(static_cast<void*>(udata)))
 #else
 # define BOOST_ASIO_KQUEUE_EV_SET(ev, ident, filt, flags, fflags, data, udata) \
     EV_SET(ev, ident, filt, flags, fflags, data, udata)
@@ -133,10 +133,6 @@ int kqueue_reactor::register_descriptor(socket_type descriptor,
   descriptor_data->descriptor_ = descriptor;
   descriptor_data->shutdown_ = false;
 
-  for (int i = 0; i < max_ops; ++i)
-    descriptor_data->op_queue_is_empty_[i] =
-      descriptor_data->op_queue_[i].empty();
-
   return 0;
 }
 
@@ -151,10 +147,6 @@ int kqueue_reactor::register_internal_descriptor(
   descriptor_data->descriptor_ = descriptor;
   descriptor_data->shutdown_ = false;
   descriptor_data->op_queue_[op_type].push(op);
-
-  for (int i = 0; i < max_ops; ++i)
-    descriptor_data->op_queue_is_empty_[i] =
-      descriptor_data->op_queue_[i].empty();
 
   struct kevent event;
   switch (op_type)
@@ -196,21 +188,6 @@ void kqueue_reactor::start_op(int op_type, socket_type descriptor,
     return;
   }
 
-  if (allow_speculative)
-  {
-    if (descriptor_data->op_queue_is_empty_[op_type]
-        && (op_type != read_op
-          || descriptor_data->op_queue_is_empty_[except_op]))
-    {
-      if (op->perform())
-      {
-        io_service_.post_immediate_completion(op);
-        return;
-      }
-      allow_speculative = false;
-    }
-  }
-
   mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
 
   if (descriptor_data->shutdown_)
@@ -219,16 +196,12 @@ void kqueue_reactor::start_op(int op_type, socket_type descriptor,
     return;
   }
 
-  for (int i = 0; i < max_ops; ++i)
-    descriptor_data->op_queue_is_empty_[i] =
-      descriptor_data->op_queue_[i].empty();
-
-  bool first = descriptor_data->op_queue_is_empty_[op_type];
+  bool first = descriptor_data->op_queue_[op_type].empty();
   if (first)
   {
     if (allow_speculative)
     {
-      if (op_type != read_op || descriptor_data->op_queue_is_empty_[except_op])
+      if (op_type != read_op || descriptor_data->op_queue_[except_op].empty())
       {
         if (op->perform())
         {
@@ -241,7 +214,6 @@ void kqueue_reactor::start_op(int op_type, socket_type descriptor,
   }
 
   descriptor_data->op_queue_[op_type].push(op);
-  descriptor_data->op_queue_is_empty_[op_type] = false;
   io_service_.work_started();
 
   if (first)

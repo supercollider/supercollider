@@ -13,8 +13,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef BOOST_CONTAINERS_DETAIL_VERSION_TYPE_HPP
-#define BOOST_CONTAINERS_DETAIL_VERSION_TYPE_HPP
+#ifndef BOOST_CONTAINER_DETAIL_VERSION_TYPE_HPP
+#define BOOST_CONTAINER_DETAIL_VERSION_TYPE_HPP
 
 #include "config_begin.hpp"
 
@@ -23,13 +23,13 @@
 
 namespace boost{
 namespace container {
-namespace containers_detail {
+namespace container_detail {
 
 //using namespace boost;
 
 template <class T, unsigned V>
 struct version_type
-    : public containers_detail::integral_constant<unsigned, V>
+    : public container_detail::integral_constant<unsigned, V>
 {
     typedef T type;
 
@@ -39,7 +39,7 @@ struct version_type
 namespace impl{
 
 template <class T, 
-          bool = containers_detail::is_convertible<version_type<T, 0>, typename T::version>::value>
+          bool = container_detail::is_convertible<version_type<T, 0>, typename T::version>::value>
 struct extract_version
 {
    static const unsigned value = 1;
@@ -79,14 +79,14 @@ struct version<T, true>
 
 template <class T>
 struct version
-   : public containers_detail::integral_constant<unsigned, impl::version<T>::value>
+   : public container_detail::integral_constant<unsigned, impl::version<T>::value>
 {
 };
 
-}  //namespace containers_detail {
+}  //namespace container_detail {
 }  //namespace container {
 }  //namespace boost{
 
 #include "config_end.hpp"
 
-#endif   //#define BOOST_CONTAINERS_DETAIL_VERSION_TYPE_HPP
+#endif   //#define BOOST_CONTAINER_DETAIL_VERSION_TYPE_HPP

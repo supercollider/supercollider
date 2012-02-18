@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -18,7 +18,7 @@
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 
-#include <boost/pointer_to_other.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 
 #include <boost/detail/no_exceptions_support.hpp>
 #include <boost/interprocess/detail/type_traits.hpp>
@@ -27,6 +27,7 @@
 #include <boost/interprocess/exceptions.hpp>
 #include <boost/type_traits/make_unsigned.hpp>
 #include <boost/type_traits/alignment_of.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 #include <cstddef>   //std::size_t
 #include <string>    //char_traits
 #include <new>       //std::nothrow
@@ -207,7 +208,7 @@ struct block_header
    }
 };
 
-inline void array_construct(void *mem, std::size_t num, ipcdetail::in_place_interface &table)
+inline void array_construct(void *mem, std::size_t num, in_place_interface &table)
 {
    //Try constructors
    std::size_t constructed = 0;
@@ -281,7 +282,7 @@ struct intrusive_value_type_impl
    {
       return const_cast<block_header<size_type>*>
          (reinterpret_cast<const block_header<size_type> *>(reinterpret_cast<const char*>(this) +
-            ::boost::interprocess::ipcdetail::get_rounded_size(size_type(sizeof(*this)), size_type(BlockHdrAlignment))));
+            get_rounded_size(size_type(sizeof(*this)), size_type(BlockHdrAlignment))));
    }
 
    bool operator <(const intrusive_value_type_impl<Hook, CharType, SizeType> & other) const
@@ -314,11 +315,11 @@ class char_ptr_holder
       : m_name(name)
    {}
 
-   char_ptr_holder(const ipcdetail::anonymous_instance_t *) 
+   char_ptr_holder(const anonymous_instance_t *) 
       : m_name(static_cast<CharType*>(0))
    {}
 
-   char_ptr_holder(const ipcdetail::unique_instance_t *) 
+   char_ptr_holder(const unique_instance_t *) 
       : m_name(reinterpret_cast<CharType*>(-1))
    {}
 
@@ -334,10 +335,11 @@ class char_ptr_holder
 template<class CharT, class VoidPointer>
 struct index_key
 {
-   typedef typename boost::
-      pointer_to_other<VoidPointer, const CharT>::type   const_char_ptr_t;
+   typedef typename boost::intrusive::
+      pointer_traits<VoidPointer>::template
+         rebind_pointer<const CharT>::type               const_char_ptr_t;
    typedef CharT                                         char_type;
-   typedef typename std::iterator_traits<const_char_ptr_t>::difference_type difference_type;
+   typedef typename boost::intrusive::pointer_traits<const_char_ptr_t>::difference_type difference_type;
    typedef typename boost::make_unsigned<difference_type>::type size_type;
 
    private:
@@ -357,8 +359,8 @@ struct index_key
       return (m_len < right.m_len) || 
                (m_len == right.m_len && 
                std::char_traits<char_type>::compare 
-                  (ipcdetail::get_pointer(mp_str)
-              ,ipcdetail::get_pointer(right.mp_str), m_len) < 0);
+                  (to_raw_pointer(mp_str)
+              ,to_raw_pointer(right.mp_str), m_len) < 0);
    }
 
    //!Equal to function for index ordering
@@ -366,8 +368,8 @@ struct index_key
    {
       return   m_len == right.m_len && 
                std::char_traits<char_type>::compare 
-                  (ipcdetail::get_pointer(mp_str),
-                   ipcdetail::get_pointer(right.mp_str), m_len) == 0;
+                  (to_raw_pointer(mp_str),
+                   to_raw_pointer(right.mp_str), m_len) == 0;
    }
 
    void name(const CharT *name)
@@ -377,7 +379,7 @@ struct index_key
    {  m_len = len; }
 
    const CharT *name() const
-   {  return ipcdetail::get_pointer(mp_str); }
+   {  return to_raw_pointer(mp_str); }
 
    size_type name_length() const
    {  return m_len; }
@@ -393,7 +395,7 @@ struct index_data
    index_data(void *ptr) : m_ptr(ptr){}
 
    void *value() const
-   {  return static_cast<void*>(ipcdetail::get_pointer(m_ptr));  }
+   {  return static_cast<void*>(to_raw_pointer(m_ptr));  }
 };
 
 template<class MemoryAlgorithm>
@@ -405,14 +407,14 @@ struct index_config
 {
    typedef typename MemoryAlgorithm::void_pointer        void_pointer;
    typedef CharT                                         char_type;
-   typedef ipcdetail::index_key<CharT, void_pointer>        key_type;
-   typedef ipcdetail::index_data<void_pointer>              mapped_type;
+   typedef index_key<CharT, void_pointer>        key_type;
+   typedef index_data<void_pointer>              mapped_type;
    typedef typename segment_manager_base_type
       <MemoryAlgorithm>::type                            segment_manager_base;
 
    template<class HeaderBase>
    struct intrusive_value_type
-   {  typedef ipcdetail::intrusive_value_type_impl<HeaderBase, CharT, typename segment_manager_base::size_type>  type; };
+   {  typedef intrusive_value_type_impl<HeaderBase, CharT, typename segment_manager_base::size_type>  type; };
 
    typedef intrusive_compare_key<CharT>            intrusive_compare_key_type;
 };
@@ -464,7 +466,7 @@ class segment_manager_iterator_value_adaptor<Iterator, false>
    const void *value() const
    {
       return reinterpret_cast<block_header<size_type>*>
-         (ipcdetail::get_pointer(m_val->second.m_ptr))->value();
+         (to_raw_pointer(m_val->second.m_ptr))->value();
    }
 
    const typename Iterator::value_type *m_val;

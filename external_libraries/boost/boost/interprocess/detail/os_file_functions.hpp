@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -18,6 +18,7 @@
 
 #include <string>
 #include <limits>
+#include <climits>
 
 #if (defined BOOST_INTERPROCESS_WINDOWS)
 #  include <boost/interprocess/detail/win32_api.hpp>
@@ -128,12 +129,15 @@ inline bool truncate_file (file_handle_t hnd, std::size_t size)
    if(!winapi::get_file_size(hnd, filesize))
       return false;
 
-   if(size > (std::numeric_limits<offset_t>::max)()){
+   const offset_t max_filesize = (std::numeric_limits<offset_t>::max)();
+   //Avoid unused variable warnings in 32 bit systems
+   (void)max_filesize;
+   if( sizeof(std::size_t) >= sizeof(offset_t) && size > std::size_t(max_filesize) ){
       winapi::set_last_error(winapi::error_file_too_large);
       return false;
    }
 
-   if(size > (unsigned long long)filesize){
+   if(offset_t(size) > filesize){
       if(!winapi::set_file_pointer_ex(hnd, filesize, 0, winapi::file_begin)){
          return false;
       }      
@@ -445,11 +449,13 @@ inline bool delete_file(const char *name)
 
 inline bool truncate_file (file_handle_t hnd, std::size_t size)
 {
-   if(off_t(size) < 0){
-      errno = EINVAL;
-      return false;
+   if(sizeof(off_t) == sizeof(std::size_t)){
+      if(size > ((~std::size_t(0)) >> 1)){
+         errno = EINVAL;
+         return false;
+      }
    }
-   return 0 == ::ftruncate(hnd, size);
+   return 0 == ::ftruncate(hnd, off_t(size));
 }
 
 inline bool get_file_size(file_handle_t hnd, offset_t &size)
