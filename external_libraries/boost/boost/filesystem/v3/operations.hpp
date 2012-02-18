@@ -55,9 +55,7 @@ namespace boost
   {
 
 //--------------------------------------------------------------------------------------//
-//                                                                                      //
-//                            support classes and enums                                 //
-//                                                                                      //
+//                                     file_type                                        //
 //--------------------------------------------------------------------------------------//
 
   enum file_type
@@ -82,27 +80,96 @@ namespace boost
     _detail_directory_symlink  // internal use only; never exposed to users
   };
 
+//--------------------------------------------------------------------------------------//
+//                                       perms                                          //
+//--------------------------------------------------------------------------------------//
+
+  enum perms
+  {
+    no_perms = 0,       // file_not_found is no_perms rather than perms_not_known
+
+    // POSIX equivalent macros given in comments.
+    // Values are from POSIX and are given in octal per the POSIX standard.
+
+    // permission bits
+    
+    owner_read = 0400,  // S_IRUSR, Read permission, owner
+    owner_write = 0200, // S_IWUSR, Write permission, owner
+    owner_exe = 0100,   // S_IXUSR, Execute/search permission, owner
+    owner_all = 0700,   // S_IRWXU, Read, write, execute/search by owner
+
+    group_read = 040,   // S_IRGRP, Read permission, group
+    group_write = 020,  // S_IWGRP, Write permission, group
+    group_exe = 010,    // S_IXGRP, Execute/search permission, group
+    group_all = 070,    // S_IRWXG, Read, write, execute/search by group
+
+    others_read = 04,   // S_IROTH, Read permission, others
+    others_write = 02,  // S_IWOTH, Write permission, others
+    others_exe = 01,    // S_IXOTH, Execute/search permission, others
+    others_all = 07,    // S_IRWXO, Read, write, execute/search by others
+
+    all_all = owner_all|group_all|others_all,  // 0777
+
+    // other POSIX bits
+
+    set_uid_on_exe = 04000, // S_ISUID, Set-user-ID on execution
+    set_gid_on_exe = 02000, // S_ISGID, Set-group-ID on execution
+    sticky_bit     = 01000, // S_ISVTX,
+                            // (POSIX XSI) On directories, restricted deletion flag 
+	                          // (V7) 'sticky bit': save swapped text even after use 
+                            // (SunOS) On non-directories: don't cache this file
+                            // (SVID-v4.2) On directories: restricted deletion flag
+                            // Also see http://en.wikipedia.org/wiki/Sticky_bit
+
+    perms_mask = all_all|set_uid_on_exe|set_gid_on_exe|sticky_bit,  // 07777
+
+    perms_not_known = 0xFFFF, // present when directory_entry cache not loaded
+
+    // options for permissions() function
+
+    add_perms = 0x1000,     // adds the given permission bits to the current bits
+    remove_perms = 0x2000,  // removes the given permission bits from the current bits;
+                            // choose add_perms or remove_perms, not both; if neither add_perms
+                            // nor remove_perms is given, replace the current bits with
+                            // the given bits.
+
+    symlink_perms = 0x4000  // on POSIX, don't resolve symlinks; implied on Windows
+  };
+
+  BOOST_BITMASK(perms)
+
+//--------------------------------------------------------------------------------------//
+//                                    file_status                                       //
+//--------------------------------------------------------------------------------------//
+
   class BOOST_FILESYSTEM_DECL file_status
   {
   public:
-    file_status() : m_value(status_error) {}
-    explicit file_status(file_type v) : m_value(v) {}
+             file_status()            : m_value(status_error), m_perms(perms_not_known) {}
+    explicit file_status(file_type v, perms prms = perms_not_known)
+                                      : m_value(v), m_perms(prms) {}
 
-    void type(file_type v)    { m_value = v; }
-    file_type type() const    { return m_value; }
+    // observers
+    file_type  type() const                       { return m_value; }
+    perms      permissions() const                { return m_perms; } 
 
-    bool operator==(const file_status& rhs) const { return type() == rhs.type(); }
+    // modifiers
+    void       type(file_type v)                  { m_value = v; }
+    void       permissions(perms prms)            { m_perms = prms; }
+
+    bool operator==(const file_status& rhs) const { return type() == rhs.type() && 
+                                                    permissions() == rhs.permissions(); }
     bool operator!=(const file_status& rhs) const { return !(*this == rhs); }
 
   private:
-    // the internal representation is unspecified so that additional state
-    // information such as permissions can be added in the future; this
-    // implementation just uses file_type as the internal representation
-
-    file_type m_value;
+    file_type   m_value;
+    enum perms  m_perms;
   };
 
-  inline bool status_known(file_status f) { return f.type() != status_error; }
+  inline bool type_present(file_status f) { return f.type() != status_error; }
+  inline bool permissions_present(file_status f)
+                                          {return f.permissions() != perms_not_known;}
+  inline bool status_known(file_status f) { return type_present(f) && permissions_present(f); }
   inline bool exists(file_status f)       { return f.type() != status_error
                                                 && f.type() != file_not_found; }
   inline bool is_regular_file(file_status f){ return f.type() == regular_file; }
@@ -159,7 +226,7 @@ namespace boost
     bool create_directory(const path& p, system::error_code* ec=0);
     BOOST_FILESYSTEM_DECL
     void create_directory_symlink(const path& to, const path& from,
-                                   system::error_code* ec=0);
+                                  system::error_code* ec=0);
     BOOST_FILESYSTEM_DECL
     void create_hard_link(const path& to, const path& from, system::error_code* ec=0);
     BOOST_FILESYSTEM_DECL
@@ -178,7 +245,9 @@ namespace boost
     std::time_t last_write_time(const path& p, system::error_code* ec=0);
     BOOST_FILESYSTEM_DECL
     void last_write_time(const path& p, const std::time_t new_time,
-                     system::error_code* ec=0);
+                         system::error_code* ec=0);
+    BOOST_FILESYSTEM_DECL
+    void permissions(const path& p, perms prms, system::error_code* ec=0);
     BOOST_FILESYSTEM_DECL
     path read_symlink(const path& p, system::error_code* ec=0);
     BOOST_FILESYSTEM_DECL
@@ -280,7 +349,7 @@ namespace boost
   path canonical(const path& p, const path& base, system::error_code& ec)
                                        {return detail::canonical(p, base, &ec);}
 
- # ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+# ifndef BOOST_FILESYSTEM_NO_DEPRECATED
   inline
   path complete(const path& p)
   {
@@ -409,6 +478,13 @@ namespace boost
   inline
   void last_write_time(const path& p, const std::time_t new_time, system::error_code& ec)
                                        {detail::last_write_time(p, new_time, &ec);}
+  inline
+  void permissions(const path& p, perms prms)
+                                       {detail::permissions(p, prms);}
+  inline
+  void permissions(const path& p, perms prms, system::error_code& ec)
+                                       {detail::permissions(p, prms, &ec);}
+
   inline
   path read_symlink(const path& p)     {return detail::read_symlink(p);}
 
@@ -689,23 +765,43 @@ namespace detail
     {
       if ((m_options & symlink_option::_detail_no_push) == symlink_option::_detail_no_push)
         m_options &= ~symlink_option::_detail_no_push;
-      else if (is_directory(m_stack.top()->status())
-        && (!is_symlink(m_stack.top()->symlink_status())
-            || (m_options & symlink_option::recurse) == symlink_option::recurse))
+
+      else
       {
-        if (ec == 0)
-          m_stack.push(directory_iterator(m_stack.top()->path()));
-        else
-        {
-          m_stack.push(directory_iterator(m_stack.top()->path(), *ec));
-          if (*ec) return;
-        }
-        if (m_stack.top() != directory_iterator())
-        {
-          ++m_level;
+        // Logic for following predicate was contributed by Daniel Aarno to handle cyclic
+        // symlinks correctly and efficiently, fixing ticket #5652.
+        //   if (((m_options & symlink_option::recurse) == symlink_option::recurse
+        //         || !is_symlink(m_stack.top()->symlink_status()))
+        //       && is_directory(m_stack.top()->status())) ...
+        // The predicate code has since been rewritten to pass error_code arguments,
+        // per ticket #5653.
+        bool or_pred = (m_options & symlink_option::recurse) == symlink_option::recurse
+                       || (ec == 0 ? !is_symlink(m_stack.top()->symlink_status())
+                                   : !is_symlink(m_stack.top()->symlink_status(*ec)));
+        if (ec != 0 && *ec)
           return;
+        bool and_pred = or_pred && (ec == 0 ? is_directory(m_stack.top()->status())
+                                            : is_directory(m_stack.top()->status(*ec)));
+        if (ec != 0 && *ec)
+          return;
+
+        if (and_pred)
+        {
+          if (ec == 0)
+            m_stack.push(directory_iterator(m_stack.top()->path()));
+          else
+          {
+            m_stack.push(directory_iterator(m_stack.top()->path(), *ec));
+            if (*ec)
+              return;
+          }
+          if (m_stack.top() != directory_iterator())
+          {
+            ++m_level;
+            return;
+          }
+          m_stack.pop();
         }
-        m_stack.pop();
       }
 
       while (!m_stack.empty() && ++m_stack.top() == directory_iterator())
@@ -782,6 +878,8 @@ namespace detail
       BOOST_ASSERT_MSG(m_imp.get(),
         "increment() on end recursive_directory_iterator");
       m_imp->increment(&ec);
+      if (m_imp->m_stack.empty())
+        m_imp.reset(); // done, so make end iterator
       return *this;
     }
 
@@ -1000,6 +1098,30 @@ namespace boost
 {
   namespace filesystem
   {
+    // permissions
+    using filesystem3::no_perms;
+    using filesystem3::owner_read;
+    using filesystem3::owner_write;
+    using filesystem3::owner_exe;
+    using filesystem3::owner_all;
+    using filesystem3::group_read;
+    using filesystem3::group_write;
+    using filesystem3::group_exe;
+    using filesystem3::group_all;
+    using filesystem3::others_read;
+    using filesystem3::others_write;
+    using filesystem3::others_exe;
+    using filesystem3::others_all;
+    using filesystem3::all_all;
+    using filesystem3::set_uid_on_exe;
+    using filesystem3::set_gid_on_exe;
+    using filesystem3::sticky_bit;
+    using filesystem3::perms_mask;
+    using filesystem3::perms_not_known;
+    using filesystem3::add_perms;
+    using filesystem3::remove_perms;
+    using filesystem3::symlink_perms;
+
     using filesystem3::absolute;
     using filesystem3::block_file;
     using filesystem3::canonical;
@@ -1034,6 +1156,9 @@ namespace boost
     using filesystem3::is_regular_file;
     using filesystem3::is_symlink;
     using filesystem3::last_write_time;
+    using filesystem3::permissions;
+    using filesystem3::permissions_present;
+    using filesystem3::perms;
     using filesystem3::read_symlink;
     using filesystem3::recursive_directory_iterator;
     using filesystem3::regular_file;
@@ -1053,6 +1178,7 @@ namespace boost
     using filesystem3::symlink_status;
     using filesystem3::system_complete;
     using filesystem3::temp_directory_path;
+    using filesystem3::type_present;
     using filesystem3::type_unknown;
     using filesystem3::unique_path;
 # ifndef BOOST_FILESYSTEM_NO_DEPRECATED

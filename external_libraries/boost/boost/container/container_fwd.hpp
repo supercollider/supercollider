@@ -8,8 +8,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_CONTAINERS_CONTAINERS_FWD_HPP
-#define BOOST_CONTAINERS_CONTAINERS_FWD_HPP
+#ifndef BOOST_CONTAINER_CONTAINER_FWD_HPP
+#define BOOST_CONTAINER_CONTAINER_FWD_HPP
 
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
@@ -26,38 +26,17 @@ namespace intrusive{
    //Create namespace to avoid compilation errors
 }}
 
-namespace boost{ namespace container{ namespace containers_detail{
+namespace boost{ namespace container{ namespace container_detail{
 
 namespace bi = boost::intrusive;
 
 }}}
 
-#ifndef _LIBCPP_VERSION
-
-namespace std {
-
-template <class T>
-class allocator;
-
-template <class T>
-struct less;
-
-template <class T1, class T2>
-struct pair;
-
-template <class CharType> 
-struct char_traits;
-
-}  //namespace std {
-
-#else 
-
 #include <utility> 
 #include <memory> 
 #include <functional> 
-#include <iosfwd> 
- 
-#endif
+#include <iosfwd>
+#include <string>
 
 /// @endcond
 
@@ -195,4 +174,4 @@ struct dummy
 
 }}  //namespace boost { namespace container {
 
-#endif //#ifndef BOOST_CONTAINERS_CONTAINERS_FWD_HPP
+#endif //#ifndef BOOST_CONTAINER_CONTAINER_FWD_HPP

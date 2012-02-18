@@ -90,7 +90,7 @@ T bessel_yn(int n, T x, const Policy& pol)
            ++k;
        }
        while(k < n);
-       if(tools::max_value<T>() * factor < value)
+       if(fabs(tools::max_value<T>() * factor) < fabs(value))
           return sign(value) * sign(value) * policies::raise_overflow_error<T>(function, 0, pol);
        value /= factor;
     }

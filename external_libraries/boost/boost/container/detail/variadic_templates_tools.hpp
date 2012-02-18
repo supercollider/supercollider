@@ -8,8 +8,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_CONTAINERS_DETAIL_VARIADIC_TEMPLATES_TOOLS_HPP
-#define BOOST_CONTAINERS_DETAIL_VARIADIC_TEMPLATES_TOOLS_HPP
+#ifndef BOOST_CONTAINER_DETAIL_VARIADIC_TEMPLATES_TOOLS_HPP
+#define BOOST_CONTAINER_DETAIL_VARIADIC_TEMPLATES_TOOLS_HPP
 
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
@@ -22,7 +22,7 @@
 
 namespace boost {
 namespace container { 
-namespace containers_detail {
+namespace container_detail {
 
 template<typename... Values>
 class tuple;
@@ -146,8 +146,8 @@ struct build_number_seq<0, index_tuple<Indexes...> >
 {  typedef index_tuple<Indexes...> type;  };
 
 
-}}}   //namespace boost { namespace container { namespace containers_detail {
+}}}   //namespace boost { namespace container { namespace container_detail {
 
 #include <boost/container/detail/config_end.hpp>
 
-#endif   //#ifndef BOOST_CONTAINERS_DETAIL_VARIADIC_TEMPLATES_TOOLS_HPP
+#endif   //#ifndef BOOST_CONTAINER_DETAIL_VARIADIC_TEMPLATES_TOOLS_HPP

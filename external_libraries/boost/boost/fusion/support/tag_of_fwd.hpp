@@ -12,9 +12,6 @@ namespace boost { namespace fusion
 {
     namespace traits
     {
-        template <typename Sequence, typename Active = void>
-        struct tag_of_fallback;
-
         template<typename T, typename Active = void>
         struct tag_of;
     }

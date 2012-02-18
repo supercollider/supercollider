@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -24,6 +24,15 @@
 // It is provided "as is" without express or implied warranty.
 //////////////////////////////////////////////////////////////////////////////
 
+#ifndef BOOST_INTERPROCESS_DETAIL_POSIX_RECURSIVE_MUTEX_HPP
+#define BOOST_INTERPROCESS_DETAIL_POSIX_RECURSIVE_MUTEX_HPP
+
+#include <boost/interprocess/detail/config_begin.hpp>
+#include <boost/interprocess/detail/workaround.hpp>
+
+#include <pthread.h>
+#include <errno.h>   
+#include <boost/interprocess/sync/posix/pthread_helpers.hpp>
 #include <boost/interprocess/sync/posix/ptime_to_timespec.hpp>
 #include <boost/interprocess/detail/posix_time_types_wrk.hpp>
 #include <boost/interprocess/exceptions.hpp>
@@ -33,39 +42,47 @@
 #include <boost/assert.hpp>
 
 namespace boost {
-
 namespace interprocess {
+namespace ipcdetail {
 
-inline interprocess_recursive_mutex::interprocess_recursive_mutex()
+class posix_recursive_mutex
 {
-   ipcdetail::mutexattr_wrapper mut_attr(true);
-   ipcdetail::mutex_initializer mut(m_mut, mut_attr);
+   posix_recursive_mutex(const posix_recursive_mutex &);
+   posix_recursive_mutex &operator=(const posix_recursive_mutex &);
+   public:
+
+   posix_recursive_mutex();
+   ~posix_recursive_mutex();
+
+   void lock();
+   bool try_lock();
+   bool timed_lock(const boost::posix_time::ptime &abs_time);
+   void unlock();
+
+   private:
+   pthread_mutex_t   m_mut;
+};
+
+inline posix_recursive_mutex::posix_recursive_mutex()
+{
+   mutexattr_wrapper mut_attr(true);
+   mutex_initializer mut(m_mut, mut_attr);
    mut.release();
 }
 
-inline interprocess_recursive_mutex::~interprocess_recursive_mutex()
+inline posix_recursive_mutex::~posix_recursive_mutex()
 {
    int res = pthread_mutex_destroy(&m_mut);
    BOOST_ASSERT(res == 0);(void)res;
 }
 
-inline void interprocess_recursive_mutex::lock()
+inline void posix_recursive_mutex::lock()
 {
-#ifdef BOOST_INTERPROCESS_ENABLE_TIMEOUT_WHEN_LOCKING
-   boost::posix_time::ptime wait_time
-      = boost::posix_time::microsec_clock::universal_time()
-        + boost::posix_time::milliseconds(BOOST_INTERPROCESS_TIMEOUT_WHEN_LOCKING_DURATION_MS);
-   if (!timed_lock(wait_time))
-   {
-      throw interprocess_exception(timeout_when_locking_error, "Interprocess mutex timeout when locking. Possible deadlock: owner died without unlocking?");
-   }
-#else
    if (pthread_mutex_lock(&m_mut) != 0) 
       throw lock_exception();
-#endif
 }
 
-inline bool interprocess_recursive_mutex::try_lock()
+inline bool posix_recursive_mutex::try_lock()
 {
    int res = pthread_mutex_trylock(&m_mut);
    if (!(res == 0 || res == EBUSY))
@@ -73,7 +90,7 @@ inline bool interprocess_recursive_mutex::try_lock()
    return res == 0;
 }
 
-inline bool interprocess_recursive_mutex::timed_lock(const boost::posix_time::ptime &abs_time)
+inline bool posix_recursive_mutex::timed_lock(const boost::posix_time::ptime &abs_time)
 {
    if(abs_time == boost::posix_time::pos_infin){
       this->lock();
@@ -81,7 +98,7 @@ inline bool interprocess_recursive_mutex::timed_lock(const boost::posix_time::pt
    }
    #ifdef BOOST_INTERPROCESS_POSIX_TIMEOUTS
 
-   timespec ts = ipcdetail::ptime_to_timespec(abs_time);
+   timespec ts = ptime_to_timespec(abs_time);
    int res = pthread_mutex_timedlock(&m_mut, &ts);
    if (res != 0 && res != ETIMEDOUT)
       throw lock_exception();
@@ -91,8 +108,6 @@ inline bool interprocess_recursive_mutex::timed_lock(const boost::posix_time::pt
 
    //Obtain current count and target time
    boost::posix_time::ptime now = microsec_clock::universal_time();
-
-   if(now >= abs_time) return false;
 
    do{
       if(this->try_lock()){
@@ -104,19 +119,24 @@ inline bool interprocess_recursive_mutex::timed_lock(const boost::posix_time::pt
          return false;
       }
       // relinquish current time slice
-     ipcdetail::thread_yield();
+     thread_yield();
    }while (true);
    return true;
 
    #endif   //BOOST_INTERPROCESS_POSIX_TIMEOUTS
 }
 
-inline void interprocess_recursive_mutex::unlock()
+inline void posix_recursive_mutex::unlock()
 {
    int res = 0;
    res = pthread_mutex_unlock(&m_mut);
    BOOST_ASSERT(res == 0);
 }
 
+}  //namespace ipcdetail {
 }  //namespace interprocess {
 }  //namespace boost {
+
+#include <boost/interprocess/detail/config_end.hpp>
+
+#endif   //#ifndef BOOST_INTERPROCESS_DETAIL_POSIX_RECURSIVE_MUTEX_HPP

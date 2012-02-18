@@ -19,12 +19,13 @@
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/list_hook.hpp>
 #include <boost/intrusive/circular_list_algorithms.hpp>
-#include <boost/intrusive/detail/pointer_to_other.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/detail/clear_on_destructor_base.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
 #include <boost/intrusive/link_mode.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/intrusive/options.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/detail/utilities.hpp>
 #include <iterator>
 #include <algorithm>
@@ -91,15 +92,15 @@ class list_impl
    /// @endcond
    typedef typename real_value_traits::pointer                       pointer;
    typedef typename real_value_traits::const_pointer                 const_pointer;
-   typedef typename std::iterator_traits<pointer>::value_type        value_type;
-   typedef typename std::iterator_traits<pointer>::reference         reference;
-   typedef typename std::iterator_traits<const_pointer>::reference   const_reference;
-   typedef typename std::iterator_traits<pointer>::difference_type   difference_type;
+   typedef typename pointer_traits<pointer>::element_type            value_type;
+   typedef typename pointer_traits<pointer>::reference               reference;
+   typedef typename pointer_traits<const_pointer>::reference         const_reference;
+   typedef typename pointer_traits<pointer>::difference_type         difference_type;
    typedef typename Config::size_type                                size_type;
    typedef list_iterator<list_impl, false>                           iterator;
    typedef list_iterator<list_impl, true>                            const_iterator;
-   typedef std::reverse_iterator<iterator>                           reverse_iterator;
-   typedef std::reverse_iterator<const_iterator>                     const_reverse_iterator;
+   typedef boost::intrusive::detail::reverse_iterator<iterator>      reverse_iterator;
+   typedef boost::intrusive::detail::reverse_iterator<const_iterator>const_reverse_iterator;
    typedef typename real_value_traits::node_traits                   node_traits;
    typedef typename node_traits::node                                node;
    typedef typename node_traits::node_ptr                            node_ptr;
@@ -127,17 +128,14 @@ class list_impl
                       ));
 
    //Const cast emulation for smart pointers
-   static node_ptr uncast(const_node_ptr ptr)
-   {
-      return const_cast<node*>(detail::boost_intrusive_get_pointer(ptr));
-      //iG pending return node_ptr(boost::const_pointer_cast<node>(ptr));
-   }
+   static node_ptr uncast(const const_node_ptr & ptr)
+   {  return pointer_traits<node_ptr>::const_cast_from(ptr);  }
 
    node_ptr get_root_node()
-   {  return node_ptr(&data_.root_plus_size_.root_);  }
+   {  return pointer_traits<node_ptr>::pointer_to(data_.root_plus_size_.root_);  }
 
    const_node_ptr get_root_node() const
-   {  return const_node_ptr(&data_.root_plus_size_.root_);  }
+   {  return pointer_traits<const_node_ptr>::pointer_to(data_.root_plus_size_.root_);  }
 
    struct root_plus_size : public size_traits
    {
@@ -1299,7 +1297,7 @@ class list_impl
    static list_impl &priv_container_from_end_iterator(const const_iterator &end_iterator)
    {
       root_plus_size *r = detail::parent_from_member<root_plus_size, node>
-         ( detail::boost_intrusive_get_pointer(end_iterator.pointed_node()), &root_plus_size::root_);
+         ( boost::intrusive::detail::to_raw_pointer(end_iterator.pointed_node()), &root_plus_size::root_);
       data_t *d = detail::parent_from_member<data_t, root_plus_size>
          ( r, &data_t::root_plus_size_);
       list_impl *s  = detail::parent_from_member<list_impl, data_t>(d, &list_impl::data_);

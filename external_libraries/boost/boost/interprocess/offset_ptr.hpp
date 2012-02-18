@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -8,8 +8,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_OFFSET_PTR_HPP
-#define BOOST_OFFSET_PTR_HPP
+#ifndef BOOST_INTERPROCESS_OFFSET_PTR_HPP
+#define BOOST_INTERPROCESS_OFFSET_PTR_HPP
 
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
@@ -22,8 +22,6 @@
 #include <boost/interprocess/detail/utilities.hpp>
 #include <boost/interprocess/detail/cast_tags.hpp>
 #include <boost/interprocess/detail/mpl.hpp>
-#include <boost/pointer_cast.hpp>
-#include <boost/pointer_to_other.hpp>
 #include <boost/assert.hpp>
 #include <ostream>
 #include <istream>
@@ -57,73 +55,19 @@ class offset_ptr
 {
    /// @cond
    typedef offset_ptr<PointedType, DifferenceType, OffsetType, OffsetAlignment>   self_t;
-
    void unspecified_bool_type_func() const {}
    typedef void (self_t::*unspecified_bool_type)() const;
-
-   //Note: using the address of a local variable to point to another address
-   //is not standard conforming and this can be optimized-away by the compiler.
-   //Non-inlining is a method to remain illegal and correct
-   #if defined(_MSC_VER) && (_MSC_VER >= 1400)
-   __declspec(noinline) //this workaround is needed for msvc-8.0 and msvc-9.0
-   #elif defined (__GNUC__)//this workaround is needed for GCC
-   __attribute__((noinline))
-   #endif
-   void set_offset(const PointedType *ptr)
-   {
-      #if defined (__GNUC__)
-      //asm(""); //Prevents the function to be optimized-away (provokes an special "side-effect")
-      #endif
-      //offset == 1 && ptr != 0 is not legal for this pointer
-      if(!ptr){
-         internal.m_offset = 1;
-      }
-      else{
-         internal.m_offset = (OffsetType)((const char*)ptr - (const char*)(this));
-         BOOST_ASSERT(internal.m_offset != 1);
-      }
-   }
-
-   #if defined(_MSC_VER) && (_MSC_VER >= 1400)
-   __declspec(noinline)
-   #elif defined (__GNUC__)
-   __attribute__((noinline))
-   #endif
-   PointedType * get_pointer() const
-   {
-      #if defined (__GNUC__)
-      //asm(""); //Prevents the function to be optimized-away (provokes an special "side-effect")
-      #endif
-      return static_cast<PointedType *>(
-         static_cast<void*>(
-            (internal.m_offset == 1) ? 
-               0 : 
-                  (const_cast<char*>(reinterpret_cast<const char*>(this)) + internal.m_offset)
-         )
-      );
-   }
-
-   void inc_offset(DifferenceType bytes)
-   {  internal.m_offset += bytes;   }
-
-   void dec_offset(DifferenceType bytes)
-   {  internal.m_offset -= bytes;   }
-
-   union internal_type{
-      OffsetType m_offset; //Distance between this object and pointed address
-    typename ::boost::aligned_storage
-         < sizeof(OffsetType)
-         , (OffsetAlignment == offset_type_alignment) ?
-            ::boost::alignment_of<OffsetType>::value : OffsetAlignment
-         >::type alignment_helper;
-   } internal;
    /// @endcond
 
    public:
+   typedef PointedType                       element_type;
    typedef PointedType *                     pointer;
    typedef typename ipcdetail::
       add_reference<PointedType>::type       reference;
-   typedef PointedType                       value_type;
+   typedef typename ipcdetail::
+      remove_volatile<typename ipcdetail::
+         remove_const<PointedType>::type
+            >::type                          value_type;
    typedef DifferenceType                    difference_type;
    typedef std::random_access_iterator_tag   iterator_category;
    typedef OffsetType                        offset_type;
@@ -137,8 +81,9 @@ class offset_ptr
    //!Constructor from other pointer.
    //!Never throws.
    template <class T>
-   offset_ptr(T *ptr) 
-   {  pointer p (ptr);  (void)p; this->set_offset(p); }
+   offset_ptr( T *ptr
+             , typename ipcdetail::enable_if< ipcdetail::is_convertible<T*, PointedType*> >::type * = 0) 
+   {  this->set_offset(static_cast<PointedType*>(ptr)); }
 
    //!Constructor from other offset_ptr
    //!Never throws.
@@ -148,8 +93,9 @@ class offset_ptr
    //!Constructor from other offset_ptr. If pointers of pointee types are 
    //!convertible, offset_ptrs will be convertibles. Never throws.
    template<class T2, class P2, class O2, std::size_t A2>
-   offset_ptr(const offset_ptr<T2, P2, O2, A2> &ptr) 
-   {  pointer p(ptr.get());  (void)p; this->set_offset(p);   }
+   offset_ptr( const offset_ptr<T2, P2, O2, A2> &ptr
+             , typename ipcdetail::enable_if< ipcdetail::is_convertible<T2*, PointedType*> >::type * = 0) 
+   {  this->set_offset(static_cast<PointedType*>(ptr.get()));   }
 
    //!Emulates static_cast operator.
    //!Never throws.
@@ -178,7 +124,7 @@ class offset_ptr
    //!Obtains raw pointer from offset.
    //!Never throws.
    pointer get()const
-   {  return this->get_pointer();   }
+   {  return this->to_raw_pointer();   }
 
    offset_type get_offset() const
    {  return internal.m_offset;  }
@@ -216,25 +162,13 @@ class offset_ptr
    //!Assignment from related offset_ptr. If pointers of pointee types 
    //!   are assignable, offset_ptrs will be assignable. Never throws.
    template<class T2, class P2, class O2, std::size_t A2>
-   offset_ptr& operator= (const offset_ptr<T2, P2, O2, A2> & pt)
-   {  pointer p(pt.get()); this->set_offset(p);  return *this;  }
+   typename ipcdetail::enable_if<ipcdetail::is_convertible<T2*, PointedType*>, offset_ptr&>::type
+      operator= (const offset_ptr<T2, P2, O2, A2> & ptr)
+   {  this->set_offset(static_cast<PointedType*>(ptr.get()));  return *this;  }
  
-   //!offset_ptr + difference_type.
-   //!Never throws.
-   template<class T>
-   offset_ptr operator+ (T offset) const   
-   {  return offset_ptr(this->get()+offset);   }
-
-   //!offset_ptr - difference_type.
-   //!Never throws.
-   template<class T>
-   offset_ptr operator- (T offset) const   
-   {  return offset_ptr(this->get()-offset);   }
-
    //!offset_ptr += difference_type.
    //!Never throws.
-   template<class T>
-   offset_ptr &operator+= (T offset)
+   offset_ptr &operator+= (difference_type offset)
    {  this->inc_offset(offset * sizeof (PointedType));   return *this;  }
 
    //!offset_ptr -= difference_type.
@@ -272,57 +206,168 @@ class offset_ptr
    //!Never throws
    bool operator! () const
    {  return this->get() == 0;   }
-/*
-   friend void swap (offset_ptr &pt, offset_ptr &pt2)
-   {  
-      value_type *ptr = pt.get();
-      pt = pt2;
-      pt2 = ptr;
+
+   //!Compatibility with pointer_traits
+   //!
+   template <class U>
+   struct rebind
+   {  typedef offset_ptr<U, DifferenceType, OffsetType, OffsetAlignment> other;  };
+
+   //!Compatibility with pointer_traits
+   //!
+   static offset_ptr pointer_to(reference r)
+   { return offset_ptr(&r); }
+
+   //!difference_type + offset_ptr
+   //!operation
+   friend offset_ptr operator+(difference_type diff, const offset_ptr& right)
+   {  offset_ptr tmp(right); tmp += diff;  return tmp;  }
+
+   //!offset_ptr + difference_type
+   //!operation
+   friend offset_ptr operator+(const offset_ptr& left, difference_type diff)
+   {  offset_ptr tmp(left); tmp += diff;  return tmp; }
+
+   //!offset_ptr - diff
+   //!operation
+   friend offset_ptr operator-(const offset_ptr &left, difference_type diff)
+   {  offset_ptr tmp(left); tmp -= diff;  return tmp; }
+
+   //!offset_ptr - diff
+   //!operation
+   friend offset_ptr operator-(difference_type diff, const offset_ptr &right)
+   {  offset_ptr tmp(right); tmp -= diff; return tmp; }
+
+   //!offset_ptr - offset_ptr
+   //!operation
+   friend difference_type operator-(const offset_ptr &pt, const offset_ptr &pt2)
+   {  return difference_type(pt.get()- pt2.get());   }
+
+   //Comparison
+   friend bool operator== (const offset_ptr &pt1, const offset_ptr &pt2)
+   {  return pt1.get() == pt2.get();  }
+
+   friend bool operator!= (const offset_ptr &pt1, const offset_ptr &pt2)
+   {  return pt1.get() != pt2.get();  }
+
+   friend bool operator<(const offset_ptr &pt1, const offset_ptr &pt2)
+   {  return pt1.get() < pt2.get();  }
+
+   friend bool operator<=(const offset_ptr &pt1, const offset_ptr &pt2)
+   {  return pt1.get() <= pt2.get();  }
+
+   friend bool operator>(const offset_ptr &pt1, const offset_ptr &pt2)
+   {  return pt1.get() > pt2.get();  }
+
+   friend bool operator>=(const offset_ptr &pt1, const offset_ptr &pt2)
+   {  return pt1.get() >= pt2.get();  }
+
+   //Comparison to raw ptr to support literal 0
+   friend bool operator== (pointer pt1, const offset_ptr &pt2)
+   {  return pt1 == pt2.get();  }
+
+   friend bool operator!= (pointer pt1, const offset_ptr &pt2)
+   {  return pt1 != pt2.get();  }
+
+   friend bool operator<(pointer pt1, const offset_ptr &pt2)
+   {  return pt1 < pt2.get();  }
+
+   friend bool operator<=(pointer pt1, const offset_ptr &pt2)
+   {  return pt1 <= pt2.get();  }
+
+   friend bool operator>(pointer pt1, const offset_ptr &pt2)
+   {  return pt1 > pt2.get();  }
+
+   friend bool operator>=(pointer pt1, const offset_ptr &pt2)
+   {  return pt1 >= pt2.get();  }
+
+   //Comparison
+   friend bool operator== (const offset_ptr &pt1, pointer pt2)
+   {  return pt1.get() == pt2;  }
+
+   friend bool operator!= (const offset_ptr &pt1, pointer pt2)
+   {  return pt1.get() != pt2;  }
+
+   friend bool operator<(const offset_ptr &pt1, pointer pt2)
+   {  return pt1.get() < pt2;  }
+
+   friend bool operator<=(const offset_ptr &pt1, pointer pt2)
+   {  return pt1.get() <= pt2;  }
+
+   friend bool operator>(const offset_ptr &pt1, pointer pt2)
+   {  return pt1.get() > pt2;  }
+
+   friend bool operator>=(const offset_ptr &pt1, pointer pt2)
+   {  return pt1.get() >= pt2;  }
+
+   friend void swap(offset_ptr &left, offset_ptr &right)
+   {
+      pointer ptr = right.get();
+      right = left;
+      left = ptr;
    }
-*/
+
+   private:
+   /// @cond
+
+   //Note: using the address of a local variable to point to another address
+   //is not standard conforming and this can be optimized-away by the compiler.
+   //Non-inlining is a method to remain illegal and correct
+   #if defined(_MSC_VER)
+   __declspec(noinline) //this workaround is needed for MSVC compilers
+   #elif defined (__GNUC__)//this workaround is needed for GCC
+   __attribute__((__noinline__))
+   #endif
+   void set_offset(const PointedType *ptr)
+   {
+      #if defined (__GNUC__)
+      //asm(""); //Prevents the function to be optimized-away (provokes an special "side-effect")
+      #endif
+      //offset == 1 && ptr != 0 is not legal for this pointer
+      if(!ptr){
+         internal.m_offset = 1;
+      }
+      else{
+         internal.m_offset = (OffsetType)((const char*)ptr - (const char*)(this));
+         BOOST_ASSERT(internal.m_offset != 1);
+      }
+   }
+
+   #if defined(_MSC_VER) && (_MSC_VER >= 1400)
+   __declspec(noinline)
+   #elif defined (__GNUC__)
+   __attribute__((__noinline__))
+   #endif
+   PointedType * to_raw_pointer() const
+   {
+      #if defined (__GNUC__)
+      //asm(""); //Prevents the function to be optimized-away (provokes an special "side-effect")
+      #endif
+      return static_cast<PointedType *>(
+         static_cast<void*>(
+            (internal.m_offset == 1) ? 
+               0 : 
+                  (const_cast<char*>(reinterpret_cast<const char*>(this)) + internal.m_offset)
+         )
+      );
+   }
+
+   void inc_offset(DifferenceType bytes)
+   {  internal.m_offset += bytes;   }
+
+   void dec_offset(DifferenceType bytes)
+   {  internal.m_offset -= bytes;   }
+
+   union internal_type{
+      OffsetType m_offset; //Distance between this object and pointee address
+    typename ::boost::aligned_storage
+         < sizeof(OffsetType)
+         , (OffsetAlignment == offset_type_alignment) ?
+            ::boost::alignment_of<OffsetType>::value : OffsetAlignment
+         >::type alignment_helper;
+   } internal;
+   /// @endcond
 };
-
-//!offset_ptr<T1, P1, O1, A1> == offset_ptr<T2, P2, O2, A2>.
-//!Never throws.
-template<class T1, class P1, class O1, std::size_t A1, class T2, class P2, class O2, std::size_t A2>
-inline bool operator== (const offset_ptr<T1, P1, O1, A1> &pt1, 
-                        const offset_ptr<T2, P2, O2, A2> &pt2)
-{  return pt1.get() == pt2.get();  }
-
-//!offset_ptr<T1, P1, O1, A1> != offset_ptr<T2, P2, O2, A2>.
-//!Never throws.
-template<class T1, class P1, class O1, std::size_t A1, class T2, class P2, class O2, std::size_t A2>
-inline bool operator!= (const offset_ptr<T1, P1, O1, A1> &pt1, 
-                        const offset_ptr<T2, P2, O2, A2> &pt2)
-{  return pt1.get() != pt2.get();  }
-
-//!offset_ptr<T1, P1, O1, A1> < offset_ptr<T2, P2, O2, A2>.
-//!Never throws.
-template<class T1, class P1, class O1, std::size_t A1, class T2, class P2, class O2, std::size_t A2>
-inline bool operator< (const offset_ptr<T1, P1, O1, A1> &pt1, 
-                       const offset_ptr<T2, P2, O2, A2> &pt2)
-{  return pt1.get() < pt2.get();  }
-
-//!offset_ptr<T1, P1, O1, A1> <= offset_ptr<T2, P2, O2, A2>.
-//!Never throws.
-template<class T1, class P1, class O1, std::size_t A1, class T2, class P2, class O2, std::size_t A2>
-inline bool operator<= (const offset_ptr<T1, P1, O1, A1> &pt1, 
-                        const offset_ptr<T2, P2, O2, A2> &pt2)
-{  return pt1.get() <= pt2.get();  }
-
-//!offset_ptr<T1, P1, O1, A1> > offset_ptr<T2, P2, O2, A2>.
-//!Never throws.
-template<class T1, class P1, class O1, std::size_t A1, class T2, class P2, class O2, std::size_t A2>
-inline bool operator>  (const offset_ptr<T1, P1, O1, A1> &pt1, 
-                        const offset_ptr<T2, P2, O2, A2> &pt2)
-{  return pt1.get() > pt2.get();  }
-
-//!offset_ptr<T1, P1, O1, A1> >= offset_ptr<T2, P2, O2, A2>.
-//!Never throws.
-template<class T1, class P1, class O1, std::size_t A1, class T2, class P2, class O2, std::size_t A2>
-inline bool operator>= (const offset_ptr<T1, P1, O1, A1> &pt1, 
-                        const offset_ptr<T2, P2, O2, A2> &pt2)
-{  return pt1.get() >= pt2.get();  }
 
 //!operator<<
 //!for offset ptr
@@ -337,30 +382,6 @@ template<class E, class T, class W, class X, class Y, std::size_t Z>
 inline std::basic_istream<E, T> & operator>> 
    (std::basic_istream<E, T> & is, offset_ptr<W, X, Y, Z> & p)
 {  return is >> p.get_offset();  }
-
-//!difference_type + offset_ptr
-//!operation
-template<class T, class P, class O, std::size_t A, class D>
-inline offset_ptr<T, P, O, A> operator+(D diff, const offset_ptr<T, P, O, A>& right)
-{  return right + diff;  }
-
-//!offset_ptr - offset_ptr
-//!operation
-template<class T1, class P1, class O1, std::size_t A1, class T2, class P2, class O2, std::size_t A2>
-inline typename offset_ptr<T1, P1, O1, A1>::difference_type operator-
-   (const offset_ptr<T1, P1, O1, A1> &pt, const offset_ptr<T2, P2, O2, A2> &pt2)
-{  return typename offset_ptr<T1, P1, O1, A1>::difference_type(pt.get()- pt2.get());   }
-
-//!swap specialization 
-//!for offset_ptr
-template<class T, class P, class O, std::size_t A>
-inline void swap (boost::interprocess::offset_ptr<T, P, O, A> &pt, 
-                  boost::interprocess::offset_ptr<T, P, O, A> &pt2)
-{  
-   typename offset_ptr<T, P, O, A>::value_type *ptr = pt.get();
-   pt = pt2;
-   pt2 = ptr;
-}
 
 //!Simulation of static_cast between pointers. Never throws.
 template<class T1, class P1, class O1, std::size_t A1, class T2, class P2, class O2, std::size_t A2>
@@ -406,23 +427,23 @@ inline boost::interprocess::offset_ptr<T1, P1, O1, A1>
 template <class T, class P, class O, std::size_t A>
 struct has_trivial_constructor< boost::interprocess::offset_ptr<T, P, O, A> > 
 {
-   enum { value = true };
+   static const bool value = true;
 };
 
 ///has_trivial_destructor<> == true_type specialization for optimizations
 template <class T, class P, class O, std::size_t A>
 struct has_trivial_destructor< boost::interprocess::offset_ptr<T, P, O, A> > 
 {
-   enum { value = true };
+   static const bool value = true;
 };
 
 //#if !defined(_MSC_VER) || (_MSC_VER >= 1400)
 namespace interprocess {
 //#endif
-//!get_pointer() enables boost::mem_fn to recognize offset_ptr. 
+//!to_raw_pointer() enables boost::mem_fn to recognize offset_ptr. 
 //!Never throws.
 template <class T, class P, class O, std::size_t A>
-inline T * get_pointer(boost::interprocess::offset_ptr<T, P, O, A> const & p)
+inline T * to_raw_pointer(boost::interprocess::offset_ptr<T, P, O, A> const & p)
 {  return p.get();   }
 //#if !defined(_MSC_VER) || (_MSC_VER >= 1400)
 }  //namespace interprocess
@@ -485,10 +506,18 @@ struct pointer_plus_bits<boost::interprocess::offset_ptr<T, P, O, A>, NumBits>
 
 }  //namespace intrusive
 
-template<class T, class T2, class T3, std::size_t A, class U>
-struct pointer_to_other< ::boost::interprocess::offset_ptr<T, T2, T3, A>, U >
+//Predeclaration
+template<class T, class U>
+struct pointer_to_other;
+
+
+
+//Backwards compatibility with pointer_to_other
+template <class PointedType, class DifferenceType, class OffsetType, std::size_t OffsetAlignment, class U>
+struct pointer_to_other
+   < ::boost::interprocess::offset_ptr<PointedType, DifferenceType, OffsetType, OffsetAlignment>, U >
 {
-   typedef ::boost::interprocess::offset_ptr<U, T2, T3, A> type;
+   typedef ::boost::interprocess::offset_ptr<U, DifferenceType, OffsetType, OffsetAlignment> type;
 };
 
 }  //namespace boost{
@@ -496,5 +525,4 @@ struct pointer_to_other< ::boost::interprocess::offset_ptr<T, T2, T3, A>, U >
 
 #include <boost/interprocess/detail/config_end.hpp>
 
-#endif //#ifndef BOOST_OFFSET_PTR_HPP
-
+#endif //#ifndef BOOST_INTERPROCESS_OFFSET_PTR_HPP

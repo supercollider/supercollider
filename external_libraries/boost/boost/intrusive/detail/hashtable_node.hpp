@@ -16,11 +16,12 @@
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <iterator>
 #include <boost/intrusive/detail/assert.hpp>
-#include <boost/intrusive/detail/pointer_to_other.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/circular_list_algorithms.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
 #include <boost/intrusive/detail/utilities.hpp>
-#include <boost/intrusive/detail/slist_node.hpp> //remove-me
+//#include <boost/intrusive/detail/slist_node.hpp> //remove-me
+#include <boost/intrusive/pointer_traits.hpp>
 #include <cstddef>
 #include <boost/pointer_cast.hpp>
 #include <boost/move/move.hpp>
@@ -84,8 +85,10 @@ struct bucket_traits_impl
 
    public:
    /// @cond
-   typedef typename boost::pointer_to_other
-      < typename Slist::pointer, bucket_impl<Slist> >::type bucket_ptr;
+
+   typedef typename pointer_traits
+      <typename Slist::pointer>::template rebind_pointer
+         < bucket_impl<Slist> >::type                                bucket_ptr;
    typedef typename Slist::size_type size_type;
    /// @endcond
 
@@ -93,14 +96,19 @@ struct bucket_traits_impl
       :  buckets_(buckets), buckets_len_(len)
    {}
 
+   bucket_traits_impl(const bucket_traits_impl &x)
+      : buckets_(x.buckets_), buckets_len_(x.buckets_len_)
+   {}
+
+
    bucket_traits_impl(BOOST_RV_REF(bucket_traits_impl) x)
       : buckets_(x.buckets_), buckets_len_(x.buckets_len_)
-   {  x.buckets_ = bucket_ptr(0);   x.buckets_len_ = 0;  }
+   {  x.buckets_ = bucket_ptr();   x.buckets_len_ = 0;  }
 
    bucket_traits_impl& operator=(BOOST_RV_REF(bucket_traits_impl) x)
    {
       buckets_ = x.buckets_; buckets_len_ = x.buckets_len_;
-      x.buckets_ = bucket_ptr(0);   x.buckets_len_ = 0; return *this;
+      x.buckets_ = bucket_ptr();   x.buckets_len_ = 0; return *this;
    }
 
    bucket_traits_impl& operator=(BOOST_COPY_ASSIGN_REF(bucket_traits_impl) x)
@@ -108,7 +116,7 @@ struct bucket_traits_impl
       buckets_ = x.buckets_;  buckets_len_ = x.buckets_len_; return *this;
    }
 
-   bucket_ptr bucket_begin() const
+   const bucket_ptr &bucket_begin() const
    {  return buckets_;  }
 
    size_type  bucket_count() const
@@ -124,7 +132,7 @@ class hashtable_iterator
    :  public std::iterator
          < std::forward_iterator_tag
          , typename Container::value_type
-         , typename std::iterator_traits<typename Container::value_type*>::difference_type
+         , typename pointer_traits<typename Container::value_type*>::difference_type
          , typename detail::add_const_if_c
                      <typename Container::value_type, IsConst>::type *
          , typename detail::add_const_if_c
@@ -135,16 +143,16 @@ class hashtable_iterator
    typedef typename Container::siterator                          siterator;
    typedef typename Container::const_siterator                    const_siterator;
    typedef typename Container::bucket_type                        bucket_type;
-   typedef typename boost::pointer_to_other
-      < typename Container::pointer, const Container>::type       const_cont_ptr;
+
+   typedef typename pointer_traits
+      <typename Container::pointer>::template rebind_pointer
+         < const Container >::type                                const_cont_ptr;
    typedef typename Container::size_type                          size_type;
 
    static typename Container::node_ptr downcast_bucket(typename bucket_type::node_ptr p)
    {
-//      This still fails in gcc < 4.4 so forget about it
-//      using ::boost::static_pointer_cast;
-//      return static_pointer_cast<typename Container::node>(p);
-      return typename Container::node_ptr(&static_cast<typename Container::node&>(*p));
+      return pointer_traits<typename Container::node_ptr>::
+         pointer_to(static_cast<typename Container::node&>(*p));
    }
 
    public:
@@ -158,7 +166,7 @@ class hashtable_iterator
    {}
 
    explicit hashtable_iterator(siterator ptr, const Container *cont)
-      :  slist_it_ (ptr),   cont_ (cont)
+      :  slist_it_ (ptr),   cont_ (cont ? pointer_traits<const_cont_ptr>::pointer_to(*cont) : const_cont_ptr() )
    {}
 
    hashtable_iterator(const hashtable_iterator<Container, false> &other)
@@ -192,10 +200,13 @@ class hashtable_iterator
    { return *this->operator ->(); }
 
    pointer operator->() const
-   { return detail::boost_intrusive_get_pointer(this->get_real_value_traits()->to_value_ptr(downcast_bucket(slist_it_.pointed_node()))); }
+   {
+      return boost::intrusive::detail::to_raw_pointer(this->get_real_value_traits()->to_value_ptr
+         (downcast_bucket(slist_it_.pointed_node())));
+   }
 
-   const Container *get_container() const
-   {  return detail::boost_intrusive_get_pointer(cont_);  }
+   const const_cont_ptr &get_container() const
+   {  return cont_;  }
 
    const real_value_traits *get_real_value_traits() const
    {  return &this->get_container()->get_real_value_traits();  }
@@ -203,8 +214,8 @@ class hashtable_iterator
    private:
    void increment()
    {
-      const Container *cont =  detail::boost_intrusive_get_pointer(cont_);
-      bucket_type* buckets = detail::boost_intrusive_get_pointer(cont->bucket_pointer());
+      const Container *cont =  boost::intrusive::detail::to_raw_pointer(cont_);
+      bucket_type* buckets = boost::intrusive::detail::to_raw_pointer(cont->bucket_pointer());
       size_type   buckets_len    = cont->bucket_count();
 
       ++slist_it_;

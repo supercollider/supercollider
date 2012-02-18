@@ -8,8 +8,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_CONTAINERS_DETAIL_MULTIALLOCATION_CHAIN_HPP
-#define BOOST_CONTAINERS_DETAIL_MULTIALLOCATION_CHAIN_HPP
+#ifndef BOOST_CONTAINER_DETAIL_MULTIALLOCATION_CHAIN_HPP
+#define BOOST_CONTAINER_DETAIL_MULTIALLOCATION_CHAIN_HPP
 
 #include "config_begin.hpp"
 #include <boost/container/container_fwd.hpp>
@@ -17,13 +17,13 @@
 #include <boost/container/detail/type_traits.hpp>
 #include <boost/container/detail/transform_iterator.hpp>
 #include <boost/intrusive/slist.hpp>
-#include <boost/pointer_to_other.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 #include <boost/type_traits/make_unsigned.hpp>
 #include <boost/move/move.hpp>
 
 namespace boost {
 namespace container {
-namespace containers_detail {
+namespace container_detail {
 
 template<class VoidPointer>
 class basic_multiallocation_chain
@@ -33,8 +33,10 @@ class basic_multiallocation_chain
                         ,bi::link_mode<bi::normal_link>
                         > node;
 
-   typedef typename boost::pointer_to_other<VoidPointer, char>::type   char_ptr;
-   typedef typename std::iterator_traits<char_ptr>::difference_type    difference_type;
+   typedef typename boost::intrusive::pointer_traits
+      <VoidPointer>::template rebind_pointer<char>::type    char_ptr;
+   typedef typename boost::intrusive::
+      pointer_traits<char_ptr>::difference_type             difference_type;
 
    typedef bi::slist< node
                     , bi::linear<true>
@@ -44,7 +46,7 @@ class basic_multiallocation_chain
    slist_impl_t slist_impl_;
 
    static node & to_node(VoidPointer p)
-   {  return *static_cast<node*>(static_cast<void*>(containers_detail::get_pointer(p))); }
+   {  return *static_cast<node*>(static_cast<void*>(container_detail::to_raw_pointer(p))); }
 
    BOOST_MOVABLE_BUT_NOT_COPYABLE(basic_multiallocation_chain)
 
@@ -140,7 +142,7 @@ class basic_multiallocation_chain
 template<class T>
 struct cast_functor
 {
-   typedef typename containers_detail::add_reference<T>::type result_type;
+   typedef typename container_detail::add_reference<T>::type result_type;
    template<class U>
    result_type operator()(U &ptr) const
    {  return *static_cast<T*>(static_cast<void*>(&ptr));  }
@@ -154,18 +156,18 @@ class transform_multiallocation_chain
 
    MultiallocationChain   holder_;
    typedef typename MultiallocationChain::void_pointer   void_pointer;
-   typedef typename boost::pointer_to_other
-      <void_pointer, T>::type                            pointer;
+   typedef typename boost::intrusive::pointer_traits
+      <void_pointer>::template rebind_pointer<T>::type   pointer;
 
    static pointer cast(void_pointer p)
    {
-      return pointer(static_cast<T*>(containers_detail::get_pointer(p)));
+      return pointer(static_cast<T*>(container_detail::to_raw_pointer(p)));
    }
 
    public:
    typedef transform_iterator
       < typename MultiallocationChain::iterator
-      , containers_detail::cast_functor <T> >                 iterator;
+      , container_detail::cast_functor <T> >                 iterator;
    typedef typename MultiallocationChain::size_type           size_type;
 
    transform_multiallocation_chain()
@@ -243,10 +245,10 @@ class transform_multiallocation_chain
 
 }}}
 
-// namespace containers_detail {
+// namespace container_detail {
 // namespace container {
 // namespace boost {
 
 #include <boost/container/detail/config_end.hpp>
 
-#endif   //BOOST_CONTAINERS_DETAIL_MULTIALLOCATION_CHAIN_HPP
+#endif   //BOOST_CONTAINER_DETAIL_MULTIALLOCATION_CHAIN_HPP

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -18,14 +18,13 @@
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 
-#include <boost/pointer_to_other.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 
 #include <boost/interprocess/interprocess_fwd.hpp>
 #include <boost/interprocess/mem_algo/detail/mem_algo_common.hpp>
 #include <boost/interprocess/containers/allocation_type.hpp>
 #include <boost/container/detail/multiallocation_chain.hpp>
 #include <boost/interprocess/offset_ptr.hpp>
-#include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/interprocess/exceptions.hpp>
 #include <boost/interprocess/detail/utilities.hpp>
 #include <boost/interprocess/detail/min_max.hpp>
@@ -33,6 +32,7 @@
 #include <boost/interprocess/detail/type_traits.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/type_traits/type_with_alignment.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 #include <boost/assert.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/type_traits.hpp>
@@ -73,22 +73,25 @@ class rbtree_best_fit
 
    private:
    struct block_ctrl;
-   typedef typename boost::
-      pointer_to_other<VoidPointer, block_ctrl>::type   block_ctrl_ptr;
-   typedef typename boost::
-      pointer_to_other<VoidPointer, char>::type         char_ptr;
+   typedef typename boost::intrusive::
+      pointer_traits<VoidPointer>::template
+         rebind_pointer<block_ctrl>::type                   block_ctrl_ptr;
+
+   typedef typename boost::intrusive::
+      pointer_traits<VoidPointer>::template
+         rebind_pointer<char>::type                         char_ptr;
 
    /// @endcond
 
    public:
-   //!Shared interprocess_mutex family used for the rest of the Interprocess framework
+   //!Shared mutex family used for the rest of the Interprocess framework
    typedef MutexFamily        mutex_family;
    //!Pointer type to be used with the rest of the Interprocess framework
    typedef VoidPointer        void_pointer;
-   typedef boost::container::containers_detail::
+   typedef boost::container::container_detail::
       basic_multiallocation_chain<VoidPointer>  multiallocation_chain;
 
-   typedef typename std::iterator_traits<char_ptr>::difference_type difference_type;
+   typedef typename boost::intrusive::pointer_traits<char_ptr>::difference_type difference_type;
    typedef typename boost::make_unsigned<difference_type>::type     size_type;
 
    /// @cond
@@ -132,16 +135,16 @@ class rbtree_best_fit
       {  return block.m_size < size;  }      
    };
 
-   //!Shared interprocess_mutex to protect memory allocate/deallocate
-   typedef typename MutexFamily::mutex_type                       interprocess_mutex;
+   //!Shared mutex to protect memory allocate/deallocate
+   typedef typename MutexFamily::mutex_type                       mutex_type;
    typedef typename bi::make_multiset
       <block_ctrl, bi::base_hook<TreeHook> >::type                Imultiset;
 
    typedef typename Imultiset::iterator                           imultiset_iterator;
 
    //!This struct includes needed data and derives from
-   //!interprocess_mutex to allow EBO when using null interprocess_mutex
-   struct header_t : public interprocess_mutex
+   //!mutex_type to allow EBO when using null mutex_type
+   struct header_t : public mutex_type
    {
       Imultiset            m_imultiset;
 
@@ -185,7 +188,7 @@ class rbtree_best_fit
    {
 
       //-----------------------
-      boost::interprocess::scoped_lock<interprocess_mutex> guard(m_header);
+      boost::interprocess::scoped_lock<mutex_type> guard(m_header);
       //-----------------------
       return algo_impl_t::allocate_many(this, elem_bytes, num_elements);
    }
@@ -195,7 +198,7 @@ class rbtree_best_fit
    {
 
       //-----------------------
-      boost::interprocess::scoped_lock<interprocess_mutex> guard(m_header);
+      boost::interprocess::scoped_lock<mutex_type> guard(m_header);
       //-----------------------
       return algo_impl_t::allocate_many(this, elem_sizes, n_elements, sizeof_element);
    }
@@ -620,7 +623,7 @@ inline bool rbtree_best_fit<MutexFamily, VoidPointer, MemAlignment>::
     all_memory_deallocated()
 {
    //-----------------------
-   boost::interprocess::scoped_lock<interprocess_mutex> guard(m_header);
+   boost::interprocess::scoped_lock<mutex_type> guard(m_header);
    //-----------------------
    size_type block1_off  = 
       priv_first_block_offset_from_this(this, m_header.m_extra_hdr_bytes);
@@ -637,7 +640,7 @@ bool rbtree_best_fit<MutexFamily, VoidPointer, MemAlignment>::
     check_sanity()
 {
    //-----------------------
-   boost::interprocess::scoped_lock<interprocess_mutex> guard(m_header);
+   boost::interprocess::scoped_lock<mutex_type> guard(m_header);
    //-----------------------
    imultiset_iterator ib(m_header.m_imultiset.begin()), ie(m_header.m_imultiset.end());
 
@@ -671,7 +674,7 @@ inline void* rbtree_best_fit<MutexFamily, VoidPointer, MemAlignment>::
    allocate(size_type nbytes)
 {  
    //-----------------------
-   boost::interprocess::scoped_lock<interprocess_mutex> guard(m_header);
+   boost::interprocess::scoped_lock<mutex_type> guard(m_header);
    //-----------------------
    size_type ignore;
    void * ret = priv_allocate(boost::interprocess::allocate_new, nbytes, nbytes, ignore).first;
@@ -683,7 +686,7 @@ inline void* rbtree_best_fit<MutexFamily, VoidPointer, MemAlignment>::
    allocate_aligned(size_type nbytes, size_type alignment)
 { 
    //-----------------------
-   boost::interprocess::scoped_lock<interprocess_mutex> guard(m_header);
+   boost::interprocess::scoped_lock<mutex_type> guard(m_header);
    //-----------------------
    return algo_impl_t::allocate_aligned(this, nbytes, alignment); 
 }
@@ -738,7 +741,7 @@ inline std::pair<void*, bool> rbtree_best_fit<MutexFamily, VoidPointer, MemAlign
    size_type r_size;
    {
       //-----------------------
-      boost::interprocess::scoped_lock<interprocess_mutex> guard(m_header);
+      boost::interprocess::scoped_lock<mutex_type> guard(m_header);
       //-----------------------
       ret = priv_allocate(command, l_size, p_size, r_size, reuse_ptr, sizeof_object);
    }
@@ -761,7 +764,7 @@ template<class MutexFamily, class VoidPointer, std::size_t MemAlignment>
 inline void rbtree_best_fit<MutexFamily, VoidPointer, MemAlignment>::zero_free_memory()
 {
    //-----------------------
-   boost::interprocess::scoped_lock<interprocess_mutex> guard(m_header);
+   boost::interprocess::scoped_lock<mutex_type> guard(m_header);
    //-----------------------
    imultiset_iterator ib(m_header.m_imultiset.begin()), ie(m_header.m_imultiset.end());
 
@@ -930,9 +933,9 @@ inline void rbtree_best_fit<MutexFamily, VoidPointer, MemAlignment>::
    deallocate_many(typename rbtree_best_fit<MutexFamily, VoidPointer, MemAlignment>::multiallocation_chain chain)
 {
    //-----------------------
-   boost::interprocess::scoped_lock<interprocess_mutex> guard(m_header);
+   boost::interprocess::scoped_lock<mutex_type> guard(m_header);
    //-----------------------
-   algo_impl_t::deallocate_many(this, boost::interprocess::move(chain));
+   algo_impl_t::deallocate_many(this, boost::move(chain));
 }
 
 template<class MutexFamily, class VoidPointer, std::size_t MemAlignment>
@@ -979,13 +982,13 @@ std::pair<void *, bool> rbtree_best_fit<MutexFamily, VoidPointer, MemAlignment>:
 
       if(it != m_header.m_imultiset.end()){
          return return_type(this->priv_check_and_allocate
-            (preferred_units, ipcdetail::get_pointer(&*it), received_size), false);
+            (preferred_units, ipcdetail::to_raw_pointer(&*it), received_size), false);
       }
 
       if(it != m_header.m_imultiset.begin()&&
               (--it)->m_size >= limit_units){
          return return_type(this->priv_check_and_allocate
-            (it->m_size, ipcdetail::get_pointer(&*it), received_size), false);
+            (it->m_size, ipcdetail::to_raw_pointer(&*it), received_size), false);
       }
    }
 
@@ -1330,7 +1333,7 @@ void rbtree_best_fit<MutexFamily, VoidPointer, MemAlignment>::deallocate(void* a
 {
    if(!addr)   return;
    //-----------------------
-   boost::interprocess::scoped_lock<interprocess_mutex> guard(m_header);
+   boost::interprocess::scoped_lock<mutex_type> guard(m_header);
    //-----------------------
    return this->priv_deallocate(addr);
 }

@@ -7,15 +7,15 @@
 // See http://www.boost.org/libs/container for documentation.
 //
 //////////////////////////////////////////////////////////////////////////////
-#ifndef BOOST_CONTAINERS_CONTAINER_DETAIL_CONFIG_INCLUDED
-#define BOOST_CONTAINERS_CONTAINER_DETAIL_CONFIG_INCLUDED
+#ifndef BOOST_CONTAINER_CONTAINER_DETAIL_CONFIG_INCLUDED
+#define BOOST_CONTAINER_CONTAINER_DETAIL_CONFIG_INCLUDED
 #include <boost/config.hpp>
 
-#endif   //BOOST_CONTAINERS_CONTAINER_DETAIL_CONFIG_INCLUDED
+#endif   //BOOST_CONTAINER_CONTAINER_DETAIL_CONFIG_INCLUDED
 
 #ifdef BOOST_MSVC
    #ifndef _CRT_SECURE_NO_DEPRECATE
-   #define  BOOST_CONTAINERS_DETAIL_CRT_SECURE_NO_DEPRECATE
+   #define  BOOST_CONTAINER_DETAIL_CRT_SECURE_NO_DEPRECATE
    #define _CRT_SECURE_NO_DEPRECATE
    #endif
    #pragma warning (push)

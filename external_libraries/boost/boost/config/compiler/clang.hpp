@@ -25,35 +25,65 @@
 
 // Clang supports "long long" in all compilation modes.
 
-#define BOOST_NO_AUTO_DECLARATIONS
-#define BOOST_NO_AUTO_MULTIDECLARATIONS
-#define BOOST_NO_CHAR16_T
-#define BOOST_NO_CHAR32_T
-#define BOOST_NO_CONSTEXPR
+#if !__has_feature(cxx_auto_type)
+#  define BOOST_NO_AUTO_DECLARATIONS
+#  define BOOST_NO_AUTO_MULTIDECLARATIONS
+#endif
+
+#if !(defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L)
+#  define BOOST_NO_CHAR16_T
+#  define BOOST_NO_CHAR32_T
+#endif
+
+#if !__has_feature(cxx_constexpr)
+#  define BOOST_NO_CONSTEXPR
+#endif
 
 #if !__has_feature(cxx_decltype)
 #  define BOOST_NO_DECLTYPE
 #endif
 
 #define BOOST_NO_DECLTYPE_N3276
-#define BOOST_NO_DEFAULTED_FUNCTIONS
+
+#if !__has_feature(cxx_defaulted_functions)
+#  define BOOST_NO_DEFAULTED_FUNCTIONS
+#endif
 
 #if !__has_feature(cxx_deleted_functions)
 #  define BOOST_NO_DELETED_FUNCTIONS
 #endif
 
-#define BOOST_NO_EXPLICIT_CONVERSION_OPERATORS
-
-#if !__has_feature(cxx_default_function_template_args)
-  #define BOOST_NO_FUNCTION_TEMPLATE_DEFAULT_ARGS
+#if !__has_feature(cxx_explicit_conversions)
+#  define BOOST_NO_EXPLICIT_CONVERSION_OPERATORS
 #endif
 
-#define BOOST_NO_INITIALIZER_LISTS
-#define BOOST_NO_LAMBDAS
-#define BOOST_NO_NOEXCEPT
-#define BOOST_NO_NULLPTR
-#define BOOST_NO_RAW_LITERALS
-#define BOOST_NO_UNIFIED_INITIALIZATION_SYNTAX
+#if !__has_feature(cxx_default_function_template_args)
+#  define BOOST_NO_FUNCTION_TEMPLATE_DEFAULT_ARGS
+#endif
+
+#if !__has_feature(cxx_generalized_initializers)
+#  define BOOST_NO_INITIALIZER_LISTS
+#endif
+
+#if !__has_feature(cxx_lambdas)
+#  define BOOST_NO_LAMBDAS
+#endif
+
+#if !__has_feature(cxx_noexcept)
+#  define BOOST_NO_NOEXCEPT
+#endif
+
+#if !__has_feature(cxx_nullptr)
+#  define BOOST_NO_NULLPTR
+#endif
+
+#if !__has_feature(cxx_raw_string_literals)
+#  define BOOST_NO_RAW_LITERALS
+#endif
+
+#if !__has_feature(cxx_generalized_initializers)
+#  define BOOST_NO_UNIFIED_INITIALIZATION_SYNTAX
+#endif
 
 #if !__has_feature(cxx_rvalue_references)
 #  define BOOST_NO_RVALUE_REFERENCES
@@ -67,8 +97,13 @@
 #  define BOOST_NO_STATIC_ASSERT
 #endif
 
-#define BOOST_NO_TEMPLATE_ALIASES
-#define BOOST_NO_UNICODE_LITERALS
+#if !__has_feature(cxx_alias_templates)
+#  define BOOST_NO_TEMPLATE_ALIASES
+#endif
+
+#if !__has_feature(cxx_unicode_literals)
+#  define BOOST_NO_UNICODE_LITERALS
+#endif
 
 #if !__has_feature(cxx_variadic_templates)
 #  define BOOST_NO_VARIADIC_TEMPLATES

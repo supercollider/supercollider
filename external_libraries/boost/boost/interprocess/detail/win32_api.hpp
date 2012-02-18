@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -8,11 +8,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_INTERPROCESS_WIN32_SYNC_PRIMITIVES_HPP
-#define BOOST_INTERPROCESS_WIN32_SYNC_PRIMITIVES_HPP
+#ifndef BOOST_INTERPROCESS_WIN32_PRIMITIVES_HPP
+#define BOOST_INTERPROCESS_WIN32_PRIMITIVES_HPP
 
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
+#include <boost/date_time/filetime_functions.hpp>
 #include <cstddef>
 #include <cstring>
 #include <cassert>
@@ -164,18 +165,20 @@ static void * const  hkey_local_machine = (void*)(unsigned long*)(long)(0x800000
 static unsigned long key_query_value    = 0x0001;
 
 //COM API
-const long RPC_C_AUTHN_LEVEL_PKT_IG = 4;
-const long RPC_C_IMP_LEVEL_IMPERSONATE_IG = 3;
-const long EOAC_NONE_IG = 0;
-const long CLSCTX_INPROC_SERVER_IG   = 0x1;
-const long CLSCTX_LOCAL_SERVER_IG   = 0x4;
-const long WBEM_FLAG_RETURN_IMMEDIATELY_IG = 0x10;
-const long WBEM_FLAG_RETURN_WHEN_COMPLETE_IG = 0x0;
-const long WBEM_FLAG_FORWARD_ONLY_IG = 0x20;
-const long WBEM_INFINITE_IG = 0xffffffffL;
-const long RPC_E_TOO_LATE_IG = 0x80010119L;
-const long S_OK_IG = 0L;
-const long S_FALSE_IG = 1;
+const unsigned long RPC_C_AUTHN_LEVEL_PKT_BIPC = 4;
+const unsigned long RPC_C_AUTHN_DEFAULT_BIPC = 0xffffffffL;
+const unsigned long RPC_C_AUTHZ_DEFAULT_BIPC = 0xffffffffL;
+const unsigned long RPC_C_IMP_LEVEL_IMPERSONATE_BIPC = 3;
+const   signed long EOAC_NONE_BIPC = 0;
+const   signed long CLSCTX_INPROC_SERVER_BIPC   = 0x1;
+const   signed long CLSCTX_LOCAL_SERVER_BIPC   = 0x4;
+const   signed long WBEM_FLAG_RETURN_IMMEDIATELY_BIPC = 0x10;
+const   signed long WBEM_FLAG_RETURN_WHEN_COMPLETE_BIPC = 0x0;
+const   signed long WBEM_FLAG_FORWARD_ONLY_BIPC = 0x20;
+const   signed long WBEM_INFINITE_BIPC = 0xffffffffL;
+const   signed long RPC_E_TOO_LATE_BIPC = 0x80010119L;
+const   signed long S_OK_BIPC = 0L;
+const   signed long S_FALSE_BIPC = 1;
 
 }  //namespace winapi {
 }  //namespace interprocess  {
@@ -186,7 +189,7 @@ namespace boost  {
 namespace interprocess  {
 namespace winapi {
 
-struct GUID_IG
+struct GUID_BIPC
 {
    unsigned long  Data1;
    unsigned short Data2;
@@ -194,10 +197,10 @@ struct GUID_IG
    unsigned char  Data4[8];
 };
 
-const GUID_IG CLSID_WbemAdministrativeLocator =
+const GUID_BIPC CLSID_WbemAdministrativeLocator =
    { 0xcb8555cc, 0x9128, 0x11d1, {0xad, 0x9b, 0x00, 0xc0, 0x4f, 0xd8, 0xfd, 0xff}};
 
-const GUID_IG IID_IUnknown = { 0x00000000, 0x0000, 0x0000, {0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46}};
+const GUID_BIPC IID_IUnknown = { 0x00000000, 0x0000, 0x0000, {0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x46}};
 
 struct wchar_variant
 {
@@ -208,11 +211,11 @@ struct wchar_variant
    } value;
 };
 
-   struct IUnknown_IG
+   struct IUnknown_BIPC
    {
       public:
       virtual long __stdcall QueryInterface( 
-            /* [in] */ const GUID_IG &riid,
+            /* [in] */ const GUID_BIPC &riid,
             /* [iid_is][out] */ void **ppvObject) = 0;
       
       virtual unsigned long __stdcall AddRef( void) = 0;
@@ -220,7 +223,7 @@ struct wchar_variant
       virtual unsigned long __stdcall Release( void) = 0;
    };
 
-struct IWbemClassObject_IG : public IUnknown_IG
+struct IWbemClassObject_BIPC : public IUnknown_BIPC
 {
    public:
    virtual long __stdcall GetQualifierSet( 
@@ -265,7 +268,7 @@ struct IWbemClassObject_IG : public IUnknown_IG
       /* [out] */ void **ppQualSet) = 0;
    
    virtual long __stdcall Clone( 
-      /* [out] */ IWbemClassObject_IG **ppCopy) = 0;
+      /* [out] */ IWbemClassObject_BIPC **ppCopy) = 0;
    
    virtual long __stdcall GetObjectText( 
       /* [in] */ long lFlags,
@@ -273,15 +276,15 @@ struct IWbemClassObject_IG : public IUnknown_IG
    
    virtual long __stdcall SpawnDerivedClass( 
       /* [in] */ long lFlags,
-      /* [out] */ IWbemClassObject_IG **ppNewClass) = 0;
+      /* [out] */ IWbemClassObject_BIPC **ppNewClass) = 0;
    
    virtual long __stdcall SpawnInstance( 
       /* [in] */ long lFlags,
-      /* [out] */ IWbemClassObject_IG **ppNewInstance) = 0;
+      /* [out] */ IWbemClassObject_BIPC **ppNewInstance) = 0;
    
    virtual long __stdcall CompareTo( 
       /* [in] */ long lFlags,
-      /* [in] */ IWbemClassObject_IG *pCompareTo) = 0;
+      /* [in] */ IWbemClassObject_BIPC *pCompareTo) = 0;
    
    virtual long __stdcall GetPropertyOrigin( 
       /* [string][in] */ const wchar_t * wszName,
@@ -293,14 +296,14 @@ struct IWbemClassObject_IG : public IUnknown_IG
    virtual long __stdcall GetMethod( 
       /* [string][in] */ const wchar_t * wszName,
       /* [in] */ long lFlags,
-      /* [out] */ IWbemClassObject_IG **ppInSignature,
-      /* [out] */ IWbemClassObject_IG **ppOutSignature) = 0;
+      /* [out] */ IWbemClassObject_BIPC **ppInSignature,
+      /* [out] */ IWbemClassObject_BIPC **ppOutSignature) = 0;
    
    virtual long __stdcall PutMethod( 
       /* [string][in] */ const wchar_t * wszName,
       /* [in] */ long lFlags,
-      /* [in] */ IWbemClassObject_IG *pInSignature,
-      /* [in] */ IWbemClassObject_IG *pOutSignature) = 0;
+      /* [in] */ IWbemClassObject_BIPC *pInSignature,
+      /* [in] */ IWbemClassObject_BIPC *pOutSignature) = 0;
    
    virtual long __stdcall DeleteMethod( 
       /* [string][in] */ const wchar_t * wszName) = 0;
@@ -311,8 +314,8 @@ struct IWbemClassObject_IG : public IUnknown_IG
    virtual long __stdcall NextMethod( 
       /* [in] */ long lFlags,
       /* [unique][in][out] */ wchar_t * *pstrName,
-      /* [unique][in][out] */ IWbemClassObject_IG **ppInSignature,
-      /* [unique][in][out] */ IWbemClassObject_IG **ppOutSignature) = 0;
+      /* [unique][in][out] */ IWbemClassObject_BIPC **ppInSignature,
+      /* [unique][in][out] */ IWbemClassObject_BIPC **ppOutSignature) = 0;
    
    virtual long __stdcall EndMethodEnumeration( void) = 0;
    
@@ -327,11 +330,11 @@ struct IWbemClassObject_IG : public IUnknown_IG
 };
 
 
-struct IWbemContext_IG : public IUnknown_IG
+struct IWbemContext_BIPC : public IUnknown_BIPC
 {
 public:
    virtual long __stdcall Clone( 
-      /* [out] */ IWbemContext_IG **ppNewCopy) = 0;
+      /* [out] */ IWbemContext_BIPC **ppNewCopy) = 0;
    
    virtual long __stdcall GetNames( 
       /* [in] */ long lFlags,
@@ -366,7 +369,7 @@ public:
 };
 
 
-struct IEnumWbemClassObject_IG : public IUnknown_IG
+struct IEnumWbemClassObject_BIPC : public IUnknown_BIPC
 {
 public:
    virtual long __stdcall Reset( void) = 0;
@@ -374,7 +377,7 @@ public:
    virtual long __stdcall Next( 
       /* [in] */ long lTimeout,
       /* [in] */ unsigned long uCount,
-      /* [length_is][size_is][out] */ IWbemClassObject_IG **apObjects,
+      /* [length_is][size_is][out] */ IWbemClassObject_BIPC **apObjects,
       /* [out] */ unsigned long *puReturned) = 0;
    
    virtual long __stdcall NextAsync( 
@@ -390,7 +393,7 @@ public:
    
 };
 
-struct IWbemServices_IG : public IUnknown_IG
+struct IWbemServices_BIPC : public IUnknown_BIPC
 {
 public:
    virtual long __stdcall OpenNamespace( 
@@ -421,13 +424,13 @@ public:
       /* [in] */ void *pResponseHandler) = 0;
    
    virtual long __stdcall PutClass( 
-      /* [in] */ IWbemClassObject_IG *pObject,
+      /* [in] */ IWbemClassObject_BIPC *pObject,
       /* [in] */ long lFlags,
       /* [in] */ void *pCtx,
       /* [unique][in][out] */ void **ppCallResult) = 0;
    
    virtual long __stdcall PutClassAsync( 
-      /* [in] */ IWbemClassObject_IG *pObject,
+      /* [in] */ IWbemClassObject_BIPC *pObject,
       /* [in] */ long lFlags,
       /* [in] */ void *pCtx,
       /* [in] */ void *pResponseHandler) = 0;
@@ -496,50 +499,50 @@ public:
       /* [in] */ const wchar_t * strQueryLanguage,
       /* [in] */ const wchar_t * strQuery,
       /* [in] */ long lFlags,
-      /* [in] */ IWbemContext_IG *pCtx,
-      /* [out] */ IEnumWbemClassObject_IG **ppEnum) = 0;
+      /* [in] */ IWbemContext_BIPC *pCtx,
+      /* [out] */ IEnumWbemClassObject_BIPC **ppEnum) = 0;
 
    virtual long __stdcall ExecQueryAsync( 
       /* [in] */ const wchar_t * strQueryLanguage,
       /* [in] */ const wchar_t * strQuery,
       /* [in] */ long lFlags,
-      /* [in] */ IWbemContext_IG *pCtx,
+      /* [in] */ IWbemContext_BIPC *pCtx,
       /* [in] */ void *pResponseHandler) = 0;
    
    virtual long __stdcall ExecNotificationQuery( 
       /* [in] */ const wchar_t * strQueryLanguage,
       /* [in] */ const wchar_t * strQuery,
       /* [in] */ long lFlags,
-      /* [in] */ IWbemContext_IG *pCtx,
+      /* [in] */ IWbemContext_BIPC *pCtx,
       /* [out] */ void **ppEnum) = 0;
    
    virtual long __stdcall ExecNotificationQueryAsync( 
       /* [in] */ const wchar_t * strQueryLanguage,
       /* [in] */ const wchar_t * strQuery,
       /* [in] */ long lFlags,
-      /* [in] */ IWbemContext_IG *pCtx,
+      /* [in] */ IWbemContext_BIPC *pCtx,
       /* [in] */ void *pResponseHandler) = 0;
    
    virtual long __stdcall ExecMethod( 
       /* [in] */ const wchar_t * strObjectPath,
       /* [in] */ const wchar_t * strMethodName,
       /* [in] */ long lFlags,
-      /* [in] */ IWbemContext_IG *pCtx,
-      /* [in] */ IWbemClassObject_IG *pInParams,
-      /* [unique][in][out] */ IWbemClassObject_IG **ppOutParams,
+      /* [in] */ IWbemContext_BIPC *pCtx,
+      /* [in] */ IWbemClassObject_BIPC *pInParams,
+      /* [unique][in][out] */ IWbemClassObject_BIPC **ppOutParams,
       /* [unique][in][out] */ void **ppCallResult) = 0;
    
    virtual long __stdcall ExecMethodAsync( 
       /* [in] */ const wchar_t * strObjectPath,
       /* [in] */ const wchar_t * strMethodName,
       /* [in] */ long lFlags,
-      /* [in] */ IWbemContext_IG *pCtx,
-      /* [in] */ IWbemClassObject_IG *pInParams,
+      /* [in] */ IWbemContext_BIPC *pCtx,
+      /* [in] */ IWbemClassObject_BIPC *pInParams,
       /* [in] */ void *pResponseHandler) = 0;
    
 };
 
-struct IWbemLocator_IG : public IUnknown_IG
+struct IWbemLocator_BIPC : public IUnknown_BIPC
 {
 public:
    virtual long __stdcall ConnectServer( 
@@ -550,7 +553,7 @@ public:
       /* [in] */ long lSecurityFlags,
       /* [in] */ const wchar_t * strAuthority,
       /* [in] */ void *pCtx,
-      /* [out] */ IWbemServices_IG **ppNamespace) = 0;
+      /* [out] */ IWbemServices_BIPC **ppNamespace) = 0;
    
 };
  
@@ -803,8 +806,8 @@ extern "C" __declspec(dllimport) int __stdcall DuplicateHandle
 extern "C" __declspec(dllimport) void *__stdcall FindFirstFileA(const char *lpFileName, win32_find_data_t *lpFindFileData);
 extern "C" __declspec(dllimport) int   __stdcall FindNextFileA(void *hFindFile, win32_find_data_t *lpFindFileData);
 extern "C" __declspec(dllimport) int   __stdcall FindClose(void *hFindFile);
-extern "C" __declspec(dllimport) void __stdcall GetSystemTimeAsFileTime(interprocess_filetime*);
-extern "C" __declspec(dllimport) int  __stdcall FileTimeToLocalFileTime(const interprocess_filetime *in, const interprocess_filetime *out);
+//extern "C" __declspec(dllimport) void __stdcall GetSystemTimeAsFileTime(interprocess_filetime*);
+//extern "C" __declspec(dllimport) int  __stdcall FileTimeToLocalFileTime(const interprocess_filetime *in, const interprocess_filetime *out);
 extern "C" __declspec(dllimport) void * __stdcall CreateMutexA(interprocess_security_attributes*, int, const char *);
 extern "C" __declspec(dllimport) void * __stdcall OpenMutexA(unsigned long, int, const char *);
 extern "C" __declspec(dllimport) unsigned long __stdcall WaitForSingleObject(void *, unsigned long);
@@ -852,6 +855,7 @@ extern "C" __declspec(dllimport) unsigned long __stdcall GetMappedFileNameW(void
 extern "C" __declspec(dllimport) long __stdcall RegOpenKeyExA(void *, const char *, unsigned long, unsigned long, void **);
 extern "C" __declspec(dllimport) long __stdcall RegQueryValueExA(void *, const char *, unsigned long*, unsigned long*, unsigned char *, unsigned long*);
 extern "C" __declspec(dllimport) long __stdcall RegCloseKey(void *);
+extern "C" __declspec(dllimport) int  __stdcall QueryPerformanceCounter(__int64 *lpPerformanceCount);
 
 //COM API
 extern "C" __declspec(dllimport) long __stdcall CoInitialize(void *pvReserved);
@@ -866,9 +870,19 @@ extern "C" __declspec(dllimport) long __stdcall CoInitializeSecurity(
                     unsigned long                        dwCapabilities,
                     void                        *pReserved3 );
 
+ extern "C" __declspec(dllimport) long __stdcall CoSetProxyBlanket(
+                     IUnknown_BIPC *pProxy,
+                     unsigned long dwAuthnSvc,
+                     unsigned long dwAuthzSvc,
+                     wchar_t *pServerPrincName,
+                     unsigned long dwAuthnLevel,
+                     unsigned long dwImpLevel,
+                     void *pAuthInfo,
+                     unsigned long dwCapabilities);
+
 extern "C" __declspec(dllimport) long __stdcall VariantClear(wchar_variant * pvarg);
-extern "C" __declspec(dllimport) long __stdcall CoCreateInstance(const GUID_IG & rclsid, IUnknown_IG *pUnkOuter,
-                    unsigned long dwClsContext, const GUID_IG & riid, void** ppv);
+extern "C" __declspec(dllimport) long __stdcall CoCreateInstance(const GUID_BIPC & rclsid, IUnknown_BIPC *pUnkOuter,
+                    unsigned long dwClsContext, const GUID_BIPC & riid, void** ppv);
 extern "C" __declspec(dllimport) void __stdcall CoUninitialize(void);
 
 
@@ -928,6 +942,9 @@ inline void sched_yield()
    }
 }
 
+inline void sleep(unsigned long ms)
+{  Sleep(ms);  }
+
 inline unsigned long get_current_thread_id()
 {  return GetCurrentThreadId();  }
 
@@ -960,19 +977,16 @@ inline bool duplicate_current_process_handle
       , lpTargetHandle,       0,                0
       , duplicate_same_access);
 }
-
+/*
 inline void get_system_time_as_file_time(interprocess_filetime *filetime)
 {  GetSystemTimeAsFileTime(filetime);  }
 
 inline bool file_time_to_local_file_time
    (const interprocess_filetime *in, const interprocess_filetime *out)
 {  return 0 != FileTimeToLocalFileTime(in, out);  }
-
-inline void *create_mutex(const char *name)
-{  return CreateMutexA(0, 0, name); }
-
-inline void *open_mutex(const char *name)
-{  return OpenMutexA(mutex_all_access, 0, name); }
+*/
+inline void *open_or_create_mutex(const char *name, bool initial_owner, interprocess_security_attributes *attr)
+{  return CreateMutexA(attr, (int)initial_owner, name);  }
 
 inline unsigned long wait_for_single_object(void *handle, unsigned long time)
 {  return WaitForSingleObject(handle, time); }
@@ -983,14 +997,11 @@ inline int release_mutex(void *handle)
 inline int unmap_view_of_file(void *address)
 {  return UnmapViewOfFile(address); }
 
-inline void *create_semaphore(long initialCount, const char *name)
-{  return CreateSemaphoreA(0, initialCount, (long)(((unsigned long)(-1))>>1), name);   }
+inline void *open_or_create_semaphore(const char *name, long initial_count, long maximum_count, interprocess_security_attributes *attr)
+{  return CreateSemaphoreA(attr, initial_count, maximum_count, name);  }
 
 inline int release_semaphore(void *handle, long release_count, long *prev_count)
 {  return ReleaseSemaphore(handle, release_count, prev_count); }
-
-inline void *open_semaphore(const char *name)
-{  return OpenSemaphoreA(semaphore_all_access, 1, name); }
 
 class interprocess_all_access_security
 {
@@ -1136,6 +1147,11 @@ inline long reg_query_value_ex(void *hKey, const char *lpValueName, unsigned lon
 inline long reg_close_key(void *hKey)
 {  return RegCloseKey(hKey); }
 
+inline bool query_performance_counter(__int64 *lpPerformanceCount)
+{
+   return 0 != QueryPerformanceCounter(lpPerformanceCount);
+}
+
 inline void initialize_object_attributes
 ( object_attributes_t *pobject_attr, unicode_string_t *name
  , unsigned long attr, void *rootdir, void *security_descr)
@@ -1181,7 +1197,7 @@ struct function_address_holder
    static void *get_module(const unsigned int id)
    {
       assert(id < (unsigned int)NumModule);
-      while(ModuleStates[id] < 2u){
+      while(ModuleStates[id] < 2){
          if(interlocked_compare_exchange(&ModuleStates[id], 1, 0) == 0){
             ModuleAddresses[id] = get_module_from_id(id);
             interlocked_increment(&ModuleStates[id]);
@@ -1207,7 +1223,7 @@ struct function_address_holder
    static void *get(const unsigned int id)
    {
       assert(id < (unsigned int)NumFunction);
-      while(FunctionStates[id] < 2u){
+      while(FunctionStates[id] < 2){
          if(interlocked_compare_exchange(&FunctionStates[id], 1, 0) == 0){
             FunctionAddresses[id] = get_address_from_dll(id);
             interlocked_increment(&FunctionStates[id]);
@@ -1600,7 +1616,7 @@ inline bool get_wmi_class_attribute( std::wstring& strValue, const wchar_t *wmi_
 {
    //See example http://msdn.microsoft.com/en-us/library/aa390423%28v=VS.85%29.aspx
    long co_init_ret = CoInitialize(0);
-   if(co_init_ret != S_OK_IG && co_init_ret != S_FALSE_IG)
+   if(co_init_ret != S_OK_BIPC && co_init_ret != S_FALSE_BIPC)
       return false;
    co_uninitializer co_initialize_end;
    (void)co_initialize_end;
@@ -1611,28 +1627,28 @@ inline bool get_wmi_class_attribute( std::wstring& strValue, const wchar_t *wmi_
       ,-1   //cAuthSvc 
       , 0   //asAuthSvc 
       , 0   //pReserved1 
-      , RPC_C_AUTHN_LEVEL_PKT_IG //dwAuthnLevel 
-      , RPC_C_IMP_LEVEL_IMPERSONATE_IG //dwImpLevel 
+      , RPC_C_AUTHN_LEVEL_PKT_BIPC //dwAuthnLevel 
+      , RPC_C_IMP_LEVEL_IMPERSONATE_BIPC //dwImpLevel 
       , 0   //pAuthList 
-      , EOAC_NONE_IG //dwCapabilities 
+      , EOAC_NONE_BIPC //dwCapabilities 
       , 0   //pReserved3 
       );
-   if( 0 == sec_init_ret || RPC_E_TOO_LATE_IG == sec_init_ret)
+   if( 0 == sec_init_ret || RPC_E_TOO_LATE_BIPC == sec_init_ret)
    {
-      IWbemLocator_IG * pIWbemLocator = 0;
+      IWbemLocator_BIPC * pIWbemLocator = 0;
       const wchar_t * bstrNamespace = L"root\\cimv2";
  
       if( 0 != CoCreateInstance(
             CLSID_WbemAdministrativeLocator,
             0,
-            CLSCTX_INPROC_SERVER_IG | CLSCTX_LOCAL_SERVER_IG,
+            CLSCTX_INPROC_SERVER_BIPC | CLSCTX_LOCAL_SERVER_BIPC,
             IID_IUnknown, (void **)&pIWbemLocator)){
          return false;
       }
  
-      com_releaser<IWbemLocator_IG> IWbemLocator_releaser(pIWbemLocator);
+      com_releaser<IWbemLocator_BIPC> IWbemLocator_releaser(pIWbemLocator);
 
-      IWbemServices_IG *pWbemServices = 0;
+      IWbemServices_BIPC *pWbemServices = 0;
 
       if( 0 != pIWbemLocator->ConnectServer(
             bstrNamespace,  // Namespace
@@ -1648,7 +1664,21 @@ inline bool get_wmi_class_attribute( std::wstring& strValue, const wchar_t *wmi_
          return false;
       }
 
-      com_releaser<IWbemServices_IG> IWbemServices_releaser(pWbemServices);
+      if( S_OK_BIPC != CoSetProxyBlanket(
+            pWbemServices,
+            RPC_C_AUTHN_DEFAULT_BIPC,
+            RPC_C_AUTHZ_DEFAULT_BIPC,
+            0,
+            RPC_C_AUTHN_LEVEL_PKT_BIPC,
+            RPC_C_IMP_LEVEL_IMPERSONATE_BIPC,
+            0,
+            EOAC_NONE_BIPC
+            )
+         ){
+         return false;
+      }
+ 
+      com_releaser<IWbemServices_BIPC> IWbemServices_releaser(pWbemServices);
 
       strValue.clear();
       strValue += L"Select ";
@@ -1656,13 +1686,13 @@ inline bool get_wmi_class_attribute( std::wstring& strValue, const wchar_t *wmi_
       strValue += L" from ";
       strValue += wmi_class;
 
-      IEnumWbemClassObject_IG * pEnumObject  = 0;
+      IEnumWbemClassObject_BIPC * pEnumObject  = 0;
 
       if ( 0 != pWbemServices->ExecQuery(
             L"WQL",
             strValue.c_str(),
-            //WBEM_FLAG_RETURN_IMMEDIATELY_IG,
-            WBEM_FLAG_RETURN_WHEN_COMPLETE_IG | WBEM_FLAG_FORWARD_ONLY_IG,
+            //WBEM_FLAG_RETURN_IMMEDIATELY_BIPC,
+            WBEM_FLAG_RETURN_WHEN_COMPLETE_BIPC | WBEM_FLAG_FORWARD_ONLY_BIPC,
             0,
             &pEnumObject
             )
@@ -1670,19 +1700,19 @@ inline bool get_wmi_class_attribute( std::wstring& strValue, const wchar_t *wmi_
          return false;
       }
 
-      com_releaser<IEnumWbemClassObject_IG> IEnumWbemClassObject_releaser(pEnumObject);
+      com_releaser<IEnumWbemClassObject_BIPC> IEnumWbemClassObject_releaser(pEnumObject);
 
-      //WBEM_FLAG_FORWARD_ONLY_IG incompatible with Reset
+      //WBEM_FLAG_FORWARD_ONLY_BIPC incompatible with Reset
       //if ( 0 != pEnumObject->Reset() ){
          //return false;
       //}
 
       wchar_variant vwchar;
       unsigned long uCount = 1, uReturned;
-      IWbemClassObject_IG * pClassObject = 0;
-      while( 0 == pEnumObject->Next( WBEM_INFINITE_IG, uCount, &pClassObject, &uReturned ) )
+      IWbemClassObject_BIPC * pClassObject = 0;
+      while( 0 == pEnumObject->Next( WBEM_INFINITE_BIPC, uCount, &pClassObject, &uReturned ) )
       {
-         com_releaser<IWbemClassObject_IG> IWbemClassObject_releaser(pClassObject);
+         com_releaser<IWbemClassObject_BIPC> IWbemClassObject_releaser(pClassObject);
          if ( 0 == pClassObject->Get( L"LastBootUpTime", 0, &vwchar, 0, 0 ) ){
             bRet = true;
             strValue = vwchar.value.pbstrVal;
@@ -1733,4 +1763,4 @@ inline bool is_directory(const char *path)
 
 #include <boost/interprocess/detail/config_end.hpp>
 
-#endif //#ifdef BOOST_INTERPROCESS_WIN32_SYNC_PRIMITIVES_HPP
+#endif //#ifdef BOOST_INTERPROCESS_WIN32_PRIMITIVES_HPP

@@ -9,8 +9,8 @@
 //////////////////////////////////////////////////////////////////////////////
 #if defined BOOST_MSVC
    #pragma warning (pop)
-   #ifdef BOOST_CONTAINERS_DETAIL_CRT_SECURE_NO_DEPRECATE
-   #undef BOOST_CONTAINERS_DETAIL_CRT_SECURE_NO_DEPRECATE
+   #ifdef BOOST_CONTAINER_DETAIL_CRT_SECURE_NO_DEPRECATE
+   #undef BOOST_CONTAINER_DETAIL_CRT_SECURE_NO_DEPRECATE
    #undef _CRT_SECURE_NO_DEPRECATE
    #endif
 #endif

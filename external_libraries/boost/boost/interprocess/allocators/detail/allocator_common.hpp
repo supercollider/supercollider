@@ -14,25 +14,24 @@
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 
-#include <boost/pointer_to_other.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 
 #include <boost/interprocess/interprocess_fwd.hpp>
-#include <boost/interprocess/detail/utilities.hpp> //get_pointer
-#include <utility>   //std::pair
+#include <boost/interprocess/detail/utilities.hpp> //to_raw_pointer
 #include <boost/utility/addressof.hpp> //boost::addressof
 #include <boost/assert.hpp>   //BOOST_ASSERT
-#include <boost/assert.hpp>
 #include <boost/interprocess/exceptions.hpp> //bad_alloc
 #include <boost/interprocess/sync/scoped_lock.hpp> //scoped_lock
 #include <boost/interprocess/containers/allocation_type.hpp> //boost::interprocess::allocation_type
 #include <boost/container/detail/multiallocation_chain.hpp>
 #include <boost/interprocess/mem_algo/detail/mem_algo_common.hpp>
 #include <boost/interprocess/detail/segment_manager_helper.hpp>
-#include <algorithm> //std::swap
-#include <boost/interprocess/detail/move.hpp>
-
+#include <boost/move/move.hpp>
 #include <boost/interprocess/detail/type_traits.hpp>
 #include <boost/interprocess/detail/utilities.hpp>
+#include <algorithm> //std::swap
+#include <utility>   //std::pair
+#include <new>
 
 namespace boost {
 namespace interprocess {
@@ -147,8 +146,9 @@ class cache_impl
 {
    typedef typename NodePool::segment_manager::
       void_pointer                                          void_pointer;
-   typedef typename pointer_to_other
-      <void_pointer, NodePool>::type                        node_pool_ptr;
+   typedef typename boost::intrusive::
+      pointer_traits<void_pointer>::template
+         rebind_pointer<NodePool>::type                     node_pool_ptr;
    typedef typename NodePool::multiallocation_chain         multiallocation_chain;
    typedef typename NodePool::segment_manager::size_type    size_type;
    node_pool_ptr                 mp_node_pool;
@@ -173,11 +173,11 @@ class cache_impl
    ~cache_impl()
    {
       this->deallocate_all_cached_nodes();
-      ipcdetail::destroy_node_pool_if_last_link(ipcdetail::get_pointer(mp_node_pool));   
+      ipcdetail::destroy_node_pool_if_last_link(ipcdetail::to_raw_pointer(mp_node_pool));   
    }
 
    NodePool *get_node_pool() const
-   {  return ipcdetail::get_pointer(mp_node_pool); }
+   {  return ipcdetail::to_raw_pointer(mp_node_pool); }
 
    segment_manager *get_segment_manager() const
    {  return mp_node_pool->get_segment_manager(); }
@@ -191,7 +191,7 @@ class cache_impl
       if(m_cached_nodes.empty()){
          m_cached_nodes = mp_node_pool->allocate_nodes(m_max_cached_nodes/2);
       }
-      void *ret = ipcdetail::get_pointer(m_cached_nodes.front());
+      void *ret = ipcdetail::to_raw_pointer(m_cached_nodes.front());
       m_cached_nodes.pop_front();
       return ret;
    }
@@ -203,7 +203,7 @@ class cache_impl
       BOOST_TRY{
          //If don't have any cached node, we have to get a new list of free nodes from the pool
          while(!m_cached_nodes.empty() && count--){
-            void *ret = ipcdetail::get_pointer(m_cached_nodes.front());
+            void *ret = ipcdetail::to_raw_pointer(m_cached_nodes.front());
             m_cached_nodes.pop_front();
             chain.push_back(ret);
             ++allocated;
@@ -213,10 +213,10 @@ class cache_impl
             multiallocation_chain chain2(mp_node_pool->allocate_nodes(n - allocated));
             chain.splice_after(chain.last(), chain2, chain2.before_begin(), chain2.last(), n - allocated);
          }
-         return boost::interprocess::move(chain);
+         return boost::move(chain);
       }
       BOOST_CATCH(...){
-         this->cached_deallocation(boost::interprocess::move(chain));
+         this->cached_deallocation(boost::move(chain));
          BOOST_RETHROW
       }
       BOOST_CATCH_END
@@ -262,7 +262,7 @@ class cache_impl
    void deallocate_all_cached_nodes()
    {
       if(m_cached_nodes.empty()) return;
-      mp_node_pool->deallocate_nodes(boost::interprocess::move(m_cached_nodes));
+      mp_node_pool->deallocate_nodes(boost::move(m_cached_nodes));
    }
 
    private:
@@ -290,7 +290,7 @@ class cache_impl
       multiallocation_chain chain;
       chain.splice_after(chain.before_begin(), m_cached_nodes, m_cached_nodes.before_begin(), it, n);
       //Deallocate all new linked list at once
-      mp_node_pool->deallocate_nodes(boost::interprocess::move(chain));
+      mp_node_pool->deallocate_nodes(boost::move(chain));
    }
 
    public:
@@ -313,10 +313,12 @@ class array_allocation_impl
    typedef typename SegmentManager::void_pointer         void_pointer;
 
    public:
-   typedef typename boost::
-      pointer_to_other<void_pointer, T>::type            pointer;
-   typedef typename boost::
-      pointer_to_other<void_pointer, const T>::type      const_pointer;
+   typedef typename boost::intrusive::
+      pointer_traits<void_pointer>::template
+         rebind_pointer<T>::type                         pointer;
+   typedef typename boost::intrusive::
+      pointer_traits<void_pointer>::template
+         rebind_pointer<const T>::type                   const_pointer;
    typedef T                                             value_type;
    typedef typename ipcdetail::add_reference
                      <value_type>::type                  reference;
@@ -324,7 +326,7 @@ class array_allocation_impl
                      <const value_type>::type            const_reference;
    typedef typename SegmentManager::size_type            size_type;
    typedef typename SegmentManager::difference_type      difference_type;
-   typedef boost::container::containers_detail::transform_multiallocation_chain
+   typedef boost::container::container_detail::transform_multiallocation_chain
       <typename SegmentManager::multiallocation_chain, T>multiallocation_chain;
 
 
@@ -334,7 +336,7 @@ class array_allocation_impl
    //!allocate, allocation_command and allocate_many.
    size_type size(const pointer &p) const
    {  
-      return (size_type)this->derived()->get_segment_manager()->size(ipcdetail::get_pointer(p))/sizeof(T);
+      return (size_type)this->derived()->get_segment_manager()->size(ipcdetail::to_raw_pointer(p))/sizeof(T);
    }
 
    std::pair<pointer, bool>
@@ -344,7 +346,7 @@ class array_allocation_impl
                          size_type &received_size, const pointer &reuse = 0)
    {
       return this->derived()->get_segment_manager()->allocation_command
-         (command, limit_size, preferred_size, received_size, ipcdetail::get_pointer(reuse));
+         (command, limit_size, preferred_size, received_size, ipcdetail::to_raw_pointer(reuse));
    }
 
    //!Allocates many elements of size elem_size in a contiguous block
@@ -373,7 +375,7 @@ class array_allocation_impl
    //!will be assigned to received_size. The elements must be deallocated
    //!with deallocate(...)
    void deallocate_many(multiallocation_chain chain)
-   {  return this->derived()->get_segment_manager()->deallocate_many(boost::interprocess::move(chain)); }
+   {  return this->derived()->get_segment_manager()->deallocate_many(boost::move(chain)); }
 
    //!Returns the number of elements that could be
    //!allocated. Never throws
@@ -390,15 +392,12 @@ class array_allocation_impl
    const_pointer address(const_reference value) const
    {  return const_pointer(boost::addressof(value));  }
 
-   //!Default construct an object. 
-   //!Throws if T's default constructor throws
-   void construct(const pointer &ptr)
-   {  new((void*)ipcdetail::get_pointer(ptr)) value_type;  }
-
-   //!Copy construct an object
-   //!Throws if T's copy constructor throws
-   void construct(const pointer &ptr, const_reference v)
-   {  new((void*)ipcdetail::get_pointer(ptr)) value_type(v);  }
+   //!Constructs an object
+   //!Throws if T's constructor throws
+   //!For backwards compatibility with libraries using C++03 allocators
+   template<class P>
+   void construct(const pointer &ptr, BOOST_FWD_REF(P) p)
+   {  ::new((void*)ipcdetail::to_raw_pointer(ptr)) value_type(::boost::forward<P>(p));  }
 
    //!Destroys object. Throws if object's
    //!destructor throws
@@ -420,14 +419,17 @@ class node_pool_allocation_impl
    {  return static_cast<Derived*>(this); }
 
    typedef typename SegmentManager::void_pointer         void_pointer;
-   typedef typename boost::
-      pointer_to_other<void_pointer, const void>::type   cvoid_pointer;
+   typedef typename boost::intrusive::
+      pointer_traits<void_pointer>::template
+         rebind_pointer<const void>::type                cvoid_pointer;
 
    public:
-   typedef typename boost::
-      pointer_to_other<void_pointer, T>::type            pointer;
-   typedef typename boost::
-      pointer_to_other<void_pointer, const T>::type      const_pointer;
+   typedef typename boost::intrusive::
+      pointer_traits<void_pointer>::template
+         rebind_pointer<T>::type                         pointer;
+   typedef typename boost::intrusive::
+      pointer_traits<void_pointer>::template
+         rebind_pointer<const T>::type                   const_pointer;
    typedef T                                             value_type;
    typedef typename ipcdetail::add_reference
                      <value_type>::type                  reference;
@@ -435,7 +437,7 @@ class node_pool_allocation_impl
                      <const value_type>::type            const_reference;
    typedef typename SegmentManager::size_type            size_type;
    typedef typename SegmentManager::difference_type      difference_type;
-   typedef boost::container::containers_detail::transform_multiallocation_chain
+   typedef boost::container::container_detail::transform_multiallocation_chain
       <typename SegmentManager::multiallocation_chain, T>multiallocation_chain;
 
 
@@ -472,9 +474,9 @@ class node_pool_allocation_impl
       typedef typename node_pool<0>::type node_pool_t;
       node_pool_t *pool = node_pool<0>::get(this->derived()->get_node_pool());
       if(Version == 1 && count == 1)
-         pool->deallocate_node(ipcdetail::get_pointer(ptr));
+         pool->deallocate_node(ipcdetail::to_raw_pointer(ptr));
       else
-         pool->get_segment_manager()->deallocate((void*)ipcdetail::get_pointer(ptr));
+         pool->get_segment_manager()->deallocate((void*)ipcdetail::to_raw_pointer(ptr));
    }
 
    //!Allocates just one object. Memory allocated with this function
@@ -507,7 +509,7 @@ class node_pool_allocation_impl
    {
       typedef typename node_pool<0>::type node_pool_t;
       node_pool_t *pool = node_pool<0>::get(this->derived()->get_node_pool());
-      pool->deallocate_node(ipcdetail::get_pointer(p));
+      pool->deallocate_node(ipcdetail::to_raw_pointer(p));
    }
 
    //!Allocates many elements of size == 1 in a contiguous block
@@ -548,15 +550,16 @@ class cached_allocator_impl
    typedef NodePool                                      node_pool_t;
    typedef typename NodePool::segment_manager            segment_manager;
    typedef typename segment_manager::void_pointer        void_pointer;
-   typedef typename boost::
-      pointer_to_other<void_pointer, const void>::type   cvoid_pointer;
+   typedef typename boost::intrusive::
+      pointer_traits<void_pointer>::template
+         rebind_pointer<const void>::type                cvoid_pointer;
    typedef typename base_t::pointer                      pointer;
    typedef typename base_t::size_type                    size_type;
    typedef typename base_t::multiallocation_chain        multiallocation_chain;
    typedef typename base_t::value_type                   value_type;
 
    public:
-   enum { DEFAULT_MAX_CACHED_NODES = 64 };
+   static const std::size_t DEFAULT_MAX_CACHED_NODES = 64;
 
    cached_allocator_impl(segment_manager *segment_mngr, size_type max_cached_nodes)
       : m_cache(segment_mngr, max_cached_nodes)
@@ -618,10 +621,10 @@ class cached_allocator_impl
    {
       (void)count;
       if(Version == 1 && count == 1){
-         m_cache.cached_deallocation(ipcdetail::get_pointer(ptr));
+         m_cache.cached_deallocation(ipcdetail::to_raw_pointer(ptr));
       }
       else{
-         this->get_segment_manager()->deallocate((void*)ipcdetail::get_pointer(ptr));
+         this->get_segment_manager()->deallocate((void*)ipcdetail::to_raw_pointer(ptr));
       }
    }
 
@@ -644,7 +647,7 @@ class cached_allocator_impl
    //!You should never use deallocate_one to deallocate memory allocated
    //!with other functions different from allocate_one(). Never throws
    void deallocate_one(const pointer &p)
-   {  this->m_cache.cached_deallocation(ipcdetail::get_pointer(p)); }
+   {  this->m_cache.cached_deallocation(ipcdetail::to_raw_pointer(p)); }
 
    //!Allocates many elements of size == 1 in a contiguous block
    //!of memory. The minimum number to be allocated is min_elements,
@@ -656,7 +659,7 @@ class cached_allocator_impl
    {
       typename node_pool_t::multiallocation_chain mem
          (chain.extract_multiallocation_chain());
-      m_cache.cached_deallocation(boost::interprocess::move(mem));
+      m_cache.cached_deallocation(boost::move(mem));
    }
 
    //!Deallocates all free blocks of the pool
@@ -778,7 +781,7 @@ class shared_pool_impl
       //-----------------------
       boost::interprocess::scoped_lock<mutex_type> guard(m_header);
       //-----------------------
-      private_node_allocator_t::deallocate_nodes(boost::interprocess::move(chain));
+      private_node_allocator_t::deallocate_nodes(boost::move(chain));
    }
 
    //!Deallocates all the free blocks of memory. Never throws

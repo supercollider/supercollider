@@ -2,7 +2,7 @@
 // detail/buffer_sequence_adapter.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2011 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2012 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -291,7 +291,8 @@ public:
 
   static Buffer first(const boost::array<Elem, 2>& buffer_sequence)
   {
-    return Buffer(buffer_sequence[0]);
+    return Buffer(boost::asio::buffer_size(buffer_sequence[0]) != 0
+        ? buffer_sequence[0] : buffer_sequence[1]);
   }
 
 private:
@@ -344,7 +345,8 @@ public:
 
   static Buffer first(const std::array<Elem, 2>& buffer_sequence)
   {
-    return Buffer(buffer_sequence[0]);
+    return Buffer(boost::asio::buffer_size(buffer_sequence[0]) != 0
+        ? buffer_sequence[0] : buffer_sequence[1]);
   }
 
 private:

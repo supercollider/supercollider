@@ -111,20 +111,21 @@ namespace boost { namespace unordered { namespace detail {
         typedef typename pick::link_pointer link_pointer;
     };
 
-    template <typename A, typename H, typename P>
+    template <typename A, typename T, typename H, typename P>
     struct set
     {
-        typedef boost::unordered::detail::set<A, H, P> types;
+        typedef boost::unordered::detail::set<A, T, H, P> types;
 
-        typedef A allocator;
+        typedef T value_type;
         typedef H hasher;
         typedef P key_equal;
+        typedef T key_type;
 
-        typedef boost::unordered::detail::allocator_traits<A> traits;
-        typedef typename traits::value_type value_type;
-        typedef value_type key_type;
+        typedef typename boost::unordered::detail::rebind_wrap<
+                A, value_type>::type allocator;
 
-        typedef boost::unordered::detail::pick_node<A, value_type> pick;
+        typedef boost::unordered::detail::allocator_traits<allocator> traits;
+        typedef boost::unordered::detail::pick_node<allocator, value_type> pick;
         typedef typename pick::node node;
         typedef typename pick::bucket bucket;
         typedef typename pick::link_pointer link_pointer;
@@ -133,20 +134,21 @@ namespace boost { namespace unordered { namespace detail {
         typedef boost::unordered::detail::set_extractor<value_type> extractor;
     };
 
-    template <typename A, typename K, typename H, typename P>
+    template <typename A, typename K, typename M, typename H, typename P>
     struct map
     {
-        typedef boost::unordered::detail::map<A, K, H, P> types;
+        typedef boost::unordered::detail::map<A, K, M, H, P> types;
 
-        typedef A allocator;
+        typedef std::pair<K const, M> value_type;
         typedef H hasher;
         typedef P key_equal;
         typedef K key_type;
 
-        typedef boost::unordered::detail::allocator_traits<A> traits;
-        typedef typename traits::value_type value_type;
+        typedef typename boost::unordered::detail::rebind_wrap<
+                A, value_type>::type allocator;
 
-        typedef boost::unordered::detail::pick_node<A, value_type> pick;
+        typedef boost::unordered::detail::allocator_traits<allocator> traits;
+        typedef boost::unordered::detail::pick_node<allocator, value_type> pick;
         typedef typename pick::node node;
         typedef typename pick::bucket bucket;
         typedef typename pick::link_pointer link_pointer;
@@ -335,7 +337,7 @@ namespace boost { namespace unordered { namespace detail {
             // exception (need strong safety in such a case).
             node_constructor a(this->node_alloc());
             a.construct_node();
-#if defined(BOOST_UNORDERED_STD_FORWARD_MOVE)
+#if defined(BOOST_UNORDERED_VARIADIC_MOVE)
             a.construct_value(boost::unordered::piecewise_construct,
                 boost::make_tuple(k), boost::make_tuple());
 #else
@@ -362,7 +364,7 @@ namespace boost { namespace unordered { namespace detail {
         template <BOOST_UNORDERED_EMPLACE_TEMPLATE>
         emplace_return emplace(BOOST_UNORDERED_EMPLACE_ARGS)
         {
-#if defined(BOOST_UNORDERED_STD_FORWARD_MOVE)
+#if defined(BOOST_UNORDERED_VARIADIC_MOVE)
             return emplace_impl(
                 extractor::extract(BOOST_UNORDERED_EMPLACE_FORWARD),
                 BOOST_UNORDERED_EMPLACE_FORWARD);
@@ -374,7 +376,7 @@ namespace boost { namespace unordered { namespace detail {
 #endif
         }
 
-#if !defined(BOOST_UNORDERED_STD_FORWARD_MOVE)
+#if !defined(BOOST_UNORDERED_VARIADIC_MOVE)
         template <typename A0>
         emplace_return emplace(
                 boost::unordered::detail::emplace_args1<A0> const& args)

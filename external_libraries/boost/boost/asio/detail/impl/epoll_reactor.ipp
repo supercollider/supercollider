@@ -2,7 +2,7 @@
 // detail/impl/epoll_reactor.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2011 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2012 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -156,10 +156,6 @@ int epoll_reactor::register_descriptor(socket_type descriptor,
     descriptor_data->reactor_ = this;
     descriptor_data->descriptor_ = descriptor;
     descriptor_data->shutdown_ = false;
-
-    for (int i = 0; i < max_ops; ++i)
-      descriptor_data->op_queue_is_empty_[i] =
-        descriptor_data->op_queue_[i].empty();
   }
 
   epoll_event ev = { 0, { 0 } };
@@ -185,10 +181,6 @@ int epoll_reactor::register_internal_descriptor(
     descriptor_data->descriptor_ = descriptor;
     descriptor_data->shutdown_ = false;
     descriptor_data->op_queue_[op_type].push(op);
-
-    for (int i = 0; i < max_ops; ++i)
-      descriptor_data->op_queue_is_empty_[i] =
-        descriptor_data->op_queue_[i].empty();
   }
 
   epoll_event ev = { 0, { 0 } };
@@ -220,22 +212,6 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
     return;
   }
 
-  bool perform_speculative = allow_speculative;
-  if (perform_speculative)
-  {
-    if (descriptor_data->op_queue_is_empty_[op_type]
-        && (op_type != read_op
-          || descriptor_data->op_queue_is_empty_[except_op]))
-    {
-      if (op->perform())
-      {
-        io_service_.post_immediate_completion(op);
-        return;
-      }
-      perform_speculative = false;
-    }
-  }
-
   mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
 
   if (descriptor_data->shutdown_)
@@ -244,17 +220,11 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
     return;
   }
 
-  for (int i = 0; i < max_ops; ++i)
-    descriptor_data->op_queue_is_empty_[i] =
-      descriptor_data->op_queue_[i].empty();
-
-  if (descriptor_data->op_queue_is_empty_[op_type])
+  if (descriptor_data->op_queue_[op_type].empty())
   {
     if (allow_speculative)
     {
-      if (perform_speculative
-          && (op_type != read_op
-            || descriptor_data->op_queue_is_empty_[except_op]))
+      if (op_type != read_op || descriptor_data->op_queue_[except_op].empty())
       {
         if (op->perform())
         {
@@ -275,7 +245,6 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
   }
 
   descriptor_data->op_queue_[op_type].push(op);
-  descriptor_data->op_queue_is_empty_[op_type] = false;
   io_service_.work_started();
 }
 

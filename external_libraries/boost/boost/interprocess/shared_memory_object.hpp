@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -15,7 +15,7 @@
 #include <boost/interprocess/detail/workaround.hpp>
 #include <boost/interprocess/creation_tags.hpp>
 #include <boost/interprocess/exceptions.hpp>
-#include <boost/interprocess/detail/move.hpp>
+#include <boost/move/move.hpp>
 #include <boost/interprocess/interprocess_fwd.hpp>
 #include <boost/interprocess/exceptions.hpp>
 #include <boost/interprocess/detail/os_file_functions.hpp>
@@ -88,7 +88,7 @@ class shared_memory_object
    //!Does not throw
    shared_memory_object &operator=(BOOST_RV_REF(shared_memory_object) moved)
    {  
-      shared_memory_object tmp(boost::interprocess::move(moved));
+      shared_memory_object tmp(boost::move(moved));
       this->swap(tmp);
       return *this;  
    }
@@ -251,7 +251,7 @@ namespace shared_memory_object_detail {
 
 #if defined(__FreeBSD__)
 
-inline bool use_filesistem_based_posix()
+inline bool use_filesystem_based_posix()
 {
    int jailed = 0;
    std::size_t len = sizeof(jailed);
@@ -275,7 +275,7 @@ inline bool shared_memory_object::priv_open_or_create
    #if defined(BOOST_INTERPROCESS_FILESYSTEM_BASED_POSIX_SHARED_MEMORY)
    const bool add_leading_slash = false;
    #elif defined(BOOST_INTERPROCESS_RUNTIME_FILESYSTEM_BASED_POSIX_SHARED_MEMORY)
-   const bool add_leading_slash = !shared_memory_object_ipcdetail::use_filesistem_based_posix();
+   const bool add_leading_slash = !shared_memory_object_detail::use_filesystem_based_posix();
    #else
    const bool add_leading_slash = true;
    #endif
@@ -361,7 +361,7 @@ inline bool shared_memory_object::remove(const char *filename)
       #if defined(BOOST_INTERPROCESS_FILESYSTEM_BASED_POSIX_SHARED_MEMORY)
       const bool add_leading_slash = false;
       #elif defined(BOOST_INTERPROCESS_RUNTIME_FILESYSTEM_BASED_POSIX_SHARED_MEMORY)
-      const bool add_leading_slash = !shared_memory_object_ipcdetail::use_filesistem_based_posix();
+      const bool add_leading_slash = !shared_memory_object_detail::use_filesystem_based_posix();
       #else
       const bool add_leading_slash = true;
       #endif

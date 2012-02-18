@@ -183,6 +183,12 @@ namespace filesystem3
       return *this;
     }
 
+    path& operator=(const value_type* ptr)  // required in case ptr overlaps *this
+    {
+      m_pathname = ptr;
+      return *this;
+    }
+
     template <class Source>
       typename boost::enable_if<path_traits::is_pathable<
         typename boost::decay<Source>::type>, path&>::type
@@ -190,6 +196,12 @@ namespace filesystem3
     {
       m_pathname.clear();
       path_traits::dispatch(source, m_pathname, codecvt());
+      return *this;
+    }
+
+    path& assign(const value_type* ptr, const codecvt_type&)  // required in case ptr overlaps *this
+    {
+      m_pathname = ptr;
       return *this;
     }
 
@@ -227,12 +239,20 @@ namespace filesystem3
 
     path& operator/=(const path& p);
 
+    path& operator/=(const value_type* ptr);
+
     template <class Source>
       typename boost::enable_if<path_traits::is_pathable<
         typename boost::decay<Source>::type>, path&>::type
     operator/=(Source const& source)
     {
       return append(source, codecvt());
+    }
+
+    path& append(const value_type* ptr, const codecvt_type&)  // required in case ptr overlaps *this
+    {
+      this->operator/=(ptr);
+      return *this;
     }
 
     template <class Source>
@@ -378,6 +398,16 @@ namespace filesystem3
     }
     bool is_relative() const         { return !is_absolute(); } 
 
+    //  -----  iterators  -----
+
+    class iterator;
+    typedef iterator const_iterator;
+
+    iterator begin() const;
+    iterator end() const;
+
+    //  -----  static members  -----
+
     //  -----  imbue  -----
 
     static std::locale imbue(const std::locale& loc);
@@ -388,14 +418,6 @@ namespace filesystem3
     {
       return *wchar_t_codecvt_facet();
     }
-
-    //  -----  iterators  -----
-
-    class iterator;
-    typedef iterator const_iterator;
-
-    iterator begin() const;
-    iterator end() const;
 
     //  -----  deprecated functions  -----
 
@@ -650,14 +672,14 @@ namespace filesystem3
   }
 
   template <class Source>
-  path& path::append(Source const & source, const codecvt_type& cvt)
+  path& path::append(Source const& source, const codecvt_type& cvt)
   {
     if (path_traits::empty(source))
       return *this;
-    string_type::size_type sep_pos(m_append_separator_if_needed());
-    path_traits::dispatch(source, m_pathname, cvt);
-    if (sep_pos)
-      m_erase_redundant_separator(sep_pos);
+      string_type::size_type sep_pos(m_append_separator_if_needed());
+      path_traits::dispatch(source, m_pathname, cvt);
+      if (sep_pos)
+        m_erase_redundant_separator(sep_pos);
     return *this;
   }
 
