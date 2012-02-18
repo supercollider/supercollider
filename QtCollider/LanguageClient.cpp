@@ -86,25 +86,30 @@ void LangClient::daemonLoop()
   commandLoop();
 }
 
-void LangClient::onScheduleChanged()
+void LangClient::sendSignal( Signal sig )
 {
-  QApplication::postEvent( this, new SCRequestEvent( Event_SCRequest_Sched ) );
-}
+  QtCollider::EventType type;
+  switch( sig )
+  {
+    case sig_input:
+      type = Event_SCRequest_Input; break;
+    case sig_sched:
+      type = Event_SCRequest_Sched; break;
+    case sig_recompile:
+      type = Event_SCRequest_Recompile; break;
+    case sig_stop:
+      type = Event_SCRequest_Stop; break;
+    default:
+      return;
+  }
 
-void LangClient::onInput()
-{
-  QApplication::postEvent( this, new SCRequestEvent( Event_SCRequest_Input ) );
+  QApplication::postEvent( this, new SCRequestEvent(type) );
 }
 
 void LangClient::onQuit( int exitCode )
 {
   QApplication::postEvent( this,
     new SCRequestEvent( Event_SCRequest_Quit, exitCode ) );
-}
-
-void LangClient::onRecompileLibrary()
-{
-  QApplication::postEvent( this, new SCRequestEvent( Event_SCRequest_Recompile ) );
 }
 
 void LangClient::customEvent( QEvent *e )
@@ -116,6 +121,9 @@ void LangClient::customEvent( QEvent *e )
       break;
     case Event_SCRequest_Sched:
       doSchedule();
+      break;
+    case Event_SCRequest_Stop:
+      stopMain();
       break;
     case Event_SCRequest_Quit:
     {

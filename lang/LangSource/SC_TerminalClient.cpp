@@ -68,9 +68,7 @@ SC_TerminalClient::SC_TerminalClient(const char* name)
 	  mShouldBeRunning(false),
 	  mReturnCode(0),
 	  mUseReadline(false),
-	  mInput(false),
-	  mSched(true),
-	  mRecompile(false)
+	  mSignals(0)
 {
 	pthread_cond_init (&mCond, NULL);
 	pthread_mutex_init(&mSignalMutex, NULL);
@@ -362,18 +360,10 @@ void SC_TerminalClient::onLibraryStartup()
 	definePrimitive(base, index++, "_Recompile", &SC_TerminalClient::prRecompile, 1, 0);
 }
 
-void SC_TerminalClient::onScheduleChanged()
+void SC_TerminalClient::sendSignal( Signal sig )
 {
 	lockSignal();
-	mSched = true;
-	pthread_cond_signal( &mCond );
-	unlockSignal();
-}
-
-void SC_TerminalClient::onInput()
-{
-	lockSignal();
-	mInput = true;
+	mSignals |= sig;
 	pthread_cond_signal( &mCond );
 	unlockSignal();
 }
@@ -383,14 +373,6 @@ void SC_TerminalClient::onQuit( int exitCode )
 	lockSignal();
 	postfl("main: quit request %i\n", exitCode);
 	quit( exitCode );
-	pthread_cond_signal( &mCond );
-	unlockSignal();
-}
-
-void SC_TerminalClient::onRecompileLibrary()
-{
-	lockSignal();
-	mRecompile = true;
 	pthread_cond_signal( &mCond );
 	unlockSignal();
 }
@@ -407,25 +389,23 @@ void SC_TerminalClient::commandLoop()
 	while( shouldBeRunning() )
 	{
 
-		while ( mInput || mSched || mRecompile ) {
-			bool input = mInput;
-			bool sched = mSched;
-			bool recompile = mRecompile;
+		while ( mSignals ) {
+			int sig = mSignals;
 
 			unlockSignal();
 
-			if (input) {
+			if (sig & sig_input) {
 				//postfl("input\n");
 				lockInput();
 				interpretInput();
 				// clear input signal, as we've processed anything signalled so far.
 				lockSignal();
-				mInput = false;
+				mSignals &= ~sig_input;
 				unlockSignal();
 				unlockInput();
 			}
 
-			if (sched) {
+			if (sig & sig_sched) {
 				//postfl("tick\n");
 				double secs;
 				lock();
@@ -433,7 +413,7 @@ void SC_TerminalClient::commandLoop()
 				// clear scheduler signal, as we've processed all items scheduled up to this time.
 				// and will enter the wait according to schedule.
 				lockSignal();
-				mSched = false;
+				mSignals &= ~sig_sched;
 				unlockSignal();
 				unlock();
 
@@ -443,10 +423,17 @@ void SC_TerminalClient::commandLoop()
 				ElapsedTimeToTimespec( secs, &nextAbsTime );
 			}
 
-			if (recompile) {
+			if (sig & sig_stop) {
+				stopMain();
+				lockSignal();
+				mSignals &= ~sig_stop;
+				unlockSignal();
+			}
+
+			if (sig & sig_recompile) {
 				recompileLibrary();
 				lockSignal();
-				mRecompile = false;
+				mSignals &= ~sig_recompile;
 				unlockSignal();
 			}
 
@@ -458,7 +445,7 @@ void SC_TerminalClient::commandLoop()
 		}
 		else if( haveNext ) {
 			int result = pthread_cond_timedwait( &mCond, &mSignalMutex, &nextAbsTime );
-			if( result == ETIMEDOUT ) mSched = true;
+			if( result == ETIMEDOUT ) mSignals |= sig_sched;
 		}
 		else {
 			pthread_cond_wait( &mCond, &mSignalMutex );
@@ -491,14 +478,15 @@ static void sc_rl_signalhandler(int sig)
 
 static int sc_rl_mainstop(int i1, int i2)
 {
-	SC_TerminalClient::instance()->stopMain();
+	static_cast<SC_TerminalClient*>(SC_LanguageClient::instance())
+		->sendSignal( SC_TerminalClient::sig_stop );
 	sc_rl_cleanlf(); // We also push a newline so that there's some UI feedback
 	return 0;
 }
 
 int SC_TerminalClient::readlineRecompile(int i1, int i2)
 {
-	static_cast<SC_TerminalClient*>(SC_LanguageClient::instance())->onRecompileLibrary();
+	static_cast<SC_TerminalClient*>(SC_LanguageClient::instance())->sendSignal(sig_recompile);
 	sc_rl_cleanlf();
 	return 0;
 }
@@ -521,7 +509,7 @@ void SC_TerminalClient::readlineCmdLine( char *cmdLine )
 		client->lockInput();
 		client->mInputBuf.append(cmdLine, len);
 		client->mInputBuf.append(kInterpretPrintCmdLine);
-		client->onInput();
+		client->sendSignal(sig_input);
 		// Wait for input to be processed,
 		// so that its output is displayed before readline prompt.
 		if (client->mInputShouldBeRunning)
@@ -746,7 +734,7 @@ void SC_TerminalClient::pushCmdLine( SC_StringBuffer &buf, const char *newData, 
 		}
 	}
 
-	if(signal) onInput();
+	if(signal) sendSignal(sig_input);
 
 	unlockInput();
 }
@@ -871,13 +859,13 @@ int SC_TerminalClient::prExit(struct VMGlobals* g, int)
 
 int SC_TerminalClient::prScheduleChanged( struct VMGlobals *g, int numArgsPushed)
 {
-	static_cast<SC_TerminalClient*>(instance())->onScheduleChanged();
+	static_cast<SC_TerminalClient*>(instance())->sendSignal(sig_sched);
 	return errNone;
 }
 
 int SC_TerminalClient::prRecompile(struct VMGlobals *, int)
 {
-	static_cast<SC_TerminalClient*>(instance())->onRecompileLibrary();
+	static_cast<SC_TerminalClient*>(instance())->sendSignal(sig_recompile);
 	return errNone;
 }
 // EOF

@@ -48,16 +48,14 @@ class LangClient : public QObject, public SC_TerminalClient
 public:
   LangClient( const char* name );
   virtual ~LangClient() {};
+  virtual void sendSignal( Signal );
 private Q_SLOTS:
   void doSchedule();
 protected:
   virtual void commandLoop();
   virtual void daemonLoop();
 
-  virtual void onScheduleChanged();
-  virtual void onInput();
   virtual void onQuit( int exitCode );
-  virtual void onRecompileLibrary();
 
   virtual void customEvent( QEvent * );
   virtual void timerEvent( QTimerEvent * );
