@@ -148,7 +148,7 @@ struct MulAdd:
 		return mAdd.changed(this);
 	}
 
-#if __cplusplus < 199711L
+#if __cplusplus <= 199711L
 	nova::detail::scalar_ramp_argument<float> mulSlope(void)
 #else
 	decltype(nova::slope_argument(0.f, 0.f)) mulSlope(void)
@@ -157,7 +157,7 @@ struct MulAdd:
 		return mMul.slope(this);
 	}
 
-#if __cplusplus < 199711L
+#if __cplusplus <= 199711L
 	nova::detail::scalar_ramp_argument<float> addSlope(void)
 #else
 	decltype(nova::slope_argument(0.f, 0.f)) addSlope(void)
