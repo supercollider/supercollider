@@ -1,5 +1,5 @@
 //  supercollider-style synthdef
-//  Copyright (C) 2008, 2009 Tim Blechmann
+//  Copyright (C) 2008-2012 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -33,8 +33,7 @@
 #include "SC_Types.h"
 #include "SC_Wire.h"
 
-namespace nova
-{
+namespace nova {
 
 class sc_synthdef
 {
@@ -88,11 +87,8 @@ public:
             buffer_mapping(std::move(rhs.buffer_mapping)), prototype(rhs.prototype)
         {}
 
-        unit_spec_t(unit_spec_t const & rhs):
-            name(rhs.name), rate(rhs.rate), special_index(rhs.special_index),
-            input_specs(rhs.input_specs), output_specs(rhs.output_specs),
-            buffer_mapping(rhs.buffer_mapping), prototype(rhs.prototype)
-        {}
+        unit_spec_t(unit_spec_t const & rhs) = default;
+        unit_spec_t & operator=(unit_spec_t const & rhs) = default;
 #endif
         string name;
         int16_t rate;           /* 0: scalar rate, 1: buffer rate, 2: full rate, 3: demand rate */
@@ -129,11 +125,8 @@ public:
         calc_unit_indices(std::move(rhs.calc_unit_indices)), memory_requirement_(rhs.memory_requirement_)
     {}
 
-    sc_synthdef(sc_synthdef const & rhs):
-        name_(rhs.name_), constants(rhs.constants), parameters(rhs.parameters),
-        parameter_map(rhs.parameter_map), graph(rhs.graph), buffer_count(rhs.buffer_count),
-        calc_unit_indices(rhs.calc_unit_indices), memory_requirement_(rhs.memory_requirement_)
-    {}
+    sc_synthdef(sc_synthdef const & rhs) = default;
+    sc_synthdef& operator=(sc_synthdef const & rhs) = default;
 #endif
 
     std::string dump(void) const;
