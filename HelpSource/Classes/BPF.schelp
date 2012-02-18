@@ -25,7 +25,7 @@ Centre frequency in Hertz.
 
 argument::rq
 
-The reciprocal of Q (bandwidth / cutoffFreq).
+The reciprocal of Q. Q is conventionally defined as cutoffFreq / bandwidth, meaning rq = (bandwidth / cutoffFreq).
 
 
 Examples::
