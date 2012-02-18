@@ -116,7 +116,7 @@ void InputSpec_ReadVer1(InputSpec* inInputSpec, char*& buffer)
 {
 	inInputSpec->mFromUnitIndex = (int16)readInt16_be(buffer);
 	inInputSpec->mFromOutputIndex = (int16)readInt16_be(buffer);
-	
+
 	inInputSpec->mWireIndex = -1;
 }
 
@@ -134,7 +134,7 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer)
 {
 	int32 name[kSCNameLen];
 	ReadName(buffer, name);
-	
+
 	inUnitSpec->mUnitDef = GetUnitDef(name);
 	if (!inUnitSpec->mUnitDef) {
 		char str[256];
@@ -164,7 +164,7 @@ void UnitSpec_ReadVer1(UnitSpec* inUnitSpec, char*& buffer)
 {
 	int32 name[kSCNameLen];
 	ReadName(buffer, name);
-	
+
 	inUnitSpec->mUnitDef = GetUnitDef(name);
 	if (!inUnitSpec->mUnitDef) {
 		char str[256];
@@ -173,7 +173,7 @@ void UnitSpec_ReadVer1(UnitSpec* inUnitSpec, char*& buffer)
 		return;
 	}
 	inUnitSpec->mCalcRate = readInt8(buffer);
-	
+
 	inUnitSpec->mNumInputs = readInt16_be(buffer);
 	inUnitSpec->mNumOutputs = readInt16_be(buffer);
 	inUnitSpec->mSpecialIndex = readInt16_be(buffer);
@@ -199,12 +199,12 @@ GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList)
 	if (magic != (('S'<<24)|('C'<<16)|('g'<<8)|'f') /*'SCgf'*/) return inList;
 
 	int32 version = readInt32_be(buffer);
-	
+
 	uint32 numDefs, i;
 	switch (version) {
 		case 2:
 			numDefs = readInt16_be(buffer);
-			
+
 			for (i=0; i<numDefs; ++i) {
 				inList = GraphDef_Read(inWorld, buffer, inList, version);
 			}
@@ -213,7 +213,7 @@ GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList)
 		case 1:
 		case 0:
 			numDefs = readInt16_be(buffer);
-			
+
 			for (i=0; i<numDefs; ++i) {
 				inList = GraphDef_ReadVer1(inWorld, buffer, inList, version); // handles 1 and 0
 			}
@@ -264,7 +264,7 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 	graphDef->mNodeDef.mHash = Hash(graphDef->mNodeDef.mName);
 
 	graphDef->mNumConstants = readInt32_be(buffer);
-	
+
 	graphDef->mConstants = (float*)malloc(graphDef->mNumConstants * sizeof(float));
 	for (uint32 i=0; i<graphDef->mNumConstants; ++i) {
 		graphDef->mConstants[i] = readFloat_be(buffer);
@@ -361,29 +361,29 @@ GraphDef* GraphDef_ReadVer1(World *inWorld, char*& buffer, GraphDef* inList, int
 {
 	int32 name[kSCNodeDefNameLen];
 	ReadNodeDefName(buffer, name);
-	
+
 	GraphDef* graphDef = (GraphDef*)calloc(1, sizeof(GraphDef));
-	
+
 	graphDef->mOriginal = graphDef;
-	
+
 	graphDef->mNodeDef.mAllocSize = sizeof(Graph);
-	
+
 	memcpy((char*)graphDef->mNodeDef.mName, (char*)name, kSCNodeDefNameByteLen);
-	
+
 	graphDef->mNodeDef.mHash = Hash(graphDef->mNodeDef.mName);
-	
+
 	graphDef->mNumConstants = readInt16_be(buffer);
 	graphDef->mConstants = (float*)malloc(graphDef->mNumConstants * sizeof(float));
 	for (uint32 i=0; i<graphDef->mNumConstants; ++i) {
 		graphDef->mConstants[i] = readFloat_be(buffer);
 	}
-	
+
 	graphDef->mNumControls = readInt16_be(buffer);
 	graphDef->mInitialControlValues = (float32*)malloc(sizeof(float32) * graphDef->mNumControls);
 	for (uint32 i=0; i<graphDef->mNumControls; ++i) {
 		graphDef->mInitialControlValues[i] = readFloat_be(buffer);
 	}
-	
+
 	graphDef->mNumParamSpecs = readInt16_be(buffer);
 	if (graphDef->mNumParamSpecs) {
 		int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
@@ -399,7 +399,7 @@ GraphDef* GraphDef_ReadVer1(World *inWorld, char*& buffer, GraphDef* inList, int
 		graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, 4, false);
 		graphDef->mParamSpecs = 0;
 	}
-	
+
 	graphDef->mNumWires = graphDef->mNumConstants;
 	graphDef->mNumUnitSpecs = readInt16_be(buffer);
 	graphDef->mUnitSpecs = (UnitSpec*)malloc(sizeof(UnitSpec) * graphDef->mNumUnitSpecs);
@@ -407,7 +407,7 @@ GraphDef* GraphDef_ReadVer1(World *inWorld, char*& buffer, GraphDef* inList, int
 	for (uint32 i=0; i<graphDef->mNumUnitSpecs; ++i) {
 		UnitSpec *unitSpec = graphDef->mUnitSpecs + i;
 		UnitSpec_ReadVer1(unitSpec, buffer);
-		
+
 		switch (unitSpec->mCalcRate)
 		{
 			case calc_ScalarRate :
@@ -425,34 +425,34 @@ GraphDef* GraphDef_ReadVer1(World *inWorld, char*& buffer, GraphDef* inList, int
 				unitSpec->mRateInfo = &inWorld->mBufRate;
 				break;
 		}
-		
+
 		graphDef->mNodeDef.mAllocSize += unitSpec->mAllocSize;
 		graphDef->mNumWires += unitSpec->mNumOutputs;
 	}
-	
+
 	DoBufferColoring(inWorld, graphDef);
-	
+
 	graphDef->mWiresAllocSize = graphDef->mNumWires * sizeof(Wire);
 	graphDef->mUnitsAllocSize = graphDef->mNumUnitSpecs * sizeof(Unit*);
 	graphDef->mCalcUnitsAllocSize = graphDef->mNumCalcUnits * sizeof(Unit*);
-	
+
 	graphDef->mNodeDef.mAllocSize += graphDef->mWiresAllocSize;
 	graphDef->mNodeDef.mAllocSize += graphDef->mUnitsAllocSize;
 	graphDef->mNodeDef.mAllocSize += graphDef->mCalcUnitsAllocSize;
-	
+
 	graphDef->mControlAllocSize = graphDef->mNumControls * sizeof(float);
 	graphDef->mNodeDef.mAllocSize += graphDef->mControlAllocSize;
-	
+
 	graphDef->mMapControlsAllocSize = graphDef->mNumControls * sizeof(float*);
 	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlsAllocSize;
-	
+
 	graphDef->mMapControlRatesAllocSize = graphDef->mNumControls * sizeof(int*);
 	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlRatesAllocSize;
-	
-	
+
+
 	graphDef->mNext = inList;
 	graphDef->mRefCount = 1;
-	
+
 	if (inVersion >= 1) {
 		graphDef->mNumVariants = readInt16_be(buffer);
 		if (graphDef->mNumVariants) {
@@ -462,7 +462,7 @@ GraphDef* GraphDef_ReadVer1(World *inWorld, char*& buffer, GraphDef* inList, int
 			}
 		}
 	}
-	
+
 	return graphDef;
 }
 
