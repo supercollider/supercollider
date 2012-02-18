@@ -70,33 +70,24 @@ DemandEnvGen : UGen {
 }
 
 DUGen : UGen {
-	init { arg ... argInputs;
-		super.init(*argInputs);
-		this.forceAudioRateInputsIntoUGenGraph;
-	}
-	forceAudioRateInputsIntoUGenGraph {
- 		inputs.do { |in| if(in.rate == \audio) { in <! 0 } };	}
-
  	// some n-ary op special cases
-
  	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
-    		^((this.prune(inMin, inMax, clip)-inMin)/(inMax-inMin) * (outMax-outMin) + outMin);
+		^((this.prune(inMin, inMax, clip)-inMin)/(inMax-inMin) * (outMax-outMin) + outMin);
 	}
 
 	linexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		^(pow(outMax/outMin, (this-inMin)/(inMax-inMin)) * outMin)
-			.prune(outMin, outMax, clip);
+		.prune(outMin, outMax, clip);
 	}
 
 	explin { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		^(log(this.prune(inMin, inMax, clip)/inMin))
-			/ (log(inMax/inMin)) * (outMax-outMin) + outMin
+		/ (log(inMax/inMin)) * (outMax-outMin) + outMin
 	}
 
 	expexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		^pow(outMax/outMin, log(this.prune(inMin, inMax, clip/inMin) / log(inMax/inMin)) * outMin)
 	}
-
 }
 
 Dseries : DUGen {
