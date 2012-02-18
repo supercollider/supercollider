@@ -17,6 +17,7 @@
 //  Boston, MA 02111-1307, USA.
 
 #include <iostream>
+#include <iterator>
 #include <fstream>
 #include <sstream>
 
@@ -264,12 +265,19 @@ void sc_synthdef::prepare(void)
 
     // store the last references to each output buffer inside a std::map for faster lookup
     std::map<input_spec, size_t> last_buffer_references;
-    for (graph_t::const_reverse_iterator it = graph.rbegin(); it != graph.rend(); ++it) {
+
+    for (graph_t::reverse_iterator it = graph.rbegin(); it != graph.rend(); ++it) {
         for (size_t i = 0; i != it->input_specs.size(); ++i) {
             input_spec const & in_spec = it->input_specs[i];
-            if (!exists(last_buffer_references, in_spec)) {
-                size_t ugen_index = graph.size() - (it - graph.rbegin()) - 1;
-                last_buffer_references.insert(std::make_pair(in_spec, ugen_index));
+
+            if (it->rate == calc_DemandRate) {
+                size_t ugen_index = number_of_ugens; // audio-inputs to demand-rate ugens will never be reused!
+                last_buffer_references[in_spec] = ugen_index;
+            } else {
+                if (!exists(last_buffer_references, in_spec)) {
+                    size_t ugen_index = std::distance(it, graph.rend()) - 1;
+                    last_buffer_references.insert(std::make_pair(in_spec, ugen_index));
+                }
             }
         }
     }
