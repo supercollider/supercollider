@@ -221,6 +221,32 @@ template<> struct assert_intrinsic_wchar_t<unsigned short> {};
 #  undef  BOOST_NO_AUTO_MULTIDECLARATIONS
 #endif
 
+// icl Version 12.1.0.233 Build 20110811 and possibly some other builds
+// had an incorrect __INTEL_COMPILER value of 9999. Intel say this has been fixed. 
+#if defined(BOOST_INTEL_STDCXX0X) && (BOOST_INTEL_CXX_VERSION > 1200)
+#  undef  BOOST_NO_FUNCTION_TEMPLATE_DEFAULT_ARGS
+#  undef  BOOST_NO_NULLPTR
+#  undef  BOOST_NO_RVALUE_REFERENCES
+#  undef  BOOST_NO_SFINAE_EXPR
+#  undef  BOOST_NO_TEMPLATE_ALIASES
+#  undef  BOOST_NO_VARIADIC_TEMPLATES
+
+// http://software.intel.com/en-us/articles/c0x-features-supported-by-intel-c-compiler/
+// continues to list scoped enum support as "Partial" 
+//#  undef  BOOST_NO_SCOPED_ENUMS 
+#endif
+
+#if defined(_MSC_VER) && (_MSC_VER <= 1700)
+//
+// Although the Intel compiler is capable of supporting these, it appears not to in MSVC compatibility mode:
+//
+#  define  BOOST_NO_INITIALIZER_LISTS
+#  define  BOOST_NO_VARIADIC_TEMPLATES
+#  define  BOOST_NO_DELETED_FUNCTIONS
+#  define  BOOST_NO_DEFAULTED_FUNCTIONS
+#  define  BOOST_NO_TEMPLATE_ALIASES
+#endif
+
 #if (BOOST_INTEL_CXX_VERSION < 1200)
 //
 // fenv.h appears not to work with Intel prior to 12.0:

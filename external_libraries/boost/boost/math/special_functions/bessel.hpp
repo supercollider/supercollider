@@ -215,7 +215,7 @@ T cyl_bessel_i_imp(T v, T x, const Policy& pol)
          return bessel_i1(x);
       }
    }
-   if((x / v < 0.25) && (v > 0))
+   if((v > 0) && (x / v < 0.25))
       return bessel_i_small_z_series(v, x, pol);
    T I, K;
    bessel_ik(v, x, &I, &K, need_i, pol);

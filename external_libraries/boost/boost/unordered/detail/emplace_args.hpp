@@ -40,20 +40,7 @@
 
 #if !defined(BOOST_NO_RVALUE_REFERENCES) && \
         !defined(BOOST_NO_VARIADIC_TEMPLATES)
-#   if defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION)
-#   elif defined(__STD_RWCOMPILER_H__) || defined(_RWSTD_VER)
-#   elif defined(_LIBCPP_VERSION)
-#       define BOOST_UNORDERED_STD_FORWARD_MOVE
-#   elif defined(__GLIBCPP__) || defined(__GLIBCXX__)
-#       if defined(__GLIBCXX__) && __GLIBCXX__ >= 20090804
-#           define BOOST_UNORDERED_STD_FORWARD_MOVE
-#       endif
-#    elif defined(__STL_CONFIG_H)
-#    elif defined(__MSL_CPP__)
-#    elif defined(__IBMCPP__)
-#    elif defined(MSIPL_COMPILE_H)
-#    elif (defined(_YVALS) && !defined(__IBMCPP__)) || defined(_CPPLIB_VER)
-#   endif
+#define BOOST_UNORDERED_VARIADIC_MOVE
 #endif
 
 namespace boost { namespace unordered { namespace detail {
@@ -64,11 +51,11 @@ namespace boost { namespace unordered { namespace detail {
     // Either forwarding variadic arguments, or storing the arguments in
     // emplace_args##n
 
-#if defined(BOOST_UNORDERED_STD_FORWARD_MOVE)
+#if defined(BOOST_UNORDERED_VARIADIC_MOVE)
 
 #define BOOST_UNORDERED_EMPLACE_TEMPLATE typename... Args
 #define BOOST_UNORDERED_EMPLACE_ARGS Args&&... args
-#define BOOST_UNORDERED_EMPLACE_FORWARD std::forward<Args>(args)...
+#define BOOST_UNORDERED_EMPLACE_FORWARD boost::forward<Args>(args)...
 
 #else
 
@@ -173,6 +160,8 @@ BOOST_PP_REPEAT_FROM_TO(1, BOOST_UNORDERED_EMPLACE_LIMIT, BOOST_UNORDERED_EARGS,
     //
     // Used for piecewise construction.
 
+#if !BOOST_WORKAROUND(__SUNPRO_CC, <= 0x590)
+
 #define BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(n, namespace_)                 \
     template<typename T>                                                    \
     void construct_from_tuple(T* ptr, namespace_::tuple<>)                  \
@@ -205,6 +194,49 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, std)
 #undef BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE
 #undef BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE_IMPL
 #undef BOOST_UNORDERED_GET_TUPLE_ARG
+
+#else
+
+    template <int N> struct length {};
+
+    template<typename T>
+    void construct_from_tuple_impl(
+            boost::unordered::detail::length<0>, T* ptr,
+            boost::tuple<>)
+    {
+        new ((void*) ptr) T();
+    }
+
+#define BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE_IMPL(z, n, _)                  \
+    template<typename T, BOOST_PP_ENUM_PARAMS_Z(z, n, typename A)>          \
+    void construct_from_tuple_impl(                                         \
+            boost::unordered::detail::length<n>, T* ptr,                    \
+            namespace_::tuple<BOOST_PP_ENUM_PARAMS_Z(z, n, A)> const& x)    \
+    {                                                                       \
+        new ((void*) ptr) T(                                                \
+            BOOST_PP_ENUM_##z(n, BOOST_UNORDERED_GET_TUPLE_ARG, namespace_) \
+        );                                                                  \
+    }
+
+#define BOOST_UNORDERED_GET_TUPLE_ARG(z, n, _)                              \
+    boost::get<n>(x)
+
+    BOOST_PP_REPEAT_FROM_TO(1, 10,                                          \
+        BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE_IMPL, _)
+
+    template <typename T, typename Tuple>
+    void construct_from_tuple(T* ptr, Tuple const& x)
+    {
+        construct_from_tuple_impl(
+            boost::unordered::detail::length<
+                boost::tuples::length<Tuple>::value>(),
+            ptr, x);
+    }
+
+#undef BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE_IMPL
+#undef BOOST_UNORDERED_GET_TUPLE_ARG
+
+#endif
 
     ////////////////////////////////////////////////////////////////////////////
     // SFINAE traits for construction.
@@ -257,7 +289,7 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, std)
 
 #endif
 
-#if defined(BOOST_UNORDERED_STD_FORWARD_MOVE)
+#if defined(BOOST_UNORDERED_VARIADIC_MOVE)
 
     ////////////////////////////////////////////////////////////////////////////
     // Construct from variadic parameters
@@ -265,7 +297,7 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, std)
     template <typename T, typename... Args>
     inline void construct_impl(T* address, Args&&... args)
     {
-        new((void*) address) T(std::forward<Args>(args)...);
+        new((void*) address) T(boost::forward<Args>(args)...);
     }
 
     template <typename A, typename B, typename A0, typename A1, typename A2>
@@ -284,7 +316,7 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, std)
     inline typename enable_if<emulation1<A, B, A0>, void>::type
         construct_impl(std::pair<A, B>* address, A0&& a0)
     {
-        new((void*) boost::addressof(address->first)) A(std::forward<A0>(a0));
+        new((void*) boost::addressof(address->first)) A(boost::forward<A0>(a0));
         new((void*) boost::addressof(address->second)) B();
    }
 
@@ -292,10 +324,10 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, std)
     inline typename enable_if<emulation3<A, B, A0>, void>::type
         construct_impl(std::pair<A, B>* address, A0&& a0, A1&& a1, A2&& a2)
     {
-        new((void*) boost::addressof(address->first)) A(std::forward<A0>(a0));
+        new((void*) boost::addressof(address->first)) A(boost::forward<A0>(a0));
         new((void*) boost::addressof(address->second)) B(
-            std::forward<A1>(a1),
-            std::forward<A2>(a2));
+            boost::forward<A1>(a1),
+            boost::forward<A2>(a2));
     }
 
     template <typename A, typename B,
@@ -304,17 +336,17 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, std)
     inline void construct_impl(std::pair<A, B>* address,
             A0&& a0, A1&& a1, A2&& a2, A3&& a3, Args&&... args)
     {
-        new((void*) boost::addressof(address->first)) A(std::forward<A0>(a0));
+        new((void*) boost::addressof(address->first)) A(boost::forward<A0>(a0));
 
         new((void*) boost::addressof(address->second)) B(
-            std::forward<A1>(a1),
-            std::forward<A2>(a2),
-            std::forward<A3>(a3),
-            std::forward<Args>(args)...);
+            boost::forward<A1>(a1),
+            boost::forward<A2>(a2),
+            boost::forward<A3>(a3),
+            boost::forward<Args>(args)...);
     }
 
 #endif // BOOST_UNORDERED_DEPRECATED_PAIR_CONSTRUCT
-#else // BOOST_UNORDERED_STD_FORWARD_MOVE
+#else // BOOST_UNORDERED_VARIADIC_MOVE
 
 ////////////////////////////////////////////////////////////////////////////////
 // Construct from emplace_args
@@ -334,7 +366,32 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, std)
                 args.a));                                                   \
     }
 
-    BOOST_PP_REPEAT_FROM_TO(1, BOOST_UNORDERED_EMPLACE_LIMIT,
+    template <typename T, typename A0>
+    inline void construct_impl(T* address, emplace_args1<A0> const& args)
+    {
+        new((void*) address) T(boost::forward<A0>(args.a0));
+    }
+
+    template <typename T, typename A0, typename A1>
+    inline void construct_impl(T* address, emplace_args2<A0, A1> const& args)
+    {
+        new((void*) address) T(
+            boost::forward<A0>(args.a0),
+            boost::forward<A1>(args.a1)
+        );
+    }
+
+    template <typename T, typename A0, typename A1, typename A2>
+    inline void construct_impl(T* address, emplace_args3<A0, A1, A2> const& args)
+    {
+        new((void*) address) T(
+            boost::forward<A0>(args.a0),
+            boost::forward<A1>(args.a1),
+            boost::forward<A2>(args.a2)
+        );
+    }
+
+    BOOST_PP_REPEAT_FROM_TO(4, BOOST_UNORDERED_EMPLACE_LIMIT,
         BOOST_UNORDERED_CONSTRUCT_IMPL, _)
 
 #undef BOOST_UNORDERED_CONSTRUCT_IMPL
@@ -401,7 +458,7 @@ BOOST_UNORDERED_CONSTRUCT_FROM_TUPLE(10, std)
 #undef BOOST_UNORDERED_CALL_FORWARD2
 
 #endif // BOOST_UNORDERED_DEPRECATED_PAIR_CONSTRUCT
-#endif // BOOST_UNORDERED_STD_FORWARD_MOVE
+#endif // BOOST_UNORDERED_VARIADIC_MOVE
 
     ////////////////////////////////////////////////////////////////////////////
     // Construct without using the emplace args mechanism.

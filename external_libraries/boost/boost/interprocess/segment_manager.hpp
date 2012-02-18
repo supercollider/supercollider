@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -32,7 +32,7 @@
 #include <boost/interprocess/exceptions.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
 #include <boost/interprocess/smart_ptr/deleter.hpp>
-#include <boost/interprocess/detail/move.hpp>
+#include <boost/move/move.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <cstddef>   //std::size_t
 #include <string>    //char_traits
@@ -129,7 +129,7 @@ class segment_manager_base
    {
       multiallocation_chain mem(MemoryAlgorithm::allocate_many(elem_bytes, num_elements));
       if(mem.empty()) throw bad_alloc();
-      return boost::interprocess::move(mem);
+      return boost::move(mem);
    }
 
    //!Allocates n_elements, each one of
@@ -139,7 +139,7 @@ class segment_manager_base
    {
       multiallocation_chain mem(MemoryAlgorithm::allocate_many(element_lenghts, n_elements, sizeof_element));
       if(mem.empty()) throw bad_alloc();
-      return boost::interprocess::move(mem);
+      return boost::move(mem);
    }
 
    //!Allocates n_elements of
@@ -158,7 +158,7 @@ class segment_manager_base
    //!Deallocates elements pointed by the
    //!multiallocation iterator range.
    void deallocate_many(multiallocation_chain chain)
-   {  MemoryAlgorithm::deallocate_many(boost::interprocess::move(chain)); }
+   {  MemoryAlgorithm::deallocate_many(boost::move(chain)); }
 
    /// @endcond
 
@@ -903,7 +903,7 @@ class segment_manager
       if(it != index.end()){
          //Get header
          block_header_t *ctrl_data = reinterpret_cast<block_header_t*>
-                                    (ipcdetail::get_pointer(it->second.m_ptr));
+                                    (ipcdetail::to_raw_pointer(it->second.m_ptr));
 
          //Sanity check
          BOOST_ASSERT((ctrl_data->m_value_bytes % table.size) == 0);
@@ -971,7 +971,7 @@ class segment_manager
       intrusive_value_type *iv = intrusive_value_type::get_intrusive_value_type(ctrl_data);
       void *memory = iv;
       void *values = ctrl_data->value();
-     std::size_t num = ctrl_data->m_value_bytes/table.size;
+      std::size_t num = ctrl_data->m_value_bytes/table.size;
       
       //Sanity check
       BOOST_ASSERT((ctrl_data->m_value_bytes % table.size) == 0);
@@ -1029,7 +1029,7 @@ class segment_manager
 
       //Get allocation parameters
       block_header_t *ctrl_data = reinterpret_cast<block_header_t*>
-                                 (ipcdetail::get_pointer(it->second.m_ptr));
+                                 (ipcdetail::to_raw_pointer(it->second.m_ptr));
       char *stored_name       = static_cast<char*>(static_cast<void*>(const_cast<CharT*>(it->first.name())));
       (void)stored_name;
 
@@ -1255,7 +1255,7 @@ class segment_manager
       if(!insert_ret.second){
          if(try2find){
             block_header_t *hdr = static_cast<block_header_t*>
-               (ipcdetail::get_pointer(it->second.m_ptr));
+               (ipcdetail::to_raw_pointer(it->second.m_ptr));
             return hdr->value();
          }
          return 0;
@@ -1336,7 +1336,7 @@ class segment_manager
       if(use_lock){
          local.lock();
       }
-      return scoped_lock<rmutex>(boost::interprocess::move(local));
+      return scoped_lock<rmutex>(boost::move(local));
    }
 
    //!This struct includes needed data and derives from

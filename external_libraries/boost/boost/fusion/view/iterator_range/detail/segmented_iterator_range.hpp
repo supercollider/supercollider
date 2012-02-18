@@ -39,11 +39,18 @@ namespace boost { namespace fusion
     {
         template <typename Sequence, typename T>
         struct push_back;
+
+        template <typename Sequence, typename T>
+        struct push_front;
     }
 
     template <typename Sequence, typename T>
     typename result_of::push_back<Sequence const, T>::type
     push_back(Sequence const& seq, T const& x);
+
+    template <typename Sequence, typename T>
+    typename result_of::push_front<Sequence const, T>::type
+    push_front(Sequence const& seq, T const& x);
 }}
 
 namespace boost { namespace fusion { namespace detail

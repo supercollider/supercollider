@@ -24,6 +24,7 @@
       !defined(_STATVFS_ACPP_PROBLEMS_FIXED))
 #define _FILE_OFFSET_BITS 64 // at worst, these defines may have no effect,
 #endif
+#if !defined(__PGI)
 #define __USE_FILE_OFFSET64 // but that is harmless on Windows and on POSIX
       // 64-bit systems or on 32-bit systems which don't have files larger 
       // than can be represented by a traditional POSIX/UNIX off_t type. 
@@ -39,6 +40,7 @@
 // is getting included by some other boost header, so do this early:
 #if !defined(_WIN32_WINNT)
 #define _WIN32_WINNT 0x0500 // Default to Windows 2K or later
+#endif
 #endif
 
 
@@ -1307,6 +1309,10 @@ namespace boost
         handle = 0;
         return error_code( ::closedir( h ) == 0 ? 0 : errno, system_category() );
       }
+
+#if defined(__PGI) && defined(__USE_FILE_OFFSET64)
+#define dirent dirent64
+#endif
 
       // warning: the only dirent member updated is d_name
       inline int readdir_r_simulator( DIR * dirp, struct dirent * entry,

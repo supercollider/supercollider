@@ -280,7 +280,6 @@ T find_inverse_gamma(T a, T p, T q, const Policy& pol, bool* p_has_10_digits)
          {
             // DiDonato and Morris Eq 35:
             T v = log(p) + boost::math::lgamma(ap1, pol);
-            T s = 1;
             z = exp((v + w) / a);
             s = boost::math::log1p(z / ap1 * (1 + z / ap2));
             z = exp((v + z - s) / a);

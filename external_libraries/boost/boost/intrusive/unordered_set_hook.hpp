@@ -18,9 +18,10 @@
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/pointer_cast.hpp>
 #include <boost/intrusive/detail/utilities.hpp>
-#include <boost/intrusive/detail/pointer_to_other.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/slist_hook.hpp>
 #include <boost/intrusive/options.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/detail/generic_hook.hpp>
 
 namespace boost {
@@ -32,10 +33,10 @@ template<class VoidPointer, bool StoreHash, bool OptimizeMultiKey>
 struct unordered_node
    :  public slist_node<VoidPointer>
 {
-   typedef typename boost::pointer_to_other
-      < VoidPointer
-      , unordered_node<VoidPointer, StoreHash, OptimizeMultiKey>
-      >::type   node_ptr;
+   typedef typename pointer_traits
+      <VoidPointer>::template rebind_pointer
+         < unordered_node<VoidPointer, StoreHash, OptimizeMultiKey> >::type
+      node_ptr;
    node_ptr    prev_in_group_;
    std::size_t hash_;
 };
@@ -44,10 +45,10 @@ template<class VoidPointer>
 struct unordered_node<VoidPointer, false, true>
    :  public slist_node<VoidPointer>
 {
-   typedef typename boost::pointer_to_other
-      < VoidPointer
-      , unordered_node<VoidPointer, false, true>
-      >::type   node_ptr;
+   typedef typename pointer_traits
+      <VoidPointer>::template rebind_pointer
+         < unordered_node<VoidPointer, false, true> >::type
+      node_ptr;
    node_ptr    prev_in_group_;
 };
 
@@ -55,10 +56,10 @@ template<class VoidPointer>
 struct unordered_node<VoidPointer, true, false>
    :  public slist_node<VoidPointer>
 {
-   typedef typename boost::pointer_to_other
-      < VoidPointer
-      , unordered_node<VoidPointer, true, false>
-      >::type   node_ptr;
+   typedef typename pointer_traits
+      <VoidPointer>::template rebind_pointer
+         < unordered_node<VoidPointer, true, false> >::type
+      node_ptr;
    std::size_t hash_;
 };
 
@@ -68,35 +69,35 @@ struct unordered_node_traits
 {
    typedef slist_node_traits<VoidPointer> reduced_slist_node_traits;
    typedef unordered_node<VoidPointer, StoreHash, OptimizeMultiKey> node;
-   typedef typename boost::pointer_to_other
-      <VoidPointer, node>::type          node_ptr;
-   typedef typename boost::pointer_to_other
-      <VoidPointer, const node>::type    const_node_ptr;
+
+   typedef typename pointer_traits
+      <VoidPointer>::template rebind_pointer
+         < node >::type node_ptr;
+   typedef typename pointer_traits
+      <VoidPointer>::template rebind_pointer
+         < const node >::type const_node_ptr;
 
    static const bool store_hash        = StoreHash;
    static const bool optimize_multikey = OptimizeMultiKey;
 
-   static node_ptr get_next(const_node_ptr n)
+   static node_ptr get_next(const const_node_ptr & n)
    {
-//      This still fails in gcc < 4.4 so forget about it
-//      using ::boost::static_pointer_cast;
-//      return static_pointer_cast<node>(n->next_);
-      return node_ptr(&static_cast<node&>(*n->next_));
+      return pointer_traits<node_ptr>::pointer_to(static_cast<node&>(*n->next_));
    }
 
-   static void set_next(node_ptr n, node_ptr next)
+   static void set_next(const node_ptr & n, const node_ptr & next)
    {  n->next_ = next;  }
 
-   static node_ptr get_prev_in_group(const_node_ptr n)
+   static node_ptr get_prev_in_group(const const_node_ptr & n)
    {  return n->prev_in_group_;  }
 
-   static void set_prev_in_group(node_ptr n, node_ptr prev)
+   static void set_prev_in_group(const node_ptr & n, const node_ptr & prev)
    {  n->prev_in_group_ = prev;  }
 
-   static std::size_t get_hash(const_node_ptr n)
+   static std::size_t get_hash(const const_node_ptr & n)
    {  return n->hash_;  }  
 
-   static void set_hash(node_ptr n, std::size_t h)
+   static void set_hash(const node_ptr & n, std::size_t h)
    {  n->hash_ = h;  }  
 };
 
@@ -107,10 +108,10 @@ struct unordered_group_adapter
    typedef typename NodeTraits::node_ptr        node_ptr;
    typedef typename NodeTraits::const_node_ptr  const_node_ptr;
 
-   static node_ptr get_next(const_node_ptr n)
+   static node_ptr get_next(const const_node_ptr & n)
    {  return NodeTraits::get_prev_in_group(n);  }
 
-   static void set_next(node_ptr n, node_ptr next)
+   static void set_next(const node_ptr & n, const node_ptr & next)
    {  NodeTraits::set_prev_in_group(n, next);   }
 };
 

@@ -8,8 +8,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_CONTAINERS_ALLOCATION_TYPE_HPP
-#define BOOST_CONTAINERS_ALLOCATION_TYPE_HPP
+#ifndef BOOST_CONTAINER_ALLOCATION_TYPE_HPP
+#define BOOST_CONTAINER_ALLOCATION_TYPE_HPP
 
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
@@ -51,4 +51,4 @@ static const allocation_type zero_memory        = (allocation_type)zero_memory_v
 
 #include <boost/container/detail/config_end.hpp>
 
-#endif   //BOOST_CONTAINERS_ALLOCATION_TYPE_HPP
+#endif   //BOOST_CONTAINER_ALLOCATION_TYPE_HPP

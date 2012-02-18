@@ -449,7 +449,12 @@ public:
         pn.swap(other.pn);
     }
 
-    template<class Y> bool _internal_less(shared_ptr<Y> const & rhs) const
+    template<class Y> bool owner_before( shared_ptr<Y> const & rhs ) const
+    {
+        return pn < rhs.pn;
+    }
+
+    template<class Y> bool owner_before( weak_ptr<Y> const & rhs ) const
     {
         return pn < rhs.pn;
     }
@@ -505,7 +510,7 @@ template<class T> inline bool operator!=(shared_ptr<T> const & a, shared_ptr<T> 
 
 template<class T, class U> inline bool operator<(shared_ptr<T> const & a, shared_ptr<U> const & b)
 {
-    return a._internal_less(b);
+    return a.owner_before( b );
 }
 
 template<class T> inline void swap(shared_ptr<T> & a, shared_ptr<T> & b)

@@ -10,8 +10,8 @@
 #pragma once
 #endif
 
-#include <boost/cstdint.hpp> // for boost::uintmax_t
 #include <boost/config.hpp>
+#include <boost/cstdint.hpp> // for boost::uintmax_t
 #include <boost/detail/workaround.hpp>
 #include <algorithm>  // for min and max
 #include <boost/config/no_tr1/cmath.hpp>
@@ -132,7 +132,7 @@
 
 #endif // defined BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
 
-#if defined(__SUNPRO_CC) || defined(__hppa) || defined(__GNUC__)
+#if (defined(__SUNPRO_CC) || defined(__hppa) || defined(__GNUC__)) && !defined(BOOST_MATH_SMALL_CONSTANT)
 // Sun's compiler emits a hard error if a constant underflows,
 // as does aCC on PA-RISC, while gcc issues a large number of warnings:
 #  define BOOST_MATH_SMALL_CONSTANT(x) 0
@@ -252,6 +252,7 @@ inline T max BOOST_PREVENT_MACRO_SUBSTITUTION(T a, T b, T c, T d)
 {
    return (std::max)((std::max)(a, b), (std::max)(c, d));
 }
+
 } // namespace tools
 
 template <class T>
@@ -265,7 +266,9 @@ void suppress_unused_variable_warning(const T&)
 
    #include <boost/detail/fenv.hpp>
 
-   namespace boost{ namespace math{
+#  ifdef FE_ALL_EXCEPT
+
+namespace boost{ namespace math{
    namespace detail
    {
    struct fpu_guard
@@ -286,8 +289,16 @@ void suppress_unused_variable_warning(const T&)
    } // namespace detail
    }} // namespaces
 
-#  define BOOST_FPU_EXCEPTION_GUARD boost::math::detail::fpu_guard local_guard_object;
-#  define BOOST_MATH_INSTRUMENT_FPU do{ fexcept_t cpu_flags; fegetexceptflag(&cpu_flags, FE_ALL_EXCEPT); BOOST_MATH_INSTRUMENT_VARIABLE(cpu_flags); } while(0); 
+#    define BOOST_FPU_EXCEPTION_GUARD boost::math::detail::fpu_guard local_guard_object;
+#    define BOOST_MATH_INSTRUMENT_FPU do{ fexcept_t cpu_flags; fegetexceptflag(&cpu_flags, FE_ALL_EXCEPT); BOOST_MATH_INSTRUMENT_VARIABLE(cpu_flags); } while(0); 
+
+#  else
+
+#    define BOOST_FPU_EXCEPTION_GUARD
+#    define BOOST_MATH_INSTRUMENT_FPU
+
+#  endif
+
 #else // All other platforms.
 #  define BOOST_FPU_EXCEPTION_GUARD
 #  define BOOST_MATH_INSTRUMENT_FPU

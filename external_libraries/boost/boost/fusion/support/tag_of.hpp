@@ -46,28 +46,29 @@ namespace boost { namespace fusion
     namespace detail
     {
         BOOST_MPL_HAS_XXX_TRAIT_DEF(fusion_tag)
+
+        template <typename Sequence, typename Active>
+        struct tag_of_impl
+          : mpl::if_<fusion::detail::is_mpl_sequence<Sequence>,
+              mpl::identity<mpl_sequence_tag>,
+              mpl::identity<non_fusion_tag> >::type
+        {};
+
+        template <typename Sequence>
+        struct tag_of_impl<
+            Sequence
+          , typename boost::enable_if<detail::has_fusion_tag<Sequence> >::type>
+        {
+            typedef typename Sequence::fusion_tag type;
+        };
     }
 
     namespace traits
     {
         template <typename Sequence, typename Active>
-        struct tag_of_fallback
-        {
-            typedef non_fusion_tag type;
-        };
-
-        template <typename Sequence, typename Active>
         struct tag_of
-          : mpl::if_< fusion::detail::is_mpl_sequence<Sequence>,
-              mpl::identity<mpl_sequence_tag>,
-              tag_of_fallback<Sequence> >::type
+            : boost::fusion::detail::tag_of_impl<Sequence, Active>
         {};
-
-        template <typename Sequence>
-        struct tag_of<Sequence, typename boost::enable_if<detail::has_fusion_tag<Sequence> >::type>
-        {
-            typedef typename Sequence::fusion_tag type;
-        };
     }
 
     namespace detail

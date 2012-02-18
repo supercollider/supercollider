@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -27,7 +27,7 @@
 #include <boost/interprocess/exceptions.hpp>
 #include <boost/interprocess/detail/mpl.hpp>
 #include <boost/interprocess/detail/type_traits.hpp>
-#include <boost/interprocess/detail/move.hpp>
+#include <boost/move/move.hpp>
 #include <boost/interprocess/detail/posix_time_types_wrk.hpp>
 
 //!\file
@@ -120,7 +120,7 @@ class scoped_lock
    //!   to thisscoped_lock with no blocking. If the scop scoped_lock does not
    //!   own the mutex, then neither will this scoped_lock. Only a moved
    //!   scoped_lock's will match this signature. An non-moved scoped_lock
-   //!   can be moved with the expression: "boost::interprocess::move(lock);". This
+   //!   can be moved with the expression: "boost::move(lock);". This
    //!   constructor does not alter the state of the mutex, only potentially
    //!   who owns it.
    scoped_lock(BOOST_RV_REF(scoped_lock) scop)
@@ -136,7 +136,7 @@ class scoped_lock
    //!   unlocking upgr. If upgr is unlocked, then this scoped_lock will be
    //!   unlocked as well. Only a moved upgradable_lock's will match this
    //!   signature. An non-moved upgradable_lock can be moved with
-   //!   the expression: "boost::interprocess::move(lock);" This constructor may block if
+   //!   the expression: "boost::move(lock);" This constructor may block if
    //!   other threads hold a sharable_lock on this mutex (sharable_lock's can
    //!   share ownership with an upgradable_lock).
    template<class T>

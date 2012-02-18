@@ -23,9 +23,12 @@
 
 #ifdef BOOST_MSVC
    #ifndef _CRT_SECURE_NO_DEPRECATE
-   #define  BOOST_INTERPROCESS_CRT_SECURE_NO_DEPRECATE
-   #define _CRT_SECURE_NO_DEPRECATE
-   #define _SCL_SECURE_NO_WARNINGS
+      #define  BOOST_INTERPROCESS_CRT_SECURE_NO_DEPRECATE
+      #define _CRT_SECURE_NO_DEPRECATE
+   #endif
+   #ifndef _SCL_SECURE_NO_WARNINGS
+      #define  BOOST_INTERPROCESS_SCL_SECURE_NO_WARNINGS
+      #define _SCL_SECURE_NO_WARNINGS
    #endif
    #pragma warning (push)
    #pragma warning(disable:4996)
@@ -179,7 +182,8 @@
       {  return v;  }
    };
 
-   template<class T> T * addressof( T & v )
+   template<class T>
+   inline T * addressof( T & v )
    {
       return ::boost::move_detail::addressof_impl<T>::f
          ( ::boost::move_detail::addr_impl_ref<T>( v ), 0 );
@@ -221,19 +225,40 @@
 
    namespace boost {
 
+   namespace move_detail {
+      template<class T>
+      struct is_class_or_union
+      {
+         struct twochar { char _[2]; };
+         template <class U>
+         static char is_class_or_union_tester(void(U::*)(void));
+         template <class U>
+         static twochar is_class_or_union_tester(...);
+         static const bool value = sizeof(is_class_or_union_tester<T>(0)) == sizeof(char);
+      };
+      struct empty{};
+   }
+
    //////////////////////////////////////////////////////////////////////////////
    //
    //                            struct rv
    //
    //////////////////////////////////////////////////////////////////////////////
    template <class T>
-   class rv : public T
+   class rv
+      : public BOOST_MOVE_MPL_NS::if_c
+         < ::boost::move_detail::is_class_or_union<T>::value
+         , T
+         , ::boost::move_detail::empty
+         >::type
    {
       rv();
       ~rv();
       rv(rv const&);
       void operator=(rv const&);
    } BOOST_MOVE_ATTRIBUTE_MAY_ALIAS;
+
+
 
    //////////////////////////////////////////////////////////////////////////////
    //
@@ -280,6 +305,10 @@
       : BOOST_MOVE_BOOST_NS::integral_constant<bool, false>
    {};
 
+   template <class T>
+   struct has_move_emulation_enabled_aux 
+     : has_move_emulation_enabled<T> {};
+     
    template <class T> 
    struct has_nothrow_move
       : public BOOST_MOVE_BOOST_NS::integral_constant<bool, false>
@@ -290,20 +319,21 @@
    //                            move()
    //
    //////////////////////////////////////////////////////////////////////////////
+    
    template <class T>
-   typename BOOST_MOVE_BOOST_NS::disable_if<has_move_emulation_enabled<T>, T&>::type move(T& x)
+   inline typename BOOST_MOVE_BOOST_NS::disable_if<has_move_emulation_enabled_aux<T>, T&>::type move(T& x)
    {
       return x;
    }
 
    template <class T>
-   typename BOOST_MOVE_BOOST_NS::enable_if<has_move_emulation_enabled<T>, rv<T>&>::type move(T& x)
+   inline typename BOOST_MOVE_BOOST_NS::enable_if<has_move_emulation_enabled<T>, rv<T>&>::type move(T& x)
    {
       return *static_cast<rv<T>* >(BOOST_MOVE_BOOST_NS::addressof(x));
    }
 
    template <class T>
-   typename BOOST_MOVE_BOOST_NS::enable_if<has_move_emulation_enabled<T>, rv<T>&>::type move(rv<T>& x)
+   inline typename BOOST_MOVE_BOOST_NS::enable_if<has_move_emulation_enabled<T>, rv<T>&>::type move(rv<T>& x)
    {
       return x;
    }
@@ -348,14 +378,14 @@
    //////////////////////////////////////////////////////////////////////////////
 
    template <class T>
-   typename BOOST_MOVE_BOOST_NS::enable_if< ::boost::move_detail::is_rv<T>, T &>::type
+   inline typename BOOST_MOVE_BOOST_NS::enable_if< ::boost::move_detail::is_rv<T>, T &>::type
       forward(const typename BOOST_MOVE_MPL_NS::identity<T>::type &x)
    {
       return const_cast<T&>(x);
    }
 
    template <class T>
-   typename BOOST_MOVE_BOOST_NS::disable_if< ::boost::move_detail::is_rv<T>, const T &>::type
+   inline typename BOOST_MOVE_BOOST_NS::disable_if< ::boost::move_detail::is_rv<T>, const T &>::type
       forward(const typename BOOST_MOVE_MPL_NS::identity<T>::type &x)
    {
       return x;
@@ -447,20 +477,20 @@
          //! This function provides a way to convert a reference into a rvalue reference
          //! in compilers with rvalue references. For other compilers converts T & into
          //! <i>::boost::rv<T> &</i> so that move emulation is activated.
-         template <class T> inline 
+         template <class T> 
          rvalue_reference move (input_reference);
 
       #elif defined(BOOST_MOVE_OLD_RVALUE_REF_BINDING_RULES)
 
          //Old move approach, lvalues could bind to rvalue references
-         template <class T> inline
-         typename remove_reference<T>::type && move(T&& t)
+         template <class T>
+         inline typename remove_reference<T>::type && move(T&& t)
          {  return t;   }
 
       #else //Old move
 
-         template <class T> inline
-         typename remove_reference<T>::type && move(T&& t)
+         template <class T>
+         inline typename remove_reference<T>::type && move(T&& t)
          { return static_cast<typename remove_reference<T>::type &&>(t); } 
 
       #endif   //Old move
@@ -484,13 +514,13 @@
          //!   ::boost::rev<T> &
          //!
          //! * Else, input_reference is equal to output_reference is equal to input_reference.
-         template <class T> inline output_reference forward(input_reference);
+         template <class T> output_reference forward(input_reference);
       #elif defined(BOOST_MOVE_OLD_RVALUE_REF_BINDING_RULES)
 
          //Old move approach, lvalues could bind to rvalue references
 
-         template <class T> inline
-         T&& forward (typename BOOST_MOVE_MPL_NS::identity<T>::type&& t)
+         template <class T>
+         inline T&& forward (typename BOOST_MOVE_MPL_NS::identity<T>::type&& t)
          {  return t;   }
 
       #else //Old move
@@ -727,7 +757,7 @@ struct is_move_iterator< ::boost::move_iterator<I> >
 //!
 //! <b>Returns</b>: move_iterator<It>(i).
 template<class It>
-move_iterator<It> make_move_iterator(const It &it)
+inline move_iterator<It> make_move_iterator(const It &it)
 {  return move_iterator<It>(it); }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -951,7 +981,7 @@ namespace move_detail {
 template
 <typename I,   // I models InputIterator
 typename F>   // F models ForwardIterator
-F uninitialized_move_move_iterator(I f, I l, F r
+inline F uninitialized_move_move_iterator(I f, I l, F r
 //                             ,typename BOOST_MOVE_BOOST_NS::enable_if< has_move_emulation_enabled<typename I::value_type> >::type* = 0
 )
 {
@@ -972,7 +1002,7 @@ F uninitialized_move_move_iterator(I f, I l, F r,
 template
 <typename I,   // I models InputIterator
 typename F>   // F models ForwardIterator
-F uninitialized_copy_or_move(I f, I l, F r,
+inline F uninitialized_copy_or_move(I f, I l, F r,
                              typename BOOST_MOVE_BOOST_NS::enable_if< move_detail::is_move_iterator<I> >::type* = 0)
 {
    return ::boost::move_detail::uninitialized_move_move_iterator(f, l, r);
@@ -989,7 +1019,7 @@ namespace move_detail {
 template
 <typename I,   // I models InputIterator
 typename F>   // F models ForwardIterator
-F move_move_iterator(I f, I l, F r
+inline F move_move_iterator(I f, I l, F r
 //                             ,typename BOOST_MOVE_BOOST_NS::enable_if< has_move_emulation_enabled<typename I::value_type> >::type* = 0
 )
 {
@@ -1011,7 +1041,7 @@ F move_move_iterator(I f, I l, F r,
 template
 <typename I,   // I models InputIterator
 typename F>   // F models ForwardIterator
-F copy_or_move(I f, I l, F r,
+inline F copy_or_move(I f, I l, F r,
                              typename BOOST_MOVE_BOOST_NS::enable_if< move_detail::is_move_iterator<I> >::type* = 0)
 {
    return ::boost::move_detail::move_move_iterator(f, l, r);
@@ -1034,7 +1064,7 @@ F copy_or_move(I f, I l, F r,
 template
 <typename I,   // I models InputIterator
 typename F>   // F models ForwardIterator
-F uninitialized_copy_or_move(I f, I l, F r
+inline F uninitialized_copy_or_move(I f, I l, F r
    /// @cond
    ,typename BOOST_MOVE_BOOST_NS::disable_if< move_detail::is_move_iterator<I> >::type* = 0
    /// @endcond
@@ -1057,7 +1087,7 @@ F uninitialized_copy_or_move(I f, I l, F r
 template
 <typename I,   // I models InputIterator
 typename F>   // F models ForwardIterator
-F copy_or_move(I f, I l, F r
+inline F copy_or_move(I f, I l, F r
    /// @cond
    ,typename BOOST_MOVE_BOOST_NS::disable_if< move_detail::is_move_iterator<I> >::type* = 0
    /// @endcond
@@ -1080,14 +1110,112 @@ struct has_trivial_destructor_after_move
    : BOOST_MOVE_BOOST_NS::has_trivial_destructor<T>
 {};
 
+
+
+namespace move_detail {
+
+// Code from Jeffrey Lee Hellrung, many thanks
+
+#ifndef BOOST_NO_RVALUE_REFERENCES
+   template< class T> struct forward_type { typedef T type; };
+#else // #ifndef BOOST_NO_RVALUE_REFERENCES
+   template< class T>
+   struct forward_type
+   { typedef const T &type; };
+
+   template< class T>
+   struct forward_type< boost::rv<T> >
+   { typedef T type; };
+#endif // #ifndef BOOST_NO_RVALUE_REFERENCES
+
+
+
+// Code from Jeffrey Lee Hellrung, many thanks
+
+template< class T > struct is_rvalue_reference : BOOST_MOVE_BOOST_NS::integral_constant<bool, false> { };
+#ifndef BOOST_NO_RVALUE_REFERENCES
+   template< class T > struct is_rvalue_reference< T&& > : BOOST_MOVE_BOOST_NS::integral_constant<bool, true> { };
+#else // #ifndef BOOST_NO_RVALUE_REFERENCES
+   template< class T > struct is_rvalue_reference< boost::rv<T>& >
+      :  BOOST_MOVE_BOOST_NS::integral_constant<bool, true>
+   {};
+
+   template< class T > struct is_rvalue_reference< const boost::rv<T>& >
+      : BOOST_MOVE_BOOST_NS::integral_constant<bool, true>
+   {};
+#endif // #ifndef BOOST_NO_RVALUE_REFERENCES
+
+#ifndef BOOST_NO_RVALUE_REFERENCES
+   template< class T > struct add_rvalue_reference { typedef T&& type; };
+#else // #ifndef BOOST_NO_RVALUE_REFERENCES
+   namespace detail_add_rvalue_reference
+   {
+      template< class T
+              , bool emulation = ::boost::has_move_emulation_enabled<T>::value
+              , bool rv        = ::boost::move_detail::is_rv<T>::value  >
+      struct add_rvalue_reference_impl { typedef T type; };
+
+      template< class T, bool emulation>
+      struct add_rvalue_reference_impl< T, emulation, true > { typedef T & type; };
+
+      template< class T, bool rv >
+      struct add_rvalue_reference_impl< T, true, rv > { typedef ::boost::rv<T>& type; };
+   } // namespace detail_add_rvalue_reference
+
+   template< class T >
+   struct add_rvalue_reference
+      : detail_add_rvalue_reference::add_rvalue_reference_impl<T>
+   { };
+
+   template< class T >
+   struct add_rvalue_reference<T &>
+   {  typedef T & type; };
+
+#endif // #ifndef BOOST_NO_RVALUE_REFERENCES
+
+template< class T > struct remove_rvalue_reference { typedef T type; };
+
+#ifndef BOOST_NO_RVALUE_REFERENCES
+   template< class T > struct remove_rvalue_reference< T&& >                  { typedef T type; };
+#else // #ifndef BOOST_NO_RVALUE_REFERENCES
+   template< class T > struct remove_rvalue_reference< rv<T> >                { typedef T type; };
+   template< class T > struct remove_rvalue_reference< const rv<T> >          { typedef T type; };
+   template< class T > struct remove_rvalue_reference< volatile rv<T> >       { typedef T type; };
+   template< class T > struct remove_rvalue_reference< const volatile rv<T> > { typedef T type; };
+   template< class T > struct remove_rvalue_reference< rv<T>& >               { typedef T type; };
+   template< class T > struct remove_rvalue_reference< const rv<T>& >         { typedef T type; };
+   template< class T > struct remove_rvalue_reference< volatile rv<T>& >      { typedef T type; };
+   template< class T > struct remove_rvalue_reference< const volatile rv<T>& >{ typedef T type; };
+#endif // #ifndef BOOST_NO_RVALUE_REFERENCES 
+
+template <typename T>
+typename boost::move_detail::add_rvalue_reference<T>::type declval();
+
+}
+// Ideas from Boost.Move review, Jeffrey Lee Hellrung:
+//
+//- TypeTraits metafunctions is_lvalue_reference, add_lvalue_reference, and remove_lvalue_reference ? 
+//  Perhaps add_reference and remove_reference can be modified so that they behave wrt emulated rvalue
+//  references the same as wrt real rvalue references, i.e., add_reference< rv<T>& > -> T& rather than
+//  rv<T>& (since T&& & -> T&).
+//
+//- Add'l TypeTraits has_[trivial_]move_{constructor,assign}...?
+//
+//- An as_lvalue(T& x) function, which amounts to an identity operation in C++0x, but strips emulated
+//  rvalue references in C++03.  This may be necessary to prevent "accidental moves". 
+
 }  //namespace boost {
 
 #if defined BOOST_MSVC
    #pragma warning (pop)
    #ifdef BOOST_INTERPROCESS_CRT_SECURE_NO_DEPRECATE
-   #undef BOOST_INTERPROCESS_CRT_SECURE_NO_DEPRECATE
-   #undef _CRT_SECURE_NO_DEPRECATE
-   #undef _SCL_SECURE_NO_WARNINGS
+      #undef BOOST_INTERPROCESS_CRT_SECURE_NO_DEPRECATE
+      #undef _CRT_SECURE_NO_DEPRECATE
+   #endif
+
+   #ifdef BOOST_INTERPROCESS_SCL_SECURE_NO_WARNINGS
+      #undef BOOST_INTERPROCESS_SCL_SECURE_NO_WARNINGS
+      #undef _SCL_SECURE_NO_WARNINGS
    #endif
 #endif
 

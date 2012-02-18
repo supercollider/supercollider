@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -19,14 +19,10 @@
 #include <boost/interprocess/detail/workaround.hpp>
 
 #include <boost/interprocess/interprocess_fwd.hpp>
-#include <boost/interprocess/mem_algo/rbtree_best_fit.hpp>
-#include <boost/interprocess/sync/mutex_family.hpp>
 #include <boost/interprocess/detail/utilities.hpp>
 #include <boost/interprocess/detail/os_file_functions.hpp>
 #include <boost/interprocess/creation_tags.hpp>
-#include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/interprocess/exceptions.hpp>
-#include <boost/interprocess/offset_ptr.hpp>
 #include <boost/interprocess/segment_manager.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 //
@@ -137,10 +133,10 @@ class basic_managed_memory_impl
    static bool shrink_to_fit(const char *filename)
    {
       typedef typename ManagedMemory::device_type device_type;
-      size_type new_size, old_size;
+      size_type new_size;
       try{
          ManagedMemory managed_memory(open_only, filename);
-         old_size = managed_memory.get_size();
+         managed_memory.get_size();
          managed_memory.self_t::shrink_to_fit();
          new_size = managed_memory.get_size();
       }
@@ -329,7 +325,7 @@ class basic_managed_memory_impl
 
    //!Allocates n_elements, each one of elem_sizes[i] bytes.
    void deallocate_many(multiallocation_chain chain)
-   {  return mp_header->deallocate_many(boost::interprocess::move(chain)); }
+   {  return mp_header->deallocate_many(boost::move(chain)); }
 
    /// @endcond
 
@@ -583,7 +579,7 @@ class basic_managed_memory_impl
    //!For all theses reasons, classes with throwing destructors are not 
    //!recommended for  memory.
    template <class T>
-   bool destroy(const ipcdetail::unique_instance_t *const )
+   bool destroy(const unique_instance_t *const )
    {   return mp_header->template destroy<T>(unique_instance);  }
 
    //!Destroys the object (named, unique, or anonymous)
@@ -724,13 +720,13 @@ template<class BasicManagedMemoryImpl>
 class create_open_func
 {
    public:
-   create_open_func(BasicManagedMemoryImpl * const frontend, ipcdetail::create_enum_t type)
+   create_open_func(BasicManagedMemoryImpl * const frontend, create_enum_t type)
       : m_frontend(frontend), m_type(type){}
 
    bool operator()(void *addr, typename BasicManagedMemoryImpl::size_type size, bool created) const
    {  
-      if(((m_type == ipcdetail::DoOpen)   &&  created) || 
-         ((m_type == ipcdetail::DoCreate) && !created))
+      if(((m_type == DoOpen)   &&  created) || 
+         ((m_type == DoCreate) && !created))
          return false;
 
       if(created)
@@ -741,7 +737,7 @@ class create_open_func
 
    private:
    BasicManagedMemoryImpl *m_frontend;
-   ipcdetail::create_enum_t           m_type;
+   create_enum_t           m_type;
 };
 
 }  //namespace ipcdetail {

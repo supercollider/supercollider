@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2007-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2007-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -43,7 +43,7 @@ inline void get_bootstamp(std::string &s, bool add = false)
       s += bootstamp;
    }
    else{
-      s = bootstamp;
+      s.swap(bootstamp);
    }
 }
 #elif defined(BOOST_INTERPROCESS_HAS_BSD_KERNEL_BOOTTIME)
@@ -64,9 +64,10 @@ inline void get_bootstamp(std::string &s, bool add = false)
       , '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
    std::size_t char_counter = 0;
-   long long fields[2] = { result.tv_sec, result.tv_usec };
+   //32 bit values to allow 32 and 64 bit process IPC
+   boost::uint32_t fields[2] = { boost::uint32_t(result.tv_sec), boost::uint32_t(result.tv_usec) };
    for(std::size_t field = 0; field != 2; ++field){
-      for(std::size_t i = 0; i != sizeof(long long); ++i){
+      for(std::size_t i = 0; i != sizeof(fields[0]); ++i){
          const char *ptr = (const char *)&fields[field];
          bootstamp_str[char_counter++] = Characters[(ptr[i]&0xF0)>>4];
          bootstamp_str[char_counter++] = Characters[(ptr[i]&0x0F)];

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -24,8 +24,15 @@
 // It is provided "as is" without express or implied warranty.
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_INTERPROCESS_DETAIL_EMULATION_RECURSIVE_MUTEX_HPP
-#define BOOST_INTERPROCESS_DETAIL_EMULATION_RECURSIVE_MUTEX_HPP
+#ifndef BOOST_INTERPROCESS_DETAIL_SPIN_RECURSIVE_MUTEX_HPP
+#define BOOST_INTERPROCESS_DETAIL_SPIN_RECURSIVE_MUTEX_HPP
+
+#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#  pragma once
+#endif
+
+#include <boost/interprocess/detail/config_begin.hpp>
+#include <boost/interprocess/detail/workaround.hpp>
 
 #include <boost/interprocess/detail/posix_time_types_wrk.hpp>
 #include <boost/interprocess/detail/os_thread_functions.hpp>
@@ -33,21 +40,21 @@
 #include <boost/interprocess/detail/atomic.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/interprocess/detail/os_thread_functions.hpp>
-#include <boost/interprocess/sync/emulation/mutex.hpp>
+#include <boost/interprocess/sync/spin/mutex.hpp>
 #include <boost/assert.hpp>
 
 namespace boost {
 namespace interprocess {
 namespace ipcdetail {
 
-class emulation_recursive_mutex
+class spin_recursive_mutex
 {
-   emulation_recursive_mutex(const emulation_recursive_mutex &);
-   emulation_recursive_mutex &operator=(const emulation_recursive_mutex &);
+   spin_recursive_mutex(const spin_recursive_mutex &);
+   spin_recursive_mutex &operator=(const spin_recursive_mutex &);
    public:
 
-   emulation_recursive_mutex();
-   ~emulation_recursive_mutex();
+   spin_recursive_mutex();
+   ~spin_recursive_mutex();
 
    void lock();
    bool try_lock();
@@ -55,18 +62,18 @@ class emulation_recursive_mutex
    void unlock();
    void take_ownership();
    private:
-   emulation_mutex                     m_mutex;
-   unsigned int                        m_nLockCount;
+   spin_mutex     m_mutex;
+   unsigned int   m_nLockCount;
    volatile ipcdetail::OS_systemwide_thread_id_t   m_nOwner;
    volatile boost::uint32_t m_s;
 };
 
-inline emulation_recursive_mutex::emulation_recursive_mutex() 
+inline spin_recursive_mutex::spin_recursive_mutex() 
    : m_nLockCount(0), m_nOwner(ipcdetail::get_invalid_systemwide_thread_id()){}
 
-inline emulation_recursive_mutex::~emulation_recursive_mutex(){}
+inline spin_recursive_mutex::~spin_recursive_mutex(){}
 
-inline void emulation_recursive_mutex::lock()
+inline void spin_recursive_mutex::lock()
 {
    typedef ipcdetail::OS_systemwide_thread_id_t handle_t;
    const handle_t thr_id(ipcdetail::get_current_systemwide_thread_id());
@@ -75,7 +82,7 @@ inline void emulation_recursive_mutex::lock()
    if(ipcdetail::equal_systemwide_thread_id(thr_id , old_id)){
       if((unsigned int)(m_nLockCount+1) == 0){
          //Overflow, throw an exception
-         throw interprocess_exception("boost::interprocess::emulation_recursive_mutex recursive lock overflow");
+         throw interprocess_exception("boost::interprocess::spin_recursive_mutex recursive lock overflow");
       } 
       ++m_nLockCount;
    }
@@ -86,7 +93,7 @@ inline void emulation_recursive_mutex::lock()
    }
 }
 
-inline bool emulation_recursive_mutex::try_lock()
+inline bool spin_recursive_mutex::try_lock()
 {
    typedef ipcdetail::OS_systemwide_thread_id_t handle_t;
    handle_t thr_id(ipcdetail::get_current_systemwide_thread_id());
@@ -95,7 +102,7 @@ inline bool emulation_recursive_mutex::try_lock()
    if(ipcdetail::equal_systemwide_thread_id(thr_id , old_id)) {  // we own it
       if((unsigned int)(m_nLockCount+1) == 0){
          //Overflow, throw an exception
-         throw interprocess_exception("boost::interprocess::emulation_recursive_mutex recursive lock overflow");
+         throw interprocess_exception("boost::interprocess::spin_recursive_mutex recursive lock overflow");
       } 
       ++m_nLockCount;
       return true;
@@ -108,7 +115,7 @@ inline bool emulation_recursive_mutex::try_lock()
    return false;
 }
 
-inline bool emulation_recursive_mutex::timed_lock(const boost::posix_time::ptime &abs_time)
+inline bool spin_recursive_mutex::timed_lock(const boost::posix_time::ptime &abs_time)
 {
    typedef ipcdetail::OS_systemwide_thread_id_t handle_t;
    if(abs_time == boost::posix_time::pos_infin){
@@ -121,7 +128,7 @@ inline bool emulation_recursive_mutex::timed_lock(const boost::posix_time::ptime
    if(ipcdetail::equal_systemwide_thread_id(thr_id , old_id)) {  // we own it
       if((unsigned int)(m_nLockCount+1) == 0){
          //Overflow, throw an exception
-         throw interprocess_exception("boost::interprocess::emulation_recursive_mutex recursive lock overflow");
+         throw interprocess_exception("boost::interprocess::spin_recursive_mutex recursive lock overflow");
       } 
       ++m_nLockCount;
       return true;
@@ -134,7 +141,7 @@ inline bool emulation_recursive_mutex::timed_lock(const boost::posix_time::ptime
    return false;
 }
 
-inline void emulation_recursive_mutex::unlock()
+inline void spin_recursive_mutex::unlock()
 {
    typedef ipcdetail::OS_systemwide_thread_id_t handle_t;
    handle_t old_id;
@@ -151,17 +158,18 @@ inline void emulation_recursive_mutex::unlock()
    }
 }
 
-inline void emulation_recursive_mutex::take_ownership()
+inline void spin_recursive_mutex::take_ownership()
 {
    typedef ipcdetail::OS_systemwide_thread_id_t handle_t;
    this->m_nLockCount = 1;
    const handle_t thr_id(ipcdetail::get_current_systemwide_thread_id());
-   ipcdetail::systemwide_thread_id_copy
-      (thr_id, m_nOwner);
+   ipcdetail::systemwide_thread_id_copy(thr_id, m_nOwner);
 }
 
 }  //namespace ipcdetail {
 }  //namespace interprocess {
 }  //namespace boost {
 
-#endif   //BOOST_INTERPROCESS_DETAIL_EMULATION_RECURSIVE_MUTEX_HPP
+#include <boost/interprocess/detail/config_end.hpp>
+
+#endif   //BOOST_INTERPROCESS_DETAIL_SPIN_RECURSIVE_MUTEX_HPP

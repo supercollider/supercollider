@@ -11,8 +11,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_CONTAINERS_DETAIL_TRANSFORM_ITERATORS_HPP
-#define BOOST_CONTAINERS_DETAIL_TRANSFORM_ITERATORS_HPP
+#ifndef BOOST_CONTAINER_DETAIL_TRANSFORM_ITERATORS_HPP
+#define BOOST_CONTAINER_DETAIL_TRANSFORM_ITERATORS_HPP
 
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
@@ -59,7 +59,7 @@ class transform_iterator
    : public UnaryFunction
    , public std::iterator
       < typename Iterator::iterator_category
-      , typename containers_detail::remove_reference<typename UnaryFunction::result_type>::type
+      , typename container_detail::remove_reference<typename UnaryFunction::result_type>::type
       , typename Iterator::difference_type
       , operator_arrow_proxy<typename UnaryFunction::result_type>
       , typename UnaryFunction::result_type>
@@ -173,4 +173,4 @@ make_transform_iterator(Iterator it, UnaryFunc fun)
 
 #include <boost/container/detail/config_end.hpp>
 
-#endif   //#ifndef BOOST_CONTAINERS_DETAIL_TRANSFORM_ITERATORS_HPP
+#endif   //#ifndef BOOST_CONTAINER_DETAIL_TRANSFORM_ITERATORS_HPP

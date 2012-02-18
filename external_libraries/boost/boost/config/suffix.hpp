@@ -636,6 +636,20 @@ namespace std{ using ::type_info; }
 #define BOOST_DO_JOIN2( X, Y ) X##Y
 
 //
+// Helper macros BOOST_NOEXCEPT, BOOST_NOEXCEPT_IF, BOOST_NOEXCEPT_EXPR
+// These aid the transition to C++11 while still supporting C++03 compilers
+//
+#ifdef BOOST_NO_NOEXCEPT
+#  define BOOST_NOEXCEPT
+#  define BOOST_NOEXCEPT_IF(Predicate)
+#  define BOOST_NOEXCEPT_EXPR(Expression) false
+#else
+#  define BOOST_NOEXCEPT noexcept
+#  define BOOST_NOEXCEPT_IF(Predicate) noexcept((Predicate))
+#  define BOOST_NOEXCEPT_EXPR(Expression) noexcept((Expression))
+#endif
+
+//
 // Set some default values for compiler/library/platform names.
 // These are for debugging config setup only:
 //
@@ -673,6 +687,18 @@ namespace std{ using ::type_info; }
 #endif
 
 #define BOOST_STATIC_CONSTEXPR  static BOOST_CONSTEXPR_OR_CONST
+
+// BOOST_FORCEINLINE ---------------------------------------------//
+// Macro to use in place of 'inline' to force a function to be inline
+#if !defined(BOOST_FORCEINLINE)
+#  if defined(_MSC_VER)
+#    define BOOST_FORCEINLINE __forceinline
+#  elif defined(__GNUC__) && __GNUC__ > 3
+#    define BOOST_FORCEINLINE inline __attribute__ ((always_inline))
+#  else
+#    define BOOST_FORCEINLINE inline
+#  endif
+#endif
 
 #endif
 

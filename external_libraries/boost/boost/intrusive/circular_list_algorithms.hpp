@@ -61,10 +61,10 @@ class circular_list_algorithms
    //! <b>Complexity</b>: Constant 
    //! 
    //! <b>Throws</b>: Nothing.
-   static void init(node_ptr this_node)
+   static void init(const node_ptr &this_node)
    {
-      NodeTraits::set_next(this_node, node_ptr(0));
-      NodeTraits::set_previous(this_node, node_ptr(0));
+      NodeTraits::set_next(this_node, node_ptr());
+      NodeTraits::set_previous(this_node, node_ptr());
    }
 
    //! <b>Effects</b>: Returns true is "this_node" is in a non-used state
@@ -73,7 +73,7 @@ class circular_list_algorithms
    //! <b>Complexity</b>: Constant 
    //! 
    //! <b>Throws</b>: Nothing.
-   static bool inited(const_node_ptr this_node)  
+   static bool inited(const const_node_ptr &this_node)  
    {  return !NodeTraits::get_next(this_node); }
 
    //! <b>Effects</b>: Constructs an empty list, making this_node the only
@@ -84,7 +84,7 @@ class circular_list_algorithms
    //! <b>Complexity</b>: Constant 
    //! 
    //! <b>Throws</b>: Nothing.
-   static void init_header(node_ptr this_node)
+   static void init_header(const node_ptr &this_node)
    {
       NodeTraits::set_next(this_node, this_node);
       NodeTraits::set_previous(this_node, this_node);
@@ -99,7 +99,7 @@ class circular_list_algorithms
    //! <b>Complexity</b>: Constant 
    //! 
    //! <b>Throws</b>: Nothing.
-   static bool unique(const_node_ptr this_node)
+   static bool unique(const const_node_ptr &this_node)
    {
       node_ptr next = NodeTraits::get_next(this_node);
       return !next || next == this_node;
@@ -113,7 +113,7 @@ class circular_list_algorithms
    //! <b>Complexity</b>: Linear 
    //! 
    //! <b>Throws</b>: Nothing.
-   static std::size_t count(const_node_ptr this_node) 
+   static std::size_t count(const const_node_ptr &this_node) 
    {
       std::size_t result = 0;
       const_node_ptr p = this_node;
@@ -131,10 +131,10 @@ class circular_list_algorithms
    //! <b>Complexity</b>: Constant 
    //! 
    //! <b>Throws</b>: Nothing.
-   static node_ptr unlink(node_ptr this_node)
+   static node_ptr unlink(const node_ptr &this_node)
    {
-      if(NodeTraits::get_next(this_node)){
-         node_ptr next(NodeTraits::get_next(this_node));
+      node_ptr next(NodeTraits::get_next(this_node));
+      if(next){
          node_ptr prev(NodeTraits::get_previous(this_node));
          NodeTraits::set_next(prev, next);
          NodeTraits::set_previous(next, prev);
@@ -152,7 +152,7 @@ class circular_list_algorithms
    //! <b>Complexity</b>: Constant 
    //! 
    //! <b>Throws</b>: Nothing.
-   static void unlink(node_ptr b, node_ptr e)
+   static void unlink(const node_ptr &b, const node_ptr &e)
    {
       if (b != e) {
          node_ptr prevb(NodeTraits::get_previous(b));
@@ -168,13 +168,16 @@ class circular_list_algorithms
    //! <b>Complexity</b>: Constant 
    //! 
    //! <b>Throws</b>: Nothing.
-   static void link_before(node_ptr nxt_node, node_ptr this_node)
+   static void link_before(const node_ptr &nxt_node, const node_ptr &this_node)
    {
       node_ptr prev(NodeTraits::get_previous(nxt_node));
       NodeTraits::set_previous(this_node, prev);
-      NodeTraits::set_next(prev, this_node);
-      NodeTraits::set_previous(nxt_node, this_node);
       NodeTraits::set_next(this_node, nxt_node);
+      //nxt_node might be an alias for prev->next_
+      //so use it before update it before NodeTraits::set_next(prev, ...)
+      //is called and the reference changes it's value
+      NodeTraits::set_previous(nxt_node, this_node);
+      NodeTraits::set_next(prev, this_node);
    }
 
    //! <b>Requires</b>: prev_node must be a node of a circular list.
@@ -184,13 +187,16 @@ class circular_list_algorithms
    //! <b>Complexity</b>: Constant 
    //! 
    //! <b>Throws</b>: Nothing.
-   static void link_after(node_ptr prev_node, node_ptr this_node)
+   static void link_after(const node_ptr &prev_node, const node_ptr &this_node)
    {
       node_ptr next(NodeTraits::get_next(prev_node));
       NodeTraits::set_previous(this_node, prev_node);
       NodeTraits::set_next(this_node, next);
-      NodeTraits::set_previous(next, this_node);
+      //prev_node might be an alias for next->next_
+      //so use it before update it before NodeTraits::set_previous(next, ...)
+      //is called and the reference changes it's value
       NodeTraits::set_next(prev_node, this_node);
+      NodeTraits::set_previous(next, this_node);
    }
 
    //! <b>Requires</b>: this_node and other_node must be nodes inserted
@@ -204,7 +210,7 @@ class circular_list_algorithms
    //! 
    //! <b>Throws</b>: Nothing.
 /*
-   static void swap_nodes(node_ptr this_node, node_ptr other_node)
+   static void swap_nodes(const node_ptr &this_node, const node_ptr &other_node)
    {
 
       if (other_node == this_node)
@@ -243,13 +249,13 @@ class circular_list_algorithms
 
    //Watanabe version
    private: 
-   static void swap_prev(node_ptr this_node, node_ptr other_node) 
+   static void swap_prev(const node_ptr &this_node, const node_ptr &other_node) 
    { 
       node_ptr temp(NodeTraits::get_previous(this_node)); 
       NodeTraits::set_previous(this_node, NodeTraits::get_previous(other_node)); 
       NodeTraits::set_previous(other_node, temp); 
    } 
-   static void swap_next(node_ptr this_node, node_ptr other_node) 
+   static void swap_next(const node_ptr &this_node, const node_ptr &other_node) 
    { 
       node_ptr temp(NodeTraits::get_next(this_node)); 
       NodeTraits::set_next(this_node, NodeTraits::get_next(other_node)); 
@@ -257,7 +263,7 @@ class circular_list_algorithms
    } 
 
    public: 
-   static void swap_nodes(node_ptr this_node, node_ptr other_node) 
+   static void swap_nodes(const node_ptr &this_node, const node_ptr &other_node) 
    {
       if (other_node == this_node)
          return;
@@ -298,7 +304,7 @@ class circular_list_algorithms
    //! <b>Complexity</b>: Constant 
    //! 
    //! <b>Throws</b>: Nothing.
-   static void transfer(node_ptr p, node_ptr b, node_ptr e)
+   static void transfer(const node_ptr &p, const node_ptr &b, const node_ptr &e)
    {
       if (b != e) {
          node_ptr prev_p(NodeTraits::get_previous(p));
@@ -323,7 +329,7 @@ class circular_list_algorithms
    //! <b>Complexity</b>: Constant 
    //! 
    //! <b>Throws</b>: Nothing.
-   static void transfer(node_ptr p, node_ptr i)
+   static void transfer(const node_ptr &p, const node_ptr &i)
    {
       node_ptr n(NodeTraits::get_next(i));
       if(n != p && i != p){
@@ -344,7 +350,7 @@ class circular_list_algorithms
    //! <b>Throws</b>: Nothing.
    //! 
    //! <b>Complexity</b>: This function is linear time.
-   static void reverse(node_ptr p)
+   static void reverse(const node_ptr &p)
    {
       node_ptr f(NodeTraits::get_next(p));
       node_ptr i(NodeTraits::get_next(f)), e(p);
@@ -362,7 +368,7 @@ class circular_list_algorithms
    //! <b>Throws</b>: Nothing.
    //! 
    //! <b>Complexity</b>: Linear to the number of moved positions.
-   static void move_backwards(node_ptr p, std::size_t n)
+   static void move_backwards(const node_ptr &p, std::size_t n)
    {
       //Null shift, nothing to do
       if(!n) return;
@@ -382,7 +388,7 @@ class circular_list_algorithms
    //! <b>Throws</b>: Nothing.
    //! 
    //! <b>Complexity</b>: Linear to the number of moved positions.
-   static void move_forward(node_ptr p, std::size_t n)
+   static void move_forward(const node_ptr &p, std::size_t n)
    {
       //Null shift, nothing to do
       if(!n)   return;

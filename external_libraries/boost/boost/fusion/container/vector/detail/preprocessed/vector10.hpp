@@ -61,7 +61,7 @@ namespace boost { namespace fusion
         template <typename Sequence>
         vector1(
             Sequence const& seq
-          , typename disable_if<is_convertible<Sequence, T0> >::type* = 0
+          , typename boost::disable_if<is_convertible<Sequence, T0> >::type* = 0
             )
             : base_type(base_type::init_from_sequence(seq)) {}
         template <typename U0>
@@ -72,7 +72,7 @@ namespace boost { namespace fusion
             return *this;
         }
         template <typename Sequence>
-        typename disable_if<is_convertible<Sequence, T0>, this_type&>::type
+        typename boost::disable_if<is_convertible<Sequence, T0>, this_type&>::type
         operator=(Sequence const& seq)
         {
             typedef typename result_of::begin<Sequence const>::type I0;
@@ -157,7 +157,7 @@ namespace boost { namespace fusion
             return *this;
         }
         template <typename Sequence>
-        typename disable_if<is_convertible<Sequence, T0>, this_type&>::type
+        typename boost::disable_if<is_convertible<Sequence, T0>, this_type&>::type
         operator=(Sequence const& seq)
         {
             typedef typename result_of::begin<Sequence const>::type I0;
@@ -242,7 +242,7 @@ namespace boost { namespace fusion
             return *this;
         }
         template <typename Sequence>
-        typename disable_if<is_convertible<Sequence, T0>, this_type&>::type
+        typename boost::disable_if<is_convertible<Sequence, T0>, this_type&>::type
         operator=(Sequence const& seq)
         {
             typedef typename result_of::begin<Sequence const>::type I0;
@@ -327,7 +327,7 @@ namespace boost { namespace fusion
             return *this;
         }
         template <typename Sequence>
-        typename disable_if<is_convertible<Sequence, T0>, this_type&>::type
+        typename boost::disable_if<is_convertible<Sequence, T0>, this_type&>::type
         operator=(Sequence const& seq)
         {
             typedef typename result_of::begin<Sequence const>::type I0;
@@ -412,7 +412,7 @@ namespace boost { namespace fusion
             return *this;
         }
         template <typename Sequence>
-        typename disable_if<is_convertible<Sequence, T0>, this_type&>::type
+        typename boost::disable_if<is_convertible<Sequence, T0>, this_type&>::type
         operator=(Sequence const& seq)
         {
             typedef typename result_of::begin<Sequence const>::type I0;
@@ -497,7 +497,7 @@ namespace boost { namespace fusion
             return *this;
         }
         template <typename Sequence>
-        typename disable_if<is_convertible<Sequence, T0>, this_type&>::type
+        typename boost::disable_if<is_convertible<Sequence, T0>, this_type&>::type
         operator=(Sequence const& seq)
         {
             typedef typename result_of::begin<Sequence const>::type I0;
@@ -582,7 +582,7 @@ namespace boost { namespace fusion
             return *this;
         }
         template <typename Sequence>
-        typename disable_if<is_convertible<Sequence, T0>, this_type&>::type
+        typename boost::disable_if<is_convertible<Sequence, T0>, this_type&>::type
         operator=(Sequence const& seq)
         {
             typedef typename result_of::begin<Sequence const>::type I0;
@@ -667,7 +667,7 @@ namespace boost { namespace fusion
             return *this;
         }
         template <typename Sequence>
-        typename disable_if<is_convertible<Sequence, T0>, this_type&>::type
+        typename boost::disable_if<is_convertible<Sequence, T0>, this_type&>::type
         operator=(Sequence const& seq)
         {
             typedef typename result_of::begin<Sequence const>::type I0;
@@ -752,7 +752,7 @@ namespace boost { namespace fusion
             return *this;
         }
         template <typename Sequence>
-        typename disable_if<is_convertible<Sequence, T0>, this_type&>::type
+        typename boost::disable_if<is_convertible<Sequence, T0>, this_type&>::type
         operator=(Sequence const& seq)
         {
             typedef typename result_of::begin<Sequence const>::type I0;
@@ -837,7 +837,7 @@ namespace boost { namespace fusion
             return *this;
         }
         template <typename Sequence>
-        typename disable_if<is_convertible<Sequence, T0>, this_type&>::type
+        typename boost::disable_if<is_convertible<Sequence, T0>, this_type&>::type
         operator=(Sequence const& seq)
         {
             typedef typename result_of::begin<Sequence const>::type I0;

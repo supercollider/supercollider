@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -8,8 +8,8 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_INTERPROCESS_DETAIL_EMULATION_MUTEX_HPP
-#define BOOST_INTERPROCESS_DETAIL_EMULATION_MUTEX_HPP
+#ifndef BOOST_INTERPROCESS_DETAIL_SPIN_MUTEX_HPP
+#define BOOST_INTERPROCESS_DETAIL_SPIN_MUTEX_HPP
 
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
@@ -27,14 +27,14 @@ namespace boost {
 namespace interprocess {
 namespace ipcdetail {
 
-class emulation_mutex
+class spin_mutex
 {
-   emulation_mutex(const emulation_mutex &);
-   emulation_mutex &operator=(const emulation_mutex &);
+   spin_mutex(const spin_mutex &);
+   spin_mutex &operator=(const spin_mutex &);
    public:
 
-   emulation_mutex();
-   ~emulation_mutex();
+   spin_mutex();
+   ~spin_mutex();
 
    void lock();
    bool try_lock();
@@ -45,7 +45,7 @@ class emulation_mutex
    volatile boost::uint32_t m_s;
 };
 
-inline emulation_mutex::emulation_mutex() 
+inline spin_mutex::spin_mutex() 
    : m_s(0) 
 {
    //Note that this class is initialized to zero.
@@ -53,12 +53,12 @@ inline emulation_mutex::emulation_mutex()
    //initialized mutex
 }
 
-inline emulation_mutex::~emulation_mutex() 
+inline spin_mutex::~spin_mutex() 
 {
    //Trivial destructor
 }
 
-inline void emulation_mutex::lock(void)
+inline void spin_mutex::lock(void)
 {
    do{
       boost::uint32_t prev_s = ipcdetail::atomic_cas32(const_cast<boost::uint32_t*>(&m_s), 1, 0);
@@ -71,13 +71,13 @@ inline void emulation_mutex::lock(void)
    }while (true);
 }
 
-inline bool emulation_mutex::try_lock(void)
+inline bool spin_mutex::try_lock(void)
 {
    boost::uint32_t prev_s = ipcdetail::atomic_cas32(const_cast<boost::uint32_t*>(&m_s), 1, 0);   
    return m_s == 1 && prev_s == 0;
 }
 
-inline bool emulation_mutex::timed_lock(const boost::posix_time::ptime &abs_time)
+inline bool spin_mutex::timed_lock(const boost::posix_time::ptime &abs_time)
 {
    if(abs_time == boost::posix_time::pos_infin){
       this->lock();
@@ -85,8 +85,6 @@ inline bool emulation_mutex::timed_lock(const boost::posix_time::ptime &abs_time
    }
    //Obtain current count and target time
    boost::posix_time::ptime now = microsec_clock::universal_time();
-
-   if(now >= abs_time) return false;
 
    do{
       if(this->try_lock()){
@@ -104,7 +102,7 @@ inline bool emulation_mutex::timed_lock(const boost::posix_time::ptime &abs_time
    return true;
 }
 
-inline void emulation_mutex::unlock(void)
+inline void spin_mutex::unlock(void)
 {  ipcdetail::atomic_cas32(const_cast<boost::uint32_t*>(&m_s), 0, 1);   }
 
 }  //namespace ipcdetail {
@@ -113,4 +111,4 @@ inline void emulation_mutex::unlock(void)
 
 #include <boost/interprocess/detail/config_end.hpp>
 
-#endif   //BOOST_INTERPROCESS_DETAIL_EMULATION_MUTEX_HPP
+#endif   //BOOST_INTERPROCESS_DETAIL_SPIN_MUTEX_HPP

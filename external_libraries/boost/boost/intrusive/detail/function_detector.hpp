@@ -11,6 +11,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //  This code was modified from the code posted by Alexandre Courpron in his
 //  article "Interface Detection" in The Code Project:
+//  http://www.codeproject.com/KB/architecture/Detector.aspx
 ///////////////////////////////////////////////////////////////////////////////
 // Copyright 2007 Alexandre Courpron
 //

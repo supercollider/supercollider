@@ -109,7 +109,7 @@
 #  define BOOST_NO_NUMERIC_LIMITS_LOWEST
 #endif
 
-#if !defined(_HAS_TR1_IMPORTS) && !defined(BOOST_NO_0X_HDR_TUPLE)
+#if (!defined(_HAS_TR1_IMPORTS) || (_HAS_TR1_IMPORTS+0 == 0)) && !defined(BOOST_NO_0X_HDR_TUPLE)
 #  define BOOST_NO_0X_HDR_TUPLE
 #endif
 //

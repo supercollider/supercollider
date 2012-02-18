@@ -26,6 +26,10 @@
 #include <boost/assert.hpp>
 #include <boost/utility/addressof.hpp>
 
+#if !defined(BOOST_UNORDERED_USE_ALLOCATOR_TRAITS)
+#define BOOST_UNORDERED_USE_ALLOCATOR_TRAITS 0
+#endif
+
 #if BOOST_UNORDERED_USE_ALLOCATOR_TRAITS
 #  include <memory>
 #endif
@@ -198,7 +202,8 @@ namespace boost { namespace unordered { namespace detail {
     template <typename Alloc, typename T>
     struct rebind_wrap
     {
-        typedef typename std::allocator_traits<Alloc>::rebind_alloc<T> type;
+        typedef typename std::allocator_traits<Alloc>::
+            template rebind_alloc<T> type;
     };
 
 #else

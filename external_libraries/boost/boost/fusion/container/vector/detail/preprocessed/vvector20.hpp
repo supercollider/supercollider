@@ -36,7 +36,7 @@ namespace boost { namespace fusion
             : vec(rhs.vec) {}
         template <typename Sequence>
         vector(Sequence const& rhs)
-            : vec(rhs) {}
+            : vec(BOOST_FUSION_VECTOR_COPY_INIT()) {}
         
         
         
@@ -136,6 +136,7 @@ namespace boost { namespace fusion
             return vec.at_impl(mpl::int_<I::value>());
         }
     private:
+        BOOST_FUSION_VECTOR_CTOR_HELPER()
         vector_n vec;
     };
 }}

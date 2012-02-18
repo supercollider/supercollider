@@ -2,7 +2,7 @@
 // detail/kqueue_reactor.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2011 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2012 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2005 Stefan Arentz (stefan at soze dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -32,10 +32,10 @@
 #include <boost/asio/detail/reactor_op.hpp>
 #include <boost/asio/detail/select_interrupter.hpp>
 #include <boost/asio/detail/socket_types.hpp>
-#include <boost/asio/detail/timer_op.hpp>
 #include <boost/asio/detail/timer_queue_base.hpp>
 #include <boost/asio/detail/timer_queue_fwd.hpp>
 #include <boost/asio/detail/timer_queue_set.hpp>
+#include <boost/asio/detail/wait_op.hpp>
 #include <boost/asio/error.hpp>
 #include <boost/asio/io_service.hpp>
 
@@ -65,8 +65,6 @@ public:
 
     descriptor_state* next_;
     descriptor_state* prev_;
-
-    bool op_queue_is_empty_[max_ops];
 
     mutex mutex_;
     int descriptor_;
@@ -149,7 +147,7 @@ public:
   template <typename Time_Traits>
   void schedule_timer(timer_queue<Time_Traits>& queue,
       const typename Time_Traits::time_type& time,
-      typename timer_queue<Time_Traits>::per_timer_data& timer, timer_op* op);
+      typename timer_queue<Time_Traits>::per_timer_data& timer, wait_op* op);
 
   // Cancel the timer operations associated with the given token. Returns the
   // number of operations that have been posted or dispatched.

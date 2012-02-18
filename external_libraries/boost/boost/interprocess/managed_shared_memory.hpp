@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -19,11 +19,14 @@
 #include <boost/interprocess/detail/workaround.hpp>
 
 #include <boost/interprocess/detail/managed_memory_impl.hpp>
-#include <boost/interprocess/exceptions.hpp>
 #include <boost/interprocess/detail/managed_open_or_create_impl.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/creation_tags.hpp>
 #include <boost/interprocess/permissions.hpp>
+//These includes needed to fulfill default template parameters of
+//predeclarations in interprocess_fwd.hpp
+#include <boost/interprocess/mem_algo/rbtree_best_fit.hpp>  
+#include <boost/interprocess/sync/mutex_family.hpp>
 
 namespace boost {
 
@@ -41,15 +44,18 @@ template
 class basic_managed_shared_memory 
    : public ipcdetail::basic_managed_memory_impl
       <CharType, AllocationAlgorithm, IndexType
-      ,ipcdetail::managed_open_or_create_impl<shared_memory_object>::ManagedOpenOrCreateUserOffset>
-   , private ipcdetail::managed_open_or_create_impl<shared_memory_object>
+      ,ipcdetail::managed_open_or_create_impl<shared_memory_object
+                                             , AllocationAlgorithm::Alignment>::ManagedOpenOrCreateUserOffset>
+   , private ipcdetail::managed_open_or_create_impl<shared_memory_object
+                                                   , AllocationAlgorithm::Alignment>
 {
    /// @cond
    typedef ipcdetail::basic_managed_memory_impl 
       <CharType, AllocationAlgorithm, IndexType,
-      ipcdetail::managed_open_or_create_impl<shared_memory_object>::ManagedOpenOrCreateUserOffset>   base_t;
+      ipcdetail::managed_open_or_create_impl
+         < shared_memory_object, AllocationAlgorithm::Alignment>::ManagedOpenOrCreateUserOffset>   base_t;
    typedef ipcdetail::managed_open_or_create_impl
-      <shared_memory_object>                       base2_t;
+      <shared_memory_object, AllocationAlgorithm::Alignment>                       base2_t;
 
    typedef ipcdetail::create_open_func<base_t>        create_open_func_t;
 
@@ -148,7 +154,7 @@ class basic_managed_shared_memory
    //!Does not throw
    basic_managed_shared_memory &operator=(BOOST_RV_REF(basic_managed_shared_memory) moved)
    {
-      basic_managed_shared_memory tmp(boost::interprocess::move(moved));
+      basic_managed_shared_memory tmp(boost::move(moved));
       this->swap(tmp);
       return *this;
    }

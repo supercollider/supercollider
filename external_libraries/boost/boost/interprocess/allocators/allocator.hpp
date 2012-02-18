@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -18,7 +18,7 @@
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 
-#include <boost/pointer_to_other.hpp>
+#include <boost/intrusive/pointer_traits.hpp>
 
 #include <boost/interprocess/interprocess_fwd.hpp>
 #include <boost/interprocess/containers/allocation_type.hpp>
@@ -32,6 +32,7 @@
 #include <boost/interprocess/detail/type_traits.hpp>
 
 #include <memory>
+#include <new>
 #include <algorithm>
 #include <cstddef>
 #include <stdexcept>
@@ -66,13 +67,14 @@ class allocator
    typedef typename segment_manager::void_pointer  aux_pointer_t;
 
    //Typedef to const void pointer
-   typedef typename 
-      boost::pointer_to_other
-         <aux_pointer_t, const void>::type   cvoid_ptr;
+   typedef typename boost::intrusive::
+      pointer_traits<aux_pointer_t>::template
+         rebind_pointer<const void>::type          cvoid_ptr;
 
    //Pointer to the allocator
-   typedef typename boost::pointer_to_other
-      <cvoid_ptr, segment_manager>::type     alloc_ptr_t;
+   typedef typename boost::intrusive::
+      pointer_traits<cvoid_ptr>::template
+         rebind_pointer<segment_manager>::type          alloc_ptr_t;
 
    //Not assignable from related allocator
    template<class T2, class SegmentManager2>
@@ -87,10 +89,12 @@ class allocator
 
    public:
    typedef T                                    value_type;
-   typedef typename boost::pointer_to_other
-      <cvoid_ptr, T>::type                      pointer;
-   typedef typename boost::
-      pointer_to_other<pointer, const T>::type  const_pointer;
+   typedef typename boost::intrusive::
+      pointer_traits<cvoid_ptr>::template
+         rebind_pointer<T>::type                pointer;
+   typedef typename boost::intrusive::
+      pointer_traits<pointer>::template
+         rebind_pointer<const T>::type          const_pointer;
    typedef typename ipcdetail::add_reference
                      <value_type>::type         reference;
    typedef typename ipcdetail::add_reference
@@ -103,7 +107,7 @@ class allocator
    /// @cond
 
    //Experimental. Don't use.
-   typedef boost::container::containers_detail::transform_multiallocation_chain
+   typedef boost::container::container_detail::transform_multiallocation_chain
       <typename SegmentManager::multiallocation_chain, T>multiallocation_chain;
    /// @endcond
 
@@ -118,7 +122,7 @@ class allocator
    //!Returns the segment manager.
    //!Never throws
    segment_manager* get_segment_manager()const
-   {  return ipcdetail::get_pointer(mp_mngr);   }
+   {  return ipcdetail::to_raw_pointer(mp_mngr);   }
 
    //!Constructor from the segment manager.
    //!Never throws
@@ -149,7 +153,7 @@ class allocator
    //!Deallocates memory previously allocated.
    //!Never throws
    void deallocate(const pointer &ptr, size_type)
-   {  mp_mngr->deallocate((void*)ipcdetail::get_pointer(ptr));  }
+   {  mp_mngr->deallocate((void*)ipcdetail::to_raw_pointer(ptr));  }
 
    //!Returns the number of elements that could be allocated.
    //!Never throws
@@ -166,7 +170,7 @@ class allocator
    //!allocate, allocation_command and allocate_many.
    size_type size(const pointer &p) const
    {  
-      return (size_type)mp_mngr->size(ipcdetail::get_pointer(p))/sizeof(T);
+      return (size_type)mp_mngr->size(ipcdetail::to_raw_pointer(p))/sizeof(T);
    }
 
    std::pair<pointer, bool>
@@ -176,7 +180,7 @@ class allocator
                          size_type &received_size, const pointer &reuse = 0)
    {
       return mp_mngr->allocation_command
-         (command, limit_size, preferred_size, received_size, ipcdetail::get_pointer(reuse));
+         (command, limit_size, preferred_size, received_size, ipcdetail::to_raw_pointer(reuse));
    }
 
    //!Allocates many elements of size elem_size in a contiguous block
@@ -240,7 +244,7 @@ class allocator
    //!will be assigned to received_size. Memory allocated with this function
    //!must be deallocated only with deallocate_one().
    void deallocate_individual(multiallocation_chain chain)
-   {  return this->deallocate_many(boost::interprocess::move(chain)); }
+   {  return this->deallocate_many(boost::move(chain)); }
 
    //!Returns address of mutable object.
    //!Never throws
@@ -252,20 +256,18 @@ class allocator
    const_pointer address(const_reference value) const
    {  return const_pointer(boost::addressof(value));  }
 
-   //!Copy construct an object
-   //!Throws if T's copy constructor throws
-   void construct(const pointer &ptr, const_reference v)
-   {  new((void*)ipcdetail::get_pointer(ptr)) value_type(v);  }
-
-   //!Default construct an object. 
-   //!Throws if T's default constructor throws
-   void construct(const pointer &ptr)
-   {  new((void*)ipcdetail::get_pointer(ptr)) value_type;  }
+   //!Constructs an object
+   //!Throws if T's constructor throws
+   //!For backwards compatibility with libraries using C++03 allocators
+   template<class P>
+   void construct(const pointer &ptr, BOOST_FWD_REF(P) p)
+   {  ::new((void*)ipcdetail::to_raw_pointer(ptr)) value_type(::boost::forward<P>(p));  }
 
    //!Destroys object. Throws if object's
    //!destructor throws
    void destroy(const pointer &ptr)
    {  BOOST_ASSERT(ptr != 0); (*ptr).~value_type();  }
+
 };
 
 //!Equality test for same type
@@ -293,7 +295,7 @@ template<class T, class SegmentManager>
 struct has_trivial_destructor
    <boost::interprocess::allocator <T, SegmentManager> >
 {
-   enum { value = true };
+   static const bool value = true;
 };
 /// @endcond
 
