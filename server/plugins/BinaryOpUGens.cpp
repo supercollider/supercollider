@@ -1428,15 +1428,15 @@ void hypotx_1(BinaryOpUGen *unit, int inNumSamples)
 
 void zero_aa(BinaryOpUGen *unit, int inNumSamples)
 {
-	float *out = OUT(0);
+	float *out = ZOUT(0);
 
 	ZClear(inNumSamples, out);
 }
 
 void firstarg_aa(BinaryOpUGen *unit, int inNumSamples)
 {
-	float *out = OUT(0);
-	float *a = IN(0);
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
 
 	ZCopy(inNumSamples, out, a);
 }
@@ -1450,8 +1450,8 @@ inline_functions void firstarg_aa_nova(BinaryOpUGen *unit, int inNumSamples)
 
 void secondarg_aa(BinaryOpUGen *unit, int inNumSamples)
 {
-	float *out = OUT(0);
-	float *b = IN(1);
+	float *out = ZOUT(0);
+	float *b = ZIN(1);
 
 	ZCopy(inNumSamples, out, b);
 }
