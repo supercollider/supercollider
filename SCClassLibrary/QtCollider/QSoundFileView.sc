@@ -2,6 +2,7 @@ QSoundFileView : QView {
 
   var <>soundfile;
   var <metaAction;
+  var <>elasticMode; // NOTE: no-op, only for compatibility
   var curDoneAction;
 
   *qtClass { ^"QcWaveform" }
