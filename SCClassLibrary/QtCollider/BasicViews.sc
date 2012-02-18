@@ -196,8 +196,6 @@ QScrollView : QAbstractScroll {
 /////////////////////////// WIDGETS ///////////////////////////////
 
 QStaticText : QTextViewBase {
-  var <string;
-
   *qtClass { ^"QLabel" }
 
   *new { arg aParent, aBounds;
@@ -213,10 +211,8 @@ QStaticText : QTextViewBase {
     super.background_( aColor );
   }
 
-  string_ { arg text;
-    string = text;
-    this.setProperty( \text, text );
-  }
+  string { ^this.getProperty(\text) }
+  string_ { arg text; this.setProperty( \text, text.asString ) }
 
   stringColor {
     ^this.palette.windowText;
