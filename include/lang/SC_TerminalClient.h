@@ -43,6 +43,14 @@ public:
 		kRecompileLibrary = 0x18 // ctrl+x
 	};
 
+	enum Signal
+	{
+		sig_input = 0x01, // there is new input
+		sig_sched = 0x02, // something has been scheduled
+		sig_recompile = 0x04, // class lib recompilation requested
+		sig_stop = 0x08 // call Main:-stop
+	};
+
 	struct Options : public SC_LanguageClient::Options
 	{
 		Options()
@@ -75,6 +83,10 @@ public:
 	virtual void postError(const char* str, size_t len);
 	virtual void flush();
 
+	// Requests an action to be taken on the main thread.
+	// NOTE: It may be called from any thread, and with interpreter locked.
+	virtual void sendSignal( Signal code );
+
 protected:
 	bool parseOptions(int& argc, char**& argv, Options& opt);
 	void printUsage();
@@ -88,29 +100,16 @@ protected:
 
 	// --------------------------------------------------------------
 
-	// NOTE: Subclasses should call when signalled:
-	// Must be called with input locked:
+	// NOTE: Subclasses should call from main thread
+	// after receiving sig_input, and with input locked:
 	void interpretInput();
-	// Must be called with interpreter locked:
-	// SC_LanguageClinet::tickLocked()
 
 	// --------------------------------------------------------------
 
-	// NOTE: Subclasses should respond to following signals:
-
-	// Called from input thread with input locked.
-	// Calls for interpretInput() on main thread:
-	virtual void onInput();
-
-	// The following are called from language,
-	// locked, and may be called from any thread:
-
-	// Calls for tickLocked() and adjusting timing according to new schedule
-	virtual void onScheduleChanged();
 	// Language requested the application to quit
+	// NOTE: It may be called from any thread, and with interpreter locked.
 	virtual void onQuit( int exitCode );
-	// Request to recompile the class library
-	virtual void onRecompileLibrary();
+
 	// See super class
 	virtual void onLibraryStartup();
 
@@ -153,9 +152,7 @@ private:
 	// signals to main thread
 	pthread_mutex_t mSignalMutex;
 	pthread_cond_t mCond;
-	bool mInput; // there is new input
-	bool mSched; // something has been scheduled
-	bool mRecompile; // class lib recompilation requested
+	int mSignals;
 
 	// command input
 	bool mUseReadline;
