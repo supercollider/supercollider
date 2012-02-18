@@ -9,6 +9,7 @@ DESCRIPTION::
 
 A sound file viewer with numerous options.
 
+In strong::Qt GUI:: you can strong::zoom:: in and out using Shift + right-click + mouse-up/down; likewise, you can strong::scroll:: using right-click + mouse-left/right.
 
 CLASSMETHODS::
 
@@ -457,12 +458,15 @@ EXAMPLES::
 SUBSECTION:: Basic example
 
 code::
+// In Qt GUI:
+// To zoom in/out: Shift + right-click + mouse-up/down
+// To scroll: right-click + mouse-left/right
 (
-w = Window.new("soundfile test", Rect(200, 200, 800, 400));
+w = Window.new("soundfile test", Rect(200, 300, 740, 100));
 a = SoundFileView.new(w, Rect(20,20, 700, 60));
 
 f = SoundFile.new;
-f.openRead("sounds/a11wlk01.wav");
+f.openRead(Help.dir +/+ "sounds/a11wlk01.wav");
 f.inspect;
 
 a.soundfile = f;
@@ -484,12 +488,13 @@ SUBSECTION:: Step by step examples
 
 code::
 ( // make a simple SoundFileView
-w = Window.new("soundfile test", Rect(10, 700, 750, 100));
+y = Window.screenBounds.height - 120;
+w = Window.new("soundfile test", Rect(200, y, 740, 100)).alwaysOnTop_(true);
 w.front;
 a = SoundFileView.new(w, Rect(20,20, 700, 60));
 
 f = SoundFile.new;
-f.openRead("sounds/a11wlk01.wav");
+f.openRead(Help.dir +/+ "sounds/a11wlk01.wav");
 // f.inspect;
 
 a.soundfile = f;            // set soundfile
@@ -497,13 +502,20 @@ a.read(0, f.numFrames);     // read in the entire file.
 a.refresh;                  // refresh to display the file.
 )
 
+// In Qt GUI:
+// To zoom in/out: Shift + right-click + mouse-up/down
+// To scroll: right-click + mouse-left/right
+
 // reading file
 a.read(0, f.numFrames / 2).refresh; // read first half
 a.read.refresh;                     // read entire file by default
 a.read(f.numFrames / 2).refresh;    // read second half
 a.read(0, -1).refresh;              // -1 also reads entire file, like buffer.
 
-// block sets visual resolution of waveform, default is 64.
+// In Qt GUI, the resolution of the view is always infinite;
+// you can always zoom in until you see a single sample.
+
+// In other GUI kits, 'block' sets the resolution of the view (default is 64).
 // i.e. the view keeps peak values for each block of e.g. 64 samples
 // rather than the entire waveform.
 a.read(0, -1, block: 32).refresh;
