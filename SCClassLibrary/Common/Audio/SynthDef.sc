@@ -417,7 +417,7 @@ SynthDef {
 	}
 	replaceUGen { arg a, b;
 		if (b.isKindOf(UGen).not) {
-			error("replaceUGen assumes a UGen ");
+			Error("replaceUGen assumes a UGen").throw;
 		};
 
 		b.widthFirstAntecedents = a.widthFirstAntecedents;
