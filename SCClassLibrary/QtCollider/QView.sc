@@ -470,24 +470,24 @@ QView : QObject {
     action.value(this);
   }
 
-  defaultKeyDownAction { arg char, modifiers, unicode, keycode; }
+  defaultKeyDownAction { arg char, modifiers, unicode, keycode, key; }
 
-  defaultKeyUpAction { arg char, modifiers, unicode, keycode; }
+  defaultKeyUpAction { arg char, modifiers, unicode, keycode, key; }
 
-  keyDown { arg char, modifiers, unicode, keycode;
+  keyDown { arg char, modifiers, unicode, keycode, key;
     if( keyDownAction.notNil ) {
-      ^keyDownAction.value( this, char, modifiers, unicode, keycode );
+      ^keyDownAction.value( this, char, modifiers, unicode, keycode, key );
     } {
-      ^this.defaultKeyDownAction( char, modifiers, unicode, keycode );
+      ^this.defaultKeyDownAction( char, modifiers, unicode, keycode, key );
     };
   }
 
-  keyUp { arg char, modifiers, unicode, keycode;
+  keyUp { arg char, modifiers, unicode, keycode, key;
     keyTyped = char;
     if( keyUpAction.notNil ) {
-      ^keyUpAction.value( this, char, modifiers, unicode, keycode );
+      ^keyUpAction.value( this, char, modifiers, unicode, keycode, key );
     } {
-      ^this.defaultKeyUpAction( char, modifiers, unicode, keycode );
+      ^this.defaultKeyUpAction( char, modifiers, unicode, keycode, key );
     };
   }
 
@@ -598,38 +598,38 @@ QView : QObject {
   moveEvent { onMove.value(this) }
   resizeEvent { onResize.value(this) }
 
-  keyDownEvent { arg char, modifiers, unicode, keycode, spontaneous;
+  keyDownEvent { arg char, modifiers, unicode, keycode, key, spontaneous;
     modifiers = QKeyModifiers.toCocoa(modifiers);
 
     if( char.size > 0 ) {char = char[0]} {char = 0.asAscii};
 
     if( spontaneous ) {
       // this event has never been propagated to parent yet
-      QView.globalKeyDownAction.value( this, char, modifiers, unicode, keycode );
+      QView.globalKeyDownAction.value( this, char, modifiers, unicode, keycode, key );
     };
 
-    if( (keycode == 16r1000020) || (keycode == 16r1000021) ||
-        (keycode == 16r1000022) || (keycode == 16r1000023 ) )
+    if( (key == 16r1000020) || (key == 16r1000021) ||
+        (key == 16r1000022) || (key == 16r1000023 ) )
       { this.keyModifiersChanged( modifiers ) };
 
-    ^this.keyDown( char, modifiers, unicode, keycode );
+    ^this.keyDown( char, modifiers, unicode, keycode, key );
   }
 
-  keyUpEvent { arg char, modifiers, unicode, keycode, spontaneous;
+  keyUpEvent { arg char, modifiers, unicode, keycode, key, spontaneous;
     modifiers = QKeyModifiers.toCocoa(modifiers);
 
     if( char.size > 0 ) {char = char[0]} {char = 0.asAscii};
 
     if( spontaneous ) {
       // this event has never been propagated to parent yet
-      QView.globalKeyUpAction.value( this, char, modifiers, unicode, keycode );
+      QView.globalKeyUpAction.value( this, char, modifiers, unicode, keycode, key );
     };
 
-    if( (keycode == 16r1000020) || (keycode == 16r1000021) ||
-        (keycode == 16r1000022) || (keycode == 16r1000023 ) )
+    if( (key == 16r1000020) || (key == 16r1000021) ||
+        (key == 16r1000022) || (key == 16r1000023 ) )
       { this.keyModifiersChanged( modifiers ) };
 
-    ^this.keyUp( char, modifiers, unicode, keycode );
+    ^this.keyUp( char, modifiers, unicode, keycode, key );
   }
 
   mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
