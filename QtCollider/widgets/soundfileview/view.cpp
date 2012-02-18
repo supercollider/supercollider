@@ -89,7 +89,7 @@ void QcWaveform::load( const QString& filename )
   SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
 
   if( !new_sf ) {
-    qcErrorMsg("Could not open soundfile.");
+    qcErrorMsg(QString("Could not open soundfile: ") + filename);
     return;
   }
 
@@ -106,7 +106,7 @@ void QcWaveform::load( const QString& filename, int beg, int dur )
   SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
 
   if( !new_sf ) {
-    qcErrorMsg("Could not open soundfile.");
+    qcErrorMsg(QString("Could not open soundfile: ") + filename);
     return;
   }
 
