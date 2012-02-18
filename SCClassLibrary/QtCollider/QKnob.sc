@@ -74,7 +74,7 @@ QKnob : QAbstractStepValue {
       { 1 };
   }
 
-  defaultKeyDownAction { arg char, modifiers, unicode, keycode;
+  defaultKeyDownAction { arg char, modifiers, unicode, keycode, key;
     var zoom = this.getScale(modifiers);
 
     // standard keydown
@@ -85,7 +85,7 @@ QKnob : QAbstractStepValue {
       $c, { this.valueAction = 0.5 },
 
       {
-        switch( keycode,
+        switch( key,
           16r5b, { this.decrement(zoom) },
           16r5d, { this.increment(zoom) },
           16r1000013, { this.increment(zoom) },

@@ -64,7 +64,7 @@ QSlider : QAbstractStepValue {
     this.setProperty( \orientation, QOrientation(aSymbol) );
   }
 
-  defaultKeyDownAction {  arg char, modifiers, unicode, keycode;
+  defaultKeyDownAction {  arg char, modifiers, unicode, keycode, key;
     var scale = this.getScale( modifiers );
     switch( char,
       $r, { this.valueAction = 1.0.rand },
@@ -72,7 +72,7 @@ QSlider : QAbstractStepValue {
       $x, { this.valueAction = 1.0 },
       $c, { this.valueAction = 0.5 },
       {
-        switch( keycode,
+        switch( key,
           16r5d, { this.increment(scale) },
           16r1000013, { this.increment(scale) },
           16r1000014, { this.increment(scale) },
