@@ -800,7 +800,7 @@ SequenceableCollection : Collection {
 			});
 			^newList
 		};
-		error("unrecognized adverb: '" ++ adverb ++ "' for operator '" ++ aSelector ++ "'\n");
+		Error("unrecognized adverb: '" ++ adverb ++ "' for operator '" ++ aSelector ++ "'\n").throw;
 		^nil
 	}
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
