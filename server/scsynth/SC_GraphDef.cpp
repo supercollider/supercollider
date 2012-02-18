@@ -584,7 +584,7 @@ inline bool BufColorAllocator::release(int inIndex)
 	return true;
 }
 
-void ReleaseInputBuffers(GraphDef *inGraphDef, UnitSpec *unitSpec, BufColorAllocator& bufColor)
+static void ReleaseInputBuffers(GraphDef *inGraphDef, UnitSpec *unitSpec, BufColorAllocator& bufColor)
 {
 	//scprintf("ReleaseInputBuffers %s numinputs %d\n", unitSpec->mUnitDef->mUnitDefName, unitSpec->mNumInputs);
 	for (int i=unitSpec->mNumInputs-1; i>=0; --i) {
@@ -594,6 +594,11 @@ void ReleaseInputBuffers(GraphDef *inGraphDef, UnitSpec *unitSpec, BufColorAlloc
 			OutputSpec *outputSpec = outUnit->mOutputSpec + inputSpec->mFromOutputIndex;
 			inputSpec->mWireIndex = outputSpec->mWireIndex;
 			if (outputSpec->mCalcRate == calc_FullRate) {
+
+				if (unitSpec->mCalcRate == calc_DemandRate)
+					// we never release any input buffers of demand-rate ugens
+					continue;
+
 				if (!bufColor.release(outputSpec->mBufferIndex)) {
 					scprintf("buffer coloring error: tried to release output with zero count\n");
 					scprintf("output: %d %s %d\n", inputSpec->mFromUnitIndex,
