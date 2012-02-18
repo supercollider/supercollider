@@ -18,8 +18,7 @@ The input signal.
 
 argument::trig
 
-Trigger. Trigger can be any signal. A trigger happens when the
-signal changes from non-positive to positive.
+Gate - can be any signal. The output is held fixed when this is non-positive.
 
 
 Examples::
