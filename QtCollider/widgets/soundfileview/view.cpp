@@ -137,15 +137,14 @@ void QcWaveform::load( const QVector<double> & data, int offset, int ch, int sr 
     return;
   }
 
+  delete _cache;
+  if( sf ) sf_close( sf );
+  sf = 0;
+
   SF_INFO new_info;
   memset( &new_info, 0, sizeof(SF_INFO) );
   new_info.channels = ch;
   new_info.samplerate = sr;
-
-  delete _cache;
-  if( sf ) sf_close( sf );
-
-  sf = 0;
   sfInfo = new_info;
 
   _beg = _rangeBeg = 0;
@@ -158,6 +157,65 @@ void QcWaveform::load( const QVector<double> & data, int offset, int ch, int sr 
   connect( _cache, SIGNAL(loadingDone()), this, SLOT(redraw()) );
 
   _cache->load( data, _rangeDur, offset, ch );
+}
+
+void QcWaveform::allocate ( int frames, int ch, int sr )
+{
+  if( ch < 1 ) {
+    qcWarningMsg( "QSoundFileView: invalid number of channels!" );
+    return;
+  }
+
+  delete _cache;
+  if( sf ) sf_close( sf );
+  sf = 0;
+
+  SF_INFO new_info;
+  memset( &new_info, 0, sizeof(SF_INFO) );
+  new_info.channels = ch;
+  new_info.samplerate = sr;
+  sfInfo = new_info;
+
+  _beg = _rangeBeg = 0;
+  _dur = _rangeDur = _rangeEnd = frames;
+
+  updateFPP();
+
+  _cache = new SoundCacheStream();
+  _cache->allocate( frames, ch );
+
+  redraw();
+}
+
+void QcWaveform::write( const QVector<double> & data, int offset )
+{
+  if( sf ) {
+    qcWarningMsg( "QSoundFileView: can not write data while displaying a sound file!" );
+    return;
+  }
+
+  if( !_cache || !_cache->ready() ) {
+    qcWarningMsg( "QSoundFileView: can not write data; memory has not been allocated yet!" );
+    return;
+  }
+
+  int ch = sfInfo.channels;
+  int ns = data.size();
+  int nf = ns / ch;
+
+  if( nf * ch != ns ) {
+    qcWarningMsg( "QSoundFileView: can not write data; size not a multiple of channels!" );
+    return;
+  }
+
+  if( offset < 0 || offset + nf > _rangeEnd ) {
+    qcWarningMsg( "QSoundFileView: can not write data; either offset is wrong or data size is too large." );
+    return;
+  }
+
+  _cache->write( data, offset, nf );
+
+  redraw();
 }
 
 void QcWaveform::doLoad( SNDFILE *new_sf, const SF_INFO &new_info, sf_count_t beg, sf_count_t dur )
