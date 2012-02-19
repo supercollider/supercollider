@@ -186,6 +186,7 @@ protected:
 
   virtual void resizeEvent( QResizeEvent * );
   virtual void paintEvent( QPaintEvent * );
+  virtual void keyPressEvent( QKeyEvent * );
   virtual void mousePressEvent( QMouseEvent * );
   virtual void mouseDoubleClickEvent ( QMouseEvent * );
   virtual void mouseMoveEvent( QMouseEvent * );
@@ -239,8 +240,7 @@ private:
   // interaction
   enum DragAction {
     NoDragAction,
-    Scroll,
-    Zoom,
+    Navigate,
     Select,
     MoveSelection,
     MoveCursor
