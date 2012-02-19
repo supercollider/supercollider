@@ -413,9 +413,7 @@ SimpleNumber : Number {
 	}
 
 	keyToDegree { arg scale, stepsPerOctave=12;
-		var n = this div: stepsPerOctave * scale.size;
-		var key = this % stepsPerOctave;
-		^scale.indexInBetween(key) + n
+		^scale.performKeyToDegree(this, stepsPerOctave)
 	}
 
 	nearestInList { arg list;  // collection is sorted
