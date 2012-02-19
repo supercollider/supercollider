@@ -277,16 +277,6 @@ def make_local_symlink(target, source, env):
 	    os.symlink(os.path.basename(str(source[0])), targetname)
     return None
 
-# for linking libX.so => libX.so.1 on *nixy systems. Note, they must be in same dir.
-def make_local_symlink(target, source, env):
-    targetname = os.path.basename(str(target[0]))
-    if os.path.isfile(targetname):
-        if not os.path.islink(targetname):
-            liblog.error("ERROR: cannot create symlink %s because already exists as non-symlink." % (targetname))
-    else:
-	    os.symlink(os.path.basename(str(source[0])), targetname)
-    return None
-
 # ======================================================================
 # command line options
 # ======================================================================
