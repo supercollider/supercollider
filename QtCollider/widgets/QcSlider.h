@@ -69,6 +69,7 @@ class QcSlider : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::Styl
   protected:
     virtual void mousePressEvent ( QMouseEvent * );
     virtual void mouseMoveEvent ( QMouseEvent * );
+    virtual void wheelEvent ( QWheelEvent * );
     virtual void paintEvent ( QPaintEvent * );
 
   private:
