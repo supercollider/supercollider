@@ -118,18 +118,6 @@ METHOD:: readFileWithTask
     argument:: showProgress
         Whether to open a progress window. Defaults to code::true::.
 
-METHOD:: startFrame
-
-    The beginning of the displayed section of the soundfile, in frames.
-
-METHOD:: numFrames
-
-    The size of the displayed section of the soundfile, in frames.
-
-METHOD:: readProgress
-
-     The reading progress, updated periodically when reading a soundfile using link::#-readWithTask:: or link::#-readFileWithTask::.
-
 METHOD:: data
 
     Gets the display data, or sets custom data instead of a sound file.
@@ -162,6 +150,36 @@ METHOD:: setData
     argument:: samplerate
         An integer.
 
+METHOD:: alloc
+    NOTE:: Only in Qt GUI ::
+    Allocates a desired amount of display channels and frames; all frames have initial value of 0.
+    argument:: frames
+        An Integer.
+    argument:: channels
+        An Integer.
+    argument:: samplerate
+        An Integer.
+
+METHOD:: set
+    NOTE:: Only in Qt GUI ::
+    Overwrites a range of display data with another data. This method can be used after link::#-alloc:: or link::#-setData:: has been called, but not while the view is displaying a sound file.
+
+    argument:: offset
+        The frame at which to start overwriting; an Integer.
+    argument:: data
+        The new data; an Array of Floats; multiple channel data should be interleaved.
+
+METHOD:: startFrame
+
+    The beginning of the read section of the soundfile, or 0 if link::#-alloc:: or link::#-setData:: has been used.
+
+METHOD:: numFrames
+
+    The total amount of frames in the view; this is unrelated to link::#-zoom#zooming:: and link::#-scroll#scrolling::.
+
+METHOD:: readProgress
+
+     The reading progress, updated periodically when reading a soundfile using link::#-readWithTask:: or link::#-readFileWithTask::.
 
 SUBSECTION:: Navigation
 

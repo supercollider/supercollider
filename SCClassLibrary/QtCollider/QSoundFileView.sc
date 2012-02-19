@@ -25,6 +25,10 @@ QSoundFileView : QView {
     }
   }
 
+  alloc { arg frames, channels=1, samplerate=44100;
+    this.invokeMethod( \allocate, [frames.asInteger, channels.asInteger, samplerate.asInteger] );
+  }
+
   data_ { arg data;
     this.setData(data);
   }
@@ -35,6 +39,11 @@ QSoundFileView : QView {
     this.invokeMethod( \load, [data, startframe, channels, samplerate] );
   }
 
+  set { arg offset=0, data;
+    if( data.isKindOf(DoubleArray).not and: {data.isKindOf(FloatArray).not} )
+      { data = data.as(DoubleArray) };
+    this.invokeMethod( \write, [data, offset.asInteger] );
+  }
 
   readFile { arg aSoundFile, startframe, frames, block, closeFile, doneAction;
     this.load( aSoundFile.path, startframe, frames, block, doneAction );

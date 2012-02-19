@@ -76,11 +76,6 @@ void SoundCacheStream::load( const QVector<double> & data, int nf, int offset, i
     float *sum = _caches[c].sum = new float [nf];
     float *sum2 = _caches[c].sum2 = new float [nf];
 
-    //qcWarningMsg(QString("%1").arg((unsigned long)_caches[i].min));
-    //qcWarningMsg(QString("%1").arg((unsigned long)_caches[i].max));
-    //qcWarningMsg(QString("%1").arg((unsigned long)_caches[i].sum));
-    //qcWarningMsg(QString("%1").arg((unsigned long)_caches[i].sum2));
-
     int s = c + (offset * ch);
     for( int f = 0; f < nf; ++f, s += ch )
     {
@@ -143,6 +138,74 @@ void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, s
 
   _loading = true;
   _loader->load( sf, info );
+}
+
+void SoundCacheStream::allocate ( int nf, int ch )
+{
+
+  Q_ASSERT( nf > 0 && ch > 0 );
+
+  if( _loader->isRunning() ) {
+    _loader->terminate();
+    _loader->wait();
+  }
+
+  delete [] _caches;
+
+  _ch = ch;
+  _beg = _dataOffset = 0;
+  _dur = _dataSize = nf;
+  _fpu = 1.0;
+
+  _caches = new SoundCache [ch];
+
+  for( int c = 0; c < ch; ++c )
+  {
+    short *min = _caches[c].min = new short [nf];
+    short *max = _caches[c].max = new short [nf];
+    float *sum = _caches[c].sum = new float [nf];
+    float *sum2 = _caches[c].sum2 = new float [nf];
+
+    size_t bytes = nf * sizeof(short);
+    memset( min, 0, bytes );
+    memset( max, 0, bytes );
+    bytes = nf * sizeof(float);
+    memset( sum, 0, bytes );
+    memset( sum2, 0, bytes );
+  }
+
+  _loadProgress = 100;
+  _loading = false;
+  _ready = true;
+}
+
+void SoundCacheStream::write( const QVector<double> & data, int offset, int count )
+{
+  Q_ASSERT( _ready && _fpu == 1.0 );
+  Q_ASSERT( count == (float) data.size() / _ch );
+
+  int end = offset + count;
+
+  // make sure range is ok
+  Q_ASSERT( offset >= 0 && end <= _dataSize );
+
+  for( int c = 0; c < _ch; ++c )
+  {
+    short *min = _caches[c].min;
+    short *max = _caches[c].max;
+    float *sum = _caches[c].sum;
+    float *sum2 = _caches[c].sum2;
+
+    int s = c;
+    for( int f = offset; f < end; ++f, s += _ch )
+    {
+      double val = std::max(-1.0, std::min(1.0, data[s])) * SHRT_MAX;
+      min[f] = val;
+      sum[f] = val;
+      sum2[f] = val * val;
+    }
+    memcpy( max + offset, min + offset, count * sizeof(short) );
+  }
 }
 
 bool SoundCacheStream::displayData

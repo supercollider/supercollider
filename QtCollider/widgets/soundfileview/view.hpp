@@ -85,6 +85,10 @@ public:
   Q_INVOKABLE void load( const QVector<double> & data, int offset = 0,
                          int channels = 1, int samplerate = 44100 );
 
+  Q_INVOKABLE void allocate ( int frames, int channels = 1, int samplerate = 44100 );
+
+  Q_INVOKABLE void write( const QVector<double> & data, int offset );
+
 public:
 
   struct Selection {
@@ -321,6 +325,9 @@ public:
   void load( const QVector<double> & data, int frames, int offset, int channels );
   void load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, sf_count_t dur,
              int maxFramesPerUnit, int maxRawFrames );
+  void allocate ( int frames, int channels );
+  void write( const QVector<double> & data, int offset, int count );
+
   inline double fpu() { return _fpu; }
   inline bool ready() { return _ready; }
   inline bool loading() { return _loading; }
