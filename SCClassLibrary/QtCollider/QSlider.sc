@@ -21,6 +21,8 @@ QSlider : QAbstractStepValue {
     action.value(this);
   }
 
+  step { ^this.getProperty(\step) }
+
   thumbSize { ^this.getProperty(\handleLength) }
   thumbSize_ { arg pixels; this.setProperty(\handleLength, pixels) }
 

@@ -24,13 +24,14 @@
 
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QWheelEvent>
 
 QC_DECLARE_QWIDGET_FACTORY(QcSlider);
 
 QcSlider::QcSlider() :
   QtCollider::Style::Client(this),
   _value(0.0),
-  _step(0.1),
+  _step(0.01),
   _hndLen(20)
 {
   setFocusPolicy( Qt::StrongFocus );
@@ -97,6 +98,13 @@ void QcSlider::mouseMoveEvent ( QMouseEvent *e )
 
   setValue( valueAt(e->pos()) );
   update();
+  Q_EMIT( action() );
+}
+
+void QcSlider::wheelEvent ( QWheelEvent *e )
+{
+  double dval = e->delta() / 120.0 * _step;
+  setValue( _value + dval );
   Q_EMIT( action() );
 }
 
