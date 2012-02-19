@@ -6,7 +6,7 @@ Plot {
 	var	<>gridLinePattern, <>gridLineSmoothing;
 	var <>gridOnX = true, <>gridOnY = true, <>labelX, <>labelY;
 
-	var valueCache;
+	var valueCache, pen;
 
 	*initClass {
 		StartUp.add {
@@ -31,11 +31,13 @@ Plot {
 	}
 
 	init {
+		var gui = plotter.gui;
 		var skin = GUI.skin.at(\plot);
+		pen = gui.pen;
 
 		skin.use {
-			font = ~gridFont ?? { Font.default };
-			if(font.class != GUI.font) { font = Font(font.name, font.size) };
+			font = ~gridFont ?? { gui.font.default };
+			if(font.class != gui.font) { font = gui.font.new(font.name, font.size) };
 			gridColorX = ~gridColorX;
 			gridColorY = ~gridColorY;
 			plotColor = ~plotColor;
@@ -71,9 +73,9 @@ Plot {
 	}
 
 	drawBackground {
-		Pen.addRect(bounds);
-		Pen.fillColor = backgroundColor;
-		Pen.fill;
+		pen.addRect(bounds);
+		pen.fillColor = backgroundColor;
+		pen.fill;
 	}
 
 	drawGridX {
@@ -82,11 +84,11 @@ Plot {
 		var base = plotBounds.bottom;
 
 		this.drawOnGridX { |hpos|
-			Pen.moveTo(hpos @ base);
-			Pen.lineTo(hpos @ top);
+			pen.moveTo(hpos @ base);
+			pen.lineTo(hpos @ top);
 		};
 
-		Pen.strokeColor = gridColorX;
+		pen.strokeColor = gridColorX;
 		this.prStrokeGrid;
 
 	}
@@ -97,11 +99,11 @@ Plot {
 		var right = plotBounds.right;
 
 		this.drawOnGridY { |vpos|
-			Pen.moveTo(left @ vpos);
-			Pen.lineTo(right @ vpos);
+			pen.moveTo(left @ vpos);
+			pen.lineTo(right @ vpos);
 		};
 
-		Pen.strokeColor = gridColorY;
+		pen.strokeColor = gridColorY;
 		this.prStrokeGrid;
 
 	}
@@ -109,23 +111,23 @@ Plot {
 	drawNumbersX {
 		var top = plotBounds.top;
 		var base = plotBounds.bottom;
-		Pen.fillColor = fontColor;
-		Pen.font = font;
+		pen.fillColor = fontColor;
+		pen.font = font;
 		this.drawOnGridX { |hpos, val, i|
 			var string = val.asStringPrec(5) ++ domainSpec.units;
-			Pen.stringAtPoint(string, hpos @ base);
+			pen.stringAtPoint(string, hpos @ base);
 		};
 	}
 
 	drawNumbersY {
 		var left = plotBounds.left;
 		var right = plotBounds.right;
-		Pen.fillColor = fontColor;
-		Pen.font = font;
+		pen.fillColor = fontColor;
+		pen.font = font;
 		this.drawOnGridY { |vpos, val, i|
 			var string = val.asStringPrec(5).asString ++ spec.units;
 			if(gridOnX.not or: { i > 0 }) {
-				Pen.stringAtPoint(string, left @ vpos);
+				pen.stringAtPoint(string, left @ vpos);
 			}
 		};
 	}
@@ -175,17 +177,17 @@ Plot {
 		var sbounds;
 		if(gridOnX and: { labelX.notNil }) {
 			sbounds = try { labelX.bounds(font) } ? 0;
-			Pen.font = font;
-			Pen.strokeColor = fontColor;
-			Pen.stringAtPoint(labelX,
+			pen.font = font;
+			pen.strokeColor = fontColor;
+			pen.stringAtPoint(labelX,
 				plotBounds.right - sbounds.width @ plotBounds.bottom
 			)
 		};
 		if(gridOnY and: { labelY.notNil }) {
 			sbounds = try { labelY.bounds(font) } ? 0;
-			Pen.font = font;
-			Pen.strokeColor = fontColor;
-			Pen.stringAtPoint(labelY,
+			pen.font = font;
+			pen.strokeColor = fontColor;
+			pen.stringAtPoint(labelY,
 				plotBounds.left - sbounds.width - 3 @ plotBounds.top
 			)
 		};
@@ -217,69 +219,69 @@ Plot {
 		var ycoord = this.dataCoordinates;
 		var xcoord = this.domainCoordinates(ycoord.size);
 
-		Pen.width = 1.0;
-		Pen.joinStyle = 1;
+		pen.width = 1.0;
+		pen.joinStyle = 1;
 		plotColor = plotColor.as(Array);
 
 		if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion
 			ycoord.flop.do { |y, i|
-				Pen.beginPath;
+				pen.beginPath;
 				this.perform(mode, xcoord, y);
-				Pen.strokeColor = plotColor.wrapAt(i);
-				Pen.stroke;
+				pen.strokeColor = plotColor.wrapAt(i);
+				pen.stroke;
 			}
 		} {
-			Pen.beginPath;
-			Pen.strokeColor = plotColor.at(0);
+			pen.beginPath;
+			pen.strokeColor = plotColor.at(0);
 			this.perform(mode, xcoord, ycoord);
-			Pen.stroke;
+			pen.stroke;
 		};
-		Pen.joinStyle = 0;
+		pen.joinStyle = 0;
 
 	}
 
 	// modes
 
 	linear { |x, y|
-		Pen.moveTo(x.first @ y.first);
+		pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
-			Pen.lineTo(x[i] @ y[i]);
+			pen.lineTo(x[i] @ y[i]);
 		}
 	}
 
 	points { |x, y|
 		var size = min(bounds.width / value.size * 0.25, 4);
 		y.size.do { |i|
-			Pen.addArc(x[i] @ y[i], 0.5, 0, 2pi);
-			if(size > 2) { Pen.addArc(x[i] @ y[i], size, 0, 2pi); };
+			pen.addArc(x[i] @ y[i], 0.5, 0, 2pi);
+			if(size > 2) { pen.addArc(x[i] @ y[i], size, 0, 2pi); };
 		}
 	}
 
 	plines { |x, y|
 		var size = min(bounds.width / value.size * 0.25, 3);
-		Pen.moveTo(x.first @ y.first);
+		pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
 			var p = x[i] @ y[i];
-			Pen.lineTo(p);
-			Pen.addArc(p, size, 0, 2pi);
-			Pen.moveTo(p);
+			pen.lineTo(p);
+			pen.addArc(p, size, 0, 2pi);
+			pen.moveTo(p);
 		}
 	}
 
 	levels { |x, y|
-		Pen.smoothing_(false);
+		pen.smoothing_(false);
 		y.size.do { |i|
-			Pen.moveTo(x[i] @ y[i]);
-			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+			pen.moveTo(x[i] @ y[i]);
+			pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
 		}
 	}
 
 	steps { |x, y|
-		Pen.smoothing_(false);
-		Pen.moveTo(x.first @ y.first);
+		pen.smoothing_(false);
+		pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
-			Pen.lineTo(x[i] @ y[i]);
-			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+			pen.lineTo(x[i] @ y[i]);
+			pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
 		}
 	}
 
@@ -401,16 +403,16 @@ Plot {
 	}
 
 	prStrokeGrid {
-		Pen.push;
+		pen.push;
 
-		Pen.width = 1;
+		pen.width = 1;
 		try {
-			Pen.smoothing_(gridLineSmoothing);
-			if(gridLinePattern.notNil) {Pen.lineDash_(gridLinePattern)};
+			pen.smoothing_(gridLineSmoothing);
+			if(gridLinePattern.notNil) {pen.lineDash_(gridLinePattern)};
 		};
-		Pen.stroke;
+		pen.stroke;
 
-		Pen.pop;
+		pen.pop;
 	}
 
 }
@@ -428,6 +430,7 @@ Plotter {
 	var <editPlotIndex, <editPos;
 
 	var <>drawFunc, <>editFunc;
+	var <gui;
 
 	*new { |name, bounds, parent|
 		^super.newCopyArgs(name).makeWindow(parent, bounds)
@@ -436,10 +439,11 @@ Plotter {
 	makeWindow { |argParent, argBounds|
 		parent = argParent ? parent;
 		bounds = argBounds ? bounds;
+		gui = GUI.current;
 		if(parent.isNil) {
-			parent = Window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
+			parent = gui.window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
 			bounds = parent.view.bounds.insetBy(5, 0).moveBy(-5, 0);
-			interactionView = UserView(parent, bounds);
+			interactionView = gui.userView.new(parent, bounds);
 			if(GUI.skin.at(\plot).at(\expertMode).not) { this.makeButtons };
 			parent.drawFunc = { this.draw };
 			parent.front;
@@ -447,7 +451,7 @@ Plotter {
 
 		} {
 			bounds = bounds ?? { parent.bounds.moveTo(0, 0) };
-			interactionView = UserView(parent, bounds);
+			interactionView = gui.userView.new(parent, bounds);
 			interactionView.drawFunc = { this.draw };
 
 		};
@@ -567,11 +571,11 @@ Plotter {
 
 	makeButtons {
 		var string = "?";
-		var font = Font.sansSerif( 9 );
+		var font = gui.font.sansSerif( 9 );
 		var bounds = string.bounds(font);
 		var padding = 8; // ensure that string is not clipped by round corners
 
-		Button(parent, Rect(parent.view.bounds.right - 16, 8, bounds.width + padding, bounds.height + padding))
+		gui.button.new(parent, Rect(parent.view.bounds.right - 16, 8, bounds.width + padding, bounds.height + padding))
 		.states_([["?"]])
 		.focusColor_(Color.clear)
 		.font_(font)
@@ -615,7 +619,7 @@ Plotter {
 	draw {
 		bounds = this.drawBounds;
 		this.updatePlotBounds;
-		Pen.use {
+		gui.pen.use {
 			plots.do { |plot| plot.draw };
 		}
 	}
