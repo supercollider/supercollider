@@ -7,27 +7,37 @@ SCPen {
 	}
 
 	*string { arg str;
-		str.drawAtPoint( Point( 0, 0 ), font ? SCFont.default, fillColor ? Color.black );
+		str.prDrawAtPoint( Point( 0, 0 ), font ? SCFont.default, fillColor ? Color.black );
 	}
 
 	*stringAtPoint { arg str, point;
-		str.drawAtPoint( point, font ? SCFont.default, fillColor ? Color.black );
+		str.prDrawAtPoint( point, font ? SCFont.default, fillColor ? Color.black );
 	}
 
 	*stringInRect { arg str, rect;
-		str.drawInRect( rect, font ? SCFont.default, fillColor ? Color.black );
+		str.prDrawInRect( rect, font ? SCFont.default, fillColor ? Color.black );
 	}
 
 	*stringCenteredIn { arg str, inRect;
-		str.drawCenteredIn( inRect, font ? SCFont.default, fillColor ? Color.black );
-	}
+		var f = font ? SCFont.default;
+		str.prDrawAtPoint(str.bounds( f ).centerIn(inRect), f, fillColor ? Color.black);	}
 
 	*stringLeftJustIn { arg str, inRect;
-		str.drawLeftJustIn( inRect, font ? SCFont.default, fillColor ? Color.black );
+		var pos, bounds, f;
+		f = font ? SCFont.default;
+		bounds = str.prBounds( Rect.new, f );
+		pos = bounds.centerIn(inRect);
+		pos.x = inRect.left + 2;
+		str.prDrawAtPoint(pos, f, fillColor ? Color.black);
 	}
 
 	*stringRightJustIn { arg str, inRect;
-		str.drawRightJustIn( inRect, font ? SCFont.default, fillColor ? Color.black );
+		var pos, bounds, f;
+		f = font ? SCFont.default;
+		bounds = str.prBounds( Rect.new, f );
+		pos = bounds.centerIn(inRect);
+		pos.x = inRect.right - 2 - bounds.width;
+		str.prDrawAtPoint(pos, f, fillColor ? Color.black);
 	}
 
 	*image { arg img;
