@@ -31,13 +31,18 @@ Plot {
 	}
 
 	init {
+		var fontName;
 		var gui = plotter.gui;
 		var skin = GUI.skin.at(\plot);
 		pen = gui.pen;
 
 		skin.use {
 			font = ~gridFont ?? { gui.font.default };
-			if(font.class != gui.font) { font = gui.font.new(font.name, font.size) };
+			if(font.class != gui.font) {
+				fontName = font.name;
+				if( gui.font.availableFonts.detect(_ == fontName).isNil, { fontName = gui.font.defaultSansFace });
+				font = gui.font.new(fontName, font.size)
+			};
 			gridColorX = ~gridColorX;
 			gridColorY = ~gridColorY;
 			plotColor = ~plotColor;
