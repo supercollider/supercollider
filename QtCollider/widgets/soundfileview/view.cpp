@@ -26,6 +26,7 @@
 #include <QPainter>
 #include <QApplication>
 #include <QPaintEvent>
+#include <QCursor>
 
 #include <climits>
 #include <cmath>
@@ -68,6 +69,7 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _drawWaveform(true)
 {
   memset( &sfInfo, 0, sizeof(SF_INFO) );
+  setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
   setAttribute( Qt::WA_OpaquePaintEvent, true );
 }
@@ -498,6 +500,17 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
   }
 }
 
+void QcWaveform::keyPressEvent( QKeyEvent *ev )
+{
+  if( ev->key() == Qt::Key_Shift && _dragAction == Navigate )
+  {
+    _dragPoint = mapFromGlobal(QCursor::pos());
+    _dragData2 = zoom();
+  }
+  else
+    ev->ignore();
+}
+
 void QcWaveform::mousePressEvent( QMouseEvent *ev )
 {
   _dragAction = NoDragAction;
@@ -549,17 +562,9 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
 
   }
   else if( btn == Qt::RightButton ) {
-
-    if( mods & Qt::ShiftModifier ) {
-      _dragAction = Zoom;
-      _dragData = zoom();
-      _dragData2 = ev->pos().x() * _fpp + _beg;
-    }
-    else {
-      _dragAction = Scroll;
-      _dragData = _beg;
-    }
-
+    _dragAction = Navigate;
+    _dragData = ev->pos().x() * _fpp + _beg;
+    _dragData2 = zoom();
   }
 }
 
@@ -573,15 +578,16 @@ void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
 {
   if( !ev->buttons() ) return;
 
-  if( _dragAction == Scroll ) {
-    double dpos = _dragPoint.x() - ev->pos().x();
-    scrollTo( dpos * _fpp + _dragData );
-  }
-  else if( _dragAction == Zoom ) {
-    double factor = pow( 2, (ev->pos().y() - _dragPoint.y()) * 0.008 );
-    double zoom_0 = _dragData;
-    zoomTo( zoom_0 * factor );
-    scrollTo( _dragData2 - (_dragPoint.x() * _fpp) );
+  if( _dragAction == Navigate ) {
+    Qt::KeyboardModifiers mods = ev->modifiers();
+    if( mods & Qt::ShiftModifier ) {
+      double factor = pow( 2, (ev->pos().y() - _dragPoint.y()) * 0.008 );
+      // zoom to the initial zoom times the factor based on distance from initial position
+      zoomTo( _dragData2 * factor );
+    }
+    // scroll to the clicked frame minus the current mouse position in frames
+    // _fpp has been adjusted by zooming
+    scrollTo( _dragData - (ev->pos().x() * _fpp) );
   }
   else if( _dragAction == Select ) {
     sf_count_t frame = qBound( 0, ev->pos().x(), width() ) * _fpp + _beg;
