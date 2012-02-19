@@ -50,19 +50,19 @@ SCPen {
 
 	*strokeColor_ { arg color;
 		strokeColor = color;
-		color.setStroke;
+		color.cocoaPrSetStroke;
 	}
 
 	*fillColor_ { arg color;
 		fillColor = color;
-		color.setFill;
+		color.cocoaPrSetFill;
 	}
 
 	*color_ { arg color;
 		color = color ? Color.black;
 		fillColor = color;
 		strokeColor = color;
-		color.set;
+		color.cocoaPrSetStroke.cocoaPrSetFill;
 	}
 
 	*use { arg function;
