@@ -375,22 +375,24 @@ void slotOneWord(PyrSlot *slot, char *str)
 			}
 			break;
 		case tagObj :
-			if (slotRawObject(slot)) {
-				PyrClass * classptr = slotRawObject(slot)->classptr;
+		{
+			PyrObject * slotObj = slotRawObject(slot);
+			if (slotObj) {
+				PyrClass * classptr = slotObj->classptr;
 				if (classptr == class_class) {
-					sprintf(str, "class %s", slotRawSymbol(&((PyrClass*)slotRawObject(slot))->name)->name);
+					sprintf(str, "class %s", slotRawSymbol(&((PyrClass*)slotObj)->name)->name);
 				} else if (classptr == class_string) {
 					char str2[32];
 					int len;
-					if (slotRawObject(slot)->size > 31) {
-						memcpy(str2, (char*)slotRawObject(slot)->slots, 28);
+					if (slotObj->size > 31) {
+						memcpy(str2, (char*)slotObj->slots, 28);
 						str2[28] = '.';
 						str2[29] = '.';
 						str2[30] = '.';
 						str2[31] = 0;
 					} else {
-						len = sc_min(31, slotRawObject(slot)->size);
-						memcpy(str2, (char*)slotRawObject(slot)->slots, len);
+						len = sc_min(31, slotObj->size);
+						memcpy(str2, (char*)slotObj->slots, len);
 						str2[len] = 0;
 					}
 					sprintf(str, "\"%s\"", str2);
@@ -423,21 +425,21 @@ void slotOneWord(PyrSlot *slot, char *str)
 					} else if (!slotRawBlock(&slotRawFrame(slot)->method)) {
 						sprintf(str, "Frame (null method)");
 					} else if (slotRawBlock(&slotRawFrame(slot)->method)->classptr == class_method) {
-						sprintf(str, "Frame (%0X) of %s:%s", slotRawInt(slot),
+						sprintf(str, "Frame (%p) of %s:%s", slotObj,
 							slotRawSymbol(&slotRawClass(&slotRawMethod(&slotRawFrame(slot)->method)->ownerclass)->name)->name,
 							slotRawSymbol(&slotRawMethod(&slotRawFrame(slot)->method)->name)->name);
 					} else {
-						sprintf(str, "Frame (%0X) of Function", slotRawInt(slot));
+						sprintf(str, "Frame (%p) of Function", slotObj);
 					}
 				} else if (classptr == class_array) {
-					sprintf(str, "[*%d]", slotRawObject(slot)->size);
+					sprintf(str, "[*%d]", slotObj->size);
 				} else {
 					sprintf(str, "<instance of %s>", slotRawSymbol(&classptr->name)->name);
 				}
-			} else {
+			} else
 				sprintf(str, "NULL Object Pointer");
-			}
 			break;
+		}
 		case tagNil :
 			sprintf(str, "nil");
 			break;
