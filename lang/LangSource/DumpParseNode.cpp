@@ -375,6 +375,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 			}
 			break;
 		case tagObj :
+		{
 			PyrObject * slotObj = slotRawObject(slot);
 			if (slotObj) {
 				PyrClass * classptr = slotObj->classptr;
@@ -424,21 +425,21 @@ void slotOneWord(PyrSlot *slot, char *str)
 					} else if (!slotRawBlock(&slotRawFrame(slot)->method)) {
 						sprintf(str, "Frame (null method)");
 					} else if (slotRawBlock(&slotRawFrame(slot)->method)->classptr == class_method) {
-						sprintf(str, "Frame (%0X) of %s:%s", slotObj,
+						sprintf(str, "Frame (%p) of %s:%s", slotObj,
 							slotRawSymbol(&slotRawClass(&slotRawMethod(&slotRawFrame(slot)->method)->ownerclass)->name)->name,
 							slotRawSymbol(&slotRawMethod(&slotRawFrame(slot)->method)->name)->name);
 					} else {
-						sprintf(str, "Frame (%0X) of Function", slotObj);
+						sprintf(str, "Frame (%p) of Function", slotObj);
 					}
 				} else if (classptr == class_array) {
 					sprintf(str, "[*%d]", slotObj->size);
 				} else {
 					sprintf(str, "<instance of %s>", slotRawSymbol(&classptr->name)->name);
 				}
-			} else {
+			} else
 				sprintf(str, "NULL Object Pointer");
-			}
 			break;
+		}
 		case tagNil :
 			sprintf(str, "nil");
 			break;
