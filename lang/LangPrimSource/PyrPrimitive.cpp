@@ -4171,7 +4171,8 @@ void initSCViewPrimitives();
 void initSchedPrimitives();
 	initSchedPrimitives();
 
-#if (defined(__APPLE__) && !defined(SC_IPHONE)) || defined(HAVE_ALSA)
+#if (defined(__APPLE__) && !defined(SC_IPHONE)) \
+	|| defined(HAVE_ALSA) || defined(HAVE_PORTMIDI)
 void initMIDIPrimitives();
 	initMIDIPrimitives();
 #endif
