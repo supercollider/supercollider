@@ -50,13 +50,15 @@ NoteOnResponder : MIDIResponder {
 	*responders { ^nonr }
 	*init {
 		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
+		if(norinit.not) {
+			MIDIIn.addFuncTo(\noteOn, { arg src, chan, note, veloc;
+				nonr.any({ arg r;
+					r.respond(src,chan,note,veloc)
+				});
+			})
+		};
 		norinit = true;
 		nonr = [];
-		MIDIIn.addFuncTo(\noteOn, { arg src, chan, note, veloc;
-			nonr.any({ arg r;
-				r.respond(src,chan,note,veloc)
-			});
-		})
 	}
 	*add { arg resp;
 		nonr = nonr.add(resp);
@@ -78,13 +80,15 @@ NoteOffResponder : NoteOnResponder {
 
 	*init {
 		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
+		if(noffinit.not) {
+			MIDIIn.addFuncTo(\noteOff, { arg src, chan, note, veloc;
+				noffr.any({ arg r;
+					r.respond(src,chan,note,veloc)
+				});
+			})
+		};
 		noffinit = true;
 		noffr = [];
-		MIDIIn.addFuncTo(\noteOff, { arg src, chan, note, veloc;
-			noffr.any({ arg r;
-				r.respond(src,chan,note,veloc)
-			});
-		})
 	}
 	*initialized { ^noffinit }
 	*responders { ^noffr }
@@ -126,16 +130,18 @@ CCResponder : MIDIResponder {
 	}
 	*init {
 		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
+		if(ccinit.not) {
+			MIDIIn.addFuncTo(\control, { arg src,chan,num,val;
+				// first try cc num specific
+				// then try non-specific (matches any cc )
+				[ccnumr[num], ccr].any({ |stack|
+					stack.notNil and: {stack.any({ |r| r.respond(src,chan,num,val) })}
+				})
+			});
+		};
 		ccinit = true;
 		ccr = [];
 		ccnumr = Array.newClear(128);
-		MIDIIn.addFuncTo(\control, { arg src,chan,num,val;
-			// first try cc num specific
-			// then try non-specific (matches any cc )
-			[ccnumr[num], ccr].any({ |stack|
-				stack.notNil and: {stack.any({ |r| r.respond(src,chan,num,val) })}
-			})
-		});
 	}
 	learn {
 		var oneShot;
@@ -170,13 +176,15 @@ TouchResponder : MIDIResponder {
 	}
 	*init {
 		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
+		if(touchinit.not) {
+			MIDIIn.addFuncTo(\touch, { arg src, chan, val;
+				touchr.any({ arg r;
+					r.respond(src,chan,nil,val)
+				})
+			})
+		};
 		touchinit = true;
 		touchr = [];
-		MIDIIn.addFuncTo(\touch, { arg src, chan, val;
-			touchr.any({ arg r;
-				r.respond(src,chan,nil,val)
-			})
-		})
 	}
 	value { arg src,chan,num,val;
 		// num is irrelevant
@@ -205,13 +213,15 @@ BendResponder : TouchResponder {
 
 	*init {
 		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
+		if(bendinit.not) {
+			MIDIIn.addFuncTo(\bend, { arg src, chan, val;
+				bendr.any({ arg r;
+					r.respond(src,chan,nil,val)
+				});
+			})
+		};
 		bendinit = true;
 		bendr = [];
-		MIDIIn.addFuncTo(\bend, { arg src, chan, val;
-			bendr.any({ arg r;
-				r.respond(src,chan,nil,val)
-			});
-		})
 	}
 	*initialized { ^bendinit }
 	*responders { ^bendr }
@@ -243,14 +253,16 @@ ProgramChangeResponder : MIDIResponder {
 	}
 	*init {
 		if(MIDIClient.initialized.not,{ MIDIIn.connectAll });
+		if(pcinit.not) {
+			MIDIIn.addFuncTo(\program, { arg src, chan, val;
+				pcr.do({ arg r;
+					if(r.matchEvent.match(src, chan, nil, val))
+					{ r.value(src,chan,val) };
+				});
+			})
+		};
 		pcinit = true;
 		pcr = [];
-		MIDIIn.addFuncTo(\program, { arg src, chan, val;
-			pcr.do({ arg r;
-				if(r.matchEvent.match(src, chan, nil, val))
-					{ r.value(src,chan,val) };
-			});
-		})
 	}
 	value { arg src,chan,val;
 		function.value(src,chan,val);
