@@ -499,3 +499,11 @@ GetStringDialog  {
 + SimpleNumber {
 	fontID { this.deprecated(thisMethod); ^this }
 }
+
++ String {
+	getSCDir {
+		this.deprecated(thisMethod, Platform.class.findMethod(\resourceDir));
+		^Platform.resourceDir
+	}
+}
+
