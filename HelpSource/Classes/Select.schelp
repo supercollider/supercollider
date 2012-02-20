@@ -1,6 +1,7 @@
 class:: Select
 summary:: Select output from an array of inputs.
 categories:: UGens>Multichannel>Select
+related:: Classes/SelectX, Classes/SelectXFocus, Classes/LinSelectX
 
 Description::
 The output is selected from an array of inputs.

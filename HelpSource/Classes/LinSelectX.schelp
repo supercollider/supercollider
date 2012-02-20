@@ -1,7 +1,7 @@
 class:: LinSelectX
 summary:: Mix one output from many sources
 categories:: UGens>Multichannel>Select
-related:: Classes/SelectXFocus, Classes/Select, Classes/SelectX
+related:: Classes/Select, Classes/SelectX, Classes/SelectXFocus
 
 description::
 The output is mixed from an array of inputs, linearly interpolating from two adjacent channels.
