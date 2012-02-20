@@ -52,14 +52,8 @@ scui_str = """<ui>
         <menuitem action="ScedStartSwingOSC"/>
         <menuitem action="ScedStopSwingOSC"/>
         <separator/>
-        <menuitem action="ScedFindHelp"/>
-        <menuitem action="ScedBrowseHelp"/>
-        <menuitem action="ScedSearchHelp"/>
-        <menuitem action="ScedMethodArgs"/>
-        <separator/>
         <menuitem action="ScedFindDefinition"/>
         <menuitem action="ScedBrowseClass"/>
-        <menuitem action="ScedOpenDevFile"/>
         <separator/>
         <menuitem action="ScedInspectObject"/>
         <separator/>
@@ -76,6 +70,13 @@ scui_str = """<ui>
   </toolbar>
 </ui>
 """
+
+# HelpBrowser does not work on Windows (yet)
+#        <separator/>
+#        <menuitem action="ScedFindHelp"/>
+#        <menuitem action="ScedBrowseHelp"/>
+#        <menuitem action="ScedSearchHelp"/>
+#        <menuitem action="ScedMethodArgs"/>
 
 class WindowHelper:
     def __init__(self, plugin, window):
@@ -132,34 +133,30 @@ class WindowHelper:
             ("ScedStopSound", gtk.STOCK_STOP, _("Stop Sound"), "Escape",
              _("Stop sound and free all server nodes"),
              self.on_stop_sound),
+# HelpBrowser does not work on windows (yet):
+#            ("ScedFindHelp", None, _("Find Help"), "<control>U",
+#             _("Find and open help file"),
+#             self.on_find_help),
 
-            ("ScedFindHelp", None, _("Find Help"), "<control>U",
-             _("Find and open help file"),
-             self.on_find_help),
+#            ("ScedBrowseHelp", None, _("Browse Help"), None,
+#             _("Browse help by categories"),
+#             self.on_browse_help),
 
-            ("ScedBrowseHelp", None, _("Browse Help"), None,
-             _("Browse help by categories"),
-             self.on_browse_help),
+#            ("ScedSearchHelp", None, _("Search Help"), "<control><alt>U",
+#             _("Search for help"),
+#             self.on_search_help),
 
-            ("ScedSearchHelp", None, _("Search Help"), "<control><alt>U",
-             _("Search for help"),
-             self.on_search_help),
+#            ("ScedMethodArgs", None, _("Show method args"), "<alt>A",
+#             _("Show method arguments and defaults"),
+#             self.on_method_args),
 
-            ("ScedMethodArgs", None, _("Show method args"), "<alt>A",
-             _("Show method arguments and defaults"),
-             self.on_method_args),
-
-            ("ScedFindDefinition", None, _("Find Definition"), "<control>Y",
-             _("Find and open class definition"),
+            ("ScedFindDefinition", None, _("Find Class Definition"), "<control>Y",
+             _("Find and open definition of selected class"),
              self.on_find_definition),
 
-            ("ScedBrowseClass", None, _("Browse class"), None,
-             _("Browse class"),
+            ("ScedBrowseClass", None, _("Browse Class"), None,
+             _("Show selected class in Class Browser"),
              self.on_browse_class),
-
-            ("ScedOpenDevFile", None, _("Open development file"), "<control><alt>K",
-             _("Open corresponding development file for current document"),
-             self.on_open_dev_file),
 
             ("ScedInspectObject", None, _("Inspect Object"), None,
              _("Inspect object state"),
@@ -320,7 +317,7 @@ class WindowHelper:
 
     def on_find_definition(self, action):
         text = self.get_selection()
-        self.__lang.evaluate("(\"gedit \" + (\"" + text + "\"" + ".interpret.filenameSymbol.asString)).systemCmd", silent=True)
+        self.__lang.evaluate( text + ".openCodeFile" )
 
     def on_browse_class(self, action):
         text = self.get_selection()
