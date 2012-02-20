@@ -552,10 +552,10 @@ ClassBrowser {
 
 					// support funcs shared in common
 				setCurrentClass: { |class|
-					~currentClass = class ?? { ~subclassArray[~subclassView.value] };
+					~currentClass = class ?? { ~subclassArray[~subclassView.value ? 0] };
 				},
 				setCurrentMethod: { |method|
-					~currentMethod = method ?? { ~methodArray[~methodView.value] };
+					~currentMethod = method ?? { ~methodArray[~methodView.value ? 0] };
 				},
 				setSubclassArray: { |class|
 					class = class ? ~result;
@@ -654,7 +654,7 @@ ClassBrowser {
 				currentState.use {
 					var	index;
 					~methodViewIndex = view.value;
-					~currentMethod = ~methodArray[~methodView.value];
+					~currentMethod = ~methodArray[~methodView.value ? 0];
 					~currentClass = this.getClass(~currentMethod);
 					~methodSearch[\filenameView].value(~filenameView);
 					~class[\argView].value(~argView);
