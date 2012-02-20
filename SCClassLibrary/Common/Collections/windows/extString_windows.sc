@@ -4,6 +4,8 @@
 	}
 
 	openOS {|aPath|
-		("start " ++ this.escapeChar($ )).systemCmd
+		// start "title" "command"
+		("start" + "\"SuperCollider\"" + this.quote).systemCmd
 	}
 }
+
