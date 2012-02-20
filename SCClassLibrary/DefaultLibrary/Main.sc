@@ -42,7 +42,7 @@ Main : Process {
 		).postln;
 
 		Main.overwriteMsg.split(Char.nl).drop(-1).collect(_.split(Char.tab)).do {|x|
-			if(x[2].beginsWith(Platform.classLibraryDir) and: {x[1].contains("/SystemOverwrites/").not}
+			if(x[2].beginsWith(Platform.classLibraryDir) and: {x[1].contains(""+/+"SystemOverwrites"+/+"").not}
 			) {
 				warn("Extension in '%' overwrites % in main class library.".format(x[1],x[0]));
 				didWarnOverwrite = true;
