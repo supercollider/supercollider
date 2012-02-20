@@ -1,10 +1,10 @@
 class:: SelectX
 summary:: Mix one output from many sources
 categories:: UGens>Multichannel>Select
-related:: Classes/SelectXFocus, Classes/Select
+related:: Classes/Select, Classes/SelectXFocus, Classes/LinSelectX
 
 description::
-The output is mixed from an array of inputs, linearly interpolating from two adjacent channels.
+The output is mixed from an array of inputs, performing an equal power crossfade between two adjacent channels.
 
 classmethods::
 method:: ar, kr
