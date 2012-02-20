@@ -293,11 +293,16 @@ else()
 	set(auxresourcesdir "share/SuperCollider")
 endif()
 
+set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")
+
 if(NOT SC_QT)
-	set(SCCLASSLIB_EXCLUDE_REGEX "QtCollider")
-else()
-	set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")
+	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|QtCollider")
 endif()
+
+if(WIN32)
+	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|PsycolliderDocument")
+endif()
+
 
 if(APPLE)
 
