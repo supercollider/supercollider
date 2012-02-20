@@ -7,11 +7,12 @@ install(FILES ${CMAKE_SOURCE_DIR}/COPYING DESTINATION SuperCollider)
 
 add_custom_target( package
     COMMAND cmake
+        "-DSC_VERSION=${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}"
         "-DSC_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
         "-DSC_WIN_DEP_DIRS=${SC_WIN_DEP_DIRS}"
         "-DSC_ED=${SC_ED}"
         "-DNSIS_SCRIPT=${CMAKE_CURRENT_SOURCE_DIR}/supercollider.nsi"
         -P "${CMAKE_CURRENT_SOURCE_DIR}/package.cmake"
-    COMMENT "Building the installer:"
+    COMMENT "Bundling the package and building the installer:"
     VERBATIM
 )
