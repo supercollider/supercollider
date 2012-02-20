@@ -50,7 +50,7 @@ var winenv;
 // a custom envelope - not a very good one, but you can hear the difference between this
 // and the default
 winenv = Env([0, 1, 0], [0.5, 0.5], [8, -8]);
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01-44_1.aiff");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
 z = Buffer.sendCollection(s, winenv.discretize, 1);
 
 SynthDef(\warp, {arg buffer = 0, envbuf = -1;

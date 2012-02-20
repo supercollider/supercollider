@@ -105,7 +105,7 @@ SynthDef(\help_playbuf, { | out=0, bufnum = 0, rate = 1, startPos = 0, amp = 0.1
 
 a = Pproto({
 	~newgroup = (type: \group).yield;
-	~sf1 = SoundFile(Help.dir +/+ "sounds/a11wlk01-44_1.aiff").asEvent.yield;
+	~sf1 = SoundFile(Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff").asEvent.yield;
 //	(type: \on).yield
 },
 	Pbind(*[

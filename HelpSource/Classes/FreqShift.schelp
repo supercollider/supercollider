@@ -41,7 +41,7 @@ code::
 
 // the ubiquitous houston example
 (
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 {FreqShift.ar(PlayBuf.ar(1,b.bufnum,BufRateScale.kr(b.bufnum),loop:1),LFNoise0.kr(0.45,1000),0,[1,1])}.play(s);
 )
 
@@ -102,7 +102,7 @@ SynthDef("frqShift1",{arg frq;
 
 (// ssllooww columbia tuned shift detune
 r.stop; // stop old routine
-Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav", bufnum:99);
+Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav", bufnum:99);
 
 SynthDef("frqShift1",{arg frq, bufnum;
 	var e1,snd,left,right;

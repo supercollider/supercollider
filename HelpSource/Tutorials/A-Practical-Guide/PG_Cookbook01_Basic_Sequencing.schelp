@@ -79,7 +79,7 @@ code::
 
 code::
 (
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 SynthDef(\stretchedFragments, { |out, bufnum, start, time = 1, stretch = 1, amp = 1, attack = 0.01, decay = 0.05|
 	var	sig = PlayBuf.ar(1, bufnum, rate: stretch.reciprocal, startPos: start, doneAction:2);

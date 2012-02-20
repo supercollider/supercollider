@@ -97,7 +97,7 @@ x.set(\trig,1); // after this trigger, the change will take effect.
 
 
 // next example
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (
 	{ var input, kernel;

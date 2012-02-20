@@ -69,7 +69,7 @@ SynthDef(\playbuf, { |bufnum, start, dur = 1, amp = 0.2, out|
 (
 TempoClock.default.tempo = 1;
 p = Pfset({
-	~buf = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+	~buf = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	0.2.yield;	// sync seems to be incompatible with patterns
 	~bufFrames = ~buf.numFrames;
 }, Pbind(
