@@ -62,6 +62,9 @@ platform specific directory for class files (see link::Guides/Using-Extensions::
 method:: pathSeparator
 platform specific path separator
 
+method:: resourceDir
+platform specific resource directory
+
 subsection:: Features
 
 method:: when
@@ -102,6 +105,9 @@ platform specific directory for class files (see link::Guides/Using-Extensions::
 
 method:: pathSeparator
 platform specific path separator
+
+method:: resourceDir
+platform specific resource directory
 
 subsection:: Startup files
 

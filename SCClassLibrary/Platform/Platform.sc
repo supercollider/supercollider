@@ -45,6 +45,9 @@ Platform
 	userConfigDir { _Platform_userConfigDir }
 	*userConfigDir { ^thisProcess.platform.userConfigDir }
 
+	resourceDir { _Platform_resourceDir }
+	*resourceDir { ^thisProcess.platform.resourceDir }
+
 	defaultTempDir { ^this.subclassResponsibility() }
 	*defaultTempDir { ^thisProcess.platform.defaultTempDir }
 

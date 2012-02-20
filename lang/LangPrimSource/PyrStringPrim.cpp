@@ -678,23 +678,6 @@ int prStripHtml(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int prString_GetResourceDirPath(struct VMGlobals *g, int numArgsPushed);
-int prString_GetResourceDirPath(struct VMGlobals *g, int numArgsPushed)
-{
-	PyrSlot *a = g->sp;
-
-	char * chars = (char*)malloc(MAXPATHLEN - 32);
-	sc_GetResourceDirectory(chars, MAXPATHLEN - 32);
-
-	PyrString* string = newPyrString(g->gc, chars, 0, false);
-	SetObject(a, string);
-	free(chars);
-
-	return errNone;
-}
-
-
 int prString_Find(struct VMGlobals *g, int numArgsPushed);
 int prString_Find(struct VMGlobals *g, int numArgsPushed)
 {
@@ -908,7 +891,6 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_String_FindRegexp", prString_FindRegexp, 3, 0);
 	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
 	definePrimitive(base, index++, "_StripHtml", prStripHtml, 1, 0);
-	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
 	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);
 	definePrimitive(base, index++, "_String_EscapeChar", prString_EscapeChar, 2, 0);
 }
