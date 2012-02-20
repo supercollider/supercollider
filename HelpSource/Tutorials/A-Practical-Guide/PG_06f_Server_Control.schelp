@@ -106,7 +106,7 @@ SynthDef(\playbuf, { |bufnum, start, dur = 1, amp = 0.2, out|
 (
 TempoClock.default.tempo = 1;
 p = Pproto({
-	~buf = (type: \allocRead, path: Help.dir +/+ "sounds/a11wlk01.wav").yield;
+	~buf = (type: \allocRead, path: Platform.resourceDir +/+ "sounds/a11wlk01.wav").yield;
 }, Pbind(
 	\instrument, \playbuf,
 		// access resources in the protoevent by Pkey

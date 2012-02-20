@@ -167,7 +167,7 @@ SynthDef("help-Buffer",{ arg out=0, bufnum;
 
 y = Synth.basicNew("help-Buffer"); // not sent yet
 
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav", action: { arg buffer;
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav", action: { arg buffer;
 		// synth add its s_new msg to follow
 		// after the buffer read completes
 		y.newMsg(s,\addToTail,[\bufnum,buffer])

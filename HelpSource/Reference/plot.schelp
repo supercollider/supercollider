@@ -59,7 +59,7 @@ Env.adsr(0.4, 0.4, 0.8, 0.9).plot
 
 // Buffers
 s.boot;
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 b.plot; // +-1 range
 b.plot(minval: nil, maxval: nil); // auto range
 b.plot(minval: 0, maxval: nil); // semi-auto range

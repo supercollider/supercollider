@@ -36,7 +36,7 @@ s.boot;
 
 (
 b = Buffer.alloc(s,2048,1);
-c = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 )
 
 (

@@ -10,7 +10,7 @@ section::複数の部分からなるシンセシス
 code::
 (
 // ディスクからサウンド・ファイルを読み込む
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 // モノのサンプル・プレーヤー ... １チャンネルのみ
 SynthDef("aMonoSamplePlayer", { arg bus = 0, bufnum = 0, rateScale = 1;
@@ -128,7 +128,7 @@ section::サンプルをループする
 code::
 (
 // サウンド・ファイルを読み込む
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 // サウンド・ファイル全体をループ再生するサンプル・プレーヤーを定義する
 SynthDef("aLoopingSamplePlayer", { arg outBus = 0, bufnum = 0, rateScale = 1, mul = 1;

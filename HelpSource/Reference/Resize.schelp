@@ -78,7 +78,7 @@ p = PopUpMenu(w, Rect(10,10,80,24))
 	});
 
 f = SoundFile.new;
-f.openRead(Help.dir +/+ "sounds/a11wlk01.wav");
+f.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 a = SoundFileView(w, Rect(10,40, 700, 180))
 	.soundfile_(f)

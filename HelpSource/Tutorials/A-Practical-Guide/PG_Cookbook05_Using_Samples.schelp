@@ -17,7 +17,7 @@ The loop actually starts with a half-beat anacrusis, so link::Classes/Ptpar:: de
 
 code::
 (
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 // one loop segment
 SynthDef(\oneLoop, { |out, bufnum, start, time, amp|

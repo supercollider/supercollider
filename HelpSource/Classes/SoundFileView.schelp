@@ -484,7 +484,7 @@ w = Window.new("soundfile test", Rect(200, 300, 740, 100));
 a = SoundFileView.new(w, Rect(20,20, 700, 60));
 
 f = SoundFile.new;
-f.openRead(Help.dir +/+ "sounds/a11wlk01.wav");
+f.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 f.inspect;
 
 a.soundfile = f;
@@ -512,7 +512,7 @@ w.front;
 a = SoundFileView.new(w, Rect(20,20, 700, 60));
 
 f = SoundFile.new;
-f.openRead(Help.dir +/+ "sounds/a11wlk01.wav");
+f.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 // f.inspect;
 
 a.soundfile = f;            // set soundfile

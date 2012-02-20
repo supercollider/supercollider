@@ -8,7 +8,7 @@ Breaking synthesis processes into parts that accomplish small well-defined tasks
 code::
 (
 // read a soundfile from disk
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 // a samplePlayer in mono ... one channel only
 SynthDef("aMonoSamplePlayer", { arg bus = 0, bufnum = 0, rateScale = 1;
@@ -79,7 +79,7 @@ The next example uses three synthsdefs to make a chain. The first synthdef is a 
 code::
 (
 // read a soundfile
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 // define a sample player that will loop over a soundfile
 SynthDef("aLoopingSamplePlayer", { arg outBus = 0, bufnum = 0, rateScale = 1, mul = 1;

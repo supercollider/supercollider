@@ -49,7 +49,7 @@ s.boot // Boot the server, if you need to
 
 // read a whole sound into memory
 // note: not *that* columbia, the first one
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav"); // remember to free the buffer later.
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav"); // remember to free the buffer later.
 
 SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
 	Out.ar(out,
