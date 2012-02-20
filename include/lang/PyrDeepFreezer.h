@@ -48,9 +48,8 @@ public:
 
 	~PyrDeepFreezer()
 	{
-		if (objectArrayCapacity > kDeepFreezerObjectArrayInitialCapacity) {
+		if (objectArrayCapacity > kDeepFreezerObjectArrayInitialCapacity)
 			g->allocPool->Free(objectArray);
-		}
 	}
 
 	long doDeepFreeze(PyrSlot *objectSlot)
@@ -62,11 +61,14 @@ public:
 				constructObjectArray(slotRawObject(objectSlot));
 				for (int i=0; i<numObjects; ++i) {
 					g->gc->BecomePermanent( objectArray[i] );
+					objectArray[i]->ClearMark();
 				}
 			}
 		} catch (std::exception &ex) {
 			error(ex.what());
 			err = errFailed;
+			for (int i=0; i<numObjects; ++i)
+				objectArray[i]->ClearMark();
 		}
 		return err;
 	}
@@ -76,9 +78,9 @@ private:
 	void recurse(PyrObject *obj, int n)
 	{
 		PyrSlot *slot = obj->slots;
-		for (int i=0; i<n; ++i, ++slot) {
-			if (IsObj(slot)) constructObjectArray(slotRawObject(slot));
-		}
+		for (int i=0; i<n; ++i, ++slot)
+			if (IsObj(slot))
+				constructObjectArray(slotRawObject(slot));
 	}
 
 	void growObjectArray()
@@ -88,9 +90,9 @@ private:
 		int32 newSize = newObjectArrayCapacity * sizeof(PyrObject*);
 		PyrObject** newArray = (PyrObject**)g->allocPool->Alloc(newSize);
 		memcpy(newArray, objectArray, numObjects * sizeof(PyrObject*));
-		if (objectArrayCapacity > kDeepFreezerObjectArrayInitialCapacity) {
+		if (objectArrayCapacity > kDeepFreezerObjectArrayInitialCapacity)
 			g->allocPool->Free(objectArray);
-		}
+
 		objectArrayCapacity = newObjectArrayCapacity;
 		objectArray = newArray;
 	}
@@ -98,7 +100,6 @@ private:
 	void putObject(PyrObject *obj)
 	{
 		obj->SetMark();
-		obj->scratch1 = numObjects;
 
 		// expand array if needed
 		if (numObjects >= objectArrayCapacity) growObjectArray();
