@@ -708,7 +708,7 @@ code::
 || arguments: code:: numChannels, buffer number, rate, trigger, start pos, loop ::
 code::
 // read sound
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 { SinOsc.ar(800 + (700 * PlayBuf.ar(1,b, BufRateScale.kr(b),  loop:1)),0,0.3) }.scope(1);
 
@@ -784,7 +784,7 @@ definitionlist::
 || arguments: code:: numChannels, trigger, buffer number, rate, center pos, dur, pan, amp, interpolation ::
 code::
 // read sound
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (
 {
@@ -1066,7 +1066,7 @@ code::
 // alloc a buffer for the FFT
 b = Buffer.alloc(s,2048,1);
 // read a sound
-c = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 
 (

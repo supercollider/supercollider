@@ -32,7 +32,7 @@ code::
 s.boot.doWhenBooted {
 	var fftsize = 1024;
 	b = Buffer.alloc(s, fftsize, 1);
-	c = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+	c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 }
 )
 

@@ -113,7 +113,7 @@ x.free;
 code::
 // next example
 
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (
 	{ var input, kernel;

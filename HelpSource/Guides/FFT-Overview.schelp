@@ -32,7 +32,7 @@ code::
 
 PV Ugens write their output data emphasis:: in place ::, i.e. back into the same buffer from which they read. PV UGens which require two buffers write their data into the first buffer, usually called 'bufferA'.
 code::
-d = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (
 { var inA, chainA, inB, chainB, chain;
@@ -89,7 +89,7 @@ any Synth using PV UGens might not.
 
 It is possible to manipulate the FFT data directly within a synth graph (if there doesn't already exist a PV UGen which will do what you want), using the methods pvcalc, pvcalc2, pvcollect. Here's an example which uses the link::Classes/SequenceableCollection:: methods clump and flop to rearrange the order of the spectral bins:
 code::
-c = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (
 x = {

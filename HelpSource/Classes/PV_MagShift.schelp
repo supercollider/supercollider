@@ -32,7 +32,7 @@ Examples::
 code::
 
 s.boot;
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (
 SynthDef("help-magStretch", { arg out=0, bufnum=0;

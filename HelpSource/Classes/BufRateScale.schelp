@@ -26,7 +26,7 @@ code::.ir::  will not track the changes.
 Examples::
 
 code::
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (
 x = { arg rate=1;

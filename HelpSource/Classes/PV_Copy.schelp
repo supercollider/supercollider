@@ -18,7 +18,7 @@ examples::
 code::
 (
 s.waitForBoot {
-	d = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+	d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 }
 )
 
@@ -74,7 +74,7 @@ x.free;
 s.waitForBoot {
 	b = Buffer.alloc(s,2048,1);
 	c = Buffer.alloc(s,2048,1);
-	d = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+	d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	e = Buffer.alloc(s,2048,1);
 	f = Buffer.alloc(s,2048,1);
 }

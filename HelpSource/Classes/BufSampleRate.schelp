@@ -27,7 +27,7 @@ code::.ir::  will not track the changes.
 Examples::
 
 code::
-b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 // compares a 1102.5 Hz sine tone (11025 * 0.1, left) with a 1100 Hz tone (right)
 // the apollo sample has a sample rate of 11.025 kHz
