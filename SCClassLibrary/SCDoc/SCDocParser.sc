@@ -14,6 +14,11 @@ SCDocParser {
     var <>currentFile;
     var <methodList, <keywordList;
     classvar copyMethodCache;
+    classvar ignoreMethods;
+
+    *initClass {
+        ignoreMethods = IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset, \initClass, \storeArgs, \storeOn, \printOn];
+    }
 
     init {
         root = tree = List.new;
@@ -426,7 +431,7 @@ SCDocParser {
                 l = Array.new;
                 (mets = c.methods) !? {
                     //ignore these methods by default. Note that they can still be explicitly documented.
-                    docmets = docmets | IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset];
+                    docmets = docmets | ignoreMethods;
                     mets.collectAs({|m|m.name.asGetter},IdentitySet).do {|name|
                         if(docmets.includes(name).not) {
                             l = l.add("_"++pfx++name.asString);
@@ -555,7 +560,7 @@ SCDocParser {
 
         (mets = class.methods) !? {
             //ignore these methods by default. Note that they can still be explicitly documented.
-            docmets = docmets | IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset];
+            docmets = docmets | ignoreMethods;
             syms = mets.collectAs({|m|m.name.asGetter},IdentitySet);
             syms.do {|name|
                 if(docmets.includes(name).not) {
