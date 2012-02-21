@@ -23,10 +23,8 @@ METHOD:: openPanel
 	Example:
 code::
 (
-Dialog.openPanel({ arg paths;
-	paths.do({ arg p;
-		p.postln;
-	})
+Dialog.openPanel({ arg path;
+	path.postln;
 },{
 	"cancelled".postln;
 });
