@@ -10,8 +10,12 @@ Installation
 To install sced via cmake, configure the build directory with
 `cmake -DSC_ED=ON'
 
-The most recent sced is for gedit version 3, but an older version for gedit 2
-is also installed.
+This will install sced for the most recent version of gedit available on your
+platform (version 3 on Linux and Mac OS X, and version 2 on Windows).
+
+If you specifically want to install sced for gedit version 2 instead of 3,
+configure the build directory with
+'cmake -DSC_ED=2'
 
 When installing into /usr/local (which is the default), gedit won't find
 the plugin since it only looks in /usr. To fix this, simply symlink
