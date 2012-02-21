@@ -337,7 +337,7 @@ QuarkViewQt {
 		installButton = Button().fixedSize_(Size(20,20));
 		treeItem = parent.addItem([
 			nil, quark.name,
-			quark.summary.replace("\n"," ").replace($\t.asString,"")
+			quark.summary !? { quark.summary.replace("\n"," ").replace("\t","") }
 		]).setView( 0, installButton );
 
 		this.updateButtonStates;
