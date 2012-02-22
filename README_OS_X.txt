@@ -51,7 +51,7 @@ This will build the software, then "install" it to a folder "SuperCollider" unde
 CMAKE_INSTALL_PREFIX, which defaults to "<build-directory>/Install",
 with the finished products in. You might like to move the "SuperCollider"
 folder into your /Applications folder or install it there directly by
-passing "-D /Applications" to cmake.
+passing "-DCMAKE_INSTALL_PREFIX=/Applications" to cmake.
 
 The build process can be configured using the cmake program, cmake
 frontends like "ccmake" or "cmake-gui", or by simply editing the
