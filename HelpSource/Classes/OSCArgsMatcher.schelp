@@ -1,6 +1,6 @@
 CLASS:: OSCArgsMatcher
 summary:: Test for specific OSC arguments before evaluating a Function
-categories:: Undocumented classes
+categories:: OpenSoundControl
 related:: Classes/OSCFunc, Guides/OSC_communication
 
 DESCRIPTION::
