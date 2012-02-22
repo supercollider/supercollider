@@ -11,19 +11,19 @@ Plot {
 
 	*initClass {
 		StartUp.add {
-				GUI.skin.put(\plot, (
-					gridColorX: Color.grey(0.7),
-					gridColorY: Color.grey(0.7),
-					fontColor: Color.grey(0.3),
-					plotColor: [Color.black, Color.blue, Color.red, Color.green(0.7)],
-					background: Color.new255(235, 235, 235),
-					gridLinePattern: nil,
-					gridLineSmoothing: false,
-					labelX: "",
-					labelY: "",
-					expertMode: false,
-					gridFont: Font( Font.defaultSansFace, 9 )
-				));
+			GUI.skin.put(\plot, (
+				gridColorX: Color.grey(0.7),
+				gridColorY: Color.grey(0.7),
+				fontColor: Color.grey(0.3),
+				plotColor: [Color.black, Color.blue, Color.red, Color.green(0.7)],
+				background: Color.new255(235, 235, 235),
+				gridLinePattern: nil,
+				gridLineSmoothing: false,
+				labelX: "",
+				labelY: "",
+				expertMode: false,
+				gridFont: Font( Font.defaultSansFace, 9 )
+			));
 		}
 	}
 
@@ -152,7 +152,6 @@ Plot {
 		};
 	}
 
-
 	domainCoordinates { |size|
 		var val = this.resampledDomainSpec.unmap(plotter.domain ?? { (0..size-1) });
 		^plotBounds.left + (val * plotBounds.width);
@@ -173,7 +172,6 @@ Plot {
 	}
 
 	drawData {
-
 		var mode = plotter.plotMode;
 		var ycoord = this.dataCoordinates;
 		var xcoord = this.domainCoordinates(ycoord.size);
@@ -354,10 +352,6 @@ Plot {
 	copy {
 		^super.copy.drawGrid_(drawGrid.copy)
 	}
-
-
-	// private implementation
-
 	prResampValues {
 		^if(value.size <= (plotBounds.width / plotter.resolution)) {
 			value
@@ -403,7 +397,6 @@ Plotter {
 			bounds = bounds ?? { parent.bounds.moveTo(0, 0) };
 			interactionView = gui.userView.new(parent, bounds);
 			interactionView.drawFunc = { this.draw };
-
 		};
 		modes = [\points, \levels, \linear, \plines, \steps].iter.loop;
 
@@ -542,8 +535,8 @@ Plotter {
 		value = arrays;
 		data = this.prReshape(arrays);
 		if(findSpecs) {
-				this.calcSpecs;
-				this.calcDomainSpecs;
+			this.calcSpecs;
+			this.calcDomainSpecs;
 		};
 		this.updatePlotSpecs;
 		this.updatePlots;
@@ -604,7 +597,6 @@ Plotter {
 
 		this.updatePlotSpecs;
 		this.updatePlotBounds;
-
 	}
 
 	updatePlots {
@@ -674,24 +666,21 @@ Plotter {
 		}
 	}
 
-
 	calcDomainSpecs {
 		// for now, a simple version
 		domainSpecs = data.collect { |val|
-				[0, val.size - 1, \lin, 1].asSpec
+			[0, val.size - 1, \lin, 1].asSpec
 		}
 	}
 
 
 	// interaction
-
-
 	pointIsInWhichPlot { |point|
 		var res = plots.detectIndex { |plot|
 			point.y.exclusivelyBetween(plot.bounds.top, plot.bounds.bottom)
 		};
 		^res ?? {
-				if(point.y < bounds.center.y) { 0 } { plots.size - 1 }
+			if(point.y < bounds.center.y) { 0 } { plots.size - 1 }
 		}
 	}
 
@@ -716,8 +705,6 @@ Plotter {
 	refresh {
 		parent !? { parent.refresh }
 	}
-
-	// private implementation
 
 	prReshape { |item|
 		var size, array = item.asArray;
@@ -747,7 +734,6 @@ Plotter {
 				elem
 			}
 		};
-
 		plotter.setValue(array, true, false);
 		if(minval.notNil and: {maxval.notNil},{
 			plotter.specs = [minval,maxval].asSpec
@@ -762,12 +748,12 @@ Plotter {
 
 + Collection {
 	plotHisto { arg steps = 100, min, max;
-			var histo = this.histo(steps, min, max);
-			var plotter = histo.plot;
-			plotter.domainSpecs = [[min ?? { this.minItem }, max ?? { this.maxItem }].asSpec];
-			plotter.specs = [[0, histo.maxItem, \linear, 1].asSpec];
-			plotter.plotMode = \steps;
-			^plotter
+		var histo = this.histo(steps, min, max);
+		var plotter = histo.plot;
+		plotter.domainSpecs = [[min ?? { this.minItem }, max ?? { this.maxItem }].asSpec];
+		plotter.specs = [[0, histo.maxItem, \linear, 1].asSpec];
+		plotter.plotMode = \steps;
+		^plotter
 	}
 }
 
