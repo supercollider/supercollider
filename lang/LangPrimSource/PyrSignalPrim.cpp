@@ -446,7 +446,7 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;
 
 	asize = slotRawObject(a)->size;
-	if (slotRawFloat(b) != 0.0 && !(isKindOfSlot(b, class_signal) && slotRawObject(b)->size == asize)) { /// check: is the first condition safe?
+	if (NotNil(b) && !(isKindOfSlot(b, class_signal) && slotRawObject(b)->size == asize)) {
 		error("Signal::fft imaginary part wrong type or length.\n");
 		return errFailed;
 	}
@@ -481,7 +481,7 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 	g->gc->GCWriteNew(complexobj, imagobj);
 
 	inreal = (float*)slotRawObject(a)->slots - 1;
-	if (slotRawFloat(b) == 0.0) { /// check: is the condition safe?
+	if (NotNil(b)) {
 
 		fftbuf = (float*)fftoutobj->slots - 1;
 		for (i=0; i<asize; ++i) {
