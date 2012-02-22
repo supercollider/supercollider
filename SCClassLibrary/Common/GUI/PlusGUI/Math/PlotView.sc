@@ -749,11 +749,13 @@ Plotter {
 		};
 
 		plotter.setValue(array, true, false);
-
-		minval !? { plotter.minval = minval; };
-		maxval !? { plotter.maxval = maxval };
+		if(minval.notNil and: {maxval.notNil},{
+			plotter.specs = [minval,maxval].asSpec
+		},{
+			minval !? { plotter.minval = minval; };
+			maxval !? { plotter.maxval = maxval };
+		});
 		plotter.refresh;
-
 		^plotter
 	}
 }
@@ -821,11 +823,10 @@ Plotter {
 			this.loadToFloatArray(duration, server, { |array, buf|
 				var numChan = buf.numChannels;
 				{
-					plotter.value = array.unlace(buf.numChannels).collect(_.drop(-1));
-					plotter.domainSpecs = (ControlSpec(0, duration, units: "s"));
+					plotter.domainSpecs = ControlSpec(0, duration, units: "s");
 					minval !? { plotter.minval = minval; };
 					maxval !? { plotter.maxval = maxval };
-					plotter.refresh;
+					plotter.setValue(array.unlace(buf.numChannels).collect(_.drop(-1)),false,true);
 
 				}.defer
 			})
@@ -850,8 +851,14 @@ Plotter {
 		);
 		this.loadToFloatArray(action: { |array, buf|
 			{
-				plotter.value = array.unlace(buf.numChannels);
-				plotter.setProperties(\labelX, "frames");
+				if(minval.notNil and: {maxval.notNil},{
+					plotter.specs = [minval,maxval].asSpec
+				},{
+					minval !? { plotter.minval = minval; };
+					maxval !? { plotter.maxval = maxval };
+				});
+				plotter.domainSpecs = ControlSpec(0.0,buf.numFrames,units:"frames");
+				plotter.setValue(array.unlace(buf.numChannels),false,true);
 			}.defer
 		});
 		^plotter
