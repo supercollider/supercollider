@@ -1,12 +1,13 @@
 Plot {
 
-	var <>plotter, <value, <>spec, <>domainSpec;
-	var <bounds, <plotBounds;
-	var <>font, <>fontColor, <>gridColorX, <>gridColorY, <>plotColor, <>backgroundColor;
-	var	<>gridLinePattern, <>gridLineSmoothing;
-	var <>gridOnX = true, <>gridOnY = true, <>labelX, <>labelY;
+	var <>plotter, <value;
+	var <bounds, <plotBounds,<>drawGrid;
 
-	var valueCache, pen;
+	var <spec, <domainSpec;
+	var <font, <fontColor, <gridColorX, <gridColorY, <>plotColor, <>backgroundColor;
+	var <gridOnX = true, <gridOnY = true, <>labelX, <>labelY;
+
+	var valueCache,pen;
 
 	*initClass {
 		StartUp.add {
@@ -36,6 +37,9 @@ Plot {
 		var skin = GUI.skin.at(\plot);
 		pen = gui.pen;
 
+		drawGrid = DrawGrid(bounds ? Rect(0,0,1,1),nil,nil);
+		drawGrid.x.labelOffset = Point(0,4);
+		drawGrid.y.labelOffset = Point(-10,0);
 		skin.use {
 			font = ~gridFont ?? { gui.font.default };
 			if(font.class != gui.font) {
@@ -43,13 +47,13 @@ Plot {
 				if( gui.font.availableFonts.detect(_ == fontName).isNil, { fontName = gui.font.defaultSansFace });
 				font = gui.font.new(fontName, font.size)
 			};
-			gridColorX = ~gridColorX;
-			gridColorY = ~gridColorY;
+			this.gridColorX = ~gridColorX;
+			this.gridColorY = ~gridColorY;
 			plotColor = ~plotColor;
-			fontColor = ~fontColor;
+			this.fontColor = ~fontColor;
 			backgroundColor = ~background;
-			gridLineSmoothing = ~gridLineSmoothing;
-			gridLinePattern = ~gridLinePattern !? {~gridLinePattern.as(FloatArray)};
+			this.gridLineSmoothing = ~gridLineSmoothing;
+			this.gridLinePattern = ~gridLinePattern !? {~gridLinePattern.as(FloatArray)};
 			labelX = ~labelX;
 			labelY = ~labelY;
 		};
@@ -60,18 +64,63 @@ Plot {
 		plotBounds = if(rect.height > 40) { rect.insetBy(size, size) } { rect };
 		bounds = rect;
 		valueCache = nil;
+		drawGrid.bounds = plotBounds;
 	}
 
 	value_ { |array|
 		value = array;
 		valueCache = nil;
 	}
-
+	spec_ { |sp|
+		spec = sp;
+		if(gridOnY and: spec.notNil,{
+			drawGrid.vertGrid = spec.grid;
+		},{
+			drawGrid.vertGrid = nil
+		})
+	}
+	domainSpec_ { |sp|
+		domainSpec = sp;
+		if(gridOnX and: domainSpec.notNil,{
+			drawGrid.horzGrid = domainSpec.grid;
+		},{
+			drawGrid.horzGrid = nil
+		})
+	}
+	gridColorX_ { |c|
+		drawGrid.x.gridColor = c;
+		gridColorX = c;
+	}
+	gridColorY_ { |c|
+		drawGrid.y.gridColor = c;
+		gridColorY = c;
+	}
+	font_ { |f|
+		font = f;
+		drawGrid.font = f;
+	}
+	fontColor_ { |c|
+		fontColor = c;
+		drawGrid.fontColor = c;
+	}
+	gridLineSmoothing_ { |bool|
+		drawGrid.smoothing = bool;
+	}
+	gridLinePattern_ { |pattern|
+		drawGrid.linePattern = pattern;
+	}
+	gridOnX_ { |bool|
+		gridOnX = bool;
+		drawGrid.horzGrid = if(gridOnX,{domainSpec.grid},{nil});
+	}
+	gridOnY_ { |bool|
+		gridOnY= bool;
+		drawGrid.vertGrid = if(gridOnY,{spec.grid},{nil});
+	}
 
 	draw {
 		this.drawBackground;
-		if(gridOnX) { this.drawGridX; this.drawNumbersX; };
-		if(gridOnY) { this.drawGridY; this.drawNumbersY; };
+		drawGrid.draw;
 		this.drawLabels;
 		this.drawData;
 		plotter.drawFunc.value(this); // additional elements
@@ -81,101 +130,6 @@ Plot {
 		pen.addRect(bounds);
 		pen.fillColor = backgroundColor;
 		pen.fill;
-	}
-
-	drawGridX {
-
-		var top = plotBounds.top;
-		var base = plotBounds.bottom;
-
-		this.drawOnGridX { |hpos|
-			pen.moveTo(hpos @ base);
-			pen.lineTo(hpos @ top);
-		};
-
-		pen.strokeColor = gridColorX;
-		this.prStrokeGrid;
-
-	}
-
-	drawGridY {
-
-		var left = plotBounds.left;
-		var right = plotBounds.right;
-
-		this.drawOnGridY { |vpos|
-			pen.moveTo(left @ vpos);
-			pen.lineTo(right @ vpos);
-		};
-
-		pen.strokeColor = gridColorY;
-		this.prStrokeGrid;
-
-	}
-
-	drawNumbersX {
-		var top = plotBounds.top;
-		var base = plotBounds.bottom;
-		pen.fillColor = fontColor;
-		pen.font = font;
-		this.drawOnGridX { |hpos, val, i|
-			var string = val.asStringPrec(5) ++ domainSpec.units;
-			pen.stringAtPoint(string, hpos @ base);
-		};
-	}
-
-	drawNumbersY {
-		var left = plotBounds.left;
-		var right = plotBounds.right;
-		pen.fillColor = fontColor;
-		pen.font = font;
-		this.drawOnGridY { |vpos, val, i|
-			var string = val.asStringPrec(5).asString ++ spec.units;
-			if(gridOnX.not or: { i > 0 }) {
-				pen.stringAtPoint(string, left @ vpos);
-			}
-		};
-	}
-
-
-	drawOnGridX { |func|
-
-		var width = plotBounds.width;
-		var left = plotBounds.left;
-		var n, gridValues;
-		var xspec = domainSpec;
-		if(this.hasSteplikeDisplay) {
-			// special treatment of special case: lines need more space
-			xspec = xspec.copy.maxval_(xspec.maxval * value.size / (value.size - 1))
-		};
-		n = (plotBounds.width / 64).round(2);
-		if(xspec.hasZeroCrossing) { n = n + 1 };
-
-		gridValues = xspec.gridValues(n);
-		if(gridOnY) { gridValues = gridValues.drop(1) };
-		gridValues = gridValues.drop(-1);
-
-		gridValues.do { |val, i|
-			var hpos = left + (xspec.unmap(val) * width);
-			func.value(hpos, val, i);
-		};
-	}
-
-	drawOnGridY { |func|
-
-		var base = plotBounds.bottom;
-		var height = plotBounds.height.neg; // measures from top left
-		var n, gridValues;
-
-		n = (plotBounds.height / 32).round(2);
-		if(spec.hasZeroCrossing) { n = n + 1 };
-		gridValues = spec.gridValues(n);
-
-		gridValues.do { |val, i|
-			var vpos = base + (spec.unmap(val) * height);
-			func.value(vpos, val, i);
-		};
-
 	}
 
 	drawLabels {
@@ -394,6 +348,11 @@ Plot {
 	zoomFont { |val|
 		font = font.copy;
 		font.size = max(1, font.size + val);
+		this.font = font;
+		drawGrid.clearCache;
+	}
+	copy {
+		^super.copy.drawGrid_(drawGrid.copy)
 	}
 
 
@@ -406,20 +365,6 @@ Plot {
 			valueCache ?? { valueCache = value.resamp1(plotBounds.width / plotter.resolution) }
 		}
 	}
-
-	prStrokeGrid {
-		pen.push;
-
-		pen.width = 1;
-		try {
-			pen.smoothing_(gridLineSmoothing);
-			if(gridLinePattern.notNil) {pen.lineDash_(gridLinePattern)};
-		};
-		pen.stroke;
-
-		pen.pop;
-	}
-
 }
 
 
@@ -622,8 +567,12 @@ Plotter {
 	}
 
 	draw {
-		bounds = this.drawBounds;
-		this.updatePlotBounds;
+		var b;
+		b = this.drawBounds;
+		if(b != bounds) {
+			bounds = b;
+			this.updatePlotBounds;
+		};
 		gui.pen.use {
 			plots.do { |plot| plot.draw };
 		}
@@ -718,10 +667,10 @@ Plotter {
 		if(separately) {
 			this.specs = specs.collect { |spec, i|
 				var list = data.at(i);
-				list !? { spec = spec.calcRange(list.flat).roundRange };
+				list !? { spec = spec.looseRange(list.flat) };
 			}
 		} {
-			this.specs = specs.first.calcRange(data.flat).roundRange;
+			this.specs = specs.first.looseRange(data.flat);
 		}
 	}
 
