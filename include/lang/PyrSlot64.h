@@ -262,6 +262,7 @@ inline int slotRawInt(PyrSlot *slot)
 
 inline double slotRawFloat(PyrSlot *slot)
 {
+	assert(IsFloat(slot));
 	return slot->u.f;
 }
 
