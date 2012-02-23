@@ -1,6 +1,6 @@
 title:: Bundled Server Messages
 summary:: Sending OSC message bundles
-categories:: OpenSoundControl
+categories:: External Control>OSC, Server>Architecture
 related:: Guides/ServerTiming
 
 When using the Synth/Node/Group sclang objects there is often a need to construct bundles to send messages together. For example when you want to start a synth that should be mapped instantly to certain buses, or need to ensure that two synths start with precise synchronisation.

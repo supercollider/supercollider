@@ -1,6 +1,6 @@
 CLASS:: OSCFuncRecvPortMessageMatcher
 summary:: Matches incoming messages to responder funcs based on receive port
-categories:: OpenSoundControl
+categories:: External Control>OSC>Matchers
 related:: Classes/AbstractMessageMatcher, Classes/OSCFuncAddrMessageMatcher, Classes/OSCFuncRecvPortMessageMatcher, Classes/OSCFuncBothMessageMatcher
 
 DESCRIPTION::

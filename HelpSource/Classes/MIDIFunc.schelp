@@ -1,6 +1,6 @@
 CLASS:: MIDIFunc
 summary:: Fast Responder for incoming MIDI Messages
-categories:: MIDI
+categories:: External Control>MIDI
 related:: Guides/MIDI, Classes/MIDIdef
 
 DESCRIPTION::

@@ -1,7 +1,7 @@
 class:: TDuty_old
 summary:: Deprecated ugen
 related:: Classes/TDuty
-categories:: Deprecated
+categories:: UGens>Deprecated
 
 description::
 This class is deprecated, use link::Classes/TDuty:: instead.

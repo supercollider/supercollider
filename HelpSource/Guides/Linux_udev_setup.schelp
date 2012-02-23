@@ -1,6 +1,6 @@
 title:: Linux Udev Setup
 summary:: Suggestion on udev setup
-categories:: Linux
+categories:: Platform>Linux
 
 In the file code:: /etc/udev/udev.rules ::
 

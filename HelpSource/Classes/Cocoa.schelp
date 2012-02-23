@@ -1,7 +1,7 @@
 class:: Cocoa
 summary:: file paths that utilize OS X Cocoa services
 related:: Classes/CocoaDialog
-categories:: OSX
+categories:: Platform>OSX
 
 ClassMethods::
 

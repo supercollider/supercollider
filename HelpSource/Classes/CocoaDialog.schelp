@@ -1,7 +1,7 @@
 class:: CocoaDialog
 summary:: file dialogs that utilize OS X Cocoa services
 related:: Classes/Cocoa, Classes/GUI
-categories:: OSX
+categories:: Platform>OSX
 
 description::
 

@@ -1,6 +1,6 @@
 CLASS:: OSCMessageDispatcher
 summary:: The default dispatcher class for OSCFunc and OSCdef.
-categories:: OpenSoundControl
+categories:: External Control>OSC>Dispatchers
 related:: Classes/OSCFunc, Classes/OSCdef, Classes/AbstractWrappingDispatcher, Classes/AbstractDispatcher, Classes/AbstractMessageMatcher, Classes/OSCMessagePatternDispatcher, Classes/OSCFuncAddrMessageMatcher, Classes/OSCFuncRecvPortMessageMatcher, Classes/OSCFuncBothMessageMatcher, Guides/OSC_communication
 
 DESCRIPTION::

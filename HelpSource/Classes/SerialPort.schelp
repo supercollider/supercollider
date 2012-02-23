@@ -1,6 +1,6 @@
 class:: SerialPort
 summary:: serial port interface
-categories:: Control
+categories:: External Control
 
 ClassMethods::
 

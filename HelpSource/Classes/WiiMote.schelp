@@ -1,7 +1,7 @@
 class:: WiiMote
 summary:: use the Nintendo (tm) Wii Remote
 related:: Classes/GeneralHID
-categories:: Control
+categories:: External Control
 
 description::
 The WiiMote class allows you to access the WiiMote from SuperCollider, both to receive data from the device, as well as send data to the device.
