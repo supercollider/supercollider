@@ -1,6 +1,6 @@
 class:: SCNSObject
 summary:: Cocoa / Objective-C bridge
-categories:: OSX
+categories:: Platform>OSX
 
 description::
 

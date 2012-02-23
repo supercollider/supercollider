@@ -1,7 +1,7 @@
 class:: HIDDeviceElement
 summary:: stores information about a device
 related:: Classes/HIDDeviceService, Classes/HIDDevice, Classes/LID, Classes/GeneralHID
-categories:: HID
+categories:: External Control>HID
 
 description::
 

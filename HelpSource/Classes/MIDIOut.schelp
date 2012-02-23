@@ -1,7 +1,7 @@
 class:: MIDIOut
 summary:: send MIDI messages
 related:: Classes/MIDIIn, Reference/MIDI, Reference/UsingMIDI
-categories:: MIDI
+categories:: External Control>MIDI
 
 description::
 a MIDIOut is bound to a specific link::Classes/MIDIEndPoint:: as defined by the operating system.

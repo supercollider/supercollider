@@ -1,6 +1,6 @@
 CLASS:: OSCFunc
 summary:: Fast Responder for incoming Open Sound Control Messages
-categories:: OpenSoundControl
+categories:: External Control>OSC
 related:: Guides/OSC_communication, Classes/OSCdef, Classes/OSCresponderNode, Classes/NetAddr
 
 DESCRIPTION::

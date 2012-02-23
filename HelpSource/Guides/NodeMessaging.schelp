@@ -1,6 +1,6 @@
 title:: Node Messaging
 summary:: Messaging Nodes with OSC
-categories:: Server>Nodes, OpenSoundControl
+categories:: Server>Nodes, External Control>OSC
 
 section:: Introduction
 The most direct and fast way to send commands to the server is to send messages to the link::Classes/Server:: object, if you are within sc-lang.  If you are in a shell you can use sendOSC (available from CNMAT).

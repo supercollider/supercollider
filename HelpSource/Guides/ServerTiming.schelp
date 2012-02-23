@@ -1,6 +1,6 @@
 title:: Server OSC timing
 summary:: Server bundling latency and OSC timing
-categories:: Server>Architecture, OpenSoundControl
+categories:: Server>Architecture, External Control>OSC, Scheduling
 related:: Classes/Server
 
 To ensure correct timing of events on the server, OSC messages may be sent with a time stamp, indicating the precise time the sound is expected to hit the hardware output.

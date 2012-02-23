@@ -1,7 +1,7 @@
 class:: GeneralHIDSpec
 summary:: Create access by names to slots of a GeneralHIDDevice
 related:: Classes/HIDDeviceService, Classes/LID, Classes/GeneralHID, Classes/GeneralHIDDevice
-categories:: HID
+categories:: External Control>HID
 
 ClassMethods::
 

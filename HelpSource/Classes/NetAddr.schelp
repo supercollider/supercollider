@@ -1,7 +1,7 @@
 class:: NetAddr
 summary:: network address
 related:: Classes/OSCFunc
-categories:: Control, OpenSoundControl
+categories:: Control, External Control>OSC
 
 ClassMethods::
 
