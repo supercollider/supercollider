@@ -735,7 +735,7 @@ Plotter {
 			}
 		};
 		plotter.setValue(array, true, false);
-		if(minval.notNil and: {maxval.notNil},{
+		if(minval.isNumber && maxval.isNumber,{
 			plotter.specs = [minval,maxval].asSpec
 		},{
 			minval !? { plotter.minval = minval; };
@@ -837,7 +837,7 @@ Plotter {
 		);
 		this.loadToFloatArray(action: { |array, buf|
 			{
-				if(minval.notNil and: {maxval.notNil},{
+				if(minval.isNumber && maxval.isNumber,{
 					plotter.specs = [minval,maxval].asSpec
 				},{
 					minval !? { plotter.minval = minval; };
