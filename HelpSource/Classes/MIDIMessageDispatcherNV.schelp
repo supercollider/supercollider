@@ -1,5 +1,5 @@
 CLASS:: MIDIMessageDispatcherNV
-summary:: The default dispatcher for link::Classes/MIDIFunc::s and link::Classes/MIDIdef::s set to respond to touch, program, and bend messages.
+summary:: The default dispatcher for MIDIFunc's and MIDIdef's set to respond to touch, program, and bend messages.
 categories:: MIDI
 related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/AbstractWrappingDispatcher, Classes/AbstractDispatcher, Classes/MIDIMessageDispatcher, Classes/AbstractMessageMatcher, Classes/MIDIFuncSrcMessageMatcher, Classes/MIDIFuncChanMessageMatcher, Classes/MIDIFuncChanArrayMessageMatcher, Classes/MIDIFuncSrcMessageMatcherNV, Classes/MIDIFuncBothMessageMatcher, Classes/MIDIFuncBothCAMessageMatcher, Guides/MIDI
 
