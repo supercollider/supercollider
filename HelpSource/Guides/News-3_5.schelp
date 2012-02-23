@@ -1,0 +1,89 @@
+title:: News in 3.5
+summary:: A summary of news in SC 3.5
+categories:: News
+
+SECTION:: Language-side news
+
+subsection:: Qt GUI
+A new cross-platform and custom styled GUI system that replaces Cocoa and SwingOSC.
+
+subsection:: SCDoc
+A new help-system provides consistent documentation with good introspection and easy link::Search##searching:: and link::Browse##browsing::.
+
+The help-files are written in a markup language which is then parsed and used to generate HTML files, which are displayed with the new link::Classes/WebView:: widget inside the link::Classes/HelpBrowser::.
+
+See link::Classes/SCDoc::, link::Reference/SCDocSyntax::, link::Guides/WritingHelp::.
+
+Also a new method link::Classes/Help#*methodArgs:: returns a human-readable string of arguments and default values for a method. Example: code::Help.methodArgs("SinOsc.ar")::
+
+subsection:: OSC and MIDI responders
+The new link::Classes/OSCFunc:: and link::Classes/MIDIFunc:: provides better alternatives to the old link::Classes/OSCresponderNode:: and link::Classes/NoteOnResponder::, etc.
+
+OSCFunc can receive on any port, not only the main code::NetAddr.langPort::.
+
+subsection:: Moved startup and config files
+The sclang startup file has moved to code:: thisProcess.platform.userConfigDir +/+ "sclang.scd" ::
+and the library configuration file moved to code:: thisProcess.platform.userConfigDir +/+ "sclang.cfg" ::
+
+subsection:: Sced3
+The GEdit plugin sced has been updated to support GEdit version 3.
+
+subsection:: WiiMote
+code::WiiMote.discover:: now returns the device object, or nil if it failed.
+
+subsection:: Bus-asMap in patterns
+Bus-asMap symbols are now allowed in code::\freq:: and friends in patterns.
+
+subsection:: Warn on classlib overwrites
+Warnings are posted when extensions overwrites methods in main class lib, unless the extensions are put in a subfolder named "SystemOverwrites".
+
+subsection:: Filesystem utils
+New cross-platform filesystem utilities: link::Classes/File#*copy::, link::Classes/File#*mtime::, link::Classes/File#*mkdir::, link::Classes/File#*realpath::, link::Classes/File#*type::, link::Classes/File#*fileSize::
+
+subsection:: String-openTextFile
+link::Classes/String#-openTextFile:: now works also on frontends without link::Classes/Document:: support. It falls back to link::Classes/String#-openOS:: to open the file with the default application for that file type.
+
+subsection:: Various bugfixes
+A lot of bugs has been fixed, for example: String regexp primitives, multichannel wrappers of SequenceableCollection, CoinGate.ar, T2K, WiiMote, SynthDesc.
+
+SECTION:: Server-side news
+
+subsection:: Bitwise ops
+The bitwise operators code::&:: (and), code::|:: (or), code:: xor: :: (xor), code::<<:: (left shift) and code::>>:: (right shift) are now supported server-side on audio and control signals. Example:
+code::
+// 8-bit magic
+(
+play {
+    var t = PulseCount.ar(Impulse.ar(8e3));
+    HPF.ar(
+        (
+            ((t * 15) & (t >> 5)) |
+            ((t * 5)  & (t >> [3, 4])) |
+            ((t * 2)  & (t >> 9)) |
+            ((t * 8)  & (t >> 11))
+            - 3 % 256
+        ) / 127-1 * 3
+        , 20
+    ).tanh
+}
+)
+::
+
+subsection:: VarLag UGen
+The new link::Classes/VarLag:: UGen provides the same functionality as Lag but with linear and other curves.
+
+subsection:: Node-onFree
+A new method link::Classes/Node#-onFree:: runs a function when node finished playing.
+
+subsection:: LocalIn initial value
+link::Classes/LocalIn:: now has an input for initial value.
+
+subsection:: Close buffers on free
+teletype::/b_free:: also free's soundfile if open (like teletype::/b_close::)
+
+subsection:: More done flags
+link::Classes/Demand::, link::Classes/VDiskIn:: and link::Classes/DiskIn:: now sets done flag (to be used by link::Classes/Done:: or link::Classes/FreeSelfWhenDone::)
+
+subsection:: SuperNova
+A new multi-processor implementation of scsynth.
+
