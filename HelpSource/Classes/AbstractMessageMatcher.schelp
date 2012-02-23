@@ -1,6 +1,6 @@
 CLASS:: AbstractMessageMatcher
 summary:: Matches incoming messages to Functions
-categories:: OpenSoundControl, MIDI
+categories:: External Control>Abstract Classes
 related:: Classes/AbstractResponderFunc, Classes/AbstractWrappingDispatcher
 
 DESCRIPTION::

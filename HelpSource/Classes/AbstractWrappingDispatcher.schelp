@@ -1,6 +1,6 @@
 CLASS:: AbstractWrappingDispatcher
 summary:: A dispatcher which wraps functions to support multiple paramter matching
-categories:: OpenSoundControl, MIDI
+categories:: External Control>Abstract Classes
 related:: Classes/AbstractDispatcher, Classes/AbstractMessageMatcher, Classes/OSCMessageDispatcher, Classes/OSCMessagePatternDispatcher, Classes/MIDIMessageDispatcher, Classes/OSCFunc, Classes/OSCdef, Classes/MIDIFunc, Classes/MIDIdef, Classes/AbstractResponderFunc
 
 DESCRIPTION::

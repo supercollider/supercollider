@@ -1,7 +1,7 @@
 class:: Score
 summary:: score of timed OSC commands
 related:: Guides/Non-Realtime-Synthesis
-categories:: Control, OpenSoundControl
+categories:: Control, Server>NRT, External Control>OSC
 
 description::
 Score encapsulates a list of timed OSC commands and provides some methods for using it, as well as support for the creation of binary OSC files for non-realtime synthesis. See link::Guides/Non-Realtime-Synthesis:: for more details.

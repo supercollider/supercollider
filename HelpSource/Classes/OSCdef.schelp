@@ -1,6 +1,6 @@
 CLASS:: OSCdef
 summary:: OSC response reference definition
-categories:: OpenSoundControl
+categories:: External Control>OSC>Dispatchers
 related:: Guides/OSC_communication, Classes/OSCFunc, Classes/OSCresponderNode, Classes/NetAddr
 
 DESCRIPTION::

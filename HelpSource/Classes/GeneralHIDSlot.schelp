@@ -1,7 +1,7 @@
 class:: GeneralHIDSlot
 summary:: A uniform class to a slot of an HID device
 related:: Classes/HIDDeviceService, Classes/LID, Classes/GeneralHID, Classes/GeneralHIDSpec
-categories:: HID
+categories:: External Control>HID
 
 description::
 GeneralHID is a cross platform wrapper for accessing HID devices. Currently the MacOSX and Linux HID support has been wrapped. Some of the code is inspired by the GUI wrapper.

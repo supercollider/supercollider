@@ -1,6 +1,6 @@
 CLASS:: AbstractResponderFunc
 summary:: Abstract superclass of responder func objects
-categories:: OpenSoundControl, MIDI
+categories:: External Control>Abstract Classes
 related:: Classes/OSCFunc, Classes/OSCdef, Classes/MIDIFunc, Classes/MIDIdef, Classes/AbstractDispatcher
 
 DESCRIPTION::

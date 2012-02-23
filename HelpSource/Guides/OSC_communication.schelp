@@ -1,5 +1,5 @@
 title:: OSC Communication
-categories:: OpenSoundControl
+categories:: External Control>OSC
 summary:: OSC network communication
 related:: Classes/NetAddr, Classes/OSCFunc
 

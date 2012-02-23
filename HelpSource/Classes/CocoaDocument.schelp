@@ -1,7 +1,7 @@
 class:: CocoaDocument
 summary:: implements Document functionality
 related:: Classes/Document
-categories:: OSX
+categories:: Platform>OSX
 
 description::
 

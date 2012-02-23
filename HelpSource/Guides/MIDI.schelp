@@ -1,7 +1,7 @@
 title:: MIDI
 summary:: about MIDI
 related:: Guides/UsingMIDI, Classes/MIDIFunc, Classes/MIDIdef
-categories:: MIDI
+categories:: External Control>MIDI
 
 note::
 See the link::Reference/UsingMIDI:: helpfile for practical considerations and techniques for using MIDI in SC.
