@@ -640,24 +640,23 @@ void Convolution2L_Ctor(Convolution2L *unit)
 	SndBuf *buf = ConvGetBuffer(unit, bufnum, "Convolution2L", 1);
 
 	if(buf) {
-		SCWorld_Allocator alloc(ft, unit->mWorld);
-		unit->m_scfft1 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_fftbuf1, kForward, alloc);
-		unit->m_scfft2 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf2, unit->m_fftbuf2, kForward, alloc);
-		unit->m_scfft3 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf3, unit->m_fftbuf3, kForward, alloc);
-		unit->m_scfftR = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_outbuf, unit->m_outbuf, kBackward, alloc);
-		unit->m_scfftR2 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_tempbuf, unit->m_tempbuf, kBackward, alloc);
-
 		unit->m_outbuf = (float*)RTAlloc(unit->mWorld, fftsize);
 		unit->m_overlapbuf = (float*)RTAlloc(unit->mWorld, insize);
 
 		memset(unit->m_outbuf, 0, fftsize);
 		memset(unit->m_overlapbuf, 0, insize);
 
-
 		//calculate fft for kernel straight away
 		memcpy(unit->m_fftbuf2, buf->data, insize);
 		//zero pad second part of buffer to allow for convolution
 		memset(unit->m_fftbuf2+unit->m_insize, 0, insize);
+
+		SCWorld_Allocator alloc(ft, unit->mWorld);
+		unit->m_scfft1 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_fftbuf1, kForward, alloc);
+		unit->m_scfft2 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf2, unit->m_fftbuf2, kForward, alloc);
+		unit->m_scfft3 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf3, unit->m_fftbuf3, kForward, alloc);
+		unit->m_scfftR = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_outbuf, unit->m_outbuf, kBackward, alloc);
+		unit->m_scfftR2 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_tempbuf, unit->m_tempbuf, kBackward, alloc);
 
 		scfft_dofft(unit->m_scfft2);
 
