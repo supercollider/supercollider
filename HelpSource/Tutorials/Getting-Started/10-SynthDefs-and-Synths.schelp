@@ -67,16 +67,13 @@ y.free;	// free just y
 
 This is more flexible than Cmd-., which frees all synths at once.
 
-SynthDef has two methods which cause the corresponding byte code to be sent to the server app without immediately creating a synth: send and load. The difference between these two is that send streams the definition over the network, and load writes the definiton to disk as a file so that the server can load it. Such a file will have the extension .scsyndef (so for example tutorial-SinOsc.scsyndef), and will be written into the synthdefs/ directory within the main SC directory. This will remain there until you specifically delete it, and will be loaded automatically whenever you boot a server.
-
-In general should use 'send' unless you're going to reuse the def all the time. It is however sometimes necessary to use 'load' with very large or complicated defs, due to limits on packet size on the network.
-
-You can create many, many Synths using the same Function or SynthDef, but using SynthDef has certain advantages, as well as certain limitations.
-
-Once you have a def in a server app, you can create many synths from it with a relatively low overhead of CPU. You can do this with Synth's new method, which takes a def's name as its first argument.
+More often, you will want to send the corresponding byte code to the server app without immediately creating a synth. The great advantage of this is that you can play any number of copies of the SynthDef without the overhead of compiling or sending a network of unit generators. In almost all cases, use 'add', as in the next example below. See link::Classes/SynthDef#-add:: for details.
 
 code::
-SynthDef.new("tutorial-PinkNoise", { Out.ar(0, PinkNoise.ar(0.3)) }).send(s);
+// execute first, by itself
+SynthDef.new("tutorial-PinkNoise", { Out.ar(0, PinkNoise.ar(0.3)) }).add;
+
+// then:
 x = Synth.new("tutorial-PinkNoise");
 y = Synth.new("tutorial-PinkNoise");
 x.free; y.free;
@@ -95,7 +92,7 @@ z = f.play;
 x.free; y.free; z.free;
 
 // Now with a SynthDef. No randomness!
-SynthDef("tutorial-NoRand", { Out.ar(0, SinOsc.ar(440 + 200.rand, 0, 0.2)) }).send(s);
+SynthDef("tutorial-NoRand", { Out.ar(0, SinOsc.ar(440 + 200.rand, 0, 0.2)) }).add;
 x = Synth("tutorial-NoRand");
 y = Synth("tutorial-NoRand");
 z = Synth("tutorial-NoRand");
@@ -110,7 +107,7 @@ There are numerous ways of getting variety out of SynthDefs, however. Some thing
 
 code::
 // With Rand, it works!
-SynthDef("tutorial-Rand", { Out.ar(0, SinOsc.ar(Rand(440, 660), 0, 0.2)) }).send(s);
+SynthDef("tutorial-Rand", { Out.ar(0, SinOsc.ar(Rand(440, 660), 0, 0.2)) }).add;
 x = Synth("tutorial-Rand");
 y = Synth("tutorial-Rand");
 z = Synth("tutorial-Rand");
@@ -125,7 +122,7 @@ code::
 (
 SynthDef("tutorial-args", { arg freq = 440, out = 0;
 	Out.ar(out, SinOsc.ar(freq, 0, 0.2));
-}).send(s);
+}).add;
 )
 x = Synth("tutorial-args");				// no args, so default values
 y = Synth("tutorial-args", ["freq", 660]);		// change freq
@@ -146,7 +143,7 @@ s.boot;
 (
 SynthDef.new("tutorial-args", { arg freq = 440, out = 0;
 	Out.ar(out, SinOsc.ar(freq, 0, 0.2));
-}).send(s);
+}).add;
 )
 s.scope; // scope so you can see the effect
 x = Synth.new("tutorial-args");

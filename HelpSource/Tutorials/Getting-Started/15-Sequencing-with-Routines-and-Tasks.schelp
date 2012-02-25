@@ -54,7 +54,7 @@ SynthDef(\singrain, { |freq = 440, amp = 0.2, sustain = 1|
 	var sig;
 	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.perc(0.01, sustain), doneAction: 2);
 	Out.ar(0, sig ! 2);	// sig ! 2 is the same as [sig, sig]
-}).send(s);
+}).add;
 
 r = Routine({
 	var delta;
@@ -172,7 +172,7 @@ SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5|
 	var sig;
 	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: 2);
 	Out.ar(0, sig ! 2)
-}).send(s);
+}).add;
 
 r = Task({
 	var delta;
