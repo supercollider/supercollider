@@ -85,7 +85,7 @@ SCKnob : SCUserView {
 	draw {
 		var startAngle, arcAngle;
 
-		color[2].set;
+		SCPen.color = color[2];
 		SCPen.addAnnularWedge(
 			center,
 			aw8,
@@ -103,7 +103,7 @@ SCKnob : SCUserView {
 			arcAngle = 1.5pi * (value - 0.5);
 		});
 
-		color[1].set;
+		SCPen.color = color[1];
 		SCPen.addAnnularWedge(
 			center,
 			aw12,
@@ -113,11 +113,11 @@ SCKnob : SCUserView {
 		);
 		SCPen.perform(\fill);
 
-		color[0].set;
+		SCPen.color = color[0];
 		SCPen.addWedge(center, aw14, 0, 2pi);
 		SCPen.perform(\fill);
 
-		color[3].set;
+		SCPen.color = color[3];
 		SCPen.width = (0.08 * size);
 		SCPen.moveTo(center);
 		SCPen.lineTo(Polar.new(aw14, 0.75pi + (1.5pi * value)).asPoint + center);
