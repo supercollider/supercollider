@@ -103,6 +103,7 @@ Main : Process {
 
 	prOpenUDPPort {|portNum|
 		_OpenUDPPort
+		^false
 	}
 
 	newSCWindow {
