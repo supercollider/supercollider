@@ -128,7 +128,7 @@
 			<key>CFBundleTypeName</key>
 			<string>Other</string>
 			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
+			<string>Editor</string>
 			<key>LSTypeIsPackage</key>
 			<false/>
 			<key>NSDocumentClass</key>
