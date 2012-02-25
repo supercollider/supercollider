@@ -1,0 +1,29 @@
+class:: PparGroup
+summary:: Starts a new ParGroup and plays the pattern in this group
+related:: Classes/ParGroup, Classes/Pgroup
+categories:: Streams-Patterns-Events>Patterns>Server Control
+
+description::
+
+The class has a semantics similar to link::Classes/Pgroup::, but instead of a Group, it creates a ParGroup on the
+server.
+
+Examples::
+
+code::
+(
+var p, q, r, o;
+p = Pbind(\degree, Prand((0..7),12), \dur, 0.3, \legato, 0.2);
+
+Ppargroup(p).play;
+
+// post the node structure:
+fork {
+	s.queryAllNodes;
+	3.wait;
+	s.queryAllNodes;
+	2.wait;
+	s.queryAllNodes;
+}
+)
+::
