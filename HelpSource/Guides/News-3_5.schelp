@@ -57,13 +57,23 @@ subsection:: Interpreter Performance Improvements
 
 The sclang now uses token threading footnote::http://www.complang.tuwien.ac.at/forth/threaded-code.html:: instead of one huge switch statement for bytecode dispatching.
 
-subsection:: UI deprecated
-
-The UI class has been deprecated. Its functionality is now provided by the link::Classes/ShutDown:: and link::Classes/OnError:: classes.
-
 subsection:: PriorityQueue stable order
 
 The link::Classes/PriorityQueue:: now provides a stable heap order: items of the same time value will have a FIFO order.
+
+subsection:: link::Reference/plot:: improvements
+
+link::Reference/plot:: has been changed to use the link::Classes/Plotter:: class, which was formerly used by the code::plot2:: methods. code::plot2:: has been deprecated, the old behavior is still available via the code::plotOld:: methods, which have also been deprecated.
+
+subsection:: UI deprecated
+
+The UI class has been deprecated. Its functionality is now provided by the link::Classes/ShutDown:: and
+link::Classes/OnError:: classes.
+
+subsection:: Panner and XFade classes deprecated
+
+The Panner and XFade classes that been used internally are now deprecated. UGens are better off, implementing the
+code::checkInputs:: explicitly.
 
 SECTION:: Server-side news
 
@@ -117,11 +127,16 @@ subsection:: HPF/RHPF internal precision
 The recursive filter loop for link::Classes/HPF:: and link::Classes/RHPF:: has been changed to double-precision in
 order to avoid quantization noise. Pieces that depend on the quantization noise can make use of the GlitchUGens provided in sc3-plugins, which implement the old behavior.
 
+subsection:: Plugin entry point
+
+Plugins should use the teletype::PluginLoad:: macro as entry point instead of implementing a teletype::load:: funcion.
+This allows ABI version checks and ensures that the entry point function is correctly exported from the shared library.
+See link::Guides/WritingUGens:: for details.
+
 subsection:: New FFT Plugin API
 
 A new FFT API for server plugins has been introduced: this simplifies writing FFT ugens in a cross-platform manner,
 since no external FFT libraries are required.
-
 
 subsection:: Supernova
 
