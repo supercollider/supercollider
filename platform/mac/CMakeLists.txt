@@ -32,7 +32,7 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
 	${CMAKE_SOURCE_DIR}/external_libraries/boost
 	${CMAKE_SOURCE_DIR}/external_libraries/threadpool
-	${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.2.6/include
+	${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include
 	${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
 	)
 
@@ -135,7 +135,7 @@ file(GLOB boost_fs_sources ${CMAKE_SOURCE_DIR}/external_libraries/boost/libs/fil
 file(GLOB boost_regex_sources ${CMAKE_SOURCE_DIR}/external_libraries/boost/libs/regex/src/*cpp)
 list(APPEND scapp_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
 
-file(GLOB yaml_sources ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.2.6/src/*cpp)
+file(GLOB yaml_sources ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/src/*cpp)
 list(APPEND scapp_sources ${yaml_sources})
 
 if(SC_QT)
