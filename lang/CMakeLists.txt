@@ -5,7 +5,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost
                     ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
-                    ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.2.6/include
+                    ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
                     LangSource/Bison)
 
@@ -79,7 +79,7 @@ file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/v3/src/*c
 file(GLOB boost_regex_sources ../external_libraries/boost/libs/regex/src/*cpp)
 list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
 
-file(GLOB yaml_sources ../external_libraries/yaml-cpp-0.2.6/src/*cpp)
+file(GLOB yaml_sources ../external_libraries/yaml-cpp-0.3.0/src/*cpp)
 list(APPEND sclang_sources ${yaml_sources})
 
 if(NOT WIN32)
