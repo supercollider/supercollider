@@ -67,14 +67,14 @@
 	horz { arg func,bounds;
 		var comp;
 		comp = GUI.hLayoutView.new(this,bounds ?? { this.bounds });
-		comp.spacing = GUI.skin.gap.x;
+		comp.tryPerform('spacing_',GUI.skin.gap.x);
 		func.value(comp);
 		^comp
 	}
 	vert { arg func,bounds;
 		var comp;
 		comp = GUI.vLayoutView.new(this,bounds ?? { this.bounds });
-		comp.spacing = GUI.skin.gap.y;
+		comp.tryPerform('spacing_',GUI.skin.gap.y);
 		func.value(comp);
 		^comp
 	}

@@ -1,7 +1,7 @@
 class:: OSCpathResponder
 summary:: client side network responder
 related:: Classes/OSCFunc, Classes/OSCdef, Guides/OSC_communication, Classes/OSCresponderNode
-categories:: OpenSoundControl
+categories:: External Control>OSC
 
 description::
 

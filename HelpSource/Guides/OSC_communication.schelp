@@ -1,9 +1,9 @@
-title:: OSC_communication
-categories:: OpenSoundControl
+title:: OSC Communication
+categories:: External Control>OSC
 summary:: OSC network communication
-related:: Classes/NetAddr, Classes/OSCresponderNode
+related:: Classes/NetAddr, Classes/OSCFunc
 
-OSC communication between programs is often done to send messages from one application to another, possibly with the applications running on different computers. In SuperCollider this communication is done by creating a link::Classes/NetAddr:: of the target application and creating an link::Classes/OSCresponderNode:: to listen to another application. The underlying protocol of OSC is either UDP or TCP.
+OSC communication between programs is often done to send messages from one application to another, possibly with the applications running on different computers. In SuperCollider this communication is done by creating a link::Classes/NetAddr:: of the target application and creating an link::Classes/OSCFunc:: to listen to another application. The underlying protocol of OSC is either UDP or TCP.
 
 section::Sending OSC to another application
 
@@ -24,9 +24,10 @@ code::
 NetAddr.localAddr	// retrieve the current IP and port
 ::
 
-You can open additional ports using link::Classes/Main#-openUDPPort::. This will return a link::Classes/Boolean:: indicating whether SC succeeded in opening the new port.
+You can open additional ports using link::Classes/Main#-openUDPPort::. This will return a link::Classes/Boolean:: indicating whether SC succeeded in opening the new port. Or you can just pass a custom port as the strong::recvPort:: argument to link::Classes/OSCFunc:: and it will open it automatically if not already open.
 code::
-thisProcess.openUDPPort(1121); // attempt to open 1121thisProcess.customPorts; // list all open custom ports
+thisProcess.openUDPPort(1121); // attempt to open 1121
+thisProcess.customPorts; // list all open custom ports
 ::
 
 To listen to incoming messages, an link::Classes/OSCFunc:: needs to be created in SuperCollider. If the sending application strong::has a fixed port it sends message from::, you can set the OSCFunc to listen only to messages coming from that IP and port:
@@ -36,6 +37,7 @@ n = NetAddr.new("127.0.0.1", 7771);	// create the NetAddr
 o = OSCFunc({ arg msg, time, addr, recvPort; [msg, time, addr, recvPort].postln; }, '/goodbye', n);
 o.free;	// remove the OSCFunc when you are done.
 ::
+note:: The port 7771 above is the port the other application is sending strong::from::, not the port SC is receiving on. See the strong::recvPort:: argument in link::Classes/OSCFunc#*new:: if you want to receive on another port than NetAddr.langPort. ::
 
 section::Receiving from an application that is sending from a variable port
 

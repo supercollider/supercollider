@@ -1,6 +1,6 @@
 CLASS:: AbstractDispatcher
 summary:: Dispatches incoming messages to Functions
-categories:: OpenSoundControl, MIDI
+categories:: External Control>Abstract Classes
 related:: Classes/AbstractWrappingDispatcher, Classes/OSCMessageDispatcher, Classes/OSCMessagePatternDispatcher, Classes/MIDIMessageDispatcher, Classes/OSCFunc, Classes/OSCdef, Classes/MIDIFunc, Classes/MIDIdef, Classes/AbstractResponderFunc
 
 DESCRIPTION::

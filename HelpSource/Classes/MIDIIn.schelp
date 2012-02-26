@@ -1,7 +1,7 @@
 class:: MIDIIn
 summary:: receive MIDI messages
 related:: Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Reference/MIDI, Guides/UsingMIDI
-categories:: MIDI
+categories:: External Control>MIDI
 
 description::
 This document explains technical details of the MIDI hardware interface class, MIDIIn.

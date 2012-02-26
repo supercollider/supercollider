@@ -47,7 +47,7 @@ code::
 (
 SynthDef("tutorial-args", { arg freq = 440, out = 0;
 	Out.ar(out, SinOsc.ar(freq, 0, 0.2));
-}).send(s);
+}).add;
 )
 // both write to bus 1, and their output is mixed
 x = Synth("tutorial-args", ["out", 1, "freq", 660]);
@@ -115,11 +115,11 @@ code::
 SynthDef("tutorial-Infreq", { arg bus, freqOffset = 0;
 	// this will add freqOffset to whatever is read in from the bus
 	Out.ar(0, SinOsc.ar(In.kr(bus) + freqOffset, 0, 0.5));
-}).send(s);
+}).add;
 
 SynthDef("tutorial-Outfreq", { arg freq = 400, bus;
 	Out.kr(bus, SinOsc.kr(1, 0, freq/40, freq));
-}).send(s);
+}).add;
 
 b = Bus.control(s,1);
 )
@@ -149,7 +149,7 @@ SynthDef("tutorial-DecayPink", { arg outBus = 0, effectBus, direct = 0.5;
 	Out.ar(outBus, source * direct);
 	// this will be our effects output
 	Out.ar(effectBus, source * (1 - direct));
-}).send(s);
+}).add;
 
 SynthDef("tutorial-DecaySin", { arg outBus = 0, effectBus, direct = 0.5;
 	var source;
@@ -159,7 +159,7 @@ SynthDef("tutorial-DecaySin", { arg outBus = 0, effectBus, direct = 0.5;
 	Out.ar(outBus, source * direct);
 	// this will be our effects output
 	Out.ar(effectBus, source * (1 - direct));
-}).send(s);
+}).add;
 
 SynthDef("tutorial-Reverb", { arg outBus = 0, inBus;
 	var input;
@@ -172,7 +172,7 @@ SynthDef("tutorial-Reverb", { arg outBus = 0, inBus;
 	16.do({ input = AllpassC.ar(input, 0.04, { Rand(0.001,0.04) }.dup, 3)});
 
 	Out.ar(outBus, input);
-}).send(s);
+}).add;
 
 b = Bus.audio(s,1); // this will be our effects bus
 )

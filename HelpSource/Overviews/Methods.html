@@ -43,6 +43,13 @@ div.met_subclasses a.seemore {
     font-size: 9pt;
     color: #777;
 }
+.searchlink {
+    background: #eed;
+    text-align: center;
+    font-size: 9pt;
+    padding: 0.25em;
+    margin: 0.25em 0;
+}
 </style>
 <noscript>
 <p>The method index needs JavaScript.
@@ -190,10 +197,6 @@ function showMethod(mname, node) {
 function did_load() {
     var hash = unescape(window.location.hash.slice(1));
 
-    if(hash && ! /^section_/.test(hash)) {
-        location.replace("../Search.html?check_title=false&check_summary=false&check_prefix=true&check_suffix=true&ignore_case=false#"+hash);
-        return;
-    }
     helpRoot=".."; fixTOC();
 
     buildMethodList();
@@ -209,6 +212,27 @@ function showmethods() {
     var section = undefined;
     if(/^section_/.test(hash))
         section = hash[8];
+    else if(hash) {
+        var div = document.createElement("p");
+        div.className = "searchlink";
+        div.appendChild(document.createTextNode("Do you want to "));
+        var a = document.createElement("a");
+        a.setAttribute("href","../Search.html#"+hash);
+        a.appendChild(document.createTextNode("search for '"+hash+"'"));
+        div.appendChild(a);
+        div.appendChild(document.createTextNode(" instead?"));
+        res.appendChild(div);
+        document.getElementById("total_count").innerHTML = "Showing single method:";
+        document.getElementById("method_note").innerHTML = "";
+        if(methods[hash]) {
+            showMethod(hash,res);
+            return;
+        }
+        var div = document.createElement("p");
+        div.appendChild(document.createTextNode("Method not found: "+hash));
+        res.appendChild(div);
+        return;
+    }
 
     var cap = undefined;
     var div = document.createElement("p");

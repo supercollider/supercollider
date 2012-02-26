@@ -1,7 +1,7 @@
 title:: Using MIDI
 summary:: Notes on MIDI support in SuperCollider
 related:: Guides/MIDI, Classes/MIDIFunc, Classes/MIDIdef
-categories:: MIDI
+categories:: External Control>MIDI
 
 keyword::MIDI
 section::Introduction

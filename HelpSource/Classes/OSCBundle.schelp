@@ -1,7 +1,7 @@
 class:: OSCBundle
 summary:: network bundle object
 related:: Guides/OSC_communication
-categories:: OpenSoundControl
+categories:: External Control>OSC
 
 description::
 A bundle object that allows to add preparation messages for async processes. If this feature is not needed, a list object can be used instead.

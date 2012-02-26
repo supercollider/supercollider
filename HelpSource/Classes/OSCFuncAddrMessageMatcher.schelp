@@ -1,6 +1,6 @@
 CLASS:: OSCFuncAddrMessageMatcher
 summary:: Matches incoming messages to responder funcs based on sender address
-categories:: OpenSoundControl
+categories:: External Control>OSC>Matchers
 related:: Classes/AbstractMessageMatcher, Classes/OSCFuncRecvPortMessageMatcher, Classes/OSCFuncBothMessageMatcher
 
 DESCRIPTION::

@@ -1,6 +1,6 @@
 CLASS:: MIDIFuncBothCAMessageMatcher
 summary:: Matches incoming MIDI messages to responder funcs based on message channel and source
-categories:: MIDI
+categories:: External Control>MIDI>Matchers
 related:: Classes/AbstractMessageMatcher, Classes/MIDIFuncSrcMessageMatcher, Classes/MIDIFuncChanMessageMatcher, Classes/MIDIFuncChanArrayMessageMatcher, Classes/MIDIFuncSrcMessageMatcherNV, Classes/MIDIFuncBothMessageMatcher
 
 DESCRIPTION::

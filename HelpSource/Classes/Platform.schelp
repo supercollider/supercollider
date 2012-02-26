@@ -1,6 +1,6 @@
 class:: Platform
 summary:: handle cross-platform differencies
-categories:: CrossPlatform
+categories:: Platform
 
 description::
 The Platform class (along with its subclasses) handles things which differ between operating systems (mac/linux/windows/...), to simplify cross-platform aspects of SuperCollider.

@@ -1,6 +1,6 @@
 title:: Non-Realtime Synthesis
 summary:: Non-realtime synthesis with binary files of OSC commands
-categories:: Server, OpenSoundControl
+categories:: Server>NRT, External Control>OSC
 related:: Classes/Score
 
 SuperCollider 3 supports non-realtime synthesis through the use of binary files of OSC commands.

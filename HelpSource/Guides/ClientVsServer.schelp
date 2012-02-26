@@ -1,6 +1,6 @@
 title:: Client vs Server
 summary:: Client versus Server Architecture and Operations
-categories:: Server>Architecture, OpenSoundControl
+categories:: Server>Architecture, External Control>OSC
 
 The name "SuperCollider" is in fact used to indicate five different things (Figure 1):
 numberedlist::

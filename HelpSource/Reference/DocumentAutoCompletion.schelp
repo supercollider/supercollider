@@ -1,5 +1,5 @@
 title:: Document Autocompletion
-categories:: OSX, Frontends
+categories:: Platform>OSX, Frontends
 summary:: SuperCollider autocompletion on OSX
 
 The autocompletion feature described in this document is available in the OSX version only. It uses the keyDownAction feature of link::Classes/CocoaDocument:: to intercept keystrokes and open the autocompletion interface when specific characters are typed. That feature is not available in all platforms.
