@@ -986,10 +986,14 @@ void SetResetFF_next_k(SetResetFF *unit, int inNumSamples)
 	float prevreset = unit->m_prevreset;
 	float level = unit->mLevel;
 
+	float curtrig = ZXP(trig);
 	if (prevreset <= 0.f && curreset > 0.f) level = 0.f;
+	else if (prevtrig <= 0.f && curtrig > 0.f) level = 1.f;
+	ZXP(out) = level;
+	prevtrig = curtrig;
 
-	LOOP1(inNumSamples,
-		float curtrig = ZXP(trig);
+	LOOP(inNumSamples - 1,
+		curtrig = ZXP(trig);
 		if (prevtrig <= 0.f && curtrig > 0.f) level = 1.f;
 		ZXP(out) = level;
 		prevtrig = curtrig;
