@@ -57,7 +57,8 @@ if [ $package_type == "source" ]; then
     fi
 
     # Here we build a list of (many) files that are useless on linux, so as to build a slimline source.tar.bz2
-    find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" -or -name scide_scapp -or -iname "iPhone*" > LinuxExclusions.txt
+    find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" -or -name scide_scapp -or -iname "iPhone*" \
+		| grep -v "external_libraries/boost/boost/asio/windows" > LinuxExclusions.txt
 	echo 'SuperCollider-Source/SuperColliderAU
 SuperCollider-Source/editors/Psycollider
 SuperCollider-Source/platform/README OS X
