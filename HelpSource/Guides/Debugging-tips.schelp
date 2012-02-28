@@ -243,7 +243,6 @@ code::
 .debug(caller)	// post the object along with a tag identifying the caller
 ::
 
-.debug is defined in the crucial library, so Linux and Windows users may not have access to it. It's used like this:
 code::
 (
 var	positiveFunc;
@@ -262,11 +261,11 @@ positiveFunc-arg a: 5
 
 The caller argument is optional; however, it's very helpful for tracing the origin of erroneous values.
 
-Another advantage of .debug is that it's easier to search for debug calls and differentiate them from legitimate postln and postcs calls.
+Another advantage of .debug is that it's easier to search for them in your source code and remove them later.
 
 To print multiple values at one time, wrap them in an array before using .debug or .postcs. Note that if any of the array members are collections, postln will hide them behind the class name: "an Array, a Dictionary" etc. Use postcs if you expect to be posting collections.
 code::
-[val1, val2, val3].debug(\myMethod);	// or, for a non-Crucial way:
+[val1, val2, val3].debug(\myMethod);
 [\callerTag, val1, val2, val3].postcs;
 ::
 By sprinkling these throughout your code, especially at the beginnings of functions or methods, the debugging output can give you a partial trace of which code blocks get visited in what order.
