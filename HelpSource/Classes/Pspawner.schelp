@@ -14,22 +14,28 @@ method::new
 argument::function
 The function defines a link::Classes/Routine:: that receives a link::Classes/Spawner:: as its sole argument. All control of subpatterns is through the spawner.
 
-InstanceMethods::
+link::Classes/Spawner:: responds to the messages:
 
-argument::par
+definitionlist::
+## par ||
 Begin an event stream in parallel to the routine. If delta is non-zero, the pattern will begin that many beats after 'now', provided that now + delta is later than the next event that the Spawner will generate. The method returns the stream. This may be called from any object.
 
-argument::seq
+## seq ||
 Run the entire pattern and then return control to the routine.
 
-argument::wait
+## wait ||
 Wait strong::dur:: seconds and then return control to the routine.
 
-argument::suspend
+## suspend ||
 Find the stream in the Spawner and stop it, returns nil if the stream is not found, the stream otherwise.
 
-argument::suspendAll
+## suspendAll ||
 Stop all substreams of the Spawner.
+::
+
+note::
+We should move the documentation of above methods to the link::Classes/Spawner:: helpfile...
+::
 
 Examples::
 

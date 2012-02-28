@@ -877,7 +877,7 @@ strong::tileMode:: - the mode to use. by default fixed to left, fixed to top
 strong::alpha:: - opacity 0 < x < 1
 
 strong::fromRect:: - the portion of the image to use. by default use the full image.
-
+::
 code::
 (
 	b = 1.0;

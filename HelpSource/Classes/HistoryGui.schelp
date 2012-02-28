@@ -1,7 +1,7 @@
 CLASS:: HistoryGui
 summary:: A gui for History objects
 categories:: GUI>Interfaces
-related::
+related:: Classes/History
 
 DESCRIPTION::
 The gui elements in detail:

@@ -78,7 +78,6 @@ The units label. Only appears if code::unitWidth:: was set to > 0.
 
 method:: controlSpec
 An instance of ControlSpec for scaling the values.
-argument:: arg1
 
 method:: loBox
 The code::lo:: value link::Classes/NumberBox::.
@@ -100,7 +99,6 @@ The hi value link::Classes/NumberBox::.
 
 method:: round
 Rounds the values in the number boxes.
-argument:: arg1
 
 subsection:: Doing Some Task (optional)
 

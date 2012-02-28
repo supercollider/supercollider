@@ -195,7 +195,6 @@ a method for generating a name for the JITGui's window.
 
 method::makeScroller
 Some objects may have more elements to display than the gui has slots, e.g. a link::Classes/ProxySpace:: can have more proxies than the mixer has numItems. Then, only link::#-numItems:: elements are shown, and the others can be scrolled to with link::#-scroller:: - an link::Classes/EZScroller:: next to the slot elements. The makeScroller method knows where in the zone to put the scroller.
-::
 
 Examples::
 

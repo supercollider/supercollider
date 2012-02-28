@@ -135,8 +135,6 @@ The following methods are usually not used directly or are called by a primitive
 method:: start
 
 method:: eventSeq
-argument:: delta
-argument:: funcs
 
 method:: cmdPeriod
 

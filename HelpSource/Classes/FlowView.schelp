@@ -41,9 +41,9 @@ argument:: bounds
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating width@height.
 
 argument:: margin
-
+...
 argument:: gap
-
+...
 argument:: windowTitle
 Title of the window.
 

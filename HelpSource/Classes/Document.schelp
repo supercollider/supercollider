@@ -35,7 +35,6 @@ discussion::
 code::
 Document.new("this is the title", "this is the text");
 ::
-::
 
 method:: open
 Open a document from a path.
@@ -80,7 +79,6 @@ A Document.
 discussion::
 code::
 Document.current.name.postln; // Prints "Document.html"
-::
 ::
 
 method:: listener
@@ -144,7 +142,6 @@ r = Routine({
 r.play;
 r.stop;
 ::
-::
 
 method:: setTheme
 Sets the theme for syntax colorization.
@@ -189,8 +186,6 @@ code::
 Document.setTheme('default');
 ::
 Next time you invoke syntaxColorize, the color theme set by setTheme will be used for syntax colorization. If you want to change the background color for the document window and selected text, in order to make them fit with your syntax colorization theme, see the help for the link::Classes/Document#background:: and link::Classes/Document#selectedBackground:: methods for Document.
-::
-
 
 subsection:: Path Utilities
 
@@ -204,7 +199,6 @@ discussion::
 In Main-startUp you can set this to a more practical directory:
 code::
 Document.dir = "~/Documents/SuperCollider";
-::
 ::
 
 method:: wikiDir
@@ -287,7 +281,6 @@ discussion::
 code::
 Document.current.name.postln;
 ::
-::
 
 method:: title
 Get / set the title (same as link::Classes/Document#name::).
@@ -304,7 +297,6 @@ code::
 a = Document("background", "'hardly see anything");
 a.background_(Color.blue(alpha:0.8)); // notice that alpha controls the window transparency
 )
-::
 ::
 
 method:: alwaysOnTop
@@ -423,7 +415,6 @@ Test here and click in front of the numbers: 17 and 23.
 code::
 Document.current.mouseUpAction = nil; // clear mouseUpActiont
 ::
-::
 
 
 method:: keyDownAction
@@ -436,7 +427,6 @@ Document.current.keyDownAction = { arg ...args; args.postln };
 // now type some text
 Document.current.keyDownAction = nil;
 ::
-::
 
 method:: keyUpAction
 Get/set the action to be performed on link::Classes/Document#keyUp::.
@@ -446,7 +436,6 @@ code::
 Document.current.keyUpAction = { arg ...args; args.postln };
 // now type some text
 Document.current.keyUpAction = nil;
-::
 ::
 
 method:: makeWikiPage
@@ -460,7 +449,6 @@ An instance of link::Classes/String::. The directory in which to save the page.
 discussion::
 code::
 Document.current.makeWikiPage("test1");
-::
 ::
 
 method:: openWikiPage
@@ -478,7 +466,6 @@ discussion::
 code::
 Document.current.selectLine(390);
 ::
-::
 
 method:: selectRange
 Select a text range in the string of the document.
@@ -491,7 +478,6 @@ code::
 (
 Document.current.selectRange(Document.current.selectedRangeLocation + 3, 150);
 )
-::
 ::
 
 method:: balanceParens
@@ -538,7 +524,6 @@ doc.selectRange(doc.selectionStart - 40, 10);
 doc.selectedString.postln;
 )
 ::
-::
 
 method:: currentLine
 Returns the current line as a link::Classes/String::.
@@ -553,8 +538,6 @@ doc.currentLine.postln;
 
 method:: getSelectedLines
 Returns all full lines from before code::rangestart:: to after code::rangestart + rangesize:: as a link::Classes/String::.
-argument:: rangestart
-argument:: rangesize
 discussion::
 code::
 (
@@ -564,16 +547,10 @@ doc.selectRange(doc.selectionStart - 40, 10);
 doc.getSelectedLines(doc.selectionStart - 40, 130).postln;
 )
 ::
-::
 
 
 method:: string
 Gets or sets the string within a certain range.
-argument:: rangestart
-argument:: rangesize
-
-Sets the string within a certain range.
-argument:: string
 argument:: rangestart
 An link::Classes/Integer::. Default value is code::nil::.
 argument:: rangesize
@@ -587,7 +564,6 @@ Document.current.string_(": test test test test test ",
 	18);
 )
 // Watch me change content
-::
 ::
 
 method:: font
@@ -608,7 +584,6 @@ Document.current.font_(Font("Impact", 14),
 )
 // Watch me change font
 ::
-::
 
 method:: stringColor
 Gets or sets the string color of a specific range of already printed text. Default is the whole document. To set the listener text color for posting, see: link::Classes/Document#postColor::.
@@ -628,7 +603,6 @@ Document.current.stringColor_(Color.rand(0.2, 0.8),
 )
 // Watch me change color
 ::
-::
 
 method:: selectedBackground
 Gets or sets the document's background color for selected text. Applies to the whole document instance.
@@ -643,26 +617,12 @@ w.selectedBackground_(Color.new255(120, 180, 110));
 w.selectRange(10, 13);
 )
 ::
-::
 
 method:: syntaxColorize
 Syntax colorize a document.
 
 method:: underlineSelection
 Underlines the current selection of a Document.
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 subsection:: Auto-Completion
@@ -679,8 +639,6 @@ code::
 	*openAutoComplete
 	autoComplete
 ::
-
-
 
 subsection:: Subclassing and Internal Methods
 

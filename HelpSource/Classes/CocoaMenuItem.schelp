@@ -30,8 +30,9 @@ Get or set this item's action. This is a Function that will be evaluated when th
 
 
 method:: state
-Get or set this item's state. If bool is true a check mark is displayed next to the item.
+Get or set this item's state.
 argument:: bool
+If bool is true a check mark is displayed next to the item.
 
 method:: remove
 Remove the receiver and its children (if any).

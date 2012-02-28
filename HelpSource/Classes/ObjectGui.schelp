@@ -1,7 +1,6 @@
 CLASS:: ObjectGui
 summary:: Controller class for MVC architecture, superclass for all XYZGui classes
 categories:: GUI
-related:: 
 
 DESCRIPTION::
 In the MVC architecture this is the Controller, which creates Views for manipulating the properties of your Model, and receives messages from the View and enacts the changes on the Model.

@@ -129,7 +129,9 @@ Dump the current NSObjects in the pool, so retained by SuperCollider.
 method::freePool
 Release all the current NSObjects in the pool and clear it. Call this method only if you really know what you are doing : all the SCNSObjects will be unvalidated !
 
-InstanceMethods::invoke
+InstanceMethods::
+
+method::invoke
 Invoke an SCNSObject.
 
 argument::method

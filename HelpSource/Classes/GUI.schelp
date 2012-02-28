@@ -97,12 +97,8 @@ classmethods::
 subsection:: Methods and Variables for GUI
 
 method:: new
-argument:: key
 
 method:: makeGUI
-argument:: key
-argument:: args
-argument:: properties
 
 method:: initClass
 Sets the code::skin:: to default values on compile.

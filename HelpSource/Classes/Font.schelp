@@ -100,14 +100,14 @@ To change this, you need to set the size via link::#-pixelSize:: or link::#-poin
 
 method:: pixelSize
 note::Only in Qt GUI::
-Gets or sets the pixel-size of the font. When getting, returns nil if the font has point-size instead. See link::#-hasPointSize:: for distinction.::
+Gets or sets the pixel-size of the font. When getting, returns nil if the font has point-size instead. See link::#-hasPointSize:: for distinction.
 Argument::
 	Any number, but note that floats will be rounded to integer values when setting pixel-size.
 
 
 method:: pointSize
 note::Only in Qt GUI::
-Gets or sets the point-size of the font. When getting, returns nil if the font has pixel-size instead. See link::#-hasPointSize:: for distinction.::
+Gets or sets the point-size of the font. When getting, returns nil if the font has pixel-size instead. See link::#-hasPointSize:: for distinction.
 Argument::
 	A Float.
 
