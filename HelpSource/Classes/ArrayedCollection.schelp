@@ -75,6 +75,13 @@ code::
 method::at
 Return the item at strong::index::.
 
+The index can also be an Array of indices to extract specified elements. Example:
+code::
+x = [10,20,30];
+y = [0,0,2,2,1];
+x[y]; // returns [ 10, 10, 30, 30, 20 ]
+::
+
 method::clipAt
 Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
 code::
