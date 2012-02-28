@@ -14,32 +14,78 @@ While layouts can form a hierachy on their own, in terms of view hierarchy all v
 The following is an example of a VLayout, organizing a series of TextFields in a vertical line, and its last item is a HLayout, organizing a series of Buttons in a horizontal line.
 
 code::
+(
 w = Window(bounds:Rect(200,200,200,200)).layout_(
 	VLayout(
 		TextField(), TextField(), TextField(),
 		HLayout( Button(), Button(), Button() )
 	)
 ).front;
+)
 ::
 
 
 section:: How a layout does its job
 
-A layout does its job by resizing and moving items within its operational space to form its specific distribution pattern, in accord with common sense of what makes the GUI useful and according to items' own size preferences and constraints.
+A layout does its job by resizing and moving items within the parent view to form a specific distribution pattern, in accord with items' own size preferences and constraints, and with the common sense of what makes the GUI useful.
 
-subsection:: Dynamic updating
+To explain how the layout operates, let's first take a look at intrinsic size preferences and constraints of views:
 
-It works dynamically, meaning that it automatically redistributes the space whenever the amount of it changes (the view on which it is installed or the parent layout is resized), whenever items are added or removed and whenever the size constraints and preferences of items change. The latter may happen for instance when a property of a view that affects its appearance is changed.
 
-subsection:: Automatic distribution policy
+subsection:: Intrinsic view sizes
 
-Items managed by a layout may be given unequal parts of space, proportional to their type and according to principles of GUI usability. According to their type, views possess intrinsic size constraints (e.g. minimum or maximum width or height) and preferences (whether they want to stay at a preferred size, or prefer to grow in one or another direction, etc.), which will be taken into account at space distribution.
+Every view intrinsically has a strong::preferred size:: and a strong::minimum size::, returned by link::Classes/View#-sizeHint:: and link::Classes/View#-minSizeHint::, respectively. The preferred size is a suitable size for the view to comfortably draw itself, display its contents and allow interaction, while the minimum size is the absolute minimum that the view needs to properly draw itself (including its contents). Both may change when the view's contents change; for example, most views that display some text will report a different code::sizeHint:: when the text changes (unless the text is scrollable).
 
-A layout may also affect space distribution up the layout hierarchy - it will define its own constraints and preferences according to its distribution pattern as well as the sum of constraints and preferences of its items. Ultimately, this means that the user's ability to resize a window will be limited by size constraints determined on the basis of window's contents.
+A view takes on its preferred size at construction, if the 'bounds' argument is omitted. However, there is usually no way to set the text on a view at construction, so the size it automatically gets will not reflect the changes in text done after construction. You can remedy that by resizing the view to its code::sizeHint:: after the text has been set - but the strong::purpose of layouts:: (explained below) is exactly to do that automatically for you. Here is an example of manually using the code::sizeHint:::
+
+code::
+// Create a Window with a StaticText
+(
+w=Window().alwaysOnTop_(true);
+t=StaticText(w);
+w.front;
+)
+
+// There's no text set yet. Post the sizeHint of StaticText:
+t.sizeHint
+
+// Set the text, and post the sizeHint again:
+t.string_("This is a looooooong text");
+t.sizeHint
+
+// Adjust the size to the sizeHint:
+t.bounds = t.bounds.size_(t.sizeHint);
+
+// Now you can see the whole text
+::
+
+As their names suggest, code::sizeHint:: and code::minSizeHint:: are only hints, and do not prevent one from setting a different size. You can, however, set a strong::hard limit:: on the size using link::Classes/View#-minSize::, link::Classes/View#-maxSize:: and similar methods:
+
+code::
+x=View(bounds:Rect(30,30,100,100)).alwaysOnTop_(true).front;
+
+// Set the minimum size limit:
+x.minSize = Size(200,200);
+
+// The view automatically resized to the minimum size.
+// Now try to shrink it back:
+x.resizeTo(100,100);
+
+// The view did not allow a smaller size than minSize.
+::
+
+subsection:: Automatic and dynamic space distribution
+
+A layout strong::automatically:: distributes its space among its items, possibly in strong::unequal:: parts, based on the intrinsic preferences and constraints of views described above. Moreover, views also have intrinsic preferences as to whether they profit from being extended horizontally or vertically, or whether they prefer their size to be fixed in a certain direction. This is also taken into account by a layout.
+
+A layout works strong::dynamically::, meaning that it redistributes the space whenever the amount of it changes (the view on which it is installed or the parent layout is resized), whenever items are added or removed, and whenever the size constraints and preferences of items change. The latter may happen for instance when a property of a view that affects its appearance is changed.
+
+A layout will affect space distribution strong::up the layout hierarchy:: - it will define its own constraints and preferences according to its distribution pattern as well as the sum of constraints and preferences of its items. Ultimately, this means that the user's ability to resize a window will be limited by size constraints determined on the basis of window's contents.
 
 For example: in a HLayout (a layout organizing items in a horizontal line) containing a Button and a TextField, the Button will be given a fixed amount of width according to the text it displays, while the TextField will be given all the width that is left. The other Button in the example code below will occupy all the width of the window, since there is no other item competing for that particular space. Note that both Button and TextField have an instrinsically fixed height and so their height never changes when resizing the window. The size constraints also limit the minimum size that the window can be resized to.
 
 code::
+(
 w = Window.new(bounds:Rect(100,100,300,80)).layout_(
 	VLayout (
 		HLayout(
@@ -49,6 +95,7 @@ w = Window.new(bounds:Rect(100,100,300,80)).layout_(
 		Button().states_([["SuperCollider"]])
 	)
 ).front;
+)
 ::
 
 section:: User customization
@@ -58,25 +105,29 @@ subsection:: Stretch factors
 Layouts typically allow the user to override their default distribution policy by assigning stretch factors to items or aspects of the layout's distribution pattern.
 
 code::
+(
 w = Window.new(bounds:Rect(100,100,400,80)).layout_(
 	HLayout(
 		[Button().states_([["Super"]]), stretch:1],
 		TextField().string_("Collider")
 	)
 ).front;
+)
 ::
 
 subsection:: Size constraints
 
-Intrinsic size constraints of a view may also be overriden by the user by explicitely setting minimum and maximum width or height of the view. If the minimum size is larger than the maximum, the former takes priority.
+The user can override a view's intrinsic size constraints and preferences that the layout will take into account, by placing a hard-limit on a view's size, as described above.
 
 code::
+(
 w = Window.new(bounds:Rect(100,100,300,300)).layout_(
 	VLayout(
 		TextField().string_("Super").minHeight_(80),
 		TextField().string_("Collider").maxWidth_(150)
 	)
 ).front;
+)
 ::
 
 subsection:: Alignment
@@ -84,6 +135,7 @@ subsection:: Alignment
 The combination of size constraints and preferences of all items in a layout hierarchy may result in a larger amount of space given to an item than its own constraints allow. In that case the item will only grow up to its maximum allowed size, and its position within its extra available space may be controlled by user by assigning alignment to an item.
 
 code::
+(
 w = Window.new.layout_(
 	HLayout(
 		[Button.new.states_([["Super"]]), align:\bottom],
@@ -91,6 +143,7 @@ w = Window.new.layout_(
 		[Button.new.states_([["Collider"]]), align:\top]
 	)
 ).front;
+)
 ::
 
 
