@@ -129,6 +129,7 @@ Loads a file of synth definitions. Resident definitions with the same names are 
 
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
+::
 
 subsection:: /d_loadDir - load a directory of synth definitions
 table::
@@ -263,7 +264,7 @@ table::
 ::
 Places node A in the same group as node B, to execute immediately before node B.
 
-subsection:: /n_after || place a node after another
+subsection:: /n_after - place a node after another
 table::
 ## N * || table::
     ## strong::int:: || the ID of the node to place (A)
