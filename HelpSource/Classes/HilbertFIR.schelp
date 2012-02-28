@@ -29,3 +29,4 @@ s.scope;
 b - Buffer.alloc(s, 2048);
 a = {HilbertFIR.ar(SinOsc.ar(100), b)}.play(s);
 a.release;
+::

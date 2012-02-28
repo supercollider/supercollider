@@ -30,4 +30,4 @@ code::
 )
 ::
 
-note:: all the ugens are continously running. This may not be the most efficient way if each input is  cpu-expensive.
+note:: all the ugens are continously running. This may not be the most efficient way if each input is  cpu-expensive.::

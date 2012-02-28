@@ -104,7 +104,7 @@ subsection::Environments
 
 Symbols are used as keys to look up objects in dictionaries and environments, but also in arrays.
 See link::Classes/IdentityDictionary::, link::Classes/Environment::, link::Classes/Event::
-discussion::
+
 code::
 a = ();
 a.put(\commune, 1871);

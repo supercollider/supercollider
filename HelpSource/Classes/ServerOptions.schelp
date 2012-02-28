@@ -133,9 +133,9 @@ A Boolean indicating whether the server should try to lock its memory into physi
 
 subsection:: Other Instance Methods
 method:: asOptionsString
-Returns:: a String specifying the options in the format required by the command-line scsynth app.
 argument:: port
 The port number for the resulting server app. Default value is 57110.
+Returns:: a String specifying the options in the format required by the command-line scsynth app.
 
 method:: firstPrivateBus
 Returns:: the index of the first audio bus on this server which is not used by the input and output hardware.

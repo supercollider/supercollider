@@ -83,7 +83,7 @@ METHOD:: strings
 METHOD:: setString
 	Sets the label of the node at the given index.
 
-	note:: In order for the label to be visible, you might need to ensure that the link::#-strokeColor:: contrasts the link::#-fillColor:: (depending on how the view draws the nodes and the labels).
+	note:: In order for the label to be visible, you might need to ensure that the link::#-strokeColor:: contrasts the link::#-fillColor:: (depending on how the view draws the nodes and the labels).::
 
 	argument::
 		A String.

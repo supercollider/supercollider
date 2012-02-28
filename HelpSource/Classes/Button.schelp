@@ -40,7 +40,6 @@ b = Button(w, Rect(20, 20, 340, 30))
 w.front;
 )
 ::
-::
 
 instancemethods::
 
@@ -75,9 +74,6 @@ argument:: modifiers
 A key modifier number, which is passed to the strong::action:: as its second argument upon mouse-releasing the button.
 
 method:: defaultKeyDownAction
-argument:: char
-argument:: modifiers
-argument:: unicode
 discussion::
 The default keydown actions are:
 table::
@@ -88,7 +84,6 @@ table::
 ## 3.asAscii || value + 1 || enter key or cmd-C on Mac OSX
 ::
 To change these use code::defaultKeyDownAction_::, see link::Classes/View::.
-::
 
 method:: properties
 A list of properties to which this view responds. See link::Classes/View::.

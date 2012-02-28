@@ -88,7 +88,6 @@ List[1, 2, ["comment", [3, 2]], { 1.0.rand }].postcs;
 
 method::error
 Prepends an error banner and posts the string.
-::
 
 method::warn
 Prepends a warning banner and posts the string.
@@ -174,7 +173,6 @@ subsection:: Concatenate strings
 
 method::++
 Return a concatenation of the two strings.
-::
 
 method::+
 Return a concatenation of the two strings with a space between them.
@@ -496,7 +494,6 @@ f.close;
 
 method::load
 Load and execute the file at the path represented by the receiver.
-::
 
 method::loadRelative
 Load and execute the file at the path represented by the receiver, interpreting the path as relative to the current document or text file. Requires that the file has been saved.

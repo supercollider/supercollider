@@ -111,11 +111,6 @@ Performs the action at the current index and the global action.
 
 method:: set
 Set the args after creation. You can only set the label if it was not nil from the beginning.
-argument:: label
-argument:: spec
-argument:: argAction
-argument:: initVal
-argument:: initAction
 
 method:: visible
 Sets/gets it the component views are visible.

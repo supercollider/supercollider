@@ -25,7 +25,7 @@ method::new
 
 Create a Thread.
 
-discussion:: You will not typically do this yourself but as a result of creating Routines, for example.
+note:: You will not typically do this yourself but as a result of creating Routines, for example.::
 
 code::
 g = Thread({"hello".postln;});

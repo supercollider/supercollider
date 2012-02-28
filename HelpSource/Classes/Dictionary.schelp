@@ -89,7 +89,6 @@ d.at(\monkey);	// Key doesn't exist: return Nil
 
 method::atFail
 Access the value associated with the key. If the key does not exist, return the result of teletype::function::.
-::
 
 method::keys
 Return a link::Classes/Set:: of all keys.

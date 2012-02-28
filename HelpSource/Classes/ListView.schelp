@@ -84,7 +84,7 @@ METHOD:: selectionMode
 	## \contiguous      || Mutliple neighbouring items can be selected by holding the Shift key.
 	::
 
-	arguments::
+	argument::
 		One of the Symbols listed in the table above.
 
 

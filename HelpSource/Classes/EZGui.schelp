@@ -90,19 +90,13 @@ subsection:: Internal Utilities
 
 method:: prSubViewBounds
 This calculates the bounds of the subviews and the gaps. It returns an array of Rects, which depends on how many subview there are. Subclasses override this if they have more than one widget.
-argument:: rect
-argument:: hasLabel
 
 method:: prMakeView
 Called by init. Returns code::[view, bounds]::. The container is either the enclosing Container, or a pop up window with a container.
-argument:: parentView
-argument:: bounds
 
 method:: prSetViewParams
 Only defined by some subclasses. Sets the code::resize::  and code::align:: of all the views, according to the state of code::layout::.
 
 method:: prMakeMarginGap
 Called in the init method of all subclasses. Sets the margin and gap of code::view::. By default, it tries to get its parent's gap, otherwise it defaults to code::2@2::. Setting code::argGap:: overrides these.
-argument:: parentView
-argument:: argMargin
-argument:: argGap
+

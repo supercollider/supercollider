@@ -21,8 +21,6 @@ classmethods::
 
 method::ar, kr
 
-discussion::
-All parameters can be modulated at control rate except for code::initCPs:: which is used only at initialisation.
 
 argument::ampdist
 
@@ -122,6 +120,10 @@ Output will be multiplied by this value.
 
 argument::add
 This value will be added to the output.
+
+discussion::
+All parameters can be modulated at control rate except for code::initCPs:: which is used only at initialisation.
+
 
 Examples::
 warning::

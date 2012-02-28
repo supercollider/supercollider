@@ -43,8 +43,6 @@ code::
 IdentityBag[1, 2, 3, 300].do({ arg item, i; item.postln });
 ::
 
-::
-
 section::Difference between Bag and IdentityBag
 code::
 // the two strings are equal, but not identical

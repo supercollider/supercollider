@@ -47,7 +47,6 @@ FreqScope.new(400, 200, 0);
 // all harmonics
 { Blip.ar(200, Line.kr(1, 100, 10), 0.2) }.play(s);
 ::
-::
 
 subsection:: Subclassing and Internal Methods
 
