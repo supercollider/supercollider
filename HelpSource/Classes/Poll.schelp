@@ -7,7 +7,7 @@ description::
 
 Print the current output value of a UGen, useful for debugging SynthDefs.
 
-WARNING:: Printing values from the Server in intensive for the CPU. Poll should be used for debugging purposes.
+WARNING:: Printing values from the Server in intensive for the CPU. Poll should be used for debugging purposes.::
 
 classmethods::
 private:: categories, new, new1

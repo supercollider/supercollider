@@ -167,7 +167,7 @@ y.postln;
 ::
 
 method::takeThese
-Removes all items in the receiver for which the strong::func:: answers true. The function is passed two arguments, the item and an integer index. note::that order is not preserved. See link::#-takeAt::.
+Removes all items in the receiver for which the strong::func:: answers true. The function is passed two arguments, the item and an integer index. Note that order is not preserved. See link::#-takeAt::.
 code::
 y = [ 1, 2, 3, 4 ];
 y.takeThese({ arg item, index; item.odd; });	//remove odd items

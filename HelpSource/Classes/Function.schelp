@@ -402,7 +402,7 @@ code::
 argument::duration
 The duration of the function to plot in seconds. The default is 0.01.
 argument::server
-The Server on which to calculate the plot. This must be running on your local machine, but does not need to be the internal server. If nil the argument::default server will be used.
+The Server on which to calculate the plot. This must be running on your local machine, but does not need to be the internal server. If nil the default server will be used.
 argument::bounds
 An instance of Rect or Point indicating the bounds of the plot window.
 argument::minval

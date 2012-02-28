@@ -107,15 +107,12 @@ The value of the knob
 
 method:: centered
 Sets/gets whether the knob is in centered mode. See link::Classes/Knob::.
-argument:: bool
 
 method:: round
 Rounds the values in the number box.
-argument:: arg1
 
 method:: controlSpec
 An instance of link::Classes/ControlSpec:: for scaling the values.
-argument:: arg1
 
 method:: value
 Gets/sets the list/menu to the index at value. Does not perform the action.
@@ -127,11 +124,6 @@ Performs the action at the current index and the global action.
 
 method:: set
 Set the args after creation. You can only set the label if it was not nil from the beginning.
-argument:: label
-argument:: spec
-argument:: argAction
-argument:: initVal
-argument:: initAction
 
 method:: visible
 Sets/gets if the component views are visible.

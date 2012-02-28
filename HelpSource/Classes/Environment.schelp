@@ -36,8 +36,6 @@ Saves the receiver on the stack.
 method::pop
 Restores link::#.currentEnvironment:: from the stack.
 
-::
-::
 
 SECTION::PseudoVariables (global variables)
 These are not methods, but global variables.

@@ -100,5 +100,4 @@ a.add("something");
 a.add("something");
 a.contents; // two objects in the bag
 ::
-argument::function
-args to function: item, count, i
+

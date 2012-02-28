@@ -11,7 +11,7 @@ subsection:: Expressing rests in event patterns
 In addition to the Rest class, rests can be specified in two other ways (legacy usages).
 
 list::
-## A link::Classes/Symbol:: may be specified in any frequency stream (under the keys degree, note, midinote or freq). The exception to this rule is control bus mapping symbols, beginning with 'c' followed by a number. Typical symbols that have been used include strong::\rest::, strong::\r:: and the empty symbol strong::\::.
+## A link::Classes/Symbol:: may be specified in any frequency stream (under the keys degree, note, midinote or freq). The exception to this rule is control bus mapping symbols, beginning with 'c' followed by a number. Typical symbols that have been used include strong::\rest::, strong::\r:: and the empty symbol strong:: \ ::.
 
 code::
 p = Pbind(
@@ -43,6 +43,7 @@ subsection:: Usage
 list::
 ## The class Rest may be embedded directly in a child pattern. This sets the isRest flag and puts the number 1 into the event.
 ## Or, a Rest instance may be embedded. Rest.new's argument specifies the value that will be placed into the event. This allows rests to be given in a duration stream -- the argument is the rest's rhythmic value.
+::
 
 section:: How it works
 
@@ -63,11 +64,11 @@ p.next(());
 That is, the importance of the Rest object is not that it appears in the event. The importance is the side effect that this object has on the resulting event.
 
 CLASSMETHODS::
+All methods of Rest except *new are private, and should not be used directly.
+
 private:: processRest
 private:: embedInStream
 private:: asStream
-
-All methods of Rest except *new are private, and should not be used directly.
 
 METHOD:: new
 Create an instance of Rest, with a value to be used in the resulting rest event.

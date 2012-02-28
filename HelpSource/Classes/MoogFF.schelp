@@ -1,7 +1,7 @@
 class:: MoogFF
 summary:: Moog VCF implementation, designed by Federico Fontana
 categories:: UGens>Filters
-related::
+related:: Classes/RLPF, Classes/LPF
 
 description::
 A digital implementation of the Moog VCF (filter). footnote::

@@ -97,7 +97,6 @@ a.set(\freq, 700);
 a.release;
 ::
 
-::
 
 SECTION::Basic Usage
 

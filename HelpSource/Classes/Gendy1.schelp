@@ -34,9 +34,6 @@ classmethods::
 
 method::ar, kr
 
-discussion::
-All parameters can be modulated at control rate except for code::initCPs:: which is used only at initialisation.
-
 argument::ampdist
 
 Choice of probability distribution for the next perturbation of
@@ -118,6 +115,8 @@ argument::knum
 
 Current number of utilised control points, allows modulation.
 
+discussion::
+All parameters can be modulated at control rate except for code::initCPs:: which is used only at initialisation.
 
 Examples::
 

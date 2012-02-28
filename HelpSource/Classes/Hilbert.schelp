@@ -35,3 +35,4 @@ s = Server.internal.boot;
 s.scope;
 a = {Hilbert.ar(SinOsc.ar(100))}.play(s);
 a.release;
+::

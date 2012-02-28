@@ -12,27 +12,21 @@ classmethods::
 private:: categories
 
 method::ar, kr
-discussion::
-The middle pan position (pos=0.0) corresponds to the original stereo mix; full left (pos of -1) is essentially just left channel playing, full right (pos of 1) just the right. The output of Balance2 remains a stereo signal.
 
 argument::left
-
 channel 1 of input stereo signal
 
-
 argument::right
-
 channel 2 of input stereo signal
 
-
 argument::pos
-
 pan position, -1 is left, +1 is right
 
-
 argument::level
-
 a control rate level input.
+
+discussion::
+The middle pan position (pos=0.0) corresponds to the original stereo mix; full left (pos of -1) is essentially just left channel playing, full right (pos of 1) just the right. The output of Balance2 remains a stereo signal.
 
 Examples::
 code::

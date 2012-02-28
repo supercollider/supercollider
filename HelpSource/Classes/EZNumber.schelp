@@ -97,11 +97,9 @@ The value of the slider
 
 method:: round
 Rounds the values in the number box.
-argument:: arg1
 
 method:: controlSpec
 An instance of link::Classes/ControlSpec:: for scaling the values.
-argument:: arg1
 
 method:: value
 Gets/sets the list/menu to the index at value. Does not perform the action.
@@ -118,11 +116,6 @@ Performs the action at the current index and the global action.
 
 method:: set
 Set the args after creation.
-argument:: label
-argument:: spec
-argument:: argAction
-argument:: initVal
-argument:: initAction
 
 method:: enabled
 Sets/gets if the list is enabled.

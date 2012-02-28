@@ -9,16 +9,6 @@ Users will not normally directly create instances of EZLists, but only use it th
 classmethods::
 
 method:: new
-argument:: parentView
-argument:: bounds
-argument:: label
-argument:: items
-argument:: globalAction
-argument:: initVal
-argument:: initAction
-argument:: labelWidth
-argument:: layout
-argument:: gap
 
 instancemethods::
 

@@ -92,11 +92,10 @@ b.close; b.free;
 b.alloc; b.cueSoundFile(Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff", 0); c = SoundFile(Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff").info;
 
 x.free; b.close; b.free; o.free; // clean up eventually
+::
 
-
-
-// the same example in OSC Messaging style, see link::Guides/NodeMessaging::
-
+The same example in OSC Messaging style, see link::Guides/NodeMessaging::
+code::
 // allocate a disk i/o buffer
 s.sendMsg("/b_alloc", 0, 65536, 1);
 

@@ -63,15 +63,14 @@ subsection:: Random Numbers
 See also: link::Guides/Randomness::
 
 method:: xrand
-returns:: a random value from zero to this, excluding the value exclude.
 argument:: exclude
 an link::Classes/Integer::.
+returns:: a random value from zero to this, excluding the value exclude.
 
 method:: xrand2
-returns:: a random value from this.neg to this, excluding the value exclude.
 argument:: exclude
 an link::Classes/Integer::.
-
+returns:: a random value from this.neg to this, excluding the value exclude.
 
 subsection:: Conversion
 

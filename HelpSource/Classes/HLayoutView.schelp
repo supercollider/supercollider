@@ -43,7 +43,7 @@ w.front
 )
 ::
 
-Stretching the layout view; Slider height fills the View automatically::
+Stretching the layout view; Slider height fills the View automatically:
 
 code::
 (

@@ -316,7 +316,8 @@ method:: asComplex
 returns:: this as link::Classes/Point::. x = y = this.
 
 method:: asWarp
-argument::spec a link::Classes/ControlSpec::
+argument::spec
+a link::Classes/ControlSpec::
 returns:: this as link::Classes/CurveWarp:: according to spec.
 
 method:: asFloat
@@ -830,9 +831,9 @@ method:: rand2
 returns:: a random number from -this to +this.
 
 method:: rrand
-returns:: a random number in the interval ]a, b[.
 argument::aNumber
 the upper limit
+returns:: a random number in the interval ]a, b[.
 discussion::
 If both a and b are link::Classes/Integer:: then the result will be an link::Classes/Integer::.
 
