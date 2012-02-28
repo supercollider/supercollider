@@ -477,7 +477,7 @@ GetStringDialog  {
 	recvOSCfunc { this.deprecated(thisMethod); ^recvOSCfunc; }
 
 	recvOSCfunc_ { |newFunc|
-		this.deprecated(thisMethod, Main.findMethod(\addOSCFunc));
+		this.deprecated(thisMethod, Main.findMethod(\addOSCRecvFunc));
 		recvOSCfunc = newFunc;
 	}
 
