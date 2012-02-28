@@ -4,7 +4,8 @@ related:: Guides/Control-Structures
 summary:: conditional execution
 
 method:: if
-subsection::example
+
+section::example
 code::
 if ( [false, true].choose,				// Boolean expression (chooses one at random)
 	{ "expression was true".postln },	// true function
@@ -30,7 +31,7 @@ code::
 )
 ::
 
-subsection:: optimization
+section:: optimization
 
 the functions will be inlined, which plucks the code from the functions and uses a more efficient jump statement.
 

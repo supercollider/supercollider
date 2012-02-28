@@ -112,7 +112,7 @@ code::
 d = Document.current;
 d.keyDownAction = { "You touched the keyboard.".postln };
 
-d.keyDownAction = d.keyDownAction.addFunc {:x, x<-(1..), \:: "already % times\n\n".postf(x) };
+d.keyDownAction = d.keyDownAction.addFunc {:x, x<-(1..), :: "already % times\n\n".postf(x) };
 
 
 d.keyDownAction = nil;
@@ -122,7 +122,7 @@ d.keyDownAction = nil;
 
 (
 d.keyDownAction = nil;
-d.keyDownAction = d.keyDownAction.addFunc {:x, x<-(1..), \:: "already % times\n\n".postf(x) };
+d.keyDownAction = d.keyDownAction.addFunc {:x, x<-(1..), :: "already % times\n\n".postf(x) };
 
 );
 

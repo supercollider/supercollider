@@ -92,7 +92,8 @@ subsection:: [1] Literal argument defaults
 
 Argument defaults that are literals are stored as part of the link::Classes/FunctionDef::. Arguments passed at runtime -- including nil -- always override the defaults:
 
-code::f = { arg x = 1; x };
+code::
+f = { arg x = 1; x };
 f.value(2);  // prints 2
 
 f.value;   // prints 1
@@ -105,7 +106,8 @@ subsection:: [2] Expression argument defaults
 
 Since expressions are evaluated when the function is called, they cannot be stored in the link::Classes/FunctionDef::. They are executed only if the passed-in value is nil.
 
-code::f = { arg x = 10.rand; x };
+code::
+f = { arg x = 10.rand; x };
 f.value(100);  // prints 100
 
 f.value;   // prints a number 0-9
@@ -115,13 +117,15 @@ f.value(nil);   // prints a number 0-9!
 
 This means you can use expression-style to define a default that cannot be overridden by nil.
 
-code::f = { arg x = (3); x };
+code::
+f = { arg x = (3); x };
 f.value(nil);   // prints 3
 ::
 
-Note: Parentheses are required when initializing an argument to an expression, if the argument list is written inside || pipes.
+Note: Parentheses are required when initializing an argument to an expression, if the argument list is written inside code::||:: pipes.
 
-code::(
+code::
+(
 var abc = 2;
 { arg x = abc+1; x }   // OK
 )
@@ -156,7 +160,8 @@ code::
 
 The following produce identical function definitions. Expression-style defaults are simply a shortcut syntax for the latter.
 
-code::{ arg x = 10.rand; x };
+code::
+{ arg x = 10.rand; x };
 
 {	arg x;
 	x ?? { x = 10.rand };

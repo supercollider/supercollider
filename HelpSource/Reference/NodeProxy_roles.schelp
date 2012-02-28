@@ -119,6 +119,8 @@ a.set(\mix1, 0.2);
 a.clear(3);
 ::
 
+::
+
 section::Adding new roles
 
 Roles can be added on the fly. They are kept in a dictionary ( strong::buildMethods:: ) in link::Classes/AbstractPlayControl::. A second dictionary ( strong::proxyControlClasses:: ) provides the wrapper class for a given key.

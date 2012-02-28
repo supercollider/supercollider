@@ -30,7 +30,7 @@ g == s.defaultGroup; // true
 ::
 
 ## link::Classes/Integer#-asTarget:: || Returns a link::Classes/Group:: object representing a group node on the current default Server with this Integer as its node ID number.
-Note:: Although this can be convenient in some cases, it does not create the corresponding node on the default server, nor does it check to make sure that it exists. As well it does not directly access the server's NodeIDAllocator, so duplication of node IDs is possible. For these reasons this method should be used with care. When not dealing with the default Server, Group-basicNew is safer and simpler, as otherwise one needs to set the server instance variable to ensure correct targeting.
+Note:: Although this can be convenient in some cases, it does not create the corresponding node on the default server, nor does it check to make sure that it exists. As well it does not directly access the server's NodeIDAllocator, so duplication of node IDs is possible. For these reasons this method should be used with care. When not dealing with the default Server, Group-basicNew is safer and simpler, as otherwise one needs to set the server instance variable to ensure correct targeting. ::
 code::
 /////// Showing the problems
 
