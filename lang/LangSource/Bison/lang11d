@@ -255,7 +255,7 @@ msgsend : name blocklist1
 				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1);
 				$$ = (long)newPyrCallNode(selectornode, args, NULL, (PyrParseNode*)$4);
 			}
-		| classname '(' keyarglist1 ')' blocklist
+		| classname '(' keyarglist1 optcomma ')' blocklist
 			{
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -264,7 +264,7 @@ msgsend : name blocklist1
 				SetSymbol(&slot, s_new);
 				selectornode = newPyrSlotNode(&slot);
 				args = (PyrParseNode*)newPyrPushNameNode((PyrSlotNode*)$1);
-				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$3, (PyrParseNode*)$5);
+				$$ = (long)newPyrCallNode(selectornode, args, (PyrParseNode*)$3, (PyrParseNode*)$6);
 			}
 		| classname '(' arglist1 optkeyarglist ')' blocklist
 			{
@@ -309,19 +309,19 @@ msgsend : name blocklist1
 				selectornode = newPyrSlotNode(&slot);
 				$$ = (long)newPyrCallNode(selectornode, (PyrParseNode*)$1, NULL, (PyrParseNode*)$5);
 			}
-		| expr '.' '(' keyarglist1 ')' blocklist
+		| expr '.' '(' keyarglist1 optcomma ')' blocklist
 			{
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
 
 				SetSymbol(&slot, s_value);
 				selectornode = newPyrSlotNode(&slot);
-				$$ = (long)newPyrCallNode(selectornode, (PyrParseNode*)$1, (PyrParseNode*)$4, (PyrParseNode*)$6);
+				$$ = (long)newPyrCallNode(selectornode, (PyrParseNode*)$1, (PyrParseNode*)$5, (PyrParseNode*)$6);
 			}
-		| expr '.' name '(' keyarglist1 ')' blocklist
+		| expr '.' name '(' keyarglist1 optcomma ')' blocklist
 			{
 				$$ = (long)newPyrCallNode((PyrSlotNode*)$3, (PyrParseNode*)$1,
-					(PyrParseNode*)$5, (PyrParseNode*)$7);
+					(PyrParseNode*)$5, (PyrParseNode*)$8);
 			}
 		| expr '.' '(' arglist1 optkeyarglist ')' blocklist
 			{
@@ -1241,8 +1241,8 @@ keyarg	: keybinop exprseq
 				{ $$ = (long)newPyrPushKeyArgNode((PyrSlotNode*)$1, (PyrParseNode*)$2); }
 		;
 
-optkeyarglist	: { $$ = 0; }
-				| ',' keyarglist1 { $$ = $2; }
+optkeyarglist	: optcomma { $$ = 0; }
+				| ',' keyarglist1 optcomma { $$ = $2; }
 				;
 
 mavars	: mavarlist
@@ -1407,7 +1407,7 @@ dictslotlist1	: dictslotdef
 				;
 
 dictslotlist	: { $$ = 0; }
-				| dictslotlist1
+				| dictslotlist1 optcomma
 				;
 
 rwslotdeflist	: rwslotdef
@@ -1444,7 +1444,7 @@ litdictslotlist1	: litdictslotdef
 				;
 
 litdictslotlist	: { $$ = 0; }
-				| litdictslotlist1
+				| litdictslotlist1 optcomma
 				;
 
 
