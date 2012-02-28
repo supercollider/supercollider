@@ -188,7 +188,7 @@ public:
             count = world.mNumAudioBusChannels - bus;
 
         for (size_t i = 0; i != count; ++i)
-            controlbus_set_unchecked(i, value);
+            controlbus_set_unchecked(bus + i, value);
     }
 
     sample controlbus_get(uint32_t bus)
