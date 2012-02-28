@@ -463,7 +463,6 @@ METHOD:: acceptsMouseOver
 		A Boolean.
 
 
-
 SUBSECTION:: Actions in general
 
 METHOD:: action
@@ -490,14 +489,23 @@ METHOD:: removeAction
 	argument:: selector
 		A Symbol containing the name of the action variable to which 'func' will be added. In other words, 'add' method will be invoked on that variable; by default that is \action, but any other (sensible) instance or class variable of the view could work (e.g. \globalKeyDownAction or \mouseUpAction or \onClose, etc.). See the other action variables below.
 
+SUBSECTION:: Key and mouse event propagation
 
+In strong::Cocoa and SwingOSC:: GUI kits, a key event occurring on a view can propagate to the parent view, and trigger the parent's key action, if either the child's action returns code::nil::, or the child has no action assigned for that key event. This has also been referred to as "key event bubbling".
 
+In strong::Qt:: GUI, however, both mouse and key events can propagate to the parent view. Event propagation works differently in Qt. By default, after a mouse or key action is evaluated, the control returns to the internals of the view implementation, and if no response to the particular mouse or key event is implemented there, it propagates to the parent.
+
+If you wish to control whether the event will be propagated or not, return code::true:: or code::false:: from the action. True means you have responded to the event, and the propagation will be stopped; false means you are not interested in the event, and the event will propagate. However, this will completely bypass the view implementation, so it will not get a chance at responding to the event with its standard behavior. Use this feature with care.
 
 SUBSECTION:: Mouse actions
 
 Use the methods below to set or get the view's actions in response to mouse interaction with the view. A view must be enabled for the mouse actions to work.
 
-When the action object is evaluated, it is passed one or more arguments from the following list (in that order):
+note::
+In Qt GUI, Mouse actions are subject to emphasis::event propagation::. See link::#key_and_mouse_event_propagation:: for details.
+::
+
+When the mouse action object is evaluated, it is passed one or more arguments from the following list (in that order):
 
 list::
 ## strong::view:: - the view
@@ -530,6 +538,15 @@ METHOD:: mouseOverAction
 
 		It is passed the following arguments: view, x, y.
 
+METHOD:: mouseWheelAction
+    note:: strong:: Only in Qt GUI :: ::
+
+    The object to be evaluated when the mouse wheel is used while the mouse is pointing onto the view.
+
+    It is passed the following arguments: view, x, y, modifiers, xDelta, yDelta.
+
+    The xDelta and yDelta arguments express rotation in horizontal and vertical direction, respectively. The value is in degrees (typically, an event occurs every 15 degrees), and can be positive or negative, depending on the direction of rotation.
+
 METHOD:: mouseEnterAction
 	note:: strong:: Only in Qt GUI :: ::
 
@@ -549,13 +566,11 @@ SUBSECTION:: Key actions
 
 Use the methods below to set or get the view's actions in response to keyboard interaction when the view has the keyboard focus.
 
-If evaluating the action object returns nil, or there is no action set, keyboard event will propagate up to the parent view which may then respond and trigger its actions. On the same condition, it will continue to propagate up unless some view responds or it hits the top of the view hierarchy. You may register an action on the Window's top view to respond to all unhandled keyboard events for the window.
-
 note::
-In Qt GUI, event propagation works differently. After handling a key event within SuperCollider language, the event processing continues in the Qt implementation of the view, and if it is not handled there it propagates to the parent view. If you want to have control over key event propagation, you can return true or false from key actions (meaning that the event was handled and will not propagate, or converse), but note that this will also prevent the Qt view implementation to respond to the key event.
+Key actions are subject to emphasis::event propagation::. See link::#key_and_mouse_event_propagation:: for details.
 ::
 
-When the action object is evaluated, it is passed one or more arguments from the following list (in that order):
+When the key action object is evaluated, it is passed one or more arguments from the following list (in that order):
 
 list::
 ## strong::view:: - The view.

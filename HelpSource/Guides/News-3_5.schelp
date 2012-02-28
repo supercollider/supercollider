@@ -5,7 +5,8 @@ categories:: News
 SECTION:: Language-side news
 
 subsection:: Qt GUI
-A new cross-platform and custom styled GUI system that replaces Cocoa and SwingOSC.
+A new cross-platform GUI kit intended to replace Cocoa and an alternative to SwingOSC.
+See link::Guides/News-Qt-GUI:: for more.
 
 subsection:: SCDoc
 A new help-system provides consistent documentation with good introspection and easy link::Search##searching:: and link::Browse##browsing::.

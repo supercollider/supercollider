@@ -1,0 +1,188 @@
+title:: What's new in Qt GUI
+summary:: A summary of new features and differences in Qt GUI
+categories:: GUI
+
+This document is intended for those already familiar with graphical user interface programming in SuperCollider. If you are new to this topic, you are suggested to first read the link::Guides/GUI-Introduction::.
+
+For the purpose of this guide, let's switch to the Qt GUI:
+
+code::
+GUI.qt
+::
+
+SECTION:: View hierarchy
+
+SUBSECTION:: Every view can be a window
+
+Every view can be displayed as a window on its own, without the use of the Window class. Hence, most methods that are present in Window, are also present in View.
+
+For example, you can display any view without embedding it in a Window or another container view using the link::Classes/View#-front:: method. For this reason, it is valid to omit the 'parent' argument at view construction - any view without a parent can be shown as a window:
+
+code::
+(
+x = SoundFileView().front;
+x.load(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+)
+::
+
+SUBSECTION:: Every view can be a container
+
+Every view can contain other views (i.e. act as their parent). For this reason, if you want to group several views together, you can simply use a View as the container:
+
+code::
+(
+v=View(bounds:300@300);
+5.do { |i|
+    Slider(v).moveTo(i * 25 + 10, 10);
+};
+v.front;
+)
+::
+
+
+SECTION:: Layout management
+
+The Qt layout system allows you to forget about pixels - it manages the size and position of child views in a parent automatically.
+
+SUBSECTION:: Intrinsic view sizes
+
+You may have noticed in the examples above that, besides omitting the code::parent:: argument, we sometimes omitted the code::bounds:: argument as well, at view construction. This is possible because views have intrinsically defined preferred and minimum sizes. See the link::Guides/GUI-Layout-Management#intrinsic_view_sizes#Intrinsic view sizes:: section of the Layout Management guide.
+
+SUBSECTION:: Layout classes
+
+A collection of layout classes allows you to associate one of them with a parent view and several child views, and it will manage positions and sizes of the children automatically according to their size preferences and constraints. It will also do that dynamically, as you resize the window:
+
+code::
+(
+w = Window.new(bounds:Rect(100,100,300,80)).layout_(
+    VLayout (
+        HLayout(
+            Button().states_([["Super"]]),
+            TextField().string_("Collider")
+        ),
+        Button().states_([["SuperCollider"]])
+    )
+).front;
+)
+::
+
+See the link::Guides/GUI-Layout-Management:: guide for detailed explanation.
+
+
+SECTION:: Color management
+
+SUBSECTION:: The palette
+
+Qt has the notion of the color palette - a collection of colors from wich the views pick when drawing themselves. It is represented by the link::Classes/QPalette:: class, and can be set on a view using link::Classes/View#-palette::.
+
+By default, a window will get the global palette ( link::Classes/QtGUI#*palette:: ), and the palette is inherited by child views from their parent. Thus, changing the parent's palette will also affect its children, unless the palette has been overridden on a particular child. You can easily change the appearance of the whole GUI by changing the global palette.
+
+SUBSECTION:: Predefined palettes
+
+There are two predefined palettes ( link::Classes/QPalette#*light:: and link::Classes/QPalette#*dark:: ), and you can also access the native palette of your operating system ( link::Classes/QPalette#*system:: ):
+
+Try changing the global palette with the code below; if you have the Qt GUI active, this will affect this window as well:
+
+code::
+QtGUI.palette = QPalette.dark;
+
+QtGUI.palette = QPalette.light;
+
+QtGUI.palette = QPalette.system;
+::
+
+SECTION:: View actions and hooks
+
+SUBSECTION:: Mouse and key event propagation
+
+In addition to key events, mouse events can also propagate to parent views.
+
+Also, the control over event propagation works differently in Qt. See link::Classes/View#key_and_mouse_event_propagation#Key and mouse event propagation:: for detailed explanation.
+
+Moreover, you can make a view transparent for mouse events using link::Classes/View#-acceptsMouse::, which will forward all mouse events to the view under, regardless of whether they are in a parent-child relationship.
+
+code::
+(
+var win, parent, child, sibling1, sibling2;
+win = Window(bounds:Rect(30,30,300,300));
+parent = Slider2D(win, win.bounds.moveTo(0,0).insetBy(50,50));
+
+// A StaticText will propagate mouse clicks to parent by default:
+child = StaticText(parent, Rect(100,-50,150,150))
+    .align_(\bottomLeft)
+    .string_("\npropagate\nto\nSlider2D")
+    .background_(Color.red.alpha_(0.4));
+
+// This StaticText is not a child of Slider2D so will propagate mouse
+// clicks to the window instead:
+sibling1 = StaticText(win, Rect(0,0,150,150))
+    .align_(\topLeft)
+    .string_("propagate\nto\nWindow")
+    .background_(Color.cyan.alpha_(0.4));
+
+// This StaticText is not a child of Slider2D, but is made transparent for mouse events:
+sibling2 = StaticText(win, Rect(150,150,150,150))
+    .align_(\bottomRight)
+    .string_("ignore")
+    .background_(Color.green.alpha_(0.4))
+    .acceptsMouse_(false);
+win.view.mouseDownAction = { win.background = Color.red(0.6) };
+win.view.mouseUpAction = { win.view.palette = QPalette() };
+win.front;
+)
+::
+
+SUBSECTION:: Extended mouse interaction
+
+Many Qt views already implement some kind of strong::mouse wheel:: interaction. For example, you can scroll a ScrollView, ListView and TreeView using the mouse wheel. You can also change the value of a Slider or a Knob using the mouse wheel. In addition, you can assign an action of your own to the mouse wheel event using link::Classes/View#-mouseWheelAction:::
+
+There's another two handy new mouse actions triggered when the strong::mouse enters or leaves:: the view: link::Classes/View#-mouseEnterAction:: and link::Classes/View#-mouseLeaveAction:::.
+
+code::
+(
+var val = 1.0;
+t=StaticText(bounds:Rect(30,30,100,100))
+    .font_(Font(size:25))
+    .align_(\center)
+    .string_(val.asString)
+    .stringColor_(Color.red)
+    .background_(Color.black)
+    .front;
+t.mouseEnterAction = { t.background = Color.white };
+t.mouseLeaveAction = { t.background = Color.black };
+t.mouseWheelAction = { |v,x,y,mod,dx,dy|
+    if(dy > 0) { val = val + 0.05 } { val = val - 0.05 };
+    val = val.clip(0,2).round(0.01);
+    t.string = val.asString;
+    t.stringColor = Color.red(val);
+};
+)
+::
+
+
+
+SUBSECTION:: Hooks for position and size change
+
+Since views can be automatically repositioned and resized by link::#layout_management#layouts::, or by the user (if they are windows), it may come handy to make your view respond to these changes using link::Classes/View#-onMove:: and link::Classes/View#-onResize::.
+
+code::
+(
+var view, update;
+update = { |v|
+    var bounds = v.bounds;
+    v.string = "%@%\n%x%".format(
+        bounds.left,
+        bounds.top,
+        bounds.height,
+        bounds.width
+    );
+};
+
+x = StaticText(bounds:Rect(100,100,200,200)).align_(\center).font_(Font(size:25));
+x.onMove = update;
+x.onResize = update;
+update.(x);
+
+x.front;
+)
+::
