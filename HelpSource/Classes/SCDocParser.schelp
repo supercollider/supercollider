@@ -91,6 +91,6 @@ p = SCDocParser.new;
 p.parseFile("/path/to/an/example.schelp");
 p.dump;
 p.findNode("summary").text.postln;
-p.parse("inline code\::code example\::.").dump;
+p.parse("inline code::code example::.").dump;
 ::
 
