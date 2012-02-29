@@ -122,8 +122,23 @@ void MainWindow::openDocument()
     mMain->documentManager()->open(filename);
 }
 
-void MainWindow::saveDocument() {}
-void MainWindow::saveDocumentAs() {}
+void MainWindow::saveDocument()
+{}
+
+void MainWindow::saveDocumentAs()
+{
+    QWidget *tabWidget = mDocTabs->currentWidget();
+    CodeEditor *editor = qobject_cast<CodeEditor*>(tabWidget);
+    if(!editor) {
+        qWarning("MainWindow: no current code editor.");
+        return;
+    }
+
+    QString filename = QFileDialog::getSaveFileName( this, "Save File" );
+    if(filename.isEmpty()) return;
+
+    mMain->documentManager()->save( editor->document(), filename );
+}
 
 void MainWindow::closeDocument()
 {

@@ -77,6 +77,20 @@ void DocumentManager::close( QTextDocument *doc )
     delete doc;
 }
 
+void DocumentManager::save( QTextDocument *doc, const QString & filename )
+{
+    QFile file(filename);
+    if(!file.open(QIODevice::WriteOnly)) {
+        qWarning() << "DocumentManager: the file" << filename << "could not be opened for writing.";
+        return;
+    }
+
+    QString str = doc->toPlainText();
+    file.write(str.toUtf8());
+
+    file.close();
+}
+
 QTextDocument * DocumentManager::newDoc()
 {
     QTextDocument *doc = new QTextDocument(this);

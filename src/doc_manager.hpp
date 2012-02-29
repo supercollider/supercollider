@@ -45,6 +45,7 @@ public Q_SLOTS:
     void create();
     void open( const QString & filename );
     void close( QTextDocument * );
+    void save( QTextDocument *, const QString & filename );
 
 Q_SIGNALS:
 
