@@ -29,7 +29,7 @@ section::Inside the bundle
 
 As an AudioUnit plugin, SuperColliderAU is packaged in a component bundle. All the files needed by SuperColliderAU can be found in the Resources folder inside the bundle:
 
-subsection::serverConfig.plist::
+subsection::serverConfig.plist
 Stores configuration parameters for the server (see link::Classes/ServerOptions::)
 
 list::
@@ -41,13 +41,13 @@ list::
 ## BeatDiv: For linking Demand Ugens to the Host tempo. If this number is set, SuperColliderAU wil trigger bus 0 each beat division and use bus 1 for reset.
 ::
 
-subsection::pluginSpec.plist::
+subsection::pluginSpec.plist
 Stores parameter configuration for standalone plugins. SuperColliderAU will use this to display and set the parameters of your synth definition. Note that the defalt values must be the same for the synth definition, they wil not be set by the wrapper. The value in this file is only for display.
 
-subsection::synthdefs::
+subsection::synthdefs
 For standalone plugins you should have your synth definition here. When controlling the server remotely you can just send the synth definitions.
 
-subsection::plugins::
+subsection::plugins
 Here you need all the SC plugins you intend to use with that server.
 
 section::Making standalone plugins

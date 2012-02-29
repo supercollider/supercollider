@@ -81,7 +81,8 @@ code::
 ~z = { max(SinOsc.ar(ExpRand(3, 160)), Saw.ar([304, 304.3])) * 0.1 };
 ::
 
-note that the fadeTime is also used for the operations xset and xmap. (see below)
+note::
+the fadeTime is also used for the operations xset and xmap. (see below)
 ::
 
 section::c) play/stop, send/free, pause/resume

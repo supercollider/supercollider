@@ -97,7 +97,7 @@ list::
 ::
 ## strong::Legacy::
 list::
-## emphasis::Symbol as pitch: :: A symbol, such as strong::\rest::, strong::\r:: or even the empty symbol strong::\::, in a key related to pitch (degree, note, midinote, freq) causes the event to be silent.
+## emphasis::Symbol as pitch: :: A symbol, such as strong::\rest::, strong::\r:: or even the empty symbol strong:: \ ::, in a key related to pitch (degree, note, midinote, freq) causes the event to be silent.
 ## emphasis::\type, \rest: :: Setting the event's \type to \rest also silences the event.
 ::
 ::
