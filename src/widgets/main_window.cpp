@@ -98,6 +98,9 @@ void MainWindow::createMenus()
     menu->addAction( mMain->mStartSCLang );
     menu->addAction( mMain->mRecompileClassLibrary );
     menu->addAction( mMain->mStopSCLang );
+    menu->addSeparator();
+    menu->addAction( mMain->mRunMain );
+    menu->addAction( mMain->mStopMain );
 
     menuBar()->addMenu(menu);
 }

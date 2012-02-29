@@ -69,6 +69,12 @@ private:
 
         mStopSCLang = new QAction(tr("Stop SCLang"), this);
         connect(mStopSCLang, SIGNAL(triggered()), scProcess, SLOT(stopLanguage()) );
+
+        mRunMain = new QAction(tr("Run Main"), this);
+        connect(mRunMain, SIGNAL(triggered()), scProcess, SLOT(runMain()));
+
+        mStopMain = new QAction(tr("Stop Main"), this);
+        connect(mStopMain, SIGNAL(triggered()), scProcess, SLOT(stopMain()));
     }
 
 public:
@@ -78,6 +84,8 @@ public:
     QAction * mStartSCLang;
     QAction * mRecompileClassLibrary;
     QAction * mStopSCLang;
+    QAction * mRunMain;
+    QAction * mStopMain;
 };
 
 }

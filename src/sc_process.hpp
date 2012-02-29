@@ -59,6 +59,16 @@ public slots:
         write("\x18");
     }
 
+    void runMain(void)
+    {
+        evaluateCode("thisProcess.run", false);
+    }
+
+    void stopMain(void)
+    {
+        evaluateCode("thisProcess.stop", false);
+    }
+
     void stopLanguage (void)
     {
         closeWriteChannel();
