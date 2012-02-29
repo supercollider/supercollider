@@ -1,9 +1,9 @@
-title:: proxyspace_examples
-summary:: proxy space examples
+title:: ProxySpace examples
+summary:: Some ProxySpace examples
 categories:: Libraries>JITLib>Tutorials
 related:: Overviews/JITLib, Classes/ProxySpace
 
-
+section::main examples
 
 subsection::preparing the environment
 
