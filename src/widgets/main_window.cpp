@@ -86,7 +86,7 @@ MainWindow::MainWindow(Main * main)
     addDockWidget(Qt::BottomDockWidgetArea, postDock);
 
     connect(main->scProcess, SIGNAL( scPost(QString) ),
-            postDock->postWindow, SLOT( append(QString) ) );
+            postDock->mPostWindow, SLOT( append(QString) ) );
 
     main->startScLang();
 }
