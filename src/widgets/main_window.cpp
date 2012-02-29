@@ -29,79 +29,88 @@
 
 namespace ScIDE {
 
-MainWindow::MainWindow(Main * main)
+MainWindow::MainWindow(Main * main) :
+    mMain(main)
 {
-    _actions.resize(ActionCount);
+    createMenus();
 
+    mDocTabs = new QTabWidget();
+    mDocTabs->setTabsClosable(true);
+    setCentralWidget(mDocTabs);
+
+    mPostDock = new PostDock(this);
+    addDockWidget(Qt::BottomDockWidgetArea, mPostDock);
+
+    connect(main->scProcess, SIGNAL( scPost(QString) ),
+            mPostDock->mPostWindow, SLOT( append(QString) ) );
+    connect(mMain->documentManager(), SIGNAL(opened(QTextDocument*)),
+            this, SLOT(createTab(QTextDocument*)));
+    connect(mDocTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+}
+
+void MainWindow::createMenus()
+{
     QAction *act;
 
-    _actions[DocNew] = act = new QAction(tr("&New"), this);
+    mActions[DocNew] = act = new QAction(tr("&New"), this);
     act->setShortcuts(QKeySequence::New);
     act->setStatusTip(tr("Create a new file"));
     connect(act, SIGNAL(triggered()), this, SLOT(newDocument()));
 
-    _actions[DocOpen] = act = new QAction(tr("&Open..."), this);
+    mActions[DocOpen] = act = new QAction(tr("&Open..."), this);
     act->setShortcuts(QKeySequence::Open);
     act->setStatusTip(tr("Open an existing file"));
     connect(act, SIGNAL(triggered()), this, SLOT(openDocument()));
 
-    _actions[DocSave] = act = new QAction(tr("&Save"), this);
+    mActions[DocSave] = act = new QAction(tr("&Save"), this);
     act->setShortcuts(QKeySequence::Save);
     act->setStatusTip(tr("Save the current document"));
     connect(act, SIGNAL(triggered()), this, SLOT(saveDocument()));
 
-    _actions[DocSaveAs] = act = new QAction(tr("Save &As..."), this);
+    mActions[DocSaveAs] = act = new QAction(tr("Save &As..."), this);
     act->setShortcuts(QKeySequence::SaveAs);
     act->setStatusTip(tr("Save the current document into a different file"));
     connect(act, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
 
-    _actions[DocClose] = act = new QAction(tr("&Close"), this);
+    mActions[DocClose] = act = new QAction(tr("&Close"), this);
     act->setShortcuts(QKeySequence::SaveAs);
     act->setStatusTip(tr("Close the current document"));
     connect(act, SIGNAL(triggered()), this, SLOT(closeDocument()));
 
-    _actions[Quit] = act = new QAction(tr("&Quit..."), this);
+    mActions[Quit] = act = new QAction(tr("&Quit..."), this);
     act->setShortcuts(QKeySequence::Quit);
     act->setStatusTip(tr("Quit SuperCollider IDE"));
 
     QMenu *menu = new QMenu(tr("&File"), this);
-    menu->addAction( _actions[DocNew] );
-    menu->addAction( _actions[DocOpen] );
-    menu->addAction( _actions[DocSave] );
-    menu->addAction( _actions[DocSaveAs] );
+    menu->addAction( mActions[DocNew] );
+    menu->addAction( mActions[DocOpen] );
+    menu->addAction( mActions[DocSave] );
+    menu->addAction( mActions[DocSaveAs] );
     menu->addSeparator();
-    menu->addAction( _actions[DocClose] );
+    menu->addAction( mActions[DocClose] );
     menu->addSeparator();
-    menu->addAction( _actions[Quit] );
+    menu->addAction( mActions[Quit] );
 
     menuBar()->addMenu(menu);
 
-    _docTabs = new QTabWidget();
-    _docTabs->setTabsClosable(true);
-    setCentralWidget(_docTabs);
+    menu = new QMenu(tr("&Language"), this);
+    menu->addAction( mMain->mStartSCLang );
+    menu->addAction( mMain->mRecompileClassLibrary );
+    menu->addAction( mMain->mStopSCLang );
 
-    connect(_docTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
-
-    postDock = new PostDock(this);
-    addDockWidget(Qt::BottomDockWidgetArea, postDock);
-
-    connect(main->scProcess, SIGNAL( scPost(QString) ),
-            postDock->mPostWindow, SLOT( append(QString) ) );
-
-    main->startScLang();
+    menuBar()->addMenu(menu);
 }
+
 
 QAction *MainWindow::action( ActionRole role )
 {
     Q_ASSERT( role < ActionCount );
-    return _actions[role];
+    return mActions[role];
 }
 
 void MainWindow::newDocument()
 {
-    CodeEditor *editor = new CodeEditor();
-    _docs.append( editor->document() );
-    _docTabs->addTab( editor, "<new>" );
+    mMain->documentManager()->create();
 }
 
 void MainWindow::openDocument() {}
@@ -110,35 +119,36 @@ void MainWindow::saveDocumentAs() {}
 
 void MainWindow::closeDocument()
 {
-    int index = _docTabs->currentIndex();
+    int tabIndex = mDocTabs->currentIndex();
 
-    if( index < 0 ) return;
+    if( tabIndex < 0 ) return;
 
-    closeTab(index);
+    closeTab(tabIndex);
 }
 
-void MainWindow::closeTab(int index)
+void MainWindow::createTab( QTextDocument *doc )
 {
-    QWidget *tabWidget = _docTabs->widget(index);
+    CodeEditor *editor = new CodeEditor(doc);
+    mDocTabs->addTab( editor, "<new>" );
+}
+
+void MainWindow::closeTab( int tabIndex )
+{
+    QWidget *tabWidget = mDocTabs->widget(tabIndex);
 
     if(!tabWidget) {
-        qWarning("Request to close a tab at index out of range.");
+        qWarning("Trying to close a tab with no widget.");
         return;
     }
-
-    _docTabs->removeTab( index );
 
     CodeEditor *editor = qobject_cast<CodeEditor*>(tabWidget);
     if(!editor) {
         qWarning("Tab widget is not a CodeEditor");
-        delete tabWidget;
         return;
     }
 
     QTextDocument *doc = editor->document();
-    if(doc)
-        _docs.removeAll(doc);
-
+    mMain->documentManager()->close(doc);
     delete tabWidget;
 }
 

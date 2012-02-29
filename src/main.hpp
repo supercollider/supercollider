@@ -25,6 +25,7 @@
 #include <QAction>
 
 #include "sc_process.hpp"
+#include "doc_manager.hpp"
 #include "widgets/main_window.hpp"
 
 namespace ScIDE {
@@ -41,6 +42,8 @@ public:
         return singleton;
     }
 
+    DocumentManager * documentManager() { return mDocManager; }
+
 public Q_SLOT:
     void startScLang(void)
     {
@@ -48,10 +51,7 @@ public Q_SLOT:
     }
 
 private:
-    Main(void)
-    {
-        prepareSCProcess();
-    }
+    Main(void);
 
     void prepareSCProcess(void)
     {
@@ -68,6 +68,8 @@ private:
 
 public:
     SCProcess * scProcess;
+    DocumentManager *mDocManager;
+
     QAction * mStartSCLang;
     QAction * mRecompileClassLibrary;
     QAction * mStopSCLang;

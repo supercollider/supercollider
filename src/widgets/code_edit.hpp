@@ -55,6 +55,7 @@ class CodeEditor : public QPlainTextEdit
   friend class LineIndicator;
 public:
   CodeEditor( QWidget *parent = 0 );
+  CodeEditor( QTextDocument *, QWidget *parent = 0 );
 private Q_SLOTS:
   void updateLayout();
   void updateLineIndicator( QRect, int );

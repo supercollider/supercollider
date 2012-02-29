@@ -6,10 +6,12 @@ set ( ide_moc_hdr
     widgets/code_edit.hpp
     main.hpp
     sc_process.hpp
+    doc_manager.hpp
 )
 
 set ( ide_src
     main.cpp
+    doc_manager.cpp
     widgets/main_window.cpp
     widgets/code_edit.cpp
 )

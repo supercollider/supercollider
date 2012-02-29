@@ -18,32 +18,49 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "widgets/main_window.hpp"
-#include "main.hpp"
+#include "doc_manager.hpp"
 
-#include <QApplication>
-#include <QAction>
+#include <QPlainTextDocumentLayout>
 
 using namespace ScIDE;
 
-int main( int argc, char *argv[] )
+QTextDocument * DocumentManager::document( int index )
 {
-    Main * main = Main::instance();
-
-    QApplication app(argc, argv);
-
-    MainWindow *win = new MainWindow(main);
-
-    QObject::connect( win->action(MainWindow::Quit), SIGNAL(triggered()),
-                      &app, SLOT(quit()) );
-
-    win->showMaximized();
-
-    return app.exec();
+    if (index < 0 || index > mDocs.count())
+        return 0;
+    return mDocs[index];
 }
 
-Main::Main(void) :
-    mDocManager( new DocumentManager(this) )
+int DocumentManager::index( QTextDocument *doc )
 {
-    prepareSCProcess();
+   return mDocs.indexOf(doc);
+}
+
+void DocumentManager::create()
+{
+    QTextDocument *doc = new QTextDocument(this);
+    doc->setDocumentLayout( new QPlainTextDocumentLayout(doc) );
+    mDocs.append(doc);
+
+    Q_EMIT( opened(doc) );
+}
+
+void DocumentManager::open( const QString & filename )
+{
+    // TODO
+}
+
+void DocumentManager::close( QTextDocument *doc )
+{
+    int i = index(doc);
+    if( i < 0 ) {
+        qWarning("DocumentManager: trying to close an unmanaged document.");
+        return;
+    }
+
+    mDocs.removeAll(doc);
+
+    Q_EMIT( closed(doc) );
+
+    delete doc;
 }

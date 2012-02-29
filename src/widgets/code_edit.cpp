@@ -56,14 +56,28 @@ int LineIndicator::calcContentsWidth()
 
 
 
-CodeEditor::CodeEditor( QWidget *parent ) : QPlainTextEdit( parent )
+CodeEditor::CodeEditor( QWidget *parent ) :
+    QPlainTextEdit( parent ),
+    _lineIndicator( new LineIndicator(this) )
 {
-  _lineIndicator = new LineIndicator( this );
   connect( _lineIndicator, SIGNAL( contentsWidthChanged() ),
            this, SLOT( updateLayout() ) );
   connect( this, SIGNAL(updateRequest(QRect,int)),
            this, SLOT(updateLineIndicator(QRect,int)) );
   _lineIndicator->updateContentsWidth();
+}
+
+CodeEditor::CodeEditor( QTextDocument *doc, QWidget *parent ) :
+    QPlainTextEdit( parent ),
+    _lineIndicator( new LineIndicator(this) )
+{
+    connect( _lineIndicator, SIGNAL( contentsWidthChanged() ),
+            this, SLOT( updateLayout() ) );
+    connect( this, SIGNAL(updateRequest(QRect,int)),
+            this, SLOT(updateLineIndicator(QRect,int)) );
+    _lineIndicator->updateContentsWidth();
+
+    setDocument(doc);
 }
 
 void CodeEditor::updateLayout()

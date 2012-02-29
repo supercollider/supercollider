@@ -21,15 +21,14 @@
 #ifndef SCIDE_WIDGETS_MAIN_WINDOW_HPP_INCLUDED
 #define SCIDE_WIDGETS_MAIN_WINDOW_HPP_INCLUDED
 
+#include "post_window.hpp"
+#include "../main.hpp"
+
 #include <QMainWindow>
 #include <QTabWidget>
 #include <QTextDocument>
 #include <QTabWidget>
 #include <QVector>
-
-#include "post_window.hpp"
-
-#include "../main.hpp"
 
 namespace ScIDE
 {
@@ -51,7 +50,7 @@ public:
         ActionCount
     };
 
-    MainWindow(struct Main * main);
+    MainWindow(struct Main *);
 
     QAction *action( ActionRole );
 
@@ -63,17 +62,19 @@ public Q_SLOTS:
     void closeDocument();
 
 private Q_SLOTS:
+    void createTab( QTextDocument * );
     void closeTab(int index);
 
-
 private:
-    QVector<QAction*> _actions;
+    void createMenus();
 
-    QList<QTextDocument*> _docs;
+    Main *mMain;
 
-    QTabWidget *_docTabs;
+    QAction * mActions[ActionCount];
 
-    PostDock * postDock;
+    QTabWidget *mDocTabs;
+
+    PostDock * mPostDock;
 };
 
 } // namespace ScIDE

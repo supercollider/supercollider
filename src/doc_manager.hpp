@@ -18,32 +18,45 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "widgets/main_window.hpp"
-#include "main.hpp"
+#ifndef SCIDE_DOC_MANAGER_HPP_INCLUDED
+#define SCIDE_DOC_MANAGER_HPP_INCLUDED
 
-#include <QApplication>
-#include <QAction>
+#include <QObject>
+#include <QList>
+#include <QTextDocument>
 
-using namespace ScIDE;
-
-int main( int argc, char *argv[] )
+namespace ScIDE
 {
-    Main * main = Main::instance();
 
-    QApplication app(argc, argv);
-
-    MainWindow *win = new MainWindow(main);
-
-    QObject::connect( win->action(MainWindow::Quit), SIGNAL(triggered()),
-                      &app, SLOT(quit()) );
-
-    win->showMaximized();
-
-    return app.exec();
-}
-
-Main::Main(void) :
-    mDocManager( new DocumentManager(this) )
+class DocumentManager : public QObject
 {
-    prepareSCProcess();
-}
+    Q_OBJECT
+
+public:
+
+    DocumentManager( QObject *parent = 0 ) : QObject(parent) {}
+
+    QTextDocument * document( int index );
+    int index( QTextDocument * );
+
+
+public Q_SLOTS:
+
+    void create();
+    void open( const QString & filename );
+    void close( QTextDocument * );
+
+Q_SIGNALS:
+
+    void opened( QTextDocument * );
+    void closed( QTextDocument * );
+
+private:
+
+    QList<QTextDocument*> mDocs;
+};
+
+} // namespace ScIDE
+
+
+#endif // SCIDE_DOC_MANAGER_HPP_INCLUDED
