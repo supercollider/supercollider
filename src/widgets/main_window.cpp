@@ -1,4 +1,5 @@
 #include "main_window.hpp"
+#include "post_window.hpp"
 
 #include <QAction>
 #include <QMenu>
@@ -29,6 +30,9 @@ MainWindow::MainWindow()
         if(a) menu->addAction(a);
 
     menuBar()->addMenu(menu);
+
+    PostDock * postDock = new PostDock(this);
+    addDockWidget(Qt::RightDockWidgetArea, postDock);
 }
 
 QAction *MainWindow::action( ActionRole role )
