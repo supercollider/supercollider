@@ -1,7 +1,6 @@
 title:: Writing Unit Generators
 summary:: Get started with writing unit generators
 categories:: Internals
-related::
 
 section:: How Unit Generator plug-ins work.
 

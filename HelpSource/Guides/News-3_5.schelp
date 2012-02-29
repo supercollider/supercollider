@@ -62,7 +62,7 @@ subsection:: PriorityQueue stable order
 
 The link::Classes/PriorityQueue:: now provides a stable heap order: items of the same time value will have a FIFO order.
 
-subsection:: link::Reference/plot:: improvements
+subsection:: plot improvements
 
 link::Reference/plot:: has been changed to use the link::Classes/Plotter:: class, which was formerly used by the code::plot2:: methods. code::plot2:: has been deprecated, the old behavior is still available via the code::plotOld:: methods, which have also been deprecated.
 

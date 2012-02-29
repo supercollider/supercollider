@@ -12,5 +12,5 @@ definitionList::
 ## link::Guides/Backwards-Compatibility:: || A discussion some classes and methods which have been added to improve compatibility with SC2 code, and their limitations.
 ::
 
-note:: These documents are not intended to be exhaustive tutorials, just an introduction to some of the differences. Close examination of the helpfiles of relevant classes should help to fill in the details. These files may be of some use to beginners as well.
+note:: These documents are not intended to be exhaustive tutorials, just an introduction to some of the differences. Close examination of the helpfiles of relevant classes should help to fill in the details. These files may be of some use to beginners as well.::
 

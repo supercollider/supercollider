@@ -29,27 +29,34 @@ table::
 
 section:: How Extensions Folders Should be Organised
 
-warning::The following section describes the old OSX-based extension directory layout. This is subject to change.::
-
-Class files and UGen plugins are recognised by their file extensions. Anything placed within a folder named help/ or
-ignore/ (case insensitive) will be ignored when compiling the class library or loading plugins, but anything in the
-former will be added to the search path for help files.
+Class files and UGen plugins are recognised by their file extensions. Anything placed within a folder named 
+teletype::ignore/:: (case insensitive) will be ignored when compiling the class library or loading plugins.
 
 Here is an example folder layout:
 
+teletype::MyExtension::
 tree::
-## teletype::MyExtension::
+## teletype::classes::
     tree::
-    ## teletype::classes::
+    ## teletype::myClass.sc::
+    ## teletype::myUGens.sc::
+    ::
+## teletype::plugins::
     tree::
-        ## teletype::myClass.sc myUGens.sc::
+    ## teletype::myUGenPlugins.scx::
+    ::
+## teletype::HelpSource::
+    tree::
+    ## teletype::Classes::
+        tree::
+        ## teletype::MyClass.schelp::
+        ## teletype::MyUGen1.schelp::
+        ## teletype::MyUGen2.schelp::
         ::
-    ## teletype::plugins::
-    tree::
-        ## teletype::myUGenPlugins.scx::
+    ## teletype::Guides::
+        tree::
+        ## teletype::MyExtensionGuide.schelp::
         ::
-    ## teletype::help::
-    tree::
-        ## teletype::myClass.html myUGen1.html myUGen2.html::
-        ::
+    ::
 ::
+

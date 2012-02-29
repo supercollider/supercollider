@@ -15,7 +15,7 @@ code::
 Filter.dumpClassSubtree;
 ::
 
-classtree::Filter::
+classtree::Filter
 
 SuperColliderのヘルプ・システムでHelp/UGens/Filtersを調べることでもフィルターのヘルプ・ファイルをみることができます。ヘルプ・ファイルの全てにはそれぞれのフィルターがどのように動作するのかを示す素晴らしい例があります。
 

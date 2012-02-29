@@ -149,6 +149,7 @@ Rect(left, top, right-left, bottom-top)
 ## code:: ugen @ ugen :: || create a Point with two link::Classes/UGen::s
 ## code:: rect & rect :: || intersection of two rectangles
 ## code:: rect | rect :: || union of two rectangles (returns a Rect whose boundaries exactly encompass both Rects)
+::
 
 section:: IOStream operators
 definitionlist::

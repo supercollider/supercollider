@@ -185,6 +185,7 @@ list::
 ## code::Pbind(\someValue, Psym(**, (pattern1: Pwhite(**))) ::
 ::
 ::
+::
 
 subsection::Switching between patterns for individual values
 
