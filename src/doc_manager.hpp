@@ -52,6 +52,7 @@ Q_SIGNALS:
     void closed( QTextDocument * );
 
 private:
+    QTextDocument *newDoc();
 
     QList<QTextDocument*> mDocs;
 };

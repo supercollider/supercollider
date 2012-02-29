@@ -21,6 +21,8 @@
 #include "doc_manager.hpp"
 
 #include <QPlainTextDocumentLayout>
+#include <QFile>
+#include <QDebug>
 
 using namespace ScIDE;
 
@@ -38,16 +40,26 @@ int DocumentManager::index( QTextDocument *doc )
 
 void DocumentManager::create()
 {
-    QTextDocument *doc = new QTextDocument(this);
-    doc->setDocumentLayout( new QPlainTextDocumentLayout(doc) );
-    mDocs.append(doc);
-
+    QTextDocument *doc = newDoc();
     Q_EMIT( opened(doc) );
 }
 
 void DocumentManager::open( const QString & filename )
 {
-    // TODO
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "DocumentManager: the file" << filename << "could not be opened for reading.";
+        return;
+    }
+
+    QByteArray bytes( file.readAll() );
+
+    file.close();
+
+    QTextDocument *doc = newDoc();
+    doc->setPlainText( QString::fromUtf8( bytes.data(), bytes.size() ) );
+
+    Q_EMIT( opened(doc) );
 }
 
 void DocumentManager::close( QTextDocument *doc )
@@ -63,4 +75,12 @@ void DocumentManager::close( QTextDocument *doc )
     Q_EMIT( closed(doc) );
 
     delete doc;
+}
+
+QTextDocument * DocumentManager::newDoc()
+{
+    QTextDocument *doc = new QTextDocument(this);
+    doc->setDocumentLayout( new QPlainTextDocumentLayout(doc) );
+    mDocs.append(doc);
+    return doc;
 }

@@ -26,6 +26,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QMenuBar>
+#include <QFileDialog>
 
 namespace ScIDE {
 
@@ -113,7 +114,14 @@ void MainWindow::newDocument()
     mMain->documentManager()->create();
 }
 
-void MainWindow::openDocument() {}
+void MainWindow::openDocument()
+{
+    QString filename = QFileDialog::getOpenFileName( this, "Open File" );
+    if(filename.isEmpty()) return;
+
+    mMain->documentManager()->open(filename);
+}
+
 void MainWindow::saveDocument() {}
 void MainWindow::saveDocumentAs() {}
 
