@@ -416,7 +416,7 @@ SCDocParser {
                                 };
                             },
                             \keyword, {
-                                match = text.findRegexp("[^ ,]+").flop[1];
+                                match = text.findRegexp("\\b[^,]+\\b").flop[1];
                                 keywords = keywords ++ match;
                             }
                         );
