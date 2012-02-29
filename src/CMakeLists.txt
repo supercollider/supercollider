@@ -1,8 +1,8 @@
-
 find_package(Qt4 REQUIRED)
 
 set ( ide_moc_hdr
     widgets/main_window.hpp
+    sc_process.hpp
 )
 
 set ( ide_src
