@@ -82,6 +82,14 @@ void MainWindow::createMenus()
     act->setShortcuts(QKeySequence::Quit);
     act->setStatusTip(tr("Quit SuperCollider IDE"));
 
+    mActions[EvaluateCurrentFile] = act = new QAction(tr("Evaluate File"), this);
+    act->setStatusTip(tr("Evaluate current File"));
+    connect(act, SIGNAL(triggered()), this, SLOT(evaluateCurrentFile()));
+
+    mActions[EvaluateSelectedRegion] = act = new QAction(tr("Evaluate Region"), this);
+    act->setStatusTip(tr("Evaluate selected Region"));
+    connect(act, SIGNAL(triggered()), this, SLOT(evaluateSelectedRegion()));
+
     QMenu *menu = new QMenu(tr("&File"), this);
     menu->addAction( mActions[DocNew] );
     menu->addAction( mActions[DocOpen] );
@@ -98,6 +106,9 @@ void MainWindow::createMenus()
     menu->addAction( mMain->mStartSCLang );
     menu->addAction( mMain->mRecompileClassLibrary );
     menu->addAction( mMain->mStopSCLang );
+    menu->addSeparator();
+    menu->addAction( mActions[EvaluateCurrentFile]);
+    menu->addAction( mActions[EvaluateSelectedRegion]);
     menu->addSeparator();
     menu->addAction( mMain->mRunMain );
     menu->addAction( mMain->mStopMain );
@@ -176,6 +187,43 @@ void MainWindow::closeTab( int tabIndex )
     QTextDocument *doc = editor->document();
     mMain->documentManager()->close(doc);
     delete tabWidget;
+}
+
+CodeEditor* MainWindow::getCurrentCodeEditor()
+{
+    QWidget *tabWidget = mDocTabs->currentWidget();
+    CodeEditor *editor = qobject_cast<CodeEditor*>(tabWidget);
+    if(!editor) {
+        qWarning("MainWindow: no current code editor.");
+        return NULL;
+    } else
+        return editor;
+}
+
+
+void MainWindow::evaluateSelectedRegion()
+{
+    CodeEditor *editor = getCurrentCodeEditor();
+    if (!editor)
+        return;
+
+    QString selectedText = editor->textCursor().selectedText();
+    mPostDock->mPostWindow->append(selectedText);
+
+    if (!selectedText.size())
+        return; // no selection
+
+    Main::instance()->evaluateCode(selectedText, false);
+}
+
+void MainWindow::evaluateCurrentFile()
+{
+    CodeEditor *editor = getCurrentCodeEditor();
+    if (!editor)
+        return;
+
+    QString documentText = editor->document()->toPlainText();
+    Main::instance()->evaluateCode(documentText, false);
 }
 
 } // namespace ScIDE

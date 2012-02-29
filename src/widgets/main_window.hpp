@@ -47,6 +47,9 @@ public:
         DocClose,
         Quit,
 
+        EvaluateCurrentFile,
+        EvaluateSelectedRegion,
+
         ActionCount
     };
 
@@ -65,8 +68,12 @@ private Q_SLOTS:
     void createTab( QTextDocument * );
     void closeTab(int index);
 
+    void evaluateSelectedRegion();
+    void evaluateCurrentFile();
+
 private:
     void createMenus();
+    class CodeEditor * getCurrentCodeEditor();
 
     Main *mMain;
 
