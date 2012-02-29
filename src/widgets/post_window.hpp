@@ -1,5 +1,5 @@
 /*
-    SuperCollider QT IDE
+    SuperCollider Qt IDE
     Copyright (c) 2012 Jakob Leben & Tim Blechmann
     http://www.audiosynth.com
 
@@ -18,8 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef WIDGETS_POSTWINDOW_HPP_INCLUDED
-#define WIDGETS_POSTWINDOW_HPP_INCLUDED
+#ifndef SCIDE_WIDGETS_POST_WINDOW_HPP_INCLUDED
+#define SCIDE_WIDGETS_POST_WINDOW_HPP_INCLUDED
 
 #include <QDockWidget>
 #include <QTextBrowser>

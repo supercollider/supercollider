@@ -3,12 +3,14 @@ find_package(Qt4 REQUIRED)
 set ( ide_moc_hdr
     widgets/main_window.hpp
     widgets/post_window.hpp
+    widgets/code_edit.hpp
     sc_process.hpp
 )
 
 set ( ide_src
     main.cpp
     widgets/main_window.cpp
+    widgets/code_edit.cpp
 )
 
 include( ${QT_USE_FILE} )

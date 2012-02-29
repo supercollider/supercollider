@@ -18,58 +18,52 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_MAIN_WINDOW_HPP_INCLUDED
-#define SCIDE_WIDGETS_MAIN_WINDOW_HPP_INCLUDED
+#ifndef SCIDE_WIDGETS_CODE_EDIT_HPP_INCLUDED
+#define SCIDE_WIDGETS_CODE_EDIT_HPP_INCLUDED
 
-#include <QMainWindow>
-#include <QTabWidget>
-#include <QTextDocument>
-#include <QTabWidget>
-#include <QVector>
+#include <QPlainTextEdit>
 
 namespace ScIDE
 {
 
-class MainWindow : public QMainWindow
+class CodeEditor;
+
+class LineIndicator : public QWidget
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-
-    enum ActionRole {
-        DocNew = 0,
-        DocOpen,
-        DocSave,
-        DocSaveAs,
-        DocClose,
-        Quit,
-
-        ActionCount
-    };
-
-    MainWindow();
-
-    QAction *action( ActionRole );
-
+  LineIndicator( CodeEditor *editor );
+  int contentsWidth() { return _contentsWidth; }
+Q_SIGNALS:
+  void contentsWidthChanged();
 public Q_SLOTS:
-    void newDocument();
-    void openDocument();
-    void saveDocument();
-    void saveDocumentAs();
-    void closeDocument();
-
-private Q_SLOTS:
-    void closeTab(int index);
-
+  void updateContentsWidth();
 private:
+  void paintEvent( QPaintEvent *e );
+  int calcContentsWidth();
 
-    QVector<QAction*> _actions;
+  CodeEditor *_editor;
+  int _contentsWidth;
+};
 
-    QList<QTextDocument*> _docs;
 
-    QTabWidget *_docTabs;
+class CodeEditor : public QPlainTextEdit
+{
+  Q_OBJECT
+
+  friend class LineIndicator;
+public:
+  CodeEditor( QWidget *parent = 0 );
+private Q_SLOTS:
+  void updateLayout();
+  void updateLineIndicator( QRect, int );
+private:
+  void resizeEvent( QResizeEvent * );
+  void paintLineIndicator( QPaintEvent * );
+  LineIndicator *_lineIndicator;
 };
 
 } // namespace ScIDE
 
-#endif
+#endif // SC_IDE_CODE_EDIT_HPP
