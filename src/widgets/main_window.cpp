@@ -83,7 +83,7 @@ MainWindow::MainWindow()
     connect(_docTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
     postDock = new PostDock(this);
-    addDockWidget(Qt::RightDockWidgetArea, postDock);
+    addDockWidget(Qt::BottomDockWidgetArea, postDock);
 
     Main::instance()->onStart(this);
 }
