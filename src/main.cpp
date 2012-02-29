@@ -32,7 +32,7 @@ int main( int argc, char *argv[] )
 
     QApplication app(argc, argv);
 
-    MainWindow *win = new MainWindow();
+    MainWindow *win = new MainWindow(main);
 
     QObject::connect( win->action(MainWindow::Quit), SIGNAL(triggered()),
                       &app, SLOT(quit()) );

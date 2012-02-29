@@ -22,6 +22,7 @@
 #define SCIDE_MAIN_HPP_INCLUDED
 
 #include <QObject>
+#include <QAction>
 
 #include "sc_process.hpp"
 #include "widgets/main_window.hpp"
@@ -40,21 +41,36 @@ public:
         return singleton;
     }
 
-    void onStart(MainWindow * mainWindow)
+public Q_SLOT:
+    void startScLang(void)
     {
-        scProcess = new SCProcess(this);
-
-        connect(scProcess, SIGNAL( scPost(QString) ),
-                mainWindow->postDock->postWindow, SLOT( append(QString) ) );
-
-        scProcess->start();
+        mStartSCLang->trigger();
     }
 
 private:
     Main(void)
-    {}
+    {
+        prepareSCProcess();
+    }
 
+    void prepareSCProcess(void)
+    {
+        scProcess = new SCProcess(this);
+        mStartSCLang = new QAction(tr("Start SCLang"), this);
+        connect(mStartSCLang, SIGNAL(triggered()), scProcess, SLOT(start()) );
+
+        mRecompileClassLibrary = new QAction(tr("Recompile Class Library"), this);
+        connect(mRecompileClassLibrary, SIGNAL(triggered()), scProcess, SLOT(recompileClassLibrary()) );
+
+        mStopSCLang = new QAction(tr("Stop SCLang"), this);
+        connect(mStopSCLang, SIGNAL(triggered()), scProcess, SLOT(stopLanguage()) );
+    }
+
+public:
     SCProcess * scProcess;
+    QAction * mStartSCLang;
+    QAction * mRecompileClassLibrary;
+    QAction * mStopSCLang;
 };
 
 }

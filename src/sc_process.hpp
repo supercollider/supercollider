@@ -54,7 +54,7 @@ public slots:
         }
     }
 
-    void recompile (void)
+    void recompileClassLibrary (void)
     {
         write("\x18");
     }

@@ -29,6 +29,8 @@
 
 #include "post_window.hpp"
 
+#include "../main.hpp"
+
 namespace ScIDE
 {
 
@@ -49,7 +51,7 @@ public:
         ActionCount
     };
 
-    MainWindow();
+    MainWindow(struct Main * main);
 
     QAction *action( ActionRole );
 
@@ -63,8 +65,6 @@ public Q_SLOTS:
 private Q_SLOTS:
     void closeTab(int index);
 
-public:
-    PostDock * postDock;
 
 private:
     QVector<QAction*> _actions;
@@ -72,6 +72,8 @@ private:
     QList<QTextDocument*> _docs;
 
     QTabWidget *_docTabs;
+
+    PostDock * postDock;
 };
 
 } // namespace ScIDE

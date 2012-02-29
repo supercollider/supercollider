@@ -29,7 +29,7 @@
 
 namespace ScIDE {
 
-MainWindow::MainWindow()
+MainWindow::MainWindow(Main * main)
 {
     _actions.resize(ActionCount);
 
@@ -85,7 +85,10 @@ MainWindow::MainWindow()
     postDock = new PostDock(this);
     addDockWidget(Qt::BottomDockWidgetArea, postDock);
 
-    Main::instance()->onStart(this);
+    connect(main->scProcess, SIGNAL( scPost(QString) ),
+            postDock->postWindow, SLOT( append(QString) ) );
+
+    main->startScLang();
 }
 
 QAction *MainWindow::action( ActionRole role )
