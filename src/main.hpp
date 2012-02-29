@@ -50,6 +50,11 @@ public Q_SLOT:
         mStartSCLang->trigger();
     }
 
+    void evaluateCode(QString const & commandString, bool silent)
+    {
+        scProcess->evaluateCode(commandString, silent);
+    }
+
 private:
     Main(void);
 

@@ -70,6 +70,21 @@ public slots:
         QString postString(out);
         emit scPost(postString);
     }
+
+    void evaluateCode(QString const & commandString, bool silent)
+    {
+        QByteArray asciiCommandString = commandString.toAscii();
+        size_t writtenBytes = write(asciiCommandString);
+        if (writtenBytes != asciiCommandString.size()) {
+            QString errorMessage ("error when passing data to sclang");
+            emit scPost(errorMessage);
+            return;
+        }
+
+        char commandChar = silent ? '\x1b' : '\x0c';
+
+        write( &commandChar, 1 );
+    }
 };
 
 }
