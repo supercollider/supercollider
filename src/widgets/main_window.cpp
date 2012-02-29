@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "../main.hpp"
 #include "main_window.hpp"
 #include "post_window.hpp"
 #include "code_edit.hpp"
@@ -79,10 +80,12 @@ MainWindow::MainWindow()
     _docTabs->setTabsClosable(true);
     setCentralWidget(_docTabs);
 
-    PostDock * postDock = new PostDock(this);
+    connect(_docTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+
+    postDock = new PostDock(this);
     addDockWidget(Qt::RightDockWidgetArea, postDock);
 
-    connect(_docTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+    Main::instance()->onStart(this);
 }
 
 QAction *MainWindow::action( ActionRole role )

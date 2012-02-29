@@ -27,6 +27,8 @@
 #include <QTabWidget>
 #include <QVector>
 
+#include "post_window.hpp"
+
 namespace ScIDE
 {
 
@@ -61,8 +63,10 @@ public Q_SLOTS:
 private Q_SLOTS:
     void closeTab(int index);
 
-private:
+public:
+    PostDock * postDock;
 
+private:
     QVector<QAction*> _actions;
 
     QList<QTextDocument*> _docs;

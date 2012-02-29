@@ -18,43 +18,43 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_POST_WINDOW_HPP_INCLUDED
-#define SCIDE_WIDGETS_POST_WINDOW_HPP_INCLUDED
+#ifndef SCIDE_MAIN_HPP_INCLUDED
+#define SCIDE_MAIN_HPP_INCLUDED
 
-#include <QDockWidget>
-#include <QTextBrowser>
-#include <QPointer>
+#include <QObject>
+
+#include "sc_process.hpp"
+#include "widgets/main_window.hpp"
 
 namespace ScIDE {
 
-class PostWindow:
-    public QTextBrowser
-{
-    Q_OBJECT
-
-public:
-    explicit PostWindow(QWidget* parent = 0):
-        QTextBrowser(parent)
-    {}
-};
-
-class PostDock:
-    public QDockWidget
+class Main:
+    public QObject
 {
 Q_OBJECT
 
 public:
-    explicit PostDock(QWidget* parent = 0):
-        QDockWidget(tr("Post Window"), parent)
+    static Main * instance(void)
     {
-        setAllowedAreas(Qt::BottomDockWidgetArea);
-        postWindow = new PostWindow(this);
-        setWidget(postWindow);
-
-        setFeatures(DockWidgetFloatable | DockWidgetMovable);
+        static Main * singleton = new Main;
+        return singleton;
     }
 
-    PostWindow * postWindow;
+    void onStart(MainWindow * mainWindow)
+    {
+        scProcess = new SCProcess(this);
+
+        connect(scProcess, SIGNAL( scPost(QString) ),
+                mainWindow->postDock->postWindow, SLOT( append(QString) ) );
+
+        scProcess->start();
+    }
+
+private:
+    Main(void)
+    {}
+
+    SCProcess * scProcess;
 };
 
 }

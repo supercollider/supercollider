@@ -49,7 +49,8 @@ public slots:
         QProcess::start(sclangProgramName, sclangArguments);
         bool processStarted = QProcess::waitForStarted();
         if (!processStarted) {
-            qWarning("cannot start sclang process");
+            QString errorMessage ("cannot start sclang process");
+            emit scPost(errorMessage);
         }
     }
 
@@ -68,11 +69,9 @@ public slots:
         QByteArray out = QProcess::readAll();
         QString postString(out);
         emit scPost(postString);
-        qDebug("%s", QString(out).toStdString().c_str());
     }
 };
 
 }
-
 
 #endif

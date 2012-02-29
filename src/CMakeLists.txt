@@ -4,6 +4,7 @@ set ( ide_moc_hdr
     widgets/main_window.hpp
     widgets/post_window.hpp
     widgets/code_edit.hpp
+    main.hpp
     sc_process.hpp
 )
 

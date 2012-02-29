@@ -19,6 +19,7 @@
 */
 
 #include "widgets/main_window.hpp"
+#include "main.hpp"
 
 #include <QApplication>
 #include <QAction>
@@ -27,6 +28,8 @@ using namespace ScIDE;
 
 int main( int argc, char *argv[] )
 {
+    Main * main = Main::instance();
+
     QApplication app(argc, argv);
 
     MainWindow *win = new MainWindow();
