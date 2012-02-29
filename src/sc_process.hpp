@@ -78,6 +78,8 @@ public slots:
     {
         QByteArray out = QProcess::readAll();
         QString postString(out);
+        if (postString.endsWith( '\n' ))
+            postString.chop(1);
         emit scPost(postString);
     }
 
