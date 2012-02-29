@@ -37,7 +37,7 @@ int main( int argc, char *argv[] )
     QObject::connect( win->action(MainWindow::Quit), SIGNAL(triggered()),
                       &app, SLOT(quit()) );
 
-    win->show();
+    win->showMaximized();
 
     return app.exec();
 }
