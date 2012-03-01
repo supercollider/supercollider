@@ -1336,7 +1336,7 @@ void yyerror(const char *s)
 {
 	parseFailed = 1;
 	yytext[yylen] = 0;
-	error("Parse error\n");
+	error("%s\n",s);
 	postErrorLine(lineno, linepos, charno);
 	//Debugger();
 }
