@@ -21,6 +21,7 @@
 #ifndef SCIDE_SC_PROCESS_HPP_INCLUDED
 #define SCIDE_SC_PROCESS_HPP_INCLUDED
 
+#include <QAction>
 #include <QProcess>
 
 namespace ScIDE {
@@ -33,9 +34,21 @@ public:
     SCProcess( QObject *parent = 0 ):
         QProcess( parent )
     {
+        prepareActions();
+
         connect(this, SIGNAL( readyRead() ),
                 this, SLOT( onReadyRead() ));
     }
+
+    enum SCProcessActionRole {
+        StartSCLang = 0,
+        RecompileClassLibrary,
+        StopSCLang,
+        RunMain,
+        StopMain,
+
+        SCProcessActionCount
+    };
 
 signals:
     void scPost(QString const &);
@@ -97,6 +110,33 @@ public slots:
 
         write( &commandChar, 1 );
     }
+
+    QAction *action(SCProcessActionRole role)
+    {
+        return mActions[role];
+    }
+
+private:
+    void prepareActions(void)
+    {
+        QAction * action;
+        mActions[StartSCLang] = action = new QAction(tr("Start SCLang"), this);
+        connect(action, SIGNAL(triggered()), this, SLOT(start()) );
+
+        mActions[RecompileClassLibrary] = action = new QAction(tr("Recompile Class Library"), this);
+        connect(action, SIGNAL(triggered()), this, SLOT(recompileClassLibrary()) );
+
+        mActions[StopSCLang] = action = new QAction(tr("Stop SCLang"), this);
+        connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()) );
+
+        mActions[RunMain] = action = new QAction(tr("Run Main"), this);
+        connect(action, SIGNAL(triggered()), this, SLOT(runMain()));
+
+        mActions[StopMain] = action = new QAction(tr("Stop Main"), this);
+        connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
+    }
+
+    QAction * mActions[SCProcessActionCount];
 };
 
 }

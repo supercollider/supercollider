@@ -42,7 +42,7 @@ MainWindow::MainWindow(Main * main) :
     mPostDock = new PostDock(this);
     addDockWidget(Qt::BottomDockWidgetArea, mPostDock);
 
-    connect(main->scProcess, SIGNAL( scPost(QString) ),
+    connect(main->scProcess(), SIGNAL( scPost(QString) ),
             mPostDock->mPostWindow, SLOT( append(QString) ) );
     connect(mMain->documentManager(), SIGNAL(opened(QTextDocument*)),
             this, SLOT(createTab(QTextDocument*)));
@@ -103,15 +103,15 @@ void MainWindow::createMenus()
     menuBar()->addMenu(menu);
 
     menu = new QMenu(tr("&Language"), this);
-    menu->addAction( mMain->mStartSCLang );
-    menu->addAction( mMain->mRecompileClassLibrary );
-    menu->addAction( mMain->mStopSCLang );
+    menu->addAction( mMain->scProcess()->action(SCProcess::StartSCLang) );
+    menu->addAction( mMain->scProcess()->action(SCProcess::RecompileClassLibrary) );
+    menu->addAction( mMain->scProcess()->action(SCProcess::StopSCLang) );
     menu->addSeparator();
     menu->addAction( mActions[EvaluateCurrentFile]);
     menu->addAction( mActions[EvaluateSelectedRegion]);
     menu->addSeparator();
-    menu->addAction( mMain->mRunMain );
-    menu->addAction( mMain->mStopMain );
+    menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::RunMain) );
+    menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::StopMain) );
 
     menuBar()->addMenu(menu);
 }
@@ -213,7 +213,7 @@ void MainWindow::evaluateSelectedRegion()
     if (!selectedText.size())
         return; // no selection
 
-    Main::instance()->evaluateCode(selectedText, false);
+    Main::instance()->scProcess()->evaluateCode(selectedText, false);
 }
 
 void MainWindow::evaluateCurrentFile()
@@ -223,7 +223,7 @@ void MainWindow::evaluateCurrentFile()
         return;
 
     QString documentText = editor->document()->toPlainText();
-    Main::instance()->evaluateCode(documentText, false);
+    Main::instance()->scProcess()->evaluateCode(documentText, false);
 }
 
 } // namespace ScIDE

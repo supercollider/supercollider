@@ -43,7 +43,6 @@ int main( int argc, char *argv[] )
 }
 
 Main::Main(void) :
-    mDocManager( new DocumentManager(this) )
-{
-    prepareSCProcess();
-}
+    mDocManager( new DocumentManager(this) ),
+    mSCProcess( new SCProcess(this) )
+{}

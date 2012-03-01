@@ -33,7 +33,7 @@ namespace ScIDE {
 class Main:
     public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     static Main * instance(void)
@@ -44,48 +44,17 @@ public:
 
     DocumentManager * documentManager() { return mDocManager; }
 
-public Q_SLOT:
-    void startScLang(void)
+    SCProcess * scProcess(void)
     {
-        mStartSCLang->trigger();
-    }
-
-    void evaluateCode(QString const & commandString, bool silent)
-    {
-        scProcess->evaluateCode(commandString, silent);
+        return mSCProcess;
     }
 
 private:
     Main(void);
 
-    void prepareSCProcess(void)
-    {
-        scProcess = new SCProcess(this);
-        mStartSCLang = new QAction(tr("Start SCLang"), this);
-        connect(mStartSCLang, SIGNAL(triggered()), scProcess, SLOT(start()) );
-
-        mRecompileClassLibrary = new QAction(tr("Recompile Class Library"), this);
-        connect(mRecompileClassLibrary, SIGNAL(triggered()), scProcess, SLOT(recompileClassLibrary()) );
-
-        mStopSCLang = new QAction(tr("Stop SCLang"), this);
-        connect(mStopSCLang, SIGNAL(triggered()), scProcess, SLOT(stopLanguage()) );
-
-        mRunMain = new QAction(tr("Run Main"), this);
-        connect(mRunMain, SIGNAL(triggered()), scProcess, SLOT(runMain()));
-
-        mStopMain = new QAction(tr("Stop Main"), this);
-        connect(mStopMain, SIGNAL(triggered()), scProcess, SLOT(stopMain()));
-    }
-
 public:
-    SCProcess * scProcess;
+    SCProcess * mSCProcess;
     DocumentManager *mDocManager;
-
-    QAction * mStartSCLang;
-    QAction * mRecompileClassLibrary;
-    QAction * mStopSCLang;
-    QAction * mRunMain;
-    QAction * mStopMain;
 };
 
 }
