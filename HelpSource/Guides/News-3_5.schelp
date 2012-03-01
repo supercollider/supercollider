@@ -51,6 +51,20 @@ New cross-platform filesystem utilities: link::Classes/File#*copy::, link::Class
 subsection:: String-openTextFile
 link::Classes/String#-openTextFile:: now works also on frontends without link::Classes/Document:: support. It falls back to link::Classes/String#-openOS:: to open the file with the default application for that file type.
 
+subsection:: Optional trailing comma
+It was already allowed to have a trailing comma in arrays: code::[1,2,3,]::,
+but now it's also allowed in Event construction and message arguments:
+code::
+(a:1, b:2, c:3,);
+
+Pbind(
+    \foo, 1,
+    \bar, 2,
+);
+
+myFunc.value(1, 2, 3,);
+::
+
 subsection:: Various bugfixes
 A lot of bugs has been fixed, for example: String regexp primitives, multichannel wrappers of SequenceableCollection, CoinGate.ar, T2K, WiiMote, SynthDesc.
 
