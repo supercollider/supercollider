@@ -9,6 +9,13 @@ Strings can be written literally using double quotes:
 code::
 "my string".class.postln;
 ::
+A sequence of string literals will be concatenated together:
+code::
+x = "hel" "lo";
+y = "this is a\n"
+    "multiline\n"
+    "string";
+::
 
 CLASSMETHODS::
 
@@ -20,7 +27,11 @@ method::readNew
 Read the entire contents of a link::Classes/File:: and return them as a new String.
 
 method::scDir
-Return the base resource directory of SuperCollider.
+Provided for backwards compatibility.
+returns::
+the value of code::Platform.resourceDir::, which is the base resource directory of SuperCollider.
+discussion::
+Please use link::Classes/Platform#*resourceDir:: instead.
 
 INSTANCEMETHODS::
 
