@@ -1266,7 +1266,6 @@ slotliteral
 		| falseobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 		| nilobj	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
 		| listlit	{ $$ = (long)newPyrLiteralNode(NULL, (PyrParseNode*)$1); }
-		| dictlit   { $$ = (long)newPyrLiteralNode(NULL, (PyrParseNode*)$1); }
 		;
 
 blockliteral : block	{ $$ = (long)newPyrPushLitNode(NULL, (PyrParseNode*)$1); }
@@ -1284,7 +1283,6 @@ pushliteral	: integer	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
 			| falseobj	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
 			| nilobj	{ $$ = (long)newPyrPushLitNode((PyrSlotNode*)$1, NULL); }
 			| listlit	{ $$ = (long)newPyrPushLitNode(NULL, (PyrParseNode*)$1); }
-			| dictlit	{ $$ = (long)newPyrPushLitNode(NULL, (PyrParseNode*)$1); }
 			;
 
 listliteral	: integer	{ $$ = (long)newPyrLiteralNode((PyrSlotNode*)$1, NULL); }
@@ -1420,10 +1418,6 @@ rwslotdef		: rwspec name
 				| rwspec name '=' slotliteral
 					{ $$ = (long)newPyrVarDefNode((PyrSlotNode*)$2, (PyrParseNode*)$4, $1); }
 				;
-
-dictlit		:	'#' '(' litdictslotlist ')'
-				{ $$ = (long)newPyrLitDictNode((PyrParseNode*)$3); }
-			;
 
 dictlit2	: '(' litdictslotlist ')'
 				{ $$ = (long)newPyrLitDictNode((PyrParseNode*)$2); }
