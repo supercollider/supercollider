@@ -1,0 +1,31 @@
+title:: News in 3.6
+summary:: A summary of news in SC 3.6
+categories:: News
+
+SECTION:: Language-side news
+
+subsection:: More informative syntax errors
+The parser now posts the details of syntax errors, example:
+code::
+[1,2,%,4];
+123;
+::
+Posts the following error message:
+teletype::
+ERROR: syntax error, unexpected BINOP, expecting ']'
+  in file 'selected text'
+  line 2 char 6:
+
+  [1,2,%•,4];
+  123;
+-----------------------------------
+ERROR: Command line parse failed
+::
+
+subsection:: Remove old syntax
+code::#(a:1):: was valid syntax, but yielded nonsense results. This will now result in a syntax error instead.
+
+SECTION:: Server-side news
+
+subsection:: SynthDef2 fileformat
+
