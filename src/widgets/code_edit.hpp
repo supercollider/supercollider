@@ -36,12 +36,13 @@ public:
   LineIndicator( CodeEditor *editor );
   int contentsWidth() { return _contentsWidth; }
 Q_SIGNALS:
-  void contentsWidthChanged();
+  void widthChanged();
 public Q_SLOTS:
-  void updateContentsWidth();
+  void setLineCount( int );
+
 private:
   void paintEvent( QPaintEvent *e );
-  int calcContentsWidth();
+  int widthForLineCount( int lineCount );
 
   CodeEditor *_editor;
   int _contentsWidth;
@@ -55,7 +56,7 @@ class CodeEditor : public QPlainTextEdit
   friend class LineIndicator;
 public:
   CodeEditor( QWidget *parent = 0 );
-  CodeEditor( QTextDocument *, QWidget *parent = 0 );
+  void setDocument( QTextDocument * );
 private Q_SLOTS:
   void updateLayout();
   void updateLineIndicator( QRect, int );

@@ -165,7 +165,8 @@ void MainWindow::closeDocument()
 
 void MainWindow::createTab( QTextDocument *doc )
 {
-    CodeEditor *editor = new CodeEditor(doc);
+    CodeEditor *editor = new CodeEditor();
+    editor->setDocument(doc);
     mDocTabs->addTab( editor, "<new>" );
 }
 

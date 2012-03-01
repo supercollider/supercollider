@@ -29,23 +29,20 @@ namespace ScIDE
 
 LineIndicator::LineIndicator( CodeEditor *editor )
 : QWidget( editor ), _editor(editor)
-{
-  connect( _editor, SIGNAL(blockCountChanged(int)), this, SLOT(updateContentsWidth()) );
-}
+{}
 
-void LineIndicator::updateContentsWidth()
+void LineIndicator::setLineCount( int count )
 {
-  _contentsWidth = calcContentsWidth();
-  Q_EMIT( contentsWidthChanged() );
+  setFixedWidth( widthForLineCount(count) );
+  Q_EMIT( widthChanged() );
 }
 
 void LineIndicator::paintEvent( QPaintEvent *e )
 { _editor->paintLineIndicator(e); }
 
-int LineIndicator::calcContentsWidth()
+int LineIndicator::widthForLineCount( int lineCount )
 {
   int digits = 1;
-  int lineCount = qMax( 1, _editor->blockCount() );
   while( lineCount >= 10 ) {
     lineCount /= 10;
     ++digits;
@@ -54,35 +51,33 @@ int LineIndicator::calcContentsWidth()
   return 4 + fontMetrics().width('9') * digits;
 }
 
-
-
 CodeEditor::CodeEditor( QWidget *parent ) :
     QPlainTextEdit( parent ),
     _lineIndicator( new LineIndicator(this) )
 {
-  connect( _lineIndicator, SIGNAL( contentsWidthChanged() ),
-           this, SLOT( updateLayout() ) );
-  connect( this, SIGNAL(updateRequest(QRect,int)),
-           this, SLOT(updateLineIndicator(QRect,int)) );
-  _lineIndicator->updateContentsWidth();
+    _lineIndicator->move( contentsRect().topLeft() );
+
+    connect( this, SIGNAL(blockCountChanged(int)),
+             _lineIndicator, SLOT(setLineCount(int)) );
+
+    connect( _lineIndicator, SIGNAL( widthChanged() ),
+             this, SLOT( updateLayout() ) );
+
+    connect( this, SIGNAL(updateRequest(QRect,int)),
+             this, SLOT(updateLineIndicator(QRect,int)) );
+
+    _lineIndicator->setLineCount(1);
 }
 
-CodeEditor::CodeEditor( QTextDocument *doc, QWidget *parent ) :
-    QPlainTextEdit( parent ),
-    _lineIndicator( new LineIndicator(this) )
+void CodeEditor::setDocument( QTextDocument *doc )
 {
-    connect( _lineIndicator, SIGNAL( contentsWidthChanged() ),
-            this, SLOT( updateLayout() ) );
-    connect( this, SIGNAL(updateRequest(QRect,int)),
-            this, SLOT(updateLineIndicator(QRect,int)) );
-    _lineIndicator->updateContentsWidth();
-
-    setDocument(doc);
+    QPlainTextEdit::setDocument(doc);
+    _lineIndicator->setLineCount( doc->blockCount() );
 }
 
 void CodeEditor::updateLayout()
 {
-  setViewportMargins( _lineIndicator->contentsWidth(), 0, 0, 0 );
+  setViewportMargins( _lineIndicator->width(), 0, 0, 0 );
 }
 
 void CodeEditor::updateLineIndicator( QRect r, int dy )
@@ -90,7 +85,7 @@ void CodeEditor::updateLineIndicator( QRect r, int dy )
   if (dy)
     _lineIndicator->scroll(0, dy);
   else
-    _lineIndicator->update(0, r.y(), _lineIndicator->contentsWidth(), r.height() );
+    _lineIndicator->update(0, r.y(), _lineIndicator->width(), r.height() );
 }
 
 void CodeEditor::resizeEvent( QResizeEvent *e )
@@ -98,13 +93,18 @@ void CodeEditor::resizeEvent( QResizeEvent *e )
   QPlainTextEdit::resizeEvent( e );
 
   QRect cr = contentsRect();
-  _lineIndicator->setGeometry( cr.left(), cr.top(), _lineIndicator->contentsWidth(), cr.height() );
+  _lineIndicator->resize( _lineIndicator->width(), cr.height() );
 }
 
 void CodeEditor::paintLineIndicator( QPaintEvent *e )
 {
-  QPainter painter( _lineIndicator );
-  painter.fillRect( e->rect(), palette().color( QPalette::Button ) );
+  QPalette plt( palette() );
+  QRect r( e->rect() );
+  QPainter p( _lineIndicator );
+
+  p.fillRect( r, plt.color( QPalette::Button ) );
+  p.setPen( plt.color(QPalette::Text) );
+  p.drawLine( r.topRight(), r.bottomRight() );
 
   QTextBlock block = firstVisibleBlock();
   int blockNumber = block.blockNumber();
@@ -114,8 +114,7 @@ void CodeEditor::paintLineIndicator( QPaintEvent *e )
   while (block.isValid() && top <= e->rect().bottom()) {
     if (block.isVisible() && bottom >= e->rect().top()) {
         QString number = QString::number(blockNumber + 1);
-        painter.setPen(Qt::black);
-        painter.drawText(0, top, _lineIndicator->contentsWidth() - 2, fontMetrics().height(),
+        p.drawText(0, top, _lineIndicator->width() - 2, fontMetrics().height(),
                         Qt::AlignRight, number);
     }
 
