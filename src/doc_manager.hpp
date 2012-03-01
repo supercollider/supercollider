@@ -22,11 +22,36 @@
 #define SCIDE_DOC_MANAGER_HPP_INCLUDED
 
 #include <QObject>
-#include <QList>
 #include <QTextDocument>
+#include <QUuid>
+#include <QHash>
 
 namespace ScIDE
 {
+
+class DocumentManager;
+
+class Document : public QObject
+{
+    Q_OBJECT
+
+    friend class DocumentManager;
+
+public:
+    Document() :
+        mId( QUuid::createUuid().toString().toAscii() ),
+        mDoc( new QTextDocument(this) )
+    {}
+
+    QTextDocument *textDocument() { return mDoc; }
+    const QByteArray & id() { return mId; }
+    QString fileName() { return mFileName; }
+
+private:
+    QByteArray mId;
+    QTextDocument *mDoc;
+    QString mFileName;
+};
 
 class DocumentManager : public QObject
 {
@@ -36,26 +61,23 @@ public:
 
     DocumentManager( QObject *parent = 0 ) : QObject(parent) {}
 
-    QTextDocument * document( int index );
-    int index( QTextDocument * );
-
-
 public Q_SLOTS:
 
     void create();
     void open( const QString & filename );
-    void close( QTextDocument * );
-    void save( QTextDocument *, const QString & filename );
+    void close( Document * );
+    void save( Document * );
+    void saveAs( Document *, const QString & filename );
 
 Q_SIGNALS:
 
-    void opened( QTextDocument * );
-    void closed( QTextDocument * );
+    void opened( Document * );
+    void closed( Document * );
+    void saved( Document * );
 
 private:
-    QTextDocument *newDoc();
 
-    QList<QTextDocument*> mDocs;
+    QHash<QByteArray, Document*> mDocHash;
 };
 
 } // namespace ScIDE

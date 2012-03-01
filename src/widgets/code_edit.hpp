@@ -21,6 +21,8 @@
 #ifndef SCIDE_WIDGETS_CODE_EDIT_HPP_INCLUDED
 #define SCIDE_WIDGETS_CODE_EDIT_HPP_INCLUDED
 
+#include "../doc_manager.hpp"
+
 #include <QPlainTextEdit>
 
 namespace ScIDE
@@ -56,14 +58,17 @@ class CodeEditor : public QPlainTextEdit
   friend class LineIndicator;
 public:
   CodeEditor( QWidget *parent = 0 );
-  void setDocument( QTextDocument * );
+  Document *document() { return mDoc; }
+  void setDocument( Document * );
 private Q_SLOTS:
   void updateLayout();
   void updateLineIndicator( QRect, int );
 private:
   void resizeEvent( QResizeEvent * );
   void paintLineIndicator( QPaintEvent * );
+
   LineIndicator *_lineIndicator;
+  Document *mDoc;
 };
 
 } // namespace ScIDE

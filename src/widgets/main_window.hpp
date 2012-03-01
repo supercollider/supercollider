@@ -23,10 +23,10 @@
 
 #include "post_window.hpp"
 #include "../main.hpp"
+#include "../doc_manager.hpp"
 
 #include <QMainWindow>
 #include <QTabWidget>
-#include <QTextDocument>
 #include <QTabWidget>
 #include <QVector>
 
@@ -65,7 +65,8 @@ public Q_SLOTS:
     void closeDocument();
 
 private Q_SLOTS:
-    void createTab( QTextDocument * );
+    void createTab( Document * );
+    void updateTab( Document * );
     void closeTab(int index);
 
     void evaluateSelectedRegion();
@@ -73,7 +74,10 @@ private Q_SLOTS:
 
 private:
     void createMenus();
-    class CodeEditor * getCurrentCodeEditor();
+    class CodeEditor * codeEditorForTab( int index );
+    class CodeEditor * currentCodeEditor()
+        { return codeEditorForTab( mDocTabs->currentIndex() ); }
+    QString tabTitle( Document * );
 
     Main *mMain;
 

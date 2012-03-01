@@ -26,21 +26,10 @@
 
 using namespace ScIDE;
 
-QTextDocument * DocumentManager::document( int index )
-{
-    if (index < 0 || index > mDocs.count())
-        return 0;
-    return mDocs[index];
-}
-
-int DocumentManager::index( QTextDocument *doc )
-{
-   return mDocs.indexOf(doc);
-}
-
 void DocumentManager::create()
 {
-    QTextDocument *doc = newDoc();
+    Document *doc = new Document();
+    mDocHash.insert( doc->id(), doc );
     Q_EMIT( opened(doc) );
 }
 
@@ -56,44 +45,50 @@ void DocumentManager::open( const QString & filename )
 
     file.close();
 
-    QTextDocument *doc = newDoc();
-    doc->setPlainText( QString::fromUtf8( bytes.data(), bytes.size() ) );
+    Document *doc = new Document();
+    doc->mDoc->setPlainText( QString::fromUtf8( bytes.data(), bytes.size() ) );
+    doc->mFileName = filename;
+
+    mDocHash.insert( doc->id(), doc );
 
     Q_EMIT( opened(doc) );
 }
 
-void DocumentManager::close( QTextDocument *doc )
+void DocumentManager::close( Document *doc )
 {
-    int i = index(doc);
-    if( i < 0 ) {
+    if(!doc) return;
+
+    if( mDocHash.remove(doc->id()) == 0 ) {
         qWarning("DocumentManager: trying to close an unmanaged document.");
         return;
     }
-
-    mDocs.removeAll(doc);
 
     Q_EMIT( closed(doc) );
 
     delete doc;
 }
 
-void DocumentManager::save( QTextDocument *doc, const QString & filename )
+void DocumentManager::save( Document *doc )
 {
+    if(!doc || doc->mFileName.isEmpty()) return;
+    saveAs(doc, doc->mFileName);
+}
+
+void DocumentManager::saveAs( Document *doc, const QString & filename )
+{
+    if(!doc) return;
+
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly)) {
         qWarning() << "DocumentManager: the file" << filename << "could not be opened for writing.";
         return;
     }
 
-    QString str = doc->toPlainText();
+    QString str = doc->textDocument()->toPlainText();
     file.write(str.toUtf8());
-
     file.close();
-}
 
-QTextDocument * DocumentManager::newDoc()
-{
-    QTextDocument *doc = new QTextDocument(this);
-    mDocs.append(doc);
-    return doc;
+    doc->mFileName = filename;
+
+    Q_EMIT(saved(doc));
 }

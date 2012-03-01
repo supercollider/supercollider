@@ -44,8 +44,10 @@ MainWindow::MainWindow(Main * main) :
 
     connect(main->scProcess(), SIGNAL( scPost(QString) ),
             mPostDock->mPostWindow, SLOT( append(QString) ) );
-    connect(mMain->documentManager(), SIGNAL(opened(QTextDocument*)),
-            this, SLOT(createTab(QTextDocument*)));
+    connect(mMain->documentManager(), SIGNAL(opened(Document*)),
+            this, SLOT(createTab(Document*)));
+    connect(mMain->documentManager(), SIGNAL(saved(Document*)),
+            this, SLOT(updateTab(Document*)));
     connect(mDocTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 }
 
@@ -137,21 +139,26 @@ void MainWindow::openDocument()
 }
 
 void MainWindow::saveDocument()
-{}
+{
+    CodeEditor *editor = currentCodeEditor();
+    if(!editor) return;
+
+    Document *doc = editor->document();
+    if(doc->fileName().isEmpty())
+        saveDocumentAs();
+    else
+        mMain->documentManager()->save(doc);
+}
 
 void MainWindow::saveDocumentAs()
 {
-    QWidget *tabWidget = mDocTabs->currentWidget();
-    CodeEditor *editor = qobject_cast<CodeEditor*>(tabWidget);
-    if(!editor) {
-        qWarning("MainWindow: no current code editor.");
-        return;
-    }
+    CodeEditor *editor = currentCodeEditor();
+    if(!editor) return;
 
     QString filename = QFileDialog::getSaveFileName( this, "Save File" );
     if(filename.isEmpty()) return;
 
-    mMain->documentManager()->save( editor->document(), filename );
+    mMain->documentManager()->saveAs( editor->document(), filename );
 }
 
 void MainWindow::closeDocument()
@@ -163,48 +170,58 @@ void MainWindow::closeDocument()
     closeTab(tabIndex);
 }
 
-void MainWindow::createTab( QTextDocument *doc )
+void MainWindow::createTab( Document *doc )
 {
     CodeEditor *editor = new CodeEditor();
     editor->setDocument(doc);
-    mDocTabs->addTab( editor, "<new>" );
+
+    mDocTabs->addTab( editor, tabTitle(doc) );
+    mDocTabs->setCurrentIndex(mDocTabs->count() - 1);
+}
+
+void MainWindow::updateTab( Document *doc )
+{
+    int c = mDocTabs->count();
+    for(int i=0; i<c; ++i) {
+        CodeEditor *editor = codeEditorForTab(i);
+        if(!editor) continue;
+        if(editor->document() == doc)
+            mDocTabs->setTabText(i, tabTitle(doc));
+    }
 }
 
 void MainWindow::closeTab( int tabIndex )
 {
-    QWidget *tabWidget = mDocTabs->widget(tabIndex);
+    CodeEditor *editor = codeEditorForTab( tabIndex );
+    if(!editor) return;
 
-    if(!tabWidget) {
-        qWarning("Trying to close a tab with no widget.");
-        return;
-    }
-
-    CodeEditor *editor = qobject_cast<CodeEditor*>(tabWidget);
-    if(!editor) {
-        qWarning("Tab widget is not a CodeEditor");
-        return;
-    }
-
-    QTextDocument *doc = editor->document();
+    Document *doc = editor->document();
+    delete editor;
     mMain->documentManager()->close(doc);
-    delete tabWidget;
 }
 
-CodeEditor* MainWindow::getCurrentCodeEditor()
+CodeEditor* MainWindow::codeEditorForTab( int index )
 {
-    QWidget *tabWidget = mDocTabs->currentWidget();
-    CodeEditor *editor = qobject_cast<CodeEditor*>(tabWidget);
+    CodeEditor *editor = qobject_cast<CodeEditor*>( mDocTabs->widget(index) );
     if(!editor) {
-        qWarning("MainWindow: no current code editor.");
+        qWarning("MainWindow: no code editor at given tab index.");
         return NULL;
     } else
         return editor;
 }
 
+QString MainWindow::tabTitle( Document *doc )
+{
+    QString fname = doc->fileName();
+    if(fname.isEmpty())
+        return QString("<new>");
+    else
+        return QDir(fname).dirName();
+}
 
 void MainWindow::evaluateSelectedRegion()
 {
-    CodeEditor *editor = getCurrentCodeEditor();
+    CodeEditor *editor = currentCodeEditor();
     if (!editor)
         return;
 
@@ -219,11 +236,11 @@ void MainWindow::evaluateSelectedRegion()
 
 void MainWindow::evaluateCurrentFile()
 {
-    CodeEditor *editor = getCurrentCodeEditor();
+    CodeEditor *editor = currentCodeEditor();
     if (!editor)
         return;
 
-    QString documentText = editor->document()->toPlainText();
+    QString documentText = editor->document()->textDocument()->toPlainText();
     Main::instance()->scProcess()->evaluateCode(documentText, false);
 }
 

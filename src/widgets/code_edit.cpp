@@ -53,7 +53,8 @@ int LineIndicator::widthForLineCount( int lineCount )
 
 CodeEditor::CodeEditor( QWidget *parent ) :
     QPlainTextEdit( parent ),
-    _lineIndicator( new LineIndicator(this) )
+    _lineIndicator( new LineIndicator(this) ),
+    mDoc(0)
 {
     _lineIndicator->move( contentsRect().topLeft() );
 
@@ -69,14 +70,17 @@ CodeEditor::CodeEditor( QWidget *parent ) :
     _lineIndicator->setLineCount(1);
 }
 
-void CodeEditor::setDocument( QTextDocument *doc )
+void CodeEditor::setDocument( Document *doc )
 {
-    doc->setDefaultFont(font());
-    doc->setDocumentLayout( new QPlainTextDocumentLayout(doc) );
+    QTextDocument *tdoc = doc->textDocument();
+    tdoc->setDefaultFont(font());
+    tdoc->setDocumentLayout( new QPlainTextDocumentLayout(tdoc) );
 
-    QPlainTextEdit::setDocument(doc);
+    QPlainTextEdit::setDocument(tdoc);
 
-    _lineIndicator->setLineCount( doc->blockCount() );
+    _lineIndicator->setLineCount( tdoc->blockCount() );
+
+    mDoc = doc;
 }
 
 void CodeEditor::updateLayout()
