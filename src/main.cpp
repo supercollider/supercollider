@@ -44,5 +44,6 @@ int main( int argc, char *argv[] )
 
 Main::Main(void) :
     mDocManager( new DocumentManager(this) ),
-    mSCProcess( new SCProcess(this) )
+    mSCProcess( new SCProcess(this) ),
+    mSCIpcServer( new SCIpcServer(this) )
 {}

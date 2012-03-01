@@ -18,41 +18,44 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_MAIN_HPP_INCLUDED
-#define SCIDE_MAIN_HPP_INCLUDED
+#ifndef SCIDE_SC_IPC_HPP_INCLUDED
+#define SCIDE_SC_IPC_HPP_INCLUDED
 
-#include <QObject>
-#include <QAction>
-
-#include "sc_ipc.hpp"
-#include "sc_process.hpp"
-#include "doc_manager.hpp"
-#include "widgets/main_window.hpp"
+#include <QCoreApplication>
+#include <QtNetwork/QLocalSocket>
+#include <QtNetwork/QLocalServer>
 
 namespace ScIDE {
 
-class Main:
-    public QObject
+class SCIpcServer:
+    public QLocalServer
 {
     Q_OBJECT
+    QString mIdeName;
 
 public:
-    static Main * instance(void)
+    explicit SCIpcServer( QObject *parent = 0 ):
+        QLocalServer( parent ),
+        mIdeName("SCIde_" + QString::number(QCoreApplication::applicationPid()))
     {
-        static Main * singleton = new Main;
-        return singleton;
+        connect(this, SIGNAL(newConnection()), this, SLOT(onNewConnection()));
     }
 
-    DocumentManager * documentManager() { return mDocManager;  }
-    SCProcess * scProcess(void)         { return mSCProcess;   }
-    SCIpcServer *scIpcServer(void)      { return mSCIpcServer; }
+private Q_SLOTS:
+    void onSclangStart(void)
+    {
+        listen(mIdeName);
+    }
 
-private:
-    Main(void);
+    void onNewConnection(void)
+    {
+        QLocalSocket * socket = nextPendingConnection();
+        connect(socket, SIGNAL(disconnected()),
+                socket, SLOT(deleteLater()));
 
-    SCProcess * mSCProcess;
-    SCIpcServer *mSCIpcServer;
-    DocumentManager *mDocManager;
+        QByteArray dataFromClient = socket->readAll();
+        // TODO: dispatch messages from sclang, possibly respond
+    }
 };
 
 }
