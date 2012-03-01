@@ -1385,8 +1385,8 @@ void postErrorLine(int linenum, int start, int charpos)
 	//parseFailed = true;
     char extPath[MAXPATHLEN];
     asRelativePath(curfilename, extPath);
-	post("   in file '%s'\n", extPath);
-	post("   line %d char %d:\n", linenum+errLineOffset, charpos);
+	post("  in file '%s'\n", extPath);
+	post("  line %d char %d:\n\n", linenum+errLineOffset, charpos);
 	// nice: postfl previous line for context
 
 	//postfl("text '%s' %d\n", text, text);
