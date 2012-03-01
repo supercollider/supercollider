@@ -284,7 +284,7 @@ class Logger:
         elif text.startswith("WARNING") or text.startswith("FAILURE"):
             tags = self.__ugly_tag
 
-        elif text.startswith("StartUp done."):
+        elif text.startswith("Welcome to SuperCollider"):
             tags = self.__good_tag
         else:
             tags = self.__tag
@@ -311,6 +311,7 @@ class LogPanel(Gtk.ScrolledWindow):
 
         self.buffer = Gtk.TextBuffer()
         self.view = Gtk.TextView()
+        self.view.modify_font(Pango.FontDescription("Monospace"))
         self.view.props.buffer = self.buffer
         self.view.props.editable = False
         self.view.props.wrap_mode = Gtk.WrapMode.CHAR
