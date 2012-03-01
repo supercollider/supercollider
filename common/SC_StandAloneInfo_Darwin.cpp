@@ -36,9 +36,8 @@ void SC_StandAloneInfo::SC_StandAloneInfoInit() {
 		} else {
 			// when sclang is run from a symlink, the resource URL above will not be found,
 			// so we need to find the path of the executable.
-			uint32_t *bufsize;
-			*bufsize = PATH_MAX;
-			if(_NSGetExecutablePath(relDir, bufsize)==0) {
+			uint32_t bufsize = PATH_MAX, *bufsizep = &bufsize;
+			if(_NSGetExecutablePath(relDir, bufsizep)==0) {
 				realpath(relDir, dirPath); // resolve symlink
 				char *dir = dirname(dirPath);
 				strcpy(dirPath, dir);
