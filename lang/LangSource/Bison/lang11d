@@ -33,7 +33,7 @@ extern LongStack generatorStack;
 
 
 %}
-
+%error-verbose
 %%
 
 root	: classes
