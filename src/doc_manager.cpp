@@ -94,7 +94,6 @@ void DocumentManager::save( QTextDocument *doc, const QString & filename )
 QTextDocument * DocumentManager::newDoc()
 {
     QTextDocument *doc = new QTextDocument(this);
-    doc->setDocumentLayout( new QPlainTextDocumentLayout(doc) );
     mDocs.append(doc);
     return doc;
 }

@@ -71,7 +71,11 @@ CodeEditor::CodeEditor( QWidget *parent ) :
 
 void CodeEditor::setDocument( QTextDocument *doc )
 {
+    doc->setDefaultFont(font());
+    doc->setDocumentLayout( new QPlainTextDocumentLayout(doc) );
+
     QPlainTextEdit::setDocument(doc);
+
     _lineIndicator->setLineCount( doc->blockCount() );
 }
 
