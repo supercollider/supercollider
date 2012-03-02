@@ -73,7 +73,7 @@ PageLayout  {
 	indentedRemaining { ^this.view.indentedRemaining }
 	*guify { arg parent,title,width,height,background;
 		^parent ?? {
-			this.new(title,width,height,background: background )
+			this.new(title,width@height,background: background )
 		}
 	}
 
