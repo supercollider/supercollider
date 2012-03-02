@@ -161,7 +161,7 @@ definitionList::
 definitionList::
 ## (note + gtranspose + root)/stepsPerOctave * octave * 12; || note is determined by:
 definitionList::
-## (degree + mtranspose).degreeToKey(scale, stepsPerOctave)
+## (degree + mtranspose).degreeToKey(scale, stepsPerOctave) ||
 ::
 ::
 ::

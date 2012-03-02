@@ -46,9 +46,10 @@ Certain objects convert themselves into Quant objects when used with link::Class
 definitionlist::
 ## link::Classes/SimpleNumber::
 || code:: 4.0 --> Quant(4.0, nil, nil) ::
-## link::Classes/Array::
-|| code:: [4.0, 1.0] --> Quant(4.0, 1.0, nil) ::
-|| code:: [4.0, 1.0, 0.1] --> Quant(4.0, 1.0, 0.1) ::
+## link::Classes/Array:: ||
+code:: [4.0, 1.0] --> Quant(4.0, 1.0, nil) ::
+
+code:: [4.0, 1.0, 0.1] --> Quant(4.0, 1.0, 0.1) ::
 ## link::Classes/Nil::
 || code:: nil --> Quant(nil, nil, nil) ::
 ::
