@@ -1,0 +1,171 @@
+CLASS:: SCViewHolder
+summary:: Instead of subclassing a (Q/SC)View, this is a proxy/adapter object that holds the View
+categories:: GUI
+related:: Classes/SCView, Classes/QView
+
+DESCRIPTION::
+When writing gui widgets it is sometimes not desireable to subclass a view class. Its preferable to write a class that acts like a View and is used where Views normally are used but isn't a direct subclass of a View class.
+
+In the SCView hierarchy it is not possible to subclass an SCView class because under the hood there is always a strict relationship between the SCView subclass and its paired C++ class.  The C++ class makes the actual view, the SC class is an interface to that C++ object.
+
+In Qt there is a bit more flexibility.
+
+But there are other reasons to not inherit from a specific view: your widget may not be a single view, in which case you would want to place a CompositeView and then place subviews inside of that.  Altogether these views are what your widget manages.  SCViewHolder can be used in this situation and it would set the top level CompositeView as its primary view.
+
+Although it is still called "SC"ViewHolder it is in fact cross platform since it doesn't draw the view(s), it simply holds them.
+
+Another possible name might be ViewAdapter or PseudoView.  It was originally called SCViewAdapter.
+
+Most of the standard view methods here simply defer to the proxied view.  This makes the ViewHolder act and quack like a View.  
+
+Messages that are not understood by the view holder are forwarded to the proxied view.
+
+Historical note: this class was originally in the cruciallib.  ObjectGui is a subclass of this.
+
+CLASSMETHODS::
+
+METHOD:: consumeKeyDowns
+global preference variable: if true then subclasses that do not set a keyDownAction do NOT bubble up keyDown events by default.
+
+returns:: The result of calling the method on the proxied view
+
+
+INSTANCEMETHODS::
+
+
+METHOD:: view
+get or set the view for which this object is a proxy/adapter.
+
+argument:: v
+the view: SCView or QView 
+
+returns:: The result of calling the method on the proxied view
+
+
+METHOD:: doesNotUnderstand
+Messages that are not understood by the view holder are forwarded to the proxied view.  So when the interpreter is told to send a message to a view holder object and that message is not understood, it calls doesNotUnderstand
+
+argument:: selector
+The message that was not understood
+
+argument::  ... args
+The arguments that were supplied
+
+returns:: the result of calling the method on the proxied view
+
+
+METHOD:: viewDidClose
+Unsets the view variable. After the view is closed (removed from the window) then all calls to the view holder will fail, and should fail as there is no view anymore.  You can check viewHolder.isClosed if you are unsure
+
+returns:: this
+
+METHOD:: remove
+Removes the view from the window if it has not already been removed.
+
+returns:: this
+
+METHOD:: action
+This method is forwarded to the view
+
+argument:: f
+
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: doAction
+This method is forwarded to the view
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: keyDownAction
+This method is forwarded to the view
+
+argument:: f
+
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: keyDownResponder
+This method is forwarded to the view.  Note: this is a cruciallib convention and will be deprecated here.
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: enableKeyDowns
+This method is forwarded to the view. Note: this is a cruciallib convention and will be deprecated here.
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: asView
+returns the view
+
+returns:: the view
+
+METHOD:: bounds
+This method is forwarded to the view
+
+argument:: b
+
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: resize
+This method is forwarded to the view
+
+argument:: r
+
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: enabled
+This method is forwarded to the view
+
+argument:: b
+
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: refresh
+This method is forwarded to the view
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: background
+This method is forwarded to the view
+
+argument:: b
+
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: focus
+This method is forwarded to the view
+
+argument:: flag
+
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: visible
+This method is forwarded to the view
+
+argument:: boo
+
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: isClosed
+This method is forwarded to the view
+
+returns:: The result of calling the method on the proxied view
+
+METHOD:: font
+This method is forwarded to the view
+
+argument:: f
+
+
+returns:: The result of calling the method on the proxied view
+
+
+
+
