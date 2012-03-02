@@ -49,9 +49,6 @@ public:
 };
 
 
-/* FIXME: undocking the widget when maximized, the size of the dock window cannot be changed
- *
- * */
 class PostDock:
     public QDockWidget
 {
@@ -66,8 +63,23 @@ public:
         setWidget(mPostWindow);
 
         setFeatures(DockWidgetFloatable | DockWidgetMovable);
+
+        connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(onFloatingChanged(bool)));
     }
 
+private Q_SLOTS:
+
+    void onFloatingChanged(bool floating)
+    {
+        // HACK: After undocking when main window maximized, the dock widget can not be
+        // resized anymore. Apparently it has to do something with the fact that the dock
+        // widget spans from edge to edge of the screen.
+        // The issue is avoided by slightly shrinking the dock widget.
+        if (floating)
+            resize(size() - QSize(1,1));
+    }
+
+public:
     PostWindow * mPostWindow;
 };
 
