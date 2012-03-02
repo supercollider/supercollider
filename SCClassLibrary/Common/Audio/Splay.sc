@@ -26,9 +26,9 @@ Splay : UGen {
 		^this.multiNewList([\audio, spread, level, center, levelComp] ++ inArray)
 	}
 	
+	/*
 	
-	
-	*ar1 { arg inArray, spread = 1, level = 1, center = 0.0, levelComp = true;
+	*ar { arg inArray, spread = 1, level = 1, center = 0.0, levelComp = true;
 		
 		var n = inArray.size.max(2); 
 		var n1 = n-1;
@@ -40,6 +40,8 @@ Splay : UGen {
 			((0 .. n1) * (2 / n1) - 1) * spread + center
 		).sum * level;
 	}
+	
+	*/
 
 	*arFill { arg n, function, spread = 1, level = 1, center = 0.0, levelComp = true;
 		^this.ar((function ! n), spread, level, center, levelComp)
