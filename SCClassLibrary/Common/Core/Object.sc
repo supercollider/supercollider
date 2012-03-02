@@ -165,8 +165,11 @@ Object  {
 		^true
 	}
 	instVarHash { arg instVarNames;
-		var res = this.class.hash;
-		var indices = if(instVarNames.notNil) {
+		var indices, res = this.class.hash;
+		if(this.instVarSize == 0) {
+			^res
+		};
+		indices = if(instVarNames.notNil) {
 			instVarNames.collect(this.slotIndex(_))
 		} {
 			(0..this.instVarSize-1)
