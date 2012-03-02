@@ -55,6 +55,8 @@ void QtCollider::init() {
 
     QtCollider::loadFactories();
 
+    QLocale::setDefault( QLocale::c() );
+
 #ifdef Q_WS_X11
     XInitThreads();
 #endif
