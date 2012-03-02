@@ -7,8 +7,7 @@ Splay : UGen {
 		var positions = ((0 .. n1) * (2 / n1) - 1) * spread + center;
 
 		if (levelComp) { level = level * n.reciprocal.sqrt };
-
-		^Pan2.multiNew(rate, inArray, positions).sum * level;
+		^Pan2.perform(this.methodSelectorForRate(rate), inArray, positions).sum * level;
 	}
 	
 	*kr { arg inArray, spread = 1, level = 1, center = 0.0, levelComp = true;
@@ -22,7 +21,7 @@ Splay : UGen {
 	
 	
 	
-	/**ar { arg inArray, spread = 1, level = 1, center = 0.0, levelComp = true;
+	*ar1 { arg inArray, spread = 1, level = 1, center = 0.0, levelComp = true;
 		
 		var n = inArray.size.max(2); 
 		var n1 = n-1;
@@ -33,7 +32,7 @@ Splay : UGen {
 			inArray,
 			((0 .. n1) * (2 / n1) - 1) * spread + center
 		).sum * level;
-	}*/
+	}
 
 	*arFill { arg n, function, spread = 1, level = 1, center = 0.0, levelComp = true;
 		^this.ar((function ! n), spread, level, center, levelComp)
@@ -55,8 +54,8 @@ SplayAz : UGen {
 		if (levelComp) { level = level * n.reciprocal.sqrt };
 		if (moreOuts) { inArray = inArray * level };
 
-		^PanAz.multiNew(
-			rate,
+		^PanAz.perform(
+			this.methodSelectorForRate(rate),
 			numChans,
 			inArray,
 			positions,
