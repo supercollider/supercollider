@@ -2,11 +2,18 @@ Splay : UGen {
 	
 	*new1 { arg rate, spread = 1, level = 1, center = 0.0, levelComp = true ... inArray;
 		
-		var n = inArray.size.max(2); 
+		var n = max(2, inArray.size); 
 		var n1 = n - 1;
 		var positions = ((0 .. n1) * (2 / n1) - 1) * spread + center;
 
-		if (levelComp) { level = level * n.reciprocal.sqrt };
+		if (levelComp) { 
+			if(rate == \audio) {
+				level = level * n.reciprocal.sqrt 
+			} {
+				level = level / n
+			}
+		 };
+		 
 		^Pan2.perform(this.methodSelectorForRate(rate), inArray, positions).sum * level;
 	}
 	
@@ -46,12 +53,19 @@ SplayAz : UGen {
 	*new1 { arg rate, numChans = 4, spread = 1, level = 1, width = 2, center = 0.0,
 			orientation = 0.5, levelComp = true ... inArray;
 
-		var n = inArray.size.max(1);
+		var n = max(1, inArray.size); 
 		var moreOuts = numChans > n;
 		var positions = ((0 .. n-1) / n * 2) * spread + center;
 		
 
-		if (levelComp) { level = level * n.reciprocal.sqrt };
+		if (levelComp) { 
+			if(rate == \audio) {
+				level = level * n.reciprocal.sqrt 
+			} {
+				level = level / n
+			}
+		 };
+		 
 		if (moreOuts) { inArray = inArray * level };
 
 		^PanAz.perform(
