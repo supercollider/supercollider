@@ -213,12 +213,7 @@ DeprecatedError : MethodError {
 	}
 	errorString {
 		var methodSignature = { arg m;
-			var c = m.ownerClass;
-			var str = c.name.asString;
-			if(c.isMetaClass)
-				{ str = str.drop( str.indexOf($_) + 1 ) ++ ":*" ++ m.name }
-				{ str = str ++ ":-" ++ m.name };
-			str;
+			m.ownerClass.name.asString  ++ ":" ++ m.name;
 		};
 		var searchForCaller = { arg backtrace, m;
 			while {
