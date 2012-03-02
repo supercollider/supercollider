@@ -26,6 +26,8 @@
 #include <QUuid>
 #include <QHash>
 
+#include "sc_syntax_highlighter.hpp"
+
 namespace ScIDE
 {
 
@@ -41,7 +43,9 @@ public:
     Document() :
         mId( QUuid::createUuid().toString().toAscii() ),
         mDoc( new QTextDocument(this) )
-    {}
+    {
+        SyntaxHighlighter *highligher = new SyntaxHighlighter(mDoc);
+    }
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
