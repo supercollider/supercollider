@@ -65,6 +65,9 @@ Returns a link::Classes/Boolean:: whether the receiver should be sorted after th
 
 method::==
 Returns a link::Classes/Boolean:: whether the two Strings are equal.
+note::
+This method is case insensitive! Use code::a.compare(b)==0:: if you need case sensitivity.
+::
 
 method::!=
 Returns a link::Classes/Boolean:: whether the two Strings are not equal.
