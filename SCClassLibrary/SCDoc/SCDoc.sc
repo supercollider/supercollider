@@ -215,6 +215,9 @@ SCDoc {
 
     *parseAndRender {|src,dest,subtarget|
         var p2;
+        if(doc_map[subtarget].isNil) {
+            Error("SCDoc.parseAndRender: % is not in doc_map, aborting!".format(src)).throw;
+        };
         SCDoc.postProgress(src+"->"+dest);
         p.parseFile(src);
 
@@ -371,6 +374,11 @@ SCDoc {
                 this.makeClassTemplate(subtarget.basename,path);
             };
 
+            if(src.notNil and: {doc_map[subtarget].isNil}) {
+                "SCDoc: Found new help file:\n    %\n    Rebuilding doc_map cache...".format(src).postln;
+                this.getAllMetaData;
+            };
+
             if(File.exists(path).not) {
                 if(src.notNil) { // no target file, but helpsource found, parse and render.
                     this.parseAndRender(src,path,subtarget);
@@ -383,9 +391,13 @@ SCDoc {
                 };
             } {
                 cmd = {
-                    ("test" + ([src,verpath]++doc_map[subtarget][\additions]).collect {|x|
-                        x.shellQuote+"-nt"+path.shellQuote
-                    }.join(" -o ")).systemCmd == 0
+                    systemCmd("test" +
+                        ([src,verpath] ++
+                            (doc_map[subtarget] !? {doc_map[subtarget][\additions]})
+                        ).collect {|x|
+                            x.shellQuote+"-nt"+path.shellQuote
+                        }.join(" -o ")
+                    ) == 0
                 };
 
                 if(src.notNil and: cmd) {
