@@ -1,6 +1,11 @@
 File : UnixFILE {
 
-	classvar <openDialogs;
+	classvar <openDialogs, <systemIsCaseSensitive;
+
+	*initClass {
+		var f = this.filenameSymbol.asString;
+		systemIsCaseSensitive = not(File.exists(f.toLower) and: {File.exists(f.toUpper)});
+	}
 
 	*new { arg pathName, mode;
 		^super.new.open(pathName, mode);
@@ -24,6 +29,13 @@ File : UnixFILE {
 	*exists { arg pathName;
 		_FileExists
 		^this.primitiveFailed
+	}
+	*existsCaseSensitive { arg pathName;
+		^if(systemIsCaseSensitive) {
+			this.exists(pathName)
+		} {
+			(pathName.dirname+/+"*").pathMatch.detect{|x|x.compare(pathName)==0}.notNil
+		}
 	}
 	*realpath { arg pathName;
 		_FileRealPath
