@@ -175,7 +175,7 @@ StaticText(~w, 295@5).background_(Color.gray);
 		// this trigger (id==0) is to update the gui only
 	SendReply.kr(Impulse.kr(10), '/amp', amp);
 		// this trigger gets sent only when amplitude crosses threshold
-	SendTrig.kr(amp >= thresh, '/amptrig');
+	SendReply.kr(amp >= thresh, '/amptrig');
 }).play(args: [inbus: s.options.numOutputBusChannels, thresh: ~threshView.value, decay: ~decayView.value]);
 
 ~ampUpdater = OSCFunc({ |msg|
