@@ -1398,12 +1398,13 @@ void postErrorLine(int linenum, int start, int charpos)
 	}
 	end=i;
 	for (i=start, j=0; i<end && j<255; ++i) {
-		if (i == pos) str[j++] = BULLET_CHAR;
 		str[j++] = text[i];
 	}
-	if (pos == end) str[j++] = BULLET_CHAR;
 	str[j] = 0;
-	post("  %s\n", str);
+	post("  %s\n  ", str);
+	for (i=0; i<charpos-yylen; i++) post(" ");
+	for (i=0; i<yylen; i++) post("^");
+	post("\n");
 
 	i=end+1;
 	if (i<textlen) {
