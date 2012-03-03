@@ -315,7 +315,7 @@ SCDoc {
         block {|break|
             helpSourceDirs.do {|dir|
                 var x = dir+/+subtarget++".schelp";
-                if(File.exists(x)) {
+                if(File.existsCaseSensitive(x)) {
                     src = x;
                     break.value;
                 };
@@ -379,7 +379,7 @@ SCDoc {
                 this.getAllMetaData;
             };
 
-            if(File.exists(path).not) {
+            if(File.existsCaseSensitive(path).not) {
                 if(src.notNil) { // no target file, but helpsource found, parse and render.
                     this.parseAndRender(src,path,subtarget);
                     isProcessing = false;
