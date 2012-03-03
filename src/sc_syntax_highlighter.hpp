@@ -25,6 +25,19 @@
 
 namespace ScIDE {
 
+class SyntaxFormatContainer
+{
+public:
+    SyntaxFormatContainer(void);
+
+private:
+    friend class SyntaxHighlighter;
+    QTextCharFormat keywordFormat, buildinsFormat, primitiveFormat, classFormat, commentFormat, stringFormat,
+        symbolFormat, charFormat, numberLiteralFormat, plainFormat;
+};
+
+extern SyntaxFormatContainer gSyntaxFormatContainer;
+
 class SyntaxHighlighter:
     public QSyntaxHighlighter
 {

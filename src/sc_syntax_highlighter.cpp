@@ -22,6 +22,28 @@
 
 namespace ScIDE {
 
+SyntaxFormatContainer::SyntaxFormatContainer(void)
+{
+    keywordFormat.setFontWeight(QFont::Bold);
+    keywordFormat.setForeground(Qt::magenta);
+
+    buildinsFormat = keywordFormat;
+    primitiveFormat = keywordFormat;
+
+    classFormat.setForeground(Qt::green);
+    numberLiteralFormat.setForeground(Qt::green);
+
+    commentFormat.setFontWeight(QFont::Light);
+
+    stringFormat.setForeground(Qt::blue);
+
+    symbolFormat.setForeground(Qt::magenta);
+    charFormat = symbolFormat;
+}
+
+SyntaxFormatContainer gSyntaxFormatContainer;
+
+
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent):
     QSyntaxHighlighter( parent )
 {
@@ -123,25 +145,6 @@ SyntaxHighlighter::highligherFormat SyntaxHighlighter::findCurrentFormat(const Q
 
 void SyntaxHighlighter::highlightBlock(const QString& text)
 {
-    QTextCharFormat keywordFormat;
-    keywordFormat.setFontWeight(QFont::Bold);
-    keywordFormat.setForeground(Qt::magenta);
-
-    QTextCharFormat classFormat;
-    classFormat.setForeground(Qt::green);
-
-    QTextCharFormat floatFormat;
-    floatFormat.setForeground(Qt::green);
-
-    QTextCharFormat commentFormat;
-    commentFormat.setFontWeight(QFont::Light);
-
-    QTextCharFormat stringFormat;
-    stringFormat.setForeground(Qt::blue);
-
-    QTextCharFormat symbolFormat;
-    symbolFormat.setForeground(Qt::magenta);
-
     int currentIndex = 0;
 
     // TODO: (nested) multiline comments
@@ -152,30 +155,39 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
         switch (format)
         {
         case FormatClass:
-            setFormat(currentIndex, lenghtOfMatch, classFormat);
+            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.classFormat);
             break;
 
         case FormatBuiltin:
+            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.buildinsFormat);
+            break;
+
         case FormatPrimitive:
+            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.primitiveFormat);
+            break;
+
         case FormatKeyword:
-            setFormat(currentIndex, lenghtOfMatch, keywordFormat);
+            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.keywordFormat);
             break;
 
         case FormatSymbol:
+            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.symbolFormat);
+            break;
+
         case FormatChar:
-            setFormat(currentIndex, lenghtOfMatch, symbolFormat);
+            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.charFormat);
             break;
 
         case FormatString:
-            setFormat(currentIndex, lenghtOfMatch, stringFormat);
+            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.stringFormat);
             break;
 
         case FormatSingleLineComment:
-            setFormat(currentIndex, lenghtOfMatch, commentFormat);
+            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.commentFormat);
             break;
 
         case FormatFloat:
-            setFormat(currentIndex, lenghtOfMatch, floatFormat);
+            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.numberLiteralFormat);
             break;
 
         case FormatNone:
