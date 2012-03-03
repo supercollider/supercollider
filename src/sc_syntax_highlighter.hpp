@@ -52,6 +52,8 @@ class SyntaxHighlighter:
         FormatChar,
         FormatString,
         FormatFloat,
+        FormatHexInt,
+        FormatRadixFloat,
         FormatSingleLineComment,
         FormatMultiLineCommentStart,
 
@@ -76,6 +78,7 @@ private:
     QRegExp charRegexp;
     QRegExp stringRegexp;
     QRegExp floatRegexp;
+    QRegExp hexIntRegexp, radixFloatRegex;
     QRegExp commentStartRegexp, commentEndRegexp;
     QRegExp singleLineCommentRegexp;
 };
