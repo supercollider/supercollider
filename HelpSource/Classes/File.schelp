@@ -46,7 +46,22 @@ subsection:: Filesystem utilities
 
 method::exists
 answers if a file exists at that path.
+note::
+Some filesystems, like the one used by OSX, are case insensitive.
+On such systems, this method will return true for "fOo" even if the file is actually named "Foo".
+For a workaround, see link::#*existsCaseSensitive:: below.
+::
 returns:: a link::Classes/Boolean::
+
+method::existsCaseSensitive
+Like link::#*exists:: but ensure case sensitivity emphasis:: of the last path component :: on case insensitive filesystems. On case sensitive systems, it falls back to using code::exists::.
+
+note::
+This is slower than the normal code::exists:: method, so use it only when really needed.
+::
+
+method::systemIsCaseSensitive
+answers if the filesystem is case sensitive or not.
 
 method::mkdir
 create directory at path, including any missing parent directories.
