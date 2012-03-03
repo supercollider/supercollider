@@ -20,7 +20,7 @@ seem to hang when freqs get very low.
 ::
 
 If you don't need very high or very low freqs, or use fixed freqs,
-link::Classes/LFNoise0::  is more efficient.
+link::Classes/LFDClipNoise::  is more efficient.
 
 
 classmethods::
