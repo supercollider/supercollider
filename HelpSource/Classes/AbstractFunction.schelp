@@ -70,7 +70,7 @@ method::coin
 method::even
 method::odd
 method::isPositive
-method::isNegative,
+method::isNegative
 method::isStrictlyPositive
 method::rho
 method::theta

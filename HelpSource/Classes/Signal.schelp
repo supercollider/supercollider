@@ -333,6 +333,5 @@ y = Signal.fill(512, { |i| (i * pi / 64).sin });
 	.plot(numChannels: 6);
 )
 ::
-method::+, -, *, /, div, %, **, min, max, ring1, ring2, ring3, ring4,
-difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, excess, <!
+method::+, -, *, /, div, %, **, min, max, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, excess, <!
 
