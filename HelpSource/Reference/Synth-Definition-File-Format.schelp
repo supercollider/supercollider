@@ -6,6 +6,15 @@ related:: Classes/SynthDef
 Synth definition files are read by the synth server and define collections of unit generators and their connections. These files are currently written by  the SuperCollider language application, but theoretically could be written by any program.
 Such a program would need knowledge of the SC unit generators and their characteristics, such as number of inputs and outputs and available calculation rates. The code to write these files is open and available in the SuperCollider language app.
 
+In the current SuperCollider 3.6 development version, there are two versions of SynthDef:
+
+list::
+## strong::SynthDef:: - The original SynthDef file format, backward compatible with .scsyndef files saved using earlier versions of SuperCollider.
+## strong::SynthDef2:: - A revised version that extends SynthDef's capacity.
+::
+
+This document describes SynthDef2's format. See link::#original_synthdef_format#Original SynthDef format:: for the differences between SynthDef and SynthDef2.
+
 section:: Basic types
 All data is stored big endian. All data is packed, not padded or aligned.
 definitionlist::
@@ -137,6 +146,42 @@ tree::
         ::
     ::
 ::
+
+section:: Original SynthDef format
+
+The original SynthDef format differs in that the following items are teletype::int16:: instead of teletype::int32::.
+
+note:: The following list describes what has changed between SynthDef and SynthDef2. It is not a complete description of the the original SynthDef file format. ::
+
+list::
+## int32 - file version, currently 1. (This is emphasis::2:: for the new format.)
+
+## a strong::synth-definition:: is :
+list::
+## int16 - number of constants (K)
+## int16 - number of parameters (P)
+## int16 - number of parameter names (N)
+## int16 - number of unit generators (U)
+::
+## a strong::param-name:: is :
+list::
+## int16 - its index in the parameter array
+::
+
+## a strong::ugen-spec:: is :
+list::
+## int16 - number of inputs (I)
+## int16 - number of outputs (O)
+::
+
+## an strong::input-spec:: is :
+list::
+## int16 - index of unit generator or -1 for a constant
+## int16 - index of constant
+## int16 - index of unit generator output
+::
+::
+
 
 section:: Glossary
 
