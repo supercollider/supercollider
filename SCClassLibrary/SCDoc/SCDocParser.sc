@@ -376,7 +376,7 @@ SCDocParser {
                             \method, {
                             //FIXME:
                             // - m.isExtensionOf(c) (perhaps not very important, we can see this in the class doc)
-                                match = text.findRegexp("\\(.*\\)|[^ ,]+").flop[1].reject{|x|x[0]==$(};
+                                match = text.findRegexp("\\(.*\\)|[^ ,\\(\\)]+").flop[1].reject{|x|x[0]==$(};
                                 match.do {|name|
                                     if("^[a-z][a-zA-Z0-9_]*|[-<>@|&%*+/!?=]+$".matchRegexp(name).not) {
                                         warn("Methodname not valid: '"++name++"' in"+path);
@@ -535,7 +535,7 @@ SCDocParser {
         var docmets = IdentitySet.new;
 
         var addMet = {|n|
-            n.text.findRegexp("\\(.*\\)|[^ ,]+").flop[1].do {|m|
+            n.text.findRegexp("\\(.*\\)|[^ ,\\(\\)]+").flop[1].do {|m|
                 if(m[0] != $() {
                     docmets.add(m.asSymbol.asGetter);
                 };
