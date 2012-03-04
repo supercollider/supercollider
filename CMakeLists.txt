@@ -150,7 +150,6 @@ set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio
 option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
-option(INSTALL_OLD_HELP "Install old and deprecated help files" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
 option(SC_IDE "Build Qt IDE." ON)
 
@@ -397,12 +396,6 @@ install(DIRECTORY examples
 	PATTERN "*~" EXCLUDE
 	PATTERN "*#" EXCLUDE
 )
-
-if(INSTALL_OLD_HELP)
-	install(DIRECTORY Help
-		DESTINATION ${auxresourcesdir}
-	)
-endif()
 
 if(INSTALL_HELP)
 	if(SC_SYMLINK_CLASSLIB AND APPLE)
