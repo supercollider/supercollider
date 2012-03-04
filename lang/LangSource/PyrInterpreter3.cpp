@@ -52,7 +52,6 @@
 
 #include <new>
 #include "InitAlloc.h"
-#include "bullet.h"
 
 //void tellPlugInsAboutToRun();
 double timeNow();

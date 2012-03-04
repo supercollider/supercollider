@@ -25,7 +25,6 @@
 #include "PyrListPrim.h"
 #include "PyrSymbol.h"
 #include "GC.h"
-#include "bullet.h"
 #include <stdlib.h>
 #include <assert.h>
 #include "PredefinedSymbols.h"
