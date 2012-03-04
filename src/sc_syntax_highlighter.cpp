@@ -147,21 +147,21 @@ SyntaxHighlighter::highligherFormat SyntaxHighlighter::findCurrentFormat(const Q
     return static_cast<highligherFormat>(minElementIndex);
 }
 
-bool SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentIndex, int & currentState)
+void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentIndex, int & currentState)
 {
     do {
         if (text[currentIndex] == '\"') {
             currentState = inString;
             setFormat(currentIndex, 1, gSyntaxFormatContainer.stringFormat);
             currentIndex += 1;
-            return currentIndex == text.size();
+            return;
         }
 
         if (text[currentIndex] == '\'') {
             currentState = inSymbol;
             setFormat(currentIndex, 1, gSyntaxFormatContainer.symbolFormat);
             currentIndex += 1;
-            return currentIndex == text.size();
+            return;
         }
 
         int lenghtOfMatch;
@@ -211,7 +211,7 @@ bool SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentI
             setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.commentFormat);
             currentIndex += lenghtOfMatch;
             currentState = inComment;
-            return currentIndex == text.size();
+            return;
 
         case FormatNone:
             currentIndex += 1;
@@ -222,10 +222,9 @@ bool SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentI
 
         currentIndex += lenghtOfMatch;
     } while (currentIndex < text.size());
-    return true; // consumed everything
 }
 
-bool SyntaxHighlighter::highlightBlockInString(const QString& text, int& currentIndex, int& currentState)
+void SyntaxHighlighter::highlightBlockInString(const QString& text, int& currentIndex, int& currentState)
 {
     int matchIndex = stringContentRegexp.indexIn(text, currentIndex);
     if (matchIndex == -1)
@@ -237,7 +236,7 @@ bool SyntaxHighlighter::highlightBlockInString(const QString& text, int& current
     if (currentIndex == text.size()) {
         // end of block
         currentState = inString;
-        return true;
+        return;
     }
 
     if (text[currentIndex] == QChar('\"'))
@@ -245,10 +244,10 @@ bool SyntaxHighlighter::highlightBlockInString(const QString& text, int& current
 
     setFormat(currentIndex, 1, gSyntaxFormatContainer.stringFormat);
     ++currentIndex;
-    return currentIndex == text.size();
+    return;
 }
 
-bool SyntaxHighlighter::highlightBlockInSymbol(const QString& text, int& currentIndex, int& currentState)
+void SyntaxHighlighter::highlightBlockInSymbol(const QString& text, int& currentIndex, int& currentState)
 {
     int matchIndex = symbolContentRegexp.indexIn(text, currentIndex);
     if (matchIndex == -1)
@@ -260,7 +259,7 @@ bool SyntaxHighlighter::highlightBlockInSymbol(const QString& text, int& current
     if (currentIndex == text.size()) {
         // end of block
         currentState = inSymbol;
-        return true;
+        return;
     }
 
     if (text[currentIndex] == QChar('\''))
@@ -268,10 +267,10 @@ bool SyntaxHighlighter::highlightBlockInSymbol(const QString& text, int& current
 
     setFormat(currentIndex, 1, gSyntaxFormatContainer.symbolFormat);
     ++currentIndex;
-    return currentIndex == text.size();
+    return;
 }
 
-bool SyntaxHighlighter::highlightBlockInComment(const QString& text, int& currentIndex, int& currentState)
+void SyntaxHighlighter::highlightBlockInComment(const QString& text, int& currentIndex, int& currentState)
 {
     /* TODO: comments can be nested */
 
@@ -279,14 +278,14 @@ bool SyntaxHighlighter::highlightBlockInComment(const QString& text, int& curren
     if (commentEndIndex == -1) {
         setFormat(currentIndex, text.size() - currentIndex, gSyntaxFormatContainer.commentFormat);
         currentIndex = text.size();
-        return true;
+        return;
     }
 
     setFormat(currentIndex, commentEndIndex - currentIndex + 2, gSyntaxFormatContainer.commentFormat);
     currentIndex = commentEndIndex + 2;
     currentState = inCode;
 
-    return currentIndex == text.size();
+    return;
 }
 
 
@@ -299,22 +298,21 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
         currentState = 0;
 
     while (currentIndex < text.size()) {
-        bool consumedFullBlock;
         switch (currentState) {
         case inCode:
-            consumedFullBlock = highlightBlockInCode(text, currentIndex, currentState);
+            highlightBlockInCode(text, currentIndex, currentState);
             break;
 
         case inString:
-            consumedFullBlock = highlightBlockInString(text, currentIndex, currentState);
+            highlightBlockInString(text, currentIndex, currentState);
             break;
 
         case inSymbol:
-            consumedFullBlock = highlightBlockInSymbol(text, currentIndex, currentState);
+            highlightBlockInSymbol(text, currentIndex, currentState);
             break;
 
         case inComment:
-            consumedFullBlock = highlightBlockInComment(text, currentIndex, currentState);
+            highlightBlockInComment(text, currentIndex, currentState);
             break;
         }
     }
