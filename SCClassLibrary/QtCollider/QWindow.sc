@@ -87,6 +87,8 @@ QWindow
   var <>acceptsClickThrough=false;
   var <currentSheet;
 
+  *implementsClass {^'Window'}
+
   *initClass {
     ShutDown.add( { QWindow.closeAll } );
   }

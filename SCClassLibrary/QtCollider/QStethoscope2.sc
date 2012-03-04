@@ -21,6 +21,8 @@ QStethoscope2 {
   var sizeToggle=false;
   var running = false;
 
+  *implementsClass {^'Stethoscope2'}
+
   *new {
     arg server, numChannels = 2, index = 0, bufsize = 4096,
         zoom = 1.0, rate = \audio, view, bufnum;

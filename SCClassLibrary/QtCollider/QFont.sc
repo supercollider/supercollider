@@ -3,6 +3,8 @@ QFont {
   var <>name, <size, <>bold, <>italic, <hasPointSize=false;
   /* ----------------- class -------------------*/
 
+  *implementsClass {^'Font'}
+
   *initClass {
 
   }

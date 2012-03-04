@@ -8,6 +8,8 @@ SCView {  // abstract class
 	var <>beginDragAction, <>canReceiveDragHandler, <>receiveDragHandler;
 	var <>onClose;
 
+	*implementsClass { ^this.name.asString[2..].asSymbol }
+
 	*new { arg parent, bounds;
 		^super.new.init(parent, bounds);
 	}
@@ -806,6 +808,7 @@ SCRangeSlider : SCSliderBase {
 }
 
 SC2DSlider : SCSliderBase {
+	*implementsClass { ^'Slider2D' }
 	x {
 		^this.getProperty(\x)
 	}
@@ -872,7 +875,7 @@ SC2DSlider : SCSliderBase {
 }
 
 SC2DTabletSlider : SC2DSlider {
-
+	*implementsClass { ^'TabletSlider2D' }
 //	var <>mouseDownAction, <>mouseUpAction;
 
 	mouseDown { arg x, y, pressure, tiltx, tilty, deviceID,

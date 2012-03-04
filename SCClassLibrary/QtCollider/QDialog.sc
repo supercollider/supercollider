@@ -25,6 +25,8 @@ QFileDialog : QObject {
 }
 
 QDialog {
+  *implementsClass {^'Dialog'}
+
   *getPaths { arg okFunc, cancelFunc, allowsMultiple=true;
     var fileMode;
     if( allowsMultiple ) { fileMode = 3 } { fileMode = 1 };
