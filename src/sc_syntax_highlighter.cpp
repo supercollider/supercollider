@@ -207,6 +207,12 @@ bool SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentI
             setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.numberLiteralFormat);
             break;
 
+        case FormatMultiLineCommentStart:
+            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.commentFormat);
+            currentIndex += lenghtOfMatch;
+            currentState = inComment;
+            return currentIndex == text.size();
+
         case FormatNone:
             currentIndex += 1;
 
@@ -265,6 +271,24 @@ bool SyntaxHighlighter::highlightBlockInSymbol(const QString& text, int& current
     return currentIndex == text.size();
 }
 
+bool SyntaxHighlighter::highlightBlockInComment(const QString& text, int& currentIndex, int& currentState)
+{
+    /* TODO: comments can be nested */
+
+    int commentEndIndex = text.indexOf(QString("*/"), currentIndex);
+    if (commentEndIndex == -1) {
+        setFormat(currentIndex, text.size() - currentIndex, gSyntaxFormatContainer.commentFormat);
+        currentIndex = text.size();
+        return true;
+    }
+
+    setFormat(currentIndex, commentEndIndex - currentIndex + 2, gSyntaxFormatContainer.commentFormat);
+    currentIndex = commentEndIndex + 2;
+    currentState = inCode;
+
+    return currentIndex == text.size();
+}
+
 
 void SyntaxHighlighter::highlightBlock(const QString& text)
 {
@@ -289,7 +313,9 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
             consumedFullBlock = highlightBlockInSymbol(text, currentIndex, currentState);
             break;
 
-        // TODO: (nested) multiline comments
+        case inComment:
+            consumedFullBlock = highlightBlockInComment(text, currentIndex, currentState);
+            break;
         }
     }
     setCurrentBlockState(currentState);

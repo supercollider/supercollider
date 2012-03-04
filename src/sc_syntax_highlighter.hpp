@@ -75,6 +75,7 @@ private:
     bool highlightBlockInCode(const QString& text, int & currentIndex, int & currentState);
     bool highlightBlockInString(const QString& text, int & currentIndex, int & currentState);
     bool highlightBlockInSymbol(const QString& text, int & currentIndex, int & currentState);
+    bool highlightBlockInComment(const QString& text, int & currentIndex, int & currentState);
     void initKeywords(void);
     void initBuildins(void);
 
