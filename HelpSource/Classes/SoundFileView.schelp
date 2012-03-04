@@ -284,7 +284,7 @@ METHOD:: selectionStart
     returns::
         An Integer.
 
-METHOD:: setSelectionStart (index, frame)
+METHOD:: setSelectionStart
 
     Sets the start frame of a selection.
 
@@ -369,7 +369,7 @@ METHOD:: setEditableSelectionStart
     argument:: editable
         A Boolean.
 
-METHOD:: setEditableSelectionSize (index, bool)
+METHOD:: setEditableSelectionSize
 
     Whether the end point of a selection can be edited.
 

@@ -567,7 +567,7 @@ method::shouldNotImplement
 
 Throws a ShouldNotImplementError. Use this to indicate that this inherited method should not be defined or used in the receiver.
 
-method::deprecated(method, alternateMethod)
+method::deprecated
 
 Throws a DeprecatedError. Use this to indicate that the enclosing method has been replaced by a better one (possibly in another class), and that it will likely be removed in the future. Unlike other errors, DeprecatedError only halts execution if Error.debug == true. In all cases it posts a warning indicating that the method is deprecated and what is the recommended alternative.
 
@@ -662,7 +662,7 @@ f = { |x, i| [x, i].postln; };
 ($Q).do(f); // Object.do
 ::
 
-method::generate(func, state)
+method::generate
 
 Object iterates by the message do, sent to the receiver.
 This method is used internally by list comprehensions.

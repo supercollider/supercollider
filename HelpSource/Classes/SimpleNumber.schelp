@@ -878,23 +878,6 @@ code::
 
 subsection:: misc
 
-method:: rate
-method::isValidUGenInput
+method:: isValidUGenInput
 returns:: false if receiver cannot be used in UGen.
-method:: performBinaryOpOnSignal (aSelector, aSignal)
-method:: performBinaryOpOnComplex
-
-method:: performBinaryOpOnSimpleNumber
-method:: hypotApx
-method:: playAndDelta
-method:: numChannels
-method:: asBufWithValues
-method:: firstArg
-
-
-
-
-
-
-
 
