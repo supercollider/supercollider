@@ -153,15 +153,13 @@ void post(const char *fmt, ...)
 	}
 }
 
-#include "bullet.h"
-
 void error(const char *fmt, ...);
 void error(const char *fmt, ...)
 {
 	va_list vargs;
 
 	if (gPostView) {
-		post(BULLET " ERROR: ");
+		post("\xa5 ERROR: ");
 		va_start(vargs, fmt); 
 		vpost(fmt, vargs);
 	}
