@@ -18,6 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include <cassert>
+
 #include "sc_syntax_highlighter.hpp"
 
 namespace ScIDE {
@@ -55,8 +57,11 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent):
 
     primitiveRegexp.setPattern("\\b_\\w*\\b");
     symbolRegexp.setPattern("(\\\\\\w*|\\'([^\\'\\\\]*(\\\\.[^\\'\\\\]*)*)\\')");
+    symbolContentRegexp.setPattern("([^\'\\\\]*(\\\\.[^\'\\\\]*)*)");
     charRegexp.setPattern("\\b\\$(\\w|(\\\\\\S))\\b");
     stringRegexp.setPattern("\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*)\"");
+    stringContentRegexp.setPattern("([^\"\\\\]*(\\\\.[^\"\\\\]*)*)");
+
     floatRegexp.setPattern("\\b-?((\\d*\\.?\\d+([eE][-+]?\\d+)?(pi)?)|pi)\\b");
     hexIntRegexp.setPattern("\\b0(x|X)(\\d|[a-f]|[A-F])+\\b");
     radixFloatRegex.setPattern("\\b(\\d)+r(\\d|[a-zA-Z])+(.(\\d|[a-zA-Z]))?\\b");
@@ -105,8 +110,8 @@ SyntaxHighlighter::highligherFormat SyntaxHighlighter::findCurrentFormat(const Q
     QVector<int> matchIndices, matchLengths;
 
     QVector<QRegExp> regexps;
-    regexps << classRegexp << keywordRegexp << buildinsRegexp << primitiveRegexp << symbolRegexp
-            << charRegexp  << stringRegexp  << floatRegexp << hexIntRegexp << radixFloatRegex
+    regexps << classRegexp << keywordRegexp << buildinsRegexp << primitiveRegexp << symbolRegexp << stringRegexp
+            << charRegexp  << floatRegexp << hexIntRegexp << radixFloatRegex
             << singleLineCommentRegexp << commentStartRegexp;
 
     int i = 0;
@@ -142,14 +147,23 @@ SyntaxHighlighter::highligherFormat SyntaxHighlighter::findCurrentFormat(const Q
     return static_cast<highligherFormat>(minElementIndex);
 }
 
-
-
-void SyntaxHighlighter::highlightBlock(const QString& text)
+bool SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentIndex, int & currentState)
 {
-    int currentIndex = 0;
-
-    // TODO: (nested) multiline comments
     do {
+        if (text[currentIndex] == '\"') {
+            currentState = inString;
+            setFormat(currentIndex, 1, gSyntaxFormatContainer.stringFormat);
+            currentIndex += 1;
+            return currentIndex == text.size();
+        }
+
+        if (text[currentIndex] == '\'') {
+            currentState = inSymbol;
+            setFormat(currentIndex, 1, gSyntaxFormatContainer.symbolFormat);
+            currentIndex += 1;
+            return currentIndex == text.size();
+        }
+
         int lenghtOfMatch;
         highligherFormat format = findCurrentFormat(text, currentIndex, lenghtOfMatch);
 
@@ -175,12 +189,12 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
             setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.symbolFormat);
             break;
 
-        case FormatChar:
-            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.charFormat);
-            break;
-
         case FormatString:
             setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.stringFormat);
+            break;
+
+        case FormatChar:
+            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.charFormat);
             break;
 
         case FormatSingleLineComment:
@@ -202,6 +216,83 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
 
         currentIndex += lenghtOfMatch;
     } while (currentIndex < text.size());
+    return true; // consumed everything
+}
+
+bool SyntaxHighlighter::highlightBlockInString(const QString& text, int& currentIndex, int& currentState)
+{
+    int matchIndex = stringContentRegexp.indexIn(text, currentIndex);
+    if (matchIndex == -1)
+        assert(false);
+
+    int matchLength = stringContentRegexp.matchedLength();
+    setFormat(currentIndex, matchLength, gSyntaxFormatContainer.stringFormat);
+    currentIndex += matchLength;
+    if (currentIndex == text.size()) {
+        // end of block
+        currentState = inString;
+        return true;
+    }
+
+    if (text[currentIndex] == QChar('\"'))
+        currentState = inCode;
+
+    setFormat(currentIndex, 1, gSyntaxFormatContainer.stringFormat);
+    ++currentIndex;
+    return currentIndex == text.size();
+}
+
+bool SyntaxHighlighter::highlightBlockInSymbol(const QString& text, int& currentIndex, int& currentState)
+{
+    int matchIndex = symbolContentRegexp.indexIn(text, currentIndex);
+    if (matchIndex == -1)
+        assert(false);
+
+    int matchLength = symbolContentRegexp.matchedLength();
+    setFormat(currentIndex, matchLength, gSyntaxFormatContainer.symbolFormat);
+    currentIndex += matchLength;
+    if (currentIndex == text.size()) {
+        // end of block
+        currentState = inSymbol;
+        return true;
+    }
+
+    if (text[currentIndex] == QChar('\''))
+        currentState = inCode;
+
+    setFormat(currentIndex, 1, gSyntaxFormatContainer.symbolFormat);
+    ++currentIndex;
+    return currentIndex == text.size();
+}
+
+
+void SyntaxHighlighter::highlightBlock(const QString& text)
+{
+    int currentIndex = 0;
+
+    int currentState = previousBlockState();
+    if (currentState == -1)
+        currentState = 0;
+
+    while (currentIndex < text.size()) {
+        bool consumedFullBlock;
+        switch (currentState) {
+        case inCode:
+            consumedFullBlock = highlightBlockInCode(text, currentIndex, currentState);
+            break;
+
+        case inString:
+            consumedFullBlock = highlightBlockInString(text, currentIndex, currentState);
+            break;
+
+        case inSymbol:
+            consumedFullBlock = highlightBlockInSymbol(text, currentIndex, currentState);
+            break;
+
+        // TODO: (nested) multiline comments
+        }
+    }
+    setCurrentBlockState(currentState);
 }
 
 }

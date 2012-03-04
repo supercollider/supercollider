@@ -42,6 +42,7 @@ class SyntaxHighlighter:
     public QSyntaxHighlighter
 {
     Q_OBJECT
+
     typedef enum
     {
         FormatClass,
@@ -49,22 +50,31 @@ class SyntaxHighlighter:
         FormatBuiltin,
         FormatPrimitive,
         FormatSymbol,
-        FormatChar,
         FormatString,
+        FormatChar,
         FormatFloat,
         FormatHexInt,
         FormatRadixFloat,
+
         FormatSingleLineComment,
         FormatMultiLineCommentStart,
 
         FormatNone
     } highligherFormat;
 
+    static const int inCode = 0;
+    static const int inComment = 1;
+    static const int inString = 2;
+    static const int inSymbol = 3;
+
 public:
     SyntaxHighlighter(QTextDocument *parent = 0);
 
 private:
     void highlightBlock(const QString &text);
+    bool highlightBlockInCode(const QString& text, int & currentIndex, int & currentState);
+    bool highlightBlockInString(const QString& text, int & currentIndex, int & currentState);
+    bool highlightBlockInSymbol(const QString& text, int & currentIndex, int & currentState);
     void initKeywords(void);
     void initBuildins(void);
 
@@ -74,9 +84,9 @@ private:
     QRegExp keywordRegexp;
     QRegExp buildinsRegexp;
     QRegExp primitiveRegexp;
-    QRegExp symbolRegexp;
+    QRegExp symbolRegexp, symbolContentRegexp;
     QRegExp charRegexp;
-    QRegExp stringRegexp;
+    QRegExp stringRegexp, stringContentRegexp;
     QRegExp floatRegexp;
     QRegExp hexIntRegexp, radixFloatRegex;
     QRegExp commentStartRegexp, commentEndRegexp;
