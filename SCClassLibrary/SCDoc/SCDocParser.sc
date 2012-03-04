@@ -13,11 +13,13 @@ SCDocParser {
     var proseDisplay;
     var <>currentFile;
     var <methodList, <keywordList;
+    classvar <>warnMethodSyntax;
     classvar copyMethodCache;
     classvar ignoreMethods;
 
     *initClass {
         ignoreMethods = IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset, \initClass, \storeArgs, \storeOn, \printOn];
+        warnMethodSyntax = false;
     }
 
     init {
@@ -376,10 +378,13 @@ SCDocParser {
                             \method, {
                             //FIXME:
                             // - m.isExtensionOf(c) (perhaps not very important, we can see this in the class doc)
-                                match = text.findRegexp("\\(.*\\)|[^ ,\\(\\)]+").flop[1].reject{|x|x[0]==$(};
-                                match.do {|name|
+                                match = text.findRegexp("\\(.*\\)|[^ ,\\(\\)]+").flop[1];
+                                if(warnMethodSyntax and: {pfx!="." and: {match.detect{|x|x[0]==$(}.notNil}}) {
+                                    warn("Method has hardcoded arguments but is a class or instance method and will get automatic args.\n  %\n  In file %".format(match.cs,path));
+                                };
+                                match.reject{|x|x[0]==$(}.do {|name|
                                     if("^[a-z][a-zA-Z0-9_]*|[-<>@|&%*+/!?=]+$".matchRegexp(name).not) {
-                                        warn("Methodname not valid: '"++name++"' in"+path);
+                                        warn("Methodname not valid: '%' in %".format(name,path));
                                     } {
                                         m = name.asSymbol;
                                         if(m.isSetter) {
