@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 25;
+    classvar version = 26;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -415,9 +415,47 @@ SCDoc {
         ^url;
     }
 
+    *makeClassImplementorDoc {|name,implements,path|
+        var m,n;
+        if(implements.class!==Symbol) {
+            warn("SCDoc: %.implementsClass is not a Symbol. Skipping %".format(name,path));
+            ^this;
+        };
+        if(implements.asClass.isNil) {
+            warn("SCDoc: %.implementsClass is %, but no such class exists".format(name,implements.cs));
+            ^this;
+        };
+        this.postProgress("Generating class redirect implementor doc: % for %".format(name,implements));
+
+        m=[(
+            tag:\prose,
+            text:"This class implements ",
+            display:\block
+        ),(
+            tag:\link,
+            text:"Classes/"++implements,
+            display:\inline
+        )];
+
+        n = [
+            (tag:\class, text:name),
+            (tag:\summary, text:"Implements "++implements),
+            (tag:\categories, text:"Redirect Class Implementors"),
+            (tag:\description, children:m)
+        ];
+
+        p.root = n;
+        p.currentFile = nil;
+        r.render(p,path,"Classes/"++name);
+    }
+
     *makeClassTemplate {|name,path|
         var class = name.asSymbol.asClass;
-        var n, m, cats, f;
+        var n, m, cats, f, c;
+
+        if(path.notNil and: {(c=class.tryPerform(\implementsClass)).class===Symbol}) {
+            ^this.makeClassImplementorDoc(name, c, path);
+        };
 
         doWait = thisThread.isKindOf(Routine);
 
@@ -512,7 +550,6 @@ SCDoc {
                     display:\block)
                 ]
             ));
-
             if(path.notNil) {
                 p.root = n;
                 p.currentFile = nil;
@@ -668,28 +705,36 @@ SCDoc {
         undocumentedClasses = classes;
         ndocs = 0;
         classes.do {|name|
-            var class, dir;
+            var class, dir, c;
             subtarget = "Classes/"++name.asString;
             if(doc_map[subtarget].isNil) {
                 cats = "Undocumented classes";
                 class = name.asClass;
                 dir = class.filenameSymbol.asString;
-                if(dir.beginsWith(Platform.userExtensionDir +/+ "quarks")) {
-                    cats = cats ++ ", " ++ "Quarks>"++class.package;
-                };
+                if((c=class.tryPerform(\implementsClass)).class===Symbol) {
+                    p.root = [
+                        (tag:\class, text:name.asString),
+                        (tag:\categories, text:"Redirect Class Implementors"),
+                        (tag:\summary, text:"Implements "++c)
+                    ];
+                } {
+                    if(dir.beginsWith(Platform.userExtensionDir +/+ "quarks")) {
+                        cats = cats ++ ", " ++ "Quarks>"++class.package;
+                    };
 
-                if(this.classHasArKrIr(class)) {
-                    cats = cats ++ ", UGens>Undocumented";
-                };
-                if(class.categories.notNil) {
-                    cats = cats ++ ", "++class.categories.join(", ");
-                };
+                    if(this.classHasArKrIr(class)) {
+                        cats = cats ++ ", UGens>Undocumented";
+                    };
+                    if(class.categories.notNil) {
+                        cats = cats ++ ", "++class.categories.join(", ");
+                    };
 
-                p.root = [
-                    (tag:\class, text:name.asString),
-                    (tag:\categories, text:cats),
-                    (tag:\summary, text:"(not documented)")
-                ];
+                    p.root = [
+                        (tag:\class, text:name.asString),
+                        (tag:\categories, text:cats),
+                        (tag:\summary, text:"(not documented)")
+                    ];
+                };
                 this.addToDocMap(p,subtarget);
                 doc = doc_map[subtarget];
                 doc[\methods] =

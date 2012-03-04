@@ -10,6 +10,7 @@ QStethoscope {
   var scopeView, indexView, nChanView, xZoomSlider, yZoomSlider;
   var style=0, sizeToggle=0, zx, zy, ai=0, ki=0, audiospec, controlspec, zoomspec;
 
+  *implementsClass {^'Stethoscope'}
 
   *new { arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
     if(server.inProcess.not, { "scope works only with internal server".error; ^nil });

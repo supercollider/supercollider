@@ -55,16 +55,20 @@ QLineLayout : QLayout {
 }
 
 QHLayout : QLineLayout {
+  *implementsClass {^'HLayout'}
   *qtClass { ^'QcHBoxLayout'; }
 }
 
 QVLayout : QLineLayout {
+  *implementsClass {^'VLayout'}
   *qtClass { ^'QcVBoxLayout'; }
 }
 
 // GRID LAYOUT ///////////////////////////////////////////////////
 
 QGridLayout : QLayout {
+  *implementsClass {^'GridLayout'}
+
   *new {
     // get rid of QObject's arguments
     ^super.new;
@@ -179,6 +183,8 @@ QGridLayout : QLayout {
 
 QStackLayout : QLayout
 {
+  *implementsClass {^'StackLayout'}
+
   *qtClass { ^'QcStackLayout' }
 
   *new { arg ...views; ^super.new([views]) }

@@ -28,6 +28,8 @@ QView : QObject {
   // hooks
   var <onClose, <onResize, <onMove;
 
+  *implementsClass { ^this.name.asString[1..].asSymbol }
+
   *initClass {
     hSizePolicy = [1,2,3,1,2,3,1,2,3];
     vSizePolicy = [1,1,1,2,2,2,3,3,3];

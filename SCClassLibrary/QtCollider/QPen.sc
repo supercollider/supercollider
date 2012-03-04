@@ -1,6 +1,6 @@
 QPen {
   classvar <font;
-
+  *implementsClass {^'Pen'}
 //-------------------------- Global state control ------------------------------
 
   *push {
