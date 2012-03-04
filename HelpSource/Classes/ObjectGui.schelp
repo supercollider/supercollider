@@ -1,5 +1,6 @@
 CLASS:: ObjectGui
 summary:: Controller class for MVC architecture, superclass for all XYZGui classes
+related:: Reference/gui
 categories:: GUI
 
 DESCRIPTION::
