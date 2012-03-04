@@ -24,7 +24,7 @@ An automatic layout management for a container. Currently the only one existing 
 note::Crucial Library also has a useful layout tool called GridLayout.::
 argument:: arg1
 
-method:: addFlowLayout(margin, gap)
+method:: addFlowLayout
 A convenience utility which sets decorator to link::Classes/FlowLayout:: and returns the decorator. See link::Classes/FlowLayout:: for examples.
 argument:: margin
 An instance of link::Classes/Point::.

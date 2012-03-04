@@ -9,7 +9,7 @@ In difference to Dswitch1, Dswitch embeds all items of
 an input demand ugen first before looking up the next index.
 
 classmethods::
-method:: new(array, index)
+method:: new
 argument:: array
 array of values or other ugens
 argument:: index

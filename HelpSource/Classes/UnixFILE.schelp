@@ -13,7 +13,7 @@ Returns whether the file is open. An open request can fail if a file cannot be f
 method::pos
 Answer the current file position
 
-seek(offset, origin)
+method:: seek
 Seek to an offset from the origin.
 
 argument::offset
@@ -27,7 +27,7 @@ definitionList::
 ## 2 || seek from end of file.
 ::
 
-method::write(item)
+method::write
 Writes an item to the file.
 
 argument::item

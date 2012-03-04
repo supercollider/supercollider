@@ -636,7 +636,7 @@ Carefull: the returned Array is a link::Classes/Int32Array:: of size receiver.wi
 ARGUMENT::array
 an link::Classes/Int32Array:: of size receiver.width * receiver.height containing all pixel values as 32bit Integer
 
-METHOD::loadPixels(array, region, start)
+METHOD::loadPixels
 load all the pixels of the receiver in an array. it is better and faster to call this function instead of link::#-pixels:: if you plan to retrieve frequently the pixel data (since it won't allocate a new array everytime !)
 code::
 // exec one line at a time
