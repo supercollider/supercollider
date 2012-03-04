@@ -31,5 +31,5 @@ foreach (el ${all_scel_sources})
 	DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${el}c)
 
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${el}c
-	DESTINATION share/emacs/site-lisp)
+	DESTINATION share/emacs/site-lisp/SuperCollider)
 endforeach()
