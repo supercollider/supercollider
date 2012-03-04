@@ -1,0 +1,83 @@
+title:: gui
+categories:: GUI, Common Methods
+summary:: Create a Graphical User Interface
+related: Classes/ObjectGui
+
+method:: gui
+The code::gui:: message is of common use in SC. It originated in the crucial library where it is used to create an link::Classes/ObjectGui:: or an ObjectGui subclass as part of a Model View Controller system.
+
+The implementation and accepted arguments to .gui varies.  This helpfile explains the default behavior of Object and hence of all Object subclasses that haven't implemented their own .gui method. This helpfile and the implementation come from the original crucial library.
+
+Any object can create a GUI, albeit a very simple one that just displays the object's string representation on a view:
+
+code::
+nil.gui;
+"2".gui;
+2.gui;
+[1,nil,"tree"].gui;
+::
+
+This means that any object can be .gui(ed) without knowing exactly what the object is.  This is identical in purpose to .asString which is used for posting an object's representation to the post window.
+
+
+section:: argument conventions
+
+The convention as stated in crucial library states that the .gui method should accept parent and bounds as its arguments in the same manner as a View does.
+
+code::
+thing.gui(parent,bounds);
+// or with optional additional arguments:
+things.gui(parent,bounds,arg1,arg2,...argN)
+::
+
+This convention hasn't been followed by many who have written their own .gui methods (perhaps calling it that rather than .makeView or .makeWindow because they liked that .gui was nice and short to type)
+
+This is the default implementation for Object, and is thus the implementation for all subclasses that have not written an explicit .gui method
+
+parent
+list::
+##  a Window,
+##  a FlowView
+##  CompositeVIew
+##  HLayoutView
+##  VLayoutView
+##  nil (which will create a Window with a FlowView on it) 
+::
+
+bounds
+list::
+## anything that responds to asRect:
+## Nil - the gui will use its own default size
+## Point - width @ height
+::
+
+Usually the bounds are not specified.  The object's gui class first adds a container, lays its things inside that container and then shrinks the container to fit it. If you do specify a bounds, the container will be set to exactly that size.
+
+Add a view to a parent view (window)
+code::
+(
+	f = FlowView.new;
+	nil.gui(f);
+	"2".gui(f);
+	2.gui(f);
+)
+::
+
+
+method:: guiClass
+
+Each class can specify an associated guiClass, which is a subclass of ObjectGui.
+Writing useful subclasses is the purpose of the ObjectGui system and many can be found in the crucial library.
+
+Examples specifying guiClass:
+
+code::
+	Object-guiClass {  ^ObjectGui }
+	Server-guiClass {  ^ServerGui }
+	AbstractPlayer-guiClass { ^AbstractPlayerGui }
+	Patch-guiClass { ^PatchGui }
+::
+
+For any class where it is appropriate, a separate gui class is implemented, usually inheriting much of its behavior from the gui class of its superclass.
+
+see link::Classes/ObjectGui::
