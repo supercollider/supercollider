@@ -21,7 +21,7 @@ section:: File Format
 a strong::synth-definition-file:: is :
 list::
 ## int32 - four byte file type id containing the ASCII characters: "SCgf"
-## int32 - file version, currently 1.
+## int32 - file version, currently 2.
 ## int16 - number of synth definitions in this file (D).
 ## [ strong::synth-definition:: ] * D
 ::
@@ -37,6 +37,8 @@ list::
 ## [ strong::param-name:: ] * N
 ## int16 - number of unit generators (U)
 ## [ strong::ugen-spec:: ] * U
+## int16 - number of variants (V)
+## [ strong::variant-spec:: ] * V
 ::
 
 a strong::param-name:: is :
@@ -74,6 +76,12 @@ list::
 ## int8 - calculation rate
 ::
 
+a strong::variant-spec:: is :
+list::
+## pstring - the name of the variant
+## [float32] * P - variant initial parameter values
+::
+
 section:: File Format as Tree
 
 soft::added by Jonatan Liljedahl::
@@ -81,7 +89,7 @@ soft::added by Jonatan Liljedahl::
 subsection::synth-definition-file
 tree::
 ## int32 - four byte file type id containing the ASCII characters: "SCgf"
-## int32 - file version, currently 1.
+## int32 - file version, currently 2.
 ## int16 - number of synth definitions in this file (D).
 ## [ strong::synth-definition:: ] * D
     tree::
@@ -120,6 +128,12 @@ tree::
             tree::
             ## int8 - calculation rate
             ::
+        ::
+    ## int16 - number of variants (V)
+    ## [ strong::variant-spec:: ] * V
+        tree::
+        ## pstring - the name of the variant
+        ## [float32] * P - variant initial parameter values
         ::
     ::
 ::
@@ -160,5 +174,5 @@ Unit generators should be listed in an order that permits efficient reuse of con
 
 There should be no duplicate values in the constants table.
 
-copyright © 2002 James McCartney - converted to new help system 2010 by Jonatan Liljedahl
+copyright © 2002 James McCartney - converted to new help system 2010 by Jonatan Liljedahl, updated for version 2 by Scott Wilson 2011
 
