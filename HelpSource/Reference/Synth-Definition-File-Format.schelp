@@ -29,13 +29,13 @@ list::
 a strong::synth-definition:: is :
 list::
 ## pstring - the name of the synth definition
-## int32 - number of constants (K)
+## int16 - number of constants (K)
 ## [float32] * K - constant values
-## int32 - number of parameters (P)
+## int16 - number of parameters (P)
 ## [float32] * P - initial parameter values
-## int32 - number of parameter names (N)
+## int16 - number of parameter names (N)
 ## [ strong::param-name:: ] * N
-## int32 - number of unit generators (U)
+## int16 - number of unit generators (U)
 ## [ strong::ugen-spec:: ] * U
 ## int16 - number of variants (V)
 ## [ strong::variant-spec:: ] * V
@@ -44,15 +44,15 @@ list::
 a strong::param-name:: is :
 list::
 ## pstring - the name of the parameter
-## int32 - its index in the parameter array
+## int16 - its index in the parameter array
 ::
 
 a strong::ugen-spec:: is :
 list::
 ## pstring - the name of the SC unit generator class
 ## int8 - calculation rate
-## int32 - number of inputs (I)
-## int32 - number of outputs (O)
+## int16 - number of inputs (I)
+## int16 - number of outputs (O)
 ## int16 - special index
 ## [ strong::input-spec:: ] * I
 ## [ strong::output-spec:: ] * O
@@ -60,14 +60,14 @@ list::
 
 an strong::input-spec:: is :
 list::
-## int32 - index of unit generator or -1 for a constant
+## int16 - index of unit generator or -1 for a constant
 ## if (unit generator index == -1) :
 list::
-## int32 - index of constant
+## int16 - index of constant
 ::
 ## else :
 list::
-## int32 - index of unit generator output
+## int16 - index of unit generator output
 ::
 ::
 
@@ -94,34 +94,34 @@ tree::
 ## [ strong::synth-definition:: ] * D
     tree::
     ## pstring - the name of the synth definition
-    ## int32 - number of constants (K)
+    ## int16 - number of constants (K)
     ## [float32] * K - constant values
-    ## int32 - number of parameters (P)
+    ## int16 - number of parameters (P)
     ## [float32] * P - initial parameter values
-    ## int32 - number of parameter names (N)
+    ## int16 - number of parameter names (N)
     ## [ strong::param-name:: ] * N
         tree::
         ## pstring - the name of the parameter
-        ## int32 - its index in the parameter array
+        ## int16 - its index in the parameter array
         ::
-    ## int32 - number of unit generators (U)
+    ## int16 - number of unit generators (U)
     ## [ strong::ugen-spec:: ] * U
         tree::
         ## pstring - the name of the SC unit generator class
         ## int8 - calculation rate
-        ## int32 - number of inputs (I)
-        ## int32 - number of outputs (O)
+        ## int16 - number of inputs (I)
+        ## int16 - number of outputs (O)
         ## int16 - special index
         ## [ strong::input-spec:: ] * I
             tree::
-            ## int32 - index of unit generator or -1 for a constant
+            ## int16 - index of unit generator or -1 for a constant
             ## if (unit generator index == -1)
                 tree::
-                ## int32 - index of constant
+                ## int16 - index of constant
                 ::
             ## else
                 tree::
-                ## int32 - index of unit generator output
+                ## int16 - index of unit generator output
                 ::
             ::
         ## [ strong::output-spec:: ] * O
