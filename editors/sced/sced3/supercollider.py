@@ -260,15 +260,16 @@ class Logger:
             self.__append_to_buffer("EOF")
             return False
 
-        self.__append_to_buffer(s.decode('mac_latin2'))
+        # FIXME: A workaround for a mac character
+        self.__append_to_buffer(bytes(s))
 
         if condition & GObject.IO_ERR:
             s = source.read() # can safely read until EOF here
-            self.__append_to_buffer(s.decode('mac_latin2'))
+            self.__append_to_buffer(bytes(s))
             return False
         elif condition & GObject.IO_HUP:
             s = source.read() # can safely read until EOF here
-            self.__append_to_buffer(s.decode('mac_latin2'))
+            self.__append_to_buffer(bytes(s))
             return False
         elif condition != 1:
             return False
