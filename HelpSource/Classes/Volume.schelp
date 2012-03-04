@@ -43,7 +43,7 @@ set the lag time that dampens volume changes
 method:: setVolumeRange
 set the volume range
 
-method:: gui(window, bounds)
+method:: gui
 create a volume gui.
 
 examples::

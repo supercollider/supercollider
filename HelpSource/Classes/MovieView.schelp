@@ -38,7 +38,7 @@ METHOD:: stepBack
 METHOD:: gotoEnd
 METHOD:: gotoBeginning
 
-METHOD:: frame (frameIdx)
+METHOD:: frame
     Go to frame.
 
     argument::

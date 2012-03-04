@@ -84,7 +84,7 @@ METHOD:: defaultServer
         SCStethoscope's default server. Returns Server.internal
 
 
-METHOD:: isValidServer (aServer)
+METHOD:: isValidServer
 
         Tests if a server is a valid server. Returns a n instanc of Boolean;
         aServer - An instance of Server.
@@ -178,7 +178,7 @@ METHOD:: quit
 
 SUBSECTION:: Convenience
 
-METHOD:: setProperties (numChannels, index, bufsize, zoom, rate)
+METHOD:: setProperties
 
     Sets several properties at once: link::#-numChannels::, link::#-index::, link::#-bufsize::, link::#-zoom::, and link::#-rate::.
 
