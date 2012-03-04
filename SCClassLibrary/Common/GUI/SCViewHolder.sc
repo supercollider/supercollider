@@ -97,7 +97,16 @@ FlowViewLayout : FlowLayout {
 	}
 
 	reflow {
+		var newRows;
 		this.reset;
+		newRows = [];
+		rows.do { |row,i|
+			row = row.select(_.notClosed);
+			if(row.isEmpty.not,{
+				newRows = newRows.add(row)
+			});
+		};
+		rows = newRows;
 		rows.do { |row|
 			row.do { |view| super.place(view) };
 			if (row !== rows.last) { this.nextLine };
