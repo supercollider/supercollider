@@ -57,7 +57,6 @@
 #include "PyrPrimitiveProto.h"
 #include "PyrKernelProto.h"
 #include "InitAlloc.h"
-#include "bullet.h"
 #include "PredefinedSymbols.h"
 #ifdef SC_WIN32
 #else
@@ -2276,7 +2275,7 @@ SC_DLLEXPORT_C void runLibrary(PyrSymbol* selector)
 		}
 		error(ex.what());
 	} catch (...) {
-		postfl(BULLET"DANGER: OUT of MEMORY. Operation failed.\n");
+		postfl("DANGER: OUT of MEMORY. Operation failed.\n");
 	}
         g->canCallOS = false;
 }

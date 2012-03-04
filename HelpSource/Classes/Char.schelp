@@ -8,7 +8,24 @@ See link::Reference/Literals::
 
 Chars may be created from link::Classes/Integer::s using the methods link::Classes/Integer#-asAscii:: and link::Classes/Integer#-asDigit::.
 
+classmethods::
+
+method::nl
+Returns code::($\n)::
+method::ff
+Returns code::($\f)::
+method::tab
+Returns code::($\t)::
+method::space
+Returns code::($ )::
+method::comma
+Returns code::($\,)::
+method::bullet
+Returns a bullet character (•) in SuperCollider.app on OSX, but a simple asterix (*) on other frontends.
+This method is not recommended, since it's actually not cross-platform.
+
 instancemethods::
+private:: archiveAsCompileString
 
 subsection::conversion
 

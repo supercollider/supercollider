@@ -95,7 +95,7 @@ Maybe : Ref {
 
 	valueEmpty { arg args;
 		if(verbose) {
-			(Char.bullet ++ " ? incomplete definition: %\n").postf(this.infoString(args))
+			("* ? incomplete definition: %\n").postf(this.infoString(args))
 		};
 		^defaultValue
 	}
@@ -120,7 +120,7 @@ Maybe : Ref {
 
 				if(this.includedInCallers) {
 					if(verbose) {
-						(Char.bullet ++ " ! Couldn't solve a recursive definition in %\n")
+						("* ! Couldn't solve a recursive definition in %\n")
 						.postf(this.infoString)
 					};
 					callFunc.value(this, callers, \recursion);
