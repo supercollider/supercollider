@@ -33,6 +33,20 @@ discussion::
 If list is smaller than numFrames, it will only set
 part of the buffer. The list may be two-dimensional for numChannels > 1.
 offset is the starting index (default: 0)
+warning::
+SynthDef permits a maximum of 65536 (2**16) unique constant values in one definition. A very large array of distinct values can corrupt the SynthDef's binary format. If you need a large buffer to be pre-initialized with signal data, it is strongly recommended to use link::Classes/Buffer:: instead.
+::
+
+If the buffer is large but holds a smaller number of unique values, e.g. code::Array.fill(88200, { #[0, 0.25, 0.5, 0.75, 1.0].choose })::, this is no problem. SynthDef compacts the large array for the list of constants.
+
+code::
+SynthDef(\bigLocalBuf, {
+	LocalBuf(88200).set(Array.fill(88200, { #[0, 0.25, 0.5, 0.75, 1.0].choose }))
+}).add;
+
+SynthDescLib.at(\bigLocalBuf).constants;
+// prints: FloatArray[ 1, 88200, 0, 0.75, 0.5, 0.25 ]
+::
 
 method:: clear
 set the buffer slot to zero.
