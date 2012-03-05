@@ -19,6 +19,7 @@
 */
 
 #include <cassert>
+#include <algorithm>
 
 #include "sc_syntax_highlighter.hpp"
 
