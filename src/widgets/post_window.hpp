@@ -58,7 +58,7 @@ public:
     explicit PostDock(QWidget* parent = 0):
         QDockWidget(tr("Post Window"), parent)
     {
-        setAllowedAreas(Qt::BottomDockWidgetArea);
+        setAllowedAreas(Qt::BottomDockWidgetArea | Qt::RightDockWidgetArea);
         mPostWindow = new PostWindow(this);
         setWidget(mPostWindow);
 
