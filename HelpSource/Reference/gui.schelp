@@ -1,7 +1,7 @@
 title:: gui
-categories:: GUI, Common Methods
+categories:: GUI, Common methods
 summary:: Create a Graphical User Interface
-related: Classes/ObjectGui
+related:: Classes/ObjectGui
 
 method:: gui
 The code::gui:: message is of common use in SC. It originated in the crucial library where it is used to create an link::Classes/ObjectGui:: or an ObjectGui subclass as part of a Model View Controller system.
@@ -20,7 +20,7 @@ nil.gui;
 This means that any object can be .gui(ed) without knowing exactly what the object is.  This is identical in purpose to .asString which is used for posting an object's representation to the post window.
 
 
-section:: argument conventions
+section:: Argument conventions
 
 The convention as stated in crucial library states that the .gui method should accept parent and bounds as its arguments in the same manner as a View does.
 
@@ -34,7 +34,8 @@ This convention hasn't been followed by many who have written their own .gui met
 
 This is the default implementation for Object, and is thus the implementation for all subclasses that have not written an explicit .gui method
 
-parent
+definitionlist::
+## parent ||
 list::
 ##  a Window,
 ##  a FlowView
@@ -43,12 +44,12 @@ list::
 ##  VLayoutView
 ##  nil (which will create a Window with a FlowView on it) 
 ::
-
-bounds
+## bounds ||
 list::
 ## anything that responds to asRect:
 ## Nil - the gui will use its own default size
 ## Point - width @ height
+::
 ::
 
 Usually the bounds are not specified.  The object's gui class first adds a container, lays its things inside that container and then shrinks the container to fit it. If you do specify a bounds, the container will be set to exactly that size.
