@@ -518,6 +518,13 @@ SynthDef {
 			[ugen.dumpName, ugen.rate, inputs].postln;
 		};
 	}
+	
+	indexOfControl { arg name, offset = 0;
+		var index;
+		var control = allControlNames.detect { |def, i| index = i; def.name == name };
+		if(control.isNil or: { control.numChannels <= offset }) { ^nil };
+		^index + offset
+	}
 
 	// make SynthDef available to all servers
 	add { arg libname, completionMsg, keepDef = true;

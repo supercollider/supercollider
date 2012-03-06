@@ -449,6 +449,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 			// do not compile the string if no argnames were added
 		if(names > 0) { msgFunc = string.compile.value };
 	}
+	
 	msgFuncKeepGate_ { |bool = false|
 		if(bool != msgFuncKeepGate) {
 			msgFuncKeepGate = bool;
@@ -460,19 +461,23 @@ Use of this synth in Patterns will not detect argument names automatically becau
 		if(metadata.isNil) { AbstractMDPlugin.clearMetadata(path); ^this };
 		this.class.mdPlugin.writeMetadata(metadata, def, path);
 	}
+	
+	indexOfControl { arg name, offset = 0;
+		^def.indexOfControl(name, offset)	
+	}
 
 	// parse the def name out of the bytes array sent with /d_recv
 	*defNameFromBytes { arg int8Array;
-		var s,n,numDefs,size;
-		s = CollStream(int8Array);
+		var stream, n, numDefs, size;
+		stream = CollStream(int8Array);
 
-		s.getInt32;
-		s.getInt32;
-		numDefs = s.getInt16;
-		size = s.getInt8;
+		stream.getInt32;
+		stream.getInt32;
+		numDefs = stream.getInt16;
+		size = stream.getInt8;
 		n = String.newClear(size);
-		^Array.fill(size,{
-		  s.getChar.asAscii
+		^Array.fill(size, {
+		  stream.getChar.asAscii
 		}).as(String)
 	}
 
