@@ -167,14 +167,14 @@ QuarkSVNRepository
 	// they may or may not be locally checked out
 	quarks {
 		var paths, quarks;
-		paths = (local.path ++ "/DIRECTORY/*.quark").pathMatch;
-		quarks = Array(paths.size);
+		paths = (local.path ++ "/*/*.quark").pathMatch;
+		quarks = Dictionary.new;
 		paths.do { |p|
 			try
-			{ var q=Quark.fromFile(p, this.local.parent); quarks add: q }
+			{ var q=Quark.fromFile(p, this.local.parent); quarks[q.name] = q; }
 			{ |e| e.errorString.postln }
 		};
-		^quarks;
+		^quarks.values;
 	}
 	// search DIRECTORY quark objects to see if quark is in repository
 	findQuark { arg name, version;
