@@ -96,7 +96,7 @@ public slots:
         emit scPost(postString);
     }
 
-    void evaluateCode(QString const & commandString, bool silent)
+    void evaluateCode(QString const & commandString, bool silent = false)
     {
         QByteArray asciiCommandString = commandString.toAscii();
         size_t writtenBytes = write(asciiCommandString);
