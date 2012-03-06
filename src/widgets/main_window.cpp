@@ -382,6 +382,9 @@ void MainWindow::evaluateCurrentRegion()
 
     if (text.isEmpty()) return;
 
+    // NOTE: QTextDocument contains unicode paragraph separators U+2029
+    text.replace( QChar( 0x2029 ), QChar( '\n' ) );
+
     Main::instance()->scProcess()->evaluateCode(text);
 }
 
