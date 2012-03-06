@@ -73,7 +73,10 @@ CodeEditor::CodeEditor( QWidget *parent ) :
 void CodeEditor::setDocument( Document *doc )
 {
     QTextDocument *tdoc = doc->textDocument();
-    tdoc->setDefaultFont(font());
+
+    QFont fnt(font());
+    fnt.setFamily("monospace");
+    tdoc->setDefaultFont(fnt);
     tdoc->setDocumentLayout( new QPlainTextDocumentLayout(tdoc) );
 
     QPlainTextEdit::setDocument(tdoc);
