@@ -5,6 +5,7 @@ set ( ide_moc_hdr
     widgets/post_window.hpp
     widgets/code_edit.hpp
     main.hpp
+    sig_mux.hpp
     sc_ipc.hpp
     sc_syntax_highlighter.hpp
     sc_process.hpp
@@ -13,6 +14,7 @@ set ( ide_moc_hdr
 
 set ( ide_src
     main.cpp
+    sig_mux.cpp
     doc_manager.cpp
     sc_syntax_highlighter.cpp
     widgets/main_window.cpp
