@@ -4,6 +4,7 @@ set ( ide_moc_hdr
     widgets/main_window.hpp
     widgets/post_window.hpp
     widgets/code_edit.hpp
+    widgets/cmd_line.hpp
     main.hpp
     sig_mux.hpp
     sc_ipc.hpp
@@ -19,6 +20,7 @@ set ( ide_src
     sc_syntax_highlighter.cpp
     widgets/main_window.cpp
     widgets/code_edit.cpp
+    widgets/cmd_line.cpp
 )
 
 include( ${QT_USE_FILE} )
