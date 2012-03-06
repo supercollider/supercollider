@@ -36,18 +36,18 @@ class LineIndicator : public QWidget
 
 public:
     LineIndicator( CodeEditor *editor );
-    int contentsWidth() { return _contentsWidth; }
 Q_SIGNALS:
     void widthChanged();
 public Q_SLOTS:
     void setLineCount( int );
-
+protected:
+    virtual void changeEvent( QEvent * );
+    virtual void paintEvent( QPaintEvent *e );
 private:
-    void paintEvent( QPaintEvent *e );
     int widthForLineCount( int lineCount );
 
-    CodeEditor *_editor;
-    int _contentsWidth;
+    CodeEditor *mEditor;
+    int mLineCount;
 };
 
 

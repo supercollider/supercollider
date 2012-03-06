@@ -28,27 +28,38 @@ namespace ScIDE
 {
 
 LineIndicator::LineIndicator( CodeEditor *editor )
-: QWidget( editor ), _editor(editor)
+: QWidget( editor ), mEditor(editor)
 {}
 
 void LineIndicator::setLineCount( int count )
 {
+    mLineCount = count;
     setFixedWidth( widthForLineCount(count) );
     Q_EMIT( widthChanged() );
 }
 
+void LineIndicator::changeEvent( QEvent *e )
+{
+    if( e->type() == QEvent::FontChange ) {
+        setFixedWidth( widthForLineCount(mLineCount) );
+        Q_EMIT( widthChanged() );
+    }
+    else
+        QWidget::changeEvent(e);
+}
+
 void LineIndicator::paintEvent( QPaintEvent *e )
-{ _editor->paintLineIndicator(e); }
+{ mEditor->paintLineIndicator(e); }
 
 int LineIndicator::widthForLineCount( int lineCount )
 {
-    int digits = 1;
-    while( lineCount >= 10 ) {
+    int digits = 2;
+    while( lineCount >= 100 ) {
         lineCount /= 10;
         ++digits;
     }
 
-    return 4 + fontMetrics().width('9') * digits;
+    return 6 + fontMetrics().width('9') * digits;
 }
 
 CodeEditor::CodeEditor( QWidget *parent ) :
@@ -56,6 +67,10 @@ CodeEditor::CodeEditor( QWidget *parent ) :
     _lineIndicator( new LineIndicator(this) ),
     mDoc(0)
 {
+    QFont fnt(font());
+    fnt.setFamily("monospace");
+    setFont(fnt);
+
     _lineIndicator->move( contentsRect().topLeft() );
 
     connect( this, SIGNAL(blockCountChanged(int)),
@@ -74,9 +89,7 @@ void CodeEditor::setDocument( Document *doc )
 {
     QTextDocument *tdoc = doc->textDocument();
 
-    QFont fnt(font());
-    fnt.setFamily("monospace");
-    tdoc->setDefaultFont(fnt);
+    tdoc->setDefaultFont(font());
     tdoc->setDocumentLayout( new QPlainTextDocumentLayout(tdoc) );
 
     QPlainTextEdit::setDocument(tdoc);
@@ -88,26 +101,26 @@ void CodeEditor::setDocument( Document *doc )
 
 void CodeEditor::zoomIn(int steps)
 {
-    QTextDocument * doc = document()->textDocument();
-    QFont f = doc->defaultFont();
+    QFont f = font();
     qreal size = f.pointSize();
     if( size != -1 )
         f.setPointSizeF( size + steps );
     else
         f.setPixelSize( f.pixelSize() + steps );
-    doc->setDefaultFont(f);
+
+    setFont(f);
 }
 
 void CodeEditor::zoomOut(int steps)
 {
-    QTextDocument * doc = document()->textDocument();
-    QFont f = doc->defaultFont();
+    QFont f = font();
     qreal size = f.pointSize();
     if( size != -1 )
         f.setPointSizeF( qMax(1.0, size - steps) );
     else
         f.setPixelSize( qMax(1, f.pixelSize() - steps) );
-    doc->setDefaultFont(f);
+
+    setFont(f);
 }
 
 void CodeEditor::updateLayout()
@@ -149,7 +162,7 @@ void CodeEditor::paintLineIndicator( QPaintEvent *e )
     while (block.isValid() && top <= e->rect().bottom()) {
         if (block.isVisible() && bottom >= e->rect().top()) {
             QString number = QString::number(blockNumber + 1);
-            p.drawText(0, top, _lineIndicator->width() - 2, fontMetrics().height(),
+            p.drawText(0, top, _lineIndicator->width() - 4, fontMetrics().height(),
                             Qt::AlignRight, number);
         }
 
