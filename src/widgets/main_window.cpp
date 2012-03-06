@@ -132,14 +132,14 @@ void MainWindow::createMenus()
     // View
 
     mActions[IncreaseFontSize] = act = new QAction(
-        QIcon::fromTheme("zoom-in"), tr("&Increase Font"), this);
-    act->setShortcut(QKeySequence(tr("CTRL++", "View|Increase Font")));
+        QIcon::fromTheme("zoom-in"), tr("&Enlarge Font"), this);
+    act->setShortcut(QKeySequence(tr("CTRL++", "View|Enlarge Font")));
     act->setStatusTip(tr("Increase displayed font size"));
     mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomIn()));
 
     mActions[DecreaseFontSize] = act = new QAction(
-        QIcon::fromTheme("zoom-out"), tr("&Decrease Font"), this);
-    act->setShortcut(QKeySequence(tr("Ctrl+-", "View|Decrease Font")));
+        QIcon::fromTheme("zoom-out"), tr("&Shrink Font"), this);
+    act->setShortcut(QKeySequence(tr("Ctrl+-", "View|Shrink Font")));
     act->setStatusTip(tr("Decrease displayed font size"));
     mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomOut()));
 
