@@ -37,6 +37,10 @@ public:
     explicit PostWindow(QWidget* parent = 0):
         QTextBrowser(parent)
     {
+        QFont f( font() );
+        f.setFamily("monospace");
+        setFont(f);
+
         setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
         mClearAction = new QAction(tr("Clear Post Window"), this);

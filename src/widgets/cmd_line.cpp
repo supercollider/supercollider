@@ -31,15 +31,18 @@ CmdLine::CmdLine( const QString &text, int maxHist ) :
     curHistory( -1 ),
     maxHistory( qMax(1,maxHist) )
 {
+    QLabel *lbl = new QLabel(text);
+
+    expr = new QLineEdit;
+    QFont f( expr->font() );
+    f.setFamily("monospace");
+    expr->setFont(f);
+
     QHBoxLayout *l = new QHBoxLayout;
     l->setContentsMargins(0,0,0,0);
-    setLayout( l );
-
-    QLabel *lbl = new QLabel(text);
-    expr = new QLineEdit;
-
     l->addWidget(lbl);
     l->addWidget(expr);
+    setLayout( l );
 
     expr->installEventFilter( this );
 }
