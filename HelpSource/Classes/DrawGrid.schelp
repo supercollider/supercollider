@@ -1,0 +1,169 @@
+CLASS:: DrawGrid
+summary:: Draws grid lines on a UserView for plotting
+categories:: GUI>Accessories
+related:: Reference/plot, Classes/GridLines, Classes/Plotter, Classes/UserView
+
+DESCRIPTION::
+DrawGrid is used by Plotter to draw the grid lines on a graph.  It can however also be used to draw GridLines on any UserView and could even be used to add grid lines to UserViews behind sliders or in any GUI.
+
+Note that DrawGrid does not hold any reference to the UserView but is meant to have its .draw method called inside of the UserView's drawFunc.  It only needs to know what bounds the grid lines should be drawn within and what the horizontal and vertical GridLines are.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+
+argument:: bounds
+the bounds to draw within.  Multiple DrawGrid may be used to draw grids on a single UserView.
+
+argument:: horzGrid
+a GridLines or BlankGridLines or GridLines subclass
+
+argument:: vertGrid
+a GridLines or BlankGridLines or GridLines subclass
+
+returns:: a DrawGrid
+
+METHOD:: test
+For testing new GridLines objects.
+code::
+DrawGrid.test( \freq.asSpec.grid, \amp.asSpec.grid );
+DrawGrid.test( nil, \degree.asSpec.grid );
+::
+
+argument:: horzGrid
+a GridLines object or subclass
+
+argument:: vertGrid
+a GridLines object or subclass
+
+argument:: bounds
+default: 500 @ 400
+
+returns:: a DrawGrid
+
+
+INSTANCEMETHODS::
+
+METHOD:: draw
+This draws to the currently active UserView. This method is meant to be called from inside the drawFunc of a UserView.
+
+returns:: nil
+
+
+METHOD:: horzGrid
+set the x gridLines
+
+argument:: g
+a GridLines
+
+returns:: self
+
+
+METHOD:: vertGrid
+set the y gridLines
+
+argument:: g
+a GridLines
+
+returns:: self
+
+
+METHOD:: bounds
+get or set bounds
+
+argument:: b
+a Rect
+
+returns:: a Rect
+
+
+METHOD:: font
+get or set Font
+
+argument:: f
+a Font
+
+returns:: a Font
+
+METHOD:: fontColor
+get or set font color
+
+argument:: c
+a Color
+
+returns:: a Color
+
+METHOD:: gridColors
+Set the colors of each of the axis.
+
+argument:: colors
+an array of two colors: x,y
+
+returns:: self
+
+METHOD:: opacity
+get or set opacity
+
+returns:: float
+
+METHOD:: smoothing
+see Pen smoothing
+
+returns:: smoothing
+
+METHOD:: linePattern
+see Pen linePattern
+
+returns:: (returnvalue)
+
+METHOD:: init
+private
+
+argument:: bounds
+argument:: h
+argument:: v
+returns:: (returnvalue)
+
+METHOD:: x
+private
+A DrawGridX object that draws the x (horizontal) axis
+
+returns:: a DrawGridX
+
+METHOD:: y
+private
+A DrawGridY object that draws the y (vertical) axis
+
+returns:: a DrawGridY
+
+
+
+
+METHOD:: copy
+safely make a copy of this object and its working members.
+
+returns:: a new DrawGrid
+
+METHOD:: clearCache
+private
+
+returns:: self
+
+
+EXAMPLES::
+
+code::
+(
+w = Window.new.front;
+u = UserView(w,Rect(20,20,300,300));
+// the Spec can define its preferred grid system
+x =  \freq.asSpec.grid;
+y =  \amp.asSpec.grid;
+d = DrawGrid(Rect(0,0,500,300), x,y);
+
+u.drawFunc = {
+	d.draw
+};
+)
+::
