@@ -25,6 +25,7 @@
 #include "cmd_line.hpp"
 
 #include <QAction>
+#include <QShortcut>
 #include <QMenu>
 #include <QMenuBar>
 #include <QFileDialog>
@@ -158,6 +159,8 @@ void MainWindow::createMenus()
     act->setStatusTip(tr("Decrease displayed font size"));
     mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomOut()));
 
+    new QShortcut( QKeySequence("Ctrl+Tab"), this, SLOT(toggleComandLineFocus()) );
+
     // Language
 
     mActions[EvaluateCurrentFile] = act = new QAction(
@@ -271,6 +274,17 @@ void MainWindow::closeDocument()
     if( tabIndex < 0 ) return;
 
     closeTab(tabIndex);
+}
+
+void MainWindow::toggleComandLineFocus()
+{
+    QWidget *cmd = cmdLine();
+    if(cmd->hasFocus()) {
+        QWidget *editor = currentCodeEditor();
+        if(editor) editor->setFocus(Qt::OtherFocusReason);
+    }
+    else
+        cmd->setFocus(Qt::OtherFocusReason);
 }
 
 void MainWindow::createTab( Document *doc )

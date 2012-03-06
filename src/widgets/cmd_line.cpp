@@ -45,6 +45,7 @@ CmdLine::CmdLine( const QString &text, int maxHist ) :
     setLayout( l );
 
     expr->installEventFilter( this );
+    setFocusProxy(expr);
 }
 
 bool CmdLine::eventFilter( QObject *, QEvent *e )

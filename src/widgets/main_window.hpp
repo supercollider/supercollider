@@ -78,6 +78,7 @@ public Q_SLOTS:
     void saveDocument();
     void saveDocumentAs();
     void closeDocument();
+    void toggleComandLineFocus();
 
 private Q_SLOTS:
     void createTab( Document * );
