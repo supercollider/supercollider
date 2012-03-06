@@ -175,6 +175,9 @@ void MainWindow::createMenus()
     act->setStatusTip(tr("Step to the next line on evaluation"));
     act->setCheckable(true);
 
+    mMain->scProcess()->action(ScIDE::SCProcess::StopMain)
+        ->setShortcut(QKeySequence(tr("Ctrl+.", "Language|Stop Main")));
+
     QMenu *menu = new QMenu(tr("&File"), this);
     menu->addAction( mActions[DocNew] );
     menu->addAction( mActions[DocOpen] );
