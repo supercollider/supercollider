@@ -32,43 +32,44 @@ class CodeEditor;
 
 class LineIndicator : public QWidget
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  LineIndicator( CodeEditor *editor );
-  int contentsWidth() { return _contentsWidth; }
+    LineIndicator( CodeEditor *editor );
+    int contentsWidth() { return _contentsWidth; }
 Q_SIGNALS:
-  void widthChanged();
+    void widthChanged();
 public Q_SLOTS:
-  void setLineCount( int );
+    void setLineCount( int );
 
 private:
-  void paintEvent( QPaintEvent *e );
-  int widthForLineCount( int lineCount );
+    void paintEvent( QPaintEvent *e );
+    int widthForLineCount( int lineCount );
 
-  CodeEditor *_editor;
-  int _contentsWidth;
+    CodeEditor *_editor;
+    int _contentsWidth;
 };
 
 
 class CodeEditor : public QPlainTextEdit
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  friend class LineIndicator;
+    friend class LineIndicator;
 public:
-  CodeEditor( QWidget *parent = 0 );
-  Document *document() { return mDoc; }
-  void setDocument( Document * );
+    CodeEditor( QWidget *parent = 0 );
+    Document *document() { return mDoc; }
+    void setDocument( Document * );
 private Q_SLOTS:
-  void updateLayout();
-  void updateLineIndicator( QRect, int );
+    void updateLayout();
+    void updateLineIndicator( QRect, int );
 private:
-  void resizeEvent( QResizeEvent * );
-  void paintLineIndicator( QPaintEvent * );
 
-  LineIndicator *_lineIndicator;
-  Document *mDoc;
+    void resizeEvent( QResizeEvent * );
+    void paintLineIndicator( QPaintEvent * );
+
+    LineIndicator *_lineIndicator;
+    Document *mDoc;
 };
 
 } // namespace ScIDE
