@@ -284,8 +284,10 @@ void MainWindow::onCurrentEditorChanged(int index)
     if( index < 0 ) return;
 
     CodeEditor *editor = codeEditorForTab(index);
-    if(editor)
+    if(editor) {
         mDocSigMux->setCurrentObject(editor);
+        editor->setFocus(Qt::OtherFocusReason);
+    }
 }
 
 CodeEditor* MainWindow::codeEditorForTab( int index )
