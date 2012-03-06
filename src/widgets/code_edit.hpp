@@ -56,20 +56,24 @@ class CodeEditor : public QPlainTextEdit
     Q_OBJECT
 
     friend class LineIndicator;
+
 public:
     CodeEditor( QWidget *parent = 0 );
     Document *document() { return mDoc; }
     void setDocument( Document * );
+public Q_SLOTS:
+    void zoomIn(int steps = 1);
+    void zoomOut(int steps = 1);
 private Q_SLOTS:
     void updateLayout();
     void updateLineIndicator( QRect, int );
 private:
-
     void resizeEvent( QResizeEvent * );
     void paintLineIndicator( QPaintEvent * );
 
     LineIndicator *_lineIndicator;
     Document *mDoc;
+
 };
 
 } // namespace ScIDE

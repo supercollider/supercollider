@@ -86,6 +86,30 @@ void CodeEditor::setDocument( Document *doc )
     mDoc = doc;
 }
 
+void CodeEditor::zoomIn(int steps)
+{
+    QTextDocument * doc = document()->textDocument();
+    QFont f = doc->defaultFont();
+    qreal size = f.pointSize();
+    if( size != -1 )
+        f.setPointSizeF( size + steps );
+    else
+        f.setPixelSize( f.pixelSize() + steps );
+    doc->setDefaultFont(f);
+}
+
+void CodeEditor::zoomOut(int steps)
+{
+    QTextDocument * doc = document()->textDocument();
+    QFont f = doc->defaultFont();
+    qreal size = f.pointSize();
+    if( size != -1 )
+        f.setPointSizeF( qMax(1.0, size - steps) );
+    else
+        f.setPixelSize( qMax(1, f.pixelSize() - steps) );
+    doc->setDefaultFont(f);
+}
+
 void CodeEditor::updateLayout()
 {
     setViewportMargins( _lineIndicator->width(), 0, 0, 0 );
