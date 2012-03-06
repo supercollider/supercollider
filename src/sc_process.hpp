@@ -120,19 +120,24 @@ private:
     void prepareActions(void)
     {
         QAction * action;
-        mActions[StartSCLang] = action = new QAction(tr("Start SCLang"), this);
+        mActions[StartSCLang] = action = new QAction(
+            QIcon::fromTheme("system-run"), tr("Start SCLang"), this);
         connect(action, SIGNAL(triggered()), this, SLOT(start()) );
 
-        mActions[RecompileClassLibrary] = action = new QAction(tr("Recompile Class Library"), this);
+        mActions[RecompileClassLibrary] = action = new QAction(
+            QIcon::fromTheme("system-reboot"), tr("Recompile Class Library"), this);
         connect(action, SIGNAL(triggered()), this, SLOT(recompileClassLibrary()) );
 
-        mActions[StopSCLang] = action = new QAction(tr("Stop SCLang"), this);
+        mActions[StopSCLang] = action = new QAction(
+            QIcon::fromTheme("system-shutdown"), tr("Stop SCLang"), this);
         connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()) );
 
-        mActions[RunMain] = action = new QAction(tr("Run Main"), this);
+        mActions[RunMain] = action = new QAction(
+            QIcon::fromTheme("media-playback-start"), tr("Run Main"), this);
         connect(action, SIGNAL(triggered()), this, SLOT(runMain()));
 
-        mActions[StopMain] = action = new QAction(tr("Stop Main"), this);
+        mActions[StopMain] = action = new QAction(
+            QIcon::fromTheme("process-stop"), tr("Stop Main"), this);
         connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
     }
 
