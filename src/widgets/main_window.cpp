@@ -161,14 +161,15 @@ void MainWindow::createMenus()
     // Language
 
     mActions[EvaluateCurrentFile] = act = new QAction(
-        QIcon::fromTheme("media-playback-start"), tr("Evaluate File"), this);
+        QIcon::fromTheme("media-playback-start"), tr("Evaluate &File"), this);
     act->setStatusTip(tr("Evaluate current File"));
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateCurrentFile()));
 
     mActions[EvaluateSelectedRegion] = act = new QAction(
-        QIcon::fromTheme("media-playback-start"), tr("Evaluate Region"), this);
-    act->setStatusTip(tr("Evaluate selected Region"));
-    connect(act, SIGNAL(triggered()), this, SLOT(evaluateSelectedRegion()));
+        QIcon::fromTheme("media-playback-start"), tr("&Evaluate Region"), this);
+    act->setShortcut(QKeySequence(tr("Ctrl+Return", "Language|Evaluate Region")));
+    act->setStatusTip(tr("Evaluate selection or current line"));
+    connect(act, SIGNAL(triggered()), this, SLOT(evaluateCurrentRegion()));
 
     QMenu *menu = new QMenu(tr("&File"), this);
     menu->addAction( mActions[DocNew] );
@@ -336,19 +337,24 @@ QWidget *MainWindow::cmdLine()
     return widget;
 }
 
-void MainWindow::evaluateSelectedRegion()
+void MainWindow::evaluateCurrentRegion()
 {
+    // Evaluate selection, if any, otherwise current line
+
     CodeEditor *editor = currentCodeEditor();
     if (!editor)
         return;
 
-    QString selectedText = editor->textCursor().selectedText();
-    mPostDock->mPostWindow->append(selectedText);
+    QString text;
+    QTextCursor cursor = editor->textCursor();
+    if (cursor.hasSelection())
+        text = cursor.selectedText();
+    else
+        text = cursor.block().text();
 
-    if (!selectedText.size())
-        return; // no selection
+    if (text.isEmpty()) return;
 
-    Main::instance()->scProcess()->evaluateCode(selectedText, false);
+    Main::instance()->scProcess()->evaluateCode(text);
 }
 
 void MainWindow::evaluateCurrentFile()
@@ -358,7 +364,7 @@ void MainWindow::evaluateCurrentFile()
         return;
 
     QString documentText = editor->document()->textDocument()->toPlainText();
-    Main::instance()->scProcess()->evaluateCode(documentText, false);
+    Main::instance()->scProcess()->evaluateCode(documentText);
 }
 
 } // namespace ScIDE

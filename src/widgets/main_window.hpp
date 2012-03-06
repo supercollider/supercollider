@@ -85,7 +85,7 @@ private Q_SLOTS:
 
     void onCurrentEditorChanged(int);
 
-    void evaluateSelectedRegion();
+    void evaluateCurrentRegion(); // either selection, or current line
     void evaluateCurrentFile();
 
 private:
