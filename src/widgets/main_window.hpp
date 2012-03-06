@@ -94,6 +94,7 @@ private:
     class CodeEditor * currentCodeEditor()
         { return codeEditorForTab( mDocTabs->currentIndex() ); }
     QString tabTitle( Document * );
+    QWidget *cmdLine();
 
     Main *mMain;
 

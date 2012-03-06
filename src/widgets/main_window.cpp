@@ -22,11 +22,13 @@
 #include "main_window.hpp"
 #include "post_window.hpp"
 #include "code_edit.hpp"
+#include "cmd_line.hpp"
 
 #include <QAction>
 #include <QMenu>
 #include <QMenuBar>
 #include <QFileDialog>
+#include <QVBoxLayout>
 
 namespace ScIDE {
 
@@ -38,7 +40,20 @@ MainWindow::MainWindow(Main * main) :
 
     mDocTabs = new QTabWidget();
     mDocTabs->setTabsClosable(true);
-    setCentralWidget(mDocTabs);
+
+    // use a layout for tool widgets, to provide for separate margin control
+    QVBoxLayout *tool_box = new QVBoxLayout;
+    tool_box->addWidget(cmdLine());
+    tool_box->setContentsMargins(5,2,5,2);
+
+    QVBoxLayout *center_box = new QVBoxLayout;
+    center_box->setContentsMargins(0,0,0,0);
+    center_box->setSpacing(0);
+    center_box->addWidget(mDocTabs);
+    center_box->addLayout(tool_box);
+    QWidget *central = new QWidget;
+    central->setLayout(center_box);
+    setCentralWidget(central);
 
     mPostDock = new PostDock(this);
     addDockWidget(Qt::BottomDockWidgetArea, mPostDock);
@@ -307,6 +322,18 @@ QString MainWindow::tabTitle( Document *doc )
         return QString("<new>");
     else
         return QDir(fname).dirName();
+}
+
+QWidget *MainWindow::cmdLine()
+{
+    static QWidget *widget = 0;
+    if(!widget) {
+        CmdLine *w = new CmdLine("Command line:");
+        connect(w, SIGNAL(invoked(QString, bool)),
+                mMain->scProcess(), SLOT(evaluateCode(QString, bool)));
+        widget = w;
+    }
+    return widget;
 }
 
 void MainWindow::evaluateSelectedRegion()
