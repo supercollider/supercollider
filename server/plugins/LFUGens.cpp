@@ -3443,8 +3443,8 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 	float *gatein = ZIN(kEnvGen_gate);
 	int counter = unit->m_counter;
 	double level = unit->m_level;
-	float gate = 0.;
 	float prevGate = unit->m_prevGate;
+	float gate = prevGate;
 	int remain = inNumSamples;
 	while (remain)
 	{
