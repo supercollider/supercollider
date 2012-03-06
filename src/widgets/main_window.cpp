@@ -171,6 +171,10 @@ void MainWindow::createMenus()
     act->setStatusTip(tr("Evaluate selection or current line"));
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateCurrentRegion()));
 
+    mActions[StepForwardOnEvaluation] = act = new QAction(tr("&Step Forward"), this);
+    act->setStatusTip(tr("Step to the next line on evaluation"));
+    act->setCheckable(true);
+
     QMenu *menu = new QMenu(tr("&File"), this);
     menu->addAction( mActions[DocNew] );
     menu->addAction( mActions[DocOpen] );
@@ -204,8 +208,9 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scProcess()->action(SCProcess::RecompileClassLibrary) );
     menu->addAction( mMain->scProcess()->action(SCProcess::StopSCLang) );
     menu->addSeparator();
-    menu->addAction( mActions[EvaluateCurrentFile]);
-    menu->addAction( mActions[EvaluateSelectedRegion]);
+    menu->addAction( mActions[EvaluateCurrentFile] );
+    menu->addAction( mActions[EvaluateSelectedRegion] );
+    menu->addAction( mActions[StepForwardOnEvaluation] );
     menu->addSeparator();
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::RunMain) );
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::StopMain) );
@@ -349,8 +354,14 @@ void MainWindow::evaluateCurrentRegion()
     QTextCursor cursor = editor->textCursor();
     if (cursor.hasSelection())
         text = cursor.selectedText();
-    else
+    else {
         text = cursor.block().text();
+        if( mActions[StepForwardOnEvaluation]->isChecked() ) {
+            cursor.movePosition(QTextCursor::NextBlock);
+            cursor.movePosition(QTextCursor::EndOfBlock);
+            editor->setTextCursor(cursor);
+        }
+    }
 
     if (text.isEmpty()) return;
 

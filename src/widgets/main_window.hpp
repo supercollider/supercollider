@@ -63,6 +63,7 @@ public:
         // Language
         EvaluateCurrentFile,
         EvaluateSelectedRegion,
+        StepForwardOnEvaluation,
 
         ActionCount
     };
