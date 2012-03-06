@@ -24,6 +24,7 @@
 #include "post_window.hpp"
 #include "../main.hpp"
 #include "../doc_manager.hpp"
+#include "../sig_mux.hpp"
 
 #include <QMainWindow>
 #include <QTabWidget>
@@ -40,6 +41,7 @@ class MainWindow : public QMainWindow
 public:
 
     enum ActionRole {
+        // File
         DocNew = 0,
         DocOpen,
         DocSave,
@@ -47,6 +49,18 @@ public:
         DocClose,
         Quit,
 
+        // Edit
+        Undo,
+        Redo,
+        Cut,
+        Copy,
+        Paste,
+
+        // View
+        IncreaseFontSize,
+        DecreaseFontSize,
+
+        // Language
         EvaluateCurrentFile,
         EvaluateSelectedRegion,
 
@@ -69,6 +83,8 @@ private Q_SLOTS:
     void updateTab( Document * );
     void closeTab(int index);
 
+    void onCurrentEditorChanged(int);
+
     void evaluateSelectedRegion();
     void evaluateCurrentFile();
 
@@ -84,6 +100,7 @@ private:
     QAction * mActions[ActionCount];
 
     QTabWidget *mDocTabs;
+    SignalMultiplexer * mDocSigMux;
 
     PostDock * mPostDock;
 };

@@ -31,7 +31,8 @@
 namespace ScIDE {
 
 MainWindow::MainWindow(Main * main) :
-    mMain(main)
+    mMain(main),
+    mDocSigMux(new SignalMultiplexer(this))
 {
     createMenus();
 
@@ -48,12 +49,18 @@ MainWindow::MainWindow(Main * main) :
             this, SLOT(createTab(Document*)));
     connect(mMain->documentManager(), SIGNAL(saved(Document*)),
             this, SLOT(updateTab(Document*)));
-    connect(mDocTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+
+    connect(mDocTabs, SIGNAL(currentChanged(int)),
+            this, SLOT(onCurrentEditorChanged(int)));
+    connect(mDocTabs, SIGNAL(tabCloseRequested(int)),
+            this, SLOT(closeTab(int)));
 }
 
 void MainWindow::createMenus()
 {
     QAction *act;
+
+    // File
 
     mActions[DocNew] = act = new QAction(tr("&New"), this);
     act->setShortcuts(QKeySequence::New);
@@ -76,13 +83,54 @@ void MainWindow::createMenus()
     connect(act, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
 
     mActions[DocClose] = act = new QAction(tr("&Close"), this);
-    act->setShortcuts(QKeySequence::SaveAs);
+    act->setShortcuts(QKeySequence::Close);
     act->setStatusTip(tr("Close the current document"));
     connect(act, SIGNAL(triggered()), this, SLOT(closeDocument()));
 
     mActions[Quit] = act = new QAction(tr("&Quit..."), this);
     act->setShortcuts(QKeySequence::Quit);
     act->setStatusTip(tr("Quit SuperCollider IDE"));
+
+    // Edit
+
+    mActions[Undo] = act = new QAction(tr("&Undo"), this);
+    act->setShortcuts(QKeySequence::Undo);
+    act->setStatusTip(tr("Undo last editing action"));
+    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(undo()));
+
+    mActions[Redo] = act = new QAction(tr("&Redo"), this);
+    act->setShortcuts(QKeySequence::Redo);
+    act->setStatusTip(tr("Redo next editing action"));
+    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(redo()));
+
+    mActions[Cut] = act = new QAction(tr("&Cut"), this);
+    act->setShortcuts(QKeySequence::Cut);
+    act->setStatusTip(tr("Cut text to clipboard"));
+    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(cut()));
+
+    mActions[Copy] = act = new QAction(tr("&Copy"), this);
+    act->setShortcuts(QKeySequence::Copy);
+    act->setStatusTip(tr("Copy text to clipboard"));
+    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(copy()));
+
+    mActions[Paste] = act = new QAction(tr("&Paste"), this);
+    act->setShortcuts(QKeySequence::Paste);
+    act->setStatusTip(tr("Paste text from clipboard"));
+    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(paste()));
+
+    // View
+
+    mActions[IncreaseFontSize] = act = new QAction(tr("&Increase Font"), this);
+    act->setShortcut(QKeySequence(tr("CTRL++", "View|Increase Font")));
+    act->setStatusTip(tr("Increase displayed font size"));
+    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomIn()));
+
+    mActions[DecreaseFontSize] = act = new QAction(tr("&Decrease Font"), this);
+    act->setShortcut(QKeySequence(tr("Ctrl+-", "View|Decrease Font")));
+    act->setStatusTip(tr("Decrease displayed font size"));
+    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomOut()));
+
+    // Language
 
     mActions[EvaluateCurrentFile] = act = new QAction(tr("Evaluate File"), this);
     act->setStatusTip(tr("Evaluate current File"));
@@ -101,6 +149,22 @@ void MainWindow::createMenus()
     menu->addAction( mActions[DocClose] );
     menu->addSeparator();
     menu->addAction( mActions[Quit] );
+
+    menuBar()->addMenu(menu);
+
+    menu = new QMenu(tr("&Edit"), this);
+    menu->addAction( mActions[Undo] );
+    menu->addAction( mActions[Redo] );
+    menu->addSeparator();
+    menu->addAction( mActions[Cut] );
+    menu->addAction( mActions[Copy] );
+    menu->addAction( mActions[Paste] );
+
+    menuBar()->addMenu(menu);
+
+    menu = new QMenu(tr("&View"), this);
+    menu->addAction( mActions[IncreaseFontSize] );
+    menu->addAction( mActions[DecreaseFontSize] );
 
     menuBar()->addMenu(menu);
 
@@ -198,6 +262,15 @@ void MainWindow::closeTab( int tabIndex )
     Document *doc = editor->document();
     delete editor;
     mMain->documentManager()->close(doc);
+}
+
+void MainWindow::onCurrentEditorChanged(int index)
+{
+    if( index < 0 ) return;
+
+    CodeEditor *editor = codeEditorForTab(index);
+    if(editor)
+        mDocSigMux->setCurrentObject(editor);
 }
 
 CodeEditor* MainWindow::codeEditorForTab( int index )
