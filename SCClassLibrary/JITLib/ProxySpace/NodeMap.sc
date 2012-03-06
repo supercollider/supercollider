@@ -131,9 +131,7 @@ NodeMap {
 				upToDate = true;
 				setArgs = setnArgs = mapArgs = mapnArgs = mapaArgs = mapanArgs = nil;
 				settings.do { arg item; item.updateNodeMap(this) };
-				controlNames = settings.values.collect { |setting|
-					ControlName(setting.key, nil, setting.mappedRate, setting.value)
-				}
+				controlNames = settings.values.collect(_.asControlName);
 			}
 	}
 
