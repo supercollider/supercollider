@@ -191,42 +191,16 @@ SynthControl : AbstractPlayControl {
 	}
 
 	spawnToBundle { | bundle, extraArgs, target, addAction = 0 | // assumes self freeing
-		var synthMsg, msg, targetID = target.asTarget.nodeID;
-		if(extraArgs.notNil and: { extraArgs.any { |x| x.size > 1 } }) {
-			synthMsg = [9, this.asDefName, -1, addAction, targetID];
-			bundle.add(synthMsg);
-			synthMsg = ["/n_setn", -1];
-			extraArgs.pairsDo { |key, val|
-				synthMsg = synthMsg.add(key);
-				synthMsg = synthMsg.add(val.size.max(1));
-				synthMsg = synthMsg.addAll(val);
-			};
-			bundle.add(synthMsg);
-
-		} {
-			synthMsg = [9, this.asDefName, -1, addAction, targetID] ++ extraArgs;
-			bundle.add(synthMsg);
-		}
+		var targetID = target.asTarget.nodeID;
+		bundle.add([9, this.asDefName, -1, addAction, targetID]++extraArgs.asOSCArgArray);
 	}
 
 	playToBundle { | bundle, extraArgs, target, addAction = 1 |
-		var group, synthMsg;
+		var group;
 		server = target.server;
 		group = target.asTarget;
 		nodeID = server.nextNodeID;
-		if(extraArgs.notNil and: { extraArgs.any { |x| x.size > 1 } }) {
-			synthMsg = [9, this.asDefName, nodeID, addAction, group.nodeID];
-			bundle.add(synthMsg);
-			synthMsg = ["/n_setn", -1];
-			extraArgs.pairsDo { |key, val|
-				synthMsg = synthMsg.add(key);
-				synthMsg = synthMsg.add(val.size.max(1));
-				synthMsg = synthMsg.addAll(val);
-			};
-			bundle.add(synthMsg);
-		} {
-			bundle.add([9, this.asDefName, nodeID, addAction, group.nodeID]++extraArgs)
-		};
+		bundle.add([9, this.asDefName, nodeID, addAction, group.nodeID]++extraArgs.asOSCArgArray);
 		if(paused) { bundle.add(["/n_run", nodeID, 0]) };
 		^nodeID
 	}

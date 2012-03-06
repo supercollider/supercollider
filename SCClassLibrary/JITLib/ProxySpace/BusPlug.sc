@@ -174,6 +174,10 @@ BusPlug : AbstractFunction {
 				{ |i| prefix ++ (index + i) }.dup(numChannels)
 			}
 	}
+	
+	asMap {
+		 ^this.busArg	
+	}
 
 	wakeUpToBundle {}
 	wakeUp {}

@@ -77,6 +77,10 @@ NodeMapSetting {
 	copy {
 		^this.class.prNew(key, value, busNumChannels, isMultiChannel, isMapped, mappedRate)
 	}
+	
+	asControlName {
+		^ControlName(key, nil, mappedRate, value)
+	}
 
 	isEmpty { ^value.isNil }
 	index { ^value }
