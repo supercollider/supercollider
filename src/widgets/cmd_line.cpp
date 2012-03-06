@@ -61,7 +61,7 @@ bool CmdLine::eventFilter( QObject *, QEvent *e )
         emit invoked( expr->text(), false );
         if( history.count() == 0 || history[0] != expr->text() )
         {
-            if( history.count() > 30 ) history.removeAt( history.count() - 1 );
+            if( history.count() >= maxHistory ) history.removeAt( history.count() - 1 );
             history.prepend( expr->text() );
         }
         curHistory = -1;
