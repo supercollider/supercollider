@@ -73,7 +73,6 @@ void MultiEditor::createActions()
     act->setShortcuts(QKeySequence::Save);
     act->setStatusTip(tr("Save the current document"));
     connect(act, SIGNAL(triggered()), this, SLOT(saveDocument()));
-    mSigMux->connect(SIGNAL(modificationChanged(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[DocSaveAs] = act = new QAction(
         QIcon::fromTheme("document-save-as"), tr("Save &As..."), this);
@@ -143,7 +142,7 @@ void MultiEditor::updateActions()
     CodeEditor *editor = currentEditor();
     QTextDocument *doc = editor ? editor->document()->textDocument() : 0;
 
-    mActions[DocSave]->setEnabled( doc && doc->isModified() );
+    mActions[DocSave]->setEnabled( doc );
     mActions[DocSaveAs]->setEnabled( doc );
     mActions[DocClose]->setEnabled( doc );
     mActions[Undo]->setEnabled( doc && doc->isUndoAvailable() );
