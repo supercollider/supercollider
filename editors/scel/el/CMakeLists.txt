@@ -1,8 +1,3 @@
-find_program(EMACS_EXECUTABLE emacs)
-if(NOT EMACS_EXECUTABLE)
-  message(SEND_ERROR "Emacs could not be found")
-endif()
-
 option(SC_EL_BYTECOMPILE "Build emacs-based IDE." ON)
 
 file(GLOB scel_sources
@@ -20,6 +15,11 @@ endforeach()
 set(all_scel_sources ${scel_sources} sclang-vars.el)
 
 if (SC_EL_BYTECOMPILE)
+	find_program(EMACS_EXECUTABLE emacs)
+	if(NOT EMACS_EXECUTABLE)
+		message(SEND_ERROR "Emacs could not be found")
+	endif()
+
 	foreach (el ${all_scel_sources})
 		add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${el}c
 			COMMAND ${EMACS_EXECUTABLE} -batch
