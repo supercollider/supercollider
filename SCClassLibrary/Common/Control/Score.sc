@@ -3,7 +3,6 @@ Score {
 	classvar <>program, <>options;
 
 	*initClass {
-		program = Platform.case(\windows, {".\\scsynth.exe"}, {"./scsynth"});
 		options = ServerOptions.new;
 	}
 
