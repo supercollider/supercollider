@@ -46,6 +46,9 @@ MultiEditor::MultiEditor( DocumentManager *manager, QWidget * parent ) :
     connect(this, SIGNAL(tabCloseRequested(int)),
             this, SLOT(onCloseRequest(int)));
 
+    connect(&mModificationMapper, SIGNAL(mapped(QWidget*)),
+            this, SLOT(onModificationChanged(QWidget*)));
+
     createActions();
     updateActions();
 }
@@ -203,8 +206,18 @@ void MultiEditor::onOpen( Document *doc )
     CodeEditor *editor = new CodeEditor();
     editor->setDocument(doc);
 
-    addTab( editor, doc->title() );
+    QTextDocument *tdoc = doc->textDocument();
+
+    QIcon icon;
+    if(tdoc->isModified())
+        icon = QIcon::fromTheme("document-save");
+
+    addTab( editor, icon, doc->title() );
     setCurrentIndex( count() - 1 );
+
+    mModificationMapper.setMapping(tdoc, editor);
+    connect(tdoc, SIGNAL(modificationChanged(bool)),
+            &mModificationMapper, SLOT(map()));
 }
 
 void MultiEditor::onClose( Document *doc )
@@ -238,6 +251,20 @@ void MultiEditor::onCurrentChanged( int index )
         editor->setFocus(Qt::OtherFocusReason);
     }
     updateActions();
+}
+
+void MultiEditor::onModificationChanged( QWidget *w )
+{
+    CodeEditor *editor = qobject_cast<CodeEditor*>(w);
+    if(!editor) return;
+
+    int i = indexOf(editor);
+    if( i == -1 ) return;
+
+    QIcon icon;
+    if(editor->document()->textDocument()->isModified())
+        icon = QIcon::fromTheme("document-save");
+    setTabIcon( i, icon );
 }
 
 CodeEditor * MultiEditor::editorForTab( int index )

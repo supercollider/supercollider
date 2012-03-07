@@ -23,6 +23,7 @@
 
 #include <QTabWidget>
 #include <QAction>
+#include <QSignalMapper>
 
 namespace ScIDE {
 
@@ -82,6 +83,7 @@ private Q_SLOTS:
     void update( Document * );
     void onCloseRequest( int index );
     void onCurrentChanged( int index );
+    void onModificationChanged( QWidget * );
 
 private:
     void createActions();
@@ -91,6 +93,7 @@ private:
 
     DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;
+    QSignalMapper mModificationMapper;
     QAction *mActions[ActionRoleCount];
 };
 

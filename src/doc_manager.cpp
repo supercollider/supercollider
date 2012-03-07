@@ -91,6 +91,7 @@ void DocumentManager::saveAs( Document *doc, const QString & filename )
 
     doc->mFileName = filename;
     doc->mTitle = QDir(filename).dirName();
+    doc->mDoc->setModified(false);
 
     Q_EMIT(saved(doc));
 }
