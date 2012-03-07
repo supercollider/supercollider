@@ -23,7 +23,6 @@
 #include "../doc_manager.hpp"
 #include "../sig_mux.hpp"
 
-#include <QDir>
 #include <QFileDialog>
 
 namespace ScIDE {
@@ -205,7 +204,7 @@ void MultiEditor::onOpen( Document *doc )
     CodeEditor *editor = new CodeEditor();
     editor->setDocument(doc);
 
-    addTab( editor, tabTitle(doc) );
+    addTab( editor, doc->title() );
     setCurrentIndex( count() - 1 );
 }
 
@@ -221,7 +220,7 @@ void MultiEditor::update( Document *doc )
     for(int i=0; i<c; ++i) {
         CodeEditor *editor = editorForTab(i);
         if(editor && editor->document() == doc)
-            setTabText(i, tabTitle(doc));
+            setTabText(i, doc->title());
     }
 }
 
@@ -256,15 +255,6 @@ CodeEditor * MultiEditor::editorForDocument( Document *doc )
             return editor;
     }
     return 0;
-}
-
-QString MultiEditor::tabTitle( Document *doc )
-{
-    QString fname = doc->fileName();
-    if(fname.isEmpty())
-        return QString("<new>");
-    else
-        return QDir(fname).dirName();
 }
 
 } // namespace ScIDE

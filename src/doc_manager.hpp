@@ -42,7 +42,8 @@ class Document : public QObject
 public:
     Document() :
         mId( QUuid::createUuid().toString().toAscii() ),
-        mDoc( new QTextDocument(this) )
+        mDoc( new QTextDocument(this) ),
+        mTitle( "Untitled" )
     {
         SyntaxHighlighter *highligher = new SyntaxHighlighter(mDoc);
     }
@@ -50,11 +51,13 @@ public:
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
     QString fileName() { return mFileName; }
+    QString title() { return mTitle; }
 
 private:
     QByteArray mId;
     QTextDocument *mDoc;
     QString mFileName;
+    QString mTitle;
 };
 
 class DocumentManager : public QObject

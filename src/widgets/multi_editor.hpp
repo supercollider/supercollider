@@ -88,7 +88,6 @@ private:
     void updateActions();
     CodeEditor * editorForTab( int index );
     CodeEditor * editorForDocument( Document * );
-    QString tabTitle( Document * );
 
     DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;

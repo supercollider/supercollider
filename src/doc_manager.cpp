@@ -23,6 +23,7 @@
 #include <QPlainTextDocumentLayout>
 #include <QFile>
 #include <QDebug>
+#include <QDir>
 
 using namespace ScIDE;
 
@@ -89,6 +90,7 @@ void DocumentManager::saveAs( Document *doc, const QString & filename )
     file.close();
 
     doc->mFileName = filename;
+    doc->mTitle = QDir(filename).dirName();
 
     Q_EMIT(saved(doc));
 }
