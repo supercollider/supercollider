@@ -22,6 +22,8 @@ OSXPlatform : UnixPlatform
 	startup {
 		Server.program = "exec %/scsynth".format(String.scDir.shellQuote);
 
+		Score.program = Server.program;
+
 		if(Platform.ideName == "scapp") {
 			Document.implementationClass.startup;
 		};
