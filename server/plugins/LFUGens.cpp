@@ -3330,7 +3330,7 @@ FLATTEN void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
 #endif
 
 #define CHECK_GATE \
-        prevGate = gate; \
+        float prevGate = gate; \
         gate = ZXP(gatein); \
         if (prevGate <= 0.f && gate > 0.f) { \
                 gatein--; \
@@ -3369,8 +3369,7 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 	float *gatein = ZIN(kEnvGen_gate);
 	int counter = unit->m_counter;
 	double level = unit->m_level;
-	float prevGate = unit->m_prevGate;
-	float gate = prevGate;
+	float gate = unit->m_prevGate;
 	int remain = inNumSamples;
 	while (remain)
 	{
