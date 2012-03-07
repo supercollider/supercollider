@@ -1,4 +1,5 @@
 option(SC_EL_BYTECOMPILE "Build emacs-based IDE." ON)
+mark_as_advanced(SC_EL_BYTECOMPILE)
 
 file(GLOB scel_sources
 	 RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.el)
