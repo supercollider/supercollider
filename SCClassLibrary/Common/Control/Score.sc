@@ -1,8 +1,9 @@
 Score {
 	var <>score, routine, isPlaying = false;
-	classvar <>options;
+	classvar <>program, <>options;
 
 	*initClass {
+		program = Platform.case(\windows, {".\\scsynth.exe"}, {"./scsynth"});
 		options = ServerOptions.new;
 	}
 
@@ -16,16 +17,6 @@ Score {
 		^super.new.init(list);
 	}
 
-	*program {
-		this.deprecated(thisMethod, Server.findRespondingMethodFor(\program));
-		^Server.program;	
-	}
-	
-	*program_ {
-		this.deprecated(thisMethod, Server.findRespondingMethodFor(\program_));
-		"Score.program_ would break Server.program's functionality. The Server.program field was NOT changed. Please use Server.program_ if you really want to change the program that Score will use".warn;
-	}
-	
 	init { arg list;
 		score = [[0.0, ["/g_new", 1]]] ++ list;
 		this.sort;
@@ -109,7 +100,7 @@ Score {
 	recordNRT { arg oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, headerFormat =
 		"AIFF", sampleFormat = "int16", options, completionString="", duration = nil, action = nil;
 		this.writeOSCFile(oscFilePath, 0, duration);
-		unixCmd(Server.program + " -N" + oscFilePath.quote
+		unixCmd(program + " -N" + oscFilePath.quote
 			+ if(inputFilePath.notNil, { inputFilePath.quote }, { "_" })
 			+ outputFilePath.quote
 		 	+ sampleRate + headerFormat + sampleFormat +
