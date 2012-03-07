@@ -30,7 +30,6 @@
 #include <QShortcut>
 #include <QMenu>
 #include <QMenuBar>
-#include <QFileDialog>
 #include <QVBoxLayout>
 
 namespace ScIDE {
@@ -39,8 +38,6 @@ MainWindow::MainWindow(Main * main) :
     mMain(main)
 {
     mEditors = new MultiEditor(main->documentManager());
-
-    createMenus();
 
     // use a layout for tool widgets, to provide for separate margin control
     QVBoxLayout *tool_box = new QVBoxLayout;
@@ -61,6 +58,8 @@ MainWindow::MainWindow(Main * main) :
 
     connect(main->scProcess(), SIGNAL( scPost(QString) ),
             mPostDock->mPostWindow, SLOT( append(QString) ) );
+
+    createMenus();
 }
 
 void MainWindow::createMenus()
@@ -70,36 +69,6 @@ void MainWindow::createMenus()
     QAction *act;
 
     // File
-
-    mActions[DocNew] = act = new QAction(
-        QIcon::fromTheme("document-new"), tr("&New"), this);
-    act->setShortcuts(QKeySequence::New);
-    act->setStatusTip(tr("Create a new file"));
-    connect(act, SIGNAL(triggered()), this, SLOT(newDocument()));
-
-    mActions[DocOpen] = act = new QAction(
-        QIcon::fromTheme("document-open"), tr("&Open..."), this);
-    act->setShortcuts(QKeySequence::Open);
-    act->setStatusTip(tr("Open an existing file"));
-    connect(act, SIGNAL(triggered()), this, SLOT(openDocument()));
-
-    mActions[DocSave] = act = new QAction(
-        QIcon::fromTheme("document-save"), tr("&Save"), this);
-    act->setShortcuts(QKeySequence::Save);
-    act->setStatusTip(tr("Save the current document"));
-    connect(act, SIGNAL(triggered()), this, SLOT(saveDocument()));
-
-    mActions[DocSaveAs] = act = new QAction(
-        QIcon::fromTheme("document-save-as"), tr("Save &As..."), this);
-    act->setShortcuts(QKeySequence::SaveAs);
-    act->setStatusTip(tr("Save the current document into a different file"));
-    connect(act, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
-
-    mActions[DocClose] = act = new QAction(
-        QIcon::fromTheme("window-close"), tr("&Close"), this);
-    act->setShortcuts(QKeySequence::Close);
-    act->setStatusTip(tr("Close the current document"));
-    connect(act, SIGNAL(triggered()), this, SLOT(closeDocument()));
 
     mActions[Quit] = act = new QAction(
         QIcon::fromTheme("application-exit"), tr("&Quit..."), this);
@@ -127,12 +96,12 @@ void MainWindow::createMenus()
         ->setShortcut(QKeySequence(tr("Ctrl+.", "Language|Stop Main")));
 
     QMenu *menu = new QMenu(tr("&File"), this);
-    menu->addAction( mActions[DocNew] );
-    menu->addAction( mActions[DocOpen] );
-    menu->addAction( mActions[DocSave] );
-    menu->addAction( mActions[DocSaveAs] );
+    menu->addAction( mEditors->action(MultiEditor::DocNew) );
+    menu->addAction( mEditors->action(MultiEditor::DocOpen) );
+    menu->addAction( mEditors->action(MultiEditor::DocSave) );
+    menu->addAction( mEditors->action(MultiEditor::DocSaveAs) );
     menu->addSeparator();
-    menu->addAction( mActions[DocClose] );
+    menu->addAction( mEditors->action(MultiEditor::DocClose) );
     menu->addSeparator();
     menu->addAction( mActions[Quit] );
 
@@ -174,50 +143,6 @@ QAction *MainWindow::action( ActionRole role )
 {
     Q_ASSERT( role < ActionCount );
     return mActions[role];
-}
-
-void MainWindow::newDocument()
-{
-    mMain->documentManager()->create();
-}
-
-void MainWindow::openDocument()
-{
-    QString filename = QFileDialog::getOpenFileName( this, "Open File" );
-    if(filename.isEmpty()) return;
-
-    mMain->documentManager()->open(filename);
-}
-
-void MainWindow::saveDocument()
-{
-    CodeEditor *editor = mEditors->currentEditor();
-    if(!editor) return;
-
-    Document *doc = editor->document();
-    if(doc->fileName().isEmpty())
-        saveDocumentAs();
-    else
-        mMain->documentManager()->save(doc);
-}
-
-void MainWindow::saveDocumentAs()
-{
-    CodeEditor *editor = mEditors->currentEditor();
-    if(!editor) return;
-
-    QString filename = QFileDialog::getSaveFileName( this, "Save File" );
-    if(filename.isEmpty()) return;
-
-    mMain->documentManager()->saveAs( editor->document(), filename );
-}
-
-void MainWindow::closeDocument()
-{
-    CodeEditor *editor = mEditors->currentEditor();
-    if(!editor) return;
-
-    mMain->documentManager()->close(editor->document());
 }
 
 void MainWindow::toggleComandLineFocus()

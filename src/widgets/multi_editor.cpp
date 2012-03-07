@@ -24,6 +24,7 @@
 #include "../sig_mux.hpp"
 
 #include <QDir>
+#include <QFileDialog>
 
 namespace ScIDE {
 
@@ -46,37 +47,83 @@ MultiEditor::MultiEditor( DocumentManager *manager, QWidget * parent ) :
     connect(this, SIGNAL(tabCloseRequested(int)),
             this, SLOT(onCloseRequest(int)));
 
+    createActions();
+}
+
+void MultiEditor::createActions()
+{
     QAction * act;
+
+    // File
+
+    mActions[DocNew] = act = new QAction(
+        QIcon::fromTheme("document-new"), tr("&New"), this);
+    act->setShortcuts(QKeySequence::New);
+    act->setStatusTip(tr("Create a new document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(newDocument()));
+
+    mActions[DocOpen] = act = new QAction(
+        QIcon::fromTheme("document-open"), tr("&Open..."), this);
+    act->setShortcuts(QKeySequence::Open);
+    act->setStatusTip(tr("Open an existing file"));
+    connect(act, SIGNAL(triggered()), this, SLOT(openDocument()));
+
+    mActions[DocSave] = act = new QAction(
+        QIcon::fromTheme("document-save"), tr("&Save"), this);
+    act->setShortcuts(QKeySequence::Save);
+    act->setStatusTip(tr("Save the current document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(saveDocument()));
+    mSigMux->connect(SIGNAL(modificationChanged(bool)), act, SLOT(setEnabled(bool)));
+
+    mActions[DocSaveAs] = act = new QAction(
+        QIcon::fromTheme("document-save-as"), tr("Save &As..."), this);
+    act->setShortcuts(QKeySequence::SaveAs);
+    act->setStatusTip(tr("Save the current document into a different file"));
+    connect(act, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
+
+    mActions[DocClose] = act = new QAction(
+        QIcon::fromTheme("window-close"), tr("&Close"), this);
+    act->setShortcuts(QKeySequence::Close);
+    act->setStatusTip(tr("Close the current document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(closeDocument()));
+
+    // Edit
 
     mActions[Undo] = act = new QAction(
         QIcon::fromTheme("edit-undo"), tr("&Undo"), this);
     act->setShortcuts(QKeySequence::Undo);
     act->setStatusTip(tr("Undo last editing action"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(undo()));
+    mSigMux->connect(SIGNAL(undoAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Redo] = act = new QAction(
         QIcon::fromTheme("edit-redo"), tr("&Redo"), this);
     act->setShortcuts(QKeySequence::Redo);
     act->setStatusTip(tr("Redo next editing action"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(redo()));
+    mSigMux->connect(SIGNAL(redoAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Cut] = act = new QAction(
         QIcon::fromTheme("edit-cut"), tr("&Cut"), this);
     act->setShortcuts(QKeySequence::Cut);
     act->setStatusTip(tr("Cut text to clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(cut()));
+    mSigMux->connect(SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Copy] = act = new QAction(
         QIcon::fromTheme("edit-copy"), tr("&Copy"), this);
     act->setShortcuts(QKeySequence::Copy);
     act->setStatusTip(tr("Copy text to clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(copy()));
+    mSigMux->connect(SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Paste] = act = new QAction(
         QIcon::fromTheme("edit-paste"), tr("&Paste"), this);
     act->setShortcuts(QKeySequence::Paste);
     act->setStatusTip(tr("Paste text from clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(paste()));
+
+    // View
 
     mActions[EnlargeFont] = act = new QAction(
         QIcon::fromTheme("zoom-in"), tr("&Enlarge Font"), this);
@@ -91,6 +138,50 @@ MultiEditor::MultiEditor( DocumentManager *manager, QWidget * parent ) :
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomOut()));
 }
 
+
+void MultiEditor::newDocument()
+{
+    mDocManager->create();
+}
+
+void MultiEditor::openDocument()
+{
+    QString filename = QFileDialog::getOpenFileName( this, "Open File" );
+    if(filename.isEmpty()) return;
+
+    mDocManager->open(filename);
+}
+
+void MultiEditor::saveDocument()
+{
+    CodeEditor *editor = currentEditor();
+    if(!editor) return;
+
+    Document *doc = editor->document();
+    if(doc->fileName().isEmpty())
+        saveDocumentAs();
+    else
+        mDocManager->save(doc);
+}
+
+void MultiEditor::saveDocumentAs()
+{
+    CodeEditor *editor = currentEditor();
+    if(!editor) return;
+
+    QString filename = QFileDialog::getSaveFileName( this, "Save File" );
+    if(filename.isEmpty()) return;
+
+    mDocManager->saveAs( editor->document(), filename );
+}
+
+void MultiEditor::closeDocument()
+{
+    CodeEditor *editor = currentEditor();
+    if(!editor) return;
+
+    mDocManager->close(editor->document());
+}
 
 void MultiEditor::onOpen( Document *doc )
 {
@@ -133,6 +224,7 @@ void MultiEditor::onCurrentChanged( int index )
     if(editor) {
         mSigMux->setCurrentObject(editor);
         editor->setFocus(Qt::OtherFocusReason);
+        editor->emitStateSignals();
     }
 }
 

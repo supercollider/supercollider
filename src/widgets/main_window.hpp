@@ -38,12 +38,7 @@ public:
 
     enum ActionRole {
         // File
-        DocNew = 0,
-        DocOpen,
-        DocSave,
-        DocSaveAs,
-        DocClose,
-        Quit,
+        Quit = 0,
 
         // Language
         EvaluateCurrentFile,
@@ -58,11 +53,6 @@ public:
     QAction *action( ActionRole );
 
 public Q_SLOTS:
-    void newDocument();
-    void openDocument();
-    void saveDocument();
-    void saveDocumentAs();
-    void closeDocument();
     void toggleComandLineFocus();
 
 private Q_SLOTS:

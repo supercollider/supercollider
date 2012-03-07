@@ -38,11 +38,21 @@ class MultiEditor : public QTabWidget
 public:
 
     enum ActionRole {
-        Undo = 0,
+        // File
+        DocNew = 0,
+        DocOpen,
+        DocSave,
+        DocSaveAs,
+        DocClose,
+
+        // Edit
+        Undo,
         Redo,
         Cut,
         Copy,
         Paste,
+
+        // View
         EnlargeFont,
         ShrinkFont,
 
@@ -57,6 +67,14 @@ public:
     QAction * action( ActionRole role )
         { return mActions[role]; }
 
+public Q_SLOTS:
+
+    void newDocument();
+    void openDocument();
+    void saveDocument();
+    void saveDocumentAs();
+    void closeDocument();
+
 private Q_SLOTS:
 
     void onOpen( Document * );
@@ -66,9 +84,9 @@ private Q_SLOTS:
     void onCurrentChanged( int index );
 
 private:
+    void createActions();
     CodeEditor * editorForTab( int index );
     CodeEditor * editorForDocument( Document * );
-
     QString tabTitle( Document * );
 
     DocumentManager * mDocManager;
