@@ -99,19 +99,6 @@ void CodeEditor::setDocument( Document *doc )
     mDoc = doc;
 }
 
-
-void CodeEditor::emitStateSignals()
-{
-    if(!mDoc) return;
-
-    QTextDocument *doc = mDoc->textDocument();
-
-    Q_EMIT( undoAvailable(doc->isUndoAvailable()) );
-    Q_EMIT( redoAvailable(doc->isRedoAvailable()) );
-    Q_EMIT( copyAvailable(textCursor().hasSelection()) );
-    Q_EMIT( modificationChanged(doc->isModified()) );
-}
-
 void CodeEditor::zoomIn(int steps)
 {
     QFont f = font();

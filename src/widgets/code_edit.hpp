@@ -61,7 +61,6 @@ public:
     CodeEditor( QWidget *parent = 0 );
     Document *document() { return mDoc; }
     void setDocument( Document * );
-    void emitStateSignals();
 public Q_SLOTS:
     void zoomIn(int steps = 1);
     void zoomOut(int steps = 1);

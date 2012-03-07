@@ -48,6 +48,7 @@ MultiEditor::MultiEditor( DocumentManager *manager, QWidget * parent ) :
             this, SLOT(onCloseRequest(int)));
 
     createActions();
+    updateActions();
 }
 
 void MultiEditor::createActions()
@@ -138,6 +139,22 @@ void MultiEditor::createActions()
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomOut()));
 }
 
+void MultiEditor::updateActions()
+{
+    CodeEditor *editor = currentEditor();
+    QTextDocument *doc = editor ? editor->document()->textDocument() : 0;
+
+    mActions[DocSave]->setEnabled( doc && doc->isModified() );
+    mActions[DocSaveAs]->setEnabled( doc );
+    mActions[DocClose]->setEnabled( doc );
+    mActions[Undo]->setEnabled( doc && doc->isUndoAvailable() );
+    mActions[Redo]->setEnabled( doc && doc->isRedoAvailable() );
+    mActions[Copy]->setEnabled( editor && editor->textCursor().hasSelection() );
+    mActions[Cut]->setEnabled( mActions[Copy]->isEnabled() );
+    mActions[Paste]->setEnabled( editor );
+    mActions[EnlargeFont]->setEnabled( editor );
+    mActions[ShrinkFont]->setEnabled( editor );
+}
 
 void MultiEditor::newDocument()
 {
@@ -203,8 +220,7 @@ void MultiEditor::update( Document *doc )
     int c = count();
     for(int i=0; i<c; ++i) {
         CodeEditor *editor = editorForTab(i);
-        if(!editor) continue;
-        if(editor->document() == doc)
+        if(editor && editor->document() == doc)
             setTabText(i, tabTitle(doc));
     }
 }
@@ -218,24 +234,17 @@ void MultiEditor::onCloseRequest( int index )
 
 void MultiEditor::onCurrentChanged( int index )
 {
-    if( index < 0 ) return;
-
     CodeEditor *editor = editorForTab(index);
     if(editor) {
         mSigMux->setCurrentObject(editor);
         editor->setFocus(Qt::OtherFocusReason);
-        editor->emitStateSignals();
     }
+    updateActions();
 }
 
 CodeEditor * MultiEditor::editorForTab( int index )
 {
-    CodeEditor *editor = qobject_cast<CodeEditor*>( widget(index) );
-    if(!editor) {
-        qWarning("MultiEditor: no editor at given index.");
-        return NULL;
-    } else
-        return editor;
+    return qobject_cast<CodeEditor*>( widget(index) );
 }
 
 CodeEditor * MultiEditor::editorForDocument( Document *doc )
@@ -243,7 +252,7 @@ CodeEditor * MultiEditor::editorForDocument( Document *doc )
     int c = count();
     for(int i = 0; i < c; ++i) {
         CodeEditor *editor = editorForTab(i);
-        if( editor->document() == doc)
+        if( editor && editor->document() == doc)
             return editor;
     }
     return 0;

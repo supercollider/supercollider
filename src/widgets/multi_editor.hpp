@@ -85,6 +85,7 @@ private Q_SLOTS:
 
 private:
     void createActions();
+    void updateActions();
     CodeEditor * editorForTab( int index );
     CodeEditor * editorForDocument( Document * );
     QString tabTitle( Document * );
