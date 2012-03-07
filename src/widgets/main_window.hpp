@@ -21,18 +21,14 @@
 #ifndef SCIDE_WIDGETS_MAIN_WINDOW_HPP_INCLUDED
 #define SCIDE_WIDGETS_MAIN_WINDOW_HPP_INCLUDED
 
-#include "post_window.hpp"
-#include "../main.hpp"
-#include "../doc_manager.hpp"
-#include "../sig_mux.hpp"
-
 #include <QMainWindow>
-#include <QTabWidget>
-#include <QTabWidget>
-#include <QVector>
 
 namespace ScIDE
 {
+
+class Main;
+class MultiEditor;
+class PostDock;
 
 class MainWindow : public QMainWindow
 {
@@ -49,17 +45,6 @@ public:
         DocClose,
         Quit,
 
-        // Edit
-        Undo,
-        Redo,
-        Cut,
-        Copy,
-        Paste,
-
-        // View
-        IncreaseFontSize,
-        DecreaseFontSize,
-
         // Language
         EvaluateCurrentFile,
         EvaluateSelectedRegion,
@@ -68,7 +53,7 @@ public:
         ActionCount
     };
 
-    MainWindow(struct Main *);
+    MainWindow(Main *);
 
     QAction *action( ActionRole );
 
@@ -81,29 +66,18 @@ public Q_SLOTS:
     void toggleComandLineFocus();
 
 private Q_SLOTS:
-    void createTab( Document * );
-    void updateTab( Document * );
-    void closeTab(int index);
-
-    void onCurrentEditorChanged(int);
-
     void evaluateCurrentRegion(); // either selection, or current line
     void evaluateCurrentFile();
 
 private:
     void createMenus();
-    class CodeEditor * codeEditorForTab( int index );
-    class CodeEditor * currentCodeEditor()
-        { return codeEditorForTab( mDocTabs->currentIndex() ); }
-    QString tabTitle( Document * );
     QWidget *cmdLine();
 
     Main *mMain;
 
     QAction * mActions[ActionCount];
 
-    QTabWidget *mDocTabs;
-    SignalMultiplexer * mDocSigMux;
+    MultiEditor *mEditors;
 
     PostDock * mPostDock;
 };

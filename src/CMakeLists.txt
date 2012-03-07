@@ -4,6 +4,7 @@ set ( ide_moc_hdr
     widgets/main_window.hpp
     widgets/post_window.hpp
     widgets/code_edit.hpp
+    widgets/multi_editor.hpp
     widgets/cmd_line.hpp
     main.hpp
     sig_mux.hpp
@@ -20,6 +21,7 @@ set ( ide_src
     sc_syntax_highlighter.cpp
     widgets/main_window.cpp
     widgets/code_edit.cpp
+    widgets/multi_editor.cpp
     widgets/cmd_line.cpp
 )
 

@@ -18,10 +18,12 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "../main.hpp"
 #include "main_window.hpp"
+#include "../main.hpp"
+#include "../doc_manager.hpp"
 #include "post_window.hpp"
 #include "code_edit.hpp"
+#include "multi_editor.hpp"
 #include "cmd_line.hpp"
 
 #include <QAction>
@@ -34,13 +36,11 @@
 namespace ScIDE {
 
 MainWindow::MainWindow(Main * main) :
-    mMain(main),
-    mDocSigMux(new SignalMultiplexer(this))
+    mMain(main)
 {
-    createMenus();
+    mEditors = new MultiEditor(main->documentManager());
 
-    mDocTabs = new QTabWidget();
-    mDocTabs->setTabsClosable(true);
+    createMenus();
 
     // use a layout for tool widgets, to provide for separate margin control
     QVBoxLayout *tool_box = new QVBoxLayout;
@@ -50,7 +50,7 @@ MainWindow::MainWindow(Main * main) :
     QVBoxLayout *center_box = new QVBoxLayout;
     center_box->setContentsMargins(0,0,0,0);
     center_box->setSpacing(0);
-    center_box->addWidget(mDocTabs);
+    center_box->addWidget(mEditors);
     center_box->addLayout(tool_box);
     QWidget *central = new QWidget;
     central->setLayout(center_box);
@@ -61,19 +61,12 @@ MainWindow::MainWindow(Main * main) :
 
     connect(main->scProcess(), SIGNAL( scPost(QString) ),
             mPostDock->mPostWindow, SLOT( append(QString) ) );
-    connect(mMain->documentManager(), SIGNAL(opened(Document*)),
-            this, SLOT(createTab(Document*)));
-    connect(mMain->documentManager(), SIGNAL(saved(Document*)),
-            this, SLOT(updateTab(Document*)));
-
-    connect(mDocTabs, SIGNAL(currentChanged(int)),
-            this, SLOT(onCurrentEditorChanged(int)));
-    connect(mDocTabs, SIGNAL(tabCloseRequested(int)),
-            this, SLOT(closeTab(int)));
 }
 
 void MainWindow::createMenus()
 {
+    new QShortcut( QKeySequence("Ctrl+Tab"), this, SLOT(toggleComandLineFocus()) );
+
     QAction *act;
 
     // File
@@ -113,54 +106,6 @@ void MainWindow::createMenus()
     act->setShortcuts(QKeySequence::Quit);
     act->setStatusTip(tr("Quit SuperCollider IDE"));
 
-    // Edit
-
-    mActions[Undo] = act = new QAction(
-        QIcon::fromTheme("edit-undo"), tr("&Undo"), this);
-    act->setShortcuts(QKeySequence::Undo);
-    act->setStatusTip(tr("Undo last editing action"));
-    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(undo()));
-
-    mActions[Redo] = act = new QAction(
-        QIcon::fromTheme("edit-redo"), tr("&Redo"), this);
-    act->setShortcuts(QKeySequence::Redo);
-    act->setStatusTip(tr("Redo next editing action"));
-    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(redo()));
-
-    mActions[Cut] = act = new QAction(
-        QIcon::fromTheme("edit-cut"), tr("&Cut"), this);
-    act->setShortcuts(QKeySequence::Cut);
-    act->setStatusTip(tr("Cut text to clipboard"));
-    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(cut()));
-
-    mActions[Copy] = act = new QAction(
-        QIcon::fromTheme("edit-copy"), tr("&Copy"), this);
-    act->setShortcuts(QKeySequence::Copy);
-    act->setStatusTip(tr("Copy text to clipboard"));
-    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(copy()));
-
-    mActions[Paste] = act = new QAction(
-        QIcon::fromTheme("edit-paste"), tr("&Paste"), this);
-    act->setShortcuts(QKeySequence::Paste);
-    act->setStatusTip(tr("Paste text from clipboard"));
-    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(paste()));
-
-    // View
-
-    mActions[IncreaseFontSize] = act = new QAction(
-        QIcon::fromTheme("zoom-in"), tr("&Enlarge Font"), this);
-    act->setShortcut(QKeySequence(tr("CTRL++", "View|Enlarge Font")));
-    act->setStatusTip(tr("Increase displayed font size"));
-    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomIn()));
-
-    mActions[DecreaseFontSize] = act = new QAction(
-        QIcon::fromTheme("zoom-out"), tr("&Shrink Font"), this);
-    act->setShortcut(QKeySequence(tr("Ctrl+-", "View|Shrink Font")));
-    act->setStatusTip(tr("Decrease displayed font size"));
-    mDocSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomOut()));
-
-    new QShortcut( QKeySequence("Ctrl+Tab"), this, SLOT(toggleComandLineFocus()) );
-
     // Language
 
     mActions[EvaluateCurrentFile] = act = new QAction(
@@ -194,18 +139,18 @@ void MainWindow::createMenus()
     menuBar()->addMenu(menu);
 
     menu = new QMenu(tr("&Edit"), this);
-    menu->addAction( mActions[Undo] );
-    menu->addAction( mActions[Redo] );
+    menu->addAction( mEditors->action(MultiEditor::Undo) );
+    menu->addAction( mEditors->action(MultiEditor::Redo) );
     menu->addSeparator();
-    menu->addAction( mActions[Cut] );
-    menu->addAction( mActions[Copy] );
-    menu->addAction( mActions[Paste] );
+    menu->addAction( mEditors->action(MultiEditor::Cut) );
+    menu->addAction( mEditors->action(MultiEditor::Copy) );
+    menu->addAction( mEditors->action(MultiEditor::Paste) );
 
     menuBar()->addMenu(menu);
 
     menu = new QMenu(tr("&View"), this);
-    menu->addAction( mActions[IncreaseFontSize] );
-    menu->addAction( mActions[DecreaseFontSize] );
+    menu->addAction( mEditors->action(MultiEditor::EnlargeFont) );
+    menu->addAction( mEditors->action(MultiEditor::ShrinkFont) );
 
     menuBar()->addMenu(menu);
 
@@ -246,7 +191,7 @@ void MainWindow::openDocument()
 
 void MainWindow::saveDocument()
 {
-    CodeEditor *editor = currentCodeEditor();
+    CodeEditor *editor = mEditors->currentEditor();
     if(!editor) return;
 
     Document *doc = editor->document();
@@ -258,7 +203,7 @@ void MainWindow::saveDocument()
 
 void MainWindow::saveDocumentAs()
 {
-    CodeEditor *editor = currentCodeEditor();
+    CodeEditor *editor = mEditors->currentEditor();
     if(!editor) return;
 
     QString filename = QFileDialog::getSaveFileName( this, "Save File" );
@@ -269,82 +214,21 @@ void MainWindow::saveDocumentAs()
 
 void MainWindow::closeDocument()
 {
-    int tabIndex = mDocTabs->currentIndex();
+    CodeEditor *editor = mEditors->currentEditor();
+    if(!editor) return;
 
-    if( tabIndex < 0 ) return;
-
-    closeTab(tabIndex);
+    mMain->documentManager()->close(editor->document());
 }
 
 void MainWindow::toggleComandLineFocus()
 {
     QWidget *cmd = cmdLine();
     if(cmd->hasFocus()) {
-        QWidget *editor = currentCodeEditor();
+        QWidget *editor = mEditors->currentEditor();
         if(editor) editor->setFocus(Qt::OtherFocusReason);
     }
     else
         cmd->setFocus(Qt::OtherFocusReason);
-}
-
-void MainWindow::createTab( Document *doc )
-{
-    CodeEditor *editor = new CodeEditor();
-    editor->setDocument(doc);
-
-    mDocTabs->addTab( editor, tabTitle(doc) );
-    mDocTabs->setCurrentIndex(mDocTabs->count() - 1);
-}
-
-void MainWindow::updateTab( Document *doc )
-{
-    int c = mDocTabs->count();
-    for(int i=0; i<c; ++i) {
-        CodeEditor *editor = codeEditorForTab(i);
-        if(!editor) continue;
-        if(editor->document() == doc)
-            mDocTabs->setTabText(i, tabTitle(doc));
-    }
-}
-
-void MainWindow::closeTab( int tabIndex )
-{
-    CodeEditor *editor = codeEditorForTab( tabIndex );
-    if(!editor) return;
-
-    Document *doc = editor->document();
-    delete editor;
-    mMain->documentManager()->close(doc);
-}
-
-void MainWindow::onCurrentEditorChanged(int index)
-{
-    if( index < 0 ) return;
-
-    CodeEditor *editor = codeEditorForTab(index);
-    if(editor) {
-        mDocSigMux->setCurrentObject(editor);
-        editor->setFocus(Qt::OtherFocusReason);
-    }
-}
-
-CodeEditor* MainWindow::codeEditorForTab( int index )
-{
-    CodeEditor *editor = qobject_cast<CodeEditor*>( mDocTabs->widget(index) );
-    if(!editor) {
-        qWarning("MainWindow: no code editor at given tab index.");
-        return NULL;
-    } else
-        return editor;
-}
-
-QString MainWindow::tabTitle( Document *doc )
-{
-    QString fname = doc->fileName();
-    if(fname.isEmpty())
-        return QString("<new>");
-    else
-        return QDir(fname).dirName();
 }
 
 QWidget *MainWindow::cmdLine()
@@ -363,7 +247,7 @@ void MainWindow::evaluateCurrentRegion()
 {
     // Evaluate selection, if any, otherwise current line
 
-    CodeEditor *editor = currentCodeEditor();
+    CodeEditor *editor = mEditors->currentEditor();
     if (!editor)
         return;
 
@@ -390,7 +274,7 @@ void MainWindow::evaluateCurrentRegion()
 
 void MainWindow::evaluateCurrentFile()
 {
-    CodeEditor *editor = currentCodeEditor();
+    CodeEditor *editor = mEditors->currentEditor();
     if (!editor)
         return;
 
