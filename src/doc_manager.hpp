@@ -71,10 +71,11 @@ public:
 public Q_SLOTS:
 
     void create();
+    void open();
     void open( const QString & filename );
     void close( Document * );
     void save( Document * );
-    void saveAs( Document *, const QString & filename );
+    void saveAs( Document * );
 
 Q_SIGNALS:
 
@@ -83,6 +84,7 @@ Q_SIGNALS:
     void saved( Document * );
 
 private:
+    bool saveAs( Document *, const QString & filename );
 
     QHash<QByteArray, Document*> mDocHash;
 };

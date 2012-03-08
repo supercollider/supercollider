@@ -23,8 +23,6 @@
 #include "../doc_manager.hpp"
 #include "../sig_mux.hpp"
 
-#include <QFileDialog>
-
 namespace ScIDE {
 
 MultiEditor::MultiEditor( DocumentManager *manager, QWidget * parent ) :
@@ -165,10 +163,7 @@ void MultiEditor::newDocument()
 
 void MultiEditor::openDocument()
 {
-    QString filename = QFileDialog::getOpenFileName( this, "Open File" );
-    if(filename.isEmpty()) return;
-
-    mDocManager->open(filename);
+    mDocManager->open();
 }
 
 void MultiEditor::saveDocument()
@@ -176,11 +171,7 @@ void MultiEditor::saveDocument()
     CodeEditor *editor = currentEditor();
     if(!editor) return;
 
-    Document *doc = editor->document();
-    if(doc->fileName().isEmpty())
-        saveDocumentAs();
-    else
-        mDocManager->save(doc);
+    mDocManager->save( editor->document() );
 }
 
 void MultiEditor::saveDocumentAs()
@@ -188,10 +179,7 @@ void MultiEditor::saveDocumentAs()
     CodeEditor *editor = currentEditor();
     if(!editor) return;
 
-    QString filename = QFileDialog::getSaveFileName( this, "Save File" );
-    if(filename.isEmpty()) return;
-
-    mDocManager->saveAs( editor->document(), filename );
+    mDocManager->saveAs( editor->document() );
 }
 
 void MultiEditor::closeDocument()
