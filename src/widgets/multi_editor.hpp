@@ -68,6 +68,9 @@ public:
     QAction * action( ActionRole role )
         { return mActions[role]; }
 
+Q_SIGNALS:
+    void currentChanged( Document * );
+
 public Q_SLOTS:
 
     void newDocument();
@@ -75,6 +78,7 @@ public Q_SLOTS:
     void saveDocument();
     void saveDocumentAs();
     void closeDocument();
+    void setCurrent( Document * );
 
 private Q_SLOTS:
 

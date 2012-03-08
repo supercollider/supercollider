@@ -191,6 +191,13 @@ void MultiEditor::closeDocument()
     mDocManager->close(editor->document());
 }
 
+void MultiEditor::setCurrent( Document *doc )
+{
+    CodeEditor *editor = editorForDocument(doc);
+    if(editor)
+        setCurrentWidget(editor);
+}
+
 void MultiEditor::onOpen( Document *doc )
 {
     CodeEditor *editor = new CodeEditor();
@@ -236,11 +243,16 @@ void MultiEditor::onCloseRequest( int index )
 void MultiEditor::onCurrentChanged( int index )
 {
     CodeEditor *editor = editorForTab(index);
+
     if(editor) {
         mSigMux->setCurrentObject(editor);
         editor->setFocus(Qt::OtherFocusReason);
     }
+
     updateActions();
+
+    if(editor)
+        Q_EMIT( currentChanged(editor->document()) );
 }
 
 void MultiEditor::onModificationChanged( QWidget *w )

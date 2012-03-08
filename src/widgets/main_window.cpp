@@ -21,10 +21,11 @@
 #include "main_window.hpp"
 #include "../main.hpp"
 #include "../doc_manager.hpp"
-#include "post_window.hpp"
 #include "code_edit.hpp"
 #include "multi_editor.hpp"
 #include "cmd_line.hpp"
+#include "doc_list.hpp"
+#include "post_window.hpp"
 
 #include <QAction>
 #include <QShortcut>
@@ -39,7 +40,11 @@ namespace ScIDE {
 MainWindow::MainWindow(Main * main) :
     mMain(main)
 {
+    setCorner( Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
+
     mEditors = new MultiEditor(main->documentManager());
+    mDocListDock = new DocumentsDock(main->documentManager(), this);
+    mPostDock = new PostDock(this);
 
     // use a layout for tool widgets, to provide for separate margin control
     QVBoxLayout *tool_box = new QVBoxLayout;
@@ -55,11 +60,16 @@ MainWindow::MainWindow(Main * main) :
     central->setLayout(center_box);
     setCentralWidget(central);
 
-    mPostDock = new PostDock(this);
+    addDockWidget(Qt::LeftDockWidgetArea, mDocListDock);
     addDockWidget(Qt::BottomDockWidgetArea, mPostDock);
 
     connect(main->scProcess(), SIGNAL( scPost(QString) ),
             mPostDock->mPostWindow, SLOT( append(QString) ) );
+    connect(mDocListDock->list(), SIGNAL(clicked(Document*)),
+            mEditors, SLOT(setCurrent(Document*)));
+    connect(mEditors, SIGNAL(currentChanged(Document*)),
+            mDocListDock->list(), SLOT(setCurrent(Document*)),
+            Qt::QueuedConnection);
 
     createMenus();
 }
@@ -77,6 +87,13 @@ void MainWindow::createMenus()
     act->setShortcuts(QKeySequence::Quit);
     act->setStatusTip(tr("Quit SuperCollider IDE"));
     QObject::connect( act, SIGNAL(triggered()), this, SLOT(onQuit()) );
+
+    // View
+    mActions[ShowDocList] = act = new QAction(tr("&Documents"), this);
+    act->setStatusTip(tr("Show/Hide the Documents dock"));
+    act->setCheckable(true);
+    connect(act, SIGNAL(triggered(bool)), mDocListDock, SLOT(setVisible(bool)));
+    connect(mDocListDock, SIGNAL(visibilityChanged(bool)), act, SLOT(setChecked(bool)));
 
     // Language
 
@@ -98,7 +115,10 @@ void MainWindow::createMenus()
     mMain->scProcess()->action(ScIDE::SCProcess::StopMain)
         ->setShortcut(QKeySequence(tr("Ctrl+.", "Language|Stop Main")));
 
-    QMenu *menu = new QMenu(tr("&File"), this);
+    QMenu *menu;
+    QMenu *submenu;
+
+    menu = new QMenu(tr("&File"), this);
     menu->addAction( mEditors->action(MultiEditor::DocNew) );
     menu->addAction( mEditors->action(MultiEditor::DocOpen) );
     menu->addAction( mEditors->action(MultiEditor::DocSave) );
@@ -121,6 +141,10 @@ void MainWindow::createMenus()
     menuBar()->addMenu(menu);
 
     menu = new QMenu(tr("&View"), this);
+    submenu = new QMenu(tr("&Docks"), this);
+    submenu->addAction( mActions[ShowDocList] );
+    menu->addMenu(submenu);
+    menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::EnlargeFont) );
     menu->addAction( mEditors->action(MultiEditor::ShrinkFont) );
 

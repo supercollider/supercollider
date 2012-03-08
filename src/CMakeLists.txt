@@ -5,6 +5,7 @@ set ( ide_moc_hdr
     widgets/post_window.hpp
     widgets/code_edit.hpp
     widgets/multi_editor.hpp
+    widgets/doc_list.hpp
     widgets/cmd_line.hpp
     main.hpp
     sig_mux.hpp
@@ -22,6 +23,7 @@ set ( ide_src
     widgets/main_window.cpp
     widgets/code_edit.cpp
     widgets/multi_editor.cpp
+    widgets/doc_list.cpp
     widgets/cmd_line.cpp
 )
 

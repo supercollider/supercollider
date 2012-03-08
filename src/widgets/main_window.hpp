@@ -29,6 +29,7 @@ namespace ScIDE
 class Main;
 class MultiEditor;
 class PostDock;
+class DocumentsDock;
 
 class MainWindow : public QMainWindow
 {
@@ -39,6 +40,9 @@ public:
     enum ActionRole {
         // File
         Quit = 0,
+
+        // View
+        ShowDocList,
 
         // Language
         EvaluateCurrentFile,
@@ -76,6 +80,7 @@ private:
     MultiEditor *mEditors;
 
     PostDock * mPostDock;
+    DocumentsDock *mDocListDock;
 };
 
 } // namespace ScIDE
