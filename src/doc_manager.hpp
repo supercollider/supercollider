@@ -67,6 +67,9 @@ class DocumentManager : public QObject
 public:
 
     DocumentManager( QObject *parent = 0 ) : QObject(parent) {}
+    QList<Document*> documents() {
+        return mDocHash.values();
+    }
 
 public Q_SLOTS:
 

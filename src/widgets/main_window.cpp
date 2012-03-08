@@ -31,6 +31,8 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QVBoxLayout>
+#include <QApplication>
+#include <QMessageBox>
 
 namespace ScIDE {
 
@@ -74,6 +76,7 @@ void MainWindow::createMenus()
         QIcon::fromTheme("application-exit"), tr("&Quit..."), this);
     act->setShortcuts(QKeySequence::Quit);
     act->setStatusTip(tr("Quit SuperCollider IDE"));
+    QObject::connect( act, SIGNAL(triggered()), this, SLOT(onQuit()) );
 
     // Language
 
@@ -143,6 +146,46 @@ QAction *MainWindow::action( ActionRole role )
 {
     Q_ASSERT( role < ActionCount );
     return mActions[role];
+}
+
+bool MainWindow::quit()
+{
+    bool ok = true;
+
+    QList<Document*> docs = mMain->documentManager()->documents();
+    Q_FOREACH(Document *doc, docs) {
+        if(doc->textDocument()->isModified()) {
+            ok = false;
+            break;
+        }
+    }
+
+    if(!ok) {
+        QMessageBox::StandardButton ret;
+        ret = QMessageBox::warning(
+            NULL,
+            tr("SuperCollider IDE"),
+            tr("There are unsaved changes to documents.\n"
+                "Do you want to quit without saving?"),
+            QMessageBox::Ok | QMessageBox::Cancel
+        );
+        if( ret == QMessageBox::Cancel )
+            return false;
+    }
+
+    QApplication::quit();
+
+    return true;
+}
+
+void MainWindow::onQuit()
+{
+    quit();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(!quit()) event->ignore();
 }
 
 void MainWindow::toggleComandLineFocus()

@@ -34,9 +34,6 @@ int main( int argc, char *argv[] )
 
     MainWindow *win = new MainWindow(main);
 
-    QObject::connect( win->action(MainWindow::Quit), SIGNAL(triggered()),
-                      &app, SLOT(quit()) );
-
     main->documentManager()->create(); // Create a new doc at startup
 
     win->showMaximized();

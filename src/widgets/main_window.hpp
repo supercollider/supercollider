@@ -52,12 +52,18 @@ public:
 
     QAction *action( ActionRole );
 
+    bool quit();
+
 public Q_SLOTS:
     void toggleComandLineFocus();
 
 private Q_SLOTS:
     void evaluateCurrentRegion(); // either selection, or current line
     void evaluateCurrentFile();
+    void onQuit();
+
+protected:
+    virtual void closeEvent(QCloseEvent *event);
 
 private:
     void createMenus();

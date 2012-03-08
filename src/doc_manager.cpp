@@ -78,7 +78,7 @@ void DocumentManager::close( Document *doc, bool * p_ok )
         ret = QMessageBox::warning(
             NULL,
             tr("SuperCollider IDE"),
-            tr("There is unsaved modifications to document '%1'.\n"
+            tr("There are unsaved changes to document '%1'.\n"
                 "Do you want to save the document?").arg(doc->title()),
             QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel
         );
