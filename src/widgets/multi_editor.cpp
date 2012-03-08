@@ -33,6 +33,7 @@ MultiEditor::MultiEditor( DocumentManager *manager, QWidget * parent ) :
     mSigMux(new SignalMultiplexer(this))
 {
     setTabsClosable(true);
+    setMovable(true);
 
     connect(manager, SIGNAL(opened(Document*)),
             this, SLOT(onOpen(Document*)));
