@@ -56,6 +56,10 @@ private Q_SLOTS:
     void onModificationChanged(QObject*);
     void onItemClicked(QListWidgetItem*);
 
+protected:
+
+    virtual QSize sizeHint() const { return QSize(170,170); }
+
 private:
     struct Item : public QListWidgetItem
     {
