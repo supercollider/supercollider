@@ -118,12 +118,15 @@ void DocumentManager::closeAll( bool * p_ok )
 void DocumentManager::save( Document *doc, bool * p_ok )
 {
     Q_ASSERT(doc);
+
+    bool ok = true;
+
     if(doc->mFileName.isEmpty())
-        saveAs(doc, p_ok);
-    else {
-        bool ok = saveAs(doc, doc->mFileName);
-        if(p_ok) *p_ok = ok;
-    }
+        saveAs(doc, &ok);
+    else if(doc->textDocument()->isModified())
+        ok = saveAs(doc, doc->mFileName);
+
+    if(p_ok) *p_ok = ok;
 }
 
 void DocumentManager::saveAs( Document *doc, bool * p_ok )
