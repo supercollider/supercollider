@@ -67,9 +67,11 @@ void DocumentManager::open( const QString & filename )
     Q_EMIT( opened(doc) );
 }
 
-void DocumentManager::close( Document *doc )
+void DocumentManager::close( Document *doc, bool * p_ok )
 {
-    if(!doc) return;
+    Q_ASSERT(doc);
+
+    bool ok = true;
 
     if(doc->textDocument()->isModified()) {
         QMessageBox::StandardButton ret;
@@ -81,45 +83,62 @@ void DocumentManager::close( Document *doc )
             QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel
         );
         if( ret == QMessageBox::Save ) {
-            save(doc);
-            // saving might have failed:
-            if( doc->textDocument()->isModified() )
-                return;
+            save(doc, &ok);
         }
         else if( ret == QMessageBox::Cancel )
-            return;
+            ok = false;
     }
 
-    if( mDocHash.remove(doc->id()) == 0 ) {
+    if( ok && mDocHash.remove(doc->id()) == 0 ) {
         qWarning("DocumentManager: trying to close an unmanaged document.");
-        return;
+        ok = false;
     }
 
-    Q_EMIT( closed(doc) );
+    if(ok) {
+        Q_EMIT( closed(doc) );
+        delete doc;
+    }
 
-    delete doc;
+    if(p_ok) *p_ok = ok;
 }
 
-void DocumentManager::save( Document *doc )
+void DocumentManager::closeAll( bool * p_ok )
 {
-    if(!doc) return;
+    bool ok = true;
+    QHash<QByteArray, Document*>::iterator it;
+    while((it = mDocHash.begin()) != mDocHash.end())
+    {
+        Document *doc = it.value();
+        close(doc, &ok);
+        if(!ok) break;
+    }
+    if(p_ok) *p_ok = ok;
+}
+
+void DocumentManager::save( Document *doc, bool * p_ok )
+{
+    Q_ASSERT(doc);
     if(doc->mFileName.isEmpty())
-        saveAs(doc);
-    else
-        saveAs(doc, doc->mFileName);
+        saveAs(doc, p_ok);
+    else {
+        bool ok = saveAs(doc, doc->mFileName);
+        if(p_ok) *p_ok = ok;
+    }
 }
 
-void DocumentManager::saveAs( Document *doc )
+void DocumentManager::saveAs( Document *doc, bool * p_ok )
 {
-    if(!doc) return;
+    Q_ASSERT(doc);
+    bool ok = false;
     QString filename = QFileDialog::getSaveFileName( NULL, "Save Document" );
     if(!filename.isEmpty())
-        saveAs(doc, filename);
+        ok = saveAs(doc, filename);
+    if(p_ok) *p_ok = ok;
 }
 
 bool DocumentManager::saveAs( Document *doc, const QString & filename )
 {
-    if(!doc) return false;
+    Q_ASSERT(doc);
 
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly)) {
