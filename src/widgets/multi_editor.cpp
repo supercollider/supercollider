@@ -30,6 +30,7 @@ MultiEditor::MultiEditor( DocumentManager *manager, QWidget * parent ) :
     mDocManager(manager),
     mSigMux(new SignalMultiplexer(this))
 {
+    setDocumentMode(true);
     setTabsClosable(true);
     setMovable(true);
 
