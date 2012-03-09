@@ -277,7 +277,22 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 
 #endif
 
-
+void sc_AppendBundleName(char *str, int size)
+{
+	CFBundleRef mainBundle;
+	mainBundle = CFBundleGetMainBundle();
+	if(mainBundle){
+		CFDictionaryRef dictRef = CFBundleGetInfoDictionary(mainBundle);
+		CFStringRef strRef;
+		strRef = (CFStringRef)CFDictionaryGetValue(dictRef, CFSTR("CFBundleName"));
+		if(strRef){
+			const char *bundleName = CFStringGetCStringPtr(strRef, kCFStringEncodingMacRoman);
+			sc_AppendToPath(str, size, bundleName);
+			return;
+		}
+	}
+	sc_AppendToPath(str, size, "SuperCollider");
+}
 
 // Support for Extensions
 
@@ -309,13 +324,18 @@ void sc_GetSystemAppSupportDirectory(char *str, int size)
 #elif defined(SC_IPHONE)
 			"/",
 #elif defined(__APPLE__)
-			"/Library/Application Support/SuperCollider",
+			"/Library/Application Support",
 #elif defined(_WIN32)
 			( getenv("SC_SYSAPPSUP_PATH")==NULL ) ? "C:\\SuperCollider" : getenv("SC_SYSAPPSUP_PATH"),
 #else
 			"/usr/local/share/SuperCollider",
 #endif
 			size);
+			
+#if defined(__APPLE__)
+	// Get the main bundle name for the app from the enclosed Info.plist 
+	sc_AppendBundleName(str, size);
+#endif
 }
 
 
@@ -336,7 +356,9 @@ void sc_GetUserAppSupportDirectory(char *str, int size)
 #if defined(SC_IPHONE)
 	sc_AppendToPath(str, size, "Documents");
 #elif defined(__APPLE__)
-	sc_AppendToPath(str, size, "Library/Application Support/SuperCollider");
+	// Get the main bundle name for the app
+	sc_AppendToPath(str, size, "Library/Application Support");
+	sc_AppendBundleName(str, size);
 #elif defined(_WIN32)
 	sc_AppendToPath(str, size, "SuperCollider");
 #else

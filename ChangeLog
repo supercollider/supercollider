@@ -5,6 +5,7 @@ User-visible changes (started after 3.4)
 * only warn about FunctionDef not being inlined if a compiler flag is set - ds
 * new help system (SCDoc) - jli
 * new help browser (HelpBrowser) - jle/jli
+* on OS X, standalone apps look use appSupportDir with the app's name = jp
 * bitwise ops (<< >> & | ^) on ugens - jli
 * new VarLag ugen - rk/jli
 * new method: Node-onFree, run function when node finishes - jli
