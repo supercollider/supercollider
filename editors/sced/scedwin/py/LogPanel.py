@@ -1,4 +1,6 @@
 # sced (SuperCollider mode for gedit)
+#
+# Copyright 2012 Jakob Leben
 # Copyright 2009 Artem Popov and other contributors (see AUTHORS)
 #
 #    sced is free software: 
