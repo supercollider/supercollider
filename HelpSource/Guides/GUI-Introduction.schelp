@@ -229,9 +229,9 @@ subsection:: Keyboard and mouse actions
 
 All the views can be assigned actions to specific mouse and keyboard events, no matter what other effects those events might have on the view or what other specialized actions or hooks the view might trigger on these events.
 
-You can assign actions to mouse events generated when the mouse pointer enters the space of a view, when it moves over them, and when a mouse button is pressed or released.
+You can assign actions to strong::mouse events:: generated when the mouse pointer enters the space of a view, when it moves over them, and when a mouse button is pressed or released.
 
-See link::Classes/View#mouse_actions:: for details.
+See link::Classes/View#mouse_actions#View: Mouse Actions:: for details.
 
 In the following example the StaticText will report whether the Button is pressed or released.
 
@@ -243,9 +243,9 @@ b.mouseDownAction = { t.string = "Button pressed" };
 b.mouseUpAction = { t.string = "Button released" };
 ::
 
-You can assign actions to keyboard events generated whenever a key is pressed or released while the view has keyboard focus. Keyboard focus is a state of a view in which it has exclusive priority to respond to keyboard events. A view that has keyboard focus typically in a way visually indicates so. On most platforms, pressing the Tab key will switch the keyboard focus between views in the active window and clicking on a view will give it focus.
+You can assign actions to strong::keyboard events:: generated whenever a key is pressed or released while the view has keyboard focus. Keyboard focus is a state of a view in which it has exclusive priority to respond to keyboard events. A view that has keyboard focus typically in a way visually indicates so. On most platforms, pressing the Tab key will switch the keyboard focus between views in the active window and clicking on a view will give it focus.
 
-See link::Classes/View#key_actions:: for details.
+See link::Classes/View#key_actions#View: Key Actions:: for details.
 
 Typing text into any of the TextFields in the following example will change the color of the rectangle bellow, for each TextField a different color.
 
@@ -261,6 +261,8 @@ y.keyDownAction = {t.background = Color.blue};
 y.keyUpAction = ~reset;
 ~reset.value;
 ::
+
+If a key or mouse event is not handled by the view on which it occurs, it may strong::propagate:: to the parent view, and trigger the parent's action. See link::Classes/View#key_and_mouse_event_propagation#View: Key and mouse event propagation:: for detailed explanation.
 
 subsection:: Drag and drop actions
 
