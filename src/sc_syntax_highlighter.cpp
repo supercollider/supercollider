@@ -42,6 +42,8 @@ SyntaxFormatContainer::SyntaxFormatContainer(void)
 
     symbolFormat.setForeground(Qt::magenta);
     charFormat = symbolFormat;
+
+    envVarFormat = symbolFormat;
 }
 
 SyntaxFormatContainer gSyntaxFormatContainer;
@@ -56,12 +58,15 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent):
 
     classRegexp.setPattern("\\b[A-Z]\\w*\\b");
 
-    primitiveRegexp.setPattern("\\b_\\w*\\b");
+    primitiveRegexp.setPattern("\\b_\\w+\\b");
     symbolRegexp.setPattern("(\\\\\\w*|\\'([^\\'\\\\]*(\\\\.[^\\'\\\\]*)*)\\')");
     symbolContentRegexp.setPattern("([^\'\\\\]*(\\\\.[^\'\\\\]*)*)");
     charRegexp.setPattern("\\b\\$(\\w|(\\\\\\S))\\b");
     stringRegexp.setPattern("\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*)\"");
     stringContentRegexp.setPattern("([^\"\\\\]*(\\\\.[^\"\\\\]*)*)");
+
+    envVarRegexp.setPattern("~\\w+");
+    symbolArgRegexp.setPattern("\\b[a-z]\\w*\\:");
 
     floatRegexp.setPattern("\\b-?((\\d*\\.?\\d+([eE][-+]?\\d+)?(pi)?)|pi)\\b");
     hexIntRegexp.setPattern("\\b0(x|X)(\\d|[a-f]|[A-F])+\\b");
@@ -112,7 +117,7 @@ SyntaxHighlighter::highligherFormat SyntaxHighlighter::findCurrentFormat(const Q
 
     QVector<QRegExp> regexps;
     regexps << classRegexp << keywordRegexp << buildinsRegexp << primitiveRegexp << symbolRegexp << stringRegexp
-            << charRegexp  << floatRegexp << hexIntRegexp << radixFloatRegex
+            << charRegexp  << floatRegexp << hexIntRegexp << radixFloatRegex << envVarRegexp << symbolArgRegexp
             << singleLineCommentRegexp << commentStartRegexp;
 
     int i = 0;
@@ -187,7 +192,12 @@ void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentI
             break;
 
         case FormatSymbol:
+        case FormatSymbolArg:
             setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.symbolFormat);
+            break;
+
+        case FormatEnvVar:
+            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.envVarFormat);
             break;
 
         case FormatString:

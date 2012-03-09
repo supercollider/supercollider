@@ -33,7 +33,7 @@ public:
 private:
     friend class SyntaxHighlighter;
     QTextCharFormat keywordFormat, buildinsFormat, primitiveFormat, classFormat, commentFormat, stringFormat,
-        symbolFormat, charFormat, numberLiteralFormat, plainFormat;
+        symbolFormat, charFormat, numberLiteralFormat, envVarFormat, plainFormat;
 };
 
 extern SyntaxFormatContainer gSyntaxFormatContainer;
@@ -55,6 +55,8 @@ class SyntaxHighlighter:
         FormatFloat,
         FormatHexInt,
         FormatRadixFloat,
+        FormatEnvVar,
+        FormatSymbolArg,
 
         FormatSingleLineComment,
         FormatMultiLineCommentStart,
@@ -81,17 +83,9 @@ private:
 
     highligherFormat findCurrentFormat(QString const & text, int & currentIndex, int & lengthOfMatch);
 
-    QRegExp classRegexp;
-    QRegExp keywordRegexp;
-    QRegExp buildinsRegexp;
-    QRegExp primitiveRegexp;
-    QRegExp symbolRegexp, symbolContentRegexp;
-    QRegExp charRegexp;
-    QRegExp stringRegexp, stringContentRegexp;
-    QRegExp floatRegexp;
-    QRegExp hexIntRegexp, radixFloatRegex;
-    QRegExp commentStartRegexp, commentEndRegexp;
-    QRegExp singleLineCommentRegexp;
+    QRegExp classRegexp, keywordRegexp, buildinsRegexp, primitiveRegexp, symbolRegexp, symbolContentRegexp,
+        charRegexp, stringRegexp, stringContentRegexp, floatRegexp, hexIntRegexp, radixFloatRegex,
+        commentStartRegexp, commentEndRegexp, singleLineCommentRegexp, envVarRegexp, symbolArgRegexp;
 };
 
 }
