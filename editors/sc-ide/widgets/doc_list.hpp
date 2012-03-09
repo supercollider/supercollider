@@ -21,7 +21,7 @@
 #ifndef SCIDE_WIDGETS_DOC_LIST_HPP_INCLUDED
 #define SCIDE_WIDGETS_DOC_LIST_HPP_INCLUDED
 
-#include "../doc_manager.hpp"
+#include "../core/doc_manager.hpp"
 
 #include <QListWidget>
 #include <QDockWidget>

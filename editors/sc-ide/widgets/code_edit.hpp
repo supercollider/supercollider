@@ -21,13 +21,12 @@
 #ifndef SCIDE_WIDGETS_CODE_EDIT_HPP_INCLUDED
 #define SCIDE_WIDGETS_CODE_EDIT_HPP_INCLUDED
 
-#include "../doc_manager.hpp"
-
 #include <QPlainTextEdit>
 
 namespace ScIDE
 {
 
+class Document;
 class CodeEditor;
 
 class LineIndicator : public QWidget

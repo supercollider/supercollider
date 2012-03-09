@@ -19,8 +19,8 @@
 */
 
 #include "main_window.hpp"
-#include "../main.hpp"
-#include "../doc_manager.hpp"
+#include "../core/main.hpp"
+#include "../core/doc_manager.hpp"
 #include "code_edit.hpp"
 #include "multi_editor.hpp"
 #include "cmd_line.hpp"

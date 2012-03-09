@@ -18,31 +18,42 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "widgets/main_window.hpp"
-#include "main.hpp"
+#ifndef SCIDE_MAIN_HPP_INCLUDED
+#define SCIDE_MAIN_HPP_INCLUDED
 
-#include <QApplication>
+#include <QObject>
 #include <QAction>
 
-using namespace ScIDE;
+#include "sc_ipc.hpp"
+#include "sc_process.hpp"
+#include "doc_manager.hpp"
 
-int main( int argc, char *argv[] )
+namespace ScIDE {
+
+class Main:
+    public QObject
 {
-    Main * main = Main::instance();
+    Q_OBJECT
 
-    QApplication app(argc, argv);
+public:
+    static Main * instance(void)
+    {
+        static Main * singleton = new Main;
+        return singleton;
+    }
 
-    MainWindow *win = new MainWindow(main);
+    DocumentManager * documentManager() { return mDocManager;  }
+    SCProcess * scProcess(void)         { return mSCProcess;   }
+    SCIpcServer *scIpcServer(void)      { return mSCIpcServer; }
 
-    main->documentManager()->create(); // Create a new doc at startup
+private:
+    Main(void);
 
-    win->showMaximized();
+    SCProcess * mSCProcess;
+    SCIpcServer *mSCIpcServer;
+    DocumentManager *mDocManager;
+};
 
-    return app.exec();
 }
 
-Main::Main(void) :
-    mDocManager( new DocumentManager(this) ),
-    mSCProcess( new SCProcess(this) ),
-    mSCIpcServer( new SCIpcServer(this) )
-{}
+#endif

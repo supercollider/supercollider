@@ -19,7 +19,7 @@
 */
 
 #include "doc_list.hpp"
-#include "../doc_manager.hpp"
+#include "../core/doc_manager.hpp"
 
 namespace ScIDE {
 

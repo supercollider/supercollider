@@ -19,6 +19,7 @@
 */
 
 #include "code_edit.hpp"
+#include "../core/doc_manager.hpp"
 
 #include <QPainter>
 #include <QPaintEvent>
