@@ -114,7 +114,7 @@ Pfset : FuncFilterPattern {
 		^super.new(func, pattern).cleanupFunc_(cleanupFunc)
 	}
 	embedInStream { arg inevent;
-		var event, cleanup = IneventStreamCleanup.new;
+		var event, cleanup = EventStreamCleanup.new;
 			// cleanup should actually not be passed in
 			// but retaining (temporarily) for backward compatibility
 		var envir = Event.make({ func.value(cleanup) });
