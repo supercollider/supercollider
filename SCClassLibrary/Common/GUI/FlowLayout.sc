@@ -48,6 +48,7 @@ FlowLayout : Decorator {
 		left = left + width + gap.x;
 		maxHeight = max(maxHeight, height);
 	}
+	remove { }
 	nextLine {
 		left = bounds.left + margin.x;
 		top = top + maxHeight + gap.y;

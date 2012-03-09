@@ -54,6 +54,8 @@ QView : QObject {
   }
 
   remove {
+    if( this.parent.notNil and: { this.parent.decorator.notNil } )
+      { this.parent.decorator.remove(this) };
     this.destroy;
     wasRemoved = true;
     this.children.do { |child| child.remove };
