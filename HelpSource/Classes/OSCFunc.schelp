@@ -93,9 +93,9 @@ EXAMPLES::
 code::
 n = NetAddr("127.0.0.1", NetAddr.langPort); // local machine
 
-OSCFunc.newMatching({|time, msg, addr| \matching.postln}, '/chat', n); // path matching
-OSCFunc({|time, msg, addr| \oneShot.postln}, '/chat', n).oneShot; // once only
-OSCdef(\test, {|time, msg, addr| \unmatching.postln}, '/chat', n); // def style
+OSCFunc.newMatching({|msg, time, addr, recvPort| \matching.postln}, '/chat', n); // path matching
+OSCFunc({|msg, time, addr, recvPort| \oneShot.postln}, '/chat', n).oneShot; // once only
+OSCdef(\test, {|msg, time, addr, recvPort| \unmatching.postln}, '/chat', n); // def style
 
 m = NetAddr("127.0.0.1", NetAddr.langPort); // loopback
 
@@ -114,7 +114,7 @@ AbstractResponderFunc.allDisabled
 
 // change funcs
 OSCdef(\test).enable;
-OSCdef(\test, {|time, msg, addr| 'Changed Unmatching'.postln}, '/chat', n); // replace at key \test
+OSCdef(\test, {|msg, time, addr, recvPort| 'Changed Unmatching'.postln}, '/chat', n); // replace at key \test
 m.sendMsg("/chat", "Hello App 1");
 OSCdef(\test).add(f = {\foo.postln}); // add another func
 m.sendMsg("/chat", "Hello App 1");
