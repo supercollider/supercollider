@@ -506,8 +506,12 @@ SynthDescLib {
 		all = IdentityDictionary.new;
 		global = this.new(\global);
 
-		ServerBoot.add {|server|
-			this.send(server)
+		ServerBoot.add { |server|
+			// tryToLoadReconstructedDefs = false:
+			// since this is done automatically, w/o user action,
+			// it should not try to do things that will cause warnings
+			// (or errors, if one of the servers is not local)
+			this.send(server, false)
 		}
 	}
 
@@ -521,8 +525,8 @@ SynthDescLib {
 		^global
 	}
 
-	*send {
-		global.send;
+	*send { |server, tryToLoadReconstructedDefs = true|
+		global.send(server, tryToLoadReconstructedDefs);
 	}
 
 	*read { arg path;
@@ -559,17 +563,19 @@ SynthDescLib {
 	}
 	*match { |key| ^global.match(key) }
 
-	send {|aServer|
-		var targetServers;
-		if (aServer.isNil) {
-			targetServers = servers
-		} {
-			targetServers = #[aServer]
-		};
-
+	send { |aServer, tryToLoadReconstructedDefs = true|
 		// sent to all
-		servers.do {|server|
-			synthDescs.do {|desc| desc.send(server.value) };
+		(aServer ? servers).do { |server|
+			server = server.value;
+			synthDescs.do { |desc|
+				if(desc.def.metadata.trueAt(\shouldNotSend).not) {
+					desc.send(server.value)
+				} {
+					if(tryToLoadReconstructedDefs) {
+						desc.def.loadReconstructed(server);
+					};
+				};
+			};
 		};
 	}
 
@@ -578,7 +584,6 @@ SynthDescLib {
 			path = SynthDef.synthDefDir ++ "*.scsyndef";
 		};
 		synthDescs = SynthDesc.read(path, true, synthDescs);
-//		postf("SynthDescLib '%' read of '%' done.\n", name, path);
 	}
 }
 
