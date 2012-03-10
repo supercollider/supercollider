@@ -241,7 +241,7 @@ OSCFunc : AbstractResponderFunc {
 		^super.new.init(func, path, srcID, recvPort, argTemplate, dispatcher ? defaultDispatcher);
 	}
 
-	*newMatching { arg func, path, srcID, argTemplate, recvPort;
+	*newMatching { arg func, path, srcID, recvPort, argTemplate;
 		^super.new.init(func, path, srcID, recvPort, argTemplate, defaultMatchingDispatcher);
 	}
 
@@ -280,7 +280,7 @@ OSCFunc : AbstractResponderFunc {
 		allFuncProxies.add(this);
 	}
 
-	printOn { arg stream; stream << this.class.name << "(" <<* [path, srcID, argTemplate] << ")" }
+	printOn { arg stream; stream << this.class.name << "(" <<* [path, srcID, recvPort, argTemplate] << ")" }
 
 }
 
@@ -312,7 +312,7 @@ OSCdef : OSCFunc {
 		^res
 	}
 
-	*newMatching { arg key, func, path, srcID, argTemplate, recvPort;
+	*newMatching { arg key, func, path, srcID, recvPort, argTemplate;
 		^this.new(key, func, path, srcID, recvPort, argTemplate, defaultMatchingDispatcher);
 	}
 
@@ -320,7 +320,7 @@ OSCdef : OSCFunc {
 
 	free { all[key] = nil; super.free; }
 
-	printOn { arg stream; stream << this.class.name << "(" <<* [key, path, srcID, argTemplate] << ")" }
+	printOn { arg stream; stream << this.class.name << "(" <<* [key, path, srcID, recvPort, argTemplate] << ")" }
 
 	*freeAll {
 		var objs = all.shallowCopy;
