@@ -72,6 +72,13 @@ MainWindow::MainWindow(Main * main) :
             Qt::QueuedConnection);
 
     createMenus();
+
+    QIcon icon;
+    icon.addFile(":/icons/sc-cube-128");
+    icon.addFile(":/icons/sc-cube-48");
+    icon.addFile(":/icons/sc-cube-32");
+    icon.addFile(":/icons/sc-cube-16");
+    QApplication::setWindowIcon(icon);
 }
 
 void MainWindow::createMenus()
