@@ -34,6 +34,7 @@ set ( ide_src
 include( ${QT_USE_FILE} )
 
 qt4_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
+qt4_add_resources( ide_rcc resources.qrc )
 
-add_executable( scide ${ide_src} ${ide_moc_src} )
+add_executable( scide ${ide_src} ${ide_moc_src} ${ide_rcc} )
 target_link_libraries( scide ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} )
