@@ -26,6 +26,7 @@
 #include "cmd_line.hpp"
 #include "doc_list.hpp"
 #include "post_window.hpp"
+#include "settings/dialog.hpp"
 
 #include <QAction>
 #include <QShortcut>
@@ -118,6 +119,13 @@ void MainWindow::createMenus()
     mMain->scProcess()->action(ScIDE::SCProcess::StopMain)
         ->setShortcut(QKeySequence(tr("Ctrl+.", "Language|Stop Main")));
 
+    // Settings
+
+    mActions[ShowSettings] = act = new QAction(tr("&Configure IDE..."), this);
+    act->setStatusTip(tr("Show configuration dialog"));
+    connect(act, SIGNAL(triggered()), this, SLOT(showSettings()));
+
+
     QMenu *menu;
     QMenu *submenu;
 
@@ -170,6 +178,11 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::RunMain) );
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::StopMain) );
+
+    menuBar()->addMenu(menu);
+
+    menu = new QMenu(tr("&Settings"), this);
+    menu->addAction( mActions[ShowSettings] );
 
     menuBar()->addMenu(menu);
 }
@@ -231,6 +244,12 @@ void MainWindow::toggleComandLineFocus()
     }
     else
         cmd->setFocus(Qt::OtherFocusReason);
+}
+
+void MainWindow::showSettings()
+{
+    Settings::Dialog dialog(mMain->settings());
+    dialog.exec();
 }
 
 QWidget *MainWindow::cmdLine()
