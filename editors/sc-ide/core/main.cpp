@@ -18,8 +18,10 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "../widgets/main_window.hpp"
 #include "main.hpp"
+#include "settings.hpp"
+#include "../widgets/main_window.hpp"
+#include "SC_DirUtils.h"
 
 #include <QApplication>
 #include <QAction>
@@ -45,4 +47,11 @@ Main::Main(void) :
     mDocManager( new DocumentManager(this) ),
     mSCProcess( new SCProcess(this) ),
     mSCIpcServer( new SCIpcServer(this) )
-{}
+{
+    char config_dir[PATH_MAX];
+    bool configured = false;
+    sc_GetUserConfigDirectory(config_dir, PATH_MAX);
+    QString settingsFile = QString(config_dir) + SC_PATH_DELIMITER + "sc_ide_conf.yaml";
+
+    mSettings = new QSettings( settingsFile, settingsFormat(), this );
+}

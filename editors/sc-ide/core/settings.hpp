@@ -18,45 +18,19 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_MAIN_HPP_INCLUDED
-#define SCIDE_MAIN_HPP_INCLUDED
+#ifndef SCIDE_SETTINGS_HPP_INCLUDED
+#define SCIDE_SETTINGS_HPP_INCLUDED
 
-#include <QObject>
-#include <QAction>
 #include <QSettings>
 
-#include "sc_ipc.hpp"
-#include "sc_process.hpp"
-#include "doc_manager.hpp"
+Q_DECLARE_METATYPE( QVector<QVariant> );
 
 namespace ScIDE {
 
-class Main:
-    public QObject
-{
-    Q_OBJECT
+QSettings::Format settingsFormat();
 
-public:
-    static Main * instance(void)
-    {
-        static Main * singleton = new Main;
-        return singleton;
-    }
+void printSettings (const QSettings *);
 
-    QSettings *settings()                { return mSettings;    }
-    DocumentManager * documentManager() { return mDocManager;  }
-    SCProcess * scProcess(void)         { return mSCProcess;   }
-    SCIpcServer *scIpcServer(void)      { return mSCIpcServer; }
+} // namespace ScIDE
 
-private:
-    Main(void);
-
-    QSettings *mSettings;
-    SCProcess * mSCProcess;
-    SCIpcServer *mSCIpcServer;
-    DocumentManager *mDocManager;
-};
-
-}
-
-#endif
+#endif // SCIDE_SETTINGS_HPP_INCLUDED

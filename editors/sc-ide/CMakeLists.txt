@@ -24,12 +24,22 @@ set ( ide_src
     core/sig_mux.cpp
     core/doc_manager.cpp
     core/sc_syntax_highlighter.cpp
+    core/settings.cpp
     widgets/main_window.cpp
     widgets/code_edit.cpp
     widgets/multi_editor.cpp
     widgets/doc_list.cpp
     widgets/cmd_line.cpp
 )
+
+list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp)
+
+file(GLOB yaml_sources ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/src/*cpp)
+list(APPEND ide_src ${yaml_sources})
+
+include_directories(${CMAKE_SOURCE_DIR}/include/common)
+include_directories(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
+include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 
 include( ${QT_USE_FILE} )
 
