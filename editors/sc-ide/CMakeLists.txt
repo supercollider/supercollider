@@ -17,6 +17,10 @@ set ( ide_moc_hdr
     widgets/multi_editor.hpp
     widgets/doc_list.hpp
     widgets/cmd_line.hpp
+    widgets/settings/dialog.hpp
+    widgets/settings/sclang_page.hpp
+    widgets/settings/editor_page.hpp
+    widgets/util/path_chooser_widget.hpp
 )
 
 set ( ide_src
@@ -30,6 +34,15 @@ set ( ide_src
     widgets/multi_editor.cpp
     widgets/doc_list.cpp
     widgets/cmd_line.cpp
+    widgets/settings/dialog.cpp
+    widgets/settings/sclang_page.cpp
+    widgets/settings/editor_page.cpp
+)
+
+set( ide_forms
+    forms/settings_dialog.ui
+    forms/settings_sclang.ui
+    forms/settings_editor.ui
 )
 
 list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp)
@@ -46,13 +59,17 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
+# Needed for auto-generated forms headers:
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets/util)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 include( ${QT_USE_FILE} )
 
 qt4_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
+qt4_wrap_ui( ide_forms_src ${ide_forms} )
 qt4_add_resources( ide_rcc resources.qrc )
 
-add_executable( scide ${ide_src} ${ide_moc_src} ${ide_rcc} )
+add_executable( scide ${ide_src} ${ide_moc_src} ${ide_forms_src} ${ide_rcc} )
 target_link_libraries( scide ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} )
 
 if(APPLE)

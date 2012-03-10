@@ -48,6 +48,9 @@ public:
         EvaluateCurrentFile,
         EvaluateSelectedRegion,
 
+        // Settings
+        ShowSettings,
+
         ActionCount
     };
 
@@ -59,6 +62,7 @@ public:
 
 public Q_SLOTS:
     void toggleComandLineFocus();
+    void showSettings();
 
 private Q_SLOTS:
     void evaluateCurrentRegion(); // either selection, or current line
