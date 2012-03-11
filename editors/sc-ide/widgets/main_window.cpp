@@ -147,6 +147,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::IndentMore) );
     menu->addAction( mEditors->action(MultiEditor::IndentLess) );
+    menu->addAction( mEditors->action(MultiEditor::SpaceIndent) );
 
     menuBar()->addMenu(menu);
 

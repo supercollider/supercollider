@@ -135,6 +135,10 @@ void MultiEditor::createActions()
     act->setStatusTip(tr("Decrease indentation of selected lines"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(indentLess()));
 
+    mActions[SpaceIndent] = act = new QAction(tr("Use Spaces Instead of Tabs"), this);
+    act->setCheckable(true);
+    act->setChecked(true);
+
     // View
 
     mActions[EnlargeFont] = act = new QAction(
@@ -220,6 +224,7 @@ void MultiEditor::onOpen( Document *doc )
 {
     CodeEditor *editor = new CodeEditor();
     editor->setDocument(doc);
+    editor->setSpaceIndent(mActions[SpaceIndent]->isChecked());
 
     QTextDocument *tdoc = doc->textDocument();
 
@@ -233,6 +238,8 @@ void MultiEditor::onOpen( Document *doc )
     mModificationMapper.setMapping(tdoc, editor);
     connect(tdoc, SIGNAL(modificationChanged(bool)),
             &mModificationMapper, SLOT(map()));
+    connect(mActions[SpaceIndent], SIGNAL(triggered(bool)),
+            editor, SLOT(setSpaceIndent(bool)));
 }
 
 void MultiEditor::onClose( Document *doc )

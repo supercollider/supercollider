@@ -54,6 +54,7 @@ public:
         Paste,
         IndentMore,
         IndentLess,
+        SpaceIndent,
 
         // View
         EnlargeFont,

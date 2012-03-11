@@ -69,6 +69,7 @@ CodeEditor::CodeEditor( QWidget *parent ) :
     _lineIndicator( new LineIndicator(this) ),
     mDoc(0),
     mIndentWidth(4),
+    mSpaceIndent(true),
     mShowWhitespace(false)
 {
     QFont fnt(font());
@@ -252,20 +253,45 @@ void CodeEditor::indent( bool less )
         QTextCursor c( block );
         QString text( block.text() );
 
-        int i = 0;
-        while(text[i] == ' ')
-            ++i;
+        int pos = 0;
+        int spaces = 0;
+        while (true)
+        {
+            QChar chr(text[pos]);
+            if( chr == ' ' )
+                ++spaces;
+            else if( chr == '\t' )
+                spaces += indent;
+            else
+                break;
+            ++pos;
+        }
 
-        if( less ) {
-            int i0 = (i / indent) * indent;
-            if( i0 == i && i0 > 0 ) i0 -= indent;
-            while( i0++ < i )
-                c.deleteChar();
+        int tabs = spaces / indent;
+        if (less) {
+            if(tabs * indent == spaces && tabs > 0)
+                --tabs;
         }
         else {
-            int i1 = (i / indent + 1) * indent;
-            while( i++ < i1 )
+            ++tabs;
+        }
+
+        c.movePosition( QTextCursor::NextCharacter, QTextCursor::KeepAnchor, pos );
+
+        if( tabs == 0 )
+        {
+            c.removeSelectedText();
+        }
+        else if( mSpaceIndent )
+        {
+            spaces = tabs * indent;
+            while(spaces--)
                 c.insertText(" ");
+        }
+        else
+        {
+            while(tabs--)
+                c.insertText("\t");
         }
 
         if(block != endBlock)
