@@ -22,23 +22,24 @@
 #include "code_edit.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/sig_mux.hpp"
+#include "../core/main.hpp"
 
 namespace ScIDE {
 
-MultiEditor::MultiEditor( DocumentManager *manager, QWidget * parent ) :
+MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QTabWidget(parent),
-    mDocManager(manager),
+    mDocManager(main->documentManager()),
     mSigMux(new SignalMultiplexer(this))
 {
     setDocumentMode(true);
     setTabsClosable(true);
     setMovable(true);
 
-    connect(manager, SIGNAL(opened(Document*)),
+    connect(mDocManager, SIGNAL(opened(Document*)),
             this, SLOT(onOpen(Document*)));
-    connect(manager, SIGNAL(closed(Document*)),
+    connect(mDocManager, SIGNAL(closed(Document*)),
             this, SLOT(onClose(Document*)));
-    connect(manager, SIGNAL(saved(Document*)),
+    connect(mDocManager, SIGNAL(saved(Document*)),
             this, SLOT(update(Document*)));
 
     connect(this, SIGNAL(currentChanged(int)),
@@ -49,8 +50,12 @@ MultiEditor::MultiEditor( DocumentManager *manager, QWidget * parent ) :
     connect(&mModificationMapper, SIGNAL(mapped(QWidget*)),
             this, SLOT(onModificationChanged(QWidget*)));
 
+    connect(main, SIGNAL(storeSettingsDemand(QSettings*)),
+            this, SLOT(storeSettings(QSettings*)));
+
     createActions();
     updateActions();
+    applySettings(main->settings());
 }
 
 void MultiEditor::createActions()
@@ -156,6 +161,12 @@ void MultiEditor::createActions()
     mActions[ShowWhitespace] = act = new QAction(tr("Show Spaces and Tabs"), this);
     act->setCheckable(true);
     mSigMux->connect(act, SIGNAL(triggered(bool)), SLOT(setShowWhitespace(bool)));
+
+    // Language
+
+    mActions[StepForwardOnEvaluation] = act = new QAction(tr("&Step Forward"), this);
+    act->setStatusTip(tr("Step to the next line on evaluation"));
+    act->setCheckable(true);
 }
 
 void MultiEditor::updateActions()
@@ -177,6 +188,24 @@ void MultiEditor::updateActions()
     mActions[ShrinkFont]->setEnabled( editor );
     mActions[ShowWhitespace]->setEnabled( editor );
     mActions[ShowWhitespace]->setChecked( editor && editor->showWhitespace() );
+}
+
+void MultiEditor::applySettings( QSettings *settings )
+{
+    settings->beginGroup("IDE/editor");
+    mActions[SpaceIndent]->setChecked( settings->value("space-indent", true).toBool() );
+    mActions[StepForwardOnEvaluation]->setChecked (
+        settings->value("step-forward-evaluation", false).toBool() );
+    settings->endGroup();
+}
+
+void MultiEditor::storeSettings( QSettings *settings )
+{
+    settings->beginGroup("IDE/editor");
+    settings->setValue("space-indent", mActions[SpaceIndent]->isChecked());
+    settings->setValue("step-forward-evaluation",
+        mActions[StepForwardOnEvaluation]->isChecked());
+    settings->endGroup();
 }
 
 void MultiEditor::newDocument()

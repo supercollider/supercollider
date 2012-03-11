@@ -48,6 +48,15 @@ public:
     SCProcess * scProcess(void)         { return mSCProcess;   }
     SCIpcServer *scIpcServer(void)      { return mSCIpcServer; }
 
+public Q_SLOTS:
+    void storeSettings() {
+        Q_EMIT(storeSettingsDemand(mSettings));
+        mSettings->sync();
+    }
+
+Q_SIGNALS:
+    void storeSettingsDemand(QSettings *);
+
 private:
     Main(void);
 
