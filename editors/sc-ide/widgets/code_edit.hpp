@@ -67,6 +67,7 @@ public Q_SLOTS:
     void zoomOut(int steps = 1);
     void indentMore() { indent(false); }
     void indentLess() { indent(true); }
+    void setSpaceIndent(bool on) { mSpaceIndent = on; }
     void setShowWhitespace(bool);
 
 protected:
@@ -85,6 +86,7 @@ private:
     LineIndicator *_lineIndicator;
     Document *mDoc;
     int mIndentWidth;
+    bool mSpaceIndent;
     bool mShowWhitespace;
 
 };
