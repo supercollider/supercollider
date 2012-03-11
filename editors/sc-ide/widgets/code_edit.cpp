@@ -68,7 +68,8 @@ CodeEditor::CodeEditor( QWidget *parent ) :
     QPlainTextEdit( parent ),
     _lineIndicator( new LineIndicator(this) ),
     mDoc(0),
-    mIndentWidth(4)
+    mIndentWidth(4),
+    mShowWhitespace(false)
 {
     QFont fnt(font());
     fnt.setFamily("monospace");
@@ -92,6 +93,14 @@ void CodeEditor::setDocument( Document *doc )
 {
     QTextDocument *tdoc = doc->textDocument();
 
+    QFontMetricsF fm(font());
+
+    QTextOption opt;
+    opt.setTabStop( fm.width(' ') * mIndentWidth );
+    if(mShowWhitespace)
+        opt.setFlags( QTextOption::ShowTabsAndSpaces );
+
+    tdoc->setDefaultTextOption(opt);
     tdoc->setDefaultFont(font());
     tdoc->setDocumentLayout( new QPlainTextDocumentLayout(tdoc) );
 
@@ -126,6 +135,19 @@ void CodeEditor::zoomOut(int steps)
     setFont(f);
 }
 
+void CodeEditor::setShowWhitespace(bool show)
+{
+    mShowWhitespace = show;
+
+    QTextDocument *doc = QPlainTextEdit::document();
+    QTextOption opt( doc->defaultTextOption() );
+    if( show )
+        opt.setFlags( opt.flags() | QTextOption::ShowTabsAndSpaces );
+    else
+        opt.setFlags( opt.flags() & ~QTextOption::ShowTabsAndSpaces );
+    doc->setDefaultTextOption(opt);
+}
+
 bool CodeEditor::event( QEvent *e )
 {
     switch (e->type())
@@ -148,6 +170,20 @@ bool CodeEditor::event( QEvent *e )
         default:;
     }
     return QPlainTextEdit::event(e);
+}
+
+void CodeEditor::changeEvent( QEvent *e )
+{
+    if( e->type() == QEvent::FontChange ) {
+        // adjust tab stop to match mIndentWidth * width of space
+        QTextDocument *doc = QPlainTextEdit::document();
+        QFontMetricsF fm(font());
+        QTextOption opt( doc->defaultTextOption() );
+        opt.setTabStop( fm.width(' ') * mIndentWidth );
+        doc->setDefaultTextOption(opt);
+    }
+
+    QPlainTextEdit::changeEvent(e);
 }
 
 void CodeEditor::updateLayout()
