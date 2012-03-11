@@ -24,6 +24,7 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QTextBlock>
+#include <QKeyEvent>
 
 namespace ScIDE
 {
@@ -66,7 +67,8 @@ int LineIndicator::widthForLineCount( int lineCount )
 CodeEditor::CodeEditor( QWidget *parent ) :
     QPlainTextEdit( parent ),
     _lineIndicator( new LineIndicator(this) ),
-    mDoc(0)
+    mDoc(0),
+    mIndentWidth(4)
 {
     QFont fnt(font());
     fnt.setFamily("monospace");
@@ -124,6 +126,30 @@ void CodeEditor::zoomOut(int steps)
     setFont(f);
 }
 
+bool CodeEditor::event( QEvent *e )
+{
+    switch (e->type())
+    {
+        case QEvent::KeyPress:
+        {
+            QKeyEvent *ke = static_cast<QKeyEvent*>(e);
+            int key = ke->key();
+            switch (key)
+            {
+                case Qt::Key_Tab:
+                case Qt::Key_Backtab:
+                    indent( key == Qt::Key_Backtab );
+                    e->accept();
+                    return true;
+                default:;
+            }
+            break;
+        }
+        default:;
+    }
+    return QPlainTextEdit::event(e);
+}
+
 void CodeEditor::updateLayout()
 {
     setViewportMargins( _lineIndicator->width(), 0, 0, 0 );
@@ -172,6 +198,47 @@ void CodeEditor::paintLineIndicator( QPaintEvent *e )
         bottom = top + (int) blockBoundingRect(block).height();
         ++blockNumber;
     }
+}
+
+void CodeEditor::indent( bool less )
+{
+    QTextDocument *doc = QPlainTextEdit::document();
+    QTextCursor c(textCursor());
+    int pos = c.position();
+    int anc = c.anchor();
+    QTextBlock block = doc->findBlock(qMin(pos,anc));
+    QTextBlock endBlock = anc != pos ? doc->findBlock(qMax(pos,anc)) : block;
+    int indent = mIndentWidth;
+
+    c.beginEditBlock();
+
+    while (true) {
+        QTextCursor c( block );
+        QString text( block.text() );
+
+        int i = 0;
+        while(text[i] == ' ')
+            ++i;
+
+        if( less ) {
+            int i0 = (i / indent) * indent;
+            if( i0 == i && i0 > 0 ) i0 -= indent;
+            while( i0++ < i )
+                c.deleteChar();
+        }
+        else {
+            int i1 = (i / indent + 1) * indent;
+            while( i++ < i1 )
+                c.insertText(" ");
+        }
+
+        if(block != endBlock)
+            block = block.next();
+        else
+            break;
+    }
+
+    c.endEditBlock();
 }
 
 } // namespace ScIDE
