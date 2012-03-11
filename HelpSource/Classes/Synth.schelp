@@ -214,6 +214,37 @@ code::
 x.set(\freq, 440, \amp, 0.5)
 ::
 
+method:: seti
+Set part of an arrayed control.
+argument:: ...args
+A sequence of strong:: name, index, value :: triplets.
+
+definitionlist::
+## name || The name of the arrayed control
+## index || The index into the array
+## value || The new value to set, can be an array to set a range of elements.
+::
+
+discussion::
+note::
+The synthdef has to be .add'ed, so that it is stored in the link::Classes/SynthDescLib::.
+::
+Example:
+code::
+(
+s.waitForBoot {
+    SynthDef(\helpSeti, { |freqs = #[100,150,200,250]|
+        Out.ar(0, SinOsc.ar(freqs.poll,0,0.1).sum ! 2)
+    }).add;
+    s.sync;
+    x = Synth(\helpSeti);
+}
+)
+x.seti(\freqs,2,600); // set only the third element
+x.seti(\freqs,1,[400,410]); // set second and third element
+x.free;
+::
+
 Examples::
 code::
 // boot the default server
