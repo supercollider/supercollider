@@ -99,14 +99,14 @@ void MultiEditor::createActions()
     mSigMux->connect(SIGNAL(undoAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Redo] = act = new QAction(
-        QIcon::fromTheme("edit-redo"), tr("&Redo"), this);
+        QIcon::fromTheme("edit-redo"), tr("Re&do"), this);
     act->setShortcuts(QKeySequence::Redo);
     act->setStatusTip(tr("Redo next editing action"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(redo()));
     mSigMux->connect(SIGNAL(redoAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Cut] = act = new QAction(
-        QIcon::fromTheme("edit-cut"), tr("&Cut"), this);
+        QIcon::fromTheme("edit-cut"), tr("Cu&t"), this);
     act->setShortcuts(QKeySequence::Cut);
     act->setStatusTip(tr("Cut text to clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(cut()));
@@ -124,6 +124,16 @@ void MultiEditor::createActions()
     act->setShortcuts(QKeySequence::Paste);
     act->setStatusTip(tr("Paste text from clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(paste()));
+
+    mActions[IndentMore] = act = new QAction(
+        QIcon::fromTheme("format-indent-more"), tr("Indent &More"), this);
+    act->setStatusTip(tr("Increase indentation of selected lines"));
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(indentMore()));
+
+    mActions[IndentLess] = act = new QAction(
+        QIcon::fromTheme("format-indent-less"), tr("Indent &Less"), this);
+    act->setStatusTip(tr("Decrease indentation of selected lines"));
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(indentLess()));
 
     // View
 
@@ -153,6 +163,8 @@ void MultiEditor::updateActions()
     mActions[Copy]->setEnabled( editor && editor->textCursor().hasSelection() );
     mActions[Cut]->setEnabled( mActions[Copy]->isEnabled() );
     mActions[Paste]->setEnabled( editor );
+    mActions[IndentMore]->setEnabled( editor );
+    mActions[IndentLess]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
     mActions[ShrinkFont]->setEnabled( editor );
 }

@@ -52,6 +52,8 @@ public:
         Cut,
         Copy,
         Paste,
+        IndentMore,
+        IndentLess,
 
         // View
         EnlargeFont,
