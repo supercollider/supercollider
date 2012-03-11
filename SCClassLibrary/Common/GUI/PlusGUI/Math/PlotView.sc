@@ -381,15 +381,22 @@ Plotter {
 	}
 
 	makeWindow { |argParent, argBounds|
+		var btnBounds;
 		parent = argParent ? parent;
 		bounds = argBounds ? bounds;
 		gui = GUI.current;
 		if(parent.isNil) {
 			parent = gui.window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
-			bounds = parent.view.bounds.insetBy(5, 0).moveBy(-5, 0);
+			if(GUI.skin.at(\plot).at(\expertMode).not) {
+				btnBounds = this.makeButtons;
+				bounds = parent.view.bounds.insetAll(8,8,btnBounds.width + 4,8);
+			}{
+				bounds = parent.view.bounds.insetBy(8);
+			};
+
 			interactionView = gui.userView.new(parent, bounds);
-			if(GUI.skin.at(\plot).at(\expertMode).not) { this.makeButtons };
-			parent.drawFunc = { this.draw };
+
+			interactionView.drawFunc = { this.draw };
 			parent.front;
 			parent.onClose = { parent = nil };
 
@@ -518,12 +525,18 @@ Plotter {
 		var bounds = string.bounds(font);
 		var padding = 8; // ensure that string is not clipped by round corners
 
-		gui.button.new(parent, Rect(parent.view.bounds.right - 16, 8, bounds.width + padding, bounds.height + padding))
+		bounds.width = bounds.width + padding;
+		bounds.height = bounds.height + padding;
+		bounds = bounds.moveTo( parent.view.bounds.right - bounds.width - 2, 8 );
+
+		gui.button.new(parent, bounds)
 		.states_([["?"]])
 		.focusColor_(Color.clear)
 		.font_(font)
 		.resize_(3)
 		.action_ { this.class.openHelpFile };
+
+		^bounds;
 	}
 
 
@@ -561,7 +574,7 @@ Plotter {
 
 	draw {
 		var b;
-		b = this.drawBounds;
+		b = this.interactionView.bounds;
 		if(b != bounds) {
 			bounds = b;
 			this.updatePlotBounds;
@@ -572,12 +585,13 @@ Plotter {
 	}
 
 	drawBounds {
-		^interactionView.bounds.insetBy(9, 8)
+		^bounds.moveTo(0, 0);
 	}
 
 	// subviews
 
 	updatePlotBounds {
+		var bounds = this.drawBounds;
 		var deltaY = if(data.size > 1 ) { 4.0 } { 0.0 };
 		var distY = bounds.height / data.size;
 		var height = distY - deltaY;
