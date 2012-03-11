@@ -36,7 +36,7 @@ SyntaxFormatContainer::SyntaxFormatContainer(void)
     classFormat.setForeground(Qt::green);
     numberLiteralFormat.setForeground(Qt::green);
 
-    commentFormat.setFontWeight(QFont::Light);
+    commentFormat.setForeground(QColor(220,0,0));
 
     stringFormat.setForeground(Qt::blue);
 
@@ -298,7 +298,6 @@ void SyntaxHighlighter::highlightBlockInComment(const QString& text, int& curren
 
     return;
 }
-
 
 void SyntaxHighlighter::highlightBlock(const QString& text)
 {
