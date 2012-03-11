@@ -58,6 +58,7 @@ public:
         // View
         EnlargeFont,
         ShrinkFont,
+        ShowWhitespace,
 
         ActionRoleCount
     };

@@ -157,6 +157,8 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::EnlargeFont) );
     menu->addAction( mEditors->action(MultiEditor::ShrinkFont) );
+    menu->addSeparator();
+    menu->addAction( mEditors->action(MultiEditor::ShowWhitespace) );
 
     menuBar()->addMenu(menu);
 

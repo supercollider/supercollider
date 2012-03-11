@@ -60,15 +60,18 @@ public:
     CodeEditor( QWidget *parent = 0 );
     Document *document() { return mDoc; }
     void setDocument( Document * );
+    bool showWhitespace() { return mShowWhitespace; }
 
 public Q_SLOTS:
     void zoomIn(int steps = 1);
     void zoomOut(int steps = 1);
     void indentMore() { indent(false); }
     void indentLess() { indent(true); }
+    void setShowWhitespace(bool);
 
 protected:
     virtual bool event( QEvent * );
+    virtual void changeEvent( QEvent * );
 
 private Q_SLOTS:
     void updateLayout();
@@ -82,6 +85,7 @@ private:
     LineIndicator *_lineIndicator;
     Document *mDoc;
     int mIndentWidth;
+    bool mShowWhitespace;
 
 };
 

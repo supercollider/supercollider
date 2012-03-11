@@ -148,6 +148,10 @@ void MultiEditor::createActions()
     act->setShortcut(QKeySequence(tr("Ctrl+-", "View|Shrink Font")));
     act->setStatusTip(tr("Decrease displayed font size"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomOut()));
+
+    mActions[ShowWhitespace] = act = new QAction(tr("Show Spaces and Tabs"), this);
+    act->setCheckable(true);
+    mSigMux->connect(act, SIGNAL(triggered(bool)), SLOT(setShowWhitespace(bool)));
 }
 
 void MultiEditor::updateActions()
@@ -167,6 +171,8 @@ void MultiEditor::updateActions()
     mActions[IndentLess]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
     mActions[ShrinkFont]->setEnabled( editor );
+    mActions[ShowWhitespace]->setEnabled( editor );
+    mActions[ShowWhitespace]->setChecked( editor && editor->showWhitespace() );
 }
 
 void MultiEditor::newDocument()
