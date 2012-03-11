@@ -60,18 +60,28 @@ public:
     CodeEditor( QWidget *parent = 0 );
     Document *document() { return mDoc; }
     void setDocument( Document * );
+
 public Q_SLOTS:
     void zoomIn(int steps = 1);
     void zoomOut(int steps = 1);
+    void indentMore() { indent(false); }
+    void indentLess() { indent(true); }
+
+protected:
+    virtual bool event( QEvent * );
+
 private Q_SLOTS:
     void updateLayout();
     void updateLineIndicator( QRect, int );
+
 private:
     void resizeEvent( QResizeEvent * );
     void paintLineIndicator( QPaintEvent * );
+    void indent( bool less );
 
     LineIndicator *_lineIndicator;
     Document *mDoc;
+    int mIndentWidth;
 
 };
 
