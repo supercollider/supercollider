@@ -503,11 +503,11 @@ Synth : Node {
 			action.value(msg.copyToEnd(4)); r.remove } ).add;
 		server.sendMsg(45, nodeID, index, count); //"/s_getn"
 	}
-	
+
 	getnMsg { arg index, count;
 		^[45, nodeID, index, count]; //"/s_getn"
 	}
-	
+
 	seti { arg ... args; // args are [key, index, value, key, index, value ...]
 		var msg = Array.new(args.size div: 3 * 2);
 		var synthDesc = SynthDescLib.at(defName.asSymbol);
@@ -517,10 +517,14 @@ Synth : Node {
 		};
 		forBy(0, args.size-1, 3, { |i|
 			var key = args[i], offset = args[i+1], value = args[i+2];
-			var controlIndex = synthDesc.indexOfControl(key, offset);
-			controlIndex !? {
-				msg.add(controlIndex);
-				msg.add(value);
+			var controlName = synthDesc.controlDict[key];
+			if(controlName.notNil and: { offset < controlName.numChannels }) {
+				msg.add(controlName.index+offset);
+				if(value.isArray) {
+					msg.add(value.keep(controlName.numChannels - offset))
+				} {
+					msg.add(value)
+				}
 			}
 		});
 		server.sendMsg("/n_set", nodeID, *msg.asOSCArgArray);

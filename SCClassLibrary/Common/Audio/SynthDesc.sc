@@ -461,10 +461,6 @@ Use of this synth in Patterns will not detect argument names automatically becau
 		if(metadata.isNil) { AbstractMDPlugin.clearMetadata(path); ^this };
 		this.class.mdPlugin.writeMetadata(metadata, def, path);
 	}
-	
-	indexOfControl { arg name, offset = 0;
-		^def.indexOfControl(name, offset)	
-	}
 
 	// parse the def name out of the bytes array sent with /d_recv
 	*defNameFromBytes { arg int8Array;
