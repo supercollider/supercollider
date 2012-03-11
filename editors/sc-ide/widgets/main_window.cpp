@@ -42,7 +42,7 @@ MainWindow::MainWindow(Main * main) :
 {
     setCorner( Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
 
-    mEditors = new MultiEditor(main->documentManager());
+    mEditors = new MultiEditor(main);
     mDocListDock = new DocumentsDock(main->documentManager(), this);
     mPostDock = new PostDock(this);
 
@@ -115,10 +115,6 @@ void MainWindow::createMenus()
     act->setStatusTip(tr("Evaluate selection or current line"));
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateCurrentRegion()));
 
-    mActions[StepForwardOnEvaluation] = act = new QAction(tr("&Step Forward"), this);
-    act->setStatusTip(tr("Step to the next line on evaluation"));
-    act->setCheckable(true);
-
     mMain->scProcess()->action(ScIDE::SCProcess::StopMain)
         ->setShortcut(QKeySequence(tr("Ctrl+.", "Language|Stop Main")));
 
@@ -170,14 +166,13 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[EvaluateCurrentFile] );
     menu->addAction( mActions[EvaluateSelectedRegion] );
-    menu->addAction( mActions[StepForwardOnEvaluation] );
+    menu->addAction( mEditors->action(MultiEditor::StepForwardOnEvaluation) );
     menu->addSeparator();
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::RunMain) );
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::StopMain) );
 
     menuBar()->addMenu(menu);
 }
-
 
 QAction *MainWindow::action( ActionRole role )
 {
@@ -209,6 +204,8 @@ bool MainWindow::quit()
         if( ret == QMessageBox::Cancel )
             return false;
     }
+
+    mMain->storeSettings();
 
     QApplication::quit();
 
@@ -262,7 +259,7 @@ void MainWindow::evaluateCurrentRegion()
         text = cursor.selectedText();
     else {
         text = cursor.block().text();
-        if( mActions[StepForwardOnEvaluation]->isChecked() ) {
+        if( mEditors->action(MultiEditor::StepForwardOnEvaluation)->isChecked() ) {
             cursor.movePosition(QTextCursor::NextBlock);
             cursor.movePosition(QTextCursor::EndOfBlock);
             editor->setTextCursor(cursor);

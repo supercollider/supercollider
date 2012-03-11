@@ -24,9 +24,11 @@
 #include <QTabWidget>
 #include <QAction>
 #include <QSignalMapper>
+#include <QSettings>
 
 namespace ScIDE {
 
+class Main;
 class Document;
 class DocumentManager;
 class CodeEditor;
@@ -61,10 +63,13 @@ public:
         ShrinkFont,
         ShowWhitespace,
 
+        // Language
+        StepForwardOnEvaluation,
+
         ActionRoleCount
     };
 
-    MultiEditor( DocumentManager *, QWidget * parent = 0 );
+    MultiEditor( Main *, QWidget * parent = 0 );
 
     CodeEditor *currentEditor()
         { return editorForTab( currentIndex() ); }
@@ -83,6 +88,8 @@ public Q_SLOTS:
     void saveDocumentAs();
     void closeDocument();
     void setCurrent( Document * );
+    void applySettings( QSettings * );
+    void storeSettings( QSettings * );
 
 private Q_SLOTS:
 
