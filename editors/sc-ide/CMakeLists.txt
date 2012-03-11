@@ -37,6 +37,10 @@ list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp)
 file(GLOB yaml_sources ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/src/*cpp)
 list(APPEND ide_src ${yaml_sources})
 
+if(APPLE)
+	list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp)
+endif()
+
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
@@ -48,3 +52,8 @@ qt4_add_resources( ide_rcc resources.qrc )
 
 add_executable( scide ${ide_src} ${ide_moc_src} ${ide_rcc} )
 target_link_libraries( scide ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} )
+
+if(APPLE)
+	target_link_libraries( scide "-framework CoreServices")
+endif()
+
