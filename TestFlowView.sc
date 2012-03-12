@@ -98,6 +98,49 @@ TestFlowView : UnitTest {
 		fb = f.absoluteBounds;
 		this.assertEquals( cb.origin, fb.origin, "with no supplied bounds, origin should be at the parent's origin");	
 	}
+	
+	test_remove {
+		/*
+			Qt now gives the decorator a chance to remove the view
+			so this is fixed for Qt but still remains an issue for Cocoa,
+			so the fix in FlowViewLayout.reflow is still needed for Cocoa for the time being.
+		*/
+		var a,b,c;
+		a = FlowView(w,Rect(0,0,200,200));
+		b = FlowView(b,Rect(0,0,200,200));
+		"hello".gui(b);
+		b.background = Color.blue;
+		a.background = Color.white;
+
+		// the blue view disappears
+		b.remove(true);
+
+		// now reflow
+		b.decorator.reflow;
+
+		// bounds checking error
+		/*
+		ERROR: Qt: Failed to get the value of property 'geometry'
+		ERROR: Primitive '_QObject_GetProperty' failed.
+		Failed.
+		RECEIVER:
+		Instance of QView {    (0x117312d48, gc=AC, fmt=00, flg=00, set=06)
+		  instance variables [34]
+		    qObject : RawPointer 0x11f398460
+			*/
+
+		// b's QView did .remove and .destroy
+		// and it doesn't show up in w's children
+		this.assertEquals( b.children.size, 0, "having removed, the inner view should have no children");
+
+		// but the QView is still in the decorator
+		// because nothing removed it from there
+		
+		this.assertEquals( b.decorator.rows.first.size, 0, "having removed, the inner view's decorator should have nothing in its first row");
+		// was
+		//[ List[ a QView ] ]
+	}
+	
 	/*
 
 w = GUI.window.new;
