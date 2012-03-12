@@ -294,18 +294,36 @@ void SyntaxHighlighter::highlightBlockInSymbol(const QString& text, int& current
 
 void SyntaxHighlighter::highlightBlockInComment(const QString& text, int& currentIndex, int& currentState)
 {
-    /* TODO: comments can be nested */
+    int index = currentIndex;
+    int maxIndex = text.size() - 1;
 
-    int commentEndIndex = text.indexOf(QString("*/"), currentIndex);
-    if (commentEndIndex == -1) {
-        setFormat(currentIndex, text.size() - currentIndex, gSyntaxFormatContainer.commentFormat);
-        currentIndex = text.size();
-        return;
+    while(index < maxIndex)
+    {
+        if (text[index] == '/' && text[index+1] == '*') {
+            ++currentState;
+            index += 2;
+        }
+        else if (text[index] == '*' && text[index+1] == '/') {
+            --currentState;
+            index += 2;
+        }
+        else
+            index += 1;
+
+        if (currentState < inComment) {
+            currentState = inCode;
+            break;
+        }
     }
 
-    setFormat(currentIndex, commentEndIndex - currentIndex + 2, gSyntaxFormatContainer.commentFormat);
-    currentIndex = commentEndIndex + 2;
-    currentState = inCode;
+    if(currentState == inCode) {
+        setFormat(currentIndex, index - currentIndex, gSyntaxFormatContainer.commentFormat);
+        currentIndex = index;
+    }
+    else {
+        setFormat(currentIndex, text.size() - currentIndex, gSyntaxFormatContainer.commentFormat);
+        currentIndex = text.size();
+    }
 
     return;
 }
@@ -341,9 +359,9 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
             highlightBlockInSymbol(text, currentIndex, currentState);
             break;
 
-        case inComment:
-            highlightBlockInComment(text, currentIndex, currentState);
-            break;
+        default:
+            if(currentState >= inComment)
+                highlightBlockInComment(text, currentIndex, currentState);
         }
     }
     setCurrentBlockState(currentState);
