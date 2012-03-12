@@ -110,7 +110,7 @@ METHOD:: alwaysOnTop
 METHOD:: visible
 	note:: only in Qt GUI ::
 
-	Wether the window is visible.
+	Whether the window is visible.
 
 	Setting this to code::true:: has the same effect as link::#-front::, and setting it to false closes the window without destroying it.
 
