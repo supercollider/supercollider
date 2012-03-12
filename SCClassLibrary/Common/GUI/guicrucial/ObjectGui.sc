@@ -10,7 +10,7 @@ ObjectGui : SCViewHolder {
 	*/
 	var <model,<dragSource;
 
-	guiBody { arg layout;
+	guiBody { arg layout,bounds ... args;
 		/* implement this method in your gui subclass */
 
 		// if your model implement guiBody then call that
@@ -18,7 +18,7 @@ ObjectGui : SCViewHolder {
 		// where model/gui code separation is not especially important
 		// and where the controller class doesn't need to maintain any state or vars
 		if(model.respondsTo(\guiBody) and: {model.isKindOf(ObjectGui).not},{
-			model.guiBody(layout)
+			model.guiBody(layout,bounds,*args)
 		})
 	}
 
@@ -35,7 +35,7 @@ ObjectGui : SCViewHolder {
 		layout.flow({ arg layout;
 			this.view = layout;
 			this.writeName(layout);
-			this.performList(\guiBody,[layout] ++ args);
+			this.performList(\guiBody,[layout,bounds] ++ args);
 		},bounds).background_(this.background);
 		//if you created it, front it
 		if(parent.isNil,{
