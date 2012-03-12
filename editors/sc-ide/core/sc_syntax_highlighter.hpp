@@ -66,9 +66,11 @@ class SyntaxHighlighter:
     } highligherFormat;
 
     static const int inCode = 0;
-    static const int inComment = 1;
-    static const int inString = 2;
-    static const int inSymbol = 3;
+    static const int inString = 1;
+    static const int inSymbol = 2;
+    static const int inComment = 100;
+    // NOTE: Integers higher than inComment are reserved for multi line comments,
+    // and indicate the comment nesting level!
 
 public:
     struct BracketInfo
