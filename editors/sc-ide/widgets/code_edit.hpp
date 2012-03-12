@@ -22,6 +22,7 @@
 #define SCIDE_WIDGETS_CODE_EDIT_HPP_INCLUDED
 
 #include <QPlainTextEdit>
+#include <QTextBlock>
 
 namespace ScIDE
 {
@@ -77,11 +78,15 @@ protected:
 private Q_SLOTS:
     void updateLayout();
     void updateLineIndicator( QRect, int );
+    void matchBrackets();
 
 private:
     void resizeEvent( QResizeEvent * );
     void paintLineIndicator( QPaintEvent * );
     void indent( bool less );
+    void matchLeftBracket( char, char, const QTextBlock & block, int i, int pos );
+    void matchRightBracket( char, char, const QTextBlock & block, int i, int pos );
+    void highlightBracket( int pos );
 
     LineIndicator *_lineIndicator;
     Document *mDoc;
