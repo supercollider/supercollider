@@ -155,7 +155,18 @@ SyntaxHighlighter::highligherFormat SyntaxHighlighter::findCurrentFormat(const Q
 
 void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentIndex, int & currentState)
 {
+    BlockData *blockData = static_cast<BlockData*>(currentBlockUserData());
+    Q_ASSERT(blockData);
+
     do {
+        static QString brackets("(){}[]");
+
+        if (brackets.contains(text[currentIndex])) {
+            blockData->brackets.append( new BracketInfo(text[currentIndex].toAscii(), currentIndex) );
+            ++currentIndex;
+            continue;
+        }
+
         if (text[currentIndex] == '\"') {
             currentState = inString;
             setFormat(currentIndex, 1, gSyntaxFormatContainer.stringFormat);
@@ -306,6 +317,15 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
     int currentState = previousBlockState();
     if (currentState == -1)
         currentState = 0;
+
+    BlockData *blockData = static_cast<BlockData*>(currentBlockUserData());
+    if(!blockData) {
+        blockData = new BlockData;
+        setCurrentBlockUserData(blockData);
+    }
+    else {
+        blockData->brackets.clear();
+    }
 
     while (currentIndex < text.size()) {
         switch (currentState) {

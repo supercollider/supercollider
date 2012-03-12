@@ -22,6 +22,7 @@
 #define SCIDE_SC_SYNTAX_HIGHLIGHTER_HPP_INCLUDED
 
 #include <QSyntaxHighlighter>
+#include <QVector>
 
 namespace ScIDE {
 
@@ -68,6 +69,19 @@ class SyntaxHighlighter:
     static const int inComment = 1;
     static const int inString = 2;
     static const int inSymbol = 3;
+
+public:
+    struct BracketInfo
+    {
+        BracketInfo( char c, int pos ) : character(c), position(pos) {}
+        char character;
+        int position;
+    };
+
+    struct BlockData : public QTextBlockUserData
+    {
+        QVector<BracketInfo*> brackets;
+    };
 
 public:
     SyntaxHighlighter(QTextDocument *parent = 0);

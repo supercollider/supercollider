@@ -20,6 +20,7 @@
 
 #include "code_edit.hpp"
 #include "../core/doc_manager.hpp"
+#include "../core/sc_syntax_highlighter.hpp"
 
 #include <QPainter>
 #include <QPaintEvent>
@@ -86,6 +87,9 @@ CodeEditor::CodeEditor( QWidget *parent ) :
 
     connect( this, SIGNAL(updateRequest(QRect,int)),
              this, SLOT(updateLineIndicator(QRect,int)) );
+
+    connect( this, SIGNAL(cursorPositionChanged()),
+             this, SLOT(matchBrackets()) );
 
     _lineIndicator->setLineCount(1);
 }
@@ -198,6 +202,132 @@ void CodeEditor::updateLineIndicator( QRect r, int dy )
         _lineIndicator->scroll(0, dy);
     else
         _lineIndicator->update(0, r.y(), _lineIndicator->width(), r.height() );
+}
+
+void CodeEditor::matchBrackets()
+{
+    QList<QTextEdit::ExtraSelection> selections;
+    setExtraSelections(selections);
+
+    QTextCursor cursor(textCursor());
+    QTextBlock block(cursor.block());
+
+    SyntaxHighlighter::BlockData *data =
+        static_cast<SyntaxHighlighter::BlockData*>(block.userData());
+
+    if(data)
+    {
+        int blockPos = block.position();
+        int curPos = cursor.position();
+        int pos = curPos - blockPos;
+        int n = data->brackets.size();
+        for( int i = 0; i < n; ++i )
+        {
+            SyntaxHighlighter::BracketInfo *bracket = data->brackets[i];
+            if(bracket->position == pos - 1)
+            {
+                static QString lbrackets("([{");
+                static QString rbrackets(")]}");
+
+                char c = bracket->character;
+                int b;
+                if((b = lbrackets.indexOf(c)) != -1)
+                    matchLeftBracket( c, rbrackets[b].toAscii(), block, i, curPos-1 );
+                else if((b = rbrackets.indexOf(c)) != -1)
+                    matchRightBracket( c, lbrackets[b].toAscii(), block, i, curPos-1 );
+
+                break;
+            }
+        }
+    }
+}
+
+void CodeEditor::matchRightBracket( char c, char cc, const QTextBlock & block, int index, int pos )
+{
+    int level = 1;
+    bool first = true;
+    QTextBlock b(block);
+    int i = index - 1;
+
+    while(b.isValid())
+    {
+        SyntaxHighlighter::BlockData *data =
+            static_cast<SyntaxHighlighter::BlockData*>(b.userData());
+
+        if(data)
+        {
+            if(!first)
+                i = data->brackets.size() - 1;
+
+            for(; i >= 0; --i)
+            {
+                SyntaxHighlighter::BracketInfo *bracket = data->brackets[i];
+                if(bracket->character == cc)
+                    --level;
+                else if(bracket->character == c)
+                    ++level;
+                if(level == 0) {
+                    highlightBracket(pos);
+                    highlightBracket(bracket->position + b.position());
+                    return;
+                }
+            }
+        }
+
+        first = false;
+        b = b.previous();
+    }
+}
+
+void CodeEditor::matchLeftBracket( char c, char cc, const QTextBlock & block, int index, int pos )
+{
+    int level = 1;
+    QTextBlock b(block);
+    int i = index + 1;
+
+    while(b.isValid())
+    {
+        SyntaxHighlighter::BlockData *data =
+            static_cast<SyntaxHighlighter::BlockData*>(b.userData());
+
+        if(data)
+        {
+            int n = data->brackets.size();
+
+            for(; i < n; ++i)
+            {
+                SyntaxHighlighter::BracketInfo *bracket = data->brackets[i];
+                if(bracket->character == cc)
+                    --level;
+                else if(bracket->character == c)
+                    ++level;
+                if(level == 0) {
+                    highlightBracket(pos);
+                    highlightBracket(bracket->position + b.position());
+                    return;
+                }
+            }
+        }
+
+        i = 0;
+        b = b.next();
+    }
+}
+
+void CodeEditor::highlightBracket( int pos )
+{
+    QTextCursor cursor = textCursor();
+    cursor.setPosition(pos);
+    cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+
+    QTextEdit::ExtraSelection selection;
+    selection.cursor = cursor;
+    selection.format.setBackground(QColor(180,0,0));
+    selection.format.setForeground(Qt::white);
+
+    QList<QTextEdit::ExtraSelection> selections = extraSelections();
+    selections.append(selection);
+    setExtraSelections(selections);
 }
 
 void CodeEditor::resizeEvent( QResizeEvent *e )
