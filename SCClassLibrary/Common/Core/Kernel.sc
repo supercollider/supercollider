@@ -455,8 +455,8 @@ FunctionDef {
 	makeEnvirFromArgs {
 		var argNames, argVals;
 		argNames = this.argNames;
-		argVals = this.prototypeFrame;
-		^().putPairs([argNames, argVals].flop.flat)
+		argVals = this.prototypeFrame.keep(argNames.size);
+		^().putPairs([argNames, argVals].flop.flatten)
 	}
 
 }
