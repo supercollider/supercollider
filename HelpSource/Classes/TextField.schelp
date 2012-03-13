@@ -91,3 +91,26 @@ METHOD:: defaultCanReceiveDrag
 
 METHOD:: defaultReceiveDrag
 	Sets link::#-valueAction:: to the current drag data.
+
+
+EXAMPLES::
+code::
+(
+w = Window.new.front;
+a = TextField(w, Rect(10, 10, 150, 20));
+a.string = "hi there";
+a.action = {arg field; field.value.postln; };
+)
+
+// does not do the action
+a.value = "yo";
+a.string = "oy";
+
+a.valueAction_("this is not a pipe"); //does the action, if the value has changed
+a.doAction; //evaluates the action with the content of the text field as an argument
+
+a.background_(Color.grey);
+a.stringColor_(Color.white);
+a.align_(\center);
+::
+
