@@ -212,37 +212,50 @@ void CodeEditor::matchBrackets()
     QTextCursor cursor(textCursor());
     QTextBlock block(cursor.block());
 
-    SyntaxHighlighter::BlockData *data =
-        static_cast<SyntaxHighlighter::BlockData*>(block.userData());
+    BracketMatch match;
+    matchBracket( block, cursor.position() - block.position(), match );
 
-    if(data)
+    if( match.pos != -1 && match.matchPos != -1 )
     {
-        int blockPos = block.position();
-        int curPos = cursor.position();
-        int pos = curPos - blockPos;
-        int n = data->brackets.size();
-        for( int i = 0; i < n; ++i )
-        {
-            SyntaxHighlighter::BracketInfo *bracket = data->brackets[i];
-            if(bracket->position == pos - 1)
-            {
-                static QString lbrackets("([{");
-                static QString rbrackets(")]}");
-
-                char c = bracket->character;
-                int b;
-                if((b = lbrackets.indexOf(c)) != -1)
-                    matchLeftBracket( c, rbrackets[b].toAscii(), block, i, curPos-1 );
-                else if((b = rbrackets.indexOf(c)) != -1)
-                    matchRightBracket( c, lbrackets[b].toAscii(), block, i, curPos-1 );
-
-                break;
-            }
-        }
+        highlightBracket(match.pos);
+        highlightBracket(match.matchPos);
     }
 }
 
-void CodeEditor::matchRightBracket( char c, char cc, const QTextBlock & block, int index, int pos )
+void CodeEditor::matchBracket( const QTextBlock & block, int pos, BracketMatch & match )
+{
+    SyntaxHighlighter::BlockData *data =
+        static_cast<SyntaxHighlighter::BlockData*>(block.userData());
+
+    Q_ASSERT(data);
+
+    int n = data->brackets.size();
+    for( int i = 0; i < n; ++i )
+    {
+        SyntaxHighlighter::BracketInfo *bracket = data->brackets[i];
+        if(bracket->position == pos - 1 || bracket->position == pos)
+        {
+            match.pos = bracket->position + block.position();
+
+            static QString lbrackets("([{");
+            static QString rbrackets(")]}");
+
+            char c = bracket->character;
+            int b;
+            if((b = lbrackets.indexOf(c)) != -1)
+                matchLeftBracket( c, rbrackets[b].toAscii(), block, i, match );
+            else if((b = rbrackets.indexOf(c)) != -1)
+                matchRightBracket( c, lbrackets[b].toAscii(), block, i, match );
+            return;
+        }
+    }
+
+    match.pos = -1;
+    match.matchPos = -1;
+}
+
+void CodeEditor::matchRightBracket
+( char c, char cc, const QTextBlock & block, int index, BracketMatch & match )
 {
     int level = 1;
     bool first = true;
@@ -267,8 +280,7 @@ void CodeEditor::matchRightBracket( char c, char cc, const QTextBlock & block, i
                 else if(bracket->character == c)
                     ++level;
                 if(level == 0) {
-                    highlightBracket(pos);
-                    highlightBracket(bracket->position + b.position());
+                    match.matchPos = bracket->position + b.position();
                     return;
                 }
             }
@@ -277,9 +289,12 @@ void CodeEditor::matchRightBracket( char c, char cc, const QTextBlock & block, i
         first = false;
         b = b.previous();
     }
+
+    match.matchPos = -1;
 }
 
-void CodeEditor::matchLeftBracket( char c, char cc, const QTextBlock & block, int index, int pos )
+void CodeEditor::matchLeftBracket
+( char c, char cc, const QTextBlock & block, int index, BracketMatch & match )
 {
     int level = 1;
     QTextBlock b(block);
@@ -302,8 +317,7 @@ void CodeEditor::matchLeftBracket( char c, char cc, const QTextBlock & block, in
                 else if(bracket->character == c)
                     ++level;
                 if(level == 0) {
-                    highlightBracket(pos);
-                    highlightBracket(bracket->position + b.position());
+                    match.matchPos = bracket->position + b.position();
                     return;
                 }
             }
@@ -312,6 +326,8 @@ void CodeEditor::matchLeftBracket( char c, char cc, const QTextBlock & block, in
         i = 0;
         b = b.next();
     }
+
+    match.matchPos = -1;
 }
 
 void CodeEditor::highlightBracket( int pos )

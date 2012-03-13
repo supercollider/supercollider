@@ -81,11 +81,21 @@ private Q_SLOTS:
     void matchBrackets();
 
 private:
+    struct BracketMatch {
+        int pos;
+        int matchPos;
+    };
+
     void resizeEvent( QResizeEvent * );
     void paintLineIndicator( QPaintEvent * );
     void indent( bool less );
-    void matchLeftBracket( char, char, const QTextBlock & block, int i, int pos );
-    void matchRightBracket( char, char, const QTextBlock & block, int i, int pos );
+    void matchBracket( const QTextBlock & block, int pos, BracketMatch & match );
+    void matchLeftBracket( char, char,
+                           const QTextBlock & block, int index,
+                           BracketMatch & match );
+    void matchRightBracket( char, char,
+                            const QTextBlock & block, int index,
+                            BracketMatch & match );
     void highlightBracket( int pos );
 
     LineIndicator *_lineIndicator;
