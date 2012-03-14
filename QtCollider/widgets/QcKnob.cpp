@@ -70,7 +70,7 @@ void QcKnob::mouseMoveEvent( QMouseEvent *e )
           e->pos().x() - _prevPos.x() :
           _prevPos.y() - e->pos().y();
     if( dif != 0 ) {
-      float step = _step;
+      double step = _step;
       modifyStep( &step );
       setValue( _value + dif * step );
       Q_EMIT( action() );

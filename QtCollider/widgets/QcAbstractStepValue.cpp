@@ -23,7 +23,7 @@
 
 #include "QcAbstractStepValue.h"
 
-bool QcAbstractStepValue::modifyStep( float *pStep )
+bool QcAbstractStepValue::modifyStep( double *pStep )
 {
   Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
   if( !mods ) return false;

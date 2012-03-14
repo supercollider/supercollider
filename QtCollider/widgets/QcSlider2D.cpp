@@ -32,10 +32,10 @@ QC_DECLARE_QWIDGET_FACTORY(QcSlider2D);
 
 QcSlider2D::QcSlider2D() :
   QtCollider::Style::Client(this),
-  _x( 0.f ),
-  _y( 0.f ),
+  _x( 0.0 ),
+  _y( 0.0 ),
   _thumbSize( QSize( 20, 20 ) ),
-  _step( 0.01f )
+  _step( 0.01 )
 {
   setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
@@ -69,8 +69,8 @@ QRect QcSlider2D::thumbRect()
 
 void QcSlider2D::setValue( const QPointF val, bool doAction )
 {
-  float x = qMax( 0.f, qMin( 1.f, (float)val.x() ) );
-  float y= qMax( 0.f, qMin( 1.f, (float)val.y() ) );
+  double x = qMax( 0.0, qMin( 1.0, (double)val.x() ) );
+  double y= qMax( 0.0, qMin( 1.0, (double)val.y() ) );
   if( x != _x || y != _y ) {
     _x = x;
     _y = y;
@@ -98,7 +98,7 @@ void QcSlider2D::mousePressEvent ( QMouseEvent * ev )
 
 void QcSlider2D::keyPressEvent ( QKeyEvent *e )
 {
-  float step = _step;
+  double step = _step;
   switch( e->key() ) {
     case Qt::Key_Up:
       modifyStep( &step );
@@ -113,11 +113,11 @@ void QcSlider2D::keyPressEvent ( QKeyEvent *e )
       modifyStep( &step );
       setValue( QPointF( _x - step, _y ) ); break;
     case Qt::Key_N:
-      setValue( QPointF( 0.f, 0.f ) ); break;
+      setValue( QPointF( 0.0, 0.0 ) ); break;
     case Qt::Key_X:
-      setValue( QPointF( 1.f, 1.f ) ); break;
+      setValue( QPointF( 1.0, 1.0 ) ); break;
     case Qt::Key_C:
-      setValue( QPointF( 0.5f, 0.5f ) ); break;
+      setValue( QPointF( 0.5, 0.5 ) ); break;
     case Qt::Key_R:
       Q_EMIT( randomize() );
       break;
