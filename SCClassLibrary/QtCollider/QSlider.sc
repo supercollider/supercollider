@@ -54,10 +54,7 @@ QSlider : QAbstractStepValue {
     }
   }
 
-  pixelStep {
-    // FIXME for now we are using step instead
-    ^this.step;
-  }
+  pixelStep { ^this.getProperty(\pixelStep) }
 
   orientation_ { arg aSymbol;
     orientation = aSymbol;
