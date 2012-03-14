@@ -31,28 +31,49 @@ QC_DECLARE_QWIDGET_FACTORY(QcSlider);
 QcSlider::QcSlider() :
   QtCollider::Style::Client(this),
   _value(0.0),
-  _step(0.01),
+  _step(0.0),
   _hndLen(20)
 {
   setFocusPolicy( Qt::StrongFocus );
   setOrientation( Qt::Vertical );
 }
 
+double QcSlider::pixelStep()
+{
+  using namespace QtCollider::Style;
+
+  QRect contRect( sunkenContentsRect(rect()) );
+  int range = (_ort == Qt::Horizontal) ? contRect.width() : contRect.height();
+  range -= _hndLen;
+
+  if(range > 0)
+      return 1.0 / range;
+  else
+      return 0.0;
+}
+
 void QcSlider::setValue( double val )
 {
+  double step = _step;
+  modifyStep(&step);
+  if (step) val = qRound(val / step) * step;
+
   _value = qBound(0.0, val, 1.0);
+
   update();
 }
 
 void  QcSlider::increment( double factor )
 {
-  setValue( _step * factor + _value );
+  double step = qMax(_step, pixelStep());
+  setValue( step * factor + _value );
   update();
 }
 
 void  QcSlider::decrement( double factor )
 {
-  setValue( - _step * factor + _value );
+  double step = qMax(_step, pixelStep());
+  setValue( - step * factor + _value );
   update();
 }
 
@@ -103,7 +124,9 @@ void QcSlider::mouseMoveEvent ( QMouseEvent *e )
 
 void QcSlider::wheelEvent ( QWheelEvent *e )
 {
-  double dval = e->delta() / 120.0 * _step;
+  double step = qMax(_step, pixelStep());
+  modifyStep(&step);
+  double dval = e->delta() / 120.0 * step;
   setValue( _value + dval );
   Q_EMIT( action() );
 }
