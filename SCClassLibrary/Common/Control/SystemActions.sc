@@ -159,7 +159,7 @@ AbstractServerAction : AbstractSystemAction {
 	}
 
 	*addToAll { arg object;
-		Server.all.do({ arg s; this.add(object, s) });
+		this.add(object, \all);
 	}
 
 	*remove { arg object, server;
