@@ -237,9 +237,11 @@ void sc_AppendBundleName(char *str, int size)
 		CFStringRef strRef;
 		strRef = (CFStringRef)CFDictionaryGetValue(dictRef, CFSTR("CFBundleName"));
 		if(strRef){
-			const char *bundleName = CFStringGetCStringPtr(strRef, kCFStringEncodingMacRoman);
-			sc_AppendToPath(str, size, bundleName);
-			return;
+			const char *bundleName = CFStringGetCStringPtr(strRef, CFStringGetSystemEncoding());
+			if(bundleName) {
+				sc_AppendToPath(str, size, bundleName);
+				return;
+			}
 		}
 	}
 	sc_AppendToPath(str, size, "SuperCollider");
