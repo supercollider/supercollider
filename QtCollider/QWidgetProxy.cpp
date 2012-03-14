@@ -374,11 +374,25 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
   if( o != _keyEventWidget || !_keyEventWidget->isEnabled() ) return false;
 
   QKeyEvent *ke = static_cast<QKeyEvent*>( e );
+
   int key = ke->key();
 
-  QString text( ke->text() );
+  int mods = ke->modifiers();
+
   QChar character;
-  if (text.count()) character = text[0];
+
+#ifdef Q_WS_MAC
+  if (mods & Qt::MetaModifier
+      && key >= Qt::Key_A && key <= Qt::Key_Z)
+  {
+      character = QChar(key - Qt::Key_A + 1);
+  }
+  else
+#endif
+  {
+      QString text( ke->text() );
+      if (text.count()) character = text[0];
+  }
 
   int unicode = character.unicode();
 
@@ -391,7 +405,7 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
 #endif
 
   args << character;
-  args << (int) ke->modifiers();
+  args << mods;
   args << unicode;
   args << keycode;
   args << key;
