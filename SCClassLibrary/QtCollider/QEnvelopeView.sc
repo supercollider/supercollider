@@ -192,11 +192,17 @@ QEnvelopeView : QView
     this.setProperty( \thumbSize, aFloat; );
   }
 
-  setThumbWidth { this.nonimpl("setThumbWidth"); }
+  setThumbWidth { arg index, width;
+    this.invokeMethod(\setThumbWidthAt, [index, width])
+  }
 
-  setThumbHeight { this.nonimpl("setThumbHeight"); }
+  setThumbHeight { arg index, height;
+    this.invokeMethod(\setThumbHeightAt, [index, height])
+  }
 
-  setThumbSize { this.nonimpl("setThumbSize"); }
+  setThumbSize { arg index, size;
+    this.invokeMethod(\setThumbSizeAt, [index, size])
+  }
 
   metaAction_ { arg function;
     this.manageMethodConnection( metaAction, function, 'metaAction()', \doMetaAction );
