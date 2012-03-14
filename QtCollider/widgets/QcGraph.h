@@ -44,6 +44,7 @@ struct QcGraphElement {
   };
 
   QcGraphElement() :
+    size( QSize(18, 18) ),
     curveType( Linear ),
     curvature( 0.0 ),
     editable( true ),
@@ -61,6 +62,7 @@ struct QcGraphElement {
   QcGraphElement *next() { return _next; }
 
   QPointF value;
+  QSize size;
   QString text;
   QColor fillColor;
   CurveType curveType;
@@ -126,9 +128,9 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
   Q_PROPERTY( VariantList value READ value WRITE setValue )
   Q_PROPERTY( VariantList strings READ dummyVariantList WRITE setStrings );
   Q_PROPERTY( int index READ index WRITE setIndex );
-  Q_PROPERTY( float thumbSize READ dummyFloat WRITE setThumbSize );
-  Q_PROPERTY( float thumbWidth READ dummyFloat WRITE setThumbWidth );
-  Q_PROPERTY( float thumbHeight READ dummyFloat WRITE setThumbHeight );
+  Q_PROPERTY( int thumbSize READ dummyInt WRITE setThumbSize );
+  Q_PROPERTY( int thumbWidth READ dummyInt WRITE setThumbWidth );
+  Q_PROPERTY( int thumbHeight READ dummyInt WRITE setThumbHeight );
   Q_PROPERTY( QColor strokeColor READ dummyColor WRITE setStrokeColor );
   Q_PROPERTY( QColor fillColor READ dummyColor WRITE setFillColor );
   Q_PROPERTY( QColor gridColor READ dummyColor WRITE setGridColor );
@@ -149,6 +151,9 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
     Q_INVOKABLE void setStringAt( int, const QString & );
     Q_INVOKABLE void setFillColorAt( int, const QColor & );
     Q_INVOKABLE void setEditableAt( int, bool );
+    Q_INVOKABLE void setThumbHeightAt( int, int );
+    Q_INVOKABLE void setThumbWidthAt( int, int );
+    Q_INVOKABLE void setThumbSizeAt( int, int );
     Q_INVOKABLE void setCurves( double curvature );
     Q_INVOKABLE void setCurves( int type );
     Q_INVOKABLE void setCurves( const VariantList & curves );
@@ -188,9 +193,9 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
     void setIndex( int i );
     void setCurrentX( float );
     void setCurrentY( float );
-    void setThumbSize( float f ) { _thumbSize = QSize(f,f); update(); }
-    void setThumbWidth( float f ) { _thumbSize.setWidth(f); update(); }
-    void setThumbHeight( float f ) { _thumbSize.setHeight(f); update(); }
+    void setThumbSize( int f );
+    void setThumbWidth( int f );
+    void setThumbHeight( int f );
     void setStrokeColor( const QColor & c ) { _strokeColor = c; update(); }
     void setFillColor( const QColor & c );
 
@@ -235,6 +240,7 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
     void moveOrderRestricted( QcGraphElement *, const QPointF & );
     void moveSelected( const QPointF & dValue, SelectionForm, bool fromCache );
     void addCurve( QPainterPath &, QcGraphElement *e1, QcGraphElement *e2 );
+    QRect valueRect();
     QRectF labelRect( QcGraphElement *, const QPointF &, const QRect &, const QFontMetrics & );
     void paintEvent( QPaintEvent * );
     void mousePressEvent( QMouseEvent * );
@@ -244,7 +250,6 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
 
     QcGraphModel _model;
 
-    QSize _thumbSize;
     QColor _strokeColor;
     QColor _gridColor;
     QPointF _gridMetrics;
@@ -260,6 +265,9 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
     Order _xOrder;
 
     int _curIndex;
+
+    bool _geometryDirty;
+    QSize _largestThumbSize;
 
     struct Selection {
       Selection () : cached(false), shallMove(false) {}
