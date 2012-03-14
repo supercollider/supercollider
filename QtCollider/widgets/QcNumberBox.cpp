@@ -218,7 +218,7 @@ void QcNumberBox::updateText()
   blockSignals(false);
 }
 
-void QcNumberBox::stepBy( int steps, float stepSize )
+void QcNumberBox::stepBy( int steps, double stepSize )
 {
   if( _valueType != Number ) return;
   modifyStep( &stepSize );

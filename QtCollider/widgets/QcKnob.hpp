@@ -29,9 +29,9 @@
 class QcKnob : public QWidget, QcAbstractStepValue, QtCollider::Style::Client
 {
   Q_OBJECT
-  Q_PROPERTY( float shiftScale READ shiftScale WRITE setShiftScale );
-  Q_PROPERTY( float ctrlScale READ ctrlScale WRITE setCtrlScale );
-  Q_PROPERTY( float altScale READ altScale WRITE setAltScale );
+  Q_PROPERTY( double shiftScale READ shiftScale WRITE setShiftScale );
+  Q_PROPERTY( double ctrlScale READ ctrlScale WRITE setCtrlScale );
+  Q_PROPERTY( double altScale READ altScale WRITE setAltScale );
 
   Q_PROPERTY( double value READ value WRITE setValue )
   Q_PROPERTY( int mode READ mode WRITE setMode )

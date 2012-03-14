@@ -34,8 +34,8 @@ QC_DECLARE_QWIDGET_FACTORY(QcRangeSlider);
 
 QcRangeSlider::QcRangeSlider() :
   QtCollider::Style::Client(this),
-  _lo( 0.f ),
-  _hi( 1.f ),
+  _lo( 0.0 ),
+  _hi( 1.0 ),
   _step( 0.01f ),
   mouseMode( None )
 {
@@ -58,9 +58,9 @@ void QcRangeSlider::setOrientation( Qt::Orientation o )
   update();
 }
 
-void QcRangeSlider::setLoValue( float val )
+void QcRangeSlider::setLoValue( double val )
 {
-  val = qMax( 0.f, qMin( 1.f, val ) );
+  val = qMax( 0.0, qMin( 1.0, val ) );
   if( val <= _hi ) {
     _lo = val;
   }
@@ -71,9 +71,9 @@ void QcRangeSlider::setLoValue( float val )
   update();
 }
 
-void QcRangeSlider::setHiValue( float val )
+void QcRangeSlider::setHiValue( double val )
 {
-  val = qMax( 0.f, qMin( 1.f, val ) );
+  val = qMax( 0.0, qMin( 1.0, val ) );
   if( val >= _lo ) {
     _hi = val;
   }
@@ -114,14 +114,14 @@ void QcRangeSlider::decrement( double factor )
 
 void QcRangeSlider::increment()
 {
-  float step = _step;
+  double step = _step;
   modifyStep( &step );
   moveBy( step );
 }
 
 void QcRangeSlider::decrement()
 {
-  float step = _step;
+  double step = _step;
   modifyStep( &step );
   moveBy( -step );
 }
@@ -157,15 +157,15 @@ double QcRangeSlider::valueFromPos( const QPoint& pos )
   return horiz ? xValue( pos.x(), valBounds ) : yValue( pos.y(), valBounds );
 }
 
-void QcRangeSlider::moveBy( float dif )
+void QcRangeSlider::moveBy( double dif )
 {
-  if( _lo + dif < 0.f ) {
-    _hi += 0.f - _lo;
-    _lo = 0.f;
+  if( _lo + dif < 0.0 ) {
+    _hi += 0.0 - _lo;
+    _lo = 0.0;
   }
-  else if( _hi + dif > 1.f ) {
-    _lo += 1.f - _hi;
-    _hi = 1.f;
+  else if( _hi + dif > 1.0 ) {
+    _lo += 1.0 - _hi;
+    _hi = 1.0;
   }
   else {
     _lo += dif;
@@ -182,7 +182,7 @@ void QcRangeSlider::mouseMoveEvent ( QMouseEvent * e )
 
   if( mouseMode == SetHi || mouseMode == SetLo )
   {
-    float val = valueFromPos( e->pos() );
+    double val = valueFromPos( e->pos() );
     if( mouseMode == SetLo ) {
       if( val > _hi ) mouseMode = SetHi;
       setLoValue( val );
@@ -291,11 +291,11 @@ void QcRangeSlider::keyPressEvent ( QKeyEvent *e )
     case Qt::Key_Left:
       decrement(); break;
     case Qt::Key_A:
-      _lo = 0.f; _hi = 1.f; update(); break;
+      _lo = 0.0; _hi = 1.0; update(); break;
     case Qt::Key_N:
-      _lo = 0.f; _hi = 0.f; update(); break;
+      _lo = 0.0; _hi = 0.0; update(); break;
     case Qt::Key_X:
-      _lo = 1.f; _hi = 1.f; update(); break;
+      _lo = 1.0; _hi = 1.0; update(); break;
     case Qt::Key_C:
       _lo = 0.5; _hi = 0.5; update(); break;
     default:
