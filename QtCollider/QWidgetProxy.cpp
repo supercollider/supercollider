@@ -382,10 +382,14 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
   QChar character;
 
 #ifdef Q_WS_MAC
-  if (mods & Qt::MetaModifier
-      && key >= Qt::Key_A && key <= Qt::Key_Z)
+  bool isLetter = key >= Qt::Key_A && key <= Qt::Key_Z;
+  if (mods & Qt::MetaModifier && isLetter)
   {
       character = QChar(key - Qt::Key_A + 1);
+  }
+  else if(mods & Qt::AltModifier && isLetter)
+  {
+      character = (mods & Qt::ShiftModifier) ? QChar(key) : QChar(key - Qt::Key_A + 97 );
   }
   else
 #endif
