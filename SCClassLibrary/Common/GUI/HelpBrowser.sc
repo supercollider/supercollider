@@ -263,8 +263,8 @@ HelpBrowser {
 				view.tryPerform(\evaluateJavaScript,"selectLine()");
 			};
 		};
-		window.view.keyDownAction = { arg view, char, mods;
-			if( ((char.ascii == 6) && mods.isCtrl) || (char == $f && mods.isCmd) ) {
+		window.view.keyDownAction = { arg view, char, mods, uni, kcode, key;
+			if( ((key == 70) && mods.isCtrl) || (char == $f && mods.isCmd) ) {
 				toggleFind.value;
 			};
 			if(char.ascii==27) {
