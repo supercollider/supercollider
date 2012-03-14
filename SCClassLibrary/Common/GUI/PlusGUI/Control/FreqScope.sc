@@ -3,7 +3,7 @@
 // cross-platform port by Tim Blechmann
 
 PlusFreqScope {
-	classvar <>server;
+	classvar <server;
 
 	var <scope;
 	var <scopebuf;
@@ -17,6 +17,14 @@ PlusFreqScope {
 
 			this.initSynthDefs;
 		}
+	}
+
+	*server_ {|aServer|
+		if (GUI.id == \qt) {
+			server = aServer;
+		} {
+			"PlusFreqScope: cannot reset server for this gui scheme".inform
+		};
 	}
 
 	*new { arg parent, bounds;
