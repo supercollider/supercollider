@@ -125,6 +125,7 @@ class QcGraphModel : public QObject
 class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
 {
   Q_OBJECT
+  Q_ENUMS( Style )
   Q_PROPERTY( VariantList value READ value WRITE setValue )
   Q_PROPERTY( VariantList strings READ dummyVariantList WRITE setStrings );
   Q_PROPERTY( int index READ index WRITE setIndex );
@@ -136,6 +137,7 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
   Q_PROPERTY( QColor gridColor READ dummyColor WRITE setGridColor );
   Q_PROPERTY( bool drawLines READ dummyBool WRITE setDrawLines );
   Q_PROPERTY( bool drawRects READ dummyBool WRITE setDrawRects );
+  Q_PROPERTY( Style style READ style WRITE setStyle );
   Q_PROPERTY( bool editable READ dummyBool WRITE setEditable );
   Q_PROPERTY( double step READ step WRITE setStep );
   Q_PROPERTY( int selectionForm READ selectionForm WRITE setSelectionForm );
@@ -178,6 +180,11 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
       RigidOrder
     };
 
+    enum Style {
+      DotStyle,
+      RectStyle,
+    };
+
   public:
     QcGraph();
 
@@ -199,6 +206,8 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
     void setStrokeColor( const QColor & c ) { _strokeColor = c; update(); }
     void setFillColor( const QColor & c );
 
+    Style style() const { return _style; }
+    void setStyle(Style s) { _style = s; _geometryDirty = true; update(); }
     void setGridColor( const QColor & c ) { _gridColor = c; update(); }
     void setDrawLines( bool b ) { _drawLines = b; update(); }
     void setDrawRects( bool b ) { _drawRects = b; update(); }
@@ -240,8 +249,17 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
     void moveOrderRestricted( QcGraphElement *, const QPointF & );
     void moveSelected( const QPointF & dValue, SelectionForm, bool fromCache );
     void addCurve( QPainterPath &, QcGraphElement *e1, QcGraphElement *e2 );
+    QSize drawnElementSize( QcGraphElement *e );
     QRect valueRect();
     QRectF labelRect( QcGraphElement *, const QPointF &, const QRect &, const QFontMetrics & );
+    void drawDotElement( QcGraphElement *, const QRectF &, const QRect & bounds,
+                         const QColor & dotColor, const QColor & circleColor,
+                         const QColor & textColor,
+                         const QPalette &, const QFontMetrics &, QPainter * );
+    void drawRectElement( QcGraphElement *, const QRectF &,
+                          const QColor & fillColor,
+                          const QColor & textColor,
+                          const QPalette &, QPainter * );
     void paintEvent( QPaintEvent * );
     void mousePressEvent( QMouseEvent * );
     void mouseMoveEvent( QMouseEvent * );
@@ -256,6 +274,7 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
     bool _gridOn;
     QColor _focusColor;
 
+    Style _style;
     bool _drawLines;
     bool _drawRects;
 

@@ -59,6 +59,7 @@ void QcGraphModel::removeAt( int i ) {
 
 QcGraph::QcGraph() :
   QtCollider::Style::Client(this),
+  _style(DotStyle),
   _drawLines( true ),
   _drawRects( true ),
   _editable( true ),
@@ -290,6 +291,9 @@ void QcGraph::setThumbWidth( int w )
     QcGraphElement *e = _model.elementAt(i);
     e->size.setWidth(w);
   }
+  // For backward compatibility, switch to style that supports
+  // different thumb width and height:
+  _style = RectStyle;
   _largestThumbSize.setWidth(w);
   update();
 }
@@ -301,6 +305,9 @@ void QcGraph::setThumbHeight( int h )
     QcGraphElement *e = _model.elementAt(i);
     e->size.setHeight(h);
   }
+  // For backward compatibility, switch to style that supports
+  // different thumb width and height:
+  _style = RectStyle;
   _largestThumbSize.setHeight(h);
   update();
 }
@@ -317,6 +324,9 @@ void QcGraph::setThumbWidthAt( int i, int w )
 {
   if( i < 0 || i >= _model.elementCount() ) return;
   _model.elementAt(i)->size.setWidth(w);
+  // For backward compatibility, switch to style that supports
+  // different thumb width and height:
+  _style = RectStyle;
   _geometryDirty = true;
   update();
 }
@@ -325,6 +335,9 @@ void QcGraph::setThumbHeightAt( int i, int h )
 {
   if( i < 0 || i >= _model.elementCount() ) return;
   _model.elementAt(i)->size.setHeight(h);
+  // For backward compatibility, switch to style that supports
+  // different thumb width and height:
+  _style = RectStyle;
   _geometryDirty = true;
   update();
 }
@@ -683,6 +696,16 @@ void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *
   }
 }
 
+QSize QcGraph::drawnElementSize( QcGraphElement *e )
+{
+  if (_style == DotStyle) {
+    int s = qMin(e->size.width(), e->size.height());
+    return QSize(s,s);
+  }
+  else
+    return e->size;
+}
+
 QRect QcGraph::valueRect()
 {
   using namespace QtCollider::Style;
@@ -692,10 +715,21 @@ QRect QcGraph::valueRect()
       int w = 0;
       int h = 0;
       int c = _model.elementCount();
-      for (int i = 0; i < c; ++i) {
-          QSize s = _model.elementAt(i)->size;
-          w = qMax(w, s.width());
-          h = qMax(h, s.height());
+      if (_style == RectStyle)
+      {
+          for (int i = 0; i < c; ++i) {
+              QSize s = _model.elementAt(i)->size;
+              w = qMax(w, s.width());
+              h = qMax(h, s.height());
+          }
+      }
+      else
+      {
+          for (int i = 0; i < c; ++i) {
+              QSize s = _model.elementAt(i)->size;
+              w = qMax(w, qMin(s.width(), s.height()));
+          }
+          h = w;
       }
       _largestThumbSize = QSize(w,h);
       _geometryDirty = false;
@@ -707,8 +741,9 @@ QRect QcGraph::valueRect()
 QRectF QcGraph::labelRect( QcGraphElement *e, const QPointF &pt, const QRect &bounds, const QFontMetrics &fm )
 {
   QRectF textRect( fm.boundingRect(e->text) );
-  qreal hnd_w_2 = e->size.width() * 0.5;
-  qreal hnd_h_2 = e->size.height() * 0.5;
+  QSize sz( drawnElementSize(e) );
+  qreal hnd_w_2 = sz.width() * 0.5;
+  qreal hnd_h_2 = sz.height() * 0.5;
   textRect.moveBottomLeft( pt + QPointF(hnd_w_2, -hnd_h_2) );
   if( textRect.y() < bounds.y() )
     textRect.moveTop( pt.y() + hnd_h_2 );
@@ -824,8 +859,9 @@ void QcGraph::paintEvent( QPaintEvent * )
     p.setRenderHint( QPainter::Antialiasing, true );
 
     QFontMetrics fm( font() );
-    QColor thumbColor = plt.color(QPalette::Button).lighter(105); thumbColor.setAlpha(70);
-    QColor defFillColor = plt.color(QPalette::Text);
+    QColor rectColor = plt.color(QPalette::Button).lighter(105);
+    QColor circleColor = rectColor; circleColor.setAlpha(70);
+    QColor dotColor = plt.color(QPalette::Text);
     QRectF rect;
     QPointF pt;
     int i;
@@ -834,40 +870,86 @@ void QcGraph::paintEvent( QPaintEvent * )
 
       QcGraphElement *e = elems[i];
 
-      rect.setSize( e->size );
+      rect.setSize( drawnElementSize(e) );
 
       pt = Style::pos( e->value, contentsRect );
       rect.moveCenter( pt.toPoint() );
 
-      // base
-      Ellipse thumb(rect);
-      drawRaised( &p, plt, thumb, thumbColor );
-
-      // marker
-      QRectF r( thumb._rect );
-      qreal wdif = r.width() * 0.3;
-      qreal hdif = r.height() * 0.3;
-      p.setPen( Qt::NoPen );
-      p.setBrush( e->fillColor.isValid() ? e->fillColor : defFillColor );
-      p.drawEllipse( r.adjusted( wdif, hdif, -wdif, -hdif ) );
-
-      // selection indicator
-      if( e->selected ) {
-        p.setBrush(Qt::NoBrush);
-        p.setPen( plt.color(QPalette::Highlight) );
-        p.drawEllipse( thumb._rect.adjusted(1,1,-1,-1) );
-      }
-
-      // label
-      p.setPen( strokeColor );
-      QString text = e->text;
-      if( !text.isEmpty() ) {
-        QRectF lblRect( labelRect( e, pt, contentsRect, fm ) );
-        p.drawText( lblRect, 0, text );
-      }
+      if( _style == DotStyle )
+          drawDotElement(e, rect, contentsRect,
+                         dotColor, circleColor, strokeColor,
+                         plt, fm, &p);
+      else
+          drawRectElement(e, rect, rectColor, strokeColor, plt, &p  );
 
     }
 
+  }
+}
+
+void QcGraph::drawDotElement
+( QcGraphElement *e, const QRectF &rect, const QRect & bounds,
+  const QColor & dotColor, const QColor & circleColor,
+  const QColor & textColor,
+  const QPalette &plt, const QFontMetrics &fm, QPainter *p )
+{
+  using namespace QtCollider::Style;
+  using QtCollider::Style::Ellipse;
+
+  // base
+  Ellipse thumb(rect);
+  drawRaised( p, plt, thumb, circleColor );
+
+  // marker
+  QRectF r( thumb._rect );
+  qreal wdif = r.width() * 0.3;
+  qreal hdif = r.height() * 0.3;
+  p->setPen( Qt::NoPen );
+  p->setBrush( e->fillColor.isValid() ? e->fillColor : dotColor );
+  p->drawEllipse( r.adjusted( wdif, hdif, -wdif, -hdif ) );
+
+  // selection indicator
+  if( e->selected ) {
+    p->setBrush(Qt::NoBrush);
+    p->setPen( plt.color(QPalette::Highlight) );
+    p->drawEllipse( thumb._rect.adjusted(1,1,-1,-1) );
+  }
+
+  // label
+  p->setPen( textColor );
+  QString text = e->text;
+  if( !text.isEmpty() ) {
+    QRectF lblRect( labelRect( e, rect.center(), bounds, fm ) );
+    p->drawText( lblRect, 0, text );
+  }
+}
+
+void QcGraph::drawRectElement
+(
+  QcGraphElement *e, const QRectF &rect,
+  const QColor & fillColor,
+  const QColor & textColor,
+  const QPalette &plt, QPainter *p )
+{
+  using namespace QtCollider::Style;
+  using QtCollider::Style::RoundRect;
+
+  // base
+  RoundRect base(rect, 5);
+  drawRaised( p, plt, base, e->fillColor.isValid() ? e->fillColor : fillColor  );
+
+  // selection indicator
+  if( e->selected ) {
+    p->setBrush(Qt::NoBrush);
+    p->setPen( plt.color(QPalette::Highlight) );
+    p->drawRoundedRect( base._rect.adjusted(1,1,-1,-1), 5, 5 );
+  }
+
+    // label
+  p->setPen( textColor );
+  QString text = e->text;
+  if( !text.isEmpty() ) {
+    p->drawText( rect, Qt::AlignCenter, text );
   }
 }
 
@@ -887,7 +969,7 @@ void QcGraph::mousePressEvent( QMouseEvent *ev )
   int i;
   for( i = 0; i < c; ++i ) {
     QcGraphElement *e = elems[i];
-    r.setSize( e->size );
+    r.setSize( drawnElementSize(e) );
     QPointF pt( Style::pos( e->value, valueRect ) );
     r.moveCenter( pt );
     if( r.contains( mpos ) ) {
