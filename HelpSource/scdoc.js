@@ -560,7 +560,7 @@ function fixTOC() {
         ts.style.border = "1px solid #ddd";
         allItems = toc.getElementsByTagName("ul")[0].getElementsByTagName("li");
         ts.onkeyup = toc_search;
-        div.appendChild(document.createTextNode("Find:"));
+        div.appendChild(document.createTextNode("Filter:"));
         div.appendChild(ts);
         t.insertBefore(div,t.firstChild);
 
