@@ -22,7 +22,16 @@
 	}
 
 	freqscope {
-		GUI.freqScope.new;
+		if ((GUI.id != \qt) and: (this != Server.internal)) {
+			"freqscope only supports the local server".warn;
+			^nil
+		};
+
+		if (GUI.id == \qt) {
+			FreqScope.server = this
+		};
+
+		^GUI.freqScope.new;
 	}
 }
 
