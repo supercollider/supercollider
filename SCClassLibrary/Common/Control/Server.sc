@@ -754,10 +754,10 @@ Server {
 		sendQuit = nil;
 		this.serverRunning = false;
 		if(scopeWindow.notNil) { scopeWindow.quit };
-		RootNode(this).freeAll;
 		if(volume.isPlaying) {
 			volume.free
 		};
+		RootNode(this).freeAll;
 		this.newAllocators;
 	}
 
