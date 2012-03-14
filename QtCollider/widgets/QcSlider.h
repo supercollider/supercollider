@@ -31,10 +31,11 @@
 class QcSlider : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::Style::Client
 {
   Q_OBJECT
-  Q_PROPERTY( float shiftScale READ dummyFloat WRITE setShiftScale );
-  Q_PROPERTY( float ctrlScale READ dummyFloat WRITE setCtrlScale );
-  Q_PROPERTY( float altScale READ dummyFloat WRITE setAltScale );
+  Q_PROPERTY( double shiftScale READ dummyFloat WRITE setShiftScale );
+  Q_PROPERTY( double ctrlScale READ dummyFloat WRITE setCtrlScale );
+  Q_PROPERTY( double altScale READ dummyFloat WRITE setAltScale );
   Q_PROPERTY( double step READ step WRITE setStep )
+  Q_PROPERTY( double pixelStep READ pixelStep )
   Q_PROPERTY( double value READ value WRITE setValue );
   Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
   Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
@@ -56,6 +57,7 @@ class QcSlider : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::Styl
 
     double step() { return _step; }
     void setStep( double d ) { _step = d; }
+    double pixelStep();
 
     Qt::Orientation orientation() const { return _ort; }
     void setOrientation( int );
