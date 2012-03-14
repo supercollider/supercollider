@@ -180,6 +180,20 @@ QEnvelopeView : QView
     this.setProperty( \drawRects, aBool );
   }
 
+  style { ^this.getProperty(\style) }
+
+  style_ { arg style;
+    if (style.isNumber.not) {
+      style = style.switch (
+        \dots, 0,
+        \rects, 1,
+        0
+      );
+    };
+    style = style.clip(0,1).asInteger;
+    this.setProperty(\style, style)
+  }
+
   thumbWidth_ { arg aFloat;
     this.setProperty( \thumbWidth, aFloat; );
   }
