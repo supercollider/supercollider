@@ -34,12 +34,12 @@ class QcRangeSlider :
   Q_OBJECT
   Q_PROPERTY( Qt::Orientation orientation
               READ orientation WRITE setOrientation );
-  Q_PROPERTY( float loValue READ loValue WRITE setLoValue )
-  Q_PROPERTY( float hiValue READ hiValue WRITE setHiValue )
-  Q_PROPERTY( float shiftScale READ dummyFloat WRITE setShiftScale );
-  Q_PROPERTY( float ctrlScale READ dummyFloat WRITE setCtrlScale );
-  Q_PROPERTY( float altScale READ dummyFloat WRITE setAltScale );
-  Q_PROPERTY( float step READ dummyFloat WRITE setStep )
+  Q_PROPERTY( double loValue READ loValue WRITE setLoValue )
+  Q_PROPERTY( double hiValue READ hiValue WRITE setHiValue )
+  Q_PROPERTY( double shiftScale READ dummyFloat WRITE setShiftScale );
+  Q_PROPERTY( double ctrlScale READ dummyFloat WRITE setCtrlScale );
+  Q_PROPERTY( double altScale READ dummyFloat WRITE setAltScale );
+  Q_PROPERTY( double step READ dummyFloat WRITE setStep )
   Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
   Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
 
@@ -56,12 +56,12 @@ class QcRangeSlider :
     QcRangeSlider();
     Qt::Orientation orientation() const { return _ort; }
     void setOrientation( Qt::Orientation o );
-    float loValue() const { return _lo; }
-    void setLoValue( float );
-    float hiValue() const { return _hi; }
-    void setHiValue( float );
+    double loValue() const { return _lo; }
+    void setLoValue( double );
+    double hiValue() const { return _hi; }
+    void setHiValue( double );
     void setRange( double val, double range );
-    void setStep( float f ) { _step = f; }
+    void setStep( double f ) { _step = f; }
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
 
@@ -76,7 +76,7 @@ class QcRangeSlider :
     QRect thumbRect();
     QRect valueRect();
     double valueFromPos( const QPoint& pos );
-    void moveBy( float );
+    void moveBy( double );
     void increment();
     void decrement();
     void mouseMoveEvent ( QMouseEvent * );
@@ -86,9 +86,9 @@ class QcRangeSlider :
     void paintEvent ( QPaintEvent * );
 
     Qt::Orientation _ort;
-    float _lo;
-    float _hi;
-    float _step;
+    double _lo;
+    double _hi;
+    double _step;
     QPoint dragOrigin;
     double dragVal, dragRange;
     MouseMode mouseMode;

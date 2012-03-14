@@ -32,9 +32,9 @@
 class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
 {
   Q_OBJECT
-  Q_PROPERTY( float shiftScale READ dummyFloat WRITE setShiftScale );
-  Q_PROPERTY( float ctrlScale READ dummyFloat WRITE setCtrlScale );
-  Q_PROPERTY( float altScale READ dummyFloat WRITE setAltScale );
+  Q_PROPERTY( double shiftScale READ dummyFloat WRITE setShiftScale );
+  Q_PROPERTY( double ctrlScale READ dummyFloat WRITE setCtrlScale );
+  Q_PROPERTY( double altScale READ dummyFloat WRITE setAltScale );
 
   Q_PROPERTY( double minimum READ minimum WRITE setMinimum );
   Q_PROPERTY( double maximum READ maximum WRITE setMaximum );
@@ -45,8 +45,8 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
   Q_PROPERTY( int valueType READ valueType );
   Q_PROPERTY( QString text READ text WRITE setTextValue );
 
-  Q_PROPERTY( float step READ dummyFloat WRITE setStep )
-  Q_PROPERTY( float scrollStep READ dummyFloat WRITE setScrollStep )
+  Q_PROPERTY( double step READ dummyFloat WRITE setStep )
+  Q_PROPERTY( double scrollStep READ dummyFloat WRITE setScrollStep )
   Q_PROPERTY( bool scroll READ dummyBool WRITE setScroll );
 
   Q_PROPERTY( QColor normalColor READ dummyColor WRITE setTextColor );
@@ -63,8 +63,8 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
     };
 
     QcNumberBox();
-    void setStep( float step_ ) { step = step_;}
-    void setScrollStep( float step_ ) { scrollStep = step_; }
+    void setStep( double step_ ) { step = step_;}
+    void setScrollStep( double step_ ) { scrollStep = step_; }
     void setScroll( bool b ) { scroll = b; }
     void setLocked( bool );
     void setTextColor( const QColor& c );
@@ -105,7 +105,7 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
     virtual void mouseMoveEvent ( QMouseEvent * event );
     virtual void wheelEvent ( QWheelEvent * event );
   private:
-    void stepBy( int steps, float stepSize );
+    void stepBy( int steps, double stepSize );
     double roundedVal( double val );
     QString stringForVal( double val );
     void updateTextColor();
@@ -117,8 +117,8 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
     QColor normalTextColor;
 
     QDoubleValidator *_validator;
-    float step;
-    float scrollStep;
+    double step;
+    double scrollStep;
     float dragDist;
     double _value;
     ValueType _valueType;
