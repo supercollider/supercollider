@@ -374,9 +374,13 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
   if( o != _keyEventWidget || !_keyEventWidget->isEnabled() ) return false;
 
   QKeyEvent *ke = static_cast<QKeyEvent*>( e );
+  int key = ke->key();
 
-  QString text = ke->text();
-  int unicode = ( text.count() == 1 ? text[0].unicode() : 0 );
+  QString text( ke->text() );
+  QChar character;
+  if (text.count()) character = text[0];
+
+  int unicode = character.unicode();
 
 #ifdef Q_WS_X11
   KeySym sym = ke->nativeVirtualKey();
@@ -386,11 +390,11 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
   int keycode = ke->nativeVirtualKey();
 #endif
 
-  args << text;
+  args << character;
   args << (int) ke->modifiers();
   args << unicode;
   args << keycode;
-  args << ke->key();
+  args << key;
   args << ke->spontaneous();
 
   return true;

@@ -210,6 +210,10 @@ bool Slot::setVariant( PyrSlot *slot, const QVariant &val )
         Slot::setRect( slot, val.toRectF() );
         break;
 
+    case QMetaType::QChar:
+        SetChar( slot, val.toChar().toLatin1() );
+        break;
+
     case QMetaType::QString:
         Slot::setString( slot, val.toString() );
         break;
@@ -530,13 +534,14 @@ QVariant Slot::toVariant( PyrSlot *slot )
 {
   QObjectProxy *proxy;
   switch (GetTag(slot)) {
-    case tagChar :
     case tagNil :
       return QVariant();
     case tagInt :
       return QVariant( toInt(slot) );
     case tagSym :
       return QVariant( toString(slot) );
+    case tagChar :
+      return QVariant( QChar(slotRawChar(slot)) );
     case tagFalse :
       return QVariant( false );
     case tagTrue :
@@ -604,7 +609,6 @@ void QtCollider::Variant::setData( PyrSlot *slot )
 {
   QObjectProxy *proxy;
   switch (GetTag(slot)) {
-    case tagChar :
     case tagNil :
       _type = QMetaType::Void;
       _ptr = 0;
@@ -616,6 +620,10 @@ void QtCollider::Variant::setData( PyrSlot *slot )
     case tagSym :
       _type = QMetaType::QString;
       _ptr = new QString( toString(slot) );
+      break;
+    case tagChar :
+      _type = QMetaType::QChar;
+      _ptr = new QChar( slotRawChar(slot) );
       break;
     case tagFalse :
       _type = QMetaType::Bool;
