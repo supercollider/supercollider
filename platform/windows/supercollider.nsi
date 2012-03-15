@@ -6,8 +6,6 @@
 !include "MUI2.nsh"
 !insertmacro MUI_LANGUAGE "English"
 
-!define SC_VERSION "3.5-rc2"
-
 Name "SuperCollider ${SC_VERSION}"
 OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}-win32.exe
 InstallDir $PROGRAMFILES\SuperCollider-${SC_VERSION}
