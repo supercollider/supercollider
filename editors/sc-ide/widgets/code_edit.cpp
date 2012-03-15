@@ -192,6 +192,38 @@ void CodeEditor::changeEvent( QEvent *e )
     QPlainTextEdit::changeEvent(e);
 }
 
+void CodeEditor::keyPressEvent( QKeyEvent *e )
+{
+    switch (e->key()) {
+    case Qt::Key_Home:
+    {
+        Qt::KeyboardModifiers mods(e->modifiers());
+        if (mods && mods != Qt::ShiftModifier) break;
+
+        QTextCursor::MoveMode mode =
+            mods & Qt::ShiftModifier ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor;
+
+        QTextCursor c(textCursor());
+        QTextBlock b(c.block());
+
+        int pos = indentedStartOfLine(b);
+        pos += b.position();
+
+        if (c.position() == pos)
+            c.movePosition(QTextCursor::StartOfLine, mode);
+        else
+            c.setPosition(pos, mode);
+
+        setTextCursor(c);
+
+        return;
+    }
+    default:;
+    }
+
+    QPlainTextEdit::keyPressEvent(e);
+}
+
 void CodeEditor::updateLayout()
 {
     setViewportMargins( _lineIndicator->width(), 0, 0, 0 );
@@ -345,6 +377,20 @@ void CodeEditor::highlightBracket( int pos )
     QList<QTextEdit::ExtraSelection> selections = extraSelections();
     selections.append(selection);
     setExtraSelections(selections);
+}
+
+int CodeEditor::indentedStartOfLine( const QTextBlock &b )
+{
+    QString t(b.text());
+    int n = t.size();
+    int i = 0;
+    while (i < n) {
+        QChar c(t[i]);
+        if (c != ' ' && c != '\t')
+            break;
+        ++i;
+    }
+    return i;
 }
 
 void CodeEditor::resizeEvent( QResizeEvent *e )
