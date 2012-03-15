@@ -4,13 +4,9 @@
 		zoom = zoom ? 1.0;
 
 		if(scopeWindow.isNil) {
-			if ((GUI.id == \qt) and: (this.isLocal)) {
-				scopeWindow = \QStethoscope2.asClass.new(this, numChannels, index, bufsize, zoom, rate);
-			} {
-				scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
-					this.options.numBuffers);
+			scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
+				this.options.numBuffers);
 				// prevent buffer conflicts by using reserved bufnum
-			};
 			scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil });
 			ServerTree.add(this, this);
 		} {

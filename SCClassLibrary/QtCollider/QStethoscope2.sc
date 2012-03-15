@@ -24,13 +24,12 @@ QStethoscope2 {
   *new {
     arg server, numChannels = 2, index = 0, bufsize = 4096,
         zoom = 1.0, rate = \audio, view, bufnum;
+    var bus;
 
-    var bus = Bus(rate, index, numChannels, server);
     if(server.isNil) {server = Server.default};
+    if(server.isLocal.not) {Error("Can not scope on remote server.").throw};
 
-    if (bufnum.notNil)
-      { ("QStethoscope2: the 'bufnum' argument ignored."
-        + "A shared-memory scope buffer is always allocated internally.").warn };
+    bus = Bus(rate, index, numChannels, server);
 
     ^super.new.initQStethoscope( server, view, bus, bufsize, 1024 * zoom.asFloat.reciprocal );
   }
