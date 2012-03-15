@@ -43,8 +43,8 @@ struct QcGraphElement {
     Curvature
   };
 
-  QcGraphElement() :
-    size( QSize(18, 18) ),
+  QcGraphElement( const QSize & sz ) :
+    size( sz ),
     curveType( Linear ),
     curvature( 0.0 ),
     editable( true ),
@@ -268,6 +268,7 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
 
     QcGraphModel _model;
 
+    QSize _defaultThumbSize;
     QColor _strokeColor;
     QColor _gridColor;
     QPointF _gridMetrics;
