@@ -186,3 +186,122 @@ update.(x);
 x.front;
 )
 ::
+
+SECTION:: Enhancements
+
+SUBSECTION:: Stethoscope
+
+Qt brings a new implementation of link::Classes/Stethoscope:: that uses emphasis::shared memory:: to allow highly efficient monitoring of buses on any strong::local server::.
+
+All the 'scope' methods of various classes (like Server, Bus, Function, etc.) are wired to this new implementation, so you don't need to worry about instantiating a Stethoscope yourself.
+
+code::
+Server.local.scope;
+::
+
+SUBSECTION:: SoundFileView
+
+link::Classes/SoundFileView:: has strong::infinite display resolution::. This means you can always zoom into the waveform until you see a single sound frame.
+
+It also offers convenient strong::mouse interaction:: for zooming in and scrolling:
+list::
+## shift + right-click + mouse-up/down = strong::zoom::
+## right-click + mouse-left/right = strong::scroll::
+::
+
+code::
+(
+var x = SoundFileView().front;
+x.load(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+)
+::
+
+Alternatively to displaying a soundfile, you can allocate an empty amount of display frames, and fill it strong::part by part:: with data to display (see documentation of link::Classes/SoundFileView#-alloc:: and link::Classes/SoundFileView#-set::). This allows, for example, to implement efficient monitoring of recording into a Buffer.
+
+code::
+(
+var v, s;
+v = SoundFileView().front;
+s = Signal.sineFill(1000, 1.0/[1,2,3,4]);
+v.alloc(5000, samplerate: 500);
+3.do { |i| v.set( i * 2000, s * (1/(i+1)) ) };
+)
+::
+
+SUBSECTION:: EnvelopeView
+
+link::Classes/EnvelopeView:: offers two different strong::display styles::: in addition to traditional style where nodes are drawn as rectangles with labels inside, it can draw nodes as small dots, with labels next to them. See link::Classes/EnvelopeView#-style::.
+
+code::
+(
+var w, e, m;
+e = EnvelopeView()
+    .value_([[0,0.4,0.6,1.0],[0,0.7,0.5,0.56]])
+    .strings_(["alpha", "beta", "gamma", "delta"])
+    .thumbWidth_(60)
+    .style_(\dots);
+m = PopUpMenu()
+    .items_(["Dot Style", "Rect Style"])
+    .action_({e.style = m.value});
+w = Window()
+    .layout_(VLayout(m,e))
+    .front;
+)
+::
+
+You can enforce a strong::strict order of nodes:: on the time axis. In this case, a node can not move to position before the previous node, or after the next node. See link::Classes/EnvelopeView#-keepHorizontalOrder:: and the example below.
+
+You can also control how a strong::selection of nodes:: behaves when it is strong::moved::: it can either keep its form rigidly and block all movement when meeting view edges or other nodes, or it can adjust its form to the obstacles, allowing the movement of those nodes that are not blocked individually. See link::Classes/EnvelopeView#-elasticSelection:: and the following example.
+
+Example: try selecting several nodes (by clicking on them with Shift key pressed) and moving them around, then use the menu to switch the way selection behaves, and repeat:
+
+code::
+(
+var w, e, m;
+e = EnvelopeView()
+    .value_([
+        [0, 0.1, 0.3, 0.4, 0.55, 0.7, 1.0],
+        [0, 1.0, 0.7, 0.3, 0.5, 0.2, 0]
+    ])
+    .keepHorizontalOrder_(true)
+    .elasticSelection_(true)
+    .front;
+m = PopUpMenu()
+    .items_(["Elastic Selection", "Rigid Selection"])
+    .action_({e.elasticSelection = m.value == 0});
+w = Window()
+    .layout_(VLayout(m,e))
+    .front;
+)
+::
+
+SUBSECTION:: ScrollView
+
+link::Classes/ScrollView:: allows to strong::replace the canvas:: that holds its child views with an arbitrary view. This allows great flexibility, including using a link::#layout_management#layout:: to manage the child views. See link::Classes/ScrollView#-canvas:: for explanation, and this link::Classes/ScrollView#examples#example::.
+
+
+SECTION:: New views
+
+SUBSECTION:: TreeView
+
+link::Classes/TreeView:: is a powerful addition to the group of views that display a strong::set of items:: (including ListView and PopUpMenu). It displays items organized in a strong::hierarchical:: manner, akin to filesystem browsers.
+
+Unlike ListView, where items are only arranged in one column, TreeView may consist of strong::several columns::: each item occupies a row, and may contain one text value for each column. Columns also have strong::labeled headers::.
+
+Moreover, each data field of an item may also strong::contain another view::, giving you a great potential for interactivity with items.
+
+SUBSECTION:: WebView
+
+link::Classes/WebView:: is the core component for strong::web page browsing::. It is also implemented in the Cocoa GUI, but we list it here nonetheless.
+
+It is a view that displays web pages, with web technology support comparable to widespread desktop web browsers.
+
+NOTE:: There may currently be some issues with displaying multimedia content. ::
+
+code::
+(
+w = WebView(bounds: Window.screenBounds.insetBy(100,40))
+    .url_("http://supercollider.sourceforge.net/")
+    .front;
+)
+::
