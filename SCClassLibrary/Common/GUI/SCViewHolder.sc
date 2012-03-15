@@ -155,7 +155,7 @@ FlowView : SCViewHolder {
 			bounds = bounds.asRect;
 			if(iMadeParent) { bounds = bounds.moveTo(0, 0) };
 		},{
-			bounds = parentView.bounds;
+			bounds = parentView.bounds.moveTo(0,0);
 		});
 		this.view = this.class.viewClass.new(parentView, bounds);
 
@@ -286,6 +286,7 @@ FlowView : SCViewHolder {
 	asFlowView {}
 	asPageLayout {}
 
+	// only SCView calls these
 	prRemoveChild { |child|
 		view.prRemoveChild(child);
 	}
