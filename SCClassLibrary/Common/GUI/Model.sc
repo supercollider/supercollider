@@ -88,9 +88,9 @@ NotificationCenter {
 	*initClass {
 		this.clear
 	}
-	//*remove { |listener|
-	//
-	//}
+	*removeForListener { |listener|
+		registrations.removeAt(listener)
+	}
 }
 
 NotificationRegistration {
