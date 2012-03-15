@@ -60,7 +60,7 @@ void QcGraphModel::removeAt( int i ) {
 QcGraph::QcGraph() :
   QtCollider::Style::Client(this),
   _defaultThumbSize( QSize(18,18) ),
-  _style(DotStyle),
+  _style(DotElements),
   _drawLines( true ),
   _drawRects( true ),
   _editable( true ),
@@ -302,7 +302,7 @@ void QcGraph::setThumbWidth( int w )
 
   // For backward compatibility, switch to style that supports
   // different thumb width and height:
-  _style = RectStyle;
+  _style = RectElements;
   _largestThumbSize.setWidth(w);
 
   update();
@@ -320,7 +320,7 @@ void QcGraph::setThumbHeight( int h )
 
   // For backward compatibility, switch to style that supports
   // different thumb width and height:
-  _style = RectStyle;
+  _style = RectElements;
   _largestThumbSize.setHeight(h);
 
   update();
@@ -340,7 +340,7 @@ void QcGraph::setThumbWidthAt( int i, int w )
   _model.elementAt(i)->size.setWidth(w);
   // For backward compatibility, switch to style that supports
   // different thumb width and height:
-  _style = RectStyle;
+  _style = RectElements;
   _geometryDirty = true;
   update();
 }
@@ -351,7 +351,7 @@ void QcGraph::setThumbHeightAt( int i, int h )
   _model.elementAt(i)->size.setHeight(h);
   // For backward compatibility, switch to style that supports
   // different thumb width and height:
-  _style = RectStyle;
+  _style = RectElements;
   _geometryDirty = true;
   update();
 }
@@ -712,7 +712,7 @@ void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *
 
 QSize QcGraph::drawnElementSize( QcGraphElement *e )
 {
-  if (_style == DotStyle) {
+  if (_style == DotElements) {
     int s = qMin(e->size.width(), e->size.height());
     return QSize(s,s);
   }
@@ -729,7 +729,7 @@ QRect QcGraph::valueRect()
       int w = 0;
       int h = 0;
       int c = _model.elementCount();
-      if (_style == RectStyle)
+      if (_style == RectElements)
       {
           for (int i = 0; i < c; ++i) {
               QSize s = _model.elementAt(i)->size;
@@ -889,7 +889,7 @@ void QcGraph::paintEvent( QPaintEvent * )
       pt = Style::pos( e->value, contentsRect );
       rect.moveCenter( pt.toPoint() );
 
-      if( _style == DotStyle )
+      if( _style == DotElements )
           drawDotElement(e, rect, contentsRect,
                          dotColor, circleColor, strokeColor,
                          plt, fm, &p);
