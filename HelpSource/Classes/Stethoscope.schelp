@@ -49,9 +49,9 @@ METHOD:: new
     argument:: index
         The offset index. An Integer. Default is nil.
     argument:: bufsize
-        The size of the analysis buffer. Default is 4096.
+        The size of the analysis buffer. Default is 4096. See also link::#-bufsize::.
     argument:: zoom
-        Horizontal maginification of the displayed wave. Default is 1.
+        Horizontal maginification of the displayed wave. Default is 1. See also link::#-xZoom::.
     argument:: rate
         \audio or \control. Default is \audio.
     argument:: view
@@ -123,8 +123,20 @@ METHOD:: numChannels
         An Integer.
 
 METHOD:: bufsize
-    The size of the scope buffer.
+    The size of the scoping buffer.
 
+    In strong::Swing:: and strong::Cococa:: GUI kits, this is the amount of signal frames that will be accumulated before they are displayed. However, it is strong::NOT ensured:: that the onsets of displayed portions of signals fall within any constant period. In other words, it is undefined how many frames will pass between one displayed portion, and another.
+
+    In strong::Qt:: GUI, this is not the issue; code::bufsize:: only defines the maximum allowed link::#-cycle::.
+
+METHOD:: cycle
+    note:: Only available in Qt GUI ::
+
+    The exact scoping period, in signal frames. Reciprocal to what is also known as emphasis::sweep speed:: in analog oscilloscopes. It is dynamically adjustable while the scope is running.
+
+    Data from scoped signals will be accumulated into a buffer until it reaches code::cycle:: amount frames, at which point the buffering will immediatly restart. The view will repeatedly display the entire buffer; it may skip a cycle if the drawing is too slow to keep up with the speed of incoming data, but the cycle boundaries will never shift with respect to signals.
+
+    If you are scoping a periodic signal, setting code::cycle:: to match the signal's period will keep the waveform locked in place.
 
 SUBSECTION:: Display
 
@@ -144,13 +156,16 @@ METHOD:: zoom
     A synonym for link::#-xZoom::.
 
 METHOD:: xZoom
-    Zoom horizontally by the given factor.
+    Magnifies the displayed wave horizontally to the given factor.
+
+    In strong::Qt GUI::, this sets link::#-cycle:: to code::1024 * xZoom.reciprocal::.
+
     argument::
         A Float.
 
 METHOD:: yZoom
+    Magnifies the displayed wave vertically to the given factor.
 
-    Zoom vertically by by the given factor.
     argument::
         A Float.
 
