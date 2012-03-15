@@ -10,6 +10,16 @@ A view which can graphically display nodes at x/y coordinates, connection lines,
 
 You can make the view display an link::Classes/Env:: using link::#-setEnv::. Note however that the view will work on a copy of the data of the Env object, therefore moving the nodes through the view will have no effect on the Env.
 
+You can also define nodes with arrays of x and y values using link::#-value::, and the connections using link::#-connect::.
+
+SUBSECTION:: Appearance
+
+In strong::Qt GUI::, the view supports two strong::display styles::: the default one draws nodes as small dots, with labels next to them, while another style draws nodes as rounded rectangles with labels drawn inside. See link::#-style::.
+
+A strong::label:: for each of the nodes can be set using link::#-strings:: and link::#-setString::.
+
+SUBSECTION:: Interaction
+
 Multiple nodes can be selected and moved using mouse or keyboard. See link::#-defaultKeyDownAction:: for details.
 
 The last selected node is considered to be the current, and can be moved programmatically using link::#-x:: and link::#-y::. It is also possible to change the selection and switch the current node programmatically using link::#-selectIndex::, link::#-deselectIndex:: and link::#-index::, as well as move the current node .
@@ -99,6 +109,8 @@ METHOD:: setFillColor
 METHOD:: setThumbWidth
 	Sets the width of the node at the given index.
 
+    NOTE:: For compatibility with existing code, this will set the link::#-style:: to strong::'rects'::. ::
+
 	argument:: index
 		An Integer.
 	argument:: width
@@ -106,6 +118,8 @@ METHOD:: setThumbWidth
 
 METHOD:: setThumbHeight
 	Sets the height of the node at the given index.
+
+    NOTE:: For compatibility with existing code, this will set the link::#-style:: to strong::'rects'::. ::
 
 	argument:: index
 		An Integer.
@@ -133,6 +147,26 @@ METHOD:: connect
 
 SUBSECTION:: Appearance
 
+METHOD:: style
+    NOTE:: Only available in Qt GUI ::
+
+    One of the following drawing styles:
+
+    list::
+
+    ## strong::'dots':: - nodes are drawn as small dots within a larger circle indicating the area of mouse sensitivity. Labels are drawn next to the dots (see link::#-setString::). This style always draws nodes with emphasis::equal width and height::, and will use the smaller of the node's sizes, if different (it never draws ellipses).
+
+    ## strong::'rects':: - nodes are drawn as rounded rectangles. Labels are drawn within the bounds of the rectangles.
+    ::
+
+    NOTE:: For compatibility with existing code, calling any of link::#-thumbWidth::, link::#-thumbHeight::, link::#-setThumbWidth::, or link::#-setThumbHeight:: will automatically switch style to strong::'rects'::. You can still set a different style afterwards.
+    ::
+
+    argument::
+        One of the symbols: code::\dots:: or code::\rects::. Alternatively, an integer 0 or 1, for each style respectively.
+
+    returns:: An integer 0 or 1.
+
 METHOD:: drawLines
 	Whether to draw the connections between the nodes.
 
@@ -159,13 +193,17 @@ METHOD:: grid
 		A Point of which x and y correspond to grid spacing on the horizontal and the vertical axis, respectively. If one of the two is 0, the grid on that axis will not be drawn.
 
 METHOD:: thumbWidth
-	The default width of the nodes. If the width of a specific node has been set using link::#-setThumbWidth::, it will take precedence.
+    Sets the width of all nodes.
+
+    NOTE:: For compatibility with existing code, this will set the link::#-style:: to strong::'rects'::. ::
 
 	argument::
 		An Integer.
 
 METHOD:: thumbHeight
-	The default height of the nodes. If the height of a specific node has been set using link::#-setThumbHeight::, it will take precedence.
+    Sets the height of all nodes.
+
+    NOTE:: For compatibility with existing code, this will set the link::#-style:: to strong::'rects'::. ::
 
 	argument::
 		An Integer.
