@@ -248,7 +248,8 @@ Monitor {
 		};
 		synthIDs = [];
 		synthAmps = [];
-
+		
+		inGroup = inGroup.asGroup;
 		server = group.server;
 
 		triplets.do { | trip, i |
@@ -284,6 +285,7 @@ Monitor {
 		fadeTime = inFadeTime ? fadeTime ? 0.02; 	// remembers monitor fadeTime.
 
 		toNumChannels = toNumChannels ? fromNumChannels;
+		inGroup = inGroup.asGroup;
 		server = inGroup.server;
 
 		if(this.isPlaying) {
