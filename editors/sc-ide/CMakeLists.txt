@@ -39,6 +39,8 @@ list(APPEND ide_src ${yaml_sources})
 
 if(APPLE)
 	list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp)
+elseif(WIN32)
+    list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
@@ -55,5 +57,7 @@ target_link_libraries( scide ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} )
 
 if(APPLE)
 	target_link_libraries( scide "-framework CoreServices")
+elseif(WIN32)
+    target_link_libraries( scide wsock32 )
 endif()
 
