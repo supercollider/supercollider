@@ -74,6 +74,7 @@ public Q_SLOTS:
 protected:
     virtual bool event( QEvent * );
     virtual void changeEvent( QEvent * );
+    virtual void keyPressEvent( QKeyEvent * );
 
 private Q_SLOTS:
     void updateLayout();
@@ -97,6 +98,7 @@ private:
                             const QTextBlock & block, int index,
                             BracketMatch & match );
     void highlightBracket( int pos );
+    int indentedStartOfLine( const QTextBlock & );
 
     LineIndicator *_lineIndicator;
     Document *mDoc;
