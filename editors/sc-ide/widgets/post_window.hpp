@@ -39,6 +39,7 @@ public:
     {
         QFont f( font() );
         f.setFamily("monospace");
+        f.setStyleHint(QFont::TypeWriter);
         setFont(f);
 
         setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
