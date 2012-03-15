@@ -59,6 +59,7 @@ void QcGraphModel::removeAt( int i ) {
 
 QcGraph::QcGraph() :
   QtCollider::Style::Client(this),
+  _defaultThumbSize( QSize(18,18) ),
   _style(DotStyle),
   _drawLines( true ),
   _drawRects( true ),
@@ -136,7 +137,7 @@ void QcGraph::setValue( const VariantList &list )
       setValue( e, val );
     }
     else {
-      QcGraphElement *e = new QcGraphElement();
+      QcGraphElement *e = new QcGraphElement(_defaultThumbSize);
       setValue( e, val );
       _model.append( e );
     }
@@ -274,41 +275,54 @@ void QcGraph::setCurrentY( float f )
 void QcGraph::setThumbSize( int s )
 {
   QSize size(s,s);
+
+  _defaultThumbSize = size;
+
   int c = _model.elementCount();
   for( int i=0; i<c; ++i ) {
     QcGraphElement *e = _model.elementAt(i);
     e->size = size;
   }
+
   _largestThumbSize = size;
   _geometryDirty = false;
+
   update();
 }
 
 void QcGraph::setThumbWidth( int w )
 {
+  _defaultThumbSize.setWidth(w);
+
   int c = _model.elementCount();
   for( int i=0; i<c; ++i ) {
     QcGraphElement *e = _model.elementAt(i);
     e->size.setWidth(w);
   }
+
   // For backward compatibility, switch to style that supports
   // different thumb width and height:
   _style = RectStyle;
   _largestThumbSize.setWidth(w);
+
   update();
 }
 
 void QcGraph::setThumbHeight( int h )
 {
+  _defaultThumbSize.setHeight(h);
+
   int c = _model.elementCount();
   for( int i=0; i<c; ++i ) {
     QcGraphElement *e = _model.elementAt(i);
     e->size.setHeight(h);
   }
+
   // For backward compatibility, switch to style that supports
   // different thumb width and height:
   _style = RectStyle;
   _largestThumbSize.setHeight(h);
+
   update();
 }
 
@@ -735,7 +749,7 @@ QRect QcGraph::valueRect()
       _geometryDirty = false;
   }
 
-  return marginsRect( sunkenContentsRect( rect() ), _largestThumbSize );
+  return marginsRect( sunkenContentsRect( rect() ), _largestThumbSize ).adjusted(1,1,-1,-1);
 }
 
 QRectF QcGraph::labelRect( QcGraphElement *e, const QPointF &pt, const QRect &bounds, const QFontMetrics &fm )
@@ -942,7 +956,7 @@ void QcGraph::drawRectElement
   if( e->selected ) {
     p->setBrush(Qt::NoBrush);
     p->setPen( plt.color(QPalette::Highlight) );
-    p->drawRoundedRect( base._rect.adjusted(1,1,-1,-1), 5, 5 );
+    p->drawRoundedRect( base._rect, 5, 5 );
   }
 
     // label
