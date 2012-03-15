@@ -36,6 +36,7 @@ CmdLine::CmdLine( const QString &text, int maxHist ) :
     expr = new QLineEdit;
     QFont f( expr->font() );
     f.setFamily("monospace");
+    f.setStyleHint(QFont::TypeWriter);
     expr->setFont(f);
 
     QHBoxLayout *l = new QHBoxLayout;

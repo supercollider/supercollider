@@ -75,6 +75,7 @@ CodeEditor::CodeEditor( QWidget *parent ) :
 {
     QFont fnt(font());
     fnt.setFamily("monospace");
+    fnt.setStyleHint(QFont::TypeWriter);
     setFont(fnt);
 
     _lineIndicator->move( contentsRect().topLeft() );
