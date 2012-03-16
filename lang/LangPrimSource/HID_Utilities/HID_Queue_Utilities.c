@@ -199,6 +199,8 @@ int  HIDQueueDevice( IOHIDDeviceRef inIOHIDDeviceRef )
 	}
 	
 	if ( ( kIOReturnSuccess != result ) || ( !tIOHIDQueueRef ) ) {
+		printf("queue NOT created successfully\n");
+
 		HIDReportErrorNum( "Could not queue device due to problem creating queue.", result );
 		
 		if ( kIOReturnSuccess != result ) {
@@ -348,6 +350,7 @@ unsigned char HIDGetEvent( IOHIDDeviceRef inIOHIDDeviceRef, IOHIDValueRef * pIOH
 	if ( inIOHIDDeviceRef ) {
 		IOHIDQueueRef tIOHIDQueueRef = IOHIDDevice_GetQueue( inIOHIDDeviceRef );
 		if ( tIOHIDQueueRef ) {
+			printf("There is a queue!\n");
 			if ( pIOHIDValueRef ) {
 				*pIOHIDValueRef = IOHIDQueueCopyNextValueWithTimeout( tIOHIDQueueRef, 0.0 );
 				
@@ -356,6 +359,7 @@ unsigned char HIDGetEvent( IOHIDDeviceRef inIOHIDDeviceRef, IOHIDValueRef * pIOH
 				}
 			}
 		} else {
+			printf("There is not a queue!\n");
 			HIDReportError( "Could not get HID event, hid queue reference does not exist." );
 		}
 	} else {
