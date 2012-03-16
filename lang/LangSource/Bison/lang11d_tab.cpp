@@ -2643,7 +2643,7 @@ yyreduce:
 
 				SetSymbol(&slot, s_value);
 				selectornode = newPyrSlotNode(&slot);
-				(yyval) = (long)newPyrCallNode(selectornode, (PyrParseNode*)(yyvsp[(1) - (7)]), (PyrParseNode*)(yyvsp[(5) - (7)]), (PyrParseNode*)(yyvsp[(6) - (7)]));
+				(yyval) = (long)newPyrCallNode(selectornode, (PyrParseNode*)(yyvsp[(1) - (7)]), (PyrParseNode*)(yyvsp[(4) - (7)]), (PyrParseNode*)(yyvsp[(7) - (7)]));
 			;}
     break;
 
