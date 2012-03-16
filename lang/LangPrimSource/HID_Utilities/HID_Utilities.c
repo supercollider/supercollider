@@ -102,10 +102,10 @@ Boolean HIDBuildMultiDeviceList( const UInt32 *inUsagePages, const UInt32 *inUsa
 	Boolean result = FALSE;                // assume failure ( pessimist! )
 	Boolean first = ( !gIOHIDManagerRef ); // not yet created?
 
-	if ( first ) {
+//	if ( first ) { // it appears this needs to happen every time?
 		// create the manager
 		gIOHIDManagerRef = IOHIDManagerCreate( kCFAllocatorDefault, kIOHIDOptionsTypeNone );
-	}
+//	}
 
 	if ( gIOHIDManagerRef ) {
 		CFMutableArrayRef hidMatchingCFMutableArrayRef = NULL;
@@ -281,7 +281,10 @@ void HIDRebuildDevices( void ) {
 
 UInt32 HIDCountDevices( void )
 {
-	return CFArrayGetCount( gDeviceCFArrayRef );
+    if(gDeviceCFArrayRef)
+        return CFArrayGetCount( gDeviceCFArrayRef );
+    else 
+        return 0;
 }
 
 // ---------------------------------
