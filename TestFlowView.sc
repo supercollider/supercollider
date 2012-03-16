@@ -1,18 +1,6 @@
 
-TestFlowView : UnitTest {
+TestFlowView : ViewTester {
 	
-	var w;
-	var <>leaveWindowsOpen = false;
-	
-	setUp {
-		w = Window.new;
-		if(leaveWindowsOpen,{ w.front })
-	}
-	tearDown {
-		if(leaveWindowsOpen.not,{
-			if(w.notNil,{ w.close })
-		})
-	}
 	test_startRow {
 		var f,g,a,b,c;
 
