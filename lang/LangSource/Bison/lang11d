@@ -316,7 +316,7 @@ msgsend : name blocklist1
 
 				SetSymbol(&slot, s_value);
 				selectornode = newPyrSlotNode(&slot);
-				$$ = (long)newPyrCallNode(selectornode, (PyrParseNode*)$1, (PyrParseNode*)$5, (PyrParseNode*)$6);
+				$$ = (long)newPyrCallNode(selectornode, (PyrParseNode*)$1, (PyrParseNode*)$4, (PyrParseNode*)$7);
 			}
 		| expr '.' name '(' keyarglist1 optcomma ')' blocklist
 			{
