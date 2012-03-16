@@ -485,6 +485,12 @@ SCDocParser {
                     if(File.exists(x)) {
                         src = x;
                         break.value;
+                    } {
+                        x = dir+/+"Classes"+/+classname++".ext.schelp";
+                        if(File.exists(x)) {
+                           src = x;
+                           break.value;
+                        }
                     };
                 };
             };
