@@ -123,10 +123,14 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>*</string>
+				<string>schelp</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>Other</string>
+			<string>SCDoc help</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/plain</string>
+			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>LSTypeIsPackage</key>
