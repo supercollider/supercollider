@@ -37,6 +37,9 @@ list::
 ## The teletype::CLASS\:::: tag is deprecated, just use teletype::TITLE\:::: instead even for class reference docs.
 ::
 
+subsection:: YAML/JSON parser
+link::Classes/String#-parseYAML:: and link::Classes/String#-parseYAMLFile:: can be used to parse YAML or JSON.
+
 SECTION:: Server-side news
 
 subsection:: SynthDef2 fileformat

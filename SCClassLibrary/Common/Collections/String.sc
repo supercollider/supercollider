@@ -497,4 +497,15 @@ String[char] : RawArray {
 	mkdir {
 		File.mkdir(this);
 	}
+
+	parseYAML {
+		_String_ParseYAML
+		^this.primitiveFailed
+	}
+
+	parseYAMLFile {
+		_String_ParseYAMLFile
+		^this.primitiveFailed
+	}
+
 }
