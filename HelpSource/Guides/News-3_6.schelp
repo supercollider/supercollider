@@ -14,12 +14,13 @@ Posts the following error message:
 teletype::
 ERROR: syntax error, unexpected BINOP, expecting ']'
   in file 'selected text'
-  line 2 char 6:
+  line 1 char 6:
 
-  [1,2,%•,4];
+  [1,2,%,4];
+       ^
   123;
 -----------------------------------
-ERROR: Command line parse failed
+ERROR: Command line parse failed 
 ::
 
 subsection:: Remove old syntax
