@@ -568,6 +568,16 @@ code::
 "Imaginary/Directory/fish.rtf".splitext;
 ::
 
+subsection::YAML and JSON parsing
+
+method::parseYAML
+Parse this string as YAML/JSON.
+returns::
+A nested structure of link::Classes/Array::s (for sequences), link::Classes/Dictionary##Dictionaries:: (for maps) and link::Classes/String::s (for scalars).
+
+method::parseYAMLFile
+Same as code::parseYAML:: but parse a file directly instead of a string. This is faster than reading a file into a string and then parse it.
+
 subsection::Document Support
 
 method::newTextWindow
