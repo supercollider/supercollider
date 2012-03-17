@@ -90,6 +90,22 @@ subsection:: Panner and XFade classes deprecated
 The Panner and XFade classes that been used internally are now deprecated. UGens are better off, implementing the
 code::checkInputs:: explicitly.
 
+subsection:: Quark files outside DIRECTORY
+
+teletype::*.quark:: files are now allowed to be within the quark itself rather than in the DIRECTORY.
+This allows manually installed quarks to be easily managed by link::Classes/Quarks#*gui::
+
+subsection:: New error marker
+Instead of the non-cross-platform bullet-character (•), the error token in error messages are now underlined with teletype::^^^:: characters instead.
+
+For example, the code code::[a, %%&&**, b]:: results in:
+teletype::
+  line 1 char 10:
+
+  [a, %%&&**, b]
+      ^^^^^^
+::
+
 SECTION:: Server-side news
 
 subsection:: Bitwise ops
