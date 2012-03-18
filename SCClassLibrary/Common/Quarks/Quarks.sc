@@ -333,7 +333,7 @@ QuarksView {
 				views.do({ |view| view.remove });
 			});
 			scrollview.decorator.reset;
-			views = quarks.collect{|quark|
+			views = quarks.sort( _.name < _.name ).collect{|quark|
 				var qView = QuarkView.new(scrollview, 500@20, quark,
 					quarksCtrl.installed.detect{|it| it == quark}.notNil);
 				scrollview.decorator.nextLine;
