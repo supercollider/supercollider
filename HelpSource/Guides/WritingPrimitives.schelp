@@ -2,8 +2,8 @@ title:: Writing Primitives
 summary:: Writing Primitives
 categories:: Internals
 
-
-section:: SuperCollider code
+section:: Example
+subsection:: SuperCollider code
 
 code::
 Cocoa {
@@ -14,7 +14,7 @@ Cocoa {
 }
 ::
 
-section:: Primitive source code
+subsection:: Define your primitive
 
 In your primitive source code define the primitive:
 
@@ -44,7 +44,7 @@ to include the receiver which is passed in as the first argument.
 
 (TODO varArgs ...)
 
-section:: Write your primitive
+subsection:: Write your primitive
 
 teletype::g->sp:: is the top of the stack and is the last argument pushed.
 teletype::g->sp - inNumArgsPushed + 1 :: is the receiver and where the result goes.
@@ -71,11 +71,63 @@ Cocoa). Or set the object at teletype::receiver:: which again is at teletype::(g
 
 section:: Guidelines
 
-If possible, you should avoid creating objects in a primitive. Primitives are much simpler to write and debug if you
-pass in an object that you create in SC code and fill in its slots in the primitive.
+subsection:: GC safety
 
-When you do fill in slots in an object with other objects, you must call teletype::g->gc->GCWrite(obj, slot):: in order
-to notify the garbage collector that you have modified a slot that it may have already scanned.
+If possible, you should avoid creating objects in a primitive. Primitives are much simpler to write and debug if you pass in an object that you create in SC code and fill in its slots in the primitive.
+
+When you do fill in slots in an object with other objects, you must call teletype::g->gc->GCWrite(object, other_object):: in order to notify the garbage collector that you have modified a slot that it may have already scanned.
+
+If you create more than one object in a primitive you must make sure that all the previously created objects are reachable before you allocate another. In other words you must store them on the stack or in another object's slots before creating another. Creating objects can call the garbage collector and if you have not made your objects reachable, they can get collected out from under you.
+
+note::
+To summarize, before calling any function that might allocate (like teletype::newPyr*::) you strong::must:: make sure these critera are fulfilled:
+numberedlist::
+## All objects previously created must be reachable, which means they must exist
+    list::
+    ## on the teletype::g->sp:: stack
+    ## or, in a lang-side class/instance variable
+    ## or, in a slot of another object that fulfils these criteria.
+    ::
+## If any object ( teletype::child:: ) was put inside a slot of another object ( teletype::parent:: ), you must have
+    list::
+    ## called teletype::g->gc->GCWrite(parent, child):: afterwards
+    ## and, set teletype::parent->size:: to the correct value
+    ::
+::
+::
+
+Here's an example of how it may look:
+teletype::
+int prMyPrimitive(struct VMGlobals* g, int numArgsPushed)
+{
+    PyrSlot* arg = g->sp;
+    float number;
+    int err;
+
+    err = slotFloatVal(arg, &number); // get one float argument
+    if(err) return err;
+
+    PyrObject *array = newPyrArray(g->gc, 2, 0, true);
+    array->size = 0;
+    SetObject(arg, array); // return value
+
+    // NOTE: array is now reachable on the stack, since arg refers to g->sp
+
+    PyrObject *str1 = newPyrString(g->gc, "Hello", 0, true);
+    SetObject(array->slots, str1);
+    array->size++;
+    g->gc->GCWrite(array, str1);
+
+    // NOTE: str1 is now reachable in array, which is reachable on the stack
+
+    SetFloat(array->slots+1, number);
+    array->size++;
+    // A float is not an allocated object, so no need for anything special here
+
+    return errNone;
+}
+::
+If we would have put teletype::SetObject(arg, array);:: at the end of this function, teletype::array:: would strong::not:: have been reachable at the call to teletype::newPyrString::, thus breaking the rules and introducing bugs that sooner or later would crash SuperCollider (but most probably not in the faulty code but somewhere else, making it very hard to find!)
 
 warning::Do not store pointers to PyrObjects in C/C++ variables unless you can absolutely guarantee that they cannot be garbage
 collected. For example the File and SCWindow classes do this by storing the objects in an array in a classvar. The
@@ -83,16 +135,12 @@ object has to stay in that array until no C object refers to it.
 strong::Failing to observe the above two points can result in very hard to find bugs.::
 ::
 
-If you create more than one object in a primitive you must make sure that all the previously created objects are
-reachable before you allocate another. In other words you must store them on the stack or in another object's slots
-before creating another. Creating objects can call the garbage collector and if you have not made your objects
-reachable, they can get collected out from under you.
+subsection:: Type safety
+Since SC is dynamically typed, you cannot rely on any of the arguments being of the class you expect. You should check every argument to make sure it is the correct type.
 
-Since SC is dynamically typed, you cannot rely on any of the arguments being of the class you expect. You should check
-every argument to make sure it is the correct type. One way to do this is by using teletype::isKindOfSlot::. If you just
-want a numeric value, you can use teletype::slotIntVal::, teletype::slotFloatVal::, or teletype::slotDoubleVal:: which
-will return an error if the value is not a numeric type. Similarly there is teletype::slotStringVal::. It is safe to
-assume that the receiver will be of the correct type because this is ensured by the method dispatch mechanism.
+One way to do this is by using teletype::isKindOfSlot::. If you just want a numeric value, you can use teletype::slotIntVal::, teletype::slotFloatVal::, or teletype::slotDoubleVal:: which will return an error if the value is not a numeric type. Similarly there is teletype::slotStringVal::.
+
+It is safe to assume that the receiver will be of the correct type because this is ensured by the method dispatch mechanism.
 
 section:: FAQ
 
