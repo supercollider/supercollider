@@ -24,8 +24,8 @@ OSCFunc can receive on any port, not only the main code::NetAddr.langPort::.
 
 subsection:: New Location of Startup file
 
-The sclang startup file has moved to code:: thisProcess.platform.userConfigDir +/+ "sclang.scd" :: . Old
-platform-specific startup file locations have been deprecated. The new startup file is plain-text, rtf is not supported.
+The link::Reference/StartupFile##sclang startup file:: has moved to code::Platform.userConfigDir +/+ "startup.scd"::.
+Old platform-specific startup file locations have been deprecated. The new startup file is plain-text, rtf is not supported.
 
 subsection:: Language configuration files
 
