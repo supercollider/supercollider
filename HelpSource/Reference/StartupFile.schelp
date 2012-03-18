@@ -2,7 +2,7 @@ title:: Sclang Startup File
 summary:: The sclang startup file
 categories:: Language
 
-Once the class library is finished compiling the interpreter looks for a file at an operating system dependent path and if such a
+Once the class library is finished compiling the interpreter looks for a file at code::Platform.userConfigDir +/+ "startup.scd":: and if such a
 file exists, executes any code within it (this happens within link::Classes/Main#-startup::). By creating a file in this location you can make user
 specific customizations.
 
