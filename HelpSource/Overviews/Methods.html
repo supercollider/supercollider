@@ -69,10 +69,10 @@ function buildMethodList() {
                 var m = mets[j];
                 var mname = m.slice(2);
                 var pfx = m[1];
-                var ext = m[0]=="+";
+                var undoc = m[0]=="?";
                 if(!methods.hasOwnProperty(mname))
                     methods[mname] = [];
-                methods[mname].push({doc:doc,pfx:pfx,ext:ext});
+                methods[mname].push({doc:doc,pfx:pfx,undoc:undoc});
             }
         }
     }
@@ -123,9 +123,9 @@ function showMethod(mname, node) {
         var a = document.createElement("a");
         a.setAttribute("href",helpRoot+"/"+v.path+".html#"+m.pfx+mname);
         a.innerHTML = v.title;
+        if(m.undoc)
+            a.className = "undoc";
         div2.appendChild(a);
-        if(m.ext)
-            div2.appendChild(document.createTextNode("+"));
         div2.appendChild(document.createTextNode(" - "+v.summary+" "));
         var n = document.createElement("span");
         n.className = "soft";
