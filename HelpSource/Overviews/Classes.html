@@ -109,10 +109,16 @@ function showdocs() {
         n.setAttribute("href","../"+v.path+".html");
         n.innerHTML = v.title;
         div.appendChild(n);
-        div.appendChild(document.createTextNode(" - "+v.summary+" "));
+        var undoc = /Undocumented classes/.test(v.categories);
+        if(undoc) {
+            n.className = "undoc";
+            div.appendChild(document.createTextNode(" -  "));
+        } else {
+            div.appendChild(document.createTextNode(" - "+v.summary+" "));
+        }
 
         var res = "";
-        if(/Undocumented classes/.test(v.categories))
+        if(undoc)
             res += " undocumented";
         if(v.installed=="extension")
             res += " extension";

@@ -59,6 +59,8 @@
 #  include "QtCollider.h"
 #endif
 
+#include "SCDocPrim.h"
+
 int yyparse();
 
 extern bool gTraceInterpreter;
@@ -4213,6 +4215,8 @@ void initOpenGLPrimitives();
 #ifdef SC_QT
 	QtCollider::initPrimitives();
 #endif
+
+initSCDocPrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
 	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());

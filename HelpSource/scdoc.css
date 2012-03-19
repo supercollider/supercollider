@@ -536,6 +536,11 @@ ul.tree li:last-child {
     margin-top:-20px;
 }
 
+a.undoc {
+    color: #88b;
+    text-decoration: line-through;
+}
+
 /* auto class links. note that color can be overridden by prettify rules below */
 a.clslnk {
 }

@@ -130,14 +130,14 @@ function buildMethodList() {
                 var m = mets[j];
                 var mname = m.slice(2);
                 var pfx = m[1];
-                var ext = m[0]=="+";
+                var undoc = m[0]=="?";
                 if(!methods.hasOwnProperty(mname))
                     methods[mname] = [];
                 if(!methods[mname].push) {
                     debug("Problem with method '"+mname+"' in "+doc.path);
                     debug(methods[mname].toString());
                 } else {
-                    methods[mname].push({doc:doc,pfx:pfx,ext:ext});
+                    methods[mname].push({doc:doc,pfx:pfx,undoc:undoc});
                 }
             }
         }
@@ -315,7 +315,12 @@ function doPrint() {
             }
             n.innerHTML = v.title;
             div.appendChild(n);
-            div.appendChild(document.createTextNode(" - "+v.summary+" "));
+            if(/Undocumented classes/.test(v.categories)) {
+                n.className = "undoc";
+                div.appendChild(document.createTextNode(" -  "));
+            } else {
+                div.appendChild(document.createTextNode(" - "+v.summary+" "));
+            }
 
             if(v.installed!="standard") {
                 var n = document.createElement("span");
@@ -373,7 +378,9 @@ function doPrint() {
                 var v = m.doc;
 
                 var div2 = document.createElement("div");
+
                 div2.className = "met_docs";
+
                 div.appendChild(div2);
 
                 var p = m.pfx;
@@ -382,10 +389,16 @@ function doPrint() {
                 var a = document.createElement("a");
                 a.setAttribute("href",helpRoot+"/"+v.path+".html#"+m.pfx+mname);
                 a.innerHTML = v.title;
+                if(m.undoc)
+                    a.className = "undoc";
                 div2.appendChild(a);
-                if(m.ext)
-                    div2.appendChild(document.createTextNode("+"));
-                div2.appendChild(document.createTextNode(" - "+v.summary+" "));
+
+                if(/Undocumented classes/.test(v.categories)) {
+                    div2.appendChild(document.createTextNode(" -  "));
+                } else {
+                    div2.appendChild(document.createTextNode(" - "+v.summary+" "));
+                }
+
                 var n = document.createElement("span");
                 n.className = "soft";
                 var res = "["+v.path.split("/")[0];
