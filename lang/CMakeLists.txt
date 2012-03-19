@@ -162,6 +162,10 @@ if (SC_WII OR APPLE)
 	endif()
 endif()
 
+include(../SCDoc/CMakeLists.txt)
+list(APPEND sclang_sources ${SCDOC_SRCS})
+
+
 if(SC_QT)
 	set(QT_COLLIDER_LANG_CLIENT ON)
 	include(../QtCollider/CMakeLists.txt)

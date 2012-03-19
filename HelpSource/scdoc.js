@@ -103,7 +103,7 @@ function addInheritedMethods() {
         var mets = s.methods.sort();
         for(var j=0;j<mets.length;j++) {
             var m = mets[j];
-            if(doc.methods.indexOf(m)<0) { // ignore methods already documented in this helpfile
+            if(doc.methods.indexOf("_"+m.slice(1))<0) { // ignore methods already documented in this helpfile
                 var li = document.createElement("li");
                 li.innerHTML = "<a href='"+helpRoot+"/"+s.path+".html#"+m.slice(1)+"'>"+m.slice(2)+"</a>";
                 if(m[1]=="*") {

@@ -13,7 +13,7 @@ HelpBrowser {
 
 	*initClass {
 		StartUp.add {
-			NotificationCenter.register(SCDoc, \docMapDidUpdate, this) {
+			NotificationCenter.register(SCDoc, \didIndexAllDocs, this) {
 				if(WebView.implClass.respondsTo(\clearCache)) {
 					WebView.clearCache;
 				}
@@ -76,9 +76,6 @@ HelpBrowser {
 	cmdPeriod { rout.play(AppClock) }
 	goTo {|url, brokenAction|
 		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp"];
-
-		//FIXME: since multiple scdoc queries can be running at the same time,
-		//it would be best to create a queue and run them in order, but only use the url from the last.
 
 		plainTextExts.do {|x|
 			if(url.endsWith(x)) {
@@ -240,6 +237,9 @@ HelpBrowser {
 		};
 		if(webView.respondsTo(\onReload_)) {
 			webView.onReload = {|wv, url|
+				if(WebView.implClass.respondsTo(\clearCache)) {
+					WebView.clearCache;
+				};
 				this.goTo(url);
 			};
 		};

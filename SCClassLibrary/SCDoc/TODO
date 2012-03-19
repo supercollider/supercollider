@@ -1,5 +1,75 @@
 TODO
 ----
+
+- *.ext.schelp should also add to metadata! method lists, keywords, etc..
+  should we also allow them to add to related:: and categories:: ?
+
+- fix helpdocs, SCDoc*, SCDoc Syntax, Writing Help, etc.
+  new notes: you need to run SCDoc.indexAllDocuments after adding a document or other file.
+  Use section titles as they are when linking to them, no simplified names anymore.
+
+- undoc classes only needs to be rendered once per session.. use mtime or something to flag..
+  otoh, rendering these are really fast so no bother?
+
+- how to merge methods docs for overwritten methods? replace the whole method doc, or add to it?
+
+- copymethod::
+  should we warn if the method signature is not the same as the target method, if any?
+  what to do with method argstring when copying from non-class/instance to class/instance and vice versa?
+  should we cache last used parse tree in the common case of copying many methods from the same source?
+
+- Additional triggers for dest-doc should update:
+   - implementing class changed
+        if(doc.redirect.notNil and: {doc.implKlass != doc.klass.tryPerform(doc.redirect.asSymbol)})
+        but this only works if doc.implKlass was the *old* implementing class..
+        so in this case we actually need to store stuff on disk.
+   - other docs metadata changed (for link:: titles)
+     not sure what to do about that.. actually it must be solved by a dependency system.
+     docs that links to other docs has those as dependencies.
+   - class hier changed (for classtree:: tag)
+     this means we need to know if a doc uses classtree::, could be marked in the SCDocMapEntry.
+     also we need to store last class hier on disk, or just always re-render docs that use classtree:: (once per session)
+
+- defer render-specific stuff until the renderer is used the first time?
+  or at least put it in SCDocRenderer-didIndexDocuments, called by SCDoc.indexAllDocuments?
+  - copy non-helpfiles
+  - export JSON
+  actually we could try better to keep renderer specific stuff in SCDocRenderer..
+  even SCDoc.helpTargetDir is renderer specific. Another renderer might not use the local disk at all?
+
+- check that argnames match with reality? (in renderer)
+
+- SCDoc.cpp: replace node->children with a linked list (node->next and node->tail)
+  instead of realloc'ing? same for text strings instead of using strmerge?
+  or realloc in blocks?
+
+- also write the arg string and the first line of each method description to a methods.js,
+  to show in Search.
+
+- private:: now counts as a subsection (like method:: and copymethod::)
+  this means it is a section that can't have any text in it, meaning it needs
+  to come after any section text.
+  an alternative would be to use the syntax: class/instancemethods optprivate subsections
+  but that would mean it *must* come right after the class/instancemethods section header.
+  This would be a lot better actually, since we can then collect all private methodnames
+  easier instead of having to scan the whole section!
+
+- deprecate keyword:: and introduce a keywords:: in header only?
+  one could then optionally use anchor::kw_word:: to set kw locations in the doc.
+  the idea is that it would speed up metadata parsing, but I'm not sure it would.
+
+- error lines are not always correct, probably because many tags eat trailing newlines.
+  but if we eat newlines before a tag, it will break EOL termination detection..
+
+- move inherit-mets from JS to renderer. get rid of docmap.js loading in docs.
+  Export those lists locally for each class doc instead.
+  OTOH, that means that we write the whole Object method list into *each* class doc!
+  Not so nice.. so keep it like this for the moment!
+
+  (then, do we really need the subclasses/superclasses in docmap.js?
+  yes, maybe for method search results ("class A inherited by B, etc..")
+  but then, at least only write it to docmap.js, no need to store it in SCDocMapEntry.)
+
 * Adjust or deprecate all old classes and methods related to help:
 
 Classes:
@@ -34,86 +104,16 @@ Methods done but could be improved:
     // Class : helpFileForMethod  - FIXME: should jump to method anchor
     // Method : openHelpFile - FIXME: should jump to method anchor
 
-Methods done:
-    // Main-showHelpSearch
-    // Main-showHelpBrowser
-    // Process-showHelp
-    // Process-helpGui
-    // Class-helpFilePath
-    // String-findHelpFileOrElse
-    // String-findHelpFile
-    // Class-openHelpFile
-    // String-openHelpFile
-
 Also deprecate class.categories since this is now in the helpfiles instead?
-(categories can still be reached run-time from SCDoc.docMap and SCDoc.makeCategoryMap)
+(categories can still be reached run-time from SCDoc.documents[path])
 
-* cross-platform: check all uses of systemCmd. move to Platform class? Some stuff are not possible on windows, use cygwin or similar?
-
-* plain HTML in HelpSource
-Some files might be kept as plain HTML instead of converting to .schelp, for example License.html but perhaps even some tutorials?
-But then we need a way to add these to the doc_map. For example a directory.scdoc file in these folders that contains a list of doc_map Event's:
-[(title: "License", summary: "SC license note", categories: "Licensing", file: "License.html"),
-...]
-'path' is set automagically.
-perhaps we need also a flag to tell if it's a original html with no schelp source, for example we should not delete these entries from cache in getAllMetaData, and  prepareHelpForURL doesn't need to check for a schelp source file.
-
-* Docs using the classtree:: tag should re-render once every session, since the class tree might have changed.
-How do we force this? perhaps by setting doc.mtime = 0 for these docs in doc_map? Or use "touch -d DATE" to set the html to a very old date?
-
-PARSER BUGS
------------
-* this doesn't work as it should:
-
-    modalrangetag:: blah blah blah
-    blah blah blah blah blah
-    blah blah ::
-
-* tags after each other doesn't work, like returns::link::hello::
-you need to write returns:: link::hello::
-perhaps hard to fix without taking into account if the tag needs closing or not?
-for example, what does this mean: code::foo::link::bar::
-
-VALIDATION
-----------
-* better error handling in parser on bogus input, etc..
-
-* Some tags should only be allowed once. like class, title, related, categories, summary, description, examples..
-Also, they should only occur in the root node.
-
-* private:: must come before any other method
-
-* check method argument names (and order?). it's ok to skip arguments though..
-
-* warn on nameless sections, subsections and methods
-
-* warn on subsection with no parent section (including description/classmethods/etc.)
-
-* warn on text before first section in classdocumentation?
-
-* make sure ## and || only happens inside lists/tables
-
-* warn if argstring is given to method under instancemethods/classmethods?
-we don't seem to use this anyway. should we allow force replacement of argstring? probably not.
 
 IDEAS AND IMPROVEMENTS
 ----------------------
-* Improve the parser,
-clean up and write better regexps. For example, code::foo::/code::bar:: does not currently work.
-Use Array instead of List where possible? (note: l=l.add(x), and add everything before we put the array in some other container like node.children, etc).
-Rewrite the parser in C or some fast external script?
-
-* Improve the regexp primitives? Perhaps like in JS where we can first compile regexp objects and the re-use them. Also, use a callback instead of returning a list of matches?
-
-* Try to make the renderer faster.
-
 * description for categories? HelpSource/category_descriptions, example:
   Server>Abstractions: Client-side classes representing server-side stuff
   show in header and category browser/overview..
   extensions should be able to add such descriptions too, but not overwrite existing descriptions?
-
-* handle formula:: tag. generate a hash hexstring for use as filename, HelpSource/formulas/xxxxxxxx.png
-The renderer would render formula:: by displaying that image if it exists, if not and if LaTeX is installed, convert formula to image first. if LaTeX not installed and image don't exist, show the latex code. (use img alt text?)
 
 * comments (* like this? *)
 
@@ -123,4 +123,48 @@ or clink::Node#-set:: -> link::Classes/Node#-set:: ?
 * render binary op methods differently? like ArrayedCollections ++
 we don't want it to display as "++ (aCollection)" do we? rather "++ aCollection" or "this ++ that" or something..
 binary ops only uses chars from this list: !@%&*-+=|<>?/
+
+
+Crazy ideas:
+
+- make a new renderer also in C??
+  integrated with sclang that can access the introspection data (classtree and methods).
+  it could use the docnode tree directly from the parser instead of going through sclang objects
+
+- or, let both parser and renderer be standalone.
+  * introspection data could be provided by a machine-readable file written by sclang
+    - class tree, their methods, the filenameSymbol for each class and method.
+    
+    C classname
+        F filenameSymbol
+        CM methodname
+            F filenameSymbol
+            A name defaultvalue
+            A etc...
+        XM
+        IM methodname
+            etc...
+        XM
+        C subclassname
+            etc...
+        XC
+    XC
+    
+  but then we need also an output mode that generates sclang code for docmap construction.
+
+- even make the whole scdoc thing in C?
+  * find all helpsource files and render if newer than html target
+  * copy any other files as is
+  * write docmap.json and/or docmap.scd for sclang interface, needed by find-help-for-string, etc.
+
+  * docmap is also needed internally by scdoc renderer:
+  - document title for links
+  - class summary for classtree::
+  We could have a mode to only parse the header, and run this first to create the initial docmap.
+  then when we parse all docs fully, the other metadata would be filled in (documented methods, keywords, etc)
+
+  * it should be fast enough to render all updated files at startup
+  * the process can run in background with .unixCmd, with an action to set helpAvailable=true
+
+...
 
