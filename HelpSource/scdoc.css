@@ -256,17 +256,17 @@ h1 {
 }
 
 h2 {
-    border-bottom: 2px solid #bbb;
-    letter-spacing: 0.05em;
+    border-bottom: 2px solid #ccc;
     margin-top: 1.5em;
     text-align: left;
     margin-bottom: 2px;
-    font-size: 1.4em;
+    font-size: 1.8em;
 }
 
 h3 {
     margin-bottom: 2px;
     text-align: left;
+    font-size: 1.4em;
 }
 
 h4 {
