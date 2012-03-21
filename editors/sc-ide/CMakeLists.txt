@@ -28,6 +28,7 @@ set ( ide_src
     core/sig_mux.cpp
     core/doc_manager.cpp
     core/sc_syntax_highlighter.cpp
+    core/sc_process.cpp
     core/settings.cpp
     widgets/main_window.cpp
     widgets/code_edit.cpp
