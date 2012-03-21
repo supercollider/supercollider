@@ -50,12 +50,17 @@ public:
 
 public Q_SLOTS:
     void storeSettings() {
-        Q_EMIT(storeSettingsDemand(mSettings));
+        Q_EMIT(storeSettingsRequest(mSettings));
         mSettings->sync();
     }
 
+    void applySettings() {
+        Q_EMIT(applySettingsRequest(mSettings));
+    }
+
 Q_SIGNALS:
-    void storeSettingsDemand(QSettings *);
+    void storeSettingsRequest(QSettings *);
+    void applySettingsRequest(QSettings *);
 
 private:
     Main(void);

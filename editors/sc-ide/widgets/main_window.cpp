@@ -151,7 +151,6 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::IndentMore) );
     menu->addAction( mEditors->action(MultiEditor::IndentLess) );
-    menu->addAction( mEditors->action(MultiEditor::SpaceIndent) );
 
     menuBar()->addMenu(menu);
 
@@ -174,7 +173,6 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[EvaluateCurrentFile] );
     menu->addAction( mActions[EvaluateSelectedRegion] );
-    menu->addAction( mEditors->action(MultiEditor::StepForwardOnEvaluation) );
     menu->addSeparator();
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::RunMain) );
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::StopMain) );
@@ -249,7 +247,9 @@ void MainWindow::toggleComandLineFocus()
 void MainWindow::showSettings()
 {
     Settings::Dialog dialog(mMain->settings());
-    dialog.exec();
+    int result = dialog.exec();
+    if( result == QDialog::Accepted )
+        mMain->applySettings();
 }
 
 QWidget *MainWindow::cmdLine()
@@ -278,7 +278,7 @@ void MainWindow::evaluateCurrentRegion()
         text = cursor.selectedText();
     else {
         text = cursor.block().text();
-        if( mEditors->action(MultiEditor::StepForwardOnEvaluation)->isChecked() ) {
+        if( mEditors->stepForwardEvaluation() ) {
             cursor.movePosition(QTextCursor::NextBlock);
             cursor.movePosition(QTextCursor::EndOfBlock);
             editor->setTextCursor(cursor);

@@ -50,8 +50,8 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     connect(&mModificationMapper, SIGNAL(mapped(QWidget*)),
             this, SLOT(onModificationChanged(QWidget*)));
 
-    connect(main, SIGNAL(storeSettingsDemand(QSettings*)),
-            this, SLOT(storeSettings(QSettings*)));
+    connect(main, SIGNAL(applySettingsRequest(QSettings*)),
+            this, SLOT(applySettings(QSettings*)));
 
     createActions();
     updateActions();
@@ -140,10 +140,6 @@ void MultiEditor::createActions()
     act->setStatusTip(tr("Decrease indentation of selected lines"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(indentLess()));
 
-    mActions[SpaceIndent] = act = new QAction(tr("Use Spaces Instead of Tabs"), this);
-    act->setCheckable(true);
-    act->setChecked(true);
-
     // View
 
     mActions[EnlargeFont] = act = new QAction(
@@ -161,12 +157,6 @@ void MultiEditor::createActions()
     mActions[ShowWhitespace] = act = new QAction(tr("Show Spaces and Tabs"), this);
     act->setCheckable(true);
     mSigMux->connect(act, SIGNAL(triggered(bool)), SLOT(setShowWhitespace(bool)));
-
-    // Language
-
-    mActions[StepForwardOnEvaluation] = act = new QAction(tr("&Step Forward"), this);
-    act->setStatusTip(tr("Step to the next line on evaluation"));
-    act->setCheckable(true);
 }
 
 void MultiEditor::updateActions()
@@ -190,22 +180,27 @@ void MultiEditor::updateActions()
     mActions[ShowWhitespace]->setChecked( editor && editor->showWhitespace() );
 }
 
-void MultiEditor::applySettings( QSettings *settings )
+void MultiEditor::applySettings( QSettings *s )
 {
-    settings->beginGroup("IDE/editor");
-    mActions[SpaceIndent]->setChecked( settings->value("space-indent", true).toBool() );
-    mActions[StepForwardOnEvaluation]->setChecked (
-        settings->value("step-forward-evaluation", false).toBool() );
-    settings->endGroup();
+    s->beginGroup("IDE/editor");
+    mSpaceIndent = s->value("spaceIndent", true).toBool();
+    mIndentWidth = s->value("indentWidth", 4).toInt();
+    mStepForwardEvaluation = s->value("stepForwardEvaluation", false).toBool();
+    s->endGroup();
+
+    int c = count();
+    for( int i = 0; i < c; ++i )
+    {
+        CodeEditor *editor = editorForTab(i);
+        if(!editor) continue;
+        applySettings(editor);
+    }
 }
 
-void MultiEditor::storeSettings( QSettings *settings )
+void MultiEditor::applySettings( CodeEditor *e )
 {
-    settings->beginGroup("IDE/editor");
-    settings->setValue("space-indent", mActions[SpaceIndent]->isChecked());
-    settings->setValue("step-forward-evaluation",
-        mActions[StepForwardOnEvaluation]->isChecked());
-    settings->endGroup();
+    e->setSpaceIndent( mSpaceIndent );
+    e->setIndentWidth( mIndentWidth );
 }
 
 void MultiEditor::newDocument()
@@ -253,7 +248,7 @@ void MultiEditor::onOpen( Document *doc )
 {
     CodeEditor *editor = new CodeEditor();
     editor->setDocument(doc);
-    editor->setSpaceIndent(mActions[SpaceIndent]->isChecked());
+    applySettings(editor);
 
     QTextDocument *tdoc = doc->textDocument();
 
@@ -267,8 +262,6 @@ void MultiEditor::onOpen( Document *doc )
     mModificationMapper.setMapping(tdoc, editor);
     connect(tdoc, SIGNAL(modificationChanged(bool)),
             &mModificationMapper, SLOT(map()));
-    connect(mActions[SpaceIndent], SIGNAL(triggered(bool)),
-            editor, SLOT(setSpaceIndent(bool)));
 }
 
 void MultiEditor::onClose( Document *doc )

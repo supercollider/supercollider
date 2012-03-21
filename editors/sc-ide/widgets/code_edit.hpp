@@ -62,6 +62,7 @@ public:
     Document *document() { return mDoc; }
     void setDocument( Document * );
     bool showWhitespace() { return mShowWhitespace; }
+    void setIndentWidth( int );
 
 public Q_SLOTS:
     void zoomIn(int steps = 1);
