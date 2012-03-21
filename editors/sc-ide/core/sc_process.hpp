@@ -26,19 +26,14 @@
 
 namespace ScIDE {
 
+class Main;
+
 class SCProcess:
     public QProcess
 {
 Q_OBJECT
 public:
-    SCProcess( QObject *parent = 0 ):
-        QProcess( parent )
-    {
-        prepareActions();
-
-        connect(this, SIGNAL( readyRead() ),
-                this, SLOT( onReadyRead() ));
-    }
+    SCProcess( Main *main );
 
     enum SCProcessActionRole {
         StartSCLang = 0,
@@ -54,18 +49,7 @@ signals:
     void scPost(QString const &);
 
 public slots:
-    void start (void)
-    {
-        QString sclangProgramName = "sclang";
-        QStringList sclangArguments;
-        sclangArguments << "-i" << "scqt";
-        QProcess::start(sclangProgramName, sclangArguments);
-        bool processStarted = QProcess::waitForStarted();
-        if (!processStarted) {
-            QString errorMessage ("cannot start sclang process");
-            emit scPost(errorMessage);
-        }
-    }
+    void start (void);
 
     void recompileClassLibrary (void)
     {
@@ -141,6 +125,7 @@ private:
         connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
     }
 
+    Main * mMain;
     QAction * mActions[SCProcessActionCount];
 };
 

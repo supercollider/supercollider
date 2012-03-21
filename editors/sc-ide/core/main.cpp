@@ -40,6 +40,10 @@ int main( int argc, char *argv[] )
 
     win->showMaximized();
 
+    bool startInterpreter = main->settings()->value("IDE/interpreter/autoStart", true).toBool();
+    if(startInterpreter)
+        main->scProcess()->start();
+
     return app.exec();
 }
 
