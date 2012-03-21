@@ -117,6 +117,22 @@ void CodeEditor::setDocument( Document *doc )
     mDoc = doc;
 }
 
+void CodeEditor::setIndentWidth( int width )
+{
+    mIndentWidth = width;
+
+    QTextDocument *tdoc = mDoc->textDocument();
+
+    QFontMetricsF fm(font());
+
+    QTextOption opt;
+    opt.setTabStop( fm.width(' ') * mIndentWidth );
+    if(mShowWhitespace)
+        opt.setFlags( QTextOption::ShowTabsAndSpaces );
+
+    tdoc->setDefaultTextOption(opt);
+}
+
 void CodeEditor::zoomIn(int steps)
 {
     QFont f = font();

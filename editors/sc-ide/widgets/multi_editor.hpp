@@ -56,15 +56,11 @@ public:
         Paste,
         IndentMore,
         IndentLess,
-        SpaceIndent,
 
         // View
         EnlargeFont,
         ShrinkFont,
         ShowWhitespace,
-
-        // Language
-        StepForwardOnEvaluation,
 
         ActionRoleCount
     };
@@ -76,6 +72,8 @@ public:
 
     QAction * action( ActionRole role )
         { return mActions[role]; }
+
+    bool stepForwardEvaluation() { return mStepForwardEvaluation; }
 
 Q_SIGNALS:
     void currentChanged( Document * );
@@ -89,7 +87,6 @@ public Q_SLOTS:
     void closeDocument();
     void setCurrent( Document * );
     void applySettings( QSettings * );
-    void storeSettings( QSettings * );
 
 private Q_SLOTS:
 
@@ -105,11 +102,17 @@ private:
     void updateActions();
     CodeEditor * editorForTab( int index );
     CodeEditor * editorForDocument( Document * );
+    void applySettings( CodeEditor * );
 
     DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;
     QSignalMapper mModificationMapper;
     QAction *mActions[ActionRoleCount];
+
+    // settings
+    bool mSpaceIndent;
+    int mIndentWidth;
+    bool mStepForwardEvaluation;
 };
 
 
