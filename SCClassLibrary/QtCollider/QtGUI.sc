@@ -86,7 +86,7 @@ QtGUI {
   *image { ^this.notImplemented( "Image" ) }
 
   *notImplemented { arg class;
-    ("QtGUI: " ++ class.asString ++ " is not implemented yet").postln;
+    //("QtGUI: " ++ class.asString ++ " is not implemented yet").postln;
     ^nil;
   }
 
