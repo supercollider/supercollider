@@ -99,9 +99,15 @@ void QcListWidget::keyPressEvent( QKeyEvent *e )
 
 QC_DECLARE_QWIDGET_FACTORY(QcPopUpMenu);
 
-QcPopUpMenu::QcPopUpMenu()
-: lastChoice( -1 ), _reactivation(false)
+QcPopUpMenu::QcPopUpMenu() :
+  _changed(false),
+  _reactivation(false)
 {
+  connect( this, SIGNAL(currentIndexChanged(int)),
+           this, SLOT(setChanged()) );
+  connect( this, SIGNAL(currentIndexChanged(int)),
+           this, SLOT(clearChanged()), Qt::QueuedConnection );
+
   connect( this, SIGNAL(activated(int)), this, SLOT(doAction(int)) );
 }
 
@@ -114,10 +120,8 @@ void QcPopUpMenu::setItems( const VariantList & items )
 
 void QcPopUpMenu::doAction( int choice )
 {
-  if( _reactivation || (choice != lastChoice) ) {
-    lastChoice = choice;
+  if( _changed || _reactivation )
     Q_EMIT( action() );
-  }
 }
 
 /////////////////////////////// QcButton ///////////////////////////////////////
