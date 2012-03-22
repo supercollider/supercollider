@@ -41,7 +41,7 @@ SclangPage::~SclangPage()
 
 void SclangPage::load( QSettings *s )
 {
-    s->beginGroup("interpreter");
+    s->beginGroup("IDE/interpreter");
     ui->autoStart->setChecked( s->value("autoStart", true).toBool() );
     ui->command->setText( s->value("command").toString() );
     ui->runtimeDir->setText( s->value("runtimeDir").toString() );
@@ -51,7 +51,7 @@ void SclangPage::load( QSettings *s )
 
 void SclangPage::store( QSettings *s )
 {
-    s->beginGroup("interpreter");
+    s->beginGroup("IDE/interpreter");
     s->setValue("autoStart", ui->autoStart->isChecked());
     s->setValue("command", ui->command->text());
     s->setValue("runtimeDir", ui->runtimeDir->text());

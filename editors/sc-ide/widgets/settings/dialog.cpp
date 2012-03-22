@@ -30,6 +30,7 @@
 #include <QListWidget>
 #include <QFile>
 #include <QLineEdit>
+#include <QPushButton>
 
 namespace ScIDE { namespace Settings {
 
@@ -56,10 +57,10 @@ Dialog::Dialog( QSettings *settings, QWidget * parent ):
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(ui->buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()),
+            this, SLOT(reset()));
 
-    mSettings->beginGroup("IDE");
-    Q_EMIT( loadRequest(mSettings) );
-    mSettings->endGroup();
+    reset();
 }
 
 Dialog::~Dialog()
@@ -69,9 +70,7 @@ Dialog::~Dialog()
 
 void Dialog::accept()
 {
-    mSettings->beginGroup("IDE");
     Q_EMIT( storeRequest(mSettings) );
-    mSettings->endGroup();
 
     QDialog::accept();
 }
@@ -79,6 +78,11 @@ void Dialog::accept()
 void Dialog::reject()
 {
     QDialog::reject();
+}
+
+void Dialog::reset()
+{
+    Q_EMIT( loadRequest(mSettings) );
 }
 
 }} // namespace ScIDE::Settings

@@ -43,13 +43,13 @@ public Q_SLOTS:
 
     virtual void accept();
     virtual void reject();
+    virtual void reset();
 
 Q_SIGNALS:
     void storeRequest( QSettings * );
     void loadRequest( QSettings * );
 
 private:
-
     QSettings *mSettings;
     Ui::ConfigDialog *ui;
 };

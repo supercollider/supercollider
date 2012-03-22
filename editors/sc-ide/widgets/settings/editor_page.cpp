@@ -37,7 +37,7 @@ EditorPage::~EditorPage()
 
 void EditorPage::load( QSettings *s )
 {
-    s->beginGroup("editor");
+    s->beginGroup("IDE/editor");
     ui->spaceIndent->setChecked( s->value("spaceIndent", true).toBool() );
     ui->indentWidth->setValue( s->value("indentWidth", 4).toInt() );
     ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation", false).toBool() );
@@ -46,7 +46,7 @@ void EditorPage::load( QSettings *s )
 
 void EditorPage::store( QSettings *s )
 {
-    s->beginGroup("editor");
+    s->beginGroup("IDE/editor");
     s->setValue("spaceIndent", ui->spaceIndent->isChecked());
     s->setValue("indentWidth", ui->indentWidth->value());
     s->setValue("stepForwardEvaluation", ui->stepForwardEvaluation->isChecked());
