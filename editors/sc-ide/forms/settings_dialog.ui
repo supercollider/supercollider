@@ -17,7 +17,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QListWidget" name="configPageList">
+      <widget class="ScIDE::IconListWidget" name="configPageList">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -39,14 +39,11 @@
          <height>32</height>
         </size>
        </property>
-       <property name="movement">
-        <enum>QListView::Static</enum>
-       </property>
-       <property name="flow">
-        <enum>QListView::TopToBottom</enum>
+       <property name="isWrapping" stdset="0">
+        <bool>false</bool>
        </property>
        <property name="viewMode">
-        <enum>QListView::IconMode</enum>
+        <enum>QListView::ListMode</enum>
        </property>
       </widget>
      </item>
@@ -83,6 +80,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ScIDE::IconListWidget</class>
+   <extends>QListWidget</extends>
+   <header>icon_list_widget.hpp</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
