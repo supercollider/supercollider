@@ -560,15 +560,15 @@ SynthDef {
 
 	doSend { |server, completionMsg|
 		var bytes = this.asBytes;
-		try {
-			server.sendMsg("/d_recv", this.asBytes, completionMsg)
+		if (bytes.size < (65535 div: 4)) {
+			server.sendMsg("/d_recv", bytes, completionMsg)
 		} {
 			if (server.isLocal) {
-				"Possible buffer overflow when sending SynthDef %. Retrying via synthdef file".format(name).warn;
+				"SynthDef % too big for sending. Retrying via synthdef file".format(name).warn;
 				this.writeDefFile(synthDefDir);
 				server.sendMsg("/d_load", synthDefDir ++ name ++ ".scsyndef", completionMsg)
 			} {
-				"Possible buffer overflow when sending SynthDef %.".format(name).warn;
+				"SynthDef % too big for sending.".format(name).warn;
 			}
 		}
 	}
