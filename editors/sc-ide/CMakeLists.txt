@@ -21,6 +21,7 @@ set ( ide_moc_hdr
     widgets/settings/sclang_page.hpp
     widgets/settings/editor_page.hpp
     widgets/util/path_chooser_widget.hpp
+    widgets/util/text_format_list_widget.hpp
 )
 
 set ( ide_src
@@ -38,6 +39,7 @@ set ( ide_src
     widgets/settings/dialog.cpp
     widgets/settings/sclang_page.cpp
     widgets/settings/editor_page.cpp
+    widgets/util/text_format_list_widget.cpp
 )
 
 set( ide_forms
