@@ -42,6 +42,9 @@ public Q_SLOTS:
     void load( QSettings * );
     void store( QSettings * );
 
+private Q_SLOTS:
+    void execSyntaxFormatContextMenu(const QPoint &);
+
 private:
     Ui::EditorConfigPage *ui;
 };

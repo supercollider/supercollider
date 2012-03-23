@@ -125,24 +125,50 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="tab_4">
       <attribute name="title">
        <string>Colors</string>
       </attribute>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Background</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Normal Text</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Matching Brackets</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="ScIDE::ColorWidget" name="bgColor"/>
+       </item>
+       <item row="1" column="1">
+        <widget class="ScIDE::ColorWidget" name="textColor"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="ScIDE::ColorWidget" name="bracketColor"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>Syntax Highlighting</string>
+      </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QTreeWidget" name="treeWidget">
-         <column>
-          <property name="text">
-           <string>Role</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Color</string>
-          </property>
-         </column>
-        </widget>
+        <widget class="ScIDE::TextFormatListWidget" name="textFormatList"/>
        </item>
       </layout>
      </widget>
@@ -150,6 +176,18 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ScIDE::TextFormatListWidget</class>
+   <extends>QTreeView</extends>
+   <header>text_format_list_widget.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>ScIDE::ColorWidget</class>
+   <extends>QLabel</extends>
+   <header>color_widget.hpp</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
