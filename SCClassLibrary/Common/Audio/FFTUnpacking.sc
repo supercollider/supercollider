@@ -13,7 +13,7 @@ UnpackFFT : MultiOutUGen {
 	}
 }
 
-Unpack1FFT : PV_ChainUGen {
+Unpack1FFT : UGen {
 	*new { | chain, bufsize, binindex, whichmeasure=0 |
 		//("bufsize:"+bufsize).postln;
 		^this.multiNew('demand', chain, bufsize, binindex, whichmeasure);
