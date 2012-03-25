@@ -42,8 +42,7 @@ METHOD:: new
     Create a Stethoscope, either as a window, or placed on a given parent view.
 
     argument:: server
-        In Qt GUI: any local Server (internal or another process on the same machine).
-        In other GUI kits: must be Server.internal.
+        A valid Server (see link::#*isValidServer::), or code::nil::, in which case the link::#*defaultServer:: is used.
     argument:: numChannels
         An integer. Default value is 2.
     argument:: index
@@ -68,6 +67,27 @@ s.boot
 SCStethoscope(s,2);
 ::
 
+METHOD:: defaultServer
+
+    The default server used if no server is passed to the link::#*new#constructor::.
+
+
+METHOD:: isValidServer
+
+    Tests whether Stethoscope can operate on the given server.
+
+    This is the current state of server support:
+    list::
+    ## strong::Qt::: any local server (see link::Classes/Server#-isLocal::).
+    ## strong::Cocoa::: only the in-process (internal) server (see link::Classes/Server#*internal:: and link::Classes/Server#-inProcess::).
+    ## strong::SwingOSC::: any out-of-process local server (see link::Classes/Server#-isLocal:: and link::Classes/Server#-inProcess::).
+    ::
+
+    argument::
+        A link::Classes/Server::.
+    returns::
+        A Boolean.
+
 METHOD:: ugenScopes
 
     Returns an array of the running ugen scopes.
@@ -76,30 +96,19 @@ code::
 Server.default = s = Server.internal
 s.boot
 {[SinOsc.ar.scope,WhiteNoise.ar(0.5).scope]*0.1}.scope(2);
-SCStethoscope.ugenScopes; // returns the ugen scopes
+Stethoscope.ugenScopes; // returns the ugen scopes
 ::
-
-METHOD:: defaultServer
-
-        SCStethoscope's default server. Returns Server.internal
-
-
-METHOD:: isValidServer
-
-        Tests if a server is a valid server. Returns a n instanc of Boolean;
-        aServer - An instance of Server.
 
 METHOD:: tileBounds
 
-        A utility used by Ugen : scope to tile scope windows.
+    A utility method used by link::Classes/UGen#-scope:: to tile scope windows.
+
+    returns::
+        A Rect.
 
 
 
 INSTANCEMETHODS::
-
-METHOD:: ugenScopes
-
-    Returns an array of the running UGen scopes, just like the class method link::#*ugenScopes::.
 
 
 SUBSECTION:: Data
