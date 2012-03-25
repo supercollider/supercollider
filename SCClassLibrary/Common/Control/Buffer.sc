@@ -527,10 +527,10 @@ Buffer {
 
 	query {
 		OSCFunc({ arg msg;
-			Post << "bufnum      :" << msg[1] << Char.nl
+			Post << "bufnum      : " << msg[1] << Char.nl
 				<< "numFrames   : " << msg[2] << Char.nl
 				<< "numChannels : " << msg[3] << Char.nl
-				<< "sampleRate  :" << msg[4] << Char.nl << Char.nl;
+				<< "sampleRate  : " << msg[4] << Char.nl << Char.nl;
 		}, '/b_info', server.addr).oneShot;
 		server.sendMsg("/b_query",bufnum)
 	}
