@@ -1,4 +1,6 @@
 QStethoscope2 {
+  classvar ugenScopes;
+
   // internal functions
   var playSynthDef, makeGui, setCycle, setYZoom, setIndex, setNumChannels,
       setRate, setStyle, updateColors;
@@ -21,12 +23,33 @@ QStethoscope2 {
   var sizeToggle=false;
   var running = false;
 
+  *defaultServer { ^if( Server.default.isLocal, Server.default, Server.local ) }
+
+  *isValidServer { arg aServer; ^aServer.isLocal }
+
+  *ugenScopes {
+    if (ugenScopes.isNil) { ugenScopes = Set.new };
+    ^ugenScopes
+  }
+
+  *tileBounds {
+    var screenBounds = QWindow.availableBounds;
+    var w = 250, h = 250;
+    var x = (ugenScopes.size * (w + 10)) + 10;
+    var right = x + w;
+    var y = floor(right / screenBounds.width) * (h + 20) + 20;
+    if(right > screenBounds.width)
+      { x = floor(right % screenBounds.width / (w + 10)) * (w + 10) + 10 };
+    x = x + screenBounds.left;
+    ^Rect(x, y, w, h)
+  }
+
   *new {
     arg server, numChannels = 2, index = 0, bufsize = 4096,
         zoom = 1.0, rate = \audio, view, bufnum;
     var bus;
 
-    if(server.isNil) {server = Server.default};
+    if(server.isNil) {server = this.defaultServer};
     if(server.isLocal.not) {Error("Can not scope on remote server.").throw};
 
     bus = Bus(rate, index, numChannels, server);
