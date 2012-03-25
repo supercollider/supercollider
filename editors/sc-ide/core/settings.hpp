@@ -22,8 +22,10 @@
 #define SCIDE_SETTINGS_HPP_INCLUDED
 
 #include <QSettings>
+#include <QTextCharFormat>
 
 Q_DECLARE_METATYPE( QVector<QVariant> );
+Q_DECLARE_METATYPE( QTextCharFormat );
 
 namespace ScIDE {
 
