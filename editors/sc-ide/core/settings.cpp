@@ -51,6 +51,51 @@ struct IODeviceSource : boost::iostreams::source {
     QIODevice *mDev;
 };
 
+static void parseTextFormat( const YAML::Node &node, const QString &key, QSettings::SettingsMap &map )
+{
+    using namespace YAML;
+
+    if(node.Type() != NodeType::Map) return;
+
+    const Node *n;
+    std::string val;
+    QTextCharFormat fm;
+
+    n = node.FindValue("color");
+    if(n && n->Type() == NodeType::Scalar) {
+        n->GetScalar(val);
+        fm.setForeground(QColor(val.c_str()));
+    }
+
+    n = node.FindValue("background");
+    if(n && n->Type() == NodeType::Scalar) {
+        n->GetScalar(val);
+        QColor color(val.c_str());
+        if(color.isValid())
+            fm.setBackground(color);
+    }
+
+    n = node.FindValue("bold");
+    if(n && n->Type() == NodeType::Scalar) {
+        bool bold = n->to<bool>();
+        if(bold) fm.setFontWeight(QFont::Bold);
+    }
+
+    n = node.FindValue("italic");
+    if(n && n->Type() == NodeType::Scalar) {
+        bool italic = n->to<bool>();
+        fm.setFontItalic(italic);
+    }
+
+    n = node.FindValue("underline");
+    if(n && n->Type() == NodeType::Scalar) {
+        bool underline = n->to<bool>();
+        fm.setFontUnderline(underline);
+    }
+
+    map.insert( key, QVariant::fromValue<QTextCharFormat>(fm) );
+}
+
 static void parseSequence( const YAML::Node &node, const QString &parentKey, QSettings::SettingsMap &map )
 {
     using namespace YAML;
@@ -88,6 +133,12 @@ static void parseNode( const YAML::Node &node, const QString &parentKey, QSettin
 {
     using namespace YAML;
 
+    if (node.Tag() == "!textFormat")
+    {
+        parseTextFormat( node, parentKey, map );
+        return;
+    }
+
     switch (node.Type())
     {
         case NodeType::Null:
@@ -123,27 +174,79 @@ static void parseNode( const YAML::Node &node, const QString &parentKey, QSettin
     }
 }
 
+static void writeTextFormat( const QTextCharFormat &fm, YAML::Emitter &out )
+{
+    out << YAML::LocalTag("textFormat");
+    out << YAML::BeginMap;
+
+    if (fm.hasProperty(QTextFormat::ForegroundBrush)) {
+        out << YAML::Key << "color";
+        out << YAML::Value << fm.foreground().color().name().toStdString();
+    }
+
+    if (fm.hasProperty(QTextFormat::BackgroundBrush)) {
+        out << YAML::Key << "background";
+        out << YAML::Value << fm.background().color().name().toStdString();
+    }
+
+    if (fm.hasProperty(QTextFormat::FontWeight)) {
+        out << YAML::Key << "bold";
+        out << YAML::Value << (fm.fontWeight() == QFont::Bold);
+    }
+
+    if (fm.hasProperty(QTextFormat::FontItalic)) {
+        out << YAML::Key << "italic";
+        out << YAML::Value << fm.fontItalic();
+    }
+
+    if (fm.hasProperty(QTextFormat::TextUnderlineStyle)) {
+        qDebug("saving underline");
+        out << YAML::Key << "underline";
+        out << YAML::Value << fm.fontUnderline();
+    }
+
+    out << YAML::EndMap;
+}
+
 static void writeValue( const QVariant &var, YAML::Emitter &out )
 {
     int type = var.type();
 
-    if(var.type() == QVariant::UserType && var.userType() == qMetaTypeId<QVector<QVariant> >())
+    switch(var.type())
     {
-        out << YAML::BeginSeq;
-
-        QVector<QVariant> vec = var.value<QVector<QVariant> >();
-        Q_FOREACH(QVariant var, vec)
-            out << var.toString().toStdString();
-
-        out << YAML::EndSeq;
-    }
-    else if(var.type() == QVariant::Invalid)
+    case QVariant::Invalid:
     {
         out << YAML::Null;
+        break;
     }
-    else
+    case QVariant::UserType:
+    {
+        int utype = var.userType();
+
+        if (utype == qMetaTypeId<QVector<QVariant> >())
+        {
+            out << YAML::BeginSeq;
+
+            QVector<QVariant> vec = var.value<QVector<QVariant> >();
+            Q_FOREACH(QVariant var, vec)
+                out << var.toString().toStdString();
+
+            out << YAML::EndSeq;
+        }
+        else if (utype == qMetaTypeId<QTextCharFormat>())
+        {
+            writeTextFormat( var.value<QTextCharFormat>(), out );
+        }
+        else
+        {
+            out << var.toString().toStdString();
+        }
+        break;
+    }
+    default:
     {
         out << var.toString().toStdString();
+    }
     }
 }
 
@@ -162,6 +265,7 @@ static void writeGroup( const QString &groupKey, YAML::Emitter &out,
 
         int i_separ = key.indexOf("/", groupKeyLen);
         if (i_separ != -1) {
+            // There is child nodes
             key.truncate( i_separ + 1 );
 
             QString yamlKey(key);
@@ -175,6 +279,7 @@ static void writeGroup( const QString &groupKey, YAML::Emitter &out,
         }
         else
         {
+            // There is no child nodes
             key.remove(0, groupKeyLen);
 
             out << YAML::Key << key.toStdString();
