@@ -21,6 +21,7 @@
 #include "code_edit.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/sc_syntax_highlighter.hpp"
+#include "../core/settings.hpp"
 
 #include <QPainter>
 #include <QPaintEvent>
@@ -168,6 +169,38 @@ void CodeEditor::setShowWhitespace(bool show)
     else
         opt.setFlags( opt.flags() & ~QTextOption::ShowTabsAndSpaces );
     doc->setDefaultTextOption(opt);
+}
+
+void CodeEditor::applySettings( QSettings *s )
+{
+    s->beginGroup("IDE/editor");
+
+    mSpaceIndent = s->value("spaceIndent", true).toBool();
+
+    setIndentWidth( s->value("indentWidth", 4).toInt() );
+
+    QPalette plt;
+    QFont fnt(font());
+
+    fnt.setFamily("monospace");
+    fnt.setStyleHint(QFont::TypeWriter);
+
+    s->beginGroup("colors");
+
+    if (s->contains("background"))
+        plt.setColor(QPalette::Base, s->value("background").value<QColor>());
+
+    if (s->contains("text"))
+        plt.setColor(QPalette::Text, s->value("text").value<QColor>());
+
+    mBracketHighlight = s->value("matchingBrackets").value<QColor>();
+
+    s->endGroup(); // colors
+
+    setPalette(plt);
+    setFont(fnt);
+
+    s->endGroup();
 }
 
 bool CodeEditor::event( QEvent *e )
@@ -387,8 +420,8 @@ void CodeEditor::highlightBracket( int pos )
 
     QTextEdit::ExtraSelection selection;
     selection.cursor = cursor;
-    selection.format.setBackground(QColor(180,0,0));
-    selection.format.setForeground(Qt::white);
+    selection.format.setFontWeight(QFont::Bold);
+    selection.format.setBackground(mBracketHighlight);
 
     QList<QTextEdit::ExtraSelection> selections = extraSelections();
     selections.append(selection);

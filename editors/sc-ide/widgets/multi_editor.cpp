@@ -28,6 +28,7 @@ namespace ScIDE {
 
 MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QTabWidget(parent),
+    mMain(main),
     mDocManager(main->documentManager()),
     mSigMux(new SignalMultiplexer(this))
 {
@@ -183,8 +184,6 @@ void MultiEditor::updateActions()
 void MultiEditor::applySettings( QSettings *s )
 {
     s->beginGroup("IDE/editor");
-    mSpaceIndent = s->value("spaceIndent", true).toBool();
-    mIndentWidth = s->value("indentWidth", 4).toInt();
     mStepForwardEvaluation = s->value("stepForwardEvaluation", false).toBool();
     s->endGroup();
 
@@ -193,14 +192,8 @@ void MultiEditor::applySettings( QSettings *s )
     {
         CodeEditor *editor = editorForTab(i);
         if(!editor) continue;
-        applySettings(editor);
+        editor->applySettings(s);
     }
-}
-
-void MultiEditor::applySettings( CodeEditor *e )
-{
-    e->setSpaceIndent( mSpaceIndent );
-    e->setIndentWidth( mIndentWidth );
 }
 
 void MultiEditor::newDocument()
@@ -248,7 +241,7 @@ void MultiEditor::onOpen( Document *doc )
 {
     CodeEditor *editor = new CodeEditor();
     editor->setDocument(doc);
-    applySettings(editor);
+    editor->applySettings(mMain->settings());
 
     QTextDocument *tdoc = doc->textDocument();
 
