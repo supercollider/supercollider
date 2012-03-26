@@ -22,36 +22,78 @@
 #include <algorithm>
 
 #include "sc_syntax_highlighter.hpp"
+#include "main.hpp"
+#include "settings.hpp"
 
 namespace ScIDE {
 
-SyntaxFormatContainer::SyntaxFormatContainer(void)
+SyntaxHighlighterGlobals * SyntaxHighlighterGlobals::mInstance = 0;
+
+SyntaxHighlighterGlobals::SyntaxHighlighterGlobals( Main *main ):
+    QObject(main)
 {
-    keywordFormat.setFontWeight(QFont::Bold);
-    keywordFormat.setForeground(Qt::magenta);
+    Q_ASSERT(mInstance == 0);
+    mInstance = this;
 
-    buildinsFormat = keywordFormat;
-    primitiveFormat = keywordFormat;
+    mDefaultFormats[KeywordFormat].setFontWeight(QFont::Bold);
+    mDefaultFormats[KeywordFormat].setForeground(Qt::magenta);
 
-    classFormat.setForeground(Qt::green);
-    numberLiteralFormat.setForeground(Qt::green);
+    mDefaultFormats[BuiltinFormat] = mDefaultFormats[KeywordFormat];
 
-    commentFormat.setForeground(QColor(220,0,0));
+    mDefaultFormats[PrimitiveFormat] = mDefaultFormats[KeywordFormat];
 
-    stringFormat.setForeground(Qt::blue);
+    mDefaultFormats[ClassFormat].setForeground(Qt::green);
 
-    symbolFormat.setForeground(Qt::magenta);
-    charFormat = symbolFormat;
+    mDefaultFormats[NumberFormat].setForeground(Qt::green);
 
-    envVarFormat = symbolFormat;
+    mDefaultFormats[CommentFormat].setForeground(QColor(220,0,0));
+
+    mDefaultFormats[StringFormat].setForeground(Qt::blue);
+
+    mDefaultFormats[SymbolFormat].setForeground(Qt::magenta);
+
+    mDefaultFormats[CharFormat] = mDefaultFormats[SymbolFormat];
+
+    mDefaultFormats[EnvVarFormat] = mDefaultFormats[SymbolFormat];
+
+    // initialize formats from defaults + settings:
+    applySettings(main->settings());
+
+    connect(main, SIGNAL(applySettingsRequest(QSettings*)),
+            this, SLOT(applySettings(QSettings*)));
 }
 
-SyntaxFormatContainer gSyntaxFormatContainer;
+void SyntaxHighlighterGlobals::applySettings( QSettings *s )
+{
+    QString key("IDE/editor/highlighting");
+    applySettings( s, key + "/normal", PlainFormat );
+    applySettings( s, key + "/keyword", KeywordFormat );
+    applySettings( s, key + "/builtin", BuiltinFormat );
+    applySettings( s, key + "/primitive", PrimitiveFormat );
+    applySettings( s, key + "/class", ClassFormat );
+    applySettings( s, key + "/number", NumberFormat );
+    applySettings( s, key + "/symbol", SymbolFormat );
+    applySettings( s, key + "/envvar", EnvVarFormat );
+    applySettings( s, key + "/string", StringFormat );
+    applySettings( s, key + "/char", CharFormat );
+    applySettings( s, key + "/comment", CommentFormat );
 
+    Q_EMIT(syntaxFormatsChanged());
+}
+
+void SyntaxHighlighterGlobals::applySettings( QSettings *s, const QString &key, SyntaxFormat type )
+{
+    if (s->contains(key))
+        mFormats[type] = s->value(key).value<QTextCharFormat>();
+    else
+        mFormats[type] = mDefaultFormats[type];
+}
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent):
     QSyntaxHighlighter( parent )
 {
+    mGlobals = SyntaxHighlighterGlobals::instance();
+
     // FIXME: later we can cache the regexps
     initKeywords();
     initBuildins();
@@ -75,6 +117,8 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent):
     singleLineCommentRegexp.setPattern("//[^\r\n]*");
     commentStartRegexp = QRegExp("/\\*");
     commentEndRegexp = QRegExp("\\*/");
+
+    connect(mGlobals, SIGNAL(syntaxFormatsChanged()), this, SLOT(rehighlight()));
 }
 
 
@@ -110,8 +154,8 @@ void SyntaxHighlighter::initBuildins(void)
     buildinsRegexp.setPattern(buildinsPattern);
 }
 
-SyntaxHighlighter::highligherFormat SyntaxHighlighter::findCurrentFormat(const QString& text,
-                                                                         int& currentIndex, int& lengthOfMatch)
+SyntaxHighlighter::SyntaxRule SyntaxHighlighter::findMatchingRule
+(const QString& text, int& currentIndex, int& lengthOfMatch)
 {
     QVector<int> matchIndices, matchLengths;
 
@@ -131,7 +175,7 @@ SyntaxHighlighter::highligherFormat SyntaxHighlighter::findCurrentFormat(const Q
         if (matchIndex == currentIndex) {
             // first character matches
             lengthOfMatch = matchLengths.back();
-            return static_cast<highligherFormat>(i);
+            return static_cast<SyntaxRule>(i);
         }
 
         ++i;
@@ -143,20 +187,22 @@ SyntaxHighlighter::highligherFormat SyntaxHighlighter::findCurrentFormat(const Q
     if (minimumIndex == -1) {
         lengthOfMatch = 0;
         // no match
-        return FormatNone;
+        return NoRule;
     }
 
     int minElementIndex = matchIndices.indexOf(minimumIndex);
 
     currentIndex = minimumIndex;
     lengthOfMatch = matchLengths[minElementIndex];
-    return static_cast<highligherFormat>(minElementIndex);
+    return static_cast<SyntaxRule>(minElementIndex);
 }
 
 void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentIndex, int & currentState)
 {
     BlockData *blockData = static_cast<BlockData*>(currentBlockUserData());
     Q_ASSERT(blockData);
+
+    const QTextCharFormat * formats = mGlobals->formats();
 
     do {
         static QString brackets("(){}[]");
@@ -169,73 +215,73 @@ void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentI
 
         if (text[currentIndex] == '\"') {
             currentState = inString;
-            setFormat(currentIndex, 1, gSyntaxFormatContainer.stringFormat);
+            setFormat(currentIndex, 1, formats[StringFormat]);
             currentIndex += 1;
             return;
         }
 
         if (text[currentIndex] == '\'') {
             currentState = inSymbol;
-            setFormat(currentIndex, 1, gSyntaxFormatContainer.symbolFormat);
+            setFormat(currentIndex, 1, formats[SymbolFormat]);
             currentIndex += 1;
             return;
         }
 
         int lenghtOfMatch;
-        highligherFormat format = findCurrentFormat(text, currentIndex, lenghtOfMatch);
+        SyntaxRule rule = findMatchingRule(text, currentIndex, lenghtOfMatch);
 
-        switch (format)
+        switch (rule)
         {
-        case FormatClass:
-            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.classFormat);
+        case ClassRule:
+            setFormat(currentIndex, lenghtOfMatch, formats[ClassFormat]);
             break;
 
-        case FormatBuiltin:
-            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.buildinsFormat);
+        case BuiltinRule:
+            setFormat(currentIndex, lenghtOfMatch, formats[BuiltinFormat]);
             break;
 
-        case FormatPrimitive:
-            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.primitiveFormat);
+        case PrimitiveRule:
+            setFormat(currentIndex, lenghtOfMatch, formats[PrimitiveFormat]);
             break;
 
-        case FormatKeyword:
-            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.keywordFormat);
+        case KeywordRule:
+            setFormat(currentIndex, lenghtOfMatch, formats[KeywordFormat]);
             break;
 
-        case FormatSymbol:
-        case FormatSymbolArg:
-            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.symbolFormat);
+        case SymbolRule:
+        case SymbolArgRule:
+            setFormat(currentIndex, lenghtOfMatch, formats[SymbolFormat]);
             break;
 
-        case FormatEnvVar:
-            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.envVarFormat);
+        case EnvVarRule:
+            setFormat(currentIndex, lenghtOfMatch, formats[EnvVarFormat]);
             break;
 
-        case FormatString:
-            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.stringFormat);
+        case StringRule:
+            setFormat(currentIndex, lenghtOfMatch, formats[StringFormat]);
             break;
 
-        case FormatChar:
-            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.charFormat);
+        case CharRule:
+            setFormat(currentIndex, lenghtOfMatch, formats[CharFormat]);
             break;
 
-        case FormatSingleLineComment:
-            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.commentFormat);
+        case SingleLineCommentRule:
+            setFormat(currentIndex, lenghtOfMatch, formats[CommentFormat]);
             break;
 
-        case FormatFloat:
-        case FormatHexInt:
-        case FormatRadixFloat:
-            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.numberLiteralFormat);
+        case FloatRule:
+        case HexIntRule:
+        case RadixFloatRule:
+            setFormat(currentIndex, lenghtOfMatch, formats[NumberFormat]);
             break;
 
-        case FormatMultiLineCommentStart:
-            setFormat(currentIndex, lenghtOfMatch, gSyntaxFormatContainer.commentFormat);
+        case MultiLineCommentStartRule:
+            setFormat(currentIndex, lenghtOfMatch, formats[CommentFormat]);
             currentIndex += lenghtOfMatch;
             currentState = inComment;
             return;
 
-        case FormatNone:
+        case NoRule:
             currentIndex += 1;
 
         default:
@@ -253,7 +299,7 @@ void SyntaxHighlighter::highlightBlockInString(const QString& text, int& current
         assert(false);
 
     int matchLength = stringContentRegexp.matchedLength();
-    setFormat(currentIndex, matchLength, gSyntaxFormatContainer.stringFormat);
+    setFormat(currentIndex, matchLength, mGlobals->format(StringFormat));
     currentIndex += matchLength;
     if (currentIndex == text.size()) {
         // end of block
@@ -264,7 +310,7 @@ void SyntaxHighlighter::highlightBlockInString(const QString& text, int& current
     if (text[currentIndex] == QChar('\"'))
         currentState = inCode;
 
-    setFormat(currentIndex, 1, gSyntaxFormatContainer.stringFormat);
+    setFormat(currentIndex, 1, mGlobals->format(StringFormat));
     ++currentIndex;
     return;
 }
@@ -276,7 +322,7 @@ void SyntaxHighlighter::highlightBlockInSymbol(const QString& text, int& current
         assert(false);
 
     int matchLength = symbolContentRegexp.matchedLength();
-    setFormat(currentIndex, matchLength, gSyntaxFormatContainer.symbolFormat);
+    setFormat(currentIndex, matchLength, mGlobals->format(SymbolFormat));
     currentIndex += matchLength;
     if (currentIndex == text.size()) {
         // end of block
@@ -287,7 +333,7 @@ void SyntaxHighlighter::highlightBlockInSymbol(const QString& text, int& current
     if (text[currentIndex] == QChar('\''))
         currentState = inCode;
 
-    setFormat(currentIndex, 1, gSyntaxFormatContainer.symbolFormat);
+    setFormat(currentIndex, 1, mGlobals->format(SymbolFormat));
     ++currentIndex;
     return;
 }
@@ -317,11 +363,11 @@ void SyntaxHighlighter::highlightBlockInComment(const QString& text, int& curren
     }
 
     if(currentState == inCode) {
-        setFormat(currentIndex, index - currentIndex, gSyntaxFormatContainer.commentFormat);
+        setFormat(currentIndex, index - currentIndex, mGlobals->format(CommentFormat));
         currentIndex = index;
     }
     else {
-        setFormat(currentIndex, text.size() - currentIndex, gSyntaxFormatContainer.commentFormat);
+        setFormat(currentIndex, text.size() - currentIndex, mGlobals->format(CommentFormat));
         currentIndex = text.size();
     }
 
