@@ -23,47 +23,98 @@
 
 #include <QSyntaxHighlighter>
 #include <QVector>
+#include <QSettings>
 
 namespace ScIDE {
 
-class SyntaxFormatContainer
-{
-public:
-    SyntaxFormatContainer(void);
+class Main;
 
-private:
-    friend class SyntaxHighlighter;
-    QTextCharFormat keywordFormat, buildinsFormat, primitiveFormat, classFormat, commentFormat, stringFormat,
-        symbolFormat, charFormat, numberLiteralFormat, envVarFormat, plainFormat;
+enum SyntaxFormat
+{
+    PlainFormat,
+    ClassFormat,
+    KeywordFormat,
+    BuiltinFormat,
+    PrimitiveFormat,
+    SymbolFormat,
+    StringFormat,
+    CharFormat,
+    NumberFormat,
+    EnvVarFormat,
+    CommentFormat,
+
+    FormatCount
 };
 
-extern SyntaxFormatContainer gSyntaxFormatContainer;
+class SyntaxHighlighterGlobals : public QObject
+{
+    Q_OBJECT
+
+public:
+    SyntaxHighlighterGlobals( Main * );
+
+    inline const QTextCharFormat * formats() const
+    {
+        return mFormats;
+    }
+
+    inline const QTextCharFormat * defaultFormats() const
+    {
+        return mDefaultFormats;
+    }
+
+    inline const QTextCharFormat & format( SyntaxFormat type ) const
+    {
+        return mFormats[type];
+    }
+
+    inline const QTextCharFormat & defaultFormat( SyntaxFormat type ) const
+    {
+        return mDefaultFormats[type];
+    }
+
+    inline static const SyntaxHighlighterGlobals * instance() { Q_ASSERT(mInstance); return mInstance; }
+
+public Q_SLOTS:
+    void applySettings( QSettings * );
+
+Q_SIGNALS:
+    void syntaxFormatsChanged();
+
+private:
+    void applySettings( QSettings*, const QString &key, SyntaxFormat );
+
+    QTextCharFormat mFormats[FormatCount];
+    QTextCharFormat mDefaultFormats[FormatCount];
+
+    static SyntaxHighlighterGlobals *mInstance;
+};
 
 class SyntaxHighlighter:
     public QSyntaxHighlighter
 {
     Q_OBJECT
 
-    typedef enum
+    enum SyntaxRule
     {
-        FormatClass,
-        FormatKeyword,
-        FormatBuiltin,
-        FormatPrimitive,
-        FormatSymbol,
-        FormatString,
-        FormatChar,
-        FormatFloat,
-        FormatHexInt,
-        FormatRadixFloat,
-        FormatEnvVar,
-        FormatSymbolArg,
+        ClassRule,
+        KeywordRule,
+        BuiltinRule,
+        PrimitiveRule,
+        SymbolRule,
+        StringRule,
+        CharRule,
+        FloatRule,
+        HexIntRule,
+        RadixFloatRule,
+        EnvVarRule,
+        SymbolArgRule,
 
-        FormatSingleLineComment,
-        FormatMultiLineCommentStart,
+        SingleLineCommentRule,
+        MultiLineCommentStartRule,
 
-        FormatNone
-    } highligherFormat;
+        NoRule
+    };
 
     static const int inCode = 0;
     static const int inString = 1;
@@ -97,11 +148,13 @@ private:
     void initKeywords(void);
     void initBuildins(void);
 
-    highligherFormat findCurrentFormat(QString const & text, int & currentIndex, int & lengthOfMatch);
+    SyntaxRule findMatchingRule(QString const & text, int & currentIndex, int & lengthOfMatch);
 
     QRegExp classRegexp, keywordRegexp, buildinsRegexp, primitiveRegexp, symbolRegexp, symbolContentRegexp,
         charRegexp, stringRegexp, stringContentRegexp, floatRegexp, hexIntRegexp, radixFloatRegex,
         commentStartRegexp, commentEndRegexp, singleLineCommentRegexp, envVarRegexp, symbolArgRegexp;
+
+    const SyntaxHighlighterGlobals *mGlobals;
 };
 
 }
