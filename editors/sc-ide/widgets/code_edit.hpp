@@ -23,6 +23,7 @@
 
 #include <QPlainTextEdit>
 #include <QTextBlock>
+#include <QSettings>
 
 namespace ScIDE
 {
@@ -71,6 +72,7 @@ public Q_SLOTS:
     void indentLess() { indent(true); }
     void setSpaceIndent(bool on) { mSpaceIndent = on; }
     void setShowWhitespace(bool);
+    void applySettings( QSettings * );
 
 protected:
     virtual bool event( QEvent * );
@@ -106,7 +108,7 @@ private:
     int mIndentWidth;
     bool mSpaceIndent;
     bool mShowWhitespace;
-
+    QColor mBracketHighlight;
 };
 
 } // namespace ScIDE

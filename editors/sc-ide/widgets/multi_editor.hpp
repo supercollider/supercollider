@@ -102,16 +102,14 @@ private:
     void updateActions();
     CodeEditor * editorForTab( int index );
     CodeEditor * editorForDocument( Document * );
-    void applySettings( CodeEditor * );
 
+    Main *mMain;
     DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;
     QSignalMapper mModificationMapper;
     QAction *mActions[ActionRoleCount];
 
     // settings
-    bool mSpaceIndent;
-    int mIndentWidth;
     bool mStepForwardEvaluation;
 };
 
