@@ -354,6 +354,10 @@
 		var window, view, bounds;
 		var updater, updateFunc;
 		var tabSize = 25;
+		var pen, font;
+
+		pen = GUI.current.pen;
+		font = Font.sansSerif(10);
 
 		window = Window.new(name.asString + "Node Tree",
 			Rect(128, 64, 400, 400),
@@ -370,7 +374,7 @@
 				var thisSize, rect, endYTabs;
 				xtabs = xtabs + 1;
 				ytabs = ytabs + 1;
-				Pen.font = Font.sansSerif(10);
+				pen.font = font;
 				group.do({|node|
 					if(node.value.isArray, {
 						thisSize = countSize.value(node);
@@ -380,11 +384,11 @@
 							window.view.bounds.width - (xtabs * tabSize * 2),
 							thisSize * tabSize;
 						);
-						Pen.fillColor = Color.grey(0.8);
-						Pen.fillRect(rect);
-						Pen.strokeRect(rect);
-						Pen.color = Color.black;
-						Pen.stringInRect(
+						pen.fillColor = Color.grey(0.8);
+						pen.fillRect(rect);
+						pen.strokeRect(rect);
+						pen.color = Color.black;
+						pen.stringInRect(
 							" Group" + node.key.asString +
 							(node.key == 1).if("- default group", ""),
 							rect
@@ -397,11 +401,11 @@
 							7 * tabSize,
 							0.8 * tabSize
 						);
-						Pen.fillColor = Color.white;
-						Pen.fillRect(rect);
-						Pen.strokeRect(rect);
-						Pen.color = Color.black;
-						Pen.stringInRect(
+						pen.fillColor = Color.white;
+						pen.fillRect(rect);
+						pen.strokeRect(rect);
+						pen.color = Color.black;
+						pen.stringInRect(
 							" " ++ node.key.asString + node.value.asString,
 							rect
 						);
