@@ -57,7 +57,7 @@ void EditorPage::load( QSettings *s )
 
     ui->bgColor->setColor( s->value("background", appPlt.color(QPalette::Base) ).value<QColor>() );
     ui->textColor->setColor( s->value("text", appPlt.color(QPalette::Text) ).value<QColor>() );
-    ui->bracketColor->setColor( s->value("matchingBrackets", QColor(200,0,0) ).value<QColor>() );
+    ui->bracketColor->setColor( s->value("matchingBrackets", Qt::gray ).value<QColor>() );
 
     s->endGroup(); // colors
 

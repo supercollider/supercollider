@@ -193,7 +193,7 @@ void CodeEditor::applySettings( QSettings *s )
     if (s->contains("text"))
         plt.setColor(QPalette::Text, s->value("text").value<QColor>());
 
-    mBracketHighlight = s->value("matchingBrackets").value<QColor>();
+    mBracketHighlight = s->value("matchingBrackets", Qt::gray).value<QColor>();
 
     s->endGroup(); // colors
 

@@ -25,6 +25,8 @@
 #include "main.hpp"
 #include "settings.hpp"
 
+#include <QApplication>
+
 namespace ScIDE {
 
 SyntaxHighlighterGlobals * SyntaxHighlighterGlobals::mInstance = 0;
@@ -36,25 +38,36 @@ SyntaxHighlighterGlobals::SyntaxHighlighterGlobals( Main *main ):
     mInstance = this;
 
     mDefaultFormats[KeywordFormat].setFontWeight(QFont::Bold);
-    mDefaultFormats[KeywordFormat].setForeground(Qt::magenta);
+    mDefaultFormats[KeywordFormat].setForeground(QColor(0,0,230));
 
-    mDefaultFormats[BuiltinFormat] = mDefaultFormats[KeywordFormat];
+    mDefaultFormats[BuiltinFormat].setForeground(QColor(51,51,191));
 
-    mDefaultFormats[PrimitiveFormat] = mDefaultFormats[KeywordFormat];
+    mDefaultFormats[PrimitiveFormat] = mDefaultFormats[BuiltinFormat];
 
-    mDefaultFormats[ClassFormat].setForeground(Qt::green);
+    mDefaultFormats[ClassFormat].setForeground(QColor(0,0,210));
 
-    mDefaultFormats[NumberFormat].setForeground(Qt::green);
+    mDefaultFormats[NumberFormat].setForeground(QColor(152,0,153));
 
-    mDefaultFormats[CommentFormat].setForeground(QColor(220,0,0));
+    mDefaultFormats[CommentFormat].setForeground(QColor(191,0,0));
 
-    mDefaultFormats[StringFormat].setForeground(Qt::blue);
+    mDefaultFormats[StringFormat].setForeground(QColor(95,95,95));
 
-    mDefaultFormats[SymbolFormat].setForeground(Qt::magenta);
+    mDefaultFormats[SymbolFormat].setForeground(QColor(0,115,0));
 
     mDefaultFormats[CharFormat] = mDefaultFormats[SymbolFormat];
 
-    mDefaultFormats[EnvVarFormat] = mDefaultFormats[SymbolFormat];
+    mDefaultFormats[EnvVarFormat].setForeground(QColor(255,102,0));
+
+    // if system base color is dark, brighten the highlighting colors
+    QPalette plt( QApplication::palette() );
+    QColor base = plt.color(QPalette::Base);
+    if (base.red() + base.green() + base.blue() < 380)
+    {
+        for (int i = 0; i < FormatCount; ++i)
+        {
+            mDefaultFormats[i].setForeground( mDefaultFormats[i].foreground().color().lighter(160) );
+        }
+    }
 
     // initialize formats from defaults + settings:
     applySettings(main->settings());

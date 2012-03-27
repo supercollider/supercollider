@@ -31,9 +31,9 @@ using namespace ScIDE;
 
 int main( int argc, char *argv[] )
 {
-    Main * main = Main::instance();
-
     QApplication app(argc, argv);
+
+    Main * main = Main::instance();
 
     MainWindow *win = new MainWindow(main);
 
