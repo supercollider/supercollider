@@ -80,7 +80,7 @@ METHOD:: isValidServer
     list::
     ## strong::Qt::: any local server (see link::Classes/Server#-isLocal::).
     ## strong::Cocoa::: only the in-process (internal) server (see link::Classes/Server#*internal:: and link::Classes/Server#-inProcess::).
-    ## strong::SwingOSC::: any out-of-process local server (see link::Classes/Server#-isLocal:: and link::Classes/Server#-inProcess::).
+    ## strong::SwingOSC::: any out-of-process server, even remote (see link::Classes/Server#-inProcess::).
     ::
 
     argument::
