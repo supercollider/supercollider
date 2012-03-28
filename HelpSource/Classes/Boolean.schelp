@@ -33,7 +33,7 @@ method::&&
 
 returns:: true if the receiver is true and aBoolean is true.
 
-method::\||
+method::||
 
 returns:: true if either the receiver is true or aBoolean is true.
 
