@@ -13,18 +13,19 @@ PlusFreqScope {
 
 	*initClass {
 		StartUp.add {
-			server = if (GUI.id == \qt) {Server.default} {Server.internal};
+			server = GUI.current.stethoscope.defaultServer;
 
 			this.initSynthDefs;
 		}
 	}
 
 	*server_ {|aServer|
-		if (GUI.id == \qt) {
-			server = aServer;
-		} {
-			"PlusFreqScope: cannot reset server for this gui scheme".inform
+		if(GUI.current.stethoscope.isValidServer(aServer).not) {
+			Error("PlusFreqScope: can not use server '%' with current GUI scheme (%)"
+				.format(aServer.name, GUI.current.id)).throw;
 		};
+
+		server = aServer;
 	}
 
 	*new { arg parent, bounds;
