@@ -39,7 +39,7 @@ f.writeArchive(PathName.tmp ++ "myFunc"); // fails
 
 method::new
 
-Create a new instance. The creation of new instances of any Object actually happens in this method (or with newCopyArgs ) when it is called by a child class. see link::Reference/Writing-Classes::
+Create a new instance. The creation of new instances of any Object actually happens in this method (or with newCopyArgs ) when it is called by a child class. see link::Guides/WritingClasses::
 
 method::newCopyArgs
 
