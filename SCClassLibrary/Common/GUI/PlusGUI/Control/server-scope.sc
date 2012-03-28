@@ -18,15 +18,8 @@
 	}
 
 	freqscope {
-		if ((GUI.id != \qt) and: (this != Server.internal)) {
-			"freqscope only supports the local server".warn;
-			^nil
-		};
-
-		if (GUI.id == \qt) {
-			FreqScope.server = this
-		};
-
+		GUI.current.freqScopeView.tryPerform('server_', this);
+		// FIXME: Can not change server in SwingOSC GUI.
 		^GUI.freqScope.new;
 	}
 }
@@ -42,15 +35,12 @@
 	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom;
 		var synth, synthDef, bytes, synthMsg, outUGen, server;
 
-		if (GUI.id == \qt) {
-			server = Server.default;
-		} {
-			server = GUI.stethoscope.defaultServer;
-			if(server.serverRunning.not) {
-				(server.name.asString ++ " server not running!").postln;
-				^nil
-			}
+		server = GUI.stethoscope.defaultServer;
+		if(server.serverRunning.not) {
+			(server.name.asString ++ " server not running!").postln;
+			^nil
 		};
+
 		synthDef = this.asSynthDef(name: SystemSynthDefs.generateTempName, fadeTime:fadeTime);
 		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };
 
@@ -64,7 +54,8 @@
 	}
 
 	freqscope {
-		var server = if (GUI.id == \qt) { Server.default } { GUI.stethoscope.defaultServer };
+		var server = if (GUI.id === \swing)
+			{ GUI.freqScopeView.audioServer } { GUI.freqScopeView.server };
 		this.play(server);
 		^GUI.freqScope.new
 	}
