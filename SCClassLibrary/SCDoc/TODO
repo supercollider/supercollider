@@ -8,6 +8,10 @@ TODO
   new notes: you need to run SCDoc.indexAllDocuments after adding a document or other file.
   Use section titles as they are when linking to them, no simplified names anymore.
 
+- clean up old-help compatibility, do we really need it in both HelpBrowser-goTo and SCDoc.findHelpFile?
+
+- HelpBrowser: clean up openNewWindows setting. only have a single class variable?
+
 - undoc classes only needs to be rendered once per session.. use mtime or something to flag..
   otoh, rendering these are really fast so no bother?
 

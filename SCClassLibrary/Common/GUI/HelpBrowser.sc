@@ -6,7 +6,7 @@ HelpBrowser {
 	var <>homeUrl;
 	var <window;
 	var webView;
-	var animCount = 0;
+	var loading = false;
 	var srchBox;
 	var openNewWin;
 	var rout;
@@ -24,10 +24,6 @@ HelpBrowser {
 	*instance {
 		if( singleton.isNil ) {
 			singleton = this.new;
-			singleton.window.onClose = {
-				singleton.stopAnim;
-				singleton = nil;
-			};
 		};
 		^singleton;
 	}
@@ -40,7 +36,13 @@ HelpBrowser {
 	}
 
 	*goTo {|url|
-		if(openNewWindows,{this.new},{this.instance}).goTo(url);
+		this.front.goTo(url);
+	}
+
+	*front {
+		var w = if(openNewWindows,{this.new},{this.instance});
+		w.window.front;
+		^w;
 	}
 
 	*openBrowsePage {|category|
@@ -52,7 +54,8 @@ HelpBrowser {
 		this.goTo(SCDoc.helpTargetDir++"/Search.html"++text);
 	}
 	*openHelpFor {|text|
-		this.goTo(SCDoc.findHelpFile(text));
+		var w = this.front;
+		{ w.startAnim; w.goTo(SCDoc.findHelpFile(text)) }.fork(AppClock);
 	}
 	*openHelpForMethod {|method|
 		var cls = method.ownerClass;
@@ -136,6 +139,13 @@ HelpBrowser {
 		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
 
 		window = Window.new( bounds: winRect ).name_("SuperCollider Help");
+
+		window.onClose = {
+			this.stopAnim;
+			if(singleton == this) {
+				singleton = nil;
+			};
+		};
 
 		toolbar = ();
 
@@ -295,15 +305,15 @@ HelpBrowser {
 
 	startAnim {
 		var progress = [">---","->--","-->-","--->"];
-		animCount = animCount + 1;
-		if(animCount==1) {
+		if(loading.not) {
+			loading = true;
 			Routine {
 				block {|break|
 					loop {
 						progress.do {|p|
 							window.name = ("Loading"+p);
 							0.3.wait;
-							if(animCount==0) {break.value};
+							if(loading.not) {break.value};
 						};
 					};
 				};
@@ -312,9 +322,7 @@ HelpBrowser {
 		};
 	}
 	stopAnim {
-		if(animCount>0) {
-			animCount = animCount - 1;
-		};
+		loading = false;
 	}
 
 }
