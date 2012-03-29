@@ -2,9 +2,10 @@
 HTML renderer
 */
 SCDocHTMLRenderer {
-    classvar currentClass, currentImplClass;
+    classvar currentClass, currentImplClass, currentMethod, currArg;
     classvar footNotes;
     classvar noParBreak;
+    classvar currDoc;
     classvar <>baseDir;
 
     *escapeSpecialChars {|str|
@@ -198,6 +199,7 @@ SCDocHTMLRenderer {
         var args = node.text ?? ""; // only outside class/instance methods
         var names = node.children[0].children.collect(_.text);
         var mstat, sym, m, m2, mname2;
+        var args1, args2;
         names.do {|mname|
             mname2 = this.escapeSpecialChars(mname);
             if(cls.notNil) {
@@ -209,14 +211,21 @@ SCDocHTMLRenderer {
                 m !? {
                     mstat = mstat | 1;
                     args = this.makeArgString(m);
+                    args2 = m.argNames !? {m.argNames[1..]};
                 };
                 //check for setter
                 m2 = icls !? {icls.findRespondingMethodFor(sym.asSetter)};
                 m2 = m2 ?? {cls.findRespondingMethodFor(sym.asSetter)};
                 m2 !? {
                     mstat = mstat | 2;
-                    args = (m2.argNames ?? [nil,"value"])[1];
+                    args = m2.argNames !? {m2.argNames[1]} ?? {"value"};
+                    args2 = m2.argNames !? {m2.argNames[1..]};
                 };
+                if(args1.notNil and: {args1 != args2}) {
+                    "SCDoc: In %\n       Methods % does not have the same argument signature:\n"
+                    "       % != %".format(currDoc.fullPath, names, args1.join(","), args2.join(",")).warn;
+                };
+                args1 = args2;
             } {
                 m = nil;
                 m2 = nil;
@@ -264,9 +273,11 @@ SCDocHTMLRenderer {
         };
         
         if(node.children.size > 1) {
+            currentMethod = m2 ?? m;
             stream << "<div class='method'>";
             this.renderChildren(stream, node.children[1]);
             stream << "</div>";
+            currentMethod = nil;
         };
     }
 
@@ -453,12 +464,41 @@ SCDocHTMLRenderer {
             \ARGUMENTS, {
                 stream << "<h4>Arguments:</h4>\n"
                 << "<table class='arguments'>\n";
+                currArg = 0;
+                if(currentMethod.notNil and: {node.children.size < (currentMethod.argNames.size-1)}) {
+                    "SCDoc: In %\n       method % has % args, but doc has % argument:: tags.".format(
+                        currDoc.fullPath,
+                        currentMethod.name,
+                        currentMethod.argNames.size-1,
+                        node.children.size,
+                    ).warn;
+                };
                 this.renderChildren(stream, node);
                 stream << "</table>";
             },
             \ARGUMENT, {
-                stream << "<tr><td class='argumentname'>"
-                << node.text << "<td class='argumentdesc'>";
+                currArg = currArg + 1;
+                stream << "<tr><td class='argumentname'>";
+                if(node.text.isNil) {
+                    currentMethod !? {
+                        if(currentMethod.varArgs and: {currArg==(currentMethod.argNames.size-1)}) {
+                            stream << "... ";
+                        };
+                        stream << if(currArg < currentMethod.argNames.size) {
+                            currentMethod.argNames[currArg];
+                        } {
+                            "(arg"++currArg++")" // excessive arg
+                        };
+                    };
+                } {
+                    // FIXME: check that the name match?
+                    stream << if(currentMethod.isNil or: {currArg < currentMethod.argNames.size}) {
+                        node.text;
+                    } {
+                        "("++node.text++")" // excessive arg
+                    };
+                };
+                stream << "<td class='argumentdesc'>";
                 this.renderChildren(stream, node);
             },
             \RETURNS, {
@@ -650,6 +690,7 @@ SCDocHTMLRenderer {
     *renderOnStream {|stream, doc, root|
         var body = root.children[1];
         var redirect;
+        currDoc = doc;
         footNotes = nil;
         noParBreak = false;
         
@@ -675,6 +716,7 @@ SCDocHTMLRenderer {
         this.renderChildren(stream, body);
         this.renderFootNotes(stream);
         this.renderFooter(stream, doc);
+        currDoc = nil;
     }
     
     *renderToFile {|filename, doc, root|
