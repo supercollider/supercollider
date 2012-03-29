@@ -1,6 +1,14 @@
 TODO
 ----
 
+- auto-fill argument::
+  - if argname is given, check that argnames match with reality.
+
+- check for broken links, in HTMLforLink: if link-text not a documents key:
+  if File.exists(text), use that,
+  else if File.exists(text++".html"), use that,
+  else post warning about broken link.
+
 - *.ext.schelp should also add to metadata! method lists, keywords, etc..
   should we also allow them to add to related:: and categories:: ?
 
@@ -40,8 +48,6 @@ TODO
   - export JSON
   actually we could try better to keep renderer specific stuff in SCDocRenderer..
   even SCDoc.helpTargetDir is renderer specific. Another renderer might not use the local disk at all?
-
-- check that argnames match with reality? (in renderer)
 
 - SCDoc.cpp: replace node->children with a linked list (node->next and node->tail)
   instead of realloc'ing? same for text strings instead of using strmerge?
