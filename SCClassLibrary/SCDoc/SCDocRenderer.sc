@@ -34,14 +34,34 @@ SCDocHTMLRenderer {
             c = if(m.size>0) {n++"#"++m} {n};
             "<a href=\""++c++"\">"++this.escapeSpecialChars(f)++"</a>";
         } {
-            c = if(n.size>0) {baseDir+/+n++if("[^.]+\\.[a-zA-Z0-9]+$".matchRegexp(n),"",".html")} {""}; // url
-            if(m.size>0) {c=c++"#"++m}; // add #anchor
+            if(n.size>0) {
+                c = baseDir+/+n;
+                doc = SCDoc.documents[n];
+                // link to other doc (might not be rendered yet)
+                if(doc.notNil) {
+                    c = c ++ ".html";
+                } {
+                    // link to ready-made html (Search, Browse, etc)
+                    if(File.exists(SCDoc.helpTargetDir+/+n++".html")) {
+                        c = c ++ ".html";
+                    } {
+                        // link to other file?
+                        if(File.exists(SCDoc.helpTargetDir+/+n).not) {
+                            "SCDoc: In %\n"
+                            "       Broken link: '%'"
+                            .format(currDoc.fullPath, link).warn;
+                        };
+                    };
+                };
+            } {
+                c = ""; // link inside same document
+            };
+            if(m.size>0) { c = c ++ "#" ++ m }; // add #anchor
             if(f.size<1) { // no label
                 if(n.size>0) {
-                    doc = SCDoc.documents[n];
                     f = if(doc.notNil) {doc.title} {n.basename};
                     if(m.size>0) {
-                        f = f++":"+m;
+                        f = f++": "++m;
                     }
                 } {
                     f = if(m.size>0) {m} {"(empty link)"};
