@@ -668,7 +668,7 @@ SCDocHTMLRenderer {
         var name, doc, desc = "";
         name = cls.name.asString;
         doc = SCDoc.documents["Classes/"++name];
-        doc !? { desc = " - "++doc[\summary] };
+        doc !? { desc = " - "++doc.summary };
         if(cls.name.isMetaClassName, {^this});
         stream << "<li> <a href='" << baseDir << "/Classes/" << name << ".html'>"
         << name << "</a>" << desc << "\n";
