@@ -6,6 +6,7 @@ SCDocHTMLRenderer {
     classvar footNotes;
     classvar noParBreak;
     classvar currDoc;
+    classvar methArgsMismatch;
     classvar <>baseDir;
 
     *escapeSpecialChars {|str|
@@ -238,14 +239,14 @@ SCDocHTMLRenderer {
                 m2 = m2 ?? {cls.findRespondingMethodFor(sym.asSetter)};
                 m2 !? {
                     mstat = mstat | 2;
-                    args = m2.argNames !? {m2.argNames[1]} ?? {"value"};
+                    args = m2.argNames !? {m2.argNames[1..].join(", ")} ?? {"value"};
                     args2 = m2.argNames !? {m2.argNames[1..]};
                 };
                 if(args1.notNil and: {args1 != args2}) {
-                    "SCDoc: In %\n       Methods % does not have the same argument signature:\n"
-                    "       % != %".format(currDoc.fullPath, names, args1.join(","), args2.join(",")).warn;
+                    args1 = false;
+                } {
+                    args1 = args2;
                 };
-                args1 = args2;
             } {
                 m = nil;
                 m2 = nil;
@@ -267,7 +268,8 @@ SCDocHTMLRenderer {
                 3, { " [= "++args++"]</h3>\n" },
                 // method not found
                 0, {
-                    warn("SCDocHTMLRenderer: Method not found:"+mname2+"in doc for class"+cls.name);
+                    "SCDoc: In %\n"
+                    "       Method %% not found.".format(currDoc.fullPath,pfx,mname2).warn;
                     ": METHOD NOT FOUND!</h3>\n"
                 }
             );
@@ -292,6 +294,8 @@ SCDocHTMLRenderer {
             };
         };
         
+        methArgsMismatch = if(args1 == false) {names};
+
         if(node.children.size > 1) {
             currentMethod = m2 ?? m;
             stream << "<div class='method'>";
@@ -482,12 +486,18 @@ SCDocHTMLRenderer {
             \CCOPYMETHOD, {},
             \ICOPYMETHOD, {},
             \ARGUMENTS, {
-                stream << "<h4>Arguments:</h4>\n"
-                << "<table class='arguments'>\n";
+                methArgsMismatch !? {
+                    "SCDoc: In %\n"
+                    "       Grouped methods % does not have the same argument signature."
+                    .format(currDoc.fullPath, methArgsMismatch).warn;
+                };
+                stream << "<h4>Arguments:</h4>\n<table class='arguments'>\n";
                 currArg = 0;
                 if(currentMethod.notNil and: {node.children.size < (currentMethod.argNames.size-1)}) {
-                    "SCDoc: In %\n       method % has % args, but doc has % argument:: tags.".format(
+                    "SCDoc: In %\n"
+                    "       Method %% has % args, but doc has % argument:: tags.".format(
                         currDoc.fullPath,
+                        if(currentMethod.ownerClass.isMetaClass) {"*"} {"-"},
                         currentMethod.name,
                         currentMethod.argNames.size-1,
                         node.children.size,
@@ -575,7 +585,8 @@ SCDocHTMLRenderer {
                 };
             },
             {
-                warn("Unknown SCDocNode id: "++node.id);
+                "SCDoc: In %\n"
+                "       Unknown SCDocNode id: %".format(currDoc.fullPath, node.id).warn;
                 this.renderChildren(stream, node);
             }
         );
@@ -747,7 +758,7 @@ SCDocHTMLRenderer {
             this.renderOnStream(stream, doc, root);
             stream.close;
         } {
-            warn("SCDoc: could not open file % for writing".format(filename));
+            warn("SCDoc: Could not open file % for writing".format(filename));
         }
     }
 }

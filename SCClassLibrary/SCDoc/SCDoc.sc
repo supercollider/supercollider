@@ -418,7 +418,7 @@ SCDoc {
             if(doc.notNil) {
                 doc.additions = val;
             } {
-                warn("SCDoc: additions % for non-existent help file".format(val));
+                warn("SCDoc: Additions % for non-existent help file".format(val));
             }
         };
         this.postMsg("copying"+nonHelpFiles.size+"non-help files...",1);
