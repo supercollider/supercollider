@@ -3,6 +3,11 @@ TODO
 
 - auto-fill argument::
   - if argname is given, check that argnames match with reality.
+  - we now only warn on grouped methods argnames mismatch if argument:: tag is used.
+    for example, Tdef pause, resume, reset are grouped *not* because they are supposed to have
+    the same args, which they don't..
+    That means we can not use argument:: if grouped methods does not have the same argnames,
+    is this ok?
 
 - *.ext.schelp should also add to metadata! method lists, keywords, etc..
   should we also allow them to add to related:: and categories:: ?
