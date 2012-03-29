@@ -4,11 +4,6 @@ TODO
 - auto-fill argument::
   - if argname is given, check that argnames match with reality.
 
-- check for broken links, in HTMLforLink: if link-text not a documents key:
-  if File.exists(text), use that,
-  else if File.exists(text++".html"), use that,
-  else post warning about broken link.
-
 - *.ext.schelp should also add to metadata! method lists, keywords, etc..
   should we also allow them to add to related:: and categories:: ?
 
