@@ -23,7 +23,7 @@ QStethoscope2 {
   var sizeToggle=false;
   var running = false;
 
-  *implementsClass {^'Stethoscope2'}
+  *implementsClass {^'Stethoscope'}
 
   *defaultServer { ^if( Server.default.isLocal, Server.default, Server.local ) }
 
