@@ -414,7 +414,12 @@ SCDoc {
             documents[doc.path] = doc;
         };
         additions.pairsDo {|key, val|
-            documents[key].additions = val;
+            doc = documents[key];
+            if(doc.notNil) {
+                doc.additions = val;
+            } {
+                warn("SCDoc: additions % for non-existent help file".format(val));
+            }
         };
         this.postMsg("copying"+nonHelpFiles.size+"non-help files...",1);
         nonHelpFiles.do {|x|
