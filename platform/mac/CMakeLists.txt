@@ -143,6 +143,9 @@ if(SC_QT)
 	list(APPEND scapp_sources ${QT_COLLIDER_SRCS})
 endif()
 
+include(${CMAKE_SOURCE_DIR}/SCDoc/CMakeLists.txt)
+list(APPEND scapp_sources ${SCDOC_SRCS})
+
 set(objcpp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/main.M
