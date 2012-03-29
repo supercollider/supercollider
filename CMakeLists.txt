@@ -125,6 +125,9 @@ if(WIN32)
         SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_RELEASE} /MTd")
         SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} /MT")
     endif()
+
+    # correctly link the static Boost Thread library:
+    add_definitions(-DBOOST_THREAD_USE_LIB)
 endif()
 
 
