@@ -37,7 +37,7 @@ PyrSymbol *s_scdoc_node;
 
 static void _doc_traverse(struct VMGlobals* g, DocNode *n, PyrObject *parent, PyrSlot *slot)
 {
-    PyrObject *result = instantiateObject( g->gc, s_scdoc_node->u.classobj, 0, false, true );
+    PyrObject *result = instantiateObject( g->gc, s_scdoc_node->u.classobj, 0, false, false );
     result->size = 0;
 	SetObject(slot, result);
 	if(parent) g->gc->GCWrite(parent, result);
@@ -65,6 +65,7 @@ static void _doc_traverse(struct VMGlobals* g, DocNode *n, PyrObject *parent, Py
     } else {
         SetNil(result->slots+result->size++);
     }
+    result->size += 3; // makeDiv, notPrivOnly, sort
 }
 
 
