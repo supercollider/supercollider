@@ -562,11 +562,6 @@ SCDoc {
         this.helpSourceDir_(thisProcess.platform.classLibraryDir.dirname +/+ "HelpSource");
         this.helpTargetDir_(thisProcess.platform.userAppSupportDir +/+ "Help");
         renderer = SCDocHTMLRenderer;
-        StartUp.add {
-            defer {
-                this.indexAllDocuments;
-            }
-        };
     }
     
     *classHasArKrIr {|c|
