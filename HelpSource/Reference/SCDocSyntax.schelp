@@ -1,426 +1,415 @@
-title:: SCDocSyntax
+title:: SCDoc Syntax
 summary:: SCDoc markup language syntax
 categories:: HelpSystem
-related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocParser, Classes/SCDocRenderer
+related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
 
-This ML consists of a specification for writing documents with semantic annotations, in a manner which does not target a specific layout or output format. Its purpose is to allow for human-writable documents to be produced in a variety of formats and for a variety of target platforms. Usability and learnability are paramount, so the syntax is as simple as possible.
+section:: Introduction
+
+This document specifies the syntax and link::#Grammar:: of the link::Classes/SCDoc:: markup language, used in SuperCollider for writing documents with semantic annotations, in a manner which does not target a specific layout or output format.
 
 A guide to writing help can be found here: link::Guides/WritingHelp::.
 
-section::Markup Language Syntax
+section:: Specification
+SCDoc documents consists of tags and text.
 
-Documents consist of tags and text. Some tags associate text with them, some just denotes a structural location in the document. Untagged text is treated as 'normal prose'.
+Tags consists of single words ending with teletype::\:::: (double-colon). They are case-insensitive, so teletype::TITLE\::::, teletype::Title\:::: and teletype::title\:::: all mean the same thing.
+Some tags take the remaining text on the same line, while others enclose the following text until a single end-tag (double-colon teletype::\::::). Some of these can be nested, while others are modal and ignores any tag until the end-tag.
 
-Tags are of two types, single-line tags and range tags, indicated using code::keyword\::::
+Untagged text becomes plain prose. Paragraphs are separated by one or more empty lines.
 
-Tags are case insensitive, code::FooBar\:::: is the same as code::foobar\:::: or code::FOOBAR\::::
+A document has a header section and a body. The header has only header tags, and these tags are not allowed in the document body.
 
-Some tags might only be meaningful after other tags, like code::argument\:::: after code::method\::::
+subsection:: Header tags
+All header tags take the remaining line of text as input. There is no end-tag other than a newline.
 
-Single-line tags are specified like so, and terminated with a newline. They can have a text associated with the tag:
-code::
-foo:: some text associated with this tag
-bar::
-This is "normal prose" and the above tag just denotes a section or location in the document.
+definitionlist::
+## teletype:: TITLE\:: :: name
+|| Title of document. Must equal classname for class reference docs. Example:
+teletype::
+title:: SCDoc
 ::
 
-Single-line tags that don't associate with text will treat any text starting on the same line after the tag as normal prose:
-code::
-bar:: This is also "normal prose" as above, since this particular tag doesn't take any text.
+## teletype:: CLASS\:: :: name
+|| Deprecated, use TITLE instead.
+
+## teletype:: CATEGORIES\:: :: list
+|| A comma-separated list of document categories. Mainly used by the link::Browse:: page.
+
+Categories can be hierarchical, where levels are denoted with teletype::>::.
+Example:
+teletype::
+categories:: External Control>OSC, Scheduling>Clocks
 ::
 
-Any untagged text following the newline will be treated as normal prose. For example:
-code::
-title:: This text will be treated as a 'title'.
-This is 'normal prose' since it's untagged.
-section:: This text is a section title
-This is also normal prose.
+## teletype:: RELATED\:: :: link(s)
+|| A comma-separated list of related docs. Example:
+teletype::
+related:: Classes/SCDoc, Reference/SCDocSyntax
 ::
 
-Some single-line tags, e.g. code::related\:::: and code::summary\:::: can be understood as floating, i.e. the renderer will decide how and where to place them. Some tags are not even actually rendered to the output but only provides document metadata, e.g. code::categories\::::.
-
-Range tags consist of an opening tag and a closing tag. They can be written as a block:
-code::
-variableTag::
-Some text of a
-variable line tag
-\::
-::
-They can also occur on the same line inside normal prose:
-code::
-This is some normal prose containing a code::inline code example::.
-Also see link::Foo:: for more information.
-::
-Some tags are "modal" tags and can't be nested, they would ignore any other tags inside it.
-If they are used as block tags, the closing \:: must be written as a single word on its own line.
-
-subsection:: Structure
-
-Some tags have structural meaning (for instance identifying a document section). They may or may not have text directly associated with them, for example a code:: section\:: section_title ::. Structural tags are hierarchical in nature, and persist until the next tag of the same or higher level.
-code::
-section:: Section 1
-Here's some normal prose.
-subsection:: Subsection 1
-Text in subsection 1.
-subsection:: Subsection 2
-Text in subsection 2.
-examples::
-The examples tag is at the same level in the hierarchy as section,
-so Section 1 ends at the examples tag above.
+## teletype:: SUMMARY\:: :: text
+|| A short summary of this document. Example:
+teletype::
+summary:: SCDoc markup language syntax
 ::
 
-Structural tags at the same level in the hierarchy may be functionally equivalent, but treated differently for rendering or querying purposes. For example code::examples\:::: is equivalent to code::section\:::: but imply particular formatting or specially identify the examples section for customised uses like concatenating all examples for classes with a given parent class.
+## teletype:: REDIRECT\:: :: name
+|| For class redirect systems, specify the name of the instance variable holding the implementing class.
+Example:
+teletype::
+redirect:: implClass
+::
+::
 
-Some structural tags don't have a specific section level, but builds hierarchies by using a close tag, like lists and tables. They can be nested.
+subsection:: Section tags
+A document is divided in sections and subsections. The section body consists of everything following the section tag until there is another section tag with the same or higher level.
+
+All kinds of sections automatically creates a link anchor with the same name as the section. Methods also creates an anchor, with the methodname prefixed with teletype::*:: for class methods and teletype::-:: for instance methods.
+
+Structural tags at the same level in the hierarchy may be functionally equivalent, but treated differently for rendering or querying purposes. For example teletype::examples\:::: is equivalent to teletype::section\:::: but imply particular formatting or specially identify the examples section for customised uses like concatenating all examples for classes with a given parent class.
 
 All structural tags has children elements, for example the items in a list or the subsections and prose in a section.
 
-section::Tags for use in the new SC Doc system
-
-code::
-tag             hasText hasChilds structural needClose modal nestable
----------------------------------------------------------------------
-title           S
-class           S
-redirect        S
-related         S
-summary         S
-classtree       S
-copymethod      S
-keyword         S
-private         S
-section         S       x         1
-subsection      S       x         2
-method          S       x         3
-argument        S       x         4
-description             x         1
-classmethods            x         1
-instancemethods         x         1
-examples                x         1
-returns                 x         4
-discussion              x         4
-list                    x                    x               x
-tree                    x                    x               x
-numberedlist            x                    x               x
-definitionlist          x                    x               x
-table                   x                    x               x
-footnote                x                    x               x
-note                    x                    x               x
-warning                 x                    x               x
-code            V                            x        x
-link            V                            x        x
-anchor          V                            x        x
-emphasis        V                            x        x
-teletype        V                            x        x
-math            V                            x        x
-strong          V                            x        x
-soft            V                            x        x
-image           V                            x        x
-##
-||
-(prose)         V
-
-hasText: tag captures text
-    S is single-line (terminated by newline)
-    V is variable-line
-hasChilds: tag captures child-elements
-structural: tag has structural level
-needClose: tag needs closing by ::
-modal: tag ignores any other tags than closing tag and do not nest
-nestable: tag can nest
+Level 1 (highest):
+definitionlist::
+## teletype:: SECTION\:: :: name
+|| A named section. The name should be plain text and can not contain any tags. Example:
+teletype::
+section:: Introduction
+::
+## teletype:: DESCRIPTION\:: ::
+## teletype:: CLASSMETHODS\:: ::
+## teletype:: INSTANCEMETHODS\:: ::
+## teletype:: EXAMPLES\:: ::
+|| These tags starts standard sections of a class reference. CLASSMETHODS and INSTANCEMETHODS have special meaning, in that they specify if a documented method is a classmethod or instancemethod.
 ::
 
-Notes:
-list::
-## modal tags can be written as inline (opening and closing tag on the same line)
-or block-style (the closing tag must be a single \:: on its own line).
-## single vs variable line is only applicable for tags that captures text.
-## modal, level and nestable are exclusive. nestable can be seen as a structural tag
-without explicit level. It's also because of the explicit level that the structural
-tags don't need closing.
-## structural-needClose-modal-nestable could be reduced to one column:
-  table::
-  ## 1-4 || level, no close tag
-  ## M   || modal, need close tag
-  ## N   || nestable, need close tag
-  ::
+Level 2:
+definitionlist::
+## teletype:: SUBSECTION\:: :: name
+|| A named subsection. The name should be plain text and can not contain any tags. Example:
+teletype::
+subsection:: Some more info
+::
 ::
 
-subsection:: Document attributes
+subsection:: Method tags
+These are level 3 subsections:
+definitionlist::
+## teletype:: METHOD\:: :: methodname(s) [argstring]
+|| Document one or more methods, given as a comma-separated list of methodnames. Following the method tag should come a short description of the method, and optional description of the arguments and return value. See the link::#tags allowed inside a method:: section below.
 
-These should only occur once in a document, and might be compulsory.
-code::
-title:: name
-class:: name
-summary:: text
-related:: link(s)
-categories:: name(s)
+Setter methods, like code::myThing_(value)::, should not be documented as such, instead SCDoc merges getter and setter methods. So in this case the name given should be code::myThing:: (without the underscore) and the text should describe the property that can be set/gotten.
+
+The METHOD tag is normally used inside CLASSMETHODS and INSTANCEMETHODS, but can also be used outside of these sections. In those cases, it documents a generic interface not bound to a specific class, and the arguments and default values should then be given in the optional strong::argstring::
+
+For real methods, the argstring is not allowed, instead the argument names and default values will be auto-filled in.
+
+## teletype:: PRIVATE\:: :: methodname(s)
+|| This tag behaves like a section but does not have a section body. It marks one or more methods as private, so that it does not show up under the auto-generated emphasis::Undocumented Methods:: sections.
+## teletype:: COPYMETHOD\:: :: classname methodname
+|| This tag behaves like a section but does not have a section body. Copy a method documentation from a class reference and insert it here as if the method was documented in this document. The methodname must be prefixed with teletype::*:: for classmethods and teletype::-:: for instancemethods. Example:
+teletype::
+copymethod:: SinOsc *ar
+::
 ::
 
-subsection:: Structural tags
+anchor::tags allowed inside a method::
+Inside a method section, the following optional tags are allowed, in the order given below.
+These tags are level 4 subsections.
+definitionlist::
+## teletype:: ARGUMENT\:: :: [argname]
+|| One for each argument. The argument section body should contain a description of the given argument.
+The strong::argname:: is optional, and will be auto-filled in if not given. If given, it must match the real name of the argument at this position.
 
-These are grouped by their level in the hierarchy, from high to low:
-code::
-section:: name
-description::
-examples::
-instancemethods::
-classmethods::
-
-subsection:: name
-
-method:: name(s)
-
-argument:: name
+NOTE::If multiple methods are documented in the same METHOD section, and ARGUMENT is used, the methods must have exactly the same argument name signature.::
+## teletype:: RETURNS\:: ::
+|| This section should contain a description of the return value, especially the type.
+## teletype:: DISCUSSION\:: ::
+|| This optional section can contain a more detailed discussion and code examples related to this method.
 ::
-description, examples and methods are equivalent to code::section\:::: structurally, but used to identify these special sections and render them consistently.
-
-subsection:: Methods and arguments
-
-Methods should appear under code::instancemethods\:::: or code::classmethods\::::, and are written with code:: method\:: name(s) ::.
-Do strong::not:: enter any arguments here, only the name.
-After the method, there should be a short description. Even if it can be multiple lines, keep it short and use code::discussion\:::: if you need more.
-
-Methods get an anchor name automatically, prefixed with code::*:: for class methods and code::-:: for instance methods. For example, to link to the code::foo:: class method, use code:: link\::#*foo\:: ::.
-
-After the method description comes the arguments, written with code:: argument\:: name :: where code::name:: must correspond to one of the methods arguments. After each argument line comes the description of that argument.
-
-There is an optional code::returns\:::: tag that could be used to describe the methods return value.
-
-If a longer discussion is needed, use the code::discussion\:::: tag. This is a good place to insert example code, etc.
-
-Method signatures and argument defaults are filled in automagically.
-
-Also, when multiple methods have the same signature (like ar and kr in ugens), they should all be listed in one single method tag.
 
 Example:
-code::
-classmethods::
-private:: new1
-
+teletype::
 method:: ar, kr
-short description here...
-
+This is a nice method, try it out!
 argument:: freq
-the frequency
+The frequency of this thing as a floating point value.
 argument:: amp
-the amplitude
-
-returns:: a new UGen
-
-method:: foo
-short description..
-
-argument:: x
-the x value
-
-returns:: some kind of value
-
-discussion::
-Here is a longer detailed discussion about this method, perhaps with example code, etc..
-::
-
-Any undocumented methods will show up in the rendered help file. To ignore methods, put them in a code::private\:::: tag, which must come directly after the code::instancemethods:: or code::classmethods:: tag.
-
-subsection:: Copy methods from other class
-You can use code:: copymethod\:: ClassName, methodName :: to copy the documentation of a method from another helpfile to this one.
-
-code::methodName:: must be prefixed with code::*:: (asterix) for class methods and code::-:: (dash) for instance methods.
-
-note::
-The copied method must itself be a real code::method:: doc, not another code::copymethod::.
+The amplitude, be careful. Goes to 11.
+returns::
+An UGen.
 ::
 
 subsection:: Modal tags
-code::
-code::
-link::
-anchor::
-image::
-emphasis::
-strong::
-soft::
+These tags enclose a text and ends with a single teletype::\:::: (double-colon) end-tag.
+The enclosed text can not contain any other tags.
+
+definitionlist::
+## teletype:: STRONG\:: ::
+|| Render text in bold font.
+## teletype:: EMPHASIS\:: ::
+|| Render text in emphasized font, typically italics.
+## teletype:: SOFT\:: ::
+|| Render text in a soft shade.
+## teletype:: LINK\:: ::
+|| Create a link to another document. The text should be the document key, which is the path relative the Help folder and without extension, like teletype::Classes/SinOsc:: or teletype::Reference/SCDocSyntax::
+
+Optionally, the path can be followed by teletype::#anchor:: to jump to a specific place in the document, and teletype::#label:: to specify another label for the link.
+
+All kinds of sections automatically creates an anchor with the same name as the section. Methods also creates an anchor, with the methodname prefixed with teletype::*:: for class methods and teletype::-:: for instance methods.
+
+The path can be empty for linking to an anchor inside the current document, and the anchor can be empty to only specify the link label. Example:
 teletype::
-::
-All of above are closed with \::
-If they are used as block tags, the closing \:: must be written as a single word on its own line.
-Since they are modal tags, they can't be nested and any other tag than the closing tag is ignored until they are closed.
-
-subsection:: Tables and lists
-code::
-list::
-tree::
-numberedList::
-definitionList::
-table::
-::
-Tables and lists are kind of structural tags, but need to be closed with \::
-They use code::##:: and code::||:: to delimit items/rows and table columns.
-
-code::
-table::
-## one || two || three
-## foo || bar || zoo
-\::
-
-list::
-## first
-## second
-## third
-\::
+See section link::#Introduction:: in this document.
+Take a look at link::Classes/SCDoc#*indexAllDocuments::
+Try link::Search#scdoc#Searching for SCDoc::,
+or perhaps link::Classes/SinOsc##go make some music::
 ::
 
-Lists can be nested:
-code::
-definitionList::
-## one || the first thing has three subthings:
-    list::
-    ## one A
-    ## one B
-    ## one C
-    \::
-## two || the second thing
-\::
+URL's are automagically turned into links, but can be explicitly created with this tag, if one wants to use another link label.
+
+## teletype:: ANCHOR\:: ::
+|| Manually create an anchor at this position in the document.
+## teletype:: IMAGE\:: ::
+|| Insert image, the text should be the relative path to the image. Example:
+teletype::
+image::foo.png::
+::
 ::
 
-subsection:: ClassTree
+The following tags (CODE, TELETYPE and MATH) can be written in two forms, either inline or block.
+strong::Inline:: form has the end-tag on the same line, and need any enclosed double-colons that should be part of the text to be escaped with backslash (teletype:: \ ::).
+strong::Block:: form has the tag and end-tag on lines by themselves, and can take multi-line text. In block form, only a single end-tag on its own line counts and any end-tags inside the text should not be escaped. Example:
+teletype::
+ code:: inline form ::
 
-A special tag to render a class hierarchy tree:
-code::
-classtree::Pattern
+ code::
+ block form
+ can span multiple lines
+ ::
 ::
 
-subsection:: Notes and warnings
-code::
-note:: text ::
-warning:: text ::
+definitionlist::
+## teletype:: CODE\:: ::
+|| Render syntax-colored SuperCollider code.
+## teletype:: TELETYPE\:: ::
+|| Render monospace text.
+## teletype:: MATH\:: ::
+|| Render mathematics given in TeX syntax. Example:
+teletype::
+ This is inline math::2\pi:: and below is block display math:
+ math::
+ 1\over\sqrt{x^\pi}
+ ::
 ::
-
-These tags can be multi-line and must end with \:: . They can contain other tags.
-
-subsection:: Links
-
-URL's are automagically converted to links.
-
-The code::link\:::: tag is used for cross-reference between docs. It uses a simple namespace, example:
-code::
-See also link::Classes/SinOsc:: for a nice oscillator.
-Or take a look at link::Browse#UGens:: for a full list.
-The link::Overviews/Methods#play#play method:: is often very useful.
-::
-
-Anchors can be inserted manually with code::anchor\::name\:::: and referenced like this: code::
-link::Foo/Bar#hello::
-::
-or to jump to an anchor in this document: code::
-link::#hello::
-::
-
-All sections get anchor names automagically, by making it lowercase and replacing spaces with '_' (underscore).
-
-All methods get anchor names prefixed with code::*:: for class methods and code::-:: for instance methods.
-
-One can change the rendered text of the link by using another code::#:: character:
-code::
-Also see link::Classes/SinOsc##a nice oscillator::
-::
-
-A link to specific methods:
-code::
-Take a look at link::Classes/SinOsc#*ar:: and link::Classes/Function#-play::
-::
-Renders as: link::Classes/SinOsc#*ar:: and link::Classes/Function#-play::
-
-The link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown, by using the methodname as anchor, for example to get a list of all classes implementing code::play:: :
-code::
-All classes implementing code::play:: can be seen link::Overviews/Methods#play#here::.
-::
-Renders as: All classes implementing code::play:: can be seen link::Overviews/Methods#play#here::.
-
-The link::Browse:: page is also dynamic, and can take a category tree as anchor name:
-code::
-For more filters, see link::Browse#UGens>Filters::
-::
-Renders as: For more filters, see link::Browse#UGens>Filters::
-
-subsection:: Images
-
-Images can be inserted with: code::
-image::filename::
-::
-
-A caption can be added like this: code::
-image::filename#caption::
-::
-
-subsection:: Footnotes
-Footnotes can be entered like this:
-code::
-Hello I'm a geek footnote::
-According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different
-meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs
-sensationally morbid or disgusting acts"
-\::
-::
-
-The result looks like this:
-Hello I'm a geek footnote::
-According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs sensationally morbid or disgusting acts"
-::
-
-subsection:: Mathematics
-Mathematics can be entered in TeX syntax using the code::math\:::: tag. Example:
-code::
-This is inline math::2\pi:: and below is block display math:
-math::
-1\over\sqrt{x^\pi}
-\::
-::
-
 Renders:
 
 This is inline math::2\pi:: and below is block display math:
 math::
 1\over\sqrt{x^\pi}
 ::
+::
 
-subsection:: Document types
-
-Document type is inferred by seeing if the document has a code::class\:::: or code::title\:::: tag.
-
-Some tags are only allowed in some types of documents. Tags not mentioned below are allowed in all types:
+subsection:: Lists and tables
+List items, table rows and definition terms are denoted with teletype::##:: (double-hash).
+Table cells and definition descriptions are denoted with teletype::||:: (double-bar).
+Lists and tables can be nested, and ends with the end-tag.
 definitionlist::
-## Class (and UGen) reference docs || tags: class, description, methods, examples, subsection
-## Other docs (tutorials and such) || tags: title, section, subsection
+## teletype:: TABLE\:: ::
+|| Create a table. Example:
+teletype::
+ table::
+	## a 1 || a 2 || a 3
+	## b 1 || b 2 || b 3
+	## c 1 || c 2 || c 3
+ ::
+::
+Renders:
+table::
+## a 1 || a 2 || a 3
+## b 1 || b 2 || b 3
+## c 1 || c 2 || c 3 ::
+
+## teletype:: DEFINITIONLIST\:: ::
+|| A definition list item consists of one or more terms prefixed with teletype::##:: followed by a description prefixed with teletype::||::. Example:
+teletype::
+ definitionlist::
+ 	## foo
+ 	## bar
+ 	|| Common dummy-variable names.
+ 	## SuperCollider
+ 	|| A very nice computer software.
+ ::
+::
+## teletype:: LIST\:: ::
+|| Create a simple bulleted list. Items are prefixed with teletype::##::
+## teletype:: NUMBEREDLIST\:: ::
+|| Create a numbered list. Items are prefixed with teletype::##::
+## teletype:: TREE\:: ::
+|| Create a tree structure. Typically nested with more TREE tags. Items are prefixed with teletype::##::
 ::
 
-Also, documents are organized in a simple directory layout after their "kind":
-list::
-## Classes
-## Reference
-## Guides
-## Overviews
-## Tutorials
-## Other
+subsection:: Notes and warnings
+These can have other tags in them, and ends with the end-tag.
+definitionlist::
+## teletype:: NOTE\:: ::
+|| Create a NOTE box with important content.
+note:: like this ::
+## teletype:: WARNING\:: ::
+|| Create a WARNING box with very important content.
+warning:: like this ::
+## teletype:: FOOTNOTE\:: ::
+|| Create a footnote which will be rendered at the end of the document.
+At the position of the FOOTNOTE tag, the footnote number will be rendered with a link to the footnote.
+Example:
+ teletype::
+ Hello I'm a geek footnote::
+ According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different
+ meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs
+ sensationally morbid or disgusting acts"
+ ::
 ::
+The result looks like this:
+Hello I'm a geek footnote::
+According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs sensationally morbid or disgusting acts"
+::
+
+::
+
+subsection:: Other tags
+definitionlist::
+## teletype:: KEYWORD\:: :: keyword(s)
+|| Specify one or more searchable keywords for this document.
+An anchor named the keyword prefixed with teletype::kw_:: will be created at the position of this tag.
+## teletype:: CLASSTREE\:: :: classname
+|| Render a class tree of subclasses starting from the given class.
+::
+
+section:: Grammar
+The following is an exact specification of the grammar:
+teletype::
+start             ::= document
+document          ::= START_FULL dochead optsections
+                    | START_PARTIAL sections
+                    | START_METADATA dochead optsections
+dochead           ::= { headline } headline
+headline          ::= ( headtag words2 | "CATEGORIES::" commalist | "RELATED::"
+                      commalist ) eol
+headtag           ::= "CLASS::"
+                    | "TITLE::"
+                    | "SUMMARY::"
+                    | "REDIRECT::"
+sectiontag        ::= "CLASSMETHODS::"
+                    | "INSTANCEMETHODS::"
+                    | "DESCRIPTION::"
+                    | "EXAMPLES::"
+optsections       ::= [ sections ]
+sections          ::= sections section
+                    | section
+                    | subsubsections
+section           ::= ( "SECTION::" words2 eol | sectiontag ) optsubsections
+optsubsections    ::= [ subsections ]
+subsections       ::= subsections subsection
+                    | subsection
+                    | subsubsections
+subsection        ::= "SUBSECTION::" words2 eol optsubsubsections
+optsubsubsections ::= [ subsubsections ]
+subsubsections    ::= subsubsections subsubsection
+                    | subsubsection
+                    | body
+subsubsection     ::= "METHOD::" methnames optMETHODARGS eol methodbody
+                    | "COPYMETHOD::" words eol
+                    | "PRIVATE::" commalist eol
+optMETHODARGS     ::= [ METHODARGS ]
+methnames         ::= { METHODNAME COMMA } METHODNAME
+methodbody        ::= optbody optargs optreturns optdiscussion
+optbody           ::= [ body ]
+optargs           ::= [ args ]
+args              ::= { arg } arg
+arg               ::= "ARGUMENT::" ( words eol optbody | eol body )
+optreturns        ::= [ "RETURNS::" body ]
+optdiscussion     ::= [ "DISCUSSION::" body ]
+body              ::= blockA
+                    | blockB
+blockA            ::= [ blockB | blockA ] bodyelem
+blockB            ::= [ blockA ] prose
+bodyelem          ::= rangetag body "::"
+                    | listtag listbody "::"
+                    | "TABLE::" tablebody "::"
+                    | "DEFINITIONLIST::" deflistbody "::"
+                    | blocktag wordsnl "::"
+                    | "CLASSTREE::" words eol
+                    | "KEYWORD::" commalist eol
+                    | EMPTYLINES
+                    | "IMAGE::" words2 "::"
+prose             ::= { proseelem } proseelem
+proseelem         ::= anyword
+                    | URL
+                    | inlinetag words "::"
+                    | "FOOTNOTE::" body "::"
+                    | NEWLINE
+inlinetag         ::= "LINK::"
+                    | "STRONG::"
+                    | "SOFT::"
+                    | "EMPHASIS::"
+                    | "CODE::"
+                    | "TELETYPE::"
+                    | "MATH::"
+                    | "ANCHOR::"
+blocktag          ::= CODEBLOCK
+                    | TELETYPEBLOCK
+                    | MATHBLOCK
+listtag           ::= "LIST::"
+                    | "TREE::"
+                    | "NUMBEREDLIST::"
+rangetag          ::= "WARNING::"
+                    | "NOTE::"
+listbody          ::= { "##" body } "##" body
+tablerow          ::= "##" tablecells
+tablebody         ::= { tablerow } tablerow
+tablecells        ::= { optbody "||" } optbody
+defterms          ::= { "##" body } "##" body
+deflistrow        ::= defterms "||" optbody
+deflistbody       ::= { deflistrow } deflistrow
+anywordurl        ::= anyword
+                    | URL
+anyword           ::= TEXT
+                    | COMMA
+words             ::= { anyword } anyword
+words2            ::= { anywordurl } anywordurl
+eol               ::= NEWLINE
+                    | EMPTYLINES
+anywordnl         ::= anyword
+                    | eol
+wordsnl           ::= { anywordnl } anywordnl
+nocommawords      ::= nocommawords TEXT
+                    | nocommawords URL
+                    | TEXT
+                    | URL
+commalist         ::= { nocommawords COMMA } nocommawords
+::
+
+
+
 
 examples::
 
 An example of documentation for LFPulse UGen:
 
-code::
-class::LFPulse
-summary::pulse oscillator
-categories::UGens>Generators>Deterministic, UGens>Oscillators
-related::Classes/LFSaw
+teletype::
+TITLE:: LFPulse
+summary:: pulse oscillator
+categories:: UGens>Generators>Deterministic, UGens>Oscillators
+related:: Classes/LFSaw
 
-description::
+DESCRIPTION::
 A non-band-limited pulse oscillator. Outputs a high value of one and a low value of zero.
 
-classmethods::
+CLASSMETHODS::
 private:: categories
 
-method:: ar, kr
+METHOD:: ar, kr
 
 argument::freq
 frequency in Hertz
@@ -431,16 +420,12 @@ initial phase offset in cycles ( 0..1 )
 argument::width
 pulse width duty cycle from zero to one.
 
-examples::
+EXAMPLES::
 
 a plot:
-code::
-{ LFPulse.ar(Line.kr(100, 800, 0.1)) }.plot(0.1);
-\::
+code:: { LFPulse.ar(Line.kr(100, 800, 0.1)) }.plot(0.1); ::
 
 50 Hz wave:
-code::
-{ LFPulse.ar(50) * 0.1 }.play;
-\::
+code:: { LFPulse.ar(50) * 0.1 }.play; ::
 ::
 
