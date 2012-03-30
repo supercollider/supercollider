@@ -250,7 +250,7 @@ void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentI
             return;
         }
 
-        if (brackets.contains(text[currentIndex])) {
+        if (brackets.contains(currentChar)) {
             blockData->brackets.push_back( BracketInfo(currentChar.toAscii(), currentIndex) );
             ++currentIndex;
             continue;
@@ -366,7 +366,8 @@ void SyntaxHighlighter::highlightBlockInSymbol(const QString& text, int& current
         return;
     }
 
-    if (text[currentIndex] == QChar('\''))
+    static const QChar endOfSymbol('\'');
+    if (text[currentIndex] == endOfSymbol)
         currentState = inCode;
 
     setFormat(currentIndex, 1, mGlobals->format(SymbolFormat));
