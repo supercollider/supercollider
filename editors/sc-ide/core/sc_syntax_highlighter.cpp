@@ -98,31 +98,31 @@ void SyntaxHighlighterGlobals::initSyntaxRules()
 
     */
 
-    mInCodeRules << SyntaxRule( SyntaxRule::SymbolArgRule, "^\\b[A-Za-z_]\\w*\\:" );
+    mInCodeRules << SyntaxRule( SyntaxRule::SymbolArg, "^\\b[A-Za-z_]\\w*\\:" );
 
-    mInCodeRules << SyntaxRule( SyntaxRule::ClassRule, "^\\b[A-Z]\\w*" );
+    mInCodeRules << SyntaxRule( SyntaxRule::Class, "^\\b[A-Z]\\w*" );
 
-    mInCodeRules << SyntaxRule( SyntaxRule::PrimitiveRule, "^\\b_\\w+" );
+    mInCodeRules << SyntaxRule( SyntaxRule::Primitive, "^\\b_\\w+" );
 
-    mInCodeRules << SyntaxRule( SyntaxRule::SymbolRule, "^(\\\\\\w*|\\'([^\\'\\\\]*(\\\\.[^\\'\\\\]*)*)\\')" );
+    mInCodeRules << SyntaxRule( SyntaxRule::Symbol, "^(\\\\\\w*|\\'([^\\'\\\\]*(\\\\.[^\\'\\\\]*)*)\\')" );
 
-    mInCodeRules << SyntaxRule( SyntaxRule::CharRule, "^\\$\\\\?." );
+    mInCodeRules << SyntaxRule( SyntaxRule::Char, "^\\$\\\\?." );
 
-    mInCodeRules << SyntaxRule( SyntaxRule::StringRule, "^\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*)\"" );
+    mInCodeRules << SyntaxRule( SyntaxRule::String, "^\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*)\"" );
 
-    mInCodeRules << SyntaxRule( SyntaxRule::EnvVarRule, "^~\\w+" );
+    mInCodeRules << SyntaxRule( SyntaxRule::EnvVar, "^~\\w+" );
 
-    mInCodeRules << SyntaxRule( SyntaxRule::RadixFloatRule, "^\\b\\d+r[0-9a-zA-Z]*(\\.[0-9A-Z]*)?" );
+    mInCodeRules << SyntaxRule( SyntaxRule::RadixFloat, "^\\b\\d+r[0-9a-zA-Z]*(\\.[0-9A-Z]*)?" );
 
     // do not include leading "-" in float highlighting, as there's no clear
     // rule whether it is not rather a binary operator
-    mInCodeRules << SyntaxRule( SyntaxRule::FloatRule, "^\\b((\\d+\\.?\\d+([eE][-+]?\\d+)?(pi)?)|pi)" );
+    mInCodeRules << SyntaxRule( SyntaxRule::Float, "^\\b((\\d+\\.?\\d+([eE][-+]?\\d+)?(pi)?)|pi)" );
 
-    mInCodeRules << SyntaxRule( SyntaxRule::HexIntRule, "^\\b0(x|X)(\\d|[a-f]|[A-F])+" );
+    mInCodeRules << SyntaxRule( SyntaxRule::HexInt, "^\\b0(x|X)(\\d|[a-f]|[A-F])+" );
 
-    mInCodeRules << SyntaxRule( SyntaxRule::SingleLineCommentRule, "^//[^\r\n]*" );
+    mInCodeRules << SyntaxRule( SyntaxRule::SingleLineComment, "^//[^\r\n]*" );
 
-    mInCodeRules << SyntaxRule( SyntaxRule::MultiLineCommentStartRule, "^/\\*" );
+    mInCodeRules << SyntaxRule( SyntaxRule::MultiLineCommentStart, "^/\\*" );
 
     mInSymbolRegexp.setPattern("([^\'\\\\]*(\\\\.[^\'\\\\]*)*)");
     mInStringRegexp.setPattern("([^\"\\\\]*(\\\\.[^\"\\\\]*)*)");
@@ -145,7 +145,7 @@ void SyntaxHighlighterGlobals::initKeywords()
              << "var";
 
     QString keywordPattern = QString("^\\b(%1)\\b").arg(keywords.join("|"));
-    mInCodeRules << SyntaxRule(SyntaxRule::KeywordRule, keywordPattern);
+    mInCodeRules << SyntaxRule(SyntaxRule::Keyword, keywordPattern);
 }
 
 void SyntaxHighlighterGlobals::initBuiltins()
@@ -157,7 +157,7 @@ void SyntaxHighlighterGlobals::initBuiltins()
              << "true";
 
     QString builtinsPattern = QString("^\\b(%1)\\b").arg(builtins.join("|"));
-    mInCodeRules << SyntaxRule(SyntaxRule::BuiltinRule, builtinsPattern);
+    mInCodeRules << SyntaxRule(SyntaxRule::Builtin, builtinsPattern);
 }
 
 void SyntaxHighlighterGlobals::applySettings( QSettings *s )
@@ -198,7 +198,7 @@ SyntaxRule::Type SyntaxHighlighter::findMatchingRule
 (const QString& text, int& currentIndex, int& lengthOfMatch)
 {
     int matchLength = -1;
-    SyntaxRule::Type matchRule = SyntaxRule::NoRule;
+    SyntaxRule::Type matchRule = SyntaxRule::None;
     foreach(SyntaxRule rule, mGlobals->mInCodeRules)
     {
         int matchIndex = rule.expr.indexIn(text, currentIndex, QRegExp::CaretAtOffset);
@@ -211,7 +211,7 @@ SyntaxRule::Type SyntaxHighlighter::findMatchingRule
         }
     }
 
-    lengthOfMatch = matchRule == SyntaxRule::NoRule ? 0 : matchLength;
+    lengthOfMatch = matchRule == SyntaxRule::None ? 0 : matchLength;
     return matchRule;
 }
 
@@ -250,60 +250,60 @@ void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentI
 
         switch (rule)
         {
-        case SyntaxRule::ClassRule:
+        case SyntaxRule::Class:
             setFormat(currentIndex, lenghtOfMatch, formats[ClassFormat]);
             break;
 
-        case SyntaxRule::BuiltinRule:
+        case SyntaxRule::Builtin:
             setFormat(currentIndex, lenghtOfMatch, formats[BuiltinFormat]);
             break;
 
-        case SyntaxRule::PrimitiveRule:
+        case SyntaxRule::Primitive:
             setFormat(currentIndex, lenghtOfMatch, formats[PrimitiveFormat]);
             break;
 
-        case SyntaxRule::KeywordRule:
+        case SyntaxRule::Keyword:
             setFormat(currentIndex, lenghtOfMatch, formats[KeywordFormat]);
             break;
 
-        case SyntaxRule::SymbolRule:
+        case SyntaxRule::Symbol:
             setFormat(currentIndex, lenghtOfMatch, formats[SymbolFormat]);
             break;
 
-        case SyntaxRule::SymbolArgRule:
+        case SyntaxRule::SymbolArg:
             // Omit the trailing ":" that was included in the regexp:
             setFormat(currentIndex, lenghtOfMatch-1, formats[SymbolFormat]);
             break;
 
-        case SyntaxRule::EnvVarRule:
+        case SyntaxRule::EnvVar:
             setFormat(currentIndex, lenghtOfMatch, formats[EnvVarFormat]);
             break;
 
-        case SyntaxRule::StringRule:
+        case SyntaxRule::String:
             setFormat(currentIndex, lenghtOfMatch, formats[StringFormat]);
             break;
 
-        case SyntaxRule::CharRule:
+        case SyntaxRule::Char:
             setFormat(currentIndex, lenghtOfMatch, formats[CharFormat]);
             break;
 
-        case SyntaxRule::SingleLineCommentRule:
+        case SyntaxRule::SingleLineComment:
             setFormat(currentIndex, lenghtOfMatch, formats[CommentFormat]);
             break;
 
-        case SyntaxRule::FloatRule:
-        case SyntaxRule::HexIntRule:
-        case SyntaxRule::RadixFloatRule:
+        case SyntaxRule::Float:
+        case SyntaxRule::HexInt:
+        case SyntaxRule::RadixFloat:
             setFormat(currentIndex, lenghtOfMatch, formats[NumberFormat]);
             break;
 
-        case SyntaxRule::MultiLineCommentStartRule:
+        case SyntaxRule::MultiLineCommentStart:
             setFormat(currentIndex, lenghtOfMatch, formats[CommentFormat]);
             currentIndex += lenghtOfMatch;
             currentState = inComment;
             return;
 
-        case SyntaxRule::NoRule:
+        case SyntaxRule::None:
             currentIndex += 1;
 
         default:
