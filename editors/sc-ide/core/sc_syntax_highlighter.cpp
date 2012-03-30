@@ -198,13 +198,14 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent):
     connect(mGlobals, SIGNAL(syntaxFormatsChanged()), this, SLOT(rehighlight()));
 }
 
-SyntaxRule::Type SyntaxHighlighter::findMatchingRule
-(const QString& text, int& currentIndex, int& lengthOfMatch)
+SyntaxRule::Type SyntaxHighlighter::findMatchingRule (const QString& text, int& currentIndex, int& lengthOfMatch)
 {
     int matchLength = -1;
     SyntaxRule::Type matchRule = SyntaxRule::None;
-    foreach(SyntaxRule rule, mGlobals->mInCodeRules)
-    {
+
+    for (QVector<SyntaxRule>::const_iterator it = mGlobals->mInCodeRules.constBegin();
+         it != mGlobals->mInCodeRules.constEnd(); ++it) {
+        SyntaxRule const & rule = *it;
         int matchIndex = rule.expr.indexIn(text, currentIndex, QRegExp::CaretAtOffset);
         // a guard to ensure all regexps match only at beginning of string:
         assert(matchIndex <= currentIndex);
