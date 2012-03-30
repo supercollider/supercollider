@@ -136,6 +136,9 @@ SCDocEntry {
             warn("SCDoc:"+path+"has no title!");
             title = "(Untitled)";
         };
+        if(isClassDoc and: { title != path.basename }) {
+            warn("SCDoc:"+path+"title and filename mismatch. Must be same for class docs!");
+        };
         if(categories.isNil) {
             warn("SCDoc:"+path+"has no categories!");
             categories = ["Uncategorized"];

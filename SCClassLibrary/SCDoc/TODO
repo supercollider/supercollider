@@ -1,9 +1,8 @@
 TODO
 ----
 
-- auto-fill argument::
-  - if argname is given, check that argnames match with reality.
-  - we now only warn on grouped methods argnames mismatch if argument:: tag is used.
+- auto-fill argument:
+    we now only warn on grouped methods argnames mismatch if argument:: tag is used.
     for example, Tdef pause, resume, reset are grouped *not* because they are supposed to have
     the same args, which they don't..
     That means we can not use argument:: if grouped methods does not have the same argnames,
@@ -11,9 +10,7 @@ TODO
 
 - should we allow *.ext.schelp to add to related:: and categories:: ?
 
-- fix helpdocs, SCDoc*, SCDoc Syntax, Writing Help, etc.
-  new notes: you need to run SCDoc.indexAllDocuments after adding a document or other file.
-  Use section titles as they are when linking to them, no simplified names anymore.
+- fix helpdocs: Writing Help, SCDocNode, SCDocEntry, SCDocHTMLRenderer
 
 - clean up old-help compatibility, do we really need it in both HelpBrowser-goTo and SCDoc.findHelpFile?
 
