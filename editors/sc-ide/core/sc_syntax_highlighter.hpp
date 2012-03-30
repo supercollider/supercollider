@@ -46,6 +46,36 @@ enum SyntaxFormat
     FormatCount
 };
 
+struct SyntaxRule
+{
+    enum Type
+    {
+        SymbolArgRule,
+        ClassRule,
+        KeywordRule,
+        BuiltinRule,
+        PrimitiveRule,
+        SymbolRule,
+        StringRule,
+        CharRule,
+        RadixFloatRule,
+        FloatRule,
+        HexIntRule,
+        EnvVarRule,
+
+        SingleLineCommentRule,
+        MultiLineCommentStartRule,
+
+        NoRule
+    };
+
+    SyntaxRule(): type(NoRule) {}
+    SyntaxRule( Type t, const QString &s ): type(t), expr(s) {}
+
+    Type type;
+    QRegExp expr;
+};
+
 class SyntaxHighlighterGlobals : public QObject
 {
     Q_OBJECT
@@ -82,10 +112,18 @@ Q_SIGNALS:
     void syntaxFormatsChanged();
 
 private:
+    friend class SyntaxHighlighter;
+
+    void initHighlightFormats();
+    void initSyntaxRules();
+    void initKeywords();
+    void initBuiltins();
     void applySettings( QSettings*, const QString &key, SyntaxFormat );
 
     QTextCharFormat mFormats[FormatCount];
     QTextCharFormat mDefaultFormats[FormatCount];
+    QVector<SyntaxRule> mInCodeRules;
+    QRegExp mInSymbolRegexp, mInStringRegexp;
 
     static SyntaxHighlighterGlobals *mInstance;
 };
@@ -94,27 +132,6 @@ class SyntaxHighlighter:
     public QSyntaxHighlighter
 {
     Q_OBJECT
-
-    enum SyntaxRule
-    {
-        SymbolArgRule,
-        ClassRule,
-        KeywordRule,
-        BuiltinRule,
-        PrimitiveRule,
-        SymbolRule,
-        StringRule,
-        CharRule,
-        RadixFloatRule,
-        FloatRule,
-        HexIntRule,
-        EnvVarRule,
-
-        SingleLineCommentRule,
-        MultiLineCommentStartRule,
-
-        NoRule
-    };
 
     static const int inCode = 0;
     static const int inString = 1;
@@ -145,17 +162,10 @@ private:
     void highlightBlockInString(const QString& text, int & currentIndex, int & currentState);
     void highlightBlockInSymbol(const QString& text, int & currentIndex, int & currentState);
     void highlightBlockInComment(const QString& text, int & currentIndex, int & currentState);
-    void initKeywords(void);
-    void initBuildins(void);
 
-    SyntaxRule findMatchingRule(QString const & text, int & currentIndex, int & lengthOfMatch);
-
-    QRegExp classRegexp, keywordRegexp, buildinsRegexp, primitiveRegexp, symbolRegexp, symbolContentRegexp,
-        charRegexp, stringRegexp, stringContentRegexp, floatRegexp, hexIntRegexp, radixFloatRegex,
-        commentStartRegexp, commentEndRegexp, singleLineCommentRegexp, envVarRegexp, symbolArgRegexp;
+    SyntaxRule::Type findMatchingRule(QString const & text, int & currentIndex, int & lengthOfMatch);
 
     const SyntaxHighlighterGlobals *mGlobals;
-    QVector<QRegExp> mRegexps;
 };
 
 }
