@@ -145,7 +145,6 @@ SCDocEntry {
             summary = "(Missing summary)";
         };
 
-        if(isClassDoc) { this.prGetUndocumentedMethods; }
     }
 
     destPath {
@@ -173,7 +172,17 @@ SCDocEntry {
         ^list;
     }
 
-    prGetUndocumentedMethods {
+    setAdditions {|a|
+        var x;
+        additions = a;
+        a.do {|f|
+            (x = SCDoc.parseFilePartial(f)) !? {
+                this.prScanMethodsKeywords(x);
+            }
+        }
+    }
+
+    indexUndocumentedMethods {
         var class;
         var ignoreMethods = IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset, \initClass, \storeArgs, \storeOn, \printOn];
         var syms, name, mets, l = Array.new;
@@ -373,11 +382,6 @@ SCDoc {
         _SCDoc_ParseFile
         ^this.primitiveFailed
     }
-    *indexDocument {|dir, file|
-        var doc = this.parseFileMetaData(dir, file);
-        doc !? { documents[doc.path] = doc; }
-        ^doc;
-    }
     *indexAllDocuments {
         var now = Main.elapsedTime;
         var key, doc;
@@ -385,7 +389,7 @@ SCDoc {
         var undocClasses = Class.allClasses.reject(_.isMetaClass).collectAs({|c|c.name},IdentitySet);
         var additions = Dictionary();
         this.checkVersion;
-        this.postMsg("indexing help-files...",0);
+        this.postMsg("Indexing help-files...",0);
         documents = Dictionary(); // or use IdDict and symbols as keys?
         helpSourceDirs = nil; // force re-scan of HelpSource folders
         this.helpSourceDirs.do {|dir|
@@ -397,9 +401,12 @@ SCDoc {
                     additions[key] = additions[key].add(f);
                 }
                 {f.extension=="schelp"} {
-                    doc = this.indexDocument(dir, f.fullPath.drop(dir.size+1));
-                    if(doc.notNil and: {doc.isClassDoc}) {
-                        undocClasses.remove(doc.title.asSymbol);
+                    doc = this.parseFileMetaData(dir, f.fullPath.drop(dir.size+1));
+                    doc !? {
+                        documents[doc.path] = doc;
+                        if(doc.isClassDoc) {
+                            undocClasses.remove(doc.title.asSymbol);
+                        }
                     }
                 }
                 {
@@ -408,33 +415,37 @@ SCDoc {
                 };
             }
         };
-        this.postMsg("adding entries for"+undocClasses.size+"undocumented classes...",1);
-        undocClasses.do {|x|
-            doc = SCDocEntry.newUndocClass(x);
-            documents[doc.path] = doc;
-        };
+        this.postMsg("Handling"+additions.size+"document additions...",1);
         additions.pairsDo {|key, val|
             doc = documents[key];
             if(doc.notNil) {
-                doc.additions = val;
+                doc.setAdditions(val);
             } {
                 warn("SCDoc: Additions % for non-existent help file".format(val));
             }
         };
-        this.postMsg("copying"+nonHelpFiles.size+"non-help files...",1);
+        this.postMsg("Indexing undocumented methods...",1);
+        documents.do {|d|
+            if(d.isClassDoc) { d.indexUndocumentedMethods };
+        };
+        this.postMsg("Adding entries for"+undocClasses.size+"undocumented classes...",1);
+        undocClasses.do {|x|
+            doc = SCDocEntry.newUndocClass(x);
+            documents[doc.path] = doc;
+        };
+        this.postMsg("Copying"+nonHelpFiles.size+"non-help files...",1);
         nonHelpFiles.do {|x|
             var dest = SCDoc.helpTargetDir+/+x[1];
             var folder = dest.dirname;
             File.mkdir(folder);
             if(File.exists(dest).not or: {File.mtime(x[0]) > File.mtime(dest)}) {
                 File.delete(dest);
-//                postln("SCDoc: copying"+x[0]);
                 File.copy(x[0],dest);
             };
         };
-        this.postMsg("exporting docmap.js...",1);
+        this.postMsg("Exporting docmap.js...",1);
         this.exportDocMapJS(this.helpTargetDir +/+ "docmap.js");
-        this.postMsg("finished in % seconds".format(round(Main.elapsedTime-now,0.01)),0);
+        this.postMsg("Indexed % documents in % seconds".format(documents.size,round(Main.elapsedTime-now,0.01)),0);
         NotificationCenter.notify(SCDoc, \didIndexAllDocs);
     }
     *didIndexDocuments {
@@ -541,7 +552,6 @@ SCDoc {
                     this.postMsg("% changed, re-indexing documents".format(doc.path),2);
                     this.indexAllDocuments;
                     ^this.prepareHelpForURL(url);
-//                    doc = this.indexDocument(doc.fullPath.drop(-8-subtarget.size), subtarget ++ ".schelp");
                 };
                 if(destExist.not
                     or: {doc.mtime>destMtime}
