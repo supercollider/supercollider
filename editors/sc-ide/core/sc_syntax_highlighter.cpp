@@ -105,31 +105,49 @@ void SyntaxHighlighterGlobals::applySettings( QSettings *s, const QString &key, 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent):
     QSyntaxHighlighter( parent )
 {
-    mGlobals = SyntaxHighlighterGlobals::instance();
+    // NOTE: The highlighting algorithm demands that all regexps
+    // start with a caret "^", to only match at beginning of string.
 
     // FIXME: later we can cache the regexps
+
+    mGlobals = SyntaxHighlighterGlobals::instance();
+
     initKeywords();
     initBuildins();
 
-    classRegexp.setPattern("\\b[A-Z]\\w*\\b");
+    classRegexp.setPattern("^\\b[A-Z]\\w*");
 
-    primitiveRegexp.setPattern("\\b_\\w+\\b");
-    symbolRegexp.setPattern("(\\\\\\w*|\\'([^\\'\\\\]*(\\\\.[^\\'\\\\]*)*)\\')");
+    primitiveRegexp.setPattern("^\\b_\\w+");
+
+    symbolRegexp.setPattern("^(\\\\\\w*|\\'([^\\'\\\\]*(\\\\.[^\\'\\\\]*)*)\\')");
     symbolContentRegexp.setPattern("([^\'\\\\]*(\\\\.[^\'\\\\]*)*)");
-    charRegexp.setPattern("\\b\\$(\\w|(\\\\\\S))\\b");
-    stringRegexp.setPattern("\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*)\"");
+
+    charRegexp.setPattern("^\\$\\\\?.");
+
+    stringRegexp.setPattern("^\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*)\"");
     stringContentRegexp.setPattern("([^\"\\\\]*(\\\\.[^\"\\\\]*)*)");
 
-    envVarRegexp.setPattern("~\\w+");
-    symbolArgRegexp.setPattern("\\b[a-z]\\w*\\:");
+    envVarRegexp.setPattern("^~\\w+");
 
-    floatRegexp.setPattern("\\b-?((\\d*\\.?\\d+([eE][-+]?\\d+)?(pi)?)|pi)\\b");
-    hexIntRegexp.setPattern("\\b0(x|X)(\\d|[a-f]|[A-F])+\\b");
-    radixFloatRegex.setPattern("\\b(\\d)+r(\\d|[a-zA-Z])+(.(\\d|[a-zA-Z]))?\\b");
+    symbolArgRegexp.setPattern("^\\b[A-Za-z_]\\w*\\:");
 
-    singleLineCommentRegexp.setPattern("//[^\r\n]*");
-    commentStartRegexp = QRegExp("/\\*");
+    // do not include leading "-" in float highlighting, as there's no clear
+    // rule whether it is not rather a binary operator
+    floatRegexp.setPattern("^\\b((\\d*\\.?\\d+([eE][-+]?\\d+)?(pi)?)|pi)");
+    hexIntRegexp.setPattern("^\\b0(x|X)(\\d|[a-f]|[A-F])+");
+    radixFloatRegex.setPattern("^\\b(\\d)+r(\\d|[a-zA-Z])+(.(\\d|[a-zA-Z]))?");
+
+    singleLineCommentRegexp.setPattern("^//[^\r\n]*");
+    commentStartRegexp = QRegExp("^/\\*");
     commentEndRegexp = QRegExp("\\*/");
+
+    /* NOTE:
+    -- floatRegexp is subset of radixFloatRegex -> must come later
+    -- classRegexp and primitiveRegexp are subsets of symbolArgRegexp -> must come later
+    */
+    mRegexps << symbolArgRegexp << classRegexp << keywordRegexp << buildinsRegexp << primitiveRegexp
+            << symbolRegexp << stringRegexp << charRegexp  << radixFloatRegex << floatRegexp << hexIntRegexp
+            << envVarRegexp << singleLineCommentRegexp << commentStartRegexp;
 
     connect(mGlobals, SIGNAL(syntaxFormatsChanged()), this, SLOT(rehighlight()));
 }
@@ -151,7 +169,7 @@ void SyntaxHighlighter::initKeywords(void)
              << "thisThread"
              << "var";
 
-    QString keywordPattern = QString("\\b(%1)\\b").arg(keywords.join("|"));
+    QString keywordPattern = QString("^\\b(%1)\\b").arg(keywords.join("|"));
     keywordRegexp.setPattern(keywordPattern);
 }
 
@@ -163,51 +181,36 @@ void SyntaxHighlighter::initBuildins(void)
              << "nil"
              << "true";
 
-    QString buildinsPattern = QString("\\b(%1)\\b").arg(buildins.join("|"));
+    QString buildinsPattern = QString("^\\b(%1)\\b").arg(buildins.join("|"));
     buildinsRegexp.setPattern(buildinsPattern);
 }
 
 SyntaxHighlighter::SyntaxRule SyntaxHighlighter::findMatchingRule
 (const QString& text, int& currentIndex, int& lengthOfMatch)
 {
-    QVector<int> matchIndices, matchLengths;
-
-    QVector<QRegExp> regexps;
-    regexps << classRegexp << keywordRegexp << buildinsRegexp << primitiveRegexp << symbolRegexp << stringRegexp
-            << charRegexp  << floatRegexp << hexIntRegexp << radixFloatRegex << envVarRegexp << symbolArgRegexp
-            << singleLineCommentRegexp << commentStartRegexp;
-
-    int i = 0;
-    foreach(QRegExp expression, regexps) {
-        int matchIndex  = expression.indexIn(text, currentIndex);
-        int matchLength = (matchIndex != -1) ? expression.matchedLength()
-                                             : -1;
-        matchIndices << matchIndex;
-        matchLengths << matchLength;
-
-        if (matchIndex == currentIndex) {
-            // first character matches
-            lengthOfMatch = matchLengths.back();
-            return static_cast<SyntaxRule>(i);
+    int regexpIndex = -1;
+    int matchLength = -1;
+    foreach(QRegExp regexp, mRegexps)
+    {
+        regexpIndex++;
+        int matchIndex = regexp.indexIn(text, currentIndex, QRegExp::CaretAtOffset);
+        // a guard to ensure all regexps match only at beginning of string:
+        assert(matchIndex <= currentIndex);
+        if (matchIndex != -1) {
+            matchLength = regexp.matchedLength();
+            break;
         }
-
-        ++i;
     }
 
-    // find the first matching regexp
-    QVector<int>::iterator minimumElementIterator = std::min_element(matchIndices.begin(), matchIndices.end());
-    int minimumIndex = *minimumElementIterator;
-    if (minimumIndex == -1) {
-        lengthOfMatch = 0;
+    if (matchLength == -1) {
         // no match
+        lengthOfMatch = 0;
         return NoRule;
     }
-
-    int minElementIndex = matchIndices.indexOf(minimumIndex);
-
-    currentIndex = minimumIndex;
-    lengthOfMatch = matchLengths[minElementIndex];
-    return static_cast<SyntaxRule>(minElementIndex);
+    else {
+        lengthOfMatch = matchLength;
+        return static_cast<SyntaxRule>(regexpIndex);
+    }
 }
 
 void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentIndex, int & currentState)
@@ -262,8 +265,12 @@ void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentI
             break;
 
         case SymbolRule:
-        case SymbolArgRule:
             setFormat(currentIndex, lenghtOfMatch, formats[SymbolFormat]);
+            break;
+
+        case SymbolArgRule:
+            // Omit the trailing ":" that was included in the regexp:
+            setFormat(currentIndex, lenghtOfMatch-1, formats[SymbolFormat]);
             break;
 
         case EnvVarRule:
