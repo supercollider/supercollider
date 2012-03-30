@@ -3,6 +3,10 @@ summary:: Get started with writing help
 categories:: HelpSystem
 related:: Reference/SCDocSyntax, Classes/SCDoc
 
+note::
+This document will be rewritten shortly!
+::
+
 section:: Writing new help
 The simplest way is to look at an existing help file or class document, and read this document and link::Reference/SCDocSyntax::
 
@@ -261,4 +265,263 @@ returns:: the stripped string
 
 The contents are inserted into the right spot (section, subsection, etc).
 It works for all kind of sections, for example one can add a subsection to code::DESCRIPTION\:::: with additional information, or add another top-level section, etc.
+
+
+subsection:: Document attributes
+
+These should only occur once in a document, and might be compulsory.
+code::
+title:: name
+class:: name
+summary:: text
+related:: link(s)
+categories:: name(s)
+::
+
+subsection:: Structural tags
+
+These are grouped by their level in the hierarchy, from high to low:
+code::
+section:: name
+description::
+examples::
+instancemethods::
+classmethods::
+
+subsection:: name
+
+method:: name(s)
+
+argument:: name
+::
+description, examples and methods are equivalent to code::section\:::: structurally, but used to identify these special sections and render them consistently.
+
+subsection:: Methods and arguments
+
+Methods should appear under code::instancemethods\:::: or code::classmethods\::::, and are written with code:: method\:: name(s) ::.
+Do strong::not:: enter any arguments here, only the name.
+After the method, there should be a short description. Even if it can be multiple lines, keep it short and use code::discussion\:::: if you need more.
+
+Methods get an anchor name automatically, prefixed with code::*:: for class methods and code::-:: for instance methods. For example, to link to the code::foo:: class method, use code:: link\::#*foo\:: ::.
+
+After the method description comes the arguments, written with code:: argument\:: name :: where code::name:: must correspond to one of the methods arguments. After each argument line comes the description of that argument.
+
+There is an optional code::returns\:::: tag that could be used to describe the methods return value.
+
+If a longer discussion is needed, use the code::discussion\:::: tag. This is a good place to insert example code, etc.
+
+Method signatures and argument defaults are filled in automagically.
+
+Also, when multiple methods have the same signature (like ar and kr in ugens), they should all be listed in one single method tag.
+
+Example:
+code::
+classmethods::
+private:: new1
+
+method:: ar, kr
+short description here...
+
+argument:: freq
+the frequency
+argument:: amp
+the amplitude
+
+returns:: a new UGen
+
+method:: foo
+short description..
+
+argument:: x
+the x value
+
+returns:: some kind of value
+
+discussion::
+Here is a longer detailed discussion about this method, perhaps with example code, etc..
+::
+
+Any undocumented methods will show up in the rendered help file. To ignore methods, put them in a code::private\:::: tag, which must come directly after the code::instancemethods:: or code::classmethods:: tag.
+
+subsection:: Copy methods from other class
+You can use code:: copymethod\:: ClassName, methodName :: to copy the documentation of a method from another helpfile to this one.
+
+code::methodName:: must be prefixed with code::*:: (asterix) for class methods and code::-:: (dash) for instance methods.
+
+note::
+The copied method must itself be a real code::method:: doc, not another code::copymethod::.
+::
+
+subsection:: Modal tags
+code::
+code::
+link::
+anchor::
+image::
+emphasis::
+strong::
+soft::
+teletype::
+::
+All of above are closed with \::
+If they are used as block tags, the closing \:: must be written as a single word on its own line.
+Since they are modal tags, they can't be nested and any other tag than the closing tag is ignored until they are closed.
+
+subsection:: Tables and lists
+code::
+list::
+tree::
+numberedList::
+definitionList::
+table::
+::
+Tables and lists are kind of structural tags, but need to be closed with \::
+They use code::##:: and code::||:: to delimit items/rows and table columns.
+
+code::
+table::
+## one || two || three
+## foo || bar || zoo
+\::
+
+list::
+## first
+## second
+## third
+\::
+::
+
+Lists can be nested:
+code::
+definitionList::
+## one || the first thing has three subthings:
+    list::
+    ## one A
+    ## one B
+    ## one C
+    \::
+## two || the second thing
+\::
+::
+
+subsection:: ClassTree
+
+A special tag to render a class hierarchy tree:
+code::
+classtree::Pattern
+::
+
+subsection:: Notes and warnings
+code::
+note:: text ::
+warning:: text ::
+::
+
+These tags can be multi-line and must end with \:: . They can contain other tags.
+
+subsection:: Links
+
+URL's are automagically converted to links.
+
+The code::link\:::: tag is used for cross-reference between docs. It uses a simple namespace, example:
+code::
+See also link::Classes/SinOsc:: for a nice oscillator.
+Or take a look at link::Browse#UGens:: for a full list.
+The link::Overviews/Methods#play#play method:: is often very useful.
+::
+
+Anchors can be inserted manually with code::anchor\::name\:::: and referenced like this: code::
+link::Foo/Bar#hello::
+::
+or to jump to an anchor in this document: code::
+link::#hello::
+::
+
+All sections get anchor names automagically, by making it lowercase and replacing spaces with '_' (underscore).
+
+All methods get anchor names prefixed with code::*:: for class methods and code::-:: for instance methods.
+
+One can change the rendered text of the link by using another code::#:: character:
+code::
+Also see link::Classes/SinOsc##a nice oscillator::
+::
+
+A link to specific methods:
+code::
+Take a look at link::Classes/SinOsc#*ar:: and link::Classes/Function#-play::
+::
+Renders as: link::Classes/SinOsc#*ar:: and link::Classes/Function#-play::
+
+The link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown, by using the methodname as anchor, for example to get a list of all classes implementing code::play:: :
+code::
+All classes implementing code::play:: can be seen link::Overviews/Methods#play#here::.
+::
+Renders as: All classes implementing code::play:: can be seen link::Overviews/Methods#play#here::.
+
+The link::Browse:: page is also dynamic, and can take a category tree as anchor name:
+code::
+For more filters, see link::Browse#UGens>Filters::
+::
+Renders as: For more filters, see link::Browse#UGens>Filters::
+
+subsection:: Images
+
+Images can be inserted with: code::
+image::filename::
+::
+
+A caption can be added like this: code::
+image::filename#caption::
+::
+
+subsection:: Footnotes
+Footnotes can be entered like this:
+code::
+Hello I'm a geek footnote::
+According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different
+meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs
+sensationally morbid or disgusting acts"
+\::
+::
+
+The result looks like this:
+Hello I'm a geek footnote::
+According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs sensationally morbid or disgusting acts"
+::
+
+subsection:: Mathematics
+Mathematics can be entered in TeX syntax using the code::math\:::: tag. Example:
+code::
+This is inline math::2\pi:: and below is block display math:
+math::
+1\over\sqrt{x^\pi}
+\::
+::
+
+Renders:
+
+This is inline math::2\pi:: and below is block display math:
+math::
+1\over\sqrt{x^\pi}
+::
+
+subsection:: Document types
+
+Document type is inferred by seeing if the document has a code::class\:::: or code::title\:::: tag.
+
+Some tags are only allowed in some types of documents. Tags not mentioned below are allowed in all types:
+definitionlist::
+## Class (and UGen) reference docs || tags: class, description, methods, examples, subsection
+## Other docs (tutorials and such) || tags: title, section, subsection
+::
+
+Also, documents are organized in a simple directory layout after their "kind":
+list::
+## Classes
+## Reference
+## Guides
+## Overviews
+## Tutorials
+## Other
+::
 

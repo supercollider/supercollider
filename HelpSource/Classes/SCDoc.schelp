@@ -1,140 +1,122 @@
 class:: SCDoc
 summary:: Help system main class
 categories:: HelpSystem
-related:: Classes/SCDocParser, Classes/SCDocRenderer, Guides/WritingHelp, Reference/SCDocSyntax
+related:: Reference/SCDocSyntax, Guides/WritingHelp, Classes/SCDocHTMLRenderer, Classes/SCDocNode, Classes/SCDocEntry
 
 DESCRIPTION::
 SCDoc manages the SuperCollider documentation system.
 
-It uses link::Classes/SCDocParser:: for parsing and link::Classes/SCDocRenderer:: for rendering.
-
-The syntax reference for the documentation markup language can be found here: link::Reference/SCDocSyntax::.
+It uses parses help files written in link::Reference/SCDocSyntax##SCDoc markup language:: and renders them as human-readable documents.
 
 A guide to writing help can be found here: link::Guides/WritingHelp::.
 
-SUBSECTION:: Basic usage
-Get help URL for a specific string:
-code::
-url = SCDoc.prepareHelpForURL(SCDoc.findHelpFile("SinOsc"));
-::
-
 CLASSMETHODS::
-private:: initClass, addToDocMap, makeMethodList, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, readDocMap, addMethodList, findHelpSourceDirs, getAllMetaData, syncNonHelpFiles, maybeWait, checkVersion
 
-method:: p
-The default link::Classes/SCDocParser:: object, created automatically.
-method:: r
-The default link::Classes/SCDocRenderer:: object, created automatically. Defaults to an instance of link::Classes/SCDocHTMLRenderer::
+subsection:: Document index
+
+method:: indexAllDocuments
+Index all documents and undocumented classes on the system, putting them in the code::SCDoc.documents:: dictionary. If run inside a Routine, this method will yield occasionally.
+
+Run this method if you added a new document and want to see the changes without restarting SuperCollider.
+discussion::
+This will take a couple of seconds, and will be done automatically once before any help can be viewed. You might consider putting this in your startup.scd file to avoid getting this delay later when you decide to view a helpfile.
+
+method:: documents
+The dictionary of indexed documents. They keys are the path relative to the Help folder and without extension, like teletype::Classes/SinOsc:: or teletype::Reference/SCDocSyntax::. The values are instances of link::Classes/SCDocEntry::
+
+method:: didIndexDocuments
+A Boolean indicating if code::SCDoc.indexAllDocuments:: was called in this session yet.
 
 method:: helpSourceDir
-get/set the system-wide directory of help sourcefiles. Defaults to code::thisProcess.platform.classLibraryDir.dirname +/+ "HelpSource"::
+get/set the system-wide directory of help sourcefiles. Defaults to code::Platform.classLibraryDir.dirname +/+ "HelpSource":: and should typically not be changed by the user.
 
 method:: helpSourceDirs
 get the list of HelpSource folders, including extensions and quarks.
 discussion::
-This searches recursively for all folders named "HelpSource" under code::thisProcess.platform.userExtensionDir:: and code::thisProcess.platform.systemExtensionDir:: as well as including the system-wide code::helpSourceDir::
+This searches recursively for all folders named "HelpSource" under code::Platform.userExtensionDir:: and code::Platform.systemExtensionDir:: as well as including the system-wide code::helpSourceDir::
+
+method:: findHelpFile
+Find help for a given string. Tries to be smart.
+returns:: the URL for help on given string
+
+method:: verbosity
+Verbosity level. 0 is silent.
+
+subsection:: Parsing and Rendering
+
+private:: checkVersion, exportDocMapJS, handleCopyMethods, postMsg, prParseFile, renderUndocClass
+
+method:: renderer
+The default renderer, defaults to link::Classes/SCDocHTMLRenderer::
 
 method:: helpTargetDir
-get/set the user help target directory. Defaults to code::thisProcess.platform.userAppSupportDir +/+ "Help"::
+get/set the user help target directory. Defaults to code::Platform.userAppSupportDir +/+ "Help":: and should typically not be changed by the user.
 
-method:: undocumentedClasses
-A set of all undocumented classes.
+method:: parseFileFull
+Parse file.
+argument::
+Full path to .schelp file
+returns::
+An link::Classes/SCDocNode:: tree
 
-method:: verbose
-If code::true::, print progress status messages to post window.
+method:: parseFileMetaData
+Parse only the stuff needed for metadata.
+argument::
+Base HelpSource directory.
+argument::
+Path relative above dir.
+returns::
+An link::Classes/SCDocNode:: tree
 
-subsection:: Main interface
+method:: parseFilePartial
+Parse a file without header, for merging of document additions
+argument::
+Full path to .ext.schelp file
+returns::
+An link::Classes/SCDocNode:: tree
+
+method:: parseDoc
+Parse the files associated with an link::Classes/SCDocEntry::, including any document additions (teletype::*.ext.schelp::)
+argument:: doc
+The link::Classes/SCDocEntry:: to parse.
+returns::
+An link::Classes/SCDocNode:: tree
+
+method:: parseAndRender
+Parse and render a specific document.
+argument:: doc
+The link::Classes/SCDocEntry:: to parse and render.
+
+method:: renderAll
+Render all help-files. Useful mainly if you want to render all help to put online or similar.
 
 method:: prepareHelpForURL
 Prepare help for the given URL by checking if the file needs rendering from schelp source, or some other action needs to be done.
-Use this as a wrapper to get on-the-fly rendering and processing of help files.
-If called from a routine, do some code::0.wait:: while running to give the GUI a chance to respond.
+Used as a wrapper to get on-the-fly rendering and processing of help files.
 argument:: url
 The url to prepare. If this is not a local file inside link::#*helpTargetDir:: then it will just pass through the url directly.
 returns:: the URL or nil if file not found.
 
-method:: findHelpFile
-Find help for a given string. This method redirects to the instance method code::findHelpFile:: on the current renderer object.
-returns:: the URL for help on given string
-
-subsection:: Render all or specific files
-
-method:: renderAll
-Render all help-files that need updating and generate overviews and cached metadata index. This can take several minutes. Useful mainly if you want to render all help to put online or similar.
-argument:: force
-Force updating of all files.
-argument:: threaded
-When true, runs the process in a link::Classes/Routine:: on link::Classes/AppClock::. This is needed to get progress feedback when running inside a frontend like the SuperCollider app on OSX. If running with the sclang terminal client, this can be set to false for better performance.
-argument:: findExtensions
-If false, don't search for extensions (useful when building base help)
-argument:: doneFunc
-Function to evaluate when done.
-discussion::
-It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::.
-
-method:: parseAndRender
-Parse and render a specific file.
-argument:: src
-The .schelp source document file, must be full path.
-argument:: dest
-The destination target file ( .html if current renderer is link::Classes/SCDocHTMLRenderer:: ), must be full path.
-argument:: kind
-The document "kind", like Classes, Reference, Overviews, Guides. Should be the same as the parent folder name of both code::src:: and code::dest::
-
-subsection:: Cached map of documents
-SCDoc keeps a dictionary where each document is represented by an link::Classes/Event:: with the keys code::path, title, categories, summary, installed::.
-
-SCDoc also writes the document map in JSON format to code::helpTargetDir/docmap.js::.
-
-method:: docMap
-Returns the internal dictionary of documents.
-returns:: An internal link::Classes/Dictionary::, it will be empty if there was no docmap cache file.
-discussion::
-If the document map cache was not already read from file, it's first read from file if existent.
-The returned Dictionary is indexed by the documents path relative helpSourceDir, and without file suffix. Like code::Classes/SCDoc::.
-
-This dictionary is cached in code::helpTargetDir/scdoc_cache::.
-
-method:: makeCategoryMap
-Creates a dictionary of all categories, with a list of documents for each category.
-returns:: A link::Classes/Dictionary:: of all documents grouped by category.
-discussion:: The keys are category symbols, and each value is a link::Classes/List:: of Events representing each document.
-
-method:: cleanState
-Reset the state so that next time link::#*prepareHelpForURL:: is called, SCDoc will collect any newly added HelpSource files and undocumented classes.
-argument:: noCache
-If true, don't read doc map cache from file and discard any old rendered files. This makes sure that every file is re-rendered, even if there was already a rendered help file. This is similar to starting with an empty Help folder.
-
 subsection:: Utilities
+
+method:: getMethodDoc
+Extract the link::Classes/SCDocNode:: tree for the specified method documentation.
+argument::
+Name of class
+argument::
+Name of method, prefixed with teletype::*:: for classmethods and teletype::-:: for instancemethods.
+returns::
+An link::Classes/SCDocNode:: tree
 
 method:: makeClassTemplate
 Create a schelp template for specified class.
-argument:: name
-String or Symbol. The name of the class.
-argument:: path
-File to render the help stub and template to, used internally by SCDoc. Just pass nil (default) to return the template string.
+argument:: doc
+The link::Classes/SCDocEntry:: for the undocumented class.
 returns::
-If path was given, true or false. If not given, returns the template string.
-
-method:: splitList
-Split a comma-separated string into an array of whitespace-stripped strings, useful to parse the contents of tags like code::categories\:::: and code::related\::::.
-argument:: txt
-The string to split.
-returns:: An link::Classes/Array:: of whitespace-stripped strings.
+Returns the template string.
 
 method:: classHasArKrIr
 argument:: c
 The link::Classes/Class:: to check.
 Returns:: code::true:: if the class responds to ar, kr or ir classmethods.
 
-method:: findHelpSource
-Find the helpsource for a help path, if existent.
-argument:: subtarget
-The sub-path for a help file, like "Guides/WritingHelp" or "Classes/SinOsc".
-returns:: The path to the .schelp file, or nil if no file found.
-discussion::
-Example:
-code::
-SCDoc.findHelpSource("Classes/SCDoc"); // a path
-SCDoc.findHelpSource("NoSuch/File"); // nil
-::
