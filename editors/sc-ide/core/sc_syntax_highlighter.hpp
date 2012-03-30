@@ -146,14 +146,19 @@ class SyntaxHighlighter:
 public:
     struct BracketInfo
     {
+        BracketInfo() {}
         BracketInfo( char c, int pos ) : character(c), position(pos) {}
+        BracketInfo (BracketInfo const & rhs):
+            character(rhs.character), position(rhs.position)
+        {}
+
         char character;
         int position;
     };
 
     struct BlockData : public QTextBlockUserData
     {
-        QVector<BracketInfo*> brackets;
+        QVector<BracketInfo> brackets;
     };
 
 public:

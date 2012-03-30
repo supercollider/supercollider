@@ -230,7 +230,7 @@ void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentI
         static QString brackets("(){}[]");
 
         if (brackets.contains(text[currentIndex])) {
-            blockData->brackets.append( new BracketInfo(text[currentIndex].toAscii(), currentIndex) );
+            blockData->brackets.append( BracketInfo(text[currentIndex].toAscii(), currentIndex) );
             ++currentIndex;
             continue;
         }

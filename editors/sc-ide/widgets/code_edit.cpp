@@ -314,15 +314,15 @@ void CodeEditor::matchBracket( const QTextBlock & block, int pos, BracketMatch &
     int n = data->brackets.size();
     for( int i = 0; i < n; ++i )
     {
-        SyntaxHighlighter::BracketInfo *bracket = data->brackets[i];
-        if(bracket->position == pos - 1 || bracket->position == pos)
+        SyntaxHighlighter::BracketInfo const & bracket = data->brackets[i];
+        if(bracket.position == pos - 1 || bracket.position == pos)
         {
-            match.pos = bracket->position + block.position();
+            match.pos = bracket.position + block.position();
 
             static QString lbrackets("([{");
             static QString rbrackets(")]}");
 
-            char c = bracket->character;
+            char c = bracket.character;
             int b;
             if((b = lbrackets.indexOf(c)) != -1)
                 matchLeftBracket( c, rbrackets[b].toAscii(), block, i, match );
@@ -356,13 +356,13 @@ void CodeEditor::matchRightBracket
 
             for(; i >= 0; --i)
             {
-                SyntaxHighlighter::BracketInfo *bracket = data->brackets[i];
-                if(bracket->character == cc)
+                SyntaxHighlighter::BracketInfo const & bracket = data->brackets[i];
+                if(bracket.character == cc)
                     --level;
-                else if(bracket->character == c)
+                else if(bracket.character == c)
                     ++level;
                 if(level == 0) {
-                    match.matchPos = bracket->position + b.position();
+                    match.matchPos = bracket.position + b.position();
                     return;
                 }
             }
@@ -393,13 +393,13 @@ void CodeEditor::matchLeftBracket
 
             for(; i < n; ++i)
             {
-                SyntaxHighlighter::BracketInfo *bracket = data->brackets[i];
-                if(bracket->character == cc)
+                SyntaxHighlighter::BracketInfo const & bracket = data->brackets[i];
+                if(bracket.character == cc)
                     --level;
-                else if(bracket->character == c)
+                else if(bracket.character == c)
                     ++level;
                 if(level == 0) {
-                    match.matchPos = bracket->position + b.position();
+                    match.matchPos = bracket.position + b.position();
                     return;
                 }
             }
