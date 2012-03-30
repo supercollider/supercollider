@@ -50,6 +50,9 @@ struct SyntaxRule
 {
     enum Type
     {
+        Identifier,
+        WhiteSpace,
+
         Keyword,
         Builtin,
         Primitive,

@@ -84,9 +84,6 @@ void SyntaxHighlighterGlobals::initHighlightFormats()
 
 void SyntaxHighlighterGlobals::initSyntaxRules()
 {
-    initKeywords();
-    initBuiltins();
-
     /* NOTE:
 
     The highlighting algorithm demands that all regexps
@@ -98,7 +95,14 @@ void SyntaxHighlighterGlobals::initSyntaxRules()
 
     */
 
+    mInCodeRules << SyntaxRule( SyntaxRule::WhiteSpace, "^\\s+" );
+
+    initKeywords();
+    initBuiltins();
+
     mInCodeRules << SyntaxRule( SyntaxRule::SymbolArg, "^\\b[A-Za-z_]\\w*\\:" );
+
+    mInCodeRules << SyntaxRule( SyntaxRule::Identifier, "^[a-z]\\w*" );
 
     mInCodeRules << SyntaxRule( SyntaxRule::Class, "^\\b[A-Z]\\w*" );
 
@@ -116,7 +120,7 @@ void SyntaxHighlighterGlobals::initSyntaxRules()
 
     // do not include leading "-" in float highlighting, as there's no clear
     // rule whether it is not rather a binary operator
-    mInCodeRules << SyntaxRule( SyntaxRule::Float, "^\\b((\\d+\\.?\\d+([eE][-+]?\\d+)?(pi)?)|pi)" );
+    mInCodeRules << SyntaxRule( SyntaxRule::Float, "^\\b((\\d+(\\.\\d+)?([eE][-+]?\\d+)?(pi)?)|pi)" );
 
     mInCodeRules << SyntaxRule( SyntaxRule::HexInt, "^\\b0(x|X)(\\d|[a-f]|[A-F])+" );
 
