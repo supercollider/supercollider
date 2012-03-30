@@ -865,7 +865,7 @@ HOT int blockValue(struct VMGlobals *g, int numArgsPushed)
 	block = slotRawBlock(&closure->block);
 	context = slotRawFrame(&closure->context);
 
-	proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : 0;
+	proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
 	caller = g->frame;
@@ -999,7 +999,8 @@ int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 	block = slotRawBlock(&closure->block);
 	context = slotRawFrame(&closure->context);
 
-	proto = slotRawObject(&block->prototypeFrame);
+	proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
+
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
 	caller = g->frame;
@@ -1161,7 +1162,8 @@ int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 	block = slotRawBlock(&closure->block);
 	context = slotRawFrame(&closure->context);
 
-	proto = slotRawObject(&block->prototypeFrame);
+	proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
+
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
 	caller = g->frame;
@@ -1309,7 +1311,8 @@ int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushe
 	block = slotRawBlock(&closure->block);
 	context = slotRawFrame(&closure->context);
 
-	proto = slotRawObject(&block->prototypeFrame);
+	proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
+
 	methraw = METHRAW(block);
 	numtemps = methraw->numtemps;
 	caller = g->frame;
