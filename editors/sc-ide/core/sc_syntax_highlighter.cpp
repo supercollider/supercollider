@@ -112,11 +112,11 @@ void SyntaxHighlighterGlobals::initSyntaxRules()
 
     mInCodeRules << SyntaxRule( SyntaxRule::EnvVarRule, "^~\\w+" );
 
-    mInCodeRules << SyntaxRule( SyntaxRule::RadixFloatRule, "^\\b(\\d)+r(\\d|[a-zA-Z])+(.(\\d|[a-zA-Z]))?" );
+    mInCodeRules << SyntaxRule( SyntaxRule::RadixFloatRule, "^\\b\\d+r[0-9a-zA-Z]*(\\.[0-9A-Z]*)?" );
 
     // do not include leading "-" in float highlighting, as there's no clear
     // rule whether it is not rather a binary operator
-    mInCodeRules << SyntaxRule( SyntaxRule::FloatRule, "^\\b((\\d*\\.?\\d+([eE][-+]?\\d+)?(pi)?)|pi)" );
+    mInCodeRules << SyntaxRule( SyntaxRule::FloatRule, "^\\b((\\d+\\.?\\d+([eE][-+]?\\d+)?(pi)?)|pi)" );
 
     mInCodeRules << SyntaxRule( SyntaxRule::HexIntRule, "^\\b0(x|X)(\\d|[a-f]|[A-F])+" );
 
