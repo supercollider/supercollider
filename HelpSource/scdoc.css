@@ -459,6 +459,10 @@ td p {
     color: #777;
 }
 
+li {
+    padding-bottom: 0.5em;
+}
+
 ul.toc {
     list-style-type: none;
     margin: 0;
