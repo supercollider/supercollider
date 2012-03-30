@@ -50,26 +50,26 @@ struct SyntaxRule
 {
     enum Type
     {
-        SymbolArgRule,
-        ClassRule,
-        KeywordRule,
-        BuiltinRule,
-        PrimitiveRule,
-        SymbolRule,
-        StringRule,
-        CharRule,
-        RadixFloatRule,
-        FloatRule,
-        HexIntRule,
-        EnvVarRule,
+        Keyword,
+        Builtin,
+        Primitive,
+        Class,
+        Symbol,
+        String,
+        Char,
+        RadixFloat,
+        Float,
+        HexInt,
+        EnvVar,
+        SymbolArg,
 
-        SingleLineCommentRule,
-        MultiLineCommentStartRule,
+        SingleLineComment,
+        MultiLineCommentStart,
 
-        NoRule
+        None
     };
 
-    SyntaxRule(): type(NoRule) {}
+    SyntaxRule(): type(None) {}
     SyntaxRule( Type t, const QString &s ): type(t), expr(s) {}
 
     Type type;
