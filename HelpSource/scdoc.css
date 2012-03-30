@@ -257,10 +257,10 @@ h1 {
 
 h2 {
     border-bottom: 2px solid #ccc;
-    margin-top: 1.5em;
+    margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
-    font-size: 1.8em;
+    font-size: 1.7em;
 }
 
 h3 {
@@ -281,19 +281,24 @@ dt {
     font-weight: bold;
 }
 dd {
-    margin-bottom: 1em;
+    margin-top: 0.25em;
+    margin-bottom: 1.25em;
+}
+
+code, pre {
+    font-family: monospace;
+    font-size: 9pt;
+}
+
+pre {
+    border-left: 2px solid #e0e0e0;
+    padding-left: 1em;
 }
 
 code.code, pre.code {
-    font-family: monospace;
-    font-size: 9pt;
-    color: #121;
 }
 
 pre.code {
-    font-size: 9pt;
-    border-left: 2px solid #e0e0e0;
-    padding-left: 1em;
 
 }
 
