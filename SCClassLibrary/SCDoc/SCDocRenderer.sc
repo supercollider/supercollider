@@ -523,6 +523,16 @@ SCDocHTMLRenderer {
                 } {
                     // FIXME: check that the name match?
                     stream << if(currentMethod.isNil or: {currArg < currentMethod.argNames.size}) {
+                        if(currentMethod.notNil and: {currentMethod.argNames[currArg] != node.text.asSymbol}) {
+                            "SCDoc: In %\n"
+                            "       Method %% has arg named '%', but doc has 'argument:: %'.".format(
+                                currDoc.fullPath,
+                                if(currentMethod.ownerClass.isMetaClass) {"*"} {"-"},
+                                currentMethod.name,
+                                currentMethod.argNames[currArg],
+                                node.text,
+                            ).warn;
+                        };
                         node.text;
                     } {
                         "("++node.text++")" // excessive arg
