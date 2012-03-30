@@ -158,7 +158,7 @@ public:
 
     struct BlockData : public QTextBlockUserData
     {
-        QVector<BracketInfo> brackets;
+        std::vector<BracketInfo> brackets;
     };
 
 public:
