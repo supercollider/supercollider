@@ -229,25 +229,29 @@ void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentI
 
     do {
         static QString brackets("(){}[]");
+        static QChar stringStart('\"');
+        static QChar symbolStart('\'');
 
-        if (brackets.contains(text[currentIndex])) {
-            blockData->brackets.append( BracketInfo(text[currentIndex].toAscii(), currentIndex) );
-            ++currentIndex;
-            continue;
-        }
+        QChar currentChar = text[currentIndex];
 
-        if (text[currentIndex] == '\"') {
+        if (currentChar == stringStart) {
             currentState = inString;
             setFormat(currentIndex, 1, formats[StringFormat]);
             currentIndex += 1;
             return;
         }
 
-        if (text[currentIndex] == '\'') {
+        if (currentChar == symbolStart) {
             currentState = inSymbol;
             setFormat(currentIndex, 1, formats[SymbolFormat]);
             currentIndex += 1;
             return;
+        }
+
+        if (brackets.contains(text[currentIndex])) {
+            blockData->brackets.append( BracketInfo(currentChar.toAscii(), currentIndex) );
+            ++currentIndex;
+            continue;
         }
 
         int lenghtOfMatch;
@@ -335,7 +339,8 @@ void SyntaxHighlighter::highlightBlockInString(const QString& text, int& current
         return;
     }
 
-    if (text[currentIndex] == QChar('\"'))
+    static const QChar endOfString('\"');
+    if (text[currentIndex] == endOfString)
         currentState = inCode;
 
     setFormat(currentIndex, 1, mGlobals->format(StringFormat));
@@ -414,6 +419,7 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
     BlockData *blockData = static_cast<BlockData*>(currentBlockUserData());
     if(!blockData) {
         blockData = new BlockData;
+        blockData->brackets.reserve(8);
         setCurrentBlockUserData(blockData);
     }
     else {
