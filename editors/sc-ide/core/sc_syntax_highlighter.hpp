@@ -97,6 +97,7 @@ class SyntaxHighlighter:
 
     enum SyntaxRule
     {
+        SymbolArgRule,
         ClassRule,
         KeywordRule,
         BuiltinRule,
@@ -104,11 +105,10 @@ class SyntaxHighlighter:
         SymbolRule,
         StringRule,
         CharRule,
+        RadixFloatRule,
         FloatRule,
         HexIntRule,
-        RadixFloatRule,
         EnvVarRule,
-        SymbolArgRule,
 
         SingleLineCommentRule,
         MultiLineCommentStartRule,
@@ -155,6 +155,7 @@ private:
         commentStartRegexp, commentEndRegexp, singleLineCommentRegexp, envVarRegexp, symbolArgRegexp;
 
     const SyntaxHighlighterGlobals *mGlobals;
+    QVector<QRegExp> mRegexps;
 };
 
 }
