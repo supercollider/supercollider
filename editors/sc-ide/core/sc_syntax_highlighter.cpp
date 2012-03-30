@@ -377,19 +377,42 @@ void SyntaxHighlighter::highlightBlockInComment(const QString& text, int& curren
     int index = currentIndex;
     int maxIndex = text.size() - 1;
 
-    while(index < maxIndex)
-    {
-        if (text[index] == '/' && text[index+1] == '*') {
-            ++currentState;
-            index += 2;
-        }
-        else if (text[index] == '*' && text[index+1] == '/') {
-            --currentState;
-            index += 2;
-        }
-        else
-            index += 1;
+    static const QString commentStart("/*");
+    static const QString commentEnd("*/");
 
+    int commentStartIndex = -2;
+    int commentEndIndex   = -2;
+
+    while(index < maxIndex) {
+        if ((commentStartIndex == -2) || (commentStartIndex < index))
+            if (commentStartIndex != -1)
+                commentStartIndex = text.indexOf(commentStart, index);
+
+        if ((commentEndIndex == -2) || (commentEndIndex < index))
+            if (commentEndIndex != -1)
+                commentEndIndex   = text.indexOf(commentEnd, index);
+
+        if (commentStartIndex == -1) {
+            if (commentEndIndex == -1) {
+                index = maxIndex;
+            } else {
+                index = commentEndIndex + 2;
+                --currentState;
+            }
+        } else {
+            if (commentEndIndex == -1) {
+                index = commentStartIndex + 2;
+                ++currentState;
+            } else {
+                if (commentStartIndex < commentEndIndex) {
+                    index = commentStartIndex + 2;
+                    ++currentState;
+                } else {
+                    index = commentEndIndex + 2;
+                    --currentState;
+                }
+            }
+        }
         if (currentState < inComment) {
             currentState = inCode;
             break;
