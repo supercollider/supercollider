@@ -203,8 +203,10 @@ SyntaxRule::Type SyntaxHighlighter::findMatchingRule (const QString& text, int& 
     int matchLength = -1;
     SyntaxRule::Type matchRule = SyntaxRule::None;
 
-    for (QVector<SyntaxRule>::const_iterator it = mGlobals->mInCodeRules.constBegin();
-         it != mGlobals->mInCodeRules.constEnd(); ++it) {
+    QVector<SyntaxRule>::const_iterator it  = mGlobals->mInCodeRules.constBegin();
+    QVector<SyntaxRule>::const_iterator end = mGlobals->mInCodeRules.constEnd();
+
+    for (; it != end; ++it) {
         SyntaxRule const & rule = *it;
         int matchIndex = rule.expr.indexIn(text, currentIndex, QRegExp::CaretAtOffset);
         // a guard to ensure all regexps match only at beginning of string:
@@ -249,7 +251,7 @@ void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentI
         }
 
         if (brackets.contains(text[currentIndex])) {
-            blockData->brackets.append( BracketInfo(currentChar.toAscii(), currentIndex) );
+            blockData->brackets.push_back( BracketInfo(currentChar.toAscii(), currentIndex) );
             ++currentIndex;
             continue;
         }
