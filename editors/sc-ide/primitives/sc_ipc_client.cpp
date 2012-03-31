@@ -97,13 +97,14 @@ public:
 private:
     void serialize(PyrSlot * slot)
     {
+        if (IsFloat(slot)) {
+            emitter << slotRawFloat(slot);
+            return;
+        }
+
         switch (GetTag(slot)) {
             case tagInt:
                 emitter << slotRawInt(slot);
-                return;
-
-            case tagFloat:
-                emitter << slotRawFloat(slot);
                 return;
 
             case tagObj:
