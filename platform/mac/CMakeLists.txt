@@ -135,9 +135,6 @@ file(GLOB boost_fs_sources ${CMAKE_SOURCE_DIR}/external_libraries/boost/libs/fil
 file(GLOB boost_regex_sources ${CMAKE_SOURCE_DIR}/external_libraries/boost/libs/regex/src/*cpp)
 list(APPEND scapp_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
 
-file(GLOB yaml_sources ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/src/*cpp)
-list(APPEND scapp_sources ${yaml_sources})
-
 if(SC_QT)
 	include(${CMAKE_SOURCE_DIR}/QtCollider/CMakeLists.txt)
 	list(APPEND scapp_sources ${QT_COLLIDER_SRCS})
@@ -229,6 +226,7 @@ set_property(TARGET ${scappbundlename}
 
 target_link_libraries(${scappbundlename} icucore)
 target_link_libraries(${scappbundlename} boost_thread)
+target_link_libraries(${scappbundlename} yaml)
 
 target_link_libraries(${scappbundlename} "-framework ApplicationServices")
 target_link_libraries(${scappbundlename} "-framework Carbon")
