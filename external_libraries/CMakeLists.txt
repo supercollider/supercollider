@@ -60,3 +60,8 @@ if(LTO)
 	set_property(TARGET boost_thread
 				APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
+
+# yaml-cpp
+include_directories(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
+aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/src yaml_src)
+add_library(yaml STATIC ${yaml_src})

@@ -79,9 +79,6 @@ file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/v3/src/*c
 file(GLOB boost_regex_sources ../external_libraries/boost/libs/regex/src/*cpp)
 list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
 
-file(GLOB yaml_sources ../external_libraries/yaml-cpp-0.3.0/src/*cpp)
-list(APPEND sclang_sources ${yaml_sources})
-
 if(NOT WIN32)
 	list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
 endif()
@@ -262,7 +259,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
 
-target_link_libraries(libsclang ${PTHREADS_LIBRARY} boost_thread)
+target_link_libraries(libsclang ${PTHREADS_LIBRARY} boost_thread yaml)
 
 if(SC_QT)
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
