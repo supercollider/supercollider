@@ -142,7 +142,7 @@ typedef union pyrslot {
 	copy the double field, not the struct.
 */
 
-inline int GetTag(PyrSlot* slot) { return slot->utag; }
+inline int GetTag(const PyrSlot* slot) { return slot->utag; }
 
 /* some macros for setting values of slots */
 inline void SetInt(PyrSlot* slot, int val)    {  (slot)->utag = tagInt;  (slot)->ui = (val); }
@@ -173,32 +173,32 @@ inline void SetFloat(PyrSlot* slot, double val)    { (slot)->utag = s_float; (sl
 #endif
 
 
-inline bool IsObj(PyrSlot* slot) { return ((slot)->utag == tagObj); }
-inline bool NotObj(PyrSlot* slot) { return ((slot)->utag != tagObj); }
+inline bool IsObj(const PyrSlot* slot) { return ((slot)->utag == tagObj); }
+inline bool NotObj(const PyrSlot* slot) { return ((slot)->utag != tagObj); }
 
-inline bool IsNil(PyrSlot* slot) { return ((slot)->utag == tagNil); }
-inline bool NotNil(PyrSlot* slot) { return ((slot)->utag != tagNil); }
+inline bool IsNil(const PyrSlot* slot) { return ((slot)->utag == tagNil); }
+inline bool NotNil(const PyrSlot* slot) { return ((slot)->utag != tagNil); }
 
-inline bool IsFalse(PyrSlot* slot) { return ((slot)->utag == tagFalse); }
-inline bool IsTrue(PyrSlot* slot) { return ((slot)->utag == tagTrue); }
+inline bool IsFalse(const PyrSlot* slot) { return ((slot)->utag == tagFalse); }
+inline bool IsTrue(const PyrSlot* slot) { return ((slot)->utag == tagTrue); }
 
 inline bool SlotEq(PyrSlot* a, PyrSlot* b) { return ((a)->ui == (b)->ui && (a)->utag == (b)->utag); }
 
-inline bool IsSym(PyrSlot* slot) { return ((slot)->utag == tagSym); }
-inline bool NotSym(PyrSlot* slot) { return ((slot)->utag != tagSym); }
+inline bool IsSym(const PyrSlot* slot) { return ((slot)->utag == tagSym); }
+inline bool NotSym(const PyrSlot* slot) { return ((slot)->utag != tagSym); }
 
-inline bool IsChar(PyrSlot* slot) { return ((slot)->utag == tagChar); }
-inline bool NotChar(PyrSlot* slot) { return ((slot)->utag != tagChar); }
+inline bool IsChar(const PyrSlot* slot) { return ((slot)->utag == tagChar); }
+inline bool NotChar(const PyrSlot* slot) { return ((slot)->utag != tagChar); }
 
-inline bool IsInt(PyrSlot* slot) { return ((slot)->utag == tagInt); }
-inline bool NotInt(PyrSlot* slot) { return ((slot)->utag != tagInt); }
+inline bool IsInt(const PyrSlot* slot) { return ((slot)->utag == tagInt); }
+inline bool NotInt(const PyrSlot* slot) { return ((slot)->utag != tagInt); }
 
 inline bool IsFloatTag(int tag)  { return ((tag & 0xFFFFFFF0) != 0x7FF90000); }
-inline bool IsFloat(PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) != 0x7FF90000); }
-inline bool NotFloat(PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) == 0x7FF90000); }
+inline bool IsFloat(const PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) != 0x7FF90000); }
+inline bool NotFloat(const PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) == 0x7FF90000); }
 
-inline bool IsPtr(PyrSlot* slot) { return ((slot)->utag == tagPtr); }
-inline bool NotPtr(PyrSlot* slot) { return ((slot)->utag != tagPtr); }
+inline bool IsPtr(const PyrSlot* slot) { return ((slot)->utag == tagPtr); }
+inline bool NotPtr(const PyrSlot* slot) { return ((slot)->utag != tagPtr); }
 
 inline void SetRawChar(PyrSlot* slot, int val) { assert(IsChar(slot)); slot->uc = val; }
 inline void SetRaw(PyrSlot* slot, int val) { assert(IsInt(slot)); slot->ui = val; }
@@ -313,19 +313,19 @@ inline PyrSymbol* slotRawSymbol(PyrSlot *slot)
 	return slot->s.u.s;
 }
 
-inline int slotRawChar(PyrSlot *slot)
+inline int slotRawChar(const PyrSlot *slot)
 {
 	assert(IsChar(slot));
 	return slot->s.u.c;
 }
 
-inline int slotRawInt(PyrSlot *slot)
+inline int slotRawInt(const PyrSlot *slot)
 {
 	assert(IsInt(slot));
 	return slot->s.u.i;
 }
 
-inline double slotRawFloat(PyrSlot *slot)
+inline double slotRawFloat(const PyrSlot *slot)
 {
 	assert(IsFloat(slot));
 	return slot->uf;
@@ -337,14 +337,14 @@ inline PyrObject* slotRawObject(PyrSlot *slot)
 	return slot->s.u.o;
 }
 
-inline void slotCopy(PyrSlot *dst, PyrSlot *src)
+inline void slotCopy(PyrSlot *dst, const PyrSlot *src)
 {
 	double *dstp = (double*)dst;
 	double *srcp = (double*)src;
 	*dstp = *srcp;
 }
 
-inline void slotCopy(PyrSlot *dst, PyrSlot *src, int num)
+inline void slotCopy(PyrSlot *dst, const PyrSlot *src, int num)
 {
 	double *dstp = (double*)dst - 1;
 	double *srcp = (double*)src - 1;
