@@ -97,13 +97,14 @@ PyrSymbol* getPrimitiveName(int index)
 	return gPrimitiveTable.table[index].name;
 }
 
-int slotStrLen(PyrSlot *slot) {
-        if (IsSym(slot)) {
-                return slotRawSymbol(slot)->length;
-        } else if (isKindOfSlot(slot, class_string)) {
-                return slotRawObject(slot)->size;
-        }
-        return -1;
+int slotStrLen(PyrSlot *slot)
+{
+	if (IsSym(slot))
+		return slotRawSymbol(slot)->length;
+	if (isKindOfSlot(slot, class_string))
+		return slotRawObject(slot)->size;
+
+	return -1;
 }
 
 int slotStrVal(PyrSlot *slot, char *str, int maxlen)

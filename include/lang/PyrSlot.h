@@ -57,6 +57,7 @@ int slotIntVal(PyrSlot* slot, int *value);
 int slotFloatVal(PyrSlot* slot, float *value);
 int slotDoubleVal(PyrSlot *slot, double *value);
 int slotStrVal(PyrSlot *slot, char *str, int maxlen);
+int slotStrLen(PyrSlot *slot);
 int slotPStrVal(PyrSlot *slot, unsigned char *str);
 int slotSymbolVal(PyrSlot *slot, PyrSymbol **symbol);
 
