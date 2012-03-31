@@ -25,6 +25,7 @@
 #include <QtNetwork/QLocalSocket>
 #include <QtNetwork/QLocalServer>
 
+
 namespace ScIDE {
 
 class SCIpcServer:
@@ -32,6 +33,7 @@ class SCIpcServer:
 {
     Q_OBJECT
     QString mIdeName;
+    QLocalSocket * mSocket;
 
 public:
     explicit SCIpcServer( QObject *parent = 0 ):
@@ -41,20 +43,48 @@ public:
         connect(this, SIGNAL(newConnection()), this, SLOT(onNewConnection()));
     }
 
-private Q_SLOTS:
+    QString const & ideName() const
+    {
+        return mIdeName;
+    }
+
     void onSclangStart(void)
     {
         listen(mIdeName);
     }
 
+private Q_SLOTS:
     void onNewConnection(void)
     {
-        QLocalSocket * socket = nextPendingConnection();
-        connect(socket, SIGNAL(disconnected()),
-                socket, SLOT(deleteLater()));
+        mSocket = nextPendingConnection();
+        connect(mSocket, SIGNAL(disconnected()),
+                mSocket, SLOT(deleteLater()));
+        connect(mSocket, SIGNAL(readyRead()), this, SLOT(readDataFromSocket()));
+    }
 
-        QByteArray dataFromClient = socket->readAll();
-        // TODO: dispatch messages from sclang, possibly respond
+    void readDataFromSocket()
+    {
+        QByteArray data = mSocket->readAll();
+
+        for (;;) {
+            QDataStream in(&data, QIODevice::ReadOnly);
+            in.setVersion(QDataStream::Qt_4_6);
+
+            QString selector, message;
+            in >> selector;
+            in >> message;
+            if (in.status() != QDataStream::Ok) {
+                bool readSuccessful = mSocket->waitForReadyRead();
+                if (!readSuccessful) {
+                    qDebug("readDataFromSocket: problem reading large message");
+                    return;
+                }
+                data.append(mSocket->readAll());
+                continue;
+            }
+            qDebug("readDataFromSocket %s %s", selector.toStdString().c_str(), message.toStdString().c_str());
+            return;
+        }
     }
 };
 

@@ -61,4 +61,21 @@ Main::Main(void) :
     mSettings = new QSettings( settingsFile, settingsFormat(), this );
 
     new SyntaxHighlighterGlobals(this);
+
+    connect(mSCProcess, SIGNAL(scStarted()), this, SLOT(onSclangStart()));
 }
+
+void Main::onSclangStart()
+{
+    mSCIpcServer->onSclangStart();
+
+    QString command = QString ( "ScIDE.connect(\"" ) + mSCIpcServer->ideName() + QString ( "\")" );
+    mSCProcess->evaluateCode ( command, false);
+
+    QString command2 ( "ScIDE.getAllClasses" );
+    mSCProcess->evaluateCode ( command2, false );
+
+    QString command3 ( "ScIDE.getSymbolTable" );
+    mSCProcess->evaluateCode ( command3, false );
+}
+

@@ -165,6 +165,10 @@ endif()
 include(../SCDoc/CMakeLists.txt)
 list(APPEND sclang_sources ${SCDOC_SRCS})
 
+if(SC_IDE)
+	add_definitions(-DSC_IDE)
+	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
+endif()
 
 if(SC_QT)
 	set(QT_COLLIDER_LANG_CLIENT ON)

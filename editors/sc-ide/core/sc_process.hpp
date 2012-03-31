@@ -47,6 +47,7 @@ public:
 
 signals:
     void scPost(QString const &);
+    void scStarted();
 
 public slots:
     void start (void);

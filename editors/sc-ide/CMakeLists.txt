@@ -80,4 +80,3 @@ if(APPLE)
 elseif(WIN32)
     target_link_libraries( scide wsock32 )
 endif()
-
