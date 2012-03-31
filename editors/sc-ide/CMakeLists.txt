@@ -83,3 +83,17 @@ elseif(WIN32)
     # when the executable is started:
     set_target_properties( scide PROPERTIES WIN32_EXECUTABLE TRUE )
 endif()
+
+# Installation
+
+if(APPLE)
+    # no-op for now
+elseif(WIN32)
+	install(TARGETS scide
+			DESTINATION "SuperCollider"
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+else()
+	install(TARGETS scide
+			RUNTIME DESTINATION "bin"
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+endif()
