@@ -79,4 +79,7 @@ if(APPLE)
 	target_link_libraries( scide "-framework CoreServices")
 elseif(WIN32)
     target_link_libraries( scide wsock32 )
+    # The following prevents a Windows console from showing up
+    # when the executable is started:
+    set_target_properties( scide PROPERTIES WIN32_EXECUTABLE TRUE )
 endif()
