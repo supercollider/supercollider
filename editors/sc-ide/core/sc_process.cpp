@@ -57,7 +57,8 @@ void SCProcess::start (void)
     if (!processStarted) {
         QString errorMessage ("cannot start sclang process");
         emit scPost(errorMessage);
-    }
+    } else
+        emit scStarted();
 }
 
 } // namespace ScIDE

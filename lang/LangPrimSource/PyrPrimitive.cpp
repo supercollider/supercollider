@@ -4220,7 +4220,12 @@ void initOpenGLPrimitives();
 	QtCollider::initPrimitives();
 #endif
 
-initSCDocPrimitives();
+#ifdef SC_IDE
+	void initScIDEPrimitives();
+	initScIDEPrimitives();
+#endif
+
+	initSCDocPrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
 	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());

@@ -175,6 +175,7 @@ option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(INSTALL_OLD_HELP "Install old and deprecated help files" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
+option(SC_IDE "Build Qt IDE." OFF)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
@@ -489,4 +490,3 @@ mark_as_advanced(JACK JACK_INCLUDE_DIR JACK_LIBRARY)
 mark_as_advanced(MATH_LIBRARY)
 mark_as_advanced(QT_QMAKE_EXECUTABLE)
 mark_as_advanced(SNDFILE)
-

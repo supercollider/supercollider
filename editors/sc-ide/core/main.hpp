@@ -58,6 +58,8 @@ public Q_SLOTS:
         Q_EMIT(applySettingsRequest(mSettings));
     }
 
+    void onSclangStart();
+
 Q_SIGNALS:
     void storeSettingsRequest(QSettings *);
     void applySettingsRequest(QSettings *);
