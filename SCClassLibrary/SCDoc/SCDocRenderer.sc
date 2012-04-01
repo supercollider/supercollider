@@ -221,6 +221,7 @@ SCDocHTMLRenderer {
         var names = node.children[0].children.collect(_.text);
         var mstat, sym, m, m2, mname2;
         var args1, args2;
+        var x;
         names.do {|mname|
             mname2 = this.escapeSpecialChars(mname);
             if(cls.notNil) {
@@ -253,24 +254,29 @@ SCDocHTMLRenderer {
                 mstat = 1;
             };
 
-            stream << "<h3 class='" << css << "'>"
-            << "<span class='methprefix'>" << (pfx??"&nbsp;") << "</span>"
-            << "<a name='" << (pfx??".") << mname << "' href='"
-            << baseDir << "/Overviews/Methods.html#"
-            << mname2 << "'>" << mname2 << "</a>";
+            x = {
+                stream << "<h3 class='" << css << "'>"
+                << "<span class='methprefix'>" << (pfx??"&nbsp;") << "</span>"
+                << "<a name='" << (pfx??".") << mname << "' href='"
+                << baseDir << "/Overviews/Methods.html#"
+                << mname2 << "'>" << mname2 << "</a>"
+            };
 
-            stream << switch (mstat,
+            switch (mstat,
                 // getter only
-                1, { " "++args++"</h3>\n" },
+                1, { x.value; stream << " " << args << "</h3>\n"; },
                 // setter only
-                2, { " = "++args++"</h3>\n" },
+                2, { x.value; stream << " = " << args << "</h3>\n"; },
                 // getter and setter
-                3, { " [= "++args++"]</h3>\n" },
+                3, {
+                    x.value; stream << "</h3>\n";
+                    x.value; stream << " = " << args << "</h3>\n";
+                },
                 // method not found
                 0, {
                     "SCDoc: In %\n"
                     "       Method %% not found.".format(currDoc.fullPath,pfx,mname2).warn;
-                    ": METHOD NOT FOUND!</h3>\n"
+                    x.value; stream << ": METHOD NOT FOUND!</h3>\n";
                 }
             );
 
