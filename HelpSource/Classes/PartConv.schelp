@@ -21,6 +21,8 @@ argument:: fftsize
 spectral convolution partition size (twice partition size). You must ensure that the blocksize divides the partition size and there are at least two blocks per partition (to allow for amortisation).
 argument:: irbufnum
 prepared buffer of spectra for each partition of the inpulse response.
+argument:: mul
+argument:: add
 
 examples::
 code::

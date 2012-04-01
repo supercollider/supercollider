@@ -36,7 +36,12 @@ the maximum number of overlapping grains that can be used at a given time. This 
 
 warning:: The above parameter is new (post SC 3.3.1) and has the potential to break code written <= 3.3.1. This parameter is BEFORE the mul slot, and you may need to update code to account for this difference. ::
 
+argument:: mul
+
+argument:: add
+
 discussion:: All args except numChannels and trigger are polled at grain creation time.
+
 instancemethods::
 private:: init, argNamesInputsOffset
 

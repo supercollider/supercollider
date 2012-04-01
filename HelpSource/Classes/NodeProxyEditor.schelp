@@ -26,7 +26,7 @@ list::
 ## optional controls for playing / monitoring
 ::
 
-link::Classes/NodeProxy:: and link::Classes/Ndef:: implement an strong::edit:: message, which returns a link::Classes/NodeProxyEditor::. Overview: link::Tutorials/JITLib/JITLib::
+link::Classes/NodeProxy:: and link::Classes/Ndef:: implement an strong::edit:: message, which returns a link::Classes/NodeProxyEditor::. Overview: link::Overviews/JITLib::
 
 ClassMethods::
 

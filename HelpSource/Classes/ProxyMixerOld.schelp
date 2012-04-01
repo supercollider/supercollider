@@ -21,6 +21,9 @@ subsection::Creation
 
 method::new
 
+argument::proxyspace
+a link::Classes/ProxySpace::
+
 argument::nProxies
 the maximum number of proxies you plan to use
 

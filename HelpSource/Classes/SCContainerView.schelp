@@ -1,7 +1,7 @@
 class:: SCContainerView
 summary:: An abstract superclass for container views
 categories:: GUI>Kits>Cocoa
-related:: Classes/CompositeView, Classes/HLayoutView, Classes/VLayoutView, Classes/ScrollView, Classes/SCTopView, Classes/SCScrollTopView
+related:: Classes/CompositeView, Classes/HLayoutView, Classes/VLayoutView, Classes/ScrollView
 
 description::
 Users will not normally directly create instances of ContainerView, but only use it through its subclasses. It provides the basic mechanisms for container views of various kinds, which are used for placing and grouping widgets in a window.

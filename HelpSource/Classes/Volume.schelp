@@ -9,6 +9,8 @@ classmethods::
 method:: new
 Create and return a new instance of Volume for a given server,
 ranging from code::startBus:: over code::numChans:: (usually the server's number of output bus channels).
+argument:: server
+a server
 argument:: startBus
 start bus
 argument:: numChans

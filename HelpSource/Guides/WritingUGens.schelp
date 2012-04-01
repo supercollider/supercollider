@@ -199,7 +199,7 @@ SuperCollider requires an SCLang class in order to build SynthDefs.
 The arguments to the MySaw UGen are code::freq:: and code::iphase::.  The code::multiNew:: method handles multi channel
 expansion.  The code::madd:: method provides support for the mul and add arguments. It will create a MulAdd UGen if
 necessary. You could write the class without mul and add arguments, but providing them makes it more convenient for the
-user. See link::WritingClasses:: for details on writing sclang classes.
+user. See link::Guides/WritingClasses:: for details on writing sclang classes.
 
 code::
 // without mul and add.

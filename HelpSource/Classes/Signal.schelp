@@ -31,7 +31,9 @@ Signal.chebyFill(1000, [0.3, -0.8, 1.1]).plot;
 argument::size
 the number of samples in the Signal.
 argument::amplitudes
-an Array of amplitudes for each Chebyshev polynomial beginning with order 1.
+an link::Classes/Array:: of amplitudes for each Chebyshev polynomial beginning with order 1.
+argument::normalize
+a link::Classes/Boolean::
 
 method::hanningWindow
 Fill a Signal of the given size with a Hanning window.
@@ -320,7 +322,7 @@ x = Signal.sineFill(512, [0, 0, 0, 1]);
 	.plot(numChannels: 9);
 ::
 
-method::neg, abs, sign, squared, cubed, sqrt, exp, log, log2, log10, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, distort, softclip, nyqring, isPositive, isNegative, isStrictlyPositive
+method::neg, abs, sign, squared, cubed, sqrt, exp, log, log2, log10, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, distort, softclip, isPositive, isNegative, isStrictlyPositive
 
 subsection::Binary Messages
 

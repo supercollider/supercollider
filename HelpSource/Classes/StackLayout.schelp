@@ -32,7 +32,7 @@ METHOD:: new
 
     Creates a StackLayout and fills it with the items given as arguments. The first view becomes the current one, i.e. visible and on top of others.
 
-    argument:: items
+    argument:: views
     A sequence of strong::views::. Unlike other layouts, StackLayout can not contain another layout.
 
     discussion::

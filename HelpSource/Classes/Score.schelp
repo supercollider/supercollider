@@ -41,6 +41,9 @@ a link::Classes/String:: indicating the path of the file. The file must contain 
 method::play
 as link::#*new:: but immediately plays it. (See also the instance method below.)
 
+argument::list
+the list.
+
 argument::server
 If no value is supplied it will play on the default link::Classes/Server::.
 
@@ -49,6 +52,9 @@ as link::#*play::, but reads the list from a file.
 
 method::write
 a convenience method to create a binary OSC file for NRT synthesis. Does not create an instance.
+
+argument::list
+the list.
 
 argument::oscFilePath
 a link::Classes/String:: containing the desired path of the OSC file.
@@ -59,11 +65,20 @@ Use clock as a tempo base. code::TempoClock.default:: is used if clock is nil.
 method::writeFromFile
 as link::#*write:: but reads the list from a file.
 
+argument::path
+a path to a file with a list.
+
+argument::oscFilePath
+a link::Classes/String:: containing the desired path of the OSC file.
+
 argument::clock
 Use clock as a tempo base. code::TempoClock.default:: is used if clock is nil.
 
 method::recordNRT
 a convenience method to synthesize strong::list:: in non-realtime. This method writes an OSC file to strong::oscFilePath:: (you have to do your own cleanup if desired) and then starts a server app to synthesize it. For details on valid headerFormats and sampleFormats see link::Classes/SoundFile::. Use code::TempoClock.default:: as a tempo base. Does not return an instance.
+
+argument::list
+the list.
 
 argument::oscFilePath
 the path to which the binary OSC file will be written.
@@ -85,6 +100,10 @@ the sample format of the output file. The default is 'int16'.
 
 argument::options
 an instance of link::Classes/ServerOptions::. If not supplied the options of the default link::Classes/Server:: will be used.
+
+argument::completionString
+
+argument::duration
 
 argument::action
 A function to be evaluated once the NRT server has finished rendering its score.

@@ -14,6 +14,8 @@ classmethods::
 method:: ar, kr
 argument::in
 Input signal to measure.
+argument::mul
+argument::add
 
 examples::
 code::

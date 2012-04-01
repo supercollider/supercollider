@@ -21,6 +21,9 @@ The input signal.
 argument::decayTime
 60 dB decay time in seconds.
 
+argument::mul
+
+argument::add
 
 Examples::
 

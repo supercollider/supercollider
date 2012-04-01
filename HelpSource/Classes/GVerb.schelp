@@ -36,6 +36,8 @@ argument:: taillevel
 amount of tail level.
 argument:: maxroomsize
 to set the size of the delay lines. Defaults to roomsize + 1.
+argument:: mul
+argument:: add
 
 examples::
 code::

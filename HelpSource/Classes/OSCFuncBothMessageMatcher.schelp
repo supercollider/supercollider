@@ -4,7 +4,7 @@ categories:: External Control>OSC>Matchers
 related:: Classes/AbstractMessageMatcher, Classes/OSCFuncAddrMessageMatcher, Classes/OSCFuncRecvPortMessageMatcher, Classes/OSCFuncBothMessageMatcher
 
 DESCRIPTION::
-This is used by link::Classes/OSCMessageDispatcher:: and link::Classes/OSCPatternMessageDispatcher:: to match incoming OSC messages  to instances of link::Classes/OSCFunc:: or link::Classes/OSCdef:: using receive port and sender address. This class is private, and generally users should not need to address instances directly.
+This is used by link::Classes/OSCMessageDispatcher:: and link::Classes/OSCMessagePatternDispatcher:: to match incoming OSC messages  to instances of link::Classes/OSCFunc:: or link::Classes/OSCdef:: using receive port and sender address. This class is private, and generally users should not need to address instances directly.
 
 
 CLASSMETHODS::

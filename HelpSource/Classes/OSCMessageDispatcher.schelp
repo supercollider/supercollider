@@ -29,6 +29,9 @@ returns:: An link::Classes/Array:: containing the funcProxy's path as a link::Cl
 METHOD:: value
 Attempt to match an incoming OSC message with this dispatcher's responder funcs, and evaluate their functions for all matches found.
 
+argument:: msg
+The OSC message as an link::Classes/Array:: in the form code::[OSCAddress, other args]::.
+
 argument:: time
 A link::Classes/Float:: indicating the time the incoming message was sent.
 
@@ -37,9 +40,6 @@ A link::Classes/NetAddr:: indicating the source of the message.
 
 argument:: recvPort
 An link::Classes/Integer:: indicating the port on which the message was received.
-
-argument:: msg
-The OSC message as an link::Classes/Array:: in the form code::[OSCAddress, other args]::.
 
 METHOD:: register
 Adds this dispatcher to thisProcess.recvOSCfunc.

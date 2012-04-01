@@ -32,6 +32,8 @@ argument::size
 must be a power of 2 plus 1, eventual wavetable is next power of two size up.
 argument::amplitudes
 an Array of amplitudes for each Chebyshev polynomial beginning with order 1.
+argument::normalize
+A link::Classes/Boolean::.
 
 INSTANCEMETHODS::
 

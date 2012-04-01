@@ -14,8 +14,8 @@ method::new
 argument::mean
 The mean of the distribution.
 
-argument::standardDeviation
-The spread of values around the mean.
+argument::dev
+The spread of values around the mean (standard deviation).
 
 argument::length
 Number of values produced.

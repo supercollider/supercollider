@@ -25,6 +25,10 @@ formant. (control rate)
 
 Must be greater than or equal to code::fundfreq::.
 
+argument::mul
+
+argument::add
+
 discussion::
 The frequency inputs are read at control rate only, so if you use an audio rate UGen as an input, it will only be sampled at the start of each audio synthesis block.
 

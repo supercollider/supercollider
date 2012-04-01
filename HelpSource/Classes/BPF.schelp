@@ -27,6 +27,9 @@ argument::rq
 
 The reciprocal of Q. Q is conventionally defined as cutoffFreq / bandwidth, meaning rq = (bandwidth / cutoffFreq).
 
+argument::mul
+
+argument::add
 
 Examples::
 

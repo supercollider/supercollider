@@ -94,7 +94,7 @@ j.dump;
 ::
 
 METHOD::fromWindow
-Creates a new SCImage from a portion of a link::Classes/SCWindow::. this can be used to capture either a window or a specific SCView.
+Creates a new SCImage from a portion of a SCWindow. this can be used to capture either a window or a specific SCView.
 
 code::
 // WINDOW Example:
@@ -328,7 +328,7 @@ SCImage.new("/Library/Desktop Pictures/Ripples Blue.jpg").plot("Hello", freeOnCl
 ::
 
 ARGUMENT::name
-the title of the link::Classes/SCWindow::. may be nil.
+the title of the SCWindow. may be nil.
 
 ARGUMENT::bounds
 the bounds of the SCWindow. may be nil.
@@ -343,7 +343,7 @@ ARGUMENT::showInfo
 shows pixel coordinates while the mouse is over the image's plot window.
 
 METHOD::lockFocus
-sets the receiver as the current graphic context. So you can use link::Classes/SCPen:: to draw inside of it.
+sets the receiver as the current graphic context. So you can use SCPen to draw inside of it.
 
 METHOD::unlockFocus
 restore the graphic context state. the receiver is not anymore the current graphic context.
@@ -868,7 +868,7 @@ table::
 ## 16 || center, center (no scale)
 ::
 
-## link::Classes/SCView#-backgroundImage:: ||
+## SCView:backgroundImage_ ||
 
 strong::image:: - the SCImage to use
 

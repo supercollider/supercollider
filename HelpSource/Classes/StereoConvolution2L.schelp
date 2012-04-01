@@ -27,6 +27,8 @@ argument:: framesize
 size of FFT frame, must be a power of two. Convolution uses twice this number internally, maximum value you can give this argument is 2^16=65536. Note that it gets progressively more expensive to run for higher powers! 512, 1024, 2048, 4096 standard.
 argument:: crossfade
 The number of periods over which a crossfade is made. The default is 1. This must be an integer.
+argument:: mul
+argument:: add
 
 examples::
 code::

@@ -51,13 +51,13 @@ method:: userConfigDir
 directory for configuration files
 
 method:: systemExtensionDir
-system extension directory (see link::Guides/Using-Extensions::)
+system extension directory (see link::Guides/UsingExtensions::)
 
 method:: userExtensionDir
-user extension directory (see link::Guides/Using-Extensions::)
+user extension directory (see link::Guides/UsingExtensions::)
 
 method:: platformDir
-platform specific directory for class files (see link::Guides/Using-Extensions::)
+platform specific directory for class files (see link::Guides/UsingExtensions::)
 
 method:: pathSeparator
 platform specific path separator
@@ -104,13 +104,13 @@ method:: userConfigDir
 directory for configuration files
 
 method:: systemExtensionDir
-system extension directory (see link::Guides/Using-Extensions::)
+system extension directory (see link::Guides/UsingExtensions::)
 
 method:: userExtensionDir
-user extension directory (see link::Guides/Using-Extensions::)
+user extension directory (see link::Guides/UsingExtensions::)
 
 method:: platformDir
-platform specific directory for class files (see link::Guides/Using-Extensions::)
+platform specific directory for class files (see link::Guides/UsingExtensions::)
 
 method:: pathSeparator
 platform specific path separator

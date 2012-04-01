@@ -19,6 +19,8 @@ argument:: freq
 cutoff frequency.
 argument:: rq
 the reciprocal of Q. bandwidth / cutoffFreq.
+argument:: mul
+argument:: add
 
 method:: sc
 calculate filter coefficients.

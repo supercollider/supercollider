@@ -145,8 +145,8 @@ argument:: numNormalColor
 An instance of link::Classes/Color::. The code::normalColor:: of the number view.
 argument:: numTypingColor
 An instance of link::Classes/Color::. The code::typingColor:: of the number view.
-argument:: knobColor
-An instance of link::Classes/Color::. The code::knobColor:: of the knob view.
+argument:: knobColors
+An instance of link::Classes/Color::. The code::knobColors:: of the knob view.
 argument:: background
 An instance of link::Classes/Color::. The code::background:: of the enclosing view.
 

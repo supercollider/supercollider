@@ -20,6 +20,10 @@ argument::channel
 
 Input channel number to read. Channel numbers begin at 1.
 
+argument::mul
+
+argument::add
+
 Examples::
 Patching input to output
 code::

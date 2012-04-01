@@ -14,11 +14,11 @@ private::initClass
 
 method::new
 
-argument::name
+argument::key
 if no instance exists with this name, create a new one, otherwise return the existing one.
 
-argument::func
-If func is given, replace the old func with the new one.
+argument::val
+If a link::Classes/Function:: is given, replace the old function with the new one.
 
 Examples::
 

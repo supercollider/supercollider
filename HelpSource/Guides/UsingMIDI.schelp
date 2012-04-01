@@ -12,7 +12,7 @@ note::
 This document is written from an OSX perspective. The essential behavior of the MIDI interface classes should be the same on other platforms, despite my continual reference to CoreMIDI here.
 ::
 
-SuperCollider does not impose much higher-level structure on MIDI functionality. The core classes are little more than hardware abstractions (see also the link::Reference/MIDI:: helpfile):
+SuperCollider does not impose much higher-level structure on MIDI functionality. The core classes are little more than hardware abstractions (see also the link::Guides/MIDI:: helpfile):
 
 definitionList::
 ## link::Classes/MIDIClient::

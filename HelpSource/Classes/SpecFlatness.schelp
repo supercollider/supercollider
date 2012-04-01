@@ -11,7 +11,7 @@ The measure is calculated linearly. For some applications you may wish to conver
 classmethods::
 method:: kr
 
-argument:: chain
+argument:: buffer
 an link::Classes/FFT:: chain.
 
 examples::

@@ -27,6 +27,8 @@ Pseed(Pn(1000, 1), Pwhite(1, 10, 3)).asStream.nextN(10);
 ::
 ::
 
+argument::pattern
+
 Examples::
 
 code::

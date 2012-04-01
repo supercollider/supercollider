@@ -298,7 +298,11 @@ Converts this into an audiorate input.
 method:: asTimeString
 Compile a time string.
 argument:: precision
-0.1 by default
+how accurate
+argument::maxDays
+the maximum number of days
+argument::dropDaysIfPossible
+a link::Classes/Boolean::
 returns:: a string corresponding to the hours:minutes:seconds based on the receiver as number of seconds
 discussion::
 code::
@@ -477,7 +481,8 @@ returns:: angle of receiver conceived as link::Classes/Polar:: or link::Classes/
 method:: degreeToKey
 argument:: scale
 an array of SimpleNumbers each treated as a step in the octave.
-
+argument:: stepsPerOctave
+12 is the standard chromatic scale.
 discussion::
 the value is truncated to an integer and used as an index into an octave repeating table of note values. Indices wrap around the table and shift octaves as they do.
 
@@ -494,8 +499,8 @@ method:: keyToDegree
 inverse of degreeToKey.
 argument:: scale
 an array of SimpleNumbers each treated as a step in the octave.
-
-
+argument:: stepsPerOctave
+12 is the standard chromatic scale.
 discussion::
 code::
 (
@@ -538,6 +543,8 @@ code::
 
 method:: quantize
 round the receiver to the quantum.
+argument::quantum
+amount.
 argument::tolerance
 allowed tolerance.
 argument::strength
@@ -833,6 +840,7 @@ returns:: a random number from -this to +this.
 method:: rrand
 argument::aNumber
 the upper limit
+argument::adverb
 returns:: a random number in the interval ]a, b[.
 discussion::
 If both a and b are link::Classes/Integer:: then the result will be an link::Classes/Integer::.
@@ -851,10 +859,11 @@ method:: exprand
 an exponentially distributed random number in the interval ]a, b[. This is always a link::Classes/Float::.
 argument::aNumber
 the upper limit
+argument::adverb
 
 method:: gauss
 a gaussian distributed random number.
-argument::aNumber
+argument::standardDeviation
 the upper limit
 discussion::
 Always returns a link::Classes/Float::.

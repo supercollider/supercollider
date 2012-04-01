@@ -205,7 +205,7 @@ section:: Creating a Quark
 
 Adding a Quark requires using standard SVN tools. Create your folder in {Application Support}/quarks/ (we'll assume it's
 called quarkname). Place your classes in this folder. Place a quark file called quarkname.quark into {Application
-Support}/quarks/DIRECTORY (see link::Reference/Quark:: for the format). You can now install, re-compile, test and
+Support}/quarks/DIRECTORY (see link::Classes/Quark:: for the format). You can now install, re-compile, test and
 uninstall install the quark from your local system without having added it into the public repository. You can use
 quarks for your own private purposes to install and uninstall packages of classes.
 

@@ -33,6 +33,9 @@ Frequency in Hertz.
 argument::numharm
 Number of harmonics. This may be lowered internally if it would cause aliasing.
 
+argument::mul
+
+argument::add
 
 Examples::
 

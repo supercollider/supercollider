@@ -37,4 +37,4 @@ method::push, pop, make, use, do, clear, keysValuesDo, keysValuesArrayDo, findKe
 
 section::Networking
 
-EnvironmentRedirect and its subclasses can be used to dispatch assignment over a network. To do this, a dispatch function can be supplied - see link::Classes/Public:: in strong::JITLibExtensions:: quark.
+EnvironmentRedirect and its subclasses can be used to dispatch assignment over a network. To do this, a dispatch function can be supplied - see Public in strong::JITLibExtensions:: quark.

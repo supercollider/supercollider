@@ -211,10 +211,3 @@ p.pidRunning; // cat will stay alive
 ("kill" + p).unixCmd
 p.pidRunning;
 ::
-
-method:: getKeys
-Returns:: the bits from the Macintosh GetKeys() Toolbox call. Receiver should be 0 to 3.
-discussion::
-code::
-[0.getKeys, 1.getKeys, 2.getKeys, 3.getKeys].postln;
-::

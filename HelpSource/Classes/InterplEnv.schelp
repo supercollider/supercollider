@@ -53,6 +53,15 @@ Plot this envelope's shape in a window.
 argument::size
 The size of the plot.
 
+argument::bounds
+The window bounds (a link::Classes/Rect::).
+
+argument::minval
+
+argument::maxval
+
+argument::parent
+
 method::asArray
 Converts the InterplEnv to an Array in a specially ordered format. This allows for InterplEnv parameters to be settable arguments in a link::Classes/SynthDef::.
 

@@ -25,6 +25,8 @@ code::
 Array.fib(5);
 Array.fib(5, 2, 32); // start from 32 with step 2.
 ::
+argument::size
+the number of values in the collection
 argument::a
 the starting step value
 argument::b
