@@ -103,7 +103,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 47 "SCDoc.y"
+#line 50 "SCDoc.y"
 
     int i;
     const char *id;
