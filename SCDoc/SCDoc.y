@@ -41,6 +41,9 @@ static DocNode * topnode;
 
 void scdocerror(const char *str);
 
+extern void error(const char *fmt, ...);
+extern void post(const char *fmt, ...);
+
 %}
 %locations
 %error-verbose
@@ -71,7 +74,7 @@ void scdocerror(const char *str);
 %token BAD_METHODNAME
 
 %type <id> headtag sectiontag listtag rangetag inlinetag blocktag
-%type <str> anyword words anywordnl wordsnl anywordurl words2 nocommawords optMETHODARGS
+%type <str> anyword words anywordnl wordsnl anywordurl words2 nocommawords optMETHODARGS methodname
 %type <doc_node> document arg optreturns optdiscussion body bodyelem
 %type <doc_node> optsubsections optsubsubsections methodbody
 %type <doc_node> dochead headline optsections sections section
@@ -197,8 +200,19 @@ optMETHODARGS: { $$ = NULL; }
     }
 ;
 
-methnames: methnames COMMA METHODNAME { free($2); $2 = NULL; $$ = doc_node_add_child($1, doc_node_make("STRING",$3,NULL)); }
-         | METHODNAME { $$ = doc_node_make("(METHODNAMES)",NULL,doc_node_make("STRING",$1,NULL)); }
+methodname: METHODNAME
+    {
+        char *p = $1+strlen($1)-1;
+        if(*p=='_') {
+            post("WARNING:\nSCDoc: In %s\n       Setter method %s should be documented without underscore.\n", scdoc_current_file, $1);
+            *p = '\0';
+        };
+        $$ = $1;
+    }
+;
+
+methnames: methnames COMMA methodname { free($2); $2 = NULL; $$ = doc_node_add_child($1, doc_node_make("STRING",$3,NULL)); }
+         | methodname { $$ = doc_node_make("(METHODNAMES)",NULL,doc_node_make("STRING",$1,NULL)); }
 ;
 
 methodbody: optbody optargs optreturns optdiscussion
@@ -367,8 +381,6 @@ commalist: commalist COMMA nocommawords { free($2); $2=NULL; $$ = doc_node_add_c
 ;
 
 %%
-
-extern void error(const char *fmt, ...);
 
 DocNode * scdoc_parse_run(int mode) {
     int modes[] = {START_FULL, START_PARTIAL, START_METADATA};

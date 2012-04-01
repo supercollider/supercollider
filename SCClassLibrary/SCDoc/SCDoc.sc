@@ -350,7 +350,7 @@ SCDocNode {
 
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 51;
+    classvar version = 52;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -786,10 +786,8 @@ SCDoc {
             } ?? { "Classes" +/+ str ++ ".html" })
         };
 
-        ^pfx +/+ if(block {|brk|
-            Class.allClasses.do{|c| if(c.findMethod(sym).notNil) {brk.value(true)}};
-            false;
-        }) {
+        if(str.last == $_) { str = str.drop(-1) };
+        ^pfx +/+ if("^[a-z][a-zA-Z0-9_]*$|^[-<>@|&%*+/!?=]+$".matchRegexp(str)) {
             "Overviews/Methods.html#" ++ str
         } { "Search.html#" ++ str }
     }
