@@ -1,9 +1,10 @@
 ServerMeterView{
 
 	classvar serverMeterViews, 	updateFreq = 10, dBLow = -80, meterWidth = 15, gapWidth = 4, <height = 230;
+	classvar serverCleanupFuncs;
 
 	var <view;
-	var inresp, outresp, insynth, outsynth, synthFunc, responderFunc, server, numIns, numOuts, inmeters, outmeters;
+	var inresp, outresp, synthFunc, responderFunc, server, numIns, numOuts, inmeters, outmeters;
 
 	*new{ |aserver,parent,leftUp,numIns,numOuts|
 		^super.new.init(aserver,parent,leftUp,numIns,numOuts)
@@ -16,14 +17,14 @@ ServerMeterView{
 	init { arg aserver, parent, leftUp, anumIns,anumOuts;
 		var innerView, viewWidth, levelIndic, palette;
 
+		server = aserver;
+
 		numIns = anumIns ?? { server.options.numInputBusChannels };
 		numOuts = anumOuts ?? { server.options.numOutputBusChannels };
 
 		viewWidth= this.class.getWidth(anumIns,anumOuts);
 
 		leftUp = leftUp ? (0@0);
-
-		server = aserver;
 
 		view = CompositeView(parent, Rect(leftUp.x,leftUp.y, viewWidth, height) );
 		view.onClose_({ this.stop });
@@ -106,6 +107,7 @@ ServerMeterView{
 			numRMSSampsRecip = 1 / numRMSSamps;
 
 			server.bind({
+				var insynth, outsynth;
 				(numIns > 0).if({
 					insynth = SynthDef(server.name ++ "InputLevels", {
 						var in = In.ar(NumOutputBuses.ir, numIns);
@@ -117,6 +119,15 @@ ServerMeterView{
 						var in = In.ar(0, numOuts);
 						SendPeakRMS.kr(in, updateFreq, 3, "/" ++ server.name ++ "OutLevels")
 					}).play(RootNode(server), nil, \addToTail);
+				});
+
+				if (serverCleanupFuncs.isNil) {
+					serverCleanupFuncs = IdentityDictionary.new;
+				};
+				serverCleanupFuncs.put(server, {
+					insynth.free;
+					outsynth.free;
+					ServerTree.remove(synthFunc, server);
 				});
 			});
 		};
@@ -179,30 +190,22 @@ ServerMeterView{
 			serverMeterViews = IdentityDictionary.new;
 		};
 		if(serverMeterViews[server].isNil){
-			serverMeterViews.put(server,List[this]);
-			ServerTree.add(synthFunc);
+			serverMeterViews.put(server, List());
+		};
+		if(serverMeterViews[server].size == 0){
+			ServerTree.add(synthFunc, server);
 			if(server.serverRunning, synthFunc); // otherwise starts when booted
-			server.doWhenBooted({this.startResponders});
-		}{
-			if(serverMeterViews[server].size == 0){
-				ServerTree.add(synthFunc);
-				if(server.serverRunning, synthFunc); // otherwise starts when booted
-
-
-			};
-			serverMeterViews[server].add(this);
-			server.doWhenBooted({this.startResponders});
-		}
-
+		};
+		serverMeterViews[server].add(this);
+		server.doWhenBooted({this.startResponders});
 	}
 
 	stop{
 		serverMeterViews[server].remove(this);
 
 		if(serverMeterViews[server].size == 0){
-			(numIns > 0).if({ insynth.free; });
-			(numOuts > 0).if({outsynth.free; });
-			ServerTree.remove(synthFunc);
+			serverCleanupFuncs[server].value;
+			serverCleanupFuncs.removeAt(server);
 		};
 
 		(numIns > 0).if({ inresp.free; });
