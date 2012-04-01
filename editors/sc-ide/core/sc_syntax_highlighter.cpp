@@ -23,7 +23,7 @@
 
 #include "sc_syntax_highlighter.hpp"
 #include "main.hpp"
-#include "settings.hpp"
+#include "settings/manager.hpp"
 
 #include <QApplication>
 
@@ -43,8 +43,8 @@ SyntaxHighlighterGlobals::SyntaxHighlighterGlobals( Main *main ):
     // initialize formats from defaults + settings:
     applySettings(main->settings());
 
-    connect(main, SIGNAL(applySettingsRequest(QSettings*)),
-            this, SLOT(applySettings(QSettings*)));
+    connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
+            this, SLOT(applySettings(Settings::Manager*)));
 }
 
 void SyntaxHighlighterGlobals::initHighlightFormats()
@@ -164,7 +164,7 @@ void SyntaxHighlighterGlobals::initBuiltins()
     mInCodeRules << SyntaxRule(SyntaxRule::Builtin, builtinsPattern);
 }
 
-void SyntaxHighlighterGlobals::applySettings( QSettings *s )
+void SyntaxHighlighterGlobals::applySettings( Settings::Manager *s )
 {
     QString key("IDE/editor/highlighting");
     applySettings( s, key + "/normal", PlainFormat );
@@ -182,7 +182,7 @@ void SyntaxHighlighterGlobals::applySettings( QSettings *s )
     Q_EMIT(syntaxFormatsChanged());
 }
 
-void SyntaxHighlighterGlobals::applySettings( QSettings *s, const QString &key, SyntaxFormat type )
+void SyntaxHighlighterGlobals::applySettings( Settings::Manager *s, const QString &key, SyntaxFormat type )
 {
     if (s->contains(key))
         mFormats[type] = s->value(key).value<QTextCharFormat>();

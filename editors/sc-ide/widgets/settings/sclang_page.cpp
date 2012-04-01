@@ -20,6 +20,7 @@
 
 #include "sclang_page.hpp"
 #include "ui_settings_sclang.h"
+#include "../../core/settings/manager.hpp"
 
 namespace ScIDE { namespace Settings {
 
@@ -39,7 +40,7 @@ SclangPage::~SclangPage()
     delete ui;
 }
 
-void SclangPage::load( QSettings *s )
+void SclangPage::load( Manager *s )
 {
     s->beginGroup("IDE/interpreter");
     ui->autoStart->setChecked( s->value("autoStart", true).toBool() );
@@ -49,7 +50,7 @@ void SclangPage::load( QSettings *s )
     s->endGroup();
 }
 
-void SclangPage::store( QSettings *s )
+void SclangPage::store( Manager *s )
 {
     s->beginGroup("IDE/interpreter");
     s->setValue("autoStart", ui->autoStart->isChecked());

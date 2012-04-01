@@ -28,7 +28,6 @@ namespace ScIDE {
 
 MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QTabWidget(parent),
-    mMain(main),
     mDocManager(main->documentManager()),
     mSigMux(new SignalMultiplexer(this))
 {
@@ -51,8 +50,8 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     connect(&mModificationMapper, SIGNAL(mapped(QWidget*)),
             this, SLOT(onModificationChanged(QWidget*)));
 
-    connect(main, SIGNAL(applySettingsRequest(QSettings*)),
-            this, SLOT(applySettings(QSettings*)));
+    connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
+            this, SLOT(applySettings(Settings::Manager*)));
 
     createActions();
     updateActions();
@@ -181,7 +180,7 @@ void MultiEditor::updateActions()
     mActions[ShowWhitespace]->setChecked( editor && editor->showWhitespace() );
 }
 
-void MultiEditor::applySettings( QSettings *s )
+void MultiEditor::applySettings( Settings::Manager *s )
 {
     s->beginGroup("IDE/editor");
     mStepForwardEvaluation = s->value("stepForwardEvaluation", false).toBool();
@@ -241,7 +240,7 @@ void MultiEditor::onOpen( Document *doc )
 {
     CodeEditor *editor = new CodeEditor();
     editor->setDocument(doc);
-    editor->applySettings(mMain->settings());
+    editor->applySettings(Main::instance()->settings());
 
     QTextDocument *tdoc = doc->textDocument();
 

@@ -26,14 +26,12 @@
 
 namespace ScIDE {
 
-class Main;
-
 class SCProcess:
     public QProcess
 {
 Q_OBJECT
 public:
-    SCProcess( Main *main );
+    SCProcess( QObject *parent = 0 );
 
     enum SCProcessActionRole {
         StartSCLang = 0,
@@ -126,7 +124,6 @@ private:
         connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
     }
 
-    Main * mMain;
     QAction * mActions[SCProcessActionCount];
 };
 

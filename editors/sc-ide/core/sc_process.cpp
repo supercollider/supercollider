@@ -20,12 +20,12 @@
 
 #include "sc_process.hpp"
 #include "main.hpp"
+#include "settings/manager.hpp"
 
 namespace ScIDE {
 
-SCProcess::SCProcess( Main *main ):
-    QProcess( main ),
-    mMain( main )
+SCProcess::SCProcess( QObject *parent ):
+    QProcess( parent )
 {
     prepareActions();
 
@@ -35,10 +35,10 @@ SCProcess::SCProcess( Main *main ):
 
 void SCProcess::start (void)
 {
-    QSettings *settings = mMain->settings();
+    Settings::Manager *settings = Main::instance()->settings();
     settings->beginGroup("IDE/interpreter");
 
-    QString sclangProgramName = settings->value("command", "sclang").toString();
+    QString sclangProgramName = settings->value("command").toString();
     QString workingDirectory = settings->value("runtimeDir").toString();
     QString configFile = settings->value("configFile").toString();
 

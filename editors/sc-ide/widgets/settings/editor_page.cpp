@@ -20,7 +20,7 @@
 
 #include "editor_page.hpp"
 #include "ui_settings_editor.h"
-#include "../../core/settings.hpp"
+#include "../../core/settings/manager.hpp"
 #include "../../core/sc_syntax_highlighter.hpp"
 
 #include <QMenu>
@@ -43,7 +43,7 @@ EditorPage::~EditorPage()
     delete ui;
 }
 
-void EditorPage::load( QSettings *s )
+void EditorPage::load( Manager *s )
 {
     s->beginGroup("IDE/editor");
 
@@ -77,7 +77,7 @@ void EditorPage::load( QSettings *s )
     s->endGroup();
 }
 
-void EditorPage::store( QSettings *s )
+void EditorPage::store( Manager *s )
 {
     s->beginGroup("IDE/editor");
 

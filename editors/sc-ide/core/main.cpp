@@ -19,7 +19,7 @@
 */
 
 #include "main.hpp"
-#include "settings.hpp"
+#include "settings/manager.hpp"
 #include "sc_syntax_highlighter.hpp"
 #include "../widgets/main_window.hpp"
 #include "SC_DirUtils.h"
@@ -58,7 +58,7 @@ Main::Main(void) :
     sc_GetUserConfigDirectory(config_dir, PATH_MAX);
     QString settingsFile = QString(config_dir) + SC_PATH_DELIMITER + "sc_ide_conf.yaml";
 
-    mSettings = new QSettings( settingsFile, settingsFormat(), this );
+    mSettings = new Settings::Manager( settingsFile, this );
 
     new SyntaxHighlighterGlobals(this);
 

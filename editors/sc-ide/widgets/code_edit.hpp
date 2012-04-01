@@ -23,10 +23,11 @@
 
 #include <QPlainTextEdit>
 #include <QTextBlock>
-#include <QSettings>
 
 namespace ScIDE
 {
+
+namespace Settings { class Manager; }
 
 class Document;
 class CodeEditor;
@@ -72,7 +73,7 @@ public Q_SLOTS:
     void indentLess() { indent(true); }
     void setSpaceIndent(bool on) { mSpaceIndent = on; }
     void setShowWhitespace(bool);
-    void applySettings( QSettings * );
+    void applySettings( Settings::Manager * );
 
 protected:
     virtual bool event( QEvent * );
