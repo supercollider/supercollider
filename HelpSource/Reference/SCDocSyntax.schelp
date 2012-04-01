@@ -99,7 +99,7 @@ definitionlist::
 ## teletype:: METHOD\:: :: methodname(s) [argstring]
 || Document one or more methods, given as a comma-separated list of methodnames. Following the method tag should come a short description of the method, and optional description of the arguments and return value. See the link::#tags allowed inside a method:: section below.
 
-Setter methods, like code::myThing_(value)::, should not be documented as such, instead SCDoc merges getter and setter methods. So in this case the name given should be code::myThing:: (without the underscore) and the text should describe the property that can be set/gotten.
+SCDoc regards getter and setter methods as read/write interfaces for a single emphasis::property::. This means that you should not write the trailing underscore for setters. Instead, document it as a single property without the underscore, as if there was only a getter, and describe the property that can be set/gotten.
 
 The METHOD tag is normally used inside CLASSMETHODS and INSTANCEMETHODS, but can also be used outside of these sections. In those cases, it documents a generic interface not bound to a specific class, and the arguments and default values should then be given in the optional strong::argstring::
 
