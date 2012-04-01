@@ -28,6 +28,10 @@ The input signal.
 argument::delaytime
 Delay time in seconds.
 
+argument::mul
+
+argument::add
+
 discussion::
 Warning:: For reasons of efficiency, the effective buffer size is limited to the previous power of two. So, if 44100 samples are allocated, the maximum delay would be 32768 samples.
 ::

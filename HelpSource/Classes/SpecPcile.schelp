@@ -13,7 +13,7 @@ The optional third argument strong::interpolate:: specifies whether interpolatio
 classmethods::
 method:: kr
 
-argument:: chain
+argument:: buffer
 an link::Classes/FFT:: chain.
 argument:: fraction
 argument:: interpolate

@@ -38,7 +38,7 @@ method::new
 argument::addr
 An instance of link::Classes/NetAddr::, usually obtained from your server: server-addr. An address of nil will respond to messages from anywhere.
 
-argument::cmdName
+argument::cmdPath
 A command path, such as ['\c_set', bus index].
 
 argument::action

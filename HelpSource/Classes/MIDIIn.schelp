@@ -1,6 +1,6 @@
 class:: MIDIIn
 summary:: receive MIDI messages
-related:: Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Reference/MIDI, Guides/UsingMIDI
+related:: Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Guides/MIDI, Guides/UsingMIDI
 categories:: External Control>MIDI
 
 description::

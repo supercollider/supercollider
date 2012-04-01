@@ -85,10 +85,3 @@ Returns a complex number with x as the real part and y as the imaginary part.
 
 method::asString
 Return a string representing the receiver.
-
-method::asShortString
-Return a short string representing the receiver.
-
-method::paramsCompileString
-Represent parameters to 'new' as compileable strings. (See link::Classes/Object#asCompileString#Object:asCompileString::)
-

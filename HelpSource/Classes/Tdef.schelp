@@ -60,7 +60,7 @@ One Tdef may have many tasks in different places. A change in the task definitio
 method::quant
 Set the quantisation time for beat accurate scheduling.
 
-argument::quant
+argument::val
 can be an array strong::[quant, phase, timingOffset, outset] ::, or just strong::[quant, phase]:: etc.
 
 method::condition

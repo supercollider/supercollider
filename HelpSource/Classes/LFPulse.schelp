@@ -19,6 +19,10 @@ initial phase offset in cycles ( 0..1 )
 argument::width
 pulse width duty cycle from zero to one.
 
+argument::mul
+
+argument::add
+
 examples::
 
 a plot:

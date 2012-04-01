@@ -167,7 +167,7 @@ a.release; // should be fine
 ::
 
 method::initAction
-Creates a link::Classes/CocoaAction::, a special delegate to handle Target / Action mechanism (See explainations above). strong::initAction:: is a convenience method to add an action to a gui element, mostly for strong::NSControl:: subclasses. Once an action is setted, a special delegate is created on your behalf to wich you can attach a action. You can access this delegate using the strong::nsAction:: accessor method.
+Creates a CocoaAction object, a special delegate to handle Target / Action mechanism (See explainations above). strong::initAction:: is a convenience method to add an action to a gui element, mostly for strong::NSControl:: subclasses. Once an action is setted, a special delegate is created on your behalf to wich you can attach a action. You can access this delegate using the strong::nsAction:: accessor method.
 
 code::
 (
@@ -195,7 +195,7 @@ argument::actionName
 may be "doFloatAction:" (default), "doIntAction:", "doStateAction:" or "doAction:".
 
 method::setDelegate
-Creates a special link::Classes/CocoaAction:: delegate object to handle delegate methods and notifications. Should not be confused with the nsAction one. This delegate can be retrieved with the strong::nsDelegate:: accessor.
+Creates a special CocoaAction object delegate object to handle delegate methods and notifications. Should not be confused with the nsAction one. This delegate can be retrieved with the strong::nsDelegate:: accessor.
 
 method::registerNotification
 Register a special notification (see NSNotification) with a link::Classes/Function:: that will be triggered each time it is sent. This method will create a defaut strong::nsDelegate:: if it does exist already.

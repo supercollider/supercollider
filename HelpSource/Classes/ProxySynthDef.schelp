@@ -12,7 +12,16 @@ ClassMethods::
 
 method::new
 
-argument::name, func, rates, prependArgs
+argument::name
+like in link::Classes/SynthDef::. todo: add variants.
+
+argument::func
+like in link::Classes/SynthDef::. todo: add variants.
+
+argument::rates
+like in link::Classes/SynthDef::. todo: add variants.
+
+argument::prependArgs
 like in link::Classes/SynthDef::. todo: add variants.
 
 argument::makeFadeEnv
@@ -23,6 +32,9 @@ a constant offset that is added to the out number
 
 argument::chanConstraint
 max numChannels for the synthdef. If ugenfunc returns a larger array, it wraps
+
+argument::rateConstraint
+a symbol like \audio, \control or \scalar.
 
 method::sampleAccurate
 always use link::Classes/OffsetOut::, if set to true (default: false)

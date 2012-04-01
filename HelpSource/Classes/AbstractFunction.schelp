@@ -105,7 +105,6 @@ method::hypot
 method::hypotApx
 method::>>
 method::+>>
-method::fill
 method::ring1
 method::ring2
 method::ring3

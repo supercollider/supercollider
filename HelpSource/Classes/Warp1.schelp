@@ -41,6 +41,10 @@ argument::interp
 the interpolation method used for pitchshifting grains. 1 = no interpolation. 2 = linear.
 		4 = cubic interpolation (more computationally intensive).
 
+argument::mul
+
+argument::add
+
 Examples::
 code::
 s.boot;

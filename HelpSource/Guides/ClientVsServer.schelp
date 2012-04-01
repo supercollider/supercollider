@@ -62,7 +62,7 @@ code::
 // assuming the server is already booted
 {SinOsc.ar}.play ;
 ::
-In this case many server operations are hidden. To understand the  passages inolved in the evalutation of this code see link::Tutorials/Getting-Started/Functions and Other Functionality:: and link::Tutorials/Getting-Started/SynthDefs and Synths:: (part of Scott Wilson's tutorial).
+In this case many server operations are hidden. To understand the  passages inolved in the evalutation of this code see link::Tutorials/Getting-Started/04-Functions-and-Other-Functionality:: and link::Tutorials/Getting-Started/10-SynthDefs-and-Synths:: (part of Scott Wilson's tutorial).
 
 The OOP-style also has a small amount of overhead. It requires clientside CPU cycles and memory to create and manipulate an object. Normally this is not significant, but there may be times when you would prefer to use the less elegant, and less expensive first method, for instance when creating large numbers of grains which will simply play and then deallocate themselves.
 

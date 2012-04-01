@@ -19,6 +19,8 @@ argument:: delTime
 A delay time in seconds.
 argument:: interp
 the kind of interpolation to be used. 1 is none, 2 is linear, 4 is cubic.
+argument:: mul
+argument:: add
 
 examples::
 See link::Classes/DelTapWr#examples:: for examples.

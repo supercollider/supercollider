@@ -32,7 +32,7 @@ subsection::Creation
 
 method::new
 
-argument::object
+argument::obj
 the proxyspace to show and control
 
 argument::numItems

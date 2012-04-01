@@ -4,13 +4,13 @@ related:: Guides/UsingMIDI, Classes/MIDIFunc, Classes/MIDIdef
 categories:: External Control>MIDI
 
 note::
-See the link::Reference/UsingMIDI:: helpfile for practical considerations and techniques for using MIDI in SC.
+See the link::Guides/UsingMIDI:: helpfile for practical considerations and techniques for using MIDI in SC.
 ::
 
 link::Classes/MIDIClient:: is a static class that starts up the MIDI service:
 It initializes with a number of virtual inports and outports.
 The default is 1 and usually no more are needed.
-The information about the hardware is stored in code::MIDIClient.sources:: and code::MIDIClient.destinations:: as link::Classes/MIDIEndpoint:: objects.
+The information about the hardware is stored in code::MIDIClient.sources:: and code::MIDIClient.destinations:: as link::Classes/MIDIEndPoint:: objects.
 
 link::Classes/MIDIIn:: represents a connection between a inport and a source of the MIDIClient.
 There are three possibilities to connect them:

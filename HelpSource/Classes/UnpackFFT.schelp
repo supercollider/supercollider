@@ -18,6 +18,10 @@ argument:: chain
 FFT chain
 argument:: bufsize
 FFT buffer size
+argument:: frombin
+limiting analysis to the bins of interest
+argument:: tobin
+limiting analysis to the bins of interest
 returns::
 A list from DC up to Nyquist of code:: [mag[0], phase[0], mag[1], phase[1], ... mag[nyquist], phase[nyquist]]. ::
 discussion::

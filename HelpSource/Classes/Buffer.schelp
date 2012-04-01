@@ -200,10 +200,10 @@ argument:: startFrame
 The first frame of the soundfile to read. The default is 0, which is the beginning of the file.
 argument:: numFrames
 The number of frames to read. The default is -1, which will read the whole file.
-argument:: completionMessage
-A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
 argument:: bufnum
 An explicitly specified buffer number. Generally this is not needed.
+argument:: completionMessage
+A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
 discussion::
 code::
 // with a completion message
@@ -495,7 +495,7 @@ subsection:: Other methods
 
 method:: read, readMsg
 Read a soundfile into an already allocated buffer.
-argument:: path
+argument:: argpath
 A String representing the path of the soundfile to be read.
 argument:: fileStartFrame
 The first frame of the soundfile to read. The default is 0, which is the beginning of the file.
@@ -516,7 +516,7 @@ Note that if the number of frames in the file is greater than the number of fram
 
 method:: readChannel, readChannelMsg
 As link::#-read:: above, but allows you to specify which channels to read.
-argument:: path
+argument:: argpath
 A String representing the path of the soundfile to be read.
 argument:: fileStartFrame
 The first frame of the soundfile to read. The default is 0, which is the beginning of the file.
@@ -560,6 +560,10 @@ Write the contents of the buffer to a file. See link::Classes/SoundFile:: for in
 argument:: path
 A String representing the path of the soundfile to be written.
 If no path is given, Buffer writes into the default recording directory with a generic name.
+argument:: headerFormat
+A String.
+argument:: sampleFormat
+A String.
 argument:: numFrames
 The number of frames to write. The default is -1, which will write the whole buffer.
 argument:: startFrame

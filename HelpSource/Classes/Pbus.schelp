@@ -13,6 +13,8 @@ ClassMethods::
 
 method::new
 
+argument::pattern
+
 argument::dur
 delay to allow inner patterns to decay.
 

@@ -1,7 +1,7 @@
 class:: NdefGui
 summary:: a gui for a NodeProxy or Ndef
 categories:: Libraries>JITLib>GUI
-related:: Classes/MonitorGUI, Classes/NdefParamGui, Classes/NdefMixer, Classes/ProxyMixer
+related:: Classes/MonitorGui, Classes/NdefParamGui, Classes/NdefMixer, Classes/ProxyMixer
 
 description::
 

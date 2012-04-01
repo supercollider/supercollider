@@ -8,7 +8,7 @@ code::
 "hi i'm talking with the default voice now, i guess".speak;
 ::
 
-Speech consists of an link::Classes/Array:: of SpeechChannels. By default Speech is initialized with only one channel, but can be set up to use up to 16 by providing an argument to init. Channels may be used through a link::Classes/SpeechChannel:: or by setting the channel in Speech's methods (see examples below).
+Speech consists of an link::Classes/Array:: of SpeechChannels. By default Speech is initialized with only one channel, but can be set up to use up to 16 by providing an argument to init. Channels may be used through a SpeechChannel object or by setting the channel in Speech's methods (see examples below).
 
 Speech is a function of the operating system and not the server. By consequence, strong::it is not possible to use UGens to filter or record the output directly::. You may be able to patch system output to system input (either by hardware of by software) to rout it to the server.
 

@@ -1,6 +1,6 @@
 class:: MIDIResponder
 summary:: Register multiple functions to be evaluated when MIDI events occur
-related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/MIDIIn, Reference/MIDI, Reference/UsingMIDI
+related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/MIDIIn, Guides/MIDI, Guides/UsingMIDI
 categories:: External Control>MIDI
 
 description::

@@ -29,6 +29,9 @@ size of FFT frame, must be a power of two. Convolution uses twice this number in
 argument::crossfade
 The number of periods over which a crossfade is made. The default is 1. This must be an integer.
 
+argument::mul
+
+argument::add
 
 Examples::
 

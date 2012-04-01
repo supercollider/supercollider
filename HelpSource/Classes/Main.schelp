@@ -82,7 +82,7 @@ Get or set a custom link::Classes/Function:: in this field that gets called when
 
 warning::This method has been deprecated as of SC 3.5, and users should instead should use link::#-addOSCFunc:: and link::#-removeOSCFunc:: to avoid overwriting any other functions added here by system objects.::
 
-argument::func
+argument::newFunc
 A link::Classes/Function:: or similar object to be set. When evaluated, this function will be passed the arguments time, replyAddr, and message, corresponding to the time the message was sent, the link::Classes/NetAddr:: of the sender, and the message itself as an link::Classes/Array::.
 
 method::addOSCRecvFunc

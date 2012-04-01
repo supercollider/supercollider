@@ -11,7 +11,7 @@ ClassMethods::
 
 method::new
 
-argument::keypattern
+argument::pattern
 integer index into the scale.
 
 argument::scale

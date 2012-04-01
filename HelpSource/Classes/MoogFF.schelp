@@ -23,6 +23,8 @@ argument:: gain
 the filter resonance gain, between zero and 4.
 argument:: reset
 when greater than zero, this will reset the state of the digital filters at the beginning of a computational block.
+argument:: mul
+argument:: add
 
 examples::
 code::

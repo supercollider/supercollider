@@ -115,6 +115,10 @@ argument::knum
 
 Current number of utilised control points, allows modulation.
 
+argument::mul
+
+argument::add
+
 discussion::
 All parameters can be modulated at control rate except for code::initCPs:: which is used only at initialisation.
 

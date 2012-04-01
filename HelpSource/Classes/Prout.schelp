@@ -14,7 +14,7 @@ ClassMethods::
 method::new
 Returns a routine from the function.
 
-argument::func
+argument::routineFunc
 routine function.
 
 Examples::

@@ -7,7 +7,7 @@ ClassMethods::
 
 method::new
 
-argument::proportions
+argument::proportion
 a pattern that returns either numbers (divides the pattern into pairs) or arrays of size n which are used to split up the input into n parts.
 
 argument::pattern

@@ -1,6 +1,6 @@
 title:: if
 categories::Core, Common methods
-related:: Guides/Control-Structures
+related:: Reference/Control-Structures
 summary:: conditional execution
 
 method:: if

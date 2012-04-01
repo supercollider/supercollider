@@ -24,6 +24,24 @@ argument::in
 
 signal input
 
+argument::a0
+See formula above.
+
+argument::a1
+See formula above.
+
+argument::a2
+See formula above.
+
+argument::b1
+See formula above.
+
+argument::b2
+See formula above.
+
+argument::mul
+
+argument::add
 
 Examples::
 

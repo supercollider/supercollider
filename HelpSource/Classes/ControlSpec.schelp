@@ -36,6 +36,8 @@ The default value.
 argument::units
 The units, e.g. "hz". Used by some gui's as a unit label.
 
+argument::grid
+
 InstanceMethods::
 
 method::map

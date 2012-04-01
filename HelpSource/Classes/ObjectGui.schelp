@@ -48,6 +48,12 @@ When implementing subclasses this is the primary and often the only method that 
 argument:: layout
 Usually a FlowView : a parent view with a FlowLayout to add views to.
 
+argument:: bounds
+nil or a Rect.
+
+argument:: args
+More args may be passed here.
+
 returns:: this
 
 METHOD:: update

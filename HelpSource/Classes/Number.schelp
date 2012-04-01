@@ -65,7 +65,7 @@ subsection:: Iteration
 
 method:: for
 Calls strong::function:: for numbers from this up to endval, inclusive, stepping each time by 1.
-argument:: endval
+argument:: endValue
 a link::Classes/Number::.
 argument:: function
 a link::Classes/Function:: which is passed two arguments, the first which is an number from this to
@@ -73,9 +73,9 @@ argument:: endval, and the second which is a number from zero to the number of i
 
 method:: forBy
 Calls strong::function:: for numbers from this up to endval stepping each time by step.
-argument:: endval
+argument:: endValue
 a link::Classes/Number::.
-argument:: step
+argument:: stepValue
 a link::Classes/Number::.
 argument:: function
 a link::Classes/Function:: which is passed two arguments, the first which is an number from this to

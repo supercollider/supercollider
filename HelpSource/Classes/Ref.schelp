@@ -82,7 +82,7 @@ section::Typical uses of Ref:
 
 subsection::preventing multi-channel expansion
 
-Consult link::Reference/MultiChannel:: for details on multi-channel expansion in SynthDefs.
+Consult link::Guides/Multichannel-Expansion:: for details on multi-channel expansion in SynthDefs.
 
 Refs prevent multi-channel expansion in a SynthDef, so the array below defines one Klank UGen rather than three.
 

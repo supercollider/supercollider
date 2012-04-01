@@ -29,6 +29,10 @@ Delay time in seconds.
 argument::decaytime
 Time for the echoes to decay by 60 decibels. If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
 
+argument::mul
+
+argument::add
+
 discussion::
 Warning:: For reasons of efficiency, the effective buffer size is limited to the previous power of two. So, if 44100 samples are allocated, the maximum delay would be 32768 samples.
 ::

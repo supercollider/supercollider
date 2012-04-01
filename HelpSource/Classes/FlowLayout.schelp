@@ -1,10 +1,10 @@
 class:: FlowLayout
 summary:: A view decorator which autowraps the view contents
 categories:: GUI>Layout
-related:: Classes/SCContainerView, Classes/CompositeView, Classes/SCTopView
+related:: Classes/SCContainerView, Classes/CompositeView
 
 description::
-FlowLayout is a decorator which automatically arranges views inside a container view in a row, and starts a new row if there is not enough space left for the next view. link::Classes/SCWindow:: and link::Classes/SCCompositeView:: both have code::addFlowLayout:: methods which assign FlowLayout to their view decorators and return the decorator.
+FlowLayout is a decorator which automatically arranges views inside a container view in a row, and starts a new row if there is not enough space left for the next view. link::Classes/Window:: and link::Classes/CompositeView:: both have code::addFlowLayout:: methods which assign FlowLayout to their view decorators and return the decorator.
 
 classmethods::
 

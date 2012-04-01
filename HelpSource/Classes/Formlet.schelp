@@ -36,6 +36,10 @@ argument::attacktime
 argument::decaytime
 60 dB decay time in seconds.
 
+argument::mul
+
+argument::add
+
 discussion::
 Note that if attacktime == decaytime then the signal cancels out and if
 attacktime > decaytime then the impulse response is inverted.

@@ -47,8 +47,16 @@ subsection::b) using as EventStreamPlayer
 method::play
 starts the EventPatternProxy and creates a player. if you want to play multiple instances, use link::#-fork::.
 
+argument::argClock
+play on a certain clock.
+
+argument::protoEvent
+
 argument::quant
 can be an array of [quant, phase, offset, outset]
+
+argument::doReset
+a link::Classes/Boolean::
 
 method::stop
 stops the player

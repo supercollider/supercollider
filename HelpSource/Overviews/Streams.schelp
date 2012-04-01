@@ -64,7 +64,7 @@ subsection:: Streams
 list::
 ## link::Classes/BinaryOpStream::
 ## link::Classes/UnaryOpStream::
-## link::Classes/EventStream::
+## link::Reference/EventStream::
 ## link::Classes/EventStreamPlayer::
 ::
 

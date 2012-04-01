@@ -13,7 +13,7 @@ private::prGetcwd, prType
 method::new
 Create a File instance and open the file. If the open fails, link::Classes/UnixFILE#-isOpen#isOpen:: will return false.
 
-argument::pathname
+argument::pathName
 a link::Classes/String:: containing the path name of the file to open.
 
 argument::mode

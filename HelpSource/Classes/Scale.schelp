@@ -69,7 +69,7 @@ private::storeOn, storedKey, storeArgs, printOn
 
 method::tuning
 Sets or gets the tuning of the Scale.
-argument::value
+argument::inTuning
 can be either an instance of link::Classes/Tuning:: or a symbol matching a library tuning.
 
 method::semitones

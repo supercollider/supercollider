@@ -11,7 +11,7 @@ This can be a useful indicator of the perceptual emphasis::brightness:: of a sig
 classmethods::
 method:: kr
 
-argument:: chain
+argument:: buffer
 an link::Classes/FFT:: chain.
 
 examples::

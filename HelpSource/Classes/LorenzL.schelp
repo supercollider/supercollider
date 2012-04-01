@@ -32,6 +32,8 @@ argument:: yi
 Initial value of y
 argument:: zi
 Initial value of z
+argument:: mul
+argument:: add
 
 examples::
 code::

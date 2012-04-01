@@ -28,6 +28,10 @@ The amount of time it takes for the amplitude adjustment to kick in fully. This 
 argument::relaxTime
 The amount of time for the amplitude adjustment to be released. Usually a bit longer than clampTime; if both times are too short, you can get some (possibly unwanted) artifacts.
 
+argument::mul
+
+argument::add
+
 discussion::
 If any of this is confusing, see http://en.wikipedia.org/wiki/Audio_level_compression
 

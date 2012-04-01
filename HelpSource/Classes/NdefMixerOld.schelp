@@ -24,6 +24,15 @@ n = NdefMixer(\trala);		// fails, no such server
 argument::server
 Server object ( link::Classes/Server:: ) or server name ( link::Classes/Symbol:: )
 
+argument::nProxies
+an Integer.
+
+argument::title
+a String.
+
+argument::bounds
+a Rect.
+
 InstanceMethods::
 
 method::proxyspace
