@@ -12,5 +12,5 @@ ClassMethods::
 method::new
 embeds the routine function.
 
-argument::func
+argument::routineFunc
 routine function.

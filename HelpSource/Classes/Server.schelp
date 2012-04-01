@@ -149,6 +149,7 @@ method:: loadDirectory
 load all the SynthDefs in the directory dir.
 argument:: dir
 a link::Classes/String:: which is a valid path.
+argument:: completionMsg
 
 method:: nextNodeID
 get a unique nodeID.

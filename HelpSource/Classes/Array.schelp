@@ -104,7 +104,7 @@ code::
 	[1, 2, 3, 4].pyramid(i + 1).postcs;
 });
 ::
-argument::n
+argument::patternType
 Choose counting algorithm. The algorithms are numbered 1 through 10.
 
 method::pyramidg

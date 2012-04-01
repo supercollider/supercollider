@@ -25,6 +25,9 @@ Send the bundle to a server. If preparation messages are given, they are sent, t
 method::schedSend
 Like send, but the sending is synced to a given clock to the next beat.
 
+argument::server
+A link::Classes/Server::.
+
 argument::clock
 A link::Classes/TempoClock::.
 

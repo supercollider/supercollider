@@ -78,7 +78,7 @@ METHOD:: parents
 	returns:: An array of all the parents, grandparents, etc., of the view.
 
 METHOD:: getParents
-	returns:: Same as link::-parents::.
+	returns:: Same as link::#-parents#parents::.
 
 METHOD:: children
 	returns:: An array of all immediate children of the view.

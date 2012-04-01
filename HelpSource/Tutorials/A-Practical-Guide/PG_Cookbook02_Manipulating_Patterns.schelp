@@ -68,7 +68,7 @@ p = Pbind(
 p.stop;
 ::
 
-strong::Third-party extension alert:: : The link::Classes/Pwalk:: pattern shown here moves forward and backward in a preset array. To do the same thing with the results of a pattern, see link::Classes/Pscratch:: in the strong::ddwPatterns:: quark. An especially fun use of Pscratch is to use it on an event pattern like Pbind, skipping around in a series of fully realized note events.
+strong::Third-party extension alert:: : The link::Classes/Pwalk:: pattern shown here moves forward and backward in a preset array. To do the same thing with the results of a pattern, see Pscratch in the strong::ddwPatterns:: quark. An especially fun use of Pscratch is to use it on an event pattern like Pbind, skipping around in a series of fully realized note events.
 
 subsection::Changing Pbind value patterns on the fly
 

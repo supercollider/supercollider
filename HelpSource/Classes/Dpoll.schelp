@@ -16,6 +16,7 @@ argument:: label
 a label string
 argument:: run
 active if 1, inactive if 0. can be a demand ugen (default: 1)
+argument:: trigid
 discussion::
 the print-out is in the form: code:: label: value block offset: offset. ::
 

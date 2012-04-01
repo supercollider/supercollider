@@ -7,6 +7,9 @@ ClassMethods::
 
 method::new
 
+argument::pattern
+the pattern to repeat
+
 argument::repeats
 Repeats the enclosed pattern strong::repeats:: times.
 

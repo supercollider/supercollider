@@ -21,6 +21,8 @@ argument:: rq
 the reciprocal of Q. bandwidth / cutoffFreq.
 argument:: db
 boost/cut the center frequency (in dBs).
+argument:: mul
+argument:: add
 
 examples::
 code::

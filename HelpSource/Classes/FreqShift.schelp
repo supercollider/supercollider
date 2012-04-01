@@ -25,6 +25,9 @@ Amount of shift in cycles per second.
 argument::phase
 Phase of the frequency shift (0..2pi).
 
+argument::mul
+
+argument::add
 
 
 Examples::

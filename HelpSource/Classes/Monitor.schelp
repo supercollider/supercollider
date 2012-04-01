@@ -11,6 +11,17 @@ InstanceMethods::
 method::play
 plays from a bus index with a number of channels to another index with a number of channels, within a target group, or a server.
 
+argument::fromIndex
+
+argument::fromNumChannels
+
+argument::toIndex
+
+argument::toNumChannels
+
+argument::target
+where to play (default: server default group)
+
 argument::multi
 keep old links and add new one
 
@@ -39,8 +50,10 @@ global scaling for amplitudes
 argument::fadeTime
 fade in and out
 
-argument::target, addAction
+argument::target
 where to play (default: server default group)
+
+argument::addAction
 
 method::isPlaying
 returns true if the group is still playing

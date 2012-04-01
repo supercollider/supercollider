@@ -49,6 +49,9 @@ the bounds within which to display; if none is given, bounds are calculated.
 argument::makeSkip
 flag whether to make a skipjack to manage updates of the envirgui.
 
+argument::options
+configuration options
+
 InstanceMethods::
 
 subsection::Instance Variables
@@ -136,6 +139,15 @@ subsection::Some internal methods
 
 method::setField
 set a field by index, with the new key, value;
+
+argument::index
+the index
+
+argument::key
+a new key
+
+argument::value
+the value
 
 argument::sameKey
 means the field had the same key already.

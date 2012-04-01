@@ -98,4 +98,4 @@ Remove all active functions from this object's function list.
 
 EXAMPLES::
 
-See link::Classes/OSCFunc:: and link::Classe/MIDIFunc::.
+See link::Classes/OSCFunc:: and link::Classes/MIDIFunc::.

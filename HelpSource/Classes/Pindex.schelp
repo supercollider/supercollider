@@ -11,8 +11,11 @@ ClassMethods::
 
 method::new
 
-argument::list
-is the array and strong::index:: the value to retrieve - both of these arguments can themselves be link::Classes/Pattern::s.
+argument::listPat
+the array. Can be a link::Classes/Pattern::.
+
+argument::indexPat
+the value to retrieve. Can be a link::Classes/Pattern::.
 
 argument::repeats
 specifies the number of repeats.

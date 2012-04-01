@@ -25,6 +25,8 @@ argument:: m
 Modulus amount
 argument:: xi
 Initial value of x
+argument:: mul
+argument:: add
 
 examples::
 code::

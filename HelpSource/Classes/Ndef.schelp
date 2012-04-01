@@ -43,6 +43,9 @@ Return a new node proxy and store it in a global ProxySpace under the key. If th
 argument::key
 If key is an association, it is interpreted as strong::key -> server name::. (order changed in SC3.3 !). If no name is given, it uses the default server that was default when Ndef was first called. (to change it, see link::#*defaultServer::).
 
+argument::object
+an object
+
 method::ar
 equivalent to code::*new(key).ar(numChannels, offset):: (see link::Classes/NodeProxy:: help for ar method)
 

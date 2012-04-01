@@ -9,9 +9,9 @@ classmethods::
 method:: ar, kr
 A special case fixed filter.
 
-argument:: in
+argument:: input
 signal input
-argument:: thresh
+argument:: threshold
 threshold
 
 discussion::

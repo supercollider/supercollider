@@ -115,11 +115,11 @@ argument:: stringColor
 An instance of link::Classes/Color::. The code::stringColor:: of the label and unit views.
 argument:: textBackground
 An instance of link::Classes/Color::. The code::background:: of the textField.
-argument:: numStringColor
+argument:: textStringColor
 An instance of link::Classes/Color::. The code::stringColor:: of the textField.
-argument:: numNormalColor
+argument:: textNormalColor
 An instance of link::Classes/Color::. The code::normalColor:: of the textField.
-argument:: numTypingColor
+argument:: textTypingColor
 An instance of link::Classes/Color::. The code::typingColor:: of the textField.
 argument:: background
 An instance of link::Classes/Color::. The code::background:: of the enclosing view.

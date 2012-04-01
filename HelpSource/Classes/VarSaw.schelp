@@ -23,6 +23,9 @@ initial phase offset in cycles ( 0..1 )
 argument::width
 duty cycle from zero to one.
 
+argument::mul
+
+argument::add
 
 Examples::
 

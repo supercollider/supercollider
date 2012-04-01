@@ -50,7 +50,7 @@ d.put("abc", 10);
 ::
 argument::key
 key to associate with object. This can be any objects, but is often a link::Classes/Symbol::.
-argument::obj
+argument::value
 an object
 
 method::removeAt

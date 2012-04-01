@@ -157,7 +157,7 @@ A JITGui watches the state of its object by calling its (the gui's) link::#-getS
 
 subsection::How JITGuis work: Methods that subclasses should implement
 
-You can write your own subclasses to JITGui very efficiently by implementing appropriate variants of the following methods in your class. For examples of these methods, see link::Classes/TaskProxyGui::, link::Classes/EnvirGui::, link::Classes/NodeProxyGui::.
+You can write your own subclasses to JITGui very efficiently by implementing appropriate variants of the following methods in your class. For examples of these methods, see link::Classes/TdefGui::, link::Classes/EnvirGui::, link::Classes/NdefGui::.
 
 method::setDefaults
 used to calculate the required onscreen size for the jitGui's zone. Should determine zone size based on link::#-numItems:: and options. also, link::#-defPos:: (where to show your jitGui by default) can be set here, and possibly modifications to the skin used.

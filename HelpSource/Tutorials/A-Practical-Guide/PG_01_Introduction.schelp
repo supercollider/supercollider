@@ -24,7 +24,7 @@ definitionList::
 ## link::Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind:: || Pattern-based musical sequencing with Pbind and cousins
 ## link::Tutorials/A-Practical-Guide/PG_04_Words_to_Phrases:: || Nesting patterns, arranging music in terms of phrases
 ## link::Tutorials/A-Practical-Guide/PG_05_Math_on_Patterns:: || Performing math and collection operations on patterns
-## link::Tutorials/A-Practical-Guide/PG_06_Filter_Patterns:: || Overview of patterns that modify the behavior of other patterns
+## link::Tutorials/A-Practical-Guide/PG_060_Filter_Patterns:: || Overview of patterns that modify the behavior of other patterns
 ## link::Tutorials/A-Practical-Guide/PG_06a_Repetition_Contraint_Patterns:: || Patterns that repeat values, or cut other patterns off early
 ## link::Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns:: || Patterns using time as the basis for their evaluation
 ## link::Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns:: || Making multiple event patterns act as one

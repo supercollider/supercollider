@@ -15,6 +15,8 @@ argument:: lagTimeU
 60 dB lag time in seconds for the upgoing signal.
 argument:: lagTimeD
 60 dB lag time in seconds for the downgoing signal.
+argument:: mul
+argument:: add
 
 examples::
 code::

@@ -11,6 +11,8 @@ method:: ar, kr
 
 argument:: which
 argument:: array
+argument:: wrap
+wrap does not work yet.
 
 examples::
 code::

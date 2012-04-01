@@ -48,7 +48,7 @@ METHOD:: increment
 METHOD:: decrement
     Decrements the value by link::#-keystep:: multiplied by the argument.
 
-    argument:: factor
+    argument:: zoom
         A Number.
 
 

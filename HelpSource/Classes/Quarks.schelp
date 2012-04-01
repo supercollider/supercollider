@@ -36,11 +36,23 @@ Check out a specific quark.
 argument:: name
 Name of quark to checkout.
 
+argument:: version
+A link::Classes/Float:: indicating which version of the quark to checkout.
+
+argument:: sync
+A link::Classes/Boolean::
+
 METHOD:: install
 Install a specific quark, by linking it into the user extensions folder.
 
 argument:: name
 Name of quark.
+
+argument:: includeDependencies
+A link::Classes/Boolean::
+
+argument:: checkoutIfNeeded
+A link::Classes/Boolean::
 
 METHOD:: uninstall
 Uninstall quark.

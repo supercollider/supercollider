@@ -6,7 +6,7 @@ related:: Classes/Object
 DESCRIPTION::
 
 SimpleController can be used as a controller according to the model-view-controller (M-V-C) paradigm. It provides an
-link::Class/IdentityDictionary:: of actions, which are called whenever the attached model sends a notification by
+link::Classes/IdentityDictionary:: of actions, which are called whenever the attached model sends a notification by
 calling changed.
 
 

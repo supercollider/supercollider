@@ -1,5 +1,5 @@
 class:: Decay2
-summary:: Exponential decay.
+summary:: Exponential decay
 related:: Classes/Decay
 categories::  UGens>Filters>Linear, UGens>Envelopes
 
@@ -32,6 +32,10 @@ argument::decayTime
 
 60 dB decay time in seconds.
 
+
+argument::mul
+
+argument::add
 
 
 Examples::

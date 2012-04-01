@@ -22,6 +22,8 @@ argument::b
 Equation variable
 argument::xi
 Initial value of x
+argument::mul
+argument::add
 
 examples::
 code::

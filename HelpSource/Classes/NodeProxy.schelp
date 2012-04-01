@@ -136,7 +136,11 @@ decay time for this action
 method::end
 releases the synths and stops playback.
 
-argument::fadeTime: decay time for this action
+argument::fadeTime
+decay time for this action
+
+argument::reset
+a boolean
 
 method::ar, kr
 return a link to my output, which is limited by [numChannels]. causes an uninitialized proxy to create a matching bus. normally strong::ar:: defaults to stereo, strong::kr:: to mono. this can be set in the classvars: link::#*defaultNumAudio::, link::#*defaultNumControl::.
@@ -242,6 +246,9 @@ Release all running synths and the group. If patterns are playing, stop them.
 argument::fadeTime
 decay time for this action
 
+argument::freeGroup
+a boolean
+
 method::release
 release running synths. If patterns are playing, stop them.
 
@@ -339,6 +346,9 @@ Returns the link::Classes/ControlName:: objects of all slots, strong::except:: t
 method::controlKeys
 Returns the keys (symbols) of all control names objects of all slots, strong::except:: the names of this list. (default: none).
 
+argument::except
+list of names
+
 argument::noInternalKeys
 If noInternalKeys is true (default: true), it ignores the keys code::[\out, \i_out, \gate, \fadeTime]:: .
 
@@ -347,19 +357,6 @@ Get all key value pairs from both link::Classes/NodeMap:: (the settings) and def
 
 method::controlKeysValues
 Get all key value pairs from default arguments.
-
-subsection::Bus-like behaviour
-
-In some ways, NodeProxy behaves like a link::Classes/Bus:: :
-
-method::line
-set my bus to the new value in dur time linearly
-
-method::xline
-set my bus to the new value in dur time exponentially
-
-method::gate
-gate my bus to the level value for dur time
 
 subsection::Sending synths to server
 
@@ -389,9 +386,6 @@ Like send, just iterating seperately over the objects.
 
 method::wakeUp
 Until the proxy is not used by any output ( either .play or .ar/.kr ) it is not running on the server. you can wake it up to force it playing. Normally this is not needed.
-
-method::record
-record output to file (returns a link::Classes/RecNodeProxy:: that you can use for control)
 
 subsection::GUI
 
@@ -439,8 +433,8 @@ definitionList::
 
 ## crucial library: ||
 definitionList::
-## link::Classes/AbstractPlayer:: || started in a separate bus, mapped to this bus
-## link::Classes/Instr:: || converted to player and started
+## AbstractPlayer || started in a separate bus, mapped to this bus
+## Instr || converted to player and started
 ::
 ::
 

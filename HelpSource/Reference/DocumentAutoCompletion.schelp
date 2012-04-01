@@ -8,7 +8,7 @@ The SCEL interface in Linux has its own autocompletion function, accessed by typ
 
 Autocompletion is not available in the Windows version as of this writing.
 
-Another way to get information about classes and methods is the class browser, accessed by calling code::.browse:: on a class, e.g. code::Object.browse::. The browser is available in the OSX version, as well as any platform where link::Classes/SwingOSC:: (http://www.sciss.de/swingOSC) is installed.
+Another way to get information about classes and methods is the class browser, accessed by calling code::.browse:: on a class, e.g. code::Object.browse::. The browser is available in the OSX version, as well as any platform where SwingOSC (http://www.sciss.de/swingOSC) is installed.
 
 section:: Usage
 
@@ -97,7 +97,7 @@ Because the class browser does not show methods defined by superclasses, you may
 
 section:: Further configuration
 
-Use the startup file (see link::Guides/Using-the-Startup-File::) to define class names and method names to be excluded from the browsers. I like to exclude the most common flow of control mechanisms (code::while::, code::do::, code::if::, etc.).
+Use the startup file (see link::Reference/StartupFile::) to define class names and method names to be excluded from the browsers. I like to exclude the most common flow of control mechanisms (code::while::, code::do::, code::if::, etc.).
 code::
 AutoCompMethodBrowser.exclude([\if, \do, \while, \loop, \collect, \select, \reject, \detect, \add, \put, \at]);
 AutoCompClassBrowser.exclude([... list of classes ...]);

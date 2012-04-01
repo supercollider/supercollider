@@ -12,7 +12,7 @@ argument::list
 argument::repeats
 number of segments.
 
-argument::length
+argument::len
 length of each segment.
 
 argument::step

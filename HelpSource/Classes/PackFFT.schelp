@@ -13,10 +13,25 @@ private:: categories
 
 method:: new
 
+argument:: chain
+The link::Classes/FFT:: chain
+
+argument:: bufsize
+FFT buffer size
+
 argument:: magsphases
 The input data should be a flat array containing magnitude and phase of all bins in ascending order.
 e.g. code:: [mag0, phase0, mag1, phase1, mag2, phase2, ... magN, phaseN] ::
 This input is typically demand-rate.
+
+argument:: frombin
+restricts the frequency band
+
+argument:: tobin
+restricts the frequency band
+
+argument:: zeroothers
+set to 1 to zero all the magnitudes outside the restricted frequency band
 
 discussion::
 This is technically similar to Demand or Duty in that it calls demand-rate UGens further up the graph to process the values, eventually calling UnpackFFT. These two ends of the process must in most cases see the same chain...! Otherwise behaviour is undefined and, who knows, possibly unpleasant.

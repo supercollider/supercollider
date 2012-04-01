@@ -13,9 +13,9 @@ CLASSMETHODS::
 private:: initClass, cmdPeriod
 
 METHOD:: defaultDispatchers
-Get or set an link::Classes/IndentityDictionary:: containing the default dispatcher objects for MIDIFuncs of different types (these are what you get if you pass nil as the dispatcher argument to link::#*new::). These objects will decide if any of their registered MIDIFuncs should respond to an incoming MIDI message. The dictionary should have the keys code::[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend]:: and values of an appropriate subclass of link::Classes/AbstractDispatcher:: for each message type. By default these will be instances of link::Classes/MIDIMessageDispatcher:: for the the first four message types, and instances of link::Classes/MIDIMessageDispatcherNV:: for the last three.
+Get or set an link::Classes/IdentityDictionary:: containing the default dispatcher objects for MIDIFuncs of different types (these are what you get if you pass nil as the dispatcher argument to link::#*new::). These objects will decide if any of their registered MIDIFuncs should respond to an incoming MIDI message. The dictionary should have the keys code::[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend]:: and values of an appropriate subclass of link::Classes/AbstractDispatcher:: for each message type. By default these will be instances of link::Classes/MIDIMessageDispatcher:: for the the first four message types, and instances of link::Classes/MIDIMessageDispatcherNV:: for the last three.
 
-returns:: The getter returns an link::Classes/IndentityDictionary::.
+returns:: The getter returns an link::Classes/IdentityDictionary::.
 
 METHOD:: new
 Create a new, enabled MIDIFunc. Normally one would use one of the message type specific convenience methods below, rather than use this method directly.

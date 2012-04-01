@@ -13,9 +13,6 @@ Returns whether the file is open. An open request can fail if a file cannot be f
 method::pos
 Answer the current file position
 
-method:: seek
-Seek to an offset from the origin.
-
 argument::offset
 an offset in bytes.
 

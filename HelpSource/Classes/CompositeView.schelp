@@ -45,7 +45,7 @@ c.resize_(6); // contents adust since coords are relative
 
 subsection:: Keydown Bubbling
 
-Key actions "bubble up" to the parent view if a view does not define one itself. In the following example, a and b do not have keyDown actions themselves, so the key event is passed to c, the parent, which defines the key down action. d's parent is the link::Classes/SCTopView::, which has no key down action. See also link::Classes/View::.
+Key actions "bubble up" to the parent view if a view does not define one itself. In the following example, a and b do not have keyDown actions themselves, so the key event is passed to c, the parent, which defines the key down action. d's parent is the SCTopView, which has no key down action. See also link::Classes/View::.
 code::
 ( //Click on the different views and hit keys on the keyboard.
 
@@ -70,7 +70,7 @@ d.background = Color.black;
 
 subsection:: Decorators
 
-A 'decorator' object can be set to handle layout management. All views added to the CompositeView will now be placed by the decorator. Currently the only one existing is link::Classes/FlowLayout::. You can use the link::Classes/ContainerView#addFlowLayout:: method as a short cut to assigning FlowLayout to decorator.
+A 'decorator' object can be set to handle layout management. All views added to the CompositeView will now be placed by the decorator. Currently the only one existing is link::Classes/FlowLayout::. You can use the ContainerView's addFlowLayout method as a short cut to assigning FlowLayout to decorator.
 code::
 (
 a = Window.new;

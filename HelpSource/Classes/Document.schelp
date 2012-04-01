@@ -119,7 +119,7 @@ A class for implementing Document, e.g. link::Classes/CocoaDocument::.
 
 method:: postColor
 Get / set the listeners pen color.
-argument:: color
+argument:: col
 An instance of link::Classes/Color::.
 discussion::
 code::
@@ -551,10 +551,12 @@ doc.getSelectedLines(doc.selectionStart - 40, 130).postln;
 
 method:: string
 Gets or sets the string within a certain range.
+argument:: string
+A link::Classes/String::.
 argument:: rangestart
-An link::Classes/Integer::. Default value is code::nil::.
+An link::Classes/Integer::.
 argument:: rangesize
-An link::Classes/Integer::. Default value is 1.
+An link::Classes/Integer::.
 discussion::
 code::
 // Select the following code in parentheses and execute it
@@ -573,7 +575,7 @@ An instance of link::Classes/Font::.
 argument:: rangestart
 An link::Classes/Integer::. Default value is -1. If code::rangestart = -1::, the whole document is selected.
 argument:: rangesize
-An link::Classes/nteger::. Default value is 0.
+An link::Classes/Integer::. Default value is 0.
 discussion::
 code::
 // Select the following code in parentheses and execute it

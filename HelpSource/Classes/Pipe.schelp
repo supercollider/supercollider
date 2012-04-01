@@ -23,6 +23,9 @@ private::prClose, prOpen
 method::open
 Open the file.
 
+argument::commandLine
+A command line link::Classes/String:: passed to popen.
+
 argument::mode
 A link::Classes/String:: passed to popen, so should be one of: "r","w"
 

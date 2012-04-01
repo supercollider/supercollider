@@ -68,7 +68,7 @@ METHOD:: setColor
 METHOD:: textColors
 	The text colors of the data fields.
 
-	ARGUMENT:: colors
+	ARGUMENT:: textColors
 		An array of Colors, each for the color of one data field.
 
 METHOD:: setTextColor

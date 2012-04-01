@@ -87,8 +87,6 @@ classmethods::
 method:: new
 argument:: name
 Plot window title.
-argument:: parent
-Either a link::Classes/Window:: / link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
 argument:: bounds
 The window bounds (a link::Classes/Rect::).
 discussion::
@@ -98,6 +96,8 @@ a = Plotter("the plot", Rect(600, 30, 800, 250));
 a.value = (0..1000).normalize(0, 14pi).curdle(0.01).scramble.flat.sin;
 )
 ::
+argument:: parent
+Either a link::Classes/Window:: / link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
 
 
 instancemethods::
@@ -106,9 +106,9 @@ subsection:: Accessing Instance Variables
 
 method:: makeWindow
 Open given plotter in a new window or within a given composite view.
-argument:: parent
+argument:: argParent
 Either a link::Classes/Window:: or link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
-argument:: bounds
+argument:: argBounds
 The window bounds (a link::Classes/Rect::).
 
 method:: plotMode

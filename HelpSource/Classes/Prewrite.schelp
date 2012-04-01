@@ -11,8 +11,14 @@ ClassMethods::
 
 method::new
 
+argument::pattern
+starting value
+
 argument::dict
 a dictionary or an event.
+
+argument::levels
+number of levels
 
 code::
 IdentityDictionary[
