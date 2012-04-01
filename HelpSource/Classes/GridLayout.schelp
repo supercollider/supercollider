@@ -41,7 +41,7 @@ METHOD:: rows
 
     Creates a GridLayout and fills each row with an array of items given as arguments.
 
-    argument:: rows
+    argument:: ... rows
 
     Each argument is an Array of items to form a consecutive row. An item can be a strong::view::, another strong::layout::, or strong::nil:: for an empty cell.
 
@@ -66,7 +66,7 @@ METHOD:: columns
 
     Creates a GridLayout and fills each column with an array of items given as arguments.
 
-    argument:: cols
+    argument:: ... cols
 
     Each argument is an Array of items to form a consecutive column. An item can be a strong::view::, another strong::layout::, or strong::nil:: for an empty cell.
 

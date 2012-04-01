@@ -99,7 +99,7 @@ An link::Classes/Image::. The default image is the SC cube.
 METHOD:: numTicks
 The number of ticks to display in the view's scale.
 
-argument:: ticks
+argument:: number
 An link::Classes/Integer:: >= 0.
 
 code::(
@@ -114,7 +114,7 @@ a.value = 0.5;
 METHOD:: numMajorTicks
 The number of ticks in the view's scale which will be large sized.
 
-argument:: ticks
+argument:: number
 An link::Classes/Integer:: >= 0.
 
 code::(

@@ -15,7 +15,7 @@ ClassMethods::
 
 method::new
 
-argument::patterns
+argument:: ... patterns
 The patterns to be chained up.
 
 InstanceMethods::

@@ -21,9 +21,6 @@ An link::Classes/Integer:: between 0 and 15 that selects which MIDI channel to m
 argument::num
 An link::Classes/Integer:: between 0 and 127 that selects which program change number to match. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val >= 4 }
 
-argument::value
-An link::Classes/Integer:: between 0 and 127 to filter values. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val < 50 }
-
 argument::install
 If true, install the responder automatically so it is active and ready to respond. If false, then it will be inactive.
 

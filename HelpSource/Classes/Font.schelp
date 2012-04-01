@@ -28,7 +28,7 @@ A Boolean.
 argument:: italic
 A Boolean.
 
-argument:: isPointSize
+argument:: usePointSize
 A Boolean. Whether to regard the strong::size:: argument as point-size - adapting to the screen resolution.
 
 discussion::
@@ -66,18 +66,12 @@ Gets/sets the default Font.
 
 method:: sansSerif
 Create a new sans serif face Font.
-argument:: size
-An instance of link::Classes/Float::.
 
 method:: monospace
 Create a new monospace face Font.
-argument:: size
-An instance of link::Classes/Float::.
 
 method:: serif
 Create a new serif face Font.
-argument:: size
-An instance of link::Classes/Float::.
 
 instancemethods::
 
@@ -90,7 +84,7 @@ method:: size
 Gets/sets the size of the font.
 note:: In Qt GUI, setting this variable is always considered as setting the link::#-pixelSize::, while getting it will return any size set. In other GUI kits, size is always considered as pixel-size anyway. See link::#-hasPointSize:: for distinction.::
 
-argument:: value
+argument:: pixelSize
 A Float.
 
 method:: hasPointSize

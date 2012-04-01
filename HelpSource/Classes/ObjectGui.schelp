@@ -51,7 +51,7 @@ Usually a FlowView : a parent view with a FlowLayout to add views to.
 argument:: bounds
 nil or a Rect.
 
-argument:: args
+argument:: ... args
 More args may be passed here.
 
 returns:: this
