@@ -241,6 +241,10 @@ function matchDoc(doc,file,folder,re) {
         }
     }
 
+    if(doc.hasOwnProperty('path') && checkboxes[0].checked && re.test(file)) {
+        return true;
+    }
+
     if(doc.hasOwnProperty('keywords')) {
         for(var i=0;i<doc.keywords.length;i++) {
             var kw = doc.keywords[i];
@@ -654,7 +658,7 @@ Search text:<input type="text" id="search_input" value="" size="40" onkeyup="Sea
 <td>Match:
 <td>
 <div id="search_checks">
-<input type="checkbox" id="check_title" checked="true">Title/Class</input>
+<input type="checkbox" id="check_title" checked="true">Title/Filename</input>
 <input type="checkbox" id="check_summary" checked="true">Summary</input>
 <input type="checkbox" id="check_categories">Categories</input>
 <input type="checkbox" id="check_methods" checked="true">Methods</input>
