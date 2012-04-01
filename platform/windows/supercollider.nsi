@@ -20,7 +20,18 @@ Var GEDIT_DIR
 !define MUI_LICENSEPAGE_TEXT_TOP "Please review the license below."
 !define MUI_LICENSEPAGE_TEXT_BOTTOM \
     "By installing this software you implicitely agree with this license."
-!insertmacro MUI_PAGE_LICENSE SuperCollider\COPYING
+!insertmacro MUI_PAGE_LICENSE SuperCollider\LICENSE.txt
+
+!define MUI_PAGE_HEADER_TEXT "Instructions"
+!define MUI_PAGE_HEADER_SUBTEXT \
+    "Useful information regarding installation and usage"
+!define MUI_LICENSEPAGE_TEXT_BOTTOM \
+    "These instructions will be available after installation \
+    in a README.txt file."
+!define MUI_LICENSEPAGE_BUTTON "Next >"
+;!define MUI_LICENSEPAGE_TEXT_BOTTOM \
+    ;"By installing this software you implicitely agree with this license."
+!insertmacro MUI_PAGE_LICENSE SuperCollider\README.txt
 
 !define MUI_PAGE_HEADER_TEXT "Installation components"
 !insertmacro MUI_PAGE_COMPONENTS
