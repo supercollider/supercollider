@@ -481,7 +481,7 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 	g->gc->GCWriteNew(complexobj, imagobj);
 
 	inreal = (float*)slotRawObject(a)->slots - 1;
-	if (NotNil(b)) {
+	if (IsNil(b)) {
 
 		fftbuf = (float*)fftoutobj->slots - 1;
 		for (i=0; i<asize; ++i) {
