@@ -306,7 +306,7 @@ SCDocHTMLRenderer {
     }
 
     *renderSubTree {|stream, node|
-        var f;
+        var f, z;
         switch(node.id,
             \PROSE, {
                 if(noParBreak) {
@@ -522,15 +522,24 @@ SCDocHTMLRenderer {
                     };
                 } {
                     stream << if(currentMethod.isNil or: {currArg < currentMethod.argNames.size}) {
-                        if(currentMethod.notNil and: {currentMethod.argNames[currArg] != node.text.asSymbol}) {
-                            "SCDoc: In %\n"
-                            "       Method %% has arg named '%', but doc has 'argument:: %'.".format(
-                                currDoc.fullPath,
-                                if(currentMethod.ownerClass.isMetaClass) {"*"} {"-"},
-                                currentMethod.name,
-                                currentMethod.argNames[currArg],
-                                node.text,
-                            ).warn;
+                        currentMethod !? {
+                            f = currentMethod.argNames[currArg].asString;
+                            if( // yes, this is a bit hairy..
+                                if(currentMethod.varArgs and: {currArg==(currentMethod.argNames.size-1)}) {
+                                    (("..."++f) != node.text) and: {("... "++f) != node.text}
+                                } {
+                                    f != node.text;
+                                }
+                            ) {
+                                "SCDoc: In %\n"
+                                "       Method %% has arg named '%', but doc has 'argument:: %'.".format(
+                                    currDoc.fullPath,
+                                    if(currentMethod.ownerClass.isMetaClass) {"*"} {"-"},
+                                    currentMethod.name,
+                                    currentMethod.argNames[currArg],
+                                    node.text,
+                                ).warn;
+                            };
                         };
                         node.text;
                     } {
