@@ -89,6 +89,8 @@ argument:: name
 Plot window title.
 argument:: bounds
 The window bounds (a link::Classes/Rect::).
+argument:: parent
+Either a link::Classes/Window:: / link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
 discussion::
 code::
 (
@@ -96,9 +98,6 @@ a = Plotter("the plot", Rect(600, 30, 800, 250));
 a.value = (0..1000).normalize(0, 14pi).curdle(0.01).scramble.flat.sin;
 )
 ::
-argument:: parent
-Either a link::Classes/Window:: / link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
-
 
 instancemethods::
 
@@ -134,7 +133,7 @@ a.plotMode = \linear; a.refresh;
 
 method:: setProperties
 Set properties of all plot views. Defaults are taken from code::GUI.skin.at(\plot);::
-argument:: pairs
+argument:: ... pairs
 A list of symbol,value pairs. Supported properties:
 list::
 ## font

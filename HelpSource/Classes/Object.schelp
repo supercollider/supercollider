@@ -479,7 +479,7 @@ method::multiChannelPerform
 Perform selector with multichannel-expansion.
 argument:: selector
 A Symbol representing a method selector.
-argument:: args
+argument:: ... args
 Method arguments, which if they contain an array, will call the method multiple times for each sub-element.
 discussion::
 Example:

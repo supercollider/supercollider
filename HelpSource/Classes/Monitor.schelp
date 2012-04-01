@@ -31,6 +31,8 @@ volume at which to monitor
 argument::fadeTime
 fade in fade out time
 
+argument::addAction
+
 method::playN
 
 the arguments strong::out::, strong::amp:: and strong::in:: can be nested arrays. see also link::Reference/playN::

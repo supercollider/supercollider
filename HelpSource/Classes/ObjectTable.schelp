@@ -10,9 +10,6 @@ CLASSMETHODS::
 
 private::initClass
 
-method::init
-Create the main ObjectTable. This is called in link::Classes/Main#-startUp::.
-
 method::add
 Put an object in the main ObjectTable and generate an Integer id.
 argument::obj

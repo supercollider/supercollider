@@ -165,7 +165,7 @@ The scheme to add.
 method:: doesNotUnderstand
 All method calls are mapped to the current scheme, so that for example code::GUI.button:: can be used and is delegated to the button association of the current scheme.
 argument:: selector
-argument:: args
+argument:: ... args
 
 method:: setSkin
 argument:: skinName
