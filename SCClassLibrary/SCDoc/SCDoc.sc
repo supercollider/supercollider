@@ -109,10 +109,8 @@ SCDocEntry {
         var hdr, bdy;
         path = aPath;
         if(node.isNil) {^this};
-        isClassDoc = (path.dirname=="Classes");
         #hdr, bdy = node.children;
         isExtension = false;
-        klass = nil;
         isUndocumentedClass = false;
         doccmethods = IdentitySet();
         docimethods = IdentitySet();
@@ -136,8 +134,14 @@ SCDocEntry {
             warn("SCDoc:"+path+"has no title!");
             title = "(Untitled)";
         };
-        if(isClassDoc and: { title != path.basename }) {
-            warn("SCDoc:"+path+"title and filename mismatch. Must be same for class docs!");
+        if(isClassDoc = (path.dirname=="Classes")) {
+            klass = title.asSymbol.asClass;
+//            if(klass.isNil) {
+//                warn("SCDoc:"+path++": No such class!");
+//            };
+            if(title != path.basename ) {
+                warn("SCDoc:"+path++": Title and filename mismatch. Must be same for class docs!");
+            };
         };
         if(categories.isNil) {
             warn("SCDoc:"+path+"has no categories!");
@@ -186,16 +190,14 @@ SCDocEntry {
     }
 
     indexUndocumentedMethods {
-        var class;
         var ignoreMethods = IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset, \initClass, \storeArgs, \storeOn, \printOn];
         var syms, name, mets, l = Array.new;
         var docmets = IdentitySet.new;
 
-        class = title.asSymbol.asClass;
-        if(class.isNil) {
+        if(klass.isNil) {
             ^this
         };
-        klass = class;
+
         if(redirect.notNil) {
             try { implKlass = klass.perform(redirect.asSymbol) };
         } {
@@ -203,7 +205,7 @@ SCDocEntry {
         };
                     
         docmets = docimethods | privimethods | ignoreMethods;
-        (mets = class.methods) !? {
+        (mets = klass.methods) !? {
             mets.collectAs({|m|m.name.asGetter},IdentitySet).do {|name|
                 if(docmets.includes(name).not) {
                     undocimethods = undocimethods.add(name);
@@ -212,7 +214,7 @@ SCDocEntry {
         };
 
         docmets = doccmethods | privcmethods | ignoreMethods;
-        (mets = class.class.methods) !? {
+        (mets = klass.class.methods) !? {
             mets.collectAs({|m|m.name.asGetter},IdentitySet).do {|name|
                 if(docmets.includes(name).not) {
                     undoccmethods = undoccmethods.add(name);
@@ -560,7 +562,7 @@ SCDoc {
                     or: {doc.mtime>destMtime}
                     or: {doc.additions.detect {|f| File.mtime(f)>destMtime}.notNil}
                     or: {File.mtime(this.helpTargetDir +/+ "scdoc_version")>destMtime}
-                    or: {doc.isClassDoc and: {File.mtime(doc.klass.filenameSymbol.asString)>destMtime}}
+                    or: {doc.klass.notNil and: {File.mtime(doc.klass.filenameSymbol.asString)>destMtime}}
                 ) {
                     this.parseAndRender(doc);
                 };

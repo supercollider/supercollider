@@ -532,8 +532,10 @@ SCDocHTMLRenderer {
                             f = currentMethod.argNames[currArg].asString;
                             if( // yes, this is a bit hairy..
                                 if(currentMethod.varArgs and: {currArg==(currentMethod.argNames.size-1)}) {
-                                    (("..."++f) != node.text) and: {("... "++f) != node.text}
+                                    z = "... "++f;
+                                    (("..."++f) != node.text) and: {z != node.text}
                                 } {
+                                    z = f;
                                     f != node.text;
                                 }
                             ) {
@@ -542,7 +544,7 @@ SCDocHTMLRenderer {
                                     currDoc.fullPath,
                                     if(currentMethod.ownerClass.isMetaClass) {"*"} {"-"},
                                     currentMethod.name,
-                                    currentMethod.argNames[currArg],
+                                    z,
                                     node.text,
                                 ).warn;
                             };
