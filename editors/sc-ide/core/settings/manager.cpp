@@ -18,38 +18,43 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_SETTINGS_EDITOR_PAGE_HPP_INCLUDED
-#define SCIDE_WIDGETS_SETTINGS_EDITOR_PAGE_HPP_INCLUDED
-
-#include <QWidget>
-
-namespace Ui {
-    class EditorConfigPage;
-}
+#include "manager.hpp"
+#include "serialization.hpp"
 
 namespace ScIDE { namespace Settings {
 
-class Manager;
-
-class EditorPage : public QWidget
+Manager::Manager( const QString & filename, QObject * parent ):
+    QObject(parent),
+    mSettings( new QSettings(filename, serializationFormat(), this) )
 {
-    Q_OBJECT
+    initDefaults();
+}
 
-public:
-    EditorPage(QWidget *parent = 0);
-    ~EditorPage();
+void Manager::initDefaults()
+{
+    // TODO
+}
 
-public Q_SLOTS:
-    void load( Manager * );
-    void store( Manager * );
+bool Manager::contains ( const QString & key ) const
+{
+    if ( mSettings->contains(key) )
+        return true;
+    else
+        return mDefaults.contains( resolvedKey(key) );
+}
 
-private Q_SLOTS:
-    void execSyntaxFormatContextMenu(const QPoint &);
+QVariant Manager::value ( const QString & key, const QVariant & dummy ) const
+{
+    // FIXME: remove dummy arg, and init default settings instead
+    if ( mSettings->contains(key) )
+        return mSettings->value(key);
+    else
+        return mDefaults.value(resolvedKey(key));
+}
 
-private:
-    Ui::EditorConfigPage *ui;
-};
+void Manager::setValue ( const QString & key, const QVariant & value )
+{
+    mSettings->setValue(key, value);
+}
 
 }} // namespace ScIDE::Settings
-
-#endif // SCIDE_WIDGETS_SETTINGS_EDITOR_PAGE_HPP_INCLUDED

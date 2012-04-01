@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "settings.hpp"
+#include "serialization.hpp"
 
 #include "yaml-cpp/yaml.h"
 
@@ -29,7 +29,7 @@
 #include <boost/iostreams/stream.hpp>
 #include <iostream>
 
-namespace ScIDE {
+namespace ScIDE { namespace Settings {
 
 typedef QSettings::SettingsMap::const_iterator SettingsIterator;
 
@@ -331,7 +331,7 @@ bool writeSettings(QIODevice &device, const QSettings::SettingsMap &map)
     }
 }
 
-QSettings::Format settingsFormat() {
+QSettings::Format serializationFormat() {
     static QSettings::Format format =
         QSettings::registerFormat( "yaml", readSettings, writeSettings );
 
@@ -368,4 +368,4 @@ void printSettings (const QSettings * settings)
     }
 }
 
-} // namespace ScIDE
+}} // namespace ScIDE::Settings

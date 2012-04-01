@@ -23,9 +23,10 @@
 
 #include <QSyntaxHighlighter>
 #include <QVector>
-#include <QSettings>
 
 namespace ScIDE {
+
+namespace Settings { class Manager; }
 
 class Main;
 
@@ -109,7 +110,7 @@ public:
     inline static const SyntaxHighlighterGlobals * instance() { Q_ASSERT(mInstance); return mInstance; }
 
 public Q_SLOTS:
-    void applySettings( QSettings * );
+    void applySettings( Settings::Manager * );
 
 Q_SIGNALS:
     void syntaxFormatsChanged();
@@ -121,7 +122,7 @@ private:
     void initSyntaxRules();
     void initKeywords();
     void initBuiltins();
-    void applySettings( QSettings*, const QString &key, SyntaxFormat );
+    void applySettings( Settings::Manager*, const QString &key, SyntaxFormat );
 
     QTextCharFormat mFormats[FormatCount];
     QTextCharFormat mDefaultFormats[FormatCount];

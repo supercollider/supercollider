@@ -11,6 +11,7 @@ set ( ide_moc_hdr
     core/sc_syntax_highlighter.hpp
     core/sc_process.hpp
     core/doc_manager.hpp
+    core/settings/manager.hpp
     widgets/main_window.hpp
     widgets/post_window.hpp
     widgets/code_edit.hpp
@@ -30,7 +31,8 @@ set ( ide_src
     core/doc_manager.cpp
     core/sc_syntax_highlighter.cpp
     core/sc_process.cpp
-    core/settings.cpp
+    core/settings/serialization.cpp
+    core/settings/manager.cpp
     widgets/main_window.cpp
     widgets/code_edit.cpp
     widgets/multi_editor.cpp

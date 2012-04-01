@@ -24,7 +24,6 @@
 #include <QTabWidget>
 #include <QAction>
 #include <QSignalMapper>
-#include <QSettings>
 
 namespace ScIDE {
 
@@ -33,6 +32,8 @@ class Document;
 class DocumentManager;
 class CodeEditor;
 class SignalMultiplexer;
+
+namespace Settings { class Manager; }
 
 class MultiEditor : public QTabWidget
 {
@@ -86,7 +87,7 @@ public Q_SLOTS:
     void saveDocumentAs();
     void closeDocument();
     void setCurrent( Document * );
-    void applySettings( QSettings * );
+    void applySettings( Settings::Manager * );
 
 private Q_SLOTS:
 
@@ -103,7 +104,6 @@ private:
     CodeEditor * editorForTab( int index );
     CodeEditor * editorForDocument( Document * );
 
-    Main *mMain;
     DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;
     QSignalMapper mModificationMapper;

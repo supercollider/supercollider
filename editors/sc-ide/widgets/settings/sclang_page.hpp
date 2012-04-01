@@ -22,13 +22,14 @@
 #define SCIDE_WIDGETS_SETTINGS_SCLANG_PAGE_HPP_INCLUDED
 
 #include <QWidget>
-#include <QSettings>
 
 namespace Ui {
     class SclangConfigPage;
 }
 
 namespace ScIDE { namespace Settings {
+
+class Manager;
 
 class SclangPage : public QWidget
 {
@@ -39,8 +40,8 @@ public:
     ~SclangPage();
 
 public Q_SLOTS:
-    void load( QSettings * );
-    void store( QSettings * );
+    void load( Manager * );
+    void store( Manager * );
 
 private:
     Ui::SclangConfigPage *ui;

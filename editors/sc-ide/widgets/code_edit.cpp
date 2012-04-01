@@ -21,7 +21,7 @@
 #include "code_edit.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/sc_syntax_highlighter.hpp"
-#include "../core/settings.hpp"
+#include "../core/settings/manager.hpp"
 
 #include <QPainter>
 #include <QPaintEvent>
@@ -171,7 +171,7 @@ void CodeEditor::setShowWhitespace(bool show)
     doc->setDefaultTextOption(opt);
 }
 
-void CodeEditor::applySettings( QSettings *s )
+void CodeEditor::applySettings( Settings::Manager *s )
 {
     s->beginGroup("IDE/editor");
 

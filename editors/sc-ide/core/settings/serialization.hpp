@@ -18,8 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_SETTINGS_HPP_INCLUDED
-#define SCIDE_SETTINGS_HPP_INCLUDED
+#ifndef SCIDE_CORE_SETTINGS_SERIALIZATION_HPP_INCLUDED
+#define SCIDE_CORE_SETTINGS_SERIALIZATION_HPP_INCLUDED
 
 #include <QSettings>
 #include <QTextCharFormat>
@@ -27,12 +27,11 @@
 Q_DECLARE_METATYPE( QVector<QVariant> );
 Q_DECLARE_METATYPE( QTextCharFormat );
 
-namespace ScIDE {
+namespace ScIDE { namespace Settings {
 
-QSettings::Format settingsFormat();
+QSettings::Format serializationFormat();
 
-void printSettings (const QSettings *);
 
-} // namespace ScIDE
+}} // namespace ScIDE::Settings
 
-#endif // SCIDE_SETTINGS_HPP_INCLUDED
+#endif // SCIDE_CORE_SETTINGS_SERIALIZATION_HPP_INCLUDED

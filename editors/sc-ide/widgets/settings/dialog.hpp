@@ -22,7 +22,6 @@
 #define SCIDE_WIDGETS_SETTINGS_DIALOG_HPP_INCLUDED
 
 #include <QDialog>
-#include <QSettings>
 
 namespace Ui {
     class ConfigDialog;
@@ -30,13 +29,15 @@ namespace Ui {
 
 namespace ScIDE { namespace Settings {
 
+class Manager;
+
 class Dialog : public QDialog
 {
     Q_OBJECT
 
 public:
 
-    Dialog( QSettings *settings, QWidget * parent = 0 );
+    Dialog( Manager *settings, QWidget * parent = 0 );
     ~Dialog();
 
 public Q_SLOTS:
@@ -46,11 +47,11 @@ public Q_SLOTS:
     virtual void reset();
 
 Q_SIGNALS:
-    void storeRequest( QSettings * );
-    void loadRequest( QSettings * );
+    void storeRequest( Manager * );
+    void loadRequest( Manager * );
 
 private:
-    QSettings *mSettings;
+    Manager *mManager;
     Ui::ConfigDialog *ui;
 };
 

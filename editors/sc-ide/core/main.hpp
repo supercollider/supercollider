@@ -23,11 +23,11 @@
 
 #include <QObject>
 #include <QAction>
-#include <QSettings>
 
 #include "sc_ipc.hpp"
 #include "sc_process.hpp"
 #include "doc_manager.hpp"
+#include "settings/manager.hpp"
 
 namespace ScIDE {
 
@@ -43,7 +43,7 @@ public:
         return singleton;
     }
 
-    QSettings *settings()                { return mSettings;    }
+    Settings::Manager *settings()       { return mSettings;    }
     DocumentManager * documentManager() { return mDocManager;  }
     SCProcess * scProcess(void)         { return mSCProcess;   }
     SCIpcServer *scIpcServer(void)      { return mSCIpcServer; }
@@ -61,13 +61,13 @@ public Q_SLOTS:
     void onSclangStart();
 
 Q_SIGNALS:
-    void storeSettingsRequest(QSettings *);
-    void applySettingsRequest(QSettings *);
+    void storeSettingsRequest(Settings::Manager *);
+    void applySettingsRequest(Settings::Manager *);
 
 private:
     Main(void);
 
-    QSettings *mSettings;
+    Settings::Manager *mSettings;
     SCProcess * mSCProcess;
     SCIpcServer *mSCIpcServer;
     DocumentManager *mDocManager;
