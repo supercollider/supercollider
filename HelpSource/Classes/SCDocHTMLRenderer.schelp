@@ -6,47 +6,33 @@ related:: Classes/SCDoc, Classes/SCDocParser, Guides/WritingHelp, Reference/SCDo
 description::
 This class is part of the SCDoc help system, and handles the rendering of the parsed document tree into HTML output.
 
-In normal cases you won't need to use this class directly, link::Classes/SCDoc:: uses this class to parse and render all help files.
+In normal cases you won't need to use this class directly, link::Classes/SCDoc:: uses this class by default to render help files.
 
 classmethods::
-method::new
-Create a renderer instance.
 
-method::enableClassLinksInCode
-Set this to false to disable generation of hypertext links for class names in example code.
+method:: renderOnStream
+Renders a parsed document as HTML onto given stream.
+argument:: stream
+A stream, for example a link::Classes/File:: instance.
+argument:: doc
+An instance of link::Classes/SCDocEntry::
+argument:: root
+An instance of link::Classes/SCDocNode::
 
-method::simplifyName
-Simplify a textstring by replacing spaces with underscores and making it all lowercase. Used to convert section names to anchor names.
-argument::txt
-The textstring to simplify.
-returns:: the simplified string.
+method:: renderToFile
+Opens a file and passes it to link::#*renderOnStream::
 
-method:: checkBrokenLinks
-Scans the entire help tree for broken links
+method:: htmlForLink
+Create a html string for the given scdoc link.
+argument:: link
+An scdoc link, such as a document key like "Classes/SinOsc", or an URL, or link to other file installed with the help.
+returns::
+A String
 
 method:: makeArgString
 Used internally.
 Returns:: A link::Classes/String:: representing the arguments (with defaults) for a link::Classes/Method::.
 
-instancemethods::
-
-private:: addUndocumentedMethods, renderFootNotes, renderTOC, escapeSpecialChars, renderHTMLSubTree, renderHTMLHeader, autoLinkClasses, renderClassTree
-
-method:: render
-Render the tree contained in the code::parser:: instance variable to HTML file.
-argument:: p
-An instance of link::Classes/SCDocParser:: holding a parsed document tree in code::.root::, which are to be rendered.
-argument:: filename
-The full path for the output filename.
-argument:: folder
-The directory part relative to the base directory of the help directory tree, like "Classes" or "Reference". This is used as a simple organization for document "kind".
-argument:: toc
-if true, create a table-of-contents.
-
-method:: findHelpFile
-returns:: the URL for help on given string
-discussion::
-If the string is empty or nil, return the home help page URL. If string is a class, return the URL for the helpfile for that class. If the string starts with uppercase but is not an existing class, then the Search page with this string. If the string starts with lowercase, then the Methods page for this method. (This page will redirect to Search if the method was not found)
 
 section:: CSS styling
 The rendered HTML reads the global style from teletype::scdoc.css::, but also reads teletype::frontend.css:: and teletype::custom.css:: (in that order) if available, to enable specific frontends and users to override the CSS.

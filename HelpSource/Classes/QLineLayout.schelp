@@ -26,7 +26,7 @@ METHOD:: new
 
 Create a link::Classes/HLayout:: or a link::Classes/VLayout:: and immediately fill it with items given as arguments. (Note that QLineLayout is an abstract class and can not be instantiated, but HLayout and VLayout inherit this constructor).
 
-argument:: items
+argument:: ... items
 Each item can be a strong::view::, a strong::layout::, strong::nil:: (for stretchable empty space) or an strong::Integer:: (for fixed-size empty space).
 
 discussion::

@@ -46,6 +46,8 @@ volume at which to monitor
 argument::fadeTime
 fade in fade out time
 
+argument:: addAction
+
 method::playN
 
 argument::outs
@@ -56,6 +58,11 @@ array of amplitudes for each channel
 
 argument::ins
 array of source channels
+
+argument:: vol
+argument:: fadetime
+argument:: group
+argument:: addAction
 
 method::monitor
 returns the current monitor (see link::Classes/Monitor::)

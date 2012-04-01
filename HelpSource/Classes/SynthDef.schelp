@@ -178,7 +178,10 @@ Compile the def and send it to server without writing to disk (thus avoiding tha
 
 method:: store
 Write the defFile and store it in the SynthDescLib specified by libname, and send a message to the library's server to load this file. When this asynchronous command is completed, the completionMessage (a valid OSC  message) is immediately executed by the server. Default for libname is \global, for dir is synthdefs/. This is needed to use defs with the event stream system. See Streams and Pattern.
-
+argument:: libname
+name of the link::Classes/SynthDescLib::
+argument:: dir
+argument:: completionMsg
 argument:: mdPlugin
 (optional) The metadata plug-in class that will be used to persist metadata. If not supplied, the default plug-in is used. See the SynthDesc help file for details.
 
