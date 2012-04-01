@@ -1,11 +1,15 @@
 ------------------------------------------------------------------------
-PsyCollider 3.2 (Supercollider 3.2 for Windows)
+Supercollider 3.5 for Windows
 ------------------------------------------------------------------------
 
 This is the Windows version of James McCartney's SuperCollider synthesis 
 engine (scsynth) and programming language (sclang). 
 Supercollider's main homepage is at
    http://supercollider.sourceforge.net/
+
+There is a lot of useful information and tutorials in the SuperCollider
+documentation which you can access online at
+    http://doc.sccode.org
 
 To get further information on SuperCollider usage or development, you
 should subscribe to the mailing lists:
@@ -15,182 +19,94 @@ should subscribe to the mailing lists:
 System Requirements
 ------------------------------------------------------------------------
 
-* Windows 2000/XP/Vista
-* Windows Installer 
+* Windows 7/Vista/XP/2000
+* (Optional) Gedit text editor
 
-Most common sound cards will work fine - the sound card should be one 
-that is supported by PortAudio (http://www.portaudio.com/). If you have 
-issues with latency, consult http://www.portaudio.com/docs/latency.html for 
-advice how to tune your operating system to achieve the best results 
+The preferred way to use SuperCollider on Windows is in combination
+with the Gedit text editor. SuperCollider for Windows comes with
+Sced - a plugin for Gedit that provides syntax highlighting for
+SuperCollider code, and allows easy interaction with SuperCollider
+from within the editor.
+
+NOTE: There is currently an issue on Windows XP that the default (local)
+synthesis server can not be started from within Gedit. To work around
+that, either use the internal server, or start up a server from command
+line and connect to it from Gedit. This issue is not present on Windows 7.
+
+Most common sound cards will work fine - the sound card should be one
+that is supported by PortAudio (http://www.portaudio.com/). If you have
+issues with latency, consult http://www.portaudio.com/docs/latency.html
+for advice on how to tune your operating system to achieve the best results
 (in short: use ASIO drivers wherever possible).
 
 ------------------------------------------------------------------------
-How to install, and how to launch
-------------------------------------------------------------------------
-To install, simply run "setup.exe" and PsyCollider will install on your 
-System (default location is Program Files\PsyCollider).
-
-Start PsyCollider from your start menu.
-
-NOTE: Your system must provide both audio input and audio output. Otherwise 
-the synthesis server will not start (see also sc-users mailinglist discussion)
-
-Paths and files you may want to be aware of:
-$PSYCOLLIDER_HOME$\startup.sc : system wide startup file
-$USER_HOME$\SuperCollider\startup.sc : user startup file
-$USER_HOME$\SuperCollider\Extensions : user extension folder for classes, plugins and help files
-
-
-------------------------------------------------------------------------
-    Note: THE FOLLOWING INFORMATION IS FOR DEVELOPERS ONLY!
-    Most people don't need to know how to build SC3 from scratch...
-------------------------------------------------------------------------
-Building
+Installation
 ------------------------------------------------------------------------
 
-To compile SuperCollider for yourself...
-Check out the latest source from supercollider.sourceforge.net 
+If you intend to use SuperCollider in combination with Gedit, please
+install the latest Gedit version for Windows prior to installing
+SuperCollider. You can download Gedit from this address:
 
-The following libraries are needed for compiling
-* libsndfile (included in the sc code tree)
-* portaudio
-* portmidi
-* pthread-Win32
-* fftw3
-* python
+http://ftp.gnome.org/pub/GNOME/binaries/win32/gedit/2.30/gedit-setup-2.30.1-1.exe
 
-You need Visual C++ 2008 (9.0) or the Express edition to build it. 
+The SuperCollider installer will ask you whether you also want to install
+Sced - the SuperCollider plugin for Gedit. If you decide so, you will be
+asked to specify the directory where you have installed Gedit (the installer
+will probably guess that automatically).
 
-Let's call ROOT the folder you checked out the SuperCollider code tree (contains "build", "Source" etc.)
-(Note that the SuperCollider code folder should be named "SuperCollider3" to avoid problems.)
+After installation, you can use SuperCollider in two ways:
+A) From within Gedit text editor (if you chose to install Sced).
+B) Via the command-line.
 
-1: Python 
-----------------------
-1) go to "http://python.org" and download and install the latest Python version (tested 2.5.1). 
-NOTE: get the Windows installer and make sure its the Unicode version and NOT the Ansii version.
-
-2) go to "http://wxpython.org" and download and install the corresponding wxPython binary (tested 2.8.6.1)
-NOTE: again you need the Unicode version.
-
-NOTE: make sure you have an environment variable set called PYTHONPATH pointing to the base directory of you installation (Should be done by python installer).
-
-2: Portaudio + ASIO
-----------------------
-- reminder : you do NOT need to build portaudio. this is taken care of by the msvc project.
-
-1) go to "http://www.portaudio.com/" and download pa_snapshot_v19.tar.gz
-(main page --> CVS (left menu) --> pa_snapshot_v19.tar.gz in the "v19-devel" branch section)
-
-2) uncompress it in the ROOT folder. normally, the portaudio folder has the correct name "portaudio".
-folders must be like that :
-
-...
-ROOT\..\portaudio\docs
-ROOT\..\portaudio\src
-....
-
-3) go to steinberg.net --> support --> 3rd party Developers (menu on the right) --> ASIO SDK Download. 
-If you agree on legal junk, you can enter a valid email address (please note that i do NOT know if you can safely Disagree with Steinberg sending your email address to commercial partners and receive the SDK info anyway...). 
-
-4) once you receive the email (it took 5 minutes here), you can download asiosdk2.zip, copy and uncompress it to a temp folder. you must then copy some parts of the asio2 sdk to the PortAudio source tree.
-
-5) unpack the zip and put it next to portaudio. 
-
-...
-ROOT\..\asio-sdk\common
-ROOT\..\asio-sdk\driver
-...
-
-3: Portmidi
------------
-- reminder : you do NOT need to build portmidi. this is taken care of by the msvc project.
-
-1) checkout version 8 from http://portmedia.svn.sourceforge.net/svnroot/portmedia/portmidi/trunk/
-
-the folder structure needs to be like this:
-...
-ROOT\..\portmidi\pm_common\
-ROOT\..\portmidi\portmidi.dsp\
-...
-
-4: Pthread-win32
-------------------------
-- reminder : you do NOT need to build pthread-win32. this is taken care of by the msvc project.
-
-1) go to : "ftp://sources.redhat.com/pub/pthreads-win32" and get "pthreads-snap-yyyy-mm-dd.tar.gz". (known to work with "pthreads-snap-2005-01-25.tar.gz")
-uncompress it and rename the folder to "pthread-win32" so that the source tree looks like :
-
-...
-ROOT\..\pthread-win32\tests
-ROOT\..\pthread-win32\announce
-ROOT\..\pthread-win32\attr.c
-...
-NOTE : the home page is "http://sources.redhat.com/pthreads-win32"
-
-
-5: fftw3
------------------------
-
-1) go to: "http://www.fftw.org/install/windows.html" and download the "PRECOMPILED WINDOWS DLL".
-
-...
-ROOT\..\fftw3
-...
-
-You also need to run the instructions in the readme that accompany the fftw3 download, which tell you 
-how to generate "lib" files for your system.
-
-
-6: libsndfile
------------------------
-
-NOTE: THIS SECTION ABOUT LIBSNDFILE MAY BE OUT OF DATE. Libsndfile windows headers are now included by default. Please first try skipping this section, then come back if it doesn't work.
-
-Some libsndfile files are included in the sc3 source distribution - however, you need to do a couple of things to get libsndfile stuff compiling correctly on your system:
-
-* go to http://www.mega-nerd.com/libsndfile/#Download section and download the "Windows zip file including precompiled binaries"
-* that zip file contains a readme with some instructions. Follow them.
-* When done, place the following files into SuperCollider's "libsndfile" folder:
-
-...
-ROOT\xtralibs\win\libsndfile\libsndfile-1.def
-ROOT\xtralibs\win\libsndfile\libsndfile-1.dll
-ROOT\xtralibs\win\libsndfile\libsndfile-1.exp
-ROOT\xtralibs\win\libsndfile\libsndfile-1.lib
-ROOT\xtralibs\include\libsndfile\sndfile.h
-...
-
-
-7: actually building and running the thing!
--------------------------------------------
-
-Once all the above is done, the Solution "SC3win.sln" should compile without problems (lots of warnings though...).
-As a result you will have the plugins in build\plugins (scx files) and PySCLang in ($PYTHONHOME)\lib\site-packages
-
-(The building of the "PySClang" target should also result in a few necessary files being copied into the "build" 
-folder. Namely Psycollider.py, startup.sc, keywords.list, libsndfile.dll, libfftw3f-3.dll.)
-
-
-Then open a Terminal and run: python.exe Psycollider.py 
-
+The two ways are described below.
 
 ------------------------------------------------------------------------
-Environment
+Using SuperCollider with Gedit text editor
 ------------------------------------------------------------------------
 
-Environment variables add directories to the default search path for plugins and synth definitions, respectively. Directory names are separated by ';' and must be set through the Control Panel. 
+This is the preferred and more powerful way.
 
- * SC_PLUGIN_PATH, SC_SYNTHDEF_PATH
+1. Start up Gedit, and first enable the Sced plugin in the preferences
+dialog: "Edit > Preferences > Plugins". You only need to do this step
+once. After that the plugin will stay enabled whenever you restart Gedit.
+
+2. To start up SuperCollider, click on the menu entry
+"Tools > SuperCollider Mode". This will start the interpreter and add
+a new menu named "SuperCollider", which gives you many options for
+further interaction with the interpreter and the sound synthesis server.
 
 ------------------------------------------------------------------------
-Reporting bugs
+Using SuperCollider in command line mode
 ------------------------------------------------------------------------
 
-Please report bugs either to the sc-users or sc-dev mailing lists.
+1. Open a Windows command line window (the cmd.exe program).
+
+2. Navigate to the SuperCollider installation folder.
+
+3. Start up the sclang.exe program, to enter the SuperCollider
+command line.
+
+4. You can now type SuperCollider code and evaluate it by pressing
+the Enter (Return) key. You can browse the previous commands using
+the up and down arrow keys.
+
+5. These are the handy keyboard shortcuts:
+- Ctrl+T : equivalent to CmdPeriod.run
+- Ctrl+X : to recompile the class library
+- Ctrl+D: to quit the SuperCollider command line
+
+------------------------------------------------------------------------
+Paths and files you may want to be aware of
+------------------------------------------------------------------------
+
+- $USER_HOME$\SuperCollider\startup.scd : user startup file
+
+- $USER_HOME$\SuperCollider\Extensions : user extension folder for classes,
+plugins and help files
 
 ------------------------------------------------------------------------
 Outro
 ------------------------------------------------------------------------
 
-thanks to james mccartney, for making this great piece of audio
+Thanks to James McCartney, for making this great piece of audio
 software publically and freely available.
