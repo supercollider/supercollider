@@ -24,16 +24,24 @@
 #include "../core/sig_mux.hpp"
 #include "../core/main.hpp"
 
+#include <QHBoxLayout>
+
 namespace ScIDE {
 
 MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
-    QTabWidget(parent),
+    QWidget(parent),
     mDocManager(main->documentManager()),
-    mSigMux(new SignalMultiplexer(this))
+    mSigMux(new SignalMultiplexer(this)),
+    mTabs(new QTabWidget)
 {
-    setDocumentMode(true);
-    setTabsClosable(true);
-    setMovable(true);
+    mTabs->setDocumentMode(true);
+    mTabs->setTabsClosable(true);
+    mTabs->setMovable(true);
+
+    QHBoxLayout *l = new QHBoxLayout;
+    l->setContentsMargins(0,0,0,0);
+    l->addWidget(mTabs);
+    setLayout(l);
 
     connect(mDocManager, SIGNAL(opened(Document*)),
             this, SLOT(onOpen(Document*)));
@@ -42,9 +50,9 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     connect(mDocManager, SIGNAL(saved(Document*)),
             this, SLOT(update(Document*)));
 
-    connect(this, SIGNAL(currentChanged(int)),
+    connect(mTabs, SIGNAL(currentChanged(int)),
             this, SLOT(onCurrentChanged(int)));
-    connect(this, SIGNAL(tabCloseRequested(int)),
+    connect(mTabs, SIGNAL(tabCloseRequested(int)),
             this, SLOT(onCloseRequest(int)));
 
     connect(&mModificationMapper, SIGNAL(mapped(QWidget*)),
@@ -186,7 +194,7 @@ void MultiEditor::applySettings( Settings::Manager *s )
     mStepForwardEvaluation = s->value("stepForwardEvaluation").toBool();
     s->endGroup();
 
-    int c = count();
+    int c = editorCount();
     for( int i = 0; i < c; ++i )
     {
         CodeEditor *editor = editorForTab(i);
@@ -233,7 +241,7 @@ void MultiEditor::setCurrent( Document *doc )
 {
     CodeEditor *editor = editorForDocument(doc);
     if(editor)
-        setCurrentWidget(editor);
+        mTabs->setCurrentWidget(editor);
 }
 
 void MultiEditor::onOpen( Document *doc )
@@ -248,8 +256,8 @@ void MultiEditor::onOpen( Document *doc )
     if(tdoc->isModified())
         icon = QIcon::fromTheme("document-save");
 
-    addTab( editor, icon, doc->title() );
-    setCurrentIndex( count() - 1 );
+    mTabs->addTab( editor, icon, doc->title() );
+    mTabs->setCurrentIndex( mTabs->count() - 1 );
 
     mModificationMapper.setMapping(tdoc, editor);
     connect(tdoc, SIGNAL(modificationChanged(bool)),
@@ -264,11 +272,11 @@ void MultiEditor::onClose( Document *doc )
 
 void MultiEditor::update( Document *doc )
 {
-    int c = count();
+    int c = editorCount();
     for(int i=0; i<c; ++i) {
         CodeEditor *editor = editorForTab(i);
         if(editor && editor->document() == doc)
-            setTabText(i, doc->title());
+            mTabs->setTabText(i, doc->title());
     }
 }
 
@@ -299,23 +307,23 @@ void MultiEditor::onModificationChanged( QWidget *w )
     CodeEditor *editor = qobject_cast<CodeEditor*>(w);
     if(!editor) return;
 
-    int i = indexOf(editor);
+    int i = mTabs->indexOf(editor);
     if( i == -1 ) return;
 
     QIcon icon;
     if(editor->document()->textDocument()->isModified())
         icon = QIcon::fromTheme("document-save");
-    setTabIcon( i, icon );
+    mTabs->setTabIcon( i, icon );
 }
 
 CodeEditor * MultiEditor::editorForTab( int index )
 {
-    return qobject_cast<CodeEditor*>( widget(index) );
+    return qobject_cast<CodeEditor*>( mTabs->widget(index) );
 }
 
 CodeEditor * MultiEditor::editorForDocument( Document *doc )
 {
-    int c = count();
+    int c = editorCount();
     for(int i = 0; i < c; ++i) {
         CodeEditor *editor = editorForTab(i);
         if( editor && editor->document() == doc)

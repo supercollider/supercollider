@@ -21,6 +21,7 @@
 #ifndef SCIDE_WIDGETS_MULTI_EDITOR_HPP_INCLUDED
 #define SCIDE_WIDGETS_MULTI_EDITOR_HPP_INCLUDED
 
+#include <QWidget>
 #include <QTabWidget>
 #include <QAction>
 #include <QSignalMapper>
@@ -35,7 +36,7 @@ class SignalMultiplexer;
 
 namespace Settings { class Manager; }
 
-class MultiEditor : public QTabWidget
+class MultiEditor : public QWidget
 {
     Q_OBJECT
 
@@ -68,8 +69,10 @@ public:
 
     MultiEditor( Main *, QWidget * parent = 0 );
 
+    int editorCount() { return mTabs->count(); }
+
     CodeEditor *currentEditor()
-        { return editorForTab( currentIndex() ); }
+        { return editorForTab( mTabs->currentIndex() ); }
 
     QAction * action( ActionRole role )
         { return mActions[role]; }
@@ -108,6 +111,9 @@ private:
     SignalMultiplexer * mSigMux;
     QSignalMapper mModificationMapper;
     QAction *mActions[ActionRoleCount];
+
+    // gui
+    QTabWidget *mTabs;
 
     // settings
     bool mStepForwardEvaluation;
