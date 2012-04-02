@@ -97,7 +97,24 @@ subsection:: Method tags
 These are level 3 subsections:
 definitionlist::
 ## teletype:: METHOD\:: :: methodname(s) [argstring]
-|| Document one or more methods, given as a comma-separated list of methodnames. Following the method tag should come a short description of the method, and optional description of the arguments and return value. See the link::#tags allowed inside a method:: section below.
+|| Document one or more methods, given as a comma-separated list of methodnames.
+
+note::
+If multiple methods are documented as a group, the methods must have the same argument name signature for existing arguments. For example, grouping the following methods would be ok:
+teletype::
+foo (a, b)
+bar (a, b, c)
+zoo (a)
+::
+But not:
+teletype::
+foo (a, x)
+bar (a, b, c)
+zoo (y)
+::
+::
+
+Following the method tag should come a short description of the method, and optional description of the arguments and return value. See the link::#tags allowed inside a method:: section below.
 
 SCDoc regards getter and setter methods as read/write interfaces for a single emphasis::property::. This means that you should not write the trailing underscore for setters. Instead, document it as a single property without the underscore, as if there was only a getter, and describe the property that can be set/gotten.
 
@@ -122,7 +139,7 @@ definitionlist::
 || One for each argument. The argument section body should contain a description of the given argument.
 The strong::argname:: is optional, and will be auto-filled in if not given. If given, it must match the real name of the argument at this position.
 
-NOTE::If multiple methods are documented in the same METHOD section, and ARGUMENT is used, the methods must have exactly the same argument name signature.::
+If the method has varargs, the argname for the varargs (if given) should be prefixed with three dots and a space (teletype::"... "::)
 ## teletype:: RETURNS\:: ::
 || This section should contain a description of the return value, especially the type.
 ## teletype:: DISCUSSION\:: ::
