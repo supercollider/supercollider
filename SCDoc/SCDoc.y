@@ -65,13 +65,15 @@ extern void post(const char *fmt, ...);
 %token LIST TREE NUMBEREDLIST DEFINITIONLIST TABLE FOOTNOTE NOTE WARNING
 // modal range tags that take multi-line text
 %token CODE LINK ANCHOR SOFT IMAGE TELETYPE MATH STRONG EMPHASIS
-%token CODEBLOCK TELETYPEBLOCK MATHBLOCK
+%token CODEBLOCK "CODE block" TELETYPEBLOCK "TELETYPE block" MATHBLOCK "MATH block"
 // symbols
-%token TAGSYM BARS HASHES
+%token TAGSYM "::" BARS "||" HASHES "##"
 // text and whitespace
-%token <str> TEXT URL COMMA METHODNAME METHODARGS
-%token NEWLINE EMPTYLINES
-%token BAD_METHODNAME
+%token <str> TEXT "text" URL COMMA METHODNAME "method name" METHODARGS "arguments string"
+%token NEWLINE "newline" EMPTYLINES "empty lines"
+%token BAD_METHODNAME "bad method name"
+
+%token END 0 "end of file"
 
 %type <id> headtag sectiontag listtag rangetag inlinetag blocktag
 %type <str> anyword words anywordnl wordsnl anywordurl words2 nocommawords optMETHODARGS methodname
@@ -362,6 +364,7 @@ words2: words2 anywordurl { $$ = strmerge($1,$2); }
 
 eol: NEWLINE
    | EMPTYLINES
+   | END
 ;
 
 anywordnl: anyword
