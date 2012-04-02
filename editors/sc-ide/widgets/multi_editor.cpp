@@ -25,6 +25,8 @@
 #include "../core/main.hpp"
 
 #include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QShortcut>
 
 namespace ScIDE {
 
@@ -38,9 +40,13 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mTabs->setTabsClosable(true);
     mTabs->setMovable(true);
 
-    QHBoxLayout *l = new QHBoxLayout;
+    mFindReplacePanel = new TextFindReplacePanel;
+    mFindReplacePanel->setVisible(false);
+
+    QVBoxLayout *l = new QVBoxLayout;
     l->setContentsMargins(0,0,0,0);
     l->addWidget(mTabs);
+    l->addWidget(mFindReplacePanel);
     setLayout(l);
 
     connect(mDocManager, SIGNAL(opened(Document*)),
@@ -57,6 +63,9 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
     connect(&mModificationMapper, SIGNAL(mapped(QWidget*)),
             this, SLOT(onModificationChanged(QWidget*)));
+
+    connect(mFindReplacePanel, SIGNAL(closeRequest()),
+            this, SLOT(hideToolPanel()));
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
@@ -137,6 +146,20 @@ void MultiEditor::createActions()
     act->setShortcuts(QKeySequence::Paste);
     act->setStatusTip(tr("Paste text from clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(paste()));
+
+    mActions[Find] = act = new QAction(
+        QIcon::fromTheme("edit-find"), tr("&Find..."), this);
+    act->setShortcuts(QKeySequence::Find);
+    act->setStatusTip(tr("Find text in document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(showFindPanel()));
+
+    mActions[Replace] = act = new QAction(
+        QIcon::fromTheme("edit-replace"), tr("&Replace..."), this);
+    act->setShortcuts(QKeySequence::Replace);
+    act->setStatusTip(tr("Find and replace text in document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(showReplacePanel()));
+
+    new QShortcut( Qt::Key_Escape, this, SLOT(hideToolPanel()) );
 
     mActions[IndentMore] = act = new QAction(
         QIcon::fromTheme("format-indent-more"), tr("Indent &More"), this);
@@ -244,6 +267,29 @@ void MultiEditor::setCurrent( Document *doc )
         mTabs->setCurrentWidget(editor);
 }
 
+void MultiEditor::showFindPanel()
+{
+    mFindReplacePanel->setMode( TextFindReplacePanel::Find );
+    mFindReplacePanel->show();
+    mFindReplacePanel->setFocus(Qt::OtherFocusReason);
+}
+
+void MultiEditor::showReplacePanel()
+{
+    mFindReplacePanel->setMode( TextFindReplacePanel::Replace );
+    mFindReplacePanel->show();
+    mFindReplacePanel->setFocus(Qt::OtherFocusReason);
+}
+
+void MultiEditor::hideToolPanel()
+{
+    mFindReplacePanel->hide();
+    CodeEditor *editor = currentEditor();
+    if (editor && !editor->hasFocus())
+        editor->setFocus(Qt::OtherFocusReason);
+}
+
+
 void MultiEditor::onOpen( Document *doc )
 {
     CodeEditor *editor = new CodeEditor();
@@ -330,6 +376,60 @@ CodeEditor * MultiEditor::editorForDocument( Document *doc )
             return editor;
     }
     return 0;
+}
+
+////////////////////// TextFindReplacePanel //////////////////////////
+
+TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
+    QWidget(parent),
+    mMode((Mode) 0) // a hack so that first setMode() works
+{
+    mCloseBtn = new QToolButton;
+    mCloseBtn->setIcon(QIcon::fromTheme("window-close"));
+    mCloseBtn->setAutoRaise(true);
+
+    mFindField = new QLineEdit;
+    mReplaceField = new QLineEdit;
+
+    mNextBtn = new QPushButton(tr("Next"));
+    mPrevBtn = new QPushButton(tr("Previous"));
+    mFindAllBtn = new QPushButton(tr("Find All"));
+    mReplaceBtn = new QPushButton(tr("Replace"));
+    mReplaceAllBtn = new QPushButton(tr("Replace All"));
+
+    mMatchCaseOpt = new QCheckBox(tr("Match Case"));
+
+    mGrid = new QGridLayout();
+    mGrid->setContentsMargins(2,2,2,2);
+    mGrid->addWidget(mCloseBtn, 0, 0);
+    mGrid->addWidget(mFindField, 0, 1);
+    mGrid->addWidget(mNextBtn, 0, 2);
+    mGrid->addWidget(mPrevBtn, 0, 3);
+    mGrid->addWidget(mFindAllBtn, 0, 4);
+    mGrid->addWidget(mMatchCaseOpt, 0, 5);
+    mGrid->addWidget(mReplaceField, 1, 1);
+    mGrid->addWidget(mReplaceBtn, 1, 2);
+    mGrid->addWidget(mReplaceAllBtn, 1, 3);
+    setLayout(mGrid);
+
+    setMode(Find);
+
+    setFocusProxy(mFindField);
+
+    connect(mCloseBtn, SIGNAL(clicked()), this, SIGNAL(closeRequest()));
+}
+
+void TextFindReplacePanel::setMode( Mode mode )
+{
+    if (mode == mMode) return;
+
+    mMode = mode;
+
+    bool visible = mMode == Replace;
+
+    mReplaceField->setVisible(visible);
+    mReplaceBtn->setVisible(visible);
+    mReplaceAllBtn->setVisible(visible);
 }
 
 } // namespace ScIDE
