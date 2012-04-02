@@ -2460,7 +2460,7 @@ yyreduce:
     {
         char *p = (yyvsp[(1) - (1)].str)+strlen((yyvsp[(1) - (1)].str))-1;
         if(*p=='_') {
-            post("WARNING:\nSCDoc: In %s\n       Setter method %s should be documented without underscore.\n", scdoc_current_file, (yyvsp[(1) - (1)].str));
+            post("WARNING: SCDoc: In %s\n  Property setter %s should be documented without underscore.\n", scdoc_current_file, (yyvsp[(1) - (1)].str));
             *p = '\0';
         };
         (yyval.str) = (yyvsp[(1) - (1)].str);
