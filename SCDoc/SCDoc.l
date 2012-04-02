@@ -106,6 +106,7 @@ if (scdoc_start_token) {
 
 <INITIAL,verbatim>[ \t\n\r]*::    BEGIN(0); return TAGSYM;
 <verbatim2>\n[ \t\n\r]*::         BEGIN(0); return TAGSYM;
+<verbatim2>\n[ \t]*\\::           scdoclval.str = strdup("\n::"); return TEXT;
 [ \t]*\|\|[ \t\n\r]*              return BARS;
 [ \t]*\#\#[ \t\n\r]*              return HASHES;
 
@@ -158,8 +159,9 @@ if (scdoc_start_token) {
 <metadata>[ \t]*,[ \t]*           scdoclval.str = strdup(scdoctext); return COMMA;
 <metadata>[a-zA-Z]+ |
 <metadata>[0-9]+    |
-<metadata>[^:\n\r,]+     |
+<metadata>[^:\\\n\r,]+     |
 <metadata>.         scdoclval.str = strdup(scdoctext); return TEXT;
+<metadata>\\::      scdoclval.str = strdup("::"); return TEXT;
 <eat>(?i:link::[ \t]*)           BEGIN(eat2);
 <eat>(?i:anchor::[ \t]*)         BEGIN(eat2);
 <eat>(?i:image::[ \t]*)          BEGIN(eat2);
