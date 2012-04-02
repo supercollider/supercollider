@@ -39,12 +39,3 @@ The rendered HTML reads the global style from teletype::scdoc.css::, but also re
 
 So to customise the CSS, the user can create a teletype::custom.css:: in their link::Classes/SCDoc#*helpTargetDir:: or at the root of any HelpSource directory (for example in teletype::YourExtension/HelpSource/custom.css:: ).
 
-examples::
-code::
-p = SCDocParser.new;
-r = SCDocHTMLRenderer.new;
-
-p.parseFile("/path/to/HelpSource/Classes/Array.schelp");
-r.render(p,"/path/to/Help/Classes/Array.html","Classes");
-::
-

@@ -3,10 +3,6 @@ summary:: Get started with writing help
 categories:: HelpSystem
 related:: Reference/SCDocSyntax, Classes/SCDoc
 
-note::
-This document will be rewritten shortly!
-::
-
 section:: Writing new help
 The simplest way is to look at an existing help file or class document, and read this document and link::Reference/SCDocSyntax::
 
@@ -16,19 +12,20 @@ subsection:: Documenting new classes
 When you navigate to an undocumented class, it will contain an schelp template that can be filled in and saved to HelpSource/Classes/ClassName.schelp.
 
 section:: Converting old helpfiles
-
-Currently there is no automated process for this, but for most help files it's really simple to do it manually:
+There is no automated process for this, but for most help files it's really simple to do it manually:
 
 numberedlist::
 ## open the old helpfile in your web browser
 ## copy the text and insert it in a new textfile: FileName.schelp
 ## add the appropriate tags, like title, sections, etc.. (see below)
-## save the file to the right subdirectory under HelpSource, depending on the document kind (see link::#directory_layout:: below)
+## save the file to the right subdirectory under HelpSource, depending on the document kind (see link::#Directory layout:: below)
 ## strong:: check that it rendered OK ::.
-You can run code::SCDoc.cleanState:: (link to method documentation: link::Classes/SCDoc#*cleanState::) to make SCDoc detect the new file and add it to the doc map next time you open a file in the link::Classes/HelpBrowser::. If the file already existed and you want to see the changes, just navigate to it again and SCDoc will re-render it.
+You can run code::SCDoc.indexAllDocuments:: (link to method documentation: link::Classes/SCDoc#*indexAllDocuments::) to make SCDoc detect the new file and add it to the document index.
+
+If the file already existed and you want to see the changes, just press Reload in the help browser and SCDoc will re-render it.
 ::
 
-A list of all undocumented classes can be seen here: link::Browse#Undocumented classes#Undocumented classes:: (auto-generated).
+A list of all undocumented classes can be seen here: link::Browse#Undocumented classes:: (auto-generated).
 
 section:: Directory layout
 The help system uses different folders under HelpSource depending on document kind:
@@ -46,68 +43,63 @@ definitionlist::
 
 note:: It's important that the document is put in the right folder. For Classes, it's a must! ::
 
-All .schelp files will be parsed and rendered to an equal directory layout in the help target directory. Any other files will just be copied.
+All .schelp files will be parsed and rendered to an equal directory layout in the help target directory. Any other files, like images or ready-made HTML files, will just be copied.
 
-section:: Metadata
+section:: Document header
 
-All tags that are used for document metadata should be entered at the top of the document source file, before any section or other text. These include:
-code::
-title:: or class::
-summary::
-related::
-categories::
-::
+All tags that are used for document metadata should be entered at the top of the document source file, before any section or other text. See link::Reference/SCDocSyntax#Header tags::
 
-You should always specify title/class, summary and categories.
+note:: You should always specify title, summary and categories. ::
 
 section:: Normal documents
-Normal documents use code::title:: for the document title.
 
 Example header:
-code::
+teletype::
 title:: My help file
 summary:: A short single-line summary of what this is
-categories:: Language>Conditionals, AndSoOn
+categories:: Language>Conditionals, SomeOtherCategory
 related:: Reference/FooBar
 ::
 
 Then use normal text in sections and subsections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/SCDocSyntax:: for tag reference.
 
-code::
+teletype::
 section:: Introduction
-this is a nice document...
+
+This is a nice document...
 blah blah blah..
 
 subsection:: Details
-some details..
+
+Some details..
 ::
 
 section:: Class reference
-Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and normal text should be written inside the special top-level sections code::description::, code::classmethods::, code::instancemethods:: and code::examples::.
+Class reference has some special tags and a more strict structure. Normal text should be written inside the special top-level sections DESCRIPTION, CLASSMETHODS, INSTANCEMETHODS and EXAMPLES.
 
 Named subsections can be used under each of the above mentioned top-level sections.
 
 Also named sections can be used, but they will be put after all above top-level sections.
 
 subsection:: Methods and arguments
-Methods are documented with the tags:
+Methods are documented like this:
 tree::
-## code::method\:::: name(s)
+## teletype::method\:::: name(s)
     tree::
-    ## short description of method
-    ## code::argument\:::: name
-    tree::
-        ## description of argument
-        ::
-    ## code::argument\:::: name
+    ## short description of method.
+    ## teletype::argument\:::: name1
     tree::
         ## description of argument
         ::
-    ## code::returns\::::
+    ## teletype::argument\:::: name2
+    tree::
+        ## description of another argument.
+        ::
+    ## teletype::returns\::::
     tree::
         ## description of return value
         ::
-    ## code::discussion\::::
+    ## teletype::discussion\::::
     tree::
         ## optional discussion and example code
         ::
@@ -116,82 +108,83 @@ tree::
 
 note:: Don't list arguments in the method tag, only the method names ::
 
-Setters are handled automagically, when documenting a setter/getter, use only the getter name (no underscore) and describe both setter and getter, example:
-code::
+After the method description comes the arguments, written with code:: argument\:: name :: where
+strong::name:: is optional, and will be auto-filled in if not given. If given, it must match the real argument name of the method. After each argument line comes the description of that argument.
+
+There is an optional code::returns\:::: tag that could be used to describe the methods return value.
+
+If a longer discussion is needed, use the code::discussion\:::: tag. This is a good place to insert example code, etc.
+
+Setters are handled automagically, when documenting a setter/getter, use only the getter name (no underscore) and describe both setter and getter as a single property, example:
+teletype::
 method:: helpSourceDir
 set or get the help source directory
 ::
 
-The code::method\:::: tag can be used also in normal documents, and should then have argumentnames. This can be useful for documenting common methods outside of a specific class document, for example link::Reference/plot::.
+Methods get an anchor name automatically, prefixed with code::*:: for class methods and code::-:: for instance methods. For example, to link to the code::foo:: class method, use code:: link\::#*foo\:: ::.
+
+The teletype::method\:::: tag can be used also in normal documents, and emphasis::should:: then have argumentnames. This can be useful for documenting common interfaces outside of a specific class document, for example link::Reference/plot::.
 Anchors for these methods get prefixed with a dot (.) instead of * or -.
 
-SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a code::private\:::: tag right after code::classmethods\:::: or code::instancemethods\::::
+When multiple methods have the same signature (like ar and kr in ugens), they should all be listed in one single method tag.
 
-Extensions can add methods to existing class docs, see the link::#extensions:: section below.
+
+SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a code::private\:::: tag, which works just like the method tag but without a section body.
+
+Extensions can add methods to existing class docs, see the link::#Extensions:: section below.
+
+subsection:: Copy methods from other class
+You can use code:: copymethod\:: ClassName, methodName :: to copy the documentation of a method from another helpfile to this one.
+
+code::methodName:: must be prefixed with code::*:: (asterix) for class methods and code::-:: (dash) for instance methods.
+
 
 subsection:: Redirect classes
 Some classes uses the code::*doesNotUnderstand:: trick to redirect to another implementing class. To document such classes, you need to add this tag in the header:
-code::
+teletype::
 redirect:: implClass
 ::
-Where code::implClass:: is the class variable name holding the implementing class.
+Where code::implClass:: is the name of the class variable holding the implementing class.
 
 subsection:: Example
 
-code::
-CLASS:: MyClass
-summary:: a nice class to do that and this
-categories:: Collections>SuperCollections, OtherCategories, AndSoOn
-related:: Classes/AnotherClass, Reference/MyClassCommandReference
+An example of documentation for LFPulse UGen, saved to HelpSource/Classes/LFPulse.schelp
+
+teletype::
+TITLE:: LFPulse
+summary:: pulse oscillator
+categories:: UGens>Generators>Deterministic, UGens>Oscillators
+related:: Classes/LFSaw
 
 DESCRIPTION::
-Here goes a long description of what the class does and why, etc..
+A non-band-limited pulse oscillator. Outputs a high value of one and a low value of zero.
 
 CLASSMETHODS::
-private:: myPrivateClassMethod
+private:: categories
 
-method:: foo
-here goes a description of the class method foo
-argument:: x
-here goes a description of argument x of method foo
-argument:: y
-here goes a description of argument y of method foo
+METHOD:: ar, kr
 
-returns:: a calculated value
+argument::freq
+frequency in Hertz
 
-discussion::
-you can enter a more in-depth discussion about this method here...
-this is a good place to put example code.
+argument::iphase
+initial phase offset in cycles ( 0..1 )
 
-method:: bar
-another class method, etc..
+argument::width
+pulse width duty cycle from zero to one.
 
-SUBSECTION:: Special class methods
-method:: hello
-this is a method in a subsection of class methods..
-
-INSTANCEMETHODS::
-private:: init, anotherPrivateMethod
-
-method:: zoo
-here goes a description of the instance method zoo
-argument:: x
-here goes a description of argument x of method zoo
-argument:: y
-here goes a description of argument y of method zoo
+returns::
+An UGen.
 
 EXAMPLES::
 
-An example of how to use this and that:
-code::
-...insert code here...
-\::
+a plot:
+code:: { LFPulse.ar(Line.kr(100, 800, 0.1)) }.plot(0.1); ::
 
-Another example:
-code::
-...insert code here...
-\::
+50 Hz wave:
+code:: { LFPulse.ar(50) * 0.1 }.play; ::
 ::
+
 
 section:: Categories
 Try to find good categories for the doc you are writing/converting. If a suitable category already exists, you should use that. See the link::Browse##Document Browser:: (auto-generated) for existing categories.
@@ -201,18 +194,17 @@ code::
 Ball.categories
 ::
 
-For other documents, you could base it on the old directory layout, or come up with better ones. like Scheduling, Sequencing, Patterns, Streams, Server, etc..
-
 Documents can exist in multiple categories, and also have hierarchical categories, like Sequencing>Patterns.
 
 section:: Cross-document linking
-To link another document, use code:: link\::Path/To/Document\:: :: where the path is relative to code::SCDoc.helpTargetDir:: and the document filename is with no extension. Example:
-code::
+To link another document, use teletype:: link\::Path/To/Document\:: :: where the path is relative to link::Classes/SCDoc#*helpTargetDir:: and the document filename is with no extension. Example:
+teletype::
 Also take a look at link::Classes/SinOsc:: and link::Reference/Literals::
 ::
+
 subsection:: Methods
-To link to a specific class method, append code::#*methodName:: or to an instance method, append code::#-methodName:: :
-code::
+To link to a specific class method, append code::#*methodName:: or to an instance method, append code::#-methodName:::
+teletype::
 Also take a look at the play method of link::Classes/Function#-play::
 ::
 This will render as link::Classes/Function#-play::
@@ -220,14 +212,14 @@ This will render as link::Classes/Function#-play::
 For generic methods documented outside of instancemethods or classmethods (like the generic link::Reference/play:: document), use a dot (.) as prefix instead of * or -.
 
 The special link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown by appending code::#name:: where name is the name of the method:
-code::
+teletype::
 For all implementations of play, see link::Overviews/Methods#play::
 ::
 
 section:: Making the document findable by Search
-The link::Search:: page can match on document title/classname, summary, methods documented with code::method\::::, and categories.
+The link::Search:: page can match on document title/filename, summary, non-private methods, and categories.
 If you mention something that should match in search but is not one of the above, you can explicitly add it with the keyword tag:
-code::
+teletype::
 keyword:: someKeyWords
 ::
 
@@ -245,7 +237,9 @@ MyQuark/MyClass1.sc
 MyQuark/MyClass2.sc
 ::
 
+note::
 All helpfiles contained in a quark will automatically get a category "Quarks>NameOfQuark" added, so you should not add this yourself. This makes it easy to navigate all documentation of a specific quark.
+::
 
 If you want to set a main help file for the quark, set code::\schelp:: in the Quark directory file to the path for the help file relative to teletype::HelpSource:: and without the teletype::.schelp:: extension. Example: code::\schelp: "Guides/MyGuide"::
 
@@ -253,7 +247,7 @@ subsection:: Method extensions
 An extension that adds methods to existing classes should document these in code::Classes/TheClass.ext.schelp::, only including the relevant bits (no title, summary, categories, etc..)
 
 Example: Classes/String.ext.schelp
-code::
+teletype::
 INSTANCEMETHODS::
 
 subsection:: Extensions by SCDoc
@@ -267,159 +261,10 @@ The contents are inserted into the right spot (section, subsection, etc).
 It works for all kind of sections, for example one can add a subsection to code::DESCRIPTION\:::: with additional information, or add another top-level section, etc.
 
 
-subsection:: Document attributes
 
-These should only occur once in a document, and might be compulsory.
-code::
-title:: name
-class:: name
-summary:: text
-related:: link(s)
-categories:: name(s)
-::
 
-subsection:: Structural tags
 
-These are grouped by their level in the hierarchy, from high to low:
-code::
-section:: name
-description::
-examples::
-instancemethods::
-classmethods::
-
-subsection:: name
-
-method:: name(s)
-
-argument:: name
-::
-description, examples and methods are equivalent to code::section\:::: structurally, but used to identify these special sections and render them consistently.
-
-subsection:: Methods and arguments
-
-Methods should appear under code::instancemethods\:::: or code::classmethods\::::, and are written with code:: method\:: name(s) ::.
-Do strong::not:: enter any arguments here, only the name.
-After the method, there should be a short description. Even if it can be multiple lines, keep it short and use code::discussion\:::: if you need more.
-
-Methods get an anchor name automatically, prefixed with code::*:: for class methods and code::-:: for instance methods. For example, to link to the code::foo:: class method, use code:: link\::#*foo\:: ::.
-
-After the method description comes the arguments, written with code:: argument\:: name :: where code::name:: must correspond to one of the methods arguments. After each argument line comes the description of that argument.
-
-There is an optional code::returns\:::: tag that could be used to describe the methods return value.
-
-If a longer discussion is needed, use the code::discussion\:::: tag. This is a good place to insert example code, etc.
-
-Method signatures and argument defaults are filled in automagically.
-
-Also, when multiple methods have the same signature (like ar and kr in ugens), they should all be listed in one single method tag.
-
-Example:
-code::
-classmethods::
-private:: new1
-
-method:: ar, kr
-short description here...
-
-argument:: freq
-the frequency
-argument:: amp
-the amplitude
-
-returns:: a new UGen
-
-method:: foo
-short description..
-
-argument:: x
-the x value
-
-returns:: some kind of value
-
-discussion::
-Here is a longer detailed discussion about this method, perhaps with example code, etc..
-::
-
-Any undocumented methods will show up in the rendered help file. To ignore methods, put them in a code::private\:::: tag, which must come directly after the code::instancemethods:: or code::classmethods:: tag.
-
-subsection:: Copy methods from other class
-You can use code:: copymethod\:: ClassName, methodName :: to copy the documentation of a method from another helpfile to this one.
-
-code::methodName:: must be prefixed with code::*:: (asterix) for class methods and code::-:: (dash) for instance methods.
-
-note::
-The copied method must itself be a real code::method:: doc, not another code::copymethod::.
-::
-
-subsection:: Modal tags
-code::
-code::
-link::
-anchor::
-image::
-emphasis::
-strong::
-soft::
-teletype::
-::
-All of above are closed with \::
-If they are used as block tags, the closing \:: must be written as a single word on its own line.
-Since they are modal tags, they can't be nested and any other tag than the closing tag is ignored until they are closed.
-
-subsection:: Tables and lists
-code::
-list::
-tree::
-numberedList::
-definitionList::
-table::
-::
-Tables and lists are kind of structural tags, but need to be closed with \::
-They use code::##:: and code::||:: to delimit items/rows and table columns.
-
-code::
-table::
-## one || two || three
-## foo || bar || zoo
-\::
-
-list::
-## first
-## second
-## third
-\::
-::
-
-Lists can be nested:
-code::
-definitionList::
-## one || the first thing has three subthings:
-    list::
-    ## one A
-    ## one B
-    ## one C
-    \::
-## two || the second thing
-\::
-::
-
-subsection:: ClassTree
-
-A special tag to render a class hierarchy tree:
-code::
-classtree::Pattern
-::
-
-subsection:: Notes and warnings
-code::
-note:: text ::
-warning:: text ::
-::
-
-These tags can be multi-line and must end with \:: . They can contain other tags.
-
-subsection:: Links
+section:: Links
 
 URL's are automagically converted to links.
 
@@ -437,7 +282,7 @@ or to jump to an anchor in this document: code::
 link::#hello::
 ::
 
-All sections get anchor names automagically, by making it lowercase and replacing spaces with '_' (underscore).
+All sections get anchor names automagically.
 
 All methods get anchor names prefixed with code::*:: for class methods and code::-:: for instance methods.
 
@@ -463,65 +308,4 @@ code::
 For more filters, see link::Browse#UGens>Filters::
 ::
 Renders as: For more filters, see link::Browse#UGens>Filters::
-
-subsection:: Images
-
-Images can be inserted with: code::
-image::filename::
-::
-
-A caption can be added like this: code::
-image::filename#caption::
-::
-
-subsection:: Footnotes
-Footnotes can be entered like this:
-code::
-Hello I'm a geek footnote::
-According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different
-meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs
-sensationally morbid or disgusting acts"
-\::
-::
-
-The result looks like this:
-Hello I'm a geek footnote::
-According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs sensationally morbid or disgusting acts"
-::
-
-subsection:: Mathematics
-Mathematics can be entered in TeX syntax using the code::math\:::: tag. Example:
-code::
-This is inline math::2\pi:: and below is block display math:
-math::
-1\over\sqrt{x^\pi}
-\::
-::
-
-Renders:
-
-This is inline math::2\pi:: and below is block display math:
-math::
-1\over\sqrt{x^\pi}
-::
-
-subsection:: Document types
-
-Document type is inferred by seeing if the document has a code::class\:::: or code::title\:::: tag.
-
-Some tags are only allowed in some types of documents. Tags not mentioned below are allowed in all types:
-definitionlist::
-## Class (and UGen) reference docs || tags: class, description, methods, examples, subsection
-## Other docs (tutorials and such) || tags: title, section, subsection
-::
-
-Also, documents are organized in a simple directory layout after their "kind":
-list::
-## Classes
-## Reference
-## Guides
-## Overviews
-## Tutorials
-## Other
-::
 
