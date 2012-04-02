@@ -34,7 +34,8 @@ Some important changes to keep in mind:
 list::
 ## Linking to sections does no longer use lower_case_and_underscored anchors, but the exact section title as it is. Example: teletype::link\::#Language-side news\:::: renders: link::#Language-side news::
 ## Run code::SCDoc.indexAllDocuments:: if you add a new document or other file and want to see the change reflected in the help. If you just changed a document and want to see the changes, just press Reload in the browser and SCDoc will detect and re-index automatically.
-## The teletype::CLASS\:::: tag is deprecated, just use teletype::TITLE\:::: instead even for class reference docs.
+## The teletype::CLASS\:::: tag is deprecated, just use teletype::TITLE\:::: instead also for class reference docs.
+## The argument name given to the teletype::ARGUMENT\:::: tag is now optional. If not given, SCDoc will auto-fill the real argument name.
 ::
 
 subsection:: YAML/JSON parser
