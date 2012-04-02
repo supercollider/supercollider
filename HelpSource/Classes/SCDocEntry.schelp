@@ -1,0 +1,118 @@
+title:: SCDocEntry
+summary:: An SCDoc document index entry
+related:: Classes/SCDoc
+categories:: HelpSystem
+
+description::
+This class is used by link::Classes/SCDoc:: to represent a document in the help file index.
+
+The document represented can be either a real .schelp file, or an auto-generated stub for undocumented classes.
+
+classmethods::
+
+method:: new
+Create and initialize a new instance.
+argument:: node
+An link::Classes/SCDocNode:: instance. Does not have to be a fully parsed document, since only the header tags, methods and keywords are used. (See link::Classes/SCDoc#*parseFileMetaData::).
+
+argument:: path
+A link::Classes/String:: for the document key, like "Classes/SinOsc".
+
+method:: newUndocClass
+Create and initialize a new instance for an undocumented class.
+argument:: name
+Name of undocumented class
+
+instancemethods::
+
+private:: prAddCopyMethod, prAddMethodNames, printOn, prJSONList, prJSONString, prScanMethodsKeywords, setAdditions, init, indexUndocumentedMethods
+
+subsection:: Document properties
+
+method:: path
+A link::Classes/String:: for the document key, like "Reference/SCDocSyntax".
+
+method:: title
+Document title. Should equal the classname for class reference docs.
+
+method:: summary
+Document summary.
+
+method:: categories
+Document categories. An link::Classes/Array:: of Strings.
+
+method:: related
+Related document links. An link::Classes/Array:: of Strings.
+
+method:: keywords
+Keywords listed in the document. An link::Classes/Array:: of Strings.
+
+method:: fullPath
+The full path to this documents .schelp file, if any.
+
+method:: mtime
+The modification time of the .schelp file, if any.
+
+method:: destPath
+The render destination path.
+
+method:: docmethods
+Documented methods which are not class or instance methods. An link::Classes/Array:: of Strings.
+
+method:: additions
+A list of document additions (*.ext.schelp) for this document. An link::Classes/Array:: of Strings.
+
+method:: isExtension
+True if this document is an extension (not part of the main library). A link::Classes/Boolean::
+
+method:: isClassDoc
+True if this document is a class doc. A link::Classes/Boolean::
+
+subsection:: Class docs
+These methods and properties are only used for class docs.
+
+method:: klass
+The link::Classes/Class:: documented.
+
+method:: isUndocumentedClass
+True if this class is undocumented (which means there are no .schelp file).
+A link::Classes/Boolean::
+
+method:: doccmethods
+A list of documented class methods.
+
+method:: docimethods
+A list of documented instance methods.
+
+method:: privcmethods
+A list of private class methods.
+
+method:: privimethods
+A list of private instance methods.
+
+method:: undoccmethods
+A list of undocumented class methods.
+
+method:: undocimethods
+A list of undocumented instance methods.
+
+method:: makeMethodList
+Return a list of strings for all non-private methods, prefixed with teletype::xy:: where x is teletype::_:: for documented methods and teletype::?:: for undocumented methods, and y is teletype::*:: for class methods, teletype::-:: for instance methods and teletype::.:: for other/generic methods.
+
+method:: redirect
+
+The name of the class variable holding the implementing class. Used by GUI redirection system, for example.
+
+method:: implKlass
+
+The implementing link::Classes/Class::, if code::redirect:: was set.
+
+method:: implements
+
+The link::Classes/Class:: being implemented. For example, the entry for link::Classes/QButton:: has this set to link::Classes/Button::
+
+method:: toJSON
+Write a representation of this document entry as JSON to Stream. Used to export the document entries to the javascript used in the link::Classes/HelpBrowser##HTML help browser::.
+argument:: stream
+A Stream.
+

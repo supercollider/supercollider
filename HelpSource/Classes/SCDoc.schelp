@@ -18,6 +18,10 @@ method:: indexAllDocuments
 Index all documents and undocumented classes on the system, putting them in the code::SCDoc.documents:: dictionary. If run inside a Routine, this method will yield occasionally.
 
 Run this method if you added a new document and want to see the changes without restarting SuperCollider.
+
+argument:: clearCache
+If true, force re-render of files even if the schelp source file is not newer than the destination.
+
 discussion::
 This will take a couple of seconds, and will be done automatically once before any help can be viewed. You might consider putting this in your startup.scd file to avoid getting this delay later when you decide to view a helpfile.
 
@@ -119,4 +123,112 @@ method:: classHasArKrIr
 argument:: c
 The link::Classes/Class:: to check.
 Returns:: code::true:: if the class responds to ar, kr or ir classmethods.
+
+section:: Parser node tree output
+The SCDoc parser outputs a tree of link::Classes/SCDocNode::s
+
+The nodes reflects the tags in the input, but it's not a one-to-one correspondation.
+A more detailed structure is added in the node tree, for easier rendering.
+
+Example:
+
+DOCUMENT
+tree::
+    ## HEADER
+    tree::
+        ## TITLE teletype::"SinOsc"::
+        ## SUMMARY teletype::"Interpolating sine wavetable oscillator"::
+        ## RELATED
+        tree::
+            ## STRING teletype::"Classes/FSinOsc"::
+            ## STRING teletype::"Classes/SinOscFB"::
+        ::
+        ## CATEGORIES
+        tree::
+            ## STRING teletype::"UGens>Generators>Deterministic"::
+            ## STRING teletype::"UGens>Oscillators"::
+        ::
+    ::
+    ## BODY
+    tree::
+        ## DESCRIPTION
+        tree::
+            ## PROSE
+            tree::
+                ## TEXT teletype::"A paragraph with "::
+                ## LINK teletype::"Classes/Osc##a link"::
+                ## TEXT teletype::" to another document."::
+            ::
+            ## PROSE
+            tree::
+                ## TEXT teletype::"Another paragraph with "::
+                ## STRONG teletype::"strong words"::
+                ## TEXT teletype::" in it."::
+            ::
+        ::
+        ## CLASSMETHODS
+        tree::
+            ## PROSE
+            tree::
+                ## TEXT teletype::"Some text..."::
+            ::
+            ## CMETHOD
+            tree::
+                ## METHODNAMES
+                tree::
+                    ## STRING teletype::"ar"::
+                    ## STRING teletype::"kr"::
+                ::
+                ## METHODBODY
+                tree::
+                    ## PROSE
+                    tree::
+                        ## TEXT teletype::"Some text..."::
+                    ::
+                    ## ARGUMENTS
+                    tree::
+                        ## ARGUMENT teletype::"freq"::
+                        tree::
+                            ## PROSE
+                            tree::
+                                ## TEXT teletype::"Frequency in hertz"::
+                            ::
+                        ::
+                        ## ARGUMENT teletype::"phase"::
+                        tree::
+                            ## PROSE
+                            tree::
+                                ## TEXT teletype::"Phase modulation"::
+                            ::
+                        ::
+                    ::
+                ::
+            ::
+        ::
+        ## EXAMPLES
+        tree::
+            ## PROSE
+            tree::
+                ## TEXT teletype::"Here are some examples:"::
+            ::
+            ## CODEBLOCK
+            teletype::
+"{ SinOsc.ar(200, 0, 0.5) }.play;
+// modulate freq
+{ SinOsc.ar(XLine.kr(2000, 200), 0, 0.5) }.play;
+// modulate freq
+{ SinOsc.ar(SinOsc.ar(XLine.kr(1, 1000, 9), 0, 200, 800), 0, 0.25) }.play;
+// modulate phase
+{ SinOsc.ar(800, SinOsc.ar(XLine.kr(1, 1000, 9), 0, 2pi), 0.25) }.play;"
+::
+        ::
+        ## SECTION teletype::"Another section"::
+        tree::
+            ## PROSE
+            tree::
+                ## TEXT teletype::"Some text..."::
+            ::
+        ::
+    ::
+::
 
