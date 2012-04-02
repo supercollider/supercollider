@@ -38,11 +38,13 @@ void SCProcess::start (void)
     Settings::Manager *settings = Main::instance()->settings();
     settings->beginGroup("IDE/interpreter");
 
-    QString sclangProgramName = settings->value("command").toString();
+    QString sclangCommand = settings->value("command").toString();
     QString workingDirectory = settings->value("runtimeDir").toString();
     QString configFile = settings->value("configFile").toString();
 
     settings->endGroup();
+
+    if(sclangCommand.isEmpty()) sclangCommand = "sclang";
 
     QStringList sclangArguments;
     if(!configFile.isEmpty())
@@ -52,7 +54,7 @@ void SCProcess::start (void)
     if(!workingDirectory.isEmpty())
         setWorkingDirectory(workingDirectory);
 
-    QProcess::start(sclangProgramName, sclangArguments);
+    QProcess::start(sclangCommand, sclangArguments);
     bool processStarted = QProcess::waitForStarted();
     if (!processStarted) {
         QString errorMessage ("cannot start sclang process");
