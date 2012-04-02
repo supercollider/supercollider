@@ -124,4 +124,7 @@ b.sine2(a.ramp(1.0, 1.0), a.pulse(7, 0.5pi, 3, 0.5, 0.1).postln , true, true, tr
 y.free;
 ::
 
-method::rand, exprand, linrand, rand2, coin
+method:: rand, exprand, linrand
+method:: rand2
+method:: coin
+

@@ -216,7 +216,7 @@ x.set(\freq, 440, \amp, 0.5)
 
 method:: seti
 Set part of an arrayed control.
-argument:: ...args
+argument:: ... args
 A sequence of strong:: name, index, value :: triplets.
 
 definitionlist::
