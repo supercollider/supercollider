@@ -14,6 +14,14 @@ void error(const char *fmt, ...)
     fflush(stderr);
 }
 
+void post(const char *fmt, ...)
+{
+    va_list vargs;
+    va_start(vargs, fmt);
+    vfprintf(stderr, fmt, vargs);
+    fflush(stderr);
+}
+
 int main(int argc, char **argv)
 {
     if(argc>1) {

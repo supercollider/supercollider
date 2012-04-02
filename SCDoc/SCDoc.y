@@ -272,7 +272,9 @@ bodyelem: rangetag body TAGSYM { $$ = doc_node_make_take_children($1,NULL,$2); }
         | DEFINITIONLIST deflistbody TAGSYM { $$ = doc_node_make_take_children("DEFINITIONLIST",NULL,$2); }
         | blocktag wordsnl TAGSYM { $$ = doc_node_make($1,$2,NULL); }
         | CLASSTREE words eol { $$ = doc_node_make("CLASSTREE",$2,NULL); }
-        | KEYWORD commalist eol { $$ = doc_node_make_take_children("KEYWORD",NULL,$2); }
+        | KEYWORD commalist eol { $$ = doc_node_make_take_children("KEYWORD",NULL,$2);
+//            printf("keyword '%s'\n",$2->children[0]->text);
+        }
         | EMPTYLINES { $$ = NULL; }
         | IMAGE words2 TAGSYM { $$ = doc_node_make("IMAGE",$2,NULL); }
         ;
