@@ -108,12 +108,12 @@ tree::
 
 note:: Don't list arguments in the method tag, only the method names ::
 
-After the method description comes the arguments, written with code:: argument\:: name :: where
+After the method description comes the arguments, written with teletype:: argument\:: name :: where
 strong::name:: is optional, and will be auto-filled in if not given. If given, it must match the real argument name of the method. After each argument line comes the description of that argument.
 
-There is an optional code::returns\:::: tag that could be used to describe the methods return value.
+There is an optional teletype::returns\:::: tag that could be used to describe the methods return value.
 
-If a longer discussion is needed, use the code::discussion\:::: tag. This is a good place to insert example code, etc.
+If a longer discussion is needed, use the teletype::discussion\:::: tag. This is a good place to insert example code, etc.
 
 Setters are handled automagically, when documenting a setter/getter, use only the getter name (no underscore) and describe both setter and getter as a single property, example:
 teletype::
@@ -121,7 +121,7 @@ method:: helpSourceDir
 set or get the help source directory
 ::
 
-Methods get an anchor name automatically, prefixed with code::*:: for class methods and code::-:: for instance methods. For example, to link to the code::foo:: class method, use code:: link\::#*foo\:: ::.
+Methods get an anchor name automatically, prefixed with teletype::*:: for class methods and teletype::-:: for instance methods. For example, to link to the teletype::foo:: class method, use teletype:: link\::#*foo\:: ::.
 
 The teletype::method\:::: tag can be used also in normal documents, and emphasis::should:: then have argumentnames. This can be useful for documenting common interfaces outside of a specific class document, for example link::Reference/plot::.
 Anchors for these methods get prefixed with a dot (.) instead of * or -.
@@ -129,14 +129,14 @@ Anchors for these methods get prefixed with a dot (.) instead of * or -.
 When multiple methods have the same signature (like ar and kr in ugens), they should all be listed in one single method tag.
 
 
-SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a code::private\:::: tag, which works just like the method tag but without a section body.
+SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a teletype::private\:::: tag, which works just like the method tag but without a section body.
 
 Extensions can add methods to existing class docs, see the link::#Extensions:: section below.
 
 subsection:: Copy methods from other class
-You can use code:: copymethod\:: ClassName, methodName :: to copy the documentation of a method from another helpfile to this one.
+You can use teletype:: copymethod\:: ClassName, methodName :: to copy the documentation of a method from another helpfile to this one.
 
-code::methodName:: must be prefixed with code::*:: (asterix) for class methods and code::-:: (dash) for instance methods.
+teletype::methodName:: must be prefixed with teletype::*:: (asterix) for class methods and teletype::-:: (dash) for instance methods.
 
 
 subsection:: Redirect classes
@@ -144,7 +144,7 @@ Some classes uses the code::*doesNotUnderstand:: trick to redirect to another im
 teletype::
 redirect:: implClass
 ::
-Where code::implClass:: is the name of the class variable holding the implementing class.
+Where teletype::implClass:: is the name of the class variable holding the implementing class.
 
 subsection:: Example
 

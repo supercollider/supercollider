@@ -214,6 +214,7 @@ code::
 x.set(\freq, 440, \amp, 0.5)
 ::
 
+
 Examples::
 code::
 // boot the default server
