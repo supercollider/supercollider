@@ -23,16 +23,19 @@ subsection:: Header tags
 All header tags take the remaining line of text as input. There is no end-tag other than a newline.
 
 definitionlist::
-## teletype:: TITLE\:: :: name
+## keyword:: title\::
+teletype:: TITLE\:: :: name
 || Title of document. Must equal classname for class reference docs. Example:
 teletype::
 title:: SCDoc
 ::
 
-## teletype:: CLASS\:: :: name
+## keyword:: class\::
+teletype:: CLASS\:: :: name
 || Deprecated, use TITLE instead.
 
-## teletype:: CATEGORIES\:: :: list
+## keyword:: categories\::
+teletype:: CATEGORIES\:: :: list
 || A comma-separated list of document categories. Mainly used by the link::Browse:: page.
 
 Categories can be hierarchical, where levels are denoted with teletype::>::.
@@ -41,19 +44,22 @@ teletype::
 categories:: External Control>OSC, Scheduling>Clocks
 ::
 
-## teletype:: RELATED\:: :: link(s)
+## keyword:: related\::
+teletype:: RELATED\:: :: link(s)
 || A comma-separated list of related docs. Example:
 teletype::
 related:: Classes/SCDoc, Reference/SCDocSyntax
 ::
 
-## teletype:: SUMMARY\:: :: text
+## keyword:: summary\::
+teletype:: SUMMARY\:: :: text
 || A short summary of this document. Example:
 teletype::
 summary:: SCDoc markup language syntax
 ::
 
-## teletype:: REDIRECT\:: :: name
+## keyword:: redirect\::
+teletype:: REDIRECT\:: :: name
 || For class redirect systems, specify the name of the instance variable holding the implementing class.
 Example:
 teletype::
@@ -72,21 +78,27 @@ All structural tags has children elements, for example the items in a list or th
 
 Level 1 (highest):
 definitionlist::
-## teletype:: SECTION\:: :: name
+## keyword:: section\::
+teletype:: SECTION\:: :: name
 || A named section. The name should be plain text and can not contain any tags. Example:
 teletype::
 section:: Introduction
 ::
-## teletype:: DESCRIPTION\:: ::
-## teletype:: CLASSMETHODS\:: ::
-## teletype:: INSTANCEMETHODS\:: ::
-## teletype:: EXAMPLES\:: ::
+## keyword:: description\::
+teletype:: DESCRIPTION\:: ::
+## keyword:: classmethods\::
+teletype:: CLASSMETHODS\:: ::
+## keyword:: instancemethods\::
+teletype:: INSTANCEMETHODS\:: ::
+## keyword:: examples\::
+teletype:: EXAMPLES\:: ::
 || These tags starts standard sections of a class reference. CLASSMETHODS and INSTANCEMETHODS have special meaning, in that they specify if a documented method is a classmethod or instancemethod.
 ::
 
 Level 2:
 definitionlist::
-## teletype:: SUBSECTION\:: :: name
+## keyword:: subsection\::
+teletype:: SUBSECTION\:: :: name
 || A named subsection. The name should be plain text and can not contain any tags. Example:
 teletype::
 subsection:: Some more info
@@ -96,7 +108,8 @@ subsection:: Some more info
 subsection:: Method tags
 These are level 3 subsections:
 definitionlist::
-## teletype:: METHOD\:: :: methodname(s) [argstring]
+## keyword:: method\::
+teletype:: METHOD\:: :: methodname(s) [argstring]
 || Document one or more methods, given as a comma-separated list of methodnames.
 
 note::
@@ -122,9 +135,11 @@ The METHOD tag is normally used inside CLASSMETHODS and INSTANCEMETHODS, but can
 
 For real methods, the argstring is not allowed, instead the argument names and default values will be auto-filled in.
 
-## teletype:: PRIVATE\:: :: methodname(s)
+## keyword:: private\::
+teletype:: PRIVATE\:: :: methodname(s)
 || This tag behaves like a section but does not have a section body. It marks one or more methods as private, so that it does not show up under the auto-generated emphasis::Undocumented Methods:: sections.
-## teletype:: COPYMETHOD\:: :: classname methodname
+## keyword:: copymethod\::
+teletype:: COPYMETHOD\:: :: classname methodname
 || This tag behaves like a section but does not have a section body. Copy a method documentation from a class reference and insert it here as if the method was documented in this document. The methodname must be prefixed with teletype::*:: for classmethods and teletype::-:: for instancemethods. Example:
 teletype::
 copymethod:: SinOsc *ar
@@ -135,14 +150,17 @@ anchor::tags allowed inside a method::
 Inside a method section, the following optional tags are allowed, in the order given below.
 These tags are level 4 subsections.
 definitionlist::
-## teletype:: ARGUMENT\:: :: [argname]
+## keyword:: argument\::
+teletype:: ARGUMENT\:: :: [argname]
 || One for each argument. The argument section body should contain a description of the given argument.
 The strong::argname:: is optional, and will be auto-filled in if not given. If given, it must match the real name of the argument at this position.
 
 If the method has varargs, the argname for the varargs (if given) should be prefixed with three dots and a space (teletype::"... "::)
-## teletype:: RETURNS\:: ::
+## keyword:: returns\::
+teletype:: RETURNS\:: ::
 || This section should contain a description of the return value, especially the type.
-## teletype:: DISCUSSION\:: ::
+## keyword:: discussion\::
+teletype:: DISCUSSION\:: ::
 || This optional section can contain a more detailed discussion and code examples related to this method.
 ::
 
@@ -163,13 +181,17 @@ These tags enclose a text and ends with a single teletype::\:::: (double-colon) 
 The enclosed text can not contain any other tags.
 
 definitionlist::
-## teletype:: STRONG\:: ::
+## keyword:: strong\::
+teletype:: STRONG\:: ::
 || Render text in bold font.
-## teletype:: EMPHASIS\:: ::
+## keyword:: emphasis\::
+teletype:: EMPHASIS\:: ::
 || Render text in emphasized font, typically italics.
-## teletype:: SOFT\:: ::
+## keyword:: soft\::
+teletype:: SOFT\:: ::
 || Render text in a soft shade.
-## teletype:: LINK\:: ::
+## keyword:: link\::
+teletype:: LINK\:: ::
 || Create a link to another document. The text should be the document key, which is the path relative the Help folder and without extension, like teletype::Classes/SinOsc:: or teletype::Reference/SCDocSyntax::
 
 Optionally, the path can be followed by teletype::#anchor:: to jump to a specific place in the document, and teletype::#label:: to specify another label for the link.
@@ -186,9 +208,11 @@ or perhaps link::Classes/SinOsc##go make some music::
 
 URL's are automagically turned into links, but can be explicitly created with this tag, if one wants to use another link label.
 
-## teletype:: ANCHOR\:: ::
+## keyword:: anchor\::
+teletype:: ANCHOR\:: ::
 || Manually create an anchor at this position in the document.
-## teletype:: IMAGE\:: ::
+## keyword:: image\::
+teletype:: IMAGE\:: ::
 || Insert image, the text should be the relative path to the image. Example:
 teletype::
 image::foo.png::
@@ -197,28 +221,31 @@ image::foo.png::
 
 The following tags (CODE, TELETYPE and MATH) can be written in two forms, either inline or block.
 strong::Inline:: form has the end-tag on the same line, and need any enclosed double-colons that should be part of the text to be escaped with backslash (teletype:: \ ::).
-strong::Block:: form has the tag and end-tag on lines by themselves, and can take multi-line text. In block form, only a single end-tag on its own line counts and any end-tags inside the text should not be escaped. Example:
+strong::Block:: form has the tag and end-tag on lines by themselves, and can take multi-line text. In block form, only a single end-tag on its own line counts and any end-tags inside the text should not be escaped (except if it's on a single line). Example:
 teletype::
- code:: inline form ::
+code:: inline form ::
 
- code::
- block form
- can span multiple lines
- ::
+code::
+block form :: <- needs no escaping
+can span multiple lines
+\::
 ::
 
 definitionlist::
-## teletype:: CODE\:: ::
+## keyword:: code\::
+teletype:: CODE\:: ::
 || Render syntax-colored SuperCollider code.
-## teletype:: TELETYPE\:: ::
+## keyword:: teletype\::
+teletype:: TELETYPE\:: ::
 || Render monospace text.
-## teletype:: MATH\:: ::
+## keyword:: math\::
+teletype:: MATH\:: ::
 || Render mathematics given in TeX syntax. Example:
 teletype::
- This is inline math::2\pi:: and below is block display math:
- math::
- 1\over\sqrt{x^\pi}
- ::
+This is inline math::2\pi:: and below is block display math:
+math::
+1\over\sqrt{x^\pi}
+\::
 ::
 Renders:
 
@@ -233,59 +260,68 @@ List items, table rows and definition terms are denoted with teletype::##:: (dou
 Table cells and definition descriptions are denoted with teletype::||:: (double-bar).
 Lists and tables can be nested, and ends with the end-tag.
 definitionlist::
-## teletype:: TABLE\:: ::
+## keyword:: table\::
+teletype:: TABLE\:: ::
 || Create a table. Example:
 teletype::
- table::
-	## a 1 || a 2 || a 3
-	## b 1 || b 2 || b 3
-	## c 1 || c 2 || c 3
- ::
+table::
+    ## a 1 || a 2 || a 3
+    ## b 1 || b 2 || b 3
+    ## c 1 || c 2 || c 3
+\::
 ::
 Renders:
 table::
 ## a 1 || a 2 || a 3
 ## b 1 || b 2 || b 3
-## c 1 || c 2 || c 3 ::
+## c 1 || c 2 || c 3
+::
 
-## teletype:: DEFINITIONLIST\:: ::
+## keyword:: definitionlist\::
+teletype:: DEFINITIONLIST\:: ::
 || A definition list item consists of one or more terms prefixed with teletype::##:: followed by a description prefixed with teletype::||::. Example:
 teletype::
- definitionlist::
+definitionlist::
  	## foo
  	## bar
  	|| Common dummy-variable names.
  	## SuperCollider
  	|| A very nice computer software.
- ::
+\::
 ::
-## teletype:: LIST\:: ::
+## keyword:: list\::
+teletype:: LIST\:: ::
 || Create a simple bulleted list. Items are prefixed with teletype::##::
-## teletype:: NUMBEREDLIST\:: ::
+## keyword:: numberedlist\::
+teletype:: NUMBEREDLIST\:: ::
 || Create a numbered list. Items are prefixed with teletype::##::
-## teletype:: TREE\:: ::
+## keyword:: tree\::
+teletype:: TREE\:: ::
 || Create a tree structure. Typically nested with more TREE tags. Items are prefixed with teletype::##::
 ::
 
 subsection:: Notes and warnings
 These can have other tags in them, and ends with the end-tag.
 definitionlist::
-## teletype:: NOTE\:: ::
+## keyword:: note\::
+teletype:: NOTE\:: ::
 || Create a NOTE box with important content.
 note:: like this ::
-## teletype:: WARNING\:: ::
+## keyword:: warning\::
+teletype:: WARNING\:: ::
 || Create a WARNING box with very important content.
 warning:: like this ::
-## teletype:: FOOTNOTE\:: ::
+## keyword:: footnote\::
+teletype:: FOOTNOTE\:: ::
 || Create a footnote which will be rendered at the end of the document.
 At the position of the FOOTNOTE tag, the footnote number will be rendered with a link to the footnote.
 Example:
- teletype::
- Hello I'm a geek footnote::
- According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different
- meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs
- sensationally morbid or disgusting acts"
- ::
+teletype::
+Hello I'm a geek footnote::
+According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different
+meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs
+sensationally morbid or disgusting acts"
+\::
 ::
 The result looks like this:
 Hello I'm a geek footnote::
@@ -296,10 +332,12 @@ According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, wi
 
 subsection:: Other tags
 definitionlist::
-## teletype:: KEYWORD\:: :: keyword(s)
+## keyword:: keyword\::
+teletype:: KEYWORD\:: :: keyword(s)
 || Specify one or more searchable keywords for this document.
 An anchor named the keyword prefixed with teletype::kw_:: will be created at the position of this tag.
-## teletype:: CLASSTREE\:: :: classname
+## keyword:: classtree\::
+teletype:: CLASSTREE\:: :: classname
 || Render a class tree of subclasses starting from the given class.
 ::
 
