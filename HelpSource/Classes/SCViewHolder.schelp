@@ -1,7 +1,7 @@
 CLASS:: SCViewHolder
 summary:: Instead of subclassing a (Q/SC)View, this is a proxy/adapter object that holds the View
 categories:: GUI
-related:: Classes/SCView, Classes/QView
+related:: Classes/View
 
 DESCRIPTION::
 When writing gui widgets it is sometimes not desireable to subclass a view class. Its preferable to write a class that acts like a View and is used where Views normally are used but isn't a direct subclass of a View class.
