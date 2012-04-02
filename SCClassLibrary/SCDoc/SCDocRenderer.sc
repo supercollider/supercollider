@@ -6,8 +6,8 @@ SCDocHTMLRenderer {
     classvar footNotes;
     classvar noParBreak;
     classvar currDoc;
-    classvar methArgsMismatch;
-    classvar <>baseDir;
+    classvar minArgs;
+    classvar baseDir;
 
     *escapeSpecialChars {|str|
         var x = "";
@@ -220,8 +220,10 @@ SCDocHTMLRenderer {
         var args = node.text ?? ""; // only outside class/instance methods
         var names = node.children[0].children.collect(_.text);
         var mstat, sym, m, m2, mname2;
-        var args1, args2;
-        var x;
+        var lastargs, args2;
+        var x, maxargs = -1;
+        var methArgsMismatch = false;
+        minArgs = inf;
         names.do {|mname|
             mname2 = this.escapeSpecialChars(mname);
             if(cls.notNil) {
@@ -243,11 +245,23 @@ SCDocHTMLRenderer {
                     args = m2.argNames !? {m2.argNames[1..].join(", ")} ?? {"value"};
                     args2 = m2.argNames !? {m2.argNames[1..]};
                 };
-                if(args1.notNil and: {args1 != args2}) {
-                    args1 = false;
-                } {
-                    args1 = args2;
+                maxargs.do {|i|
+                    var a = args2[i];
+                    var b = lastargs[i];
+                    if(a!=b and: {a!=nil} and: {b!=nil}) {
+                        methArgsMismatch = true;
+                    }
                 };
+                lastargs = args2;
+                case
+                    {args2.size>maxargs} {
+                        maxargs = args2.size;
+                        currentMethod = m2 ?? m;
+                    }
+                    {args2.size<minArgs} {
+                        minArgs = args2.size;
+                    }
+                ;
             } {
                 m = nil;
                 m2 = nil;
@@ -300,10 +314,13 @@ SCDocHTMLRenderer {
             };
         };
         
-        methArgsMismatch = if(args1 == false) {names};
+        if(methArgsMismatch) {
+            "SCDoc: In %\n"
+            "       Grouped methods % does not have the same argument signature."
+            .format(currDoc.fullPath, names).warn;
+        };
 
         if(node.children.size > 1) {
-            currentMethod = m2 ?? m;
             stream << "<div class='method'>";
             this.renderChildren(stream, node.children[1]);
             stream << "</div>";
@@ -492,11 +509,6 @@ SCDocHTMLRenderer {
             \CCOPYMETHOD, {},
             \ICOPYMETHOD, {},
             \ARGUMENTS, {
-                methArgsMismatch !? {
-                    "SCDoc: In %\n"
-                    "       Grouped methods % does not have the same argument signature."
-                    .format(currDoc.fullPath, methArgsMismatch).warn;
-                };
                 stream << "<h4>Arguments:</h4>\n<table class='arguments'>\n";
                 currArg = 0;
                 if(currentMethod.notNil and: {node.children.size < (currentMethod.argNames.size-1)}) {
@@ -521,7 +533,11 @@ SCDocHTMLRenderer {
                             stream << "... ";
                         };
                         stream << if(currArg < currentMethod.argNames.size) {
-                            currentMethod.argNames[currArg];
+                            if(currArg > minArgs) {
+                                "("++currentMethod.argNames[currArg]++")";
+                            } {
+                                currentMethod.argNames[currArg];
+                            }
                         } {
                             "(arg"++currArg++")" // excessive arg
                         };
@@ -530,14 +546,10 @@ SCDocHTMLRenderer {
                     stream << if(currentMethod.isNil or: {currArg < currentMethod.argNames.size}) {
                         currentMethod !? {
                             f = currentMethod.argNames[currArg].asString;
-                            if( // yes, this is a bit hairy..
-                                if(currentMethod.varArgs and: {currArg==(currentMethod.argNames.size-1)}) {
-                                    z = "... "++f;
-                                    (("..."++f) != node.text) and: {z != node.text}
-                                } {
-                                    z = f;
-                                    f != node.text;
-                                }
+                            if(
+                                (z = if(currentMethod.varArgs and: {currArg==(currentMethod.argNames.size-1)})
+                                        {"... "++f} {f}
+                                ) != node.text;
                             ) {
                                 "SCDoc: In %\n"
                                 "       Method %% has arg named '%', but doc has 'argument:: %'.".format(
@@ -549,7 +561,11 @@ SCDocHTMLRenderer {
                                 ).warn;
                             };
                         };
-                        node.text;
+                        if(currArg > minArgs) {
+                            "("++node.text++")";
+                        } {
+                            node.text;
+                        };
                     } {
                         "("++node.text++")" // excessive arg
                     };
