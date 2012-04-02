@@ -204,7 +204,7 @@ methodname: METHODNAME
     {
         char *p = $1+strlen($1)-1;
         if(*p=='_') {
-            post("WARNING:\nSCDoc: In %s\n       Setter method %s should be documented without underscore.\n", scdoc_current_file, $1);
+            post("WARNING: SCDoc: In %s\n  Property setter %s should be documented without underscore.\n", scdoc_current_file, $1);
             *p = '\0';
         };
         $$ = $1;

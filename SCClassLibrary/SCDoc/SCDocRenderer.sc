@@ -49,7 +49,7 @@ SCDocHTMLRenderer {
                         // link to other file?
                         if(File.exists(SCDoc.helpTargetDir+/+n).not) {
                             "SCDoc: In %\n"
-                            "       Broken link: '%'"
+                            "  Broken link: '%'"
                             .format(currDoc.fullPath, link).warn;
                         };
                     };
@@ -289,7 +289,7 @@ SCDocHTMLRenderer {
                 // method not found
                 0, {
                     "SCDoc: In %\n"
-                    "       Method %% not found.".format(currDoc.fullPath,pfx,mname2).warn;
+                    "  Method %% not found.".format(currDoc.fullPath,pfx,mname2).warn;
                     x.value; stream << ": METHOD NOT FOUND!</h3>\n";
                 }
             );
@@ -316,7 +316,7 @@ SCDocHTMLRenderer {
         
         if(methArgsMismatch) {
             "SCDoc: In %\n"
-            "       Grouped methods % does not have the same argument signature."
+            "  Grouped methods % does not have the same argument signature."
             .format(currDoc.fullPath, names).warn;
         };
 
@@ -513,7 +513,7 @@ SCDocHTMLRenderer {
                 currArg = 0;
                 if(currentMethod.notNil and: {node.children.size < (currentMethod.argNames.size-1)}) {
                     "SCDoc: In %\n"
-                    "       Method %% has % args, but doc has % argument:: tags.".format(
+                    "  Method %% has % args, but doc has % argument:: tags.".format(
                         currDoc.fullPath,
                         if(currentMethod.ownerClass.isMetaClass) {"*"} {"-"},
                         currentMethod.name,
@@ -552,7 +552,7 @@ SCDocHTMLRenderer {
                                 ) != node.text;
                             ) {
                                 "SCDoc: In %\n"
-                                "       Method %% has arg named '%', but doc has 'argument:: %'.".format(
+                                "  Method %% has arg named '%', but doc has 'argument:: %'.".format(
                                     currDoc.fullPath,
                                     if(currentMethod.ownerClass.isMetaClass) {"*"} {"-"},
                                     currentMethod.name,
@@ -628,7 +628,7 @@ SCDocHTMLRenderer {
             },
             {
                 "SCDoc: In %\n"
-                "       Unknown SCDocNode id: %".format(currDoc.fullPath, node.id).warn;
+                "  Unknown SCDocNode id: %".format(currDoc.fullPath, node.id).warn;
                 this.renderChildren(stream, node);
             }
         );
