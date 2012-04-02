@@ -8,9 +8,6 @@ TODO
 
 - HelpBrowser: clean up openNewWindows setting. only have a single class variable?
 
-- undoc classes only needs to be rendered once per session.. use mtime or something to flag..
-  otoh, rendering these are really fast so no bother?
-
 - how to merge methods docs for overwritten methods? replace the whole method doc, or add to it?
 
 - copymethod::
@@ -23,19 +20,12 @@ TODO
         if(doc.redirect.notNil and: {doc.implKlass != doc.klass.tryPerform(doc.redirect.asSymbol)})
         but this only works if doc.implKlass was the *old* implementing class..
         so in this case we actually need to store stuff on disk.
-   - other docs metadata changed (for link:: titles)
+   - another docs metadata changed (for link:: titles)
      not sure what to do about that.. actually it must be solved by a dependency system.
      docs that links to other docs has those as dependencies.
    - class hier changed (for classtree:: tag)
      this means we need to know if a doc uses classtree::, could be marked in the SCDocMapEntry.
      also we need to store last class hier on disk, or just always re-render docs that use classtree:: (once per session)
-
-- defer render-specific stuff until the renderer is used the first time?
-  or at least put it in SCDocRenderer-didIndexDocuments, called by SCDoc.indexAllDocuments?
-  - copy non-helpfiles
-  - export JSON
-  actually we could try better to keep renderer specific stuff in SCDocRenderer..
-  even SCDoc.helpTargetDir is renderer specific. Another renderer might not use the local disk at all?
 
 - SCDoc.cpp: replace node->children with a linked list (node->next and node->tail)
   instead of realloc'ing? same for text strings instead of using strmerge?
