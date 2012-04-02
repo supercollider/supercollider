@@ -149,6 +149,9 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::Copy) );
     menu->addAction( mEditors->action(MultiEditor::Paste) );
     menu->addSeparator();
+    menu->addAction( mEditors->action(MultiEditor::Find) );
+    menu->addAction( mEditors->action(MultiEditor::Replace) );
+    menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::IndentMore) );
     menu->addAction( mEditors->action(MultiEditor::IndentLess) );
 

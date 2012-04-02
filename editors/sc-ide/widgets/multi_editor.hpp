@@ -25,6 +25,11 @@
 #include <QTabWidget>
 #include <QAction>
 #include <QSignalMapper>
+#include <QPushButton>
+#include <QToolButton>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QGridLayout>
 
 namespace ScIDE {
 
@@ -35,6 +40,8 @@ class CodeEditor;
 class SignalMultiplexer;
 
 namespace Settings { class Manager; }
+
+class TextFindReplacePanel;
 
 class MultiEditor : public QWidget
 {
@@ -56,6 +63,8 @@ public:
         Cut,
         Copy,
         Paste,
+        Find,
+        Replace,
         IndentMore,
         IndentLess,
 
@@ -90,6 +99,9 @@ public Q_SLOTS:
     void saveDocumentAs();
     void closeDocument();
     void setCurrent( Document * );
+    void showFindPanel();
+    void showReplacePanel();
+    void hideToolPanel();
     void applySettings( Settings::Manager * );
 
 private Q_SLOTS:
@@ -114,11 +126,48 @@ private:
 
     // gui
     QTabWidget *mTabs;
+    TextFindReplacePanel *mFindReplacePanel;
 
     // settings
     bool mStepForwardEvaluation;
 };
 
+class TextFindReplacePanel : public QWidget
+{
+    Q_OBJECT
+
+public:
+    enum Mode
+    {
+        Find = 1,
+        Replace
+    };
+
+public:
+    TextFindReplacePanel( QWidget * parent = 0 );
+
+    Mode mode () const { return mMode; }
+
+    void setMode( Mode );
+
+Q_SIGNALS:
+    void closeRequest();
+
+private:
+    QToolButton *mCloseBtn;
+    QLineEdit *mFindField;
+    QLineEdit *mReplaceField;
+    QPushButton *mNextBtn;
+    QPushButton *mPrevBtn;
+    QPushButton *mFindAllBtn;
+    QPushButton *mReplaceBtn;
+    QPushButton *mReplaceAllBtn;
+    QCheckBox *mMatchCaseOpt;
+
+    QGridLayout *mGrid;
+
+    Mode mMode;
+};
 
 } // namespace ScIDE
 
