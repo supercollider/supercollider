@@ -133,8 +133,8 @@ String[char] : RawArray {
 		});
 		Error(this).throw;
 	}
-	error { "ERROR:\n".post; this.postln; }
-	warn { "WARNING:\n".post; this.postln }
+	error { "ERROR: ".post; this.postln; }
+	warn { "WARNING: ".post; this.postln }
 	inform { ^this.postln }
 	++ { arg anObject; ^this prCat: anObject.asString; }
 	+ { arg anObject; ^this prCat: " " prCat: anObject.asString; }
