@@ -1,0 +1,35 @@
+title:: SCDocNode
+summary:: An SCDoc parsed document node
+related:: Classes/SCDoc
+categories:: HelpSystem
+
+description::
+This class is used internally by link::Classes/SCDoc:: to represent a node in the parsed document tree returned by the  parser. It has an id symbol, optional text and optional children.
+
+classmethods::
+
+method:: new
+Create a new node
+
+instancemethods::
+
+private:: addDivAfter, makeDiv, notPrivOnly, printOn, sort, sortClassDoc
+
+method:: id
+The node ID. A link::Classes/Symbol::
+
+method:: text
+Text associated with this node. A link::Classes/String:: or nil.
+
+method:: children
+Children of this node. A link::Classes/Array:: or nil.
+
+method:: merge
+Merge another document node tree with this one. Used by document additions (*.ext.schelp)
+argument:: root2
+Another SCDocNode instance.
+
+method:: findChild
+Find the first child of this node with specified id.
+argument:: id
+A link::Classes/Symbol::
