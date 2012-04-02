@@ -21,8 +21,6 @@ SCDocEntry {
     var <>isClassDoc;
     var <>klass, <>implKlass, <>implements;
     var <>isUndocumentedClass;
-    var <>superclasses, // could we get rid of these?
-        <>subclasses;
 
     printOn {|stream|
         stream << "SCDocEntry(" << path.cs << ", " << title.cs << ", " << summary.cs << ")";
@@ -79,7 +77,7 @@ SCDocEntry {
         doc.isUndocumentedClass = true;
         doc.title = name.asString;
         f = doc.klass.filenameSymbol.asString;
-        doc.mtime = File.mtime(f);
+        doc.mtime = 0;
         doc.isExtension = f.beginsWith(Platform.classLibraryDir).not;
         doc.undoccmethods = doc.klass.class.methods.collectAs({|m|m.name.asGetter},IdentitySet);
         doc.undocimethods = doc.klass.methods.collectAs({|m|m.name.asGetter},IdentitySet);
@@ -387,13 +385,13 @@ SCDoc {
         _SCDoc_ParseFile
         ^this.primitiveFailed
     }
-    *indexAllDocuments {
+    *indexAllDocuments { |clearCache=false|
         var now = Main.elapsedTime;
         var key, doc;
         var nonHelpFiles;
         var undocClasses = Class.allClasses.reject(_.isMetaClass).collectAs({|c|c.name},IdentitySet);
         var additions = Dictionary();
-        this.checkVersion;
+        this.checkVersion(clearCache);
         this.postMsg("Indexing help-files...",0);
         documents = Dictionary(); // or use IdDict and symbols as keys?
         helpSourceDirs = nil; // force re-scan of HelpSource folders
@@ -550,7 +548,10 @@ SCDoc {
             doc = this.documents[subtarget];
             doc !? {
                 if(doc.isUndocumentedClass) {
-                    this.renderUndocClass(doc);
+                    if(doc.mtime == 0) {
+                        this.renderUndocClass(doc);
+                        doc.mtime = 1;
+                    };
                     ^url;
                 };
                 if(File.mtime(doc.fullPath)>doc.mtime) { // src changed after indexing
@@ -588,10 +589,10 @@ SCDoc {
         ^#[\ar,\kr,\ir].collect {|m| c.class.findRespondingMethodFor(m).notNil }.reduce {|a,b| a or: b};
     }
 
-    *checkVersion {
+    *checkVersion {|clearCache=false|
         var f, path = this.helpTargetDir +/+ "scdoc_version";
-        if(path.load != version) {
-            this.postMsg("version update, refreshing timestamp",1);
+        if(clearCache or: {path.load != version}) {
+            this.postMsg("refreshing scdoc version timestamp",1);
             // this will update the mtime of the version file, triggering re-rendering of files older than now
             File.mkdir(this.helpTargetDir);
             f = File.open(path,"w");
