@@ -183,7 +183,7 @@ void MultiEditor::updateActions()
 void MultiEditor::applySettings( Settings::Manager *s )
 {
     s->beginGroup("IDE/editor");
-    mStepForwardEvaluation = s->value("stepForwardEvaluation", false).toBool();
+    mStepForwardEvaluation = s->value("stepForwardEvaluation").toBool();
     s->endGroup();
 
     int c = count();

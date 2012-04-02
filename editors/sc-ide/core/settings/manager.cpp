@@ -21,6 +21,10 @@
 #include "manager.hpp"
 #include "serialization.hpp"
 
+#include <QTextCharFormat>
+#include <QPalette>
+#include <QApplication>
+
 namespace ScIDE { namespace Settings {
 
 Manager::Manager( const QString & filename, QObject * parent ):
@@ -32,7 +36,62 @@ Manager::Manager( const QString & filename, QObject * parent ):
 
 void Manager::initDefaults()
 {
-    // TODO
+    QPalette appPlt( QApplication::palette() );
+
+    beginGroup("IDE");
+
+    beginGroup("interpreter");
+    setDefault("autoStart", true);
+    setDefault("command", "sclang");
+    endGroup();
+
+    beginGroup("editor");
+
+    setDefault("spaceIndent", true);
+    setDefault("indentWidth", 4);
+    setDefault("stepForwardEvaluation", false);
+
+    beginGroup("colors");
+    setDefault("background", appPlt.color(QPalette::Base));
+    setDefault("text", appPlt.color(QPalette::Text));
+    setDefault("matchingBrackets", Qt::gray);
+    endGroup(); // colors
+
+    beginGroup("highlighting");
+    initHighlightingDefaults();
+    endGroup(); // highlighting
+
+    endGroup(); // editor
+
+    endGroup(); // IDE
+}
+
+inline static QVariant makeHlFormat
+    ( const QBrush &fg, QFont::Weight w = QFont::Normal )
+{
+    QTextCharFormat f;
+    f.setForeground(fg);
+    if(w != QFont::Normal)
+        f.setFontWeight(w);
+    return QVariant::fromValue<QTextCharFormat>(f);
+}
+
+void Manager::initHighlightingDefaults()
+{
+    QPalette plt( QApplication::palette() );
+    QColor base = plt.color(QPalette::Base);
+    int shade = (base.red() + base.green() + base.blue() < 380) ? 160 : 100;
+
+    setDefault( "keyword", makeHlFormat( QColor(0,0,230).lighter(shade), QFont::Bold ) );
+    setDefault( "builtin", makeHlFormat( QColor(51,51,191).lighter(shade) ) );
+    setDefault( "envvar", makeHlFormat( QColor(255,102,0).lighter(shade) ) );
+    setDefault( "class", makeHlFormat( QColor(0,0,210).lighter(shade) ) );
+    setDefault( "number", makeHlFormat( QColor(152,0,153).lighter(shade) ) );
+    setDefault( "symbol", makeHlFormat( QColor(0,115,0).lighter(shade) ) );
+    setDefault( "string", makeHlFormat( QColor(95,95,95).lighter(shade) ) );
+    setDefault( "char", makeHlFormat( QColor(0,115,0).lighter(shade) ) );
+    setDefault( "comment", makeHlFormat( QColor(191,0,0).lighter(shade) ) );
+    setDefault( "primitive", makeHlFormat( QColor(51,51,191).lighter(shade) ) );
 }
 
 bool Manager::contains ( const QString & key ) const
@@ -43,9 +102,8 @@ bool Manager::contains ( const QString & key ) const
         return mDefaults.contains( resolvedKey(key) );
 }
 
-QVariant Manager::value ( const QString & key, const QVariant & dummy ) const
+QVariant Manager::value ( const QString & key ) const
 {
-    // FIXME: remove dummy arg, and init default settings instead
     if ( mSettings->contains(key) )
         return mSettings->value(key);
     else

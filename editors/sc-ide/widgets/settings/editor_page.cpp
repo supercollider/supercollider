@@ -22,6 +22,7 @@
 #include "ui_settings_editor.h"
 #include "../../core/settings/manager.hpp"
 #include "../../core/sc_syntax_highlighter.hpp"
+#include "../../core/main.hpp"
 
 #include <QMenu>
 #include <QDebug>
@@ -47,34 +48,29 @@ void EditorPage::load( Manager *s )
 {
     s->beginGroup("IDE/editor");
 
-    ui->spaceIndent->setChecked( s->value("spaceIndent", true).toBool() );
-    ui->indentWidth->setValue( s->value("indentWidth", 4).toInt() );
-    ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation", false).toBool() );
+    ui->spaceIndent->setChecked( s->value("spaceIndent").toBool() );
+    ui->indentWidth->setValue( s->value("indentWidth").toInt() );
+    ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation").toBool() );
 
     s->beginGroup("colors");
 
-    QPalette appPlt( QApplication::palette() );
-
-    ui->bgColor->setColor( s->value("background", appPlt.color(QPalette::Base) ).value<QColor>() );
-    ui->textColor->setColor( s->value("text", appPlt.color(QPalette::Text) ).value<QColor>() );
-    ui->bracketColor->setColor( s->value("matchingBrackets", Qt::gray ).value<QColor>() );
+    ui->bgColor->setColor( s->value("background").value<QColor>() );
+    ui->textColor->setColor( s->value("text").value<QColor>() );
+    ui->bracketColor->setColor( s->value("matchingBrackets").value<QColor>() );
 
     s->endGroup(); // colors
 
-    const SyntaxHighlighterGlobals *scSyntax = SyntaxHighlighterGlobals::instance();
-    //ui->textFormatList->addFormat( "Normal", scSyntax->format(PlainFormat) );
-    ui->textFormatList->addFormat( "Keyword", scSyntax->format(KeywordFormat) );
-    ui->textFormatList->addFormat( "BuiltIn", scSyntax->format(BuiltinFormat) );
-    ui->textFormatList->addFormat( "EnvVar", scSyntax->format(EnvVarFormat) );
-    ui->textFormatList->addFormat( "Class", scSyntax->format(ClassFormat) );
-    ui->textFormatList->addFormat( "Number", scSyntax->format(NumberFormat) );
-    ui->textFormatList->addFormat( "Symbol", scSyntax->format(SymbolFormat) );
-    ui->textFormatList->addFormat( "String", scSyntax->format(StringFormat) );
-    ui->textFormatList->addFormat( "Char", scSyntax->format(CharFormat) );
-    ui->textFormatList->addFormat( "Comment", scSyntax->format(CommentFormat) );
-    ui->textFormatList->addFormat( "Primitive", scSyntax->format(PrimitiveFormat) );
+    s->beginGroup("highlighting");
 
-    s->endGroup();
+    QStringList formatNames;
+    formatNames << "Keyword" << "BuiltIn" << "EnvVar" << "Class" << "Number"
+        << "Symbol" << "String" << "Char" << "Comment" << "Primitive";
+    foreach(const QString &name, formatNames)
+        ui->textFormatList->addFormat(name, s->value(name.toLower()).value<QTextCharFormat>());
+
+    s->endGroup(); // highlighting
+
+    s->endGroup(); // IDE/editor
 }
 
 void EditorPage::store( Manager *s )
@@ -113,7 +109,8 @@ void EditorPage::execSyntaxFormatContextMenu(const QPoint &pos)
     int i = ui->textFormatList->currentIndex();
     if (i < 0) return;
 
-    QMenu *menu = new QMenu(ui->textFormatList->name(i), this);
+    QString formatName = ui->textFormatList->name(i);
+    QMenu *menu = new QMenu(formatName, this);
     QAction *actReset = menu->addAction("Reset to Default");
     QAction *actClearBg = menu->addAction("Clear Background");
 
@@ -126,8 +123,10 @@ void EditorPage::execSyntaxFormatContextMenu(const QPoint &pos)
             << ClassFormat << NumberFormat << SymbolFormat
             << StringFormat << CharFormat << CommentFormat << PrimitiveFormat;
 
-        QTextCharFormat fm =
-            SyntaxHighlighterGlobals::instance()->defaultFormat(formats[i]);
+        Manager *mng = Main::instance()->settings();
+        mng->beginGroup("IDE/editor/highlighting");
+        QTextCharFormat fm = mng->defaultValue(formatName.toLower()).value<QTextCharFormat>();
+        mng->endGroup();
 
         ui->textFormatList->setFormat(i, fm);
     }

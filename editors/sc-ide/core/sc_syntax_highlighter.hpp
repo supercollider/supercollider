@@ -92,19 +92,9 @@ public:
         return mFormats;
     }
 
-    inline const QTextCharFormat * defaultFormats() const
-    {
-        return mDefaultFormats;
-    }
-
     inline const QTextCharFormat & format( SyntaxFormat type ) const
     {
         return mFormats[type];
-    }
-
-    inline const QTextCharFormat & defaultFormat( SyntaxFormat type ) const
-    {
-        return mDefaultFormats[type];
     }
 
     inline static const SyntaxHighlighterGlobals * instance() { Q_ASSERT(mInstance); return mInstance; }
@@ -118,14 +108,12 @@ Q_SIGNALS:
 private:
     friend class SyntaxHighlighter;
 
-    void initHighlightFormats();
     void initSyntaxRules();
     void initKeywords();
     void initBuiltins();
     void applySettings( Settings::Manager*, const QString &key, SyntaxFormat );
 
     QTextCharFormat mFormats[FormatCount];
-    QTextCharFormat mDefaultFormats[FormatCount];
     QVector<SyntaxRule> mInCodeRules;
     QRegExp mInSymbolRegexp, mInStringRegexp;
 

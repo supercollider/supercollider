@@ -37,49 +37,13 @@ SyntaxHighlighterGlobals::SyntaxHighlighterGlobals( Main *main ):
     Q_ASSERT(mInstance == 0);
     mInstance = this;
 
-    initHighlightFormats();
     initSyntaxRules();
 
-    // initialize formats from defaults + settings:
+    // initialize formats from settings:
     applySettings(main->settings());
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
-}
-
-void SyntaxHighlighterGlobals::initHighlightFormats()
-{
-    mDefaultFormats[KeywordFormat].setFontWeight(QFont::Bold);
-    mDefaultFormats[KeywordFormat].setForeground(QColor(0,0,230));
-
-    mDefaultFormats[BuiltinFormat].setForeground(QColor(51,51,191));
-
-    mDefaultFormats[PrimitiveFormat] = mDefaultFormats[BuiltinFormat];
-
-    mDefaultFormats[ClassFormat].setForeground(QColor(0,0,210));
-
-    mDefaultFormats[NumberFormat].setForeground(QColor(152,0,153));
-
-    mDefaultFormats[CommentFormat].setForeground(QColor(191,0,0));
-
-    mDefaultFormats[StringFormat].setForeground(QColor(95,95,95));
-
-    mDefaultFormats[SymbolFormat].setForeground(QColor(0,115,0));
-
-    mDefaultFormats[CharFormat] = mDefaultFormats[SymbolFormat];
-
-    mDefaultFormats[EnvVarFormat].setForeground(QColor(255,102,0));
-
-    // if system base color is dark, brighten the highlighting colors
-    QPalette plt( QApplication::palette() );
-    QColor base = plt.color(QPalette::Base);
-    if (base.red() + base.green() + base.blue() < 380)
-    {
-        for (int i = 0; i < FormatCount; ++i)
-        {
-            mDefaultFormats[i].setForeground( mDefaultFormats[i].foreground().color().lighter(160) );
-        }
-    }
 }
 
 void SyntaxHighlighterGlobals::initSyntaxRules()
@@ -184,10 +148,7 @@ void SyntaxHighlighterGlobals::applySettings( Settings::Manager *s )
 
 void SyntaxHighlighterGlobals::applySettings( Settings::Manager *s, const QString &key, SyntaxFormat type )
 {
-    if (s->contains(key))
-        mFormats[type] = s->value(key).value<QTextCharFormat>();
-    else
-        mFormats[type] = mDefaultFormats[type];
+    mFormats[type] = s->value(key).value<QTextCharFormat>();
 }
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent):
