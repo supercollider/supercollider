@@ -1,22 +1,10 @@
 TODO
 ----
 
-- auto-fill argument:
-    we now only warn on grouped methods argnames mismatch if argument:: tag is used.
-    for example, Tdef pause, resume, reset are grouped *not* because they are supposed to have
-    the same args, which they don't..
-    That means we can not use argument:: if grouped methods does not have the same argnames,
-    is this ok?
-    
-    use only the longest argstring when selecting the method to use for argname check?
-    and only check names up too length of method? so allow:
-    foo (a, b, c)
-    bar (a, b)
-    and then use the shorter as count when determining excess args.. so c would be rendered (c).
-
 - should we allow *.ext.schelp to add to related:: and categories:: ?
 
 - clean up old-help compatibility, do we really need it in both HelpBrowser-goTo and SCDoc.findHelpFile?
+  And automatically call Help.rebuildTree on startup?
 
 - HelpBrowser: clean up openNewWindows setting. only have a single class variable?
 
