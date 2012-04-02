@@ -41,7 +41,7 @@ int main( int argc, char *argv[] )
 
     win->showMaximized();
 
-    bool startInterpreter = main->settings()->value("IDE/interpreter/autoStart", true).toBool();
+    bool startInterpreter = main->settings()->value("IDE/interpreter/autoStart").toBool();
     if(startInterpreter)
         main->scProcess()->start();
 

@@ -54,19 +54,33 @@ public:
 
     bool contains ( const QString & key ) const;
 
-    QVariant value ( const QString & key, const QVariant & dummy = QVariant() ) const;
+    QVariant value ( const QString & key ) const;
+
+    QVariant defaultValue ( const QString & key ) const
+    {
+        return mDefaults.value(resolvedKey(key));
+    }
 
     void setValue ( const QString & key, const QVariant & value );
 
 private:
+    void setDefault ( const QString & key, const QVariant & value )
+    {
+        mDefaults.insert(resolvedKey(key), value);
+    }
+
     typedef QSettings::SettingsMap SettingsMap;
 
     QString resolvedKey( const QString & key ) const
     {
-        return mSettings->group().append(key);
+        QString fullKey = mSettings->group();
+        if(!fullKey.isEmpty()) fullKey.append("/");
+        fullKey.append(key);
+        return fullKey;
     }
 
     void initDefaults();
+    void initHighlightingDefaults();
 
     QSettings *mSettings;
     SettingsMap mDefaults;

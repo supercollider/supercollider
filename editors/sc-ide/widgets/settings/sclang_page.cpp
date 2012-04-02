@@ -43,7 +43,7 @@ SclangPage::~SclangPage()
 void SclangPage::load( Manager *s )
 {
     s->beginGroup("IDE/interpreter");
-    ui->autoStart->setChecked( s->value("autoStart", true).toBool() );
+    ui->autoStart->setChecked( s->value("autoStart").toBool() );
     ui->command->setText( s->value("command").toString() );
     ui->runtimeDir->setText( s->value("runtimeDir").toString() );
     ui->configFile->setText( s->value("configFile").toString() );

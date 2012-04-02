@@ -175,9 +175,9 @@ void CodeEditor::applySettings( Settings::Manager *s )
 {
     s->beginGroup("IDE/editor");
 
-    mSpaceIndent = s->value("spaceIndent", true).toBool();
+    mSpaceIndent = s->value("spaceIndent").toBool();
 
-    setIndentWidth( s->value("indentWidth", 4).toInt() );
+    setIndentWidth( s->value("indentWidth").toInt() );
 
     QPalette plt;
     QFont fnt(font());
@@ -193,7 +193,7 @@ void CodeEditor::applySettings( Settings::Manager *s )
     if (s->contains("text"))
         plt.setColor(QPalette::Text, s->value("text").value<QColor>());
 
-    mBracketHighlight = s->value("matchingBrackets", Qt::gray).value<QColor>();
+    mBracketHighlight = s->value("matchingBrackets").value<QColor>();
 
     s->endGroup(); // colors
 
