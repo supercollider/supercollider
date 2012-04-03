@@ -40,6 +40,10 @@ QTextView : QAbstractScroll {
     this.setProperty( \textColor, aColor );
   }
 
+  background { ^this.palette.base }
+
+  background_ { arg color; this.palette = this.palette.base_(color); }
+
   selectedString { ^this.getProperty( \selectedString ); }
 
   selectedString_ { arg string; this.setProperty( \selectedString, string ); }
