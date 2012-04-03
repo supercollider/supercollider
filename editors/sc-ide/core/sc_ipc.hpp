@@ -24,7 +24,7 @@
 #include <QCoreApplication>
 #include <QtNetwork/QLocalSocket>
 #include <QtNetwork/QLocalServer>
-
+#include <QBuffer>
 
 namespace ScIDE {
 
@@ -34,6 +34,7 @@ class SCIpcServer:
     Q_OBJECT
     QString mIdeName;
     QLocalSocket * mSocket;
+    QByteArray mReceivedData;
 
 public:
     explicit SCIpcServer( QObject *parent = 0 ):
@@ -64,27 +65,30 @@ private Q_SLOTS:
 
     void readDataFromSocket()
     {
-        QByteArray data = mSocket->readAll();
+        mReceivedData.append(mSocket->readAll());
+        tryEvaluateReceivedData();
+    }
 
-        for (;;) {
-            QDataStream in(&data, QIODevice::ReadOnly);
-            in.setVersion(QDataStream::Qt_4_6);
+private:
+    void tryEvaluateReceivedData(void)
+    {
+        QBuffer receivedData(&mReceivedData);
+        receivedData.open(QIODevice::ReadOnly);
 
-            QString selector, message;
-            in >> selector;
-            in >> message;
-            if (in.status() != QDataStream::Ok) {
-                bool readSuccessful = mSocket->waitForReadyRead();
-                if (!readSuccessful) {
-                    qDebug("readDataFromSocket: problem reading large message");
-                    return;
-                }
-                data.append(mSocket->readAll());
-                continue;
-            }
-            qDebug("readDataFromSocket %s %s", selector.toStdString().c_str(), message.toStdString().c_str());
+        QDataStream in(&receivedData);
+        in.setVersion(QDataStream::Qt_4_6);
+        QString selector, message;
+        in >> selector;
+        if (in.status() != QDataStream::Ok)
             return;
-        }
+
+        in >> message;
+        if (in.status() != QDataStream::Ok)
+            return;
+
+        mReceivedData.remove(0, receivedData.pos());
+
+        qDebug("dispatch %s", selector.toStdString().c_str());
     }
 };
 
