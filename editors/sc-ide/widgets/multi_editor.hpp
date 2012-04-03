@@ -153,6 +153,7 @@ public:
 
     Mode mode () const { return mMode; }
     void setMode( Mode );
+    void initiate();
 
     QString findString() const { return mFindField->text(); }
     QString replaceString() const { return mReplaceField->text(); }
