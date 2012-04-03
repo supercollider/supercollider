@@ -270,6 +270,7 @@ void MultiEditor::setCurrent( Document *doc )
 void MultiEditor::showFindPanel()
 {
     mFindReplacePanel->setMode( TextFindReplacePanel::Find );
+    mFindReplacePanel->initiate();
     mFindReplacePanel->show();
     mFindReplacePanel->setFocus(Qt::OtherFocusReason);
 }
@@ -277,6 +278,7 @@ void MultiEditor::showFindPanel()
 void MultiEditor::showReplacePanel()
 {
     mFindReplacePanel->setMode( TextFindReplacePanel::Replace );
+    mFindReplacePanel->initiate();
     mFindReplacePanel->show();
     mFindReplacePanel->setFocus(Qt::OtherFocusReason);
 }
@@ -424,6 +426,7 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     setMode(Find);
 
     setFocusProxy(mFindField);
+    QWidget::setTabOrder(mFindField, mReplaceField);
 
     connect(mCloseBtn, SIGNAL(clicked()), this, SIGNAL(close()));
     connect(mNextBtn, SIGNAL(clicked()), this, SLOT(findNext()));
@@ -446,11 +449,27 @@ void TextFindReplacePanel::setMode( Mode mode )
     mMode = mode;
 
     bool visible = mMode == Replace;
-
     mReplaceLabel->setVisible(visible);
     mReplaceField->setVisible(visible);
     mReplaceBtn->setVisible(visible);
     mReplaceAllBtn->setVisible(visible);
+}
+
+void TextFindReplacePanel::initiate()
+{
+    if(mEditor)
+    {
+        QTextCursor c( mEditor->textCursor() );
+        if(c.hasSelection() &&
+           c.document()->findBlock(c.selectionStart()) ==
+           c.document()->findBlock(c.selectionEnd()))
+        {
+            mFindField->setText(c.selectedText());
+            mReplaceField->clear();
+        }
+    }
+
+    mFindField->selectAll();
 }
 
 void TextFindReplacePanel::findNext()
