@@ -134,6 +134,67 @@ void CodeEditor::setIndentWidth( int width )
     tdoc->setDefaultTextOption(opt);
 }
 
+bool CodeEditor::find( const QString &text, QTextDocument::FindFlags options )
+{
+    // Although QTextDocument provides a find() method, we implement
+    // our own, because the former one is not adequate.
+
+    // FIXME: Can't find multi-line strings
+
+    // FIXME: There's probably some room for optimization.
+
+    if(text.isEmpty()) return true;
+    QTextDocument *doc = QPlainTextEdit::document();
+
+    bool backwards = options & QTextDocument::FindBackward;
+    Qt::CaseSensitivity matchCase =
+        options & QTextDocument::FindCaseSensitively ?
+        Qt::CaseSensitive : Qt::CaseInsensitive;
+
+    QTextCursor c( textCursor() );
+    if (c.hasSelection())
+    {
+        bool matching =
+            c.selectedText().compare(text, matchCase) == 0;
+
+        if( backwards == matching )
+            c.setPosition(qMin(c.position(), c.anchor()));
+        else
+            c.setPosition(qMax(c.position(), c.anchor()));
+    }
+
+    c.movePosition( backwards ? QTextCursor::Start : QTextCursor::End, QTextCursor::KeepAnchor );
+    QString searchText(c.selectedText());
+
+    int i;
+    if(backwards)
+        i = searchText.lastIndexOf( text, -1, matchCase );
+    else
+        i = searchText.indexOf( text, 0, matchCase );
+
+    if(i == -1)
+    {
+        c.movePosition( backwards ? QTextCursor::End : QTextCursor::Start, QTextCursor::KeepAnchor );
+        searchText = c.selectedText();
+        if(backwards)
+            i = searchText.lastIndexOf( text, -1, matchCase );
+        else
+            i = searchText.indexOf( text, 0, matchCase );
+    }
+
+    if(i == -1)
+        return false;
+    else
+    {
+        if(c.atEnd())
+            i = i + c.anchor();
+        c.setPosition(i);
+        c.setPosition(i + text.length(), QTextCursor::KeepAnchor);
+        setTextCursor(c);
+        return true;
+    }
+}
+
 void CodeEditor::zoomIn(int steps)
 {
     QFont f = font();
