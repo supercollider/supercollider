@@ -69,9 +69,15 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _drawWaveform(true)
 {
   memset( &sfInfo, 0, sizeof(SF_INFO) );
+
   setFocusPolicy( Qt::StrongFocus );
+
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
-  setAttribute( Qt::WA_OpaquePaintEvent, true );
+
+  QPalette plt(palette());
+  plt.setColor(QPalette::Window, Qt::black);
+  setPalette(plt);
+  setAutoFillBackground(true);
 }
 
 QcWaveform::~QcWaveform()
@@ -498,10 +504,6 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
     draw( pixmap, 0, width(), _beg, _dur );
     dirty = false;
   }
-
-  // clear background
-
-  p.fillRect( rect(), QColor( 0, 0, 0 ) );
 
   // draw selections
 
