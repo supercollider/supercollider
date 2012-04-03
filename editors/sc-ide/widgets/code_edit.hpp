@@ -66,6 +66,7 @@ public:
     bool showWhitespace() { return mShowWhitespace; }
     void setIndentWidth( int );
     bool find( const QString &text, QTextDocument::FindFlags options = 0 );
+    bool findAll( const QString &text, QTextDocument::FindFlags options = 0 );
 
 public Q_SLOTS:
     void zoomIn(int steps = 1);
@@ -74,6 +75,7 @@ public Q_SLOTS:
     void indentLess() { indent(true); }
     void setSpaceIndent(bool on) { mSpaceIndent = on; }
     void setShowWhitespace(bool);
+    void clearSearchHighlighting();
     void applySettings( Settings::Manager * );
 
 protected:
@@ -102,8 +104,8 @@ private:
     void matchRightBracket( char, char,
                             const QTextBlock & block, int index,
                             BracketMatch & match );
-    void highlightBracket( int pos );
     int indentedStartOfLine( const QTextBlock & );
+    void updateExtraSelections();
 
     LineIndicator *_lineIndicator;
     Document *mDoc;
@@ -111,6 +113,9 @@ private:
     bool mSpaceIndent;
     bool mShowWhitespace;
     QColor mBracketHighlight;
+
+    QList<QTextEdit::ExtraSelection> mBracketSelections;
+    QList<QTextEdit::ExtraSelection> mSearchSelections;
 };
 
 } // namespace ScIDE

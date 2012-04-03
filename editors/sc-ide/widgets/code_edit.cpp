@@ -195,6 +195,43 @@ bool CodeEditor::find( const QString &text, QTextDocument::FindFlags options )
     }
 }
 
+bool CodeEditor::findAll( const QString &text, QTextDocument::FindFlags options )
+{
+    mSearchSelections.clear();
+
+    if(text.isEmpty()) {
+        updateExtraSelections();
+        return true;
+    }
+
+    // ignore the "backwards" flag:
+    options &= ~QTextDocument::FindBackward;
+
+    QTextEdit::ExtraSelection selection;
+    selection.format.setBackground(Qt::yellow);
+
+    QTextDocument *doc = QPlainTextEdit::document();
+    QTextCursor c(doc);
+    while(true)
+    {
+        c = doc->find(text, c, options);
+        if(c.isNull()) break;
+
+        selection.cursor = c;
+        mSearchSelections.append(selection);
+    }
+
+    updateExtraSelections();
+
+    return mSearchSelections.count() > 0;
+}
+
+void CodeEditor::clearSearchHighlighting()
+{
+    mSearchSelections.clear();
+    updateExtraSelections();
+}
+
 void CodeEditor::zoomIn(int steps)
 {
     QFont f = font();
@@ -349,8 +386,7 @@ void CodeEditor::updateLineIndicator( QRect r, int dy )
 
 void CodeEditor::matchBrackets()
 {
-    QList<QTextEdit::ExtraSelection> selections;
-    setExtraSelections(selections);
+    mBracketSelections.clear();
 
     QTextCursor cursor(textCursor());
     QTextBlock block(cursor.block());
@@ -360,9 +396,22 @@ void CodeEditor::matchBrackets()
 
     if( match.pos != -1 && match.matchPos != -1 )
     {
-        highlightBracket(match.pos);
-        highlightBracket(match.matchPos);
+        QTextEdit::ExtraSelection selection;
+        selection.format.setFontWeight(QFont::Bold);
+        selection.format.setBackground(mBracketHighlight);
+
+        cursor.setPosition(match.pos);
+        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        selection.cursor = cursor;
+        mBracketSelections.append(selection);
+
+        cursor.setPosition(match.matchPos);
+        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
+        selection.cursor = cursor;
+        mBracketSelections.append(selection);
     }
+
+    updateExtraSelections();
 }
 
 void CodeEditor::matchBracket( const QTextBlock & block, int pos, BracketMatch & match )
@@ -473,22 +522,6 @@ void CodeEditor::matchLeftBracket
     match.matchPos = -1;
 }
 
-void CodeEditor::highlightBracket( int pos )
-{
-    QTextCursor cursor = textCursor();
-    cursor.setPosition(pos);
-    cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
-
-    QTextEdit::ExtraSelection selection;
-    selection.cursor = cursor;
-    selection.format.setFontWeight(QFont::Bold);
-    selection.format.setBackground(mBracketHighlight);
-
-    QList<QTextEdit::ExtraSelection> selections = extraSelections();
-    selections.append(selection);
-    setExtraSelections(selections);
-}
-
 int CodeEditor::indentedStartOfLine( const QTextBlock &b )
 {
     QString t(b.text());
@@ -501,6 +534,14 @@ int CodeEditor::indentedStartOfLine( const QTextBlock &b )
         ++i;
     }
     return i;
+}
+
+void CodeEditor::updateExtraSelections()
+{
+    QList<QTextEdit::ExtraSelection> selections;
+    selections.append(mBracketSelections);
+    selections.append(mSearchSelections);
+    setExtraSelections(selections);
 }
 
 void CodeEditor::resizeEvent( QResizeEvent *e )
