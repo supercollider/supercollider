@@ -27,6 +27,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QShortcut>
+#include <QApplication>
 
 namespace ScIDE {
 
@@ -64,8 +65,7 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     connect(&mModificationMapper, SIGNAL(mapped(QWidget*)),
             this, SLOT(onModificationChanged(QWidget*)));
 
-    connect(mFindReplacePanel, SIGNAL(closeRequest()),
-            this, SLOT(hideToolPanel()));
+    connect(mFindReplacePanel, SIGNAL(close()), this, SLOT(hideToolPanel()));
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
@@ -289,7 +289,6 @@ void MultiEditor::hideToolPanel()
         editor->setFocus(Qt::OtherFocusReason);
 }
 
-
 void MultiEditor::onOpen( Document *doc )
 {
     CodeEditor *editor = new CodeEditor();
@@ -342,6 +341,8 @@ void MultiEditor::onCurrentChanged( int index )
         editor->setFocus(Qt::OtherFocusReason);
     }
 
+    mFindReplacePanel->setEditor(editor);
+
     updateActions();
 
     if(editor)
@@ -382,7 +383,8 @@ CodeEditor * MultiEditor::editorForDocument( Document *doc )
 
 TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     QWidget(parent),
-    mMode((Mode) 0) // a hack so that first setMode() works
+    mMode((Mode) 0), // a hack so that first setMode() works
+    mEditor(0)
 {
     mCloseBtn = new QToolButton;
     mCloseBtn->setIcon(QIcon::fromTheme("window-close"));
@@ -399,24 +401,42 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
 
     mMatchCaseOpt = new QCheckBox(tr("Match Case"));
 
+    mFindLabel = new QLabel(tr("Find:"));
+    mFindLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    mReplaceLabel = new QLabel(tr("Replace:"));
+    mReplaceLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
     mGrid = new QGridLayout();
     mGrid->setContentsMargins(2,2,2,2);
     mGrid->addWidget(mCloseBtn, 0, 0);
-    mGrid->addWidget(mFindField, 0, 1);
-    mGrid->addWidget(mNextBtn, 0, 2);
-    mGrid->addWidget(mPrevBtn, 0, 3);
-    mGrid->addWidget(mFindAllBtn, 0, 4);
-    mGrid->addWidget(mMatchCaseOpt, 0, 5);
-    mGrid->addWidget(mReplaceField, 1, 1);
-    mGrid->addWidget(mReplaceBtn, 1, 2);
-    mGrid->addWidget(mReplaceAllBtn, 1, 3);
+    mGrid->addWidget(mFindLabel, 0, 1);
+    mGrid->addWidget(mFindField, 0, 2);
+    mGrid->addWidget(mNextBtn, 0, 3);
+    mGrid->addWidget(mPrevBtn, 0, 4);
+    mGrid->addWidget(mFindAllBtn, 0, 5);
+    mGrid->addWidget(mMatchCaseOpt, 0, 6);
+    mGrid->addWidget(mReplaceLabel, 1, 1);
+    mGrid->addWidget(mReplaceField, 1, 2);
+    mGrid->addWidget(mReplaceBtn, 1, 3);
+    mGrid->addWidget(mReplaceAllBtn, 1, 4);
     setLayout(mGrid);
 
     setMode(Find);
 
     setFocusProxy(mFindField);
 
-    connect(mCloseBtn, SIGNAL(clicked()), this, SIGNAL(closeRequest()));
+    connect(mCloseBtn, SIGNAL(clicked()), this, SIGNAL(close()));
+    connect(mNextBtn, SIGNAL(clicked()), this, SLOT(findNext()));
+    connect(mPrevBtn, SIGNAL(clicked()), this, SLOT(findPrevious()));
+    connect(mFindAllBtn, SIGNAL(clicked()), this, SLOT(findAll()));
+    connect(mReplaceBtn, SIGNAL(clicked()), this, SLOT(replace()));
+    connect(mReplaceAllBtn, SIGNAL(clicked()), this, SLOT(replaceAll()));
+    connect(mFindField, SIGNAL(returnPressed()), this, SLOT(onFindFieldReturn()));
+    connect(mReplaceField, SIGNAL(returnPressed()), this, SLOT(replace()));
+
+    // FIXME: disabling non-functional buttons for now:
+    mFindAllBtn->setEnabled(false);
+    mReplaceAllBtn->setEnabled(false);
 }
 
 void TextFindReplacePanel::setMode( Mode mode )
@@ -427,9 +447,71 @@ void TextFindReplacePanel::setMode( Mode mode )
 
     bool visible = mMode == Replace;
 
+    mReplaceLabel->setVisible(visible);
     mReplaceField->setVisible(visible);
     mReplaceBtn->setVisible(visible);
     mReplaceAllBtn->setVisible(visible);
 }
+
+void TextFindReplacePanel::findNext()
+{
+    find(false);
+}
+
+void TextFindReplacePanel::findPrevious()
+{
+    find(true);
+}
+
+void TextFindReplacePanel::onFindFieldReturn()
+{
+    find (QApplication::keyboardModifiers() & Qt::ShiftModifier);
+}
+
+void TextFindReplacePanel::find (bool backwards)
+{
+    if (!mEditor) return;
+
+    QString str(findString());
+    if (str.isEmpty()) return;
+
+    QTextDocument::FindFlags flags;
+    if (backwards)
+        flags |= QTextDocument::FindBackward;
+    if (matchCase())
+        flags |= QTextDocument::FindCaseSensitively;
+
+    mEditor->find(str, flags);
+}
+
+void TextFindReplacePanel::findAll()
+{
+    //TODO
+}
+
+void TextFindReplacePanel::replace()
+{
+    if (!mEditor) return;
+
+    QString fstr(findString());
+    if (fstr.isEmpty()) return;
+
+    QString rstr(replaceString());
+
+    QTextCursor c( mEditor->textCursor() );
+    if (c.hasSelection() && c.selectedText().compare(
+            fstr, matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive) == 0)
+    {
+        c.insertText(rstr);
+    }
+
+    findNext();
+}
+
+void TextFindReplacePanel::replaceAll()
+{
+    //TODO
+}
+
 
 } // namespace ScIDE

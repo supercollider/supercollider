@@ -65,6 +65,7 @@ public:
     void setDocument( Document * );
     bool showWhitespace() { return mShowWhitespace; }
     void setIndentWidth( int );
+    bool find( const QString &text, QTextDocument::FindFlags options = 0 );
 
 public Q_SLOTS:
     void zoomIn(int steps = 1);

@@ -29,6 +29,7 @@
 #include <QToolButton>
 #include <QLineEdit>
 #include <QCheckBox>
+#include <QLabel>
 #include <QGridLayout>
 
 namespace ScIDE {
@@ -99,9 +100,11 @@ public Q_SLOTS:
     void saveDocumentAs();
     void closeDocument();
     void setCurrent( Document * );
+
     void showFindPanel();
     void showReplacePanel();
     void hideToolPanel();
+
     void applySettings( Settings::Manager * );
 
 private Q_SLOTS:
@@ -146,17 +149,36 @@ public:
 public:
     TextFindReplacePanel( QWidget * parent = 0 );
 
-    Mode mode () const { return mMode; }
+    void setEditor( CodeEditor *editor ) { mEditor = editor; }
 
+    Mode mode () const { return mMode; }
     void setMode( Mode );
 
+    QString findString() const { return mFindField->text(); }
+    QString replaceString() const { return mReplaceField->text(); }
+    bool matchCase() const { return mMatchCaseOpt->isChecked(); }
+
+public Q_SLOTS:
+    void findNext();
+    void findPrevious();
+    void findAll();
+    void replace();
+    void replaceAll();
+
 Q_SIGNALS:
-    void closeRequest();
+    void close();
+
+private Q_SLOTS:
+    void onFindFieldReturn();
 
 private:
+    void find (bool backwards);
+
     QToolButton *mCloseBtn;
     QLineEdit *mFindField;
+    QLabel *mFindLabel;
     QLineEdit *mReplaceField;
+    QLabel *mReplaceLabel;
     QPushButton *mNextBtn;
     QPushButton *mPrevBtn;
     QPushButton *mFindAllBtn;
@@ -167,6 +189,8 @@ private:
     QGridLayout *mGrid;
 
     Mode mMode;
+
+    CodeEditor *mEditor;
 };
 
 } // namespace ScIDE
