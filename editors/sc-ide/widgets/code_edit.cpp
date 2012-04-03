@@ -195,13 +195,13 @@ bool CodeEditor::find( const QString &text, QTextDocument::FindFlags options )
     }
 }
 
-bool CodeEditor::findAll( const QString &text, QTextDocument::FindFlags options )
+int CodeEditor::findAll( const QString &text, QTextDocument::FindFlags options )
 {
     mSearchSelections.clear();
 
     if(text.isEmpty()) {
         updateExtraSelections();
-        return true;
+        return 0;
     }
 
     // ignore the "backwards" flag:
@@ -223,7 +223,33 @@ bool CodeEditor::findAll( const QString &text, QTextDocument::FindFlags options 
 
     updateExtraSelections();
 
-    return mSearchSelections.count() > 0;
+    return mSearchSelections.count();
+}
+
+int CodeEditor::replaceAll( const QString &text, const QString &replacement, QTextDocument::FindFlags options )
+{
+    mSearchSelections.clear();
+    updateExtraSelections();
+
+    if(text.isEmpty()) return 0;
+
+    // ignore the "backwards" flag:
+    options &= ~QTextDocument::FindBackward;
+
+    QTextDocument *doc = QPlainTextEdit::document();
+    QTextCursor c(doc);
+    c.beginEditBlock();
+    int i = 0;
+    while(true)
+    {
+        c = doc->find(text, c, options);
+        if(c.isNull()) break;
+        c.insertText(replacement);
+        ++i;
+    }
+    QTextCursor(doc).endEditBlock();
+
+    return i;
 }
 
 void CodeEditor::clearSearchHighlighting()

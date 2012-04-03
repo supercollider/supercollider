@@ -437,9 +437,6 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     connect(mReplaceAllBtn, SIGNAL(clicked()), this, SLOT(replaceAll()));
     connect(mFindField, SIGNAL(returnPressed()), this, SLOT(onFindFieldReturn()));
     connect(mReplaceField, SIGNAL(returnPressed()), this, SLOT(replace()));
-
-    // FIXME: disabling non-functional buttons for now:
-    mReplaceAllBtn->setEnabled(false);
 }
 
 void TextFindReplacePanel::setMode( Mode mode )
@@ -538,7 +535,13 @@ void TextFindReplacePanel::replace()
 
 void TextFindReplacePanel::replaceAll()
 {
-    //TODO
+    if (!mEditor) return;
+
+    QTextDocument::FindFlags flags;
+    if (matchCase())
+        flags |= QTextDocument::FindCaseSensitively;
+
+    mEditor->replaceAll(findString(), replaceString(), flags);
 }
 
 
