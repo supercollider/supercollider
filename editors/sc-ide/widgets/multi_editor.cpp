@@ -159,7 +159,8 @@ void MultiEditor::createActions()
     act->setStatusTip(tr("Find and replace text in document"));
     connect(act, SIGNAL(triggered()), this, SLOT(showReplacePanel()));
 
-    new QShortcut( Qt::Key_Escape, this, SLOT(hideToolPanel()) );
+    QShortcut *escShortcut = new QShortcut( Qt::Key_Escape, this, SLOT(hideToolPanel()) );
+    mSigMux->connect(escShortcut, SIGNAL(activated()), SLOT(clearSearchHighlighting()));
 
     mActions[IndentMore] = act = new QAction(
         QIcon::fromTheme("format-indent-more"), tr("Indent &More"), this);
@@ -438,7 +439,6 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     connect(mReplaceField, SIGNAL(returnPressed()), this, SLOT(replace()));
 
     // FIXME: disabling non-functional buttons for now:
-    mFindAllBtn->setEnabled(false);
     mReplaceAllBtn->setEnabled(false);
 }
 
@@ -505,7 +505,16 @@ void TextFindReplacePanel::find (bool backwards)
 
 void TextFindReplacePanel::findAll()
 {
-    //TODO
+    if (!mEditor) return;
+
+    QString str(findString());
+    // NOTE: empty string removes any search highlighting
+
+    QTextDocument::FindFlags flags;
+    if (matchCase())
+        flags |= QTextDocument::FindCaseSensitively;
+
+    mEditor->findAll(str, flags);
 }
 
 void TextFindReplacePanel::replace()
