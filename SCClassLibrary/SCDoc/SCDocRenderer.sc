@@ -72,7 +72,7 @@ SCDocHTMLRenderer {
         };
     }
 
-    *makeArgString {|m|
+    *makeArgString {|m, par=true|
         var res = "";
         var value;
         var l = m.argNames;
@@ -80,26 +80,22 @@ SCDocHTMLRenderer {
         l.do {|a,i|
             if (i>0) { //skip 'this' (first arg)
                 if(i==last and: {m.varArgs}) {
-                    res = res ++ " <span class='argstr'>";
-                    res = res ++ "... " ++ a;
+                    res = res ++ " <span class='argstr'>" ++ "... " ++ a;
                 } {
                     if (i>1) { res = res ++ ", " };
-                    res = res ++ "<span class='argstr'>";
-                    res = res ++ a;
-                    value = m.prototypeFrame[i];
-                    value !? {
+                    res = res ++ "<span class='argstr'>" ++ a;
+                    (value = m.prototypeFrame[i]) !? {
                         value = if(value.class===Float) { value.asString } { value.cs };
-                        res = res ++ " = " ++ value;
+                        res = res ++ ": " ++ value;
                     };
                 };
                 res = res ++ "</span>";
             };
         };
-        if (res.notEmpty) {
+        if (res.notEmpty and: par) {
             ^("("++res++")");
-        } {
-            ^"";
         };
+        ^res;
     }
 
     *renderHeader {|stream, doc|
@@ -224,6 +220,7 @@ SCDocHTMLRenderer {
         var x, maxargs = -1;
         var methArgsMismatch = false;
         minArgs = inf;
+        currentMethod = nil;
         names.do {|mname|
             mname2 = this.escapeSpecialChars(mname);
             if(cls.notNil) {
@@ -242,7 +239,7 @@ SCDocHTMLRenderer {
                 m2 = m2 ?? {cls.findRespondingMethodFor(sym.asSetter)};
                 m2 !? {
                     mstat = mstat | 2;
-                    args = m2.argNames !? {m2.argNames[1..].join(", ")} ?? {"value"};
+                    args = m2.argNames !? {this.makeArgString(m2,false)} ?? {"value"};
                     args2 = m2.argNames !? {m2.argNames[1..]};
                 };
                 maxargs.do {|i|
@@ -293,7 +290,7 @@ SCDocHTMLRenderer {
             // has setter
             if(mstat & 2 > 0) {
                 x.value;
-                if(maxargs<2) {
+                if(args2.size<2) {
                     stream << " = " << args << "</h3>\n";
                 } {
                     stream << "_ (" << args << ")</h3>\n";
@@ -330,8 +327,8 @@ SCDocHTMLRenderer {
             stream << "<div class='method'>";
             this.renderChildren(stream, node.children[1]);
             stream << "</div>";
-            currentMethod = nil;
         };
+        currentMethod = nil;
     }
 
     *renderSubTree {|stream, node|
