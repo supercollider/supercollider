@@ -538,8 +538,8 @@ bool BufAllocReadCmd::Stage2()
 	memset(&fileinfo, 0, sizeof(fileinfo));
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
-		char str[256];
-		sprintf(str, "File '%s' could not be opened.\n", mFilename);
+		char str[512];
+		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
 		SendFailureWithBufnum(&mReplyAddress, "/b_allocRead", str, mBufIndex);	//SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
 		return false;
@@ -638,16 +638,16 @@ bool BufReadCmd::Stage2()
 
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
-		char str[256];
-		sprintf(str, "File '%s' could not be opened.\n", mFilename);
+		char str[512];
+		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
 		SendFailureWithBufnum(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
 	}
 	if (fileinfo.channels != buf->channels) {
-		char str[256];
+		char str[512];
 		sf_close(sf);
-		sprintf(str, "channel mismatch. File'%s' has %d channels. Buffer has %d channels.\n", mFilename, fileinfo.channels, buf->channels);
+		sprintf(str, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n", mFilename, fileinfo.channels, buf->channels);
 		SendFailureWithBufnum(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
@@ -801,8 +801,8 @@ bool BufAllocReadChannelCmd::Stage2()
 	memset(&fileinfo, 0, sizeof(fileinfo));
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
-		char str[256];
-		sprintf(str, "File '%s' could not be opened.\n", mFilename);
+		char str[512];
+		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
 		SendFailureWithBufnum(&mReplyAddress, "/b_allocReadChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
 		return false;
@@ -927,8 +927,8 @@ bool BufReadChannelCmd::Stage2()
 
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
-		char str[256];
-		sprintf(str, "File '%s' could not be opened.\n", mFilename);
+		char str[512];
+		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
 		SendFailureWithBufnum(&mReplyAddress, "/b_readChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
@@ -1078,10 +1078,8 @@ bool BufWriteCmd::Stage2()
 
 	SNDFILE* sf = sf_open(mFilename, SFM_WRITE, &mFileInfo);
 	if (!sf) {
-		char sferr[256];
-		char str[256];
-		sf_error_str(NULL, sferr, 256);
-		sprintf(str, "File '%s' could not be opened. '%s'\n", mFilename, sferr);
+		char str[512];
+		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
 		SendFailureWithBufnum(&mReplyAddress, "/b_write", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_write", str);
 		scprintf(str);
 		return false;
