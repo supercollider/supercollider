@@ -11,7 +11,8 @@ MathJax.Hub.Config({
     showContext:  false,
   },
   "HTML-CSS": {
-    scale: 110
+    scale: 110,
+    availableFonts: []
   }
 });
 
