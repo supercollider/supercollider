@@ -1,6 +1,6 @@
 QWebView : QView {
 
-  var <onLoadFinished, <onLoadFailed, <onLinkActivated, <onReload;
+  var <onLoadFinished, <onLoadFailed, <onLinkActivated, <onReload, <onJavaScriptMsg;
 
   *qtClass { ^'QtCollider::WebView'; }
 
@@ -99,6 +99,12 @@ QWebView : QView {
     this.manageFunctionConnection( onReload, func, 'reloadTriggered(QString)' );
     this.setProperty( \delegateReload, func.notNil );
     onReload = func;
+  }
+
+  onJavaScriptMsg_ { arg func;
+    this.manageFunctionConnection( onJavaScriptMsg, func,
+      'jsConsoleMsg(const QString&, int, const QString&)' );
+    onJavaScriptMsg = func;
   }
 
   enterInterpretsSelection { ^this.getProperty( \enterInterpretsSelection ); }

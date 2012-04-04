@@ -53,6 +53,7 @@ Q_SIGNALS:
   void linkActivated( const QString & );
   void reloadTriggered( const QString & );
   void interpret( const QString & code );
+  void jsConsoleMsg( const QString &, int, const QString & );
 
 public:
 
@@ -95,8 +96,12 @@ public:
 
   WebPage( QObject *parent ) : QWebPage( parent ), _delegateReload(false) {}
   virtual void triggerAction ( WebAction action, bool checked = false );
+  virtual void javaScriptConsoleMessage ( const QString &, int, const QString & );
   bool delegateReload() const { return _delegateReload; }
   void setDelegateReload( bool flag ) { _delegateReload = flag; }
+
+Q_SIGNALS:
+  void jsConsoleMsg( const QString &, int, const QString & );
 
 private:
 

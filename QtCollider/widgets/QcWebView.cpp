@@ -58,6 +58,9 @@ WebView::WebView( QWidget *parent ) :
   connect( this, SIGNAL(interpret(QString)),
            qApp, SLOT(interpret(QString)),
            Qt::QueuedConnection );
+
+  connect( page, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)),
+           this, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)) );
 }
 
 QString WebView::url() const
@@ -168,6 +171,11 @@ void WebPage::triggerAction ( WebAction action, bool checked )
   }
 
   QWebPage::triggerAction( action, checked );
+}
+
+void WebPage::javaScriptConsoleMessage ( const QString & msg, int line, const QString & src )
+{
+  Q_EMIT( jsConsoleMsg(msg,line,src) );
 }
 
 } // namespace QtCollider
