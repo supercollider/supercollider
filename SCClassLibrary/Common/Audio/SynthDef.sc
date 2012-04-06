@@ -14,6 +14,7 @@ SynthDef {
 	var <>available;
 	var <>variants;
 	var <>widthFirstUGens;
+	var rewriteInProgress;
 
 	var <>desc, <>metadata;
 
@@ -407,9 +408,12 @@ SynthDef {
 
 	// UGens do these
 	addUGen { arg ugen;
-		ugen.synthIndex = children.size;
-		ugen.widthFirstAntecedents = widthFirstUGens.copy;
-		children = children.add(ugen);
+		if (rewriteInProgress.isNil) {
+			// we don't add ugens, if a rewrite operation is in progress
+			ugen.synthIndex = children.size;
+			ugen.widthFirstAntecedents = widthFirstUGens.copy;
+			children = children.add(ugen);
+		}
 	}
 	removeUGen { arg ugen;
 		// lazy removal: clear entry and later remove all nil enties
@@ -449,9 +453,12 @@ SynthDef {
 	optimizeGraph {
 		var oldSize;
 		this.initTopoSort;
+
+		rewriteInProgress = true;
 		children.copy.do { arg ugen;
 			ugen.optimizeGraph;
 		};
+		rewriteInProgress = nil;
 
 		// fixup removed ugens
 		oldSize = children.size;

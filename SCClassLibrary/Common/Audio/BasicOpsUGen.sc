@@ -51,6 +51,9 @@ UnaryOpUGen : BasicOpUGen {
 		inputs = theInput.asArray;
 	}
 
+	optimizeGraph {
+		super.performDeadCodeElimination
+	}
 }
 
 BinaryOpUGen : BasicOpUGen {
@@ -102,41 +105,161 @@ BinaryOpUGen : BasicOpUGen {
 	}
 
 	optimizeGraph {
-		var a, b, muladd;
-		#a, b = inputs;
-
 		//this.constantFolding;
 
-		if (operator == '+', {
-			// create a MulAdd if possible.
-			if (a.isKindOf(BinaryOpUGen) and: { a.operator == '*'
-				and: { a.descendants.size == 1 }},
-			{
-				if (MulAdd.canBeMulAdd(a.inputs[0], a.inputs[1], b), {
-					buildSynthDef.removeUGen(a);
-					muladd = MulAdd.new(a.inputs[0], a.inputs[1], b);
-				},{
-				if (MulAdd.canBeMulAdd(a.inputs[1], a.inputs[0], b), {
-					buildSynthDef.removeUGen(a);
-					muladd = MulAdd.new(a.inputs[1], a.inputs[0], b)
-				})});
-			},{
-			if (b.isKindOf(BinaryOpUGen) and: { b.operator == '*'
-				and: { b.descendants.size == 1 }},
-			{
-				if (MulAdd.canBeMulAdd(b.inputs[0], b.inputs[1], a), {
-					buildSynthDef.removeUGen(b);
-					muladd = MulAdd.new(b.inputs[0], b.inputs[1], a)
-				},{
-				if (MulAdd.canBeMulAdd(b.inputs[1], b.inputs[0], a), {
-					buildSynthDef.removeUGen(b);
-					muladd = MulAdd.new(b.inputs[1], b.inputs[0], a)
-				})});
-			})});
-			if (muladd.notNil, {
-				synthDef.replaceUGen(this, muladd);
-			});
-		});
+
+		if (super.performDeadCodeElimination) {
+			^this
+		};
+
+		if (operator == '+') {
+			this.optimizeAdd;
+			^this;
+		};
+
+		if (operator == '-') {
+			this.optimizeSub
+		};
+	}
+
+	optimizeAdd {
+		var optimizedUGen;
+
+		// create a Sum3 if possible.
+		optimizedUGen = this.optimizeToSum3;
+
+		// create a Sum4 if possible.
+		if (optimizedUGen.isNil) {
+			optimizedUGen = this.optimizeToSum4
+		};
+
+		// create a MulAdd if possible.
+		if (optimizedUGen.isNil) {
+			optimizedUGen = this.optimizeToMulAdd
+		};
+
+		// optimize negative additions
+		if (optimizedUGen.isNil) {
+			optimizedUGen = this.optimizeAddNeg
+		};
+
+		if (optimizedUGen.notNil) {
+			synthDef.replaceUGen(this, optimizedUGen);
+			optimizedUGen.optimizeGraph
+		};
+	}
+
+	optimizeAddNeg {
+		var a, b;
+		#a, b = inputs;
+
+		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' }) {
+			// a + b.neg -> a - b
+			if (b.descendants.size == 1) {
+				buildSynthDef.removeUGen(b);
+			} {
+				b.descendants.remove(this);
+			};
+			^(a - b.inputs[0])
+		};
+
+		if (a.isKindOf(UnaryOpUGen) and: { a.operator == 'neg' }) {
+			// a.neg + b -> b - a
+			if (a.descendants.size == 1) {
+				buildSynthDef.removeUGen(a);
+			} {
+				a.descendants.remove(this);
+			};
+			^(b - a.inputs[0])
+		};
+		^nil
+	}
+
+	optimizeToMulAdd {
+		var a, b;
+		#a, b = inputs;
+
+		if (a.isKindOf(BinaryOpUGen) and: { a.operator == '*'
+			and: { a.descendants.size == 1 }})
+		{
+			if (MulAdd.canBeMulAdd(a.inputs[0], a.inputs[1], b)) {
+				buildSynthDef.removeUGen(a);
+				^MulAdd.new(a.inputs[0], a.inputs[1], b);
+			};
+
+			if (MulAdd.canBeMulAdd(a.inputs[1], a.inputs[0], b)) {
+				buildSynthDef.removeUGen(a);
+				^MulAdd.new(a.inputs[1], a.inputs[0], b)
+			};
+		};
+
+		if (b.isKindOf(BinaryOpUGen) and: { b.operator == '*'
+			and: { b.descendants.size == 1 }})
+		{
+			if (MulAdd.canBeMulAdd(b.inputs[0], b.inputs[1], a)) {
+				buildSynthDef.removeUGen(b);
+				^MulAdd.new(b.inputs[0], b.inputs[1], a)
+			};
+
+			if (MulAdd.canBeMulAdd(b.inputs[1], b.inputs[0], a)) {
+				buildSynthDef.removeUGen(b);
+				^MulAdd.new(b.inputs[1], b.inputs[0], a)
+			};
+		};
+		^nil
+	}
+
+	optimizeToSum3 {
+		var a, b;
+		#a, b = inputs;
+
+		if (a.isKindOf(BinaryOpUGen) and: { a.operator == '+'
+			and: { a.descendants.size == 1 }}) {
+			buildSynthDef.removeUGen(a);
+			^Sum3(a.inputs[0], a.inputs[1], b);
+		};
+
+		if (b.isKindOf(BinaryOpUGen) and: { b.operator == '+'
+			and: { b.descendants.size == 1 }}) {
+			buildSynthDef.removeUGen(b);
+			^Sum3(b.inputs[0], b.inputs[1], a);
+		};
+		^nil
+	}
+
+	optimizeToSum4 {
+		var a, b;
+		#a, b = inputs;
+
+		if (a.isKindOf(Sum3) and: { a.descendants.size == 1 }) {
+			buildSynthDef.removeUGen(a);
+			^Sum4(a.inputs[0], a.inputs[1], a.inputs[2], b);
+		};
+
+		if (b.isKindOf(Sum3) and: { b.descendants.size == 1 }) {
+			buildSynthDef.removeUGen(b);
+			^Sum4(b.inputs[0], b.inputs[1], b.inputs[2], a);
+		};
+		^nil
+	}
+
+	optimizeSub {
+		var a, b, replacement;
+		#a, b = inputs;
+
+		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' }) {
+			// a - b.neg -> a + b
+			if (b.descendants.size == 1) {
+				buildSynthDef.removeUGen(b);
+			} {
+				b.descendants.remove(this);
+			};
+			replacement = BinaryOpUGen('+', a, b.inputs[0]);
+
+			synthDef.replaceUGen(this, replacement);
+			replacement.optimizeGraph
+		};
+		^nil
 	}
 
 	constantFolding {
@@ -282,5 +405,45 @@ MulAdd : UGen {
 			^true
 		});
 		^false
+	}
+}
+
+Sum3 : UGen {
+	*new { arg in0, in1, in2;
+		^this.multiNew(nil, in0, in1, in2)
+	}
+
+	*new1 { arg dummyRate, in0, in1, in2;
+		var argArray, rate, sortedArgs;
+		if (in2 == 0.0) { ^(in0 + in1) };
+		if (in1 == 0.0) { ^(in0 + in2) };
+		if (in0 == 0.0) { ^(in1 + in2) };
+
+		argArray = [in0, in1, in2];
+		rate = argArray.rate;
+		sortedArgs = argArray.sort {|a b| a.rate < b.rate};
+
+		^super.new1(*([rate] ++ sortedArgs))
+	}
+}
+
+Sum4 : UGen {
+	*new { arg in0, in1, in2, in3;
+		^this.multiNew(nil, in0, in1, in2, in3)
+	}
+
+	*new1 { arg dummyRate, in0, in1, in2, in3;
+		var argArray, rate, sortedArgs;
+
+		if (in0 == 0.0) { ^Sum3.new1(nil, in1, in2, in3) };
+		if (in1 == 0.0) { ^Sum3.new1(nil, in0, in2, in3) };
+		if (in2 == 0.0) { ^Sum3.new1(nil, in0, in1, in3) };
+		if (in3 == 0.0) { ^Sum3.new1(nil, in0, in1, in2) };
+
+		argArray = [in0, in1, in2, in3];
+		rate = argArray.rate;
+		sortedArgs = argArray.sort {|a b| a.rate < b.rate};
+
+		^super.new1(rate, in0, in1, in2, in3)
 	}
 }

@@ -413,7 +413,7 @@ UGen : AbstractFunction {
 				input.source.descendants.add(this);
 			});
 		});
-		
+
 		widthFirstAntecedents.do({ arg ugen;
 			antecedents.add(ugen);
 			ugen.descendants.add(this);
@@ -442,6 +442,28 @@ UGen : AbstractFunction {
 
 	dumpName {
 		^synthIndex.asString ++ "_" ++ this.class.name.asString
+	}
+
+	performDeadCodeElimination {
+		if (descendants.size == 0) {
+			this.inputs.do {|a|
+				if (a.isKindOf(UGen)) {
+					a.descendants.remove(this);
+					a.optimizeGraph
+				}
+			};
+			buildSynthDef.removeUGen(this);
+			^true;
+		};
+		^false
+	}
+}
+
+// ugen, which has no side effect and can therefore be considered for a dead code elimination
+// read access to buffers/busses are allowed
+PureUGen : UGen {
+	optimizeGraph {
+		super.performDeadCodeElimination
 	}
 }
 

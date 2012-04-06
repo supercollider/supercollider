@@ -1688,7 +1688,7 @@ void SinOsc_Ctor(SinOsc *unit)
 
 //////////////!!!
 
-void SinOscFB_next_ik(SinOscFB *unit, int inNumSamples)
+void SinOscFB_next_kk(SinOscFB *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float freqin = ZIN0(0);
@@ -1719,7 +1719,7 @@ void SinOscFB_next_ik(SinOscFB *unit, int inNumSamples)
 void SinOscFB_Ctor(SinOscFB *unit)
 {
 	//Print("next_ik\n");
-	SETCALC(SinOscFB_next_ik);
+	SETCALC(SinOscFB_next_kk);
 
 	int tableSize2 = ft->mSineSize;
 	unit->m_lomask = (tableSize2 - 1) << 3;
@@ -1730,7 +1730,7 @@ void SinOscFB_Ctor(SinOscFB *unit)
 
 	unit->m_phase = 0;
 
-	SinOscFB_next_ik(unit, 1);
+	SinOscFB_next_kk(unit, 1);
 }
 
 
