@@ -40,7 +40,21 @@ list::
 subsection:: YAML/JSON parser
 link::Classes/String#-parseYAML:: and link::Classes/String#-parseYAMLFile:: can be used to parse YAML or JSON.
 
+subsection:: SynthDef optimizations for additive terms
+
+When the SynthDef is compiled, separate additive ugens are combined via the new link::Classes/Sum3:: and
+link::Classes/Sum4:: ugens.
+
+subsection:: Basic dead code elimination for SynthDefs
+
+The process of building synthdefs how performs a simple dead code elimination pass, which removes all
+link::Classes/PureUGen:: instaces without successor.
+
+
 SECTION:: Server-side news
 
 subsection:: SynthDef2 fileformat
 
+subsection:: C++ base class for Unit Generators
+
+A new C++ base class has been introduces, which extends the plain c-style Unit struct by a moden C++ interface.
