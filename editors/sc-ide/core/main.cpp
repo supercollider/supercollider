@@ -50,8 +50,7 @@ int main( int argc, char *argv[] )
 
 Main::Main(void) :
     mDocManager( new DocumentManager(this) ),
-    mSCProcess( new SCProcess(this) ),
-    mSCIpcServer( new SCIpcServer(this) )
+    mSCProcess( new SCProcess(this) )
 {
     char config_dir[PATH_MAX];
     bool configured = false;
@@ -61,21 +60,4 @@ Main::Main(void) :
     mSettings = new Settings::Manager( settingsFile, this );
 
     new SyntaxHighlighterGlobals(this);
-
-    connect(mSCProcess, SIGNAL(scStarted()), this, SLOT(onSclangStart()));
 }
-
-void Main::onSclangStart()
-{
-    mSCIpcServer->onSclangStart();
-
-    QString command = QString ( "ScIDE.connect(\"" ) + mSCIpcServer->ideName() + QString ( "\")" );
-    mSCProcess->evaluateCode ( command, false);
-
-    QString command2 ( "ScIDE.sendAllClasses" );
-    mSCProcess->evaluateCode ( command2, false );
-
-    QString command3 ( "ScIDE.sendSymbolTable" );
-    mSCProcess->evaluateCode ( command3, false );
-}
-

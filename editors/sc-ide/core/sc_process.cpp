@@ -25,7 +25,7 @@
 namespace ScIDE {
 
 SCProcess::SCProcess( QObject *parent ):
-    QProcess( parent )
+    QProcess( parent ), mIPC( new SCIpcServer )
 {
     prepareActions();
 
@@ -60,7 +60,7 @@ void SCProcess::start (void)
         QString errorMessage ("cannot start sclang process");
         emit scPost(errorMessage);
     } else
-        emit scStarted();
+        onSclangStart();
 }
 
 } // namespace ScIDE
