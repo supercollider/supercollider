@@ -75,7 +75,7 @@ public Q_SLOTS:
 
     void create();
     void open();
-    void open( const QString & filename );
+    void open( const QString & filename, int initialCursorPosition = 0 );
     void close( Document *, bool * ok = 0 );
     void closeAll( bool * ok = 0 );
     void save( Document *, bool * ok = 0 );
@@ -83,7 +83,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
 
-    void opened( Document * );
+    void opened( Document *, int );
     void closed( Document * );
     void saved( Document * );
 

@@ -112,7 +112,7 @@ public Q_SLOTS:
 
 private Q_SLOTS:
 
-    void onOpen( Document * );
+    void onOpen( Document *, int initialCursorPosition );
     void onClose( Document * );
     void update( Document * );
     void onCloseRequest( int index );

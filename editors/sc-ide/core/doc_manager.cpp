@@ -33,7 +33,7 @@ void DocumentManager::create()
 {
     Document *doc = new Document();
     mDocHash.insert( doc->id(), doc );
-    Q_EMIT( opened(doc) );
+    Q_EMIT( opened(doc, 0) );
 }
 
 void DocumentManager::open()
@@ -44,7 +44,7 @@ void DocumentManager::open()
     open(filename);
 }
 
-void DocumentManager::open( const QString & filename )
+void DocumentManager::open( const QString & filename, int initialCursorPosition )
 {
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly)) {
@@ -64,7 +64,7 @@ void DocumentManager::open( const QString & filename )
 
     mDocHash.insert( doc->id(), doc );
 
-    Q_EMIT( opened(doc) );
+    Q_EMIT( opened(doc, initialCursorPosition) );
 }
 
 void DocumentManager::close( Document *doc, bool * p_ok )
