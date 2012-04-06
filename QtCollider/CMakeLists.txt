@@ -1,10 +1,21 @@
-find_package (Qt4 4.5)
+find_package (Qt4 4.5 COMPONENTS QtCore QtGui QtWebKit)
+
 if (NOT QT4_FOUND)
-    message(FATAL_ERROR
-        "You are trying to compile with Qt GUI support, but either Qt version on your"
-        " system is not compatible, or Qt cannot be found."
-        " Please either install Qt (version 4.5 or greater), or compile without Qt GUI support"
-        " (add -DSC_QT=OFF to the cmake command line).")
+    set(FIND_QT_ERROR_MSG "You are trying to compile with Qt GUI support, but a suitable version of Qt or one of its components could not be found:")
+
+    if(NOT QT_QTCORE_FOUND)
+      set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\n-- Missing component: QtCore")
+    endif()
+    if(NOT QT_QTGUI_FOUND)
+      set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\n-- Missing component: QtGui")
+    endif()
+    if(NOT QT_QTWEBKIT_FOUND)
+      set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\n-- Missing component: QtWebKit")
+    endif()
+
+    set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\nPlease either install Qt (version 4.5 or greater), or compile without Qt GUI support (add -DSC_QT=OFF to the cmake command line).")
+
+    message(FATAL_ERROR ${FIND_QT_ERROR_MSG})
 endif()
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
@@ -104,8 +115,6 @@ if( CMAKE_COMPILER_IS_GNUCXX )
       PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions"
   )
 endif()
-
-set( QT_USE_QTWEBKIT TRUE )
 
 include(${QT_USE_FILE})
 
