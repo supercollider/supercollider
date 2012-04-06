@@ -1,6 +1,6 @@
 Prewrite : FilterPattern {
-	var <>dict, <>levels=1;
-	*new { arg pattern, dict, levels;
+	var <>dict, <>levels;
+	*new { arg pattern, dict, levels=1;
 		^super.new(pattern).dict_(dict).levels_(levels)
 	}
 	storeArgs { ^[ pattern, dict, levels ] }
