@@ -72,10 +72,10 @@ void Main::onSclangStart()
     QString command = QString ( "ScIDE.connect(\"" ) + mSCIpcServer->ideName() + QString ( "\")" );
     mSCProcess->evaluateCode ( command, false);
 
-    QString command2 ( "ScIDE.getAllClasses" );
+    QString command2 ( "ScIDE.sendAllClasses" );
     mSCProcess->evaluateCode ( command2, false );
 
-    QString command3 ( "ScIDE.getSymbolTable" );
+    QString command3 ( "ScIDE.sendSymbolTable" );
     mSCProcess->evaluateCode ( command3, false );
 }
 
