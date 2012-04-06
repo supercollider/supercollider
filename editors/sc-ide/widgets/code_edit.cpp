@@ -445,7 +445,10 @@ void CodeEditor::matchBracket( const QTextBlock & block, int pos, BracketMatch &
     SyntaxHighlighter::BlockData *data =
         static_cast<SyntaxHighlighter::BlockData*>(block.userData());
 
-    Q_ASSERT(data);
+    if (!data) {
+        match.pos = match.matchPos = -1;
+        return;
+    }
 
     int n = data->brackets.size();
     for( int i = 0; i < n; ++i )
