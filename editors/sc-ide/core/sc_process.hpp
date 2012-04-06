@@ -25,12 +25,16 @@
 #include <QProcess>
 #include <QDebug>
 
+#include "sc_ipc.hpp"
+
 namespace ScIDE {
 
 class SCProcess:
     public QProcess
 {
 Q_OBJECT
+    SCIpcServer * mIPC;
+
 public:
     SCProcess( QObject *parent = 0 );
 
@@ -46,7 +50,6 @@ public:
 
 signals:
     void scPost(QString const &);
-    void scStarted();
 
 public slots:
     void start (void);
@@ -107,6 +110,13 @@ public slots:
     }
 
 private:
+    void onSclangStart()
+    {
+        mIPC->onSclangStart();
+        QString command = QString("ScIDE.connect(\"%1\")").arg(mIPC->ideName());
+        evaluateCode ( command, true );
+    }
+
     void prepareActions(void)
     {
         QAction * action;

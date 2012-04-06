@@ -24,7 +24,6 @@
 #include <QObject>
 #include <QAction>
 
-#include "sc_ipc.hpp"
 #include "sc_process.hpp"
 #include "doc_manager.hpp"
 #include "settings/manager.hpp"
@@ -46,7 +45,6 @@ public:
     Settings::Manager *settings()       { return mSettings;    }
     DocumentManager * documentManager() { return mDocManager;  }
     SCProcess * scProcess(void)         { return mSCProcess;   }
-    SCIpcServer *scIpcServer(void)      { return mSCIpcServer; }
 
 public Q_SLOTS:
     void storeSettings() {
@@ -58,8 +56,6 @@ public Q_SLOTS:
         Q_EMIT(applySettingsRequest(mSettings));
     }
 
-    void onSclangStart();
-
 Q_SIGNALS:
     void storeSettingsRequest(Settings::Manager *);
     void applySettingsRequest(Settings::Manager *);
@@ -69,7 +65,6 @@ private:
 
     Settings::Manager *mSettings;
     SCProcess * mSCProcess;
-    SCIpcServer *mSCIpcServer;
     DocumentManager *mDocManager;
 };
 
