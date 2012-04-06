@@ -74,6 +74,9 @@ public:
         ShrinkFont,
         ShowWhitespace,
 
+        // Browse
+        OpenClassDefinition,
+
         ActionRoleCount
     };
 

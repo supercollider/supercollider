@@ -189,6 +189,12 @@ void MultiEditor::createActions()
     mActions[ShowWhitespace] = act = new QAction(tr("Show Spaces and Tabs"), this);
     act->setCheckable(true);
     mSigMux->connect(act, SIGNAL(triggered(bool)), SLOT(setShowWhitespace(bool)));
+
+    // Browse
+    mActions[OpenClassDefinition] = act = new QAction(tr("Open Class Definition"), this);
+
+    act->setShortcut(QKeySequence(tr("Ctrl+d")));
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(openClassDefinition()));
 }
 
 void MultiEditor::updateActions()
