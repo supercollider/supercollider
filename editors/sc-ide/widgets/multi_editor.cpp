@@ -50,8 +50,8 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     l->addWidget(mFindReplacePanel);
     setLayout(l);
 
-    connect(mDocManager, SIGNAL(opened(Document*)),
-            this, SLOT(onOpen(Document*)));
+    connect(mDocManager, SIGNAL(opened(Document*, int)),
+            this, SLOT(onOpen(Document*, int)));
     connect(mDocManager, SIGNAL(closed(Document*)),
             this, SLOT(onClose(Document*)));
     connect(mDocManager, SIGNAL(saved(Document*)),
@@ -298,7 +298,7 @@ void MultiEditor::hideToolPanel()
         editor->setFocus(Qt::OtherFocusReason);
 }
 
-void MultiEditor::onOpen( Document *doc )
+void MultiEditor::onOpen( Document *doc, int initialCursorPosition )
 {
     CodeEditor *editor = new CodeEditor();
     editor->setDocument(doc);
@@ -316,6 +316,12 @@ void MultiEditor::onOpen( Document *doc )
     mModificationMapper.setMapping(tdoc, editor);
     connect(tdoc, SIGNAL(modificationChanged(bool)),
             &mModificationMapper, SLOT(map()));
+
+    if (initialCursorPosition) {
+        QTextCursor cursor;
+        cursor.setPosition(initialCursorPosition);
+        editor->setTextCursor(cursor);
+    }
 }
 
 void MultiEditor::onClose( Document *doc )

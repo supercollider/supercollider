@@ -26,7 +26,7 @@ namespace ScIDE {
 DocumentList::DocumentList(DocumentManager *manager, QWidget * parent):
     QListWidget(parent)
 {
-    connect(manager, SIGNAL(opened(Document*)), this, SLOT(onOpen(Document*)));
+    connect(manager, SIGNAL(opened(Document*, int)), this, SLOT(onOpen(Document*, int)));
     connect(manager, SIGNAL(closed(Document*)), this, SLOT(onClose(Document*)));
     connect(manager, SIGNAL(saved(Document*)), this, SLOT(onSaved(Document*)));
     connect(&mModificationMapper, SIGNAL(mapped(QObject*)),
@@ -42,7 +42,7 @@ void DocumentList::setCurrent( Document *doc )
         setCurrentItem(itm);
 }
 
-void DocumentList::onOpen( Document *doc )
+void DocumentList::onOpen( Document *doc, int )
 {
     addItemFor(doc);
 }
