@@ -70,11 +70,15 @@ public:
     int replaceAll( const QString &text, const QString &replacement,
                     QTextDocument::FindFlags options = 0 );
 
+Q_SIGNALS:
+    void openClassDefinitionFor( QString );
+
 public Q_SLOTS:
     void zoomIn(int steps = 1);
     void zoomOut(int steps = 1);
     void indentMore() { indent(false); }
     void indentLess() { indent(true); }
+    void openClassDefinition();
     void setSpaceIndent(bool on) { mSpaceIndent = on; }
     void setShowWhitespace(bool);
     void clearSearchHighlighting();

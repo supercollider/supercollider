@@ -29,6 +29,7 @@ set ( ide_src
     core/main.cpp
     core/sig_mux.cpp
     core/doc_manager.cpp
+    core/sc_ipc.cpp
     core/sc_syntax_highlighter.cpp
     core/sc_process.cpp
     core/settings/serialization.cpp

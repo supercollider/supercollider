@@ -23,6 +23,7 @@
 
 #include <QAction>
 #include <QProcess>
+#include <QDebug>
 
 namespace ScIDE {
 
@@ -68,6 +69,12 @@ public slots:
     void stopLanguage (void)
     {
         closeWriteChannel();
+    }
+
+    void getClassDefinitions(QString const & classname)
+    {
+        QString commandString = QString("ScIDE.getClassDefinitions(%1)").arg(classname);
+        evaluateCode(commandString, true);
     }
 
     void onReadyRead(void)

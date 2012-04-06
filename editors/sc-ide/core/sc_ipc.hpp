@@ -70,26 +70,10 @@ private Q_SLOTS:
     }
 
 private:
-    void tryEvaluateReceivedData(void)
-    {
-        QBuffer receivedData(&mReceivedData);
-        receivedData.open(QIODevice::ReadOnly);
-
-        QDataStream in(&receivedData);
-        in.setVersion(QDataStream::Qt_4_6);
-        QString selector, message;
-        in >> selector;
-        if (in.status() != QDataStream::Ok)
-            return;
-
-        in >> message;
-        if (in.status() != QDataStream::Ok)
-            return;
-
-        mReceivedData.remove(0, receivedData.pos());
-
-        qDebug("dispatch %s", selector.toStdString().c_str());
-    }
+    void tryEvaluateReceivedData(void);
+    void openClassDefinitionHandler(QString const &);
+    void classesHandler(QString const &);
+    void symbolTableHandler(QString const &);
 };
 
 }
