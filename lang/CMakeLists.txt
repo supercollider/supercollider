@@ -79,6 +79,10 @@ file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/v3/src/*c
 file(GLOB boost_regex_sources ../external_libraries/boost/libs/regex/src/*cpp)
 list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
 
+file(GLOB_RECURSE headers ../include/*.h* )
+file(GLOB_RECURSE external_headers ../external_libraries/*.h* )
+list(APPEND sclang_sources ${headers} ${external_headers}) # make qt creator happy
+
 if(NOT WIN32)
 	list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
 endif()
