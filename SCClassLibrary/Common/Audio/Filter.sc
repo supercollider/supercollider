@@ -1,4 +1,4 @@
-Filter : UGen {
+Filter : PureUGen {
  	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
@@ -323,6 +323,8 @@ Formlet : Filter {
 // doneAction = 6   remove and deallocate this synth and free all children in the following group (if it is a group).
 
 DetectSilence : Filter {
+	optimizeGraph {
+	}
 
 	*ar { arg in = 0.0, amp = 0.0001, time = 0.1, doneAction = 0;
 		^this.multiNew('audio', in, amp, time, doneAction)

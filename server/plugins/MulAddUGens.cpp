@@ -19,697 +19,696 @@
 */
 
 
-#include "SC_PlugIn.h"
-
-
-
-#ifdef NOVA_SIMD
-#include "simd_memory.hpp"
-#include "simd_binary_arithmetic.hpp"
-#include "simd_ternary_arithmetic.hpp"
-
-using nova::slope_argument;
-
-#include "function_attributes.h"
-
-
-#endif
-
-
+#include "SC_PlugIn.hpp"
+#include "SIMD_Unit.hpp"
 
 static InterfaceTable *ft;
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+namespace {
 
-#define MULIN IN(1)
-#define ADDIN IN(2)
-
-struct MulAdd : public Unit
+struct MulAdd:
+	SIMD_Unit
 {
-	float mPrevMul, mPrevAdd;
+	ControlRateInput<1> mMul;
+	ControlRateInput<2> mAdd;
+
+#define MULADD_CALCFUNC(METHOD_NAME)				\
+	do {											\
+		set_unrolled_calc_function<MulAdd, 			\
+				&MulAdd::METHOD_NAME<unrolled_64>,	\
+				&MulAdd::METHOD_NAME<unrolled>,		\
+				&MulAdd::METHOD_NAME<scalar> >();	\
+		return;										\
+	} while (0)
+
+	MulAdd(void)
+	{
+		mMul.init(this);
+		mAdd.init(this);
+
+		if (mCalcRate != calc_FullRate) {
+			set_calc_function<MulAdd, &MulAdd::next_scalar>();
+			return;
+		}
+
+		assert(inRate(0) == calc_FullRate);
+
+		switch (inRate(1)) {
+		case calc_FullRate:
+			switch (inRate(2)) {
+			case calc_FullRate:
+				MULADD_CALCFUNC(next_aa);
+
+			case calc_BufRate:
+				MULADD_CALCFUNC(next_ak);
+
+			case calc_ScalarRate:
+				if (mAdd == 0.f)
+					MULADD_CALCFUNC(next_a0);
+				else
+					MULADD_CALCFUNC(next_ai);
+
+			default:
+				assert(false);
+			}
+
+		case calc_BufRate:
+			switch (inRate(2)) {
+			case calc_FullRate:
+				MULADD_CALCFUNC(next_ka);
+
+			case calc_BufRate:
+				MULADD_CALCFUNC(next_kk);
+
+			case calc_ScalarRate:
+				if (mAdd == 0.f)
+					MULADD_CALCFUNC(next_k0);
+				else
+					MULADD_CALCFUNC(next_ki);
+
+			default:
+				assert(false);
+			}
+
+		case calc_ScalarRate:
+			switch (inRate(2)) {
+			case calc_FullRate:
+				if (mMul == 1.0)
+					MULADD_CALCFUNC(next_1a);
+				else if (mMul == 0.f)
+					MULADD_CALCFUNC(next_0a);
+				else
+					MULADD_CALCFUNC(next_ia);
+
+			case calc_BufRate:
+				if (mMul == 1.0)
+					MULADD_CALCFUNC(next_1k);
+				else if (mMul == 0.f)
+					MULADD_CALCFUNC(next_0k);
+				else
+					MULADD_CALCFUNC(next_ik);
+
+			case calc_ScalarRate:
+				if (mMul == 1.0) {
+					if (mAdd == 0)
+						MULADD_CALCFUNC(next_10);
+					else
+						MULADD_CALCFUNC(next_1i);
+				}
+
+				else if (mMul == 0.f) {
+					if (mAdd == 0.f)
+						MULADD_CALCFUNC(next_00);
+					else
+						MULADD_CALCFUNC(next_0i);
+				}
+				else {
+					if (mAdd == 0.f)
+						MULADD_CALCFUNC(next_i0);
+					else
+						MULADD_CALCFUNC(next_ii);
+				}
+
+			default:
+				assert(false);
+			}
+
+		default:
+			assert(false);
+		}
+	}
+
+	inline bool mulChanged(void) const
+	{
+		return mMul.changed(this);
+	}
+
+	inline bool addChanged(void) const
+	{
+		return mAdd.changed(this);
+	}
+
+#if __cplusplus <= 199711L
+	nova::detail::scalar_ramp_argument<float> mulSlope(void)
+#else
+	decltype(nova::slope_argument(0.f, 0.f)) mulSlope(void)
+#endif
+	{
+		return mMul.slope(this);
+	}
+
+#if __cplusplus <= 199711L
+	nova::detail::scalar_ramp_argument<float> addSlope(void)
+#else
+	decltype(nova::slope_argument(0.f, 0.f)) addSlope(void)
+#endif
+	{
+		return mAdd.slope(this);
+	}
+
+	void next_scalar(int inNumSamples)
+	{
+		out0(0) = (in0(0) * in0(1)) + in0(2);
+	}
+
+	template <int SIMD>
+	void next_aa(int inNumSamples)
+	{
+		muladd<SIMD>(out(0), in(0), in(1), in(2), inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_ak(int inNumSamples)
+	{
+		if (addChanged())
+			muladd<SIMD>(out(0), in(0), in(1), addSlope(), inNumSamples);
+		else {
+			if (mAdd == 0.f)
+				times_vec<SIMD>(out(0), in(0), in(1), inNumSamples);
+			else
+				next_ai<SIMD>(inNumSamples);
+		}
+	}
+
+	template <int SIMD>
+	void next_ai(int inNumSamples)
+	{
+		muladd<SIMD>(out(0), in(0), in(1), mAdd, inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_ka(int inNumSamples)
+	{
+		if (mulChanged())
+			muladd<SIMD>(out(0), in(0), mulSlope(), in(2), inNumSamples);
+		else
+			next_ia<SIMD>(inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_kk(int inNumSamples)
+	{
+		if (addChanged()) {
+			if (mulChanged())
+				muladd<SIMD>(out(0), in(0), mulSlope(), addSlope(), inNumSamples);
+			else {
+				if (mMul == 0)
+					slope_vec<SIMD>(out(0), addSlope(), inNumSamples);
+				else if (mMul == 1.f)
+					plus_vec<SIMD>(out(0), in(0), addSlope(), inNumSamples);
+				else
+					muladd<SIMD>(out(0), in(0), mMul, addSlope(), inNumSamples);
+			}
+		} else
+			next_ki<SIMD>(inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_ki(int inNumSamples)
+	{
+		if (mulChanged())
+			muladd<SIMD>(out(0), in(0), mulSlope(), mAdd, inNumSamples);
+		else
+			next_ii<SIMD>(inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_ia(int inNumSamples)
+	{
+		if (mMul == 0)
+			next_0a<SIMD>(inNumSamples);
+		else if (mMul == 1.0)
+			next_1a<SIMD>(inNumSamples);
+		else
+			muladd<SIMD>(out(0), in(0), mMul, in(2), inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_ik(int inNumSamples)
+	{
+		if (addChanged()) {
+			if (mMul == 0.f)
+				slope_vec<SIMD>(out(0), addSlope(), inNumSamples);
+			else if (mMul == 1.f)
+				plus_vec<SIMD>(out(0), in(0), addSlope(), inNumSamples);
+			else
+				muladd<SIMD>(out(0), in(0), mMul, addSlope(), inNumSamples);
+		} else
+			next_ii<SIMD>(inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_ii(int inNumSamples)
+	{
+		if (mMul == 0)
+			next_0i<SIMD>(inNumSamples);
+		else if (mMul == 1.f) {
+			next_1i<SIMD>(inNumSamples);
+		} else {
+			if (mAdd == 0)
+				times_vec<SIMD>(out(0), in(0), mMul, inNumSamples);
+			else
+				muladd<SIMD>(out(0), in(0), mMul, mAdd, inNumSamples);
+		}
+	}
+
+	template <int SIMD>
+	void next_1a(int inNumSamples)
+	{
+		plus_vec<SIMD>(out(0), in(0), in(2), inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_1k(int inNumSamples)
+	{
+		if (addChanged())
+			plus_vec<SIMD>(out(0), in(0), addSlope(), inNumSamples);
+		else
+			next_1i<SIMD>(inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_1i(int inNumSamples)
+	{
+		if (mAdd == 0)
+			copy_vec<SIMD>(out(0), in(0), inNumSamples);
+		else
+			plus_vec<SIMD>(out(0), in(0), mAdd, inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_0a(int inNumSamples)
+	{
+		copy_vec<SIMD>(out(0), in(2), inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_0k(int inNumSamples)
+	{
+		if (addChanged())
+			slope_vec<SIMD>(out(0), addSlope(), inNumSamples);
+		else
+			next_0i<SIMD>(inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_0i(int inNumSamples)
+	{
+		set_vec<SIMD>(out(0), mAdd, inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_a0(int inNumSamples)
+	{
+		times_vec<SIMD>(out(0), in(0), in(1), inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_k0(int inNumSamples)
+	{
+		if (mulChanged())
+			times_vec<SIMD>(out(0), in(0), mulSlope(), inNumSamples);
+		else
+			next_ik<SIMD>(inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_i0(int inNumSamples)
+	{
+		if (mMul == 0.f)
+			next_00<SIMD>(inNumSamples);
+		else if (mMul == 1.f)
+			next_10<SIMD>(inNumSamples);
+		else
+			times_vec<SIMD>(out(0), in(0), mMul, inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_10(int inNumSamples)
+	{
+		copy_vec<SIMD>(out(0), in(0), inNumSamples);
+	}
+
+	template <int SIMD>
+	void next_00(int inNumSamples)
+	{
+		set_vec<SIMD>(out(0), 0.f, inNumSamples);
+	}
 };
 
-extern "C"
+DEFINE_XTORS(MulAdd)
+
+struct Sum3:
+	SIMD_Unit
 {
-	void MulAdd_Ctor(MulAdd *unit);
+	ControlRateInput<1> in1;
+	ControlRateInput<2> in2;
 
-	// mul add functions for every occasion:
-	void ampmix_k(MulAdd *unit, int inNumSamples);
-
-	void ampmix_aa(MulAdd *unit, int inNumSamples);
-	void ampmix_ak(MulAdd *unit, int inNumSamples);
-	void ampmix_ai(MulAdd *unit, int inNumSamples);
-
-	void ampmix_ka(MulAdd *unit, int inNumSamples);
-	void ampmix_kk(MulAdd *unit, int inNumSamples);
-	void ampmix_ki(MulAdd *unit, int inNumSamples);
-
-	void ampmix_ia(MulAdd *unit, int inNumSamples);
-	void ampmix_ik(MulAdd *unit, int inNumSamples);
-	void ampmix_ii(MulAdd *unit, int inNumSamples);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-void ampmix_k(MulAdd *unit, int inNumSamples);
-void ampmix_k(MulAdd *unit, int inNumSamples)
-{
-	ZOUT0(0) = ZIN0(0) * MULIN[0] + ADDIN[0];
-}
-
-void ampmix_aa(MulAdd *unit, int inNumSamples);
-void ampmix_aa(MulAdd *unit, int inNumSamples)
-{
-	float *in = ZIN(0);
-	float *out = ZOUT(0);
-	float *amp = MULIN - ZOFF;
-	float *mix = ADDIN - ZOFF;
-
-	LOOP1(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + ZXP(mix); );
-}
-
-void ampmix_ak(MulAdd *unit, int inNumSamples);
-void ampmix_ak(MulAdd *unit, int inNumSamples)
-{
-	float *in = ZIN(0);
-	float *out = ZOUT(0);
-	float *amp = MULIN - ZOFF;
-
-	float mix_cur = unit->mPrevAdd;
-	float nextMix = ADDIN[0];
-	float mix_slope = CALCSLOPE(nextMix, mix_cur);
-	if (mix_slope == 0.f) {
-		if (mix_cur == 0.f) {
-			LOOP1(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in); );
-		} else {
-			LOOP1(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + mix_cur; );
-		}
-	} else {
-		LOOP1(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + mix_cur; mix_cur += mix_slope; );
-		unit->mPrevAdd = nextMix;
-	}
-}
-
-void ampmix_ai(MulAdd *unit, int inNumSamples);
-void ampmix_ai(MulAdd *unit, int inNumSamples)
-{
-	float *in = ZIN(0);
-	float *out = ZOUT(0);
-	float *amp = MULIN - ZOFF;
-	float mix_cur = unit->mPrevAdd;
-
-	LOOP1(inNumSamples, ZXP(out) = ZXP(amp) * ZXP(in) + mix_cur; );
-}
-
-void ampmix_ka(MulAdd *unit, int inNumSamples);
-void ampmix_ka(MulAdd *unit, int inNumSamples)
-{
-	float *in = ZIN(0);
-	float *out = ZOUT(0);
-	float *mix = ADDIN - ZOFF;
-	float amp_cur = unit->mPrevMul;
-	float nextAmp = MULIN[0];
-	float amp_slope = CALCSLOPE(nextAmp, amp_cur);
-
-	if (amp_slope == 0.f) {
-		if (amp_cur == 0.f) {
-			ZCopy(inNumSamples, out, mix);
-		} else if (amp_cur == 1.f) {
-			LOOP1(inNumSamples, ZXP(out) = ZXP(in) + ZXP(mix); );
-		} else {
-			LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + ZXP(mix); );
-		}
-	} else {
-		LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + ZXP(mix); amp_cur += amp_slope; );
-		unit->mPrevMul = nextAmp;
-	}
-}
-
-void ampmix_kk(MulAdd *unit, int inNumSamples);
-void ampmix_kk(MulAdd *unit, int inNumSamples)
-{
-	float *in = ZIN(0);
-	float *out = ZOUT(0);
-
-	float amp_cur = unit->mPrevMul;
-	float nextAmp = MULIN[0];
-	float amp_slope = CALCSLOPE(nextAmp, amp_cur);
-	float mix_cur = unit->mPrevAdd;
-	float nextMix = ADDIN[0];
-	float mix_slope = CALCSLOPE(nextMix, mix_cur);
-
-	if (amp_slope == 0.f) {
-		if (mix_slope == 0.f) {
-			if (mix_cur == 0.f) {
-				if (amp_cur == 1.f) {
-					if (out != in)
-						ZCopy(inNumSamples, out, in);
-				} else if (amp_cur == 0.f) {
-					ZClear(inNumSamples, out);
-				} else {
-					LOOP1(inNumSamples, ZXP(out) = ZXP(in) * amp_cur;);
-				}
-			} else {
-				if (amp_cur == 1.f) {
-					LOOP1(inNumSamples, ZXP(out) = ZXP(in) + mix_cur;);
-				} else if (amp_cur == 0.f) {
-					LOOP1(inNumSamples, ZXP(out) = mix_cur;);
-				} else {
-					LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; );
-				}
-			}
-		} else {
-			if (amp_cur == 1.f) {
-				LOOP1(inNumSamples, ZXP(out) = ZXP(in) + mix_cur; mix_cur += mix_slope;);
-			} else if (amp_cur == 0.f) {
-				LOOP1(inNumSamples, ZXP(out) = mix_cur; mix_cur += mix_slope;);
-			} else {
-				LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; mix_cur += mix_slope; );
-			}
-			unit->mPrevAdd = nextMix;
-		}
-	} else {
-		if (mix_slope == 0.f) {
-			if (mix_cur == 0.f) {
-				LOOP1(inNumSamples, ZXP(out) = ZXP(in) * amp_cur; amp_cur += amp_slope; );
-			} else {
-				LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; amp_cur += amp_slope; );
-			}
-		} else {
-			LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; amp_cur += amp_slope; mix_cur += mix_slope; );
-			unit->mPrevAdd = nextMix;
-		}
-		unit->mPrevMul = nextAmp;
-	}
-}
-
-void ampmix_ki(MulAdd *unit, int inNumSamples);
-void ampmix_ki(MulAdd *unit, int inNumSamples)
-{
-	float *in = ZIN(0);
-	float *out = ZOUT(0);
-
-	float amp_cur = unit->mPrevMul;
-	float nextAmp = MULIN[0];
-	float amp_slope = CALCSLOPE(nextAmp, amp_cur);
-	float mix_cur = unit->mPrevAdd;
-	//postbuf("ampmix_ki %p %g %g\n", out, amp_cur, mix_cur);
-
-	if (amp_slope == 0.f) {
-		if (amp_cur == 1.f) {
-			LOOP1(inNumSamples, ZXP(out) = ZXP(in) + mix_cur;);
-		} else if (amp_cur == 0.f) {
-			LOOP1(inNumSamples, ZXP(out) = mix_cur;);
-		} else {
-			LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; );
-		}
-	} else {
-		LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; amp_cur += amp_slope; );
-		unit->mPrevMul = nextAmp;
-	}
-}
-
-void ampmix_ia(MulAdd *unit, int inNumSamples);
-void ampmix_ia(MulAdd *unit, int inNumSamples)
-{
-	float *in = ZIN(0);
-	float *out = ZOUT(0);
-	float *mix = ADDIN - ZOFF;
-	float amp_cur = unit->mPrevMul;
-
-#ifdef IPHONE_VEC
-	in++;
-	out++;
-	mix++;
-	vscalarmul(in, amp_cur, in, inNumSamples);
-	vadd(out, in, mix, inNumSamples);
-#else
-	LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + ZXP(mix); );
-#endif
-}
-
-
-void ampmix_ik(MulAdd *unit, int inNumSamples);
-void ampmix_ik(MulAdd *unit, int inNumSamples)
-{
-	float *in = ZIN(0);
-	float *out = ZOUT(0);
-
-	float amp_cur = unit->mPrevMul;
-	float mix_cur = unit->mPrevAdd;
-	float nextMix = ADDIN[0];
-	float mix_slope = CALCSLOPE(nextMix, mix_cur);
-
-	if (mix_slope == 0.f) {
-		if (mix_cur == 0.f) {
-			LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in); );
-		} else {
-			LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; );
-		}
-	} else {
-		LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; mix_cur += mix_slope; );
-		unit->mPrevAdd = nextMix;
-	}
-}
-
-void ampmix_ii(MulAdd *unit, int inNumSamples);
-void ampmix_ii(MulAdd *unit, int inNumSamples)
-{
-	float *in = ZIN(0);
-	float *out = ZOUT(0);
-
-	float amp_cur = unit->mPrevMul;
-	float mix_cur = unit->mPrevAdd;
-	LOOP1(inNumSamples, ZXP(out) = amp_cur * ZXP(in) + mix_cur; );
-}
-
-#ifdef NOVA_SIMD
-FLATTEN void ampmix_aa_nova(MulAdd *unit, int inNumSamples)
-{
-	nova::muladd_vec_simd(OUT(0), IN(0), MULIN,
-						  ADDIN, inNumSamples);
-}
-
-FLATTEN void ampmix_aa_nova_64(MulAdd *unit, int inNumSamples)
-{
-	nova::muladd_vec_simd<64>(OUT(0), IN(0), MULIN, ADDIN);
-}
-
-FLATTEN void ampmix_ak_nova(MulAdd *unit, int inNumSamples)
-{
-	float mix_cur = unit->mPrevAdd;
-	float nextMix = ADDIN[0];
-	if (nextMix == mix_cur) {
-		if (mix_cur == 0.f)
-			nova::times_vec_simd(OUT(0), IN(0), MULIN, inNumSamples);
-		else
-			nova::muladd_vec_simd(OUT(0), IN(0), MULIN, mix_cur, inNumSamples);
-	} else {
-		float mix_slope = CALCSLOPE(nextMix, mix_cur);
-		unit->mPrevAdd = nextMix;
-		nova::muladd_vec_simd(OUT(0), IN(0), MULIN,
-							  slope_argument(mix_cur, mix_slope), inNumSamples);
-	}
-}
-
-FLATTEN void ampmix_ak_nova_64(MulAdd *unit, int inNumSamples)
-{
-	float mix_cur = unit->mPrevAdd;
-	float nextMix = ADDIN[0];
-	if (nextMix == mix_cur) {
-		if (mix_cur == 0.f)
-			nova::times_vec_simd<64>(OUT(0), IN(0), MULIN);
-		else
-			nova::muladd_vec_simd<64>(OUT(0), IN(0), MULIN,
-										 mix_cur);
-	} else {
-		float mix_slope = CALCSLOPE(nextMix, mix_cur);
-		unit->mPrevAdd = nextMix;
-		nova::muladd_vec_simd<64>(OUT(0), IN(0), MULIN,
-								  slope_argument(mix_cur, mix_slope));
-	}
-}
-
-FLATTEN void ampmix_ai_nova(MulAdd *unit, int inNumSamples)
-{
-	nova::muladd_vec_simd(OUT(0), IN(0), MULIN,
-						  unit->mPrevAdd, inNumSamples);
-}
-
-FLATTEN void ampmix_ai_nova_64(MulAdd *unit, int inNumSamples)
-{
-	nova::muladd_vec_simd<64>(OUT(0), IN(0), MULIN,
-							  unit->mPrevAdd);
-}
-
-FLATTEN void ampmix_ka_nova(MulAdd *unit, int inNumSamples)
-{
-	float amp_cur = unit->mPrevMul;
-	float nextAmp = MULIN[0];
-
-	if (amp_cur == nextAmp) {
-		if (amp_cur == 0.f)
-			nova::copyvec_simd(OUT(0), ADDIN, inNumSamples);
-		else if (amp_cur == 1.f)
-			nova::plus_vec_simd(OUT(0), IN(0), ADDIN, inNumSamples);
-		else
-			nova::muladd_vec_simd(OUT(0), IN(0), amp_cur,
-								  ADDIN, inNumSamples);
-	} else {
-		float amp_slope = CALCSLOPE(nextAmp, amp_cur);
-		unit->mPrevMul = nextAmp;
-		nova::muladd_vec_simd(OUT(0), IN(0), slope_argument(amp_cur, amp_slope),
-							  ADDIN, inNumSamples);
-	}
-}
-
-FLATTEN void ampmix_ka_nova_64(MulAdd *unit, int inNumSamples)
-{
-	float amp_cur = unit->mPrevMul;
-	float nextAmp = MULIN[0];
-
-	if (amp_cur == nextAmp) {
-		if (amp_cur == 0.f)
-			nova::copyvec_simd<64>(OUT(0), ADDIN);
-		else if (amp_cur == 1.f)
-			nova::plus_vec_simd<64>(OUT(0), IN(0), ADDIN);
-		else
-			nova::muladd_vec_simd<64>(OUT(0), IN(0), amp_cur,
-										 ADDIN);
-	} else {
-		float amp_slope = CALCSLOPE(nextAmp, amp_cur);
-		unit->mPrevMul = nextAmp;
-		nova::muladd_vec_simd<64>(OUT(0), IN(0), slope_argument(amp_cur, amp_slope),
-								  ADDIN);
-	}
-}
-
-FLATTEN void ampmix_kk_nova(MulAdd *unit, int inNumSamples)
-{
-	float amp_cur = unit->mPrevMul;
-	float nextAmp = MULIN[0];
-	float mix_cur = unit->mPrevAdd;
-	float nextMix = ADDIN[0];
-
-	if (nextAmp == amp_cur) {
-		if (nextMix == mix_cur) {
-			if (mix_cur == 0.f) {
-					if (amp_cur == 1.f) {
-						if (ZOUT(0) != ZIN(0))
-							ZCopy(inNumSamples, ZOUT(0), ZIN(0));
-					} else if (amp_cur == 0.f)
-						nova::zerovec_simd(OUT(0), inNumSamples);
-					else
-						nova::times_vec_simd(OUT(0), IN(0), amp_cur, inNumSamples);
-				} else {
-					if (amp_cur == 1.f)
-						nova::plus_vec_simd(OUT(0), IN(0), mix_cur, inNumSamples);
-					else if (amp_cur == 0.f)
-						nova::setvec_simd(OUT(0), mix_cur, inNumSamples);
-					else
-						nova::muladd_vec_simd(OUT(0), IN(0), amp_cur,
-											  mix_cur, inNumSamples);
-				}
-		} else {
-			float mix_slope = CALCSLOPE(nextMix, mix_cur);
-			if (amp_cur == 1.f)
-				nova::plus_vec_simd(OUT(0), IN(0), slope_argument(mix_cur, mix_slope), inNumSamples);
-			else if (amp_cur == 0.f)
-				nova::set_slope_vec_simd(OUT(0), mix_cur, mix_slope, inNumSamples);
-			else
-				nova::muladd_vec_simd(OUT(0), IN(0), amp_cur,
-									  slope_argument(mix_cur, mix_slope), inNumSamples);
-			unit->mPrevAdd = nextMix;
-		}
-	} else {
-		float amp_slope = CALCSLOPE(nextAmp, amp_cur);
-		if (nextMix == mix_cur) {
-			if (mix_cur == 0.f)
-				nova::times_vec_simd(OUT(0), IN(0), slope_argument(amp_cur, amp_slope), inNumSamples);
-			else
-				nova::muladd_vec_simd(OUT(0), IN(0), slope_argument(amp_cur, amp_slope),
-									  mix_cur, inNumSamples);
-		} else {
-			float mix_slope = CALCSLOPE(nextMix, mix_cur);
-			nova::muladd_vec_simd(OUT(0), IN(0), slope_argument(amp_cur, amp_slope),
-								  slope_argument(mix_cur, mix_slope), inNumSamples);
-			unit->mPrevAdd = nextMix;
-		}
-		unit->mPrevMul = nextAmp;
-	}
-}
-
-FLATTEN void ampmix_ki_nova(MulAdd *unit, int inNumSamples)
-{
-	float amp_cur = unit->mPrevMul;
-	float nextAmp = MULIN[0];
-	float mix_cur = unit->mPrevAdd;
-
-	if (nextAmp == amp_cur) {
-		if (amp_cur == 1.f)
-			nova::plus_vec_simd(OUT(0), IN(0), mix_cur, inNumSamples);
-		else if (amp_cur == 0.f)
-			nova::setvec_simd(OUT(0), mix_cur, inNumSamples);
-		else
-			nova::muladd_vec_simd(OUT(0), IN(0), amp_cur,
-								  mix_cur, inNumSamples);
-	} else {
-		float amp_slope = CALCSLOPE(nextAmp, amp_cur);
-		nova::muladd_vec_simd(OUT(0), IN(0), slope_argument(amp_cur, amp_slope),
-							  mix_cur, inNumSamples);
-		unit->mPrevMul = nextAmp;
-	}
-}
-
-FLATTEN void ampmix_ki_nova_64(MulAdd *unit, int inNumSamples)
-{
-	float amp_cur = unit->mPrevMul;
-	float nextAmp = MULIN[0];
-	float mix_cur = unit->mPrevAdd;
-
-	if (nextAmp == amp_cur) {
-		if (amp_cur == 1.f)
-			nova::plus_vec_simd<64>(OUT(0), IN(0), mix_cur);
-		else if (amp_cur == 0.f)
-			nova::setvec_simd<64>(OUT(0), mix_cur);
-		else
-			nova::muladd_vec_simd<64>(OUT(0), IN(0), amp_cur,
-										 mix_cur);
-	} else {
-		float amp_slope = CALCSLOPE(nextAmp, amp_cur);
-		nova::muladd_vec_simd<64>(OUT(0), IN(0), slope_argument(amp_cur, amp_slope),
-								  mix_cur);
-		unit->mPrevMul = nextAmp;
-	}
-}
-
-FLATTEN void ampmix_ia_nova(MulAdd *unit, int inNumSamples)
-{
-	nova::muladd_vec_simd(OUT(0), IN(0), unit->mPrevMul,
-						  ADDIN, inNumSamples);
-}
-
-FLATTEN void ampmix_ia_nova_64(MulAdd *unit, int inNumSamples)
-{
-	nova::muladd_vec_simd<64>(OUT(0), IN(0), unit->mPrevMul,
-							  ADDIN);
-}
-
-FLATTEN void ampmix_ik_nova(MulAdd *unit, int inNumSamples)
-{
-	float amp_cur = unit->mPrevMul;
-	float mix_cur = unit->mPrevAdd;
-	float nextMix = ADDIN[0];
-
-	if (nextMix == mix_cur) {
-		if (mix_cur == 0.f)
-			nova::times_vec_simd(OUT(0), IN(0), amp_cur, inNumSamples);
-		else
-			nova::muladd_vec_simd(OUT(0), IN(0), amp_cur,
-								  mix_cur, inNumSamples);
-	} else {
-		float mix_slope = CALCSLOPE(nextMix, mix_cur);
-		nova::muladd_vec_simd(OUT(0), IN(0), amp_cur,
-							  slope_argument(mix_cur, mix_slope), inNumSamples);
-		unit->mPrevAdd = nextMix;
-	}
-}
-
-FLATTEN void ampmix_ik_nova_64(MulAdd *unit, int inNumSamples)
-{
-	float amp_cur = unit->mPrevMul;
-	float mix_cur = unit->mPrevAdd;
-	float nextMix = ADDIN[0];
-
-	if (nextMix == mix_cur) {
-		if (mix_cur == 0.f)
-			nova::times_vec_simd<64>(OUT(0), IN(0), amp_cur);
-		else
-			nova::muladd_vec_simd<64>(OUT(0), IN(0), amp_cur, mix_cur);
-	} else {
-		float mix_slope = CALCSLOPE(nextMix, mix_cur);
-		nova::muladd_vec_simd<64>(OUT(0), IN(0), amp_cur,
-								  slope_argument(mix_cur, mix_slope));
-		unit->mPrevAdd = nextMix;
-	}
-}
-
-FLATTEN void ampmix_ii_nova(MulAdd *unit, int inNumSamples)
-{
-	nova::muladd_vec_simd(OUT(0), IN(0), unit->mPrevMul,
-						  unit->mPrevAdd, inNumSamples);
-}
-
-FLATTEN void ampmix_ii_nova_64(MulAdd *unit, int inNumSamples)
-{
-	nova::muladd_vec_simd<64>(OUT(0), IN(0), unit->mPrevMul,
-							  unit->mPrevAdd);
-}
-
-#endif
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void MulAdd_Ctor(MulAdd *unit)
-{
-	if (unit->mCalcRate != calc_FullRate) {
-		unit->mCalcFunc = (UnitCalcFunc)&ampmix_k;
-		ampmix_k(unit, 1);
-		return;
-	}
-
-	unit->mPrevMul = ZIN0(1);
-	unit->mPrevAdd = ZIN0(2);
-
-	int mulRate = INRATE(1);
-	int addRate = INRATE(2);
-
-	//Print("muladd %d %d %g %g\n", mulRate, addRate, unit->mPrevMul, unit->mPrevAdd);
-	//Print("**** %p %p %p    %p\n", IN(0), IN(1), IN(2), OUT(0));
-
-
-#if defined (NOVA_SIMD)
-	if ((BUFLENGTH & 15))
+	Sum3(void)
 	{
-#endif
-		switch (mulRate) {
-		case calc_FullRate :
-			switch (addRate) {
-				case calc_FullRate :
-					unit->mCalcFunc = (UnitCalcFunc)&ampmix_aa;
-					break;
-				case calc_BufRate :
-					unit->mCalcFunc = (UnitCalcFunc)&ampmix_ak;
-					break;
-				case calc_ScalarRate :
-					unit->mCalcFunc = (UnitCalcFunc)&ampmix_ai;
-					break;
-			}
-			break;
-		case calc_BufRate :
-			switch (addRate) {
-				case calc_FullRate :
-					unit->mCalcFunc = (UnitCalcFunc)&ampmix_ka;
-					break;
-				case calc_BufRate :
-					unit->mCalcFunc = (UnitCalcFunc)&ampmix_kk;
-					break;
-				case calc_ScalarRate :
-					unit->mCalcFunc = (UnitCalcFunc)&ampmix_ki;
-					break;
-			}
-			break;
-		case calc_ScalarRate :
-			switch (addRate) {
-				case calc_FullRate :
-					unit->mCalcFunc = (UnitCalcFunc)&ampmix_ia;
-					break;
-				case calc_BufRate :
-					unit->mCalcFunc = (UnitCalcFunc)&ampmix_ik;
-					break;
-				case calc_ScalarRate :
-					unit->mCalcFunc = (UnitCalcFunc)&ampmix_ii;
-					break;
-			}
-			break;
+		in1.init(this);
+		in2.init(this);
+
+		if (mCalcRate != calc_FullRate) {
+			set_calc_function<Sum3, &Sum3::next_scalar>();
+			return;
 		}
 
-#if defined (NOVA_SIMD)
-	} else {
-		if (BUFLENGTH == 64) {
-		switch (mulRate) {
-			case calc_FullRate :
-				switch (addRate) {
-					case calc_FullRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_aa_nova_64;
-						break;
-					case calc_BufRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ak_nova_64;
-						break;
-					case calc_ScalarRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ai_nova_64;
-						break;
-				}
-				break;
-			case calc_BufRate :
-				switch (addRate) {
-					case calc_FullRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ka_nova_64;
-						break;
-					case calc_BufRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_kk_nova;
-						break;
-					case calc_ScalarRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ki_nova_64;
-						break;
-				}
-				break;
-			case calc_ScalarRate :
-				switch (addRate) {
-					case calc_FullRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ia_nova_64;
-						break;
-					case calc_BufRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ik_nova_64;
-						break;
-					case calc_ScalarRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ii_nova_64;
-						break;
-				}
-				break;
+		assert(inRate(0) == calc_FullRate);
+
+		switch (inRate(1)) {
+		case calc_FullRate:
+			switch (inRate(2)) {
+			case calc_FullRate:
+				set_vector_calc_function<Sum3, &Sum3::next_aaa<true>, &Sum3::next_aaa<false> >();
+				return;
+
+			case calc_BufRate:
+				set_vector_calc_function<Sum3, &Sum3::next_aak<true>, &Sum3::next_aak<false> >();
+				return;
+
+			case calc_ScalarRate:
+				set_vector_calc_function<Sum3, &Sum3::next_aai<true>, &Sum3::next_aai<false> >();
+				return;
+
+			default:
+				assert(false);
+			}
+
+		case calc_BufRate:
+			switch (inRate(2)) {
+				case calc_BufRate:
+					set_vector_calc_function<Sum3, &Sum3::next_akk<true>, &Sum3::next_akk<false> >();
+					return;
+
+				case calc_ScalarRate:
+					set_vector_calc_function<Sum3, &Sum3::next_aki<true>, &Sum3::next_aki<false> >();
+					return;
+
+				default:
+					assert(false);
+			}
+
+		case calc_ScalarRate:
+			assert (inRate(2) == calc_ScalarRate);
+			set_vector_calc_function<Sum3, &Sum3::next_aii<true>, &Sum3::next_aii<false> >();
+			return;
+
+		default:
+			assert(false);
 		}
-		} else {
-		switch (mulRate) {
-			case calc_FullRate :
-				switch (addRate) {
-					case calc_FullRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_aa_nova;
-						break;
-					case calc_BufRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ak_nova;
-						break;
-					case calc_ScalarRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ai_nova;
-						break;
-				}
-				break;
-			case calc_BufRate :
-				switch (addRate) {
-					case calc_FullRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ka_nova;
-						break;
-					case calc_BufRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_kk_nova;
-						break;
-					case calc_ScalarRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ki_nova;
-						break;
-				}
-				break;
-			case calc_ScalarRate :
-				switch (addRate) {
-					case calc_FullRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ia_nova;
-						break;
-					case calc_BufRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ik_nova;
-						break;
-					case calc_ScalarRate :
-						unit->mCalcFunc = (UnitCalcFunc)&ampmix_ii_nova;
-						break;
-				}
-				break;
+	}
+
+	template <bool SIMD, typename Arg1, typename Arg2, typename Arg3>
+	static void sum_vec(float * out, Arg1 const & arg1, Arg2 const & arg2, Arg3 const & arg3, int inNumSamples)
+	{
+		if (SIMD)
+			nova::sum_vec_simd(out, arg1, arg2, arg3, inNumSamples);
+		else
+			nova::sum_vec(out, arg1, arg2, arg3, inNumSamples);
+	}
+
+	void next_scalar(int inNumSamples)
+	{
+		out0(0) = in0(0) + in0(1) + in0(2);
+	}
+
+	template <bool SIMD>
+	void next_aaa(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), in(1), in(2), inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aak(int inNumSamples)
+	{
+		if (in2.changed(this))
+			sum_vec<SIMD>(out(0), in(0), in(1), in2.slope(this), inNumSamples);
+		else
+			next_aai<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aai(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), in(1), in2, inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aki(int inNumSamples)
+	{
+		if (in1.changed(this))
+			sum_vec<SIMD>(out(0), in(0), in1.slope(this), in2, inNumSamples);
+		else
+			next_aii<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_akk(int inNumSamples)
+	{
+		if (in2.changed(this)) {
+			if (in1.changed(this))
+				sum_vec<SIMD>(out(0), in(0), in1.slope(this), in2.slope(this), inNumSamples);
+			else
+				sum_vec<SIMD>(out(0), in(0), in1, in2.slope(this), inNumSamples);
+		} else
+			next_aki<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aii(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), in0(1), in0(2), inNumSamples);
+	}
+};
+
+DEFINE_XTORS(Sum3)
+
+struct Sum4:
+	SIMD_Unit
+{
+	ControlRateInput<1> in1;
+	ControlRateInput<2> in2;
+	ControlRateInput<3> in3;
+
+	Sum4(void)
+	{
+		in1.init(this);
+		in2.init(this);
+		in3.init(this);
+
+		if (mCalcRate != calc_FullRate) {
+			set_calc_function<Sum4, &Sum4::next_scalar>();
+			return;
 		}
+
+		assert(inRate(0) == calc_FullRate);
+
+		switch (inRate(1)) {
+		case calc_FullRate:
+			switch (inRate(2)) {
+			case calc_FullRate:
+				switch (inRate(3)) {
+				case calc_FullRate:
+					set_vector_calc_function<Sum4, &Sum4::next_aaaa<true>, &Sum4::next_aaaa<false> >();
+					return;
+
+				case calc_BufRate:
+					set_vector_calc_function<Sum4, &Sum4::next_aaak<true>, &Sum4::next_aaak<false> >();
+					return;
+
+				case calc_ScalarRate:
+					set_vector_calc_function<Sum4, &Sum4::next_aaai<true>, &Sum4::next_aaai<false> >();
+					return;
+
+				default:
+					assert(false);
+				}
+
+			case calc_BufRate:
+				switch (inRate(3)) {
+				case calc_BufRate:
+					set_vector_calc_function<Sum4, &Sum4::next_aakk<true>, &Sum4::next_aakk<false> >();
+					return;
+
+				case calc_ScalarRate:
+					set_vector_calc_function<Sum4, &Sum4::next_aaki<true>, &Sum4::next_aaki<false> >();
+					return;
+
+				default:
+					assert(false);
+				}
+
+			case calc_ScalarRate:
+				switch (inRate(3)) {
+				case calc_ScalarRate:
+					set_vector_calc_function<Sum4, &Sum4::next_aaii<true>, &Sum4::next_aaii<false> >();
+					return;
+
+				default:
+					assert(false);
+				}
+			}
+		case calc_BufRate:
+			switch (inRate(2)) {
+			case calc_BufRate:
+				switch (inRate(3)) {
+				case calc_BufRate:
+					set_vector_calc_function<Sum4, &Sum4::next_akkk<true>, &Sum4::next_akkk<false> >();
+					return;
+
+				case calc_ScalarRate:
+					set_vector_calc_function<Sum4, &Sum4::next_akki<true>, &Sum4::next_akki<false> >();
+					return;
+
+				default:
+					assert(false);
+				}
+
+			case calc_ScalarRate:
+				switch (inRate(3)) {
+				case calc_ScalarRate:
+					set_vector_calc_function<Sum4, &Sum4::next_akii<true>, &Sum4::next_akii<false> >();
+					return;
+
+				default:
+					assert(false);
+				}
+			}
+
+		case calc_ScalarRate:
+			switch (inRate(2)) {
+			case calc_ScalarRate:
+				switch (inRate(3)) {
+				case calc_ScalarRate:
+					set_vector_calc_function<Sum4, &Sum4::next_aiii<true>, &Sum4::next_aiii<false> >();
+					return;
+
+				default:
+					assert(false);
+				}
+
+			default:
+				assert(false);
+			}
+
+		default:
+			assert(false);
 		}
-    }
-#endif
-	ampmix_k(unit, 1);
+	}
+
+	void next_scalar(int inNumSamples)
+	{
+		out0(0) = in0(0) + in0(1) + in0(2) + in0(3);
+	}
+
+	template <bool SIMD, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+	static void sum_vec(float * out, Arg1 const & arg1, Arg2 const & arg2, Arg3 const & arg3, Arg4 const & arg4, int inNumSamples)
+	{
+		if (SIMD)
+			nova::sum_vec_simd(out, arg1, arg2, arg3, arg4, inNumSamples);
+		else
+			nova::sum_vec(out, arg1, arg2, arg3, arg4, inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aaaa(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), in(1), in(2), in(3), inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aaak(int inNumSamples)
+	{
+		if (in3.changed(this))
+			sum_vec<SIMD>(out(0), in(0), in(1), in(2), in3.slope(this), inNumSamples);
+		else
+			next_aaai<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aaai(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), in(1), in(2), in3, inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aakk(int inNumSamples)
+	{
+		if (in3.changed(this)) {
+			if (in2.changed(this))
+				sum_vec<SIMD>(out(0), in(0), in(1), in2.slope(this), in3.slope(this), inNumSamples);
+			else
+				sum_vec<SIMD>(out(0), in(0), in(1), in2, in3.slope(this), inNumSamples);
+		} else
+			next_aaki<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aaki(int inNumSamples)
+	{
+		if (in2.changed(this))
+			sum_vec<SIMD>(out(0), in(0), in(1), in2.slope(this), in3, inNumSamples);
+		else
+			next_aaii<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aaii(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), in(1), in2, in3, inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_akkk(int inNumSamples)
+	{
+		if (in3.changed(this)) {
+			if (in2.changed(this)) {
+				if (in1.changed(this))
+					sum_vec<SIMD>(out(0), in(0), in1.slope(this), in2.slope(this), in3.slope(this), inNumSamples);
+				else
+					sum_vec<SIMD>(out(0), in(0), in1, in2.slope(this), in3.slope(this), inNumSamples);
+			} else {
+				if (in1.changed(this))
+					sum_vec<SIMD>(out(0), in(0), in1.slope(this), in2, in3.slope(this), inNumSamples);
+				else
+					sum_vec<SIMD>(out(0), in(0), in1, in2, in3.slope(this), inNumSamples);
+			}
+		} else
+			next_akki<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_akki(int inNumSamples)
+	{
+		if (in2.changed(this)) {
+			if (in1.changed(this))
+				sum_vec<SIMD>(out(0), in(0), in1.slope(this), in2.slope(this), in3, inNumSamples);
+			else
+				sum_vec<SIMD>(out(0), in(0), in1, in2.slope(this), in3, inNumSamples);
+		} else
+			next_akii<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_akii(int inNumSamples)
+	{
+		if (in1.changed(this))
+			sum_vec<SIMD>(out(0), in(0), in1.slope(this), in2, in3, inNumSamples);
+		else
+			next_aiii<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aiii(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), in1, in2, in3, inNumSamples);
+	}
+};
+
+DEFINE_XTORS(Sum4)
+
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -718,4 +717,6 @@ PluginLoad(MulAdd)
 	ft = inTable;
 
 	DefineSimpleUnit(MulAdd);
+	DefineSimpleUnit(Sum3);
+	DefineSimpleUnit(Sum4);
 }
