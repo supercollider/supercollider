@@ -55,7 +55,7 @@ public:
 static SCIpcClient * gIpcClient = NULL;
 
 
-int SCIdeConnect(struct VMGlobals *g, int numArgsPushed)
+int ScIDE_Connect(struct VMGlobals *g, int numArgsPushed)
 {
     if (gIpcClient) {
         error("ScIDE already connected\n");
@@ -149,7 +149,7 @@ private:
     }
 };
 
-int SCIdeSend(struct VMGlobals *g, int numArgsPushed)
+int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
 {
     if (!gIpcClient) {
         error("ScIDE not connected\n");
@@ -172,7 +172,7 @@ int SCIdeSend(struct VMGlobals *g, int numArgsPushed)
         stream << QString(selector);
         stream << QString(serializer.data());
     } catch (std::exception const & e) {
-        postfl("Exception during SCIdeSend: %s\n", e.what());
+        postfl("Exception during ScIDE_Send: %s\n", e.what());
         return errFailed;
     }
 
@@ -184,6 +184,6 @@ void initScIDEPrimitives()
 {
     int base = nextPrimitiveIndex();
     int index = 0;
-    definePrimitive(base, index++, "_SCIdeConnect", SCIdeConnect, 2, 0);
-    definePrimitive(base, index++, "_SCIdeSend",    SCIdeSend, 3, 0);
+    definePrimitive(base, index++, "_ScIDE_Connect", ScIDE_Connect, 2, 0);
+    definePrimitive(base, index++, "_ScIDE_Send",    ScIDE_Send, 3, 0);
 }

@@ -1,14 +1,14 @@
 ScIDE {
 	*connect {|ideName|
-		_SCIdeConnect
+		_ScIDE_Connect
 		this.primitiveFailed
 	}
 
-	*getAllClasses {
+	*sendAllClasses {
 		this.prSend(\classes, Class.allClasses.collectAs(_.asString, Array))
 	}
 
-	*getSymbolTable {
+	*sendSymbolTable {
 		var result, dt;
 
 		dt = {
@@ -31,7 +31,7 @@ ScIDE {
 	}
 
 	*prSend {|selector, data|
-		_SCIdeSend
+		_ScIDE_Send
 		this.primitiveFailed
 	}
 }
