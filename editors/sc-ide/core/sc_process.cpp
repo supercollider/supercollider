@@ -25,12 +25,13 @@
 namespace ScIDE {
 
 SCProcess::SCProcess( QObject *parent ):
-    QProcess( parent ), mIPC( new SCIpcServer )
+    QProcess( parent ), mIPC( new SCIpcServer(this) )
 {
     prepareActions();
 
     connect(this, SIGNAL( readyRead() ),
             this, SLOT( onReadyRead() ));
+    connect(mIPC, SIGNAL(scPost(QString)), this, SIGNAL(scPost(QString)));
 }
 
 void SCProcess::start (void)

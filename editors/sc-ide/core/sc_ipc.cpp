@@ -78,23 +78,50 @@ void SCIpcServer::openClassDefinitionHandler ( const QString& YAMLString )
     while(parser.GetNextDocument(doc)) {
         assert(doc.Type() == YAML::NodeType::Sequence);
 
-        for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it) {
-            assert(doc.Type() == YAML::NodeType::Sequence);
+        switch (doc.size()) {
+        case 0:
+        {
+            QString errorMessage = QString("Class not defined");
+            emit scPost(errorMessage);
+            return;
+        }
+
+        case 1:
+        {
+            YAML::Iterator it = doc.begin();
+            YAML::Node const & entry = *it;
             std::string name, path;
             int charPosition;
 
-            YAML::Node const & entry = *it;
+            assert(entry.Type() == YAML::NodeType::Sequence);
 
             name = entry[0].to<std::string>();
             path = entry[1].to<std::string>();
             charPosition = entry[2].to<int>() - 1; // position is one off
-
-            // LATER: we want to show a popup list so that the user can select which definition to open
             Main::instance()->documentManager()->open(QString(path.c_str()), charPosition);
             return;
         }
-    }
 
+        default:
+        {
+            for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it) {
+                std::string name, path;
+                int charPosition;
+
+                YAML::Node const & entry = *it;
+                assert(entry.Type() == YAML::NodeType::Sequence);
+
+                name = entry[0].to<std::string>();
+                path = entry[1].to<std::string>();
+                charPosition = entry[2].to<int>() - 1; // position is one off
+
+                // LATER: we want to show a popup list so that the user can select which definition to open
+                Main::instance()->documentManager()->open(QString(path.c_str()), charPosition);
+                return;
+            }
+        }
+        }
+    }
 }
 
 void SCIpcServer::symbolTableHandler ( const QString& YAMLString )
