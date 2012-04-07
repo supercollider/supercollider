@@ -48,7 +48,7 @@ public:
         SCProcessActionCount
     };
 
-signals:
+Q_SIGNALS:
     void scPost(QString const &);
 
 public slots:

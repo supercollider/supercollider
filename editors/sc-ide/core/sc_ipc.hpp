@@ -54,6 +54,9 @@ public:
         listen(mIdeName);
     }
 
+Q_SIGNALS:
+    void scPost(QString const &);
+
 private Q_SLOTS:
     void onNewConnection(void)
     {
