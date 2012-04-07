@@ -24,10 +24,12 @@
 #include "../core/sig_mux.hpp"
 #include "../core/main.hpp"
 
+#include <QApplication>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QScrollBar>
 #include <QShortcut>
-#include <QApplication>
+
 
 namespace ScIDE {
 
@@ -318,7 +320,11 @@ void MultiEditor::onOpen( Document *doc, int initialCursorPosition )
             &mModificationMapper, SLOT(map()));
 
     if (initialCursorPosition) {
-        QTextCursor cursor;
+        // HACK: scroll to the bottom before setting the cursor so that it is then scrolled to the top
+        QScrollBar * scrollBar = editor->verticalScrollBar();
+        scrollBar->setValue(scrollBar->maximum());
+
+        QTextCursor cursor = editor->textCursor();
         cursor.setPosition(initialCursorPosition);
         editor->setTextCursor(cursor);
     }
