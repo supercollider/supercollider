@@ -194,9 +194,8 @@ void MultiEditor::createActions()
 
     // Browse
     mActions[OpenClassDefinition] = act = new QAction(tr("Open Class Definition"), this);
-
     act->setShortcut(QKeySequence(tr("Ctrl+d")));
-    mSigMux->connect(act, SIGNAL(triggered()), SLOT(openClassDefinition()));
+    connect(act, SIGNAL(triggered(bool)), this, SLOT(openClassDefinition()));
 }
 
 void MultiEditor::updateActions()
@@ -399,6 +398,14 @@ CodeEditor * MultiEditor::editorForDocument( Document *doc )
     }
     return 0;
 }
+
+void MultiEditor::openClassDefinition()
+{
+    CodeEditor * editor = currentEditor();
+    QString selectedText = editor->textCursor().selectedText();
+    Main::instance()->scProcess()->getClassDefinitions(selectedText);
+}
+
 
 ////////////////////// TextFindReplacePanel //////////////////////////
 

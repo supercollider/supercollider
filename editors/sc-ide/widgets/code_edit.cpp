@@ -22,7 +22,6 @@
 #include "../core/doc_manager.hpp"
 #include "../core/sc_syntax_highlighter.hpp"
 #include "../core/settings/manager.hpp"
-#include "../core/main.hpp"
 
 #include <QPainter>
 #include <QPaintEvent>
@@ -281,12 +280,6 @@ void CodeEditor::zoomOut(int steps)
         f.setPixelSize( qMax(1, f.pixelSize() - steps) );
 
     setFont(f);
-}
-
-void CodeEditor::openClassDefinition()
-{
-    QString selectedText = this->textCursor().selectedText();
-    Main::instance()->scProcess()->getClassDefinitions(selectedText);
 }
 
 

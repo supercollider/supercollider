@@ -118,6 +118,7 @@ private Q_SLOTS:
     void onCloseRequest( int index );
     void onCurrentChanged( int index );
     void onModificationChanged( QWidget * );
+    void openClassDefinition();
 
 private:
     void createActions();
