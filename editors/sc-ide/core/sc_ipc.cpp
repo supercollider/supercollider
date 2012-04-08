@@ -22,6 +22,8 @@
 
 #include "main.hpp"
 
+#include <QMenu>
+
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
 
@@ -43,15 +45,11 @@ void SCIpcServer::tryEvaluateReceivedData ( void )
     if ( in.status() != QDataStream::Ok )
         return;
 
-    qDebug("%s", selector.toStdString().c_str());
-
     in >> message;
     if ( in.status() != QDataStream::Ok )
         return;
 
     mReceivedData.remove ( 0, receivedData.pos() );
-
-    qDebug("%s", message.toStdString().c_str());
 
     if ( selector == classDefinitions )
         openClassDefinitionHandler(message);
@@ -90,35 +88,36 @@ void SCIpcServer::openClassDefinitionHandler ( const QString& YAMLString )
         {
             YAML::Iterator it = doc.begin();
             YAML::Node const & entry = *it;
-            std::string name, path;
-            int charPosition;
-
             assert(entry.Type() == YAML::NodeType::Sequence);
 
-            name = entry[0].to<std::string>();
-            path = entry[1].to<std::string>();
-            charPosition = entry[2].to<int>() - 1; // position is one off
+            // name, path, character position
+            std::string path = entry[1].to<std::string>();
+            int charPosition = entry[2].to<int>() - 1; // position is one off
             Main::instance()->documentManager()->open(QString(path.c_str()), charPosition);
             return;
         }
 
         default:
         {
+            QMenu * menu = new QMenu();
+            QList<QAction*> actions;
             for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it) {
-                std::string name, path;
-                int charPosition;
-
                 YAML::Node const & entry = *it;
                 assert(entry.Type() == YAML::NodeType::Sequence);
 
-                name = entry[0].to<std::string>();
-                path = entry[1].to<std::string>();
-                charPosition = entry[2].to<int>() - 1; // position is one off
+                std::string path = entry[1].to<std::string>();
+                int charPosition = entry[2].to<int>() - 1; // position is one off
 
-                // LATER: we want to show a popup list so that the user can select which definition to open
-                Main::instance()->documentManager()->open(QString(path.c_str()), charPosition);
-                return;
+                QAction * action = new QAction(QString(path.c_str()), menu);
+                action->setData(QVariant(charPosition));
+                actions.append(action);
             }
+
+            menu->addActions(actions);
+            QAction * selectedAction = menu->exec(QCursor::pos());
+            if (selectedAction)
+                Main::instance()->documentManager()->open(selectedAction->text(), selectedAction->data().toInt());
+            delete menu;
         }
         }
     }
