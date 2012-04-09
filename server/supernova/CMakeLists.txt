@@ -35,13 +35,6 @@ include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
                     )
 
-if (Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-else()
-    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
-endif()
-
-
 if(APPLE)
     include_directories(${CMAKE_SOURCE_DIR}/external_libraries/libsndfile)
 endif()
