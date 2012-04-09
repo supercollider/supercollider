@@ -132,30 +132,6 @@ endif()
 
 
 #############################################
-# some default libraries
-
-find_package(Pthreads)
-
-if (NOT PTHREADS_FOUND)
-    message(SEND_ERROR "cannot find libpthreads")
-endif()
-include_directories(${PTHREADS_INCLUDE_DIR})
-
-if (MSVC OR MINGW)
-    set(MATH_LIBRARY "")
-else()
-    find_library(MATH_LIBRARY m)
-endif()
-
-if(CURL)
-	find_package(CURL)
-	if(CURL_FOUND)
-		add_definitions("-DHAVE_LIBCURL")
-		include_directories(${CURL_INCLUDE_DIRS})
-	endif()
-endif()
-
-#############################################
 # Options
 option(NOVA_SIMD "Build with nova-simd support." ON)
 option(FINAL_BUILD "Build as single source file." OFF)
@@ -220,6 +196,43 @@ endif()
 
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
 option(SC_OX "Try to compile with support for C++0x (experimental, mainly related to supernova)" OFF)
+
+#############################################
+# some default libraries
+
+find_package(Pthreads)
+
+if (NOT PTHREADS_FOUND)
+    message(SEND_ERROR "cannot find libpthreads")
+endif()
+include_directories(${PTHREADS_INCLUDE_DIR})
+
+if (MSVC OR MINGW)
+    set(MATH_LIBRARY "")
+else()
+    find_library(MATH_LIBRARY m)
+endif()
+
+if(CURL)
+	find_package(CURL)
+	if(CURL_FOUND)
+		add_definitions("-DHAVE_LIBCURL")
+		include_directories(${CURL_INCLUDE_DIRS})
+	endif()
+endif()
+
+set(Boost_USE_MULTITHREADED      ON)
+find_package( Boost 1.48.0 COMPONENTS thread system filesystem program_options regex )
+
+if (SC_OX)
+	set(Boost_FOUND OFF) # boost 1.48 does not like c++11
+endif()
+
+if (NOT Boost_FOUND)
+	message("building boost libraries manually")
+endif()
+
+
 
 #############################################
 # some preprocessor flags
