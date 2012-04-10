@@ -46,8 +46,23 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/external_libraries/
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
-					${SNDFILE_INCLUDE_DIR}
+                    ${SNDFILE_INCLUDE_DIR}
                     )
+
+if (WIN32 OR APPLE)
+    find_package(Portaudio)
+    if(NOT PORTAUDIO_FOUND)
+        message(FATAL_ERROR "Portaudio missing")
+    endif()
+    add_definitions(-DPORTAUDIO_BACKEND ${PORTAUDIO_DEFINITIONS})
+    include_directories(${PORTAUDIO_INCLUDE_DIRS})
+else()
+    find_library(JACK NAMES jack)
+    if (JACK)
+        add_definitions(-DJACK_BACKEND)
+        include_directories(${JACK_INCLUDE_DIRS})
+    endif()
+endif()
 
 
 add_library(boost_test STATIC boost_test.cpp)
@@ -68,7 +83,3 @@ foreach(test ${simple_tests})
 
   add_test(${test_name}_run ${EXECUTABLE_OUTPUT_PATH}/${test_name})
 endforeach(test)
-
-set_property(TARGET server_test
-             APPEND
-             PROPERTY COMPILE_DEFINITIONS JACK_BACKEND SUPERNOVA)
