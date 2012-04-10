@@ -8,6 +8,18 @@ The simplest way is to look at an existing help file or class document, and read
 
 note:: The help files should use UTF-8 encoding! ::
 
+subsection:: News in SC 3.5.2
+SCDoc has been rewritten and the parser is now implemented in C++ for speed and stability.
+The syntax has gotten stricter, and it will throw errors or warnings if there are faults in the documentation.
+
+Some important changes to keep in mind:
+list::
+## Linking to sections does no longer use lower_case_and_underscored anchors, but the exact section title as it is. Example: teletype::link\::#Language-side news\:::: renders: link::#Language-side news::
+## Run code::SCDoc.indexAllDocuments:: if you add a new document or other file and want to see the change reflected in the help. If you just changed a document and want to see the changes, just press Reload in the browser and SCDoc will detect and re-index automatically.
+## The teletype::CLASS\:::: tag is deprecated, just use teletype::TITLE\:::: instead also for class reference docs.
+## The argument name given to the teletype::ARGUMENT\:::: tag is now optional. If not given, SCDoc will auto-fill the real argument name.
+::
+
 subsection:: Documenting new classes
 When you navigate to an undocumented class, it will contain an schelp template that can be filled in and saved to HelpSource/Classes/ClassName.schelp.
 
