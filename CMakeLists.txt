@@ -224,7 +224,9 @@ if (SC_OX)
 	set(Boost_FOUND OFF) # boost 1.48 does not like c++11
 endif()
 
-if (NOT Boost_FOUND)
+if (Boost_FOUND)
+	link_directories(${Boost_LIBRARY_DIRS})
+else()
 	message("building boost libraries manually")
 endif()
 
