@@ -250,7 +250,7 @@ void thread_init_functor::operator()(int thread_index)
     }
 
     if (!thread_set_affinity(thread_index))
-        std::cerr << "Warning: cannot set thread affinity of dsp thread" << std::endl;
+        std::cerr << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
 }
 
 void io_thread_init_functor::operator()() const
@@ -277,7 +277,7 @@ void synth_prototype_deleter::dispose(synth_prototype * ptr)
 void realtime_engine_functor::init_thread(void)
 {
     if (!thread_set_affinity(0))
-        std::cerr << "Warning: cannot set thread affinity of jack thread" << std::endl;
+        std::cerr << "Warning: cannot set thread affinity of main audio thread" << std::endl;
 
     name_current_thread(0);
 }
