@@ -228,7 +228,11 @@ set_property(TARGET ${scappbundlename}
 # also TODO, separate gui name? (currently using MACOSX_BUNDLE_BUNDLE_NAME twice)
 
 target_link_libraries(${scappbundlename} icucore)
-target_link_libraries(${scappbundlename} boost_thread)
+if (Boost_FOUND)
+	target_link_libraries(${scappbundlename} ${Boost_THREAD_LIBRARY})
+else()
+	target_link_libraries(${scappbundlename} boost_thread)
+endif()
 
 target_link_libraries(${scappbundlename} "-framework ApplicationServices")
 target_link_libraries(${scappbundlename} "-framework Carbon")
