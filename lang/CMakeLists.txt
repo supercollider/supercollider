@@ -282,7 +282,7 @@ endif()
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp)
 
-if (${Boost_FOUND})
+if (Boost_FOUND)
 	target_link_libraries(sclang libsclang ${Boost_THREAD_LIBRARY})
 else()
 	target_link_libraries(sclang libsclang boost_thread)
