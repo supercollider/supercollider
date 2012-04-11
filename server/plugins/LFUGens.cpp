@@ -2029,8 +2029,8 @@ void Clip_next_k(Clip* unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in  = ZIN(0);
-	float lo = unit->m_lo;
-	float hi = unit->m_hi;
+	float lo = ZIN0(1);
+	float hi = ZIN0(2);
 
 	ZXP(out) = sc_clip(ZXP(in), lo, hi);
 }
