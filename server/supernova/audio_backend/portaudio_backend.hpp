@@ -130,26 +130,34 @@ public:
 
         PaStreamParameters in_parameters, out_parameters;
 
-        in_parameters.channelCount = inchans;
-        in_parameters.device = input_device_index;
-        in_parameters.sampleFormat = paFloat32 | paNonInterleaved;
-        in_parameters.suggestedLatency = Pa_GetDeviceInfo(in_parameters.device)->defaultLowInputLatency;
-        in_parameters.hostApiSpecificStreamInfo = NULL;
+        if (inchans) {
+            in_parameters.channelCount = inchans;
+            in_parameters.device = input_device_index;
+            in_parameters.sampleFormat = paFloat32 | paNonInterleaved;
+            in_parameters.suggestedLatency = Pa_GetDeviceInfo(in_parameters.device)->defaultLowInputLatency;
+            in_parameters.hostApiSpecificStreamInfo = NULL;
+        }
 
-        out_parameters.channelCount = outchans;
-        out_parameters.device = output_device_index;
-        out_parameters.sampleFormat = paFloat32 | paNonInterleaved;
-        out_parameters.suggestedLatency = Pa_GetDeviceInfo(out_parameters.device)->defaultLowOutputLatency;
-        out_parameters.hostApiSpecificStreamInfo = NULL;
+        if (outchans) {
+            out_parameters.channelCount = outchans;
+            out_parameters.device = output_device_index;
+            out_parameters.sampleFormat = paFloat32 | paNonInterleaved;
+            out_parameters.suggestedLatency = Pa_GetDeviceInfo(out_parameters.device)->defaultLowOutputLatency;
+            out_parameters.hostApiSpecificStreamInfo = NULL;
+        }
 
-        PaError supported = Pa_IsFormatSupported(&in_parameters, &out_parameters, samplerate);
+        PaStreamParameters * in_stream_parameters  = inchans ? &in_parameters : NULL;
+        PaStreamParameters * out_stream_parameters = outchans ? &out_parameters : NULL;
+
+        PaError supported = Pa_IsFormatSupported(in_stream_parameters, out_stream_parameters, samplerate);
         report_error(supported);
         if (supported != 0)
             return false;
 
         callback_initialized = false;
         blocksize_ = blocksize;
-        PaError opened = Pa_OpenStream(&stream, &in_parameters, &out_parameters,
+
+        PaError opened = Pa_OpenStream(&stream, in_stream_parameters, out_stream_parameters,
                                        samplerate, pa_blocksize, paNoFlag,
                                        &portaudio_backend::pa_process, this);
 
