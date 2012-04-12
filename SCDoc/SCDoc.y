@@ -103,11 +103,11 @@ start: document { topnode = $1; }
      | document error { topnode = NULL; doc_node_free_tree($1); }
      ;
 
-document: START_FULL dochead optsections
+document: START_FULL eateol dochead optsections
     {
         $$ = doc_node_create("DOCUMENT");
-        doc_node_add_child($$, $2);
         doc_node_add_child($$, $3);
+        doc_node_add_child($$, $4);
     }
        | START_PARTIAL sections
     {
@@ -120,6 +120,10 @@ document: START_FULL dochead optsections
         doc_node_add_child($$, $3);
     }
 ;
+
+eateol: eol
+      | /* empty */
+      ;
 
 dochead: dochead headline { $$ = doc_node_add_child($1,$2); }
        | headline { $$ = doc_node_make("HEADER",NULL,$1); }
