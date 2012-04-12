@@ -281,6 +281,7 @@ ProxyMixer : JITGui {
 		arGuis.do { |gui|
 			var pxIsEdited = gui.object.notNil and: { gui.object == editGui.object };
 			gui.checkUpdate;
+			if(gui.hasName.not) { gui.name = this.proxyspace.findKeyForValue(gui.object) };
 			gui.edBut.value_(pxIsEdited.binaryValue);
 		};
 
@@ -312,6 +313,7 @@ ProxyMixer : JITGui {
 		krGuis.do { |gui|
 			var pxIsEdited = gui.object.notNil and: { gui.object == editGui.object };
 			gui.checkUpdate;
+			if(gui.hasName.not) { gui.name = this.proxyspace.findKeyForValue(gui.object) };
 			gui.edBut.value_(pxIsEdited.binaryValue);
 		};
 
