@@ -96,6 +96,10 @@ JITGui {
 			nameView.string_(name);
 		};
 	}
+	
+	hasName {
+		^nameView.notNil and: { nameView.string.notNil }
+	}
 
 	getName {	^try { object.key } ? "_anon_" }
 	winName { |name| ^this.class.name ++ $_ ++ (name ?? { this.getName }) }
