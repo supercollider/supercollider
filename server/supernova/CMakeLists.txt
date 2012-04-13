@@ -64,6 +64,8 @@ set(libsupernova_src
     server/server_args.cpp
 )
 
+file(GLOB_RECURSE supernova_headers *hpp)
+
 if(COMPACT_BUILD)
   CREATE_FINAL_FILE(libsupernova_final.cpp ${libsupernova_src})
   add_library (libsupernova STATIC libsupernova_final.cpp)
@@ -74,7 +76,7 @@ endif()
 set_property(TARGET libsupernova
              PROPERTY OUTPUT_NAME supernova)
 
-add_executable(supernova server/main.cpp)
+add_executable(supernova server/main.cpp ${supernova_headers})
 
 set_property(TARGET libsupernova supernova
              APPEND
