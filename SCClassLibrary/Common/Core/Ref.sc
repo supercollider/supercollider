@@ -46,7 +46,7 @@ Ref : AbstractFunction
 	}
 
 	flopDeepForUGen { |rank|
-		^this.value.asArray.flopDeep(rank).unbubble.collect { |x| this.class.new(x) }
+		^this.value.asArray.flopDeep(rank).collect { |item| this.class.new(item) }.unbubble
 	}
 }
 
