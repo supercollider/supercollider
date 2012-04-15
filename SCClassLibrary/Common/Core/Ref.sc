@@ -44,6 +44,10 @@ Ref : AbstractFunction
 	asBufWithValues {
 		^LocalBuf.newFrom(value);
 	}
+
+	flopDeepForUGen { |rank|
+		^this.value.asArray.flopDeep(rank).unbubble.collect { |x| this.class.new(x) }
+	}
 }
 
 RefCopy : Ref
