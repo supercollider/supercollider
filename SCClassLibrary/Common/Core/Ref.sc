@@ -45,8 +45,12 @@ Ref : AbstractFunction
 		^LocalBuf.newFrom(value);
 	}
 
-	flopDeepForUGen { |rank|
-		^this.value.asArray.flopDeep(rank).collect { |item| this.class.new(item) }.unbubble
+	// Allow to multichannel expand ugen specs, like those of Klank,
+	// in the case of which two is the rank, but could be otherwise.
+	multichannelExpand { |rank|
+		var array = this.value.asArray.flopDeep(rank);
+		var refarray = array.collect { |item| this.class.new(item) };
+		^refarray.unbubble
 	}
 }
 
