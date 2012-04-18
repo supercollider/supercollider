@@ -385,4 +385,5 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
    *nextBar { | beat | ^TempoClock.default.nextBar(beat)  }
    *beatInBar { ^TempoClock.default.beatInBar  }
 
+	archiveAsCompileString { ^true }
 }
