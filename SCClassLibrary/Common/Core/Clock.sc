@@ -352,38 +352,38 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		this.changed(\meter);
 	}
 
-// these methods allow TempoClock to act as TempoClock.default
-   *stop { TempoClock.default.stop  }
-   *play { | task, quant | TempoClock.default.play(task, quant)  }
-   *sched { | delta, item | TempoClock.default.sched(delta, item)  }
-   *schedAbs { | beat, item | TempoClock.default.schedAbs(beat, item)  }
-   *clear { | releaseNodes | TempoClock.default.clear(releaseNodes)  }
-   *tempo_ { | newTempo | TempoClock.default.tempo_(newTempo)  }
-   *etempo_ { | newTempo | TempoClock.default.etempo_(newTempo)  }
+	// these methods allow TempoClock to act as TempoClock.default
+	*stop { TempoClock.default.stop	}
+	*play { | task, quant | TempoClock.default.play(task, quant)	 }
+	*sched { | delta, item | TempoClock.default.sched(delta, item)  }
+	*schedAbs { | beat, item | TempoClock.default.schedAbs(beat, item)  }
+	*clear { | releaseNodes | TempoClock.default.clear(releaseNodes)	 }
+	*tempo_ { | newTempo | TempoClock.default.tempo_(newTempo)  }
+	*etempo_ { | newTempo | TempoClock.default.etempo_(newTempo)	 }
 
-   *tempo { ^TempoClock.default.tempo }
-   *beats { ^TempoClock.default.beats }
-   *beats2secs { | beats | ^TempoClock.default.beats2secs(beats)  }
-   *secs2beats { | secs | ^TempoClock.default.secs2beats(secs)  }
-   *nextTimeOnGrid { | quant = 1, phase = 0 | ^TempoClock.default.nextTimeOnGrid(quant, phase)  }
-   *timeToNextBeat { | quant = 1 | ^TempoClock.default.timeToNextBeat(quant)  }
+	*tempo { ^TempoClock.default.tempo }
+	*beats { ^TempoClock.default.beats }
+	*beats2secs { | beats | ^TempoClock.default.beats2secs(beats)  }
+	*secs2beats { | secs | ^TempoClock.default.secs2beats(secs)	}
+	*nextTimeOnGrid { | quant = 1, phase = 0 | ^TempoClock.default.nextTimeOnGrid(quant, phase)	}
+	*timeToNextBeat { | quant = 1 | ^TempoClock.default.timeToNextBeat(quant)  }
 
-   *setTempoAtBeat { | newTempo, beats | TempoClock.default.setTempoAtBeat(newTempo, beats)  }
-   *setTempoAtSec { | newTempo, secs | TempoClock.default.setTempoAtSec(newTempo, secs)  }
-   *setMeterAtBeat { | newBeatsPerBar, beats | TempoClock.default.setMeterAtBeat(newBeatsPerBar, beats)  }
+	*setTempoAtBeat { | newTempo, beats | TempoClock.default.setTempoAtBeat(newTempo, beats)	 }
+	*setTempoAtSec { | newTempo, secs | TempoClock.default.setTempoAtSec(newTempo, secs)	 }
+	*setMeterAtBeat { | newBeatsPerBar, beats | TempoClock.default.setMeterAtBeat(newBeatsPerBar, beats)	 }
 
-   *beatsPerBar { ^TempoClock.default.beatsPerBar  }
-   *baseBarBeat { ^TempoClock.default.baseBarBeat  }
-   *baseBar { ^TempoClock.default.baseBar  }
-   *playNextBar { | task | ^TempoClock.default.playNextBar(task)  }
-   *beatDur { ^TempoClock.default.beatDur  }
-   *elapsedBeats { ^TempoClock.default.elapsedBeats  }
-   *beatsPerBar_ { | newBeatsPerBar | TempoClock.default.beatsPerBar_(newBeatsPerBar)  }
-   *beats2bars { | beats | ^TempoClock.default.beats2bars(beats)  }
-   *bars2beats { | bars | ^TempoClock.default.bars2beats(bars)  }
-   *bar { ^TempoClock.default.bar  }
-   *nextBar { | beat | ^TempoClock.default.nextBar(beat)  }
-   *beatInBar { ^TempoClock.default.beatInBar  }
+	*beatsPerBar { ^TempoClock.default.beatsPerBar  }
+	*baseBarBeat { ^TempoClock.default.baseBarBeat  }
+	*baseBar { ^TempoClock.default.baseBar  }
+	*playNextBar { | task | ^TempoClock.default.playNextBar(task)  }
+	*beatDur { ^TempoClock.default.beatDur  }
+	*elapsedBeats { ^TempoClock.default.elapsedBeats	 }
+	*beatsPerBar_ { | newBeatsPerBar | TempoClock.default.beatsPerBar_(newBeatsPerBar)  }
+	*beats2bars { | beats | ^TempoClock.default.beats2bars(beats)  }
+	*bars2beats { | bars | ^TempoClock.default.bars2beats(bars)	}
+	*bar { ^TempoClock.default.bar  }
+	*nextBar { | beat | ^TempoClock.default.nextBar(beat)  }
+	*beatInBar { ^TempoClock.default.beatInBar  }
 
 	archiveAsCompileString { ^true }
 }
