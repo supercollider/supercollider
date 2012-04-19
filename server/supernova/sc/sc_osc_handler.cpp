@@ -744,6 +744,7 @@ int first_arg_as_int(received_message const & message)
 
 void quit_perform(nova_endpoint const & endpoint)
 {
+    instance->prepare_to_terminate();
     send_done_message(endpoint, "/quit");
     instance->terminate();
 }

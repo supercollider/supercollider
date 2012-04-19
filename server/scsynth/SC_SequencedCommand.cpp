@@ -1192,6 +1192,7 @@ bool AudioQuitCmd::Stage3()
 	scprintf("/quit : quit not allowed in AU host\n");
 	return false;
 #else
+	mWorld->hw->mShmem->disconnect();
 	return true;
 #endif
 }
