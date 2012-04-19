@@ -19,7 +19,7 @@ argument::in
 The signal to be analyzed. The signal's rate determines the rate at which the input is read.
 
 argument:: hop
-The amount of offset from one FFT analysis frame to the next, measured in multiples of the analysis frame size. This can range between zero and one, and the default is 0.5 (meaning each frame has a 50% overlap with the preceding/following frames).
+The amount of offset from the beginning of one FFT analysis frame to the next, measured in multiples of the analysis frame size. This can range between 1.0 and values close to (but larger than) 0.0, and the default is 0.5 (meaning each frame has a 50% overlap with the preceding/following frames).
 
 argument:: wintype
 Defines how the data is windowed:
@@ -49,82 +49,101 @@ Note that for phase-vocoder usage, changing the hop or wintype settings from the
 Examples::
 
 code::
-s = Server.local.boot;
-
-b = Buffer.alloc(s,2048,1);
-
 (
-SynthDef("help-noopFFT", { arg out=0,bufnum=0;
+{
 	var in, chain;
-	in = WhiteNoise.ar(0.01);
-	chain = FFT(bufnum, in);
-	chain.inspect; // its an FFT
-	Out.ar(out,
-		IFFT(chain) // inverse FFT
-	);
-}).play(s,[\out,0,\bufnum,b.bufnum]);
+	in = WhiteNoise.ar(0.1);
+	chain = FFT(LocalBuf(2048), in);
+	IFFT(chain) // inverse FFT
+}.play;
+)
+
+// hinspecting it, we see that the chain is an FFT:
+(
+{
+	var in, chain;
+	in = WhiteNoise.ar(0.1);
+	chain = FFT(LocalBuf(2048), in);
+	chain.inspect; 
+	IFFT(chain) // inverse FFT
+}.play;
 )
 
 (
-SynthDef("help-sineFFT", { arg out=0,bufnum=0;
+{
 	var in, chain;
-	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08,0,6,6.2).squared, 0, 100,800));
-	chain = FFT(bufnum, in);
-	Out.ar(out, IFFT(chain));
-}).play(s,[\out,0,\bufnum,b.bufnum]);
+	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08,0,6,6.2).squared, 0, 100, 800));
+	chain = FFT(LocalBuf(2048), in);
+	IFFT(chain)
+}.play;
 )
 
 (
-SynthDef("help-magAbove", { arg out=0,bufnum=0;
+{
 	var in, chain;
 	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08,0,6,6.2).squared, 0, 100,800));
 	//in = WhiteNoise.ar(0.2);
-	chain = FFT(bufnum, in);
+	chain = FFT(LocalBuf(2048), in);
 	chain = PV_MagAbove(chain, 310);
-	Out.ar(out, 0.5 * IFFT(chain));
-}).play(s,[\out,0,\bufnum,b.bufnum]);
+	0.5 * IFFT(chain);
+}.play;
 )
 
 (
-SynthDef("help-brick", { arg out=0,bufnum=0;
+{
 	var in, chain;
-	in = {WhiteNoise.ar(0.2)}.dup;
-	chain = FFT(bufnum, in);
+	in = WhiteNoise.ar(0.2);
+	chain = FFT(LocalBuf(2048), in);
 	chain = PV_BrickWall(chain, SinOsc.kr(0.1));
-	Out.ar(out, IFFT(chain));
-}).play(s,[\out,0,\bufnum,b.bufnum]);
+	IFFT(chain)
+}.play;
 )
 
 (
-SynthDef("help-randcomb", { arg out=0,bufnum=0;
+{
 	var in, chain;
-	in = {WhiteNoise.ar(0.8)}.dup;
-	chain = FFT(bufnum, in);
+	in = WhiteNoise.ar(0.8);
+	chain = FFT(LocalBuf(2048), in);
 	chain = PV_RandComb(chain, 0.95, Impulse.kr(0.4));
-	Out.ar(out, IFFT(chain));
-}).play(s,[\out,0,\bufnum,b.bufnum]);
+	IFFT(chain)
+}.play;
 )
 
 (
-SynthDef("help-rectcomb", { arg out=0,bufnum=0;
+{
 	var in, chain;
-	in = {WhiteNoise.ar(0.2)}.dup;
-	chain = FFT(bufnum, in);
+	in = WhiteNoise.ar(0.2);
+	chain = FFT(LocalBuf(2048), in);
 	chain = PV_RectComb(chain, 8, LFTri.kr(0.097,0,0.4,0.5),
 		LFTri.kr(0.24,0,-0.5,0.5));
-	Out.ar(out, IFFT(chain));
-}).play(s,[\out,0,\bufnum,b.bufnum]);
+	IFFT(chain)
+}.play;
 )
 
 (
-SynthDef("help-magFreeze", { arg out=0,bufnum=0;
+{
 	var in, chain;
 	in = SinOsc.ar(LFNoise1.kr(5.2,250,400));
-	chain = FFT(bufnum, in);
+	chain = FFT(LocalBuf(2048), in);
 	// moves in and out of freeze
 	chain = PV_MagFreeze(chain, SinOsc.kr(0.2) );
-	Out.ar(out, 0.5 * IFFT(chain));
-}).play(s,[\out,0,\bufnum,b.bufnum]);
+	0.5 * IFFT(chain);
+}.play;
 )
+
+
+// stereo example:
+
+(
+{
+	var in, chain;
+	in = SinOsc.ar(LFNoise1.kr([5.2, 3.3],250,400));
+	chain = FFT({ LocalBuf(2048) } ! 2, in); // we need two buffers for stereo input.
+	// moves in and out of freeze
+	chain = PV_MagFreeze(chain, SinOsc.kr([0.2, 0.3]) );
+	0.5 * IFFT(chain);
+}.play;
+)
+
 ::
 
