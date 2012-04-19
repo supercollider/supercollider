@@ -58,6 +58,8 @@ void QcKnob::mousePressEvent( QMouseEvent *e )
 
 void QcKnob::mouseMoveEvent( QMouseEvent *e )
 {
+  if( !e->buttons() ) return;
+
   if( _mode == 0 ) {
       double val = value( e->pos() );
       if( !(val < 0.0 && _value > 0.5) && !(val > 1.0 && _value < 0.5) )
