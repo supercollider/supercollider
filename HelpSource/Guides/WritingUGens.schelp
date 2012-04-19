@@ -228,7 +228,7 @@ include_directories(${SC_PATH}/external_libraries/libsndfile/)
 
 set(CMAKE_SHARED_MODULE_PREFIX "")
 if(APPLE OR WIN32)
-    set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
+set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
 endif()
 
 add_library(MySaw MODULE MySaw.cpp)
