@@ -153,6 +153,7 @@ void start_audio_backend(server_arguments const & args)
     instance->prepare_backend();
     instance->activate_audio();
     instance->start_receive_thread();
+    instance->start_dsp_threads();
 }
 
 #else
