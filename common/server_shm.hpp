@@ -125,9 +125,16 @@ public:
 
 	~server_shared_memory_creator(void)
 	{
+		if (shm)
+			disconnect();
+	}
+
+	void disconnect()
+	{
 		shm->destroy(segment);
 		segment.destroy<server_shared_memory>(shmem_name.c_str());
 		shared_memory_object::remove(shmem_name.c_str());
+		shm = NULL;
 	}
 
 	float * get_control_busses(void)

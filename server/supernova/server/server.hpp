@@ -179,6 +179,11 @@ public:
         system_interpreter.run();
     }
 
+    void prepare_to_terminate()
+    {
+        server_shared_memory_creator::disconnect();
+    }
+
     void terminate(void)
     {
         system_interpreter.terminate();
