@@ -225,8 +225,8 @@ code::
 [[1, 2, 3], [4, 5, 6]].flopWith(_+_);
 [[1, 2, 3], 1, [7, 8]].flopWith{ |a,b,c| a+b+c }; // shorter array wraps
 
-//typical use case
-[synths,buffers].flopWith{ |a,b| a.set(\buf,b) }
+// typical use case (pseudocode)
+[synths, buffers].flopWith{ |a,b| a.set(\buf, b) }
 ::
 argument::func
 A function taking as many arguments as elements in the array.
