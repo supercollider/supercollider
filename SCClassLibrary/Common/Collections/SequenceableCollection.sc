@@ -493,9 +493,10 @@ SequenceableCollection : Collection {
 		}
 	}
 
-	// UGens require Refs
-	flopDeepForUGen { arg rank;
-		^this
+	// UGens require Refs, but given this method, one can do without
+	multichannelExpandRef { arg rank;
+		if(this.first.isKindOf(Ref)) { ^this };
+		^this.flopDeep(rank).collect { |item| Ref(item) }
 	}
 
 	unlace { arg numlists, clumpSize=1, clip=false;
