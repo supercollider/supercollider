@@ -246,6 +246,35 @@ a.collect(_.size); // sizes are the same
 a.collect(_.shape) // shapes can be different
 ::
 
+
+method::flopDeep
+argument::rank
+The depth (dimension) from which the array is inverted inside-out.
+
+Fold dimensions in a multi-dimensional Collection (turn inside out).
+code::
+[[1, 2, 3], [[41, 52], 5, 6]].flopDeep(2);
+[[1, 2, 3], [[41, 52], 5, 6]].flopDeep(1);
+[[1, 2, 3], [[41, 52], 5, 6]].flopDeep(0);
+[[[10, 100, 1000], 2, 3], [[41, 52], 5, 6]].flopDeep(2); // shorter array wraps
+[].flopDeep(1); // result is always one dimension higher.
+[[]].flopDeep(4);
+::
+
+method::maxSizeAtDepth
+argument::rank
+The depth at which the size of the arrays is measured
+
+Returns the maximum size of all subarrays at a certain depth (dimension)
+code::
+[[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(2);
+[[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(1);
+[[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(0);
+[].maxSizeAtDepth(0);
+[[]].maxSizeAtDepth(0);
+[[]].maxSizeAtDepth(1);
+::
+
 method::resamp0
 Returns a new Collection of the desired length, with values resampled evenly-spaced from the receiver without interpolation.
 code::

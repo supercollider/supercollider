@@ -465,24 +465,25 @@ SequenceableCollection : Collection {
 			if(rank.isNil) { ^this.flop };
 			
 			size = this.size;
-			maxsize = this.sizeAtDepth(rank);
+			maxsize = this.maxSizeAtDepth(rank);
 			^this.species.fill(maxsize, { |i|
 				this.wrapCopyAtDepth(rank, i)
 			})
 	}
 
-	sizeAtDepth { arg rank;
+	maxSizeAtDepth { arg rank;
 		var maxsize = 0;
 		if(rank == 0) { ^this.size };
 		this.do { |sublist| 
-			var sz = if(sublist.isSequenceableCollection) { sublist.sizeAtDepth(rank - 1) } { 1 };
+			var sz = if(sublist.isSequenceableCollection) 
+					{ sublist.maxSizeAtDepth(rank - 1) } { 1 };
 			if (sz > maxsize) { maxsize = sz };
 		};
 		^maxsize
 	}
 
 	wrapCopyAtDepth { arg rank, index;
-		if(rank == 0) { ^this.at(index).deepCopy }; // debatable whether we want a deepCopy
+		if(rank == 0) { ^this.wrapAt(index).deepCopy }; // debatable whether we want a deepCopy
 		^this.collect { |item, i|
 			if(item.isSequenceableCollection) {
 				item.wrapCopyAtDepth(rank - 1, index) 
