@@ -12,7 +12,8 @@ The fast fourier transform analyzes the frequency content of a signal. The IFFT 
 
 classmethods::
 
-method::new
+method::new, ar, kr
+returns a time domain signal from converting the FFT frequency domain signal chain. The *new method is equivalent to the *ar message returns an audio rate signal.
 
 argument::buffer
 
@@ -38,18 +39,15 @@ The IFFT UGen converts the FFT data in-place (in the original FFT buffer) and ov
 Examples::
 
 code::
-s = Server.local;
 
-b = Buffer.alloc(s,2048,1);
-
-SynthDef("help-noopFFT", { arg out=0,bufnum=0;
+// without any modification, convert FFT chain (frequency domain signal) back to audio (time domain signal)
+{
 	var in, chain;
 	in = WhiteNoise.ar(0.01);
-	chain = FFT(bufnum, in);
-	chain.inspect; // its an FFT
-	Out.ar(out,
-		IFFT(chain) // inverse FFT
+	chain = FFT(LocalBuf(2048), in);
+	IFFT.ar(chain) // inverse FFT
 	);
-}).play(s,[\out,0,\bufnum,b.bufnum]);
+}.play;
+
 ::
 
