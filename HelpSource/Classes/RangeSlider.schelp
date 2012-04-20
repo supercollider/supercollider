@@ -181,3 +181,97 @@ METHOD:: defaultCanReceiveDrag
 
 METHOD:: defaultReceiveDrag
 	Sets  link::#-lo:: and link::#-hi:: to the two coordinates of the Point stored as the current drag data, respectively, and triggers the link::#-action::.
+
+
+
+EXAMPLES::
+
+subsection:: Basic examples
+
+code::
+(
+w = Window.new.front;
+a = RangeSlider(w, Rect(20, 80, 120, 30))
+    .lo_(0.2)
+    .range_(0.4)
+    .action_({ |slider|
+        [\sliderLOW, slider.lo, \sliderHI, slider.hi].postln;
+    });
+)
+::
+
+code::
+(
+w = Window.new.front;
+a = RangeSlider(w, Rect(20, 80, 120, 30))
+    .lo_(0.2)
+    .hi_(0.8)
+    .action_({ |slider|
+        b.activeLo_(slider.lo); // this will trigger the action of b (and set it's value)
+        b.hi_(slider.hi);
+    });
+b = RangeSlider(w, Rect(220, 80, 20, 130))
+    .lo_(0.2)
+    .hi_(0.8)
+    .knobColor_(HiliteGradient(Color.grey, Color.white,\h))
+    .action_({ |slider|
+        [\sliderLOW, slider.lo, \sliderHI, slider.hi].postln;
+    });
+
+)
+::
+
+subsection:: Use of setDeviation
+
+code::
+(
+
+w = Window("setDeviation", Rect(300, 300, 300, 150));
+a = RangeSlider(w, Rect(10, 10, 200, 30))
+    .lo_(0)
+    .hi_(1);
+b = Slider(w, Rect(10, 50, 200, 30))
+    .action_(
+        {   arg me;
+            a.setDeviation(c.value, b.value);
+        });
+c = Slider(w, Rect(10, 100, 200, 30))
+    .action_(
+        {   arg me;
+            a.setDeviation(c.value, b.value);
+        }
+    );
+c.valueAction = 0.2;
+w.front;
+)
+::
+
+subsection:: Sound example
+
+Shape a bandpass filter.
+
+In Cocoa GUI, hold down the Ctrl key to move the whole range; in other GUI kits you can simply click within the range and drag it.
+
+code::
+(
+s.waitForBoot({
+    a={arg freq=1800, bw=0.2;
+            var r;
+            BBandPass.ar(WhiteNoise.ar(0.3), freq, bw);
+
+            }.play;
+
+    w = Window("2DSlider", Rect(100,Window.screenBounds.height-400, 400 ,50));
+    t = RangeSlider(w, Rect(10, 10, 380, 30))
+            .lo_(0.4)
+            .hi_(0.6)
+            .action_({|sl|
+                a.set(\freq,1800*(sl.lo+sl.lo)+10,\bw, (sl.hi-sl.lo).abs+0.01);
+            });
+    t.doAction;
+
+    w.front;
+    CmdPeriod.doOnce({w.close});
+})
+)
+::
