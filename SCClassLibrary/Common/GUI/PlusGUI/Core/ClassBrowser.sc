@@ -93,7 +93,7 @@ ClassBrowser {
 
 			~helpButton.action = {
 				if(currentState.currentClass.notNil) {
-					currentState.currentClass.openHelpFile;
+					currentState.currentClass.help;
 				}
 			};
 

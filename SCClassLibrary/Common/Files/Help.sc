@@ -579,7 +579,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 				// The class name, or helpfile name we're after
 
 				if(lv.value.notNil and: {if(index==0, tree, {selectednodes[index-1]})[lists[index][lv.value]].isNil}, {
-					{ selecteditem.openHelpFile }.defer;
+					{ selecteditem.help }.defer;
 				});
 			},
 			//default:
@@ -609,7 +609,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 
 			if(clickCount == 2, {
 				if(lv.value.notNil and: { try { if(index==0, tree, {selectednodes[index-1]})[lists[index][lv.value]] }.isNil}, {
-					{ selecteditem.openHelpFile }.defer;
+					{ selecteditem.help }.defer;
 				});
 			});
 		});
@@ -659,7 +659,7 @@ gui { |sysext=true,userext=true, allowCached=true|
 		Button.new( win, Rect( 5, /* 534 */ bounds.height - 30, 110, 20 ))
 			.states_([["Open Help File", Color.black, Color.clear]])
 			.resize_(7)
-			.action_({{ selecteditem.openHelpFile }.defer;});
+			.action_({{ selecteditem.help }.defer;});
 		classButt = Button.new( win, Rect( 119, /* 534 */ bounds.height - 30, 110, 20 ))
 			.states_([["Open Class File", Color.black, Color.clear]])
 			.resize_(7)

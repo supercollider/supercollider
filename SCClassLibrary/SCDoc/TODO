@@ -90,7 +90,7 @@ Methods to deprecate?
 
 Methods done but could be improved:
     // Class : helpFileForMethod  - FIXME: should jump to method anchor
-    // Method : openHelpFile - FIXME: should jump to method anchor
+    // Method : help - FIXME: should jump to method anchor
 
 Also deprecate class.categories since this is now in the helpfiles instead?
 (categories can still be reached run-time from SCDoc.documents[path])

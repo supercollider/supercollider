@@ -216,5 +216,5 @@ h.indicesFor([\me, \her], "=");	// indices for line written by \me or \her AND c
 	// so please read on at HistoryGui help ...
 h.makeWin;
 
-HistoryGui.openHelpFile;
+HistoryGui.help;
 ::

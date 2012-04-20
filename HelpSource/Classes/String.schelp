@@ -611,11 +611,11 @@ code::
 "foobar".findHelpFile;
 ::
 
-method::openHelpFile
+method::help
 Performs link::#-findHelpFile:: on this, and opens the file it if it exists, otherwise opens the main helpfile.
 code::
-"Document".openHelpFile;
-"foobar".openHelpFile;
+"Document".help;
+"foobar".help;
 ::
 
 subsection::Misc methods
