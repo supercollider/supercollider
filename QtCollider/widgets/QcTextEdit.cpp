@@ -28,7 +28,7 @@
 
 class QcTextEditFactory : public QcWidgetFactory<QcTextEdit>
 {
-  void initialize( QWidgetProxy *p, QcTextEdit *w, QList<QVariant> & ) {
+  void initialize( QWidgetProxy *p, QcTextEdit *w ) {
     p->setMouseEventWidget( w->viewport() );
   }
 };
@@ -131,8 +131,8 @@ void QcTextEdit::setRangeColor( const VariantList &list )
   format.setForeground( c );
 
   QTextCursor cursor( document() );
-  cursor.setPosition( start );
-  cursor.setPosition( start + size, QTextCursor::KeepAnchor );
+  cursor.movePosition( QTextCursor::NextCharacter, QTextCursor::MoveAnchor, start );
+  cursor.movePosition( QTextCursor::NextCharacter, QTextCursor::KeepAnchor, size );
   cursor.setCharFormat( format );
 }
 
@@ -147,8 +147,8 @@ void QcTextEdit::setRangeFont( const VariantList & list )
   format.setFont( f );
 
   QTextCursor cursor( document() );
-  cursor.setPosition( start );
-  cursor.setPosition( start + size, QTextCursor::KeepAnchor );
+  cursor.movePosition( QTextCursor::NextCharacter, QTextCursor::MoveAnchor, start );
+  cursor.movePosition( QTextCursor::NextCharacter, QTextCursor::KeepAnchor, size );
   cursor.setCharFormat( format );
 }
 
@@ -160,8 +160,8 @@ void QcTextEdit::setRangeText( const VariantList & list )
   int size = list.data[2].toInt();
 
   QTextCursor cursor( document() );
-  cursor.setPosition( start );
-  cursor.setPosition( start + size, QTextCursor::KeepAnchor );
+  cursor.movePosition( QTextCursor::NextCharacter, QTextCursor::MoveAnchor, start );
+  cursor.movePosition( QTextCursor::NextCharacter, QTextCursor::KeepAnchor, size );
   cursor.insertText( text );
 }
 
