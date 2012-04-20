@@ -156,7 +156,10 @@ void FFT_Ctor(FFT *unit)
 	int audiosize = unit->m_audiosize * sizeof(float);
 
 	int hopsize = (int)(sc_max(sc_min(ZIN0(2), 1.f), 0.f) * unit->m_audiosize);
-	if (((int)(hopsize / unit->mWorld->mFullRate.mBufLength)) * unit->mWorld->mFullRate.mBufLength
+	if (hopsize < unit->mWorld->mFullRate.mBufLength) {
+		Print("FFT_Ctor: hopsize smaller than SC's block size (%i) - automatically corrected.\n", hopsize, unit->mWorld->mFullRate.mBufLength);
+		hopsize = unit->mWorld->mFullRate.mBufLength;
+	} else if (((int)(hopsize / unit->mWorld->mFullRate.mBufLength)) * unit->mWorld->mFullRate.mBufLength
 				!= hopsize) {
 		Print("FFT_Ctor: hopsize (%i) not an exact multiple of SC's block size (%i) - automatically corrected.\n", hopsize, unit->mWorld->mFullRate.mBufLength);
 		hopsize = ((int)(hopsize / unit->mWorld->mFullRate.mBufLength)) * unit->mWorld->mFullRate.mBufLength;
