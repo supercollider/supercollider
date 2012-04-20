@@ -829,9 +829,3 @@ SCDoc {
         );
     }
 }
-
-+ Help {
-	*dir {
-		^SCDoc.helpTargetDir
-	}
-}

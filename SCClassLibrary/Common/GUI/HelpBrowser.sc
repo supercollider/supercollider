@@ -67,7 +67,7 @@ HelpBrowser {
 			cls = cls.name.asString;
 			met = "-"++met;
 		};
-		this.goTo(Help.dir+/+"Classes"+/+cls++".html#"++met);
+		this.goTo(SCDoc.helpTargetDir+/+"Classes"+/+cls++".html#"++met);
 	}
 	*getOldWrapUrl {|url|
 		var c;
@@ -327,8 +327,3 @@ HelpBrowser {
 
 }
 
-+ Help {
-	*gui {
-		HelpBrowser.instance.goHome;
-	}
-}

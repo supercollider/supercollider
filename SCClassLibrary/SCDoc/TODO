@@ -4,7 +4,6 @@ TODO
 - should we allow *.ext.schelp to add to related:: and categories:: ?
 
 - clean up old-help compatibility, do we really need it in both HelpBrowser-goTo and SCDoc.findHelpFile?
-  And automatically call Help.rebuildTree on startup?
 
 - HelpBrowser: clean up openNewWindows setting. only have a single class variable?
 
