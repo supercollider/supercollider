@@ -372,6 +372,10 @@ QPopUpMenu : QItemViewBase {
     this.setProperty( \currentIndex, val ? -1 );
   }
 
+  background { ^this.palette.button; }
+
+  background_ { arg color; this.palette = this.palette.button_(color); }
+
   stringColor {
     ^this.palette.buttonText;
   }
