@@ -201,3 +201,35 @@ METHOD:: defaultGetDrag
 
 	returns::
 		The link::#-selectedString::.
+
+
+
+EXAMPLES::
+
+code::
+(
+w = Window.new("Text View Example",Rect(100,Window.screenBounds.height-400, 520,300)).front;
+t = TextView(w.asView,Rect(10,10, 500,200))
+    .focus(true);
+)
+
+// Using the Window you just created, try these in succession, and test how the text view responds
+t.mouseUpAction_{|it, x, y, modifiers, buttonNumber, clickCount, pos| [pos].postln};
+t.autohidesScrollers_(false);
+t.hasVerticalScroller_(false);
+t.hasVerticalScroller_(true);
+t.hasHorizontalScroller_(false);
+t.hasHorizontalScroller_(true);
+t.autohidesScrollers_(true);
+
+t.open("Help/GUI/Main-GUI/Button.html"); // load an html file
+
+// selective editing and formatting
+t.setStringColor (Color.red, 5, 5);
+t.setFont (Font("Courier",12), 5, 10);
+t.setString ("\nA replacement String\n", 12, 6);
+
+// compare with these methods, which change everything
+t.font_(Font("Courier",14));
+t.stringColor_(Color.blue);
+::
