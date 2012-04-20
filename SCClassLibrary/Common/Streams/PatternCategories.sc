@@ -13,7 +13,6 @@
 + Psync { *categories{ ^ #["Streams-Patterns-Events>Patterns>Repetition"]  }}
 
 + Ptime { *categories{ ^ #["Streams-Patterns-Events>Patterns>Time"]  }}
-+ Pflow { *categories{ ^ #["Streams-Patterns-Events>Patterns>Time"]  }}
 + Pstep { *categories{ ^ #["Streams-Patterns-Events>Patterns>Time"]  }}
 + Pstep2add { *categories{ ^ #["Streams-Patterns-Events>Patterns>Time"]  }}
 + Pstep3add { *categories{ ^ #["Streams-Patterns-Events>Patterns>Time"]  }}

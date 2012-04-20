@@ -122,7 +122,6 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + PackFFT		    { *categories { ^ #["UGens>FFT"] } }
 + PanB            { *categories { ^ #["UGens>Multichannel>Ambisonics"] } }
 + PanB2           { *categories { ^ #["UGens>Multichannel>Ambisonics"] } }
-+ Panner          { *categories { ^ #["UGens>Multichannel>Panners"] } }
 + PartConv   { *categories { ^ #["UGens>FFT"] } }
 + Pause           { *categories { ^ #["UGens>Synth control"] } }
 + PauseSelf       { *categories { ^ #["UGens>Synth control"] } }
@@ -211,7 +210,6 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + VOsc3           { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + Warp1           { *categories { ^ #["UGens>Buffer", "UGens>Generators>Granular"] } }
 + WhiteNoise      { *categories { ^ #["UGens>Generators>Stochastic"] } }
-+ XFade           { *categories { ^ #["UGens>Multichannel>Select"] } }
 + XLine           { *categories { ^ #["UGens>Envelopes"] } }
 + ZeroCrossing    { *categories { ^ #["UGens>Analysis>Pitch"] } }
 + Control { *categories { ^#["UGens>Synth control"]}}
