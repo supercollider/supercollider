@@ -40,7 +40,7 @@ method::dumpFullInterface
 
 Post all the class and instance methods that this class responds to (i.e. those defined in this class and those inherited by it).
 
-method::openHelpFile
+method::help
 
 Opens the help file for this Class if it exists.
 

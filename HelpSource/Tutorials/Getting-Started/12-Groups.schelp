@@ -175,7 +175,7 @@ So if you're looking at a helpfile and can't find a particular method that a cla
 
 code::
 Group.superclass; 				// this will return 'Node'
-Group.superclass.openHelpFile;
+Group.superclass.help;
 Group.findRespondingMethodFor('set');		// Node-set
 Group.findRespondingMethodFor('postln');	// Object-postln;
 Group.helpFileForMethod('postln'); 		// opens class Object help file

@@ -445,7 +445,7 @@ Document {
 		{ selectedText.first == $[ and: { selectedText.last == $] }}
 		{
 			// open help file
-			selectedText[1 .. selectedText.size-2].openHelpFile
+			selectedText[1 .. selectedText.size-2].help
 		}
 		{ selectedText.containsStringAt(0, "http://")
 			or: { selectedText.containsStringAt(0, "file://") } }

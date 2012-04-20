@@ -534,7 +534,7 @@ Plotter {
 		.focusColor_(Color.clear)
 		.font_(font)
 		.resize_(3)
-		.action_ { this.class.openHelpFile };
+		.action_ { this.class.help };
 
 		^bounds;
 	}

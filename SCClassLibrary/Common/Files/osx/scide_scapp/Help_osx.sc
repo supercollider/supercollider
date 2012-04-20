@@ -12,7 +12,7 @@
 				}{
 					// Add selectable menu item
 					SCMenuItem.new(menu, key.asString, subindex).action_(
-						{ key.asString.openHelpFile }
+						{ key.asString.help }
 					)
 				}
 			};

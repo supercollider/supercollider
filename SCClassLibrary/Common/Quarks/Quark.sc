@@ -131,7 +131,7 @@ Quark
 		};
 		^deps;
 	}
-	openHelpFile {
+	help {
 		var p = info.schelp;
 		if(p.notNil) {
 			HelpBrowser.openHelpFor(p);
@@ -243,7 +243,7 @@ QuarkView {
 		browseHelpButton = GUI.button.new(parent, infoBounds)
 			.font_( Font.sansSerif( 10 ))
 			.states_([["help"]])
-			.action_({ quark.openHelpFile });
+			.action_({ quark.help });
 
 		if(quark.isLocal) {
 			srcButton = GUI.button.new(parent, sourceBounds)
@@ -314,7 +314,7 @@ QuarkView {
 		GUI.button.new(window, Rect(125, 176, 150, 20))
 			.resize_(8)
 			.states_([["Open quark help"]])
-			.action_({ quark.openHelpFile });
+			.action_({ quark.help });
 	}
 	remove {
 		[installButton, nameView, infoButton, srcButton].do(_.remove);

@@ -132,7 +132,7 @@
 
 	helpFileForMethod {
 		arg methodSymbol;
-		this.findRespondingMethodFor(methodSymbol).ownerClass.openHelpFile;
+		this.findRespondingMethodFor(methodSymbol).ownerClass.help;
 	}
 
 		// show all subclasses of this class sorted in alpha order (not tree order)

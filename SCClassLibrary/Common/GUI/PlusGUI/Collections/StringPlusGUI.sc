@@ -107,7 +107,7 @@
 		this.findHelpFile;
 	}
 
-	openHelpFile {
+	help {
 		if (Platform.openHelpFileAction.notNil) {
 			Platform.openHelpFileAction.value(this)
 		} {
@@ -115,3 +115,4 @@
 		}
 	}
 }
+

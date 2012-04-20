@@ -52,7 +52,7 @@ For example, if the quark contains teletype::HelpSource/Reference/MyQuark.schelp
 code::
     \schelp: "Reference/MyQuark"
 ::
-It is used by link::#-openHelpFile::. If no code::\schelp:: is given, it will open the category browser showing all helpfiles for the quark.
+It is used by link::#-help::. If no code::\schelp:: is given, it will open the category browser showing all helpfiles for the quark.
 
 note::
 The old help system (sc version 3.4) used code::\helpdoc::, and the new help system (link::Classes/SCDoc::) uses code::\schelp:: instead to be able to support both old and new helpfiles during the transition to the new help system.
@@ -77,7 +77,7 @@ method:: path
 The path of the quark.
 method:: info
 The whole info blob as given in the .quark file.
-method:: openHelpFile
+method:: help
 Open the main helpfile for this quark as given by the code::\schelp:: key in the directory file,
 or the category browser page showing all helpfiles for this quark if no main helpfile was specified.
 This method falls back to opening the old help as given by code::\helpdoc:: if above fails.

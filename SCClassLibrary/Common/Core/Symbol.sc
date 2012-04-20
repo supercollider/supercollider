@@ -242,4 +242,9 @@ Symbol {
 		_Symbol_matchOSCPattern
 		^this.primitiveFailed
 	}
+
+	help {
+		this.asString.help
+	}
+
 }
