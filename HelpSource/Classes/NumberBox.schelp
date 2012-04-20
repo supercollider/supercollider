@@ -203,3 +203,64 @@ METHOD:: defaultCanReceiveDrag
 
 METHOD:: defaultReceiveDrag
 	Sets link::#-valueAction:: to the current drag data.
+
+
+
+EXAMPLES::
+
+subsection:: Basic Example
+
+code::
+(
+    w = Window("NumberBox Example", Rect(100, 500, 400, 120));
+    b =     NumberBox(w, Rect(150, 10, 100, 20));
+    b.value = rrand(1,15);
+    b.action = {arg numb; numb.value.postln; };
+    w.front
+)
+// try these one at time
+b.value = rrand(1,15) ;     // sets the value but does not perform the action
+b.valueAction_(5);      // sets the value and performs the action
+b.step_(0.1);           // change the increment/decrement size for the arrow keys
+b.scroll_step=10;    // change the increment/decrement size for the mosueScrolling
+
+b.background_(Color.grey);          // change the background color of the box
+b.typingColor_(Color(0.3,1,0.3));   // change the typing color for the box
+b.normalColor_(Color.white);        // change the normal color for the box. won't change until next value change
+
+b.stringColor = Color.red;
+b.align = \center;
+
+b.increment; // increment or decrement by step
+b.decrement;
+::
+
+
+subsection:: Sound Example
+
+Change freqency of a playing synth by step using arrow keys:
+
+code::
+(
+s.waitForBoot({
+
+    n={arg freq=220;
+        var out;
+        out=SinOsc.ar(freq,0,0.2);
+        8.do{out = AllpassN.ar(out, 0.2,0.02+0.20.rand,8)};
+        out;
+    }.play;
+
+    w = Window("Use arrow keys to change the frequency by steps", Rect(100, 500, 500, 120));
+    b =     NumberBox(w, Rect(200, 10, 100, 20));
+    b.value = 220;
+    b.action = {arg numb; n.set(\freq,numb.value); };
+    b.step=55; //make the step a fraction of the freq
+    b.focus;
+    w.front;
+
+    CmdPeriod.doOnce({w.close});
+
+});
+)
+::

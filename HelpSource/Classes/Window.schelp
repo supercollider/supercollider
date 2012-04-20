@@ -260,3 +260,136 @@ METHOD:: addToOnClose
 METHOD:: removeFromOnClose
 
 	Removes an object from link::#-onClose::, if the latter is an Array.
+
+
+
+EXAMPLES::
+
+subsection:: Adding Views
+
+code::
+(
+var w;
+w = Window("my name is... panel", Rect(128, 64, 340, 360));
+
+32.do({ arg i;
+    b = Button(w, Rect(rrand(20,300),rrand(20,300), 75, 24));
+    b.states = [["Start "++i, Color.black, Color.rand],
+        ["Stop "++i, Color.white, Color.red]];
+});
+w.front;
+)
+::
+
+
+subsection:: Using Decorator
+
+code::
+(
+var w;
+w = Window("my name is... panel", Rect(128, 64, 340, 360));
+
+w.view.decorator = FlowLayout(w.view.bounds);
+// w.addFlowLayout; // you can als write this instead of the line above
+
+w.view.background = Color(0.6,0.8,0.8);
+32.do({ arg i;
+    b = Button(w, Rect(rrand(20,300),rrand(20,300), 75, 24));
+    b.states = [["Start "++i, Color.black, Color.rand],
+        ["Stop "++i, Color.white, Color.red]];
+});
+
+w.front;
+)
+::
+
+
+subsection:: Setting Bounds
+
+code::
+// use screenbounds for precise placement from the top
+(
+x = Window.new("test", Rect(100,Window.screenBounds.height-180,300,100));x.front;
+)
+
+// bounds.top refers to the bottom edge of the window,
+// measured from the bottom of the screen. Different than in View.
+x.bounds_(Rect(100,400,300,300));
+::
+
+
+subsection:: Borderless Window
+
+code::
+w = Window.new(border:false).front; // can't be manually closed
+w.close; // so close it in code
+::
+
+
+subsection:: Window with Scrollers
+
+code::
+(
+w = Window(scroll: true); // you must set this when the window is created
+c = Slider2D(w, Rect(0, 0, 1500, 300));
+d = Slider(w, Rect(0, 310, 20, 300));
+c.background = Color.grey.alpha = 0.6;
+d.background = Color.grey.alpha = 0.6;
+w.front;
+)
+::
+
+
+subsection::onClose
+
+code::
+(
+x = Window.new.front;
+x.alpha = 0.8;
+x.onClose_({ y = Synth.new(\default) }); //close the window and the synth plays
+)
+x.close;
+y.free;
+::
+
+
+subsection:: Drawing on Window with Pen
+
+code::
+(
+var w, much = 0.02, string, synth;
+
+w = Window.new("gui", Rect(100, 100, 300, 500)).front;
+w.view.background_(Color.new255(153, 255, 102).vary);
+
+string = "gui ".dup(24).join;
+
+w.drawFunc = Routine {
+    var i = 0;
+    var size = 40;
+    var func = { |i, j| sin(i * 0.07 + (j * 0.0023) + 1.5pi) * much + 1 };
+    var scale;
+    var font = Font("Helvetica", 40).boldVariant;
+    loop {
+        i = i + 1;
+        Pen.font = font;
+        string.do { |char, j|
+
+            scale = func.value(i, j).dup(6);
+
+            Pen.fillColor = Color.new255(0, 120, 120).vary;
+            Pen.matrix = scale * #[1, 0, 0, 1, 1, 0];
+            Pen.stringAtPoint(char.asString,
+                ((size * (j % 9)) - 10) @ (size * (j div: 9))
+            );
+        };
+        0.yield // stop here, return something unimportant
+    }
+};
+
+{ while { w.isClosed.not } { w.refresh; 0.04.wait; } }.fork(AppClock);
+
+w.front;
+
+)
+::
