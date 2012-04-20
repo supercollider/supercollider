@@ -23,10 +23,6 @@ PsycolliderDocument : Document {
 		id = path.openWinTextFile;
 	}
 
-	*findHelpFile { |str|
-		^Help.findHelpFile(str)
-	}
-
 	*postColor_ {
 	}
 }

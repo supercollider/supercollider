@@ -104,13 +104,9 @@ SCTextView : SCView{
 	}
 
 	open {|path|
-		if ( path.contains( "SC://"), {
-	        	path = Help.findHelpFile( path.asRelativePath( "SC:/") );
-		});
-
 		if ( path.contains( "://" ).not, {
-	        if ( path.first.asString != "/" ) { path = String.scDir +/+ path; };
-	        path = "file://"++path;
+	        	if ( path.first.asString != "/" ) { path = String.scDir +/+ path; };
+	        	path = "file://"++path;
 		});
 		path = path.replace(" ", "%20");
 		this.setProperty(\open, path);
@@ -224,10 +220,6 @@ SCWebView : SCView{
 	var <>onLoadFinished, <>onLoadFailed, <onLinkActivated, <enterInterpretsSelection=true;
 
 	url_ {|path|
-		if ( path.contains( "SC://"), {
-	        	path = Help.findHelpFile( path.asRelativePath( "SC:/") );
-		});
-
 		if ( path.contains( "://" ).not, {
 	        if ( path.first.asString != "/" ) { path = String.scDir +/+ path; };
 	        path = "file://"++path;
