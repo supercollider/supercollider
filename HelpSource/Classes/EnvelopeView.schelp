@@ -20,17 +20,15 @@ A strong::label:: for each of the nodes can be set using link::#-strings:: and l
 
 SUBSECTION:: Interaction
 
-Multiple nodes can be selected and moved using mouse or keyboard. See link::#-defaultKeyDownAction:: for details.
+Nodes can be selected and moved using mouse. Shift-clicking a node will add it to the selection.
 
-The last selected node is considered to be the current, and can be moved programmatically using link::#-x:: and link::#-y::. It is also possible to change the selection and switch the current node programmatically using link::#-selectIndex::, link::#-deselectIndex:: and link::#-index::, as well as move the current node .
+You can also move selected nodes and change selection using keyboard. In strong::Qt::, pressing the arrow keys will move selected nodes (as long as link::#-step:: is larger than 0). Pressing the left or right arrow keys while holding down Alt will select previous or next node, and holding down Shift will extend selection to the left or to the right. Other GUI kits may differ.
 
-In strong::Qt GUI::, link::#-keepHorizontalOrder:: allows you to enforce the order of nodes in horizontal direction to match their index order. In that case, node movement to the left and to the right will be restricted by the positions of their immediate neighbours. This is especially useful when EnvelopeView is used to display an link::Classes/Env::.
+In strong::Qt::, link::#-keepHorizontalOrder:: allows you to enforce the order of nodes in horizontal direction to match their index order. In that case, node movement to the left and to the right will be restricted by the positions of their immediate neighbours. This is especially useful when EnvelopeView is used to display an link::Classes/Env::.
 
-In strong::Qt GUI::, link::#-elasticSelection:: determines whether moving multiple nodes will be blocked altogether if any of the nodes meet an obstacle (the view bounds or a neighbour node), or only those individual nodes will be blocked.
+In strong::Qt::, link::#-elasticSelection:: determines whether moving multiple nodes will be blocked altogether if any of the nodes meet an obstacle (the view bounds or a neighbour node), or only those individual nodes will be blocked.
 
-note:: The variable link::#-step:: must be explicitly set to allow moving nodes using keyboard. ::
-
-
+Node selection can also be changed programmatically using link::#-index::, link::#-selectIndex::, and link::#-deselectIndex::. The link::#-index#current:: node can be moved programmatically using link::#-x:: and link::#-y::.
 
 INSTANCEMETHODS::
 
@@ -244,13 +242,19 @@ METHOD:: colors
 SUBSECTION:: Interaction
 
 METHOD:: index
-	The index of the emphasis::current:: node.
+	The index of the emphasis::current:: node, i.e. the node affected by link::#-x:: and link::#-y:: methods.
+
+    In strong::Qt::, this is the selected node with lowest index, or -1 if no selection.
+
+    In strong::Cocoa::, this is the last node selected, or -1 if no selection.
+
+    In strong::SwingOSC::, this is the last node clicked, regardless of selection.
 
 	argument::
 		An Integer.
 
 METHOD:: lastIndex
-	Synonym for link::#-index::.
+    The last node selected, regardless of the current state of selection.
 
 
 METHOD:: selectIndex
