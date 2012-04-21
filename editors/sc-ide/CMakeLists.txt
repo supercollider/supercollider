@@ -51,6 +51,21 @@ set( ide_forms
     forms/settings_editor.ui
 )
 
+# Translation files
+SET( translations
+    translations/scide_de.ts
+    translations/scide_es.ts
+    translations/scide_fr.ts
+    translations/scide_ja.ts
+    translations/scide_pt.ts
+    translations/scide_ru.ts
+    translations/scide_sl.ts
+    translations/scide_sv.ts
+    translations/scide_zh.ts
+)
+
+QT4_ADD_TRANSLATION( translations_src ${translations} )
+
 list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp)
 
 if(APPLE)
@@ -72,7 +87,7 @@ qt4_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
 qt4_wrap_ui( ide_forms_src ${ide_forms} )
 qt4_add_resources( ide_rcc resources.qrc )
 
-add_executable( scide ${ide_src} ${ide_moc_src} ${ide_forms_src} ${ide_rcc} )
+add_executable( scide ${ide_src} ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations_src} )
 target_link_libraries( scide ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} yaml)
 
 if(APPLE)
