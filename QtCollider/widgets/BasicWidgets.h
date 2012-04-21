@@ -108,9 +108,9 @@ class QcTextField : public QLineEdit
   Q_OBJECT
 
   public:
-    QcTextField() {
-      connect( this, SIGNAL(returnPressed()), this, SIGNAL(action()) );
-    };
+    QcTextField() {}
+  protected:
+    virtual void keyPressEvent( QKeyEvent * );
   Q_SIGNALS:
     void action();
 };
