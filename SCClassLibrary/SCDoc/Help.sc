@@ -1,4 +1,17 @@
-+ Help {
+Help {
+	// These classvars and vars are part of the deprecated Help.tree stuff. When that stuff is removed from the classlib, this can be removed too.
+	classvar <global, categoriesSkipThese;
+	classvar <filterUserDirEntries, <>cachePath;
+	var	tree, fileslist, <root;
+
+
+
+	*gui {
+		HelpBrowser.instance.goHome;
+	}
+	*dir {
+		^SCDoc.helpTargetDir
+	}
     *methodArgs {|string|
         var class, meth, f, m;
         f = string.findRegexp("(\\w*)\\.(\\w+)").flop[1];
@@ -29,5 +42,6 @@
             }.join($\n);
         }
     }
+
 }
 

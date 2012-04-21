@@ -1,7 +1,0 @@
-
-+ Help {
-	*dir {
-		^SCDoc.helpTargetDir
-	}
-}
-
