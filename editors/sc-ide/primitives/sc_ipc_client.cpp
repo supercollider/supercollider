@@ -170,7 +170,7 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
         QDataStream stream(gIpcClient->mSocket);
         stream.setVersion(QDataStream::Qt_4_6);
         stream << QString(selector);
-        stream << QString(serializer.data());
+        stream << QString::fromUtf8(serializer.data());
     } catch (std::exception const & e) {
         postfl("Exception during ScIDE_Send: %s\n", e.what());
         return errFailed;

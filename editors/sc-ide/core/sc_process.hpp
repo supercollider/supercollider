@@ -83,7 +83,7 @@ public slots:
     void onReadyRead(void)
     {
         QByteArray out = QProcess::readAll();
-        QString postString(out);
+        QString postString = QString::fromUtf8(out);
         if (postString.endsWith( '\n' ))
             postString.chop(1);
         emit scPost(postString);
@@ -91,9 +91,9 @@ public slots:
 
     void evaluateCode(QString const & commandString, bool silent = false)
     {
-        QByteArray asciiCommandString = commandString.toAscii();
-        size_t writtenBytes = write(asciiCommandString);
-        if (writtenBytes != asciiCommandString.size()) {
+        QByteArray bytesToWrite = commandString.toUtf8();
+        size_t writtenBytes = write(bytesToWrite);
+        if (writtenBytes != bytesToWrite.size()) {
             QString errorMessage ("error when passing data to sclang");
             emit scPost(errorMessage);
             return;
