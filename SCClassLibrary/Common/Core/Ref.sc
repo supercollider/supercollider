@@ -48,8 +48,10 @@ Ref : AbstractFunction
 	// Allow to multichannel expand ugen specs, like those of Klank,
 	// in the case of which two is the rank, but could be otherwise.
 	multichannelExpandRef { |rank|
-		var array = this.value.asArray.flopDeep(rank);
-		var refarray = array.collect { |item| this.class.new(item) };
+		var array, refarray;
+		array = this.value.asArray;
+		if(array.maxSizeAtDepth(rank) <= 1) { ^this }; // no need to expand
+		refarray = array.flopDeep(rank).collect { |item| this.class.new(item) };
 		^refarray.unbubble
 	}
 }

@@ -493,10 +493,9 @@ SequenceableCollection : Collection {
 		}
 	}
 
-	// UGens require Refs, but given this method, one can do without
+	// For UGen inputs that require Refs. Assume this is already an array of Refs.
 	multichannelExpandRef { arg rank;
-		if(this.first.isKindOf(Ref)) { ^this };
-		^this.flopDeep(rank).collect { |item| Ref(item) }
+		^this
 	}
 
 	unlace { arg numlists, clumpSize=1, clip=false;
