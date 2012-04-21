@@ -64,12 +64,12 @@ QcGraph::QcGraph() :
   _drawLines( true ),
   _drawRects( true ),
   _editable( true ),
-  _step( 0.f ),
+  _step( 0.01 ),
   _selectionForm( ElasticSelection ),
   _xOrder( NoOrder ),
   _gridOn( false ),
-  _curIndex( -1 ),
-  _geometryDirty( false )
+  _geometryDirty( false ),
+  _lastIndex(-1)
 {
   QPalette plt( palette() );
 
@@ -97,18 +97,27 @@ VariantList QcGraph::value() const
   return values;
 }
 
+QcGraphElement *QcGraph::currentElement() const
+{
+  return _selection.count() ? _selection.elems.first().elem : 0;
+}
+
+int QcGraph::index() const
+{
+  QcGraphElement *e = currentElement();
+  return e ? _model.elements().indexOf(e) : -1;
+}
+
 float QcGraph::currentX() const
 {
-  if( _curIndex < 0 ) return 0.f;
-  QcGraphElement *e = _model.elementAt(_curIndex);
-  return e->value.x();
+  QcGraphElement *e = currentElement();
+  return e ? e->value.x() : 0.f;
 }
 
 float QcGraph::currentY() const
 {
-  if( _curIndex < 0 ) return 0.f;
-  QcGraphElement *e = _model.elementAt(_curIndex);
-  return e->value.y();
+  QcGraphElement *e = currentElement();
+  return e ? e->value.y() : 0.f;
 }
 
 void QcGraph::setValue( const VariantList &list )
@@ -144,8 +153,6 @@ void QcGraph::setValue( const VariantList &list )
   }
 
   if( newc ) ensureOrder();
-
-  _curIndex = -1;
 
   _geometryDirty = true;
 
@@ -223,10 +230,7 @@ void QcGraph::connectElements( int src, VariantList targets )
 }
 
 void QcGraph::setIndex( int i ) {
-  if( i >= -1 && i < _model.elementCount() ) {
-    _curIndex = i;
-    update();
-  }
+  select(i);
 }
 
 void QcGraph::select( int i, bool exclusive ) {
@@ -250,25 +254,29 @@ void QcGraph::deselectAll() {
 
 void QcGraph::setCurrentX( float f )
 {
-  if( _curIndex < 0 ) return;
-  QcGraphElement *e = _model.elementAt(_curIndex);
+  QcGraphElement *e = currentElement();
+  if(!e) return;
+
   QPointF val = e->value;
   val.setX( f );
   if( _xOrder != NoOrder ) orderRestrictValue(e,val,true);
   else restrictValue(val);
   e->value = val;
+
   update();
 }
 
 void QcGraph::setCurrentY( float f )
 {
-  if( _curIndex < 0 ) return;
-  QcGraphElement *e = _model.elementAt(_curIndex);
+  QcGraphElement *e = currentElement();
+  if(!e) return;
+
   QPointF val = e->value;
   val.setY( f );
   if( _xOrder != NoOrder ) orderRestrictValue(e,val,true);
   else restrictValue(val);
   e->value = val;
+
   update();
 }
 
@@ -435,6 +443,7 @@ void QcGraph::setIndexSelected( int index, bool select )
       ++i;
     }
     _selection.elems.insert( si, SelectedElement(e) );
+    _lastIndex = index;
   }
   else {
     e->selected = false;
@@ -987,7 +996,6 @@ void QcGraph::mousePressEvent( QMouseEvent *ev )
     QPointF pt( Style::pos( e->value, valueRect ) );
     r.moveCenter( pt );
     if( r.contains( mpos ) ) {
-      _curIndex = i;
 
       if( ev->modifiers() & Qt::ShiftModifier ) {
         setIndexSelected( i, !e->selected );
@@ -1018,7 +1026,6 @@ void QcGraph::mousePressEvent( QMouseEvent *ev )
   _selection.shallMove = false;
 
   if( !(ev->modifiers() & Qt::ShiftModifier) ) {
-    _curIndex = 0;
     setAllDeselected();
   }
 
@@ -1054,14 +1061,76 @@ void QcGraph::mouseMoveEvent( QMouseEvent *ev )
 
 void QcGraph::keyPressEvent( QKeyEvent *event )
 {
-  if( _curIndex < 0 ) return;
+  int mods = event->modifiers();
+  if( mods & Qt::AltModifier || mods & Qt::ShiftModifier )
+  {
+    // selection mode
 
-  if( event->modifiers() & Qt::AltModifier ) {
+    int c = _model.elementCount();
+    if(!c) return;
+
+    switch( event->key() ) {
+      case Qt::Key_Right:
+      {
+          // select the index after the last selected one (wrapping)
+          // or extend selection to the right
+
+          int i = -1;
+          if(_selection.count()) {
+              for (i = c - 1; i >= 0; --i) {
+                  if(_model.elementAt(i)->selected)
+                      break;
+              }
+          }
+
+          if( event->modifiers() & Qt::ShiftModifier ) {
+              i = qMin(i + 1, c - 1);
+              setIndexSelected( i, true );
+          }
+          else {
+              ++i;
+              if (i >= c) i = 0;
+              setAllDeselected();
+              setIndexSelected( i, true );
+          }
+
+          break;
+      }
+      case Qt::Key_Left:
+      {
+          // select the index before the first selected one (wrapping)
+          // or extend selection to the left
+          int i = c;
+          if(_selection.count()) {
+              for(i = 0; i < c; ++i) {
+                  if(_model.elementAt(i)->selected)
+                      break;
+              }
+          }
+
+          if( event->modifiers() & Qt::ShiftModifier ) {
+              i = qMax(i - 1, 0);
+              setIndexSelected( i, true );
+          }
+          else {
+              --i;
+              if (i < 0) i = c - 1;
+              setAllDeselected();
+              setIndexSelected( i, true );
+          }
+
+          break;
+      }
+      default: break;
+    }
+  }
+  else
+  {
     // editing mode
 
     if( !_editable || !_selection.size() ) return;
 
-    QPointF dValue;;
+    QPointF dValue;
 
     switch( event->key() ) {
       case Qt::Key_Up:
@@ -1084,26 +1153,6 @@ void QcGraph::keyPressEvent( QKeyEvent *event )
 
     update();
     doAction( event->modifiers() );
-
-  }
-  else {
-    // selection mode
-
-    switch( event->key() ) {
-      case Qt::Key_Right:
-        setIndex( _curIndex+1 );
-        if( !(event->modifiers() & Qt::ShiftModifier) ) setAllDeselected();
-        setIndexSelected( _curIndex, true );
-        break;
-      case Qt::Key_Left:
-        // always keep an index current:
-        if( _curIndex > 0 ) setIndex( _curIndex-1 );
-        if( !(event->modifiers() & Qt::ShiftModifier) ) setAllDeselected();
-        setIndexSelected( _curIndex, true );
-        break;
-      default: break;
-    }
-
   }
 }
 

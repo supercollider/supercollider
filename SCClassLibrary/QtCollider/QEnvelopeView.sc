@@ -58,9 +58,7 @@ QEnvelopeView : QView
     ^this.setProperty( \index, index );
   }
 
-  lastIndex {
-    ^this.index;
-  }
+  lastIndex { ^this.getProperty( \lastIndex ); }
 
   selectIndex { arg index;
     if( index < 0 ){
