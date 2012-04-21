@@ -476,6 +476,9 @@ MultiOutUGen : UGen {
 	}
 
 	initOutputs { arg numChannels, rate;
+		if(numChannels < 1) { 
+			Error("Number of channels in % must be larder than 0".format(this)).throw
+		};
 		channels = Array.fill(numChannels, { arg i;
 			OutputProxy(rate, this, i);
 		});
