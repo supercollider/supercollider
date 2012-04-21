@@ -124,6 +124,18 @@ void QcPopUpMenu::doAction( int choice )
     Q_EMIT( action() );
 }
 
+/////////////////////////////// QcTextField ////////////////////////////////////
+
+void QcTextField::keyPressEvent( QKeyEvent *e )
+{
+  // NOTE: We could use the returnPressed() signal, but that would still
+  // propagate the event to parent, which we want to avoid.
+  if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return)
+    Q_EMIT(action());
+  else
+    QLineEdit::keyPressEvent(e);
+}
+
 /////////////////////////////// QcButton ///////////////////////////////////////
 
 QC_DECLARE_QWIDGET_FACTORY(QcButton);
