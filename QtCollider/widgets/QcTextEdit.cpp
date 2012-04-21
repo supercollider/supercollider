@@ -84,9 +84,8 @@ void QcTextEdit::select( int start, int size )
 
 QString QcTextEdit::selectedString() const
 {
-  // NOTE QTextCuror.selectedText() contains unicode paragraph separators U+2029
-  // instead of newline \n characters
-  return textCursor().selectedText().replace( QChar( 0x2029 ), QChar( '\n' ) );
+  QString selection( textCursor().selectedText() );
+  return prepareText(selection);
 }
 
 void QcTextEdit::replaceSelectedText( const QString &string )
@@ -170,12 +169,27 @@ void QcTextEdit::keyPressEvent( QKeyEvent *e )
   if( _interpretSelection && e->modifiers() & (Qt::ControlModifier|Qt::ShiftModifier)
       && ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter ) )
   {
-    QString selection = selectedString();
-    if( !selection.isEmpty() ) {
-      Q_EMIT( interpret( selection ) );
-      return;
+    QTextCursor c(textCursor());
+
+    if ( !c.hasSelection() ) {
+      c.movePosition( QTextCursor::StartOfLine );
+      c.movePosition( QTextCursor::EndOfLine, QTextCursor::KeepAnchor );
     }
+
+    if ( c.hasSelection() ) {
+      QString selection( c.selectedText() );
+      Q_EMIT( interpret( prepareText(selection) ) );
+    }
+
+    return;
   }
 
   QTextEdit::keyPressEvent( e );
+}
+
+QString & QcTextEdit::prepareText( QString & text ) const
+{
+  // NOTE: QTextDocument contains unicode paragraph separators U+2029
+  // instead of newline \n characters
+  return text.replace( QChar( 0x2029 ), QChar( '\n' ) );
 }
