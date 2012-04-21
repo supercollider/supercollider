@@ -83,7 +83,7 @@ void Slot::setSize( PyrSlot *slot, const QSizeF &sz )
 void Slot::setString( PyrSlot *slot, const QString& arg )
 {
   PyrString *str = newPyrString( gMainVMGlobals->gc,
-                                 arg.toStdString().c_str(), 0, true );
+                                 arg.toUtf8().constData(), 0, true );
   SetObject( slot, str );
 }
 
@@ -301,11 +301,11 @@ double Slot::toDouble( PyrSlot *slot )
 QString Slot::toString( PyrSlot *slot )
 {
   if( IsSym(slot) ) {
-    return QString( slotRawSymbol(slot)->name );
+    return QString::fromUtf8( slotRawSymbol(slot)->name );
   }
   else if( isKindOfSlot( slot, class_String ) ) {
     int len = slotRawObject( slot )->size;
-    return QString::fromAscii( slotRawString(slot)->s, len );
+    return QString::fromUtf8( slotRawString(slot)->s, len );
   }
   return QString();
 }
