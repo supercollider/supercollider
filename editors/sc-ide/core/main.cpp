@@ -26,12 +26,22 @@
 
 #include <QApplication>
 #include <QAction>
+#include <QLibraryInfo>
+#include <QTranslator>
 
 using namespace ScIDE;
 
 int main( int argc, char *argv[] )
 {
     QApplication app(argc, argv);
+
+    QTranslator qtTranslator;
+    qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    app.installTranslator(&qtTranslator);
+
+    QTranslator scideTranslator;
+    scideTranslator.load("scide_" + QLocale::system().name());
+    app.installTranslator(&scideTranslator);
 
     Main * main = Main::instance();
 
