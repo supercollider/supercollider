@@ -68,6 +68,7 @@ class QcTextEdit : public QTextEdit, QcHelper
     virtual void keyPressEvent( QKeyEvent * );
 
   private:
+    QString & prepareText( QString & str ) const;
 
     QString _document;
     bool _interpretSelection;
