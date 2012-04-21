@@ -129,6 +129,7 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
   Q_PROPERTY( VariantList value READ value WRITE setValue )
   Q_PROPERTY( VariantList strings READ dummyVariantList WRITE setStrings );
   Q_PROPERTY( int index READ index WRITE setIndex );
+  Q_PROPERTY( int lastIndex READ lastIndex );
   Q_PROPERTY( int thumbSize READ dummyInt WRITE setThumbSize );
   Q_PROPERTY( int thumbWidth READ dummyInt WRITE setThumbWidth );
   Q_PROPERTY( int thumbHeight READ dummyInt WRITE setThumbHeight );
@@ -189,7 +190,9 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
     QcGraph();
 
     VariantList value() const;
-    int index() const { return _curIndex; }
+    QcGraphElement *currentElement() const;
+    int index() const;
+    int lastIndex() const { return _lastIndex; }
     float currentX() const;
     float currentY() const;
     QPointF grid() const { return _gridMetrics; }
@@ -284,21 +287,21 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
     SelectionForm _selectionForm;
     Order _xOrder;
 
-    int _curIndex;
-
     bool _geometryDirty;
     QSize _largestThumbSize;
 
     struct Selection {
       Selection () : cached(false), shallMove(false) {}
-      int size() { return elems.size(); }
-      int count() { return elems.count(); }
+      int size() const { return elems.size(); }
+      int count() const { return elems.count(); }
 
       QList<SelectedElement> elems;
       bool cached;
       bool shallMove;
       QPointF moveOrigin; // in data domain
     } _selection;
+
+    int _lastIndex;
 };
 
 #endif
