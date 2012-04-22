@@ -180,6 +180,14 @@ is equivalent to:
 code::
 [ Klank.ar(`[[400,500,600],[1,2,1]], z),  Klank.ar(`[[700,800,900],[1,2,1]], z)]
 ::
+Also the Refs multichannelExpand when passed to a Klank:
+code::
+Klank.ar(`[[[400,500,600], [700,800,900]],[1,2,1]], z)
+::
+, which is is equivalent to:
+code::
+[ Klank.ar(`[[400,500,600],[1,2,1]], z),  Klank.ar(`[[700,800,900],[1,2,1]], z)]
+::
 
 section:: Reducing channel expansion with Mix
 The link::Classes/Mix:: object provides the means for reducing multichannel arrays to a single channel.

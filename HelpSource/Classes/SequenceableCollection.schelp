@@ -218,6 +218,14 @@ code::
 [[1, 2, 3], [4, 5, 6], [7, 8]].flop; // shorter array wraps
 [].flop; // result is always 2-d.
 ::
+Note that the innermost arrays are not copied:
+code::
+a = [1, 2];
+x = [[[a, 5], [a, 10]], [[a, 50, 60]]].flop;
+a[0] = pi;
+x // pi is everywhere
+::
+
 
 method::flopWith
 Flop with a user defined function. Can be used to collect over several collections in parallel.
@@ -259,6 +267,13 @@ code::
 [[[10, 100, 1000], 2, 3], [[41, 52], 5, 6]].flopDeep(2); // shorter array wraps
 [].flopDeep(1); // result is always one dimension higher.
 [[]].flopDeep(4);
+::
+Note that, just like in flop, the innermost arrays (deeper than rank) are not copied.
+code::
+a = [1, 2];
+x = [[[a, 5], [a, 10]], [[a, 50, 60]]].flopDeep(1);
+a[0] = pi;
+x // pi is everywhere
 ::
 
 method::maxSizeAtDepth
@@ -445,6 +460,14 @@ See also link::Guides/Multichannel-Expansion::
 method::clip, wrap, fold, prune, linlin, linexp, explin, expexp, lincurve, curvelin, range, exprange, unipolar, bipolar, lag, lag2, lag3, lagud, lag2ud, lag3ud, varlag, slew, blend, checkBadValues
 Calls code:: this.multiChannelPerform(selector, *args) :: where selector is the name of the message.
 
+method::multichannelExpandRef
+This method is called internally on inputs to UGens that take multidimensional arrays, like link::Classes/Klank:: and it allows proper multichannel expansion even in those cases. For SequenceableCollection, this returns the collection itself, assuming that it contains already a number of Refs. See link::Classes/Ref:: for the corresponding method implementation.
+argument::rank
+The depth at which the list is expanded. For instance the Klank spec has a rank of 2. For more examples, see link::Classes/SequenceableCollection#-flopDeep::
+code::
+`([[[100, 200], 500], nil, [[[0.01, 0.3], 0.8]]]).multichannelExpandRef(2);
+[`[[100, 200], nil, [0.2, 0.8]], `[[130, 202], nil, [0.2, 0.5]]].multichannelExpandRef(2);
+::
 
 subsection:: Rhythm-lists
 method:: convertRhythm

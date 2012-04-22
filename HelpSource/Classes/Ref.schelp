@@ -122,3 +122,14 @@ code::
 	]).play;
 )
 ::
+
+
+method::multichannelExpandRef
+This method is called internally on inputs to UGens that take multidimensional arrays, like link::Classes/Klank:: and it allows proper multichannel expansion even in those cases. For SequenceableCollection, this returns the collection itself, assuming that it contains already a number of Refs.
+
+argument::rank
+The depth at which the list is expanded. For instance the Klank spec has a rank of 2.
+code::
+`([[[100, 200], 500], nil, [[[0.01, 0.3], 0.8]]]).multichannelExpandRef(2);
+[`[[100, 200], nil, [0.2, 0.8]], `[[130, 202], nil, [0.2, 0.5]]].multichannelExpandRef(2);
+::

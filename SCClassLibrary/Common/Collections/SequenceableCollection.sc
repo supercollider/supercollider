@@ -493,11 +493,6 @@ SequenceableCollection : Collection {
 		}
 	}
 
-	// For UGen inputs that require Refs. Assume this is already an array of Refs.
-	multichannelExpandRef { arg rank;
-		^this
-	}
-
 	unlace { arg numlists, clumpSize=1, clip=false;
 		var size, list, sublist, self;
 
@@ -894,6 +889,12 @@ SequenceableCollection : Collection {
 		} {
 			^this.class.new
 		}
+	}
+
+	// this method is for UGen inputs that require Refs to block direct multichannel expansion.
+	// here, we assume this is already an array of Refs, which we simply return.
+	multichannelExpandRef { arg rank;
+		^this
 	}
 
 	// support some UGen convenience methods.
