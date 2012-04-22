@@ -483,7 +483,7 @@ SequenceableCollection : Collection {
 	}
 
 	wrapCopyAtDepth { arg rank, index;
-		if(rank == 0) { ^this.wrapAt(index).deepCopy }; // debatable whether we want a deepCopy
+		if(rank == 0) { ^this.wrapAt(index) };
 		^this.collect { |item, i|
 			if(item.isSequenceableCollection) {
 				item.wrapCopyAtDepth(rank - 1, index) 
