@@ -323,25 +323,9 @@ METHOD:: metaAction
 
 METHOD:: defaultKeyDownAction
 
-	Implements the default effects of key presses as follows:
+    Implements the default behavior on key presses.
 
-	table::
-	## strong::Key::           || strong::Effect::
-	## Shift/Alt + right arrow || increment x by step
-	## Shift/Alt + left arrow  || decrement x by step
-	## right arrow             || select next node
-	## left arrow              || select previous node
-	## up arrow                || increment y by step
-	## down arrow              || decrement y by step
-	::
-
-	note:: strong:: Differences between GUI kits ::
-
-		strong::Cocoa:: uses the Shift modifier to move nodes horizontally, while strong::SwingOSC:: uses Alt for the same purpose. strong::Qt:: however will only move nodes at all if Alt is pressed, and holding down Shift will select each node at the current index, as it is changed.
-
-		In strong::Qt::, the default effects of key presses are defined in the view implementation instead of in this method. If you want to override them, you need to return code::true:: from this method, or from link::Classes/View#-keyDownAction::. See link::Classes/View#key_actions#Key actions:: for explanation.
-
-	::
+    In Qt, the default behavior is defined in the C++ implementation of the view instead of this method. See link::Classes/View#Key and mouse event propagation:: for explanation of how to override the behavior.
 
 
 
