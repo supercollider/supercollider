@@ -217,7 +217,7 @@ QView : QObject {
   }
 
   focusColor {
-    ^try { this.getProperty(\focusColor) } { Color() };
+    ^this.getProperty(\focusColor) ? Color();
   }
 
   // ------------------ container stuff ----------------------------
