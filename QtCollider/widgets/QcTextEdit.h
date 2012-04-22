@@ -66,6 +66,7 @@ class QcTextEdit : public QTextEdit, QcHelper
 
   protected:
     virtual void keyPressEvent( QKeyEvent * );
+    virtual void insertFromMimeData ( const QMimeData * );
 
   private:
     QString & prepareText( QString & str ) const;
