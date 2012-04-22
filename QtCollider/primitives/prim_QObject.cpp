@@ -317,8 +317,9 @@ QC_LANG_PRIMITIVE( QObject_GetProperty, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
   QVariant val = proxy->property( symProp->name );
   if( !val.isValid() ) {
-    qcErrorMsg(QString("Failed to get the value of property '%1'").arg(symProp->name));
-    return errFailed;
+    qcDebugMsg(1, QString("WARNING: Invalid property '%1'").arg(symProp->name));
+    SetNil(r);
+    return errNone;
   }
 
   if( Slot::setVariant(r, val) )
