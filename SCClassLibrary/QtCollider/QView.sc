@@ -706,7 +706,11 @@ QView : QObject {
     ^this.primitiveFailed;
   }
 
-  dragEnterEvent {
+  dragEnterEvent { arg internal, data;
+    if(internal.not) {
+      // dnd incoming from outside SC
+      QView.prSetCurrentDrag(data);
+    };
     // always accept the event
     ^true;
   }

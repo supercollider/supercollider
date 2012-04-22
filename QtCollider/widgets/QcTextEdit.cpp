@@ -23,6 +23,7 @@
 #include "../QcWidgetFactory.h"
 
 #include <QFile>
+#include <QUrl>
 #include <QKeyEvent>
 #include <QApplication>
 
@@ -185,6 +186,24 @@ void QcTextEdit::keyPressEvent( QKeyEvent *e )
   }
 
   QTextEdit::keyPressEvent( e );
+}
+
+void QcTextEdit::insertFromMimeData ( const QMimeData * data )
+{
+  if(data->hasUrls()) {
+    QTextCursor c( textCursor() );
+    QList<QUrl> urls = data->urls();
+    int n = urls.count();
+    for(int i = 0; i < n; ++i)
+    {
+      QUrl &url = urls[i];
+      QString text = url.scheme() == "file" ? url.toLocalFile() : url.toString();
+      c.insertText(text);
+      if(n > 1) c.insertText("\n");
+    }
+  }
+  else
+    QTextEdit::insertFromMimeData(data);
 }
 
 QString & QcTextEdit::prepareText( QString & text ) const
