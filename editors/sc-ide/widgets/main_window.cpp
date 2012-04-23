@@ -87,6 +87,8 @@ MainWindow::MainWindow(Main * main) :
             mPostDock->mPostWindow, SLOT( append(QString) ) );
     connect(main->scProcess(), SIGNAL( stateChanged(QProcess::ProcessState) ),
             this, SLOT( onInterpreterStateChanged(QProcess::ProcessState) ) );
+    connect(main->scProcess(), SIGNAL(statusMessage(const QString&)),
+            status, SLOT(showMessage(const QString&)));
     connect(mDocListDock->list(), SIGNAL(clicked(Document*)),
             mEditors, SLOT(setCurrent(Document*)));
     connect(mEditors, SIGNAL(currentChanged(Document*)),

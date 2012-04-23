@@ -55,7 +55,7 @@ public:
     }
 
 Q_SIGNALS:
-    void scPost(QString const &);
+    void message(QString const &);
 
 private Q_SLOTS:
     void onNewConnection(void)

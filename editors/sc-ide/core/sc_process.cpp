@@ -31,13 +31,15 @@ SCProcess::SCProcess( QObject *parent ):
 
     connect(this, SIGNAL( readyRead() ),
             this, SLOT( onReadyRead() ));
-    connect(mIPC, SIGNAL(scPost(QString)), this, SIGNAL(scPost(QString)));
+    connect(mIPC, SIGNAL(message(QString)), this, SIGNAL(statusMessage(QString)));
 }
 
 void SCProcess::start (void)
 {
-    if (state() != QProcess::NotRunning)
+    if (state() != QProcess::NotRunning) {
+        statusMessage("Interpreter is already running.");
         return;
+    }
 
     Settings::Manager *settings = Main::instance()->settings();
     settings->beginGroup("IDE/interpreter");
@@ -61,8 +63,7 @@ void SCProcess::start (void)
     QProcess::start(sclangCommand, sclangArguments);
     bool processStarted = QProcess::waitForStarted();
     if (!processStarted) {
-        QString errorMessage ("cannot start sclang process");
-        emit scPost(errorMessage);
+        emit statusMessage("Could not start interpreter!");
     } else
         onSclangStart();
 }
