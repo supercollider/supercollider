@@ -50,12 +50,18 @@ public:
 
 Q_SIGNALS:
     void scPost(QString const &);
+    void statusMessage(const QString &);
 
 public slots:
     void start (void);
 
     void recompileClassLibrary (void)
     {
+        if(state() != QProcess::Running) {
+            emit statusMessage("Interpreter is not running!");
+            return;
+        }
+
         write("\x18");
     }
 
@@ -71,6 +77,11 @@ public slots:
 
     void stopLanguage (void)
     {
+        if(state() != QProcess::Running) {
+            emit statusMessage("Interpreter is not running!");
+            return;
+        }
+
         closeWriteChannel();
     }
 
@@ -91,11 +102,15 @@ public slots:
 
     void evaluateCode(QString const & commandString, bool silent = false)
     {
+        if(state() != QProcess::Running) {
+            emit statusMessage("Interpreter is not running!");
+            return;
+        }
+
         QByteArray bytesToWrite = commandString.toUtf8();
         size_t writtenBytes = write(bytesToWrite);
         if (writtenBytes != bytesToWrite.size()) {
-            QString errorMessage ("error when passing data to sclang");
-            emit scPost(errorMessage);
+            emit statusMessage("Error when passing data to interpreter!");
             return;
         }
 

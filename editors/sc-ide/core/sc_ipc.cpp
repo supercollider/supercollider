@@ -79,8 +79,7 @@ void SCIpcServer::openClassDefinitionHandler ( const QString& YAMLString )
         switch (doc.size()) {
         case 0:
         {
-            QString errorMessage = QString("Class not defined");
-            emit scPost(errorMessage);
+            emit message("Class not defined!");
             return;
         }
 
