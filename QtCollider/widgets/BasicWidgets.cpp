@@ -91,8 +91,26 @@ void QcListWidget::onCurrentItemChanged()
 void QcListWidget::keyPressEvent( QKeyEvent *e )
 {
   QListWidget::keyPressEvent( e );
-  if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
+
+  switch (e->key())
+  {
+  case Qt::Key_Return:
+  case Qt::Key_Enter:
     Q_EMIT( returnPressed() );
+    e->accept();
+    break;
+  case Qt::Key_Up:
+  case Qt::Key_Down:
+  case Qt::Key_Left:
+  case Qt::Key_Right:
+  case Qt::Key_PageUp:
+  case Qt::Key_PageDown:
+  case Qt::Key_Home:
+  case Qt::Key_End:
+    // Prevent propagating to parent when scroller reaches minimum or maximum:
+    e->accept();
+  default: break;
+  }
 }
 
 ////////////////////////// QcPopUpMenu /////////////////////////////////////////
