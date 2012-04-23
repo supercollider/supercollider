@@ -35,6 +35,7 @@
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QMessageBox>
+#include <QStatusBar>
 
 namespace ScIDE {
 
@@ -43,9 +44,27 @@ MainWindow::MainWindow(Main * main) :
 {
     setCorner( Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
 
+    // Construct status bar:
+
+    mLangStatus = new StatusLabel();
+    mLangStatus->setText("Inactive");
+    mSynthStatus = new StatusLabel();
+    mSynthStatus->setText("Inactive");
+
+    QStatusBar *status = statusBar();
+    status->addPermanentWidget( new QLabel("Interpreter:") );
+    status->addPermanentWidget( mLangStatus );
+    status->addPermanentWidget( new QLabel("Synth:") );
+    status->addPermanentWidget( mSynthStatus );
+
+    // Code editor
     mEditors = new MultiEditor(main);
+
+    // Docks
     mDocListDock = new DocumentsDock(main->documentManager(), this);
     mPostDock = new PostDock(this);
+
+    // Layout
 
     // use a layout for tool widgets, to provide for separate margin control
     QVBoxLayout *tool_box = new QVBoxLayout;
@@ -66,6 +85,8 @@ MainWindow::MainWindow(Main * main) :
 
     connect(main->scProcess(), SIGNAL( scPost(QString) ),
             mPostDock->mPostWindow, SLOT( append(QString) ) );
+    connect(main->scProcess(), SIGNAL( stateChanged(QProcess::ProcessState) ),
+            this, SLOT( onInterpreterStateChanged(QProcess::ProcessState) ) );
     connect(mDocListDock->list(), SIGNAL(clicked(Document*)),
             mEditors, SLOT(setCurrent(Document*)));
     connect(mEditors, SIGNAL(currentChanged(Document*)),
@@ -233,6 +254,30 @@ void MainWindow::onQuit()
     quit();
 }
 
+void MainWindow::onInterpreterStateChanged( QProcess::ProcessState state )
+{
+    QString text;
+    QColor color;
+
+    switch(state) {
+    case QProcess::NotRunning:
+        text = "Inactive";
+        color = Qt::white;
+        break;
+    case QProcess::Starting:
+        text = "Booting";
+        color = QColor(255,255,0);
+        break;
+    case QProcess::Running:
+        text = "Active";
+        color = Qt::green;
+        break;
+    }
+
+    mLangStatus->setText(text);
+    mLangStatus->setTextColor(color);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(!quit()) event->ignore();
@@ -306,6 +351,31 @@ void MainWindow::evaluateCurrentFile()
 
     QString documentText = editor->document()->textDocument()->toPlainText();
     Main::instance()->scProcess()->evaluateCode(documentText);
+}
+
+//////////////////////////// StatusLabel /////////////////////////////////
+
+StatusLabel::StatusLabel(QWidget *parent) : QLabel(parent)
+{
+    setAutoFillBackground(true);
+    setMargin(3);
+    setAlignment(Qt::AlignCenter);
+    setBackground(Qt::black);
+    setTextColor(Qt::white);
+}
+
+void StatusLabel::setBackground(const QBrush & brush)
+{
+    QPalette plt(palette());
+    plt.setBrush(QPalette::Window, brush);
+    setPalette(plt);
+}
+
+void StatusLabel::setTextColor(const QColor & color)
+{
+    QPalette plt(palette());
+    plt.setColor(QPalette::WindowText, color);
+    setPalette(plt);
 }
 
 } // namespace ScIDE
