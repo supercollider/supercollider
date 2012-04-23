@@ -22,6 +22,8 @@
 #define SCIDE_WIDGETS_MAIN_WINDOW_HPP_INCLUDED
 
 #include <QMainWindow>
+#include <QLabel>
+#include <QProcess>
 
 namespace ScIDE
 {
@@ -30,6 +32,7 @@ class Main;
 class MultiEditor;
 class PostDock;
 class DocumentsDock;
+class StatusLabel;
 
 class MainWindow : public QMainWindow
 {
@@ -67,6 +70,7 @@ public Q_SLOTS:
 private Q_SLOTS:
     void evaluateCurrentRegion(); // either selection, or current line
     void evaluateCurrentFile();
+    void onInterpreterStateChanged( QProcess::ProcessState );
     void onQuit();
 
 protected:
@@ -82,8 +86,21 @@ private:
 
     MultiEditor *mEditors;
 
+    // Status bar
+    StatusLabel *mLangStatus;
+    StatusLabel *mSynthStatus;
+
+    // Docks
     PostDock * mPostDock;
     DocumentsDock *mDocListDock;
+};
+
+class StatusLabel : public QLabel
+{
+public:
+    StatusLabel(QWidget *parent = 0);
+    void setBackground(const QBrush &);
+    void setTextColor(const QColor &);
 };
 
 } // namespace ScIDE
