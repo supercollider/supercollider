@@ -36,6 +36,9 @@ SCProcess::SCProcess( QObject *parent ):
 
 void SCProcess::start (void)
 {
+    if (state() != QProcess::NotRunning)
+        return;
+
     Settings::Manager *settings = Main::instance()->settings();
     settings->beginGroup("IDE/interpreter");
 
