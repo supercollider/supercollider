@@ -104,6 +104,10 @@ public:
   VariantList columns() const;
   void setColumns( const VariantList & );
 
+protected:
+
+  virtual void keyPressEvent( QKeyEvent * );
+
 private:
 
   QTreeWidgetItem * _itemOnPress;

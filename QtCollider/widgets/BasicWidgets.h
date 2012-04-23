@@ -75,9 +75,9 @@ class QcListWidget : public QListWidget, public QcHelper
     void returnPressed();
   private Q_SLOTS:
     void onCurrentItemChanged();
+  protected:
+    virtual void keyPressEvent( QKeyEvent * );
   private:
-    void keyPressEvent( QKeyEvent * );
-
     bool _emitAction;
 };
 
