@@ -14,9 +14,9 @@ SCDocHTMLRenderer {
         var beg = -1, end = 0;
         str.do {|chr, i|
             switch(chr,
-                $&, { x = x ++ str[beg..i-1] ++ "&amp;"; beg = i+1; },
-                $<, { x = x ++ str[beg..i-1] ++ "&lt;"; beg = i+1; },
-                $>, { x = x ++ str[beg..i-1] ++ "&gt;"; beg = i+1; },
+                $&, { x = x ++ str.copyRange(beg, i-1) ++ "&amp;"; beg = i+1; },
+                $<, { x = x ++ str.copyRange(beg, i-1) ++ "&lt;"; beg = i+1; },
+                $>, { x = x ++ str.copyRange(beg, i-1) ++ "&gt;"; beg = i+1; },
                 { end = i }
             );
         };
