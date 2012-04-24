@@ -84,7 +84,7 @@ MainWindow::MainWindow(Main * main) :
     addDockWidget(Qt::BottomDockWidgetArea, mPostDock);
 
     connect(main->scProcess(), SIGNAL( scPost(QString) ),
-            mPostDock->mPostWindow, SLOT( append(QString) ) );
+            mPostDock->mPostWindow, SLOT( post(QString) ) );
     connect(main->scProcess(), SIGNAL( stateChanged(QProcess::ProcessState) ),
             this, SLOT( onInterpreterStateChanged(QProcess::ProcessState) ) );
     connect(main->scProcess(), SIGNAL(statusMessage(const QString&)),
