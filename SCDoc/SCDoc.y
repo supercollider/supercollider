@@ -368,7 +368,6 @@ words2: words2 anywordurl { $$ = strmerge($1,$2); }
 
 eol: NEWLINE
    | EMPTYLINES
-   | END
 ;
 
 anywordnl: anyword
