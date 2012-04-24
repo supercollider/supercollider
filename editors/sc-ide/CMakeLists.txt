@@ -37,6 +37,7 @@ set ( ide_src
     widgets/main_window.cpp
     widgets/code_edit.cpp
     widgets/multi_editor.cpp
+    widgets/post_window.cpp
     widgets/doc_list.cpp
     widgets/cmd_line.cpp
     widgets/settings/dialog.cpp
