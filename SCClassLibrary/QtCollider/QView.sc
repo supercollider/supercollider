@@ -380,18 +380,18 @@ QView : QObject {
 
   mouseDownAction_ { arg aFunction;
     mouseDownAction = aFunction;
-    this.setEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true );
-    this.setEventHandler( QObject.mouseDblClickEvent, \mouseDownEvent, true );
+    this.setEventHandlerEnabled( QObject.mouseDownEvent, true );
+    this.setEventHandlerEnabled( QObject.mouseDblClickEvent, true );
   }
 
   mouseUpAction_ { arg aFunction;
     mouseUpAction = aFunction;
-    this.setEventHandler( QObject.mouseUpEvent, \mouseUpEvent, true );
+    this.setEventHandlerEnabled( QObject.mouseUpEvent, true );
   }
 
   mouseMoveAction_ { arg aFunction;
     mouseMoveAction = aFunction;
-    this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true );
+    this.setEventHandlerEnabled( QObject.mouseMoveEvent, true );
   }
 
   // mouseOverAction responds to same Qt event as mouseMoveAction,
@@ -399,28 +399,28 @@ QView : QObject {
   // See QView:-mouseMoveEvent method.
   mouseOverAction_ { arg aFunction;
     mouseOverAction = aFunction;
-    this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true );
+    this.setEventHandlerEnabled( QObject.mouseMoveEvent, true );
     this.setProperty(\mouseTracking, true);
   }
 
   mouseEnterAction_ { arg aFunction;
     mouseEnterAction = aFunction;
-    this.setEventHandler( QObject.mouseEnterEvent, \mouseEnterEvent, true );
+    this.setEventHandlerEnabled( QObject.mouseEnterEvent, true );
   }
 
   mouseLeaveAction_ { arg aFunction;
     mouseLeaveAction = aFunction;
-    this.setEventHandler( QObject.mouseLeaveEvent, \mouseLeaveEvent, true );
+    this.setEventHandlerEnabled( QObject.mouseLeaveEvent, true );
   }
 
   mouseWheelAction_ { arg aFunction;
     mouseWheelAction = aFunction;
-    this.setEventHandler( QObject.mouseWheelEvent, \mouseWheelEvent, true );
+    this.setEventHandlerEnabled( QObject.mouseWheelEvent, true );
   }
 
   beginDragAction_ { arg handler;
     beginDragAction = handler;
-    this.setEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true )
+    this.setEventHandlerEnabled( QObject.mouseDownEvent, true )
   }
 
   canReceiveDragHandler_ { arg handler;
@@ -537,47 +537,11 @@ QView : QObject {
   }
 
   initQView { arg parent;
-
-    var handleKeyDown, handleKeyUp, overridesMouseDown, handleDrag;
-
     if (parent.notNil) {
         if( parent.decorator.notNil ) { parent.decorator.place(this) }
     };
 
-    this.setEventHandler( QObject.closeEvent, \onCloseEvent, true );
-
-    // key events
-    handleKeyDown = handleKeyUp = this.overrides( \keyModifiersChanged );
-    if( handleKeyDown.not )
-      { handleKeyDown = this.overrides( \defaultKeyDownAction ) };
-    if( handleKeyUp.not )
-      { handleKeyUp = this.overrides( \defaultKeyUpAction )};
-
-    this.setEventHandler( QObject.keyDownEvent, \keyDownEvent, true, enabled: handleKeyDown );
-    this.setEventHandler( QObject.keyUpEvent, \keyUpEvent, true, enabled: handleKeyUp );
-
-    // mouse events
-    overridesMouseDown = this.overrides( \mouseDown );
-    if( this.respondsTo(\defaultGetDrag) || overridesMouseDown )
-      {this.setEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true )};
-    if( overridesMouseDown )
-      {this.setEventHandler( QObject.mouseDblClickEvent, \mouseDownEvent, true )};
-    if( this.overrides( \mouseUp ) )
-      {this.setEventHandler( QObject.mouseUpEvent, \mouseUpEvent, true )};
-    if( this.overrides( \mouseMove ) || this.overrides( \mouseOver ) )
-      {this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true )};
-    if( this.overrides( \mouseEnter ) )
-      {this.setEventHandler( QObject.mouseEnterEvent, \mouseEnterEvent, true )};
-    if( this.overrides( \mouseLeave ) )
-      {this.setEventHandler( QObject.mouseLeaveEvent, \mouseLeaveEvent, true )};
-    if( this.overrides( \mouseWheel ) )
-      {this.setEventHandler( QObject.wheelEvent, \mouseWheelEvent, true )};
-
-    // DnD events
-    handleDrag = this.respondsTo(\defaultCanReceiveDrag) or: {this.respondsTo(\defaultReceiveDrag)};
-    this.setEventHandler( 60, \dragEnterEvent, true, enabled:handleDrag );
-    this.setEventHandler( 61, \dragMoveEvent, true, enabled:handleDrag );
-    this.setEventHandler( 63, \dropEvent, true, enabled:handleDrag );
+    // NOTE: Most event handlers are set up in the C++ implementation.
   }
 
   onCloseEvent {

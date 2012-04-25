@@ -122,6 +122,9 @@ class QObjectProxy : public QObject
 
     static QObjectProxy *fromObject( QObject * );
 
+    // WARNING: language must be locked, and _scObject must exist
+    bool isOverriding( PyrSymbol *method, PyrClass *superklass );
+
   protected:
 
     void invokeScMethod
