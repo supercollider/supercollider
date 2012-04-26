@@ -44,104 +44,9 @@ using namespace QtCollider;
 
 QAtomicInt QWidgetProxy::_globalEventMask = 0;
 
-#define GET_SYM( NAME ) static PyrSymbol *s_##NAME = getsym(#NAME)
-
 QWidgetProxy::QWidgetProxy( QWidget *w, PyrObject *po )
 : QObjectProxy( w, po ), _keyEventWidget( w ), _mouseEventWidget( w )
-{
-
-  static PyrClass *klass_QView = getsym("QView")->u.classobj;
-
-  // handlers
-  GET_SYM(onCloseEvent);
-  GET_SYM(keyDownEvent);
-  GET_SYM(keyUpEvent);
-  GET_SYM(mouseDownEvent);
-  GET_SYM(mouseUpEvent);
-  GET_SYM(mouseMoveEvent);
-  GET_SYM(mouseEnterEvent);
-  GET_SYM(mouseLeaveEvent);
-  GET_SYM(mouseWheelEvent);
-  GET_SYM(dragEnterEvent);
-  GET_SYM(dragMoveEvent);
-  GET_SYM(dropEvent);
-
-  // addressees
-  GET_SYM(defaultKeyDownAction);
-  GET_SYM(defaultKeyUpAction);
-  GET_SYM(keyModifiersChanged);
-  GET_SYM(mouseDown);
-  GET_SYM(mouseUp);
-  GET_SYM(mouseMove);
-  GET_SYM(mouseOver);
-  GET_SYM(mouseEnter);
-  GET_SYM(mouseLeave);
-  GET_SYM(mouseWheel);
-  GET_SYM(defaultGetDrag);
-  GET_SYM(defaultCanReceiveDrag);
-  GET_SYM(defaultReceiveDrag);
-
-  setEventHandler( QEvent::Close, s_onCloseEvent, QtCollider::Synchronous );
-
-  bool overridesKeyModifiersChanged = isOverriding(s_keyModifiersChanged, klass_QView);
-
-  setEventHandler( QEvent::KeyPress, s_keyDownEvent, QtCollider::Synchronous,
-    isOverriding(s_defaultKeyDownAction, klass_QView)
-    || overridesKeyModifiersChanged
-  );
-
-  setEventHandler( QEvent::KeyRelease, s_keyUpEvent, QtCollider::Synchronous,
-    isOverriding(s_defaultKeyUpAction, klass_QView)
-    || overridesKeyModifiersChanged
-  );
-
-  bool overridesMouseDown = isOverriding(s_mouseDown, klass_QView);
-
-  setEventHandler( QEvent::MouseButtonPress, s_mouseDownEvent, QtCollider::Synchronous,
-    overridesMouseDown || isOverriding(s_defaultGetDrag, klass_QView)
-  );
-
-  setEventHandler( QEvent::MouseButtonDblClick, s_mouseDownEvent, QtCollider::Synchronous,
-    overridesMouseDown
-  );
-
-  setEventHandler( QEvent::MouseButtonRelease, s_mouseUpEvent, QtCollider::Synchronous,
-    isOverriding(s_mouseUp, klass_QView)
-  );
-
-  setEventHandler( QEvent::MouseMove, s_mouseMoveEvent, QtCollider::Synchronous,
-    isOverriding(s_mouseMove, klass_QView)
-    || isOverriding(s_mouseOver, klass_QView)
-  );
-
-  setEventHandler( QEvent::Enter, s_mouseEnterEvent, QtCollider::Synchronous,
-    isOverriding(s_mouseEnter, klass_QView)
-  );
-
-  setEventHandler( QEvent::Leave, s_mouseLeaveEvent, QtCollider::Synchronous,
-    isOverriding(s_mouseLeave, klass_QView)
-  );
-
-  setEventHandler( QEvent::Wheel, s_mouseWheelEvent, QtCollider::Synchronous,
-    isOverriding(s_mouseWheel, klass_QView)
-  );
-
-  bool enableDnd =
-    isOverriding(s_defaultCanReceiveDrag, klass_QView)
-    || isOverriding(s_defaultReceiveDrag, klass_QView);
-
-  setEventHandler( QEvent::DragEnter, s_dragEnterEvent, QtCollider::Synchronous,
-    enableDnd
-  );
-
-  setEventHandler( QEvent::DragMove, s_dragMoveEvent, QtCollider::Synchronous,
-    enableDnd
-  );
-
-  setEventHandler( QEvent::Drop, s_dropEvent, QtCollider::Synchronous,
-    enableDnd
-  );
-}
+{ }
 
 void QWidgetProxy::setKeyEventWidget( QWidget *w )
 {
@@ -352,7 +257,7 @@ bool QWidgetProxy::filterEvent( QObject *o, QEvent *e, EventHandlerData &eh, QLi
       return eh.enabled && interpretMouseEvent( o, e, args );
 
     case QEvent::Wheel:
-      return eh.enabled && interpretMouseWheelEvent( o, e, args );
+      return interpretMouseWheelEvent( o, e, args );
 
     case QEvent::DragEnter:
     case QEvent::DragMove:

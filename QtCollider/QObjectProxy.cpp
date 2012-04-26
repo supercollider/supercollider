@@ -502,25 +502,3 @@ QObjectProxy * QObjectProxy::fromObject( QObject *object )
   }
   return 0;
 }
-
-bool QObjectProxy::isOverriding( PyrSymbol *method, PyrClass *superklass )
-{
-  static const PyrClass *klass_Object = getsym("Object")->u.classobj;
-
-  for(PyrClass *klass = _scObject->classptr;
-      klass != superklass && klass != klass_Object;
-      klass = slotRawSymbol(&klass->superclass)->u.classobj)
-  {
-    PyrSlot *methodSlot = &_scObject->classptr->methods;
-    if(!IsObj(methodSlot)) continue;
-    PyrObject *methodArray = slotRawObject(methodSlot);
-    PyrSlot *methods = methodArray->slots;
-    for(int i = 0; i < methodArray->size; ++i)
-    {
-      PyrMethod *m = slotRawMethod(methods+i);
-      if(slotRawSymbol(&m->name) == method)
-        return true;
-    }
-  }
-  return false;
-}
