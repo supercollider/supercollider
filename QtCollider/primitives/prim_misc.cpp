@@ -179,6 +179,37 @@ QC_LANG_PRIMITIVE( QWebView_ClearMemoryCaches, 0, PyrSlot *r, PyrSlot *a, VMGlob
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( Qt_IsMethodOverridden, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if(NotObj(a) || NotSym(a+1))
+    return errWrongType;
+
+  PyrObject *self = slotRawObject(r);
+  PyrObjectHdr *superclass = slotRawObject(a);
+  PyrSymbol *method = slotRawSymbol(a+1);
+
+  for(PyrClass *klass = self->classptr;
+      klass != superclass && klass != class_object;
+      klass = slotRawSymbol(&klass->superclass)->u.classobj)
+  {
+    PyrSlot *methodSlot = &klass->methods;
+    if(!IsObj(methodSlot)) continue;
+    PyrObject *methodArray = slotRawObject(methodSlot);
+    PyrSlot *methods = methodArray->slots;
+    for(int i = 0; i < methodArray->size; ++i)
+    {
+      PyrMethod *m = slotRawMethod(methods+i);
+      if(slotRawSymbol(&m->name) == method){
+        SetTrue(r);
+        return errNone;
+      }
+    }
+  }
+
+  SetFalse(r);
+  return errNone;
+}
+
 void defineMiscPrimitives()
 {
   LangPrimitiveDefiner definer;
@@ -193,6 +224,7 @@ void defineMiscPrimitives()
   definer.define<Qt_FocusWidget>();
   definer.define<Qt_SetStyle>();
   definer.define<Qt_AvailableStyles>();
+  definer.define<Qt_IsMethodOverridden>();
   definer.define<QWebView_ClearMemoryCaches>();
 }
 
