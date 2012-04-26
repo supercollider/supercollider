@@ -29,7 +29,8 @@
 #include <QVBoxLayout>
 #include <QScrollBar>
 #include <QShortcut>
-
+#include <QMenu>
+#include <QDebug>
 
 namespace ScIDE {
 
@@ -427,7 +428,15 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     mReplaceBtn = new QPushButton(tr("Replace"));
     mReplaceAllBtn = new QPushButton(tr("Replace All"));
 
-    mMatchCaseOpt = new QCheckBox(tr("Match Case"));
+    mOptionsBtn = new QPushButton(tr("Options"));
+    QMenu *optMenu = new QMenu(this);
+    mMatchCaseAction = optMenu->addAction(tr("Match Case"));
+    mMatchCaseAction->setCheckable(true);
+    mRegExpAction = optMenu->addAction(tr("Regular Expression"));
+    mRegExpAction->setCheckable(true);
+    mWholeWordAction = optMenu->addAction(tr("Whole Words"));
+    mWholeWordAction->setCheckable(true);
+    mOptionsBtn->setMenu(optMenu);
 
     mFindLabel = new QLabel(tr("Find:"));
     mFindLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
@@ -442,7 +451,7 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     mGrid->addWidget(mNextBtn, 0, 3);
     mGrid->addWidget(mPrevBtn, 0, 4);
     mGrid->addWidget(mFindAllBtn, 0, 5);
-    mGrid->addWidget(mMatchCaseOpt, 0, 6);
+    mGrid->addWidget(mOptionsBtn, 0, 6);
     mGrid->addWidget(mReplaceLabel, 1, 1);
     mGrid->addWidget(mReplaceField, 1, 2);
     mGrid->addWidget(mReplaceBtn, 1, 3);
@@ -494,6 +503,22 @@ void TextFindReplacePanel::initiate()
     mFindField->selectAll();
 }
 
+QRegExp TextFindReplacePanel::regexp()
+{
+    QRegExp expr(findString());
+    expr.setPatternSyntax(asRegExp() ? QRegExp::RegExp : QRegExp::FixedString);
+    expr.setCaseSensitivity(matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive);
+    return expr;
+}
+
+QTextDocument::FindFlags TextFindReplacePanel::flags()
+{
+    QTextDocument::FindFlags f;
+    if(wholeWords())
+        f |= QTextDocument::FindWholeWords;
+    return f;
+}
+
 void TextFindReplacePanel::findNext()
 {
     find(false);
@@ -513,60 +538,42 @@ void TextFindReplacePanel::find (bool backwards)
 {
     if (!mEditor) return;
 
-    QString str(findString());
-    if (str.isEmpty()) return;
+    QRegExp expr = regexp();
+    if (expr.isEmpty()) return;
 
-    QTextDocument::FindFlags flags;
+    QTextDocument::FindFlags opt = flags();
     if (backwards)
-        flags |= QTextDocument::FindBackward;
-    if (matchCase())
-        flags |= QTextDocument::FindCaseSensitively;
+        opt |= QTextDocument::FindBackward;
 
-    mEditor->find(str, flags);
+    mEditor->find(expr, opt);
 }
 
 void TextFindReplacePanel::findAll()
 {
     if (!mEditor) return;
 
-    QString str(findString());
-    // NOTE: empty string removes any search highlighting
-
-    QTextDocument::FindFlags flags;
-    if (matchCase())
-        flags |= QTextDocument::FindCaseSensitively;
-
-    mEditor->findAll(str, flags);
+    // NOTE: empty expression removes any search highlighting
+    mEditor->findAll(regexp(), flags());
 }
 
 void TextFindReplacePanel::replace()
 {
     if (!mEditor) return;
 
-    QString fstr(findString());
-    if (fstr.isEmpty()) return;
+    QRegExp expr = regexp();
+    if (expr.isEmpty()) return;
 
-    QString rstr(replaceString());
-
-    QTextCursor c( mEditor->textCursor() );
-    if (c.hasSelection() && c.selectedText().compare(
-            fstr, matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive) == 0)
-    {
-        c.insertText(rstr);
-    }
-
-    findNext();
+    mEditor->replace(expr, replaceString(), flags());
 }
 
 void TextFindReplacePanel::replaceAll()
 {
     if (!mEditor) return;
 
-    QTextDocument::FindFlags flags;
-    if (matchCase())
-        flags |= QTextDocument::FindCaseSensitively;
+    QRegExp expr = regexp();
+    if (expr.isEmpty()) return;
 
-    mEditor->replaceAll(findString(), replaceString(), flags);
+    mEditor->replaceAll(expr, replaceString(), flags());
 }
 
 
