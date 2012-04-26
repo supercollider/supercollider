@@ -503,6 +503,21 @@ void CodeEditor::changeEvent( QEvent *e )
 void CodeEditor::keyPressEvent( QKeyEvent *e )
 {
     switch (e->key()) {
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+    {
+        QTextCursor c(textCursor());
+        QTextBlock b(c.block());
+        int indent = indentedStartOfLine(b);
+        c.insertBlock();
+        if(indent > 0) {
+            QString str(b.text());
+            str.truncate(indent);
+            c.insertText(str);
+        }
+
+        return;
+    }
     case Qt::Key_Home:
     {
         Qt::KeyboardModifiers mods(e->modifiers());
