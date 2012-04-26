@@ -253,26 +253,6 @@ bool CodeEditor::find( const QRegExp &expr, QTextDocument::FindFlags options )
         return false;
 }
 
-bool CodeEditor::replace( const QRegExp &expr, const QString &replacement, QTextDocument::FindFlags options )
-{
-    if(expr.isEmpty()) return true;
-
-    QTextCursor cursor = textCursor();
-    if (cursor.hasSelection() && expr.exactMatch(cursor.selectedText()))
-    {
-        QString rstr = replacement;
-        if(expr.patternSyntax() != QRegExp::FixedString)
-        {
-            int capCount = expr.captureCount()+1;
-            for(int i = 0; i < capCount; ++i)
-                rstr.replace(QString("\\%1").arg(i), expr.cap(i));
-        }
-        cursor.insertText(rstr);
-    }
-
-    return find(expr, options);
-}
-
 int CodeEditor::findAll( const QRegExp &expr, QTextDocument::FindFlags options )
 {
     mSearchSelections.clear();
@@ -306,6 +286,69 @@ int CodeEditor::findAll( const QRegExp &expr, QTextDocument::FindFlags options )
     return mSearchSelections.count();
 }
 
+//#define CSTR(QSTR) QSTR.toStdString().c_str()
+
+static QString resolvedReplacement( const QString &replacement, const QRegExp &expr )
+{
+    //qDebug("START");
+    static const QRegExp rexpr("(\\\\\\\\)|(\\\\[0-9]+)");
+    QString str( replacement );
+    int i=0;
+    while(i < str.size() && ((i = rexpr.indexIn(str, i)) != -1))
+    {
+        int len = rexpr.matchedLength();
+        if(rexpr.pos(1) != -1)
+        {
+            //qDebug("%i (%s): escape", i, CSTR(rexpr.cap(1)));
+            str.replace(i, len, "\\");
+            i += 1;
+        }
+        else if(rexpr.pos(2) != -1)
+        {
+            QString num_str = rexpr.cap(2);
+            num_str.remove(0, 1);
+            int num = num_str.toInt();
+            //qDebug("%i (%s): backref = %i", i, CSTR(rexpr.cap(2)), num);
+            if(num <= expr.captureCount())
+            {
+                QString cap = expr.cap(num);
+                //qDebug("resolving ref to: %s", CSTR(cap));
+                str.replace(i, len, cap);
+                i += cap.size();
+            }
+            else
+            {
+                //qDebug("ref out of range", i, num);
+                str.remove(i, len);
+            }
+        }
+        else
+        {
+            //qDebug("%i (%s): unknown match", i, CSTR(rexpr.cap(0)));
+            str.remove(i, len);
+        }
+        //qDebug(">> [%s] %i", CSTR(str), i);
+    }
+    //qDebug("END");
+    return str;
+}
+
+bool CodeEditor::replace( const QRegExp &expr, const QString &replacement, QTextDocument::FindFlags options )
+{
+    if(expr.isEmpty()) return true;
+
+    QTextCursor cursor = textCursor();
+    if (cursor.hasSelection() && expr.exactMatch(cursor.selectedText()))
+    {
+        QString rstr = replacement;
+        if(expr.patternSyntax() != QRegExp::FixedString)
+            rstr = resolvedReplacement(rstr, expr);
+        cursor.insertText(rstr);
+    }
+
+    return find(expr, options);
+}
+
 int CodeEditor::replaceAll( const QRegExp &expr, const QString &replacement, QTextDocument::FindFlags options )
 {
     mSearchSelections.clear();
@@ -322,21 +365,18 @@ int CodeEditor::replaceAll( const QRegExp &expr, const QString &replacement, QTe
 
     QTextCursor(doc).beginEditBlock();
 
-    while (block.isValid()) {
+    while (block.isValid())
+    {
         int blockPos = block.position();
         int offset = 0;
         while(findInBlock(doc, block, expr, offset, options, cursor))
         {
-            offset = cursor.selectionEnd() - blockPos;
             QString rstr = replacement;
             if(caps)
-            {
-                int capCount = expr.captureCount()+1;
-                for(int i = 0; i < capCount; ++i)
-                    rstr.replace(QString("\\%1").arg(i), expr.cap(i));
-            }
+                rstr = resolvedReplacement(rstr, expr);
             cursor.insertText(rstr);
             ++replacements;
+            offset = cursor.selectionEnd() - blockPos;
         }
         block = block.next();
     }
