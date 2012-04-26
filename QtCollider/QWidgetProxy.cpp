@@ -257,7 +257,7 @@ bool QWidgetProxy::filterEvent( QObject *o, QEvent *e, EventHandlerData &eh, QLi
       return eh.enabled && interpretMouseEvent( o, e, args );
 
     case QEvent::Wheel:
-      return interpretMouseWheelEvent( o, e, args );
+      return eh.enabled && interpretMouseWheelEvent( o, e, args );
 
     case QEvent::DragEnter:
     case QEvent::DragMove:
