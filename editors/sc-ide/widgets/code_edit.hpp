@@ -65,9 +65,10 @@ public:
     void setDocument( Document * );
     bool showWhitespace() { return mShowWhitespace; }
     void setIndentWidth( int );
-    bool find( const QString &text, QTextDocument::FindFlags options = 0 );
-    int findAll( const QString &text, QTextDocument::FindFlags options = 0 );
-    int replaceAll( const QString &text, const QString &replacement,
+    bool find( const QRegExp &expr, QTextDocument::FindFlags options = 0);
+    bool replace( const QRegExp &expr, const QString &replacement, QTextDocument::FindFlags options = 0);
+    int findAll( const QRegExp &expr, QTextDocument::FindFlags options = 0 );
+    int replaceAll( const QRegExp &expr, const QString &replacement,
                     QTextDocument::FindFlags options = 0 );
 
 public Q_SLOTS:

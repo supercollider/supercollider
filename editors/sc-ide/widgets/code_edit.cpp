@@ -134,91 +134,171 @@ void CodeEditor::setIndentWidth( int width )
     tdoc->setDefaultTextOption(opt);
 }
 
-bool CodeEditor::find( const QString &text, QTextDocument::FindFlags options )
+static bool findInBlock(QTextDocument *doc, const QTextBlock &block, const QRegExp &expr, int offset,
+                        QTextDocument::FindFlags options, QTextCursor &cursor)
+{
+    QString text = block.text();
+    if(options & QTextDocument::FindBackward)
+        text.truncate(offset);
+    text.replace(QChar::Nbsp, QLatin1Char(' '));
+
+    int idx = -1;
+    while (offset >=0 && offset <= text.length()) {
+        idx = (options & QTextDocument::FindBackward) ?
+               expr.lastIndexIn(text, offset) : expr.indexIn(text, offset);
+        if (idx == -1)
+            return false;
+
+        if (options & QTextDocument::FindWholeWords) {
+            const int start = idx;
+            const int end = start + expr.matchedLength();
+            if ((start != 0 && text.at(start - 1).isLetterOrNumber())
+                || (end != text.length() && text.at(end).isLetterOrNumber())) {
+                //if this is not a whole word, continue the search in the string
+                offset = (options & QTextDocument::FindBackward) ? idx-1 : end+1;
+                idx = -1;
+                continue;
+            }
+        }
+        //we have a hit, return the cursor for that.
+        break;
+    }
+
+    if (idx == -1)
+        return false;
+
+    cursor = QTextCursor(doc);
+    cursor.setPosition(block.position() + idx);
+    cursor.setPosition(cursor.position() + expr.matchedLength(), QTextCursor::KeepAnchor);
+    return true;
+}
+
+bool CodeEditor::find( const QRegExp &expr, QTextDocument::FindFlags options )
 {
     // Although QTextDocument provides a find() method, we implement
     // our own, because the former one is not adequate.
 
-    // FIXME: Can't find multi-line strings
-
-    // FIXME: There's probably some room for optimization.
-
-    if(text.isEmpty()) return true;
-    QTextDocument *doc = QPlainTextEdit::document();
+    if(expr.isEmpty()) return true;
 
     bool backwards = options & QTextDocument::FindBackward;
-    Qt::CaseSensitivity matchCase =
-        options & QTextDocument::FindCaseSensitively ?
-        Qt::CaseSensitive : Qt::CaseInsensitive;
 
     QTextCursor c( textCursor() );
+    int pos;
     if (c.hasSelection())
     {
-        bool matching =
-            c.selectedText().compare(text, matchCase) == 0;
+        bool matching = expr.exactMatch(c.selectedText());
 
         if( backwards == matching )
-            c.setPosition(qMin(c.position(), c.anchor()));
+            pos = c.selectionStart();
         else
-            c.setPosition(qMax(c.position(), c.anchor()));
+            pos = c.selectionEnd();
+    }
+    else
+        pos = c.position();
+
+    QTextDocument *doc = QPlainTextEdit::document();
+    QTextBlock startBlock = doc->findBlock(pos);
+    int startBlockOffset = pos - startBlock.position();
+
+    QTextCursor cursor;
+
+    if (!backwards) {
+        int blockOffset = startBlockOffset;
+        QTextBlock block = startBlock;
+        while (block.isValid()) {
+            if (findInBlock(doc, block, expr, blockOffset, options, cursor))
+                break;
+            blockOffset = 0;
+            block = block.next();
+        }
+        if(cursor.isNull())
+        {
+            blockOffset = 0;
+            block = doc->begin();
+            while(true) {
+                if (findInBlock(doc, block, expr, blockOffset, options, cursor)
+                    || block == startBlock)
+                    break;
+                block = block.next();
+            }
+        }
+    } else {
+        int blockOffset = startBlockOffset;
+        QTextBlock block = startBlock;
+        while (block.isValid()) {
+            if (findInBlock(doc, block, expr, blockOffset, options, cursor))
+                break;
+            block = block.previous();
+            blockOffset = block.length() - 1;
+        }
+        if(cursor.isNull())
+        {
+            block = doc->end();
+            while(true) {
+                blockOffset = block.length() - 1;
+                if (findInBlock(doc, block, expr, blockOffset, options, cursor)
+                    || block == startBlock)
+                    break;
+                block = block.previous();
+            }
+        }
     }
 
-    c.movePosition( backwards ? QTextCursor::Start : QTextCursor::End, QTextCursor::KeepAnchor );
-    QString searchText(c.selectedText());
-
-    int i;
-    if(backwards)
-        i = searchText.lastIndexOf( text, -1, matchCase );
-    else
-        i = searchText.indexOf( text, 0, matchCase );
-
-    if(i == -1)
+    if(!cursor.isNull())
     {
-        c.movePosition( backwards ? QTextCursor::End : QTextCursor::Start, QTextCursor::KeepAnchor );
-        searchText = c.selectedText();
-        if(backwards)
-            i = searchText.lastIndexOf( text, -1, matchCase );
-        else
-            i = searchText.indexOf( text, 0, matchCase );
-    }
-
-    if(i == -1)
-        return false;
-    else
-    {
-        if(c.atEnd())
-            i = i + c.anchor();
-        c.setPosition(i);
-        c.setPosition(i + text.length(), QTextCursor::KeepAnchor);
-        setTextCursor(c);
+        setTextCursor(cursor);
         return true;
     }
+    else
+        return false;
 }
 
-int CodeEditor::findAll( const QString &text, QTextDocument::FindFlags options )
+bool CodeEditor::replace( const QRegExp &expr, const QString &replacement, QTextDocument::FindFlags options )
+{
+    if(expr.isEmpty()) return true;
+
+    QTextCursor cursor = textCursor();
+    if (cursor.hasSelection() && expr.exactMatch(cursor.selectedText()))
+    {
+        QString rstr = replacement;
+        if(expr.patternSyntax() != QRegExp::FixedString)
+        {
+            int capCount = expr.captureCount()+1;
+            for(int i = 0; i < capCount; ++i)
+                rstr.replace(QString("\\%1").arg(i), expr.cap(i));
+        }
+        cursor.insertText(rstr);
+    }
+
+    return find(expr, options);
+}
+
+int CodeEditor::findAll( const QRegExp &expr, QTextDocument::FindFlags options )
 {
     mSearchSelections.clear();
 
-    if(text.isEmpty()) {
+    if(expr.isEmpty()) {
         updateExtraSelections();
         return 0;
     }
-
-    // ignore the "backwards" flag:
-    options &= ~QTextDocument::FindBackward;
 
     QTextEdit::ExtraSelection selection;
     selection.format.setBackground(Qt::yellow);
 
     QTextDocument *doc = QPlainTextEdit::document();
-    QTextCursor c(doc);
-    while(true)
-    {
-        c = doc->find(text, c, options);
-        if(c.isNull()) break;
+    QTextBlock block = doc->begin();
+    QTextCursor cursor;
 
-        selection.cursor = c;
-        mSearchSelections.append(selection);
+    while (block.isValid()) {
+        int blockPos = block.position();
+        int offset = 0;
+        while(findInBlock(doc, block, expr, offset, options, cursor))
+        {
+            offset = cursor.selectionEnd() - blockPos;
+            selection.cursor = cursor;
+            mSearchSelections.append(selection);
+        }
+        block = block.next();
     }
 
     updateExtraSelections();
@@ -226,30 +306,44 @@ int CodeEditor::findAll( const QString &text, QTextDocument::FindFlags options )
     return mSearchSelections.count();
 }
 
-int CodeEditor::replaceAll( const QString &text, const QString &replacement, QTextDocument::FindFlags options )
+int CodeEditor::replaceAll( const QRegExp &expr, const QString &replacement, QTextDocument::FindFlags options )
 {
     mSearchSelections.clear();
     updateExtraSelections();
 
-    if(text.isEmpty()) return 0;
+    if(expr.isEmpty()) return 0;
 
-    // ignore the "backwards" flag:
-    options &= ~QTextDocument::FindBackward;
+    int replacements = 0;
+    bool caps = expr.patternSyntax() != QRegExp::FixedString;
 
     QTextDocument *doc = QPlainTextEdit::document();
-    QTextCursor c(doc);
-    c.beginEditBlock();
-    int i = 0;
-    while(true)
-    {
-        c = doc->find(text, c, options);
-        if(c.isNull()) break;
-        c.insertText(replacement);
-        ++i;
+    QTextBlock block = doc->begin();
+    QTextCursor cursor;
+
+    QTextCursor(doc).beginEditBlock();
+
+    while (block.isValid()) {
+        int blockPos = block.position();
+        int offset = 0;
+        while(findInBlock(doc, block, expr, offset, options, cursor))
+        {
+            offset = cursor.selectionEnd() - blockPos;
+            QString rstr = replacement;
+            if(caps)
+            {
+                int capCount = expr.captureCount()+1;
+                for(int i = 0; i < capCount; ++i)
+                    rstr.replace(QString("\\%1").arg(i), expr.cap(i));
+            }
+            cursor.insertText(rstr);
+            ++replacements;
+        }
+        block = block.next();
     }
+
     QTextCursor(doc).endEditBlock();
 
-    return i;
+    return replacements;
 }
 
 void CodeEditor::clearSearchHighlighting()

@@ -31,6 +31,7 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QGridLayout>
+#include <QTextDocument>
 
 namespace ScIDE {
 
@@ -161,7 +162,11 @@ public:
 
     QString findString() const { return mFindField->text(); }
     QString replaceString() const { return mReplaceField->text(); }
-    bool matchCase() const { return mMatchCaseOpt->isChecked(); }
+    bool matchCase() const { return mMatchCaseAction->isChecked(); }
+    bool asRegExp() const { return mRegExpAction->isChecked(); }
+    bool wholeWords() const { return mWholeWordAction->isChecked(); }
+    QRegExp regexp();
+    QTextDocument::FindFlags flags();
 
 public Q_SLOTS:
     void findNext();
@@ -189,7 +194,10 @@ private:
     QPushButton *mFindAllBtn;
     QPushButton *mReplaceBtn;
     QPushButton *mReplaceAllBtn;
-    QCheckBox *mMatchCaseOpt;
+    QPushButton *mOptionsBtn;
+    QAction *mMatchCaseAction;
+    QAction *mRegExpAction;
+    QAction *mWholeWordAction;
 
     QGridLayout *mGrid;
 
