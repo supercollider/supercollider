@@ -393,8 +393,8 @@ QTextCursor CodeEditor::currentRegion()
     QTextBlock b(c.block());
 
     int pos = c.positionInBlock();
-    int startPos = -1;
-    int endPos = -1;
+    BracketIterator start;
+    BracketIterator end;
     int topLevel = 0;
     int level = 0;
 
@@ -402,13 +402,12 @@ QTextCursor CodeEditor::currentRegion()
     BracketIterator it = BracketIterator::leftOf( b, pos );
     while(it.isValid())
     {
-        char chr = it.character();
-        int pos = it.position();
+        char chr = it->character;
         if(chr == '(') {
             ++level;
             if(level > topLevel) {
                 topLevel = level;
-                startPos = it.position() + 1;
+                start = it;
             }
         }
         else if(chr == ')') {
@@ -425,8 +424,7 @@ QTextCursor CodeEditor::currentRegion()
     it = BracketIterator::rightOf( b, pos );
     while(it.isValid())
     {
-        char chr = it.character();
-        int pos = it.position();
+        char chr = it->character;
         if(chr == '(')
             ++topLevel;
         else if(chr == ')')
@@ -434,18 +432,18 @@ QTextCursor CodeEditor::currentRegion()
             --topLevel;
             if(topLevel == 0)
             {
-                endPos = it.position();
+                end = it;
                 break;
             }
         }
         ++it;
     }
 
-    if(startPos >= 0 && endPos >= 0)
+    if(start.isValid() && end.isValid())
     {
         QTextCursor c(QPlainTextEdit::document());
-        c.setPosition(startPos);
-        c.setPosition(endPos, QTextCursor::KeepAnchor);
+        c.setPosition(start.position() + 1);
+        c.setPosition(end.position(), QTextCursor::KeepAnchor);
         return c;
     }
 
