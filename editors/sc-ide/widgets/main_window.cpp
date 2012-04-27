@@ -133,11 +133,17 @@ void MainWindow::createMenus()
     act->setStatusTip(tr("Evaluate current File"));
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateCurrentFile()));
 
-    mActions[EvaluateSelectedRegion] = act = new QAction(
-        QIcon::fromTheme("media-playback-start"), tr("&Evaluate Region"), this);
-    act->setShortcut(QKeySequence(tr("Ctrl+Return", "Language|Evaluate Region")));
+    mActions[EvaluateSelection] = act = new QAction(
+        QIcon::fromTheme("media-playback-start"), tr("&Evaluate Selection"), this);
+    act->setShortcut(QKeySequence(tr("Ctrl+Return", "Language|Evaluate Selection")));
     act->setStatusTip(tr("Evaluate selection or current line"));
-    connect(act, SIGNAL(triggered()), this, SLOT(evaluateCurrentRegion()));
+    connect(act, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
+
+    mActions[EvaluateRegion] = act = new QAction(
+    QIcon::fromTheme("media-playback-start"), tr("&Evaluate Region"), this);
+    act->setShortcut(QKeySequence(tr("Alt+Return", "Language|Evaluate Region")));
+    act->setStatusTip(tr("Evaluate current region"));
+    connect(act, SIGNAL(triggered()), this, SLOT(evaluateRegion()));
 
     mMain->scProcess()->action(ScIDE::SCProcess::StopMain)
         ->setShortcut(QKeySequence(tr("Ctrl+.", "Language|Stop Main")));
@@ -200,7 +206,8 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scProcess()->action(SCProcess::StopSCLang) );
     menu->addSeparator();
     menu->addAction( mActions[EvaluateCurrentFile] );
-    menu->addAction( mActions[EvaluateSelectedRegion] );
+    menu->addAction( mActions[EvaluateRegion] );
+    menu->addAction( mActions[EvaluateSelection] );
     menu->addSeparator();
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::RunMain) );
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::StopMain) );
@@ -316,7 +323,7 @@ QWidget *MainWindow::cmdLine()
     return widget;
 }
 
-void MainWindow::evaluateCurrentRegion()
+void MainWindow::evaluateSelection()
 {
     // Evaluate selection, if any, otherwise current line
 
@@ -340,6 +347,24 @@ void MainWindow::evaluateCurrentRegion()
     if (text.isEmpty()) return;
 
     // NOTE: QTextDocument contains unicode paragraph separators U+2029
+    text.replace( QChar( 0x2029 ), QChar( '\n' ) );
+
+    Main::instance()->scProcess()->evaluateCode(text);
+}
+
+void MainWindow::evaluateRegion()
+{
+    CodeEditor *editor = mEditors->currentEditor();
+    if (!editor)
+        return;
+
+    QTextCursor region = editor->currentRegion();
+    if(region.isNull()) {
+        // TODO: post a warning in status bar
+        return;
+    }
+
+    QString text = region.selectedText();
     text.replace( QChar( 0x2029 ), QChar( '\n' ) );
 
     Main::instance()->scProcess()->evaluateCode(text);

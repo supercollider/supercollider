@@ -32,6 +32,23 @@ namespace Settings { class Manager; }
 class Document;
 class CodeEditor;
 
+class BracketIterator
+{
+public:
+    static BracketIterator leftOf( const QTextBlock & block, int pos );
+    static BracketIterator rightOf( const QTextBlock & block, int pos );
+    static BracketIterator around( const QTextBlock & block, int pos );
+    BracketIterator& operator ++();
+    BracketIterator& operator --();
+    bool isValid() { return idx >= 0; }
+    char character();
+    int position();
+private:
+    BracketIterator() {}
+    QTextBlock block;
+    int idx;
+};
+
 class LineIndicator : public QWidget
 {
     Q_OBJECT
@@ -70,6 +87,7 @@ public:
     int findAll( const QRegExp &expr, QTextDocument::FindFlags options = 0 );
     int replaceAll( const QRegExp &expr, const QString &replacement,
                     QTextDocument::FindFlags options = 0 );
+    QTextCursor currentRegion();
 
 public Q_SLOTS:
     void zoomIn(int steps = 1);
@@ -101,12 +119,6 @@ private:
     void paintLineIndicator( QPaintEvent * );
     void indent( bool less );
     void matchBracket( const QTextBlock & block, int pos, BracketMatch & match );
-    void matchLeftBracket( char, char,
-                           const QTextBlock & block, int index,
-                           BracketMatch & match );
-    void matchRightBracket( char, char,
-                            const QTextBlock & block, int index,
-                            BracketMatch & match );
     int indentedStartOfLine( const QTextBlock & );
     void updateExtraSelections();
 
