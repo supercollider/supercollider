@@ -49,7 +49,8 @@ public:
 
         // Language
         EvaluateCurrentFile,
-        EvaluateSelectedRegion,
+        EvaluateSelection,
+        EvaluateRegion,
 
         // Settings
         ShowSettings,
@@ -68,7 +69,8 @@ public Q_SLOTS:
     void showSettings();
 
 private Q_SLOTS:
-    void evaluateCurrentRegion(); // either selection, or current line
+    void evaluateSelection(); // either selection, or current line
+    void evaluateRegion();
     void evaluateCurrentFile();
     void onInterpreterStateChanged( QProcess::ProcessState );
     void onQuit();

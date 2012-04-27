@@ -386,6 +386,71 @@ int CodeEditor::replaceAll( const QRegExp &expr, const QString &replacement, QTe
     return replacements;
 }
 
+QTextCursor CodeEditor::currentRegion()
+{
+    QTextCursor c(textCursor());
+    QTextBlock b(c.block());
+
+    int pos = c.positionInBlock();
+    int startPos = -1;
+    int endPos = -1;
+    int topLevel = 0;
+    int level = 0;
+
+    // search unmatched opening bracket
+    BracketIterator it = BracketIterator::leftOf( b, pos );
+    while(it.isValid())
+    {
+        char chr = it.character();
+        int pos = it.position();
+        if(chr == '(') {
+            ++level;
+            if(level > topLevel) {
+                topLevel = level;
+                startPos = it.position() + 1;
+            }
+        }
+        else if(chr == ')') {
+            --level;
+        }
+        --it;
+    }
+
+    if(topLevel < 1)
+        // no unmatched opening bracket
+        return QTextCursor();
+
+    // match the found opening bracket
+    it = BracketIterator::rightOf( b, pos );
+    while(it.isValid())
+    {
+        char chr = it.character();
+        int pos = it.position();
+        if(chr == '(')
+            ++topLevel;
+        else if(chr == ')')
+        {
+            --topLevel;
+            if(topLevel == 0)
+            {
+                endPos = it.position();
+                break;
+            }
+        }
+        ++it;
+    }
+
+    if(startPos >= 0 && endPos >= 0)
+    {
+        QTextCursor c(QPlainTextEdit::document());
+        c.setPosition(startPos);
+        c.setPosition(endPos, QTextCursor::KeepAnchor);
+        return c;
+    }
+
+    return QTextCursor();
+}
+
 void CodeEditor::clearSearchHighlighting()
 {
     mSearchSelections.clear();
@@ -592,113 +657,57 @@ void CodeEditor::matchBrackets()
 
 void CodeEditor::matchBracket( const QTextBlock & block, int pos, BracketMatch & match )
 {
-    SyntaxHighlighter::BlockData *data =
-        static_cast<SyntaxHighlighter::BlockData*>(block.userData());
+    BracketIterator it = BracketIterator::around( block, pos );
 
-    if (!data) {
+    if( !it.isValid() )
+    {
         match.pos = match.matchPos = -1;
         return;
     }
 
-    int n = data->brackets.size();
-    for( int i = 0; i < n; ++i )
+    char c = it.character();
+    match.pos = it.position();
+
+    static QString lbrackets("([{");
+    static QString rbrackets(")]}");
+
+    int b;
+    if((b = lbrackets.indexOf(c)) != -1)
     {
-        SyntaxHighlighter::BracketInfo const & bracket = data->brackets[i];
-        if(bracket.position == pos - 1 || bracket.position == pos)
+        char cc = rbrackets[b].toAscii();
+        int level = 1;
+        while((++it).isValid())
         {
-            match.pos = bracket.position + block.position();
-
-            static QString lbrackets("([{");
-            static QString rbrackets(")]}");
-
-            char c = bracket.character;
-            int b;
-            if((b = lbrackets.indexOf(c)) != -1)
-                matchLeftBracket( c, rbrackets[b].toAscii(), block, i, match );
-            else if((b = rbrackets.indexOf(c)) != -1)
-                matchRightBracket( c, lbrackets[b].toAscii(), block, i, match );
-            return;
-        }
-    }
-
-    match.pos = -1;
-    match.matchPos = -1;
-}
-
-void CodeEditor::matchRightBracket
-( char c, char cc, const QTextBlock & block, int index, BracketMatch & match )
-{
-    int level = 1;
-    bool first = true;
-    QTextBlock b(block);
-    int i = index - 1;
-
-    while(b.isValid())
-    {
-        SyntaxHighlighter::BlockData *data =
-            static_cast<SyntaxHighlighter::BlockData*>(b.userData());
-
-        if(data)
-        {
-            if(!first)
-                i = data->brackets.size() - 1;
-
-            for(; i >= 0; --i)
-            {
-                SyntaxHighlighter::BracketInfo const & bracket = data->brackets[i];
-                if(bracket.character == cc)
-                    --level;
-                else if(bracket.character == c)
-                    ++level;
-                if(level == 0) {
-                    match.matchPos = bracket.position + b.position();
-                    return;
-                }
+            char chr = it.character();
+            if(chr == cc)
+                --level;
+            else if(chr == c)
+                ++level;
+            if(level == 0) {
+                match.matchPos = it.position();
+                return;
             }
         }
-
-        first = false;
-        b = b.previous();
     }
-
-    match.matchPos = -1;
-}
-
-void CodeEditor::matchLeftBracket
-( char c, char cc, const QTextBlock & block, int index, BracketMatch & match )
-{
-    int level = 1;
-    QTextBlock b(block);
-    int i = index + 1;
-
-    while(b.isValid())
+    else if((b = rbrackets.indexOf(c)) != -1)
     {
-        SyntaxHighlighter::BlockData *data =
-            static_cast<SyntaxHighlighter::BlockData*>(b.userData());
-
-        if(data)
+        char cc = lbrackets[b].toAscii();
+        int level = 1;
+        while((--it).isValid())
         {
-            int n = data->brackets.size();
-
-            for(; i < n; ++i)
-            {
-                SyntaxHighlighter::BracketInfo const & bracket = data->brackets[i];
-                if(bracket.character == cc)
-                    --level;
-                else if(bracket.character == c)
-                    ++level;
-                if(level == 0) {
-                    match.matchPos = bracket.position + b.position();
-                    return;
-                }
+            char chr = it.character();
+            if(chr == cc)
+                --level;
+            else if(chr == c)
+                ++level;
+            if(level == 0) {
+                match.matchPos = it.position();
+                return;
             }
         }
-
-        i = 0;
-        b = b.next();
     }
 
-    match.matchPos = -1;
+    match.pos = match.matchPos = -1;
 }
 
 int CodeEditor::indentedStartOfLine( const QTextBlock &b )
@@ -824,6 +833,170 @@ void CodeEditor::indent( bool less )
     }
 
     c.endEditBlock();
+}
+
+BracketIterator BracketIterator::leftOf( const QTextBlock & block, int pos )
+{
+    BracketIterator it;
+    it.block = block;
+    it.idx = -1;
+
+    while(it.block.isValid())
+    {
+        SyntaxHighlighter::BlockData *data =
+            static_cast<SyntaxHighlighter::BlockData*>(it.block.userData());
+
+        it.idx = data ? data->brackets.size() : 0;
+
+        while(it.idx--)
+        {
+            SyntaxHighlighter::BracketInfo const & bracket = data->brackets[it.idx];
+            if( pos < 0 || bracket.position < pos )
+                return it;
+        }
+
+        pos = -1; // match on first bracket in next block;
+        it.block = it.block.previous();
+    }
+
+    return it;
+}
+
+BracketIterator BracketIterator::rightOf( const QTextBlock & block, int pos )
+{
+    BracketIterator it;
+    it.block = block;
+    it.idx = -1;
+
+    while(it.block.isValid())
+    {
+        SyntaxHighlighter::BlockData *data =
+            static_cast<SyntaxHighlighter::BlockData*>(it.block.userData());
+
+        int n = data->brackets.size();
+
+        while(++it.idx < n)
+        {
+            SyntaxHighlighter::BracketInfo const & bracket = data->brackets[it.idx];
+            if( bracket.position >= pos )
+                return it;
+        }
+
+        it.idx = -1;
+        pos = -1; // match right on first bracket in next block;
+        it.block = it.block.next();
+    }
+
+    return it;
+}
+
+BracketIterator BracketIterator::around( const QTextBlock & block, int pos )
+{
+    BracketIterator it;
+    it.block = block;
+    it.idx = -1;
+
+    if(!block.isValid())
+        return it;
+
+    SyntaxHighlighter::BlockData *data =
+        static_cast<SyntaxHighlighter::BlockData*>(block.userData());
+
+    if (!data)
+        return it;
+
+    int n = data->brackets.size();
+    for( int i = 0; i < n; ++i )
+    {
+        SyntaxHighlighter::BracketInfo const & bracket = data->brackets[i];
+        if(bracket.position > pos) {
+            return it;
+        }
+        else if(bracket.position == pos - 1 || bracket.position == pos)
+        {
+            it.idx = i;
+            break;
+        }
+    }
+
+    return it;
+}
+
+BracketIterator& BracketIterator::operator ++()
+{
+    while(block.isValid())
+    {
+        SyntaxHighlighter::BlockData *data =
+            static_cast<SyntaxHighlighter::BlockData*>(block.userData());
+
+        if (data)
+        {
+            int n = data->brackets.size();
+            if(++idx < n)
+                return *this;
+        }
+
+        idx = -1;
+        block = block.next();
+    }
+    return *this;
+}
+
+BracketIterator& BracketIterator::operator --()
+{
+    if(idx > 0)
+    {
+        --idx;
+        return *this;
+    }
+    else if( idx < 0 )
+    {
+        return *this;
+    }
+
+    idx = -1;
+    while( (block = block.previous()).isValid() )
+    {
+        SyntaxHighlighter::BlockData *data =
+            static_cast<SyntaxHighlighter::BlockData*>(block.userData());
+
+        if(data)
+            idx = data->brackets.size() - 1;
+
+        if (idx < 0)
+            continue;
+
+        // we have a valid idx
+        break;
+    }
+
+    return *this;
+}
+
+char BracketIterator::character()
+{
+    Q_ASSERT(block.isValid() && idx >= 0);
+
+    SyntaxHighlighter::BlockData *data =
+        static_cast<SyntaxHighlighter::BlockData*>(block.userData());
+
+    Q_ASSERT(data);
+
+    SyntaxHighlighter::BracketInfo const & bracket = data->brackets[idx];
+    return bracket.character;
+}
+
+int BracketIterator::position()
+{
+    Q_ASSERT(block.isValid() && idx >= 0);
+
+    SyntaxHighlighter::BlockData *data =
+        static_cast<SyntaxHighlighter::BlockData*>(block.userData());
+
+    Q_ASSERT(data);
+
+    SyntaxHighlighter::BracketInfo const & bracket = data->brackets[idx];
+    return bracket.position + block.position();
 }
 
 } // namespace ScIDE
