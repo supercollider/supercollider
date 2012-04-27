@@ -19,7 +19,7 @@
 */
 
 #include "multi_editor.hpp"
-#include "code_edit.hpp"
+#include "code_editor/editor.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/sig_mux.hpp"
 #include "../core/main.hpp"

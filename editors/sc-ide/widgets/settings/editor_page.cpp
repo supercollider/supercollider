@@ -20,8 +20,8 @@
 
 #include "editor_page.hpp"
 #include "ui_settings_editor.h"
+#include "../code_editor/highlighter.hpp"
 #include "../../core/settings/manager.hpp"
-#include "../../core/sc_syntax_highlighter.hpp"
 #include "../../core/main.hpp"
 
 #include <QMenu>

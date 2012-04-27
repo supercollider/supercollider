@@ -18,10 +18,10 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "code_edit.hpp"
-#include "../core/doc_manager.hpp"
-#include "../core/sc_syntax_highlighter.hpp"
-#include "../core/settings/manager.hpp"
+#include "editor.hpp"
+#include "highlighter.hpp"
+#include "../../core/doc_manager.hpp"
+#include "../../core/settings/manager.hpp"
 
 #include <QPainter>
 #include <QPaintEvent>
@@ -99,6 +99,7 @@ CodeEditor::CodeEditor( QWidget *parent ) :
 void CodeEditor::setDocument( Document *doc )
 {
     QTextDocument *tdoc = doc->textDocument();
+    new SyntaxHighlighter(tdoc);
 
     QFontMetricsF fm(font());
 
@@ -835,168 +836,6 @@ void CodeEditor::indent( bool less )
     c.endEditBlock();
 }
 
-BracketIterator BracketIterator::leftOf( const QTextBlock & block, int pos )
-{
-    BracketIterator it;
-    it.block = block;
-    it.idx = -1;
 
-    while(it.block.isValid())
-    {
-        SyntaxHighlighter::BlockData *data =
-            static_cast<SyntaxHighlighter::BlockData*>(it.block.userData());
-
-        it.idx = data ? data->brackets.size() : 0;
-
-        while(it.idx--)
-        {
-            SyntaxHighlighter::BracketInfo const & bracket = data->brackets[it.idx];
-            if( pos < 0 || bracket.position < pos )
-                return it;
-        }
-
-        pos = -1; // match on first bracket in next block;
-        it.block = it.block.previous();
-    }
-
-    return it;
-}
-
-BracketIterator BracketIterator::rightOf( const QTextBlock & block, int pos )
-{
-    BracketIterator it;
-    it.block = block;
-    it.idx = -1;
-
-    while(it.block.isValid())
-    {
-        SyntaxHighlighter::BlockData *data =
-            static_cast<SyntaxHighlighter::BlockData*>(it.block.userData());
-
-        int n = data->brackets.size();
-
-        while(++it.idx < n)
-        {
-            SyntaxHighlighter::BracketInfo const & bracket = data->brackets[it.idx];
-            if( bracket.position >= pos )
-                return it;
-        }
-
-        it.idx = -1;
-        pos = -1; // match right on first bracket in next block;
-        it.block = it.block.next();
-    }
-
-    return it;
-}
-
-BracketIterator BracketIterator::around( const QTextBlock & block, int pos )
-{
-    BracketIterator it;
-    it.block = block;
-    it.idx = -1;
-
-    if(!block.isValid())
-        return it;
-
-    SyntaxHighlighter::BlockData *data =
-        static_cast<SyntaxHighlighter::BlockData*>(block.userData());
-
-    if (!data)
-        return it;
-
-    int n = data->brackets.size();
-    for( int i = 0; i < n; ++i )
-    {
-        SyntaxHighlighter::BracketInfo const & bracket = data->brackets[i];
-        if(bracket.position > pos) {
-            return it;
-        }
-        else if(bracket.position == pos - 1 || bracket.position == pos)
-        {
-            it.idx = i;
-            break;
-        }
-    }
-
-    return it;
-}
-
-BracketIterator& BracketIterator::operator ++()
-{
-    while(block.isValid())
-    {
-        SyntaxHighlighter::BlockData *data =
-            static_cast<SyntaxHighlighter::BlockData*>(block.userData());
-
-        if (data)
-        {
-            int n = data->brackets.size();
-            if(++idx < n)
-                return *this;
-        }
-
-        idx = -1;
-        block = block.next();
-    }
-    return *this;
-}
-
-BracketIterator& BracketIterator::operator --()
-{
-    if(idx > 0)
-    {
-        --idx;
-        return *this;
-    }
-    else if( idx < 0 )
-    {
-        return *this;
-    }
-
-    idx = -1;
-    while( (block = block.previous()).isValid() )
-    {
-        SyntaxHighlighter::BlockData *data =
-            static_cast<SyntaxHighlighter::BlockData*>(block.userData());
-
-        if(data)
-            idx = data->brackets.size() - 1;
-
-        if (idx < 0)
-            continue;
-
-        // we have a valid idx
-        break;
-    }
-
-    return *this;
-}
-
-char BracketIterator::character()
-{
-    Q_ASSERT(block.isValid() && idx >= 0);
-
-    SyntaxHighlighter::BlockData *data =
-        static_cast<SyntaxHighlighter::BlockData*>(block.userData());
-
-    Q_ASSERT(data);
-
-    SyntaxHighlighter::BracketInfo const & bracket = data->brackets[idx];
-    return bracket.character;
-}
-
-int BracketIterator::position()
-{
-    Q_ASSERT(block.isValid() && idx >= 0);
-
-    SyntaxHighlighter::BlockData *data =
-        static_cast<SyntaxHighlighter::BlockData*>(block.userData());
-
-    Q_ASSERT(data);
-
-    SyntaxHighlighter::BracketInfo const & bracket = data->brackets[idx];
-    return bracket.position + block.position();
-}
 
 } // namespace ScIDE

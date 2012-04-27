@@ -21,7 +21,7 @@
 #include "main_window.hpp"
 #include "../core/main.hpp"
 #include "../core/doc_manager.hpp"
-#include "code_edit.hpp"
+#include "code_editor/editor.hpp"
 #include "multi_editor.hpp"
 #include "cmd_line.hpp"
 #include "doc_list.hpp"
