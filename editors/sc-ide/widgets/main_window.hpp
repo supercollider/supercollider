@@ -24,6 +24,7 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <QProcess>
+#include <QSignalMapper>
 
 namespace ScIDE
 {
@@ -55,6 +56,11 @@ public:
         // Settings
         ShowSettings,
 
+        // Help
+        BrowseHelp,
+        SearchHelp,
+        HelpForSelection,
+
         ActionCount
     };
 
@@ -68,10 +74,14 @@ public Q_SLOTS:
     void toggleComandLineFocus();
     void showSettings();
 
+signals:
+    void evaluateCode( const QString &, bool silent = true );
+
 private Q_SLOTS:
     void evaluateSelection(); // either selection, or current line
     void evaluateRegion();
     void evaluateCurrentFile();
+    void helpForSelection();
     void onInterpreterStateChanged( QProcess::ProcessState );
     void onQuit();
 
@@ -95,6 +105,8 @@ private:
     // Docks
     PostDock * mPostDock;
     DocumentsDock *mDocListDock;
+
+    QSignalMapper mCodeEvalMapper;
 };
 
 class StatusLabel : public QLabel
