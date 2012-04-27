@@ -21,6 +21,8 @@
 #ifndef SCIDE_SC_SYNTAX_HIGHLIGHTER_HPP_INCLUDED
 #define SCIDE_SC_SYNTAX_HIGHLIGHTER_HPP_INCLUDED
 
+#include "brackets.hpp"
+
 #include <QSyntaxHighlighter>
 #include <QVector>
 
@@ -131,24 +133,6 @@ class SyntaxHighlighter:
     static const int inComment = 100;
     // NOTE: Integers higher than inComment are reserved for multi line comments,
     // and indicate the comment nesting level!
-
-public:
-    struct BracketInfo
-    {
-        BracketInfo() {}
-        BracketInfo( char c, int pos ) : character(c), position(pos) {}
-        BracketInfo (BracketInfo const & rhs):
-            character(rhs.character), position(rhs.position)
-        {}
-
-        char character;
-        int position;
-    };
-
-    struct BlockData : public QTextBlockUserData
-    {
-        std::vector<BracketInfo> brackets;
-    };
 
 public:
     SyntaxHighlighter(QTextDocument *parent = 0);

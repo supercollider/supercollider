@@ -20,8 +20,8 @@
 
 #include "main.hpp"
 #include "settings/manager.hpp"
-#include "sc_syntax_highlighter.hpp"
 #include "../widgets/main_window.hpp"
+#include "../widgets/code_editor/highlighter.hpp"
 #include "SC_DirUtils.h"
 
 #include <QApplication>

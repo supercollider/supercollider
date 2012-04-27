@@ -18,8 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_CODE_EDIT_HPP_INCLUDED
-#define SCIDE_WIDGETS_CODE_EDIT_HPP_INCLUDED
+#ifndef SCIDE_WIDGETS_CODE_EDITOR_EDITOR_HPP_INCLUDED
+#define SCIDE_WIDGETS_CODE_EDITOR_EDITOR_HPP_INCLUDED
 
 #include <QPlainTextEdit>
 #include <QTextBlock>
@@ -31,23 +31,6 @@ namespace Settings { class Manager; }
 
 class Document;
 class CodeEditor;
-
-class BracketIterator
-{
-public:
-    static BracketIterator leftOf( const QTextBlock & block, int pos );
-    static BracketIterator rightOf( const QTextBlock & block, int pos );
-    static BracketIterator around( const QTextBlock & block, int pos );
-    BracketIterator& operator ++();
-    BracketIterator& operator --();
-    bool isValid() { return idx >= 0; }
-    char character();
-    int position();
-private:
-    BracketIterator() {}
-    QTextBlock block;
-    int idx;
-};
 
 class LineIndicator : public QWidget
 {
@@ -135,4 +118,4 @@ private:
 
 } // namespace ScIDE
 
-#endif // SC_IDE_CODE_EDIT_HPP
+#endif // SCIDE_WIDGETS_CODE_EDITOR_EDITOR_HPP_INCLUDED

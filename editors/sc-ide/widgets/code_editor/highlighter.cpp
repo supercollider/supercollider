@@ -21,9 +21,9 @@
 #include <cassert>
 #include <algorithm>
 
-#include "sc_syntax_highlighter.hpp"
-#include "main.hpp"
-#include "settings/manager.hpp"
+#include "highlighter.hpp"
+#include "../../core/main.hpp"
+#include "../../core/settings/manager.hpp"
 
 #include <QApplication>
 
@@ -185,7 +185,7 @@ SyntaxRule::Type SyntaxHighlighter::findMatchingRule (const QString& text, int& 
 
 void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentIndex, int & currentState)
 {
-    BlockData *blockData = static_cast<BlockData*>(currentBlockUserData());
+    TextBlockData *blockData = static_cast<TextBlockData*>(currentBlockUserData());
     Q_ASSERT(blockData);
 
     const QTextCharFormat * formats = mGlobals->formats();
@@ -403,9 +403,9 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
     if (currentState == -1)
         currentState = 0;
 
-    BlockData *blockData = static_cast<BlockData*>(currentBlockUserData());
+    TextBlockData *blockData = static_cast<TextBlockData*>(currentBlockUserData());
     if(!blockData) {
-        blockData = new BlockData;
+        blockData = new TextBlockData;
         blockData->brackets.reserve(8);
         setCurrentBlockUserData(blockData);
     }
