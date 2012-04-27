@@ -47,13 +47,31 @@ struct TextBlockData : public QTextBlockUserData
 class BracketIterator
 {
 private:
-    BracketIterator() {}
     QTextBlock blk;
     int idx;
+    TextBlockData *data;
 
 public:
+    BracketIterator(): idx(-1) {}
     bool isValid() { return idx >= 0; }
     const QTextBlock & block() { return blk; }
+    const BracketInfo & operator *()
+    {
+        Q_ASSERT(blk.isValid());
+        Q_ASSERT(idx >= 0);
+        Q_ASSERT(data);
+
+        return data->brackets[idx];
+    }
+
+    const BracketInfo * operator ->()
+    {
+        Q_ASSERT(blk.isValid());
+        Q_ASSERT(idx >= 0);
+        Q_ASSERT(data);
+
+        return &data->brackets[idx];
+    }
 
     static BracketIterator leftOf( const QTextBlock & block, int pos )
     {
@@ -63,14 +81,13 @@ public:
 
         while(it.blk.isValid())
         {
-            TextBlockData *data =
-                static_cast<TextBlockData*>(it.blk.userData());
+            it.data = static_cast<TextBlockData*>(it.blk.userData());
 
-            it.idx = data ? data->brackets.size() : 0;
+            it.idx = it.data ? it.data->brackets.size() : 0;
 
             while(it.idx--)
             {
-                BracketInfo const & bracket = data->brackets[it.idx];
+                BracketInfo const & bracket = it.data->brackets[it.idx];
                 if( pos < 0 || bracket.position < pos )
                     return it;
             }
@@ -90,14 +107,13 @@ public:
 
         while(it.blk.isValid())
         {
-            TextBlockData *data =
-                static_cast<TextBlockData*>(it.blk.userData());
+            it.data = static_cast<TextBlockData*>(it.blk.userData());
 
-            int n = data->brackets.size();
+            int n = it.data->brackets.size();
 
             while(++it.idx < n)
             {
-                BracketInfo const & bracket = data->brackets[it.idx];
+                BracketInfo const & bracket = it.data->brackets[it.idx];
                 if( bracket.position >= pos )
                     return it;
             }
@@ -119,16 +135,15 @@ public:
         if(!block.isValid())
             return it;
 
-        TextBlockData *data =
-            static_cast<TextBlockData*>(block.userData());
+        it.data = static_cast<TextBlockData*>(block.userData());
 
-        if (!data)
+        if (!it.data)
             return it;
 
-        int n = data->brackets.size();
+        int n = it.data->brackets.size();
         for( int i = 0; i < n; ++i )
         {
-            BracketInfo const & bracket = data->brackets[i];
+            BracketInfo const & bracket = it.data->brackets[i];
             if(bracket.position > pos) {
                 return it;
             }
@@ -144,10 +159,13 @@ public:
 
     BracketIterator& operator ++()
     {
-        while(blk.isValid())
+        if(idx < 0)
+            return *this;
+
+        do
         {
-            TextBlockData *data =
-                static_cast<TextBlockData*>(blk.userData());
+            if(idx < 0)
+                data = static_cast<TextBlockData*>(blk.userData());
 
             if (data)
             {
@@ -159,6 +177,8 @@ public:
             idx = -1;
             blk = blk.next();
         }
+        while( blk.isValid() );
+
         return *this;
     }
 
@@ -177,8 +197,7 @@ public:
         idx = -1;
         while( (blk = blk.previous()).isValid() )
         {
-            TextBlockData *data =
-                static_cast<TextBlockData*>(blk.userData());
+            data = static_cast<TextBlockData*>(blk.userData());
 
             if(data)
                 idx = data->brackets.size() - 1;
@@ -195,28 +214,20 @@ public:
 
     char character()
     {
-        Q_ASSERT(blk.isValid() && idx >= 0);
-
-        TextBlockData *data =
-            static_cast<TextBlockData*>(blk.userData());
-
+        Q_ASSERT(blk.isValid());
+        Q_ASSERT(idx >= 0);
         Q_ASSERT(data);
 
-        BracketInfo const & bracket = data->brackets[idx];
-        return bracket.character;
+        return data->brackets[idx].character;
     }
 
     int position()
     {
-        Q_ASSERT(blk.isValid() && idx >= 0);
-
-        TextBlockData *data =
-            static_cast<TextBlockData*>(blk.userData());
-
+        Q_ASSERT(blk.isValid());
+        Q_ASSERT(idx >= 0);
         Q_ASSERT(data);
 
-        BracketInfo const & bracket = data->brackets[idx];
-        return bracket.position + blk.position();
+        return data->brackets[idx].position + blk.position();
     }
 };
 
