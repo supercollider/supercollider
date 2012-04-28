@@ -21,6 +21,7 @@
 #ifndef SCIDE_WIDGETS_CODE_EDITOR_EDITOR_HPP_INCLUDED
 #define SCIDE_WIDGETS_CODE_EDITOR_EDITOR_HPP_INCLUDED
 
+#include <QGraphicsScene>
 #include <QPlainTextEdit>
 #include <QTextBlock>
 
@@ -52,7 +53,6 @@ private:
     int mLineCount;
 };
 
-
 class CodeEditor : public QPlainTextEdit
 {
     Q_OBJECT
@@ -71,6 +71,7 @@ public:
     int replaceAll( const QRegExp &expr, const QString &replacement,
                     QTextDocument::FindFlags options = 0 );
     QTextCursor currentRegion();
+    void blinkCode( const QTextCursor & c );
 
 public Q_SLOTS:
     void zoomIn(int steps = 1);
@@ -89,11 +90,13 @@ protected:
     virtual void mouseReleaseEvent ( QMouseEvent * );
     virtual void mouseDoubleClickEvent ( QMouseEvent * );
     virtual void mouseMoveEvent( QMouseEvent * );
+    virtual void paintEvent( QPaintEvent * );
 
 private Q_SLOTS:
     void updateLayout();
     void updateLineIndicator( QRect, int );
     void matchBrackets();
+    void onOverlayChanged ( const QList<QRectF> & region );
 
 private:
     struct BracketMatch {
@@ -118,6 +121,8 @@ private:
     QList<QTextEdit::ExtraSelection> mBracketSelections;
     QList<QTextEdit::ExtraSelection> mSearchSelections;
     bool mMouseBracketMatch;
+
+    QGraphicsScene *mOverlay;
 };
 
 } // namespace ScIDE

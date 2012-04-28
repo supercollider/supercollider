@@ -18,6 +18,7 @@ set ( ide_moc_hdr
     widgets/cmd_line.hpp
     widgets/code_editor/editor.hpp
     widgets/code_editor/highlighter.hpp
+    widgets/code_editor/overlay.hpp
     widgets/settings/dialog.hpp
     widgets/settings/sclang_page.hpp
     widgets/settings/editor_page.hpp
@@ -40,6 +41,7 @@ set ( ide_src
     widgets/cmd_line.cpp
     widgets/code_editor/editor.cpp
     widgets/code_editor/highlighter.cpp
+    widgets/code_editor/overlay.cpp
     widgets/settings/dialog.cpp
     widgets/settings/sclang_page.cpp
     widgets/settings/editor_page.cpp
