@@ -111,7 +111,7 @@ private:
     int indentedStartOfLine( const QTextBlock & );
     void updateExtraSelections();
 
-    LineIndicator *_lineIndicator;
+    LineIndicator *mLineIndicator;
     Document *mDoc;
     int mIndentWidth;
     bool mSpaceIndent;

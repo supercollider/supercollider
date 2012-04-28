@@ -59,6 +59,8 @@ void EditorPage::load( Manager *s )
     ui->bracketColor->setColor( s->value("matchingBrackets").value<QColor>() );
     ui->evalCodeFg->setColor( s->value("evaluatedCodeText").value<QColor>() );
     ui->evalCodeBg->setColor( s->value("evaluatedCodeBackground").value<QColor>() );
+    ui->lineNumbersFg->setColor( s->value("lineNumbers").value<QColor>() );
+    ui->lineNumbersBg->setColor( s->value("lineNumbersBackground").value<QColor>() );
 
     s->endGroup(); // colors
 
@@ -90,6 +92,8 @@ void EditorPage::store( Manager *s )
     s->setValue("matchingBrackets", ui->bracketColor->color());
     s->setValue("evaluatedCodeText", ui->evalCodeFg->color());
     s->setValue("evaluatedCodeBackground", ui->evalCodeBg->color());
+    s->setValue("lineNumbers", ui->lineNumbersFg->color());
+    s->setValue("lineNumbersBackground", ui->lineNumbersBg->color());
 
     s->endGroup(); // colors
 
