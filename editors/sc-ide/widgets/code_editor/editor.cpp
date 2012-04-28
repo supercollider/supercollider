@@ -68,7 +68,7 @@ int LineIndicator::widthForLineCount( int lineCount )
 
 CodeEditor::CodeEditor( QWidget *parent ) :
     QPlainTextEdit( parent ),
-    _lineIndicator( new LineIndicator(this) ),
+    mLineIndicator( new LineIndicator(this) ),
     mDoc(0),
     mIndentWidth(4),
     mSpaceIndent(true),
@@ -81,12 +81,12 @@ CodeEditor::CodeEditor( QWidget *parent ) :
     fnt.setStyleHint(QFont::TypeWriter);
     setFont(fnt);
 
-    _lineIndicator->move( contentsRect().topLeft() );
+    mLineIndicator->move( contentsRect().topLeft() );
 
     connect( this, SIGNAL(blockCountChanged(int)),
-             _lineIndicator, SLOT(setLineCount(int)) );
+             mLineIndicator, SLOT(setLineCount(int)) );
 
-    connect( _lineIndicator, SIGNAL( widthChanged() ),
+    connect( mLineIndicator, SIGNAL( widthChanged() ),
              this, SLOT( updateLayout() ) );
 
     connect( this, SIGNAL(updateRequest(QRect,int)),
@@ -98,7 +98,7 @@ CodeEditor::CodeEditor( QWidget *parent ) :
     connect( mOverlay, SIGNAL(changed(const QList<QRectF>&)),
              this, SLOT(onOverlayChanged(const QList<QRectF>&)) );
 
-    _lineIndicator->setLineCount(1);
+    mLineIndicator->setLineCount(1);
 }
 
 void CodeEditor::setDocument( Document *doc )
@@ -119,7 +119,7 @@ void CodeEditor::setDocument( Document *doc )
 
     QPlainTextEdit::setDocument(tdoc);
 
-    _lineIndicator->setLineCount( tdoc->blockCount() );
+    mLineIndicator->setLineCount( tdoc->blockCount() );
 
     mDoc = doc;
 }
@@ -521,6 +521,13 @@ void CodeEditor::applySettings( Settings::Manager *s )
     if (s->contains("text"))
         plt.setColor(QPalette::Text, s->value("text").value<QColor>());
 
+    QPalette lineNumPlt;
+    if (s->contains("lineNumbersBackground"))
+        lineNumPlt.setColor(QPalette::Button, s->value("lineNumbersBackground").value<QColor>());
+    if (s->contains("lineNumbers"))
+        lineNumPlt.setColor(QPalette::ButtonText, s->value("lineNumbers").value<QColor>());
+    mLineIndicator->setPalette(lineNumPlt);
+
     mBracketHighlight = s->value("matchingBrackets").value<QColor>();
 
     s->endGroup(); // colors
@@ -668,15 +675,15 @@ void CodeEditor::paintEvent( QPaintEvent *e )
 
 void CodeEditor::updateLayout()
 {
-    setViewportMargins( _lineIndicator->width(), 0, 0, 0 );
+    setViewportMargins( mLineIndicator->width(), 0, 0, 0 );
 }
 
 void CodeEditor::updateLineIndicator( QRect r, int dy )
 {
     if (dy)
-        _lineIndicator->scroll(0, dy);
+        mLineIndicator->scroll(0, dy);
     else
-        _lineIndicator->update(0, r.y(), _lineIndicator->width(), r.height() );
+        mLineIndicator->update(0, r.y(), mLineIndicator->width(), r.height() );
 }
 
 void CodeEditor::matchBrackets()
@@ -791,17 +798,17 @@ void CodeEditor::resizeEvent( QResizeEvent *e )
     QPlainTextEdit::resizeEvent( e );
 
     QRect cr = contentsRect();
-    _lineIndicator->resize( _lineIndicator->width(), cr.height() );
+    mLineIndicator->resize( mLineIndicator->width(), cr.height() );
 }
 
 void CodeEditor::paintLineIndicator( QPaintEvent *e )
 {
-    QPalette plt( palette() );
+    QPalette plt( mLineIndicator->palette() );
     QRect r( e->rect() );
-    QPainter p( _lineIndicator );
+    QPainter p( mLineIndicator );
 
     p.fillRect( r, plt.color( QPalette::Button ) );
-    p.setPen( plt.color(QPalette::Text) );
+    p.setPen( plt.color(QPalette::ButtonText) );
     p.drawLine( r.topRight(), r.bottomRight() );
 
     QTextBlock block = firstVisibleBlock();
@@ -812,7 +819,7 @@ void CodeEditor::paintLineIndicator( QPaintEvent *e )
     while (block.isValid() && top <= e->rect().bottom()) {
         if (block.isVisible() && bottom >= e->rect().top()) {
             QString number = QString::number(blockNumber + 1);
-            p.drawText(0, top, _lineIndicator->width() - 4, fontMetrics().height(),
+            p.drawText(0, top, mLineIndicator->width() - 4, fontMetrics().height(),
                             Qt::AlignRight, number);
         }
 

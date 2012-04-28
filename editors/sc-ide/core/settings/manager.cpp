@@ -57,6 +57,8 @@ void Manager::initDefaults()
     setDefault("matchingBrackets", Qt::gray);
     setDefault("evaluatedCodeBackground", QColor("#F8A200"));
     setDefault("evaluatedCodeText", Qt::black);
+    setDefault("lineNumbersBackground", appPlt.color(QPalette::Button));
+    setDefault("lineNumbers", appPlt.color(QPalette::ButtonText));
     endGroup(); // colors
 
     beginGroup("highlighting");
