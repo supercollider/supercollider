@@ -64,7 +64,7 @@ Pcollect : FuncFilterPattern {
 		loop {
 			outval = stream.next(inval);
 			if (outval.isNil) { ^inval };
-			inval = yield(func.value(outval));
+			inval = yield(func.value(outval, inval));
 		}
 	}
 	asStream {
@@ -80,7 +80,7 @@ Pselect : FuncFilterPattern {
 			while ({
 				outval = stream.next(inval);
 				if (outval.isNil) { ^inval };
-				func.value(outval).not
+				func.value(outval, inval).not
 			});
 			inval = yield(outval);
 		}
@@ -98,7 +98,7 @@ Preject : FuncFilterPattern {
 			while ({
 				outval = stream.next(inval);
 				if (outval.isNil) { ^inval };
-				func.value(outval);
+				func.value(outval, inval);
 			});
 			inval = yield(outval);
 		}
