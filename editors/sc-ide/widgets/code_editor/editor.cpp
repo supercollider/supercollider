@@ -72,7 +72,8 @@ CodeEditor::CodeEditor( QWidget *parent ) :
     mDoc(0),
     mIndentWidth(4),
     mSpaceIndent(true),
-    mShowWhitespace(false)
+    mShowWhitespace(false),
+    mMouseBracketMatch(false)
 {
     QFont fnt(font());
     fnt.setFamily("monospace");
@@ -609,6 +610,40 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
     }
 
     QPlainTextEdit::keyPressEvent(e);
+}
+
+void CodeEditor::mouseReleaseEvent ( QMouseEvent *e )
+{
+    // Prevent deselection of bracket match:
+    if(!mMouseBracketMatch)
+        QPlainTextEdit::mouseReleaseEvent(e);
+
+    mMouseBracketMatch = false;
+}
+
+void CodeEditor::mouseDoubleClickEvent ( QMouseEvent *e )
+{
+    QTextCursor c(textCursor());
+    BracketMatch m;
+    matchBracket( c.block(), c.positionInBlock(), m );
+    if(m.pos > -1 && m.matchPos > -1)
+    {
+        c.setPosition(qMin(m.pos, m.matchPos));
+        c.setPosition(qMax(m.pos, m.matchPos) + 1, QTextCursor::KeepAnchor);
+        setTextCursor(c);
+        mMouseBracketMatch = true;
+    }
+    else
+    {
+        QPlainTextEdit::mouseDoubleClickEvent(e);
+    }
+}
+
+void CodeEditor::mouseMoveEvent( QMouseEvent *e )
+{
+    // Prevent initiating a text drag:
+    if(!mMouseBracketMatch)
+        QPlainTextEdit::mouseMoveEvent(e);
 }
 
 void CodeEditor::updateLayout()
