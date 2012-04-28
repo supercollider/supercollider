@@ -86,6 +86,9 @@ protected:
     virtual bool event( QEvent * );
     virtual void changeEvent( QEvent * );
     virtual void keyPressEvent( QKeyEvent * );
+    virtual void mouseReleaseEvent ( QMouseEvent * );
+    virtual void mouseDoubleClickEvent ( QMouseEvent * );
+    virtual void mouseMoveEvent( QMouseEvent * );
 
 private Q_SLOTS:
     void updateLayout();
@@ -114,6 +117,7 @@ private:
 
     QList<QTextEdit::ExtraSelection> mBracketSelections;
     QList<QTextEdit::ExtraSelection> mSearchSelections;
+    bool mMouseBracketMatch;
 };
 
 } // namespace ScIDE
