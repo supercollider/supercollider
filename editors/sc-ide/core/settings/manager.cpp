@@ -55,6 +55,8 @@ void Manager::initDefaults()
     setDefault("background", appPlt.color(QPalette::Base));
     setDefault("text", appPlt.color(QPalette::Text));
     setDefault("matchingBrackets", Qt::gray);
+    setDefault("evaluatedCodeBackground", QColor("#F8A200"));
+    setDefault("evaluatedCodeText", Qt::black);
     endGroup(); // colors
 
     beginGroup("highlighting");

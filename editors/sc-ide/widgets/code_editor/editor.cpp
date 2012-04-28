@@ -73,7 +73,8 @@ CodeEditor::CodeEditor( QWidget *parent ) :
     mIndentWidth(4),
     mSpaceIndent(true),
     mShowWhitespace(false),
-    mMouseBracketMatch(false)
+    mMouseBracketMatch(false),
+    mOverlay( new QGraphicsScene(this) )
 {
     QFont fnt(font());
     fnt.setFamily("monospace");
@@ -93,6 +94,9 @@ CodeEditor::CodeEditor( QWidget *parent ) :
 
     connect( this, SIGNAL(cursorPositionChanged()),
              this, SLOT(matchBrackets()) );
+
+    connect( mOverlay, SIGNAL(changed(const QList<QRectF>&)),
+             this, SLOT(onOverlayChanged(const QList<QRectF>&)) );
 
     _lineIndicator->setLineCount(1);
 }
@@ -646,6 +650,22 @@ void CodeEditor::mouseMoveEvent( QMouseEvent *e )
         QPlainTextEdit::mouseMoveEvent(e);
 }
 
+void CodeEditor::onOverlayChanged ( const QList<QRectF> & region )
+{
+    foreach(QRectF r, region)
+    {
+        viewport()->update(r.toRect());
+    }
+}
+
+void CodeEditor::paintEvent( QPaintEvent *e )
+{
+    QPlainTextEdit::paintEvent(e);
+
+    QPainter p(viewport());
+    mOverlay->render(&p, e->rect(), e->rect());
+}
+
 void CodeEditor::updateLayout()
 {
     setViewportMargins( _lineIndicator->width(), 0, 0, 0 );
@@ -868,7 +888,5 @@ void CodeEditor::indent( bool less )
 
     c.endEditBlock();
 }
-
-
 
 } // namespace ScIDE

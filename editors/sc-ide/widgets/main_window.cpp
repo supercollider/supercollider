@@ -375,10 +375,14 @@ void MainWindow::evaluateSelection()
     else {
         text = cursor.block().text();
         if( mEditors->stepForwardEvaluation() ) {
-            cursor.movePosition(QTextCursor::NextBlock);
-            cursor.movePosition(QTextCursor::EndOfBlock);
-            editor->setTextCursor(cursor);
+            QTextCursor newCursor = cursor;
+            newCursor.movePosition(QTextCursor::NextBlock);
+            newCursor.movePosition(QTextCursor::EndOfBlock);
+            editor->setTextCursor(newCursor);
         }
+        // Adjust cursor for code blinking:
+        cursor.movePosition(QTextCursor::StartOfBlock);
+        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
     }
 
     if (text.isEmpty()) return;
@@ -387,6 +391,8 @@ void MainWindow::evaluateSelection()
     text.replace( QChar( 0x2029 ), QChar( '\n' ) );
 
     Main::instance()->scProcess()->evaluateCode(text);
+
+    editor->blinkCode(cursor);
 }
 
 void MainWindow::evaluateRegion()
@@ -405,6 +411,8 @@ void MainWindow::evaluateRegion()
     text.replace( QChar( 0x2029 ), QChar( '\n' ) );
 
     Main::instance()->scProcess()->evaluateCode(text);
+
+    editor->blinkCode(region);
 }
 
 void MainWindow::evaluateCurrentFile()
