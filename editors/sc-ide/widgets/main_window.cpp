@@ -343,6 +343,7 @@ void MainWindow::toggleComandLineFocus()
 void MainWindow::showSettings()
 {
     Settings::Dialog dialog(mMain->settings());
+    dialog.resize(700,400);
     int result = dialog.exec();
     if( result == QDialog::Accepted )
         mMain->applySettings();

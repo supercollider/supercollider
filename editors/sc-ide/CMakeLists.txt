@@ -82,6 +82,7 @@ include_directories(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/includ
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 # Needed for auto-generated forms headers:
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets/util)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 include( ${QT_USE_FILE} )

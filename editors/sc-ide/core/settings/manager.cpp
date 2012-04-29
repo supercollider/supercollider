@@ -51,6 +51,15 @@ void Manager::initDefaults()
     setDefault("indentWidth", 4);
     setDefault("stepForwardEvaluation", false);
 
+    beginGroup("font");
+    QFont fnt(QApplication::font());
+    fnt.setFamily("monospace");
+    fnt.setStyleHint(QFont::TypeWriter);
+    setDefault("family", fnt.family());
+    //setDefault("style", "Regular");
+    setDefault("size", fnt.pointSizeF());
+    endGroup(); // font
+
     beginGroup("colors");
     setDefault("background", appPlt.color(QPalette::Base));
     setDefault("text", appPlt.color(QPalette::Text));

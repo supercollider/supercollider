@@ -23,6 +23,8 @@
 
 #include <QWidget>
 
+class QFontDatabase;
+
 namespace Ui {
     class EditorConfigPage;
 }
@@ -44,9 +46,18 @@ public Q_SLOTS:
     void store( Manager * );
 
 private Q_SLOTS:
+    void onFontFamilyChanged(int);
+    void onFontStyleChanged(int);
+    void onMonospaceToggle(bool);
+    void updateFontPreview();
     void execSyntaxFormatContextMenu(const QPoint &);
 
 private:
+
+    QFontDatabase *fontDatabase;
+    QString fontFamily;
+    QString fontStyle;
+
     Ui::EditorConfigPage *ui;
 };
 

@@ -26,15 +26,23 @@
 
 #include <QMenu>
 #include <QDebug>
+#include <QListWidgetItem>
 
 namespace ScIDE { namespace Settings {
 
 EditorPage::EditorPage(QWidget *parent) :
     QWidget(parent),
-    ui( new Ui::EditorConfigPage )
+    ui( new Ui::EditorConfigPage ),
+    fontDatabase(new QFontDatabase)
 {
     ui->setupUi(this);
 
+    new SyntaxHighlighter(static_cast<QPlainTextEdit*>(ui->fontPreview)->document());
+
+    connect( ui->onlyMonoFonts, SIGNAL(toggled(bool)), this, SLOT(onMonospaceToggle(bool)) );
+    connect( ui->fontList, SIGNAL(currentRowChanged(int)), this, SLOT(onFontFamilyChanged(int)) );
+    connect( ui->fontStyle, SIGNAL(currentRowChanged(int)), this, SLOT(onFontStyleChanged(int)) );
+    connect( ui->fontSize, SIGNAL(valueChanged(double)), this, SLOT(updateFontPreview()) );
     connect( ui->textFormatList, SIGNAL(customContextMenuRequested(const QPoint&)),
              this, SLOT(execSyntaxFormatContextMenu(const QPoint&)) );
 }
@@ -42,6 +50,7 @@ EditorPage::EditorPage(QWidget *parent) :
 EditorPage::~EditorPage()
 {
     delete ui;
+    delete fontDatabase;
 }
 
 void EditorPage::load( Manager *s )
@@ -51,6 +60,36 @@ void EditorPage::load( Manager *s )
     ui->spaceIndent->setChecked( s->value("spaceIndent").toBool() );
     ui->indentWidth->setValue( s->value("indentWidth").toInt() );
     ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation").toBool() );
+
+    s->beginGroup("font");
+
+    fontFamily = s->value("family").toString();
+    fontStyle = s->value("style").toString();
+
+    ui->fontList->clear();
+    int idx = 0;
+    QStringList fontFamilies = fontDatabase->families();
+    foreach(QString family, fontFamilies)
+    {
+        ui->fontList->addItem(family);
+        if(family.compare(fontFamily, Qt::CaseInsensitive) == 0)
+            idx = ui->fontList->count() - 1;
+    }
+    ui->fontList->setCurrentRow(idx);
+    ui->fontList->scrollToItem(ui->fontList->item(idx));
+
+    int c = ui->fontStyle->count();
+    for(int i = 0; i < c; ++i) {
+        QString style = ui->fontStyle->item(i)->text();
+        if(style.compare(fontStyle, Qt::CaseInsensitive)==0) {
+            ui->fontStyle->setCurrentRow(i);
+            break;
+        }
+    }
+
+    ui->fontSize->setValue( s->value("size").toReal() );
+
+    s->endGroup(); // font
 
     s->beginGroup("colors");
 
@@ -75,6 +114,8 @@ void EditorPage::load( Manager *s )
     s->endGroup(); // highlighting
 
     s->endGroup(); // IDE/editor
+
+    ui->fontPreview->applySettings(s);
 }
 
 void EditorPage::store( Manager *s )
@@ -84,6 +125,18 @@ void EditorPage::store( Manager *s )
     s->setValue("spaceIndent", ui->spaceIndent->isChecked());
     s->setValue("indentWidth", ui->indentWidth->value());
     s->setValue("stepForwardEvaluation", ui->stepForwardEvaluation->isChecked());
+
+    s->beginGroup("font");
+
+    QListWidgetItem *item = ui->fontList->currentItem();
+    if(item)
+        s->setValue("family", item->text());
+    item = ui->fontStyle->currentItem();
+    if(item)
+        s->setValue("style", item->text());
+    s->setValue("size", ui->fontSize->value());
+
+    s->endGroup(); // font
 
     s->beginGroup("colors");
 
@@ -110,6 +163,63 @@ void EditorPage::store( Manager *s )
     s->endGroup(); // highlighting
 
     s->endGroup();
+}
+
+void EditorPage::onFontFamilyChanged(int idx)
+{
+    if(idx < 0) return;
+
+    Q_ASSERT(fontDatabase);
+
+    fontFamily = ui->fontList->item(idx)->text();
+
+    QStringList styles = fontDatabase->styles(fontFamily);
+    ui->fontStyle->clear();
+    int styleIdx = 0;
+    foreach(QString style, styles) {
+        ui->fontStyle->addItem(style);
+        if( style.compare("Regular", Qt::CaseInsensitive) == 0
+            || style.compare("Normal", Qt::CaseInsensitive) == 0
+        )
+            styleIdx = ui->fontStyle->count()-1;
+    }
+
+    ui->fontStyle->setCurrentRow(styleIdx);
+    updateFontPreview();
+}
+
+void EditorPage::onFontStyleChanged(int idx)
+{
+    updateFontPreview();
+}
+
+void EditorPage::onMonospaceToggle(bool on)
+{
+    int c = ui->fontList->count();
+    for(int i = 0; i < c; ++i)
+    {
+        QListWidgetItem *item = ui->fontStyle->currentItem();
+        QString style;
+        if(item) style = item->text();
+
+        item = ui->fontList->item(i);
+        QString family = item->text();
+
+        item->setHidden(on && !fontDatabase->isFixedPitch(family, style));
+    }
+}
+
+void EditorPage::updateFontPreview()
+{
+    QFont f;
+    QListWidgetItem *item = ui->fontList->currentItem();
+    if(item)
+        f.setFamily(item->text());
+    item = ui->fontStyle->currentItem();
+    if(item)
+        f.setStyleName(item->text());
+    f.setPointSizeF(ui->fontSize->value());
+    ui->fontPreview->setFont(f);
 }
 
 void EditorPage::execSyntaxFormatContextMenu(const QPoint &pos)
