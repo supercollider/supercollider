@@ -57,8 +57,6 @@ endif()
 #############################################
 # Compiler flags etc
 
-add_definitions(-DWIN32_LEAN_AND_MEAN)
-
 if (${CMAKE_COMPILER_IS_GNUCXX})
 	exec_program(${CMAKE_CXX_COMPILER} ARGS -dumpversion OUTPUT_VARIABLE _gcc_version)
 
@@ -120,6 +118,8 @@ if(WIN32)
     set_property(DIRECTORY
                  APPEND
                  PROPERTY COMPILE_DEFINITIONS SC_WIN32 NOMINMAX _WIN32_WINNT=0x0500)
+
+    add_definitions(-DWIN32_LEAN_AND_MEAN)
 
     if(MSVC)
         SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_RELEASE} /MTd")
