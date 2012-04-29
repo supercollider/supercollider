@@ -27,6 +27,7 @@
 #include <QMenu>
 #include <QDebug>
 #include <QListWidgetItem>
+#include <QFontDatabase>
 
 namespace ScIDE { namespace Settings {
 
