@@ -503,15 +503,9 @@ void CodeEditor::applySettings( Settings::Manager *s )
     setIndentWidth( s->value("indentWidth").toInt() );
 
     QPalette plt;
+
     QFont fnt;
-
-    s->beginGroup("font");
-
-    fnt.setFamily( s->value("family").toString() );
-    fnt.setStyleName( s->value("style").toString() );
-    fnt.setPointSizeF( s->value("size").toDouble() );
-
-    s->endGroup(); // font
+    fnt.fromString( s->value("font").toString() );
 
     s->beginGroup("colors");
 

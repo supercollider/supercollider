@@ -53,6 +53,7 @@ private Q_SLOTS:
     void execSyntaxFormatContextMenu(const QPoint &);
 
 private:
+    QFont constructFont();
 
     QFontDatabase *fontDatabase;
     QString fontFamily;
