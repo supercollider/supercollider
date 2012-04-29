@@ -61,10 +61,10 @@ void EditorPage::load( Manager *s )
     ui->indentWidth->setValue( s->value("indentWidth").toInt() );
     ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation").toBool() );
 
-    s->beginGroup("font");
-
-    fontFamily = s->value("family").toString();
-    fontStyle = s->value("style").toString();
+    QFont f;
+    f.fromString(s->value("font").toString());
+    fontFamily = f.family();
+    fontStyle = fontDatabase->styleString(f);
 
     ui->fontList->clear();
     int idx = 0;
@@ -87,9 +87,7 @@ void EditorPage::load( Manager *s )
         }
     }
 
-    ui->fontSize->setValue( s->value("size").toReal() );
-
-    s->endGroup(); // font
+    ui->fontSize->setValue( f.pointSizeF() );
 
     s->beginGroup("colors");
 
@@ -126,17 +124,8 @@ void EditorPage::store( Manager *s )
     s->setValue("indentWidth", ui->indentWidth->value());
     s->setValue("stepForwardEvaluation", ui->stepForwardEvaluation->isChecked());
 
-    s->beginGroup("font");
-
-    QListWidgetItem *item = ui->fontList->currentItem();
-    if(item)
-        s->setValue("family", item->text());
-    item = ui->fontStyle->currentItem();
-    if(item)
-        s->setValue("style", item->text());
-    s->setValue("size", ui->fontSize->value());
-
-    s->endGroup(); // font
+    QFont f = constructFont();
+    s->setValue("font", f.toString());
 
     s->beginGroup("colors");
 
@@ -211,15 +200,28 @@ void EditorPage::onMonospaceToggle(bool on)
 
 void EditorPage::updateFontPreview()
 {
-    QFont f;
+    ui->fontPreview->setFont(constructFont());
+}
+
+QFont EditorPage::constructFont()
+{
+    QString family, style;
+    double size;
+
     QListWidgetItem *item = ui->fontList->currentItem();
     if(item)
-        f.setFamily(item->text());
+        family = item->text();
+
     item = ui->fontStyle->currentItem();
     if(item)
-        f.setStyleName(item->text());
-    f.setPointSizeF(ui->fontSize->value());
-    ui->fontPreview->setFont(f);
+        style = item->text();
+
+    size = ui->fontSize->value();
+
+    QFont f = fontDatabase->font(family, style, size);
+    f.setPointSizeF(size);
+
+    return f;
 }
 
 void EditorPage::execSyntaxFormatContextMenu(const QPoint &pos)
