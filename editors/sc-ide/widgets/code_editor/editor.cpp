@@ -76,11 +76,6 @@ CodeEditor::CodeEditor( QWidget *parent ) :
     mMouseBracketMatch(false),
     mOverlay( new QGraphicsScene(this) )
 {
-    QFont fnt(font());
-    fnt.setFamily("monospace");
-    fnt.setStyleHint(QFont::TypeWriter);
-    setFont(fnt);
-
     mLineIndicator->move( contentsRect().topLeft() );
 
     connect( this, SIGNAL(blockCountChanged(int)),
@@ -128,7 +123,7 @@ void CodeEditor::setIndentWidth( int width )
 {
     mIndentWidth = width;
 
-    QTextDocument *tdoc = mDoc->textDocument();
+    QTextDocument *tdoc = QPlainTextEdit::document();
 
     QFontMetricsF fm(font());
 
@@ -464,7 +459,7 @@ void CodeEditor::clearSearchHighlighting()
 void CodeEditor::zoomIn(int steps)
 {
     QFont f = font();
-    qreal size = f.pointSize();
+    qreal size = f.pointSizeF();
     if( size != -1 )
         f.setPointSizeF( size + steps );
     else
@@ -476,7 +471,7 @@ void CodeEditor::zoomIn(int steps)
 void CodeEditor::zoomOut(int steps)
 {
     QFont f = font();
-    qreal size = f.pointSize();
+    qreal size = f.pointSizeF();
     if( size != -1 )
         f.setPointSizeF( qMax(1.0, size - steps) );
     else
@@ -508,10 +503,15 @@ void CodeEditor::applySettings( Settings::Manager *s )
     setIndentWidth( s->value("indentWidth").toInt() );
 
     QPalette plt;
-    QFont fnt(font());
+    QFont fnt;
 
-    fnt.setFamily("monospace");
-    fnt.setStyleHint(QFont::TypeWriter);
+    s->beginGroup("font");
+
+    fnt.setFamily( s->value("family").toString() );
+    fnt.setStyleName( s->value("style").toString() );
+    fnt.setPointSizeF( s->value("size").toDouble() );
+
+    s->endGroup(); // font
 
     s->beginGroup("colors");
 
