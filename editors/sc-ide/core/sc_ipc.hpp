@@ -51,13 +51,15 @@ public:
 
     void onSclangStart(void)
     {
-        listen(mIdeName);
+        if(!isListening()) // avoid a warning on stderr
+            listen(mIdeName);
     }
 
 Q_SIGNALS:
     void message(QString const &);
 
 private Q_SLOTS:
+
     void onNewConnection(void)
     {
         mSocket = nextPendingConnection();
