@@ -80,37 +80,39 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
 void MultiEditor::createActions()
 {
+    Settings::Manager *s = Main::instance()->settings();
+    s->beginGroup("IDE/shortcuts");
+
     QAction * act;
 
     // File
 
     mActions[DocNew] = act = new QAction(
         QIcon::fromTheme("document-new"), tr("&New"), this);
-    act->setShortcuts(QKeySequence::New);
+    act->setShortcut(s->shortcut("newDocument"));
     act->setStatusTip(tr("Create a new document"));
     connect(act, SIGNAL(triggered()), this, SLOT(newDocument()));
 
     mActions[DocOpen] = act = new QAction(
         QIcon::fromTheme("document-open"), tr("&Open..."), this);
-    act->setShortcuts(QKeySequence::Open);
+    act->setShortcut(s->shortcut("openDocument"));
     act->setStatusTip(tr("Open an existing file"));
     connect(act, SIGNAL(triggered()), this, SLOT(openDocument()));
 
     mActions[DocSave] = act = new QAction(
         QIcon::fromTheme("document-save"), tr("&Save"), this);
-    act->setShortcuts(QKeySequence::Save);
+    act->setShortcut(s->shortcut("saveDocument"));
     act->setStatusTip(tr("Save the current document"));
     connect(act, SIGNAL(triggered()), this, SLOT(saveDocument()));
 
     mActions[DocSaveAs] = act = new QAction(
         QIcon::fromTheme("document-save-as"), tr("Save &As..."), this);
-    act->setShortcuts(QKeySequence::SaveAs);
     act->setStatusTip(tr("Save the current document into a different file"));
     connect(act, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
 
     mActions[DocClose] = act = new QAction(
         QIcon::fromTheme("window-close"), tr("&Close"), this);
-    act->setShortcuts(QKeySequence::Close);
+    act->setShortcut(s->shortcut("closeDocument"));
     act->setStatusTip(tr("Close the current document"));
     connect(act, SIGNAL(triggered()), this, SLOT(closeDocument()));
 
@@ -118,51 +120,52 @@ void MultiEditor::createActions()
 
     mActions[Undo] = act = new QAction(
         QIcon::fromTheme("edit-undo"), tr("&Undo"), this);
-    act->setShortcuts(QKeySequence::Undo);
+    act->setShortcut(s->shortcut("undo"));
     act->setStatusTip(tr("Undo last editing action"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(undo()));
     mSigMux->connect(SIGNAL(undoAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Redo] = act = new QAction(
         QIcon::fromTheme("edit-redo"), tr("Re&do"), this);
-    act->setShortcuts(QKeySequence::Redo);
+    act->setShortcut(s->shortcut("redo"));
     act->setStatusTip(tr("Redo next editing action"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(redo()));
     mSigMux->connect(SIGNAL(redoAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Cut] = act = new QAction(
         QIcon::fromTheme("edit-cut"), tr("Cu&t"), this);
-    act->setShortcuts(QKeySequence::Cut);
+    act->setShortcut(s->shortcut("cut"));
     act->setStatusTip(tr("Cut text to clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(cut()));
     mSigMux->connect(SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Copy] = act = new QAction(
         QIcon::fromTheme("edit-copy"), tr("&Copy"), this);
-    act->setShortcuts(QKeySequence::Copy);
+    act->setShortcut(s->shortcut("copy"));
     act->setStatusTip(tr("Copy text to clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(copy()));
     mSigMux->connect(SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Paste] = act = new QAction(
         QIcon::fromTheme("edit-paste"), tr("&Paste"), this);
-    act->setShortcuts(QKeySequence::Paste);
+    act->setShortcut(s->shortcut("paste"));
     act->setStatusTip(tr("Paste text from clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(paste()));
 
     mActions[Find] = act = new QAction(
         QIcon::fromTheme("edit-find"), tr("&Find..."), this);
-    act->setShortcuts(QKeySequence::Find);
+    act->setShortcut(s->shortcut("find"));
     act->setStatusTip(tr("Find text in document"));
     connect(act, SIGNAL(triggered()), this, SLOT(showFindPanel()));
 
     mActions[Replace] = act = new QAction(
         QIcon::fromTheme("edit-replace"), tr("&Replace..."), this);
-    act->setShortcuts(QKeySequence::Replace);
+    act->setShortcut(s->shortcut("replace"));
     act->setStatusTip(tr("Find and replace text in document"));
     connect(act, SIGNAL(triggered()), this, SLOT(showReplacePanel()));
 
-    QShortcut *escShortcut = new QShortcut( Qt::Key_Escape, this, SLOT(hideToolPanel()) );
+    QShortcut *escShortcut =
+        new QShortcut( s->shortcut("hideToolPanel"), this, SLOT(hideToolPanel()) );
     mSigMux->connect(escShortcut, SIGNAL(activated()), SLOT(clearSearchHighlighting()));
 
     mActions[IndentMore] = act = new QAction(
@@ -179,13 +182,13 @@ void MultiEditor::createActions()
 
     mActions[EnlargeFont] = act = new QAction(
         QIcon::fromTheme("zoom-in"), tr("&Enlarge Font"), this);
-    act->setShortcut(QKeySequence(tr("CTRL++", "View|Enlarge Font")));
+    act->setShortcut(s->shortcut("enlargeFont"));
     act->setStatusTip(tr("Increase displayed font size"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomIn()));
 
     mActions[ShrinkFont] = act = new QAction(
         QIcon::fromTheme("zoom-out"), tr("&Shrink Font"), this);
-    act->setShortcut(QKeySequence(tr("Ctrl+-", "View|Shrink Font")));
+    act->setShortcut(s->shortcut("shrinkFont"));
     act->setStatusTip(tr("Decrease displayed font size"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomOut()));
 
@@ -195,8 +198,10 @@ void MultiEditor::createActions()
 
     // Browse
     mActions[OpenClassDefinition] = act = new QAction(tr("Open Class Definition"), this);
-    act->setShortcut(QKeySequence(tr("Ctrl+d")));
+    act->setShortcut(s->shortcut("openDefinition"));
     connect(act, SIGNAL(triggered(bool)), this, SLOT(openClassDefinition()));
+
+    s->endGroup(); // IDE/shortcuts
 }
 
 void MultiEditor::updateActions()

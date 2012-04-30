@@ -72,6 +72,30 @@ void Manager::initDefaults()
 
     endGroup(); // editor
 
+    beginGroup("shortcuts");
+    setDefault("cmdLineFocus", tr("Ctrl+Tab", "Toggle command line focus"));
+    setDefault("quit", tr("Ctrl+Q", "Quit application"));
+    setDefault("evaluateSelection", tr("Ctrl+Return", "Evaluate selection"));
+    setDefault("evaluateRegion", tr("Alt+Return", "Evaluate region"));
+    setDefault("stopMain", tr("Ctrl+.", "Stop Main (a.k.a. cmd-period)"));
+    setDefault("helpForSelection", tr("Ctrl+H", "Help for selection"));
+    setDefault("newDocument", tr("Ctrl+N", "New document"));
+    setDefault("openDocument", tr("Ctrl+O", "Open document"));
+    setDefault("saveDocument", tr("Ctrl+S", "Save document"));
+    setDefault("closeDocument", tr("Ctrl+W", "Close document"));
+    setDefault("undo", tr("Ctrl+Z", "Undo"));
+    setDefault("redo", tr("Ctrl+Shift+Z", "Redo"));
+    setDefault("cut", tr("Ctrl+X", "Cut"));
+    setDefault("copy", tr("Ctrl+C", "Copy"));
+    setDefault("paste", tr("Ctrl+V", "Paste"));
+    setDefault("find", tr("Ctrl+F", "Find"));
+    setDefault("replace", tr("Ctrl+R", "Replace"));
+    setDefault("hideToolPanel", tr("Esc", "Hide tool panel"));
+    setDefault("enlargeFont", tr("Ctrl++", "Enlarge font"));
+    setDefault("shrinkFont", tr("Ctrl+-", "Shrink font"));
+    setDefault("openDefinition", tr("Ctrl+D", "Open definition"));
+    endGroup(); // shortcuts
+
     endGroup(); // IDE
 }
 
@@ -122,6 +146,11 @@ QVariant Manager::value ( const QString & key ) const
 void Manager::setValue ( const QString & key, const QVariant & value )
 {
     mSettings->setValue(key, value);
+}
+
+QKeySequence Manager::shortcut( const QString & key )
+{
+    return QKeySequence( value(key).toString() );
 }
 
 }} // namespace ScIDE::Settings
