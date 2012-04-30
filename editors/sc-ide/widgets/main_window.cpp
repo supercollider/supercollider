@@ -116,7 +116,10 @@ MainWindow::MainWindow(Main * main) :
 
 void MainWindow::createMenus()
 {
-    new QShortcut( QKeySequence("Ctrl+Tab"), this, SLOT(toggleComandLineFocus()) );
+    Settings::Manager *s = mMain->settings();
+    s->beginGroup("IDE/shortcuts");
+
+    new QShortcut( s->shortcut("cmdLineFocus"), this, SLOT(toggleComandLineFocus()) );
 
     QAction *act;
 
@@ -124,7 +127,7 @@ void MainWindow::createMenus()
 
     mActions[Quit] = act = new QAction(
         QIcon::fromTheme("application-exit"), tr("&Quit..."), this);
-    act->setShortcuts(QKeySequence::Quit);
+    act->setShortcut(s->shortcut("quit"));
     act->setStatusTip(tr("Quit SuperCollider IDE"));
     QObject::connect( act, SIGNAL(triggered()), this, SLOT(onQuit()) );
 
@@ -144,18 +147,18 @@ void MainWindow::createMenus()
 
     mActions[EvaluateSelection] = act = new QAction(
         QIcon::fromTheme("media-playback-start"), tr("&Evaluate Selection"), this);
-    act->setShortcut(QKeySequence(tr("Ctrl+Return", "Language|Evaluate Selection")));
+    act->setShortcut(s->shortcut("evaluateSelection"));
     act->setStatusTip(tr("Evaluate selection or current line"));
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
 
     mActions[EvaluateRegion] = act = new QAction(
     QIcon::fromTheme("media-playback-start"), tr("&Evaluate Region"), this);
-    act->setShortcut(QKeySequence(tr("Alt+Return", "Language|Evaluate Region")));
+    act->setShortcut(s->shortcut("evaluateRegion"));
     act->setStatusTip(tr("Evaluate current region"));
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateRegion()));
 
     mMain->scProcess()->action(ScIDE::SCProcess::StopMain)
-        ->setShortcut(QKeySequence(tr("Ctrl+.", "Language|Stop Main")));
+        ->setShortcut(s->shortcut("stopMain"));
 
     // Settings
 
@@ -181,9 +184,11 @@ void MainWindow::createMenus()
 
     mActions[HelpForSelection] = act = new QAction(
     QIcon::fromTheme("system-help"), tr("&Help for Selection"), this);
-    act->setShortcut(QKeySequence(tr("Ctrl+H", "Help|Help for Selection")));
+    act->setShortcut(s->shortcut("helpForSelection"));
     act->setStatusTip(tr("Find help for selected text"));
     connect(act, SIGNAL(triggered()), this, SLOT(helpForSelection()));
+
+    s->endGroup(); // IDE/shortcuts;
 
     QMenu *menu;
     QMenu *submenu;

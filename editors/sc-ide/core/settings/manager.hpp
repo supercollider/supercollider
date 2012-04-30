@@ -24,6 +24,7 @@
 #include "serialization.hpp" // to forward meta type declarations
 
 #include <QObject>
+#include <QKeySequence>
 
 namespace ScIDE { namespace Settings {
 
@@ -62,6 +63,8 @@ public:
     }
 
     void setValue ( const QString & key, const QVariant & value );
+
+    QKeySequence shortcut( const QString & key );
 
 private:
     void setDefault ( const QString & key, const QVariant & value )
