@@ -191,7 +191,7 @@ subsubsection: METHOD methnames optMETHODARGS eol methodbody
                 method_type=="CMETHOD"?"CCOPYMETHOD":(method_type=="IMETHOD"?"ICOPYMETHOD":"COPYMETHOD"),
                 $2,NULL
                 ); }
-             | PRIVATE commalist eol { $$ = doc_node_make_take_children(method_type=="CMETHOD"?"CPRIVATE":"IPRIVATE",NULL,$2); }
+             | PRIVATE commalist eoleof { $$ = doc_node_make_take_children(method_type=="CMETHOD"?"CPRIVATE":"IPRIVATE",NULL,$2); }
 ;
 
 optMETHODARGS: { $$ = NULL; }
@@ -277,8 +277,8 @@ bodyelem: rangetag body TAGSYM { $$ = doc_node_make_take_children($1,NULL,$2); }
         | TABLE tablebody TAGSYM { $$ = doc_node_make_take_children("TABLE",NULL,$2); }
         | DEFINITIONLIST deflistbody TAGSYM { $$ = doc_node_make_take_children("DEFINITIONLIST",NULL,$2); }
         | blocktag wordsnl TAGSYM { $$ = doc_node_make($1,$2,NULL); }
-        | CLASSTREE words eol { $$ = doc_node_make("CLASSTREE",$2,NULL); }
-        | KEYWORD commalist eol { $$ = doc_node_make_take_children("KEYWORD",NULL,$2);
+        | CLASSTREE words eoleof { $$ = doc_node_make("CLASSTREE",$2,NULL); }
+        | KEYWORD commalist eoleof { $$ = doc_node_make_take_children("KEYWORD",NULL,$2);
 //            printf("keyword '%s'\n",$2->children[0]->text);
         }
         | EMPTYLINES { $$ = NULL; }
@@ -369,6 +369,10 @@ words2: words2 anywordurl { $$ = strmerge($1,$2); }
 eol: NEWLINE
    | EMPTYLINES
 ;
+
+eoleof: eol
+      | END
+      ;
 
 anywordnl: anyword
          | eol { $$ = strdup("\n"); }
