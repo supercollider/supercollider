@@ -378,18 +378,18 @@ QView : QObject {
 
   mouseDownAction_ { arg aFunction;
     mouseDownAction = aFunction;
-    this.setEventHandlerEnabled( QObject.mouseDownEvent, true );
-    this.setEventHandlerEnabled( QObject.mouseDblClickEvent, true );
+    this.setEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true );
+    this.setEventHandler( QObject.mouseDblClickEvent, \mouseDownEvent, true );
   }
 
   mouseUpAction_ { arg aFunction;
     mouseUpAction = aFunction;
-    this.setEventHandlerEnabled( QObject.mouseUpEvent, true );
+    this.setEventHandler( QObject.mouseUpEvent, \mouseUpEvent, true );
   }
 
   mouseMoveAction_ { arg aFunction;
     mouseMoveAction = aFunction;
-    this.setEventHandlerEnabled( QObject.mouseMoveEvent, true );
+    this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true );
   }
 
   // mouseOverAction responds to same Qt event as mouseMoveAction,
@@ -397,28 +397,28 @@ QView : QObject {
   // See QView:-mouseMoveEvent method.
   mouseOverAction_ { arg aFunction;
     mouseOverAction = aFunction;
-    this.setEventHandlerEnabled( QObject.mouseMoveEvent, true );
+    this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true );
     this.setProperty(\mouseTracking, true);
   }
 
   mouseEnterAction_ { arg aFunction;
     mouseEnterAction = aFunction;
-    this.setEventHandlerEnabled( QObject.mouseEnterEvent, true );
+    this.setEventHandler( QObject.mouseEnterEvent, \mouseEnterEvent, true );
   }
 
   mouseLeaveAction_ { arg aFunction;
     mouseLeaveAction = aFunction;
-    this.setEventHandlerEnabled( QObject.mouseLeaveEvent, true );
+    this.setEventHandler( QObject.mouseLeaveEvent, \mouseLeaveEvent, true );
   }
 
   mouseWheelAction_ { arg aFunction;
     mouseWheelAction = aFunction;
-    this.setEventHandlerEnabled( QObject.mouseWheelEvent, true );
+    this.setEventHandler( QObject.mouseWheelEvent, \mouseWheelEvent, true );
   }
 
   beginDragAction_ { arg handler;
     beginDragAction = handler;
-    this.setEventHandlerEnabled( QObject.mouseDownEvent, true )
+    this.setEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true )
   }
 
   canReceiveDragHandler_ { arg handler;
@@ -535,6 +535,7 @@ QView : QObject {
   }
 
   initQView { arg parent;
+
     var handleKeyDown, handleKeyUp, overridesMouseDown, handleDrag;
 
     if (parent.notNil) {
@@ -555,31 +556,23 @@ QView : QObject {
 
     // mouse events
     overridesMouseDown = this.overrides( \mouseDown );
-
-    this.setEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true,
-        this.overrides(\defaultGetDrag) || overridesMouseDown );
-
-    this.setEventHandler( QObject.mouseDblClickEvent, \mouseDownEvent, true,
-      overridesMouseDown );
-
-    this.setEventHandler( QObject.mouseUpEvent, \mouseUpEvent, true,
-      this.overrides( \mouseUp ) );
-
-    this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true,
-      this.overrides( \mouseMove ) || this.overrides( \mouseOver ) );
-
-    this.setEventHandler( QObject.mouseEnterEvent, \mouseEnterEvent, true,
-      this.overrides( \mouseEnter ) );
-
-    this.setEventHandler( QObject.mouseLeaveEvent, \mouseLeaveEvent, true,
-      this.overrides( \mouseLeave ) );
-
-    this.setEventHandler( QObject.mouseWheelEvent, \mouseWheelEvent, true,
-      this.overrides( \mouseWheel ) );
+    if( this.respondsTo(\defaultGetDrag) || overridesMouseDown )
+      {this.setEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true )};
+    if( overridesMouseDown )
+      {this.setEventHandler( QObject.mouseDblClickEvent, \mouseDownEvent, true )};
+    if( this.overrides( \mouseUp ) )
+      {this.setEventHandler( QObject.mouseUpEvent, \mouseUpEvent, true )};
+    if( this.overrides( \mouseMove ) || this.overrides( \mouseOver ) )
+      {this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true )};
+    if( this.overrides( \mouseEnter ) )
+      {this.setEventHandler( QObject.mouseEnterEvent, \mouseEnterEvent, true )};
+    if( this.overrides( \mouseLeave ) )
+      {this.setEventHandler( QObject.mouseLeaveEvent, \mouseLeaveEvent, true )};
+    if( this.overrides( \mouseWheel ) )
+      {this.setEventHandler( QObject.mouseWheelEvent, \mouseWheelEvent, true )};
 
     // DnD events
-    handleDrag = this.overrides(\defaultCanReceiveDrag)
-      or: {this.overrides(\defaultReceiveDrag)};
+    handleDrag = this.respondsTo(\defaultCanReceiveDrag) or: {this.respondsTo(\defaultReceiveDrag)};
     this.setEventHandler( 60, \dragEnterEvent, true, enabled:handleDrag );
     this.setEventHandler( 61, \dragMoveEvent, true, enabled:handleDrag );
     this.setEventHandler( 63, \dropEvent, true, enabled:handleDrag );
@@ -765,8 +758,8 @@ QView : QObject {
   overrides { arg method; ^this.prOverrides(QView, method) }
 
   prOverrides { arg superclass, method;
-      _Qt_IsMethodOverridden
-      ^this.primitiveFailed
+    _Qt_IsMethodOverridden
+    ^this.primitiveFailed
   }
 
   nonimpl { arg methodName;
