@@ -603,13 +603,15 @@ SCDoc {
         ^false;
     }
 
-    *renderAll {
+    *renderAll {|includeExtensions=true|
         this.postMsg("Rendering all documents");
         this.documents.do {|doc|
-            if(doc.isUndocumentedClass) {
-                this.renderUndocClass(doc);
-            } {
-                this.parseAndRender(doc);
+            if(includeExtensions or: {doc.isExtension.not}) {
+                if(doc.isUndocumentedClass) {
+                    this.renderUndocClass(doc);
+                } {
+                    this.parseAndRender(doc);
+                }
             }
         };
         this.postMsg("Done!");
