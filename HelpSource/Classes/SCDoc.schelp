@@ -93,6 +93,8 @@ The link::Classes/SCDocEntry:: to parse and render.
 
 method:: renderAll
 Render all help-files. Useful mainly if you want to render all help to put online or similar.
+argument:: includeExtensions
+If false, skip quarks, plugins and other extensions.
 
 method:: prepareHelpForURL
 Prepare help for the given URL by checking if the file needs rendering from schelp source, or some other action needs to be done.

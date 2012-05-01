@@ -3,6 +3,7 @@ HTML renderer
 */
 SCDocHTMLRenderer {
     classvar currentClass, currentImplClass, currentMethod, currArg;
+    classvar currentNArgs;
     classvar footNotes;
     classvar noParBreak;
     classvar currDoc;
@@ -322,6 +323,18 @@ SCDocHTMLRenderer {
             "  Grouped methods % does not have the same argument signature."
             .format(currDoc.fullPath, names).warn;
         };
+        
+        // ignore trailing mul add arguments
+        if(currentMethod.notNil) {
+            currentNArgs = currentMethod.argNames.size;
+            if(currentNArgs > 2
+            and: {currentMethod.argNames[currentNArgs-1] == \add}
+            and: {currentMethod.argNames[currentNArgs-2] == \mul}) {
+                currentNArgs = currentNArgs - 2;
+            }
+        } {
+            currentNArgs = 0;
+        };    
 
         if(node.children.size > 1) {
             stream << "<div class='method'>";
@@ -514,13 +527,13 @@ SCDocHTMLRenderer {
             \ARGUMENTS, {
                 stream << "<h4>Arguments:</h4>\n<table class='arguments'>\n";
                 currArg = 0;
-                if(currentMethod.notNil and: {node.children.size < (currentMethod.argNames.size-1)}) {
+                if(currentMethod.notNil and: {node.children.size < (currentNArgs-1)}) {
                     "SCDoc: In %\n"
                     "  Method %% has % args, but doc has % argument:: tags.".format(
                         currDoc.fullPath,
                         if(currentMethod.ownerClass.isMetaClass) {"*"} {"-"},
                         currentMethod.name,
-                        currentMethod.argNames.size-1,
+                        currentNArgs-1,
                         node.children.size,
                     ).warn;
                 };
