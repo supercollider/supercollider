@@ -29,6 +29,39 @@ Mix {
 		var array = Array.fill(n, function);
 		^this.new(array);
 	}
+
+	// and these common idioms
+	*ar { |array|
+		var result = this.new(array);
+		^switch(result.rate)
+			{ \audio } { result }
+			{ \control } { K2A.ar(result) }
+			{ \scalar } { DC.ar(result) }
+			{ Error("Unsupported rate % for Mix.ar".format(result.rate)).throw };
+	}
+
+	*kr { |array|
+		var result;
+		// 'rate' on an array returns the fastest rate
+		// ('audio' takes precedence over 'control' over 'scalar')
+		if(array.rate == \audio) {
+			"Audio rate input(s) to Mix.kr will result in signal degradation.".warn;
+			array.do { |unit|
+				if(unit.rate == \audio) {
+					(unit + unit.rate).postln;
+					unit.dumpArgs;
+				};
+			};
+			array = array.collect { |unit|
+				if(unit.rate == \audio) { A2K.kr(unit) } { unit };
+			};
+		};
+		result = this.new(array);
+		^switch(result.rate)
+			{ \control } { result }
+			{ \scalar } { DC.kr(result) }
+			{ Error("Unsupported rate % for Mix.kr".format(result.rate)).throw };
+	}		
 }
 
 
