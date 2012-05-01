@@ -32,6 +32,7 @@ PyrSymbol *s_interpretCmdLine;
 PyrSymbol *s_interpretPrintCmdLine;
 PyrSymbol *s_doFunction;
 PyrSymbol *s_doDrawFunc;
+PyrSymbol *s_prRelease;
 PyrSymbol *s_Rect;
 PyrSymbol *s_Point;
 PyrSymbol *s_Color;
@@ -72,6 +73,7 @@ void initPrimitives () {
 
   s_doFunction = getsym("doFunction");
   s_doDrawFunc = getsym("doDrawFunc");
+  s_prRelease = getsym("prRelease");
 
   s_Rect = getsym("Rect");
   s_Point = getsym("Point");

@@ -59,7 +59,6 @@ QObject {
   initQObject{ arg className, argumentArray;
     this.prConstruct( className, argumentArray );
     heap = heap.add( this );
-    this.connectFunction( 'destroyed()', { heap.remove(this) }, false );
   }
 
   destroy {
@@ -176,6 +175,8 @@ QObject {
     _QObject_ManuallyFinalize
     ^this.primitiveFailed
   }
+
+  prRelease { heap.remove(this); }
 
   doFunction { arg f ... args; f.performList(\value, this, args); }
 }

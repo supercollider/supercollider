@@ -60,6 +60,7 @@ bool QObjectProxy::compareThread() {
 void QObjectProxy::invalidate() {
   qcProxyDebugMsg( 1, QString("Object has been deleted. Invalidating proxy.") );
   mutex.lock(); qObject = 0; mutex.unlock();
+  QApplication::postEvent( this, new QEvent((QEvent::Type) QtCollider::Event_Proxy_Release) );
 }
 
 bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *argSlot,
@@ -204,6 +205,9 @@ void QObjectProxy::customEvent( QEvent *event )
       return;
     case (QEvent::Type) QtCollider::Event_Proxy_Destroy:
       destroyEvent( static_cast<DestroyEvent*>(event) );
+      return;
+    case (QEvent::Type) QtCollider::Event_Proxy_Release:
+      invokeScMethod(s_prRelease);
       return;
     default: ;
   }

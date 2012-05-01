@@ -68,7 +68,8 @@ namespace QtCollider {
     Event_Proxy_BringFront,
     Event_Proxy_SetFocus,
     Event_Proxy_SetAlwaysOnTop,
-    Event_Proxy_StartDrag
+    Event_Proxy_StartDrag,
+    Event_Proxy_Release
   };
 
   enum Synchronicity {
@@ -103,6 +104,7 @@ namespace QtCollider {
   extern PyrSymbol *s_interpretPrintCmdLine;
   extern PyrSymbol *s_doFunction;
   extern PyrSymbol *s_doDrawFunc;
+  extern PyrSymbol *s_prRelease;
   extern PyrSymbol *s_Rect;
   extern PyrSymbol *s_Point;
   extern PyrSymbol *s_Color;
