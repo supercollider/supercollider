@@ -233,12 +233,7 @@ bool QWidgetProxy::filterEvent( QObject *o, QEvent *e, EventHandlerData &eh, QLi
   // NOTE We assume that qObject need not be checked here, as we wouldn't get events if
   // it wasn't existing
 
-  int type = e->type();
-
-  eh = eventHandlers().value( type );
-  if( eh.type != type ) return false;
-
-  switch( type ) {
+  switch( eh.type ) {
 
     case QEvent::KeyPress:
       return ((_globalEventMask & KeyPress) || eh.enabled)
