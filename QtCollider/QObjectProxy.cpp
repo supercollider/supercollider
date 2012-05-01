@@ -184,7 +184,7 @@ void QObjectProxy::invokeScMethod
     QtCollider::runLang( _scObject, method, args, result );
   }
   else {
-    SetNil( result );
+    if(result) SetNil( result );
     qcDebugMsg(1, "WARNING: no SC object");
   }
 
