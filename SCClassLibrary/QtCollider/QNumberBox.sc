@@ -4,7 +4,7 @@ QNumberBox : QAbstractStepValue {
   var <normalColor, <typingColor;
   var <object, <>setBoth = true;
 
-  *qtClass { ^"QcNumberBox" }
+  *qtClass { ^'QcNumberBox' }
 
   *new { arg aParent, aBounds;
     var obj = super.new( aParent, aBounds );

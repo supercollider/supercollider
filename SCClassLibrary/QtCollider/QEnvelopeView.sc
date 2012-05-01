@@ -5,7 +5,7 @@ QEnvelopeView : QView
   var <drawLines = true, <drawRects = true;
   var <metaAction;
 
-  *qtClass {^"QcGraph"}
+  *qtClass {^'QcGraph'}
 
   editable_ { arg aBool;
     editable = aBool;

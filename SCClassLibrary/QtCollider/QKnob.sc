@@ -18,7 +18,7 @@ QKnob : QAbstractStepValue {
 
   var <>keystep = 0.01;
 
-  *qtClass {^"QcKnob"}
+  *qtClass {^'QcKnob'}
 
   *new { arg parent, bounds;
     var me = super.new(parent,bounds);

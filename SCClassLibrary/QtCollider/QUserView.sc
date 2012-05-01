@@ -1,7 +1,7 @@
 QUserView : QView {
   var <drawFunc, <drawingEnabled=true;
 
-  *qtClass { ^"QcCustomPainted" }
+  *qtClass { ^'QcCustomPainted' }
 
   *new { arg parent, bounds;
     var me = super.new(parent, bounds ?? {this.sizeHint} );

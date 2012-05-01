@@ -1,5 +1,5 @@
 QRangeSlider : QAbstractStepValue {
-  *qtClass { ^"QcRangeSlider" }
+  *qtClass { ^'QcRangeSlider' }
 
   *new { arg parent, bounds;
     ^super.new( parent, bounds ).initQRangeSlider( bounds );

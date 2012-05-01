@@ -118,11 +118,11 @@ QAbstractStepValue : QView {
 /////////////////////// CONTAINERS ////////////////////////////////
 
 QHLayoutView : QView {
-  *qtClass { ^"QcHLayoutWidget" }
+  *qtClass { ^'QcHLayoutWidget' }
 }
 
 QVLayoutView : QView {
-  *qtClass { ^"QcVLayoutWidget" }
+  *qtClass { ^'QcVLayoutWidget' }
 }
 
 QScrollCanvas : QObject {
@@ -148,7 +148,7 @@ QScrollView : QAbstractScroll {
     ^super.new( parent, bounds ).initQScrollView;
   }
 
-  *qtClass { ^"QcScrollArea" }
+  *qtClass { ^'QcScrollArea' }
 
   children { arg class = QView;
     ^canvas.children( class );
@@ -196,7 +196,7 @@ QScrollView : QAbstractScroll {
 /////////////////////////// WIDGETS ///////////////////////////////
 
 QStaticText : QTextViewBase {
-  *qtClass { ^"QLabel" }
+  *qtClass { ^'QLabel' }
 
   *new { arg aParent, aBounds;
     var obj = super.new( aParent, aBounds );
@@ -224,7 +224,7 @@ QStaticText : QTextViewBase {
 }
 
 QTextField : QTextViewBase {
-  *qtClass { ^"QcTextField" }
+  *qtClass { ^'QcTextField' }
 
   string {
     ^this.getProperty( \text );
@@ -273,7 +273,7 @@ QTextField : QTextViewBase {
 QButton : QView {
   var <states;
 
-  *qtClass { ^"QcButton" }
+  *qtClass { ^'QcButton' }
 
   value {
     ^this.getProperty( \value );
@@ -317,7 +317,7 @@ QButton : QView {
 
 QCheckBox : QView {
 
-  *qtClass { ^"QcCheckBox" }
+  *qtClass { ^'QcCheckBox' }
 
   *new{ |parent,bounds,text|
     ^super.new(parent,bounds).init(text)
@@ -357,7 +357,7 @@ QCheckBox : QView {
 
 QPopUpMenu : QItemViewBase {
 
-  *qtClass { ^"QcPopUpMenu" }
+  *qtClass { ^'QcPopUpMenu' }
 
   allowsReselection { ^this.getProperty( \reactivationEnabled ) }
 

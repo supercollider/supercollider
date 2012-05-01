@@ -6,7 +6,7 @@ QMultiSliderView : QView {
   var <metaAction;
 
 
-  *qtClass { ^"QcMultiSlider" }
+  *qtClass { ^'QcMultiSlider' }
 
   size { ^this.getProperty(\sliderCount) }
   size_ { arg int; this.setProperty( \sliderCount, int ) }

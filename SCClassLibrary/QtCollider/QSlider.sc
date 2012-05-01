@@ -2,7 +2,7 @@ QSlider : QAbstractStepValue {
   //compatibility stuff:
   var <orientation;
 
-  *qtClass { ^"QcSlider" }
+  *qtClass { ^'QcSlider' }
 
   *new { arg parent, bounds;
     ^super.new( parent, bounds ).initQSlider( bounds );

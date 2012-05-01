@@ -5,7 +5,7 @@ QSoundFileView : QView {
   var <>elasticMode; // NOTE: no-op, only for compatibility
   var curDoneAction;
 
-  *qtClass { ^"QcWaveform" }
+  *qtClass { ^'QcWaveform' }
 
   load { arg filename, startframe, frames, block, doneAction;
     if( filename.isString && filename != "" ) {

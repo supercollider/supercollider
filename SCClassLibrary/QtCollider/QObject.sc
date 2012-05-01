@@ -38,7 +38,7 @@ QObject {
 
   *qtClass { ^nil }
 
-  *meta { ^QMetaObject(this.qtClass); }
+  *meta { ^QMetaObject(this.qtClass) }
 
   *new { arg argumentArray;
     var className = this.qtClass;
