@@ -1,6 +1,6 @@
 QLevelIndicator : QView {
 
-  *qtClass {^"QcLevelIndicator"}
+  *qtClass {^'QcLevelIndicator'}
 
   value {
     ^this.getProperty(\value)

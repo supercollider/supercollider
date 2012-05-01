@@ -2,7 +2,7 @@ QListView : QItemViewBase {
   var <colors;
   var <enterKeyAction;
 
-  *qtClass { ^"QcListWidget" }
+  *qtClass { ^'QcListWidget' }
 
   mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
     // Override QView:mouseDownEvent:

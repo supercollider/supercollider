@@ -1,7 +1,7 @@
 QTextView : QAbstractScroll {
   var <stringColor, <font, <editable=true;
 
-  *qtClass { ^"QcTextEdit" }
+  *qtClass { ^'QcTextEdit' }
 
   enterInterpretsSelection { ^this.getProperty( \enterInterpretsSelection ); }
 

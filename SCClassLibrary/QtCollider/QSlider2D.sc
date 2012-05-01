@@ -1,9 +1,9 @@
 QSlider2D : QAbstractStepValue {
-  *qtClass { ^"QcSlider2D" }
+  *qtClass { ^'QcSlider2D' }
 
   *new { arg parent, bounds;
     var me = super.new( parent, bounds );
-    me.connectMethod( "randomize()", \randomize );
+    me.connectMethod( 'randomize()', \randomize );
     ^me;
   }
 

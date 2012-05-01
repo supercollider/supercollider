@@ -56,12 +56,12 @@ QLineLayout : QLayout {
 
 QHLayout : QLineLayout {
   *implementsClass {^'HLayout'}
-  *qtClass { ^'QcHBoxLayout'; }
+  *qtClass { ^'QcHBoxLayout' }
 }
 
 QVLayout : QLineLayout {
   *implementsClass {^'VLayout'}
-  *qtClass { ^'QcVBoxLayout'; }
+  *qtClass { ^'QcVBoxLayout' }
 }
 
 // GRID LAYOUT ///////////////////////////////////////////////////

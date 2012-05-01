@@ -2,7 +2,7 @@ QScope : QView {
   var <bufnum, <style=0, <xZoom=1.0, <yZoom=1.0, <x=0.0, <y=0.0;
   var <waveColors;
 
-  *qtClass { ^"QcScope" }
+  *qtClass { ^'QcScope' }
 
   bufnum_ { arg anInt;
     bufnum = anInt;
