@@ -25,6 +25,7 @@
 #include "QcObjectFactory.h"
 #include "QWidgetProxy.h"
 
+#include <QMetaMethod>
 #include <QLayout>
 
 template <class QWIDGET>
@@ -60,12 +61,37 @@ public:
       }
     }
 
-    QObjectProxy *prox( proxy(w, scObject) );
-
-    // check if parent arg is valid;
+    // NOTE: performance: it is completely equal if parent is passed
+    // in constructor, or set later, but for some reason it is cheaper
+    // if it is set here, before setting other stuff like geometry, etc.
 
     QObjectProxy *parentProxy( arg[0].value<QObjectProxy*>() );
+    QWidget *parent = parentProxy ? qobject_cast<QWidget*>( parentProxy->object() ) : 0;
 
+    if( parent )
+    {
+      const QMetaObject *mo = parent->metaObject();
+      int mi = mo->indexOfMethod( "addChild(QWidget*)" );
+      bool ok;
+      if( mi >= 0 )
+      {
+          QMetaMethod mm = mo->method( mi );
+          ok = mm.invoke( parent, Q_ARG(QWidget*, w) );
+          if(!ok)
+          {
+              qcErrorMsg("Could not set parent!");
+              delete w;
+              return 0;
+          }
+      }
+      else
+      {
+          if(parent->layout())
+              parent->layout()->addWidget(w);
+          else
+              w->setParent( parent );
+      }
+    }
 
     // set requested geometry
 
@@ -78,21 +104,13 @@ public:
 
     w->setAcceptDrops( true );
 
-    // set parent
+    // ensure visible:
 
-    QWidget *parent = parentProxy ? qobject_cast<QWidget*>( parentProxy->object() ) : 0;
+    if(parent && parent->isVisible()) w->show();
 
-    if( parent ) {
+    // create the proxy:
 
-      // Ok, we have the parent, so stuff the child in
-
-      const QMetaObject *mo = parent->metaObject();
-      bool ok = mo->invokeMethod( parent, "addChild", Q_ARG( QWidget*, w ) );
-
-      if( !ok ) w->setParent( parent );
-
-      w->show();
-    }
+    QObjectProxy *prox( proxy(w, scObject) );
 
     return prox;
   }

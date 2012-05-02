@@ -38,7 +38,6 @@ class QcDefaultWidget : public QWidget
   Q_OBJECT
   public:
     QcDefaultWidget() { setLayout( new QcDefaultLayout() ); }
-    Q_INVOKABLE void addChild( QWidget* w ) { layout()->addWidget(w); }
 };
 
 class QcHLayoutWidget : public QWidget
@@ -153,7 +152,6 @@ class QcCustomPainted : public QcCanvas, QcHelper
     QcCustomPainted() {
       setLayout( new QcDefaultLayout() );
     }
-    Q_INVOKABLE void addChild( QWidget* w ) { layout()->addWidget(w); }
   protected:
     // reimplement event handlers just so events don't propagate
     virtual void mousePressEvent( QMouseEvent * ) {}

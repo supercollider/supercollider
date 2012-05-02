@@ -107,10 +107,8 @@ void QcScrollArea::setWidget( QObjectProxy *proxy )
 
 void QcScrollArea::addChild( QWidget* w )
 {
-  if( widget() ) {
+  if( widget() )
     w->setParent( widget() );
-    w->show();
-  }
 }
 
 QRectF QcScrollArea::innerBounds() const {
