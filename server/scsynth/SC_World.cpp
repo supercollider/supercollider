@@ -353,8 +353,10 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 			server_shared_memory_creator::cleanup(inOptions->mSharedMemoryID);
 			hw->mShmem = new server_shared_memory_creator(inOptions->mSharedMemoryID, inOptions->mNumControlBusChannels);
 			world->mControlBus = hw->mShmem->get_control_busses();
-		} else
+		} else {
+			hw->mShmem = 0;
 			world->mControlBus = (float*)zalloc(world->mNumControlBusChannels, sizeof(float));
+		}
 
 		world->mNumSharedControls = 0;
 		world->mSharedControls = inOptions->mSharedControls;
