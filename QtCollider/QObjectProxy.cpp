@@ -44,7 +44,9 @@ QObjectProxy::QObjectProxy( QObject *qObject_, PyrObject *scObject_ )
   _scClassName( slotRawSymbol( &scObject_->classptr->name )->name )
 {
   ProxyToken *token = new ProxyToken( this, qObject );
-  connect( qObject, SIGNAL( destroyed( QObject* ) ), this, SLOT( invalidate() ) );
+  // WARNING: make sure the signal is already in normalized signature,
+  // to avoid triggering very expensive normalization!
+  connect( qObject, SIGNAL(destroyed(QObject*)), this, SLOT(invalidate()) );
   qObject->installEventFilter( this );
 }
 
