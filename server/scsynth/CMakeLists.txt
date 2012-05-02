@@ -31,8 +31,7 @@ else()
 endif()
 
 # Here we work out which audio API to use, from system type and/or user option.
-string(TOLOWER "$ENV{AUDIOAPI}" AUDIOAPI)
-if(AUDIOAPI STREQUAL "")
+if(AUDIOAPI STREQUAL "default")
 	if(APPLE)
 		set(AUDIOAPI coreaudio)
 	elseif(WIN32)
