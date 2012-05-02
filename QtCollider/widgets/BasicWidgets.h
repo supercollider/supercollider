@@ -37,23 +37,30 @@ class QcDefaultWidget : public QWidget
 {
   Q_OBJECT
   public:
-    QcDefaultWidget() { setLayout( new QcDefaultLayout() ); }
+    QcDefaultWidget(): l(this) {}
+  protected:
+    virtual void resizeEvent( QResizeEvent *e ) { if(!layout()) l.resize(e); }
+    QtCollider::DefaultLayout l;
 };
 
 class QcHLayoutWidget : public QWidget
 {
   Q_OBJECT
   public:
-    QcHLayoutWidget() { setLayout( new QcHLayout() ); }
-    Q_INVOKABLE void addChild( QWidget* w ) { layout()->addWidget(w); }
+    QcHLayoutWidget(): l(this) {}
+  protected:
+    virtual void resizeEvent( QResizeEvent *e ) { if(!layout()) l.resize(e); }
+    QtCollider::HLayout l;
 };
 
 class QcVLayoutWidget : public QWidget
 {
   Q_OBJECT
   public:
-    QcVLayoutWidget() { setLayout( new QcVLayout() ); }
-    Q_INVOKABLE void addChild( QWidget* w ) { layout()->addWidget(w); }
+    QcVLayoutWidget(): l(this) {}
+  protected:
+    virtual void resizeEvent( QResizeEvent *e ) { if(!layout()) l.resize(e); }
+    QtCollider::VLayout l;
 };
 
 
@@ -149,14 +156,14 @@ class QcCustomPainted : public QcCanvas, QcHelper
 {
   Q_OBJECT
   public:
-    QcCustomPainted() {
-      setLayout( new QcDefaultLayout() );
-    }
+    QcCustomPainted(): l(this) {}
   protected:
     // reimplement event handlers just so events don't propagate
     virtual void mousePressEvent( QMouseEvent * ) {}
     virtual void mouseReleaseEvent( QMouseEvent * ) {}
     virtual void mouseMoveEvent( QMouseEvent * ) {}
+    virtual void resizeEvent( QResizeEvent *e ) { QcCanvas::resizeEvent(e); if(!layout()) l.resize(e); }
+    QtCollider::DefaultLayout l;
 };
 
 class QcCheckBox : public QCheckBox
