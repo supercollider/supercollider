@@ -89,6 +89,11 @@ void Slot::setString( PyrSlot *slot, const QString& arg )
 
 void Slot::setColor( PyrSlot *slot, const QColor &c )
 {
+  if(!c.isValid()) {
+    SetNil(slot);
+    return;
+  }
+
   PyrObject *obj = instantiateObject( gMainVMGlobals->gc, class_Color, 0, true, true );
   SetObject( slot, obj );
 
