@@ -92,7 +92,6 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/widgets/QcFileDialog.cpp
   ${QT_COLLIDER_DIR}/widgets/QcPenPrinter.cpp
   ${QT_COLLIDER_DIR}/widgets/QcWebView.cpp
-  ${QT_COLLIDER_DIR}/layouts/classic_layouts.cpp
   ${QT_COLLIDER_DIR}/layouts/layouts.cpp
   ${QT_COLLIDER_DIR}/layouts/stack_layout.cpp
   ${QT_COLLIDER_DIR}/style/ProxyStyle.cpp
