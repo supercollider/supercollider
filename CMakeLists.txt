@@ -144,9 +144,8 @@ option(SSE "Compile with support for SSE instructions.")
 option(SSE41 "Compile with support for SSE4.1 instructions.")
 option(SSE42 "Compile with support for SSE4.2 instructions.")
 
-
+set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
 option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
-
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(INSTALL_OLD_HELP "Install old and deprecated help files" ON)
