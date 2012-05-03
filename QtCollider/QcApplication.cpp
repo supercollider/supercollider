@@ -86,18 +86,7 @@ QcApplication::~QcApplication()
 
 bool QcApplication::compareThread()
 {
-  bool same;
-
-  _mutex.lock();
-
-  if( _instance )
-    same = QThread::currentThread() == _instance->thread();
-  else
-    same = false;
-
-  _mutex.unlock();
-
-  return same;
+  return gMainVMGlobals->canCallOS;
 }
 
 void QcApplication::interpret( const QString &str, bool print )

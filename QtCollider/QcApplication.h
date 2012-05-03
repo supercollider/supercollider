@@ -52,7 +52,7 @@ class QcApplication : public QApplication
   public:
     QcApplication( int & argc, char ** argv );
     virtual ~QcApplication();
-    static bool compareThread();
+    static bool compareThread(); // NOTE: language must be locked
     static void processEvents() {
       if( _instance ) _instance->_eventProc.work();
     }

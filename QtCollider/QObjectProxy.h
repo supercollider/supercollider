@@ -86,7 +86,8 @@ class QObjectProxy : public QObject
 
     virtual ~QObjectProxy();
 
-    // compare current thread to proxy's thread
+    // Check if this is the right thread.
+    // WARNING: must be called with language locked!
     bool compareThread();
 
     // WARNING: must be called with language locked!
