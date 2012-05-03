@@ -131,21 +131,11 @@ QMultiSliderView : QView {
     this.setProperty( \isFilled, aBool );
   }
 
-  background {
-    ^this.palette.base;
-  }
+  fillColor { ^this.getProperty(\fillColor) }
+  fillColor_ { arg color; this.setProperty( \fillColor, color ) }
 
-  background_ { arg color;
-    this.palette = this.palette.base_(color);
-  }
-
-  fillColor_ { arg aColor;
-    this.setProperty( \fillColor, aColor );
-  }
-
-  strokeColor_ { arg aColor;
-    this.setProperty( \strokeColor, aColor );
-  }
+  strokeColor { ^this.getProperty(\strokeColor) }
+  strokeColor_ { arg color; this.setProperty( \strokeColor, color ) }
 
   colors_ { arg colorStroke, colorFill;
     this.strokeColor_( colorStroke );
