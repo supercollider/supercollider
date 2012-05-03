@@ -100,40 +100,30 @@ namespace QtCollider {
 
   QPalette systemPalette();
 
-  extern PyrSymbol *s_interpretCmdLine;
-  extern PyrSymbol *s_interpretPrintCmdLine;
-  extern PyrSymbol *s_doFunction;
-  extern PyrSymbol *s_doDrawFunc;
-  extern PyrSymbol *s_prRelease;
-  extern PyrSymbol *s_Rect;
-  extern PyrSymbol *s_Point;
-  extern PyrSymbol *s_Color;
-  extern PyrSymbol *s_Size;
-  extern PyrSymbol *s_Array;
-  extern PyrSymbol *s_FloatArray;
-  extern PyrSymbol *s_SymbolArray;
-  extern PyrSymbol *s_String;
-  extern PyrSymbol *s_QPalette;
-  extern PyrSymbol *s_QFont;
-  extern PyrSymbol *s_QObject;
-  extern PyrSymbol *s_QLayout;
-  extern PyrSymbol *s_QTreeViewItem;
+#define QC_DO_SYMBOLS \
+  QC_DO_SYMBOL(interpretCmdLine); \
+  QC_DO_SYMBOL(interpretPrintCmdLine); \
+  QC_DO_SYMBOL(doFunction); \
+  QC_DO_SYMBOL(doDrawFunc); \
+  QC_DO_SYMBOL(prRelease); \
+  QC_DO_SYMBOL(Rect); \
+  QC_DO_SYMBOL(Point); \
+  QC_DO_SYMBOL(Color); \
+  QC_DO_SYMBOL(Size); \
+  QC_DO_SYMBOL(QPalette); \
+  QC_DO_SYMBOL(QFont); \
+  QC_DO_SYMBOL(QObject); \
+  QC_DO_SYMBOL(QLayout); \
+  QC_DO_SYMBOL(QTreeViewItem); \
+  QC_DO_SYMBOL(Gradient); \
+  QC_DO_SYMBOL(HiliteGradient);
 
-#define class_Rect s_Rect->u.classobj
-#define class_Point s_Point->u.classobj
-#define class_Color s_Color->u.classobj
-#define class_Size s_Size->u.classobj
-#define class_Array s_Array->u.classobj
-#define class_FloatArray s_FloatArray->u.classobj
-#define class_SymbolArray s_SymbolArray->u.classobj
-#define class_String s_String->u.classobj
-#define class_QPalette s_QPalette->u.classobj
-#define class_QFont s_QFont->u.classobj
-#define class_QObject s_QObject->u.classobj
-#define class_QLayout s_QLayout->u.classobj
-#define class_QTreeViewItem s_QTreeViewItem->u.classobj
+#define QC_DO_SYMBOL(SYM) extern PyrSymbol * sym_##SYM
+QC_DO_SYMBOLS
+#undef QC_DO_SYMBOL
 
-#define SC_CLASS( SYM ) getsym(#SYM)->u.classobj
+#define SC_SYM( SYM ) QtCollider::sym_##SYM
+#define SC_CLASS( SYM ) SC_SYM(SYM)->u.classobj
 
 }
 

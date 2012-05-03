@@ -111,7 +111,7 @@ void QcApplication::interpret( const QString &str, bool print )
       SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strObj);
       g->gc->GCWrite(slotRawObject(&g->process->interpreter), strObj);
 
-      runLibrary( print ? QtCollider::s_interpretPrintCmdLine : QtCollider::s_interpretCmdLine );
+      runLibrary( print ? SC_SYM(interpretPrintCmdLine) : SC_SYM(interpretCmdLine) );
   }
   QtCollider::unlockLang();
 }

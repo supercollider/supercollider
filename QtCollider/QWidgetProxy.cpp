@@ -485,7 +485,7 @@ void QWidgetProxy::customPaint( QPainter *painter )
   QtCollider::lockLang();
 
   if( QtCollider::beginPainting( painter ) ) {
-    invokeScMethod( s_doDrawFunc, QList<QVariant>(), 0, true );
+    invokeScMethod( SC_SYM(doDrawFunc), QList<QVariant>(), 0, true );
     QtCollider::endPainting();
   }
 

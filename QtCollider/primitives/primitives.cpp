@@ -28,24 +28,9 @@
 
 namespace QtCollider {
 
-PyrSymbol *s_interpretCmdLine;
-PyrSymbol *s_interpretPrintCmdLine;
-PyrSymbol *s_doFunction;
-PyrSymbol *s_doDrawFunc;
-PyrSymbol *s_prRelease;
-PyrSymbol *s_Rect;
-PyrSymbol *s_Point;
-PyrSymbol *s_Color;
-PyrSymbol *s_Size;
-PyrSymbol *s_Array;
-PyrSymbol *s_FloatArray;
-PyrSymbol *s_SymbolArray;
-PyrSymbol *s_String;
-PyrSymbol *s_QPalette;
-PyrSymbol *s_QFont;
-PyrSymbol *s_QObject;
-PyrSymbol *s_QLayout;
-PyrSymbol *s_QTreeViewItem;
+#define QC_DO_SYMBOL(SYM) PyrSymbol * sym_##SYM
+QC_DO_SYMBOLS
+#undef QC_DO_SYMBOL
 
 void defineQObjectPrimitives();
 void defineQPenPrimitives();
@@ -68,26 +53,9 @@ void initPrimitives () {
   defineMiscPrimitives();
   defineQPalettePrimitives();
 
-  s_interpretCmdLine = getsym("interpretCmdLine");
-  s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
-
-  s_doFunction = getsym("doFunction");
-  s_doDrawFunc = getsym("doDrawFunc");
-  s_prRelease = getsym("prRelease");
-
-  s_Rect = getsym("Rect");
-  s_Point = getsym("Point");
-  s_Size = getsym("Size");
-  s_Color = getsym("Color");
-  s_Array = getsym("Array");
-  s_FloatArray = getsym("FloatArray");
-  s_SymbolArray = getsym("SymbolArray");
-  s_String = getsym("String");
-  s_QObject = getsym("QObject");
-  s_QLayout = getsym("QLayout");
-  s_QFont = getsym("QFont");
-  s_QPalette = getsym("QPalette");
-  s_QTreeViewItem = getsym("QTreeViewItem");
+#define QC_DO_SYMBOL(SYM) sym_##SYM = getsym(#SYM);
+QC_DO_SYMBOLS
+#undef QC_DO_SYMBOL
 }
 
 } // namespace QtCollider

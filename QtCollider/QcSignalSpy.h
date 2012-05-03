@@ -174,7 +174,7 @@ protected:
 
     args.prepend( QVariant::fromValue( _handler ) );
 
-    _proxy->invokeScMethod( s_doFunction, args );
+    _proxy->invokeScMethod( SC_SYM(doFunction), args );
   }
 
   PyrObject * _handler;

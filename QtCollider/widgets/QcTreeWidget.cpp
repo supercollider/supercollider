@@ -230,7 +230,7 @@ QcTreeWidget::ItemPtr QcTreeWidget::Item::safePtr( QTreeWidgetItem * item )
 void QcTreeWidget::Item::initialize (
   VMGlobals *g, PyrObject *obj, const QcTreeWidget::ItemPtr &ptr )
 {
-  Q_ASSERT( isKindOf( obj, class_QTreeViewItem ) );
+  Q_ASSERT( isKindOf( obj, SC_CLASS(QTreeViewItem) ) );
   if( ptr.id() ) {
     // store the SafePtr
     QcTreeWidget::ItemPtr *newPtr = new QcTreeWidget::ItemPtr( ptr );
