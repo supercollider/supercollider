@@ -304,12 +304,13 @@ void QcRangeSlider::keyPressEvent ( QKeyEvent *e )
   Q_EMIT( action() );
 }
 
-inline void drawMarker( QPainter *p, const QPalette &plt, Qt::Orientation ort, bool first, const QPoint & pt, int len )
+inline void drawMarker( QPainter *p, const QColor &color,
+                        Qt::Orientation ort, bool first, const QPoint & pt, int len )
 {
   p->save();
   p->setRenderHint( QPainter::Antialiasing, false );
 
-  QPen pen(plt.color(QPalette::ButtonText));
+  QPen pen(color);
 
   bool vert = ort == Qt::Vertical;
 
@@ -341,11 +342,11 @@ void QcRangeSlider::paintEvent ( QPaintEvent *e )
   QPainter p(this);
   p.setRenderHint( QPainter::Antialiasing, true );
 
-  QPalette plt = palette();
+  const QPalette & plt = palette();
+  const QColor & knobClr = knobColor();
 
   RoundRect frame(rect(), 2);
-  QColor baseColor( grooveColor() );
-  drawSunken( &p, plt, frame, baseColor, hasFocus() ? focusColor() : QColor() );
+  drawSunken( &p, plt, frame, grooveColor(), hasFocus() ? focusColor() : QColor() );
 
   QRect contRect( sunkenContentsRect(rect()) );
 
@@ -380,17 +381,17 @@ void QcRangeSlider::paintEvent ( QPaintEvent *e )
     int mark_len = hndRect.height() - 4;
 
     QPoint pt( hndRect.left() + HND, hndRect.top() + 2 );
-    drawMarker( &p, plt, _ort, true, pt, mark_len );
+    drawMarker( &p, knobClr, _ort, true, pt, mark_len );
 
     pt.setX( hndRect.right() - HND + 1 );
-    drawMarker( &p, plt, _ort, false, pt, mark_len );
+    drawMarker( &p, knobClr, _ort, false, pt, mark_len );
   } else {
     int mark_len = hndRect.width() - 4;
     QPoint pt( hndRect.left() + 2, hndRect.top() + HND );
-    drawMarker( &p, plt, _ort, true, pt, mark_len );
+    drawMarker( &p, knobClr, _ort, true, pt, mark_len );
 
     pt.setY( hndRect.bottom() - HND + 1 );
-    drawMarker( &p, plt, _ort, false, pt, mark_len );
+    drawMarker( &p, knobClr, _ort, false, pt, mark_len );
   }
 
   // value region
@@ -398,7 +399,7 @@ void QcRangeSlider::paintEvent ( QPaintEvent *e )
   if( horiz ? valRect.width() > 2 : valRect.height() > 2 ) {
     p.setRenderHint( QPainter::Antialiasing, false );
 
-    QColor c( plt.color(QPalette::ButtonText) );
+    QColor c( knobClr );
     c.setAlpha(50);
 
     p.setPen(Qt::NoPen);

@@ -42,6 +42,7 @@ class QcRangeSlider :
   Q_PROPERTY( double step READ dummyFloat WRITE setStep )
   Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
   Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
+  Q_PROPERTY( QColor knobColor READ knobColor WRITE setKnobColor );
 
   public:
     enum MouseMode {
@@ -64,6 +65,10 @@ class QcRangeSlider :
     void setStep( double f ) { _step = f; }
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
+
+    const QColor & knobColor() const
+      { return _knobColor.isValid() ? _knobColor : palette().color(QPalette::ButtonText); }
+    void setKnobColor(const QColor &c) { _knobColor = c; update(); }
 
   public Q_SLOTS:
     void increment( double factor );
@@ -92,6 +97,8 @@ class QcRangeSlider :
     QPoint dragOrigin;
     double dragVal, dragRange;
     MouseMode mouseMode;
+
+    QColor _knobColor;
 };
 
 #endif
