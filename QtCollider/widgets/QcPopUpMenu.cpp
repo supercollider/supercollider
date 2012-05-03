@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -19,21 +19,32 @@
 *
 ************************************************************************/
 
-#include "BasicWidgets.h"
+#include "QcPopUpMenu.h"
 #include "../QcWidgetFactory.h"
 
-QC_DECLARE_QWIDGET_FACTORY( QcDefaultWidget );
-QC_DECLARE_QWIDGET_FACTORY( QcHLayoutWidget );
-QC_DECLARE_QWIDGET_FACTORY( QcVLayoutWidget );
+QC_DECLARE_QWIDGET_FACTORY(QcPopUpMenu);
 
-class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>
+QcPopUpMenu::QcPopUpMenu() :
+  _changed(false),
+  _reactivation(false)
 {
-protected:
-  virtual void initialize( QWidgetProxy *p, QcCustomPainted *w )
-  {
-    QObject::connect( w, SIGNAL(painting(QPainter*)),
-                      p, SLOT(customPaint(QPainter*)) );
-  }
-};
+  connect( this, SIGNAL(currentIndexChanged(int)),
+           this, SLOT(setChanged()) );
+  connect( this, SIGNAL(currentIndexChanged(int)),
+           this, SLOT(clearChanged()), Qt::QueuedConnection );
 
-QC_DECLARE_FACTORY( QcCustomPainted, QcCustomPaintedFactory );
+  connect( this, SIGNAL(activated(int)), this, SLOT(doAction(int)) );
+}
+
+void QcPopUpMenu::setItems( const VariantList & items )
+{
+  clear();
+  Q_FOREACH( QVariant item, items.data )
+      addItem( item.toString() );
+}
+
+void QcPopUpMenu::doAction( int choice )
+{
+  if( _changed || _reactivation )
+    Q_EMIT( action() );
+}

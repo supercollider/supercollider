@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -19,21 +19,24 @@
 *
 ************************************************************************/
 
-#include "BasicWidgets.h"
 #include "../QcWidgetFactory.h"
 
-QC_DECLARE_QWIDGET_FACTORY( QcDefaultWidget );
-QC_DECLARE_QWIDGET_FACTORY( QcHLayoutWidget );
-QC_DECLARE_QWIDGET_FACTORY( QcVLayoutWidget );
+#include <QCheckBox>
 
-class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>
+class QcCheckBox : public QCheckBox
 {
-protected:
-  virtual void initialize( QWidgetProxy *p, QcCustomPainted *w )
-  {
-    QObject::connect( w, SIGNAL(painting(QPainter*)),
-                      p, SLOT(customPaint(QPainter*)) );
-  }
+  Q_OBJECT
+  Q_PROPERTY( bool value READ value WRITE setValue );
+
+  public:
+    QcCheckBox() {
+      connect( this, SIGNAL(clicked()), this, SIGNAL(action()) );
+    }
+  Q_SIGNALS:
+    void action();
+  private:
+    bool value() { return isChecked(); }
+    void setValue( bool val ) { setChecked(val); }
 };
 
-QC_DECLARE_FACTORY( QcCustomPainted, QcCustomPaintedFactory );
+QC_DECLARE_QWIDGET_FACTORY( QcCheckBox );

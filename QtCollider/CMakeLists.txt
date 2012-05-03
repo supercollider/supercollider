@@ -28,6 +28,11 @@ set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/QObjectProxy.h
   ${QT_COLLIDER_DIR}/QWidgetProxy.h
   ${QT_COLLIDER_DIR}/widgets/BasicWidgets.h
+  ${QT_COLLIDER_DIR}/widgets/QcButton.h
+  ${QT_COLLIDER_DIR}/widgets/QcCheckBox.h
+  ${QT_COLLIDER_DIR}/widgets/QcTextField.h
+  ${QT_COLLIDER_DIR}/widgets/QcListWidget.h
+  ${QT_COLLIDER_DIR}/widgets/QcPopUpMenu.h
   ${QT_COLLIDER_DIR}/widgets/QcTreeWidget.h
   ${QT_COLLIDER_DIR}/widgets/QcScrollArea.h
   ${QT_COLLIDER_DIR}/widgets/QcNumberBox.h
@@ -70,6 +75,11 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/primitives/prim_QWidget.cpp
   ${QT_COLLIDER_DIR}/primitives/prim_QPalette.cpp
   ${QT_COLLIDER_DIR}/widgets/BasicWidgets.cpp
+  ${QT_COLLIDER_DIR}/widgets/QcButton.cpp
+  ${QT_COLLIDER_DIR}/widgets/QcCheckBox.h
+  ${QT_COLLIDER_DIR}/widgets/QcTextField.h
+  ${QT_COLLIDER_DIR}/widgets/QcListWidget.cpp
+  ${QT_COLLIDER_DIR}/widgets/QcPopUpMenu.cpp
   ${QT_COLLIDER_DIR}/widgets/QcTreeWidget.cpp
   ${QT_COLLIDER_DIR}/widgets/QcScrollArea.cpp
   ${QT_COLLIDER_DIR}/widgets/QcAbstractStepValue.cpp

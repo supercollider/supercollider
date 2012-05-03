@@ -20,6 +20,11 @@
 ************************************************************************/
 
 #include "QcObjectFactory.h"
+#include "QcWidgetFactory.h"
+
+#include <QLabel>
+
+QC_DECLARE_QWIDGET_FACTORY( QLabel );
 
 namespace QtCollider {
 
