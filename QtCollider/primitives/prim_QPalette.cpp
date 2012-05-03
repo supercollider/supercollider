@@ -40,7 +40,7 @@ int QPalette_Finalize( struct VMGlobals *g, struct PyrObject *obj )
 
 void QPalette_Init( struct VMGlobals *g, struct PyrObject *obj, const QPalette & palette )
 {
-  assert( obj->classptr == class_QPalette );
+  assert( obj->classptr == SC_CLASS(QPalette) );
   assert( IsNil(obj->slots) && IsNil(obj->slots+1) );
 
   QPalette *p = new QPalette(palette);

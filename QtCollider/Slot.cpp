@@ -50,7 +50,7 @@ static QPalette::ColorRole paletteColorRoles[] = {
 
 void Slot::setRect( PyrSlot *slot, const QRectF &r )
 {
-  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, class_Rect, 0, true, true );
+  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, SC_CLASS(Rect), 0, true, true );
   SetObject( slot, obj );
 
   PyrSlot *slots = obj->slots;
@@ -62,7 +62,7 @@ void Slot::setRect( PyrSlot *slot, const QRectF &r )
 
 void Slot::setPoint( PyrSlot *slot, const QPointF &pt )
 {
-  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, class_Point, 0, true, true );
+  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, SC_CLASS(Point), 0, true, true );
   SetObject( slot, obj );
 
   PyrSlot *slots = obj->slots;
@@ -72,7 +72,7 @@ void Slot::setPoint( PyrSlot *slot, const QPointF &pt )
 
 void Slot::setSize( PyrSlot *slot, const QSizeF &sz )
 {
-  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, class_Size, 0, true, true );
+  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, SC_CLASS(Size), 0, true, true );
   SetObject( slot, obj );
 
   PyrSlot *slots = obj->slots;
@@ -94,7 +94,7 @@ void Slot::setColor( PyrSlot *slot, const QColor &c )
     return;
   }
 
-  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, class_Color, 0, true, true );
+  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, SC_CLASS(Color), 0, true, true );
   SetObject( slot, obj );
 
   PyrSlot *slots = obj->slots;
@@ -107,7 +107,7 @@ void Slot::setColor( PyrSlot *slot, const QColor &c )
 void Slot::setPalette( PyrSlot *slot, const QPalette &plt )
 {
   PyrGC *gc = gMainVMGlobals->gc;
-  PyrObject *obj = instantiateObject( gc, class_QPalette, 0, true, true );
+  PyrObject *obj = instantiateObject( gc, SC_CLASS(QPalette), 0, true, true );
   SetObject( slot, obj );
 
   QPalette_Init( gMainVMGlobals, obj, plt );
@@ -129,7 +129,7 @@ void Slot::setQObject( PyrSlot *s, QObject *o )
 
 void Slot::setTreeWidgetItem( PyrSlot *s, const SafePtr<QcTreeWidget::Item> & itemPtr )
 {
-  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, class_QTreeViewItem, 0, true, true );
+  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, SC_CLASS(QTreeViewItem), 0, true, true );
   QcTreeWidget::Item::initialize( gMainVMGlobals, obj, itemPtr );
   SetObject( s, obj );
 }
@@ -308,7 +308,7 @@ QString Slot::toString( PyrSlot *slot )
   if( IsSym(slot) ) {
     return QString::fromUtf8( slotRawSymbol(slot)->name );
   }
-  else if( isKindOfSlot( slot, class_String ) ) {
+  else if( isKindOfSlot( slot, class_string ) ) {
     int len = slotRawObject( slot )->size;
     return QString::fromUtf8( slotRawString(slot)->s, len );
   }
@@ -317,7 +317,7 @@ QString Slot::toString( PyrSlot *slot )
 
 QPointF Slot::toPoint( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, class_Point ) ) {
+  if( !isKindOfSlot( slot, SC_CLASS(Point) ) ) {
     return QPointF();
   }
   PyrSlot *slots = slotRawObject( slot )->slots;
@@ -330,7 +330,7 @@ QPointF Slot::toPoint( PyrSlot *slot )
 
 QRectF Slot::toRect( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, class_Rect ) ) {
+  if( !isKindOfSlot( slot, SC_CLASS(Rect) ) ) {
     return QRectF();
   }
 
@@ -347,7 +347,7 @@ QRectF Slot::toRect( PyrSlot *slot )
 
 QSizeF Slot::toSize( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, class_Size ) ) {
+  if( !isKindOfSlot( slot, SC_CLASS(Size) ) ) {
     return QSizeF();
   }
 
@@ -390,7 +390,7 @@ QColor Slot::toColor( PyrSlot *slot )
   PyrObject *obj = slotRawObject(slot);
   PyrClass *klass = obj->classptr;
 
-  if( klass == class_Color )
+  if( klass == SC_CLASS(Color) )
     return asColor(obj);
 
   if( klass == SC_CLASS(Gradient) || klass == SC_CLASS(HiliteGradient) )
@@ -411,7 +411,7 @@ QColor Slot::toColor( PyrSlot *slot )
 
 QFont Slot::toFont( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, class_QFont ) )
+  if( !isKindOfSlot( slot, SC_CLASS(QFont) ) )
     return QFont();
 
   PyrSlot *slots = slotRawObject(slot)->slots;
@@ -445,7 +445,7 @@ QFont Slot::toFont( PyrSlot *slot )
 
 QPalette Slot::toPalette( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, class_QPalette ) )
+  if( !isKindOfSlot( slot, SC_CLASS(QPalette) ) )
     return QPalette();
 
   QPalette *p = QPALETTE_FROM_OBJECT(slotRawObject(slot));
@@ -454,7 +454,7 @@ QPalette Slot::toPalette( PyrSlot *slot )
 
 VariantList Slot::toVariantList( PyrSlot *slot )
 {
-  if( isKindOfSlot( slot, class_Array ) ) {
+  if( isKindOfSlot( slot, class_array ) ) {
     PyrObject *obj = slotRawObject( slot );
     PyrSlot *slots = obj->slots;
     int size = obj->size;
@@ -463,7 +463,7 @@ VariantList Slot::toVariantList( PyrSlot *slot )
       list.data << Slot::toVariant( slots );
     return list;
   }
-  else if( isKindOfSlot( slot, class_SymbolArray ) ) {
+  else if( isKindOfSlot( slot, class_symbolarray ) ) {
     PyrSymbolArray *symarray = slotRawSymbolArray( slot );
     PyrSymbol **symbols = symarray->symbols;
     int size = symarray->size;
@@ -515,7 +515,7 @@ static QVector<numeric_type> toNumericVector( PyrObject *obj )
 
 QObjectProxy* Slot::toObjectProxy( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, class_QObject ) ) return 0;
+  if( !isKindOfSlot( slot, SC_CLASS(QObject) ) ) return 0;
   QObjectProxy *proxy = 0;
   PyrSlot *proxySlot = slotRawObject( slot )->slots;
   if( IsPtr( proxySlot ) ) proxy = (QObjectProxy*) slotRawPtr( proxySlot );
@@ -524,7 +524,7 @@ QObjectProxy* Slot::toObjectProxy( PyrSlot *slot )
 
 QcTreeWidget::ItemPtr Slot::toTreeWidgetItem( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, class_QTreeViewItem ) ) return QcTreeWidget::ItemPtr();
+  if( !isKindOfSlot( slot, SC_CLASS(QTreeViewItem) ) ) return QcTreeWidget::ItemPtr();
   PyrSlot *ptrSlot = slotRawObject(slot)->slots+0;
   if( IsPtr( ptrSlot ) ) {
     QcTreeWidget::ItemPtr *safePtr = static_cast<QcTreeWidget::ItemPtr*>( slotRawPtr(ptrSlot) );
@@ -563,38 +563,38 @@ QVariant Slot::toVariant( PyrSlot *slot )
       else if( format == obj_int32 || format == obj_int16 || format == obj_int8 )
         return QVariant::fromValue< QVector<int> >( toNumericVector<int>(obj) );
 
-      else if( isKindOfSlot( slot, class_String ) ) {
+      else if( isKindOfSlot( slot, class_string ) ) {
         return QVariant( toString(slot) );
       }
-      else if( isKindOfSlot( slot, class_Point ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(Point) ) ) {
         return QVariant( toPoint( slot ) );
       }
-      else if( isKindOfSlot( slot, class_Rect ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(Rect) ) ) {
         return QVariant( toRect(slot) );
       }
-      else if( isKindOfSlot( slot, class_Size ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(Size) ) ) {
         return QVariant( toSize(slot) );
       }
-      else if( klass == class_Color ||
+      else if( klass == SC_CLASS(Color) ||
         klass == SC_CLASS(Gradient) ||
         klass == SC_CLASS(HiliteGradient) )
       {
         return QVariant::fromValue<QColor>( toColor(slot) );
       }
-      else if( isKindOfSlot( slot, class_QFont ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(QFont) ) ) {
         return QVariant::fromValue<QFont>( toFont(slot) );
       }
-      else if( isKindOfSlot( slot, class_QPalette ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(QPalette) ) ) {
         return QVariant::fromValue<QPalette>( toPalette(slot) );
       }
-      else if( isKindOfSlot( slot, class_QObject ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(QObject) ) ) {
         proxy = toObjectProxy(slot);
         return QVariant::fromValue<QObjectProxy*>( proxy );
       }
-      else if( isKindOfSlot( slot, class_Array ) || isKindOfSlot( slot, class_SymbolArray ) ) {
+      else if( isKindOfSlot( slot, class_array ) || isKindOfSlot( slot, class_symbolarray ) ) {
         return QVariant::fromValue<VariantList>( toVariantList(slot) );
       }
-      else if( isKindOfSlot( slot, class_QTreeViewItem ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(QTreeViewItem) ) ) {
         return QVariant::fromValue<QcTreeWidget::ItemPtr>( toTreeWidgetItem(slot) );
       }
       else {
@@ -652,34 +652,34 @@ void QtCollider::Variant::setData( PyrSlot *slot )
         _type = qMetaTypeId< QVector<int> >();
         _ptr = new QVector<int>( toNumericVector<int>(obj) );
       }
-      else if( isKindOfSlot( slot, class_String ) ) {
+      else if( isKindOfSlot( slot, class_string ) ) {
         _type = QMetaType::QString;
         _ptr = new QString( toString(slot) );
       }
-      else if( isKindOfSlot( slot, class_Point ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(Point) ) ) {
         _type = QMetaType::QPointF;
         _ptr = new QPointF( toPoint(slot) );
       }
-      else if( isKindOfSlot( slot, class_Rect ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(Rect) ) ) {
         _type = QMetaType::QRectF;
         _ptr = new QRectF( toRect(slot) );
       }
-      else if( isKindOfSlot( slot, class_Size ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(Size) ) ) {
         _type = QMetaType::QSizeF;
         _ptr = new QSizeF( toSize(slot) );
       }
-      else if( klass == class_Color ||
+      else if( klass == SC_CLASS(Color) ||
         klass == SC_CLASS(Gradient) ||
         klass == SC_CLASS(HiliteGradient) )
       {
         _type = QMetaType::QColor;
         _ptr = new QColor( toColor(slot) );
       }
-      else if( isKindOfSlot( slot, class_Array ) || isKindOfSlot( slot, class_SymbolArray ) ) {
+      else if( isKindOfSlot( slot, class_array ) || isKindOfSlot( slot, class_symbolarray ) ) {
         _type = qMetaTypeId<VariantList>();
         _ptr = new VariantList( toVariantList(slot) );
       }
-      else if( isKindOfSlot( slot, class_QObject ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(QObject) ) ) {
         proxy = toObjectProxy(slot);
         if( !proxy ) {
           _type = QMetaType::Void;
@@ -690,7 +690,7 @@ void QtCollider::Variant::setData( PyrSlot *slot )
           _ptr = new QObjectProxy*( proxy );
         }
       }
-      else if( isKindOfSlot( slot, class_QTreeViewItem ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(QTreeViewItem) ) ) {
         _type = qMetaTypeId<QcTreeWidget::ItemPtr>();
         _ptr = new QcTreeWidget::ItemPtr( toTreeWidgetItem(slot) );
       }

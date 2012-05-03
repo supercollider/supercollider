@@ -215,7 +215,7 @@ QC_QPEN_PRIMITIVE( QPen_SetDashPattern, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 {
   if( !IsObj( a ) ) return errWrongType;
   PyrObject *obj = slotRawObject( a );
-  if( obj->classptr != class_FloatArray ) return errWrongType;
+  if( obj->classptr != class_floatarray ) return errWrongType;
   PyrFloatArray *farray = reinterpret_cast<PyrFloatArray*>(obj);
 
   int s = farray->size;

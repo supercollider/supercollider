@@ -72,7 +72,7 @@ QC_LANG_PRIMITIVE( QObject_New, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   PyrSlot *slotArg = a+1;
 
-  if( isKindOfSlot( slotArg, class_Array ) ) {
+  if( isKindOfSlot( slotArg, class_array ) ) {
     PyrObject *array = slotRawObject( slotArg );
     PyrSlot *s = array->slots;
     int size = array->size;
@@ -464,7 +464,7 @@ QC_LANG_PRIMITIVE( QObject_DisconnectObject, 2, PyrSlot *r, PyrSlot *a, VMGlobal
 QC_LANG_PRIMITIVE( QObject_ConnectSlot, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   // Args: signal, receiver, slot
-  if( !isKindOfSlot( a+1, class_QObject )
+  if( !isKindOfSlot( a+1, SC_CLASS(QObject) )
       || NotSym( a+0 ) || NotSym( a+2 ) ) return errWrongType;
 
   PyrSymbol *symSig = slotRawSymbol( a+0 );

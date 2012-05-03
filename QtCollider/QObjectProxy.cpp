@@ -90,7 +90,7 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *
   // get data from argument slots
   QtCollider::Variant argSlots[10];
 
-  if( isKindOfSlot( argSlot, class_Array ) ) {
+  if( isKindOfSlot( argSlot, class_array ) ) {
     PyrSlot *slots = slotRawObject( argSlot )->slots;
     int size = slotRawObject( argSlot )->size;
     int i;
@@ -210,7 +210,7 @@ void QObjectProxy::customEvent( QEvent *event )
       destroyEvent( static_cast<DestroyEvent*>(event) );
       return;
     case (QEvent::Type) QtCollider::Event_Proxy_Release:
-      invokeScMethod(s_prRelease);
+      invokeScMethod(SC_SYM(prRelease));
       return;
     default: ;
   }
