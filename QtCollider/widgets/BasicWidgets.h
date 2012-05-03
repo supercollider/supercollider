@@ -25,7 +25,23 @@
 #include "QcCanvas.h"
 #include "../layouts/classic_layouts.hpp"
 
-class QcDefaultWidget : public QWidget
+class QcSimpleWidget : public QWidget
+{
+  Q_OBJECT
+  Q_PROPERTY( QColor background READ background WRITE setBackground );
+
+public:
+  const QColor & background() const { return _bkg; }
+  void setBackground( const QColor &c );
+
+protected:
+  virtual void paintEvent( QPaintEvent * );
+
+private:
+  QColor _bkg;
+};
+
+class QcDefaultWidget : public QcSimpleWidget
 {
   Q_OBJECT
   public:
@@ -35,7 +51,7 @@ class QcDefaultWidget : public QWidget
     QtCollider::DefaultLayout l;
 };
 
-class QcHLayoutWidget : public QWidget
+class QcHLayoutWidget : public QcSimpleWidget
 {
   Q_OBJECT
   public:
@@ -45,7 +61,7 @@ class QcHLayoutWidget : public QWidget
     QtCollider::HLayout l;
 };
 
-class QcVLayoutWidget : public QWidget
+class QcVLayoutWidget : public QcSimpleWidget
 {
   Q_OBJECT
   public:

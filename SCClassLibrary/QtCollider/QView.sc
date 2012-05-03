@@ -83,14 +83,8 @@ QView : QObject {
     this.setProperty( \palette, p );
   }
 
-  background {
-    ^this.palette.window;
-  }
-
-  background_ { arg color;
-    this.palette = this.palette.window_(color);
-    this.setProperty( \autoFillBackground, true );
-  }
+  background { ^this.getProperty(\background); }
+  background_ { arg color; this.setProperty(\background, color); }
 
   // NOTE: only for backwards compatibility
   backColor_ { arg color;
