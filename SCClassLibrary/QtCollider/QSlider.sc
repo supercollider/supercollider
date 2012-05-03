@@ -26,21 +26,11 @@ QSlider : QAbstractStepValue {
   thumbSize { ^this.getProperty(\handleLength) }
   thumbSize_ { arg pixels; this.setProperty(\handleLength, pixels) }
 
-  knobColor {
-    ^this.palette.buttonText;
-  }
+  knobColor { ^this.getProperty(\knobColor) }
+  knobColor_ { arg color; this.setProperty(\knobColor, color) }
 
-  knobColor_ { arg color;
-    this.palette = this.palette.buttonText_(color);
-  }
-
-  background {
-    ^this.getProperty(\grooveColor);
-  }
-
-  background_ { arg color;
-    this.setProperty(\grooveColor, color);
-  }
+  background { ^this.getProperty(\grooveColor) }
+  background_ { arg color; this.setProperty(\grooveColor, color) }
 
   initQSlider { arg bounds;
     var r;

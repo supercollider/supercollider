@@ -37,10 +37,11 @@ class QcSlider : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::Styl
   Q_PROPERTY( double step READ step WRITE setStep )
   Q_PROPERTY( double pixelStep READ pixelStep )
   Q_PROPERTY( double value READ value WRITE setValue );
-  Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
-  Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
   Q_PROPERTY( int orientation READ orientation WRITE setOrientation );
   Q_PROPERTY( int handleLength READ handleLength WRITE setHandleLength );
+  Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
+  Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
+  Q_PROPERTY( QColor knobColor READ knobColor WRITE setKnobColor );
 
   public Q_SLOTS:
     void increment( double factor );
@@ -65,6 +66,10 @@ class QcSlider : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::Styl
     int handleLength() const { return _hndLen; }
     void setHandleLength( int i ) { _hndLen = i; updateGeometry(); update(); }
 
+    const QColor & knobColor() const
+      { return _knobColor.isValid() ? _knobColor : palette().color(QPalette::ButtonText); }
+    void setKnobColor(const QColor &c) { _knobColor = c; update(); }
+
     virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
 
@@ -82,6 +87,8 @@ class QcSlider : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::Styl
     double _value;
     double _step;
     int _hndLen;
+
+    QColor _knobColor;
 };
 
 #endif

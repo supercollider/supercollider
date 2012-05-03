@@ -146,8 +146,7 @@ void QcSlider::paintEvent( QPaintEvent *e )
 
   // draw groove
   RoundRect shGroove( rGroove, 2 );
-  QColor baseColor( grooveColor() );
-  drawSunken( &p, plt, shGroove, baseColor, hasFocus() ? focusColor() : QColor() );
+  drawSunken( &p, plt, shGroove, grooveColor(), hasFocus() ? focusColor() : QColor() );
 
   // geometry
   QRect rHandle( thumbRect() );
@@ -159,7 +158,7 @@ void QcSlider::paintEvent( QPaintEvent *e )
   p.restore();
 
     // draw marker
-  QPen pen(plt.color(QPalette::ButtonText));
+  QPen pen(knobColor());
   pen.setWidth(2);
   p.setPen(pen);
   if(_ort == Qt::Horizontal) {
