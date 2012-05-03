@@ -20,13 +20,17 @@
 ************************************************************************/
 
 #include "../QcHelper.h"
+#include "../style/style.hpp"
+
 #include <QPushButton>
 
-class QcButton : public QPushButton, public QcHelper
+class QcButton : public QPushButton, QcHelper, QtCollider::Style::Client
 {
   Q_OBJECT
   Q_PROPERTY( VariantList states READ dummyVariantList WRITE setStates );
   Q_PROPERTY( int value READ getValue WRITE setValue );
+  Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
+
   public:
     QcButton();
   Q_SIGNALS:
@@ -35,6 +39,7 @@ class QcButton : public QPushButton, public QcHelper
 #ifdef Q_WS_MAC
     bool hitButton( const QPoint & ) const;
 #endif
+    virtual void paintEvent ( QPaintEvent * );
   private Q_SLOTS:
     void doAction();
   private:
@@ -50,5 +55,4 @@ class QcButton : public QPushButton, public QcHelper
     void cycleStates();
     QList<State> states;
     int currentState;
-    QPalette defaultPalette;
 };

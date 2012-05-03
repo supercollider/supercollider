@@ -28,9 +28,6 @@ public:
 
   virtual void polish ( QPalette & );
 
-  virtual void drawControl ( ControlElement, const QStyleOption *,
-                             QPainter *, const QWidget * = 0 ) const;
-
   QColor color( ColorRole role ) {
     Q_ASSERT(role < ColorRoleCount);
     return _colors[role];
