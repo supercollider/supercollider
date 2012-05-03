@@ -57,7 +57,7 @@ QObjectProxy::~QObjectProxy()
 }
 
 bool QObjectProxy::compareThread() {
-  return QThread::currentThread() == this->thread();
+  return gMainVMGlobals->canCallOS;
 }
 
 void QObjectProxy::invalidate() {
