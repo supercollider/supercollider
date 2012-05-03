@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -19,21 +19,28 @@
 *
 ************************************************************************/
 
-#include "BasicWidgets.h"
-#include "../QcWidgetFactory.h"
+#include "../QcHelper.h"
+#include <QListWidget>
 
-QC_DECLARE_QWIDGET_FACTORY( QcDefaultWidget );
-QC_DECLARE_QWIDGET_FACTORY( QcHLayoutWidget );
-QC_DECLARE_QWIDGET_FACTORY( QcVLayoutWidget );
-
-class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>
+class QcListWidget : public QListWidget, QcHelper
 {
-protected:
-  virtual void initialize( QWidgetProxy *p, QcCustomPainted *w )
-  {
-    QObject::connect( w, SIGNAL(painting(QPainter*)),
-                      p, SLOT(customPaint(QPainter*)) );
-  }
-};
+  Q_OBJECT
+  Q_PROPERTY( VariantList items READ dummyVariantList WRITE setItems );
+  Q_PROPERTY( VariantList colors READ dummyVariantList WRITE setColors );
+  Q_PROPERTY( int currentRow READ currentRow WRITE setCurrentRowWithoutAction )
 
-QC_DECLARE_FACTORY( QcCustomPainted, QcCustomPaintedFactory );
+  public:
+    QcListWidget();
+    void setItems( const VariantList & );
+    void setColors( const VariantList & ) const;
+    void setCurrentRowWithoutAction( int );
+  Q_SIGNALS:
+    void action();
+    void returnPressed();
+  private Q_SLOTS:
+    void onCurrentItemChanged();
+  protected:
+    virtual void keyPressEvent( QKeyEvent * );
+  private:
+    bool _emitAction;
+};

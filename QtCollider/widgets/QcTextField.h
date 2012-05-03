@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -19,21 +19,32 @@
 *
 ************************************************************************/
 
-#include "BasicWidgets.h"
 #include "../QcWidgetFactory.h"
 
-QC_DECLARE_QWIDGET_FACTORY( QcDefaultWidget );
-QC_DECLARE_QWIDGET_FACTORY( QcHLayoutWidget );
-QC_DECLARE_QWIDGET_FACTORY( QcVLayoutWidget );
+#include <QLineEdit>
+#include <QKeyEvent>
 
-class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>
+class QcTextField : public QLineEdit
 {
+  Q_OBJECT
+
+public:
+  QcTextField() {}
+
 protected:
-  virtual void initialize( QWidgetProxy *p, QcCustomPainted *w )
+
+  virtual void keyPressEvent( QKeyEvent *e )
   {
-    QObject::connect( w, SIGNAL(painting(QPainter*)),
-                      p, SLOT(customPaint(QPainter*)) );
+    // NOTE: We could use the returnPressed() signal, but that would still
+    // propagate the event to parent, which we want to avoid.
+    if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return)
+      Q_EMIT(action());
+    else
+      QLineEdit::keyPressEvent(e);
   }
+
+Q_SIGNALS:
+  void action();
 };
 
-QC_DECLARE_FACTORY( QcCustomPainted, QcCustomPaintedFactory );
+QC_DECLARE_QWIDGET_FACTORY( QcTextField );

@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -19,21 +19,30 @@
 *
 ************************************************************************/
 
-#include "BasicWidgets.h"
-#include "../QcWidgetFactory.h"
+#include "../QcHelper.h"
+#include <QComboBox>
 
-QC_DECLARE_QWIDGET_FACTORY( QcDefaultWidget );
-QC_DECLARE_QWIDGET_FACTORY( QcHLayoutWidget );
-QC_DECLARE_QWIDGET_FACTORY( QcVLayoutWidget );
-
-class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>
+class QcPopUpMenu : public QComboBox, QcHelper
 {
-protected:
-  virtual void initialize( QWidgetProxy *p, QcCustomPainted *w )
-  {
-    QObject::connect( w, SIGNAL(painting(QPainter*)),
-                      p, SLOT(customPaint(QPainter*)) );
-  }
-};
+  Q_OBJECT
+  Q_PROPERTY( VariantList items READ dummyVariantList WRITE setItems );
+  Q_PROPERTY( bool reactivationEnabled READ reactivationEnabled WRITE setReactivationEnabled )
 
-QC_DECLARE_FACTORY( QcCustomPainted, QcCustomPaintedFactory );
+public:
+    QcPopUpMenu();
+    bool reactivationEnabled() const { return _reactivation; }
+    void setReactivationEnabled( bool b ) { _reactivation = b; }
+
+Q_SIGNALS:
+    void action();
+
+private Q_SLOTS:
+    void doAction(int);
+    void setChanged() { _changed = true; }
+    void clearChanged() { _changed = false; }
+
+private:
+    void setItems( const VariantList & );
+    bool _changed;
+    bool _reactivation;
+};
