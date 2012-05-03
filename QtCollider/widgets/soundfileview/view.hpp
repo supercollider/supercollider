@@ -62,19 +62,21 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( float scrollPos READ scrollPos WRITE setScrollPos );
   Q_PROPERTY( int currentSelection READ currentSelection WRITE setCurrentSelection );
   Q_PROPERTY( VariantList selections READ selections );
-  Q_PROPERTY( QColor peakColor READ dummyColor WRITE setPeakColor );
-  Q_PROPERTY( QColor rmsColor READ dummyColor WRITE setRmsColor );
+
   Q_PROPERTY( float yZoom READ yZoom WRITE setYZoom );
   Q_PROPERTY( float xZoom READ xZoom WRITE setXZoom );
   Q_PROPERTY( bool cursorVisible READ cursorVisible WRITE setCursorVisible );
   Q_PROPERTY( bool cursorEditable READ cursorEditable WRITE setCursorEditable );
   Q_PROPERTY( int cursorPosition READ cursorPosition WRITE setCursorPosition );
-  Q_PROPERTY( QColor cursorColor READ cursorColor WRITE setCursorColor );
   Q_PROPERTY( bool gridVisible READ gridVisible WRITE setGridVisible );
   Q_PROPERTY( float gridOffset READ gridOffset WRITE setGridOffset );
   Q_PROPERTY( float gridResolution READ gridResolution WRITE setGridResolution );
-  Q_PROPERTY( QColor gridColor READ gridColor WRITE setGridColor );
   Q_PROPERTY( bool drawsWaveform READ drawsWaveform WRITE setDrawsWaveform );
+  Q_PROPERTY( QColor background READ background WRITE setBackground );
+  Q_PROPERTY( QColor peakColor READ peakColor WRITE setPeakColor );
+  Q_PROPERTY( QColor rmsColor READ rmsColor WRITE setRmsColor );
+  Q_PROPERTY( QColor cursorColor READ cursorColor WRITE setCursorColor );
+  Q_PROPERTY( QColor gridColor READ gridColor WRITE setGridColor );
 
 public:
   Q_INVOKABLE void load( const QString& filename );
@@ -131,8 +133,6 @@ public:
   void setCursorVisible( bool b ) { _showCursor = b; update(); }
   int cursorPosition() const { return _cursorPos; }
   void setCursorPosition( int pos ) { _cursorPos = pos; update(); }
-  QColor cursorColor() const { return _cursorColor; }
-  void setCursorColor( const QColor &c ) { _cursorColor = c; update(); }
   bool cursorEditable() const { return _cursorEditable; }
   void setCursorEditable( bool b ) { _cursorEditable = b; }
 
@@ -142,16 +142,28 @@ public:
   void setGridOffset( float f ) { _gridOffset = f; update(); }
   float gridResolution() const { return _gridResolution; }
   void setGridResolution( float f ) { _gridResolution = f; update(); }
-  QColor gridColor() const { return _gridColor; }
-  void setGridColor( const QColor &c ) { _gridColor = c; update(); }
-
-  void setPeakColor( const QColor &clr ) { _peakColor = clr; redraw(); }
-  void setRmsColor( const QColor &clr ) { _rmsColor = clr; redraw(); }
 
   bool drawsWaveform() const { return _drawWaveform; }
   void setDrawsWaveform( bool b ) { _drawWaveform = b; update(); }
   VariantList waveColors() const;
   void setWaveColors( const VariantList & );
+
+  const QColor & background() const { return _bkgColor; }
+  void setBackground( const QColor &c )
+  {
+      if(_bkgColor == c) return;
+      _bkgColor = c;
+      setAttribute(Qt::WA_OpaquePaintEvent, c.isValid() && c.alpha() == 255);
+      update();
+  }
+  const QColor & peakColor() const { return _peakColor; }
+  void setPeakColor( const QColor &clr ) { _peakColor = clr; redraw(); }
+  const QColor & rmsColor() const { return _rmsColor; }
+  void setRmsColor( const QColor &clr ) { _rmsColor = clr; redraw(); }
+  const QColor & cursorColor() const { return _cursorColor; }
+  void setCursorColor( const QColor &c ) { _cursorColor = c; update(); }
+  const QColor & gridColor() const { return _gridColor; }
+  void setGridColor( const QColor &c ) { _gridColor = c; update(); }
 
   QSize sizeHint() const { return QSize( 400, 200 ); }
   QSize minimumSizeHint() const { return QSize( 100, 20 ); }
@@ -218,14 +230,12 @@ private:
   // cursor
   bool _showCursor;
   sf_count_t _cursorPos;
-  QColor _cursorColor;
   bool _cursorEditable;
 
   //grid
   bool _showGrid;
   float _gridResolution;
   float _gridOffset;
-  QColor _gridColor;
 
   // view
   double _beg;
@@ -235,8 +245,11 @@ private:
 
   // painting
   QPixmap *pixmap;
+  QColor _bkgColor;
   QColor _peakColor;
   QColor _rmsColor;
+  QColor _cursorColor;
+  QColor _gridColor;
   bool dirty;
   bool _drawWaveform;
   QList<QColor> _waveColors;
