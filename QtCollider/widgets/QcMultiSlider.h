@@ -49,10 +49,11 @@ class QcMultiSlider : public QWidget, QcHelper, QtCollider::Style::Client
   Q_PROPERTY( bool drawRects READ dummyBool WRITE setDrawRects );
   Q_PROPERTY( bool isFilled READ dummyBool WRITE setIsFilled );
   Q_PROPERTY( bool highlight READ dummyBool WRITE setHighlight );
-  Q_PROPERTY( QColor fillColor READ dummyColor WRITE setFillColor );
-  Q_PROPERTY( QColor strokeColor READ dummyColor WRITE setStrokeColor );
   Q_PROPERTY( bool editable READ dummyBool WRITE setEditable );
   Q_PROPERTY( int startIndex READ dummyInt WRITE setStartIndex );
+  Q_PROPERTY( QColor background READ background WRITE setBackground );
+  Q_PROPERTY( QColor fillColor READ fillColor WRITE setFillColor );
+  Q_PROPERTY( QColor strokeColor READ strokeColor WRITE setStrokeColor );
   Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
 
   Q_SIGNALS:
@@ -81,6 +82,18 @@ class QcMultiSlider : public QWidget, QcHelper, QtCollider::Style::Client
     QSize sizeHint() const { return QSize( 500,300 ); }
     QSize minimumSizeHint() const { return QSize( 50, 50 ); }
 
+    const QColor & background() const
+      { return _bkgColor.isValid() ? _bkgColor : palette().color(QPalette::Base); }
+    void setBackground( const QColor & c ) { _bkgColor = c; update(); }
+
+    const QColor & fillColor() const
+      { return _fillColor.isValid() ? _fillColor : palette().color(QPalette::Text); }
+    void setFillColor( const QColor& c ) { _fillColor = c; update(); }
+
+    const QColor & strokeColor() const
+      { return _strokeColor.isValid() ? _strokeColor : palette().color(QPalette::Text); }
+    void setStrokeColor( const QColor& c ) { _strokeColor = c; update(); }
+
   protected:
     virtual void mousePressEvent( QMouseEvent * );
     virtual void mouseMoveEvent( QMouseEvent * );
@@ -103,8 +116,6 @@ class QcMultiSlider : public QWidget, QcHelper, QtCollider::Style::Client
     void setDrawRects( bool b ) { drawRects = b; update(); }
     void setIsFilled( bool b ) { isFilled = b; update(); }
     void setHighlight( bool b ) { highlight = b; update(); }
-    void setFillColor( const QColor& c ) { _fillColor = c; update(); }
-    void setStrokeColor( const QColor& c ) { _strokeColor = c; update(); }
     void setEditable( bool b ) { editable = b; }
     void setStartIndex( int i ) { startIndex = qBound(0, i, _values.count()-1); update(); }
 
@@ -133,10 +144,12 @@ class QcMultiSlider : public QWidget, QcHelper, QtCollider::Style::Client
     bool drawLines;
     bool isFilled;
     bool highlight;
+    int startIndex;
+
+    QColor _bkgColor;
     QColor _fillColor;
     QColor _strokeColor;
     QColor _focusColor;
-    int startIndex;
 
     // temporary
     QPoint moveOrigin;

@@ -304,21 +304,14 @@ void QcMultiSlider::paintEvent( QPaintEvent *e )
   QPainter p(this);
   p.setRenderHint( QPainter::Antialiasing, true );
 
-  QPalette pal = palette();
-
   RoundRect frame(rect(), 2);
-  drawSunken( &p, pal, frame, pal.color(QPalette::Base), hasFocus() ? focusColor() : QColor() );
+  drawSunken( &p, palette(), frame, background(), hasFocus() ? focusColor() : QColor() );
 
   if( !_values.count() ) return;
 
   p.setRenderHint( QPainter::Antialiasing, false );
 
   bool horiz = ort == Qt::Horizontal;
-
-  QColor fillColor =
-    _fillColor.isValid() ? _fillColor : pal.color( QPalette::Text );
-  QColor strokeColor =
-    _strokeColor.isValid() ? _strokeColor : pal.color( QPalette::Text );
 
   QRect bounds( contentsRect() );
 
@@ -343,6 +336,8 @@ void QcMultiSlider::paintEvent( QPaintEvent *e )
   yscale = bounds.height();
   if( !isFilled ) yscale -= thumbSize.height();
 
+  const QColor & fillClr = fillColor();
+
   // selection
 
   if( highlight ) {
@@ -354,13 +349,13 @@ void QcMultiSlider::paintEvent( QPaintEvent *e )
       r.setWidth( c * spacing );
       r.moveLeft( i * spacing );
 
-      QColor hlColor = fillColor;
+      QColor hlColor = fillClr;
       hlColor.setAlpha( 70 );
       p.fillRect( r, hlColor );
     }
   }
 
-  p.setPen( strokeColor );
+  p.setPen( strokeColor() );
 
   // lines
 
@@ -372,7 +367,7 @@ void QcMultiSlider::paintEvent( QPaintEvent *e )
     p.setRenderHint( QPainter::Antialiasing, true );
     p.translate( spacing * 0.5, isFilled ? 0.0 : thumbSize.height() * 0.5 );
     p.scale( 1.0, (qreal) yscale );
-    if( fill ) p.setBrush( fillColor );
+    if( fill ) p.setBrush( fillClr );
 
     QPainterPath path;
 
@@ -413,7 +408,7 @@ void QcMultiSlider::paintEvent( QPaintEvent *e )
   if( drawRects ) {
     p.setRenderHint( QPainter::Antialiasing, false );
     p.translate( (spacing - width) * 0.5, 0 );
-    p.setBrush( fillColor );
+    p.setBrush( fillClr );
 
     QRectF r;
     r.setWidth( width );
