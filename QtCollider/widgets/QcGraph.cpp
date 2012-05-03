@@ -782,27 +782,18 @@ void QcGraph::paintEvent( QPaintEvent * )
   using QtCollider::Style::RoundRect;
 
   QPainter p( this );
-  QPalette plt( palette() );
+  const QPalette & plt = palette();
 
   p.setRenderHint( QPainter::Antialiasing, true );
   RoundRect frame(rect(), 2);
-  drawSunken( &p, plt, frame, plt.color(QPalette::Base), hasFocus() ? focusColor() : QColor() );
+  drawSunken( &p, plt, frame, background(), hasFocus() ? focusColor() : QColor() );
   p.setRenderHint( QPainter::Antialiasing, false );
 
   QRect contentsRect( valueRect() );
 
-  QColor strokeColor = _strokeColor.isValid() ? _strokeColor :  plt.color(QPalette::Text);
-  QColor gridColor;
-  if(_gridColor.isValid())
-    gridColor = _gridColor;
-  else {
-    gridColor = plt.color(QPalette::Text);
-    gridColor.setAlpha(40);
-  }
-
   //draw grid;
 
-  p.setPen(gridColor);
+  p.setPen( gridColor() );
   p.setBrush( Qt::NoBrush );
   p.drawRect( contentsRect );
 
@@ -840,7 +831,9 @@ void QcGraph::paintEvent( QPaintEvent * )
   int c = elems.count();
   if( !c ) return;
 
-  p.setPen( strokeColor );
+  const QColor & strokeClr = strokeColor();
+
+  p.setPen( strokeClr );
 
   // draw lines;
   if( _drawLines ) {
@@ -885,6 +878,7 @@ void QcGraph::paintEvent( QPaintEvent * )
     QColor rectColor = plt.color(QPalette::Button).lighter(105);
     QColor circleColor = rectColor; circleColor.setAlpha(70);
     QColor dotColor = plt.color(QPalette::Text);
+    const QColor & selectClr = selectionColor();
     QRectF rect;
     QPointF pt;
     int i;
@@ -900,10 +894,10 @@ void QcGraph::paintEvent( QPaintEvent * )
 
       if( _style == DotElements )
           drawDotElement(e, rect, contentsRect,
-                         dotColor, circleColor, strokeColor,
+                         dotColor, circleColor, strokeClr, selectClr,
                          plt, fm, &p);
       else
-          drawRectElement(e, rect, rectColor, strokeColor, plt, &p  );
+          drawRectElement(e, rect, rectColor, strokeClr, selectClr, plt, &p  );
 
     }
 
@@ -913,7 +907,7 @@ void QcGraph::paintEvent( QPaintEvent * )
 void QcGraph::drawDotElement
 ( QcGraphElement *e, const QRectF &rect, const QRect & bounds,
   const QColor & dotColor, const QColor & circleColor,
-  const QColor & textColor,
+  const QColor & textColor, const QColor & selectColor,
   const QPalette &plt, const QFontMetrics &fm, QPainter *p )
 {
   using namespace QtCollider::Style;
@@ -934,7 +928,7 @@ void QcGraph::drawDotElement
   // selection indicator
   if( e->selected ) {
     p->setBrush(Qt::NoBrush);
-    p->setPen( plt.color(QPalette::Highlight) );
+    p->setPen( selectColor );
     p->drawEllipse( thumb._rect.adjusted(1,1,-1,-1) );
   }
 
@@ -952,6 +946,7 @@ void QcGraph::drawRectElement
   QcGraphElement *e, const QRectF &rect,
   const QColor & fillColor,
   const QColor & textColor,
+  const QColor & selectColor,
   const QPalette &plt, QPainter *p )
 {
   using namespace QtCollider::Style;
@@ -964,7 +959,7 @@ void QcGraph::drawRectElement
   // selection indicator
   if( e->selected ) {
     p->setBrush(Qt::NoBrush);
-    p->setPen( plt.color(QPalette::Highlight) );
+    p->setPen( selectColor );
     p->drawRoundedRect( base._rect, 5, 5 );
   }
 
