@@ -39,6 +39,7 @@ class QcSlider2D : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::St
   Q_PROPERTY( double step READ dummyFloat WRITE setStep )
   Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
   Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
+  Q_PROPERTY( QColor knobColor READ knobColor WRITE setKnobColor );
 
   public:
     QcSlider2D();
@@ -47,6 +48,9 @@ class QcSlider2D : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::St
     void setXValue( double x ) { setValue( QPointF( x, _y ), false ); }
     void setYValue( double y ) { setValue( QPointF( _x, y ), false ); }
     void setStep( double f ) { _step = f;}
+    const QColor & knobColor() const
+      { return _knobColor.isValid() ? _knobColor : palette().color(QPalette::ButtonText); }
+    void setKnobColor(const QColor &c) { _knobColor = c; update(); }
     QSize sizeHint() const { return QSize(150,150); }
     QSize minimumSizeHint() const { return QSize(30,30); }
   public Q_SLOTS:
@@ -69,6 +73,8 @@ class QcSlider2D : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::St
     double _y;
     QSize _thumbSize;
     double _step;
+
+    QColor _knobColor;
 };
 
 #endif

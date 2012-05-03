@@ -139,8 +139,7 @@ void QcSlider2D::paintEvent ( QPaintEvent *e )
   QPalette plt = palette();
 
   RoundRect frame(rect(), 2);
-  QColor baseColor( grooveColor() );
-  drawSunken( &p, plt, frame, baseColor, hasFocus() ? focusColor() : QColor() );
+  drawSunken( &p, plt, frame, grooveColor(), hasFocus() ? focusColor() : QColor() );
 
   Ellipse thumb(thumbRect());
   drawRaised( &p, plt, thumb, plt.color(QPalette::Button).lighter(105) );
@@ -149,6 +148,6 @@ void QcSlider2D::paintEvent ( QPaintEvent *e )
   qreal wdif = r.width() * 0.3;
   qreal hdif = r.height() * 0.3;
   p.setPen( Qt::NoPen );
-  p.setBrush( plt.color(QPalette::ButtonText) );
+  p.setBrush( knobColor() );
   p.drawEllipse( r.adjusted( wdif, hdif, -wdif, -hdif ) );
 }
