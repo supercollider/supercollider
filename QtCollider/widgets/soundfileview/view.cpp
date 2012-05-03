@@ -51,18 +51,19 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _showCursor(false),
   _cursorEditable(true),
   _cursorPos(0),
-  _cursorColor(QColor(255,0,0)),
 
   _showGrid(true),
   _gridResolution(1.0),
   _gridOffset(0.0),
-  _gridColor(QColor(100,100,200)),
 
   _beg(0.0),
   _dur(0.0),
   _yZoom(1.f),
 
   pixmap(0),
+  _bkgColor( QColor(0,0,0) ),
+  _cursorColor( QColor(255,0,0) ),
+  _gridColor( QColor(100,100,200) ),
   _peakColor( QColor(242,178,0) ),
   _rmsColor( QColor(255,255,0) ),
   dirty(false),
@@ -71,13 +72,8 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   memset( &sfInfo, 0, sizeof(SF_INFO) );
 
   setFocusPolicy( Qt::StrongFocus );
-
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
-
-  QPalette plt(palette());
-  plt.setColor(QPalette::Window, Qt::black);
-  setPalette(plt);
-  setAutoFillBackground(true);
+  setAttribute( Qt::WA_OpaquePaintEvent, true );
 }
 
 QcWaveform::~QcWaveform()
@@ -497,6 +493,8 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
     p.drawText( rect(), "loading...", opt );
     return;
   }
+
+  p.fillRect( rect(), _bkgColor );
 
   // draw waveform on pixmap
 
