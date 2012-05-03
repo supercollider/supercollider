@@ -26,6 +26,7 @@
 #include <QPixmap>
 #include <QBasicTimer>
 #include <QTime>
+#include <QPalette>
 
 class QcCanvas : public QWidget
 {
@@ -33,6 +34,7 @@ class QcCanvas : public QWidget
   Q_PROPERTY( bool drawingEnabled READ drawingEnabled WRITE setDrawingEnabled );
   Q_PROPERTY( float frameRate READ frameRate WRITE setFrameRate );
   Q_PROPERTY( int frameCount READ frameCount );
+  Q_PROPERTY( QColor background READ background WRITE setBackground );
   Q_OBJECT
 public:
   QcCanvas( QWidget *parent = 0 );
@@ -43,6 +45,8 @@ public:
   float frameRate() const;
   void setFrameRate( float rate );
   int frameCount() const { return _frameCount; }
+  QColor background() const { return _bkg; }
+  void setBackground( const QColor &c );
 public Q_SLOTS:
   void refresh();
   void clear();
@@ -74,6 +78,7 @@ private:
   QTime _meterTime;
   int _meterFrames;
 
+  QColor _bkg;
 };
 
 #endif

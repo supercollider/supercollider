@@ -43,11 +43,6 @@ QUserView : QView {
 
   frame { ^this.getProperty( \frameCount ); }
 
-  background_ { arg color;
-    // Do not autoFillBackground; the widget will paint it if necessary.
-    this.palette = this.palette.window_(color);
-  }
-
   // override QView's action_ to not connect to 'action()' signal
   action_ { arg func;
     action = func;

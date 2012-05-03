@@ -24,6 +24,7 @@
 #include "../Common.h"
 
 #include <QPainter>
+#include <QPaintEvent>
 
 QcCanvas::QcCanvas( QWidget *parent )
 : QWidget( parent ),
@@ -39,9 +40,7 @@ QcCanvas::QcCanvas( QWidget *parent )
   _frameCount( 0 ),
   _meterPeriod( 1000 ),
   _meterFrames( 0 )
-{
-  //_bkgColor = palette().color( QPalette::Background );
-}
+{}
 
 float QcCanvas::frameRate() const
 {
@@ -58,6 +57,18 @@ void QcCanvas::setFrameRate( float rate )
       _timerId = startTimer( 1000.f / _fps );
     }
   }
+}
+
+void QcCanvas::setBackground( const QColor &c )
+{
+  if(_bkg == c) return;
+
+  _bkg = c;
+
+  setAttribute( Qt::WA_OpaquePaintEvent, c.isValid() && c.alpha() == 255 );
+
+  if( !testAttribute(Qt::WA_WState_InPaintEvent) )
+      update();
 }
 
 void QcCanvas::refresh()
@@ -93,7 +104,7 @@ void QcCanvas::customEvent( QEvent *e )
 {
   if( e->type() == (QEvent::Type) QtCollider::Event_Refresh ) {
     e->accept();
-    refresh();
+    if(_paint) refresh();
   }
 }
 
@@ -109,7 +120,7 @@ void QcCanvas::resizeEvent( QResizeEvent * )
   refresh();
 }
 
-void QcCanvas::paintEvent( QPaintEvent * )
+void QcCanvas::paintEvent( QPaintEvent *e )
 {
   if( _paint && _repaintNeeded ) {
     if( _resize ) {
@@ -123,18 +134,27 @@ void QcCanvas::paintEvent( QPaintEvent * )
       _clearOnce = false;
     }
 
+    bool opaque_before = testAttribute(Qt::WA_OpaquePaintEvent);
+
     QPainter pixPainter( &_pixmap );
     Q_EMIT( painting(&pixPainter) );
     _repaintNeeded = false;
+
+    bool opaque_after = testAttribute(Qt::WA_OpaquePaintEvent);
+    if( opaque_before && !opaque_after )
+    {
+      repaint();
+      return;
+    }
   }
 
   QPainter p(this);
   QPalette plt(palette());
 
-  if( plt.isBrushSet(QPalette::Normal, QPalette::Window) )
-      p.fillRect( rect(), plt.color(QPalette::Window) );
+  if( _bkg.isValid() )
+      p.fillRect( e->rect(), _bkg );
 
-  if( _paint ) p.drawPixmap( rect(), _pixmap );
+  if( _paint ) p.drawPixmap( e->rect(), _pixmap, e->rect() );
 }
 
 void QcCanvas::timerEvent( QTimerEvent *e )
