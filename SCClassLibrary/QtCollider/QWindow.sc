@@ -64,11 +64,6 @@ QTopView : QView {
     this.setProperty( \geometry, rOld.resizeTo( rNew.width, rNew.height ) );
   }
 
-  background_ { arg color;
-    // Do not autoFillBackground; the widget will paint it if necessary.
-    this.palette = this.palette.window_(color);
-  }
-
   drawingEnabled_ { arg bool; this.setProperty( \drawingEnabled, bool ); }
 
   findWindow { ^window; }

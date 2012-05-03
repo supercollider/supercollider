@@ -128,15 +128,8 @@ QVLayoutView : QView {
 QScrollCanvas : QObject {
   *qtClass { ^'QcScrollWidget' }
 
-  background {
-    ^this.getProperty(\palette).window;
-  }
-
-  background_ { arg color;
-    // Do not autoFillBackground; the widget will paint it if necessary.
-    var p = this.getProperty(\palette);
-    this.setProperty( \palette, p.window_(color) );
-  }
+  background { ^this.getProperty(\background); }
+  background_ { arg color; this.setProperty(\background, color); }
 }
 
 QScrollView : QAbstractScroll {
