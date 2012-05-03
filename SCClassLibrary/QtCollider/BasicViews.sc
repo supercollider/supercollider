@@ -204,11 +204,16 @@ QStaticText : QTextViewBase {
     ^obj;
   }
 
-  background_ { arg aColor;
-    if( this.background.isNil ) {
-      this.setProperty( \autoFillBackground, true);
-    };
-    super.background_( aColor );
+  background {
+    var p = this.palette;
+    ^if(p.hasColor(\window)) {p.window} {nil}
+  }
+
+  background_ { arg color;
+    var p = this.palette;
+    if(p.hasColor(\window).not)
+      { this.setProperty( \autoFillBackground, true) };
+    this.palette = p.window_(color);
   }
 
   string { ^this.getProperty(\text) }

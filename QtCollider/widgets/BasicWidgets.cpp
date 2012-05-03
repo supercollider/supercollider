@@ -22,9 +22,29 @@
 #include "BasicWidgets.h"
 #include "../QcWidgetFactory.h"
 
+#include <QPaintEvent>
+#include <QPainter>
+
 QC_DECLARE_QWIDGET_FACTORY( QcDefaultWidget );
 QC_DECLARE_QWIDGET_FACTORY( QcHLayoutWidget );
 QC_DECLARE_QWIDGET_FACTORY( QcVLayoutWidget );
+
+void QcSimpleWidget::setBackground( const QColor &c )
+{
+  if(_bkg == c) return;
+
+  _bkg = c;
+  setAttribute(Qt::WA_OpaquePaintEvent, c.isValid() && c.alpha() == 255);
+  update();
+}
+
+void QcSimpleWidget::paintEvent( QPaintEvent *e )
+{
+  if (!_bkg.isValid()) return;
+
+  QPainter p(this);
+  p.fillRect(e->rect(), _bkg);
+}
 
 class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>
 {

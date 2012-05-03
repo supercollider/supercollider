@@ -38,8 +38,4 @@ QScope : QView {
     waveColors = aColorArray;
     this.setProperty( \waveColors, aColorArray );
   }
-
-  background { ^this.getProperty( \background ); }
-
-  background_ { arg color; this.setProperty( \background, color, true ); }
 }
