@@ -40,12 +40,7 @@ AbstractEnv {
 	curves_ { arg z;
 		curves = z;
 		array = nil;
-	}
-
-	asArray {
-		if (array.isNil) { array = this.prAsArray }
-		^array
-	}
+	} // todo: multichannel expansion
 
 	*shapeNumber { arg shapeName;
 		var shape;
@@ -112,6 +107,10 @@ AbstractEnv {
 
 	discretize {arg n = 1024;
 		^this.asSignal(n);
+	}
+
+	asUGenInput { arg ugen;
+		^ugen.convertEnv(this).collect(Ref(_))
 	}
 
 }
