@@ -329,7 +329,7 @@ void scfft_dofft(scfft * f)
 {
 	// Data goes to transform buf
 	memcpy(f->trbuf, f->indata, f->nwin * sizeof(float));
-	scfft_dowindowing(f->trbuf, f->nwin, f->nfull, f->log2nfull, f->wintype, f->scalefac);
+	scfft_dowindowing(f->trbuf, f->nwin, f->nfull, f->log2nwin, f->wintype, f->scalefac);
 	#if SC_FFT_FFTW
 		fftwf_execute(f->plan);
 		// Rearrange output data onto public buffer
@@ -376,7 +376,7 @@ void scfft_doifft(scfft * f)
 		// Copy to public buffer
 		memcpy(f->outdata, trbuf, f->nwin * sizeof(float));
 	#endif
-	scfft_dowindowing(f->outdata, f->nwin, f->nfull, f->log2nfull, f->wintype, f->scalefac);
+	scfft_dowindowing(f->outdata, f->nwin, f->nfull, f->log2nwin, f->wintype, f->scalefac);
 }
 
 void scfft_destroy(scfft *f, SCFFT_Allocator & alloc)
