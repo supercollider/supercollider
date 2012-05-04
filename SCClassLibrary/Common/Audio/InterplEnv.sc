@@ -1,3 +1,120 @@
+AbstractEnv {
+	var <levels;
+	var <times;
+	var <curves = 'lin';		// can also be 'exp', 'sin', 'cos', a float curve value,
+							// or an array of curve values
+	var <array;
+	classvar <shapeNames;
+
+	*newClear { arg numSegments = 8;
+		// make an envelope for filling in later.
+		^this.new(Array.fill(numSegments + 1, 0), Array.fill(numSegments, 1))
+	}
+
+	*initClass {
+		shapeNames = IdentityDictionary[
+			\step -> 0,
+			\lin -> 1,
+			\linear -> 1,
+			\exp -> 2,
+			\exponential -> 2,
+			\sin -> 3,
+			\sine -> 3,
+			\wel -> 4,
+			\welch -> 4,
+			\sqr -> 6,
+			\squared -> 6,
+			\cub -> 7,
+			\cubed -> 7
+		];
+	}
+
+	levels_ { arg z;
+		levels = z;
+		array = nil;
+	}
+	times_ { arg z;
+		times = z;
+		array = nil;
+	}
+	curves_ { arg z;
+		curves = z;
+		array = nil;
+	}
+
+	asArray {
+		if (array.isNil) { array = this.prAsArray }
+		^array
+	}
+
+	*shapeNumber { arg shapeName;
+		var shape;
+		if (shapeName.isValidUGenInput) { ^5 };
+		shape = shapeNames.at(shapeName);
+		if (shape.notNil) { ^shape };
+		Error("Env shape not defined.").throw;
+	}
+
+	curveValue { arg curve;
+		^if(curve.isValidUGenInput) { curve } { 0 };
+	}
+
+
+	// methods to make some typical shapes :
+
+	// fixed duration envelopes
+	*triangle { arg dur=1.0, level=1.0;
+		dur = dur * 0.5;
+		^this.new(
+			[0, level, 0],
+			[dur, dur]
+		)
+	}
+	*sine { arg dur=1.0, level=1.0;
+		dur = dur * 0.5;
+		^this.new(
+			[0, level, 0],
+			[dur, dur],
+			'sine'
+		)
+	}
+	*perc { arg attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0;
+		^this.new(
+			[0, level, 0],
+			[attackTime, releaseTime],
+			curve
+		)
+	}
+	*linen { arg attackTime=0.01, sustainTime=1.0, releaseTime=1.0, level=1.0, curve = \lin;
+		^this.new(
+			[0, level, level, 0],
+			[attackTime, sustainTime, releaseTime],
+			curve
+		)
+	}
+
+	range { |lo = 0.0, hi = 1.0|
+		^this.copy.levels_(levels.linlin(levels.minItem, levels.maxItem, lo, hi))
+	}
+
+	exprange { |lo = 0.01, hi = 1.0|
+		^this.copy.levels_(levels.linexp(levels.minItem, levels.maxItem, lo, hi))
+	}
+
+	asSignal { arg length = 400;
+		var duration, signal, ratio;
+		duration = times.sum;
+		ratio = duration/(length - 1);
+		signal = Signal(length);
+		length.do({ arg i; signal.add(this.at(i * ratio)) });
+		^signal;
+	}
+
+	discretize {arg n = 1024;
+		^this.asSignal(n);
+	}
+
+}
 
 // InterplEnvs are a fixed duration
 // Envelope specification for an IEnvGen, InterplEnv is not a UGen itself
@@ -38,6 +155,10 @@ InterplEnv : AbstractEnv {
 			];
 		});
 		^contents
+	}
+
+	asArrayForInterpolation {
+		^this.asArray
 	}
 
 }
