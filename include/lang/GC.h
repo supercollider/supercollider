@@ -144,6 +144,7 @@ public:
 	}
 	void FullCollection();
 	void ScanFinalizers();
+	void RunAllFinalizers();
 	GCSet* GetGCSet(PyrObjectHdr* inObj);
 	void CompletePartialScan(PyrObject *obj);
 

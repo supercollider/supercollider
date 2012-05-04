@@ -2175,8 +2175,6 @@ void aboutToCompileLibrary()
 		SetObject(g->sp, g->process);
 		runInterpreter(g, s_shutdown, 1);
 
-		g->gc->ScanFinalizers(); // run finalizers
-
 		g->canCallOS = false;
 	}
 	pthread_mutex_unlock (&gLangMutex);
@@ -2190,16 +2188,28 @@ void closeAllCustomPorts();
 void shutdownLibrary()
 {
 	closeAllGUIScreens();
+
 	schedStop();
+
 	aboutToCompileLibrary();
 
 	TempoClock_stopAll();
 
 	pthread_mutex_lock (&gLangMutex);
+
 	closeAllCustomPorts();
 
+	if (compiledOK) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		g->gc->RunAllFinalizers();
+		g->canCallOS = false;
+	}
+
 	pyr_pool_runtime->FreeAll();
+
 	compiledOK = false;
+
 	pthread_mutex_unlock (&gLangMutex);
 }
 

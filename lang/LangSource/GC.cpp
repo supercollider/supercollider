@@ -756,6 +756,31 @@ void PyrGC::ScanFinalizers()
 	}
 }
 
+void PyrGC::RunAllFinalizers()
+{
+	GCSet *gcs = &mSets[kFinalizerSet];
+
+	PyrObjectHdr *obj = gcs->mBlack.next;
+	while (!IsMarker(obj)) {
+		Finalize((PyrObject*)obj);
+		obj = obj->next;
+	}
+
+	obj = gcs->mWhite.next;
+	PyrObjectHdr *firstFreeObj = gcs->mFree;
+	while (obj != firstFreeObj) {
+		Finalize((PyrObject*)obj);
+		obj = obj->next;
+	}
+
+	obj = mGrey.next;
+	while (!IsMarker(obj)) {
+		if (obj->classptr == class_finalizer)
+			Finalize((PyrObject*)obj);
+		obj = obj->next;
+	}
+}
+
 bool PyrGC::SanityCheck2()
 {
 	int numgrey = 0;
