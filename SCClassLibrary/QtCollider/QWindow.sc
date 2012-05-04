@@ -75,7 +75,7 @@ QWindow
 {
   classvar <allWindows, <>initAction;
 
-  var resizable, <drawFunc, <onClose;
+  var resizable, <drawFunc;
   var <view;
 
   //TODO
@@ -166,10 +166,8 @@ QWindow
     view.setProperty( \geometry, rect.moveBy( 0, menuSpacer ) );
   }
 
-  onClose_ { arg func;
-    view.manageFunctionConnection( onClose, func, 'destroyed()', false );
-    onClose = func;
-  }
+  onClose { ^view.onClose }
+  onClose_ { arg func; view.onClose_(func) }
 
   // TODO
   addToOnClose{ arg function; }
