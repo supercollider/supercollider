@@ -1,10 +1,24 @@
-AbstractEnv {
-	var <levels;
-	var <times;
-	var <curves = 'lin';		// can also be 'exp', 'sin', 'cos', a float curve value,
-							// or an array of curve values
-	var <array;
+Env {
+	var <levels, <times, <curves;
+	var <releaseNode;	// index of release level, if nil then ignore release
+	var <loopNode;	// index of loop start level, if nil then does not loop
+	var <offset; 		// an offset to all time values (only works in IEnvGen)
+	
+	var <array;		// cache for osc-conform data
 	classvar <shapeNames;
+
+	
+	*new { arg levels = #[0,1,0], times = #[1,1], curve = 'lin', releaseNode, loopNode, offset;
+		^this.multiNew([levels, times, curve, releaseNode, loopNode, offset])
+	}
+
+	*multiNew { arg args;
+			^args.flopDeep(2).collect { |each| this.new1(*each) }.unbubble
+	}
+
+	*new1 { arg levels, times, curve, releaseNode, loopNode, offset;
+		^super.newCopyArgs(levels, times, curve ? 'lin', releaseNode, loopNode, offset)
+	}
 
 	*newClear { arg numSegments = 8;
 		// make an envelope for filling in later.
@@ -39,6 +53,18 @@ AbstractEnv {
 	}
 	curves_ { arg z;
 		curves = z;
+		array = nil;
+	}
+	releaseNode_ { arg z;
+		releaseNode = z;
+		array = nil;
+	}
+	loopNode_ { arg z;
+		loopNode = z;
+		array = nil;
+	}
+	offset_ { arg z;
+		offset = z;
 		array = nil;
 	}
 
@@ -92,6 +118,17 @@ AbstractEnv {
 			curve
 		)
 	}
+	*xyc { arg ... xyc;
+		var times, levels, curves, offset;
+		#times, levels, curves = xyc.flop;
+		offset = times[0];
+		times = times.differentiate.drop(1);
+		curves.removeLast;
+		^this.new(levels, times, curves, offset: offset);
+	}
+	*pairs { arg pairs, curve;
+		^this.xyc(pairs +++ curve);
+	}
 
 	range { |lo = 0.0, hi = 1.0|
 		^this.copy.levels_(levels.linlin(levels.minItem, levels.maxItem, lo, hi))
@@ -114,41 +151,14 @@ AbstractEnv {
 		^this.asSignal(n);
 	}
 
-}
-
-
-Env : AbstractEnv {
-	// envelope specification for an EnvGen, Env is not a UGen itself
-
-	var <releaseNode;	// index of release level, if nil then ignore release;
-	var <loopNode;		// index of loop start level, if nil then does not loop;
-
-
-	*new { arg levels = #[0,1,0], times = #[1,1], curve = 'lin', releaseNode, loopNode;
-		^super.newCopyArgs(levels, times, curve)
-			// note, we may not use newCopyArgs for these because of other instance vars
-			// in the superclass
-			.releaseNode_(releaseNode).loopNode_(loopNode)
-	}
-
-	releaseNode_ { arg z;
-		releaseNode = z;
-		array = nil;
-	}
-
-	loopNode_ { arg z;
-		loopNode = z;
-		array = nil;
-	}
-
 	storeArgs { ^[levels, times, curves, releaseNode, loopNode] }
 
 	== { arg that;
-		^this.compareObject(that, ['levels','times','curves','releaseNode','loopNode'])
+		^this.compareObject(that, ['levels','times','curves','releaseNode','loopNode','offset'])
 	}
 
 	hash {
-		^this.instVarHash(['levels','times','curves','releaseNode','loopNode'])
+		^this.instVarHash(['levels','times','curves','releaseNode','loopNode','offset'])
 	}
 
 	at { arg time;
@@ -296,6 +306,22 @@ Env : AbstractEnv {
 		};
 	}
 
+	// don't cache this version for now, but instead return it directly.
+	asArrayForInterpolation {
+		var contents, curvesArray;
+		contents = [offset ? 0, levels.at(0), times.size, times.sum];
+		curvesArray = curves.asArray;
+		times.size.do({ arg i;
+			contents = contents ++ [
+				times[i],
+				this.class.shapeNumber(curvesArray.wrapAt(i)),
+				this.curveValue(curvesArray.wrapAt(i)),
+				levels[i+1]
+			];
+		});
+		^contents
+	}
+
 	prAsArray {
 		var contents, curvesArray, size;
 		size = times.size;
@@ -313,4 +339,6 @@ Env : AbstractEnv {
 		});
 		^contents
 	}
+	
+	
 }
