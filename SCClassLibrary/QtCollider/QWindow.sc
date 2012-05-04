@@ -84,10 +84,6 @@ QWindow
 
   *implementsClass {^'Window'}
 
-  *initClass {
-    ShutDown.add( { QWindow.closeAll } );
-  }
-
   *screenBounds {
     _QWindow_ScreenBounds
   }
