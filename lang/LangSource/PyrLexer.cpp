@@ -2167,10 +2167,17 @@ void aboutToCompileLibrary()
 	//printf("->aboutToCompileLibrary\n");
 	pthread_mutex_lock (&gLangMutex);
 	if (compiledOK) {
-		++gMainVMGlobals->sp;
-		SetObject(gMainVMGlobals->sp, gMainVMGlobals->process);
-		runInterpreter(gMainVMGlobals, s_shutdown, 1);
-		gVMGlobals.gc->ScanFinalizers(); // run finalizers
+		VMGlobals *g = gMainVMGlobals;
+
+		g->canCallOS = true;
+
+		++g->sp;
+		SetObject(g->sp, g->process);
+		runInterpreter(g, s_shutdown, 1);
+
+		g->gc->ScanFinalizers(); // run finalizers
+
+		g->canCallOS = false;
 	}
 	pthread_mutex_unlock (&gLangMutex);
 	//printf("<-aboutToCompileLibrary\n");
