@@ -22,6 +22,10 @@
 #include "LanguageClient.h"
 #include "QcApplication.h"
 #include "QtCollider.h"
+#include "QObjectProxy.h"
+
+#include <PyrKernel.h>
+#include <PyrLexer.h>
 
 #include <qmath.h>
 
@@ -110,6 +114,44 @@ void LangClient::onQuit( int exitCode )
 {
   QApplication::postEvent( this,
     new SCRequestEvent( Event_SCRequest_Quit, exitCode ) );
+}
+
+void LangClient::onLibraryShutdown()
+{
+  // NOTE: Finalization does not work properly in sclang:
+  // finalizers of still accessible objects are not called at shutdown.
+  // Therefore we finalize here manually.
+
+  QtCollider::lockLang();
+  if(!compiledOK) {
+    QtCollider::unlockLang();
+    return;
+  }
+
+  VMGlobals *g = gMainVMGlobals;
+
+  // Get the 'heap' classvar of QObject:
+  int idx = slotRawInt( &SC_CLASS(QObject)->classVarIndex );
+  PyrSlot *heap_slot = slotRawObject( &g->process->classVars )->slots + idx;
+
+  if (IsObj(heap_slot))
+  {
+    // Delete all objects on heap:
+    PyrObject *heap = slotRawObject( heap_slot );
+    int n = heap->size;
+    for(int i = 0; i < n; ++i)
+    {
+        PyrObject *object = slotRawObject(heap->slots+i);
+        QObjectProxy *proxy = static_cast<QObjectProxy*>(slotRawPtr(object->slots));
+        proxy->finalize();
+        proxy->destroy( QObjectProxy::DestroyObject );
+        // Destroy the proxy later, to keep it safe for other shutdown handlers:
+        DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyProxy );
+        QApplication::postEvent( proxy, e );
+    }
+  }
+
+  QtCollider::unlockLang();
 }
 
 void LangClient::customEvent( QEvent *e )

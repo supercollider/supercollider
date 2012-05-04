@@ -56,6 +56,7 @@ protected:
   virtual void daemonLoop();
 
   virtual void onQuit( int exitCode );
+  virtual void onLibraryShutdown();
 
   virtual void customEvent( QEvent * );
   virtual void timerEvent( QTimerEvent * );
