@@ -68,24 +68,6 @@ Env {
 		array = nil;
 	}
 
-	asArray {
-		if (array.isNil) { array = this.prAsArray }
-		^array
-	}
-
-	*shapeNumber { arg shapeName;
-		var shape;
-		if (shapeName.isValidUGenInput) { ^5 };
-		shape = shapeNames.at(shapeName);
-		if (shape.notNil) { ^shape };
-		Error("Env shape not defined.").throw;
-	}
-
-	curveValue { arg curve;
-		^if(curve.isValidUGenInput) { curve } { 0 };
-	}
-
-
 	// methods to make some typical shapes :
 
 	// fixed duration envelopes
@@ -304,6 +286,23 @@ Env {
 				s.sendBundle(s.latency + releaseTime, [15, id, \gate, 0])
 			};
 		};
+	}
+
+	*shapeNumber { arg shapeName;
+		var shape;
+		if (shapeName.isValidUGenInput) { ^5 };
+		shape = shapeNames.at(shapeName);
+		if (shape.notNil) { ^shape };
+		Error("Env shape not defined.").throw;
+	}
+
+	curveValue { arg curve;
+		^if(curve.isValidUGenInput) { curve } { 0 };
+	}
+
+	asArray {
+		if (array.isNil) { array = this.prAsArray }
+		^array
 	}
 
 	// don't cache this version for now, but instead return it directly.
