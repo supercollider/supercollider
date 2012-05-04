@@ -154,11 +154,12 @@ InterplEnv : AbstractEnv {
 				levels[i+1]
 			];
 		});
+		contents = contents.flopDeep(1);
 		^contents
 	}
 
 	asArrayForInterpolation {
-		^this.asArray
+		^this.prAsArray
 	}
 
 }

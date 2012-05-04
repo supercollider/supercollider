@@ -9,14 +9,7 @@ Env {
 
 	
 	*new { arg levels = #[0,1,0], times = #[1,1], curve = 'lin', releaseNode, loopNode, offset;
-		^this.multiNew([levels, times, curve, releaseNode, loopNode, offset])
-	}
-
-	*multiNew { arg args;
-			^args.flopDeep(2).collect { |each| this.new1(*each) }.unbubble
-	}
-
-	*new1 { arg levels, times, curve, releaseNode, loopNode, offset;
+		times = times.clipExtend(levels.size - 1);
 		^super.newCopyArgs(levels, times, curve ? 'lin', releaseNode, loopNode, offset)
 	}
 
@@ -121,15 +114,17 @@ Env {
 	}
 
 	asSignal { arg length = 400;
-		var duration, signal, ratio;
-		duration = times.sum;
-		ratio = duration/(length - 1);
-		signal = Signal(length);
-		length.do({ arg i; signal.add(this.at(i * ratio)) });
-		^signal;
+		^this.asArray.collect { |chan|
+			var duration, signal, ratio;
+			duration = chan[5, 9 ..].sum;
+			ratio = duration / (length - 1);
+			signal = Signal(length);
+			length.do { arg i; signal.add(chan.envAt(i * ratio)) };
+			signal
+		}.unbubble
 	}
 
-	discretize {arg n = 1024;
+	discretize { arg n = 1024;
 		^this.asSignal(n);
 	}
 
@@ -143,15 +138,20 @@ Env {
 		^this.instVarHash(['levels','times','curves','releaseNode','loopNode','offset'])
 	}
 
+	asUGenInput { arg ugen;
+		^ugen.convertEnv(this).collect(Ref(_))
+	}
+
 	at { arg time;
 		var array = this.asArray;
 		^if(time.isSequenceableCollection) {
-			time.collect { |t| array.envAt(t) }
+			time.collect { |t, i| array.wrapAt(i).envAt(t) }
 		} {
-			array.envAt(time)
+			array.collect(_.envAt(time)).unbubble // inefficient, fix this
 		}
 	}
 
+	// doesn't work for multichannel expanison
 	embedInStream { arg inval;
 		var startTime;
 		startTime = thisThread.endBeat ? thisThread.beats;
@@ -164,7 +164,7 @@ Env {
 	asStream {
 		^Routine({ arg inval; this.embedInStream(inval) })
 	}
-
+ // todo: multichannel expansion
 	asPseg {
 		var c = if(curves.isSequenceableCollection.not) { curves } { Pseq(curves, inf) };
 		^Pseg(Pseq(levels), Pseq(times ++ [1.0]), c) // last time is a dummy
@@ -307,6 +307,7 @@ Env {
 				levels[i+1]
 			];
 		});
+		contents = contents.flopDeep(1);
 		^contents
 	}
 
@@ -325,6 +326,7 @@ Env {
 			contents.add(this.class.shapeNumber(curvesArray.wrapAt(i)));
 			contents.add(this.curveValue(curvesArray.wrapAt(i)));
 		});
+		contents = contents.flopDeep(1);
 		^contents
 	}
 	
