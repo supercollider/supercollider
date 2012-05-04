@@ -49,9 +49,12 @@ EnvGen : UGen { // envelope generator
 	*kr { arg envelope, gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction = 0;
 		^this.multiNewList(['control', gate, levelScale, levelBias, timeScale, doneAction, envelope])
 	}
-	*new1 { arg rate, gate, levelScale, levelBias, timeScale, doneAction, envelope;
+	*convertEnv { arg env;
+		^env.asArray
+	}
+	*new1 { arg rate, gate, levelScale, levelBias, timeScale, doneAction, envArray;
 		^super.new.rate_(rate).addToSynth.init([gate, levelScale, levelBias, timeScale, doneAction]
-			++ envelope.asArray);
+			++ envArray.dereference);
 	}
  	init { arg theInputs;
  		// store the inputs as an array

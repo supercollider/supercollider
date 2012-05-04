@@ -8,8 +8,12 @@ IEnvGen : UGen { // envelope index generator
 		^this.multiNewList(['control', index, envelope]).madd(mul, add)
 	}
 
-	*new1 { arg rate, index, envelope;
-		^super.new.rate_(rate).addToSynth.init([index] ++ envelope.asArrayForInterpolation)
+	*convertEnv { arg env;
+		^env.asArrayForInterpolation
+	}
+
+	*new1 { arg rate, index, envArray;
+		^super.new.rate_(rate).addToSynth.init([index] ++ envArray.dereference)
 	}
 
  	init { arg theInputs;
