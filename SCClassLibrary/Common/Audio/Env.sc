@@ -268,22 +268,11 @@ Env {
 		if(s.serverRunning.not) { "Server not running.".warn; ^this };
 		id = s.nextNodeID;
 		fork {
-			def = { arg gate=1;
-				Out.ar(0,
-					SinOsc.ar(800, pi/2, 0.3) * EnvGen.ar(this, gate, doneAction:2)
-				)
-			}.asSynthDef;
-			def.send(s);
-			s.sync;
-			s.sendBundle(s.latency, [9, def.name, id]);
-			if(s.notified) {
-				OSCpathResponder(s.addr, ['/n_end', id], { |time, responder, message|
-					s.sendMsg(\d_free, def.name);
-					responder.remove;
-				}).add;
-			};
+			var synth = { arg gate=1;
+				SinOsc.ar(800, pi/2, 0.3) * EnvGen.ar(this, gate, doneAction:2)
+			}.play;
 			if(this.isSustained) {
-				s.sendBundle(s.latency + releaseTime, [15, id, \gate, 0])
+				s.sendBundle(s.latency + releaseTime, [15, synth.nodeID, \gate, 0])
 			};
 		};
 	}
