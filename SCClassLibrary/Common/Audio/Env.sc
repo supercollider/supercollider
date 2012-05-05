@@ -9,7 +9,7 @@ Env {
 
 	
 	*new { arg levels = #[0,1,0], times = #[1,1], curve = 'lin', releaseNode, loopNode, offset;
-		times = times.clipExtend(levels.size - 1);
+		times = times.asArray.clipExtend(levels.size - 1);
 		^super.newCopyArgs(levels, times, curve ? 'lin', releaseNode, loopNode, offset)
 	}
 
@@ -95,13 +95,19 @@ Env {
 	}
 	*xyc { arg xyc;
 		var times, levels, curves, offset;
+		var timeOf = { |x|
+			var time = x[0];
+			if(time.isSequenceableCollection) { time.minItem } { time }
+		};
+		xyc.sort { |a, b| timeOf.(a) < timeOf.(b) };
 		#times, levels, curves = xyc.flop;
 		offset = times[0];
 		times = times.differentiate.drop(1);
-		curves.removeLast;
+		curves.asArray.drop(-1);
 		^this.new(levels, times, curves, offset: offset);
 	}
 	*pairs { arg pairs, curve;
+		if(curve.isNil) { ^this.xyc(pairs) };
 		^this.xyc(pairs +++ curve);
 	}
 
@@ -267,10 +273,8 @@ Env {
 	}
 
 	test { arg releaseTime = 3.0;
-		var id, def, s;
-		s = Server.default;
+		var s = Server.default;
 		if(s.serverRunning.not) { "Server not running.".warn; ^this };
-		id = s.nextNodeID;
 		fork {
 			var synth = { arg gate=1;
 				SinOsc.ar(800, pi/2, 0.3) * EnvGen.ar(this, gate, doneAction:2)
@@ -293,7 +297,13 @@ Env {
 	}
 
 	curveValue { arg curve;
-		^if(curve.isValidUGenInput) { curve } { 0 };
+		^if(curve.isSequenceableCollection) {
+			curve.collect { |x|
+				if(x.isValidUGenInput) { x } { 0 }
+			}
+		} {
+			if(curve.isValidUGenInput) { curve } { 0 }
+		}
 	}
 
 	asArray {
@@ -314,7 +324,7 @@ Env {
 				levels[i+1]
 			];
 		});
-		contents = contents.flopDeep(1);
+		contents = contents.flop;
 		^contents
 	}
 
@@ -333,7 +343,7 @@ Env {
 			contents.add(this.class.shapeNumber(curvesArray.wrapAt(i)));
 			contents.add(this.curveValue(curvesArray.wrapAt(i)));
 		});
-		contents = contents.flopDeep(1);
+		contents = contents.flop;
 		^contents
 	}
 	
