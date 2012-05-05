@@ -869,7 +869,7 @@ Plotter {
 	plot { |size = 400, bounds, minval, maxval|
 		var plotter = this.asSignal(size)
 			.plot("envelope plot", bounds, minval: minval, maxval: maxval);
-		plotter.domainSpecs = ControlSpec(0, this.times.sum, units: "s");
+		plotter.domainSpecs = this.times.sum.asArray.collect(ControlSpec(0, _, units: "s"));
 		plotter.setProperties(\labelX, "time");
 		plotter.refresh;
 		^plotter
