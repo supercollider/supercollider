@@ -147,7 +147,11 @@ Env {
 		^if(time.isSequenceableCollection) {
 			time.collect { |t, i| array.wrapAt(i).envAt(t) }
 		} {
-			array.collect(_.envAt(time)).unbubble // inefficient, fix this
+			if(array.size <= 1) { 
+				array[0].envAt(time)
+			} {
+				array.collect(_.envAt(time))
+			}
 		}
 	}
 
@@ -278,11 +282,14 @@ Env {
 	}
 
 	*shapeNumber { arg shapeName;
-		var shape;
-		if (shapeName.isValidUGenInput) { ^5 };
-		shape = shapeNames.at(shapeName);
-		if (shape.notNil) { ^shape };
-		Error("Env shape not defined.").throw;
+		^shapeName.asArray.collect { |name|
+			var shape;
+			if(name.isValidUGenInput) { 5 } {
+				shape = shapeNames.at(name);
+				if(shape.isNil) { Error("Env shape not defined.").throw };
+				shape
+			}
+		}.unbubble
 	}
 
 	curveValue { arg curve;
