@@ -93,7 +93,7 @@ Env {
 			curve
 		)
 	}
-	*xyc { arg ... xyc;
+	*xyc { arg xyc;
 		var times, levels, curves, offset;
 		#times, levels, curves = xyc.flop;
 		offset = times[0];
