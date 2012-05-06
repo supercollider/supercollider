@@ -50,7 +50,7 @@ EnvGen : UGen { // envelope generator
 		^this.multiNewList(['control', gate, levelScale, levelBias, timeScale, doneAction, envelope])
 	}
 	*convertEnv { arg env;
-		^env.asArray
+		^env.asMultichannelArray
 	}
 	*new1 { arg rate, gate, levelScale, levelBias, timeScale, doneAction, envArray;
 		^super.new.rate_(rate).addToSynth.init([gate, levelScale, levelBias, timeScale, doneAction]
