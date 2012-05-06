@@ -938,17 +938,6 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 	// 		unit->m_tempfftbuf[0] = (float*)RTAlloc(unit->mWorld, fftsize);
 	// 		unit->m_tempfftbuf[1] = (float*)RTAlloc(unit->mWorld, fftsize);
 
-	SCWorld_Allocator alloc(ft, unit->mWorld);
-	unit->m_scfft1 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_fftbuf1, kForward, alloc);
-	unit->m_scfft2[0] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf2[0], unit->m_fftbuf2[0], kForward, alloc);
-	unit->m_scfft3[0] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf2[1], unit->m_fftbuf2[1], kForward, alloc);
-	unit->m_scfftR[0] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf3[0], unit->m_fftbuf3[0], kForward, alloc);
-	unit->m_scfftR2[0] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf3[1], unit->m_fftbuf3[1], kForward, alloc);
-	unit->m_scfft2[1] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_outbuf[0], unit->m_outbuf[0], kBackward, alloc);
-	unit->m_scfft3[1] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_tempbuf[0], unit->m_tempbuf[0], kBackward, alloc);
-	unit->m_scfftR[1] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_outbuf[1], unit->m_outbuf[1], kBackward, alloc);
-	unit->m_scfftR2[1] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_tempbuf[1], unit->m_tempbuf[1], kBackward, alloc);
-
 	unit->m_outbuf[0] = (float*)RTAlloc(unit->mWorld, fftsize);
 	unit->m_overlapbuf[0] = (float*)RTAlloc(unit->mWorld, insize);
 	unit->m_outbuf[1] = (float*)RTAlloc(unit->mWorld, fftsize);
@@ -959,6 +948,16 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 	memset(unit->m_outbuf[1], 0, fftsize);
 	memset(unit->m_overlapbuf[1], 0, insize);
 
+	SCWorld_Allocator alloc(ft, unit->mWorld);
+	unit->m_scfft1 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_fftbuf1, kForward, alloc);
+	unit->m_scfft2[0] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf2[0], unit->m_fftbuf2[0], kForward, alloc);
+	unit->m_scfft3[0] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf2[1], unit->m_fftbuf2[1], kForward, alloc);
+	unit->m_scfftR[0] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf3[0], unit->m_fftbuf3[0], kForward, alloc);
+	unit->m_scfftR2[0] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf3[1], unit->m_fftbuf3[1], kForward, alloc);
+	unit->m_scfft2[1] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_outbuf[0], unit->m_outbuf[0], kBackward, alloc);
+	unit->m_scfft3[1] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_tempbuf[0], unit->m_tempbuf[0], kBackward, alloc);
+	unit->m_scfftR[1] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_outbuf[1], unit->m_outbuf[1], kBackward, alloc);
+	unit->m_scfftR2[1] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_tempbuf[1], unit->m_tempbuf[1], kBackward, alloc);
 
 	float fbufnum  = ZIN0(1);
 	uint32 bufnumL = (int)fbufnum;
