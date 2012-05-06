@@ -120,7 +120,7 @@ Env {
 	}
 
 	asSignal { arg length = 400;
-		^this.asArray.collect { |chan|
+		^this.asMultichannelArray.collect { |chan|
 			var duration, signal, ratio;
 			duration = chan[5, 9 ..].sum;
 			ratio = duration / (length - 1);
@@ -149,7 +149,7 @@ Env {
 	}
 
 	at { arg time;
-		var array = this.asArray;
+		var array = this.asMultichannelArray;
 		^if(time.isSequenceableCollection) {
 			time.collect { |t, i| array.wrapAt(i).envAt(t) }
 		} {
@@ -307,6 +307,11 @@ Env {
 	}
 
 	asArray {
+		if (array.isNil) { array = this.prAsArray }
+		^array.unbubble // keep backward compatibility
+	}
+
+	asMultichannelArray {
 		if (array.isNil) { array = this.prAsArray }
 		^array
 	}
