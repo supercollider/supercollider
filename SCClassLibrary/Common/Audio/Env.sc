@@ -61,54 +61,8 @@ Env {
 		array = nil;
 	}
 
-	// methods to make some typical shapes :
-
-	// fixed duration envelopes
-	*triangle { arg dur=1.0, level=1.0;
-		dur = dur * 0.5;
-		^this.new(
-			[0, level, 0],
-			[dur, dur]
-		)
-	}
-	*sine { arg dur=1.0, level=1.0;
-		dur = dur * 0.5;
-		^this.new(
-			[0, level, 0],
-			[dur, dur],
-			'sine'
-		)
-	}
-	*perc { arg attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0;
-		^this.new(
-			[0, level, 0],
-			[attackTime, releaseTime],
-			curve
-		)
-	}
-	*linen { arg attackTime=0.01, sustainTime=1.0, releaseTime=1.0, level=1.0, curve = \lin;
-		^this.new(
-			[0, level, level, 0],
-			[attackTime, sustainTime, releaseTime],
-			curve
-		)
-	}
-	*xyc { arg xyc;
-		var times, levels, curves, offset;
-		var timeOf = { |x|
-			var time = x[0];
-			if(time.isSequenceableCollection) { time.minItem } { time }
-		};
-		xyc.sort { |a, b| timeOf.(a) < timeOf.(b) };
-		#times, levels, curves = xyc.flop;
-		offset = times[0];
-		times = times.differentiate.drop(1);
-		curves.asArray.drop(-1);
-		^this.new(levels, times, curves, offset: offset);
-	}
-	*pairs { arg pairs, curve;
-		if(curve.isNil) { ^this.xyc(pairs) };
-		^this.xyc(pairs +++ curve);
+	duration_ { arg dur;
+		times = times.normalizeSum(dur)
 	}
 
 	range { arg lo = 0.0, hi = 1.0;
@@ -119,62 +73,65 @@ Env {
 		^this.copy.levels_(levels.linexp(levels.minItem, levels.maxItem, lo, hi))
 	}
 
-	asSignal { arg length = 400;
-		^this.asMultichannelArray.collect { |chan|
-			var duration, signal, ratio;
-			duration = chan[5, 9 ..].sum;
-			ratio = duration / (length - 1);
-			signal = Signal(length);
-			length.do { arg i; signal.add(chan.envAt(i * ratio)) };
-			signal
-		}.unbubble
+	// methods to make some typical shapes :
+
+	// fixed duration envelopes
+
+	*triangle { arg dur=1.0, level=1.0;
+		dur = dur * 0.5;
+		^this.new(
+			[0, level, 0],
+			[dur, dur]
+		)
 	}
 
-	discretize { arg n = 1024;
-		^this.asSignal(n);
+	*sine { arg dur=1.0, level=1.0;
+		dur = dur * 0.5;
+		^this.new(
+			[0, level, 0],
+			[dur, dur],
+			'sine'
+		)
 	}
 
-	storeArgs { ^[levels, times, curves, releaseNode, loopNode] }
-
-	== { arg that;
-		^this.compareObject(that, ['levels','times','curves','releaseNode','loopNode','offset'])
+	*perc { arg attackTime=0.01, releaseTime=1.0, level=1.0, curve = -4.0;
+		^this.new(
+			[0, level, 0],
+			[attackTime, releaseTime],
+			curve
+		)
 	}
 
-	hash {
-		^this.instVarHash(['levels','times','curves','releaseNode','loopNode','offset'])
+	*linen { arg attackTime=0.01, sustainTime=1.0, releaseTime=1.0, level=1.0, curve = \lin;
+		^this.new(
+			[0, level, level, 0],
+			[attackTime, sustainTime, releaseTime],
+			curve
+		)
 	}
 
-	at { arg time;
-		var array = this.asMultichannelArray;
-		^if(time.isSequenceableCollection) {
-			time.collect { |t, i| array.wrapAt(i).envAt(t) }
-		} {
-			if(array.size <= 1) { 
-				array[0].envAt(time)
-			} {
-				array.collect(_.envAt(time))
-			}
-		}
+	*xyc { arg xyc;
+		var times, levels, curves, offset, order;
+		#times, levels, curves = xyc.flop;
+		if(times.includesSeqColl.not) { // sort triplets, if possible.
+			order = times.order;
+			times = times[order];
+			levels = levels[order];
+			curves = curves[order];
+		};
+		offset = times[0];
+		times = times.differentiate.drop(1);
+		curves.asArray.drop(-1);
+		^this.new(levels, times, curves, offset: offset);
 	}
 
-	embedInStream { arg inval;
-		var startTime = thisThread.endBeat ? thisThread.beats;
-		thisThread.endBeat = this.times.sum + startTime;
-		loop {
-			inval = yield(this.at(thisThread.beats - startTime));
-		}
-	}
-
-	asStream {
-		^Routine({ arg inval; this.embedInStream(inval) })
-	}
-
-	asPseg {
-		var c = if(curves.isSequenceableCollection.not) { curves } { Pseq(curves, inf) };
-		^Pseg(Pseq(levels), Pseq(times ++ [1.0]), c) // last time is a dummy
+	*pairs { arg pairs, curve;
+		if(curve.isNil) { ^this.xyc(pairs) };
+		^this.xyc(pairs +++ curve);
 	}
 
 	// envelopes with sustain
+
 	*cutoff { arg releaseTime = 0.1, level = 1.0, curve = \lin;
 		var curveNo = this.shapeNumber(curve);
 		var releaseLevel = if(curveNo == 2) { -100.dbamp } { 0 };
@@ -217,6 +174,72 @@ Env {
 		^times.copyRange(releaseNode, times.size - 1).sum
 	}
 
+	isSustained {
+		^releaseNode.notNil
+	}
+
+	asSignal { arg length = 400;
+		^this.asMultichannelArray.collect { |chan|
+			var duration, signal, ratio;
+			duration = chan[5, 9 ..].sum;
+			ratio = duration / (length - 1);
+			signal = Signal(length);
+			length.do { arg i; signal.add(chan.envAt(i * ratio)) };
+			signal
+		}.unbubble
+	}
+
+	discretize { arg n = 1024;
+		^this.asSignal(n);
+	}
+
+	storeArgs { ^[levels, times, curves, releaseNode, loopNode] }
+
+	== { arg that;
+		^this.compareObject(that, ['levels','times','curves','releaseNode','loopNode','offset'])
+	}
+
+	hash {
+		^this.instVarHash(['levels','times','curves','releaseNode','loopNode','offset'])
+	}
+
+	at { arg time;
+		var data = this.asMultichannelArray;
+		^if(time.isSequenceableCollection) {
+			if(data.size <= 1) {
+				data = data[0];
+				time.collect { |t| data.envAt(t) }
+			} {
+				time.collect { |t|
+					data.collect { |channel| channel.envAt(t) }
+				}
+			}
+		} {
+			if(data.size <= 1) {
+				data[0].envAt(time)
+			} {
+				data.collect { |channel| channel.envAt(time) }
+			}
+		}
+	}
+
+	embedInStream { arg inval;
+		var startTime = thisThread.endBeat ? thisThread.beats;
+		thisThread.endBeat = this.times.sum + startTime;
+		loop {
+			inval = yield(this.at(thisThread.beats - startTime));
+		}
+	}
+
+	asStream {
+		^Routine({ arg inval; this.embedInStream(inval) })
+	}
+
+	asPseg {
+		var c = if(curves.isSequenceableCollection.not) { curves } { Pseq(curves, inf) };
+		^Pseg(Pseq(levels), Pseq(times ++ [1.0]), c) // last time is a dummy
+	}
+
 	// blend two envelopes
 	blend { arg argAnotherEnv, argBlendFrac=0.5;
 		^this.class.new(
@@ -253,10 +276,6 @@ Env {
 			releaseNode = releaseNode + 1;
 		};
 		loopNode = 0;
-	}
-
-	isSustained {
-		^releaseNode.notNil
 	}
 
 	test { arg releaseTime = 3.0;
@@ -303,40 +322,52 @@ Env {
 		^array
 	}
 
+	// this version is for IEnvGen and has a special format.
 	// don't cache this version for now, but instead return it directly.
 	asArrayForInterpolation {
-		var contents, curvesArray;
-		contents = [offset ? 0, levels.at(0), times.size, times.sum];
+		var contents, size;
+		var levelArray = levels.asUGenInput;
+		var timeArray = times.asUGenInput;
+		var curvesArray = curves.asArray.asUGenInput;
+
+		size = timeArray.size;
+		contents = Array.new((size + 1) * 4);
+		contents.add(offset.asUGenInput ? 0);
+		contents.add(levelArray.at(0));
+		contents.add(size);
+		contents.add(timeArray.sum);
 		curvesArray = curves.asArray;
-		times.size.do({ arg i;
-			contents = contents ++ [
-				times[i],
-				this.class.shapeNumber(curvesArray.wrapAt(i)),
-				this.curveValue(curvesArray.wrapAt(i)),
-				levels[i+1]
-			];
-		});
-		contents = contents.flop;
-		^contents
+		times.size.do { arg i;
+			contents.add(timeArray[i]);
+			contents.add(this.class.shapeNumber(curvesArray.wrapAt(i)));
+			contents.add(this.curveValue(curvesArray.wrapAt(i)));
+			contents.add(levelArray[i+1]);
+		};
+
+		^contents.flop
 	}
 
 	prAsArray {
-		var contents, curvesArray, size;
+		var contents, size;
+		var levelArray = levels.asUGenInput;
+		var timeArray = times.asUGenInput;
+		var curvesArray = curves.asArray.asUGenInput;
+
 		size = times.size;
 		contents = Array.new((size + 1) * 4);
-		contents.add(levels.at(0));
+		contents.add(levelArray.at(0));
 		contents.add(size);
-		contents.add(releaseNode ? -99);
-		contents.add(loopNode ? -99);
-		curvesArray = curves.asArray;
-		size.do({ arg i;
-			contents.add(levels.at(i+1));
-			contents.add(times.at(i));
+		contents.add(releaseNode.asUGenInput ? -99);
+		contents.add(loopNode.asUGenInput ? -99);
+		
+		size.do { arg i;
+			contents.add(levelArray.at(i+1));
+			contents.add(timeArray.at(i));
 			contents.add(this.class.shapeNumber(curvesArray.wrapAt(i)));
 			contents.add(this.curveValue(curvesArray.wrapAt(i)));
-		});
-		contents = contents.flop;
-		^contents
+		};
+
+		^contents.flop;
 	}
 	
 	
