@@ -142,12 +142,18 @@ void* sc_dbg_zalloc(size_t n, size_t size, const char* tag, int line)
 # if SC_DEBUG_MEMORY
 #  define malloc(size)			sc_dbg_malloc((size), __FUNCTION__, __LINE__)
 #  define free(ptr)				sc_dbg_free((ptr), __FUNCTION__, __LINE__)
-#  define zalloc(n, size)		sc_dbg_zalloc((n), (size), __FUNCTION__, __LINE__)
+#  define zalloc_(n, size)		sc_dbg_zalloc((n), (size), __FUNCTION__, __LINE__)
 # else
 #  define malloc(size)			sc_malloc((size))
 #  define free(ptr)				sc_free((ptr))
-#  define zalloc(n, size)		sc_zalloc((n), (size))
+#  define zalloc_(n, size)		sc_zalloc((n), (size))
 # endif // SC_DEBUG_MEMORY
+
+void* zalloc(size_t n, size_t size)
+{
+	return zalloc_(n, size);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
