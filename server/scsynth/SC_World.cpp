@@ -43,6 +43,8 @@
 # include <sys/param.h>
 #endif
 
+#include "../supernova/utilities/malloc_aligned.hpp"
+
 // undefine the shadowed scfft functions
 #undef scfft_create
 #undef scfft_dofft
@@ -79,35 +81,9 @@ void sc_SetDenormalFlags();
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef __linux__
-
-#ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE 600
-#endif
-#include <stdlib.h>
-#include <errno.h>
-
-#ifndef SC_MEMORY_ALIGNMENT
-# error SC_MEMORY_ALIGNMENT undefined
-#endif
-#define SC_DBUG_MEMORY 0
-
 inline void* sc_malloc(size_t size)
 {
-#if SC_MEMORY_ALIGNMENT > 1
-	void* ptr;
-	int err = posix_memalign(&ptr, SC_MEMORY_ALIGNMENT, size);
-	if (err) {
-		if (err != ENOMEM) {
-			perror("sc_malloc");
-			abort();
-		}
-		return 0;
-	}
-	return ptr;
-#else
-	return malloc(size);
-#endif
+	return nova::malloc_aligned(size);
 }
 
 void* sc_dbg_malloc(size_t size, const char* tag, int line)
@@ -126,13 +102,13 @@ void* sc_dbg_malloc(size_t size, const char* tag, int line)
 
 inline void sc_free(void* ptr)
 {
-	free(ptr);
+	return nova::free_aligned(ptr);
 }
 
 void sc_dbg_free(void* ptr, const char* tag, int line)
 {
 	fprintf(stderr, "sc_dbg_free [%s:%d]: %p\n", tag, line, ptr);
-	free(ptr);
+	sc_free(ptr);
 }
 
 inline void* sc_zalloc(size_t n, size_t size)
@@ -164,8 +140,6 @@ void* sc_dbg_zalloc(size_t n, size_t size, const char* tag, int line)
 #  define free(ptr)				sc_free((ptr))
 #  define zalloc(n, size)		sc_zalloc((n), (size))
 # endif // SC_DEBUG_MEMORY
-
-#endif // __linux__
 
 ////////////////////////////////////////////////////////////////////////////////
 
