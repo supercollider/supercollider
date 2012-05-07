@@ -111,11 +111,11 @@ Env {
 		^this.xyc(pairs +++ curve);
 	}
 
-	range { |lo = 0.0, hi = 1.0|
+	range { arg lo = 0.0, hi = 1.0;
 		^this.copy.levels_(levels.linlin(levels.minItem, levels.maxItem, lo, hi))
 	}
 
-	exprange { |lo = 0.01, hi = 1.0|
+	exprange { arg lo = 0.01, hi = 1.0;
 		^this.copy.levels_(levels.linexp(levels.minItem, levels.maxItem, lo, hi))
 	}
 
@@ -158,8 +158,7 @@ Env {
 	}
 
 	embedInStream { arg inval;
-		var startTime;
-		startTime = thisThread.endBeat ? thisThread.beats;
+		var startTime = thisThread.endBeat ? thisThread.beats;
 		thisThread.endBeat = this.times.sum + startTime;
 		loop {
 			inval = yield(this.at(thisThread.beats - startTime));
@@ -178,11 +177,7 @@ Env {
 	// envelopes with sustain
 	*cutoff { arg releaseTime = 0.1, level = 1.0, curve = \lin;
 		var curveNo = this.shapeNumber(curve);
-		var releaseLevel = if(curveNo==2){
-			-100.dbamp
-		}{
-			0
-		};
+		var releaseLevel = if(curveNo == 2) { -100.dbamp } { 0 };
 		^this.new([level, releaseLevel], [releaseTime], curve, 0)
 	}
 
@@ -218,11 +213,8 @@ Env {
 	}
 
 	releaseTime {
-		if(releaseNode.notNil,{
-			^times.copyRange(releaseNode, times.size - 1).sum
-		},{
-			^0.0 // ?
-		})
+		if(releaseNode.isNil) { ^0.0 };
+		^times.copyRange(releaseNode, times.size - 1).sum
 	}
 
 	// blend two envelopes
