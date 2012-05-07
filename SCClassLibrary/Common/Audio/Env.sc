@@ -144,10 +144,6 @@ Env {
 		^this.instVarHash(['levels','times','curves','releaseNode','loopNode','offset'])
 	}
 
-	asUGenInput { arg ugen;
-		^ugen.convertEnv(this).collect(Ref(_))
-	}
-
 	at { arg time;
 		var array = this.asMultichannelArray;
 		^if(time.isSequenceableCollection) {
