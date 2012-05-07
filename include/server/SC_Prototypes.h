@@ -33,18 +33,7 @@
 
 // replacement for calloc.
 // calloc lazily zeroes memory on first touch. This is good for most purposes, but bad for realtime audio.
-static inline void* zalloc(size_t n, size_t size)
-{
-	size *= n;
-	if (size) {
-		void* ptr = malloc(size);
-		if (ptr) {
-			memset(ptr, 0, size);
-			return ptr;
-		}
-	}
-	return 0;
-}
+void* zalloc(size_t n, size_t size);
 
 ////////////////////////////////////////////////////////////////////////
 
