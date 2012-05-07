@@ -157,7 +157,6 @@ Env {
 		}
 	}
 
-	// doesn't work for multichannel expanison
 	embedInStream { arg inval;
 		var startTime;
 		startTime = thisThread.endBeat ? thisThread.beats;
@@ -170,7 +169,7 @@ Env {
 	asStream {
 		^Routine({ arg inval; this.embedInStream(inval) })
 	}
- // todo: multichannel expansion
+
 	asPseg {
 		var c = if(curves.isSequenceableCollection.not) { curves } { Pseq(curves, inf) };
 		^Pseg(Pseq(levels), Pseq(times ++ [1.0]), c) // last time is a dummy
