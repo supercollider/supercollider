@@ -8,9 +8,9 @@ Env {
 	classvar <shapeNames;
 
 	
-	*new { arg levels = #[0,1,0], times = #[1,1], curve = 'lin', releaseNode, loopNode, offset;
+	*new { arg levels = #[0,1,0], times = #[1,1], curve = \lin, releaseNode, loopNode, offset;
 		times = times.asArray.clipExtend(levels.size - 1);
-		^super.newCopyArgs(levels, times, curve ? 'lin', releaseNode, loopNode, offset)
+		^super.newCopyArgs(levels, times, curve ? \lin, releaseNode, loopNode, offset)
 	}
 
 	*newClear { arg numSegments = 8;
@@ -169,6 +169,10 @@ Env {
 		)
 	}
 
+	*circle { arg levels, times, curve = \lin, timeLoop = 0, curveLoop = \lin;
+		^this.new(levels, times, curve).circle(timeLoop, curveLoop);
+	}
+
 	releaseTime {
 		if(releaseNode.isNil) { ^0.0 };
 		^times.copyRange(releaseNode, times.size - 1).sum
@@ -262,16 +266,18 @@ Env {
 	}
 
 	// connect releaseNode (or end) to first node of envelope
-	circle { arg timeFromLastToFirst = 0.0, curve = 'lin';
-		var first0Then1 = Latch.kr(1.0, Impulse.kr(0.0));
+	circle { arg timeFromLastToFirst = 0.0, curve = \lin;
+		var first0Then1;
+		if(UGen.buildSynthDef.isNil) { ^this };
+		first0Then1 = Latch.kr(1.0, Impulse.kr(0.0));
 		if(releaseNode.isNil) {
-			levels = [0.0]++ levels ++ 0.0;
-			curves = [curve]++ curves.asArray.wrapExtend(times.size) ++ 'lin';
+			levels = [0.0] ++ levels ++ 0.0;
+			curves = [curve] ++ curves.asArray.wrapExtend(times.size) ++ \lin;
 			times  = [first0Then1 * timeFromLastToFirst] ++ times ++ inf;
 			releaseNode = levels.size - 2;
 		} {
-			levels = [0.0]++ levels;
-			curves = [curve]++ curves.asArray.wrapExtend(times.size);
+			levels = [0.0] ++ levels;
+			curves = [curve] ++ curves.asArray.wrapExtend(times.size);
 			times  = [first0Then1 * timeFromLastToFirst] ++ times;
 			releaseNode = releaseNode + 1;
 		};
