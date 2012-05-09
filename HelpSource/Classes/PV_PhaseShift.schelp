@@ -19,8 +19,11 @@ FFT buffer.
 
 argument::shift
 
-Phase shift in degrees.
+Phase shift in radians.
 
+argument::integrate
+
+If greater than zero, integrate the phase-shift across calls (for an accumulating phase shift).
 
 Examples::
 
