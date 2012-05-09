@@ -21,6 +21,7 @@
 
 #include "FFT_UGens.h"
 
+#define TWOPI 6.28318530717952646f
 
 struct PV_OutOfPlace : Unit
 {
@@ -38,6 +39,11 @@ struct PV_MagShift : PV_OutOfPlace
 
 struct PV_BinShift : PV_OutOfPlace
 {
+};
+
+struct PV_PhaseShift : Unit
+{
+	float m_phase_integral;
 };
 
 struct PV_Diffuser : Unit
@@ -81,8 +87,8 @@ struct PV_Conj : PV_Unit {};
 
 extern "C"
 {
-	void PV_PhaseShift_Ctor(PV_Unit *unit);
-	void PV_PhaseShift_next(PV_Unit *unit, int inNumSamples);
+	void PV_PhaseShift_Ctor(PV_PhaseShift *unit);
+	void PV_PhaseShift_next(PV_PhaseShift *unit, int inNumSamples);
 
 	void PV_PhaseShift90_Ctor(PV_Unit *unit);
 	void PV_PhaseShift90_next(PV_Unit *unit, int inNumSamples);
@@ -382,6 +388,7 @@ void PV_BinShift_next(PV_BinShift *unit, int inNumSamples)
 	// get shift and stretch params
 	float stretch = ZIN0(1);
 	float shift = ZIN0(2);
+	float interp = ZIN0(3);
 
 	SCComplexBuf *p = ToComplexApx(buf);
 	SCComplexBuf *q = (SCComplexBuf*)unit->m_tempbuf;
@@ -395,10 +402,25 @@ void PV_BinShift_next(PV_BinShift *unit, int inNumSamples)
 	int i;
 	q->dc = p->dc;
 	q->nyq = p->nyq;
-	for (i=0, fpos = shift; i < numbins; ++i, fpos += stretch) {
-		int32 pos = (int32)(fpos + 0.5);
-		if (pos >= 0 && pos < numbins) {
-			q->bin[pos] += p->bin[i];
+	if(interp > 0){
+		for (i=0, fpos = shift; i < numbins; ++i, fpos += stretch) {
+			int32 fpos0 = (int32)std::floor(fpos);
+			int32 fpos1 = fpos0+1;
+			float beta = fpos - std::floor(fpos);
+			float alpha = 1.0f - beta;
+			if (fpos0 >= 0 && fpos0 < numbins) {
+				q->bin[fpos0] += alpha * p->bin[i];
+			}
+			if (fpos1 >= 0 && fpos1 < numbins) {
+				q->bin[fpos1] += beta * p->bin[i];
+			}
+		}
+	} else {
+		for (i=0, fpos = shift; i < numbins; ++i, fpos += stretch) {
+			int32 pos = (int32)(fpos + 0.5);
+			if (pos >= 0 && pos < numbins) {
+				q->bin[pos] += p->bin[i];
+			}
 		}
 	}
 	memcpy(p->bin, q->bin, numbins * sizeof(SCComplex));
@@ -492,23 +514,32 @@ void PV_MagNoise_Ctor(PV_Unit *unit)
 	ZOUT0(0) = ZIN0(0);
 }
 
-void PV_PhaseShift_next(PV_Unit *unit, int inNumSamples)
+void PV_PhaseShift_next(PV_PhaseShift *unit, int inNumSamples)
 {
 	PV_GET_BUF
 
 	SCPolarBuf *p = ToPolarApx(buf);
 
 	float shift = ZIN0(1);
+	int integrate = ZIN0(2);
+
+	float ashift = shift;
+
+	if (integrate > 0) {
+		ashift += unit->m_phase_integral;
+		unit->m_phase_integral = fmod(ashift, TWOPI);
+	}
 
 	for (int i=0; i<numbins; ++i) {
-		p->bin[i].phase += shift;
+		p->bin[i].phase += ashift;
 	}
 }
 
-void PV_PhaseShift_Ctor(PV_Unit *unit)
+void PV_PhaseShift_Ctor(PV_PhaseShift *unit)
 {
 	SETCALC(PV_PhaseShift_next);
 	ZOUT0(0) = ZIN0(0);
+	unit->m_phase_integral = 0;
 }
 
 void PV_PhaseShift90_next(PV_Unit *unit, int inNumSamples)

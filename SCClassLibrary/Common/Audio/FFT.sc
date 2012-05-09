@@ -56,12 +56,17 @@ PV_MagSmear : PV_ChainUGen
 
 PV_BinShift : PV_ChainUGen
 {
+	*new { arg buffer, stretch = 1.0, shift = 0.0, interp = 0;
+		^this.multiNew('control', buffer, stretch, shift, interp)
+	}
+}
 
+PV_MagShift : PV_ChainUGen
+{
 	*new { arg buffer, stretch = 1.0, shift = 0.0;
 		^this.multiNew('control', buffer, stretch, shift)
 	}
 }
-PV_MagShift : PV_BinShift {}
 
 PV_MagSquared : PV_ChainUGen
 {
@@ -77,8 +82,8 @@ PV_Conj : PV_MagSquared {}
 
 PV_PhaseShift : PV_ChainUGen
 {
-	*new { arg buffer, shift;
-		^this.multiNew('control', buffer, shift)
+	*new { arg buffer, shift, integrate=0;
+		^this.multiNew('control', buffer, shift, integrate)
 	}
 }
 
