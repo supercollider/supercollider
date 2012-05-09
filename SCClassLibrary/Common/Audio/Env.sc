@@ -9,7 +9,7 @@ Env {
 
 	
 	*new { arg levels = #[0,1,0], times = #[1,1], curve = \lin, releaseNode, loopNode, offset;
-		times = times.asArray.clipExtend(levels.size - 1);
+		times = times.asArray.wrapExtend(levels.size - 1);
 		^super.newCopyArgs(levels, times, curve ? \lin, releaseNode, loopNode, offset)
 	}
 
