@@ -29,7 +29,7 @@ Add an offset to bin position.
 
 argument::interp
 
-If greater than zero, linear-interpolate between bins.
+Set to 0 (default) for no interpolation, or 1 to linear-interpolate between bins.
 
 
 Examples::
