@@ -1,3 +1,5 @@
+* change the world for a better place
+
 User-visible changes (started after 3.4)
 
 * sclang startup file moved to thisProcess.platform.userConfigDir +/+ "sclang.scd" - tb
