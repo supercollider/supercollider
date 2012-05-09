@@ -62,7 +62,11 @@ Env {
 	}
 
 	duration_ { arg dur;
-		times = times.normalizeSum(dur)
+		times = times.normalizeSum * dur
+	}
+
+	duration {
+		^times.sum
 	}
 
 	range { arg lo = 0.0, hi = 1.0;
@@ -169,7 +173,7 @@ Env {
 		)
 	}
 
-	*circle { arg levels, times, curve = \lin, timeLoop = 0, curveLoop = \lin;
+	*circle { arg levels, times, curve = \lin;
 		times = times.asArray.wrapExtend(levels.size);
 		curve = curve.asArray.wrapExtend(levels.size);
 		^this.new(levels, times.drop(-1), curve.drop(-1)).circle(times.last, curve.last);
@@ -231,7 +235,7 @@ Env {
 
 	embedInStream { arg inval;
 		var startTime = thisThread.endBeat ? thisThread.beats;
-		thisThread.endBeat = this.times.sum + startTime;
+		thisThread.endBeat = this.duration + startTime;
 		loop {
 			inval = yield(this.at(thisThread.beats - startTime));
 		}
