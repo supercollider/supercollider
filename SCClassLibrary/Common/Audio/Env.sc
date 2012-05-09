@@ -90,7 +90,7 @@ Env {
 		^this.new(
 			[0, level, 0],
 			[dur, dur],
-			'sine'
+			\sine
 		)
 	}
 
@@ -113,7 +113,7 @@ Env {
 	*xyc { arg xyc;
 		var times, levels, curves, offset, order;
 		#times, levels, curves = xyc.flop;
-		if(times.includesSeqColl.not) { // sort triplets, if possible.
+		if(times.containsSeqColl.not) { // sort triplets, if possible.
 			order = times.order;
 			times = times[order];
 			levels = levels[order];
@@ -170,7 +170,9 @@ Env {
 	}
 
 	*circle { arg levels, times, curve = \lin, timeLoop = 0, curveLoop = \lin;
-		^this.new(levels, times, curve).circle(timeLoop, curveLoop);
+		times = times.asArray.wrapExtend(levels.size);
+		curve = curve.asArray.wrapExtend(levels.size);
+		^this.new(levels, times.drop(-1), curve.drop(-1)).circle(times.last, curve.last);
 	}
 
 	releaseTime {
@@ -200,11 +202,11 @@ Env {
 	storeArgs { ^[levels, times, curves, releaseNode, loopNode] }
 
 	== { arg that;
-		^this.compareObject(that, ['levels','times','curves','releaseNode','loopNode','offset'])
+		^this.compareObject(that, [\levels, \times, \curves, \releaseNode, \loopNode, \offset])
 	}
 
 	hash {
-		^this.instVarHash(['levels','times','curves','releaseNode','loopNode','offset'])
+		^this.instVarHash([\levels, \times, \curves, \releaseNode, \loopNode, \offset])
 	}
 
 	at { arg time;
