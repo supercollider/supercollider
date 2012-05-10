@@ -36,6 +36,14 @@ Env {
 		];
 	}
 
+	kr { arg doneAction = 0, gate = 1.0, timeScale = 1.0, mul = 1.0, add = 0.0;
+		^EnvGen.kr(this, gate, mul, add, timeScale, doneAction)
+	}
+
+	ar { arg doneAction = 0, gate = 1.0, timeScale = 1.0, mul = 1.0, add = 0.0;
+		^EnvGen.ar(this, gate, mul, add, timeScale, doneAction)
+	}
+
 	levels_ { arg z;
 		levels = z;
 		array = nil;
