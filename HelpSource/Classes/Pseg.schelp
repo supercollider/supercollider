@@ -1,6 +1,6 @@
 class:: Pseg
 summary:: timed embedding of values
-related:: Classes/Ptime, Classes/Pstep
+related:: Classes/Ptime, Classes/Pstep, Classes/Env
 categories:: Streams-Patterns-Events>Patterns>Time
 
 description::
