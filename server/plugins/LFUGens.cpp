@@ -3185,7 +3185,7 @@ inline_functions void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
 		case shape_Linear : {
 			double slope = unit->m_grow;
 			nova::set_slope_vec_simd(OUT(0), (float)level, (float)slope, inNumSamples);
-			level += 64 * slope;
+			level += inNumSamples * slope;
 			remain = 0;
 			counter -= inNumSamples;
 		} break;
