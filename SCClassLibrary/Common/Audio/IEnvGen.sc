@@ -12,7 +12,7 @@ IEnvGen : UGen { // envelope index generator
 
 	*convertEnv { arg env;
 		if(env.isSequenceableCollection) { ^env.reference }; // raw envelope data
-		^env.asArrayForInterpolation.collect(_.reference)
+		^env.asArrayForInterpolation.collect(_.reference).unbubble
 	}
 
 	*new1 { arg rate, index, envArray;
