@@ -826,7 +826,10 @@ Plotter {
 					plotter.domainSpecs = ControlSpec(0, duration, units: "s");
 					minval !? { plotter.minval = minval; };
 					maxval !? { plotter.maxval = maxval };
-					plotter.setValue(array.unlace(buf.numChannels).collect(_.drop(-1)),false,true);
+					plotter.setValue(
+						array.unlace(buf.numChannels).collect(_.drop(-1)), 
+						true, true
+					);
 
 				}.defer
 			})
