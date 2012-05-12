@@ -1,5 +1,6 @@
 class:: Point
 summary:: Cartesian point
+related:: Classes/Polar, Classes/Complex
 categories:: Geometry
 
 description::

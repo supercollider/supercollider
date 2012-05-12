@@ -1,5 +1,6 @@
 class:: Polar
 summary:: Polar coordinates
+related:: Classes/Point, Classes/Complex
 categories:: Math
 
 description::
@@ -9,6 +10,7 @@ classmethods::
 
 method:: new
 Create a new polar coordinate with the given radius, rho, and angle in radians, theta.
+
 
 
 instancemethods::
