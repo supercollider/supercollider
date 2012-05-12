@@ -737,7 +737,8 @@ Plotter {
 
 + ArrayedCollection {
 	plot { |name, bounds, discrete=false, numChannels, minval, maxval|
-		var array = this.as(Array), plotter = Plotter(name, bounds);
+		var array = this.as(Array);
+		var plotter = Plotter(name, bounds);
 		if(discrete) { plotter.plotMode = \points };
 
 		numChannels !? { array = array.unlace(numChannels) };
@@ -748,13 +749,17 @@ Plotter {
 				elem
 			}
 		};
-		plotter.setValue(array, true, false);
-		if(minval.isNumber && maxval.isNumber,{
-			plotter.specs = [minval,maxval].asSpec
-		},{
-			minval !? { plotter.minval = minval; };
+		plotter.setValue(
+			array,
+			findSpecs: true,
+			refresh: false
+		);
+		if(minval.isNumber && maxval.isNumber) {
+			plotter.specs = [minval, maxval].asSpec
+		} {
+			minval !? { plotter.minval = minval };
 			maxval !? { plotter.maxval = maxval };
-		});
+		};
 		plotter.refresh;
 		^plotter
 	}
@@ -827,8 +832,9 @@ Plotter {
 					minval !? { plotter.minval = minval; };
 					maxval !? { plotter.maxval = maxval };
 					plotter.setValue(
-						array.unlace(buf.numChannels).collect(_.drop(-1)), 
-						true, true
+						array.unlace(buf.numChannels).collect(_.drop(-1)),
+						findSpecs: minval.isNil and: { maxval.isNil },
+						refresh: true
 					);
 
 				}.defer
@@ -855,13 +861,17 @@ Plotter {
 		this.loadToFloatArray(action: { |array, buf|
 			{
 				if(minval.isNumber && maxval.isNumber,{
-					plotter.specs = [minval,maxval].asSpec
+					plotter.specs = [minval, maxval].asSpec
 				},{
-					minval !? { plotter.minval = minval; };
+					minval !? { plotter.minval = minval };
 					maxval !? { plotter.maxval = maxval };
 				});
-				plotter.domainSpecs = ControlSpec(0.0,buf.numFrames,units:"frames");
-				plotter.setValue(array.unlace(buf.numChannels),false,true);
+				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units:"frames");
+				plotter.setValue(
+					array.unlace(buf.numChannels),
+					findSpecs: false,
+					refresh: true
+				);
 			}.defer
 		});
 		^plotter
