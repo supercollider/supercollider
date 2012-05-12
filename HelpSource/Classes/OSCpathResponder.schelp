@@ -5,7 +5,11 @@ categories:: External Control>OSC
 
 description::
 
-note:: As of SC 3.5 link::Classes/OSCFunc:: and link::Classes/OSCdef:: are the recommended way of registering for incoming OSC messages. They are faster, safer, and have more logical argument order than the old responder classes, and they support pattern matching and custom listening ports. Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally. They are maintained for legacy code only.::
+note:: As of SC 3.5 link::Classes/OSCFunc:: and link::Classes/OSCdef:: are the recommended way of registering for incoming OSC messages. They are faster, safer, and have more logical argument order than the old responder classes, and they support pattern matching and custom listening ports. Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally. They are maintained for legacy code only.
+
+The replacement for path matching is to be found in the template argument of OSCFunc and OSCDef (see example below).
+
+::
 
 Register a function to be called upon receiving a command with a specific path.
 
@@ -53,11 +57,11 @@ code::
 s.boot;
 
 (
-	var s, commandpath, response, aSynth, nodeID, triggerID;
-	s = Server.local;
-	s.boot;
+	var commandpath, response, aSynth, nodeID, triggerID;
 	triggerID = 1;
-	aSynth = { arg freq = 1, triggerID = 1; SendTrig.kr(SinOsc.kr(freq), triggerID, 666); }.play;
+	aSynth = { arg freq = 1, triggerID = 1;
+		SendTrig.kr(SinOsc.kr(freq), triggerID, 666)
+	}.play;
 	nodeID = aSynth.nodeID;
 	commandpath = ['/tr', nodeID, triggerID];
 	response = { arg time, responder, message; message.postln };
@@ -69,4 +73,27 @@ s.boot;
 // switch on and off:
 o.remove;
 o.add;
+
+
+// this can be written now conveniently and efficiently with OSCFunc.
+// the argTemplate is like the "path" of OSCpathResponder, but without the OSC-path itself.
+(
+	var commandpath, response, aSynth, nodeID, triggerID;
+	triggerID = 1;
+	aSynth = { arg freq = 1, triggerID = 1;
+		SendTrig.kr(SinOsc.kr(freq), triggerID, 666)
+	}.play;
+	nodeID = aSynth.nodeID;
+	commandpath = [nodeID, triggerID];
+	response = { arg message; message.postln };
+
+	o = OSCFunc(response, '/tr', s.addr, argTemplate: commandpath);
+
+)
+
+// an OSCFunc is removed with cmd-Period.
+// in order to switch it on and off programmatically:
+o.remove;
+o.add;
+
 ::
