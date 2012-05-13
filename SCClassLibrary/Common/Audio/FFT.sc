@@ -27,11 +27,11 @@ IFFT : WidthFirstUGen
 	}
 
 	*ar { | buffer, wintype = 0, winsize=0|
-		^this.multiNew('audio', buffer, wintype, winsize).do(_.initSiblings)
+		^this.multiNew('audio', buffer, wintype, winsize)
 	}
 
 	*kr { | buffer, wintype = 0, winsize=0|
-		^this.multiNew('control', buffer, wintype, winsize).do(_.initSiblings)
+		^this.multiNew('control', buffer, wintype, winsize)
 	}
 
 }
