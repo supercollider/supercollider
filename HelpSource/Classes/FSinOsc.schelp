@@ -37,11 +37,12 @@ This value will be added to the output.
 Examples::
 
 code::
-{ FSinOsc.ar(800, 0.0, 0.25) }.play;
+{ FSinOsc.ar(800) * 0.2 }.play;
 
-{ FSinOsc.ar(XLine.kr(200,4000,1),0.0, 0.25) }.play;
+{ FSinOsc.ar(XLine.kr(200, 4000, 1)) * 0.2 }.play;
 
 // loses amplitude towards the end
-{ FSinOsc.ar(FSinOsc.ar(XLine.kr(4,401,8),0.0, 200,800),0.0, 0.25) }.play;
+{ FSinOsc.ar(FSinOsc.ar(XLine.kr(4, 401, 8), 0.0, 200, 800)) * 0.2 }.play;
+
 ::
 

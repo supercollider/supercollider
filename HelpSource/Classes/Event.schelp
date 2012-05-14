@@ -38,11 +38,47 @@ Returns an event that describes a pause of strong::dur:: duration.
 
 method::addEventType
 Event types define alternate play functions that are selected by the value of strong::~type::.
+argument::type
+A name (usually a symbol) for the event type, which can be used to select it
+
+argument:func
+A function which optionally takes the server as a first argument
+
+code::
+Event.addEventType(\happyEvent, { ("I am so happy to be silent sometimes, says" + ~who).postln; });
+Pbind(\type, \happyEvent, \who, Prand(["Alice", "Bob", "Eve"], inf), \dur, Pwhite(0.1, 1.0, inf)).play;
+
+// To a certain degree, it is possible to reuse some of another event type's functionality:
+(
+Event.addEventType(\happyEvent, { |server|
+	~octave = [5, 6, 7]; // always play three octaves
+	~detune = 10.0.rand2; // always play a bit out of tune
+	~type = \note; // now set type to a different one
+	currentEnvironment.play;
+});
+Pbind(\type, \happyEvent, \degree, Pseq([0, 1, 2, 3, 4, 4, 5, 5, 5, 5, 4, 2, 3, 2, 3, 1], inf), \dur, Pwhite(0.1, 1.0, inf)).play;
+);
+
+::
+
+
+method::makeDefaultSynthDef
+This method is called in order to build the default SynthDef, which is stored under the key strong::\default::
+code::
+SynthDef(\default, { Out.ar(0, Line.kr(0.3, 0, 0.5) * SinOsc.ar(Rand(300, 500.0)) ) }).add; // overwrite default
+(freq: 600).play;
+Event.makeDefaultSynthDef; // reset default
+(freq: 600).play;
+::
 
 INSTANCEMETHODS::
 
 method::play
-Play the event. This evaluates the function at strong::\play:: (see example above).
+Play the event. This evaluates the function at strong::\play::.
+code::
+(freq: 800).play;
+(play: {  "I rather do something else: ".post; ~x.postln; }, x: 800.rand).play;
+::
 
 method::delta
 Returns the inter onset time - the time delay until the next event in a sequence. This usually depends on strong::\dur:: and strong::\stretch::, but may be overridden by specifying strong::\delta:: directly.
@@ -171,6 +207,8 @@ code::
 // timingOffset gives a tempo-relative offset time to each synth
 (instrument: \pm, ratio: [2.3, 4.5, 1.7], timingOffset: [0, 1.2, 3], sustain: [0.2, 2, 1]).play;
 ::
+
+In the \note event, all keys multichannel expand apart from: \instrument, \dur, \delta, \strum.
 
 subsection::Arrayed Arguments
 
