@@ -7,7 +7,7 @@ String represents an array of characters.
 
 Strings can be written literally using double quotes:
 code::
-"my string".class.postln;
+"my string".class
 ::
 A sequence of string literals will be concatenated together:
 code::
@@ -39,17 +39,16 @@ private::prUnixCmd, prFormat, prCat, prBounds, hash, species, getSCDir, prDrawIn
 
 subsection:: Accessing characters
 
-method::@
-method::at
+method::@, at
 Strings respond to .at in a manner similar to other indexed collections. Each element is a link::Classes/Char::.
 code::
-"ABCDEFG".at(2).postln;
+"ABCDEFG".at(2)
 ::
 
 method::ascii
 Returns an Array of asci numbers of the Strings's characters.
 code::
-"wertvoll".ascii;
+"wertvoll".ascii
 ::
 
 subsection:: Comparing strings
@@ -59,26 +58,59 @@ Returns a -1, 0, or 1 depending on whether the receiver should be sorted before 
 
 method::<
 Returns a link::Classes/Boolean:: whether the receiver should be sorted before the argument.
+code::
+"same" < "samf"
+::
 
 method::>
 Returns a link::Classes/Boolean:: whether the receiver should be sorted after the argument.
+code::
+"same" > "samf"
+::
+method::<=
+Returns a link::Classes/Boolean:: whether the receiver should be sorted before the argument, including the same string.
+code::
+"same" <= "same"
+"same" <= "samf"
+::
+
+method::>=
+Returns a link::Classes/Boolean:: whether the receiver should be sorted after the argument, including the same string.
+code::
+"same" >= "same"
+"same" >= "samf"
+::
 
 method::==
 Returns a link::Classes/Boolean:: whether the two Strings are equal.
 note::
-This method is case insensitive! Use code::a.compare(b)==0:: if you need case sensitivity.
+This method is (now) case sensitive!
+::
+code::
+"same" == "same"
+"same" == "Same"; // false
 ::
 
 method::!=
 Returns a link::Classes/Boolean:: whether the two Strings are not equal.
+code::
+"same" != "same"; // false
+"same" != "Same"; 
+::
 
 subsection:: Posting strings
 
 method::post
 Prints the string to the current post window.
+code::
+"One".post; "Two".post;"";
+::
 
 method::postln
 Prints the string and a carriage return to the current post window.
+code::
+"One".postln; "Two".postln;"";
+::
 
 method::postc, postcln
 As link::#-post:: and link::#-postln::, but formatted as a comment.
@@ -102,12 +134,21 @@ List[1, 2, ["comment", [3, 2]], { 1.0.rand }].postcs;
 
 method::error
 Prepends an error banner and posts the string.
+code::
+"Do not press this button again".error;
+::
 
 method::warn
 Prepends a warning banner and posts the string.
+code::
+"Do not press this button again".warn;
+::
 
 method::inform
 Posts the string.
+code::
+"Do not press this button again".inform;
+::
 
 subsection:: Interpreting strings as code
 
@@ -187,9 +228,15 @@ subsection:: Concatenate strings
 
 method::++
 Return a concatenation of the two strings.
+code::
+"hello" ++ "word"
+::
 
 method::+
 Return a concatenation of the two strings with a space between them.
+code::
+"hello" + "word"
+::
 
 method::+/+
 Path concatenation operator - useful for avoiding doubling-up slashes unnecessarily.
@@ -249,6 +296,8 @@ code::
 "aaaabaaa".findAllRegexp("a+");
 ::
 
+method::findAllRegexp
+Like link::#-findAll::, but use regular expressions.
 
 subsection:: Searching strings
 
@@ -306,33 +355,18 @@ A link::Classes/Boolean::
 
 subsection:: Manipulating strings
 
-method::escapeChar
-Add the escape character (\) before any character of your choice.
+method::rotate
+Rotate the string by n steps.
 code::
-// escape spaces:
-"This will become a Unix friendly string".escapeChar($ ).postln;
+"hello word".rotate(1)
 ::
 
-method::shellQuote
-Return a new string suitable for use as a filename in a shell command, by enclosing it in single quotes ( teletype::':: ).
-If the string contains any single quotes they will be escaped.
-discussion::
-You should use this method on a path before embedding it in a string executed by link::#-unixCmd:: or link::#-systemCmd::.
+method::scramble
+Randomize the order of characters in the string.
 code::
-unixCmd("ls"+Platform.userExtensionDir.shellQuote)
-::
-note::
-This works well with shells such as strong::bash::, other shells might need different quotation/escaping.
+"hello word".scramble
 ::
 
-method::quote
-Return this string enclosed in double-quote ( teletype::":: ) characters.
-
-method::tr
-Transliteration. Replace all instances of strong::from:: with strong::to::.
-code::
-":-(:-(:-(".tr($(, $)); //turn the frowns upside down
-::
 
 method::replace
 Like link::#-tr::, but with strings as arguments.
@@ -348,6 +382,38 @@ format("this % a %. pi = %, list = %\n", "is", "test", pi.round(1e-4), (1..4))
 this is a test. pi = 3.1416, list = [ 1, 2, 3, 4 ]
 ::
 
+method::escapeChar
+Add the escape character (\) before any character of your choice.
+code::
+// escape spaces:
+"This will become a Unix friendly string".escapeChar($ ).postln;
+::
+
+method::quote
+Return this string enclosed in double-quote ( teletype::":: ) characters.
+code::
+"tell your" + "friends".quote + "not to tread onto the lawn"
+::
+
+method::zeroPad
+Return this string enclosed in space characters.
+code::
+"spaces".zeroPad.postcs;
+::
+
+method::underlined
+Return this string followed by dashes in the next line ( teletype::-:: ).
+code::
+"underlined".underlined;
+"underlined".underlined($~);
+::
+
+method::tr
+Transliteration. Replace all instances of strong::from:: with strong::to::.
+code::
+":-(:-(:-(".tr($(, $)); //turn the frowns upside down
+::
+
 
 method::padLeft
 method::padRight
@@ -356,12 +422,23 @@ argument:: size
 Number of characters to fill
 argument:: string
 Padding string
+code::
+"this sentence has thirty-nine letters".padRight(39, "-+");
+"this sentence has thirty-nine letters".padLeft(30, "-+");
+"this sentence has thirty-nine letters".padRight(13, "-+"); // nothing to pad.
+::
 
 method::toUpper
 Return this string with uppercase letters.
+code::
+"Please, don't be impolite".toUpper;
+::
 
 method::toLower
 Return this string with lowercase letters.
+code::
+"SINOSC".toLower;
+::
 
 method::stripRTF
 Returns a new String with all RTF formatting removed.
@@ -482,6 +559,12 @@ code::
 "USER".getenv;
 ::
 
+method::unsetenv
+Set the environment variable to nil.
+
+method::mkdir
+Make a directory from the given path location.
+
 method::pathMatch
 Returns an link::Classes/Array:: containing all paths matching this String. Wildcards apply, non-recursive.
 code::
@@ -533,6 +616,19 @@ Platform.userConfigDir.openOS;
 subsection::Pathname Support
 
 Also see link::#-+/+:: for path concatenation.
+
+method::shellQuote
+Return a new string suitable for use as a filename in a shell command, by enclosing it in single quotes ( teletype::':: ).
+If the string contains any single quotes they will be escaped.
+discussion::
+You should use this method on a path before embedding it in a string executed by link::#-unixCmd:: or link::#-systemCmd::.
+code::
+unixCmd("ls " + Platform.userExtensionDir.shellQuote)
+::
+note::
+This works well with shells such as strong::bash::, other shells might need different quotation/escaping.
+Apart from usage in the construction of shell commands, strong::escaping is not needed:: for paths passed to methods like pathMatch(path) or File.open(path).
+::
 
 method::absolutePath
 method::asAbsolutePath
