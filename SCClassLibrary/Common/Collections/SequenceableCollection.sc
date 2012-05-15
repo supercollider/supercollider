@@ -462,7 +462,7 @@ SequenceableCollection : Collection {
 
 	flopDeep { arg rank;
 		var size, maxsize;
-		if(rank.isNil) { rank = this.maxDepth };
+		if(rank.isNil) { rank = this.maxDepth - 1 };
 		if(rank <= 1) { ^this.flop };
 
 		size = this.size;

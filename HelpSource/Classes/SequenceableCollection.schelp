@@ -264,11 +264,15 @@ code::
 [[1, 2, 3], [[41, 52], 5, 6]].flopDeep(2);
 [[1, 2, 3], [[41, 52], 5, 6]].flopDeep(1);
 [[1, 2, 3], [[41, 52], 5, 6]].flopDeep(0);
+[[1, 2, 3], [[41, 52], 5, 6]].flopDeep; // without argument, flop from the deepest level
+
 [[[10, 100, 1000], 2, 3], [[41, 52], 5, 6]].flopDeep(2); // shorter array wraps
 [].flopDeep(1); // result is always one dimension higher.
 [[]].flopDeep(4);
 ::
-Note that, just like in flop, the innermost arrays (deeper than rank) are not copied.
+
+note::Note that, just like in flop, the innermost arrays (deeper than rank) are not copied.::
+
 code::
 a = [1, 2];
 x = [[[a, 5], [a, 10]], [[a, 50, 60]]].flopDeep(1);
