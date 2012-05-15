@@ -8,6 +8,13 @@ A FunctionList is a function that composes multiple functions into one. This all
 
 See the link::Reference/Functions:: help file for a basic introduction.
 
+code::
+a = FunctionList.new;
+fork { loop { 0.7.wait; a.value.postln } };
+a.addFunc({ 800.rand });
+a.addFunc({ "another".scramble });
+::
+
 classMethods::
 
 method::new
