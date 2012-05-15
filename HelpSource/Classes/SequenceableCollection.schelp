@@ -277,10 +277,11 @@ x // pi is everywhere
 ::
 
 method::maxSizeAtDepth
+Returns the maximum size of all subarrays at a certain depth (dimension)
+
 argument::rank
 The depth at which the size of the arrays is measured
 
-Returns the maximum size of all subarrays at a certain depth (dimension)
 code::
 [[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(2);
 [[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(1);
@@ -288,6 +289,16 @@ code::
 [].maxSizeAtDepth(0);
 [[]].maxSizeAtDepth(0);
 [[]].maxSizeAtDepth(1);
+::
+
+method::maxDepth
+Returns the maximum depth of all subarrays.
+
+argument::max
+Internally used only.
+
+code::
+[[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxDepth
 ::
 
 method::resamp0

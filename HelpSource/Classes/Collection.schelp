@@ -45,6 +45,7 @@ code::
 List[].isEmpty;
 ::
 
+
 subsection::Adding and Removing
 
 method::add
@@ -253,6 +254,31 @@ If function is nil, then answer the minimum of all items in the receiver.
 code::
 List[1, 2, 3, 4].minIndex({ arg item, i; item + 10 });
 List[3.2, 12.2, 13, 0.4].minIndex;
+::
+
+method::maxSizeAtDepth
+Returns the maximum size of all subcollections at a certain depth (dimension)
+
+argument::rank
+The depth at which the size of the collection is measured
+
+code::
+Set[Set[1, 2, 3], [Set[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(2);
+Set[Set[1, 2, 3], [Set[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(1);
+Set[Set[1, 2, 3], [Set[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(0);
+Set[].maxSizeAtDepth(0);
+Set[[]].maxSizeAtDepth(0);
+Set[[]].maxSizeAtDepth(1);
+::
+
+method::maxDepth
+Returns the maximum depth of all subcollections.
+
+argument::max
+Internally used only.
+
+code::
+Set[Set[1, 2, 3], Set[Set[41, 52], 5, 6], 1, 2, 3].maxDepth
 ::
 
 method::iter
