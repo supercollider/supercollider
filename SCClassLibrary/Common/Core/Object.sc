@@ -246,6 +246,7 @@ Object  {
 	isInteger { ^false }
 	isFloat { ^false }
 	isSequenceableCollection { ^false }
+	isCollection { ^false }
 	isArray { ^false }
 	isString { ^false }
 	containsSeqColl { ^false }

@@ -462,6 +462,7 @@ SequenceableCollection : Collection {
 
 	flopDeep { arg rank;
 		var size, maxsize;
+		if(rank.isNil) { rank = this.maxDepth };
 		if(rank <= 1) { ^this.flop };
 
 		size = this.size;
@@ -469,17 +470,6 @@ SequenceableCollection : Collection {
 		^this.species.fill(maxsize, { |i|
 			this.wrapAtDepth(rank, i)
 		})
-	}
-
-	maxSizeAtDepth { arg rank;
-		var maxsize = 0;
-		if(rank == 0) { ^this.size };
-		this.do { |sublist| 
-			var sz = if(sublist.isSequenceableCollection) 
-					{ sublist.maxSizeAtDepth(rank - 1) } { 1 };
-			if (sz > maxsize) { maxsize = sz };
-		};
-		^maxsize
 	}
 
 	wrapAtDepth { arg rank, index;

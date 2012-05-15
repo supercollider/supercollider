@@ -58,6 +58,7 @@ Collection {
 	isEmpty { ^this.size == 0 }
 	notEmpty { ^this.size > 0 }
 	asCollection { ^this }
+	isCollection { ^true }
 
 	add { ^this.subclassResponsibility(thisMethod) }
 	addAll { | aCollection | aCollection.asCollection.do { | item | this.add(item) } }
@@ -394,6 +395,24 @@ Collection {
 				}
 		};
 		^minValue;
+	}
+
+	maxSizeAtDepth { arg rank;
+		var maxsize = 0;
+		if(rank == 0) { ^this.size };
+		this.do { |sublist|
+			var sz = if(sublist.isCollection)
+					{ sublist.maxSizeAtDepth(rank - 1) } { 1 };
+			if (sz > maxsize) { maxsize = sz };
+		};
+		^maxsize
+	}
+
+	maxDepth { arg max = 0;
+		this.do { |elem|
+			if(elem.isCollection) { max = max(max, elem.maxDepth(max + 1)) }
+		};
+		^max
 	}
 
 	invert { | axis |
