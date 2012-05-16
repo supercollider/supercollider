@@ -28,7 +28,6 @@
 #include <QStyle>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QScrollBar>
 #include <QShortcut>
 #include <QMenu>
 #include <QDebug>
@@ -61,6 +60,8 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
             this, SLOT(onClose(Document*)));
     connect(mDocManager, SIGNAL(saved(Document*)),
             this, SLOT(update(Document*)));
+    connect(mDocManager, SIGNAL(showRequest(Document*,int)),
+            this, SLOT(show(Document*,int))),
 
     connect(mTabs, SIGNAL(currentChanged(int)),
             this, SLOT(onCurrentChanged(int)));
@@ -307,7 +308,7 @@ void MultiEditor::hideToolPanel()
         editor->setFocus(Qt::OtherFocusReason);
 }
 
-void MultiEditor::onOpen( Document *doc, int initialCursorPosition )
+void MultiEditor::onOpen( Document *doc, int pos )
 {
     CodeEditor *editor = new CodeEditor();
     editor->setDocument(doc);
@@ -326,21 +327,21 @@ void MultiEditor::onOpen( Document *doc, int initialCursorPosition )
     connect(tdoc, SIGNAL(modificationChanged(bool)),
             &mModificationMapper, SLOT(map()));
 
-    if (initialCursorPosition) {
-        // HACK: scroll to the bottom before setting the cursor so that it is then scrolled to the top
-        QScrollBar * scrollBar = editor->verticalScrollBar();
-        scrollBar->setValue(scrollBar->maximum());
-
-        QTextCursor cursor = editor->textCursor();
-        cursor.setPosition(initialCursorPosition);
-        editor->setTextCursor(cursor);
-    }
+    if (pos > 0)
+        editor->showPosition(pos);
 }
 
 void MultiEditor::onClose( Document *doc )
 {
     CodeEditor *editor = editorForDocument(doc);
     delete editor;
+}
+
+void MultiEditor::show( Document *doc, int pos )
+{
+    CodeEditor *editor = editorForDocument( doc );
+    mTabs->setCurrentWidget(editor);
+    editor->showPosition(pos);
 }
 
 void MultiEditor::update( Document *doc )

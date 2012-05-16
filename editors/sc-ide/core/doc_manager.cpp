@@ -46,6 +46,20 @@ void DocumentManager::open()
 
 void DocumentManager::open( const QString & filename, int initialCursorPosition )
 {
+    // Check if file already opened
+
+    DocIterator it;
+    for( it = mDocHash.begin(); it != mDocHash.end(); ++it )
+    {
+        Document *doc = it.value();
+        if(doc->fileName() == filename) {
+            Q_EMIT( showRequest(doc, initialCursorPosition) );
+            return;
+        }
+    }
+
+    // Open the file
+
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly)) {
         qWarning() << "DocumentManager: the file" << filename << "could not be opened for reading.";

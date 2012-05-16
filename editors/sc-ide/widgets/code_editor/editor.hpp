@@ -72,6 +72,7 @@ public:
                     QTextDocument::FindFlags options = 0 );
     QTextCursor currentRegion();
     void blinkCode( const QTextCursor & c );
+    void showPosition( int );
 
 public Q_SLOTS:
     void zoomIn(int steps = 1);
