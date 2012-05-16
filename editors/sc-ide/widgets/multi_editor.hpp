@@ -135,6 +135,7 @@ private:
     // gui
     QTabWidget *mTabs;
     TextFindReplacePanel *mFindReplacePanel;
+    QIcon mDocModifiedIcon;
 
     // settings
     bool mStepForwardEvaluation;

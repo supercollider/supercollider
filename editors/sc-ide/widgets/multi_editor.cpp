@@ -25,6 +25,7 @@
 #include "../core/main.hpp"
 
 #include <QApplication>
+#include <QStyle>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QScrollBar>
@@ -38,7 +39,8 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
     mDocManager(main->documentManager()),
     mSigMux(new SignalMultiplexer(this)),
-    mTabs(new QTabWidget)
+    mTabs(new QTabWidget),
+    mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) )
 {
     mTabs->setDocumentMode(true);
     mTabs->setTabsClosable(true);
@@ -315,7 +317,7 @@ void MultiEditor::onOpen( Document *doc, int initialCursorPosition )
 
     QIcon icon;
     if(tdoc->isModified())
-        icon = QIcon::fromTheme("document-save");
+        icon = mDocModifiedIcon;
 
     mTabs->addTab( editor, icon, doc->title() );
     mTabs->setCurrentIndex( mTabs->count() - 1 );
@@ -385,7 +387,7 @@ void MultiEditor::onModificationChanged( QWidget *w )
 
     QIcon icon;
     if(editor->document()->textDocument()->isModified())
-        icon = QIcon::fromTheme("document-save");
+        icon = mDocModifiedIcon;
     mTabs->setTabIcon( i, icon );
 }
 

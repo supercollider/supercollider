@@ -21,10 +21,14 @@
 #include "doc_list.hpp"
 #include "../core/doc_manager.hpp"
 
+#include <QApplication>
+#include <QStyle>
+
 namespace ScIDE {
 
 DocumentList::DocumentList(DocumentManager *manager, QWidget * parent):
-    QListWidget(parent)
+    QListWidget(parent),
+    mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) )
 {
     connect(manager, SIGNAL(opened(Document*, int)), this, SLOT(onOpen(Document*, int)));
     connect(manager, SIGNAL(closed(Document*)), this, SLOT(onClose(Document*)));
@@ -66,7 +70,7 @@ void DocumentList::onModificationChanged( QObject * obj )
     if(item)
         item->setIcon(
             doc->textDocument()->isModified() ?
-            QIcon::fromTheme("document-save") : QIcon()
+            mDocModifiedIcon : QIcon()
         );
 }
 
@@ -82,6 +86,10 @@ DocumentList::Item * DocumentList::addItemFor( Document *doc )
     Item *item = new Item(doc, this);
 
     QTextDocument *tdoc = doc->textDocument();
+
+    if(tdoc->isModified())
+        item->setIcon( mDocModifiedIcon );
+
     mModificationMapper.setMapping(tdoc, doc);
     connect(tdoc, SIGNAL(modificationChanged(bool)),
             &mModificationMapper, SLOT(map()));
