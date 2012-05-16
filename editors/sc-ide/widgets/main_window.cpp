@@ -36,6 +36,7 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QStatusBar>
+#include <QFileDialog>
 
 namespace ScIDE {
 
@@ -103,6 +104,9 @@ MainWindow::MainWindow(Main * main) :
     connect(mEditors, SIGNAL(currentChanged(Document*)),
             mDocListDock->list(), SLOT(setCurrent(Document*)),
             Qt::QueuedConnection);
+    // Update actions on document change
+    connect(mEditors, SIGNAL(currentChanged(Document*)),
+            this, SLOT(onCurrentDocumentChanged(Document*)));
 
     createMenus();
 
@@ -130,6 +134,35 @@ void MainWindow::createMenus()
     act->setShortcut(s->shortcut("quit"));
     act->setStatusTip(tr("Quit SuperCollider IDE"));
     QObject::connect( act, SIGNAL(triggered()), this, SLOT(onQuit()) );
+
+    mActions[DocNew] = act = new QAction(
+        QIcon::fromTheme("document-new"), tr("&New"), this);
+    act->setShortcut(s->shortcut("newDocument"));
+    act->setStatusTip(tr("Create a new document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(newDocument()));
+
+    mActions[DocOpen] = act = new QAction(
+        QIcon::fromTheme("document-open"), tr("&Open..."), this);
+    act->setShortcut(s->shortcut("openDocument"));
+    act->setStatusTip(tr("Open an existing file"));
+    connect(act, SIGNAL(triggered()), this, SLOT(openDocument()));
+
+    mActions[DocSave] = act = new QAction(
+        QIcon::fromTheme("document-save"), tr("&Save"), this);
+    act->setShortcut(s->shortcut("saveDocument"));
+    act->setStatusTip(tr("Save the current document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(saveDocument()));
+
+    mActions[DocSaveAs] = act = new QAction(
+        QIcon::fromTheme("document-save-as"), tr("Save &As..."), this);
+    act->setStatusTip(tr("Save the current document into a different file"));
+    connect(act, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
+
+    mActions[DocClose] = act = new QAction(
+        QIcon::fromTheme("window-close"), tr("&Close"), this);
+    act->setShortcut(s->shortcut("closeDocument"));
+    act->setStatusTip(tr("Close the current document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(closeDocument()));
 
     // View
     mActions[ShowDocList] = act = new QAction(tr("&Documents"), this);
@@ -194,12 +227,12 @@ void MainWindow::createMenus()
     QMenu *submenu;
 
     menu = new QMenu(tr("&File"), this);
-    menu->addAction( mEditors->action(MultiEditor::DocNew) );
-    menu->addAction( mEditors->action(MultiEditor::DocOpen) );
-    menu->addAction( mEditors->action(MultiEditor::DocSave) );
-    menu->addAction( mEditors->action(MultiEditor::DocSaveAs) );
+    menu->addAction( mActions[DocNew] );
+    menu->addAction( mActions[DocOpen] );
+    menu->addAction( mActions[DocSave] );
+    menu->addAction( mActions[DocSaveAs] );
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::DocClose) );
+    menu->addAction( mActions[DocClose] );
     menu->addSeparator();
     menu->addAction( mActions[Quit] );
 
@@ -305,6 +338,13 @@ void MainWindow::onQuit()
     quit();
 }
 
+void MainWindow::onCurrentDocumentChanged( Document * doc )
+{
+    mActions[DocSave]->setEnabled(doc);
+    mActions[DocSaveAs]->setEnabled(doc);
+    mActions[DocClose]->setEnabled(doc);
+}
+
 void MainWindow::onInterpreterStateChanged( QProcess::ProcessState state )
 {
     QString text;
@@ -332,6 +372,76 @@ void MainWindow::onInterpreterStateChanged( QProcess::ProcessState state )
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(!quit()) event->ignore();
+}
+
+void MainWindow::newDocument()
+{
+    mMain->documentManager()->create();
+}
+
+void MainWindow::openDocument()
+{
+    QFileDialog dialog (this);
+
+    dialog.setFileMode( QFileDialog::ExistingFiles );
+
+    QStringList filters;
+    filters
+        << "All files(*)"
+        << "SuperCollider(*.scd *.sc)"
+        << "SCDoc(*.schelp)";
+    dialog.setNameFilters(filters);
+
+    if (dialog.exec())
+    {
+        QStringList filenames = dialog.selectedFiles();
+        foreach(QString filename, filenames)
+            mMain->documentManager()->open(filename);
+    }
+}
+
+void MainWindow::saveDocument()
+{
+    CodeEditor *editor = mEditors->currentEditor();
+    if(!editor) return;
+
+    Document *doc = editor->document();
+    Q_ASSERT(doc);
+
+    if (doc->fileName().isEmpty())
+        saveDocumentAs();
+    else
+        mMain->documentManager()->save( doc );
+}
+
+void MainWindow::saveDocumentAs()
+{
+    CodeEditor *editor = mEditors->currentEditor();
+    if(!editor) return;
+
+    QFileDialog dialog(this);
+
+    dialog.setAcceptMode( QFileDialog::AcceptSave );
+
+    QStringList filters;
+    filters
+        << "SuperCollider(*.scd *.sc)"
+        << "SCDoc(*.schelp)"
+        << "All files(*)";
+    dialog.setNameFilters(filters);
+
+    dialog.setDefaultSuffix("scd");
+
+    if (dialog.exec())
+        mMain->documentManager()->saveAs( editor->document(), dialog.selectedFiles()[0] );
+}
+
+void MainWindow::closeDocument()
+{
+    CodeEditor *editor = mEditors->currentEditor();
+    if(!editor) return;
+
+    mMain->documentManager()->close( editor->document() );
 }
 
 void MainWindow::toggleComandLineFocus()

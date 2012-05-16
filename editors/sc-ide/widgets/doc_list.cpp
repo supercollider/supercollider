@@ -41,9 +41,13 @@ DocumentList::DocumentList(DocumentManager *manager, QWidget * parent):
 
 void DocumentList::setCurrent( Document *doc )
 {
-    Item *itm = itemFor(doc);
-    if(itm)
-        setCurrentItem(itm);
+    if(!doc)
+        setCurrentRow(-1);
+    else {
+        Item *itm = itemFor(doc);
+        if(itm)
+            setCurrentItem(itm);
+    }
 }
 
 void DocumentList::onOpen( Document *doc, int )

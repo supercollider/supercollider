@@ -70,12 +70,12 @@ public:
 public Q_SLOTS:
 
     void create();
-    void open();
-    void open( const QString & filename, int initialCursorPosition = 0 );
+    // initialCursorPosition -1 means "don't change position if already open"
+    void open( const QString & filename, int initialCursorPosition = -1 );
     void close( Document *, bool * ok = 0 );
     void closeAll( bool * ok = 0 );
     void save( Document *, bool * ok = 0 );
-    void saveAs( Document *, bool * ok = 0 );
+    void saveAs( Document *, const QString & filename, bool * ok = 0 );
 
 Q_SIGNALS:
 
@@ -85,7 +85,7 @@ Q_SIGNALS:
     void showRequest( Document *, int pos = -1 );
 
 private:
-    bool saveAs( Document *, const QString & filename );
+    bool doSaveAs( Document *, const QString & filename );
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
 

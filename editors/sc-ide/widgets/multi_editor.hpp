@@ -51,14 +51,8 @@ class MultiEditor : public QWidget
 
 public:
 
-    enum ActionRole {
-        // File
-        DocNew = 0,
-        DocOpen,
-        DocSave,
-        DocSaveAs,
-        DocClose,
-
+    enum ActionRole
+    {
         // Edit
         Undo,
         Redo,
@@ -98,11 +92,6 @@ Q_SIGNALS:
 
 public Q_SLOTS:
 
-    void newDocument();
-    void openDocument();
-    void saveDocument();
-    void saveDocumentAs();
-    void closeDocument();
     void setCurrent( Document * );
 
     void showFindPanel();

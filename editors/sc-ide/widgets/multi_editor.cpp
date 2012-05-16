@@ -88,37 +88,6 @@ void MultiEditor::createActions()
 
     QAction * act;
 
-    // File
-
-    mActions[DocNew] = act = new QAction(
-        QIcon::fromTheme("document-new"), tr("&New"), this);
-    act->setShortcut(s->shortcut("newDocument"));
-    act->setStatusTip(tr("Create a new document"));
-    connect(act, SIGNAL(triggered()), this, SLOT(newDocument()));
-
-    mActions[DocOpen] = act = new QAction(
-        QIcon::fromTheme("document-open"), tr("&Open..."), this);
-    act->setShortcut(s->shortcut("openDocument"));
-    act->setStatusTip(tr("Open an existing file"));
-    connect(act, SIGNAL(triggered()), this, SLOT(openDocument()));
-
-    mActions[DocSave] = act = new QAction(
-        QIcon::fromTheme("document-save"), tr("&Save"), this);
-    act->setShortcut(s->shortcut("saveDocument"));
-    act->setStatusTip(tr("Save the current document"));
-    connect(act, SIGNAL(triggered()), this, SLOT(saveDocument()));
-
-    mActions[DocSaveAs] = act = new QAction(
-        QIcon::fromTheme("document-save-as"), tr("Save &As..."), this);
-    act->setStatusTip(tr("Save the current document into a different file"));
-    connect(act, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
-
-    mActions[DocClose] = act = new QAction(
-        QIcon::fromTheme("window-close"), tr("&Close"), this);
-    act->setShortcut(s->shortcut("closeDocument"));
-    act->setStatusTip(tr("Close the current document"));
-    connect(act, SIGNAL(triggered()), this, SLOT(closeDocument()));
-
     // Edit
 
     mActions[Undo] = act = new QAction(
@@ -212,9 +181,6 @@ void MultiEditor::updateActions()
     CodeEditor *editor = currentEditor();
     QTextDocument *doc = editor ? editor->document()->textDocument() : 0;
 
-    mActions[DocSave]->setEnabled( doc );
-    mActions[DocSaveAs]->setEnabled( doc );
-    mActions[DocClose]->setEnabled( doc );
     mActions[Undo]->setEnabled( doc && doc->isUndoAvailable() );
     mActions[Redo]->setEnabled( doc && doc->isRedoAvailable() );
     mActions[Copy]->setEnabled( editor && editor->textCursor().hasSelection() );
@@ -241,40 +207,6 @@ void MultiEditor::applySettings( Settings::Manager *s )
         if(!editor) continue;
         editor->applySettings(s);
     }
-}
-
-void MultiEditor::newDocument()
-{
-    mDocManager->create();
-}
-
-void MultiEditor::openDocument()
-{
-    mDocManager->open();
-}
-
-void MultiEditor::saveDocument()
-{
-    CodeEditor *editor = currentEditor();
-    if(!editor) return;
-
-    mDocManager->save( editor->document() );
-}
-
-void MultiEditor::saveDocumentAs()
-{
-    CodeEditor *editor = currentEditor();
-    if(!editor) return;
-
-    mDocManager->saveAs( editor->document() );
-}
-
-void MultiEditor::closeDocument()
-{
-    CodeEditor *editor = currentEditor();
-    if(!editor) return;
-
-    mDocManager->close(editor->document());
 }
 
 void MultiEditor::setCurrent( Document *doc )
@@ -374,8 +306,7 @@ void MultiEditor::onCurrentChanged( int index )
 
     updateActions();
 
-    if(editor)
-        Q_EMIT( currentChanged(editor->document()) );
+    Q_EMIT( currentChanged( editor ? editor->document() : 0 ) );
 }
 
 void MultiEditor::onModificationChanged( QWidget *w )
