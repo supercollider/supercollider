@@ -68,9 +68,6 @@ private:
             mDoc(doc)
         {
             setText(doc->title());
-            QTextDocument *tdoc = doc->textDocument();
-            if(tdoc->isModified())
-                setIcon( QIcon::fromTheme("document-save") );
         }
 
         Document *mDoc;
@@ -80,6 +77,7 @@ private:
     Item *itemFor( Document * );
     Item *itemFor( QListWidgetItem * );
     QSignalMapper mModificationMapper;
+    QIcon mDocModifiedIcon;
 };
 
 class DocumentsDock : public QDockWidget
