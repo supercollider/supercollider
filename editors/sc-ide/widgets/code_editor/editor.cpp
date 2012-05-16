@@ -27,6 +27,7 @@
 #include <QPaintEvent>
 #include <QTextBlock>
 #include <QKeyEvent>
+#include <QScrollBar>
 
 namespace ScIDE
 {
@@ -448,6 +449,21 @@ QTextCursor CodeEditor::currentRegion()
     }
 
     return QTextCursor();
+}
+
+void CodeEditor::showPosition( int pos )
+{
+    if (pos < 0) return;
+
+    QTextDocument *doc = QPlainTextEdit::document();
+    if (!doc) return;
+
+    int lineNumber = doc->findBlock(pos).firstLineNumber();
+    verticalScrollBar()->setValue(lineNumber);
+
+    QTextCursor cursor(doc);
+    cursor.setPosition(pos);
+    setTextCursor(cursor);
 }
 
 void CodeEditor::clearSearchHighlighting()

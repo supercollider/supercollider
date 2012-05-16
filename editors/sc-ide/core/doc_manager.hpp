@@ -46,8 +46,8 @@ public:
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
-    QString fileName() { return mFileName; }
-    QString title() { return mTitle; }
+    const QString & fileName() { return mFileName; }
+    const QString & title() { return mTitle; }
 
 private:
     QByteArray mId;
@@ -82,9 +82,12 @@ Q_SIGNALS:
     void opened( Document *, int );
     void closed( Document * );
     void saved( Document * );
+    void showRequest( Document *, int pos = -1 );
 
 private:
     bool saveAs( Document *, const QString & filename );
+
+    typedef QHash<QByteArray, Document*>::iterator DocIterator;
 
     QHash<QByteArray, Document*> mDocHash;
 };
