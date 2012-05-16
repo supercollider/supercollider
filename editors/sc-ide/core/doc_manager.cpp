@@ -24,7 +24,6 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
-#include <QFileDialog>
 #include <QMessageBox>
 
 using namespace ScIDE;
@@ -34,14 +33,6 @@ void DocumentManager::create()
     Document *doc = new Document();
     mDocHash.insert( doc->id(), doc );
     Q_EMIT( opened(doc, 0) );
-}
-
-void DocumentManager::open()
-{
-    QString filename = QFileDialog::getOpenFileName( NULL, "Open File" );
-    if(filename.isEmpty()) return;
-
-    open(filename);
 }
 
 void DocumentManager::open( const QString & filename, int initialCursorPosition )
@@ -133,27 +124,22 @@ void DocumentManager::save( Document *doc, bool * p_ok )
 {
     Q_ASSERT(doc);
 
-    bool ok = true;
+    bool ok = false;
 
-    if(doc->mFileName.isEmpty())
-        saveAs(doc, &ok);
-    else if(doc->textDocument()->isModified())
-        ok = saveAs(doc, doc->mFileName);
+    if (!doc->mFileName.isEmpty())
+        ok = doSaveAs( doc, doc->mFileName );
 
     if(p_ok) *p_ok = ok;
 }
 
-void DocumentManager::saveAs( Document *doc, bool * p_ok )
+void DocumentManager::saveAs( Document *doc, const QString & filename, bool * p_ok )
 {
     Q_ASSERT(doc);
-    bool ok = false;
-    QString filename = QFileDialog::getSaveFileName( NULL, "Save Document" );
-    if(!filename.isEmpty())
-        ok = saveAs(doc, filename);
+    bool ok = doSaveAs( doc, filename );
     if(p_ok) *p_ok = ok;
 }
 
-bool DocumentManager::saveAs( Document *doc, const QString & filename )
+bool DocumentManager::doSaveAs( Document *doc, const QString & filename )
 {
     Q_ASSERT(doc);
 

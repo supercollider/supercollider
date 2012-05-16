@@ -34,6 +34,7 @@ class MultiEditor;
 class PostDock;
 class DocumentsDock;
 class StatusLabel;
+class Document;
 
 class MainWindow : public QMainWindow
 {
@@ -44,6 +45,11 @@ public:
     enum ActionRole {
         // File
         Quit = 0,
+        DocNew,
+        DocOpen,
+        DocSave,
+        DocSaveAs,
+        DocClose,
 
         // View
         ShowDocList,
@@ -73,6 +79,11 @@ public:
 public Q_SLOTS:
     void toggleComandLineFocus();
     void showSettings();
+    void newDocument();
+    void openDocument();
+    void saveDocument();
+    void saveDocumentAs();
+    void closeDocument();
 
 signals:
     void evaluateCode( const QString &, bool silent = true );
@@ -84,6 +95,7 @@ private Q_SLOTS:
     void helpForSelection();
     void onInterpreterStateChanged( QProcess::ProcessState );
     void onQuit();
+    void onCurrentDocumentChanged( Document * );
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
