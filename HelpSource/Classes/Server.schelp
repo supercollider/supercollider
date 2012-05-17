@@ -1,7 +1,7 @@
 class:: Server
 summary:: Object representing an sc-server application
 categories:: Server>Abstractions
-related:: Classes/ServerOptions
+related:: Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference
 
 description::
 
