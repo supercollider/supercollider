@@ -52,6 +52,7 @@ public:
         DocSaveAs,
         DocClose,
         DocReload,
+        ClearRecentDocs,
 
         // View
         ShowDocList,
@@ -107,6 +108,8 @@ private Q_SLOTS:
     void onCurrentDocumentChanged( Document * );
     void onDocumentChangedExternally( Document * );
     void onDocDialogFinished();
+    void updateRecentDocsMenu();
+    void onRecentDocAction( QAction * );
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -118,6 +121,7 @@ private:
     Main *mMain;
 
     QAction * mActions[ActionCount];
+    QMenu * mRecentDocsMenu;
 
     MultiEditor *mEditors;
 

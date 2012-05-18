@@ -58,16 +58,21 @@ int main( int argc, char *argv[] )
     return app.exec();
 }
 
-Main::Main(void) :
-    mDocManager( new DocumentManager(this) ),
-    mSCProcess( new SCProcess(this) )
+static QString getSettingsFile()
 {
     char config_dir[PATH_MAX];
     bool configured = false;
     sc_GetUserConfigDirectory(config_dir, PATH_MAX);
-    QString settingsFile = QString(config_dir) + SC_PATH_DELIMITER + "sc_ide_conf.yaml";
+    return QString(config_dir) + SC_PATH_DELIMITER + "sc_ide_conf.yaml";
+}
 
-    mSettings = new Settings::Manager( settingsFile, this );
+// NOTE: mSettings must be the first to initialize,
+// because other members use it!
 
+Main::Main(void) :
+    mSettings( new Settings::Manager( getSettingsFile(), this ) ),
+    mDocManager( new DocumentManager(this) ),
+    mSCProcess( new SCProcess(this) )
+{
     new SyntaxHighlighterGlobals(this);
 }
