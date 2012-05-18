@@ -82,6 +82,7 @@ void Manager::initDefaults()
     setDefault("newDocument", tr("Ctrl+N", "New document"));
     setDefault("openDocument", tr("Ctrl+O", "Open document"));
     setDefault("saveDocument", tr("Ctrl+S", "Save document"));
+    setDefault("reloadDocument", tr("F5", "Reload document"));
     setDefault("closeDocument", tr("Ctrl+W", "Close document"));
     setDefault("undo", tr("Ctrl+Z", "Undo"));
     setDefault("redo", tr("Ctrl+Shift+Z", "Redo"));

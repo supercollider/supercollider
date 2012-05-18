@@ -16,6 +16,7 @@ set ( ide_moc_hdr
     widgets/multi_editor.hpp
     widgets/doc_list.hpp
     widgets/cmd_line.hpp
+    widgets/documents_dialog.hpp
     widgets/code_editor/editor.hpp
     widgets/code_editor/highlighter.hpp
     widgets/code_editor/overlay.hpp
@@ -39,6 +40,7 @@ set ( ide_src
     widgets/post_window.cpp
     widgets/doc_list.cpp
     widgets/cmd_line.cpp
+    widgets/documents_dialog.cpp
     widgets/code_editor/editor.cpp
     widgets/code_editor/highlighter.cpp
     widgets/code_editor/overlay.cpp

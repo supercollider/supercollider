@@ -35,6 +35,7 @@ class PostDock;
 class DocumentsDock;
 class StatusLabel;
 class Document;
+class DocumentsDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -50,6 +51,7 @@ public:
         DocSave,
         DocSaveAs,
         DocClose,
+        DocReload,
 
         // View
         ShowDocList,
@@ -76,6 +78,12 @@ public:
 
     bool quit();
 
+    static MainWindow *instance() { return mInstance; }
+
+    static bool close( Document * );
+    static bool save( Document *, bool forceChoose = false );
+    static bool reload( Document * );
+
 public Q_SLOTS:
     void toggleComandLineFocus();
     void showSettings();
@@ -83,6 +91,7 @@ public Q_SLOTS:
     void openDocument();
     void saveDocument();
     void saveDocumentAs();
+    void reloadDocument();
     void closeDocument();
 
 signals:
@@ -96,6 +105,8 @@ private Q_SLOTS:
     void onInterpreterStateChanged( QProcess::ProcessState );
     void onQuit();
     void onCurrentDocumentChanged( Document * );
+    void onDocumentChangedExternally( Document * );
+    void onDocDialogFinished();
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -119,6 +130,9 @@ private:
     DocumentsDock *mDocListDock;
 
     QSignalMapper mCodeEvalMapper;
+    DocumentsDialog * mDocDialog;
+
+    static MainWindow *mInstance;
 };
 
 class StatusLabel : public QLabel
