@@ -19,12 +19,14 @@
 */
 
 #include "post_window.hpp"
+#include "../core/main.hpp"
 
 #include <QPointer>
 #include <QToolBar>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QScrollBar>
+#include <QShortcut>
 
 namespace ScIDE {
 
@@ -40,6 +42,11 @@ PostWindow::PostWindow(QWidget* parent):
     f.setFamily("monospace");
     f.setStyleHint(QFont::TypeWriter);
     setFont(f);
+
+    QAction *copyAction = new QAction(tr("Copy"), this);
+    connect(copyAction, SIGNAL(triggered()), this, SLOT(copy()));
+    copyAction->setShortcut( Main::instance()->settings()->shortcut("IDE/shortcuts/copy") );
+    addAction(copyAction);
 
     mAutoScrollAction = new QAction(tr("Auto Scroll"), this);
     mAutoScrollAction->setCheckable(true);
