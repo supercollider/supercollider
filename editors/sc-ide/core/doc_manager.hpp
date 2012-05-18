@@ -25,6 +25,8 @@
 #include <QTextDocument>
 #include <QUuid>
 #include <QHash>
+#include <QFileSystemWatcher>
+#include <QDateTime>
 
 namespace ScIDE
 {
@@ -54,6 +56,7 @@ private:
     QTextDocument *mDoc;
     QString mFileName;
     QString mTitle;
+    QDateTime mSaveTime;
 };
 
 class DocumentManager : public QObject
@@ -62,20 +65,18 @@ class DocumentManager : public QObject
 
 public:
 
-    DocumentManager( QObject *parent = 0 ) : QObject(parent) {}
+    DocumentManager( QObject *parent = 0 );
     QList<Document*> documents() {
         return mDocHash.values();
     }
 
-public Q_SLOTS:
-
     void create();
     // initialCursorPosition -1 means "don't change position if already open"
     void open( const QString & filename, int initialCursorPosition = -1 );
-    void close( Document *, bool * ok = 0 );
-    void closeAll( bool * ok = 0 );
-    void save( Document *, bool * ok = 0 );
-    void saveAs( Document *, const QString & filename, bool * ok = 0 );
+    void close( Document * );
+    bool save( Document * );
+    bool saveAs( Document *, const QString & filename );
+    bool reload( Document * );
 
 Q_SIGNALS:
 
@@ -83,6 +84,10 @@ Q_SIGNALS:
     void closed( Document * );
     void saved( Document * );
     void showRequest( Document *, int pos = -1 );
+    void changedExternally( Document * );
+
+private slots:
+    void onFileChanged( const QString & path );
 
 private:
     bool doSaveAs( Document *, const QString & filename );
@@ -90,6 +95,7 @@ private:
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
 
     QHash<QByteArray, Document*> mDocHash;
+    QFileSystemWatcher mFsWatcher;
 };
 
 } // namespace ScIDE

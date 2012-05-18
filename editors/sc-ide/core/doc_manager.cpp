@@ -28,6 +28,12 @@
 
 using namespace ScIDE;
 
+DocumentManager::DocumentManager( QObject *parent ):
+    QObject(parent)
+{
+    connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
+}
+
 void DocumentManager::create()
 {
     Document *doc = new Document();
@@ -56,9 +62,7 @@ void DocumentManager::open( const QString & filename, int initialCursorPosition 
         qWarning() << "DocumentManager: the file" << filename << "could not be opened for reading.";
         return;
     }
-
     QByteArray bytes( file.readAll() );
-
     file.close();
 
     Document *doc = new Document();
@@ -69,83 +73,74 @@ void DocumentManager::open( const QString & filename, int initialCursorPosition 
 
     mDocHash.insert( doc->id(), doc );
 
+    mFsWatcher.addPath(filename);
+
     Q_EMIT( opened(doc, initialCursorPosition) );
 }
 
-void DocumentManager::close( Document *doc, bool * p_ok )
+bool DocumentManager::reload( Document *doc )
 {
     Q_ASSERT(doc);
 
-    bool ok = true;
+    if (doc->mFileName.isEmpty())
+        return false;
 
-    if(doc->textDocument()->isModified()) {
-        QMessageBox::StandardButton ret;
-        ret = QMessageBox::warning(
-            NULL,
-            tr("SuperCollider IDE"),
-            tr("There are unsaved changes to document '%1'.\n"
-                "Do you want to save the document?").arg(doc->title()),
-            QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel
-        );
-        if( ret == QMessageBox::Save ) {
-            save(doc, &ok);
-        }
-        else if( ret == QMessageBox::Cancel )
-            ok = false;
+    QFile file(doc->mFileName);
+    if(!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "DocumentManager: the file" << doc->mFileName << "could not be opened for reading.";
+        return false;
     }
+    QByteArray bytes( file.readAll() );
+    file.close();
 
-    if( ok && mDocHash.remove(doc->id()) == 0 ) {
+    doc->mDoc->setPlainText( QString::fromUtf8( bytes.data(), bytes.size() ) );
+    doc->mDoc->setModified(false);
+
+    if (!mFsWatcher.files().contains(doc->mFileName))
+        mFsWatcher.addPath(doc->mFileName);
+
+    return true;
+}
+
+void DocumentManager::close( Document *doc )
+{
+    Q_ASSERT(doc);
+
+    if( mDocHash.remove(doc->id()) == 0 ) {
         qWarning("DocumentManager: trying to close an unmanaged document.");
-        ok = false;
+        return;
     }
-
-    if(ok) {
-        Q_EMIT( closed(doc) );
-        delete doc;
-    }
-
-    if(p_ok) *p_ok = ok;
-}
-
-void DocumentManager::closeAll( bool * p_ok )
-{
-    bool ok = true;
-    QHash<QByteArray, Document*>::iterator it;
-    while((it = mDocHash.begin()) != mDocHash.end())
-    {
-        Document *doc = it.value();
-        close(doc, &ok);
-        if(!ok) break;
-    }
-    if(p_ok) *p_ok = ok;
-}
-
-void DocumentManager::save( Document *doc, bool * p_ok )
-{
-    Q_ASSERT(doc);
-
-    bool ok = false;
 
     if (!doc->mFileName.isEmpty())
-        ok = doSaveAs( doc, doc->mFileName );
+        mFsWatcher.removePath(doc->mFileName);
 
-    if(p_ok) *p_ok = ok;
+    Q_EMIT( closed(doc) );
+    delete doc;
 }
 
-void DocumentManager::saveAs( Document *doc, const QString & filename, bool * p_ok )
-{
-    Q_ASSERT(doc);
-    bool ok = doSaveAs( doc, filename );
-    if(p_ok) *p_ok = ok;
-}
-
-bool DocumentManager::doSaveAs( Document *doc, const QString & filename )
+bool DocumentManager::save( Document *doc )
 {
     Q_ASSERT(doc);
 
-    QFile file(filename);
+    if (doc->mFileName.isEmpty())
+        return false;
+
+    return doSaveAs( doc, doc->mFileName );
+}
+
+bool DocumentManager::saveAs( Document *doc, const QString & filename )
+{
+    Q_ASSERT(doc);
+    return doSaveAs( doc, filename );
+}
+
+bool DocumentManager::doSaveAs( Document *doc, const QString & fileName )
+{
+    Q_ASSERT(doc);
+
+    QFile file(fileName);
     if(!file.open(QIODevice::WriteOnly)) {
-        qWarning() << "DocumentManager: the file" << filename << "could not be opened for writing.";
+        qWarning() << "DocumentManager: the file" << fileName << "could not be opened for writing.";
         return false;
     }
 
@@ -153,11 +148,33 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & filename )
     file.write(str.toUtf8());
     file.close();
 
-    doc->mFileName = filename;
-    doc->mTitle = QDir(filename).dirName();
+    doc->mFileName = fileName;
+    doc->mTitle = QDir(fileName).dirName();
     doc->mDoc->setModified(false);
+    QFileInfo finfo(file);
+    doc->mSaveTime = finfo.lastModified();
+
+    // Always try to start watching, because the file could have been removed:
+    if (!mFsWatcher.files().contains(fileName))
+        mFsWatcher.addPath(fileName);
 
     Q_EMIT(saved(doc));
 
     return true;
+}
+
+void DocumentManager::onFileChanged( const QString & path )
+{
+    DocIterator it;
+    for( it = mDocHash.begin(); it != mDocHash.end(); ++it )
+    {
+        Document *doc = it.value();
+        if (doc->mFileName == path) {
+            QFileInfo info(doc->mFileName);
+            if (doc->mSaveTime < info.lastModified()) {
+                doc->mDoc->setModified(true);
+                emit changedExternally(doc);
+            }
+        }
+    }
 }

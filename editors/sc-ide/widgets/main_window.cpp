@@ -27,6 +27,7 @@
 #include "doc_list.hpp"
 #include "post_window.hpp"
 #include "settings/dialog.hpp"
+#include "documents_dialog.hpp"
 
 #include <QAction>
 #include <QShortcut>
@@ -40,9 +41,15 @@
 
 namespace ScIDE {
 
+MainWindow * MainWindow::mInstance = 0;
+
 MainWindow::MainWindow(Main * main) :
-    mMain(main)
+    mMain(main),
+    mDocDialog(0)
 {
+    Q_ASSERT(!mInstance);
+    mInstance = this;
+
     setCorner( Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
 
     // Construct status bar:
@@ -108,6 +115,9 @@ MainWindow::MainWindow(Main * main) :
     connect(mEditors, SIGNAL(currentChanged(Document*)),
             this, SLOT(onCurrentDocumentChanged(Document*)));
 
+    connect(mMain->documentManager(), SIGNAL(changedExternally(Document*)),
+            this, SLOT(onDocumentChangedExternally(Document*)));
+
     createMenus();
 
     QIcon icon;
@@ -163,6 +173,12 @@ void MainWindow::createMenus()
     act->setShortcut(s->shortcut("closeDocument"));
     act->setStatusTip(tr("Close the current document"));
     connect(act, SIGNAL(triggered()), this, SLOT(closeDocument()));
+
+    mActions[DocReload] = act = new QAction(
+        QIcon::fromTheme("view-refresh"), tr("&Reload"), this);
+    act->setShortcut(s->shortcut("reloadDocument"));
+    act->setStatusTip(tr("Reload the current document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(reloadDocument()));
 
     // View
     mActions[ShowDocList] = act = new QAction(tr("&Documents"), this);
@@ -231,6 +247,8 @@ void MainWindow::createMenus()
     menu->addAction( mActions[DocOpen] );
     menu->addAction( mActions[DocSave] );
     menu->addAction( mActions[DocSaveAs] );
+    menu->addSeparator();
+    menu->addAction( mActions[DocReload] );
     menu->addSeparator();
     menu->addAction( mActions[DocClose] );
     menu->addSeparator();
@@ -306,23 +324,16 @@ bool MainWindow::quit()
     bool ok = true;
 
     QList<Document*> docs = mMain->documentManager()->documents();
-    Q_FOREACH(Document *doc, docs) {
-        if(doc->textDocument()->isModified()) {
-            ok = false;
-            break;
-        }
-    }
+    QList<Document*> unsavedDocs;
+    foreach(Document* doc, docs)
+        if(doc->textDocument()->isModified())
+            unsavedDocs.append(doc);
 
-    if(!ok) {
-        QMessageBox::StandardButton ret;
-        ret = QMessageBox::warning(
-            NULL,
-            tr("SuperCollider IDE"),
-            tr("There are unsaved changes to documents.\n"
-                "Do you want to quit without saving?"),
-            QMessageBox::Ok | QMessageBox::Cancel
-        );
-        if( ret == QMessageBox::Cancel )
+    if (unsavedDocs.count())
+    {
+        DocumentsDialog dialog(unsavedDocs, DocumentsDialog::Quit, this);
+
+        if (!dialog.exec())
             return false;
     }
 
@@ -343,6 +354,23 @@ void MainWindow::onCurrentDocumentChanged( Document * doc )
     mActions[DocSave]->setEnabled(doc);
     mActions[DocSaveAs]->setEnabled(doc);
     mActions[DocClose]->setEnabled(doc);
+}
+
+void MainWindow::onDocumentChangedExternally( Document *doc )
+{
+    if (mDocDialog)
+        return;
+
+    mDocDialog = new DocumentsDialog(DocumentsDialog::ExternalChange, this);
+    mDocDialog->addDocument(doc);
+    connect(mDocDialog, SIGNAL(finished(int)), this, SLOT(onDocDialogFinished()));
+    mDocDialog->open();
+}
+
+void MainWindow::onDocDialogFinished()
+{
+    mDocDialog->deleteLater();
+    mDocDialog = 0;
 }
 
 void MainWindow::onInterpreterStateChanged( QProcess::ProcessState state )
@@ -374,6 +402,85 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if(!quit()) event->ignore();
 }
 
+bool MainWindow::close( Document *doc )
+{
+    if (doc->textDocument()->isModified())
+    {
+        QMessageBox::StandardButton ret;
+        ret = QMessageBox::warning(
+            mInstance,
+            tr("SuperCollider IDE"),
+            tr("There are unsaved changes in document '%1'.\n\n"
+                "Do you want to save it?").arg(doc->title()),
+            QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
+            QMessageBox::Save // the default
+        );
+        switch (ret)
+        {
+        case QMessageBox::Cancel:
+            return false;
+        case QMessageBox::Save:
+            if (!MainWindow::save(doc))
+                return false;
+            break;
+        }
+    }
+
+    Main::instance()->documentManager()->close(doc);
+    return true;
+}
+
+bool MainWindow::reload( Document *doc )
+{
+    if (doc->fileName().isEmpty())
+        return false;
+
+    if (doc->textDocument()->isModified())
+    {
+        QMessageBox::StandardButton ret;
+        ret = QMessageBox::warning(
+            mInstance,
+            tr("SuperCollider IDE"),
+            tr("There are unsaved changes in document '%1'.\n\n"
+                "Do you want to reload it?").arg(doc->title()),
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No // the default
+        );
+        if (ret == QMessageBox::No)
+            return false;
+    }
+
+    return Main::instance()->documentManager()->reload(doc);
+}
+
+bool MainWindow::save( Document *doc, bool forceChoose )
+{
+    DocumentManager *mng = Main::instance()->documentManager();
+    QString fileName = doc->fileName();
+    if (forceChoose || fileName.isEmpty())
+    {
+        QFileDialog dialog(mInstance);
+
+        dialog.setAcceptMode( QFileDialog::AcceptSave );
+
+        QStringList filters;
+        filters
+            << "SuperCollider(*.scd *.sc)"
+            << "SCDoc(*.schelp)"
+            << "All files(*)";
+        dialog.setNameFilters(filters);
+
+        dialog.setDefaultSuffix("scd");
+
+        if (dialog.exec() == QDialog::Accepted)
+            return mng->saveAs(doc, dialog.selectedFiles()[0]);
+        else
+            return false;
+    }
+    else
+        return mng->save(doc);
+}
+
 void MainWindow::newDocument()
 {
     mMain->documentManager()->create();
@@ -381,7 +488,9 @@ void MainWindow::newDocument()
 
 void MainWindow::openDocument()
 {
-    QFileDialog dialog (this);
+    QFileDialog dialog (this, Qt::Dialog);
+    dialog.setModal(true);
+    dialog.setWindowModality(Qt::ApplicationModal);
 
     dialog.setFileMode( QFileDialog::ExistingFiles );
 
@@ -408,10 +517,7 @@ void MainWindow::saveDocument()
     Document *doc = editor->document();
     Q_ASSERT(doc);
 
-    if (doc->fileName().isEmpty())
-        saveDocumentAs();
-    else
-        mMain->documentManager()->save( doc );
+    MainWindow::save(doc);
 }
 
 void MainWindow::saveDocumentAs()
@@ -419,21 +525,19 @@ void MainWindow::saveDocumentAs()
     CodeEditor *editor = mEditors->currentEditor();
     if(!editor) return;
 
-    QFileDialog dialog(this);
+    Document *doc = editor->document();
+    Q_ASSERT(doc);
 
-    dialog.setAcceptMode( QFileDialog::AcceptSave );
+    MainWindow::save(doc, true);
+}
 
-    QStringList filters;
-    filters
-        << "SuperCollider(*.scd *.sc)"
-        << "SCDoc(*.schelp)"
-        << "All files(*)";
-    dialog.setNameFilters(filters);
+void MainWindow::reloadDocument()
+{
+    CodeEditor *editor = mEditors->currentEditor();
+    if(!editor) return;
 
-    dialog.setDefaultSuffix("scd");
-
-    if (dialog.exec())
-        mMain->documentManager()->saveAs( editor->document(), dialog.selectedFiles()[0] );
+    Q_ASSERT(editor->document());
+    MainWindow::reload(editor->document());
 }
 
 void MainWindow::closeDocument()
@@ -441,7 +545,8 @@ void MainWindow::closeDocument()
     CodeEditor *editor = mEditors->currentEditor();
     if(!editor) return;
 
-    mMain->documentManager()->close( editor->document() );
+    Q_ASSERT(editor->document());
+    MainWindow::close( editor->document() );
 }
 
 void MainWindow::toggleComandLineFocus()
