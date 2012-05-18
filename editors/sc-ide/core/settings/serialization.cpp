@@ -100,8 +100,7 @@ static void parseSequence( const YAML::Node &node, const QString &parentKey, QSe
 {
     using namespace YAML;
 
-    QVector<QVariant> values;
-    values.reserve(node.size());
+    QStringList values;
 
     YAML::Iterator it;
     for(it = node.begin(); it != node.end(); ++it) {
@@ -109,14 +108,14 @@ static void parseSequence( const YAML::Node &node, const QString &parentKey, QSe
         switch (item.Type())
         {
             case NodeType::Null:
-                values << QVariant();
+                values << QString();
                 break;
 
             case NodeType::Scalar:
             {
                 std::string val;
                 item >> val;
-                values << QVariant(val.c_str());
+                values << QString(val.c_str());
                 break;
             }
 
@@ -126,7 +125,7 @@ static void parseSequence( const YAML::Node &node, const QString &parentKey, QSe
         }
     }
 
-    map.insert( parentKey, QVariant::fromValue<QVector<QVariant> >(values) );
+    map.insert( parentKey, QVariant::fromValue<QStringList>(values) );
 }
 
 static void parseNode( const YAML::Node &node, const QString &parentKey, QSettings::SettingsMap &map )
@@ -219,21 +218,22 @@ static void writeValue( const QVariant &var, YAML::Emitter &out )
         out << YAML::Null;
         break;
     }
+    case QVariant::StringList:
+    {
+        out << YAML::BeginSeq;
+
+        QStringList list = var.value<QStringList>();
+        Q_FOREACH(const QString & str, list)
+            out << str.toStdString();
+
+        out << YAML::EndSeq;
+        break;
+    }
     case QVariant::UserType:
     {
         int utype = var.userType();
 
-        if (utype == qMetaTypeId<QVector<QVariant> >())
-        {
-            out << YAML::BeginSeq;
-
-            QVector<QVariant> vec = var.value<QVector<QVariant> >();
-            Q_FOREACH(QVariant var, vec)
-                out << var.toString().toStdString();
-
-            out << YAML::EndSeq;
-        }
-        else if (utype == qMetaTypeId<QTextCharFormat>())
+        if (utype == qMetaTypeId<QTextCharFormat>())
         {
             writeTextFormat( var.value<QTextCharFormat>(), out );
         }
