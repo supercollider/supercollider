@@ -24,8 +24,14 @@ Note:: The Buffer's numFrames must be a power of two and is recommended to be at
 argument:: loop
 If set to 1, the soundfile will loop.
 
+Note:: If the buffer has a larger number of frames than the sound file there will be a noticeable gap between the first and the following loop iterations. In that case chose a smaller buffer size or use link::Classes/PlayBuf##PlayBuf:: instead::
+
 discussion::
 This UGen will set the link::Classes/Done##'done' flag:: when finished playing.
+
+
+
+
 
 instancemethods::
 private:: init
