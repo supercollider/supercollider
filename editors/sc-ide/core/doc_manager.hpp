@@ -27,10 +27,14 @@
 #include <QHash>
 #include <QFileSystemWatcher>
 #include <QDateTime>
+#include <QStringList>
 
 namespace ScIDE
 {
 
+namespace Settings { class Manager; }
+
+class Main;
 class DocumentManager;
 
 class Document : public QObject
@@ -65,18 +69,24 @@ class DocumentManager : public QObject
 
 public:
 
-    DocumentManager( QObject *parent = 0 );
+    DocumentManager( Main * );
     QList<Document*> documents() {
         return mDocHash.values();
     }
 
     void create();
-    // initialCursorPosition -1 means "don't change position if already open"
-    void open( const QString & filename, int initialCursorPosition = -1 );
     void close( Document * );
     bool save( Document * );
     bool saveAs( Document *, const QString & filename );
     bool reload( Document * );
+    const QStringList & recents() const { return mRecent; }
+
+public slots:
+    // initialCursorPosition -1 means "don't change position if already open"
+    void open( const QString & filename, int initialCursorPosition = -1 );
+    void clearRecents();
+    void applySettings( Settings::Manager * );
+    void storeSettings( Settings::Manager * );
 
 Q_SIGNALS:
 
@@ -85,17 +95,23 @@ Q_SIGNALS:
     void saved( Document * );
     void showRequest( Document *, int pos = -1 );
     void changedExternally( Document * );
+    void recentsChanged();
 
 private slots:
     void onFileChanged( const QString & path );
 
 private:
     bool doSaveAs( Document *, const QString & filename );
+    void addToRecent( Document * );
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
 
     QHash<QByteArray, Document*> mDocHash;
     QFileSystemWatcher mFsWatcher;
+
+    QStringList mRecent;
+
+    static const int mMaxRecent = 10;
 };
 
 } // namespace ScIDE

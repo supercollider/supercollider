@@ -114,11 +114,17 @@ MainWindow::MainWindow(Main * main) :
     // Update actions on document change
     connect(mEditors, SIGNAL(currentChanged(Document*)),
             this, SLOT(onCurrentDocumentChanged(Document*)));
-
-    connect(mMain->documentManager(), SIGNAL(changedExternally(Document*)),
+    // Document management
+    DocumentManager *docMng = main->documentManager();
+    connect(docMng, SIGNAL(changedExternally(Document*)),
             this, SLOT(onDocumentChangedExternally(Document*)));
+    connect(docMng, SIGNAL(recentsChanged()),
+            this, SLOT(updateRecentDocsMenu()));
 
     createMenus();
+
+    // Initialize recent documents menu
+    updateRecentDocsMenu();
 
     QIcon icon;
     icon.addFile(":/icons/sc-cube-128");
@@ -179,6 +185,10 @@ void MainWindow::createMenus()
     act->setShortcut(s->shortcut("reloadDocument"));
     act->setStatusTip(tr("Reload the current document"));
     connect(act, SIGNAL(triggered()), this, SLOT(reloadDocument()));
+
+    mActions[ClearRecentDocs] = act = new QAction(tr("Clear", "Clear recent documents"), this);
+    connect(act, SIGNAL(triggered()),
+            Main::instance()->documentManager(), SLOT(clearRecents()));
 
     // View
     mActions[ShowDocList] = act = new QAction(tr("&Documents"), this);
@@ -245,6 +255,9 @@ void MainWindow::createMenus()
     menu = new QMenu(tr("&File"), this);
     menu->addAction( mActions[DocNew] );
     menu->addAction( mActions[DocOpen] );
+    mRecentDocsMenu = menu->addMenu(tr("Open Recent", "Open a recent document"));
+    connect(mRecentDocsMenu, SIGNAL(triggered(QAction*)),
+            this, SLOT(onRecentDocAction(QAction*)));
     menu->addAction( mActions[DocSave] );
     menu->addAction( mActions[DocSaveAs] );
     menu->addSeparator();
@@ -371,6 +384,26 @@ void MainWindow::onDocDialogFinished()
 {
     mDocDialog->deleteLater();
     mDocDialog = 0;
+}
+
+void MainWindow::updateRecentDocsMenu()
+{
+    mRecentDocsMenu->clear();
+
+    const QStringList &recent = mMain->documentManager()->recents();
+
+    foreach( const QString & path, recent )
+        QAction *action = mRecentDocsMenu->addAction(path);
+
+    if (!recent.isEmpty()) {
+        mRecentDocsMenu->addSeparator();
+        mRecentDocsMenu->addAction(mActions[ClearRecentDocs]);
+    }
+}
+
+void MainWindow::onRecentDocAction( QAction *action )
+{
+    mMain->documentManager()->open(action->text());
 }
 
 void MainWindow::onInterpreterStateChanged( QProcess::ProcessState state )

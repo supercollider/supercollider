@@ -19,6 +19,8 @@
 */
 
 #include "doc_manager.hpp"
+#include "main.hpp"
+#include "settings/manager.hpp"
 
 #include <QPlainTextDocumentLayout>
 #include <QDebug>
@@ -28,10 +30,17 @@
 
 using namespace ScIDE;
 
-DocumentManager::DocumentManager( QObject *parent ):
-    QObject(parent)
+DocumentManager::DocumentManager( Main *main ):
+    QObject(main)
 {
     connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
+
+    connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
+            this, SLOT(applySettings(Settings::Manager*)));
+    connect(main, SIGNAL(storeSettingsRequest(Settings::Manager*)),
+            this, SLOT(storeSettings(Settings::Manager*)));
+
+    applySettings(main->settings());
 }
 
 void DocumentManager::create()
@@ -51,6 +60,7 @@ void DocumentManager::open( const QString & filename, int initialCursorPosition 
         Document *doc = it.value();
         if(doc->fileName() == filename) {
             Q_EMIT( showRequest(doc, initialCursorPosition) );
+            addToRecent(doc);
             return;
         }
     }
@@ -76,6 +86,7 @@ void DocumentManager::open( const QString & filename, int initialCursorPosition 
     mFsWatcher.addPath(filename);
 
     Q_EMIT( opened(doc, initialCursorPosition) );
+    addToRecent(doc);
 }
 
 bool DocumentManager::reload( Document *doc )
@@ -131,7 +142,10 @@ bool DocumentManager::save( Document *doc )
 bool DocumentManager::saveAs( Document *doc, const QString & filename )
 {
     Q_ASSERT(doc);
-    return doSaveAs( doc, filename );
+    bool ok = doSaveAs( doc, filename );
+    if (ok)
+        addToRecent(doc);
+    return ok;
 }
 
 bool DocumentManager::doSaveAs( Document *doc, const QString & fileName )
@@ -177,4 +191,35 @@ void DocumentManager::onFileChanged( const QString & path )
             }
         }
     }
+}
+
+void DocumentManager::addToRecent( Document *doc )
+{
+    const QString &path = doc->fileName();
+    int i = mRecent.indexOf(path);
+    if (i != -1)
+        mRecent.move( i, 0 );
+    else {
+        mRecent.prepend(path);
+        if (mRecent.count() > mMaxRecent)
+            mRecent.removeLast();
+    }
+
+    emit recentsChanged();
+}
+
+void DocumentManager::clearRecents()
+{
+    mRecent.clear();
+    emit recentsChanged();
+}
+
+void DocumentManager::applySettings( Settings::Manager *s )
+{
+    mRecent = s->value("IDE/recentDocuments").value<QStringList>();
+}
+
+void DocumentManager::storeSettings( Settings::Manager *s )
+{
+    s->setValue("IDE/recentDocuments", QVariant::fromValue<QStringList>(mRecent));
 }
