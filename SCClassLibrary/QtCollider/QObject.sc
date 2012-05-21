@@ -165,11 +165,6 @@ QObject {
     ^this.primitiveFailed
   }
 
-  prFinalize {
-    _QObject_ManuallyFinalize
-    ^this.primitiveFailed
-  }
-
   prRelease { heap.remove(this); }
 
   doFunction { arg f ... args; f.performList(\value, this, args); }
