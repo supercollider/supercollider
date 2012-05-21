@@ -393,7 +393,7 @@ QTextCursor CodeEditor::currentRegion()
     QTextCursor c(textCursor());
     QTextBlock b(c.block());
 
-    int pos = c.positionInBlock();
+    int pos = c.position() - b.position();
     BracketIterator start;
     BracketIterator end;
     int topLevel = 0;
@@ -645,8 +645,10 @@ void CodeEditor::mouseReleaseEvent ( QMouseEvent *e )
 void CodeEditor::mouseDoubleClickEvent ( QMouseEvent *e )
 {
     QTextCursor c(textCursor());
+    QTextBlock b(c.block());
+
     BracketMatch m;
-    matchBracket( c.block(), c.positionInBlock(), m );
+    matchBracket( b, c.position() - b.position(), m );
     if(m.pos > -1 && m.matchPos > -1)
     {
         c.setPosition(qMin(m.pos, m.matchPos));
