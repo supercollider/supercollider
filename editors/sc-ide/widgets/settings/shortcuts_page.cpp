@@ -152,13 +152,11 @@ void ShortcutsPage::filterBy( const QString &str )
 
 void ShortcutsPage::showItem( QTreeWidgetItem *item, QTreeWidgetItem *prev )
 {
-    QAction *a = item->data(0, ActionRole).value<QAction*>();
-    Q_ASSERT(a);
+    QVariant defaultSeqVar = item ? item->data(0, DefaultSequenceRole) : QVariant();
+    QString defaultSeq = defaultSeqVar.value<QKeySequence>().toString(QKeySequence::NativeText);
+    ui->defaultSeq->setText(defaultSeq);
 
-    QString defaultSeq = item->data(0, DefaultSequenceRole).toString();
-    ui->defaultSeq->setText( defaultSeq );
-
-    QVariant customSeqVar = item->data(0, CustomSequenceRole);
+    QVariant customSeqVar = item ? item->data(0, CustomSequenceRole) : QVariant();
     ui->customSeq->setSequence( customSeqVar.value<QKeySequence>() );
 
     if (customSeqVar.isValid())
