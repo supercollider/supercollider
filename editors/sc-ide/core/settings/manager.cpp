@@ -154,4 +154,22 @@ QKeySequence Manager::shortcut( const QString & key )
     return QKeySequence( value(key).toString() );
 }
 
+void Manager::addAction ( QAction *action )
+{
+    mActions.append(action);
+    QString key = keyForAction(action);
+
+    beginGroup("IDE/shortcuts");
+
+    setDefault( key, QVariant::fromValue<QKeySequence>(action->shortcut()) );
+    action->setShortcut( value(key).value<QKeySequence>() );
+
+    endGroup();
+}
+
+QString Manager::keyForAction ( QAction *action )
+{
+    return action->text().toLower().remove('&').replace(' ', '_');
+}
+
 }} // namespace ScIDE::Settings

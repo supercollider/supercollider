@@ -22,6 +22,7 @@
 #include "ui_settings_dialog.h"
 #include "sclang_page.hpp"
 #include "editor_page.hpp"
+#include "shortcuts_page.hpp"
 #include "../../core/settings/manager.hpp"
 
 #include <QVBoxLayout>
@@ -53,6 +54,13 @@ Dialog::Dialog( Manager *settings, QWidget * parent ):
     ui->configPageStack->addWidget(w);
     ui->configPageList->addItem (
         new QListWidgetItem(QIcon::fromTheme("accessories-text-editor"), "Editor"));
+    connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
+    connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
+
+    w = new ShortcutsPage;
+    ui->configPageStack->addWidget(w);
+    ui->configPageList->addItem (
+        new QListWidgetItem(QIcon::fromTheme("input-keyboard"), "Shortcuts"));
     connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
     connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
 

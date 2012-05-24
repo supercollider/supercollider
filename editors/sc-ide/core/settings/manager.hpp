@@ -25,6 +25,8 @@
 
 #include <QObject>
 #include <QKeySequence>
+#include <QList>
+#include <QAction>
 
 namespace ScIDE { namespace Settings {
 
@@ -51,9 +53,16 @@ public:
 
     void sync() { mSettings->sync(); }
 
+    void remove ( const QString &key ) { mSettings->remove(key); }
+
     // extended
 
     bool contains ( const QString & key ) const;
+
+    bool isOverridden( const QString & key ) const
+    {
+        return mSettings->contains( key );
+    }
 
     QVariant value ( const QString & key ) const;
 
@@ -65,6 +74,10 @@ public:
     void setValue ( const QString & key, const QVariant & value );
 
     QKeySequence shortcut( const QString & key );
+
+    const QList<QAction*> & actions() { return mActions; }
+    void addAction ( QAction *action );
+    QString keyForAction ( QAction *action );
 
 private:
     void setDefault ( const QString & key, const QVariant & value )
@@ -87,6 +100,7 @@ private:
 
     QSettings *mSettings;
     SettingsMap mDefaults;
+    QList<QAction*> mActions;
 };
 
 }} // namespace ScIDE::Settings
