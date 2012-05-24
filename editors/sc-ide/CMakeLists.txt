@@ -23,8 +23,10 @@ set ( ide_moc_hdr
     widgets/settings/dialog.hpp
     widgets/settings/sclang_page.hpp
     widgets/settings/editor_page.hpp
+    widgets/settings/shortcuts_page.hpp
     widgets/util/path_chooser_widget.hpp
     widgets/util/text_format_list_widget.hpp
+    widgets/util/key_sequence_edit.hpp
 )
 
 set ( ide_src
@@ -47,6 +49,7 @@ set ( ide_src
     widgets/settings/dialog.cpp
     widgets/settings/sclang_page.cpp
     widgets/settings/editor_page.cpp
+    widgets/settings/shortcuts_page.cpp
     widgets/util/text_format_list_widget.cpp
 )
 
@@ -54,6 +57,7 @@ set( ide_forms
     forms/settings_dialog.ui
     forms/settings_sclang.ui
     forms/settings_editor.ui
+    forms/settings_shortcuts.ui
 )
 
 # Translation files
