@@ -139,7 +139,7 @@ void MainWindow::createMenus()
     Settings::Manager *s = mMain->settings();
     s->beginGroup("IDE/shortcuts");
 
-    new QShortcut( s->shortcut("cmdLineFocus"), this, SLOT(toggleComandLineFocus()) );
+    new QShortcut( tr("Ctrl+Tab", "Toggle command line focus"), this, SLOT(toggleComandLineFocus()) );
 
     QAction *act;
 
@@ -147,25 +147,25 @@ void MainWindow::createMenus()
 
     mActions[Quit] = act = new QAction(
         QIcon::fromTheme("application-exit"), tr("&Quit..."), this);
-    act->setShortcut(s->shortcut("quit"));
+    act->setShortcut(tr("Ctrl+Q", "Quit application"));
     act->setStatusTip(tr("Quit SuperCollider IDE"));
     QObject::connect( act, SIGNAL(triggered()), this, SLOT(onQuit()) );
 
     mActions[DocNew] = act = new QAction(
         QIcon::fromTheme("document-new"), tr("&New"), this);
-    act->setShortcut(s->shortcut("newDocument"));
+    act->setShortcut(tr("Ctrl+N", "New document"));
     act->setStatusTip(tr("Create a new document"));
     connect(act, SIGNAL(triggered()), this, SLOT(newDocument()));
 
     mActions[DocOpen] = act = new QAction(
         QIcon::fromTheme("document-open"), tr("&Open..."), this);
-    act->setShortcut(s->shortcut("openDocument"));
+    act->setShortcut(tr("Ctrl+O", "Open document"));
     act->setStatusTip(tr("Open an existing file"));
     connect(act, SIGNAL(triggered()), this, SLOT(openDocument()));
 
     mActions[DocSave] = act = new QAction(
         QIcon::fromTheme("document-save"), tr("&Save"), this);
-    act->setShortcut(s->shortcut("saveDocument"));
+    act->setShortcut(tr("Ctrl+S", "Save document"));
     act->setStatusTip(tr("Save the current document"));
     connect(act, SIGNAL(triggered()), this, SLOT(saveDocument()));
 
@@ -176,13 +176,13 @@ void MainWindow::createMenus()
 
     mActions[DocClose] = act = new QAction(
         QIcon::fromTheme("window-close"), tr("&Close"), this);
-    act->setShortcut(s->shortcut("closeDocument"));
+    act->setShortcut(tr("Ctrl+W", "Close document"));
     act->setStatusTip(tr("Close the current document"));
     connect(act, SIGNAL(triggered()), this, SLOT(closeDocument()));
 
     mActions[DocReload] = act = new QAction(
         QIcon::fromTheme("view-refresh"), tr("&Reload"), this);
-    act->setShortcut(s->shortcut("reloadDocument"));
+    act->setShortcut(tr("F5", "Reload document"));
     act->setStatusTip(tr("Reload the current document"));
     connect(act, SIGNAL(triggered()), this, SLOT(reloadDocument()));
 
@@ -206,18 +206,15 @@ void MainWindow::createMenus()
 
     mActions[EvaluateSelection] = act = new QAction(
         QIcon::fromTheme("media-playback-start"), tr("&Evaluate Selection"), this);
-    act->setShortcut(s->shortcut("evaluateSelection"));
+    act->setShortcut(tr("Ctrl+Return", "Evaluate selection"));
     act->setStatusTip(tr("Evaluate selection or current line"));
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
 
     mActions[EvaluateRegion] = act = new QAction(
     QIcon::fromTheme("media-playback-start"), tr("&Evaluate Region"), this);
-    act->setShortcut(s->shortcut("evaluateRegion"));
+    act->setShortcut(tr("Alt+Return", "Evaluate region"));
     act->setStatusTip(tr("Evaluate current region"));
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateRegion()));
-
-    mMain->scProcess()->action(ScIDE::SCProcess::StopMain)
-        ->setShortcut(s->shortcut("stopMain"));
 
     // Settings
 
@@ -243,7 +240,7 @@ void MainWindow::createMenus()
 
     mActions[HelpForSelection] = act = new QAction(
     QIcon::fromTheme("system-help"), tr("&Help for Selection"), this);
-    act->setShortcut(s->shortcut("helpForSelection"));
+    act->setShortcut(tr("Ctrl+H", "Help for selection"));
     act->setStatusTip(tr("Find help for selected text"));
     connect(act, SIGNAL(triggered()), this, SLOT(helpForSelection()));
 
@@ -324,6 +321,10 @@ void MainWindow::createMenus()
     menu->addAction( mActions[HelpForSelection] );
 
     menuBar()->addMenu(menu);
+
+    // Add actions to settings
+    for (int i = 0; i < ActionCount; ++i)
+        s->addAction( mActions[i] );
 }
 
 QAction *MainWindow::action( ActionRole role )
