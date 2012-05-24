@@ -19,6 +19,7 @@
 */
 
 #include "multi_editor.hpp"
+#include "main_window.hpp"
 #include "code_editor/editor.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/sig_mux.hpp"
@@ -293,7 +294,7 @@ void MultiEditor::onCloseRequest( int index )
 {
     CodeEditor *editor = editorForTab( index );
     if(editor)
-        mDocManager->close(editor->document());
+        MainWindow::close(editor->document());
 }
 
 void MultiEditor::onCurrentChanged( int index )
