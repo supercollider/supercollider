@@ -59,7 +59,6 @@ public:
 
         // Language
         EvaluateCurrentFile,
-        EvaluateSelection,
         EvaluateRegion,
 
         // Settings
@@ -99,7 +98,6 @@ signals:
     void evaluateCode( const QString &, bool silent = true );
 
 private Q_SLOTS:
-    void evaluateSelection(); // either selection, or current line
     void evaluateRegion();
     void evaluateCurrentFile();
     void helpForSelection();
