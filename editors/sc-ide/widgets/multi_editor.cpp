@@ -92,52 +92,52 @@ void MultiEditor::createActions()
 
     mActions[Undo] = act = new QAction(
         QIcon::fromTheme("edit-undo"), tr("&Undo"), this);
-    act->setShortcut(s->shortcut("undo"));
+    act->setShortcut(tr("Ctrl+Z", "Undo"));
     act->setStatusTip(tr("Undo last editing action"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(undo()));
     mSigMux->connect(SIGNAL(undoAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Redo] = act = new QAction(
         QIcon::fromTheme("edit-redo"), tr("Re&do"), this);
-    act->setShortcut(s->shortcut("redo"));
+    act->setShortcut(tr("Ctrl+Shift+Z", "Redo"));
     act->setStatusTip(tr("Redo next editing action"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(redo()));
     mSigMux->connect(SIGNAL(redoAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Cut] = act = new QAction(
         QIcon::fromTheme("edit-cut"), tr("Cu&t"), this);
-    act->setShortcut(s->shortcut("cut"));
+    act->setShortcut(tr("Ctrl+X", "Cut"));
     act->setStatusTip(tr("Cut text to clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(cut()));
     mSigMux->connect(SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Copy] = act = new QAction(
         QIcon::fromTheme("edit-copy"), tr("&Copy"), this);
-    act->setShortcut(s->shortcut("copy"));
+    act->setShortcut(tr("Ctrl+C", "Copy"));
     act->setStatusTip(tr("Copy text to clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(copy()));
     mSigMux->connect(SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
 
     mActions[Paste] = act = new QAction(
         QIcon::fromTheme("edit-paste"), tr("&Paste"), this);
-    act->setShortcut(s->shortcut("paste"));
+    act->setShortcut(tr("Ctrl+V", "Paste"));
     act->setStatusTip(tr("Paste text from clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(paste()));
 
     mActions[Find] = act = new QAction(
         QIcon::fromTheme("edit-find"), tr("&Find..."), this);
-    act->setShortcut(s->shortcut("find"));
+    act->setShortcut(tr("Ctrl+F", "Find"));
     act->setStatusTip(tr("Find text in document"));
     connect(act, SIGNAL(triggered()), this, SLOT(showFindPanel()));
 
     mActions[Replace] = act = new QAction(
         QIcon::fromTheme("edit-replace"), tr("&Replace..."), this);
-    act->setShortcut(s->shortcut("replace"));
+    act->setShortcut(tr("Ctrl+R", "Replace"));
     act->setStatusTip(tr("Find and replace text in document"));
     connect(act, SIGNAL(triggered()), this, SLOT(showReplacePanel()));
 
     QShortcut *escShortcut =
-        new QShortcut( s->shortcut("hideToolPanel"), this, SLOT(hideToolPanel()) );
+        new QShortcut( tr("Esc", "Hide tool panel"), this, SLOT(hideToolPanel()) );
     mSigMux->connect(escShortcut, SIGNAL(activated()), SLOT(clearSearchHighlighting()));
 
     mActions[IndentMore] = act = new QAction(
@@ -154,13 +154,13 @@ void MultiEditor::createActions()
 
     mActions[EnlargeFont] = act = new QAction(
         QIcon::fromTheme("zoom-in"), tr("&Enlarge Font"), this);
-    act->setShortcut(s->shortcut("enlargeFont"));
+    act->setShortcut(tr("Ctrl++", "Enlarge font"));
     act->setStatusTip(tr("Increase displayed font size"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomIn()));
 
     mActions[ShrinkFont] = act = new QAction(
         QIcon::fromTheme("zoom-out"), tr("&Shrink Font"), this);
-    act->setShortcut(s->shortcut("shrinkFont"));
+    act->setShortcut( tr("Ctrl+-", "Shrink font"));
     act->setStatusTip(tr("Decrease displayed font size"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomOut()));
 
@@ -170,10 +170,13 @@ void MultiEditor::createActions()
 
     // Browse
     mActions[OpenClassDefinition] = act = new QAction(tr("Open Class Definition"), this);
-    act->setShortcut(s->shortcut("openDefinition"));
+    act->setShortcut(tr("Ctrl+D", "Open definition"));
     connect(act, SIGNAL(triggered(bool)), this, SLOT(openClassDefinition()));
 
     s->endGroup(); // IDE/shortcuts
+
+    for (int i = 0; i < ActionRoleCount; ++i)
+        s->addAction( mActions[i] );
 }
 
 void MultiEditor::updateActions()
