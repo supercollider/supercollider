@@ -204,15 +204,9 @@ void MainWindow::createMenus()
     act->setStatusTip(tr("Evaluate current File"));
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateCurrentFile()));
 
-    mActions[EvaluateSelection] = act = new QAction(
-        QIcon::fromTheme("media-playback-start"), tr("&Evaluate Selection"), this);
-    act->setShortcut(tr("Ctrl+Return", "Evaluate selection"));
-    act->setStatusTip(tr("Evaluate selection or current line"));
-    connect(act, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
-
     mActions[EvaluateRegion] = act = new QAction(
     QIcon::fromTheme("media-playback-start"), tr("&Evaluate Region"), this);
-    act->setShortcut(tr("Alt+Return", "Evaluate region"));
+    act->setShortcut(tr("Ctrl+Return", "Evaluate region"));
     act->setStatusTip(tr("Evaluate current region"));
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateRegion()));
 
@@ -303,7 +297,6 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[EvaluateCurrentFile] );
     menu->addAction( mActions[EvaluateRegion] );
-    menu->addAction( mActions[EvaluateSelection] );
     menu->addSeparator();
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::RunMain) );
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::StopMain) );
@@ -615,59 +608,49 @@ QWidget *MainWindow::cmdLine()
     return widget;
 }
 
-void MainWindow::evaluateSelection()
-{
-    // Evaluate selection, if any, otherwise current line
-
-    CodeEditor *editor = mEditors->currentEditor();
-    if (!editor)
-        return;
-
-    QString text;
-    QTextCursor cursor = editor->textCursor();
-    if (cursor.hasSelection())
-        text = cursor.selectedText();
-    else {
-        text = cursor.block().text();
-        if( mEditors->stepForwardEvaluation() ) {
-            QTextCursor newCursor = cursor;
-            newCursor.movePosition(QTextCursor::NextBlock);
-            newCursor.movePosition(QTextCursor::EndOfBlock);
-            editor->setTextCursor(newCursor);
-        }
-        // Adjust cursor for code blinking:
-        cursor.movePosition(QTextCursor::StartOfBlock);
-        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-    }
-
-    if (text.isEmpty()) return;
-
-    // NOTE: QTextDocument contains unicode paragraph separators U+2029
-    text.replace( QChar( 0x2029 ), QChar( '\n' ) );
-
-    Main::instance()->scProcess()->evaluateCode(text);
-
-    editor->blinkCode(cursor);
-}
-
 void MainWindow::evaluateRegion()
 {
     CodeEditor *editor = mEditors->currentEditor();
     if (!editor)
         return;
 
-    QTextCursor region = editor->currentRegion();
-    if(region.isNull()) {
-        // TODO: post a warning in status bar
-        return;
+    QString text;
+
+    // Try current selection
+    QTextCursor cursor = editor->textCursor();
+    if (cursor.hasSelection())
+        text = cursor.selectedText();
+    else
+    {
+        // If no selection, try current region
+        cursor = editor->currentRegion();
+        if (!cursor.isNull())
+            text = cursor.selectedText();
+        else
+        {
+            //If no current region, try current line
+            cursor = editor->textCursor();
+            text = cursor.block().text();
+            if( mEditors->stepForwardEvaluation() ) {
+                QTextCursor newCursor = cursor;
+                newCursor.movePosition(QTextCursor::NextBlock);
+                newCursor.movePosition(QTextCursor::EndOfBlock);
+                editor->setTextCursor(newCursor);
+            }
+            // Adjust cursor for code blinking:
+            cursor.movePosition(QTextCursor::StartOfBlock);
+            cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        }
     }
 
-    QString text = region.selectedText();
+    if (text.isEmpty())
+        return;
+
     text.replace( QChar( 0x2029 ), QChar( '\n' ) );
 
     Main::instance()->scProcess()->evaluateCode(text);
 
-    editor->blinkCode(region);
+    editor->blinkCode(cursor);
 }
 
 void MainWindow::evaluateCurrentFile()
