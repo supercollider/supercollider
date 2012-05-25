@@ -146,6 +146,10 @@ void StackLayout::setCurrentIndex(int index)
     }
     if (reenableUpdates)
         parent->setUpdatesEnabled(true);
+
+    if (_mode == StackOne)
+      // expandingDirections() might have changed, so invalidate():
+      invalidate();
 }
 
 int StackLayout::currentIndex() const
@@ -194,17 +198,35 @@ void StackLayout::addItem(QLayoutItem *item)
 QSize StackLayout::sizeHint() const
 {
     QSize s(0, 0);
-    int n = _list.count();
 
-    for (int i = 0; i < n; ++i)
-        if (QWidget *widget = _list.at(i)->widget()) {
-            QSize ws(widget->sizeHint());
-            if (widget->sizePolicy().horizontalPolicy() == QSizePolicy::Ignored)
-                ws.setWidth(0);
-            if (widget->sizePolicy().verticalPolicy() == QSizePolicy::Ignored)
-                ws.setHeight(0);
-            s = s.expandedTo(ws);
-        }
+    switch (_mode)
+    {
+    case StackOne:
+        if (_index >= 0)
+            if (QWidget *w = _list.at(_index)->widget()) {
+                if (w->sizePolicy().horizontalPolicy() != QSizePolicy::Ignored)
+                  s.setWidth(w->sizeHint().width());
+                if (w->sizePolicy().verticalPolicy() != QSizePolicy::Ignored)
+                  s.setHeight(w->sizeHint().height());
+            }
+        break;
+
+    case StackAll:
+    {
+        int n = _list.count();
+        for (int i = 0; i < n; ++i)
+            if (QWidget *w = _list.at(i)->widget()) {
+                QSize ws(w->sizeHint());
+                if (w->sizePolicy().horizontalPolicy() == QSizePolicy::Ignored)
+                    ws.setWidth(0);
+                if (w->sizePolicy().verticalPolicy() == QSizePolicy::Ignored)
+                    ws.setHeight(0);
+                s = s.expandedTo(ws);
+            }
+        break;
+    }
+    }
+
     return s;
 }
 
@@ -241,15 +263,54 @@ static QSize smartMinSize(const QSize &sizeHint, const QSize &minSizeHint,
 QSize StackLayout::minimumSize() const
 {
     QSize s(0, 0);
-    int n = _list.count();
 
-    for (int i = 0; i < n; ++i)
-        if (QWidget *w = _list.at(i)->widget())
-            s = s.expandedTo(
-              smartMinSize(w->sizeHint(), w->minimumSizeHint(),
-                            w->minimumSize(), w->maximumSize(),
-                            w->sizePolicy()));
+    switch (_mode)
+    {
+    case StackOne:
+        if (_index >= 0)
+            if (QWidget *w = _list.at(_index)->widget())
+                s = smartMinSize(w->sizeHint(), w->minimumSizeHint(),
+                                 w->minimumSize(), w->maximumSize(),
+                                 w->sizePolicy());
+        break;
+
+    case StackAll:
+    {
+        int n = _list.count();
+        for (int i = 0; i < n; ++i)
+            if (QWidget *w = _list.at(i)->widget())
+                s = s.expandedTo(
+                  smartMinSize(w->sizeHint(), w->minimumSizeHint(),
+                               w->minimumSize(), w->maximumSize(),
+                               w->sizePolicy()));
+        break;
+    }
+    }
+
     return s;
+}
+
+Qt::Orientations StackLayout::expandingDirections () const
+{
+    Qt::Orientations directions;
+
+    switch (_mode)
+    {
+    case StackOne:
+        directions = _index >= 0 ? _list.at(_index)->expandingDirections() : (Qt::Orientations) 0;
+        break;
+
+    case StackAll:
+    {
+        Qt::Orientations directions = 0;
+        int n = _list.count();
+        for (int i = 0; i < n; ++i)
+            directions |= _list.at(i)->expandingDirections();
+        break;
+    }
+    }
+
+    return directions;
 }
 
 void StackLayout::setGeometry(const QRect &rect)
@@ -307,6 +368,8 @@ void StackLayout::setStackingMode(StackingMode stackingMode)
     }
         break;
     }
+
+    invalidate();
 }
 
 void StackLayout::invalidate()
