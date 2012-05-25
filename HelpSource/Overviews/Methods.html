@@ -231,6 +231,7 @@ function showmethods() {
         var div = document.createElement("p");
         div.appendChild(document.createTextNode("Method not found: "+hash));
         res.appendChild(div);
+        window.location = "../Search.html#"+hash;
         return;
     }
 
