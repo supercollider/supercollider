@@ -22,7 +22,10 @@
 #ifndef QC_LAYOUTS_H
 #define QC_LAYOUTS_H
 
+#include "stack_layout.hpp"
+#include "../Common.h"
 #include "../QcObjectFactory.h"
+#include "../QObjectProxy.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -249,6 +252,31 @@ public:
   }
   Q_INVOKABLE void setMinColumnWidth( int col, int w ) {
     setColumnMinimumWidth( col, w );
+  }
+};
+
+class QcStackLayout : public QcLayout<QtCollider::StackLayout>
+{
+  Q_OBJECT
+  Q_PROPERTY( VariantList margins READ margins WRITE setMargins )
+
+public:
+  QcStackLayout() {}
+
+  Q_INVOKABLE QcStackLayout( const VariantList &items )
+  {
+    Q_FOREACH(QVariant var, items.data) {
+      QObjectProxy *p = var.value<QObjectProxy*>();
+      if(!p) return;
+      QWidget *w = qobject_cast<QWidget*>( p->object() );
+      if(w) addWidget(w);
+    }
+  }
+
+  Q_INVOKABLE void insertWidget( int index, QObjectProxy *proxy )
+  {
+    if (QWidget *w = qobject_cast<QWidget*>( proxy->object() ))
+      QtCollider::StackLayout::insertWidget(index, w);
   }
 };
 
