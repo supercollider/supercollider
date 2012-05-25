@@ -70,6 +70,7 @@ public:
     QLayoutItem *takeAt(int);
     QSize sizeHint() const;
     QSize minimumSize() const;
+    Qt::Orientations expandingDirections () const;
     void setGeometry(const QRect &rect);
 
     virtual void invalidate();
