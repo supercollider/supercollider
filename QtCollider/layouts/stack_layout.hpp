@@ -23,32 +23,21 @@
 *
 ************************************************************************/
 
-#ifndef QC_STACK_LAYOUT_HPP
-#define QC_STACK_LAYOUT_HPP
-
-#include "layouts.hpp"
-#include "../Common.h"
-#include "../QObjectProxy.h"
+#ifndef QT_COLLIDER_STACK_LAYOUT_HPP_INCLUDED
+#define QT_COLLIDER_STACK_LAYOUT_HPP_INCLUDED
 
 #include <QLayout>
 #include <QList>
 
-class QcStackLayout : public QcLayout<QLayout>
+namespace QtCollider {
+
+class StackLayout : public QLayout
 {
     Q_OBJECT
     Q_ENUMS(StackingMode)
-    Q_PROPERTY( VariantList margins READ margins WRITE setMargins )
     Q_PROPERTY( int currentIndex READ currentIndex WRITE setCurrentIndex )
     Q_PROPERTY( StackingMode stackingMode READ stackingMode WRITE setStackingMode )
     Q_PROPERTY( int count READ count )
-
-public:
-  Q_INVOKABLE QcStackLayout( const VariantList &items );
-
-  Q_INVOKABLE void insertWidget( int index, QObjectProxy *proxy ) {
-    QWidget *w = qobject_cast<QWidget*>( proxy->object() );
-    if( w ) insertWidget(index, w);
-  }
 
 public:
     enum StackingMode {
@@ -56,8 +45,8 @@ public:
         StackAll
     };
 
-    QcStackLayout();
-    ~QcStackLayout();
+    StackLayout();
+    ~StackLayout();
 
     int addWidget(QWidget *w);
     int insertWidget(int index, QWidget *w);
@@ -92,4 +81,6 @@ private:
     bool _gotParent;
 };
 
-#endif // QC_STACK_LAYOUT_HPP
+} // namespace QtCollider
+
+#endif // QT_COLLIDER_STACK_LAYOUT_HPP_INCLUDED
