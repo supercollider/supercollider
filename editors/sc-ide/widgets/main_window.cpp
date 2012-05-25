@@ -24,6 +24,8 @@
 #include "code_editor/editor.hpp"
 #include "multi_editor.hpp"
 #include "cmd_line.hpp"
+#include "find_replace_tool.hpp"
+#include "tool_box.hpp"
 #include "doc_list.hpp"
 #include "post_window.hpp"
 #include "settings/dialog.hpp"
@@ -34,6 +36,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QVBoxLayout>
+#include <QGridLayout>
 #include <QApplication>
 #include <QMessageBox>
 #include <QStatusBar>
@@ -68,22 +71,31 @@ MainWindow::MainWindow(Main * main) :
     // Code editor
     mEditors = new MultiEditor(main);
 
+    // Tools
+
+    mCmdLine = new CmdLine("Command Line:");
+    connect(mCmdLine, SIGNAL(invoked(QString, bool)),
+            main->scProcess(), SLOT(evaluateCode(QString, bool)));
+
+    mFindReplaceTool = new TextFindReplacePanel;
+
+    mToolBox = new ToolBox;
+    mToolBox->addWidget(mCmdLine);
+    mToolBox->addWidget(mFindReplaceTool);
+    mToolBox->hide();
+
     // Docks
     mDocListDock = new DocumentsDock(main->documentManager(), this);
     mPostDock = new PostDock(this);
 
     // Layout
 
-    // use a layout for tool widgets, to provide for separate margin control
-    QVBoxLayout *tool_box = new QVBoxLayout;
-    tool_box->addWidget(cmdLine());
-    tool_box->setContentsMargins(5,2,5,2);
-
     QVBoxLayout *center_box = new QVBoxLayout;
     center_box->setContentsMargins(0,0,0,0);
     center_box->setSpacing(0);
     center_box->addWidget(mEditors);
-    center_box->addLayout(tool_box);
+    center_box->addWidget(mToolBox);
+
     QWidget *central = new QWidget;
     central->setLayout(center_box);
     setCentralWidget(central);
@@ -120,7 +132,10 @@ MainWindow::MainWindow(Main * main) :
             this, SLOT(onDocumentChangedExternally(Document*)));
     connect(docMng, SIGNAL(recentsChanged()),
             this, SLOT(updateRecentDocsMenu()));
+    // ToolBox
+    connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
 
+    createActions();
     createMenus();
 
     // Initialize recent documents menu
@@ -134,12 +149,10 @@ MainWindow::MainWindow(Main * main) :
     QApplication::setWindowIcon(icon);
 }
 
-void MainWindow::createMenus()
+void MainWindow::createActions()
 {
     Settings::Manager *s = mMain->settings();
     s->beginGroup("IDE/shortcuts");
-
-    new QShortcut( tr("Ctrl+Tab", "Toggle command line focus"), this, SLOT(toggleComandLineFocus()) );
 
     QAction *act;
 
@@ -190,12 +203,38 @@ void MainWindow::createMenus()
     connect(act, SIGNAL(triggered()),
             Main::instance()->documentManager(), SLOT(clearRecents()));
 
+    // Edit
+
+    mActions[Find] = act = new QAction(
+        QIcon::fromTheme("edit-find"), tr("&Find..."), this);
+    act->setShortcut(tr("Ctrl+F", "Find"));
+    act->setStatusTip(tr("Find text in document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(showFindTool()));
+
+    mActions[Replace] = act = new QAction(
+        QIcon::fromTheme("edit-replace"), tr("&Replace..."), this);
+    act->setShortcut(tr("Ctrl+R", "Replace"));
+    act->setStatusTip(tr("Find and replace text in document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(showReplaceTool()));
+
     // View
+
     mActions[ShowDocList] = act = new QAction(tr("&Documents"), this);
     act->setStatusTip(tr("Show/Hide the Documents dock"));
     act->setCheckable(true);
     connect(act, SIGNAL(triggered(bool)), mDocListDock, SLOT(setVisible(bool)));
     connect(mDocListDock, SIGNAL(visibilityChanged(bool)), act, SLOT(setChecked(bool)));
+
+    mActions[ShowCmdLine] = act = new QAction(tr("&Command Line"), this);
+    act->setStatusTip(tr("Command line for quick code evaluation"));
+    act->setShortcut(tr("Ctrl+E", "Show command line"));
+    connect(act, SIGNAL(triggered()), this, SLOT(showCmdLine()));
+
+    mActions[CloseToolBox] = act = new QAction(
+        QIcon::fromTheme("window-close"), tr("&Close Tool Panel"), this);
+    act->setStatusTip(tr("Close any open tool panel"));
+    act->setShortcut(tr("Esc", "Close tool box"));
+    connect(act, SIGNAL(triggered()), this, SLOT(hideToolBox()));
 
     // Language
 
@@ -240,6 +279,13 @@ void MainWindow::createMenus()
 
     s->endGroup(); // IDE/shortcuts;
 
+    // Add actions to settings
+    for (int i = 0; i < ActionCount; ++i)
+        s->addAction( mActions[i] );
+}
+
+void MainWindow::createMenus()
+{
     QMenu *menu;
     QMenu *submenu;
 
@@ -268,8 +314,8 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::Copy) );
     menu->addAction( mEditors->action(MultiEditor::Paste) );
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::Find) );
-    menu->addAction( mEditors->action(MultiEditor::Replace) );
+    menu->addAction( mActions[Find] );
+    menu->addAction( mActions[Replace] );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::IndentMore) );
     menu->addAction( mEditors->action(MultiEditor::IndentLess) );
@@ -282,6 +328,13 @@ void MainWindow::createMenus()
     submenu = new QMenu(tr("&Docks"), this);
     submenu->addAction( mActions[ShowDocList] );
     menu->addMenu(submenu);
+    menu->addSeparator();
+    submenu = menu->addMenu(tr("&Tool Panels"));
+    submenu->addAction( mActions[Find] );
+    submenu->addAction( mActions[Replace] );
+    submenu->addAction( mActions[ShowCmdLine] );
+    submenu->addSeparator();
+    submenu->addAction( mActions[CloseToolBox] );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::EnlargeFont) );
     menu->addAction( mEditors->action(MultiEditor::ShrinkFont) );
@@ -314,10 +367,6 @@ void MainWindow::createMenus()
     menu->addAction( mActions[HelpForSelection] );
 
     menuBar()->addMenu(menu);
-
-    // Add actions to settings
-    for (int i = 0; i < ActionCount; ++i)
-        s->addAction( mActions[i] );
 }
 
 QAction *MainWindow::action( ActionRole role )
@@ -361,6 +410,8 @@ void MainWindow::onCurrentDocumentChanged( Document * doc )
     mActions[DocSave]->setEnabled(doc);
     mActions[DocSaveAs]->setEnabled(doc);
     mActions[DocClose]->setEnabled(doc);
+
+    mFindReplaceTool->setEditor( mEditors->currentEditor() );
 }
 
 void MainWindow::onDocumentChangedExternally( Document *doc )
@@ -574,6 +625,49 @@ void MainWindow::closeDocument()
 
     Q_ASSERT(editor->document());
     MainWindow::close( editor->document() );
+}
+
+void MainWindow::showCmdLine()
+{
+    mToolBox->setCurrentWidget( mCmdLine );
+    mToolBox->show();
+
+    mCmdLine->setFocus(Qt::OtherFocusReason);
+}
+
+void MainWindow::showFindTool()
+{
+    mFindReplaceTool->setMode( TextFindReplacePanel::Find );
+    mFindReplaceTool->initiate();
+
+    mToolBox->setCurrentWidget( mFindReplaceTool );
+    mToolBox->show();
+
+    mFindReplaceTool->setFocus(Qt::OtherFocusReason);
+}
+
+void MainWindow::showReplaceTool()
+{
+    mFindReplaceTool->setMode( TextFindReplacePanel::Replace );
+    mFindReplaceTool->initiate();
+
+    mToolBox->setCurrentWidget( mFindReplaceTool );
+    mToolBox->show();
+
+    mFindReplaceTool->setFocus(Qt::OtherFocusReason);
+}
+
+void MainWindow::hideToolBox()
+{
+    mToolBox->hide();
+    CodeEditor *editor = mEditors->currentEditor();
+    if (editor) {
+        // This slot is mapped to Escape, so also clear highlighting
+        // whenever invoked:
+        editor->clearSearchHighlighting();
+        if (!editor->hasFocus())
+            editor->setFocus(Qt::OtherFocusReason);
+    }
 }
 
 void MainWindow::toggleComandLineFocus()

@@ -46,13 +46,9 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mTabs->setTabsClosable(true);
     mTabs->setMovable(true);
 
-    mFindReplacePanel = new TextFindReplacePanel;
-    mFindReplacePanel->setVisible(false);
-
     QVBoxLayout *l = new QVBoxLayout;
     l->setContentsMargins(0,0,0,0);
     l->addWidget(mTabs);
-    l->addWidget(mFindReplacePanel);
     setLayout(l);
 
     connect(mDocManager, SIGNAL(opened(Document*, int)),
@@ -71,8 +67,6 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
     connect(&mModificationMapper, SIGNAL(mapped(QWidget*)),
             this, SLOT(onModificationChanged(QWidget*)));
-
-    connect(mFindReplacePanel, SIGNAL(close()), this, SLOT(hideToolPanel()));
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
@@ -124,22 +118,6 @@ void MultiEditor::createActions()
     act->setShortcut(tr("Ctrl+V", "Paste"));
     act->setStatusTip(tr("Paste text from clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(paste()));
-
-    mActions[Find] = act = new QAction(
-        QIcon::fromTheme("edit-find"), tr("&Find..."), this);
-    act->setShortcut(tr("Ctrl+F", "Find"));
-    act->setStatusTip(tr("Find text in document"));
-    connect(act, SIGNAL(triggered()), this, SLOT(showFindPanel()));
-
-    mActions[Replace] = act = new QAction(
-        QIcon::fromTheme("edit-replace"), tr("&Replace..."), this);
-    act->setShortcut(tr("Ctrl+R", "Replace"));
-    act->setStatusTip(tr("Find and replace text in document"));
-    connect(act, SIGNAL(triggered()), this, SLOT(showReplacePanel()));
-
-    QShortcut *escShortcut =
-        new QShortcut( tr("Esc", "Hide tool panel"), this, SLOT(hideToolPanel()) );
-    mSigMux->connect(escShortcut, SIGNAL(activated()), SLOT(clearSearchHighlighting()));
 
     mActions[IndentMore] = act = new QAction(
         QIcon::fromTheme("format-indent-more"), tr("Indent &More"), this);
@@ -220,30 +198,6 @@ void MultiEditor::setCurrent( Document *doc )
         mTabs->setCurrentWidget(editor);
 }
 
-void MultiEditor::showFindPanel()
-{
-    mFindReplacePanel->setMode( TextFindReplacePanel::Find );
-    mFindReplacePanel->initiate();
-    mFindReplacePanel->show();
-    mFindReplacePanel->setFocus(Qt::OtherFocusReason);
-}
-
-void MultiEditor::showReplacePanel()
-{
-    mFindReplacePanel->setMode( TextFindReplacePanel::Replace );
-    mFindReplacePanel->initiate();
-    mFindReplacePanel->show();
-    mFindReplacePanel->setFocus(Qt::OtherFocusReason);
-}
-
-void MultiEditor::hideToolPanel()
-{
-    mFindReplacePanel->hide();
-    CodeEditor *editor = currentEditor();
-    if (editor && !editor->hasFocus())
-        editor->setFocus(Qt::OtherFocusReason);
-}
-
 void MultiEditor::onOpen( Document *doc, int pos )
 {
     CodeEditor *editor = new CodeEditor();
@@ -306,8 +260,6 @@ void MultiEditor::onCurrentChanged( int index )
         editor->setFocus(Qt::OtherFocusReason);
     }
 
-    mFindReplacePanel->setEditor(editor);
-
     updateActions();
 
     Q_EMIT( currentChanged( editor ? editor->document() : 0 ) );
@@ -349,175 +301,5 @@ void MultiEditor::openClassDefinition()
     QString selectedText = editor->textCursor().selectedText();
     Main::instance()->scProcess()->getClassDefinitions(selectedText);
 }
-
-
-////////////////////// TextFindReplacePanel //////////////////////////
-
-TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
-    QWidget(parent),
-    mMode((Mode) 0), // a hack so that first setMode() works
-    mEditor(0)
-{
-    mCloseBtn = new QToolButton;
-    mCloseBtn->setIcon(QIcon::fromTheme("window-close"));
-    mCloseBtn->setAutoRaise(true);
-
-    mFindField = new QLineEdit;
-    mReplaceField = new QLineEdit;
-
-    mNextBtn = new QPushButton(tr("Next"));
-    mPrevBtn = new QPushButton(tr("Previous"));
-    mFindAllBtn = new QPushButton(tr("Find All"));
-    mReplaceBtn = new QPushButton(tr("Replace"));
-    mReplaceAllBtn = new QPushButton(tr("Replace All"));
-
-    mOptionsBtn = new QPushButton(tr("Options"));
-    QMenu *optMenu = new QMenu(this);
-    mMatchCaseAction = optMenu->addAction(tr("Match Case"));
-    mMatchCaseAction->setCheckable(true);
-    mRegExpAction = optMenu->addAction(tr("Regular Expression"));
-    mRegExpAction->setCheckable(true);
-    mWholeWordAction = optMenu->addAction(tr("Whole Words"));
-    mWholeWordAction->setCheckable(true);
-    mOptionsBtn->setMenu(optMenu);
-
-    mFindLabel = new QLabel(tr("Find:"));
-    mFindLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    mReplaceLabel = new QLabel(tr("Replace:"));
-    mReplaceLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-
-    mGrid = new QGridLayout();
-    mGrid->setContentsMargins(2,2,2,2);
-    mGrid->addWidget(mCloseBtn, 0, 0);
-    mGrid->addWidget(mFindLabel, 0, 1);
-    mGrid->addWidget(mFindField, 0, 2);
-    mGrid->addWidget(mNextBtn, 0, 3);
-    mGrid->addWidget(mPrevBtn, 0, 4);
-    mGrid->addWidget(mFindAllBtn, 0, 5);
-    mGrid->addWidget(mOptionsBtn, 0, 6);
-    mGrid->addWidget(mReplaceLabel, 1, 1);
-    mGrid->addWidget(mReplaceField, 1, 2);
-    mGrid->addWidget(mReplaceBtn, 1, 3);
-    mGrid->addWidget(mReplaceAllBtn, 1, 4);
-    setLayout(mGrid);
-
-    setMode(Find);
-
-    setFocusProxy(mFindField);
-    QWidget::setTabOrder(mFindField, mReplaceField);
-
-    connect(mCloseBtn, SIGNAL(clicked()), this, SIGNAL(close()));
-    connect(mNextBtn, SIGNAL(clicked()), this, SLOT(findNext()));
-    connect(mPrevBtn, SIGNAL(clicked()), this, SLOT(findPrevious()));
-    connect(mFindAllBtn, SIGNAL(clicked()), this, SLOT(findAll()));
-    connect(mReplaceBtn, SIGNAL(clicked()), this, SLOT(replace()));
-    connect(mReplaceAllBtn, SIGNAL(clicked()), this, SLOT(replaceAll()));
-    connect(mFindField, SIGNAL(returnPressed()), this, SLOT(onFindFieldReturn()));
-    connect(mReplaceField, SIGNAL(returnPressed()), this, SLOT(replace()));
-}
-
-void TextFindReplacePanel::setMode( Mode mode )
-{
-    if (mode == mMode) return;
-
-    mMode = mode;
-
-    bool visible = mMode == Replace;
-    mReplaceLabel->setVisible(visible);
-    mReplaceField->setVisible(visible);
-    mReplaceBtn->setVisible(visible);
-    mReplaceAllBtn->setVisible(visible);
-}
-
-void TextFindReplacePanel::initiate()
-{
-    if(mEditor)
-    {
-        QTextCursor c( mEditor->textCursor() );
-        if(c.hasSelection() &&
-           c.document()->findBlock(c.selectionStart()) ==
-           c.document()->findBlock(c.selectionEnd()))
-        {
-            mFindField->setText(c.selectedText());
-            mReplaceField->clear();
-        }
-    }
-
-    mFindField->selectAll();
-}
-
-QRegExp TextFindReplacePanel::regexp()
-{
-    QRegExp expr(findString());
-    expr.setPatternSyntax(asRegExp() ? QRegExp::RegExp : QRegExp::FixedString);
-    expr.setCaseSensitivity(matchCase() ? Qt::CaseSensitive : Qt::CaseInsensitive);
-    return expr;
-}
-
-QTextDocument::FindFlags TextFindReplacePanel::flags()
-{
-    QTextDocument::FindFlags f;
-    if(wholeWords())
-        f |= QTextDocument::FindWholeWords;
-    return f;
-}
-
-void TextFindReplacePanel::findNext()
-{
-    find(false);
-}
-
-void TextFindReplacePanel::findPrevious()
-{
-    find(true);
-}
-
-void TextFindReplacePanel::onFindFieldReturn()
-{
-    find (QApplication::keyboardModifiers() & Qt::ShiftModifier);
-}
-
-void TextFindReplacePanel::find (bool backwards)
-{
-    if (!mEditor) return;
-
-    QRegExp expr = regexp();
-    if (expr.isEmpty()) return;
-
-    QTextDocument::FindFlags opt = flags();
-    if (backwards)
-        opt |= QTextDocument::FindBackward;
-
-    mEditor->find(expr, opt);
-}
-
-void TextFindReplacePanel::findAll()
-{
-    if (!mEditor) return;
-
-    // NOTE: empty expression removes any search highlighting
-    mEditor->findAll(regexp(), flags());
-}
-
-void TextFindReplacePanel::replace()
-{
-    if (!mEditor) return;
-
-    QRegExp expr = regexp();
-    if (expr.isEmpty()) return;
-
-    mEditor->replace(expr, replaceString(), flags());
-}
-
-void TextFindReplacePanel::replaceAll()
-{
-    if (!mEditor) return;
-
-    QRegExp expr = regexp();
-    if (expr.isEmpty()) return;
-
-    mEditor->replaceAll(expr, replaceString(), flags());
-}
-
 
 } // namespace ScIDE
