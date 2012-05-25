@@ -43,8 +43,6 @@ class SignalMultiplexer;
 
 namespace Settings { class Manager; }
 
-class TextFindReplacePanel;
-
 class MultiEditor : public QWidget
 {
     Q_OBJECT
@@ -59,8 +57,6 @@ public:
         Cut,
         Copy,
         Paste,
-        Find,
-        Replace,
         IndentMore,
         IndentLess,
 
@@ -94,10 +90,6 @@ public Q_SLOTS:
 
     void setCurrent( Document * );
 
-    void showFindPanel();
-    void showReplacePanel();
-    void hideToolPanel();
-
     void applySettings( Settings::Manager * );
 
 private Q_SLOTS:
@@ -124,77 +116,10 @@ private:
 
     // gui
     QTabWidget *mTabs;
-    TextFindReplacePanel *mFindReplacePanel;
     QIcon mDocModifiedIcon;
 
     // settings
     bool mStepForwardEvaluation;
-};
-
-class TextFindReplacePanel : public QWidget
-{
-    Q_OBJECT
-
-public:
-    enum Mode
-    {
-        Find = 1,
-        Replace
-    };
-
-public:
-    TextFindReplacePanel( QWidget * parent = 0 );
-
-    void setEditor( CodeEditor *editor ) { mEditor = editor; }
-
-    Mode mode () const { return mMode; }
-    void setMode( Mode );
-    void initiate();
-
-    QString findString() const { return mFindField->text(); }
-    QString replaceString() const { return mReplaceField->text(); }
-    bool matchCase() const { return mMatchCaseAction->isChecked(); }
-    bool asRegExp() const { return mRegExpAction->isChecked(); }
-    bool wholeWords() const { return mWholeWordAction->isChecked(); }
-    QRegExp regexp();
-    QTextDocument::FindFlags flags();
-
-public Q_SLOTS:
-    void findNext();
-    void findPrevious();
-    void findAll();
-    void replace();
-    void replaceAll();
-
-Q_SIGNALS:
-    void close();
-
-private Q_SLOTS:
-    void onFindFieldReturn();
-
-private:
-    void find (bool backwards);
-
-    QToolButton *mCloseBtn;
-    QLineEdit *mFindField;
-    QLabel *mFindLabel;
-    QLineEdit *mReplaceField;
-    QLabel *mReplaceLabel;
-    QPushButton *mNextBtn;
-    QPushButton *mPrevBtn;
-    QPushButton *mFindAllBtn;
-    QPushButton *mReplaceBtn;
-    QPushButton *mReplaceAllBtn;
-    QPushButton *mOptionsBtn;
-    QAction *mMatchCaseAction;
-    QAction *mRegExpAction;
-    QAction *mWholeWordAction;
-
-    QGridLayout *mGrid;
-
-    Mode mMode;
-
-    CodeEditor *mEditor;
 };
 
 } // namespace ScIDE

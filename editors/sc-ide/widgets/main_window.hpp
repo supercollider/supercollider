@@ -31,6 +31,8 @@ namespace ScIDE
 
 class Main;
 class MultiEditor;
+class ToolBox;
+class TextFindReplacePanel;
 class PostDock;
 class DocumentsDock;
 class StatusLabel;
@@ -54,8 +56,14 @@ public:
         DocReload,
         ClearRecentDocs,
 
+        // Edit
+        Find,
+        Replace,
+
         // View
         ShowDocList,
+        ShowCmdLine,
+        CloseToolBox,
 
         // Language
         EvaluateCurrentFile,
@@ -94,6 +102,11 @@ public Q_SLOTS:
     void reloadDocument();
     void closeDocument();
 
+    void showCmdLine();
+    void showFindTool();
+    void showReplaceTool();
+    void hideToolBox();
+
 signals:
     void evaluateCode( const QString &, bool silent = true );
 
@@ -113,6 +126,7 @@ protected:
     virtual void closeEvent(QCloseEvent *event);
 
 private:
+    void createActions();
     void createMenus();
     QWidget *cmdLine();
 
@@ -122,6 +136,11 @@ private:
     QMenu * mRecentDocsMenu;
 
     MultiEditor *mEditors;
+
+    // Tools
+    ToolBox *mToolBox;
+    QWidget *mCmdLine;
+    TextFindReplacePanel *mFindReplaceTool;
 
     // Status bar
     StatusLabel *mLangStatus;

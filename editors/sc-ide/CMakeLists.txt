@@ -16,6 +16,8 @@ set ( ide_moc_hdr
     widgets/multi_editor.hpp
     widgets/doc_list.hpp
     widgets/cmd_line.hpp
+    widgets/find_replace_tool.hpp
+    widgets/tool_box.hpp
     widgets/documents_dialog.hpp
     widgets/code_editor/editor.hpp
     widgets/code_editor/highlighter.hpp
@@ -42,6 +44,7 @@ set ( ide_src
     widgets/post_window.cpp
     widgets/doc_list.cpp
     widgets/cmd_line.cpp
+    widgets/find_replace_tool.cpp
     widgets/documents_dialog.cpp
     widgets/code_editor/editor.cpp
     widgets/code_editor/highlighter.cpp
@@ -73,6 +76,14 @@ SET( translations
     translations/scide_zh.ts
 )
 
+# QtCollider shared sources:
+list(APPEND ide_moc_hdr
+    ${CMAKE_SOURCE_DIR}/QtCollider/layouts/stack_layout.hpp
+)
+list(APPEND ide_src
+    ${CMAKE_SOURCE_DIR}/QtCollider/layouts/stack_layout.cpp
+)
+
 QT4_ADD_TRANSLATION( translations_src ${translations} )
 
 list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp)
@@ -86,6 +97,8 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
+# For QtCollider headers:
+include_directories(${CMAKE_SOURCE_DIR})
 # Needed for auto-generated forms headers:
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets/util)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets)
