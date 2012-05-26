@@ -6,18 +6,23 @@ categories:: Collections>Ordered
 description::
 Arrays are ArrayedCollections whose slots may contain any object. Arrays have a fixed maximum size beyond which they cannot grow. For expandable arrays, use the link::Classes/List:: class.
 
+strong::Literal Arrays:: can be created at compile time, and are very efficient. See link::Reference/Literals:: for information.
+
+For handling strong::multidimensional arrays::, there are specific methods which are covered in the helpfile link::Language/J concepts in SC::.
+
+note::
 For Arrays, the code::add:: method may or may not return the same Array object. It will add the argument to the receiver if there is space, otherwise it returns a new Array object with the argument added. Thus the proper usage of code::add:: with an Array is to always assign the result as follows:
 code::
     z = z.add(obj);
 ::
-This allows an efficient use of resources, only growing the array when it needs to. The List class manages the Array for you, and in many cases is more suitable.
+This allows an efficient use of resources, only growing the array when it needs to. The link::Classes/List:: class manages the Array internally, and in many cases is more suitable.
+::
 
 Elements can be put into an existing slot with code::a.put(2,obj):: and accessed with
 code::a.at(2):: or code::a[2]::
 
 See link::Classes/ArrayedCollection:: for the principal methods: at, put, clipAt, wrapAt, etc...
 
-Literal Arrays can be created at compile time, and are very efficient. See link::Reference/Literals:: for information.
 
 ClassMethods::
 
