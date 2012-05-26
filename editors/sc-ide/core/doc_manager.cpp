@@ -48,15 +48,24 @@ void DocumentManager::create()
     Q_EMIT( opened(doc, 0) );
 }
 
-void DocumentManager::open( const QString & filename, int initialCursorPosition )
+void DocumentManager::open( const QString & path, int initialCursorPosition )
 {
+    QFileInfo info(path);
+    QString cpath = info.canonicalFilePath();
+    info.setFile(cpath);
+
+    if (cpath.isEmpty()) {
+        qWarning() << "DocumentManager: Can not open file: canonical path is empty.";
+        return;
+    }
+
     // Check if file already opened
 
     DocIterator it;
     for( it = mDocHash.begin(); it != mDocHash.end(); ++it )
     {
         Document *doc = it.value();
-        if(doc->fileName() == filename) {
+        if(doc->mFilePath == cpath) {
             Q_EMIT( showRequest(doc, initialCursorPosition) );
             addToRecent(doc);
             return;
@@ -65,9 +74,9 @@ void DocumentManager::open( const QString & filename, int initialCursorPosition 
 
     // Open the file
 
-    QFile file(filename);
+    QFile file(cpath);
     if(!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "DocumentManager: the file" << filename << "could not be opened for reading.";
+        qWarning() << "DocumentManager: the file" << cpath << "could not be opened for reading.";
         return;
     }
     QByteArray bytes( file.readAll() );
@@ -76,12 +85,12 @@ void DocumentManager::open( const QString & filename, int initialCursorPosition 
     Document *doc = new Document();
     doc->mDoc->setPlainText( QString::fromUtf8( bytes.data(), bytes.size() ) );
     doc->mDoc->setModified(false);
-    doc->mFileName = filename;
-    doc->mTitle = QDir(filename).dirName();
+    doc->mFilePath = cpath;
+    doc->mTitle = info.fileName();
 
     mDocHash.insert( doc->id(), doc );
 
-    mFsWatcher.addPath(filename);
+    mFsWatcher.addPath(cpath);
 
     Q_EMIT( opened(doc, initialCursorPosition) );
     addToRecent(doc);
@@ -91,12 +100,12 @@ bool DocumentManager::reload( Document *doc )
 {
     Q_ASSERT(doc);
 
-    if (doc->mFileName.isEmpty())
+    if (doc->mFilePath.isEmpty())
         return false;
 
-    QFile file(doc->mFileName);
+    QFile file(doc->mFilePath);
     if(!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "DocumentManager: the file" << doc->mFileName << "could not be opened for reading.";
+        qWarning() << "DocumentManager: the file" << doc->mFilePath << "could not be opened for reading.";
         return false;
     }
     QByteArray bytes( file.readAll() );
@@ -105,8 +114,8 @@ bool DocumentManager::reload( Document *doc )
     doc->mDoc->setPlainText( QString::fromUtf8( bytes.data(), bytes.size() ) );
     doc->mDoc->setModified(false);
 
-    if (!mFsWatcher.files().contains(doc->mFileName))
-        mFsWatcher.addPath(doc->mFileName);
+    if (!mFsWatcher.files().contains(doc->mFilePath))
+        mFsWatcher.addPath(doc->mFilePath);
 
     return true;
 }
@@ -120,8 +129,8 @@ void DocumentManager::close( Document *doc )
         return;
     }
 
-    if (!doc->mFileName.isEmpty())
-        mFsWatcher.removePath(doc->mFileName);
+    if (!doc->mFilePath.isEmpty())
+        mFsWatcher.removePath(doc->mFilePath);
 
     Q_EMIT( closed(doc) );
     delete doc;
@@ -131,28 +140,31 @@ bool DocumentManager::save( Document *doc )
 {
     Q_ASSERT(doc);
 
-    if (doc->mFileName.isEmpty())
-        return false;
-
-    return doSaveAs( doc, doc->mFileName );
+    return doSaveAs( doc, doc->mFilePath );
 }
 
-bool DocumentManager::saveAs( Document *doc, const QString & filename )
+bool DocumentManager::saveAs( Document *doc, const QString & path )
 {
     Q_ASSERT(doc);
-    bool ok = doSaveAs( doc, filename );
+
+    if (path.isEmpty()) {
+        qWarning() << "DocumentManager: the saving path is empty.";
+        return false;
+    }
+
+    bool ok = doSaveAs( doc, path );
     if (ok)
         addToRecent(doc);
     return ok;
 }
 
-bool DocumentManager::doSaveAs( Document *doc, const QString & fileName )
+bool DocumentManager::doSaveAs( Document *doc, const QString & path )
 {
     Q_ASSERT(doc);
 
-    QFile file(fileName);
+    QFile file(path);
     if(!file.open(QIODevice::WriteOnly)) {
-        qWarning() << "DocumentManager: the file" << fileName << "could not be opened for writing.";
+        qWarning() << "DocumentManager: the file" << path << "could not be opened for writing.";
         return false;
     }
 
@@ -160,15 +172,17 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & fileName )
     file.write(str.toUtf8());
     file.close();
 
-    doc->mFileName = fileName;
-    doc->mTitle = QDir(fileName).dirName();
+    QFileInfo info(path);
+    QString cpath = info.canonicalFilePath();
+
+    doc->mFilePath = cpath;
+    doc->mTitle = info.fileName();
     doc->mDoc->setModified(false);
-    QFileInfo finfo(file);
-    doc->mSaveTime = finfo.lastModified();
+    doc->mSaveTime = info.lastModified();
 
     // Always try to start watching, because the file could have been removed:
-    if (!mFsWatcher.files().contains(fileName))
-        mFsWatcher.addPath(fileName);
+    if (!mFsWatcher.files().contains(cpath))
+        mFsWatcher.addPath(cpath);
 
     Q_EMIT(saved(doc));
 
@@ -181,8 +195,8 @@ void DocumentManager::onFileChanged( const QString & path )
     for( it = mDocHash.begin(); it != mDocHash.end(); ++it )
     {
         Document *doc = it.value();
-        if (doc->mFileName == path) {
-            QFileInfo info(doc->mFileName);
+        if (doc->mFilePath == path) {
+            QFileInfo info(doc->mFilePath);
             if (doc->mSaveTime < info.lastModified()) {
                 doc->mDoc->setModified(true);
                 emit changedExternally(doc);
@@ -193,7 +207,7 @@ void DocumentManager::onFileChanged( const QString & path )
 
 void DocumentManager::addToRecent( Document *doc )
 {
-    const QString &path = doc->fileName();
+    const QString &path = doc->mFilePath;
     int i = mRecent.indexOf(path);
     if (i != -1)
         mRecent.move( i, 0 );

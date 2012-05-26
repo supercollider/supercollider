@@ -52,13 +52,13 @@ public:
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
-    const QString & fileName() { return mFileName; }
+    const QString & filePath() { return mFilePath; }
     const QString & title() { return mTitle; }
 
 private:
     QByteArray mId;
     QTextDocument *mDoc;
-    QString mFileName;
+    QString mFilePath;
     QString mTitle;
     QDateTime mSaveTime;
 };
@@ -77,13 +77,13 @@ public:
     void create();
     void close( Document * );
     bool save( Document * );
-    bool saveAs( Document *, const QString & filename );
+    bool saveAs( Document *, const QString & path );
     bool reload( Document * );
     const QStringList & recents() const { return mRecent; }
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
-    void open( const QString & filename, int initialCursorPosition = -1 );
+    void open( const QString & path, int initialCursorPosition = -1 );
     void clearRecents();
     void applySettings( Settings::Manager * );
     void storeSettings( Settings::Manager * );
@@ -101,7 +101,7 @@ private slots:
     void onFileChanged( const QString & path );
 
 private:
-    bool doSaveAs( Document *, const QString & filename );
+    bool doSaveAs( Document *, const QString & path );
     void addToRecent( Document * );
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;

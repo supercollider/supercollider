@@ -270,8 +270,8 @@ DocumentsDialog::Item::Item(Document *doc):
 void DocumentsDialog::Item::update()
 {
     setTitle(mDoc->title());
-    setPath(mDoc->fileName());
-    if (!mDoc->fileName().isEmpty() && !QFile::exists(mDoc->fileName())) {
+    setPath(mDoc->filePath());
+    if (!mDoc->filePath().isEmpty() && !QFile::exists(mDoc->filePath())) {
         setStatus("Removed");
         setChecked(false);
     }
