@@ -20,6 +20,47 @@ Collection {
 		};
 		^obj
 	}
+	*fill2D { | rows, cols, function |
+		var obj = this.new(rows);
+		rows.do { |row|
+			var obj2 = this.new(cols);
+			cols.do { |col|
+				obj2 = obj2.add(function.value(row, col))
+			};
+			obj = obj.add(obj2);
+		};
+		^obj
+	}
+	*fill3D { | planes, rows, cols, function |
+		var obj = this.new(planes);
+		planes.do { |plane|
+			var obj2 = this.new(rows);
+			rows.do { |row|
+				var obj3 = this.new(cols);
+				cols.do { |col|
+					obj3 = obj3.add(function.value(plane, row, col))
+				};
+				obj2 = obj2.add(obj3);
+			};
+			obj = obj.add(obj2);
+		};
+		^obj
+	}
+	*fillND { | dimensions, function, args = #[] | // args are private
+		var n = dimensions.first;
+		var obj = this.new(n);
+		var argIndex = args.size;
+		args = args ++ 0;
+		if(dimensions.size <= 1) {
+			n.do { |i| obj.add(function.valueArray(args.put(argIndex, i))) }
+		} {
+			dimensions = dimensions.drop(1);
+			n.do { |i|
+				obj = obj.add(this.fillND(dimensions, function, args.put(argIndex, i)))
+			}
+		};
+		^obj
+	}
 
 	@ { | index | ^this[index] }
 

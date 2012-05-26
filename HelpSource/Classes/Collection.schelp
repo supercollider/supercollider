@@ -29,6 +29,27 @@ code::
 Array.fill(4, { arg i; i * 2 });
 ::
 
+method::fill2D
+Creates a 2 dimensional ArrayedCollection of the given sizes. The items are determined by evaluation of the supplied function. The function is passed row and column indexes as arguments. See link::Guides/J-concepts-in-SC::
+code::
+Array.fill2D(2, 4, 0);
+Array.fill2D(3, 4, { arg r, c; r*c+c; });
+::
+
+method::fill3D
+Creates a 3 dimensional ArrayedCollection of the given sizes. The items are determined by evaluation of the supplied function. The function is passed plane, row and column indexes as arguments. See link::Guides/J-concepts-in-SC::
+code::
+Array.fill3D(2, 3, 4, { arg p, r, c; p; });
+::
+
+method::fillND
+Creates a N dimensional ArrayedCollection where N is the size of the array strong::dimensions::. The items are determined by evaluation of the supplied function. The function is passed N number of indexes as arguments.
+code::
+Array.fillND([4, 4], { arg a, b; a+b; });			//2d
+Array.fillND([4, 4, 4], { arg a, b, c; a+b*c; });		//3d
+Array.fillND([1, 2, 3, 4], { arg a, b, c, d; b+d; });		//4d
+::
+
 INSTANCEMETHODS::
 
 subsection::Accessing
