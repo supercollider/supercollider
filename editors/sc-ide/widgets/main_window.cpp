@@ -510,7 +510,7 @@ bool MainWindow::close( Document *doc )
 
 bool MainWindow::reload( Document *doc )
 {
-    if (doc->fileName().isEmpty())
+    if (doc->filePath().isEmpty())
         return false;
 
     if (doc->textDocument()->isModified())
@@ -534,8 +534,7 @@ bool MainWindow::reload( Document *doc )
 bool MainWindow::save( Document *doc, bool forceChoose )
 {
     DocumentManager *mng = Main::instance()->documentManager();
-    QString fileName = doc->fileName();
-    if (forceChoose || fileName.isEmpty())
+    if (forceChoose || doc->filePath().isEmpty())
     {
         QFileDialog dialog(mInstance);
 
