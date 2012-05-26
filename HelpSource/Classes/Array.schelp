@@ -43,7 +43,23 @@ code::
 Array.with(7, 'eight',  9).postln;
 ::
 
+copymethod:: Collection *fill
+
+copymethod:: Collection *newFrom
+
+copymethod:: ArrayedCollection *geom
+
+copymethod:: ArrayedCollection *series
+
+copymethod:: ArrayedCollection *iota
+
+
+
+
+
+
 InstanceMethods::
+
 
 method::reverse
 Returns a new Array whose elements are reversed. The receiver is unchanged.
