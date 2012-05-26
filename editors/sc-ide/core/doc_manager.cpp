@@ -35,8 +35,6 @@ DocumentManager::DocumentManager( Main *main ):
 {
     connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 
-    connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
-            this, SLOT(applySettings(Settings::Manager*)));
     connect(main, SIGNAL(storeSettingsRequest(Settings::Manager*)),
             this, SLOT(storeSettings(Settings::Manager*)));
 
