@@ -515,13 +515,16 @@ ScaleInfo {
 			"\\" ++ k ++ ": " ++ scales.at(k).name
 		}).join("\n");
 
-		dirDoc = dirDoc ?? {
+		if(Document.implementationClass.notNil) {
+			dirDoc = dirDoc ?? {
 				Document.new("Tuning Directory", dirString)
 				.onClose_({ dirDoc.free; dirDoc = nil });
-		};
-		dirDoc.front;
-		dirDoc.string = dirString;
-
+			};
+			dirDoc.front;
+			dirDoc.string = dirString;
+		} {
+			dirString.postln;
+		}
 	}
 }
 
@@ -629,12 +632,16 @@ TuningInfo {
 			"\\" ++ k ++ ": " ++ tunings.at(k).name
 		}).join("\n");
 
-		dirDoc = dirDoc ?? {
+		if(Document.implementationClass.notNil) {
+			dirDoc = dirDoc ?? {
 				Document.new("Tuning Directory", dirString)
 				.onClose_({ dirDoc.free; dirDoc = nil });
-		};
-		dirDoc.front;
-		dirDoc.string = dirString;
+			};
+			dirDoc.front;
+			dirDoc.string = dirString;
+		} {
+			dirString.postln;
+		}
 
 	}
 }
