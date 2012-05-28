@@ -14,6 +14,7 @@ Collection {
 	}
 	*fill { | size, function |
 		var obj;
+		if(size.isSequenceableCollection) { ^this.fillND(size, function) };
 		obj = this.new(size);
 		size.do { | i |
 			obj.add(function.value(i));
