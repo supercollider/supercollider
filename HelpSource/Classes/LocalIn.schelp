@@ -120,10 +120,10 @@ code::
 
 	in = LocalIn.ar(1);
 	imp = Impulse.ar(1);
-	sound = DelayC.ar(imp + (play * 0.995), 1, 440.reciprocal - ControlRate.ir.reciprocal);
+	sound = DelayC.ar(imp + (in * 0.995), 1, 440.reciprocal - ControlRate.ir.reciprocal);
 	LocalOut.ar(sound); // for feedback
 	in
-}.play(s, 0)
+}.play(s, 0);
 
 // compare pitch
 {
