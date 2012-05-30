@@ -784,7 +784,7 @@ SCDoc {
 
         sym = str.asSymbol;
         if(sym.asClass.notNil) {
-            ^pfx +/+ (if(this.documents["Classes"+/+str].isNil) {
+            ^pfx +/+ (if(this.documents["Classes"+/+str].isUndocumentedClass) {
                 (old = Help.findHelpFile(str)) !? {
                     "OldHelpWrapper.html#"++old++"?"++SCDoc.helpTargetDir +/+ "Classes" +/+ str ++ ".html"
                 }
