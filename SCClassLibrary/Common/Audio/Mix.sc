@@ -61,7 +61,15 @@ Mix {
 			{ \control } { result }
 			{ \scalar } { DC.kr(result) }
 			{ Error("Unsupported rate % for Mix.kr".format(result.rate)).throw };
-	}		
+	}
+
+	*arFill { |n, function|
+		^this.ar(Array.fill(n, function))
+	}
+
+	*krFill { |n, function|
+		^this.kr(Array.fill(n, function))
+	}
 }
 
 
