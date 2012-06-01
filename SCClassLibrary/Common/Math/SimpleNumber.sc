@@ -359,9 +359,8 @@ SimpleNumber : Number {
 		var constIndex = synth.constants.at(this.asFloat);
 		if (constIndex.isNil) {
 			Error("SimpleNumber-writeInputSpec constant not found: " ++ this.asFloat).throw;		};
-		//[\inpspc, this.class.name, constIndex, this].postln;
-		file.putInt16(-1);
-		file.putInt16(constIndex);
+		file.putInt32(-1);
+		file.putInt32(constIndex);
 	}
 
 	series { arg second, last;

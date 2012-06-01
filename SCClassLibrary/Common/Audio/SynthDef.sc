@@ -33,7 +33,7 @@ SynthDef {
 	}
 
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
-		^this.prNew(name).variants_(variants).metadata_(metadata)
+		^this.prNew(name).variants_(variants).metadata_(metadata).children_(Array.new(64))
 			.build(ugenGraphFunc, rates, prependArgs)
 	}
 	*prNew { arg name;
@@ -300,6 +300,7 @@ SynthDef {
 				.format(name), this).throw
 		}
 	}
+	
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
 		var allControlNamesTemp, allControlNamesMap;
@@ -309,21 +310,21 @@ SynthDef {
 		this.writeConstants(file);
 
 		//controls have been added by the Control UGens
-		file.putInt16(controls.size);
+		file.putInt32(controls.size);
 		controls.do { | item |
 			file.putFloat(item);
 		};
 
 		allControlNamesTemp = allControlNames.reject { |cn| cn.rate == \noncontrol };
-		file.putInt16(allControlNamesTemp.size);
+		file.putInt32(allControlNamesTemp.size);
 		allControlNamesTemp.do { | item |
 			if (item.name.notNil) {
 				file.putPascalString(item.name.asString);
-				file.putInt16(item.index);
+				file.putInt32(item.index);
 			};
 		};
 
-		file.putInt16(children.size);
+		file.putInt32(children.size);
 		children.do { | item |
 			item.writeDef(file);
 		};
@@ -369,15 +370,16 @@ SynthDef {
 					file.putFloat(item);
 				};
 			};
-		}
+		};
 	}
+	
 	writeConstants { arg file;
 		var array = FloatArray.newClear(constants.size);
 		constants.keysValuesDo { arg value, index;
 			array[index] = value;
 		};
 
-		file.putInt16(constants.size);
+		file.putInt32(constants.size);
 		array.do { | item |
 			file.putFloat(item)
 		};

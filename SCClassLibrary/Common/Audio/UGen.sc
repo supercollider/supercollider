@@ -374,8 +374,8 @@ UGen : AbstractFunction {
 		^nil
 	}
 	writeInputSpec { arg file, synthDef;
-		file.putInt16(synthIndex);
-		file.putInt16(this.outputIndex);
+		file.putInt32(synthIndex);
+		file.putInt32(this.outputIndex);
 	}
 	writeOutputSpec { arg file;
 		file.putInt8(this.rateNumber);
@@ -390,18 +390,16 @@ UGen : AbstractFunction {
 		^this.class.name.asString;
 	}
 	writeDef { arg file;
-		//[\WR, this.class.name, rate, this.numInputs, this.numOutputs].postln;
 		file.putPascalString(this.name);
 		file.putInt8(this.rateNumber);
-		file.putInt16(this.numInputs);
-		file.putInt16(this.numOutputs);
+		file.putInt32(this.numInputs);
+		file.putInt32(this.numOutputs);
 		file.putInt16(this.specialIndex);
 		// write wire spec indices.
 		inputs.do({ arg input;
 			input.writeInputSpec(file, synthDef);
 		});
 		this.writeOutputSpecs(file);
-		//[this.class.name, file.length].postln;
 	}
 
 ///////////////////////////////////////////////////////////////

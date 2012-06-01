@@ -1,13 +1,13 @@
-SynthDef2 : SynthDef {
+SynthDefOld : SynthDef {
 	
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
 		^this.prNew(name).variants_(variants).metadata_(metadata).children_(Array.new(64))
 			.build(ugenGraphFunc, rates, prependArgs)
-	}
+	}	
 	
 	writeDefFile { arg dir, overwrite;
 		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
-			super.writeDefFile2(name, dir, overwrite);
+			super.writeDefFileOld(name, dir, overwrite);
 		} {
 			// actual error, not just warning as in .send and .load,
 			// because you might try to write the file somewhere other than
@@ -26,23 +26,23 @@ SynthDef2 : SynthDef {
 		this.writeConstants(file);
 
 		//controls have been added by the Control UGens
-		file.putInt32(controls.size);
+		file.putInt16(controls.size);
 		controls.do { | item |
 			file.putFloat(item);
 		};
 
 		allControlNamesTemp = allControlNames.reject { |cn| cn.rate == \noncontrol };
-		file.putInt32(allControlNamesTemp.size);
+		file.putInt16(allControlNamesTemp.size);
 		allControlNamesTemp.do { | item |
 			if (item.name.notNil) {
 				file.putPascalString(item.name.asString);
-				file.putInt32(item.index);
+				file.putInt16(item.index);
 			};
 		};
 
-		file.putInt32(children.size);
+		file.putInt16(children.size);
 		children.do { | item |
-			item.writeDef2(file);
+			item.writeDefOld(file);
 		};
 
 		file.putInt16(variants.size);
@@ -86,7 +86,7 @@ SynthDef2 : SynthDef {
 					file.putFloat(item);
 				};
 			};
-		};
+		}
 	}
 	
 	writeConstants { arg file;
@@ -95,7 +95,7 @@ SynthDef2 : SynthDef {
 			array[index] = value;
 		};
 
-		file.putInt32(constants.size);
+		file.putInt16(constants.size);
 		array.do { | item |
 			file.putFloat(item)
 		};
@@ -103,63 +103,65 @@ SynthDef2 : SynthDef {
 	
 	asBytes {
 		var stream = CollStream.on(Int8Array.new(256));
-		this.asArray.writeDef2(stream);
+		this.asArray.writeDefOld(stream);
 		^stream.collection;
 	}
+
 }
 
 + Collection {
 	
-	writeDef2 { | file |
+	writeDefOld { | file |
 		file.putString("SCgf");
-		file.putInt32(2); // file version
+		file.putInt32(1); // file version
 		file.putInt16(this.size); // number of defs in file.
 
 		this.do { | item | item.writeDef(file); }
 	}
-	
-	writeInputSpec2 { | file, synthDef |
-		this.do { | item | item.writeInputSpec2(file, synthDef) };
+
+	writeInputSpecOld { | file, synthDef |
+		this.do { | item | item.writeInputSpecOld(file, synthDef) };
 	}
-	
 }
 
 + UGen {
 	
-	writeDef2 { arg file;
+	writeDefOld { arg file;
+		//[\WR, this.class.name, rate, this.numInputs, this.numOutputs].postln;
 		file.putPascalString(this.name);
 		file.putInt8(this.rateNumber);
-		file.putInt32(this.numInputs);
-		file.putInt32(this.numOutputs);
+		file.putInt16(this.numInputs);
+		file.putInt16(this.numOutputs);
 		file.putInt16(this.specialIndex);
 		// write wire spec indices.
 		inputs.do({ arg input;
-			input.writeInputSpec2(file, synthDef);
+			input.writeInputSpecOld(file, synthDef);
 		});
 		this.writeOutputSpecs(file);
+		//[this.class.name, file.length].postln;
 	}
 	
-	writeInputSpec2 { arg file, synthDef;
-		file.putInt32(synthIndex);
-		file.putInt32(this.outputIndex);
+	writeInputSpecOld { arg file, synthDef;
+		file.putInt16(synthIndex);
+		file.putInt16(this.outputIndex);
 	}
-	
 }
 
 + SimpleNumber {
 	
-	writeInputSpec2 { arg file, synth;
+	writeInputSpecOld { arg file, synth;
 		var constIndex = synth.constants.at(this.asFloat);
 		if (constIndex.isNil) {
 			Error("SimpleNumber-writeInputSpec constant not found: " ++ this.asFloat).throw;		};
-		file.putInt32(-1);
-		file.putInt32(constIndex);
+		//[\inpspc, this.class.name, constIndex, this].postln;
+		file.putInt16(-1);
+		file.putInt16(constIndex);
 	}
 }
 
 + Object {
 	
-	writeDefFile2 { arg name, dir, overwrite = (true);
+	writeDefFileOld { arg name, dir, overwrite = (true);
 
 		StartUp.defer { // make sure the synth defs are written to the right path
 			var file;
@@ -171,7 +173,7 @@ SynthDef2 : SynthDef {
 					file = File(name, "w");
 					protect {
 						AbstractMDPlugin.clearMetadata(name);
-						this.asArray.writeDef2(file);
+						this.asArray.writeDefOld(file);
 					}{
 						file.close;
 					}
