@@ -423,7 +423,7 @@ Sum3 : UGen {
 		rate = argArray.rate;
 		sortedArgs = argArray.sort {|a b| a.rate < b.rate};
 
-		^super.new1(*([rate] ++ sortedArgs))
+		^super.new1(rate, *sortedArgs)
 	}
 }
 
@@ -444,6 +444,6 @@ Sum4 : UGen {
 		rate = argArray.rate;
 		sortedArgs = argArray.sort {|a b| a.rate < b.rate};
 
-		^super.new1(rate, in0, in1, in2, in3)
+		^super.new1(rate, *sortedArgs)
 	}
 }
