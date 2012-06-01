@@ -281,6 +281,7 @@ void SigOsc_next_a(SigOsc *unit, int inNumSamples);
 
 void FSinOsc_Ctor(FSinOsc *unit);
 void FSinOsc_next(FSinOsc *unit, int inNumSamples);
+void FSinOsc_next_i(FSinOsc *unit, int inNumSamples);
 
 void PSinGrain_Ctor(PSinGrain *unit);
 void PSinGrain_next(PSinGrain *unit, int inNumSamples);
@@ -1310,7 +1311,10 @@ void SigOsc_next_a(SigOsc *unit, int inNumSamples)
 
 void FSinOsc_Ctor(FSinOsc *unit)
 {
-	SETCALC(FSinOsc_next);
+	if (INRATE(0) == calc_ScalarRate)
+		SETCALC(FSinOsc_next_i);
+	else
+		SETCALC(FSinOsc_next);
 	unit->m_freq = ZIN0(0);
 	float iphase = ZIN0(1);
 	float w = unit->m_freq * unit->mRate->mRadiansPerSample;
@@ -1351,7 +1355,38 @@ void FSinOsc_next(FSinOsc *unit, int inNumSamples)
 	//Print("y %g %g  b1 %g\n", y1, y2, b1);
 	unit->m_y1 = y1;
 	unit->m_y2 = y2;
-	unit->m_b1 = b1;
+}
+
+void FSinOsc_next_i(FSinOsc *unit, int inNumSamples)
+{
+#ifdef __GNUC__
+	float * __restrict__ out = ZOUT(0);
+#else
+	float * out = ZOUT(0);
+#endif
+	double b1 = unit->m_b1;
+
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	//Print("y %g %g  b1 %g\n", y1, y2, b1);
+	//Print("%d %d\n", unit->mRate->mFilterLoops, unit->mRate->mFilterRemain);
+	LOOP(unit->mRate->mFilterLoops,
+		y0 = b1 * y1 - y2;
+		y2 = b1 * y0 - y1;
+		y1 = b1 * y2 - y0;
+		ZXP(out) = y0;
+		ZXP(out) = y2;
+		ZXP(out) = y1;
+	);
+	LOOP(unit->mRate->mFilterRemain,
+		ZXP(out) = y0 = b1 * y1 - y2;
+		y2 = y1;
+		y1 = y0;
+	);
+	//Print("y %g %g  b1 %g\n", y1, y2, b1);
+	unit->m_y1 = y1;
+	unit->m_y2 = y2;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
