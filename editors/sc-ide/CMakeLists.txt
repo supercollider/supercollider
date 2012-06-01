@@ -110,7 +110,18 @@ qt4_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
 qt4_wrap_ui( ide_forms_src ${ide_forms} )
 qt4_add_resources( ide_rcc resources.qrc )
 
-add_executable( scide ${ide_src} ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations_src} )
+set(ide_sources ${ide_src} )
+
+set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations_src})
+
+if(FINAL_BUILD) # sclang final-builds are broken
+  CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
+  add_executable( scide scide_final.cpp ${ide_rc_sources} )
+else()
+  add_executable( scide ${ide_sources} ${ide_rc_sources} )
+endif()
+
+
 target_link_libraries( scide ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} yaml)
 
 if(APPLE)
