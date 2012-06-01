@@ -388,13 +388,10 @@ SynthDef {
 		children.do { arg ugen;
 			var err;
 			if ((err = ugen.checkInputs).notNil) {
-				if(firstErr.isNil){
-					firstErr = if(err.indexOf($:).isNil){err}{
-						err[..err.indexOf($:)-1]
-					};
-				};
-				(ugen.class.asString + err).postln;
+				err = ugen.class.asString + err;
+				err.postln;
 				ugen.dumpArgs;
+				if(firstErr.isNil) { firstErr = err };
 			};
 		};
 		if(firstErr.notNil) {
