@@ -180,7 +180,7 @@ Object  {
 		};
 		indices.do { |i|
 			var obj = this.instVarAt(i);
-			res = res bitXor: obj.hash;
+			res = res << 1 bitXor: obj.hash;  // encode slot order by left shifting
 		};
 		^res
 	}

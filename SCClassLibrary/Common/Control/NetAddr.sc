@@ -132,11 +132,11 @@ NetAddr {
 	}
 
 	== { arg that;
-		^that respondsTo: #[\port, \addr]
-			and: { this.port == that.port and: { this.addr == that.addr} }
+		^this.compareObject(that, #[\port, \addr])
 	}
-	hash { arg that;
-		^addr.hash bitXor: port.hash
+
+	hash {
+		^this.instVarHash(#[\port, \addr])
 	}
 
 	// Asymmetric: "that" may be nil or have nil port (wildcards)

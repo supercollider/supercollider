@@ -18,10 +18,11 @@ Point {
 	asArray { ^[this.x, this.y] }
 
 	== { arg aPoint;
-		^aPoint respondsTo: #[\x, \y] and: { x == aPoint.x and: { y == aPoint.y } }
+		^this.compareObject(aPoint, #[\x, \y])
 	}
-	hash { ^ (x.hash << 1) bitXor: y.hash }
-
+	hash {
+		^this.instVarHash(#[\x, \y])
+	}
 	performBinaryOpOnSomething { |aSelector, thing, adverb|
 		^thing.asPoint.perform(aSelector, this, adverb)
 	}

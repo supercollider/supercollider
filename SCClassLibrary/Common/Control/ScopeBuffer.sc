@@ -43,5 +43,12 @@ ScopeBuffer {
 			[index, numChannels, server.asCompileString]  <<")"
 	}
 
-	hash { ^index.hash bitXor: numChannels.hash bitXor: server.hash }
+	== { arg that;
+		^this.compareObject(that, #[\index, \numChannels, \server])
+	}
+
+	hash {
+		^this.instVarHash(#[\index, \numChannels, \server])
+	}
+
 }
