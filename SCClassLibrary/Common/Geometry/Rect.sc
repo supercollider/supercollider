@@ -146,13 +146,11 @@ Rect {
 	asRect { ^this }
 	bounds { ^Rect.new(left, top, width, height) }
 	== { arg that;
-		^that respondsTo: #[\left, \top, \width, \height]
-			and: { left == that.left
-			and: { top == that.top
-			and: { width == that.width
-			and: { height == that.height }}}}
+		^this.compareObject(that, #[\left, \top, \width, \height])
 	}
-	hash { ^left.hash bitXor: top.hash bitXor: width.hash bitXor: height.hash }
+	hash {
+		^this.instVarHash(#[\left, \top, \width, \height])
+	}
 
 	// deprec
 	layout { arg argBounds;

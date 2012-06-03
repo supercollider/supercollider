@@ -61,7 +61,7 @@ Complex : Number {
 		});
 	}
 	hash {
-		^real.hash bitXor: imag.hash
+		^real.hash << 1 bitXor: imag.hash
 	}
 
 	// double dispatch

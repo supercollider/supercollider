@@ -125,12 +125,12 @@ Scale {
 		^tuning.stepsPerOctave
 	}
 
-	== { |scale|
-		^degrees == scale.degrees and: { tuning == scale.tuning }
+	== { arg that;
+		^this.compareObject(that, #[\degrees, \tuning])
 	}
 
-	hash {
-		^degrees.hash bitXor: tuning.hash
+	hash { 
+		^this.instVarHash(#[\degrees, \tuning])
 	}
 
 	storeOn { |stream|
@@ -216,10 +216,11 @@ Tuning {
 	}
 
 	== { |argTuning|
-		^tuning == argTuning.tuning and: { octaveRatio == argTuning.octaveRatio }	}
+		^this.compareObject(argTuning, #[\tuning, \octaveRatio])
+	}
 
 	hash {
-		^tuning.hash bitXor: octaveRatio.hash
+		^this.instVarHash([\tuning, \octaveRatio])
 	}
 
 	*doesNotUnderstand { |selector, args|

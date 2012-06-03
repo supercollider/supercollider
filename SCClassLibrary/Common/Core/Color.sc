@@ -29,15 +29,13 @@ Color {
 
 	*rand { arg lo=0.3,hi=0.9; ^Color.new(rrand(lo,hi),rrand(lo,hi),rrand(lo,hi)) }
 
-	== {|that|
-		^(that.respondsTo(#[\red, \green, \blue, \alpha])
-			and: {(this.red  == that.red)
-			and: {this.green == that.green}
-			and: {this.blue  == that.blue}
-			and: {this.alpha  == that.alpha}
-		})
+	== { arg that;
+		^this.compareObject(that, #[\red, \green, \blue, \alpha])
 	}
-	hash { ^red.hash bitXor: green.hash bitXor: blue.hash bitXor: alpha.hash }
+
+	hash {
+		^this.instVarHash(#[\red, \green, \blue, \alpha])
+	}
 
 	scaleByAlpha {
 		^Color.new(red * alpha, green * alpha, blue * alpha, 1.0)

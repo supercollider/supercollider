@@ -211,12 +211,14 @@ Node {
 		^msg
 	}
 
-	hash {  ^server.hash bitXor: nodeID.hash	}
-
-	== { arg aNode;
-		^aNode respondsTo: #[\nodeID, \server]
-			and: { aNode.nodeID == nodeID and: { aNode.server === server }}
+	== { arg that;
+		^this.compareObject(that, #[\nodeID, \server])
 	}
+
+	hash {
+		^this.instVarHash(#[\nodeID, \server])
+	}
+
 	printOn { arg stream; stream << this.class.name << "(" << nodeID <<")" }
 	asUGenInput { Error("should not use a % inside a SynthDef".format(this.class.name)).throw }
 	asControlInput { ^this.nodeID }

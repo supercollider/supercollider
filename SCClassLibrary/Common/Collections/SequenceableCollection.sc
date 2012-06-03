@@ -118,6 +118,14 @@ SequenceableCollection : Collection {
 		^true
 	}
 
+	hash {
+		var hash = this.class.hash;
+		this.do { | item |
+			hash = hash << 1 bitXor: item.hash // encode item order by left shifting
+		};
+		^hash
+	}
+
 	copyRange { arg start, end;
 		var newColl;
 		var i = start;

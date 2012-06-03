@@ -203,16 +203,12 @@ Bus {
 		stream << this.class.name << "(" <<*
 			[rate.asCompileString, index, numChannels, server.asCompileString]  <<")"
 	}
-
 	== { arg aBus;
-		if(aBus === this,{ ^true });
-		^aBus respondsTo: #[\index, \numChannels, \rate, \server]
-		and: { aBus.index == index
-		and: { aBus.numChannels == numChannels
-		and: { aBus.rate == rate
-		and: { aBus.server === server }}}}
+		^this.compareObject(aBus, #[\index, \numChannels, \rate, \server])
 	}
-	hash { ^index.hash bitXor: numChannels.hash bitXor: rate.hash bitXor: server.hash }
+	hash {
+		^this.instVarHash(#[\index, \numChannels, \rate, \server])
+	}
 
 	isAudioOut { // audio interface
 		^(rate === \audio and: {index < server.options.firstPrivateBus})
