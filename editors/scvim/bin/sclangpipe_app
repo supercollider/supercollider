@@ -34,7 +34,7 @@ end
 pid_loc = "/tmp/sclangpipe_app-pid" unless (pid_loc = ENV["SCVIM_PIPE_PID_LOC"])
 app = `which sclang`.chomp
 if app.empty?
-  mac_loc = "/Applications/SuperCollider/sclang"
+  mac_loc = "/Applications/SuperCollider/SuperCollider.app/Contents/Resources/sclang"
   if RUBY_PLATFORM =~ /darwin/ and File.exists?(mac_loc)
     app = mac_loc
   else
