@@ -2,8 +2,7 @@ title:: J concepts in SC
 summary:: An overview of concepts borrowed from J
 categories:: Language
 
-The J programming language is a successor of APL. (http://www.jsoftware.com)
-These languages are made for processing arrays of data and are able to express
+The J programming language is a successor of APL (http://www.jsoftware.com). These languages are made for processing arrays of data and are able to express
 complex notions of iteration implicitly.
 
 The following are some concepts borrowed from or inspired by J.
@@ -21,19 +20,23 @@ z.rank; // 3 dimensions
 z.shape;
 ::
 
-fill a 2D array
+fill a multidimensional array
 code::
-Array.fill2D(3,3,{1.0.rand.round(0.01)});
+// 2 dimensions
+Array.fill([3,3], { 1.0.rand.round(0.01) });
+Array.fill([2,3], {|i,j| i@j });
 
-Array.fill2D(2,3,{|i,j| i@j});
+// 3 dimensions
+Array.fill([2, 2, 2], { 1.0.rand.round(0.01) });
+Array.fill([2, 3, 4], {|i,j,k| [i, j, k].join });
+
+// a shorter variant of the above:
+{|i,j,k| [i, j, k].join } ! [2, 3, 4];
+
+// more dimensions
+Array.fill([2, 2, 4, 2], {|...args| args.join });
 ::
 
-fill a 3D array
-code::
-Array.fill3D(2,2,2,{1.0.rand.round(0.01)});
-
-Array.fill3D(2,2,2,{|i,j,k| `[i,j,k]});
-::
 
 section:: Creating arrays
 using dup to create arrays
@@ -45,6 +48,7 @@ code::
 {{100.rand} dup: 3} dup: 4;
 {|i| i.squared} dup: 10;
 {|i| i.nthPrime} dup: 10;
+{ |i, j, k| i * j } dup: [5, 5]; // multidimensional dup
 ::
 ! is an abbreviation of dup
 code::
@@ -55,6 +59,7 @@ code::
 {{100.rand} ! 3} ! 4;
 {|i| i.squared} ! 10;
 {|i| i.nthPrime} ! 10;
+{ |i, j| i * j } ! [5, 5];
 ::
 
 other ways to do the same thing:
@@ -112,22 +117,22 @@ section:: Sections of multidimensional arrays
 slice can get sections of multidimensional arrays.
 nil gets all the indices of a dimension.
 code::
-z = Array.iota(4,5);
+z = Array.iota(4, 5);
 z.slice(nil, (1..3));
 z.slice(2, (1..3));
 z.slice((2..3), (0..2));
 z.slice((1..3), 3);
 z.slice(2, 3);
 
-z = Array.iota(3,3,3);
-z.slice([0,1],[1,2],[0,2]);
-z.slice(nil,nil,[0,2]);
+z = Array.iota(3, 3, 3);
+z.slice([0,1], [1,2], [0,2]);
+z.slice(nil, nil, [0,2]);
 z.slice(1);
-z.slice(nil,1);
-z.slice(nil,nil,1);
-z.slice(nil,2,1);
-z.slice(nil,1,(1..2));
-z.slice(1,[0,1]);
+z.slice(nil, 1);
+z.slice(nil, nil, 1);
+z.slice(nil, 2, 1);
+z.slice(nil, 1, (1..2));
+z.slice(1, [0,1]);
 z.flop;
 ::
 
@@ -225,6 +230,29 @@ a.reshapeLike(b, \clipAt);
 
 a.reshapeLike(b, \at);
 ::
+
+section:: measuring dimensionality and size
+maxSizeAtDepth allows you to check the maximum array size at a given depth dimension
+code::
+[[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(2);
+[[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(1);
+[[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(0);
+(0..3).collect([[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxSizeAtDepth(_)) // max sizes for each dimension
+::
+
+section:: inverting dimensions
+flopDeep allows you to to invert the outermost dimension with a dimension at any depth. This is analogous to flop, which does the same for 2-dimensional arrays.
+code::
+[[1, 2, 3], [[41, 52], 5, 6]].flopDeep(2);
+[[1, 2, 3], [[41, 52], 5, 6]].flopDeep(1);
+[[1, 2, 3], [[41, 52], 5, 6]].flopDeep(0);
+[[1, 2, 3], [[41, 52], 5, 6]].flopDeep; // without argument, flop from the deepest level
+
+[[[10, 100, 1000], 2, 3], [[41, 52], 5, 6]].flopDeep(2); // shorter array wraps
+[].flopDeep(1); // result is always one dimension higher.
+[[]].flopDeep(4);
+::
+
 
 section:: allTuples
 allTuples will generate all combinations of the sub arrays
