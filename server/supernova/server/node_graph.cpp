@@ -59,6 +59,18 @@ void node_graph::add_node(server_node * n, node_position_constraint const & cons
         break;
     }
 
+    case replace: {
+        abstract_group * node_parent = node->parent_;
+        node_parent->replace_child(n, node);
+
+        if (node->is_synth())
+            synth_count_ -= 1;
+        else
+            group_count_ -= 1;
+
+        break;
+    }
+
     default:
         assert(false);      /* this point should not be reached! */
     }
@@ -170,6 +182,17 @@ void abstract_group::add_child(server_node * node)
 
     child_nodes.push_front(*node);
     node->set_parent(this);
+}
+
+void abstract_group::replace_child(server_node * node, server_node * node_to_replace)
+{
+    assert (not has_child(node));
+    assert (has_child(node_to_replace));
+
+    server_node_list::iterator position_of_old_element = server_node_list::s_iterator_to(*node_to_replace);
+    child_nodes.insert(position_of_old_element, *node);
+    node->set_parent(this);
+    remove_child(node_to_replace);
 }
 
 bool abstract_group::has_child(const server_node * node) const

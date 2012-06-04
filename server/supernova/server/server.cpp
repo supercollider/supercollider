@@ -106,6 +106,10 @@ abstract_synth * nova_server::add_synth(const char * name, int id, node_position
     if (ret == 0)
         return 0;
 
+    server_node * node_to_replace = NULL;
+    if (constraints.second == replace)
+        notification_node_ended(constraints.first);
+
     node_graph::add_node(ret, constraints);
     update_dsp_queue();
     notification_node_started(ret);

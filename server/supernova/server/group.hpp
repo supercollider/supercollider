@@ -87,6 +87,7 @@ public:
     void add_child(server_node * node);
     virtual void add_child(server_node * node, node_position_constraint const &) = 0;
     virtual void add_child(server_node * node, node_position) = 0;
+    void replace_child(server_node * node, server_node * node_to_replace);
 
     bool has_child(const server_node * node) const;
 
