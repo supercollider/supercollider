@@ -106,7 +106,6 @@ abstract_synth * nova_server::add_synth(const char * name, int id, node_position
     if (ret == 0)
         return 0;
 
-    server_node * node_to_replace = NULL;
     if (constraints.second == replace)
         notification_node_ended(constraints.first);
 
