@@ -753,7 +753,13 @@ PbindProxy : Pattern {
 
 	}
 
-	storeArgs { ^pairs.collect(_.source) }
+	storeArgs {
+		var result = Array(pairs.size);
+		pairs.pairsDo { |key, value|
+			result.add(key).add(value.source)
+		};
+		^result
+	}
 }
 
 
