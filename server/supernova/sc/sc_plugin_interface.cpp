@@ -563,7 +563,7 @@ int do_asynchronous_command(World *inWorld, void* replyAddr, const char* cmdName
                                             stage2, stage3, stage4, cleanup,
                                             completionMsgSize, completionMsgData);
     return 0;
-};
+}
 
 } /* extern "C" */
 
