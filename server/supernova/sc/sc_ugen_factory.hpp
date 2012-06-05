@@ -32,8 +32,7 @@
 
 #include "utilities/named_hash_entry.hpp"
 
-namespace nova
-{
+namespace nova {
 namespace bi = boost::intrusive;
 
 struct sc_unitcmd_def:
