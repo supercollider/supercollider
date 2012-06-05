@@ -30,8 +30,7 @@
 #include "SC_World.h"
 #include "SC_Wire.h"
 
-namespace nova
-{
+namespace nova {
 
 sc_ugen_factory * sc_factory;
 

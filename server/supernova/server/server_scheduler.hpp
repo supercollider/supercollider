@@ -76,8 +76,7 @@ class scheduler:
         public audio_sync_callback
     {
     public:
-        reset_queue_cb(scheduler * sched,
-                       dsp_thread_queue_ptr & qptr):
+        reset_queue_cb(scheduler * sched, dsp_thread_queue_ptr & qptr):
             sched(sched), qptr(qptr)
         {}
 
