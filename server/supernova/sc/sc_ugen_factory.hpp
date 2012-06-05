@@ -77,7 +77,7 @@ public:
         unitcmd_set(unitcmd_set_type::bucket_traits(unitcmd_set_buckets, unitcmd_set_bucket_count))
     {}
 
-    Unit * construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, char *& chunk);
+    Unit * construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, linear_allocator & allocator);
 
     void initialize(Unit * unit)
     {

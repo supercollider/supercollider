@@ -208,6 +208,23 @@ PURE inline std::size_t string_hash(const char * str)
     return ret;
 }
 
+struct linear_allocator
+{
+    linear_allocator(char * chunk):
+        chunk(chunk)
+    {}
+
+    template <typename T>
+    T * alloc(int count = 1)
+    {
+        T * ret = reinterpret_cast<T*>(chunk);
+        chunk += count * sizeof(T);
+        return ret;
+    }
+
+private:
+    char * chunk;
+};
 
 } /* namespace nova */
 
