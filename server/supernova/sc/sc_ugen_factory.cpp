@@ -34,19 +34,19 @@ namespace nova {
 
 sc_ugen_factory * sc_factory;
 
-Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, char *& chunk)
+Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, linear_allocator & allocator)
 {
     const int buffer_length = world->mBufLength;
 
     const size_t output_count = unit_spec.output_specs.size();
 
     /* size for wires and buffers */
-    memset(chunk, 0, alloc_size);
-    Unit * unit = (Unit*)chunk;     chunk += alloc_size;
-    unit->mInBuf  = (float**)chunk; chunk += unit_spec.input_specs.size() * sizeof(float*);
-    unit->mOutBuf = (float**)chunk; chunk += unit_spec.output_specs.size() * sizeof(float*);
-    unit->mInput  = (Wire**)chunk;  chunk += unit_spec.input_specs.size() * sizeof(Wire*);
-    unit->mOutput = (Wire**)chunk;  chunk += unit_spec.output_specs.size() * sizeof(Wire*);
+    Unit * unit   = (Unit*)allocator.alloc<uint8_t>(alloc_size);
+    memset(unit, 0, alloc_size);
+    unit->mInBuf  = allocator.alloc<float*>(unit_spec.input_specs.size());
+    unit->mOutBuf = allocator.alloc<float*>(unit_spec.output_specs.size());
+    unit->mInput  = allocator.alloc<Wire*>(unit_spec.input_specs.size());
+    unit->mOutput = allocator.alloc<Wire*>(unit_spec.output_specs.size());
 
     unit->mNumInputs  = unit_spec.input_specs.size();
     unit->mNumOutputs = unit_spec.output_specs.size();
@@ -71,7 +71,7 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
 
     /* allocate buffers */
     for (size_t i = 0; i != output_count; ++i) {
-        Wire * w = (Wire*)chunk; chunk += sizeof(Wire);
+        Wire * w = allocator.alloc<Wire>();
 
         w->mFromUnit = unit;
         w->mCalcRate = unit->mCalcRate;
