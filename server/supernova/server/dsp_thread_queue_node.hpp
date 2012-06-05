@@ -27,8 +27,7 @@
 #include "server/synth.hpp"
 #include "../sc/sc_synth.hpp"
 
-namespace nova
-{
+namespace nova {
 
 /* optimized for sc_synth, since we don't support other types of synths for now */
 class queue_node_data
