@@ -50,7 +50,7 @@ Pseq : ListPattern {
 	}
 	embedInStream {  arg inval;
 		var item, offsetValue;
-		offsetValue = offset.value;
+		offsetValue = offset.value(inval);
 		if (inval.eventAt('reverse') == true, {
 			repeats.value(inval).do({ arg j;
 				list.size.reverseDo({ arg i;
@@ -74,7 +74,7 @@ Pseq : ListPattern {
 Pser : Pseq {
 	embedInStream { arg inval;
 		var item;
-		var offsetValue = offset.value;
+		var offsetValue = offset.value(inval);
 		if (inval.eventAt('reverse') == true, {
 			repeats.value(inval).reverseDo({ arg i;
 				item = list.wrapAt(i + offsetValue);
@@ -264,7 +264,7 @@ Ptuple : ListPattern {
 Place : Pseq {
 	embedInStream {  arg inval;
 		var item;
-		var offsetValue = offset.value;
+		var offsetValue = offset.value(inval);
 
 		if (inval.eventAt('reverse') == true, {
 			repeats.value(inval).do({ arg j;
@@ -296,7 +296,7 @@ Ppatlace : Pseq {
 	embedInStream { |inval|
 		var	consecutiveNils = 0, index, repeat, item;
 		var streamList = list.collect({ |item| item.asStream });
-		var offsetValue = offset.value;
+		var offsetValue = offset.value(inval);
 		var localRepeats = repeats.value(inval);
 
 		index = repeat = 0;
