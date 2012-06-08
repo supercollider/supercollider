@@ -88,7 +88,8 @@ Scale {
 	}
 
 	degreeToRatio { |degree, octave = 0|
-		^this.ratios.at(degree) * (this.octaveRatio ** octave);
+		octave = octave + (degree div: degrees.size);
+		^this.ratios.wrapAt(degree) * (this.octaveRatio ** octave);
 	}
 
 	degreeToFreq { |degree, rootFreq, octave|
