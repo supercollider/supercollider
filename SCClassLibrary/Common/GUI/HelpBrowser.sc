@@ -98,7 +98,15 @@ HelpBrowser {
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
 				};
 				// detect old helpfiles and open them in OldHelpWrapper
-				if(block{|break| Help.do {|key,path| if(url.endsWith(path)) {break.value(true)}}; false}) {
+				if(
+					block{|break|
+						Help.do {|key, path|
+							if(url.endsWith(path)) {
+								break.value(true)
+							}
+						}; false
+					}
+				) {
 					url = HelpBrowser.getOldWrapUrl(url)
 				};
 				webView.url = url;
