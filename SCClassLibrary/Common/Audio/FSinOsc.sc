@@ -68,12 +68,10 @@ Klank : UGen {
 DynKlank : UGen {
 
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
-		specificationsArrayRef = specificationsArrayRef.multichannelExpand(2);
 		^this.multiNew(\audio, specificationsArrayRef, input, freqscale, freqoffset, decayscale)
 	}
 
 	*kr { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
-		specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
 		^this.multiNew(\control, specificationsArrayRef, input, freqscale, freqoffset, decayscale)
 	}
 
@@ -92,12 +90,10 @@ DynKlank : UGen {
 DynKlang : UGen {
 
 	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
-		specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
 		^this.multiNew(\audio, specificationsArrayRef, freqscale, freqoffset);
 	}
 
 	*kr { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
-		specificationsArrayRef = specificationsArrayRef.multichannelExpandRef(2);
 		^this.multiNew(\control, specificationsArrayRef, freqscale, freqoffset);
 	}
 
