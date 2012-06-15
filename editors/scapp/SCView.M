@@ -1925,21 +1925,22 @@ SCScrollView::SCScrollView(SCContainerView *inParent, PyrObject* inObj, SCRect i
 	[scrollView setDocumentView:view];
 
 	[scrollView setPostsFrameChangedNotifications: YES]; // we need this to resize the SCGraphView if the scroll view exceeds its bounds
-	[[NSNotificationCenter defaultCenter] addObserver:view
-											 selector:@selector(scrollViewResized:)
-												 name:@"NSViewFrameDidChangeNotification"
-											   object:scrollView];
+
 
 	NSClipView *contentView = [scrollView contentView];
 	[contentView setPostsBoundsChangedNotifications:YES];
-	[[NSNotificationCenter defaultCenter] addObserver:view
-											 selector:@selector(userScrolled:)
-												 name:@"NSViewBoundsDidChangeNotification"
-											   object:contentView];
 
 	SetNSScrollView(scrollView);
 	[topGraphview addSubview: scrollView];
 	[view setFrameSizeToMinimum];
+	[[NSNotificationCenter defaultCenter] addObserver:view
+											 selector:@selector(scrollViewResized:)
+												 name:@"NSViewFrameDidChangeNotification"
+											   object:scrollView];
+	[[NSNotificationCenter defaultCenter] addObserver:view
+											 selector:@selector(userScrolled:)
+												 name:@"NSViewBoundsDidChangeNotification"
+											   object:contentView];
 	setBounds(mLayout.bounds);
 	setVisibleFromParent();
 
