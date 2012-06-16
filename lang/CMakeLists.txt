@@ -3,11 +3,16 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
                     ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost
                     ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
                     ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
                     LangSource/Bison)
+
+if (Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+else()
+    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
+endif()
 
 if(APPLE)
 	include_directories("LangPrimSource/${HID_UTIL_DIR}")
@@ -73,10 +78,12 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
 
-file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
-file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/v3/src/*cpp)
-file(GLOB boost_regex_sources ../external_libraries/boost/libs/regex/src/*cpp)
-list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
+if (NOT Boost_FOUND)
+	file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
+	file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/v3/src/*cpp)
+	file(GLOB boost_regex_sources ../external_libraries/boost/libs/regex/src/*cpp)
+	list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
+endif()
 
 file(GLOB yaml_sources ../external_libraries/yaml-cpp-0.3.0/src/*cpp)
 list(APPEND sclang_sources ${yaml_sources})
@@ -190,6 +197,10 @@ if (SC_WII OR APPLE)
 	endif()
 endif()
 
+if (Boost_FOUND)
+	target_link_libraries(libsclang ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
+endif()
+
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
 else()
@@ -257,25 +268,30 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
 
-target_link_libraries(libsclang ${PTHREADS_LIBRARY} supercollider_boost_thread)
+target_link_libraries(libsclang ${PTHREADS_LIBRARY})
 
 if(SC_QT)
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
 endif()
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp)
-target_link_libraries(sclang libsclang boost_thread)
+
+if (${Boost_FOUND})
+	target_link_libraries(sclang libsclang ${Boost_THREAD_LIBRARY})
+else()
+	target_link_libraries(sclang libsclang boost_thread)
+endif()
 
 set_property(TARGET sclang
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS USE_SC_TERMINAL_CLIENT)
 
 if(LTO)
-    set_property(TARGET sclang libsclang
-                 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+	set_property(TARGET sclang libsclang
+					APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-    set_property(TARGET sclang libsclang
-                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
+	set_property(TARGET sclang libsclang
+					APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
 if(APPLE)

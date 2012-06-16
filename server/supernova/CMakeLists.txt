@@ -31,10 +31,16 @@ endif()
 
 
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_move
                     ${CMAKE_SOURCE_DIR}/external_libraries/oscpack
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
                     )
+
+if (Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+else()
+    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
+endif()
+
 
 if(APPLE)
     include_directories(${CMAKE_SOURCE_DIR}/external_libraries/libsndfile)
@@ -124,7 +130,14 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     target_link_libraries(libsupernova rt)
 endif()
 
-target_link_libraries(libsupernova oscpack tlsf boost_thread boost_system boost_filesystem boost_program_options ${PTHREADS_LIBRARIES})
+target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES})
+
+if (Boost_FOUND)
+    target_link_libraries(libsupernova ${Boost_THREAD_LIBRARY}  ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
+else()
+    target_link_libraries(libsupernova boost_thread boost_system boost_filesystem boost_program_options)
+endif()
+
 target_link_libraries(supernova libsupernova)
 
 if(APPLE)
