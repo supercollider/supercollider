@@ -3639,7 +3639,8 @@ void sc_osc_handler::do_asynchronous_command(World * world, void* replyAddr, con
                                              int completionMsgSize, void* completionMsgData)
 {
     completion_message msg(completionMsgSize, completionMsgData);
-    nova_endpoint endpoint(*static_cast<nova_endpoint*>(replyAddr));
+    nova_endpoint endpoint = replyAddr ? (*static_cast<nova_endpoint*>(replyAddr))
+                                       : nova_endpoint();
 
     if (world->mRealTime)
         cmd_dispatcher<true>::fire_system_callback(boost::bind(handle_asynchronous_plugin_stage2<true>, world, cmdName,

@@ -144,13 +144,10 @@ public:
 
     unsigned short port() const
     {
-        if (type_.family_ == AF_INET)
-        {
+        if (type_.family_ == AF_INET) {
             return boost::asio::detail::socket_ops::network_to_host_short(
                 data_.v4.sin_port);
-        }
-        else
-        {
+        } else {
             return boost::asio::detail::socket_ops::network_to_host_short(
                 data_.v6.sin6_port);
         }
@@ -176,6 +173,11 @@ public:
         if (e1.address() != e2.address())
             return false;
         return e1.port() < e2.port();
+    }
+
+    bool is_valid() const
+    {
+        return port() != 0;
     }
 
 private:
