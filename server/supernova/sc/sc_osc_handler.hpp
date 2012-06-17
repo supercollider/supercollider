@@ -116,6 +116,8 @@ public:
     /** sending functions */
     void send(const char * data, size_t size, nova_endpoint const & endpoint)
     {
+        if (!endpoint.is_valid())
+            return;
         nova_protocol prot = endpoint.protocol();
         if (prot.family() == AF_INET && prot.type() == SOCK_DGRAM)
         {
