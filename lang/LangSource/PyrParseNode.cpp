@@ -4216,7 +4216,7 @@ int conjureSelectorIndex(PyrParseNode *node, PyrBlock* func,
 	// otherwise add it to the selectors table
 
 	if (selectors->size+1 >= 256) {
-		error("Literal table too big. Simplify the function.\n");
+		error("Selector table too big: too many classes, method selectors or function definitions in this function. Simplify the function.\n");
 		post("Next selector was: %s\n", selector->name);
 		nodePostErrorLine(node);
 		compileErrors++;
@@ -4267,7 +4267,7 @@ int conjureLiteralSlotIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot)
 	// otherwise add it to the selectors table
 
 	if (selectors->size+1 >= 256) {
-		error("Literal table too big (>256). Simplify the function.\n");
+		error("Selector table too big: too many classes, method selectors or function definitions in this function. Simplify the function.\n");
 		post("Next literal was:\n");
 		dumpPyrSlot(slot);
 		nodePostErrorLine(node);
