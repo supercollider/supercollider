@@ -197,3 +197,66 @@ table.atAll(#[c4, e4, gs4, c5, e5, gs5, c6])
 )
 ::
 
+section:: Compiler limits
+
+There is no theoretical limit on the number of literals in a single function, if those literals are used as freestanding objects. (Of course, there remains the practical limits of system memory and the processor time required to keep track of all the objects.)
+
+The following are a special category of literal, called emphasis::selectors::.
+
+list::
+## Class names
+## Method names
+## Function definitions (enclosed in curly braces code::{  }::)
+::
+
+Here, there are four selectors: code::SinOsc::, code::ar::, code::play:: and the entire function containing SinOsc.
+
+code::{ SinOsc.ar(440, 0, 0.1) }.play;::
+
+A single function may contain no more than 256 selectors. If this limit is exceeded, a compiler error is printed:
+
+teletype::ERROR: Selector table too big: too many classes, method selectors or function definitions in this function. Simplify the function.::
+
+note::
+Code submitted for interactive execution is first compiled into a function. A very large block of code, spanning several thousand lines, may run into this limitation if it doesn't break down the tasks into smaller functions. In general, code is easier to maintain if it is reasonably emphasis::modular::, with small functions handling clearly-defined parts of the problem. This error message is a signal that the code has become too complex for a loose or "flat" code structure.
+::
+
+subsection:: What counts as "inside the function"?
+
+Selectors are counted only toward the function definition currently being compiled.
+
+code::
+{ x.foo };
+
+{ x.bar };
+::
+
+Both functions contain exactly one selector. They are separate functions. The use of "foo" in one function doesn't affect the number of selectors in another function.
+
+code::
+{
+	var f = { |n|
+		if(n > 1) { n * f.value(n-1) } { 1 }
+	};
+
+	f.value(10);
+}.value;
+::
+
+The outer function includes only the selector code::value::. The other selectors -- code::>::, code::*::, code::-:: -- belong to the inner function definition and don't affect the outer function's number of selectors.
+
+So, one possible easy way to work around the limitation is to break up a large block of code into several functions that are value'd successively:
+
+code::
+{
+	... a bunch of code ...
+}.value;
+
+{
+	... a bunch of code ...
+}.value;
+
+{
+	... a bunch of code ...
+}.value;
+::
