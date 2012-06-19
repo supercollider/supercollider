@@ -9,7 +9,7 @@ The following sections describe the types of literals that can be represented.
 section::Numbers
 
 subsection::Integers
-An integer is any series of digits optionally preceeded by a minus sign:
+An integer is any series of digits optionally preceded by a minus sign:
 code::
 -13
 666
@@ -65,14 +65,14 @@ code::
 
 section::Characters
 
-Characters are preceeded by a dollar sign:
+Characters are preceded by a dollar sign:
 code::
 $A
 $B
 $C
 ::
 
-Tab, linefeed, carriage return, and backslash are preceeded by a backslash:
+Tab, linefeed, carriage return, and backslash are preceded by a backslash:
 code::
 $\t
 $\n
