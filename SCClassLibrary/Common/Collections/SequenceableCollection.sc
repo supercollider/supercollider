@@ -334,6 +334,19 @@ SequenceableCollection : Collection {
 		list = list.add(sublist);
 		^list
 	}
+	split { arg separator=$/;
+		var list = Array.new, index, prevIndex = -1, sepsize;
+		separator = separator.as(this.class);
+		sepsize = separator.size;
+		loop {
+			index = this.find(separator, offset: prevIndex + 1);
+			if(index.isNil) {
+				^list.add(this[prevIndex..]);
+			};
+			list = list.add(this[prevIndex..index - 1]);
+			prevIndex = index + sepsize;
+		}
+	}
 	clump { arg groupSize;
 		var list = Array.new((this.size / groupSize).roundUp.asInteger);
 		var sublist = this.species.new(groupSize);
