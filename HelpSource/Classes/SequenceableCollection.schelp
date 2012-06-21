@@ -193,7 +193,7 @@ a.drop(-3);
 ::
 
 method::join
-Returns a link::Classes/String:: formed by connecting all the elements of the receiver, with strong::joiner:: inbetween.
+Returns a link::Classes/String:: formed by connecting all the elements of the receiver, with strong::joiner:: inbetween. See also link::Classes/String#-split:: as the complementary operation.
 code::
 ["m", "ss", "ss", "pp", ""].join("i");
 ::
@@ -256,10 +256,11 @@ a.collect(_.shape) // shapes can be different
 
 
 method::flopDeep
+Fold dimensions in a multi-dimensional Collection (turn inside out).
+
 argument::rank
 The depth (dimension) from which the array is inverted inside-out.
 
-Fold dimensions in a multi-dimensional Collection (turn inside out).
 code::
 [[1, 2, 3], [[41, 52], 5, 6]].flopDeep(2);
 [[1, 2, 3], [[41, 52], 5, 6]].flopDeep(1);

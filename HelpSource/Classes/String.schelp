@@ -424,8 +424,8 @@ argument:: string
 Padding string
 code::
 "this sentence has thirty-nine letters".padRight(39, "-+");
-"this sentence has thirty-nine letters".padLeft(30, "-+");
-"this sentence has thirty-nine letters".padRight(13, "-+"); // nothing to pad.
+"this sentence has thirty-nine letters".padLeft(39, "-+");
+"this sentence more than thirteen letters".padRight(13, "-+"); // nothing to pad.
 ::
 
 method::toUpper
