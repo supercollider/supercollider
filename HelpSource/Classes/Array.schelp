@@ -8,7 +8,7 @@ Arrays are ArrayedCollections whose slots may contain any object. Arrays have a 
 
 strong::Literal Arrays:: can be created at compile time, and are very efficient. See link::Reference/Literals:: for information.
 
-For handling strong::multidimensional arrays::, there are specific methods which are covered in the helpfile link::Language/J concepts in SC::.
+For handling strong::multidimensional arrays::, there are specific methods which are covered in the helpfile link::Guides/J-concepts-in-SC::.
 
 note::
 For Arrays, the code::add:: method may or may not return the same Array object. It will add the argument to the receiver if there is space, otherwise it returns a new Array object with the argument added. Thus the proper usage of code::add:: with an Array is to always assign the result as follows:
@@ -45,6 +45,10 @@ Array.with(7, 'eight',  9).postln;
 
 copymethod:: Collection *fill
 
+copymethod:: Collection *fill2D
+
+copymethod:: Collection *fillND
+
 copymethod:: Collection *newFrom
 
 copymethod:: ArrayedCollection *geom
@@ -53,6 +57,17 @@ copymethod:: ArrayedCollection *series
 
 copymethod:: ArrayedCollection *iota
 
+copymethod:: Collection *interpolation
+
+copymethod:: Collection *rand
+
+copymethod:: Collection *rand2
+
+copymethod:: Collection *linrand
+
+copymethod:: Collection *exprand
+
+copymethod:: Collection *fib
 
 
 
@@ -60,6 +75,65 @@ copymethod:: ArrayedCollection *iota
 
 InstanceMethods::
 
+copymethod:: ArrayedCollection -at
+
+copymethod:: ArrayedCollection -put
+
+copymethod:: ArrayedCollection -insert
+
+copymethod:: ArrayedCollection -overWrite
+
+copymethod:: ArrayedCollection -clipAt
+
+copymethod:: ArrayedCollection -wrapAt
+
+copymethod:: ArrayedCollection -foldAt
+
+copymethod:: ArrayedCollection -slice
+
+copymethod:: ArrayedCollection -clipPut
+
+copymethod:: ArrayedCollection -wrapPut
+
+copymethod:: ArrayedCollection -foldPut
+
+copymethod:: ArrayedCollection -swap
+
+copymethod:: ArrayedCollection -replace
+
+copymethod:: ArrayedCollection -++
+
+copymethod:: ArrayedCollection -add
+
+copymethod:: ArrayedCollection -addAll
+
+copymethod:: ArrayedCollection -addFirst
+
+copymethod:: ArrayedCollection -removeAt
+
+copymethod:: ArrayedCollection -collect
+
+copymethod:: ArrayedCollection -do
+
+copymethod:: ArrayedCollection -reverseDo
+
+copymethod:: ArrayedCollection -deepCollect
+
+copymethod:: ArrayedCollection -reshape
+
+copymethod:: ArrayedCollection -bubble
+
+copymethod:: ArrayedCollection -unbubble
+
+copymethod:: ArrayedCollection -windex
+
+copymethod:: ArrayedCollection -size
+
+copymethod:: ArrayedCollection -normalize
+
+copymethod:: ArrayedCollection -normalizeSum
+
+copymethod:: ArrayedCollection -plot
 
 method::reverse
 Returns a new Array whose elements are reversed. The receiver is unchanged.

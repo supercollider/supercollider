@@ -7,6 +7,8 @@ SequenceableCollection is a subclass of Collection whose elements can be indexed
 
 CLASSMETHODS::
 
+copymethod:: Collection *fill
+
 method::series
 Fill a SequenceableCollection with an arithmetic series.
 code::
@@ -62,7 +64,10 @@ code::
 Array.interpolation(5, 3.2, 20.5);
 ::
 
+
+
 INSTANCEMETHODS::
+
 
 method::first
 Return the first element of the collection.
@@ -110,6 +115,11 @@ code::
 y = List[ 10, 5, 77, 55, 12, 123];
 y.indexOfGreaterThan(70);
 ::
+
+copymethod:: Collection -maxIndex
+
+copymethod:: Collection -minIndex
+
 
 method::find
 If the strong::sublist:: exists in the receiver (in the specified order), at an offset greater than or equal to the initial strong::offset::, then return the starting index.
@@ -195,7 +205,8 @@ a.drop(-3);
 method::join
 Returns a link::Classes/String:: formed by connecting all the elements of the receiver, with strong::joiner:: inbetween. See also link::Classes/String#-split:: as the complementary operation.
 code::
-["m", "ss", "ss", "pp", ""].join("i");
+["m", "ss", "ss", "pp", ""].join("i").postcs;
+"mississippi".split("i").postcs;
 ::
 
 method::flat
@@ -401,7 +412,7 @@ code::
 ::
 
 method::curdle
-Separates the collection into sub-collections by separating elements according to the given probability.
+Separates the collection into sub-collections by randomly separating elements according to the given probability.
 code::
 [1, 2, 3, 4, 5, 6, 7, 8].curdle(0.3).postcs;
 ::
