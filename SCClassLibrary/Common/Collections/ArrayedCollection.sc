@@ -326,10 +326,13 @@ ArrayedCollection : SequenceableCollection {
 		^result
 	}
 	deepCollect { arg depth = 1, function;
+		if(depth.isNil) {
+			^this.collect {|item| item.deepCollect(depth, function) }
+		};
 		if (depth <= 0) {
 			^function.value(this, 0)
 		};
-		depth = depth-1;
+		depth = depth - 1;
 		^this.collect {|item| item.deepCollect(depth, function) }
 	}
 	reshapeLike { arg another, indexing=\wrapAt;
