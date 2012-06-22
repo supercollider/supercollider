@@ -1,4 +1,4 @@
-Delay1 : UGen {
+Delay1 : PureUGen {
 
 	*ar { arg in = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in).madd(mul, add)
@@ -14,7 +14,7 @@ Delay2 : Delay1 { }
 
 // these delays use real time allocated memory.
 
-DelayN : UGen {
+DelayN : PureUGen {
 
 	*ar { arg in = 0.0, maxdelaytime = 0.2, delaytime = 0.2, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in.asAudioRateInput, maxdelaytime, delaytime).madd(mul, add)
@@ -28,7 +28,7 @@ DelayL : DelayN { }
 DelayC : DelayN { }
 
 
-CombN : UGen {
+CombN : PureUGen {
 
 	*ar { arg in = 0.0, maxdelaytime = 0.2, delaytime = 0.2, decaytime = 1.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in.asAudioRateInput(this), maxdelaytime, delaytime, decaytime).madd(mul, add)
