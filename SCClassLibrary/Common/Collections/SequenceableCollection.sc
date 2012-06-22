@@ -92,8 +92,18 @@ SequenceableCollection : Collection {
 		newlist = newlist.addAll(this).addAll(aSequenceableCollection);
 		^newlist
 	}
-	+++ { arg aSequenceableCollection;
+	+++ { arg aSequenceableCollection, adverb;
 		aSequenceableCollection = aSequenceableCollection.asSequenceableCollection;
+		if(adverb.notNil) {
+			if(adverb == 0) { ^this ++ aSequenceableCollection };
+			if(adverb == 1) { ^this +++ aSequenceableCollection };
+			if(adverb < 0) { ^aSequenceableCollection.perform('+++', this, adverb.neg) };
+			^this.deepCollect(adverb - 1, { |sublist|
+				sublist.asSequenceableCollection.collect {|item, i|
+					item.asSequenceableCollection ++ aSequenceableCollection.wrapAt(i)
+				}
+			})
+		};
 		^this.collect {|item, i|
 			item.asSequenceableCollection ++ aSequenceableCollection.wrapAt(i)
 		}
