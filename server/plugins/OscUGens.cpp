@@ -1610,9 +1610,11 @@ void SinOsc_next_iaa(SinOsc *unit, int inNumSamples)
 	float radtoinc = unit->m_radtoinc;
 	//Print("SinOsc_next_iaa %d %g %g %d\n", inNumSamples, cpstoinc, radtoinc, phase);
 	LOOP1(inNumSamples,
-		int32 phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
+		float phaseIn = ZXP(phasein);
+		float freqIn  = ZXP(freqin);
+		int32 phaseoffset = phase + (int32)(radtoinc * phaseIn);
 		float z = lookupi1(table0, table1, phaseoffset, lomask);
-		phase += (int32)(cpstoinc * ZXP(freqin));
+		phase += (int32)(cpstoinc * freqIn);
 		ZXP(out) = z;
 	);
 	unit->m_phase = phase;

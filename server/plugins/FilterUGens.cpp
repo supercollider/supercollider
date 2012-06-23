@@ -1993,11 +1993,15 @@ void LPZ2_next(LPZ2* unit, int inNumSamples)
 
 	LOOP(unit->mRate->mFilterLoops,
 		x0 = ZXP(in);
-		ZXP(out) = (x0 + 2.f * x1 + x2) * 0.25f;
+		float out0  = (x0 + 2.f * x1 + x2) * 0.25f;
 		x2 = ZXP(in);
-		ZXP(out) = (x2 + 2.f * x0 + x1) * 0.25f;
+		float out1 = (x2 + 2.f * x0 + x1) * 0.25f;
 		x1 = ZXP(in);
-		ZXP(out) = (x1 + 2.f * x2 + x0) * 0.25f;
+		float out2 = (x1 + 2.f * x2 + x0) * 0.25f;
+
+		ZXP(out) = out0;
+		ZXP(out) = out1;
+		ZXP(out) = out2;
 	);
 	LOOP(unit->mRate->mFilterRemain,
 		x0 = ZXP(in);
@@ -2538,17 +2542,21 @@ void LPF_next(LPF* unit, int inNumSamples)
 		float b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * (y0 + 2.f * y1 + y2);
+			float out0 = a0 * (y0 + 2.f * y1 + y2);
 
 			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * (y2 + 2.f * y0 + y1);
+			float out1 = a0 * (y2 + 2.f * y0 + y1);
 
 			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * (y1 + 2.f * y2 + y0);
+			float out2 = a0 * (y1 + 2.f * y2 + y0);
 
 			a0 += a0_slope;
 			b1 += b1_slope;
 			b2 += b2_slope;
+
+			ZXP(out) = out0;
+			ZXP(out) = out1;
+			ZXP(out) = out2;
 		);
 		LOOP(unit->mRate->mFilterRemain,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
@@ -2564,13 +2572,17 @@ void LPF_next(LPF* unit, int inNumSamples)
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * (y0 + 2.f * y1 + y2);
+			float out0 = a0 * (y0 + 2.f * y1 + y2);
 
 			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * (y2 + 2.f * y0 + y1);
+			float out1 = a0 * (y2 + 2.f * y0 + y1);
 
 			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * (y1 + 2.f * y2 + y0);
+			float out2 = a0 * (y1 + 2.f * y2 + y0);
+
+			ZXP(out) = out0;
+			ZXP(out) = out1;
+			ZXP(out) = out2;
 		);
 		LOOP(unit->mRate->mFilterRemain,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
