@@ -104,10 +104,6 @@ GetStringDialog  {
 
 + Mix {
 
-	*ar { arg array;
-		this.deprecated(thisMethod, Mix.class.findMethod(\new));
-		^this.new(array);
-	}
 	*arFill { arg n,func;
 		this.deprecated(thisMethod, Mix.class.findMethod(\fill));
 		^this.fill(n,func);
