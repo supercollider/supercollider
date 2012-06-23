@@ -1743,13 +1743,18 @@ void LPZ1_next(LPZ1* unit, int inNumSamples)
 
 	LOOP(inNumSamples >> 2,
 		x0 = ZXP(in);
-		ZXP(out) = 0.5f * (x0 + x1);
+		float out0 = 0.5f * (x0 + x1);
 		x1 = ZXP(in);
-		ZXP(out) = 0.5f * (x1 + x0);
+		float out1 = 0.5f * (x1 + x0);
 		x0 = ZXP(in);
-		ZXP(out) = 0.5f * (x0 + x1);
+		float out2 = 0.5f * (x0 + x1);
 		x1 = ZXP(in);
-		ZXP(out) = 0.5f * (x1 + x0);
+		float out3 = 0.5f * (x1 + x0);
+
+		ZXP(out) = out0;
+		ZXP(out) = out1;
+		ZXP(out) = out2;
+		ZXP(out) = out3;
 	);
 	LOOP(inNumSamples & 3,
 		x0 = ZXP(in);
@@ -1784,14 +1789,19 @@ void HPZ1_next(HPZ1* unit, int inNumSamples)
 
 	LOOP(inNumSamples >> 2,
 		x0 = ZXP(in);
-		ZXP(out) = 0.5f * (x0 - x1);
+		float out0 = 0.5f * (x0 - x1);
 		x1 = ZXP(in);
-		ZXP(out) = 0.5f * (x1 - x0);
+		float out1 = 0.5f * (x1 - x0);
 		x0 = ZXP(in);
-		ZXP(out) = 0.5f * (x0 - x1);
+		float out2 = 0.5f * (x0 - x1);
 		x1 = ZXP(in);
-		ZXP(out) = 0.5f * (x1 - x0);
-	);
+		float out3 = 0.5f * (x1 - x0);
+
+		ZXP(out) = out0;
+		ZXP(out) = out1;
+		ZXP(out) = out2;
+		ZXP(out) = out3;
+		);
 	LOOP(inNumSamples & 3,
 		x0 = ZXP(in);
 		//printf("%d %d %g %g\n", this, inNumSamples, x0, x1);
