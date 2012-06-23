@@ -227,6 +227,21 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 	SC_StandAloneInfo::GetResourceDir(pathBuf, length);
 }
 
+void sc_AppendBundleName(char *str, int size)
+{
+	CFBundleRef mainBundle;
+	mainBundle = CFBundleGetMainBundle();
+	CFDictionaryRef dictRef = CFBundleGetInfoDictionary(mainBundle);
+	CFStringRef strRef;
+	strRef = (CFStringRef)CFDictionaryGetValue(dictRef, CFSTR("CFBundleName"));
+	if(!mainBundle || !strRef){
+		sc_AppendToPath(str, size, "SuperCollider");
+	} else {
+		const char *bundleName = CFStringGetCStringPtr(strRef, kCFStringEncodingMacRoman);
+		sc_AppendToPath(str, size, bundleName);
+	}
+}
+
 #elif defined(SC_IPHONE)
 
 bool sc_IsStandAlone()
@@ -276,21 +291,6 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 }
 
 #endif
-
-void sc_AppendBundleName(char *str, int size)
-{
-	CFBundleRef mainBundle;
-	mainBundle = CFBundleGetMainBundle();
-	CFDictionaryRef dictRef = CFBundleGetInfoDictionary(mainBundle);
-	CFStringRef strRef;
-	strRef = (CFStringRef)CFDictionaryGetValue(dictRef, CFSTR("CFBundleName"));
-	if(!mainBundle || !strRef){
-		sc_AppendToPath(str, size, "SuperCollider");
-	} else {
-		const char *bundleName = CFStringGetCStringPtr(strRef, kCFStringEncodingMacRoman);
-		sc_AppendToPath(str, size, bundleName);
-	}
-}
 
 // Support for Extensions
 
