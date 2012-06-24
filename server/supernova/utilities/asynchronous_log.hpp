@@ -163,8 +163,8 @@ public:
     }
 
 private:
-    thread thread_;
     atomic_bool running_flag;
+    thread thread_;
     array<char, 4096> out_buffer;
 };
 
