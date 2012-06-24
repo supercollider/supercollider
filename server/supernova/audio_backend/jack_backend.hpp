@@ -163,14 +163,14 @@ public:
         cpu_time_accumulator.get(peak, average);
     }
 
-    int connect_input(int channel, const char * portname)
+    int connect_input(size_t channel, const char * portname)
     {
         if (channel >= input_ports.size())
             return -1;
         return jack_connect(client, portname, jack_port_name(input_ports[channel]));
     }
 
-    int connect_output(int channel, const char * portname)
+    int connect_output(size_t channel, const char * portname)
     {
         if (channel >= output_ports.size())
             return -1;
@@ -274,8 +274,8 @@ private:
         }
 
         /* get port regions */
-        jack_default_audio_sample_t * inputs[input_channels];
-        jack_default_audio_sample_t * outputs[output_channels];
+        jack_default_audio_sample_t ** inputs   = (jack_default_audio_sample_t **)alloca(input_channels * sizeof(jack_default_audio_sample_t*));
+        jack_default_audio_sample_t ** outputs  = (jack_default_audio_sample_t **)alloca(output_channels * sizeof(jack_default_audio_sample_t*));
         for (uint16_t i = 0; i != input_channels; ++i)
             inputs[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(input_ports[i], frames);
 
