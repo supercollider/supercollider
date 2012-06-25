@@ -450,11 +450,12 @@ Collection {
 		^maxsize
 	}
 
-	maxDepth { arg max = 0;
+	maxDepth { arg max = 1;
+		var res = max;
 		this.do { |elem|
-			if(elem.isCollection) { max = max(max, elem.maxDepth(max + 1)) }
+			if(elem.isCollection) { res = max(res, elem.maxDepth(max + 1)) }
 		};
-		^max
+		^res
 	}
 
 	invert { | axis |

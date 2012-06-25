@@ -737,8 +737,14 @@ Plotter {
 
 + ArrayedCollection {
 	plot { |name, bounds, discrete=false, numChannels, minval, maxval|
-		var array = this.as(Array);
-		var plotter = Plotter(name, bounds);
+		var array, plotter;
+		array = this.as(Array);
+		
+		if(array.maxDepth > 3) {
+			"Cannot currently plot an array with more than 3 dimensions".warn;
+			^nil 
+		};
+		plotter = Plotter(name, bounds);
 		if(discrete) { plotter.plotMode = \points };
 
 		numChannels !? { array = array.unlace(numChannels) };
