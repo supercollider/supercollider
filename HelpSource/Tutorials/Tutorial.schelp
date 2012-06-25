@@ -117,9 +117,21 @@ code::
 s.quit;
 ::
 
-SynthDef has two methods which send the def automatically, load which writes it to disk, and send which sends it without writing it to disk. The latter can be useful to avoid clutter on your drive.
+
+SynthDef has three methods which send the def automatically, load which writes it to disk, and send which sends it without writing it to disk. The latter can be useful to avoid clutter on your drive, but is limited to SynthDefs up to a certain complexity.
+
+Most generally useful and recommended is to use the method strong::add::, which sends or writes to disk only if it can't send, and it sends to all servers listed in the SynthDefLib (A server can be added by SynthDescLib.global.addServer(server)).
 
 code::
+(
+SynthDef("sine", { arg freq=800;
+	var osc;
+	osc = SinOsc.ar(freq, 0, 0.1); // 800 Hz sine oscillator
+	Out.ar(0, osc); // send output to audio bus zero.
+}).add;
+)
+
+
 (
 SynthDef("sine", { arg freq=800;
 	var osc;
@@ -317,26 +329,26 @@ section::Sequencing with Routines
 
 code::
 (
-var space,offset,timer, saw, envsaw, sampler, delay;
+var space, offset, timer, saw, envsaw, sampler, delay;
 
-SynthDef("saw",{ arg out=100, pan=0, trig=0.0, freq=500, amp=1, cutoff=10000, rezz=1;
+SynthDef("saw", { arg out=100, pan=0, trig=0.0, freq=500, amp=1, cutoff=10000, rezz=1;
 	freq = Lag.kr(freq,0.1);
 	Out.ar(out,Pan2.ar(RLPF.ar(Saw.ar([freq,freq*2],amp),cutoff,rezz),
 		pan));
-	}).load(s);
+}).add;
 
 SynthDef("envsaw",{ arg out=100, pan=0, sustain=0.5, freq=500, amp=1, cutoff=10000, rezz=1;
 	var env;
 	env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction:0, gate:amp);
 	Out.ar(out,Pan2.ar(RLPF.ar(Saw.ar(Lag.kr(freq,0.1),env),cutoff,rezz)*amp,
 		pan));
-	}).load(s);
+}).add;
 
 SynthDef("delay", { arg out=0, delay = 0.4, decay = 14;
 	var in;
 	in = In.ar(out,2);
 	Out.ar(out, CombN.ar(in, 0.5, delay, decay, 1, in));
-}).load(s);
+}).add;
 
 SynthDef("sampler",{ arg sample, trig=1,rate=1.0,out=0,bufnum=0,pan=0,amp=1, sustain=0.25;
 	var env;
@@ -346,37 +358,41 @@ SynthDef("sampler",{ arg sample, trig=1,rate=1.0,out=0,bufnum=0,pan=0,amp=1, sus
 		PlayBuf.ar(1,bufnum,rate,InTrig.kr(trig),0,0)*amp,
 			pan);
 	)
-}).load(s);
+}).add;
 
 Tempo.bpm = 120;
-timer=BeatSched.new;
+timer = BeatSched.new;
 offset = Tempo.tempo.reciprocal;
 
 space = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
-saw=Synth("saw");
-delay=Synth.after(saw,"delay", [\decay, 20]);
+saw = Synth("saw");
+delay = Synth.after(saw,"delay", [\decay, 20]);
 
 timer.sched(0,{
 	var r;
-	r=Routine({ var wait, freq, cutoff,rezz;
-	wait = Pseq([2],inf).asStream;
-	freq = Pseq([30,40,42,40],inf).asStream;
-	cutoff = Pfunc({500.rand2+1000}).asStream;
-	rezz = 0.5;
-	inf.do({saw.set("freq", freq.next.midicps, "cutoff", cutoff.next, "rezz", rezz, "amp", 0.1, "out", 0);
-(wait.next*offset).wait});});
-timer.sched(0,r);
+	r = Routine({ var wait, freq, cutoff,rezz;
+		wait = Pseq([2],inf).asStream;
+		freq = Pseq([30,40,42,40],inf).asStream;
+		cutoff = Pfunc({500.rand2+1000}).asStream;
+		rezz = 0.5;
+		inf.do({ 
+			saw.set("freq", freq.next.midicps, "cutoff", cutoff.next, "rezz", rezz, "amp", 0.1, "out", 0);
+			(wait.next*offset).wait
+		});
+	});
+	timer.sched(0, r);
 });
 
 timer.sched(0,{
 	var r;
 	r=Routine({ var wait, rate;
-	wait = Pseq([0.25],inf).asStream;
-	rate = Pfunc({0.5.rand}).asStream;
-	inf.do({Synth.before(delay, "sampler", [\bufnum, space, \trig, 1, \amp,0.1, \rate, rate.next, \sustain, wait.next]);
-(wait.next*offset).wait});});
-timer.sched(0,r);
+		wait = Pseq([0.25],inf).asStream;
+		rate = Pfunc({0.5.rand}).asStream;
+		inf.do({
+			Synth.before(delay, "sampler", [\bufnum, space, \trig, 1, \amp,0.1, \rate, rate.next, \sustain, 		wait.next]);
+			(wait.next*offset).wait});});
+		timer.sched(0,r);
 });
 
 )
@@ -393,7 +409,7 @@ SynthDef("patternefx_Ex", { arg out, in;
 	audio = In.ar([20,21],2);
 	efx=CombN.ar(audio, 0.5, [0.24,0.4], 2, 1);
 	Out.ar([0,1], audio+efx);
-	}).load(s);
+	}).add;
 
 Synth.new("patternefx_Ex");
 
@@ -405,7 +421,7 @@ SynthDef("pattern_Ex", { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, re
 			cut, rez),
 		pan) * EnvGen.kr(Env.linen(0.01, 1, 0.3), gate, amp, doneAction:2);
 	)
-	}).load(s);
+	}).add;
 
 SynthDef("bass_Ex", { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1;
 	Out.ar(out,
@@ -415,7 +431,7 @@ SynthDef("bass_Ex", { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez =
 			cut, rez),
 		pan) * EnvGen.kr(Env.linen(0.01, 1, 0.3), gate, amp, doneAction:2);
 	)
-	}).load(s);
+	}).add;
 
 SynthDescLib.global.read;
 
