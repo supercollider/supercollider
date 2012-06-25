@@ -334,7 +334,31 @@ ArrayedCollection : SequenceableCollection {
 			item;
 		};
 	}
-
+	deepCollect { | depth = 1, function, index = 0, rank = 0 |
+		if(depth.isNil) {
+			rank = rank + 1;
+			^this.collect { |item, i| item.deepCollect(depth, function, i, rank) }
+		};
+		if (depth <= 0) {
+			^function.value(this, index, rank)
+		};
+		depth = depth - 1;
+		rank = rank + 1;
+		^this.collect { |item, i| item.deepCollect(depth, function, i, rank) }
+	}
+	deepDo { | depth = 1, function, index = 0, rank = 0 |
+		if(depth.isNil) {
+			rank = rank + 1;
+			^this.do { |item, i| item.deepDo(depth, function, i, rank) }
+		};
+		if (depth <= 0) {
+			function.value(this, index, rank);
+			^this
+		};
+		depth = depth - 1;
+		rank = rank + 1;
+		^this.do { |item, i| item.deepDo(depth, function, i, rank) }
+	}
 	unbubble { arg depth=0, levels=1;
 		if (depth <= 0) {
 			// converts a size 1 array to the item.
