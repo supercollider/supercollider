@@ -325,15 +325,17 @@ ArrayedCollection : SequenceableCollection {
 		shape[1..].reverseDo {|n| result = result.clump(n) };
 		^result
 	}
-	deepCollect { arg depth = 1, function;
+	deepCollect { arg depth = 1, function, index = 0, rank = 0;
 		if(depth.isNil) {
-			^this.collect {|item| item.deepCollect(depth, function) }
+			rank = rank + 1;
+			^this.collect {|item, i| item.deepCollect(depth, function, i, rank) }
 		};
 		if (depth <= 0) {
-			^function.value(this, 0)
+			^function.value(this, index, rank)
 		};
 		depth = depth - 1;
-		^this.collect {|item| item.deepCollect(depth, function) }
+		rank = rank + 1;
+		^this.collect {|item, i| item.deepCollect(depth, function, i, rank) }
 	}
 	reshapeLike { arg another, indexing=\wrapAt;
 		var index = 0;
