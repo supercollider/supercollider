@@ -224,7 +224,6 @@ Collection {
 		};
 		^prev
 	}
-
 	inject { | thisValue, function |
 		var nextValue = thisValue;
 		this.do { | item, i |
@@ -456,6 +455,33 @@ Collection {
 			if(elem.isCollection) { res = max(res, elem.maxDepth(max + 1)) }
 		};
 		^res
+	}
+	
+	deepCollect { | depth = 1, function, index = 0, rank = 0 |
+		if(depth.isNil) {
+			rank = rank + 1;
+			^this.collect { |item, i| item.deepCollect(depth, function, i, rank) }
+		};
+		if (depth <= 0) {
+			^function.value(this, index, rank)
+		};
+		depth = depth - 1;
+		rank = rank + 1;
+		^this.collect { |item, i| item.deepCollect(depth, function, i, rank) }
+	}
+
+	deepDo { | depth = 1, function, index = 0, rank = 0 |
+		if(depth.isNil) {
+			rank = rank + 1;
+			^this.do { |item, i| item.deepDo(depth, function, i, rank) }
+		};
+		if (depth <= 0) {
+			function.value(this, index, rank);
+			^this
+		};
+		depth = depth - 1;
+		rank = rank + 1;
+		^this.do { |item, i| item.deepDo(depth, function, i, rank) }
 	}
 
 	invert { | axis |

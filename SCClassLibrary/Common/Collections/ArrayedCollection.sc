@@ -313,7 +313,7 @@ ArrayedCollection : SequenceableCollection {
 		// rank is the number of dimensions in a multidimensional array.
 		// see also Object-rank
 		// this assumes every element has the same rank
-		^ 1 + this.first.rank
+		^1 + this.first.rank
 	}
 	shape {
 		// this assumes every element has the same shape
@@ -324,18 +324,6 @@ ArrayedCollection : SequenceableCollection {
 		var result = this.flat.wrapExtend(size);
 		shape[1..].reverseDo {|n| result = result.clump(n) };
 		^result
-	}
-	deepCollect { arg depth = 1, function, index = 0, rank = 0;
-		if(depth.isNil) {
-			rank = rank + 1;
-			^this.collect {|item, i| item.deepCollect(depth, function, i, rank) }
-		};
-		if (depth <= 0) {
-			^function.value(this, index, rank)
-		};
-		depth = depth - 1;
-		rank = rank + 1;
-		^this.collect {|item, i| item.deepCollect(depth, function, i, rank) }
 	}
 	reshapeLike { arg another, indexing=\wrapAt;
 		var index = 0;
