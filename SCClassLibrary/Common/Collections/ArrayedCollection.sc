@@ -334,7 +334,7 @@ ArrayedCollection : SequenceableCollection {
 			item;
 		};
 	}
-	deepCollect { | depth = 1, function, index = 0, rank = 0 |
+	deepCollect { arg depth = 1, function, index = 0, rank = 0;
 		if(depth.isNil) {
 			rank = rank + 1;
 			^this.collect { |item, i| item.deepCollect(depth, function, i, rank) }
@@ -346,7 +346,7 @@ ArrayedCollection : SequenceableCollection {
 		rank = rank + 1;
 		^this.collect { |item, i| item.deepCollect(depth, function, i, rank) }
 	}
-	deepDo { | depth = 1, function, index = 0, rank = 0 |
+	deepDo { arg depth = 1, function, index = 0, rank = 0;
 		if(depth.isNil) {
 			rank = rank + 1;
 			^this.do { |item, i| item.deepDo(depth, function, i, rank) }
