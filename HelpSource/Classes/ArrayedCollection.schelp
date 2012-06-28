@@ -75,6 +75,7 @@ code::
 y = [ 1, 2, 3 ];
 y.wrapAt(3).postln; // this returns the value at index 0
 y.wrapAt(4).postln; // this returns the value at index 1
+y.wrapAt([-2, 1])   // index can also be a collection or negative numbers
 ::
 
 method::foldAt
