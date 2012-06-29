@@ -253,6 +253,9 @@ static inline bool getGrainWin(Unit * unit, float wintype, SndBuf *& window, con
 	assert(wintype < unit->mWorld->mNumSndBufs);
 	window = unit->mWorld->mSndBufs + (int)wintype;
 	windowData = window->data;
+	if (!windowData)
+		return false;
+
 	windowSamples = window->samples;
 	windowFrames = window->frames;
 	windowGuardFrame = windowFrames - 1;
