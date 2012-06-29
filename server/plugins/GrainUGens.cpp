@@ -1096,10 +1096,10 @@ static inline void GrainBuf_next_play_active(GrainBuf *unit, int inNumSamples)
 
 		GRAIN_BUF
 
-		if (!bufData) {
+		if (!bufData || (bufChannels != 1)) {
 			grain->counter -= inNumSamples;
 			if (!GrainBuf_grain_cleanup(unit, grain))
-                ++i;
+				++i;
 			continue;
 		}
 
