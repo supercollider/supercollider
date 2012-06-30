@@ -4,7 +4,7 @@ related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/MIDIResponder, Classes/CCRe
 categories:: External Control>MIDI
 
 Description::
-note:: As of SC 3.5 link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: are the recommended way of registering for incoming MIDI messages. They are faster, safer, and have more logical argument order than the old MIDI responder classes. The older class MIDIResponder, and its subclasses NoteOnResponder, NoteOffResponder, BendResponder, TouchResponder, CCResponder, and ProgramChangeResponder are maintained for legacy code only.::
+note:: SC 3.5 added the link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: classes. These are faster, and aim to have a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::.They still lack some features of the MIDIresponder classes.::
 ClassMethods::
 
 method::new
@@ -25,7 +25,7 @@ argument::install
 If true, install the responder automatically so it is active and ready to respond. If false, then it will be inactive.
 
 argument::swallowEvent
-If true, then if the midi event is matched, cease testing any further responders.
+If true, then if the midi event is matched, cease testing any further responders. Note that doing this will prevent any other responders of this type from responding, including ones added behind the scenes in classes. Note also that this functionality is sensitive to the order in which responders are added. 
 
 InstanceMethods::
 
