@@ -95,10 +95,10 @@ struct unordered_node_traits
    {  n->prev_in_group_ = prev;  }
 
    static std::size_t get_hash(const const_node_ptr & n)
-   {  return n->hash_;  }  
+   {  return n->hash_;  } 
 
    static void set_hash(const node_ptr & n, std::size_t h)
-   {  n->hash_ = h;  }  
+   {  n->hash_ = h;  } 
 };
 
 template<class NodeTraits>
@@ -147,12 +147,12 @@ struct get_uset_node_algo
 {
    typedef typename detail::if_c
       < (StoreHash || OptimizeMultiKey)
-      , unordered_node_traits<VoidPointer, StoreHash, OptimizeMultiKey> 
-      , slist_node_traits<VoidPointer> 
+      , unordered_node_traits<VoidPointer, StoreHash, OptimizeMultiKey>
+      , slist_node_traits<VoidPointer>
       >::type node_traits_type;
    typedef typename detail::if_c
       < OptimizeMultiKey
-      , unordered_algorithms<node_traits_type> 
+      , unordered_algorithms<node_traits_type>
       , circular_slist_algorithms<node_traits_type>
       >::type type;
 };
@@ -169,7 +169,7 @@ struct make_unordered_set_base_hook
 {
    /// @cond
    typedef typename pack_options
-      < hook_defaults, 
+      < hook_defaults,
          #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
          O1, O2, O3, O4
          #else
@@ -190,16 +190,16 @@ struct make_unordered_set_base_hook
    typedef implementation_defined type;
 };
 
-//! Derive a class from unordered_set_base_hook in order to store objects in 
-//! in an unordered_set/unordered_multi_set. unordered_set_base_hook holds the data necessary to maintain 
+//! Derive a class from unordered_set_base_hook in order to store objects in
+//! in an unordered_set/unordered_multi_set. unordered_set_base_hook holds the data necessary to maintain
 //! the unordered_set/unordered_multi_set and provides an appropriate value_traits class for unordered_set/unordered_multi_set.
-//! 
+//!
 //! The hook admits the following options: \c tag<>, \c void_pointer<>,
 //! \c link_mode<>, \c store_hash<> and \c optimize_multikey<>.
 //!
-//! \c tag<> defines a tag to identify the node. 
-//! The same tag value can be used in different classes, but if a class is 
-//! derived from more than one \c list_base_hook, then each \c list_base_hook needs its 
+//! \c tag<> defines a tag to identify the node.
+//! The same tag value can be used in different classes, but if a class is
+//! derived from more than one \c list_base_hook, then each \c list_base_hook needs its
 //! unique tag.
 //!
 //! \c void_pointer<> is the pointer type that will be used internally in the hook
@@ -232,27 +232,27 @@ class unordered_set_base_hook
    public:
    //! <b>Effects</b>: If link_mode is \c auto_unlink or \c safe_link
    //!   initializes the node to an unlinked state.
-   //! 
-   //! <b>Throws</b>: Nothing. 
+   //!
+   //! <b>Throws</b>: Nothing.
    unordered_set_base_hook();
 
    //! <b>Effects</b>: If link_mode is \c auto_unlink or \c safe_link
    //!   initializes the node to an unlinked state. The argument is ignored.
-   //! 
-   //! <b>Throws</b>: Nothing. 
-   //! 
+   //!
+   //! <b>Throws</b>: Nothing.
+   //!
    //! <b>Rationale</b>: Providing a copy-constructor
-   //!   makes classes using the hook STL-compliant without forcing the 
+   //!   makes classes using the hook STL-compliant without forcing the
    //!   user to do some additional work. \c swap can be used to emulate
    //!   move-semantics.
    unordered_set_base_hook(const unordered_set_base_hook& );
 
    //! <b>Effects</b>: Empty function. The argument is ignored.
-   //! 
-   //! <b>Throws</b>: Nothing. 
-   //! 
-   //! <b>Rationale</b>: Providing an assignment operator 
-   //!   makes classes using the hook STL-compliant without forcing the 
+   //!
+   //! <b>Throws</b>: Nothing.
+   //!
+   //! <b>Rationale</b>: Providing an assignment operator
+   //!   makes classes using the hook STL-compliant without forcing the
    //!   user to do some additional work. \c swap can be used to emulate
    //!   move-semantics.
    unordered_set_base_hook& operator=(const unordered_set_base_hook& );
@@ -261,37 +261,37 @@ class unordered_set_base_hook
    //!   nothing (ie. no code is generated). If link_mode is \c safe_link and the
    //!   object is stored in an unordered_set an assertion is raised. If link_mode is
    //!   \c auto_unlink and \c is_linked() is true, the node is unlinked.
-   //! 
-   //! <b>Throws</b>: Nothing. 
+   //!
+   //! <b>Throws</b>: Nothing.
    ~unordered_set_base_hook();
 
-   //! <b>Effects</b>: Swapping two nodes swaps the position of the elements 
-   //!   related to those nodes in one or two containers. That is, if the node 
-   //!   this is part of the element e1, the node x is part of the element e2 
-   //!   and both elements are included in the containers s1 and s2, then after 
-   //!   the swap-operation e1 is in s2 at the position of e2 and e2 is in s1 
-   //!   at the position of e1. If one element is not in a container, then 
-   //!   after the swap-operation the other element is not in a container. 
-   //!   Iterators to e1 and e2 related to those nodes are invalidated. 
+   //! <b>Effects</b>: Swapping two nodes swaps the position of the elements
+   //!   related to those nodes in one or two containers. That is, if the node
+   //!   this is part of the element e1, the node x is part of the element e2
+   //!   and both elements are included in the containers s1 and s2, then after
+   //!   the swap-operation e1 is in s2 at the position of e2 and e2 is in s1
+   //!   at the position of e1. If one element is not in a container, then
+   //!   after the swap-operation the other element is not in a container.
+   //!   Iterators to e1 and e2 related to those nodes are invalidated.
    //!
-   //! <b>Complexity</b>: Constant 
+   //! <b>Complexity</b>: Constant
    //!
-   //! <b>Throws</b>: Nothing. 
+   //! <b>Throws</b>: Nothing.
    void swap_nodes(unordered_set_base_hook &other);
 
    //! <b>Precondition</b>: link_mode must be \c safe_link or \c auto_unlink.
    //!
    //! <b>Returns</b>: true, if the node belongs to a container, false
-   //!   otherwise. This function can be used to test whether \c unordered_set::iterator_to 
-   //!   will return a valid iterator. 
+   //!   otherwise. This function can be used to test whether \c unordered_set::iterator_to
+   //!   will return a valid iterator.
    //!
-   //! <b>Complexity</b>: Constant 
+   //! <b>Complexity</b>: Constant
    bool is_linked() const;
 
    //! <b>Effects</b>: Removes the node if it's inserted in a container.
    //!   This function is only allowed if link_mode is \c auto_unlink.
-   //! 
-   //! <b>Throws</b>: Nothing. 
+   //!
+   //! <b>Throws</b>: Nothing.
    void unlink();
    #endif
 };
@@ -308,7 +308,7 @@ struct make_unordered_set_member_hook
 {
    /// @cond
    typedef typename pack_options
-      < hook_defaults, 
+      < hook_defaults,
          #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
          O1, O2, O3, O4
          #else
@@ -332,7 +332,7 @@ struct make_unordered_set_member_hook
 //! Put a public data member unordered_set_member_hook in order to store objects of this class in
 //! an unordered_set/unordered_multi_set. unordered_set_member_hook holds the data necessary for maintaining the
 //! unordered_set/unordered_multi_set and provides an appropriate value_traits class for unordered_set/unordered_multi_set.
-//! 
+//!
 //! The hook admits the following options: \c void_pointer<>,
 //! \c link_mode<> and \c store_hash<>.
 //!
@@ -362,27 +362,27 @@ class unordered_set_member_hook
    public:
    //! <b>Effects</b>: If link_mode is \c auto_unlink or \c safe_link
    //!   initializes the node to an unlinked state.
-   //! 
-   //! <b>Throws</b>: Nothing. 
+   //!
+   //! <b>Throws</b>: Nothing.
    unordered_set_member_hook();
 
    //! <b>Effects</b>: If link_mode is \c auto_unlink or \c safe_link
    //!   initializes the node to an unlinked state. The argument is ignored.
-   //! 
-   //! <b>Throws</b>: Nothing. 
-   //! 
+   //!
+   //! <b>Throws</b>: Nothing.
+   //!
    //! <b>Rationale</b>: Providing a copy-constructor
-   //!   makes classes using the hook STL-compliant without forcing the 
+   //!   makes classes using the hook STL-compliant without forcing the
    //!   user to do some additional work. \c swap can be used to emulate
    //!   move-semantics.
    unordered_set_member_hook(const unordered_set_member_hook& );
 
    //! <b>Effects</b>: Empty function. The argument is ignored.
-   //! 
-   //! <b>Throws</b>: Nothing. 
-   //! 
-   //! <b>Rationale</b>: Providing an assignment operator 
-   //!   makes classes using the hook STL-compliant without forcing the 
+   //!
+   //! <b>Throws</b>: Nothing.
+   //!
+   //! <b>Rationale</b>: Providing an assignment operator
+   //!   makes classes using the hook STL-compliant without forcing the
    //!   user to do some additional work. \c swap can be used to emulate
    //!   move-semantics.
    unordered_set_member_hook& operator=(const unordered_set_member_hook& );
@@ -391,43 +391,43 @@ class unordered_set_member_hook
    //!   nothing (ie. no code is generated). If link_mode is \c safe_link and the
    //!   object is stored in an unordered_set an assertion is raised. If link_mode is
    //!   \c auto_unlink and \c is_linked() is true, the node is unlinked.
-   //! 
-   //! <b>Throws</b>: Nothing. 
+   //!
+   //! <b>Throws</b>: Nothing.
    ~unordered_set_member_hook();
 
-   //! <b>Effects</b>: Swapping two nodes swaps the position of the elements 
-   //!   related to those nodes in one or two containers. That is, if the node 
-   //!   this is part of the element e1, the node x is part of the element e2 
-   //!   and both elements are included in the containers s1 and s2, then after 
-   //!   the swap-operation e1 is in s2 at the position of e2 and e2 is in s1 
-   //!   at the position of e1. If one element is not in a container, then 
-   //!   after the swap-operation the other element is not in a container. 
-   //!   Iterators to e1 and e2 related to those nodes are invalidated. 
+   //! <b>Effects</b>: Swapping two nodes swaps the position of the elements
+   //!   related to those nodes in one or two containers. That is, if the node
+   //!   this is part of the element e1, the node x is part of the element e2
+   //!   and both elements are included in the containers s1 and s2, then after
+   //!   the swap-operation e1 is in s2 at the position of e2 and e2 is in s1
+   //!   at the position of e1. If one element is not in a container, then
+   //!   after the swap-operation the other element is not in a container.
+   //!   Iterators to e1 and e2 related to those nodes are invalidated.
    //!
-   //! <b>Complexity</b>: Constant 
+   //! <b>Complexity</b>: Constant
    //!
-   //! <b>Throws</b>: Nothing. 
+   //! <b>Throws</b>: Nothing.
    void swap_nodes(unordered_set_member_hook &other);
 
    //! <b>Precondition</b>: link_mode must be \c safe_link or \c auto_unlink.
    //!
    //! <b>Returns</b>: true, if the node belongs to a container, false
-   //!   otherwise. This function can be used to test whether \c unordered_set::iterator_to 
-   //!   will return a valid iterator. 
+   //!   otherwise. This function can be used to test whether \c unordered_set::iterator_to
+   //!   will return a valid iterator.
    //!
-   //! <b>Complexity</b>: Constant 
+   //! <b>Complexity</b>: Constant
    bool is_linked() const;
 
    //! <b>Effects</b>: Removes the node if it's inserted in a container.
    //!   This function is only allowed if link_mode is \c auto_unlink.
-   //! 
-   //! <b>Throws</b>: Nothing. 
+   //!
+   //! <b>Throws</b>: Nothing.
    void unlink();
    #endif
 };
 
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #include <boost/intrusive/detail/config_end.hpp>
 

@@ -200,7 +200,7 @@ struct key_nodeptr_comp
    key_nodeptr_comp(KeyValueCompare kcomp, const Container *cont)
       :  base_t(kcomp), cont_(cont)
    {}
-   
+  
    template<class T>
    struct is_node_ptr
    {
@@ -236,7 +236,7 @@ struct node_cloner
    typedef typename real_value_traits::node_ptr          node_ptr;
    typedef typename real_value_traits::const_node_ptr    const_node_ptr;
    typedef detail::ebo_functor_holder<F>                 base_t;
-   enum { safemode_or_autounlink  = 
+   enum { safemode_or_autounlink  =
             (int)real_value_traits::link_mode == (int)auto_unlink   ||
             (int)real_value_traits::link_mode == (int)safe_link     };
 
@@ -270,7 +270,7 @@ struct node_disposer
    typedef typename real_value_traits::node_ptr    node_ptr;
    typedef detail::ebo_functor_holder<F>           base_t;
    typedef typename Container::node_algorithms     node_algorithms;
-   enum { safemode_or_autounlink  = 
+   enum { safemode_or_autounlink  =
             (int)real_value_traits::link_mode == (int)auto_unlink   ||
             (int)real_value_traits::link_mode == (int)safe_link     };
 
@@ -378,7 +378,7 @@ struct base_hook_traits
 
    static const link_mode_type link_mode = LinkMode;
 
-   static pointer to_value_ptr(const node_ptr & n) 
+   static pointer to_value_ptr(const node_ptr & n)
    {
       return pointer_traits<pointer>::pointer_to
          (static_cast<reference>(static_cast<node_holder_reference>(*n)));
@@ -504,7 +504,7 @@ inline std::size_t floor_log2 (std::size_t x)
 
    std::size_t n = x;
    std::size_t log2 = 0;
-   
+  
    for(std::size_t shift = Bits >> 1; shift; shift >>= 1){
       std::size_t tmp = n >> shift;
       if (tmp)
@@ -655,7 +655,7 @@ struct node_to_value
       , detail::store_cont_ptr_on_it<Container>::value
       >::type
 {
-   static const bool store_container_ptr = 
+   static const bool store_container_ptr =
       detail::store_cont_ptr_on_it<Container>::value;
 
    typedef typename Container::real_value_traits         real_value_traits;
@@ -871,8 +871,8 @@ class reverse_iterator
 };
 
 } //namespace detail
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #include <boost/intrusive/detail/config_end.hpp>
 

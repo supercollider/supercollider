@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( sndfile_backend_test_1 )
 
 
     boost::xtime xt;
-    boost::xtime_get(&xt, boost::TIME_UTC);
+    boost::xtime_get(&xt, boost::TIME_UTC_);
     xt.sec += 1;
     boost::thread::sleep(xt);
 

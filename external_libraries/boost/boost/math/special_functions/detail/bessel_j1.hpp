@@ -22,8 +22,38 @@
 namespace boost { namespace math{  namespace detail{
 
 template <typename T>
+T bessel_j1(T x);
+
+template <class T>
+struct bessel_j1_initializer
+{
+   struct init
+   {
+      init()
+      {
+         do_init();
+      }
+      static void do_init()
+      {
+         bessel_j1(T(1));
+      }
+      void force_instantiate()const{}
+   };
+   static const init initializer;
+   static void force_instantiate()
+   {
+      initializer.force_instantiate();
+   }
+};
+
+template <class T>
+const typename bessel_j1_initializer<T>::init bessel_j1_initializer<T>::initializer;
+
+template <typename T>
 T bessel_j1(T x)
 {
+    bessel_j1_initializer<T>::force_instantiate();
+
     static const T P1[] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, -1.4258509801366645672e+11)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, 6.6781041261492395835e+09)),

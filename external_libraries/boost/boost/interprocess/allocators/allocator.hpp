@@ -45,12 +45,12 @@ namespace boost {
 namespace interprocess {
 
 
-//!An STL compatible allocator that uses a segment manager as 
+//!An STL compatible allocator that uses a segment manager as
 //!memory source. The internal pointer type will of the same type (raw, smart) as
 //!"typename SegmentManager::void_pointer" type. This allows
 //!placing the allocator in shared memory, memory mapped-files, etc...
 template<class T, class SegmentManager>
-class allocator 
+class allocator
 {
    public:
    //Segment manager
@@ -115,7 +115,7 @@ class allocator
    //!objects of type T2
    template<class T2>
    struct rebind
-   {   
+   {  
       typedef allocator<T2, SegmentManager>     other;
    };
 
@@ -126,21 +126,21 @@ class allocator
 
    //!Constructor from the segment manager.
    //!Never throws
-   allocator(segment_manager *segment_mngr) 
+   allocator(segment_manager *segment_mngr)
       : mp_mngr(segment_mngr) { }
 
    //!Constructor from other allocator.
    //!Never throws
-   allocator(const allocator &other) 
+   allocator(const allocator &other)
       : mp_mngr(other.get_segment_manager()){ }
 
    //!Constructor from related allocator.
    //!Never throws
    template<class T2>
-   allocator(const allocator<T2, SegmentManager> &other) 
+   allocator(const allocator<T2, SegmentManager> &other)
       : mp_mngr(other.get_segment_manager()){}
 
-   //!Allocates memory for an array of count elements. 
+   //!Allocates memory for an array of count elements.
    //!Throws boost::interprocess::bad_alloc if there is no enough memory
    pointer allocate(size_type count, cvoid_ptr hint = 0)
    {
@@ -169,13 +169,13 @@ class allocator
    //!pointed by p can hold. This size only works for memory allocated with
    //!allocate, allocation_command and allocate_many.
    size_type size(const pointer &p) const
-   {  
+   { 
       return (size_type)mp_mngr->size(ipcdetail::to_raw_pointer(p))/sizeof(T);
    }
 
    std::pair<pointer, bool>
       allocation_command(boost::interprocess::allocation_type command,
-                         size_type limit_size, 
+                         size_type limit_size,
                          size_type preferred_size,
                          size_type &received_size, const pointer &reuse = 0)
    {
@@ -273,14 +273,14 @@ class allocator
 //!Equality test for same type
 //!of allocator
 template<class T, class SegmentManager> inline
-bool operator==(const allocator<T , SegmentManager>  &alloc1, 
+bool operator==(const allocator<T , SegmentManager>  &alloc1,
                 const allocator<T, SegmentManager>  &alloc2)
    {  return alloc1.get_segment_manager() == alloc2.get_segment_manager(); }
 
 //!Inequality test for same type
 //!of allocator
 template<class T, class SegmentManager> inline
-bool operator!=(const allocator<T, SegmentManager>  &alloc1, 
+bool operator!=(const allocator<T, SegmentManager>  &alloc1,
                 const allocator<T, SegmentManager>  &alloc2)
    {  return alloc1.get_segment_manager() != alloc2.get_segment_manager(); }
 

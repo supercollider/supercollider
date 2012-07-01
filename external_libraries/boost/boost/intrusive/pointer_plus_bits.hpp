@@ -63,7 +63,7 @@ struct pointer_plus_bits<T*, NumBits>
    static void set_pointer(pointer &n, pointer p)
    {
       BOOST_INTRUSIVE_INVARIANT_ASSERT(0 == (std::size_t(p) & Mask));
-      n = pointer(std::size_t(p) | (std::size_t(n) & Mask)); 
+      n = pointer(std::size_t(p) | (std::size_t(n) & Mask));
    }
 
    static std::size_t get_bits(pointer n)
@@ -76,7 +76,7 @@ struct pointer_plus_bits<T*, NumBits>
    }
 };
 
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #endif //BOOST_INTRUSIVE_POINTER_PLUS_BITS_HPP

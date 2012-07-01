@@ -57,7 +57,7 @@ struct hash_bool_flags
    static const std::size_t incremental_pos        = 32u;
 };
 
-template 
+template
    < class  ValueTraits
    , class  Hash
    , class  Equal
@@ -161,7 +161,7 @@ struct get_slist_impl_from_supposed_value_traits
 template<class SupposedValueTraits>
 struct unordered_bucket_impl
 {
-   typedef typename 
+   typedef typename
       get_slist_impl_from_supposed_value_traits
          <SupposedValueTraits>::type            slist_impl;
    typedef detail::bucket_impl<slist_impl>      implementation_defined;
@@ -490,7 +490,7 @@ struct group_functions
       //itself, as group list does not link bucket
       node_ptr prev_in_group(group_traits::get_next(elem));
       bool first_in_group = node_traits::get_next(prev_in_group) != elem;
-      
+     
       if(first_in_group){
          node_ptr start_pos;
          if(last_in_group){
@@ -810,7 +810,7 @@ class hashtable_impl
       node_cast_adaptor(const ConvertibleToF &c2f, const hashtable_impl *cont)
          :  base_t(base_t(c2f, cont))
       {}
-      
+     
       typename base_t::node_ptr operator()(const typename slist_impl::node &to_clone)
       {  return base_t::operator()(static_cast<const node &>(to_clone));   }
 
@@ -824,7 +824,7 @@ class hashtable_impl
    //noncopyable, movable
    BOOST_MOVABLE_BUT_NOT_COPYABLE(hashtable_impl)
 
-   enum { safemode_or_autounlink  = 
+   enum { safemode_or_autounlink  =
             (int)real_value_traits::link_mode == (int)auto_unlink   ||
             (int)real_value_traits::link_mode == (int)safe_link     };
 
@@ -879,19 +879,19 @@ class hashtable_impl
    //!
    //! <b>Effects</b>: Constructs an empty unordered_set, storing a reference
    //!   to the bucket array and copies of the key_hasher and equal_func functors.
-   //!   
-   //! <b>Complexity</b>: Constant. 
-   //! 
+   //!  
+   //! <b>Complexity</b>: Constant.
+   //!
    //! <b>Throws</b>: If value_traits::node_traits::node
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks)
-   //!   or the copy constructor or invocation of hash_func or equal_func throws. 
+   //!   or the copy constructor or invocation of hash_func or equal_func throws.
    //!
    //! <b>Notes</b>: buckets array must be disposed only after
    //!   *this is disposed.
    hashtable_impl ( const bucket_traits &b_traits
                   , const hasher & hash_func = hasher()
                   , const key_equal &equal_func = key_equal()
-                  , const value_traits &v_traits = value_traits()) 
+                  , const value_traits &v_traits = value_traits())
       :  data_(b_traits, hash_func, equal_func, v_traits)
    {
       priv_initialize_buckets();
@@ -905,7 +905,7 @@ class hashtable_impl
    }
 
    //! <b>Effects</b>: to-do
-   //!   
+   //!  
    hashtable_impl(BOOST_RV_REF(hashtable_impl) x)
       : data_( ::boost::move(x.priv_bucket_traits())
              , ::boost::move(x.priv_hasher())
@@ -927,25 +927,25 @@ class hashtable_impl
    }
 
    //! <b>Effects</b>: to-do
-   //!   
-   hashtable_impl& operator=(BOOST_RV_REF(hashtable_impl) x) 
+   //!  
+   hashtable_impl& operator=(BOOST_RV_REF(hashtable_impl) x)
    {  this->swap(x); return *this;  }
 
-   //! <b>Effects</b>: Detaches all elements from this. The objects in the unordered_set 
+   //! <b>Effects</b>: Detaches all elements from this. The objects in the unordered_set
    //!   are not deleted (i.e. no destructors are called).
-   //! 
-   //! <b>Complexity</b>: Linear to the number of elements in the unordered_set, if 
+   //!
+   //! <b>Complexity</b>: Linear to the number of elements in the unordered_set, if
    //!   it's a safe-mode or auto-unlink value. Otherwise constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   ~hashtable_impl() 
+   ~hashtable_impl()
    {}
 
    //! <b>Effects</b>: Returns an iterator pointing to the beginning of the unordered_set.
-   //! 
+   //!
    //! <b>Complexity</b>: Amortized constant time.
    //!   Worst case (empty unordered_set): O(this->bucket_count())
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    iterator begin()
    {  return iterator(this->priv_begin(), this);   }
@@ -955,7 +955,7 @@ class hashtable_impl
    //!
    //! <b>Complexity</b>: Amortized constant time.
    //!   Worst case (empty unordered_set): O(this->bucket_count())
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    const_iterator begin() const
    {  return this->cbegin();  }
@@ -965,57 +965,57 @@ class hashtable_impl
    //!
    //! <b>Complexity</b>: Amortized constant time.
    //!   Worst case (empty unordered_set): O(this->bucket_count())
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    const_iterator cbegin() const
    {  return const_iterator(this->priv_begin(), this);   }
 
    //! <b>Effects</b>: Returns an iterator pointing to the end of the unordered_set.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    iterator end()
    {  return iterator(priv_invalid_local_it(), 0);   }
 
    //! <b>Effects</b>: Returns a const_iterator pointing to the end of the unordered_set.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    const_iterator end() const
    {  return this->cend(); }
 
    //! <b>Effects</b>: Returns a const_iterator pointing to the end of the unordered_set.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    const_iterator cend() const
    {  return const_iterator(priv_invalid_local_it(), 0);  }
 
    //! <b>Effects</b>: Returns the hasher object used by the unordered_set.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: If hasher copy-constructor throws.
    hasher hash_function() const
    {  return this->priv_hasher();  }
 
    //! <b>Effects</b>: Returns the key_equal object used by the unordered_set.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: If key_equal copy-constructor throws.
    key_equal key_eq() const
    {  return this->priv_equal();   }
 
    //! <b>Effects</b>: Returns true if the container is empty.
-   //! 
+   //!
    //! <b>Complexity</b>: if constant-time size and cache_begin options are disabled,
    //!   average constant time (worst case, with empty() == true: O(this->bucket_count()).
    //!   Otherwise constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    bool empty() const
    {
@@ -1038,10 +1038,10 @@ class hashtable_impl
    }
 
    //! <b>Effects</b>: Returns the number of elements stored in the unordered_set.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to elements contained in *this if
    //!   constant_time_size is false. Constant-time otherwise.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    size_type size() const
    {
@@ -1060,10 +1060,10 @@ class hashtable_impl
 
    //! <b>Requires</b>: the hasher and the equality function unqualified swap
    //!   call should not throw.
-   //! 
+   //!
    //! <b>Effects</b>: Swaps the contents of two unordered_sets.
    //!   Swaps also the contained bucket array and equality and hasher functors.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: If the swap() call for the comparison or hash functors
@@ -1095,7 +1095,7 @@ class hashtable_impl
    //!   hash than the original node.
    //!
    //! <b>Effects</b>: Erases all the elements from *this
-   //!   calling Disposer::operator()(pointer), clones all the 
+   //!   calling Disposer::operator()(pointer), clones all the
    //!   elements from src calling Cloner::operator()(const_reference )
    //!   and inserts them on *this. The hash function and the equality
    //!   predicate are copied from the source.
@@ -1106,7 +1106,7 @@ class hashtable_impl
    //!   calling Disposer::operator()(pointer).
    //!
    //! <b>Complexity</b>: Linear to erased plus inserted elements.
-   //! 
+   //!
    //! <b>Throws</b>: If cloner or hasher throw or hash or equality predicate copying
    //!   throws. Basic guarantee.
    template <class Cloner, class Disposer>
@@ -1131,7 +1131,7 @@ class hashtable_impl
             typedef node_cast_adaptor<detail::node_disposer<Disposer, hashtable_impl> > NodeDisposer;
             typedef node_cast_adaptor<detail::node_cloner<Cloner, hashtable_impl> > NodeCloner;
             NodeDisposer node_disp(disposer, this);
-   
+  
             detail::exception_array_disposer<bucket_type, NodeDisposer, size_type>
                rollback(dst_buckets[0], node_disp, constructed);
             for( constructed = 0
@@ -1191,15 +1191,15 @@ class hashtable_impl
    }
 
    //! <b>Requires</b>: value must be an lvalue
-   //! 
+   //!
    //! <b>Effects</b>: Inserts the value into the unordered_set.
    //!
    //! <b>Returns</b>: An iterator to the inserted value.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(1), worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws. Strong guarantee.
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    //!   No copy-constructors are called.
    iterator insert_equal(reference value)
@@ -1212,16 +1212,16 @@ class hashtable_impl
       return priv_insert_equal_find(value, bucket_num, hash_value, it);
    }
 
-   //! <b>Requires</b>: Dereferencing iterator must yield an lvalue 
+   //! <b>Requires</b>: Dereferencing iterator must yield an lvalue
    //!   of type value_type.
-   //! 
+   //!
    //! <b>Effects</b>: Equivalent to this->insert_equal(t) for each element in [b, e).
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(N), where N is std::distance(b, e).
    //!   Worst case O(N*this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    //!   No copy-constructors are called.
    template<class Iterator>
@@ -1232,7 +1232,7 @@ class hashtable_impl
    }
 
    //! <b>Requires</b>: value must be an lvalue
-   //! 
+   //!
    //! <b>Effects</b>: Tries to inserts value into the unordered_set.
    //!
    //! <b>Returns</b>: If the value
@@ -1240,11 +1240,11 @@ class hashtable_impl
    //!   iterator to the new value and true. If there is an equivalent value
    //!   returns a pair containing an iterator to the already present value
    //!   and false.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(1), worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws. Strong guarantee.
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    //!   No copy-constructors are called.
    std::pair<iterator, bool> insert_unique(reference value)
@@ -1254,20 +1254,20 @@ class hashtable_impl
          (value, this->priv_hasher(), this->priv_equal(), commit_data);
       if(!ret.second)
          return ret;
-      return std::pair<iterator, bool> 
+      return std::pair<iterator, bool>
          (this->insert_unique_commit(value, commit_data), true);
    }
 
-   //! <b>Requires</b>: Dereferencing iterator must yield an lvalue 
+   //! <b>Requires</b>: Dereferencing iterator must yield an lvalue
    //!   of type value_type.
-   //! 
+   //!
    //! <b>Effects</b>: Equivalent to this->insert_unique(t) for each element in [b, e).
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(N), where N is std::distance(b, e).
    //!   Worst case O(N*this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    //!   No copy-constructors are called.
    template<class Iterator>
@@ -1277,14 +1277,14 @@ class hashtable_impl
          this->insert_unique(*b);
    }
 
-   //! <b>Requires</b>: "hash_func" must be a hash function that induces 
+   //! <b>Requires</b>: "hash_func" must be a hash function that induces
    //!   the same hash values as the stored hasher. The difference is that
    //!   "hash_func" hashes the given key instead of the value_type.
    //!
-   //!   "equal_func" must be a equality function that induces 
+   //!   "equal_func" must be a equality function that induces
    //!   the same equality as key_equal. The difference is that
    //!   "equal_func" compares an arbitrary key with the contained values.
-   //! 
+   //!
    //! <b>Effects</b>: Checks if a value can be inserted in the unordered_set, using
    //!   a user provided key instead of the value itself.
    //!
@@ -1293,11 +1293,11 @@ class hashtable_impl
    //!   and false. If the value can be inserted returns true in the returned
    //!   pair boolean and fills "commit_data" that is meant to be used with
    //!   the "insert_commit" function.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(1), worst case O(this->size()).
    //!
    //! <b>Throws</b>: If hash_func or equal_func throw. Strong guarantee.
-   //! 
+   //!
    //! <b>Notes</b>: This function is used to improve performance when constructing
    //!   a value_type is expensive: if there is an equivalent value
    //!   the constructed object must be discarded. Many times, the part of the
@@ -1334,16 +1334,16 @@ class hashtable_impl
    //!   must have been obtained from a previous call to "insert_check".
    //!   No objects should have been inserted or erased from the unordered_set between
    //!   the "insert_check" that filled "commit_data" and the call to "insert_commit".
-   //! 
+   //!
    //! <b>Effects</b>: Inserts the value in the unordered_set using the information obtained
    //!   from the "commit_data" that a previous "insert_check" filled.
    //!
    //! <b>Returns</b>: An iterator to the newly inserted object.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant time.
    //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Notes</b>: This function has only sense if a "insert_check" has been
    //!   previously executed to fill "commit_data". No value should be inserted or
    //!   erased between the "insert_check" and "insert_commit" calls.
@@ -1363,62 +1363,62 @@ class hashtable_impl
       return iterator(b.insert_after(b.before_begin(), *n), this);
    }
 
-   //! <b>Effects</b>: Erases the element pointed to by i. 
-   //! 
+   //! <b>Effects</b>: Erases the element pointed to by i.
+   //!
    //! <b>Complexity</b>: Average case O(1), worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!    to the erased element. No destructors are called.
    void erase(const_iterator i)
    {  this->erase_and_dispose(i, detail::null_disposer());  }
 
-   //! <b>Effects</b>: Erases the range pointed to by b end e. 
-   //! 
+   //! <b>Effects</b>: Erases the range pointed to by b end e.
+   //!
    //! <b>Complexity</b>: Average case O(std::distance(b, e)),
    //!   worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!    to the erased elements. No destructors are called.
    void erase(const_iterator b, const_iterator e)
    {  this->erase_and_dispose(b, e, detail::null_disposer());  }
 
    //! <b>Effects</b>: Erases all the elements with the given value.
-   //! 
+   //!
    //! <b>Returns</b>: The number of erased elements.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(this->count(value)).
    //!   Worst case O(this->size()).
-   //! 
-   //! <b>Throws</b>: If the internal hasher or the equality functor throws. 
+   //!
+   //! <b>Throws</b>: If the internal hasher or the equality functor throws.
    //!   Basic guarantee.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!    to the erased elements. No destructors are called.
    size_type erase(const_reference value)
    {  return this->erase(value, this->priv_hasher(), this->priv_equal());  }
 
-   //! <b>Requires</b>: "hash_func" must be a hash function that induces 
+   //! <b>Requires</b>: "hash_func" must be a hash function that induces
    //!   the same hash values as the stored hasher. The difference is that
    //!   "hash_func" hashes the given key instead of the value_type.
    //!
-   //!   "equal_func" must be a equality function that induces 
+   //!   "equal_func" must be a equality function that induces
    //!   the same equality as key_equal. The difference is that
    //!   "equal_func" compares an arbitrary key with the contained values.
    //!
    //! <b>Effects</b>: Erases all the elements that have the same hash and
    //!   compare equal with the given key.
-   //! 
+   //!
    //! <b>Returns</b>: The number of erased elements.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(this->count(value)).
    //!   Worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If hash_func or equal_func throw. Basic guarantee.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!    to the erased elements. No destructors are called.
    template<class KeyType, class KeyHasher, class KeyValueEqual>
@@ -1427,14 +1427,14 @@ class hashtable_impl
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
    //!
-   //! <b>Effects</b>: Erases the element pointed to by i. 
+   //! <b>Effects</b>: Erases the element pointed to by i.
    //!   Disposer::operator()(pointer) is called for the removed element.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(1), worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
-   //! <b>Note</b>: Invalidates the iterators 
+   //!
+   //! <b>Note</b>: Invalidates the iterators
    //!    to the erased elements.
    template<class Disposer>
    void erase_and_dispose(const_iterator i, Disposer disposer
@@ -1452,12 +1452,12 @@ class hashtable_impl
    //!
    //! <b>Effects</b>: Erases the range pointed to by b end e.
    //!   Disposer::operator()(pointer) is called for the removed elements.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(std::distance(b, e)),
    //!   worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators
    //!    to the erased elements.
    template<class Disposer>
@@ -1492,15 +1492,15 @@ class hashtable_impl
    //!
    //! <b>Effects</b>: Erases all the elements with the given value.
    //!   Disposer::operator()(pointer) is called for the removed elements.
-   //! 
+   //!
    //! <b>Returns</b>: The number of erased elements.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(this->count(value)).
    //!   Worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws.
    //!   Basic guarantee.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!    to the erased elements. No destructors are called.
    template<class Disposer>
@@ -1514,12 +1514,12 @@ class hashtable_impl
    //!   Disposer::operator()(pointer) is called for the removed elements.
    //!
    //! <b>Returns</b>: The number of erased elements.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(this->count(value)).
    //!   Worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If hash_func or equal_func throw. Basic guarantee.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators
    //!    to the erased elements.
    template<class KeyType, class KeyHasher, class KeyValueEqual, class Disposer>
@@ -1565,13 +1565,13 @@ class hashtable_impl
       return count;
    }
 
-   //! <b>Effects</b>: Erases all of the elements. 
-   //! 
+   //! <b>Effects</b>: Erases all of the elements.
+   //!
    //! <b>Complexity</b>: Linear to the number of elements on the container.
    //!   if it's a safe-mode or auto-unlink value_type. Constant time otherwise.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!    to the erased elements. No destructors are called.
    void clear()
@@ -1581,14 +1581,14 @@ class hashtable_impl
    }
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
-   //! 
-   //! <b>Effects</b>: Erases all of the elements. 
-   //! 
+   //!
+   //! <b>Effects</b>: Erases all of the elements.
+   //!
    //! <b>Complexity</b>: Linear to the number of elements on the container.
    //!   Disposer::operator()(pointer) is called for the removed elements.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!    to the erased elements. No destructors are called.
    template<class Disposer>
@@ -1606,25 +1606,25 @@ class hashtable_impl
    }
 
    //! <b>Effects</b>: Returns the number of contained elements with the given value
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(1), worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws.
    size_type count(const_reference value) const
    {  return this->count(value, this->priv_hasher(), this->priv_equal());  }
 
-   //! <b>Requires</b>: "hash_func" must be a hash function that induces 
+   //! <b>Requires</b>: "hash_func" must be a hash function that induces
    //!   the same hash values as the stored hasher. The difference is that
    //!   "hash_func" hashes the given key instead of the value_type.
    //!
-   //!   "equal_func" must be a equality function that induces 
+   //!   "equal_func" must be a equality function that induces
    //!   the same equality as key_equal. The difference is that
    //!   "equal_func" compares an arbitrary key with the contained values.
    //!
    //! <b>Effects</b>: Returns the number of contained elements with the given key
    //!
    //! <b>Complexity</b>: Average case O(1), worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If hash_func or equal throw.
    template<class KeyType, class KeyHasher, class KeyValueEqual>
    size_type count(const KeyType &key, const KeyHasher &hash_func, const KeyValueEqual &equal_func) const
@@ -1638,25 +1638,25 @@ class hashtable_impl
    //!   "value" or end() if that element does not exist.
    //!
    //! <b>Complexity</b>: Average case O(1), worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws.
    iterator find(const_reference value)
    {  return this->find(value, this->priv_hasher(), this->priv_equal());   }
 
-   //! <b>Requires</b>: "hash_func" must be a hash function that induces 
+   //! <b>Requires</b>: "hash_func" must be a hash function that induces
    //!   the same hash values as the stored hasher. The difference is that
    //!   "hash_func" hashes the given key instead of the value_type.
    //!
-   //!   "equal_func" must be a equality function that induces 
+   //!   "equal_func" must be a equality function that induces
    //!   the same equality as key_equal. The difference is that
    //!   "equal_func" compares an arbitrary key with the contained values.
    //!
-   //! <b>Effects</b>: Finds an iterator to the first element whose key is 
+   //! <b>Effects</b>: Finds an iterator to the first element whose key is
    //!   "key" according to the given hash and equality functor or end() if
    //!   that element does not exist.
    //!
    //! <b>Complexity</b>: Average case O(1), worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If hash_func or equal_func throw.
    //!
    //! <b>Note</b>: This function is used when constructing a value_type
@@ -1672,29 +1672,29 @@ class hashtable_impl
       return iterator(local_it, this);
    }
 
-   //! <b>Effects</b>: Finds a const_iterator to the first element whose key is 
+   //! <b>Effects</b>: Finds a const_iterator to the first element whose key is
    //!   "key" or end() if that element does not exist.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(1), worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws.
    const_iterator find(const_reference value) const
    {  return this->find(value, this->priv_hasher(), this->priv_equal());   }
 
-   //! <b>Requires</b>: "hash_func" must be a hash function that induces 
+   //! <b>Requires</b>: "hash_func" must be a hash function that induces
    //!   the same hash values as the stored hasher. The difference is that
    //!   "hash_func" hashes the given key instead of the value_type.
    //!
-   //!   "equal_func" must be a equality function that induces 
+   //!   "equal_func" must be a equality function that induces
    //!   the same equality as key_equal. The difference is that
    //!   "equal_func" compares an arbitrary key with the contained values.
    //!
-   //! <b>Effects</b>: Finds an iterator to the first element whose key is 
+   //! <b>Effects</b>: Finds an iterator to the first element whose key is
    //!   "key" according to the given hasher and equality functor or end() if
    //!   that element does not exist.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(1), worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If hash_func or equal_func throw.
    //!
    //! <b>Note</b>: This function is used when constructing a value_type
@@ -1712,30 +1712,30 @@ class hashtable_impl
    }
 
    //! <b>Effects</b>: Returns a range containing all elements with values equivalent
-   //!   to value. Returns std::make_pair(this->end(), this->end()) if no such 
+   //!   to value. Returns std::make_pair(this->end(), this->end()) if no such
    //!   elements exist.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(this->count(value)). Worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws.
    std::pair<iterator,iterator> equal_range(const_reference value)
    {  return this->equal_range(value, this->priv_hasher(), this->priv_equal());  }
 
-   //! <b>Requires</b>: "hash_func" must be a hash function that induces 
+   //! <b>Requires</b>: "hash_func" must be a hash function that induces
    //!   the same hash values as the stored hasher. The difference is that
    //!   "hash_func" hashes the given key instead of the value_type.
    //!
-   //!   "equal_func" must be a equality function that induces 
+   //!   "equal_func" must be a equality function that induces
    //!   the same equality as key_equal. The difference is that
    //!   "equal_func" compares an arbitrary key with the contained values.
    //!
    //! <b>Effects</b>: Returns a range containing all elements with equivalent
-   //!   keys. Returns std::make_pair(this->end(), this->end()) if no such 
+   //!   keys. Returns std::make_pair(this->end(), this->end()) if no such
    //!   elements exist.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(this->count(key, hash_func, equal_func)).
    //!   Worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If hash_func or the equal_func throw.
    //!
    //! <b>Note</b>: This function is used when constructing a value_type
@@ -1753,31 +1753,31 @@ class hashtable_impl
    }
 
    //! <b>Effects</b>: Returns a range containing all elements with values equivalent
-   //!   to value. Returns std::make_pair(this->end(), this->end()) if no such 
+   //!   to value. Returns std::make_pair(this->end(), this->end()) if no such
    //!   elements exist.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(this->count(value)). Worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws.
    std::pair<const_iterator, const_iterator>
       equal_range(const_reference value) const
    {  return this->equal_range(value, this->priv_hasher(), this->priv_equal());  }
 
-   //! <b>Requires</b>: "hash_func" must be a hash function that induces 
+   //! <b>Requires</b>: "hash_func" must be a hash function that induces
    //!   the same hash values as the stored hasher. The difference is that
    //!   "hash_func" hashes the given key instead of the value_type.
    //!
-   //!   "equal_func" must be a equality function that induces 
+   //!   "equal_func" must be a equality function that induces
    //!   the same equality as key_equal. The difference is that
    //!   "equal_func" compares an arbitrary key with the contained values.
    //!
    //! <b>Effects</b>: Returns a range containing all elements with equivalent
-   //!   keys. Returns std::make_pair(this->end(), this->end()) if no such 
+   //!   keys. Returns std::make_pair(this->end(), this->end()) if no such
    //!   elements exist.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case O(this->count(key, hash_func, equal_func)).
    //!   Worst case O(this->size()).
-   //! 
+   //!
    //! <b>Throws</b>: If the hasher or equal_func throw.
    //!
    //! <b>Note</b>: This function is used when constructing a value_type
@@ -1796,12 +1796,12 @@ class hashtable_impl
 
    //! <b>Requires</b>: value must be an lvalue and shall be in a unordered_set of
    //!   appropriate type. Otherwise the behavior is undefined.
-   //! 
+   //!
    //! <b>Effects</b>: Returns: a valid iterator belonging to the unordered_set
    //!   that points to the value
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: If the internal hash function throws.
    iterator iterator_to(reference value)
    {
@@ -1810,12 +1810,12 @@ class hashtable_impl
 
    //! <b>Requires</b>: value must be an lvalue and shall be in a unordered_set of
    //!   appropriate type. Otherwise the behavior is undefined.
-   //! 
+   //!
    //! <b>Effects</b>: Returns: a valid const_iterator belonging to the
    //!   unordered_set that points to the value
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: If the internal hash function throws.
    const_iterator iterator_to(const_reference value) const
    {
@@ -1825,78 +1825,78 @@ class hashtable_impl
 
    //! <b>Requires</b>: value must be an lvalue and shall be in a unordered_set of
    //!   appropriate type. Otherwise the behavior is undefined.
-   //! 
+   //!
    //! <b>Effects</b>: Returns: a valid local_iterator belonging to the unordered_set
    //!   that points to the value
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>: This static function is available only if the <i>value traits</i>
    //!   is stateless.
    static local_iterator s_local_iterator_to(reference value)
    {
       BOOST_STATIC_ASSERT((!stateful_value_traits));
       siterator sit = bucket_type::s_iterator_to(((hashtable_impl*)0)->priv_value_to_node(value));
-      return local_iterator(sit, (hashtable_impl*)0);  
+      return local_iterator(sit, (hashtable_impl*)0); 
    }
 
    //! <b>Requires</b>: value must be an lvalue and shall be in a unordered_set of
    //!   appropriate type. Otherwise the behavior is undefined.
-   //! 
+   //!
    //! <b>Effects</b>: Returns: a valid const_local_iterator belonging to
    //!   the unordered_set that points to the value
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>: This static function is available only if the <i>value traits</i>
    //!   is stateless.
    static const_local_iterator s_local_iterator_to(const_reference value)
    {
       BOOST_STATIC_ASSERT((!stateful_value_traits));
       siterator sit = bucket_type::s_iterator_to(((hashtable_impl*)0)->priv_value_to_node(const_cast<value_type&>(value)));
-      return const_local_iterator(sit, (hashtable_impl*)0);  
+      return const_local_iterator(sit, (hashtable_impl*)0); 
    }
 
    //! <b>Requires</b>: value must be an lvalue and shall be in a unordered_set of
    //!   appropriate type. Otherwise the behavior is undefined.
-   //! 
+   //!
    //! <b>Effects</b>: Returns: a valid local_iterator belonging to the unordered_set
    //!   that points to the value
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    local_iterator local_iterator_to(reference value)
    {
       siterator sit = bucket_type::s_iterator_to(this->priv_value_to_node(value));
-      return local_iterator(sit, this);  
+      return local_iterator(sit, this); 
    }
 
    //! <b>Requires</b>: value must be an lvalue and shall be in a unordered_set of
    //!   appropriate type. Otherwise the behavior is undefined.
-   //! 
+   //!
    //! <b>Effects</b>: Returns: a valid const_local_iterator belonging to
    //!   the unordered_set that points to the value
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    const_local_iterator local_iterator_to(const_reference value) const
    {
       siterator sit = bucket_type::s_iterator_to
          (const_cast<node &>(this->priv_value_to_node(value)));
-      return const_local_iterator(sit, this);  
+      return const_local_iterator(sit, this); 
    }
 
    //! <b>Effects</b>: Returns the number of buckets passed in the constructor
    //!   or the last rehash function.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    size_type bucket_count() const
    {  return this->priv_buckets_len();   }
@@ -1904,33 +1904,33 @@ class hashtable_impl
    //! <b>Requires</b>: n is in the range [0, this->bucket_count()).
    //!
    //! <b>Effects</b>: Returns the number of elements in the nth bucket.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    size_type bucket_size(size_type n) const
    {  return this->priv_buckets()[n].size();   }
 
    //! <b>Effects</b>: Returns the index of the bucket in which elements
    //!   with keys equivalent to k would be found, if any such element existed.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: If the hash functor throws.
    //!
    //! <b>Note</b>: the return value is in the range [0, this->bucket_count()).
    size_type bucket(const key_type& k)  const
    {  return this->bucket(k, this->priv_hasher());   }
 
-   //! <b>Requires</b>: "hash_func" must be a hash function that induces 
+   //! <b>Requires</b>: "hash_func" must be a hash function that induces
    //!   the same hash values as the stored hasher. The difference is that
    //!   "hash_func" hashes the given key instead of the value_type.
    //!
    //! <b>Effects</b>: Returns the index of the bucket in which elements
    //!   with keys equivalent to k would be found, if any such element existed.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: If hash_func throws.
    //!
    //! <b>Note</b>: the return value is in the range [0, this->bucket_count()).
@@ -1940,9 +1940,9 @@ class hashtable_impl
 
    //! <b>Effects</b>: Returns the bucket array pointer passed in the constructor
    //!   or the last rehash function.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    bucket_ptr bucket_pointer() const
    {  return this->priv_buckets();   }
@@ -1951,13 +1951,13 @@ class hashtable_impl
    //!
    //! <b>Effects</b>: Returns a local_iterator pointing to the beginning
    //!   of the sequence stored in the bucket n.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>:  [this->begin(n), this->end(n)) is a valid range
-   //!   containing all of the elements in the nth bucket. 
+   //!   containing all of the elements in the nth bucket.
    local_iterator begin(size_type n)
    {  return local_iterator(this->priv_buckets()[n].begin(), this);  }
 
@@ -1965,13 +1965,13 @@ class hashtable_impl
    //!
    //! <b>Effects</b>: Returns a const_local_iterator pointing to the beginning
    //!   of the sequence stored in the bucket n.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>:  [this->begin(n), this->end(n)) is a valid range
-   //!   containing all of the elements in the nth bucket. 
+   //!   containing all of the elements in the nth bucket.
    const_local_iterator begin(size_type n) const
    {  return this->cbegin(n);  }
 
@@ -1979,13 +1979,13 @@ class hashtable_impl
    //!
    //! <b>Effects</b>: Returns a const_local_iterator pointing to the beginning
    //!   of the sequence stored in the bucket n.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>:  [this->begin(n), this->end(n)) is a valid range
-   //!   containing all of the elements in the nth bucket. 
+   //!   containing all of the elements in the nth bucket.
    const_local_iterator cbegin(size_type n) const
    {
       siterator sit = const_cast<bucket_type&>(this->priv_buckets()[n]).begin();
@@ -1996,13 +1996,13 @@ class hashtable_impl
    //!
    //! <b>Effects</b>: Returns a local_iterator pointing to the end
    //!   of the sequence stored in the bucket n.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>:  [this->begin(n), this->end(n)) is a valid range
-   //!   containing all of the elements in the nth bucket. 
+   //!   containing all of the elements in the nth bucket.
    local_iterator end(size_type n)
    {  return local_iterator(this->priv_buckets()[n].end(), this);  }
 
@@ -2010,11 +2010,11 @@ class hashtable_impl
    //!
    //! <b>Effects</b>: Returns a const_local_iterator pointing to the end
    //!   of the sequence stored in the bucket n.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>:  [this->begin(n), this->end(n)) is a valid range
    //!   containing all of the elements in the nth bucket.
    const_local_iterator end(size_type n) const
@@ -2024,13 +2024,13 @@ class hashtable_impl
    //!
    //! <b>Effects</b>: Returns a const_local_iterator pointing to the end
    //!   of the sequence stored in the bucket n.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>:  [this->begin(n), this->end(n)) is a valid range
-   //!   containing all of the elements in the nth bucket. 
+   //!   containing all of the elements in the nth bucket.
    const_local_iterator cend(size_type n) const
    {  return const_local_iterator(const_cast<bucket_type&>(this->priv_buckets()[n]).end(), this);  }
 
@@ -2044,12 +2044,12 @@ class hashtable_impl
    //!   the values from the old bucket and inserts then in the new one.
    //!   Bucket traits hold by *this is assigned from new_bucket_traits.
    //!   If the container is configured as incremental<>, the split bucket is set
-   //!   to the new bucket_len(). 
+   //!   to the new bucket_len().
    //!
    //!   If store_hash option is true, this method does not use the hash function.
-   //! 
+   //!
    //! <b>Complexity</b>: Average case linear in this->size(), worst case quadratic.
-   //! 
+   //!
    //! <b>Throws</b>: If the hasher functor throws. Basic guarantee.
    void rehash(const bucket_traits &new_bucket_traits)
    {
@@ -2058,7 +2058,7 @@ class hashtable_impl
       bucket_ptr old_buckets     = this->priv_buckets();
       size_type  old_buckets_len = this->priv_buckets_len();
 
-      //Check power of two bucket array if the option is activated      
+      //Check power of two bucket array if the option is activated     
       BOOST_INTRUSIVE_INVARIANT_ASSERT
       (!power_2_buckets || (0 == (new_buckets_len & (new_buckets_len-1u))));
 
@@ -2066,7 +2066,7 @@ class hashtable_impl
       const bool same_buffer = old_buckets == new_buckets;
       //If the new bucket length is a common factor
       //of the old one we can avoid hash calculations.
-      const bool fast_shrink = (!incremental) && (old_buckets_len > new_buckets_len) && 
+      const bool fast_shrink = (!incremental) && (old_buckets_len > new_buckets_len) &&
          (power_2_buckets ||(old_buckets_len % new_buckets_len) == 0);
       //If we are shrinking the same bucket array and it's
       //is a fast shrink, just rehash the last nodes
@@ -2147,11 +2147,11 @@ class hashtable_impl
 
    //! <b>Requires</b>:
    //!
-   //! <b>Effects</b>: 
-   //! 
-   //! <b>Complexity</b>: 
-   //! 
-   //! <b>Throws</b>: 
+   //! <b>Effects</b>:
+   //!
+   //! <b>Complexity</b>:
+   //!
+   //! <b>Throws</b>:
    //!
    //! <b>Note</b>: this method is only available if incremental<true> option is activated.
    bool incremental_rehash(bool grow = true)
@@ -2214,15 +2214,15 @@ class hashtable_impl
    }
 
    //! <b>Effects</b>: If new_bucket_traits.bucket_count() is not
-   //!   this->bucket_count()/2 or this->bucket_count()*2, or 
+   //!   this->bucket_count()/2 or this->bucket_count()*2, or
    //!   this->split_bucket() != new_bucket_traits.bucket_count() returns false
    //!   and does nothing.
    //!
    //!   Otherwise, copy assigns new_bucket_traits to the internal bucket_traits
    //!   and transfers all the objects from old buckets to the new ones.
-   //!   
+   //!  
    //! <b>Complexity</b>: Linear to size().
-   //! 
+   //!
    //! <b>Throws</b>: Nothing
    //!
    //! <b>Note</b>: this method is only available if incremental<true> option is activated.
@@ -2267,11 +2267,11 @@ class hashtable_impl
 
    //! <b>Requires</b>:
    //!
-   //! <b>Effects</b>: 
-   //! 
-   //! <b>Complexity</b>: 
-   //! 
-   //! <b>Throws</b>: 
+   //! <b>Effects</b>:
+   //!
+   //! <b>Complexity</b>:
+   //!
+   //! <b>Throws</b>:
    size_type split_count() const
    {
       //This function is only available if incremental hashing is activated
@@ -2282,11 +2282,11 @@ class hashtable_impl
    //! <b>Effects</b>: Returns the nearest new bucket count optimized for
    //!   the container that is bigger or equal than n. This suggestion can be
    //!   used to create bucket arrays with a size that will usually improve
-   //!   container's performance. If such value does not exist, the 
+   //!   container's performance. If such value does not exist, the
    //!   higher possible value is returned.
-   //! 
+   //!
    //! <b>Complexity</b>: Amortized constant time.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    static size_type suggested_upper_bucket_count(size_type n)
    {
@@ -2301,11 +2301,11 @@ class hashtable_impl
    //! <b>Effects</b>: Returns the nearest new bucket count optimized for
    //!   the container that is smaller or equal than n. This suggestion can be
    //!   used to create bucket arrays with a size that will usually improve
-   //!   container's performance. If such value does not exist, the 
+   //!   container's performance. If such value does not exist, the
    //!   lowest possible value is returned.
-   //! 
+   //!
    //! <b>Complexity</b>: Amortized constant time.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    static size_type suggested_lower_bucket_count(size_type n)
    {
@@ -2613,7 +2613,7 @@ class hashtable_impl
       bool last_in_group = (first_end_ptr <= nxt && nxt <= last_end_ptr) ||
                             (group_traits::get_next(nxt) != elem);
       bool first_in_group = node_traits::get_next(prev_in_group) != elem;
-      
+     
       if(first_in_group){
          node_ptr start_pos;
          if(last_in_group){
@@ -2684,7 +2684,7 @@ class hashtable_impl
       slist_node_ptr elem(i.slist_it().pointed_node());
       slist_node_ptr f_bucket_end, l_bucket_end;
       if(store_hash){
-         f_bucket_end = l_bucket_end = 
+         f_bucket_end = l_bucket_end =
          (this->priv_buckets()
             [this->priv_hash_to_bucket
                (this->priv_stored_hash(elem, store_hash_t()))
@@ -2720,7 +2720,7 @@ class hashtable_impl
       const real_bucket_traits &rbt = this->priv_real_bucket_traits();
       return rbt.bucket_begin() + rbt.bucket_count();
    }
-   
+  
    siterator priv_invalid_local_it() const
    {  return priv_invalid_bucket()->end();  }
 
@@ -2887,7 +2887,7 @@ class hashtable_impl
       if(constant_time_size && this->empty()){
          return priv_invalid_local_it();
       }
-      
+     
       siterator it = previt;
       ++it;
 
@@ -3008,7 +3008,7 @@ class hashtable_impl
             ++count;
          }
       }
-   
+  
       //If we reached the end, find the first, non-empty bucket
       for(bucket_number_second = bucket_number_first+1
          ; bucket_number_second != this->priv_buckets_len()
@@ -3043,7 +3043,7 @@ template <class T, bool UniqueKeys, class ...Options>
 struct make_hashtable_opt
 {
    typedef typename pack_options
-      < uset_defaults<T>, 
+      < uset_defaults<T>,
          #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
          O1, O2, O3, O4, O5, O6, O7, O8, O9, O10
          #else
@@ -3061,7 +3061,7 @@ struct make_hashtable_opt
       , detail::eval_value_traits<value_traits>
       , detail::identity<value_traits>
       >::type                                            real_value_traits;
-   typedef typename packed_options::bucket_traits        specified_bucket_traits;   
+   typedef typename packed_options::bucket_traits        specified_bucket_traits;  
 
    //Real bucket traits must be calculated from options and calculated value_traits
    typedef typename detail::get_slist_impl
@@ -3111,7 +3111,7 @@ struct make_hashtable
    /// @cond
    typedef hashtable_impl
       <  typename make_hashtable_opt
-            <T, false, 
+            <T, false,
             #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
             O1, O2, O3, O4, O5, O6, O7, O8, O9, O10
             #else
@@ -3132,7 +3132,7 @@ template<class T, class ...Options>
 template<class T, class O1, class O2, class O3, class O4, class O5, class O6, class O7, class O8, class O9, class O10>
 #endif
 class hashtable
-   :  public make_hashtable<T, 
+   :  public make_hashtable<T,
          #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
          O1, O2, O3, O4, O5, O6, O7, O8, O9, O10
          #else
@@ -3140,7 +3140,7 @@ class hashtable
          #endif
          >::type
 {
-   typedef typename make_hashtable<T, 
+   typedef typename make_hashtable<T,
       #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
       O1, O2, O3, O4, O5, O6, O7, O8, O9, O10
       #else
@@ -3180,8 +3180,8 @@ class hashtable
 
 #endif
 
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #include <boost/intrusive/detail/config_end.hpp>
 

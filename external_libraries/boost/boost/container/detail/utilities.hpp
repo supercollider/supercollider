@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2012. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -21,12 +21,22 @@
 #include <boost/move/move.hpp>
 #include <boost/container/detail/mpl.hpp>
 #include <boost/container/detail/type_traits.hpp>
-#include <boost/container/allocator/allocator_traits.hpp>
+#include <boost/container/allocator_traits.hpp>
 #include <algorithm>
 
 namespace boost {
 namespace container {
 namespace container_detail {
+
+template <typename T>
+inline T* addressof(T& obj)
+{
+   return static_cast<T*>(
+	   static_cast<void*>(
+	      const_cast<char*>(
+            &reinterpret_cast<const char&>(obj)
+   )));
+}
 
 template<class T>
 const T &max_value(const T &a, const T &b)
@@ -140,7 +150,7 @@ enum {
    && !::boost::is_fundamental<_TypeT>::value
 };
 
-}; 
+};
 */
 
 template<class T>
@@ -223,7 +233,7 @@ F uninitialized_copy_alloc(A &a, I f, I l, F r)
 template
    <typename A,
     typename F, // F models ForwardIterator
-    typename T> 
+    typename T>
 void uninitialized_fill_alloc(A &a, F f, F l, const T &t)
 {
    while (f != l) {
@@ -261,6 +271,7 @@ F uninitialized_copy_or_move_alloc
 {
    return ::boost::container::uninitialized_copy_alloc(a, f, l, r);
 }
+
 
 }  //namespace container {
 }  //namespace boost {

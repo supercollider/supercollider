@@ -40,7 +40,7 @@ enum link_mode_type{
    //!the container without using any function provided by the containers.
    auto_unlink
 };
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #endif //BOOST_INTRUSIVE_VALUE_LINK_TYPE_HPP

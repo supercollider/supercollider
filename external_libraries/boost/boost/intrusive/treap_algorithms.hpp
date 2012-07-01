@@ -28,15 +28,15 @@
 namespace boost {
 namespace intrusive {
 
-//! treap_algorithms provides basic algorithms to manipulate 
+//! treap_algorithms provides basic algorithms to manipulate
 //! nodes forming a treap.
-//! 
+//!
 //! (1) the header node is maintained with links not only to the root
 //! but also to the leftmost node of the tree, to enable constant time
 //! begin(), and to the rightmost node of the tree, to enable linear time
 //! performance when used with the generic set algorithms (set_union,
 //! etc.);
-//! 
+//!
 //! (2) when a node being deleted has two children its successor node is
 //! relinked into its place, rather than copied, so that the only
 //! pointers invalidated are those referring to the deleted node.
@@ -56,15 +56,15 @@ namespace intrusive {
 //! <b>Static functions</b>:
 //!
 //! <tt>static node_ptr get_parent(const_node_ptr n);</tt>
-//! 
+//!
 //! <tt>static void set_parent(node_ptr n, node_ptr parent);</tt>
 //!
 //! <tt>static node_ptr get_left(const_node_ptr n);</tt>
-//! 
+//!
 //! <tt>static void set_left(node_ptr n, node_ptr left);</tt>
 //!
 //! <tt>static node_ptr get_right(const_node_ptr n);</tt>
-//! 
+//!
 //! <tt>static void set_right(node_ptr n, node_ptr right);</tt>
 template<class NodeTraits>
 class treap_algorithms
@@ -92,7 +92,7 @@ class treap_algorithms
             tree_algorithms::erase(header_, z_);
          }
       }
-      
+     
       void release()
       {  remove_it_ = false;  }
 
@@ -117,7 +117,7 @@ class treap_algorithms
             rotate_up_n(header_, p_, n_);
          }
       }
-      
+     
       void release()
       {  remove_it_ = false;  }
 
@@ -170,27 +170,27 @@ class treap_algorithms
 
    //! <b>Requires</b>: header1 and header2 must be the header nodes
    //!  of two trees.
-   //! 
-   //! <b>Effects</b>: Swaps two trees. After the function header1 will contain 
+   //!
+   //! <b>Effects</b>: Swaps two trees. After the function header1 will contain
    //!   links to the second tree and header2 will have links to the first tree.
-   //! 
-   //! <b>Complexity</b>: Constant. 
-   //! 
+   //!
+   //! <b>Complexity</b>: Constant.
+   //!
    //! <b>Throws</b>: Nothing.
    static void swap_tree(const node_ptr & header1, const node_ptr & header2)
    {  return tree_algorithms::swap_tree(header1, header2);  }
 
    //! <b>Requires</b>: node1 and node2 can't be header nodes
    //!  of two trees.
-   //! 
+   //!
    //! <b>Effects</b>: Swaps two nodes. After the function node1 will be inserted
    //!   in the position node2 before the function. node2 will be inserted in the
    //!   position node1 had before the function.
-   //! 
-   //! <b>Complexity</b>: Logarithmic. 
-   //! 
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>: This function will break container ordering invariants if
    //!   node1 and node2 are not equivalent according to the ordering rules.
    //!
@@ -199,22 +199,22 @@ class treap_algorithms
    {
       if(node1 == node2)
          return;
-   
+  
       node_ptr header1(tree_algorithms::get_header(node1)), header2(tree_algorithms::get_header(node2));
       swap_nodes(node1, header1, node2, header2);
    }
 
    //! <b>Requires</b>: node1 and node2 can't be header nodes
    //!  of two trees with header header1 and header2.
-   //! 
+   //!
    //! <b>Effects</b>: Swaps two nodes. After the function node1 will be inserted
    //!   in the position node2 before the function. node2 will be inserted in the
    //!   position node1 had before the function.
-   //! 
-   //! <b>Complexity</b>: Constant. 
-   //! 
+   //!
+   //! <b>Complexity</b>: Constant.
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>: This function will break container ordering invariants if
    //!   node1 and node2 are not equivalent according to the ordering rules.
    //!
@@ -224,14 +224,14 @@ class treap_algorithms
 
    //! <b>Requires</b>: node_to_be_replaced must be inserted in a tree
    //!   and new_node must not be inserted in a tree.
-   //! 
+   //!
    //! <b>Effects</b>: Replaces node_to_be_replaced in its position in the
    //!   tree with new_node. The tree does not need to be rebalanced
-   //! 
-   //! <b>Complexity</b>: Logarithmic. 
-   //! 
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>: This function will break container ordering invariants if
    //!   new_node is not equivalent to node_to_be_replaced according to the
    //!   ordering rules. This function is faster than erasing and inserting
@@ -247,14 +247,14 @@ class treap_algorithms
 
    //! <b>Requires</b>: node_to_be_replaced must be inserted in a tree
    //!   with header "header" and new_node must not be inserted in a tree.
-   //! 
+   //!
    //! <b>Effects</b>: Replaces node_to_be_replaced in its position in the
    //!   tree with new_node. The tree does not need to be rebalanced
-   //! 
-   //! <b>Complexity</b>: Constant. 
-   //! 
+   //!
+   //! <b>Complexity</b>: Constant.
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Note</b>: This function will break container ordering invariants if
    //!   new_node is not equivalent to node_to_be_replaced according to the
    //!   ordering rules. This function is faster than erasing and inserting
@@ -265,11 +265,11 @@ class treap_algorithms
    {  tree_algorithms::replace_node(node_to_be_replaced, header, new_node);  }
 
    //! <b>Requires</b>: node is a tree node but not the header.
-   //! 
+   //!
    //! <b>Effects</b>: Unlinks the node and rebalances the tree.
-   //! 
+   //!
    //! <b>Complexity</b>: Average complexity is constant time.
-   //! 
+   //!
    //! <b>Throws</b>: If "pcomp" throws, strong guarantee
    template<class NodePtrPriorityCompare>
    static void unlink(const node_ptr & node, NodePtrPriorityCompare pcomp)
@@ -283,14 +283,14 @@ class treap_algorithms
    }
 
    //! <b>Requires</b>: header is the header of a tree.
-   //! 
+   //!
    //! <b>Effects</b>: Unlinks the leftmost node from the tree, and
    //!   updates the header link to the new leftmost node.
-   //! 
+   //!
    //! <b>Complexity</b>: Average complexity is constant time.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Notes</b>: This function breaks the tree and the tree can
    //!   only be used for more unlink_leftmost_without_rebalance calls.
    //!   This function is normally used to achieve a step by step
@@ -300,51 +300,51 @@ class treap_algorithms
 
    //! <b>Requires</b>: node is a node of the tree or an node initialized
    //!   by init(...).
-   //! 
+   //!
    //! <b>Effects</b>: Returns true if the node is initialized by init().
-   //! 
+   //!
    //! <b>Complexity</b>: Constant time.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    static bool unique(const const_node_ptr & node)
    {  return tree_algorithms::unique(node);  }
 
    //! <b>Requires</b>: node is a node of the tree but it's not the header.
-   //! 
+   //!
    //! <b>Effects</b>: Returns the number of nodes of the subtree.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear time.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    static std::size_t count(const const_node_ptr & node)
    {  return tree_algorithms::count(node);   }
 
    //! <b>Requires</b>: header is the header node of the tree.
-   //! 
+   //!
    //! <b>Effects</b>: Returns the number of nodes above the header.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear time.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    static std::size_t size(const const_node_ptr & header)
    {  return tree_algorithms::size(header);   }
 
    //! <b>Requires</b>: p is a node from the tree except the header.
-   //! 
+   //!
    //! <b>Effects</b>: Returns the next node of the tree.
-   //! 
+   //!
    //! <b>Complexity</b>: Average constant time.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    static node_ptr next_node(const node_ptr & p)
    {  return tree_algorithms::next_node(p); }
 
    //! <b>Requires</b>: p is a node from the tree except the leftmost node.
-   //! 
+   //!
    //! <b>Effects</b>: Returns the previous node of the tree.
-   //! 
+   //!
    //! <b>Complexity</b>: Average constant time.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    static node_ptr prev_node(const node_ptr & p)
    {  return tree_algorithms::prev_node(p); }
@@ -352,9 +352,9 @@ class treap_algorithms
    //! <b>Requires</b>: node must not be part of any tree.
    //!
    //! <b>Effects</b>: After the function unique(node) == true.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    //!
    //! <b>Nodes</b>: If node is inserted in a tree, this function corrupts the tree.
@@ -365,9 +365,9 @@ class treap_algorithms
    //!
    //! <b>Effects</b>: Initializes the header to represent an empty tree.
    //!   unique(header) == true.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    //!
    //! <b>Nodes</b>: If node is inserted in a tree, this function corrupts the tree.
@@ -380,9 +380,9 @@ class treap_algorithms
    //!    of that tree and z != header.
    //!
    //! <b>Effects</b>: Erases node "z" from the tree with header "header".
-   //! 
+   //!
    //! <b>Complexity</b>: Amortized constant time.
-   //! 
+   //!
    //! <b>Throws</b>: If "pcomp" throws, strong guarantee.
    template<class NodePtrPriorityCompare>
    static node_ptr erase(const node_ptr & header, const node_ptr & z, NodePtrPriorityCompare pcomp)
@@ -397,18 +397,18 @@ class treap_algorithms
    //!   object taking a node_ptr and returning a new cloned node of it. "disposer" must
    //!   take a node_ptr and shouldn't throw.
    //!
-   //! <b>Effects</b>: First empties target tree calling 
+   //! <b>Effects</b>: First empties target tree calling
    //!   <tt>void disposer::operator()(const node_ptr &)</tt> for every node of the tree
    //!    except the header.
-   //!    
+   //!   
    //!   Then, duplicates the entire tree pointed by "source_header" cloning each
-   //!   source node with <tt>node_ptr Cloner::operator()(const node_ptr &)</tt> to obtain 
+   //!   source node with <tt>node_ptr Cloner::operator()(const node_ptr &)</tt> to obtain
    //!   the nodes of the target tree. If "cloner" throws, the cloned target nodes
    //!   are disposed using <tt>void disposer(const node_ptr &)</tt>.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of element of the source tree plus the.
    //!   number of elements of tree target tree when calling this function.
-   //! 
+   //!
    //! <b>Throws</b>: If cloner functor throws. If this happens target nodes are disposed.
    template <class Cloner, class Disposer>
    static void clone
@@ -420,13 +420,13 @@ class treap_algorithms
    //! <b>Requires</b>: "disposer" must be an object function
    //!   taking a node_ptr parameter and shouldn't throw.
    //!
-   //! <b>Effects</b>: Empties the target tree calling 
+   //! <b>Effects</b>: Empties the target tree calling
    //!   <tt>void disposer::operator()(const node_ptr &)</tt> for every node of the tree
    //!    except the header.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of element of the source tree plus the.
    //!   number of elements of tree target tree when calling this function.
-   //! 
+   //!
    //! <b>Throws</b>: If cloner functor throws. If this happens target nodes are disposed.
    template<class Disposer>
    static void clear_and_dispose(const node_ptr & header, Disposer disposer)
@@ -442,7 +442,7 @@ class treap_algorithms
    //!   not exist.
    //!
    //! <b>Complexity</b>: Logarithmic.
-   //! 
+   //!
    //! <b>Throws</b>: If "comp" throws.
    template<class KeyType, class KeyNodePtrCompare>
    static node_ptr lower_bound
@@ -458,7 +458,7 @@ class treap_algorithms
    //!   than "key" according to "comp" or "header" if that element does not exist.
    //!
    //! <b>Complexity</b>: Logarithmic.
-   //! 
+   //!
    //! <b>Throws</b>: If "comp" throws.
    template<class KeyType, class KeyNodePtrCompare>
    static node_ptr upper_bound
@@ -474,7 +474,7 @@ class treap_algorithms
    //!   "key" according to "comp" or "header" if that element does not exist.
    //!
    //! <b>Complexity</b>: Logarithmic.
-   //! 
+   //!
    //! <b>Throws</b>: If "comp" throws.
    template<class KeyType, class KeyNodePtrCompare>
    static node_ptr find
@@ -492,7 +492,7 @@ class treap_algorithms
    //!   if they there are no equivalent elements.
    //!
    //! <b>Complexity</b>: Logarithmic.
-   //! 
+   //!
    //! <b>Throws</b>: If "comp" throws.
    template<class KeyType, class KeyNodePtrCompare>
    static std::pair<node_ptr, node_ptr> equal_range
@@ -509,10 +509,10 @@ class treap_algorithms
    //!
    //! <b>Effects</b>: Inserts new_node into the tree before the upper bound
    //!   according to "comp" and rotates the tree according to "pcomp".
-   //! 
+   //!
    //! <b>Complexity</b>: Average complexity for insert element is at
    //!   most logarithmic.
-   //! 
+   //!
    //! <b>Throws</b>: If "comp" throw or "pcomp" throw.
    template<class NodePtrCompare, class NodePtrPriorityCompare>
    static node_ptr insert_equal_upper_bound
@@ -534,10 +534,10 @@ class treap_algorithms
    //!
    //! <b>Effects</b>: Inserts new_node into the tree before the upper bound
    //!   according to "comp" and rotates the tree according to "pcomp".
-   //! 
+   //!
    //! <b>Complexity</b>: Average complexity for insert element is at
    //!   most logarithmic.
-   //! 
+   //!
    //! <b>Throws</b>: If "comp" throws.
    template<class NodePtrCompare, class NodePtrPriorityCompare>
    static node_ptr insert_equal_lower_bound
@@ -557,7 +557,7 @@ class treap_algorithms
    //!   NodePtrPriorityCompare is a priority function object that induces a strict weak
    //!   ordering compatible with the one used to create the
    //!   the tree. NodePtrPriorityCompare compares two node_ptrs.
-   //!   
+   //!  
    //! <b>Effects</b>: Inserts new_node into the tree, using "hint" as a hint to
    //!   where it will be inserted. If "hint" is the upper_bound
    //!   the insertion takes constant time (two comparisons in the worst case).
@@ -565,7 +565,7 @@ class treap_algorithms
    //!
    //! <b>Complexity</b>: Logarithmic in general, but it is amortized
    //!   constant time if new_node is inserted immediately before "hint".
-   //! 
+   //!
    //! <b>Throws</b>: If "comp" throw or "pcomp" throw.
    template<class NodePtrCompare, class NodePtrPriorityCompare>
    static node_ptr insert_equal
@@ -585,14 +585,14 @@ class treap_algorithms
    //!   NodePtrPriorityCompare is a priority function object that induces a strict weak
    //!   ordering compatible with the one used to create the
    //!   the tree. NodePtrPriorityCompare compares two node_ptrs.
-   //!   
+   //!  
    //! <b>Effects</b>: Inserts new_node into the tree before "pos"
    //!   and rotates the tree according to "pcomp".
    //!
    //! <b>Complexity</b>: Constant-time.
-   //! 
+   //!
    //! <b>Throws</b>: If "pcomp" throws, strong guarantee.
-   //! 
+   //!
    //! <b>Note</b>: If "pos" is not the successor of the newly inserted "new_node"
    //! tree invariants might be broken.
    template<class NodePtrPriorityCompare>
@@ -611,14 +611,14 @@ class treap_algorithms
    //!   NodePtrPriorityCompare is a priority function object that induces a strict weak
    //!   ordering compatible with the one used to create the
    //!   the tree. NodePtrPriorityCompare compares two node_ptrs.
-   //!   
+   //!  
    //! <b>Effects</b>: Inserts x into the tree in the last position
    //!   and rotates the tree according to "pcomp".
    //!
    //! <b>Complexity</b>: Constant-time.
-   //! 
+   //!
    //! <b>Throws</b>: If "pcomp" throws, strong guarantee.
-   //! 
+   //!
    //! <b>Note</b>: If "new_node" is less than the greatest inserted key
    //! tree invariants are broken. This function is slightly faster than
    //! using "insert_before".
@@ -636,14 +636,14 @@ class treap_algorithms
    //!   NodePtrPriorityCompare is a priority function object that induces a strict weak
    //!   ordering compatible with the one used to create the
    //!   the tree. NodePtrPriorityCompare compares two node_ptrs.
-   //!   
+   //!  
    //! <b>Effects</b>: Inserts x into the tree in the first position
    //!   and rotates the tree according to "pcomp".
    //!
    //! <b>Complexity</b>: Constant-time.
-   //! 
+   //!
    //! <b>Throws</b>: If "pcomp" throws, strong guarantee.
-   //! 
+   //!
    //! <b>Note</b>: If "new_node" is greater than the lowest inserted key
    //! tree invariants are broken. This function is slightly faster than
    //! using "insert_before".
@@ -659,7 +659,7 @@ class treap_algorithms
    //!   KeyNodePtrCompare is a function object that induces a strict weak
    //!   ordering compatible with the strict weak ordering used to create the
    //!   the tree. NodePtrCompare compares KeyType with a node_ptr.
-   //! 
+   //!
    //! <b>Effects</b>: Checks if there is an equivalent node to "key" in the
    //!   tree according to "comp" and obtains the needed information to realize
    //!   a constant-time node insertion if there is no equivalent node.
@@ -670,11 +670,11 @@ class treap_algorithms
    //!   in the returned pair's boolean and fills "commit_data" that is meant to
    //!   be used with the "insert_commit" function to achieve a constant-time
    //!   insertion function.
-   //! 
+   //!
    //! <b>Complexity</b>: Average complexity is at most logarithmic.
    //!
    //! <b>Throws</b>: If "comp" throws.
-   //! 
+   //!
    //! <b>Notes</b>: This function is used to improve performance when constructing
    //!   a node is expensive and the user does not want to have two equivalent nodes
    //!   in the tree: if there is an equivalent value
@@ -707,12 +707,12 @@ class treap_algorithms
    //!   ordering compatible with the strict weak ordering used to create the
    //!   the tree. NodePtrCompare compares KeyType with a node_ptr.
    //!   "hint" is node from the "header"'s tree.
-   //! 
+   //!
    //! <b>Effects</b>: Checks if there is an equivalent node to "key" in the
    //!   tree according to "comp" using "hint" as a hint to where it should be
    //!   inserted and obtains the needed information to realize
-   //!   a constant-time node insertion if there is no equivalent node. 
-   //!   If "hint" is the upper_bound the function has constant time 
+   //!   a constant-time node insertion if there is no equivalent node.
+   //!   If "hint" is the upper_bound the function has constant time
    //!   complexity (two comparisons in the worst case).
    //!
    //! <b>Returns</b>: If there is an equivalent value
@@ -721,12 +721,12 @@ class treap_algorithms
    //!   in the returned pair's boolean and fills "commit_data" that is meant to
    //!   be used with the "insert_commit" function to achieve a constant-time
    //!   insertion function.
-   //! 
+   //!
    //! <b>Complexity</b>: Average complexity is at most logarithmic, but it is
    //!   amortized constant time if new_node should be inserted immediately before "hint".
    //!
    //! <b>Throws</b>: If "comp" throws.
-   //! 
+   //!
    //! <b>Notes</b>: This function is used to improve performance when constructing
    //!   a node is expensive and the user does not want to have two equivalent nodes
    //!   in the tree: if there is an equivalent value
@@ -757,16 +757,16 @@ class treap_algorithms
    //!   "commit_data" must have been obtained from a previous call to
    //!   "insert_unique_check". No objects should have been inserted or erased
    //!   from the set between the "insert_unique_check" that filled "commit_data"
-   //!   and the call to "insert_commit". 
-   //! 
-   //! 
+   //!   and the call to "insert_commit".
+   //!
+   //!
    //! <b>Effects</b>: Inserts new_node in the set using the information obtained
    //!   from the "commit_data" that a previous "insert_check" filled.
    //!
    //! <b>Complexity</b>: Constant time.
    //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Notes</b>: This function has only sense if a "insert_unique_check" has been
    //!   previously executed to fill "commit_data". No value should be inserted or
    //!   erased between the "insert_check" and "insert_commit" calls.
@@ -782,7 +782,7 @@ class treap_algorithms
    //! <b>Effects</b>: Returns a pointer to the header node of the tree.
    //!
    //! <b>Complexity</b>: Logarithmic.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    static node_ptr get_header(const node_ptr & n)
    {  return tree_algorithms::get_header(n);   }
@@ -791,11 +791,11 @@ class treap_algorithms
    private:
 
    //! <b>Requires</b>: p is a node of a tree.
-   //! 
+   //!
    //! <b>Effects</b>: Returns true if p is the header of the tree.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    static bool is_header(const const_node_ptr & p)
    {
@@ -887,8 +887,8 @@ class treap_algorithms
    /// @endcond
 };
 
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #include <boost/intrusive/detail/config_end.hpp>
 

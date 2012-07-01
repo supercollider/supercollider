@@ -193,7 +193,7 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	boost::filesystem3::copy(filename1, filename2);
+	boost::filesystem::copy(filename1, filename2);
 	return errNone;
 }
 

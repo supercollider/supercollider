@@ -24,7 +24,7 @@
 #include <boost/interprocess/detail/mpl.hpp>
 
 #ifndef BOOST_INTERPROCESS_PERFECT_FORWARDING
-#include <boost/interprocess/detail/preprocessor.hpp> 
+#include <boost/interprocess/detail/preprocessor.hpp>
 #else
 #include <boost/move/move.hpp>
 #include <boost/interprocess/detail/variadic_templates_tools.hpp>
@@ -34,7 +34,7 @@
 //!Describes a proxy class that implements named allocation syntax.
 
 namespace boost {
-namespace interprocess { 
+namespace interprocess {
 namespace ipcdetail {
 
 #ifdef BOOST_INTERPROCESS_PERFECT_FORWARDING
@@ -83,7 +83,7 @@ struct CtorNArg : public placement_destroy<T>
    {
       this->expansion_helper(++get<IdxPack>(args_)...);
    }
- 
+
    template<class ...ExpansionArgs>
    void expansion_helper(ExpansionArgs &&...)
    {}
@@ -93,11 +93,11 @@ struct CtorNArg : public placement_destroy<T>
    {}
 
    tuple<Args&...> args_;
-};                                                                      
+};                                                                     
 
 //!Describes a proxy class that implements named
 //!allocation syntax.
-template 
+template
    < class SegmentManager  //segment manager to construct the object
    , class T               //type of object to build
    , bool is_iterator      //passing parameters are normal object or iterators?
@@ -119,10 +119,10 @@ class named_proxy
 
    template<class ...Args>
    T *operator()(Args &&...args) const
-   {  
+   { 
       CtorNArg<T, is_iterator, Args...> &&ctor_obj = CtorNArg<T, is_iterator, Args...>
          (boost::forward<Args>(args)...);
-      return mp_mngr->template 
+      return mp_mngr->template
          generic_construct<T>(mp_name, m_num, m_find, m_dothrow, ctor_obj);
    }
 
@@ -199,7 +199,7 @@ struct Ctor0Arg   :  public placement_destroy<T>
 //       private:
 //       void construct(void *mem, true_)
 //       {  new((void*)mem)T(*m_p1, *m_p2); }
-//                                                                           
+//                                                                          
 //       void construct(void *mem, false_)
 //       {  new((void*)mem)T(m_p1, m_p2); }
 //
@@ -270,7 +270,7 @@ struct Ctor0Arg   :  public placement_destroy<T>
 
 //!Describes a proxy class that implements named
 //!allocation syntax.
-template 
+template
    < class SegmentManager  //segment manager to construct the object
    , class T               //type of object to build
    , bool is_iterator      //passing parameters are normal object or iterators?
@@ -293,9 +293,9 @@ class named_proxy
    //!makes a named allocation and calls the
    //!default constructor
    T *operator()() const
-   {  
+   { 
       Ctor0Arg<T> ctor_obj;
-      return mp_mngr->template 
+      return mp_mngr->template
          generic_construct<T>(mp_name, m_num, m_find, m_dothrow, ctor_obj);
    }
    //!
@@ -322,7 +322,7 @@ class named_proxy
    ////////////////////////////////////////////////////////////////////////
    //
    // template <class P1, class P2>
-   // T *operator()(P1 &p1, P2 &p2) const 
+   // T *operator()(P1 &p1, P2 &p2) const
    // {
    //    typedef Ctor2Arg
    //       <T, is_iterator, P1, P2>

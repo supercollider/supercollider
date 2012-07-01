@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2012. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -38,7 +38,7 @@ struct version_type
 
 namespace impl{
 
-template <class T, 
+template <class T,
           bool = container_detail::is_convertible<version_type<T, 0>, typename T::version>::value>
 struct extract_version
 {

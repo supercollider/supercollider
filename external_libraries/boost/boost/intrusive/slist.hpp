@@ -75,12 +75,12 @@ struct slist_defaults
 
 /// @endcond
 
-//! The class template slist is an intrusive container, that encapsulates 
-//! a singly-linked list. You can use such a list to squeeze the last bit 
-//! of performance from your application. Unfortunately, the little gains 
-//! come with some huge drawbacks. A lot of member functions can't be 
-//! implemented as efficiently as for standard containers. To overcome 
-//! this limitation some other member functions with rather unusual semantics 
+//! The class template slist is an intrusive container, that encapsulates
+//! a singly-linked list. You can use such a list to squeeze the last bit
+//! of performance from your application. Unfortunately, the little gains
+//! come with some huge drawbacks. A lot of member functions can't be
+//! implemented as efficiently as for standard containers. To overcome
+//! this limitation some other member functions with rather unusual semantics
 //! have to be introduced.
 //!
 //! The template parameter \c T is the type to be managed by the container.
@@ -91,11 +91,11 @@ struct slist_defaults
 //! \c base_hook<>/member_hook<>/value_traits<>,
 //! \c constant_time_size<>, \c size_type<>,
 //! \c linear<> and \c cache_last<>.
-//! 
-//! The iterators of slist are forward iterators. slist provides a static 
-//! function called "previous" to compute the previous iterator of a given iterator. 
-//! This function has linear complexity. To improve the usability esp. with 
-//! the '*_after' functions, ++end() == begin() and previous(begin()) == end() 
+//!
+//! The iterators of slist are forward iterators. slist provides a static
+//! function called "previous" to compute the previous iterator of a given iterator.
+//! This function has linear complexity. To improve the usability esp. with
+//! the '*_after' functions, ++end() == begin() and previous(begin()) == end()
 //! are defined. An new special function "before_begin()" is defined, which returns
 //! an iterator that points one less the beginning of the list: ++before_begin() == begin()
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
@@ -151,7 +151,7 @@ class slist_impl
    //noncopyable
    BOOST_MOVABLE_BUT_NOT_COPYABLE(slist_impl)
 
-   enum { safemode_or_autounlink  = 
+   enum { safemode_or_autounlink  =
             (int)real_value_traits::link_mode == (int)auto_unlink   ||
             (int)real_value_traits::link_mode == (int)safe_link     };
 
@@ -273,10 +273,10 @@ class slist_impl
    {  return this->get_real_value_traits(detail::bool_<external_value_traits>());  }
 
    public:
-   //! <b>Effects</b>: constructs an empty list. 
-   //! 
-   //! <b>Complexity</b>: Constant 
-   //! 
+   //! <b>Effects</b>: constructs an empty list.
+   //!
+   //! <b>Complexity</b>: Constant
+   //!
    //! <b>Throws</b>: If value_traits::node_traits::node
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks).
    slist_impl(const value_traits &v_traits = value_traits())
@@ -284,11 +284,11 @@ class slist_impl
    {  this->set_default_constructed_state(); }
 
    //! <b>Requires</b>: Dereferencing iterator must yield an lvalue of type value_type.
-   //! 
+   //!
    //! <b>Effects</b>: Constructs a list equal to [first,last).
-   //! 
-   //! <b>Complexity</b>: Linear in std::distance(b, e). No copy constructors are called.  
-   //! 
+   //!
+   //! <b>Complexity</b>: Linear in std::distance(b, e). No copy constructors are called. 
+   //!
    //! <b>Throws</b>: If value_traits::node_traits::node
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks).
    template<class Iterator>
@@ -300,44 +300,44 @@ class slist_impl
    }
 
    //! <b>Effects</b>: to-do
-   //!   
+   //!  
    slist_impl(BOOST_RV_REF(slist_impl) x)
       : data_(::boost::move(x.priv_value_traits()))
    {
       this->priv_size_traits().set_size(size_type(0));
-      node_algorithms::init_header(this->get_root_node());  
+      node_algorithms::init_header(this->get_root_node()); 
       this->swap(x);
    }
 
    //! <b>Effects</b>: to-do
-   //!   
-   slist_impl& operator=(BOOST_RV_REF(slist_impl) x) 
+   //!  
+   slist_impl& operator=(BOOST_RV_REF(slist_impl) x)
    {  this->swap(x); return *this;  }
 
    //! <b>Effects</b>: If it's a safe-mode
    //!   or auto-unlink value, the destructor does nothing
-   //!   (ie. no code is generated). Otherwise it detaches all elements from this. 
-   //!   In this case the objects in the list are not deleted (i.e. no destructors 
+   //!   (ie. no code is generated). Otherwise it detaches all elements from this.
+   //!   In this case the objects in the list are not deleted (i.e. no destructors
    //!   are called), but the hooks according to the value_traits template parameter
    //!   are set to their default value.
-   //! 
-   //! <b>Complexity</b>: Linear to the number of elements in the list, if 
+   //!
+   //! <b>Complexity</b>: Linear to the number of elements in the list, if
    //!   it's a safe-mode or auto-unlink value. Otherwise constant.
    ~slist_impl()
    {}
 
    //! <b>Effects</b>: Erases all the elements of the container.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements of the list.
    //!   if it's a safe-mode or auto-unlink value_type. Constant time otherwise.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references) to the erased elements.
    void clear()
    {
       if(safemode_or_autounlink){
-         this->clear_and_dispose(detail::null_disposer()); 
+         this->clear_and_dispose(detail::null_disposer());
       }
       else{
          this->set_default_constructed_state();
@@ -348,11 +348,11 @@ class slist_impl
    //!
    //! <b>Effects</b>: Erases all the elements of the container
    //!   Disposer::operator()(pointer) is called for the removed elements.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements of the list.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators to the erased elements.
    template <class Disposer>
    void clear_and_dispose(Disposer disposer)
@@ -369,16 +369,16 @@ class slist_impl
    }
 
    //! <b>Requires</b>: value must be an lvalue.
-   //! 
+   //!
    //! <b>Effects</b>: Inserts the value in the front of the list.
    //!   No copy constructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
-   void push_front(reference value) 
+   void push_front(reference value)
    {
       node_ptr to_insert = get_real_value_traits().to_node_ptr(value);
       if(safemode_or_autounlink)
@@ -388,22 +388,22 @@ class slist_impl
             this->set_last_node(to_insert);
          }
       }
-      node_algorithms::link_after(this->get_root_node(), to_insert); 
+      node_algorithms::link_after(this->get_root_node(), to_insert);
       this->priv_size_traits().increment();
    }
 
    //! <b>Requires</b>: value must be an lvalue.
-   //! 
+   //!
    //! <b>Effects</b>: Inserts the value in the back of the list.
    //!   No copy constructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    //!   This function is only available is cache_last<> is true.
-   void push_back(reference value) 
+   void push_back(reference value)
    {
       BOOST_STATIC_ASSERT((cache_last));
       this->insert_after(const_iterator(this->get_last_node(), this), value);
@@ -411,24 +411,24 @@ class slist_impl
 
    //! <b>Effects</b>: Erases the first element of the list.
    //!   No destructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references) to the erased element.
-   void pop_front() 
+   void pop_front()
    {  return this->pop_front_and_dispose(detail::null_disposer());   }
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
    //!
    //! <b>Effects</b>: Erases the first element of the list.
    //!   Disposer::operator()(pointer) is called for the removed element.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators to the erased element.
    template<class Disposer>
    void pop_front_and_dispose(Disposer disposer)
@@ -447,23 +447,23 @@ class slist_impl
    }
 
    //! <b>Effects</b>: Returns a reference to the first element of the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
    reference front()
    { return *this->get_real_value_traits().to_value_ptr(node_traits::get_next(this->get_root_node())); }
 
    //! <b>Effects</b>: Returns a const_reference to the first element of the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
    const_reference front() const
    { return *this->get_real_value_traits().to_value_ptr(uncast(node_traits::get_next(this->get_root_node()))); }
 
    //! <b>Effects</b>: Returns a reference to the last element of the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    //!
    //! <b>Complexity</b>: Constant.
@@ -477,9 +477,9 @@ class slist_impl
    }
 
    //! <b>Effects</b>: Returns a const_reference to the last element of the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
@@ -491,165 +491,165 @@ class slist_impl
    }
 
    //! <b>Effects</b>: Returns an iterator to the first element contained in the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   iterator begin() 
+   iterator begin()
    { return iterator (node_traits::get_next(this->get_root_node()), this); }
 
    //! <b>Effects</b>: Returns a const_iterator to the first element contained in the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   const_iterator begin() const 
+   const_iterator begin() const
    { return const_iterator (node_traits::get_next(this->get_root_node()), this); }
 
    //! <b>Effects</b>: Returns a const_iterator to the first element contained in the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   const_iterator cbegin() const 
+   const_iterator cbegin() const
    { return const_iterator(node_traits::get_next(this->get_root_node()), this); }
 
    //! <b>Effects</b>: Returns an iterator to the end of the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   iterator end() 
+   iterator end()
    { return iterator(this->get_end_node(), this); }
 
    //! <b>Effects</b>: Returns a const_iterator to the end of the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   const_iterator end() const 
+   const_iterator end() const
    { return const_iterator(uncast(this->get_end_node()), this); }
 
    //! <b>Effects</b>: Returns a const_iterator to the end of the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   const_iterator cend() const 
+   const_iterator cend() const
    { return this->end(); }
 
    //! <b>Effects</b>: Returns an iterator that points to a position
    //!   before the first element. Equivalent to "end()"
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   iterator before_begin() 
+   iterator before_begin()
    { return iterator(this->get_root_node(), this); }
 
    //! <b>Effects</b>: Returns an iterator that points to a position
    //!   before the first element. Equivalent to "end()"
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   const_iterator before_begin() const 
+   const_iterator before_begin() const
    { return const_iterator(uncast(this->get_root_node()), this); }
 
    //! <b>Effects</b>: Returns an iterator that points to a position
    //!   before the first element. Equivalent to "end()"
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   const_iterator cbefore_begin() const 
+   const_iterator cbefore_begin() const
    { return this->before_begin(); }
 
    //! <b>Effects</b>: Returns an iterator to the last element contained in the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Note</b>: This function is present only if cached_last<> option is true.
-   iterator last() 
+   iterator last()
    { return iterator (this->get_last_node(), this); }
 
    //! <b>Effects</b>: Returns a const_iterator to the first element contained in the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Note</b>: This function is present only if cached_last<> option is true.
-   const_iterator last() const 
+   const_iterator last() const
    { return const_iterator (this->get_last_node(), this); }
 
    //! <b>Effects</b>: Returns a const_iterator to the first element contained in the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Note</b>: This function is present only if cached_last<> option is true.
-   const_iterator clast() const 
+   const_iterator clast() const
    { return const_iterator(this->get_last_node(), this); }
 
    //! <b>Precondition</b>: end_iterator must be a valid end iterator
    //!   of slist.
-   //! 
+   //!
    //! <b>Effects</b>: Returns a const reference to the slist associated to the end iterator
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
    static slist_impl &container_from_end_iterator(iterator end_iterator)
    {  return slist_impl::priv_container_from_end_iterator(end_iterator);   }
 
    //! <b>Precondition</b>: end_iterator must be a valid end const_iterator
    //!   of slist.
-   //! 
+   //!
    //! <b>Effects</b>: Returns a const reference to the slist associated to the end iterator
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
    static const slist_impl &container_from_end_iterator(const_iterator end_iterator)
    {  return slist_impl::priv_container_from_end_iterator(end_iterator);   }
 
    //! <b>Effects</b>: Returns the number of the elements contained in the list.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements contained in the list.
    //!   if constant_time_size is false. Constant time otherwise.
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    size_type size() const
    {
       if(constant_time_size)
          return this->priv_size_traits().get_size();
       else
-         return node_algorithms::count(this->get_root_node()) - 1; 
+         return node_algorithms::count(this->get_root_node()) - 1;
    }
 
    //! <b>Effects</b>: Returns true if the list contains no elements.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    bool empty() const
    { return node_algorithms::unique(this->get_root_node()); }
 
    //! <b>Effects</b>: Swaps the elements of x and *this.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
-   //! <b>Complexity</b>: Linear to the number of elements of both lists. 
+   //!
+   //! <b>Complexity</b>: Linear to the number of elements of both lists.
    //!  Constant-time if linear<> and/or cache_last<> options are used.
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    void swap(slist_impl& other)
    {
@@ -669,11 +669,11 @@ class slist_impl
    //! <b>Effects</b>: Moves backwards all the elements, so that the first
    //!   element becomes the second, the second becomes the third...
    //!   the last element becomes the first one.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements plus the number shifts.
-   //! 
+   //!
    //! <b>Note</b>: Iterators Does not affect the validity of iterators and references.
    void shift_backwards(size_type n = 1)
    {  this->priv_shift_backwards(n, detail::bool_<linear>());  }
@@ -681,11 +681,11 @@ class slist_impl
    //! <b>Effects</b>: Moves forward all the elements, so that the second
    //!   element becomes the first, the third becomes the second...
    //!   the first element becomes the last one.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements plus the number shifts.
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    void shift_forward(size_type n = 1)
    {  this->priv_shift_forward(n, detail::bool_<linear>()); }
@@ -694,15 +694,15 @@ class slist_impl
    //!   Cloner should yield to nodes equivalent to the original nodes.
    //!
    //! <b>Effects</b>: Erases all the elements from *this
-   //!   calling Disposer::operator()(pointer), clones all the 
+   //!   calling Disposer::operator()(pointer), clones all the
    //!   elements from src calling Cloner::operator()(const_reference )
    //!   and inserts them on *this.
    //!
    //!   If cloner throws, all cloned elements are unlinked and disposed
    //!   calling Disposer::operator()(pointer).
-   //!   
+   //!  
    //! <b>Complexity</b>: Linear to erased plus inserted elements.
-   //! 
+   //!
    //! <b>Throws</b>: If cloner throws.
    template <class Cloner, class Disposer>
    void clone_from(const slist_impl &src, Cloner cloner, Disposer disposer)
@@ -725,11 +725,11 @@ class slist_impl
    //!    No copy constructor is called.
    //!
    //! <b>Returns</b>: An iterator to the inserted element.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    iterator insert_after(const_iterator prev_p, reference value)
    {
@@ -745,17 +745,17 @@ class slist_impl
       return iterator (n, this);
    }
 
-   //! <b>Requires</b>: Dereferencing iterator must yield 
+   //! <b>Requires</b>: Dereferencing iterator must yield
    //!   an lvalue of type value_type and prev_p must point to an element
    //!   contained by the list or to the end node.
-   //! 
+   //!
    //! <b>Effects</b>: Inserts the [first, last)
    //!   after the position prev_p.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements inserted.
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    template<class Iterator>
    void insert_after(const_iterator prev_p, Iterator first, Iterator last)
@@ -769,44 +769,44 @@ class slist_impl
    //!
    //! <b>Effects</b>: Inserts the value before the position pointed by p.
    //!   No copy constructor is called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements before p.
    //!  Constant-time if cache_last<> is true and p == end().
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    iterator insert(const_iterator p, reference value)
    {  return this->insert_after(this->previous(p), value);  }
 
-   //! <b>Requires</b>: Dereferencing iterator must yield 
-   //!   an lvalue of type value_type and p must point to an element 
+   //! <b>Requires</b>: Dereferencing iterator must yield
+   //!   an lvalue of type value_type and p must point to an element
    //!   contained by the list or to the end node.
-   //! 
+   //!
    //! <b>Effects</b>: Inserts the pointed by b and e
    //!   before the position p. No copy constructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements inserted plus linear
    //!   to the elements before b.
    //!   Linear to the number of elements to insert if cache_last<> option is true and p == end().
-   //! 
+   //!
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    template<class Iterator>
    void insert(const_iterator p, Iterator b, Iterator e)
    {  return this->insert_after(this->previous(p), b, e);  }
 
-   //! <b>Effects</b>: Erases the element after the element pointed by prev of 
+   //! <b>Effects</b>: Erases the element after the element pointed by prev of
    //!   the list. No destructors are called.
    //!
    //! <b>Returns</b>: the first element remaining beyond the removed elements,
    //!   or end() if no such element exists.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references) to the
    //!   erased element.
    iterator erase_after(const_iterator prev)
@@ -817,12 +817,12 @@ class slist_impl
    //!
    //! <b>Returns</b>: the first element remaining beyond the removed elements,
    //!   or end() if no such element exists.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of erased elements if it's a safe-mode
    //!   , auto-unlink value or constant-time size is activated. Constant time otherwise.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references) to the
    //!   erased element.
    iterator erase_after(const_iterator before_first, const_iterator last)
@@ -849,12 +849,12 @@ class slist_impl
    //!
    //! <b>Returns</b>: the first element remaining beyond the removed elements,
    //!   or end() if no such element exists.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
-   //! <b>Complexity</b>: constant-time if link_mode is normal_link. 
+   //!
+   //! <b>Complexity</b>: constant-time if link_mode is normal_link.
    //!   Linear to the elements (last - before_first) otherwise.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references) to the
    //!   erased element.
    iterator erase_after(const_iterator before_first, const_iterator last, difference_type n)
@@ -879,33 +879,33 @@ class slist_impl
       }
    }
 
-   //! <b>Effects</b>: Erases the element pointed by i of the list. 
+   //! <b>Effects</b>: Erases the element pointed by i of the list.
    //!   No destructors are called.
    //!
    //! <b>Returns</b>: the first element remaining beyond the removed element,
    //!   or end() if no such element exists.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the elements before i.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references) to the
    //!   erased element.
    iterator erase(const_iterator i)
    {  return this->erase_after(this->previous(i));  }
 
    //! <b>Requires</b>: first and last must be valid iterator to elements in *this.
-   //! 
+   //!
    //! <b>Effects</b>: Erases the range pointed by b and e.
    //!   No destructors are called.
    //!
    //! <b>Returns</b>: the first element remaining beyond the removed elements,
    //!   or end() if no such element exists.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the elements before last.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references) to the
    //!   erased elements.
    iterator erase(const_iterator first, const_iterator last)
@@ -917,12 +917,12 @@ class slist_impl
    //!
    //! <b>Returns</b>: the first element remaining beyond the removed elements,
    //!   or end() if no such element exists.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: linear to the elements before first if link_mode is normal_link
    //!   and constant_time_size is activated. Linear to the elements before last otherwise.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references) to the
    //!   erased element.
    iterator erase(const_iterator first, const_iterator last, difference_type n)
@@ -930,17 +930,17 @@ class slist_impl
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
    //!
-   //! <b>Effects</b>: Erases the element after the element pointed by prev of 
+   //! <b>Effects</b>: Erases the element after the element pointed by prev of
    //!   the list.
    //!   Disposer::operator()(pointer) is called for the removed element.
    //!
    //! <b>Returns</b>: the first element remaining beyond the removed elements,
    //!   or end() if no such element exists.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators to the erased element.
    template<class Disposer>
    iterator erase_after_and_dispose(const_iterator prev, Disposer disposer)
@@ -992,11 +992,11 @@ class slist_impl
    //!
    //! <b>Returns</b>: the first element remaining beyond the removed elements,
    //!   or end() if no such element exists.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Lineal to the elements (last - before_first + 1).
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators to the erased element.
    template<class Disposer>
    iterator erase_after_and_dispose(const_iterator before_first, const_iterator last, Disposer disposer)
@@ -1020,17 +1020,17 @@ class slist_impl
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
    //!
-   //! <b>Effects</b>: Erases the element pointed by i of the list. 
+   //! <b>Effects</b>: Erases the element pointed by i of the list.
    //!   No destructors are called.
    //!   Disposer::operator()(pointer) is called for the removed element.
    //!
    //! <b>Returns</b>: the first element remaining beyond the removed element,
    //!   or end() if no such element exists.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the elements before i.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references) to the
    //!   erased element.
    template<class Disposer>
@@ -1045,38 +1045,38 @@ class slist_impl
 
    //! <b>Requires</b>: first and last must be valid iterator to elements in *this.
    //!                  Disposer::operator()(pointer) shouldn't throw.
-   //! 
+   //!
    //! <b>Effects</b>: Erases the range pointed by b and e.
    //!   No destructors are called.
    //!   Disposer::operator()(pointer) is called for the removed elements.
    //!
    //! <b>Returns</b>: the first element remaining beyond the removed elements,
    //!   or end() if no such element exists.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of erased elements plus linear
    //!   to the elements before first.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references) to the
    //!   erased elements.
    template<class Disposer>
    iterator erase_and_dispose(const_iterator first, const_iterator last, Disposer disposer)
    {  return this->erase_after_and_dispose(this->previous(first), last, disposer);  }
 
-   //! <b>Requires</b>: Dereferencing iterator must yield 
+   //! <b>Requires</b>: Dereferencing iterator must yield
    //!   an lvalue of type value_type.
-   //! 
+   //!
    //! <b>Effects</b>: Clears the list and inserts the range pointed by b and e.
    //!   No destructors or copy constructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements inserted plus
    //!   linear to the elements contained in the list if it's a safe-mode
    //!   or auto-unlink value.
    //!   Linear to the number of elements inserted in the list otherwise.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!   to the erased elements.
    template<class Iterator>
@@ -1088,18 +1088,18 @@ class slist_impl
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
    //!
-   //! <b>Requires</b>: Dereferencing iterator must yield 
+   //! <b>Requires</b>: Dereferencing iterator must yield
    //!   an lvalue of type value_type.
-   //! 
+   //!
    //! <b>Effects</b>: Clears the list and inserts the range pointed by b and e.
    //!   No destructors or copy constructors are called.
    //!   Disposer::operator()(pointer) is called for the removed elements.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements inserted plus
    //!   linear to the elements contained in the list.
-   //! 
+   //!
    //! <b>Note</b>: Invalidates the iterators (but not the references)
    //!   to the erased elements.
    template<class Iterator, class Disposer>
@@ -1111,18 +1111,18 @@ class slist_impl
 
    //! <b>Requires</b>: prev must point to an element contained by this list or
    //!   to the before_begin() element
-   //! 
+   //!
    //! <b>Effects</b>: Transfers all the elements of list x to this list, after the
    //! the element pointed by prev. No destructors or copy constructors are called.
-   //! 
+   //!
    //! <b>Returns</b>: Nothing.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    //!
    //! <b>Complexity</b>: In general, linear to the elements contained in x.
-   //!   Constant-time if cache_last<> option is true and also constant-time if 
+   //!   Constant-time if cache_last<> option is true and also constant-time if
    //!   linear<> option is true "this" is empty and "last" is not used.
-   //! 
+   //!
    //! <b>Note</b>: Iterators of values obtained from list x now point to elements of this
    //! list. Iterators of this list and all the references are not invalidated.
    //!
@@ -1159,14 +1159,14 @@ class slist_impl
    //! <b>Requires</b>: prev must point to an element contained by this list or
    //!   to the before_begin() element. prev_ele must point to an element contained in list
    //!   x or must be x.before_begin().
-   //! 
-   //! <b>Effects</b>: Transfers the element after prev_ele, from list x to this list, 
+   //!
+   //! <b>Effects</b>: Transfers the element after prev_ele, from list x to this list,
    //!   after the element pointed by prev. No destructors or copy constructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant.
-   //! 
+   //!
    //! <b>Note</b>: Iterators of values obtained from list x now point to elements of this
    //! list. Iterators of this list and all the references are not invalidated.
    void splice_after(const_iterator prev_pos, slist_impl &x, const_iterator prev_ele)
@@ -1177,17 +1177,17 @@ class slist_impl
 
    //! <b>Requires</b>: prev_pos must be a dereferenceable iterator in *this or be
    //!   before_begin(), and before_first and before_last belong to x and
-   //!   ++before_first != x.end() && before_last != x.end(). 
-   //! 
+   //!   ++before_first != x.end() && before_last != x.end().
+   //!
    //! <b>Effects</b>: Transfers the range (before_first, before_last] from list x to this
    //!   list, after the element pointed by prev_pos.
    //!   No destructors or copy constructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements transferred
    //!   if constant_time_size is true. Constant-time otherwise.
-   //! 
+   //!
    //! <b>Note</b>: Iterators of values obtained from list x now point to elements of this
    //!   list. Iterators of this list and all the references are not invalidated.
    void splice_after(const_iterator prev_pos, slist_impl &x, const_iterator before_first, const_iterator before_last)
@@ -1203,14 +1203,14 @@ class slist_impl
    //!   before_begin(), and before_first and before_last belong to x and
    //!   ++before_first != x.end() && before_last != x.end() and
    //!   n == std::distance(before_first, before_last).
-   //! 
+   //!
    //! <b>Effects</b>: Transfers the range (before_first, before_last] from list x to this
    //!   list, after the element pointed by p. No destructors or copy constructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant time.
-   //! 
+   //!
    //! <b>Note</b>: Iterators of values obtained from list x now point to elements of this
    //!   list. Iterators of this list and all the references are not invalidated.
    void splice_after(const_iterator prev_pos, slist_impl &x, const_iterator before_first, const_iterator before_last, difference_type n)
@@ -1227,19 +1227,19 @@ class slist_impl
    }
 
    //! <b>Requires</b>: it is an iterator to an element in *this.
-   //! 
+   //!
    //! <b>Effects</b>: Transfers all the elements of list x to this list, before the
    //! the element pointed by it. No destructors or copy constructors are called.
-   //! 
+   //!
    //! <b>Returns</b>: Nothing.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
    //!
    //! <b>Complexity</b>: Linear to the elements contained in x plus linear to
    //!   the elements before it.
    //!   Linear to the elements before it if cache_last<> option is true.
    //!   Constant-time if cache_last<> option is true and it == end().
-   //! 
+   //!
    //! <b>Note</b>: Iterators of values obtained from list x now point to elements of this
    //! list. Iterators of this list and all the references are not invalidated.
    //!
@@ -1253,66 +1253,66 @@ class slist_impl
    //! <b>Requires</b>: it p must be a valid iterator of *this.
    //!   elem must point to an element contained in list
    //!   x.
-   //! 
-   //! <b>Effects</b>: Transfers the element elem, from list x to this list, 
+   //!
+   //! <b>Effects</b>: Transfers the element elem, from list x to this list,
    //!   before the element pointed by pos. No destructors or copy constructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the elements before pos and before elem.
    //!   Linear to the elements before elem if cache_last<> option is true and pos == end().
-   //! 
+   //!
    //! <b>Note</b>: Iterators of values obtained from list x now point to elements of this
    //! list. Iterators of this list and all the references are not invalidated.
    void splice(const_iterator pos, slist_impl &x, const_iterator elem)
    {  return this->splice_after(this->previous(pos), x, x.previous(elem));  }
 
    //! <b>Requires</b>: pos must be a dereferenceable iterator in *this
-   //!   and first and last belong to x and first and last a valid range on x. 
-   //! 
+   //!   and first and last belong to x and first and last a valid range on x.
+   //!
    //! <b>Effects</b>: Transfers the range [first, last) from list x to this
    //!   list, before the element pointed by pos.
    //!   No destructors or copy constructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the sum of elements before pos, first, and last
    //!   plus linear to the number of elements transferred if constant_time_size is true.
    //!   Linear to the sum of elements before first, and last
    //!   plus linear to the number of elements transferred if constant_time_size is true
    //!   if cache_last<> is true and pos == end()
-   //! 
+   //!
    //! <b>Note</b>: Iterators of values obtained from list x now point to elements of this
    //!   list. Iterators of this list and all the references are not invalidated.
    void splice(const_iterator pos, slist_impl &x, const_iterator first, const_iterator last)
    {  return this->splice_after(this->previous(pos), x, x.previous(first), x.previous(last));  }
 
    //! <b>Requires</b>: pos must be a dereferenceable iterator in *this
-   //!   and first and last belong to x and first and last a valid range on x. 
+   //!   and first and last belong to x and first and last a valid range on x.
    //!   n == std::distance(first, last).
-   //! 
+   //!
    //! <b>Effects</b>: Transfers the range [first, last) from list x to this
    //!   list, before the element pointed by pos.
    //!   No destructors or copy constructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the sum of elements before pos, first, and last.
    //!   Linear to the sum of elements before first and last
    //!   if cache_last<> is true and pos == end().
-   //! 
+   //!
    //! <b>Note</b>: Iterators of values obtained from list x now point to elements of this
    //!   list. Iterators of this list and all the references are not invalidated.
    void splice(const_iterator pos, slist_impl &x, const_iterator first, const_iterator last, difference_type n)
    {  return this->splice_after(this->previous(pos), x, x.previous(first), x.previous(last), n);  }
 
-   //! <b>Effects</b>: This function sorts the list *this according to std::less<value_type>. 
+   //! <b>Effects</b>: This function sorts the list *this according to std::less<value_type>.
    //!   The sort is stable, that is, the relative order of equivalent elements is preserved.
-   //! 
+   //!
    //! <b>Throws</b>: If value_traits::node_traits::node
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks)
    //!   or the predicate throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Complexity</b>: The number of comparisons is approximately N log N, where N
    //!   is the list's size.
    //!
@@ -1368,44 +1368,44 @@ class slist_impl
 
    //! <b>Requires</b>: p must be a comparison function that induces a strict weak
    //!   ordering and both *this and x must be sorted according to that ordering
-   //!   The lists x and *this must be distinct. 
-   //! 
+   //!   The lists x and *this must be distinct.
+   //!
    //! <b>Effects</b>: This function removes all of x's elements and inserts them
-   //!   in order into *this. The merge is stable; that is, if an element from *this is 
-   //!   equivalent to one from x, then the element from *this will precede the one from x. 
-   //! 
+   //!   in order into *this. The merge is stable; that is, if an element from *this is
+   //!   equivalent to one from x, then the element from *this will precede the one from x.
+   //!
    //! <b>Throws</b>: If value_traits::node_traits::node
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks)
    //!   or std::less<value_type> throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Complexity</b>: This function is linear time: it performs at most
    //!   size() + x.size() - 1 comparisons.
-   //! 
+   //!
    //! <b>Note</b>: Iterators and references are not invalidated.
    void sort()
    { this->sort(std::less<value_type>()); }
 
    //! <b>Requires</b>: p must be a comparison function that induces a strict weak
    //!   ordering and both *this and x must be sorted according to that ordering
-   //!   The lists x and *this must be distinct. 
-   //! 
+   //!   The lists x and *this must be distinct.
+   //!
    //! <b>Effects</b>: This function removes all of x's elements and inserts them
-   //!   in order into *this. The merge is stable; that is, if an element from *this is 
-   //!   equivalent to one from x, then the element from *this will precede the one from x. 
-   //! 
+   //!   in order into *this. The merge is stable; that is, if an element from *this is
+   //!   equivalent to one from x, then the element from *this will precede the one from x.
+   //!
    //! <b>Returns</b>: Nothing.
-   //! 
+   //!
    //! <b>Throws</b>: If the predicate throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Complexity</b>: This function is linear time: it performs at most
    //!   size() + x.size() - 1 comparisons.
-   //! 
+   //!
    //! <b>Note</b>: Iterators and references are not invalidated.
-   //! 
+   //!
    //! <b>Additional note</b>: If optional "last" argument is passed, it is assigned
    //! to an iterator to the last transferred value or end() is x is empty.
    template<class Predicate>
-   void merge(slist_impl& x, Predicate p, const_iterator *last = 0) 
+   void merge(slist_impl& x, Predicate p, const_iterator *last = 0)
    {
       const_iterator e(this->cend()), ex(x.cend()), bb(this->cbefore_begin()),
                      bb_next;
@@ -1432,25 +1432,25 @@ class slist_impl
    }
 
    //! <b>Effects</b>: This function removes all of x's elements and inserts them
-   //!   in order into *this according to std::less<value_type>. The merge is stable; 
-   //!   that is, if an element from *this is equivalent to one from x, then the element 
-   //!   from *this will precede the one from x. 
-   //! 
+   //!   in order into *this according to std::less<value_type>. The merge is stable;
+   //!   that is, if an element from *this is equivalent to one from x, then the element
+   //!   from *this will precede the one from x.
+   //!
    //! <b>Throws</b>: if std::less<value_type> throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Complexity</b>: This function is linear time: it performs at most
    //!   size() + x.size() - 1 comparisons.
-   //! 
+   //!
    //! <b>Note</b>: Iterators and references are not invalidated
    void merge(slist_impl& x)
    {  this->merge(x, std::less<value_type>());  }
 
-   //! <b>Effects</b>: Reverses the order of elements in the list. 
-   //! 
+   //! <b>Effects</b>: Reverses the order of elements in the list.
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: This function is linear to the contained elements.
-   //! 
+   //!
    //! <b>Note</b>: Iterators and references are not invalidated
    void reverse()
    {
@@ -1462,13 +1462,13 @@ class slist_impl
 
    //! <b>Effects</b>: Removes all the elements that compare equal to value.
    //!   No destructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: If std::equal_to<value_type> throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear time. It performs exactly size() comparisons for equality.
-   //! 
+   //!
    //! <b>Note</b>: The relative order of elements that are not removed is unchanged,
-   //!   and iterators to elements that are not removed remain valid. This function is 
+   //!   and iterators to elements that are not removed remain valid. This function is
    //!   linear time: it performs exactly size() comparisons for equality.
    void remove(const_reference value)
    {  this->remove_if(detail::equal_to_value<const_reference>(value));  }
@@ -1479,9 +1479,9 @@ class slist_impl
    //!   Disposer::operator()(pointer) is called for every removed element.
    //!
    //! <b>Throws</b>: If std::equal_to<value_type> throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear time. It performs exactly size() comparisons for equality.
-   //! 
+   //!
    //! <b>Note</b>: The relative order of elements that are not removed is unchanged,
    //!   and iterators to elements that are not removed remain valid.
    template<class Disposer>
@@ -1490,11 +1490,11 @@ class slist_impl
 
    //! <b>Effects</b>: Removes all the elements for which a specified
    //!   predicate is satisfied. No destructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: If pred throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear time. It performs exactly size() calls to the predicate.
-   //! 
+   //!
    //! <b>Note</b>: The relative order of elements that are not removed is unchanged,
    //!   and iterators to elements that are not removed remain valid.
    template<class Pred>
@@ -1508,7 +1508,7 @@ class slist_impl
    //!   Disposer::operator()(pointer) is called for every removed element.
    //!
    //! <b>Throws</b>: If pred throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear time. It performs exactly size() comparisons for equality.
    //!
    //! <b>Note</b>: The relative order of elements that are not removed is unchanged,
@@ -1517,7 +1517,7 @@ class slist_impl
    void remove_and_dispose_if(Pred pred, Disposer disposer)
    {
       const_iterator bcur(this->before_begin()), cur(this->begin()), e(this->end());
-      
+     
       while(cur != e){
          if (pred(*cur)){
             cur = this->erase_after_and_dispose(bcur, disposer);
@@ -1532,26 +1532,26 @@ class slist_impl
       }
    }
 
-   //! <b>Effects</b>: Removes adjacent duplicate elements or adjacent 
+   //! <b>Effects</b>: Removes adjacent duplicate elements or adjacent
    //!   elements that are equal from the list. No destructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: If std::equal_to<value_type> throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear time (size()-1) comparisons calls to pred()).
-   //! 
+   //!
    //! <b>Note</b>: The relative order of elements that are not removed is unchanged,
    //!   and iterators to elements that are not removed remain valid.
    void unique()
    {  this->unique_and_dispose(std::equal_to<value_type>(), detail::null_disposer());  }
 
-   //! <b>Effects</b>: Removes adjacent duplicate elements or adjacent 
+   //! <b>Effects</b>: Removes adjacent duplicate elements or adjacent
    //!   elements that satisfy some binary predicate from the list.
    //!   No destructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: If the predicate throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear time (size()-1) comparisons equality comparisons.
-   //! 
+   //!
    //! <b>Note</b>: The relative order of elements that are not removed is unchanged,
    //!   and iterators to elements that are not removed remain valid.
    template<class BinaryPredicate>
@@ -1560,14 +1560,14 @@ class slist_impl
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
    //!
-   //! <b>Effects</b>: Removes adjacent duplicate elements or adjacent 
+   //! <b>Effects</b>: Removes adjacent duplicate elements or adjacent
    //!   elements that satisfy some binary predicate from the list.
    //!   Disposer::operator()(pointer) is called for every removed element.
-   //! 
+   //!
    //! <b>Throws</b>: If std::equal_to<value_type> throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear time (size()-1) comparisons equality comparisons.
-   //! 
+   //!
    //! <b>Note</b>: The relative order of elements that are not removed is unchanged,
    //!   and iterators to elements that are not removed remain valid.
    template<class Disposer>
@@ -1576,14 +1576,14 @@ class slist_impl
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
    //!
-   //! <b>Effects</b>: Removes adjacent duplicate elements or adjacent 
+   //! <b>Effects</b>: Removes adjacent duplicate elements or adjacent
    //!   elements that satisfy some binary predicate from the list.
    //!   Disposer::operator()(pointer) is called for every removed element.
-   //! 
+   //!
    //! <b>Throws</b>: If the predicate throws. Basic guarantee.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear time (size()-1) comparisons equality comparisons.
-   //! 
+   //!
    //! <b>Note</b>: The relative order of elements that are not removed is unchanged,
    //!   and iterators to elements that are not removed remain valid.
    template<class BinaryPredicate, class Disposer>
@@ -1610,17 +1610,17 @@ class slist_impl
    }
 
    //! <b>Requires</b>: value must be a reference to a value inserted in a list.
-   //! 
+   //!
    //! <b>Effects</b>: This function returns a const_iterator pointing to the element
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant time.
-   //! 
+   //!
    //! <b>Note</b>: Iterators and references are not invalidated.
    //!   This static function is available only if the <i>value traits</i>
    //!   is stateless.
-   static iterator s_iterator_to(reference value) 
+   static iterator s_iterator_to(reference value)
    {
       BOOST_STATIC_ASSERT((!stateful_value_traits));
       //BOOST_INTRUSIVE_INVARIANT_ASSERT (!node_algorithms::inited(value_traits::to_node_ptr(value)));
@@ -1628,17 +1628,17 @@ class slist_impl
    }
 
    //! <b>Requires</b>: value must be a const reference to a value inserted in a list.
-   //! 
+   //!
    //! <b>Effects</b>: This function returns an iterator pointing to the element.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant time.
-   //! 
+   //!
    //! <b>Note</b>: Iterators and references are not invalidated.
    //!   This static function is available only if the <i>value traits</i>
    //!   is stateless.
-   static const_iterator s_iterator_to(const_reference value) 
+   static const_iterator s_iterator_to(const_reference value)
    {
       BOOST_STATIC_ASSERT((!stateful_value_traits));
       //BOOST_INTRUSIVE_INVARIANT_ASSERT (!node_algorithms::inited(value_traits::to_node_ptr(const_cast<reference> (value))));
@@ -1646,28 +1646,28 @@ class slist_impl
    }
 
    //! <b>Requires</b>: value must be a reference to a value inserted in a list.
-   //! 
+   //!
    //! <b>Effects</b>: This function returns a const_iterator pointing to the element
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant time.
-   //! 
+   //!
    //! <b>Note</b>: Iterators and references are not invalidated.
-   iterator iterator_to(reference value) 
+   iterator iterator_to(reference value)
    {
       //BOOST_INTRUSIVE_INVARIANT_ASSERT (!node_algorithms::inited(value_traits::to_node_ptr(value)));
       return iterator (value_traits::to_node_ptr(value), this);
    }
 
    //! <b>Requires</b>: value must be a const reference to a value inserted in a list.
-   //! 
+   //!
    //! <b>Effects</b>: This function returns an iterator pointing to the element.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant time.
-   //! 
+   //!
    //! <b>Note</b>: Iterators and references are not invalidated.
    const_iterator iterator_to(const_reference value) const
    {
@@ -1675,35 +1675,35 @@ class slist_impl
       return const_iterator (value_traits::to_node_ptr(const_cast<reference> (value)), this);
    }
 
-   //! <b>Returns</b>: The iterator to the element before i in the list. 
-   //!   Returns the end-iterator, if either i is the begin-iterator or the 
-   //!   list is empty. 
-   //! 
+   //! <b>Returns</b>: The iterator to the element before i in the list.
+   //!   Returns the end-iterator, if either i is the begin-iterator or the
+   //!   list is empty.
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements before i.
    //!   Constant if cache_last<> is true and i == end().
    iterator previous(iterator i)
    {  return this->previous(this->cbefore_begin(), i); }
 
-   //! <b>Returns</b>: The const_iterator to the element before i in the list. 
-   //!   Returns the end-const_iterator, if either i is the begin-const_iterator or 
-   //!   the list is empty. 
-   //! 
+   //! <b>Returns</b>: The const_iterator to the element before i in the list.
+   //!   Returns the end-const_iterator, if either i is the begin-const_iterator or
+   //!   the list is empty.
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
-   //! <b>Complexity</b>: Linear to the number of elements before i. 
+   //!
+   //! <b>Complexity</b>: Linear to the number of elements before i.
    //!   Constant if cache_last<> is true and i == end().
    const_iterator previous(const_iterator i) const
    {  return this->previous(this->cbefore_begin(), i); }
 
    //! <b>Returns</b>: The iterator to the element before i in the list,
    //!   starting the search on element after prev_from.
-   //!   Returns the end-iterator, if either i is the begin-iterator or the 
-   //!   list is empty. 
-   //! 
+   //!   Returns the end-iterator, if either i is the begin-iterator or the
+   //!   list is empty.
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements before i.
    //!   Constant if cache_last<> is true and i == end().
    iterator previous(const_iterator prev_from, iterator i)
@@ -1711,12 +1711,12 @@ class slist_impl
 
    //! <b>Returns</b>: The const_iterator to the element before i in the list,
    //!   starting the search on element after prev_from.
-   //!   Returns the end-const_iterator, if either i is the begin-const_iterator or 
-   //!   the list is empty. 
-   //! 
+   //!   Returns the end-const_iterator, if either i is the begin-const_iterator or
+   //!   the list is empty.
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
-   //! <b>Complexity</b>: Linear to the number of elements before i. 
+   //!
+   //! <b>Complexity</b>: Linear to the number of elements before i.
    //!   Constant if cache_last<> is true and i == end().
    const_iterator previous(const_iterator prev_from, const_iterator i) const
    {
@@ -1730,17 +1730,17 @@ class slist_impl
 
    //! <b>Requires</b>: prev_pos must be a dereferenceable iterator in *this or be
    //!   before_begin(), and before_first and before_last belong to x and
-   //!   ++before_first != x.end() && before_last != x.end(). 
-   //! 
+   //!   ++before_first != x.end() && before_last != x.end().
+   //!
    //! <b>Effects</b>: Transfers the range (before_first, before_last] to this
    //!   list, after the element pointed by prev_pos.
    //!   No destructors or copy constructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Linear to the number of elements transferred
    //!   if constant_time_size is true. Constant-time otherwise.
-   //! 
+   //!
    //! <b>Note</b>: Iterators of values obtained from list x now point to elements of this
    //!   list. Iterators of this list and all the references are not invalidated.
    void incorporate_after(const_iterator prev_from, const node_ptr & first, const node_ptr & before_last)
@@ -1756,14 +1756,14 @@ class slist_impl
    //!   before_begin(), and before_first and before_last belong to x and
    //!   ++before_first != x.end() && before_last != x.end() and
    //!   n == std::distance(first, before_last) + 1.
-   //! 
+   //!
    //! <b>Effects</b>: Transfers the range (before_first, before_last] from list x to this
    //!   list, after the element pointed by p. No destructors or copy constructors are called.
-   //! 
+   //!
    //! <b>Throws</b>: Nothing.
-   //! 
+   //!
    //! <b>Complexity</b>: Constant time.
-   //! 
+   //!
    //! <b>Note</b>: Iterators of values obtained from list x now point to elements of this
    //!   list. Iterators of this list and all the references are not invalidated.
    void incorporate_after(const_iterator prev_pos, const node_ptr & first, const node_ptr & before_last, difference_type n)
@@ -1837,7 +1837,7 @@ class slist_impl
 
    void priv_shift_forward(size_type n, detail::bool_<false>)
    {
-      node_ptr last = node_algorithms::move_backwards(this->get_root_node(), (std::size_t)n);   
+      node_ptr last = node_algorithms::move_backwards(this->get_root_node(), (std::size_t)n);  
       if(cache_last && last){
          this->set_last_node(last);
       }
@@ -1860,7 +1860,7 @@ class slist_impl
    {
       bool other_was_empty = false;
       if(this_impl->empty()){
-         //Check if both are empty or 
+         //Check if both are empty or
          if(other_impl->empty())
             return;
          //If this is empty swap pointers
@@ -2043,7 +2043,7 @@ struct make_slist
 {
    /// @cond
    typedef typename pack_options
-      < slist_defaults<T>, 
+      < slist_defaults<T>,
          #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
          O1, O2, O3, O4, O5
          #else
@@ -2075,7 +2075,7 @@ template<class T, class O1, class O2, class O3, class O4, class O5>
 template<class T, class ...Options>
 #endif
 class slist
-   :  public make_slist<T, 
+   :  public make_slist<T,
          #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
          O1, O2, O3, O4, O5
          #else
@@ -2084,7 +2084,7 @@ class slist
       >::type
 {
    typedef typename make_slist
-      <T, 
+      <T,
       #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
       O1, O2, O3, O4, O5
       #else
@@ -2126,8 +2126,8 @@ class slist
 
 #endif
 
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #include <boost/intrusive/detail/config_end.hpp>
 

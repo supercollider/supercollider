@@ -20,7 +20,7 @@
 #include <cstddef>
 
 namespace boost {
-namespace interprocess { 
+namespace interprocess {
 namespace ipcdetail {
 
 template <class T, T val>
@@ -105,24 +105,24 @@ struct if_
 
 
 template <class Pair>
-struct select1st 
-//   : public std::unary_function<Pair, typename Pair::first_type> 
+struct select1st
+//   : public std::unary_function<Pair, typename Pair::first_type>
 {
    template<class OtherPair>
-   const typename Pair::first_type& operator()(const OtherPair& x) const 
+   const typename Pair::first_type& operator()(const OtherPair& x) const
    {  return x.first;   }
 
-   const typename Pair::first_type& operator()(const typename Pair::first_type& x) const 
+   const typename Pair::first_type& operator()(const typename Pair::first_type& x) const
    {  return x;   }
 };
 
 // identity is an extension: it is not part of the standard.
 template <class T>
-struct identity 
-//   : public std::unary_function<T,T> 
+struct identity
+//   : public std::unary_function<T,T>
 {
    typedef T type;
-   const T& operator()(const T& x) const 
+   const T& operator()(const T& x) const
    { return x; }
 };
 
@@ -144,8 +144,8 @@ struct ls_zeros<1>
    static const std::size_t value = 0;
 };
 
-}  //namespace ipcdetail { 
-}  //namespace interprocess { 
+}  //namespace ipcdetail {
+}  //namespace interprocess {
 }  //namespace boost {
 
 #endif   //#ifndef BOOST_INTERPROCESS_DETAIL_MPL_HPP

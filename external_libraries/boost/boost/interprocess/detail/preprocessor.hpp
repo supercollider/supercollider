@@ -21,7 +21,7 @@
 #error "This file is not needed when perfect forwarding is available"
 #endif
 
-#include <boost/preprocessor/iteration/local.hpp> 
+#include <boost/preprocessor/iteration/local.hpp>
 #include <boost/preprocessor/repetition/enum_params.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/repetition/enum.hpp>
@@ -57,28 +57,30 @@
 
 #ifndef BOOST_NO_RVALUE_REFERENCES
 
-#ifdef BOOST_MOVE_OLD_RVALUE_REF_BINDING_RULES
+   #if defined(BOOST_MOVE_MSVC_10_MEMBER_RVALUE_REF_BUG)
 
-#define BOOST_INTERPROCESS_PP_PARAM_INIT(z, n, data) \
-  BOOST_PP_CAT(m_p, n) (BOOST_INTERPROCESS_MOVE_NAMESPACE::forward< BOOST_PP_CAT(P, n) >( BOOST_PP_CAT(p, n) ))           \
-//!
+   #define BOOST_INTERPROCESS_PP_PARAM_INIT(z, n, data)  \
+      BOOST_PP_CAT(m_p, n) (BOOST_PP_CAT(p, n))          \
+   //!
 
-#else
 
-#define BOOST_INTERPROCESS_PP_PARAM_INIT(z, n, data) \
-  BOOST_PP_CAT(m_p, n) (BOOST_PP_CAT(p, n))           \
-//!
+   #else //#if defined(BOOST_MOVE_MSVC_10_MEMBER_RVALUE_REF_BUG)
 
-#endif
+   #define BOOST_INTERPROCESS_PP_PARAM_INIT(z, n, data) \
+     BOOST_PP_CAT(m_p, n) (::boost::forward< BOOST_PP_CAT(P, n) >( BOOST_PP_CAT(p, n) ))  \
+   //!
 
-#else
-#define BOOST_INTERPROCESS_PP_PARAM_INIT(z, n, data) \
-  BOOST_PP_CAT(m_p, n) (const_cast<BOOST_PP_CAT(P, n) &>(BOOST_PP_CAT(p, n))) \
-//!
+   #endif   //#if defined(BOOST_MOVE_MSVC_10_MEMBER_RVALUE_REF_BUG)
+
+#else //#ifndef BOOST_NO_RVALUE_REFERENCES
+
+   #define BOOST_INTERPROCESS_PP_PARAM_INIT(z, n, data) \
+     BOOST_PP_CAT(m_p, n) (const_cast<BOOST_PP_CAT(P, n) &>(BOOST_PP_CAT(p, n))) \
+   //!
 #endif
 
 #define BOOST_INTERPROCESS_PP_PARAM_INC(z, n, data)   \
-  BOOST_PP_CAT(++m_p, n)                        \
+   BOOST_PP_CAT(++m_p, n)                        \
 //!
 
 #ifndef BOOST_NO_RVALUE_REFERENCES

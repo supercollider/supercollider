@@ -21,7 +21,7 @@
 #include <cstddef>   //std::size_t
 
 namespace boost {
-namespace interprocess { 
+namespace interprocess {
 namespace ipcdetail {
 
 template<typename... Values>
@@ -136,7 +136,7 @@ struct index_tuple{};
 template<std::size_t Num, typename Tuple = index_tuple<> >
 struct build_number_seq;
 
-template<std::size_t Num, int... Indexes> 
+template<std::size_t Num, int... Indexes>
 struct build_number_seq<Num, index_tuple<Indexes...> >
    : build_number_seq<Num - 1, index_tuple<Indexes..., sizeof...(Indexes)> >
 {};

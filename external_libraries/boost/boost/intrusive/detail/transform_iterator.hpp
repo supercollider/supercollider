@@ -71,7 +71,7 @@ class transform_iterator
    {  return members_.m_it;   }
 
    //Constructors
-   transform_iterator& operator++() 
+   transform_iterator& operator++()
    { increment();   return *this;   }
 
    transform_iterator operator++(int)

@@ -20,10 +20,10 @@
    #pragma warning (push)
    //
    //'function' : resolved overload was found by argument-dependent lookup
-   //A function found by argument-dependent lookup (Koenig lookup) was eventually 
+   //A function found by argument-dependent lookup (Koenig lookup) was eventually
    //chosen by overload resolution.
    //
-   //In Visual C++ .NET and earlier compilers, a different function would have 
+   //In Visual C++ .NET and earlier compilers, a different function would have
    //been called. To pick the original function, use an explicitly qualified name.
    //
 

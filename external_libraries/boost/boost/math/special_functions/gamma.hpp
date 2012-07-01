@@ -1258,6 +1258,101 @@ inline typename tools::promote_args<T>::type
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(detail::gamma_imp(static_cast<value_type>(z), forwarding_policy(), evaluation_type()), "boost::math::tgamma<%1%>(%1%)");
 }
 
+template <class T, class Policy>
+struct igamma_initializer
+{
+   struct init
+   {
+      init()
+      {
+         typedef typename policies::precision<T, Policy>::type precision_type;
+
+         typedef typename mpl::if_<
+            mpl::or_<mpl::equal_to<precision_type, mpl::int_<0> >,
+            mpl::greater<precision_type, mpl::int_<113> > >,
+            mpl::int_<0>,
+            typename mpl::if_<
+               mpl::less_equal<precision_type, mpl::int_<53> >,
+               mpl::int_<53>,
+               typename mpl::if_<
+                  mpl::less_equal<precision_type, mpl::int_<64> >,
+                  mpl::int_<64>,
+                  mpl::int_<113>
+               >::type
+            >::type
+         >::type tag_type;
+
+         do_init(tag_type());
+      }
+      template <int N>
+      static void do_init(const mpl::int_<N>&)
+      {
+         boost::math::gamma_p(static_cast<T>(400), static_cast<T>(400), Policy());
+      }
+      static void do_init(const mpl::int_<53>&){}
+      void force_instantiate()const{}
+   };
+   static const init initializer;
+   static void force_instantiate()
+   {
+      initializer.force_instantiate();
+   }
+};
+
+template <class T, class Policy>
+const typename igamma_initializer<T, Policy>::init igamma_initializer<T, Policy>::initializer;
+
+template <class T, class Policy>
+struct lgamma_initializer
+{
+   struct init
+   {
+      init()
+      {
+         typedef typename policies::precision<T, Policy>::type precision_type;
+         typedef typename mpl::if_<
+            mpl::and_<
+               mpl::less_equal<precision_type, mpl::int_<64> >, 
+               mpl::greater<precision_type, mpl::int_<0> > 
+            >,
+            mpl::int_<64>,
+            typename mpl::if_<
+               mpl::and_<
+                  mpl::less_equal<precision_type, mpl::int_<113> >,
+                  mpl::greater<precision_type, mpl::int_<0> > 
+               >,
+               mpl::int_<113>, mpl::int_<0> >::type
+             >::type tag_type;
+         do_init(tag_type());
+      }
+      static void do_init(const mpl::int_<64>&)
+      {
+         boost::math::lgamma(static_cast<T>(2.5), Policy());
+         boost::math::lgamma(static_cast<T>(1.25), Policy());
+         boost::math::lgamma(static_cast<T>(1.75), Policy());
+      }
+      static void do_init(const mpl::int_<113>&)
+      {
+         boost::math::lgamma(static_cast<T>(2.5), Policy());
+         boost::math::lgamma(static_cast<T>(1.25), Policy());
+         boost::math::lgamma(static_cast<T>(1.5), Policy());
+         boost::math::lgamma(static_cast<T>(1.75), Policy());
+      }
+      static void do_init(const mpl::int_<0>&)
+      {
+      }
+      void force_instantiate()const{}
+   };
+   static const init initializer;
+   static void force_instantiate()
+   {
+      initializer.force_instantiate();
+   }
+};
+
+template <class T, class Policy>
+const typename lgamma_initializer<T, Policy>::init lgamma_initializer<T, Policy>::initializer;
+
 template <class T1, class T2, class Policy>
 inline typename tools::promote_args<T1, T2>::type
    tgamma(T1 a, T2 z, const Policy&, const mpl::false_)
@@ -1272,6 +1367,9 @@ inline typename tools::promote_args<T1, T2>::type
       policies::promote_double<false>, 
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
+
+   igamma_initializer<value_type, forwarding_policy>::force_instantiate();
+
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(
       detail::gamma_incomplete_imp(static_cast<value_type>(a),
       static_cast<value_type>(z), false, true,
@@ -1284,6 +1382,7 @@ inline typename tools::promote_args<T1, T2>::type
 {
    return tgamma(a, z, policies::policy<>(), tag);
 }
+
 
 } // namespace detail
 
@@ -1308,6 +1407,9 @@ inline typename tools::promote_args<T>::type
       policies::promote_double<false>, 
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
+
+   detail::lgamma_initializer<value_type, forwarding_policy>::force_instantiate();
+
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(detail::lgamma_imp(static_cast<value_type>(z), forwarding_policy(), evaluation_type(), sign), "boost::math::lgamma<%1%>(%1%)");
 }
 
@@ -1395,6 +1497,8 @@ inline typename tools::promote_args<T1, T2>::type
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
+   detail::igamma_initializer<value_type, forwarding_policy>::force_instantiate();
+
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(
       detail::gamma_incomplete_imp(static_cast<value_type>(a),
       static_cast<value_type>(z), false, false,
@@ -1424,6 +1528,8 @@ inline typename tools::promote_args<T1, T2>::type
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
+   detail::igamma_initializer<value_type, forwarding_policy>::force_instantiate();
+
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(
       detail::gamma_incomplete_imp(static_cast<value_type>(a),
       static_cast<value_type>(z), true, true,
@@ -1452,6 +1558,8 @@ inline typename tools::promote_args<T1, T2>::type
       policies::promote_double<false>, 
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
+
+   detail::igamma_initializer<value_type, forwarding_policy>::force_instantiate();
 
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(
       detail::gamma_incomplete_imp(static_cast<value_type>(a),

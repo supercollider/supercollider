@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2011. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2012. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -23,7 +23,7 @@ namespace container {
 
 /// @cond
 enum allocation_type_v
-{   
+{  
    // constants for allocation commands
    allocate_new_v   = 0x01,
    expand_fwd_v     = 0x02,

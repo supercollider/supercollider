@@ -542,7 +542,7 @@ T zeta_imp_prec(T s, T sc, const Policy&, const mpl::int_<64>&)
 }
 
 template <class T, class Policy>
-T zeta_imp_prec(T s, T sc, const Policy& pol, const mpl::int_<113>&)
+T zeta_imp_prec(T s, T sc, const Policy&, const mpl::int_<113>&)
 {
    BOOST_MATH_STD_USING
    T result;
@@ -896,6 +896,49 @@ T zeta_imp(T s, T sc, const Policy& pol, const Tag& tag)
    return result;
 }
 
+template <class T, class Policy, class tag>
+struct zeta_initializer
+{
+   struct init
+   {
+      init()
+      {
+         do_init(tag());
+      }
+      static void do_init(const mpl::int_<0>&){}
+      static void do_init(const mpl::int_<53>&){}
+      static void do_init(const mpl::int_<64>&)
+      {
+         boost::math::zeta(static_cast<T>(0.5), Policy());
+         boost::math::zeta(static_cast<T>(1.5), Policy());
+         boost::math::zeta(static_cast<T>(3.5), Policy());
+         boost::math::zeta(static_cast<T>(6.5), Policy());
+         boost::math::zeta(static_cast<T>(14.5), Policy());
+         boost::math::zeta(static_cast<T>(40.5), Policy());
+      }
+      static void do_init(const mpl::int_<113>&)
+      {
+         boost::math::zeta(static_cast<T>(0.5), Policy());
+         boost::math::zeta(static_cast<T>(1.5), Policy());
+         boost::math::zeta(static_cast<T>(3.5), Policy());
+         boost::math::zeta(static_cast<T>(5.5), Policy());
+         boost::math::zeta(static_cast<T>(9.5), Policy());
+         boost::math::zeta(static_cast<T>(16.5), Policy());
+         boost::math::zeta(static_cast<T>(25), Policy());
+         boost::math::zeta(static_cast<T>(70), Policy());
+      }
+      void force_instantiate()const{}
+   };
+   static const init initializer;
+   static void force_instantiate()
+   {
+      initializer.force_instantiate();
+   }
+};
+
+template <class T, class Policy, class tag>
+const typename zeta_initializer<T, Policy, tag>::init zeta_initializer<T, Policy, tag>::initializer;
+
 } // detail
 
 template <class T, class Policy>
@@ -928,6 +971,8 @@ inline typename tools::promote_args<T>::type zeta(T s, const Policy&)
       >::type
    >::type tag_type;
    //typedef mpl::int_<0> tag_type;
+
+   detail::zeta_initializer<value_type, forwarding_policy, tag_type>::force_instantiate();
 
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(detail::zeta_imp(
       static_cast<value_type>(s),

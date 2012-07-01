@@ -143,7 +143,7 @@ class generic_hook
       typedef Tag                                           tag;
       typedef typename GetNodeAlgorithms::type::node_traits node_traits;
       static const bool is_base_hook = !detail::is_same<Tag, member_tag>::value;
-      static const bool safemode_or_autounlink = 
+      static const bool safemode_or_autounlink =
          (int)link_mode == (int)auto_unlink || (int)link_mode == (int)safe_link;
    };
 
@@ -163,14 +163,14 @@ class generic_hook
       }
    }
 
-   generic_hook(const generic_hook& ) 
+   generic_hook(const generic_hook& )
    {
       if(boost_intrusive_tags::safemode_or_autounlink){
          node_algorithms::init(this->this_ptr());
       }
    }
 
-   generic_hook& operator=(const generic_hook& ) 
+   generic_hook& operator=(const generic_hook& )
    {  return *this;  }
 
    ~generic_hook()
@@ -179,13 +179,13 @@ class generic_hook
          (*this, detail::link_dispatch<boost_intrusive_tags::link_mode>());
    }
 
-   void swap_nodes(generic_hook &other) 
+   void swap_nodes(generic_hook &other)
    {
       node_algorithms::swap_nodes
          (this->this_ptr(), other.this_ptr());
    }
 
-   bool is_linked() const 
+   bool is_linked() const
    {
       //is_linked() can be only used in safe-mode or auto-unlink
       BOOST_STATIC_ASSERT(( boost_intrusive_tags::safemode_or_autounlink ));
@@ -201,8 +201,8 @@ class generic_hook
 };
 
 } //namespace detail
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #include <boost/intrusive/detail/config_end.hpp>
 

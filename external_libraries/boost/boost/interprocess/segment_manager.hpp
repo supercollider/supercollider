@@ -69,9 +69,9 @@ class segment_manager_base
    typedef typename MemoryAlgorithm::void_pointer  void_pointer;
    typedef typename MemoryAlgorithm::mutex_family  mutex_family;
    typedef MemoryAlgorithm memory_algorithm;
-   
+  
    /// @cond
-   
+  
    //Experimental. Don't use
    typedef typename MemoryAlgorithm::multiallocation_chain    multiallocation_chain;
    typedef typename MemoryAlgorithm::difference_type  difference_type;
@@ -88,7 +88,7 @@ class segment_manager_base
    //!"size" is the size of the memory segment where
    //!the basic segment manager is being constructed.
    //!
-   //!"reserved_bytes" is the number of bytes 
+   //!"reserved_bytes" is the number of bytes
    //!after the end of the memory algorithm object itself
    //!that the memory algorithm will exclude from
    //!dynamic allocation
@@ -115,7 +115,7 @@ class segment_manager_base
    static size_type get_min_size (size_type size)
    {  return MemoryAlgorithm::get_min_size(size);  }
 
-   //!Allocates nbytes bytes. This function is only used in 
+   //!Allocates nbytes bytes. This function is only used in
    //!single-segment management. Never throws
    void * allocate (size_type nbytes, std::nothrow_t)
    {  return MemoryAlgorithm::allocate(nbytes);   }
@@ -165,22 +165,22 @@ class segment_manager_base
    //!Allocates nbytes bytes. Throws boost::interprocess::bad_alloc
    //!on failure
    void * allocate(size_type nbytes)
-   {  
+   { 
       void * ret = MemoryAlgorithm::allocate(nbytes);
       if(!ret)
          throw bad_alloc();
       return ret;
    }
 
-   //!Allocates nbytes bytes. This function is only used in 
+   //!Allocates nbytes bytes. This function is only used in
    //!single-segment management. Never throws
    void * allocate_aligned (size_type nbytes, size_type alignment, std::nothrow_t)
    {  return MemoryAlgorithm::allocate_aligned(nbytes, alignment);   }
 
-   //!Allocates nbytes bytes. This function is only used in 
+   //!Allocates nbytes bytes. This function is only used in
    //!single-segment management. Throws bad_alloc when fails
    void * allocate_aligned(size_type nbytes, size_type alignment)
-   {  
+   { 
       void * ret = MemoryAlgorithm::allocate_aligned(nbytes, alignment);
       if(!ret)
          throw bad_alloc();
@@ -269,7 +269,7 @@ class segment_manager_base
             throw bad_alloc();
          }
          else{
-            return 0; 
+            return 0;
          }
       }
 
@@ -293,7 +293,7 @@ class segment_manager_base
    void prot_anonymous_destroy(const void *object, ipcdetail::in_place_interface &table)
    {
 
-      //Get control data from associated with this object    
+      //Get control data from associated with this object   
       typedef ipcdetail::block_header<size_type> block_header_t;
       block_header_t *ctrl_data = block_header_t::block_header_from_value(object, table.size, table.alignment);
 
@@ -318,9 +318,9 @@ class segment_manager_base
 //!This object is placed in the beginning of memory segment and
 //!implements the allocation (named or anonymous) of portions
 //!of the segment. This object contains two indexes that
-//!maintain an association between a name and a portion of the segment. 
+//!maintain an association between a name and a portion of the segment.
 //!
-//!The first index contains the mappings for normal named objects using the 
+//!The first index contains the mappings for normal named objects using the
 //!char type specified in the template parameter.
 //!
 //!The second index contains the association for unique instances. The key will
@@ -336,7 +336,7 @@ template<class CharType
         ,template<class IndexConfig> class IndexType>
 class segment_manager
    :  public segment_manager_base<MemoryAlgorithm>
-{ 
+{
    /// @cond
    //Non-copyable
    segment_manager();
@@ -446,7 +446,7 @@ class segment_manager
    //!Returns throwing "construct" proxy
    //!object
    template <class T>
-   typename construct_proxy<T>::type      
+   typename construct_proxy<T>::type     
       construct(char_ptr_holder_t name)
    {  return typename construct_proxy<T>::type (this, name, false, true);  }
 
@@ -466,39 +466,39 @@ class segment_manager
    //!Returns no throwing "search or construct"
    //!proxy object
    template <class T>
-   typename construct_proxy<T>::type   
+   typename construct_proxy<T>::type  
       find_or_construct(char_ptr_holder_t name, std::nothrow_t)
    {  return typename construct_proxy<T>::type (this, name, true, false);  }
 
    //!Returns throwing "construct from iterators" proxy object
    template <class T>
-   typename construct_iter_proxy<T>::type     
+   typename construct_iter_proxy<T>::type    
       construct_it(char_ptr_holder_t name)
    {  return typename construct_iter_proxy<T>::type (this, name, false, true);  }
 
    //!Returns throwing "search or construct from iterators"
    //!proxy object
    template <class T>
-   typename construct_iter_proxy<T>::type   
+   typename construct_iter_proxy<T>::type  
       find_or_construct_it(char_ptr_holder_t name)
    {  return typename construct_iter_proxy<T>::type (this, name, true, true);  }
 
    //!Returns no throwing "construct from iterators"
    //!proxy object
    template <class T>
-   typename construct_iter_proxy<T>::type   
+   typename construct_iter_proxy<T>::type  
       construct_it(char_ptr_holder_t name, std::nothrow_t)
    {  return typename construct_iter_proxy<T>::type (this, name, false, false);  }
 
    //!Returns no throwing "search or construct from iterators"
    //!proxy object
    template <class T>
-   typename construct_iter_proxy<T>::type 
+   typename construct_iter_proxy<T>::type
       find_or_construct_it(char_ptr_holder_t name, std::nothrow_t)
    {  return typename construct_iter_proxy<T>::type (this, name, true, false);  }
 
-   //!Calls object function blocking recursive interprocess_mutex and guarantees that 
-   //!no new named_alloc or destroy will be executed by any process while 
+   //!Calls object function blocking recursive interprocess_mutex and guarantees that
+   //!no new named_alloc or destroy will be executed by any process while
    //!executing the object function call*/
    template <class Func>
    void atomic_func(Func &f)
@@ -571,22 +571,22 @@ class segment_manager
    static instance_type get_instance_type(const T *ptr)
    {  return priv_get_instance_type(block_header_t::block_header_from_value(ptr));  }
 
-   //!Preallocates needed index resources to optimize the 
+   //!Preallocates needed index resources to optimize the
    //!creation of "num" named objects in the managed memory segment.
    //!Can throw boost::interprocess::bad_alloc if there is no enough memory.
    void reserve_named_objects(size_type num)
-   {  
+   { 
       //-------------------------------
       scoped_lock<rmutex> guard(m_header);
       //-------------------------------
-      m_header.m_named_index.reserve(num);  
+      m_header.m_named_index.reserve(num); 
    }
 
-   //!Preallocates needed index resources to optimize the 
+   //!Preallocates needed index resources to optimize the
    //!creation of "num" unique objects in the managed memory segment.
    //!Can throw boost::interprocess::bad_alloc if there is no enough memory.
    void reserve_unique_objects(size_type num)
-   {  
+   { 
       //-------------------------------
       scoped_lock<rmutex> guard(m_header);
       //-------------------------------
@@ -596,32 +596,32 @@ class segment_manager
    //!Calls shrink_to_fit in both named and unique object indexes
    //!to try to free unused memory from those indexes.
    void shrink_to_fit_indexes()
-   {  
+   { 
       //-------------------------------
       scoped_lock<rmutex> guard(m_header);
       //-------------------------------
-      m_header.m_named_index.shrink_to_fit();  
-      m_header.m_unique_index.shrink_to_fit();  
+      m_header.m_named_index.shrink_to_fit(); 
+      m_header.m_unique_index.shrink_to_fit(); 
    }
 
    //!Returns the number of named objects stored in
    //!the segment.
    size_type get_num_named_objects()
-   {  
+   { 
       //-------------------------------
       scoped_lock<rmutex> guard(m_header);
       //-------------------------------
-      return m_header.m_named_index.size();  
+      return m_header.m_named_index.size(); 
    }
 
    //!Returns the number of unique objects stored in
    //!the segment.
    size_type get_num_unique_objects()
-   {  
+   { 
       //-------------------------------
       scoped_lock<rmutex> guard(m_header);
       //-------------------------------
-      return m_header.m_unique_index.size();  
+      return m_header.m_unique_index.size(); 
    }
 
    //!Obtains the minimum size needed by the
@@ -693,13 +693,13 @@ class segment_manager
 
    /// @cond
 
-   //!Generic named/anonymous new function. Offers all the possibilities, 
-   //!such as throwing, search before creating, and the constructor is 
+   //!Generic named/anonymous new function. Offers all the possibilities,
+   //!such as throwing, search before creating, and the constructor is
    //!encapsulated in an object function.
    template<class T>
-   T *generic_construct(const CharType *name, 
-                        size_type num, 
-                         bool try2find, 
+   T *generic_construct(const CharType *name,
+                        size_type num,
+                         bool try2find,
                          bool dothrow,
                          ipcdetail::in_place_interface &table)
    {
@@ -713,7 +713,7 @@ class segment_manager
    //!returned pair is 0.
    template <class T>
    std::pair<T*, size_type> priv_find_impl (const CharType* name, bool lock)
-   {  
+   { 
       //The name can't be null, no anonymous object can be found by name
       BOOST_ASSERT(name != 0);
       ipcdetail::placement_destroy<T> table;
@@ -737,13 +737,13 @@ class segment_manager
    {
       ipcdetail::placement_destroy<T> table;
       size_type size;
-      void *ret = priv_generic_find<char>(name, m_header.m_unique_index, table, size, is_intrusive_t(), lock); 
+      void *ret = priv_generic_find<char>(name, m_header.m_unique_index, table, size, is_intrusive_t(), lock);
       return std::pair<T*, size_type>(static_cast<T*>(ret), size);
    }
 
-   void *priv_generic_construct(const CharType *name, 
-                   size_type num, 
-                         bool try2find, 
+   void *priv_generic_construct(const CharType *name,
+                   size_type num,
+                         bool try2find,
                          bool dothrow,
                          ipcdetail::in_place_interface &table)
    {
@@ -805,7 +805,7 @@ class segment_manager
          return 0;
       }
       CharType *name = static_cast<CharType*>(ctrl_data->template name<CharType>());
-   
+  
       //Sanity checks
       BOOST_ASSERT(ctrl_data->sizeof_char() == sizeof(CharType));
       BOOST_ASSERT(ctrl_data->m_num_char == std::char_traits<CharType>::length(name));
@@ -837,7 +837,7 @@ class segment_manager
 
    template <class CharT>
    void *priv_generic_find
-      (const CharT* name, 
+      (const CharT* name,
        IndexType<ipcdetail::index_config<CharT, MemoryAlgorithm> > &index,
        ipcdetail::in_place_interface &table,
        size_type &length,
@@ -877,7 +877,7 @@ class segment_manager
 
    template <class CharT>
    void *priv_generic_find
-      (const CharT* name, 
+      (const CharT* name,
        IndexType<ipcdetail::index_config<CharT, MemoryAlgorithm> > &index,
        ipcdetail::in_place_interface &table,
        size_type &length,
@@ -941,7 +941,7 @@ class segment_manager
    }
 
    template <class CharT>
-   bool priv_generic_named_destroy(const CharT *name, 
+   bool priv_generic_named_destroy(const CharT *name,
                                    IndexType<ipcdetail::index_config<CharT, MemoryAlgorithm> > &index,
                                    ipcdetail::in_place_interface &table,
                                    ipcdetail::true_ is_intrusive_index)
@@ -951,7 +951,7 @@ class segment_manager
       typedef ipcdetail::index_key<CharT, void_pointer>  index_key_t;
       typedef typename index_type::iterator           index_it;
       typedef typename index_type::value_type         intrusive_value_type;
-      
+     
       //-------------------------------
       scoped_lock<rmutex> guard(m_header);
       //-------------------------------
@@ -972,7 +972,7 @@ class segment_manager
       void *memory = iv;
       void *values = ctrl_data->value();
       std::size_t num = ctrl_data->m_value_bytes/table.size;
-      
+     
       //Sanity check
       BOOST_ASSERT((ctrl_data->m_value_bytes % table.size) == 0);
       BOOST_ASSERT(sizeof(CharT) == ctrl_data->sizeof_char());
@@ -992,7 +992,7 @@ class segment_manager
    }
 
    template <class CharT>
-   bool priv_generic_named_destroy(const CharT *name, 
+   bool priv_generic_named_destroy(const CharT *name,
                                    IndexType<ipcdetail::index_config<CharT, MemoryAlgorithm> > &index,
                                    ipcdetail::in_place_interface &table,
                                    ipcdetail::false_ is_intrusive_index)
@@ -1006,7 +1006,7 @@ class segment_manager
       scoped_lock<rmutex> guard(m_header);
       //-------------------------------
       //Try to find the name in the index
-      index_it it = index.find(key_type (name, 
+      index_it it = index.find(key_type (name,
                                      std::char_traits<CharT>::length(name)));
 
       //If not found, return false
@@ -1033,7 +1033,7 @@ class segment_manager
       char *stored_name       = static_cast<char*>(static_cast<void*>(const_cast<CharT*>(it->first.name())));
       (void)stored_name;
 
-      //Check if the distance between the name pointer and the memory pointer 
+      //Check if the distance between the name pointer and the memory pointer
       //is correct (this can detect incorrect type in destruction)
      std::size_t num = ctrl_data->m_value_bytes/table.size;
       void *values = ctrl_data->value();
@@ -1070,8 +1070,8 @@ class segment_manager
    template<class CharT>
    void * priv_generic_named_construct(unsigned char type,
                                const CharT *name,
-                        size_type num, 
-                               bool try2find, 
+                        size_type num,
+                               bool try2find,
                                bool dothrow,
                                ipcdetail::in_place_interface &table,
                                IndexType<ipcdetail::index_config<CharT, MemoryAlgorithm> > &index,
@@ -1095,12 +1095,12 @@ class segment_manager
       //-------------------------------
       //Insert the node. This can throw.
       //First, we want to know if the key is already present before
-      //we allocate any memory, and if the key is not present, we 
+      //we allocate any memory, and if the key is not present, we
       //want to allocate all memory in a single buffer that will
       //contain the name and the user buffer.
       //
       //Since equal_range(key) + insert(hint, value) approach is
-      //quite inefficient in container implementations 
+      //quite inefficient in container implementations
       //(they re-test if the position is correct), I've chosen
       //to insert the node, do an ugly un-const cast and modify
       //the key (which is a smart pointer) to an equivalent one
@@ -1138,7 +1138,7 @@ class segment_manager
       }
 
       //Allocates buffer for name + data, this can throw (it hurts)
-      void *buffer_ptr; 
+      void *buffer_ptr;
 
       //Check if there is enough memory
       if(dothrow){
@@ -1149,7 +1149,7 @@ class segment_manager
          buffer_ptr = this->allocate
             (block_info.template total_size_with_header<intrusive_value_type>(), std::nothrow_t());
          if(!buffer_ptr)
-            return 0; 
+            return 0;
       }
 
       //Now construct the intrusive hook plus the header
@@ -1184,7 +1184,7 @@ class segment_manager
       //the memory allocation as the intrusive value is built in that
       //memory
       value_eraser<index_type> v_eraser(index, it);
-      
+     
       //Construct array, this can throw
       ipcdetail::array_construct(ptr, num, table);
 
@@ -1197,10 +1197,10 @@ class segment_manager
    //!Generic named new function for
    //!named functions
    template<class CharT>
-   void * priv_generic_named_construct(unsigned char type,  
+   void * priv_generic_named_construct(unsigned char type, 
                                const CharT *name,
-                        size_type num, 
-                               bool try2find, 
+                        size_type num,
+                               bool try2find,
                                bool dothrow,
                                ipcdetail::in_place_interface &table,
                                IndexType<ipcdetail::index_config<CharT, MemoryAlgorithm> > &index,
@@ -1227,12 +1227,12 @@ class segment_manager
       //-------------------------------
       //Insert the node. This can throw.
       //First, we want to know if the key is already present before
-      //we allocate any memory, and if the key is not present, we 
+      //we allocate any memory, and if the key is not present, we
       //want to allocate all memory in a single buffer that will
       //contain the name and the user buffer.
       //
       //Since equal_range(key) + insert(hint, value) approach is
-      //quite inefficient in container implementations 
+      //quite inefficient in container implementations
       //(they re-test if the position is correct), I've chosen
       //to insert the node, do an ugly un-const cast and modify
       //the key (which is a smart pointer) to an equivalent one
@@ -1265,7 +1265,7 @@ class segment_manager
       value_eraser<index_type> v_eraser(index, it);
 
       //Allocates buffer for name + data, this can throw (it hurts)
-      void *buffer_ptr; 
+      void *buffer_ptr;
       block_header_t * hdr;
 
       //Allocate and construct the headers
@@ -1277,7 +1277,7 @@ class segment_manager
          else{
             buffer_ptr = this->allocate(total_size, std::nothrow_t());
             if(!buffer_ptr)
-               return 0; 
+               return 0;
          }
          index_it *idr = new(buffer_ptr) index_it(it);
          hdr = block_header_t::template from_first_header<index_it>(idr);
@@ -1289,7 +1289,7 @@ class segment_manager
          else{
             buffer_ptr = this->allocate(block_info.total_size(), std::nothrow_t());
             if(!buffer_ptr)
-               return 0; 
+               return 0;
          }
          hdr = static_cast<block_header_t*>(buffer_ptr);
       }
@@ -1303,7 +1303,7 @@ class segment_manager
       std::char_traits<CharT>::copy(name_ptr, name, namelen+1);
 
       //Do the ugly cast, please mama, forgive me!
-      //This new key points to an identical string, so it must have the 
+      //This new key points to an identical string, so it must have the
       //same position than the overwritten key according to the predicate
       const_cast<key_type &>(it->first).name(name_ptr);
       it->second.m_ptr  = hdr;
@@ -1346,7 +1346,7 @@ class segment_manager
    {
       named_index_t           m_named_index;
       unique_index_t          m_unique_index;
-   
+  
       header_t(Base *restricted_segment_mngr)
          :  m_named_index (restricted_segment_mngr)
          ,  m_unique_index(restricted_segment_mngr)

@@ -44,11 +44,11 @@ class common_slist_algorithms
       return p;
    }
 
-   static void init_header(const node_ptr & this_node)  
-   {  NodeTraits::set_next(this_node, this_node);  }  
+   static void init_header(const node_ptr & this_node) 
+   {  NodeTraits::set_next(this_node, this_node);  } 
 
-   static void init(const node_ptr & this_node)  
-   {  NodeTraits::set_next(this_node, node_ptr());  }  
+   static void init(const node_ptr & this_node) 
+   {  NodeTraits::set_next(this_node, node_ptr());  } 
 
    static bool unique(const const_node_ptr & this_node)
    {
@@ -56,7 +56,7 @@ class common_slist_algorithms
       return !next || next == this_node;
    }
 
-   static bool inited(const const_node_ptr & this_node)  
+   static bool inited(const const_node_ptr & this_node) 
    {  return !NodeTraits::get_next(this_node); }
 
    static void unlink_after(const node_ptr & prev_node)
@@ -80,7 +80,7 @@ class common_slist_algorithms
       NodeTraits::set_next(bp, b);
       NodeTraits::set_next(be, p);
    }
-   
+  
    static void transfer_after(const node_ptr & bp, const node_ptr & bb, const node_ptr & be)
    {
       if (bp != bb && bp != be && bb != be) {
@@ -95,8 +95,8 @@ class common_slist_algorithms
 };
 
 } //namespace detail
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #include <boost/intrusive/detail/config_end.hpp>
 

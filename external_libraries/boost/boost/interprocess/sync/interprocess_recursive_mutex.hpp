@@ -43,9 +43,9 @@
    #include <boost/interprocess/sync/posix/recursive_mutex.hpp>
    #define BOOST_INTERPROCESS_USE_POSIX
 //Experimental...
-//#elif !defined(BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION) && defined (BOOST_INTERPROCESS_WINDOWS)
-//   #include <boost/interprocess/sync/windows/recursive_mutex.hpp>
-//   #define BOOST_INTERPROCESS_USE_WINDOWS
+#elif !defined(BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION) && defined (BOOST_INTERPROCESS_WINDOWS)
+   #include <boost/interprocess/sync/windows/recursive_mutex.hpp>
+   #define BOOST_INTERPROCESS_USE_WINDOWS
 #elif !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    #include <boost/interprocess/sync/spin/recursive_mutex.hpp>
    #define BOOST_INTERPROCESS_USE_GENERIC_EMULATION
@@ -72,8 +72,8 @@ class mutex_traits;
 namespace boost {
 namespace interprocess {
 
-//!Wraps a interprocess_mutex that can be placed in shared memory and can be 
-//!shared between processes. Allows several locking calls by the same 
+//!Wraps a interprocess_mutex that can be placed in shared memory and can be
+//!shared between processes. Allows several locking calls by the same
 //!process. Allows timed lock tries
 class interprocess_recursive_mutex
 {
@@ -99,7 +99,7 @@ class interprocess_recursive_mutex
    //!Throws: interprocess_exception on error.
    void lock();
 
-   //!Tries to lock the interprocess_mutex, returns false when interprocess_mutex 
+   //!Tries to lock the interprocess_mutex, returns false when interprocess_mutex
    //!is already locked, returns true when success. The mutex must be unlocked
    //!the same number of times it is locked.
    //!Throws: interprocess_exception if a severe error is found

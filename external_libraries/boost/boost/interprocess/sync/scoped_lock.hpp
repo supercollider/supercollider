@@ -89,7 +89,7 @@ class scoped_lock
       : mp_mutex(&m), m_locked(true)
    {}
 
-   //!Effects: m.try_lock(). 
+   //!Effects: m.try_lock().
    //!Postconditions: mutex() == &m. owns() == the return value of the
    //!   m.try_lock() executed within the constructor.
    //!Notes: The constructor will take ownership of the mutex if it can do
@@ -101,7 +101,7 @@ class scoped_lock
       : mp_mutex(&m), m_locked(mp_mutex->try_lock())
    {}
 
-   //!Effects: m.timed_lock(abs_time). 
+   //!Effects: m.timed_lock(abs_time).
    //!Postconditions: mutex() == &m. owns() == the return value of the
    //!   m.timed_lock(abs_time) executed within the constructor.
    //!Notes: The constructor will take ownership of the mutex if it can do
@@ -128,7 +128,7 @@ class scoped_lock
    {  mp_mutex = scop.release(); }
 
    //!Effects: If upgr.owns() then calls unlock_upgradable_and_lock() on the
-   //!   referenced mutex. upgr.release() is called. 
+   //!   referenced mutex. upgr.release() is called.
    //!Postconditions: mutex() == the value upgr.mutex() had before the construction.
    //!   upgr.mutex() == 0. owns() == upgr.owns() before the construction.
    //!   upgr.owns() == false after the construction.
@@ -155,12 +155,12 @@ class scoped_lock
    //!Effects: If upgr.owns() then calls try_unlock_upgradable_and_lock() on the
    //!referenced mutex:
    //!   a)if try_unlock_upgradable_and_lock() returns true then mutex() obtains
-   //!      the value from upgr.release() and owns() is set to true. 
+   //!      the value from upgr.release() and owns() is set to true.
    //!   b)if try_unlock_upgradable_and_lock() returns false then upgr is
-   //!      unaffected and this scoped_lock construction as the same effects as  
-   //!      a default construction. 
+   //!      unaffected and this scoped_lock construction as the same effects as 
+   //!      a default construction.
    //!   c)Else upgr.owns() is false. mutex() obtains the value from upgr.release()
-   //!      and owns() is set to false 
+   //!      and owns() is set to false
    //!Notes: This construction will not block. It will try to obtain mutex
    //!   ownership from upgr immediately, while changing the lock type from a
    //!   "read lock" to a "write lock". If the "read lock" isn't held in the
@@ -186,12 +186,12 @@ class scoped_lock
    //!Effects: If upgr.owns() then calls timed_unlock_upgradable_and_lock(abs_time)
    //!   on the referenced mutex:
    //!   a)if timed_unlock_upgradable_and_lock(abs_time) returns true then mutex()
-   //!      obtains the value from upgr.release() and owns() is set to true. 
+   //!      obtains the value from upgr.release() and owns() is set to true.
    //!   b)if timed_unlock_upgradable_and_lock(abs_time) returns false then upgr
    //!      is unaffected and this scoped_lock construction as the same effects
    //!      as a default construction.
    //!   c)Else upgr.owns() is false. mutex() obtains the value from upgr.release()
-   //!      and owns() is set to false 
+   //!      and owns() is set to false
    //!Notes: This construction will not block. It will try to obtain mutex ownership
    //!   from upgr immediately, while changing the lock type from a "read lock" to a
    //!   "write lock". If the "read lock" isn't held in the first place, the mutex
@@ -214,14 +214,14 @@ class scoped_lock
    }
 
    //!Effects: If shar.owns() then calls try_unlock_sharable_and_lock() on the
-   //!referenced mutex. 
+   //!referenced mutex.
    //!   a)if try_unlock_sharable_and_lock() returns true then mutex() obtains
-   //!      the value from shar.release() and owns() is set to true. 
+   //!      the value from shar.release() and owns() is set to true.
    //!   b)if try_unlock_sharable_and_lock() returns false then shar is
    //!      unaffected and this scoped_lock construction has the same
-   //!      effects as a default construction. 
+   //!      effects as a default construction.
    //!   c)Else shar.owns() is false. mutex() obtains the value from
-   //!      shar.release() and owns() is set to false 
+   //!      shar.release() and owns() is set to false
    //!Notes: This construction will not block. It will try to obtain mutex
    //!   ownership from shar immediately, while changing the lock type from a
    //!   "read lock" to a "write lock". If the "read lock" isn't held in the
@@ -253,13 +253,13 @@ class scoped_lock
    }
 
    //!Effects: If owns() before the call, then unlock() is called on mutex().
-   //!   *this gets the state of scop and scop gets set to a default constructed state. 
+   //!   *this gets the state of scop and scop gets set to a default constructed state.
    //!Notes: With a recursive mutex it is possible that both this and scop own
    //!   the same mutex before the assignment. In this case, this will own the
    //!   mutex after the assignment (and scop will not), but the mutex's lock
    //!   count will be decremented by one.
    scoped_lock &operator=(BOOST_RV_REF(scoped_lock) scop)
-   {  
+   { 
       if(this->owns())
          this->unlock();
       m_locked = scop.owns();
@@ -281,7 +281,7 @@ class scoped_lock
    }
 
    //!Effects: If mutex() == 0 or if already locked, throws a lock_exception()
-   //!   exception. Calls try_lock() on the referenced mutex. 
+   //!   exception. Calls try_lock() on the referenced mutex.
    //!Postconditions: owns() == the value returned from mutex()->try_lock().
    //!Notes: The scoped_lock changes from a state of not owning the mutex, to
    //!   owning the mutex, but only if blocking was not required. If the
@@ -348,8 +348,8 @@ class scoped_lock
       m_locked = false;
       return mut;
    }
- 
-   //!Effects: Swaps state with moved lock. 
+
+   //!Effects: Swaps state with moved lock.
    //!Throws: Nothing.
    void swap( scoped_lock<mutex_type> &other)
    {
@@ -359,7 +359,7 @@ class scoped_lock
 
    /// @cond
    private:
-   mutex_type *mp_mutex; 
+   mutex_type *mp_mutex;
    bool        m_locked;
    /// @endcond
 };

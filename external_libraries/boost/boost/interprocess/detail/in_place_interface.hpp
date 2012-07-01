@@ -25,7 +25,7 @@
 //!Describes an abstract interface for placement construction and destruction.
 
 namespace boost {
-namespace interprocess { 
+namespace interprocess {
 namespace ipcdetail {
 
 struct in_place_interface

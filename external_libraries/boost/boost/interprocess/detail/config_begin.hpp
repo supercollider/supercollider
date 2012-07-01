@@ -44,4 +44,5 @@
                                     //    with /GR-; unpredictable behavior may result
    #pragma warning (disable : 4673) //  throwing '' the following types will not be considered at the catch site
    #pragma warning (disable : 4671) //  the copy constructor is inaccessible
+   #pragma warning (disable : 4250) //  inherits 'x' via dominance
 #endif

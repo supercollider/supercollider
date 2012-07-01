@@ -31,7 +31,7 @@
 #include <boost/interprocess/detail/workaround.hpp>
 
 #include <pthread.h>
-#include <errno.h>   
+#include <errno.h>  
 #include <boost/interprocess/sync/posix/pthread_helpers.hpp>
 #include <boost/interprocess/sync/posix/ptime_to_timespec.hpp>
 #include <boost/interprocess/detail/posix_time_types_wrk.hpp>
@@ -78,7 +78,7 @@ inline posix_recursive_mutex::~posix_recursive_mutex()
 
 inline void posix_recursive_mutex::lock()
 {
-   if (pthread_mutex_lock(&m_mut) != 0) 
+   if (pthread_mutex_lock(&m_mut) != 0)
       throw lock_exception();
 }
 

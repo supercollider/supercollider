@@ -65,7 +65,7 @@ class mapped_region
    public:
 
    //!Creates a mapping region of the mapped memory "mapping", starting in
-   //!offset "offset", and the mapping's size will be "size". The mapping 
+   //!offset "offset", and the mapping's size will be "size". The mapping
    //!can be opened for read-only "read_only" or read-write
    //!"read_write.
    template<class MemoryMappable>
@@ -123,7 +123,7 @@ class mapped_region
    //!Never throws.
    mode_t get_mode() const;
 
-   //!Flushes to the disk a byte range within the mapped memory. 
+   //!Flushes to the disk a byte range within the mapped memory.
    //!Never throws
    bool flush(std::size_t mapping_offset = 0, std::size_t numbytes = 0);
 
@@ -175,7 +175,7 @@ inline mapped_region::~mapped_region()
 inline std::size_t mapped_region::get_size()  const
 {  return m_size; }
 
-inline offset_t mapped_region::get_offset()  const 
+inline offset_t mapped_region::get_offset()  const
 {  return m_offset;   }
 
 inline mode_t mapped_region::get_mode()  const
@@ -514,7 +514,7 @@ inline mapped_region::mapped_region
    }
 
    //Calculate new base for the user
-   m_base = static_cast<char*>(base) + extra_offset; 
+   m_base = static_cast<char*>(base) + extra_offset;
    m_extra_offset = extra_offset;
    m_offset = offset;
    m_size   = size;
