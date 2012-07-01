@@ -57,7 +57,7 @@ struct list_node_traits
    {  n->next_ = next;  }
 };
 
-// list_iterator provides some basic functions for a 
+// list_iterator provides some basic functions for a
 // node oriented bidirectional iterator:
 template<class Container, bool IsConst>
 class list_iterator
@@ -76,7 +76,7 @@ class list_iterator
    typedef typename node_traits::node_ptr          node_ptr;
    typedef typename pointer_traits<node_ptr>::
       template rebind_pointer<void>::type          void_pointer;
-   static const bool store_container_ptr = 
+   static const bool store_container_ptr =
       detail::store_cont_ptr_on_it<Container>::value;
 
    public:
@@ -103,14 +103,14 @@ class list_iterator
    {  members_.nodeptr_ = node;  return static_cast<list_iterator&>(*this);  }
 
    public:
-   list_iterator& operator++() 
+   list_iterator& operator++()
    {
       node_ptr p = node_traits::get_next(members_.nodeptr_);
       members_.nodeptr_ = p;
-      //members_.nodeptr_ = node_traits::get_next(members_.nodeptr_); 
-      return static_cast<list_iterator&> (*this); 
+      //members_.nodeptr_ = node_traits::get_next(members_.nodeptr_);
+      return static_cast<list_iterator&> (*this);
    }
-   
+  
    list_iterator operator++(int)
    {
       list_iterator result (*this);
@@ -118,12 +118,12 @@ class list_iterator
       return result;
    }
 
-   list_iterator& operator--() 
-   { 
-      members_.nodeptr_ = node_traits::get_previous(members_.nodeptr_); 
-      return static_cast<list_iterator&> (*this); 
+   list_iterator& operator--()
+   {
+      members_.nodeptr_ = node_traits::get_previous(members_.nodeptr_);
+      return static_cast<list_iterator&> (*this);
    }
-   
+  
    list_iterator operator--(int)
    {
       list_iterator result (*this);
@@ -182,8 +182,8 @@ class list_iterator
    } members_;
 };
 
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #include <boost/intrusive/detail/config_end.hpp>
 

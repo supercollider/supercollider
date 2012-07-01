@@ -164,13 +164,13 @@ struct rbtree_node_traits
          ,  OptimizeSize &&
            (max_pointer_plus_bits
             < VoidPointer
-            , detail::alignment_of<compact_rbtree_node<VoidPointer> >::value 
+            , detail::alignment_of<compact_rbtree_node<VoidPointer> >::value
             >::value >= 1)
          >
 {};
 
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #include <boost/intrusive/detail/config_end.hpp>
 

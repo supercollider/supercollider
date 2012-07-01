@@ -104,7 +104,7 @@ typedef pthread_t OS_thread_id_t;
 typedef pid_t     OS_process_id_t;
 
 struct OS_systemwide_thread_id_t
-{  
+{ 
    OS_systemwide_thread_id_t()
       :  pid(), tid()
    {}
@@ -153,7 +153,7 @@ inline OS_thread_id_t get_current_thread_id()
 {  return ::pthread_self();  }
 
 inline OS_thread_id_t get_invalid_thread_id()
-{ 
+{
    static pthread_t invalid_id;
    return invalid_id;
 }

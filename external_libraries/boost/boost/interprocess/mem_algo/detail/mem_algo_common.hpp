@@ -117,7 +117,7 @@ class memory_algorithm_common
 
          lcm_val = max;
          //If we want to use minbytes data to get a buffer between maxbytes
-         //and minbytes if maxbytes can't be achieved, calculate the 
+         //and minbytes if maxbytes can't be achieved, calculate the
          //biggest of all possibilities
          current_forward = get_truncated_size_po2(received_size, backwards_multiple);
          needs_backwards = size_to_achieve - current_forward;
@@ -176,7 +176,7 @@ class memory_algorithm_common
          lcm_val = lcm(max, min);
       }
       //If we want to use minbytes data to get a buffer between maxbytes
-      //and minbytes if maxbytes can't be achieved, calculate the 
+      //and minbytes if maxbytes can't be achieved, calculate the
       //biggest of all possibilities
       current_forward = get_truncated_size(received_size, backwards_multiple);
       needs_backwards = size_to_achieve - current_forward;
@@ -199,7 +199,7 @@ class memory_algorithm_common
    static void* allocate_aligned
       (MemoryAlgorithm *memory_algo, size_type nbytes, size_type alignment)
    {
-      
+     
       //Ensure power of 2
       if ((alignment & (alignment - size_type(1u))) != 0){
          //Alignment is not power of two
@@ -215,7 +215,7 @@ class memory_algorithm_common
 
       if(nbytes > UsableByPreviousChunk)
          nbytes -= UsableByPreviousChunk;
-      
+     
       //We can find a aligned portion if we allocate a block that has alignment
       //nbytes + alignment bytes or more.
       size_type minimum_allocation = max_value
@@ -223,13 +223,13 @@ class memory_algorithm_common
       //Since we will split that block, we must request a bit more memory
       //if the alignment is near the beginning of the buffer, because otherwise,
       //there is no space for a new block before the alignment.
-      // 
+      //
       //            ____ Aligned here
       //           |
       //  -----------------------------------------------------
-      // | MBU | 
+      // | MBU |
       //  -----------------------------------------------------
-      size_type request = 
+      size_type request =
          minimum_allocation + (2*MinBlockUnits*Alignment - AllocatedCtrlBytes
          //prevsize - UsableByPreviousChunk
          );
@@ -263,7 +263,7 @@ class memory_algorithm_common
       }
 
       //Buffer not aligned, find the aligned part.
-      // 
+      //
       //                    ____ Aligned here
       //                   |
       //  -----------------------------------------------------
@@ -324,7 +324,7 @@ class memory_algorithm_common
       return memory_algo->priv_get_user_buffer(second);
    }
 
-   static bool try_shrink 
+   static bool try_shrink
       (MemoryAlgorithm *memory_algo, void *ptr
       ,const size_type max_size,   const size_type preferred_size
       ,size_type &received_size)
@@ -361,8 +361,8 @@ class memory_algorithm_common
       if(old_user_units == preferred_user_units)
          return true;
 
-      size_type shrunk_user_units = 
-         ((BlockCtrlUnits - AllocatedCtrlUnits) > preferred_user_units)
+      size_type shrunk_user_units =
+         ((BlockCtrlUnits - AllocatedCtrlUnits) >= preferred_user_units)
          ? (BlockCtrlUnits - AllocatedCtrlUnits)
          : preferred_user_units;
 
@@ -380,7 +380,7 @@ class memory_algorithm_common
       return true;
    }
 
-   static bool shrink 
+   static bool shrink
       (MemoryAlgorithm *memory_algo, void *ptr
       ,const size_type max_size,   const size_type preferred_size
       ,size_type &received_size)
@@ -389,7 +389,7 @@ class memory_algorithm_common
       block_ctrl *block = memory_algo->priv_get_block(ptr);
       size_type old_block_units = (size_type)block->m_size;
 
-      if(!try_shrink 
+      if(!try_shrink
          (memory_algo, ptr, max_size, preferred_size, received_size)){
          return false;
       }
@@ -479,7 +479,7 @@ class memory_algorithm_common
 
             //The last block should take all the remaining space
             if((low_idx + 1) == n_elements ||
-               (total_used_units + elem_units + 
+               (total_used_units + elem_units +
                ((!sizeof_element)
                   ? elem_units
               : std::max(memory_algo->priv_get_total_units(elem_sizes[low_idx+1]*sizeof_element), ptr_size_units))
@@ -528,7 +528,7 @@ class memory_algorithm_common
          //Sanity check
          BOOST_ASSERT(total_used_units == received_units);
       }
-      
+     
       if(low_idx != n_elements){
          priv_deallocate_many(memory_algo, boost::move(chain));
       }

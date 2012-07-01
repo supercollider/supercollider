@@ -68,7 +68,7 @@ class spin_recursive_mutex
    volatile boost::uint32_t m_s;
 };
 
-inline spin_recursive_mutex::spin_recursive_mutex() 
+inline spin_recursive_mutex::spin_recursive_mutex()
    : m_nLockCount(0), m_nOwner(ipcdetail::get_invalid_systemwide_thread_id()){}
 
 inline spin_recursive_mutex::~spin_recursive_mutex(){}
@@ -83,7 +83,7 @@ inline void spin_recursive_mutex::lock()
       if((unsigned int)(m_nLockCount+1) == 0){
          //Overflow, throw an exception
          throw interprocess_exception("boost::interprocess::spin_recursive_mutex recursive lock overflow");
-      } 
+      }
       ++m_nLockCount;
    }
    else{
@@ -103,7 +103,7 @@ inline bool spin_recursive_mutex::try_lock()
       if((unsigned int)(m_nLockCount+1) == 0){
          //Overflow, throw an exception
          throw interprocess_exception("boost::interprocess::spin_recursive_mutex recursive lock overflow");
-      } 
+      }
       ++m_nLockCount;
       return true;
    }
@@ -129,7 +129,7 @@ inline bool spin_recursive_mutex::timed_lock(const boost::posix_time::ptime &abs
       if((unsigned int)(m_nLockCount+1) == 0){
          //Overflow, throw an exception
          throw interprocess_exception("boost::interprocess::spin_recursive_mutex recursive lock overflow");
-      } 
+      }
       ++m_nLockCount;
       return true;
    }

@@ -45,15 +45,15 @@ class spin_mutex
    volatile boost::uint32_t m_s;
 };
 
-inline spin_mutex::spin_mutex() 
-   : m_s(0) 
+inline spin_mutex::spin_mutex()
+   : m_s(0)
 {
    //Note that this class is initialized to zero.
    //So zeroed memory can be interpreted as an
    //initialized mutex
 }
 
-inline spin_mutex::~spin_mutex() 
+inline spin_mutex::~spin_mutex()
 {
    //Trivial destructor
 }
@@ -73,7 +73,7 @@ inline void spin_mutex::lock(void)
 
 inline bool spin_mutex::try_lock(void)
 {
-   boost::uint32_t prev_s = ipcdetail::atomic_cas32(const_cast<boost::uint32_t*>(&m_s), 1, 0);   
+   boost::uint32_t prev_s = ipcdetail::atomic_cas32(const_cast<boost::uint32_t*>(&m_s), 1, 0);  
    return m_s == 1 && prev_s == 0;
 }
 

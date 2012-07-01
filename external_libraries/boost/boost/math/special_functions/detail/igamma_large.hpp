@@ -759,7 +759,6 @@ T igamma_temme_large(T a, T x, const Policy& pol, mpl::int_<113> const *)
    return result;
 }
 
-
 }  // namespace detail
 }  // namespace math
 }  // namespace math

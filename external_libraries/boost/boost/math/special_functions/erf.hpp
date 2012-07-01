@@ -978,6 +978,59 @@ T erf_imp(T z, bool invert, const Policy& pol, const mpl::int_<113>& t)
    return result;
 } // template <class T, class Lanczos>T erf_imp(T z, bool invert, const Lanczos& l, const mpl::int_<113>& t)
 
+template <class T, class Policy, class tag>
+struct erf_initializer
+{
+   struct init
+   {
+      init()
+      {
+         do_init(tag());
+      }
+      static void do_init(const mpl::int_<0>&){}
+      static void do_init(const mpl::int_<53>&)
+      {
+         boost::math::erf(static_cast<T>(1e-12), Policy());
+         boost::math::erf(static_cast<T>(0.25), Policy());
+         boost::math::erf(static_cast<T>(1.25), Policy());
+         boost::math::erf(static_cast<T>(2.25), Policy());
+         boost::math::erf(static_cast<T>(4.25), Policy());
+         boost::math::erf(static_cast<T>(5.25), Policy());
+      }
+      static void do_init(const mpl::int_<64>&)
+      {
+         boost::math::erf(static_cast<T>(1e-12), Policy());
+         boost::math::erf(static_cast<T>(0.25), Policy());
+         boost::math::erf(static_cast<T>(1.25), Policy());
+         boost::math::erf(static_cast<T>(2.25), Policy());
+         boost::math::erf(static_cast<T>(4.25), Policy());
+         boost::math::erf(static_cast<T>(5.25), Policy());
+      }
+      static void do_init(const mpl::int_<113>&)
+      {
+         boost::math::erf(static_cast<T>(1e-22), Policy());
+         boost::math::erf(static_cast<T>(0.25), Policy());
+         boost::math::erf(static_cast<T>(1.25), Policy());
+         boost::math::erf(static_cast<T>(2.125), Policy());
+         boost::math::erf(static_cast<T>(2.75), Policy());
+         boost::math::erf(static_cast<T>(3.25), Policy());
+         boost::math::erf(static_cast<T>(5.25), Policy());
+         boost::math::erf(static_cast<T>(7.25), Policy());
+         boost::math::erf(static_cast<T>(11.25), Policy());
+         boost::math::erf(static_cast<T>(12.5), Policy());
+      }
+      void force_instantiate()const{}
+   };
+   static const init initializer;
+   static void force_instantiate()
+   {
+      initializer.force_instantiate();
+   }
+};
+
+template <class T, class Policy, class tag>
+const typename erf_initializer<T, Policy, tag>::init erf_initializer<T, Policy, tag>::initializer;
+
 } // namespace detail
 
 template <class T, class Policy>
@@ -1016,6 +1069,8 @@ inline typename tools::promote_args<T>::type erf(T z, const Policy& /* pol */)
    >::type tag_type;
 
    BOOST_MATH_INSTRUMENT_CODE("tag_type = " << typeid(tag_type).name());
+
+   detail::erf_initializer<value_type, forwarding_policy, tag_type>::force_instantiate(); // Force constants to be initialized before main
 
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(detail::erf_imp(
       static_cast<value_type>(z),
@@ -1060,6 +1115,8 @@ inline typename tools::promote_args<T>::type erfc(T z, const Policy& /* pol */)
    >::type tag_type;
 
    BOOST_MATH_INSTRUMENT_CODE("tag_type = " << typeid(tag_type).name());
+
+   detail::erf_initializer<value_type, forwarding_policy, tag_type>::force_instantiate(); // Force constants to be initialized before main
 
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(detail::erf_imp(
       static_cast<value_type>(z),

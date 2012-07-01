@@ -251,6 +251,13 @@ struct type_rebinder<Ptr<T, Tn...>, U, 0u >
    typedef Ptr<U, Tn...> type;
 };
 
+//Needed for non-conforming compilers like GCC 4.3
+template <template <class> class Ptr, typename T, class U>
+struct type_rebinder<Ptr<T>, U, 0u >
+{
+   typedef Ptr<U> type;
+};
+
 #else //C++03 compilers
 
 #define BOOST_PP_LOCAL_MACRO(n)                                                  \

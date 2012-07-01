@@ -1473,6 +1473,94 @@ T expint_i_imp(T z, const Policy& pol, const mpl::int_<113>& tag)
    return result;
 }
 
+template <class T, class Policy, class tag>
+struct expint_i_initializer
+{
+   struct init
+   {
+      init()
+      {
+         do_init(tag());
+      }
+      static void do_init(const mpl::int_<0>&){}
+      static void do_init(const mpl::int_<53>&)
+      {
+         boost::math::expint(T(5));
+         boost::math::expint(T(7));
+         boost::math::expint(T(18));
+         boost::math::expint(T(38));
+         boost::math::expint(T(45));
+      }
+      static void do_init(const mpl::int_<64>&)
+      {
+         boost::math::expint(T(5));
+         boost::math::expint(T(7));
+         boost::math::expint(T(18));
+         boost::math::expint(T(38));
+         boost::math::expint(T(45));
+      }
+      static void do_init(const mpl::int_<113>&)
+      {
+         boost::math::expint(T(5));
+         boost::math::expint(T(7));
+         boost::math::expint(T(17));
+         boost::math::expint(T(25));
+         boost::math::expint(T(40));
+         boost::math::expint(T(50));
+         boost::math::expint(T(80));
+         boost::math::expint(T(200));
+         boost::math::expint(T(220));
+      }
+      void force_instantiate()const{}
+   };
+   static const init initializer;
+   static void force_instantiate()
+   {
+      initializer.force_instantiate();
+   }
+};
+
+template <class T, class Policy, class tag>
+const typename expint_i_initializer<T, Policy, tag>::init expint_i_initializer<T, Policy, tag>::initializer;
+
+template <class T, class Policy, class tag>
+struct expint_1_initializer
+{
+   struct init
+   {
+      init()
+      {
+         do_init(tag());
+      }
+      static void do_init(const mpl::int_<0>&){}
+      static void do_init(const mpl::int_<53>&)
+      {
+         boost::math::expint(1, T(0.5));
+         boost::math::expint(1, T(2));
+      }
+      static void do_init(const mpl::int_<64>&)
+      {
+         boost::math::expint(1, T(0.5));
+         boost::math::expint(1, T(2));
+      }
+      static void do_init(const mpl::int_<113>&)
+      {
+         boost::math::expint(1, T(0.5));
+         boost::math::expint(1, T(2));
+         boost::math::expint(1, T(6));
+      }
+      void force_instantiate()const{}
+   };
+   static const init initializer;
+   static void force_instantiate()
+   {
+      initializer.force_instantiate();
+   }
+};
+
+template <class T, class Policy, class tag>
+const typename expint_1_initializer<T, Policy, tag>::init expint_1_initializer<T, Policy, tag>::initializer;
+
 template <class T, class Policy>
 inline typename tools::promote_args<T>::type
    expint_forwarder(T z, const Policy& /*pol*/, mpl::true_ const&)
@@ -1503,6 +1591,8 @@ inline typename tools::promote_args<T>::type
          >::type
       >::type
    >::type tag_type;
+
+   expint_i_initializer<value_type, forwarding_policy, tag_type>::force_instantiate();
 
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(detail::expint_i_imp(
       static_cast<value_type>(z),
@@ -1549,6 +1639,8 @@ inline typename tools::promote_args<T>::type
          >::type
       >::type
    >::type tag_type;
+
+   detail::expint_1_initializer<value_type, forwarding_policy, tag_type>::force_instantiate();
 
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(detail::expint_imp(
       n,

@@ -81,7 +81,7 @@ set(sclang_sources
 
 if (NOT Boost_FOUND)
 	file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
-	file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/v3/src/*cpp)
+	file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/src/*cpp)
 	file(GLOB boost_regex_sources ../external_libraries/boost/libs/regex/src/*cpp)
 	list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
 endif()

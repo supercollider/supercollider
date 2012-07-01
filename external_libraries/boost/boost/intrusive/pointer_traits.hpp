@@ -52,7 +52,7 @@ struct pointer_traits
       typedef unspecified_type difference_type;
 
       //!Ptr::rebind<U> if such a type exists; otherwise, SomePointer<U, Args> if Ptr is
-      //!a class template instantiation of the form SomePointer<T, Args>, where Args is zero or 
+      //!a class template instantiation of the form SomePointer<T, Args>, where Args is zero or
       //!more type arguments ; otherwise, the instantiation of rebind is ill-formed.
       //!
       //!For portable code for C++03 and C++11, <pre>typename rebind_pointer<U>::type</pre>
@@ -60,7 +60,7 @@ struct pointer_traits
       template <class U> using rebind = unspecified;
 
       //!Ptr::rebind<U> if such a type exists; otherwise, SomePointer<U, Args> if Ptr is
-      //!a class template instantiation of the form SomePointer<T, Args>, where Args is zero or 
+      //!a class template instantiation of the form SomePointer<T, Args>, where Args is zero or
       //!more type arguments ; otherwise, the instantiation of rebind is ill-formed.
       //!
       typedef element_type &reference;
@@ -232,7 +232,7 @@ struct pointer_traits<T*>
 
    template <class U> struct rebind_pointer
    {  typedef U* type;  };
-   
+  
    //! <b>Returns</b>: addressof(r)
    //!
    static pointer pointer_to(reference r)

@@ -40,7 +40,7 @@ struct prime_list_holder
 
 template<int Dummy>
 const std::size_t prime_list_holder<Dummy>::prime_list[] = {
-   3ul, 7ul, 11ul, 17ul, 29ul, 
+   3ul, 7ul, 11ul, 17ul, 29ul,
    53ul, 97ul, 193ul, 389ul, 769ul,
    1543ul, 3079ul, 6151ul, 12289ul, 24593ul,
    49157ul, 98317ul, 196613ul, 393241ul, 786433ul,
@@ -180,9 +180,9 @@ class hashtable_iterator
    {  return hashtable_iterator<Container, false>(this->slist_it(), this->get_container());   }
 
    public:
-   hashtable_iterator& operator++() 
+   hashtable_iterator& operator++()
    {  this->increment();   return *this;   }
-   
+  
    hashtable_iterator operator++(int)
    {
       hashtable_iterator result (*this);
@@ -219,7 +219,7 @@ class hashtable_iterator
       size_type   buckets_len    = cont->bucket_count();
 
       ++slist_it_;
-      if(buckets[0].cend().pointed_node()    <= slist_it_.pointed_node() && 
+      if(buckets[0].cend().pointed_node()    <= slist_it_.pointed_node() &&
          slist_it_.pointed_node()<= buckets[buckets_len].cend().pointed_node()      ){
          //Now get the bucket_impl from the iterator
          const bucket_type &b = static_cast<const bucket_type&>

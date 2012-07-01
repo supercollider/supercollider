@@ -195,7 +195,7 @@ inline T log_max_value(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE(T))
       (std::numeric_limits<T>::max_exponent == 128
       || std::numeric_limits<T>::max_exponent == 1024
       || std::numeric_limits<T>::max_exponent == 16384),
-      mpl::int_<std::numeric_limits<T>::max_exponent>,
+      mpl::int_<(std::numeric_limits<T>::max_exponent > INT_MAX ? INT_MAX : static_cast<int>(std::numeric_limits<T>::max_exponent))>,
       mpl::int_<0>
    >::type tag_type;
    BOOST_STATIC_ASSERT( ::std::numeric_limits<T>::is_specialized);
@@ -217,7 +217,7 @@ inline T log_min_value(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE(T))
       (std::numeric_limits<T>::max_exponent == 128
       || std::numeric_limits<T>::max_exponent == 1024
       || std::numeric_limits<T>::max_exponent == 16384),
-      mpl::int_<std::numeric_limits<T>::max_exponent>,
+      mpl::int_<(std::numeric_limits<T>::max_exponent > INT_MAX ? INT_MAX : static_cast<int>(std::numeric_limits<T>::max_exponent))>,
       mpl::int_<0>
    >::type tag_type;
 

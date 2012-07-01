@@ -34,17 +34,17 @@ namespace interprocess {
 template <class MapConfig>
 struct iset_index_aux
 {
-   typedef typename 
+   typedef typename
       MapConfig::segment_manager_base                          segment_manager_base;
 
-   typedef typename 
+   typedef typename
       segment_manager_base::void_pointer                       void_pointer;
    typedef typename bi::make_set_base_hook
       < bi::void_pointer<void_pointer>
       , bi::optimize_size<true>
       >::type                                                  derivation_hook;
 
-   typedef typename MapConfig::template 
+   typedef typename MapConfig::template
       intrusive_value_type<derivation_hook>::type              value_type;
    typedef std::less<value_type>                               value_compare;
    typedef typename bi::make_set
@@ -82,20 +82,20 @@ class iset_index
    struct intrusive_key_value_less
    {
       bool operator()(const intrusive_compare_key_type &i, const value_type &b) const
-      {  
+      { 
          std::size_t blen = b.name_length();
-         return (i.m_len < blen) || 
-                  (i.m_len == blen && 
-                  std::char_traits<char_type>::compare 
+         return (i.m_len < blen) ||
+                  (i.m_len == blen &&
+                  std::char_traits<char_type>::compare
                      (i.mp_str, b.name(), i.m_len) < 0);
       }
 
       bool operator()(const value_type &b, const intrusive_compare_key_type &i) const
-      {  
+      { 
          std::size_t blen = b.name_length();
-         return (blen < i.m_len) || 
+         return (blen < i.m_len) ||
                   (blen == i.m_len &&
-                  std::char_traits<char_type>::compare 
+                  std::char_traits<char_type>::compare
                      (b.name(), i.mp_str, i.m_len) < 0);
       }
    };
@@ -143,7 +143,7 @@ struct is_intrusive_index
 /// @endcond
 
 }  //namespace interprocess {
-}  //namespace boost 
+}  //namespace boost
 
 #include <boost/interprocess/detail/config_end.hpp>
 

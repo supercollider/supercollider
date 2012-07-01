@@ -20,7 +20,7 @@
 #include <boost/interprocess/detail/config_begin.hpp>
 
 namespace boost {
-namespace interprocess { 
+namespace interprocess {
 namespace ipcdetail {
 
 struct nat{};
@@ -137,7 +137,7 @@ struct is_same
 };
 
 } // namespace ipcdetail
-}  //namespace interprocess { 
+}  //namespace interprocess {
 }  //namespace boost {
 
 #include <boost/interprocess/detail/config_end.hpp>

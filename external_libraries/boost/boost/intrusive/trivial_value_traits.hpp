@@ -40,7 +40,7 @@ struct trivial_value_traits
    static const const_pointer  &to_value_ptr(const const_node_ptr &n)  {  return n; }
 };
 
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #endif //BOOST_INTRUSIVE_TRIVIAL_VALUE_TRAITS_HPP

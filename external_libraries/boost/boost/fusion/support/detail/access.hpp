@@ -15,7 +15,7 @@ namespace boost { namespace fusion { namespace detail
     template <typename T>
     struct ref_result
     {
-        typedef typename add_reference<typename T::type>::type type;
+        typedef typename add_reference<T>::type type;
     };
 
     template <typename T>
@@ -23,7 +23,7 @@ namespace boost { namespace fusion { namespace detail
     {
         typedef typename 
             add_reference<
-                typename add_const<typename T::type>::type
+                typename add_const<T>::type
             >::type 
         type;
     };

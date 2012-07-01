@@ -48,12 +48,12 @@ class xsi_key;
 
 template<>
 struct managed_open_or_create_impl_device_id_t<xsi_shared_memory_file_wrapper>
-{  
+{ 
    typedef xsi_key type;
 };
 
 #endif   //BOOST_INTERPROCESS_XSI_SHARED_MEMORY_OBJECTS
-   
+  
 /// @endcond
 
 namespace ipcdetail {
@@ -79,7 +79,7 @@ class managed_open_or_create_impl_device_holder<true, DeviceAbstraction>
 
    const DeviceAbstraction &get_device() const
    {  return dev; }
-   
+  
    private:
    DeviceAbstraction dev;
 };
@@ -94,16 +94,16 @@ class managed_open_or_create_impl
    typedef typename managed_open_or_create_impl_device_id_t<DeviceAbstraction>::type device_id_t;
    typedef managed_open_or_create_impl_device_holder<StoreDevice, DeviceAbstraction> DevHolder;
    enum
-   {  
-      UninitializedSegment,  
-      InitializingSegment,  
+   { 
+      UninitializedSegment, 
+      InitializingSegment, 
       InitializedSegment,
       CorruptedSegment
    };
 
    public:
    static const std::size_t
-      ManagedOpenOrCreateUserOffset = 
+      ManagedOpenOrCreateUserOffset =
          ct_rounded_size
             < sizeof(boost::uint32_t)
             , MemAlignment ? (MemAlignment) :
@@ -113,7 +113,7 @@ class managed_open_or_create_impl
    managed_open_or_create_impl()
    {}
 
-   managed_open_or_create_impl(create_only_t, 
+   managed_open_or_create_impl(create_only_t,
                  const device_id_t & id,
                  std::size_t size,
                  mode_t mode,
@@ -130,7 +130,7 @@ class managed_open_or_create_impl
          , null_mapped_region_function());
    }
 
-   managed_open_or_create_impl(open_only_t, 
+   managed_open_or_create_impl(open_only_t,
                  const device_id_t & id,
                  mode_t mode,
                  const void *addr)
@@ -146,7 +146,7 @@ class managed_open_or_create_impl
    }
 
 
-   managed_open_or_create_impl(open_or_create_t, 
+   managed_open_or_create_impl(open_or_create_t,
                  const device_id_t & id,
                  std::size_t size,
                  mode_t mode,
@@ -164,7 +164,7 @@ class managed_open_or_create_impl
    }
 
    template <class ConstructFunc>
-   managed_open_or_create_impl(create_only_t, 
+   managed_open_or_create_impl(create_only_t,
                  const device_id_t & id,
                  std::size_t size,
                  mode_t mode,
@@ -183,7 +183,7 @@ class managed_open_or_create_impl
    }
 
    template <class ConstructFunc>
-   managed_open_or_create_impl(open_only_t, 
+   managed_open_or_create_impl(open_only_t,
                  const device_id_t & id,
                  mode_t mode,
                  const void *addr,
@@ -200,7 +200,7 @@ class managed_open_or_create_impl
    }
 
    template <class ConstructFunc>
-   managed_open_or_create_impl(open_or_create_t, 
+   managed_open_or_create_impl(open_or_create_t,
                  const device_id_t & id,
                  std::size_t size,
                  mode_t mode,
@@ -222,10 +222,10 @@ class managed_open_or_create_impl
    {  this->swap(moved);   }
 
    managed_open_or_create_impl &operator=(BOOST_RV_REF(managed_open_or_create_impl) moved)
-   {  
+   { 
       managed_open_or_create_impl tmp(boost::move(moved));
       this->swap(tmp);
-      return *this;  
+      return *this; 
    }
 
    ~managed_open_or_create_impl()
@@ -298,10 +298,10 @@ class managed_open_or_create_impl
       tmp.swap(dev);
    }
 
-   template <class ConstructFunc> inline 
+   template <class ConstructFunc> inline
    void priv_open_or_create
-      (create_enum_t type, 
-       const device_id_t & id, 
+      (create_enum_t type,
+       const device_id_t & id,
        std::size_t size,
        mode_t mode, const void *addr,
        const permissions &perm,

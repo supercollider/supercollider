@@ -127,10 +127,10 @@ struct identity
 #if defined(BOOST_MSVC) || defined(__BORLANDC_)
 #define BOOST_INTRUSIVE_TT_DECL __cdecl
 #else
-#define BOOST_INTRUSIVE_TT_DECL 
+#define BOOST_INTRUSIVE_TT_DECL
 #endif
 
-#if defined(_MSC_EXTENSIONS) && !defined(__BORLAND__) && !defined(_WIN64)
+#if defined(_MSC_EXTENSIONS) && !defined(__BORLAND__) && !defined(_WIN64) && !defined(UNDER_CE)
 #define BOOST_INTRUSIVE_TT_TEST_MSC_FUNC_SIGS
 #endif
 
@@ -346,9 +346,9 @@ struct ls_zeros<1>
    static const std::size_t value = 0;
 };
 
-} //namespace detail 
-} //namespace intrusive 
-} //namespace boost 
+} //namespace detail
+} //namespace intrusive
+} //namespace boost
 
 #include <boost/intrusive/detail/config_end.hpp>
 

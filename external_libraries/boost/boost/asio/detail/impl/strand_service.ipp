@@ -38,7 +38,7 @@ struct strand_service::on_do_complete_exit
     impl_->mutex_.unlock();
 
     if (more_handlers)
-      owner_->post_immediate_completion(impl_);
+      owner_->post_private_immediate_completion(impl_);
   }
 };
 

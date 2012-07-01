@@ -27,7 +27,7 @@
 #include <boost/interprocess/detail/type_traits.hpp>
 
 namespace boost {
-namespace interprocess { 
+namespace interprocess {
 
 template <class PseudoReference>
 struct operator_arrow_proxy
@@ -77,7 +77,7 @@ class transform_iterator
    {}
 
    //Constructors
-   transform_iterator& operator++() 
+   transform_iterator& operator++()
    { increment();   return *this;   }
 
    transform_iterator operator++(int)
@@ -87,7 +87,7 @@ class transform_iterator
       return result;
    }
 
-   transform_iterator& operator--() 
+   transform_iterator& operator--()
    { decrement();   return *this;   }
 
    transform_iterator operator--(int)
@@ -186,7 +186,7 @@ make_transform_iterator(Iterator it, UnaryFunc fun)
    return transform_iterator<Iterator, UnaryFunc>(it, fun);
 }
 
-}  //namespace interprocess { 
+}  //namespace interprocess {
 }  //namespace boost {
 
 #include <boost/interprocess/detail/config_end.hpp>

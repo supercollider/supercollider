@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2011.
+// (C) Copyright Ion Gaztanaga 2005-2012.
 // (C) Copyright Gennaro Prota 2003 - 2004.
 //
 // Distributed under the Boost Software License, Version 1.0.
@@ -21,7 +21,7 @@
 #include "config_begin.hpp"
 #include <boost/container/detail/workaround.hpp>
 #include <boost/move/move.hpp>
-#include <boost/container/allocator/allocator_traits.hpp>
+#include <boost/container/allocator_traits.hpp>
 
 #ifdef BOOST_CONTAINER_PERFECT_FORWARDING
 #include <boost/container/detail/variadic_templates_tools.hpp>
@@ -33,7 +33,7 @@
 #include <iterator>
 
 namespace boost {
-namespace container { 
+namespace container {
 
 template <class T, class Difference = std::ptrdiff_t>
 class constant_iterator
@@ -50,9 +50,9 @@ class constant_iterator
    constant_iterator()
       :  m_ptr(0), m_num(0){}
 
-   constant_iterator& operator++() 
+   constant_iterator& operator++()
    { increment();   return *this;   }
-   
+  
    constant_iterator operator++(int)
    {
       constant_iterator result (*this);
@@ -60,9 +60,9 @@ class constant_iterator
       return result;
    }
 
-   constant_iterator& operator--() 
+   constant_iterator& operator--()
    { decrement();   return *this;   }
-   
+  
    constant_iterator operator--(int)
    {
       constant_iterator result (*this);
@@ -161,9 +161,9 @@ class default_construct_iterator
    default_construct_iterator()
       :  m_num(0){}
 
-   default_construct_iterator& operator++() 
+   default_construct_iterator& operator++()
    { increment();   return *this;   }
-   
+  
    default_construct_iterator operator++(int)
    {
       default_construct_iterator result (*this);
@@ -171,9 +171,9 @@ class default_construct_iterator
       return result;
    }
 
-   default_construct_iterator& operator--() 
+   default_construct_iterator& operator--()
    { decrement();   return *this;   }
-   
+  
    default_construct_iterator operator--(int)
    {
       default_construct_iterator result (*this);
@@ -247,7 +247,7 @@ class default_construct_iterator
    {  return other.m_num < m_num;   }
 
    const T & dereference() const
-   { 
+   {
       static T dummy;
       return dummy;
    }
@@ -273,9 +273,9 @@ class repeat_iterator
    repeat_iterator()
       :  m_ptr(0), m_num(0){}
 
-   this_type& operator++() 
+   this_type& operator++()
    { increment();   return *this;   }
-   
+  
    this_type operator++(int)
    {
       this_type result (*this);
@@ -283,9 +283,9 @@ class repeat_iterator
       return result;
    }
 
-   this_type& operator--() 
+   this_type& operator--()
    { increment();   return *this;   }
-   
+  
    this_type operator--(int)
    {
       this_type result (*this);
@@ -384,9 +384,9 @@ class emplace_iterator
    emplace_iterator()
       :  m_num(0), m_pe(0){}
 
-   this_type& operator++() 
+   this_type& operator++()
    { increment();   return *this;   }
-   
+  
    this_type operator++(int)
    {
       this_type result (*this);
@@ -394,9 +394,9 @@ class emplace_iterator
       return result;
    }
 
-   this_type& operator--() 
+   this_type& operator--()
    { decrement();   return *this;   }
-   
+  
    this_type operator--(int)
    {
       this_type result (*this);
@@ -475,7 +475,7 @@ class emplace_iterator
    {  return other.m_num < m_num;   }
 
    const T & dereference() const
-   { 
+   {
       static T dummy;
       return dummy;
    }
@@ -513,7 +513,7 @@ struct emplace_functor
    container_detail::tuple<Args&...> args_;
 };
 
-#else
+#else //#ifdef BOOST_CONTAINER_PERFECT_FORWARDING
 
 #define BOOST_PP_LOCAL_MACRO(n)                                                        \
    BOOST_PP_EXPR_IF(n, template <)                                                     \
@@ -522,16 +522,16 @@ struct emplace_functor
    struct BOOST_PP_CAT(BOOST_PP_CAT(emplace_functor, n), arg)                          \
    {                                                                                   \
       BOOST_PP_CAT(BOOST_PP_CAT(emplace_functor, n), arg)                              \
-         ( BOOST_PP_ENUM(n, BOOST_CONTAINER_PP_PARAM_LIST, _) )                       \
-      BOOST_PP_EXPR_IF(n, :) BOOST_PP_ENUM(n, BOOST_CONTAINER_PP_PARAM_INIT, _){}    \
+         ( BOOST_PP_ENUM(n, BOOST_CONTAINER_PP_PARAM_LIST, _) )                        \
+      BOOST_PP_EXPR_IF(n, :) BOOST_PP_ENUM(n, BOOST_CONTAINER_PP_PARAM_INIT, _){}      \
                                                                                        \
       template<class A, class T>                                                       \
       void operator()(A &a, T *ptr)                                                    \
       {                                                                                \
          allocator_traits<A>::construct                                                \
-            (a, ptr BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_MEMBER_FORWARD, _) );\
+            (a, ptr BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_MEMBER_FORWARD, _) ); \
       }                                                                                \
-      BOOST_PP_REPEAT(n, BOOST_CONTAINER_PP_PARAM_DEFINE, _)                         \
+      BOOST_PP_REPEAT(n, BOOST_CONTAINER_PP_PARAM_DEFINE, _)                           \
    };                                                                                  \
    //!
 #define BOOST_PP_LOCAL_LIMITS (0, BOOST_CONTAINER_MAX_CONSTRUCTOR_PARAMETERS)
@@ -539,7 +539,7 @@ struct emplace_functor
 
 #endif
 
-}  //namespace container { 
+}  //namespace container {
 }  //namespace boost {
 
 #include <boost/container/detail/config_end.hpp>

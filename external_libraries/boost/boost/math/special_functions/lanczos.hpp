@@ -34,6 +34,35 @@ namespace boost{ namespace math{ namespace lanczos{
 // http://my.fit.edu/~gabdo/gamma.txt and elaborated by Toth at
 // http://www.rskey.org/gamma.htm using NTL::RR at 1000 bit precision.
 //
+// Begin with a small helper to force initialization of constants prior
+// to main.  This makes the constant initialization thread safe, even
+// when called with a user-defined number type.
+//
+template <class Lanczos, class T>
+struct lanczos_initializer
+{
+   struct init
+   {
+      init()
+      {
+         T t(1);
+         Lanczos::lanczos_sum(t);
+         Lanczos::lanczos_sum_expG_scaled(t);
+         Lanczos::lanczos_sum_near_1(t);
+         Lanczos::lanczos_sum_near_2(t);
+         Lanczos::g();
+      }
+      void force_instantiate()const{}
+   };
+   static const init initializer;
+   static void force_instantiate()
+   {
+      initializer.force_instantiate();
+   }
+};
+template <class Lanczos, class T>
+typename lanczos_initializer<Lanczos, T>::init const lanczos_initializer<Lanczos, T>::initializer;
+//
 // Lanczos Coefficients for N=6 G=5.581
 // Max experimental error (with arbitary precision arithmetic) 9.516e-12
 // Generated with compiler: Microsoft Visual C++ version 8.0 on Win32 at Mar 23 2006
@@ -47,6 +76,7 @@ struct lanczos6 : public mpl::int_<35>
    template <class T>
    static T lanczos_sum(const T& z)
    {
+      lanczos_initializer<lanczos6, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T num[6] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 35, 8706.349592549009182288174442774377925882)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 35, 8523.650341121874633477483696775067709735)),
@@ -69,6 +99,7 @@ struct lanczos6 : public mpl::int_<35>
    template <class T>
    static T lanczos_sum_expG_scaled(const T& z)
    {
+      lanczos_initializer<lanczos6, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T num[6] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 35, 32.81244541029783471623665933780748627823)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 35, 32.12388941444332003446077108933558534361)),
@@ -92,6 +123,7 @@ struct lanczos6 : public mpl::int_<35>
    template<class T>
    static T lanczos_sum_near_1(const T& dz)
    {
+      lanczos_initializer<lanczos6, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T d[5] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 35, 2.044879010930422922760429926121241330235)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 35, -2.751366405578505366591317846728753993668)),
@@ -110,6 +142,7 @@ struct lanczos6 : public mpl::int_<35>
    template<class T>
    static T lanczos_sum_near_2(const T& dz)
    {
+      lanczos_initializer<lanczos6, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T d[5] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 35, 5.748142489536043490764289256167080091892)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 35, -7.734074268282457156081021756682138251825)),
@@ -143,6 +176,7 @@ struct lanczos11 : public mpl::int_<60>
    template <class T>
    static T lanczos_sum(const T& z)
    {
+      lanczos_initializer<lanczos11, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T num[11] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 60, 38474670393.31776828316099004518914832218)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 60, 36857665043.51950660081971227404959150474)),
@@ -175,6 +209,7 @@ struct lanczos11 : public mpl::int_<60>
    template <class T>
    static T lanczos_sum_expG_scaled(const T& z)
    {
+      lanczos_initializer<lanczos11, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T num[11] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 60, 709811.662581657956893540610814842699825)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 60, 679979.847415722640161734319823103390728)),
@@ -208,6 +243,7 @@ struct lanczos11 : public mpl::int_<60>
    template<class T>
    static T lanczos_sum_near_1(const T& dz)
    {
+      lanczos_initializer<lanczos11, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T d[10] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 60, 4.005853070677940377969080796551266387954)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 60, -13.17044315127646469834125159673527183164)),
@@ -231,6 +267,7 @@ struct lanczos11 : public mpl::int_<60>
    template<class T>
    static T lanczos_sum_near_2(const T& dz)
    {
+      lanczos_initializer<lanczos11, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T d[10] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 60, 19.05889633808148715159575716844556056056)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 60, -62.66183664701721716960978577959655644762)),
@@ -269,6 +306,7 @@ struct lanczos13 : public mpl::int_<72>
    template <class T>
    static T lanczos_sum(const T& z)
    {
+      lanczos_initializer<lanczos13, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T num[13] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 72, 44012138428004.60895436261759919070125699)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 72, 41590453358593.20051581730723108131357995)),
@@ -305,6 +343,7 @@ struct lanczos13 : public mpl::int_<72>
    template <class T>
    static T lanczos_sum_expG_scaled(const T& z)
    {
+      lanczos_initializer<lanczos13, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T num[13] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 72, 86091529.53418537217994842267760536134841)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 72, 81354505.17858011242874285785316135398567)),
@@ -342,6 +381,7 @@ struct lanczos13 : public mpl::int_<72>
    template<class T>
    static T lanczos_sum_near_1(const T& dz)
    {
+      lanczos_initializer<lanczos13, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T d[12] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 72, 4.832115561461656947793029596285626840312)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 72, -19.86441536140337740383120735104359034688)),
@@ -367,6 +407,7 @@ struct lanczos13 : public mpl::int_<72>
    template<class T>
    static T lanczos_sum_near_2(const T& dz)
    {
+      lanczos_initializer<lanczos13, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T d[12] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 72, 26.96979819614830698367887026728396466395)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 72, -110.8705424709385114023884328797900204863)),
@@ -382,7 +423,7 @@ struct lanczos13 : public mpl::int_<72>
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 72, -0.9685385411006641478305219367315965391289e-9)),
       };
       T result = 0;
-      T z = z = 2;
+      T z = dz + 2;
       for(unsigned k = 1; k <= sizeof(d)/sizeof(d[0]); ++k)
       {
          result += (-d[k-1]*dz)/(z + k*z + k*k - 1);
@@ -407,6 +448,7 @@ struct lanczos22 : public mpl::int_<120>
    template <class T>
    static T lanczos_sum(const T& z)
    {
+      lanczos_initializer<lanczos22, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T num[22] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 120, 46198410803245094237463011094.12173081986)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 120, 43735859291852324413622037436.321513777)),
@@ -461,6 +503,7 @@ struct lanczos22 : public mpl::int_<120>
    template <class T>
    static T lanczos_sum_expG_scaled(const T& z)
    {
+      lanczos_initializer<lanczos22, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T num[22] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 120, 6939996264376682180.277485395074954356211)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 120, 6570067992110214451.87201438870245659384)),
@@ -516,6 +559,7 @@ struct lanczos22 : public mpl::int_<120>
    template<class T>
    static T lanczos_sum_near_1(const T& dz)
    {
+      lanczos_initializer<lanczos22, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T d[21] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 120, 8.318998691953337183034781139546384476554)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 120, -63.15415991415959158214140353299240638675)),
@@ -550,6 +594,7 @@ struct lanczos22 : public mpl::int_<120>
    template<class T>
    static T lanczos_sum_near_2(const T& dz)
    {
+      lanczos_initializer<lanczos22, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T d[21] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 120, 75.39272007105208086018421070699575462226)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 120, -572.3481967049935412452681346759966390319)),
@@ -830,6 +875,7 @@ struct lanczos17m64 : public mpl::int_<64>
    template <class T>
    static T lanczos_sum(const T& z)
    {
+      lanczos_initializer<lanczos17m64, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T num[17] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, 553681095419291969.2230556393350368550504)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, 731918863887667017.2511276782146694632234)),
@@ -874,6 +920,7 @@ struct lanczos17m64 : public mpl::int_<64>
    template <class T>
    static T lanczos_sum_expG_scaled(const T& z)
    {
+      lanczos_initializer<lanczos17m64, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T num[17] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, 2715894658327.717377557655133124376674911)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, 3590179526097.912105038525528721129550434)),
@@ -919,6 +966,7 @@ struct lanczos17m64 : public mpl::int_<64>
    template<class T>
    static T lanczos_sum_near_1(const T& dz)
    {
+      lanczos_initializer<lanczos17m64, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T d[16] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, 4.493645054286536365763334986866616581265)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, -16.95716370392468543800733966378143997694)),
@@ -948,6 +996,7 @@ struct lanczos17m64 : public mpl::int_<64>
    template<class T>
    static T lanczos_sum_near_2(const T& dz)
    {
+      lanczos_initializer<lanczos17m64, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T d[16] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, 23.56409085052261327114594781581930373708)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, -88.92116338946308797946237246006238652361)),
@@ -991,6 +1040,7 @@ struct lanczos24m113 : public mpl::int_<113>
    template <class T>
    static T lanczos_sum(const T& z)
    {
+      lanczos_initializer<lanczos24m113, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T num[24] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 113, 2029889364934367661624137213253.22102954656825019111612712252027267955023987678816620961507)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 113, 2338599599286656537526273232565.2727349714338768161421882478417543004440597874814359063158)),
@@ -1049,6 +1099,7 @@ struct lanczos24m113 : public mpl::int_<113>
    template <class T>
    static T lanczos_sum_expG_scaled(const T& z)
    {
+      lanczos_initializer<lanczos24m113, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T num[24] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 113, 3035162425359883494754.02878223286972654682199012688209026810841953293372712802258398358538)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 113, 3496756894406430103600.16057175075063458536101374170860226963245118484234495645518505519827)),
@@ -1108,6 +1159,7 @@ struct lanczos24m113 : public mpl::int_<113>
    template<class T>
    static T lanczos_sum_near_1(const T& dz)
    {
+      lanczos_initializer<lanczos24m113, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T d[23] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 113, 7.4734083002469026177867421609938203388868806387315406134072298925733950040583068760685908)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 113, -50.4225805042247530267317342133388132970816607563062253708655085754357843064134941138154171)),
@@ -1144,6 +1196,7 @@ struct lanczos24m113 : public mpl::int_<113>
    template<class T>
    static T lanczos_sum_near_2(const T& dz)
    {
+      lanczos_initializer<lanczos24m113, T>::force_instantiate(); // Ensure our constants get initialized before main()
       static const T d[23] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 113, 61.4165001061101455341808888883960361969557848005400286332291451422461117307237198559485365)),
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 113, -414.372973678657049667308134761613915623353625332248315105320470271523320700386200587519147)),

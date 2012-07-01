@@ -10,7 +10,7 @@
 #include <boost/fusion/support/detail/access.hpp>
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/add_const.hpp>
-#include <boost/mpl/eval_if.hpp>
+#include <boost/mpl/if.hpp>
 #include <boost/mpl/bool.hpp>
 
 namespace boost { namespace fusion
@@ -93,15 +93,15 @@ namespace boost { namespace fusion
             template <typename Sequence, typename N>
             struct apply
             {
-                typedef detail::cons_deref<
-                    typename detail::cons_advance<Sequence, N::value>::type>
+                typedef typename detail::cons_deref<
+                    typename detail::cons_advance<Sequence, N::value>::type>::type
                 element;
 
                 typedef typename
-                    mpl::eval_if<
+                    mpl::if_<
                         is_const<Sequence>
-                      , detail::cref_result<element>
-                      , detail::ref_result<element>
+                      , typename detail::cref_result<element>::type
+                      , typename detail::ref_result<element>::type
                     >::type
                 type;
 

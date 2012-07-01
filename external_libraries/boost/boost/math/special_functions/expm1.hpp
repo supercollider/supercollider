@@ -65,34 +65,37 @@ namespace detail
      expm1_series& operator=(const expm1_series&);
   };
 
-template <class T, bool b = boost::is_pod<T>::value>
-struct expm1_init_on_startup
+template <class T, class Policy, class tag>
+struct expm1_initializer
 {
    struct init
    {
       init()
       {
-         boost::math::expm1(T(0.5f));
+         do_init(tag());
       }
-      void do_nothing()const{}
+      template <int N>
+      static void do_init(const mpl::int_<N>&){}
+      static void do_init(const mpl::int_<64>&)
+      {
+         expm1(T(0.5));
+      }
+      static void do_init(const mpl::int_<113>&)
+      {
+         expm1(T(0.5));
+      }
+      void force_instantiate()const{}
    };
-
-   static void do_nothing()
-   {
-      initializer.do_nothing();
-   }
-
    static const init initializer;
+   static void force_instantiate()
+   {
+      initializer.force_instantiate();
+   }
 };
 
-template <class T, bool b>
-const typename expm1_init_on_startup<T, b>::init expm1_init_on_startup<T, b>::initializer;
+template <class T, class Policy, class tag>
+const typename expm1_initializer<T, Policy, tag>::init expm1_initializer<T, Policy, tag>::initializer;
 
-template <class T>
-struct expm1_init_on_startup<T, true>
-{
-   static void do_nothing(){}
-};
 //
 // Algorithm expm1 is part of C99, but is not yet provided by many compilers.
 //
@@ -133,8 +136,6 @@ T expm1_imp(T x, const mpl::int_<53>&, const P& pol)
 {
    BOOST_MATH_STD_USING
 
-   expm1_init_on_startup<T>::do_nothing();
-
    T a = fabs(x);
    if(a > T(0.5L))
    {
@@ -161,8 +162,6 @@ template <class T, class P>
 T expm1_imp(T x, const mpl::int_<64>&, const P& pol)
 {
    BOOST_MATH_STD_USING
-
-   expm1_init_on_startup<T>::do_nothing();
 
    T a = fabs(x);
    if(a > T(0.5L))
@@ -206,8 +205,6 @@ template <class T, class P>
 T expm1_imp(T x, const mpl::int_<113>&, const P& pol)
 {
    BOOST_MATH_STD_USING
-
-   expm1_init_on_startup<T>::do_nothing();
 
    T a = fabs(x);
    if(a > T(0.5L))
@@ -287,6 +284,8 @@ inline typename tools::promote_args<T>::type expm1(T x, const Policy& /* pol */)
       >::type
    >::type tag_type;
 
+   detail::expm1_initializer<value_type, forwarding_policy, tag_type>::force_instantiate();
+   
    return policies::checked_narrowing_cast<result_type, forwarding_policy>(detail::expm1_imp(
       static_cast<value_type>(x),
       tag_type(), forwarding_policy()), "boost::math::expm1<%1%>(%1%)");

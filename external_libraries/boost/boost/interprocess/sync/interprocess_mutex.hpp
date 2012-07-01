@@ -31,9 +31,9 @@
    #include <boost/interprocess/sync/posix/mutex.hpp>
    #define BOOST_INTERPROCESS_USE_POSIX
 //Experimental...
-//#elif !defined(BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION) && defined (BOOST_INTERPROCESS_WINDOWS)
-//   #include <boost/interprocess/sync/windows/mutex.hpp>
-//   #define BOOST_INTERPROCESS_USE_WINDOWS
+#elif !defined(BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION) && defined (BOOST_INTERPROCESS_WINDOWS)
+   #include <boost/interprocess/sync/windows/mutex.hpp>
+   #define BOOST_INTERPROCESS_USE_WINDOWS
 #elif !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    #include <boost/interprocess/sync/spin/mutex.hpp>
    #define BOOST_INTERPROCESS_USE_GENERIC_EMULATION
@@ -61,7 +61,7 @@ namespace interprocess {
 
 class interprocess_condition;
 
-//!Wraps a interprocess_mutex that can be placed in shared memory and can be 
+//!Wraps a interprocess_mutex that can be placed in shared memory and can be
 //!shared between processes. Allows timed lock tries
 class interprocess_mutex
 {
@@ -98,9 +98,9 @@ class interprocess_mutex
    //!Effects: The calling thread will try to obtain exclusive ownership of the
    //!   mutex if it can do so in until the specified time is reached. If the
    //!   mutex supports recursive locking, the mutex must be unlocked the same
-   //!   number of times it is locked. 
+   //!   number of times it is locked.
    //!Returns: If the thread acquires ownership of the mutex, returns true, if
-   //!   the timeout expires returns false. 
+   //!   the timeout expires returns false.
    //!Throws: interprocess_exception on error.
    bool timed_lock(const boost::posix_time::ptime &abs_time);
 

@@ -19,8 +19,8 @@
 #include <boost/interprocess/detail/workaround.hpp>
 
 #include <pthread.h>
-#include <errno.h>   
-#include <boost/interprocess/exceptions.hpp>   
+#include <errno.h>  
+#include <boost/interprocess/exceptions.hpp>  
 
 namespace boost {
 namespace interprocess {
@@ -29,7 +29,7 @@ namespace ipcdetail{
    #if defined BOOST_INTERPROCESS_POSIX_PROCESS_SHARED
 
    //!Makes pthread_mutexattr_t cleanup easy when using exceptions
-   struct mutexattr_wrapper 
+   struct mutexattr_wrapper
    {
       //!Constructor
       mutexattr_wrapper(bool recursive = false)
@@ -51,7 +51,7 @@ namespace ipcdetail{
    };
 
    //!Makes pthread_condattr_t cleanup easy when using exceptions
-   struct condattr_wrapper 
+   struct condattr_wrapper
    {
       //!Constructor
       condattr_wrapper()
@@ -86,7 +86,7 @@ namespace ipcdetail{
 
       void release() {mp_mut = 0; }
 
-    private:     
+    private:    
       pthread_mutex_t *mp_mut;
    };
 
@@ -94,7 +94,7 @@ namespace ipcdetail{
    class condition_initializer
    {
     public:
-      condition_initializer(pthread_cond_t &cond, pthread_condattr_t &cond_attr) 
+      condition_initializer(pthread_cond_t &cond, pthread_condattr_t &cond_attr)
       : mp_cond(&cond)
       {
          if(pthread_cond_init(mp_cond, &cond_attr)!= 0)
@@ -105,7 +105,7 @@ namespace ipcdetail{
 
       void release()       { mp_cond = 0; }
 
-    private:   
+    private:  
       pthread_cond_t *mp_cond;
    };
 
@@ -114,7 +114,7 @@ namespace ipcdetail{
    #if defined(BOOST_INTERPROCESS_POSIX_BARRIERS) && defined(BOOST_INTERPROCESS_POSIX_PROCESS_SHARED)
 
    //!Makes pthread_barrierattr_t cleanup easy when using exceptions
-   struct barrierattr_wrapper 
+   struct barrierattr_wrapper
    {
       //!Constructor
       barrierattr_wrapper()
@@ -138,8 +138,8 @@ namespace ipcdetail{
    {
     public:
       //!Constructor. Takes barrier attributes to initialize the barrier
-      barrier_initializer(pthread_barrier_t &mut, 
-                          pthread_barrierattr_t &mut_attr, 
+      barrier_initializer(pthread_barrier_t &mut,
+                          pthread_barrierattr_t &mut_attr,
                           int count)
       : mp_barrier(&mut)
       {
@@ -151,7 +151,7 @@ namespace ipcdetail{
 
       void release() {mp_barrier = 0; }
 
-    private:     
+    private:    
       pthread_barrier_t *mp_barrier;
    };
 

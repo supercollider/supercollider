@@ -135,6 +135,22 @@ public:
   BOOST_ASIO_DECL void post_deferred_completions(
       op_queue<win_iocp_operation>& ops);
 
+  // Request invocation of the given operation using the thread-private queue
+  // and return immediately. Assumes that work_started() has not yet been
+  // called for the operation.
+  void post_private_immediate_completion(win_iocp_operation* op)
+  {
+    post_immediate_completion(op);
+  }
+
+  // Request invocation of the given operation using the thread-private queue
+  // and return immediately. Assumes that work_started() was previously called
+  // for the operation.
+  void post_private_deferred_completion(win_iocp_operation* op)
+  {
+    post_deferred_completion(op);
+  }
+
   // Process unfinished operations as part of a shutdown_service operation.
   // Assumes that work_started() was previously called for the operations.
   BOOST_ASIO_DECL void abandon_operations(op_queue<operation>& ops);

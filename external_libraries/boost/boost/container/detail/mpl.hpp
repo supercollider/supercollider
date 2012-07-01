@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2011.
+// (C) Copyright Ion Gaztanaga 2005-2012.
 //
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -20,7 +20,7 @@
 #include <cstddef>
 
 namespace boost {
-namespace container { 
+namespace container {
 namespace container_detail {
 
 template <class T, T val>
@@ -109,24 +109,24 @@ struct if_
 
 
 template <class Pair>
-struct select1st 
-//   : public std::unary_function<Pair, typename Pair::first_type> 
+struct select1st
+//   : public std::unary_function<Pair, typename Pair::first_type>
 {
    template<class OtherPair>
-   const typename Pair::first_type& operator()(const OtherPair& x) const 
+   const typename Pair::first_type& operator()(const OtherPair& x) const
    {  return x.first;   }
 
-   const typename Pair::first_type& operator()(const typename Pair::first_type& x) const 
+   const typename Pair::first_type& operator()(const typename Pair::first_type& x) const
    {  return x;   }
 };
 
 // identity is an extension: it is not part of the standard.
 template <class T>
-struct identity 
-//   : public std::unary_function<T,T> 
+struct identity
+//   : public std::unary_function<T,T>
 {
    typedef T type;
-   const T& operator()(const T& x) const 
+   const T& operator()(const T& x) const
    { return x; }
 };
 
@@ -152,8 +152,8 @@ template <typename T> struct unvoid { typedef T type; };
 template <> struct unvoid<void> { struct type { }; };
 template <> struct unvoid<const void> { struct type { }; };
 
-}  //namespace container_detail { 
-}  //namespace container { 
+}  //namespace container_detail {
+}  //namespace container {
 }  //namespace boost {
 
 #endif   //#ifndef BOOST_CONTAINER_CONTAINER_DETAIL_MPL_HPP

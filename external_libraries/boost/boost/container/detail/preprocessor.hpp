@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2008-2011. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2008-2012. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -27,7 +27,7 @@
 //#error "This file is not needed when perfect forwarding is available"
 #endif   //BOOST_CONTAINER_PERFECT_FORWARDING
 
-#include <boost/preprocessor/iteration/local.hpp> 
+#include <boost/preprocessor/iteration/local.hpp>
 #include <boost/preprocessor/punctuation/paren_if.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 #include <boost/preprocessor/control/expr_if.hpp>
@@ -62,6 +62,10 @@
    //!
 #endif   //#ifndef BOOST_NO_RVALUE_REFERENCES
 
+#define BOOST_CONTAINER_PP_CONST_REF_PARAM_LIST_Q(z, n, Data) \
+const BOOST_PP_CAT(Q, n) & BOOST_PP_CAT(q, n) \
+//!
+
 #ifndef BOOST_NO_RVALUE_REFERENCES
    #define BOOST_CONTAINER_PP_PARAM(U, u) \
    U && u \
@@ -74,17 +78,16 @@
 
 #ifndef BOOST_NO_RVALUE_REFERENCES
 
-   #ifdef BOOST_MOVE_OLD_RVALUE_REF_BINDING_RULES
+   #if defined(BOOST_MOVE_MSVC_10_MEMBER_RVALUE_REF_BUG)
 
-      #define BOOST_CONTAINER_PP_PARAM_INIT(z, n, data) \
-      BOOST_PP_CAT(m_p, n) (boost::forward< BOOST_PP_CAT(P, n) >( BOOST_PP_CAT(p, n) ))           \
-      //!
+   #define BOOST_CONTAINER_PP_PARAM_INIT(z, n, data) \
+   BOOST_PP_CAT(m_p, n) (static_cast<BOOST_PP_CAT(P, n)>( BOOST_PP_CAT(p, n) ))           \
 
-   #else    //BOOST_MOVE_OLD_RVALUE_REF_BINDING_RULES
+   #else //#if defined(BOOST_MOVE_MSVC_10_MEMBER_RVALUE_REF_BUG)
 
-      #define BOOST_CONTAINER_PP_PARAM_INIT(z, n, data) \
-      BOOST_PP_CAT(m_p, n) (static_cast<BOOST_PP_CAT(P, n)>( BOOST_PP_CAT(p, n) ))           \
-      //!
+   #define BOOST_CONTAINER_PP_PARAM_INIT(z, n, data) \
+   BOOST_PP_CAT(m_p, n) (::boost::forward< BOOST_PP_CAT(P, n) >( BOOST_PP_CAT(p, n) ))           \
+   //!
 
    #endif   //BOOST_MOVE_OLD_RVALUE_REF_BINDING_RULES
 
@@ -127,7 +130,7 @@
 #else //!defined(BOOST_NO_RVALUE_REFERENCES) && defined(BOOST_MOVE_MSVC_10_MEMBER_RVALUE_REF_BUG)
 
    #define BOOST_CONTAINER_PP_MEMBER_FORWARD(z, n, data) \
-   boost::forward< BOOST_PP_CAT(P, n) >( BOOST_PP_CAT(this->m_p, n) ) \
+   ::boost::forward< BOOST_PP_CAT(P, n) >( BOOST_PP_CAT(this->m_p, n) ) \
    //!
 
 #endif   //!defined(BOOST_NO_RVALUE_REFERENCES) && defined(BOOST_MOVE_MSVC_10_MEMBER_RVALUE_REF_BUG)
@@ -140,11 +143,11 @@
 
 
 #define BOOST_CONTAINER_PP_PARAM_FORWARD(z, n, data) \
-boost::forward< BOOST_PP_CAT(P, n) >( BOOST_PP_CAT(p, n) ) \
+::boost::forward< BOOST_PP_CAT(P, n) >( BOOST_PP_CAT(p, n) ) \
 //!
 
 #define BOOST_CONTAINER_PP_DECLVAL(z, n, data) \
-boost::move_detail::declval< BOOST_PP_CAT(P, n) >() \
+::boost::move_detail::declval< BOOST_PP_CAT(P, n) >() \
 //!
 
 #define BOOST_CONTAINER_PP_MEMBER_IT_FORWARD(z, n, data) \
@@ -152,7 +155,11 @@ BOOST_PP_CAT(*this->m_p, n) \
 //!
 
 #define BOOST_CONTAINER_PP_TEMPLATE_PARAM_VOID_DEFAULT(z, n, data)   \
-  BOOST_PP_CAT(class P, n) = void                                      \
+  BOOST_PP_CAT(class P, n) = void                                    \
+//!
+
+#define BOOST_CONTAINER_PP_TEMPLATE_PARAM_WITH_DEFAULT(z, n, default_type) \
+  BOOST_PP_CAT(class P, n) = default_type                                  \
 //!
 
 #define BOOST_CONTAINER_PP_STATIC_PARAM_REF_DECLARE(z, n, data) \

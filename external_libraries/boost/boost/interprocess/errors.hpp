@@ -11,7 +11,7 @@
 //////////////////////////////////////////////////////////////////////////////
 //
 //  Copyright (C) 2002 Beman Dawes
-//  Copyright (C) 2001 Dietmar Kuehl 
+//  Copyright (C) 2001 Dietmar Kuehl
 //  Use, modification, and distribution is subject to the Boost Software
 //  License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy
 //  at http://www.boost.org/LICENSE_1_0.txt)
@@ -64,16 +64,16 @@ inline int system_error_code() // artifact of POSIX and WINDOWS error reporting
 inline void fill_system_message(int sys_err_code, std::string &str)
 {
    void *lpMsgBuf;
-   winapi::format_message( 
-      winapi::format_message_allocate_buffer | 
-      winapi::format_message_from_system | 
+   winapi::format_message(
+      winapi::format_message_allocate_buffer |
+      winapi::format_message_from_system |
       winapi::format_message_ignore_inserts,
       0,
       sys_err_code,
       winapi::make_lang_id(winapi::lang_neutral, winapi::sublang_default), // Default language
       reinterpret_cast<char *>(&lpMsgBuf),
       0,
-      0 
+      0
    );
    str += static_cast<const char*>(lpMsgBuf);
    winapi::local_free( lpMsgBuf ); // free the buffer
@@ -123,7 +123,7 @@ typedef int    native_error_t;
 struct ec_xlate
 {
    native_error_t sys_ec;
-   error_code_t   ec; 
+   error_code_t   ec;
 };
 
 static const ec_xlate ec_table[] =
@@ -183,9 +183,9 @@ static const ec_xlate ec_table[] =
 };
 
 inline error_code_t lookup_error(native_error_t err)
-{  
+{ 
    const ec_xlate *cur  = &ec_table[0],
-                  *end  = cur + sizeof(ec_table)/sizeof(ec_xlate); 
+                  *end  = cur + sizeof(ec_table)/sizeof(ec_xlate);
    for  (;cur != end; ++cur ){
       if ( err == cur->sys_ec ) return cur->ec;
    }

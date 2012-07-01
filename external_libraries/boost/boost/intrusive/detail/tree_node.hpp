@@ -66,7 +66,7 @@ struct tree_node_traits
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 
-// tree_iterator provides some basic functions for a 
+// tree_iterator provides some basic functions for a
 // node oriented bidirectional iterator:
 template<class Container, bool IsConst>
 class tree_iterator
@@ -86,7 +86,7 @@ class tree_iterator
    typedef typename node_traits::node_ptr          node_ptr;
    typedef typename pointer_traits<node_ptr>::template
       rebind_pointer<void>::type                   void_pointer;
-   static const bool store_container_ptr = 
+   static const bool store_container_ptr =
       detail::store_cont_ptr_on_it<Container>::value;
 
    public:
@@ -114,12 +114,12 @@ class tree_iterator
    {  members_.nodeptr_ = nodeptr;  return static_cast<tree_iterator&>(*this);  }
 
    public:
-   tree_iterator& operator++() 
-   { 
-      members_.nodeptr_ = node_algorithms::next_node(members_.nodeptr_); 
-      return static_cast<tree_iterator&> (*this); 
+   tree_iterator& operator++()
+   {
+      members_.nodeptr_ = node_algorithms::next_node(members_.nodeptr_);
+      return static_cast<tree_iterator&> (*this);
    }
-   
+  
    tree_iterator operator++(int)
    {
       tree_iterator result (*this);
@@ -127,12 +127,12 @@ class tree_iterator
       return result;
    }
 
-   tree_iterator& operator--() 
-   { 
-      members_.nodeptr_ = node_algorithms::prev_node(members_.nodeptr_); 
-      return static_cast<tree_iterator&> (*this); 
+   tree_iterator& operator--()
+   {
+      members_.nodeptr_ = node_algorithms::prev_node(members_.nodeptr_);
+      return static_cast<tree_iterator&> (*this);
    }
-   
+  
    tree_iterator operator--(int)
    {
       tree_iterator result (*this);
@@ -182,8 +182,8 @@ class tree_iterator
    } members_;
 };
 
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #include <boost/intrusive/detail/config_end.hpp>
 

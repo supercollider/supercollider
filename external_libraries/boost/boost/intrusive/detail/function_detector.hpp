@@ -15,7 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Copyright 2007 Alexandre Courpron
 //
-// Permission to use, copy, modify, redistribute and sell this software, 
+// Permission to use, copy, modify, redistribute and sell this software,
 // provided that this copyright notice appears on all copies of the software.
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -74,7 +74,7 @@ namespace function_detector {
    public : \
       static const int check = NotFound + (sizeof(Test<T>(0, 0)) - sizeof(NotFoundType));\
    };\
-}}} //namespace boost::intrusive::function_detector { 
+}}} //namespace boost::intrusive::function_detector {
 
 #define BOOST_INTRUSIVE_DETECT_FUNCTION(Class, InstantiationKey, ReturnType, Identifier, Params) \
     ::boost::intrusive::function_detector::DetectMember_##InstantiationKey_##Identifier< Class,\

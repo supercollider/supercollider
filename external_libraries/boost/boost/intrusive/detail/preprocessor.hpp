@@ -18,7 +18,7 @@
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/detail/workaround.hpp>
 
-#include <boost/preprocessor/iteration/local.hpp> 
+#include <boost/preprocessor/iteration/local.hpp>
 #include <boost/preprocessor/punctuation/paren_if.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 #include <boost/preprocessor/control/expr_if.hpp>

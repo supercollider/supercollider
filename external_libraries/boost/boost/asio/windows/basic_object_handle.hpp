@@ -125,7 +125,7 @@ public:
   void wait()
   {
     boost::system::error_code ec;
-    this->service.wait(this->implementation, ec);
+    this->get_service().wait(this->get_implementation(), ec);
     boost::asio::detail::throw_error(ec, "wait");
   }
 
@@ -139,7 +139,7 @@ public:
    */
   void wait(boost::system::error_code& ec)
   {
-    this->service.wait(this->implementation, ec);
+    this->get_service().wait(this->get_implementation(), ec);
   }
 
   /// Start an asynchronous wait on the object handle.
@@ -161,7 +161,7 @@ public:
   template <typename WaitHandler>
   void async_wait(WaitHandler handler)
   {
-    this->service.async_wait(this->implementation, handler);
+    this->get_service().async_wait(this->get_implementation(), handler);
   }
 };
 

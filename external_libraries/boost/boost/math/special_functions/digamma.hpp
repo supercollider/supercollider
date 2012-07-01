@@ -407,6 +407,31 @@ T digamma_imp(T x, const Tag* t, const Policy& pol)
    return result;
 }
 
+//
+// Initializer: ensure all our constants are initialized prior to the first call of main:
+//
+template <class T, class Policy>
+struct digamma_initializer
+{
+   struct init
+   {
+      init()
+      {
+         boost::math::digamma(T(1.5), Policy());
+         boost::math::digamma(T(500), Policy());
+      }
+      void force_instantiate()const{}
+   };
+   static const init initializer;
+   static void force_instantiate()
+   {
+      initializer.force_instantiate();
+   }
+};
+
+template <class T, class Policy>
+const typename digamma_initializer<T, Policy>::init digamma_initializer<T, Policy>::initializer;
+
 } // namespace detail
 
 template <class T, class Policy>
@@ -432,6 +457,9 @@ inline typename tools::promote_args<T>::type
          >::type
       >::type
    >::type tag_type;
+
+   // Force initialization of constants:
+   detail::digamma_initializer<result_type, Policy>::force_instantiate();
 
    return policies::checked_narrowing_cast<result_type, Policy>(detail::digamma_imp(
       static_cast<value_type>(x),

@@ -22,9 +22,39 @@
 namespace boost { namespace math { namespace detail{
 
 template <typename T, typename Policy>
+T bessel_k0(T x, const Policy&);
+
+template <class T, class Policy>
+struct bessel_k0_initializer
+{
+   struct init
+   {
+      init()
+      {
+         do_init();
+      }
+      static void do_init()
+      {
+         bessel_k0(T(1), Policy());
+      }
+      void force_instantiate()const{}
+   };
+   static const init initializer;
+   static void force_instantiate()
+   {
+      initializer.force_instantiate();
+   }
+};
+
+template <class T, class Policy>
+const typename bessel_k0_initializer<T, Policy>::init bessel_k0_initializer<T, Policy>::initializer;
+
+template <typename T, typename Policy>
 T bessel_k0(T x, const Policy& pol)
 {
     BOOST_MATH_INSTRUMENT_CODE(x);
+
+    bessel_k0_initializer<T, Policy>::force_instantiate();
 
     static const T P1[] = {
          static_cast<T>(BOOST_MATH_BIG_CONSTANT(T, 64, 2.4708152720399552679e+03)),
