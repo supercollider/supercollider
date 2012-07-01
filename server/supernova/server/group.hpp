@@ -109,6 +109,18 @@ public:
         return false;
     }
 
+    bool has_parallel_group_children(void) const
+    {
+        if (is_parallel())
+            return true;
+
+        for (group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
+            if (it->is_parallel())
+                return true;
+
+        return false;
+    }
+
     std::size_t child_count(void) const
     {
         assert(child_group_count == child_groups.size());

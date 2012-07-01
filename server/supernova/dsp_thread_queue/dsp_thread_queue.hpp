@@ -265,8 +265,8 @@ public:
 #endif
 
     /** preallocate node_count nodes */
-    dsp_thread_queue(std::size_t node_count):
-        total_node_count(0)
+    dsp_thread_queue(std::size_t node_count, bool has_parallelism = true):
+        total_node_count(0), has_parallelism_(has_parallelism)
     {
         initially_runnable_items.reserve(node_count);
         queue_items = item_allocator().allocate(node_count * sizeof(dsp_thread_queue_item));
@@ -309,10 +309,16 @@ public:
         return total_node_count;
     }
 
+    bool has_parallelism(void) const
+    {
+        return has_parallelism_;
+    }
+
 private:
     node_count_t total_node_count;          /* total number of nodes */
     item_vector_t initially_runnable_items; /* nodes without precedessor */
     dsp_thread_queue_item * queue_items;    /* all nodes */
+    const bool has_parallelism_;
 
     friend class dsp_queue_interpreter<runnable, Alloc>;
 };
@@ -390,12 +396,15 @@ public:
         queue->dump_queue();
 #endif
 
-        thread_count_t thread_number =
-            std::min(thread_count_t(std::min(total_node_count(),
-                                             node_count_t(std::numeric_limits<thread_count_t>::max()))),
-                     thread_count);
+        if (queue->has_parallelism()) {
+            thread_count_t thread_number =
+                    std::min(thread_count_t(std::min(total_node_count(),
+                                                     node_count_t(std::numeric_limits<thread_count_t>::max()))),
+                             thread_count);
 
-        used_helper_threads = thread_number - 1; /* this thread is not waked up */
+            used_helper_threads = thread_number - 1; /* this thread is not waked up */
+        } else
+            used_helper_threads = 0;
         return ret;
     }
 
@@ -414,12 +423,15 @@ public:
         queue->dump_queue();
 #endif
 
-        thread_count_t thread_number =
-            std::min(thread_count_t(std::min(total_node_count(),
-                                             node_count_t(std::numeric_limits<thread_count_t>::max()))),
-                     thread_count);
+        if (queue->has_parallelism()) {
+            thread_count_t thread_number =
+                    std::min(thread_count_t(std::min(total_node_count(),
+                                                     node_count_t(std::numeric_limits<thread_count_t>::max()))),
+                             thread_count);
 
-        used_helper_threads = thread_number - 1; /* this thread is not waked up */
+            used_helper_threads = thread_number - 1; /* this thread is not waked up */
+        } else
+            used_helper_threads = 0;
         return ret;
     }
 #endif
