@@ -26,8 +26,7 @@
 
 #include "dsp_thread_queue/dsp_thread_queue.hpp"
 
-namespace nova
-{
+namespace nova {
 
 void node_graph::add_node(server_node * n, node_position_constraint const & constraint)
 {

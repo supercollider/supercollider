@@ -26,8 +26,8 @@ extern "C"
 
 #include <exception>
 #include <cstring>
+#include <array>
 
-#include <boost/array.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/mpl/modulus.hpp>
 #include <boost/mpl/arithmetic.hpp>
@@ -35,11 +35,9 @@ extern "C"
 
 #include "branch_hints.hpp"
 
-namespace nova
-{
+namespace nova {
 
-namespace detail
-{
+namespace detail {
 
 #ifdef __GNUC__
 template <std::size_t bytes>
@@ -114,7 +112,7 @@ class tl_allocator
             destroy_memory_pool(pool.begin());
         }
 
-        boost::array<long, poolsize> pool;
+        std::array<long, poolsize> pool;
     };
 
 public:

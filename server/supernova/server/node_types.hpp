@@ -28,8 +28,7 @@
 #include "synth_prototype.hpp"
 #include "utilities/static_pool.hpp"
 
-namespace nova
-{
+namespace nova {
 
 class server_node;
 

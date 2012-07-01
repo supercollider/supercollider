@@ -20,14 +20,12 @@
 #define DSP_CONTEXT_HPP
 
 #include <boost/cstdint.hpp>
-#include <boost/array.hpp>
+#include <array>
 #include <boost/lockfree/detail/prefix.hpp>
 
 #include "sample_types.hpp"
 
-namespace nova
-{
-
+namespace nova {
 
 /** \brief struct holding thread-local resources
  *
@@ -39,7 +37,7 @@ struct BOOST_LOCKFREE_CACHELINE_ALIGNMENT thread_local_resource
 };
 
 static const int max_threads = 2;
-extern boost::array<thread_local_resource, max_threads> thread_local_resources;
+extern std::array<thread_local_resource, max_threads> thread_local_resources;
 
 /** \brief dsp context
  *  */

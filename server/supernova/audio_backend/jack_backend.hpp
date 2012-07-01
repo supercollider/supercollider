@@ -23,8 +23,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/lexical_cast.hpp>
-
 #include <jack/jack.h>
 #include <jack/thread.h>
 
@@ -33,8 +31,7 @@
 #include "audio_backend_common.hpp"
 #include "cpu_time_info.hpp"
 
-namespace nova
-{
+namespace nova {
 
 /** jack backend
  *
@@ -102,7 +99,7 @@ public:
         input_ports.clear();
         for (uint32_t i = 0; i != input_port_count; ++i) {
             std::string portname ("input_");
-            portname += boost::lexical_cast<std::string>(i+1);
+            portname += std::to_string(i+1);
             jack_port_t * port =
                 jack_port_register(client, portname.c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
             input_ports.push_back(port);
@@ -113,7 +110,7 @@ public:
         output_ports.clear();
         for (uint32_t i = 0; i != output_port_count; ++i) {
             std::string portname ("output_");
-            portname += boost::lexical_cast<std::string>(i+1);
+            portname += std::to_string(i+1);
             jack_port_t * port =
                 jack_port_register(client, portname.c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
             output_ports.push_back(port);

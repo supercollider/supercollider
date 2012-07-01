@@ -22,6 +22,13 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   endif()
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_INTEL OR CMAKE_COMPILER_IS_CLANG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+else()
+    message(FATAL_ERROR "unknown compiler. supernova cannot be compiled")
+endif()
+
 if(MEMORY_DEBUGGING)
     set_property(DIRECTORY .
                  APPEND
@@ -128,9 +135,9 @@ endif()
 target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES})
 
 if (Boost_FOUND)
-    target_link_libraries(libsupernova ${Boost_THREAD_LIBRARY}  ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
+    target_link_libraries(libsupernova   ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
 else()
-    target_link_libraries(libsupernova boost_thread boost_system boost_filesystem boost_program_options)
+    target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options)
 endif()
 
 target_link_libraries(supernova libsupernova)

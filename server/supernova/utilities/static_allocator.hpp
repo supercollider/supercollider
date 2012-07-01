@@ -26,7 +26,7 @@ extern "C"
 
 #include <exception>
 
-#include <boost/array.hpp>
+#include <array>
 #include <boost/noncopyable.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/mpl/arithmetic.hpp>
@@ -78,7 +78,7 @@ class static_allocator
         }
 #endif
 
-        boost::array<long, poolsize> pool;
+        std::array<long, poolsize> pool;
     };
 
 public:
@@ -160,7 +160,6 @@ public:
 
 private:
     data data_;
-/*     boost::array<long, poolsize> pool; */
 };
 
 

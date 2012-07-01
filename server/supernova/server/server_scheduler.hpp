@@ -19,6 +19,8 @@
 #ifndef SERVER_SCHEDULER_HPP
 #define SERVER_SCHEDULER_HPP
 
+#include <mutex>
+
 #include "dsp_thread_queue/dsp_thread.hpp"
 #include "group.hpp"
 #include "memory_pool.hpp"
@@ -125,7 +127,7 @@ public:
     void add_sync_callback(audio_sync_callback * cb)
     {
         /* we need to guard, because it can be called from the main (system) thread and the network receiver thread */
-        boost::mutex::scoped_lock lock(sync_mutex);
+        std::lock_guard<std::mutex> lock(sync_mutex);
         cbs.add_callback(cb);
     }
 
@@ -146,7 +148,7 @@ public:
 private:
     callback_system<audio_sync_callback, false> cbs;
     dsp_threads threads;
-    boost::mutex sync_mutex;
+    std::mutex sync_mutex;
 };
 
 } /* namespace nova */

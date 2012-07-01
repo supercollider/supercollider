@@ -19,20 +19,17 @@
 #ifndef SERVER_AUDIO_BUS_MANAGER_HPP
 #define SERVER_AUDIO_BUS_MANAGER_HPP
 
-#include <boost/noncopyable.hpp>
-
+#include <cstdint>
 #include "sample_types.hpp"
 
 #include "../utilities/malloc_aligned.hpp"
 #include "nova-tt/rw_spinlock.hpp"
 
-namespace nova
-{
+namespace nova {
 
-class audio_bus_manager:
-    public boost::noncopyable
+class audio_bus_manager
 {
-    typedef boost::uint16_t uint16_t;
+    typedef std::uint16_t uint16_t;
 
 public:
 /*    audio_bus_manager(uint16_t count = 4096, uint16_t blocksize = 64)
@@ -42,6 +39,9 @@ public:
 */
     audio_bus_manager(void)
     {}
+
+    audio_bus_manager(audio_bus_manager const &) = delete;
+    audio_bus_manager& operator=(audio_bus_manager const &) = delete;
 
     void initialize(uint16_t c, uint16_t b)
     {

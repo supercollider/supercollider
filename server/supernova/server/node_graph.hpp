@@ -81,11 +81,7 @@ public:
         return &root_group_/* .get() */;
     }
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
-#else
-    typedef std::auto_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
-#endif
 
     dsp_thread_queue_ptr generate_dsp_queue(void);
 

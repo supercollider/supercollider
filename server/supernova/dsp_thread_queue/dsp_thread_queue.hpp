@@ -20,17 +20,16 @@
 #define DSP_THREAD_QUEUE_DSP_THREAD_QUEUE_HPP
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <vector>
 
 #include <boost/atomic.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/thread.hpp>
 #include <cstdio>
 
 #ifdef DEBUG_DSP_THREADS
-#include <boost/foreach.hpp>
 #include <cstdio>
 #endif
 
@@ -41,8 +40,7 @@
 #include "utilities/branch_hints.hpp"
 #include "utilities/utils.hpp"
 
-namespace nova
-{
+namespace nova {
 
 template <typename runnable, typename Alloc>
 class dsp_queue_interpreter;
@@ -72,7 +70,7 @@ class dsp_thread_queue_item:
     typedef typename Alloc::template rebind<dsp_thread_queue_item>::other new_allocator;
 
 public:
-    typedef boost::uint_fast16_t activation_limit_t;
+    typedef std::uint_fast16_t activation_limit_t;
 
     struct successor_list
     {
@@ -182,7 +180,7 @@ public:
 
         if (!successors.empty()) {
             printf("\tsuccessors:\n");
-            BOOST_FOREACH(dsp_thread_queue_item * item, successors) {
+            for(dsp_thread_queue_item * item : successors) {
                 printf("\t\t%p\n", item);
             }
         }
@@ -237,7 +235,7 @@ private:
 template <typename runnable, typename Alloc = std::allocator<void*> >
 class dsp_thread_queue
 {
-    typedef boost::uint_fast16_t node_count_t;
+    typedef std::uint_fast16_t node_count_t;
 
     typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
     typedef std::vector<dsp_thread_queue_item*,
@@ -337,11 +335,7 @@ public:
     typedef boost::uint_fast8_t thread_count_t;
     typedef boost::uint_fast16_t node_count_t;
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
-#else
-    typedef std::auto_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
-#endif
 
     dsp_queue_interpreter(thread_count_t tc):
         node_count(0)
@@ -381,7 +375,6 @@ public:
         return ret;
     }
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
     dsp_thread_queue_ptr reset_queue(dsp_thread_queue_ptr && new_queue)
     {
         dsp_thread_queue_ptr ret(std::move(queue));
@@ -407,34 +400,6 @@ public:
             used_helper_threads = 0;
         return ret;
     }
-
-#else
-
-    dsp_thread_queue_ptr reset_queue(dsp_thread_queue_ptr & new_queue)
-    {
-        dsp_thread_queue_ptr ret(queue.release());
-        queue = new_queue;
-        if (queue.get() == 0)
-            return ret;
-
-        queue->reset_activation_counts();
-
-#ifdef DEBUG_DSP_THREADS
-        queue->dump_queue();
-#endif
-
-        if (queue->has_parallelism()) {
-            thread_count_t thread_number =
-                    std::min(thread_count_t(std::min(total_node_count(),
-                                                     node_count_t(std::numeric_limits<thread_count_t>::max()))),
-                             thread_count);
-
-            used_helper_threads = thread_number - 1; /* this thread is not waked up */
-        } else
-            used_helper_threads = 0;
-        return ret;
-    }
-#endif
 
     node_count_t total_node_count(void) const
     {

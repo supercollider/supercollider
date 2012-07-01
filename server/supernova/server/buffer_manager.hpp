@@ -30,8 +30,7 @@
 #include "utilities/malloc_aligned.hpp"
 
 
-namespace nova
-{
+namespace nova {
 
 struct buffer_wrapper
 {
@@ -222,5 +221,4 @@ private:
 
 } /* namespace nova */
 
-#undef foreach
 #endif /* SERVER_BUFFER_MANAGER_HPP */

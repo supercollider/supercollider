@@ -19,8 +19,8 @@
 #define SERVER_NRT_SYNTHESIS_HPP
 
 #include <iostream>
-#include <string>
 #include <fstream>
+#include <string>
 
 #include <boost/integer/endian.hpp>
 
@@ -29,8 +29,7 @@
 #include "audio_backend/sndfile_backend.hpp"
 #include "sc/sc_plugin_interface.hpp"
 
-namespace nova
-{
+namespace nova {
 
 struct non_rt_functor
 {
@@ -104,8 +103,7 @@ struct non_realtime_synthesis_engine
 
             cout << "Next OSC bundle " << bundle_time.get_secs() << "." << bundle_time.get_nanoseconds() << endl;
 
-            while (instance->current_time() < bundle_time)
-            {
+            while (instance->current_time() < bundle_time) {
                 if (has_inputs)
                     backend.audio_fn(64);
                 else

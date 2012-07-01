@@ -17,17 +17,14 @@
 //  Boston, MA 02111-1307, USA.
 
 #include <iostream>
+#include <thread>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
-#include <boost/thread.hpp>
-
 
 #include "server_args.hpp"
 
-
-namespace nova
-{
+namespace nova {
 
 server_arguments::server_arguments(int argc, char * argv[])
 {
@@ -67,7 +64,7 @@ server_arguments::server_arguments(int argc, char * argv[])
         ("ugen-search-path,U", value<std::vector<std::string> >(&ugen_paths), "a colon-separated list of paths\n"
                                                                  "if -U is specified, the standard paths are NOT searched for plugins.")
         ("restricted-path,P", value<std::vector<std::string> >(&restrict_paths), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
-        ("threads,T", value<uint16_t>(&threads)->default_value(boost::thread::hardware_concurrency()), "number of audio threads")
+        ("threads,T", value<uint16_t>(&threads)->default_value(std::thread::hardware_concurrency()), "number of audio threads")
         ;
 
     options_description audio_options("audio options");
@@ -127,6 +124,6 @@ server_arguments::server_arguments(int argc, char * argv[])
     }
 }
 
-std::auto_ptr<server_arguments> server_arguments::instance_;
+std::unique_ptr<server_arguments> server_arguments::instance_;
 
 } /* namespace nova */

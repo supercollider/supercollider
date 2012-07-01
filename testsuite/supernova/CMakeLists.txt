@@ -31,6 +31,11 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
     )
 endif()
 
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_INTEL OR CMAKE_COMPILER_IS_CLANG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+else()
+    message(FATAL_ERROR "unknown compiler. supernova testsuite cannot be compiled")
+endif()
 
 find_package(Sndfile REQUIRED)
 

@@ -5,8 +5,7 @@
 
 using namespace nova;
 
-namespace
-{
+namespace {
 struct osc_test_responder:
     public osc_responder
 {
@@ -39,14 +38,14 @@ BOOST_AUTO_TEST_CASE( osc_server_test_1 )
 BOOST_AUTO_TEST_CASE( osc_server_test_2 )
 {
     osc_server server(12321);
-    std::auto_ptr<osc_test_responder> resp (new osc_test_responder());
+    std::unique_ptr<osc_test_responder> resp (new osc_test_responder());
     server.add_responder("/foo", resp.get());
     server.remove_responder("/foo", resp.get());
 }
 
 BOOST_AUTO_TEST_CASE( osc_server_test_3 )
 {
-    std::auto_ptr<osc_test_responder> resp (new osc_test_responder());
+    std::unique_ptr<osc_test_responder> resp (new osc_test_responder());
     {
         osc_server server(12321);
 

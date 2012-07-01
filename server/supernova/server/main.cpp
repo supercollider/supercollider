@@ -16,11 +16,11 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#include <iostream>
-#include <cstdlib>
 #include <csignal>
-#include <vector>
+#include <cstdlib>
+#include <iostream>
 #include <string>
+#include <vector>
 
 #include <boost/filesystem/path.hpp>
 #include <boost/algorithm/string.hpp>
@@ -187,7 +187,7 @@ void set_plugin_paths(void)
     server_arguments const & args = server_arguments::instance();
 
     if (!args.ugen_paths.empty()) {
-        foreach(string const & path, args.ugen_paths)
+        for(string const & path : args.ugen_paths)
             sc_factory->load_plugin_folder(path);
     } else {
         path home = resolve_home();
@@ -239,7 +239,7 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
             directories.push_back(path(resourceDir) / "synthdefs");
         }
 
-        foreach(path const & directory, directories)
+        for(path const & directory : directories)
             load_synthdef_folder(server, directory, args.verbosity > 0);
     }
 #ifndef NDEBUG

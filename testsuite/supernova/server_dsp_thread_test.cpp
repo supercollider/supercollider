@@ -77,13 +77,6 @@ BOOST_AUTO_TEST_CASE( dsp_thread_test_3 )
     run_test_3<nova::rt_pool_allocator<void*> >();
 }
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-#define auto_ptr unique_ptr
-#define MOVE(X) std::move(X)
-#else
-#define MOVE(X) X
-#endif
-
 template <typename Alloc>
 void run_test_4(void)
 {
@@ -91,7 +84,7 @@ void run_test_4(void)
     typedef typename nova::dsp_thread_queue<dummy_runnable, Alloc> dsp_thread_queue;
 
     typedef typename nova::dsp_threads<dummy_runnable, nova::nop_thread_init, Alloc> dsp_threads;
-    typedef std::auto_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
+    typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
     dsp_threads t(1);
     t.start_threads();
@@ -106,7 +99,7 @@ void run_test_4(void)
     dsp_thread_queue_item * item2 = q->allocate_queue_item(dummy, sl, 0);
     q->add_initially_runnable(item2);
 
-    t.reset_queue(MOVE(q));
+    t.reset_queue(std::move(q));
 
     t.run();
 
@@ -131,7 +124,7 @@ void run_test_5(void)
     typedef nova::dsp_thread_queue<dummy_runnable, Alloc> dsp_thread_queue;
     typedef nova::dsp_threads<dummy_runnable, nova::nop_thread_init, Alloc> dsp_threads;
 
-    typedef std::auto_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
+    typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
     dsp_threads t(2);
     t.start_threads();
@@ -155,7 +148,7 @@ void run_test_5(void)
     dsp_thread_queue_item * item5 = q->allocate_queue_item(dummy, sl, 0);
     q->add_initially_runnable(item5);
 
-    t.reset_queue(MOVE(q));
+    t.reset_queue(std::move(q));
 
     t.run();
 
@@ -183,7 +176,7 @@ void run_test_6(void)
     typedef nova::dsp_thread_queue<dummy_runnable, Alloc> dsp_thread_queue;
     typedef nova::dsp_threads<dummy_runnable, nova::nop_thread_init, Alloc> dsp_threads;
 
-    typedef std::auto_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
+    typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
     dsp_threads t(2);
     t.start_threads();
@@ -198,7 +191,7 @@ void run_test_6(void)
         q->add_initially_runnable(items.back());
     }
 
-    t.reset_queue(MOVE(q));
+    t.reset_queue(std::move(q));
 
     const int iterations = 10000;
 

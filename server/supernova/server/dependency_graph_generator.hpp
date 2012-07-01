@@ -21,12 +21,6 @@
 
 #include "node_graph.hpp"
 
-#ifdef BOOST_HAS_RVALUE_REFS
-#define MOVE(X) std::move(X)
-#else
-#define MOVE(X) X
-#endif
-
 namespace nova {
 
 class dependency_graph_generator
@@ -111,8 +105,7 @@ private:
                 std::size_t node_count = 1;
 
                 // we fill the child nodes in reverse order to an array
-                for(;;)
-                {
+                for(;;) {
                     sequential_children.push_back(&*it);
                     ++it;
                     if (it == g.child_nodes.rend())
@@ -131,7 +124,7 @@ private:
                 int activation_limit = get_previous_activation_count(it, g.child_nodes.rend(), previous_activation_limit);
 
                 thread_queue_item * q_item =
-                    q->allocate_queue_item(queue_node(MOVE(queue_node_data(static_cast<abstract_synth*>(*seq_it++))), node_count),
+                    q->allocate_queue_item(queue_node(std::move(queue_node_data(static_cast<abstract_synth*>(*seq_it++))), node_count),
                                             successors, activation_limit);
 
                 queue_node & q_node = q_item->get_job();
@@ -153,8 +146,7 @@ private:
             } else {
                 abstract_group & grp = static_cast<abstract_group&>(node);
 
-                if (grp.has_synth_children())
-                {
+                if (grp.has_synth_children()) {
                     int activation_limit = get_previous_activation_count(it, g.child_nodes.rend(), previous_activation_limit);
                     successors = fill_queue_recursive(grp, successors, activation_limit);
                 }
@@ -176,7 +168,7 @@ private:
             server_node & node = *it;
 
             if (node.is_synth()) {
-                thread_queue_item * q_item = q->allocate_queue_item(queue_node(MOVE(queue_node_data(static_cast<abstract_synth*>(&node)))),
+                thread_queue_item * q_item = q->allocate_queue_item(queue_node(std::move(queue_node_data(static_cast<abstract_synth*>(&node)))),
                                                                     successors_from_parent, previous_activation_limit);
 
                 if (previous_activation_limit == 0)
