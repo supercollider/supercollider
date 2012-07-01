@@ -19,7 +19,7 @@
 #ifndef AUDIO_BACKEND_CPU_TIME_INFO_HPP
 #define AUDIO_BACKEND_CPU_TIME_INFO_HPP
 
-#include <boost/array.hpp>
+#include <vector>
 #include "utilities/aligned_class.hpp"
 #include "nova-simd/simd_horizontal_functions.hpp"
 

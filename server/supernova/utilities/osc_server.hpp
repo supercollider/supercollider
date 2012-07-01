@@ -21,9 +21,10 @@
 
 #include <string>
 #include <iostream>
+#include <thread>
 
 #include <boost/asio.hpp>
-#include <boost/thread.hpp>
+#include <boost/array.hpp>
 #include <boost/bind.hpp>
 
 #include "branch_hints.hpp"
@@ -34,11 +35,9 @@
 #include "nova-tt/thread_priority.hpp"
 #include "nova-tt/name_thread.hpp"
 
-namespace nova
-{
+namespace nova {
 
-namespace detail
-{
+namespace detail {
 using namespace boost::asio;
 using namespace boost::asio::ip;
 
@@ -47,7 +46,7 @@ class network_thread
 public:
     void start_receive(void)
     {
-        thread_ = boost::thread(network_thread::start, this);
+        thread_ = std::move(std::thread(network_thread::start, this));
         sem.wait();
     }
 
@@ -94,7 +93,7 @@ protected:
 
 private:
     semaphore sem;
-    boost::thread thread_;
+    std::thread thread_;
 };
 
 class osc_server:

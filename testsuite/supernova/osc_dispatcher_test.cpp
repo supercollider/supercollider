@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE( osc_dispatcher_test_1 )
 {
     osc_dispatcher dispatcher;
 
-    std::auto_ptr<osc_test_responder> resp (new osc_test_responder());
+    unique_ptr<osc_test_responder> resp (new osc_test_responder());
     dispatcher.add_responder("foo", resp.get());
     dispatcher.remove_responder("foo", resp.get());
 }
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE( osc_dispatcher_test_2 )
 {
     osc_dispatcher dispatcher;
 
-    std::auto_ptr<osc_test_responder> resp (new osc_test_responder());
+    unique_ptr<osc_test_responder> resp (new osc_test_responder());
     dispatcher.add_responder("/foo", resp.get());
     dispatcher.add_responder("/fpp", resp.get());
 

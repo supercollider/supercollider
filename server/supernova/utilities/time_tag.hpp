@@ -19,24 +19,19 @@
 #ifndef UTILITIES_TIME_TAG_HPP
 #define UTILITIES_TIME_TAG_HPP
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 #include <cmath>
-
-#ifdef BOOST_NO_INT64_T
-#error "boost doesn't support int64 types"
-#endif
 
 #include "boost/date_time/posix_time/posix_time_types.hpp"
 #include "boost/date_time/gregorian/gregorian_types.hpp"
 
-namespace nova
-{
+namespace nova {
 
 /** time_tag class, compatible to osc time tags */
 class time_tag
 {
-    typedef boost::uint32_t uint32;
-    typedef boost::uint64_t uint64;
+    typedef std::uint32_t uint32;
+    typedef std::uint64_t uint64;
 
     typedef union
     {

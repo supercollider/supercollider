@@ -22,16 +22,14 @@
 #include <cassert>
 #include <iostream>
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 
 #include "node_types.hpp"
 #include "synth_prototype.hpp"
 #include "utilities/time_tag.hpp"
 
-namespace nova
-{
-namespace detail
-{
+namespace nova   {
+namespace detail {
 
 /** wrapper class implementing the functionality of synth, that accesses its prototype */
 class synth_prototype_instance
@@ -68,7 +66,7 @@ class abstract_synth:
 {
 public:
     typedef float sample;
-    typedef boost::uint_fast16_t samplecount_t;
+    typedef std::uint_fast16_t samplecount_t;
 
     typedef detail::synth_prototype_instance prototype_instance;
 

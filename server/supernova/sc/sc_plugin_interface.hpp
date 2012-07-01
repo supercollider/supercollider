@@ -19,6 +19,7 @@
 #ifndef SC_PLUGIN_INTERFACE_HPP
 #define SC_PLUGIN_INTERFACE_HPP
 
+#include <mutex>
 #include <vector>
 
 #include "../server/audio_bus_manager.hpp"
@@ -30,12 +31,10 @@
 #include "SC_World.h"
 
 #include <boost/scoped_array.hpp>
-#include <boost/thread/mutex.hpp>
 
 #include "../../common/SC_SndFileHelpers.hpp"
 
-namespace nova
-{
+namespace nova {
 
 class sc_done_action_handler
 {
@@ -148,15 +147,15 @@ public:
 
     void free_buffer(uint32_t index);
 
-    typedef boost::mutex::scoped_lock buffer_lock_t;
+    typedef std::lock_guard<std::mutex> buffer_lock_t;
 
-    boost::mutex & buffer_guard(size_t index)
+    std::mutex & buffer_guard(size_t index)
     {
         return async_buffer_guards[index];
     }
 
 private:
-    boost::scoped_array<boost::mutex> async_buffer_guards;
+    boost::scoped_array<std::mutex> async_buffer_guards;
     /* @} */
 
 public:

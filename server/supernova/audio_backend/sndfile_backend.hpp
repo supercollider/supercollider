@@ -21,10 +21,10 @@
 
 #include <cmath>
 #include <string>
+#include <thread>
 
 #include <boost/atomic.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
-#include <boost/thread.hpp>
 
 #include <sndfile.hh>
 
@@ -119,11 +119,11 @@ public:
         if (input_file)
         {
             reader_running.store(true);
-            reader_thread = boost::thread(boost::bind(&sndfile_backend::sndfile_read_thread, this));
+            reader_thread = std::thread(std::bind(&sndfile_backend::sndfile_read_thread, this));
         }
 
         writer_running.store(true);
-        writer_thread = boost::thread(boost::bind(&sndfile_backend::sndfile_write_thread, this));
+        writer_thread = std::thread(std::bind(&sndfile_backend::sndfile_write_thread, this));
     }
 
     void deactivate_audio(void)
@@ -275,7 +275,7 @@ private:
 
     aligned_storage_ptr<sample_type> temp_buffer;
 
-    boost::thread reader_thread, writer_thread;
+    std::thread reader_thread, writer_thread;
     boost::lockfree::spsc_queue< sample_type > read_frames, write_frames;
     nova::semaphore read_semaphore, write_semaphore;
     boost::atomic<bool> running, reader_running, writer_running;

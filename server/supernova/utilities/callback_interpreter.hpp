@@ -19,6 +19,8 @@
 #ifndef UTILITIES_CALLBACK_INTERPRETER_HPP
 #define UTILITIES_CALLBACK_INTERPRETER_HPP
 
+#include <thread>
+
 #include "branch_hints.hpp"
 #include "callback_system.hpp"
 
@@ -26,21 +28,18 @@
 #include "nova-tt/thread_priority.hpp"
 
 #include <boost/atomic.hpp>
-#include <boost/bind.hpp>
 #include <boost/checked_delete.hpp>
-#include <boost/ref.hpp>
-#include <boost/thread.hpp>
 
 
-namespace nova
-{
+namespace nova {
 
-namespace detail
-{
+namespace detail {
+
 struct nop_functor
 {
     void operator()() const {}
 };
+
 } /* namespace detail */
 
 
@@ -109,7 +108,7 @@ class threaded_callback_interpreter:
 {
     typedef callback_interpreter<callback_type, true, callback_deleter> super;
 
-    boost::thread thread;
+    std::thread callback_thread;
 
 public:
     threaded_callback_interpreter(void)
@@ -123,10 +122,11 @@ public:
 
     void start_thread(void)
     {
+        using namespace std;
         semaphore sync_sem;
         semaphore_sync<semaphore> sync(sync_sem);
-        boost::thread thr(boost::bind(&threaded_callback_interpreter::run_thread, this, boost::ref(sync_sem)));
-        thread = boost::move(thr);
+        thread thr(bind(&threaded_callback_interpreter::run_thread, this, ref(sync_sem)));
+        callback_thread = move(thr);
     }
 
     void run_thread(semaphore & sync_sem)
@@ -138,7 +138,7 @@ public:
     void join_thread(void)
     {
         super::terminate();
-        thread.join();
+        callback_thread.join();
     }
 };
 
@@ -156,8 +156,10 @@ public:
         worker_thread_count_(worker_thread_count), priority(priority), rt(rt)
     {
         semaphore sync_sem;
+        using namespace std;
+
         for (uint16_t i = 0; i != worker_thread_count; ++i)
-            threads.create_thread(boost::bind(&callback_interpreter_threadpool::run, this, boost::ref(sync_sem)));
+            threads.emplace_back(std::bind(&callback_interpreter_threadpool::run, this, boost::ref(sync_sem)));
 
         for (uint16_t i = 0; i != worker_thread_count; ++i)
             sync_sem.wait();
@@ -175,7 +177,9 @@ public:
 
         for (uint16_t i = 0; i != worker_thread_count_; ++i)
             super::sem.post();
-        threads.join_all();
+
+        for (std::thread & thread : threads)
+            thread.join();
     }
 
 private:
@@ -192,7 +196,7 @@ private:
         super::run(sync_sem);
     }
 
-    boost::thread_group threads;
+    std::vector<std::thread> threads;
     uint16_t worker_thread_count_;
     uint16_t priority;
     bool rt;

@@ -30,11 +30,11 @@
 #include "utilities/sized_array.hpp"
 #include "utilities/exists.hpp"
 
-namespace nova
-{
-typedef boost::int16_t int16;
-typedef boost::int32_t int32;
-typedef boost::int8_t int8;
+namespace nova {
+
+typedef std::int16_t int16;
+typedef std::int32_t int32;
+typedef std::int8_t int8;
 
 using boost::integer::big32_t;
 using boost::integer::big16_t;
@@ -221,8 +221,7 @@ void sc_synthdef::read_synthdef(const char *& ptr, int version)
     prepare();
 }
 
-namespace
-{
+namespace {
 
 template <typename Alloc = std::allocator<int16_t> >
 class buffer_allocator

@@ -24,7 +24,8 @@ extern "C"
 #include "tlsf.h"
 }
 
-#include <boost/array.hpp>
+#include <array>
+
 #include <boost/noncopyable.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/mpl/arithmetic.hpp>
@@ -34,8 +35,7 @@ extern "C"
 #include "nova-tt/dummy_mutex.hpp"
 #include "nova-tt/mlock.hpp"
 
-namespace nova
-{
+namespace nova {
 
 template <std::size_t bytes,
           bool blocking = false>
@@ -55,12 +55,12 @@ class static_pool:
     struct data:
         mutex_type
     {
-        boost::array<long, poolsize> pool;
+        std::array<long, poolsize> pool;
     };
 
     void lock_memory(void)
     {
-        mlock(data_.pool.begin(), bytes);
+        mlock(data_.pool.data(), poolsize * sizeof(long));
     }
 
 public:
@@ -70,7 +70,7 @@ public:
         if (lock)
             lock_memory();
 
-        data_.pool.assign(0);
+        data_.pool.fill(0);
         std::size_t status = init_memory_pool(bytes, data_.pool.begin());
         assert(status > 0);
 

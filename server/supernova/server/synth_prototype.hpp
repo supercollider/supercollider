@@ -20,8 +20,8 @@
 #define SERVER_SYNTH_PROTOTYPE_HPP
 
 #include <cassert>
+#include <cstdint>
 
-#include <boost/cstdint.hpp>
 #include <boost/checked_delete.hpp>
 #include <boost/intrusive/unordered_set.hpp>
 
@@ -31,7 +31,7 @@
 
 namespace nova {
 
-typedef boost::int16_t slot_index_t;
+typedef std::int16_t slot_index_t;
 typedef c_string slot_identifier_type;
 
 namespace detail {

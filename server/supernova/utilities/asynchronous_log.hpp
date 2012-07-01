@@ -23,8 +23,8 @@
 #include <cstdio>
 #include <cstdarg>
 
-#include <boost/bind.hpp>
-#include <boost/thread.hpp>
+#include <thread>
+#include <array>
 #include <boost/lockfree/spsc_queue.hpp>
 #include <boost/mpl/if.hpp>
 
@@ -32,8 +32,6 @@
 
 namespace nova {
 namespace asynchronous_log_impl {
-
-using namespace boost;
 
 struct asynchronous_log:
     noncopyable
@@ -50,13 +48,13 @@ struct asynchronous_log:
 
     bool log_printf(const char *fmt, va_list vargs)
     {
-        array<char, 4096> scratchpad;
-        int print_result = vsnprintf(scratchpad.c_array(), scratchpad.size(), fmt, vargs);
+        std::array<char, 4096> scratchpad;
+        int print_result = vsnprintf(scratchpad.data(), scratchpad.size(), fmt, vargs);
 
         if (print_result >= scratchpad.size())
             fprintf(stderr, "warning: log message truncated");
 
-        return log(scratchpad.c_array(), print_result);
+        return log(scratchpad.data(), print_result);
     }
 
     bool log(const char * string)
@@ -130,7 +128,7 @@ struct asynchronous_log_thread:
 {
 public:
     asynchronous_log_thread(void):
-        running_flag(true), thread_(bind(&asynchronous_log_thread::run, this))
+        running_flag(true), thread_(std::bind(&asynchronous_log_thread::run, this))
     {}
 
     ~asynchronous_log_thread(void)
@@ -143,15 +141,15 @@ public:
     void run(void)
     {
         while (running_flag.load()) {
-            size_t read_chars = read_log_waiting(out_buffer.c_array(), out_buffer.size());
+            size_t read_chars = read_log_waiting(out_buffer.data(), out_buffer.size());
             post_outbuffer(read_chars);
 
             while (read_chars == out_buffer.size()) {
-                read_chars = read(out_buffer.c_array(), out_buffer.size());
+                read_chars = read(out_buffer.data(), out_buffer.size());
                 post_outbuffer(read_chars);
             }
         }
-        size_t read_chars = read_log(out_buffer.c_array(), out_buffer.size());
+        size_t read_chars = read_log(out_buffer.data(), out_buffer.size());
         post_outbuffer(read_chars);
     }
 
@@ -163,9 +161,9 @@ public:
     }
 
 private:
-    atomic_bool running_flag;
-    thread thread_;
-    array<char, 4096> out_buffer;
+    boost::atomic_bool running_flag;
+    std::thread thread_;
+    std::array<char, 4096> out_buffer;
 };
 
 } /* namespace asynchronous_log_impl */

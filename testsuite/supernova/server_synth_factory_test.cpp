@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE( synth_factory_test_1 )
 
     sf.register_prototype(new test_synth_prototype);
 
-    auto_ptr<abstract_synth> s(sf.create_instance("foo", 1));
+    unique_ptr<abstract_synth> s(sf.create_instance("foo", 1));
 
     BOOST_REQUIRE(s.get() != 0);
 }

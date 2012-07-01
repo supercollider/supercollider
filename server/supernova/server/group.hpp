@@ -28,8 +28,7 @@
 #include "dsp_thread_queue/dsp_thread_queue.hpp"
 #include "utilities/exists.hpp"
 
-namespace nova
-{
+namespace nova {
 
 typedef nova::dsp_queue_node<rt_pool_allocator<void*> > queue_node;
 typedef nova::dsp_thread_queue_item<dsp_queue_node<rt_pool_allocator<void*> >,

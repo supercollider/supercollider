@@ -26,21 +26,10 @@
 
 #include "server/synth_factory.hpp"
 
-namespace nova
-{
+namespace nova {
 
 using namespace std;
 
-void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> const & defs)
-{
-    foreach(sc_synthdef const & def, defs) {
-        auto_ptr<sc_synth_prototype> sp(new sc_synth_prototype(def));
-        factory.register_prototype(sp.get());
-        sp.release();
-    }
-}
-
-#ifdef BOOST_HAS_RVALUE_REFS
 void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> && defs)
 {
     std::vector<sc_synthdef> synthdefs(std::move(defs));
@@ -50,7 +39,6 @@ void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> && def
         factory.register_prototype(sp);
     }
 }
-#endif
 
 
 std::vector<sc_synthdef> sc_read_synthdefs_file(path const & file)

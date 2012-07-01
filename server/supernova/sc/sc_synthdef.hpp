@@ -19,16 +19,15 @@
 #ifndef SC_SYNTHDEF_HPP
 #define SC_SYNTHDEF_HPP
 
+#include <cstdint>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
-#include <boost/cstdint.hpp>
 #include <boost/filesystem/path.hpp>
 
 #include "utilities/malloc_aligned.hpp"
 #include "utilities/named_hash_entry.hpp"
-
 
 #include "SC_Types.h"
 #include "SC_Wire.h"
@@ -77,7 +76,6 @@ public:
             input_specs(in_specs), output_specs(out_specs)
         {}
 
-#ifdef BOOST_HAS_RVALUE_REFS
         unit_spec_t(unit_spec_t && rhs):
             name(std::move(rhs.name)), rate(rhs.rate), special_index(rhs.special_index),
             input_specs(std::move(rhs.input_specs)), output_specs(std::move(rhs.output_specs)),
@@ -86,7 +84,7 @@ public:
 
         unit_spec_t(unit_spec_t const & rhs) = default;
         unit_spec_t & operator=(unit_spec_t const & rhs) = default;
-#endif
+
         string name;
         int16_t rate;           /* 0: scalar rate, 1: buffer rate, 2: full rate, 3: demand rate */
         int16_t special_index;
@@ -115,7 +113,6 @@ public:
 
     sc_synthdef(const char *& buffer, int version);
 
-#ifdef BOOST_HAS_RVALUE_REFS
     sc_synthdef(sc_synthdef && rhs):
         name_(std::move(rhs.name_)), constants(std::move(rhs.constants)), parameters(std::move(rhs.parameters)),
         parameter_map(std::move(rhs.parameter_map)), graph(std::move(rhs.graph)), buffer_count(rhs.buffer_count),
@@ -124,7 +121,6 @@ public:
 
     sc_synthdef(sc_synthdef const & rhs) = default;
     sc_synthdef& operator=(sc_synthdef const & rhs) = default;
-#endif
 
     std::string dump(void) const;
 
@@ -166,7 +162,7 @@ private:
     parameter_map_t parameter_map;
 
     graph_t graph;
-    boost::uint16_t buffer_count;
+    std::uint16_t buffer_count;
     calc_units_t calc_unit_indices; /**< indices of the units, that need to be calculated */
     std::size_t memory_requirement_;
 };

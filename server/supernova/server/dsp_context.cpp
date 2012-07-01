@@ -20,5 +20,5 @@
 
 namespace nova
 {
-boost::array<thread_local_resource, max_threads> thread_local_resources;
+std::array<thread_local_resource, max_threads> thread_local_resources;
 } /* namespace nova */

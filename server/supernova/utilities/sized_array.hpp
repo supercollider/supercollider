@@ -21,15 +21,11 @@
 
 #include <cassert>
 #include <memory>               /* std::allocator */
-
-#include <stdint.h>
+#include <type_traits>
 
 #include <boost/mpl/if.hpp>
-#include <boost/type_traits/is_integral.hpp>
-#include <boost/move/move.hpp>
 
-namespace nova
-{
+namespace nova {
 
 /** dynamically sized array
  *
@@ -47,8 +43,6 @@ class sized_array:
     private Alloc::template rebind<T>::other
 {
     typedef typename Alloc::template rebind<T>::other Allocator;
-
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(sized_array)
 
 public:
     // types
@@ -69,6 +63,9 @@ public:
         for (size_type i = 0; i != size; ++i)
             Allocator::construct(data_ + i, def);
     }
+
+    sized_array(sized_array & arg) = delete;
+    sized_array & operator=(sized_array & arg) = delete;
 
 private:
     template <typename int_type>
@@ -115,13 +112,12 @@ public:
     template<typename Constructor_arg>
     explicit sized_array(Constructor_arg const & arg)
     {
-        typedef typename boost::mpl::if_<boost::is_integral<Constructor_arg>,
+        typedef typename boost::mpl::if_<std::is_integral<Constructor_arg>,
                                          call_int_ctor,
                                          call_container_ctor>::type ctor;
         ctor::init(*this, arg);
     }
 
-#ifdef BOOST_HAS_RVALUE_REFS
     explicit sized_array(sized_array && arg)
     {
         data_ = arg.data_;
@@ -139,22 +135,6 @@ public:
         arg.size_ = 0;
         return *this;
     }
-#else
-    explicit sized_array(BOOST_RV_REF(sized_array) arg)
-    {
-        operator=(arg);
-    }
-
-    /** move assignment */
-    sized_array & operator=(BOOST_RV_REF(sized_array) arg)
-    {
-        data_ = arg.data_;
-        size_ = arg.size();
-        arg.data_ = 0;
-        arg.size_ = 0;
-        return *this;
-    }
-#endif
 
     ~sized_array(void)
     {
