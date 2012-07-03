@@ -115,7 +115,7 @@ public:
             return true;
 
         for (group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
-            if (it->is_parallel())
+            if (it->has_parallel_group_children())
                 return true;
 
         return false;
