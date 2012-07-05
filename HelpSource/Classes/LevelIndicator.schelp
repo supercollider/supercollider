@@ -167,7 +167,7 @@ GUI.cocoa; // just to be sure
 
 // something to meter
 (
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 x = { var colum, noise, imp, delimp, mul = 1;
 	imp = Impulse.kr(10);
 	delimp = Delay1.kr(imp);
