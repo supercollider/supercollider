@@ -1096,6 +1096,8 @@ bool BufWriteCmd::Stage2()
 
 	if (mNumFrames > framesToEnd) mNumFrames = framesToEnd;
 
+	sf_command(sf, SFC_SET_CLIPPING, NULL, SF_TRUE); // choose clipping rather than wraparound for integer-format files
+
 	if (mNumFrames > 0) {
 		sf_writef_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
 	}
