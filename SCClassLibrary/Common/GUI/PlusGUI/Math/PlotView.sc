@@ -750,7 +750,7 @@ Plotter {
 		numChannels !? { array = array.unlace(numChannels) };
 		array = array.collect {|elem|
 			if (elem.isKindOf(Env)) {
-				elem.asSignal
+				elem.asMultichannelSignal.flop
 			} {
 				elem
 			}
@@ -886,7 +886,7 @@ Plotter {
 
 + Env {
 	plot { |size = 400, bounds, minval, maxval|
-		var plotter = this.asSignal(size)
+		var plotter = [this.asMultichannelSignal(size).flop]
 			.plot("envelope plot", bounds, minval: minval, maxval: maxval);
 		plotter.domainSpecs = this.times.sum.asArray.collect(ControlSpec(0, _, units: "s"));
 		plotter.setProperties(\labelX, "time");
