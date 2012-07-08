@@ -536,6 +536,8 @@ SC_DLLEXPORT_C void World_NonRealTimeSynthesis(struct World *world, WorldOptions
 		inOptions->mNonRealTimeOutputHeaderFormat, inOptions->mNonRealTimeOutputSampleFormat);
 
 	world->hw->mNRTOutputFile = sf_open(inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &outputFileInfo);
+	sf_command(world->hw->mNRTOutputFile, SFC_SET_CLIPPING, NULL, SF_TRUE);
+
 	if (!world->hw->mNRTOutputFile)
 		throw std::runtime_error("Couldn't open non real time output file.\n");
 
