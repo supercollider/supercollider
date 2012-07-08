@@ -73,8 +73,7 @@ public:
         output_channels = output_channel_count;
         samplerate_ = samplerate = std::floor(samplerate);
 
-        if (!input_file_name.empty())
-        {
+        if (!input_file_name.empty()) {
             input_file = SndfileHandle(input_file_name.c_str(), SFM_READ);
             if (!input_file)
                 throw std::runtime_error("cannot open input file");
@@ -92,6 +91,9 @@ public:
         output_file = SndfileHandle(output_file_name.c_str(), SFM_WRITE, format, output_channel_count, samplerate);
         if (!output_file)
             throw std::runtime_error("cannot open output file");
+
+        output_file.command(SFC_SET_CLIPPING, NULL, SF_TRUE);
+
         super::output_samples.resize(output_channel_count);
 
         temp_buffer.reset(calloc_aligned<float>(std::max(input_channels, output_channels) * 64));
