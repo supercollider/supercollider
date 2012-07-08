@@ -1571,6 +1571,8 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	slotIntVal(slotRawObject(a)->slots + 5, &info.samplerate);
 
 	file = sf_open(filename, SFM_WRITE, &info);
+	sf_command(file, SFC_SET_CLIPPING, NULL, SF_TRUE);
+
 	if (file) {
 		SetPtr(slotRawObject(a)->slots+0, file);
 		SetTrue(a);
