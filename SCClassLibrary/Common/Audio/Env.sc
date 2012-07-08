@@ -196,15 +196,19 @@ Env {
 		^releaseNode.notNil
 	}
 
-	asSignal { arg length = 400;
+	asMultichannelSignal { arg length = 400, class = (Signal);
 		^this.asMultichannelArray.collect { |chan|
 			var duration, signal, ratio;
 			duration = chan[5, 9 ..].sum;
 			ratio = duration / (length - 1);
-			signal = Signal(length);
+			signal = class.new(length);
 			length.do { arg i; signal.add(chan.envAt(i * ratio)) };
 			signal
-		}.unbubble
+		}
+	}
+
+	asSignal { arg length = 400;
+		^this.asMultichannelSignal(length).unbubble
 	}
 
 	discretize { arg n = 1024;
