@@ -378,7 +378,8 @@ Object  {
 
 	// arrays
 	rank { ^0 }
-	deepCollect { arg depth, function, index, rank; ^function.value(this, index, rank) }
+	deepCollect { arg depth, function, index = 0, rank = 0; ^function.value(this, index, rank) }
+	deepDo { arg depth, function, index = 0, rank = 0; function.value(this, index, rank) }
 	slice { ^this }
 	shape { ^nil }
 	unbubble { ^this }
