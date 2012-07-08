@@ -15,7 +15,7 @@ code::
 var p, q, r, o;
 p = Pbind(\degree, Prand((0..7),12), \dur, 0.3, \legato, 0.2);
 
-Ppargroup(p).play;
+PparGroup(p).play;
 
 // post the node structure:
 fork {
