@@ -25,7 +25,7 @@
 
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
-#include <boost/lockfree/ringbuffer.hpp>
+#include <boost/lockfree/spsc_queue.hpp>
 #include <boost/mpl/if.hpp>
 
 #include <nova-tt/semaphore.hpp>
@@ -67,7 +67,7 @@ struct asynchronous_log:
 
     bool log(const char * string, size_t length)
     {
-        size_t total_enqueued = buffer.enqueue(string, length);
+        size_t total_enqueued = buffer.push(string, length);
         if (total_enqueued == 0)
             return false;
 
@@ -80,7 +80,7 @@ struct asynchronous_log:
         length -= total_enqueued;
 
         for (;;) {
-            size_t enqueued = buffer.enqueue(string, length);
+            size_t enqueued = buffer.push(string, length);
             if (enqueued == 0)
                 continue;
 
@@ -112,7 +112,7 @@ struct asynchronous_log:
 
     size_t read(char * out_buffer, size_t size)
     {
-        return buffer.dequeue(out_buffer, size);
+        return buffer.pop(out_buffer, size);
     }
 
     void interrrupt(void)
@@ -121,7 +121,7 @@ struct asynchronous_log:
     }
 
 private:
-    lockfree::ringbuffer<char, 32768> buffer;
+    boost::lockfree::spsc_queue<char, boost::lockfree::capacity<32768> > buffer;
     nova::semaphore sem;
 };
 

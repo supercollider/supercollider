@@ -344,7 +344,7 @@ public:
 #endif
 
     dsp_queue_interpreter(thread_count_t tc):
-        runnable_set(1024), node_count(0)
+        node_count(0)
     {
         if (!runnable_set.is_lock_free())
             std::cout << "Warning: scheduler queue is not lockfree!" << std::endl;
@@ -587,7 +587,7 @@ private:
     thread_count_t thread_count;        /* number of dsp threads to be used by this queue */
     thread_count_t used_helper_threads; /* number of helper threads, which are actually used */
 
-    boost::lockfree::stack<dsp_thread_queue_item*> runnable_set;
+    boost::lockfree::stack<dsp_thread_queue_item*,  boost::lockfree::capacity<32768> > runnable_set;
     boost::atomic<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
 };
 

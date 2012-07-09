@@ -2,7 +2,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
                     ${CMAKE_SOURCE_DIR}/include/server
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost-lockfree
                     ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
                     ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src

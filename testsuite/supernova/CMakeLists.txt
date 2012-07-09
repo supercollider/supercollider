@@ -40,7 +40,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/server/supernova
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost-lockfree
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_move
                     ${CMAKE_SOURCE_DIR}/external_libraries/oscpack
                     ${CMAKE_SOURCE_DIR}/external_libraries/

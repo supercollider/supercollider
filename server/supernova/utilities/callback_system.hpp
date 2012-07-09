@@ -25,8 +25,8 @@
 
 #include <boost/checked_delete.hpp>
 
-#include <boost/lockfree/ringbuffer.hpp>
-#include <boost/lockfree/fifo.hpp>
+#include <boost/lockfree/spsc_queue.hpp>
+#include <boost/lockfree/queue.hpp>
 
 
 namespace nova {
@@ -38,8 +38,8 @@ template <class callback_type,
 class callback_system:
     private callback_deleter
 {
-    typedef typename boost::mpl::if_c<mpmc, boost::lockfree::fifo<callback_type*>,
-                                            boost::lockfree::ringbuffer<callback_type*, 0>
+    typedef typename boost::mpl::if_c<mpmc, boost::lockfree::queue<callback_type*>,
+                                            boost::lockfree::spsc_queue<callback_type*>
                                      >::type queue_type;
 
 public:
@@ -50,7 +50,7 @@ public:
     /** \brief adds a new Callback to the Scheduler, threadsafe */
     inline void add_callback(callback_type * cb)
     {
-        callbacks.enqueue(cb);
+        callbacks.push(cb);
     }
 
     /** \brief run all callbacks */
@@ -59,7 +59,7 @@ public:
         for (;;) {
             callback_type* runme;
 
-            if (not callbacks.dequeue(runme))
+            if (not callbacks.pop(runme))
                 break;
 
             run_callback(runme);
@@ -74,7 +74,7 @@ public:
     void run_callback(void)
     {
         callback_type* runme;
-        bool dequeued = callbacks.dequeue(&runme);
+        bool dequeued = callbacks.pop(&runme);
         assert(dequeued);
 
         run_callback(runme);
