@@ -4,6 +4,3 @@
 [submodule "external_libraries/nova-tt"]
 	path = external_libraries/nova-tt
 	url = git://supercollider.git.sourceforge.net/gitroot/supercollider/nova-tt
-[submodule "external_libraries/boost_lockfree"]
-	path = external_libraries/boost_lockfree
-	url = git://supercollider.git.sourceforge.net/gitroot/supercollider/boost-lockfree
