@@ -282,7 +282,7 @@ namespace boost
 #     endif
 #   endif
 #   ifdef BOOST_BIG_ENDIAN  
-        endian & operator=(T val) { m_value = val); return *this; }
+        endian & operator=(T val) { m_value = val; return *this; }
         operator T() const        { return m_value; }
 #   else  
         endian & operator=(T val) { detail::store_big_endian<T, sizeof(T)>(&m_value, val); return *this; }
