@@ -120,7 +120,7 @@ class QcMultiSlider : public QWidget, QcHelper, QtCollider::Style::Client
     void setStartIndex( int i ) { startIndex = qBound(0, i, _values.count()-1); update(); }
 
     QRect contentsRect();
-    QRect valueRect( int count, double & spacing );
+    QRect valueRect( int count, qreal & spacing );
     inline float valueFromPos( float pos, float range );
     inline void setValue( int index, double value );
     double rounded ( double value );
