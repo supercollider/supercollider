@@ -879,7 +879,7 @@ void Poll_Ctor(Poll* unit)
 		};
 	unit->m_id_string[(int)unit->m_id] = '\0';
 
-	unit->m_mayprint = unit->mWorld->mVerbosity >= 0;
+	unit->m_mayprint = unit->mWorld->mVerbosity >= -1;
 
 	Poll_next_kk(unit, 1);
 }

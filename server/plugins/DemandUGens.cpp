@@ -2087,7 +2087,7 @@ void Dpoll_Ctor(Dpoll *unit)
 		unit->m_id_string[i] = (char)IN0(4+i);
 	}
 	unit->m_id_string[(int)unit->m_id] = '\0';
-	unit->m_mayprint = unit->mWorld->mVerbosity >= 0;
+	unit->m_mayprint = unit->mWorld->mVerbosity >= -1;
 	OUT0(0) = 0.f;
 }
 
