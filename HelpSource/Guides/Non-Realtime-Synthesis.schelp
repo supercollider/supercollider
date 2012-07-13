@@ -3,6 +3,8 @@ summary:: Non-realtime synthesis with binary files of OSC commands
 categories:: Server>NRT, External Control>OSC
 related:: Classes/Score
 
+section:: Non-Realtime Synthesis
+
 SuperCollider 3 supports non-realtime synthesis through the use of binary files of OSC commands.
 
 First create an OSC command file (i.e. a score)
@@ -102,3 +104,74 @@ Score.recordNRT(g, "help-oscFile.osc", "helpNRT.aiff", options: o); // synthesiz
 )
 ::
 
+section:: Analysis using a Non-Realtime server
+
+An NRT server may also be used to extract analytical data from a sound file. The main issues are:
+
+DEFINITIONlIST::
+## Suppressing audio file output
+|| In OSX and Linux environments, use teletype::/dev/null:: for the output file path. In Windows, use teletype::NUL::.
+## Retrieving analytical data.
+|| The easiest way is to allocate a buffer at the beginning of the NRT score, and use BufWr to fill the buffer. At the end of the score, write the buffer into a temporary file. Then you can use SoundFile on the language side to access the data. See the example.
+::
+
+code::
+// Example: Extract onsets into a buffer.
+
+(
+fork {
+	var resultbuf, resultpath, oscpath, score, dur, sf, cond, size, data;
+
+	// get duration
+	sf = SoundFile.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+	dur = sf.duration;
+	sf.close;
+
+	resultpath = PathName.tmp +/+ UniqueID.next ++ ".aiff";
+	oscpath = PathName.tmp +/+ UniqueID.next ++ ".osc";
+
+	score = Score([
+		[0, (resultbuf = Buffer.new(s, 1000, 1, 0)).allocMsg],
+		[0, [\d_recv, SynthDef(\onsets, {
+			var sig = SoundIn.ar(0), // will come from NRT input file
+			fft = FFT(LocalBuf(512, 1), sig),
+			trig = Onsets.kr(fft),
+			// count the triggers: this is the index to save the data into resultbuf
+			i = PulseCount.kr(trig),
+			// count time in seconds
+			timer = Sweep.ar(1);
+			// 'i' must be audio-rate for BufWr.ar
+			BufWr.ar(timer, resultbuf, K2A.ar(i), loop: 0);
+			BufWr.ar(i, resultbuf, DC.ar(0), 0);  // # of points in index 0
+		}).asBytes]],
+		[0, Synth.basicNew(\onsets, s, 1000).newMsg],
+		[dur, resultbuf.writeMsg(resultpath, headerFormat: "AIFF", sampleFormat: "float")]
+	]);
+
+	cond = Condition.new;
+
+	// osc file path, output path, input path - input is soundfile to analyze
+	score.recordNRT(oscpath, "/dev/null", sf.path, sampleRate: sf.sampleRate,
+		options: ServerOptions.new
+			.verbosity_(-1)
+			.numInputBusChannels_(sf.numChannels)
+			.numOutputBusChannels_(sf.numChannels)
+			.sampleRate_(sf.sampleRate),
+		action: { cond.unhang }  // this re-awakens the process after NRT is finished
+	);
+	cond.hang;  // wait for completion
+
+	sf = SoundFile.openRead(resultpath);
+	// get the size: one frame at the start
+	sf.readData(size = FloatArray.newClear(1));
+	size = size[0];
+	// now the rest of the data
+	sf.readData(data = FloatArray.newClear(size));
+	sf.close;
+
+	File.delete(oscpath); File.delete(resultpath);
+
+	data.postln;  // these are your onsets!
+};
+)
+::
