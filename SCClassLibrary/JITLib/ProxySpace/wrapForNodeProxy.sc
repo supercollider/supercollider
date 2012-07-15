@@ -65,7 +65,7 @@
 
 	prepareForProxySynthDef { arg proxy;
 		proxy.initBus(\control, 1);
-		^{ÊDC.multiNewList([proxy.rate] ++ this) };
+		^{DC.multiNewList([proxy.rate] ++ this) };
 	}
 }
 
@@ -82,7 +82,7 @@
 +RawArray {
 	prepareForProxySynthDef { arg proxy;
 		proxy.initBus(\control, this.size);
-		^{ÊDC.multiNewList([proxy.rate] ++ this) };
+		^{DC.multiNewList([proxy.rate] ++ this) };
 	}
 }
 
