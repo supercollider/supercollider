@@ -64,11 +64,10 @@ void EditorPage::load( Manager *s )
 
     QFont f;
     f.fromString(s->value("font").toString());
-    fontFamily = f.family();
-    fontStyle = fontDatabase->styleString(f);
 
     ui->fontList->clear();
     int idx = 0;
+    QString fontFamily = f.family();
     QStringList fontFamilies = fontDatabase->families();
     foreach(QString family, fontFamilies)
     {
@@ -80,6 +79,7 @@ void EditorPage::load( Manager *s )
     ui->fontList->scrollToItem(ui->fontList->item(idx));
 
     int c = ui->fontStyle->count();
+    QString fontStyle = fontDatabase->styleString(f);
     for(int i = 0; i < c; ++i) {
         QString style = ui->fontStyle->item(i)->text();
         if(style.compare(fontStyle, Qt::CaseInsensitive)==0) {
@@ -161,10 +161,10 @@ void EditorPage::onFontFamilyChanged(int idx)
 
     Q_ASSERT(fontDatabase);
 
-    fontFamily = ui->fontList->item(idx)->text();
-
-    QStringList styles = fontDatabase->styles(fontFamily);
     ui->fontStyle->clear();
+
+    QString fontFamily = ui->fontList->item(idx)->text();
+    QStringList styles = fontDatabase->styles(fontFamily);
     int styleIdx = 0;
     foreach(QString style, styles) {
         ui->fontStyle->addItem(style);

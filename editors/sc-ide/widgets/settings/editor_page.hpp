@@ -56,8 +56,6 @@ private:
     QFont constructFont();
 
     QFontDatabase *fontDatabase;
-    QString fontFamily;
-    QString fontStyle;
 
     Ui::EditorConfigPage *ui;
 };
