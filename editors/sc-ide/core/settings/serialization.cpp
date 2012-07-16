@@ -25,6 +25,7 @@
 #include <QDebug>
 #include <QVector>
 #include <QStringList>
+#include <QKeySequence>
 #include <boost/iostreams/concepts.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <iostream>
@@ -227,6 +228,14 @@ static void writeValue( const QVariant &var, YAML::Emitter &out )
             out << str.toStdString();
 
         out << YAML::EndSeq;
+        break;
+    }
+    case QVariant::KeySequence:
+    {
+        QKeySequence kseq = var.value<QKeySequence>();
+
+        out << kseq.toString( QKeySequence::PortableText ).toStdString();
+
         break;
     }
     case QVariant::UserType:
