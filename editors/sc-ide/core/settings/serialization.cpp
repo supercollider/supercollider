@@ -116,7 +116,7 @@ static void parseSequence( const YAML::Node &node, const QString &parentKey, QSe
             {
                 std::string val;
                 item >> val;
-                values << QString(val.c_str());
+                values << QString::fromUtf8(val.c_str());
                 break;
             }
 
@@ -149,7 +149,7 @@ static void parseNode( const YAML::Node &node, const QString &parentKey, QSettin
         {
             std::string val;
             node >> val;
-            map.insert( parentKey, QVariant(val.c_str()) );
+            map.insert( parentKey, QVariant( QString::fromUtf8(val.c_str()) ) );
             return;
         }
 
@@ -225,7 +225,7 @@ static void writeValue( const QVariant &var, YAML::Emitter &out )
 
         QStringList list = var.value<QStringList>();
         Q_FOREACH(const QString & str, list)
-            out << str.toStdString();
+            out << str.toUtf8().constData();
 
         out << YAML::EndSeq;
         break;
@@ -234,7 +234,7 @@ static void writeValue( const QVariant &var, YAML::Emitter &out )
     {
         QKeySequence kseq = var.value<QKeySequence>();
 
-        out << kseq.toString( QKeySequence::PortableText ).toStdString();
+        out << kseq.toString( QKeySequence::PortableText ).toUtf8().constData();
 
         break;
     }
@@ -248,13 +248,13 @@ static void writeValue( const QVariant &var, YAML::Emitter &out )
         }
         else
         {
-            out << var.toString().toStdString();
+            out << var.toString().toUtf8().constData();
         }
         break;
     }
     default:
     {
-        out << var.toString().toStdString();
+        out << var.toString().toUtf8().constData();
     }
     }
 }
