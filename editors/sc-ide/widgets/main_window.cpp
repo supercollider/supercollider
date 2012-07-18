@@ -21,6 +21,7 @@
 #include "main_window.hpp"
 #include "../core/main.hpp"
 #include "../core/doc_manager.hpp"
+#include "../core/session_manager.hpp"
 #include "code_editor/editor.hpp"
 #include "multi_editor.hpp"
 #include "cmd_line.hpp"
@@ -86,7 +87,10 @@ MainWindow::MainWindow(Main * main) :
 
     // Docks
     mDocListDock = new DocumentsDock(main->documentManager(), this);
+    mDocListDock->setObjectName("documents-dock");
+
     mPostDock = new PostDock(this);
+    mPostDock->setObjectName("post-dock");
 
     // Layout
 
@@ -102,6 +106,12 @@ MainWindow::MainWindow(Main * main) :
 
     addDockWidget(Qt::LeftDockWidgetArea, mDocListDock);
     addDockWidget(Qt::BottomDockWidgetArea, mPostDock);
+
+    // Session management
+    connect(main->sessionManager(), SIGNAL(saveSessionRequest(Session*)),
+            this, SLOT(saveSession(Session*)));
+    connect(main->sessionManager(), SIGNAL(loadSessionRequest(Session*)),
+            this, SLOT(loadSession(Session*)));
 
     // A system for easy evaluation of pre-defined code:
     connect(&mCodeEvalMapper, SIGNAL(mapped(QString)),
@@ -369,6 +379,78 @@ void MainWindow::createMenus()
     menuBar()->addMenu(menu);
 }
 
+void MainWindow::loadSession( Session *session )
+{
+    session->beginGroup("mainWindow");
+
+    QByteArray geom = QByteArray::fromBase64
+        ( session->value("geometry").value<QByteArray>() );
+    if (!geom.isEmpty())
+        this->restoreGeometry(geom);
+
+    QByteArray state = QByteArray::fromBase64
+        ( session->value("state").value<QByteArray>() );
+    if (!state.isEmpty())
+        this->restoreState(state);
+
+    session->endGroup();
+
+    DocumentManager *docMng = mMain->documentManager();
+
+    QVariantList docs = session->value("documents").value<QVariantList>();
+    if (docs.isEmpty())
+        docMng->create(); // Start with a new document
+    else
+        foreach (const QVariant & docData, docs)
+        {
+            QVariantMap docMap = docData.value<QVariantMap>();
+            docMng->open( docMap.value("file").toString(),
+                          docMap.value("position").toInt(),
+                          false // don't modify recent document list
+                        );
+        }
+
+    QString currentFilePath = session->value("currentDocument").toString();
+    if (!currentFilePath.isEmpty())
+        docMng->open(currentFilePath, -1, false);
+
+}
+
+void MainWindow::saveSession( Session *session )
+{
+    session->beginGroup("mainWindow");
+    session->setValue("geometry", this->saveGeometry().toBase64());
+    session->setValue("state", this->saveState().toBase64());
+    session->endGroup();
+
+    int docCount = mEditors->editorCount();
+    if (docCount) {
+        QVariantList docsList;
+        for (int i = 0; i < docCount; ++i )
+        {
+            CodeEditor *editor = mEditors->editor(i);
+            if (!editor || editor->document()->filePath().isEmpty())
+                continue;
+
+            QVariantMap docMap;
+            docMap.insert("file", editor->document()->filePath());
+            docMap.insert("position", editor->textCursor().position());
+
+            docsList.append( docMap );
+        }
+
+        session->setValue( "documents", QVariant::fromValue<QVariantList>(docsList) );
+    }
+    else
+        session->remove( "documents" );
+
+    CodeEditor *editor;
+    if ((editor = mEditors->currentEditor()))
+        session->setValue("currentDocument", editor->document()->filePath());
+    else
+        session->remove("currentDocument");
+}
+
 QAction *MainWindow::action( ActionRole role )
 {
     Q_ASSERT( role < ActionCount );
@@ -393,9 +475,7 @@ bool MainWindow::quit()
             return false;
     }
 
-    mMain->storeSettings();
-
-    QApplication::quit();
+    mMain->quit();
 
     return true;
 }

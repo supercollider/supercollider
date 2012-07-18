@@ -30,6 +30,8 @@
 
 namespace ScIDE {
 
+class SessionManager;
+
 class Main:
     public QObject
 {
@@ -44,6 +46,7 @@ public:
 
     Settings::Manager *settings()       { return mSettings;    }
     DocumentManager * documentManager() { return mDocManager;  }
+    SessionManager * sessionManager()   { return mSessionManager; }
     SCProcess * scProcess(void)         { return mSCProcess;   }
 
 public Q_SLOTS:
@@ -56,6 +59,8 @@ public Q_SLOTS:
         Q_EMIT(applySettingsRequest(mSettings));
     }
 
+    void quit();
+
 Q_SIGNALS:
     void storeSettingsRequest(Settings::Manager *);
     void applySettingsRequest(Settings::Manager *);
@@ -66,6 +71,7 @@ private:
     Settings::Manager *mSettings;
     SCProcess * mSCProcess;
     DocumentManager *mDocManager;
+    SessionManager *mSessionManager;
 };
 
 }

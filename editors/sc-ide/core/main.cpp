@@ -20,6 +20,7 @@
 
 #include "main.hpp"
 #include "settings/manager.hpp"
+#include "session_manager.hpp"
 #include "../widgets/main_window.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
 #include "SC_DirUtils.h"
@@ -28,6 +29,7 @@
 #include <QAction>
 #include <QLibraryInfo>
 #include <QTranslator>
+#include <QDir>
 
 using namespace ScIDE;
 
@@ -46,10 +48,13 @@ int main( int argc, char *argv[] )
     Main * main = Main::instance();
 
     MainWindow *win = new MainWindow(main);
+    win->show();
 
-    main->documentManager()->create(); // Create a new doc at startup
-
-    win->showMaximized();
+    // NOTE: load session after GUI is created, so that GUI can respond
+    QString lastSession = main->sessionManager()->lastSession();
+    if (lastSession.isEmpty())
+        lastSession = "default";
+    main->sessionManager()->openSession(lastSession);
 
     bool startInterpreter = main->settings()->value("IDE/interpreter/autoStart").toBool();
     if(startInterpreter)
@@ -72,7 +77,14 @@ static QString getSettingsFile()
 Main::Main(void) :
     mSettings( new Settings::Manager( getSettingsFile(), this ) ),
     mDocManager( new DocumentManager(this) ),
+    mSessionManager( new SessionManager(mDocManager, this) ),
     mSCProcess( new SCProcess(this) )
 {
     new SyntaxHighlighterGlobals(this);
+}
+
+void Main::quit() {
+    mSessionManager->closeSession();
+    storeSettings();
+    QApplication::quit();
 }

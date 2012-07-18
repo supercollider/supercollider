@@ -75,6 +75,8 @@ public:
 
     int editorCount() { return mTabs->count(); }
 
+    CodeEditor *editor( int index ) { return editorForTab(index); }
+
     CodeEditor *currentEditor()
         { return editorForTab( mTabs->currentIndex() ); }
 

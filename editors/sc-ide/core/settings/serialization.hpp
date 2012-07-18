@@ -23,15 +23,14 @@
 
 #include <QSettings>
 #include <QTextCharFormat>
-
-Q_DECLARE_METATYPE( QVector<QVariant> );
-Q_DECLARE_METATYPE( QTextCharFormat );
+#include <QVariant>
 
 namespace ScIDE { namespace Settings {
 
 QSettings::Format serializationFormat();
 
-
 }} // namespace ScIDE::Settings
+
+Q_DECLARE_METATYPE( QTextCharFormat );
 
 #endif // SCIDE_CORE_SETTINGS_SERIALIZATION_HPP_INCLUDED
