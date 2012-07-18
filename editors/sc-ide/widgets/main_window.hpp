@@ -38,6 +38,9 @@ class DocumentsDock;
 class StatusLabel;
 class Document;
 class DocumentsDialog;
+struct Session;
+
+namespace Settings { class Manager; }
 
 class MainWindow : public QMainWindow
 {
@@ -111,6 +114,8 @@ signals:
     void evaluateCode( const QString &, bool silent = true );
 
 private Q_SLOTS:
+    void loadSession( Session *session );
+    void saveSession( Session *session );
     void evaluateRegion();
     void evaluateCurrentFile();
     void helpForSelection();

@@ -11,6 +11,7 @@ set ( ide_moc_hdr
     core/sc_process.hpp
     core/doc_manager.hpp
     core/settings/manager.hpp
+    core/session_manager.hpp
     widgets/main_window.hpp
     widgets/post_window.hpp
     widgets/multi_editor.hpp
@@ -39,6 +40,7 @@ set ( ide_src
     core/sc_process.cpp
     core/settings/serialization.cpp
     core/settings/manager.cpp
+    core/session_manager.cpp
     widgets/main_window.cpp
     widgets/multi_editor.cpp
     widgets/post_window.cpp

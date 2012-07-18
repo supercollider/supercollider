@@ -48,7 +48,7 @@ void DocumentManager::create()
     Q_EMIT( opened(doc, 0) );
 }
 
-void DocumentManager::open( const QString & path, int initialCursorPosition )
+void DocumentManager::open( const QString & path, int initialCursorPosition, bool toRecent )
 {
     QFileInfo info(path);
     QString cpath = info.canonicalFilePath();
@@ -67,7 +67,7 @@ void DocumentManager::open( const QString & path, int initialCursorPosition )
         Document *doc = it.value();
         if(doc->mFilePath == cpath) {
             Q_EMIT( showRequest(doc, initialCursorPosition) );
-            addToRecent(doc);
+            if (toRecent) addToRecent(doc);
             return;
         }
     }
@@ -93,7 +93,8 @@ void DocumentManager::open( const QString & path, int initialCursorPosition )
     mFsWatcher.addPath(cpath);
 
     Q_EMIT( opened(doc, initialCursorPosition) );
-    addToRecent(doc);
+
+    if (toRecent) this->addToRecent(doc);
 }
 
 bool DocumentManager::reload( Document *doc )
@@ -228,10 +229,17 @@ void DocumentManager::clearRecents()
 
 void DocumentManager::applySettings( Settings::Manager *s )
 {
-    mRecent = s->value("IDE/recentDocuments").value<QStringList>();
+    QVariantList list = s->value("IDE/recentDocuments").value<QVariantList>();
+    mRecent.clear();
+    foreach (const QVariant & var, list)
+        mRecent << var.toString();
 }
 
 void DocumentManager::storeSettings( Settings::Manager *s )
 {
-    s->setValue("IDE/recentDocuments", QVariant::fromValue<QStringList>(mRecent));
+    QVariantList list;
+    foreach (const QString & path, mRecent)
+        list << QVariant(path);
+
+    s->setValue("IDE/recentDocuments", QVariant::fromValue<QVariantList>(list));
 }
