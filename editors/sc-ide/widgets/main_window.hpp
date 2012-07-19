@@ -61,7 +61,6 @@ public:
 
         // Sessions
         NewSession,
-        SaveSession,
         SaveSessionAs,
 
         // Edit
@@ -102,7 +101,6 @@ public:
 
 public Q_SLOTS:
     void newSession();
-    void saveCurrentSession();
     void saveCurrentSessionAs();
 
     void newDocument();
@@ -136,6 +134,7 @@ private Q_SLOTS:
     void updateRecentDocsMenu();
     void onRecentDocAction( QAction * );
     void onOpenSessionAction( QAction * );
+    void updateWindowTitle();
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -144,7 +143,6 @@ private:
     void createActions();
     void createMenus();
     bool promptSaveDocs();
-    void updateWindowTitle();
     QWidget *cmdLine();
 
     Main *mMain;

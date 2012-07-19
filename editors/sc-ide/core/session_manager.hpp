@@ -54,18 +54,19 @@ public:
     QStringList availableSessions();
     QString lastSession();
 
-    Session * openSession( const QString & name );
+    void newSession();
     void saveSession();
     Session * saveSessionAs( const QString & name );
-    void closeSession();
-
+    Session * openSession( const QString & name );
     Session *currentSession() { return mSession; }
 
 signals:
     void saveSessionRequest(Session * session);
     void loadSessionRequest(Session * session);
+    void currentSessionChanged(Session * session);
 
 private:
+    void closeSession();
     bool saveLastSession( const QDir & dir, const QString & file );
     DocumentManager *mDocMng;
     Session *mSession;
