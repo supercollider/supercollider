@@ -143,12 +143,14 @@ private:
     void createActions();
     void createMenus();
     bool promptSaveDocs();
+    void updateSessionsMenu();
     QWidget *cmdLine();
 
     Main *mMain;
 
     QAction * mActions[ActionCount];
     QMenu * mRecentDocsMenu;
+    QMenu * mSessionsMenu;
 
     MultiEditor *mEditors;
 
