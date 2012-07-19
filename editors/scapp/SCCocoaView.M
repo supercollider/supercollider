@@ -2485,13 +2485,13 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 		if (err) { return err;}
 		return errNone;
 	} else if([type isEqualToString:QCPortTypeStructure]) {
-		NSLog(@"QCPortTypeStructure");
-		NSLog(@"class: %@", [nsObject class]);
+		//NSLog(@"QCPortTypeStructure");
+		//NSLog(@"class: %@", [nsObject class]);
 
 		// for the moment QC seems to deal with all internal structures as NSCFDictionary
 		// but check here to be safe
 		if([nsObject isKindOfClass: [NSDictionary class]]){
-			NSLog(@"it's a dict");
+			//NSLog(@"it's a dict");
             
 //mc: check, if it shall better become an array
             bool isArray = true;
@@ -2503,16 +2503,12 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
             PyrObject *dict, *array;
             VMGlobals *g = gMainVMGlobals;
                         
-            
             if (isArray) {
+//mc: case array            
                 int arraySize = (int) [theKeys count];
-                NSLog(@"but will become an array of size: %i", arraySize);
-                
-//                PyrObject *array;
-//                VMGlobals *g = gMainVMGlobals;
+                //NSLog(@"Yes, but shall become an array of size: %i", arraySize);
                 
                 array = newPyrArray(g->gc, arraySize, 0, true);
-       //do i need to nullify the slots?         
                 array->size = arraySize;
                 nilSlots(array->slots, array->size);
                 
@@ -2520,9 +2516,6 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
             
             }
             else {
-            
-//                PyrObject *dict, *array;
-//                VMGlobals *g = gMainVMGlobals;
 
                 dict = instantiateObject(g->gc, class_identdict, 5, true, false);
                 array = newPyrArray(g->gc, 4, 0, false);
@@ -2540,52 +2533,51 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 			//while ((key = [enumerator nextObject])) {
             for (id key in nsObject){ 
             
-				NSLog(@"key class: %@", [key class]);
+				//NSLog(@"key class: %@", [key class]);
 				id innerNSObject = [nsObject objectForKey: key];
-				NSLog(@"innerNSObject: %@", innerNSObject);
+				//NSLog(@"innerNSObject: %@", innerNSObject);
 				PyrSlot innerSlot;
 				NSString *innerType;
 
 				if([innerNSObject isKindOfClass: [NSNumber class]]){
-					NSLog(@"objCType: %s", [innerNSObject objCType]);
+					//NSLog(@"objCType: %s", [innerNSObject objCType]);
 					if(!strcmp([innerNSObject objCType], @encode(BOOL))) {
-						NSLog(@"Number");
+						//NSLog(@"Number");
 						innerType = QCPortTypeBoolean;
 					} else if(!strcmp([innerNSObject objCType], @encode(int))) {
 						innerType = QCPortTypeIndex;
 					} else innerType = QCPortTypeNumber;
 				} else if([innerNSObject isKindOfClass: [NSColor class]]){
-					NSLog(@"Color");
+					//NSLog(@"Color");
 					innerType = QCPortTypeColor;
 				} else if([innerNSObject isKindOfClass: [NSString class]]){
-					NSLog(@"String");
+					//NSLog(@"String");
 					innerType = QCPortTypeString;
 				} else if([innerNSObject isKindOfClass: [NSArray class]] || [innerNSObject isKindOfClass: [NSDictionary class]]){
-					NSLog(@"Structure");
+					//NSLog(@"Structure");
 					innerType = QCPortTypeStructure;
 				} else return errWrongType; // it's something else
 
-				NSLog(@"innerObject Class: %@", [innerNSObject class]);
+				//NSLog(@"innerObject Class: %@", [innerNSObject class]);
 				int err = getSCObjectForNSObject(&innerSlot, innerNSObject, innerType);
 				if(err) return err;
 
                 
                 if (isArray) {
-                                        
-                    NSLog(@"index: %i", [[key stringValue] intValue]);
+//mc: case array            
+                    //NSLog(@"the true index is: %i", [[key stringValue] intValue]);
                     
                     err = putIndexedSlot(g, array, &innerSlot, [[key stringValue] intValue]);
-
                 }    
                 else {
                     PyrSlot outKey;
-    //mc: 
+//mc: fix key issue: 
                     // NSLog(@"the bloody key: %@ is of class: %@", key, [key class]);
                     if([key isKindOfClass: [NSNumber class]]){
                         //NSLog(@"converted Key: %@", [NSString stringWithFormat:@"%d", key]);
                         //SetSymbol(&outKey, getsym([[NSString stringWithFormat:@"%d", key] cString]));
 
-                        NSLog(@"stringValue Key: %@", [key stringValue]);
+                        //NSLog(@"stringValue Key: %@", [key stringValue]);
                         SetSymbol(&outKey, getsym([[key stringValue] cString]));
                     }
                     else {
@@ -2593,9 +2585,8 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
                     }
                     
                     err = identDictPut(g, dict, &outKey, &innerSlot);
-                    if(err) return err;
                 }
-                
+                if(err) return err;
 			}
 
 
