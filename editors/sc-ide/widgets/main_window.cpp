@@ -337,11 +337,10 @@ void MainWindow::createMenus()
     menu->addAction( mActions[NewSession] );
     menu->addAction( mActions[SaveSessionAs] );
     submenu = menu->addMenu(tr("&Open Session"));
-    QStringList sessions = mMain->sessionManager()->availableSessions();
-    foreach (const QString & session, sessions)
-        submenu->addAction( session );
     connect(submenu, SIGNAL(triggered(QAction*)),
             this, SLOT(onOpenSessionAction(QAction*)));
+    mSessionsMenu = submenu;
+    updateSessionsMenu();
 
     menuBar()->addMenu(menu);
 
@@ -423,6 +422,8 @@ void MainWindow::saveCurrentSessionAs()
     if (name.isEmpty()) return;
 
     mMain->sessionManager()->saveSessionAs(name);
+
+    updateSessionsMenu();
 }
 
 void MainWindow::onOpenSessionAction( QAction * action )
@@ -793,6 +794,14 @@ void MainWindow::updateWindowTitle()
     title.append("SuperCollider IDE");
 
     setWindowTitle(title);
+}
+
+void MainWindow::updateSessionsMenu()
+{
+    mSessionsMenu->clear();
+    QStringList sessions = mMain->sessionManager()->availableSessions();
+    foreach (const QString & session, sessions)
+        mSessionsMenu->addAction( session );
 }
 
 void MainWindow::showCmdLine()
