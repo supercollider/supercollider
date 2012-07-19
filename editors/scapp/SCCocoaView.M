@@ -2493,7 +2493,7 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 		if([nsObject isKindOfClass: [NSDictionary class]]){
 			//NSLog(@"it's a dict");
             
-//mc: check, if it shall better become an array
+//check, if it shall better become an array
             bool isArray = true;
             NSArray *theKeys = [nsObject allKeys];
             for (id key in theKeys) {
@@ -2504,7 +2504,7 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
             VMGlobals *g = gMainVMGlobals;
                         
             if (isArray) {
-//mc: case array            
+//case array            
                 int arraySize = (int) [theKeys count];
                 //NSLog(@"Yes, but shall become an array of size: %i", arraySize);
                 
@@ -2526,7 +2526,7 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
                 SetObject(slot, dict);
             }
 
-//mc: adopting Fast Enumeration
+//adopting Fast Enumeration
 			//NSEnumerator *enumerator = [nsObject keyEnumerator];
 			//id key;
 
@@ -2564,14 +2564,14 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 
                 
                 if (isArray) {
-//mc: case array            
+//case array            
                     //NSLog(@"the true index is: %i", [[key stringValue] intValue]);
                     
                     err = putIndexedSlot(g, array, &innerSlot, [[key stringValue] intValue]);
                 }    
                 else {
                     PyrSlot outKey;
-//mc: fix key issue: 
+//fix key issue: 
                     // NSLog(@"the bloody key: %@ is of class: %@", key, [key class]);
                     if([key isKindOfClass: [NSNumber class]]){
                         //NSLog(@"converted Key: %@", [NSString stringWithFormat:@"%d", key]);
