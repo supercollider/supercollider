@@ -59,6 +59,11 @@ public:
         DocReload,
         ClearRecentDocs,
 
+        // Sessions
+        NewSession,
+        SaveSession,
+        SaveSessionAs,
+
         // Edit
         Find,
         Replace,
@@ -96,6 +101,10 @@ public:
     static bool reload( Document * );
 
 public Q_SLOTS:
+    void newSession();
+    void saveCurrentSession();
+    void saveCurrentSessionAs();
+
     void newDocument();
     void openDocument();
     void saveDocument();
@@ -126,6 +135,7 @@ private Q_SLOTS:
     void onDocDialogFinished();
     void updateRecentDocsMenu();
     void onRecentDocAction( QAction * );
+    void onOpenSessionAction( QAction * );
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -133,6 +143,8 @@ protected:
 private:
     void createActions();
     void createMenus();
+    bool promptSaveDocs();
+    void updateWindowTitle();
     QWidget *cmdLine();
 
     Main *mMain;

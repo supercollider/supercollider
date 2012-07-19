@@ -105,8 +105,7 @@ Session *SessionManager::openSession( const QString & name )
         return 0;
 
     QString sessionFile = dir.filePath(name + ".yaml");
-    mSession = new Session( sessionFile, Settings::serializationFormat() );
-    mSessionName = name;
+    mSession = new Session( sessionFile, name, Settings::serializationFormat() );
 
     saveLastSession( dir, sessionFile );
 
@@ -132,7 +131,6 @@ Session * SessionManager::saveSessionAs( const QString & name )
     if (mSession) {
         delete mSession;
         mSession = 0;
-        mSessionName.clear();
     }
 
     QDir dir = sessionsDir();
@@ -140,8 +138,7 @@ Session * SessionManager::saveSessionAs( const QString & name )
         return 0;
 
     QString sessionFile = dir.filePath(name + ".yaml");
-    mSession = new Session( sessionFile, Settings::serializationFormat() );
-    mSessionName = name;
+    mSession = new Session( sessionFile, name, Settings::serializationFormat() );
 
     emit saveSessionRequest(mSession);
 
@@ -163,7 +160,6 @@ void SessionManager::closeSession()
 
     delete mSession;
     mSession = 0;
-    mSessionName.clear();
 }
 
 bool SessionManager::saveLastSession( const QDir & dir, const QString & sessionFile )
