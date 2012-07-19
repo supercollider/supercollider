@@ -32,9 +32,15 @@ class DocumentManager;
 
 struct Session : public QSettings
 {
-    Session( const QString & file, Format format, QObject * parent = 0 ):
-        QSettings(file, format, parent)
+    Session( const QString & file, const QString & name, Format format, QObject * parent = 0 ):
+        QSettings(file, format, parent),
+        mName(name)
     {}
+
+    const QString & name() { return mName; }
+
+private:
+    QString mName;
 };
 
 class SessionManager : public QObject
@@ -54,7 +60,6 @@ public:
     void closeSession();
 
     Session *currentSession() { return mSession; }
-    const QString & currentSessionName() { return mSessionName; }
 
 signals:
     void saveSessionRequest(Session * session);
@@ -64,7 +69,6 @@ private:
     bool saveLastSession( const QDir & dir, const QString & file );
     DocumentManager *mDocMng;
     Session *mSession;
-    QString mSessionName;
 };
 
 } // namespace ScIDE

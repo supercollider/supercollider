@@ -42,6 +42,8 @@
 #include <QMessageBox>
 #include <QStatusBar>
 #include <QFileDialog>
+#include <QInputDialog>
+#include <QFileInfo>
 
 namespace ScIDE {
 
@@ -157,6 +159,8 @@ MainWindow::MainWindow(Main * main) :
     icon.addFile(":/icons/sc-cube-32");
     icon.addFile(":/icons/sc-cube-16");
     QApplication::setWindowIcon(icon);
+
+    updateWindowTitle();
 }
 
 void MainWindow::createActions()
@@ -212,6 +216,23 @@ void MainWindow::createActions()
     mActions[ClearRecentDocs] = act = new QAction(tr("Clear", "Clear recent documents"), this);
     connect(act, SIGNAL(triggered()),
             Main::instance()->documentManager(), SLOT(clearRecents()));
+
+    // Sessions
+
+    mActions[NewSession] = act = new QAction(
+        QIcon::fromTheme("document-new"), tr("&New Session"), this);
+    act->setStatusTip(tr("Open a new session"));
+    connect(act, SIGNAL(triggered()), this, SLOT(newSession()));
+
+    mActions[SaveSession] = act = new QAction(
+        QIcon::fromTheme("document-save"), tr("&Save Session"), this);
+    act->setStatusTip(tr("Save the current session"));
+    connect(act, SIGNAL(triggered()), this, SLOT(saveCurrentSession()));
+
+    mActions[SaveSessionAs] = act = new QAction(
+        QIcon::fromTheme("document-save-as"), tr("Save Session &As..."), this);
+    act->setStatusTip(tr("Save the current session with a different name"));
+    connect(act, SIGNAL(triggered()), this, SLOT(saveCurrentSessionAs()));
 
     // Edit
 
@@ -316,6 +337,19 @@ void MainWindow::createMenus()
 
     menuBar()->addMenu(menu);
 
+    menu = new QMenu(tr("&Session"), this);
+    menu->addAction( mActions[NewSession] );
+    menu->addAction( mActions[SaveSession] );
+    menu->addAction( mActions[SaveSessionAs] );
+    submenu = menu->addMenu(tr("&Open Session"));
+    QStringList sessions = mMain->sessionManager()->availableSessions();
+    foreach (const QString & session, sessions)
+        submenu->addAction( session );
+    connect(submenu, SIGNAL(triggered(QAction*)),
+            this, SLOT(onOpenSessionAction(QAction*)));
+
+    menuBar()->addMenu(menu);
+
     menu = new QMenu(tr("&Edit"), this);
     menu->addAction( mEditors->action(MultiEditor::Undo) );
     menu->addAction( mEditors->action(MultiEditor::Redo) );
@@ -379,8 +413,46 @@ void MainWindow::createMenus()
     menuBar()->addMenu(menu);
 }
 
+void MainWindow::newSession()
+{
+    if (promptSaveDocs()) {
+        mMain->sessionManager()->closeSession();
+        mMain->documentManager()->create();
+        updateWindowTitle();
+    }
+}
+
+void MainWindow::saveCurrentSession()
+{
+    SessionManager *mng = mMain->sessionManager();
+    if (mng->currentSession())
+        mng->saveSession();
+    else
+        saveCurrentSessionAs();
+}
+
+void MainWindow::saveCurrentSessionAs()
+{
+    QString name = QInputDialog::getText( this,
+                                          "Save Current Session",
+                                          "Enter a name for the session:" );
+
+    if (name.isEmpty()) return;
+
+    mMain->sessionManager()->saveSessionAs(name);
+    updateWindowTitle();
+}
+
+void MainWindow::onOpenSessionAction( QAction * action )
+{
+    if (promptSaveDocs())
+        mMain->sessionManager()->openSession( action->text() );
+}
+
 void MainWindow::loadSession( Session *session )
 {
+    updateWindowTitle();
+
     session->beginGroup("mainWindow");
 
     QByteArray geom = QByteArray::fromBase64
@@ -459,21 +531,8 @@ QAction *MainWindow::action( ActionRole role )
 
 bool MainWindow::quit()
 {
-    bool ok = true;
-
-    QList<Document*> docs = mMain->documentManager()->documents();
-    QList<Document*> unsavedDocs;
-    foreach(Document* doc, docs)
-        if(doc->textDocument()->isModified())
-            unsavedDocs.append(doc);
-
-    if (unsavedDocs.count())
-    {
-        DocumentsDialog dialog(unsavedDocs, DocumentsDialog::Quit, this);
-
-        if (!dialog.exec())
-            return false;
-    }
+    if (!promptSaveDocs())
+        return false;
 
     mMain->quit();
 
@@ -487,6 +546,8 @@ void MainWindow::onQuit()
 
 void MainWindow::onCurrentDocumentChanged( Document * doc )
 {
+    updateWindowTitle();
+
     mActions[DocSave]->setEnabled(doc);
     mActions[DocSaveAs]->setEnabled(doc);
     mActions[DocClose]->setEnabled(doc);
@@ -704,6 +765,54 @@ void MainWindow::closeDocument()
 
     Q_ASSERT(editor->document());
     MainWindow::close( editor->document() );
+}
+
+bool MainWindow::promptSaveDocs()
+{
+    QList<Document*> docs = mMain->documentManager()->documents();
+    QList<Document*> unsavedDocs;
+    foreach(Document* doc, docs)
+        if(doc->textDocument()->isModified())
+            unsavedDocs.append(doc);
+
+    if (unsavedDocs.count())
+    {
+        DocumentsDialog dialog(unsavedDocs, DocumentsDialog::Quit, this);
+
+        if (!dialog.exec())
+            return false;
+    }
+
+    return true;
+}
+
+void MainWindow::updateWindowTitle()
+{
+    Session *session = mMain->sessionManager()->currentSession();
+    CodeEditor *editor = mEditors->currentEditor();
+    Document *doc = editor ? editor->document() : 0;
+
+    QString title;
+
+    if (session) {
+        title.append(session->name());
+        if (doc) title.append(": ");
+    }
+
+    if (doc) {
+        QString fileName =
+            doc->filePath().isEmpty() ? "Untitled" :
+            QFileInfo(doc->filePath()).fileName();
+
+        title.append( fileName );
+    }
+
+    if (!title.isEmpty())
+        title.append(" - ");
+
+    title.append("SuperCollider IDE");
+
+    setWindowTitle(title);
 }
 
 void MainWindow::showCmdLine()
