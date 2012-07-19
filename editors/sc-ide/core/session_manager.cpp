@@ -94,6 +94,19 @@ QString SessionManager::lastSession()
     return QFileInfo(path).baseName();
 }
 
+void SessionManager::newSession()
+{
+    closeSession();
+
+    mDocMng->create();
+
+    QDir dir = sessionsDir();
+    if (!dir.path().isEmpty())
+        saveLastSession( dir, QString() );
+
+    emit currentSessionChanged(0);
+}
+
 Session *SessionManager::openSession( const QString & name )
 {
     // NOTE: This will create a session if it doesn't exists
@@ -110,6 +123,8 @@ Session *SessionManager::openSession( const QString & name )
     saveLastSession( dir, sessionFile );
 
     emit loadSessionRequest(mSession);
+
+    emit currentSessionChanged(mSession);
 
     return mSession;
 }
@@ -134,8 +149,10 @@ Session * SessionManager::saveSessionAs( const QString & name )
     }
 
     QDir dir = sessionsDir();
-    if (dir.path().isEmpty())
+    if (dir.path().isEmpty()) {
+        emit currentSessionChanged(0);
         return 0;
+    }
 
     QString sessionFile = dir.filePath(name + ".yaml");
     mSession = new Session( sessionFile, name, Settings::serializationFormat() );
@@ -145,6 +162,8 @@ Session * SessionManager::saveSessionAs( const QString & name )
     mSession->sync();
 
     saveLastSession( dir, sessionFile );
+
+    emit currentSessionChanged(mSession);
 
     return mSession;
 }
@@ -167,9 +186,12 @@ bool SessionManager::saveLastSession( const QDir & dir, const QString & sessionF
     QString linkFile = dir.filePath(".last-session.lnk");
 
     if ( QFile::exists(linkFile) )
-        QFile::remove(linkFile);
+        if (!QFile::remove(linkFile)) {
+            qWarning("Could not remove old link to last session!");
+            return false;
+        }
 
-    if ( QFile::link( sessionFile, linkFile ) )
+    if ( sessionFile.isEmpty() || QFile::link( sessionFile, linkFile ) )
         return true;
     else
         qWarning("Could not create link to last session!");

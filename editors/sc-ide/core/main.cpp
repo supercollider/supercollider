@@ -48,13 +48,17 @@ int main( int argc, char *argv[] )
     Main * main = Main::instance();
 
     MainWindow *win = new MainWindow(main);
-    win->show();
 
     // NOTE: load session after GUI is created, so that GUI can respond
     QString lastSession = main->sessionManager()->lastSession();
-    if (lastSession.isEmpty())
-        lastSession = "default";
-    main->sessionManager()->openSession(lastSession);
+    if (!lastSession.isEmpty()) {
+        main->sessionManager()->openSession(lastSession);
+        win->show();
+    }
+    else {
+        main->sessionManager()->newSession();
+        win->showMaximized();
+    }
 
     bool startInterpreter = main->settings()->value("IDE/interpreter/autoStart").toBool();
     if(startInterpreter)
@@ -84,7 +88,7 @@ Main::Main(void) :
 }
 
 void Main::quit() {
-    mSessionManager->closeSession();
+    mSessionManager->saveSession();
     storeSettings();
     QApplication::quit();
 }

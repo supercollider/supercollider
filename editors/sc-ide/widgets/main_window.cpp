@@ -114,7 +114,8 @@ MainWindow::MainWindow(Main * main) :
             this, SLOT(saveSession(Session*)));
     connect(main->sessionManager(), SIGNAL(loadSessionRequest(Session*)),
             this, SLOT(loadSession(Session*)));
-
+    connect(main->sessionManager(), SIGNAL(currentSessionChanged(Session*)),
+            this, SLOT(updateWindowTitle()));
     // A system for easy evaluation of pre-defined code:
     connect(&mCodeEvalMapper, SIGNAL(mapped(QString)),
             this, SIGNAL(evaluateCode(QString)));
@@ -223,11 +224,6 @@ void MainWindow::createActions()
         QIcon::fromTheme("document-new"), tr("&New Session"), this);
     act->setStatusTip(tr("Open a new session"));
     connect(act, SIGNAL(triggered()), this, SLOT(newSession()));
-
-    mActions[SaveSession] = act = new QAction(
-        QIcon::fromTheme("document-save"), tr("&Save Session"), this);
-    act->setStatusTip(tr("Save the current session"));
-    connect(act, SIGNAL(triggered()), this, SLOT(saveCurrentSession()));
 
     mActions[SaveSessionAs] = act = new QAction(
         QIcon::fromTheme("document-save-as"), tr("Save Session &As..."), this);
@@ -339,7 +335,6 @@ void MainWindow::createMenus()
 
     menu = new QMenu(tr("&Session"), this);
     menu->addAction( mActions[NewSession] );
-    menu->addAction( mActions[SaveSession] );
     menu->addAction( mActions[SaveSessionAs] );
     submenu = menu->addMenu(tr("&Open Session"));
     QStringList sessions = mMain->sessionManager()->availableSessions();
@@ -415,20 +410,8 @@ void MainWindow::createMenus()
 
 void MainWindow::newSession()
 {
-    if (promptSaveDocs()) {
-        mMain->sessionManager()->closeSession();
-        mMain->documentManager()->create();
-        updateWindowTitle();
-    }
-}
-
-void MainWindow::saveCurrentSession()
-{
-    SessionManager *mng = mMain->sessionManager();
-    if (mng->currentSession())
-        mng->saveSession();
-    else
-        saveCurrentSessionAs();
+    if (promptSaveDocs())
+        mMain->sessionManager()->newSession();
 }
 
 void MainWindow::saveCurrentSessionAs()
@@ -440,7 +423,6 @@ void MainWindow::saveCurrentSessionAs()
     if (name.isEmpty()) return;
 
     mMain->sessionManager()->saveSessionAs(name);
-    updateWindowTitle();
 }
 
 void MainWindow::onOpenSessionAction( QAction * action )
@@ -451,8 +433,6 @@ void MainWindow::onOpenSessionAction( QAction * action )
 
 void MainWindow::loadSession( Session *session )
 {
-    updateWindowTitle();
-
     session->beginGroup("mainWindow");
 
     QByteArray geom = QByteArray::fromBase64
