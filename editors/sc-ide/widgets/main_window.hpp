@@ -96,8 +96,6 @@ public:
     static bool reload( Document * );
 
 public Q_SLOTS:
-    void toggleComandLineFocus();
-    void showSettings();
     void newDocument();
     void openDocument();
     void saveDocument();
@@ -109,6 +107,8 @@ public Q_SLOTS:
     void showFindTool();
     void showReplaceTool();
     void hideToolBox();
+
+    void showSettings();
 
 signals:
     void evaluateCode( const QString &, bool silent = true );

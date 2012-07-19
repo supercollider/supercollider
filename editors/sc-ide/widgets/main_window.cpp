@@ -749,17 +749,6 @@ void MainWindow::hideToolBox()
     }
 }
 
-void MainWindow::toggleComandLineFocus()
-{
-    QWidget *cmd = cmdLine();
-    if(cmd->hasFocus()) {
-        QWidget *editor = mEditors->currentEditor();
-        if(editor) editor->setFocus(Qt::OtherFocusReason);
-    }
-    else
-        cmd->setFocus(Qt::OtherFocusReason);
-}
-
 void MainWindow::showSettings()
 {
     Settings::Dialog dialog(mMain->settings());
