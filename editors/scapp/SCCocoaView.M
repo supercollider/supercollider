@@ -2307,6 +2307,15 @@ id SCQuartzComposerView::getNSObjectForSCObject(PyrSlot *scobject, int *returnEr
 		NSString *returnObject =  [NSString stringWithCString: string->s length: string->size];
 		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
 		return returnObject;
+        
+//need to convert symbol to string        
+    } else if(IsSym(scobject)) { // it's a S Y M B O L
+        PyrSymbol *sym = slotRawSymbol(scobject);
+		NSString *returnObject =  [[NSString alloc] initWithCString: sym->name encoding: NSASCIIStringEncoding];
+		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
+        //post("fixed it \"%s\".\n\n", sym->name);
+		return returnObject;
+        
 	} else if(isKindOfSlot(scobject, s_color->u.classobj)) { // it's a color
 		SCColor rgb;
 		err = slotColorVal(scobject, &rgb);
