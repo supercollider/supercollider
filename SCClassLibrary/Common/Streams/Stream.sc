@@ -2,6 +2,7 @@ Stream : AbstractFunction {
 	// 'reset' is defined in class Object to do nothing.
 	// reading
 
+	parent { ^nil }
 	next { ^this.subclassResponsibility(thisMethod) }
 	iter { ^this }
 
@@ -333,7 +334,7 @@ PauseStream : Stream
 		if (doReset, { this.reset });
 		clock = argClock ? clock ? TempoClock.default;
 		streamHasEnded = false;
-		stream = originalStream;
+		this.refresh; //stream = originalStream;
 		isWaiting = true;	// make sure that accidental play/stop/play sequences
 						// don't cause memory leaks
 		era = CmdPeriod.era;
@@ -378,7 +379,7 @@ PauseStream : Stream
 	}
 
 	refresh {
-		stream = originalStream
+		stream = originalStream.threadPlayer_(this)
 	}
 
 	start { arg argClock, quant;
@@ -386,7 +387,8 @@ PauseStream : Stream
 	}
 
 	stream_ { arg argStream;
-		originalStream = argStream;
+		originalStream.threadPlayer_(nil);  // not owned any more
+		originalStream = argStream.threadPlayer_(this);
 		if (stream.notNil, { stream = argStream; streamHasEnded = argStream.isNil; });
 	}
 
@@ -404,6 +406,7 @@ PauseStream : Stream
 		stream.beats = beats;
 		^this.next(beats)
 	}
+	threadPlayer { ^this }
 }
 
 // Task is a PauseStream for wrapping a Routine

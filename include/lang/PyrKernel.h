@@ -115,6 +115,7 @@ struct PyrThread : public PyrObjectHdr
 	PyrSlot beats, seconds, clock, nextBeat, endBeat, endValue;
 	PyrSlot environment;
 	PyrSlot exceptionHandler;
+	PyrSlot threadPlayer;
 	PyrSlot executingPath;
 	PyrSlot oldExecutingPath;
 	PyrSlot stackSize;

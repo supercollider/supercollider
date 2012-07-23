@@ -181,7 +181,7 @@ Class {
 Process {
 	// A Process is a runtime environment.
 	var classVars, <interpreter;
-	var curThread, mainThread;
+	var curThread, <mainThread;
 	var schedulerQueue;
 	var <>nowExecutingPath;
 

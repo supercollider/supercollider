@@ -10,8 +10,8 @@ Semaphore {
 	wait {
 		count = count - 1;
 		if (count < 0) {
-			waitingThreads.add(thisThread);
-			nil.yield;
+			waitingThreads.add(thisThread.threadPlayer);
+			\hang.yield;
 		};
 	}
 	signal {

@@ -6,13 +6,13 @@ Condition {
 	}
 	wait {
 		if (test.value.not, {
-			waitingThreads = waitingThreads.add(thisThread);
-			nil.yield;
+			waitingThreads = waitingThreads.add(thisThread.threadPlayer);
+			\hang.yield;
 		});
 	}
-	hang { arg value;
+	hang { arg value = \hang;
 		// ignore the test, just wait
-		waitingThreads = waitingThreads.add(thisThread);
+		waitingThreads = waitingThreads.add(thisThread.threadPlayer);
 		value.yield;
 	}
 
