@@ -358,7 +358,7 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::IndentMore) );
     menu->addAction( mEditors->action(MultiEditor::IndentLess) );
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::OpenClassDefinition) );
+    menu->addAction( mEditors->action(MultiEditor::OpenDefinition) );
 
     menuBar()->addMenu(menu);
 

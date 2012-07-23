@@ -79,6 +79,7 @@ private:
     void openClassDefinitionHandler(QString const &);
     void classesHandler(QString const &);
     void symbolTableHandler(QString const &);
+    void methodDefinitionHandler (const QString &);
 };
 
 }

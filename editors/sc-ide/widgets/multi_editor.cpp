@@ -148,9 +148,9 @@ void MultiEditor::createActions()
     mSigMux->connect(act, SIGNAL(triggered(bool)), SLOT(setShowWhitespace(bool)));
 
     // Browse
-    mActions[OpenClassDefinition] = act = new QAction(tr("Open Class Definition"), this);
-    act->setShortcut(tr("Ctrl+D", "Open definition"));
-    connect(act, SIGNAL(triggered(bool)), this, SLOT(openClassDefinition()));
+    mActions[OpenDefinition] = act = new QAction(tr("Open Class/Method Definition"), this);
+    act->setShortcut(tr("Ctrl+D", "Open definition of selected class or method"));
+    connect(act, SIGNAL(triggered(bool)), this, SLOT(openDefinition()));
 
     s->endGroup(); // IDE/shortcuts
 
@@ -295,11 +295,16 @@ CodeEditor * MultiEditor::editorForDocument( Document *doc )
     return 0;
 }
 
-void MultiEditor::openClassDefinition()
+void MultiEditor::openDefinition()
 {
     CodeEditor * editor = currentEditor();
     QString selectedText = editor->textCursor().selectedText();
-    Main::instance()->scProcess()->getClassDefinitions(selectedText);
+    if (selectedText.isEmpty())
+        return;
+    if (selectedText[0].isUpper())
+        Main::instance()->scProcess()->getClassDefinitions(selectedText);
+    else
+        Main::instance()->scProcess()->getMethodDefinitions(selectedText);
 }
 
 } // namespace ScIDE
