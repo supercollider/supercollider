@@ -31,6 +31,7 @@
 #include "post_window.hpp"
 #include "settings/dialog.hpp"
 #include "documents_dialog.hpp"
+#include "sessions_dialog.hpp"
 
 #include <QAction>
 #include <QShortcut>
@@ -44,6 +45,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QFileInfo>
+#include <QPointer>
 
 namespace ScIDE {
 
@@ -230,6 +232,10 @@ void MainWindow::createActions()
     act->setStatusTip(tr("Save the current session with a different name"));
     connect(act, SIGNAL(triggered()), this, SLOT(saveCurrentSessionAs()));
 
+    mActions[ManageSessions] = act = new QAction(
+        tr("&Manage Sessions..."), this);
+    connect(act, SIGNAL(triggered()), this, SLOT(openSessionsDialog()));
+
     // Edit
 
     mActions[Find] = act = new QAction(
@@ -341,6 +347,8 @@ void MainWindow::createMenus()
             this, SLOT(onOpenSessionAction(QAction*)));
     mSessionsMenu = submenu;
     updateSessionsMenu();
+    menu->addSeparator();
+    menu->addAction( mActions[ManageSessions] );
 
     menuBar()->addMenu(menu);
 
@@ -502,6 +510,15 @@ void MainWindow::saveSession( Session *session )
         session->setValue("currentDocument", editor->document()->filePath());
     else
         session->remove("currentDocument");
+}
+
+void MainWindow::openSessionsDialog()
+{
+    QPointer<MainWindow> mainwin(this);
+    SessionsDialog dialog(mMain->sessionManager(), this);
+    dialog.exec();
+    if (mainwin)
+        mainwin->updateSessionsMenu();
 }
 
 QAction *MainWindow::action( ActionRole role )
