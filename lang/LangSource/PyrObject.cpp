@@ -1636,7 +1636,7 @@ void initClasses()
 	class_absfunc = makeIntrinsicClass(s_absfunc, s_object, 0, 0);
 	class_stream = makeIntrinsicClass(s_stream, s_absfunc, 0, 0);
 
-	class_thread = makeIntrinsicClass(s_thread, s_stream, 26, 0);
+	class_thread = makeIntrinsicClass(s_thread, s_stream, 27, 0);
 		addIntrinsicVar(class_thread, "state", &o_nil);
 		addIntrinsicVar(class_thread, "func", &o_nil);
 		addIntrinsicVar(class_thread, "stack", &o_nil);
@@ -1663,6 +1663,7 @@ void initClasses()
 
 		addIntrinsicVar(class_thread, "environment", &o_nil);
 		addIntrinsicVar(class_thread, "exceptionHandler", &o_nil);
+		addIntrinsicVar(class_thread, "threadPlayer", &o_nil);
 
 		addIntrinsicVar(class_thread, "executingPath", &o_nil);
 		addIntrinsicVar(class_thread, "oldExecutingPath", &o_nil);

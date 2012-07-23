@@ -235,6 +235,9 @@ Object  {
 
 	isRest { ^false }
 
+	threadPlayer {}
+	threadPlayer_ {}
+
 	// testing
 	? { arg obj; ^this }
 	?? { arg obj; ^this }
