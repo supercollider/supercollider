@@ -93,6 +93,11 @@ public slots:
         evaluateCode(commandString, true);
     }
 
+    void getMethodDefinitions(QString const & methodName)
+    {
+        evaluateCode(QString("ScIDE.sendMethodDefinitions(\"%1\")").arg(methodName), true);
+    }
+
     void onReadyRead(void)
     {
         QByteArray out = QProcess::readAll();

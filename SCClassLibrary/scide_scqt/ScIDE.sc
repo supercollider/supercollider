@@ -64,6 +64,35 @@ ScIDE {
 		this.prSend(\classDefinitions, result.asArray)
 	}
 
+	*sendMethodDefinitions { |name|
+		var out;
+		if (name.isEmpty) {
+			^this;
+		};
+		if (name[0].toLower != name[0]) {
+			// This is not a valid method name
+			^this;
+		};
+		out = [];
+		name = name.asSymbol;
+		Class.allClasses.do({ arg class;
+			class.methods.do({ arg method;
+				var signature;
+				var definition;
+				if (method.name == name, {
+					signature = [class.name, name];
+					if (method.argNames.size > 1) {
+						signature = signature ++ method.argNames[1..];
+					};
+					definition = [method.filenameSymbol.asString, method.charPos];
+					out = out.add( [signature, definition] );
+				});
+			});
+		});
+
+		this.prSend(\methodDefinitions, out);
+	}
+
 	*prSend {|selector, data|
 		_ScIDE_Send
 		this.primitiveFailed

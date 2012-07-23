@@ -66,7 +66,7 @@ public:
         ShowWhitespace,
 
         // Browse
-        OpenClassDefinition,
+        OpenDefinition,
 
         ActionRoleCount
     };
@@ -103,7 +103,7 @@ private Q_SLOTS:
     void onCloseRequest( int index );
     void onCurrentChanged( int index );
     void onModificationChanged( QWidget * );
-    void openClassDefinition();
+    void openDefinition();
 
 private:
     void createActions();
