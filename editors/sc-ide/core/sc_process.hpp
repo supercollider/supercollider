@@ -89,7 +89,7 @@ public slots:
 
     void getClassDefinitions(QString const & classname)
     {
-        QString commandString = QString("ScIDE.getClassDefinitions(%1)").arg(classname);
+        QString commandString = QString("ScIDE.sendClassDefinitions('%1')").arg(classname);
         evaluateCode(commandString, true);
     }
 

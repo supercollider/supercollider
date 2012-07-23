@@ -36,7 +36,7 @@ ScIDE {
 		this.prSend(\symbolTable, result)
 	}
 
-	*getClassDefinitions {|name|
+	*sendClassDefinitions { |name|
 		var result, class, files;
 
 		result = SortedList(8, subListSorter);
