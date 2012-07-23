@@ -20,6 +20,7 @@ set ( ide_moc_hdr
     widgets/find_replace_tool.hpp
     widgets/tool_box.hpp
     widgets/documents_dialog.hpp
+    widgets/sessions_dialog.hpp
     widgets/code_editor/editor.hpp
     widgets/code_editor/highlighter.hpp
     widgets/code_editor/overlay.hpp

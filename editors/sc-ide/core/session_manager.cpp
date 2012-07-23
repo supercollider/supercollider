@@ -181,6 +181,42 @@ void SessionManager::closeSession()
     mSession = 0;
 }
 
+void SessionManager::removeSession( const QString & name )
+{
+    QDir dir = sessionsDir();
+    if (dir.path().isEmpty())
+        return;
+
+    if (mSession && mSession->name() == name)
+    {
+        delete mSession;
+        mSession = 0;
+        saveLastSession(dir, QString());
+        emit currentSessionChanged(0);
+    }
+
+    if (!QFile::remove(dir.filePath(name + ".yaml")))
+        qWarning("Could not remove a session file!");
+}
+
+void SessionManager::renameSession( const QString & oldName, const QString & newName )
+{
+    if (mSession && mSession->name() == oldName)
+    {
+        saveSessionAs(newName);
+        removeSession(oldName);
+    }
+    else
+    {
+        QDir dir = sessionsDir();
+        if (dir.path().isEmpty())
+            return;
+
+        if (!dir.rename(oldName + ".yaml", newName + ".yaml"))
+            qWarning("Could not rename session file!");
+    }
+}
+
 bool SessionManager::saveLastSession( const QDir & dir, const QString & sessionFile )
 {
     QString linkFile = dir.filePath(".last-session.lnk");

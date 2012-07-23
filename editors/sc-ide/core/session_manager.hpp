@@ -58,6 +58,8 @@ public:
     void saveSession();
     Session * saveSessionAs( const QString & name );
     Session * openSession( const QString & name );
+    void removeSession( const QString & name );
+    void renameSession( const QString & oldName, const QString & newName );
     Session *currentSession() { return mSession; }
 
 signals:

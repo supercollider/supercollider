@@ -62,6 +62,7 @@ public:
         // Sessions
         NewSession,
         SaveSessionAs,
+        ManageSessions,
 
         // Edit
         Find,
@@ -102,6 +103,7 @@ public:
 public Q_SLOTS:
     void newSession();
     void saveCurrentSessionAs();
+    void openSessionsDialog();
 
     void newDocument();
     void openDocument();
