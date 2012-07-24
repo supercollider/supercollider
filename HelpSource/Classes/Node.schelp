@@ -281,9 +281,34 @@ method:: waitForFree
 Wait until this Node is freed. Should be used inside a Routine or similar.
 discussion::
 code::
+(
 fork {
     {SinOsc.ar(440!2) * Line.kr(0,1,5,doneAction:2)}.play.waitForFree;
     {PinkNoise.ar(1) * Line.kr(1,0,2,doneAction:2)}.play.onFree {"done".postln};
 }
+)
+::
+
+code::
+(
+SynthDef(\help, {
+	var mod = LFNoise2.kr(Rand(1, 6)) * 0.2;
+	var snd = mod * Blip.ar(Rand(200, 800) * (mod + 1));
+	Out.ar(0, snd);
+	FreeSelf.kr(mod < 0);
+}).add;
+)
+
+(
+fork {
+	10.do {
+		"started a synth".postln;
+		Synth(\help).waitForFree;
+		"This one ended. Wait a second, I will start the next one.".postln;
+		1.wait;
+	};
+	"This is it.".postln;
+}
+);
 ::
 
