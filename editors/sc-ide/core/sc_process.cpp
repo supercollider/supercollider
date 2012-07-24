@@ -32,6 +32,7 @@ SCProcess::SCProcess( Main *parent ):
     connect(this, SIGNAL( readyRead() ),
             this, SLOT( onReadyRead() ));
     connect(mIPC, SIGNAL(message(QString)), this, SIGNAL(statusMessage(QString)));
+    connect(mIPC, SIGNAL(command(QString,QString)), this, SIGNAL(scCommand(QString,QString)));
 }
 
 void SCProcess::start (void)

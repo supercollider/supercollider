@@ -57,6 +57,7 @@ public:
 
 Q_SIGNALS:
     void message(QString const &);
+    void command(const QString & selector, const QString & data);
 
 private Q_SLOTS:
 
@@ -76,10 +77,6 @@ private Q_SLOTS:
 
 private:
     void tryEvaluateReceivedData(void);
-    void openClassDefinitionHandler(QString const &);
-    void classesHandler(QString const &);
-    void symbolTableHandler(QString const &);
-    void methodDefinitionHandler (const QString &);
 };
 
 }
