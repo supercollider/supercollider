@@ -31,6 +31,7 @@ set ( ide_moc_hdr
     widgets/util/path_chooser_widget.hpp
     widgets/util/text_format_list_widget.hpp
     widgets/util/key_sequence_edit.hpp
+    widgets/util/popup_widget.hpp
 )
 
 set ( ide_src
@@ -57,6 +58,7 @@ set ( ide_src
     widgets/settings/editor_page.cpp
     widgets/settings/shortcuts_page.cpp
     widgets/util/text_format_list_widget.cpp
+    widgets/util/popup_widget.cpp
 )
 
 set( ide_forms

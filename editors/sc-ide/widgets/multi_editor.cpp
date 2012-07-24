@@ -21,6 +21,7 @@
 #include "multi_editor.hpp"
 #include "main_window.hpp"
 #include "code_editor/editor.hpp"
+#include "util/popup_widget.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/sig_mux.hpp"
 #include "../core/main.hpp"
@@ -36,7 +37,46 @@
 #include <QMenu>
 #include <QDebug>
 
+#include <QTreeWidget>
+#include <QHeaderView>
+#include <QFileInfo>
+
 namespace ScIDE {
+
+class PopUpTree : public PopUpWidget
+{
+public:
+    PopUpTree( QWidget * parent = 0 ):
+        PopUpWidget(parent)
+    {
+        mTreeWidget = new QTreeWidget();
+        mTreeWidget->setFrameShape(QFrame::NoFrame);
+        mTreeWidget->setRootIsDecorated(false);
+        mTreeWidget->setAllColumnsShowFocus(true);
+        //mTreeWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+        mTreeWidget->setHeaderHidden(true);
+        mTreeWidget->header()->setStretchLastSection(false);
+
+        QHeaderView *header = mTreeWidget->header();
+        header->setResizeMode( QHeaderView::ResizeToContents );
+
+        QHBoxLayout *layout = new QHBoxLayout(this);
+        layout->addWidget(mTreeWidget);
+        layout->setContentsMargins(1,1,1,1);
+
+        connect(mTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(accept()));
+        connect(mTreeWidget, SIGNAL(itemActivated(QTreeWidgetItem*, int)), this, SLOT(accept()));
+
+        mTreeWidget->setFocus(Qt::OtherFocusReason);
+
+        resize(300, 200);
+    }
+
+    QTreeWidget *treeWidget() { return mTreeWidget; }
+
+private:
+    QTreeWidget *mTreeWidget;
+};
 
 MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
@@ -357,8 +397,10 @@ void MultiEditor::handleClassDefinitions( const QString & yamlString )
 
         default:
         {
-            QMenu * menu = new QMenu();
-            QList<QAction*> actions;
+            QPointer<PopUpTree> popup = new PopUpTree(this);
+            QTreeWidget *tree = popup->treeWidget();
+            tree->setColumnCount(2);
+
             for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it) {
                 YAML::Node const & entry = *it;
                 assert(entry.Type() == YAML::NodeType::Sequence);
@@ -366,16 +408,33 @@ void MultiEditor::handleClassDefinitions( const QString & yamlString )
                 std::string path = entry[1].to<std::string>();
                 int charPosition = entry[2].to<int>() - 1; // position is one off
 
-                QAction * action = new QAction(QString(path.c_str()), menu);
-                action->setData(QVariant(charPosition));
-                actions.append(action);
+                QTreeWidgetItem *item = new QTreeWidgetItem (
+                    tree,
+                    QStringList()
+                    << QFileInfo(path.c_str()).fileName()
+                    << path.c_str()
+                );
+                item->setData( 0, Qt::UserRole, charPosition );
             }
 
-            menu->addActions(actions);
-            QAction * selectedAction = menu->exec(QCursor::pos());
-            if (selectedAction)
-                Main::instance()->documentManager()->open(selectedAction->text(), selectedAction->data().toInt());
-            delete menu;
+            tree->setCurrentItem(tree->topLevelItem(0));
+
+            CodeEditor *editor = currentEditor();
+            QPoint pos = editor ?
+                editor->viewport()->mapToGlobal( editor->cursorRect().bottomLeft() ) + QPoint(5,5) :
+                QPoint(100,100);
+
+            if (popup->exec(pos))
+            {
+                QTreeWidgetItem *item = tree->currentItem();
+                if (item) {
+                    QString fileName = item->text(1);
+                    int pos = item->data(0, Qt::UserRole).toInt();
+                    Main::instance()->documentManager()->open(fileName, pos);
+                }
+            }
+
+            delete popup;
         }
         }
     }
@@ -437,25 +496,49 @@ void MultiEditor::handleMethodDefinitions( const QString & yamlString )
         }
         default:
         {
-            QMenu * menu = new QMenu();
-            int idx = 0;
-            for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it, ++idx) {
+            QPointer<PopUpTree> popup = new PopUpTree(this);
+            QTreeWidget *tree = popup->treeWidget();
+            tree->setColumnCount(2);
+
+            for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it)
+            {
                 YAML::Node const & entry = *it;
                 assert(entry.Type() == YAML::NodeType::Sequence);
-                QString sig = constructMethodSignature( entry[0] );
-                QAction * action = menu->addAction(sig);
-                action->setData(idx);
+
+                QString signature = constructMethodSignature( entry[0] );
+
+                YAML::Node const & location = entry[1];
+                assert(location.Type() == YAML::NodeType::Sequence);
+                QString path = location[0].to<std::string>().c_str();
+                int pos = location[1].to<int>();
+
+                QTreeWidgetItem *item = new QTreeWidgetItem (
+                    tree,
+                    QStringList()
+                    << signature
+                    << path
+                );
+                item->setData( 0, Qt::UserRole, pos );
             }
 
-            QAction * selectedAction = menu->exec(QCursor::pos());
-            if (selectedAction) {
-                int selIdx = selectedAction->data().toInt();
-                YAML::Node const & location = doc[selIdx][1];
-                QString fileName( location[0].to<std::string>().c_str() );
-                int pos = location[1].to<int>();
-                Main::instance()->documentManager()->open(fileName, pos);
+            tree->setCurrentItem(tree->topLevelItem(0));
+
+            CodeEditor *editor = currentEditor();
+            QPoint pos = editor ?
+                editor->viewport()->mapToGlobal( editor->cursorRect().bottomLeft() ) + QPoint(5,5) :
+                QPoint(100,100);
+
+            if (popup->exec(pos))
+            {
+                QTreeWidgetItem *item = tree->currentItem();
+                if (item) {
+                    QString fileName = item->text(1);
+                    int pos = item->data(0, Qt::UserRole).toInt();
+                    Main::instance()->documentManager()->open(fileName, pos);
+                }
             }
-            delete menu;
+
+            delete popup;
         }
         }
     }
