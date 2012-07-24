@@ -53,6 +53,7 @@ public:
 Q_SIGNALS:
     void scPost(QString const &);
     void statusMessage(const QString &);
+    void scCommand(const QString & selector, const QString & data);
 
 public slots:
     void start (void);

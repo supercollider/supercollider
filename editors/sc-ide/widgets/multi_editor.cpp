@@ -25,6 +25,9 @@
 #include "../core/sig_mux.hpp"
 #include "../core/main.hpp"
 
+#include "yaml-cpp/node.h"
+#include "yaml-cpp/parser.h"
+
 #include <QApplication>
 #include <QStyle>
 #include <QHBoxLayout>
@@ -70,6 +73,9 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
+
+    connect(main->scProcess(), SIGNAL(scCommand(QString,QString)),
+            this, SLOT(performScCommand(QString,QString)));
 
     createActions();
     updateActions();
@@ -305,6 +311,154 @@ void MultiEditor::openDefinition()
         Main::instance()->scProcess()->getClassDefinitions(selectedText);
     else
         Main::instance()->scProcess()->getMethodDefinitions(selectedText);
+}
+
+void MultiEditor::performScCommand( const QString & selector, const QString & data )
+{
+    static QString classDefinitions("classDefinitions");
+    static QString methodDefinitions("methodDefinitions");
+
+    if (selector == classDefinitions)
+        handleClassDefinitions(data);
+    else if(selector == methodDefinitions)
+        handleMethodDefinitions(data);
+}
+
+void MultiEditor::handleClassDefinitions( const QString & yamlString )
+{
+    std::stringstream stream;
+    stream << yamlString.toStdString();
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    while(parser.GetNextDocument(doc)) {
+        assert(doc.Type() == YAML::NodeType::Sequence);
+
+        switch (doc.size()) {
+        case 0:
+        {
+            //emit message("Class not defined!");
+            qDebug("Class not defined!");
+            return;
+        }
+
+        case 1:
+        {
+            YAML::Iterator it = doc.begin();
+            YAML::Node const & entry = *it;
+            assert(entry.Type() == YAML::NodeType::Sequence);
+
+            // name, path, character position
+            std::string path = entry[1].to<std::string>();
+            int charPosition = entry[2].to<int>() - 1; // position is one off
+            Main::instance()->documentManager()->open(QString(path.c_str()), charPosition);
+            return;
+        }
+
+        default:
+        {
+            QMenu * menu = new QMenu();
+            QList<QAction*> actions;
+            for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it) {
+                YAML::Node const & entry = *it;
+                assert(entry.Type() == YAML::NodeType::Sequence);
+
+                std::string path = entry[1].to<std::string>();
+                int charPosition = entry[2].to<int>() - 1; // position is one off
+
+                QAction * action = new QAction(QString(path.c_str()), menu);
+                action->setData(QVariant(charPosition));
+                actions.append(action);
+            }
+
+            menu->addActions(actions);
+            QAction * selectedAction = menu->exec(QCursor::pos());
+            if (selectedAction)
+                Main::instance()->documentManager()->open(selectedAction->text(), selectedAction->data().toInt());
+            delete menu;
+        }
+        }
+    }
+}
+
+static QString constructMethodSignature(const YAML::Node & node)
+{
+    assert(node.Type() == YAML::NodeType::Sequence);
+
+    QString sig( node[0].to<std::string>().c_str() );
+    sig.append(": ");
+
+    QString method( node[1].to<std::string>().c_str() );
+    sig.append(method);
+
+    int count = node.size();
+    if (count > 2) {
+        sig.append(" (");
+        for (int i = 2; i < count; ++i) {
+            if (i > 2) sig.append(", ");
+            sig.append( node[i].to<std::string>().c_str() );
+        }
+        sig.append(")");
+    }
+    else if (method.endsWith('_')) {
+        sig.append(" (value)");
+    }
+
+    return sig;
+}
+
+void MultiEditor::handleMethodDefinitions( const QString & yamlString )
+{
+    std::stringstream stream;
+    stream << yamlString.toStdString();
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    while(parser.GetNextDocument(doc)) {
+        assert(doc.Type() == YAML::NodeType::Sequence);
+
+        switch (doc.size()) {
+        case 0:
+        {
+            //emit message("Method not defined!");
+            qDebug("Method not defined!");
+            return;
+        }
+        case 1:
+        {
+            YAML::Node const & entry = doc[0];
+            QString sig = constructMethodSignature( entry[0] );
+            YAML::Node const & location = entry[1];
+            assert(location.Type() == YAML::NodeType::Sequence);
+            QString fileName( location[0].to<std::string>().c_str() );
+            int pos = location[1].to<int>();
+            Main::instance()->documentManager()->open(fileName, pos);
+            return;
+        }
+        default:
+        {
+            QMenu * menu = new QMenu();
+            int idx = 0;
+            for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it, ++idx) {
+                YAML::Node const & entry = *it;
+                assert(entry.Type() == YAML::NodeType::Sequence);
+                QString sig = constructMethodSignature( entry[0] );
+                QAction * action = menu->addAction(sig);
+                action->setData(idx);
+            }
+
+            QAction * selectedAction = menu->exec(QCursor::pos());
+            if (selectedAction) {
+                int selIdx = selectedAction->data().toInt();
+                YAML::Node const & location = doc[selIdx][1];
+                QString fileName( location[0].to<std::string>().c_str() );
+                int pos = location[1].to<int>();
+                Main::instance()->documentManager()->open(fileName, pos);
+            }
+            delete menu;
+        }
+        }
+    }
 }
 
 } // namespace ScIDE

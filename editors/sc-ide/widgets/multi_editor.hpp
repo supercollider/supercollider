@@ -105,11 +105,16 @@ private Q_SLOTS:
     void onModificationChanged( QWidget * );
     void openDefinition();
 
+    void performScCommand( const QString & selector, const QString & yamlData );
+
 private:
     void createActions();
     void updateActions();
     CodeEditor * editorForTab( int index );
     CodeEditor * editorForDocument( Document * );
+
+    void handleClassDefinitions( const QString & );
+    void handleMethodDefinitions( const QString & );
 
     DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;
