@@ -5,7 +5,22 @@ related:: Overviews/GUI-Classes, Guides/GUI-Introduction, Classes/ViewRedirect
 
 
 description::
-The GUI class provides a means of writing cross platform gui code. GUI provides Factory abstraction for all gui related core classes. Each gui kit is described by a gui scheme which maps class names to actual classes. These schemes are in turn used by link::Classes/ViewRedirect:: to provide a simple cross-platform gui syntax. It also provide utilities for switching kits and other cross platform tasks. You can get your available schemes (depending on what you installed) with:
+SuperCollider currently supports three operating system platforms: Macintosh OSX, UNIX (Linux and FreeBSD) and Windows (with some limitations).
+
+Graphical User Interface (GUI) code, for the most part, does not need to worry about which platform is executing the code because of the strong::view redirect:: system. At any time, one and only one strong::GUI kit:: is active. This determines which GUI classes will be used for rendering. These classes, the active views, have prefixes for the GUI kit that created the view object: SCWindow vs. JSCWindow vs. QWindow.
+
+table::
+## strong::GUI kit:: || strong::Code to activate:: || strong::Supported platform(s):: || strong::Framework:: || strong::Prefix::
+## Cocoa || code::GUI.cocoa:: || Mac OSX only || Cocoa || SC-
+## SwingOSC || code::GUI.swing:: || All || Java + Swing || JSC-
+## Qt || code::GUI.qt:: || All || Qt || Q-
+::
+
+In general, users should not concern themselves with the prefixes. Instead, work with the emphasis::redirect:: classes, which have no prefix: Window, Button, Slider, etc. The redirect class will ask the currently-selected kit which emphasis::implementation class:: should be used.
+
+The GUI kit (CocoaGUI, QtGUI, SwingGUI) maps the generic view names to the implementing classes: code::Window --> SCWindow, QWindow or JSCWindow::. These schemes are in turn used by link::Classes/ViewRedirect:: to provide a simple cross-platform gui syntax. The GUI class provides utilities for switching kits and other cross platform tasks. 
+
+You can get your available schemes (depending on what you installed) with:
 code::
 GUI.schemes;
 ::
@@ -14,16 +29,18 @@ For a complete list of gui classes and redirects, see link::Overviews/GUI-Classe
 
 subsection:: Switching and Referring to GUI Kits
 
-As of this writing, two GUI kits are available through the GUI class: link::Classes/CocoaGUI:: (Mac OS X native) and link::Classes/SwingGUI:: (Java). Note that link::Classes/SwingOSC:: is not part of every SuperCollider distribution, so you may have to install it separately.
+As of this writing, three GUI kits are available through the GUI class: link::Classes/QtGUI:: (Qt framework), link::Classes/CocoaGUI:: (Mac OS X native) and link::Classes/SwingGUI:: (Java). Note that link::Classes/SwingOSC:: is not part of every SuperCollider distribution, so you may have to install it separately.
 
 You can switch the GUI kit by calling one of the following class methods:
 code::
+GUI.qt;		// use Qt in subsequent GUI creation procedures
 GUI.cocoa;	// use cocoa in subsequent GUI creation procedures
 GUI.swing;	// use swing in subsequent GUI creation procedures
 		// NOTE: If you do not have SwingOSC installed, you get
 		// a warning only, and do not switch; so you cannot
-		// accidentally disable your (mac) gui system.
+		// accidentally disable your gui system.
 ::
+
 These methods return the new GUI kit implementation. The current implementation can be queried by calling
 code::
 GUI.current;	// returns the current GUI kit implementation
