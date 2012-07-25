@@ -502,6 +502,19 @@ void GraphDef_DeleteMsg(World *inWorld, GraphDef *inDef)
 	DeleteGraphDefMsg msg;
 	msg.mDef = inDef;
 	inWorld->hw->mDeleteGraphDefs.Write(msg);
+
+	small_scpacket packet;
+	packet.adds("/d_removed");
+	packet.maketags(1);
+	packet.addtag(',');
+	packet.addtag('s');
+	packet.adds((char*)inDef->mNodeDef.mName);
+
+	ReplyAddress *users = inWorld->hw->mUsers;
+	int numUsers = inWorld->hw->mNumUsers;
+	for (int i=0; i<numUsers; ++i) {
+		SendReply(users+i, packet.data(), packet.size());
+	}
 }
 
 GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList)
