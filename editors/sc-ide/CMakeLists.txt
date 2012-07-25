@@ -18,6 +18,7 @@ set ( ide_moc_hdr
     widgets/doc_list.hpp
     widgets/cmd_line.hpp
     widgets/find_replace_tool.hpp
+    widgets/goto_line_tool.hpp
     widgets/tool_box.hpp
     widgets/documents_dialog.hpp
     widgets/sessions_dialog.hpp

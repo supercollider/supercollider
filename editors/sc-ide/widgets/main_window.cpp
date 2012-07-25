@@ -26,6 +26,7 @@
 #include "multi_editor.hpp"
 #include "cmd_line.hpp"
 #include "find_replace_tool.hpp"
+#include "goto_line_tool.hpp"
 #include "tool_box.hpp"
 #include "doc_list.hpp"
 #include "post_window.hpp"
@@ -84,9 +85,13 @@ MainWindow::MainWindow(Main * main) :
 
     mFindReplaceTool = new TextFindReplacePanel;
 
+    mGoToLineTool = new GoToLineTool();
+    connect(mGoToLineTool, SIGNAL(activated(int)), this, SLOT(hideToolBox()));
+
     mToolBox = new ToolBox;
     mToolBox->addWidget(mCmdLine);
     mToolBox->addWidget(mFindReplaceTool);
+    mToolBox->addWidget(mGoToLineTool);
     mToolBox->hide();
 
     // Docks
@@ -263,6 +268,11 @@ void MainWindow::createActions()
     act->setShortcut(tr("Ctrl+E", "Show command line"));
     connect(act, SIGNAL(triggered()), this, SLOT(showCmdLine()));
 
+    mActions[ShowGoToLineTool] = act = new QAction(tr("&Go To Line"), this);
+    act->setStatusTip(tr("Tool to jump to a line by number"));
+    act->setShortcut(tr("Ctrl+G", "Show go-to-line tool"));
+    connect(act, SIGNAL(triggered()), this, SLOT(showGoToLineTool()));
+
     mActions[CloseToolBox] = act = new QAction(
         QIcon::fromTheme("window-close"), tr("&Close Tool Panel"), this);
     act->setStatusTip(tr("Close any open tool panel"));
@@ -379,6 +389,7 @@ void MainWindow::createMenus()
     submenu->addAction( mActions[Find] );
     submenu->addAction( mActions[Replace] );
     submenu->addAction( mActions[ShowCmdLine] );
+    submenu->addAction( mActions[ShowGoToLineTool] );
     submenu->addSeparator();
     submenu->addAction( mActions[CloseToolBox] );
     menu->addSeparator();
@@ -550,7 +561,9 @@ void MainWindow::onCurrentDocumentChanged( Document * doc )
     mActions[DocSaveAs]->setEnabled(doc);
     mActions[DocClose]->setEnabled(doc);
 
-    mFindReplaceTool->setEditor( mEditors->currentEditor() );
+    CodeEditor *editor = mEditors->currentEditor();
+    mFindReplaceTool->setEditor( editor );
+    mGoToLineTool->setEditor( editor );
 }
 
 void MainWindow::onDocumentChangedExternally( Document *doc )
@@ -827,6 +840,17 @@ void MainWindow::showCmdLine()
     mToolBox->show();
 
     mCmdLine->setFocus(Qt::OtherFocusReason);
+}
+
+void MainWindow::showGoToLineTool()
+{
+    CodeEditor *editor = mEditors->currentEditor();
+    mGoToLineTool->setValue( editor ? editor->textCursor().blockNumber() + 1 : 0 );
+
+    mToolBox->setCurrentWidget( mGoToLineTool );
+    mToolBox->show();
+
+    mGoToLineTool->setFocus();
 }
 
 void MainWindow::showFindTool()

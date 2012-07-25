@@ -33,6 +33,7 @@ class Main;
 class MultiEditor;
 class ToolBox;
 class TextFindReplacePanel;
+class GoToLineTool;
 class PostDock;
 class DocumentsDock;
 class StatusLabel;
@@ -71,6 +72,7 @@ public:
         // View
         ShowDocList,
         ShowCmdLine,
+        ShowGoToLineTool,
         CloseToolBox,
 
         // Language
@@ -115,6 +117,7 @@ public Q_SLOTS:
     void showCmdLine();
     void showFindTool();
     void showReplaceTool();
+    void showGoToLineTool();
     void hideToolBox();
 
     void showSettings();
@@ -159,6 +162,7 @@ private:
     // Tools
     ToolBox *mToolBox;
     QWidget *mCmdLine;
+    GoToLineTool *mGoToLineTool;
     TextFindReplacePanel *mFindReplaceTool;
 
     // Status bar
