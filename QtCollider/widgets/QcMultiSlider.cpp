@@ -226,7 +226,7 @@ void QcMultiSlider::mouseMoveEvent( QMouseEvent *e )
     return;
   }
 
-  double xStep;
+  qreal xStep;
 
   QRect r( valueRect( c - startIndex, xStep ) );
 
@@ -336,10 +336,10 @@ void QcMultiSlider::paintEvent( QPaintEvent *e )
   }
 
   int count = _values.count() - startIndex;
-  double spacing, width, yscale;
+  qreal spacing, width, yscale;
 
-  spacing = elastic ? (double) bounds.width() / count : thumbSize.width() + gap;
-  width = elastic ? qMin( spacing, (double) thumbSize.width() ) : thumbSize.width();
+  spacing = elastic ? (qreal) bounds.width() / count : thumbSize.width() + gap;
+  width = elastic ? qMin( spacing, (qreal) thumbSize.width() ) : thumbSize.width();
   yscale = bounds.height();
   if( !isFilled ) yscale -= thumbSize.height();
 
