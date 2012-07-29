@@ -1,6 +1,6 @@
 class:: TIRand
 summary:: Triggered integer random number generator.
-related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TRand
+related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TRand, Classes/TChoose
 categories:: UGens>Random, UGens>Triggers
 
 
