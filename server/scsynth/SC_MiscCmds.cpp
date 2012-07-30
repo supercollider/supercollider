@@ -1082,7 +1082,6 @@ SCErr meth_n_after(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 SCErr meth_n_order(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_n_order(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
-	SCErr err;
 
 	Node *prevNode = 0;
 	Node *node = 0;

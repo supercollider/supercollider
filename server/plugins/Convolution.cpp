@@ -635,8 +635,6 @@ void Convolution2L_Ctor(Convolution2L *unit)
 								  //if (bufnum >= world->mNumSndBufs) bufnum = 0;
 								  //SndBuf *buf = world->mSndBufs + bufnum;
 
-	World *world = unit->mWorld;
-
 	SndBuf *buf = ConvGetBuffer(unit, bufnum, "Convolution2L", 1);
 
 	if(buf) {
@@ -742,7 +740,6 @@ void Convolution2L_next(Convolution2L *unit, int numSamples)
 	if (unit->m_prevtrig <= 0.f && curtrig > 0.f){
 
 		uint32 bufnum = (int)ZIN0(1);
-		World *world = unit->mWorld;
 		SndBuf *buf = ConvGetBuffer(unit, bufnum, "Convolution2L", numSamples);
 		if (!buf)
 			return;
@@ -968,8 +965,6 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 	//unit->m_log2n = LOG2CEIL(unit->m_fftsize);
     //int log2n = unit->m_log2n;
 
-	World *world = unit->mWorld;
-
 	SndBuf *buf = ConvGetBuffer(unit, bufnumL, "StereoConvolution2L", 1);
 
 	if (buf) {
@@ -1072,14 +1067,12 @@ void StereoConvolution2L_next(StereoConvolution2L *unit, int wrongNumSamples)
 	unit->m_pos += numSamples;
 
 	if (unit->m_prevtrig <= 0.f && curtrig > 0.f){
-		int log2n2 = unit->m_log2n;
 		float fbufnum  = ZIN0(1);
 		uint32 bufnumL = (int)fbufnum;
 		fbufnum  = ZIN0(2);
 		uint32 bufnumR = (int)fbufnum;
 		unit->m_cflength = (int)ZIN0(5);
 		//printf("bufnum %i \n", bufnum);
-		World *world = unit->mWorld;
 
 		SndBuf *bufL = ConvGetBuffer(unit, bufnumL, "StereoConvolution2L", numSamples);
 		SndBuf *bufR = ConvGetBuffer(unit, bufnumR, "StereoConvolution2L", numSamples);
@@ -1289,7 +1282,6 @@ void Convolution3_Ctor(Convolution3 *unit)
 	float fbufnum  = ZIN0(1);
 	uint32 bufnum = (int)fbufnum;
 
-	World *world = unit->mWorld;
 	//if (bufnum >= world->mNumSndBufs) bufnum = 0;
 	//SndBuf *buf = world->mSndBufs + bufnum;
 	SndBuf *buf = ConvGetBuffer(unit, bufnum, "Convolution3", 1);
@@ -1339,7 +1331,6 @@ void Convolution3_next_a(Convolution3 *unit)
 	float *pin1 = unit->m_inbuf1;
 
 	int numSamples = unit->mWorld->mFullRate.mBufLength;
-	uint32 insize=unit->m_insize * sizeof(float);
 
 	// copy input
 	Copy(numSamples, pin1, in);
@@ -1351,7 +1342,6 @@ void Convolution3_next_a(Convolution3 *unit)
 		// 			int log2n2 = unit->m_log2n;
 		uint32 bufnum = (int)fbufnum;
 		// 			printf("bufnum %i \n", bufnum);
-		World *world = unit->mWorld;
 		SndBuf *buf = ConvGetBuffer(unit, bufnum, "Convolution3", numSamples);
 		LOCK_SNDBUF_SHARED(buf);
 
@@ -1404,7 +1394,6 @@ void Convolution3_next_k(Convolution3 *unit)
 	float *out1 = unit->m_inbuf1 + unit->m_pos;
 	// 	float *out2 = unit->m_inbuf2 + unit->m_pos;
 
-	int numSamples = unit->mWorld->mFullRate.mBufLength;
 	uint32 insize=unit->m_insize * sizeof(float);
 
 
@@ -1414,7 +1403,6 @@ void Convolution3_next_k(Convolution3 *unit)
 		// 			int log2n2 = unit->m_log2n;
 		uint32 bufnum = (int)fbufnum;
 		// 			printf("bufnum %i \n", bufnum);
-		World *world = unit->mWorld;
 		SndBuf *buf= ConvGetBuffer(unit, bufnum, "Convolution3", 1);
 		if (!buf)
 			return;

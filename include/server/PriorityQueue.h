@@ -102,8 +102,7 @@ public:
 	{
 		for (int i=0; i<mSize; ++i)
 		{
-			int j = (i<<1)+1;
-			int k = j+1;
+			// int j = (i<<1)+1;
 			//if (j<mSize && mEvents[i].mTime > mEvents[j].mTime) throw std::runtime_error("priority queue unsorted");
 			//if (k<mSize && mEvents[i].mTime > mEvents[k].mTime) throw std::runtime_error("priority queue unsorted");
 		}

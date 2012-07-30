@@ -157,7 +157,6 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum)
 	} 
     
 	LOCK_SNDBUF(buf);
-	int numbins = buf->samples - 2 >> 1;
 
 	//assumed in this representation
 	SCComplexBuf *p = ToComplexApx(buf);
@@ -201,8 +200,6 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum)
 		indexbase= 12*i; //6 partials, 2 of each
 
 		//transient sum, setting up last values too
-
-		float phasesum=0.0;
 
 		for(int j=0;j<12;++j) { //12 if 144 data points
 

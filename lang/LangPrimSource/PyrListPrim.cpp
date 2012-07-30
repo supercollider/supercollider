@@ -541,7 +541,6 @@ void PriorityQueueAdd(struct VMGlobals *g, PyrObject* queueobj, PyrSlot* item, d
 		maxsize = ARRAYMAXINDEXSIZE(schedq);
 		size = schedq->size;
 		if (size+3 > maxsize) {
-			PyrSlot *pslot, *qslot;
 
 			newschedq = newPyrArray(g->gc, maxsize*2, 0, true);
 			newschedq->size = size;

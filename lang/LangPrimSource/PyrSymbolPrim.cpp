@@ -226,7 +226,6 @@ int prSymbol_matchOSCPattern(struct VMGlobals *g, int numArgsPushed);
 int prSymbol_matchOSCPattern(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
-	int length;
 	
 	a = g->sp - 1;
 	b = g->sp;

@@ -738,7 +738,6 @@ void PV_Copy_next(PV_Unit *unit, int inNumSamples)
 	}
 
 	if (buf1->samples != buf2->samples) return;
-	int numbins = buf1->samples - 2 >> 1;
 
 	// copy to buf2
 	LOCK_SNDBUF2_SHARED_EXCLUSIVE(buf1, buf2);

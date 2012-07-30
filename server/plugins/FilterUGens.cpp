@@ -4746,7 +4746,6 @@ void FreqShift_next_ka(FreqShift *unit, int inNumSamples)
 	float *table1 = table0 + 1;
 	int32 lomask = unit->m_lomask;
 	int32 phase = unit->m_phase;
-	float phasemod = unit->m_phasein;
 
 	int32 freq = (int32)(unit->m_cpstoinc * freqin);
 

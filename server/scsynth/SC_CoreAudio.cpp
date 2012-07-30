@@ -1512,13 +1512,6 @@ OSStatus	deviceListenerProc (	AudioDeviceID			inDevice,
 									void*					inClientData)
 {
     OSStatus			err = noErr;
-    UInt32 				outSize,
-                        theUIntData,
-						mute,
-						playThru;
-    UInt32				tLong;
-	Float32				vol;
-
 
 	SC_CoreAudioDriver* coredriver = (SC_CoreAudioDriver*) inClientData;
 

@@ -244,7 +244,6 @@ void myUpdatedFunc(void *refCon, IOBluetoothDeviceInquiryRef inquiry, IOBluetoot
 
 void myCompleteFunc(void *refCon, IOBluetoothDeviceInquiryRef inquiry, IOReturn error, Boolean aborted)
 {
-	IOReturn	ret;
 
 	if (aborted) return; // called by stop ;)
 

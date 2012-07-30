@@ -1889,7 +1889,7 @@ bool parseOneClass(PyrSymbol *fileSym)
 	ClassDependancy *classdep;
 	bool res;
 
-	int startPos, startLine, startLineOffset;
+	int startPos, startLineOffset;
 
 	res = true;
 

@@ -736,8 +736,6 @@ void MaxLocalBufs_Ctor(MaxLocalBufs *unit)
 {
 	Graph *parent = unit->mParent;
 
-	int offset =  unit->mWorld->mNumSndBufs;
-	int bufnum =  parent->localBufNum;
 	int maxBufNum = (int)(IN0(0) + .5f);
 	if(!parent->localMaxBufNum) {
 		parent->mLocalSndBufs = (SndBuf*)RTAlloc(unit->mWorld, maxBufNum * sizeof(SndBuf));
@@ -4196,8 +4194,6 @@ inline void FilterX_perform_a(CombX *unit, int inNumSamples, UnitCalcFunc resetF
 
 	float *dlybuf = unit->m_dlybuf;
 	long iwrphase = unit->m_iwrphase;
-	float dsamp = unit->m_dsamp;
-	float feedbk = unit->m_feedbk;
 	long mask = unit->m_mask;
 
 	LOOP1(inNumSamples,
@@ -6160,8 +6156,8 @@ Pluck - Karplus-Strong
 void Pluck_Ctor(Pluck *unit)
 {
 //	FeedbackDelay_Reset(unit);
-	float maxdelaytime = unit->m_maxdelaytime = IN0(2);
-	float delaytime = unit->m_delaytime = IN0(3);
+	unit->m_maxdelaytime = IN0(2);
+	unit->m_delaytime = IN0(3);
 	unit->m_dlybuf = 0;
 	bool allocationSucessful = DelayUnit_AllocDelayLine(unit, "Pluck");
 	if (!allocationSucessful)
