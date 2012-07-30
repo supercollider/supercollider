@@ -54,7 +54,6 @@ float gSine[kSineSize+1];
 static bool initTables(void)
 {
 	double sineIndexToPhase = twopi / kSineSize;
-	double pmf = (1L << 29) / twopi;
 	for (int i=0; i <= kSineSize; ++i) {
 		double phase = i * sineIndexToPhase;
 		float32 d = sin(phase);

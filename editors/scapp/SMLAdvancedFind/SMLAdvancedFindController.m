@@ -254,7 +254,6 @@ if (mContents != newContents)
 	}
 	[replaceSearchField setRecentSearches:recentReplaces];
 	
-	NSInteger searchStringLength = [searchString length];
 //	 [[NSApp mainWindow] firstResponder];
 //	if (!searchStringLength > 0 || SMLCurrentDocument == nil || SMLCurrentProject == nil) {
 //		NSBeep();
@@ -609,9 +608,7 @@ if (mContents != newContents)
 - (void)insertDocumentIntoFourthContentView:(id)document selectRange: (NSRange) selectRange
 {
 
-	int gutterWidth  = 0; // no lineNumbers for now  
 	if(!myWindowController) myWindowController = [[NSWindowController alloc] initWithWindow: [mScrollView window]];
-	NSTextStorage *textStorage = [[document textView] textStorage];
 	if(mCurrentDocument != (NSDocument*) document || mTextView == NULL){
 		mTextView = [[SCTextView alloc] initWithFrame: 
 						[mScrollView bounds]];

@@ -562,7 +562,6 @@ const int circDiam = 20;
     [pboard setData: data forType: sSCObjType];
     [pboard setString: string forType: NSStringPboardType];
 
-    NSSize imageSize = [image size];
     where.x -= circDiam / 2;
     where.y += circDiam / 4;
 

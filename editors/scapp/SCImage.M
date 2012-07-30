@@ -1650,7 +1650,6 @@ int prSCImage_setColorAt(struct VMGlobals *g, int numArgsPushed)
 
 	int x, y, err;
 	SCColor	color;
-	NSSize size = [image size];
 
 	err = slotColorVal(colorSlot, &color);
 	if(err) return err;
@@ -2367,7 +2366,7 @@ int prSCImageFilter_ApplyMultiple(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot		*receiver			= g->sp - 4;
 	PyrSlot		*filtersSlot		= g->sp - 3;
 	PyrSlot		*inPlace			= g->sp - 2;
-	PyrSlot		*updateRegionSlot	= g->sp - 1;
+	//	PyrSlot		*updateRegionSlot	= g->sp - 1;
 	PyrSlot		*cropRegionSlot		= g->sp;
 	int			err = errNone;
 
@@ -2701,7 +2700,6 @@ int prSCImageFilter_ApplyKernel(struct VMGlobals *g, int numArgsPushed)
 	int			err;
 	CGRect		destExtent;
 	CGRect		cropRegion;
-	CGRect		maxRect;
 
 
 	err = errNone;

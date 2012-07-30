@@ -1263,7 +1263,6 @@ int prTextWindow_SetDefaultFont(struct VMGlobals *g, int numArgsPushed)
 {
 	NSFont *newDefault, *oldDefault;
 	if (!g->canCallOS) return errCantCallOS;
-	PyrSlot *a = g->sp - 1;
 	PyrSlot *fontSlot = g->sp; //font
 	if (IsNil(fontSlot)) return errNone; // use default font
 	if (!(isKindOfSlot(fontSlot, s_font->u.classobj))) return errWrongType;
@@ -2002,7 +2001,6 @@ int prShowCursor(struct VMGlobals *g, int numArgsPushed)
 {
    if (!g->canCallOS) return errCantCallOS;
 
-    PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
 
     BOOL show;
@@ -3165,7 +3163,6 @@ int prPen_DrawPath(struct VMGlobals *g, int numArgsPushed)
 	if ( !gctx )
 		return errFailed;
 
-    CGContextRef cgc = (CGContextRef)[gctx graphicsPort];
 	//kCGPathFill=0, kCGPathEOFill=1, kCGPathStroke=2, kCGPathFillStroke=3, or kCGPathEOFillStroke=4
 	CGContextDrawPath( 
 					  (CGContextRef)[gctx graphicsPort], 
@@ -3376,7 +3373,6 @@ static void					GradientCalcLinear(void *info, const ColorData *in, ColorData *o
 
 static CGFunctionRef		CreateGradientFunctionRef()
 {
-	size_t components;
     static const ColorData input_value_range [2] = { 0, 1 };
     static const ColorData output_value_ranges [8] = { 0, 1, 0, 1, 0, 1, 0, 1 };
     static const CGFunctionCallbacks callbacks = { 0,

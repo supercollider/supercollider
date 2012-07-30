@@ -656,7 +656,6 @@ const int circDiam = 20;
     [pboard setData: data forType: sSCObjType];
     [pboard setString: string forType: NSStringPboardType];
 
-    NSSize imageSize = [image size];
     where.x -= circDiam / 2;
     where.y += circDiam / 4;
 
@@ -1584,7 +1583,6 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if(!isKindOfSlot(slot, class_string)) return errWrongType;
 		PyrString* pstring = slotRawString(slot);
 		if(!pstring) return errNone;
-		NSRange selectedRange = [mTextView selectedRange];
 		NSString *path = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
 
 		int result = open(path);
@@ -3086,7 +3084,6 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 
 	if (strcmp(name, "align")==0) {
-		int align;
 		if (IsSym(slot)) {
 			[[mTextField window] endEditingFor:mTextField];
 			if (slotRawSymbol(slot)->name[0] == 'l')      [mTextField setAlignment: NSLeftTextAlignment];

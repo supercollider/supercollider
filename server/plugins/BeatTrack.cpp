@@ -571,7 +571,6 @@ float findtor(BeatTrack *unit)
 //128 calculation calls for multiplying M and acf, calculates M as it goes apart from precalculated Gaussian or Raleigh distribution
 void beatperiod(BeatTrack *unit,int j, int whichm)
 {
-	int baseframe = unit->m_storedfcounter+DFSTORE;
 	float * acf = unit->m_acf;
 
 	//int startindex= 512*j;

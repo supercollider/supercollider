@@ -1134,7 +1134,6 @@ static void calcRowStats(PyrMethod** bigTable, ColumnDescriptor * sels, int numC
 {
 		//chunkSize = 0;
 		//chunkOffset = 0;
-	PyrMethod** methodPtr = bigTable;
 	for (int j=0; j<numClasses; ++j) {
 		for (int i=begin; i<end; ++i) {
 			PyrMethod* method = bigTable[j * numSelectors + i];
@@ -1165,7 +1164,7 @@ static void calcRowStats(PyrMethod** bigTable, ColumnDescriptor * sels, int numC
 
 void buildBigMethodMatrix()
 {
-	PyrMethod **bigTable, **temprow, **row;
+	PyrMethod **bigTable, **row;
 	PyrClass *classobj, **classes;
 	int i, j, k;
 	int popSum, widthSum;

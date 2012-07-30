@@ -479,7 +479,6 @@ void PartConv_next( PartConv *unit, int inNumSamples )
 //buffer preparation
 void PreparePartConv(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 {
-	int frames1 = buf->frames;
 	//int channels1 = buf->channels;
 	float *data1 = buf->data;
 

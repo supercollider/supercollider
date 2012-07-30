@@ -104,7 +104,6 @@ if (![NSBundle loadNibNamed:@"GoToLinePanel" owner:self]) {
 - (void)selectLine:(id)sender
 {
     int linenum = [findTextField intValue];
-    linenum = linenum;
     if(!linenum)[self getAndDisplayCurrentLine];
     else
     [self prselectLine: linenum];

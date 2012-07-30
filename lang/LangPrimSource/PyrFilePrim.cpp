@@ -165,7 +165,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 
 int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 1, *b = g->sp;
+	PyrSlot *b = g->sp;
 	char filename[PATH_MAX];
 
 	int error = slotStrVal(b, filename, PATH_MAX);
@@ -182,7 +182,7 @@ int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 
 int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 2, *b = g->sp - 1, *c = g->sp;
+	PyrSlot *b = g->sp - 1, *c = g->sp;
 	char filename1[PATH_MAX];
 	char filename2[PATH_MAX];
 	int error;

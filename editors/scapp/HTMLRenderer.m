@@ -29,7 +29,6 @@
 }
 
 - (NSAttributedString *)attributedStringWithURL:(NSURL *)url {
-	NSMutableAttributedString *result = nil;
 	
 	finishedRendering = 0;
 	[self renderHTMLFragment:url];
@@ -42,7 +41,6 @@
 
 - (void)renderHTMLFragment:(NSURL *)url {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
 
 	[NSThread setThreadPriority:1.0];
 	[renderLock lock];
