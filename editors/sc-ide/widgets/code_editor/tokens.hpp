@@ -27,24 +27,57 @@
 namespace ScIDE
 {
 
-struct BracketInfo
+struct Token
 {
-    BracketInfo() {}
-    BracketInfo( char c, int pos ) : character(c), position(pos) {}
-    BracketInfo (BracketInfo const & rhs):
-        character(rhs.character), position(rhs.position)
+    enum Type
+    {
+        Unknown = 0,
+
+        WhiteSpace,
+
+        Keyword,
+        Builtin,
+        Primitive,
+        Name,
+        Class,
+        Symbol,
+        String,
+        Char,
+        RadixFloat,
+        Float,
+        HexInt,
+        EnvVar,
+        SymbolArg,
+
+        SingleLineComment,
+        MultiLineCommentStart,
+
+        OpeningBracket,
+        ClosingBracket
+    };
+
+    Token() {}
+    Token( Type t, int pos, int len = 0, char c = 0 ):
+        type(t), position(pos), length(len), character(c) {}
+    Token (Token const & rhs):
+        type(rhs.type),
+        position(rhs.position),
+        length(rhs.length),
+        character(rhs.character)
     {}
 
-    char character;
+    Type type;
     int position;
+    int length;
+    char character;
 };
 
 struct TextBlockData : public QTextBlockUserData
 {
-    std::vector<BracketInfo> brackets;
+    std::vector<Token> tokens;
 };
 
-class BracketIterator
+class TokenIterator
 {
 private:
     QTextBlock blk;
@@ -52,30 +85,30 @@ private:
     TextBlockData *data;
 
 public:
-    BracketIterator(): idx(-1) {}
+    TokenIterator(): idx(-1) {}
     bool isValid() { return idx >= 0; }
     const QTextBlock & block() { return blk; }
-    const BracketInfo & operator *()
+    const Token & operator *()
     {
         Q_ASSERT(blk.isValid());
         Q_ASSERT(idx >= 0);
         Q_ASSERT(data);
 
-        return data->brackets[idx];
+        return data->tokens[idx];
     }
 
-    const BracketInfo * operator ->()
+    const Token * operator ->()
     {
         Q_ASSERT(blk.isValid());
         Q_ASSERT(idx >= 0);
         Q_ASSERT(data);
 
-        return &data->brackets[idx];
+        return &data->tokens[idx];
     }
 
-    static BracketIterator leftOf( const QTextBlock & block, int pos )
+    static TokenIterator leftOf( const QTextBlock & block, int pos )
     {
-        BracketIterator it;
+        TokenIterator it;
         it.blk = block;
         it.idx = -1;
 
@@ -83,25 +116,25 @@ public:
         {
             it.data = static_cast<TextBlockData*>(it.blk.userData());
 
-            it.idx = it.data ? it.data->brackets.size() : 0;
+            it.idx = it.data ? it.data->tokens.size() : 0;
 
             while(it.idx--)
             {
-                BracketInfo const & bracket = it.data->brackets[it.idx];
-                if( pos < 0 || bracket.position < pos )
+                Token const & token = it.data->tokens[it.idx];
+                if( pos < 0 || token.position < pos )
                     return it;
             }
 
-            pos = -1; // match on first bracket in next block;
+            pos = -1; // match on first token in next block;
             it.blk = it.blk.previous();
         }
 
         return it;
     }
 
-    static BracketIterator rightOf( const QTextBlock & block, int pos )
+    static TokenIterator rightOf( const QTextBlock & block, int pos )
     {
-        BracketIterator it;
+        TokenIterator it;
         it.blk = block;
         it.idx = -1;
 
@@ -109,26 +142,26 @@ public:
         {
             it.data = static_cast<TextBlockData*>(it.blk.userData());
 
-            int n = it.data->brackets.size();
+            int n = it.data->tokens.size();
 
             while(++it.idx < n)
             {
-                BracketInfo const & bracket = it.data->brackets[it.idx];
-                if( bracket.position >= pos )
+                Token const & token = it.data->tokens[it.idx];
+                if( token.position >= pos )
                     return it;
             }
 
             it.idx = -1;
-            pos = -1; // match right on first bracket in next block;
+            pos = -1; // match right on first token in next block;
             it.blk = it.blk.next();
         }
 
         return it;
     }
 
-    static BracketIterator around( const QTextBlock & block, int pos )
+    static TokenIterator around( const QTextBlock & block, int pos )
     {
-        BracketIterator it;
+        TokenIterator it;
         it.blk = block;
         it.idx = -1;
 
@@ -140,14 +173,14 @@ public:
         if (!it.data)
             return it;
 
-        int n = it.data->brackets.size();
+        int n = it.data->tokens.size();
         for( int i = 0; i < n; ++i )
         {
-            BracketInfo const & bracket = it.data->brackets[i];
-            if(bracket.position > pos) {
+            Token const & token = it.data->tokens[i];
+            if(token.position > pos) {
                 return it;
             }
-            else if(bracket.position == pos - 1 || bracket.position == pos)
+            else if(token.position == pos - 1 || token.position == pos)
             {
                 it.idx = i;
                 break;
@@ -157,7 +190,7 @@ public:
         return it;
     }
 
-    BracketIterator& operator ++()
+    TokenIterator& operator ++()
     {
         if(idx < 0)
             return *this;
@@ -169,7 +202,7 @@ public:
 
             if (data)
             {
-                int n = data->brackets.size();
+                int n = data->tokens.size();
                 if(++idx < n)
                     return *this;
             }
@@ -182,7 +215,7 @@ public:
         return *this;
     }
 
-    BracketIterator& operator --()
+    TokenIterator& operator --()
     {
         if(idx > 0)
         {
@@ -200,7 +233,7 @@ public:
             data = static_cast<TextBlockData*>(blk.userData());
 
             if(data)
-                idx = data->brackets.size() - 1;
+                idx = data->tokens.size() - 1;
 
             if (idx < 0)
                 continue;
@@ -218,7 +251,7 @@ public:
         Q_ASSERT(idx >= 0);
         Q_ASSERT(data);
 
-        return data->brackets[idx].character;
+        return data->tokens[idx].character;
     }
 
     int position()
@@ -227,7 +260,7 @@ public:
         Q_ASSERT(idx >= 0);
         Q_ASSERT(data);
 
-        return data->brackets[idx].position + blk.position();
+        return data->tokens[idx].position + blk.position();
     }
 };
 

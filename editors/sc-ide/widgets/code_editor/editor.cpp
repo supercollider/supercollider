@@ -394,13 +394,13 @@ QTextCursor CodeEditor::currentRegion()
     QTextBlock b(c.block());
 
     int pos = c.position() - b.position();
-    BracketIterator start;
-    BracketIterator end;
+    TokenIterator start;
+    TokenIterator end;
     int topLevel = 0;
     int level = 0;
 
     // search unmatched opening bracket
-    BracketIterator it = BracketIterator::leftOf( b, pos );
+    TokenIterator it = TokenIterator::leftOf( b, pos );
     while(it.isValid())
     {
         char chr = it->character;
@@ -422,7 +422,7 @@ QTextCursor CodeEditor::currentRegion()
         return QTextCursor();
 
     // match the found opening bracket
-    it = BracketIterator::rightOf( b, pos );
+    it = TokenIterator::rightOf( b, pos );
     while(it.isValid())
     {
         char chr = it->character;
@@ -730,7 +730,7 @@ void CodeEditor::matchBrackets()
 
 void CodeEditor::matchBracket( const QTextBlock & block, int pos, BracketMatch & match )
 {
-    BracketIterator it = BracketIterator::around( block, pos );
+    TokenIterator it = TokenIterator::around( block, pos );
 
     if( !it.isValid() )
     {
@@ -744,17 +744,15 @@ void CodeEditor::matchBracket( const QTextBlock & block, int pos, BracketMatch &
     static QString lbrackets("([{");
     static QString rbrackets(")]}");
 
-    int b;
-    if((b = lbrackets.indexOf(c)) != -1)
+    if(it->type == Token::OpeningBracket)
     {
-        char cc = rbrackets[b].toAscii();
         int level = 1;
         while((++it).isValid())
         {
-            char chr = it.character();
-            if(chr == cc)
+            Token::Type type = it->type;
+            if(type == Token::ClosingBracket)
                 --level;
-            else if(chr == c)
+            else if(type == Token::OpeningBracket)
                 ++level;
             if(level == 0) {
                 match.matchPos = it.position();
@@ -762,16 +760,15 @@ void CodeEditor::matchBracket( const QTextBlock & block, int pos, BracketMatch &
             }
         }
     }
-    else if((b = rbrackets.indexOf(c)) != -1)
+    else if(it->type == Token::ClosingBracket)
     {
-        char cc = lbrackets[b].toAscii();
         int level = 1;
         while((--it).isValid())
         {
-            char chr = it.character();
-            if(chr == cc)
+            Token::Type type = it->type;
+            if(type == Token::OpeningBracket)
                 --level;
-            else if(chr == c)
+            else if(type == Token::ClosingBracket)
                 ++level;
             if(level == 0) {
                 match.matchPos = it.position();
