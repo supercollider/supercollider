@@ -43,8 +43,9 @@ static inline string make_shmem_name(unsigned int port_number)
 	return string("SuperColliderServer_") + boost::lexical_cast<string>(port_number);
 }
 
-struct server_shared_memory
+class server_shared_memory
 {
+public:
 	typedef offset_ptr<float> sh_float_ptr;
 	typedef offset_ptr<scope_buffer> scope_buffer_ptr;
 

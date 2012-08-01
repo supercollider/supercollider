@@ -33,8 +33,8 @@ namespace detail_server_shm {
 using boost::interprocess::offset_ptr;
 using boost::atomic;
 
-struct scope_buffer_writer;
-struct scope_buffer_reader;
+class scope_buffer_writer;
+class scope_buffer_reader;
 
 class scope_buffer_pool
 {
@@ -186,8 +186,10 @@ private:
 	}
 };
 
-struct scope_buffer_writer
+class scope_buffer_writer
 {
+public:
+
 	scope_buffer *buffer;
 
 	scope_buffer_writer( scope_buffer *buffer = 0 ):
