@@ -21,6 +21,8 @@
 #ifndef SCIDE_WIDGETS_CODE_EDITOR_EDITOR_HPP_INCLUDED
 #define SCIDE_WIDGETS_CODE_EDITOR_EDITOR_HPP_INCLUDED
 
+#include "tokens.hpp"
+
 #include <QGraphicsScene>
 #include <QPlainTextEdit>
 #include <QTextBlock>
@@ -62,6 +64,7 @@ class CodeEditor : public QPlainTextEdit
 public:
     CodeEditor( QWidget *parent = 0 );
     Document *document() { return mDoc; }
+    QTextDocument *textDocument() { return QPlainTextEdit::document(); }
     void setDocument( Document * );
     bool showWhitespace() { return mShowWhitespace; }
     void setIndentWidth( int );
@@ -101,14 +104,14 @@ private Q_SLOTS:
 
 private:
     struct BracketMatch {
-        int pos;
-        int matchPos;
+        TokenIterator first;
+        TokenIterator second;
     };
 
     void resizeEvent( QResizeEvent * );
     void paintLineIndicator( QPaintEvent * );
     void indent( bool less );
-    void matchBracket( const QTextBlock & block, int pos, BracketMatch & match );
+    void matchBracket( int pos, BracketMatch & match );
     int indentedStartOfLine( const QTextBlock & );
     void updateExtraSelections();
 

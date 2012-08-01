@@ -106,6 +106,36 @@ public:
         return &data->tokens[idx];
     }
 
+    TokenIterator( const QTextBlock & block ):
+        blk(block),
+        idx(-1)
+    {
+        if (block.isValid()) {
+            data = static_cast<TextBlockData*>(block.userData());
+            if (data && !data->tokens.empty())
+                idx = 0;
+        }
+    }
+
+    TokenIterator( const QTextBlock & block, int pos ):
+        blk(block)
+    {
+        if (block.isValid()) {
+            data = static_cast<TextBlockData*>(block.userData());
+            idx = data ? data->tokens.size() : 0;
+            while (idx--)
+            {
+                const Token & token = data->tokens[idx];
+                if (token.position > pos)
+                    continue;
+                else if (token.position == pos || token.position + token.length > pos)
+                    break;
+            }
+        }
+        else
+            idx = -1;
+    }
+
     static TokenIterator leftOf( const QTextBlock & block, int pos )
     {
         TokenIterator it;
