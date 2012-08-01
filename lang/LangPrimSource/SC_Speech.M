@@ -377,7 +377,7 @@ int prGetSpeechVoiceNames(struct VMGlobals *g, int numArgsPushed){
 		NSDictionary * dictionaryOfVoiceAttributes = [NSSpeechSynthesizer attributesForVoice:aVoice];
 		NSString *	voiceDisplayName = [dictionaryOfVoiceAttributes objectForKey:NSVoiceName];
 
-		PyrString *namestring = newPyrString(g->gc, [voiceDisplayName cString], 0, true);
+		PyrString *namestring = newPyrString(g->gc, [voiceDisplayName cStringUsingEncoding:[NSString defaultCStringEncoding]], 0, true);
 		SetObject(allVoices->slots+allVoices->size++, namestring);
 		g->gc->GCWrite(allVoices, (PyrObject*) namestring);
 

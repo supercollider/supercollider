@@ -948,7 +948,7 @@ int SCView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			PyrString* pstring = slotRawString(slot);
 			if(!pstring) return errNone;
 			if(mDragLabel) [mDragLabel release];
-			mDragLabel = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
+			mDragLabel = [[[NSString alloc] initWithCString: pstring->s encoding:[NSString defaultCStringEncoding] ] substringToIndex: pstring->size];
 			return errNone;
 		} else if (IsNil(slot)) {
 			if(mDragLabel) [mDragLabel release];
@@ -1032,7 +1032,9 @@ void SCView::beginDrag(SCPoint where)
 		slotCopy(&slot, &g->classvars->slots[classVarIndex]);
 		slotCopy(&stringSlot, &g->classvars->slots[classVarIndex+1]);
 		if (isKindOfSlot(&stringSlot, class_string)) {
-			string = [NSString stringWithCString: slotRawString(&stringSlot)->s length: slotRawString(&stringSlot)->size];
+			PyrString *pstring = slotRawString(&stringSlot);
+			string = [NSString stringWithCString: pstring->s encoding:[NSString defaultCStringEncoding]];
+			string = [string substringToIndex: pstring->size];
 		}
 		if(mDragLabel) label = mDragLabel;
 	}

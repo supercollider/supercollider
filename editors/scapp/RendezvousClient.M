@@ -244,7 +244,7 @@ static unsigned indexOfServiceBeingResolved = 0;		// which service am I currentl
 {
 	if (!serviceBeingResolved) {
 		// this is odd... I got a resolution I didn't ask for
-		post("Resolved OSC Service %s without requesting it.\n", [[sender name] cString]);
+		post("Resolved OSC Service %s without requesting it.\n", [[sender name] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		[sender stop];
 		return;
 	}
@@ -268,12 +268,12 @@ static unsigned indexOfServiceBeingResolved = 0;		// which service am I currentl
 	struct hostent*  hostent = gethostbyaddr((char*) &(sockaddr->sin_addr), 4, AF_INET);
 	
 	if (hostent)
-		serviceBeingResolved->hostName = [[NSString alloc] initWithCString: hostent->h_name];
+		serviceBeingResolved->hostName = [[NSString alloc] initWithCString: hostent->h_name encoding:NSASCIIStringEncoding];
 	else {
 		// Couldn't find a host name for the address.
 		// Convert the address to a string for the hostname
 		char* addrOctets = inet_ntoa(sockaddr->sin_addr);
-		serviceBeingResolved->hostName = [[NSString alloc] initWithCString: addrOctets];
+		serviceBeingResolved->hostName = [[NSString alloc] initWithCString: addrOctets encoding:NSASCIIStringEncoding];
 	}
 	serviceBeingResolved->isResolved = YES;
 	[sender stop];
@@ -346,7 +346,7 @@ int prInitOSCService(struct VMGlobals *g, int numArgsPushed)
 		
 	// set the server name		
 	NSString* name = [service->netService name];
-	PyrString *serverNameString = newPyrString(g->gc, [name cString] , 0, true);
+	PyrString *serverNameString = newPyrString(g->gc, [name cStringUsingEncoding:[NSString defaultCStringEncoding]] , 0, true);
 	PyrObject *serverObject = slotRawObject(serverSlot);
 	SetObject(&serverObject->slots[0], serverNameString);
 	
@@ -362,7 +362,7 @@ int prInitOSCService(struct VMGlobals *g, int numArgsPushed)
 	
 	// hostName
 	NSString* hostName = service->hostName;
-	PyrString *hostNameString = newPyrString(g->gc, [hostName cString] , 0, true);	
+	PyrString *hostNameString = newPyrString(g->gc, [hostName cStringUsingEncoding:[NSString defaultCStringEncoding]] , 0, true);
 	SetObject(&serverObject->slots[1], hostNameString);
 	
 	// port

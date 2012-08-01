@@ -613,7 +613,7 @@ extern bool compiledOK;
 		g->canCallOS = true;
 		++g->sp;  SetObject(g->sp, pobj);
 
-		PyrString* pyrString = newPyrString(g->gc,[[aNotification name] cString],0,true);
+		PyrString* pyrString = newPyrString(g->gc,[[aNotification name] cStringUsingEncoding:[NSString defaultCStringEncoding]],0,true);
 		++g->sp;  SetObject(g->sp, pyrString);
 		++g->sp;  SetPtr(g->sp, (void*)aNotification);
 		++g->sp;  SetPtr(g->sp, (void*)[aNotification object]);
@@ -1434,7 +1434,7 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 	) {
 		// not an instance method and not a class method
 		SetNil(receiver);
-		post("Warning: NSClass: %s does not respond to: %s \n", [nsclassname cString], [nsinitname cString]);
+		post("Warning: NSClass: %s does not respond to: %s \n", [nsclassname cStringUsingEncoding:[NSString defaultCStringEncoding]], [nsinitname cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		return errNone;
 	}
 
@@ -1462,7 +1462,7 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 		//should check for type [sig getArgumentTypeAtIndex: i];
 		if(numberOfArgs != len)
 		{
-			post("Warning: NSClass: %s numberOfArguments does not match: %i, provided: %i \n", [nsclassname cString],numberOfArgs, len);
+			post("Warning: NSClass: %s numberOfArguments does not match: %i, provided: %i \n", [nsclassname cStringUsingEncoding:[NSString defaultCStringEncoding]],numberOfArgs, len);
 			SetNil(receiver);
 			return errFailed;
 		}
@@ -1814,7 +1814,7 @@ int prObjcDeferInvocation(struct VMGlobals *g, int numArgsPushed)
 	SEL sel = NSSelectorFromString(nsinitname);
 	if(![nsclass instancesRespondToSelector:sel])
 	{
-		post("Warning: %s does not respond to: %s \n", [nsclassname cString], [nsinitname cString]);
+		post("Warning: %s does not respond to: %s \n", [nsclassname cStringUsingEncoding:[NSString defaultCStringEncoding]], [nsinitname cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		return errNone;
 	}
 
@@ -1960,7 +1960,7 @@ int prObjcBundleAllocClassNamed(struct VMGlobals *g, int numArgsPushed)
 	if(![nsclass instancesRespondToSelector:sel])
 	{
 		SetNil(receiver);
-		post("Warning: NSClass: %s does not respond to: %s \n", [nsclassname cString], [nsinitname cString]);
+		post("Warning: NSClass: %s does not respond to: %s \n", [nsclassname cStringUsingEncoding:[NSString defaultCStringEncoding]], [nsinitname cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 		return errNone;
 	}
 	NSMethodSignature *sig = [nsclass  instanceMethodSignatureForSelector: sel];
@@ -1976,7 +1976,7 @@ int prObjcBundleAllocClassNamed(struct VMGlobals *g, int numArgsPushed)
 		//should check for type [sig getArgumentTypeAtIndex: i];
 		if(numberOfArgs != len)
 		{
-			post("Warning: NSClass: %s numberOfArguments does not match: %i, provided: %i \n", [nsclassname cString],numberOfArgs, len);
+			post("Warning: NSClass: %s numberOfArguments does not match: %i, provided: %i \n", [nsclassname cStringUsingEncoding:[NSString defaultCStringEncoding]],numberOfArgs, len);
 			SetNil(receiver);
 			return errFailed;
 		};

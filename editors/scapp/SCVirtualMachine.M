@@ -381,7 +381,7 @@ void setupUserPaneViews(id target, id view, int tagsum)
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 	[dict setObject: panel forKey: @"NSOwner"];
 	NSZone *zone = [NSApp zone];
-	post("path '%s'\n", [nspath cString]);
+	post("path '%s'\n", [nspath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	BOOL result = [NSBundle loadNibFile: nspath externalNameTable: dict withZone: zone];
 	if (!result) {
 		post("loadNibFile failed\n");

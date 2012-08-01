@@ -248,7 +248,8 @@ void SyntaxColorize(NSTextView* textView);
 - (void) insertText: (char*) text length: (int)length
 {
     NSRange selectedRange = [activeTextView selectedRange];
-    NSString *string = [[NSString alloc] initWithCString: text length: length];
+	NSString *string = [NSString stringWithCString:text encoding:[NSString defaultCStringEncoding]];
+	string = [string substringToIndex:(NSUInteger)length];
     if ([activeTextView shouldChangeTextInRange: selectedRange replacementString: string]) {
         [activeTextView replaceCharactersInRange: selectedRange withString: string];
         [activeTextView didChangeText];
@@ -496,7 +497,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 		char resourceDirPath[MAXPATHLEN - 32];
 		sc_GetResourceDirectory(resourceDirPath, MAXPATHLEN - 32);
 		sc_AppendToPath(resourceDirPath, PATH_MAX - 32, "Help/");
-		searchPath = [NSString stringWithCString:(const char *) resourceDirPath];
+		searchPath = [NSString stringWithCString:(const char *) resourceDirPath encoding:[NSString defaultCStringEncoding]];
 		helpFilePath = helpFileWithName(fileManager, desiredHelpFile, searchPath);
 		if (helpFilePath) return helpFilePath;
 
@@ -561,12 +562,13 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 		} else {
 			NSString* trialName = [helpFolderPath stringByAppendingString: candidate];
 
-			char name[MAXPATHLEN];
+			//char name[MAXPATHLEN];
 			char resolvedName[MAXPATHLEN];
-			[trialName getCString:name];
+			//[trialName getCString:name];
+			const char* name = [trialName cStringUsingEncoding:[NSString defaultCStringEncoding]];
 			bool isAlias = false;
 			sc_ResolveIfAlias(name, resolvedName, isAlias, MAXPATHLEN);
-			fullName = [NSString stringWithCString:resolvedName];
+			fullName = [NSString stringWithCString:resolvedName encoding:[NSString defaultCStringEncoding]];
 			// compare with valid extensions
 			if([[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".html"]]
 				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".rtf"]]
@@ -682,7 +684,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 		if([link hasPrefix:@"SC://"] || [link hasPrefix:@"sc://"]) { // this means search immediately
 			NSString *helpPath = pathOfHelpFileFor([[[link substringFromIndex:5] stringByDeletingPathExtension] stringByDeletingPathExtension]);
 			if(!helpPath) {
-				post("WARNING:\nInvalid hyperlink: '%s' Please repair this.\n", [link cString]);
+				post("WARNING:\nInvalid hyperlink: '%s' Please repair this.\n", [link cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 				return YES;
 			}
 			desiredURL = [NSURL URLWithString: helpPath];
@@ -696,7 +698,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 			NSString *helpPath = pathOfHelpFileFor([[[[link relativeString] substringFromIndex:5] stringByDeletingPathExtension] stringByDeletingPathExtension]);
 			if(!helpPath) {
-				post("WARNING:\nInvalid hyperlink: '%s' Please repair this.\n", [[link relativeString] cString]);
+				post("WARNING:\nInvalid hyperlink: '%s' Please repair this.\n", [[link relativeString] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 				return YES;
 			}
 			desiredURL = [NSURL fileURLWithPath: helpPath];
@@ -721,22 +723,22 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
         doc = [docctl openDocumentWithContentsOfURL: desiredURL display: true];
         if (!doc) {
 			// it's a bad file:// URL, post a warning and search
-			post("WARNING:\nInvalid hyperlink: '%s' Please repair this.\nSearching help directories for alternative.\n", [[desiredURL path] cString]);
+			post("WARNING:\nInvalid hyperlink: '%s' Please repair this.\nSearching help directories for alternative.\n", [[desiredURL path] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			// delete extension twice in case something.help.rtf
 			NSString *desiredHelpName = [[[[desiredURL path] lastPathComponent] stringByDeletingPathExtension] stringByDeletingPathExtension];
 			NSString *helpPath = pathOfHelpFileFor(desiredHelpName);
 			if(!helpPath) {
-				post("Can't find Help File Document for: '%s'\n", [desiredHelpName cString]);
+				post("Can't find Help File Document for: '%s'\n", [desiredHelpName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 				return YES;
 			}
 			desiredURL = [NSURL fileURLWithPath: helpPath];
 			if([[NSFileManager defaultManager] fileExistsAtPath: [desiredURL path]]) {
 				doc = (MyDocument*)[docctl documentForURL: [desiredURL absoluteURL]];
-			} else post("file doesn't exist at path: '%s'\n", [[desiredURL path] cString]);
+			} else post("file doesn't exist at path: '%s'\n", [[desiredURL path] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			if (!doc) {
 				doc = [docctl openDocumentWithContentsOfURL: desiredURL display: true];
 				if(!doc) {
-					post("Can't open Help File Document: '%s'\n", [[desiredURL path] cString]);
+					post("Can't open Help File Document: '%s'\n", [[desiredURL path] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 					return YES;
 				}
 			}
@@ -861,7 +863,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			|| [aType isEqualToString: @"NSStringPboardType"])
 	{
 		NSString *text = [textView string];
-		success = [text writeToFile: path atomically: YES];
+		success = [text writeToFile: path atomically: YES encoding:[NSString defaultCStringEncoding] error:nil];
 	} else if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"]) {
 
 		[textView setDefaultTabsTo: 28.0f]; // set default tabs to preserve layout

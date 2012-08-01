@@ -467,7 +467,7 @@ const int circDiam = 20;
 		nsstring = label;
 	} else if (slot) {
         PyrClass *classobj = classOfSlot(slot);
-        nsstring = [NSString stringWithCString: slotRawSymbol(&classobj->name)->name];
+        nsstring = [NSString stringWithCString: slotRawSymbol(&classobj->name)->name encoding:[NSString defaultCStringEncoding]];
         if (!nsstring) return 0;
     } else {
         nsstring = @"No Data!";
@@ -821,8 +821,7 @@ NSDictionary *makeFontAttrDict(char *cFontName, float fontSize, SCColor sccolor)
 {
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 
-    NSString *fontName = [NSString stringWithCString: cFontName];
-
+	NSString *fontName = [NSString stringWithCString: cFontName encoding:[NSString defaultCStringEncoding]];
     NSFont *font = [NSFont fontWithName: fontName size: fontSize];
     if (!font) return 0;
 
@@ -892,25 +891,27 @@ int nsStringDrawInRectAlign(NSString *nsstring, SCRect screct, char *cFontName, 
 
 int stringDrawInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
 {
-	NSString *nsstring = [NSString stringWithCString: cString];
+	NSString *nsstring = [NSString stringWithCString: cString encoding:[NSString defaultCStringEncoding]];
 	return nsStringDrawInRect(nsstring, screct, cFontName, fontSize, sccolor);
 }
 
 int stringDrawCenteredInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
 {
-	NSString *nsstring = [NSString stringWithCString: cString];
+	NSString *nsstring = [NSString stringWithCString: cString encoding:[NSString defaultCStringEncoding]];
 	return nsStringDrawInRectAlign(nsstring, screct, cFontName, fontSize, sccolor, 0, 0, NULL);
 }
 
 int stringDrawLeftInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
 {
-	NSString *nsstring = [NSString stringWithCString: cString];
+	NSString *nsstring = [NSString stringWithCString: cString encoding:[NSString defaultCStringEncoding]];
+
 	return nsStringDrawInRectAlign(nsstring, screct, cFontName, fontSize, sccolor, -1, 0, NULL);
 }
 
 int stringDrawRightInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
 {
-	NSString *nsstring = [NSString stringWithCString: cString];
+	NSString *nsstring = [NSString stringWithCString: cString encoding:[NSString defaultCStringEncoding]];
+
 	return nsStringDrawInRectAlign(nsstring, screct, cFontName, fontSize, sccolor, 1, 0, NULL);
 }
 
@@ -1049,7 +1050,7 @@ extern PyrSymbol* s_doaction;
 - (void)setFrameSizeToMinimum
 {
 	NSScrollView* sv;
-	if (sv = [self enclosingScrollView]){
+	if ((sv = [self enclosingScrollView])){
 
 		NSSize visSize = [[sv contentView] documentVisibleRect].size;
 

@@ -217,10 +217,14 @@ void PostBuf::Flush()
 				NSRange range = [gPostView selectedRange];
 	
 				if ([gPostView shouldChangeTextInRange: range replacementString: nil]) {
-					string = [NSString stringWithCString: buf + rdpos length: firstpart];
+					//					string = [NSString stringWithCString: buf + rdpos length: firstpart];
+					string = [NSString stringWithCString: buf + rdpos encoding:NSASCIIStringEncoding];
+					string = [string substringToIndex:firstpart];
 					[gPostView replaceCharactersInRange: range withString: string];
 	
-					string = [NSString stringWithCString: buf length: secondpart];
+					//					string = [NSString stringWithCString: buf length: secondpart];
+					string = [NSString stringWithCString: buf encoding:NSASCIIStringEncoding];
+					string = [string substringToIndex: secondpart];
 					range = [gPostView selectedRange];
 					[gPostView replaceCharactersInRange: range withString: string];
 					[gPostView didChangeText];
@@ -232,7 +236,9 @@ void PostBuf::Flush()
 			rdpos = endpos;
 		} else {
 			if (gPostView) {
-				NSString* string = [NSString stringWithCString: buf + rdpos length: numtoread];
+				//				NSString* string = [NSString stringWithCString: buf + rdpos length: numtoread];
+				NSString* string = [NSString stringWithCString:buf + rdpos encoding:NSASCIIStringEncoding];
+				string = [string substringToIndex:numtoread];
 				NSRange range = [gPostView selectedRange];
 				
 				if ([gPostView shouldChangeTextInRange: range replacementString: string]) {
