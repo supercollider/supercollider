@@ -25,6 +25,7 @@
 #include "../core/doc_manager.hpp"
 #include "../core/sig_mux.hpp"
 #include "../core/main.hpp"
+#include "../core/sc_process.hpp"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -83,7 +84,8 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mDocManager(main->documentManager()),
     mSigMux(new SignalMultiplexer(this)),
     mTabs(new QTabWidget),
-    mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) )
+    mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) ),
+    mScRequest( new ScRequest(main->scProcess(), this) )
 {
     mTabs->setDocumentMode(true);
     mTabs->setTabsClosable(true);
@@ -114,8 +116,8 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
 
-    connect(main->scProcess(), SIGNAL(scCommand(QString,QString)),
-            this, SLOT(performScCommand(QString,QString)));
+    connect(mScRequest, SIGNAL(response(QString,QString)),
+            this, SLOT(onScResponse(QString,QString)));
 
     createActions();
     updateActions();
@@ -347,20 +349,20 @@ void MultiEditor::openDefinition()
     QString selectedText = editor->textCursor().selectedText();
     if (selectedText.isEmpty())
         return;
-    if (selectedText[0].isUpper())
-        Main::instance()->scProcess()->getClassDefinitions(selectedText);
-    else
-        Main::instance()->scProcess()->getMethodDefinitions(selectedText);
+
+    QString command ( selectedText[0].isUpper() ? "sendClassDefinitions" : "sendMethodDefinitions");
+
+    mScRequest->send( command, selectedText );
 }
 
-void MultiEditor::performScCommand( const QString & selector, const QString & data )
+void MultiEditor::onScResponse( const QString & command, const QString & data )
 {
-    static QString classDefinitions("classDefinitions");
-    static QString methodDefinitions("methodDefinitions");
+    static QString classDefinitions("sendClassDefinitions");
+    static QString methodDefinitions("sendMethodDefinitions");
 
-    if (selector == classDefinitions)
+    if (command == classDefinitions)
         handleClassDefinitions(data);
-    else if(selector == methodDefinitions)
+    else if(command == methodDefinitions)
         handleMethodDefinitions(data);
 }
 

@@ -10,11 +10,15 @@ ScIDE {
 		this.primitiveFailed
 	}
 
-	*sendAllClasses {
-		this.prSend(\classes, Class.allClasses.collectAs(_.asString, Array))
+	*request { |id, command, data|
+		this.tryPerform(command, id, data);
 	}
 
-	*sendSymbolTable {
+	*sendAllClasses { |id|
+		this.prSend(id, Class.allClasses.collectAs(_.asString, Array))
+	}
+
+	*sendSymbolTable { |id|
 		var result, dt;
 
 		dt = {
@@ -33,10 +37,10 @@ ScIDE {
 
 		"ScIDE: Built symbol table in % seconds\n".postf(dt.asStringPrec(3));
 
-		this.prSend(\symbolTable, result)
+		this.prSend(id, result)
 	}
 
-	*sendClassDefinitions { |name|
+	*sendClassDefinitions { |id, name|
 		var result, class, files;
 
 		result = SortedList(8, subListSorter);
@@ -61,10 +65,10 @@ ScIDE {
 			}
 		};
 
-		this.prSend(\classDefinitions, result.asArray)
+		this.prSend(id, result.asArray)
 	}
 
-	*sendMethodDefinitions { |name|
+	*sendMethodDefinitions { |id, name|
 		var out;
 		if (name.isEmpty) {
 			^this;
@@ -90,10 +94,10 @@ ScIDE {
 			});
 		});
 
-		this.prSend(\methodDefinitions, out);
+		this.prSend(id, out);
 	}
 
-	*prSend {|selector, data|
+	*prSend {|id, data|
 		_ScIDE_Send
 		this.primitiveFailed
 	}

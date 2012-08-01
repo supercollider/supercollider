@@ -26,6 +26,7 @@
 #include <QtNetwork/QLocalSocket>
 #include <QtNetwork/QLocalServer>
 #include <QByteArray>
+#include <QUuid>
 #include <QDebug>
 
 namespace ScIDE {
@@ -50,10 +51,20 @@ public:
         SCProcessActionCount
     };
 
+    void sendRequest( const QString &id, const QString &command, const QString &data )
+    {
+        QString cmd = QString("ScIDE.request(\"%1\",'%2',\"%3\")")
+            .arg(id)
+            .arg(command)
+            .arg(data);
+
+        evaluateCode(cmd, true);
+    }
+
 Q_SIGNALS:
     void scPost(QString const &);
     void statusMessage(const QString &);
-    void scCommand(const QString & selector, const QString & data);
+    void response(const QString & id, const QString & data);
 
 public slots:
     void start (void);
@@ -160,6 +171,47 @@ private:
     QLocalSocket *mIpcSocket;
     QString mIpcServerName;
     QByteArray mIpcData;
+};
+
+class ScRequest : public QObject
+{
+    Q_OBJECT
+public:
+    ScRequest( SCProcess *sc, QObject * parent = 0 ):
+        QObject(parent),
+        mSc(sc)
+    {
+        connect(mSc, SIGNAL(response(QString,QString)),
+                this, SLOT(onResponse(QString,QString)));
+    }
+
+    void send( const QString & command, const QString & data )
+    {
+        mId = QUuid::createUuid();
+        mCommand = command;
+        mSc->sendRequest(mId.toString(), command, data);
+    }
+
+    void cancel()
+    {
+        mId == QUuid();
+    }
+
+signals:
+    void response( const QString & command, const QString & data );
+
+private slots:
+    void onResponse( const QString & responseId, const QString & responseData )
+    {
+        if (responseId == mId.toString()) {
+            emit response(mCommand, responseData);
+        }
+    }
+
+private:
+    QString mCommand;
+    QUuid mId;
+    SCProcess *mSc;
 };
 
 }

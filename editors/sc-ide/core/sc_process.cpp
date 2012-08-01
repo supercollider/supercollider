@@ -113,8 +113,8 @@ void SCProcess::onIpcData()
 
     QDataStream in ( &receivedData );
     in.setVersion ( QDataStream::Qt_4_6 );
-    QString selector, message;
-    in >> selector;
+    QString id, message;
+    in >> id;
     if ( in.status() != QDataStream::Ok )
         return;
 
@@ -124,7 +124,7 @@ void SCProcess::onIpcData()
 
     mIpcData.remove ( 0, receivedData.pos() );
 
-    emit scCommand(selector, message);
+    emit response(id, message);
 }
 
 } // namespace ScIDE
