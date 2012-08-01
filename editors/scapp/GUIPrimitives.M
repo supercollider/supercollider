@@ -186,7 +186,8 @@ int prTextWindow_SetName(struct VMGlobals *g, int numArgsPushed)
 
 	NSWindow *window = [[doc textView] window];
 	PyrString *string = slotRawString(b);
-	NSString *title = [NSString stringWithCString: string->s length: string->size];
+	NSString *title = [NSString stringWithCString: string->s encoding:[NSString defaultCStringEncoding]];
+	title = [title substringToIndex: string->size];
 	[window setTitle: title];
 	return errNone;
 }
@@ -445,7 +446,8 @@ int prTextWindow_SetFont(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 
 	PyrString *pstring = slotRawString(nameSlot);
-	NSString *fontName = [NSString stringWithCString: pstring->s length: pstring->size];
+	NSString *fontName = [NSString stringWithCString: pstring->s encoding:[NSString defaultCStringEncoding]];
+	fontName = [fontName substringToIndex: pstring->size];
 	if (!fontName) return errFailed;
 	NSFont *font = [NSFont fontWithName: fontName size: size];
 	if (!font) return errFailed;
@@ -663,13 +665,12 @@ int prTextWindow_InsertTextInRange(struct VMGlobals *g, int numArgsPushed)
 	if(rangeStart<0) selectedRange =	NSMakeRange(0, length);
 	else selectedRange =	NSMakeRange(rangeStart, rangeSize);
 
-
-	NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
+	NSString *string = [NSString stringWithCString: pstring->s encoding:[NSString defaultCStringEncoding]];
+	string = [string substringToIndex:pstring->size];
 	if ([[doc activeTextView]  shouldChangeTextInRange: selectedRange replacementString: string]) {
 		[[doc activeTextView]  replaceCharactersInRange: selectedRange withString: string];
 		[[doc activeTextView]  didChangeText];
 	}
-	[string release];
 
 	return errNone;
 }
@@ -728,8 +729,9 @@ int prTextWindow_SetFileName(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *b = g->sp;
         MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
         if (!doc) return errFailed;
-		PyrString* filenmae = slotRawString(b);
-		NSString *nsname = [NSString stringWithCString: filenmae->s length: filenmae->size];
+		PyrString* filename = slotRawString(b);
+		NSString *nsname = [NSString stringWithCString: filename->s encoding:[NSString defaultCStringEncoding]];
+		nsname = [nsname substringToIndex:filename->size];
 		if(!nsname) return errFailed;
         [doc setFileName: nsname];
         return errNone;
@@ -1161,7 +1163,8 @@ int prNewTextWindow(struct VMGlobals *g, int numArgsPushed)
 		}
 		if (isKindOfSlot(titleSlot, class_string)) {
 			PyrString* title = slotRawString(titleSlot);
-			NSString *nstitle = [NSString stringWithCString: title->s length: title->size];
+			NSString *nstitle = [NSString stringWithCString: title->s encoding:[NSString defaultCStringEncoding]];
+			nstitle = [nstitle substringToIndex: title->size];
 			[window setTitle: nstitle];
 		}
 		[[doc undoManager] removeAllActions];
@@ -1215,7 +1218,7 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
 		docCreatedFromLang = true;
 		MyDocument *doc = [docctl openDocumentWithContentsOfFile: nspath display: true];
 		if (!doc) {
-			post("Can't open Document '%s'\n", [nspath cString]);
+			post("Can't open Document '%s'\n", [nspath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			docCreatedFromLang = false;
 			return errFailed;
 		}
@@ -1716,7 +1719,9 @@ int prSCWindow_SetName(struct VMGlobals *g, int numArgsPushed)
     SCGraphView* view = (SCGraphView*)slotRawPtr(slotRawObject(a)->slots);
     if (!view) return errNone;
     PyrString *string = slotRawString(b);
-    NSString *title = [NSString stringWithCString: string->s length: string->size];
+	//    NSString *title = [NSString stringWithCString: string->s length: string->size];
+	NSString *title = [NSString stringWithCString: string->s encoding:[NSString defaultCStringEncoding]];
+	//	title = [title substringToIndex:string->size];
     [[view window] setTitle: title];
     return errNone;
 }
@@ -3629,8 +3634,8 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 
 	PyrString* string = slotRawString(stringSlot);
 
-	NSString *label = [[NSString alloc] initWithCString: string->s length: string->size];
-
+	NSString *label = [NSString stringWithCString:string->s encoding:[NSString defaultCStringEncoding]];
+	label = [label substringToIndex:string->size];
 	//NSLog(@"Label: %@", label);
 	// make a menu item
 	SCNSMenuItem *menuItem = [[SCNSMenuItem alloc] initWithTitle:label action:@selector(doAction:) keyEquivalent:@""];
@@ -3820,8 +3825,8 @@ int prSetMenuItemKeyboardEquivalent(struct VMGlobals *g, int numArgsPushed)
 
 	PyrString* string = slotRawString(stringSlot);
 
-	NSString *kbEquiv = [[NSString alloc] initWithCString: string->s length: string->size];
-
+	NSString *kbEquiv = [NSString stringWithCString:string->s encoding:[NSString defaultCStringEncoding] ];
+	kbEquiv = [kbEquiv substringToIndex:string->size];
 	[menuItem setKeyEquivalent:kbEquiv];
 
 	int mod = NSCommandKeyMask;
@@ -3834,8 +3839,6 @@ int prSetMenuItemKeyboardEquivalent(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	[menuItem setKeyEquivalentModifierMask:mod];
-
-	[kbEquiv release];
 	return errNone;
 }
 

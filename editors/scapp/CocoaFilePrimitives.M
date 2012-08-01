@@ -37,7 +37,7 @@ File utilties that depend on the Cocoa framework.
 inline NSString* nsStringFromPyrSlot(PyrSlot *slot)
 {
     PyrString* pyrString = slotRawString(slot);
-    return [NSString stringWithCString: pyrString->s length: pyrString->size];
+    return [NSString stringWithUTF8String: pyrString->s];
 }
 
 
@@ -94,7 +94,7 @@ int prStandardizePath(struct VMGlobals *g, int numArgsPushed)
 		path = [path stringByStandardizingPath];
 		pyrString = newPyrString(g->gc, [path fileSystemRepresentation], 0, true);
 	} else {
-		pyrString = newPyrString(g->gc, [path cString],0,true);
+		pyrString = newPyrString(g->gc, [path cStringUsingEncoding:[NSString defaultCStringEncoding]],0,true);
 	}
 	SetObject(string, pyrString);
     return errNone;

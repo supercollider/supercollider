@@ -164,7 +164,7 @@ extern bool compiledOK;
 		PyrObject * pobj = (PyrObject*)[[self delegate] getSCObject];
 		if (pobj) {
 			pthread_mutex_lock (&gLangMutex);
-			PyrSymbol *documentclass = getsym([langClassToCall cString]);
+			PyrSymbol *documentclass = getsym([langClassToCall cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			PyrObject *classobj = (PyrObject*) documentclass->u.classobj;		
 			if(NotNil(pobj->slots+objectKeyUpActionIndex) || NotNil(classobj->slots+keyUpActionIndex)){
 				if(compiledOK){
@@ -206,7 +206,7 @@ extern bool compiledOK;
 
 		if (pobj) {
 			pthread_mutex_lock (&gLangMutex);
-			PyrSymbol *documentclass = getsym([langClassToCall cString]);
+			PyrSymbol *documentclass = getsym([langClassToCall cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			PyrObject *classobj = (PyrObject*) documentclass->u.classobj;			
 			if(NotNil(pobj->slots+objectKeyDownActionIndex) || NotNil(classobj->slots+keyDownActionIndex)){
 				if(compiledOK){

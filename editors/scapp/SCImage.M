@@ -1224,7 +1224,7 @@ int prSCImage_WriteToFile(struct VMGlobals *g, int numArgsPushed)
  	err = slotIntVal(b, &image_type);
 	if (err) return err;
 
-	NSString *StringPath = [[NSString alloc] initWithCString:path length:strlen(path)];
+	NSString *StringPath = [NSString stringWithCString:path encoding:[NSString defaultCStringEncoding]];
 	delete [] path;
 
 	SCImage *image = (SCImage *)slotRawPtr(slotRawObject(receiver)->slots);
@@ -1234,8 +1234,6 @@ int prSCImage_WriteToFile(struct VMGlobals *g, int numArgsPushed)
 	}
 	NSData *data = [[image bitmapRepresentation] representationUsingType:(NSBitmapImageFileType)image_type properties:nil];
 	BOOL result = [data writeToFile:StringPath atomically:YES];
-
-	[StringPath release];
 
 	SetBool(receiver, result ? true : false); // inform the user if save is ok
 

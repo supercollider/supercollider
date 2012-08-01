@@ -111,7 +111,7 @@ void post(const char *fmt, ...);
     }
     char *cstring = 0;
     if ([hitThing respondsToSelector: @selector(stringValue)]) {
-        cstring = (char*)[[hitThing stringValue] cString];
+        cstring = (char*)[[hitThing stringValue] cStringUsingEncoding:[NSString defaultCStringEncoding]];
     }
     
     pthread_mutex_lock (&gLangMutex);
