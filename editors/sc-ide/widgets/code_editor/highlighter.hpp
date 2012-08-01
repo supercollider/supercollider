@@ -21,7 +21,7 @@
 #ifndef SCIDE_SC_SYNTAX_HIGHLIGHTER_HPP_INCLUDED
 #define SCIDE_SC_SYNTAX_HIGHLIGHTER_HPP_INCLUDED
 
-#include "brackets.hpp"
+#include "tokens.hpp"
 
 #include <QSyntaxHighlighter>
 #include <QVector>
@@ -51,34 +51,10 @@ enum SyntaxFormat
 
 struct SyntaxRule
 {
-    enum Type
-    {
-        Identifier,
-        WhiteSpace,
+    SyntaxRule(): type(Token::Unknown) {}
+    SyntaxRule( Token::Type t, const QString &s ): type(t), expr(s) {}
 
-        Keyword,
-        Builtin,
-        Primitive,
-        Class,
-        Symbol,
-        String,
-        Char,
-        RadixFloat,
-        Float,
-        HexInt,
-        EnvVar,
-        SymbolArg,
-
-        SingleLineComment,
-        MultiLineCommentStart,
-
-        None
-    };
-
-    SyntaxRule(): type(None) {}
-    SyntaxRule( Type t, const QString &s ): type(t), expr(s) {}
-
-    Type type;
+    Token::Type type;
     QRegExp expr;
 };
 
@@ -144,7 +120,7 @@ private:
     void highlightBlockInSymbol(const QString& text, int & currentIndex, int & currentState);
     void highlightBlockInComment(const QString& text, int & currentIndex, int & currentState);
 
-    SyntaxRule::Type findMatchingRule(QString const & text, int & currentIndex, int & lengthOfMatch);
+    Token::Type findMatchingRule(QString const & text, int & currentIndex, int & lengthOfMatch);
 
     const SyntaxHighlighterGlobals *mGlobals;
 };
