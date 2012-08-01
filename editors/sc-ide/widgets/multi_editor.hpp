@@ -40,6 +40,7 @@ class Document;
 class DocumentManager;
 class CodeEditor;
 class SignalMultiplexer;
+class ScRequest;
 
 namespace Settings { class Manager; }
 
@@ -105,7 +106,7 @@ private Q_SLOTS:
     void onModificationChanged( QWidget * );
     void openDefinition();
 
-    void performScCommand( const QString & selector, const QString & yamlData );
+    void onScResponse( const QString & command, const QString & yamlData );
 
 private:
     void createActions();
@@ -127,6 +128,9 @@ private:
 
     // settings
     bool mStepForwardEvaluation;
+
+    // lang comm
+    ScRequest *mScRequest;
 };
 
 } // namespace ScIDE
