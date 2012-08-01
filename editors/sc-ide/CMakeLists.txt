@@ -7,7 +7,6 @@ find_package(Qt4 REQUIRED)
 set ( ide_moc_hdr
     core/main.hpp
     core/sig_mux.hpp
-    core/sc_ipc.hpp
     core/sc_process.hpp
     core/doc_manager.hpp
     core/settings/manager.hpp
@@ -39,7 +38,6 @@ set ( ide_src
     core/main.cpp
     core/sig_mux.cpp
     core/doc_manager.cpp
-    core/sc_ipc.cpp
     core/sc_process.cpp
     core/settings/serialization.cpp
     core/settings/manager.cpp

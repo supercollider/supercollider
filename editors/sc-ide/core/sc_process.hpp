@@ -23,9 +23,10 @@
 
 #include <QAction>
 #include <QProcess>
+#include <QtNetwork/QLocalSocket>
+#include <QtNetwork/QLocalServer>
+#include <QByteArray>
 #include <QDebug>
-
-#include "sc_ipc.hpp"
 
 namespace ScIDE {
 
@@ -35,7 +36,6 @@ class SCProcess:
     public QProcess
 {
 Q_OBJECT
-    SCIpcServer * mIPC;
 
 public:
     SCProcess( Main * );
@@ -132,17 +132,34 @@ public slots:
         return mActions[role];
     }
 
+private slots:
+    void onNewIpcConnection()
+    {
+        mIpcSocket = mIpcServer->nextPendingConnection();
+        connect(mIpcSocket, SIGNAL(disconnected()), mIpcSocket, SLOT(deleteLater()));
+        connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
+    }
+
+    void onIpcData();
+
 private:
     void onSclangStart()
     {
-        mIPC->onSclangStart();
-        QString command = QString("ScIDE.connect(\"%1\")").arg(mIPC->ideName());
+        if(!mIpcServer->isListening()) // avoid a warning on stderr
+            mIpcServer->listen(mIpcServerName);
+
+        QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
         evaluateCode ( command, true );
     }
 
     void prepareActions(Main *);
 
     QAction * mActions[SCProcessActionCount];
+
+    QLocalServer *mIpcServer;
+    QLocalSocket *mIpcSocket;
+    QString mIpcServerName;
+    QByteArray mIpcData;
 };
 
 }
