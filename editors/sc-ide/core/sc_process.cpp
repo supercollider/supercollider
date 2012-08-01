@@ -22,17 +22,51 @@
 #include "main.hpp"
 #include "settings/manager.hpp"
 
+#include <QCoreApplication>
+#include <QBuffer>
+
 namespace ScIDE {
 
 SCProcess::SCProcess( Main *parent ):
-    QProcess( parent ), mIPC( new SCIpcServer(this) )
+    QProcess( parent ),
+    mIpcServer( new QLocalServer(this) ),
+    mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid()))
 {
+
     prepareActions(parent);
 
     connect(this, SIGNAL( readyRead() ),
             this, SLOT( onReadyRead() ));
-    connect(mIPC, SIGNAL(message(QString)), this, SIGNAL(statusMessage(QString)));
-    connect(mIPC, SIGNAL(command(QString,QString)), this, SIGNAL(scCommand(QString,QString)));
+    connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
+}
+
+void SCProcess::prepareActions(Main * main)
+{
+    QAction * action;
+    mActions[StartSCLang] = action = new QAction(
+        QIcon::fromTheme("system-run"), tr("Start SCLang"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(start()) );
+
+    mActions[RecompileClassLibrary] = action = new QAction(
+        QIcon::fromTheme("system-reboot"), tr("Recompile Class Library"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(recompileClassLibrary()) );
+
+    mActions[StopSCLang] = action = new QAction(
+        QIcon::fromTheme("system-shutdown"), tr("Stop SCLang"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()) );
+
+    mActions[RunMain] = action = new QAction(
+        QIcon::fromTheme("media-playback-start"), tr("Run Main"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(runMain()));
+
+    mActions[StopMain] = action = new QAction(
+        QIcon::fromTheme("process-stop"), tr("Stop Main"), this);
+    action->setShortcut(tr("Ctrl+.", "Stop Main (a.k.a. cmd-period)"));
+    connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
+
+    Settings::Manager *settings = main->settings();
+    for (int i = 0; i < SCProcessActionCount; ++i)
+        settings->addAction( mActions[i] );
 }
 
 void SCProcess::start (void)
@@ -69,33 +103,28 @@ void SCProcess::start (void)
         onSclangStart();
 }
 
-void SCProcess::prepareActions(Main * main)
+
+void SCProcess::onIpcData()
 {
-    QAction * action;
-    mActions[StartSCLang] = action = new QAction(
-        QIcon::fromTheme("system-run"), tr("Start SCLang"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(start()) );
+    mIpcData.append(mIpcSocket->readAll());
 
-    mActions[RecompileClassLibrary] = action = new QAction(
-        QIcon::fromTheme("system-reboot"), tr("Recompile Class Library"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(recompileClassLibrary()) );
+    QBuffer receivedData ( &mIpcData );
+    receivedData.open ( QIODevice::ReadOnly );
 
-    mActions[StopSCLang] = action = new QAction(
-        QIcon::fromTheme("system-shutdown"), tr("Stop SCLang"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()) );
+    QDataStream in ( &receivedData );
+    in.setVersion ( QDataStream::Qt_4_6 );
+    QString selector, message;
+    in >> selector;
+    if ( in.status() != QDataStream::Ok )
+        return;
 
-    mActions[RunMain] = action = new QAction(
-        QIcon::fromTheme("media-playback-start"), tr("Run Main"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(runMain()));
+    in >> message;
+    if ( in.status() != QDataStream::Ok )
+        return;
 
-    mActions[StopMain] = action = new QAction(
-        QIcon::fromTheme("process-stop"), tr("Stop Main"), this);
-    action->setShortcut(tr("Ctrl+.", "Stop Main (a.k.a. cmd-period)"));
-    connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
+    mIpcData.remove ( 0, receivedData.pos() );
 
-    Settings::Manager *settings = main->settings();
-    for (int i = 0; i < SCProcessActionCount; ++i)
-        settings->addAction( mActions[i] );
+    emit scCommand(selector, message);
 }
 
 } // namespace ScIDE
