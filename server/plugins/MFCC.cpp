@@ -162,7 +162,7 @@ void MFCC_dofft(MFCC *unit, uint32 ibufnum)
 	//int numbins = buf->samples - 2 >> 1;
 
 	//assumed in this representation
-	SCComplexBuf *p = ToComplexApx(buf);
+	ToComplexApx(buf);
 
 	float * data= buf->data;
 

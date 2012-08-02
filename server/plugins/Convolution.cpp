@@ -1391,7 +1391,7 @@ void Convolution3_next_k(Convolution3 *unit)
 	//	float *in2 = IN(1);
 	float curtrig = ZIN0(2);
 
-	float *out1 = unit->m_inbuf1 + unit->m_pos;
+	//	float *out1 = unit->m_inbuf1 + unit->m_pos;
 	// 	float *out2 = unit->m_inbuf2 + unit->m_pos;
 
 	uint32 insize=unit->m_insize * sizeof(float);

@@ -159,7 +159,7 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum)
 	LOCK_SNDBUF(buf);
 
 	//assumed in this representation
-	SCComplexBuf *p = ToComplexApx(buf);
+	ToComplexApx(buf);
 
 	const float * data= buf->data;
 

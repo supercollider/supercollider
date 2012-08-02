@@ -114,7 +114,7 @@ void PV_OnsetDetectionBase_Ctor(PV_OnsetDetectionBase *unit)
 
 	PV_FEAT_GET_BUF_UNLOCKED
 
-	unit->m_numbins = buf->samples - 2 >> 1;
+	unit->m_numbins = numbins;
 	int insize = unit->m_numbins * sizeof(float);
 
 	if(bufOK) {

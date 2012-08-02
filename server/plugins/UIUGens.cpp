@@ -89,7 +89,7 @@ void* gstate_update_func(void* arg)
 
 		gMouseUGenGlobals.mouseX = point.x * rscreenWidth; //(float)p.h * rscreenWidth;
 		gMouseUGenGlobals.mouseY = point.y * rscreenHeight; //(float)p.v * rscreenHeight;
-		gMouseUGenGlobals.mouseButton = Button();
+		gMouseUGenGlobals.mouseButton = GetCurrentButtonState();
 #else
 		Point p;
 		GetGlobalMouse(&p);
