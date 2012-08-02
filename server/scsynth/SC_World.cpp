@@ -154,6 +154,11 @@ void* zalloc(size_t n, size_t size)
 	return zalloc_(n, size);
 }
 
+void zfree(void * ptr)
+{
+	return free(ptr);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
