@@ -25,6 +25,7 @@ set ( ide_moc_hdr
     widgets/code_editor/editor.hpp
     widgets/code_editor/highlighter.hpp
     widgets/code_editor/overlay.hpp
+    widgets/code_editor/autocompleter.hpp
     widgets/settings/dialog.hpp
     widgets/settings/sclang_page.hpp
     widgets/settings/editor_page.hpp
@@ -56,6 +57,7 @@ set ( ide_src
     widgets/code_editor/editor.cpp
     widgets/code_editor/highlighter.cpp
     widgets/code_editor/overlay.cpp
+    widgets/code_editor/autocompleter.cpp
     widgets/settings/dialog.cpp
     widgets/settings/sclang_page.cpp
     widgets/settings/editor_page.cpp

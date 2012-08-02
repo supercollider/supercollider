@@ -20,6 +20,7 @@
 
 #include "editor.hpp"
 #include "highlighter.hpp"
+#include "autocompleter.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
 
@@ -75,7 +76,8 @@ CodeEditor::CodeEditor( QWidget *parent ) :
     mSpaceIndent(true),
     mShowWhitespace(false),
     mMouseBracketMatch(false),
-    mOverlay( new QGraphicsScene(this) )
+    mOverlay( new QGraphicsScene(this) ),
+    mAutoCompleter( new AutoCompleter(this) )
 {
     mLineIndicator->move( contentsRect().topLeft() );
 
@@ -118,6 +120,8 @@ void CodeEditor::setDocument( Document *doc )
     mLineIndicator->setLineCount( tdoc->blockCount() );
 
     mDoc = doc;
+
+    mAutoCompleter->documentChanged(tdoc);
 }
 
 void CodeEditor::setIndentWidth( int width )
@@ -648,6 +652,7 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
     }
 
     QPlainTextEdit::keyPressEvent(e);
+    mAutoCompleter->keyPress(e);
 }
 
 void CodeEditor::mouseReleaseEvent ( QMouseEvent *e )

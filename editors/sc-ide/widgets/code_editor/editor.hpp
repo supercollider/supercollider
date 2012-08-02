@@ -34,6 +34,7 @@ namespace Settings { class Manager; }
 
 class Document;
 class CodeEditor;
+class AutoCompleter;
 
 class LineIndicator : public QWidget
 {
@@ -127,6 +128,8 @@ private:
     bool mMouseBracketMatch;
 
     QGraphicsScene *mOverlay;
+
+    AutoCompleter *mAutoCompleter;
 };
 
 } // namespace ScIDE
