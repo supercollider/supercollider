@@ -120,7 +120,7 @@ void Unpack1FFT_Ctor(Unpack1FFT* unit)
 	} else { \
 		buf = world->mSndBufs + ibufnum; \
 	} \
-	int binindex = unit->binindex; \
+	int binindex __attribute__((__unused__)) = unit->binindex; \
 	LOCK_SNDBUF(buf); \
 	SCComplexBuf *p = ToComplexApx(buf); \
 

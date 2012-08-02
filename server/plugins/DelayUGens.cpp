@@ -7184,7 +7184,7 @@ void Pluck_next_ka_z(Pluck *unit, int inNumSamples)
 	uint32 bufSamples = buf->samples; \
 	uint32 bufFrames = buf->frames; \
 	int guardFrame __attribute__((__unused__)) = bufFrames - 2; \
-	double loopMax = (double)bufSamples;
+	double loopMax __attribute__((__unused__)) = (double)bufSamples;
 
 #define CHECK_DELTAP_BUF \
 	if ((!bufData) || (bufChannels != 1)) { \
@@ -7300,7 +7300,7 @@ void DelTapWr_next_simd(DelTapWr *unit, int inNumSamples)
 	uint32 phaseIn = *iPhaseIn; \
 	float fbufnum  = IN0(0); \
 	uint32 bufnum = (uint32)fbufnum; \
-	float* out = ZOUT(0); \
+	float* out __attribute__((__unused__)) = ZOUT(0); \
 
 #define SETUP_TAPDELA \
 	float* delTime = ZIN(2); \
