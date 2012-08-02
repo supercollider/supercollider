@@ -38,18 +38,13 @@ public:
     };
 
 public:
-    PopUpWidget( QWidget * parent = 0 ):
-        QWidget( parent, Qt::Popup ),
-        mEventLoop(0),
-        mResult(0)
-    {}
+    PopUpWidget( QWidget * parent = 0 );
 
-    ~PopUpWidget()
-    {
-        quit();
-    }
+    virtual ~PopUpWidget();
 
     int exec( const QPoint & pos );
+
+    void popup( const QPoint & pos );
 
 public slots:
 
@@ -70,6 +65,9 @@ public slots:
         quit();
     }
 
+signals:
+    void finished(int result);
+
 private:
     void quit()
     {
@@ -83,11 +81,14 @@ protected:
     virtual void hideEvent( QHideEvent *e )
     {
         quit();
+        emit finished(mResult);
     }
 
     virtual void keyPressEvent( QKeyEvent *ke );
 
     virtual void showEvent( QShowEvent * );
+
+    virtual bool eventFilter( QObject *, QEvent * );
 
 private:
 
