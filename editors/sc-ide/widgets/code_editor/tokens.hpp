@@ -275,22 +275,33 @@ public:
         return *this;
     }
 
+    TokenIterator previous()
+    {
+        TokenIterator it(*this);
+        --it;
+        return it;
+    }
+
+    TokenIterator next()
+    {
+        TokenIterator it(*this);
+        ++it;
+        return it;
+    }
+
     char character()
     {
-        Q_ASSERT(blk.isValid());
-        Q_ASSERT(idx >= 0);
-        Q_ASSERT(data);
-
-        return data->tokens[idx].character;
+        return (*this)->character;
     }
 
     int position()
     {
-        Q_ASSERT(blk.isValid());
-        Q_ASSERT(idx >= 0);
-        Q_ASSERT(data);
+        return (*this)->position + blk.position();
+    }
 
-        return data->tokens[idx].position + blk.position();
+    Token::Type type()
+    {
+        return isValid() ? (*this)->type : Token::Unknown;
     }
 };
 
