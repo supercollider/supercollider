@@ -441,7 +441,7 @@ bool BufFreeCmd::Stage3()
 
 void BufFreeCmd::Stage4()
 {
-	free(mFreeData);
+	zfree(mFreeData);
 	SendDoneWithIntValue("/b_free", mBufIndex);
 }
 
