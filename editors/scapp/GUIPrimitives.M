@@ -712,7 +712,7 @@ int prTextWindow_GetFileName(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *a = g->sp;
         MyDocument* doc = (MyDocument*) slotRawPtr(slotRawObject(a)->slots);
         if (!doc) return errFailed;
-        const char * cstr = [[doc fileName] UTF8String];
+        const char * cstr = [[[doc fileURL] path] UTF8String];
 		if(!cstr){
 			SetNil(a);
 			return errNone;
@@ -733,7 +733,8 @@ int prTextWindow_SetFileName(struct VMGlobals *g, int numArgsPushed)
 		NSString *nsname = [NSString stringWithCString: filename->s encoding:[NSString defaultCStringEncoding]];
 		nsname = [nsname substringToIndex:filename->size];
 		if(!nsname) return errFailed;
-        [doc setFileName: nsname];
+		NSURL *urlname = [NSURL URLWithString:nsname];
+        [doc setFileURL: urlname];
         return errNone;
 }
 int prTextWindow_GetSelectedRangeLocation(struct VMGlobals *g, int numArgsPushed);

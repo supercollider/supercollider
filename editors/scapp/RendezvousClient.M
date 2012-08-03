@@ -113,7 +113,6 @@ static unsigned indexOfServiceBeingResolved = 0;		// which service am I currentl
 		browsers[serviceType] = [[NSNetServiceBrowser alloc] init];
 		[browsers[serviceType] setDelegate: self];
 	}
-	
 	// 10 elements is a reasonable starting point
 	oscServices = [[NSMutableArray alloc] initWithCapacity: 10];
 	

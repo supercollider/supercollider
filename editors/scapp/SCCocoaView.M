@@ -73,7 +73,7 @@ extern PyrSymbol *s_scview;
 {
 }
 
-- (void)setSCView: (struct SCCocoaTextView*)inObject
+- (void)setSCView: (class SCCocoaTextView*)inObject
 {
 	mSCViewObject = inObject;
 }
@@ -82,15 +82,15 @@ extern PyrSymbol *s_scview;
 - (IBAction) executeSelection: (id) sender
 {
 	if(enterExecutesSelection)
-    [self sendSelection: "interpretPrintCmdLine" ];
+    [self sendSelection: @"interpretPrintCmdLine" ];
 }
 
-- (void)sendSelection: (char*) methodName
+- (void)sendSelection: (NSString*) nsmethodName
 {
     if (!compiledOK) {
         return;
     }
-
+	const char *methodName = [nsmethodName UTF8String];
 	NSRange selectedRange;
 	SCTextView * txtView = mSCViewObject->getTextView();
 	NSString* selection = [txtView currentlySelectedTextOrLine: &selectedRange];
@@ -685,7 +685,7 @@ const int circDiam = 20;
 //    return;
 //}
 
-- (void)setSCView: (struct SCTextField*)inObject
+- (void)setSCView: (class SCTextField*)inObject
 {
 	mSCViewObject = inObject;
 }
@@ -757,7 +757,7 @@ const int circDiam = 20;
 		pthread_mutex_lock (&gLangMutex);
 		PyrSymbol *method = getsym("doAction");
 		PyrObject *mObj;
-		if (mObj = mSCViewObject->GetSCObj()) {
+		if ((mObj = mSCViewObject->GetSCObj())) {
 			VMGlobals *g = gMainVMGlobals;
 			g->canCallOS = true;
 			++g->sp;  SetObject(g->sp, mObj);
@@ -1096,12 +1096,12 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	enterExecutesSelection = YES;
 }
 
-- (void)setSCObject: (struct SCWebView*)inObject
+- (void)setSCObject: (class SCWebView*)inObject
 {
     mSCWebView = inObject;
 }
 
-- (struct SCWebView*)getSCObject
+- (class SCWebView*)getSCObject
 {
     return mSCWebView;
 }
@@ -1285,8 +1285,9 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	enterExecutesSelection = flag;
 }
 
-- (void)sendSelection: (char*) methodName
+- (void)sendSelection: (NSString*) nsmethodName
 {
+	const char * methodName = [nsmethodName UTF8String];
     if (!compiledOK) {
         return;
     }
@@ -1310,32 +1311,32 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 
 - (IBAction)openCode:(id)sender
 {
-    [self sendSelection: "openCodeFile"];
+    [self sendSelection: @"openCodeFile"];
 }
 
 - (IBAction) showHelpFor: (id) sender
 {
-	[self sendSelection: "showHelp"];
+	[self sendSelection: @"showHelp"];
 }
 
 - (IBAction)showHelpSearch:(id)sender {
-	[self sendSelection: "showHelpSearch"];
+	[self sendSelection: @"showHelpSearch"];
 }
 
 - (IBAction)methodTemplates: (id)sender
 {
-    [self sendSelection: "methodTemplates"];
+    [self sendSelection: @"methodTemplates"];
 }
 
 - (IBAction)methodReferences: (id)sender
 {
-    [self sendSelection: "methodReferences"];
+    [self sendSelection: @"methodReferences"];
 }
 
 - (IBAction)executeSelection: (id) sender
 {
 	if(enterExecutesSelection)
-		[self sendSelection: "interpretPrintCmdLine" ];
+		[self sendSelection: @"interpretPrintCmdLine" ];
 }
 
 // workaround for plaintext copy

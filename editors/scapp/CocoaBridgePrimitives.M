@@ -2222,7 +2222,7 @@ void initCocoaBridgePrimitives()
 		id nsobj;
 		NSEnumerator* e = [nsobjects objectEnumerator];
 		while((nsobj = [e nextObject])) {
-			if(strcmp(class_getName(nsobj->isa->isa), "FREED(id)") == 0) { // may happen so add verbosity
+			if(strcmp(class_getName(object_getClass(object_getClass(nsobj))), "FREED(id)") == 0) { // may happen so add verbosity
 				NSLog(@"Already FREED NSObject in POOL -> will cause crash");
 				continue;
 			}

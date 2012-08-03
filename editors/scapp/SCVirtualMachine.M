@@ -209,7 +209,7 @@ static id sharedSCVM = nil;
 	pthread_mutex_unlock(&gLangMutex);
 }
 
-- (void)sendMain: (char*) methodName
+- (void)sendMain: (const char*) methodName
 {
 	pthread_mutex_lock(&gLangMutex);
 	runLibrary(getsym(methodName));
@@ -338,7 +338,7 @@ void setupUserPaneViews(id target, id view, int tagsum)
 		int thisTag = [view tag];
 		if (thisTag > 0) newTagSum += thisTag;
 	}
-	post("  view '%s' %d %d\n", class_getName(view->isa), tagsum, newTagSum);
+	post("  view '%s' %d %d\n", class_getName(object_getClass(view)), tagsum, newTagSum);
 
 	if ([view respondsToSelector: @selector(setTarget:)]) {
 		[view setTarget: target];

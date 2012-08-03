@@ -571,7 +571,7 @@ const int circDiam = 20;
     pasteboard: pboard source: self slideBack: YES];
 }
 
-- (unsigned int)draggingEntered:(id)dragInfo {
+- (NSDragOperation)draggingEntered:(id)dragInfo {
 	if (!mTopView) return NSDragOperationNone;
 	NSPasteboard* pboard = [dragInfo draggingPasteboard];
 	if ([[pboard types] containsObject: sSCObjType]) {
@@ -646,7 +646,7 @@ const int circDiam = 20;
     }
 }
 
-- (unsigned int)draggingUpdated:(id)dragInfo {
+- (NSDragOperation)draggingUpdated:(id)dragInfo {
 	if (!mTopView) return NSDragOperationNone;
     NSPoint mouseLoc = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
 

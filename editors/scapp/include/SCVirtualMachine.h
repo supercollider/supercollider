@@ -37,7 +37,7 @@
 - (void)doPeriodicTask: (NSTimer*) timer;
 - (void)doClockTask: (NSTimer*) timer;
 - (void)setCmdLine: (const char*) text length: (int)length;
-- (void)sendMain: (char*) methodName;
+- (void)sendMain: (const char*) methodName;
 
 - (void)defer: (NSInvocation*) action;
 - (void)performDeferredOperations;

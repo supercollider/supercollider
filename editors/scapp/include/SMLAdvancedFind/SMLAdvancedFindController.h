@@ -89,7 +89,7 @@ typedef enum {
 
 - (void)alertThatThisIsNotAValidRegularExpression:(NSString *)string;
 
-- (void)searchScopeChanged:(id)sender;
+- (IBAction)searchScopeChanged:(id)sender;
 
 - (NSWindow *)advancedFindWindow;
 - (NSOutlineView *)findResultsOutlineView;

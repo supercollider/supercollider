@@ -44,7 +44,7 @@ SCColor synColText = SCMakeColor(0, 0, 0, 1),
 		synColPunc = SCMakeColor(0.0, 0.0, 0.0, 1), // : ; ' [ ] { } ( )
 		synColEnv = SCMakeColor(1.0, 0.4, 0, 1);
 
-static bool streq(char *cstr, unichar *ustr)
+static bool streq(const char *cstr, unichar *ustr)
 {
     while (true) {
         char c = *cstr++;
@@ -172,7 +172,7 @@ void SyntaxColorize(NSTextView* textView)
 		if (c == '{') { bracket = true; }
 			else bracket = false;
 		
-		if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_') goto ident;
+		if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_') goto ident;
 		else if (c == '\\') goto symbol1;
 		else if (c == '\'') goto symbol3;
 		else if (c == '"') goto string1;
@@ -202,8 +202,8 @@ void SyntaxColorize(NSTextView* textView)
 	ident:
 		c = input();
 		
-		if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' 
-			|| c == '_' || c >= '0' && c <= '9') goto ident;
+		if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') 
+			|| c == '_' || (c >= '0' && c <= '9')) goto ident;
 		else if (c == ':') {
 			yytext[yylen] = 0;
 			//r = processkeywordbinop(yytext) ; 
@@ -250,7 +250,7 @@ void SyntaxColorize(NSTextView* textView)
 	symbol1:
 		c = input();
 		
-		if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' 
+		if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') 
 			|| c == '_') {
 				startrun = textpos - 2;
 				goto symbol2;
@@ -262,8 +262,8 @@ void SyntaxColorize(NSTextView* textView)
 	symbol2:
 		c = input();
 		
-		if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' 
-			|| c == '_' || c >= '0' && c <= '9') goto symbol2;
+		if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+			|| c == '_' || (c >= '0' && c <= '9')) goto symbol2;
 		else {
 			unput(c);
 			endrun = textpos;
@@ -380,7 +380,7 @@ void SyntaxColorize(NSTextView* textView)
  		startrun = textpos -1;
  		do {
  			c = input0();
- 		}	while (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_' || c >= '0' && c <= '9');
+ 		}	while ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || (c >= '0' && c <= '9'));
  		endrun = textpos - 1;
  		range = NSMakeRange(startrun, endrun - startrun);
  		[textStorage addAttribute:NSForegroundColorAttributeName value: environColor range: range];
@@ -416,7 +416,7 @@ void SyntaxColorize(NSTextView* textView)
 		} while (c == ' ' || c == '\n' || c == '\t' || c == '\v' || c == '\f' ||  c == '\r' || c == 0 || (c >= '0' && c <= '9'));
 		textpos = tempTextpos; charno = tempCharno; yylen = tempYylen; lineno = tempLineno; //restore original position
 		if(reachedStart) continue;
-		if(c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_' || c == ')' || c == ']') continue; //it must be a subtraction operator, skip.
+		if((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_' || c == ')' || c == ']') continue; //it must be a subtraction operator, skip.
 		startrun = textpos - 1;
 		do {
 			c = input0();			
