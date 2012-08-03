@@ -319,7 +319,7 @@ bool BufAllocCmd::Stage3()
 
 void BufAllocCmd::Stage4()
 {
-	free(mFreeData);
+	zfree(mFreeData);
 	SendDoneWithIntValue("/b_alloc", mBufIndex);
 }
 
@@ -385,7 +385,7 @@ bool BufGenCmd::Stage3()
 
 void BufGenCmd::Stage4()
 {
-	free(mFreeData);
+	zfree(mFreeData);
 	SendDoneWithIntValue("/b_gen", mBufIndex);
 }
 
@@ -575,7 +575,7 @@ bool BufAllocReadCmd::Stage3()
 
 void BufAllocReadCmd::Stage4()
 {
-	free(mFreeData);
+	zfree(mFreeData);
 	SendDoneWithIntValue("/b_allocRead", mBufIndex);
 }
 
@@ -862,7 +862,7 @@ bool BufAllocReadChannelCmd::Stage3()
 
 void BufAllocReadChannelCmd::Stage4()
 {
-	free(mFreeData);
+	zfree(mFreeData);
 	SendDoneWithIntValue("/b_allocReadChannel", mBufIndex);
 }
 
