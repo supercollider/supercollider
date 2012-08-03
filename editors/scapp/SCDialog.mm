@@ -58,7 +58,7 @@
 		[openPanel retain];
 	}
 	[openPanel setAllowsMultipleSelection: allowsMultiple];
-    if(NSOKButton == [openPanel runModalForTypes: nil]) {
+    if(NSOKButton == [openPanel runModal]) {
          [self returnPaths: [openPanel URLs]];
     } else {
         [self cancel];
@@ -98,7 +98,7 @@
 {
 	NSSavePanel *savePanel = [NSSavePanel savePanel];
 	if([savePanel runModal] == NSFileHandlingPanelOKButton) {
-		[self returnPath: [savePanel filename]];
+		[self returnPath: [[savePanel URL] path]];
 	} else {
 		[self cancel];
 	}

@@ -87,7 +87,7 @@ extern PyrSymbol *s_closed;
     atIndex: (unsigned) charIndex;
 - (IBAction) createLink: (id) sender;
 
-- (void)sendSelection: (char*) methodName;
+- (void)sendSelection: (const char*) methodName;
 
 - (NSString *)windowNibName;
 

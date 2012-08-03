@@ -54,7 +54,7 @@
 - (void)textDidBeginEditing:(NSNotification *)aNotification;
 - (void)setSCView: (struct SCCocoaTextView*)inObject;
 - (IBAction) executeSelection: (id) sender;
-- (void)sendSelection: (char*) methodName;
+- (void)sendSelection: (NSString*) nsmethodName;
 - (void) keyUp: (NSEvent*) event;
 - (BOOL) handleKeyDown: (NSEvent*) event;
 - (void) mouseDown: (NSEvent*) event;
@@ -143,7 +143,7 @@
 - (void)webView:(WebView *)webView unableToImplementPolicyWithError:(NSError *)error frame:(WebFrame *)frame;
 - (void)doLinkAction:(NSString *)urlString;
 - (void) setEnterExecutesSelection: (BOOL) flag;
-- (void)sendSelection: (char*) methodName;
+- (void)sendSelection: (NSString*) nsmethodName;
 - (void)setSelection;
 - (IBAction)openCode:(id)sender;
 - (IBAction) showHelpFor: (id) sender;
