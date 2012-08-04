@@ -252,6 +252,11 @@ if (APPLE)
 			DESTINATION "${scappauxresourcesdir}/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
+        if (SUPERNOVA)
+                install(TARGETS ${supernova_plugins}
+                        DESTINATION "${scappauxresourcesdir}/supernova_plugins"
+                        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+        endif()
 elseif (WIN32)
 	install(TARGETS ${plugins}
 			DESTINATION "SuperCollider/plugins"
