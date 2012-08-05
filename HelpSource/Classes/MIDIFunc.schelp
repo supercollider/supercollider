@@ -6,7 +6,7 @@ related:: Guides/MIDI, Classes/MIDIdef
 DESCRIPTION::
 MIDIFunc (and its subclass link::Classes/MIDIdef::) registers one or more functions to respond to an incoming MIDI message. Many of its methods are inherited from its superclass link::Classes/AbstractResponderFunc::.
 
-note:: MIDIFunc and link:Classes/MIDIdef:: aim to improve upon the MIDIresponder classes by being faster and easier to use. They were made with the intention of creating a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::. As of this time, however, they still lack some features of the MIDIresponder classes, notably the learn method. Note that unlike those classes, MIDIFuncs are removed on Cmd-. by default. This can be overriden using either of the fix or permanent methods.::
+note:: MIDIFunc and link::Classes/MIDIdef:: aim to improve upon the MIDIresponder classes by being faster and easier to use. They were made with the intention of creating a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::. As of this time, however, they still lack some features of the MIDIresponder classes, notably the learn method. Note that unlike those classes, MIDIFuncs are removed on Cmd-. by default. This can be overriden using either of the fix or permanent methods.::
 
 
 CLASSMETHODS::
