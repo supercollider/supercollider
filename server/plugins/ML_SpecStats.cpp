@@ -102,8 +102,6 @@ struct SpecCentroid : FFTAnalyser_Unit
 /*
 extern "C"
 {
-//	void load(InterfaceTable *inTable);
-
 	void SpecFlatness_Ctor(SpecFlatness *unit);
 	void SpecFlatness_next(SpecFlatness *unit, int inNumSamples);
 
