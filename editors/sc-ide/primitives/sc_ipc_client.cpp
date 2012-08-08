@@ -123,10 +123,9 @@ private:
             serialize(slotRawObject(slot));
             return;
 
-        case tagSym: {
+        case tagSym:
             emitter << YAML::DoubleQuoted << slotRawSymbol(slot)->name;
             return;
-        }
 
         default:
             printf ("type: %d\n", GetTag(slot));
@@ -144,7 +143,7 @@ private:
             char * cstr = new char[len + 10];
             memcpy(cstr, str->s, len);
             cstr[len] = 0; // zero-terminate
-            emitter << cstr;
+            emitter << YAML::DoubleQuoted << cstr;
             delete[] cstr;
             return;
         }
