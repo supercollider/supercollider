@@ -2222,6 +2222,18 @@ int SCQuartzComposerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if(!success) return errFailed;
 		return errNone;
 	}
+    
+// pause and resume rendering added:
+    if (strcmp(name, "pause")==0) {
+		[mQCView pauseRendering];
+		return errNone;
+	}
+    
+    if (strcmp(name, "resume")==0) {
+		[mQCView resumeRendering];
+		return errNone;
+	}
+    
 
 	//// doesn't seem to work ; fix later
 	//	if (strcmp(name, "erase")==0) {

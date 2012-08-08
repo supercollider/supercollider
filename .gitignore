@@ -15,3 +15,17 @@ common/Packager/SuperCollider*.dmg
 /build*
 
 *~
+platform/mac/Language.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+platform/mac/Language.xcodeproj/project.xcworkspace/xcuserdata/admin2.xcuserdatad/UserInterfaceState.xcuserstate
+platform/mac/Language.xcodeproj/project.xcworkspace/xcuserdata/admin2.xcuserdatad/WorkspaceSettings.xcsettings
+platform/mac/Language.xcodeproj/xcuserdata/admin2.xcuserdatad/xcschemes/All.xcscheme
+platform/mac/Language.xcodeproj/xcuserdata/admin2.xcuserdatad/xcschemes/sclang.xcscheme
+platform/mac/Language.xcodeproj/xcuserdata/admin2.xcuserdatad/xcschemes/Standalone Template.xcscheme
+platform/mac/Language.xcodeproj/xcuserdata/admin2.xcuserdatad/xcschemes/SuperCollider.xcscheme
+platform/mac/Language.xcodeproj/xcuserdata/admin2.xcuserdatad/xcschemes/xcschememanagement.plist
+platform/mac/Synth.xcodeproj/xcuserdata/admin2.xcuserdatad/xcschemes/All.xcscheme
+platform/mac/Synth.xcodeproj/xcuserdata/admin2.xcuserdatad/xcschemes/AllExceptAU.xcscheme
+platform/mac/Synth.xcodeproj/xcuserdata/admin2.xcuserdatad/xcschemes/libscsynth.xcscheme
+platform/mac/Synth.xcodeproj/xcuserdata/admin2.xcuserdatad/xcschemes/scsynth.xcscheme
+platform/mac/Synth.xcodeproj/xcuserdata/admin2.xcuserdatad/xcschemes/SuperColliderAU.xcscheme
+platform/mac/Synth.xcodeproj/xcuserdata/admin2.xcuserdatad/xcschemes/xcschememanagement.plist
