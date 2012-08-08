@@ -384,7 +384,9 @@ SoundFile {
 		if (server.serverRunning) {
 			^SoundFile.collect(path)
 				.collect { |  sf |
-					Buffer(server, sf.numFrames, sf.numChannels).allocRead(sf.path)
+					Buffer(server, sf.numFrames, sf.numChannels)
+					.allocRead(sf.path)
+					.sampleRate_(sf.sampleRate);
 				}
 		} {
 			"the server must be running to collection soundfiles into buffers ".error
