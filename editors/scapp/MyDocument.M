@@ -254,7 +254,6 @@ void SyntaxColorize(NSTextView* textView);
         [activeTextView replaceCharactersInRange: selectedRange withString: string];
         [activeTextView didChangeText];
     }
-    [string release];
 }
 
 
