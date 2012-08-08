@@ -4,35 +4,56 @@ categories:: GUI
 
 
 
-SECTION:: Platform indepedent GUI code
+SECTION:: First problem: Platform independence
 
-SuperCollider provides for writing graphical user interface code that may be executed by different GUI kits implementing the same functionality. A user may not worry about the different implementations and under most circumstances generic GUI code will have the same effect in any of them. Nontheless, there may appear slight differences between them, therefore it's worth mentioning them here.
+strong::Why do you need to know about this?::
 
-subsection:: Different GUI kits
-
-Various GUI kits are managed by the link::Classes/GUI:: class. See it's documentation for details of how to switch the active GUI kit.
-
-At the moment of this writing, there exist three GUI kits:
-
-table::
-
-## strong::Name:: || strong::Implementation:: || strong::Availability::
-## strong::Cocoa:: || Mac OS Cocoa toolkit || Only on Mac OS, within the SuperCollider application
-## strong::SwingOSC:: || Java || Cross-platform, running as a separate program and commuincating with SuperCollider via OSC.
-## strong::Qt:: || Qt framework || Cross-platform.
-
+numberedlist::
+## You'll create a Window.new and wonder why you got back a SCWindow or QWindow.
+## You might use Mac-only GUI objects and wonder why your friend on Windows can't run your code.
+## On Mac, you might run some examples that are specific to Q- objects and wonder why they don't work right away.
 ::
 
-subsection:: Generic GUI code
+strong::Short answer::
 
-There is a set of classes available for writing generic GUI code. When they are instantiated an instance of the kit-specific equivalent class is returned instead. The equivalent classes of all the GUI kits implement a large set of common methods which can therefore be used in generic code, and are documented as belonging to the generic class.
+Make sure you select the right strong::GUI kit::.
 
-The kit-specific classes typically have the same name as their generic equivalents, but prefixed with an identifier of the implementation: "SC" for Cocoa, "JSC" for SwingOSC and "Q" for Qt.
+When SuperCollider starts, one of the available kits becomes the default.
+
+table::
+## strong::Platform:: || strong::Default kit::
+## Mac OSX || Cocoa -- code::GUI.cocoa::
+## Linux/FreeBSD || Qt -- code::GUI.qt::
+## Windows || Qt -- code::GUI.qt::
+::
+
+For most cases, the Qt GUI kit is sufficient. Cocoa is retained as the default in Mac OSX for historical reasons. (This may change in a future release.)
+
+warning:: Some GUI examples are Qt-specific. They are labeled as such in the documentation. Strong::These examples will not work in OSX unless you manually switch to the Qt kit:: by running the following code:
+
+code::GUI.qt;::
+::
+
+See the link::Classes/GUI:: help file for more background on the GUI kits.
+
+
+subsection:: Use "GUI redirect" classes whenever possible
+
+It is strongly recommended to use generic view class names: Window, Button, Slider, etc. Code written using the generic names can run in other GUI kits.
+
+code::
+// DO write
+w = Window.new.front;
+
+// DO NOT write
+w = SCWindow.new.front;
+::
+
+In the second example, the use of the Cocoa-specific window class ensures that the code will not run in Linux or Windows without modification. This is usually not a good idea.
 
 For a list of all the generic GUI classes and their kit-specific equivalents see link::Overviews/GUI-Classes::.
 
 In the rest of this document we will refer to GUI classes by their generic name, adding notes where important differences between GUI kits are of concern.
-
 
 
 

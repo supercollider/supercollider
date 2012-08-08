@@ -319,7 +319,7 @@ bool BufAllocCmd::Stage3()
 
 void BufAllocCmd::Stage4()
 {
-	free(mFreeData);
+	zfree(mFreeData);
 	SendDoneWithIntValue("/b_alloc", mBufIndex);
 }
 
@@ -385,7 +385,7 @@ bool BufGenCmd::Stage3()
 
 void BufGenCmd::Stage4()
 {
-	free(mFreeData);
+	zfree(mFreeData);
 	SendDoneWithIntValue("/b_gen", mBufIndex);
 }
 
@@ -440,7 +440,7 @@ bool BufFreeCmd::Stage3()
 
 void BufFreeCmd::Stage4()
 {
-	free(mFreeData);
+	zfree(mFreeData);
 	SendDoneWithIntValue("/b_free", mBufIndex);
 }
 
@@ -575,7 +575,7 @@ bool BufAllocReadCmd::Stage3()
 
 void BufAllocReadCmd::Stage4()
 {
-	free(mFreeData);
+	zfree(mFreeData);
 	SendDoneWithIntValue("/b_allocRead", mBufIndex);
 }
 
@@ -862,7 +862,7 @@ bool BufAllocReadChannelCmd::Stage3()
 
 void BufAllocReadChannelCmd::Stage4()
 {
-	free(mFreeData);
+	zfree(mFreeData);
 	SendDoneWithIntValue("/b_allocReadChannel", mBufIndex);
 }
 
@@ -1095,6 +1095,8 @@ bool BufWriteCmd::Stage2()
 	if (mNumFrames < 0 || mNumFrames > buf->frames) mNumFrames = buf->frames;
 
 	if (mNumFrames > framesToEnd) mNumFrames = framesToEnd;
+
+	sf_command(sf, SFC_SET_CLIPPING, NULL, SF_TRUE); // choose clipping rather than wraparound for integer-format files
 
 	if (mNumFrames > 0) {
 		sf_writef_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);

@@ -30,6 +30,10 @@
 #include <tbb/cache_aligned_allocator.h>
 #endif /* HAVE_TBB */
 
+#ifdef _MSC_VER
+#include <malloc.h>
+#endif
+
 #include "function_attributes.h"
 
 namespace nova {
@@ -87,6 +91,20 @@ inline void* MALLOC malloc_aligned(std::size_t nbytes)
 inline void free_aligned(void *ptr)
 {
     _mm_free(ptr);
+}
+
+#elif defined(_MSC_VER)
+
+const int malloc_memory_alignment = 64;
+
+inline void* MALLOC malloc_aligned(std::size_t nbytes)
+{
+    return _aligned_malloc(nbytes, malloc_memory_alignment);
+}
+
+inline void free_aligned(void *ptr)
+{
+    _aligned_free(ptr);
 }
 
 #elif defined(HAVE_TBB)
