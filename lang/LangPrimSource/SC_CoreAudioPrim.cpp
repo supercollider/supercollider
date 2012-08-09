@@ -37,12 +37,18 @@ int listDevices(struct VMGlobals *g, int type)
 {
 	int numDevices, num = 0;
     PyrSlot *a = g->sp-2;
-
+	AudioObjectPropertyAddress propertyAddress;
+	propertyAddress.mSelector = kAudioHardwarePropertyDevices;
+	propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
+	propertyAddress.mElement = kAudioObjectPropertyElementMaster;
+	
 //	unsigned long count;
     UInt32 count;
-    OSStatus err = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &count, 0);
+	//    OSStatus err = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &count, 0);
+	OSStatus err = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count);
 	AudioDeviceID *devices = (AudioDeviceID*)malloc(count);
-	err = AudioHardwareGetProperty(kAudioHardwarePropertyDevices, &count, devices);
+	// err = AudioHardwareGetProperty(kAudioHardwarePropertyDevices, &count, devices);
+	err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count, devices);
 	if (err!=kAudioHardwareNoError)
 	{
 		free(devices);
@@ -55,10 +61,29 @@ int listDevices(struct VMGlobals *g, int type)
 
 	if (type<BOTH)
 	{
+		if(type < IN)
+		{
+			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
+		} else {
+			propertyAddress.mScope = kAudioDevicePropertyScopeInput;
+		}
+		
 		for (i=0; i<numDevices; i++)
 		{
 			Boolean writeable;
-			err = AudioDeviceGetPropertyInfo(devices[i], 0, type, kAudioDevicePropertyStreams, &count, &writeable);
+			propertyAddress.mSelector = kAudioDevicePropertyStreams;
+			// err = AudioDeviceGetPropertyInfo(devices[i], 0, type, kAudioDevicePropertyStreams, &count, &writeable);
+			
+			err = AudioObjectGetPropertyDataSize(devices[i], &propertyAddress, 0, NULL, &count);
+
+			if (err!=kAudioHardwareNoError)
+			{
+				free(devices);
+				return 0;
+			}
+			
+			err = AudioObjectIsPropertySettable(devices[i], &propertyAddress, &writeable);
+			
 			if (err!=kAudioHardwareNoError)
 			{
 				free(devices);
@@ -78,14 +103,21 @@ int listDevices(struct VMGlobals *g, int type)
 	{
 		if (!devices[i]) continue;
 
-		err = AudioDeviceGetPropertyInfo(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, 0);
+		propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
+		propertyAddress.mSelector = kAudioDevicePropertyDeviceName;
+		
+		// err = AudioDeviceGetPropertyInfo(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, 0);
+		
+		err = AudioObjectGetPropertyDataSize(devices[i], &propertyAddress, 0, NULL, &count);
+		
 		if (err != kAudioHardwareNoError)
 		{
 			break;
 		}
 
 		char *name = (char*)malloc(count);
-		err = AudioDeviceGetProperty(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, name);
+		// err = AudioDeviceGetProperty(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, name);
+		err = AudioObjectGetPropertyData(devices[i], &propertyAddress, 0, NULL, &count, name);
 		if (err != kAudioHardwareNoError)
 		{
 			free(name);
