@@ -289,11 +289,11 @@ prose: prose proseelem { $$ = doc_node_add_child($1, $2); }
      | proseelem { $$ = doc_node_make("PROSE",NULL,$1); }
      ;
 
-proseelem: anyword { $$ = doc_node_make("TEXT",$1,NULL); } // one TEXT for each word
+proseelem: anyword { $$ = doc_node_make(NODE_TEXT,$1,NULL); } // one TEXT for each word
          | URL { $$ = doc_node_make("LINK",$1,NULL); }
          | inlinetag words TAGSYM { $$ = doc_node_make($1,$2,NULL); }
          | FOOTNOTE body TAGSYM { $$ = doc_node_make_take_children("FOOTNOTE",NULL,$2); }
-         | NEWLINE { $$ = doc_node_create("NL"); }
+         | NEWLINE { $$ = doc_node_create(NODE_NL); }
          ;
 
 inlinetag: LINK { $$ = "LINK"; }
