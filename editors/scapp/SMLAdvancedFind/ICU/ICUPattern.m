@@ -233,7 +233,7 @@ unsigned UnicodeWordBoundaries = UREGEX_UWORD;
 
 	if(U_FAILURE(status))
 		[NSException raise:@"Split Exception"
-					format:@"Unable to split string: %@", u_errorName(status)];
+					format:@"Unable to split string: %@", [NSString stringWithCString: u_errorName(status) encoding:[NSString defaultCStringEncoding]]];
 
 	return [NSArray arrayWithArray:results];	
 }

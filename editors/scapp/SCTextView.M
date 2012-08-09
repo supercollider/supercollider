@@ -20,6 +20,7 @@
 
 #import "SCTextView.h"
 #import "MyDocument.h"
+#import "SCCocoaView.h"
 #import "SC_DirUtils.h"
 #include "SCBase.h"
 #include "PyrSymbol.h"

@@ -1095,7 +1095,7 @@ int prTextWindow_GetIndexOfListener(struct VMGlobals *g, int numArgsPushed)
 		PyrSlot *a = g->sp;
 		NSDocumentController *docctl = [NSDocumentController sharedDocumentController];
         if (!docctl) return errFailed;
-		MyDocument* doc = [gPostView delegate];
+		MyDocument* doc = (MyDocument*)[gPostView delegate];
         if (!doc) return errFailed;
 		int index = [[docctl documents] indexOfObject: doc];
 		SetInt(a, index);
@@ -1212,7 +1212,8 @@ int prOpenTextFile(struct VMGlobals *g, int numArgsPushed)
             return errFailed;
         }
 
-        NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
+		NSString *nsstring = [NSString stringWithCString: string->s encoding:[NSString defaultCStringEncoding]];
+		nsstring = [nsstring substringToIndex:string->size];
         NSURL *url = [NSURL fileURLWithPath: nsstring];
         NSString *nspath = [url path];
 
@@ -1278,7 +1279,8 @@ int prTextWindow_SetDefaultFont(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 
 	PyrString *pstring = slotRawString(nameSlot);
-	NSString *fontName = [NSString stringWithCString: pstring->s length: pstring->size];
+	NSString *fontName = [NSString stringWithCString:pstring->s encoding:[NSString defaultCStringEncoding]];
+	fontName = [fontName substringToIndex:pstring->size];
 	if (!fontName) return errFailed;
 	newDefault = [NSFont fontWithName: fontName size: size];
 	if (!newDefault) {
@@ -1404,7 +1406,9 @@ int prSCWindow_New(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 
 	PyrString *string = slotRawString(b);
-	NSString *title = [NSString stringWithCString: string->s length: string->size];
+	// NSString *title = [NSString stringWithCString: string->s length: string->size];
+	NSString *title = [NSString stringWithCString:string->s encoding:[NSString defaultCStringEncoding]];
+	title = [title substringToIndex:string->size];
 
 	SCNSWindow *window = [[SCNSWindow alloc]
 		initWithContentRect: bounds
@@ -2032,7 +2036,8 @@ int addFontAttribute(NSMutableDictionary *dict, PyrSlot *fontSlot)
     if (err) return err;
 
     PyrString *string = slotRawString(nameSlot);
-    NSString *fontName = [NSString stringWithCString: string->s length: string->size];
+	NSString *fontName = [NSString stringWithCString:string->s encoding:[NSString defaultCStringEncoding]];
+	fontName = [fontName substringToIndex:string->size];
     if (!fontName) return errFailed;
     NSFont *font = [NSFont fontWithName: fontName size: size];
     if (!font) return errFailed;
@@ -2175,7 +2180,8 @@ int prString_GetBounds(struct VMGlobals *g, int numArgsPushed)
     if (err) return err;
 
     PyrString* string = slotRawString(a);
-    NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
+	NSString *nsstring = [NSString stringWithCString:string->s encoding:[NSString defaultCStringEncoding]];
+	nsstring = [nsstring substringToIndex:string->size];
     if (!nsstring) return errFailed;
     NSSize size = [nsstring sizeWithAttributes: dict];
 
@@ -2212,8 +2218,10 @@ int prString_DrawAtPoint(struct VMGlobals *g, int numArgsPushed)
     if (err) return err;
 
     PyrString* string = slotRawString(a);
-    NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
-    if (!nsstring) return errFailed;
+	//    NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
+    NSString *nsstring = [NSString stringWithCString:string->s encoding:[NSString defaultCStringEncoding]];
+	nsstring = [nsstring substringToIndex:string->size];
+	if (!nsstring) return errFailed;
 
     [nsstring drawAtPoint: p withAttributes: dict];
 
@@ -2243,9 +2251,11 @@ int prString_DrawInRect(struct VMGlobals *g, int numArgsPushed)
     if (err) return err;
 
     PyrString* string = slotRawString(a);
-    NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
+    //NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
+	NSString *nsstring = [NSString stringWithCString:string->s encoding:[NSString defaultCStringEncoding]];
     if (!nsstring) return errFailed;
-
+	nsstring = [nsstring substringToIndex:string->size];
+	
     [nsstring drawInRect: rect withAttributes: dict];
 
     return errNone;
@@ -3583,7 +3593,10 @@ int prLoadUserPanel(struct VMGlobals *g, int numArgsPushed)
     if (!isKindOfSlot(b, class_string)) return errWrongType;
     PyrString* string = slotRawString(b);
 
-    NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
+    //NSString *nsstring = [NSString stringWithCString: string->s length: string->size];
+	NSString *nsstring = [NSString stringWithCString:string->s encoding:[NSString defaultCStringEncoding]];
+	nsstring = [nsstring substringToIndex:string->size];
+	// why is this retained?
     [nsstring retain];
 
     void *scobj = slotRawObject(a);

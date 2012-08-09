@@ -44,9 +44,6 @@ void initPrimitives () {
 
   qcDebugMsg(1,"initializing QtGUI primitives");
 
-  int base = nextPrimitiveIndex();
-  int index = 0;
-
   defineQObjectPrimitives();
   defineQWidgetPrimitives();
   defineQPenPrimitives();
