@@ -194,7 +194,7 @@ public:
 
     void cancel()
     {
-        mId == QUuid();
+        mId = QUuid();
     }
 
 signals:
