@@ -21,7 +21,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface SCVirtualMachine : NSObject {
+@interface SCVirtualMachine : NSObject <NSWindowDelegate> {
     NSMutableArray *deferredOperations;
     NSMutableArray *guiWindows;
 	NSTimer *deferredTaskTimer;

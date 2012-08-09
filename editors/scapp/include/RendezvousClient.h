@@ -30,7 +30,7 @@ enum OSCServiceType
 	kNumOSCServiceTypes
 };
 
-@interface RendezvousClient : NSObject {
+@interface RendezvousClient : NSObject <NSNetServiceBrowserDelegate, NSNetServiceDelegate> {
 	NSNetServiceBrowser* browsers[kNumOSCServiceTypes];
 	NSMutableArray* oscServices;
 }

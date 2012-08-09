@@ -142,7 +142,7 @@ NSString *kEnterProximity = @"enterProximity";
 
 
 //////////////////////////////////////////////////////////////////////////////
-- (unsigned int) deviceID
+- (UInt16) deviceID
 {
    OSStatus		result;
    TabletPointerRec tabletData;
