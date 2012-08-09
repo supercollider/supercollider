@@ -159,10 +159,7 @@ protected:
 	double mSmoothSampleRate;
 	double mSampleRate;
 
-	AudioDeviceIOProcID mOutputID;
-	AudioDeviceIOProcID mInputID;
-	
-    // Driver interface methods, implemented by subclasses
+	// Driver interface methods, implemented by subclasses
 	/**
 	* DriverSetup() should init the driver and write the num of samples per callback
 	* and the sample rate into the two addresses supplied as arguments.
@@ -186,7 +183,7 @@ public:
 	SC_AudioDriver(struct World *inWorld);
 	virtual ~SC_AudioDriver();
 
-    int64 mOSCbuftime;
+	int64 mOSCbuftime;
 
 	bool Setup();
 	bool Start();
@@ -228,7 +225,7 @@ extern SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld);
 class SC_CoreAudioDriver : public SC_AudioDriver
 {
 
-    AudioBufferList * mInputBufList;
+	AudioBufferList * mInputBufList;
 	AudioDeviceID	mInputDevice;
 	AudioDeviceID	mOutputDevice;
 
@@ -255,6 +252,9 @@ protected:
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
 	virtual bool DriverStart();
 	virtual bool DriverStop();
+
+	AudioDeviceIOProcID mOutputID;
+	AudioDeviceIOProcID mInputID;
 
 public:
 	int builtinoutputflag_; 
@@ -313,7 +313,7 @@ public:
 
 inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 {
-    return new SC_iCoreAudioDriver(inWorld);
+	return new SC_iCoreAudioDriver(inWorld);
 }
 #endif // SC_AUDIO_API_COREAUDIOIPHONE
 
@@ -322,13 +322,13 @@ inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 class SC_PortAudioDriver : public SC_AudioDriver
 {
 
-    int mInputChannelCount, mOutputChannelCount;
-    PaStream *mStream;
+	int mInputChannelCount, mOutputChannelCount;
+	PaStream *mStream;
 	PaTime mPaStreamStartupTime;
 	int64 mPaStreamStartupTimeOSC;
 
 protected:
-    // Driver interface methods
+	// Driver interface methods
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
 	virtual bool DriverStart();
 	virtual bool DriverStop();
@@ -337,7 +337,7 @@ public:
     SC_PortAudioDriver(struct World *inWorld);
 	virtual ~SC_PortAudioDriver();
 
-    int PortAudioCallback( const void *input, void *output,
+	int PortAudioCallback( const void *input, void *output,
             unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
             PaStreamCallbackFlags statusFlags );
 private:
