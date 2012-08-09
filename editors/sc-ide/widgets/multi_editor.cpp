@@ -21,7 +21,6 @@
 #include "multi_editor.hpp"
 #include "main_window.hpp"
 #include "code_editor/editor.hpp"
-#include "util/popup_widget.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/sig_mux.hpp"
 #include "../core/main.hpp"
@@ -41,17 +40,17 @@
 #include <QTreeWidget>
 #include <QHeaderView>
 #include <QFileInfo>
+#include <QDialog>
 
 namespace ScIDE {
 
-class PopUpTree : public PopUpWidget
+class OpenDefinitionDialog : public QDialog
 {
 public:
-    PopUpTree( QWidget * parent = 0 ):
-        PopUpWidget(parent)
+    OpenDefinitionDialog( QWidget * parent = 0 ):
+        QDialog(parent)
     {
         mTreeWidget = new QTreeWidget();
-        mTreeWidget->setFrameShape(QFrame::NoFrame);
         mTreeWidget->setRootIsDecorated(false);
         mTreeWidget->setAllColumnsShowFocus(true);
         //mTreeWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -70,7 +69,7 @@ public:
 
         mTreeWidget->setFocus(Qt::OtherFocusReason);
 
-        resize(300, 200);
+        resize(400, 300);
     }
 
     QTreeWidget *treeWidget() { return mTreeWidget; }
@@ -399,8 +398,10 @@ void MultiEditor::handleClassDefinitions( const QString & yamlString )
 
         default:
         {
-            QPointer<PopUpTree> popup = new PopUpTree(this);
-            QTreeWidget *tree = popup->treeWidget();
+            QPointer<OpenDefinitionDialog> dialog = new OpenDefinitionDialog(this);
+            dialog->setWindowTitle("Open Class Definition");
+
+            QTreeWidget *tree = dialog->treeWidget();
             tree->setColumnCount(2);
 
             for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it) {
@@ -421,12 +422,7 @@ void MultiEditor::handleClassDefinitions( const QString & yamlString )
 
             tree->setCurrentItem(tree->topLevelItem(0));
 
-            CodeEditor *editor = currentEditor();
-            QPoint pos = editor ?
-                editor->viewport()->mapToGlobal( editor->cursorRect().bottomLeft() ) + QPoint(5,5) :
-                QPoint(100,100);
-
-            if (popup->exec(pos))
+            if (dialog->exec())
             {
                 QTreeWidgetItem *item = tree->currentItem();
                 if (item) {
@@ -436,7 +432,7 @@ void MultiEditor::handleClassDefinitions( const QString & yamlString )
                 }
             }
 
-            delete popup;
+            delete dialog;
         }
         }
     }
@@ -498,8 +494,9 @@ void MultiEditor::handleMethodDefinitions( const QString & yamlString )
         }
         default:
         {
-            QPointer<PopUpTree> popup = new PopUpTree(this);
-            QTreeWidget *tree = popup->treeWidget();
+            QPointer<OpenDefinitionDialog> dialog = new OpenDefinitionDialog(this);
+            dialog->setWindowTitle("Open Method Definition");
+            QTreeWidget *tree = dialog->treeWidget();
             tree->setColumnCount(2);
 
             for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it)
@@ -525,12 +522,7 @@ void MultiEditor::handleMethodDefinitions( const QString & yamlString )
 
             tree->setCurrentItem(tree->topLevelItem(0));
 
-            CodeEditor *editor = currentEditor();
-            QPoint pos = editor ?
-                editor->viewport()->mapToGlobal( editor->cursorRect().bottomLeft() ) + QPoint(5,5) :
-                QPoint(100,100);
-
-            if (popup->exec(pos))
+            if (dialog->exec())
             {
                 QTreeWidgetItem *item = tree->currentItem();
                 if (item) {
@@ -540,7 +532,7 @@ void MultiEditor::handleMethodDefinitions( const QString & yamlString )
                 }
             }
 
-            delete popup;
+            delete dialog;
         }
         }
     }
