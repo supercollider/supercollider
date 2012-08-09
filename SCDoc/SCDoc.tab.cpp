@@ -2690,7 +2690,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 292 "SCDoc.y"
-    { (yyval.doc_node) = doc_node_make("TEXT",(yyvsp[(1) - (1)].str),NULL); ;}
+    { (yyval.doc_node) = doc_node_make(NODE_TEXT,(yyvsp[(1) - (1)].str),NULL); ;}
     break;
 
   case 81:
@@ -2718,7 +2718,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 296 "SCDoc.y"
-    { (yyval.doc_node) = doc_node_create("NL"); ;}
+    { (yyval.doc_node) = doc_node_create(NODE_NL); ;}
     break;
 
   case 85:

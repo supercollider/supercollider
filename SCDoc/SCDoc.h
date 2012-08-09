@@ -5,6 +5,9 @@
 #define SCDOC_PARSE_PARTIAL 1
 #define SCDOC_PARSE_METADATA 2
 
+extern const char * NODE_TEXT;
+extern const char * NODE_NL;
+
 typedef struct DocNode {
     const char *id;
     char *text;

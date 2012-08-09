@@ -29,6 +29,9 @@ int scdoclex_destroy(void);
 
 char * scdoc_current_file = NULL;
 
+const char * NODE_TEXT = "TEXT";
+const char * NODE_NL = "NL";
+
 static int doc_node_dump_level_done[32] = {0,};
 
 // merge a+b and free b
@@ -119,20 +122,20 @@ void doc_node_free_tree(DocNode *n) {
 
 void doc_node_fixup_tree(DocNode *n) {
     int i;
-    if(n->id != "TEXT" && n->text) {
+    if(n->id != NODE_TEXT && n->text) {
         n->text = striptrailingws(n->text);
     }
     if(n->n_childs) {
         DocNode *last = n->children[n->n_childs-1];
-        if(last->id=="NL") {
+        if(last->id==NODE_NL) {
             free(last); // NL has no text or children
             n->n_childs--;
         }
         last = NULL;
         for(i = 0; i < n->n_childs; i++) {
             DocNode *child = n->children[i];
-            if((child->id=="TEXT" || child->id=="NL") && last && last->id=="TEXT") {
-                if(child->id=="NL") {
+            if((child->id==NODE_TEXT || child->id==NODE_NL) && last && last->id==NODE_TEXT) {
+                if(child->id==NODE_NL) {
                     last->text = (char*)realloc(last->text,strlen(last->text)+2);
                     strcat(last->text," ");
                 } else {
