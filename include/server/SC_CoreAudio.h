@@ -159,6 +159,9 @@ protected:
 	double mSmoothSampleRate;
 	double mSampleRate;
 
+	AudioDeviceIOProcID mOutputID;
+	AudioDeviceIOProcID mInputID;
+	
     // Driver interface methods, implemented by subclasses
 	/**
 	* DriverSetup() should init the driver and write the num of samples per callback
