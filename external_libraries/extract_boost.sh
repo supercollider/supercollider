@@ -13,9 +13,9 @@ bcp --boost=${BOOST_ROOT} \
 	--scan server/supernova/*/*pp \
 	--scan editors/sc-ide/*/*pp \
 	--scan editors/sc-ide/*/*/*pp \
-	--scan external_libraries/boost_*/*/*pp \
-	--scan external_libraries/boost_*/*/*/*pp \
-	--scan external_libraries/boost_*/*/*/*/*pp \
+	--scan external_libraries/boost*/*/*pp \
+	--scan external_libraries/boost*/*/*/*pp \
+	--scan external_libraries/boost*/*/*/*/*pp \
 	--scan external_libraries/threadpool/boost/*/*pp \
 	--scan external_libraries/threadpool/boost/*/*/*pp \
 	--scan testsuite/supernova/*pp \
