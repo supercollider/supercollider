@@ -25,6 +25,8 @@
 #include <QCoreApplication>
 #include <QBuffer>
 
+#include "sc_server.hpp"
+
 namespace ScIDE {
 
 SCProcess::SCProcess( Main *parent ):
