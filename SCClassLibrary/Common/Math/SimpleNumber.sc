@@ -358,7 +358,8 @@ SimpleNumber : Number {
 	writeInputSpec { arg file, synth;
 		var constIndex = synth.constants.at(this.asFloat);
 		if (constIndex.isNil) {
-			Error("SimpleNumber-writeInputSpec constant not found: " ++ this.asFloat).throw;		};
+			Error("SimpleNumber-writeInputSpec constant not found: " ++ this.asFloat).throw;
+		};
 		file.putInt32(-1);
 		file.putInt32(constIndex);
 	}
