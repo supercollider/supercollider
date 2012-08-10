@@ -31,18 +31,7 @@ class ScServer : public QObject
 	Q_OBJECT
 
 public:
-	ScServer(QObject * parent):
-		QObject(parent), mPort(0)
-	{
-		mUdpSocket = new QUdpSocket(this);
-		for (int port = 57140; port != 57150; ++port) {
-			bool success = mUdpSocket->bind(port);
-			if (success)
-				return;
-		}
-		startTimer(333);
-	}
-
+	ScServer(QObject * parent);
 	void timerEvent(QTimerEvent * event);
 
 public Q_SLOTS:
