@@ -3,6 +3,11 @@ ScIDE {
 
 	*initClass {
 		subListSorter = { | a b | a[0].perform('<', b[0]) };
+
+		SimpleController(Server.default)
+		.put(\serverRunning, { | server, what, extraArg |
+			this.prSend(\defaultServerRunning, server.serverRunning)
+		});
 	}
 
 	*connect {|ideName|
