@@ -103,22 +103,33 @@ private:
         }
 
         switch (GetTag(slot)) {
-            case tagInt:
-                emitter << slotRawInt(slot);
-                return;
+        case tagNil:
+            emitter << YAML::Null;
 
-            case tagObj:
-                serialize(slotRawObject(slot));
-                return;
+        case tagInt:
+            emitter << slotRawInt(slot);
+            return;
 
-            case tagSym: {
-                emitter << slotRawSymbol(slot)->name;
-                return;
-            }
+        case tagFalse:
+            emitter << false;
+            return;
 
-            default:
-                printf ("type: %d\n", GetTag(slot));
-                throw std::runtime_error("YAMLSerializer: not implementation for this type");
+        case tagTrue:
+            emitter << true;
+            return;
+
+        case tagObj:
+            serialize(slotRawObject(slot));
+            return;
+
+        case tagSym: {
+            emitter << YAML::DoubleQuoted << slotRawSymbol(slot)->name;
+            return;
+        }
+
+        default:
+            printf ("type: %d\n", GetTag(slot));
+            throw std::runtime_error("YAMLSerializer: not implementation for this type");
         }
     }
 
