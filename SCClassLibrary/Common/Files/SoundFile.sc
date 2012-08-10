@@ -389,7 +389,7 @@ SoundFile {
 					.sampleRate_(sf.sampleRate);
 				}
 		} {
-			"the server must be running to collection soundfiles into buffers ".error
+			"the server must be running to collect soundfiles into buffers".error
 		}
 	}
 
