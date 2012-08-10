@@ -34,6 +34,8 @@ set ( ide_moc_hdr
     widgets/util/popup_widget.hpp
 )
 
+file (GLOB_RECURSE all_hdr *hpp)
+
 set ( ide_src
     core/main.cpp
     core/sig_mux.cpp
@@ -114,7 +116,7 @@ qt4_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
 qt4_wrap_ui( ide_forms_src ${ide_forms} )
 qt4_add_resources( ide_rcc resources.qrc )
 
-set(ide_sources ${ide_src} )
+set(ide_sources ${ide_src} ${all_hdr} )
 
 set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations_src})
 
