@@ -8,6 +8,7 @@ set ( ide_moc_hdr
     core/main.hpp
     core/sig_mux.hpp
     core/sc_process.hpp
+    core/sc_server.hpp
     core/doc_manager.hpp
     core/settings/manager.hpp
     core/session_manager.hpp
@@ -41,6 +42,7 @@ set ( ide_src
     core/sig_mux.cpp
     core/doc_manager.cpp
     core/sc_process.cpp
+    core/sc_server.cpp
     core/settings/serialization.cpp
     core/settings/manager.cpp
     core/session_manager.cpp
@@ -101,6 +103,7 @@ elseif(WIN32)
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
+include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 # For QtCollider headers:
