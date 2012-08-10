@@ -27,6 +27,18 @@
 
 namespace ScIDE {
 
+ScServer::ScServer(QObject * parent):
+    QObject(parent), mPort(0)
+{
+    mUdpSocket = new QUdpSocket(this);
+    for (int port = 57140; port != 57150; ++port) {
+        bool success = mUdpSocket->bind(port);
+        if (success)
+            break;
+    }
+    startTimer(333);
+}
+
 void ScServer::timerEvent(QTimerEvent * event)
 {
 	if (mUdpSocket->hasPendingDatagrams()) {
