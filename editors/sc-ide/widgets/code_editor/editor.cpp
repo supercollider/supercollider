@@ -442,6 +442,23 @@ QTextCursor CodeEditor::currentRegion()
 
     if(start.isValid() && end.isValid())
     {
+        // only care about brackets at beginning of a line
+        if(start->position != 0)
+            return QTextCursor();
+
+        // check whether the bracket makes part of an event
+        it = start.next();
+        if (it.isValid()) {
+            if (it->type == Token::SymbolArg)
+                return QTextCursor();
+            else {
+                ++it;
+                if (it.isValid() && it->character == ':')
+                    return QTextCursor();
+            }
+        }
+
+        // ok, this is is a real top-level region
         QTextCursor c(QPlainTextEdit::document());
         c.setPosition(start.position() + 1);
         c.setPosition(end.position(), QTextCursor::KeepAnchor);
