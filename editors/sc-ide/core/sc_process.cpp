@@ -144,15 +144,23 @@ void ScResponder::onResponse( const QString & selector, const QString & data )
         YAML::Node doc;
 
         bool serverRunningState;
-        while(parser.GetNextDocument(doc)) {
-            assert(doc.Type() == YAML::NodeType::Scalar);
+        std::string hostName;
+        int port;
 
-            bool success = doc.Read(serverRunningState);
-            if (!success)
-                return; // LATER: report error?
+        while(parser.GetNextDocument(doc)) {
+            assert(doc.Type() == YAML::NodeType::Sequence);
+
+            bool success = doc[0].Read(serverRunningState);
+            if (!success) return; // LATER: report error?
+
+            success = doc[1].Read(hostName);
+            if (!success) return; // LATER: report error?
+
+            success = doc[2].Read(port);
+            if (!success) return; // LATER: report error?
         }
 
-        emit serverRunningChanged (serverRunningState);
+        emit serverRunningChanged (serverRunningState, QString(hostName.c_str()), port);
         return;
     }
 }

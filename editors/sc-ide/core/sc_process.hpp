@@ -224,7 +224,7 @@ public:
     {}
 
 Q_SIGNALS:
-    void serverRunningChanged( bool serverRunning );
+    void serverRunningChanged( bool serverRunning, const QString & hostName, int port );
 
 private Q_SLOTS:
     void onResponse( const QString & selector, const QString & data );

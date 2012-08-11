@@ -6,7 +6,8 @@ ScIDE {
 
 		SimpleController(Server.default)
 		.put(\serverRunning, { | server, what, extraArg |
-			this.prSend(\defaultServerRunningChanged, server.serverRunning)
+			var addr = server.addr;
+			this.prSend(\defaultServerRunningChanged, [server.serverRunning, addr.hostname, addr.port])
 		});
 	}
 
