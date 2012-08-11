@@ -46,63 +46,6 @@ ScIDE {
 		this.prSend(id, result)
 	}
 
-	*sendClassDefinitions { |id, name|
-		var result, class, files;
-
-		result = SortedList(8, subListSorter);
-
-		if ((class = name.asSymbol.asClass).notNil) {
-			files = IdentitySet.new;
-			result.add([
-				"  " ++ name,
-				class.filenameSymbol.asString,
-				class.charPos + 1
-			]);
-			files.add(class.filenameSymbol);
-			class.methods.do { | method |
-				if (files.includes(method.filenameSymbol).not) {
-					result = result.add([
-						"+ " ++ name,
-						method.filenameSymbol.asString,
-						method.charPos + 1
-					]);
-					files.add(method.filenameSymbol);
-				}
-			}
-		};
-
-		this.prSend(id, result.asArray)
-	}
-
-	*sendMethodDefinitions { |id, name|
-		var out;
-		if (name.isEmpty) {
-			^this;
-		};
-		if (name[0].toLower != name[0]) {
-			// This is not a valid method name
-			^this;
-		};
-		out = [];
-		name = name.asSymbol;
-		Class.allClasses.do({ arg class;
-			class.methods.do({ arg method;
-				var signature;
-				var definition;
-				if (method.name == name, {
-					signature = [class.name, name];
-					if (method.argNames.size > 1) {
-						signature = signature ++ method.argNames[1..];
-					};
-					definition = [method.filenameSymbol.asString, method.charPos];
-					out = out.add( [signature, definition] );
-				});
-			});
-		});
-
-		this.prSend(id, out);
-	}
-
 	*completeClass { |id, text|
 		var out = [];
 		Class.allClasses.do { |class|
