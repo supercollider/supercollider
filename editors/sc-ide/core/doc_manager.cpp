@@ -179,6 +179,8 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
 {
     Q_ASSERT(doc);
 
+    doc->deleteTrailingSpaces();
+
     QFile file(path);
     if(!file.open(QIODevice::WriteOnly)) {
         qWarning() << "DocumentManager: the file" << path << "could not be opened for writing.";
