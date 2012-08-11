@@ -992,16 +992,15 @@ void CodeEditor::indentLineAtCursor(QTextCursor cursor)
 
     cursor.movePosition(QTextCursor::StartOfBlock);
     cursor.setPosition(cursor.position() + indentedStartOfLine(cursor.block()), QTextCursor::KeepAnchor);
-    cursor.removeSelectedText();
 
     if ( mSpaceIndent ) {
         const int spaces = mIndentWidth * indentationLevel;
-        for (int i = 0; i != spaces; ++i)
-            cursor.insertText(" ");
+        QString replacement (spaces, QChar(' '));
+        cursor.insertText(replacement);
     } else {
         const int tabs = indentationLevel;
-        for (int i = 0; i != tabs; ++i)
-            cursor.insertText("\t");
+        QString replacement (tabs, QChar('\t'));
+        cursor.insertText(replacement);
     }
 }
 
