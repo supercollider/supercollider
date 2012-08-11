@@ -23,6 +23,7 @@
 
 #include <QString>
 #include <QVector>
+#include <QMetaType>
 
 #include <map>
 
@@ -81,5 +82,8 @@ private:
 } // namespace ScLanguage
 
 } // namespace ScIDE
+
+Q_DECLARE_METATYPE(ScIDE::ScLanguage::Class*)
+Q_DECLARE_METATYPE(const ScIDE::ScLanguage::Method*)
 
 #endif // SCIDE_CORE_SC_INTROSPECTION_HPP_INCLUDED
