@@ -27,6 +27,9 @@
 
 #include "sc_server.hpp"
 
+#include "yaml-cpp/node.h"
+#include "yaml-cpp/parser.h"
+
 namespace ScIDE {
 
 SCProcess::SCProcess( Main *parent ):
@@ -127,6 +130,31 @@ void SCProcess::onIpcData()
     mIpcData.remove ( 0, receivedData.pos() );
 
     emit response(id, message);
+}
+
+void ScResponder::onResponse( const QString & selector, const QString & data )
+{
+    static QString defaultServerRunningChangedSymbol("defaultServerRunningChanged");
+
+    if (selector == defaultServerRunningChangedSymbol) {
+        std::stringstream stream;
+        stream << data.toStdString();
+        YAML::Parser parser(stream);
+
+        YAML::Node doc;
+
+        bool serverRunningState;
+        while(parser.GetNextDocument(doc)) {
+            assert(doc.Type() == YAML::NodeType::Scalar);
+
+            bool success = doc.Read(serverRunningState);
+            if (!success)
+                return; // LATER: report error?
+        }
+
+        emit serverRunningChanged (serverRunningState);
+        return;
+    }
 }
 
 } // namespace ScIDE

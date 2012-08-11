@@ -70,6 +70,7 @@ private:
 
     Settings::Manager *mSettings;
     SCProcess * mSCProcess;
+    ScResponder * mSCResponder;
     DocumentManager *mDocManager;
     SessionManager *mSessionManager;
 };

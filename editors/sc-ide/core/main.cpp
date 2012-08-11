@@ -82,9 +82,11 @@ Main::Main(void) :
     mSettings( new Settings::Manager( getSettingsFile(), this ) ),
     mDocManager( new DocumentManager(this) ),
     mSessionManager( new SessionManager(mDocManager, this) ),
-    mSCProcess( new SCProcess(this) )
+    mSCProcess( new SCProcess(this) ),
+    mSCResponder( new ScResponder(this) )
 {
     new SyntaxHighlighterGlobals(this);
+    connect(mSCProcess, SIGNAL(response(QString,QString)), mSCResponder, SLOT(onResponse(QString,QString)));
 }
 
 void Main::quit() {

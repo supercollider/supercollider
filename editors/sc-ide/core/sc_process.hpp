@@ -214,6 +214,22 @@ private:
     SCProcess *mSc;
 };
 
+class ScResponder : public QObject
+{
+    Q_OBJECT
+
+public:
+    ScResponder( QObject * parent = 0):
+        QObject(parent)
+    {}
+
+Q_SIGNALS:
+    void serverRunningChanged( bool serverRunning );
+
+private Q_SLOTS:
+    void onResponse( const QString & selector, const QString & data );
+};
+
 }
 
 #endif
