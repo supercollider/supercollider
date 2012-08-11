@@ -305,23 +305,14 @@ void MainWindow::createActions()
 
     // Help
 
-    mActions[BrowseHelp] = act = new QAction(
-    QIcon::fromTheme("system-help"), tr("&Browse Help"), this);
-    act->setStatusTip(tr("Open help browser on the Browse page."));
-    //connect(act, SIGNAL(triggered()), this, SLOT(browseHelp()));
-    mCodeEvalMapper.setMapping(act, "HelpBrowser.openBrowsePage");
-    connect(act, SIGNAL(triggered()), &mCodeEvalMapper, SLOT(map()));
-
-    mActions[SearchHelp] = act = new QAction(
-    QIcon::fromTheme("system-help"), tr("&Search Help"), this);
-    act->setStatusTip(tr("Open help browser on the Search page."));
-    //connect(act, SIGNAL(triggered()), this, SLOT(searchHelp()));
-    mCodeEvalMapper.setMapping(act, "HelpBrowser.openSearchPage");
-    connect(act, SIGNAL(triggered()), &mCodeEvalMapper, SLOT(map()));
+    mActions[Help] = act = new QAction(
+    QIcon::fromTheme("system-help"), tr("Open Help Browser"), this);
+    act->setStatusTip(tr("Open help."));
+    connect(act, SIGNAL(triggered()), this, SLOT(helpForSelection()));
 
     mActions[HelpForSelection] = act = new QAction(
     QIcon::fromTheme("system-help"), tr("&Help for Selection"), this);
-    act->setShortcut(tr("Ctrl+H", "Help for selection"));
+    act->setShortcut(tr("F1", "Help for selection"));
     act->setStatusTip(tr("Find help for selected text"));
     connect(act, SIGNAL(triggered()), this, SLOT(helpForSelection()));
 
@@ -423,8 +414,7 @@ void MainWindow::createMenus()
     menuBar()->addMenu(menu);
 
     menu = new QMenu(tr("&Help"), this);
-    menu->addAction( mActions[BrowseHelp] );
-    menu->addAction( mActions[SearchHelp] );
+    menu->addAction( mActions[Help] );
     menu->addAction( mActions[HelpForSelection] );
 
     menuBar()->addMenu(menu);
@@ -994,11 +984,21 @@ void MainWindow::evaluateCurrentFile()
 void MainWindow::helpForSelection()
 {
     CodeEditor *editor = mEditors->currentEditor();
-    if (editor)
-    {
-        QString code = QString("\"%1\".help").arg(editor->textCursor().selectedText());
-        Main::instance()->scProcess()->evaluateCode(code, true);
+    if (editor) {
+        if (editor->textCursor().hasSelection()) {
+            QString code = QString("HelpBrowser.openHelpFor(\"%1\")").arg(editor->textCursor().selectedText());
+            Main::instance()->scProcess()->evaluateCode(code, true);
+            return;
+        }
     }
+
+    openHelp();
+}
+
+void MainWindow::openHelp()
+{
+    QString code = QString("Help.gui");
+    Main::instance()->scProcess()->evaluateCode(code, true);
 }
 
 //////////////////////////// StatusLabel /////////////////////////////////
