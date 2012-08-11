@@ -629,15 +629,9 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
     case Qt::Key_Enter:
     case Qt::Key_Return:
     {
-        QTextCursor c(textCursor());
-        QTextBlock b(c.block());
-        int indent = indentedStartOfLine(b);
-        c.insertBlock();
-        if(indent > 0) {
-            QString str(b.text());
-            str.truncate(indent);
-            c.insertText(str);
-        }
+        QTextCursor cursor(textCursor());
+        cursor.insertBlock();
+        indentCurrentLine();
 
         return;
     }
