@@ -87,6 +87,7 @@ public Q_SLOTS:
     void setShowWhitespace(bool);
     void clearSearchHighlighting();
     void applySettings( Settings::Manager * );
+    void deleteTrailingSpaces();
 
 protected:
     virtual bool event( QEvent * );
