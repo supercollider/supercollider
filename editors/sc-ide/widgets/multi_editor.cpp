@@ -83,8 +83,7 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mDocManager(main->documentManager()),
     mSigMux(new SignalMultiplexer(this)),
     mTabs(new QTabWidget),
-    mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) ),
-    mScRequest( new ScRequest(main->scProcess(), this) )
+    mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) )
 {
     mTabs->setDocumentMode(true);
     mTabs->setTabsClosable(true);
@@ -114,9 +113,6 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
-
-    connect(mScRequest, SIGNAL(response(QString,QString)),
-            this, SLOT(onScResponse(QString,QString)));
 
     createActions();
     updateActions();
@@ -343,193 +339,230 @@ void MultiEditor::openDefinition()
     if (selectedText.isEmpty())
         return;
 
-    QString command ( selectedText[0].isUpper() ? "sendClassDefinitions" : "sendMethodDefinitions");
-
-    mScRequest->send( command, selectedText );
+    if (selectedText[0].isUpper())
+        openClassDefinition(selectedText);
+    else
+        openMethodDefinition(selectedText);
 }
 
-void MultiEditor::onScResponse( const QString & command, const QString & data )
+void MultiEditor::openClassDefinition( const QString & className )
 {
-    static QString classDefinitions("sendClassDefinitions");
-    static QString methodDefinitions("sendMethodDefinitions");
+    using namespace ScLanguage;
 
-    if (command == classDefinitions)
-        handleClassDefinitions(data);
-    else if(command == methodDefinitions)
-        handleMethodDefinitions(data);
-}
+    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+    const ClassMap & classes = introspection.classMap();
 
-void MultiEditor::handleClassDefinitions( const QString & yamlString )
-{
-    std::stringstream stream;
-    stream << yamlString.toStdString();
-    YAML::Parser parser(stream);
+    ClassMap::const_iterator klass_it = classes.find(className);
+    if (klass_it == classes.end()) {
+        qWarning("Class not defined!");
+        return;
+    }
+    Class *klass = klass_it->second;
 
-    YAML::Node doc;
-    while(parser.GetNextDocument(doc)) {
-        assert(doc.Type() == YAML::NodeType::Sequence);
+    ClassMap::const_iterator object_class_it = classes.find("Object");
+    assert(object_class_it != classes.end());
+    Class *objectClass = object_class_it->second;
 
-        switch (doc.size()) {
-        case 0:
+    QString classLibPath = objectClass->definition.path;
+    int len = classLibPath.lastIndexOf("Common");
+    if (len != -1)
+        classLibPath.truncate(len);
+    else
+        classLibPath = QString();
+
+    typedef QMap< QString, QList<Method*>* > MethodMap;
+    MethodMap methodMap;
+
+    foreach (Method *method, klass->metaClass->methods) {
+        QList<Method*>* list = methodMap.value(method->definition.path);
+        if (!list) {
+            list = new QList<Method*>;
+            methodMap.insert(method->definition.path, list);
+        }
+        list->append(method);
+    }
+
+    foreach (Method *method, klass->methods) {
+        QList<Method*>* list = methodMap.value(method->definition.path);
+        if (!list) {
+            list = new QList<Method*>;
+            methodMap.insert(method->definition.path, list);
+        }
+        list->append(method);
+    }
+
+    QPointer<OpenDefinitionDialog> dialog = new OpenDefinitionDialog(this);
+    dialog->setWindowTitle(tr("Open Definition of Class '%1'").arg(klass->name));
+
+    QTreeWidget *tree = dialog->treeWidget();
+    tree->setColumnCount(1);
+    tree->setRootIsDecorated(true);
+
+    for (MethodMap::Iterator it = methodMap.begin();
+            it != methodMap.end();
+        ++it)
+    {
+        QString path = it.key();
+        QList<Method*> *methods = it.value();
+
+        QString displayPath;
+        if (path.startsWith(classLibPath))
+            displayPath = path.mid(classLibPath.length());
+        else
+            displayPath = path;
+
+        QTreeWidgetItem *pathItem = new QTreeWidgetItem (
+            tree,
+            QStringList()
+            << displayPath
+        );
+
+        pathItem->setData( 0, Qt::UserRole, path );
+
+        foreach( Method *method, *methods )
         {
-            //emit message("Class not defined!");
-            qDebug("Class not defined!");
-            return;
+            QString name = method->name;
+            if (method->ownerClass == klass->metaClass)
+                name.prepend('*');
+            QTreeWidgetItem *methodItem = new QTreeWidgetItem (
+                pathItem,
+                QStringList()
+                << name
+            );
+
+            methodItem->setData( 0, Qt::UserRole, method->definition.position );
         }
 
-        case 1:
-        {
-            YAML::Iterator it = doc.begin();
-            YAML::Node const & entry = *it;
-            assert(entry.Type() == YAML::NodeType::Sequence);
+        delete methods;
+    }
 
-            // name, path, character position
-            std::string path = entry[1].to<std::string>();
-            int charPosition = entry[2].to<int>() - 1; // position is one off
-            Main::instance()->documentManager()->open(QString(path.c_str()), charPosition);
-            return;
-        }
+    tree->setCurrentItem(tree->topLevelItem(0));
 
-        default:
-        {
-            QPointer<OpenDefinitionDialog> dialog = new OpenDefinitionDialog(this);
-            dialog->setWindowTitle("Open Class Definition");
-
-            QTreeWidget *tree = dialog->treeWidget();
-            tree->setColumnCount(2);
-
-            for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it) {
-                YAML::Node const & entry = *it;
-                assert(entry.Type() == YAML::NodeType::Sequence);
-
-                std::string path = entry[1].to<std::string>();
-                int charPosition = entry[2].to<int>() - 1; // position is one off
-
-                QTreeWidgetItem *item = new QTreeWidgetItem (
-                    tree,
-                    QStringList()
-                    << QFileInfo(path.c_str()).fileName()
-                    << path.c_str()
-                );
-                item->setData( 0, Qt::UserRole, charPosition );
-            }
-
-            tree->setCurrentItem(tree->topLevelItem(0));
-
-            if (dialog->exec())
-            {
-                QTreeWidgetItem *item = tree->currentItem();
-                if (item) {
-                    QString fileName = item->text(1);
-                    int pos = item->data(0, Qt::UserRole).toInt();
-                    Main::instance()->documentManager()->open(fileName, pos);
-                }
-            }
-
-            delete dialog;
-        }
+    if (dialog->exec())
+    {
+        QTreeWidgetItem *item = tree->currentItem();
+        if (item && item->parent() && item->parent() != tree->invisibleRootItem()) {
+            QString path = item->parent()->data(0, Qt::UserRole).toString();
+            int pos = item->data(0, Qt::UserRole).toInt();
+            Main::instance()->documentManager()->open(path, pos);
         }
     }
+
+    delete dialog;
 }
 
-static QString constructMethodSignature(const YAML::Node & node)
+static QString signature(ScLanguage::Method *method, bool arguments = false)
 {
-    assert(node.Type() == YAML::NodeType::Sequence);
+    using namespace ScLanguage;
 
-    QString sig( node[0].to<std::string>().c_str() );
-    sig.append(": ");
+    QString sig = method->ownerClass->name;
+    if (sig.startsWith("Meta_")) {
+        sig.remove(0, 5);
+        sig.append(": *");
+    }
+    else
+        sig.append(": ");
 
-    QString method( node[1].to<std::string>().c_str() );
-    sig.append(method);
+    sig.append(method->name);
 
-    int count = node.size();
-    if (count > 2) {
+    if (!arguments)
+        return sig;
+
+    int argc = method->arguments.count();
+    if (argc) {
         sig.append(" (");
-        for (int i = 2; i < count; ++i) {
-            if (i > 2) sig.append(", ");
-            sig.append( node[i].to<std::string>().c_str() );
+        for( int i = 0; i < argc; ++i )
+        {
+            const Argument & arg = method->arguments[i];
+            if (i > 0)
+                sig.append(", ");
+            sig.append(arg.name);
+            if (!arg.defaultValue.isEmpty()) {
+                sig.append(" = ");
+                sig.append(arg.defaultValue);
+            }
         }
         sig.append(")");
     }
-    else if (method.endsWith('_')) {
+    else if (method->name.endsWith('_'))
         sig.append(" (value)");
-    }
 
     return sig;
 }
 
-void MultiEditor::handleMethodDefinitions( const QString & yamlString )
+void MultiEditor::openMethodDefinition( const QString & methodName )
 {
-    std::stringstream stream;
-    stream << yamlString.toStdString();
-    YAML::Parser parser(stream);
+    using namespace ScLanguage;
+    using std::pair;
 
-    YAML::Node doc;
-    while(parser.GetNextDocument(doc)) {
-        assert(doc.Type() == YAML::NodeType::Sequence);
+    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+    const MethodMap & methods = introspection.methodMap();
+    const ClassMap & classes = introspection.classMap();
 
-        switch (doc.size()) {
-        case 0:
-        {
-            //emit message("Method not defined!");
-            qDebug("Method not defined!");
-            return;
-        }
-        case 1:
-        {
-            YAML::Node const & entry = doc[0];
-            QString sig = constructMethodSignature( entry[0] );
-            YAML::Node const & location = entry[1];
-            assert(location.Type() == YAML::NodeType::Sequence);
-            QString fileName( location[0].to<std::string>().c_str() );
-            int pos = location[1].to<int>();
-            Main::instance()->documentManager()->open(fileName, pos);
-            return;
-        }
-        default:
-        {
-            QPointer<OpenDefinitionDialog> dialog = new OpenDefinitionDialog(this);
-            dialog->setWindowTitle("Open Method Definition");
-            QTreeWidget *tree = dialog->treeWidget();
-            tree->setColumnCount(2);
+    pair<MethodMap::const_iterator, MethodMap::const_iterator> matchingMethods =
+        methods.equal_range(methodName);
 
-            for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it)
-            {
-                YAML::Node const & entry = *it;
-                assert(entry.Type() == YAML::NodeType::Sequence);
+    if (matchingMethods.first == matchingMethods.second) {
+        qWarning("Method not defined!");
+        return;
+    }
 
-                QString signature = constructMethodSignature( entry[0] );
+    ClassMap::const_iterator object_class_it = classes.find("Object");
+    assert(object_class_it != classes.end());
+    Class *objectClass = object_class_it->second;
 
-                YAML::Node const & location = entry[1];
-                assert(location.Type() == YAML::NodeType::Sequence);
-                QString path = location[0].to<std::string>().c_str();
-                int pos = location[1].to<int>();
+    QString classLibPath = objectClass->definition.path;
+    int len = classLibPath.lastIndexOf("Common");
+    if (len != -1)
+        classLibPath.truncate(len);
+    else
+        classLibPath = QString();
 
-                QTreeWidgetItem *item = new QTreeWidgetItem (
-                    tree,
-                    QStringList()
-                    << signature
-                    << path
-                );
-                item->setData( 0, Qt::UserRole, pos );
-            }
+    QPointer<OpenDefinitionDialog> dialog = new OpenDefinitionDialog(this);
+    dialog->setWindowTitle(tr("Open Definition of Method '%1'").arg(methodName));
+    QTreeWidget *tree = dialog->treeWidget();
+    tree->setColumnCount(2);
 
-            tree->setCurrentItem(tree->topLevelItem(0));
+    for (MethodMap::const_iterator it = matchingMethods.first;
+        it != matchingMethods.second;
+        ++it)
+    {
+        Method *method = it->second;
 
-            if (dialog->exec())
-            {
-                QTreeWidgetItem *item = tree->currentItem();
-                if (item) {
-                    QString fileName = item->text(1);
-                    int pos = item->data(0, Qt::UserRole).toInt();
-                    Main::instance()->documentManager()->open(fileName, pos);
-                }
-            }
+        const QString & path = method->definition.path;
 
-            delete dialog;
-        }
+        QString displayPath;
+        if (path.startsWith(classLibPath))
+            displayPath = path.mid(classLibPath.length());
+        else
+            displayPath = path;
+
+        QTreeWidgetItem *item = new QTreeWidgetItem (
+            tree,
+            QStringList()
+            << signature(method)
+            << displayPath
+        );
+
+        item->setData( 0, Qt::UserRole, path );
+        item->setData( 0, Qt::UserRole + 1, method->definition.position );
+    }
+
+    tree->model()->sort(0);
+    tree->setCurrentItem(tree->topLevelItem(0));
+
+
+    if (dialog->exec())
+    {
+        QTreeWidgetItem *item = tree->currentItem();
+        if (item) {
+            QString path = item->data(0, Qt::UserRole).toString();
+            int pos = item->data(0, Qt::UserRole + 1).toInt();
+            Main::instance()->documentManager()->open(path, pos);
         }
     }
+
+    delete dialog;
 }
 
 } // namespace ScIDE

@@ -105,16 +105,14 @@ private Q_SLOTS:
     void onModificationChanged( QWidget * );
     void openDefinition();
 
-    void onScResponse( const QString & command, const QString & yamlData );
-
 private:
     void createActions();
     void updateActions();
     CodeEditor * editorForTab( int index );
     CodeEditor * editorForDocument( Document * );
 
-    void handleClassDefinitions( const QString & );
-    void handleMethodDefinitions( const QString & );
+    void openClassDefinition( const QString & );
+    void openMethodDefinition( const QString & );
 
     DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;
@@ -127,9 +125,6 @@ private:
 
     // settings
     bool mStepForwardEvaluation;
-
-    // lang comm
-    ScRequest *mScRequest;
 };
 
 } // namespace ScIDE
