@@ -635,6 +635,24 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
 
         return;
     }
+
+    case Qt::Key_BraceRight:
+    {
+        QTextCursor cursor(textCursor());
+        cursor.insertText(QString(QChar('}')));
+        indentCurrentLine();
+
+        return;
+    }
+    case Qt::Key_BracketRight:
+    {
+        QTextCursor cursor(textCursor());
+        cursor.insertText(QString(QChar(']')));
+        indentCurrentLine();
+
+        return;
+    }
+
     case Qt::Key_Home:
     {
         Qt::KeyboardModifiers mods(e->modifiers());
