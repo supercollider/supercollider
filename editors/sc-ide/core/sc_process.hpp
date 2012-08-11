@@ -21,6 +21,8 @@
 #ifndef SCIDE_SC_PROCESS_HPP_INCLUDED
 #define SCIDE_SC_PROCESS_HPP_INCLUDED
 
+#include "sc_introspection.hpp"
+
 #include <QAction>
 #include <QProcess>
 #include <QtNetwork/QLocalSocket>
@@ -51,6 +53,8 @@ public:
         SCProcessActionCount
     };
 
+    const ScLanguage::Introspection & introspection() { return mIntrospection; }
+
     void sendRequest( const QString &id, const QString &command, const QString &data )
     {
         QString cmd = QString("ScIDE.request(\"%1\",'%2',\"%3\")")
@@ -77,6 +81,8 @@ public slots:
         }
 
         write("\x18");
+
+        evaluateCode ( "ScIDE.sendIntrospection", true );
     }
 
     void runMain(void)
@@ -150,11 +156,14 @@ private:
 
         QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
         evaluateCode ( command, true );
+        evaluateCode ( "ScIDE.sendIntrospection", true );
     }
 
     void prepareActions(Main *);
 
     QAction * mActions[SCProcessActionCount];
+
+    ScLanguage::Introspection mIntrospection;
 
     QLocalServer *mIpcServer;
     QLocalSocket *mIpcSocket;

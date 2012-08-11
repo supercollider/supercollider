@@ -26,6 +26,7 @@
 #include <QBuffer>
 
 #include "sc_server.hpp"
+#include "sc_introspection.hpp"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -129,7 +130,12 @@ void SCProcess::onIpcData()
 
     mIpcData.remove ( 0, receivedData.pos() );
 
-    emit response(id, message);
+    if (id == "introspection") {
+        //qDebug("introspection arriving");
+        mIntrospection.parse(message);
+    }
+    else
+        emit response(id, message);
 }
 
 void ScResponder::onResponse( const QString & selector, const QString & data )

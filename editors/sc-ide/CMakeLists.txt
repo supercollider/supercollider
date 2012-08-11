@@ -44,6 +44,7 @@ set ( ide_src
     core/doc_manager.cpp
     core/sc_process.cpp
     core/sc_server.cpp
+    core/sc_introspection.cpp
     core/settings/serialization.cpp
     core/settings/manager.cpp
     core/session_manager.cpp

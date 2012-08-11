@@ -20,6 +20,24 @@ ScIDE {
 		this.tryPerform(command, id, data);
 	}
 
+	*sendIntrospection {
+		var out;
+		out = [];
+		Class.allClasses.do { |class|
+			var classData;
+			classData = [
+				class.name,
+				class.class.name,
+				class.superclass !? {class.superclass.name},
+				class.filenameSymbol,
+				class.charPos,
+				class.methods.collect { |m| this.serializeMethodDetailed(m) };
+			];
+			out = out.add(classData);
+		};
+		this.prSend(\introspection, out);
+	}
+
 	*sendAllClasses { |id|
 		this.prSend(id, Class.allClasses.collectAs(_.asString, Array))
 	}
@@ -146,6 +164,25 @@ ScIDE {
 				method.prototypeFrame.collect { |val| val !? val.cs }
 			].lace [2..];
 		};
+		^data;
+	}
+
+	*serializeMethodDetailed { arg method;
+		var args, data;
+		args = [];
+		if (method.argNames.size > 1) {
+			args = args ++ [
+				method.argNames.as(Array),
+				method.prototypeFrame.collect { |val| val !? val.cs }
+			].lace [2..];
+		};
+		data = [
+			method.ownerClass.name,
+			method.name,
+			method.filenameSymbol,
+			method.charPos,
+			args
+		];
 		^data;
 	}
 
