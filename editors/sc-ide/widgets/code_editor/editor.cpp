@@ -626,33 +626,6 @@ void CodeEditor::changeEvent( QEvent *e )
 void CodeEditor::keyPressEvent( QKeyEvent *e )
 {
     switch (e->key()) {
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-    {
-        QTextCursor cursor(textCursor());
-        cursor.insertBlock();
-        indentCurrentLine();
-
-        return;
-    }
-
-    case Qt::Key_BraceRight:
-    {
-        QTextCursor cursor(textCursor());
-        cursor.insertText(QString(QChar('}')));
-        indentCurrentLine();
-
-        return;
-    }
-    case Qt::Key_BracketRight:
-    {
-        QTextCursor cursor(textCursor());
-        cursor.insertText(QString(QChar(']')));
-        indentCurrentLine();
-
-        return;
-    }
-
     case Qt::Key_Home:
     {
         Qt::KeyboardModifiers mods(e->modifiers());
@@ -680,6 +653,18 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
     }
 
     QPlainTextEdit::keyPressEvent(e);
+
+    switch (e->key()) {
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+    case Qt::Key_BraceRight:
+    case Qt::Key_BracketRight:
+        indentCurrentLine();
+        break;
+
+    default:;
+    }
+
     mAutoCompleter->keyPress(e);
 }
 
