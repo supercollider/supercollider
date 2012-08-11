@@ -105,6 +105,7 @@ private:
         switch (GetTag(slot)) {
         case tagNil:
             emitter << YAML::Null;
+            return;
 
         case tagInt:
             emitter << slotRawInt(slot);
