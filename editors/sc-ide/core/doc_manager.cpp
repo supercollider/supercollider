@@ -27,8 +27,24 @@
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
+#include <QTextBlock>
 
 using namespace ScIDE;
+
+void Document::deleteTrailingSpaces()
+{
+    QTextCursor cursor (textDocument());
+    cursor.movePosition(QTextCursor::EndOfBlock);
+    QTextDocument * doc = textDocument();
+
+    while( !cursor.atEnd() ) {
+        while( (cursor.block().length() > 1) && doc->characterAt(cursor.position() - 1).isSpace())
+            cursor.deletePreviousChar();
+
+        cursor.movePosition(QTextCursor::NextBlock);
+        cursor.movePosition(QTextCursor::EndOfBlock);
+    }
+}
 
 DocumentManager::DocumentManager( Main *main ):
     QObject(main)

@@ -55,6 +55,8 @@ public:
     const QString & filePath() { return mFilePath; }
     const QString & title() { return mTitle; }
 
+    void deleteTrailingSpaces();
+
 private:
     QByteArray mId;
     QTextDocument *mDoc;

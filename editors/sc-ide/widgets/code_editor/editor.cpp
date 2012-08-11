@@ -580,17 +580,7 @@ void CodeEditor::applySettings( Settings::Manager *s )
 
 void CodeEditor::deleteTrailingSpaces()
 {
-    QTextCursor cursor (QPlainTextEdit::document());
-    cursor.movePosition(QTextCursor::EndOfBlock);
-    QTextDocument * doc = QPlainTextEdit::document();
-
-    while( !cursor.atEnd()) {
-        while( (cursor.block().length() > 1) && doc->characterAt(cursor.position() - 1).isSpace())
-            cursor.deletePreviousChar();
-
-        cursor.movePosition(QTextCursor::NextBlock);
-        cursor.movePosition(QTextCursor::EndOfBlock);
-    }
+    document()->deleteTrailingSpaces();
 }
 
 bool CodeEditor::event( QEvent *e )
