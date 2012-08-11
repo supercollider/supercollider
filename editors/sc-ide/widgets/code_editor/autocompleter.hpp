@@ -37,20 +37,15 @@ class ScRequest;
 class CompletionMenu;
 class MethodCallWidget;
 
+namespace ScLanguage { struct Method; }
+
 class AutoCompleter : public QObject
 {
     Q_OBJECT
 
 public:
-    struct Method {
-        QString className;
-        QString methodName;
-        QStringList argNames;
-        QStringList argDefaults;
-    };
 
     AutoCompleter( CodeEditor * );
-
 
     void keyPress( QKeyEvent * );
     void documentChanged( QTextDocument * );
@@ -58,14 +53,13 @@ public:
 private slots:
     void onContentsChange(int pos, int removed, int added);
     void onCursorChanged();
-    void onCompletionResponse( const QString & cmd, const QString & data );
-    void onMethodCallResponse( const QString & cmd, const QString & data );
     void onCompletionMenuFinished( int result );
 
 private:
     struct MethodCall {
+        MethodCall(): position(0), method(0) {}
         int position;
-        Method method;
+        const ScLanguage::Method *method;
     };
 
     enum CompletionType {
@@ -80,16 +74,15 @@ private:
 
     // completion
 
-    void startCompletion();
+    void triggerCompletion();
     void quitCompletion( const QString & reason = QString() );
-    void onCompletionResponse( const QString & data );
+    void showCompletionMenu();
     void updateCompletionMenu();
 
     // method call aid
 
-    void startMethodCall();
+    void triggerMethodCallAid();
     void updateMethodCall( int cursorPos );
-    void onMethodCallResponse( const QString & data );
     void pushMethodCall( const MethodCall & call );
     void showMethodCall( const MethodCall & call, int arg = 0 );
     void hideMethodCall();
@@ -101,8 +94,6 @@ private:
     // data
 
     CodeEditor *mEditor;
-    ScRequest *mCompletionRequest;
-    ScRequest *mMethodCallRequest;
 
     struct {
         bool on;
@@ -110,19 +101,18 @@ private:
         int pos;
         int len;
         int contextPos;
+        QString base;
         QString text;
         QPointer<CompletionMenu> menu;
     } mCompletion;
 
     struct {
-        int pos;
         QStack<MethodCall> stack;
+        QPointer<CompletionMenu> menu;
         QPointer<MethodCallWidget> widget;
     } mMethodCall;
 };
 
 } // namespace ScIDE
-
-Q_DECLARE_METATYPE(ScIDE::AutoCompleter::Method);
 
 #endif

@@ -45,56 +45,15 @@ static bool tokenMaybeName( Token::Type type )
     return (type == Token::Name || type == Token::Keyword || type == Token::Builtin);
 }
 
-static AutoCompleter::Method parseMethod( const YAML::Node & node )
+static QString incrementedString( const QString & other )
 {
-    Q_ASSERT(node.Type() == YAML::NodeType::Sequence);
-    Q_ASSERT(node.size() >= 2);
+    if(other.isEmpty())
+        return QString();
 
-    assert(node[0].Type() == YAML::NodeType::Scalar);
-    assert(node[1].Type() == YAML::NodeType::Scalar);
-
-    AutoCompleter::Method m;
-    m.className = node[0].to<std::string>().c_str();
-    m.methodName = node[1].to<std::string>().c_str();
-    YAML::Iterator it = node.begin();
-    ++it; ++it;
-    while (it != node.end())
-    {
-        // get arg name
-        assert(it->Type() == YAML::NodeType::Scalar);
-        m.argNames << it->to<std::string>().c_str();
-        // get arg default value
-        ++it;
-        if (it == node.end())
-            break;
-        if(it->Read(YAML::Null))
-            m.argDefaults << QString();
-        else {
-            assert(it->Type() == YAML::NodeType::Scalar);
-            m.argDefaults << it->to<std::string>().c_str();
-        }
-        // next arg
-        ++it;
-    }
-
-    return m;
-}
-
-static QString methodSignature( const AutoCompleter::Method & method )
-{
-    QString text = method.methodName;
-    text += "(";
-    int argc = method.argNames.count();
-    for (int i = 0; i < argc; ++i) {
-        text += method.argNames[i];
-        QString val = method.argDefaults[i];
-        if (!val.isEmpty())
-            text += " = " + val;
-        if (i != argc - 1)
-            text += ", ";
-    }
-    text +=")";
-    return text;
+    QString str = other;
+    int pos = str.length()-1;
+    str[pos] = QChar( str[pos].unicode() + 1 );
+    return str;
 }
 
 class CompletionMenu : public PopUpWidget
@@ -153,16 +112,14 @@ public:
         return QString();
     }
 
-    AutoCompleter::Method currentMethod()
+    const ScLanguage::Method * currentMethod()
     {
         QStandardItem *item =
             mModel->itemFromIndex (
                 mFilterModel->mapToSource (
                     mListView->currentIndex()));
-        if (item)
-            return item->data(MethodRole).value<AutoCompleter::Method>();
 
-        return AutoCompleter::Method();
+        return item ? item->data(MethodRole).value<const ScLanguage::Method*>() : 0;
     }
 
     QString exec( const QPoint & pos )
@@ -228,17 +185,21 @@ public:
         setLayout(box);
     }
 
-    void showMethod( const AutoCompleter::Method & method, int arg )
+    void showMethod( const ScLanguage::Method * method, int argNum )
     {
-        QString text = method.methodName;
+        QString text = method->name;
         text += " (";
-        int argc = method.argNames.count();
-        for (int i = 0; i < argc; ++i) {
-            if (i == arg)
-                text += "<b>" + method.argNames[i] + "</b>";
+        int argc = method->arguments.count();
+        for (int i = 0; i < argc; ++i)
+        {
+            const ScLanguage::Argument & arg = method->arguments[i];
+
+            if (i == argNum)
+                text += "<b>" + arg.name + "</b>";
             else
-                text += method.argNames[i];
-            QString val = method.argDefaults[i];
+                text += arg.name;
+
+            QString val = arg.defaultValue;
             if (!val.isEmpty())
                 text += " = " + val;
             if (i != argc - 1)
@@ -254,19 +215,12 @@ private:
 
 AutoCompleter::AutoCompleter( CodeEditor *editor ):
     QObject(editor),
-    mEditor(editor),
-    mCompletionRequest( new ScRequest(Main::instance()->scProcess(), this) ),
-    mMethodCallRequest( new ScRequest(Main::instance()->scProcess(), this) )
+    mEditor(editor)
 {
     mCompletion.on = false;
-    mMethodCall.pos = -1;
 
     connect(editor, SIGNAL(cursorPositionChanged()),
             this, SLOT(onCursorChanged()));
-    connect(mCompletionRequest, SIGNAL(response(QString,QString)),
-            this, SLOT(onCompletionResponse(QString,QString)));
-    connect(mMethodCallRequest, SIGNAL(response(QString,QString)),
-            this, SLOT(onMethodCallResponse(QString,QString)));
 }
 
 void AutoCompleter::documentChanged( QTextDocument * doc )
@@ -287,7 +241,7 @@ void AutoCompleter::keyPress( QKeyEvent *e )
     {
     case Qt::Key_ParenLeft:
     case Qt::Key_Comma:
-        startMethodCall();
+        triggerMethodCallAid();
         break;
     case Qt::Key_Backspace:
     case Qt::Key_Delete:
@@ -295,13 +249,8 @@ void AutoCompleter::keyPress( QKeyEvent *e )
     default:
         qDebug(">>> key");
         if (!e->text().isEmpty() && !mCompletion.on)
-            startCompletion();
+            triggerCompletion();
     }
-#if 0
-    if ((key >= Qt::Key_0 && key <= Qt::Key_9) ||
-        (key >= Qt::Key_A && key <= Qt::Key_Z) ||
-        key == Qt::Key_Period)
-#endif
 }
 
 void AutoCompleter::onContentsChange( int pos, int removed, int added )
@@ -358,19 +307,18 @@ void AutoCompleter::onCursorChanged()
         }
     }
 
-    if (mMethodCall.pos != -1) {
-        qDebug("Method call: cancelling sclang request");
-        mMethodCall.pos = -1;
-        mMethodCallRequest->cancel();
+    if (!mMethodCall.menu.isNull()) {
+        qDebug("Method call: quitting menu");
+        delete mMethodCall.menu;
     }
 
     updateMethodCall(cursorPos);
 }
 
-void AutoCompleter::startCompletion()
+void AutoCompleter::triggerCompletion()
 {
     if (mCompletion.on) {
-        qWarning("AutoCompleter::startCompletion(): completion already started!");
+        qWarning("AutoCompleter::triggerCompletion(): completion already started!");
         return;
     }
 
@@ -383,7 +331,6 @@ void AutoCompleter::startCompletion()
         return;
 
     const Token & token = *it;
-    QString contextText, command;
 
     if (token.type == Token::Class)
     {
@@ -394,9 +341,8 @@ void AutoCompleter::startCompletion()
         mCompletion.len = it->length;
         mCompletion.text = tokenText(it);
         mCompletion.contextPos = mCompletion.pos + 3;
-        contextText = mCompletion.text;
-        contextText.truncate(3);
-        command = "completeClass";
+        mCompletion.base = mCompletion.text;
+        mCompletion.base.truncate(3);
     }
     else {
         // Parse method call
@@ -448,23 +394,22 @@ void AutoCompleter::startCompletion()
 
         if (cit.isValid()) {
             mCompletion.contextPos = mCompletion.pos;
-            contextText = tokenText(cit);
-            command = "completeClassMethod";
+            mCompletion.base = tokenText(cit);
             mCompletion.type = ClassMethodCompletion;
         }
         else {
             mCompletion.contextPos = mCompletion.pos + 3;
-            contextText = tokenText(mit);
-            contextText.truncate(3);
-            command = "completeMethod";
+            mCompletion.base = tokenText(mit);
+            mCompletion.base.truncate(3);
             mCompletion.type = MethodCompletion;
         }
     }
 
     mCompletion.on = true;
-    qDebug() << "Completion: ON";
-    qDebug() << "Completion: sending request:" << command << contextText;
-    mCompletionRequest->send( command, contextText );
+
+    qDebug() << QString("Completion: ON <%1>").arg(mCompletion.base);
+
+    showCompletionMenu();
 }
 
 void AutoCompleter::quitCompletion( const QString & reason )
@@ -472,8 +417,6 @@ void AutoCompleter::quitCompletion( const QString & reason )
     Q_ASSERT(mCompletion.on);
 
     qDebug() << QString("Completion: OFF (%1)").arg(reason);
-
-    mCompletionRequest->cancel();
 
     if (mCompletion.menu) {
         mCompletion.menu->hide();
@@ -484,91 +427,124 @@ void AutoCompleter::quitCompletion( const QString & reason )
     mCompletion.on = false;
 }
 
-void AutoCompleter::onCompletionResponse( const QString & cmd, const QString & data )
+void AutoCompleter::showCompletionMenu()
 {
-    qDebug(">>> completion response");
+    qDebug(">>> showCompletionMenu");
 
-    if ( cmd != "completeClass" &&
-         cmd != "completeMethod" &&
-         cmd != "completeClassMethod")
-        return;
+    using namespace ScLanguage;
+    using ScLanguage::Method;
 
-    if (!mCompletion.on) {
-        qWarning("Completion: sclang response while completion off!");
-        return;
-    }
+    Q_ASSERT(mCompletion.on);
+    Q_ASSERT(mCompletion.menu.isNull());
 
-    if (!mCompletion.menu.isNull()) {
-        qWarning("Completion: can not show new menu - one already shown!");
-        return;
-    }
+    const Introspection & introspection = Main::instance()->scProcess()->introspection();
 
-    QPointer<CompletionMenu> popup = new CompletionMenu(mEditor);
-
-    std::stringstream stream;
-    stream << data.toStdString();
-    YAML::Parser parser(stream);
-
-    YAML::Node doc;
-    if(!parser.GetNextDocument(doc) || doc.Type() != YAML::NodeType::Sequence) {
-        qWarning("Bad YAML data!");
-        delete popup;
-        return;
-    }
+    QPointer<CompletionMenu> menu;
 
     switch (mCompletion.type)
     {
     case ClassCompletion:
     {
-        for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it)
-        {
-            YAML::Node const & entry = *it;
-            if(entry.Type() == YAML::NodeType::Scalar) {
-                QString text( entry.to<std::string>().c_str() );
-                popup->addItem( new QStandardItem(text) );
-            }
-            else
-                qWarning("YAML parsing: a YAML data entry not a scalar");
+        const ClassMap & classes = introspection.classMap();
+
+        QString lo = mCompletion.base;
+        QString hi = incrementedString(lo);
+
+        ClassMap::const_iterator matchStart, matchEnd;
+        matchStart = classes.lower_bound(lo);
+        matchEnd = classes.upper_bound(hi);
+        if (matchStart == matchEnd) {
+            qDebug() << "Completion: no class matches:" << mCompletion.base;
+            return;
         }
+
+        menu = new CompletionMenu(mEditor);
+
+        for (ClassMap::const_iterator it = matchStart; it != matchEnd; ++it)
+        {
+            Class *klass = it->second;
+            menu->addItem( new QStandardItem(klass->name) );
+        }
+
         break;
     }
     case ClassMethodCompletion:
-    case MethodCompletion:
     {
-        for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it)
-        {
-            YAML::Node const & entry = *it;
-            if (entry.Type() != YAML::NodeType::Sequence) {
-                qWarning("YAML parsing: a YAML data entry not a Sequence");
-                continue;
-            }
-            if (entry.size() < 2) {
-                qWarning("YAML parsing: two few sequence elements");
-                continue;
-            }
-            Method m = parseMethod(entry);
-            QStandardItem *item = new QStandardItem();
-            if (mCompletion.type == ClassMethodCompletion)
-                item->setText(m.methodName);
-            else {
-                item->setText(m.methodName + " (" + m.className + ')');
-                item->setData(m.methodName, CompletionMenu::CompletionRole);
-            }
-            item->setData( QVariant::fromValue<Method>(m), CompletionMenu::MethodRole );
-            popup->addItem(item);
+        const ClassMap & classes = introspection.classMap();
+        ClassMap::const_iterator it = classes.find(mCompletion.base);
+        if (it == classes.end()) {
+            qDebug() << "Completion: class not found:" << mCompletion.base;
+            return;
         }
+
+        Class *metaClass = it->second->metaClass;
+        QMap<QString, const Method*> matching;
+        do {
+            foreach (const Method * method, metaClass->methods)
+            {
+                // Operators are also methods, but are not valid in
+                // a method call syntax, so filter them out.
+                Q_ASSERT(!method->name.isEmpty());
+                if (!method->name[0].isLetter())
+                    continue;
+
+                if (matching.value(method->name) != 0)
+                    continue;
+
+                matching.insert(method->name, method);
+            }
+            metaClass = metaClass->superClass;
+        } while (metaClass);
+
+        menu = new CompletionMenu(mEditor);
+
+        foreach(const Method *method, matching)
+        {
+                QStandardItem *item = new QStandardItem(method->name);
+                item->setData(
+                    QVariant::fromValue(method),
+                    CompletionMenu::MethodRole );
+                menu->addItem(item);
+        }
+
         break;
     }
-    default:
-        Q_ASSERT(false);
+    case MethodCompletion:
+    {
+        const MethodMap & methods = introspection.methodMap();
+
+        QString lo = mCompletion.base;
+        QString hi = incrementedString(lo);
+
+        MethodMap::const_iterator matchStart, matchEnd;
+        matchStart = methods.lower_bound(lo);
+        matchEnd = methods.upper_bound(hi);
+        if (matchStart == matchEnd) {
+            qDebug() << "Completion: no method matches:" << mCompletion.base;
+            return;
+        }
+
+        menu = new CompletionMenu(mEditor);
+        menu->setCompletionRole(CompletionMenu::CompletionRole);
+
+        for (MethodMap::const_iterator it = matchStart; it != matchEnd; ++it)
+        {
+            const Method *method = it->second;
+            QStandardItem *item = new QStandardItem();
+            item->setText(method->name + " (" + method->ownerClass->name + ')');
+            item->setData(method->name, CompletionMenu::CompletionRole);
+            item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
+            menu->addItem(item);
+        }
+
+        break;
+    }
     }
 
-    if (mCompletion.type == MethodCompletion)
-        popup->setCompletionRole(CompletionMenu::CompletionRole);
+    Q_ASSERT(!menu.isNull());
+    mCompletion.menu = menu;
 
-    mCompletion.menu = popup;
-
-    connect(popup, SIGNAL(finished(int)), this, SLOT(onCompletionMenuFinished(int)));
+    connect(menu, SIGNAL(finished(int)), this, SLOT(onCompletionMenuFinished(int)));
 
     QTextCursor cursor(document());
     cursor.setPosition(mCompletion.pos);
@@ -576,7 +552,7 @@ void AutoCompleter::onCompletionResponse( const QString & cmd, const QString & d
         mEditor->viewport()->mapToGlobal( mEditor->cursorRect(cursor).bottomLeft() )
         + QPoint(0,5);
 
-    popup->popup(pos);
+    menu->popup(pos);
 
     updateCompletionMenu();
 }
@@ -618,7 +594,7 @@ void AutoCompleter::onCompletionMenuFinished( int result )
 
         if (!text.isEmpty()) {
             CompletionType type = mCompletion.type;
-            Method method;
+            const ScLanguage::Method *method = 0;
             if (type == MethodCompletion || type == ClassMethodCompletion)
                 method = mCompletion.menu->currentMethod();
 
@@ -629,7 +605,7 @@ void AutoCompleter::onCompletionMenuFinished( int result )
             cursor.setPosition( mCompletion.pos + mCompletion.len, QTextCursor::KeepAnchor );
             cursor.insertText(text);
 
-            if (!method.methodName.isEmpty()) {
+            if (method) {
                 cursor.insertText("(");
                 MethodCall call;
                 call.position = cursor.position() - 1;
@@ -648,7 +624,7 @@ void AutoCompleter::onCompletionMenuFinished( int result )
     //quitCompletion("cancelled");
 }
 
-void AutoCompleter::startMethodCall()
+void AutoCompleter::triggerMethodCallAid()
 {
     // go find the bracket that I'm currently in,
     // and count relevant commas along the way
@@ -730,23 +706,86 @@ void AutoCompleter::startMethodCall()
     {
         qDebug("Method call: call already on stack");
         // method call popup should have been updated by updateMethodCall();
+        return;
     }
-    else
+
+    qDebug("Method call: new call");
+    MethodCall call;
+    call.position = bracketPos;
+    pushMethodCall(call);
+
+    using namespace ScLanguage;
+    using std::pair;
+
+    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+
+    const Method *method = 0;
+
+    if (!className.isEmpty())
     {
-        qDebug("Method call: new call");
-        MethodCall call;
-        call.position = bracketPos;
-        pushMethodCall(call);
+        const ClassMap & classes = introspection.classMap();
+        ClassMap::const_iterator it = classes.find(className);
+        if (it == classes.end()) {
+            qDebug() << "MethodCall: class not found:" << className;
+            return;
+        }
 
-        // store position for sc response
-        mMethodCall.pos = bracketPos;
+        Class *metaClass = it->second->metaClass;
+        do {
+            foreach (const Method * m, metaClass->methods)
+            {
+                if (m->name == methodName) {
+                    method = m;
+                    break;
+                }
+            }
+            if (method) break;
+            metaClass = metaClass->superClass;
+        } while (metaClass);
+    }
+    else {
+        const MethodMap & methods = introspection.methodMap();
 
-        QString text = className;
-        if (!text.isEmpty())
-            text.append('.');
-        text.append(methodName);
+        pair<MethodMap::const_iterator, MethodMap::const_iterator> match =
+            methods.equal_range(methodName);
 
-        mMethodCallRequest->send( "findMethod", text );
+        if (match.first == match.second) {
+            qDebug() << "MethodCall: no method matches:" << methodName;
+            return;
+        }
+
+        Q_ASSERT(mMethodCall.menu.isNull());
+        QPointer<CompletionMenu> menu = new CompletionMenu(mEditor);
+        mMethodCall.menu = menu;
+
+        for (MethodMap::const_iterator it = match.first; it != match.second; ++it)
+        {
+            const Method *method = it->second;
+            QStandardItem *item = new QStandardItem();
+            item->setText(method->name + " (" + method->ownerClass->name + ')');
+            item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
+            menu->addItem(item);
+        }
+
+        QTextCursor cursor(document());
+        cursor.setPosition(bracketPos);
+        QPoint pos =
+            mEditor->viewport()->mapToGlobal( mEditor->cursorRect(cursor).bottomLeft() )
+            + QPoint(0,5);
+
+        if ( ! static_cast<PopUpWidget*>(menu)->exec(pos) ) {
+            delete menu;
+            return;
+        }
+
+        method = menu->currentMethod();
+        delete menu;
+    }
+
+    if (method) {
+        Q_ASSERT(!mMethodCall.stack.isEmpty());
+        mMethodCall.stack.top().method = method;
+        updateMethodCall( mEditor->textCursor().position() );
     }
 }
 
@@ -790,11 +829,11 @@ void AutoCompleter::updateMethodCall( int cursorPos )
         }
 
         if (level > 0) {
-            if (call.method.methodName.isEmpty())
+            if (!call.method)
                 qDebug("Method call: call data incomplete. skipping.");
             else {
                 qDebug("Method call: found current call: %s(%i)",
-                    call.method.methodName.toStdString().c_str(), arg);
+                    call.method->name.toStdString().c_str(), arg);
                 showMethodCall(call, arg);
                 return;
             }
@@ -807,84 +846,6 @@ void AutoCompleter::updateMethodCall( int cursorPos )
     }
 
     hideMethodCall();
-}
-
-void AutoCompleter::onMethodCallResponse( const QString & cmd, const QString & data )
-{
-    qDebug(">>> method call response...");
-
-    if (cmd != "findMethod" )
-        return;
-
-    static QPointer<CompletionMenu> popup;
-
-    Q_ASSERT(popup.isNull());
-    // FIXME: check that method call is still relevant, even before popup!
-
-    std::stringstream stream;
-    stream << data.toStdString();
-    YAML::Parser parser(stream);
-
-    YAML::Node doc;
-    if(!parser.GetNextDocument(doc) || doc.Type() != YAML::NodeType::Sequence) {
-        qWarning("YAML parsing: document not a Sequence!");
-        return;
-    }
-
-    QList<Method> methods;
-
-    for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it)
-    {
-        YAML::Node const & entry = *it;
-        if (entry.Type() != YAML::NodeType::Sequence) {
-            qWarning("YAML parsing: node not a Sequence!");
-            continue;
-        }
-        if (entry.size() < 2) {
-            qWarning("YAML parsing: two few sequence elements!");
-            continue;
-        }
-        methods.append( parseMethod(entry) );
-    }
-
-    Method method;
-
-    if (methods.count() == 1)
-        method = methods.first();
-    else {
-        popup = new CompletionMenu(mEditor);
-
-        foreach( const Method & m, methods ) {
-            QStandardItem *item = new QStandardItem();
-            item->setText(m.methodName + " (" + m.className + ')');
-            item->setData(m.methodName, CompletionMenu::CompletionRole);
-            item->setData( QVariant::fromValue<Method>(m), CompletionMenu::MethodRole );
-            popup->addItem(item);
-        }
-
-        QTextCursor cursor(document());
-        cursor.setPosition(mMethodCall.pos);
-        QPoint pos =
-            mEditor->viewport()->mapToGlobal( mEditor->cursorRect(cursor).bottomLeft() )
-            + QPoint(0,5);
-
-        PopUpWidget *w = static_cast<PopUpWidget*>( popup );
-        if (!w->exec(pos)) {
-            delete popup;
-            return;
-        }
-
-        method = popup->currentMethod();
-        delete popup;
-    }
-
-    if (!method.methodName.isEmpty()
-        && !mMethodCall.stack.isEmpty()
-        && mMethodCall.stack.top().position == mMethodCall.pos)
-    {
-        mMethodCall.stack.top().method = method;
-        updateMethodCall( mEditor->textCursor().position() );
-    }
 }
 
 void AutoCompleter::pushMethodCall( const MethodCall & call )
