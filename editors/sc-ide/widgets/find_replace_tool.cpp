@@ -80,6 +80,8 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     connect(mReplaceAllBtn, SIGNAL(clicked()), this, SLOT(replaceAll()));
     connect(mFindField, SIGNAL(returnPressed()), this, SLOT(onFindFieldReturn()));
     connect(mReplaceField, SIGNAL(returnPressed()), this, SLOT(replace()));
+
+    connect(mFindField, SIGNAL(textChanged(QString)), this, SLOT(findAll()));
 }
 
 void TextFindReplacePanel::setMode( Mode mode )
@@ -110,6 +112,7 @@ void TextFindReplacePanel::initiate()
     }
 
     mFindField->selectAll();
+    findAll();
 }
 
 QRegExp TextFindReplacePanel::regexp()
@@ -163,6 +166,7 @@ void TextFindReplacePanel::findAll()
 
     // NOTE: empty expression removes any search highlighting
     mEditor->findAll(regexp(), flags());
+    mEditor->find(regexp(), flags());
 }
 
 void TextFindReplacePanel::replace()
