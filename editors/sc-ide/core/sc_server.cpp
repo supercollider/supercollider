@@ -41,45 +41,45 @@ ScServer::ScServer(QObject * parent):
 
 void ScServer::timerEvent(QTimerEvent * event)
 {
-	if (mUdpSocket->hasPendingDatagrams()) {
-		size_t datagramSize = mUdpSocket->pendingDatagramSize();
-		QByteArray array(datagramSize, 0);
-		mUdpSocket->readDatagram(array.data(), datagramSize);
+    if (mUdpSocket->hasPendingDatagrams()) {
+        size_t datagramSize = mUdpSocket->pendingDatagramSize();
+        QByteArray array(datagramSize, 0);
+        mUdpSocket->readDatagram(array.data(), datagramSize);
 
-		if (array[0]) {
-			char *addr = array.data();
-			const char * data = OSCstrskip(array.data());
-			int size = datagramSize - (data - addr);
+        if (array[0]) {
+            char *addr = array.data();
+            const char * data = OSCstrskip(array.data());
+            int size = datagramSize - (data - addr);
 
-			if (strcmp(addr, "/status.reply") == 0) {
-				sc_msg_iter reply(size, data);
-				int	unused     = reply.geti();
-				int	ugenCount  = reply.geti();
-				int	synthCount = reply.geti();
-				int	groupCount = reply.geti();
-				int	defCount   = reply.geti();
-				float avgCPU   = reply.getf();
-				float peakCPU  = reply.getf();
-				double srNom   = reply.getd();
-				double srAct   = reply.getd();
+            if (strcmp(addr, "/status.reply") == 0) {
+                sc_msg_iter reply(size, data);
+                int	unused     = reply.geti();
+                int	ugenCount  = reply.geti();
+                int	synthCount = reply.geti();
+                int	groupCount = reply.geti();
+                int	defCount   = reply.geti();
+                float avgCPU   = reply.getf();
+                float peakCPU  = reply.getf();
+                double srNom   = reply.getd();
+                double srAct   = reply.getd();
 
                 qDebug() << "Server status:" << ugenCount << synthCount << groupCount << defCount << avgCPU << peakCPU;
 
-				emit updateServerStatus(ugenCount, synthCount, groupCount, defCount, avgCPU, peakCPU);
-			}
-		}
-	}
+                emit updateServerStatus(ugenCount, synthCount, groupCount, defCount, avgCPU, peakCPU);
+            }
+        }
+    }
 
-	if (mPort) {
-		small_scpacket packet;
-		packet.BeginMsg();
-		packet.adds_slpre("/status");
-		packet.maketags(1);
-		packet.addtag(',');
-		packet.EndMsg();
+    if (mPort) {
+        small_scpacket packet;
+        packet.BeginMsg();
+        packet.adds_slpre("status");
+        packet.maketags(1);
+        packet.addtag(',');
+        packet.EndMsg();
 
-		mUdpSocket->writeDatagram(packet.data(), packet.size(), mServerAddress, mPort);
-	}
+        mUdpSocket->writeDatagram(packet.data(), packet.size(), mServerAddress, mPort);
+    }
 }
 
 }

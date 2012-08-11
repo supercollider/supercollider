@@ -83,10 +83,13 @@ Main::Main(void) :
     mDocManager( new DocumentManager(this) ),
     mSessionManager( new SessionManager(mDocManager, this) ),
     mSCProcess( new SCProcess(this) ),
-    mSCResponder( new ScResponder(this) )
+    mSCResponder( new ScResponder(this) ),
+    mSCServer( new ScServer(this) )
 {
     new SyntaxHighlighterGlobals(this);
+
     connect(mSCProcess, SIGNAL(response(QString,QString)), mSCResponder, SLOT(onResponse(QString,QString)));
+    connect(mSCResponder, SIGNAL(serverRunningChanged(bool,QString,int)), mSCServer, SLOT(onServerRunningChanged(bool,QString,int)));
 }
 
 void Main::quit() {

@@ -25,6 +25,7 @@
 #include <QAction>
 
 #include "sc_process.hpp"
+#include "sc_server.hpp"
 #include "doc_manager.hpp"
 #include "settings/manager.hpp"
 
@@ -71,6 +72,7 @@ private:
     Settings::Manager *mSettings;
     SCProcess * mSCProcess;
     ScResponder * mSCResponder;
+    ScServer * mSCServer;
     DocumentManager *mDocManager;
     SessionManager *mSessionManager;
 };

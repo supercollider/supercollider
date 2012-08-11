@@ -28,26 +28,31 @@ namespace ScIDE {
 
 class ScServer : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	ScServer(QObject * parent);
-	void timerEvent(QTimerEvent * event);
+    ScServer(QObject * parent);
+    void timerEvent(QTimerEvent * event);
 
 public Q_SLOTS:
-	void setServerAddress(QHostAddress const & address, int port)
-	{
-		mServerAddress = address;
-		mPort = port;
-	}
+    void onServerRunningChanged( bool running, QString const & hostName, int port )
+    {
+        if (running) {
+            mServerAddress = QHostAddress(hostName);
+            mPort = port;
+        } else {
+            mServerAddress.clear();
+            mPort = 0;
+        }
+    }
 
 Q_SIGNALS:
-	void updateServerStatus (int ugenCount, int synthCount, int groupCount, int defCount, float avgCPU, float peakCPU);
+    void updateServerStatus (int ugenCount, int synthCount, int groupCount, int defCount, float avgCPU, float peakCPU);
 
 private:
-	QUdpSocket * mUdpSocket;
-	QHostAddress mServerAddress;
-	int mPort;
+    QUdpSocket * mUdpSocket;
+    QHostAddress mServerAddress;
+    int mPort;
 };
 
 }
