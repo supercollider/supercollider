@@ -18,6 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#define QT_NO_DEBUG_OUTPUT
+
 #include "autocompleter.hpp"
 #include "tokens.hpp"
 #include "editor.hpp"
@@ -931,3 +933,5 @@ QString AutoCompleter::tokenText( TokenIterator & it )
 }
 
 } // namespace ScIDE
+
+#undef QT_NO_DEBUG_OUTPUT
