@@ -132,6 +132,8 @@ private Q_SLOTS:
     void evaluateCurrentFile();
     void helpForSelection();
     void onInterpreterStateChanged( QProcess::ProcessState );
+    void onServerStatusReply(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU);
+    void onServerRunningChanged( bool running, QString const & hostName, int port );
     void onQuit();
     void onCurrentDocumentChanged( Document * );
     void onDocumentChangedExternally( Document * );
@@ -167,7 +169,7 @@ private:
 
     // Status bar
     StatusLabel *mLangStatus;
-    StatusLabel *mSynthStatus;
+    StatusLabel *mServerStatus;
 
     // Docks
     PostDock * mPostDock;
