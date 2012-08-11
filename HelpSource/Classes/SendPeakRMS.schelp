@@ -59,7 +59,7 @@ code::
 
 (
 o = OSCFunc({ |msg|
-	"rms: %, peak: %".format(msg[3], msg[4]).postln
+	"peak: %, rms: %".format(msg[3], msg[4]).postln
 }, '/replyAddress');
 )
 o.free;
