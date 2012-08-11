@@ -65,14 +65,16 @@ MainWindow::MainWindow(Main * main) :
 
     mLangStatus = new StatusLabel();
     mLangStatus->setText("Inactive");
-    mSynthStatus = new StatusLabel();
-    mSynthStatus->setText("Inactive");
+    mServerStatus = new StatusLabel();
+    onServerStatusReply(0, 0, 0, 0, 0, 0);
 
     QStatusBar *status = statusBar();
     status->addPermanentWidget( new QLabel("Interpreter:") );
     status->addPermanentWidget( mLangStatus );
-    status->addPermanentWidget( new QLabel("Synth:") );
-    status->addPermanentWidget( mSynthStatus );
+    status->addPermanentWidget( new QLabel("Server:") );
+    status->addPermanentWidget( mServerStatus );
+
+    onServerRunningChanged(false, "", 0);
 
     // Code editor
     mEditors = new MultiEditor(main);
@@ -154,6 +156,9 @@ MainWindow::MainWindow(Main * main) :
             this, SLOT(updateRecentDocsMenu()));
     // ToolBox
     connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
+
+    connect(main->scResponder(), SIGNAL(serverRunningChanged(bool,QString,int)), this, SLOT(onServerRunningChanged(bool,QString,int)));
+    connect(main->scServer(), SIGNAL(updateServerStatus(int,int,int,int,float,float)), this, SLOT(onServerStatusReply(int,int,int,int,float,float)));
 
     createActions();
     createMenus();
@@ -627,6 +632,29 @@ void MainWindow::onInterpreterStateChanged( QProcess::ProcessState state )
     mLangStatus->setTextColor(color);
 }
 
+
+void MainWindow::onServerStatusReply(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU)
+{
+    QString statusString =
+            QString("%1% %2% %3u %4s %5g %6d")
+            .arg(avgCPU,  5, 'f', 2)
+            .arg(peakCPU, 5, 'f', 2)
+            .arg(ugens,     4)
+            .arg(synths,    4)
+            .arg(groups,    4)
+            .arg(synthDefs, 4);
+
+    mServerStatus->setText(statusString);
+}
+
+void MainWindow::onServerRunningChanged(bool running, const QString &, int)
+{
+    mServerStatus->setBackgroundRole( running ? QPalette::Window : QPalette::Button );
+    mServerStatus->setTextColor( running ? Qt::green : Qt::white);
+    if (!running)
+        onServerStatusReply(0, 0, 0, 0, 0, 0);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(!quit()) event->ignore();
@@ -983,6 +1011,11 @@ StatusLabel::StatusLabel(QWidget *parent) : QLabel(parent)
     setAlignment(Qt::AlignCenter);
     setBackground(Qt::black);
     setTextColor(Qt::white);
+
+    QFont font("Monospace");
+    font.setStyleHint(QFont::Monospace);
+    font.setBold(true);
+    setFont(font);
 }
 
 void StatusLabel::setBackground(const QBrush & brush)

@@ -46,6 +46,9 @@ void ScServer::timerEvent(QTimerEvent * event)
         QByteArray array(datagramSize, 0);
         mUdpSocket->readDatagram(array.data(), datagramSize);
 
+        if (!mPort)
+            return;
+
         if (array[0]) {
             char *addr = array.data();
             const char * data = OSCstrskip(array.data());
@@ -62,8 +65,6 @@ void ScServer::timerEvent(QTimerEvent * event)
                 float peakCPU  = reply.getf();
                 double srNom   = reply.getd();
                 double srAct   = reply.getd();
-
-                qDebug() << "Server status:" << ugenCount << synthCount << groupCount << defCount << avgCPU << peakCPU;
 
                 emit updateServerStatus(ugenCount, synthCount, groupCount, defCount, avgCPU, peakCPU);
             }
