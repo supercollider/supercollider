@@ -81,13 +81,12 @@ public:
 public Q_SLOTS:
     void zoomIn(int steps = 1);
     void zoomOut(int steps = 1);
-    void indentMore() { indent(false); }
-    void indentLess() { indent(true); }
     void setSpaceIndent(bool on) { mSpaceIndent = on; }
     void setShowWhitespace(bool);
     void clearSearchHighlighting();
     void applySettings( Settings::Manager * );
     void deleteTrailingSpaces();
+    void indent();
 
 protected:
     virtual bool event( QEvent * );
@@ -112,10 +111,14 @@ private:
 
     void resizeEvent( QResizeEvent * );
     void paintLineIndicator( QPaintEvent * );
-    void indent( bool less );
     void matchBracket( int pos, BracketMatch & match );
-    int indentedStartOfLine( const QTextBlock & );
     void updateExtraSelections();
+
+    int indentedStartOfLine( const QTextBlock & );
+    int findIndentationLevel( QTextBlock const & );
+    void indentCurrentLine();
+    void indentCurrentSelection();
+    void indentLineAtCursor( QTextCursor cursor );
 
     LineIndicator *mLineIndicator;
     Document *mDoc;

@@ -166,15 +166,10 @@ void MultiEditor::createActions()
     act->setStatusTip(tr("Paste text from clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(paste()));
 
-    mActions[IndentMore] = act = new QAction(
-        QIcon::fromTheme("format-indent-more"), tr("Indent &More"), this);
-    act->setStatusTip(tr("Increase indentation of selected lines"));
-    mSigMux->connect(act, SIGNAL(triggered()), SLOT(indentMore()));
-
-    mActions[IndentLess] = act = new QAction(
-        QIcon::fromTheme("format-indent-less"), tr("Indent &Less"), this);
-    act->setStatusTip(tr("Decrease indentation of selected lines"));
-    mSigMux->connect(act, SIGNAL(triggered()), SLOT(indentLess()));
+    mActions[IndentLineOrRegion] = act = new QAction(
+        QIcon::fromTheme("format-indent-line"), tr("Indent Line or Region"), this);
+    act->setStatusTip(tr("Indent Line or Region"));
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(indent()));
 
     // View
 
@@ -215,8 +210,7 @@ void MultiEditor::updateActions()
     mActions[Copy]->setEnabled( editor && editor->textCursor().hasSelection() );
     mActions[Cut]->setEnabled( mActions[Copy]->isEnabled() );
     mActions[Paste]->setEnabled( editor );
-    mActions[IndentMore]->setEnabled( editor );
-    mActions[IndentLess]->setEnabled( editor );
+    mActions[IndentLineOrRegion]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
     mActions[ShrinkFont]->setEnabled( editor );
     mActions[ShowWhitespace]->setEnabled( editor );
