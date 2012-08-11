@@ -83,8 +83,7 @@ public:
         ShowSettings,
 
         // Help
-        BrowseHelp,
-        SearchHelp,
+        Help,
         HelpForSelection,
 
         ActionCount
@@ -130,6 +129,7 @@ private Q_SLOTS:
     void saveSession( Session *session );
     void evaluateRegion();
     void evaluateCurrentFile();
+    void openHelp();
     void helpForSelection();
     void onInterpreterStateChanged( QProcess::ProcessState );
     void onServerStatusReply(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU);
