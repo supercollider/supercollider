@@ -65,10 +65,12 @@ static AutoCompleter::Method parseMethod( const YAML::Node & node )
         ++it;
         if (it == node.end())
             break;
-        if(it->Type() == YAML::NodeType::Scalar)
-            m.argDefaults << it->to<std::string>().c_str();
-        else
+        if(it->Read(YAML::Null))
             m.argDefaults << QString();
+        else {
+            assert(it->Type() == YAML::NodeType::Scalar);
+            m.argDefaults << it->to<std::string>().c_str();
+        }
         // next arg
         ++it;
     }

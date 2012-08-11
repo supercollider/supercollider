@@ -199,7 +199,7 @@ ScIDE {
 		if (method.argNames.size > 1) {
 			data = data ++ [
 				method.argNames.as(Array),
-				method.prototypeFrame.collect(_.cs)
+				method.prototypeFrame.collect { |val| val !? val.cs }
 			].lace [2..];
 		};
 		^data;
