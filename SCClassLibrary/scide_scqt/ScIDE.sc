@@ -6,7 +6,7 @@ ScIDE {
 
 		SimpleController(Server.default)
 		.put(\serverRunning, { | server, what, extraArg |
-			this.prSend(\defaultServerRunning, server.serverRunning)
+			this.prSend(\defaultServerRunningChanged, server.serverRunning)
 		});
 	}
 
