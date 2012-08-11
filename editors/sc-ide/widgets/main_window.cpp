@@ -378,8 +378,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[Find] );
     menu->addAction( mActions[Replace] );
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::IndentMore) );
-    menu->addAction( mEditors->action(MultiEditor::IndentLess) );
+    menu->addAction( mEditors->action(MultiEditor::IndentLineOrRegion) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::OpenDefinition) );
 

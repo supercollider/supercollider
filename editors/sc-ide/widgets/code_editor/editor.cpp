@@ -24,11 +24,13 @@
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
 
+#include <QDebug>
+#include <QKeyEvent>
 #include <QPainter>
 #include <QPaintEvent>
-#include <QTextBlock>
-#include <QKeyEvent>
 #include <QScrollBar>
+#include <QTextBlock>
+#include <QTextDocumentFragment>
 
 namespace ScIDE
 {
@@ -593,16 +595,16 @@ bool CodeEditor::event( QEvent *e )
             int key = ke->key();
             switch (key)
             {
-                case Qt::Key_Tab:
-                case Qt::Key_Backtab:
-                    indent( key == Qt::Key_Backtab );
-                    e->accept();
-                    return true;
-                default:;
+            case Qt::Key_Tab:
+            case Qt::Key_Backtab:
+                indent();
+                e->accept();
+                return true;
+            default:;
             }
             break;
-        }
-        default:;
+    }
+    default:;
     }
     return QPlainTextEdit::event(e);
 }
@@ -851,6 +853,7 @@ int CodeEditor::indentedStartOfLine( const QTextBlock &b )
             break;
         ++i;
     }
+
     return i;
 }
 
@@ -899,70 +902,91 @@ void CodeEditor::paintLineIndicator( QPaintEvent *e )
     }
 }
 
-void CodeEditor::indent( bool less )
+void CodeEditor::indent()
 {
-    QTextDocument *doc = QPlainTextEdit::document();
-    QTextCursor c(textCursor());
-    int pos = c.position();
-    int anc = c.anchor();
-    QTextBlock block = doc->findBlock(qMin(pos,anc));
-    QTextBlock endBlock = anc != pos ? doc->findBlock(qMax(pos,anc)) : block;
-    int indent = mIndentWidth;
+    QTextCursor cursor = textCursor();
+    if (cursor.selection().isEmpty())
+        indentCurrentLine();
+    else
+        indentCurrentSelection();
+}
 
-    c.beginEditBlock();
+int CodeEditor::findIndentationLevel(QTextBlock const & block)
+{
+    if (!block.isValid())
+        return 0;
 
-    while (true) {
-        QTextCursor c( block );
-        QString text( block.text() );
+    TokenIterator it = TokenIterator::leftOf(block, 0);
 
-        int pos = 0;
-        int spaces = 0;
-        while (true)
-        {
-            QChar chr(text[pos]);
-            if( chr == ' ' )
-                ++spaces;
-            else if( chr == '\t' )
-                spaces += indent;
-            else
-                break;
-            ++pos;
-        }
+    int level = 0;
 
-        int tabs = spaces / indent;
-        if (less) {
-            if(tabs * indent == spaces && tabs > 0)
-                --tabs;
-        }
-        else {
-            ++tabs;
-        }
+    TokenIterator next(block);
+    if (next.isValid() && next->type == Token::ClosingBracket)
+        level = -1;
 
-        c.movePosition( QTextCursor::NextCharacter, QTextCursor::KeepAnchor, pos );
+    while (it.isValid()) {
+        if (it->type == Token::OpeningBracket)
+            level += 1;
+        else if (it->type == Token::ClosingBracket)
+            level -= 1;
+        --it;
+    }
 
-        if( tabs == 0 )
-        {
-            c.removeSelectedText();
-        }
-        else if( mSpaceIndent )
-        {
-            spaces = tabs * indent;
-            while(spaces--)
-                c.insertText(" ");
-        }
-        else
-        {
-            while(tabs--)
-                c.insertText("\t");
-        }
+    return qMax(level, 0);
+}
 
-        if(block != endBlock)
+void CodeEditor::indentCurrentSelection()
+{
+    QTextCursor cursor = textCursor();
+
+    const int position = cursor.position();
+    const int anchor = cursor.anchor();
+
+    QTextDocument * doc = QPlainTextEdit::document();
+    QTextBlock block = doc->findBlock(qMin(position, anchor));
+    QTextBlock endBlock = anchor != position ? doc->findBlock(qMax(position, anchor))
+                                             : block;
+
+    cursor.beginEditBlock();
+
+    for (;;) {
+        cursor.setPosition(block.position());
+        indentLineAtCursor(cursor);
+
+        if ( block != endBlock )
             block = block.next();
         else
             break;
     }
 
-    c.endEditBlock();
+    cursor.endEditBlock();
+}
+
+void CodeEditor::indentCurrentLine()
+{
+    QTextCursor cursor = textCursor();
+    cursor.beginEditBlock();
+    indentLineAtCursor(textCursor());
+    cursor.endEditBlock();
+}
+
+void CodeEditor::indentLineAtCursor(QTextCursor cursor)
+{
+    const int indentationLevel = findIndentationLevel(cursor.block());
+
+    cursor.movePosition(QTextCursor::StartOfBlock);
+    cursor.setPosition(cursor.position() + indentedStartOfLine(cursor.block()), QTextCursor::KeepAnchor);
+    cursor.removeSelectedText();
+
+    if ( mSpaceIndent ) {
+        const int spaces = mIndentWidth * indentationLevel;
+        for (int i = 0; i != spaces; ++i)
+            cursor.insertText(" ");
+    } else {
+        const int tabs = indentationLevel;
+        for (int i = 0; i != tabs; ++i)
+            cursor.insertText("\t");
+    }
 }
 
 } // namespace ScIDE
