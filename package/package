@@ -39,7 +39,8 @@ if [ $package_type == "source" ]; then
     fi
     returndir=`pwd`
     cd ../
-    bash package/git-archive-all.sh --prefix SuperCollider-Source/ "$returndir/SuperCollider-Source.tmp.tar"
+    python package/git-archive-all.py --prefix SuperCollider-Source/ "$returndir/SuperCollider-Source.tmp.tar"
+
     cd "$returndir"
     # NB we only need one instance of boost, so we exclude one of its two appearances as a submodule in the following
     tar -x --exclude ".gitignore" --exclude ".gitmodules" \
