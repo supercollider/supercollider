@@ -360,7 +360,7 @@ void AutoCompleter::triggerCompletion()
             TokenIterator it = dit.next();
             if (tokenMaybeName(it.type())
                 && it.block() == dit.block()
-                && it->position == dit->position + 1)
+                && it->positionInBlock == dit->positionInBlock + 1)
                     mit = it;
         }
         else if (tokenMaybeName(token.type))
