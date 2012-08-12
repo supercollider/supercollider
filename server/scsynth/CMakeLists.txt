@@ -210,8 +210,9 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libscsynth rt)
 endif()
 
+file(GLOB_RECURSE all_headers ../../*hpp)
 
-add_executable(scsynth scsynth_main.cpp)
+add_executable(scsynth scsynth_main.cpp ${all_headers})
 target_link_libraries(scsynth libscsynth ${PTHREADS_LIBRARY})
 
 if(LTO)
