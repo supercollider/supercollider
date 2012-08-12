@@ -38,10 +38,6 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		endif()
 	endif()
 
-	if (${DSO_VISIBILITY})
-		remove_definitions(-fvisibility=hidden)
-	endif()
-
 	add_library(boost_thread STATIC ${boost_thread_src} ${boost_thread_platform})
 
 	if(LTO)
