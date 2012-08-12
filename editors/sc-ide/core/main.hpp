@@ -72,8 +72,8 @@ private:
     Main(void);
 
     Settings::Manager *mSettings;
-    SCProcess * mSCProcess;
     ScResponder * mSCResponder;
+    SCProcess * mSCProcess;
     ScServer * mSCServer;
     DocumentManager *mDocManager;
     SessionManager *mSessionManager;
