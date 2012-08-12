@@ -125,7 +125,7 @@ bool Introspection::parse(const QString & yamlString )
 
                 // get arg default value
                 ++arg;
-                if (arg == node.end())
+                if (arg == argNode.end())
                     break;
                 if(!arg->Read(YAML::Null)) {
                     assert(arg->Type() == YAML::NodeType::Scalar);
