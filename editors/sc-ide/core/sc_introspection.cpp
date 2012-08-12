@@ -33,7 +33,7 @@ namespace ScLanguage {
 
 bool Introspection::parse(const QString & yamlString )
 {
-    using std::pair;
+    using std::make_pair;
 
     clear();
 
@@ -56,7 +56,7 @@ bool Introspection::parse(const QString & yamlString )
         QString name = (*it)[0].to<std::string>().c_str();
         Class *klass = new Class;
         klass->name = name;
-        mClassMap.insert(pair<QString, Class*>(klass->name, klass));
+        mClassMap.insert(make_pair(klass->name, klass));
     }
 
     for (YAML::Iterator docIterator = doc.begin(); docIterator != doc.end(); ++docIterator)
@@ -139,7 +139,7 @@ bool Introspection::parse(const QString & yamlString )
             }
 
             klass->methods.append(method);
-            mMethodMap.insert(pair<QString, Method*>(method->name, method));
+            mMethodMap.insert(make_pair(method->name, method));
         }
     }
 
