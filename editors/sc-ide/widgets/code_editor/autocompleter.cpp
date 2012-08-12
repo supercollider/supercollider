@@ -183,6 +183,16 @@ public:
         box->setContentsMargins(5,2,5,2);
         box->addWidget(mLabel);
         setLayout(box);
+
+        parent->installEventFilter(this);
+    }
+
+    bool eventFilter( QObject *obj, QEvent *ev )
+    {
+        if (obj == parentWidget() && ev->type() == QEvent::FocusOut)
+            hide();
+
+        return QWidget::eventFilter(obj, ev);
     }
 
     void showMethod( const ScLanguage::Method * method, int argNum )
@@ -866,7 +876,7 @@ void AutoCompleter::showMethodCall( const MethodCall & call, int arg )
     pos += QPoint(0, -20);
 
     if (mMethodCall.widget.isNull())
-        mMethodCall.widget = new MethodCallWidget(mEditor->viewport());
+        mMethodCall.widget = new MethodCallWidget(mEditor);
 
     MethodCallWidget *w = mMethodCall.widget;
 
