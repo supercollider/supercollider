@@ -31,9 +31,20 @@
 #  define PATH_MAX _MAX_PATH
 # endif
 # include <string.h>
-# define strcasecmp stricmp
 # define snprintf _snprintf
 #endif
+
+#include <boost/algorithm/string.hpp>
+
+static inline bool stringCaseCompare(const char * a, const char * b)
+{
+#if _POSIX_VERSION >= 200112L
+	return strcasecmp(a, b) == 0;
+#else
+	return boost::iequals(a, b);
+#endif
+}
+
 
 # ifndef MAXPATHLEN
 #  define MAXPATHLEN PATH_MAX
