@@ -967,7 +967,7 @@ void CodeEditor::indentCurrentLine()
 {
     QTextCursor cursor = textCursor();
     cursor.beginEditBlock();
-    indentLineAtCursor(textCursor());
+    indentLineAtCursor(cursor);
     cursor.endEditBlock();
 }
 
