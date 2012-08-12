@@ -38,12 +38,16 @@ SCProcess::SCProcess( Main *parent ):
     mIpcServer( new QLocalServer(this) ),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid()))
 {
+    mIntrospectionParser = new ScIntrospectionParser( parent->scResponder(), this );
+    mIntrospectionParser->start();
 
     prepareActions(parent);
 
     connect(this, SIGNAL( readyRead() ),
             this, SLOT( onReadyRead() ));
     connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
+    connect(mIntrospectionParser, SIGNAL(done(ScLanguage::Introspection*)),
+            this, SLOT(swapIntrospection(ScLanguage::Introspection*)));
 }
 
 void SCProcess::prepareActions(Main * main)
@@ -130,17 +134,13 @@ void SCProcess::onIpcData()
 
     mIpcData.remove ( 0, receivedData.pos() );
 
-    if (id == "introspection") {
-        //qDebug("introspection arriving");
-        mIntrospection.parse(message);
-    }
-    else
-        emit response(id, message);
+    emit response(id, message);
 }
 
 void ScResponder::onResponse( const QString & selector, const QString & data )
 {
     static QString defaultServerRunningChangedSymbol("defaultServerRunningChanged");
+    static QString introspectionSymbol("introspection");
 
     if (selector == defaultServerRunningChangedSymbol) {
         std::stringstream stream;
@@ -167,6 +167,10 @@ void ScResponder::onResponse( const QString & selector, const QString & data )
         }
 
         emit serverRunningChanged (serverRunningState, QString(hostName.c_str()), port);
+        return;
+    }
+    else if (selector == introspectionSymbol) {
+        emit newIntrospectionData(data);
         return;
     }
 }

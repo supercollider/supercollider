@@ -29,11 +29,13 @@
 #include <QtNetwork/QLocalServer>
 #include <QByteArray>
 #include <QUuid>
+#include <QThread>
 #include <QDebug>
 
 namespace ScIDE {
 
 class Main;
+class ScIntrospectionParser;
 
 class SCProcess:
     public QProcess
@@ -133,6 +135,11 @@ public slots:
         write( &commandChar, 1 );
     }
 
+    void swapIntrospection (ScLanguage::Introspection *newIntrospection)
+    {
+        mIntrospection = *newIntrospection;
+    }
+
     QAction *action(SCProcessActionRole role)
     {
         return mActions[role];
@@ -164,6 +171,7 @@ private:
     QAction * mActions[SCProcessActionCount];
 
     ScLanguage::Introspection mIntrospection;
+    ScIntrospectionParser *mIntrospectionParser;
 
     QLocalServer *mIpcServer;
     QLocalSocket *mIpcSocket;
@@ -223,9 +231,54 @@ public:
 
 Q_SIGNALS:
     void serverRunningChanged( bool serverRunning, const QString & hostName, int port );
+    void newIntrospectionData( const QString & yaml );
 
 private Q_SLOTS:
     void onResponse( const QString & selector, const QString & data );
+};
+
+class ScIntrospectionParserWorker : public QObject
+{
+    Q_OBJECT
+signals:
+    void done( ScLanguage::Introspection * output );
+private slots:
+    void process( const QString & input )
+    {
+        ScLanguage::Introspection *introspection = new ScLanguage::Introspection;
+        introspection->parse(input);
+        emit done(introspection);
+    }
+    void quit()
+    {
+        thread()->quit();
+    }
+};
+
+class ScIntrospectionParser : public QThread
+{
+    Q_OBJECT
+public:
+    ScIntrospectionParser( ScResponder * responder, QObject * parent = 0 ):
+        QThread(parent)
+    {
+        connect(responder, SIGNAL(newIntrospectionData(QString)),
+                &mWorker, SLOT(process(QString)), Qt::QueuedConnection);
+        connect(&mWorker, SIGNAL(done(ScLanguage::Introspection*)),
+                this, SIGNAL(done(ScLanguage::Introspection*)), Qt::QueuedConnection);
+        mWorker.moveToThread(this);
+    }
+    ~ScIntrospectionParser()
+    {
+        QMetaObject::invokeMethod(&mWorker, "quit");
+        wait();
+    }
+
+signals:
+    void done( ScLanguage::Introspection * );
+
+private:
+    ScIntrospectionParserWorker mWorker;
 };
 
 }

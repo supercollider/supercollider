@@ -82,8 +82,8 @@ Main::Main(void) :
     mSettings( new Settings::Manager( getSettingsFile(), this ) ),
     mDocManager( new DocumentManager(this) ),
     mSessionManager( new SessionManager(mDocManager, this) ),
-    mSCProcess( new SCProcess(this) ),
     mSCResponder( new ScResponder(this) ),
+    mSCProcess( new SCProcess(this) ),
     mSCServer( new ScServer(this) )
 {
     new SyntaxHighlighterGlobals(this);
