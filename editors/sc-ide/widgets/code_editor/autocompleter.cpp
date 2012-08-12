@@ -172,7 +172,7 @@ public:
     MethodCallWidget( QWidget * parent = 0 ):
         QWidget( parent, Qt::ToolTip )
     {
-        QPalette p;
+        QPalette p( palette() );
         p.setColor( QPalette::Window, p.color(QPalette::ToolTipBase) );
         p.setColor( QPalette::WindowText, p.color(QPalette::ToolTipText) );
         setPalette(p);
