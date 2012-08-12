@@ -67,9 +67,9 @@ bool Introspection::parse(const QString & yamlString )
         mClassMap.insert(pair<QString, Class*>(klass->name, klass));
     }
 
-    for (YAML::Iterator it = doc.begin(); it != doc.end(); ++it)
+    for (YAML::Iterator docIterator = doc.begin(); docIterator != doc.end(); ++docIterator)
     {
-        const YAML::Node & node = *it;
+        const YAML::Node & node = *docIterator;
         QString name = node[0].to<std::string>().c_str();
         ClassMap::iterator it = mClassMap.find(name);
         assert(it != mClassMap.end());
