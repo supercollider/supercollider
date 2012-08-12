@@ -56,18 +56,17 @@ struct Token
         ClosingBracket
     };
 
-    Token() {}
     Token( Type t, int pos, int len = 0, char c = 0 ):
-        type(t), position(pos), length(len), character(c) {}
+        type(t), positionInBlock(pos), length(len), character(c) {}
     Token (Token const & rhs):
         type(rhs.type),
-        position(rhs.position),
+        positionInBlock(rhs.positionInBlock),
         length(rhs.length),
         character(rhs.character)
     {}
 
     Type type;
-    int position;
+    int positionInBlock;
     int length;
     char character;
 };
@@ -126,9 +125,9 @@ public:
             while (idx--)
             {
                 const Token & token = data->tokens[idx];
-                if (token.position > pos)
+                if (token.positionInBlock > pos)
                     continue;
-                else if (token.position == pos || token.position + token.length > pos)
+                else if (token.positionInBlock == pos || token.positionInBlock + token.length > pos)
                     break;
             }
         }
@@ -151,7 +150,7 @@ public:
             while(it.idx--)
             {
                 Token const & token = it.data->tokens[it.idx];
-                if( pos < 0 || token.position < pos )
+                if( pos < 0 || token.positionInBlock < pos )
                     return it;
             }
 
@@ -177,7 +176,7 @@ public:
             while(++it.idx < n)
             {
                 Token const & token = it.data->tokens[it.idx];
-                if( token.position >= pos )
+                if( token.positionInBlock >= pos )
                     return it;
             }
 
@@ -207,10 +206,10 @@ public:
         for( int i = 0; i < n; ++i )
         {
             Token const & token = it.data->tokens[i];
-            if(token.position > pos) {
+            if(token.positionInBlock > pos) {
                 return it;
             }
-            else if(token.position == pos - 1 || token.position == pos)
+            else if(token.positionInBlock == pos - 1 || token.positionInBlock == pos)
             {
                 it.idx = i;
                 break;
@@ -296,7 +295,7 @@ public:
 
     int position()
     {
-        return (*this)->position + blk.position();
+        return (*this)->positionInBlock + blk.position();
     }
 
     Token::Type type()

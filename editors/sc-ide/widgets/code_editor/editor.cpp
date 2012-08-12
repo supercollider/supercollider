@@ -458,7 +458,7 @@ QTextCursor CodeEditor::currentRegion()
     if(start.isValid() && end.isValid())
     {
         // only care about brackets at beginning of a line
-        if(start->position != 0)
+        if(start->positionInBlock != 0)
             return QTextCursor();
 
         // check whether the bracket makes part of an event
@@ -790,11 +790,11 @@ void CodeEditor::matchBracket( int pos, BracketMatch & match )
     while (it.isValid() && it.block() == block)
     {
         const Token & token = *it;
-        if (token.position > posInBlock)
+        if (token.positionInBlock > posInBlock)
             return;
         else if (
-            (token.position == posInBlock && token.type == Token::OpeningBracket) ||
-            (token.position == posInBlock - 1 && token.type == Token::ClosingBracket)
+            (token.positionInBlock == posInBlock && token.type == Token::OpeningBracket) ||
+            (token.positionInBlock == posInBlock - 1 && token.type == Token::ClosingBracket)
         )
             break;
         ++it;
