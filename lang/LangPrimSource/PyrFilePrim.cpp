@@ -52,7 +52,6 @@ Primitives for File i/o.
 #else
 # include <direct.h>
 # include <malloc.h>
-# define strcasecmp stricmp
 #endif
 
 #ifdef _WIN32
