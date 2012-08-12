@@ -31,19 +31,11 @@
 namespace ScIDE {
 namespace ScLanguage {
 
-
 bool Introspection::parse(const QString & yamlString )
 {
     using std::pair;
 
-    for (ClassMap::iterator it = mClassMap.begin(); it != mClassMap.end(); ++it)
-        delete it->second;
-
-    for (MethodMap::iterator it = mMethodMap.begin(); it != mMethodMap.end(); ++it)
-        delete it->second;
-
-    mClassMap.clear();
-    mMethodMap.clear();
+    clear();
 
     //qDebug("parsing introspection...");
 
@@ -154,7 +146,6 @@ bool Introspection::parse(const QString & yamlString )
     //qDebug("done parsing introspection.");
     return true;
 }
-
 
 } // namespace ScLanguage
 } // namespace ScIDE
