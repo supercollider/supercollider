@@ -913,22 +913,34 @@ int CodeEditor::findIndentationLevel(QTextBlock const & block)
     if (!block.isValid())
         return 0;
 
-    TokenIterator it = TokenIterator::leftOf(block, 0);
-
-    int level = 0;
     int offset = 0;
-
     TokenIterator next(block);
     if (next.isValid() && next->type == Token::ClosingBracket)
         offset = -1;
 
-    while (it.isValid()) {
-        if (it->type == Token::OpeningBracket && it->character != '(')
-            level += 1;
-        else if (it->type == Token::ClosingBracket && it->character != ')')
-            level -= 1;
+    int level = 0;
+    TokenIterator it (QPlainTextEdit::document()->begin());
 
-        --it;
+    while (it.isValid() && (it.block().position() < block.position())) {
+        switch (it->type) {
+        case Token::OpeningBracket:
+            if (it->character == '(') {
+                if (level != 0 || it->positionInBlock)
+                    level += 1;
+            } else
+                level += 1;
+            break;
+
+        case Token::ClosingBracket:
+            level -= 1;
+            break;
+
+        default:
+            ;
+        }
+        level = qMax(level, 0);
+
+        ++it;
     }
 
     level += offset;
