@@ -26,40 +26,41 @@
 #ifndef NO_LIBSNDFILE
 #include "sndfile.h"
 #include "string.h"
+#include "SC_DirUtils.h"
 
 static inline int headerFormatFromString(const char *name)
 {
 	if (!name) return SF_FORMAT_AIFF;
-	if (strcasecmp(name, "AIFF")==0) return SF_FORMAT_AIFF;
-	if (strcasecmp(name, "AIFC")==0) return SF_FORMAT_AIFF;
-	if (strcasecmp(name, "RIFF")==0) return SF_FORMAT_WAV;
-	if (strcasecmp(name, "WAVEX")==0) return SF_FORMAT_WAVEX;
-	if (strcasecmp(name, "WAVE")==0) return SF_FORMAT_WAV;
-	if (strcasecmp(name, "WAV" )==0) return SF_FORMAT_WAV;
-	if (strcasecmp(name, "Sun" )==0) return SF_FORMAT_AU;
-	if (strcasecmp(name, "IRCAM")==0) return SF_FORMAT_IRCAM;
-	if (strcasecmp(name, "NeXT")==0) return SF_FORMAT_AU;
-	if (strcasecmp(name, "raw")==0) return SF_FORMAT_RAW;
-	if (strcasecmp(name, "MAT4")==0) return SF_FORMAT_MAT4;
-	if (strcasecmp(name, "MAT5")==0) return SF_FORMAT_MAT5;
-	if (strcasecmp(name, "PAF")==0) return SF_FORMAT_PAF;
-	if (strcasecmp(name, "SVX")==0) return SF_FORMAT_SVX;
-	if (strcasecmp(name, "NIST")==0) return SF_FORMAT_NIST;
-	if (strcasecmp(name, "VOC")==0) return SF_FORMAT_VOC;
-	if (strcasecmp(name, "W64")==0) return SF_FORMAT_W64;
-	if (strcasecmp(name, "PVF")==0) return SF_FORMAT_PVF;
-	if (strcasecmp(name, "XI")==0) return SF_FORMAT_XI;
-	if (strcasecmp(name, "HTK")==0) return SF_FORMAT_HTK;
-	if (strcasecmp(name, "SDS")==0) return SF_FORMAT_SDS;
-	if (strcasecmp(name, "AVR")==0) return SF_FORMAT_AVR;
-	if (strcasecmp(name, "SD2")==0) return SF_FORMAT_SD2;
-	if (strcasecmp(name, "FLAC")==0) return SF_FORMAT_FLAC;
+	if (stringCaseCompare(name, "AIFF"))  return SF_FORMAT_AIFF;
+	if (stringCaseCompare(name, "AIFC"))  return SF_FORMAT_AIFF;
+	if (stringCaseCompare(name, "RIFF"))  return SF_FORMAT_WAV;
+	if (stringCaseCompare(name, "WAVEX")) return SF_FORMAT_WAVEX;
+	if (stringCaseCompare(name, "WAVE"))  return SF_FORMAT_WAV;
+	if (stringCaseCompare(name, "WAV" ))  return SF_FORMAT_WAV;
+	if (stringCaseCompare(name, "Sun" ))  return SF_FORMAT_AU;
+	if (stringCaseCompare(name, "IRCAM")) return SF_FORMAT_IRCAM;
+	if (stringCaseCompare(name, "NeXT"))  return SF_FORMAT_AU;
+	if (stringCaseCompare(name, "raw"))   return SF_FORMAT_RAW;
+	if (stringCaseCompare(name, "MAT4"))  return SF_FORMAT_MAT4;
+	if (stringCaseCompare(name, "MAT5"))  return SF_FORMAT_MAT5;
+	if (stringCaseCompare(name, "PAF"))   return SF_FORMAT_PAF;
+	if (stringCaseCompare(name, "SVX"))   return SF_FORMAT_SVX;
+	if (stringCaseCompare(name, "NIST"))  return SF_FORMAT_NIST;
+	if (stringCaseCompare(name, "VOC"))   return SF_FORMAT_VOC;
+	if (stringCaseCompare(name, "W64"))   return SF_FORMAT_W64;
+	if (stringCaseCompare(name, "PVF"))   return SF_FORMAT_PVF;
+	if (stringCaseCompare(name, "XI"))    return SF_FORMAT_XI;
+	if (stringCaseCompare(name, "HTK"))   return SF_FORMAT_HTK;
+	if (stringCaseCompare(name, "SDS"))   return SF_FORMAT_SDS;
+	if (stringCaseCompare(name, "AVR"))   return SF_FORMAT_AVR;
+	if (stringCaseCompare(name, "SD2"))   return SF_FORMAT_SD2;
+	if (stringCaseCompare(name, "FLAC"))  return SF_FORMAT_FLAC;
 	// TODO allow other platforms to know vorbis once libsndfile 1.0.18 is established
 	#if defined(__APPLE__) || defined(_WIN32) || LIBSNDFILE_1018
-	if (strcasecmp(name, "vorbis")==0) return SF_FORMAT_VORBIS;
+	if (stringCaseCompare(name, "vorbis")) return SF_FORMAT_VORBIS;
 	#endif
-	if (strcasecmp(name, "CAF")==0) return SF_FORMAT_CAF;
-	if (strcasecmp(name, "RF64")==0) return SF_FORMAT_RF64;
+	if (stringCaseCompare(name, "CAF"))   return SF_FORMAT_CAF;
+	if (stringCaseCompare(name, "RF64"))  return SF_FORMAT_RF64;
 	return 0;
 }
 

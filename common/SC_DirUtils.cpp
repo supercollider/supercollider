@@ -169,8 +169,8 @@ inline static bool sc_IsSpecialDirectory(const char* name)
 
 bool sc_SkipDirectory(const char *name)
 {
-	return ((strcasecmp(name, "help") == 0) ||
-			(strcasecmp(name, "ignore") == 0) ||
+	return (stringCaseCompare(name, "help")   ||
+			stringCaseCompare(name, "ignore") ||
 			(strcmp(name, ".svn") == 0) ||
 			(strcmp(name, ".git") == 0) ||
 			(strcmp(name, "_darcs") == 0) ||
