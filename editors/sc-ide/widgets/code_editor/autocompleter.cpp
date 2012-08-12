@@ -178,6 +178,7 @@ public:
         setPalette(p);
 
         mLabel = new QLabel();
+        mLabel->setTextFormat( Qt::RichText );
 
         QHBoxLayout *box = new QHBoxLayout;
         box->setContentsMargins(5,2,5,2);
@@ -197,25 +198,32 @@ public:
 
     void showMethod( const ScLanguage::Method * method, int argNum )
     {
-        QString text = method->name;
-        text += " (";
+        QString text;
         int argc = method->arguments.count();
         for (int i = 0; i < argc; ++i)
         {
             const ScLanguage::Argument & arg = method->arguments[i];
 
-            if (i == argNum)
-                text += "<b>" + arg.name + "</b>";
-            else
-                text += arg.name;
+            if (i == argNum) {
+                text += QString(
+                    "<span style=\""
+                    //"text-decoration: underline;"
+                    "font-weight: bold;"
+                    "\">");
+            }
+
+            text += arg.name;
 
             QString val = arg.defaultValue;
             if (!val.isEmpty())
                 text += " = " + val;
+
+            if (i == argNum)
+                text += "</span>";
+
             if (i != argc - 1)
-                text += ", ";
+                text += ", &nbsp;&nbsp;";
         }
-        text +=")";
         mLabel->setText(text);
     }
 
