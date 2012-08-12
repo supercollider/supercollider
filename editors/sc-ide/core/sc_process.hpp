@@ -44,6 +44,10 @@ Q_OBJECT
 
 public:
     SCProcess( Main * );
+    ~SCProcess()
+    {
+        mIntrospection.release();
+    }
 
     enum SCProcessActionRole {
         StartSCLang = 0,
@@ -137,7 +141,9 @@ public slots:
 
     void swapIntrospection (ScLanguage::Introspection *newIntrospection)
     {
+        mIntrospection.release();
         mIntrospection = *newIntrospection;
+        delete newIntrospection;
     }
 
     QAction *action(SCProcessActionRole role)

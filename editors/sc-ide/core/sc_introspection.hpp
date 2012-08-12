@@ -74,7 +74,28 @@ public:
     const ClassMap & classMap() const { return mClassMap; }
     const MethodMap & methodMap() const { return mMethodMap; }
 
+    void release()
+    {
+        deleteAll();
+        clear();
+    }
+
+    void clear()
+    {
+        mClassMap.clear();
+        mMethodMap.clear();
+    }
+
 private:
+    void deleteAll()
+    {
+        for (ClassMap::iterator it = mClassMap.begin(); it != mClassMap.end(); ++it)
+            delete it->second;
+
+        for (MethodMap::iterator it = mMethodMap.begin(); it != mMethodMap.end(); ++it)
+            delete it->second;
+    }
+
     ClassMap mClassMap;
     MethodMap mMethodMap;
 };
