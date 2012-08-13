@@ -885,6 +885,15 @@ code::
 ::
 
 
+subsection:: UGen Compatibility Methods
+
+Some methods to ease the development of generic ugen code.
+
+method:: lag, lag2, lag3, lagud, lag2ud, lag3ud, slew, varlag
+
+returns:: code::this::
+
+
 subsection:: misc
 
 method:: isValidUGenInput
