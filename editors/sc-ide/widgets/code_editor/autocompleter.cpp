@@ -500,17 +500,16 @@ void AutoCompleter::showCompletionMenu()
         do {
             foreach (const Method * method, metaClass->methods)
             {
-                QString methodName = method->name.get();
                 // Operators are also methods, but are not valid in
                 // a method call syntax, so filter them out.
-                Q_ASSERT(!methodName.isEmpty());
-                if (!methodName[0].isLetter())
+                Q_ASSERT(!method->name.isEmpty());
+                if (!method->name[0].isLetter())
                     continue;
 
-                if (matching.value(methodName) != 0)
+                if (matching.value(method->name) != 0)
                     continue;
 
-                matching.insert(methodName, method);
+                matching.insert(method->name, method);
             }
             metaClass = metaClass->superClass;
         } while (metaClass);
@@ -519,11 +518,11 @@ void AutoCompleter::showCompletionMenu()
 
         foreach(const Method *method, matching)
         {
-            QStandardItem *item = new QStandardItem(method->name.get());
-            item->setData(
-                        QVariant::fromValue(method),
-                        CompletionMenu::MethodRole );
-            menu->addItem(item);
+                QStandardItem *item = new QStandardItem(method->name);
+                item->setData(
+                    QVariant::fromValue(method),
+                    CompletionMenu::MethodRole );
+                menu->addItem(item);
         }
 
         break;
@@ -550,8 +549,8 @@ void AutoCompleter::showCompletionMenu()
         {
             const Method *method = it->second;
             QStandardItem *item = new QStandardItem();
-            item->setText(method->name.get() + " (" + method->ownerClass->name + ')');
-            item->setData(method->name.get(), CompletionMenu::CompletionRole);
+            item->setText(method->name + " (" + method->ownerClass->name + ')');
+            item->setData(method->name, CompletionMenu::CompletionRole);
             item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
             menu->addItem(item);
         }
@@ -852,7 +851,7 @@ void AutoCompleter::updateMethodCall( int cursorPos )
                 qDebug("Method call: call data incomplete. skipping.");
             else {
                 qDebug("Method call: found current call: %s(%i)",
-                    call.method->name.get().toStdString().c_str(), arg);
+                    call.method->name.toStdString().c_str(), arg);
                 showMethodCall(call, arg);
                 return;
             }
