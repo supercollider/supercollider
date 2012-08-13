@@ -335,7 +335,12 @@ CodeEditor * MultiEditor::editorForDocument( Document *doc )
 void MultiEditor::openDefinition()
 {
     CodeEditor * editor = currentEditor();
-    QString selectedText = editor->textCursor().selectedText();
+    QTextCursor textCursor = editor->textCursor();
+
+    if (!textCursor.hasSelection())
+        textCursor.select(QTextCursor::WordUnderCursor);
+
+    QString selectedText = textCursor.selectedText();
     if (selectedText.isEmpty())
         return;
 
