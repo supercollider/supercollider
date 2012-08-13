@@ -363,7 +363,7 @@ void MultiEditor::openClassDefinition( const QString & className )
     assert(object_class_it != classes.end());
     Class *objectClass = object_class_it->second;
 
-    QString classLibPath = objectClass->definition.path.get();
+    QString classLibPath = objectClass->definition.path;
     int len = classLibPath.lastIndexOf("Common");
     if (len != -1)
         classLibPath.truncate(len);
@@ -477,14 +477,14 @@ static QString signature(ScLanguage::Method *method, bool arguments = false)
             if (i > 0)
                 sig.append(", ");
             sig.append(arg.name);
-            if (!arg.defaultValue.get().isEmpty()) {
+            if (!arg.defaultValue.isEmpty()) {
                 sig.append(" = ");
                 sig.append(arg.defaultValue);
             }
         }
         sig.append(")");
     }
-    else if (method->name.get().endsWith('_'))
+    else if (method->name.endsWith('_'))
         sig.append(" (value)");
 
     return sig;

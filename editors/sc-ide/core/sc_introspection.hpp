@@ -21,21 +21,11 @@
 #ifndef SCIDE_CORE_SC_INTROSPECTION_HPP_INCLUDED
 #define SCIDE_CORE_SC_INTROSPECTION_HPP_INCLUDED
 
-#include <QHash>
-#include <QMetaType>
 #include <QString>
 #include <QVector>
+#include <QMetaType>
 
-#include <string>
 #include <map>
-
-#include <boost/flyweight.hpp>
-
-
-static inline std::size_t hash_value(QString const& b)
-{
-    return qHash(b);
-}
 
 namespace ScIDE {
 
@@ -45,35 +35,33 @@ struct Class;
 struct Method;
 struct Argument;
 
-typedef boost::flyweight<QString> FlyweightString;
-
 typedef std::map<QString, Class*> ClassMap;
 typedef std::multimap<QString, Method*> MethodMap;
 typedef QVector<Argument> ArgumentVector;
 typedef QVector<Method*> MethodVector;
 
 struct Argument {
-    FlyweightString name;
-    FlyweightString defaultValue;
+    QString name;
+    QString defaultValue;
 };
 
 struct Class {
-    FlyweightString name;
+    QString name;
     Class *metaClass;
     Class *superClass;
     MethodVector methods;
     struct {
-        FlyweightString path;
+        QString path;
         int position;
     } definition;
 };
 
 struct Method {
     Class *ownerClass;
-    FlyweightString name;
+    QString name;
     ArgumentVector arguments;
     struct {
-        FlyweightString path;
+        QString path;
         int position;
     } definition;
 };
