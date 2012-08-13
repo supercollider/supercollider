@@ -363,17 +363,7 @@ void MultiEditor::openClassDefinition( const QString & className )
         return;
     }
     Class *klass = klass_it->second;
-
-    ClassMap::const_iterator object_class_it = classes.find("Object");
-    assert(object_class_it != classes.end());
-    Class *objectClass = object_class_it->second;
-
-    QString classLibPath = objectClass->definition.path;
-    int len = classLibPath.lastIndexOf("Common");
-    if (len != -1)
-        classLibPath.truncate(len);
-    else
-        classLibPath = QString();
+    QString classLibPath = introspection.classLibraryPath();
 
     typedef QMap< QString, QList<Method*>* > MethodMap;
     MethodMap methodMap;
@@ -403,18 +393,12 @@ void MultiEditor::openClassDefinition( const QString & className )
     tree->setColumnCount(1);
     tree->setRootIsDecorated(true);
 
-    for (MethodMap::Iterator it = methodMap.begin();
-            it != methodMap.end();
-        ++it)
-    {
+    for (MethodMap::Iterator it = methodMap.begin(); it != methodMap.end(); ++it) {
         QString path = it.key();
         QList<Method*> *methods = it.value();
 
-        QString displayPath;
-        if (path.startsWith(classLibPath))
-            displayPath = path.mid(classLibPath.length());
-        else
-            displayPath = path;
+        QString displayPath = path.startsWith(classLibPath) ? path.mid(classLibPath.length())
+                                                            : path;
 
         QTreeWidgetItem *pathItem = new QTreeWidgetItem (
             tree,
@@ -424,8 +408,7 @@ void MultiEditor::openClassDefinition( const QString & className )
 
         pathItem->setData( 0, Qt::UserRole, path );
 
-        foreach( Method *method, *methods )
-        {
+        foreach( Method *method, *methods ) {
             QString name = method->name;
             if (method->ownerClass == klass->metaClass)
                 name.prepend('*');

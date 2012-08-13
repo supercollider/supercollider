@@ -84,9 +84,17 @@ public:
     {
         mClassMap.clear();
         mMethodMap.clear();
+        mClassLibraryPath.clear();
+    }
+
+    QString const & classLibraryPath() const
+    {
+        return mClassLibraryPath;
     }
 
 private:
+    void inferClassLibraryPath();
+
     void deleteAll()
     {
         for (ClassMap::iterator it = mClassMap.begin(); it != mClassMap.end(); ++it)
@@ -98,6 +106,7 @@ private:
 
     ClassMap mClassMap;
     MethodMap mMethodMap;
+    QString mClassLibraryPath;
 };
 
 } // namespace ScLanguage
