@@ -179,12 +179,6 @@ if (SC_QT)
 endif (SC_QT)
 
 if(WIN32)
-	option(SC_PSYCOLLIDER "Build PsyCollider" ON)
-else()
-	option(SC_PSYCOLLIDER "Build PsyCollider" OFF)
-endif()
-
-if(WIN32)
     option(SC_WIN_DEP_DIRS
         "A list of directories where dependencies will be searched for when packaging.")
 endif()
@@ -321,7 +315,7 @@ if(NOT SC_QT)
 endif()
 
 if(WIN32)
-	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|PsycolliderDocument")
+	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}")
 endif()
 
 
