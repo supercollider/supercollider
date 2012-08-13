@@ -143,9 +143,28 @@ bool Introspection::parse(const QString & yamlString )
         }
     }
 
+    inferClassLibraryPath();
+
     //qDebug("done parsing introspection.");
     return true;
 }
+
+void Introspection::inferClassLibraryPath()
+{
+    ClassMap::const_iterator object_class_it = mClassMap.find("Object");
+    assert(object_class_it != mClassMap.end());
+    Class *objectClass = object_class_it->second;
+
+    QString classLibPath = objectClass->definition.path;
+    int len = classLibPath.lastIndexOf("Common");
+    if (len != -1)
+        classLibPath.truncate(len);
+    else
+        classLibPath.clear();
+
+    mClassLibraryPath = classLibPath;
+}
+
 
 } // namespace ScLanguage
 } // namespace ScIDE
