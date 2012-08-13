@@ -18,15 +18,16 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "sc_process.hpp"
-#include "main.hpp"
-#include "settings/manager.hpp"
-
 #include <QCoreApplication>
 #include <QBuffer>
 
-#include "sc_server.hpp"
+#include "SC_DirUtils.h"
+
 #include "sc_introspection.hpp"
+#include "sc_process.hpp"
+#include "sc_server.hpp"
+#include "main.hpp"
+#include "settings/manager.hpp"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -89,13 +90,20 @@ void SCProcess::start (void)
     Settings::Manager *settings = Main::instance()->settings();
     settings->beginGroup("IDE/interpreter");
 
-    QString sclangCommand = settings->value("command").toString();
     QString workingDirectory = settings->value("runtimeDir").toString();
     QString configFile = settings->value("configFile").toString();
 
     settings->endGroup();
 
-    if(sclangCommand.isEmpty()) sclangCommand = "sclang";
+    QString sclangCommand;
+#ifdef Q_OS_MAC
+    char resourcePath[PATH_MAX];
+    sc_GetResourceDirectory(resourcePath, PATH_MAX);
+
+    sclangCommand = QString(resourcePath) + "/sclang";
+#else
+    sclangCommand = "sclang";
+#endif
 
     QStringList sclangArguments;
     if(!configFile.isEmpty())

@@ -44,7 +44,6 @@ void SclangPage::load( Manager *s )
 {
     s->beginGroup("IDE/interpreter");
     ui->autoStart->setChecked( s->value("autoStart").toBool() );
-    ui->command->setText( s->value("command").toString() );
     ui->runtimeDir->setText( s->value("runtimeDir").toString() );
     ui->configFile->setText( s->value("configFile").toString() );
     s->endGroup();
@@ -54,7 +53,6 @@ void SclangPage::store( Manager *s )
 {
     s->beginGroup("IDE/interpreter");
     s->setValue("autoStart", ui->autoStart->isChecked());
-    s->setValue("command", ui->command->text());
     s->setValue("runtimeDir", ui->runtimeDir->text());
     s->setValue("configFile", ui->configFile->text());
     s->endGroup();

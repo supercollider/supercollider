@@ -20,20 +20,6 @@
       <property name="fieldGrowthPolicy">
        <enum>QFormLayout::ExpandingFieldsGrow</enum>
       </property>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Command:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Runtime Directory:</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="1">
        <widget class="QCheckBox" name="autoStart">
         <property name="text">
@@ -41,21 +27,25 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Runtime Directory:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="ScIDE::PathChooserWidget" name="runtimeDir"/>
+      </item>
+      <item row="2" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>Configuration file:</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="ScIDE::PathChooserWidget" name="configFile"/>
-      </item>
       <item row="2" column="1">
-       <widget class="ScIDE::PathChooserWidget" name="runtimeDir"/>
-      </item>
-      <item row="1" column="1">
-       <widget class="ScIDE::PathChooserWidget" name="command"/>
+       <widget class="ScIDE::PathChooserWidget" name="configFile"/>
       </item>
      </layout>
     </widget>
