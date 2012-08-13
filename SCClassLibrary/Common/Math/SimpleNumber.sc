@@ -354,6 +354,8 @@ SimpleNumber : Number {
 	rate { ^'scalar' } // scalarRate constant
 	asAudioRateInput { ^if(this == 0) { Silent.ar } { DC.ar(this) } }
 
+	madd   { arg mul, add; ^(this * mul) + add; }
+
 	lag    { ^this }
 	lag2   { ^this }
 	lag3   { ^this }
