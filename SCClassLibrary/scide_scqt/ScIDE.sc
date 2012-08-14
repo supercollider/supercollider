@@ -4,6 +4,8 @@ ScIDE {
 	*initClass {
 		subListSorter = { | a b | a[0].perform('<', b[0]) };
 
+		Class.initClassTree(Server);
+
 		SimpleController(Server.default)
 		.put(\serverRunning, { | server, what, extraArg |
 			var addr = server.addr;
