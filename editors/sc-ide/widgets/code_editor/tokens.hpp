@@ -78,6 +78,20 @@ struct TextBlockData : public QTextBlockUserData
 
 class TokenIterator
 {
+
+/*
+TokenIterator allows easy iteration over tokens in a Document (produced by the syntax highlighter).
+
+An iterator is valid as long as it refers to an existing token.
+
+An invalid iterator must not be dereferenced, incremented or decremented.
+
+Incrementing and decrementing an iterator makes it refer to the next and previous token
+in the document, respectively, regardless of which block the tokens reside in.
+
+If there is no next/previous token, then incrementing/decrementing an iterator will make it invalid.
+*/
+
 private:
     QTextBlock blk;
     int idx;
@@ -105,6 +119,8 @@ public:
         return &data->tokens[idx];
     }
 
+    // Constructs an iterator for the first token at the given block.
+    // If there's no token in the block, the new iterator is invalid.
     TokenIterator( const QTextBlock & block ):
         blk(block),
         idx(-1)
@@ -116,6 +132,8 @@ public:
         }
     }
 
+    // Constructs an iterator for the token that starts at, or contains the given position.
+    // If there is no such token, the new iterator is invalid.
     TokenIterator( const QTextBlock & block, int pos ):
         blk(block)
     {
@@ -135,6 +153,8 @@ public:
             idx = -1;
     }
 
+    // Return an iterator for the first token found left of given position, anywhere in the document.
+    // If there is no such token, the returned iterator is invalid.
     static TokenIterator leftOf( const QTextBlock & block, int pos )
     {
         TokenIterator it;
@@ -161,6 +181,8 @@ public:
         return it;
     }
 
+    // Return an iterator for the first token found at or right of given position, anywhere in the document.
+    // If there is no such token, the returned iterator is invalid.
     static TokenIterator rightOf( const QTextBlock & block, int pos )
     {
         TokenIterator it;
@@ -188,6 +210,8 @@ public:
         return it;
     }
 
+    // Return an iterator for the token at 'pos' or 'pos-1'.
+    // If there is no such token, the returned iterator is invalid.
     static TokenIterator around( const QTextBlock & block, int pos )
     {
         TokenIterator it;
@@ -293,11 +317,15 @@ public:
         return (*this)->character;
     }
 
+    // A convenience function returning the global position in document of the token
+    // referred to by this iterator
     int position()
     {
         return (*this)->positionInBlock + blk.position();
     }
 
+    // A convenience function returning the type of token referred to by this iterator,
+    // or Token::Unknown if the iterator is invalid
     Token::Type type()
     {
         return isValid() ? (*this)->type : Token::Unknown;
