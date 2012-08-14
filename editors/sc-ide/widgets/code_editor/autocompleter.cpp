@@ -81,7 +81,6 @@ public:
         layout->setContentsMargins(1,1,1,1);
 
         connect(mListView, SIGNAL(clicked(QModelIndex)), this, SLOT(accept()));
-        connect(mListView, SIGNAL(activated(QModelIndex)), this, SLOT(accept()));
 
         mListView->setFocus(Qt::OtherFocusReason);
 
@@ -149,9 +148,11 @@ protected:
             case Qt::Key_Down:
             case Qt::Key_PageUp:
             case Qt::Key_PageDown:
+                QApplication::sendEvent( mListView, ev );
+                return true;
             case Qt::Key_Return:
             case Qt::Key_Enter:
-                QApplication::sendEvent( mListView, ev );
+                accept();
                 return true;
             }
         }
