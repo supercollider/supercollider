@@ -6,6 +6,13 @@ if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
 endif()
 
+if (APPLE)
+  include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
+  set(ide_name ${scappbundlename})
+else()
+  set(ide_name scide)
+endif()
+
 set ( ide_moc_hdr
     core/main.hpp
     core/sig_mux.hpp
@@ -128,35 +135,58 @@ set(ide_sources ${ide_src} ${all_hdr} )
 
 set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations_src})
 
-if(FINAL_BUILD) # sclang final-builds are broken
+if(FINAL_BUILD)
   CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
-  add_executable( scide scide_final.cpp ${ide_rc_sources} )
+  add_executable( ${ide_name} MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} )
 else()
-  add_executable( scide ${ide_sources} ${ide_rc_sources} )
+  add_executable( ${ide_name} MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} )
 endif()
 
 
-target_link_libraries( scide ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} yaml)
+target_link_libraries( ${ide_name} ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} yaml)
 
 if(APPLE)
-	target_link_libraries( scide "-framework CoreServices")
+	target_link_libraries( ${ide_name} "-framework CoreServices")
 elseif(WIN32)
-    target_link_libraries( scide wsock32 )
+    target_link_libraries( ${ide_name} wsock32 )
     # The following prevents a Windows console from showing up
     # when the executable is started:
-    set_target_properties( scide PROPERTIES WIN32_EXECUTABLE TRUE )
+    set_target_properties( ${ide_name} PROPERTIES WIN32_EXECUTABLE TRUE )
 endif()
 
 # Installation
 
 if(APPLE)
-    # no-op for now
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Install path prefix" FORCE)
+    endif()
+
+    # set how it shows up in the Info.plist file
+    SET(MACOSX_BUNDLE_ICON_FILE ../../platform/mac/SCcube.icns)
+
+    install(DIRECTORY ../../platform/mac/Resources/ DESTINATION ${scappauxresourcesdir})
+
+    install(TARGETS ${ide_name}
+        DESTINATION ${scappbundlename}
+        )
+
+    # for processing into the plist:
+    set_property(TARGET ${ide_name}
+	    PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
+
+    set(MACOSX_BUNDLE_BUNDLE_NAME "${scappbundlename}")
+
+    include(InstallRequiredSystemLibraries)
+
+    include(DeployQt4)
+    install_qt4_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
+
 elseif(WIN32)
-	install(TARGETS scide
+	install(TARGETS ${ide_name}
 			DESTINATION "SuperCollider"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 else()
-	install(TARGETS scide
+	install(TARGETS ${ide_name}
 			RUNTIME DESTINATION "bin"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()

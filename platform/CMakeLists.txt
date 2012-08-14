@@ -1,5 +1,7 @@
 if(APPLE)
-	add_subdirectory(mac)
+    if (NOT SC_IDE)
+        add_subdirectory(mac)
+    endif()
 elseif(WIN32)
     add_subdirectory(windows)
 endif()
