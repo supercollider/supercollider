@@ -33,8 +33,8 @@ namespace ScIDE { namespace Settings {
 
 EditorPage::EditorPage(QWidget *parent) :
     QWidget(parent),
-    ui( new Ui::EditorConfigPage ),
-    fontDatabase(new QFontDatabase)
+    fontDatabase(new QFontDatabase),
+    ui( new Ui::EditorConfigPage )
 {
     ui->setupUi(this);
 

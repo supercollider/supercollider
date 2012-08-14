@@ -80,11 +80,11 @@ static QString getSettingsFile()
 
 Main::Main(void) :
     mSettings( new Settings::Manager( getSettingsFile(), this ) ),
-    mDocManager( new DocumentManager(this) ),
-    mSessionManager( new SessionManager(mDocManager, this) ),
     mSCResponder( new ScResponder(this) ),
     mSCProcess( new SCProcess(this) ),
-    mSCServer( new ScServer(this) )
+    mSCServer( new ScServer(this) ),
+    mDocManager( new DocumentManager(this) ),
+    mSessionManager( new SessionManager(mDocManager, this) )
 {
     new SyntaxHighlighterGlobals(this);
 

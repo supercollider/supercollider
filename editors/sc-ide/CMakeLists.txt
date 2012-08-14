@@ -1,8 +1,10 @@
 cmake_minimum_required( VERSION 2.8 )
 
-project(sc-ide)
-
 find_package(Qt4 REQUIRED)
+
+if(${CMAKE_COMPILER_IS_GNUCXX})
+    add_definitions(-Wreorder)
+endif()
 
 set ( ide_moc_hdr
     core/main.hpp
