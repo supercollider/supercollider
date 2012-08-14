@@ -363,7 +363,7 @@ void MultiEditor::openClassDefinition( const QString & className )
         return;
     }
     Class *klass = klass_it->second;
-    QString classLibPath = introspection.classLibraryPath();
+    QString const & classLibPath = introspection.classLibraryPath();
 
     typedef QMap< QString, QList<Method*>* > MethodMap;
     MethodMap methodMap;
@@ -495,16 +495,7 @@ void MultiEditor::openMethodDefinition( const QString & methodName )
         return;
     }
 
-    ClassMap::const_iterator object_class_it = classes.find("Object");
-    assert(object_class_it != classes.end());
-    Class *objectClass = object_class_it->second;
-
-    QString classLibPath = objectClass->definition.path;
-    int len = classLibPath.lastIndexOf("Common");
-    if (len != -1)
-        classLibPath.truncate(len);
-    else
-        classLibPath = QString();
+    QString const & classLibPath = introspection.classLibraryPath();
 
     QPointer<OpenDefinitionDialog> dialog = new OpenDefinitionDialog(this);
     dialog->setWindowTitle(tr("Open Definition of Method '%1'").arg(methodName));
