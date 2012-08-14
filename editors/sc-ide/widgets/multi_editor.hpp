@@ -59,6 +59,8 @@ public:
         Copy,
         Paste,
         IndentLineOrRegion,
+        TriggerAutoCompletion,
+        TriggerMethodCallAid,
 
         // View
         EnlargeFont,

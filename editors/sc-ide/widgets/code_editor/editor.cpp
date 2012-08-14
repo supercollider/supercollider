@@ -1001,4 +1001,14 @@ void CodeEditor::indentLineAtCursor(QTextCursor cursor)
     }
 }
 
+void CodeEditor::triggerAutoCompletion()
+{
+    mAutoCompleter->triggerCompletion();
+}
+
+void CodeEditor::triggerMethodCallAid()
+{
+    mAutoCompleter->triggerMethodCallAid();
+}
+
 } // namespace ScIDE

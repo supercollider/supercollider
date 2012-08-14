@@ -260,7 +260,7 @@ void AutoCompleter::keyPress( QKeyEvent *e )
     {
     case Qt::Key_ParenLeft:
     case Qt::Key_Comma:
-        triggerMethodCallAid();
+        triggerMethodCallAid(false);
         break;
     case Qt::Key_Backspace:
     case Qt::Key_Delete:
@@ -337,7 +337,8 @@ void AutoCompleter::onCursorChanged()
 void AutoCompleter::triggerCompletion()
 {
     if (mCompletion.on) {
-        qWarning("AutoCompleter::triggerCompletion(): completion already started!");
+        qDebug("AutoCompleter::triggerCompletion(): completion already started.");
+        updateCompletionMenu();
         return;
     }
 
@@ -664,7 +665,7 @@ void AutoCompleter::onCompletionMenuFinished( int result )
     //quitCompletion("cancelled");
 }
 
-void AutoCompleter::triggerMethodCallAid()
+void AutoCompleter::triggerMethodCallAid( bool force )
 {
     // go find the bracket that I'm currently in,
     // and count relevant commas along the way
@@ -746,7 +747,14 @@ void AutoCompleter::triggerMethodCallAid()
     {
         qDebug("Method call: call already on stack");
         // method call popup should have been updated by updateMethodCall();
-        return;
+
+        if (force) {
+            qDebug("Method call: forced re-trigger, popping current call.");
+            mMethodCall.stack.pop();
+            hideMethodCall();
+        }
+        else
+            return;
     }
 
     qDebug("Method call: new call");

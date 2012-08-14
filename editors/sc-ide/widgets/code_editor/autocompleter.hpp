@@ -49,6 +49,10 @@ public:
 
     void keyPress( QKeyEvent * );
     void documentChanged( QTextDocument * );
+    void triggerCompletion();
+    // NOTE: default 'force' to true for the purpose of
+    // argument-less QAction::triggered() signal
+    void triggerMethodCallAid( bool force = true );
 
 private slots:
     void onContentsChange(int pos, int removed, int added);
@@ -74,14 +78,12 @@ private:
 
     // completion
 
-    void triggerCompletion();
     void quitCompletion( const QString & reason = QString() );
     void showCompletionMenu();
     void updateCompletionMenu();
 
     // method call aid
 
-    void triggerMethodCallAid();
     void updateMethodCall( int cursorPos );
     void pushMethodCall( const MethodCall & call );
     void showMethodCall( const MethodCall & call, int arg = 0 );

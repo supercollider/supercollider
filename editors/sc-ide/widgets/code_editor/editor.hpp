@@ -87,6 +87,8 @@ public Q_SLOTS:
     void applySettings( Settings::Manager * );
     void deleteTrailingSpaces();
     void indent();
+    void triggerAutoCompletion();
+    void triggerMethodCallAid();
 
 protected:
     virtual bool event( QEvent * );
