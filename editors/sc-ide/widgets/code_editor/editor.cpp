@@ -919,7 +919,7 @@ int CodeEditor::findIndentationLevel(QTextBlock const & block)
         offset = -1;
 
     int level = 0;
-    TokenIterator it (QPlainTextEdit::document()->begin());
+    TokenIterator it = TokenIterator::rightOf( QPlainTextEdit::document()->begin(), 0 );
 
     while (it.isValid() && (it.block().position() < block.position())) {
         switch (it->type) {
