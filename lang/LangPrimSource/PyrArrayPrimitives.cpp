@@ -1651,8 +1651,12 @@ int prArrayExtendWrap(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 	if (NotInt(b)) return errWrongType;
 
+    size = slotRawInt(b);
+    if (size < 0)
+        return errFailed;
+
 	obj1 = slotRawObject(a);
-	size = slotRawInt(b);
+
 	if(obj1->size > 0) {
 		obj2 = instantiateObject(g->gc, obj1->classptr, size, false, true);
 		obj2->size = size;
