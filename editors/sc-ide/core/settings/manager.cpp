@@ -42,7 +42,6 @@ void Manager::initDefaults()
 
     beginGroup("interpreter");
     setDefault("autoStart", true);
-    setDefault("command", "sclang");
     endGroup();
 
     beginGroup("editor");
