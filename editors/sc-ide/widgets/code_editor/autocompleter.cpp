@@ -465,12 +465,12 @@ void AutoCompleter::showCompletionMenu()
     {
         const ClassMap & classes = introspection.classMap();
 
-        QString lo = mCompletion.base;
-        QString hi = incrementedString(lo);
+        QString min = mCompletion.base;
+        QString max = incrementedString(min);
 
         ClassMap::const_iterator matchStart, matchEnd;
-        matchStart = classes.lower_bound(lo);
-        matchEnd = classes.upper_bound(hi);
+        matchStart = classes.lower_bound(min);
+        matchEnd = classes.lower_bound(max);
         if (matchStart == matchEnd) {
             qDebug() << "Completion: no class matches:" << mCompletion.base;
             return;
@@ -532,12 +532,12 @@ void AutoCompleter::showCompletionMenu()
     {
         const MethodMap & methods = introspection.methodMap();
 
-        QString lo = mCompletion.base;
-        QString hi = incrementedString(lo);
+        QString min = mCompletion.base;
+        QString max = incrementedString(min);
 
         MethodMap::const_iterator matchStart, matchEnd;
-        matchStart = methods.lower_bound(lo);
-        matchEnd = methods.upper_bound(hi);
+        matchStart = methods.lower_bound(min);
+        matchEnd = methods.lower_bound(max);
         if (matchStart == matchEnd) {
             qDebug() << "Completion: no method matches:" << mCompletion.base;
             return;
