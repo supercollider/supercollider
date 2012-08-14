@@ -638,7 +638,6 @@ void MainWindow::onServerStatusReply(int ugens, int synths, int groups, int synt
 
 void MainWindow::onServerRunningChanged(bool running, const QString &, int)
 {
-    mServerStatus->setBackgroundRole( running ? QPalette::Window : QPalette::Button );
     mServerStatus->setTextColor( running ? Qt::green : Qt::white);
     if (!running)
         onServerStatusReply(0, 0, 0, 0, 0, 0);
