@@ -859,13 +859,24 @@ void AutoCompleter::updateMethodCall( int cursorPos )
         ++token;
         int arg = 0;
         int level = 1;
+        TokenIterator argNameToken;
         while( level > 0 && token.isValid() && token.position() < cursorPos )
         {
             char chr = token.character();
             Token::Type type = token->type;
-            if (chr == ',' && level == 1)
-                ++arg;
-            else if (type == Token::OpeningBracket)
+            if (level == 1) {
+                if (type == Token::SymbolArg) {
+                    argNameToken = token;
+                    arg = -1;
+                }
+                else if (chr == ',') {
+                    argNameToken = TokenIterator();
+                    if (arg != -1)
+                        ++arg;
+                }
+            }
+
+            if (type == Token::OpeningBracket)
                 ++level;
             else if (type == Token::ClosingBracket)
                 --level;
@@ -873,21 +884,33 @@ void AutoCompleter::updateMethodCall( int cursorPos )
             ++token;
         }
 
-        if (level > 0) {
-            if (!call.method)
-                qDebug("Method call: call data incomplete. skipping.");
-            else {
-                qDebug("Method call: found current call: %s(%i)",
-                    call.method->name.get().toStdString().c_str(), arg);
-                showMethodCall(call, arg);
-                return;
-            }
-        }
-        else {
+        if (level <= 0) {
             Q_ASSERT(i == mMethodCall.stack.count() - 1);
             qDebug("Method call: call left of cursor. popping.");
             mMethodCall.stack.pop();
+            continue;
         }
+
+        if (!call.method) {
+            qDebug("Method call: call has no method attached. skipping.");
+            continue;
+        }
+
+        if (argNameToken.isValid()) {
+            arg = -1;
+            QString argName = tokenText(argNameToken);
+            argName.chop(1);
+            for (int idx = 0; idx < call.method->arguments.count(); ++idx) {
+                if (call.method->arguments[idx].name == argName) {
+                    arg = idx;
+                    break;
+                }
+            }
+        }
+        qDebug("Method call: found current call: %s(%i)",
+            call.method->name.get().toStdString().c_str(), arg);
+        showMethodCall(call, arg);
+        return;
     }
 
     hideMethodCall();
