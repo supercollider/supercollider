@@ -772,33 +772,39 @@ void AutoCompleter::triggerMethodCallAid()
             qDebug() << "MethodCall: no method matches:" << methodName;
             return;
         }
-
-        Q_ASSERT(mMethodCall.menu.isNull());
-        QPointer<CompletionMenu> menu = new CompletionMenu(mEditor);
-        mMethodCall.menu = menu;
-
-        for (MethodMap::const_iterator it = match.first; it != match.second; ++it)
+        else if (std::distance(match.first, match.second) == 1)
         {
-            const Method *method = it->second;
-            QStandardItem *item = new QStandardItem();
-            item->setText(method->name + " (" + method->ownerClass->name + ')');
-            item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
-            menu->addItem(item);
+            method = match.first->second;
         }
+        else
+        {
+            Q_ASSERT(mMethodCall.menu.isNull());
+            QPointer<CompletionMenu> menu = new CompletionMenu(mEditor);
+            mMethodCall.menu = menu;
 
-        QTextCursor cursor(document());
-        cursor.setPosition(bracketPos);
-        QPoint pos =
-            mEditor->viewport()->mapToGlobal( mEditor->cursorRect(cursor).bottomLeft() )
-            + QPoint(0,5);
+            for (MethodMap::const_iterator it = match.first; it != match.second; ++it)
+            {
+                const Method *method = it->second;
+                QStandardItem *item = new QStandardItem();
+                item->setText(method->name + " (" + method->ownerClass->name + ')');
+                item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
+                menu->addItem(item);
+            }
 
-        if ( ! static_cast<PopUpWidget*>(menu)->exec(pos) ) {
+            QTextCursor cursor(document());
+            cursor.setPosition(bracketPos);
+            QPoint pos =
+                mEditor->viewport()->mapToGlobal( mEditor->cursorRect(cursor).bottomLeft() )
+                + QPoint(0,5);
+
+            if ( ! static_cast<PopUpWidget*>(menu)->exec(pos) ) {
+                delete menu;
+                return;
+            }
+
+            method = menu->currentMethod();
             delete menu;
-            return;
         }
-
-        method = menu->currentMethod();
-        delete menu;
     }
 
     if (method) {
