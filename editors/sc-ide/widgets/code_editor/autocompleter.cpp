@@ -546,14 +546,32 @@ void AutoCompleter::showCompletionMenu()
         menu = new CompletionMenu(mEditor);
         menu->setCompletionRole(CompletionMenu::CompletionRole);
 
-        for (MethodMap::const_iterator it = matchStart; it != matchEnd; ++it)
+        MethodMap::const_iterator it = matchStart;
+        while(it != matchEnd)
         {
             const Method *method = it->second;
+
+            std::pair<MethodMap::const_iterator, MethodMap::const_iterator> range
+                = methods.equal_range(it->first);
+
+            int count = std::distance(range.first, range.second);
+
             QStandardItem *item = new QStandardItem();
-            item->setText(method->name.get() + " (" + method->ownerClass->name + ')');
-            item->setData(method->name.get(), CompletionMenu::CompletionRole);
-            item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
+
+            QString methodName = method->name.get();
+            QString detail(" [ %1 ]");
+            if (count == 1) {
+                item->setText( methodName + detail.arg(method->ownerClass->name) );
+                item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
+            }
+            else {
+                item->setText(methodName + detail.arg(count));
+            }
+            item->setData(methodName, CompletionMenu::CompletionRole);
+
             menu->addItem(item);
+
+            it = range.second;
         }
 
         break;
@@ -612,10 +630,12 @@ void AutoCompleter::onCompletionMenuFinished( int result )
         QString text = mCompletion.menu->currentText();
 
         if (!text.isEmpty()) {
+#if 0
             CompletionType type = mCompletion.type;
             const ScLanguage::Method *method = 0;
             if (type == MethodCompletion || type == ClassMethodCompletion)
                 method = mCompletion.menu->currentMethod();
+#endif
 
             quitCompletion("done");
 
@@ -623,7 +643,7 @@ void AutoCompleter::onCompletionMenuFinished( int result )
             cursor.setPosition( mCompletion.pos );
             cursor.setPosition( mCompletion.pos + mCompletion.len, QTextCursor::KeepAnchor );
             cursor.insertText(text);
-
+#if 0
             if (method) {
                 cursor.insertText("(");
                 MethodCall call;
@@ -632,7 +652,7 @@ void AutoCompleter::onCompletionMenuFinished( int result )
                 pushMethodCall(call);
                 showMethodCall(call, 0);
             }
-
+#endif
             return;
         }
     }
