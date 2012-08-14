@@ -174,11 +174,11 @@ public:
     {
         QPalette p( palette() );
         p.setColor( QPalette::Window, p.color(QPalette::ToolTipBase) );
-        p.setColor( QPalette::WindowText, p.color(QPalette::ToolTipText) );
         setPalette(p);
 
         mLabel = new QLabel();
         mLabel->setTextFormat( Qt::RichText );
+        mLabel->setForegroundRole(QPalette::ToolTipText);
 
         QHBoxLayout *box = new QHBoxLayout;
         box->setContentsMargins(5,2,5,2);
