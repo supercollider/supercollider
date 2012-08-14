@@ -167,6 +167,16 @@ void MultiEditor::createActions()
     act->setStatusTip(tr("Indent Line or Region"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(indent()));
 
+    mActions[TriggerAutoCompletion] = act = new QAction(tr("Trigger Autocompletion"), this);
+    act->setStatusTip(tr("Suggest possible completions of text at cursor"));
+    act->setShortcut(tr("Ctrl+Space", "Trigger Autocompletion"));
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(triggerAutoCompletion()));
+
+    mActions[TriggerMethodCallAid] = act = new QAction(tr("Trigger Method Call Aid"), this);
+    act->setStatusTip(tr("Show arguments for currently typed method call"));
+    act->setShortcut(tr("Alt+Space", "Trigger Method Call Aid"));
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(triggerMethodCallAid()));
+
     // View
 
     mActions[EnlargeFont] = act = new QAction(
@@ -194,6 +204,11 @@ void MultiEditor::createActions()
 
     for (int i = 0; i < ActionRoleCount; ++i)
         s->addAction( mActions[i] );
+
+    // These actions are not added to any menu, so they have to be added
+    // at least to this widget, in order for the shortcuts to always respond:
+    addAction(mActions[TriggerAutoCompletion]);
+    addAction(mActions[TriggerMethodCallAid]);
 }
 
 void MultiEditor::updateActions()
