@@ -891,8 +891,8 @@ void AutoCompleter::updateMethodCall( int cursorPos )
             continue;
         }
 
-        if (!call.method) {
-            qDebug("Method call: call has no method attached. skipping.");
+        if (!call.method || !call.method->arguments.count()) {
+            qDebug("Method call: no info to show. skipping.");
             continue;
         }
 
