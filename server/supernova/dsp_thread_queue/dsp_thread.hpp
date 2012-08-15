@@ -23,7 +23,6 @@
 #include <iostream>
 #include <thread>
 
-#include <boost/bind.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
 #include "dsp_thread_queue.hpp"
