@@ -44,6 +44,11 @@ void scdocerror(const char *str);
 extern void error(const char *fmt, ...);
 extern void post(const char *fmt, ...);
 
+static inline bool stringEqual(const char * a, const char * b)
+{
+    return strcmp(a, b) == 0;
+}
+
 %}
 %locations
 %error-verbose
@@ -188,10 +193,14 @@ subsubsection: METHOD methnames optMETHODARGS eol methodbody
 //        doc_node_add_child($2, $3);
     }
              | COPYMETHOD words eol { $$ = doc_node_make(
-                method_type=="CMETHOD"?"CCOPYMETHOD":(method_type=="IMETHOD"?"ICOPYMETHOD":"COPYMETHOD"),
-                $2,NULL
+                stringEqual(method_type, "CMETHOD") ? "CCOPYMETHOD"
+                                                    : (stringEqual(method_type, "IMETHOD") ? "ICOPYMETHOD"
+                                                                                           : "COPYMETHOD"),
+                $2, NULL
                 ); }
-             | PRIVATE commalist eoleof { $$ = doc_node_make_take_children(method_type=="CMETHOD"?"CPRIVATE":"IPRIVATE",NULL,$2); }
+             | PRIVATE commalist eoleof { $$ = doc_node_make_take_children( stringEqual(method_type, "CMETHOD") ? "CPRIVATE"
+                                                                                                                : "IPRIVATE",
+                NULL, $2); }
 ;
 
 optMETHODARGS: { $$ = NULL; }
@@ -199,7 +208,7 @@ optMETHODARGS: { $$ = NULL; }
     {
 //        $$ = doc_node_make("ARGSTRING",$1,NULL);
         $$ = $1;
-        if(method_type!="METHOD") {
+        if(!stringEqual(method_type, "METHOD")) {
             yyerror("METHOD argument string is not allowed inside CLASSMETHODS or INSTANCEMETHODS");
             YYERROR;
         }
