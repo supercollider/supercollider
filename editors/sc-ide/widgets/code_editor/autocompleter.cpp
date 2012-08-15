@@ -37,6 +37,7 @@
 #include <QStandardItem>
 #include <QHBoxLayout>
 #include <QApplication>
+#include <QGtkStyle>
 
 namespace ScIDE {
 
@@ -173,13 +174,21 @@ public:
     MethodCallWidget( QWidget * parent = 0 ):
         QWidget( parent, Qt::ToolTip )
     {
-        QPalette p( palette() );
-        p.setColor( QPalette::Window, p.color(QPalette::ToolTipBase) );
-        setPalette(p);
-
         mLabel = new QLabel();
         mLabel->setTextFormat( Qt::RichText );
-        mLabel->setForegroundRole(QPalette::ToolTipText);
+
+        if (qobject_cast<QGtkStyle*>(style()) != 0) {
+            QPalette p;
+            p.setColor( QPalette::Window, QColor(255, 255, 220) );
+            p.setColor( QPalette::WindowText, Qt::black );
+            setPalette(p);
+        }
+        else {
+            QPalette p( palette() );
+            p.setColor( QPalette::Window, p.color(QPalette::ToolTipBase) );
+            setPalette(p);
+            mLabel->setForegroundRole(QPalette::ToolTipText);
+        }
 
         QHBoxLayout *box = new QHBoxLayout;
         box->setContentsMargins(5,2,5,2);
