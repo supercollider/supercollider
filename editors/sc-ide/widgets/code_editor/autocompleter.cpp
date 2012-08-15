@@ -37,7 +37,10 @@
 #include <QStandardItem>
 #include <QHBoxLayout>
 #include <QApplication>
-#include <QGtkStyle>
+
+#ifdef Q_WS_X11
+# include <QGtkStyle>
+#endif
 
 namespace ScIDE {
 
@@ -177,13 +180,16 @@ public:
         mLabel = new QLabel();
         mLabel->setTextFormat( Qt::RichText );
 
+#ifdef Q_WS_X11
         if (qobject_cast<QGtkStyle*>(style()) != 0) {
             QPalette p;
             p.setColor( QPalette::Window, QColor(255, 255, 220) );
             p.setColor( QPalette::WindowText, Qt::black );
             setPalette(p);
         }
-        else {
+        else
+#endif
+        {
             QPalette p( palette() );
             p.setColor( QPalette::Window, p.color(QPalette::ToolTipBase) );
             setPalette(p);
