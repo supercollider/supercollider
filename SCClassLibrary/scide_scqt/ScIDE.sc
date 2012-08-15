@@ -175,7 +175,11 @@ ScIDE {
 		if (method.argNames.size > 1) {
 			args = args ++ [
 				method.argNames.as(Array),
-				method.prototypeFrame.collect { |val| val !? val.cs }
+				method.prototypeFrame.collect { |val|
+					val !? {
+						if (val.class === Float) { val.asString } { val.cs }
+					}
+				};
 			].lace [2..];
 		};
 		data = [
