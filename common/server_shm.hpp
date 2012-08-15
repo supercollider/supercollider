@@ -22,6 +22,7 @@
 
 #include "scope_buffer.hpp"
 
+#include <boost/version.hpp>
 #include <boost/foreach.hpp>
 #include <boost/ref.hpp>
 #include <boost/lexical_cast.hpp>
@@ -108,7 +109,9 @@ public:
 		shmem_name(detail_server_shm::make_shmem_name(port_number)),
 		segment(bi::open_or_create, shmem_name.c_str(), 8192 * 1024)
 	{
+#if (BOOST_VERSION < 105100)
 		segment.flush();
+#endif
 
 		const int num_scope_buffers = 128;
 		size_t scope_pool_size = num_scope_buffers * sizeof(float) * 8192; // pessimize, about 4 MB
