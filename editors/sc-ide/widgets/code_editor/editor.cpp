@@ -91,6 +91,8 @@ CodeEditor::CodeEditor( QWidget *parent ) :
 
     connect( this, SIGNAL(updateRequest(QRect,int)),
              this, SLOT(updateLineIndicator(QRect,int)) );
+    connect( this, SIGNAL(selectionChanged()),
+             mLineIndicator, SLOT(update()) );
 
     connect( this, SIGNAL(cursorPositionChanged()),
              this, SLOT(matchBrackets()) );
@@ -880,6 +882,16 @@ void CodeEditor::paintLineIndicator( QPaintEvent *e )
     p.setPen( plt.color(QPalette::ButtonText) );
     p.drawLine( r.topRight(), r.bottomRight() );
 
+    QTextDocument *doc = QPlainTextEdit::document();
+    QTextCursor cursor(textCursor());
+    int selStartBlock, selEndBlock;
+    if (cursor.hasSelection()) {
+        selStartBlock = doc->findBlock(cursor.selectionStart()).blockNumber();
+        selEndBlock = doc->findBlock(cursor.selectionEnd()).blockNumber();
+    }
+    else
+        selStartBlock = selEndBlock = -1;
+
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
     int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
@@ -887,9 +899,24 @@ void CodeEditor::paintLineIndicator( QPaintEvent *e )
 
     while (block.isValid() && top <= e->rect().bottom()) {
         if (block.isVisible() && bottom >= e->rect().top()) {
-            QString number = QString::number(blockNumber + 1);
+            p.save();
+
+            QRect numRect( 0, top, mLineIndicator->width() - 1, bottom - top );
+
+            int num = blockNumber;
+            if (num >= selStartBlock && num <= selEndBlock) {
+                num -= selStartBlock;
+                p.setPen(Qt::NoPen);
+                p.setBrush(plt.color(QPalette::Highlight));
+                p.drawRect(numRect);
+                p.setPen(plt.color(QPalette::HighlightedText));
+            }
+
+            QString number = QString::number(num + 1);
             p.drawText(0, top, mLineIndicator->width() - 4, fontMetrics().height(),
                             Qt::AlignRight, number);
+
+            p.restore();
         }
 
         block = block.next();
