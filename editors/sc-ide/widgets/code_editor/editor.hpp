@@ -49,11 +49,15 @@ public Q_SLOTS:
 protected:
     virtual void changeEvent( QEvent * );
     virtual void paintEvent( QPaintEvent *e );
+    virtual void mousePressEvent( QMouseEvent * );
+    virtual void mouseMoveEvent( QMouseEvent * );
+    virtual void mouseDoubleClickEvent( QMouseEvent * );
 private:
     int widthForLineCount( int lineCount );
 
     CodeEditor *mEditor;
     int mLineCount;
+    int mLastCursorPos;
 };
 
 class CodeEditor : public QPlainTextEdit
