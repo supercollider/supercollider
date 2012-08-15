@@ -323,7 +323,7 @@ static void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fu
 		vDSP_vmul(data, 1, win, 1, data, 1, winsize);
 #elif defined (NOVA_SIMD)
 		using namespace nova;
-		if ((vec<float>::objects_per_cacheline & winsize == 0) && vec<float>::is_aligned(data))
+		if (((vec<float>::objects_per_cacheline & winsize) == 0) && vec<float>::is_aligned(data))
 			times_vec_simd(data, data, win, winsize);
 		else
 			times_vec(data, data, win, winsize);
