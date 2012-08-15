@@ -3139,16 +3139,12 @@ FLATTEN void pow_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 	float xb = unit->mPrevB;
 	float next_b = ZIN0(1);
 
-	if (xb == next_b) {
+	if (xb == next_b)
 		nova::spow_vec_simd(OUT(0), IN(0), xb, inNumSamples);
-	} else {
+	else {
 		float slope = CALCSLOPE(next_b, xb);
-		LOOP1(inNumSamples,
-			float xa = ZXP(a);
-			ZXP(out) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
-			xb += slope;
-		);
-		unit->mPrevB = xb;
+		nova::spow_vec_simd(OUT(0), IN(0), slope_argument(xb, slope), inNumSamples);
+		unit->mPrevB = next_b;
 	}
 }
 
@@ -3160,19 +3156,14 @@ FLATTEN void pow_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		if (xa >= 0.f) {
+		if (xa >= 0.f)
 			nova::pow_vec_simd(OUT(0), xa, IN(1), inNumSamples);
-		} else {
+		else
 			nova::spow_vec_simd(OUT(0), xa, IN(1), inNumSamples);
-		}
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		LOOP1(inNumSamples,
-			float xb = ZXP(b);
-			ZXP(out) = xa >= 0.f ? pow(xa, xb) : -pow(-xa, xb);
-			xa += slope;
-		);
-		unit->mPrevA = xa;
+		nova::spow_vec_simd(OUT(0), slope_argument(xa, slope), IN(1), inNumSamples);
+		unit->mPrevA = next_a;
 	}
 }
 
@@ -3192,7 +3183,6 @@ FLATTEN void pow_ai_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = ZIN0(1);
 	nova::spow_vec_simd(OUT(0), IN(0), xb, inNumSamples);
-	unit->mPrevB = xb;
 }
 #endif
 
