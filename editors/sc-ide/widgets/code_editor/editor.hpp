@@ -120,6 +120,8 @@ private:
     void matchBracket( int pos, BracketMatch & match );
     void updateExtraSelections();
 
+    void zoomFont(int steps);
+
     int indentedStartOfLine( const QTextBlock & );
     void indent( const QTextCursor & );
     QTextBlock indent( const QTextBlock & b, int level );

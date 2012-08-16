@@ -95,6 +95,28 @@ void PostWindow::onScrollChange()
     mAutoScrollAction->setEnabled(!isAtBottom);
 }
 
+void PostWindow::zoomIn(int steps)
+{
+    zoomFont(steps);
+}
+
+void PostWindow::zoomOut(int steps)
+{
+    zoomFont(-steps);
+}
+
+void PostWindow::zoomFont(int steps)
+{
+    QFont currentFont = font();
+    qreal size = currentFont.pointSizeF();
+    if( size != -1 )
+        currentFont.setPointSizeF( qMax(1.0, size + steps) );
+    else
+        currentFont.setPixelSize( qMax(1, currentFont.pixelSize() + steps) );
+
+    setFont( currentFont );
+}
+
 PostDock::PostDock(QWidget* parent):
     QDockWidget(tr("Post Window"), parent)
 {
