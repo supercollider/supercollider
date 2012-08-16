@@ -68,6 +68,9 @@ public:
         ResetFontSize,
         ShowWhitespace,
 
+        NextDocument,
+        PreviousDocument,
+
         // Browse
         OpenDefinition,
 
@@ -96,6 +99,9 @@ public Q_SLOTS:
     void setCurrent( Document * );
 
     void applySettings( Settings::Manager * );
+
+    void showNextDocument();
+    void showPreviousDocument();
 
 private Q_SLOTS:
 

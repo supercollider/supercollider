@@ -203,6 +203,14 @@ void MultiEditor::createActions()
     act->setCheckable(true);
     mSigMux->connect(act, SIGNAL(triggered(bool)), SLOT(setShowWhitespace(bool)));
 
+    mActions[NextDocument] = act = new QAction(tr("Next Document"), this);
+    act->setShortcut( tr("Alt+Right", "Next Document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(showNextDocument()));
+
+    mActions[PreviousDocument] = act = new QAction(tr("Previous Document"), this);
+    act->setShortcut( tr("Alt+Left", "Next Document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
+
     // Browse
     mActions[OpenDefinition] = act = new QAction(tr("Open Class/Method Definition"), this);
     act->setShortcut(tr("Ctrl+D", "Open definition of selected class or method"));
@@ -261,6 +269,18 @@ void MultiEditor::setCurrent( Document *doc )
     CodeEditor *editor = editorForDocument(doc);
     if(editor)
         mTabs->setCurrentWidget(editor);
+}
+
+void MultiEditor::showNextDocument()
+{
+    int currentIndex = mTabs->currentIndex();
+    mTabs->setCurrentIndex( qMin(currentIndex + 1, mTabs->count() - 1) );
+}
+
+void MultiEditor::showPreviousDocument()
+{
+    int currentIndex = mTabs->currentIndex();
+    mTabs->setCurrentIndex( qMax(0, currentIndex - 1) );
 }
 
 void MultiEditor::onOpen( Document *doc, int pos )
