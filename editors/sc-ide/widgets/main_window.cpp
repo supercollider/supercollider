@@ -1019,12 +1019,23 @@ StatusClockLabel::StatusClockLabel(QWidget * parent):
     StatusLabel(parent)
 {
     setTextColor(Qt::green);
-    timerEvent(NULL);
+    mTimerId = startTimer(1000);
+    updateTime();
 }
 
-void StatusClockLabel::timerEvent(QTimerEvent *)
+StatusClockLabel::~StatusClockLabel()
 {
-    startTimer(1000);
+    killTimer(mTimerId);
+}
+
+void StatusClockLabel::timerEvent(QTimerEvent *e)
+{
+    if (e->timerId() == mTimerId)
+        updateTime();
+}
+
+void StatusClockLabel::updateTime()
+{
     setText(QTime::currentTime().toString());
 }
 
