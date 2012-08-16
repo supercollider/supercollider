@@ -48,10 +48,6 @@
 #include <QFileInfo>
 #include <QPointer>
 
-#ifdef Q_OS_MAC
-#include "../hacks/macfullscreen.h"
-#endif
-
 namespace ScIDE {
 
 MainWindow * MainWindow::mInstance = 0;
@@ -847,14 +843,10 @@ void MainWindow::updateWindowTitle()
 
 void MainWindow::toggleFullScreen()
 {
-#ifdef Q_OS_MAC
-    MacFullScreen::toggleFullScreen(this);
-#else
-    if (isFullScreen()) {
+    if (isFullScreen())
         setWindowState(windowState() & ~Qt::WindowFullScreen);
-    } else
+    else
         setWindowState(windowState() | Qt::WindowFullScreen);
-#endif
 }
 
 void MainWindow::changeEvent(QEvent *e)
