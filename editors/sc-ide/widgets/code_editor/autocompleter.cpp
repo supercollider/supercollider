@@ -322,7 +322,7 @@ void AutoCompleter::onContentsChange( int pos, int removed, int added )
                 mCompletion.text.clear();
             }
             if (!mCompletion.menu.isNull())
-                updateCompletionMenu();
+                updateCompletionMenu(false);
         }
     }
 }
@@ -349,11 +349,11 @@ void AutoCompleter::onCursorChanged()
     updateMethodCall(cursorPos);
 }
 
-void AutoCompleter::triggerCompletion()
+void AutoCompleter::triggerCompletion(bool forceShow)
 {
     if (mCompletion.on) {
         qDebug("AutoCompleter::triggerCompletion(): completion already started.");
-        updateCompletionMenu();
+        updateCompletionMenu(forceShow);
         return;
     }
 
@@ -444,7 +444,7 @@ void AutoCompleter::triggerCompletion()
 
     qDebug() << QString("Completion: ON <%1>").arg(mCompletion.base);
 
-    showCompletionMenu();
+    showCompletionMenu(forceShow);
 }
 
 void AutoCompleter::quitCompletion( const QString & reason )
@@ -462,7 +462,7 @@ void AutoCompleter::quitCompletion( const QString & reason )
     mCompletion.on = false;
 }
 
-void AutoCompleter::showCompletionMenu()
+void AutoCompleter::showCompletionMenu(bool forceShow)
 {
     qDebug(">>> showCompletionMenu");
 
@@ -608,10 +608,10 @@ void AutoCompleter::showCompletionMenu()
 
     menu->popup(pos);
 
-    updateCompletionMenu();
+    updateCompletionMenu(forceShow);
 }
 
-void AutoCompleter::updateCompletionMenu()
+void AutoCompleter::updateCompletionMenu(bool forceShow)
 {
     Q_ASSERT(mCompletion.on && !mCompletion.menu.isNull());
 
@@ -629,7 +629,10 @@ void AutoCompleter::updateCompletionMenu()
     if (menu->model()->hasChildren()) {
         menu->model()->sort(0);
         menu->view()->setCurrentIndex( menu->model()->index(0,0) );
-        menu->show();
+        if (forceShow || menu->currentText() != mCompletion.text)
+            menu->show();
+        else
+            menu->hide();
     }
     else {
         menu->hide();
