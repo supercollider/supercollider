@@ -132,13 +132,11 @@ void PostWindow::zoomOut(int steps)
 void PostWindow::zoomFont(int steps)
 {
     QFont currentFont = font();
-    qreal size = currentFont.pointSizeF();
-    if( size != -1 )
-        currentFont.setPointSizeF( qMax(1.0, size + steps) );
-    else
-        currentFont.setPixelSize( qMax(1, currentFont.pixelSize() + steps) );
-
-    setFont( currentFont );
+    const int newSize = currentFont.pointSize() + steps;
+    if (newSize <= 0)
+        return;
+    currentFont.setPointSize(newSize);
+    setFont(currentFont);
 }
 
 void PostWindow::wheelEvent( QWheelEvent * e )
