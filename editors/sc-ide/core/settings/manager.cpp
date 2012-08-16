@@ -46,7 +46,7 @@ void Manager::initDefaults()
 
     beginGroup("editor");
 
-    setDefault("spaceIndent", true);
+    setDefault("spaceIndent", false);
     setDefault("indentWidth", 4);
     setDefault("stepForwardEvaluation", false);
 
