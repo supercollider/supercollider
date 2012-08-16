@@ -254,13 +254,7 @@ FLATTEN void abs_nova_64(UnaryOpUGen *unit, int inNumSamples)
 }
 #endif
 
-template <typename F>
-inline F sc_recip(F x)
-{
-	return (F)1. / x;
-}
-
-DEFINE_UNARY_OP_FUNCS(recip, sc_recip)
+DEFINE_UNARY_OP_FUNCS(recip, sc_reciprocal)
 
 #ifdef NOVA_SIMD
 FLATTEN void recip_nova(UnaryOpUGen *unit, int inNumSamples)
