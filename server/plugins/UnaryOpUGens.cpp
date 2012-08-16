@@ -259,12 +259,12 @@ DEFINE_UNARY_OP_FUNCS(recip, sc_reciprocal)
 #ifdef NOVA_SIMD
 FLATTEN void recip_nova(UnaryOpUGen *unit, int inNumSamples)
 {
-	nova::over_vec_simd(OUT(0), 1.f, IN(0), inNumSamples);
+	nova::reciprocal_vec_simd(OUT(0), IN(0), inNumSamples);
 }
 
 FLATTEN void recip_nova_64(UnaryOpUGen *unit, int inNumSamples)
 {
-	nova::over_vec_simd<64>(OUT(0), 1.f, IN(0));
+	nova::reciprocal_vec_simd<64>(OUT(0), IN(0));
 }
 #endif
 
