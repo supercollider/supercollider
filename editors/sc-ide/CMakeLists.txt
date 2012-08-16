@@ -76,12 +76,6 @@ set ( ide_src
     widgets/util/popup_widget.cpp
 )
 
-if (APPLE)
-    set( ide_src ${ide_src}
-         hacks/macfullscreen.mm
-    )
-endif()
-
 set( ide_forms
     forms/settings_dialog.ui
     forms/settings_sclang.ui
