@@ -586,42 +586,42 @@ void CodeEditor::setShowWhitespace(bool show)
     doc->setDefaultTextOption(opt);
 }
 
-void CodeEditor::applySettings( Settings::Manager *s )
+void CodeEditor::applySettings( Settings::Manager *settings )
 {
-    s->beginGroup("IDE/editor");
+    settings->beginGroup("IDE/editor");
 
-    mSpaceIndent = s->value("spaceIndent").toBool();
+    mSpaceIndent = settings->value("spaceIndent").toBool();
 
-    setIndentWidth( s->value("indentWidth").toInt() );
+    setIndentWidth( settings->value("indentWidth").toInt() );
 
     QPalette plt;
 
     QFont fnt;
-    fnt.fromString( s->value("font").toString() );
+    fnt.fromString( settings->value("font").toString() );
 
-    s->beginGroup("colors");
+    settings->beginGroup("colors");
 
-    if (s->contains("background"))
-        plt.setColor(QPalette::Base, s->value("background").value<QColor>());
+    if (settings->contains("background"))
+        plt.setColor(QPalette::Base, settings->value("background").value<QColor>());
 
-    if (s->contains("text"))
-        plt.setColor(QPalette::Text, s->value("text").value<QColor>());
+    if (settings->contains("text"))
+        plt.setColor(QPalette::Text, settings->value("text").value<QColor>());
 
     QPalette lineNumPlt;
-    if (s->contains("lineNumbersBackground"))
-        lineNumPlt.setColor(QPalette::Button, s->value("lineNumbersBackground").value<QColor>());
-    if (s->contains("lineNumbers"))
-        lineNumPlt.setColor(QPalette::ButtonText, s->value("lineNumbers").value<QColor>());
+    if (settings->contains("lineNumbersBackground"))
+        lineNumPlt.setColor(QPalette::Button, settings->value("lineNumbersBackground").value<QColor>());
+    if (settings->contains("lineNumbers"))
+        lineNumPlt.setColor(QPalette::ButtonText, settings->value("lineNumbers").value<QColor>());
     mLineIndicator->setPalette(lineNumPlt);
 
-    mBracketHighlight = s->value("matchingBrackets").value<QColor>();
+    mBracketHighlight = settings->value("matchingBrackets").value<QColor>();
 
-    s->endGroup(); // colors
+    settings->endGroup(); // colors
 
     setPalette(plt);
     setFont(fnt);
 
-    s->endGroup();
+    settings->endGroup();
 }
 
 void CodeEditor::deleteTrailingSpaces()
