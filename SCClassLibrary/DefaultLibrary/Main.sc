@@ -29,7 +29,8 @@ Main : Process {
 				"scvim", {", type :SChelp for help"},
 				"scel",  {", type C-c C-y for help"},
 				"sced",  {", type ctrl-U for help"},
-				"scapp", {", type cmd-d for help"}
+				"scapp", {", type cmd-d for help"},
+				"scqt", {", for help press F1"}
 			) ?? {
 				(
 					osx: ", type cmd-d for help",
