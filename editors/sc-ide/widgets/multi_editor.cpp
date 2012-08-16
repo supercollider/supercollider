@@ -191,6 +191,12 @@ void MultiEditor::createActions()
     act->setStatusTip(tr("Decrease displayed font size"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomOut()));
 
+    mActions[ResetFontSize] = act = new QAction(
+        QIcon::fromTheme("zoom-reset"), tr("&Reset Font Size"), this);
+    act->setShortcut( tr("Ctrl+0", "Reset font"));
+    act->setStatusTip(tr("Reset displayed font size"));
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(resetFontSize()));
+
     mActions[ShowWhitespace] = act = new QAction(tr("Show Spaces and Tabs"), this);
     act->setCheckable(true);
     mSigMux->connect(act, SIGNAL(triggered(bool)), SLOT(setShowWhitespace(bool)));
@@ -224,6 +230,7 @@ void MultiEditor::updateActions()
     mActions[IndentLineOrRegion]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
     mActions[ShrinkFont]->setEnabled( editor );
+    mActions[ResetFontSize]->setEnabled( editor );
     mActions[ShowWhitespace]->setEnabled( editor );
     mActions[ShowWhitespace]->setChecked( editor && editor->showWhitespace() );
 }

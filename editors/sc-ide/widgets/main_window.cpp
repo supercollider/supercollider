@@ -390,6 +390,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::EnlargeFont) );
     menu->addAction( mEditors->action(MultiEditor::ShrinkFont) );
+    menu->addAction( mEditors->action(MultiEditor::ResetFontSize) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::ShowWhitespace) );
 

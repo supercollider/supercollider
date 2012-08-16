@@ -65,6 +65,7 @@ public:
         // View
         EnlargeFont,
         ShrinkFont,
+        ResetFontSize,
         ShowWhitespace,
 
         // Browse
