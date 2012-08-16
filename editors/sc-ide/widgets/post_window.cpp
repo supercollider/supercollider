@@ -62,12 +62,14 @@ PostWindow::PostWindow(QWidget* parent):
     action->setIconText("+");
     action->setShortcut(tr("Ctrl++", "Enlarge Font"));
     action->setShortcutContext( Qt::WidgetShortcut );
+    action->setToolTip(tr("Enlarge font"));
     connect(action, SIGNAL(triggered()), this, SLOT(zoomIn()));
     addAction(action);
 
     action = new QAction(tr("Shink Post Font"), this);
     action->setIconText("-");
     action->setShortcut(tr("Ctrl+-", "Shrink Font"));
+    action->setToolTip(tr("Shrink font"));
     action->setShortcutContext( Qt::WidgetShortcut );
     connect(action, SIGNAL(triggered()), this, SLOT(zoomOut()));
     addAction(action);
@@ -77,25 +79,24 @@ PostWindow::PostWindow(QWidget* parent):
     addAction(action);
 
     mAutoScrollAction = new QAction(tr("Auto Scroll"), this);
+    mAutoScrollAction->setToolTip(tr("Keep scrolled to bottom on new posts"));
     mAutoScrollAction->setCheckable(true);
+    mAutoScrollAction->setChecked(true);
     addAction(mAutoScrollAction);
 
     setContextMenuPolicy(Qt::ActionsContextMenu);
 
     connect(this, SIGNAL(scrollToBottomRequest()),
             this, SLOT(scrollToBottom()), Qt::QueuedConnection);
-    connect(mAutoScrollAction, SIGNAL(triggered()), this, SLOT(scrollToBottom()));
-    connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SLOT(onScrollChange()));
-    connect(verticalScrollBar(), SIGNAL(rangeChanged(int, int)),
-            this, SLOT(onScrollChange()));
+    connect(mAutoScrollAction, SIGNAL(triggered(bool)),
+            this, SLOT(onAutoScrollTriggered(bool)));
 }
 
 
 void PostWindow::post(const QString &text)
 {
     QScrollBar *scrollBar = verticalScrollBar();
-    bool scroll = scrollBar->value() == scrollBar->maximum();
+    bool scroll = mAutoScrollAction->isChecked() && (scrollBar->value() == scrollBar->maximum());
 
     QTextCursor c(document());
     c.movePosition(QTextCursor::End);
@@ -111,12 +112,10 @@ void PostWindow::scrollToBottom()
     verticalScrollBar()->triggerAction(QAbstractSlider::SliderToMaximum);
 }
 
-void PostWindow::onScrollChange()
+void PostWindow::onAutoScrollTriggered(bool on)
 {
-    QScrollBar *scrollBar = verticalScrollBar();
-    bool isAtBottom = scrollBar->value() == scrollBar->maximum();
-    mAutoScrollAction->setChecked(isAtBottom);
-    mAutoScrollAction->setEnabled(!isAtBottom);
+    if (on)
+        scrollToBottom();
 }
 
 void PostWindow::zoomIn(int steps)

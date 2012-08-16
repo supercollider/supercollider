@@ -45,7 +45,7 @@ public slots:
     void zoomOut(int steps = 1);
 
 private slots:
-    void onScrollChange();
+    void onAutoScrollTriggered(bool);
 
 private:
     void zoomFont(int steps);
