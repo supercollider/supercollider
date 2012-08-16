@@ -74,6 +74,7 @@ public:
         ShowCmdLine,
         ShowGoToLineTool,
         CloseToolBox,
+        ShowFullScreen,
 
         // Language
         EvaluateCurrentFile,
@@ -142,6 +143,7 @@ private Q_SLOTS:
     void onRecentDocAction( QAction * );
     void onOpenSessionAction( QAction * );
     void updateWindowTitle();
+    void toggleFullStreen();
 
 protected:
     virtual void closeEvent(QCloseEvent *event);

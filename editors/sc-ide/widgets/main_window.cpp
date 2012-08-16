@@ -48,6 +48,10 @@
 #include <QFileInfo>
 #include <QPointer>
 
+#ifdef Q_OS_MAC
+#include "../hacks/macfullscreen.h"
+#endif
+
 namespace ScIDE {
 
 MainWindow * MainWindow::mInstance = 0;
@@ -284,6 +288,11 @@ void MainWindow::createActions()
     act->setShortcut(tr("Esc", "Close tool box"));
     connect(act, SIGNAL(triggered()), this, SLOT(hideToolBox()));
 
+    mActions[ShowFullScreen] = act = new QAction(tr("&FullScreen"), this);
+    act->setCheckable(false);
+    act->setShortcut(tr("Ctrl+Shift+F11", "Show ScIDE in Full Screen"));
+    connect(act, SIGNAL(triggered()), this, SLOT(toggleFullStreen()));
+
     // Language
 
     mActions[EvaluateCurrentFile] = act = new QAction(
@@ -396,6 +405,8 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::NextDocument) );
     menu->addAction( mEditors->action(MultiEditor::PreviousDocument) );
+    menu->addSeparator();
+    menu->addAction( mActions[ShowFullScreen] );
 
     menuBar()->addMenu(menu);
 
@@ -844,6 +855,18 @@ void MainWindow::updateWindowTitle()
     title.append("SuperCollider IDE");
 
     setWindowTitle(title);
+}
+
+void MainWindow::toggleFullStreen()
+{
+#ifdef Q_OS_MAC
+    MacFullScreen::toggleFullScreen(this);
+#else
+    if (isFullScreen())
+        setWindowState(windowState() & ~Qt::WindowFullScreen);
+    else
+        setWindowState(windowState() | Qt::WindowFullScreen);
+#endif
 }
 
 void MainWindow::updateSessionsMenu()
