@@ -49,6 +49,7 @@ private slots:
 
 private:
     void zoomFont(int steps);
+    void wheelEvent( QWheelEvent * );
 
     QAction * mAutoScrollAction;
     QAction * mClearAction;
