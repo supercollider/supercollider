@@ -58,6 +58,7 @@ MainWindow * MainWindow::mInstance = 0;
 
 MainWindow::MainWindow(Main * main) :
     mMain(main),
+    mClockLabel(0),
     mDocDialog(0)
 {
     Q_ASSERT(!mInstance);
@@ -291,7 +292,7 @@ void MainWindow::createActions()
     mActions[ShowFullScreen] = act = new QAction(tr("&FullScreen"), this);
     act->setCheckable(false);
     act->setShortcut(tr("Ctrl+Shift+F11", "Show ScIDE in Full Screen"));
-    connect(act, SIGNAL(triggered()), this, SLOT(toggleFullStreen()));
+    connect(act, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
 
     // Settings
 
@@ -844,7 +845,7 @@ void MainWindow::updateWindowTitle()
     setWindowTitle(title);
 }
 
-void MainWindow::toggleFullStreen()
+void MainWindow::toggleFullScreen()
 {
 #ifdef Q_OS_MAC
     MacFullScreen::toggleFullScreen(this);
@@ -854,16 +855,24 @@ void MainWindow::toggleFullStreen()
     } else
         setWindowState(windowState() | Qt::WindowFullScreen);
 #endif
+}
 
-    QStatusBar * statusbar = statusBar();
-    if (isFullScreen()) {
-        mClockLabel = new StatusClockLabel(this);
-        statusbar->insertWidget(0, mClockLabel);
-    } else {
-        statusbar->removeWidget(mClockLabel);
-        mClockLabel->deleteLater();
-        mClockLabel = NULL;
+void MainWindow::changeEvent(QEvent *e)
+{
+    if (e->type() == QEvent::WindowStateChange)
+    {
+        QStatusBar * statusbar = statusBar();
+        if (isFullScreen()) {
+            Q_ASSERT(mClockLabel == NULL);
+            mClockLabel = new StatusClockLabel(this);
+            statusbar->insertWidget(0, mClockLabel);
+        } else if (mClockLabel) {
+            delete mClockLabel;
+            mClockLabel = NULL;
+        }
     }
+
+    QMainWindow::changeEvent(e);
 }
 
 void MainWindow::updateSessionsMenu()

@@ -137,10 +137,11 @@ private Q_SLOTS:
     void onRecentDocAction( QAction * );
     void onOpenSessionAction( QAction * );
     void updateWindowTitle();
-    void toggleFullStreen();
+    void toggleFullScreen();
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
+    virtual void changeEvent(QEvent *);
 
 private:
     void createActions();
