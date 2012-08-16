@@ -24,18 +24,18 @@ Main : Process {
 		StartUp.run;
 		openPorts = Set[NetAddr.langPort];
 
-		("Welcome to SuperCollider" + Main.version
-			++ (Platform.ideName.switch(
-				"scvim", {", type :SChelp for help"},
-				"scel",  {", type C-c C-y for help"},
-				"sced",  {", type ctrl-U for help"},
-				"scapp", {", type cmd-d for help"},
-				"scqt", {", for help press F1"}
+		("Welcome to SuperCollider %.".format(Main.version)
+			+ (Platform.ideName.switch(
+				"scvim", {"For help type :SChelp for help."},
+				"scel",  {"For help type C-c C-y for help."},
+				"sced",  {"For help type ctrl-U for help."},
+				"scapp", {"For help type cmd-d for help."},
+				"scqt", {"For help press F1."}
 			) ?? {
 				(
-					osx: ", type cmd-d for help",
-					linux: ", for help type ctrl-c ctrl-h (Emacs) or :SChelp (vim) or ctrl-U (sced/gedit)",
-				 	windows: ", press F1 for help",
+					osx: "For help type cmd-d.",
+					linux: "For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim) or ctrl-U (sced/gedit).",
+				 	windows: "For help press F1.",
 					iphone: ""
 				 ).at(platform.name);
 
