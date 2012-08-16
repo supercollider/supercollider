@@ -637,7 +637,6 @@ bool CodeEditor::event( QEvent *e )
             switch (key)
             {
             case Qt::Key_Tab:
-            case Qt::Key_Backtab:
                 indent();
                 e->accept();
                 return true;
@@ -690,6 +689,14 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
 
         return;
     }
+
+    case Qt::Key_Backtab:
+    {
+        QTextCursor cursor = textCursor();
+        cursor.insertText("\t");
+        return;
+    }
+
     default:;
     }
 
