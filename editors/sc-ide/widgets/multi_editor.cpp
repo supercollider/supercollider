@@ -121,8 +121,8 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
 void MultiEditor::createActions()
 {
-    Settings::Manager *s = Main::instance()->settings();
-    s->beginGroup("IDE/shortcuts");
+    Settings::Manager *settings = Main::instance()->settings();
+    settings->beginGroup("IDE/shortcuts");
 
     QAction * act;
 
@@ -214,21 +214,24 @@ void MultiEditor::createActions()
     // Browse
     mActions[OpenDefinition] = act = new QAction(tr("Open Class/Method Definition"), this);
     act->setShortcut(tr("Ctrl+D", "Open definition of selected class or method"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(act, SIGNAL(triggered(bool)), this, SLOT(openDefinition()));
 
-    s->endGroup(); // IDE/shortcuts
+    settings->endGroup(); // IDE/shortcuts
 
     for (int i = 0; i < ActionRoleCount; ++i)
-        s->addAction( mActions[i] );
+        settings->addAction( mActions[i] );
 
     // These actions are not added to any menu, so they have to be added
     // at least to this widget, in order for the shortcuts to always respond:
     addAction(mActions[TriggerAutoCompletion]);
     addAction(mActions[TriggerMethodCallAid]);
+
     // These actions have to be added because to the widget because they have
     // Qt::WidgetWithChildrenShortcut context:
     addAction(mActions[EnlargeFont]);
     addAction(mActions[ShrinkFont]);
+    addAction(mActions[OpenDefinition]);
 }
 
 void MultiEditor::updateActions()
