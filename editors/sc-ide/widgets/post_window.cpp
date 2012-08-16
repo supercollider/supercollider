@@ -43,18 +43,42 @@ PostWindow::PostWindow(QWidget* parent):
     f.setStyleHint(QFont::TypeWriter);
     setFont(f);
 
+    QAction * action;
+
     QAction *copyAction = new QAction(tr("Copy"), this);
     connect(copyAction, SIGNAL(triggered()), this, SLOT(copy()));
     copyAction->setShortcut( Main::instance()->settings()->shortcut("IDE/shortcuts/copy") );
     addAction(copyAction);
 
-    mAutoScrollAction = new QAction(tr("Auto Scroll"), this);
-    mAutoScrollAction->setCheckable(true);
-    addAction(mAutoScrollAction);
-
     mClearAction = new QAction(tr("Clear"), this);
     connect(mClearAction, SIGNAL(triggered()), this, SLOT(clear()));
     addAction(mClearAction);
+
+    action = new QAction(this);
+    action->setSeparator(true);
+    addAction(action);
+
+    action = new QAction(tr("Enlarge Post Font"), this);
+    action->setIconText("+");
+    action->setShortcut(tr("Ctrl++", "Enlarge Font"));
+    action->setShortcutContext( Qt::WidgetShortcut );
+    connect(action, SIGNAL(triggered()), this, SLOT(zoomIn()));
+    addAction(action);
+
+    action = new QAction(tr("Shink Post Font"), this);
+    action->setIconText("-");
+    action->setShortcut(tr("Ctrl+-", "Shrink Font"));
+    action->setShortcutContext( Qt::WidgetShortcut );
+    connect(action, SIGNAL(triggered()), this, SLOT(zoomOut()));
+    addAction(action);
+
+    action = new QAction(this);
+    action->setSeparator(true);
+    addAction(action);
+
+    mAutoScrollAction = new QAction(tr("Auto Scroll"), this);
+    mAutoScrollAction->setCheckable(true);
+    addAction(mAutoScrollAction);
 
     setContextMenuPolicy(Qt::ActionsContextMenu);
 
@@ -115,6 +139,19 @@ void PostWindow::zoomFont(int steps)
         currentFont.setPixelSize( qMax(1, currentFont.pixelSize() + steps) );
 
     setFont( currentFont );
+}
+
+void PostWindow::wheelEvent( QWheelEvent * e )
+{
+    if (e->modifiers() == Qt::ControlModifier) {
+        if (e->delta() > 0)
+            zoomIn();
+        else
+            zoomOut();
+        return;
+    }
+
+    QPlainTextEdit::wheelEvent(e);
 }
 
 PostDock::PostDock(QWidget* parent):
