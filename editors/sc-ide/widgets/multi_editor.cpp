@@ -182,12 +182,14 @@ void MultiEditor::createActions()
     mActions[EnlargeFont] = act = new QAction(
         QIcon::fromTheme("zoom-in"), tr("&Enlarge Font"), this);
     act->setShortcut(tr("Ctrl++", "Enlarge font"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     act->setStatusTip(tr("Increase displayed font size"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomIn()));
 
     mActions[ShrinkFont] = act = new QAction(
         QIcon::fromTheme("zoom-out"), tr("&Shrink Font"), this);
     act->setShortcut( tr("Ctrl+-", "Shrink font"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     act->setStatusTip(tr("Decrease displayed font size"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomOut()));
 
@@ -215,6 +217,10 @@ void MultiEditor::createActions()
     // at least to this widget, in order for the shortcuts to always respond:
     addAction(mActions[TriggerAutoCompletion]);
     addAction(mActions[TriggerMethodCallAid]);
+    // These actions have to be added because to the widget because they have
+    // Qt::WidgetWithChildrenShortcut context:
+    addAction(mActions[EnlargeFont]);
+    addAction(mActions[ShrinkFont]);
 }
 
 void MultiEditor::updateActions()
