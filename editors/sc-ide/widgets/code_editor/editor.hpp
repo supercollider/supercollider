@@ -102,6 +102,7 @@ protected:
     virtual void mouseReleaseEvent ( QMouseEvent * );
     virtual void mouseDoubleClickEvent ( QMouseEvent * );
     virtual void mouseMoveEvent( QMouseEvent * );
+    virtual void wheelEvent( QWheelEvent * );
     virtual void paintEvent( QPaintEvent * );
 
 private Q_SLOTS:

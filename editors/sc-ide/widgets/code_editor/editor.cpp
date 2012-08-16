@@ -572,7 +572,6 @@ void CodeEditor::zoomFont(int steps)
     setFont( currentFont );
 }
 
-
 void CodeEditor::setShowWhitespace(bool show)
 {
     mShowWhitespace = show;
@@ -746,6 +745,19 @@ void CodeEditor::mouseMoveEvent( QMouseEvent *e )
     // Prevent initiating a text drag:
     if(!mMouseBracketMatch)
         QPlainTextEdit::mouseMoveEvent(e);
+}
+
+void CodeEditor::wheelEvent( QWheelEvent * e )
+{
+    if (e->modifiers() == Qt::ControlModifier) {
+        if (e->delta() > 0)
+            zoomIn();
+        else
+            zoomOut();
+        return;
+    }
+
+    QPlainTextEdit::wheelEvent(e);
 }
 
 void CodeEditor::onOverlayChanged ( const QList<QRectF> & region )
