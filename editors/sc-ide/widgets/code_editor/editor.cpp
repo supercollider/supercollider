@@ -693,7 +693,8 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
     case Qt::Key_Return:
     case Qt::Key_BraceRight:
     case Qt::Key_BracketRight:
-        indentCurrentLine();
+    case Qt::Key_ParenRight:
+        indent();
         break;
 
     default:;
@@ -960,104 +961,92 @@ void CodeEditor::paintLineIndicator( QPaintEvent *e )
 
 void CodeEditor::indent()
 {
-    QTextCursor cursor = textCursor();
-    if (cursor.selection().isEmpty())
-        indentCurrentLine();
-    else
-        indentCurrentSelection();
+    indent(textCursor());
 }
 
-int CodeEditor::findIndentationLevel(QTextBlock const & block)
+void CodeEditor::indent( const QTextCursor & selection )
 {
-    if (!block.isValid())
-        return 0;
+    QTextCursor cursor(selection);
 
-    int offset = 0;
-    TokenIterator next(block);
-    if (next.isValid() && next->type == Token::ClosingBracket)
-        offset = -1;
+    cursor.beginEditBlock();
 
+    QTextDocument *doc = QPlainTextEdit::document();
+    int startBlockNum = doc->findBlock(cursor.selectionStart()).blockNumber();
+    int endBlockNum = cursor.hasSelection() ?
+        doc->findBlock(cursor.selectionEnd()).blockNumber() : startBlockNum;
+
+    QStack<int> stack;
     int level = 0;
-    TokenIterator it = TokenIterator::rightOf( QPlainTextEdit::document()->begin(), 0 );
-
-    while (it.isValid() && (it.block().position() < block.position())) {
-        switch (it->type) {
-        case Token::OpeningBracket:
-            if (it->character == '(') {
-                if (level != 0 || it->positionInBlock)
-                    level += 1;
-            } else
-                level += 1;
-            break;
-
-        case Token::ClosingBracket:
-            level -= 1;
-            break;
-
-        default:
-            ;
+    int blockNum = 0;
+    QTextBlock b = QPlainTextEdit::document()->begin();
+    while (b.isValid())
+    {
+        if (level > 0) {
+            stack.push(level);
+            level = 0;
         }
-        level = qMax(level, 0);
 
-        ++it;
-    }
+        TextBlockData *data = static_cast<TextBlockData*>(b.userData());
+        if (data)
+        {
+            int count = data->tokens.size();
+            for (int idx = 0; idx < count; ++idx)
+            {
+                const Token & token = data->tokens[idx];
+                switch (token.type)
+                {
+                case Token::OpeningBracket:
+                    if (token.character != '(' || stack.size() || token.positionInBlock)
+                        level += 1;
+                    break;
 
-    level += offset;
+                case Token::ClosingBracket:
+                    if (level)
+                        level -= 1;
+                    else if(!stack.isEmpty()) {
+                        stack.top() -= 1;
+                        if (stack.top() <= 0)
+                            stack.pop();
+                    }
+                    break;
 
-    return qMax(level, 0);
-}
+                default:
+                    ;
+                }
+            }
+        }
 
-void CodeEditor::indentCurrentSelection()
-{
-    QTextCursor cursor = textCursor();
+        if(blockNum >= startBlockNum)
+            b = indent(b, stack.size());
 
-    const int position = cursor.position();
-    const int anchor = cursor.anchor();
-
-    QTextDocument * doc = QPlainTextEdit::document();
-    QTextBlock block = doc->findBlock(qMin(position, anchor));
-    QTextBlock endBlock = anchor != position ? doc->findBlock(qMax(position, anchor))
-                                             : block;
-
-    cursor.beginEditBlock();
-
-    for (;;) {
-        cursor.setPosition(block.position());
-        indentLineAtCursor(cursor);
-
-        if ( block != endBlock )
-            block = block.next();
-        else
+        if(blockNum == endBlockNum)
             break;
+
+        b = b.next();
+        ++blockNum;
     }
 
     cursor.endEditBlock();
 }
 
-void CodeEditor::indentCurrentLine()
+QTextBlock CodeEditor::indent( const QTextBlock & block, int level )
 {
-    QTextCursor cursor = textCursor();
-    cursor.beginEditBlock();
-    indentLineAtCursor(cursor);
-    cursor.endEditBlock();
-}
-
-void CodeEditor::indentLineAtCursor(QTextCursor cursor)
-{
-    const int indentationLevel = findIndentationLevel(cursor.block());
-
+    QTextCursor cursor(block);
     cursor.movePosition(QTextCursor::StartOfBlock);
-    cursor.setPosition(cursor.position() + indentedStartOfLine(cursor.block()), QTextCursor::KeepAnchor);
+    cursor.setPosition(cursor.position() + indentedStartOfLine(block), QTextCursor::KeepAnchor);
 
     if ( mSpaceIndent ) {
-        const int spaces = mIndentWidth * indentationLevel;
+        const int spaces = mIndentWidth * level;
         QString replacement (spaces, QChar(' '));
         cursor.insertText(replacement);
     } else {
-        const int tabs = indentationLevel;
+        const int tabs = level;
         QString replacement (tabs, QChar('\t'));
         cursor.insertText(replacement);
     }
+
+    // modification has invalidated the block, so return a new one
+    return cursor.block();
 }
 
 void CodeEditor::triggerAutoCompletion()

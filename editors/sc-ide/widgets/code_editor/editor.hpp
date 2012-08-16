@@ -121,10 +121,8 @@ private:
     void updateExtraSelections();
 
     int indentedStartOfLine( const QTextBlock & );
-    int findIndentationLevel( QTextBlock const & );
-    void indentCurrentLine();
-    void indentCurrentSelection();
-    void indentLineAtCursor( QTextCursor cursor );
+    void indent( const QTextCursor & );
+    QTextBlock indent( const QTextBlock & b, int level );
 
     LineIndicator *mLineIndicator;
     Document *mDoc;
