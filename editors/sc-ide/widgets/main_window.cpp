@@ -862,11 +862,21 @@ void MainWindow::toggleFullStreen()
 #ifdef Q_OS_MAC
     MacFullScreen::toggleFullScreen(this);
 #else
-    if (isFullScreen())
+    if (isFullScreen()) {
         setWindowState(windowState() & ~Qt::WindowFullScreen);
-    else
+    } else
         setWindowState(windowState() | Qt::WindowFullScreen);
 #endif
+
+    QStatusBar * statusbar = statusBar();
+    if (isFullScreen()) {
+        mClockLabel = new StatusClockLabel(this);
+        statusbar->insertWidget(0, mClockLabel);
+    } else {
+        statusbar->removeWidget(mClockLabel);
+        mClockLabel->deleteLater();
+        mClockLabel = NULL;
+    }
 }
 
 void MainWindow::updateSessionsMenu()
@@ -1060,6 +1070,21 @@ void StatusLabel::setTextColor(const QColor & color)
     QPalette plt(palette());
     plt.setColor(QPalette::WindowText, color);
     setPalette(plt);
+}
+
+//////////////////////////// StatusClockLabel ////////////////////////////
+
+StatusClockLabel::StatusClockLabel(QWidget * parent):
+    StatusLabel(parent)
+{
+    setTextColor(Qt::green);
+    timerEvent(NULL);
+}
+
+void StatusClockLabel::timerEvent(QTimerEvent *)
+{
+    startTimer(1000);
+    setText(QTime::currentTime().toString());
 }
 
 } // namespace ScIDE
