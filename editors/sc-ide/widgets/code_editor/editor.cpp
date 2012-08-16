@@ -540,26 +540,24 @@ void CodeEditor::clearSearchHighlighting()
 
 void CodeEditor::zoomIn(int steps)
 {
-    QFont f = font();
-    qreal size = f.pointSizeF();
-    if( size != -1 )
-        f.setPointSizeF( size + steps );
-    else
-        f.setPixelSize( f.pixelSize() + steps );
-
-    setFont(f);
+    zoomFont(steps);
 }
 
 void CodeEditor::zoomOut(int steps)
 {
-    QFont f = font();
-    qreal size = f.pointSizeF();
-    if( size != -1 )
-        f.setPointSizeF( qMax(1.0, size - steps) );
-    else
-        f.setPixelSize( qMax(1, f.pixelSize() - steps) );
+    zoomFont(-steps);
+}
 
-    setFont(f);
+void CodeEditor::zoomFont(int steps)
+{
+    QFont currentFont = font();
+    qreal size = currentFont.pointSizeF();
+    if( size != -1 )
+        currentFont.setPointSizeF( qMax(1.0, size + steps) );
+    else
+        currentFont.setPixelSize( qMax(1, currentFont.pixelSize() + steps) );
+
+    setFont( currentFont );
 }
 
 

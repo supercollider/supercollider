@@ -40,13 +40,16 @@ signals:
 
 public slots:
     void post(const QString &text);
-
     void scrollToBottom();
+    void zoomIn(int steps = 1);
+    void zoomOut(int steps = 1);
 
 private slots:
     void onScrollChange();
 
 private:
+    void zoomFont(int steps);
+
     QAction * mAutoScrollAction;
     QAction * mClearAction;
 };
