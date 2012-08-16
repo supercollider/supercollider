@@ -2341,6 +2341,7 @@ void InRect_Ctor(InRect* unit)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 void LinExp_next(LinExp *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -2399,7 +2400,7 @@ FLATTEN static void LinExp_next_nova_kk(LinExp *unit, int inNumSamples)
 	float dstlo = ZIN0(3);
 	float dsthi = ZIN0(4);
 	float dstratio = dsthi/dstlo;
-	float rsrcrange = 1. / (srchi - srclo);
+	float rsrcrange = sc_reciprocal(srchi - srclo);
 	float rrminuslo = rsrcrange * -srclo;
 
 	LinExp_next_nova_loop(out, in, inNumSamples, dstlo, dstratio, rsrcrange, rrminuslo);
@@ -2415,8 +2416,8 @@ void LinExp_next_kk(LinExp *unit, int inNumSamples)
 	float srchi = ZIN0(2);
 	float dstlo = ZIN0(3);
 	float dsthi = ZIN0(4);
-	float dstratio = dsthi/dstlo;
-	float rsrcrange = 1. / (srchi - srclo);
+	float dstratio = dsthi * sc_reciprocal(dstlo);
+	float rsrcrange = sc_reciprocal(srchi - srclo);
 	float rrminuslo = rsrcrange * -srclo;
 
 	LOOP1(inNumSamples,
@@ -2440,7 +2441,7 @@ void LinExp_next_aa(LinExp *unit, int inNumSamples)
 		float zsrchi = ZXP(srchi);
 		float zsrclo = ZXP(srclo);
 		float dstratio = zdsthi/zdstlo;
-		float rsrcrange = 1. / (zsrchi - zsrclo);
+		float rsrcrange = sc_reciprocal(zsrchi - zsrclo);
 		float rrminuslo = rsrcrange * -zsrclo;
 		ZXP(out) = zdstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
 	);
@@ -2460,7 +2461,7 @@ void LinExp_next_ak(LinExp *unit, int inNumSamples)
 		float zsrchi = ZXP(srchi);
 		float zsrclo = ZXP(srclo);
 
-		float rsrcrange = 1. / (zsrchi - zsrclo);
+		float rsrcrange = sc_reciprocal(zsrchi - zsrclo);
 		float rrminuslo = rsrcrange * -zsrclo;
 		ZXP(out) = dstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo);
 	);
@@ -2474,7 +2475,7 @@ void LinExp_next_ka(LinExp *unit, int inNumSamples)
 	float srchi = ZIN0(2);
 	float *dstlo = ZIN(3);
 	float *dsthi = ZIN(4);
-	float rsrcrange = 1. / (srchi - srclo);
+	float rsrcrange = sc_reciprocal(srchi - srclo);
 	float rrminuslo = rsrcrange * -srclo;
 
 	LOOP1(inNumSamples,
@@ -2530,7 +2531,7 @@ static void LinExp_SetCalc(LinExp* unit)
 	float dsthi = ZIN0(4);
 	unit->m_dstlo = dstlo;
 	unit->m_dstratio = dsthi/dstlo;
-	unit->m_rsrcrange = 1. / (srchi - srclo);
+	unit->m_rsrcrange = sc_reciprocal(srchi - srclo);
 	unit->m_rrminuslo = unit->m_rsrcrange * -srclo;
 }
 
