@@ -85,6 +85,7 @@ public:
 public Q_SLOTS:
     void zoomIn(int steps = 1);
     void zoomOut(int steps = 1);
+    void resetFontSize();
     void setSpaceIndent(bool on) { mSpaceIndent = on; }
     void setShowWhitespace(bool);
     void clearSearchHighlighting();

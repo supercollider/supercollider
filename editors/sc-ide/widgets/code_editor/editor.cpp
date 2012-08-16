@@ -22,6 +22,7 @@
 #include "highlighter.hpp"
 #include "autocompleter.hpp"
 #include "../../core/doc_manager.hpp"
+#include "../../core/main.hpp"
 #include "../../core/settings/manager.hpp"
 
 #include <QDebug>
@@ -546,6 +547,17 @@ void CodeEditor::zoomIn(int steps)
 void CodeEditor::zoomOut(int steps)
 {
     zoomFont(-steps);
+}
+
+void CodeEditor::resetFontSize()
+{
+    Settings::Manager *settings = Main::instance()->settings();
+
+    settings->beginGroup("IDE/editor");
+    QFont fnt;
+    fnt.fromString( settings->value("font").toString() );
+    setFont(fnt);
+    settings->endGroup();
 }
 
 void CodeEditor::zoomFont(int steps)
