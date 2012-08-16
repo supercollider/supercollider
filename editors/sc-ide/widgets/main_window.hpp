@@ -26,8 +26,7 @@
 #include <QProcess>
 #include <QSignalMapper>
 
-namespace ScIDE
-{
+namespace ScIDE {
 
 class Main;
 class MultiEditor;
@@ -36,10 +35,11 @@ class TextFindReplacePanel;
 class GoToLineTool;
 class PostDock;
 class DocumentsDock;
-class StatusLabel;
 class Document;
 class DocumentsDialog;
 struct Session;
+class StatusLabel;
+class StatusClockLabel;
 
 namespace Settings { class Manager; }
 
@@ -172,6 +172,7 @@ private:
     // Status bar
     StatusLabel *mLangStatus;
     StatusLabel *mServerStatus;
+    StatusClockLabel *mClockLabel;
 
     // Docks
     PostDock * mPostDock;
@@ -189,6 +190,15 @@ public:
     StatusLabel(QWidget *parent = 0);
     void setBackground(const QBrush &);
     void setTextColor(const QColor &);
+};
+
+class StatusClockLabel : public StatusLabel
+{
+public:
+    StatusClockLabel (QWidget * parent = 0);
+
+private:
+    void timerEvent(QTimerEvent *);
 };
 
 } // namespace ScIDE
