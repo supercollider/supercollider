@@ -393,6 +393,9 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::ResetFontSize) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::ShowWhitespace) );
+    menu->addSeparator();
+    menu->addAction( mEditors->action(MultiEditor::NextDocument) );
+    menu->addAction( mEditors->action(MultiEditor::PreviousDocument) );
 
     menuBar()->addMenu(menu);
 
