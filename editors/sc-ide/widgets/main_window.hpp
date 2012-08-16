@@ -76,10 +76,6 @@ public:
         CloseToolBox,
         ShowFullScreen,
 
-        // Language
-        EvaluateCurrentFile,
-        EvaluateRegion,
-
         // Settings
         ShowSettings,
 
@@ -128,8 +124,6 @@ signals:
 private Q_SLOTS:
     void loadSession( Session *session );
     void saveSession( Session *session );
-    void evaluateRegion();
-    void evaluateCurrentFile();
     void openHelp();
     void helpForSelection();
     void onInterpreterStateChanged( QProcess::ProcessState );

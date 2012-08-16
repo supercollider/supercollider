@@ -293,19 +293,6 @@ void MainWindow::createActions()
     act->setShortcut(tr("Ctrl+Shift+F11", "Show ScIDE in Full Screen"));
     connect(act, SIGNAL(triggered()), this, SLOT(toggleFullStreen()));
 
-    // Language
-
-    mActions[EvaluateCurrentFile] = act = new QAction(
-        QIcon::fromTheme("media-playback-start"), tr("Evaluate &File"), this);
-    act->setStatusTip(tr("Evaluate current File"));
-    connect(act, SIGNAL(triggered()), this, SLOT(evaluateCurrentFile()));
-
-    mActions[EvaluateRegion] = act = new QAction(
-    QIcon::fromTheme("media-playback-start"), tr("&Evaluate Region"), this);
-    act->setShortcut(tr("Ctrl+Return", "Evaluate region"));
-    act->setStatusTip(tr("Evaluate current region"));
-    connect(act, SIGNAL(triggered()), this, SLOT(evaluateRegion()));
-
     // Settings
 
     mActions[ShowSettings] = act = new QAction(tr("&Configure IDE..."), this);
@@ -415,8 +402,8 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scProcess()->action(SCProcess::RecompileClassLibrary) );
     menu->addAction( mMain->scProcess()->action(SCProcess::StopSCLang) );
     menu->addSeparator();
-    menu->addAction( mActions[EvaluateCurrentFile] );
-    menu->addAction( mActions[EvaluateRegion] );
+    menu->addAction( mEditors->action(MultiEditor::EvaluateCurrentDocument) );
+    menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );
     menu->addSeparator();
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::RunMain) );
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::StopMain) );
@@ -960,61 +947,6 @@ QWidget *MainWindow::cmdLine()
         widget = w;
     }
     return widget;
-}
-
-void MainWindow::evaluateRegion()
-{
-    CodeEditor *editor = mEditors->currentEditor();
-    if (!editor)
-        return;
-
-    QString text;
-
-    // Try current selection
-    QTextCursor cursor = editor->textCursor();
-    if (cursor.hasSelection())
-        text = cursor.selectedText();
-    else
-    {
-        // If no selection, try current region
-        cursor = editor->currentRegion();
-        if (!cursor.isNull())
-            text = cursor.selectedText();
-        else
-        {
-            //If no current region, try current line
-            cursor = editor->textCursor();
-            text = cursor.block().text();
-            if( mEditors->stepForwardEvaluation() ) {
-                QTextCursor newCursor = cursor;
-                newCursor.movePosition(QTextCursor::NextBlock);
-                newCursor.movePosition(QTextCursor::EndOfBlock);
-                editor->setTextCursor(newCursor);
-            }
-            // Adjust cursor for code blinking:
-            cursor.movePosition(QTextCursor::StartOfBlock);
-            cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-        }
-    }
-
-    if (text.isEmpty())
-        return;
-
-    text.replace( QChar( 0x2029 ), QChar( '\n' ) );
-
-    Main::instance()->scProcess()->evaluateCode(text);
-
-    editor->blinkCode(cursor);
-}
-
-void MainWindow::evaluateCurrentFile()
-{
-    CodeEditor *editor = mEditors->currentEditor();
-    if (!editor)
-        return;
-
-    QString documentText = editor->document()->textDocument()->toPlainText();
-    Main::instance()->scProcess()->evaluateCode(documentText);
 }
 
 void MainWindow::helpForSelection()

@@ -211,7 +211,21 @@ void MultiEditor::createActions()
     act->setShortcut( tr("Alt+Left", "Next Document"));
     connect(act, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
 
-    // Browse
+    // Language
+
+    mActions[EvaluateCurrentDocument] = act = new QAction(
+        QIcon::fromTheme("media-playback-start"), tr("Evaluate &File"), this);
+    act->setStatusTip(tr("Evaluate current File"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(act, SIGNAL(triggered()), this, SLOT(evaluateDocument()));
+
+    mActions[EvaluateRegion] = act = new QAction(
+    QIcon::fromTheme("media-playback-start"), tr("&Evaluate Region"), this);
+    act->setShortcut(tr("Ctrl+Return", "Evaluate region"));
+    act->setStatusTip(tr("Evaluate current region"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(act, SIGNAL(triggered()), this, SLOT(evaluateRegion()));
+
     mActions[OpenDefinition] = act = new QAction(tr("Open Class/Method Definition"), this);
     act->setShortcut(tr("Ctrl+D", "Open definition of selected class or method"));
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -232,6 +246,8 @@ void MultiEditor::createActions()
     addAction(mActions[EnlargeFont]);
     addAction(mActions[ShrinkFont]);
     addAction(mActions[OpenDefinition]);
+    addAction(mActions[EvaluateCurrentDocument]);
+    addAction(mActions[EvaluateRegion]);
 }
 
 void MultiEditor::updateActions()
@@ -247,6 +263,9 @@ void MultiEditor::updateActions()
     mActions[IndentLineOrRegion]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
     mActions[ShrinkFont]->setEnabled( editor );
+    mActions[OpenDefinition]->setEnabled( editor );
+    mActions[EvaluateCurrentDocument]->setEnabled( editor );
+    mActions[EvaluateRegion]->setEnabled( editor );
     mActions[ResetFontSize]->setEnabled( editor );
     mActions[ShowWhitespace]->setEnabled( editor );
     mActions[ShowWhitespace]->setChecked( editor && editor->showWhitespace() );
@@ -382,6 +401,61 @@ CodeEditor * MultiEditor::editorForDocument( Document *doc )
     }
     return 0;
 }
+
+
+void MultiEditor::evaluateRegion()
+{
+    CodeEditor * editor = currentEditor();
+    if (!editor)
+        return;
+
+    QString text;
+
+    // Try current selection
+    QTextCursor cursor = editor->textCursor();
+    if (cursor.hasSelection())
+        text = cursor.selectedText();
+    else {
+        // If no selection, try current region
+        cursor = editor->currentRegion();
+        if (!cursor.isNull())
+            text = cursor.selectedText();
+        else {
+            // If no current region, try current line
+            cursor = editor->textCursor();
+            text = cursor.block().text();
+            if( mStepForwardEvaluation ) {
+                QTextCursor newCursor = cursor;
+                newCursor.movePosition(QTextCursor::NextBlock);
+                newCursor.movePosition(QTextCursor::EndOfBlock);
+                editor->setTextCursor(newCursor);
+            }
+            // Adjust cursor for code blinking:
+            cursor.movePosition(QTextCursor::StartOfBlock);
+            cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        }
+    }
+
+    if (text.isEmpty())
+        return;
+
+    text.replace( QChar( 0x2029 ), QChar( '\n' ) );
+
+    Main::instance()->scProcess()->evaluateCode(text);
+
+    editor->blinkCode( cursor );
+}
+
+void MultiEditor::evaluateDocument()
+{
+    CodeEditor * editor = currentEditor();
+    if (!editor)
+        return;
+
+    QString documentText = editor->document()->textDocument()->toPlainText();
+    Main::instance()->scProcess()->evaluateCode(documentText);
+}
+
 
 void MultiEditor::openDefinition()
 {

@@ -71,7 +71,10 @@ public:
         NextDocument,
         PreviousDocument,
 
-        // Browse
+        // Language
+        EvaluateCurrentDocument,
+        EvaluateRegion,
+
         OpenDefinition,
 
         ActionRoleCount
@@ -113,6 +116,8 @@ private Q_SLOTS:
     void onCurrentChanged( int index );
     void onModificationChanged( QWidget * );
     void openDefinition();
+    void evaluateRegion();
+    void evaluateDocument();
 
 private:
     void createActions();
