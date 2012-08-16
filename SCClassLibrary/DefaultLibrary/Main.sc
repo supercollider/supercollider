@@ -26,10 +26,10 @@ Main : Process {
 
 		("Welcome to SuperCollider %.".format(Main.version)
 			+ (Platform.ideName.switch(
-				"scvim", {"For help type :SChelp for help."},
-				"scel",  {"For help type C-c C-y for help."},
-				"sced",  {"For help type ctrl-U for help."},
-				"scapp", {"For help type cmd-d for help."},
+				"scvim", {"For help type :SChelp."},
+				"scel",  {"For help type C-c C-y."},
+				"sced",  {"For help type ctrl-U."},
+				"scapp", {"For help type cmd-d."},
 				"scqt", {"For help press F1."}
 			) ?? {
 				(
