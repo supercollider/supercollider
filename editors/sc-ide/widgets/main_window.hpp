@@ -191,9 +191,12 @@ class StatusClockLabel : public StatusLabel
 {
 public:
     StatusClockLabel (QWidget * parent = 0);
+    ~StatusClockLabel();
 
 private:
     void timerEvent(QTimerEvent *);
+    void updateTime();
+    int mTimerId;
 };
 
 } // namespace ScIDE
