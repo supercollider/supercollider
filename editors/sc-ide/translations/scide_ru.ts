@@ -394,7 +394,7 @@ Do you want to quit without saving?</source>
     <name>ScIDE::PostDock</name>
     <message>
         <location filename="../widgets/post_window.hpp" line="64"/>
-        <source>Post Window</source>
+        <source>Post window</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
