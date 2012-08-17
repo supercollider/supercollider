@@ -399,8 +399,6 @@ void sc_GetUserConfigDirectory(char *str, int size)
 	}
 
 #if defined(__linux__) || defined(__freebsd__)
-	char * home = str;
-
 	sc_GetUserHomeDirectory(str, size);
 	sc_AppendToPath(str, size, ".config/SuperCollider");
 #else
