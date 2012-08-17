@@ -1414,7 +1414,7 @@ void CodeEditor::gotoNextBlock()
         return;
 
     if (it->type == Token::ClosingBracket) {
-        if (it == cursor)
+        if (it.position() == cursor.position())
             ++it;
     }
 
@@ -1443,7 +1443,7 @@ void CodeEditor::gotoPreviousBlock()
         return;
 
     if (it->type == Token::OpeningBracket) {
-        if (it == cursor)
+        if (it.position() == cursor.position())
             --it;
     }
 
