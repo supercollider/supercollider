@@ -134,7 +134,7 @@ public:
 
     // Constructs an iterator for the token that starts at, or contains the given position.
     // If there is no such token, the new iterator is invalid.
-    TokenIterator( const QTextBlock & block, int pos ):
+    TokenIterator( const QTextBlock & block, int positionInBlock ):
         blk(block)
     {
         if (block.isValid()) {
@@ -143,9 +143,9 @@ public:
             while (idx--)
             {
                 const Token & token = data->tokens[idx];
-                if (token.positionInBlock > pos)
+                if (token.positionInBlock > positionInBlock)
                     continue;
-                else if (token.positionInBlock == pos || token.positionInBlock + token.length > pos)
+                else if (token.positionInBlock == positionInBlock || token.positionInBlock + token.length > positionInBlock)
                     break;
             }
         }
@@ -155,7 +155,7 @@ public:
 
     // Return an iterator for the first token found left of given position, anywhere in the document.
     // If there is no such token, the returned iterator is invalid.
-    static TokenIterator leftOf( const QTextBlock & block, int pos )
+    static TokenIterator leftOf( const QTextBlock & block, int positionInBlock )
     {
         TokenIterator it;
         it.blk = block;
@@ -170,11 +170,11 @@ public:
             while(it.idx--)
             {
                 Token const & token = it.data->tokens[it.idx];
-                if( pos < 0 || token.positionInBlock < pos )
+                if( positionInBlock < 0 || token.positionInBlock < positionInBlock )
                     return it;
             }
 
-            pos = -1; // match on first token in next block;
+            positionInBlock = -1; // match on first token in next block;
             it.blk = it.blk.previous();
         }
 
@@ -183,7 +183,7 @@ public:
 
     // Return an iterator for the first token found at or right of given position, anywhere in the document.
     // If there is no such token, the returned iterator is invalid.
-    static TokenIterator rightOf( const QTextBlock & block, int pos )
+    static TokenIterator rightOf( const QTextBlock & block, int positionInBlock )
     {
         TokenIterator it;
         it.blk = block;
@@ -198,12 +198,12 @@ public:
             while(++it.idx < n)
             {
                 Token const & token = it.data->tokens[it.idx];
-                if( token.positionInBlock >= pos )
+                if( token.positionInBlock >= positionInBlock )
                     return it;
             }
 
             it.idx = -1;
-            pos = -1; // match right on first token in next block;
+            positionInBlock = -1; // match right on first token in next block;
             it.blk = it.blk.next();
         }
 
@@ -212,7 +212,7 @@ public:
 
     // Return an iterator for the token at 'pos' or 'pos-1'.
     // If there is no such token, the returned iterator is invalid.
-    static TokenIterator around( const QTextBlock & block, int pos )
+    static TokenIterator around( const QTextBlock & block, int positionInBlock )
     {
         TokenIterator it;
         it.blk = block;
@@ -230,10 +230,10 @@ public:
         for( int i = 0; i < n; ++i )
         {
             Token const & token = it.data->tokens[i];
-            if(token.positionInBlock > pos) {
+            if(token.positionInBlock > positionInBlock) {
                 return it;
             }
-            else if(token.positionInBlock == pos - 1 || token.positionInBlock == pos)
+            else if(token.positionInBlock == positionInBlock - 1 || token.positionInBlock == positionInBlock)
             {
                 it.idx = i;
                 break;
