@@ -739,6 +739,13 @@ void MainWindow::openDocument()
 
     dialog.setFileMode( QFileDialog::ExistingFiles );
 
+    CodeEditor * currentEditor = mEditors->currentEditor();
+    if (currentEditor) {
+        Document * currentDocument = currentEditor->document();
+        QFileInfo filePath (currentDocument->filePath());
+        dialog.setDirectory(filePath.dir());
+    }
+
     QStringList filters;
     filters
         << "All files(*)"
