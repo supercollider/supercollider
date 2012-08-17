@@ -68,6 +68,9 @@ public:
         MoveLineUp,
         MoveLineDown,
 
+        GotoPreviousBlock,
+        GotoNextBlock,
+
         // View
         EnlargeFont,
         ShrinkFont,

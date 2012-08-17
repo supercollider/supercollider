@@ -1405,4 +1405,62 @@ void CodeEditor::moveLineDown()
     moveLineUpDown(false);
 }
 
+void CodeEditor::gotoNextBlock()
+{
+    QTextCursor cursor = textCursor();
+    TokenIterator it = TokenIterator::rightOf(cursor.block(), cursor.positionInBlock());
+
+    if (!it.isValid())
+        return;
+
+    if (it->type == Token::ClosingBracket) {
+        if (it == cursor)
+            ++it;
+    }
+
+    while (it.isValid()) {
+        switch (it->type) {
+        case Token::ClosingBracket:
+        {
+            QTextCursor newCursor(it.block());
+            newCursor.setPosition(it.position());
+            setTextCursor(newCursor);
+            return;
+        }
+        default:
+            ;
+        }
+        ++it;
+    }
+}
+
+void CodeEditor::gotoPreviousBlock()
+{
+    QTextCursor cursor = textCursor();
+    TokenIterator it = TokenIterator::leftOf(cursor.block(), cursor.positionInBlock());
+
+    if (!it.isValid())
+        return;
+
+    if (it->type == Token::OpeningBracket) {
+        if (it == cursor)
+            --it;
+    }
+
+    while (it.isValid()) {
+        switch (it->type) {
+        case Token::OpeningBracket:
+        {
+            QTextCursor newCursor(it.block());
+            newCursor.setPosition(it.position());
+            setTextCursor(newCursor);
+            return;
+        }
+        default:
+            ;
+        }
+        --it;
+    }
+}
+
 } // namespace ScIDE

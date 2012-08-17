@@ -99,6 +99,8 @@ public Q_SLOTS:
     void copyLineDown();
     void moveLineUp();
     void moveLineDown();
+    void gotoPreviousBlock();
+    void gotoNextBlock();
 
 protected:
     virtual bool event( QEvent * );
