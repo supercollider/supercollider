@@ -230,10 +230,7 @@ static void writeTextFormat( const QTextCharFormat &fm, YAML::Emitter &out )
 
 static void writeValue( const QVariant &var, YAML::Emitter &out )
 {
-    int type = var.type();
-
-    switch(var.type())
-    {
+    switch(var.type()) {
     case QVariant::Invalid:
     {
         out << YAML::Null;

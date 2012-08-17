@@ -70,7 +70,6 @@ int main( int argc, char *argv[] )
 static QString getSettingsFile()
 {
     char config_dir[PATH_MAX];
-    bool configured = false;
     sc_GetUserConfigDirectory(config_dir, PATH_MAX);
     return QString(config_dir) + SC_PATH_DELIMITER + "sc_ide_conf.yaml";
 }
