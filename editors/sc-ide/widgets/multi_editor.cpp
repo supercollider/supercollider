@@ -668,7 +668,6 @@ void MultiEditor::openMethodDefinition( const QString & methodName )
 
     const Introspection & introspection = Main::instance()->scProcess()->introspection();
     const MethodMap & methods = introspection.methodMap();
-    const ClassMap & classes = introspection.classMap();
 
     pair<MethodMap::const_iterator, MethodMap::const_iterator> matchingMethods =
         methods.equal_range(methodName);

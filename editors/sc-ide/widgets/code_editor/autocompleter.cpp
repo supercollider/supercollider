@@ -863,8 +863,6 @@ void AutoCompleter::triggerMethodCallAid( bool force )
 
 void AutoCompleter::updateMethodCall( int cursorPos )
 {
-    QTextDocument *doc = document();
-
     int i = mMethodCall.stack.count();
     while (i--)
     {
