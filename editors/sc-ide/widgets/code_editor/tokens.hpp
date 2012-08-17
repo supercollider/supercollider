@@ -193,7 +193,7 @@ public:
         {
             it.data = static_cast<TextBlockData*>(it.blk.userData());
 
-            int n = it.data->tokens.size();
+            int n = it.data ? it.data->tokens.size() : 0;
 
             while(++it.idx < n)
             {
