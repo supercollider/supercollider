@@ -184,6 +184,30 @@ void MultiEditor::createActions()
     act->setStatusTip(tr("Toggle Comment"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(toggleComment()));
 
+    mActions[CopyLineUp] = act = new QAction(
+        QIcon::fromTheme("edit-copylineup"), tr("Copy Line Up"), this);
+    act->setShortcut(tr("Ctrl+Alt+Up", "Copy Line Up"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(copyLineUp()));
+
+    mActions[CopyLineDown] = act = new QAction(
+        QIcon::fromTheme("edit-copylinedown"), tr("Copy Line Down"), this);
+    act->setShortcut(tr("Ctrl+Alt+Down", "Copy Line Up"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(copyLineDown()));
+
+    mActions[MoveLineUp] = act = new QAction(
+        QIcon::fromTheme("edit-movelineup"), tr("move Line Up"), this);
+    act->setShortcut(tr("Ctrl+Shift+Up", "Move Line Up"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(moveLineUp()));
+
+    mActions[MoveLineDown] = act = new QAction(
+        QIcon::fromTheme("edit-movelinedown"), tr("Move Line Down"), this);
+    act->setShortcut(tr("Ctrl+Shift+Down", "Move Line Up"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(moveLineDown()));
+
 
     // View
 
@@ -257,6 +281,10 @@ void MultiEditor::createActions()
     addAction(mActions[EvaluateCurrentDocument]);
     addAction(mActions[EvaluateRegion]);
     addAction(mActions[ToggleComment]);
+    addAction(mActions[CopyLineUp]);
+    addAction(mActions[CopyLineDown]);
+    addAction(mActions[MoveLineUp]);
+    addAction(mActions[MoveLineDown]);
 }
 
 void MultiEditor::updateActions()
@@ -270,6 +298,10 @@ void MultiEditor::updateActions()
     mActions[Cut]->setEnabled( mActions[Copy]->isEnabled() );
     mActions[Paste]->setEnabled( editor );
     mActions[ToggleComment]->setEnabled( editor );
+    mActions[CopyLineUp]->setEnabled( editor );
+    mActions[CopyLineDown]->setEnabled( editor );
+    mActions[MoveLineUp]->setEnabled( editor );
+    mActions[MoveLineDown]->setEnabled( editor );
 
     mActions[IndentLineOrRegion]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );

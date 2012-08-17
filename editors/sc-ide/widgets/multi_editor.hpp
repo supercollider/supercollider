@@ -63,6 +63,11 @@ public:
         TriggerMethodCallAid,
         ToggleComment,
 
+        CopyLineUp,
+        CopyLineDown,
+        MoveLineUp,
+        MoveLineDown,
+
         // View
         EnlargeFont,
         ShrinkFont,
