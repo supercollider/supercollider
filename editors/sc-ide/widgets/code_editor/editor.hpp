@@ -132,7 +132,7 @@ private:
     void toggleCommentSingleLine( QTextCursor );
     void toggleCommentSingleLine();
     void toggleCommentSelection();
-    void addSingleLineComment( QTextCursor );
+    void addSingleLineComment( QTextCursor, int indentationLevel );
     void removeSingleLineComment( QTextCursor );
 
     void copyUpDown(bool up);
@@ -141,6 +141,8 @@ private:
     int indentedStartOfLine( const QTextBlock & );
     void indent( const QTextCursor & );
     QTextBlock indent( const QTextBlock & b, int level );
+    QString makeIndentationString( int level );
+    int indentationLevel( const QTextCursor & );
 
     LineIndicator *mLineIndicator;
     Document *mDoc;
