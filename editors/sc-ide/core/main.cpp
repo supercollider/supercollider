@@ -34,6 +34,7 @@
 
 using namespace ScIDE;
 
+// FIXME: when using Application, we cannot access QApplication::arguments()
 class Application : public QApplication
 {
 public:
@@ -58,7 +59,11 @@ public:
 
 int main( int argc, char *argv[] )
 {
+#ifdef Q_OS_MAC
     Application app(argc, argv);
+#else
+    QApplication app(argc, argv);
+#endif
 
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
@@ -83,11 +88,13 @@ int main( int argc, char *argv[] )
         win->showMaximized();
     }
 
-    QStringList arguments (app.arguments());
+#ifndef Q_OS_MAC
+    QStringList arguments (QApplication::arguments());
     arguments.pop_front(); // application path
     foreach (QString argument, arguments) {
         main->documentManager()->open(argument);
     }
+#endif
 
     bool startInterpreter = main->settings()->value("IDE/interpreter/autoStart").toBool();
     if (startInterpreter)
