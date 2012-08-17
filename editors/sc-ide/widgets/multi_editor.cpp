@@ -208,6 +208,17 @@ void MultiEditor::createActions()
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(moveLineDown()));
 
+    mActions[GotoPreviousBlock] = act = new QAction(
+        QIcon::fromTheme("edit-gotopreviousblock"), tr("Go to Previous Block"), this);
+    act->setShortcut(tr("Ctrl+[", "Go to Previous Block"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoPreviousBlock()));
+
+    mActions[GotoNextBlock] = act = new QAction(
+        QIcon::fromTheme("edit-gotonextblock"), tr("Go to Next Block"), this);
+    act->setShortcut(tr("Ctrl+]", "Go to Next Block"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoNextBlock()));
 
     // View
 
@@ -285,6 +296,8 @@ void MultiEditor::createActions()
     addAction(mActions[CopyLineDown]);
     addAction(mActions[MoveLineUp]);
     addAction(mActions[MoveLineDown]);
+    addAction(mActions[GotoPreviousBlock]);
+    addAction(mActions[GotoNextBlock]);
 }
 
 void MultiEditor::updateActions()
@@ -302,6 +315,8 @@ void MultiEditor::updateActions()
     mActions[CopyLineDown]->setEnabled( editor );
     mActions[MoveLineUp]->setEnabled( editor );
     mActions[MoveLineDown]->setEnabled( editor );
+    mActions[GotoPreviousBlock]->setEnabled( editor );
+    mActions[GotoNextBlock]->setEnabled( editor );
 
     mActions[IndentLineOrRegion]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
