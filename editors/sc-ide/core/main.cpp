@@ -27,15 +27,38 @@
 
 #include <QApplication>
 #include <QAction>
+#include <QDir>
+#include <QFileOpenEvent>
 #include <QLibraryInfo>
 #include <QTranslator>
-#include <QDir>
 
 using namespace ScIDE;
 
+class Application : public QApplication
+{
+public:
+    Application ( int argc, char * argv [] ) :
+        QApplication(argc, argv)
+    {}
+
+    bool event( QEvent *event )
+    {
+        if( event->type() == QEvent::FileOpen ) {
+            // open the file dragged onto the application icon on Mac
+            QFileOpenEvent *openEvent = static_cast<QFileOpenEvent*>(event);
+            Main::instance()->documentManager()->open(openEvent->file());
+            return true;
+        }
+
+        return QApplication::event( event );
+    }
+};
+
+
+
 int main( int argc, char *argv[] )
 {
-    QApplication app(argc, argv);
+    Application app(argc, argv);
 
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
