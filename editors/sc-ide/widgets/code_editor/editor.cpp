@@ -1181,7 +1181,7 @@ void CodeEditor::toggleCommentSelection()
             else
                 removeSingleLineComment(blockCursor);
             currentBlock = currentBlock.next();
-        } while (currentBlock.position() < cursor.selectionEnd());
+        } while (currentBlock.isValid() && currentBlock.position() <= cursor.selectionEnd());
     } else {
         QString selectionText = cursor.selectedText();
         QTextCursor selectionCursor(cursor);
