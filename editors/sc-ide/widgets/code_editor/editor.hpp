@@ -95,6 +95,10 @@ public Q_SLOTS:
     void triggerAutoCompletion();
     void triggerMethodCallAid();
     void toggleComment();
+    void copyLineUp();
+    void copyLineDown();
+    void moveLineUp();
+    void moveLineDown();
 
 protected:
     virtual bool event( QEvent * );
@@ -130,6 +134,9 @@ private:
     void toggleCommentSelection();
     void addSingleLineComment( QTextCursor );
     void removeSingleLineComment( QTextCursor );
+
+    void copyUpDown(bool up);
+    void moveLineUpDown(bool up);
 
     int indentedStartOfLine( const QTextBlock & );
     void indent( const QTextCursor & );

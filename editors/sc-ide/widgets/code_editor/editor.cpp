@@ -1201,4 +1201,138 @@ void CodeEditor::toggleCommentSelection()
     cursor.endEditBlock();
 }
 
+void CodeEditor::copyUpDown(bool up)
+{
+    // directly taken from qtcreator
+    // Copyright (c) 2012 Nokia Corporation and/or its subsidiary(-ies).
+    // GNU Lesser General Public License
+    QTextCursor cursor = textCursor();
+    QTextCursor move = cursor;
+    move.beginEditBlock();
+
+    bool hasSelection = cursor.hasSelection();
+
+    if (hasSelection) {
+        move.setPosition(cursor.selectionStart());
+        move.movePosition(QTextCursor::StartOfBlock);
+        move.setPosition(cursor.selectionEnd(), QTextCursor::KeepAnchor);
+        move.movePosition(move.atBlockStart() ? QTextCursor::Left: QTextCursor::EndOfBlock,
+                          QTextCursor::KeepAnchor);
+    } else {
+        move.movePosition(QTextCursor::StartOfBlock);
+        move.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+    }
+
+    QString text = move.selectedText();
+
+    if (up) {
+        move.setPosition(cursor.selectionStart());
+        move.movePosition(QTextCursor::StartOfBlock);
+        move.insertBlock();
+        move.movePosition(QTextCursor::Left);
+    } else {
+        move.movePosition(QTextCursor::EndOfBlock);
+        if (move.atBlockStart()) {
+            move.movePosition(QTextCursor::NextBlock);
+            move.insertBlock();
+            move.movePosition(QTextCursor::Left);
+        } else {
+            move.insertBlock();
+        }
+    }
+
+    int start = move.position();
+    move.clearSelection();
+    move.insertText(text);
+    int end = move.position();
+
+    move.setPosition(start);
+    move.setPosition(end, QTextCursor::KeepAnchor);
+
+    indent(cursor);
+    move.endEditBlock();
+
+    setTextCursor(move);
+}
+
+void CodeEditor::copyLineDown()
+{
+    copyUpDown(false);
+}
+
+void CodeEditor::copyLineUp()
+{
+    copyUpDown(true);
+}
+
+void CodeEditor::moveLineUpDown(bool up)
+{
+    // directly taken from qtcreator
+    // Copyright (c) 2012 Nokia Corporation and/or its subsidiary(-ies).
+    // GNU Lesser General Public License
+    QTextCursor cursor = textCursor();
+    QTextCursor move = cursor;
+
+    move.setVisualNavigation(false); // this opens folded items instead of destroying them
+
+    move.beginEditBlock();
+
+    bool hasSelection = cursor.hasSelection();
+
+    if (cursor.hasSelection()) {
+        move.setPosition(cursor.selectionStart());
+        move.movePosition(QTextCursor::StartOfBlock);
+        move.setPosition(cursor.selectionEnd(), QTextCursor::KeepAnchor);
+        move.movePosition(move.atBlockStart() ? QTextCursor::Left: QTextCursor::EndOfBlock,
+                          QTextCursor::KeepAnchor);
+    } else {
+        move.movePosition(QTextCursor::StartOfBlock);
+        move.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+    }
+    QString text = move.selectedText();
+
+    move.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor);
+    move.removeSelectedText();
+
+    if (up) {
+        move.movePosition(QTextCursor::PreviousBlock);
+        move.insertBlock();
+        move.movePosition(QTextCursor::Left);
+    } else {
+        move.movePosition(QTextCursor::EndOfBlock);
+        if (move.atBlockStart()) { // empty block
+            move.movePosition(QTextCursor::NextBlock);
+            move.insertBlock();
+            move.movePosition(QTextCursor::Left);
+        } else {
+            move.insertBlock();
+        }
+    }
+
+    int start = move.position();
+    move.clearSelection();
+    move.insertText(text);
+    int end = move.position();
+
+    if (hasSelection) {
+        move.setPosition(start);
+        move.setPosition(end, QTextCursor::KeepAnchor);
+    }
+
+    indent(cursor);
+    move.endEditBlock();
+
+    setTextCursor(move);
+}
+
+void CodeEditor::moveLineUp()
+{
+    moveLineUpDown(true);
+}
+
+void CodeEditor::moveLineDown()
+{
+    moveLineUpDown(false);
+}
+
 } // namespace ScIDE
