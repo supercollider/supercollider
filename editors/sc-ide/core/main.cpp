@@ -60,8 +60,14 @@ int main( int argc, char *argv[] )
         win->showMaximized();
     }
 
+    QStringList arguments (app.arguments());
+    arguments.pop_front(); // application path
+    foreach (QString argument, arguments) {
+        main->documentManager()->open(argument);
+    }
+
     bool startInterpreter = main->settings()->value("IDE/interpreter/autoStart").toBool();
-    if(startInterpreter)
+    if (startInterpreter)
         main->scProcess()->start();
 
     return app.exec();
