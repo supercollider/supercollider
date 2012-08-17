@@ -729,13 +729,16 @@ void CodeEditor::mouseReleaseEvent ( QMouseEvent *e )
 void CodeEditor::mouseDoubleClickEvent ( QMouseEvent *e )
 {
     QTextCursor c(textCursor());
+    TokenIterator it = TokenIterator::around(c.block(), c.positionInBlock());
+    if (!it.isValid())
+        return;
 
-    BracketMatch m;
-    matchBracket( c.position(), m );
-    if(m.first.isValid() && m.second.isValid())
+    BracketMatch match;
+    matchBracket( it, match );
+    if(match.first.isValid() && match.second.isValid())
     {
-        c.setPosition(m.first.position());
-        c.setPosition(m.second.position() + 1, QTextCursor::KeepAnchor);
+        c.setPosition(match.first.position());
+        c.setPosition(match.second.position() + 1, QTextCursor::KeepAnchor);
         setTextCursor(c);
         mMouseBracketMatch = true;
     }
@@ -799,9 +802,26 @@ void CodeEditor::matchBrackets()
     mBracketSelections.clear();
 
     QTextCursor cursor(textCursor());
+    QTextBlock block( cursor.block() );
+    int posInBlock = cursor.positionInBlock();
+    TokenIterator it(block);
+    while (it.isValid() && it.block() == block)
+    {
+        const Token & token = *it;
+        if (token.positionInBlock > posInBlock) {
+            it = TokenIterator();
+            break;
+        } else if (
+            (token.positionInBlock == posInBlock && token.type == Token::OpeningBracket) ||
+            (token.positionInBlock == posInBlock - 1 && token.type == Token::ClosingBracket)
+        )
+            break;
+        ++it;
+    }
 
     BracketMatch match;
-    matchBracket( cursor.position(), match );
+    if( it.isValid() && it.block() == block)
+        matchBracket( it, match );
 
     if( match.first.isValid() && match.second.isValid() )
     {
@@ -840,30 +860,9 @@ void CodeEditor::matchBrackets()
     updateExtraSelections();
 }
 
-void CodeEditor::matchBracket( int pos, BracketMatch & match )
+void CodeEditor::matchBracket( const TokenIterator & bracket , BracketMatch & match )
 {
-    QTextBlock block( textDocument()->findBlock(pos) );
-    if (!block.isValid())
-        return;
-
-    int posInBlock = pos - block.position();
-    TokenIterator it(block);
-
-    while (it.isValid() && it.block() == block)
-    {
-        const Token & token = *it;
-        if (token.positionInBlock > posInBlock)
-            return;
-        else if (
-            (token.positionInBlock == posInBlock && token.type == Token::OpeningBracket) ||
-            (token.positionInBlock == posInBlock - 1 && token.type == Token::ClosingBracket)
-        )
-            break;
-        ++it;
-    }
-
-    if( !it.isValid() || it.block() != block)
-        return;
+    TokenIterator it(bracket);
 
     if(it->type == Token::OpeningBracket)
     {
