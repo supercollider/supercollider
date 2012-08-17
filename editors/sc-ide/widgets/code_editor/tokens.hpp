@@ -22,6 +22,7 @@
 #define SCIDE_WIDGETS_CODE_EDITOR_BRACKETS_HPP_INCLUDED
 
 #include <QTextBlock>
+#include <QTextCursor>
 #include <vector>
 
 namespace ScIDE
@@ -99,8 +100,8 @@ private:
 
 public:
     TokenIterator(): idx(-1) {}
-    bool isValid() { return idx >= 0; }
-    const QTextBlock & block() { return blk; }
+    bool isValid() const             { return idx >= 0; }
+    const QTextBlock & block() const { return blk; }
     const Token & operator *()
     {
         Q_ASSERT(blk.isValid());
@@ -110,7 +111,7 @@ public:
         return data->tokens[idx];
     }
 
-    const Token * operator ->()
+    const Token * operator ->() const
     {
         Q_ASSERT(blk.isValid());
         Q_ASSERT(idx >= 0);
@@ -312,23 +313,30 @@ public:
         return it;
     }
 
-    char character()
+    char character() const
     {
         return (*this)->character;
     }
 
     // A convenience function returning the global position in document of the token
     // referred to by this iterator
-    int position()
+    int position() const
     {
         return (*this)->positionInBlock + blk.position();
     }
 
     // A convenience function returning the type of token referred to by this iterator,
     // or Token::Unknown if the iterator is invalid
-    Token::Type type()
+    Token::Type type() const
     {
         return isValid() ? (*this)->type : Token::Unknown;
+    }
+
+    bool operator==(QTextCursor const & cursor) const
+    {
+        if (!isValid()) return false;
+
+        return (cursor.block() == block()) && (cursor.position() == position());
     }
 };
 
