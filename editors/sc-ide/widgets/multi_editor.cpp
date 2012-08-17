@@ -177,6 +177,14 @@ void MultiEditor::createActions()
     act->setShortcut(tr("Alt+Space", "Trigger Method Call Aid"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(triggerMethodCallAid()));
 
+    mActions[ToggleComment] = act = new QAction(
+        QIcon::fromTheme("edit-comment"), tr("Toggle &Comment"), this);
+    act->setShortcut(tr("Ctrl+/", "Toggle Comment"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    act->setStatusTip(tr("Toggle Comment"));
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(toggleSingleLineComment()));
+
+
     // View
 
     mActions[EnlargeFont] = act = new QAction(
@@ -248,6 +256,7 @@ void MultiEditor::createActions()
     addAction(mActions[OpenDefinition]);
     addAction(mActions[EvaluateCurrentDocument]);
     addAction(mActions[EvaluateRegion]);
+    addAction(mActions[ToggleComment]);
 }
 
 void MultiEditor::updateActions()
@@ -260,6 +269,8 @@ void MultiEditor::updateActions()
     mActions[Copy]->setEnabled( editor && editor->textCursor().hasSelection() );
     mActions[Cut]->setEnabled( mActions[Copy]->isEnabled() );
     mActions[Paste]->setEnabled( editor );
+    mActions[ToggleComment]->setEnabled( editor );
+
     mActions[IndentLineOrRegion]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
     mActions[ShrinkFont]->setEnabled( editor );

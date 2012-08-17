@@ -443,14 +443,14 @@ QTextCursor CodeEditor::currentRegion()
     QTextCursor c(textCursor());
     QTextBlock b(c.block());
 
-    int pos = c.position() - b.position();
+    int positionInBlock = c.position() - b.position();
     TokenIterator start;
     TokenIterator end;
     int topLevel = 0;
     int level = 0;
 
     // search unmatched opening bracket
-    TokenIterator it = TokenIterator::leftOf( b, pos );
+    TokenIterator it = TokenIterator::leftOf( b, positionInBlock );
     while(it.isValid())
     {
         char chr = it->character;
@@ -472,7 +472,7 @@ QTextCursor CodeEditor::currentRegion()
         return QTextCursor();
 
     // match the found opening bracket
-    it = TokenIterator::rightOf( b, pos );
+    it = TokenIterator::rightOf( b, positionInBlock );
     while(it.isValid())
     {
         char chr = it->character;
@@ -1084,6 +1084,31 @@ void CodeEditor::triggerAutoCompletion()
 void CodeEditor::triggerMethodCallAid()
 {
     mAutoCompleter->triggerMethodCallAid();
+}
+
+static bool isSingleLineComment(QTextBlock const & block)
+{
+    static QRegExp commentRegex("^\\s*//.*");
+    return commentRegex.exactMatch(block.text());
+}
+
+void CodeEditor::toggleSingleLineComment()
+{
+    QTextCursor cursor = textCursor();
+    QTextBlock currentBlock(cursor.block());
+
+    cursor.beginEditBlock();
+    cursor.movePosition(QTextCursor::StartOfBlock);
+
+    if (isSingleLineComment(currentBlock)) {
+        cursor.setPosition(cursor.position() + indentedStartOfLine(currentBlock) + 2, QTextCursor::KeepAnchor);
+        cursor.insertText("");
+    } else {
+        cursor.setPosition(cursor.position() + indentedStartOfLine(currentBlock), QTextCursor::KeepAnchor);
+        cursor.insertText("// ");
+    }
+    indent(cursor);
+    cursor.endEditBlock();
 }
 
 } // namespace ScIDE

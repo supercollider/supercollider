@@ -94,6 +94,7 @@ public Q_SLOTS:
     void indent();
     void triggerAutoCompletion();
     void triggerMethodCallAid();
+    void toggleSingleLineComment();
 
 protected:
     virtual bool event( QEvent * );
