@@ -182,7 +182,7 @@ void MultiEditor::createActions()
     act->setShortcut(tr("Ctrl+/", "Toggle Comment"));
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     act->setStatusTip(tr("Toggle Comment"));
-    mSigMux->connect(act, SIGNAL(triggered()), SLOT(toggleSingleLineComment()));
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(toggleComment()));
 
 
     // View
