@@ -1092,22 +1092,112 @@ static bool isSingleLineComment(QTextBlock const & block)
     return commentRegex.exactMatch(block.text());
 }
 
-void CodeEditor::toggleSingleLineComment()
+static bool isSelectionComment(QString const & text)
+{
+    QString trimmed = text.trimmed();
+    if ( trimmed.startsWith(QString("/*")) && trimmed.endsWith(QString("*/")) )
+        return true;
+    else
+        return false;
+}
+
+void CodeEditor::toggleComment()
 {
     QTextCursor cursor = textCursor();
+
+    if (cursor.hasSelection())
+        toggleCommentSelection();
+    else
+        toggleCommentSingleLine();
+}
+
+void CodeEditor::toggleCommentSingleLine()
+{
+    QTextCursor cursor = textCursor();
+    cursor.beginEditBlock();
+
+    toggleCommentSingleLine( cursor );
+
+    cursor.endEditBlock();
+}
+
+void CodeEditor::addSingleLineComment(QTextCursor cursor)
+{
+    QTextBlock currentBlock(cursor.block());
+    cursor.movePosition(QTextCursor::StartOfBlock);
+    cursor.setPosition(cursor.position() + indentedStartOfLine(currentBlock), QTextCursor::KeepAnchor);
+    cursor.insertText("// ");
+}
+
+void CodeEditor::removeSingleLineComment(QTextCursor cursor)
+{
+    QTextBlock currentBlock(cursor.block());
+    cursor.movePosition(QTextCursor::StartOfBlock);
+    cursor.setPosition(cursor.position() + indentedStartOfLine(currentBlock) + 2, QTextCursor::KeepAnchor);
+
+    if (!cursor.selectedText().endsWith(QString("//")))
+        cursor.setPosition(cursor.anchor() + indentedStartOfLine(currentBlock), QTextCursor::KeepAnchor);
+
+    cursor.insertText("");
+}
+
+void CodeEditor::toggleCommentSingleLine(QTextCursor cursor)
+{
     QTextBlock currentBlock(cursor.block());
 
     cursor.beginEditBlock();
-    cursor.movePosition(QTextCursor::StartOfBlock);
 
-    if (isSingleLineComment(currentBlock)) {
-        cursor.setPosition(cursor.position() + indentedStartOfLine(currentBlock) + 2, QTextCursor::KeepAnchor);
-        cursor.insertText("");
-    } else {
-        cursor.setPosition(cursor.position() + indentedStartOfLine(currentBlock), QTextCursor::KeepAnchor);
-        cursor.insertText("// ");
-    }
+    if (!isSingleLineComment(currentBlock))
+        addSingleLineComment(cursor);
+    else
+        removeSingleLineComment(cursor);
+
     indent(cursor);
+    cursor.endEditBlock();
+}
+
+static bool isBlockOnlySelection(QTextCursor)
+{
+    return true;
+}
+
+void CodeEditor::toggleCommentSelection()
+{
+    QTextCursor cursor = textCursor();
+    cursor.beginEditBlock();
+
+    if (isBlockOnlySelection(cursor)) {
+        QTextCursor selectionCursor(cursor);
+        selectionCursor.setPosition(cursor.selectionStart());
+
+        QTextBlock currentBlock = selectionCursor.block();
+        bool isComment = isSingleLineComment(currentBlock);
+
+        // TODO: keep indentation level of first block
+        do {
+            QTextCursor blockCursor(currentBlock);
+            if (!isComment)
+                addSingleLineComment(blockCursor);
+            else
+                removeSingleLineComment(blockCursor);
+            currentBlock = currentBlock.next();
+        } while (currentBlock.position() < cursor.selectionEnd());
+    } else {
+        QString selectionText = cursor.selectedText();
+        QTextCursor selectionCursor(cursor);
+
+        if (isSelectionComment(selectionText)) {
+            selectionText = selectionText.trimmed().remove(2);
+            selectionText.chop(2);
+            selectionCursor.insertText(selectionText);
+        } else {
+            selectionText = QString("/* ") + selectionText + QString(" */");
+            selectionCursor.insertText(selectionText);
+        }
+    }
+
+    indent();
+
     cursor.endEditBlock();
 }
 
