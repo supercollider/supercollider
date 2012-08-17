@@ -1005,15 +1005,15 @@ void CodeEditor::indent( const QTextCursor & selection )
     QStack<int> stack;
     int level = 0;
     int blockNum = 0;
-    QTextBlock b = QPlainTextEdit::document()->begin();
-    while (b.isValid())
+    QTextBlock block = QPlainTextEdit::document()->begin();
+    while (block.isValid())
     {
         if (level > 0) {
             stack.push(level);
             level = 0;
         }
 
-        TextBlockData *data = static_cast<TextBlockData*>(b.userData());
+        TextBlockData *data = static_cast<TextBlockData*>(block.userData());
         if (data)
         {
             int count = data->tokens.size();
@@ -1044,16 +1044,32 @@ void CodeEditor::indent( const QTextCursor & selection )
         }
 
         if(blockNum >= startBlockNum)
-            b = indent(b, stack.size());
+            block = indent(block, stack.size());
 
         if(blockNum == endBlockNum)
             break;
 
-        b = b.next();
+        block = block.next();
         ++blockNum;
     }
 
     cursor.endEditBlock();
+}
+
+QString CodeEditor::makeIndentationString(int level)
+{
+    if (level <= 0)
+        return QString();
+
+    if ( mSpaceIndent ) {
+        const int spaces = mIndentWidth * level;
+        QString indentationString (spaces, QChar(' '));
+        return indentationString;
+    } else {
+        const int tabs = level;
+        QString indentationString (tabs, QChar('\t'));
+        return indentationString;
+    }
 }
 
 QTextBlock CodeEditor::indent( const QTextBlock & block, int level )
@@ -1062,18 +1078,62 @@ QTextBlock CodeEditor::indent( const QTextBlock & block, int level )
     cursor.movePosition(QTextCursor::StartOfBlock);
     cursor.setPosition(cursor.position() + indentedStartOfLine(block), QTextCursor::KeepAnchor);
 
-    if ( mSpaceIndent ) {
-        const int spaces = mIndentWidth * level;
-        QString replacement (spaces, QChar(' '));
-        cursor.insertText(replacement);
-    } else {
-        const int tabs = level;
-        QString replacement (tabs, QChar('\t'));
-        cursor.insertText(replacement);
-    }
+    cursor.insertText(makeIndentationString(level));
 
     // modification has invalidated the block, so return a new one
     return cursor.block();
+}
+
+int CodeEditor::indentationLevel(const QTextCursor & cursor)
+{
+    QTextDocument *doc = QPlainTextEdit::document();
+    int startBlockNum = doc->findBlock(cursor.selectionStart()).blockNumber();
+
+    QStack<int> stack;
+    int level = 0;
+    int blockNum = 0;
+    QTextBlock block = QPlainTextEdit::document()->begin();
+    while (block.isValid()) {
+        if (level > 0) {
+            stack.push(level);
+            level = 0;
+        }
+
+        TextBlockData *data = static_cast<TextBlockData*>(block.userData());
+        if (data) {
+            int count = data->tokens.size();
+            for (int idx = 0; idx < count; ++idx) {
+                const Token & token = data->tokens[idx];
+                switch (token.type) {
+                case Token::OpeningBracket:
+                    if (token.character != '(' || stack.size() || token.positionInBlock)
+                        level += 1;
+                    break;
+
+                case Token::ClosingBracket:
+                    if (level)
+                        level -= 1;
+                    else if(!stack.isEmpty()) {
+                        stack.top() -= 1;
+                        if (stack.top() <= 0)
+                            stack.pop();
+                    }
+                    break;
+
+                default:
+                    ;
+                }
+            }
+        }
+
+        if (blockNum == startBlockNum)
+            return stack.size();
+
+        block = block.next();
+        ++blockNum;
+    }
+
+    return -1;
 }
 
 void CodeEditor::triggerAutoCompletion()
@@ -1121,12 +1181,20 @@ void CodeEditor::toggleCommentSingleLine()
     cursor.endEditBlock();
 }
 
-void CodeEditor::addSingleLineComment(QTextCursor cursor)
+void CodeEditor::addSingleLineComment(QTextCursor cursor, int indentation)
 {
     QTextBlock currentBlock(cursor.block());
+    int blockIndentationLevel = indentationLevel(cursor);
+
     cursor.movePosition(QTextCursor::StartOfBlock);
     cursor.setPosition(cursor.position() + indentedStartOfLine(currentBlock), QTextCursor::KeepAnchor);
-    cursor.insertText("// ");
+
+    QString commentString = makeIndentationString(indentation) + QString("// ")
+                            + makeIndentationString(blockIndentationLevel - indentation);
+
+    cursor.insertText(commentString);
+
+    cursor.movePosition(QTextCursor::StartOfBlock);
 }
 
 void CodeEditor::removeSingleLineComment(QTextCursor cursor)
@@ -1147,9 +1215,10 @@ void CodeEditor::toggleCommentSingleLine(QTextCursor cursor)
 
     cursor.beginEditBlock();
 
-    if (!isSingleLineComment(currentBlock))
-        addSingleLineComment(cursor);
-    else
+    if (!isSingleLineComment(currentBlock)) {
+        int blockIndentation = indentationLevel(cursor);
+        addSingleLineComment(cursor, blockIndentation);
+    } else
         removeSingleLineComment(cursor);
 
     cursor.endEditBlock();
@@ -1172,12 +1241,14 @@ void CodeEditor::toggleCommentSelection()
 
         QTextBlock currentBlock = selectionCursor.block();
         bool isComment = isSingleLineComment(currentBlock);
+        int firstBlockIndentation = isComment ? 0
+                                              : indentationLevel(selectionCursor);
 
         // TODO: keep indentation level of first block
         do {
             QTextCursor blockCursor(currentBlock);
             if (!isComment)
-                addSingleLineComment(blockCursor);
+                addSingleLineComment(blockCursor, firstBlockIndentation);
             else
                 removeSingleLineComment(blockCursor);
             currentBlock = currentBlock.next();
