@@ -584,7 +584,7 @@ void MainWindow::updateRecentDocsMenu()
     const QStringList &recent = mMain->documentManager()->recents();
 
     foreach( const QString & path, recent )
-        QAction *action = mRecentDocsMenu->addAction(path);
+        mRecentDocsMenu->addAction(path);
 
     if (!recent.isEmpty()) {
         mRecentDocsMenu->addSeparator();
