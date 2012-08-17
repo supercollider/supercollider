@@ -111,6 +111,8 @@ protected:
     virtual void mouseMoveEvent( QMouseEvent * );
     virtual void wheelEvent( QWheelEvent * );
     virtual void paintEvent( QPaintEvent * );
+    virtual void dragEnterEvent( QDragEnterEvent *e );
+    virtual void dropEvent( QDropEvent *e );
 
 private Q_SLOTS:
     void updateLayout();
