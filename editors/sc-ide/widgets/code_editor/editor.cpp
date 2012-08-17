@@ -32,9 +32,9 @@
 #include <QScrollBar>
 #include <QTextBlock>
 #include <QTextDocumentFragment>
+#include <QUrl>
 
-namespace ScIDE
-{
+namespace ScIDE {
 
 LineIndicator::LineIndicator( CodeEditor *editor )
 : QWidget( editor ), mEditor(editor)
@@ -782,6 +782,25 @@ void CodeEditor::paintEvent( QPaintEvent *e )
 
     QPainter p(viewport());
     mOverlay->render(&p, e->rect(), e->rect());
+}
+
+void CodeEditor::dragEnterEvent( QDragEnterEvent * event )
+{
+    foreach (QUrl url, event->mimeData()->urls()) {
+        if (url.isLocalFile()) {
+            // LATER: check mime type ?
+            event->acceptProposedAction();
+            return;
+        }
+    }
+}
+
+void CodeEditor::dropEvent( QDropEvent * event )
+{
+    foreach (QUrl url, event->mimeData()->urls()) {
+        if (url.isLocalFile())
+            Main::instance()->documentManager()->open(url.toLocalFile());
+    }
 }
 
 void CodeEditor::updateLayout()
