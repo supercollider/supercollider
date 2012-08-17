@@ -815,7 +815,7 @@ void CodeEditor::matchBrackets()
         ){
             QTextEdit::ExtraSelection selection;
             selection.format.setFontWeight(QFont::Bold);
-            selection.format.setBackground(mBracketHighlight);
+            selection.format.setForeground(mBracketHighlight);
 
             cursor.setPosition(match.first.position());
             cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
