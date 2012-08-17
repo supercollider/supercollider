@@ -22,7 +22,6 @@
 #define SCIDE_WIDGETS_CODE_EDITOR_BRACKETS_HPP_INCLUDED
 
 #include <QTextBlock>
-#include <QTextCursor>
 #include <vector>
 
 namespace ScIDE
@@ -330,13 +329,6 @@ public:
     Token::Type type() const
     {
         return isValid() ? (*this)->type : Token::Unknown;
-    }
-
-    bool operator==(QTextCursor const & cursor) const
-    {
-        if (!isValid()) return false;
-
-        return (cursor.block() == block()) && (cursor.position() == position());
     }
 };
 
