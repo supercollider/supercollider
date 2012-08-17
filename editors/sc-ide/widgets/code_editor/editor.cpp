@@ -441,16 +441,16 @@ int CodeEditor::replaceAll( const QRegExp &expr, const QString &replacement, QTe
 QTextCursor CodeEditor::currentRegion()
 {
     QTextCursor c(textCursor());
-    QTextBlock b(c.block());
+    QTextBlock block(c.block());
 
-    int positionInBlock = c.position() - b.position();
+    int positionInBlock = c.position() - block.position();
     TokenIterator start;
     TokenIterator end;
     int topLevel = 0;
     int level = 0;
 
     // search unmatched opening bracket
-    TokenIterator it = TokenIterator::leftOf( b, positionInBlock );
+    TokenIterator it = TokenIterator::leftOf( block, positionInBlock );
     while(it.isValid())
     {
         char chr = it->character;
@@ -472,7 +472,7 @@ QTextCursor CodeEditor::currentRegion()
         return QTextCursor();
 
     // match the found opening bracket
-    it = TokenIterator::rightOf( b, positionInBlock );
+    it = TokenIterator::rightOf( block, positionInBlock );
     while(it.isValid())
     {
         char chr = it->character;
@@ -1152,8 +1152,8 @@ void CodeEditor::toggleCommentSingleLine(QTextCursor cursor)
     else
         removeSingleLineComment(cursor);
 
-    indent(cursor);
     cursor.endEditBlock();
+    indent(cursor);
 }
 
 static bool isBlockOnlySelection(QTextCursor)
@@ -1196,9 +1196,8 @@ void CodeEditor::toggleCommentSelection()
         }
     }
 
-    indent();
-
     cursor.endEditBlock();
+    indent(currentRegion());
 }
 
 void CodeEditor::copyUpDown(bool up)
@@ -1249,8 +1248,8 @@ void CodeEditor::copyUpDown(bool up)
     move.setPosition(start);
     move.setPosition(end, QTextCursor::KeepAnchor);
 
-    indent(cursor);
     move.endEditBlock();
+    indent(currentRegion());
 
     setTextCursor(move);
 }
@@ -1319,8 +1318,8 @@ void CodeEditor::moveLineUpDown(bool up)
         move.setPosition(end, QTextCursor::KeepAnchor);
     }
 
-    indent(cursor);
     move.endEditBlock();
+    indent(currentRegion());
 
     setTextCursor(move);
 }
