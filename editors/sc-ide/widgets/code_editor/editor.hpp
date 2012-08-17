@@ -126,7 +126,7 @@ private:
 
     void resizeEvent( QResizeEvent * );
     void paintLineIndicator( QPaintEvent * );
-    void matchBracket( int pos, BracketMatch & match );
+    void matchBracket( const TokenIterator & bracket, BracketMatch & match );
     void updateExtraSelections();
 
     void zoomFont(int steps);
