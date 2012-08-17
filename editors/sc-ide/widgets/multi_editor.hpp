@@ -61,6 +61,7 @@ public:
         IndentLineOrRegion,
         TriggerAutoCompletion,
         TriggerMethodCallAid,
+        ToggleComment,
 
         // View
         EnlargeFont,
