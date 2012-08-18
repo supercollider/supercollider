@@ -538,14 +538,7 @@ void MultiEditor::openClassDefinition( const QString & className )
     using namespace ScLanguage;
 
     const Introspection & introspection = Main::instance()->scProcess()->introspection();
-    const ClassMap & classes = introspection.classMap();
-
-    ClassMap::const_iterator klass_it = classes.find(className);
-    if (klass_it == classes.end()) {
-        qWarning("Class not defined!");
-        return;
-    }
-    Class *klass = klass_it->second;
+    const Class *klass = introspection.findClass(className);
     QString const & classLibPath = introspection.classLibraryPath();
 
     typedef QMap< QString, QList<Method*>* > MethodMap;
@@ -609,8 +602,7 @@ void MultiEditor::openClassDefinition( const QString & className )
 
     tree->setCurrentItem(tree->topLevelItem(0));
 
-    if (dialog->exec())
-    {
+    if (dialog->exec()) {
         QTreeWidgetItem *item = tree->currentItem();
         if (item && item->parent() && item->parent() != tree->invisibleRootItem()) {
             QString path = item->parent()->data(0, Qt::UserRole).toString();
