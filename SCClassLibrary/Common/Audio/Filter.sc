@@ -70,14 +70,14 @@ Decay2 : Filter {
 Lag : Filter {
 
 	*ar { arg in = 0.0, lagTime = 0.1, mul = 1.0, add = 0.0;
-		if (in.rate == \scalar) {
+		if ( (in.rate == \scalar) || (lagTime == 0) ) {
 			^in.madd(mul, add)
 		} {
 			^this.multiNew('audio', in, lagTime).madd(mul, add)
 		}
 	}
 	*kr { arg in = 0.0, lagTime = 0.1, mul = 1.0, add = 0.0;
-		if (in.rate == \scalar) {
+		if ( (in.rate == \scalar) || (lagTime == 0) ) {
 			^in.madd(mul, add)
 		} {
 			^this.multiNew('control', in, lagTime).madd(mul, add)
@@ -112,14 +112,14 @@ Lag3UD : LagUD {}
 
 VarLag : Filter {
 	*ar { arg in = 0.0, time = 0.1, curvature = 0, warp = 5, start, mul = 1.0, add = 0.0;
-		if (in.rate == \scalar) {
+		if ( (in.rate == \scalar) || (time == 0) ) {
 			^in.madd(mul, add)
 		} {
 			^this.multiNew('audio', in, time, curvature, warp, start).madd(mul, add);
 		}
 	}
 	*kr { arg in = 0.0, time = 0.1, curvature = 0, warp = 5, start, mul = 1.0, add = 0.0;
-		if (in.rate == \scalar) {
+		if ( (in.rate == \scalar) || (time == 0) ) {
 			^in.madd(mul, add)
 		} {
 			^this.multiNew('control', in, time, curvature, warp, start).madd(mul, add);
