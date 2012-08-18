@@ -20,6 +20,8 @@
 
 #include "sc_introspection.hpp"
 
+#include "../common/SC_DirUtils.h"
+
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
 
@@ -30,6 +32,17 @@
 
 namespace ScIDE {
 namespace ScLanguage {
+
+Introspection::Introspection()
+{
+    char userExtensionDir[PATH_MAX];
+    sc_GetUserExtensionDirectory(userExtensionDir, PATH_MAX);
+    mUserExtensionDir = QString(userExtensionDir) + QString("/");
+
+    char systemExtensionDir[PATH_MAX];
+    sc_GetSystemExtensionDirectory(systemExtensionDir, PATH_MAX);
+    mSystemExtensionDir = QString(systemExtensionDir) + QString("/");
+}
 
 bool Introspection::parse(const QString & yamlString )
 {
@@ -147,6 +160,20 @@ bool Introspection::parse(const QString & yamlString )
 
     //qDebug("done parsing introspection.");
     return true;
+}
+
+QString Introspection::compactLibraryPath(QString const & path) const
+{
+    if (path.startsWith(mClassLibraryPath))
+        return path.mid(mClassLibraryPath.length());
+
+    if (path.startsWith(mUserExtensionDir))
+        return QString("Extensions/") + path.mid(mUserExtensionDir.length());
+
+    if (path.startsWith(mSystemExtensionDir))
+        return QString("Extensions/") + path.mid(mSystemExtensionDir.length());
+
+    return path;
 }
 
 void Introspection::inferClassLibraryPath()
