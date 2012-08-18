@@ -51,72 +51,38 @@ Splay : UGen {
 
 
 SplayAz : UGen {
-
-	*new1 { arg rate, numChans = 4, spread = 1, level = 1, width = 2, center = 0.0,
-			orientation = 0.5, levelComp = true ... inArray;
-
-		var n = max(1, inArray.size);
-		var moreOuts = numChans > n;
-		var positions = ((0 .. n-1) / n * 2) * spread + center;
-
-
-		if (levelComp) {
-			if(rate == \audio) {
-				level = level * n.reciprocal.sqrt
-			} {
-				level = level / n
-			}
-		 };
-
-		if (moreOuts) { inArray = inArray * level };
-
-		^PanAz.perform(
-			this.methodSelectorForRate(rate),
-			numChans,
-			inArray,
-			positions,
-			1,
-			width,
-			orientation
-		).sum * if (moreOuts) { 1 } { level };
-	}
-
 	*kr { arg numChans = 4, inArray, spread = 1, level = 1, width = 2, center = 0.0,
 			orientation = 0.5, levelComp = true;
-		 ^this.multiNewList([\control, numChans, spread, level, width, center,
-			orientation, levelComp] ++ inArray)
+
+		var n = max(1, inArray.size);
+
+		var pos = [ center - spread, center + spread ].resamp1(n);
+
+		if (levelComp) {
+			level = level / n
+		};
+
+		^(PanAz.kr(numChans, inArray, pos, level, width, orientation).flop.collect(_.sum))
 	}
 
 	*ar { arg numChans = 4, inArray, spread = 1, level = 1, width = 2, center = 0.0,
 			orientation = 0.5, levelComp = true;
-		 ^this.multiNewList([\audio, numChans, spread, level, width, center,
-			orientation, levelComp] ++ inArray)
+
+		var n = max(1, inArray.size);
+
+		var pos = [ center - spread, center + spread ].resamp1(n);
+
+		if (levelComp) {
+			level = level * n.reciprocal.sqrt
+		};
+
+		^(PanAz.ar(numChans, inArray, pos, level, width, orientation).flop.collect(_.sum))
 	}
 
-
-	/**ar { arg numChans = 4, inArray, spread = 1, level = 1, width = 2, center = 0.0,
-			orientation = 0.5, levelComp = true;
-
-		var n = inArray.size.max(1);
-		var moreOuts = numChans > n;
-
-		if (levelComp) { level = level * n.reciprocal.sqrt };
-		if (moreOuts) { inArray = inArray * level };
-
-		^PanAz.ar(
-			numChans,
-			inArray,
-			((0 .. n-1) / n * 2) * spread + center,
-			1,
-			width,
-			orientation
-		).sum * if (moreOuts, 1, level);
-	}
-*/
 	*arFill { arg numChans = 4, n, function, spread = 1, level = 1, width = 2, center = 0.0,
 		orientation = 0.5, levelComp = true;
 		^this.ar(numChans, function ! n, spread, level, width, center,
-		orientation, levelComp)
+			orientation, levelComp)
 	}
 }
 
