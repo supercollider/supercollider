@@ -24,6 +24,7 @@
 #include "editor_page.hpp"
 #include "shortcuts_page.hpp"
 #include "../../core/settings/manager.hpp"
+#include "../../core/main.hpp"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -66,8 +67,8 @@ Dialog::Dialog( Manager *settings, QWidget * parent ):
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(ui->buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()),
-            this, SLOT(reset()));
+    connect(ui->buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(apply()));
+    connect(ui->buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(reset()));
 
     reset();
 }
@@ -87,6 +88,12 @@ void Dialog::accept()
 void Dialog::reject()
 {
     QDialog::reject();
+}
+
+void Dialog::apply()
+{
+    Q_EMIT( storeRequest(mManager) );
+    Main::instance()->applySettings();
 }
 
 void Dialog::reset()
