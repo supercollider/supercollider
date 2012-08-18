@@ -185,13 +185,13 @@ SequenceableCollection : Collection {
 		^nil
 	}
 
-        indicesOfEqual { |item|
-                var indices;
-                this.do { arg val, i;
-                        if (item == val) { indices = indices.add(i) }
-                };
-                ^indices
-        }
+	indicesOfEqual { |item|
+		var indices;
+		this.do { arg val, i;
+			if (item == val) { indices = indices.add(i) }
+		};
+		^indices
+	}
 
 
 	find { |sublist, offset=0|
