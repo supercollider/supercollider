@@ -101,7 +101,7 @@ void SCProcess::start (void)
     char resourcePath[PATH_MAX];
     sc_GetResourceDirectory(resourcePath, PATH_MAX);
 
-    sclangCommand = QString(resourcePath) + "/sclang";
+    sclangCommand = QString(resourcePath) + "/sclang.app";
 #else
     sclangCommand = "sclang";
 #endif
