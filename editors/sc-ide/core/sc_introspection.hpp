@@ -83,7 +83,7 @@ struct Method {
 class Introspection
 {
 public:
-    typedef QMap< QString, QList<Method*>* > ClassMethodMap;
+    typedef QMap< QString, QList<Method*> > ClassMethodMap;
 
     bool parse(const QString & yamlString );
 
