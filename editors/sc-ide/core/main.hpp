@@ -70,6 +70,7 @@ Q_SIGNALS:
 
 private:
     Main(void);
+    bool eventFilter(QObject *obj, QEvent *event);
 
     Settings::Manager *mSettings;
     ScResponder * mSCResponder;
@@ -77,19 +78,6 @@ private:
     ScServer * mSCServer;
     DocumentManager *mDocManager;
     SessionManager *mSessionManager;
-};
-
-class FileOpenEventFilter : public QObject
-{
-    Q_OBJECT
-
-public:
-    explicit FileOpenEventFilter(QObject * parent):
-        QObject(parent)
-    {}
-
-protected:
-    bool eventFilter(QObject *obj, QEvent *event);
 };
 
 }

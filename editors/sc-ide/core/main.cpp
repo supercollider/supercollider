@@ -37,7 +37,6 @@ using namespace ScIDE;
 int main( int argc, char *argv[] )
 {
     QApplication app(argc, argv);
-    app.installEventFilter(new FileOpenEventFilter(&app));
 
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
@@ -97,6 +96,8 @@ Main::Main(void) :
 
     connect(mSCProcess, SIGNAL(response(QString,QString)), mSCResponder, SLOT(onResponse(QString,QString)));
     connect(mSCResponder, SIGNAL(serverRunningChanged(bool,QString,int)), mSCServer, SLOT(onServerRunningChanged(bool,QString,int)));
+
+    qApp->installEventFilter(this);
 }
 
 void Main::quit() {
@@ -105,13 +106,13 @@ void Main::quit() {
     QApplication::quit();
 }
 
-bool FileOpenEventFilter::eventFilter(QObject *obj, QEvent *event)
+bool Main::eventFilter(QObject *object, QEvent *event)
 {
     if (event->type() == QEvent::FileOpen) {
         // open the file dragged onto the application icon on Mac
         QFileOpenEvent *openEvent = static_cast<QFileOpenEvent*>(event);
-        Main::instance()->documentManager()->open(openEvent->file());
+        mDocManager->open(openEvent->file());
         return true;
     } else
-        return QObject::eventFilter(obj, event);
+        return QObject::eventFilter(object, event);
 }
