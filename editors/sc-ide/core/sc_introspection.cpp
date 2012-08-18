@@ -180,5 +180,31 @@ const Class * Introspection::findClass(const QString &className) const
     return klass_it->second;
 }
 
+Introspection::ClassMethodMap Introspection::constructMethodMap(const Class * klass) const
+{
+    ClassMethodMap methodMap;
+    if (!klass)
+        return methodMap;
+
+    foreach (Method *method, klass->metaClass->methods) {
+        QList<Method*>* list = methodMap.value(method->definition.path);
+        if (!list) {
+            list = new QList<Method*>;
+            methodMap.insert(method->definition.path, list);
+        }
+        list->append(method);
+    }
+
+    foreach (Method *method, klass->methods) {
+        QList<Method*>* list = methodMap.value(method->definition.path);
+        if (!list) {
+            list = new QList<Method*>;
+            methodMap.insert(method->definition.path, list);
+        }
+        list->append(method);
+    }
+    return methodMap;
+}
+
 } // namespace ScLanguage
 } // namespace ScIDE
