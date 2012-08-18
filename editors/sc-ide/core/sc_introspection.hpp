@@ -85,7 +85,7 @@ class Introspection
 public:
     Introspection();
 
-    typedef QMap< QString, QList<Method*> > ClassMethodMap;
+    typedef QMap< QString, QList<Method*> > ClassMethodMap; // maps Path to List of Methods
 
     bool parse(const QString & yamlString );
 
