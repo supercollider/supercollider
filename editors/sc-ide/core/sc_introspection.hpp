@@ -86,6 +86,8 @@ public:
     const ClassMap & classMap() const { return mClassMap; }
     const MethodMap & methodMap() const { return mMethodMap; }
 
+    const Class * findClass( QString const & className ) const;
+
     void release()
     {
         deleteAll();

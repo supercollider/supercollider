@@ -165,6 +165,20 @@ void Introspection::inferClassLibraryPath()
     mClassLibraryPath = classLibPath;
 }
 
+const Class * Introspection::findClass(const QString &className) const
+{
+    if (mClassMap.empty()) {
+        qWarning("Sclang Introspection not available, yet!");
+        return NULL;
+    }
+
+    ClassMap::const_iterator klass_it = mClassMap.find(className);
+    if (klass_it == mClassMap.end()) {
+        qWarning("Class not defined!");
+        return NULL;
+    }
+    return klass_it->second;
+}
 
 } // namespace ScLanguage
 } // namespace ScIDE
