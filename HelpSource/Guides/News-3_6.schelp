@@ -45,6 +45,10 @@ code::
 "Foo" == "fOo"; // false
 ::
 
+subsection:: SplayAz Bug Fix
+Positioning of SplayAz was broken. The semantics of the TELETYPE::spread:: and TELETYPE::center:: arguments has
+been changed in order to fix the behavior.
+
 SECTION:: Server-side news
 
 subsection:: SynthDef2 fileformat
