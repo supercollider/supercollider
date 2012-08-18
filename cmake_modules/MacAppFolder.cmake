@@ -5,16 +5,20 @@ if(APPLE)
 	if ("${standalone}" STREQUAL "")
 		if (SC_IDE)
 			set(scappbundlename ${PROJECT_NAME})
+	        set(scappauxresourcesdir  "${scappbundlename}/${scappbundlename}.app/Contents/Resources")
+	        set(sclangauxresourcesdir "${scappbundlename}/${scappbundlename}.app/Contents/Resources/sclang.app/Contents")
 		else()
 			set(scappbundlename ${PROJECT_NAME}Cocoa)
+	        set(scappauxresourcesdir  "${scappbundlename}/${scappbundlename}.app/Contents/Resources")
+	        set(sclangauxresourcesdir "${scappbundlename}/${scappbundlename}.app/Contents/Resources")
 		endif()
 	else()
 		# We're building a standalone, change the app name.
 		set(scappbundlename ${standalone})
 		message(STATUS "Building sc in STANDALONE mode. App name: " ${standalone})
+	    set(scappauxresourcesdir  "${scappbundlename}/${scappbundlename}.app/Contents/Resources")
+	    set(sclangauxresourcesdir "${scappbundlename}/${scappbundlename}.app/Contents/Resources")
 	endif()
-
-	set(scappauxresourcesdir "${scappbundlename}/${scappbundlename}.app/Contents/Resources")
 
 	###### Allow user to select a FHS-style install
 	# TODO not yet used
