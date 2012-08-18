@@ -1286,7 +1286,9 @@ void CodeEditor::toggleCommentSelection()
     }
 
     cursor.endEditBlock();
+    cursor.beginEditBlock();
     indent(currentRegion());
+    cursor.endEditBlock();
 }
 
 void CodeEditor::copyUpDown(bool up)
