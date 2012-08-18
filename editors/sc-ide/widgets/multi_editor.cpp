@@ -538,29 +538,14 @@ void MultiEditor::openClassDefinition( const QString & className )
     using namespace ScLanguage;
 
     const Introspection & introspection = Main::instance()->scProcess()->introspection();
-    const Class *klass = introspection.findClass(className);
     QString const & classLibPath = introspection.classLibraryPath();
 
-    typedef QMap< QString, QList<Method*>* > MethodMap;
-    MethodMap methodMap;
+    const Class *klass = introspection.findClass(className);
+    if (!klass)
+        return;
 
-    foreach (Method *method, klass->metaClass->methods) {
-        QList<Method*>* list = methodMap.value(method->definition.path);
-        if (!list) {
-            list = new QList<Method*>;
-            methodMap.insert(method->definition.path, list);
-        }
-        list->append(method);
-    }
-
-    foreach (Method *method, klass->methods) {
-        QList<Method*>* list = methodMap.value(method->definition.path);
-        if (!list) {
-            list = new QList<Method*>;
-            methodMap.insert(method->definition.path, list);
-        }
-        list->append(method);
-    }
+    typedef Introspection::ClassMethodMap MethodMap;
+    MethodMap methodMap = introspection.constructMethodMap(klass);
 
     QPointer<OpenDefinitionDialog> dialog = new OpenDefinitionDialog(this);
     dialog->setWindowTitle(tr("Open Definition of Class '%1'").arg(klass->name));

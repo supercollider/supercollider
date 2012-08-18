@@ -22,6 +22,8 @@
 #define SCIDE_CORE_SC_INTROSPECTION_HPP_INCLUDED
 
 #include <QHash>
+#include <QList>
+#include <QMap>
 #include <QMetaType>
 #include <QString>
 #include <QVector>
@@ -81,12 +83,19 @@ struct Method {
 class Introspection
 {
 public:
+    typedef QMap< QString, QList<Method*>* > ClassMethodMap;
+
     bool parse(const QString & yamlString );
 
     const ClassMap & classMap() const { return mClassMap; }
     const MethodMap & methodMap() const { return mMethodMap; }
 
     const Class * findClass( QString const & className ) const;
+    ClassMethodMap constructMethodMap( const Class * klass ) const;
+    ClassMethodMap constructMethodMap( QString const & className ) const
+    {
+        return constructMethodMap(findClass(className));
+    }
 
     void release()
     {
