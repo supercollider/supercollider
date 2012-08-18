@@ -163,6 +163,21 @@ String[char] : RawArray {
 		});
 		^string
 	}
+	split { arg separator=$/;
+		var word="";
+		var array=[];
+		separator=separator.ascii;
+
+		this.do({arg let,i;
+			if(let.ascii != separator ,{
+				word=word++let;
+			},{
+				array=array.add(word);
+				word="";
+			});
+		});
+		^array.add(word);
+	}
 
 	containsStringAt { arg index, string;
 		^compare( this[index..index + string.size-1], string, false) == 0
