@@ -32,13 +32,13 @@ namespace ScIDE {
 class DocumentManager;
 class Document;
 
-class DocumentList : public QListWidget
+class DocumentListWidget : public QListWidget
 {
     Q_OBJECT
 
 public:
 
-    DocumentList(DocumentManager *, QWidget * parent = 0);
+    DocumentListWidget(DocumentManager *, QWidget * parent = 0);
 
 public Q_SLOTS:
 
@@ -85,18 +85,18 @@ class DocumentsDock : public QDockWidget
 public:
     DocumentsDock(DocumentManager *manager, QWidget* parent = 0):
         QDockWidget(tr("Documents"), parent),
-        mDocList(new DocumentList(manager))
+        mDocList(new DocumentListWidget(manager))
     {
         setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
         setFeatures(DockWidgetFloatable | DockWidgetMovable | DockWidgetClosable);
         setWidget(mDocList);
     }
 
-    DocumentList *list() { return mDocList; }
+    DocumentListWidget *list() { return mDocList; }
 
 private:
 
-    DocumentList *mDocList;
+    DocumentListWidget *mDocList;
 };
 
 } // namespace ScIDE

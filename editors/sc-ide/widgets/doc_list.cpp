@@ -26,7 +26,7 @@
 
 namespace ScIDE {
 
-DocumentList::DocumentList(DocumentManager *manager, QWidget * parent):
+DocumentListWidget::DocumentListWidget(DocumentManager *manager, QWidget * parent):
     QListWidget(parent),
     mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) )
 {
@@ -39,7 +39,7 @@ DocumentList::DocumentList(DocumentManager *manager, QWidget * parent):
             this, SLOT(onItemClicked(QListWidgetItem*)));
 }
 
-void DocumentList::setCurrent( Document *doc )
+void DocumentListWidget::setCurrent( Document *doc )
 {
     if(!doc)
         setCurrentRow(-1);
@@ -50,24 +50,24 @@ void DocumentList::setCurrent( Document *doc )
     }
 }
 
-void DocumentList::onOpen( Document *doc, int )
+void DocumentListWidget::onOpen( Document *doc, int )
 {
     addItemFor(doc);
 }
 
-void DocumentList::onClose( Document *doc )
+void DocumentListWidget::onClose( Document *doc )
 {
     delete itemFor(doc);
 }
 
-void DocumentList::onSaved( Document *doc )
+void DocumentListWidget::onSaved( Document *doc )
 {
     Item *item = itemFor(doc);
     if(item)
         item->setText(doc->title());
 }
 
-void DocumentList::onModificationChanged( QObject * obj )
+void DocumentListWidget::onModificationChanged( QObject * obj )
 {
     Document *doc = qobject_cast<Document*>(obj);
     Item *item = itemFor(doc);
@@ -78,14 +78,14 @@ void DocumentList::onModificationChanged( QObject * obj )
         );
 }
 
-void DocumentList::onItemClicked(QListWidgetItem* litem)
+void DocumentListWidget::onItemClicked(QListWidgetItem* litem)
 {
     Item *item = itemFor(litem);
     if(item)
         Q_EMIT( clicked(item->mDoc) );
 }
 
-DocumentList::Item * DocumentList::addItemFor( Document *doc )
+DocumentListWidget::Item * DocumentListWidget::addItemFor( Document *doc )
 {
     Item *item = new Item(doc, this);
 
@@ -101,7 +101,7 @@ DocumentList::Item * DocumentList::addItemFor( Document *doc )
     return item;
 }
 
-DocumentList::Item *DocumentList::itemFor( Document *doc )
+DocumentListWidget::Item *DocumentListWidget::itemFor( Document *doc )
 {
     int c = count();
     for(int i = 0; i < c; ++i)
@@ -112,7 +112,7 @@ DocumentList::Item *DocumentList::itemFor( Document *doc )
     return 0;
 }
 
-DocumentList::Item *DocumentList::itemFor( QListWidgetItem *litem )
+DocumentListWidget::Item *DocumentListWidget::itemFor( QListWidgetItem *litem )
 {
     if(litem->type() == QListWidgetItem::UserType)
         return static_cast<Item*>(litem);
