@@ -187,21 +187,13 @@ Introspection::ClassMethodMap Introspection::constructMethodMap(const Class * kl
         return methodMap;
 
     foreach (Method *method, klass->metaClass->methods) {
-        QList<Method*>* list = methodMap.value(method->definition.path);
-        if (!list) {
-            list = new QList<Method*>;
-            methodMap.insert(method->definition.path, list);
-        }
-        list->append(method);
+        QList<Method*> & list = methodMap[method->definition.path];
+        list.append(method);
     }
 
     foreach (Method *method, klass->methods) {
-        QList<Method*>* list = methodMap.value(method->definition.path);
-        if (!list) {
-            list = new QList<Method*>;
-            methodMap.insert(method->definition.path, list);
-        }
-        list->append(method);
+        QList<Method*> & list = methodMap[method->definition.path];
+        list.append(method);
     }
     return methodMap;
 }

@@ -556,7 +556,7 @@ void MultiEditor::openClassDefinition( const QString & className )
 
     for (MethodMap::Iterator it = methodMap.begin(); it != methodMap.end(); ++it) {
         QString path = it.key();
-        QList<Method*> *methods = it.value();
+        QList<Method*> methods = it.value();
 
         QString displayPath = path.startsWith(classLibPath) ? path.mid(classLibPath.length())
                                                             : path;
@@ -569,7 +569,7 @@ void MultiEditor::openClassDefinition( const QString & className )
 
         pathItem->setData( 0, Qt::UserRole, path );
 
-        foreach( Method *method, *methods ) {
+        foreach( Method *method, methods ) {
             QString name = method->name;
             if (method->ownerClass == klass->metaClass)
                 name.prepend('*');
@@ -581,8 +581,6 @@ void MultiEditor::openClassDefinition( const QString & className )
 
             methodItem->setData( 0, Qt::UserRole, method->definition.position );
         }
-
-        delete methods;
     }
 
     tree->setCurrentItem(tree->topLevelItem(0));
