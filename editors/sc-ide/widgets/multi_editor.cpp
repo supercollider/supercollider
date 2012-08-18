@@ -538,7 +538,6 @@ void MultiEditor::openClassDefinition( const QString & className )
     using namespace ScLanguage;
 
     const Introspection & introspection = Main::instance()->scProcess()->introspection();
-    QString const & classLibPath = introspection.classLibraryPath();
 
     const Class *klass = introspection.findClass(className);
     if (!klass)
@@ -558,8 +557,7 @@ void MultiEditor::openClassDefinition( const QString & className )
         QString path = it.key();
         QList<Method*> methods = it.value();
 
-        QString displayPath = path.startsWith(classLibPath) ? path.mid(classLibPath.length())
-                                                            : path;
+        QString displayPath = introspection.compactLibraryPath(path);
 
         QTreeWidgetItem *pathItem = new QTreeWidgetItem (
             tree,

@@ -83,6 +83,8 @@ struct Method {
 class Introspection
 {
 public:
+    Introspection();
+
     typedef QMap< QString, QList<Method*> > ClassMethodMap;
 
     bool parse(const QString & yamlString );
@@ -115,6 +117,9 @@ public:
         return mClassLibraryPath;
     }
 
+    // remove class library path, userExtensionDir and systemExtensionDir
+    QString compactLibraryPath(QString const & path) const;
+
 private:
     void inferClassLibraryPath();
 
@@ -130,6 +135,8 @@ private:
     ClassMap mClassMap;
     MethodMap mMethodMap;
     QString mClassLibraryPath;
+    QString mUserExtensionDir;
+    QString mSystemExtensionDir;
 };
 
 } // namespace ScLanguage
