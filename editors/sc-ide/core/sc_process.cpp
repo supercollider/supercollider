@@ -60,6 +60,7 @@ void SCProcess::prepareActions(Main * main)
 
     mActions[RecompileClassLibrary] = action = new QAction(
         QIcon::fromTheme("system-reboot"), tr("Recompile Class Library"), this);
+    action->setShortcut(tr("Ctrl+Shift+l", "Recompile Class Library)"));
     connect(action, SIGNAL(triggered()), this, SLOT(recompileClassLibrary()) );
 
     mActions[StopSCLang] = action = new QAction(
