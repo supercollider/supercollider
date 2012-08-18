@@ -650,8 +650,6 @@ void MultiEditor::openMethodDefinition( const QString & methodName )
         return;
     }
 
-    QString const & classLibPath = introspection.classLibraryPath();
-
     QPointer<OpenDefinitionDialog> dialog = new OpenDefinitionDialog(this);
     dialog->setWindowTitle(tr("Open Definition of Method '%1'").arg(methodName));
     QTreeWidget *tree = dialog->treeWidget();
@@ -664,12 +662,7 @@ void MultiEditor::openMethodDefinition( const QString & methodName )
         Method *method = it->second;
 
         const QString & path = method->definition.path;
-
-        QString displayPath;
-        if (path.startsWith(classLibPath))
-            displayPath = path.mid(classLibPath.length());
-        else
-            displayPath = path;
+        QString displayPath = introspection.compactLibraryPath(path);
 
         QTreeWidgetItem *item = new QTreeWidgetItem (
             tree,
