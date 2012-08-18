@@ -309,7 +309,7 @@ if(APPLE)
 	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
 	install(TARGETS sclang
-			DESTINATION "${scappauxresourcesdir}"
+			DESTINATION "${sclangauxresourcesdir}"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 elseif(WIN32)
 	install(TARGETS sclang
