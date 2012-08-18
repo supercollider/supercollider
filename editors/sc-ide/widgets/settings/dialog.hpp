@@ -45,6 +45,7 @@ public Q_SLOTS:
     virtual void accept();
     virtual void reject();
     virtual void reset();
+    void apply();
 
 Q_SIGNALS:
     void storeRequest( Manager * );
