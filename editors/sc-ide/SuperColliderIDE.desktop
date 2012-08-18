@@ -7,3 +7,4 @@ Type=Application
 Terminal=false
 Patterns=*.scd;*.sc;*scdoc
 Categories=Application;Multimedia;Audio;AudioVideo
+MimeType=text/x-sc;
