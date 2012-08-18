@@ -1262,7 +1262,6 @@ void CodeEditor::toggleCommentSelection()
         int firstBlockIndentation = isComment ? 0
                                               : indentationLevel(selectionCursor);
 
-        // TODO: keep indentation level of first block
         do {
             QTextCursor blockCursor(currentBlock);
             if (!isComment)
@@ -1270,7 +1269,7 @@ void CodeEditor::toggleCommentSelection()
             else
                 removeSingleLineComment(blockCursor);
             currentBlock = currentBlock.next();
-        } while (currentBlock.isValid() && currentBlock.position() <= cursor.selectionEnd());
+        } while (currentBlock.isValid() && currentBlock.position() < cursor.selectionEnd());
     } else {
         QString selectionText = cursor.selectedText();
         QTextCursor selectionCursor(cursor);
