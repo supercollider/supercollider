@@ -787,7 +787,7 @@ void CodeEditor::paintEvent( QPaintEvent *e )
 void CodeEditor::dragEnterEvent( QDragEnterEvent * event )
 {
     foreach (QUrl url, event->mimeData()->urls()) {
-        if (url.isLocalFile()) {
+        if (url.scheme() == QString("file")) { // LATER: use isLocalFile
             // LATER: check mime type ?
             event->acceptProposedAction();
             return;
@@ -798,7 +798,7 @@ void CodeEditor::dragEnterEvent( QDragEnterEvent * event )
 void CodeEditor::dropEvent( QDropEvent * event )
 {
     foreach (QUrl url, event->mimeData()->urls()) {
-        if (url.isLocalFile())
+        if (url.scheme() == QString("file")) // LATER: use isLocalFile
             Main::instance()->documentManager()->open(url.toLocalFile());
     }
 }
