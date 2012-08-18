@@ -103,11 +103,6 @@ static QVariant parseScalar( const YAML::Node & node )
 {
     using namespace YAML;
 
-    if (node.Tag() == "!textFormat")
-    {
-        return parseTextFormat( node );
-    }
-
     switch (node.Type())
     {
         case NodeType::Scalar:
@@ -165,7 +160,9 @@ static void parseNode( const YAML::Node &node, const QString &parentKey, QSettin
 
         const YAML::Node & childNode = it.second();
 
-        if (childNode.Type() == NodeType::Map)
+        if (childNode.Tag() == "!textFormat")
+            map.insert( childKey, parseTextFormat(childNode) );
+        else if (childNode.Type() == NodeType::Map)
             parseNode( childNode, childKey, map );
         else
             map.insert( childKey, parseScalar( childNode ) );
