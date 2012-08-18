@@ -34,36 +34,10 @@
 
 using namespace ScIDE;
 
-// FIXME: when using Application, we cannot access QApplication::arguments()
-class Application : public QApplication
-{
-public:
-    Application ( int argc, char * argv [] ) :
-        QApplication(argc, argv)
-    {}
-
-    bool event( QEvent *event )
-    {
-        if( event->type() == QEvent::FileOpen ) {
-            // open the file dragged onto the application icon on Mac
-            QFileOpenEvent *openEvent = static_cast<QFileOpenEvent*>(event);
-            Main::instance()->documentManager()->open(openEvent->file());
-            return true;
-        }
-
-        return QApplication::event( event );
-    }
-};
-
-
-
 int main( int argc, char *argv[] )
 {
-#ifdef Q_OS_MAC
-    Application app(argc, argv);
-#else
     QApplication app(argc, argv);
-#endif
+    app.installEventFilter(new FileOpenEventFilter(&app));
 
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
@@ -88,13 +62,11 @@ int main( int argc, char *argv[] )
         win->showMaximized();
     }
 
-#ifndef Q_OS_MAC
     QStringList arguments (QApplication::arguments());
     arguments.pop_front(); // application path
     foreach (QString argument, arguments) {
         main->documentManager()->open(argument);
     }
-#endif
 
     bool startInterpreter = main->settings()->value("IDE/interpreter/autoStart").toBool();
     if (startInterpreter)
@@ -131,4 +103,15 @@ void Main::quit() {
     mSessionManager->saveSession();
     storeSettings();
     QApplication::quit();
+}
+
+bool FileOpenEventFilter::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type() == QEvent::FileOpen) {
+        // open the file dragged onto the application icon on Mac
+        QFileOpenEvent *openEvent = static_cast<QFileOpenEvent*>(event);
+        Main::instance()->documentManager()->open(openEvent->file());
+        return true;
+    } else
+        return QObject::eventFilter(obj, event);
 }

@@ -21,8 +21,8 @@
 #ifndef SCIDE_MAIN_HPP_INCLUDED
 #define SCIDE_MAIN_HPP_INCLUDED
 
-#include <QObject>
 #include <QAction>
+#include <QObject>
 
 #include "sc_process.hpp"
 #include "sc_server.hpp"
@@ -77,6 +77,19 @@ private:
     ScServer * mSCServer;
     DocumentManager *mDocManager;
     SessionManager *mSessionManager;
+};
+
+class FileOpenEventFilter : public QObject
+{
+    Q_OBJECT
+
+public:
+    explicit FileOpenEventFilter(QObject * parent):
+        QObject(parent)
+    {}
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
 };
 
 }
