@@ -309,7 +309,7 @@ void MainWindow::createActions()
 
     mActions[HelpForSelection] = act = new QAction(
     QIcon::fromTheme("system-help"), tr("&Help for Selection"), this);
-    act->setShortcut(tr("F1", "Help for selection"));
+    act->setShortcut(tr("Ctrl+D", "Help for selection"));
     act->setStatusTip(tr("Find help for selected text"));
     connect(act, SIGNAL(triggered()), this, SLOT(helpForSelection()));
 
