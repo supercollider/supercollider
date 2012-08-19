@@ -71,6 +71,11 @@ public:
         return singleton;
     }
 
+    static void evaluateCode(QString const & text, bool silent = false)
+    {
+        instance()->scProcess()->evaluateCode(text, silent);
+    }
+
     Settings::Manager *settings()       { return mSettings;    }
     DocumentManager * documentManager() { return mDocManager;  }
     SessionManager * sessionManager()   { return mSessionManager; }

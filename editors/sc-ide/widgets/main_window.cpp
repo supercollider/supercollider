@@ -964,7 +964,7 @@ void MainWindow::helpForSelection()
 
         if (textCursor.hasSelection()) {
             QString code = QString("HelpBrowser.openHelpFor(\"%1\")").arg(textCursor.selectedText());
-            Main::instance()->scProcess()->evaluateCode(code, true);
+            Main::evaluateCode(code, true);
             return;
         }
     }
