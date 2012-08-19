@@ -21,6 +21,7 @@
 #include "doc_manager.hpp"
 #include "main.hpp"
 #include "settings/manager.hpp"
+#include "../../common/SC_TextUtils.hpp"
 
 #include <QPlainTextDocumentLayout>
 #include <QDebug>
@@ -76,10 +77,7 @@ void DocumentManager::open( const QString & path, int initialCursorPosition, boo
     }
 
     // Check if file already opened
-
-    DocIterator it;
-    for( it = mDocHash.begin(); it != mDocHash.end(); ++it )
-    {
+    for( DocIterator it = mDocHash.begin(); it != mDocHash.end(); ++it ) {
         Document *doc = it.value();
         if(doc->mFilePath == cpath) {
             Q_EMIT( showRequest(doc, initialCursorPosition) );
@@ -89,7 +87,6 @@ void DocumentManager::open( const QString & path, int initialCursorPosition, boo
     }
 
     // Open the file
-
     QFile file(cpath);
     if(!file.open(QIODevice::ReadOnly)) {
         qWarning() << "DocumentManager: the file" << cpath << "could not be opened for reading.";
@@ -98,15 +95,29 @@ void DocumentManager::open( const QString & path, int initialCursorPosition, boo
     QByteArray bytes( file.readAll() );
     file.close();
 
+    // strip .rtf
+    bool isRTF = false;
+    QString filePath = cpath;
+    if (info.suffix() == QString("rtf")) {
+        isRTF = true;
+
+        filePath += QString(".scd");
+        int result = rtf2txt(bytes.data());
+        bytes = bytes.left(result);
+        QMessageBox::warning(NULL, QString(tr("Opening RTF File")),
+                             QString(tr("Warning: RTF file will be converted to plain-text scd file.")));
+    }
+
     Document *doc = new Document();
     doc->mDoc->setPlainText( QString::fromUtf8( bytes.data(), bytes.size() ) );
     doc->mDoc->setModified(false);
-    doc->mFilePath = cpath;
+    doc->mFilePath = filePath;
     doc->mTitle = info.fileName();
 
     mDocHash.insert( doc->id(), doc );
 
-    mFsWatcher.addPath(cpath);
+    if (!isRTF)
+        mFsWatcher.addPath(cpath);
 
     Q_EMIT( opened(doc, initialCursorPosition) );
 
