@@ -399,7 +399,7 @@ void MultiEditor::createActions()
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateLine()));
 
     mActions[OpenDefinition] = act = new QAction(tr("Open Class/Method Definition"), this);
-    act->setShortcut(tr("Ctrl+E", "Open definition of selected class or method"));
+    act->setShortcut(tr("Ctrl+I", "Open definition of selected class or method"));
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(act, SIGNAL(triggered(bool)), this, SLOT(openDefinition()));
 
