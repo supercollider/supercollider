@@ -50,12 +50,12 @@ ScIDE {
 		dt = {
 			result = IdentitySet(16384);
 			Class.allClasses.do { | class |
-			if (class.isMetaClass.not) {
-				result.add(class.name);
-			};
-			class.methods.do { | method |
-			result.add(method.name);
-			};
+				if (class.isMetaClass.not) {
+					result.add(class.name);
+				};
+				class.methods.do { | method |
+					result.add(method.name);
+				};
 			};
 
 			result = result.collectAs(_.asString, Array)
@@ -90,7 +90,7 @@ ScIDE {
 					// methods include operators like "+", but those are
 					// actually not valid in the method call syntax
 					if (method.name.asString[0].isAlpha &&
-						methods[method.name].isNil)
+					methods[method.name].isNil)
 					{
 						methods.put(method.name, method);
 					};
