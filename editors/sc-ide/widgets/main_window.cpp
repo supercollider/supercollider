@@ -35,18 +35,18 @@
 #include "sessions_dialog.hpp"
 
 #include <QAction>
-#include <QShortcut>
+#include <QApplication>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QGridLayout>
+#include <QInputDialog>
 #include <QMenu>
 #include <QMenuBar>
-#include <QVBoxLayout>
-#include <QGridLayout>
-#include <QApplication>
 #include <QMessageBox>
-#include <QStatusBar>
-#include <QFileDialog>
-#include <QInputDialog>
-#include <QFileInfo>
 #include <QPointer>
+#include <QShortcut>
+#include <QStatusBar>
+#include <QVBoxLayout>
 
 namespace ScIDE {
 
@@ -140,12 +140,16 @@ MainWindow::MainWindow(Main * main) :
     // Interpreter: forward status messages
     connect(main->scProcess(), SIGNAL(statusMessage(const QString&)),
             status, SLOT(showMessage(const QString&)));
+
     // Document list interaction
     connect(mDocListDock->list(), SIGNAL(clicked(Document*)),
             mEditors, SLOT(setCurrent(Document*)));
     connect(mEditors, SIGNAL(currentChanged(Document*)),
             mDocListDock->list(), SLOT(setCurrent(Document*)),
             Qt::QueuedConnection);
+    connect(mEditors, SIGNAL(currentChanged(Document*)),
+            main->documentManager(), SLOT(activeDocumentChanged(Document*)));
+
     // Update actions on document change
     connect(mEditors, SIGNAL(currentChanged(Document*)),
             this, SLOT(onCurrentDocumentChanged(Document*)));

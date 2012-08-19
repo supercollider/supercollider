@@ -149,6 +149,7 @@ void DocumentManager::close( Document *doc )
     if (!doc->mFilePath.isEmpty())
         mFsWatcher.removePath(doc->mFilePath);
 
+    mRecentActiveDocuments.removeOne(doc);
     Q_EMIT( closed(doc) );
     delete doc;
 }
@@ -260,4 +261,10 @@ void DocumentManager::storeSettings( Settings::Manager *s )
         list << QVariant(path);
 
     s->setValue("IDE/recentDocuments", QVariant::fromValue<QVariantList>(list));
+}
+
+void DocumentManager::activeDocumentChanged( Document * document )
+{
+    mRecentActiveDocuments.removeOne(document);
+    mRecentActiveDocuments.push_front(document);
 }
