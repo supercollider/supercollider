@@ -77,8 +77,10 @@ public:
     Document * exec( const QPoint & pos )
     {
         move(pos);
-        QDialog::exec();
-        return currentDocument();
+        if (QDialog::exec())
+            return currentDocument();
+        else
+            return 0;
     }
 
 private:
@@ -119,6 +121,10 @@ private:
             ke->accept();
             return;
         }
+
+        case Qt::Key_Escape:
+            reject();
+            return;
 
         default:
             ;
