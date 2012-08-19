@@ -391,6 +391,13 @@ void MultiEditor::createActions()
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateRegion()));
 
+    mActions[EvaluateLine] = act = new QAction(
+    QIcon::fromTheme("media-playback-startline"), tr("&Evaluate Line"), this);
+    act->setShortcut(tr("Shift+Ctrl+Return", "Evaluate line"));
+    act->setStatusTip(tr("Evaluate current line"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(act, SIGNAL(triggered()), this, SLOT(evaluateLine()));
+
     mActions[OpenDefinition] = act = new QAction(tr("Open Class/Method Definition"), this);
     act->setShortcut(tr("Ctrl+D", "Open definition of selected class or method"));
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -414,6 +421,7 @@ void MultiEditor::createActions()
     addAction(mActions[OpenDefinition]);
     addAction(mActions[EvaluateCurrentDocument]);
     addAction(mActions[EvaluateRegion]);
+    addAction(mActions[EvaluateLine]);
     addAction(mActions[ToggleComment]);
     addAction(mActions[CopyLineUp]);
     addAction(mActions[CopyLineDown]);
@@ -447,6 +455,7 @@ void MultiEditor::updateActions()
     mActions[OpenDefinition]->setEnabled( editor );
     mActions[EvaluateCurrentDocument]->setEnabled( editor );
     mActions[EvaluateRegion]->setEnabled( editor );
+    mActions[EvaluateLine]->setEnabled( editor );
     mActions[ResetFontSize]->setEnabled( editor );
     mActions[ShowWhitespace]->setEnabled( editor );
     mActions[ShowWhitespace]->setChecked( editor && editor->showWhitespace() );
@@ -634,6 +643,40 @@ void MultiEditor::evaluateRegion()
 
     if (text.isEmpty())
         return;
+
+    text.replace( QChar( 0x2029 ), QChar( '\n' ) );
+
+    Main::instance()->scProcess()->evaluateCode(text);
+
+    editor->blinkCode( cursor );
+}
+
+void MultiEditor::evaluateLine()
+{
+    CodeEditor * editor = currentEditor();
+    if (!editor)
+        return;
+
+    QString text;
+
+    // Try current selection
+    QTextCursor cursor = editor->textCursor();
+    cursor.select(QTextCursor::LineUnderCursor);
+    text = cursor.selectedText();
+
+    if( mStepForwardEvaluation ) {
+        QTextCursor newCursor = cursor;
+        newCursor.movePosition(QTextCursor::NextBlock);
+        newCursor.movePosition(QTextCursor::EndOfBlock);
+        editor->setTextCursor(newCursor);
+    }
+
+    if (text.isEmpty())
+        return;
+
+    // Adjust cursor for code blinking:
+    cursor.movePosition(QTextCursor::StartOfBlock);
+    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
 
     text.replace( QChar( 0x2029 ), QChar( '\n' ) );
 
