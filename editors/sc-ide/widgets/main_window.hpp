@@ -141,7 +141,6 @@ private Q_SLOTS:
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
-    virtual void changeEvent(QEvent *);
 
 private:
     void createActions();
