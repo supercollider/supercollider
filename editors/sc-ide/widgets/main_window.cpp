@@ -291,7 +291,7 @@ void MainWindow::createActions()
 
     mActions[ShowFullScreen] = act = new QAction(tr("&FullScreen"), this);
     act->setCheckable(false);
-    act->setShortcut(tr("Ctrl+Shift+F11", "Show ScIDE in Full Screen"));
+    act->setShortcut(tr("Ctrl+Shift+F", "Show ScIDE in Full Screen"));
     connect(act, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
 
     // Settings
