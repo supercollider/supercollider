@@ -726,28 +726,6 @@ void CodeEditor::mouseReleaseEvent ( QMouseEvent *e )
     mMouseBracketMatch = false;
 }
 
-void CodeEditor::mouseDoubleClickEvent ( QMouseEvent *e )
-{
-    QTextCursor c(textCursor());
-    TokenIterator it = TokenIterator::around(c.block(), c.positionInBlock());
-    if (!it.isValid())
-        return;
-
-    BracketMatch match;
-    matchBracket( it, match );
-    if(match.first.isValid() && match.second.isValid())
-    {
-        c.setPosition(match.first.position());
-        c.setPosition(match.second.position() + 1, QTextCursor::KeepAnchor);
-        setTextCursor(c);
-        mMouseBracketMatch = true;
-    }
-    else
-    {
-        QPlainTextEdit::mouseDoubleClickEvent(e);
-    }
-}
-
 void CodeEditor::mouseMoveEvent( QMouseEvent *e )
 {
     // Prevent initiating a text drag:
