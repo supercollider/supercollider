@@ -79,6 +79,7 @@ public:
 
         NextDocument,
         PreviousDocument,
+        SwitchDocument,
 
         // Language
         EvaluateCurrentDocument,
@@ -114,6 +115,7 @@ public Q_SLOTS:
 
     void showNextDocument();
     void showPreviousDocument();
+    void switchDocument();
 
 private Q_SLOTS:
 

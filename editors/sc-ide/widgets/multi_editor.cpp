@@ -37,12 +37,121 @@
 #include <QMenu>
 #include <QDebug>
 
-#include <QTreeWidget>
-#include <QHeaderView>
-#include <QFileInfo>
 #include <QDialog>
+#include <QFileInfo>
+#include <QHeaderView>
+#include <QListView>
+#include <QTreeWidget>
+#include <QStandardItemModel>
+
 
 namespace ScIDE {
+
+class DocumentSelectPopUp : public QDialog
+{
+public:
+    explicit DocumentSelectPopUp(QWidget * parent):
+        QDialog(parent, Qt::Popup)
+    {
+        mModel = new QStandardItemModel(this);
+        populateModel();
+
+        mListView = new QListView();
+        mListView->setModel(mModel);
+        mListView->setFrameShape(QFrame::NoFrame);
+
+        QHBoxLayout *layout = new QHBoxLayout(this);
+        layout->addWidget(mListView);
+        layout->setContentsMargins(1,1,1,1);
+
+        connect(mListView, SIGNAL(activated(QModelIndex)), this, SLOT(accept()));
+
+        mListView->setFocus(Qt::OtherFocusReason);
+
+        QModelIndex nextIndex = mModel->index(1, 0);
+        mListView->setCurrentIndex(nextIndex);
+
+        mListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    }
+
+    Document * exec( const QPoint & pos )
+    {
+        move(pos);
+        QDialog::exec();
+        return currentDocument();
+    }
+
+private:
+    void keyReleaseEvent (QKeyEvent * ke)
+    {
+        // adapted from qtcreator
+        if (ke->modifiers() == 0
+            /*HACK this is to overcome some event inconsistencies between platforms*/
+            || (ke->modifiers() == Qt::AltModifier
+                && (ke->key() == Qt::Key_Alt || ke->key() == -1))) {
+            ke->accept();
+            accept();
+        }
+        QDialog::keyPressEvent(ke);
+    }
+
+    void keyPressEvent(QKeyEvent * ke)
+    {
+        switch (ke->key()) {
+        case Qt::Key_Tab: {
+            int row = mListView->currentIndex().row() + 1;
+            if (!mModel->hasIndex(row, 0))
+                row = 0;
+
+            QModelIndex nextIndex = mModel->index(row, 0);
+            mListView->setCurrentIndex(nextIndex);
+            ke->accept();
+            return;
+        }
+
+        case Qt::Key_Backtab: {
+            int row = mListView->currentIndex().row() - 1;
+            if (!mModel->hasIndex(row, 0))
+                row = mModel->rowCount() - 1;
+
+            QModelIndex nextIndex = mModel->index(row, 0);
+            mListView->setCurrentIndex(nextIndex);
+            ke->accept();
+            return;
+        }
+
+        default:
+            ;
+        }
+
+        QDialog::keyPressEvent(ke);
+    }
+
+    Document * currentDocument()
+    {
+        QStandardItem * currentItem = mModel->itemFromIndex(mListView->currentIndex());
+
+        return currentItem ? currentItem->data().value<Document*>()
+                           : NULL;
+    }
+
+    void populateModel()
+    {
+        DocumentManager * manager = Main::instance()->documentManager();
+        DocumentManager::DocumentList const & documentList = manager->recentActiveDocuments();
+
+        foreach (Document * document, documentList) {
+            QStandardItem * item = new QStandardItem(document->title());
+            item->setData(QVariant::fromValue(document));
+            mModel->appendRow(item);
+        }
+    }
+
+    QListView *mListView;
+    QStandardItemModel *mModel;
+};
+
+
 
 class OpenDefinitionDialog : public QDialog
 {
@@ -77,6 +186,7 @@ public:
 private:
     QTreeWidget *mTreeWidget;
 };
+
 
 MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
@@ -113,6 +223,8 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
+
+    connect(this, SIGNAL(currentChanged(Document*)), mDocManager, SLOT(activeDocumentChanged(Document*)));
 
     createActions();
     updateActions();
@@ -254,6 +366,10 @@ void MultiEditor::createActions()
     act->setShortcut( tr("Alt+Left", "Next Document"));
     connect(act, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
 
+    mActions[SwitchDocument] = act = new QAction(tr("Switch Document"), this);
+    act->setShortcut( tr("Ctrl+Tab", "Switch Document"));
+    connect(act, SIGNAL(triggered()), this, SLOT(switchDocument()));
+
     // Language
 
     mActions[EvaluateCurrentDocument] = act = new QAction(
@@ -283,6 +399,7 @@ void MultiEditor::createActions()
     // at least to this widget, in order for the shortcuts to always respond:
     addAction(mActions[TriggerAutoCompletion]);
     addAction(mActions[TriggerMethodCallAid]);
+    addAction(mActions[SwitchDocument]);
 
     // These actions have to be added because to the widget because they have
     // Qt::WidgetWithChildrenShortcut context:
@@ -361,6 +478,19 @@ void MultiEditor::showPreviousDocument()
 {
     int currentIndex = mTabs->currentIndex();
     mTabs->setCurrentIndex( qMax(0, currentIndex - 1) );
+}
+
+void MultiEditor::switchDocument()
+{
+    DocumentSelectPopUp * popup = new DocumentSelectPopUp(this);
+
+    QPoint position = rect().center();
+    QPoint globalPosition = mapToGlobal(position);
+
+    Document * selectedDocument = popup->exec(globalPosition);
+
+    if (selectedDocument)
+        mTabs->setCurrentWidget( editorForDocument(selectedDocument) );
 }
 
 void MultiEditor::onOpen( Document *doc, int pos )
