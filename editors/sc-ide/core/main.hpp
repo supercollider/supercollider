@@ -24,6 +24,9 @@
 #include <QAction>
 #include <QObject>
 
+#include <QtNetwork/QLocalSocket>
+#include <QtNetwork/QLocalServer>
+
 #include "sc_process.hpp"
 #include "sc_server.hpp"
 #include "doc_manager.hpp"
@@ -32,6 +35,29 @@
 namespace ScIDE {
 
 class SessionManager;
+
+class SingleInstanceGuard:
+    public QObject
+{
+    Q_OBJECT
+
+public:
+    bool tryConnect(QStringList const & arguments);
+
+public Q_SLOTS:
+    void onNewIpcConnection()
+    {
+        mIpcSocket = mIpcServer->nextPendingConnection();
+        connect(mIpcSocket, SIGNAL(disconnected()), mIpcSocket, SLOT(deleteLater()));
+        connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
+    }
+
+    void onIpcData();
+
+private:
+    QLocalServer * mIpcServer;
+    QLocalSocket * mIpcSocket;
+};
 
 class Main:
     public QObject

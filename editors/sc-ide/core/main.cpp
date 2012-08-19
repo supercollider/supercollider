@@ -27,6 +27,8 @@
 
 #include <QApplication>
 #include <QAction>
+#include <QBuffer>
+#include <QDataStream>
 #include <QDir>
 #include <QFileOpenEvent>
 #include <QLibraryInfo>
@@ -37,6 +39,15 @@ using namespace ScIDE;
 int main( int argc, char *argv[] )
 {
     QApplication app(argc, argv);
+
+    QStringList arguments (QApplication::arguments());
+    arguments.pop_front(); // application path
+
+    SingleInstanceGuard guard;
+    if (!arguments.empty()) {
+        if (guard.tryConnect(arguments))
+            return 0;
+    }
 
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
@@ -61,8 +72,6 @@ int main( int argc, char *argv[] )
         win->showMaximized();
     }
 
-    QStringList arguments (QApplication::arguments());
-    arguments.pop_front(); // application path
     foreach (QString argument, arguments) {
         main->documentManager()->open(argument);
     }
@@ -73,6 +82,54 @@ int main( int argc, char *argv[] )
 
     return app.exec();
 }
+
+
+bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
+{
+    QLocalSocket * mSocket = new QLocalSocket(this);
+    mSocket->connectToServer("SuperColliderIDESingleton");
+    if (mSocket->waitForConnected(500)) {
+        QDataStream stream(mSocket);
+        stream.setVersion(QDataStream::Qt_4_6);
+
+        stream << QString("open");
+        stream << arguments;
+        mSocket->flush();
+        return true;
+    }
+    delete mSocket;
+
+    mIpcServer = new QLocalServer(this);
+    mIpcServer->listen("SuperColliderIDESingleton");
+    connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
+    return false;
+}
+
+void SingleInstanceGuard::onIpcData()
+{
+    QByteArray ipcData = mIpcSocket->readAll();
+
+    QBuffer receivedData ( &ipcData );
+    receivedData.open ( QIODevice::ReadOnly );
+
+    QDataStream in ( &receivedData );
+    in.setVersion ( QDataStream::Qt_4_6 );
+    QString id;
+    in >> id;
+    if ( in.status() != QDataStream::Ok )
+        return;
+
+    QStringList message;
+    in >> message;
+    if ( in.status() != QDataStream::Ok )
+        return;
+
+    if (id == QString("open")) {
+        foreach (QString path, message)
+            Main::instance()->documentManager()->open(path);
+    }
+}
+
 
 static QString getSettingsFile()
 {
