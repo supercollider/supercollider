@@ -2,6 +2,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
                     ${CMAKE_SOURCE_DIR}/include/server
+                    ${CMAKE_SOURCE_DIR}/common
+
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost-lockfree
                     ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
                     ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include
@@ -75,6 +77,8 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+
 	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
