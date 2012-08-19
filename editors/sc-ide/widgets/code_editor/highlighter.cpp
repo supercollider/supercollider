@@ -109,7 +109,7 @@ void SyntaxHighlighterGlobals::initKeywords()
              << "thisMethod"
              << "thisProcess"
              << "thisThread"
-             << "thisThread"
+             << "currentEnvironment"
              << "var";
 
     QString keywordPattern = QString("^\\b(%1)\\b").arg(keywords.join("|"));
