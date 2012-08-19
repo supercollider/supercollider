@@ -856,28 +856,18 @@ void MainWindow::updateWindowTitle()
 
 void MainWindow::toggleFullScreen()
 {
-    if (isFullScreen())
+    if (isFullScreen()) {
         setWindowState(windowState() & ~Qt::WindowFullScreen);
-    else
+
+        delete mClockLabel;
+        mClockLabel = NULL;
+    } else {
         setWindowState(windowState() | Qt::WindowFullScreen);
-}
 
-void MainWindow::changeEvent(QEvent *e)
-{
-    if (e->type() == QEvent::WindowStateChange)
-    {
-        QStatusBar * statusbar = statusBar();
-        if (isFullScreen()) {
-            Q_ASSERT(mClockLabel == NULL);
-            mClockLabel = new StatusClockLabel(this);
-            statusbar->insertWidget(0, mClockLabel);
-        } else if (mClockLabel) {
-            delete mClockLabel;
-            mClockLabel = NULL;
-        }
+        Q_ASSERT(mClockLabel == NULL);
+        mClockLabel = new StatusClockLabel(this);
+        statusBar()->insertWidget(0, mClockLabel);
     }
-
-    QMainWindow::changeEvent(e);
 }
 
 void MainWindow::updateSessionsMenu()
