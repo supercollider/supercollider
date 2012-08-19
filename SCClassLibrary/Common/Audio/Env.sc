@@ -8,7 +8,7 @@ Env {
 	classvar <shapeNames;
 
 	
-	*new { arg levels = #[0,1,0], times = #[1,1], curve = \lin, releaseNode, loopNode, offset;
+	*new { arg levels = #[0,1,0], times = #[1,1], curve = \lin, releaseNode, loopNode, offset = 0;
 		times = times.asArray.wrapExtend(levels.size - 1);
 		^super.newCopyArgs(levels, times, curve ? \lin, releaseNode, loopNode, offset)
 	}
@@ -227,6 +227,7 @@ Env {
 
 	at { arg time;
 		var data = this.asMultichannelArray;
+		time = (time - offset).max(0);
 		^if(time.isSequenceableCollection) {
 			if(data.size <= 1) {
 				data = data[0];
