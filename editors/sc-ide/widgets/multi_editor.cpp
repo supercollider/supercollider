@@ -385,7 +385,7 @@ void MultiEditor::createActions()
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateDocument()));
 
     mActions[EvaluateRegion] = act = new QAction(
-    QIcon::fromTheme("media-playback-start"), tr("&Evaluate Region"), this);
+    QIcon::fromTheme("media-playback-start"), tr("&Evaluate Selection, Line or Region"), this);
     act->setShortcut(tr("Ctrl+Return", "Evaluate region"));
     act->setStatusTip(tr("Evaluate current region"));
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
