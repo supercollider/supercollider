@@ -84,6 +84,7 @@ public:
         // Language
         EvaluateCurrentDocument,
         EvaluateRegion,
+        EvaluateLine,
 
         OpenDefinition,
 
@@ -128,6 +129,7 @@ private Q_SLOTS:
     void onModificationChanged( QWidget * );
     void openDefinition();
     void evaluateRegion();
+    void evaluateLine();
     void evaluateDocument();
 
 private:

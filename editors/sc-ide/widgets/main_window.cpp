@@ -406,6 +406,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::EvaluateCurrentDocument) );
     menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );
+    menu->addAction( mEditors->action(MultiEditor::EvaluateLine) );
     menu->addSeparator();
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::RunMain) );
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::StopMain) );
