@@ -646,7 +646,7 @@ void MultiEditor::evaluateRegion()
 
     text.replace( QChar( 0x2029 ), QChar( '\n' ) );
 
-    Main::instance()->scProcess()->evaluateCode(text);
+    Main::evaluateCode(text);
 
     editor->blinkCode( cursor );
 }
@@ -680,7 +680,7 @@ void MultiEditor::evaluateLine()
 
     text.replace( QChar( 0x2029 ), QChar( '\n' ) );
 
-    Main::instance()->scProcess()->evaluateCode(text);
+    Main::evaluateCode(text);
 
     editor->blinkCode( cursor );
 }
@@ -692,7 +692,7 @@ void MultiEditor::evaluateDocument()
         return;
 
     QString documentText = editor->document()->textDocument()->toPlainText();
-    Main::instance()->scProcess()->evaluateCode(documentText);
+    Main::evaluateCode(documentText);
 }
 
 
