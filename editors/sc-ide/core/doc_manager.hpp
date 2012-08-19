@@ -21,16 +21,17 @@
 #ifndef SCIDE_DOC_MANAGER_HPP_INCLUDED
 #define SCIDE_DOC_MANAGER_HPP_INCLUDED
 
+#include <QDateTime>
+#include <QFileSystemWatcher>
+#include <QHash>
+#include <QList>
+#include <QMetaType>
 #include <QObject>
+#include <QStringList>
 #include <QTextDocument>
 #include <QUuid>
-#include <QHash>
-#include <QFileSystemWatcher>
-#include <QDateTime>
-#include <QStringList>
 
-namespace ScIDE
-{
+namespace ScIDE {
 
 namespace Settings { class Manager; }
 
@@ -70,6 +71,7 @@ class DocumentManager : public QObject
     Q_OBJECT
 
 public:
+    typedef QList< Document * > DocumentList;
 
     DocumentManager( Main * );
     QList<Document*> documents() {
@@ -83,12 +85,15 @@ public:
     bool reload( Document * );
     const QStringList & recents() const { return mRecent; }
 
+    DocumentList const & recentActiveDocuments() const { return mRecentActiveDocuments; }
+
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
     void open( const QString & path, int initialCursorPosition = -1, bool addToRecent = true );
     void clearRecents();
     void applySettings( Settings::Manager * );
     void storeSettings( Settings::Manager * );
+    void activeDocumentChanged( Document * );
 
 Q_SIGNALS:
 
@@ -112,11 +117,13 @@ private:
     QFileSystemWatcher mFsWatcher;
 
     QStringList mRecent;
-
     static const int mMaxRecent = 10;
+
+    DocumentList mRecentActiveDocuments;
 };
 
 } // namespace ScIDE
 
+Q_DECLARE_METATYPE( ScIDE::Document* );
 
 #endif // SCIDE_DOC_MANAGER_HPP_INCLUDED
