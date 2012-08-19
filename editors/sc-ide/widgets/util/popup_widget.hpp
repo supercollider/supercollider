@@ -38,7 +38,7 @@ public:
     };
 
 public:
-    PopUpWidget( QWidget * parent = 0 );
+    explicit PopUpWidget( QWidget * parent = 0 );
 
     virtual ~PopUpWidget();
 
