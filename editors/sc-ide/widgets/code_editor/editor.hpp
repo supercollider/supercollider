@@ -107,7 +107,6 @@ protected:
     virtual void changeEvent( QEvent * );
     virtual void keyPressEvent( QKeyEvent * );
     virtual void mouseReleaseEvent ( QMouseEvent * );
-    virtual void mouseDoubleClickEvent ( QMouseEvent * );
     virtual void mouseMoveEvent( QMouseEvent * );
     virtual void wheelEvent( QWheelEvent * );
     virtual void paintEvent( QPaintEvent * );
