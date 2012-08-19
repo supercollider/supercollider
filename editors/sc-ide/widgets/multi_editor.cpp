@@ -484,8 +484,10 @@ void MultiEditor::switchDocument()
 {
     DocumentSelectPopUp * popup = new DocumentSelectPopUp(this);
 
-    QPoint position = rect().center();
-    QPoint globalPosition = mapToGlobal(position);
+    QRect popupRect(0,0,300,200);
+    popupRect.moveCenter(rect().center());
+    popup->resize(popupRect.size());
+    QPoint globalPosition = mapToGlobal(popupRect.topLeft());
 
     Document * selectedDocument = popup->exec(globalPosition);
 
