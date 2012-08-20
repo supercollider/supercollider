@@ -154,7 +154,7 @@ void PostWindow::wheelEvent( QWheelEvent * e )
 PostDock::PostDock(QWidget* parent):
     QDockWidget(tr("Post window"), parent)
 {
-    setAllowedAreas(Qt::BottomDockWidgetArea | Qt::RightDockWidgetArea);
+    setAllowedAreas(Qt::BottomDockWidgetArea | Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
     setFeatures(DockWidgetFloatable | DockWidgetMovable);
 
     mPostWindow = new PostWindow(this);

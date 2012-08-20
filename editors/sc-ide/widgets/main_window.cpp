@@ -100,9 +100,11 @@ MainWindow::MainWindow(Main * main) :
     // Docks
     mDocListDock = new DocumentsDock(main->documentManager(), this);
     mDocListDock->setObjectName("documents-dock");
+    mDocListDock->hide();
 
     mPostDock = new PostDock(this);
     mPostDock->setObjectName("post-dock");
+    addDockWidget(Qt::LeftDockWidgetArea, mPostDock);
 
     // Layout
 
@@ -115,9 +117,6 @@ MainWindow::MainWindow(Main * main) :
     QWidget *central = new QWidget;
     central->setLayout(center_box);
     setCentralWidget(central);
-
-    addDockWidget(Qt::LeftDockWidgetArea, mDocListDock);
-    addDockWidget(Qt::BottomDockWidgetArea, mPostDock);
 
     // Session management
     connect(main->sessionManager(), SIGNAL(saveSessionRequest(Session*)),
