@@ -35,6 +35,19 @@ namespace ScLanguage {
 
 Introspection::Introspection()
 {
+    initPaths();
+}
+
+Introspection::Introspection( QString const & yamlString )
+{
+    initPaths();
+    bool parsingSuccessful = parse(yamlString);
+    if (!parsingSuccessful)
+        throw std::runtime_error("Introspection parse error");
+}
+
+void Introspection::initPaths()
+{
     char userExtensionDir[PATH_MAX];
     sc_GetUserExtensionDirectory(userExtensionDir, PATH_MAX);
     mUserExtensionDir = QString(userExtensionDir) + QString("/");
