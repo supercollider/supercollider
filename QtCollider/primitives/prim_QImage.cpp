@@ -69,6 +69,11 @@ void QImage_InitPath( struct VMGlobals *g, struct PyrObject *obj,
 void QImage_InitFromData( struct VMGlobals *g, struct PyrObject *obj,
                           const QByteArray &byteArray )
 {
+  INIT_ASSERT
+  QImage *img = new QImage();
+  // FIX: to check the byteArray
+  img->loadFromData( byteArray );
+  INIT_SETUP
 }
 
 void QImage_InitEmpty( struct VMGlobals *g, struct PyrObject *obj,
@@ -97,7 +102,35 @@ QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_NewURL, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  return errNone;
+    // receives a non encoded url
+    if( NotSym(a) ) return errWrongType; // FIX: to be added to other "string arg" primitives if necessary
+
+    QUrl url( Slot::toString(a) );
+    if( !url.isValid() || url.isEmpty() ) return errReturn;
+    // FIX: e.g. "http://" or "no valid" as url passes crashes
+
+    if( url.isLocalFile() ) {
+        QImage_InitPath( g, slotRawObject(r), url.toLocalFile() );
+        return errNone;
+    }
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    QNetworkReply *reply = manager->get( QNetworkRequest( url ) );
+
+    QEventLoop loop;
+    QcApplication::connect(manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
+    // FIX: add a signal to abort the download if is taking to loong.
+    loop.exec(); // blocks
+
+    QByteArray byteArray = reply->readAll();
+    if( byteArray.isEmpty() ) return errReturn;
+
+    QImage_InitFromData( g, slotRawObject(r), byteArray );
+
+    manager->deleteLater();
+    reply->deleteLater();
+
+    return errNone;
 }
 
 QC_LANG_PRIMITIVE( QImage_NewEmpty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
