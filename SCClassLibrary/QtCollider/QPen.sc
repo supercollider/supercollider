@@ -284,6 +284,11 @@ QPen {
     this.stringInRect( string, rect, font, color, QAlignment(\right) );
   }
 
+  *drawImage { arg target, image, source;
+    _QPen_DrawImage
+    ^this.primitiveFailed;
+  }
+
 //---------------------- PRIVATE! -- Painter on/off-----------------------------
 
   *prBegin { arg aQView;

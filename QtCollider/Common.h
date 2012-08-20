@@ -116,7 +116,8 @@ namespace QtCollider {
   QC_DO_SYMBOL(QLayout); \
   QC_DO_SYMBOL(QTreeViewItem); \
   QC_DO_SYMBOL(Gradient); \
-  QC_DO_SYMBOL(HiliteGradient);
+  QC_DO_SYMBOL(HiliteGradient); \
+  QC_DO_SYMBOL(QImage);
 
 #define QC_DO_SYMBOL(SYM) extern PyrSymbol * sym_##SYM
 QC_DO_SYMBOLS

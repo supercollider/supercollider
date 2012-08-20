@@ -37,6 +37,7 @@ void defineQPenPrimitives();
 void defineMiscPrimitives();
 void defineQWidgetPrimitives();
 void defineQPalettePrimitives();
+void defineQImagePrimitives();
 
 QC_PUBLIC
 void initPrimitives () {
@@ -49,6 +50,7 @@ void initPrimitives () {
   defineQPenPrimitives();
   defineMiscPrimitives();
   defineQPalettePrimitives();
+  defineQImagePrimitives();
 
 #define QC_DO_SYMBOL(SYM) sym_##SYM = getsym(#SYM);
 QC_DO_SYMBOLS
