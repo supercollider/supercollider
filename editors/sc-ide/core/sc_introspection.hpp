@@ -84,6 +84,7 @@ class Introspection
 {
 public:
     Introspection();
+    ~Introspection();
 
     typedef QMap< QString, QList<Method*> > ClassMethodMap; // maps Path to List of Methods
 
@@ -99,19 +100,6 @@ public:
         return constructMethodMap(findClass(className));
     }
 
-    void release()
-    {
-        deleteAll();
-        clear();
-    }
-
-    void clear()
-    {
-        mClassMap.clear();
-        mMethodMap.clear();
-        mClassLibraryPath.clear();
-    }
-
     QString const & classLibraryPath() const
     {
         return mClassLibraryPath;
@@ -120,16 +108,31 @@ public:
     // remove class library path, userExtensionDir and systemExtensionDir
     QString compactLibraryPath(QString const & path) const;
 
+    Introspection & operator=(Introspection const & rhs)
+    {
+        clear();
+        mClassMap = rhs.mClassMap;
+        mMethodMap = rhs.mMethodMap;
+        mClassLibraryPath = rhs.mClassLibraryPath;
+        mUserExtensionDir = rhs.mUserExtensionDir;
+        mSystemExtensionDir = rhs.mSystemExtensionDir;
+        return *this;
+    }
+
 private:
     void inferClassLibraryPath();
 
-    void deleteAll()
+    void clear()
     {
         for (ClassMap::iterator it = mClassMap.begin(); it != mClassMap.end(); ++it)
             delete it->second;
 
         for (MethodMap::iterator it = mMethodMap.begin(); it != mMethodMap.end(); ++it)
             delete it->second;
+
+        mClassMap.clear();
+        mMethodMap.clear();
+        mClassLibraryPath.clear();
     }
 
     ClassMap mClassMap;

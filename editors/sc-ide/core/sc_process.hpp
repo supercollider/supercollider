@@ -44,10 +44,6 @@ Q_OBJECT
 
 public:
     SCProcess( Main * );
-    ~SCProcess()
-    {
-        mIntrospection.release();
-    }
 
     enum SCProcessActionRole {
         StartSCLang = 0,
@@ -141,7 +137,7 @@ public slots:
 
     void swapIntrospection (ScLanguage::Introspection *newIntrospection)
     {
-        mIntrospection.release();
+        // LATER: use c++11/std::move
         mIntrospection = *newIntrospection;
         delete newIntrospection;
     }

@@ -44,6 +44,11 @@ Introspection::Introspection()
     mSystemExtensionDir = QString(systemExtensionDir) + QString("/");
 }
 
+Introspection::~Introspection()
+{
+    clear();
+}
+
 bool Introspection::parse(const QString & yamlString )
 {
     using std::make_pair;
