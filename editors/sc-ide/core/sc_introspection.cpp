@@ -74,7 +74,7 @@ bool Introspection::parse(const QString & yamlString )
         QString name = (*it)[0].to<std::string>().c_str();
         Class *klass = new Class;
         klass->name = name;
-        mClassMap.insert(make_pair(klass->name, klass));
+        mClassMap.insert(make_pair(klass->name, QSharedPointer<Class>(klass)));
     }
 
     for (YAML::Iterator docIterator = doc.begin(); docIterator != doc.end(); ++docIterator)
@@ -83,7 +83,7 @@ bool Introspection::parse(const QString & yamlString )
         QString name = node[0].to<std::string>().c_str();
         ClassMap::iterator it = mClassMap.find(name);
         assert(it != mClassMap.end());
-        Class *klass = it->second;
+        Class *klass = it->second.data();
 
         //qDebug() << klass->name;
 
@@ -92,7 +92,7 @@ bool Introspection::parse(const QString & yamlString )
         QString metaClassName = node[1].to<std::string>().c_str();
         class_it = mClassMap.find(metaClassName);
         assert(class_it != mClassMap.end());
-        klass->metaClass = class_it->second;
+        klass->metaClass = class_it->second.data();
 
         if (node[2].Read(YAML::Null))
             klass->superClass = 0;
@@ -100,7 +100,7 @@ bool Introspection::parse(const QString & yamlString )
             QString superClassName = node[2].to<std::string>().c_str();
             class_it = mClassMap.find(superClassName);
             assert(class_it != mClassMap.end());
-            klass->superClass = class_it->second;
+            klass->superClass = class_it->second.data();
         }
 
         klass->definition.path = node[3].to<std::string>().c_str();
@@ -157,7 +157,7 @@ bool Introspection::parse(const QString & yamlString )
             }
 
             klass->methods.append(method);
-            mMethodMap.insert(make_pair(method->name, method));
+            mMethodMap.insert(make_pair(method->name, QSharedPointer<Method>(method)));
         }
     }
 
@@ -185,7 +185,7 @@ void Introspection::inferClassLibraryPath()
 {
     ClassMap::const_iterator object_class_it = mClassMap.find("Object");
     assert(object_class_it != mClassMap.end());
-    Class *objectClass = object_class_it->second;
+    Class *objectClass = object_class_it->second.data();
 
     QString classLibPath = objectClass->definition.path;
     int len = classLibPath.lastIndexOf("Common");
@@ -209,7 +209,7 @@ const Class * Introspection::findClass(const QString &className) const
         qWarning("Class not defined!");
         return NULL;
     }
-    return klass_it->second;
+    return klass_it->second.data();
 }
 
 Introspection::ClassMethodMap Introspection::constructMethodMap(const Class * klass) const

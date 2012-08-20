@@ -837,10 +837,8 @@ void MultiEditor::openMethodDefinition( const QString & methodName )
     tree->setColumnCount(2);
 
     for (MethodMap::const_iterator it = matchingMethods.first;
-        it != matchingMethods.second;
-        ++it)
-    {
-        Method *method = it->second;
+         it != matchingMethods.second; ++it) {
+        Method *method = it->second.data();
 
         const QString & path = method->definition.path;
         QString displayPath = introspection.compactLibraryPath(path);
