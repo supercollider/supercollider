@@ -83,6 +83,9 @@ void QImage_InitEmpty( struct VMGlobals *g, struct PyrObject *obj,
 void QImage_InitWindow( struct VMGlobals *g, struct PyrObject *obj,
                         QWidget *widget, const QRect &rect )
 {
+  INIT_ASSERT
+  QImage *img = new QImage(QPixmap::grabWidget( widget, rect ).toImage());
+  INIT_SETUP
 }
 
 QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
@@ -110,6 +113,18 @@ QC_LANG_PRIMITIVE( QImage_NewEmpty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_NewFromWindow, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+  if( NotObj(a) || NotObj(a+1) ) return errWrongType;
+
+  QObjectProxy *proxy = Slot::toObjectProxy(a);
+  if( !proxy ) return errWrongType;
+  QWidget *widget = qobject_cast<QWidget *>( proxy->object() );
+  if( !widget ) return errWrongType;
+
+  if( slotRawObject(a+1)->classptr != SC_CLASS(Rect) ) return errWrongType;
+  QRect rect = Slot::toRect(a+1).toRect();
+
+  QImage_InitWindow( g, slotRawObject(r), widget, rect );
+
   return errNone;
 }
 
