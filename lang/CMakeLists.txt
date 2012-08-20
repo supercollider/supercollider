@@ -307,15 +307,9 @@ endif()
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
 	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-	if (SC_IDE)
-		install(TARGETS sclang
-			DESTINATION "${sclangauxmacosdir}"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-	else()
-		install(TARGETS sclang
-			DESTINATION "${sclangauxresourcesdir}"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-	endif()
+	install(TARGETS sclang
+		DESTINATION "${sclanginstalldir}"
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 elseif(WIN32)
 	install(TARGETS sclang
 			DESTINATION "SuperCollider"
