@@ -495,9 +495,8 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
 
         menu = new CompletionMenu(mEditor);
 
-        for (ClassMap::const_iterator it = matchStart; it != matchEnd; ++it)
-        {
-            Class *klass = it->second;
+        for (ClassMap::const_iterator it = matchStart; it != matchEnd; ++it) {
+            Class *klass = it->second.data();
             menu->addItem( new QStandardItem(klass->name) );
         }
 
@@ -563,10 +562,8 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
         menu = new CompletionMenu(mEditor);
         menu->setCompletionRole(CompletionMenu::CompletionRole);
 
-        MethodMap::const_iterator it = matchStart;
-        while(it != matchEnd)
-        {
-            const Method *method = it->second;
+        for (MethodMap::const_iterator it = matchStart; it != matchEnd; ) {
+            const Method *method = it->second.data();
 
             std::pair<MethodMap::const_iterator, MethodMap::const_iterator> range
                 = methods.equal_range(it->first);
@@ -580,10 +577,9 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
             if (count == 1) {
                 item->setText( methodName + detail.arg(method->ownerClass->name) );
                 item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
-            }
-            else {
+            } else
                 item->setText(methodName + detail.arg(count));
-            }
+
             item->setData(methodName, CompletionMenu::CompletionRole);
 
             menu->addItem(item);
@@ -818,20 +814,16 @@ void AutoCompleter::triggerMethodCallAid( bool force )
         if (match.first == match.second) {
             qDebug() << "MethodCall: no method matches:" << methodName;
             return;
-        }
-        else if (std::distance(match.first, match.second) == 1)
-        {
-            method = match.first->second;
-        }
-        else
-        {
+        } else if (std::distance(match.first, match.second) == 1)
+            method = match.first->second.data();
+        else {
             Q_ASSERT(mMethodCall.menu.isNull());
             QPointer<CompletionMenu> menu = new CompletionMenu(mEditor);
             mMethodCall.menu = menu;
 
             for (MethodMap::const_iterator it = match.first; it != match.second; ++it)
             {
-                const Method *method = it->second;
+                const Method *method = it->second.data();
                 QStandardItem *item = new QStandardItem();
                 item->setText(method->name + " (" + method->ownerClass->name + ')');
                 item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );

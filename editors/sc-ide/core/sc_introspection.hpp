@@ -25,6 +25,7 @@
 #include <QList>
 #include <QMap>
 #include <QMetaType>
+#include <QSharedPointer>
 #include <QString>
 #include <QVector>
 
@@ -43,16 +44,12 @@ namespace ScIDE {
 
 namespace ScLanguage {
 
-struct Class;
-struct Method;
-struct Argument;
-
 typedef boost::flyweight<QString> FlyweightString;
 
-typedef std::map<QString, Class*> ClassMap;
-typedef std::multimap<QString, Method*> MethodMap;
-typedef QVector<Argument> ArgumentVector;
-typedef QVector<Method*> MethodVector;
+typedef std::map<QString, QSharedPointer<class Class> > ClassMap;
+typedef std::multimap<QString, QSharedPointer<class Method> > MethodMap;
+typedef QVector<class Argument> ArgumentVector;
+typedef QVector<class Method*> MethodVector;
 
 struct Argument {
     FlyweightString name;
@@ -108,28 +105,11 @@ public:
     // remove class library path, userExtensionDir and systemExtensionDir
     QString compactLibraryPath(QString const & path) const;
 
-    Introspection & operator=(Introspection const & rhs)
-    {
-        clear();
-        mClassMap = rhs.mClassMap;
-        mMethodMap = rhs.mMethodMap;
-        mClassLibraryPath = rhs.mClassLibraryPath;
-        mUserExtensionDir = rhs.mUserExtensionDir;
-        mSystemExtensionDir = rhs.mSystemExtensionDir;
-        return *this;
-    }
-
 private:
     void inferClassLibraryPath();
 
     void clear()
     {
-        for (ClassMap::iterator it = mClassMap.begin(); it != mClassMap.end(); ++it)
-            delete it->second;
-
-        for (MethodMap::iterator it = mMethodMap.begin(); it != mMethodMap.end(); ++it)
-            delete it->second;
-
         mClassMap.clear();
         mMethodMap.clear();
         mClassLibraryPath.clear();
