@@ -41,7 +41,6 @@ static inline std::size_t hash_value(QString const& b)
 }
 
 namespace ScIDE {
-
 namespace ScLanguage {
 
 typedef boost::flyweight<QString> FlyweightString;
@@ -81,11 +80,10 @@ class Introspection
 {
 public:
     Introspection();
+    Introspection( QString const & yamlString );
     ~Introspection();
 
     typedef QMap< QString, QList<Method*> > ClassMethodMap; // maps Path to List of Methods
-
-    bool parse(const QString & yamlString );
 
     const ClassMap & classMap() const { return mClassMap; }
     const MethodMap & methodMap() const { return mMethodMap; }
@@ -106,6 +104,8 @@ public:
     QString compactLibraryPath(QString const & path) const;
 
 private:
+    void initPaths();
+    bool parse(const QString & yamlString );
     void inferClassLibraryPath();
 
     void clear()

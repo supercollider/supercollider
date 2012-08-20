@@ -247,9 +247,13 @@ signals:
 private slots:
     void process( const QString & input )
     {
-        ScLanguage::Introspection *introspection = new ScLanguage::Introspection;
-        introspection->parse(input);
-        emit done(introspection);
+        try {
+            ScLanguage::Introspection *introspection = new ScLanguage::Introspection (input);
+            emit done(introspection);
+        } catch (std::exception & e) {
+            // LATER: show message in status bar
+            qDebug() << e.what();
+        }
     }
     void quit()
     {
