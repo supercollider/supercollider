@@ -307,7 +307,14 @@ if(APPLE)
 		DESTINATION ${scappbundlename}
 	)
 
-    install(DIRECTORY platform/mac/Resources/ DESTINATION ${scappbundlename})
+	if(SC_IDE)
+		set(iconrsrc platform/mac/Resources/)
+		install(DIRECTORY platform/mac/Resources/ DESTINATION ${sclangauxresourcesdir})
+		install(FILES platform/mac/Info.plist DESTINATION ${sclangauxcontents})
+		install(FILES ${iconrsrc}/html.icns ${iconrsrc}/rtf.icns ${iconrsrc}/rtfd.icns ${iconrsrc}/html.icns ${iconrsrc}/quark.icns ${iconrsrc}/sc.icns ${iconrsrc}/scd.icns ${iconrsrc}/SCcube.icns DESTINATION ${scappauxresourcesdir})
+	else()
+		install(DIRECTORY platform/mac/Resources/ DESTINATION ${scappbundlename})
+	endif()
 
 elseif(WIN32)
 	set(auxresourcesdir "SuperCollider")
