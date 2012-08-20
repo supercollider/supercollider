@@ -276,8 +276,8 @@ void DocumentManager::storeSettings( Settings::Manager *s )
 
 void DocumentManager::activeDocumentChanged( Document * document )
 {
-	if (document) {
-		mRecentActiveDocuments.removeOne(document);
-		mRecentActiveDocuments.push_front(document);
-	}
+    if (document) {
+        mRecentActiveDocuments.removeOne(document);
+        mRecentActiveDocuments.push_front(document);
+    }
 }
