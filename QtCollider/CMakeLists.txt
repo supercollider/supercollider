@@ -74,6 +74,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/primitives/prim_misc.cpp
   ${QT_COLLIDER_DIR}/primitives/prim_QWidget.cpp
   ${QT_COLLIDER_DIR}/primitives/prim_QPalette.cpp
+  ${QT_COLLIDER_DIR}/primitives/prim_QImage.cpp
   ${QT_COLLIDER_DIR}/widgets/BasicWidgets.cpp
   ${QT_COLLIDER_DIR}/widgets/QcButton.cpp
   ${QT_COLLIDER_DIR}/widgets/QcCheckBox.h
