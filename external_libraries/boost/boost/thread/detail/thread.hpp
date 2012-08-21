@@ -582,6 +582,7 @@ namespace boost
     }
 #endif
 
+#if defined BOOST_THREAD_PROVIDES_DEPRECATED_FEATURES_SINCE_V3_0_0
     inline bool thread::operator==(const thread& other) const
     {
         return get_id()==other.get_id();
@@ -591,6 +592,7 @@ namespace boost
     {
         return get_id()!=other.get_id();
     }
+#endif
 
     namespace detail
     {

@@ -45,7 +45,7 @@ void task_io_service::dispatch(Handler handler)
 
     BOOST_ASIO_HANDLER_CREATION((p.p, "io_service", this, "dispatch"));
 
-    post_immediate_completion(p.p);
+    post_non_private_immediate_completion(p.p);
     p.v = p.p = 0;
   }
 }

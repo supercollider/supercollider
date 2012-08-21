@@ -36,33 +36,31 @@ namespace boost
 #else
         boost::once_flag current_thread_tls_init_flag=BOOST_ONCE_INIT;
 #endif
-        #if defined(UNDER_CE)
+#if defined(UNDER_CE)
         // Windows CE does not define the TLS_OUT_OF_INDEXES constant.
-        DWORD tls_out_of_index=0xFFFFFFFF;
-        #else
-        DWORD tls_out_of_index=TLS_OUT_OF_INDEXES;
-        #endif
-        DWORD current_thread_tls_key=tls_out_of_index;
+#define TLS_OUT_OF_INDEXES 0xFFFFFFFF
+#endif
+        DWORD current_thread_tls_key=TLS_OUT_OF_INDEXES;
 
         void create_current_thread_tls_key()
         {
             tss_cleanup_implemented(); // if anyone uses TSS, we need the cleanup linked in
             current_thread_tls_key=TlsAlloc();
-            BOOST_ASSERT(current_thread_tls_key!=tls_out_of_index);
+            BOOST_ASSERT(current_thread_tls_key!=TLS_OUT_OF_INDEXES);
         }
 
         void cleanup_tls_key()
         {
-            if(current_thread_tls_key!=tls_out_of_index)
+            if(current_thread_tls_key!=TLS_OUT_OF_INDEXES)
             {
                 TlsFree(current_thread_tls_key);
-                current_thread_tls_key=tls_out_of_index;
+                current_thread_tls_key=TLS_OUT_OF_INDEXES;
             }
         }
 
         detail::thread_data_base* get_current_thread_data()
         {
-            if(current_thread_tls_key==tls_out_of_index)
+            if(current_thread_tls_key==TLS_OUT_OF_INDEXES)
             {
                 return 0;
             }
@@ -72,7 +70,7 @@ namespace boost
         void set_current_thread_data(detail::thread_data_base* new_data)
         {
             boost::call_once(current_thread_tls_init_flag,create_current_thread_tls_key);
-            if(current_thread_tls_key!=tls_out_of_index)
+            if(current_thread_tls_key!=TLS_OUT_OF_INDEXES)
                 BOOST_VERIFY(TlsSetValue(current_thread_tls_key,new_data));
             else
                 boost::throw_exception(thread_resource_error());
@@ -185,16 +183,20 @@ namespace boost
         {
             detail::thread_data_base* const thread_info(reinterpret_cast<detail::thread_data_base*>(param));
             set_current_thread_data(thread_info);
-            try
+#ifndef BOOST_NO_EXCEPTIONS
+            try // BOOST_NO_EXCEPTIONS protected
+#endif
             {
                 thread_info->run();
             }
-            catch(thread_interrupted const&)
+#ifndef BOOST_NO_EXCEPTIONS
+            catch(thread_interrupted const&) // BOOST_NO_EXCEPTIONS protected
             {
             }
+#endif
 // Removed as it stops the debugger identifying the cause of the exception
 // Unhandled exceptions still cause the application to terminate
-//             catch(...)
+//             catch(...) // BOOST_NO_EXCEPTIONS protected
 //             {
 //                 std::terminate();
 //             }
@@ -221,7 +223,7 @@ namespace boost
     void thread::start_thread(const attributes& attr)
     {
       //uintptr_t const new_thread=_beginthreadex(attr.get_security(),attr.get_stack_size(),&thread_start_function,thread_info.get(),CREATE_SUSPENDED,&thread_info->id);
-      uintptr_t const new_thread=_beginthreadex(0,attr.get_stack_size(),&thread_start_function,thread_info.get(),CREATE_SUSPENDED,&thread_info->id);
+      uintptr_t const new_thread=_beginthreadex(0,static_cast<unsigned int>(attr.get_stack_size()),&thread_start_function,thread_info.get(),CREATE_SUSPENDED,&thread_info->id);
       if(!new_thread)
       {
           boost::throw_exception(thread_resource_error());
@@ -256,15 +258,19 @@ namespace boost
         void make_external_thread_data()
         {
             externally_launched_thread* me=detail::heap_new<externally_launched_thread>();
-            try
+#ifndef BOOST_NO_EXCEPTIONS
+            try // BOOST_NO_EXCEPTIONS protected
+#endif
             {
                 set_current_thread_data(me);
             }
-            catch(...)
+#ifndef BOOST_NO_EXCEPTIONS
+            catch(...) // BOOST_NO_EXCEPTIONS protected
             {
                 detail::heap_delete(me);
-                throw;
+                throw; // BOOST_NO_EXCEPTIONS protected
             }
+#endif
         }
 
         detail::thread_data_base* get_or_make_current_thread_data()

@@ -40,17 +40,17 @@ public:
   // Constructor for a full fenced block.
   explicit gcc_x86_fenced_block(full_t)
   {
-    barrier1();
+    lbarrier();
   }
 
   // Destructor.
   ~gcc_x86_fenced_block()
   {
-    barrier2();
+    sbarrier();
   }
 
 private:
-  static int barrier1()
+  static int barrier()
   {
     int r = 0, m = 1;
     __asm__ __volatile__ (
@@ -61,12 +61,21 @@ private:
     return r;
   }
 
-  static void barrier2()
+  static void lbarrier()
   {
 #if defined(__SSE2__)
-    __asm__ __volatile__ ("mfence" ::: "memory");
+    __asm__ __volatile__ ("lfence" ::: "memory");
 #else // defined(__SSE2__)
-    barrier1();
+    barrier();
+#endif // defined(__SSE2__)
+  }
+
+  static void sbarrier()
+  {
+#if defined(__SSE2__)
+    __asm__ __volatile__ ("sfence" ::: "memory");
+#else // defined(__SSE2__)
+    barrier();
 #endif // defined(__SSE2__)
   }
 };

@@ -50,11 +50,6 @@ struct strand_service::on_dispatch_exit
   }
 };
 
-inline void strand_service::destroy(strand_service::implementation_type& impl)
-{
-  impl = 0;
-}
-
 template <typename Handler>
 void strand_service::dispatch(strand_service::implementation_type& impl,
     Handler handler)

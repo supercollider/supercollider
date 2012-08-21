@@ -37,7 +37,7 @@ namespace boost { namespace unordered { namespace detail {
 
 #if BOOST_UNORDERED_DETAIL_FULL_CONSTRUCT
         template <BOOST_UNORDERED_EMPLACE_TEMPLATE>
-        grouped_node(BOOST_UNORDERED_EMPLACE_ARGS) :
+        explicit grouped_node(BOOST_UNORDERED_EMPLACE_ARGS) :
             node_base(),
             group_prev_(),
             hash_(0)
@@ -48,6 +48,10 @@ namespace boost { namespace unordered { namespace detail {
 
         ~grouped_node() {
             boost::unordered::detail::destroy(this->value_ptr());
+        }
+
+        grouped_node(grouped_node const&) {
+            assert(false);
         }
 #else
         grouped_node() :
@@ -61,6 +65,9 @@ namespace boost { namespace unordered { namespace detail {
         {
             group_prev_ = self;
         }
+
+    private:
+        grouped_node& operator=(grouped_node const&);
     };
 
     template <typename T>
@@ -77,7 +84,7 @@ namespace boost { namespace unordered { namespace detail {
 
 #if BOOST_UNORDERED_DETAIL_FULL_CONSTRUCT
         template <BOOST_UNORDERED_EMPLACE_TEMPLATE>
-        grouped_ptr_node(BOOST_UNORDERED_EMPLACE_ARGS) :
+        explicit grouped_ptr_node(BOOST_UNORDERED_EMPLACE_ARGS) :
             bucket_base(),
             group_prev_(0),
             hash_(0)
@@ -88,6 +95,10 @@ namespace boost { namespace unordered { namespace detail {
 
         ~grouped_ptr_node() {
             boost::unordered::detail::destroy(this->value_ptr());
+        }
+
+        grouped_ptr_node(grouped_ptr_node const&) {
+            assert(false);
         }
 #else
         grouped_ptr_node() :
@@ -101,6 +112,9 @@ namespace boost { namespace unordered { namespace detail {
         {
             group_prev_ = self;
         }
+
+    private:
+        grouped_ptr_node& operator=(grouped_ptr_node const&);
     };
 
     // If the allocator uses raw pointers use grouped_ptr_node
@@ -497,12 +511,21 @@ namespace boost { namespace unordered { namespace detail {
         }
 
 #if defined(BOOST_NO_RVALUE_REFERENCES)
+#   if defined(BOOST_NO_VARIADIC_TEMPLATES)
         iterator emplace(boost::unordered::detail::emplace_args1<
                 boost::unordered::detail::please_ignore_this_overload> const&)
         {
             BOOST_ASSERT(false);
             return iterator();
         }
+#   else
+        iterator emplace(
+                boost::unordered::detail::please_ignore_this_overload const&)
+        {
+            BOOST_ASSERT(false);
+            return iterator();
+        }
+#   endif
 #endif
 
         template <BOOST_UNORDERED_EMPLACE_TEMPLATE>

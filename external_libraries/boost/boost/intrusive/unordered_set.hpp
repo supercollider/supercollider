@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2009
+// (C) Copyright Ion Gaztanaga  2006-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -113,7 +113,7 @@ class unordered_set_impl
    //!
    //! <b>Effects</b>: Constructs an empty unordered_set_impl, storing a reference
    //!   to the bucket array and copies of the hasher and equal functors.
-   //!  
+   //!
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: If value_traits::node_traits::node
@@ -134,7 +134,7 @@ class unordered_set_impl
    //!
    //! <b>Effects</b>: Constructs an empty unordered_set and inserts elements from
    //!   [b, e).
-   //!  
+   //!
    //! <b>Complexity</b>: If N is std::distance(b, e): Average case is O(N)
    //!   (with a good hash function and with buckets_len >= N),worst case O(N2).
    //!
@@ -155,13 +155,13 @@ class unordered_set_impl
    {  table_.insert_unique(b, e);  }
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    unordered_set_impl(BOOST_RV_REF(unordered_set_impl) x)
       :  table_(::boost::move(x.table_))
    {}
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    unordered_set_impl& operator=(BOOST_RV_REF(unordered_set_impl) x)
    {  table_ = ::boost::move(x.table_);  return *this;  }
 
@@ -290,7 +290,7 @@ class unordered_set_impl
    //!
    //!   If any operation throws, all cloned elements are unlinked and disposed
    //!   calling Disposer::operator()(pointer).
-   //!  
+   //!
    //! <b>Complexity</b>: Linear to erased plus inserted elements.
    //!
    //! <b>Throws</b>: If cloner or hasher throw or hash or equality predicate copying
@@ -1184,7 +1184,7 @@ class unordered_multiset_impl
    //!
    //! <b>Effects</b>: Constructs an empty unordered_multiset, storing a reference
    //!   to the bucket array and copies of the hasher and equal functors.
-   //!  
+   //!
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: If value_traits::node_traits::node
@@ -1205,7 +1205,7 @@ class unordered_multiset_impl
    //!
    //! <b>Effects</b>: Constructs an empty unordered_multiset and inserts elements from
    //!   [b, e).
-   //!  
+   //!
    //! <b>Complexity</b>: If N is std::distance(b, e): Average case is O(N)
    //!   (with a good hash function and with buckets_len >= N),worst case O(N2).
    //!
@@ -1226,13 +1226,13 @@ class unordered_multiset_impl
    {  table_.insert_equal(b, e);  }
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    unordered_multiset_impl(BOOST_RV_REF(unordered_multiset_impl) x)
       :  table_(::boost::move(x.table_))
    {}
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    unordered_multiset_impl& operator=(BOOST_RV_REF(unordered_multiset_impl) x)
    {  table_ = ::boost::move(x.table_);  return *this;  }
 
@@ -1362,7 +1362,7 @@ class unordered_multiset_impl
    //!
    //!   If any operation throws, all cloned elements are unlinked and disposed
    //!   calling Disposer::operator()(pointer).
-   //!  
+   //!
    //! <b>Complexity</b>: Linear to erased plus inserted elements.
    //!
    //! <b>Throws</b>: If cloner or hasher throw or hash or equality predicate copying

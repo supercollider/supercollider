@@ -129,11 +129,13 @@ namespace boost
 
             void check_for_interruption()
             {
+#ifndef BOOST_NO_EXCEPTIONS
                 if(thread_info->interrupt_requested)
                 {
                     thread_info->interrupt_requested=false;
-                    throw thread_interrupted();
+                    throw thread_interrupted(); // BOOST_NO_EXCEPTIONS protected
                 }
+#endif
             }
 
             void operator=(interruption_checker&);

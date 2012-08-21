@@ -65,6 +65,44 @@ struct null_scoped_array_deallocator
    {}
 };
 
+template <class Allocator>
+struct scoped_destroy_deallocator
+{
+   typedef boost::container::allocator_traits<Allocator> AllocTraits;
+   typedef typename AllocTraits::pointer    pointer;
+   typedef typename AllocTraits::size_type  size_type;
+   typedef container_detail::integral_constant<unsigned,
+      boost::container::container_detail::
+         version<Allocator>::value>                          alloc_version;
+   typedef container_detail::integral_constant<unsigned, 1>  allocator_v1;
+   typedef container_detail::integral_constant<unsigned, 2>  allocator_v2;
+
+   scoped_destroy_deallocator(pointer p, Allocator& a)
+      : m_ptr(p), m_alloc(a) {}
+
+   ~scoped_destroy_deallocator()
+   {
+      if(m_ptr){
+         AllocTraits::destroy(m_alloc, container_detail::to_raw_pointer(m_ptr));
+         priv_deallocate(m_ptr, alloc_version());
+      }
+   }
+
+   void release()
+   {  m_ptr = 0; }
+
+   private:
+
+   void priv_deallocate(const pointer &p, allocator_v1)
+   {  AllocTraits::deallocate(m_alloc, p, 1); }
+
+   void priv_deallocate(const pointer &p, allocator_v2)
+   {  m_alloc.deallocate_one(p); }
+
+   pointer     m_ptr;
+   Allocator&  m_alloc;
+};
+
 
 //!A deleter for scoped_ptr that destroys
 //!an object using a STL allocator.
@@ -147,6 +185,27 @@ class scoped_destructor
 
    private:
    value_type *pv_;
+   A &a_;
+};
+
+
+template<class A>
+class value_destructor
+{
+   typedef boost::container::allocator_traits<A> AllocTraits;
+   public:
+   typedef typename A::value_type value_type;
+   value_destructor(A &a, value_type &rv)
+      : rv_(rv), a_(a)
+   {}
+
+   ~value_destructor()
+   {
+      AllocTraits::destroy(a_, &rv_);
+   }
+
+   private:
+   value_type &rv_;
    A &a_;
 };
 

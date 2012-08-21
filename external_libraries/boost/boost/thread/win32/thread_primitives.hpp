@@ -341,22 +341,42 @@ namespace boost
         {
             inline bool interlocked_bit_test_and_set(long* x,long bit)
             {
+#if 0
                 __asm {
                     mov eax,bit;
                     mov edx,x;
                     lock bts [edx],eax;
                     setc al;
                 };
+#else
+                bool ret;
+                __asm {
+                    mov eax,bit; mov edx,x; lock bts [edx],eax; setc al; mov ret, al
+                };
+                return ret;
+
+#endif
             }
 
             inline bool interlocked_bit_test_and_reset(long* x,long bit)
             {
+#if 0
                 __asm {
                     mov eax,bit;
                     mov edx,x;
                     lock btr [edx],eax;
                     setc al;
                 };
+#else
+
+
+                bool ret;
+                __asm {
+                    mov eax,bit; mov edx,x; lock btr [edx],eax; setc al; mov ret, al
+                };
+                return ret;
+
+#endif
             }
 
         }

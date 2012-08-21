@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga  2007.
+// (C) Copyright Ion Gaztanaga  2007-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -119,7 +119,7 @@ class tree_iterator
       members_.nodeptr_ = node_algorithms::next_node(members_.nodeptr_);
       return static_cast<tree_iterator&> (*this);
    }
-  
+
    tree_iterator operator++(int)
    {
       tree_iterator result (*this);
@@ -132,7 +132,7 @@ class tree_iterator
       members_.nodeptr_ = node_algorithms::prev_node(members_.nodeptr_);
       return static_cast<tree_iterator&> (*this);
    }
-  
+
    tree_iterator operator--(int)
    {
       tree_iterator result (*this);

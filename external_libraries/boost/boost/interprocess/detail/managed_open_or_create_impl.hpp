@@ -396,7 +396,8 @@ class managed_open_or_create_impl
 
             if(previous == UninitializedSegment){
                try{
-                  construct_func(static_cast<char*>(region.get_address()) + ManagedOpenOrCreateUserOffset, size - ManagedOpenOrCreateUserOffset, true);
+                  construct_func( static_cast<char*>(region.get_address()) + ManagedOpenOrCreateUserOffset
+                                , size - ManagedOpenOrCreateUserOffset, true);
                   //All ok, just move resources to the external mapped region
                   m_mapped_region.swap(region);
                }

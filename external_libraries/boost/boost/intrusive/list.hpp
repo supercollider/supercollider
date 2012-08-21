@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2009
+// (C) Copyright Ion Gaztanaga  2006-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -204,16 +204,16 @@ class list_impl
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks).
    list_impl(const value_traits &v_traits = value_traits())
       :  data_(v_traits)
-   { 
+   {
       this->priv_size_traits().set_size(size_type(0));
-      node_algorithms::init_header(this->get_root_node()); 
+      node_algorithms::init_header(this->get_root_node());
    }
 
    //! <b>Requires</b>: Dereferencing iterator must yield an lvalue of type value_type.
    //!
    //! <b>Effects</b>: Constructs a list equal to the range [first,last).
    //!
-   //! <b>Complexity</b>: Linear in std::distance(b, e). No copy constructors are called. 
+   //! <b>Complexity</b>: Linear in std::distance(b, e). No copy constructors are called.
    //!
    //! <b>Throws</b>: If real_value_traits::node_traits::node
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks).
@@ -227,17 +227,17 @@ class list_impl
    }
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    list_impl(BOOST_RV_REF(list_impl) x)
       : data_(::boost::move(x.priv_value_traits()))
    {
       this->priv_size_traits().set_size(size_type(0));
-      node_algorithms::init_header(this->get_root_node()); 
+      node_algorithms::init_header(this->get_root_node());
       this->swap(x);
    }
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    list_impl& operator=(BOOST_RV_REF(list_impl) x)
    {  this->swap(x); return *this;  }
 
@@ -470,7 +470,7 @@ class list_impl
    //! <b>Throws</b>: Nothing.
    //!
    //! <b>Complexity</b>: Constant.
-   reverse_iterator rend()  
+   reverse_iterator rend()
    { return reverse_iterator(begin()); }
 
    //! <b>Effects</b>: Returns a const_reverse_iterator pointing to the end
@@ -479,7 +479,7 @@ class list_impl
    //! <b>Throws</b>: Nothing.
    //!
    //! <b>Complexity</b>: Constant.
-   const_reverse_iterator rend() const  
+   const_reverse_iterator rend() const
    { return this->crend(); }
 
    //! <b>Effects</b>: Returns a const_reverse_iterator pointing to the end
@@ -488,7 +488,7 @@ class list_impl
    //! <b>Throws</b>: Nothing.
    //!
    //! <b>Complexity</b>: Constant.
-   const_reverse_iterator crend() const  
+   const_reverse_iterator crend() const
    { return const_reverse_iterator(this->begin()); }
 
    //! <b>Precondition</b>: end_iterator must be a valid end iterator
@@ -771,7 +771,7 @@ class list_impl
    //!
    //!   If cloner throws, all cloned elements are unlinked and disposed
    //!   calling Disposer::operator()(pointer).
-   //!  
+   //!
    //! <b>Complexity</b>: Linear to erased plus inserted elements.
    //!
    //! <b>Throws</b>: If cloner throws. Basic guarantee.

@@ -232,7 +232,7 @@ public:
           ? bytes_avail : space_avail;
         storage_.resize(orig_size + length);
         std::size_t bytes_copied = boost::asio::buffer_copy(
-            storage_.data(), buffers_, length);
+            storage_.data() + orig_size, buffers_, length);
 
         io_service_.dispatch(detail::bind_handler(handler_, ec, bytes_copied));
       }

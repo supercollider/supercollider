@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2009
+// (C) Copyright Ion Gaztanaga  2006-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -110,7 +110,7 @@ class list_iterator
       //members_.nodeptr_ = node_traits::get_next(members_.nodeptr_);
       return static_cast<list_iterator&> (*this);
    }
-  
+
    list_iterator operator++(int)
    {
       list_iterator result (*this);
@@ -123,7 +123,7 @@ class list_iterator
       members_.nodeptr_ = node_traits::get_previous(members_.nodeptr_);
       return static_cast<list_iterator&> (*this);
    }
-  
+
    list_iterator operator--(int)
    {
       list_iterator result (*this);

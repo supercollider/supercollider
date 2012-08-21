@@ -159,6 +159,7 @@ namespace boost
                 return timed_lock(system_time(timeout));
             }
 
+#ifdef BOOST_THREAD_USES_CHRONO
             template <class Rep, class Period>
             bool try_lock_for(const chrono::duration<Rep, Period>& rel_time)
             {
@@ -209,6 +210,7 @@ namespace boost
               }
               return true;
             }
+#endif
 
             void unlock()
             {

@@ -12,6 +12,7 @@
 #include <boost/fusion/iterator/deref.hpp>
 #include <boost/fusion/iterator/next.hpp>
 #include <boost/fusion/iterator/equal_to.hpp>
+#include <boost/fusion/support/as_const.hpp>
 
 namespace boost { namespace fusion { namespace detail
 {
@@ -32,7 +33,7 @@ namespace boost { namespace fusion { namespace detail
         static bool
         call(I1 const& a, I2 const& b, mpl::false_)
         {
-            return *a != *b
+            return extension::as_const(*a) != extension::as_const(*b)
                 || call(fusion::next(a), fusion::next(b));
         }
 
