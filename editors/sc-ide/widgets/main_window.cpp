@@ -709,27 +709,24 @@ bool MainWindow::reload( Document *doc )
 bool MainWindow::save( Document *doc, bool forceChoose )
 {
     DocumentManager *mng = Main::instance()->documentManager();
-    if (forceChoose || doc->filePath().isEmpty())
-    {
+    if (forceChoose || doc->filePath().isEmpty()) {
         QFileDialog dialog(mInstance);
-
         dialog.setAcceptMode( QFileDialog::AcceptSave );
 
-        QStringList filters;
-        filters
-            << "SuperCollider(*.scd *.sc)"
-            << "SCDoc(*.schelp)"
-            << "All files(*)";
-        dialog.setNameFilters(filters);
+        QStringList filters = (QStringList()
+                               << "SuperCollider Document(*.scd)"
+                               << "SuperCollider Class file(*.sc)"
+                               << "SCDoc(*.schelp)"
+                               << "All files(*)");
 
+        dialog.setNameFilters(filters);
         dialog.setDefaultSuffix("scd");
 
         if (dialog.exec() == QDialog::Accepted)
             return mng->saveAs(doc, dialog.selectedFiles()[0]);
         else
             return false;
-    }
-    else
+    } else
         return mng->save(doc);
 }
 
