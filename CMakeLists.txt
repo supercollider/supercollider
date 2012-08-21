@@ -300,16 +300,13 @@ if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
 	include (cmake_modules/MacAppFolder.cmake)
 
-	set(auxresourcesdir ${sclangauxresourcesdir})
+	set(auxresourcesdir ${scappauxresourcesdir})
 
 	# Some aux files which go in the app's folder
 	install(FILES README.txt ChangeLog COPYING AUTHORS platform/mac/MOVED_STUFF.txt
 		DESTINATION ${scappbundlename}
 	)
-
-    install(DIRECTORY platform/mac/Resources/ DESTINATION ${scappbundlename})
-
-elseif(WIN32)
+elseif (WIN32)
 	set(auxresourcesdir "SuperCollider")
 else()
 	set(auxresourcesdir "share/SuperCollider")
@@ -409,7 +406,6 @@ if(INSTALL_HELP)
 	else()
 		message(STATUS "Will copy HelpSource to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}")
 		if(APPLE)
-            # FIXME: EXISTS is called at configure time!
 			if(EXISTS "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
 				if(IS_SYMLINK "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
 					message(STATUS "Unlinking ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")

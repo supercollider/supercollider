@@ -231,11 +231,11 @@ endif()
 
 if(APPLE)
 	# TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
-	# determines the app name and app install location (sclangbundlename, scappdir):
+	# determines the app name and app install location (scappbundlename, scappdir):
 	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 	install(TARGETS ${INSTALL_TARGETS}
-			RUNTIME DESTINATION "${sclangauxresourcesdir}"
-			LIBRARY DESTINATION "${sclangauxresourcesdir}"
+			RUNTIME DESTINATION "${scappauxresourcesdir}"
+			LIBRARY DESTINATION "${scappauxresourcesdir}"
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
 elseif(WIN32)
 	install(TARGETS ${INSTALL_TARGETS}

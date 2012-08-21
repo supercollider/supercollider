@@ -155,7 +155,7 @@ if(APPLE)
 	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
 	install(TARGETS supernova
-			DESTINATION ${sclangauxresourcesdir}
+			DESTINATION ${scappauxresourcesdir}
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
 else()
 

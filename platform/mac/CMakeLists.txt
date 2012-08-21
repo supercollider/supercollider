@@ -203,6 +203,8 @@ add_definitions(-DYYSTACK_USE_ALLOCA -DHAVE_SPEECH)
 # set how it shows up in the Info.plist file
 SET(MACOSX_BUNDLE_ICON_FILE SCcube.icns)
 
+install(DIRECTORY Resources/ DESTINATION ${scappauxresourcesdir})
+
 add_executable(${scappbundlename} MACOSX_BUNDLE
 	${scapp_sources} ${scapp_parser_source}
 	)

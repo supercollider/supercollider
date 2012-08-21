@@ -166,6 +166,8 @@ if(APPLE)
     # set how it shows up in the Info.plist file
     SET(MACOSX_BUNDLE_ICON_FILE ../../platform/mac/SCcube.icns)
 
+    install(DIRECTORY ../../platform/mac/Resources/ DESTINATION ${scappauxresourcesdir})
+
     install(TARGETS ${ide_name}
         DESTINATION ${scappbundlename}
         )
