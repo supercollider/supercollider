@@ -36,6 +36,8 @@ namespace ScIDE {
 
 class SessionManager;
 
+// scide instances have a LocalServer. when called with an argument, it will try to reconnect
+// to the instance with the lowest number.
 class SingleInstanceGuard:
     public QObject
 {

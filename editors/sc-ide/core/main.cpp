@@ -44,10 +44,8 @@ int main( int argc, char *argv[] )
     arguments.pop_front(); // application path
 
     SingleInstanceGuard guard;
-    if (!arguments.empty()) {
-        if (guard.tryConnect(arguments))
-            return 0;
-    }
+    if (guard.tryConnect(arguments))
+        return 0;
 
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
@@ -86,22 +84,35 @@ int main( int argc, char *argv[] )
 
 bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
 {
-    QLocalSocket * mSocket = new QLocalSocket(this);
-    mSocket->connectToServer("SuperColliderIDESingleton");
-    if (mSocket->waitForConnected(500)) {
-        QDataStream stream(mSocket);
-        stream.setVersion(QDataStream::Qt_4_6);
+    const int maxNumberOfInstances = 128;
+    if (!arguments.empty()) {
+        for (int socketID = 0; socketID != maxNumberOfInstances; ++socketID) {
+            QString serverName = QString("SuperColliderIDE_Singleton_%1").arg(socketID);
+            QSharedPointer<QLocalSocket> socket (new QLocalSocket(this));
+            socket->connectToServer(serverName);
 
-        stream << QString("open");
-        stream << arguments;
-        mSocket->flush();
-        return true;
+            if (socket->waitForConnected(200)) {
+                QDataStream stream(socket.data());
+                stream.setVersion(QDataStream::Qt_4_6);
+
+                stream << QString("open");
+                stream << arguments;
+                socket->flush();
+                return true;
+            }
+        }
     }
-    delete mSocket;
 
     mIpcServer = new QLocalServer(this);
-    mIpcServer->listen("SuperColliderIDESingleton");
-    connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
+    for (int socketID = 0; socketID != maxNumberOfInstances; ++socketID) {
+        QString serverName = QString("SuperColliderIDE_Singleton_%1").arg(socketID);
+
+        bool listening = mIpcServer->listen(serverName);
+        if (listening) {
+            connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
+            return false;
+        }
+    }
     return false;
 }
 
