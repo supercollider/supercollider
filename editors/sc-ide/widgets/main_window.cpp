@@ -188,7 +188,6 @@ void MainWindow::createActions()
     QAction *act;
 
     // File
-
     mActions[Quit] = act = new QAction(
         QIcon::fromTheme("application-exit"), tr("&Quit..."), this);
     act->setShortcut(tr("Ctrl+Q", "Quit application"));
@@ -235,7 +234,6 @@ void MainWindow::createActions()
             Main::instance()->documentManager(), SLOT(clearRecents()));
 
     // Sessions
-
     mActions[NewSession] = act = new QAction(
         QIcon::fromTheme("document-new"), tr("&New Session"), this);
     act->setStatusTip(tr("Open a new session"));
@@ -251,7 +249,6 @@ void MainWindow::createActions()
     connect(act, SIGNAL(triggered()), this, SLOT(openSessionsDialog()));
 
     // Edit
-
     mActions[Find] = act = new QAction(
         QIcon::fromTheme("edit-find"), tr("&Find..."), this);
     act->setShortcut(tr("Ctrl+F", "Find"));
@@ -265,7 +262,6 @@ void MainWindow::createActions()
     connect(act, SIGNAL(triggered()), this, SLOT(showReplaceTool()));
 
     // View
-
     mActions[ShowDocList] = act = new QAction(tr("&Documents"), this);
     act->setStatusTip(tr("Show/Hide the Documents dock"));
     act->setCheckable(true);
@@ -288,19 +284,24 @@ void MainWindow::createActions()
     act->setShortcut(tr("Esc", "Close tool box"));
     connect(act, SIGNAL(triggered()), this, SLOT(hideToolBox()));
 
-    mActions[ShowFullScreen] = act = new QAction(tr("&FullScreen"), this);
+    mActions[ShowFullScreen] = act = new QAction(tr("&Full Screen"), this);
     act->setCheckable(false);
     act->setShortcut(tr("Ctrl+Shift+F", "Show ScIDE in Full Screen"));
     connect(act, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
 
-    // Settings
+    mActions[ClearPostWindow] = act = new QAction(
+        QIcon::fromTheme("window-clearpostwindow"), tr("Clear Post Window"), this);
+    act->setStatusTip(tr("Clear Post Window"));
+    act->setShortcut(tr("Ctrl+Shift+C", "Clear Post Window"));
+    connect(act, SIGNAL(triggered()), mPostDock->mPostWindow, SLOT(clear()));
 
+    // Settings
     mActions[ShowSettings] = act = new QAction(tr("&Configure IDE..."), this);
     act->setStatusTip(tr("Show configuration dialog"));
     connect(act, SIGNAL(triggered()), this, SLOT(showSettings()));
 
-    // Help
 
+    // Help
     mActions[Help] = act = new QAction(
     QIcon::fromTheme("system-help"), tr("Open Help Browser"), this);
     act->setStatusTip(tr("Open help."));
@@ -393,6 +394,8 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::NextDocument) );
     menu->addAction( mEditors->action(MultiEditor::PreviousDocument) );
+    menu->addSeparator();
+    menu->addAction( mActions[ClearPostWindow] );
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
 
