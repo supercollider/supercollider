@@ -93,17 +93,20 @@ class winapi_semaphore_functions
       }
    }
 
-   unsigned int value() const
+   long value() const
    {
-      winapi::interprocess_semaphore_basic_information info;
-      winapi::NtQuerySemaphore_t pNtQuerySemaphore =
-            (winapi::NtQuerySemaphore_t)winapi::dll_func::get(winapi::dll_func::NtQuerySemaphore);
-      unsigned int ret_len;
-      long status = pNtQuerySemaphore(m_sem_hnd, winapi::semaphore_basic_information, &info, sizeof(info), &ret_len);
-      if(status){
+      long count, limit;
+      if(!winapi::get_semaphore_info(m_sem_hnd, count, limit))
          return 0;
-      }
-      return info.count;
+      return count;
+   }
+
+   long limit() const
+   {
+      long count, limit;
+      if(!winapi::get_semaphore_info(m_sem_hnd, count, limit))
+         return 0;
+      return limit;
    }
 
    /// @cond
@@ -122,6 +125,9 @@ class winapi_semaphore_wrapper
 
    public:
 
+   //Long is 32 bits in windows
+   static const long MaxCount = long(0x7FFFFFFF);
+
    winapi_semaphore_wrapper(void *hnd = winapi::invalid_handle_value)
       : winapi_semaphore_functions(hnd)
    {}
@@ -139,21 +145,37 @@ class winapi_semaphore_wrapper
    void *handle() const
    {  return m_sem_hnd; }
 
-   bool open_or_create(const char *name, long sem_count, const permissions &perm)
+   bool open_or_create( const char *name
+                      , long sem_count
+                      , long max_count
+                      , const permissions &perm
+                      , bool &created)
    {
       if(m_sem_hnd == winapi::invalid_handle_value){
          m_sem_hnd = winapi::open_or_create_semaphore
             ( name
             , sem_count
-            , (std::numeric_limits<long>::max)()
+            , max_count
             , (winapi::interprocess_security_attributes*)perm.get_permissions()
             );
+         created = winapi::get_last_error() != winapi::error_already_exists;
          return m_sem_hnd != winapi::invalid_handle_value;
       }
       else{
          return false;
       }
-   }  
+   }
+
+   bool open_semaphore(const char *name)
+   {
+      if(m_sem_hnd == winapi::invalid_handle_value){
+         m_sem_hnd = winapi::open_semaphore(name);
+         return m_sem_hnd != winapi::invalid_handle_value;
+      }
+      else{
+         return false;
+      }
+   }
 
    void close()
    {

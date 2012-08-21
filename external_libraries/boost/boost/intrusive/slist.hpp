@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2009
+// (C) Copyright Ion Gaztanaga  2006-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -287,7 +287,7 @@ class slist_impl
    //!
    //! <b>Effects</b>: Constructs a list equal to [first,last).
    //!
-   //! <b>Complexity</b>: Linear in std::distance(b, e). No copy constructors are called. 
+   //! <b>Complexity</b>: Linear in std::distance(b, e). No copy constructors are called.
    //!
    //! <b>Throws</b>: If value_traits::node_traits::node
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks).
@@ -300,17 +300,17 @@ class slist_impl
    }
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    slist_impl(BOOST_RV_REF(slist_impl) x)
       : data_(::boost::move(x.priv_value_traits()))
    {
       this->priv_size_traits().set_size(size_type(0));
-      node_algorithms::init_header(this->get_root_node()); 
+      node_algorithms::init_header(this->get_root_node());
       this->swap(x);
    }
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    slist_impl& operator=(BOOST_RV_REF(slist_impl) x)
    {  this->swap(x); return *this;  }
 
@@ -700,7 +700,7 @@ class slist_impl
    //!
    //!   If cloner throws, all cloned elements are unlinked and disposed
    //!   calling Disposer::operator()(pointer).
-   //!  
+   //!
    //! <b>Complexity</b>: Linear to erased plus inserted elements.
    //!
    //! <b>Throws</b>: If cloner throws.
@@ -1517,7 +1517,7 @@ class slist_impl
    void remove_and_dispose_if(Pred pred, Disposer disposer)
    {
       const_iterator bcur(this->before_begin()), cur(this->begin()), e(this->end());
-     
+
       while(cur != e){
          if (pred(*cur)){
             cur = this->erase_after_and_dispose(bcur, disposer);
@@ -1837,7 +1837,7 @@ class slist_impl
 
    void priv_shift_forward(size_type n, detail::bool_<false>)
    {
-      node_ptr last = node_algorithms::move_backwards(this->get_root_node(), (std::size_t)n);  
+      node_ptr last = node_algorithms::move_backwards(this->get_root_node(), (std::size_t)n);
       if(cache_last && last){
          this->set_last_node(last);
       }

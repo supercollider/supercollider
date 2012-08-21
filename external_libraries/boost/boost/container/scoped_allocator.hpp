@@ -23,6 +23,7 @@
 
 #include <boost/container/detail/config_begin.hpp>
 #include <boost/container/detail/workaround.hpp>
+#include <boost/container/scoped_allocator_fwd.hpp>
 #include <boost/type_traits/integral_constant.hpp>
 #include <boost/container/allocator_traits.hpp>
 #include <boost/container/detail/type_traits.hpp>
@@ -31,49 +32,8 @@
 #include <boost/container/detail/pair.hpp>
 #include <boost/move/move.hpp>
 
-#if defined(BOOST_NO_VARIADIC_TEMPLATES)
-#include <boost/container/detail/preprocessor.hpp>
-#endif
 
 namespace boost { namespace container {
-
-#if defined(BOOST_CONTAINER_PERFECT_FORWARDING)
-
-#if !defined(BOOST_CONTAINER_UNIMPLEMENTED_PACK_EXPANSION_TO_FIXED_LIST)
-
-template <typename OuterAlloc, typename ...InnerAllocs>
-class scoped_allocator_adaptor;
-
-#else // #if !defined(BOOST_CONTAINER_UNIMPLEMENTED_PACK_EXPANSION_TO_FIXED_LIST)
-
-template <typename ...InnerAllocs>
-class scoped_allocator_adaptor;
-
-template <typename OuterAlloc, typename ...InnerAllocs>
-class scoped_allocator_adaptor<OuterAlloc, InnerAllocs...>;
-
-#endif   // #if !defined(BOOST_CONTAINER_UNIMPLEMENTED_PACK_EXPANSION_TO_FIXED_LIST)
-
-
-#else    // #if defined(BOOST_CONTAINER_PERFECT_FORWARDING) || defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
-
-template <typename OuterAlloc
-BOOST_PP_ENUM_TRAILING( BOOST_CONTAINER_MAX_CONSTRUCTOR_PARAMETERS
-                      , BOOST_CONTAINER_PP_TEMPLATE_PARAM_WITH_DEFAULT, container_detail::nat)
->
-class scoped_allocator_adaptor;
-
-#endif
-
-//! The allocator_arg_t struct is an empty structure type used as a unique type to
-//! disambiguate constructor and function overloading. Specifically, several types
-//! have constructors with allocator_arg_t as the first argument, immediately followed
-//! by an argument of a type that satisfies the Allocator requirements
-struct allocator_arg_t{};
-
-//! A instance of type allocator_arg_t
-//!
-static const allocator_arg_t allocator_arg = allocator_arg_t();
 
 //! <b>Remark</b>: if a specialization is derived from true_type, indicates that T may be constructed
 //! with an allocator as its last constructor argument.  Ideally, all constructors of T (including the

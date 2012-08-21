@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2009.
+// (C) Copyright Ion Gaztanaga  2006-2012.
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -135,7 +135,7 @@ class rbtree_algorithms
       rbtree_node_cloner(F f)
          :  base_t(f)
       {}
-     
+
       node_ptr operator()(const node_ptr & p)
       {
          node_ptr n = base_t::get()(p);
@@ -201,7 +201,7 @@ class rbtree_algorithms
    {
       if(node1 == node2)
          return;
-  
+
       node_ptr header1(tree_algorithms::get_header(node1)), header2(tree_algorithms::get_header(node2));
       swap_nodes(node1, header1, node2, header2);
    }
@@ -418,7 +418,7 @@ class rbtree_algorithms
    //! <b>Effects</b>: First empties target tree calling
    //!   <tt>void disposer::operator()(const node_ptr &)</tt> for every node of the tree
    //!    except the header.
-   //!   
+   //!
    //!   Then, duplicates the entire tree pointed by "source_header" cloning each
    //!   source node with <tt>node_ptr Cloner::operator()(const node_ptr &)</tt> to obtain
    //!   the nodes of the target tree. If "cloner" throws, the cloned target nodes
@@ -518,6 +518,31 @@ class rbtree_algorithms
       (const const_node_ptr & header, const KeyType &key, KeyNodePtrCompare comp)
    {  return tree_algorithms::equal_range(header, key, comp);  }
 
+   //! <b>Requires</b>: "header" must be the header node of a tree.
+   //!   KeyNodePtrCompare is a function object that induces a strict weak
+   //!   ordering compatible with the strict weak ordering used to create the
+   //!   the tree. KeyNodePtrCompare can compare KeyType with tree's node_ptrs.
+   //!   'lower_key' must not be greater than 'upper_key' according to 'comp'. If
+   //!   'lower_key' == 'upper_key', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key) if left_closed, upper_bound(lower_key) otherwise
+   //!
+   //!   second = upper_bound(upper_key) if right_closed, lower_bound(upper_key) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If "comp" throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_key and upper_key.
+   template<class KeyType, class KeyNodePtrCompare>
+   static std::pair<node_ptr, node_ptr> bounded_range
+      (const const_node_ptr & header, const KeyType &lower_key, const KeyType &upper_key, KeyNodePtrCompare comp
+      , bool left_closed, bool right_closed)
+   {  return tree_algorithms::bounded_range(header, lower_key, upper_key, comp, left_closed, right_closed);  }
+
    //! <b>Requires</b>: "h" must be the header node of a tree.
    //!   NodePtrCompare is a function object that induces a strict weak
    //!   ordering compatible with the strict weak ordering used to create the
@@ -565,7 +590,7 @@ class rbtree_algorithms
    //!   ordering compatible with the strict weak ordering used to create the
    //!   the tree. NodePtrCompare compares two node_ptrs. "hint" is node from
    //!   the "header"'s tree.
-   //!  
+   //!
    //! <b>Effects</b>: Inserts new_node into the tree, using "hint" as a hint to
    //!   where it will be inserted. If "hint" is the upper_bound
    //!   the insertion takes constant time (two comparisons in the worst case).
@@ -588,7 +613,7 @@ class rbtree_algorithms
    //!   "pos" must be an iterator pointing to the successor to "new_node"
    //!   once inserted according to the order of already inserted nodes. This function does not
    //!   check "pos" and this precondition must be guaranteed by the caller.
-   //!  
+   //!
    //! <b>Effects</b>: Inserts new_node into the tree before "pos".
    //!
    //! <b>Complexity</b>: Constant-time.
@@ -608,7 +633,7 @@ class rbtree_algorithms
    //! <b>Requires</b>: "header" must be the header node of a tree.
    //!   "new_node" must be, according to the used ordering no less than the
    //!   greatest inserted key.
-   //!  
+   //!
    //! <b>Effects</b>: Inserts new_node into the tree before "pos".
    //!
    //! <b>Complexity</b>: Constant-time.
@@ -627,7 +652,7 @@ class rbtree_algorithms
    //! <b>Requires</b>: "header" must be the header node of a tree.
    //!   "new_node" must be, according to the used ordering, no greater than the
    //!   lowest inserted key.
-   //!  
+   //!
    //! <b>Effects</b>: Inserts new_node into the tree before "pos".
    //!
    //! <b>Complexity</b>: Constant-time.

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga  2006-2009
+// (C) Copyright Ion Gaztanaga  2006-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -200,7 +200,7 @@ struct key_nodeptr_comp
    key_nodeptr_comp(KeyValueCompare kcomp, const Container *cont)
       :  base_t(kcomp), cont_(cont)
    {}
-  
+
    template<class T>
    struct is_node_ptr
    {
@@ -504,7 +504,7 @@ inline std::size_t floor_log2 (std::size_t x)
 
    std::size_t n = x;
    std::size_t log2 = 0;
-  
+
    for(std::size_t shift = Bits >> 1; shift; shift >>= 1){
       std::size_t tmp = n >> shift;
       if (tmp)
@@ -529,7 +529,7 @@ inline float fast_log2 (float val)
    x += 127 << 23;
    caster.x = x;
    val = caster.val;
-   val = ((-1.0f/3) * val + 2) * val - 2.0f/3;
+   val = ((-1.0f/3.f) * val + 2.f) * val - (2.0f/3.f);
 
    return (val + log_2);
 }

@@ -213,8 +213,8 @@ struct allocator_traits
    static void deallocate(Alloc &a, pointer p, size_type n)
    {  return a.deallocate(p, n);  }
 
-   //! <b>Effects</b>: calls `a.construct(p, std::forward<Args>(args)...)` if that call is well-formed;
-   //! otherwise, invokes `::new (static_cast<void*>(p)) T(std::forward<Args>(args)...)`
+   //! <b>Effects</b>: calls `a.allocate(n, p)` if that call is well-formed;
+   //! otherwise, invokes `a.allocate(n)`
    static pointer allocate(Alloc &a, size_type n, const_void_pointer p)
    {
       const bool value = boost::container::container_detail::

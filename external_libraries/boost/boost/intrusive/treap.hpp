@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2008
+// (C) Copyright Ion Gaztanaga 2008-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -167,7 +167,7 @@ class treap_impl
       {}
       node_plus_pred_t node_plus_pred_;
    } data_;
- 
+
    const value_compare &priv_comp() const
    {  return data_.node_plus_pred_.get();  }
 
@@ -226,7 +226,7 @@ class treap_impl
    typedef typename node_algorithms::insert_commit_data insert_commit_data;
 
    //! <b>Effects</b>: Constructs an empty treap.
-   //!  
+   //!
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: If value_traits::node_traits::node
@@ -236,8 +236,8 @@ class treap_impl
             , const priority_compare &pcmp = priority_compare()
             , const value_traits &v_traits = value_traits())
       :  data_(cmp, pcmp, v_traits)
-   { 
-      node_algorithms::init_header(this->priv_header_ptr()); 
+   {
+      node_algorithms::init_header(this->priv_header_ptr());
       this->priv_size_traits().set_size(size_type(0));
    }
 
@@ -270,19 +270,19 @@ class treap_impl
    }
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    treap_impl(BOOST_RV_REF(treap_impl) x)
       : data_( ::boost::move(x.priv_comp())
              , ::boost::move(x.priv_pcomp())
              , ::boost::move(x.priv_value_traits()))
    {
-      node_algorithms::init_header(this->priv_header_ptr()); 
+      node_algorithms::init_header(this->priv_header_ptr());
       this->priv_size_traits().set_size(size_type(0));
       this->swap(x);
    }
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    treap_impl& operator=(BOOST_RV_REF(treap_impl) x)
    {  this->swap(x); return *this;  }
 
@@ -786,7 +786,7 @@ class treap_impl
    //!   If the check is successful, the user can construct the value_type and use
    //!   "insert_commit" to insert the object in constant-time. This can give a total
    //!   constant-time complexity to the insertion: check(O(1)) + commit(O(1)).
-   //!  
+   //!
    //!   "commit_data" remains valid for a subsequent "insert_commit" only if no more
    //!   objects are inserted or erased from the container.
    template<class KeyType, class KeyValueCompare, class KeyValuePrioCompare>
@@ -1339,6 +1339,104 @@ class treap_impl
       return std::pair<const_iterator, const_iterator>(const_iterator(ret.first, this), const_iterator(ret.second, this));
    }
 
+   //! <b>Requires</b>: 'lower_value' must not be greater than 'upper_value'. If
+   //!   'lower_value' == 'upper_value', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key) if left_closed, upper_bound(lower_key) otherwise
+   //!
+   //!   second = upper_bound(upper_key) if right_closed, lower_bound(upper_key) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If the predicate throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_value and upper_value.
+   std::pair<iterator,iterator> bounded_range
+      (const_reference lower_value, const_reference upper_value, bool left_closed, bool right_closed)
+   {  return this->bounded_range(lower_value, upper_value, priv_comp(), left_closed, right_closed);   }
+
+   //! <b>Requires</b>: KeyValueCompare is a function object that induces a strict weak
+   //!   ordering compatible with the strict weak ordering used to create the
+   //!   the tree. 
+   //!   'lower_key' must not be greater than 'upper_key' according to 'comp'. If
+   //!   'lower_key' == 'upper_key', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key, comp) if left_closed, upper_bound(lower_key, comp) otherwise
+   //!
+   //!   second = upper_bound(upper_key, comp) if right_closed, lower_bound(upper_key, comp) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If "comp" throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_key and upper_key.
+   template<class KeyType, class KeyValueCompare>
+   std::pair<iterator,iterator> bounded_range
+      (const KeyType &lower_key, const KeyType &upper_key, KeyValueCompare comp, bool left_closed, bool right_closed)
+   {
+      detail::key_nodeptr_comp<KeyValueCompare, treap_impl>
+         key_node_comp(comp, this);
+      std::pair<node_ptr, node_ptr> ret
+         (node_algorithms::bounded_range
+            (this->priv_header_ptr(), lower_key, upper_key, key_node_comp, left_closed, right_closed));
+      return std::pair<iterator, iterator>(iterator(ret.first, this), iterator(ret.second, this));
+   }
+
+   //! <b>Requires</b>: 'lower_value' must not be greater than 'upper_value'. If
+   //!   'lower_value' == 'upper_value', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key) if left_closed, upper_bound(lower_key) otherwise
+   //!
+   //!   second = upper_bound(upper_key) if right_closed, lower_bound(upper_key) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If the predicate throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_value and upper_value.
+   std::pair<const_iterator,const_iterator> bounded_range
+      (const_reference lower_value, const_reference upper_value, bool left_closed, bool right_closed) const
+   {  return this->bounded_range(lower_value, upper_value, priv_comp(), left_closed, right_closed);   }
+
+   //! <b>Requires</b>: KeyValueCompare is a function object that induces a strict weak
+   //!   ordering compatible with the strict weak ordering used to create the
+   //!   the tree. 
+   //!   'lower_key' must not be greater than 'upper_key' according to 'comp'. If
+   //!   'lower_key' == 'upper_key', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key, comp) if left_closed, upper_bound(lower_key, comp) otherwise
+   //!
+   //!   second = upper_bound(upper_key, comp) if right_closed, lower_bound(upper_key, comp) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If "comp" throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_key and upper_key.
+   template<class KeyType, class KeyValueCompare>
+   std::pair<const_iterator,const_iterator> bounded_range
+      (const KeyType &lower_key, const KeyType &upper_key, KeyValueCompare comp, bool left_closed, bool right_closed) const
+   {
+      detail::key_nodeptr_comp<KeyValueCompare, treap_impl>
+         key_node_comp(comp, this);
+      std::pair<node_ptr, node_ptr> ret
+         (node_algorithms::bounded_range
+            (this->priv_header_ptr(), lower_key, upper_key, key_node_comp, left_closed, right_closed));
+      return std::pair<const_iterator, const_iterator>(const_iterator(ret.first, this), const_iterator(ret.second, this));
+   }
+
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
    //!   Cloner should yield to nodes equivalent to the original nodes.
    //!
@@ -1349,7 +1447,7 @@ class treap_impl
    //!
    //!   If cloner throws, all cloned elements are unlinked and disposed
    //!   calling Disposer::operator()(pointer).
-   //!  
+   //!
    //! <b>Complexity</b>: Linear to erased plus inserted elements.
    //!
    //! <b>Throws</b>: If cloner throws or predicate copy assignment throws. Basic guarantee.

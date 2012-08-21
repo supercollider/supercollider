@@ -81,9 +81,9 @@ namespace boost
                 return notified;
             }
 
-            bool wait(timeout wait_until)
+            bool wait(timeout abs_time)
             {
-                return this_thread::interruptible_wait(semaphore,wait_until);
+                return this_thread::interruptible_wait(semaphore,abs_time);
             }
 
             bool woken()
@@ -203,7 +203,7 @@ namespace boost
 
         protected:
             template<typename lock_type>
-            bool do_wait(lock_type& lock,timeout wait_until)
+            bool do_wait(lock_type& lock,timeout abs_time)
             {
                 relocker<lock_type> locker(lock);
 
@@ -214,7 +214,7 @@ namespace boost
                 bool woken=false;
                 while(!woken)
                 {
-                    if(!entry->wait(wait_until))
+                    if(!entry->wait(abs_time))
                     {
                         return false;
                     }
@@ -225,11 +225,11 @@ namespace boost
             }
 
             template<typename lock_type,typename predicate_type>
-            bool do_wait(lock_type& m,timeout const& wait_until,predicate_type pred)
+            bool do_wait(lock_type& m,timeout const& abs_time,predicate_type pred)
             {
                 while (!pred())
                 {
-                    if(!do_wait(m, wait_until))
+                    if(!do_wait(m, abs_time))
                         return pred();
                 }
                 return true;
@@ -314,14 +314,14 @@ namespace boost
         }
 
 
-        bool timed_wait(unique_lock<mutex>& m,boost::system_time const& wait_until)
+        bool timed_wait(unique_lock<mutex>& m,boost::system_time const& abs_time)
         {
-            return do_wait(m,wait_until);
+            return do_wait(m,abs_time);
         }
 
-        bool timed_wait(unique_lock<mutex>& m,boost::xtime const& wait_until)
+        bool timed_wait(unique_lock<mutex>& m,boost::xtime const& abs_time)
         {
-            return do_wait(m,system_time(wait_until));
+            return do_wait(m,system_time(abs_time));
         }
         template<typename duration_type>
         bool timed_wait(unique_lock<mutex>& m,duration_type const& wait_duration)
@@ -330,14 +330,14 @@ namespace boost
         }
 
         template<typename predicate_type>
-        bool timed_wait(unique_lock<mutex>& m,boost::system_time const& wait_until,predicate_type pred)
+        bool timed_wait(unique_lock<mutex>& m,boost::system_time const& abs_time,predicate_type pred)
         {
-            return do_wait(m,wait_until,pred);
+            return do_wait(m,abs_time,pred);
         }
         template<typename predicate_type>
-        bool timed_wait(unique_lock<mutex>& m,boost::xtime const& wait_until,predicate_type pred)
+        bool timed_wait(unique_lock<mutex>& m,boost::xtime const& abs_time,predicate_type pred)
         {
-            return do_wait(m,system_time(wait_until),pred);
+            return do_wait(m,system_time(abs_time),pred);
         }
         template<typename duration_type,typename predicate_type>
         bool timed_wait(unique_lock<mutex>& m,duration_type const& wait_duration,predicate_type pred)
@@ -422,15 +422,15 @@ namespace boost
         }
 
         template<typename lock_type>
-        bool timed_wait(lock_type& m,boost::system_time const& wait_until)
+        bool timed_wait(lock_type& m,boost::system_time const& abs_time)
         {
-            return do_wait(m,wait_until);
+            return do_wait(m,abs_time);
         }
 
         template<typename lock_type>
-        bool timed_wait(lock_type& m,boost::xtime const& wait_until)
+        bool timed_wait(lock_type& m,boost::xtime const& abs_time)
         {
-            return do_wait(m,system_time(wait_until));
+            return do_wait(m,system_time(abs_time));
         }
 
         template<typename lock_type,typename duration_type>
@@ -440,15 +440,15 @@ namespace boost
         }
 
         template<typename lock_type,typename predicate_type>
-        bool timed_wait(lock_type& m,boost::system_time const& wait_until,predicate_type pred)
+        bool timed_wait(lock_type& m,boost::system_time const& abs_time,predicate_type pred)
         {
-            return do_wait(m,wait_until,pred);
+            return do_wait(m,abs_time,pred);
         }
 
         template<typename lock_type,typename predicate_type>
-        bool timed_wait(lock_type& m,boost::xtime const& wait_until,predicate_type pred)
+        bool timed_wait(lock_type& m,boost::xtime const& abs_time,predicate_type pred)
         {
-            return do_wait(m,system_time(wait_until),pred);
+            return do_wait(m,system_time(abs_time),pred);
         }
 
         template<typename lock_type,typename duration_type,typename predicate_type>

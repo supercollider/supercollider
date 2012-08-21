@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2009
+// (C) Copyright Ion Gaztanaga  2006-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -382,7 +382,7 @@ class circular_slist_algorithms
          std::size_t new_before_last_pos = (distance - (n % distance))% distance;
          //If the shift is a multiple of the size there is nothing to do
          if(!new_before_last_pos)   return node_ptr();
-        
+
          for( new_last = p
             ; new_before_last_pos--
             ; new_last = node_traits::get_next(new_last)){

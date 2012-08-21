@@ -371,4 +371,19 @@
 # endif // !defined(UNDER_CE)
 #endif // !defined(BOOST_ASIO_DISABLE_SIGNAL)
 
+// Support for the __thread keyword extension.
+#if !defined(BOOST_ASIO_DISABLE_THREAD_KEYWORD_EXTENSION)
+# if defined(__linux__)
+#  if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+#   if ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 3)) || (__GNUC__ > 3)
+#    if !defined(__INTEL_COMPILER) && !defined(__ICL)
+#     define BOOST_ASIO_HAS_THREAD_KEYWORD_EXTENSION 1
+#    elif defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1100)
+#     define BOOST_ASIO_HAS_THREAD_KEYWORD_EXTENSION 1
+#    endif // defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 1100)
+#   endif // ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 3)) || (__GNUC__ > 3)
+#  endif // defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+# endif // defined(__linux__)
+#endif // !defined(BOOST_ASIO_DISABLE_THREAD_KEYWORD_EXTENSION)
+
 #endif // BOOST_ASIO_DETAIL_CONFIG_HPP

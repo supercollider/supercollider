@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2009
+// (C) Copyright Ion Gaztanaga  2006-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -87,7 +87,7 @@ class set_impl
 
    public:
    //! <b>Effects</b>: Constructs an empty set.
-   //!  
+   //!
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: If value_traits::node_traits::node
@@ -118,13 +118,13 @@ class set_impl
    {}
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    set_impl(BOOST_RV_REF(set_impl) x)
       :  tree_(::boost::move(x.tree_))
    {}
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    set_impl& operator=(BOOST_RV_REF(set_impl) x)
    {  tree_ = ::boost::move(x.tree_);  return *this;  }
 
@@ -350,7 +350,7 @@ class set_impl
    //!
    //!   If cloner throws, all cloned elements are unlinked and disposed
    //!   calling Disposer::operator()(pointer).
-   //!  
+   //!
    //! <b>Complexity</b>: Linear to erased plus inserted elements.
    //!
    //! <b>Throws</b>: If cloner throws or predicate copy assignment throws. Basic guarantee.
@@ -460,7 +460,7 @@ class set_impl
    //!   If the check is successful, the user can construct the value_type and use
    //!   "insert_commit" to insert the object in constant-time. This can give a total
    //!   constant-time complexity to the insertion: check(O(1)) + commit(O(1)).
-   //!  
+   //!
    //!   "commit_data" remains valid for a subsequent "insert_commit" only if no more
    //!   objects are inserted or erased from the set.
    template<class KeyType, class KeyValueCompare>
@@ -976,6 +976,91 @@ class set_impl
       equal_range(const KeyType& key, KeyValueCompare comp) const
    {  return tree_.equal_range(key, comp);  }
 
+   //! <b>Requires</b>: 'lower_value' must not be greater than 'upper_value'. If
+   //!   'lower_value' == 'upper_value', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key) if left_closed, upper_bound(lower_key) otherwise
+   //!
+   //!   second = upper_bound(upper_key) if right_closed, lower_bound(upper_key) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If the predicate throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_value and upper_value.
+   std::pair<iterator,iterator> bounded_range
+      (const_reference lower_value, const_reference upper_value, bool left_closed, bool right_closed)
+   {  return tree_.bounded_range(lower_value, upper_value, left_closed, right_closed);  }
+
+   //! <b>Requires</b>: KeyValueCompare is a function object that induces a strict weak
+   //!   ordering compatible with the strict weak ordering used to create the
+   //!   the tree. 
+   //!   'lower_key' must not be greater than 'upper_key' according to 'comp'. If
+   //!   'lower_key' == 'upper_key', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key, comp) if left_closed, upper_bound(lower_key, comp) otherwise
+   //!
+   //!   second = upper_bound(upper_key, comp) if right_closed, lower_bound(upper_key, comp) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If "comp" throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_key and upper_key.
+   template<class KeyType, class KeyValueCompare>
+   std::pair<iterator,iterator> bounded_range
+      (const KeyType& lower_key, const KeyType& upper_key, KeyValueCompare comp, bool left_closed, bool right_closed)
+   {  return tree_.bounded_range(lower_key, upper_key, comp, left_closed, right_closed);  }
+
+   //! <b>Requires</b>: 'lower_value' must not be greater than 'upper_value'. If
+   //!   'lower_value' == 'upper_value', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key) if left_closed, upper_bound(lower_key) otherwise
+   //!
+   //!   second = upper_bound(upper_key) if right_closed, lower_bound(upper_key) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If the predicate throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_value and upper_value.
+   std::pair<const_iterator, const_iterator>
+      bounded_range(const_reference lower_value, const_reference upper_value, bool left_closed, bool right_closed) const
+   {  return tree_.bounded_range(lower_value, upper_value, left_closed, right_closed);  }
+
+   //! <b>Requires</b>: KeyValueCompare is a function object that induces a strict weak
+   //!   ordering compatible with the strict weak ordering used to create the
+   //!   the tree. 
+   //!   'lower_key' must not be greater than 'upper_key' according to 'comp'. If
+   //!   'lower_key' == 'upper_key', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key, comp) if left_closed, upper_bound(lower_key, comp) otherwise
+   //!
+   //!   second = upper_bound(upper_key, comp) if right_closed, lower_bound(upper_key, comp) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If "comp" throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_key and upper_key.
+   template<class KeyType, class KeyValueCompare>
+   std::pair<const_iterator, const_iterator>
+      bounded_range
+         (const KeyType& lower_key, const KeyType& upper_key, KeyValueCompare comp, bool left_closed, bool right_closed) const
+   {  return tree_.bounded_range(lower_key, upper_key, comp, left_closed, right_closed);  }
+
    //! <b>Requires</b>: value must be an lvalue and shall be in a set of
    //!   appropriate type. Otherwise the behavior is undefined.
    //!
@@ -1303,7 +1388,7 @@ class multiset_impl
 
    public:
    //! <b>Effects</b>: Constructs an empty multiset.
-   //!  
+   //!
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: If value_traits::node_traits::node
@@ -1334,13 +1419,13 @@ class multiset_impl
    {}
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    multiset_impl(BOOST_RV_REF(multiset_impl) x)
       :  tree_(::boost::move(x.tree_))
    {}
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    multiset_impl& operator=(BOOST_RV_REF(multiset_impl) x)
    {  tree_ = ::boost::move(x.tree_);  return *this;  }
 
@@ -1566,7 +1651,7 @@ class multiset_impl
    //!
    //!   If cloner throws, all cloned elements are unlinked and disposed
    //!   calling Disposer::operator()(pointer).
-   //!  
+   //!
    //! <b>Complexity</b>: Linear to erased plus inserted elements.
    //!
    //! <b>Throws</b>: If cloner throws or predicate copy assignment throws. Basic guarantee.
@@ -2096,6 +2181,91 @@ class multiset_impl
       equal_range(const KeyType& key, KeyValueCompare comp) const
    {  return tree_.equal_range(key, comp);  }
 
+   //! <b>Requires</b>: 'lower_value' must not be greater than 'upper_value'. If
+   //!   'lower_value' == 'upper_value', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key) if left_closed, upper_bound(lower_key) otherwise
+   //!
+   //!   second = upper_bound(upper_key) if right_closed, lower_bound(upper_key) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If the predicate throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_value and upper_value.
+   std::pair<iterator,iterator> bounded_range
+      (const_reference lower_value, const_reference upper_value, bool left_closed, bool right_closed)
+   {  return tree_.bounded_range(lower_value, upper_value, left_closed, right_closed);  }
+
+   //! <b>Requires</b>: KeyValueCompare is a function object that induces a strict weak
+   //!   ordering compatible with the strict weak ordering used to create the
+   //!   the tree. 
+   //!   'lower_key' must not be greater than 'upper_key' according to 'comp'. If
+   //!   'lower_key' == 'upper_key', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key, comp) if left_closed, upper_bound(lower_key, comp) otherwise
+   //!
+   //!   second = upper_bound(upper_key, comp) if right_closed, lower_bound(upper_key, comp) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If "comp" throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_key and upper_key.
+   template<class KeyType, class KeyValueCompare>
+   std::pair<iterator,iterator> bounded_range
+      (const KeyType& lower_key, const KeyType& upper_key, KeyValueCompare comp, bool left_closed, bool right_closed)
+   {  return tree_.bounded_range(lower_key, upper_key, comp, left_closed, right_closed);  }
+
+   //! <b>Requires</b>: 'lower_value' must not be greater than 'upper_value'. If
+   //!   'lower_value' == 'upper_value', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key) if left_closed, upper_bound(lower_key) otherwise
+   //!
+   //!   second = upper_bound(upper_key) if right_closed, lower_bound(upper_key) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If the predicate throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_value and upper_value.
+   std::pair<const_iterator, const_iterator>
+      bounded_range(const_reference lower_value, const_reference upper_value, bool left_closed, bool right_closed) const
+   {  return tree_.bounded_range(lower_value, upper_value, left_closed, right_closed);  }
+
+   //! <b>Requires</b>: KeyValueCompare is a function object that induces a strict weak
+   //!   ordering compatible with the strict weak ordering used to create the
+   //!   the tree. 
+   //!   'lower_key' must not be greater than 'upper_key' according to 'comp'. If
+   //!   'lower_key' == 'upper_key', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key, comp) if left_closed, upper_bound(lower_key, comp) otherwise
+   //!
+   //!   second = upper_bound(upper_key, comp) if right_closed, lower_bound(upper_key, comp) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If "comp" throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_key and upper_key.
+   template<class KeyType, class KeyValueCompare>
+   std::pair<const_iterator, const_iterator>
+      bounded_range
+         (const KeyType& lower_key, const KeyType& upper_key, KeyValueCompare comp, bool left_closed, bool right_closed) const
+   {  return tree_.bounded_range(lower_key, upper_key, comp, left_closed, right_closed);  }
+
    //! <b>Requires</b>: value must be an lvalue and shall be in a set of
    //!   appropriate type. Otherwise the behavior is undefined.
    //!
@@ -2330,7 +2500,7 @@ class multiset
       Options...
       #endif
       >::type   Base;
-  
+
    BOOST_MOVABLE_BUT_NOT_COPYABLE(multiset)
 
    public:

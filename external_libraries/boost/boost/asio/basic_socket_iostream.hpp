@@ -53,7 +53,7 @@
         basic_socket_streambuf<Protocol, StreamSocketService, \
           Time, TimeTraits, TimerService> >::member) \
   { \
-    tie(this); \
+    this->setf(std::ios_base::unitbuf); \
     if (rdbuf()->connect(BOOST_PP_ENUM_PARAMS(n, x)) == 0) \
       this->setstate(std::ios_base::failbit); \
   } \
@@ -112,7 +112,7 @@ public:
         basic_socket_streambuf<Protocol, StreamSocketService,
           Time, TimeTraits, TimerService> >::member)
   {
-    tie(this);
+    this->setf(std::ios_base::unitbuf);
   }
 
 #if defined(GENERATING_DOCUMENTATION)
@@ -131,7 +131,7 @@ public:
         basic_socket_streambuf<Protocol, StreamSocketService,
           Time, TimeTraits, TimerService> >::member)
   {
-    tie(this);
+    this->setf(std::ios_base::unitbuf);
     if (rdbuf()->connect(x...) == 0)
       this->setstate(std::ios_base::failbit);
   }

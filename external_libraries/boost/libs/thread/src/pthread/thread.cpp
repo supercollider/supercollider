@@ -138,16 +138,20 @@ namespace boost
                 boost::detail::thread_data_ptr thread_info = static_cast<boost::detail::thread_data_base*>(param)->self;
                 thread_info->self.reset();
                 detail::set_current_thread_data(thread_info.get());
-                try
+#ifndef BOOST_NO_EXCEPTIONS
+                try // BOOST_NO_EXCEPTIONS protected
+#endif
                 {
                     thread_info->run();
                 }
-                catch(thread_interrupted const&)
+#ifndef BOOST_NO_EXCEPTIONS
+                catch(thread_interrupted const&) // BOOST_NO_EXCEPTIONS protected
                 {
                 }
+#endif
 // Removed as it stops the debugger identifying the cause of the exception
 // Unhandled exceptions still cause the application to terminate
-//                 catch(...)
+//                 catch(...) // BOOST_NO_EXCEPTIONS protected
 //                 {
 //                     std::terminate();
 //                 }
@@ -221,14 +225,14 @@ namespace boost
         if (res != 0)
         {
             thread_info->self.reset();
-            throw thread_resource_error();
+            boost::throw_exception(thread_resource_error());
         }
         int detached_state;
         res = pthread_attr_getdetachstate(h, &detached_state);
         if (res != 0)
         {
             thread_info->self.reset();
-            throw thread_resource_error();
+            boost::throw_exception(thread_resource_error());
         }
         if (PTHREAD_CREATE_DETACHED==detached_state)
         {
@@ -558,6 +562,7 @@ namespace boost
 
         void interruption_point()
         {
+#ifndef BOOST_NO_EXCEPTIONS
             boost::detail::thread_data_base* const thread_info=detail::get_current_thread_data();
             if(thread_info && thread_info->interrupt_enabled)
             {
@@ -568,6 +573,7 @@ namespace boost
                     throw thread_interrupted();
                 }
             }
+#endif
         }
 
         bool interruption_enabled() BOOST_NOEXCEPT

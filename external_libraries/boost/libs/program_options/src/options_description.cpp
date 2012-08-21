@@ -147,7 +147,7 @@ namespace boost { namespace program_options {
             if (prefix_style == command_line_style::allow_long_disguise)
                 return "-" + m_long_name;
         }
-		// sanity check: m_short_name[0] should be '-' or '/'
+        // sanity check: m_short_name[0] should be '-' or '/'
         if (m_short_name.length() == 2)
         {
             if (prefix_style == command_line_style::allow_slash_for_short)
@@ -469,7 +469,7 @@ namespace boost { namespace program_options {
                     // Take care to never increment the iterator past
                     // the end, since MSVC 8.0 (brokenly), assumes that
                     // doing that, even if no access happens, is a bug.
-                    unsigned remaining = distance(line_begin, par_end);
+                    unsigned remaining = static_cast<unsigned>(std::distance(line_begin, par_end));
                     string::const_iterator line_end = line_begin + 
                         ((remaining < line_length) ? remaining : line_length);
             
@@ -489,7 +489,7 @@ namespace boost { namespace program_options {
                         {                 
                             // is last_space within the second half ot the 
                             // current line
-                            if (static_cast<unsigned>(distance(last_space, line_end)) < 
+                            if (static_cast<unsigned>(std::distance(last_space, line_end)) < 
                                 (line_length / 2))
                             {
                                 line_end = last_space;
@@ -502,8 +502,8 @@ namespace boost { namespace program_options {
               
                     if (first_line)
                     {
-                        indent += par_indent;
-                        line_length -= par_indent; // there's less to work with now
+                        indent += static_cast<unsigned>(par_indent);
+                        line_length -= static_cast<unsigned>(par_indent); // there's less to work with now
                         first_line = false;
                     }
 
@@ -592,7 +592,7 @@ namespace boost { namespace program_options {
                       os.put(' ');
                    }
                 } else {
-                   for(unsigned pad = first_column_width - ss.str().size(); pad > 0; --pad)
+                   for(unsigned pad = first_column_width - static_cast<unsigned>(ss.str().size()); pad > 0; --pad)
                    {
                       os.put(' ');
                    }

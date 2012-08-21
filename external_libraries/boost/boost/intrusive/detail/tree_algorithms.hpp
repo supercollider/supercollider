@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga  2007.
+// (C) Copyright Ion Gaztanaga  2007-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -192,7 +192,7 @@ class tree_algorithms
    {
       if(node1 == node2)
          return;
-  
+
       node_ptr header1(get_header(node1)), header2(get_header(node2));
       swap_nodes(node1, header1, node2, header2);
    }
@@ -216,7 +216,7 @@ class tree_algorithms
    {
       if(node1 == node2)
          return;
-  
+
       //node1 and node2 must not be header nodes
       //BOOST_INTRUSIVE_INVARIANT_ASSERT((header1 != node1 && header2 != node2));
       if(header1 != header2){
@@ -388,7 +388,7 @@ class tree_algorithms
    {
       if(node_to_be_replaced == new_node)
          return;
-  
+
       //Update header if necessary
       if(node_to_be_replaced == NodeTraits::get_left(header)){
          NodeTraits::set_left(header, new_node);
@@ -688,7 +688,7 @@ class tree_algorithms
    {
       if(header1 == header2)
          return;
-  
+
       node_ptr tmp;
 
       //Parent swap
@@ -765,11 +765,87 @@ class tree_algorithms
    //!   KeyNodePtrCompare is a function object that induces a strict weak
    //!   ordering compatible with the strict weak ordering used to create the
    //!   the tree. KeyNodePtrCompare can compare KeyType with tree's node_ptrs.
+   //!   'lower_key' must not be greater than 'upper_key' according to 'comp'. If
+   //!   'lower_key' == 'upper_key', ('left_closed' || 'right_closed') must be false.
+   //!
+   //! <b>Effects</b>: Returns an a pair with the following criteria:
+   //!
+   //!   first = lower_bound(lower_key) if left_closed, upper_bound(lower_key) otherwise
+   //!
+   //!   second = upper_bound(upper_key) if right_closed, lower_bound(upper_key) otherwise
+   //!
+   //! <b>Complexity</b>: Logarithmic.
+   //!
+   //! <b>Throws</b>: If "comp" throws.
+   //!
+   //! <b>Note</b>: This function can be more efficient than calling upper_bound
+   //!   and lower_bound for lower_key and upper_key.
+   template< class KeyType, class KeyNodePtrCompare>
+   static std::pair<node_ptr, node_ptr> bounded_range
+      ( const const_node_ptr & header
+      , const KeyType &lower_key
+      , const KeyType &upper_key
+      , KeyNodePtrCompare comp
+      , bool left_closed
+      , bool right_closed)
+   {
+      node_ptr y = uncast(header);
+      node_ptr x = NodeTraits::get_parent(header);
+
+      while(x){
+         //If x is less than lower_key the target
+         //range is on the right part
+         if(comp(x, lower_key)){
+            //Check for invalid input range
+            BOOST_INTRUSIVE_INVARIANT_ASSERT(comp(x, upper_key));
+            x = NodeTraits::get_right(x);
+         }
+         //If the upper_key is less than x, the target
+         //range is on the left part
+         else if(comp(upper_key, x)){
+            //y > upper_key
+            y = x;
+            x = NodeTraits::get_left(x);
+         }
+         else{
+            //x is inside the bounded range( x >= lower_key && x <= upper_key),
+            //so we must split lower and upper searches
+            //
+            //Sanity check: if lower_key and upper_key are equal, then both left_closed and right_closed can't be false
+            BOOST_INTRUSIVE_INVARIANT_ASSERT(left_closed || right_closed || comp(lower_key, x) || comp(x, upper_key));
+            return std::pair<node_ptr,node_ptr>(
+               left_closed
+                  //If left_closed, then comp(x, lower_key) is already the lower_bound
+                  //condition so we save one comparison and go to the next level
+                  //following traditional lower_bound algo
+                  ? lower_bound_loop(NodeTraits::get_left(x), x, lower_key, comp)
+                  //If left-open, comp(x, lower_key) is not the upper_bound algo
+                  //condition so we must recheck current 'x' node with upper_bound algo
+                  : upper_bound_loop(x, y, lower_key, comp)
+            ,
+               right_closed
+                  //If right_closed, then comp(upper_key, x) is already the upper_bound
+                  //condition so we can save one comparison and go to the next level
+                  //following lower_bound algo
+                  ? upper_bound_loop(NodeTraits::get_right(x), y, upper_key, comp)
+                  //If right-open, comp(upper_key, x) is not the lower_bound algo
+                  //condition so we must recheck current 'x' node with lower_bound algo
+                  : lower_bound_loop(x, y, upper_key, comp)
+            );
+         }
+      }
+      return std::pair<node_ptr,node_ptr> (y, y);
+   }
+
+   //! <b>Requires</b>: "header" must be the header node of a tree.
+   //!   KeyNodePtrCompare is a function object that induces a strict weak
+   //!   ordering compatible with the strict weak ordering used to create the
+   //!   the tree. KeyNodePtrCompare can compare KeyType with tree's node_ptrs.
    //!
    //! <b>Effects</b>: Returns an a pair of node_ptr delimiting a range containing
    //!   all elements that are equivalent to "key" according to "comp" or an
    //!   empty range that indicates the position where those elements would be
-   //!   if they there are no equivalent elements.
+   //!   if there are no equivalent elements.
    //!
    //! <b>Complexity</b>: Logarithmic.
    //!
@@ -778,45 +854,7 @@ class tree_algorithms
    static std::pair<node_ptr, node_ptr> equal_range
       (const const_node_ptr & header, const KeyType &key, KeyNodePtrCompare comp)
    {
-      node_ptr y = uncast(header);
-      node_ptr x = NodeTraits::get_parent(header);
-
-      while(x){
-         if(comp(x, key)){
-            x = NodeTraits::get_right(x);
-         }
-         else if(comp(key, x)){
-            y = x;
-            x = NodeTraits::get_left(x);
-         }
-         else{
-            node_ptr xu(x), yu(y);
-            y = x, x = NodeTraits::get_left(x);
-            xu = NodeTraits::get_right(xu);
-
-            while(x){
-               if(comp(x, key)){
-                  x = NodeTraits::get_right(x);
-               }
-               else {
-                  y = x;
-                  x = NodeTraits::get_left(x);
-               }
-            }
-
-            while(xu){
-               if(comp(key, xu)){
-                  yu = xu;
-                  xu = NodeTraits::get_left(xu);
-               }
-               else {
-                  xu = NodeTraits::get_right(xu);
-               }
-            }
-            return std::pair<node_ptr,node_ptr> (y, yu);
-         }
-      }
-      return std::pair<node_ptr,node_ptr> (y, y);
+      return bounded_range(header, key, key, comp, true, true);
    }
 
    //! <b>Requires</b>: "header" must be the header node of a tree.
@@ -835,18 +873,7 @@ class tree_algorithms
    static node_ptr lower_bound
       (const const_node_ptr & header, const KeyType &key, KeyNodePtrCompare comp)
    {
-      node_ptr y = uncast(header);
-      node_ptr x = NodeTraits::get_parent(header);
-      while(x){
-         if(comp(x, key)){
-            x = NodeTraits::get_right(x);
-         }
-         else {
-            y = x;
-            x = NodeTraits::get_left(x);
-         }
-      }
-      return y;
+      return lower_bound_loop(NodeTraits::get_parent(header), uncast(header), key, comp);
    }
 
    //! <b>Requires</b>: "header" must be the header node of a tree.
@@ -864,18 +891,7 @@ class tree_algorithms
    static node_ptr upper_bound
       (const const_node_ptr & header, const KeyType &key, KeyNodePtrCompare comp)
    {
-      node_ptr y = uncast(header);
-      node_ptr x = NodeTraits::get_parent(header);
-      while(x){
-         if(comp(key, x)){
-            y = x;
-            x = NodeTraits::get_left(x);
-         }
-         else {
-            x = NodeTraits::get_right(x);
-         }
-      }
-      return y;
+      return upper_bound_loop(NodeTraits::get_parent(header), uncast(header), key, comp);
    }
 
    //! <b>Requires</b>: "header" must be the header node of a tree.
@@ -1174,7 +1190,7 @@ class tree_algorithms
    //! <b>Effects</b>: First empties target tree calling
    //!   <tt>void disposer::operator()(const node_ptr &)</tt> for every node of the tree
    //!    except the header.
-   //!   
+   //!
    //!   Then, duplicates the entire tree pointed by "source_header" cloning each
    //!   source node with <tt>node_ptr Cloner::operator()(const node_ptr &)</tt> to obtain
    //!   the nodes of the target tree. If "cloner" throws, the cloned target nodes
@@ -1536,7 +1552,7 @@ class tree_algorithms
       //Put old_root as right child
       NodeTraits::set_right(super_root, old_root);
 
-      //Start the compression algorithm           
+      //Start the compression algorithm
       node_ptr even_parent = super_root;
       node_ptr new_root = old_root;
 
@@ -1596,6 +1612,40 @@ class tree_algorithms
    }
 
    private:
+
+   template<class KeyType, class KeyNodePtrCompare>
+   static node_ptr lower_bound_loop
+      (node_ptr x, node_ptr y, const KeyType &key, KeyNodePtrCompare comp)
+   {
+      while(x){
+         if(comp(x, key)){
+            x = NodeTraits::get_right(x);
+         }
+         else{
+            y = x;
+            x = NodeTraits::get_left(x);
+         }
+      }
+      return y;
+   }
+
+   template<class KeyType, class KeyNodePtrCompare>
+   static node_ptr upper_bound_loop
+      (node_ptr x, node_ptr y, const KeyType &key, KeyNodePtrCompare comp)
+   {
+      while(x){
+         if(comp(key, x)){
+            y = x;
+            x = NodeTraits::get_left(x);
+         }
+         else{
+            x = NodeTraits::get_right(x);
+         }
+      }
+      return y;
+   }
+
+
    template<class NodePtrCompare>
    static void insert_equal_check_impl
       (bool upper, const node_ptr & h, const node_ptr & new_node, NodePtrCompare comp, insert_commit_data & commit_data, std::size_t *pdepth = 0)

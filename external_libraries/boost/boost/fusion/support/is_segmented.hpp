@@ -7,6 +7,7 @@
 #if !defined(FUSION_IS_SEGMENTED_03202006_0015)
 #define FUSION_IS_SEGMENTED_03202006_0015
 
+#include <boost/mpl/bool.hpp>
 #include <boost/fusion/support/tag_of.hpp>
 
 namespace boost { namespace fusion 
@@ -41,8 +42,10 @@ namespace boost { namespace fusion
     {
         template <typename Sequence>
         struct is_segmented
-          : extension::is_segmented_impl<typename traits::tag_of<Sequence>::type>::
-                template apply<Sequence>
+          : mpl::bool_<
+                (bool)extension::is_segmented_impl<typename traits::tag_of<Sequence>::type>::
+                    template apply<Sequence>::type::value
+            >
         {
         };
     }

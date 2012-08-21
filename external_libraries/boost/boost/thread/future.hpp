@@ -9,6 +9,12 @@
 #define BOOST_THREAD_FUTURE_HPP
 
 #include <boost/thread/detail/config.hpp>
+
+// boost::thread::future requires exception handling
+// due to boost::exception::exception_ptr dependency
+
+#ifndef BOOST_NO_EXCEPTIONS
+
 #include <boost/detail/scoped_enum_emulation.hpp>
 #include <stdexcept>
 #include <boost/thread/detail/move.hpp>
@@ -43,11 +49,15 @@
 #include <boost/thread/detail/memory.hpp>
 #endif
 
+#include <boost/utility/result_of.hpp>
+//#include <boost/thread.hpp>
+
 #if defined BOOST_THREAD_PROVIDES_FUTURE
 #define BOOST_THREAD_FUTURE future
 #else
 #define BOOST_THREAD_FUTURE unique_future
 #endif
+
 
 namespace boost
 {
@@ -474,7 +484,7 @@ namespace boost
             void mark_finished_with_result(rvalue_source_type result_)
             {
                 boost::lock_guard<boost::mutex> lock(mutex);
-                mark_finished_with_result_internal(result_);
+                mark_finished_with_result_internal(static_cast<rvalue_source_type>(result_));
             }
 
             move_dest_type get()
@@ -1655,8 +1665,39 @@ namespace boost
 
     BOOST_THREAD_DCL_MOVABLE_BEG(T) packaged_task<T> BOOST_THREAD_DCL_MOVABLE_END
 
+//    template <class F>
+//    BOOST_THREAD_FUTURE<typename boost::result_of<F()>::type>
+//    async(launch policy, F f)
+//    {
+//        typedef typename boost::result_of<F()>::type R;
+//        typedef BOOST_THREAD_FUTURE<R> future;
+//        if (int(policy) & int(launch::async))
+//        {
+//          packaged_task<R> pt( f );
+//
+//          BOOST_THREAD_FUTURE ret = pt.get_future();
+//          boost::thread( boost::move(pt) ).detach();
+//          return ::boost::move(ret);
+//        }
+//        else if (int(policy) & int(launch::deferred))
+//        {
+//          packaged_task<R> pt( f );
+//
+//          BOOST_THREAD_FUTURE ret = pt.get_future();
+//          return ::boost::move(ret);
+//        }
+//    }
+//
+//    template <class F>
+//    BOOST_THREAD_FUTURE<typename boost::result_of<F()>::type>
+//    async(F f)
+//    {
+//        return async(launch::any, f);
+//    }
+
+
 
 }
 
-
-#endif
+#endif // BOOST_NO_EXCEPTION
+#endif // header

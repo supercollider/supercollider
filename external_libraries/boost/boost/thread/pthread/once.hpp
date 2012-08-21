@@ -78,18 +78,18 @@ namespace boost
                 {
                     flag.epoch=being_initialized;
 #ifndef BOOST_NO_EXCEPTIONS
-                    try
+                    try // BOOST_NO_EXCEPTIONS protected
                     {
 #endif
                         pthread::pthread_mutex_scoped_unlock relocker(&detail::once_epoch_mutex);
                         f();
 #ifndef BOOST_NO_EXCEPTIONS
                     }
-                    catch(...)
+                    catch(...)  // BOOST_NO_EXCEPTIONS protected
                     {
                         flag.epoch=uninitialized_flag;
                         BOOST_VERIFY(!pthread_cond_broadcast(&detail::once_epoch_cv));
-                        throw;
+                        throw;  // BOOST_NO_EXCEPTIONS protected
                     }
 #endif
                     flag.epoch=--detail::once_global_epoch;

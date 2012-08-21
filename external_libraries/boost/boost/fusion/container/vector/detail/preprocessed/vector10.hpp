@@ -34,6 +34,15 @@ namespace boost { namespace fusion
             
             return vector_data1(*i0);
         }
+        template <typename Sequence>
+        static vector_data1
+        init_from_sequence(Sequence& seq)
+        {
+            typedef typename result_of::begin<Sequence>::type I0;
+            I0 i0 = fusion::begin(seq);
+            
+            return vector_data1(*i0);
+        }
         T0 m0;
     };
     template <typename T0>
@@ -61,6 +70,12 @@ namespace boost { namespace fusion
         template <typename Sequence>
         vector1(
             Sequence const& seq
+          , typename boost::disable_if<is_convertible<Sequence, T0> >::type* = 0
+            )
+            : base_type(base_type::init_from_sequence(seq)) {}
+        template <typename Sequence>
+        vector1(
+            Sequence& seq
           , typename boost::disable_if<is_convertible<Sequence, T0> >::type* = 0
             )
             : base_type(base_type::init_from_sequence(seq)) {}
@@ -121,6 +136,15 @@ namespace boost { namespace fusion
             typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0);
             return vector_data2(*i0 , *i1);
         }
+        template <typename Sequence>
+        static vector_data2
+        init_from_sequence(Sequence& seq)
+        {
+            typedef typename result_of::begin<Sequence>::type I0;
+            I0 i0 = fusion::begin(seq);
+            typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0);
+            return vector_data2(*i0 , *i1);
+        }
         T0 m0; T1 m1;
     };
     template <typename T0 , typename T1>
@@ -147,6 +171,11 @@ namespace boost { namespace fusion
         template <typename Sequence>
         vector2(
             Sequence const& seq
+            )
+            : base_type(base_type::init_from_sequence(seq)) {}
+        template <typename Sequence>
+        vector2(
+            Sequence& seq
             )
             : base_type(base_type::init_from_sequence(seq)) {}
         template <typename U0 , typename U1>
@@ -206,6 +235,15 @@ namespace boost { namespace fusion
             typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1);
             return vector_data3(*i0 , *i1 , *i2);
         }
+        template <typename Sequence>
+        static vector_data3
+        init_from_sequence(Sequence& seq)
+        {
+            typedef typename result_of::begin<Sequence>::type I0;
+            I0 i0 = fusion::begin(seq);
+            typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1);
+            return vector_data3(*i0 , *i1 , *i2);
+        }
         T0 m0; T1 m1; T2 m2;
     };
     template <typename T0 , typename T1 , typename T2>
@@ -232,6 +270,11 @@ namespace boost { namespace fusion
         template <typename Sequence>
         vector3(
             Sequence const& seq
+            )
+            : base_type(base_type::init_from_sequence(seq)) {}
+        template <typename Sequence>
+        vector3(
+            Sequence& seq
             )
             : base_type(base_type::init_from_sequence(seq)) {}
         template <typename U0 , typename U1 , typename U2>
@@ -291,6 +334,15 @@ namespace boost { namespace fusion
             typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2);
             return vector_data4(*i0 , *i1 , *i2 , *i3);
         }
+        template <typename Sequence>
+        static vector_data4
+        init_from_sequence(Sequence& seq)
+        {
+            typedef typename result_of::begin<Sequence>::type I0;
+            I0 i0 = fusion::begin(seq);
+            typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2);
+            return vector_data4(*i0 , *i1 , *i2 , *i3);
+        }
         T0 m0; T1 m1; T2 m2; T3 m3;
     };
     template <typename T0 , typename T1 , typename T2 , typename T3>
@@ -317,6 +369,11 @@ namespace boost { namespace fusion
         template <typename Sequence>
         vector4(
             Sequence const& seq
+            )
+            : base_type(base_type::init_from_sequence(seq)) {}
+        template <typename Sequence>
+        vector4(
+            Sequence& seq
             )
             : base_type(base_type::init_from_sequence(seq)) {}
         template <typename U0 , typename U1 , typename U2 , typename U3>
@@ -376,6 +433,15 @@ namespace boost { namespace fusion
             typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2); typedef typename result_of::next< I3>::type I4; I4 i4 = fusion::next(i3);
             return vector_data5(*i0 , *i1 , *i2 , *i3 , *i4);
         }
+        template <typename Sequence>
+        static vector_data5
+        init_from_sequence(Sequence& seq)
+        {
+            typedef typename result_of::begin<Sequence>::type I0;
+            I0 i0 = fusion::begin(seq);
+            typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2); typedef typename result_of::next< I3>::type I4; I4 i4 = fusion::next(i3);
+            return vector_data5(*i0 , *i1 , *i2 , *i3 , *i4);
+        }
         T0 m0; T1 m1; T2 m2; T3 m3; T4 m4;
     };
     template <typename T0 , typename T1 , typename T2 , typename T3 , typename T4>
@@ -402,6 +468,11 @@ namespace boost { namespace fusion
         template <typename Sequence>
         vector5(
             Sequence const& seq
+            )
+            : base_type(base_type::init_from_sequence(seq)) {}
+        template <typename Sequence>
+        vector5(
+            Sequence& seq
             )
             : base_type(base_type::init_from_sequence(seq)) {}
         template <typename U0 , typename U1 , typename U2 , typename U3 , typename U4>
@@ -461,6 +532,15 @@ namespace boost { namespace fusion
             typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2); typedef typename result_of::next< I3>::type I4; I4 i4 = fusion::next(i3); typedef typename result_of::next< I4>::type I5; I5 i5 = fusion::next(i4);
             return vector_data6(*i0 , *i1 , *i2 , *i3 , *i4 , *i5);
         }
+        template <typename Sequence>
+        static vector_data6
+        init_from_sequence(Sequence& seq)
+        {
+            typedef typename result_of::begin<Sequence>::type I0;
+            I0 i0 = fusion::begin(seq);
+            typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2); typedef typename result_of::next< I3>::type I4; I4 i4 = fusion::next(i3); typedef typename result_of::next< I4>::type I5; I5 i5 = fusion::next(i4);
+            return vector_data6(*i0 , *i1 , *i2 , *i3 , *i4 , *i5);
+        }
         T0 m0; T1 m1; T2 m2; T3 m3; T4 m4; T5 m5;
     };
     template <typename T0 , typename T1 , typename T2 , typename T3 , typename T4 , typename T5>
@@ -487,6 +567,11 @@ namespace boost { namespace fusion
         template <typename Sequence>
         vector6(
             Sequence const& seq
+            )
+            : base_type(base_type::init_from_sequence(seq)) {}
+        template <typename Sequence>
+        vector6(
+            Sequence& seq
             )
             : base_type(base_type::init_from_sequence(seq)) {}
         template <typename U0 , typename U1 , typename U2 , typename U3 , typename U4 , typename U5>
@@ -546,6 +631,15 @@ namespace boost { namespace fusion
             typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2); typedef typename result_of::next< I3>::type I4; I4 i4 = fusion::next(i3); typedef typename result_of::next< I4>::type I5; I5 i5 = fusion::next(i4); typedef typename result_of::next< I5>::type I6; I6 i6 = fusion::next(i5);
             return vector_data7(*i0 , *i1 , *i2 , *i3 , *i4 , *i5 , *i6);
         }
+        template <typename Sequence>
+        static vector_data7
+        init_from_sequence(Sequence& seq)
+        {
+            typedef typename result_of::begin<Sequence>::type I0;
+            I0 i0 = fusion::begin(seq);
+            typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2); typedef typename result_of::next< I3>::type I4; I4 i4 = fusion::next(i3); typedef typename result_of::next< I4>::type I5; I5 i5 = fusion::next(i4); typedef typename result_of::next< I5>::type I6; I6 i6 = fusion::next(i5);
+            return vector_data7(*i0 , *i1 , *i2 , *i3 , *i4 , *i5 , *i6);
+        }
         T0 m0; T1 m1; T2 m2; T3 m3; T4 m4; T5 m5; T6 m6;
     };
     template <typename T0 , typename T1 , typename T2 , typename T3 , typename T4 , typename T5 , typename T6>
@@ -572,6 +666,11 @@ namespace boost { namespace fusion
         template <typename Sequence>
         vector7(
             Sequence const& seq
+            )
+            : base_type(base_type::init_from_sequence(seq)) {}
+        template <typename Sequence>
+        vector7(
+            Sequence& seq
             )
             : base_type(base_type::init_from_sequence(seq)) {}
         template <typename U0 , typename U1 , typename U2 , typename U3 , typename U4 , typename U5 , typename U6>
@@ -631,6 +730,15 @@ namespace boost { namespace fusion
             typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2); typedef typename result_of::next< I3>::type I4; I4 i4 = fusion::next(i3); typedef typename result_of::next< I4>::type I5; I5 i5 = fusion::next(i4); typedef typename result_of::next< I5>::type I6; I6 i6 = fusion::next(i5); typedef typename result_of::next< I6>::type I7; I7 i7 = fusion::next(i6);
             return vector_data8(*i0 , *i1 , *i2 , *i3 , *i4 , *i5 , *i6 , *i7);
         }
+        template <typename Sequence>
+        static vector_data8
+        init_from_sequence(Sequence& seq)
+        {
+            typedef typename result_of::begin<Sequence>::type I0;
+            I0 i0 = fusion::begin(seq);
+            typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2); typedef typename result_of::next< I3>::type I4; I4 i4 = fusion::next(i3); typedef typename result_of::next< I4>::type I5; I5 i5 = fusion::next(i4); typedef typename result_of::next< I5>::type I6; I6 i6 = fusion::next(i5); typedef typename result_of::next< I6>::type I7; I7 i7 = fusion::next(i6);
+            return vector_data8(*i0 , *i1 , *i2 , *i3 , *i4 , *i5 , *i6 , *i7);
+        }
         T0 m0; T1 m1; T2 m2; T3 m3; T4 m4; T5 m5; T6 m6; T7 m7;
     };
     template <typename T0 , typename T1 , typename T2 , typename T3 , typename T4 , typename T5 , typename T6 , typename T7>
@@ -657,6 +765,11 @@ namespace boost { namespace fusion
         template <typename Sequence>
         vector8(
             Sequence const& seq
+            )
+            : base_type(base_type::init_from_sequence(seq)) {}
+        template <typename Sequence>
+        vector8(
+            Sequence& seq
             )
             : base_type(base_type::init_from_sequence(seq)) {}
         template <typename U0 , typename U1 , typename U2 , typename U3 , typename U4 , typename U5 , typename U6 , typename U7>
@@ -716,6 +829,15 @@ namespace boost { namespace fusion
             typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2); typedef typename result_of::next< I3>::type I4; I4 i4 = fusion::next(i3); typedef typename result_of::next< I4>::type I5; I5 i5 = fusion::next(i4); typedef typename result_of::next< I5>::type I6; I6 i6 = fusion::next(i5); typedef typename result_of::next< I6>::type I7; I7 i7 = fusion::next(i6); typedef typename result_of::next< I7>::type I8; I8 i8 = fusion::next(i7);
             return vector_data9(*i0 , *i1 , *i2 , *i3 , *i4 , *i5 , *i6 , *i7 , *i8);
         }
+        template <typename Sequence>
+        static vector_data9
+        init_from_sequence(Sequence& seq)
+        {
+            typedef typename result_of::begin<Sequence>::type I0;
+            I0 i0 = fusion::begin(seq);
+            typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2); typedef typename result_of::next< I3>::type I4; I4 i4 = fusion::next(i3); typedef typename result_of::next< I4>::type I5; I5 i5 = fusion::next(i4); typedef typename result_of::next< I5>::type I6; I6 i6 = fusion::next(i5); typedef typename result_of::next< I6>::type I7; I7 i7 = fusion::next(i6); typedef typename result_of::next< I7>::type I8; I8 i8 = fusion::next(i7);
+            return vector_data9(*i0 , *i1 , *i2 , *i3 , *i4 , *i5 , *i6 , *i7 , *i8);
+        }
         T0 m0; T1 m1; T2 m2; T3 m3; T4 m4; T5 m5; T6 m6; T7 m7; T8 m8;
     };
     template <typename T0 , typename T1 , typename T2 , typename T3 , typename T4 , typename T5 , typename T6 , typename T7 , typename T8>
@@ -742,6 +864,11 @@ namespace boost { namespace fusion
         template <typename Sequence>
         vector9(
             Sequence const& seq
+            )
+            : base_type(base_type::init_from_sequence(seq)) {}
+        template <typename Sequence>
+        vector9(
+            Sequence& seq
             )
             : base_type(base_type::init_from_sequence(seq)) {}
         template <typename U0 , typename U1 , typename U2 , typename U3 , typename U4 , typename U5 , typename U6 , typename U7 , typename U8>
@@ -801,6 +928,15 @@ namespace boost { namespace fusion
             typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2); typedef typename result_of::next< I3>::type I4; I4 i4 = fusion::next(i3); typedef typename result_of::next< I4>::type I5; I5 i5 = fusion::next(i4); typedef typename result_of::next< I5>::type I6; I6 i6 = fusion::next(i5); typedef typename result_of::next< I6>::type I7; I7 i7 = fusion::next(i6); typedef typename result_of::next< I7>::type I8; I8 i8 = fusion::next(i7); typedef typename result_of::next< I8>::type I9; I9 i9 = fusion::next(i8);
             return vector_data10(*i0 , *i1 , *i2 , *i3 , *i4 , *i5 , *i6 , *i7 , *i8 , *i9);
         }
+        template <typename Sequence>
+        static vector_data10
+        init_from_sequence(Sequence& seq)
+        {
+            typedef typename result_of::begin<Sequence>::type I0;
+            I0 i0 = fusion::begin(seq);
+            typedef typename result_of::next< I0>::type I1; I1 i1 = fusion::next(i0); typedef typename result_of::next< I1>::type I2; I2 i2 = fusion::next(i1); typedef typename result_of::next< I2>::type I3; I3 i3 = fusion::next(i2); typedef typename result_of::next< I3>::type I4; I4 i4 = fusion::next(i3); typedef typename result_of::next< I4>::type I5; I5 i5 = fusion::next(i4); typedef typename result_of::next< I5>::type I6; I6 i6 = fusion::next(i5); typedef typename result_of::next< I6>::type I7; I7 i7 = fusion::next(i6); typedef typename result_of::next< I7>::type I8; I8 i8 = fusion::next(i7); typedef typename result_of::next< I8>::type I9; I9 i9 = fusion::next(i8);
+            return vector_data10(*i0 , *i1 , *i2 , *i3 , *i4 , *i5 , *i6 , *i7 , *i8 , *i9);
+        }
         T0 m0; T1 m1; T2 m2; T3 m3; T4 m4; T5 m5; T6 m6; T7 m7; T8 m8; T9 m9;
     };
     template <typename T0 , typename T1 , typename T2 , typename T3 , typename T4 , typename T5 , typename T6 , typename T7 , typename T8 , typename T9>
@@ -827,6 +963,11 @@ namespace boost { namespace fusion
         template <typename Sequence>
         vector10(
             Sequence const& seq
+            )
+            : base_type(base_type::init_from_sequence(seq)) {}
+        template <typename Sequence>
+        vector10(
+            Sequence& seq
             )
             : base_type(base_type::init_from_sequence(seq)) {}
         template <typename U0 , typename U1 , typename U2 , typename U3 , typename U4 , typename U5 , typename U6 , typename U7 , typename U8 , typename U9>

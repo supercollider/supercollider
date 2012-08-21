@@ -187,12 +187,6 @@ class basic_managed_shared_memory
       return base_t::template shrink_to_fit
          <basic_managed_shared_memory>(shmname);
    }
-
-   bool flush()
-   {
-      return this->base2_t::flush();
-   }
-
    /// @cond
 
    //!Tries to find a previous named allocation address. Returns a memory

@@ -41,7 +41,7 @@ namespace boost
   } //namespace thread_detail
 
   typedef container::allocator_arg_t allocator_arg_t;
-  BOOST_CONSTEXPR allocator_arg_t allocator_arg = {};
+  BOOST_CONSTEXPR_OR_CONST allocator_arg_t allocator_arg = {};
 
   template <class T, class Alloc>
   struct uses_allocator: public container::uses_allocator<T, Alloc>

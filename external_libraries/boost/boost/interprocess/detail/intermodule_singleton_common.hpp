@@ -21,6 +21,7 @@
 #include <boost/interprocess/detail/atomic.hpp>
 #include <boost/interprocess/detail/os_thread_functions.hpp>
 #include <boost/type_traits/type_with_alignment.hpp>
+#include <boost/interprocess/detail/mpl.hpp>
 #include <boost/assert.hpp>
 #include <cstddef>
 #include <cstdio>
@@ -44,32 +45,32 @@ inline void get_pid_creation_time_str(std::string &s)
    s = stream.str();
 }
 
-inline const char *get_shm_base_name()
-{  return "bip.gmem.shm.";  }
+inline const char *get_map_base_name()
+{  return "bip.gmem.map.";  }
 
-inline void get_shm_name(std::string &shm_name)
+inline void get_map_name(std::string &map_name)
 {
-   get_pid_creation_time_str(shm_name);
-   shm_name.insert(0, get_shm_base_name());
+   get_pid_creation_time_str(map_name);
+   map_name.insert(0, get_map_base_name());
 }
 
-inline std::size_t get_shm_size()
+inline std::size_t get_map_size()
 {  return 65536;  }
 
-template<class ManagedGlobalMemory>
-struct managed_sh_dependant;
+template<class ThreadSafeGlobalMap>
+struct thread_safe_global_map_dependant;
 
 }  //namespace intermodule_singleton_helpers {
 
 //This class contains common code for all singleton types, so that we instantiate this
-//code just once per module. This class also holds a shared memory manager
+//code just once per module. This class also holds a thread soafe global map
 //to be used by all instances protected with a reference count
-template<class ManagedGlobalMemory>
+template<class ThreadSafeGlobalMap>
 class intermodule_singleton_common
 {
    public:
-   typedef void*(singleton_constructor_t)(ManagedGlobalMemory &);
-   typedef void (singleton_destructor_t)(void *, ManagedGlobalMemory &);
+   typedef void*(singleton_constructor_t)(ThreadSafeGlobalMap &);
+   typedef void (singleton_destructor_t)(void *, ThreadSafeGlobalMap &);
 
    static const ::boost::uint32_t Uninitialized       = 0u;
    static const ::boost::uint32_t Initializing        = 1u;
@@ -77,11 +78,11 @@ class intermodule_singleton_common
    static const ::boost::uint32_t Broken              = 3u;
    static const ::boost::uint32_t Destroyed           = 4u;
 
-   //Initialize this_module_singleton_ptr, creates the shared memory if needed and also creates an unique
-   //opaque type in shared memory through a singleton_constructor_t function call,
+   //Initialize this_module_singleton_ptr, creates the global map if needed and also creates an unique
+   //opaque type in global map through a singleton_constructor_t function call,
    //initializing the passed pointer to that unique instance.
    //
-   //We have two concurrency types here. a)the shared memory/singleton creation must
+   //We have two concurrency types here. a)the global map/singleton creation must
    //be safe between threads of this process but in different modules/dlls. b)
    //the pointer to the singleton is per-module, so we have to protect this
    //initization between threads of the same module.
@@ -98,7 +99,7 @@ class intermodule_singleton_common
          ::boost::uint32_t previous_module_singleton_initialized = atomic_cas32
             (&this_module_singleton_initialized, Initializing, Uninitialized);
          //If the thread succeeded the CAS (winner) it will compete with other
-         //winner threads from other modules to create the shared memory
+         //winner threads from other modules to create the global map
          if(previous_module_singleton_initialized == Destroyed){
             //Trying to resurrect a dead Phoenix singleton. Just try to
             //mark it as uninitialized and start again
@@ -114,17 +115,17 @@ class intermodule_singleton_common
          }
          if(previous_module_singleton_initialized == Uninitialized){
             try{
-               //Now initialize shm, this function solves concurrency issues
-               //between threads of several modules
-               initialize_shm();
-               //Increment the module reference count that reflects how many
-               //singletons this module holds, so that we can safely destroy
-               //module shared memory object when no singleton is left
-               atomic_inc32(&this_module_singleton_count);
-               //Now try to create the singleton in shared memory.
+               //Now initialize the global map, this function must solve concurrency
+               //issues between threads of several modules
+               initialize_global_map_handle();
+               //Now try to create the singleton in global map.
                //This function solves concurrency issues
                //between threads of several modules
-               void *tmp = constructor(get_shm());
+               void *tmp = constructor(get_map());
+               //Increment the module reference count that reflects how many
+               //singletons this module holds, so that we can safely destroy
+               //module global map object when no singleton is left
+               atomic_inc32(&this_module_singleton_count);
                //Insert a barrier before assigning the pointer to
                //make sure this assignment comes after the initialization
                atomic_write32(&this_module_singleton_initialized, Initializing);
@@ -177,7 +178,7 @@ class intermodule_singleton_common
          //Note: this destructor might provoke a Phoenix singleton
          //resurrection. This means that this_module_singleton_count
          //might change after this call.
-         destructor(ptr, get_shm());
+         destructor(ptr, get_map());
          ptr = 0;
 
          //Memory barrier to make sure pointer is nulled.
@@ -185,31 +186,34 @@ class intermodule_singleton_common
          atomic_write32(&this_module_singleton_initialized, Destroyed);
 
          //If this is the last singleton of this module
-         //apply shm destruction.
+         //apply map destruction.
          //Note: singletons are destroyed when the module is unloaded
          //so no threads should be executing or holding references
          //to this module
          if(1 == atomic_dec32(&this_module_singleton_count)){
-            destroy_shm();
+            destroy_global_map_handle();
          }
       }
    }
 
    private:
-   static ManagedGlobalMemory &get_shm()
+   static ThreadSafeGlobalMap &get_map()
    {
-      return *static_cast<ManagedGlobalMemory *>(static_cast<void *>(&mem_holder.shm_mem));
+      return *static_cast<ThreadSafeGlobalMap *>(static_cast<void *>(&mem_holder.map_mem));
    }
 
-   static void initialize_shm()
+   static void initialize_global_map_handle()
    {
-      //Obtain unique shm name and size
-      std::string s;
+      //Obtain unique map name and size
       while(1){
-         //Try to pass shm state to initializing
-         ::boost::uint32_t tmp = atomic_cas32(&this_module_shm_initialized, Initializing, Uninitialized);
-         if(tmp >= Initialized){
+         //Try to pass map state to initializing
+         ::boost::uint32_t tmp = atomic_cas32(&this_module_map_initialized, Initializing, Uninitialized);
+         if(tmp == Initialized || tmp == Broken){
             break;
+         }
+         else if(tmp == Destroyed){
+            tmp = atomic_cas32(&this_module_map_initialized, Uninitialized, Destroyed);
+            continue;
          }
          //If some other thread is doing the work wait
          else if(tmp == Initializing){
@@ -218,30 +222,24 @@ class intermodule_singleton_common
          else{ //(tmp == Uninitialized)
             //If not initialized try it again?
             try{
-               //Remove old shared memory from the system
-               intermodule_singleton_helpers::managed_sh_dependant<ManagedGlobalMemory>::remove_old_gmem();
-               //
-               if(s.empty()){
-                  intermodule_singleton_helpers::get_shm_name(s);
-               }
-               const char *ShmName = s.c_str();
-               const std::size_t ShmSize = intermodule_singleton_helpers::get_shm_size();;
-
-               //in-place construction of the shared memory class
-               ::new (&get_shm())ManagedGlobalMemory(open_or_create, ShmName, ShmSize);
-               //Use shared memory internal lock to initialize the lock file
+               //Remove old global map from the system
+               intermodule_singleton_helpers::thread_safe_global_map_dependant<ThreadSafeGlobalMap>::remove_old_gmem();
+               //in-place construction of the global map class
+               intermodule_singleton_helpers::thread_safe_global_map_dependant
+                  <ThreadSafeGlobalMap>::construct_map(static_cast<void*>(&get_map()));
+               //Use global map's internal lock to initialize the lock file
                //that will mark this gmem as "in use".
-               typename intermodule_singleton_helpers::managed_sh_dependant<ManagedGlobalMemory>::
-                  lock_file_logic f(get_shm());
+               typename intermodule_singleton_helpers::thread_safe_global_map_dependant<ThreadSafeGlobalMap>::
+                  lock_file_logic f(get_map());
                //If function failed (maybe a competing process has erased the shared
                //memory between creation and file locking), retry with a new instance.
-               if(f.retry_with_new_shm){
-                  get_shm().~ManagedGlobalMemory();
-                  atomic_write32(&this_module_shm_initialized, Destroyed);
+               if(f.retry()){
+                  get_map().~ThreadSafeGlobalMap();
+                  atomic_write32(&this_module_map_initialized, Destroyed);
                }
                else{
-                  //Locking succeeded, so this shared memory module-instance is ready
-                  atomic_write32(&this_module_shm_initialized, Initialized);
+                  //Locking succeeded, so this global map module-instance is ready
+                  atomic_write32(&this_module_map_initialized, Initialized);
                   break;
                }
             }
@@ -253,18 +251,18 @@ class intermodule_singleton_common
       }
    }
 
-   static void destroy_shm()
+   static void destroy_global_map_handle()
    {
       if(!atomic_read32(&this_module_singleton_count)){
          //This module is being unloaded, so destroy
-         //the shared memory object of this module
-         //and unlink the shared memory if it's the last
-         typename intermodule_singleton_helpers::managed_sh_dependant<ManagedGlobalMemory>::
-            unlink_shmlogic f(get_shm());
-         (get_shm()).~ManagedGlobalMemory();
-         atomic_write32(&this_module_shm_initialized, Destroyed);
+         //the global map object of this module
+         //and unlink the global map if it's the last
+         typename intermodule_singleton_helpers::thread_safe_global_map_dependant<ThreadSafeGlobalMap>::
+            unlink_map_logic f(get_map());
+         (get_map()).~ThreadSafeGlobalMap();
+         atomic_write32(&this_module_map_initialized, Destroyed);
          //Do some cleanup for other processes old gmem instances
-         intermodule_singleton_helpers::managed_sh_dependant<ManagedGlobalMemory>::remove_old_gmem();
+         intermodule_singleton_helpers::thread_safe_global_map_dependant<ThreadSafeGlobalMap>::remove_old_gmem();
       }
    }
 
@@ -272,32 +270,47 @@ class intermodule_singleton_common
    //this_module_singleton_count is the number of singletons used by this module
    static volatile boost::uint32_t this_module_singleton_count;
 
-   //this_module_shm_initialized is the state of this module's shm class object.
+   //this_module_map_initialized is the state of this module's map class object.
    //Values: Uninitialized, Initializing, Initialized, Broken
-   static volatile boost::uint32_t this_module_shm_initialized;
+   static volatile boost::uint32_t this_module_map_initialized;
 
-   //Raw memory to construct the shared memory manager  
+   //Raw memory to construct the global map manager  
    static struct mem_holder_t
    {
       ::boost::detail::max_align aligner;
-      char shm_mem [sizeof(ManagedGlobalMemory)];
+      char map_mem [sizeof(ThreadSafeGlobalMap)];
    } mem_holder;
 };
 
-template<class ManagedGlobalMemory>
-volatile boost::uint32_t intermodule_singleton_common<ManagedGlobalMemory>::this_module_singleton_count;
+template<class ThreadSafeGlobalMap>
+volatile boost::uint32_t intermodule_singleton_common<ThreadSafeGlobalMap>::this_module_singleton_count;
 
-template<class ManagedGlobalMemory>
-volatile boost::uint32_t intermodule_singleton_common<ManagedGlobalMemory>::this_module_shm_initialized;
+template<class ThreadSafeGlobalMap>
+volatile boost::uint32_t intermodule_singleton_common<ThreadSafeGlobalMap>::this_module_map_initialized;
 
-template<class ManagedGlobalMemory>
-typename intermodule_singleton_common<ManagedGlobalMemory>::mem_holder_t
-   intermodule_singleton_common<ManagedGlobalMemory>::mem_holder;
+template<class ThreadSafeGlobalMap>
+typename intermodule_singleton_common<ThreadSafeGlobalMap>::mem_holder_t
+   intermodule_singleton_common<ThreadSafeGlobalMap>::mem_holder;
+
+//A reference count to be stored in global map holding the number
+//of singletons (one per module) attached to the instance pointed by
+//the internal ptr.
+struct ref_count_ptr
+{
+   ref_count_ptr(void *p, boost::uint32_t count)
+      : ptr(p), singleton_ref_count(count)
+   {}
+   void *ptr;
+   //This reference count serves to count the number of attached
+   //modules to this singleton
+   volatile boost::uint32_t singleton_ref_count;
+};
+
 
 //Now this class is a singleton, initializing the singleton in
 //the first get() function call if LazyInit is false. If true
 //then the singleton will be initialized when loading the module.
-template<typename C, bool LazyInit, bool Phoenix, class ManagedGlobalMemory>
+template<typename C, bool LazyInit, bool Phoenix, class ThreadSafeGlobalMap>
 class intermodule_singleton_impl
 {
    public:
@@ -316,13 +329,13 @@ class intermodule_singleton_impl
 
    static void atentry_work()
    {
-      intermodule_singleton_common<ManagedGlobalMemory>::initialize_singleton_logic
+      intermodule_singleton_common<ThreadSafeGlobalMap>::initialize_singleton_logic
          (this_module_singleton_ptr, this_module_singleton_initialized, singleton_constructor, Phoenix);
    }
 
    static void atexit_work()
    {
-      intermodule_singleton_common<ManagedGlobalMemory>::finalize_singleton_logic
+      intermodule_singleton_common<ThreadSafeGlobalMap>::finalize_singleton_logic
          (this_module_singleton_ptr, this_module_singleton_initialized, singleton_destructor);
    }
 
@@ -365,38 +378,29 @@ class intermodule_singleton_impl
 
    static lifetime_type lifetime;
 
-   //A reference count to be stored in shared memory holding the number
-   //of singletons (one per module) attached to the instance pointed by
-   //the internal ptr.
-   struct ref_count_ptr
-   {
-      ref_count_ptr(C *p, boost::uint32_t count)
-         : ptr(p), singleton_ref_count(count)
-      {}
-      C *ptr;
-      //This reference count serves to count the number of attached
-      //modules to this singleton
-      volatile boost::uint32_t singleton_ref_count;
-   };
-
-   //A functor to be executed inside shared memory lock that just
-   //searches for the singleton in shm and if not present creates a new one.
+   //A functor to be executed inside global map lock that just
+   //searches for the singleton in map and if not present creates a new one.
    //If singleton constructor throws, the exception is propagated
    struct init_atomic_func
    {
-      init_atomic_func(ManagedGlobalMemory &m)
-         : mshm(m)
+      init_atomic_func(ThreadSafeGlobalMap &m)
+         : m_map(m)
       {}
 
       void operator()()
       {
-         ref_count_ptr *rcount = mshm.template find<ref_count_ptr>(unique_instance).first;
+         ref_count_ptr *rcount = intermodule_singleton_helpers::thread_safe_global_map_dependant
+            <ThreadSafeGlobalMap>::find(m_map, typeid(C).name());
          if(!rcount){
-            C *p = new C();
+            C *p = new C;
             try{
-               rcount = mshm.template construct<ref_count_ptr>(unique_instance)(p, 0u);
+               ref_count_ptr val(p, 0u);
+               rcount = intermodule_singleton_helpers::thread_safe_global_map_dependant
+                           <ThreadSafeGlobalMap>::insert(m_map, typeid(C).name(), val);
             }
             catch(...){
+               intermodule_singleton_helpers::thread_safe_global_map_dependant
+                           <ThreadSafeGlobalMap>::erase(m_map, typeid(C).name());
                delete p;
                throw;
             }
@@ -407,66 +411,80 @@ class intermodule_singleton_impl
          atomic_inc32(&rcount->singleton_ref_count);
          ret_ptr = rcount->ptr;
       }
-      ManagedGlobalMemory &mshm;
+      void *data() const 
+         { return ret_ptr;  }
+
+      private:
+      ThreadSafeGlobalMap &m_map;
       void *ret_ptr;
    };
 
-   //A functor to be executed inside shared memory lock that just
-   //deletes the singleton in shm if the attached count reaches to zero
+   //A functor to be executed inside global map lock that just
+   //deletes the singleton in map if the attached count reaches to zero
    struct fini_atomic_func
    {
-      fini_atomic_func(ManagedGlobalMemory &m)
-         : mshm(m)
+      fini_atomic_func(ThreadSafeGlobalMap &m)
+         : m_map(m)
       {}
 
       void operator()()
       {
-         ref_count_ptr *rcount = mshm.template find<ref_count_ptr>(unique_instance).first;
+         ref_count_ptr *rcount = intermodule_singleton_helpers::thread_safe_global_map_dependant
+            <ThreadSafeGlobalMap>::find(m_map, typeid(C).name());
             //The object must exist
          BOOST_ASSERT(rcount);
+         BOOST_ASSERT(rcount->singleton_ref_count > 0);
          //Check if last reference
          if(atomic_dec32(&rcount->singleton_ref_count) == 1){
             //If last, destroy the object
             BOOST_ASSERT(rcount->ptr != 0);
-            delete rcount->ptr;
-            //Now destroy shm entry
-            bool destroyed = mshm.template destroy<ref_count_ptr>(unique_instance);
+            C *pc = static_cast<C*>(rcount->ptr);
+            //Now destroy map entry
+            bool destroyed = intermodule_singleton_helpers::thread_safe_global_map_dependant
+                        <ThreadSafeGlobalMap>::erase(m_map, typeid(C).name());
             (void)destroyed;  BOOST_ASSERT(destroyed == true);
+            delete pc;
          }
       }
-      ManagedGlobalMemory &mshm;
+      void *data() const
+         { return ret_ptr;  }
+      
+      private:
+      ThreadSafeGlobalMap &m_map;
       void *ret_ptr;
    };
 
    //A wrapper to execute init_atomic_func
-   static void *singleton_constructor(ManagedGlobalMemory &mshm)
+   static void *singleton_constructor(ThreadSafeGlobalMap &map)
    {
-      init_atomic_func f(mshm);
-      mshm.atomic_func(f);
-      return f.ret_ptr;
+      init_atomic_func f(map);
+      intermodule_singleton_helpers::thread_safe_global_map_dependant
+                  <ThreadSafeGlobalMap>::atomic_func(map, f);
+      return f.data();
    }
 
    //A wrapper to execute fini_atomic_func
-   static void singleton_destructor(void *p, ManagedGlobalMemory &mshm)
+   static void singleton_destructor(void *p, ThreadSafeGlobalMap &map)
    {  (void)p;
-      fini_atomic_func f(mshm);
-      mshm.atomic_func(f);
+      fini_atomic_func f(map);
+      intermodule_singleton_helpers::thread_safe_global_map_dependant
+                  <ThreadSafeGlobalMap>::atomic_func(map, f);
    }
 };
 
-template <typename C, bool L, bool P, class ManagedGlobalMemory>
-volatile int intermodule_singleton_impl<C, L, P, ManagedGlobalMemory>::lifetime_type_lazy::m_dummy = 0;
+template <typename C, bool L, bool P, class ThreadSafeGlobalMap>
+volatile int intermodule_singleton_impl<C, L, P, ThreadSafeGlobalMap>::lifetime_type_lazy::m_dummy = 0;
 
 //These will be zero-initialized by the loader
-template <typename C, bool L, bool P, class ManagedGlobalMemory>
-void *intermodule_singleton_impl<C, L, P, ManagedGlobalMemory>::this_module_singleton_ptr = 0;
+template <typename C, bool L, bool P, class ThreadSafeGlobalMap>
+void *intermodule_singleton_impl<C, L, P, ThreadSafeGlobalMap>::this_module_singleton_ptr = 0;
 
-template <typename C, bool L, bool P, class ManagedGlobalMemory>
-volatile boost::uint32_t intermodule_singleton_impl<C, L, P, ManagedGlobalMemory>::this_module_singleton_initialized = 0;
+template <typename C, bool L, bool P, class ThreadSafeGlobalMap>
+volatile boost::uint32_t intermodule_singleton_impl<C, L, P, ThreadSafeGlobalMap>::this_module_singleton_initialized = 0;
 
-template <typename C, bool L, bool P, class ManagedGlobalMemory>
-typename intermodule_singleton_impl<C, L, P, ManagedGlobalMemory>::lifetime_type
-   intermodule_singleton_impl<C, L, P, ManagedGlobalMemory>::lifetime;
+template <typename C, bool L, bool P, class ThreadSafeGlobalMap>
+typename intermodule_singleton_impl<C, L, P, ThreadSafeGlobalMap>::lifetime_type
+   intermodule_singleton_impl<C, L, P, ThreadSafeGlobalMap>::lifetime;
 
 }  //namespace ipcdetail{
 }  //namespace interprocess{

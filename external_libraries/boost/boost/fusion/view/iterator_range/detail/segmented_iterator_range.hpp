@@ -21,6 +21,8 @@
 #include <boost/fusion/iterator/equal_to.hpp>
 #include <boost/fusion/container/list/detail/reverse_cons.hpp>
 #include <boost/fusion/iterator/detail/segment_sequence.hpp>
+#include <boost/fusion/support/is_sequence.hpp>
+#include <boost/utility/enable_if.hpp>
 
 //  Invariants:
 //  - Each segmented iterator has a stack
@@ -45,11 +47,19 @@ namespace boost { namespace fusion
     }
 
     template <typename Sequence, typename T>
-    typename result_of::push_back<Sequence const, T>::type
+    typename
+        lazy_enable_if<
+            traits::is_sequence<Sequence>
+          , result_of::push_back<Sequence const, T>
+        >::type
     push_back(Sequence const& seq, T const& x);
 
     template <typename Sequence, typename T>
-    typename result_of::push_front<Sequence const, T>::type
+    typename
+        lazy_enable_if<
+            traits::is_sequence<Sequence>
+          , result_of::push_front<Sequence const, T>
+        >::type
     push_front(Sequence const& seq, T const& x);
 }}
 

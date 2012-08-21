@@ -58,6 +58,10 @@ time2_demo contained this comment:
 #define BOOST_CHRONO_SECOND_TEMPLATE_PARAMETER_OF_TIME_POINT_MUST_BE_A_BOOST_CHRONO_DURATION "Second template parameter of time_point must be a boost::chrono::duration"
 #endif
 
+#ifndef BOOST_CHRONO_HEADER_ONLY
+// this must occur after all of the includes and before any code appears:
+#include <boost/config/abi_prefix.hpp> // must be the last #include
+#endif
 
 //----------------------------------------------------------------------------//
 //                                                                            //
@@ -447,7 +451,7 @@ namespace chrono {
                     >
                 >::type* = 0
             ) : rep_(r) { }
-        ~duration() {} //= default;
+        //~duration() {} //= default;
         BOOST_CONSTEXPR
         duration(const duration& rhs) : rep_(rhs.rep_) {} // = default;
         duration& operator=(const duration& rhs) // = default;
@@ -660,7 +664,7 @@ namespace detail
     template <class LhsDuration, class RhsDuration>
     struct duration_eq
     {
-        bool operator()(const LhsDuration& lhs, const RhsDuration& rhs)
+      BOOST_CONSTEXPR bool operator()(const LhsDuration& lhs, const RhsDuration& rhs)
         {
             typedef typename common_type<LhsDuration, RhsDuration>::type CD;
             return CD(lhs).count() == CD(rhs).count();
@@ -670,7 +674,7 @@ namespace detail
     template <class LhsDuration>
     struct duration_eq<LhsDuration, LhsDuration>
     {
-        bool operator()(const LhsDuration& lhs, const LhsDuration& rhs)
+      BOOST_CONSTEXPR bool operator()(const LhsDuration& lhs, const LhsDuration& rhs)
         {
             return lhs.count() == rhs.count();
         }
@@ -679,7 +683,7 @@ namespace detail
     template <class LhsDuration, class RhsDuration>
     struct duration_lt
     {
-        bool operator()(const LhsDuration& lhs, const RhsDuration& rhs)
+      BOOST_CONSTEXPR bool operator()(const LhsDuration& lhs, const RhsDuration& rhs)
         {
             typedef typename common_type<LhsDuration, RhsDuration>::type CD;
             return CD(lhs).count() < CD(rhs).count();
@@ -689,7 +693,7 @@ namespace detail
     template <class LhsDuration>
     struct duration_lt<LhsDuration, LhsDuration>
     {
-        bool operator()(const LhsDuration& lhs, const LhsDuration& rhs)
+      BOOST_CONSTEXPR bool operator()(const LhsDuration& lhs, const LhsDuration& rhs)
         {
             return lhs.count() < rhs.count();
         }
@@ -782,5 +786,10 @@ namespace detail
 
 } // namespace chrono
 } // namespace boost
+
+#ifndef BOOST_CHRONO_HEADER_ONLY
+// the suffix header occurs after all of our code:
+#include <boost/config/abi_suffix.hpp> // pops abi_prefix.hpp pragmas
+#endif
 
 #endif // BOOST_CHRONO_DURATION_HPP

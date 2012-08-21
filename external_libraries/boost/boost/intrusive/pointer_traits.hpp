@@ -6,7 +6,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2011-2011. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2011-2012. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -232,7 +232,7 @@ struct pointer_traits<T*>
 
    template <class U> struct rebind_pointer
    {  typedef U* type;  };
-  
+
    //! <b>Returns</b>: addressof(r)
    //!
    static pointer pointer_to(reference r)

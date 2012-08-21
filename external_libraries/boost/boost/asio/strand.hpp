@@ -105,7 +105,6 @@ public:
    */
   ~strand()
   {
-    service_.destroy(impl_);
   }
 
   /// Get the io_service associated with the strand.

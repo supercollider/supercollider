@@ -49,13 +49,13 @@ class windows_mutex
 };
 
 inline windows_mutex::windows_mutex()
-   : id_()
+   : id_(this)
 {
    sync_handles &handles =
       windows_intermodule_singleton<sync_handles>::get();
    //Create mutex with the initial count
    bool open_or_created;
-   handles.obtain_mutex(this->id_, &open_or_created);
+   (void)handles.obtain_mutex(this->id_, &open_or_created);
    //The mutex must be created, never opened
    assert(open_or_created);
    assert(open_or_created && winapi::get_last_error() != winapi::error_already_exists);

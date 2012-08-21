@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2009
+// (C) Copyright Ion Gaztanaga  2006-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -43,10 +43,10 @@ struct slist_node_traits
       <VoidPointer>::template rebind_pointer<const node>::type    const_node_ptr;
 
    static const node_ptr &get_next(const const_node_ptr & n)
-   {  return n->next_;  } 
+   {  return n->next_;  }
 
    static void set_next(const node_ptr & n, const node_ptr & next)
-   {  n->next_ = next;  } 
+   {  n->next_ = next;  }
 };
 
 // slist_iterator provides some basic functions for a
@@ -100,7 +100,7 @@ class slist_iterator
       members_.nodeptr_ = node_traits::get_next(members_.nodeptr_);
       return static_cast<slist_iterator&> (*this);
    }
-  
+
    slist_iterator operator++(int)
    {
       slist_iterator result (*this);

@@ -249,7 +249,7 @@ namespace boost { namespace program_options { namespace detail {
             bool ok = false;
             for(unsigned i = 0; i < style_parsers.size(); ++i)
             {
-                unsigned current_size = args.size();
+                unsigned current_size = static_cast<unsigned>(args.size());
                 vector<option> next = style_parsers[i](args);
 
                 // Check that option names
@@ -321,7 +321,7 @@ namespace boost { namespace program_options { namespace detail {
                 // We only allow to grab tokens that are not already
                 // recognized as key options.
 
-                int can_take_more = max_tokens - opt.value.size();
+                int can_take_more = max_tokens - static_cast<int>(opt.value.size());
                 unsigned j = i+1;
                 for (; can_take_more && j < result.size(); --can_take_more, ++j)
                 {
@@ -440,7 +440,7 @@ namespace boost { namespace program_options { namespace detail {
             unsigned min_tokens = d.semantic()->min_tokens();
             unsigned max_tokens = d.semantic()->max_tokens();
             
-            unsigned present_tokens = opt.value.size() + other_tokens.size();
+            unsigned present_tokens = static_cast<unsigned>(opt.value.size() + other_tokens.size());
             
             if (present_tokens >= min_tokens)
             {
@@ -455,7 +455,7 @@ namespace boost { namespace program_options { namespace detail {
                 // if they look like options
                 if (opt.value.size() <= min_tokens) 
                 {
-                    min_tokens -= opt.value.size();
+		    min_tokens -= static_cast<unsigned>(opt.value.size());
                 }
                 else
                 {

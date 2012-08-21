@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga  2006-2009
+// (C) Copyright Ion Gaztanaga  2006-2012
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -490,7 +490,7 @@ struct group_functions
       //itself, as group list does not link bucket
       node_ptr prev_in_group(group_traits::get_next(elem));
       bool first_in_group = node_traits::get_next(prev_in_group) != elem;
-     
+
       if(first_in_group){
          node_ptr start_pos;
          if(last_in_group){
@@ -810,7 +810,7 @@ class hashtable_impl
       node_cast_adaptor(const ConvertibleToF &c2f, const hashtable_impl *cont)
          :  base_t(base_t(c2f, cont))
       {}
-     
+
       typename base_t::node_ptr operator()(const typename slist_impl::node &to_clone)
       {  return base_t::operator()(static_cast<const node &>(to_clone));   }
 
@@ -879,7 +879,7 @@ class hashtable_impl
    //!
    //! <b>Effects</b>: Constructs an empty unordered_set, storing a reference
    //!   to the bucket array and copies of the key_hasher and equal_func functors.
-   //!  
+   //!
    //! <b>Complexity</b>: Constant.
    //!
    //! <b>Throws</b>: If value_traits::node_traits::node
@@ -905,7 +905,7 @@ class hashtable_impl
    }
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    hashtable_impl(BOOST_RV_REF(hashtable_impl) x)
       : data_( ::boost::move(x.priv_bucket_traits())
              , ::boost::move(x.priv_hasher())
@@ -927,7 +927,7 @@ class hashtable_impl
    }
 
    //! <b>Effects</b>: to-do
-   //!  
+   //!
    hashtable_impl& operator=(BOOST_RV_REF(hashtable_impl) x)
    {  this->swap(x); return *this;  }
 
@@ -1131,7 +1131,7 @@ class hashtable_impl
             typedef node_cast_adaptor<detail::node_disposer<Disposer, hashtable_impl> > NodeDisposer;
             typedef node_cast_adaptor<detail::node_cloner<Cloner, hashtable_impl> > NodeCloner;
             NodeDisposer node_disp(disposer, this);
-  
+
             detail::exception_array_disposer<bucket_type, NodeDisposer, size_type>
                rollback(dst_buckets[0], node_disp, constructed);
             for( constructed = 0
@@ -1839,7 +1839,7 @@ class hashtable_impl
    {
       BOOST_STATIC_ASSERT((!stateful_value_traits));
       siterator sit = bucket_type::s_iterator_to(((hashtable_impl*)0)->priv_value_to_node(value));
-      return local_iterator(sit, (hashtable_impl*)0); 
+      return local_iterator(sit, (hashtable_impl*)0);
    }
 
    //! <b>Requires</b>: value must be an lvalue and shall be in a unordered_set of
@@ -1858,7 +1858,7 @@ class hashtable_impl
    {
       BOOST_STATIC_ASSERT((!stateful_value_traits));
       siterator sit = bucket_type::s_iterator_to(((hashtable_impl*)0)->priv_value_to_node(const_cast<value_type&>(value)));
-      return const_local_iterator(sit, (hashtable_impl*)0); 
+      return const_local_iterator(sit, (hashtable_impl*)0);
    }
 
    //! <b>Requires</b>: value must be an lvalue and shall be in a unordered_set of
@@ -1873,7 +1873,7 @@ class hashtable_impl
    local_iterator local_iterator_to(reference value)
    {
       siterator sit = bucket_type::s_iterator_to(this->priv_value_to_node(value));
-      return local_iterator(sit, this); 
+      return local_iterator(sit, this);
    }
 
    //! <b>Requires</b>: value must be an lvalue and shall be in a unordered_set of
@@ -1889,7 +1889,7 @@ class hashtable_impl
    {
       siterator sit = bucket_type::s_iterator_to
          (const_cast<node &>(this->priv_value_to_node(value)));
-      return const_local_iterator(sit, this); 
+      return const_local_iterator(sit, this);
    }
 
    //! <b>Effects</b>: Returns the number of buckets passed in the constructor
@@ -2058,7 +2058,7 @@ class hashtable_impl
       bucket_ptr old_buckets     = this->priv_buckets();
       size_type  old_buckets_len = this->priv_buckets_len();
 
-      //Check power of two bucket array if the option is activated     
+      //Check power of two bucket array if the option is activated
       BOOST_INTRUSIVE_INVARIANT_ASSERT
       (!power_2_buckets || (0 == (new_buckets_len & (new_buckets_len-1u))));
 
@@ -2220,7 +2220,7 @@ class hashtable_impl
    //!
    //!   Otherwise, copy assigns new_bucket_traits to the internal bucket_traits
    //!   and transfers all the objects from old buckets to the new ones.
-   //!  
+   //!
    //! <b>Complexity</b>: Linear to size().
    //!
    //! <b>Throws</b>: Nothing
@@ -2613,7 +2613,7 @@ class hashtable_impl
       bool last_in_group = (first_end_ptr <= nxt && nxt <= last_end_ptr) ||
                             (group_traits::get_next(nxt) != elem);
       bool first_in_group = node_traits::get_next(prev_in_group) != elem;
-     
+
       if(first_in_group){
          node_ptr start_pos;
          if(last_in_group){
@@ -2720,7 +2720,7 @@ class hashtable_impl
       const real_bucket_traits &rbt = this->priv_real_bucket_traits();
       return rbt.bucket_begin() + rbt.bucket_count();
    }
-  
+
    siterator priv_invalid_local_it() const
    {  return priv_invalid_bucket()->end();  }
 
@@ -2887,7 +2887,7 @@ class hashtable_impl
       if(constant_time_size && this->empty()){
          return priv_invalid_local_it();
       }
-     
+
       siterator it = previt;
       ++it;
 
@@ -3008,7 +3008,7 @@ class hashtable_impl
             ++count;
          }
       }
-  
+
       //If we reached the end, find the first, non-empty bucket
       for(bucket_number_second = bucket_number_first+1
          ; bucket_number_second != this->priv_buckets_len()
@@ -3061,7 +3061,7 @@ struct make_hashtable_opt
       , detail::eval_value_traits<value_traits>
       , detail::identity<value_traits>
       >::type                                            real_value_traits;
-   typedef typename packed_options::bucket_traits        specified_bucket_traits;  
+   typedef typename packed_options::bucket_traits        specified_bucket_traits;
 
    //Real bucket traits must be calculated from options and calculated value_traits
    typedef typename detail::get_slist_impl

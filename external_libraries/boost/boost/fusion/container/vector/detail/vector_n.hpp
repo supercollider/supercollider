@@ -68,6 +68,16 @@
             return BOOST_PP_CAT(vector_data, N)(BOOST_PP_ENUM_PARAMS(N, *i));
         }
 
+        template <typename Sequence>
+        static BOOST_PP_CAT(vector_data, N)
+        init_from_sequence(Sequence& seq)
+        {
+            typedef typename result_of::begin<Sequence>::type I0;
+            I0 i0 = fusion::begin(seq);
+            BOOST_PP_REPEAT_FROM_TO(1, N, FUSION_ITER_DECL_VAR, _)
+            return BOOST_PP_CAT(vector_data, N)(BOOST_PP_ENUM_PARAMS(N, *i));
+        }
+
         BOOST_PP_REPEAT(N, FUSION_MEMBER_DECL, _)
     };
 
@@ -103,6 +113,15 @@
         template <typename Sequence>
         BOOST_PP_CAT(vector, N)(
             Sequence const& seq
+#if (N == 1)
+          , typename boost::disable_if<is_convertible<Sequence, T0> >::type* /*dummy*/ = 0
+#endif
+            )
+            : base_type(base_type::init_from_sequence(seq)) {}
+
+        template <typename Sequence>
+        BOOST_PP_CAT(vector, N)(
+            Sequence& seq
 #if (N == 1)
           , typename boost::disable_if<is_convertible<Sequence, T0> >::type* /*dummy*/ = 0
 #endif
