@@ -66,7 +66,7 @@ PostWindow::PostWindow(QWidget* parent):
     connect(action, SIGNAL(triggered()), this, SLOT(zoomIn()));
     addAction(action);
 
-    action = new QAction(tr("Shink Post Font"), this);
+    action = new QAction(tr("Shrink Post Font"), this);
     action->setIconText("-");
     action->setShortcut(tr("Ctrl+-", "Shrink Font"));
     action->setToolTip(tr("Shrink font"));
