@@ -209,18 +209,13 @@ QC_LANG_PRIMITIVE( QImage_SetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( !QcApplication::compareThread )
     return QtCollider::wrongThreadError();
 
-  if( imgPainter ) { // should not happen
-      qcDebugMsg(1, "WARNING: QImage reset painter");
-      QtCollider::endPainting();
-      delete imgPainter;
-  }
-
-  imgPainter = new QPainter(img);
-
   if( QtCollider::paintingAnnounced() ) {
     qcDebugMsg(1, "WARNING: Custom painting already in progress. Will not paint." );
     return errNone;
   }
+
+  assert( imgPainter == 0 );
+  imgPainter = new QPainter(img);
 
   QtCollider::announcePainting();
   QtCollider::beginPainting( imgPainter );
