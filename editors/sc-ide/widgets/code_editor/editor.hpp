@@ -95,6 +95,7 @@ public Q_SLOTS:
     void triggerAutoCompletion();
     void triggerMethodCallAid();
     void toggleComment();
+    void toggleOverwriteMode();
     void copyLineUp();
     void copyLineDown();
     void moveLineUp();
