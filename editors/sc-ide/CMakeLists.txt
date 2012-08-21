@@ -156,6 +156,10 @@ elseif(WIN32)
     set_target_properties( ${ide_name} PROPERTIES WIN32_EXECUTABLE TRUE )
 endif()
 
+if(PTHREADS_FOUND)
+    target_link_libraries(${ide_name} ${PTHREADS_LIBRARIES})
+endif()
+
 # Installation
 
 if(APPLE)
