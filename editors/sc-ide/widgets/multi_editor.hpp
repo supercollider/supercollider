@@ -62,6 +62,7 @@ public:
         TriggerAutoCompletion,
         TriggerMethodCallAid,
         ToggleComment,
+        ToggleOverwriteMode,
 
         CopyLineUp,
         CopyLineDown,

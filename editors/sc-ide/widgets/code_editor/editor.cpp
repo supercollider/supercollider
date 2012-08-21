@@ -1322,6 +1322,13 @@ void CodeEditor::copyUpDown(bool up)
     setTextCursor(move);
 }
 
+
+void CodeEditor::toggleOverwriteMode()
+{
+    setOverwriteMode(!overwriteMode());
+}
+
+
 void CodeEditor::copyLineDown()
 {
     copyUpDown(false);

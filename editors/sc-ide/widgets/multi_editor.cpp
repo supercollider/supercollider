@@ -303,6 +303,12 @@ void MultiEditor::createActions()
     act->setStatusTip(tr("Toggle Comment"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(toggleComment()));
 
+    mActions[ToggleOverwriteMode] = act = new QAction(
+        QIcon::fromTheme("edit-overwrite"), tr("Toggle &Overwrite Mode"), this);
+    act->setShortcut(tr("Insert", "Toggle Overwrite Mode"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(toggleOverwriteMode()));
+
     mActions[CopyLineUp] = act = new QAction(
         QIcon::fromTheme("edit-copylineup"), tr("Copy Line Up"), this);
     act->setShortcut(tr("Ctrl+Alt+Up", "Copy Line Up"));
@@ -424,6 +430,7 @@ void MultiEditor::createActions()
     addAction(mActions[EvaluateRegion]);
     addAction(mActions[EvaluateLine]);
     addAction(mActions[ToggleComment]);
+    addAction(mActions[ToggleOverwriteMode]);
     addAction(mActions[CopyLineUp]);
     addAction(mActions[CopyLineDown]);
     addAction(mActions[MoveLineUp]);
@@ -443,6 +450,7 @@ void MultiEditor::updateActions()
     mActions[Cut]->setEnabled( mActions[Copy]->isEnabled() );
     mActions[Paste]->setEnabled( editor );
     mActions[ToggleComment]->setEnabled( editor );
+    mActions[ToggleOverwriteMode]->setEnabled( editor );
     mActions[CopyLineUp]->setEnabled( editor );
     mActions[CopyLineDown]->setEnabled( editor );
     mActions[MoveLineUp]->setEnabled( editor );
