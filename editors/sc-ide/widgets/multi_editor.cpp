@@ -204,6 +204,7 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mTabs->setDocumentMode(true);
     mTabs->setTabsClosable(true);
     mTabs->setMovable(true);
+    mTabs->setUsesScrollButtons(true);
 
     QVBoxLayout *l = new QVBoxLayout;
     l->setContentsMargins(0,0,0,0);
