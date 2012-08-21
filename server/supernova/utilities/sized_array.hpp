@@ -58,7 +58,7 @@ public:
 
     // construct/copy/destruct
     explicit sized_array(size_type size = 0, T const & def = T()):
-        data_(Allocator::allocate(size)), size_(size)
+        data_( size ? Allocator::allocate(size) : 0), size_(size)
     {
         for (size_type i = 0; i != size; ++i)
             Allocator::construct(data_ + i, def);
