@@ -239,15 +239,8 @@ void sc_AppendBundleName(char *str, int size)
 		if(strRef){
 			const char *bundleName = CFStringGetCStringPtr(strRef, CFStringGetSystemEncoding());
 			if(bundleName) {
-				if(((strcmp(bundleName, "SuperColliderCocoa") == 0) ||
-					(strcmp(bundleName, "sclang") == 0)))
-				{
-					sc_AppendToPath(str, size, "SuperCollider");
-					return;
-				} else {
-					sc_AppendToPath(str, size, bundleName);
-					return;
-				}
+				sc_AppendToPath(str, size, bundleName);
+				return;
 			}
 		}
 	}
