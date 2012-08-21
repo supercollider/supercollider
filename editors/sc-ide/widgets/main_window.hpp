@@ -75,6 +75,7 @@ public:
         ShowGoToLineTool,
         CloseToolBox,
         ShowFullScreen,
+        ClearPostWindow,
 
         // Settings
         ShowSettings,
