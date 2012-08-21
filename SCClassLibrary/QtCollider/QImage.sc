@@ -101,8 +101,11 @@ QImage {
 
 	draw { arg aFunction;
 		this.prSetPainter;
-		aFunction.value(this);
-		this.prUnsetPainter;
+		protect({
+			aFunction.value(this);
+		}, {
+			this.prUnsetPainter;
+		});
 	}
 
 	// saving and archiving
