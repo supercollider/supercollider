@@ -301,6 +301,10 @@ void MainWindow::createActions()
     act->setShortcut(tr("Ctrl+Shift+I", "Lookup Definition"));
     connect(act, SIGNAL(triggered()), this, SLOT(lookupDefinition()));
 
+    mActions[LookupDocumentation] = act = new QAction(
+        QIcon::fromTheme("window-lookupDocumentation"), tr("Lookup Documentation"), this);
+    act->setShortcut(tr("Ctrl+Shift+D", "Lookup Documentation"));
+    connect(act, SIGNAL(triggered()), this, SLOT(lookupDocumentation()));
 
     // Settings
     mActions[ShowSettings] = act = new QAction(tr("&Configure IDE..."), this);
@@ -407,6 +411,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
     menu->addAction( mActions[LookupDefinition] );
+    menu->addAction( mActions[LookupDocumentation] );
 
     menuBar()->addMenu(menu);
 
@@ -888,6 +893,18 @@ void MainWindow::lookupDefinition()
 
     delete dialog;
 }
+
+void MainWindow::lookupDocumentation()
+{
+    PopupTextInput * dialog = new PopupTextInput(tr("Lookup Documentation For"), this);
+
+    bool success = dialog->exec();
+    if (success)
+        mEditors->openDocumentation(dialog->textValue());
+
+    delete dialog;
+}
+
 
 void MainWindow::updateSessionsMenu()
 {

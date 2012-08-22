@@ -78,6 +78,7 @@ public:
         ClearPostWindow,
 
         LookupDefinition,
+        LookupDocumentation,
 
         // Settings
         ShowSettings,
@@ -143,6 +144,7 @@ private Q_SLOTS:
     void updateWindowTitle();
     void toggleFullScreen();
     void lookupDefinition();
+    void lookupDocumentation();
 
 
 protected:
