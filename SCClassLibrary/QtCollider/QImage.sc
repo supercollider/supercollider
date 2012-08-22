@@ -19,16 +19,15 @@ QImage {
 
 	*open { arg path;
 		path = path.standardizePath;
-		if ( File.exists(path) ) {
-			^super.new.prNewPath(path);
-		}{
-			format("QImage: % not found.", path).error;
-			^nil
-		}
+		^try({
+			super.new.prNewPath(path);
+		});
 	}
 
-	*openURL { arg path;
-		^super.new.prNewURL(path);
+	*openURL { arg path, timeout = 60;
+		^try({
+			super.new.prNewURL(path, timeout);
+		});
 	}
 
 	*fromImage { arg image;
@@ -120,7 +119,7 @@ QImage {
 		^this.primitiveFailed
 	}
 
-	prNewURL { arg path;
+	prNewURL { arg path, timeout;
 		_QImage_NewURL
 		^this.primitiveFailed
 	}
