@@ -30,6 +30,7 @@
 #include <QPainter>
 
 #include <QEventLoop>
+#include <QTimer>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
@@ -58,22 +59,35 @@ int QImage_Finalize( struct VMGlobals *g, struct PyrObject *obj )
   return errNone;
 }
 
-void QImage_InitPath( struct VMGlobals *g, struct PyrObject *obj,
+bool QImage_InitPath( struct VMGlobals *g, struct PyrObject *obj,
                   const QString &path )
 {
   INIT_ASSERT
+
   QImage *img = new QImage( path );
+  if( img->isNull() ) {
+      delete img;
+      return false;
+  }
+
   INIT_SETUP
+  return true;
 }
 
-void QImage_InitFromData( struct VMGlobals *g, struct PyrObject *obj,
+bool QImage_InitFromData( struct VMGlobals *g, struct PyrObject *obj,
                           const QByteArray &byteArray )
 {
   INIT_ASSERT
+
   QImage *img = new QImage();
-  // FIX: to check the byteArray
   img->loadFromData( byteArray );
+  if( img->isNull() ) {
+      delete img;
+      return false;
+  }
+
   INIT_SETUP
+  return true;
 }
 
 void QImage_InitEmpty( struct VMGlobals *g, struct PyrObject *obj,
@@ -96,41 +110,73 @@ void QImage_InitWindow( struct VMGlobals *g, struct PyrObject *obj,
 QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QString path( Slot::toString(a) );
-  QImage_InitPath( g, slotRawObject(r), path );
-  return errNone;
+  if( QImage_InitPath( g, slotRawObject(r), path ) ) {
+    return errNone;
+  } else {
+    qcErrorMsg("QImage file doesn't exist or can't be open");
+    return errFailed;
+  }
 }
 
-QC_LANG_PRIMITIVE( QImage_NewURL, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    // receives a non encoded url
-    if( NotSym(a) ) return errWrongType; // FIX: to be added to other "string arg" primitives if necessary
+  QUrl url( Slot::toString(a) );
+  if( !url.isValid() || url.isEmpty() ) {
+    qcErrorMsg("QImage invalid or empty URL");
+    return errFailed;
+  }
 
-    QUrl url( Slot::toString(a) );
-    if( !url.isValid() || url.isEmpty() ) return errReturn;
-    // FIX: e.g. "http://" or "no valid" as url passes crashes
-
-    if( url.isLocalFile() ) {
-        QImage_InitPath( g, slotRawObject(r), url.toLocalFile() );
-        return errNone;
+  if( url.isLocalFile() ) {
+    if( QImage_InitPath( g, slotRawObject(r), url.toLocalFile() ) ) {
+      return errNone;
+    } else {
+      qcErrorMsg("QImage file doesn't exist or can't be open");
+      return errFailed;
     }
+  }
 
-    QNetworkAccessManager *manager = new QNetworkAccessManager();
-    QNetworkReply *reply = manager->get( QNetworkRequest( url ) );
+  if( !IsFloat(a+1) && !IsInt(a+1) ) return errWrongType;
+  float timeout = Slot::toFloat(a+1);
 
-    QEventLoop loop;
-    QcApplication::connect(manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()));
-    // FIX: add a signal to abort the download if is taking to loong.
-    loop.exec(); // blocks
+  QNetworkAccessManager *manager = new QNetworkAccessManager();
+  QNetworkReply *reply = manager->get( QNetworkRequest( url ) );
 
-    QByteArray byteArray = reply->readAll();
-    if( byteArray.isEmpty() ) return errReturn;
+  QEventLoop loop;
+  QTimer::singleShot( 100 * timeout, &loop, SLOT(quit()) );
+  QcApplication::connect( manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()) );
+  QcApplication::connect( reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop, SLOT(quit()) );
+  loop.exec(); // blocks
 
-    QImage_InitFromData( g, slotRawObject(r), byteArray );
-
+  if( reply->error() != QNetworkReply::NoError ) {
+    qcErrorMsg(QString("QImage error in download from ").append(url.toString()));
     manager->deleteLater();
     reply->deleteLater();
+    return errFailed;
+  } else if( !reply->isFinished() ) {
+    qcErrorMsg("QImage download timeout");
+    reply->abort();
+    manager->deleteLater();
+    reply->deleteLater();
+    return errFailed;
+  }
 
+  QByteArray byteArray = reply->readAll();
+  if( byteArray.isEmpty() ) {
+    qcErrorMsg("QImage information could not be read");
+    return errFailed;
+  }
+
+  if( QImage_InitFromData( g, slotRawObject(r), byteArray ) ) {
     return errNone;
+  } else {
+    qcErrorMsg("QImage url bynary data is not an image file");
+    return errFailed;
+  }
+
+  manager->deleteLater();
+  reply->deleteLater();
+
+  return errNone;
 }
 
 QC_LANG_PRIMITIVE( QImage_NewEmpty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
