@@ -107,6 +107,7 @@ public:
     bool stepForwardEvaluation() { return mStepForwardEvaluation; }
 
     void openDefinition(QString const & string);
+    bool openDocumentation(QString const & string);
 
 Q_SIGNALS:
     void currentChanged( Document * );
@@ -120,6 +121,8 @@ public Q_SLOTS:
     void showNextDocument();
     void showPreviousDocument();
     void switchDocument();
+
+    bool openDocumentation();
 
 private Q_SLOTS:
 

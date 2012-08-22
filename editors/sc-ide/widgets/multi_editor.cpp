@@ -735,8 +735,7 @@ void MultiEditor::openDefinition()
     if (!textCursor.hasSelection())
         textCursor.select(QTextCursor::WordUnderCursor);
 
-    QString selectedText = textCursor.selectedText();
-    openDefinition(selectedText);
+    openDefinition(textCursor.selectedText());
 }
 
 void MultiEditor::openClassDefinition( const QString & className )
@@ -895,5 +894,31 @@ void MultiEditor::openMethodDefinition( const QString & methodName )
 
     delete dialog;
 }
+
+bool MultiEditor::openDocumentation(const QString &string)
+{
+    QString symbol = string.trimmed();
+    if (symbol.isEmpty())
+        return false;
+
+    QString code = QString("HelpBrowser.openHelpFor(\"%1\")").arg(symbol);
+    Main::evaluateCode(code, true);
+    return true;
+}
+
+bool MultiEditor::openDocumentation()
+{
+    CodeEditor * editor = currentEditor();
+    if (!editor)
+        return false;
+
+    QTextCursor textCursor = editor->textCursor();
+
+    if (!textCursor.hasSelection())
+        textCursor.select(QTextCursor::WordUnderCursor);
+
+    return openDocumentation(textCursor.selectedText());
+}
+
 
 } // namespace ScIDE

@@ -312,13 +312,13 @@ void MainWindow::createActions()
     mActions[Help] = act = new QAction(
     QIcon::fromTheme("system-help"), tr("Open Help Browser"), this);
     act->setStatusTip(tr("Open help."));
-    connect(act, SIGNAL(triggered()), this, SLOT(helpForSelection()));
+    connect(act, SIGNAL(triggered()), this, SLOT(helpForCursor()));
 
     mActions[HelpForSelection] = act = new QAction(
     QIcon::fromTheme("system-help"), tr("&Help for Selection"), this);
     act->setShortcut(tr("Ctrl+D", "Help for selection"));
     act->setStatusTip(tr("Find help for selected text"));
-    connect(act, SIGNAL(triggered()), this, SLOT(helpForSelection()));
+    connect(act, SIGNAL(triggered()), this, SLOT(helpForCursor()));
 
     s->endGroup(); // IDE/shortcuts;
 
@@ -972,23 +972,11 @@ QWidget *MainWindow::cmdLine()
     return widget;
 }
 
-void MainWindow::helpForSelection()
+void MainWindow::helpForCursor()
 {
-    CodeEditor *editor = mEditors->currentEditor();
-    if (editor) {
-        QTextCursor textCursor = editor->textCursor();
-
-        if (!textCursor.hasSelection())
-            textCursor.select(QTextCursor::WordUnderCursor);
-
-        if (textCursor.hasSelection()) {
-            QString code = QString("HelpBrowser.openHelpFor(\"%1\")").arg(textCursor.selectedText());
-            Main::evaluateCode(code, true);
-            return;
-        }
-    }
-
-    openHelp();
+    bool documentationOpened = mEditors->openDocumentation();
+    if (!documentationOpened)
+        openHelp();
 }
 
 void MainWindow::openHelp()
