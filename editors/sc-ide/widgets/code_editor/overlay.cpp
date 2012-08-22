@@ -160,7 +160,7 @@ void CodeEditor::blinkCode( const QTextCursor & c )
     mOverlay->addItem(item);
 
     QPropertyAnimation *anim = new QPropertyAnimation(item, "opacity", item);
-    anim->setDuration(600);
+    anim->setDuration(mBlinkDuration);
     anim->setStartValue(1.0);
     anim->setEndValue(0.0);
     anim->setEasingCurve( QEasingCurve::InCubic );

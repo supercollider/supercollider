@@ -62,6 +62,8 @@ void EditorPage::load( Manager *s )
     ui->indentWidth->setValue( s->value("indentWidth").toInt() );
     ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation").toBool() );
 
+    ui->blinkDuration->setValue( s->value("blinkDuration").toInt() );
+
     QFont f;
     f.fromString(s->value("font").toString());
 
@@ -124,6 +126,8 @@ void EditorPage::store( Manager *s )
     s->setValue("spaceIndent", ui->spaceIndent->isChecked());
     s->setValue("indentWidth", ui->indentWidth->value());
     s->setValue("stepForwardEvaluation", ui->stepForwardEvaluation->isChecked());
+
+    s->setValue("blinkDuration", ui->blinkDuration->value());
 
     QFont f = constructFont();
     s->setValue("font", f.toString());

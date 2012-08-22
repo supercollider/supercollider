@@ -110,6 +110,7 @@ CodeEditor::CodeEditor( QWidget *parent ) :
     mIndentWidth(4),
     mSpaceIndent(true),
     mShowWhitespace(false),
+    mBlinkDuration(600),
     mMouseBracketMatch(false),
     mOverlay( new QGraphicsScene(this) ),
     mAutoCompleter( new AutoCompleter(this) )
@@ -588,8 +589,8 @@ void CodeEditor::applySettings( Settings::Manager *settings )
     settings->beginGroup("IDE/editor");
 
     mSpaceIndent = settings->value("spaceIndent").toBool();
-
     setIndentWidth( settings->value("indentWidth").toInt() );
+    mBlinkDuration = settings->value("blinkDuration").toInt();
 
     QPalette plt;
 
