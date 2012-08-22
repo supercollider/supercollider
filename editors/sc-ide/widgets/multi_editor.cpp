@@ -715,6 +715,17 @@ void MultiEditor::evaluateDocument()
     Main::evaluateCode(documentText);
 }
 
+void MultiEditor::openDefinition(const QString &string)
+{
+    QString definitionString = string.trimmed();
+    if (definitionString.isEmpty())
+        return;
+
+    if (definitionString[0].isUpper())
+        openClassDefinition(definitionString);
+    else
+        openMethodDefinition(definitionString);
+}
 
 void MultiEditor::openDefinition()
 {
@@ -725,13 +736,7 @@ void MultiEditor::openDefinition()
         textCursor.select(QTextCursor::WordUnderCursor);
 
     QString selectedText = textCursor.selectedText();
-    if (selectedText.isEmpty())
-        return;
-
-    if (selectedText[0].isUpper())
-        openClassDefinition(selectedText);
-    else
-        openMethodDefinition(selectedText);
+    openDefinition(selectedText);
 }
 
 void MultiEditor::openClassDefinition( const QString & className )

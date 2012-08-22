@@ -106,6 +106,8 @@ public:
 
     bool stepForwardEvaluation() { return mStepForwardEvaluation; }
 
+    void openDefinition(QString const & string);
+
 Q_SIGNALS:
     void currentChanged( Document * );
 
