@@ -153,6 +153,7 @@ private:
     int mIndentWidth;
     bool mSpaceIndent;
     bool mShowWhitespace;
+    int mBlinkDuration;
     QColor mBracketHighlight;
 
     QList<QTextEdit::ExtraSelection> mBracketSelections;

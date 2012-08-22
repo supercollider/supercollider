@@ -50,6 +50,8 @@ void Manager::initDefaults()
     setDefault("indentWidth", 4);
     setDefault("stepForwardEvaluation", false);
 
+    setDefault("blinkDuration", 600);
+
     QFont fnt(QApplication::font());
     fnt.setFamily("monospace");
     fnt.setStyleHint(QFont::TypeWriter);
