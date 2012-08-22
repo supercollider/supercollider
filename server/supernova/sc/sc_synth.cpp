@@ -92,7 +92,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     calc_units   = allocator.alloc<Unit*>(calc_unit_count);
     unit_buffers = allocator.alloc<sample>(sample_alloc_size);
 
-    const int alignment_mask = wire_buffer_alignment - 1;
+    const int alignment_mask = wire_buffer_alignment * 8 - 1;
     unit_buffers = (sample*) ((size_t(unit_buffers) + alignment_mask) & ~alignment_mask);     /* next aligned pointer */
 
     /* allocate unit generators */
