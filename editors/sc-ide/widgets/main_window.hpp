@@ -129,7 +129,7 @@ private Q_SLOTS:
     void loadSession( Session *session );
     void saveSession( Session *session );
     void openHelp();
-    void helpForSelection();
+    void helpForCursor();
     void onInterpreterStateChanged( QProcess::ProcessState );
     void onServerStatusReply(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU);
     void onServerRunningChanged( bool running, QString const & hostName, int port );
