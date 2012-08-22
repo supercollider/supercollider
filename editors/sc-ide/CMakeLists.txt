@@ -21,13 +21,14 @@ set ( ide_moc_hdr
     core/doc_manager.hpp
     core/settings/manager.hpp
     core/session_manager.hpp
-    widgets/main_window.hpp
-    widgets/post_window.hpp
-    widgets/multi_editor.hpp
-    widgets/doc_list.hpp
     widgets/cmd_line.hpp
+    widgets/doc_list.hpp
     widgets/find_replace_tool.hpp
     widgets/goto_line_tool.hpp
+    widgets/main_window.hpp
+    widgets/multi_editor.hpp
+    widgets/popup_text_input.hpp
+    widgets/post_window.hpp
     widgets/tool_box.hpp
     widgets/documents_dialog.hpp
     widgets/sessions_dialog.hpp

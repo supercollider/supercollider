@@ -77,6 +77,8 @@ public:
         ShowFullScreen,
         ClearPostWindow,
 
+        LookupDefinition,
+
         // Settings
         ShowSettings,
 
@@ -122,6 +124,7 @@ public Q_SLOTS:
 signals:
     void evaluateCode( const QString &, bool silent = true );
 
+
 private Q_SLOTS:
     void loadSession( Session *session );
     void saveSession( Session *session );
@@ -139,6 +142,8 @@ private Q_SLOTS:
     void onOpenSessionAction( QAction * );
     void updateWindowTitle();
     void toggleFullScreen();
+    void lookupDefinition();
+
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
