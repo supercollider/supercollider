@@ -33,6 +33,7 @@
 #include "settings/dialog.hpp"
 #include "documents_dialog.hpp"
 #include "sessions_dialog.hpp"
+#include "popup_text_input.hpp"
 
 #include <QAction>
 #include <QApplication>
@@ -295,6 +296,12 @@ void MainWindow::createActions()
     act->setShortcut(tr("Ctrl+Shift+C", "Clear Post Window"));
     connect(act, SIGNAL(triggered()), mPostDock->mPostWindow, SLOT(clear()));
 
+    mActions[LookupDefinition] = act = new QAction(
+        QIcon::fromTheme("window-lookupdefinition"), tr("Lookup Definition"), this);
+    act->setShortcut(tr("Ctrl+Shift+I", "Lookup Definition"));
+    connect(act, SIGNAL(triggered()), this, SLOT(lookupDefinition()));
+
+
     // Settings
     mActions[ShowSettings] = act = new QAction(tr("&Configure IDE..."), this);
     act->setStatusTip(tr("Show configuration dialog"));
@@ -399,6 +406,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[ClearPostWindow] );
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
+    menu->addAction( mActions[LookupDefinition] );
 
     menuBar()->addMenu(menu);
 
@@ -868,6 +876,17 @@ void MainWindow::toggleFullScreen()
         mClockLabel = new StatusClockLabel(this);
         statusBar()->insertWidget(0, mClockLabel);
     }
+}
+
+void MainWindow::lookupDefinition()
+{
+    PopupTextInput * dialog = new PopupTextInput(tr("Symbol Lookup"), this);
+
+    bool success = dialog->exec();
+    if (success)
+        mEditors->openDefinition(dialog->textValue());
+
+    delete dialog;
 }
 
 void MainWindow::updateSessionsMenu()

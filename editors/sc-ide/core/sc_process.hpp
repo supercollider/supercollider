@@ -40,7 +40,7 @@ class ScIntrospectionParser;
 class SCProcess:
     public QProcess
 {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     SCProcess( Main * );
