@@ -72,6 +72,23 @@ private:
         MethodCompletion
     };
 
+    struct CompletionDescription {
+        bool on;
+        CompletionType type;
+        int pos;
+        int len;
+        int contextPos;
+        QString base;
+        QString text;
+        QPointer<CompletionMenu> menu;
+    };
+
+    struct MethodCallContext {
+        QStack<MethodCall> stack;
+        QPointer<CompletionMenu> menu;
+        QPointer<MethodCallWidget> widget;
+    };
+
     typedef QStack<MethodCall>::iterator MethodCallIterator;
 
     QTextDocument *document();
@@ -89,6 +106,10 @@ private:
     void showMethodCall( const MethodCall & call, int arg = 0 );
     void hideMethodCall();
 
+    static CompletionMenu * menuForClassCompletion(CompletionDescription const & completion, CodeEditor * editor);
+    static CompletionMenu * menuForClassMethodCompletion(CompletionDescription const & completion, CodeEditor * editor);
+    static CompletionMenu * menuForMethodCompletion(CompletionDescription const & completion, CodeEditor * editor);
+
     // utilities
 
     QString tokenText( TokenIterator & it );
@@ -96,23 +117,8 @@ private:
     // data
 
     CodeEditor *mEditor;
-
-    struct {
-        bool on;
-        CompletionType type;
-        int pos;
-        int len;
-        int contextPos;
-        QString base;
-        QString text;
-        QPointer<CompletionMenu> menu;
-    } mCompletion;
-
-    struct {
-        QStack<MethodCall> stack;
-        QPointer<CompletionMenu> menu;
-        QPointer<MethodCallWidget> widget;
-    } mMethodCall;
+    CompletionDescription mCompletion;
+    MethodCallContext mMethodCall;
 };
 
 } // namespace ScIDE

@@ -472,139 +472,159 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
     Q_ASSERT(mCompletion.on);
     Q_ASSERT(mCompletion.menu.isNull());
 
-    const Introspection & introspection = Main::instance()->scProcess()->introspection();
-
     QPointer<CompletionMenu> menu;
 
-    switch (mCompletion.type)
-    {
+    switch (mCompletion.type) {
     case ClassCompletion:
-    {
-        const ClassMap & classes = introspection.classMap();
-
-        QString min = mCompletion.base;
-        QString max = incrementedString(min);
-
-        ClassMap::const_iterator matchStart, matchEnd;
-        matchStart = classes.lower_bound(min);
-        matchEnd = classes.lower_bound(max);
-        if (matchStart == matchEnd) {
-            qDebug() << "Completion: no class matches:" << mCompletion.base;
-            return;
-        }
-
-        menu = new CompletionMenu(mEditor);
-
-        for (ClassMap::const_iterator it = matchStart; it != matchEnd; ++it) {
-            Class *klass = it->second.data();
-            menu->addItem( new QStandardItem(klass->name) );
-        }
-
+        menu = menuForClassCompletion(mCompletion, mEditor);
         break;
-    }
+
     case ClassMethodCompletion:
-    {
-        const ClassMap & classes = introspection.classMap();
-        ClassMap::const_iterator it = classes.find(mCompletion.base);
-        if (it == classes.end()) {
-            qDebug() << "Completion: class not found:" << mCompletion.base;
-            return;
-        }
-
-        Class *metaClass = it->second->metaClass;
-        QMap<QString, const Method*> matching;
-        do {
-            foreach (const Method * method, metaClass->methods)
-            {
-                QString methodName = method->name.get();
-                // Operators are also methods, but are not valid in
-                // a method call syntax, so filter them out.
-                Q_ASSERT(!methodName.isEmpty());
-                if (!methodName[0].isLetter())
-                    continue;
-
-                if (matching.value(methodName) != 0)
-                    continue;
-
-                matching.insert(methodName, method);
-            }
-            metaClass = metaClass->superClass;
-        } while (metaClass);
-
-        menu = new CompletionMenu(mEditor);
-
-        foreach(const Method *method, matching)
-        {
-            QStandardItem *item = new QStandardItem(method->name.get());
-            item->setData(
-                        QVariant::fromValue(method),
-                        CompletionMenu::MethodRole );
-            menu->addItem(item);
-        }
-
+        menu = menuForClassMethodCompletion(mCompletion, mEditor);
         break;
-    }
+
     case MethodCompletion:
-    {
-        const MethodMap & methods = introspection.methodMap();
-
-        QString min = mCompletion.base;
-        QString max = incrementedString(min);
-
-        MethodMap::const_iterator matchStart, matchEnd;
-        matchStart = methods.lower_bound(min);
-        matchEnd = methods.lower_bound(max);
-        if (matchStart == matchEnd) {
-            qDebug() << "Completion: no method matches:" << mCompletion.base;
-            return;
-        }
-
-        menu = new CompletionMenu(mEditor);
-        menu->setCompletionRole(CompletionMenu::CompletionRole);
-
-        for (MethodMap::const_iterator it = matchStart; it != matchEnd; ) {
-            const Method *method = it->second.data();
-
-            std::pair<MethodMap::const_iterator, MethodMap::const_iterator> range
-                = methods.equal_range(it->first);
-
-            int count = std::distance(range.first, range.second);
-
-            QStandardItem *item = new QStandardItem();
-
-            QString methodName = method->name.get();
-            QString detail(" [ %1 ]");
-            if (count == 1) {
-                item->setText( methodName + detail.arg(method->ownerClass->name) );
-                item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
-            } else
-                item->setText(methodName + detail.arg(count));
-
-            item->setData(methodName, CompletionMenu::CompletionRole);
-
-            menu->addItem(item);
-
-            it = range.second;
-        }
-
+        menu = menuForMethodCompletion(mCompletion, mEditor);
         break;
     }
-    }
 
-    Q_ASSERT(!menu.isNull());
+    if (menu == NULL) return;
+
     mCompletion.menu = menu;
 
     connect(menu, SIGNAL(finished(int)), this, SLOT(onCompletionMenuFinished(int)));
 
     QTextCursor cursor(document());
     cursor.setPosition(mCompletion.pos);
-    QPoint pos =
-        mEditor->viewport()->mapToGlobal( mEditor->cursorRect(cursor).bottomLeft() )
+    QPoint pos = mEditor->viewport()->mapToGlobal( mEditor->cursorRect(cursor).bottomLeft() )
         + QPoint(0,5);
 
     menu->popup(pos);
 
     updateCompletionMenu(forceShow);
+}
+
+CompletionMenu * AutoCompleter::menuForClassCompletion(CompletionDescription const & completion,
+                                                       CodeEditor * editor)
+{
+    using namespace ScLanguage;
+    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+
+    const ClassMap & classes = introspection.classMap();
+
+    QString min = completion.base;
+    QString max = incrementedString(min);
+
+    ClassMap::const_iterator matchStart, matchEnd;
+    matchStart = classes.lower_bound(min);
+    matchEnd = classes.lower_bound(max);
+    if (matchStart == matchEnd) {
+        qDebug() << "Completion: no class matches:" << completion.base;
+        return NULL;
+    }
+
+    CompletionMenu * menu = new CompletionMenu(editor);
+
+    for (ClassMap::const_iterator it = matchStart; it != matchEnd; ++it) {
+        Class *klass = it->second.data();
+        menu->addItem( new QStandardItem(klass->name) );
+    }
+
+    return menu;
+}
+
+CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescription const & completion,
+                                                             CodeEditor * editor)
+{
+    using namespace ScLanguage;
+    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+
+    const ClassMap & classes = introspection.classMap();
+    ClassMap::const_iterator it = classes.find(completion.base);
+    if (it == classes.end()) {
+        qDebug() << "Completion: class not found:" << completion.base;
+        return NULL;
+    }
+
+    Class *metaClass = it->second->metaClass;
+    QMap<QString, const Method*> matching;
+    do {
+        foreach (const Method * method, metaClass->methods)
+        {
+            QString methodName = method->name.get();
+            // Operators are also methods, but are not valid in
+            // a method call syntax, so filter them out.
+            Q_ASSERT(!methodName.isEmpty());
+            if (!methodName[0].isLetter())
+                continue;
+
+            if (matching.value(methodName) != 0)
+                continue;
+
+            matching.insert(methodName, method);
+        }
+        metaClass = metaClass->superClass;
+    } while (metaClass);
+
+    CompletionMenu * menu = new CompletionMenu(editor);
+
+    foreach(const Method *method, matching) {
+        QStandardItem *item = new QStandardItem(method->name.get());
+        item->setData( QVariant::fromValue(method),
+                       CompletionMenu::MethodRole );
+        menu->addItem(item);
+    }
+
+    return menu;
+}
+
+CompletionMenu * AutoCompleter::menuForMethodCompletion(CompletionDescription const & completion,
+                                                        CodeEditor * editor)
+{
+    using namespace ScLanguage;
+    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+
+    const MethodMap & methods = introspection.methodMap();
+
+    QString min = completion.base;
+    QString max = incrementedString(min);
+
+    MethodMap::const_iterator matchStart, matchEnd;
+    matchStart = methods.lower_bound(min);
+    matchEnd = methods.lower_bound(max);
+    if (matchStart == matchEnd) {
+        qDebug() << "Completion: no method matches:" << completion.base;
+        return NULL;
+    }
+
+    CompletionMenu *menu = new CompletionMenu(editor);
+    menu->setCompletionRole(CompletionMenu::CompletionRole);
+
+    for (MethodMap::const_iterator it = matchStart; it != matchEnd; ) {
+        const Method *method = it->second.data();
+
+        std::pair<MethodMap::const_iterator, MethodMap::const_iterator> range
+            = methods.equal_range(it->first);
+
+        int count = std::distance(range.first, range.second);
+
+        QStandardItem *item = new QStandardItem();
+
+        QString methodName = method->name.get();
+        QString detail(" [ %1 ]");
+        if (count == 1) {
+            item->setText( methodName + detail.arg(method->ownerClass->name) );
+            item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
+        } else
+            item->setText(methodName + detail.arg(count));
+
+        item->setData(methodName, CompletionMenu::CompletionRole);
+
+        menu->addItem(item);
+
+        it = range.second;
+    }
+    return menu;
 }
 
 void AutoCompleter::updateCompletionMenu(bool forceShow)
@@ -617,10 +637,8 @@ void AutoCompleter::updateCompletionMenu(bool forceShow)
         QString pattern = mCompletion.text;
         pattern.prepend("^");
         menu->model()->setFilterRegExp(pattern);
-    }
-    else {
+    } else
         menu->model()->setFilterRegExp(QString());
-    }
 
     if (menu->model()->hasChildren()) {
         menu->model()->sort(0);
@@ -629,10 +647,8 @@ void AutoCompleter::updateCompletionMenu(bool forceShow)
             menu->show();
         else
             menu->hide();
-    }
-    else {
+    } else
         menu->hide();
-    }
 }
 
 void AutoCompleter::onCompletionMenuFinished( int result )
