@@ -33,9 +33,11 @@ namespace ScIDE {
 LookupDialog::LookupDialog( QWidget * parent ):
     QDialog(parent, Qt::Popup)
 {
-    setWindowTitle("Look Up Class or Method Definition");
+    setWindowTitle(tr("Look Up Class or Method Definition"));
 
     mQueryEdit = new QLineEdit(this);
+    mQueryEdit->setText(tr("Enter symbol to look up"));
+    mQueryEdit->selectAll();
 
     mResultList = new QTreeWidget(this);
     mResultList->setRootIsDecorated(false);
