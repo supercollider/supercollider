@@ -102,7 +102,9 @@ MainWindow::MainWindow(Main * main) :
     // Docks
     mDocListDock = new DocumentsDock(main->documentManager(), this);
     mDocListDock->setObjectName("documents-dock");
+    addDockWidget(Qt::RightDockWidgetArea, mDocListDock);
     mDocListDock->hide();
+
 
     mPostDock = new PostDock(this);
     mPostDock->setObjectName("post-dock");
