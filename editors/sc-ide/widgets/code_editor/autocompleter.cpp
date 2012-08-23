@@ -381,14 +381,17 @@ void AutoCompleter::triggerCompletion(bool forceShow)
     }
     else {
         // Parse method call
-        TokenIterator classIt, dotIt, methodIt;
+        TokenIterator objectIt, dotIt, methodIt;
+
+        bool objectIsClass = false;
 
         if (triggeringToken.character == '.') {
             dotIt = it;
             --it;
-            if (it.type() == Token::Class)
-                classIt = it;
-            else
+            if (it.type() == Token::Class) {
+                objectIt = it;
+                objectIsClass = true;
+            } else
                 return;
 
             TokenIterator currentIt = dotIt.next();
@@ -396,9 +399,8 @@ void AutoCompleter::triggerCompletion(bool forceShow)
                 && currentIt.block() == dotIt.block()
                 && currentIt->positionInBlock == dotIt->positionInBlock + 1)
                     methodIt = currentIt;
-        }
-        else if (tokenMaybeName(triggeringToken.type))
-        {
+
+        } else if (tokenMaybeName(triggeringToken.type)) {
             methodIt = it;
             --it;
             if (it.isValid() && it->character == '.')
@@ -406,32 +408,31 @@ void AutoCompleter::triggerCompletion(bool forceShow)
             else
                 return;
             --it;
-            if (it.type() == Token::Class)
-                classIt = it;
-        }
-        else
+            if (it.type() == Token::Class) {
+                objectIt = it;
+                objectIsClass = true;
+            }
+        } else
             return;
 
-        if (!classIt.isValid() && methodIt->length < 3)
+        if (!objectIsClass && methodIt->length < 3)
             return;
 
         if (methodIt.isValid()) {
             mCompletion.pos = methodIt.position();
             mCompletion.len = methodIt->length;
             mCompletion.text = tokenText(methodIt);
-        }
-        else {
+        } else {
             mCompletion.pos = dotIt.position() + 1;
             mCompletion.len = 0;
             mCompletion.text.clear();
         }
 
-        if (classIt.isValid()) {
+        if (objectIsClass) {
             mCompletion.contextPos = mCompletion.pos;
-            mCompletion.base = tokenText(classIt);
+            mCompletion.base = tokenText(objectIt);
             mCompletion.type = ClassMethodCompletion;
-        }
-        else {
+        } else {
             mCompletion.contextPos = mCompletion.pos + 3;
             mCompletion.base = tokenText(methodIt);
             mCompletion.base.truncate(3);
