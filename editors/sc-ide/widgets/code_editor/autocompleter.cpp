@@ -358,18 +358,18 @@ void AutoCompleter::triggerCompletion(bool forceShow)
     }
 
     QTextCursor cursor( mEditor->textCursor() );
-    int cursorPos = cursor.positionInBlock();
+    const int cursorPos = cursor.positionInBlock();
     QTextBlock block( cursor.block() );
     TokenIterator it( block, cursorPos - 1 );
 
     if (!it.isValid())
         return;
 
-    const Token & token = *it;
+    const Token & triggeringToken = *it;
 
-    if (token.type == Token::Class)
+    if (triggeringToken.type == Token::Class)
     {
-        if (token.length < 3)
+        if (triggeringToken.length < 3)
             return;
         mCompletion.type = ClassCompletion;
         mCompletion.pos = it.position();
@@ -381,60 +381,59 @@ void AutoCompleter::triggerCompletion(bool forceShow)
     }
     else {
         // Parse method call
+        TokenIterator classIt, dotIt, methodIt;
 
-        TokenIterator cit, dit, mit;
-
-        if (token.character == '.')
-        {
-            dit = it;
+        if (triggeringToken.character == '.') {
+            dotIt = it;
             --it;
             if (it.type() == Token::Class)
-                cit = it;
+                classIt = it;
             else
                 return;
-            TokenIterator it = dit.next();
-            if (tokenMaybeName(it.type())
-                && it.block() == dit.block()
-                && it->positionInBlock == dit->positionInBlock + 1)
-                    mit = it;
+
+            TokenIterator currentIt = dotIt.next();
+            if (tokenMaybeName(currentIt.type())
+                && currentIt.block() == dotIt.block()
+                && currentIt->positionInBlock == dotIt->positionInBlock + 1)
+                    methodIt = currentIt;
         }
-        else if (tokenMaybeName(token.type))
+        else if (tokenMaybeName(triggeringToken.type))
         {
-            mit = it;
+            methodIt = it;
             --it;
             if (it.isValid() && it->character == '.')
-                dit = it;
+                dotIt = it;
             else
                 return;
             --it;
             if (it.type() == Token::Class)
-                cit = it;
+                classIt = it;
         }
         else
             return;
 
-        if (!cit.isValid() && mit->length < 3)
+        if (!classIt.isValid() && methodIt->length < 3)
             return;
 
-        if (mit.isValid()) {
-            mCompletion.pos = mit.position();
-            mCompletion.len = mit->length;
-            mCompletion.text = tokenText(mit);
+        if (methodIt.isValid()) {
+            mCompletion.pos = methodIt.position();
+            mCompletion.len = methodIt->length;
+            mCompletion.text = tokenText(methodIt);
         }
         else {
-            mCompletion.pos = dit.position() + 1;
+            mCompletion.pos = dotIt.position() + 1;
             mCompletion.len = 0;
             mCompletion.text.clear();
         }
 
-        if (cit.isValid()) {
+        if (classIt.isValid()) {
             mCompletion.contextPos = mCompletion.pos;
-            mCompletion.base = tokenText(cit);
+            mCompletion.base = tokenText(classIt);
             mCompletion.type = ClassMethodCompletion;
         }
         else {
             mCompletion.contextPos = mCompletion.pos + 3;
-            mCompletion.base = tokenText(mit);
+            mCompletion.base = tokenText(methodIt);
             mCompletion.base.truncate(3);
             mCompletion.type = MethodCompletion;
         }
