@@ -653,9 +653,9 @@ SC_DLLEXPORT_C void World_NonRealTimeSynthesis(struct World *world, WorldOptions
 
 				PerformOSCBundle(world, &packet);
 				if (nextOSCPacket(cmdFile, &packet, schedTime)) { run = false; break; }
-	if(inOptions->mVerbosity >= 0) {
-        printf("nextOSCPacket %g\n", schedTime * oscToSeconds);
-	}
+				if(inOptions->mVerbosity >= 0) {
+					printf("nextOSCPacket %g\n", schedTime * oscToSeconds);
+				}
 				if (schedTime < prevTime) {
 					scprintf("ERROR: Packet time stamps out-of-order.\n");
 					run = false;
@@ -670,23 +670,23 @@ SC_DLLEXPORT_C void World_NonRealTimeSynthesis(struct World *world, WorldOptions
 			float *outBus = outputBuses;
 			for (int j=0; j<numOutputChannels; ++j, outBus += bufLength) {
 				float *outFileBufPtr = outBufPos + j;
-                                if (outputTouched[j] == bufCounter) {
-                                    for (int k=0; k<bufLength; ++k) {
-                                            *outFileBufPtr = outBus[k];
-                                            outFileBufPtr += numOutputChannels;
-                                    }
-                                } else {
-                                    for (int k=0; k<bufLength; ++k) {
-                                            *outFileBufPtr = 0.f;
-                                            outFileBufPtr += numOutputChannels;
-                                    }
-                                }
+				if (outputTouched[j] == bufCounter) {
+					for (int k=0; k<bufLength; ++k) {
+						*outFileBufPtr = outBus[k];
+						outFileBufPtr += numOutputChannels;
+					}
+				} else {
+					for (int k=0; k<bufLength; ++k) {
+						*outFileBufPtr = 0.f;
+						outFileBufPtr += numOutputChannels;
+					}
+				}
 			}
 			bufFramesCalculated += bufLength;
 			inBufPos += inBufStep;
 			outBufPos += outBufStep;
 			world->mBufCounter++;
-                        oscTime = nextTime;
+			oscTime = nextTime;
 		}
 
 Bail:
@@ -694,14 +694,14 @@ Bail:
 		sf_writef_float(world->hw->mNRTOutputFile, outputFileBuf, bufFramesCalculated);
 	}
 
-        if (cmdFile != stdin) fclose(cmdFile);
+	if (cmdFile != stdin) fclose(cmdFile);
 	sf_close(world->hw->mNRTOutputFile);
-        world->hw->mNRTOutputFile = 0;
+	world->hw->mNRTOutputFile = 0;
 
 	if (world->hw->mNRTInputFile) {
-            sf_close(world->hw->mNRTInputFile);
-            world->hw->mNRTInputFile = 0;
-        }
+		sf_close(world->hw->mNRTInputFile);
+		world->hw->mNRTInputFile = 0;
+	}
 
 	World_Cleanup(world);
 }
