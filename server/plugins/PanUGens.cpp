@@ -22,6 +22,7 @@
 #include "SC_PlugIn.h"
 
 #ifdef NOVA_SIMD
+#include "simd_memory.hpp"
 #include "simd_binary_arithmetic.hpp"
 #include "simd_pan.hpp"
 #include "simd_mix.hpp"
@@ -1385,6 +1386,10 @@ void calcPos(float pos, int numOutputs, float width, float orientation)
 }
 */
 
+#ifdef NOVA_SIMD
+void PanAz_next_ak_nova(PanAz *unit, int inNumSamples);
+#endif
+
 void PanAz_Ctor(PanAz *unit)
 {
 	if (INRATE(1) == calc_FullRate) {
@@ -1397,7 +1402,14 @@ void PanAz_Ctor(PanAz *unit)
 			unit->m_chanamp[i] = 0;
 			ZOUT0(i) = 0.f;
 		}
+#ifdef NOVA_SIMD
+		if (!(BUFLENGTH & 15))
+			SETCALC(PanAz_next_ak_nova);
+		else
+			SETCALC(PanAz_next_ak);
+#else
 		SETCALC(PanAz_next_ak);
+#endif
 	}
 }
 
@@ -1457,6 +1469,51 @@ void PanAz_next_ak(PanAz *unit, int inNumSamples)
 	}
 }
 
+#ifdef NOVA_SIMD
+FLATTEN void PanAz_next_ak_nova(PanAz *unit, int inNumSamples)
+{
+	float pos = ZIN0(1);
+	float level = ZIN0(2);
+	float width = ZIN0(3);
+	float orientation = ZIN0(4);
+
+	int numOutputs = unit->mNumOutputs;
+	float rwidth = sc_reciprocal( width );
+	float range = numOutputs * rwidth;
+	float rrange = sc_reciprocal( range );
+
+	pos = pos * 0.5f * numOutputs + width * 0.5f + orientation;
+
+	float * in = IN(0);
+	float * __restrict__ chanamps = unit->m_chanamp;
+
+	for (int i=0; i<numOutputs; ++i) {
+		float chanamp = chanamps[i];
+		float nextchanamp;
+		float chanpos = pos - i;
+		chanpos *= rwidth;
+		chanpos = chanpos - range * sc_floor(rrange * chanpos);
+		if (chanpos > 1.f) {
+			nextchanamp = 0.f;
+		} else {
+			nextchanamp = level * ft->mSine[(long)(4096.f * chanpos)];
+		}
+
+		float *out = OUT(i);
+		if (nextchanamp == chanamp) {
+//			if (nextchanamp == 0.f)
+//				nova::zerovec_simd(out, inNumSamples);
+//			else
+				nova::times_vec_simd(out, in, chanamp, inNumSamples);
+		} else {
+			float chanampslope  = CALCSLOPE(nextchanamp, chanamp);
+			nova::times_vec_simd(out, in, slope_argument(chanamp, chanampslope), inNumSamples);
+			chanamps[i] = nextchanamp;
+		}
+	}
+}
+#endif
+
 void PanAz_next_aa(PanAz *unit, int inNumSamples)
 {
 	float level = ZIN0(2);
@@ -1464,9 +1521,9 @@ void PanAz_next_aa(PanAz *unit, int inNumSamples)
 	float orientation = ZIN0(4);
 
 	int numOutputs = unit->mNumOutputs;
-	float rwidth = 1.f / width;
+	float rwidth = sc_reciprocal( width );
 	float range = numOutputs * rwidth;
-	float rrange = 1.f / range;
+	float rrange = sc_reciprocal( range );
 
 
 	// compute constant parts with which the pos has to be multiplied/added to respect numOutputs, width and orientation
