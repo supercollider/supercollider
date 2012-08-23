@@ -66,7 +66,7 @@ int main( int argc, char *argv[] )
         win->show();
     }
     else {
-        main->sessionManager()->newSession();
+        main->sessionManager()->openSession("Default");
         win->showMaximized();
     }
 
