@@ -74,6 +74,15 @@ int ScIDE_Connect(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int ScIDE_Connected(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot * returnSlot = g->sp - numArgsPushed + 1;
+
+    SetBool(returnSlot, gIpcClient != 0);
+
+    return errNone;
+}
+
 struct YAMLSerializer
 {
     YAML::Emitter emitter;
@@ -194,6 +203,7 @@ void initScIDEPrimitives()
 {
     int base = nextPrimitiveIndex();
     int index = 0;
-    definePrimitive(base, index++, "_ScIDE_Connect", ScIDE_Connect, 2, 0);
-    definePrimitive(base, index++, "_ScIDE_Send",    ScIDE_Send, 3, 0);
+    definePrimitive(base, index++, "_ScIDE_Connect",   ScIDE_Connect, 2, 0);
+    definePrimitive(base, index++, "_ScIDE_Connected", ScIDE_Connected, 1, 0);
+    definePrimitive(base, index++, "_ScIDE_Send",      ScIDE_Send, 3, 0);
 }

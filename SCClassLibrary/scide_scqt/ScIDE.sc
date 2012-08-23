@@ -11,15 +11,25 @@ ScIDE {
 			var addr = server.addr;
 			this.prSend(\defaultServerRunningChanged, [server.serverRunning, addr.hostname, addr.port])
 		});
+
+		StartUp.add {
+			if (ScIDE.connected) {
+				ScIDE.sendIntrospection
+			}
+		}
 	}
 
 	*connect {|ideName|
-		_ScIDE_Connect
-		this.primitiveFailed
+		this.prConnect(ideName);
+		this.sendIntrospection;
 	}
 
 	*request { |id, command, data|
 		this.tryPerform(command, id, data);
+	}
+
+	*connected {
+		_ScIDE_Connected
 	}
 
 	*sendIntrospection {
@@ -202,6 +212,11 @@ ScIDE {
 
 	*prSend {|id, data|
 		_ScIDE_Send
+		this.primitiveFailed
+	}
+
+	*prConnect {|ideName|
+		_ScIDE_Connect
 		this.primitiveFailed
 	}
 }
