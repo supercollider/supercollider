@@ -67,6 +67,14 @@ struct Class {
 };
 
 struct Method {
+    enum SignatureStyle {
+        SignatureWithoutArguments,
+        SignatureWithArguments,
+        SignatureWithArgumentsAndDefaultValues
+    };
+
+    QString signature( SignatureStyle style ) const;
+
     Class *ownerClass;
     FlyweightString name;
     ArgumentVector arguments;

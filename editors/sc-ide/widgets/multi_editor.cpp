@@ -20,6 +20,7 @@
 
 #include "multi_editor.hpp"
 #include "main_window.hpp"
+#include "lookup_dialog.hpp"
 #include "code_editor/editor.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/sig_mux.hpp"
@@ -156,43 +157,6 @@ private:
     QListView *mListView;
     QStandardItemModel *mModel;
 };
-
-
-
-class OpenDefinitionDialog : public QDialog
-{
-public:
-    OpenDefinitionDialog( QWidget * parent = 0 ):
-        QDialog(parent)
-    {
-        mTreeWidget = new QTreeWidget();
-        mTreeWidget->setRootIsDecorated(false);
-        mTreeWidget->setAllColumnsShowFocus(true);
-        //mTreeWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-        mTreeWidget->setHeaderHidden(true);
-        mTreeWidget->header()->setStretchLastSection(false);
-
-        QHeaderView *header = mTreeWidget->header();
-        header->setResizeMode( QHeaderView::ResizeToContents );
-
-        QHBoxLayout *layout = new QHBoxLayout(this);
-        layout->addWidget(mTreeWidget);
-        layout->setContentsMargins(1,1,1,1);
-
-        connect(mTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(accept()));
-        connect(mTreeWidget, SIGNAL(itemActivated(QTreeWidgetItem*, int)), this, SLOT(accept()));
-
-        mTreeWidget->setFocus(Qt::OtherFocusReason);
-
-        resize(400, 300);
-    }
-
-    QTreeWidget *treeWidget() { return mTreeWidget; }
-
-private:
-    QTreeWidget *mTreeWidget;
-};
-
 
 MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
@@ -721,10 +685,9 @@ void MultiEditor::openDefinition(const QString &string)
     if (definitionString.isEmpty())
         return;
 
-    if (definitionString[0].isUpper())
-        openClassDefinition(definitionString);
-    else
-        openMethodDefinition(definitionString);
+    LookupDialog dialog(this);
+    dialog.query(definitionString);
+    dialog.exec();
 }
 
 void MultiEditor::openDefinition()
@@ -736,163 +699,6 @@ void MultiEditor::openDefinition()
         textCursor.select(QTextCursor::WordUnderCursor);
 
     openDefinition(textCursor.selectedText());
-}
-
-void MultiEditor::openClassDefinition( const QString & className )
-{
-    using namespace ScLanguage;
-
-    const Introspection & introspection = Main::instance()->scProcess()->introspection();
-
-    const Class *klass = introspection.findClass(className);
-    if (!klass)
-        return;
-
-    typedef Introspection::ClassMethodMap MethodMap;
-    MethodMap methodMap = introspection.constructMethodMap(klass);
-
-    QPointer<OpenDefinitionDialog> dialog = new OpenDefinitionDialog(this);
-    dialog->setWindowTitle(tr("Open Definition of Class '%1'").arg(klass->name));
-
-    QTreeWidget *tree = dialog->treeWidget();
-    tree->setColumnCount(1);
-    tree->setRootIsDecorated(true);
-
-    for (MethodMap::Iterator it = methodMap.begin(); it != methodMap.end(); ++it) {
-        QString path = it.key();
-        QList<Method*> methods = it.value();
-
-        QString displayPath = introspection.compactLibraryPath(path);
-
-        QTreeWidgetItem *pathItem = new QTreeWidgetItem (
-            tree,
-            QStringList()
-            << displayPath
-        );
-
-        pathItem->setData( 0, Qt::UserRole, path );
-
-        foreach( Method *method, methods ) {
-            QString name = method->name;
-            if (method->ownerClass == klass->metaClass)
-                name.prepend('*');
-            QTreeWidgetItem *methodItem = new QTreeWidgetItem (
-                pathItem,
-                QStringList()
-                << name
-            );
-
-            methodItem->setData( 0, Qt::UserRole, method->definition.position );
-        }
-    }
-
-    tree->setCurrentItem(tree->topLevelItem(0));
-
-    if (dialog->exec()) {
-        QTreeWidgetItem *item = tree->currentItem();
-        if (item && item->parent() && item->parent() != tree->invisibleRootItem()) {
-            QString path = item->parent()->data(0, Qt::UserRole).toString();
-            int pos = item->data(0, Qt::UserRole).toInt();
-            Main::instance()->documentManager()->open(path, pos);
-        }
-    }
-
-    delete dialog;
-}
-
-static QString signature(ScLanguage::Method *method, bool arguments = false)
-{
-    using namespace ScLanguage;
-
-    QString sig = method->ownerClass->name;
-    if (sig.startsWith("Meta_")) {
-        sig.remove(0, 5);
-        sig.append(": *");
-    }
-    else
-        sig.append(": ");
-
-    sig.append(method->name);
-
-    if (!arguments)
-        return sig;
-
-    int argc = method->arguments.count();
-    if (argc) {
-        sig.append(" (");
-        for( int i = 0; i < argc; ++i )
-        {
-            const Argument & arg = method->arguments[i];
-            if (i > 0)
-                sig.append(", ");
-            sig.append(arg.name);
-            if (!arg.defaultValue.get().isEmpty()) {
-                sig.append(" = ");
-                sig.append(arg.defaultValue);
-            }
-        }
-        sig.append(")");
-    }
-    else if (method->name.get().endsWith('_'))
-        sig.append(" (value)");
-
-    return sig;
-}
-
-void MultiEditor::openMethodDefinition( const QString & methodName )
-{
-    using namespace ScLanguage;
-    using std::pair;
-
-    const Introspection & introspection = Main::instance()->scProcess()->introspection();
-    const MethodMap & methods = introspection.methodMap();
-
-    pair<MethodMap::const_iterator, MethodMap::const_iterator> matchingMethods =
-        methods.equal_range(methodName);
-
-    if (matchingMethods.first == matchingMethods.second) {
-        qWarning("Method not defined!");
-        return;
-    }
-
-    QPointer<OpenDefinitionDialog> dialog = new OpenDefinitionDialog(this);
-    dialog->setWindowTitle(tr("Open Definition of Method '%1'").arg(methodName));
-    QTreeWidget *tree = dialog->treeWidget();
-    tree->setColumnCount(2);
-
-    for (MethodMap::const_iterator it = matchingMethods.first;
-         it != matchingMethods.second; ++it) {
-        Method *method = it->second.data();
-
-        const QString & path = method->definition.path;
-        QString displayPath = introspection.compactLibraryPath(path);
-
-        QTreeWidgetItem *item = new QTreeWidgetItem (
-            tree,
-            QStringList()
-            << signature(method)
-            << displayPath
-        );
-
-        item->setData( 0, Qt::UserRole, path );
-        item->setData( 0, Qt::UserRole + 1, method->definition.position );
-    }
-
-    tree->model()->sort(0);
-    tree->setCurrentItem(tree->topLevelItem(0));
-
-
-    if (dialog->exec())
-    {
-        QTreeWidgetItem *item = tree->currentItem();
-        if (item) {
-            QString path = item->data(0, Qt::UserRole).toString();
-            int pos = item->data(0, Qt::UserRole + 1).toInt();
-            Main::instance()->documentManager()->open(path, pos);
-        }
-    }
-
-    delete dialog;
 }
 
 bool MultiEditor::openDocumentation(const QString &string)

@@ -243,5 +243,42 @@ Introspection::ClassMethodMap Introspection::constructMethodMap(const Class * kl
     return methodMap;
 }
 
+QString Method::signature( SignatureStyle style ) const
+{
+    QString sig = ownerClass->name.get();
+    if (sig.startsWith("Meta_")) {
+        sig.remove(0, 5);
+        sig.append(": *");
+    }
+    else
+        sig.append(": ");
+
+    sig.append(name.get());
+
+    if (style == SignatureWithoutArguments)
+        return sig;
+
+    int argc = arguments.count();
+    if (argc) {
+        sig.append(" (");
+        for( int i = 0; i < argc; ++i )
+        {
+            const Argument & arg = arguments[i];
+            if (i > 0)
+                sig.append(", ");
+            sig.append(arg.name);
+            if (style == SignatureWithArgumentsAndDefaultValues && !arg.defaultValue.get().isEmpty()) {
+                sig.append(" = ");
+                sig.append(arg.defaultValue);
+            }
+        }
+        sig.append(")");
+    }
+    else if (name.get().endsWith('_'))
+        sig.append(" (value)");
+
+    return sig;
+}
+
 } // namespace ScLanguage
 } // namespace ScIDE

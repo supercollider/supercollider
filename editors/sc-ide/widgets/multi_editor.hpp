@@ -144,9 +144,6 @@ private:
     CodeEditor * editorForTab( int index );
     CodeEditor * editorForDocument( Document * );
 
-    void openClassDefinition( const QString & );
-    void openMethodDefinition( const QString & );
-
     DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;
     QSignalMapper mModificationMapper;
