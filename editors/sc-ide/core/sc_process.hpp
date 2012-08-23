@@ -83,8 +83,6 @@ public slots:
         }
 
         write("\x18");
-
-        evaluateCode ( "ScIDE.sendIntrospection", true );
     }
 
     void runMain(void)
@@ -165,7 +163,6 @@ private:
 
         QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
         evaluateCode ( command, true );
-        evaluateCode ( "ScIDE.sendIntrospection", true );
     }
 
     void prepareActions(Main *);
