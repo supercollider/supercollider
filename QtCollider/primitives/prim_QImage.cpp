@@ -163,20 +163,21 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   QByteArray byteArray = reply->readAll();
   if( byteArray.isEmpty() ) {
     qcErrorMsg("QImage information could not be read");
+    manager->deleteLater();
+    reply->deleteLater();
     return errFailed;
   }
 
   if( QImage_InitFromData( g, slotRawObject(r), byteArray ) ) {
+    manager->deleteLater();
+    reply->deleteLater();
     return errNone;
   } else {
     qcErrorMsg("QImage url bynary data is not an image file");
+    manager->deleteLater();
+    reply->deleteLater();
     return errFailed;
   }
-
-  manager->deleteLater();
-  reply->deleteLater();
-
-  return errNone;
 }
 
 QC_LANG_PRIMITIVE( QImage_NewEmpty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
