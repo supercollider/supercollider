@@ -27,6 +27,7 @@
 #include "cmd_line.hpp"
 #include "find_replace_tool.hpp"
 #include "goto_line_tool.hpp"
+#include "lookup_dialog.hpp"
 #include "tool_box.hpp"
 #include "doc_list.hpp"
 #include "post_window.hpp"
@@ -885,13 +886,8 @@ void MainWindow::toggleFullScreen()
 
 void MainWindow::lookupDefinition()
 {
-    PopupTextInput * dialog = new PopupTextInput(tr("Symbol Lookup"), this);
-
-    bool success = dialog->exec();
-    if (success)
-        mEditors->openDefinition(dialog->textValue());
-
-    delete dialog;
+    LookupDialog dialog(mEditors);
+    dialog.exec();
 }
 
 void MainWindow::lookupDocumentation()
