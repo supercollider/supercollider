@@ -27,11 +27,12 @@
 #include <QKeyEvent>
 #include <QDesktopWidget>
 #include <QApplication>
+#include <QPainter>
 
 namespace ScIDE {
 
 LookupDialog::LookupDialog( QWidget * parent ):
-    QDialog(parent, Qt::Popup)
+    QDialog(parent, Qt::Popup | Qt::FramelessWindowHint)
 {
     setWindowTitle(tr("Look Up Class or Method Definition"));
 
@@ -221,6 +222,14 @@ bool LookupDialog::eventFilter( QObject *object, QEvent *event )
     }
 
     return QDialog::eventFilter(object,event);
+}
+
+void LookupDialog::paintEvent( QPaintEvent * )
+{
+    QPainter painter(this);
+    painter.setBrush(Qt::NoBrush);
+    painter.setPen(palette().color(QPalette::Dark));
+    painter.drawRect(rect().adjusted(0,0,-1,-1));
 }
 
 } // namespace ScIDE

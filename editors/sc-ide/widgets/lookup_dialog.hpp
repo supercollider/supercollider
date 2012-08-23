@@ -44,6 +44,7 @@ private:
     bool performClassQuery(const QString & className);
     bool performMethodQuery(const QString & methodName);
     bool eventFilter( QObject *, QEvent * );
+    void paintEvent( QPaintEvent * );
 
     QTreeWidget *mResultList;
     QLineEdit *mQueryEdit;
