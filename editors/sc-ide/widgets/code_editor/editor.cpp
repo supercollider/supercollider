@@ -1010,6 +1010,8 @@ void CodeEditor::indent( const QTextCursor & selection )
             level = 0;
         }
 
+        int initialStackSize = stack.size();
+
         TextBlockData *data = static_cast<TextBlockData*>(block.userData());
         if (data)
         {
@@ -1040,8 +1042,14 @@ void CodeEditor::indent( const QTextCursor & selection )
             }
         }
 
-        if(blockNum >= startBlockNum)
-            block = indent(block, stack.size());
+        if(blockNum >= startBlockNum) {
+            int indentLevel;
+            if (data && data->tokens.size() && data->tokens[0].type == Token::ClosingBracket)
+                indentLevel = stack.size();
+            else
+                indentLevel = initialStackSize;
+            block = indent(block, indentLevel);
+        }
 
         if(blockNum == endBlockNum)
             break;
