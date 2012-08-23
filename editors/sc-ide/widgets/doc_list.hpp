@@ -58,7 +58,7 @@ private Q_SLOTS:
 
 protected:
 
-    virtual QSize sizeHint() const { return QSize(170,170); }
+    virtual QSize sizeHint() const { return QSize(250,200); }
 
 private:
     struct Item : public QListWidgetItem
