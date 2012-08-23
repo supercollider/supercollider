@@ -1415,9 +1415,9 @@ void PanAz_next_ak(PanAz *unit, int inNumSamples)
 	float orientation = ZIN0(4);
 
 	int numOutputs = unit->mNumOutputs;
-	float rwidth = 1.f / width;
+	float rwidth = sc_reciprocal( width );
 	float range = numOutputs * rwidth;
-	float rrange = 1.f / range;
+	float rrange = sc_reciprocal( range );
 
 	pos = pos * 0.5f * numOutputs + width * 0.5f + orientation;
 
@@ -1428,7 +1428,7 @@ void PanAz_next_ak(PanAz *unit, int inNumSamples)
 		float nextchanamp;
 		float chanpos = pos - i;
 		chanpos *= rwidth;
-		chanpos = chanpos - range * std::floor(rrange * chanpos);
+		chanpos = chanpos - range * sc_floor(rrange * chanpos);
 		if (chanpos > 1.f) {
 			nextchanamp = 0.f;
 		} else {
@@ -1446,7 +1446,7 @@ void PanAz_next_ak(PanAz *unit, int inNumSamples)
 				)
 			}
 		} else {
-			float chanampslope  = CALCSLOPE(nextchanamp, chanamp);
+			float chanampslope = CALCSLOPE(nextchanamp, chanamp);
 			float *in = zin0;
 			LOOP1(inNumSamples,
 				ZXP(out) = ZXP(in) * chanamp;
