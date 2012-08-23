@@ -32,6 +32,7 @@ set ( ide_moc_hdr
     widgets/tool_box.hpp
     widgets/documents_dialog.hpp
     widgets/sessions_dialog.hpp
+    widgets/lookup_dialog.hpp
     widgets/code_editor/editor.hpp
     widgets/code_editor/highlighter.hpp
     widgets/code_editor/overlay.hpp
@@ -65,6 +66,7 @@ set ( ide_src
     widgets/cmd_line.cpp
     widgets/find_replace_tool.cpp
     widgets/documents_dialog.cpp
+    widgets/lookup_dialog.cpp
     widgets/code_editor/editor.cpp
     widgets/code_editor/highlighter.cpp
     widgets/code_editor/overlay.cpp
