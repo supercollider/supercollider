@@ -30,7 +30,7 @@ else()
     message(FATAL_ERROR "unknown compiler. supernova cannot be compiled")
 endif()
 
-if(MEMORY_DEBUGGING)
+if(SN_MEMORY_DEBUGGING)
     set_property(DIRECTORY .
                  APPEND
                  PROPERTY COMPILE_DEFINITIONS_DEBUG NOVA_MEMORY_DEBUGGING)
