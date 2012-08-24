@@ -28,6 +28,8 @@
 #include <QImage>
 #include <QUrl>
 #include <QPainter>
+#include <QImageReader>
+#include <QImageWriter>
 
 #include <QEventLoop>
 #include <QTimer>
@@ -329,6 +331,30 @@ QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( QImage_Formats, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( NotInt(a) ) return errWrongType;
+  int rw = Slot::toInt(a);
+
+  QList<QByteArray> formats;
+  if( rw ) {
+      formats = QImageWriter::supportedImageFormats();
+  } else {
+      formats = QImageReader::supportedImageFormats();
+  }
+
+  PyrObject *arr = instantiateObject( g->gc, s_array->u.classobj, formats.size(), true, true );
+  SetObject(r, arr);
+
+  for( int i = 0; i < formats.size(); i++ ) {
+    QString qstr = QString(formats.at(i));
+    PyrString *str = newPyrString( g->gc, qstr.toStdString().c_str(), obj_immutable, false );
+    SetObject(arr->slots+i, str);
+  }
+
+  return errNone;
+}
+
 void defineQImagePrimitives()
 {
   LangPrimitiveDefiner definer;
@@ -345,6 +371,7 @@ void defineQImagePrimitives()
   definer.define<QImage_GetPixel>();
   definer.define<QImage_SetPixel>();
   definer.define<QImage_Fill>();
+  definer.define<QImage_Formats>();
 }
 
 } // namespace QtCollider
