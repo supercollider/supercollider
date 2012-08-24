@@ -146,7 +146,17 @@ void SCProcess::onIpcData()
     emit response(id, message);
 }
 
-void SCProcess::activeDocumentChanged(Document * document)
+void SCProcess::onSclangStart()
+{
+    if(!mIpcServer->isListening()) // avoid a warning on stderr
+        mIpcServer->listen(mIpcServerName);
+
+    QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
+    evaluateCode ( command, true );
+    setActiveDocument(Main::instance()->documentManager()->currentDocument());
+}
+
+void SCProcess::setActiveDocument(Document * document)
 {
     QString filePath;
     if (document)
@@ -162,6 +172,7 @@ void ScResponder::onResponse( const QString & selector, const QString & data )
 {
     static QString defaultServerRunningChangedSymbol("defaultServerRunningChanged");
     static QString introspectionSymbol("introspection");
+    static QString requestCurrentPathSymbol("requestCurrentPath");
 
     if (selector == defaultServerRunningChangedSymbol) {
         std::stringstream stream;
@@ -192,6 +203,10 @@ void ScResponder::onResponse( const QString & selector, const QString & data )
     }
     else if (selector == introspectionSymbol) {
         emit newIntrospectionData(data);
+        return;
+    }
+    else if (selector == requestCurrentPathSymbol) {
+        Main::scProcess()->setActiveDocument(Main::instance()->documentManager()->currentDocument());
         return;
     }
 }

@@ -67,7 +67,7 @@ public:
         evaluateCode(cmd, true);
     }
 
-    void activeDocumentChanged( class Document * );
+    void setActiveDocument(class Document *);
 
 Q_SIGNALS:
     void scPost(QString const &);
@@ -158,14 +158,7 @@ private slots:
     void onIpcData();
 
 private:
-    void onSclangStart()
-    {
-        if(!mIpcServer->isListening()) // avoid a warning on stderr
-            mIpcServer->listen(mIpcServerName);
-
-        QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
-        evaluateCode ( command, true );
-    }
+    void onSclangStart();
 
     void prepareActions(Main *);
 
