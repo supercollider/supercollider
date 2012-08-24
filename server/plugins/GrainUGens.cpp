@@ -1147,15 +1147,13 @@ static inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int
 		return;
 	}
 
-	GrainBufG *grain = unit->mGrains + unit->mNumActive++;
 	float winType = grain_in_at<full_rate>(unit, 7, position);
 	DECLARE_WINDOW
 	bool success = getGrainWin(unit, winType, window, windowData, windowSamples, windowFrames, windowGuardFrame);
-	if (!success) {
-		GrainBuf_grain_cleanup(unit, grain);
+	if (!success)
 		return;
-	}
 
+	GrainBufG *grain = unit->mGrains + unit->mNumActive++;
 	int32 bufnum = grain_in_at<full_rate>(unit, 2, position);
 	grain->bufnum = bufnum;
 
