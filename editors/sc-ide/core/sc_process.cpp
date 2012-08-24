@@ -122,6 +122,52 @@ void SCProcess::start (void)
         onSclangStart();
 }
 
+void SCProcess::recompileClassLibrary (void)
+{
+    if(state() != QProcess::Running) {
+        emit statusMessage("Interpreter is not running!");
+        return;
+    }
+
+    write("\x18");
+}
+
+void SCProcess::stopLanguage (void)
+{
+    if(state() != QProcess::Running) {
+        emit statusMessage("Interpreter is not running!");
+        return;
+    }
+
+    closeWriteChannel();
+}
+void SCProcess::onReadyRead(void)
+{
+    QByteArray out = QProcess::readAll();
+    QString postString = QString::fromUtf8(out);
+    if (postString.endsWith( '\n' ))
+        postString.chop(1);
+    emit scPost(postString);
+}
+
+void SCProcess::evaluateCode(QString const & commandString, bool silent)
+{
+    if(state() != QProcess::Running) {
+        emit statusMessage("Interpreter is not running!");
+        return;
+    }
+
+    QByteArray bytesToWrite = commandString.toUtf8();
+    size_t writtenBytes = write(bytesToWrite);
+    if (writtenBytes != bytesToWrite.size()) {
+        emit statusMessage("Error when passing data to interpreter!");
+        return;
+    }
+
+    char commandChar = silent ? '\x1b' : '\x0c';
+
+    write( &commandChar, 1 );
+}
 
 void SCProcess::onIpcData()
 {

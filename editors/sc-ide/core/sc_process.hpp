@@ -68,6 +68,10 @@ public:
     }
 
     void setActiveDocument(class Document *);
+    QAction *action(SCProcessActionRole role)
+    {
+        return mActions[role];
+    }
 
 Q_SIGNALS:
     void scPost(QString const &);
@@ -76,75 +80,18 @@ Q_SIGNALS:
 
 public slots:
     void start (void);
-
-    void recompileClassLibrary (void)
-    {
-        if(state() != QProcess::Running) {
-            emit statusMessage("Interpreter is not running!");
-            return;
-        }
-
-        write("\x18");
-    }
-
-    void runMain(void)
-    {
-        evaluateCode("thisProcess.run", false);
-    }
-
-    void stopMain(void)
-    {
-        evaluateCode("thisProcess.stop", false);
-    }
-
-    void stopLanguage (void)
-    {
-        if(state() != QProcess::Running) {
-            emit statusMessage("Interpreter is not running!");
-            return;
-        }
-
-        closeWriteChannel();
-    }
-
-    void onReadyRead(void)
-    {
-        QByteArray out = QProcess::readAll();
-        QString postString = QString::fromUtf8(out);
-        if (postString.endsWith( '\n' ))
-            postString.chop(1);
-        emit scPost(postString);
-    }
-
-    void evaluateCode(QString const & commandString, bool silent = false)
-    {
-        if(state() != QProcess::Running) {
-            emit statusMessage("Interpreter is not running!");
-            return;
-        }
-
-        QByteArray bytesToWrite = commandString.toUtf8();
-        size_t writtenBytes = write(bytesToWrite);
-        if (writtenBytes != bytesToWrite.size()) {
-            emit statusMessage("Error when passing data to interpreter!");
-            return;
-        }
-
-        char commandChar = silent ? '\x1b' : '\x0c';
-
-        write( &commandChar, 1 );
-    }
+    void recompileClassLibrary (void);
+    void runMain(void)  { evaluateCode("thisProcess.run", false); }
+    void stopMain(void) { evaluateCode("thisProcess.stop", false); }
+    void stopLanguage (void);
+    void onReadyRead(void);
+    void evaluateCode(QString const & commandString, bool silent = false);
 
     void swapIntrospection (ScLanguage::Introspection *newIntrospection)
     {
         // LATER: use c++11/std::move
         mIntrospection = *newIntrospection;
         delete newIntrospection;
-    }
-
-    QAction *action(SCProcessActionRole role)
-    {
-        return mActions[role];
     }
 
 private slots:
