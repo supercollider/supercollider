@@ -172,6 +172,11 @@ Order : SequenceableCollection {
 	choose {
 		^array.choose
 	}
+	
+	storeOn { arg stream;
+		stream << this.class.name;
+		stream << ".newFromIndices( " <<<* [ array, indices ] << " )"; 
+	}
 }
 
 
@@ -420,6 +425,13 @@ SparseArray : Order {
 		}{
 			super.maxItem(function);
 		}
+	}
+	
+	storeOn { | stream |
+		if (stream.atLimit) { ^this };
+		stream << this.class.name << "[ " ;
+		this.storeItemsOn(stream);
+		stream << " ]" ;
 	}
 
 	// private implementation
