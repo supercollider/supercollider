@@ -38,7 +38,7 @@ EditorPage::EditorPage(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    new SyntaxHighlighter(static_cast<QPlainTextEdit*>(ui->fontPreview)->document());
+    //new SyntaxHighlighter(static_cast<QPlainTextEdit*>(ui->fontPreview)->document());
 
     connect( ui->onlyMonoFonts, SIGNAL(toggled(bool)), this, SLOT(onMonospaceToggle(bool)) );
     connect( ui->fontList, SIGNAL(currentRowChanged(int)), this, SLOT(onFontFamilyChanged(int)) );
@@ -117,7 +117,7 @@ void EditorPage::load( Manager *s )
 
     s->endGroup(); // IDE/editor
 
-    ui->fontPreview->applySettings(s);
+    //ui->fontPreview->applySettings(s);
 }
 
 void EditorPage::store( Manager *s )
@@ -207,7 +207,7 @@ void EditorPage::onMonospaceToggle(bool on)
 
 void EditorPage::updateFontPreview()
 {
-    ui->fontPreview->setFont(constructFont());
+    //ui->fontPreview->setFont(constructFont());
 }
 
 QFont EditorPage::constructFont()
