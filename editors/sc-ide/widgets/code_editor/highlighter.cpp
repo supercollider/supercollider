@@ -104,12 +104,6 @@ void SyntaxHighlighterGlobals::initKeywords()
              << "const"
              << "super"
              << "this"
-             << "thisFunction"
-             << "thisFunctionDef"
-             << "thisMethod"
-             << "thisProcess"
-             << "thisThread"
-             << "currentEnvironment"
              << "var";
 
     QString keywordPattern = QString("^\\b(%1)\\b").arg(keywords.join("|"));
@@ -122,7 +116,14 @@ void SyntaxHighlighterGlobals::initBuiltins()
     builtins << "false"
              << "inf"
              << "nil"
-             << "true";
+             << "true"
+             << "thisFunction"
+             << "thisFunctionDef"
+             << "thisMethod"
+             << "thisProcess"
+             << "thisThread"
+             << "currentEnvironment"
+                ;
 
     QString builtinsPattern = QString("^\\b(%1)\\b").arg(builtins.join("|"));
     mInCodeRules << SyntaxRule(Token::Builtin, builtinsPattern);
