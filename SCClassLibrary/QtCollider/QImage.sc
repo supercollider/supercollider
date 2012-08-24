@@ -41,7 +41,15 @@ QImage {
 	}
 
 	// Class variables attributes
-	*formats {}
+	*formats { arg rw = "r";
+		case(
+			{ rw.asSymbol == \r }, { rw = 0 },
+			{ rw.asSymbol == \w }, { rw = 1 },
+			{ true },
+			{ Error("QImage.formats(rw) must be either 'r' or 'w'").throw }
+		);
+		^this.prFormats(rw);
+	}
 
 	*compositingOperations {}
 
@@ -147,8 +155,12 @@ QImage {
 		_QImage_UnsetPainter
 		^this.primitiveFailed
 	}
-}
 
+	*prFormats { arg rw;
+		_QImage_Formats
+		^this.primitiveFailed
+	}
+}
 
 /* *** additions of the original SCImage *** */
 // integer additions to retrieve 8-bit pixel component from RGBA packed data
