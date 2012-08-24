@@ -547,7 +547,10 @@ void MultiEditor::onCurrentChanged( int index )
 
     updateActions();
 
-    Q_EMIT( currentChanged( editor ? editor->document() : 0 ) );
+    Document * currentDocument = editor ? editor->document() : NULL;
+
+    Main::scProcess()->activeDocumentChanged(currentDocument);
+    Q_EMIT( currentChanged( currentDocument ) );
 }
 
 void MultiEditor::onModificationChanged( QWidget *w )

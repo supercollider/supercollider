@@ -1,5 +1,6 @@
 ScIDE {
 	classvar subListSorter;
+	classvar <>currentPath;
 
 	*initClass {
 		subListSorter = { | a b | a[0].perform('<', b[0]) };

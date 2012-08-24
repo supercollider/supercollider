@@ -558,12 +558,16 @@ Interpreter {
 	}
 
 	interpretPrintCmdLine {
-		var res, func, code = cmdLine, doc = Document.current;
+		var res, func, code = cmdLine, doc = Document.current, ideClass = \ScIDE.asClass;
 		"\n".post;
 		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
 		func = this.compile(cmdLine);
-		if(doc.tryPerform(\dataptr).notNil) {
-			thisProcess.nowExecutingPath = doc.tryPerform(\path);
+		if (ideClass.notNil) {
+			thisProcess.nowExecutingPath = ideClass.currentPath
+		} {
+			if(doc.tryPerform(\dataptr).notNil) {
+				thisProcess.nowExecutingPath = doc.tryPerform(\path);
+			}
 		};
 		res = func.value;
 		thisProcess.nowExecutingPath = nil;
