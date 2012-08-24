@@ -29,6 +29,8 @@
 #include <QSortFilterProxyModel>
 #include <QPointer>
 
+#include "tokens.hpp"
+
 namespace ScIDE {
 
 class CodeEditor;
@@ -37,7 +39,7 @@ class ScRequest;
 class CompletionMenu;
 class MethodCallWidget;
 
-namespace ScLanguage { struct Method; }
+namespace ScLanguage { struct Method; struct Class; }
 
 class AutoCompleter : public QObject
 {
@@ -69,7 +71,9 @@ private:
     enum CompletionType {
         ClassCompletion,
         ClassMethodCompletion,
-        MethodCompletion
+        InferredObjectMethodCompletion,
+        MethodCompletion,
+        InvalidCompletion
     };
 
     struct CompletionDescription {
@@ -81,6 +85,7 @@ private:
         QString base;
         QString text;
         QPointer<CompletionMenu> menu;
+        Token::Type tokenType;
     };
 
     struct MethodCallContext {
@@ -109,6 +114,9 @@ private:
     static CompletionMenu * menuForClassCompletion(CompletionDescription const & completion, CodeEditor * editor);
     static CompletionMenu * menuForClassMethodCompletion(CompletionDescription const & completion, CodeEditor * editor);
     static CompletionMenu * menuForMethodCompletion(CompletionDescription const & completion, CodeEditor * editor);
+    static CompletionMenu * menuForInferedObjectMethodCompletion(CompletionDescription const & completion, CodeEditor * editor);
+
+    static const ScLanguage::Class * classForCompletionDescription(CompletionDescription const & completion);
 
     // utilities
 

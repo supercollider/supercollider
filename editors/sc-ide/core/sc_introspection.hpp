@@ -64,6 +64,17 @@ struct Class {
         FlyweightString path;
         int position;
     } definition;
+
+    bool isSubclassOf(const Class * parentClass) const
+    {
+        if (superClass == parentClass)
+            return true;
+
+        if (superClass == NULL)
+            return false;
+
+        return superClass->isSubclassOf(parentClass);
+    }
 };
 
 struct Method {
@@ -110,6 +121,11 @@ public:
 
     // remove class library path, userExtensionDir and systemExtensionDir
     QString compactLibraryPath(QString const & path) const;
+
+    bool isClassMethod (const Method * method) const
+    {
+        return (method->ownerClass->name.get().startsWith("Meta_"));
+    }
 
 private:
     void initPaths();
