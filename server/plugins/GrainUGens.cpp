@@ -247,6 +247,10 @@ static inline bool getGrainWin(Unit * unit, float wintype, SndBuf *& window, con
 	}
 
 	assert(wintype < unit->mWorld->mNumSndBufs);
+
+	if (wintype < 0)
+		return true; // use default hann window
+
 	window = unit->mWorld->mSndBufs + (int)wintype;
 	windowData = window->data;
 	if (!windowData)
