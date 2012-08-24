@@ -253,8 +253,6 @@ QC_LANG_PRIMITIVE( QImage_Write, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_SetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
-
   if( !QcApplication::compareThread )
     return QtCollider::wrongThreadError();
 
@@ -264,6 +262,8 @@ QC_LANG_PRIMITIVE( QImage_SetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   }
 
   assert( imgPainter == 0 );
+
+  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
   imgPainter = new QPainter(img);
 
   QtCollider::announcePainting();
