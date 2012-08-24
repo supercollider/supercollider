@@ -146,6 +146,18 @@ void SCProcess::onIpcData()
     emit response(id, message);
 }
 
+void SCProcess::activeDocumentChanged(Document * document)
+{
+    QString filePath;
+    if (document)
+        filePath = document->filePath();
+
+    if (!filePath.isEmpty())
+        evaluateCode(QString("ScIDE.currentPath_(\"%1\")").arg(filePath), true);
+    else
+        evaluateCode(QString("ScIDE.currentPath_(nil)"), true);
+}
+
 void ScResponder::onResponse( const QString & selector, const QString & data )
 {
     static QString defaultServerRunningChangedSymbol("defaultServerRunningChanged");

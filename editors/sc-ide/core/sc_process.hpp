@@ -67,6 +67,8 @@ public:
         evaluateCode(cmd, true);
     }
 
+    void activeDocumentChanged( class Document * );
+
 Q_SIGNALS:
     void scPost(QString const &);
     void statusMessage(const QString &);

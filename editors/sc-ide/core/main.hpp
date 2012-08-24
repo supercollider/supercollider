@@ -73,6 +73,11 @@ public:
         return singleton;
     }
 
+    static SCProcess * scProcess(void)
+    {
+        return instance()->mSCProcess;
+    }
+
     static void evaluateCode(QString const & text, bool silent = false)
     {
         instance()->scProcess()->evaluateCode(text, silent);
@@ -81,7 +86,6 @@ public:
     Settings::Manager *settings()       { return mSettings;    }
     DocumentManager * documentManager() { return mDocManager;  }
     SessionManager * sessionManager()   { return mSessionManager; }
-    SCProcess * scProcess()             { return mSCProcess;   }
     ScServer  * scServer()              { return mSCServer;    }
     ScResponder  * scResponder()        { return mSCResponder; }
 
