@@ -72,7 +72,7 @@ QImage {
 	height_ { arg h;
 	}
 
-	setPixel {
+	setPixel { arg rgbaInteger, x, y;
 		_QImage_SetPixel
 		^this.primitiveFailed
 	}
