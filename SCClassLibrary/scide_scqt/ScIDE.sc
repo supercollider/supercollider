@@ -15,8 +15,9 @@ ScIDE {
 
 		StartUp.add {
 			if (ScIDE.connected) {
-				ScIDE.sendIntrospection
-			}
+				ScIDE.sendIntrospection;
+				this.prSend(\requestCurrentPath)
+			};
 		}
 	}
 

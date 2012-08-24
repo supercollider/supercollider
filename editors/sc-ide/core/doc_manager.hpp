@@ -86,6 +86,10 @@ public:
     const QStringList & recents() const { return mRecent; }
 
     DocumentList const & recentActiveDocuments() const { return mRecentActiveDocuments; }
+    Document * currentDocument() const {
+        if (mRecentActiveDocuments.empty()) return 0;
+        return mRecentActiveDocuments.front();
+    }
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"

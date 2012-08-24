@@ -549,7 +549,7 @@ void MultiEditor::onCurrentChanged( int index )
 
     Document * currentDocument = editor ? editor->document() : NULL;
 
-    Main::scProcess()->activeDocumentChanged(currentDocument);
+    Main::scProcess()->setActiveDocument(currentDocument);
     Q_EMIT( currentChanged( currentDocument ) );
 }
 
