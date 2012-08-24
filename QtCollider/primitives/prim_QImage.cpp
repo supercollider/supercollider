@@ -182,7 +182,7 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   }
 }
 
-QC_LANG_PRIMITIVE( QImage_NewEmpty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( QImage_NewEmpty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( NotInt(a) || NotInt(a+1) ) return errWrongType;
   int width = Slot::toInt(a);
@@ -301,9 +301,9 @@ QC_LANG_PRIMITIVE( QImage_GetPixel, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( QImage_SetPixel, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( QImage_SetPixel, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( NotInt(a) || NotInt(a+1)) return errWrongType;
+  if( NotInt(a) || NotInt(a+1) || NotInt(a+2) ) return errWrongType;
 
   QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
   int argb = Slot::toInt(a);
