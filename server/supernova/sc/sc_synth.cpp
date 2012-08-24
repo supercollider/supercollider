@@ -51,7 +51,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     const size_t constants_count = synthdef.constants.size();
 
     /* we allocate one memory chunk */
-    const size_t wire_buffer_alignment = 64; // align to cache line boundaries
+    const size_t wire_buffer_alignment = 64 * 8; // align to cache line boundaries
     const size_t alloc_size = prototype->memory_requirement();
 
     const size_t sample_alloc_size = world.mBufLength * synthdef.buffer_count
@@ -92,8 +92,8 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     calc_units   = allocator.alloc<Unit*>(calc_unit_count);
     unit_buffers = allocator.alloc<sample>(sample_alloc_size);
 
-    const int alignment_mask = wire_buffer_alignment * 8 - 1;
-    unit_buffers = (sample*) ((size_t(unit_buffers) + alignment_mask) & ~alignment_mask);     /* next aligned pointer */
+    const int alignment_mask = wire_buffer_alignment - 1;
+    unit_buffers = (sample*) ((intptr_t(unit_buffers) + alignment_mask) & ~alignment_mask);     /* next aligned pointer */
 
     /* allocate unit generators */
     sc_factory->allocate_ugens(synthdef.graph.size());
