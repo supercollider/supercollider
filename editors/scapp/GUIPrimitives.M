@@ -1882,6 +1882,7 @@ int prSCWindow_SetAlpha(struct VMGlobals *g, int numArgsPushed)
 
     float alpha;
     int err = slotFloatVal(b, &alpha);
+	CGFloat cgalpha = (CGFloat)alpha;
     if (err) return err;
 
     SCGraphView* view = (SCGraphView*)slotRawPtr(slotRawObject(a)->slots);
@@ -1897,7 +1898,7 @@ int prSCWindow_SetAlpha(struct VMGlobals *g, int numArgsPushed)
     SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
     [anInvocation setTarget: window];
     [anInvocation setSelector: sel];
-    [anInvocation setArgument: &alpha atIndex: 2];
+    [anInvocation setArgument: &cgalpha atIndex: 2];
     [scvm defer: anInvocation];
 
     return errNone;
