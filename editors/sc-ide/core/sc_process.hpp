@@ -178,6 +178,10 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void onResponse( const QString & selector, const QString & data );
+
+private:
+    void handleOpenFile( const QString & data ) const;
+    void handleServerRunningChanged( const QString & data );
 };
 
 class ScIntrospectionParserWorker : public QObject
