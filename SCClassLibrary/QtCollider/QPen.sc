@@ -284,7 +284,13 @@ QPen {
     this.stringInRect( string, rect, font, color, QAlignment(\right) );
   }
 
-  *drawImage { arg target, image, source;
+  *drawImage { arg target, image, source, operation = 'sourceOver', fraction = 1.0;
+    operation = QImage.compositingOperations.indexOf(operation) ? 0;
+	fraction = fraction.asFloat;
+	this.prDrawImage(target, image, source, operation, fraction);
+  }
+
+  *prDrawImage { arg target, image, source, operation, fraction;
     _QPen_DrawImage
     ^this.primitiveFailed;
   }
