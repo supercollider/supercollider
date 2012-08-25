@@ -21,10 +21,11 @@
 #ifndef SCIDE_WIDGETS_MAIN_WINDOW_HPP_INCLUDED
 #define SCIDE_WIDGETS_MAIN_WINDOW_HPP_INCLUDED
 
-#include <QMainWindow>
 #include <QLabel>
+#include <QMainWindow>
 #include <QProcess>
 #include <QSignalMapper>
+#include <QStatusBar>
 
 namespace ScIDE {
 
@@ -145,7 +146,7 @@ private Q_SLOTS:
     void toggleFullScreen();
     void lookupDefinition();
     void lookupDocumentation();
-
+    void showMessage( QString const & string );
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -172,6 +173,7 @@ private:
     TextFindReplacePanel *mFindReplaceTool;
 
     // Status bar
+    QStatusBar  *mStatusBar;
     StatusLabel *mLangStatus;
     StatusLabel *mServerStatus;
     StatusClockLabel *mClockLabel;
