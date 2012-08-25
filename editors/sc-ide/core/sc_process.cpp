@@ -204,6 +204,9 @@ void SCProcess::onSclangStart()
 
 void SCProcess::setActiveDocument(Document * document)
 {
+    if (state() != QProcess::Running)
+        return;
+
     QString filePath;
     if (document)
         filePath = document->filePath();
