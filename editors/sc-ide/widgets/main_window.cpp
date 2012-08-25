@@ -473,15 +473,15 @@ void MainWindow::loadSession( Session *session )
 {
     session->beginGroup("mainWindow");
 
-    QByteArray geom = QByteArray::fromBase64
-        ( session->value("geometry").value<QByteArray>() );
+    QByteArray geom = QByteArray::fromBase64( session->value("geometry").value<QByteArray>() );
     if (!geom.isEmpty())
-        this->restoreGeometry(geom);
+        restoreGeometry(geom);
 
-    QByteArray state = QByteArray::fromBase64
-        ( session->value("state").value<QByteArray>() );
+    updateClockWidget(isFullScreen());
+
+    QByteArray state = QByteArray::fromBase64( session->value("state").value<QByteArray>() );
     if (!state.isEmpty())
-        this->restoreState(state);
+        restoreState(state);
 
     session->endGroup();
 
@@ -875,14 +875,26 @@ void MainWindow::toggleFullScreen()
     if (isFullScreen()) {
         setWindowState(windowState() & ~Qt::WindowFullScreen);
 
-        delete mClockLabel;
-        mClockLabel = NULL;
+        updateClockWidget(false);
     } else {
         setWindowState(windowState() | Qt::WindowFullScreen);
 
-        Q_ASSERT(mClockLabel == NULL);
-        mClockLabel = new StatusClockLabel(this);
-        statusBar()->insertWidget(0, mClockLabel);
+        updateClockWidget(true);
+    }
+}
+
+void MainWindow::updateClockWidget(bool isFullScreen)
+{
+    if (!isFullScreen) {
+        if (mClockLabel) {
+            delete mClockLabel;
+            mClockLabel = NULL;
+        }
+    } else {
+        if (mClockLabel == NULL) {
+            mClockLabel = new StatusClockLabel(this);
+            statusBar()->insertWidget(0, mClockLabel);
+        }
     }
 }
 
