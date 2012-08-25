@@ -64,7 +64,6 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangSource/DumpParseNode.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/GC.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/InitAlloc.cpp
-	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrFileUtils.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrInterpreter3.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrLexer.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrMathOps.cpp
