@@ -1,6 +1,42 @@
 
 QImage {
+	classvar <compositingOperations;
 	var dataptr, finalizer;
+
+	*initClass {
+		compositingOperations = [
+			'sourceOver',       // 0
+			'destinationOver',  // 1
+			'clear',            // 2
+			'copy',             // 3
+
+			'destination',      // 4 qt name
+
+			'sourceIn',         // 5
+			'destinationIn',    // 6
+			'sourceOut',        // 7
+			'destinationOut',   // 8
+			'sourceATop',       // 9
+			'destinationATop',  // 10
+			'xor',              // 11
+
+			'plus',             // 12 qt name
+			'multiply',         // 13 qt name
+			'screen',           // 14 qt name
+			'overlay',          // 15 qt name
+
+			'plusDarker',       // 16 CompositionMode_Darken + plus?
+			'plusLighter',      // 17 CompositionMode_Lighten + plus?
+			'highlight',        // 18 CompositionMode_ColorDodge?
+
+			'colorBurn',        // 19 qt name
+			'hardLight',        // 20 qt name
+			'softLight',        // 21 qt name
+            'difference',       // 22 qt name
+			'exclusion',        // 23 qt name
+			// 24-32 RasterOp
+		];
+	}
 
 	*new { arg multiple;
 	}
@@ -50,8 +86,6 @@ QImage {
 		);
 		^this.prFormats(rw);
 	}
-
-	*compositingOperations {}
 
 	*interpolations {}
 
