@@ -53,18 +53,18 @@ using nova::wrap_argument;
 
 struct sc_distort_functor
 {
-    template <typename FloatType>
-    inline FloatType operator()(FloatType arg) const
-    {
-        return sc_distort(arg);
-    }
+	template <typename FloatType>
+	inline FloatType operator()(FloatType arg) const
+	{
+		return sc_distort(arg);
+	}
 
-    template <typename FloatType>
-    inline nova::vec<FloatType> operator()(nova::vec<FloatType> arg) const
-    {
-        nova::vec<FloatType> one (1.f);
-        return arg * reciprocal(one + abs(arg));
-    }
+	template <typename FloatType>
+	inline nova::vec<FloatType> operator()(nova::vec<FloatType> arg) const
+	{
+		nova::vec<FloatType> one (1.f);
+		return arg * reciprocal(one + abs(arg));
+	}
 };
 
 namespace nova {
