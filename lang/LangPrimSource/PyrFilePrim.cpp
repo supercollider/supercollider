@@ -343,37 +343,20 @@ int prFilePos(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static bool filelen(FILE *file, size_t *length)
-{	// does not preserve file pointer
-	fpos_t pos;
-	if (fseek(file, 0, SEEK_END)) return true;
-	if (fgetpos(file, &pos)) return true;
-
-#ifdef SC_LINUX
-	// sk: hack alert!
-	*length = pos.__pos;
-#else
-	*length = pos;
-#endif
-
-	return false;
-}
-
 int prFileLength(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a;
-	PyrFile *pfile;
-	FILE *file;
-	fpos_t pos;
-	size_t length;
+	PyrSlot * a = g->sp;
+	PyrFile *pfile = (PyrFile*)slotRawObject(a);
+	FILE *file = (FILE*)slotRawPtr(&pfile->fileptr);
 
-	a = g->sp;
-	pfile = (PyrFile*)slotRawObject(a);
-	file = (FILE*)slotRawPtr(&pfile->fileptr);
 	if (file == NULL) return errFailed;
+
 	// preserve file position
+	fpos_t pos;
 	if (fgetpos(file, &pos)) return errFailed;
-	if (filelen(file, &length)) return errFailed;
+	if (fseek(file, 0, SEEK_END)) return errFailed;
+	size_t length;
+	length = ftell(file);
 	if (fsetpos(file, &pos)) return errFailed;
 
 	SetInt(a, length);
