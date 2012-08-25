@@ -48,6 +48,11 @@ static QPainter *imgPainter = 0;
   assert( IsNil( obj->slots ) && IsNil( obj->slots+1 ) );
 
 #define INIT_SETUP \
+  if( img->format() != QImage::Format_ARGB32_Premultiplied ) { \
+    QImage *aux = img; \
+    img = new QImage( img->convertToFormat( QImage::Format_ARGB32_Premultiplied ) ); \
+    delete aux; \
+  } \
   SetPtr( obj->slots, img ); // dataptr \
   InstallFinalizer( g, obj, 1, QImage_Finalize ); // finalizer
 
@@ -96,7 +101,7 @@ void QImage_InitEmpty( struct VMGlobals *g, struct PyrObject *obj,
                        int width, int height )
 {
   INIT_ASSERT
-  QImage *img = new QImage( width, height, QImage::Format_ARGB32 );
+  QImage *img = new QImage( width, height, QImage::Format_ARGB32_Premultiplied );
   img->fill( QColor(Qt::black).rgba() );
   INIT_SETUP
 }
