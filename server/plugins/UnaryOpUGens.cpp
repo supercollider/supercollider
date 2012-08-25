@@ -51,6 +51,25 @@ using nova::wrap_argument;
 		nova::NOVANAME##_vec_simd<64>(OUT(0), IN(0));                   \
 	}
 
+struct sc_distort_functor
+{
+    template <typename FloatType>
+    inline FloatType operator()(FloatType arg) const
+    {
+        return sc_distort(arg);
+    }
+
+    template <typename FloatType>
+    inline nova::vec<FloatType> operator()(nova::vec<FloatType> arg) const
+    {
+        nova::vec<FloatType> one (1.f);
+        return arg * reciprocal(one + abs(arg));
+    }
+};
+
+namespace nova {
+NOVA_SIMD_DEFINE_UNARY_WRAPPER (distort, sc_distort_functor)
+}
 #endif
 
 using namespace std; // for math functions
@@ -366,23 +385,7 @@ NOVA_WRAPPER_CT_UNROLL(sign, sgn)
 DEFINE_UNARY_OP_FUNCS(distort, sc_distort)
 
 #ifdef NOVA_SIMD
-void distort_a_nova(UnaryOpUGen *unit, int inNumSamples)
-{
-	float *out = OUT(0);
-	float *a = IN(0);
-	using namespace nova;
-
-	int vs = vec<float>::size;
-	int len = inNumSamples / vs;
-	vec<float> one(1.f);
-
-	for (int i=0; i<len; ++i) {
-		vec<float> arg; arg.load_aligned(a);
-		vec<float> result = arg / (one + abs(arg));
-		result.store_aligned(out);
-		out += vs; a += vs;
-	}
-}
+NOVA_WRAPPER_CT_UNROLL(distort, distort)
 #endif
 
 DEFINE_UNARY_OP_FUNCS(distortneg, sc_distortneg)
@@ -652,7 +655,7 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opCosH : func = &cosh_a; break;
 		case opTanH : func = &tanh_nova; break;
 
-		case opDistort : func = &distort_a_nova; break;
+		case opDistort : func = &distort_nova_64; break;
 		case opSoftClip : func = &softclip_nova_64; break;
 
 		case opRectWindow : func = &rectwindow_a; break;
@@ -702,7 +705,7 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opCosH : func = &cosh_a; break;
 		case opTanH : func = &tanh_nova; break;
 
-		case opDistort : func = &distort_a_nova; break;
+		case opDistort : func = &distort_nova; break;
 		case opSoftClip : func = &softclip_nova; break;
 
 		case opRectWindow : func = &rectwindow_a; break;
