@@ -51,7 +51,6 @@ set(sclang_sources
 	LangSource/DumpParseNode.cpp
 	LangSource/GC.cpp
 	LangSource/InitAlloc.cpp
-	LangSource/PyrFileUtils.cpp
 	LangSource/PyrInterpreter3.cpp
 	LangSource/PyrLexer.cpp
 	LangSource/PyrMathOps.cpp

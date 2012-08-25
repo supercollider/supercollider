@@ -29,7 +29,6 @@ Primitives for File i/o.
 #include "PyrPrimitive.h"
 #include "PyrSymbol.h"
 #include "PyrFilePrim.h"
-#include "PyrFileUtils.h"
 #include "ReadWriteMacros.h"
 #include "SCBase.h"
 #include "SC_DirUtils.h"
@@ -77,8 +76,6 @@ Primitives for File i/o.
 #endif
 
 #define DELIMITOR ':'
-
-bool filelen(FILE *file, size_t *length);
 
 int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 {
@@ -344,6 +341,22 @@ int prFilePos(struct VMGlobals *g, int numArgsPushed)
 
 	SetInt(a, length);
 	return errNone;
+}
+
+static bool filelen(FILE *file, size_t *length)
+{	// does not preserve file pointer
+	fpos_t pos;
+	if (fseek(file, 0, SEEK_END)) return true;
+	if (fgetpos(file, &pos)) return true;
+
+#ifdef SC_LINUX
+	// sk: hack alert!
+	*length = pos.__pos;
+#else
+	*length = pos;
+#endif
+
+	return false;
 }
 
 int prFileLength(struct VMGlobals *g, int numArgsPushed)
