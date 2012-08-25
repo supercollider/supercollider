@@ -76,7 +76,7 @@ int main( int argc, char *argv[] )
 
     bool startInterpreter = main->settings()->value("IDE/interpreter/autoStart").toBool();
     if (startInterpreter)
-        main->scProcess()->start();
+        main->scProcess()->startLanguage();
 
     return app.exec();
 }

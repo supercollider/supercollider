@@ -420,8 +420,9 @@ void MainWindow::createMenus()
 
     menu = new QMenu(tr("&Language"), this);
     menu->addAction( mMain->scProcess()->action(SCProcess::StartSCLang) );
-    menu->addAction( mMain->scProcess()->action(SCProcess::RecompileClassLibrary) );
     menu->addAction( mMain->scProcess()->action(SCProcess::StopSCLang) );
+    menu->addAction( mMain->scProcess()->action(SCProcess::RestartSCLang) );
+    menu->addAction( mMain->scProcess()->action(SCProcess::RecompileClassLibrary) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::EvaluateCurrentDocument) );
     menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );

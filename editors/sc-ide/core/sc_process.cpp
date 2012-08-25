@@ -56,7 +56,7 @@ void SCProcess::prepareActions(Main * main)
     QAction * action;
     mActions[StartSCLang] = action = new QAction(
         QIcon::fromTheme("system-run"), tr("Start SCLang"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(start()) );
+    connect(action, SIGNAL(triggered()), this, SLOT(startLanguage()) );
 
     mActions[RecompileClassLibrary] = action = new QAction(
         QIcon::fromTheme("system-reboot"), tr("Recompile Class Library"), this);
@@ -66,6 +66,10 @@ void SCProcess::prepareActions(Main * main)
     mActions[StopSCLang] = action = new QAction(
         QIcon::fromTheme("system-shutdown"), tr("Stop SCLang"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()) );
+
+    mActions[RestartSCLang] = action = new QAction(
+        QIcon::fromTheme("system-reboot"), tr("Restart SCLang"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(restartLanguage()) );
 
     mActions[RunMain] = action = new QAction(
         QIcon::fromTheme("media-playback-start"), tr("Run Main"), this);
@@ -81,7 +85,7 @@ void SCProcess::prepareActions(Main * main)
         settings->addAction( mActions[i] );
 }
 
-void SCProcess::start (void)
+void SCProcess::startLanguage (void)
 {
     if (state() != QProcess::NotRunning) {
         statusMessage("Interpreter is already running.");
@@ -132,6 +136,7 @@ void SCProcess::recompileClassLibrary (void)
     write("\x18");
 }
 
+
 void SCProcess::stopLanguage (void)
 {
     if(state() != QProcess::Running) {
@@ -140,7 +145,28 @@ void SCProcess::stopLanguage (void)
     }
 
     closeWriteChannel();
+
+    bool finished = waitForFinished(200);
+    if ( !finished && (state() != QProcess::NotRunning) ) {
+#ifdef Q_OS_WIN32
+        kill();
+#else
+        terminate();
+#endif
+        bool reallyFinished = waitForFinished(200);
+        if (!reallyFinished)
+            emit statusMessage("Interpreter cannot be stopped");
+    }
 }
+
+void SCProcess::restartLanguage()
+{
+    stopLanguage();
+    startLanguage();
+}
+
+
+
 void SCProcess::onReadyRead(void)
 {
     QByteArray out = QProcess::readAll();
