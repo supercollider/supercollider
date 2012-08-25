@@ -92,7 +92,6 @@ BinaryOpUGen : BasicOpUGen {
 		if (selector == '/', {
 			if (b == 1.0, { ^a });
 			if (b == -1.0, { ^a.neg });
-			if (b.rate == 'scalar', { ^a * b.reciprocal });
 		})})})});
 
  		^super.new1(rate, selector, a, b)
