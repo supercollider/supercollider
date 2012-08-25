@@ -219,8 +219,11 @@ if(LTO)
     set_property(TARGET scsynth libscsynth
                  APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-    set_property(TARGET scsynth libscsynth
+    set_property(TARGET scsynth
                  APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
+
+    set_property(TARGET libscsynth
+                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
 
 if (LIBSCSYNTH)
