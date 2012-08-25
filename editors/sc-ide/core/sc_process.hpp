@@ -49,6 +49,7 @@ public:
         StartSCLang = 0,
         RecompileClassLibrary,
         StopSCLang,
+        RestartSCLang,
         RunMain,
         StopMain,
 
@@ -79,11 +80,12 @@ Q_SIGNALS:
     void response(const QString & id, const QString & data);
 
 public slots:
-    void start (void);
     void recompileClassLibrary (void);
     void runMain(void)  { evaluateCode("thisProcess.run", false); }
     void stopMain(void) { evaluateCode("thisProcess.stop", false); }
+    void startLanguage (void);
     void stopLanguage (void);
+    void restartLanguage (void);
     void onReadyRead(void);
     void evaluateCode(QString const & commandString, bool silent = false);
 
