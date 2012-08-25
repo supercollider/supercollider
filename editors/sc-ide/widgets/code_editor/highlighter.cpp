@@ -123,6 +123,7 @@ void SyntaxHighlighterGlobals::initBuiltins()
              << "thisProcess"
              << "thisThread"
              << "currentEnvironment"
+             << "topEnvironment"
                 ;
 
     QString builtinsPattern = QString("^\\b(%1)\\b").arg(builtins.join("|"));
