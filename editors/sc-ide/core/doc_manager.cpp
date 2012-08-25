@@ -35,6 +35,7 @@ using namespace ScIDE;
 void Document::deleteTrailingSpaces()
 {
     QTextCursor cursor (textDocument());
+    cursor.beginEditBlock();
     cursor.movePosition(QTextCursor::EndOfBlock);
     QTextDocument * doc = textDocument();
 
@@ -45,6 +46,7 @@ void Document::deleteTrailingSpaces()
         cursor.movePosition(QTextCursor::NextBlock);
         cursor.movePosition(QTextCursor::EndOfBlock);
     }
+    cursor.endEditBlock();
 }
 
 DocumentManager::DocumentManager( Main *main ):
