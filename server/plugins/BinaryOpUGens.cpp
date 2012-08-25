@@ -1988,7 +1988,7 @@ void div_ak(BinaryOpUGen *unit, int inNumSamples)
 		} else if (xb == 1.f) {
 			ZCopy(inNumSamples, out, a);
 		} else {
-			float recip = sc_reciprocal(xb);
+			float recip = 1.f/ xb;
 			LOOP1(inNumSamples,
 				ZXP(out) = ZXP(a) * recip;
 			);
@@ -2047,7 +2047,7 @@ void div_ai(BinaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	float xb = ZIN0(1);
 
-	float rxb = sc_reciprocal(xb);
+	float rxb = 1.f / xb;
 	LOOP1(inNumSamples,
 		ZXP(out) = ZXP(a) * rxb;
 	);
@@ -2087,7 +2087,7 @@ FLATTEN void div_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 		else if (xb == 1.f)
 			nova::copyvec_simd(OUT(0), IN(0), inNumSamples);
 		else {
-			float recip = sc_reciprocal(xb);
+			float recip = 1.f / xb;
 			nova::times_vec_simd(OUT(0), IN(0), recip, inNumSamples);
 		}
 	} else {
