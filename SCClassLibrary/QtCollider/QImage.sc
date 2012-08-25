@@ -32,7 +32,7 @@ QImage {
 			'colorBurn',        // 19 qt name
 			'hardLight',        // 20 qt name
 			'softLight',        // 21 qt name
-            'difference',       // 22 qt name
+			'difference',       // 22 qt name
 			'exclusion',        // 23 qt name
 			// 24-32 RasterOp
 		];
@@ -175,10 +175,6 @@ QImage {
 		_QImage_NewEmpty
 		^this.primitiveFailed
 	}
-
-	// in QPen.drawImage, TODO: operation, fraction
-	//prDrawInRect { arg rect, fromRect, operation, fraction;
-	//}
 
 	prSetPainter {
 		_QImage_SetPainter
