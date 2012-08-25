@@ -71,11 +71,11 @@ MainWindow::MainWindow(Main * main) :
     mServerStatus = new StatusLabel();
     onServerStatusReply(0, 0, 0, 0, 0, 0);
 
-    QStatusBar *status = statusBar();
-    status->addPermanentWidget( new QLabel("Interpreter:") );
-    status->addPermanentWidget( mLangStatus );
-    status->addPermanentWidget( new QLabel("Server:") );
-    status->addPermanentWidget( mServerStatus );
+    mStatusBar = statusBar();
+    mStatusBar->addPermanentWidget( new QLabel("Interpreter:") );
+    mStatusBar->addPermanentWidget( mLangStatus );
+    mStatusBar->addPermanentWidget( new QLabel("Server:") );
+    mStatusBar->addPermanentWidget( mServerStatus );
 
     onServerRunningChanged(false, "", 0);
 
@@ -142,7 +142,7 @@ MainWindow::MainWindow(Main * main) :
             this, SLOT( onInterpreterStateChanged(QProcess::ProcessState) ) );
     // Interpreter: forward status messages
     connect(main->scProcess(), SIGNAL(statusMessage(const QString&)),
-            status, SLOT(showMessage(const QString&)));
+            this, SLOT(showMessage(const QString&)));
 
     // Document list interaction
     connect(mDocListDock->list(), SIGNAL(clicked(Document*)),
@@ -901,6 +901,11 @@ void MainWindow::lookupDocumentation()
         mEditors->openDocumentation(dialog->textValue());
 
     delete dialog;
+}
+
+void MainWindow::showMessage( QString const & string )
+{
+    mStatusBar->showMessage(string, 3000);
 }
 
 
