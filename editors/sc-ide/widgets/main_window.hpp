@@ -157,6 +157,7 @@ private:
     bool promptSaveDocs();
     void updateSessionsMenu();
     QWidget *cmdLine();
+    void updateClockWidget( bool isFullScreen );
 
     Main *mMain;
 
