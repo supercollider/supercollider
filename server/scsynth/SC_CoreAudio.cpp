@@ -24,6 +24,7 @@
 #include "SC_SequencedCommand.h"
 #include "SC_Prototypes.h"
 #include "SC_HiddenWorld.h"
+#include "SC_WorldOptions.h"
 #include "SC_Endian.h"
 #include "SC_Lib_Cintf.h"
 #include <stdlib.h>

@@ -25,6 +25,7 @@
 #include "SC_UnitSpec.h"
 #include "SC_UnitDef.h"
 #include "SC_HiddenWorld.h"
+#include "SC_WorldOptions.h"
 #include "SC_Wire.h"
 #include "SC_WireSpec.h"
 #include <stdio.h>

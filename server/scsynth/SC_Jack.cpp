@@ -27,6 +27,7 @@
 #include "SC_HiddenWorld.h"
 #include "SC_Prototypes.h"
 #include "SC_StringParser.h"
+#include "SC_WorldOptions.h"
 
 #include <jack/jack.h>
 #include <math.h>

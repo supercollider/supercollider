@@ -109,13 +109,6 @@ struct World
 #endif
 };
 
-extern "C" {
-#ifdef _WIN32
-  __declspec(dllexport)
-#endif //_WIN32
-  int scprintf(const char *fmt, ...);
-}
-
 inline SndBuf* World_GetBuf(struct World *inWorld, uint32 index)
 {
 	if (index > inWorld->mNumSndBufs) index = 0;

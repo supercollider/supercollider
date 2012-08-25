@@ -32,6 +32,7 @@
 #include <new>
 #include "SC_Prototypes.h"
 #include "scsynthsend.h"
+#include "SC_WorldOptions.h"
 
 extern int gMissingNodeID;
 
