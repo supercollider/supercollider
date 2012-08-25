@@ -674,7 +674,7 @@ void PyrGC::Collect(int32 inNumToScan)
 	Collect();	// collect space
 }
 
-void PyrGC::Collect()
+HOT void PyrGC::Collect()
 {
 	BEGINPAUSE
 	bool stackScanned = false;
