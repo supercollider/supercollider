@@ -163,6 +163,15 @@ if(PTHREADS_FOUND)
     target_link_libraries(${ide_name} ${PTHREADS_LIBRARIES})
 endif()
 
+if(LTO)
+    set_property(TARGET ${ide_name}
+                 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+
+    set_property(TARGET ${ide_name}
+                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
+endif()
+
+
 # Installation
 
 if(APPLE)
