@@ -34,6 +34,10 @@ ScIDE {
 		_ScIDE_Connected
 	}
 
+	*open { |path|
+		this.prSend(\openFile, [path])
+	}
+
 	*sendIntrospection {
 		var out;
 		out = [];

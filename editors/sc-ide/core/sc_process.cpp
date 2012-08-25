@@ -243,47 +243,78 @@ void SCProcess::setActiveDocument(Document * document)
         evaluateCode(QString("ScIDE.currentPath_(nil)"), true);
 }
 
+
+
 void ScResponder::onResponse( const QString & selector, const QString & data )
 {
     static QString defaultServerRunningChangedSymbol("defaultServerRunningChanged");
     static QString introspectionSymbol("introspection");
     static QString requestCurrentPathSymbol("requestCurrentPath");
+    static QString openFileSymbol("openFile");
 
-    if (selector == defaultServerRunningChangedSymbol) {
-        std::stringstream stream;
-        stream << data.toStdString();
-        YAML::Parser parser(stream);
+    if (selector == defaultServerRunningChangedSymbol)
+        handleServerRunningChanged(data);
 
-        YAML::Node doc;
-
-        bool serverRunningState;
-        std::string hostName;
-        int port;
-
-        while(parser.GetNextDocument(doc)) {
-            assert(doc.Type() == YAML::NodeType::Sequence);
-
-            bool success = doc[0].Read(serverRunningState);
-            if (!success) return; // LATER: report error?
-
-            success = doc[1].Read(hostName);
-            if (!success) return; // LATER: report error?
-
-            success = doc[2].Read(port);
-            if (!success) return; // LATER: report error?
-        }
-
-        emit serverRunningChanged (serverRunningState, QString(hostName.c_str()), port);
-        return;
-    }
-    else if (selector == introspectionSymbol) {
+    else if (selector == introspectionSymbol)
         emit newIntrospectionData(data);
-        return;
-    }
-    else if (selector == requestCurrentPathSymbol) {
+
+    else if (selector == requestCurrentPathSymbol)
         Main::scProcess()->setActiveDocument(Main::instance()->documentManager()->currentDocument());
-        return;
+
+    else if (selector == openFileSymbol)
+        handleOpenFile(data);
+}
+
+
+
+void ScResponder::handleOpenFile( const QString & data ) const
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        for (int index = 0; index != doc.size(); ++index) {
+            std::string path;
+            bool success = doc[index].Read(path);
+            if (!success)
+                return;
+
+            Main::instance()->documentManager()->open(QString(path.c_str()));
+        }
     }
+}
+
+void ScResponder::handleServerRunningChanged( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+
+    bool serverRunningState;
+    std::string hostName;
+    int port;
+
+    YAML::Node doc;
+    while(parser.GetNextDocument(doc)) {
+        assert(doc.Type() == YAML::NodeType::Sequence);
+
+        bool success = doc[0].Read(serverRunningState);
+        if (!success) return; // LATER: report error?
+
+        success = doc[1].Read(hostName);
+        if (!success) return; // LATER: report error?
+
+        success = doc[2].Read(port);
+        if (!success) return; // LATER: report error?
+    }
+
+    emit serverRunningChanged (serverRunningState, QString(hostName.c_str()), port);
+    return;
 }
 
 } // namespace ScIDE
