@@ -29,6 +29,7 @@
 #include "SC_DirUtils.h"
 #include "SC_StringParser.h"
 #include "../../common/SC_SndFileHelpers.hpp"
+#include "SC_WorldOptions.h"
 
 #define GET_COMPLETION_MSG(msg) \
 	mMsgSize = msg.getbsize(); \

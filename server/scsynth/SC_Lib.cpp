@@ -27,6 +27,7 @@
 #include <ctype.h>
 #include "SC_Prototypes.h"
 #include "SC_Str4.h"
+#include "SC_WorldOptions.h"
 
 
 void SendDone(ReplyAddress *inReply, const char *inCommandName)

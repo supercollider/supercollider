@@ -28,6 +28,7 @@
 #include "SC_Prototypes.h"
 #include "SC_Str4.h"
 #include "SC_World.h"
+#include "SC_WorldOptions.h"
 #include "SC_Errors.h"
 #include "scsynthsend.h"
 

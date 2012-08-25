@@ -25,6 +25,7 @@
 #include "SC_UnitDef.h"
 #include "SC_BufGen.h"
 #include "SC_World.h"
+#include "SC_WorldOptions.h"
 #include "SC_StringParser.h"
 #include "SC_InterfaceTable.h"
 #include "SC_DirUtils.h"
