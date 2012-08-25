@@ -727,6 +727,9 @@ const ScLanguage::Class * AutoCompleter::classForCompletionDescription(AutoCompl
     if (objectString == QString("currentEnvironment"))
         return introspection.findClass("Environment");
 
+    if (objectString == QString("topEnvironment"))
+        return introspection.findClass("Environment");
+
     if (objectString == QString("inf"))
         return introspection.findClass("Float");
 
