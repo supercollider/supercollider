@@ -102,7 +102,7 @@ void QImage_InitEmpty( struct VMGlobals *g, struct PyrObject *obj,
 {
   INIT_ASSERT
   QImage *img = new QImage( width, height, QImage::Format_ARGB32_Premultiplied );
-  img->fill( QColor(Qt::black).rgba() );
+  img->fill( QColor(Qt::transparent).rgba() );
   INIT_SETUP
 }
 
