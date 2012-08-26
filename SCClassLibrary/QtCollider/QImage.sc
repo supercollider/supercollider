@@ -370,11 +370,15 @@ QImage {
 }
 
 // integer additions to retrieve 8-bit pixel component from RGBA packed data
+// values were rotated to Qt's ARGB order
 
 +Integer {
-	*fromRGBA {|r, g=0, b=0, a=255|
+	*fromRGBA { arg r, g = 0, b = 0, a = 255;
 		^(
-			((r.asInteger & 16r000000FF) << 24) | ((g.asInteger & 16r000000FF) << 16) | ((b.asInteger & 16r000000FF) << 8) | (a.asInteger & 16r000000FF)
+			((a.asInteger & 16r000000FF) << 24) |
+			((r.asInteger & 16r000000FF) << 16) |
+			((g.asInteger & 16r000000FF) << 8) |
+			(b.asInteger & 16r000000FF)
 		);
 	}
 
@@ -395,16 +399,16 @@ QImage {
 		^[this.red, this.green, this.blue, this.alpha];
 	}
 
-	red {
+	alpha {
 		^((this >> 24) & 16r000000FF);
 	}
-	green {
+	red {
 		^((this >> 16) & 16r000000FF);
 	}
-	blue {
+	green {
 		^((this >> 8) & 16r000000FF);
 	}
-	alpha {
+	blue {
 		^(this & 16r000000FF);
 	}
 }
