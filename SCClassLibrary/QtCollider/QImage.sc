@@ -135,12 +135,6 @@ QImage {
 		// TODO
 	}
 
-	/** TODO: QT IS ARGB
-	 *	Converts a Color instance into
-	 *	a pixel datatype suitable for SCImage.
-	 *	This is a 32bit packed Integer in
-	 *	the RGBA format.
-	 */
 	*colorToPixel { arg col;
 		^Integer.fromRGBA(
 			(col.red * 255 ).asInteger,
