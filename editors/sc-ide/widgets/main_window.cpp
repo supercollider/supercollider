@@ -218,12 +218,13 @@ void MainWindow::createActions()
 
     mActions[DocSaveAs] = act = new QAction(
         QIcon::fromTheme("document-save-as"), tr("Save &As..."), this);
+    act->setShortcut(tr("Ctrl+Shift+S", "Save &As..."));
     act->setStatusTip(tr("Save the current document into a different file"));
     connect(act, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
 
     mActions[DocSaveAll] = act = new QAction(
         QIcon::fromTheme("document-save"), tr("Save All..."), this);
-    act->setShortcut(tr("Ctrl+Shift+S", "Save all documents"));
+    act->setShortcut(tr("Ctrl+Alt+S", "Save all documents"));
     act->setStatusTip(tr("Save all open documents"));
     connect(act, SIGNAL(triggered()), this, SLOT(saveAllDocuments()));
 
