@@ -53,6 +53,7 @@ private:
 
     QAction * mAutoScrollAction;
     QAction * mClearAction;
+    bool mNewlinePending;
 };
 
 

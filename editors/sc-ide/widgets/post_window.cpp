@@ -31,7 +31,8 @@
 namespace ScIDE {
 
 PostWindow::PostWindow(QWidget* parent):
-    QPlainTextEdit(parent)
+    QPlainTextEdit(parent),
+    mNewlinePending(false)
 {
     setReadOnly(true);
     setLineWrapMode(QPlainTextEdit::NoWrap);
@@ -100,10 +101,23 @@ void PostWindow::post(const QString &text)
 
     QTextCursor c(document());
     c.movePosition(QTextCursor::End);
-    c.insertBlock();
-    c.insertText(text);
 
-    if(scroll)
+    if (mNewlinePending) {
+        c.insertBlock();
+        mNewlinePending = false;
+        c.movePosition(QTextCursor::End);
+    }
+
+    if ( text.endsWith("\n") ) {
+        QString textToInsert (text);
+        textToInsert.chop(1);
+        mNewlinePending = true;
+        c.insertText(textToInsert);
+    } else {
+        c.insertText(text);
+    }
+
+    if (scroll)
         emit(scrollToBottomRequest());
 }
 

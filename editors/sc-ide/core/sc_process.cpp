@@ -171,8 +171,6 @@ void SCProcess::onReadyRead(void)
 {
     QByteArray out = QProcess::readAll();
     QString postString = QString::fromUtf8(out);
-    if (postString.endsWith( '\n' ))
-        postString.chop(1);
     emit scPost(postString);
 }
 
