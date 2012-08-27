@@ -192,9 +192,6 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     connect(&mModificationMapper, SIGNAL(mapped(QWidget*)),
             this, SLOT(onModificationChanged(QWidget*)));
 
-    connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
-            this, SLOT(applySettings(Settings::Manager*)));
-
     connect(this, SIGNAL(currentChanged(Document*)), mDocManager, SLOT(activeDocumentChanged(Document*)));
 
     createActions();

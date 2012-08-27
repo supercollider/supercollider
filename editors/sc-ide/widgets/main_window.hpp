@@ -91,7 +91,7 @@ public:
         ActionCount
     };
 
-    MainWindow(Main *);
+    explicit MainWindow(Main *);
 
     QAction *action( ActionRole );
 
@@ -147,6 +147,7 @@ private Q_SLOTS:
     void lookupDefinition();
     void lookupDocumentation();
     void showMessage( QString const & string );
+    void applySettings( Settings::Manager * );
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
