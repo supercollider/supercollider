@@ -51,6 +51,7 @@ void Manager::initDefaults()
     setDefault("stepForwardEvaluation", false);
 
     setDefault("blinkDuration", 600);
+    setDefault("postWindowScrollback", 1000);
 
     QFont fnt(QApplication::font());
     fnt.setFamily("monospace");
