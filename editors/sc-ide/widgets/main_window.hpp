@@ -57,7 +57,9 @@ public:
         DocOpen,
         DocSave,
         DocSaveAs,
+        DocSaveAll,
         DocClose,
+        DocCloseAll,
         DocReload,
         ClearRecentDocs,
 
@@ -112,8 +114,10 @@ public Q_SLOTS:
     void openDocument();
     void saveDocument();
     void saveDocumentAs();
+    void saveAllDocuments();
     void reloadDocument();
     void closeDocument();
+    void closeAllDocuments();
 
     void showCmdLine();
     void showFindTool();
