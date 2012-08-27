@@ -71,9 +71,11 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void onFindFieldReturn();
+    void onFindFieldTextChanged();
 
 private:
     void find (bool backwards);
+    bool eventFilter (QObject *, QEvent *);
 
     QLineEdit *mFindField;
     QLabel *mFindLabel;
@@ -94,6 +96,7 @@ private:
     Mode mMode;
 
     CodeEditor *mEditor;
+    int mSearchPosition;
 };
 
 } // namespace ScIDE

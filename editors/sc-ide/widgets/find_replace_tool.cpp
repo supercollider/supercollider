@@ -28,7 +28,8 @@ namespace ScIDE {
 TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     QWidget(parent),
     mMode((Mode) 0), // a hack so that first setMode() works
-    mEditor(0)
+    mEditor(0),
+    mSearchPosition(-1)
 {
     mFindField = new QLineEdit;
     mReplaceField = new QLineEdit;
@@ -72,6 +73,7 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
 
     setFocusProxy(mFindField);
     QWidget::setTabOrder(mFindField, mReplaceField);
+    mFindField->installEventFilter(this);
 
     connect(mNextBtn, SIGNAL(clicked()), this, SLOT(findNext()));
     connect(mPrevBtn, SIGNAL(clicked()), this, SLOT(findPrevious()));
@@ -79,9 +81,8 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     connect(mReplaceBtn, SIGNAL(clicked()), this, SLOT(replace()));
     connect(mReplaceAllBtn, SIGNAL(clicked()), this, SLOT(replaceAll()));
     connect(mFindField, SIGNAL(returnPressed()), this, SLOT(onFindFieldReturn()));
+    connect(mFindField, SIGNAL(textChanged(QString)), this, SLOT(onFindFieldTextChanged()));
     connect(mReplaceField, SIGNAL(returnPressed()), this, SLOT(replace()));
-
-    connect(mFindField, SIGNAL(textChanged(QString)), this, SLOT(findAll()));
 }
 
 void TextFindReplacePanel::setMode( Mode mode )
@@ -99,6 +100,8 @@ void TextFindReplacePanel::setMode( Mode mode )
 
 void TextFindReplacePanel::initiate()
 {
+    mSearchPosition = -1;
+
     if(mEditor)
     {
         QTextCursor c( mEditor->textCursor() );
@@ -146,8 +149,43 @@ void TextFindReplacePanel::onFindFieldReturn()
     find (QApplication::keyboardModifiers() & Qt::ShiftModifier);
 }
 
+void TextFindReplacePanel::onFindFieldTextChanged()
+{
+    // Incremental search
+
+    if (!mEditor) return;
+
+    QRegExp expr(regexp());
+    QTextDocument::FindFlags flagz(flags());
+
+    if (mSearchPosition == -1)
+        mSearchPosition = mEditor->textCursor().selectionStart();
+
+    int count = mEditor->findAll(expr, flagz);
+
+    QTextCursor searchCursor(mEditor->textDocument());
+    searchCursor.setPosition(mSearchPosition);
+
+    if (expr.isEmpty()) {
+        mEditor->setTextCursor(searchCursor);
+    } else if (count) {
+        mEditor->setTextCursor(searchCursor);
+        mEditor->find(expr, flagz);
+    }
+}
+
+bool TextFindReplacePanel::eventFilter (QObject *obj, QEvent *ev)
+{
+    if (obj == mFindField && ev->type() == QEvent::FocusOut)
+        mSearchPosition = -1;
+
+    return QWidget::eventFilter(obj,ev);
+}
+
 void TextFindReplacePanel::find (bool backwards)
 {
+    // Non incremental search!
+
     if (!mEditor) return;
 
     QRegExp expr = regexp();
@@ -158,6 +196,9 @@ void TextFindReplacePanel::find (bool backwards)
         opt |= QTextDocument::FindBackward;
 
     mEditor->find(expr, opt);
+
+    // This was not incremental search, so reset search position
+    mSearchPosition = -1;
 }
 
 void TextFindReplacePanel::findAll()
@@ -166,7 +207,6 @@ void TextFindReplacePanel::findAll()
 
     // NOTE: empty expression removes any search highlighting
     mEditor->findAll(regexp(), flags());
-    mEditor->find(regexp(), flags());
 }
 
 void TextFindReplacePanel::replace()
@@ -177,6 +217,8 @@ void TextFindReplacePanel::replace()
     if (expr.isEmpty()) return;
 
     mEditor->replace(expr, replaceString(), flags());
+
+    mSearchPosition = -1;
 }
 
 void TextFindReplacePanel::replaceAll()
@@ -187,6 +229,8 @@ void TextFindReplacePanel::replaceAll()
     if (expr.isEmpty()) return;
 
     mEditor->replaceAll(expr, replaceString(), flags());
+
+    mSearchPosition = -1;
 }
 
 } // namespace ScIDE
