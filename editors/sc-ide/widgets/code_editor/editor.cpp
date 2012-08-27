@@ -289,17 +289,7 @@ bool CodeEditor::find( const QRegExp &expr, QTextDocument::FindFlags options )
     }
 
     if(!cursor.isNull()) {
-        QTextEdit::ExtraSelection extraSelection;
-        extraSelection.cursor = cursor;
-        extraSelection.format.setBackground(Qt::yellow);
-
-        cursor.setPosition(cursor.selectionEnd());
         setTextCursor(cursor);
-
-        QList<QTextEdit::ExtraSelection> selections = extraSelections();
-        selections.append(extraSelection);
-        setExtraSelections(selections);
-
         return true;
     }
     else
