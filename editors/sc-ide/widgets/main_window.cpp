@@ -225,11 +225,23 @@ void MainWindow::createActions()
     act->setStatusTip(tr("Save the current document into a different file"));
     connect(act, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
 
+    mActions[DocSaveAll] = act = new QAction(
+        QIcon::fromTheme("document-save"), tr("Save All..."), this);
+    act->setShortcut(tr("Ctrl+Shift+S", "Save all documents"));
+    act->setStatusTip(tr("Save all open documents"));
+    connect(act, SIGNAL(triggered()), this, SLOT(saveAllDocuments()));
+
     mActions[DocClose] = act = new QAction(
         QIcon::fromTheme("window-close"), tr("&Close"), this);
     act->setShortcut(tr("Ctrl+W", "Close document"));
     act->setStatusTip(tr("Close the current document"));
     connect(act, SIGNAL(triggered()), this, SLOT(closeDocument()));
+
+    mActions[DocCloseAll] = act = new QAction(
+        QIcon::fromTheme("window-close"), tr("Close All..."), this);
+    act->setShortcut(tr("Ctrl+Shift+W", "Close all documents"));
+    act->setStatusTip(tr("Close all documents"));
+    connect(act, SIGNAL(triggered()), this, SLOT(closeAllDocuments()));
 
     mActions[DocReload] = act = new QAction(
         QIcon::fromTheme("view-refresh"), tr("&Reload"), this);
@@ -351,10 +363,12 @@ void MainWindow::createMenus()
             this, SLOT(onRecentDocAction(QAction*)));
     menu->addAction( mActions[DocSave] );
     menu->addAction( mActions[DocSaveAs] );
+    menu->addAction( mActions[DocSaveAll] );
     menu->addSeparator();
     menu->addAction( mActions[DocReload] );
     menu->addSeparator();
     menu->addAction( mActions[DocClose] );
+    menu->addAction( mActions[DocCloseAll] );
     menu->addSeparator();
     menu->addAction( mActions[Quit] );
 
@@ -809,6 +823,14 @@ void MainWindow::saveDocumentAs()
     MainWindow::save(doc, true);
 }
 
+void MainWindow::saveAllDocuments()
+{
+    QList<Document*> docs = mMain->documentManager()->documents();
+    foreach (Document *doc, docs)
+        if (!MainWindow::save(doc))
+            return;
+}
+
 void MainWindow::reloadDocument()
 {
     CodeEditor *editor = mEditors->currentEditor();
@@ -825,6 +847,15 @@ void MainWindow::closeDocument()
 
     Q_ASSERT(editor->document());
     MainWindow::close( editor->document() );
+}
+
+void MainWindow::closeAllDocuments()
+{
+    if (promptSaveDocs()) {
+        QList<Document*> docs = mMain->documentManager()->documents();
+        foreach (Document *doc, docs)
+            mMain->documentManager()->close(doc);
+    }
 }
 
 bool MainWindow::promptSaveDocs()
