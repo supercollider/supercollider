@@ -121,7 +121,7 @@ void SCProcess::startLanguage (void)
     QProcess::start(sclangCommand, sclangArguments);
     bool processStarted = QProcess::waitForStarted();
     if (!processStarted) {
-        emit statusMessage("Could not start interpreter!");
+        emit statusMessage(tr("Failed to start interpreter!"));
     } else
         onSclangStart();
 }
@@ -155,7 +155,7 @@ void SCProcess::stopLanguage (void)
 #endif
         bool reallyFinished = waitForFinished(200);
         if (!reallyFinished)
-            emit statusMessage("Interpreter cannot be stopped");
+            emit statusMessage(tr("Failed to stop interpreter!"));
     }
 }
 
