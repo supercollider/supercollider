@@ -856,11 +856,19 @@ void MainWindow::updateWindowTitle()
     }
 
     if (doc) {
-        QString fileName =
-            doc->filePath().isEmpty() ? "Untitled" :
-            QFileInfo(doc->filePath()).fileName();
+        if (!doc->filePath().isEmpty()) {
+            QFileInfo info = QFileInfo(doc->filePath());
+            QString pathString = info.dir().path();
 
-        title.append( fileName );
+            QString homePath = QDir::homePath();
+            if (pathString.startsWith(homePath))
+                pathString.replace(0, homePath.size(), QString("~"));
+
+            QString titleString = QString("%1 (%2)").arg(info.fileName(), pathString);
+
+            title.append( titleString  );
+        } else
+            title.append( "Untitled" );
     }
 
     if (!title.isEmpty())
