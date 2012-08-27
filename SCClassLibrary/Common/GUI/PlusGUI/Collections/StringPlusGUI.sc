@@ -19,12 +19,23 @@
 	}
 
 	openDocument {
+		var ideClass;
 		if(Document.implementationClass.notNil) {
 			Document.open(this);
-		} {
-			this.openOS;
-		}
+			^this
+		};
+
+		ideClass = \ScIDE.asClass;
+		if ( ideClass.notNil ) {
+			if ( this.endsWith(".sc") || this.endsWith(".scd") ) {
+				ideClass.open(this);
+				^this
+			}
+		};
+
+		this.openOS
 	}
+
 //	*fromUser { arg prompt="Enter string :", default="";
 //		_GetStringFromUser
 //		^this.primitiveFailed
