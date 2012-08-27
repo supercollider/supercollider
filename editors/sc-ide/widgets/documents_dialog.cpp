@@ -106,15 +106,15 @@ void DocumentsDialog::init( Mode mode, const QList<Document*> &docs )
         connect(btn, SIGNAL(clicked()), this, SLOT(closeSelected()));
     }
     else {
-        btn = dialogBtnBox->addButton(tr("&Ignore"), QDialogButtonBox::ActionRole);
-        btn->setIcon( QIcon::fromTheme("window-close") );
-        connect(btn, SIGNAL(clicked()), this, SLOT(ignoreSelected()));
-
-        btn = dialogBtnBox->addButton(tr("&Save"), QDialogButtonBox::ActionRole);
+        defaultBtn = btn = dialogBtnBox->addButton(tr("&Save"), QDialogButtonBox::ActionRole);
         btn->setIcon( QIcon::fromTheme("document-save") );
         connect(btn, SIGNAL(clicked()), this, SLOT(saveSelected()));
 
-        defaultBtn = btn = dialogBtnBox->addButton(tr("Do &Not Quit"), QDialogButtonBox::RejectRole);
+        btn = dialogBtnBox->addButton(tr("Do &Not Save"), QDialogButtonBox::ActionRole);
+        btn->setIcon( QIcon::fromTheme("window-close") );
+        connect(btn, SIGNAL(clicked()), this, SLOT(ignoreSelected()));
+
+        btn = dialogBtnBox->addButton(tr("&Cancel"), QDialogButtonBox::RejectRole);
         btn->setIcon( QIcon::fromTheme("window-close") );
         connect(btn, SIGNAL(clicked()), this, SLOT(reject()));
     }
