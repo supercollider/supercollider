@@ -88,8 +88,6 @@ protected:
 
     virtual void showEvent( QShowEvent * );
 
-    virtual bool eventFilter( QObject *, QEvent * );
-
 private:
 
     QEventLoop *mEventLoop;

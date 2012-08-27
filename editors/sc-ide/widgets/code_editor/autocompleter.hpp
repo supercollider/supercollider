@@ -96,6 +96,8 @@ private:
 
     typedef QStack<MethodCall>::iterator MethodCallIterator;
 
+    bool eventFilter( QObject *, QEvent * );
+
     QTextDocument *document();
 
     // completion

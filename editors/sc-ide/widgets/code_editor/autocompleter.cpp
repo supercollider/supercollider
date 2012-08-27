@@ -90,6 +90,8 @@ public:
         mListView->setFocus(Qt::OtherFocusReason);
 
         resize(200, 200);
+
+        parent->installEventFilter(this);
     }
 
     void addItem( QStandardItem * item )
@@ -201,16 +203,6 @@ public:
         box->setContentsMargins(5,2,5,2);
         box->addWidget(mLabel);
         setLayout(box);
-
-        parent->installEventFilter(this);
-    }
-
-    bool eventFilter( QObject *obj, QEvent *ev )
-    {
-        if (obj == parentWidget() && ev->type() == QEvent::FocusOut)
-            hide();
-
-        return QWidget::eventFilter(obj, ev);
     }
 
     void showMethod( const ScLanguage::Method * method, int argNum )
@@ -253,6 +245,7 @@ AutoCompleter::AutoCompleter( CodeEditor *editor ):
     mEditor(editor)
 {
     mCompletion.on = false;
+    mEditor->installEventFilter(this);
 
     connect(editor, SIGNAL(cursorPositionChanged()),
             this, SLOT(onCursorChanged()));
@@ -286,6 +279,44 @@ void AutoCompleter::keyPress( QKeyEvent *e )
         if (!e->text().isEmpty() && !mCompletion.on)
             triggerCompletion();
     }
+}
+
+bool AutoCompleter::eventFilter( QObject *object, QEvent *event )
+{
+    if (object != mEditor)
+        return false;
+
+    switch(event->type()) {
+    case QEvent::FocusOut:
+        if (mCompletion.menu)
+            mCompletion.menu->reject();
+        if (mMethodCall.menu)
+            mMethodCall.menu->reject();
+        if (mMethodCall.widget)
+            mMethodCall.widget->hide();
+        break;
+    case QEvent::ShortcutOverride: {
+        QKeyEvent * kevent = static_cast<QKeyEvent*>(event);
+        if (kevent->key() == Qt::Key_Escape) {
+            if (mCompletion.menu && mCompletion.menu->isVisible())
+                mCompletion.menu->reject();
+            else if (mMethodCall.menu && mMethodCall.menu->isVisible())
+                mMethodCall.menu->reject();
+            else if (mMethodCall.widget && mMethodCall.widget->isVisible()) {
+                // disable method call aid for current call:
+                Q_ASSERT(!mMethodCall.stack.isEmpty());
+                mMethodCall.stack.top().method = 0;
+                hideMethodCall();
+            }
+            else break;
+            return true;
+        }
+        break;
+    }
+    default:;
+    }
+
+    return QObject::eventFilter(object, event);
 }
 
 void AutoCompleter::onContentsChange( int pos, int removed, int added )
