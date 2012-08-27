@@ -1416,24 +1416,17 @@ void CodeEditor::gotoNextBlock()
     if (!it.isValid())
         return;
 
-    if (it->type == Token::ClosingBracket) {
-        if (it.position() == cursor.position())
-            ++it;
-    }
+    while (it.isValid() && it->type != Token::OpeningBracket)
+        --it;
 
-    while (it.isValid()) {
-        switch (it->type) {
-        case Token::ClosingBracket:
-        {
-            QTextCursor newCursor(it.block());
-            newCursor.setPosition(it.position());
-            setTextCursor(newCursor);
-            return;
-        }
-        default:
-            ;
-        }
-        ++it;
+    BracketMatch match;
+    matchBracket(it, match);
+
+    if (match.second.isValid()) {
+        it = match.second;
+        QTextCursor newCursor(it.block());
+        newCursor.setPosition(it.position());
+        setTextCursor(newCursor);
     }
 }
 
@@ -1445,24 +1438,17 @@ void CodeEditor::gotoPreviousBlock()
     if (!it.isValid())
         return;
 
-    if (it->type == Token::OpeningBracket) {
-        if (it.position() == cursor.position())
-            --it;
-    }
+    while (it.isValid() && it->type != Token::ClosingBracket)
+        ++it;
 
-    while (it.isValid()) {
-        switch (it->type) {
-        case Token::OpeningBracket:
-        {
-            QTextCursor newCursor(it.block());
-            newCursor.setPosition(it.position());
-            setTextCursor(newCursor);
-            return;
-        }
-        default:
-            ;
-        }
-        --it;
+    BracketMatch match;
+    matchBracket(it, match);
+
+    if (match.first.isValid()) {
+        it = match.first;
+        QTextCursor newCursor(it.block());
+        newCursor.setPosition(it.position());
+        setTextCursor(newCursor);
     }
 }
 
