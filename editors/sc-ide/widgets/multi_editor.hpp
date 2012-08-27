@@ -109,14 +109,14 @@ public:
     void openDefinition(QString const & string);
     bool openDocumentation(QString const & string);
 
+    void applySettings( Settings::Manager * );
+
 Q_SIGNALS:
     void currentChanged( Document * );
 
 public Q_SLOTS:
 
     void setCurrent( Document * );
-
-    void applySettings( Settings::Manager * );
 
     void showNextDocument();
     void showPreviousDocument();

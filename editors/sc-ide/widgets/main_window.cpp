@@ -162,6 +162,10 @@ MainWindow::MainWindow(Main * main) :
             this, SLOT(onDocumentChangedExternally(Document*)));
     connect(docMng, SIGNAL(recentsChanged()),
             this, SLOT(updateRecentDocsMenu()));
+
+    connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
+            this, SLOT(applySettings(Settings::Manager*)));
+
     // ToolBox
     connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
 
@@ -928,6 +932,12 @@ void MainWindow::showMessage( QString const & string )
 {
     mStatusBar->showMessage(string, 3000);
 }
+
+void MainWindow::applySettings( Settings::Manager * settings )
+{
+    mEditors->applySettings(settings);
+}
+
 
 
 void MainWindow::updateSessionsMenu()
