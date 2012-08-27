@@ -93,6 +93,15 @@ PostWindow::PostWindow(QWidget* parent):
             this, SLOT(onAutoScrollTriggered(bool)));
 }
 
+void PostWindow::applySettings(Settings::Manager * settings)
+{
+    settings->beginGroup("IDE/editor");
+
+    int scrollback = settings->value("postWindowScrollback").toInt();
+    setMaximumBlockCount(scrollback);
+    settings->endGroup();
+}
+
 
 void PostWindow::post(const QString &text)
 {

@@ -27,13 +27,16 @@
 
 namespace ScIDE {
 
+namespace Settings { class Manager; }
+
 class PostWindow:
     public QPlainTextEdit
 {
     Q_OBJECT
 
 public:
-    PostWindow(QWidget* parent = 0);
+    explicit PostWindow(QWidget* parent = 0);
+    void applySettings(Settings::Manager * );
 
 signals:
     void scrollToBottomRequest();

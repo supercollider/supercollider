@@ -936,8 +936,8 @@ void MainWindow::showMessage( QString const & string )
 void MainWindow::applySettings( Settings::Manager * settings )
 {
     mEditors->applySettings(settings);
+    mPostDock->mPostWindow->applySettings(settings);
 }
-
 
 
 void MainWindow::updateSessionsMenu()

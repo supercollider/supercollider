@@ -63,6 +63,7 @@ void EditorPage::load( Manager *s )
     ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation").toBool() );
 
     ui->blinkDuration->setValue( s->value("blinkDuration").toInt() );
+    ui->postWindowScrollback->setValue( s->value("postWindowScrollback").toInt() );
 
     QFont f;
     f.fromString(s->value("font").toString());
@@ -128,6 +129,7 @@ void EditorPage::store( Manager *s )
     s->setValue("stepForwardEvaluation", ui->stepForwardEvaluation->isChecked());
 
     s->setValue("blinkDuration", ui->blinkDuration->value());
+    s->setValue("postWindowScrollback", ui->postWindowScrollback->value());
 
     QFont f = constructFont();
     s->setValue("font", f.toString());
