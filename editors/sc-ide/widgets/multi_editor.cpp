@@ -165,6 +165,7 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
     mDocManager(main->documentManager()),
     mSigMux(new SignalMultiplexer(this)),
+    mBoxSigMux(new SignalMultiplexer(this)),
     mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) )
 {
     mTabs = new QTabBar;
@@ -174,8 +175,8 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mTabs->setUsesScrollButtons(true);
     mTabs->setDrawBase(false);
 
-    mCurrentEditorBox = newBox();
-    mSplitter = new MultiSplitter(mCurrentEditorBox);
+    CodeEditorBox *defaultBox = newBox();
+    mSplitter = new MultiSplitter(defaultBox);
 
     QVBoxLayout *l = new QVBoxLayout;
     l->setContentsMargins(0,0,0,0);
@@ -201,10 +202,15 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mSigMux->connect(SIGNAL(modificationChanged(bool)),
                      this, SLOT(onModificationChanged(bool)));
 
+    mBoxSigMux->connect(SIGNAL(currentChanged(CodeEditor*)),
+                        this, SLOT(onCurrentEditorChanged(CodeEditor*)));
+
     connect(this, SIGNAL(currentDocumentChanged(Document*)), mDocManager, SLOT(activeDocumentChanged(Document*)));
 
     createActions();
-    updateActions();
+
+    setCurrentBox( defaultBox ); // will updateActions();
+
     applySettings(main->settings());
 }
 
@@ -574,26 +580,12 @@ void MultiEditor::onCurrentTabChanged( int index )
 
     CodeEditorBox *curBox = currentBox();
     curBox->setDocument(doc);
-    CodeEditor *editor = curBox->currentEditor();
-    Q_ASSERT(editor);
-    editor->setFocus(Qt::OtherFocusReason);
+    curBox->setFocus(Qt::OtherFocusReason);
 }
 
 void MultiEditor::onCurrentEditorChanged(CodeEditor *editor)
 {
-    // TODO: only react if editor is in current box.
-    if (editor) {
-        int tabIndex = tabForDocument(editor->document());
-        if (tabIndex != -1)
-            mTabs->setCurrentIndex(tabIndex);
-    }
-
-    mSigMux->setCurrentObject(editor);
-    updateActions();
-
-    Document *currentDocument = editor ? editor->document() : 0;
-    Main::scProcess()->setActiveDocument(currentDocument);
-    emit currentDocumentChanged(currentDocument);
+    setCurrentEditor(editor);
 }
 
 void MultiEditor::onEditorFocusChanged(CodeEditor *editor, bool focused)
@@ -601,8 +593,7 @@ void MultiEditor::onEditorFocusChanged(CodeEditor *editor, bool focused)
     if (focused) {
         CodeEditorBox *box = qobject_cast<CodeEditorBox*>( editor->parent() );
         if (box)
-            mCurrentEditorBox = box;
-        onCurrentEditorChanged(editor);
+            setCurrentBox(box);
     }
 }
 
@@ -785,22 +776,41 @@ CodeEditorBox *MultiEditor::newBox()
 {
     CodeEditorBox *box = new CodeEditorBox();
 
-    connect(box, SIGNAL(currentChanged(CodeEditor*)),
-            this, SLOT(onCurrentEditorChanged(CodeEditor*)));
     connect(box, SIGNAL(editorFocusChanged(CodeEditor*,bool)),
             this, SLOT(onEditorFocusChanged(CodeEditor*, bool)));
 
     return box;
 }
 
+void MultiEditor::setCurrentBox( CodeEditorBox * box )
+{
+    if (mCurrentEditorBox == box)
+        return;
+
+    mCurrentEditorBox = box;
+    mBoxSigMux->setCurrentObject(box);
+    setCurrentEditor( box->currentEditor() );
+}
+
+void MultiEditor::setCurrentEditor( CodeEditor * editor )
+{
+    if (editor) {
+        int tabIndex = tabForDocument(editor->document());
+        if (tabIndex != -1)
+            mTabs->setCurrentIndex(tabIndex);
+    }
+
+    mSigMux->setCurrentObject(editor);
+    updateActions();
+
+    Document *currentDocument = editor ? editor->document() : 0;
+    Main::scProcess()->setActiveDocument(currentDocument);
+    emit currentDocumentChanged(currentDocument);
+}
+
 CodeEditor *MultiEditor::currentEditor()
 {
     return currentBox()->currentEditor();
-}
-
-QSplitter * splitterForBox( CodeEditorBox *box )
-{
-    return qobject_cast<QSplitter*>( box->parentWidget() );
 }
 
 void MultiEditor::split( Qt::Orientation splitDirection )
@@ -812,11 +822,8 @@ void MultiEditor::split( Qt::Orientation splitDirection )
 
     CodeEditorBox *box = newBox();
     box->setDocument(curEditor->document(), curEditor->textCursor().position());
-
     mSplitter->insertWidget(box, curBox, splitDirection);
-
-    Q_ASSERT(box->currentEditor());
-    box->currentEditor()->setFocus( Qt::OtherFocusReason );
+    box->setFocus( Qt::OtherFocusReason );
 }
 
 void MultiEditor::removeCurrentSplit()
@@ -827,16 +834,11 @@ void MultiEditor::removeCurrentSplit()
     CodeEditorBox *box = currentBox();
     mSplitter->removeWidget(box);
 
+    // switch current box to first box found:
     box = mSplitter->findChild<CodeEditorBox*>();
     Q_ASSERT(box);
-
-    mCurrentEditorBox = box;
-
-    CodeEditor *editor = box->currentEditor();
-    if (editor)
-        editor->setFocus( Qt::OtherFocusReason );
-    // do the switch anyway:
-    onCurrentEditorChanged( editor );
+    setCurrentBox(box);
+    box->setFocus( Qt::OtherFocusReason );
 }
 
 } // namespace ScIDE

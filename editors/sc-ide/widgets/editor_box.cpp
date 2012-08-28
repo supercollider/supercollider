@@ -59,6 +59,8 @@ void CodeEditorBox::setDocument(Document *doc, int pos)
 
     mLayout->setCurrentWidget(editor);
 
+    setFocusProxy(editor);
+
     emit currentChanged(editor);
 }
 
@@ -73,6 +75,7 @@ void CodeEditorBox::onDocumentClosed(Document *doc)
             editor = currentEditor();
             if (editor)
                 mLayout->setCurrentWidget(editor);
+            setFocusProxy(editor);
             emit currentChanged(editor);
         }
     }

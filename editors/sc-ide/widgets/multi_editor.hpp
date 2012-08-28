@@ -157,9 +157,12 @@ private:
     void createActions();
     void updateActions();
     CodeEditorBox *newBox();
+    void setCurrentBox( CodeEditorBox * );
+    void setCurrentEditor( CodeEditor * );
 
     DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;
+    SignalMultiplexer * mBoxSigMux;
     QAction *mActions[ActionRoleCount];
 
     // gui
