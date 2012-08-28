@@ -34,7 +34,7 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
             this, SLOT(onDocumentClosed(Document*)));
 }
 
-void CodeEditorBox::setDocument(Document *doc)
+void CodeEditorBox::setDocument(Document *doc, int pos)
 {
     if (!doc || (currentEditor() && currentEditor()->document() == doc))
         return;
@@ -53,6 +53,9 @@ void CodeEditorBox::setDocument(Document *doc)
         mHistory.removeOne(editor);
         mHistory.append(editor);
     }
+
+    if (pos != -1)
+        editor->showPosition(pos);
 
     mLayout->setCurrentWidget(editor);
 
@@ -113,6 +116,12 @@ bool CodeEditorBox::eventFilter( QObject *object, QEvent *event )
     }
 
     return QWidget::eventFilter(object, event);
+}
+
+Document * CodeEditorBox::currentDocument()
+{
+    CodeEditor *editor = currentEditor();
+    return editor ? editor->document() : 0;
 }
 
 } // namesapce ScIDE
