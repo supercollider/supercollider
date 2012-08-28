@@ -39,6 +39,7 @@ class Document;
 class DocumentManager;
 class CodeEditor;
 class CodeEditorBox;
+class MultiSplitter;
 class SignalMultiplexer;
 class ScRequest;
 class Session;
@@ -82,6 +83,9 @@ public:
         PreviousDocument,
         SwitchDocument,
 
+        SplitHorizontally,
+        SplitVertically,
+
         // Language
         EvaluateCurrentDocument,
         EvaluateRegion,
@@ -99,7 +103,8 @@ public:
     int tabForDocument( Document * doc );
 
     CodeEditor *currentEditor();
-    CodeEditorBox *currentBox() { return mEditorBox; }
+    CodeEditorBox *currentBox() { return mCurrentEditorBox; }
+    void split( Qt::Orientation direction );
 
     QAction * action( ActionRole role )
         { return mActions[role]; }
@@ -125,6 +130,9 @@ public slots:
     void showPreviousDocument();
     void switchDocument();
 
+    void splitHorizontally() { split(Qt::Horizontal); }
+    void splitVertically() { split(Qt::Vertical); }
+
     bool openDocumentation();
 
 private slots:
@@ -136,6 +144,7 @@ private slots:
     void onCloseRequest( int index );
     void onCurrentTabChanged( int index );
     void onCurrentEditorChanged( CodeEditor * );
+    void onEditorFocusChanged( CodeEditor *, bool focused );
     void onModificationChanged( bool modified );
     void openDefinition();
     void evaluateRegion();
@@ -145,6 +154,7 @@ private slots:
 private:
     void createActions();
     void updateActions();
+    CodeEditorBox *newBox();
 
     DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;
@@ -152,7 +162,8 @@ private:
 
     // gui
     QTabBar *mTabs;
-    CodeEditorBox *mEditorBox;
+    CodeEditorBox *mCurrentEditorBox;
+    MultiSplitter *mSplitter;
     QIcon mDocModifiedIcon;
 
     // settings

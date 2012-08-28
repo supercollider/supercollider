@@ -23,6 +23,7 @@
 #include "main_window.hpp"
 #include "lookup_dialog.hpp"
 #include "code_editor/editor.hpp"
+#include "util/multi_splitter.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/sig_mux.hpp"
 #include "../core/main.hpp"
@@ -173,13 +174,14 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mTabs->setUsesScrollButtons(true);
     mTabs->setDrawBase(false);
 
-    mEditorBox = new CodeEditorBox();
+    mCurrentEditorBox = newBox();
+    mSplitter = new MultiSplitter(mCurrentEditorBox);
 
     QVBoxLayout *l = new QVBoxLayout;
     l->setContentsMargins(0,0,0,0);
     l->setSpacing(0);
     l->addWidget(mTabs);
-    l->addWidget(mEditorBox);
+    l->addWidget(mSplitter);
     setLayout(l);
 
     connect(mDocManager, SIGNAL(opened(Document*, int)),
@@ -195,9 +197,6 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
             this, SLOT(onCurrentTabChanged(int)));
     connect(mTabs, SIGNAL(tabCloseRequested(int)),
             this, SLOT(onCloseRequest(int)));
-
-    connect(mEditorBox, SIGNAL(currentChanged(CodeEditor*)),
-            this, SLOT(onCurrentEditorChanged(CodeEditor*)));
 
     mSigMux->connect(SIGNAL(modificationChanged(bool)),
                      this, SLOT(onModificationChanged(bool)));
@@ -353,6 +352,12 @@ void MultiEditor::createActions()
     mActions[SwitchDocument] = act = new QAction(tr("Switch Document"), this);
     act->setShortcut( tr("Ctrl+Tab", "Switch Document"));
     connect(act, SIGNAL(triggered()), this, SLOT(switchDocument()));
+
+    mActions[SplitHorizontally] = act = new QAction(tr("Split Horizontally"), this);
+    connect(act, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
+
+    mActions[SplitVertically] = act = new QAction(tr("Split Vertically"), this);
+    connect(act, SIGNAL(triggered()), this, SLOT(splitVertically()));
 
     // Language
 
@@ -573,6 +578,7 @@ void MultiEditor::onCurrentTabChanged( int index )
 
 void MultiEditor::onCurrentEditorChanged(CodeEditor *editor)
 {
+    // TODO: only react if editor is in current box.
     if (editor) {
         int tabIndex = tabForDocument(editor->document());
         if (tabIndex != -1)
@@ -585,6 +591,16 @@ void MultiEditor::onCurrentEditorChanged(CodeEditor *editor)
     Document *currentDocument = editor ? editor->document() : 0;
     Main::scProcess()->setActiveDocument(currentDocument);
     emit currentDocumentChanged(currentDocument);
+}
+
+void MultiEditor::onEditorFocusChanged(CodeEditor *editor, bool focused)
+{
+    if (focused) {
+        CodeEditorBox *box = qobject_cast<CodeEditorBox*>( editor->parent() );
+        if (box)
+            mCurrentEditorBox = box;
+        onCurrentEditorChanged(editor);
+    }
 }
 
 void MultiEditor::onModificationChanged( bool modified )
@@ -762,9 +778,39 @@ int MultiEditor::tabForDocument( Document * doc )
     return -1;
 }
 
+CodeEditorBox *MultiEditor::newBox()
+{
+    CodeEditorBox *box = new CodeEditorBox();
+
+    connect(box, SIGNAL(currentChanged(CodeEditor*)),
+            this, SLOT(onCurrentEditorChanged(CodeEditor*)));
+    connect(box, SIGNAL(editorFocusChanged(CodeEditor*,bool)),
+            this, SLOT(onEditorFocusChanged(CodeEditor*, bool)));
+
+    return box;
+}
+
 CodeEditor *MultiEditor::currentEditor()
 {
     return currentBox()->currentEditor();
+}
+
+QSplitter * splitterForBox( CodeEditorBox *box )
+{
+    return qobject_cast<QSplitter*>( box->parentWidget() );
+}
+
+void MultiEditor::split( Qt::Orientation splitDirection )
+{
+    CodeEditorBox *curBox = currentBox();
+    CodeEditor *curEditor = curBox->currentEditor();
+    if (!curEditor)
+        return;
+
+    CodeEditorBox *box = newBox();
+    box->setDocument(curEditor->document(), curEditor->textCursor().position());
+
+    mSplitter->insertWidget(box, curBox, splitDirection);
 }
 
 } // namespace ScIDE
