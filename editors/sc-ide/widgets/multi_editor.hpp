@@ -85,6 +85,7 @@ public:
 
         SplitHorizontally,
         SplitVertically,
+        RemoveCurrentSplit,
 
         // Language
         EvaluateCurrentDocument,
@@ -132,6 +133,7 @@ public slots:
 
     void splitHorizontally() { split(Qt::Horizontal); }
     void splitVertically() { split(Qt::Vertical); }
+    void removeCurrentSplit();
 
     bool openDocumentation();
 
