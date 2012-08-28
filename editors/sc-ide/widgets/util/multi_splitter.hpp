@@ -89,6 +89,13 @@ public:
         }
     }
 
+    void clear()
+    {
+        int widgetCount = count();
+        for(int idx = 0; idx < widgetCount; ++idx)
+            delete widget(idx);
+    }
+
 private:
     QSplitter *parentSplitterOf( QWidget *widget )
     {

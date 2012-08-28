@@ -468,36 +468,106 @@ void MultiEditor::applySettings( Settings::Manager *s )
     s->endGroup();
 }
 
-void MultiEditor::saveSession( Session *session )
+static QVariantList saveBoxState( CodeEditorBox *box )
 {
-    QVariantList editors;
-    CodeEditorBox *editorBox = currentBox();
-    const CodeEditorBox::History &boxHistory = editorBox->history();
-    foreach( CodeEditor * editor, boxHistory ) {
+    QVariantList boxData;
+    foreach( CodeEditor *editor, box->history() ) {
         if (!editor->document()->filePath().isEmpty()) {
             QVariantMap editorData;
             editorData.insert("file", editor->document()->filePath());
             editorData.insert("position", editor->textCursor().position());
-            editors.append( editorData );
+            boxData.append( editorData );
+        }
+    }
+    return boxData;
+}
+
+static QVariantMap saveSplitterState( QSplitter *splitter )
+{
+    QVariantMap splitterData;
+
+    splitterData.insert( "state", splitter->saveState().toBase64() );
+
+    QVariantList childrenData;
+
+    int childCount = splitter->count();
+    for (int idx = 0; idx < childCount; idx++) {
+        QWidget *child = splitter->widget(idx);
+
+        CodeEditorBox *box = qobject_cast<CodeEditorBox*>(child);
+        if (box) {
+            QVariantList boxData = saveBoxState(box);
+            if (!boxData.isEmpty())
+                childrenData.append( QVariant(boxData) );
+            continue;
+        }
+
+        QSplitter *childSplitter = qobject_cast<QSplitter*>(child);
+        if (childSplitter) {
+            QVariantMap childSplitterData = saveSplitterState(childSplitter);
+            childrenData.append( QVariant(childSplitterData) );
         }
     }
 
-    if (editors.isEmpty())
-        session->remove( "editors" );
-    else
-        session->setValue( "editors", QVariant::fromValue<QVariantList>(editors) );
+    splitterData.insert( "elements", childrenData );
+
+    return splitterData;
+}
+
+void MultiEditor::saveSession( Session *session )
+{
+    session->remove( "editors" );
+    session->setValue( "editors", saveSplitterState(mSplitter) );
+}
+
+void MultiEditor::loadBoxState( CodeEditorBox *box, const QVariantList & data )
+{
+    mCurrentEditorBox = box;
+    foreach( QVariant docVar, data )
+    {
+        QVariantMap docData = docVar.value<QVariantMap>();
+        QString docPath = docData.value("file").toString();
+        int docPos = docData.value("position").toInt();
+        Main::instance()->documentManager()->open( docPath, docPos );
+    }
+}
+
+void MultiEditor::loadSplitterState( QSplitter *splitter, const QVariantMap & data )
+{
+    QByteArray state = QByteArray::fromBase64( data.value("state").value<QByteArray>() );
+
+    QVariantList childrenData = data.value("elements").value<QVariantList>();
+    foreach (const QVariant & childVar, childrenData) {
+        if (childVar.type() == QVariant::List) {
+            CodeEditorBox *childBox = newBox();
+            splitter->addWidget(childBox);
+            QVariantList childBoxData = childVar.value<QVariantList>();
+            loadBoxState( childBox, childBoxData );
+        }
+        else if (childVar.type() == QVariant::Map) {
+            QSplitter *childSplitter = new QSplitter;
+            splitter->addWidget(childSplitter);
+            QVariantMap childSplitterData = childVar.value<QVariantMap>();
+            loadSplitterState( childSplitter, childSplitterData );
+        }
+    }
+
+    splitter->restoreState(state);
 }
 
 void MultiEditor::loadSession( Session *session )
 {
-    QVariantList editors = session->value("editors").value<QVariantList>();
-    foreach( const QVariant &var, editors )
-    {
-        QVariantMap editorData = var.value<QVariantMap>();
-        QString currentDocPath = editorData.value("file").toString();
-        int currentDocPos = editorData.value("position").toInt();
-        Main::instance()->documentManager()->open(currentDocPath, currentDocPos, false);
-    }
+    mSplitter->clear();
+
+    QVariantMap splitterData = session->value("editors").value<QVariantMap>();
+    loadSplitterState( mSplitter, splitterData );
+
+    if (!mSplitter->count())
+        mSplitter->addWidget( newBox() );
+
+    CodeEditorBox *firstBox = mSplitter->findChild<CodeEditorBox*>();
+    Q_ASSERT(firstBox);
+    setCurrentBox( firstBox );
 }
 
 void MultiEditor::setCurrent( Document *doc )
