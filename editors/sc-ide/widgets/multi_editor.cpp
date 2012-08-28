@@ -54,11 +54,11 @@ namespace ScIDE {
 class DocumentSelectPopUp : public QDialog
 {
 public:
-    explicit DocumentSelectPopUp(QWidget * parent):
+    explicit DocumentSelectPopUp(const CodeEditorBox::History & history, QWidget * parent):
         QDialog(parent, Qt::Popup)
     {
         mModel = new QStandardItemModel(this);
-        populateModel();
+        populateModel(history);
 
         mListView = new QListView();
         mListView->setModel(mModel);
@@ -145,12 +145,18 @@ private:
                            : NULL;
     }
 
-    void populateModel()
+    void populateModel( const CodeEditorBox::History & history )
     {
-        DocumentManager * manager = Main::instance()->documentManager();
-        DocumentManager::DocumentList const & documentList = manager->recentActiveDocuments();
+        QList<Document*> displayDocuments;
+        foreach(CodeEditor *editor, history)
+            displayDocuments << editor->document();
 
-        foreach (Document * document, documentList) {
+        QList<Document*> managerDocuments =  Main::instance()->documentManager()->documents();
+        foreach(Document *document, managerDocuments)
+            if (!displayDocuments.contains(document))
+                displayDocuments << document;
+
+        foreach (Document * document, displayDocuments) {
             QStandardItem * item = new QStandardItem(document->title());
             item->setData(QVariant::fromValue(document));
             mModel->appendRow(item);
@@ -515,7 +521,9 @@ void MultiEditor::showPreviousDocument()
 
 void MultiEditor::switchDocument()
 {
-    DocumentSelectPopUp * popup = new DocumentSelectPopUp(this);
+    CodeEditorBox *box = currentBox();
+
+    DocumentSelectPopUp * popup = new DocumentSelectPopUp(box->history(), this);
 
     QRect popupRect(0,0,300,200);
     popupRect.moveCenter(rect().center());
@@ -525,7 +533,7 @@ void MultiEditor::switchDocument()
     Document * selectedDocument = popup->exec(globalPosition);
 
     if (selectedDocument)
-        mTabs->setCurrentIndex( tabForDocument(selectedDocument) );
+        box->setDocument(selectedDocument);
 }
 
 void MultiEditor::onOpen( Document *doc, int pos )
