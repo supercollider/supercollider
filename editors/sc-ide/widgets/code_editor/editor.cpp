@@ -117,6 +117,8 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
 {
     Q_ASSERT(mDoc != 0);
 
+    setFrameShape( QFrame::NoFrame );
+
     mLineIndicator->move( contentsRect().topLeft() );
 
     QTextDocument *tdoc = doc->textDocument();
