@@ -359,6 +359,9 @@ void MultiEditor::createActions()
     mActions[SplitVertically] = act = new QAction(tr("Split Vertically"), this);
     connect(act, SIGNAL(triggered()), this, SLOT(splitVertically()));
 
+    mActions[RemoveCurrentSplit] = act = new QAction(tr("Remove Current Split"), this);
+    connect(act, SIGNAL(triggered()), this, SLOT(removeCurrentSplit()));
+
     // Language
 
     mActions[EvaluateCurrentDocument] = act = new QAction(
@@ -811,6 +814,29 @@ void MultiEditor::split( Qt::Orientation splitDirection )
     box->setDocument(curEditor->document(), curEditor->textCursor().position());
 
     mSplitter->insertWidget(box, curBox, splitDirection);
+
+    Q_ASSERT(box->currentEditor());
+    box->currentEditor()->setFocus( Qt::OtherFocusReason );
+}
+
+void MultiEditor::removeCurrentSplit()
+{
+    if (mSplitter->count() < 2)
+        return;
+
+    CodeEditorBox *box = currentBox();
+    mSplitter->removeWidget(box);
+
+    box = mSplitter->findChild<CodeEditorBox*>();
+    Q_ASSERT(box);
+
+    mCurrentEditorBox = box;
+
+    CodeEditor *editor = box->currentEditor();
+    if (editor)
+        editor->setFocus( Qt::OtherFocusReason );
+    // do the switch anyway:
+    onCurrentEditorChanged( editor );
 }
 
 } // namespace ScIDE
