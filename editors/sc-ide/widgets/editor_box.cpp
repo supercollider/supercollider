@@ -46,12 +46,12 @@ void CodeEditorBox::setDocument(Document *doc, int pos)
         editor->applySettings(Main::instance()->settings());
         connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
                 editor, SLOT(applySettings(Settings::Manager*)));
-        mHistory.append(editor);
+        mHistory.prepend(editor);
         mLayout->addWidget(editor);
     }
     else {
         mHistory.removeOne(editor);
-        mHistory.append(editor);
+        mHistory.prepend(editor);
     }
 
     if (pos != -1)
@@ -84,7 +84,7 @@ void CodeEditorBox::onDocumentClosed(Document *doc)
 CodeEditor *CodeEditorBox::currentEditor()
 {
     if (mHistory.count())
-        return mHistory.last();
+        return mHistory.first();
     else
         return 0;
 }
