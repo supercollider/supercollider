@@ -26,6 +26,7 @@
 #include <QGraphicsScene>
 #include <QPlainTextEdit>
 #include <QTextBlock>
+#include <QList>
 
 namespace ScIDE
 {
@@ -67,7 +68,7 @@ class CodeEditor : public QPlainTextEdit
     friend class LineIndicator;
 
 public:
-    CodeEditor( QWidget *parent = 0 );
+    CodeEditor( Document *, QWidget *parent = 0 );
     Document *document() { return mDoc; }
     QTextDocument *textDocument() { return QPlainTextEdit::document(); }
     void setDocument( Document * );
@@ -149,7 +150,9 @@ private:
     int indentationLevel( const QTextCursor & );
 
     LineIndicator *mLineIndicator;
+
     Document *mDoc;
+
     int mIndentWidth;
     bool mSpaceIndent;
     bool mShowWhitespace;
