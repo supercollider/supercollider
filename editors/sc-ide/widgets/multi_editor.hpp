@@ -31,6 +31,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QTextDocument>
+#include <QSplitter>
 
 namespace ScIDE {
 
@@ -159,6 +160,8 @@ private:
     CodeEditorBox *newBox();
     void setCurrentBox( CodeEditorBox * );
     void setCurrentEditor( CodeEditor * );
+    void loadBoxState( CodeEditorBox *box, const QVariantList & data );
+    void loadSplitterState( QSplitter *, const QVariantMap & data );
 
     DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;
