@@ -147,14 +147,12 @@ MainWindow::MainWindow(Main * main) :
     // Document list interaction
     connect(mDocListDock->list(), SIGNAL(clicked(Document*)),
             mEditors, SLOT(setCurrent(Document*)));
-    connect(mEditors, SIGNAL(currentChanged(Document*)),
+    connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
             mDocListDock->list(), SLOT(setCurrent(Document*)),
             Qt::QueuedConnection);
-    connect(mEditors, SIGNAL(currentChanged(Document*)),
-            main->documentManager(), SLOT(activeDocumentChanged(Document*)));
 
     // Update actions on document change
-    connect(mEditors, SIGNAL(currentChanged(Document*)),
+    connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
             this, SLOT(onCurrentDocumentChanged(Document*)));
     // Document management
     DocumentManager *docMng = main->documentManager();
@@ -514,15 +512,18 @@ void MainWindow::loadSession( Session *session )
         {
             QVariantMap docMap = docData.value<QVariantMap>();
             docMng->open( docMap.value("file").toString(),
-                          docMap.value("position").toInt(),
+                          0,
                           false // don't modify recent document list
                         );
         }
 
-    QString currentFilePath = session->value("currentDocument").toString();
-    if (!currentFilePath.isEmpty())
-        docMng->open(currentFilePath, -1, false);
-
+    QVariantList editors = session->value("editors").value<QVariantList>();
+    if (!editors.isEmpty()) {
+        QVariantMap editorData = editors[0].value<QVariantMap>();
+        QString currentDocPath = editorData.value("file").toString();
+        int currentDocPos = editorData.value("position").toInt();
+        docMng->open(currentDocPath, currentDocPos, false);
+    }
 }
 
 void MainWindow::saveSession( Session *session )
@@ -532,18 +533,19 @@ void MainWindow::saveSession( Session *session )
     session->setValue("state", this->saveState().toBase64());
     session->endGroup();
 
-    int docCount = mEditors->editorCount();
-    if (docCount) {
+    int tabCount = mEditors->tabCount();
+    if (tabCount) {
         QVariantList docsList;
-        for (int i = 0; i < docCount; ++i )
+        for (int idx = 0; idx < tabCount; ++idx )
         {
-            CodeEditor *editor = mEditors->editor(i);
-            if (!editor || editor->document()->filePath().isEmpty())
+            Document *doc = mEditors->documentForTab(idx);
+            if (!doc || doc->filePath().isEmpty())
                 continue;
 
             QVariantMap docMap;
-            docMap.insert("file", editor->document()->filePath());
-            docMap.insert("position", editor->textCursor().position());
+            docMap.insert("file", doc->filePath());
+            // TODO:
+            //docMap.insert("position", editor->textCursor().position());
 
             docsList.append( docMap );
         }
@@ -553,11 +555,18 @@ void MainWindow::saveSession( Session *session )
     else
         session->remove( "documents" );
 
-    CodeEditor *editor;
-    if ((editor = mEditors->currentEditor()))
-        session->setValue("currentDocument", editor->document()->filePath());
+    QVariantList editors;
+    CodeEditor *editor = mEditors->currentEditor();
+    if (editor && !editor->document()->filePath().isEmpty()) {
+        QVariantMap editorData;
+        editorData.insert("file", editor->document()->filePath());
+        editorData.insert("position", editor->textCursor().position());
+        editors.append( editorData );
+    }
+    if (editors.isEmpty())
+        session->remove( "editors" );
     else
-        session->remove("currentDocument");
+        session->setValue( "editors", QVariant::fromValue<QVariantList>(editors) );
 }
 
 void MainWindow::openSessionsDialog()

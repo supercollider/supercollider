@@ -71,14 +71,13 @@ public:
     void setEditor( CodeEditor *editor )
     {
         if (mEditor)
-            mEditor->document()->textDocument()->disconnect( this, SLOT(setMaximum(int)) );
+            mEditor->disconnect( this, SLOT(setMaximum(int)) );
 
         mEditor = editor;
 
         if (mEditor) {
-            QTextDocument *doc = mEditor->document()->textDocument();
-            connect(doc, SIGNAL(blockCountChanged(int)), this, SLOT(setMaximum(int)));
-            setMaximum(doc->blockCount());
+            connect(mEditor, SIGNAL(blockCountChanged(int)), this, SLOT(setMaximum(int)));
+            setMaximum(mEditor->blockCount());
         }
         else
             setMaximum(0);
@@ -112,7 +111,7 @@ private slots:
         int lineNumber = mSpinBox->value();
 
         if (mEditor) {
-            QTextDocument *doc = mEditor->document()->textDocument();
+            QTextDocument *doc = mEditor->textDocument();
             QTextBlock block( doc->findBlockByNumber(lineNumber - 1) );
             if (!block.isValid())
                 return;

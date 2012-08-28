@@ -1,0 +1,118 @@
+/*
+    SuperCollider Qt IDE
+    Copyright (c) 2012 Jakob Leben & Tim Blechmann
+    http://www.audiosynth.com
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+*/
+
+#include "editor_box.hpp"
+#include "code_editor/editor.hpp"
+#include "../../core/main.hpp"
+
+namespace ScIDE {
+
+CodeEditorBox::CodeEditorBox(QWidget *parent) :
+    QWidget(parent)
+{
+    mLayout = new QStackedLayout();
+    setLayout(mLayout);
+
+    connect(Main::instance()->documentManager(), SIGNAL(closed(Document*)),
+            this, SLOT(onDocumentClosed(Document*)));
+}
+
+void CodeEditorBox::setDocument(Document *doc)
+{
+    if (!doc || (currentEditor() && currentEditor()->document() == doc))
+        return;
+
+    CodeEditor *editor = editorForDocument(doc);
+    if (!editor) {
+        editor = new CodeEditor(doc);
+        editor->installEventFilter(this);
+        editor->applySettings(Main::instance()->settings());
+        connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
+                editor, SLOT(applySettings(Settings::Manager*)));
+        mHistory.append(editor);
+        mLayout->addWidget(editor);
+    }
+    else {
+        mHistory.removeOne(editor);
+        mHistory.append(editor);
+    }
+
+    mLayout->setCurrentWidget(editor);
+
+    emit currentChanged(editor);
+}
+
+void CodeEditorBox::onDocumentClosed(Document *doc)
+{
+    CodeEditor * editor = editorForDocument(doc);
+    if (editor) {
+        bool wasCurrent = editor == currentEditor();
+        mHistory.removeAll(editor);
+        delete editor;
+        if (wasCurrent) {
+            editor = currentEditor();
+            if (editor)
+                mLayout->setCurrentWidget(editor);
+            emit currentChanged(editor);
+        }
+    }
+}
+
+CodeEditor *CodeEditorBox::currentEditor()
+{
+    if (mHistory.count())
+        return mHistory.last();
+    else
+        return 0;
+}
+
+int CodeEditorBox::historyIndexOf(Document *doc)
+{
+    int count = mHistory.count();
+    for(int idx = 0; idx < count; ++idx)
+        if (mHistory[idx]->document() == doc)
+            return idx;
+    return -1;
+}
+
+CodeEditor *CodeEditorBox::editorForDocument(Document* doc)
+{
+    foreach(CodeEditor *editor, mHistory)
+        if (editor->document() == doc)
+            return editor;
+    return 0;
+}
+
+bool CodeEditorBox::eventFilter( QObject *object, QEvent *event )
+{
+    switch(event->type()) {
+    case QEvent::FocusIn:
+    case QEvent::FocusOut: {
+        CodeEditor *editor = qobject_cast<CodeEditor*>(object);
+        if (editor)
+            emit editorFocusChanged(editor, event->type() == QEvent::FocusIn);
+    }
+    default:;
+    }
+
+    return QWidget::eventFilter(object, event);
+}
+
+} // namesapce ScIDE

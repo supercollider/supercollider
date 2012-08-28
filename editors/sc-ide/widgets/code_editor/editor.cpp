@@ -103,10 +103,10 @@ int LineIndicator::widthForLineCount( int lineCount )
     return 6 + fontMetrics().width('9') * digits;
 }
 
-CodeEditor::CodeEditor( QWidget *parent ) :
+CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     QPlainTextEdit( parent ),
     mLineIndicator( new LineIndicator(this) ),
-    mDoc(0),
+    mDoc(doc),
     mIndentWidth(4),
     mSpaceIndent(true),
     mShowWhitespace(false),
@@ -115,7 +115,22 @@ CodeEditor::CodeEditor( QWidget *parent ) :
     mOverlay( new QGraphicsScene(this) ),
     mAutoCompleter( new AutoCompleter(this) )
 {
+    Q_ASSERT(mDoc != 0);
+
     mLineIndicator->move( contentsRect().topLeft() );
+
+    QTextDocument *tdoc = doc->textDocument();
+    QFontMetricsF fm(font());
+
+    QTextOption opt;
+    opt.setTabStop( fm.width(' ') * mIndentWidth );
+    if(mShowWhitespace)
+        opt.setFlags( QTextOption::ShowTabsAndSpaces );
+    tdoc->setDefaultTextOption(opt);
+    tdoc->setDefaultFont(font());
+
+    QPlainTextEdit::setDocument(tdoc);
+    mAutoCompleter->documentChanged(tdoc);
 
     connect( this, SIGNAL(blockCountChanged(int)),
              mLineIndicator, SLOT(setLineCount(int)) );
@@ -135,31 +150,6 @@ CodeEditor::CodeEditor( QWidget *parent ) :
              this, SLOT(onOverlayChanged(const QList<QRectF>&)) );
 
     mLineIndicator->setLineCount(1);
-}
-
-void CodeEditor::setDocument( Document *doc )
-{
-    QTextDocument *tdoc = doc->textDocument();
-    new SyntaxHighlighter(tdoc);
-
-    QFontMetricsF fm(font());
-
-    QTextOption opt;
-    opt.setTabStop( fm.width(' ') * mIndentWidth );
-    if(mShowWhitespace)
-        opt.setFlags( QTextOption::ShowTabsAndSpaces );
-
-    tdoc->setDefaultTextOption(opt);
-    tdoc->setDefaultFont(font());
-    tdoc->setDocumentLayout( new QPlainTextDocumentLayout(tdoc) );
-
-    QPlainTextEdit::setDocument(tdoc);
-
-    mLineIndicator->setLineCount( tdoc->blockCount() );
-
-    mDoc = doc;
-
-    mAutoCompleter->documentChanged(tdoc);
 }
 
 void CodeEditor::setIndentWidth( int width )
@@ -614,7 +604,7 @@ void CodeEditor::applySettings( Settings::Manager *settings )
 
 void CodeEditor::deleteTrailingSpaces()
 {
-    document()->deleteTrailingSpaces();
+    mDoc->deleteTrailingSpaces();
 }
 
 bool CodeEditor::event( QEvent *e )
