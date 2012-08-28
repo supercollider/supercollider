@@ -502,28 +502,7 @@ void MainWindow::loadSession( Session *session )
 
     session->endGroup();
 
-    DocumentManager *docMng = mMain->documentManager();
-
-    QVariantList docs = session->value("documents").value<QVariantList>();
-    if (docs.isEmpty())
-        docMng->create(); // Start with a new document
-    else
-        foreach (const QVariant & docData, docs)
-        {
-            QVariantMap docMap = docData.value<QVariantMap>();
-            docMng->open( docMap.value("file").toString(),
-                          0,
-                          false // don't modify recent document list
-                        );
-        }
-
-    QVariantList editors = session->value("editors").value<QVariantList>();
-    if (!editors.isEmpty()) {
-        QVariantMap editorData = editors[0].value<QVariantMap>();
-        QString currentDocPath = editorData.value("file").toString();
-        int currentDocPos = editorData.value("position").toInt();
-        docMng->open(currentDocPath, currentDocPos, false);
-    }
+    mEditors->loadSession(session);
 }
 
 void MainWindow::saveSession( Session *session )
@@ -533,40 +512,7 @@ void MainWindow::saveSession( Session *session )
     session->setValue("state", this->saveState().toBase64());
     session->endGroup();
 
-    int tabCount = mEditors->tabCount();
-    if (tabCount) {
-        QVariantList docsList;
-        for (int idx = 0; idx < tabCount; ++idx )
-        {
-            Document *doc = mEditors->documentForTab(idx);
-            if (!doc || doc->filePath().isEmpty())
-                continue;
-
-            QVariantMap docMap;
-            docMap.insert("file", doc->filePath());
-            // TODO:
-            //docMap.insert("position", editor->textCursor().position());
-
-            docsList.append( docMap );
-        }
-
-        session->setValue( "documents", QVariant::fromValue<QVariantList>(docsList) );
-    }
-    else
-        session->remove( "documents" );
-
-    QVariantList editors;
-    CodeEditor *editor = mEditors->currentEditor();
-    if (editor && !editor->document()->filePath().isEmpty()) {
-        QVariantMap editorData;
-        editorData.insert("file", editor->document()->filePath());
-        editorData.insert("position", editor->textCursor().position());
-        editors.append( editorData );
-    }
-    if (editors.isEmpty())
-        session->remove( "editors" );
-    else
-        session->setValue( "editors", QVariant::fromValue<QVariantList>(editors) );
+    mEditors->saveSession(session);
 }
 
 void MainWindow::openSessionsDialog()

@@ -41,7 +41,7 @@ class CodeEditor;
 class CodeEditorBox;
 class SignalMultiplexer;
 class ScRequest;
-
+class Session;
 namespace Settings { class Manager; }
 
 class MultiEditor : public QWidget
@@ -99,6 +99,7 @@ public:
     int tabForDocument( Document * doc );
 
     CodeEditor *currentEditor();
+    CodeEditorBox *currentBox() { return mEditorBox; }
 
     QAction * action( ActionRole role )
         { return mActions[role]; }
@@ -109,6 +110,9 @@ public:
     bool openDocumentation(QString const & string);
 
     void applySettings( Settings::Manager * );
+
+    void saveSession( Session * );
+    void loadSession( Session * );
 
 signals:
     void currentDocumentChanged( Document * );

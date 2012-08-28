@@ -39,9 +39,12 @@ public:
 
     CodeEditorBox(QWidget *parent = 0);
 
-    void setDocument(Document *);
+    void setDocument(Document *, int pos = -1);
 
     CodeEditor *currentEditor();
+    Document *currentDocument();
+
+    const History & history() { return mHistory; }
 
 signals:
     void currentChanged(CodeEditor*);

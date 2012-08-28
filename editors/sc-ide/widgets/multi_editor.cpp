@@ -27,6 +27,7 @@
 #include "../core/sig_mux.hpp"
 #include "../core/main.hpp"
 #include "../core/sc_process.hpp"
+#include "../core/session_manager.hpp"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -447,6 +448,38 @@ void MultiEditor::applySettings( Settings::Manager *s )
     s->endGroup();
 }
 
+void MultiEditor::saveSession( Session *session )
+{
+    QVariantList editors;
+    CodeEditorBox *editorBox = currentBox();
+    const CodeEditorBox::History &boxHistory = editorBox->history();
+    foreach( CodeEditor * editor, boxHistory ) {
+        if (!editor->document()->filePath().isEmpty()) {
+            QVariantMap editorData;
+            editorData.insert("file", editor->document()->filePath());
+            editorData.insert("position", editor->textCursor().position());
+            editors.append( editorData );
+        }
+    }
+
+    if (editors.isEmpty())
+        session->remove( "editors" );
+    else
+        session->setValue( "editors", QVariant::fromValue<QVariantList>(editors) );
+}
+
+void MultiEditor::loadSession( Session *session )
+{
+    QVariantList editors = session->value("editors").value<QVariantList>();
+    foreach( const QVariant &var, editors )
+    {
+        QVariantMap editorData = var.value<QVariantMap>();
+        QString currentDocPath = editorData.value("file").toString();
+        int currentDocPos = editorData.value("position").toInt();
+        Main::instance()->documentManager()->open(currentDocPath, currentDocPos, false);
+    }
+}
+
 void MultiEditor::setCurrent( Document *doc )
 {
     int tabIdx = tabForDocument(doc);
@@ -489,31 +522,23 @@ void MultiEditor::onOpen( Document *doc, int pos )
     if(tdoc->isModified())
         icon = mDocModifiedIcon;
 
-    mTabs->addTab( icon, doc->title() );
-    int newTabIndex = mTabs->count() - 1;
+    int newTabIndex = mTabs->addTab( icon, doc->title() );
     mTabs->setTabData( newTabIndex, QVariant::fromValue<Document*>(doc) );
-    mTabs->setCurrentIndex( newTabIndex );
 
-    // 'onCurrentChanged' may have been called on 'addTab' if first tab added,
-    // i.e. before 'setTabData', so call again explicitly:
-    onCurrentTabChanged(newTabIndex);
+    currentBox()->setDocument(doc, pos);
 }
 
 void MultiEditor::onClose( Document *doc )
 {
-    // TODO: with multiple editors, copy this slot into each editor?
     int tabIdx = tabForDocument(doc);
     if (tabIdx != -1)
         mTabs->removeTab(tabIdx);
+    // TODO: each box should switch document according to their own history
 }
 
 void MultiEditor::show( Document *doc, int pos )
 {
-    int tabIdx = tabForDocument(doc);
-    if (tabIdx != -1)
-        mTabs->setCurrentIndex(tabIdx);
-    Q_ASSERT(currentEditor());
-    currentEditor()->showPosition(pos);
+    currentBox()->setDocument(doc, pos);
 }
 
 void MultiEditor::update( Document *doc )
@@ -532,20 +557,22 @@ void MultiEditor::onCloseRequest( int index )
 
 void MultiEditor::onCurrentTabChanged( int index )
 {
-    Document *doc = index != -1 ? documentForTab(index) : 0;
+    if (index == -1)
+        return;
 
-    if (doc) {
-        mEditorBox->setDocument(doc);
-        CodeEditor *editor = mEditorBox->currentEditor();
-        Q_ASSERT(editor);
-        editor->setFocus(Qt::OtherFocusReason);
-    }
+    Document *doc = documentForTab(index);
+    if (!doc)
+        return;
+
+    CodeEditorBox *curBox = currentBox();
+    curBox->setDocument(doc);
+    CodeEditor *editor = curBox->currentEditor();
+    Q_ASSERT(editor);
+    editor->setFocus(Qt::OtherFocusReason);
 }
 
 void MultiEditor::onCurrentEditorChanged(CodeEditor *editor)
 {
-    qDebug("MultiEditor::onCurrentEditorChanged");
-
     if (editor) {
         int tabIndex = tabForDocument(editor->document());
         if (tabIndex != -1)
@@ -562,15 +589,11 @@ void MultiEditor::onCurrentEditorChanged(CodeEditor *editor)
 
 void MultiEditor::onModificationChanged( bool modified )
 {
-    qDebug() << "MultiEditor::onModificationChanged:" << modified;
-
     Q_ASSERT(currentEditor());
 
     int tabIdx = tabForDocument( currentEditor()->document() );
     if (tabIdx == -1)
         return;
-
-    qDebug("setting tab icon...");
 
     QIcon icon;
     if(modified)
@@ -741,7 +764,7 @@ int MultiEditor::tabForDocument( Document * doc )
 
 CodeEditor *MultiEditor::currentEditor()
 {
-    return mEditorBox->currentEditor();
+    return currentBox()->currentEditor();
 }
 
 } // namespace ScIDE
