@@ -472,8 +472,11 @@ void MultiEditor::applySettings( Settings::Manager *s )
 
 static QVariantList saveBoxState( CodeEditorBox *box )
 {
+    // save editors in reverse order - first one is last shown.
     QVariantList boxData;
-    foreach( CodeEditor *editor, box->history() ) {
+    int idx = box->history().count();
+    while(idx--) {
+        CodeEditor *editor = box->history()[idx];
         if (!editor->document()->filePath().isEmpty()) {
             QVariantMap editorData;
             editorData.insert("file", editor->document()->filePath());
