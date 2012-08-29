@@ -925,13 +925,13 @@ CodeEditor *MultiEditor::currentEditor()
 
 void MultiEditor::split( Qt::Orientation splitDirection )
 {
+    CodeEditorBox *box = newBox();
     CodeEditorBox *curBox = currentBox();
     CodeEditor *curEditor = curBox->currentEditor();
-    if (!curEditor)
-        return;
 
-    CodeEditorBox *box = newBox();
-    box->setDocument(curEditor->document(), curEditor->textCursor().position());
+    if (curEditor)
+        box->setDocument(curEditor->document(), curEditor->textCursor().position());
+
     mSplitter->insertWidget(box, curBox, splitDirection);
     box->setFocus( Qt::OtherFocusReason );
 }
