@@ -80,7 +80,7 @@ PostWindow::PostWindow(QWidget* parent):
     addAction(action);
 
     mAutoScrollAction = new QAction(tr("Auto Scroll"), this);
-    mAutoScrollAction->setToolTip(tr("Keep scrolled to bottom on new posts"));
+    mAutoScrollAction->setToolTip(tr("Scroll to bottom on new posts"));
     mAutoScrollAction->setCheckable(true);
     mAutoScrollAction->setChecked(true);
     addAction(mAutoScrollAction);
@@ -106,7 +106,7 @@ void PostWindow::applySettings(Settings::Manager * settings)
 void PostWindow::post(const QString &text)
 {
     QScrollBar *scrollBar = verticalScrollBar();
-    bool scroll = mAutoScrollAction->isChecked() && (scrollBar->value() == scrollBar->maximum());
+    bool scroll = mAutoScrollAction->isChecked();
 
     QTextCursor c(document());
     c.movePosition(QTextCursor::End);
