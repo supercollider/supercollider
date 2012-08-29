@@ -335,7 +335,7 @@ void MainWindow::createActions()
     mActions[Help] = act = new QAction(
     QIcon::fromTheme("system-help"), tr("Open Help Browser"), this);
     act->setStatusTip(tr("Open help."));
-    connect(act, SIGNAL(triggered()), this, SLOT(helpForCursor()));
+    connect(act, SIGNAL(triggered()), this, SLOT(openHelp()));
 
     mActions[HelpForSelection] = act = new QAction(
     QIcon::fromTheme("system-help"), tr("&Help for Selection"), this);
