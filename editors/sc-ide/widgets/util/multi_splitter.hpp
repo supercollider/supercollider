@@ -28,11 +28,10 @@ namespace ScIDE {
 class MultiSplitter : public QSplitter
 {
 public:
-    explicit MultiSplitter(QWidget *firstWidget, QWidget *parent = 0):
+    explicit MultiSplitter(QWidget *parent = 0):
         QSplitter(parent)
     {
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        addWidget(firstWidget);
     }
 
     void insertWidget( QWidget *widget, QWidget *neighbour, Qt::Orientation direction )
@@ -87,13 +86,6 @@ public:
             grandParent->insertWidget(posInParent, parent->widget(0));
             delete parent;
         }
-    }
-
-    void clear()
-    {
-        int widgetCount = count();
-        for(int idx = 0; idx < widgetCount; ++idx)
-            delete widget(idx);
     }
 
 private:

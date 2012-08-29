@@ -182,7 +182,9 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mTabs->setDrawBase(false);
 
     CodeEditorBox *defaultBox = newBox();
-    mSplitter = new MultiSplitter(defaultBox);
+
+    mSplitter = new MultiSplitter();
+    mSplitter->addWidget(defaultBox);
 
     QVBoxLayout *l = new QVBoxLayout;
     l->setContentsMargins(0,0,0,0);
@@ -562,19 +564,35 @@ void MultiEditor::switchSession( Session *session )
     foreach (Document *doc, docs)
         docManager->close(doc);
 
-    mSplitter->clear();
+    delete mSplitter;
+    mSplitter = new MultiSplitter();
 
     if (session) {
         QVariantMap splitterData = session->value("editors").value<QVariantMap>();
         loadSplitterState( mSplitter, splitterData );
     }
 
-    if (!mSplitter->count())
-        mSplitter->addWidget( newBox() );
+    CodeEditorBox *firstBox = 0;
 
-    CodeEditorBox *firstBox = mSplitter->findChild<CodeEditorBox*>();
-    Q_ASSERT(firstBox);
+    if (mSplitter->count()) {
+        firstBox = mSplitter->findChild<CodeEditorBox*>();
+        if (!firstBox) {
+            qWarning("Session seems to contain invalid editor split data!");
+            delete mSplitter;
+            mSplitter = new MultiSplitter();
+        }
+    }
+
+    if (!firstBox) {
+        firstBox = newBox();
+        mSplitter->addWidget( firstBox );
+    }
+
     setCurrentBox( firstBox );
+
+    layout()->addWidget(mSplitter);
+
+
 
     if (!firstBox->currentDocument())
         docManager->create();
