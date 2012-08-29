@@ -32,6 +32,7 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
     QWidget(parent)
 {
     setFocusPolicy(Qt::StrongFocus);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     mLayout = new QStackedLayout();
     setLayout(mLayout);
