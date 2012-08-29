@@ -502,8 +502,7 @@ static QVariantMap saveSplitterState( QSplitter *splitter )
         CodeEditorBox *box = qobject_cast<CodeEditorBox*>(child);
         if (box) {
             QVariantList boxData = saveBoxState(box);
-            if (!boxData.isEmpty())
-                childrenData.append( QVariant(boxData) );
+            childrenData.append( QVariant(boxData) );
             continue;
         }
 
@@ -596,8 +595,6 @@ void MultiEditor::switchSession( Session *session )
     setCurrentBox( firstBox );
 
     layout()->addWidget(mSplitter);
-
-
 
     if (!firstBox->currentDocument())
         docManager->create();
