@@ -11,15 +11,15 @@
 	TODO:
 		- check representations
 		- raw data
-		- resize / interpolations
 		- on screen interpolations (?)
 		- lock/unlockFocus (?)
 */
 
 QImage {
-	classvar <compositingOperations, <allPlotWindows;
+	classvar <compositingOperations, <allPlotWindows, <aspectRatioModes, <transformModes;
 	var dataptr, finalizer;
 	var <>name, <url;
+	var arm, trm;
 
 	*initClass {
 		compositingOperations = [
@@ -54,27 +54,48 @@ QImage {
 			'exclusion',        // 23 qt name
 			// 24-32 RasterOp
 		];
+
+		aspectRatioModes = [
+			'ignoreAspectRatio',
+			'keepAspectRatio',
+			'keepAspectRatioByExpanding'
+		];
+
+		transformModes = [
+			'fastTransformation',
+			'smoothTransformation'
+		];
 	}
 
 	*new { arg multiple, height = nil;
-		if(multiple.isKindOf(Point), {
-			^this.newEmpty(multiple.x, multiple.y);
-		});
+		var ret;
 
-		if(multiple.isKindOf(Number), {
-			^this.newEmpty(multiple, height ? multiple);
-		});
+		case(
+		{ multiple.isKindOf(Point) }, {
+			ret = this.newEmpty(multiple.x, multiple.y);
+		},
 
-		if(multiple.isKindOf(String), {
+		{ multiple.isKindOf(Number) }, {
+			ret = this.newEmpty(multiple, height ? multiple);
+		},
+
+		{ multiple.isKindOf(String) }, {
 			if (multiple.beginsWith("http://").not
 				and:{ multiple.beginsWith("file://").not }
 				and:{ multiple.beginsWith("ftp://").not  }, {
-				^this.open(multiple);
+				ret = this.open(multiple);
+			}, {
+				ret = this.openURL(multiple);
 			});
-			^this.openURL(multiple);
 		});
 
-		^nil;
+		if(ret.isNil, {
+			^nil;
+		}, {
+			ret.arMode = 'keepAspectRatio';
+			ret.trMode = 'fastTransformation';
+			^ret;
+		});
 	}
 
 	*newEmpty { arg width, height;
@@ -132,7 +153,7 @@ QImage {
 	}
 
 	*interpolations {
-		// TODO
+		^[]; // TODO
 	}
 
 	*colorToPixel { arg col;
@@ -144,11 +165,39 @@ QImage {
 	}
 
 	// Instance methods
-	scalesWhenResized {
-		// TODO
+	arMode {
+		^aspectRatioModes.at(arm);
 	}
-	scalesWhenResized_ { arg flag;
-		// TODO
+	arMode_ { arg m;
+		var res;
+		if((res = aspectRatioModes.indexOf(m)).notNil, {
+			arm = res;
+		});
+	}
+
+	trMode {
+		^transformModes.at(trm);
+	}
+	trMode_ { arg m;
+		var res;
+		if((res = transformModes.indexOf(m)).notNil, {
+			trm = res;
+		});
+	}
+
+	scalesWhenResized { // FIX: compatibility behavior
+		^(this.arMode == 'ignoreAspectRatio');
+	}
+	scalesWhenResized_ { arg flag, mode; // FIX: compatibility behavior
+		if(flag, {
+			this.arMode = 'ignoreAspectRatio';
+		}, {
+			if(mode.notNil, {
+				this.arMode = mode;
+			}, {
+				this.arMode = 'keepAspectRatio';
+			});
+		});
 	}
 
 	width {
@@ -156,7 +205,7 @@ QImage {
 		^this.primitiveFailed
 	}
 	width_ { arg w;
-		// TODO
+		this.setSize(w, this.height);
 	}
 
 	height {
@@ -164,11 +213,11 @@ QImage {
 		^this.primitiveFailed
 	}
 	height_ { arg h;
-		// TODO
+		this.setSize(this.width, h);
 	}
 
 	setSize { arg width, height;
-		// TODO
+		this.prSetSize(width, height, arm, trm);
 	}
 
 	// pixel manipulation
@@ -359,6 +408,11 @@ QImage {
 
 	*prFormats { arg rw;
 		_QImage_Formats
+		^this.primitiveFailed
+	}
+
+	prSetSize { arg width, height, arMode, trMode;
+		_QImage_SetSize
 		^this.primitiveFailed
 	}
 }

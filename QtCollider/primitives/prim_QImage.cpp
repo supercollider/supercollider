@@ -240,6 +240,23 @@ QC_LANG_PRIMITIVE( QImage_Height, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( QImage_SetSize, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( NotInt(a) || NotInt(a+1) || NotInt(a+2) || NotInt(a+3) ) return errWrongType;
+  QSize newSize = QSize( Slot::toInt(a), Slot::toInt(a+1) );
+  int arMode = Slot::toInt(a+2);
+  int trMode = Slot::toInt(a+3);
+
+  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
+  QImage *res = new QImage(
+    img->scaled( newSize, (Qt::AspectRatioMode)arMode, (Qt::TransformationMode)trMode ) );
+
+  SetPtr( slotRawObject(r)->slots, res );
+  delete img;
+
+  return errNone;
+}
+
 QC_LANG_PRIMITIVE( QImage_Write, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
@@ -370,6 +387,7 @@ void defineQImagePrimitives()
   definer.define<QImage_Free>();
   definer.define<QImage_Width>();
   definer.define<QImage_Height>();
+  definer.define<QImage_SetSize>();
   definer.define<QImage_Write>();
   definer.define<QImage_SetPainter>();
   definer.define<QImage_UnsetPainter>();
