@@ -598,6 +598,8 @@ void MultiEditor::switchSession( Session *session )
 
     if (!firstBox->currentDocument())
         docManager->create();
+
+    firstBox->setFocus(Qt::OtherFocusReason); // ensure focus
 }
 
 void MultiEditor::setCurrent( Document *doc )
@@ -648,6 +650,7 @@ void MultiEditor::onOpen( Document *doc, int pos )
     mTabs->setTabData( newTabIndex, QVariant::fromValue<Document*>(doc) );
 
     currentBox()->setDocument(doc, pos);
+    currentBox()->setFocus(Qt::OtherFocusReason);
 }
 
 void MultiEditor::onClose( Document *doc )
@@ -661,6 +664,7 @@ void MultiEditor::onClose( Document *doc )
 void MultiEditor::show( Document *doc, int pos )
 {
     currentBox()->setDocument(doc, pos);
+    currentBox()->setFocus(Qt::OtherFocusReason);
 }
 
 void MultiEditor::update( Document *doc )
