@@ -591,6 +591,7 @@ void MultiEditor::switchSession( Session *session )
         mSplitter->addWidget( firstBox );
     }
 
+    mCurrentEditorBox = 0; // ensure complete update
     setCurrentBox( firstBox );
 
     layout()->addWidget(mSplitter);
