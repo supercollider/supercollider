@@ -64,8 +64,7 @@ public:
 
 signals:
     void saveSessionRequest(Session * session);
-    void loadSessionRequest(Session * session);
-    void currentSessionChanged(Session * session);
+    void switchSessionRequest(Session * session);
 
 private:
     void closeSession();
