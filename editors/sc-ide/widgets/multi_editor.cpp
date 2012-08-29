@@ -700,13 +700,9 @@ void MultiEditor::onCurrentEditorChanged(CodeEditor *editor)
     setCurrentEditor(editor);
 }
 
-void MultiEditor::onEditorFocusChanged(CodeEditor *editor, bool focused)
+void MultiEditor::onBoxActivated(CodeEditorBox *box)
 {
-    if (focused) {
-        CodeEditorBox *box = qobject_cast<CodeEditorBox*>( editor->parent() );
-        if (box)
-            setCurrentBox(box);
-    }
+    setCurrentBox(box);
 }
 
 void MultiEditor::onModificationChanged( bool modified )
@@ -888,8 +884,8 @@ CodeEditorBox *MultiEditor::newBox()
 {
     CodeEditorBox *box = new CodeEditorBox();
 
-    connect(box, SIGNAL(editorFocusChanged(CodeEditor*,bool)),
-            this, SLOT(onEditorFocusChanged(CodeEditor*, bool)));
+    connect(box, SIGNAL(activated(CodeEditorBox*)),
+            this, SLOT(onBoxActivated(CodeEditorBox*)));
 
     return box;
 }
@@ -902,6 +898,8 @@ void MultiEditor::setCurrentBox( CodeEditorBox * box )
     mCurrentEditorBox = box;
     mBoxSigMux->setCurrentObject(box);
     setCurrentEditor( box->currentEditor() );
+
+    mCurrentEditorBox->setActive();
 }
 
 void MultiEditor::setCurrentEditor( CodeEditor * editor )
