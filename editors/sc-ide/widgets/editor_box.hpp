@@ -24,6 +24,7 @@
 
 #include <QWidget>
 #include <QStackedLayout>
+#include <QPointer>
 
 namespace ScIDE {
 
@@ -46,9 +47,26 @@ public:
 
     const History & history() { return mHistory; }
 
+    void setActive() {
+        if (isActive())
+            return;
+
+        CodeEditorBox *lastActiveBox = gActiveBox;
+        gActiveBox = this;
+
+        if (lastActiveBox)
+            lastActiveBox->update();
+
+        update();
+
+        emit activated(this);
+    }
+
+    bool isActive() { return gActiveBox == this; }
+
 signals:
     void currentChanged(CodeEditor*);
-    void editorFocusChanged( CodeEditor *, bool focused );
+    void activated( CodeEditorBox *me );
 
 private slots:
     void onDocumentClosed(Document*);
@@ -57,9 +75,12 @@ private:
     int historyIndexOf(Document*);
     CodeEditor *editorForDocument(Document*);
     bool eventFilter( QObject *, QEvent * );
+    void focusInEvent( QFocusEvent * );
+    void paintEvent( QPaintEvent * );
 
     QStackedLayout *mLayout;
     History mHistory;
+    static QPointer<CodeEditorBox> gActiveBox;
 };
 
 } // namespace ScIDE

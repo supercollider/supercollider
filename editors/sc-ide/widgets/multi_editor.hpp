@@ -147,7 +147,7 @@ private slots:
     void onCloseRequest( int index );
     void onCurrentTabChanged( int index );
     void onCurrentEditorChanged( CodeEditor * );
-    void onEditorFocusChanged( CodeEditor *, bool focused );
+    void onBoxActivated( CodeEditorBox * );
     void onModificationChanged( bool modified );
     void openDefinition();
     void evaluateRegion();

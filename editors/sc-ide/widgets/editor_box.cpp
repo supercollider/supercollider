@@ -22,11 +22,17 @@
 #include "code_editor/editor.hpp"
 #include "../../core/main.hpp"
 
+#include <QPainter>
+
 namespace ScIDE {
+
+QPointer<CodeEditorBox> CodeEditorBox::gActiveBox;
 
 CodeEditorBox::CodeEditorBox(QWidget *parent) :
     QWidget(parent)
 {
+    setFocusPolicy(Qt::StrongFocus);
+
     mLayout = new QStackedLayout();
     setLayout(mLayout);
 
@@ -110,21 +116,34 @@ bool CodeEditorBox::eventFilter( QObject *object, QEvent *event )
 {
     switch(event->type()) {
     case QEvent::FocusIn:
-    case QEvent::FocusOut: {
-        CodeEditor *editor = qobject_cast<CodeEditor*>(object);
-        if (editor)
-            emit editorFocusChanged(editor, event->type() == QEvent::FocusIn);
-    }
+        setActive();
     default:;
     }
 
     return QWidget::eventFilter(object, event);
 }
 
+void CodeEditorBox::focusInEvent( QFocusEvent * )
+{
+    setActive();
+}
+
 Document * CodeEditorBox::currentDocument()
 {
     CodeEditor *editor = currentEditor();
     return editor ? editor->document() : 0;
+}
+
+void CodeEditorBox::paintEvent( QPaintEvent * )
+{
+    if (mLayout->currentWidget() == 0) {
+        QPainter painter(this);
+        painter.setRenderHint( QPainter::Antialiasing, true );
+        int colorRatio = isActive() ? 160 : 125;
+        painter.setBrush( palette().color(QPalette::Window).darker(colorRatio) );
+        painter.setPen( Qt::NoPen );
+        painter.drawRoundedRect( rect().adjusted(4, 4, -4, -4), 4, 4 );
+    }
 }
 
 } // namesapce ScIDE
