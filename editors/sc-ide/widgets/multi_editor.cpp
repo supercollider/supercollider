@@ -557,7 +557,8 @@ void MultiEditor::loadSplitterState( QSplitter *splitter, const QVariantMap & da
         }
     }
 
-    splitter->restoreState(state);
+    if (!splitter->restoreState(state))
+        qWarning("MultiEditor: could not restore splitter state!");
 }
 
 void MultiEditor::switchSession( Session *session )
