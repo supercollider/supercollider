@@ -125,10 +125,8 @@ MainWindow::MainWindow(Main * main) :
     // Session management
     connect(main->sessionManager(), SIGNAL(saveSessionRequest(Session*)),
             this, SLOT(saveSession(Session*)));
-    connect(main->sessionManager(), SIGNAL(loadSessionRequest(Session*)),
-            this, SLOT(loadSession(Session*)));
-    connect(main->sessionManager(), SIGNAL(currentSessionChanged(Session*)),
-            this, SLOT(updateWindowTitle()));
+    connect(main->sessionManager(), SIGNAL(switchSessionRequest(Session*)),
+            this, SLOT(switchSession(Session*)));
     // A system for easy evaluation of pre-defined code:
     connect(&mCodeEvalMapper, SIGNAL(mapped(QString)),
             this, SIGNAL(evaluateCode(QString)));
@@ -490,23 +488,27 @@ void MainWindow::onOpenSessionAction( QAction * action )
         mMain->sessionManager()->openSession( action->text() );
 }
 
-void MainWindow::loadSession( Session *session )
+void MainWindow::switchSession( Session *session )
 {
-    session->beginGroup("mainWindow");
+    if (session) {
+        session->beginGroup("mainWindow");
 
-    QByteArray geom = QByteArray::fromBase64( session->value("geometry").value<QByteArray>() );
-    if (!geom.isEmpty())
-        restoreGeometry(geom);
+        QByteArray geom = QByteArray::fromBase64( session->value("geometry").value<QByteArray>() );
+        if (!geom.isEmpty())
+            restoreGeometry(geom);
 
-    updateClockWidget(isFullScreen());
+        updateClockWidget(isFullScreen());
 
-    QByteArray state = QByteArray::fromBase64( session->value("state").value<QByteArray>() );
-    if (!state.isEmpty())
-        restoreState(state);
+        QByteArray state = QByteArray::fromBase64( session->value("state").value<QByteArray>() );
+        if (!state.isEmpty())
+            restoreState(state);
 
-    session->endGroup();
+        session->endGroup();
+    }
 
-    mEditors->loadSession(session);
+    mEditors->switchSession(session);
+
+    updateWindowTitle();
 }
 
 void MainWindow::saveSession( Session *session )

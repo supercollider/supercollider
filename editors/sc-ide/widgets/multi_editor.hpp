@@ -119,7 +119,7 @@ public:
     void applySettings( Settings::Manager * );
 
     void saveSession( Session * );
-    void loadSession( Session * );
+    void switchSession( Session * );
 
 signals:
     void currentDocumentChanged( Document * );

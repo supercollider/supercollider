@@ -555,12 +555,19 @@ void MultiEditor::loadSplitterState( QSplitter *splitter, const QVariantMap & da
     splitter->restoreState(state);
 }
 
-void MultiEditor::loadSession( Session *session )
+void MultiEditor::switchSession( Session *session )
 {
+    DocumentManager *docManager = Main::instance()->documentManager();
+    QList<Document*> docs = docManager->documents();
+    foreach (Document *doc, docs)
+        docManager->close(doc);
+
     mSplitter->clear();
 
-    QVariantMap splitterData = session->value("editors").value<QVariantMap>();
-    loadSplitterState( mSplitter, splitterData );
+    if (session) {
+        QVariantMap splitterData = session->value("editors").value<QVariantMap>();
+        loadSplitterState( mSplitter, splitterData );
+    }
 
     if (!mSplitter->count())
         mSplitter->addWidget( newBox() );
@@ -568,6 +575,9 @@ void MultiEditor::loadSession( Session *session )
     CodeEditorBox *firstBox = mSplitter->findChild<CodeEditorBox*>();
     Q_ASSERT(firstBox);
     setCurrentBox( firstBox );
+
+    if (!firstBox->currentDocument())
+        docManager->create();
 }
 
 void MultiEditor::setCurrent( Document *doc )
