@@ -88,7 +88,29 @@ public:
         }
     }
 
+    template<typename T> T* findChild()
+    {
+        return MultiSplitter::findChild<T>(this);
+    }
+
 private:
+    template<typename T> static T* findChild( QSplitter * splitter ) {
+        int childCount = splitter->count();
+        for (int idx = 0; idx < childCount; ++idx) {
+            QWidget *child = splitter->widget(idx);
+            T* typedChild = qobject_cast<T*>(child);
+            if (typedChild)
+                return typedChild;
+            QSplitter *childSplitter = qobject_cast<QSplitter*>(child);
+            if (childSplitter) {
+                typedChild = findChild<T>( childSplitter );
+                if (typedChild)
+                    return typedChild;
+            }
+        }
+        return 0;
+    }
+
     QSplitter *parentSplitterOf( QWidget *widget )
     {
         return qobject_cast<QSplitter*>( widget->parent() );

@@ -578,7 +578,7 @@ void MultiEditor::switchSession( Session *session )
     CodeEditorBox *firstBox = 0;
 
     if (mSplitter->count()) {
-        firstBox = mSplitter->findChild<CodeEditorBox*>();
+        firstBox = mSplitter->findChild<CodeEditorBox>();
         if (!firstBox) {
             qWarning("Session seems to contain invalid editor split data!");
             delete mSplitter;
@@ -943,7 +943,7 @@ void MultiEditor::removeCurrentSplit()
     mSplitter->removeWidget(box);
 
     // switch current box to first box found:
-    box = mSplitter->findChild<CodeEditorBox*>();
+    box = mSplitter->findChild<CodeEditorBox>();
     Q_ASSERT(box);
     setCurrentBox(box);
     box->setFocus( Qt::OtherFocusReason );
