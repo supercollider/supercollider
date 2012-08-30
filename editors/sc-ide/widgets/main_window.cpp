@@ -427,6 +427,7 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::SplitHorizontally) );
     menu->addAction( mEditors->action(MultiEditor::SplitVertically) );
     menu->addAction( mEditors->action(MultiEditor::RemoveCurrentSplit) );
+    menu->addAction( mEditors->action(MultiEditor::RemoveAllSplits) );
     menu->addSeparator();
     menu->addAction( mActions[ClearPostWindow] );
     menu->addSeparator();
