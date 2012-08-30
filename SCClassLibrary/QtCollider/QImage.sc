@@ -232,6 +232,31 @@ QImage {
 		^this.primitiveFailed
 	}
 
+	pixels {
+		var pixelArray;
+		if(this.width == 0 or: { this.height == 0 }, { ^nil });
+		pixelArray = Int32Array.newClear(this.width * this.height);
+		this.prLoadPixels(pixelArray, nil, 0, true);
+		^pixelArray;
+	}
+
+	loadPixels {arg array, region = nil, start = 0;
+		if(array.isKindOf(Int32Array).not, {
+			"QImage: array should be an Int32Array".warn;
+			^nil;
+		});
+		this.prLoadPixels(array, region, start, true);
+		^this;
+	}
+
+	pixels_ {arg array;
+		this.setPixels(array);
+	}
+
+	setPixels { arg array, region = nil, start = 0;
+		this.prLoadPixels(array, region, start, false);
+	}
+
 	fill { arg color;
 		_QImage_Fill
 		^this.primitiveFailed
@@ -414,6 +439,11 @@ QImage {
 
 	prSetSize { arg width, height, arMode, trMode;
 		_QImage_SetSize
+		^this.primitiveFailed
+	}
+
+	prLoadPixels {arg array, region, start, geset;
+		_QImage_LoadPixels
 		^this.primitiveFailed
 	}
 }
