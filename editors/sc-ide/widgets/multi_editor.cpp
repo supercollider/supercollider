@@ -367,14 +367,17 @@ void MultiEditor::createActions()
     act->setShortcut( tr("Ctrl+Tab", "Switch Document"));
     connect(act, SIGNAL(triggered()), this, SLOT(switchDocument()));
 
-    mActions[SplitHorizontally] = act = new QAction(tr("Split Horizontally"), this);
+    mActions[SplitHorizontally] = act = new QAction(tr("Split To Right"), this);
     connect(act, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
 
-    mActions[SplitVertically] = act = new QAction(tr("Split Vertically"), this);
+    mActions[SplitVertically] = act = new QAction(tr("Split To Bottom"), this);
     connect(act, SIGNAL(triggered()), this, SLOT(splitVertically()));
 
     mActions[RemoveCurrentSplit] = act = new QAction(tr("Remove Current Split"), this);
     connect(act, SIGNAL(triggered()), this, SLOT(removeCurrentSplit()));
+
+    mActions[RemoveAllSplits] = act = new QAction(tr("Remove All Splits"), this);
+    connect(act, SIGNAL(triggered()), this, SLOT(removeAllSplits()));
 
     // Language
 
@@ -939,6 +942,7 @@ void MultiEditor::split( Qt::Orientation splitDirection )
 void MultiEditor::removeCurrentSplit()
 {
     if (mSplitter->count() < 2)
+        // Do not allow removing the one and only box.
         return;
 
     CodeEditorBox *box = currentBox();
@@ -948,6 +952,23 @@ void MultiEditor::removeCurrentSplit()
     box = mSplitter->findChild<CodeEditorBox>();
     Q_ASSERT(box);
     setCurrentBox(box);
+    box->setFocus( Qt::OtherFocusReason );
+}
+
+void MultiEditor::removeAllSplits()
+{
+    if (mSplitter->count() < 2)
+        // Nothing to do.
+        return;
+
+    CodeEditorBox *box = currentBox();
+    MultiSplitter *newSplitter = new MultiSplitter;
+    newSplitter->addWidget(box);
+
+    delete mSplitter;
+    mSplitter = newSplitter;
+    layout()->addWidget(newSplitter);
+
     box->setFocus( Qt::OtherFocusReason );
 }
 
