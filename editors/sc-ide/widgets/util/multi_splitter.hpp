@@ -55,11 +55,28 @@ public:
             parentSplitter->addWidget(widget);
         }
         else {
+            // store parent's current distribution:
+            QList<int> parentsSizes = parentSplitter->sizes();
             QSplitter * splitter = new QSplitter(direction);
+            // move the neighbour to the new splitter, and add the new widget:
             splitter->addWidget(neighbour);
             splitter->addWidget(widget);
+            // insert the new splitter at the neighbour's old position:
             parentSplitter->insertWidget(posInParent, splitter);
+            // restore parent's old distribution, affected by operations above:
+            parentSplitter->setSizes(parentsSizes);
+            // change the parent to the new splitter, for operations below:
+            parentSplitter = splitter;
         }
+
+        int widgetCount = parentSplitter->count();
+        int splitterSize = direction == Qt::Horizontal ?
+                    parentSplitter->size().width() : parentSplitter->size().height();
+        QList<int> newWidgetSizes;
+        int singleWidgetSize = splitterSize / widgetCount;
+        for( int idx = 0; idx < widgetCount; ++idx )
+            newWidgetSizes << singleWidgetSize;
+        parentSplitter->setSizes( newWidgetSizes );
     }
 
     void removeWidget( QWidget *widget )
