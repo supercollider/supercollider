@@ -99,6 +99,9 @@ public:
 
     bool quit();
 
+    void saveWindowState();
+    void restoreWindowState();
+
     static MainWindow *instance() { return mInstance; }
 
     static bool close( Document * );

@@ -40,6 +40,8 @@ void Manager::initDefaults()
 
     beginGroup("IDE");
 
+    setDefault("startWithSession", "last");
+
     beginGroup("interpreter");
     setDefault("autoStart", true);
     endGroup();

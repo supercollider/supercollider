@@ -464,6 +464,33 @@ void MainWindow::createMenus()
     menuBar()->addMenu(menu);
 }
 
+void MainWindow::saveWindowState()
+{
+    Settings::Manager *settings = Main::instance()->settings();
+    settings->beginGroup("IDE/mainWindow");
+    settings->setValue("geometry", this->saveGeometry().toBase64());
+    settings->setValue("state", this->saveState().toBase64());
+    settings->endGroup();
+}
+
+void MainWindow::restoreWindowState()
+{
+    Settings::Manager *settings = Main::instance()->settings();
+    settings->beginGroup("IDE/mainWindow");
+
+    QByteArray geom = QByteArray::fromBase64( settings->value("geometry").value<QByteArray>() );
+    if (!geom.isEmpty())
+        restoreGeometry(geom);
+    else
+        setWindowState( windowState() & ~Qt::WindowFullScreen | Qt::WindowMaximized );
+
+    QByteArray state = QByteArray::fromBase64( settings->value("state").value<QByteArray>() );
+    if (!state.isEmpty())
+        restoreState(state);
+
+    settings->endGroup();
+}
+
 void MainWindow::newSession()
 {
     if (promptSaveDocs())
@@ -541,6 +568,8 @@ bool MainWindow::quit()
 {
     if (!promptSaveDocs())
         return false;
+
+    saveWindowState();
 
     mMain->quit();
 
