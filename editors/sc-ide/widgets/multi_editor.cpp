@@ -599,9 +599,6 @@ void MultiEditor::switchSession( Session *session )
 
     layout()->addWidget(mSplitter);
 
-    if (!firstBox->currentDocument())
-        docManager->create();
-
     firstBox->setFocus(Qt::OtherFocusReason); // ensure focus
 }
 
