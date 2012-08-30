@@ -938,7 +938,8 @@ void MultiEditor::split( Qt::Orientation splitDirection )
 
 void MultiEditor::removeCurrentSplit()
 {
-    if (mSplitter->count() < 2)
+    int boxCount = mSplitter->findChildren<CodeEditorBox*>().count();
+    if (boxCount < 2)
         // Do not allow removing the one and only box.
         return;
 
@@ -954,11 +955,13 @@ void MultiEditor::removeCurrentSplit()
 
 void MultiEditor::removeAllSplits()
 {
-    if (mSplitter->count() < 2)
+    CodeEditorBox *box = currentBox();
+    Q_ASSERT(box);
+    Q_ASSERT(mSplitter->count());
+    if (mSplitter->count() == 1 && mSplitter->widget(0) == box)
         // Nothing to do.
         return;
 
-    CodeEditorBox *box = currentBox();
     MultiSplitter *newSplitter = new MultiSplitter;
     newSplitter->addWidget(box);
 
