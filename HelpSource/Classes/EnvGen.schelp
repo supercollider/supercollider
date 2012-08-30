@@ -88,14 +88,14 @@ code::
 )
 // EnvGen multichannel expands when passed a multichannel envelope
 (
-{ 
+{
 	SinOsc.ar(
 		EnvGen.kr(
 			Env.circle([0, 1, 0, (2..4), 0, LFNoise1.kr(0.1 ! 5) * 10, 0], [0.01, 0.6])
-		) 
+		)
 		* 240 + 300
-	).sum * 0.2 
-}.play; 
+	).sum * 0.2
+}.play;
 )
 ::
 
@@ -189,9 +189,9 @@ SynthDef(\help_Env_newClear, { |out = 0|
 	env = Env.newClear(4);
 	// create a control argument array
 	envctl = \env.kr(env.asArray);
-	Out.ar(out, 
+	Out.ar(out,
 		SinOsc.ar(EnvGen.kr(envctl, \gate.tr), 0, 0.3) // the gate control is a trigger
-	); 
+	);
 }).add;
 )
 
@@ -281,38 +281,42 @@ code::
 
 subsection::More examples
 
+For more information about the emphasis::control bus mapping:: used in the line code::a = Synth(\sine, [freq: f.asMap]);::, see link::Classes/Node#-map:: and link::Classes/Bus#-asMap::.
+
 code::
 
 // Changing an Env while playing
 (
 SynthDef(\env, { arg i_outbus=0;
-    var env, envctl;
+	var env, envctl;
 
-    // make a dummy 8 segment envelope
-    env = Env.newClear(8);
+	// make a dummy 8 segment envelope
+	env = Env.newClear(8);
 
-    // create a control argument array
-    envctl = \env.kr( env.asArray );
+	// create a control argument array
+	envctl = \env.kr( env.asArray );
 
-    ReplaceOut.kr(i_outbus, EnvGen.kr(envctl, doneAction: 2));
+	ReplaceOut.kr(i_outbus, EnvGen.kr(envctl, doneAction: 2));
 }).add;
 )
 
 (
-SynthDef(\sine, {
-    Out.ar(0, SinOsc.ar(In.kr(0), 0, 0.2));
+SynthDef(\sine, { |freq = 0|
+	Out.ar(0, SinOsc.ar(freq, 0, 0.2));
 }).add;
 )
 
-s.sendMsg(\c_set, 0, 800);
+f = Bus.control(s, 1);
+f.set(800);
 
-s.sendMsg(\s_new, \sine, 1001, 1, 0);
+// use f's control bus value for frequency
+// i.e. *map* the control to read from the bus
+a = Synth(\sine, [freq: f.asMap]);
 
-e = Env([700, 900, 900, 800], [1, 1, 1]*0.4, \exp).asArray;
-s.sendBundle(nil, [\s_new, \env, 1002, 2, 1001], [\n_setn, 1002, \env, e.size] ++ e);
+Synth(\env, [i_outbus: f, env: Env([700, 900, 900, 800], [1, 1, 1]*0.4, \exp)]);
 
-f = Env([1000, 1000, 800, 1000, 900, 1000], [1, 1, 1, 1, 1]*0.3, \step).asArray;
-s.sendBundle(nil, [\s_new, \env, 1003, 2, 1001], [\n_setn, 1003, \env, f.size] ++ f);
+Synth(\env, [i_outbus: f, env: Env([1000, 1000, 800, 1000, 900, 1000], [1, 1, 1, 1, 1]*0.3, \step)]);
 
-s.sendMsg(\n_free, 1001);
+a.free;
+f.free;
 ::
