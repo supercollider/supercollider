@@ -64,8 +64,8 @@ public:
 
     bool isActive() { return gActiveBox == this; }
 
-    QSize minimumSizeHint() const { return QSize(50,50); }
-    QSize sizeHint() const { return QSize(200,200); }
+    QSize minimumSizeHint() const { return QSize(100, 100); }
+    QSize sizeHint() const { return QSize(100, 100); }
 
 signals:
     void currentChanged(CodeEditor*);
