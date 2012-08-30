@@ -28,7 +28,7 @@
 
 #include "audio_backend_common.hpp"
 #include "utilities/branch_hints.hpp"
-
+#include "cpu_time_info.hpp"
 
 namespace nova {
 
@@ -210,6 +210,12 @@ public:
         return stream;
     }
 
+    void get_cpuload(float & peak, float & average) const
+    {
+        cpu_time_accumulator.get(peak, average);
+    }
+
+
 private:
     int perform(const void *inputBuffer, void *outputBuffer, unsigned long frames,
                 const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags)
@@ -241,6 +247,7 @@ private:
             processed += blocksize_;
         }
 
+        cpu_time_accumulator.update(Pa_GetStreamCpuLoad(stream));
         return paContinue;
     }
 
@@ -254,6 +261,7 @@ private:
     PaStream *stream;
     uint32_t blocksize_;
     bool callback_initialized;
+    cpu_time_info cpu_time_accumulator;
 };
 
 } /* namespace nova */
