@@ -29,6 +29,8 @@ namespace ScIDE {
 
 namespace Settings { class Manager; }
 
+class PostDock;
+
 class PostWindow:
     public QPlainTextEdit
 {
@@ -51,6 +53,8 @@ private slots:
     void onAutoScrollTriggered(bool);
 
 private:
+    friend class PostDock;
+
     void zoomFont(int steps);
     void wheelEvent( QWheelEvent * );
 

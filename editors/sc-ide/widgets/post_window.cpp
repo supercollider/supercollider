@@ -183,15 +183,16 @@ PostDock::PostDock(QWidget* parent):
     mPostWindow = new PostWindow(this);
     setWidget(mPostWindow);
 
-    QWidget *titleBar = new QWidget();
     QToolBar *toolBar = new QToolBar();
-    foreach(QAction *a, mPostWindow->actions())
-        toolBar->addAction(a);
+    toolBar->addAction(mPostWindow->mAutoScrollAction);
+
+    QWidget *titleBar = new QWidget();
     QHBoxLayout *l = new QHBoxLayout();
     l->setContentsMargins(5,2,5,0);
     l->addWidget(new QLabel(windowTitle()), 1);
     l->addWidget(toolBar);
     titleBar->setLayout(l);
+
     setTitleBarWidget(titleBar);
 
     connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(onFloatingChanged(bool)));
