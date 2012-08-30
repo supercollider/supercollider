@@ -573,7 +573,7 @@ void MultiEditor::switchSession( Session *session )
     delete mSplitter;
     mSplitter = new MultiSplitter();
 
-    if (session) {
+    if (session && session->contains("editors")) {
         QVariantMap splitterData = session->value("editors").value<QVariantMap>();
         loadSplitterState( mSplitter, splitterData );
     }
