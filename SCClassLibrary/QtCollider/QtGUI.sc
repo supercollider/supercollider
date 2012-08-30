@@ -83,7 +83,7 @@ QtGUI {
   *pen { ^QPen }
 
   *font { ^QFont }
-  *image { ^this.notImplemented( "Image" ) }
+  *image { ^QImage }
 
   *notImplemented { arg class;
     //("QtGUI: " ++ class.asString ++ " is not implemented yet").postln;
