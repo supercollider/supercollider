@@ -11,6 +11,7 @@
 	TODO:
 		- check representations
 		- raw data
+		- tileInRect
 		- on screen interpolations (?)
 		- lock/unlockFocus (?)
 */
@@ -295,7 +296,7 @@ QImage {
 
 	tileInRect { arg rect, fromRect, operation = 'sourceOver', fraction = 1.0;
 		// TODO: check stretch behavior
-		Pen.drawImage(rect, this, fromRect, operation, fraction);
+		//Pen.drawImage(rect, this, fromRect, operation, fraction);
 	}
 
 	drawStringAtPoint { arg string, point, font, color;
