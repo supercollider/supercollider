@@ -148,6 +148,10 @@ static void parseNode( const YAML::Node &node, const QString &parentKey, QSettin
 {
     using namespace YAML;
 
+    static const std::string textFormatTag("!textFormat");
+    static const std::string qVariantListTag("!QVariantList");
+    static const std::string qVariantMapTag("!QVariantMap");
+
     Q_ASSERT(node.Type() == NodeType::Map);
 
     YAML::Iterator it;
@@ -159,13 +163,14 @@ static void parseNode( const YAML::Node &node, const QString &parentKey, QSettin
         childKey += key.c_str();
 
         const YAML::Node & childNode = it.second();
+        const std::string & childTag = childNode.Tag();
 
-        if (childNode.Tag() == "!textFormat")
+        if (childTag == textFormatTag)
             map.insert( childKey, parseTextFormat(childNode) );
+        else if (childTag == qVariantListTag || childTag == qVariantMapTag || childNode.Type() != NodeType::Map)
+            map.insert( childKey, parseScalar( childNode ) );
         else if (childNode.Type() == NodeType::Map)
             parseNode( childNode, childKey, map );
-        else
-            map.insert( childKey, parseScalar( childNode ) );
     }
 }
 
@@ -243,7 +248,7 @@ static void writeValue( const QVariant &var, YAML::Emitter &out )
     }
     case QVariant::List:
     {
-        out << YAML::BeginSeq;
+        out << YAML::LocalTag("QVariantList") << YAML::BeginSeq;
 
         QVariantList list = var.value<QVariantList>();
         foreach (const QVariant & var, list)
@@ -255,7 +260,7 @@ static void writeValue( const QVariant &var, YAML::Emitter &out )
     }
     case QVariant::Map:
     {
-        out << YAML::BeginMap;
+        out << YAML::LocalTag("QVariantMap") << YAML::BeginMap;
 
         QVariantMap map = var.value<QVariantMap>();
         QVariantMap::iterator it;

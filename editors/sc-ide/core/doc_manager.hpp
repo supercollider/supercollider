@@ -21,6 +21,8 @@
 #ifndef SCIDE_DOC_MANAGER_HPP_INCLUDED
 #define SCIDE_DOC_MANAGER_HPP_INCLUDED
 
+#include "../widgets/code_editor/highlighter.hpp"
+
 #include <QDateTime>
 #include <QFileSystemWatcher>
 #include <QHash>
@@ -29,6 +31,7 @@
 #include <QObject>
 #include <QStringList>
 #include <QTextDocument>
+#include <QPlainTextDocumentLayout>
 #include <QUuid>
 
 namespace ScIDE {
@@ -49,7 +52,10 @@ public:
         mId( QUuid::createUuid().toString().toAscii() ),
         mDoc( new QTextDocument(this) ),
         mTitle( "Untitled" )
-    {}
+    {
+        mDoc->setDocumentLayout( new QPlainTextDocumentLayout(mDoc) );
+        new SyntaxHighlighter(mDoc);
+    }
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }

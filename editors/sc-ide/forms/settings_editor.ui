@@ -370,26 +370,6 @@
        </layout>
       </widget>
      </widget>
-     <widget class="ScIDE::CodeEditor" name="fontPreview">
-      <property name="font">
-       <font>
-        <family>Monospace</family>
-        <italic>false</italic>
-       </font>
-      </property>
-      <property name="plainText">
-       <string>(
-SynthDef(\help_synth, { |out, freq = 800, sustain = 1, amp = 0.1|
-        Out.ar(out,
-                SinOsc.ar(freq, 0, 0.2) * Line.kr(amp, 0, sustain, doneAction: 2)
-        )
-}).add;
-)</string>
-      </property>
-      <property name="tabStopWidth">
-       <number>20</number>
-      </property>
-     </widget>
     </widget>
    </item>
   </layout>
@@ -404,11 +384,6 @@ SynthDef(\help_synth, { |out, freq = 800, sustain = 1, amp = 0.1|
    <class>ScIDE::ColorWidget</class>
    <extends>QLabel</extends>
    <header>color_widget.hpp</header>
-  </customwidget>
-  <customwidget>
-   <class>ScIDE::CodeEditor</class>
-   <extends>QPlainTextEdit</extends>
-   <header>code_editor/editor.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>

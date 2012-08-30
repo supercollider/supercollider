@@ -50,9 +50,7 @@ SessionManager::SessionManager( DocumentManager *docMng, QObject * parent ) :
     QObject(parent),
     mDocMng(docMng),
     mSession(0)
-{
-
-}
+{}
 
 QDir SessionManager::sessionsDir()
 {
@@ -98,13 +96,11 @@ void SessionManager::newSession()
 {
     closeSession();
 
-    mDocMng->create();
-
     QDir dir = sessionsDir();
     if (!dir.path().isEmpty())
         saveLastSession( dir, QString() );
 
-    emit currentSessionChanged(0);
+    emit switchSessionRequest(0);
 }
 
 Session *SessionManager::openSession( const QString & name )
@@ -122,9 +118,7 @@ Session *SessionManager::openSession( const QString & name )
 
     saveLastSession( dir, sessionFile );
 
-    emit loadSessionRequest(mSession);
-
-    emit currentSessionChanged(mSession);
+    emit switchSessionRequest(mSession);
 
     return mSession;
 }
@@ -150,7 +144,7 @@ Session * SessionManager::saveSessionAs( const QString & name )
 
     QDir dir = sessionsDir();
     if (dir.path().isEmpty()) {
-        emit currentSessionChanged(0);
+        emit switchSessionRequest(0);
         return 0;
     }
 
@@ -163,7 +157,7 @@ Session * SessionManager::saveSessionAs( const QString & name )
 
     saveLastSession( dir, sessionFile );
 
-    emit currentSessionChanged(mSession);
+    emit switchSessionRequest(mSession);
 
     return mSession;
 }
@@ -172,10 +166,6 @@ void SessionManager::closeSession()
 {
     if (mSession)
         emit saveSessionRequest(mSession);
-
-    QList<Document*> docs = mDocMng->documents();
-    foreach (Document *doc, docs)
-        mDocMng->close(doc);
 
     delete mSession;
     mSession = 0;
@@ -192,7 +182,7 @@ void SessionManager::removeSession( const QString & name )
         delete mSession;
         mSession = 0;
         saveLastSession(dir, QString());
-        emit currentSessionChanged(0);
+        emit switchSessionRequest(0);
     }
 
     if (!QFile::remove(dir.filePath(name + ".yaml")))

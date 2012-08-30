@@ -132,7 +132,7 @@ signals:
 
 
 private Q_SLOTS:
-    void loadSession( Session *session );
+    void switchSession( Session *session );
     void saveSession( Session *session );
     void openHelp();
     void helpForCursor();

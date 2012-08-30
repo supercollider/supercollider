@@ -125,10 +125,8 @@ MainWindow::MainWindow(Main * main) :
     // Session management
     connect(main->sessionManager(), SIGNAL(saveSessionRequest(Session*)),
             this, SLOT(saveSession(Session*)));
-    connect(main->sessionManager(), SIGNAL(loadSessionRequest(Session*)),
-            this, SLOT(loadSession(Session*)));
-    connect(main->sessionManager(), SIGNAL(currentSessionChanged(Session*)),
-            this, SLOT(updateWindowTitle()));
+    connect(main->sessionManager(), SIGNAL(switchSessionRequest(Session*)),
+            this, SLOT(switchSession(Session*)));
     // A system for easy evaluation of pre-defined code:
     connect(&mCodeEvalMapper, SIGNAL(mapped(QString)),
             this, SIGNAL(evaluateCode(QString)));
@@ -147,14 +145,12 @@ MainWindow::MainWindow(Main * main) :
     // Document list interaction
     connect(mDocListDock->list(), SIGNAL(clicked(Document*)),
             mEditors, SLOT(setCurrent(Document*)));
-    connect(mEditors, SIGNAL(currentChanged(Document*)),
+    connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
             mDocListDock->list(), SLOT(setCurrent(Document*)),
             Qt::QueuedConnection);
-    connect(mEditors, SIGNAL(currentChanged(Document*)),
-            main->documentManager(), SLOT(activeDocumentChanged(Document*)));
 
     // Update actions on document change
-    connect(mEditors, SIGNAL(currentChanged(Document*)),
+    connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
             this, SLOT(onCurrentDocumentChanged(Document*)));
     // Document management
     DocumentManager *docMng = main->documentManager();
@@ -428,6 +424,11 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::NextDocument) );
     menu->addAction( mEditors->action(MultiEditor::PreviousDocument) );
     menu->addSeparator();
+    menu->addAction( mEditors->action(MultiEditor::SplitHorizontally) );
+    menu->addAction( mEditors->action(MultiEditor::SplitVertically) );
+    menu->addAction( mEditors->action(MultiEditor::RemoveCurrentSplit) );
+    menu->addAction( mEditors->action(MultiEditor::RemoveAllSplits) );
+    menu->addSeparator();
     menu->addAction( mActions[ClearPostWindow] );
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
@@ -488,41 +489,27 @@ void MainWindow::onOpenSessionAction( QAction * action )
         mMain->sessionManager()->openSession( action->text() );
 }
 
-void MainWindow::loadSession( Session *session )
+void MainWindow::switchSession( Session *session )
 {
-    session->beginGroup("mainWindow");
+    if (session) {
+        session->beginGroup("mainWindow");
 
-    QByteArray geom = QByteArray::fromBase64( session->value("geometry").value<QByteArray>() );
-    if (!geom.isEmpty())
-        restoreGeometry(geom);
+        QByteArray geom = QByteArray::fromBase64( session->value("geometry").value<QByteArray>() );
+        if (!geom.isEmpty())
+            restoreGeometry(geom);
 
-    updateClockWidget(isFullScreen());
+        updateClockWidget(isFullScreen());
 
-    QByteArray state = QByteArray::fromBase64( session->value("state").value<QByteArray>() );
-    if (!state.isEmpty())
-        restoreState(state);
+        QByteArray state = QByteArray::fromBase64( session->value("state").value<QByteArray>() );
+        if (!state.isEmpty())
+            restoreState(state);
 
-    session->endGroup();
+        session->endGroup();
+    }
 
-    DocumentManager *docMng = mMain->documentManager();
+    mEditors->switchSession(session);
 
-    QVariantList docs = session->value("documents").value<QVariantList>();
-    if (docs.isEmpty())
-        docMng->create(); // Start with a new document
-    else
-        foreach (const QVariant & docData, docs)
-        {
-            QVariantMap docMap = docData.value<QVariantMap>();
-            docMng->open( docMap.value("file").toString(),
-                          docMap.value("position").toInt(),
-                          false // don't modify recent document list
-                        );
-        }
-
-    QString currentFilePath = session->value("currentDocument").toString();
-    if (!currentFilePath.isEmpty())
-        docMng->open(currentFilePath, -1, false);
-
+    updateWindowTitle();
 }
 
 void MainWindow::saveSession( Session *session )
@@ -532,32 +519,7 @@ void MainWindow::saveSession( Session *session )
     session->setValue("state", this->saveState().toBase64());
     session->endGroup();
 
-    int docCount = mEditors->editorCount();
-    if (docCount) {
-        QVariantList docsList;
-        for (int i = 0; i < docCount; ++i )
-        {
-            CodeEditor *editor = mEditors->editor(i);
-            if (!editor || editor->document()->filePath().isEmpty())
-                continue;
-
-            QVariantMap docMap;
-            docMap.insert("file", editor->document()->filePath());
-            docMap.insert("position", editor->textCursor().position());
-
-            docsList.append( docMap );
-        }
-
-        session->setValue( "documents", QVariant::fromValue<QVariantList>(docsList) );
-    }
-    else
-        session->remove( "documents" );
-
-    CodeEditor *editor;
-    if ((editor = mEditors->currentEditor()))
-        session->setValue("currentDocument", editor->document()->filePath());
-    else
-        session->remove("currentDocument");
+    mEditors->saveSession(session);
 }
 
 void MainWindow::openSessionsDialog()
