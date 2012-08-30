@@ -60,21 +60,32 @@ int main( int argc, char *argv[] )
     MainWindow *win = new MainWindow(main);
 
     // NOTE: load session after GUI is created, so that GUI can respond
-    QString lastSession = main->sessionManager()->lastSession();
-    if (!lastSession.isEmpty()) {
-        main->sessionManager()->openSession(lastSession);
-        win->show();
+    Settings::Manager *settings = main->settings();
+    SessionManager *sessions = main->sessionManager();
+
+    QString startSessionName = settings->value("IDE/startWithSession").toString();
+    if (startSessionName == "last") {
+        QString lastSession = sessions->lastSession();
+        if (!lastSession.isEmpty()) {
+            sessions->openSession(lastSession);
+        }
     }
-    else {
-        main->sessionManager()->openSession("Default");
-        win->showMaximized();
+    else if (!startSessionName.isEmpty()) {
+        sessions->openSession(startSessionName);
     }
+
+    if (!sessions->currentSession()) {
+        win->restoreWindowState();
+        sessions->newSession();
+    }
+
+    win->show();
 
     foreach (QString argument, arguments) {
         main->documentManager()->open(argument);
     }
 
-    bool startInterpreter = main->settings()->value("IDE/interpreter/autoStart").toBool();
+    bool startInterpreter = settings->value("IDE/interpreter/autoStart").toBool();
     if (startInterpreter)
         main->scProcess()->startLanguage();
 

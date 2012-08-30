@@ -20,6 +20,7 @@
 
 #include "dialog.hpp"
 #include "ui_settings_dialog.h"
+#include "general_page.hpp"
 #include "sclang_page.hpp"
 #include "editor_page.hpp"
 #include "shortcuts_page.hpp"
@@ -44,7 +45,16 @@ Dialog::Dialog( Manager *settings, QWidget * parent ):
 {
     ui->setupUi(this);
 
-    QWidget *w = new SclangPage;
+    QWidget *w;
+
+    w = new GeneralPage;
+    ui->configPageStack->addWidget(w);
+    ui->configPageList->addItem (
+        new QListWidgetItem(QIcon::fromTheme("preferences-system"), "General"));
+    connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
+    connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
+
+    w = new SclangPage;
     ui->configPageStack->addWidget(w);
     ui->configPageList->addItem (
         new QListWidgetItem(QIcon::fromTheme("applications-system"), "Interpreter"));
