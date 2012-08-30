@@ -107,9 +107,9 @@ public:
                 if (splitter) {
                     QList<int> childSizes = splitter->sizes();
                     Qt::Orientation childOrientation = splitter->orientation();
-                    int idx = splitter->count();
-                    while(idx--)
-                        parent->addWidget(splitter->widget(idx));
+                    int childCount = splitter->count();
+                    while(childCount--)
+                        parent->addWidget(splitter->widget(0)); // 0 is always another widget
                     delete splitter;
                     parent->setOrientation(childOrientation);
                     parent->setSizes(childSizes);
