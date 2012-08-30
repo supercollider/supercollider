@@ -573,19 +573,19 @@ void MultiEditor::switchSession( Session *session )
     delete mSplitter;
     mSplitter = new MultiSplitter();
 
+    CodeEditorBox *firstBox = 0;
+
     if (session && session->contains("editors")) {
         QVariantMap splitterData = session->value("editors").value<QVariantMap>();
         loadSplitterState( mSplitter, splitterData );
-    }
 
-    CodeEditorBox *firstBox = 0;
-
-    if (mSplitter->count()) {
-        firstBox = mSplitter->findChild<CodeEditorBox>();
-        if (!firstBox) {
-            qWarning("Session seems to contain invalid editor split data!");
-            delete mSplitter;
-            mSplitter = new MultiSplitter();
+        if (mSplitter->count()) {
+            firstBox = mSplitter->findChild<CodeEditorBox>();
+            if (!firstBox) {
+                qWarning("Session seems to contain invalid editor split data!");
+                delete mSplitter;
+                mSplitter = new MultiSplitter();
+            }
         }
     }
 
