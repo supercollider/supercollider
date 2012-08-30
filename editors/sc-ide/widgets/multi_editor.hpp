@@ -22,9 +22,8 @@
 #define SCIDE_WIDGETS_MULTI_EDITOR_HPP_INCLUDED
 
 #include <QWidget>
-#include <QTabWidget>
+#include <QTabBar>
 #include <QAction>
-#include <QSignalMapper>
 #include <QPushButton>
 #include <QToolButton>
 #include <QLineEdit>
@@ -32,6 +31,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QTextDocument>
+#include <QSplitter>
 
 namespace ScIDE {
 
@@ -39,9 +39,11 @@ class Main;
 class Document;
 class DocumentManager;
 class CodeEditor;
+class CodeEditorBox;
+class MultiSplitter;
 class SignalMultiplexer;
 class ScRequest;
-
+class Session;
 namespace Settings { class Manager; }
 
 class MultiEditor : public QWidget
@@ -82,6 +84,11 @@ public:
         PreviousDocument,
         SwitchDocument,
 
+        SplitHorizontally,
+        SplitVertically,
+        RemoveCurrentSplit,
+        RemoveAllSplits,
+
         // Language
         EvaluateCurrentDocument,
         EvaluateRegion,
@@ -94,12 +101,13 @@ public:
 
     MultiEditor( Main *, QWidget * parent = 0 );
 
-    int editorCount() { return mTabs->count(); }
+    int tabCount() { return mTabs->count(); }
+    Document * documentForTab( int index );
+    int tabForDocument( Document * doc );
 
-    CodeEditor *editor( int index ) { return editorForTab(index); }
-
-    CodeEditor *currentEditor()
-        { return editorForTab( mTabs->currentIndex() ); }
+    CodeEditor *currentEditor();
+    CodeEditorBox *currentBox() { return mCurrentEditorBox; }
+    void split( Qt::Orientation direction );
 
     QAction * action( ActionRole role )
         { return mActions[role]; }
@@ -111,10 +119,13 @@ public:
 
     void applySettings( Settings::Manager * );
 
-Q_SIGNALS:
-    void currentChanged( Document * );
+    void saveSession( Session * );
+    void switchSession( Session * );
 
-public Q_SLOTS:
+signals:
+    void currentDocumentChanged( Document * );
+
+public slots:
 
     void setCurrent( Document * );
 
@@ -122,17 +133,24 @@ public Q_SLOTS:
     void showPreviousDocument();
     void switchDocument();
 
+    void splitHorizontally() { split(Qt::Horizontal); }
+    void splitVertically() { split(Qt::Vertical); }
+    void removeCurrentSplit();
+    void removeAllSplits();
+
     bool openDocumentation();
 
-private Q_SLOTS:
+private slots:
 
     void onOpen( Document *, int initialCursorPosition );
     void onClose( Document * );
     void show( Document *, int cursorPosition = -1 );
     void update( Document * );
     void onCloseRequest( int index );
-    void onCurrentChanged( int index );
-    void onModificationChanged( QWidget * );
+    void onCurrentTabChanged( int index );
+    void onCurrentEditorChanged( CodeEditor * );
+    void onBoxActivated( CodeEditorBox * );
+    void onModificationChanged( bool modified );
     void openDefinition();
     void evaluateRegion();
     void evaluateLine();
@@ -141,16 +159,21 @@ private Q_SLOTS:
 private:
     void createActions();
     void updateActions();
-    CodeEditor * editorForTab( int index );
-    CodeEditor * editorForDocument( Document * );
+    CodeEditorBox *newBox();
+    void setCurrentBox( CodeEditorBox * );
+    void setCurrentEditor( CodeEditor * );
+    void loadBoxState( CodeEditorBox *box, const QVariantList & data );
+    void loadSplitterState( QSplitter *, const QVariantMap & data );
 
     DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;
-    QSignalMapper mModificationMapper;
+    SignalMultiplexer * mBoxSigMux;
     QAction *mActions[ActionRoleCount];
 
     // gui
-    QTabWidget *mTabs;
+    QTabBar *mTabs;
+    CodeEditorBox *mCurrentEditorBox;
+    MultiSplitter *mSplitter;
     QIcon mDocModifiedIcon;
 
     // settings

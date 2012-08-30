@@ -19,13 +19,16 @@
 */
 
 #include "multi_editor.hpp"
+#include "editor_box.hpp"
 #include "main_window.hpp"
 #include "lookup_dialog.hpp"
 #include "code_editor/editor.hpp"
+#include "util/multi_splitter.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/sig_mux.hpp"
 #include "../core/main.hpp"
 #include "../core/sc_process.hpp"
+#include "../core/session_manager.hpp"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -51,11 +54,11 @@ namespace ScIDE {
 class DocumentSelectPopUp : public QDialog
 {
 public:
-    explicit DocumentSelectPopUp(QWidget * parent):
+    explicit DocumentSelectPopUp(const CodeEditorBox::History & history, QWidget * parent):
         QDialog(parent, Qt::Popup)
     {
         mModel = new QStandardItemModel(this);
-        populateModel();
+        populateModel(history);
 
         mListView = new QListView();
         mListView->setModel(mModel);
@@ -142,12 +145,18 @@ private:
                            : NULL;
     }
 
-    void populateModel()
+    void populateModel( const CodeEditorBox::History & history )
     {
-        DocumentManager * manager = Main::instance()->documentManager();
-        DocumentManager::DocumentList const & documentList = manager->recentActiveDocuments();
+        QList<Document*> displayDocuments;
+        foreach(CodeEditor *editor, history)
+            displayDocuments << editor->document();
 
-        foreach (Document * document, documentList) {
+        QList<Document*> managerDocuments =  Main::instance()->documentManager()->documents();
+        foreach(Document *document, managerDocuments)
+            if (!displayDocuments.contains(document))
+                displayDocuments << document;
+
+        foreach (Document * document, displayDocuments) {
             QStandardItem * item = new QStandardItem(document->title());
             item->setData(QVariant::fromValue(document));
             mModel->appendRow(item);
@@ -162,17 +171,26 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
     mDocManager(main->documentManager()),
     mSigMux(new SignalMultiplexer(this)),
-    mTabs(new QTabWidget),
+    mBoxSigMux(new SignalMultiplexer(this)),
     mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) )
 {
+    mTabs = new QTabBar;
     mTabs->setDocumentMode(true);
     mTabs->setTabsClosable(true);
     mTabs->setMovable(true);
     mTabs->setUsesScrollButtons(true);
+    mTabs->setDrawBase(false);
+
+    CodeEditorBox *defaultBox = newBox();
+
+    mSplitter = new MultiSplitter();
+    mSplitter->addWidget(defaultBox);
 
     QVBoxLayout *l = new QVBoxLayout;
     l->setContentsMargins(0,0,0,0);
+    l->setSpacing(0);
     l->addWidget(mTabs);
+    l->addWidget(mSplitter);
     setLayout(l);
 
     connect(mDocManager, SIGNAL(opened(Document*, int)),
@@ -185,17 +203,22 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
             this, SLOT(show(Document*,int))),
 
     connect(mTabs, SIGNAL(currentChanged(int)),
-            this, SLOT(onCurrentChanged(int)));
+            this, SLOT(onCurrentTabChanged(int)));
     connect(mTabs, SIGNAL(tabCloseRequested(int)),
             this, SLOT(onCloseRequest(int)));
 
-    connect(&mModificationMapper, SIGNAL(mapped(QWidget*)),
-            this, SLOT(onModificationChanged(QWidget*)));
+    mSigMux->connect(SIGNAL(modificationChanged(bool)),
+                     this, SLOT(onModificationChanged(bool)));
 
-    connect(this, SIGNAL(currentChanged(Document*)), mDocManager, SLOT(activeDocumentChanged(Document*)));
+    mBoxSigMux->connect(SIGNAL(currentChanged(CodeEditor*)),
+                        this, SLOT(onCurrentEditorChanged(CodeEditor*)));
+
+    connect(this, SIGNAL(currentDocumentChanged(Document*)), mDocManager, SLOT(activeDocumentChanged(Document*)));
 
     createActions();
-    updateActions();
+
+    setCurrentBox( defaultBox ); // will updateActions();
+
     applySettings(main->settings());
 }
 
@@ -344,6 +367,18 @@ void MultiEditor::createActions()
     act->setShortcut( tr("Ctrl+Tab", "Switch Document"));
     connect(act, SIGNAL(triggered()), this, SLOT(switchDocument()));
 
+    mActions[SplitHorizontally] = act = new QAction(tr("Split To Right"), this);
+    connect(act, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
+
+    mActions[SplitVertically] = act = new QAction(tr("Split To Bottom"), this);
+    connect(act, SIGNAL(triggered()), this, SLOT(splitVertically()));
+
+    mActions[RemoveCurrentSplit] = act = new QAction(tr("Remove Current Split"), this);
+    connect(act, SIGNAL(triggered()), this, SLOT(removeCurrentSplit()));
+
+    mActions[RemoveAllSplits] = act = new QAction(tr("Remove All Splits"), this);
+    connect(act, SIGNAL(triggered()), this, SLOT(removeAllSplits()));
+
     // Language
 
     mActions[EvaluateCurrentDocument] = act = new QAction(
@@ -403,7 +438,7 @@ void MultiEditor::createActions()
 void MultiEditor::updateActions()
 {
     CodeEditor *editor = currentEditor();
-    QTextDocument *doc = editor ? editor->document()->textDocument() : 0;
+    QTextDocument *doc = editor ? editor->textDocument() : 0;
 
     mActions[Undo]->setEnabled( doc && doc->isUndoAvailable() );
     mActions[Redo]->setEnabled( doc && doc->isRedoAvailable() );
@@ -436,21 +471,142 @@ void MultiEditor::applySettings( Settings::Manager *s )
     s->beginGroup("IDE/editor");
     mStepForwardEvaluation = s->value("stepForwardEvaluation").toBool();
     s->endGroup();
+}
 
-    int c = editorCount();
-    for( int i = 0; i < c; ++i )
-    {
-        CodeEditor *editor = editorForTab(i);
-        if(!editor) continue;
-        editor->applySettings(s);
+static QVariantList saveBoxState( CodeEditorBox *box )
+{
+    // save editors in reverse order - first one is last shown.
+    QVariantList boxData;
+    int idx = box->history().count();
+    while(idx--) {
+        CodeEditor *editor = box->history()[idx];
+        if (!editor->document()->filePath().isEmpty()) {
+            QVariantMap editorData;
+            editorData.insert("file", editor->document()->filePath());
+            editorData.insert("position", editor->textCursor().position());
+            boxData.append( editorData );
+        }
     }
+    return boxData;
+}
+
+static QVariantMap saveSplitterState( QSplitter *splitter )
+{
+    QVariantMap splitterData;
+
+    splitterData.insert( "state", splitter->saveState().toBase64() );
+
+    QVariantList childrenData;
+
+    int childCount = splitter->count();
+    for (int idx = 0; idx < childCount; idx++) {
+        QWidget *child = splitter->widget(idx);
+
+        CodeEditorBox *box = qobject_cast<CodeEditorBox*>(child);
+        if (box) {
+            QVariantList boxData = saveBoxState(box);
+            childrenData.append( QVariant(boxData) );
+            continue;
+        }
+
+        QSplitter *childSplitter = qobject_cast<QSplitter*>(child);
+        if (childSplitter) {
+            QVariantMap childSplitterData = saveSplitterState(childSplitter);
+            childrenData.append( QVariant(childSplitterData) );
+        }
+    }
+
+    splitterData.insert( "elements", childrenData );
+
+    return splitterData;
+}
+
+void MultiEditor::saveSession( Session *session )
+{
+    session->remove( "editors" );
+    session->setValue( "editors", saveSplitterState(mSplitter) );
+}
+
+void MultiEditor::loadBoxState( CodeEditorBox *box, const QVariantList & data )
+{
+    mCurrentEditorBox = box;
+    foreach( QVariant docVar, data )
+    {
+        QVariantMap docData = docVar.value<QVariantMap>();
+        QString docPath = docData.value("file").toString();
+        int docPos = docData.value("position").toInt();
+        Main::instance()->documentManager()->open( docPath, docPos );
+    }
+}
+
+void MultiEditor::loadSplitterState( QSplitter *splitter, const QVariantMap & data )
+{
+    QByteArray state = QByteArray::fromBase64( data.value("state").value<QByteArray>() );
+
+    QVariantList childrenData = data.value("elements").value<QVariantList>();
+    foreach (const QVariant & childVar, childrenData) {
+        if (childVar.type() == QVariant::List) {
+            CodeEditorBox *childBox = newBox();
+            splitter->addWidget(childBox);
+            QVariantList childBoxData = childVar.value<QVariantList>();
+            loadBoxState( childBox, childBoxData );
+        }
+        else if (childVar.type() == QVariant::Map) {
+            QSplitter *childSplitter = new QSplitter;
+            splitter->addWidget(childSplitter);
+            QVariantMap childSplitterData = childVar.value<QVariantMap>();
+            loadSplitterState( childSplitter, childSplitterData );
+        }
+    }
+
+    if (!splitter->restoreState(state))
+        qWarning("MultiEditor: could not restore splitter state!");
+}
+
+void MultiEditor::switchSession( Session *session )
+{
+    DocumentManager *docManager = Main::instance()->documentManager();
+    QList<Document*> docs = docManager->documents();
+    foreach (Document *doc, docs)
+        docManager->close(doc);
+
+    delete mSplitter;
+    mSplitter = new MultiSplitter();
+
+    CodeEditorBox *firstBox = 0;
+
+    if (session && session->contains("editors")) {
+        QVariantMap splitterData = session->value("editors").value<QVariantMap>();
+        loadSplitterState( mSplitter, splitterData );
+
+        if (mSplitter->count()) {
+            firstBox = mSplitter->findChild<CodeEditorBox>();
+            if (!firstBox) {
+                qWarning("Session seems to contain invalid editor split data!");
+                delete mSplitter;
+                mSplitter = new MultiSplitter();
+            }
+        }
+    }
+
+    if (!firstBox) {
+        firstBox = newBox();
+        mSplitter->addWidget( firstBox );
+    }
+
+    mCurrentEditorBox = 0; // ensure complete update
+    setCurrentBox( firstBox );
+
+    layout()->addWidget(mSplitter);
+
+    firstBox->setFocus(Qt::OtherFocusReason); // ensure focus
 }
 
 void MultiEditor::setCurrent( Document *doc )
 {
-    CodeEditor *editor = editorForDocument(doc);
-    if(editor)
-        mTabs->setCurrentWidget(editor);
+    int tabIdx = tabForDocument(doc);
+    if (tabIdx != -1)
+        mTabs->setCurrentIndex(tabIdx);
 }
 
 void MultiEditor::showNextDocument()
@@ -467,7 +623,9 @@ void MultiEditor::showPreviousDocument()
 
 void MultiEditor::switchDocument()
 {
-    DocumentSelectPopUp * popup = new DocumentSelectPopUp(this);
+    CodeEditorBox *box = currentBox();
+
+    DocumentSelectPopUp * popup = new DocumentSelectPopUp(box->history(), this);
 
     QRect popupRect(0,0,300,200);
     popupRect.moveCenter(rect().center());
@@ -477,109 +635,89 @@ void MultiEditor::switchDocument()
     Document * selectedDocument = popup->exec(globalPosition);
 
     if (selectedDocument)
-        mTabs->setCurrentWidget( editorForDocument(selectedDocument) );
+        box->setDocument(selectedDocument);
 }
 
 void MultiEditor::onOpen( Document *doc, int pos )
 {
-    CodeEditor *editor = new CodeEditor();
-    editor->setDocument(doc);
-    editor->applySettings(Main::instance()->settings());
-
     QTextDocument *tdoc = doc->textDocument();
 
     QIcon icon;
     if(tdoc->isModified())
         icon = mDocModifiedIcon;
 
-    mTabs->addTab( editor, icon, doc->title() );
-    mTabs->setCurrentIndex( mTabs->count() - 1 );
+    int newTabIndex = mTabs->addTab( icon, doc->title() );
+    mTabs->setTabData( newTabIndex, QVariant::fromValue<Document*>(doc) );
 
-    mModificationMapper.setMapping(tdoc, editor);
-    connect(tdoc, SIGNAL(modificationChanged(bool)),
-            &mModificationMapper, SLOT(map()));
-
-    if (pos > 0)
-        editor->showPosition(pos);
+    currentBox()->setDocument(doc, pos);
+    currentBox()->setFocus(Qt::OtherFocusReason);
 }
 
 void MultiEditor::onClose( Document *doc )
 {
-    CodeEditor *editor = editorForDocument(doc);
-    delete editor;
+    int tabIdx = tabForDocument(doc);
+    if (tabIdx != -1)
+        mTabs->removeTab(tabIdx);
+    // TODO: each box should switch document according to their own history
 }
 
 void MultiEditor::show( Document *doc, int pos )
 {
-    CodeEditor *editor = editorForDocument( doc );
-    mTabs->setCurrentWidget(editor);
-    editor->showPosition(pos);
+    currentBox()->setDocument(doc, pos);
+    currentBox()->setFocus(Qt::OtherFocusReason);
 }
 
 void MultiEditor::update( Document *doc )
 {
-    int c = editorCount();
-    for(int i=0; i<c; ++i) {
-        CodeEditor *editor = editorForTab(i);
-        if(editor && editor->document() == doc)
-            mTabs->setTabText(i, doc->title());
-    }
+    int tabIdx = tabForDocument(doc);
+    if (tabIdx != -1)
+        mTabs->setTabText(tabIdx, doc->title());
 }
 
 void MultiEditor::onCloseRequest( int index )
 {
-    CodeEditor *editor = editorForTab( index );
-    if(editor)
-        MainWindow::close(editor->document());
+    Document *doc = documentForTab(index);
+    if (doc)
+        MainWindow::close(doc);
 }
 
-void MultiEditor::onCurrentChanged( int index )
+void MultiEditor::onCurrentTabChanged( int index )
 {
-    CodeEditor *editor = editorForTab(index);
+    if (index == -1)
+        return;
 
-    if(editor) {
-        mSigMux->setCurrentObject(editor);
-        editor->setFocus(Qt::OtherFocusReason);
-    }
+    Document *doc = documentForTab(index);
+    if (!doc)
+        return;
 
-    updateActions();
-
-    Document * currentDocument = editor ? editor->document() : NULL;
-
-    Main::scProcess()->setActiveDocument(currentDocument);
-    Q_EMIT( currentChanged( currentDocument ) );
+    CodeEditorBox *curBox = currentBox();
+    curBox->setDocument(doc);
+    curBox->setFocus(Qt::OtherFocusReason);
 }
 
-void MultiEditor::onModificationChanged( QWidget *w )
+void MultiEditor::onCurrentEditorChanged(CodeEditor *editor)
 {
-    CodeEditor *editor = qobject_cast<CodeEditor*>(w);
-    if(!editor) return;
+    setCurrentEditor(editor);
+}
 
-    int i = mTabs->indexOf(editor);
-    if( i == -1 ) return;
+void MultiEditor::onBoxActivated(CodeEditorBox *box)
+{
+    setCurrentBox(box);
+}
+
+void MultiEditor::onModificationChanged( bool modified )
+{
+    Q_ASSERT(currentEditor());
+
+    int tabIdx = tabForDocument( currentEditor()->document() );
+    if (tabIdx == -1)
+        return;
 
     QIcon icon;
-    if(editor->document()->textDocument()->isModified())
+    if(modified)
         icon = mDocModifiedIcon;
-    mTabs->setTabIcon( i, icon );
+    mTabs->setTabIcon( tabIdx, icon );
 }
-
-CodeEditor * MultiEditor::editorForTab( int index )
-{
-    return qobject_cast<CodeEditor*>( mTabs->widget(index) );
-}
-
-CodeEditor * MultiEditor::editorForDocument( Document *doc )
-{
-    int c = editorCount();
-    for(int i = 0; i < c; ++i) {
-        CodeEditor *editor = editorForTab(i);
-        if( editor && editor->document() == doc)
-            return editor;
-    }
-    return 0;
-}
-
 
 void MultiEditor::evaluateRegion()
 {
@@ -675,7 +813,7 @@ void MultiEditor::evaluateDocument()
     if (!editor)
         return;
 
-    QString documentText = editor->document()->textDocument()->toPlainText();
+    QString documentText = editor->textDocument()->toPlainText();
     Main::evaluateCode(documentText);
 }
 
@@ -726,5 +864,112 @@ bool MultiEditor::openDocumentation()
     return openDocumentation(textCursor.selectedText());
 }
 
+Document * MultiEditor::documentForTab( int index )
+{
+    return mTabs->tabData(index).value<Document*>();
+}
+
+int MultiEditor::tabForDocument( Document * doc )
+{
+    int tabCount = mTabs->count();
+    for (int idx = 0; idx < tabCount; ++idx) {
+        Document *tabDoc = documentForTab(idx);
+        if (tabDoc && tabDoc == doc)
+            return idx;
+    }
+    return -1;
+}
+
+CodeEditorBox *MultiEditor::newBox()
+{
+    CodeEditorBox *box = new CodeEditorBox();
+
+    connect(box, SIGNAL(activated(CodeEditorBox*)),
+            this, SLOT(onBoxActivated(CodeEditorBox*)));
+
+    return box;
+}
+
+void MultiEditor::setCurrentBox( CodeEditorBox * box )
+{
+    if (mCurrentEditorBox == box)
+        return;
+
+    mCurrentEditorBox = box;
+    mBoxSigMux->setCurrentObject(box);
+    setCurrentEditor( box->currentEditor() );
+
+    mCurrentEditorBox->setActive();
+}
+
+void MultiEditor::setCurrentEditor( CodeEditor * editor )
+{
+    if (editor) {
+        int tabIndex = tabForDocument(editor->document());
+        if (tabIndex != -1)
+            mTabs->setCurrentIndex(tabIndex);
+    }
+
+    mSigMux->setCurrentObject(editor);
+    updateActions();
+
+    Document *currentDocument = editor ? editor->document() : 0;
+    Main::scProcess()->setActiveDocument(currentDocument);
+    emit currentDocumentChanged(currentDocument);
+}
+
+CodeEditor *MultiEditor::currentEditor()
+{
+    return currentBox()->currentEditor();
+}
+
+void MultiEditor::split( Qt::Orientation splitDirection )
+{
+    CodeEditorBox *box = newBox();
+    CodeEditorBox *curBox = currentBox();
+    CodeEditor *curEditor = curBox->currentEditor();
+
+    if (curEditor)
+        box->setDocument(curEditor->document(), curEditor->textCursor().position());
+
+    mSplitter->insertWidget(box, curBox, splitDirection);
+    box->setFocus( Qt::OtherFocusReason );
+}
+
+void MultiEditor::removeCurrentSplit()
+{
+    int boxCount = mSplitter->findChildren<CodeEditorBox*>().count();
+    if (boxCount < 2)
+        // Do not allow removing the one and only box.
+        return;
+
+    CodeEditorBox *box = currentBox();
+    mSplitter->removeWidget(box);
+
+    // switch current box to first box found:
+    box = mSplitter->findChild<CodeEditorBox>();
+    Q_ASSERT(box);
+    setCurrentBox(box);
+    box->setFocus( Qt::OtherFocusReason );
+}
+
+void MultiEditor::removeAllSplits()
+{
+    CodeEditorBox *box = currentBox();
+    Q_ASSERT(box);
+    Q_ASSERT(mSplitter->count());
+    if (mSplitter->count() == 1 && mSplitter->widget(0) == box)
+        // Nothing to do.
+        return;
+
+    MultiSplitter *newSplitter = new MultiSplitter;
+    newSplitter->addWidget(box);
+
+    delete mSplitter;
+    mSplitter = newSplitter;
+    layout()->addWidget(newSplitter);
+
+    box->setFocus( Qt::OtherFocusReason );
+}
 
 } // namespace ScIDE

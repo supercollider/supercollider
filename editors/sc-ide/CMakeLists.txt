@@ -27,6 +27,7 @@ set ( ide_moc_hdr
     widgets/goto_line_tool.hpp
     widgets/main_window.hpp
     widgets/multi_editor.hpp
+    widgets/editor_box.hpp
     widgets/popup_text_input.hpp
     widgets/post_window.hpp
     widgets/tool_box.hpp
@@ -61,6 +62,7 @@ set ( ide_src
     core/session_manager.cpp
     widgets/main_window.cpp
     widgets/multi_editor.cpp
+    widgets/editor_box.cpp
     widgets/post_window.cpp
     widgets/doc_list.cpp
     widgets/cmd_line.cpp
