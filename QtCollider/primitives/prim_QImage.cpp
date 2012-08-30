@@ -341,6 +341,70 @@ QC_LANG_PRIMITIVE( QImage_SetPixel, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( QImage_LoadPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( slotRawObject(a)->classptr != class_int32array ) {
+      qcErrorMsg("QImage_LoadPixels array argument is not a Int32Array");
+      return errWrongType;
+  }
+
+  if( NotInt(a+2) ) return errWrongType;
+  int start = Slot::toInt(a+2);
+  if( !(IsTrue(a+3) || IsFalse(a+3)) ) return errWrongType;
+  int geset = Slot::toBool(a+3); // t/f g/s
+
+  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
+  QRect imgRect = QRect(0, 0, img->width(), img->height());
+  QRect rect;
+
+  if( IsNil(a+1) ) {
+    rect = imgRect;
+  } else {
+    if( slotRawObject(a+1)->classptr != SC_CLASS(Rect) ) return errWrongType;
+    rect = Slot::toRect(a+1).toRect();
+    if( !rect.isValid() || !imgRect.contains(rect) ) {
+      qcErrorMsg("QImage_LoadPixels no valid Rect");
+      return errReturn;
+    }
+  }
+
+  PyrInt32Array* allocatedPixelArray = (PyrInt32Array*)slotRawObject(a);
+  QRgb *pixelData = ( (QRgb *)allocatedPixelArray->i ) + start;
+
+  int x = rect.x();
+  int y = rect.y();
+  int width = rect.width();
+  int height = rect.height();
+  int size = width * height;
+  int sizex = width + x;
+  int sizey = height + y;
+
+  if( allocatedPixelArray->size - start < size ) {
+    return errIndexOutOfRange;
+  }
+
+  QRgb *auxPixels;
+  if(geset) {
+    for( int iy = y; iy < sizey; ++iy ) {
+      for( int ix = x; ix < sizex; ++ix ) {
+        auxPixels = ( (QRgb *)img->scanLine( iy ) ) + ix;
+        *pixelData = *auxPixels;
+        ++pixelData;
+      }
+    }
+  } else {
+    for( int iy = y; iy < y + height; ++iy ) {
+      for( int ix = x; ix < x + width; ++ix ) {
+        auxPixels = ( (QRgb *)img->scanLine( iy ) ) + ix;
+        *auxPixels = *pixelData;
+        ++pixelData;
+      }
+    }
+  }
+
+  return errNone;
+}
+
 QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( NotObj(a) ) return errWrongType;
@@ -393,6 +457,7 @@ void defineQImagePrimitives()
   definer.define<QImage_UnsetPainter>();
   definer.define<QImage_GetPixel>();
   definer.define<QImage_SetPixel>();
+  definer.define<QImage_LoadPixels>();
   definer.define<QImage_Fill>();
   definer.define<QImage_Formats>();
 }
