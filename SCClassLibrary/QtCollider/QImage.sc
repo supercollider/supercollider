@@ -10,7 +10,6 @@
 /*
 	TODO:
 		- check representations
-		- raw data
 		- tileInRect
 		- on screen interpolations (?)
 		- lock/unlockFocus (?)
@@ -87,6 +86,7 @@ QImage {
 				ret = this.open(multiple);
 			}, {
 				ret = this.openURL(multiple);
+				ret.url = multiple;
 			});
 		});
 
@@ -232,6 +232,14 @@ QImage {
 		^this.primitiveFailed
 	}
 
+	setColor { arg color, x, y;
+		^this.setPixel(color.asInteger, x, y);
+	}
+
+	getColor {arg x, y;
+		^this.getPixel(x, y).asColor;
+	}
+
 	pixels {
 		var pixelArray;
 		if(this.width == 0 or: { this.height == 0 }, { ^nil });
@@ -306,8 +314,17 @@ QImage {
 		});
 	}
 
-	accelerated {}
-	accelerated_ {}
+	crop { arg aRect; "crop not implemented".warn }
+	invert { "invert not implemented".warn }
+
+	interpolation { "interpolations not implemented".warn }
+	interpolation_ { arg mode; "interpolations not implemented".warn }
+
+	accelerated { "accelerated not implemented".warn }
+	accelerated_ { arg aBool; "accelerated not implemented".warn }
+
+	lockFocus { "lockFocus not implemented".warn }
+	unlockFocus { "unlockFocus not implemented".warn }
 
 	drawAtPoint { arg point, fromRect, operation = 'sourceOver', fraction = 1.0;
 		var size = Point(this.width, this.height);
@@ -320,8 +337,7 @@ QImage {
 	}
 
 	tileInRect { arg rect, fromRect, operation = 'sourceOver', fraction = 1.0;
-		// TODO: check stretch behavior
-		//Pen.drawImage(rect, this, fromRect, operation, fraction);
+		"tileInRect not implemented".warn
 	}
 
 	drawStringAtPoint { arg string, point, font, color;
@@ -481,12 +497,15 @@ QImage {
 	alpha {
 		^((this >> 24) & 16r000000FF);
 	}
+
 	red {
 		^((this >> 16) & 16r000000FF);
 	}
+
 	green {
 		^((this >> 8) & 16r000000FF);
 	}
+
 	blue {
 		^(this & 16r000000FF);
 	}
@@ -529,8 +548,9 @@ QImage {
 	14 - fixed to left, center
 	15 - fixed to right, center
 	16 - center, center (no scale)
-//*/
+*/
 
+/*
 +SCView {
 	backgroundImage_ { arg image, tileMode=1, alpha=1.0, fromRect;
 		this.setProperty(\backgroundImage, [image, tileMode, alpha, fromRect])
@@ -540,6 +560,7 @@ QImage {
 		^this.primitiveFailed
 	}
 }
+*/
 
 +Rect {
 	outsetBy {arg h, v;
@@ -547,5 +568,4 @@ QImage {
 		^this.class.new(left - h, top - v, width + h + h, height + v + v);
 	}
 }
-*/
 
