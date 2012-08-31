@@ -1508,4 +1508,11 @@ void CodeEditor::gotoNextEmptyLine()
     cursor.endEditBlock();
 }
 
+void CodeEditor::selectCurrentRegion()
+{
+    QTextCursor selectedRegionCursor = currentRegion();
+    if (!selectedRegionCursor.isNull() && selectedRegionCursor.hasSelection())
+        setTextCursor(selectedRegionCursor);
+}
+
 } // namespace ScIDE

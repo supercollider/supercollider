@@ -105,6 +105,7 @@ public Q_SLOTS:
     void gotoNextBlock();
     void gotoPreviousEmptyLine();
     void gotoNextEmptyLine();
+    void selectCurrentRegion();
 
 protected:
     virtual bool event( QEvent * );
