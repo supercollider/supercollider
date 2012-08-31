@@ -73,6 +73,8 @@ public:
 
         GotoPreviousBlock,
         GotoNextBlock,
+        GotoPreviousEmptyLine,
+        GotoNextEmptyLine,
 
         // View
         EnlargeFont,

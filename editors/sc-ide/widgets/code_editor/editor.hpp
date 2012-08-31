@@ -103,6 +103,8 @@ public Q_SLOTS:
     void moveLineDown();
     void gotoPreviousBlock();
     void gotoNextBlock();
+    void gotoPreviousEmptyLine();
+    void gotoNextEmptyLine();
 
 protected:
     virtual bool event( QEvent * );

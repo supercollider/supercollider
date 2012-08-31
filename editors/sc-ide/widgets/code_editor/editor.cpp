@@ -1444,4 +1444,60 @@ void CodeEditor::gotoPreviousBlock()
     }
 }
 
+void CodeEditor::gotoPreviousEmptyLine()
+{
+    static const QRegExp whiteSpaceLine("^\\s*$");
+
+    QTextCursor cursor = textCursor();
+    cursor.beginEditBlock();
+
+    // find first non-whitespace line
+    while ( cursor.position() ) {
+        cursor.movePosition(QTextCursor::PreviousBlock);
+
+        if ( !whiteSpaceLine.exactMatch(cursor.block().text()) )
+            break;
+    }
+
+    // find first whitespace line
+    while ( cursor.position() ) {
+        cursor.movePosition(QTextCursor::PreviousBlock);
+
+        if ( whiteSpaceLine.exactMatch(cursor.block().text()) ) {
+            setTextCursor(cursor);
+            break;
+        }
+    }
+
+    cursor.endEditBlock();
+}
+
+void CodeEditor::gotoNextEmptyLine()
+{
+    static const QRegExp whiteSpaceLine("^\\s*$");
+
+    QTextCursor cursor = textCursor();
+    cursor.beginEditBlock();
+
+    // find first non-whitespace line
+    while ( cursor.position() ) {
+        cursor.movePosition(QTextCursor::NextBlock);
+
+        if ( !whiteSpaceLine.exactMatch(cursor.block().text()) )
+            break;
+    }
+
+    // find first whitespace line
+    while ( cursor.position() ) {
+        cursor.movePosition(QTextCursor::NextBlock);
+
+        if ( whiteSpaceLine.exactMatch(cursor.block().text()) ) {
+            setTextCursor(cursor);
+            break;
+        }
+    }
+
+    cursor.endEditBlock();
+}
+
 } // namespace ScIDE
