@@ -47,6 +47,7 @@ set ( ide_moc_hdr
     widgets/util/text_format_list_widget.hpp
     widgets/util/key_sequence_edit.hpp
     widgets/util/popup_widget.hpp
+    widgets/util/color_widget.hpp
 )
 
 file (GLOB_RECURSE all_hdr *hpp)

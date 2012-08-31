@@ -61,13 +61,17 @@ void Manager::initDefaults()
     setDefault("font", fnt.toString());
 
     beginGroup("colors");
-    setDefault("background", appPlt.color(QPalette::Base));
-    setDefault("text", appPlt.color(QPalette::Text));
-    setDefault("matchingBrackets", Qt::red);
-    setDefault("evaluatedCodeBackground", QColor("#F8A200"));
-    setDefault("evaluatedCodeText", Qt::black);
-    setDefault("lineNumbersBackground", appPlt.color(QPalette::Button));
-    setDefault("lineNumbers", appPlt.color(QPalette::ButtonText));
+
+    QTextCharFormat matchingBracketsFormat;
+    matchingBracketsFormat.setForeground(Qt::red);
+    matchingBracketsFormat.setFontWeight(QFont::Bold);
+    setDefault("matchingBrackets", QVariant::fromValue(matchingBracketsFormat));
+
+    QTextCharFormat evaluatedCodeFormat;
+    evaluatedCodeFormat.setBackground(QColor("#F8A200"));
+    evaluatedCodeFormat.setForeground(Qt::black);
+    setDefault("evaluatedCode", QVariant::fromValue(evaluatedCodeFormat));
+
     endGroup(); // colors
 
     beginGroup("highlighting");
@@ -96,8 +100,8 @@ void Manager::initHighlightingDefaults()
     int shade = (base.red() + base.green() + base.blue() < 380) ? 160 : 100;
 
     setDefault( "keyword", makeHlFormat( QColor(0,0,230).lighter(shade), QFont::Bold ) );
-    setDefault( "builtin", makeHlFormat( QColor(51,51,191).lighter(shade) ) );
-    setDefault( "envvar", makeHlFormat( QColor(255,102,0).lighter(shade) ) );
+    setDefault( "built-in", makeHlFormat( QColor(51,51,191).lighter(shade) ) );
+    setDefault( "env-var", makeHlFormat( QColor(255,102,0).lighter(shade) ) );
     setDefault( "class", makeHlFormat( QColor(0,0,210).lighter(shade) ) );
     setDefault( "number", makeHlFormat( QColor(152,0,153).lighter(shade) ) );
     setDefault( "symbol", makeHlFormat( QColor(0,115,0).lighter(shade) ) );

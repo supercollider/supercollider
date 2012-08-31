@@ -38,8 +38,7 @@ void CodeEditor::blinkCode( const QTextCursor & c )
 
     Settings::Manager *settings = Main::instance()->settings();
     settings->beginGroup("IDE/editor/colors");
-    QColor fg = settings->value("evaluatedCodeText").value<QColor>();
-    QColor bg = settings->value("evaluatedCodeBackground").value<QColor>();
+    QTextCharFormat evalCodeTextFormat = settings->value("evaluatedCode").value<QTextCharFormat>();
     settings->endGroup();
 
     QTextDocument *doc = c.document();
@@ -130,8 +129,7 @@ void CodeEditor::blinkCode( const QTextCursor & c )
 
         range.start = start;
         range.length = (b == endBlock ? endPos : b.length() - 1) - range.start;
-        range.format.setForeground(fg);
-        range.format.setBackground(bg);
+        range.format = evalCodeTextFormat;
         selections.append(range);
 
         if(b == endBlock) {

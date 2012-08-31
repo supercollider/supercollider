@@ -22,6 +22,9 @@
 #define SCIDE_WIDGETS_SETTINGS_EDITOR_PAGE_HPP_INCLUDED
 
 #include <QWidget>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
+#include <QTextCharFormat>
 
 class QFontDatabase;
 
@@ -46,18 +49,42 @@ public Q_SLOTS:
     void store( Manager * );
 
 private Q_SLOTS:
+    void onCurrentTabChanged(int);
+
     void onFontFamilyChanged(int);
     void onFontStyleChanged(int);
     void onMonospaceToggle(bool);
     void updateFontPreview();
-    void execSyntaxFormatContextMenu(const QPoint &);
+
+    void updateTextFormatEdit();
+    void updateTextFormatDisplay();
+    void updateTextFormatDisplayCommons();
 
 private:
+    enum TextFormatListRole {
+        TextFormatConfigKeyRole = Qt::UserRole,
+        TextFormatRole
+    };
+
+    void loadGeneralTextFormats( Manager * );
+    void loadSyntaxTextFormats( Manager * );
+
     QFont constructFont();
+    QTextCharFormat constructTextFormat();
+
+    void addTextFormat
+    ( QTreeWidgetItem * parent, const QString & name, const QString &key, const QTextCharFormat & format );
+
+    void setTextFormat( QTreeWidgetItem *, const QTextCharFormat & format );
 
     QFontDatabase *fontDatabase;
 
     Ui::EditorConfigPage *ui;
+
+    QStringList mFormatKeys;
+    QTreeWidgetItem *mGeneralFormatsItem;
+    QTreeWidgetItem *mSyntaxFormatsItem;
+    QTreeWidgetItem *mCommonTextFormatItem;
 };
 
 }} // namespace ScIDE::Settings
