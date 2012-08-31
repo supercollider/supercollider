@@ -329,6 +329,16 @@ void MultiEditor::createActions()
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoNextBlock()));
 
+    mActions[GotoPreviousEmptyLine] = act = new QAction( tr("Go to Previous Empty Line"), this);
+    act->setShortcut(tr("Ctrl+Up", "Go to Previous Empty Line"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoPreviousEmptyLine()));
+
+    mActions[GotoNextEmptyLine] = act = new QAction( tr("Go to Next Empty Line"), this);
+    act->setShortcut(tr("Ctrl+Down", "Go to Next Empty Line"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoNextEmptyLine()));
+
     // View
 
     mActions[EnlargeFont] = act = new QAction(
@@ -433,6 +443,8 @@ void MultiEditor::createActions()
     addAction(mActions[MoveLineDown]);
     addAction(mActions[GotoPreviousBlock]);
     addAction(mActions[GotoNextBlock]);
+    addAction(mActions[GotoPreviousEmptyLine]);
+    addAction(mActions[GotoNextEmptyLine]);
 }
 
 void MultiEditor::updateActions()
@@ -453,6 +465,8 @@ void MultiEditor::updateActions()
     mActions[MoveLineDown]->setEnabled( editor );
     mActions[GotoPreviousBlock]->setEnabled( editor );
     mActions[GotoNextBlock]->setEnabled( editor );
+    mActions[GotoPreviousEmptyLine]->setEnabled( editor );
+    mActions[GotoNextEmptyLine]->setEnabled( editor );
 
     mActions[IndentLineOrRegion]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
