@@ -18,14 +18,20 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include <stdlib.h>
 
-#include "SC_UnitDef.h"
-#include "SC_World.h"
-#include "SC_Unit.h"
+#include "SC_Endian.h" // first to avoid win32 IN clash
+
+#include "SC_Graph.h"
 #include "SC_InterfaceTable.h"
+#include "SC_Lib_Cintf.h"
 #include "SC_Prototypes.h"
 #include "SC_Str4.h"
-#include <stdlib.h>
+#include "SC_Unit.h"
+#include "SC_UnitDef.h"
+#include "SC_World.h"
+#include "sc_msg_iter.h"
+
 
 bool UnitDef_Create(const char *inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
 {
@@ -52,7 +58,6 @@ bool UnitDef_Create(const char *inName, size_t inAllocSize, UnitCtorFunc inCtor,
 }
 
 
-#include "SC_Lib_Cintf.h"
 
 bool UnitDef_AddCmd(const char *inUnitDefName, const char *inCmdName, UnitCmdFunc inFunc)
 {
@@ -66,9 +71,8 @@ bool UnitDef_AddCmd(const char *inUnitDefName, const char *inCmdName, UnitCmdFun
 	UnitDef* unitDef = GetUnitDef(unitDefName);
 	if (!unitDef) return false;
 
-	if (!unitDef->mCmds) {
+	if (!unitDef->mCmds)
 		unitDef->mCmds = new HashTable<UnitCmd, Malloc>(&gMalloc, 4, true);
-	}
 
 	UnitCmd *cmd = new UnitCmd();
 	memset(cmd->mCmdName, 0, kSCNameByteLen);
@@ -83,7 +87,6 @@ bool UnitDef_AddCmd(const char *inUnitDefName, const char *inCmdName, UnitCmdFun
 
 bool PlugIn_DefineCmd(const char *inCmdName, PlugInCmdFunc inFunc, void *inUserData)
 {
-
 	if (strlen(inCmdName) >= kSCNameByteLen) return false;
 
 	PlugInCmd *cmd = new PlugInCmd();
@@ -97,9 +100,6 @@ bool PlugIn_DefineCmd(const char *inCmdName, PlugInCmdFunc inFunc, void *inUserD
 
 	return true;
 }
-
-#include "sc_msg_iter.h"
-#include "SC_Graph.h"
 
 int Unit_DoCmd(World *inWorld, int inSize, char *inData)
 {
@@ -141,4 +141,3 @@ int PlugIn_DoCmd(World *inWorld, int inSize, char *inData, ReplyAddress *inReply
 
 	return kSCErr_None;
 }
-
