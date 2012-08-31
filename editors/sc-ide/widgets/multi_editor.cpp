@@ -339,6 +339,11 @@ void MultiEditor::createActions()
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoNextEmptyLine()));
 
+    mActions[SelectRegion] = act = new QAction( tr("Select Region"), this);
+    act->setShortcut(tr("Ctrl+Shift+R", "Select Region"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(selectCurrentRegion()));
+
     // View
 
     mActions[EnlargeFont] = act = new QAction(
@@ -445,6 +450,7 @@ void MultiEditor::createActions()
     addAction(mActions[GotoNextBlock]);
     addAction(mActions[GotoPreviousEmptyLine]);
     addAction(mActions[GotoNextEmptyLine]);
+    addAction(mActions[SelectRegion]);
 }
 
 void MultiEditor::updateActions()
@@ -467,6 +473,7 @@ void MultiEditor::updateActions()
     mActions[GotoNextBlock]->setEnabled( editor );
     mActions[GotoPreviousEmptyLine]->setEnabled( editor );
     mActions[GotoNextEmptyLine]->setEnabled( editor );
+    mActions[SelectRegion]->setEnabled( editor );
 
     mActions[IndentLineOrRegion]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );

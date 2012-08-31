@@ -76,6 +76,8 @@ public:
         GotoPreviousEmptyLine,
         GotoNextEmptyLine,
 
+        SelectRegion,
+
         // View
         EnlargeFont,
         ShrinkFont,
