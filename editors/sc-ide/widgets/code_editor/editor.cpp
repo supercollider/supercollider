@@ -581,20 +581,29 @@ void CodeEditor::applySettings( Settings::Manager *settings )
 
     settings->beginGroup("colors");
 
-    if (settings->contains("background"))
-        plt.setColor(QPalette::Base, settings->value("background").value<QColor>());
+    if (settings->contains("text")) {
+        QTextCharFormat format = settings->value("text").value<QTextCharFormat>();
+        QBrush bg = format.background();
+        QBrush fg = format.foreground();
+        if (bg.style() != Qt::NoBrush)
+            plt.setBrush(QPalette::Base, bg);
+        if (fg.style() != Qt::NoBrush)
+            plt.setBrush(QPalette::Text, fg);
+    }
 
-    if (settings->contains("text"))
-        plt.setColor(QPalette::Text, settings->value("text").value<QColor>());
+    if (settings->contains("lineNumbers")) {
+        QPalette lineNumPlt;
+        QTextCharFormat format = settings->value("lineNumbers").value<QTextCharFormat>();
+        QBrush bg = format.background();
+        QBrush fg = format.foreground();
+        if (bg.style() != Qt::NoBrush)
+            plt.setBrush(QPalette::Button, bg);
+        if (fg.style() != Qt::NoBrush)
+            plt.setBrush(QPalette::ButtonText, fg);
+        mLineIndicator->setPalette(lineNumPlt);
+    }
 
-    QPalette lineNumPlt;
-    if (settings->contains("lineNumbersBackground"))
-        lineNumPlt.setColor(QPalette::Button, settings->value("lineNumbersBackground").value<QColor>());
-    if (settings->contains("lineNumbers"))
-        lineNumPlt.setColor(QPalette::ButtonText, settings->value("lineNumbers").value<QColor>());
-    mLineIndicator->setPalette(lineNumPlt);
-
-    mBracketHighlight = settings->value("matchingBrackets").value<QColor>();
+    mBracketHighlight = settings->value("matchingBrackets").value<QTextCharFormat>();
 
     settings->endGroup(); // colors
 
@@ -814,8 +823,7 @@ void CodeEditor::matchBrackets()
             || (tok1.character == '{' && tok2.character == '}')
         ){
             QTextEdit::ExtraSelection selection;
-            selection.format.setFontWeight(QFont::Bold);
-            selection.format.setForeground(mBracketHighlight);
+            selection.format = mBracketHighlight;
 
             cursor.setPosition(match.first.position());
             cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
