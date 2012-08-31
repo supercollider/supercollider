@@ -117,8 +117,11 @@ std::vector<sc_synthdef> read_synthdefs(const char * buf_ptr)
             sc_synthdef def(buf_ptr, version);
             ret.push_back(def);
         }
-        catch (std::runtime_error const & e) {
+        catch (std::exception const & e) {
             std::cerr << "Exception when reading synthdef: " << e.what() << std::endl;
+        }
+        catch (...) {
+            std::cerr << "Exception when reading synthdef" << std::endl;
         }
     }
     return ret;
