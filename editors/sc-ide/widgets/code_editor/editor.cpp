@@ -1454,51 +1454,32 @@ void CodeEditor::gotoPreviousBlock()
 
 void CodeEditor::gotoPreviousEmptyLine()
 {
-    static const QRegExp whiteSpaceLine("^\\s*$");
-
-    QTextCursor cursor = textCursor();
-    cursor.beginEditBlock();
-
-    // find first non-whitespace line
-    while ( cursor.position() ) {
-        cursor.movePosition(QTextCursor::PreviousBlock);
-
-        if ( !whiteSpaceLine.exactMatch(cursor.block().text()) )
-            break;
-    }
-
-    // find first whitespace line
-    while ( cursor.position() ) {
-        cursor.movePosition(QTextCursor::PreviousBlock);
-
-        if ( whiteSpaceLine.exactMatch(cursor.block().text()) ) {
-            setTextCursor(cursor);
-            break;
-        }
-    }
-
-    cursor.endEditBlock();
+    gotoEmptyLineUpDown(true);
 }
 
 void CodeEditor::gotoNextEmptyLine()
 {
+    gotoEmptyLineUpDown(false);
+}
+
+void CodeEditor::gotoEmptyLineUpDown(bool up)
+{
     static const QRegExp whiteSpaceLine("^\\s*$");
+
+    const QTextCursor::MoveOperation direction = up ? QTextCursor::PreviousBlock
+                                                    : QTextCursor::NextBlock;
 
     QTextCursor cursor = textCursor();
     cursor.beginEditBlock();
 
     // find first non-whitespace line
-    while ( cursor.position() ) {
-        cursor.movePosition(QTextCursor::NextBlock);
-
+    while ( cursor.movePosition(direction) ) {
         if ( !whiteSpaceLine.exactMatch(cursor.block().text()) )
             break;
     }
 
     // find first whitespace line
-    while ( cursor.position() ) {
-        cursor.movePosition(QTextCursor::NextBlock);
-
+    while ( cursor.movePosition(direction) ) {
         if ( whiteSpaceLine.exactMatch(cursor.block().text()) ) {
             setTextCursor(cursor);
             break;
@@ -1507,6 +1488,7 @@ void CodeEditor::gotoNextEmptyLine()
 
     cursor.endEditBlock();
 }
+
 
 void CodeEditor::selectCurrentRegion()
 {
