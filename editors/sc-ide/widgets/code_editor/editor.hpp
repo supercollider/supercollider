@@ -145,6 +145,7 @@ private:
 
     void copyUpDown(bool up);
     void moveLineUpDown(bool up);
+    void gotoEmptyLineUpDown(bool up);
 
     int indentedStartOfLine( const QTextBlock & );
     void indent( const QTextCursor & );
