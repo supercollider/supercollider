@@ -248,6 +248,7 @@ void MultiEditor::createActions()
     mActions[Cut] = act = new QAction(
         QIcon::fromTheme("edit-cut"), tr("Cu&t"), this);
     act->setShortcut(tr("Ctrl+X", "Cut"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     act->setStatusTip(tr("Cut text to clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(cut()));
     mSigMux->connect(SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
@@ -255,6 +256,7 @@ void MultiEditor::createActions()
     mActions[Copy] = act = new QAction(
         QIcon::fromTheme("edit-copy"), tr("&Copy"), this);
     act->setShortcut(tr("Ctrl+C", "Copy"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     act->setStatusTip(tr("Copy text to clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(copy()));
     mSigMux->connect(SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
@@ -262,6 +264,7 @@ void MultiEditor::createActions()
     mActions[Paste] = act = new QAction(
         QIcon::fromTheme("edit-paste"), tr("&Paste"), this);
     act->setShortcut(tr("Ctrl+V", "Paste"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     act->setStatusTip(tr("Paste text from clipboard"));
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(paste()));
 
@@ -273,11 +276,13 @@ void MultiEditor::createActions()
     mActions[TriggerAutoCompletion] = act = new QAction(tr("Trigger Autocompletion"), this);
     act->setStatusTip(tr("Suggest possible completions of text at cursor"));
     act->setShortcut(tr("Ctrl+Space", "Trigger Autocompletion"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(triggerAutoCompletion()));
 
     mActions[TriggerMethodCallAid] = act = new QAction(tr("Trigger Method Call Aid"), this);
     act->setStatusTip(tr("Show arguments for currently typed method call"));
     act->setShortcut(tr("Alt+Space", "Trigger Method Call Aid"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(triggerMethodCallAid()));
 
     mActions[ToggleComment] = act = new QAction(
@@ -434,6 +439,9 @@ void MultiEditor::createActions()
 
     // These actions have to be added because to the widget because they have
     // Qt::WidgetWithChildrenShortcut context:
+    addAction(mActions[Cut]);
+    addAction(mActions[Copy]);
+    addAction(mActions[Paste]);
     addAction(mActions[EnlargeFont]);
     addAction(mActions[ShrinkFont]);
     addAction(mActions[OpenDefinition]);
