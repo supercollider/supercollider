@@ -41,9 +41,8 @@ EditorPage::EditorPage(QWidget *parent) :
     connect( ui->tabs, SIGNAL(currentChanged(int)), this, SLOT(onCurrentTabChanged(int)) );
 
     connect( ui->onlyMonoFonts, SIGNAL(toggled(bool)), this, SLOT(onMonospaceToggle(bool)) );
-    connect( ui->fontList, SIGNAL(currentRowChanged(int)), this, SLOT(onFontFamilyChanged(int)) );
-    connect( ui->fontStyle, SIGNAL(currentRowChanged(int)), this, SLOT(onFontStyleChanged(int)) );
-    connect( ui->fontSize, SIGNAL(valueChanged(double)), this, SLOT(updateFontPreview()) );
+    connect( ui->fontCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateFontPreview()) );
+    connect( ui->fontSize, SIGNAL(valueChanged(int)), this, SLOT(updateFontPreview()) );
 
     connect( ui->textFormats, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem*)),
              this, SLOT(updateTextFormatEdit()) );
@@ -82,33 +81,23 @@ void EditorPage::load( Manager *s )
     ui->blinkDuration->setValue( s->value("blinkDuration").toInt() );
     ui->postWindowScrollback->setValue( s->value("postWindowScrollback").toInt() );
 
-    QFont f;
-    f.fromString(s->value("font").toString());
+    s->beginGroup("font");
+    QString fontFamily = s->value("family").toString();
+    int fontSize = s->value("size").toInt();
+    s->endGroup();
 
-    ui->fontList->clear();
-    int idx = 0;
-    QString fontFamily = f.family();
-    QStringList fontFamilies = fontDatabase->families();
-    foreach(QString family, fontFamilies)
-    {
-        ui->fontList->addItem(family);
-        if(family.compare(fontFamily, Qt::CaseInsensitive) == 0)
-            idx = ui->fontList->count() - 1;
-    }
-    ui->fontList->setCurrentRow(idx);
-    ui->fontList->scrollToItem(ui->fontList->item(idx));
+    // If no font preferences:
+    // - use default font size.
+    // - leave font family empty, as it will result in default font anyway
+    QFont defaultFont = QApplication::font("QPlainTextEdit");
+    if (fontSize < 1)
+        fontSize = defaultFont.pointSize();
 
-    int c = ui->fontStyle->count();
-    QString fontStyle = fontDatabase->styleString(f);
-    for(int i = 0; i < c; ++i) {
-        QString style = ui->fontStyle->item(i)->text();
-        if(style.compare(fontStyle, Qt::CaseInsensitive)==0) {
-            ui->fontStyle->setCurrentRow(i);
-            break;
-        }
-    }
+    populateFontList( ui->onlyMonoFonts->isChecked() );
+    int fontFamilyIndex = ui->fontCombo->findText( fontFamily, Qt::MatchFixedString );
+    ui->fontCombo->setCurrentIndex( fontFamilyIndex );
 
-    ui->fontSize->setValue( f.pointSizeF() );
+    ui->fontSize->setValue( fontSize );
 
     ui->textFormats->clear();
 
@@ -179,6 +168,19 @@ void EditorPage::loadSyntaxTextFormats( Manager *settings )
     }
 }
 
+void EditorPage::populateFontList( bool onlyMonospaced )
+{
+    ui->fontCombo->clear();
+    QStringList fontFamilies = fontDatabase->families();
+    foreach(QString family, fontFamilies)
+    {
+        if (onlyMonospaced && !fontDatabase->isFixedPitch(family))
+            continue;
+
+        ui->fontCombo->addItem(family);
+    }
+}
+
 void EditorPage::store( Manager *s )
 {
     s->beginGroup("IDE/editor");
@@ -190,8 +192,12 @@ void EditorPage::store( Manager *s )
     s->setValue("blinkDuration", ui->blinkDuration->value());
     s->setValue("postWindowScrollback", ui->postWindowScrollback->value());
 
-    QFont f = constructFont();
-    s->setValue("font", f.toString());
+    s->beginGroup("font");
+    QString fontFamily = ui->fontCombo->currentText();
+    if (!fontFamily.isEmpty())
+        s->setValue("family", fontFamily);
+    s->setValue("size", ui->fontSize->value());
+    s->endGroup();
 
     s->beginGroup("colors");
 
@@ -228,48 +234,9 @@ void EditorPage::onCurrentTabChanged(int)
         updateFontPreview();
 }
 
-void EditorPage::onFontFamilyChanged(int idx)
+void EditorPage::onMonospaceToggle(bool onlyMonospaced)
 {
-    if(idx < 0) return;
-
-    Q_ASSERT(fontDatabase);
-
-    ui->fontStyle->clear();
-
-    QString fontFamily = ui->fontList->item(idx)->text();
-    QStringList styles = fontDatabase->styles(fontFamily);
-    int styleIdx = 0;
-    foreach(QString style, styles) {
-        ui->fontStyle->addItem(style);
-        if( style.compare("Regular", Qt::CaseInsensitive) == 0
-            || style.compare("Normal", Qt::CaseInsensitive) == 0
-        )
-            styleIdx = ui->fontStyle->count()-1;
-    }
-
-    ui->fontStyle->setCurrentRow(styleIdx);
-    updateFontPreview();
-}
-
-void EditorPage::onFontStyleChanged(int idx)
-{
-    updateFontPreview();
-}
-
-void EditorPage::onMonospaceToggle(bool on)
-{
-    int c = ui->fontList->count();
-    for(int i = 0; i < c; ++i)
-    {
-        QListWidgetItem *item = ui->fontStyle->currentItem();
-        QString style;
-        if(item) style = item->text();
-
-        item = ui->fontList->item(i);
-        QString family = item->text();
-
-        item->setHidden(on && !fontDatabase->isFixedPitch(family, style));
-    }
+    populateFontList( onlyMonospaced );
 }
 
 void EditorPage::updateFontPreview()
@@ -280,23 +247,13 @@ void EditorPage::updateFontPreview()
 
 QFont EditorPage::constructFont()
 {
-    QString family, style;
-    double size;
+    QString family = ui->fontCombo->currentText();
+    int size = ui->fontSize->value();
 
-    QListWidgetItem *item = ui->fontList->currentItem();
-    if(item)
-        family = item->text();
+    QFont font(family, size);
+    font.setStyleHint( QFont::TypeWriter );
 
-    item = ui->fontStyle->currentItem();
-    if(item)
-        style = item->text();
-
-    size = ui->fontSize->value();
-
-    QFont f = fontDatabase->font(family, style, size);
-    f.setPointSizeF(size);
-
-    return f;
+    return font;
 }
 
 void EditorPage::addTextFormat

@@ -576,8 +576,14 @@ void CodeEditor::applySettings( Settings::Manager *settings )
 
     QPalette plt;
 
-    QFont fnt;
-    fnt.fromString( settings->value("font").toString() );
+    QString fontFamily = settings->value("font/family").toString();
+    int fontSize = settings->value("font/size").toInt();
+
+    QFont font;
+    font.setStyleHint(QFont::TypeWriter);
+    font.setFamily(fontFamily);
+    if (fontSize > 0)
+        font.setPointSize(fontSize);
 
     settings->beginGroup("colors");
 
@@ -608,7 +614,7 @@ void CodeEditor::applySettings( Settings::Manager *settings )
     settings->endGroup(); // colors
 
     setPalette(plt);
-    setFont(fnt);
+    setFont(font);
 
     settings->endGroup();
 }

@@ -55,10 +55,7 @@ void Manager::initDefaults()
     setDefault("blinkDuration", 600);
     setDefault("postWindowScrollback", 1000);
 
-    QFont fnt(QApplication::font());
-    fnt.setFamily("monospace");
-    fnt.setStyleHint(QFont::TypeWriter);
-    setDefault("font", fnt.toString());
+    setDefault("font/family", "monospace");
 
     beginGroup("colors");
 
