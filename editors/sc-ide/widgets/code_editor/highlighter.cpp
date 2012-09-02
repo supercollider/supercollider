@@ -135,12 +135,12 @@ void SyntaxHighlighterGlobals::applySettings( Settings::Manager *s )
     QString key("IDE/editor/highlighting");
     applySettings( s, key + "/normal", PlainFormat );
     applySettings( s, key + "/keyword", KeywordFormat );
-    applySettings( s, key + "/builtin", BuiltinFormat );
+    applySettings( s, key + "/built-in", BuiltinFormat );
     applySettings( s, key + "/primitive", PrimitiveFormat );
     applySettings( s, key + "/class", ClassFormat );
     applySettings( s, key + "/number", NumberFormat );
     applySettings( s, key + "/symbol", SymbolFormat );
-    applySettings( s, key + "/envvar", EnvVarFormat );
+    applySettings( s, key + "/env-var", EnvVarFormat );
     applySettings( s, key + "/string", StringFormat );
     applySettings( s, key + "/char", CharFormat );
     applySettings( s, key + "/comment", CommentFormat );
