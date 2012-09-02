@@ -787,7 +787,6 @@ void MultiEditor::evaluateRegion()
             if( mStepForwardEvaluation ) {
                 QTextCursor newCursor = cursor;
                 newCursor.movePosition(QTextCursor::NextBlock);
-                newCursor.movePosition(QTextCursor::EndOfBlock);
                 editor->setTextCursor(newCursor);
             }
             // Adjust cursor for code blinking:
@@ -822,7 +821,6 @@ void MultiEditor::evaluateLine()
     if( mStepForwardEvaluation ) {
         QTextCursor newCursor = cursor;
         newCursor.movePosition(QTextCursor::NextBlock);
-        newCursor.movePosition(QTextCursor::EndOfBlock);
         editor->setTextCursor(newCursor);
     }
 
