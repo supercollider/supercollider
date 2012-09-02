@@ -38,8 +38,10 @@ class PostWindow:
 
 public:
     explicit PostWindow(QWidget* parent = 0);
+
     void applySettings(Settings::Manager * );
-    QSize sizeHint() const { return QSize(500, 300); }
+
+    QSize sizeHint() const { return mSizeHint; }
 
 signals:
     void scrollToBottomRequest();
@@ -62,6 +64,7 @@ private:
     QAction * mAutoScrollAction;
     QAction * mClearAction;
     bool mNewlinePending;
+    QSize mSizeHint;
 };
 
 
