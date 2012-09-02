@@ -23,11 +23,10 @@
 #ifdef __GNUC__
 
 #ifdef _WIN32
-#undef CONST
 #undef PURE
 #endif
 
-#define CONST __attribute__((const))
+#define CONST_FUNCTION __attribute__((const))
 #define PURE __attribute__((pure))
 
 #define MALLOC __attribute__((malloc))
@@ -53,8 +52,8 @@
 #define PURE /*PURE*/
 #endif
 
-#ifndef CONST
-#define CONST /*CONST*/
+#ifndef CONST_FUNCTION
+#define CONST_FUNCTION /*CONST_FUNCTION*/
 #endif
 #endif
 
