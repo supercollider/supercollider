@@ -27,6 +27,8 @@
 #include <QLabel>
 #include <QScrollBar>
 #include <QShortcut>
+#include <QApplication>
+#include <QDesktopWidget>
 
 namespace ScIDE {
 
@@ -38,6 +40,9 @@ PostWindow::PostWindow(QWidget* parent):
     setLineWrapMode(QPlainTextEdit::NoWrap);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setMaximumBlockCount(500);
+
+    QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
+    mSizeHint = QSize( availableScreenRect.width() / 2.7, 300 );
 
     QFont f( font() );
     f.setFamily("monospace");
