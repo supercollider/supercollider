@@ -270,7 +270,8 @@ QC_LANG_PRIMITIVE( QImage_Write, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( img->save(path, format.toUpper().toStdString().c_str(), quality) )
     return errNone;
 
-  return errFailed;
+  qcErrorMsg( QString("QImage can't write file: ").append(path) );
+  return errNone;
 }
 
 QC_LANG_PRIMITIVE( QImage_SetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
