@@ -51,8 +51,6 @@ public Q_SLOTS:
 private Q_SLOTS:
     void onCurrentTabChanged(int);
 
-    void onFontFamilyChanged(int);
-    void onFontStyleChanged(int);
     void onMonospaceToggle(bool);
     void updateFontPreview();
 
@@ -68,6 +66,8 @@ private:
 
     void loadGeneralTextFormats( Manager * );
     void loadSyntaxTextFormats( Manager * );
+
+    void populateFontList( bool onlyMonospaced = false );
 
     QFont constructFont();
     QTextCharFormat constructTextFormat();
