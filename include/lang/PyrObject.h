@@ -236,14 +236,13 @@ void dumpObjectSlot(PyrSlot *slot);
 bool respondsTo(PyrSlot *slot, PyrSymbol *selector);
 bool isSubclassOf(struct PyrClass *classobj, struct PyrClass *testclass);
 
-const int kFloatTagIndex = 11;
 extern struct PyrClass* gTagClassTable[16];
 
 inline struct PyrClass* classOfSlot(PyrSlot *slot)
 {
 	PyrClass *classobj;
 	int tag;
-	if (IsFloat(slot)) classobj = gTagClassTable[kFloatTagIndex];
+	if (IsFloat(slot)) classobj = class_float;
 	else if ((tag = GetTag(slot) & 0xF) == 1) classobj = slotRawObject(slot)->classptr;
 	else classobj = gTagClassTable[tag];
 
