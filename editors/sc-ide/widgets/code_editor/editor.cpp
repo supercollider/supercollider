@@ -668,6 +668,7 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
     case Qt::Key_Return:
         // override to avoid entering a "soft" new line when certain modifier is held
         textCursor().insertBlock();
+        ensureCursorVisible();
         break;
     case Qt::Key_Home:
     {
@@ -700,6 +701,7 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
     {
         QTextCursor cursor = textCursor();
         cursor.insertText("\t");
+        ensureCursorVisible();
         return;
     }
 
