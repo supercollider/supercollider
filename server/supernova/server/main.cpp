@@ -32,7 +32,9 @@
 #include "../sc/sc_synth_prototype.hpp"
 #include "../utilities/utils.hpp"
 
+#ifndef WIN32
 #include <wordexp.h> /**< \todo: this is posix-only */
+#endif
 
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 # include <sys/resource.h>
@@ -147,9 +149,11 @@ void start_audio_backend(server_arguments const & args)
     bool success = instance->open_stream(args.hw_name, args.input_channels, args.hw_name, args.output_channels,
         args.samplerate, args.blocksize, args.blocksize);
 
-    if (!success)
+    if (!success){
+		cout << "could not open portaudio device name:" << args.hw_name << endl;
         exit(1);
-
+	}
+    cout << "opened portaudio device name:" << args.hw_name << endl;
     instance->prepare_backend();
     instance->activate_audio();
     instance->start_receive_thread();
@@ -177,6 +181,9 @@ boost::filesystem::path resolve_home(void)
 #elif defined(__APPLE__)
     path home(getenv("HOME"));
     return home;
+#elif defined(WIN32)
+    path home(getenv("USERPROFILE"));
+    return home;
 #else
 #error platform not supported
 #endif
@@ -200,6 +207,10 @@ void set_plugin_paths(void)
 #elif defined(__APPLE__)
         sc_factory->load_plugin_folder(home / "Library/Application Support/SuperCollider/supernova_plugins/");
         sc_factory->load_plugin_folder("/Library/Application Support/SuperCollider/supernova_plugins/");
+#elif defined(WIN32)
+
+        sc_factory->load_plugin_folder("./supernova_plugins");
+
 #else
         cerr << "Don't know how to locate plugins on this platform. Please specify search path in command line."
 #endif
