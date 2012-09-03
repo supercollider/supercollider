@@ -48,11 +48,11 @@ Q_SIGNALS:
 public Q_SLOTS:
     void setLineCount( int );
 protected:
-    virtual void changeEvent( QEvent * );
     virtual void paintEvent( QPaintEvent *e );
     virtual void mousePressEvent( QMouseEvent * );
     virtual void mouseMoveEvent( QMouseEvent * );
     virtual void mouseDoubleClickEvent( QMouseEvent * );
+    virtual void changeEvent( QEvent * );
 private:
     int widthForLineCount( int lineCount );
 
@@ -72,7 +72,7 @@ public:
     Document *document() { return mDoc; }
     QTextDocument *textDocument() { return QPlainTextEdit::document(); }
     void setDocument( Document * );
-    bool showWhitespace() { return mShowWhitespace; }
+    bool showWhitespace();
     void setIndentWidth( int );
     bool find( const QRegExp &expr, QTextDocument::FindFlags options = 0);
     bool replace( const QRegExp &expr, const QString &replacement, QTextDocument::FindFlags options = 0);
@@ -109,7 +109,6 @@ public Q_SLOTS:
 
 protected:
     virtual bool event( QEvent * );
-    virtual void changeEvent( QEvent * );
     virtual void keyPressEvent( QKeyEvent * );
     virtual void mouseReleaseEvent ( QMouseEvent * );
     virtual void mouseMoveEvent( QMouseEvent * );
@@ -123,6 +122,7 @@ private Q_SLOTS:
     void updateLineIndicator( QRect, int );
     void matchBrackets();
     void onOverlayChanged ( const QList<QRectF> & region );
+    void onDocumentFontChanged();
 
 private:
     struct BracketMatch {
@@ -159,7 +159,6 @@ private:
 
     int mIndentWidth;
     bool mSpaceIndent;
-    bool mShowWhitespace;
     int mBlinkDuration;
     QTextCharFormat mBracketHighlight;
 

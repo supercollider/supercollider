@@ -50,9 +50,6 @@ void CodeEditorBox::setDocument(Document *doc, int pos)
     if (!editor) {
         editor = new CodeEditor(doc);
         editor->installEventFilter(this);
-        editor->applySettings(Main::instance()->settings());
-        connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
-                editor, SLOT(applySettings(Settings::Manager*)));
         mHistory.prepend(editor);
         mLayout->addWidget(editor);
     }
