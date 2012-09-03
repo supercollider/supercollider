@@ -48,21 +48,28 @@ class Document : public QObject
     friend class DocumentManager;
 
 public:
-    Document() :
-        mId( QUuid::createUuid().toString().toAscii() ),
-        mDoc( new QTextDocument(this) ),
-        mTitle( "Untitled" )
-    {
-        mDoc->setDocumentLayout( new QPlainTextDocumentLayout(mDoc) );
-        new SyntaxHighlighter(mDoc);
-    }
+    Document();
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
     const QString & filePath() { return mFilePath; }
     const QString & title() { return mTitle; }
 
+    QFont defaultFont() const { return mDoc->defaultFont(); }
+    void setDefaultFont( const QFont & font );
+
+    int indentWidth() const { return mIndentWidth; }
+    void setIndentWidth( int numSpaces );
+
     void deleteTrailingSpaces();
+
+    static QFont settingsFont( Settings::Manager * );
+
+public slots:
+    void applySettings( Settings::Manager * );
+
+signals:
+    void defaultFontChanged();
 
 private:
     QByteArray mId;
@@ -70,6 +77,7 @@ private:
     QString mFilePath;
     QString mTitle;
     QDateTime mSaveTime;
+    int mIndentWidth;
 };
 
 class DocumentManager : public QObject
@@ -101,7 +109,6 @@ public slots:
     // initialCursorPosition -1 means "don't change position if already open"
     void open( const QString & path, int initialCursorPosition = -1, bool addToRecent = true );
     void clearRecents();
-    void applySettings( Settings::Manager * );
     void storeSettings( Settings::Manager * );
     void activeDocumentChanged( Document * );
 
@@ -118,8 +125,10 @@ private slots:
     void onFileChanged( const QString & path );
 
 private:
+    Document * createDocument();
     bool doSaveAs( Document *, const QString & path );
     void addToRecent( Document * );
+    void loadRecentDocuments( Settings::Manager * );
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
 

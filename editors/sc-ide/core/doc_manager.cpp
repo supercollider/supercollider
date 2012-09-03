@@ -29,8 +29,34 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QTextBlock>
+#include <QApplication>
 
 using namespace ScIDE;
+
+Document::Document():
+    mId( QUuid::createUuid().toString().toAscii() ),
+    mDoc( new QTextDocument(this) ),
+    mTitle( "Untitled" ),
+    mIndentWidth(4)
+{
+    mDoc->setDocumentLayout( new QPlainTextDocumentLayout(mDoc) );
+
+    new SyntaxHighlighter(mDoc);
+
+    connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
+             this, SLOT(applySettings(Settings::Manager*)) );
+
+    applySettings( Main::instance()->settings() );
+}
+
+void Document::applySettings( Settings::Manager *settings )
+{
+    QFont font = Document::settingsFont( settings );
+    int indentWidth = settings->value("IDE/editor/indentWidth").toInt();
+
+    setDefaultFont(font);
+    setIndentWidth(indentWidth);
+}
 
 void Document::deleteTrailingSpaces()
 {
@@ -49,6 +75,41 @@ void Document::deleteTrailingSpaces()
     cursor.endEditBlock();
 }
 
+QFont Document::settingsFont( Settings::Manager *settings )
+{
+    QString fontFamily = settings->value("IDE/editor/font/family").toString();
+    int fontSize = settings->value("IDE/editor/font/size").toInt();
+
+    QFont font = QApplication::font("QPlainTextEdit");
+    font.setStyleHint(QFont::TypeWriter);
+    font.setFamily(fontFamily);
+    if (fontSize > 0)
+        font.setPointSize(fontSize);
+
+    return font;
+}
+
+void Document::setDefaultFont( const QFont & font )
+{
+    mDoc->setDefaultFont( font );
+    // update tab stop, since it depends on font:
+    setIndentWidth( mIndentWidth );
+    emit defaultFontChanged();
+}
+
+void Document::setIndentWidth( int numSpaces )
+{
+    mIndentWidth = numSpaces;
+
+    QFontMetricsF fontMetrics( mDoc->defaultFont() );
+    qreal tabStop = fontMetrics.width(' ') * numSpaces;
+
+    QTextOption options = mDoc->defaultTextOption();
+    options.setTabStop(tabStop);
+    mDoc->setDefaultTextOption(options);
+}
+
+
 DocumentManager::DocumentManager( Main *main ):
     QObject(main)
 {
@@ -57,13 +118,20 @@ DocumentManager::DocumentManager( Main *main ):
     connect(main, SIGNAL(storeSettingsRequest(Settings::Manager*)),
             this, SLOT(storeSettings(Settings::Manager*)));
 
-    applySettings(main->settings());
+    loadRecentDocuments( main->settings() );
+}
+
+Document * DocumentManager::createDocument()
+{
+    Document *doc = new Document();
+    mDocHash.insert( doc->id(), doc );
+    return doc;
 }
 
 void DocumentManager::create()
 {
-    Document *doc = new Document();
-    mDocHash.insert( doc->id(), doc );
+    Document *doc = createDocument();
+
     Q_EMIT( opened(doc, 0) );
 }
 
@@ -110,7 +178,7 @@ void DocumentManager::open( const QString & path, int initialCursorPosition, boo
                              QString(tr("Warning: RTF file will be converted to plain-text scd file.")));
     }
 
-    Document *doc = new Document();
+    Document *doc = createDocument();
     doc->mDoc->setPlainText( QString::fromUtf8( bytes.data(), bytes.size() ) );
     doc->mDoc->setModified(false);
     doc->mFilePath = filePath;
@@ -259,21 +327,21 @@ void DocumentManager::clearRecents()
     emit recentsChanged();
 }
 
-void DocumentManager::applySettings( Settings::Manager *s )
+void DocumentManager::loadRecentDocuments( Settings::Manager *settings )
 {
-    QVariantList list = s->value("IDE/recentDocuments").value<QVariantList>();
+    QVariantList list = settings->value("IDE/recentDocuments").value<QVariantList>();
     mRecent.clear();
     foreach (const QVariant & var, list)
         mRecent << var.toString();
 }
 
-void DocumentManager::storeSettings( Settings::Manager *s )
+void DocumentManager::storeSettings( Settings::Manager *settings )
 {
     QVariantList list;
     foreach (const QString & path, mRecent)
         list << QVariant(path);
 
-    s->setValue("IDE/recentDocuments", QVariant::fromValue<QVariantList>(list));
+    settings->setValue("IDE/recentDocuments", QVariant::fromValue<QVariantList>(list));
 }
 
 void DocumentManager::activeDocumentChanged( Document * document )

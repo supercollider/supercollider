@@ -109,9 +109,7 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     QPlainTextEdit( parent ),
     mLineIndicator( new LineIndicator(this) ),
     mDoc(doc),
-    mIndentWidth(4),
     mSpaceIndent(true),
-    mShowWhitespace(false),
     mBlinkDuration(600),
     mMouseBracketMatch(false),
     mOverlay( new QGraphicsScene(this) ),
@@ -123,18 +121,7 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
 
     mLineIndicator->move( contentsRect().topLeft() );
 
-    QTextDocument *tdoc = doc->textDocument();
-    QFontMetricsF fm(font());
-
-    QTextOption opt;
-    opt.setTabStop( fm.width(' ') * mIndentWidth );
-    if(mShowWhitespace)
-        opt.setFlags( QTextOption::ShowTabsAndSpaces );
-    tdoc->setDefaultTextOption(opt);
-    tdoc->setDefaultFont(font());
-
-    QPlainTextEdit::setDocument(tdoc);
-    mAutoCompleter->documentChanged(tdoc);
+    connect( mDoc, SIGNAL(defaultFontChanged()), this, SLOT(onDocumentFontChanged()) );
 
     connect( this, SIGNAL(blockCountChanged(int)),
              mLineIndicator, SLOT(setLineCount(int)) );
@@ -144,6 +131,7 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
 
     connect( this, SIGNAL(updateRequest(QRect,int)),
              this, SLOT(updateLineIndicator(QRect,int)) );
+
     connect( this, SIGNAL(selectionChanged()),
              mLineIndicator, SLOT(update()) );
 
@@ -153,23 +141,33 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     connect( mOverlay, SIGNAL(changed(const QList<QRectF>&)),
              this, SLOT(onOverlayChanged(const QList<QRectF>&)) );
 
+    connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
+             this, SLOT(applySettings(Settings::Manager*)) );
+
+    QTextDocument *tdoc = doc->textDocument();
+    QPlainTextEdit::setDocument(tdoc);
+    mAutoCompleter->documentChanged(tdoc);
+    onDocumentFontChanged();
     mLineIndicator->setLineCount(blockCount());
+
+    applySettings(Main::instance()->settings());
 }
 
-void CodeEditor::setIndentWidth( int width )
+bool CodeEditor::showWhitespace()
 {
-    mIndentWidth = width;
+    QTextOption options( textDocument()->defaultTextOption() );
+    return options.flags().testFlag( QTextOption::ShowTabsAndSpaces );
+}
 
-    QTextDocument *tdoc = QPlainTextEdit::document();
-
-    QFontMetricsF fm(font());
-
-    QTextOption opt;
-    opt.setTabStop( fm.width(' ') * mIndentWidth );
-    if(mShowWhitespace)
-        opt.setFlags( QTextOption::ShowTabsAndSpaces );
-
-    tdoc->setDefaultTextOption(opt);
+void CodeEditor::setShowWhitespace(bool show)
+{
+    QTextDocument *doc = textDocument();
+    QTextOption opt( doc->defaultTextOption() );
+    if( show )
+        opt.setFlags( opt.flags() | QTextOption::ShowTabsAndSpaces );
+    else
+        opt.setFlags( opt.flags() & ~QTextOption::ShowTabsAndSpaces );
+    doc->setDefaultTextOption(opt);
 }
 
 static bool findInBlock(QTextDocument *doc, const QTextBlock &block, const QRegExp &expr, int offset,
@@ -537,35 +535,17 @@ void CodeEditor::zoomOut(int steps)
 void CodeEditor::resetFontSize()
 {
     Settings::Manager *settings = Main::instance()->settings();
-
-    settings->beginGroup("IDE/editor");
-    QFont fnt;
-    fnt.fromString( settings->value("font").toString() );
-    setFont(fnt);
-    settings->endGroup();
+    mDoc->setDefaultFont( Document::settingsFont(settings) );
 }
 
 void CodeEditor::zoomFont(int steps)
 {
-    QFont currentFont = font();
+    QFont currentFont = mDoc->defaultFont();
     const int newSize = currentFont.pointSize() + steps;
     if (newSize <= 0)
         return;
     currentFont.setPointSize(newSize);
-    setFont(currentFont);
-}
-
-void CodeEditor::setShowWhitespace(bool show)
-{
-    mShowWhitespace = show;
-
-    QTextDocument *doc = QPlainTextEdit::document();
-    QTextOption opt( doc->defaultTextOption() );
-    if( show )
-        opt.setFlags( opt.flags() | QTextOption::ShowTabsAndSpaces );
-    else
-        opt.setFlags( opt.flags() & ~QTextOption::ShowTabsAndSpaces );
-    doc->setDefaultTextOption(opt);
+    mDoc->setDefaultFont(currentFont);
 }
 
 void CodeEditor::applySettings( Settings::Manager *settings )
@@ -573,19 +553,10 @@ void CodeEditor::applySettings( Settings::Manager *settings )
     settings->beginGroup("IDE/editor");
 
     mSpaceIndent = settings->value("spaceIndent").toBool();
-    setIndentWidth( settings->value("indentWidth").toInt() );
+
     mBlinkDuration = settings->value("blinkDuration").toInt();
 
-    QPalette plt;
-
-    QString fontFamily = settings->value("font/family").toString();
-    int fontSize = settings->value("font/size").toInt();
-
-    QFont font;
-    font.setStyleHint(QFont::TypeWriter);
-    font.setFamily(fontFamily);
-    if (fontSize > 0)
-        font.setPointSize(fontSize);
+    QPalette palette;
 
     settings->beginGroup("colors");
 
@@ -594,9 +565,9 @@ void CodeEditor::applySettings( Settings::Manager *settings )
         QBrush bg = format.background();
         QBrush fg = format.foreground();
         if (bg.style() != Qt::NoBrush)
-            plt.setBrush(QPalette::Base, bg);
+            palette.setBrush(QPalette::Base, bg);
         if (fg.style() != Qt::NoBrush)
-            plt.setBrush(QPalette::Text, fg);
+            palette.setBrush(QPalette::Text, fg);
     }
 
     if (settings->contains("lineNumbers")) {
@@ -605,9 +576,9 @@ void CodeEditor::applySettings( Settings::Manager *settings )
         QBrush bg = format.background();
         QBrush fg = format.foreground();
         if (bg.style() != Qt::NoBrush)
-            plt.setBrush(QPalette::Button, bg);
+            palette.setBrush(QPalette::Button, bg);
         if (fg.style() != Qt::NoBrush)
-            plt.setBrush(QPalette::ButtonText, fg);
+            palette.setBrush(QPalette::ButtonText, fg);
         mLineIndicator->setPalette(lineNumPlt);
     }
 
@@ -615,10 +586,15 @@ void CodeEditor::applySettings( Settings::Manager *settings )
 
     settings->endGroup(); // colors
 
-    setPalette(plt);
-    setFont(font);
+    setPalette(palette);
 
     settings->endGroup();
+}
+
+void CodeEditor::onDocumentFontChanged()
+{
+    QFont font = mDoc->defaultFont();
+    setFont(font);
 }
 
 void CodeEditor::deleteTrailingSpaces()
@@ -647,20 +623,6 @@ bool CodeEditor::event( QEvent *e )
     default:;
     }
     return QPlainTextEdit::event(e);
-}
-
-void CodeEditor::changeEvent( QEvent *e )
-{
-    if( e->type() == QEvent::FontChange ) {
-        // adjust tab stop to match mIndentWidth * width of space
-        QTextDocument *doc = QPlainTextEdit::document();
-        QFontMetricsF fm(font());
-        QTextOption opt( doc->defaultTextOption() );
-        opt.setTabStop( fm.width(' ') * mIndentWidth );
-        doc->setDefaultTextOption(opt);
-    }
-
-    QPlainTextEdit::changeEvent(e);
 }
 
 void CodeEditor::keyPressEvent( QKeyEvent *e )
@@ -977,8 +939,8 @@ void CodeEditor::paintLineIndicator( QPaintEvent *e )
             }
 
             QString number = QString::number(num + 1);
-            p.drawText(0, top, mLineIndicator->width() - 4, fontMetrics().height(),
-                            Qt::AlignRight, number);
+            p.drawText(0, top, mLineIndicator->width() - 4, bottom - top,
+                       Qt::AlignRight, number);
 
             p.restore();
         }
@@ -1074,7 +1036,7 @@ QString CodeEditor::makeIndentationString(int level)
         return QString();
 
     if ( mSpaceIndent ) {
-        const int spaces = mIndentWidth * level;
+        const int spaces = mDoc->indentWidth() * level;
         QString indentationString (spaces, QChar(' '));
         return indentationString;
     } else {
