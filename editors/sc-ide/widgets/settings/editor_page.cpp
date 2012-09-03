@@ -86,12 +86,16 @@ void EditorPage::load( Manager *s )
     int fontSize = s->value("size").toInt();
     s->endGroup();
 
-    // If no font preferences:
-    // - use default font size.
-    // - leave font family empty, as it will result in default font anyway
+    // Display info about the font that would actually be used:
     QFont defaultFont = QApplication::font("QPlainTextEdit");
-    if (fontSize < 1)
-        fontSize = defaultFont.pointSize();
+    defaultFont.setFamily(fontFamily);
+    if (fontSize > 0)
+        defaultFont.setPointSize(fontSize);
+    defaultFont.setStyleHint( QFont::TypeWriter );
+
+    QFontInfo fontInfo( defaultFont );
+    fontFamily = fontInfo.family();
+    fontSize = fontInfo.pointSize();
 
     populateFontList( ui->onlyMonoFonts->isChecked() );
     int fontFamilyIndex = ui->fontCombo->findText( fontFamily, Qt::MatchFixedString );
