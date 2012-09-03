@@ -198,7 +198,7 @@ const char *CheckBadValues_fpclassString(int fpclass)
 		case FP_NORMAL:       return "normal";
 		case FP_NAN:          return "NaN";
 		case FP_INFINITE:     return "infinity";
-#ifndef _WIN32
+#ifndef _MSC_VER
 		case FP_ZERO:         return "zero";
 #endif
 		case FP_SUBNORMAL:    return "denormal";
@@ -206,7 +206,7 @@ const char *CheckBadValues_fpclassString(int fpclass)
 	}
 }
 
-#ifndef _WIN32
+#ifndef _MSC_VER
 inline int CheckBadValues_fold_fpclasses(int fpclass)
 {
 	switch(fpclass) {
