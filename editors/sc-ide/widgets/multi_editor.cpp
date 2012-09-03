@@ -388,15 +388,19 @@ void MultiEditor::createActions()
     connect(act, SIGNAL(triggered()), this, SLOT(switchDocument()));
 
     mActions[SplitHorizontally] = act = new QAction(tr("Split To Right"), this);
+    act->setShortcut( tr("Ctrl+P, 3", "Split To Right"));
     connect(act, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
 
     mActions[SplitVertically] = act = new QAction(tr("Split To Bottom"), this);
+    act->setShortcut( tr("Ctrl+P, 2", "Split To Bottom"));
     connect(act, SIGNAL(triggered()), this, SLOT(splitVertically()));
 
     mActions[RemoveCurrentSplit] = act = new QAction(tr("Remove Current Split"), this);
+    act->setShortcut( tr("Ctrl+P, 1", "Remove Current Split"));
     connect(act, SIGNAL(triggered()), this, SLOT(removeCurrentSplit()));
 
     mActions[RemoveAllSplits] = act = new QAction(tr("Remove All Splits"), this);
+    act->setShortcut( tr("Ctrl+P, 0", "Remove All Splits"));
     connect(act, SIGNAL(triggered()), this, SLOT(removeAllSplits()));
 
     // Language
