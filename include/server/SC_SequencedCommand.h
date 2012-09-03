@@ -34,11 +34,7 @@
 #include "SC_BufGen.h"
 #include "sc_msg_iter.h"
 #ifndef NO_LIBSNDFILE
-	#ifdef _WIN32
-		#include <sndfile-win.h>
-	#else
-		#include <sndfile.h>
-	#endif
+#include <sndfile.h>
 #endif
 #include <new>
 
