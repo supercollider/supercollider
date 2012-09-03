@@ -32,11 +32,7 @@ static const int sc_api_version = 2;
 #include "SC_Export.h"
 
 #ifndef NO_LIBSNDFILE
-	#ifdef _WIN32
-		#include <sndfile-win.h>
-	#else
-		#include <sndfile.h>
-	#endif
+#include <sndfile.h>
 #endif
 
 struct World;

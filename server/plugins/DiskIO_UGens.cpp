@@ -25,11 +25,8 @@
 #include "MsgFifo.h"
 #include "SC_SyncCondition.h"
 #include "SC_PlugIn.h"
-#ifdef _WIN32
-	#include <sndfile-win.h>
-#else
-	#include <sndfile.h>
-#endif
+
+#include <sndfile.h>
 
 #include <new>
 
