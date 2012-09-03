@@ -664,10 +664,18 @@ void CodeEditor::changeEvent( QEvent *e )
 void CodeEditor::keyPressEvent( QKeyEvent *e )
 {
     switch (e->key()) {
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+        // override to avoid entering a "soft" new line when certain modifier is held
+        textCursor().insertBlock();
+        break;
     case Qt::Key_Home:
     {
         Qt::KeyboardModifiers mods(e->modifiers());
-        if (mods && mods != Qt::ShiftModifier) break;
+        if (mods && mods != Qt::ShiftModifier) {
+            QPlainTextEdit::keyPressEvent(e);
+            break;
+        }
 
         QTextCursor::MoveMode mode =
             mods & Qt::ShiftModifier ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor;
@@ -695,10 +703,9 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
         return;
     }
 
-    default:;
+    default:
+        QPlainTextEdit::keyPressEvent(e);
     }
-
-    QPlainTextEdit::keyPressEvent(e);
 
     switch (e->key()) {
     case Qt::Key_Enter:
