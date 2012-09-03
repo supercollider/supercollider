@@ -36,9 +36,11 @@
 
 namespace ScIDE {
 
-LineIndicator::LineIndicator( CodeEditor *editor )
-: QWidget( editor ), mEditor(editor)
-{}
+LineIndicator::LineIndicator( CodeEditor *editor ):
+    QWidget( editor ), mEditor(editor)
+{
+    setLineCount(1);
+}
 
 void LineIndicator::setLineCount( int count )
 {
@@ -151,7 +153,7 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     connect( mOverlay, SIGNAL(changed(const QList<QRectF>&)),
              this, SLOT(onOverlayChanged(const QList<QRectF>&)) );
 
-    mLineIndicator->setLineCount(1);
+    mLineIndicator->setLineCount(blockCount());
 }
 
 void CodeEditor::setIndentWidth( int width )
