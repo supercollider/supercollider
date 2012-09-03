@@ -260,7 +260,7 @@ public:
 
     void cpu_load(float & peak, float & average) const
     {
-#ifdef JACK_BACKEND
+#if defined(JACK_BACKEND) || defined(PORTAUDIO_BACKEND)
         return get_cpuload(peak, average);
 #else
         peak = average = 0.f;
