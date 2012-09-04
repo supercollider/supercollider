@@ -28,6 +28,8 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+// FIXME: once we completely move to c++11, we should get rid of sc_fpclassify
+
 // Visual C++ doesn't have fpclassify (C99), so define it here if needed
 #ifdef _MSC_VER
 #include <float.h>
