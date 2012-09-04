@@ -18,9 +18,9 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "autocompleter.hpp"
 #include "editor.hpp"
 #include "highlighter.hpp"
-#include "autocompleter.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/main.hpp"
 #include "../../core/settings/manager.hpp"
@@ -119,7 +119,6 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     Q_ASSERT(mDoc != 0);
 
     setFrameShape( QFrame::NoFrame );
-    setMouseTracking( true );
 
     mLineIndicator->move( contentsRect().topLeft() );
 
@@ -629,10 +628,14 @@ bool CodeEditor::event( QEvent *e )
 void CodeEditor::keyPressEvent( QKeyEvent *e )
 {
     QPoint cursorPosition = QCursor::pos();
-    QPoint cursorInWidget = mapFromGlobal(cursorPosition);
+    QObject * prnt = parent();
+    QWidget * parentWidget = qobject_cast<QWidget*>(prnt->parent()); // MultiSplitter
 
-    if (geometry().contains(cursorInWidget))
-        QApplication::setOverrideCursor(QCursor(Qt::BlankCursor));
+    if (parentWidget) {
+        QPoint cursorInWidget = parentWidget->mapFromGlobal(cursorPosition);
+        if (parentWidget->geometry().contains(cursorInWidget))
+            QApplication::setOverrideCursor(QCursor(Qt::BlankCursor));
+    }
 
     switch (e->key()) {
     case Qt::Key_Enter:
@@ -706,9 +709,6 @@ void CodeEditor::mouseReleaseEvent ( QMouseEvent *e )
 
 void CodeEditor::mouseMoveEvent( QMouseEvent *e )
 {
-    QApplication::restoreOverrideCursor();
-    QApplication::restoreOverrideCursor();
-
     // Prevent initiating a text drag:
     if(!mMouseBracketMatch)
         QPlainTextEdit::mouseMoveEvent(e);

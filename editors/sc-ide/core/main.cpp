@@ -193,11 +193,24 @@ void Main::quit() {
 
 bool Main::eventFilter(QObject *object, QEvent *event)
 {
-    if (event->type() == QEvent::FileOpen) {
+    switch (event->type()) {
+    case QEvent::FileOpen:
+    {
         // open the file dragged onto the application icon on Mac
         QFileOpenEvent *openEvent = static_cast<QFileOpenEvent*>(event);
         mDocManager->open(openEvent->file());
         return true;
-    } else
-        return QObject::eventFilter(object, event);
+    }
+
+    case QEvent::MouseMove:
+        // twice to restore the default cursor
+        QApplication::restoreOverrideCursor();
+        QApplication::restoreOverrideCursor();
+        break;
+
+    default:
+        break;
+    }
+
+    return QObject::eventFilter(object, event);
 }
