@@ -153,6 +153,8 @@ private:
     QString makeIndentationString( int level );
     int indentationLevel( const QTextCursor & );
 
+    void hideMouseCursor();
+
     LineIndicator *mLineIndicator;
 
     Document *mDoc;
