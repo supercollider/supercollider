@@ -39,7 +39,7 @@ class PostWindow:
 public:
     explicit PostWindow(QWidget* parent = 0);
 
-    void applySettings(Settings::Manager * );
+    void applySettings( Settings::Manager * );
 
     QSize sizeHint() const { return mSizeHint; }
 

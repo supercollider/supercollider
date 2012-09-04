@@ -20,6 +20,7 @@
 
 #include "post_window.hpp"
 #include "../core/main.hpp"
+#include "../core/settings/manager.hpp"
 
 #include <QPointer>
 #include <QToolBar>
@@ -39,15 +40,9 @@ PostWindow::PostWindow(QWidget* parent):
     setReadOnly(true);
     setLineWrapMode(QPlainTextEdit::NoWrap);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    setMaximumBlockCount(500);
 
     QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
     mSizeHint = QSize( availableScreenRect.width() / 2.7, 300 );
-
-    QFont f( font() );
-    f.setFamily("monospace");
-    f.setStyleHint(QFont::TypeWriter);
-    setFont(f);
 
     QAction * action;
 
@@ -96,17 +91,18 @@ PostWindow::PostWindow(QWidget* parent):
             this, SLOT(scrollToBottom()), Qt::QueuedConnection);
     connect(mAutoScrollAction, SIGNAL(triggered(bool)),
             this, SLOT(onAutoScrollTriggered(bool)));
+
+    applySettings( Main::instance()->settings() );
 }
 
 void PostWindow::applySettings(Settings::Manager * settings)
 {
-    settings->beginGroup("IDE/editor");
+    int scrollback = settings->value("IDE/editor/postWindowScrollback").toInt();
+    QFont font = settings->codeFont();
 
-    int scrollback = settings->value("postWindowScrollback").toInt();
     setMaximumBlockCount(scrollback);
-    settings->endGroup();
+    setFont(font);
 }
-
 
 void PostWindow::post(const QString &text)
 {
