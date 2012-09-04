@@ -25,8 +25,8 @@
 #include "../widgets/code_editor/highlighter.hpp"
 #include "SC_DirUtils.h"
 
-#include <QApplication>
 #include <QAction>
+#include <QApplication>
 #include <QBuffer>
 #include <QDataStream>
 #include <QDir>
