@@ -63,8 +63,6 @@ public:
 
     void deleteTrailingSpaces();
 
-    static QFont settingsFont( Settings::Manager * );
-
 public slots:
     void applySettings( Settings::Manager * );
     void resetDefaultFont();
