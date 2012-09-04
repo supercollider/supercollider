@@ -79,6 +79,8 @@ public:
     void addAction ( QAction *action );
     QString keyForAction ( QAction *action );
 
+    QFont codeFont();
+
 private:
     void setDefault ( const QString & key, const QVariant & value )
     {
