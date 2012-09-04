@@ -33,7 +33,7 @@
 #include "SC_Win32Utils.h"
 #endif
 
-#ifdef SC_LINUX
+#ifdef __linux__
 # include <errno.h>
 #endif
 

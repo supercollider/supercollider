@@ -107,7 +107,6 @@ if(APPLE)
 		APPEND
 		PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	add_definitions("-DSC_LINUX")
 	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
 elseif(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
 	add_definitions("-DSC_FREEBSD")
