@@ -102,12 +102,18 @@ bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
             QSharedPointer<QLocalSocket> socket (new QLocalSocket(this));
             socket->connectToServer(serverName);
 
+            QStringList canonicalArguments;
+            foreach (QString path, arguments) {
+                QFileInfo info(path);
+                canonicalArguments << info.canonicalFilePath();
+            }
+
             if (socket->waitForConnected(200)) {
                 QDataStream stream(socket.data());
                 stream.setVersion(QDataStream::Qt_4_6);
 
                 stream << QString("open");
-                stream << arguments;
+                stream << canonicalArguments;
                 socket->flush();
                 return true;
             }
