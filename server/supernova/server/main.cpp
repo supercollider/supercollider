@@ -32,17 +32,14 @@
 #include "../sc/sc_synth_prototype.hpp"
 #include "../utilities/utils.hpp"
 
-#ifndef WIN32
-#include <wordexp.h> /**< \todo: this is posix-only */
+#ifdef __linux__
+#include <wordexp.h>
+#include <sys/resource.h>
 #endif
 
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 # include <sys/resource.h>
 # include <sys/mman.h>
-#endif
-
-#ifdef __LINUX__
-#include <sys/resource.h>
 #endif
 
 #include "SC_DirUtils.h"
@@ -149,10 +146,10 @@ void start_audio_backend(server_arguments const & args)
     bool success = instance->open_stream(args.hw_name, args.input_channels, args.hw_name, args.output_channels,
         args.samplerate, args.blocksize, args.blocksize);
 
-    if (!success){
-		cout << "could not open portaudio device name:" << args.hw_name << endl;
+    if (!success) {
+        cout << "could not open portaudio device name:" << args.hw_name << endl;
         exit(1);
-	}
+    }
     cout << "opened portaudio device name:" << args.hw_name << endl;
     instance->prepare_backend();
     instance->activate_audio();
