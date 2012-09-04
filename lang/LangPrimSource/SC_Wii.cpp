@@ -61,7 +61,7 @@
 	}
 #endif // SC_DARWIN
 
-#ifdef SC_LINUX
+#ifdef __linux__
 	#include <stdint.h>
 	#include <stdio.h>
 	#include <stdlib.h>
@@ -73,7 +73,7 @@
 // 	#include <wiimote_event.h>
 // 	#include <wiimote_link.h>
 	}
-#endif // SC_LINUX
+#endif // __linux__
 
 // common:
 #include <string.h>
@@ -125,7 +125,7 @@ struct SC_WII
 
 	bool update();
 
-#ifdef SC_LINUX
+#ifdef __linux__
 	void handleBatteryEvent( uint8_t battery );
 	void handleButtonEvent( uint16_t buttons );
 	void handleAccEvent( uint8_t acc[3] );
@@ -160,7 +160,7 @@ struct SC_WII
 	WiiRemoteRef	m_wiiremote;
 	char			m_address[32];
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 	cwiid_wiimote_t *m_wiiremote;
 	int id;
 	unsigned char rpt_mode;
@@ -183,7 +183,7 @@ public:
 
 	int start( float updtime );
 	int stop();
-#ifdef SC_LINUX
+#ifdef __linux__
 	cwiid_wiimote_t *  discover();
 #endif
 #ifdef SC_DARWIN
@@ -207,7 +207,7 @@ private:
 };
 
 
-#ifdef SC_LINUX
+#ifdef __linux__
 /// linux specific cwiid functions
 #define toggle_bit(bf,b)	\
 	(bf) = ((bf) & b)		\
@@ -291,7 +291,7 @@ SC_WIIManager::SC_WIIManager()
 	: m_running(false),
 	  m_devices(0)
 {
-#ifdef SC_LINUX
+#ifdef __linux__
 	cwiid_set_err(err);
 #endif
 
@@ -349,7 +349,7 @@ int SC_WIIManager::start( float updtime )
 	return errNone;
 }
 
-#ifdef SC_LINUX
+#ifdef __linux__
 cwiid_wiimote_t * SC_WIIManager::discover()
 {
 	bdaddr_t bdaddr = {0, 0, 0, 0, 0, 0};
@@ -419,7 +419,7 @@ int SC_WIIManager::add(SC_WII* dev)
 		m_devices = dev;
 	}
 
-#ifdef SC_LINUX
+#ifdef __linux__
  	dev->id = cwiid_get_id( dev->m_wiiremote );
 
 	if (cwiid_enable(dev->m_wiiremote, CWIID_FLAG_MESG_IFC)) {
@@ -459,7 +459,7 @@ int SC_WIIManager::remove(SC_WII* dev)
 	return errFailed;
 }
 
-#ifdef SC_LINUX
+#ifdef __linux__
 void cwiid_callback(cwiid_wiimote_t *wiimotet, int mesg_count,
                     union cwiid_mesg mesg[], struct timespec *timestamp)
 {
@@ -567,7 +567,7 @@ SC_WII::SC_WII(PyrObject* obj)
 	: m_next(0),
 	  m_obj(obj)
 {
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 	m_report = nil;
 // #endif
 	m_wiiremote = NULL;
@@ -602,7 +602,7 @@ bool SC_WII::open()
 // 		return SC_WIIManager::instance().add(this);
 		}
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 //  	m_wiiremote = (wiimote_t*)malloc(sizeof(wiimote_t));
 // 	m_report = (wiimote_report_t)malloc(sizeof(wiimote_report_t));
 //  	if ( m_wiiremote != NULL )
@@ -627,7 +627,7 @@ bool SC_WII::close()
 		m_wiiremote = NULL;
 		m_searching = 0;
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 		if ( cwiid_close( m_wiiremote ) ){
 // 			m_wiiremote = NULL;
 			post( "error closing device\n" );
@@ -665,7 +665,7 @@ bool SC_WII::wii_connect()
 			m_connected = false;
 	}
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 // 	if (wiimote_connect(m_wiiremote, m_address) < 0) {
 // 		post("WII: unable to open wiimote: %s at address %s\n", wiimote_get_error(), m_address);
 // 		post("WII: unable to open wiimote at address %s\n",m_address);
@@ -709,7 +709,7 @@ bool SC_WII::wii_disconnect()
 	wiiremote_stopsearch( m_wiiremote );
 	result = wiiremote_disconnect( m_wiiremote);
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 // 	result = wiimote_disconnect(m_wiiremote);
 #endif
 
@@ -721,7 +721,7 @@ bool SC_WII::wii_disconnect()
 
 int SC_WII::enable( bool enab )
 {
-#ifdef SC_LINUX
+#ifdef __linux__
 	if ( enab ) {
 		if (cwiid_enable(m_wiiremote, CWIID_FLAG_MESG_IFC)) {
 		return errFailed;
@@ -938,7 +938,7 @@ void SC_WII::handleEvent()
 }
 #endif
 
-#ifdef SC_LINUX
+#ifdef __linux__
 void SC_WII::handleBatteryEvent( uint8_t battery ){
 	pthread_mutex_lock(&gLangMutex);
 	if (compiledOK) {
@@ -953,7 +953,7 @@ void SC_WII::handleBatteryEvent( uint8_t battery ){
 }
 #endif
 
-#ifdef SC_LINUX
+#ifdef __linux__
 void SC_WII::handleExtensionEvent( int ext_type ){
 	pthread_mutex_lock(&gLangMutex);
 	if (compiledOK) {
@@ -968,7 +968,7 @@ void SC_WII::handleExtensionEvent( int ext_type ){
 }
 #endif
 
-#ifdef SC_LINUX
+#ifdef __linux__
 void SC_WII::handleButtonEvent( uint16_t buttons ){
 	pthread_mutex_lock(&gLangMutex);
 	if (compiledOK) {
@@ -1003,7 +1003,7 @@ void SC_WII::handleButtonEvent( uint16_t buttons ){
 }
 #endif
 
-#ifdef SC_LINUX
+#ifdef __linux__
 void SC_WII::handleAccEvent( uint8_t acc[3] ){
 	pthread_mutex_lock(&gLangMutex);
 	if (compiledOK) {
@@ -1020,7 +1020,7 @@ void SC_WII::handleAccEvent( uint8_t acc[3] ){
 }
 #endif
 
-#ifdef SC_LINUX
+#ifdef __linux__
 void SC_WII::handleNunchukEvent( struct cwiid_nunchuk_mesg nunchuk ){
 	pthread_mutex_lock(&gLangMutex);
 	if (compiledOK) {
@@ -1047,7 +1047,7 @@ void SC_WII::handleNunchukEvent( struct cwiid_nunchuk_mesg nunchuk ){
 }
 #endif
 
-#ifdef SC_LINUX
+#ifdef __linux__
 void SC_WII::handleClassicEvent( struct cwiid_classic_mesg classic ){
 	pthread_mutex_lock(&gLangMutex);
 	if (compiledOK) {
@@ -1091,7 +1091,7 @@ void SC_WII::handleClassicEvent( struct cwiid_classic_mesg classic ){
 }
 #endif
 
-#ifdef SC_LINUX
+#ifdef __linux__
 void SC_WII::handleIREvent( int id, cwiid_ir_src ir ){
 	pthread_mutex_lock(&gLangMutex);
 	if (compiledOK) {
@@ -1165,7 +1165,7 @@ int prWii_Discover(VMGlobals* g, int numArgsPushed)
 	PyrObject* allDevsArray = slotRawObject(&args[1]);
 	PyrSlot* slotsArray = allDevsArray->slots;
 
-#ifdef SC_LINUX
+#ifdef __linux__
 	cwiid_wiimote_t * thiswii;
 
 	thiswii = SC_WIIManager::instance().discover();
@@ -1191,7 +1191,7 @@ int prWii_Discover(VMGlobals* g, int numArgsPushed)
 
 // 	if (!dev) return errFailed;
 // 	free( dev->m_wiiremote );
-#ifdef SC_LINUX
+#ifdef __linux__
 	dev->m_wiiremote = thiswii;
 #endif
 	if ( SC_WIIManager::instance().add( dev ) ) {
@@ -1266,7 +1266,7 @@ int prWiiAddress(VMGlobals *g, int numArgsPushed)
 // 	SC_WII* dev = SC_WII::getDevice(obj);
 // 	if (!dev) return errFailed;
 //
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 	char path[19];
 // #endif
 // #ifdef SC_DARWIN
@@ -1359,7 +1359,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 			SetFloat(infoObj->slots+17, dev->m_wiiremote->nunchukJoyStickCalibData.y_center);
 		}
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 /*		SetInt(infoObj->slots+0, dev->m_wiiremote->cal.x_zero);
 		SetInt(infoObj->slots+1, dev->m_wiiremote->cal.y_zero);
 		SetInt(infoObj->slots+2, dev->m_wiiremote->cal.z_zero);
@@ -1418,7 +1418,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
 // 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
 // #endif
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 		SetInt(bslots+0, dev->m_wiiremote->led.one);
 // 		SetInt(bslots+1, dev->m_wiiremote->led.two);
 // 		SetInt(bslots+2, dev->m_wiiremote->led.three);
@@ -1461,7 +1461,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
 // // 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
 // #endif
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 		SetInt(bslots+0, dev->m_wiiremote->keys.left);
 // 		SetInt(bslots+1, dev->m_wiiremote->keys.right);
 // 		SetInt(bslots+2, dev->m_wiiremote->keys.down);
@@ -1511,7 +1511,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
 // // 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
 // #endif
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 		SetInt(bslots+0, dev->m_wiiremote->axis.x);
 // 		SetInt(bslots+1, dev->m_wiiremote->axis.y);
 // 		SetInt(bslots+2, dev->m_wiiremote->axis.z);
@@ -1553,7 +1553,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
 // // 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
 // #endif
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 		SetInt(bslots+0, dev->m_wiiremote->ir1.x);
 // 		SetInt(bslots+1, dev->m_wiiremote->ir1.y);
 // 		SetInt(bslots+2, dev->m_wiiremote->ir1.size);
@@ -1595,7 +1595,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
 // // 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
 // #endif
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 		SetInt(bslots+0, dev->m_wiiremote->ext.nunchuk.keys.z);
 // 		SetInt(bslots+1, dev->m_wiiremote->ext.nunchuk.keys.c);
 // #endif
@@ -1636,7 +1636,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
 // // 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
 // #endif
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 		SetInt(bslots+0, dev->m_wiiremote->ext.nunchuk.joyx);
 // 		SetInt(bslots+1, dev->m_wiiremote->ext.nunchuk.joyy);
 // #endif
@@ -1677,7 +1677,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
 // // 		SetInt(bslots+3, dev->m_wiiremote->isLED4Illuminated);
 // #endif
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 		SetInt(bslots+0, dev->m_wiiremote->ext.nunchuk.axis.x);
 // 		SetInt(bslots+1, dev->m_wiiremote->ext.nunchuk.axis.y);
 // 		SetInt(bslots+2, dev->m_wiiremote->ext.nunchuk.axis.z);
@@ -1710,7 +1710,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 		else
 // 			SetInt( args, 0 );
 // #endif
-// // #ifdef SC_LINUX
+// // #ifdef __linux__
 // // 		if ( dev->m_wiiremote->mode.ext == 1 )
 // // 			SetInt( args, dev->m_wiiremote->ext.id );
 // // 		else
@@ -1744,7 +1744,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 		else
 // 			SetFloat( args, 0 );
 // #endif
-// // #ifdef SC_LINUX
+// // #ifdef __linux__
 // // 		SetFloat( args, dev->m_wiiremote->battery );
 // // #endif
 // 	}
@@ -1793,7 +1793,7 @@ int prWiiSetLED(VMGlobals *g, int numArgsPushed)
 //		if ( !result )
 //			dev->wii_disconnect();
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 	if ( enable1 )
 		set_bit(&dev->led_state, CWIID_LED1_ON);
 	else
@@ -1847,7 +1847,7 @@ int prWiiSetVibration(VMGlobals *g, int numArgsPushed)
 //			dev->wii_disconnect();
 // 	post( "WII: rumble %i %i", enable1, result );
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 		if (cwiid_set_rumble(dev->m_wiiremote, (unsigned char) enable1)) {
 			return errFailed;
 		}
@@ -1884,7 +1884,7 @@ int prWiiSetExpansion(VMGlobals *g, int numArgsPushed)
 //		if ( !result )
 //			dev->wii_disconnect();
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 		if ( enable1 )
 			set_bit(&dev->rpt_mode, CWIID_RPT_EXT);
 		else
@@ -1925,7 +1925,7 @@ int prWiiSetIRSensor(VMGlobals *g, int numArgsPushed)
 //			dev->wii_disconnect();
 
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 		if ( enable1 )
 			set_bit(&dev->rpt_mode, CWIID_RPT_IR);
 		else
@@ -1965,7 +1965,7 @@ int prWiiSetMotionSensor(VMGlobals *g, int numArgsPushed)
 //		if ( !result )
 //			dev->wii_disconnect();
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 		if ( enable1 )
 			set_bit(&dev->rpt_mode, CWIID_RPT_ACC);
 		else
@@ -2003,7 +2003,7 @@ int prWiiSetButtons(VMGlobals *g, int numArgsPushed)
 // buttons are always enabled
 // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 		if ( enable1 )
 			set_bit(&dev->rpt_mode, CWIID_RPT_BTN);
 		else
@@ -2041,7 +2041,7 @@ int prWiiEnable(VMGlobals *g, int numArgsPushed)
 // is always enabled
 // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 #endif
-#ifdef SC_LINUX
+#ifdef __linux__
 		dev->enable( enable1 );
 #endif
 	}
@@ -2084,7 +2084,7 @@ int prWiiEnable(VMGlobals *g, int numArgsPushed)
 // // #ifdef SC_DARWIN
 // // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 // // #endif
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 		uint8_t sample[20] = {
 // 			0x3c,0x3c,0x3c,0x3c,0x3c,0x3c,0x3c,0x3c,0x3c,0x3c,
 // 			0x3c,0x3c,0x3c,0x3c,0x3c,0x3c,0x3c,0x3c,0x3c,0x3c
@@ -2126,7 +2126,7 @@ int prWiiEnable(VMGlobals *g, int numArgsPushed)
 // // #ifdef SC_DARWIN
 // // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 // // #endif
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 		if ( enable1 )
 // 			wiimote_speaker_enable(dev->m_wiiremote);
 // 		else
@@ -2165,7 +2165,7 @@ int prWiiEnable(VMGlobals *g, int numArgsPushed)
 // // #ifdef SC_DARWIN
 // // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 // // #endif
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 		if ( enable1 )
 // 			dev->speaker_init( 4 );
 // 		else
@@ -2204,7 +2204,7 @@ int prWiiEnable(VMGlobals *g, int numArgsPushed)
 // // #ifdef SC_DARWIN
 // // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 // // #endif
-// #ifdef SC_LINUX
+// #ifdef __linux__
 // 		if ( enable1 )
 // 			wiimote_speaker_mute(dev->m_wiiremote);
 // 		else

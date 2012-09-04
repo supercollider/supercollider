@@ -587,7 +587,7 @@ kern_return_t  RescheduleStdThread( mach_port_t    machThread,
 }
 #endif // SC_DARWIN
 
-#ifdef SC_LINUX
+#ifdef __linux__
 #include <string.h>
 
 static void SC_LinuxSetRealtimePriority(pthread_t thread, int priority)
@@ -608,7 +608,7 @@ static void SC_LinuxSetRealtimePriority(pthread_t thread, int priority)
 			 param.sched_priority, strerror(err));
 	}
 }
-#endif // SC_LINUX
+#endif // __linux__
 
 
 SC_DLLEXPORT_C void schedRun()
@@ -645,9 +645,9 @@ SC_DLLEXPORT_C void schedRun()
 		//post("param.sched_priority %d\n", param.sched_priority);
 #endif // SC_DARWIN
 
-#ifdef SC_LINUX
+#ifdef __linux__
 		SC_LinuxSetRealtimePriority(gSchedThread, 1);
-#endif // SC_LINUX
+#endif // __linux__
 }
 
 
@@ -790,9 +790,9 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	//pthread_setschedparam (mThread, policy, &param);
 #endif // SC_DARWIN
 
-#ifdef SC_LINUX
+#ifdef __linux__
 	SC_LinuxSetRealtimePriority(mThread, 1);
-#endif // SC_LINUX
+#endif // __linux__
 }
 
 void TempoClock::StopReq()
