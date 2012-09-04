@@ -1389,16 +1389,65 @@ void CodeEditor::moveLineDown()
     moveLineUpDown(false);
 }
 
+// taking nested brackets into account
+static TokenIterator previousOpeningBracket(TokenIterator it)
+{
+    int level = 0;
+    while (it.isValid()) {
+        switch (it->type) {
+        case Token::OpeningBracket:
+            if (level == 0)
+                return it;
+            --level;
+            break;
+
+        case Token::ClosingBracket:
+            ++level;
+
+        default:
+            break;
+        }
+        --it;
+    }
+    return it;
+}
+
+// taking nested brackets into account
+static TokenIterator nextClosingBracket(TokenIterator it)
+{
+    int level = 0;
+    while (it.isValid()) {
+        switch (it->type) {
+        case Token::ClosingBracket:
+            if (level == 0)
+                return it;
+            --level;
+            break;
+
+        case Token::OpeningBracket:
+            ++level;
+
+        default:
+            break;
+        }
+        ++it;
+    }
+    return it;
+}
+
+
 void CodeEditor::gotoNextBlock()
 {
     QTextCursor cursor = textCursor();
-    TokenIterator it = TokenIterator::rightOf(cursor.block(), cursor.positionInBlock());
 
-    if (!it.isValid())
-        return;
+    TokenIterator it (cursor.block(), cursor.positionInBlock());
 
-    while (it.isValid() && it->type != Token::OpeningBracket)
-        --it;
+    if (it.type() != Token::OpeningBracket) {
+        it = TokenIterator::leftOf(cursor.block(), cursor.positionInBlock());
+        it = previousOpeningBracket(it);
+    }
+
+    if (!it.isValid()) return;
 
     BracketMatch match;
     matchBracket(it, match);
@@ -1406,7 +1455,7 @@ void CodeEditor::gotoNextBlock()
     if (match.second.isValid()) {
         it = match.second;
         QTextCursor newCursor(it.block());
-        newCursor.setPosition(it.position());
+        newCursor.setPosition(it.position() + 1);
         setTextCursor(newCursor);
     }
 }
@@ -1414,13 +1463,21 @@ void CodeEditor::gotoNextBlock()
 void CodeEditor::gotoPreviousBlock()
 {
     QTextCursor cursor = textCursor();
-    TokenIterator it = TokenIterator::leftOf(cursor.block(), cursor.positionInBlock());
 
-    if (!it.isValid())
-        return;
+    TokenIterator it;
+    if (cursor.positionInBlock())
+        it = TokenIterator(cursor.block(), cursor.positionInBlock() - 1);
+    else {
+        QTextBlock previousBlock = cursor.block().previous();
+        it = TokenIterator(previousBlock, previousBlock.length() - 1);
+    }
 
-    while (it.isValid() && it->type != Token::ClosingBracket)
-        ++it;
+    if (it.type() != Token::ClosingBracket) {
+        it = TokenIterator::rightOf(cursor.block(), cursor.positionInBlock());
+        it = nextClosingBracket(it);
+    }
+
+    if (!it.isValid()) return;
 
     BracketMatch match;
     matchBracket(it, match);
