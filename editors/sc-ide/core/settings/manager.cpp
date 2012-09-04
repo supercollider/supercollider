@@ -152,4 +152,18 @@ QString Manager::keyForAction ( QAction *action )
     return action->text().toLower().remove('&').replace(' ', '_');
 }
 
+QFont Manager::codeFont()
+{
+    QString fontFamily = value("IDE/editor/font/family").toString();
+    int fontSize = value("IDE/editor/font/size").toInt();
+
+    QFont font = QApplication::font("QPlainTextEdit");
+    font.setStyleHint(QFont::TypeWriter);
+    font.setFamily(fontFamily);
+    if (fontSize > 0)
+        font.setPointSize(fontSize);
+
+    return font;
+}
+
 }} // namespace ScIDE::Settings
