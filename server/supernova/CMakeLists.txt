@@ -75,6 +75,11 @@ set(libsupernova_src
     server/server_args.cpp
 )
 
+if(WIN32)
+    list(APPEND libsupernova_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
+endif()
+
+
 if(FFT_GREEN)
     list(APPEND libsupernova_src ../../common/fftlib.c)
 endif()
@@ -149,6 +154,10 @@ else()
 endif()
 
 target_link_libraries(supernova libsupernova)
+
+if(WIN32)
+    target_link_libraries(libsupernova wsock32 ws2_32 winmm)
+endif()
 
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
