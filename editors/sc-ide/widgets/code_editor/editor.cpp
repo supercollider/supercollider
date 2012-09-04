@@ -25,6 +25,7 @@
 #include "../../core/main.hpp"
 #include "../../core/settings/manager.hpp"
 
+#include <QApplication>
 #include <QDebug>
 #include <QKeyEvent>
 #include <QPainter>
@@ -118,6 +119,7 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     Q_ASSERT(mDoc != 0);
 
     setFrameShape( QFrame::NoFrame );
+    setMouseTracking( true );
 
     mLineIndicator->move( contentsRect().topLeft() );
 
@@ -626,6 +628,12 @@ bool CodeEditor::event( QEvent *e )
 
 void CodeEditor::keyPressEvent( QKeyEvent *e )
 {
+    QPoint cursorPosition = QCursor::pos();
+    QPoint cursorInWidget = mapFromGlobal(cursorPosition);
+
+    if (geometry().contains(cursorInWidget))
+        QApplication::setOverrideCursor(QCursor(Qt::BlankCursor));
+
     switch (e->key()) {
     case Qt::Key_Enter:
     case Qt::Key_Return:
@@ -698,6 +706,9 @@ void CodeEditor::mouseReleaseEvent ( QMouseEvent *e )
 
 void CodeEditor::mouseMoveEvent( QMouseEvent *e )
 {
+    QApplication::restoreOverrideCursor();
+    QApplication::restoreOverrideCursor();
+
     // Prevent initiating a text drag:
     if(!mMouseBracketMatch)
         QPlainTextEdit::mouseMoveEvent(e);
