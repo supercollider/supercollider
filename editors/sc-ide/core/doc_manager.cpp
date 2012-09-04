@@ -51,7 +51,7 @@ Document::Document():
 
 void Document::applySettings( Settings::Manager *settings )
 {
-    QFont font = Document::settingsFont( settings );
+    QFont font = settings->codeFont();
     int indentWidth = settings->value("IDE/editor/indentWidth").toInt();
 
     setDefaultFont(font);
@@ -75,20 +75,6 @@ void Document::deleteTrailingSpaces()
     cursor.endEditBlock();
 }
 
-QFont Document::settingsFont( Settings::Manager *settings )
-{
-    QString fontFamily = settings->value("IDE/editor/font/family").toString();
-    int fontSize = settings->value("IDE/editor/font/size").toInt();
-
-    QFont font = QApplication::font("QPlainTextEdit");
-    font.setStyleHint(QFont::TypeWriter);
-    font.setFamily(fontFamily);
-    if (fontSize > 0)
-        font.setPointSize(fontSize);
-
-    return font;
-}
-
 void Document::setDefaultFont( const QFont & font )
 {
     mDoc->setDefaultFont( font );
@@ -100,7 +86,7 @@ void Document::setDefaultFont( const QFont & font )
 void Document::resetDefaultFont()
 {
     Settings::Manager *settings = Main::instance()->settings();
-    setDefaultFont( Document::settingsFont(settings) );
+    setDefaultFont( settings->codeFont() );
 }
 
 void Document::setIndentWidth( int numSpaces )
