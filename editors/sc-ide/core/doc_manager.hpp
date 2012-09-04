@@ -67,6 +67,7 @@ public:
 
 public slots:
     void applySettings( Settings::Manager * );
+    void resetDefaultFont();
 
 signals:
     void defaultFontChanged();

@@ -534,8 +534,7 @@ void CodeEditor::zoomOut(int steps)
 
 void CodeEditor::resetFontSize()
 {
-    Settings::Manager *settings = Main::instance()->settings();
-    mDoc->setDefaultFont( Document::settingsFont(settings) );
+    mDoc->resetDefaultFont();
 }
 
 void CodeEditor::zoomFont(int steps)

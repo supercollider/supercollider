@@ -97,6 +97,12 @@ void Document::setDefaultFont( const QFont & font )
     emit defaultFontChanged();
 }
 
+void Document::resetDefaultFont()
+{
+    Settings::Manager *settings = Main::instance()->settings();
+    setDefaultFont( Document::settingsFont(settings) );
+}
+
 void Document::setIndentWidth( int numSpaces )
 {
     mIndentWidth = numSpaces;
