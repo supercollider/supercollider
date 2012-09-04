@@ -36,6 +36,7 @@ class TextFindReplacePanel;
 class GoToLineTool;
 class PostDock;
 class DocumentsDock;
+class CmdLine;
 class Document;
 class DocumentsDialog;
 struct Session;
@@ -164,7 +165,6 @@ private:
     void createMenus();
     bool promptSaveDocs();
     void updateSessionsMenu();
-    QWidget *cmdLine();
     void updateClockWidget( bool isFullScreen );
 
     Main *mMain;
@@ -177,7 +177,7 @@ private:
 
     // Tools
     ToolBox *mToolBox;
-    QWidget *mCmdLine;
+    CmdLine *mCmdLine;
     GoToLineTool *mGoToLineTool;
     TextFindReplacePanel *mFindReplaceTool;
 

@@ -20,6 +20,8 @@
 */
 
 #include "cmd_line.hpp"
+#include "../core/main.hpp"
+#include "../core/settings/manager.hpp"
 
 #include <QHBoxLayout>
 #include <QLabel>
@@ -34,10 +36,6 @@ CmdLine::CmdLine( const QString &text, int maxHist ) :
     QLabel *lbl = new QLabel(text);
 
     expr = new QLineEdit;
-    QFont f( expr->font() );
-    f.setFamily("monospace");
-    f.setStyleHint(QFont::TypeWriter);
-    expr->setFont(f);
 
     QHBoxLayout *l = new QHBoxLayout;
     l->setContentsMargins(0,0,0,0);
@@ -47,6 +45,14 @@ CmdLine::CmdLine( const QString &text, int maxHist ) :
 
     expr->installEventFilter( this );
     setFocusProxy(expr);
+
+    applySettings( Main::instance()->settings() );
+}
+
+void CmdLine::applySettings( Settings::Manager *settings )
+{
+    QFont codeFont = settings->codeFont();
+    expr->setFont( codeFont );
 }
 
 bool CmdLine::eventFilter( QObject *, QEvent *e )
