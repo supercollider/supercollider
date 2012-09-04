@@ -627,15 +627,7 @@ bool CodeEditor::event( QEvent *e )
 
 void CodeEditor::keyPressEvent( QKeyEvent *e )
 {
-    QPoint cursorPosition = QCursor::pos();
-    QObject * prnt = parent();
-    QWidget * parentWidget = qobject_cast<QWidget*>(prnt->parent()); // MultiSplitter
-
-    if (parentWidget) {
-        QPoint cursorInWidget = parentWidget->mapFromGlobal(cursorPosition);
-        if (parentWidget->geometry().contains(cursorInWidget))
-            QApplication::setOverrideCursor(QCursor(Qt::BlankCursor));
-    }
+    hideMouseCursor();
 
     switch (e->key()) {
     case Qt::Key_Enter:
@@ -1484,6 +1476,21 @@ void CodeEditor::selectCurrentRegion()
     QTextCursor selectedRegionCursor = currentRegion();
     if (!selectedRegionCursor.isNull() && selectedRegionCursor.hasSelection())
         setTextCursor(selectedRegionCursor);
+}
+
+void CodeEditor::hideMouseCursor()
+{
+    QPoint cursorPosition = QCursor::pos();
+    QWidget * prnt = parentWidget();
+    Q_ASSERT(prnt);
+
+    QWidget * parentWidget = prnt->parentWidget();
+    Q_ASSERT(parentWidget);
+
+    // MultiSplitter
+    QPoint cursorInWidget = parentWidget->mapFromGlobal(cursorPosition);
+    if (parentWidget->geometry().contains(cursorInWidget))
+        QApplication::setOverrideCursor(QCursor(Qt::BlankCursor));
 }
 
 } // namespace ScIDE
