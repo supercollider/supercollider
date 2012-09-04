@@ -34,7 +34,14 @@ public:
     ScServer(QObject * parent);
     void timerEvent(QTimerEvent * event);
 
+    bool isRunning() { return mPort != 0; }
+
 public Q_SLOTS:
+
+    void boot();
+
+    void quit();
+
     void onServerRunningChanged( bool running, QString const & hostName, int port )
     {
         if (running) {

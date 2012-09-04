@@ -91,6 +91,9 @@ public:
         Help,
         HelpForSelection,
 
+        // Server
+        ToggleServerRunning,
+
         ActionCount
     };
 
@@ -155,6 +158,7 @@ private Q_SLOTS:
     void lookupDefinition();
     void lookupDocumentation();
     void showMessage( QString const & string );
+    void toggleServerRunning();
     void applySettings( Settings::Manager * );
 
 protected:

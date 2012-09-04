@@ -22,6 +22,7 @@
 #include "../core/main.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/session_manager.hpp"
+#include "../core/sc_server.hpp"
 #include "code_editor/editor.hpp"
 #include "multi_editor.hpp"
 #include "cmd_line.hpp"
@@ -76,8 +77,6 @@ MainWindow::MainWindow(Main * main) :
     mStatusBar->addPermanentWidget( mLangStatus );
     mStatusBar->addPermanentWidget( new QLabel("Server:") );
     mStatusBar->addPermanentWidget( mServerStatus );
-
-    onServerRunningChanged(false, "", 0);
 
     // Code editor
     mEditors = new MultiEditor(main);
@@ -170,6 +169,12 @@ MainWindow::MainWindow(Main * main) :
 
     createActions();
     createMenus();
+
+    // Must be called after createAtions(), because it accesses an action:
+    onServerRunningChanged(false, "", 0);
+
+    mServerStatus->addAction( action(ToggleServerRunning) );
+    mServerStatus->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     // Initialize recent documents menu
     updateRecentDocsMenu();
@@ -339,6 +344,10 @@ void MainWindow::createActions()
     act->setShortcut(tr("Ctrl+D", "Help for selection"));
     act->setStatusTip(tr("Find help for selected text"));
     connect(act, SIGNAL(triggered()), this, SLOT(helpForCursor()));
+
+    // Server
+    mActions[ToggleServerRunning] = act = new QAction(this);
+    connect(act, SIGNAL(triggered()), this, SLOT(toggleServerRunning()));
 
     s->endGroup(); // IDE/shortcuts;
 
@@ -674,9 +683,18 @@ void MainWindow::onServerStatusReply(int ugens, int synths, int groups, int synt
 
 void MainWindow::onServerRunningChanged(bool running, const QString &, int)
 {
+    QAction *serverStatusAction = mActions[ToggleServerRunning];
+
     mServerStatus->setTextColor( running ? Qt::green : Qt::white);
-    if (!running)
+    if (!running) {
         onServerStatusReply(0, 0, 0, 0, 0, 0);
+
+        serverStatusAction->setText( tr("&Boot Server") );
+        serverStatusAction->setStatusTip(tr("Boot sound synthesis server"));
+    } else {
+        serverStatusAction->setText( tr("&Quit Server") );
+        serverStatusAction->setStatusTip(tr("Quit sound synthesis server"));
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -1047,6 +1065,16 @@ void MainWindow::openHelp()
 {
     QString code = QString("Help.gui");
     Main::instance()->scProcess()->evaluateCode(code, true);
+}
+
+void MainWindow::toggleServerRunning()
+{
+    ScServer *scServer = Main::instance()->scServer();
+
+    if (scServer->isRunning())
+        scServer->quit();
+    else
+        scServer->boot();
 }
 
 //////////////////////////// StatusLabel /////////////////////////////////

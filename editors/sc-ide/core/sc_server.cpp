@@ -21,6 +21,8 @@
 #include <QDebug>
 
 #include "sc_server.hpp"
+#include "sc_process.hpp"
+#include "main.hpp"
 
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
@@ -37,6 +39,23 @@ ScServer::ScServer(QObject * parent):
             break;
     }
     startTimer(333);
+}
+
+void ScServer::boot()
+{
+    if (isRunning())
+        return;
+
+    Main::instance()->scProcess()->evaluateCode( "ScIDE.defaultServer.boot" );
+}
+
+void ScServer::quit()
+{
+
+    if (!isRunning())
+        return;
+
+    Main::instance()->scProcess()->evaluateCode( "ScIDE.defaultServer.quit" );
 }
 
 void ScServer::timerEvent(QTimerEvent * event)
