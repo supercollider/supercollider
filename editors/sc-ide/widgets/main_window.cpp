@@ -961,6 +961,7 @@ void MainWindow::applySettings( Settings::Manager * settings )
 {
     mEditors->applySettings(settings);
     mPostDock->mPostWindow->applySettings(settings);
+    mCmdLine->applySettings(settings);
 }
 
 
@@ -1033,18 +1034,6 @@ void MainWindow::showSettings()
     int result = dialog.exec();
     if( result == QDialog::Accepted )
         mMain->applySettings();
-}
-
-QWidget *MainWindow::cmdLine()
-{
-    static QWidget *widget = 0;
-    if(!widget) {
-        CmdLine *w = new CmdLine("Command line:");
-        connect(w, SIGNAL(invoked(QString, bool)),
-                mMain->scProcess(), SLOT(evaluateCode(QString, bool)));
-        widget = w;
-    }
-    return widget;
 }
 
 void MainWindow::helpForCursor()

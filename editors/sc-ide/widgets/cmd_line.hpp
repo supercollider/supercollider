@@ -28,12 +28,15 @@
 
 namespace ScIDE {
 
+namespace Settings { class Manager; }
+
 class CmdLine : public QWidget
 {
 Q_OBJECT
 
 public:
     CmdLine( const QString &text, int maxHistory = 30 );
+    void applySettings( Settings::Manager * );
 signals:
     void invoked( const QString &, bool silent );
 private:
