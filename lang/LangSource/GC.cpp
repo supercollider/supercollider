@@ -174,16 +174,16 @@ HOT void PyrGC::ScanSlots(PyrSlot *inSlots, long inNumToScan)
 				PyrObjectHdr * objPrev  = obj->prev;
 				PyrObjectHdr * objNext  = obj->next;
 
+				/* link in grey set */
+				greyNext->prev = obj;
+				grey->next = obj;
+				obj->prev = grey;
+				obj->next = greyNext;
+				greyNext = obj;
+
 				// remove from old set
 				objNext->prev = objPrev;
 				objPrev->next = objNext;
-
-				/* link in grey set */
-				obj->next = greyNext;
-				obj->prev = grey;
-				greyNext->prev = obj;
-				grey->next = obj;
-				greyNext = obj;
 
 				obj->gc_color = greyColor;
 				foundGreyObjects++;
