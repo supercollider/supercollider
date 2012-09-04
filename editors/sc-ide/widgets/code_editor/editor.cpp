@@ -1538,17 +1538,9 @@ void CodeEditor::selectCurrentRegion()
 
 void CodeEditor::hideMouseCursor()
 {
-    QPoint cursorPosition = QCursor::pos();
-    QWidget * prnt = parentWidget();
-    Q_ASSERT(prnt);
-
-    QWidget * parentWidget = prnt->parentWidget();
-    Q_ASSERT(parentWidget);
-
-    // MultiSplitter
-    QPoint cursorInWidget = parentWidget->mapFromGlobal(cursorPosition);
-    if (parentWidget->geometry().contains(cursorInWidget))
-        QApplication::setOverrideCursor(QCursor(Qt::BlankCursor));
+    QCursor * overrideCursor = QApplication::overrideCursor();
+    if (!overrideCursor || overrideCursor->shape() != Qt::BlankCursor)
+        QApplication::setOverrideCursor( Qt::BlankCursor );
 }
 
 } // namespace ScIDE

@@ -203,8 +203,6 @@ bool Main::eventFilter(QObject *object, QEvent *event)
     }
 
     case QEvent::MouseMove:
-        // twice to restore the default cursor
-        QApplication::restoreOverrideCursor();
         QApplication::restoreOverrideCursor();
         break;
 
