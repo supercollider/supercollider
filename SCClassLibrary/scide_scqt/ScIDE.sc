@@ -1,13 +1,16 @@
 ScIDE {
 	classvar subListSorter;
 	classvar <>currentPath;
+	classvar <defaultServer;
 
 	*initClass {
 		subListSorter = { | a b | a[0].perform('<', b[0]) };
 
 		Class.initClassTree(Server);
 
-		SimpleController(Server.default)
+		defaultServer = Server.default;
+
+		SimpleController(defaultServer)
 		.put(\serverRunning, { | server, what, extraArg |
 			var addr = server.addr;
 			this.prSend(\defaultServerRunningChanged, [server.serverRunning, addr.hostname, addr.port])
