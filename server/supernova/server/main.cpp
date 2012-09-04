@@ -194,22 +194,27 @@ void set_plugin_paths(void)
         for(string const & path : args.ugen_paths)
             sc_factory->load_plugin_folder(path);
     } else {
-        path home = resolve_home();
-
 #ifdef __linux__
+        path home = resolve_home();
         sc_factory->load_plugin_folder("/usr/local/lib/supernova/plugins");
         sc_factory->load_plugin_folder("/usr/lib/supernova/plugins");
         sc_factory->load_plugin_folder(home / "/.local/share/SuperCollider/supernova_plugins");
         sc_factory->load_plugin_folder(home / "share/SuperCollider/supernova_plugins");
-#elif defined(__APPLE__)
-        sc_factory->load_plugin_folder(home / "Library/Application Support/SuperCollider/supernova_plugins/");
-        sc_factory->load_plugin_folder("/Library/Application Support/SuperCollider/supernova_plugins/");
-#elif defined(WIN32)
-
-        sc_factory->load_plugin_folder("./supernova_plugins");
-
 #else
-        cerr << "Don't know how to locate plugins on this platform. Please specify search path in command line."
+        char plugin_dir[MAXPATHLEN];
+        sc_GetResourceDirectory(plugin_dir, MAXPATHLEN);
+        sc_AppendToPath(plugin_dir, MAXPATHLEN, "supernova_plugins");
+
+#if 0
+        // FIXME: how to load plugins from extension paths?
+        char extension_dir[MAXPATHLEN];
+
+        sc_GetSystemExtensionDirectory(extension_dir, MAXPATHLEN);
+        sc_factory->load_plugin_folder(path(extensions_dir) / "supernova_plugins");
+
+        sc_GetUserExtensionDirectory(extension_dir, MAXPATHLEN);
+        sc_factory->load_plugin_folder(path(extensions_dir) / "supernova_plugins");
+#endif
 #endif
     }
 
