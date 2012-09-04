@@ -282,48 +282,46 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 {
     //std::cout << "try open plugin: " << path << std::endl;
     const char * filename = path.string().c_str();
-	HINSTANCE hinstance = LoadLibrary( path.string().c_str() );
-	if (!hinstance) {
-		char *s;
-		DWORD lastErr = GetLastError();
-		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-				0, lastErr , 0, (char*)&s, 1, 0 );
+    HINSTANCE hinstance = LoadLibrary( path.string().c_str() );
+    if (!hinstance) {
+        char *s;
+        DWORD lastErr = GetLastError();
+        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                       0, lastErr , 0, (char*)&s, 1, 0 );
 
-		 std::cerr << "Cannot open plugin: " << path << s << std::endl;
-		LocalFree( s );
-		return;
-	}
+        std::cerr << "Cannot open plugin: " << path << s << std::endl;
+        LocalFree( s );
+        return;
+    }
 
     typedef int (*info_function)();
-	info_function api_version = reinterpret_cast<info_function>(GetProcAddress( hinstance, "api_version" ));
+    info_function api_version = reinterpret_cast<info_function>(GetProcAddress( hinstance, "api_version" ));
 
-	if ((*api_version)() != sc_api_version) {
+    if ((*api_version)() != sc_api_version) {
         std::cerr << "API Version Mismatch: " << filename << std::endl;
-		FreeLibrary(hinstance);
-		return;
-	}
+        FreeLibrary(hinstance);
+        return;
+    }
 
-	void *ptr = (void *)GetProcAddress( hinstance, "load" );
-	if (!ptr) {
-		char *s;
-		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-				0, GetLastError(), 0, (char*)&s, 1, 0 );
+    void *ptr = (void *)GetProcAddress( hinstance, "load" );
+    if (!ptr) {
+        char *s;
+        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                       0, GetLastError(), 0, (char*)&s, 1, 0 );
 
         std::cerr << "*** ERROR: GetProcAddress err " << s << std::endl;
-		LocalFree( s );
+        LocalFree( s );
 
-		FreeLibrary(hinstance);
-		return;
-	}
+        FreeLibrary(hinstance);
+        return;
+    }
 
-	LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
-	(*loadFunc)(&sc_interface);
+    LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
+    (*loadFunc)(&sc_interface);
 
-	// FIXME: at the moment we never call FreeLibrary() on a loaded plugin
+    // FIXME: at the moment we never call FreeLibrary() on a loaded plugin
 
-	return;
-
-
+    return;
 }
 
 void sc_ugen_factory::close_handles(void)
