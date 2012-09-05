@@ -43,29 +43,34 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
 
 void CodeEditorBox::setDocument(Document *doc, int pos)
 {
-    if (!doc || (currentEditor() && currentEditor()->document() == doc))
+    if (!doc)
         return;
 
-    CodeEditor *editor = editorForDocument(doc);
-    if (!editor) {
-        editor = new CodeEditor(doc);
-        editor->installEventFilter(this);
-        mHistory.prepend(editor);
-        mLayout->addWidget(editor);
-    }
-    else {
-        mHistory.removeOne(editor);
-        mHistory.prepend(editor);
+    CodeEditor *editor = currentEditor();
+    bool switchEditor = !editor || editor->document() != doc;
+
+    if (switchEditor)
+    {
+        editor = editorForDocument(doc);
+        if (!editor) {
+            editor = new CodeEditor(doc);
+            editor->installEventFilter(this);
+            mHistory.prepend(editor);
+            mLayout->addWidget(editor);
+        }
+        else {
+            mHistory.removeOne(editor);
+            mHistory.prepend(editor);
+        }
+        mLayout->setCurrentWidget(editor);
+        setFocusProxy(editor);
     }
 
     if (pos != -1)
         editor->showPosition(pos);
 
-    mLayout->setCurrentWidget(editor);
-
-    setFocusProxy(editor);
-
-    emit currentChanged(editor);
+    if (switchEditor)
+        emit currentChanged(editor);
 }
 
 void CodeEditorBox::onDocumentClosed(Document *doc)
