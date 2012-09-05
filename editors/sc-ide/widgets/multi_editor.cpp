@@ -34,19 +34,19 @@
 #include "yaml-cpp/parser.h"
 
 #include <QApplication>
-#include <QStyle>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QShortcut>
-#include <QMenu>
 #include <QDebug>
-
 #include <QDialog>
 #include <QFileInfo>
+#include <QHBoxLayout>
 #include <QHeaderView>
 #include <QListView>
-#include <QTreeWidget>
+#include <QMenu>
+#include <QPainter>
 #include <QStandardItemModel>
+#include <QShortcut>
+#include <QStyle>
+#include <QTreeWidget>
+#include <QVBoxLayout>
 
 
 namespace ScIDE {
@@ -54,7 +54,7 @@ namespace ScIDE {
 class DocumentSelectPopUp : public QDialog
 {
 public:
-    explicit DocumentSelectPopUp(const CodeEditorBox::History & history, QWidget * parent):
+    DocumentSelectPopUp(const CodeEditorBox::History & history, QWidget * parent):
         QDialog(parent, Qt::Popup)
     {
         mModel = new QStandardItemModel(this);
@@ -134,6 +134,14 @@ private:
         }
 
         QDialog::keyPressEvent(ke);
+    }
+
+    void paintEvent( QPaintEvent * )
+    {
+        QPainter painter(this);
+        painter.setBrush(Qt::NoBrush);
+        painter.setPen(palette().color(QPalette::Dark));
+        painter.drawRect(rect().adjusted(0,0,-1,-1));
     }
 
     void cycleDown()
