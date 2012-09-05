@@ -315,7 +315,8 @@ function doPrint() {
             if(v.matched_kw) {
                 n.setAttribute("href",v.path+".html#kw_"+v.matched_kw);
             } else {
-                n.setAttribute("href",v.path+".html");
+                var link = v.oldhelp?v.oldhelp:(v.path+".html");
+                n.setAttribute("href",link);
             }
             n.innerHTML = v.title;
             div.appendChild(n);
