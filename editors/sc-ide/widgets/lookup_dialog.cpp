@@ -126,7 +126,7 @@ bool LookupDialog::performClassQuery(const QString & className)
 
         foreach (const Method * method, metaClass->methods) {
             QString signature = method->signature( Method::SignatureWithoutArguments );
-            QString displayPath = introspection.compactLibraryPath(klass->definition.path);
+            QString displayPath = introspection.compactLibraryPath(method->definition.path);
 
             QTreeWidgetItem *methodItem = new QTreeWidgetItem( QStringList() << signature << displayPath );
             methodItem->setData( 0, Qt::UserRole, method->definition.path.get() );
@@ -137,7 +137,7 @@ bool LookupDialog::performClassQuery(const QString & className)
 
         foreach (const Method * method, klass->methods) {
             QString signature = method->signature( Method::SignatureWithoutArguments );
-            QString displayPath = introspection.compactLibraryPath(klass->definition.path);
+            QString displayPath = introspection.compactLibraryPath(method->definition.path);
 
             QTreeWidgetItem *methodItem = new QTreeWidgetItem( QStringList() << signature << displayPath  );
             methodItem->setData( 0, Qt::UserRole, method->definition.path.get() );
