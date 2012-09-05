@@ -74,7 +74,6 @@ public:
         Replace,
 
         // View
-        ShowDocList,
         ShowCmdLine,
         ShowGoToLineTool,
         CloseToolBox,
