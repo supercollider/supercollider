@@ -569,7 +569,7 @@ SCDoc {
 
         url = url.replace("%20"," ");
         #proto, path, query, anchor = url.findRegexp("(^\\w+://)?([^#?]+)(\\?[^#]+)?(#.*)?")[1..].flop[1];
-        if(proto.isEmpty) {proto="file://"};
+        if(proto.isEmpty) {proto="file://"; url = proto++url};
         if(proto!="file://") {^url}; // just pass through remote url's
         if(path.beginsWith(helpTargetDir).not) {^url}; // just pass through non-help url's
 
