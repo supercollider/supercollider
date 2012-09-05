@@ -286,12 +286,6 @@ void MainWindow::createActions()
     connect(act, SIGNAL(triggered()), this, SLOT(showReplaceTool()));
 
     // View
-    mActions[ShowDocList] = act = new QAction(tr("&Documents"), this);
-    act->setStatusTip(tr("Show/Hide the Documents dock"));
-    act->setCheckable(true);
-    connect(act, SIGNAL(triggered(bool)), mDocListDock, SLOT(setVisible(bool)));
-    connect(mDocListDock, SIGNAL(visibilityChanged(bool)), act, SLOT(setChecked(bool)));
-
     mActions[ShowCmdLine] = act = new QAction(tr("&Command Line"), this);
     act->setStatusTip(tr("Command line for quick code evaluation"));
     act->setShortcut(tr("Ctrl+E", "Show command line"));
@@ -417,7 +411,8 @@ void MainWindow::createMenus()
 
     menu = new QMenu(tr("&View"), this);
     submenu = new QMenu(tr("&Docks"), this);
-    submenu->addAction( mActions[ShowDocList] );
+    submenu->addAction( mPostDock->toggleViewAction() );
+    submenu->addAction( mDocListDock->toggleViewAction() );
     menu->addMenu(submenu);
     menu->addSeparator();
     submenu = menu->addMenu(tr("&Tool Panels"));
