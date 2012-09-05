@@ -147,6 +147,8 @@ private:
     void moveLineUpDown(bool up);
     void gotoEmptyLineUpDown(bool up);
 
+    QTextCursor regionAtCursor(QTextCursor);
+
     int indentedStartOfLine( const QTextBlock & );
     void indent( const QTextCursor & );
     QTextBlock indent( const QTextBlock & b, int level );

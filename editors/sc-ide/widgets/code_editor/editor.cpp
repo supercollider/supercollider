@@ -424,7 +424,12 @@ int CodeEditor::replaceAll( const QRegExp &expr, const QString &replacement, QTe
 
 QTextCursor CodeEditor::currentRegion()
 {
-    QTextCursor c(textCursor());
+    return regionAtCursor(textCursor());
+}
+
+
+QTextCursor CodeEditor::regionAtCursor(QTextCursor c)
+{
     QTextBlock block(c.block());
 
     int positionInBlock = c.position() - block.position();
