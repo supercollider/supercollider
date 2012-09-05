@@ -155,6 +155,8 @@ private:
 
     void hideMouseCursor();
 
+    QTextCursor cursorAt( const TokenIterator, int offset = 0 );
+
     LineIndicator *mLineIndicator;
 
     Document *mDoc;
