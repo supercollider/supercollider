@@ -98,16 +98,25 @@ HelpBrowser {
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
 				};
 				// detect old helpfiles and open them in OldHelpWrapper
-				if(
-					block{|break|
+				if(url.beginsWith("sc://")) {
+					url = SCDoc.findHelpFile(newPath);
+				} {
+					if(
+						/*
+						// this didn't work for quarks due to difference between registered old help path and the quarks symlink in Extensions.
+						// we could use File.realpath(path) below but that would double the execution time,
+						// so let's just assume any local file outside helpTargetDir is an old helpfile.
+						block{|break|
 						Help.do {|key, path|
-							if(url.endsWith(path)) {
-								break.value(true)
-							}
+						if(url.endsWith(path)) {
+						break.value(true)
+						}
 						}; false
-					}
-				) {
-					url = HelpBrowser.getOldWrapUrl(url)
+						}*/
+						newPath.beginsWith(SCDoc.helpTargetDir).not and: { url.beginsWith("file://") }
+					) {
+						url = HelpBrowser.getOldWrapUrl(url)
+					};
 				};
 				webView.url = url;
 				// needed since onLoadFinished is not called if the path did not change:
