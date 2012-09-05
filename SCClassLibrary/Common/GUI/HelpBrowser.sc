@@ -78,7 +78,7 @@ HelpBrowser {
 	}
 	cmdPeriod { rout.play(AppClock) }
 	goTo {|url, brokenAction|
-		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp"];
+		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp",".rtf"];
 
 		plainTextExts.do {|x|
 			if(url.endsWith(x)) {
