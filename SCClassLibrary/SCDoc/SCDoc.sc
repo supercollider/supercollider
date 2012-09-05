@@ -16,7 +16,8 @@ SCDocEntry {
         <>additions,
         <>isExtension,
         <>mtime,
-        <>fullPath;
+        <>fullPath,
+        <>oldHelp;
 
     var <>isClassDoc;
     var <>klass, <>implKlass, <>implements;
@@ -29,7 +30,7 @@ SCDocEntry {
     prJSONString {|stream, key, x|
         if(x.isNil) { x = "" };
         stream << "'" << key << "': \"" << x.escapeChar(34.asAscii) << "\",\n";
-        
+
     }
     prJSONList {|stream, key, v|
         if(v.isNil) { v = "" };
@@ -47,6 +48,9 @@ SCDocEntry {
         this.prJSONList(stream, "keywords", keywords);
         this.prJSONList(stream, "related", related);
         this.prJSONList(stream, "methods", this.makeMethodList);
+        if(oldHelp.notNil) {
+            this.prJSONString(stream, "oldhelp", oldHelp);
+        };
         if(klass.notNil) {
             klass.superclasses !? {
                 this.prJSONList(stream, "superclasses", klass.superclasses.collect {|c|
@@ -68,7 +72,7 @@ SCDocEntry {
     *new {|node,path|
         ^super.new.init(node,path);
     }
-    
+
     *newUndocClass {|name|
         var doc = super.new.init(nil,"Classes/"++name.asString);
         var f, cats, implements, c;
@@ -98,7 +102,7 @@ SCDocEntry {
         doc.klass.categories !? {
             cats = cats ++ doc.klass.categories;
         };
-        doc.categories = cats;        
+        doc.categories = cats;
 
         ^doc;
     }
@@ -201,7 +205,7 @@ SCDocEntry {
         } {
             implKlass = nil;
         };
-                    
+
         docmets = docimethods | privimethods | ignoreMethods;
         (mets = klass.methods) !? {
             mets.collectAs({|m|m.name.asGetter},IdentitySet).do {|name|
@@ -228,7 +232,7 @@ SCDocEntry {
         }
         ^list;
     }
-    
+
     prAddCopyMethod {|node, list|
         ^list.add(node.text.split($ )[1].drop(1))
     }
@@ -295,7 +299,7 @@ SCDocNode {
         };
         node.children = node.children.add(mets);
     }
-    
+
     sortClassDoc {
         var x = 0;
         // FIXME: does this work correctly for prose before first section, etc?
@@ -385,6 +389,34 @@ SCDoc {
         _SCDoc_ParseFile
         ^this.primitiveFailed
     }
+    *indexOldHelp {
+        var f = {|x,cat="Old Helpfiles",indent=0|
+            var a,b,doc;
+            x.pairsDo {|k,v|
+                if(v.isKindOf(Dictionary)) {
+                    k = k.asString;
+                    a = 0;
+                    b = k.size-1;
+                    while({ $[ == k[a]},{a=a+1});
+                    while({ $] == k[b]},{b=b-1});
+                    k = k.copyRange(a,b);
+                    f.(v,cat++">"++k.asString,indent+1);
+                } {
+                    if(v.size>0) {
+                        doc = SCDocEntry(nil,"Old Help"+/+v);
+                        doc.oldHelp = v;
+                        doc.title = v.basename;
+                        doc.summary = "(not yet converted to new help format)";
+                        doc.categories = [cat];
+                        doc.isExtension = true;
+                        SCDoc.documents[doc.path] = doc;
+                    }
+                }
+            }
+        };
+        Help.rebuildTree;
+        f.(Help.tree);
+    }
     *indexAllDocuments { |clearCache=false|
         var now = Main.elapsedTime;
         var key, doc;
@@ -446,6 +478,8 @@ SCDoc {
                 File.copy(x[0],dest);
             };
         };
+        this.postMsg("Indexing old helpfiles...");
+        this.indexOldHelp;
         this.postMsg("Exporting docmap.js...",1);
         this.exportDocMapJS(this.helpTargetDir +/+ "docmap.js");
         this.postMsg("Indexed % documents in % seconds".format(documents.size,round(Main.elapsedTime-now,0.01)),0);
@@ -498,7 +532,7 @@ SCDoc {
 //        if(path!=helpTargetDir) {didRun = false};
         helpTargetDir = path.standardizePath;
     }
-    
+
     *postMsg {|txt, lvl=0|
         if(verbosity>lvl) {
             postln("SCDoc: "++txt);
@@ -538,11 +572,11 @@ SCDoc {
         if(proto.isEmpty) {proto="file://"};
         if(proto!="file://") {^url}; // just pass through remote url's
         if(path.beginsWith(helpTargetDir).not) {^url}; // just pass through non-help url's
-        
+
         if(destExist = File.existsCaseSensitive(path)) {
             destMtime = File.mtime(path);
         };
-                
+
         if(path.endsWith(".html")) {
             subtarget = path.drop(this.helpTargetDir.size+1).drop(-5);
             doc = this.documents[subtarget];
@@ -584,7 +618,7 @@ SCDoc {
         this.helpTargetDir_(thisProcess.platform.userAppSupportDir +/+ "Help");
         renderer = SCDocHTMLRenderer;
     }
-    
+
     *classHasArKrIr {|c|
         ^#[\ar,\kr,\ir].collect {|m| c.class.findRespondingMethodFor(m).notNil }.reduce {|a,b| a or: b};
     }
@@ -723,7 +757,7 @@ SCDoc {
                 }
             }
         };
-        
+
         var err = {|txt|
             warn("SCDoc.getMethodDoc(%, %): %".format(classname,methodname,txt));
         };
