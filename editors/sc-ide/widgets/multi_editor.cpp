@@ -88,6 +88,15 @@ public:
     }
 
 private:
+    bool event(QEvent * event)
+    {
+        if (event->type() == QEvent::ShortcutOverride) {
+            event->accept();
+            return true;
+        }
+        return QWidget::event(event);
+    }
+
     void keyReleaseEvent (QKeyEvent * ke)
     {
         // adapted from qtcreator
@@ -98,33 +107,23 @@ private:
             ke->accept();
             accept();
         }
-        QDialog::keyPressEvent(ke);
+        QDialog::keyReleaseEvent(ke);
     }
 
     void keyPressEvent(QKeyEvent * ke)
     {
         switch (ke->key()) {
-        case Qt::Key_Tab: {
-            int row = mListView->currentIndex().row() + 1;
-            if (!mModel->hasIndex(row, 0))
-                row = 0;
-
-            QModelIndex nextIndex = mModel->index(row, 0);
-            mListView->setCurrentIndex(nextIndex);
+        case Qt::Key_Down:
+        case Qt::Key_Tab:
+            cycleDown();
             ke->accept();
             return;
-        }
 
-        case Qt::Key_Backtab: {
-            int row = mListView->currentIndex().row() - 1;
-            if (!mModel->hasIndex(row, 0))
-                row = mModel->rowCount() - 1;
-
-            QModelIndex nextIndex = mModel->index(row, 0);
-            mListView->setCurrentIndex(nextIndex);
+        case Qt::Key_Up:
+        case Qt::Key_Backtab:
+            cycleUp();
             ke->accept();
             return;
-        }
 
         case Qt::Key_Escape:
             reject();
@@ -137,10 +136,29 @@ private:
         QDialog::keyPressEvent(ke);
     }
 
+    void cycleDown()
+    {
+        int row = mListView->currentIndex().row() + 1;
+        if (!mModel->hasIndex(row, 0))
+            row = 0;
+
+        QModelIndex nextIndex = mModel->index(row, 0);
+        mListView->setCurrentIndex(nextIndex);
+    }
+
+    void cycleUp()
+    {
+        int row = mListView->currentIndex().row() - 1;
+        if (!mModel->hasIndex(row, 0))
+            row = mModel->rowCount() - 1;
+
+        QModelIndex nextIndex = mModel->index(row, 0);
+        mListView->setCurrentIndex(nextIndex);
+    }
+
     Document * currentDocument()
     {
         QStandardItem * currentItem = mModel->itemFromIndex(mListView->currentIndex());
-
         return currentItem ? currentItem->data().value<Document*>()
                            : NULL;
     }
