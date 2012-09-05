@@ -531,18 +531,19 @@ void MainWindow::switchSession( Session *session )
 {
     if (session) {
         session->beginGroup("mainWindow");
-
         QByteArray geom = QByteArray::fromBase64( session->value("geometry").value<QByteArray>() );
+        QByteArray state = QByteArray::fromBase64( session->value("state").value<QByteArray>() );
+        session->endGroup();
+
+        // Workaround for Qt bug 4397:
+        setWindowState(Qt::WindowNoState);
+
         if (!geom.isEmpty())
             restoreGeometry(geom);
-
-        updateClockWidget(isFullScreen());
-
-        QByteArray state = QByteArray::fromBase64( session->value("state").value<QByteArray>() );
         if (!state.isEmpty())
             restoreState(state);
 
-        session->endGroup();
+        updateClockWidget(isFullScreen());
     }
 
     mEditors->switchSession(session);
