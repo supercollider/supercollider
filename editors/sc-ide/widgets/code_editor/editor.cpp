@@ -1452,11 +1452,8 @@ void CodeEditor::gotoNextBlock()
     if (previousBracket.isValid()) {
         TokenIterator nextBracket = nextClosingBracket(previousBracket.next());
 
-        if (nextBracket.isValid()) {
-            QTextCursor newCursor(nextBracket.block());
-            newCursor.setPosition(nextBracket.position() + 1);
-            setTextCursor(newCursor);
-        }
+        if (nextBracket.isValid())
+            setTextCursor(cursorAt(nextBracket, 1));
     }
 }
 
@@ -1483,11 +1480,8 @@ void CodeEditor::gotoPreviousBlock()
     if (nextBracket.isValid()) {
         TokenIterator previousBracket = previousOpeningBracket(nextBracket.previous());
 
-        if (previousBracket.isValid()) {
-            QTextCursor newCursor(previousBracket.block());
-            newCursor.setPosition(previousBracket.position());
-            setTextCursor(newCursor);
-        }
+        if (previousBracket.isValid())
+            setTextCursor(cursorAt(previousBracket));
     }
 }
 
@@ -1541,6 +1535,16 @@ void CodeEditor::hideMouseCursor()
     QCursor * overrideCursor = QApplication::overrideCursor();
     if (!overrideCursor || overrideCursor->shape() != Qt::BlankCursor)
         QApplication::setOverrideCursor( Qt::BlankCursor );
+}
+
+QTextCursor CodeEditor::cursorAt(const TokenIterator it, int offset)
+{
+    Q_ASSERT(it.isValid());
+
+    QTextCursor textCursor(textDocument());
+    textCursor.setPosition(it.position() + offset);
+
+    return textCursor;
 }
 
 } // namespace ScIDE
