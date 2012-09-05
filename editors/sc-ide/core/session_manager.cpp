@@ -157,7 +157,7 @@ Session * SessionManager::saveSessionAs( const QString & name )
 
     saveLastSession( dir, sessionFile );
 
-    emit switchSessionRequest(mSession);
+    emit currentSessionNameChanged();
 
     return mSession;
 }

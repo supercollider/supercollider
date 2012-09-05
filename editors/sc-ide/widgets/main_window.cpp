@@ -126,6 +126,8 @@ MainWindow::MainWindow(Main * main) :
             this, SLOT(saveSession(Session*)));
     connect(main->sessionManager(), SIGNAL(switchSessionRequest(Session*)),
             this, SLOT(switchSession(Session*)));
+    connect(main->sessionManager(), SIGNAL(currentSessionNameChanged()),
+            this, SLOT(updateWindowTitle()));
     // A system for easy evaluation of pre-defined code:
     connect(&mCodeEvalMapper, SIGNAL(mapped(QString)),
             this, SIGNAL(evaluateCode(QString)));
