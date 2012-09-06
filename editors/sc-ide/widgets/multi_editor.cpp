@@ -463,11 +463,6 @@ void MultiEditor::createActions()
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(act, SIGNAL(triggered()), this, SLOT(evaluateLine()));
 
-    mActions[OpenDefinition] = act = new QAction(tr("Open Class/Method Definition"), this);
-    act->setShortcut(tr("Ctrl+I", "Open definition of selected class or method"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(act, SIGNAL(triggered(bool)), this, SLOT(openDefinition()));
-
     settings->endGroup(); // IDE/shortcuts
 
     for (int i = 0; i < ActionRoleCount; ++i)
@@ -486,7 +481,6 @@ void MultiEditor::createActions()
     addAction(mActions[Paste]);
     addAction(mActions[EnlargeFont]);
     addAction(mActions[ShrinkFont]);
-    addAction(mActions[OpenDefinition]);
     addAction(mActions[EvaluateCurrentDocument]);
     addAction(mActions[EvaluateRegion]);
     addAction(mActions[EvaluateLine]);
@@ -532,7 +526,6 @@ void MultiEditor::updateActions()
     mActions[IndentLineOrRegion]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
     mActions[ShrinkFont]->setEnabled( editor );
-    mActions[OpenDefinition]->setEnabled( editor );
     mActions[EvaluateCurrentDocument]->setEnabled( editor );
     mActions[EvaluateRegion]->setEnabled( editor );
     mActions[EvaluateLine]->setEnabled( editor );
@@ -892,12 +885,6 @@ void MultiEditor::evaluateDocument()
 
     QString documentText = editor->textDocument()->toPlainText();
     Main::evaluateCode(documentText);
-}
-
-void MultiEditor::openDefinition()
-{
-    CodeEditor * editor = currentEditor();
-    Main::openDefinition(editor->symbolUnderCursor(), this);
 }
 
 Document * MultiEditor::documentForTab( int index )

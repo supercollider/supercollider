@@ -86,6 +86,9 @@ public:
         // Settings
         ShowSettings,
 
+        // Language
+        OpenDefinition,
+
         // Help
         Help,
         HelpForSelection,
@@ -154,6 +157,7 @@ private Q_SLOTS:
     void onOpenSessionAction( QAction * );
     void updateWindowTitle();
     void toggleFullScreen();
+    void openDefinition();
     void lookupDefinition();
     void lookupDocumentation();
     void showMessage( QString const & string );

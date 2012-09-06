@@ -111,6 +111,7 @@ public Q_SLOTS:
     void gotoNextRegion();
     void gotoPreviousRegion();
     bool openDocumentation();
+    void openDefinition();
 
 protected:
     virtual bool event( QEvent * );

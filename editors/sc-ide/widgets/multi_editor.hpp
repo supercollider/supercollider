@@ -100,8 +100,6 @@ public:
         EvaluateRegion,
         EvaluateLine,
 
-        OpenDefinition,
-
         ActionRoleCount
     };
 
@@ -152,7 +150,6 @@ private slots:
     void onCurrentEditorChanged( CodeEditor * );
     void onBoxActivated( CodeEditorBox * );
     void onModificationChanged( bool modified );
-    void openDefinition();
     void evaluateRegion();
     void evaluateLine();
     void evaluateDocument();
