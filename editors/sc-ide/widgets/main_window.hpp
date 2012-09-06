@@ -141,7 +141,7 @@ private Q_SLOTS:
     void switchSession( Session *session );
     void saveSession( Session *session );
     void openHelp();
-    void helpForCursor();
+    void openDocumentation();
     void onInterpreterStateChanged( QProcess::ProcessState );
     void onServerStatusReply(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU);
     void onServerRunningChanged( bool running, QString const & hostName, int port );

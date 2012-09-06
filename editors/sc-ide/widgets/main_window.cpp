@@ -339,7 +339,7 @@ void MainWindow::createActions()
     QIcon::fromTheme("system-help"), tr("&Help for Selection"), this);
     act->setShortcut(tr("Ctrl+D", "Help for selection"));
     act->setStatusTip(tr("Find help for selected text"));
-    connect(act, SIGNAL(triggered()), this, SLOT(helpForCursor()));
+    connect(act, SIGNAL(triggered()), this, SLOT(openDocumentation()));
 
     // Server
     mActions[ToggleServerRunning] = act = new QAction(this);
@@ -1052,7 +1052,7 @@ void MainWindow::showSettings()
         mMain->applySettings();
 }
 
-void MainWindow::helpForCursor()
+void MainWindow::openDocumentation()
 {
     QWidget * focussedWidget = QApplication::focusWidget();
 
