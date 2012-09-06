@@ -1518,6 +1518,8 @@ void CodeEditor::gotoEmptyLineUpDown(bool up)
     QTextCursor cursor = textCursor();
     cursor.beginEditBlock();
 
+    bool cursorMoved = false;
+
     // find first non-whitespace line
     while ( cursor.movePosition(direction) ) {
         if ( !whiteSpaceLine.exactMatch(cursor.block().text()) )
@@ -1528,8 +1530,17 @@ void CodeEditor::gotoEmptyLineUpDown(bool up)
     while ( cursor.movePosition(direction) ) {
         if ( whiteSpaceLine.exactMatch(cursor.block().text()) ) {
             setTextCursor(cursor);
+            cursorMoved = true;
             break;
         }
+    }
+
+    if (!cursorMoved) {
+        const QTextCursor::MoveOperation startOrEnd = up ? QTextCursor::Start
+                                                         : QTextCursor::End;
+
+        cursor.movePosition(startOrEnd);
+        setTextCursor(cursor);
     }
 
     cursor.endEditBlock();
