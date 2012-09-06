@@ -120,8 +120,6 @@ public:
 
     bool stepForwardEvaluation() { return mStepForwardEvaluation; }
 
-    void openDefinition(QString const & string);
-
     void applySettings( Settings::Manager * );
 
     void saveSession( Session * );

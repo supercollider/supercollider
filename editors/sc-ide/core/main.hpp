@@ -96,6 +96,8 @@ public:
         return true;
     }
 
+    static void openDefinition(const QString &string, QWidget * parent);
+
     Settings::Manager *settings()       { return mSettings;    }
     DocumentManager * documentManager() { return mDocManager;  }
     SessionManager * sessionManager()   { return mSessionManager; }

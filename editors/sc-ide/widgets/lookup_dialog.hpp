@@ -32,7 +32,7 @@ class LookupDialog : public QDialog
     Q_OBJECT
 
 public:
-    LookupDialog(QWidget *parent = 0);
+    explicit LookupDialog(QWidget *parent = 0);
     void query( const QString & query ) { mQueryEdit->setText(query); performQuery(); }
     void clearQuery() { mQueryEdit->clear(); }
 

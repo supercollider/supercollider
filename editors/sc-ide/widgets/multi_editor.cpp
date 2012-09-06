@@ -894,17 +894,6 @@ void MultiEditor::evaluateDocument()
     Main::evaluateCode(documentText);
 }
 
-void MultiEditor::openDefinition(const QString &string)
-{
-    QString definitionString = string.trimmed();
-    if (definitionString.isEmpty())
-        return;
-
-    LookupDialog dialog(this);
-    dialog.query(definitionString);
-    dialog.exec();
-}
-
 void MultiEditor::openDefinition()
 {
     CodeEditor * editor = currentEditor();
@@ -913,7 +902,7 @@ void MultiEditor::openDefinition()
     if (!textCursor.hasSelection())
         textCursor.select(QTextCursor::WordUnderCursor);
 
-    openDefinition(textCursor.selectedText());
+    Main::openDefinition(textCursor.selectedText(), this);
 }
 
 bool MultiEditor::openDocumentation()
