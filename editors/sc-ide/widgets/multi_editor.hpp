@@ -73,6 +73,8 @@ public:
 
         GotoPreviousBlock,
         GotoNextBlock,
+        GotoPreviousRegion,
+        GotoNextRegion,
         GotoPreviousEmptyLine,
         GotoNextEmptyLine,
 

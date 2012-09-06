@@ -1457,9 +1457,13 @@ void CodeEditor::gotoNextBlock()
     if (previousBracket.isValid()) {
         TokenIterator nextBracket = nextClosingBracket(previousBracket.next());
 
-        if (nextBracket.isValid())
+        if (nextBracket.isValid()) {
             setTextCursor(cursorAt(nextBracket, 1));
+            return;
+        }
     }
+
+    gotoNextRegion();
 }
 
 void CodeEditor::gotoPreviousBlock()
@@ -1485,9 +1489,13 @@ void CodeEditor::gotoPreviousBlock()
     if (nextBracket.isValid()) {
         TokenIterator previousBracket = previousOpeningBracket(nextBracket.previous());
 
-        if (previousBracket.isValid())
+        if (previousBracket.isValid()) {
             setTextCursor(cursorAt(previousBracket));
+            return;
+        }
     }
+
+    gotoPreviousRegion();
 }
 
 void CodeEditor::gotoPreviousEmptyLine()
@@ -1534,6 +1542,75 @@ void CodeEditor::selectCurrentRegion()
     if (!selectedRegionCursor.isNull() && selectedRegionCursor.hasSelection())
         setTextCursor(selectedRegionCursor);
 }
+
+void CodeEditor::gotoNextRegion()
+{
+    QTextCursor cursor = textCursor();
+    cursor.movePosition(QTextCursor::NextCharacter);
+
+    QTextCursor regionCursor = regionAtCursor(cursor);
+
+    QTextCursor cursorBehindRegion;
+    if (!regionCursor.isNull() && regionCursor.hasSelection()) {
+        cursorBehindRegion = regionCursor;
+        cursorBehindRegion.movePosition(QTextCursor::NextCharacter);
+    } else {
+        cursorBehindRegion = textCursor();
+        cursorBehindRegion.movePosition(QTextCursor::NextCharacter);
+    }
+
+    TokenIterator it = TokenIterator(cursorBehindRegion.block(), cursorBehindRegion.positionInBlock());
+    if (!it.isValid() || it->type == Token::OpeningBracket)
+        it = TokenIterator::rightOf(cursorBehindRegion.block(), cursorBehindRegion.positionInBlock());
+
+    while (it.isValid()) {
+        if ( (it->type == Token::OpeningBracket) && (it->character == '(') &&
+             (it->positionInBlock == 0) ) {
+            setTextCursor( cursorAt(it) );
+            return;
+        }
+        ++it;
+    }
+
+    cursor = textCursor();
+    cursor.movePosition(QTextCursor::End);
+    setTextCursor(cursor);
+}
+
+void CodeEditor::gotoPreviousRegion()
+{
+    QTextCursor cursor = textCursor();
+
+    QTextCursor regionCursor = regionAtCursor(cursor);
+
+    QTextCursor cursorBeforeRegion;
+    if (!regionCursor.isNull() && regionCursor.hasSelection()) {
+        cursorBeforeRegion = regionCursor;
+        cursorBeforeRegion.setPosition(cursorBeforeRegion.anchor());
+        cursorBeforeRegion.movePosition(QTextCursor::PreviousCharacter);
+    } else {
+        cursorBeforeRegion = textCursor();
+        cursorBeforeRegion.movePosition(QTextCursor::PreviousCharacter);
+    }
+
+    TokenIterator it = TokenIterator(cursorBeforeRegion.block(), cursorBeforeRegion.positionInBlock());
+    if (!it.isValid() || it->type == Token::ClosingBracket)
+        it = TokenIterator::leftOf(cursorBeforeRegion.block(), cursorBeforeRegion.positionInBlock());
+
+    while (it.isValid()) {
+        if ( (it->type == Token::ClosingBracket) && (it->character == ')') &&
+             (it->positionInBlock == 0) ) {
+            setTextCursor( cursorAt(it) );
+            return;
+        }
+        --it;
+    }
+
+    cursor = textCursor();
+    cursor.movePosition(QTextCursor::Start);
+    setTextCursor(cursor);
+}
+
 
 void CodeEditor::hideMouseCursor()
 {
