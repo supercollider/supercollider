@@ -552,6 +552,14 @@ void CodeEditor::showPosition( int pos )
     setTextCursor(cursor);
 }
 
+QString CodeEditor::symbolUnderCursor()
+{
+    QTextCursor cursor = textCursor();
+    if (!cursor.hasSelection())
+        cursor.select(QTextCursor::WordUnderCursor);
+    return cursor.selectedText();
+}
+
 void CodeEditor::clearSearchHighlighting()
 {
     mSearchSelections.clear();
@@ -1667,11 +1675,7 @@ void CodeEditor::gotoPreviousRegion()
 
 bool CodeEditor::openDocumentation()
 {
-    QTextCursor cursor = textCursor();
-    if (!cursor.hasSelection())
-        cursor.select(QTextCursor::WordUnderCursor);
-
-    return Main::openDocumentation(cursor.selectedText());
+    return Main::openDocumentation(symbolUnderCursor());
 }
 
 void CodeEditor::hideMouseCursor()

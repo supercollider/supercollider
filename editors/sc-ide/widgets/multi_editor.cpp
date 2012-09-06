@@ -897,12 +897,7 @@ void MultiEditor::evaluateDocument()
 void MultiEditor::openDefinition()
 {
     CodeEditor * editor = currentEditor();
-    QTextCursor textCursor = editor->textCursor();
-
-    if (!textCursor.hasSelection())
-        textCursor.select(QTextCursor::WordUnderCursor);
-
-    Main::openDefinition(textCursor.selectedText(), this);
+    Main::openDefinition(editor->symbolUnderCursor(), this);
 }
 
 Document * MultiEditor::documentForTab( int index )

@@ -82,6 +82,8 @@ public:
     QTextCursor currentRegion();
     void blinkCode( const QTextCursor & c );
     void showPosition( int );
+    QString symbolUnderCursor();
+
 
 public Q_SLOTS:
     void zoomIn(int steps = 1);

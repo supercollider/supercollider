@@ -42,6 +42,7 @@ public:
     void applySettings( Settings::Manager * );
 
     QSize sizeHint() const { return mSizeHint; }
+    QString symbolUnderCursor();
 
 signals:
     void scrollToBottomRequest();
