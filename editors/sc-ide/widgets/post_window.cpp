@@ -104,6 +104,14 @@ void PostWindow::applySettings(Settings::Manager * settings)
     setFont(font);
 }
 
+QString PostWindow::symbolUnderCursor()
+{
+    QTextCursor cursor = textCursor();
+    if (!cursor.hasSelection())
+        cursor.select(QTextCursor::WordUnderCursor);
+    return cursor.selectedText();
+}
+
 void PostWindow::post(const QString &text)
 {
     QScrollBar *scrollBar = verticalScrollBar();
@@ -177,11 +185,7 @@ void PostWindow::wheelEvent( QWheelEvent * e )
 
 bool PostWindow::openDocumentation()
 {
-    QTextCursor cursor = textCursor();
-    if (!cursor.hasSelection())
-        cursor.select(QTextCursor::WordUnderCursor);
-
-    return Main::openDocumentation(cursor.selectedText());
+    return Main::openDocumentation(symbolUnderCursor());
 }
 
 
