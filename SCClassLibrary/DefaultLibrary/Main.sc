@@ -30,7 +30,7 @@ Main : Process {
 				"scel",  {"For help type C-c C-y."},
 				"sced",  {"For help type ctrl-U."},
 				"scapp", {"For help type cmd-d."},
-				"scqt", {"For help press F1."}
+				"scqt", {"For help press %.".format(if(this.platform.name==\osx,"Cmd-D","Ctrl-D"))}
 			) ?? {
 				(
 					osx: "For help type cmd-d.",
