@@ -963,7 +963,7 @@ void MainWindow::lookupDocumentation()
 
     bool success = dialog->exec();
     if (success)
-        mEditors->openDocumentation(dialog->textValue());
+        Main::openDocumentation(dialog->textValue());
 
     delete dialog;
 }
