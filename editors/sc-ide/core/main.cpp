@@ -21,8 +21,10 @@
 #include "main.hpp"
 #include "settings/manager.hpp"
 #include "session_manager.hpp"
+#include "../widgets/lookup_dialog.hpp"
 #include "../widgets/main_window.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
+
 #include "SC_DirUtils.h"
 
 #include <QAction>
@@ -211,4 +213,15 @@ bool Main::eventFilter(QObject *object, QEvent *event)
     }
 
     return QObject::eventFilter(object, event);
+}
+
+void Main::openDefinition(const QString &string, QWidget * parent)
+{
+    QString definitionString = string.trimmed();
+    if (definitionString.isEmpty())
+        return;
+
+    LookupDialog dialog(parent);
+    dialog.query(definitionString);
+    dialog.exec();
 }
