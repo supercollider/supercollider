@@ -236,11 +236,17 @@ void load_synthdef_folder(nova_server & server, path const & folder, bool verbos
 
 void load_synthdefs(nova_server & server, server_arguments const & args)
 {
+#ifndef _WIN32
+    const char pathSeparator[] = ":";
+#else
+    const char pathSeparator[] = ";";
+#endif
+
     if (args.load_synthdefs) {
         const char * env_synthdef_path = getenv("SC_SYNTHDEF_PATH");
         vector<path> directories;
         if (env_synthdef_path) {
-            boost::split(directories, env_synthdef_path, boost::is_any_of(":"));
+            boost::split(directories, env_synthdef_path, boost::is_any_of(pathSeparator));
         } else {
             char resourceDir[MAXPATHLEN];
             if(sc_IsStandAlone())
