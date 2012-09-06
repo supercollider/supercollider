@@ -52,6 +52,8 @@ public slots:
     void zoomIn(int steps = 1);
     void zoomOut(int steps = 1);
 
+    bool openDocumentation();
+
 private slots:
     void onAutoScrollTriggered(bool);
 

@@ -905,20 +905,6 @@ void MultiEditor::openDefinition()
     Main::openDefinition(textCursor.selectedText(), this);
 }
 
-bool MultiEditor::openDocumentation()
-{
-    CodeEditor * editor = currentEditor();
-    if (!editor)
-        return false;
-
-    QTextCursor textCursor = editor->textCursor();
-
-    if (!textCursor.hasSelection())
-        textCursor.select(QTextCursor::WordUnderCursor);
-
-    return Main::openDocumentation(textCursor.selectedText());
-}
-
 Document * MultiEditor::documentForTab( int index )
 {
     return mTabs->tabData(index).value<Document*>();

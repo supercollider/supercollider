@@ -29,13 +29,24 @@
 
 namespace ScIDE {
 
+QString CmdLineEdit::symbolUnderCursor()
+{
+    // TODO: select word under cursor
+    return selectedText();
+}
+
+bool CmdLineEdit::openDocumentation()
+{
+    return Main::openDocumentation(symbolUnderCursor());
+}
+
 CmdLine::CmdLine( const QString &text, int maxHist ) :
     curHistory( -1 ),
     maxHistory( qMax(1,maxHist) )
 {
     QLabel *lbl = new QLabel(text);
 
-    expr = new QLineEdit;
+    expr = new CmdLineEdit;
 
     QHBoxLayout *l = new QHBoxLayout;
     l->setContentsMargins(0,0,0,0);

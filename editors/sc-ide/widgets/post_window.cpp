@@ -175,6 +175,16 @@ void PostWindow::wheelEvent( QWheelEvent * e )
     QPlainTextEdit::wheelEvent(e);
 }
 
+bool PostWindow::openDocumentation()
+{
+    QTextCursor cursor = textCursor();
+    if (!cursor.hasSelection())
+        cursor.select(QTextCursor::WordUnderCursor);
+
+    return Main::openDocumentation(cursor.selectedText());
+}
+
+
 PostDock::PostDock(QWidget* parent):
     QDockWidget(tr("Post window"), parent)
 {

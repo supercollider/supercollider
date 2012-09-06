@@ -1054,7 +1054,15 @@ void MainWindow::showSettings()
 
 void MainWindow::helpForCursor()
 {
-    bool documentationOpened = mEditors->openDocumentation();
+    QWidget * focussedWidget = QApplication::focusWidget();
+
+    bool documentationOpened = false;
+
+    int indexOfMethod = focussedWidget->metaObject()->indexOfMethod("openDocumentation()");
+    if (indexOfMethod != -1)
+        QMetaObject::invokeMethod( focussedWidget, "openDocumentation", Qt::DirectConnection,
+                                   Q_RETURN_ARG(bool, documentationOpened) );
+
     if (!documentationOpened)
         openHelp();
 }

@@ -1665,6 +1665,14 @@ void CodeEditor::gotoPreviousRegion()
     setTextCursor(cursor);
 }
 
+bool CodeEditor::openDocumentation()
+{
+    QTextCursor cursor = textCursor();
+    if (!cursor.hasSelection())
+        cursor.select(QTextCursor::WordUnderCursor);
+
+    return Main::openDocumentation(cursor.selectedText());
+}
 
 void CodeEditor::hideMouseCursor()
 {

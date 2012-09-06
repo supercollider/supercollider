@@ -141,8 +141,6 @@ public slots:
     void removeCurrentSplit();
     void removeAllSplits();
 
-    bool openDocumentation();
-
 private slots:
 
     void onOpen( Document *, int initialCursorPosition );

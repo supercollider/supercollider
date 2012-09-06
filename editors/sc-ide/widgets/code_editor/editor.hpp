@@ -108,6 +108,7 @@ public Q_SLOTS:
     void selectCurrentRegion();
     void gotoNextRegion();
     void gotoPreviousRegion();
+    bool openDocumentation();
 
 protected:
     virtual bool event( QEvent * );
