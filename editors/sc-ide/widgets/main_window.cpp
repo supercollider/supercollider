@@ -323,6 +323,11 @@ void MainWindow::createActions()
     act->setShortcut(tr("Ctrl+Shift+D", "Lookup Documentation"));
     connect(act, SIGNAL(triggered()), this, SLOT(lookupDocumentation()));
 
+    // Language
+    mActions[OpenDefinition] = act = new QAction(tr("Open Class/Method Definition"), this);
+    act->setShortcut(tr("Ctrl+I", "Open definition of selected class or method"));
+    connect(act, SIGNAL(triggered(bool)), this, SLOT(openDefinition()));
+
     // Settings
     mActions[ShowSettings] = act = new QAction(tr("&Configure IDE..."), this);
     act->setStatusTip(tr("Show configuration dialog"));
@@ -405,7 +410,7 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::ToggleOverwriteMode) );
     menu->addAction( mEditors->action(MultiEditor::SelectRegion) );
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::OpenDefinition) );
+    menu->addAction( mActions[OpenDefinition] );
 
     menuBar()->addMenu(menu);
 
@@ -949,6 +954,15 @@ void MainWindow::updateClockWidget(bool isFullScreen)
             statusBar()->insertWidget(0, mClockLabel);
         }
     }
+}
+
+void MainWindow::openDefinition()
+{
+    QWidget * focussedWidget = QApplication::focusWidget();
+
+    int indexOfMethod = focussedWidget->metaObject()->indexOfMethod("openDefinition()");
+    if (indexOfMethod != -1)
+        QMetaObject::invokeMethod( focussedWidget, "openDefinition", Qt::DirectConnection );
 }
 
 void MainWindow::lookupDefinition()

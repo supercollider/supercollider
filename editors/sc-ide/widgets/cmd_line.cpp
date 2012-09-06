@@ -20,6 +20,7 @@
 */
 
 #include "cmd_line.hpp"
+#include "main_window.hpp"
 #include "../core/main.hpp"
 #include "../core/settings/manager.hpp"
 
@@ -38,6 +39,11 @@ QString CmdLineEdit::symbolUnderCursor()
 bool CmdLineEdit::openDocumentation()
 {
     return Main::openDocumentation(symbolUnderCursor());
+}
+
+void CmdLineEdit::openDefinition()
+{
+    return Main::openDefinition(symbolUnderCursor(), MainWindow::instance());
 }
 
 CmdLine::CmdLine( const QString &text, int maxHist ) :

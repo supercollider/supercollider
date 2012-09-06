@@ -1678,6 +1678,11 @@ bool CodeEditor::openDocumentation()
     return Main::openDocumentation(symbolUnderCursor());
 }
 
+void CodeEditor::openDefinition()
+{
+    return Main::openDefinition(symbolUnderCursor(), this);
+}
+
 void CodeEditor::hideMouseCursor()
 {
     QCursor * overrideCursor = QApplication::overrideCursor();

@@ -18,18 +18,19 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "main_window.hpp"
 #include "post_window.hpp"
 #include "../core/main.hpp"
 #include "../core/settings/manager.hpp"
 
-#include <QPointer>
-#include <QToolBar>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QScrollBar>
-#include <QShortcut>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QPointer>
+#include <QScrollBar>
+#include <QShortcut>
+#include <QToolBar>
 
 namespace ScIDE {
 
@@ -186,6 +187,11 @@ void PostWindow::wheelEvent( QWheelEvent * e )
 bool PostWindow::openDocumentation()
 {
     return Main::openDocumentation(symbolUnderCursor());
+}
+
+void PostWindow::openDefinition()
+{
+    Main::openDefinition(symbolUnderCursor(), MainWindow::instance());
 }
 
 
