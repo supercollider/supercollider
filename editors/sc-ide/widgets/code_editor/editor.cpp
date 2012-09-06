@@ -507,6 +507,36 @@ QTextCursor CodeEditor::regionAtCursor(QTextCursor c)
     return QTextCursor();
 }
 
+QTextCursor CodeEditor::blockAtCursor(QTextCursor cursor)
+{
+    TokenIterator it (cursor.block(), cursor.positionInBlock());
+
+    if (it.isValid()) {
+        switch (it->type) {
+        case Token::OpeningBracket:
+        case Token::ClosingBracket:
+        {
+            BracketMatch match;
+            matchBracket(it, match);
+
+            if (match.first.isValid()) {
+                QTextCursor selection(textDocument());
+                selection.setPosition(match.first.position());
+                selection.setPosition(match.second.position() + 1, QTextCursor::KeepAnchor);
+                return selection;
+            }
+            break;
+        }
+
+        default:
+            break;
+        }
+    }
+
+    return QTextCursor();
+}
+
+
 void CodeEditor::showPosition( int pos )
 {
     if (pos < 0) return;
@@ -702,6 +732,19 @@ void CodeEditor::mouseReleaseEvent ( QMouseEvent *e )
         QPlainTextEdit::mouseReleaseEvent(e);
 
     mMouseBracketMatch = false;
+}
+
+void CodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
+{
+    QTextCursor cursor = cursorForPosition(e->pos());
+    QTextCursor selection = blockAtCursor(cursor);
+
+    if (!selection.isNull()) {
+        setTextCursor(selection);
+        return;
+    }
+
+    QPlainTextEdit::mouseDoubleClickEvent(e);
 }
 
 void CodeEditor::mouseMoveEvent( QMouseEvent *e )

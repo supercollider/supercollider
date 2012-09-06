@@ -113,6 +113,7 @@ protected:
     virtual bool event( QEvent * );
     virtual void keyPressEvent( QKeyEvent * );
     virtual void mouseReleaseEvent ( QMouseEvent * );
+    virtual void mouseDoubleClickEvent( QMouseEvent * );
     virtual void mouseMoveEvent( QMouseEvent * );
     virtual void wheelEvent( QWheelEvent * );
     virtual void paintEvent( QPaintEvent * );
@@ -150,6 +151,7 @@ private:
     void gotoEmptyLineUpDown(bool up);
 
     QTextCursor regionAtCursor(QTextCursor);
+    QTextCursor blockAtCursor(QTextCursor); // text cursor should point to bracket!
 
     int indentedStartOfLine( const QTextBlock & );
     void indent( const QTextCursor & );
