@@ -916,17 +916,6 @@ void MultiEditor::openDefinition()
     openDefinition(textCursor.selectedText());
 }
 
-bool MultiEditor::openDocumentation(const QString &string)
-{
-    QString symbol = string.trimmed();
-    if (symbol.isEmpty())
-        return false;
-
-    QString code = QString("HelpBrowser.openHelpFor(\"%1\")").arg(symbol);
-    Main::evaluateCode(code, true);
-    return true;
-}
-
 bool MultiEditor::openDocumentation()
 {
     CodeEditor * editor = currentEditor();
@@ -938,7 +927,7 @@ bool MultiEditor::openDocumentation()
     if (!textCursor.hasSelection())
         textCursor.select(QTextCursor::WordUnderCursor);
 
-    return openDocumentation(textCursor.selectedText());
+    return Main::openDocumentation(textCursor.selectedText());
 }
 
 Document * MultiEditor::documentForTab( int index )

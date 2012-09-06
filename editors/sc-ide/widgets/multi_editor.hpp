@@ -121,7 +121,6 @@ public:
     bool stepForwardEvaluation() { return mStepForwardEvaluation; }
 
     void openDefinition(QString const & string);
-    bool openDocumentation(QString const & string);
 
     void applySettings( Settings::Manager * );
 

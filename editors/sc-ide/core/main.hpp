@@ -83,6 +83,19 @@ public:
         instance()->scProcess()->evaluateCode(text, silent);
     }
 
+    static bool openDocumentation(const QString & string)
+    {
+        // LATER: move to a new ScLanguage class
+
+        QString symbol = string.trimmed();
+        if (symbol.isEmpty())
+            return false;
+
+        QString code = QString("HelpBrowser.openHelpFor(\"%1\")").arg(symbol);
+        evaluateCode(code, true);
+        return true;
+    }
+
     Settings::Manager *settings()       { return mSettings;    }
     DocumentManager * documentManager() { return mDocManager;  }
     SessionManager * sessionManager()   { return mSessionManager; }
