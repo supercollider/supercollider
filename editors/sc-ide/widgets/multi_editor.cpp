@@ -360,6 +360,18 @@ void MultiEditor::createActions()
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoNextBlock()));
 
+    mActions[GotoPreviousRegion] = act = new QAction(
+        QIcon::fromTheme("edit-gotopreviousregion"), tr("Go to Previous Region"), this);
+    act->setShortcut(tr("Alt+[", "Go to Previous Region"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoPreviousRegion()));
+
+    mActions[GotoNextRegion] = act = new QAction(
+        QIcon::fromTheme("edit-gotonextregion"), tr("Go to Next Region"), this);
+    act->setShortcut(tr("Alt+]", "Go to Next Region"));
+    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoNextRegion()));
+
     mActions[GotoPreviousEmptyLine] = act = new QAction( tr("Go to Previous Empty Line"), this);
     act->setShortcut(tr("Ctrl+Up", "Go to Previous Empty Line"));
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
@@ -486,6 +498,8 @@ void MultiEditor::createActions()
     addAction(mActions[MoveLineDown]);
     addAction(mActions[GotoPreviousBlock]);
     addAction(mActions[GotoNextBlock]);
+    addAction(mActions[GotoPreviousRegion]);
+    addAction(mActions[GotoNextRegion]);
     addAction(mActions[GotoPreviousEmptyLine]);
     addAction(mActions[GotoNextEmptyLine]);
     addAction(mActions[SelectRegion]);
@@ -509,6 +523,8 @@ void MultiEditor::updateActions()
     mActions[MoveLineDown]->setEnabled( editor );
     mActions[GotoPreviousBlock]->setEnabled( editor );
     mActions[GotoNextBlock]->setEnabled( editor );
+    mActions[GotoPreviousRegion]->setEnabled( editor );
+    mActions[GotoNextRegion]->setEnabled( editor );
     mActions[GotoPreviousEmptyLine]->setEnabled( editor );
     mActions[GotoNextEmptyLine]->setEnabled( editor );
     mActions[SelectRegion]->setEnabled( editor );
