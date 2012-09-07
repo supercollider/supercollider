@@ -102,7 +102,7 @@ void Document::setIndentWidth( int numSpaces )
 }
 
 
-DocumentManager::DocumentManager( Main *main ):
+DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
     QObject(main)
 {
     connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
@@ -110,7 +110,7 @@ DocumentManager::DocumentManager( Main *main ):
     connect(main, SIGNAL(storeSettingsRequest(Settings::Manager*)),
             this, SLOT(storeSettings(Settings::Manager*)));
 
-    loadRecentDocuments( main->settings() );
+    loadRecentDocuments( settings );
 }
 
 Document * DocumentManager::createDocument()

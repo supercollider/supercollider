@@ -174,12 +174,12 @@ static QString getSettingsFile()
 Main::Main(void) :
     mSettings( new Settings::Manager( getSettingsFile(), this ) ),
     mSCResponder( new ScResponder(this) ),
-    mSCProcess( new SCProcess(this) ),
+    mSCProcess( new SCProcess(this, mSCResponder, mSettings) ),
     mSCServer( new ScServer(this) ),
-    mDocManager( new DocumentManager(this) ),
+    mDocManager( new DocumentManager(this, mSettings) ),
     mSessionManager( new SessionManager(mDocManager, this) )
 {
-    new SyntaxHighlighterGlobals(this);
+    new SyntaxHighlighterGlobals(this, mSettings);
 
     connect(mSCProcess, SIGNAL(response(QString,QString)), mSCResponder, SLOT(onResponse(QString,QString)));
     connect(mSCResponder, SIGNAL(serverRunningChanged(bool,QString,int)), mSCServer, SLOT(onServerRunningChanged(bool,QString,int)));

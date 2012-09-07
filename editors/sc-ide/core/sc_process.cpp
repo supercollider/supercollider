@@ -34,15 +34,15 @@
 
 namespace ScIDE {
 
-SCProcess::SCProcess( Main *parent ):
+SCProcess::SCProcess( Main *parent, ScResponder * responder, Settings::Manager * settings ):
     QProcess( parent ),
     mIpcServer( new QLocalServer(this) ),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid()))
 {
-    mIntrospectionParser = new ScIntrospectionParser( parent->scResponder(), this );
+    mIntrospectionParser = new ScIntrospectionParser( responder, this );
     mIntrospectionParser->start();
 
-    prepareActions(parent);
+    prepareActions(settings);
 
     connect(this, SIGNAL( readyRead() ),
             this, SLOT( onReadyRead() ));
@@ -51,7 +51,7 @@ SCProcess::SCProcess( Main *parent ):
             this, SLOT(swapIntrospection(ScLanguage::Introspection*)));
 }
 
-void SCProcess::prepareActions(Main * main)
+void SCProcess::prepareActions(Settings::Manager * settings)
 {
     QAction * action;
     mActions[StartSCLang] = action = new QAction(
@@ -80,7 +80,6 @@ void SCProcess::prepareActions(Main * main)
     action->setShortcut(tr("Ctrl+.", "Stop Main (a.k.a. cmd-period)"));
     connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
 
-    Settings::Manager *settings = main->settings();
     for (int i = 0; i < SCProcessActionCount; ++i)
         settings->addAction( mActions[i] );
 }
