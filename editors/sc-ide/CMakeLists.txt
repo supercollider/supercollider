@@ -23,17 +23,18 @@ set ( ide_moc_hdr
     core/session_manager.hpp
     widgets/cmd_line.hpp
     widgets/doc_list.hpp
+    widgets/documents_dialog.hpp
+    widgets/editor_box.hpp
     widgets/find_replace_tool.hpp
     widgets/goto_line_tool.hpp
+    widgets/lookup_dialog.hpp
     widgets/main_window.hpp
     widgets/multi_editor.hpp
-    widgets/editor_box.hpp
     widgets/popup_text_input.hpp
     widgets/post_window.hpp
-    widgets/tool_box.hpp
-    widgets/documents_dialog.hpp
+    widgets/session_switch_dialog.hpp
     widgets/sessions_dialog.hpp
-    widgets/lookup_dialog.hpp
+    widgets/tool_box.hpp
     widgets/code_editor/editor.hpp
     widgets/code_editor/highlighter.hpp
     widgets/code_editor/overlay.hpp
@@ -62,15 +63,16 @@ set ( ide_src
     core/settings/serialization.cpp
     core/settings/manager.cpp
     core/session_manager.cpp
+    widgets/cmd_line.cpp
+    widgets/doc_list.cpp
+    widgets/documents_dialog.cpp
+    widgets/editor_box.cpp
+    widgets/find_replace_tool.cpp
+    widgets/lookup_dialog.cpp
     widgets/main_window.cpp
     widgets/multi_editor.cpp
-    widgets/editor_box.cpp
     widgets/post_window.cpp
-    widgets/doc_list.cpp
-    widgets/cmd_line.cpp
-    widgets/find_replace_tool.cpp
-    widgets/documents_dialog.cpp
-    widgets/lookup_dialog.cpp
+    widgets/session_switch_dialog.cpp
     widgets/code_editor/editor.cpp
     widgets/code_editor/highlighter.cpp
     widgets/code_editor/overlay.cpp
@@ -83,7 +85,7 @@ set ( ide_src
     widgets/util/text_format_list_widget.cpp
     widgets/util/popup_widget.cpp
 
-	${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
 )
 
 set( ide_forms
