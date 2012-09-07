@@ -46,7 +46,7 @@ Document::Document():
     connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
              this, SLOT(applySettings(Settings::Manager*)) );
 
-    applySettings( Main::instance()->settings() );
+    applySettings( Main::settings() );
 }
 
 void Document::applySettings( Settings::Manager *settings )
@@ -85,7 +85,7 @@ void Document::setDefaultFont( const QFont & font )
 
 void Document::resetDefaultFont()
 {
-    Settings::Manager *settings = Main::instance()->settings();
+    Settings::Manager *settings = Main::settings();
     setDefaultFont( settings->codeFont() );
 }
 

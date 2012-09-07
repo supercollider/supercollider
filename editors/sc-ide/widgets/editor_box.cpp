@@ -37,7 +37,7 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
     mLayout = new QStackedLayout();
     setLayout(mLayout);
 
-    connect(Main::instance()->documentManager(), SIGNAL(closed(Document*)),
+    connect(Main::documentManager(), SIGNAL(closed(Document*)),
             this, SLOT(onDocumentClosed(Document*)));
 }
 

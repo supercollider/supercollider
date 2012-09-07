@@ -92,7 +92,7 @@ void SCProcess::startLanguage (void)
         return;
     }
 
-    Settings::Manager *settings = Main::instance()->settings();
+    Settings::Manager *settings = Main::settings();
     settings->beginGroup("IDE/interpreter");
 
     QString workingDirectory = settings->value("runtimeDir").toString();
@@ -223,7 +223,7 @@ void SCProcess::onSclangStart()
 
     QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
     evaluateCode ( command, true );
-    setActiveDocument(Main::instance()->documentManager()->currentDocument());
+    setActiveDocument(Main::documentManager()->currentDocument());
 }
 
 void SCProcess::setActiveDocument(Document * document)
@@ -257,7 +257,7 @@ void ScResponder::onResponse( const QString & selector, const QString & data )
         emit newIntrospectionData(data);
 
     else if (selector == requestCurrentPathSymbol)
-        Main::scProcess()->setActiveDocument(Main::instance()->documentManager()->currentDocument());
+        Main::scProcess()->setActiveDocument(Main::documentManager()->currentDocument());
 
     else if (selector == openFileSymbol)
         handleOpenFile(data);
@@ -282,7 +282,7 @@ void ScResponder::handleOpenFile( const QString & data ) const
             if (!success)
                 return;
 
-            Main::instance()->documentManager()->open(QString(path.c_str()));
+            Main::documentManager()->open(QString(path.c_str()));
         }
     }
 }

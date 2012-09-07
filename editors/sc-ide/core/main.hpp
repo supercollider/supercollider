@@ -73,10 +73,12 @@ public:
         return singleton;
     }
 
-    static SCProcess * scProcess(void)
-    {
-        return instance()->mSCProcess;
-    }
+    static SCProcess * scProcess()             { return instance()->mSCProcess;      }
+    static ScServer  * scServer()              { return instance()->mSCServer;       }
+    static ScResponder * scResponder()         { return instance()->mSCResponder;    }
+    static SessionManager * sessionManager()   { return instance()->mSessionManager; }
+    static DocumentManager * documentManager() { return instance()->mDocManager;     }
+    static Settings::Manager *settings()       { return instance()->mSettings;       }
 
     static void evaluateCode(QString const & text, bool silent = false)
     {
@@ -97,12 +99,6 @@ public:
     }
 
     static void openDefinition(const QString &string, QWidget * parent);
-
-    Settings::Manager *settings()       { return mSettings;    }
-    DocumentManager * documentManager() { return mDocManager;  }
-    SessionManager * sessionManager()   { return mSessionManager; }
-    ScServer  * scServer()              { return mSCServer;    }
-    ScResponder  * scResponder()        { return mSCResponder; }
 
 public Q_SLOTS:
     void storeSettings() {

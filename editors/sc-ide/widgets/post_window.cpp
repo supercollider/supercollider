@@ -49,7 +49,7 @@ PostWindow::PostWindow(QWidget* parent):
 
     QAction *copyAction = new QAction(tr("Copy"), this);
     connect(copyAction, SIGNAL(triggered()), this, SLOT(copy()));
-    copyAction->setShortcut( Main::instance()->settings()->shortcut("IDE/shortcuts/copy") );
+    copyAction->setShortcut( Main::settings()->shortcut("IDE/shortcuts/copy") );
     addAction(copyAction);
 
     mClearAction = new QAction(tr("Clear"), this);
@@ -93,7 +93,7 @@ PostWindow::PostWindow(QWidget* parent):
     connect(mAutoScrollAction, SIGNAL(triggered(bool)),
             this, SLOT(onAutoScrollTriggered(bool)));
 
-    applySettings( Main::instance()->settings() );
+    applySettings( Main::settings() );
 }
 
 void PostWindow::applySettings(Settings::Manager * settings)

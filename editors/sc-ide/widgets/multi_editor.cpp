@@ -177,7 +177,7 @@ private:
         foreach(CodeEditor *editor, history)
             displayDocuments << editor->document();
 
-        QList<Document*> managerDocuments =  Main::instance()->documentManager()->documents();
+        QList<Document*> managerDocuments =  Main::documentManager()->documents();
         foreach(Document *document, managerDocuments)
             if (!displayDocuments.contains(document))
                 displayDocuments << document;
@@ -250,7 +250,7 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
 void MultiEditor::createActions()
 {
-    Settings::Manager *settings = Main::instance()->settings();
+    Settings::Manager *settings = Main::settings();
     settings->beginGroup("IDE/shortcuts");
 
     QAction * act;
@@ -603,7 +603,7 @@ void MultiEditor::loadBoxState( CodeEditorBox *box, const QVariantList & data )
         QVariantMap docData = docVar.value<QVariantMap>();
         QString docPath = docData.value("file").toString();
         int docPos = docData.value("position").toInt();
-        Main::instance()->documentManager()->open( docPath, docPos );
+        Main::documentManager()->open( docPath, docPos );
     }
 }
 
@@ -633,7 +633,7 @@ void MultiEditor::loadSplitterState( QSplitter *splitter, const QVariantMap & da
 
 void MultiEditor::switchSession( Session *session )
 {
-    DocumentManager *docManager = Main::instance()->documentManager();
+    DocumentManager *docManager = Main::documentManager();
     QList<Document*> docs = docManager->documents();
     foreach (Document *doc, docs)
         docManager->close(doc);

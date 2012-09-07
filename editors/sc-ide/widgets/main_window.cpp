@@ -479,7 +479,7 @@ void MainWindow::createMenus()
 
 void MainWindow::saveWindowState()
 {
-    Settings::Manager *settings = Main::instance()->settings();
+    Settings::Manager *settings = Main::settings();
     settings->beginGroup("IDE/mainWindow");
     settings->setValue("geometry", this->saveGeometry().toBase64());
     settings->setValue("state", this->saveState().toBase64());
@@ -488,7 +488,7 @@ void MainWindow::saveWindowState()
 
 void MainWindow::restoreWindowState()
 {
-    Settings::Manager *settings = Main::instance()->settings();
+    Settings::Manager *settings = Main::settings();
     settings->beginGroup("IDE/mainWindow");
 
     QByteArray geom = QByteArray::fromBase64( settings->value("geometry").value<QByteArray>() );
@@ -1084,12 +1084,12 @@ void MainWindow::openDocumentation()
 void MainWindow::openHelp()
 {
     QString code = QString("Help.gui");
-    Main::instance()->scProcess()->evaluateCode(code, true);
+    Main::scProcess()->evaluateCode(code, true);
 }
 
 void MainWindow::toggleServerRunning()
 {
-    ScServer *scServer = Main::instance()->scServer();
+    ScServer *scServer = Main::scServer();
 
     if (scServer->isRunning())
         scServer->quit();

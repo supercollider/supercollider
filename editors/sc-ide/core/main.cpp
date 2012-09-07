@@ -156,7 +156,7 @@ void SingleInstanceGuard::onIpcData()
 
     if (id == QString("open")) {
         foreach (QString path, message)
-            Main::instance()->documentManager()->open(path);
+            Main::documentManager()->open(path);
     }
 }
 

@@ -63,7 +63,7 @@ CmdLine::CmdLine( const QString &text, int maxHist ) :
     expr->installEventFilter( this );
     setFocusProxy(expr);
 
-    applySettings( Main::instance()->settings() );
+    applySettings( Main::settings() );
 }
 
 void CmdLine::applySettings( Settings::Manager *settings )
