@@ -585,7 +585,7 @@ CompletionMenu * AutoCompleter::menuForClassCompletion(CompletionDescription con
                                                        CodeEditor * editor)
 {
     using namespace ScLanguage;
-    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+    const Introspection & introspection = Main::scProcess()->introspection();
 
     const ClassMap & classes = introspection.classMap();
 
@@ -614,7 +614,7 @@ CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescripti
                                                              CodeEditor * editor)
 {
     using namespace ScLanguage;
-    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+    const Introspection & introspection = Main::scProcess()->introspection();
 
     const ClassMap & classes = introspection.classMap();
     ClassMap::const_iterator it = classes.find(completion.base);
@@ -659,7 +659,7 @@ CompletionMenu * AutoCompleter::menuForMethodCompletion(CompletionDescription co
                                                         CodeEditor * editor)
 {
     using namespace ScLanguage;
-    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+    const Introspection & introspection = Main::scProcess()->introspection();
 
     const MethodMap & methods = introspection.methodMap();
 
@@ -707,7 +707,7 @@ CompletionMenu * AutoCompleter::menuForMethodCompletion(CompletionDescription co
 const ScLanguage::Class * AutoCompleter::classForCompletionDescription(AutoCompleter::CompletionDescription const & completion)
 {
     using namespace ScLanguage;
-    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+    const Introspection & introspection = Main::scProcess()->introspection();
 
     switch (completion.tokenType) {
     case Token::Float:
@@ -771,7 +771,7 @@ CompletionMenu * AutoCompleter::menuForInferedObjectMethodCompletion(CompletionD
                                                                      CodeEditor * editor)
 {
     using namespace ScLanguage;
-    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+    const Introspection & introspection = Main::scProcess()->introspection();
 
     const MethodMap & allMethods = introspection.methodMap();
 
@@ -973,7 +973,7 @@ void AutoCompleter::triggerMethodCallAid( bool force )
     using namespace ScLanguage;
     using std::pair;
 
-    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+    const Introspection & introspection = Main::scProcess()->introspection();
 
     const Method *method = 0;
 

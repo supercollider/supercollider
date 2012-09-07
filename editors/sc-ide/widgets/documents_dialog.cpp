@@ -46,7 +46,7 @@ DocumentsDialog::DocumentsDialog(const QList<Document*> & docs, Mode mode, QWidg
 
 void DocumentsDialog::init( Mode mode, const QList<Document*> &docs )
 {
-    DocumentManager *mng = Main::instance()->documentManager();
+    DocumentManager *mng = Main::documentManager();
     connect(mng, SIGNAL(changedExternally(Document*)), this, SLOT(onDocumentChangedExternally(Document*)));
 
     mMode = mode;
@@ -192,7 +192,7 @@ void DocumentsDialog::saveSelected()
 
 void DocumentsDialog::reloadSelected()
 {
-    DocumentManager *mng = Main::instance()->documentManager();
+    DocumentManager *mng = Main::documentManager();
 
     int i = 0;
     while (i < count())
@@ -228,7 +228,7 @@ void DocumentsDialog::ignoreSelected()
 
 void DocumentsDialog::closeSelected()
 {
-    DocumentManager *mng = Main::instance()->documentManager();
+    DocumentManager *mng = Main::documentManager();
 
     int i = 0;
     while (i < count())

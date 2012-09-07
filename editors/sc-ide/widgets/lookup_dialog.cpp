@@ -105,7 +105,7 @@ bool LookupDialog::performClassQuery(const QString & className)
 
     mResultList->clear();
 
-    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+    const Introspection & introspection = Main::scProcess()->introspection();
 
     const Class *klass = introspection.findClass(className);
     if (!klass)
@@ -159,7 +159,7 @@ bool LookupDialog::performMethodQuery(const QString & methodName)
 
     mResultList->clear();
 
-    const Introspection & introspection = Main::instance()->scProcess()->introspection();
+    const Introspection & introspection = Main::scProcess()->introspection();
     const MethodMap & methods = introspection.methodMap();
 
     pair<MethodMap::const_iterator, MethodMap::const_iterator> matchingMethods =
@@ -205,7 +205,7 @@ void LookupDialog::onAccepted()
     QString path = currentItem->data( 0, Qt::UserRole ).toString();
     int pos = currentItem->data( 0, Qt::UserRole + 1 ).toInt();
 
-    Main::instance()->documentManager()->open(path, pos);
+    Main::documentManager()->open(path, pos);
 }
 
 bool LookupDialog::eventFilter( QObject *object, QEvent *event )

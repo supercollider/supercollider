@@ -151,7 +151,7 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     onDocumentFontChanged();
     mLineIndicator->setLineCount(blockCount());
 
-    applySettings(Main::instance()->settings());
+    applySettings(Main::settings());
 }
 
 bool CodeEditor::showWhitespace()
@@ -806,7 +806,7 @@ void CodeEditor::dropEvent( QDropEvent * event )
 {
     foreach (QUrl url, event->mimeData()->urls()) {
         if (url.scheme() == QString("file")) // LATER: use isLocalFile
-            Main::instance()->documentManager()->open(url.toLocalFile());
+            Main::documentManager()->open(url.toLocalFile());
     }
 }
 

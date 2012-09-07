@@ -36,7 +36,7 @@ void CodeEditor::blinkCode( const QTextCursor & c )
 {
     if( !c.document() || !c.hasSelection() ) return;
 
-    Settings::Manager *settings = Main::instance()->settings();
+    Settings::Manager *settings = Main::settings();
     settings->beginGroup("IDE/editor/colors");
     QTextCharFormat evalCodeTextFormat = settings->value("evaluatedCode").value<QTextCharFormat>();
     settings->endGroup();

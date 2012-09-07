@@ -46,7 +46,7 @@ void ScServer::boot()
     if (isRunning())
         return;
 
-    Main::instance()->scProcess()->evaluateCode( "ScIDE.defaultServer.boot" );
+    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.boot" );
 }
 
 void ScServer::quit()
@@ -55,7 +55,7 @@ void ScServer::quit()
     if (!isRunning())
         return;
 
-    Main::instance()->scProcess()->evaluateCode( "ScIDE.defaultServer.quit" );
+    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.quit" );
 }
 
 void ScServer::timerEvent(QTimerEvent * event)
