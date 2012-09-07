@@ -37,6 +37,7 @@ namespace ScIDE {
 SCProcess::SCProcess( Main *parent, ScResponder * responder, Settings::Manager * settings ):
     QProcess( parent ),
     mIpcServer( new QLocalServer(this) ),
+    mIpcSocket(NULL),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid()))
 {
     mIntrospectionParser = new ScIntrospectionParser( responder, this );
@@ -190,6 +191,24 @@ void SCProcess::evaluateCode(QString const & commandString, bool silent)
     char commandChar = silent ? '\x1b' : '\x0c';
 
     write( &commandChar, 1 );
+}
+
+void SCProcess::onNewIpcConnection()
+{
+    if (mIpcSocket)
+        // we can handle only one ipc connection at a time
+        mIpcSocket->disconnect();
+
+    mIpcSocket = mIpcServer->nextPendingConnection();
+    connect(mIpcSocket, SIGNAL(disconnected()), this, SLOT(finalizeConnection()));
+    connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
+}
+
+void SCProcess::finalizeConnection()
+{
+    mIpcData.clear();
+    mIpcSocket->deleteLater();
+    mIpcSocket = NULL;
 }
 
 void SCProcess::onIpcData()
