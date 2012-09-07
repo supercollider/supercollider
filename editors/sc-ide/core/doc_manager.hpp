@@ -86,7 +86,7 @@ class DocumentManager : public QObject
 public:
     typedef QList< Document * > DocumentList;
 
-    DocumentManager( Main * );
+    DocumentManager( Main *, Settings::Manager * );
     QList<Document*> documents() {
         return mDocHash.values();
     }

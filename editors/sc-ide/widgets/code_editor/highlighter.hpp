@@ -63,7 +63,7 @@ class SyntaxHighlighterGlobals : public QObject
     Q_OBJECT
 
 public:
-    SyntaxHighlighterGlobals( Main * );
+    SyntaxHighlighterGlobals( Main *, Settings::Manager * settings );
 
     inline const QTextCharFormat * formats() const
     {

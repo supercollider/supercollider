@@ -22,6 +22,7 @@
 #define SCIDE_SC_PROCESS_HPP_INCLUDED
 
 #include "sc_introspection.hpp"
+#include "settings/manager.hpp"
 
 #include <QAction>
 #include <QProcess>
@@ -43,7 +44,7 @@ class SCProcess:
     Q_OBJECT
 
 public:
-    SCProcess( Main * );
+    SCProcess( Main *, class ScResponder * responder, Settings::Manager * );
 
     enum SCProcessActionRole {
         StartSCLang = 0,
@@ -109,7 +110,7 @@ private slots:
 private:
     void onSclangStart();
 
-    void prepareActions(Main *);
+    void prepareActions(Settings::Manager * settings);
 
     QAction * mActions[SCProcessActionCount];
 

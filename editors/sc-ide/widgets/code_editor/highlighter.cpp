@@ -31,7 +31,7 @@ namespace ScIDE {
 
 SyntaxHighlighterGlobals * SyntaxHighlighterGlobals::mInstance = 0;
 
-SyntaxHighlighterGlobals::SyntaxHighlighterGlobals( Main *main ):
+SyntaxHighlighterGlobals::SyntaxHighlighterGlobals( Main *main, Settings::Manager * settings ):
     QObject(main)
 {
     Q_ASSERT(mInstance == 0);
@@ -40,7 +40,7 @@ SyntaxHighlighterGlobals::SyntaxHighlighterGlobals( Main *main ):
     initSyntaxRules();
 
     // initialize formats from settings:
-    applySettings(main->settings());
+    applySettings(settings);
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
