@@ -8,7 +8,24 @@ ScIDE {
 
 		Class.initClassTree(Server);
 
-		defaultServer = Server.default;
+		StartUp.add {
+			if (ScIDE.connected) {
+                this.handshake
+			};
+		}
+	}
+
+	*connect {|ideName|
+		this.prConnect(ideName);
+        defer {
+            this.handshake
+        }
+	}
+
+    *handshake {
+        this.prSend(\requestCurrentPath);
+
+        defaultServer = Server.default;
 
 		SimpleController(defaultServer)
 		.put(\serverRunning, { | server, what, extraArg |
@@ -16,18 +33,10 @@ ScIDE {
 			this.prSend(\defaultServerRunningChanged, [server.serverRunning, addr.hostname, addr.port])
 		});
 
-		StartUp.add {
-			if (ScIDE.connected) {
-				ScIDE.sendIntrospection;
-				this.prSend(\requestCurrentPath)
-			};
-		}
-	}
+        this.prSend(\defaultServerRunningChanged, [defaultServer.serverRunning, defaultServer.addr.hostname, defaultServer.addr.port]);
 
-	*connect {|ideName|
-		this.prConnect(ideName);
-		this.sendIntrospection;
-	}
+        this.sendIntrospection; // sending the introspection at the end, as otherwise the communication channel seems to get stuck
+    }
 
 	*request { |id, command, data|
 		this.tryPerform(command, id, data);
