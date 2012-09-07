@@ -18,7 +18,7 @@ set(all_scel_sources ${scel_sources} sclang-vars.el)
 if (SC_EL_BYTECOMPILE)
 	find_program(EMACS_EXECUTABLE emacs)
 	if(NOT EMACS_EXECUTABLE)
-		message(SEND_ERROR "Emacs could not be found")
+		message(SEND_ERROR "Emacs could not be found.\n (If emacs interface is not required, then set SC_EL=no)")
 	endif()
 
 	foreach (el ${all_scel_sources})
