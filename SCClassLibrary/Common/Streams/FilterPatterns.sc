@@ -115,8 +115,8 @@ Pfset : FuncFilterPattern {
 	}
 	embedInStream { arg inevent;
 		var event, cleanup = EventStreamCleanup.new;
-			// cleanup should actually not be passed in
-			// but retaining (temporarily) for backward compatibility
+		// cleanup should actually not be passed in
+		// but retaining (temporarily) for backward compatibility
 		var envir = Event.make({ func.value(cleanup) });
 		var stream = pattern.asStream;
 		var once = true;
@@ -153,24 +153,24 @@ Psetpre : FilterPattern {
 		^event[name] = val;
 	}
 	embedInStream { arg event;
+		var cleanup = EventStreamCleanup.new;
 		var val, inevent, filteredEvent;
 		var valStream = value.asStream;
 		var evtStream = pattern.asStream;
 
 		loop {
 			val = valStream.next(event);
-//			if (val.isNil or: event.isNil) { ^event };
-//			event = this.filterEvent(event, val);
 			if (val.isNil or: event.isNil) {
-				filteredEvent = nil;
+				^cleanup.exit(event)
 			}{
 				event = event.copy;
 				filteredEvent = this.filterEvent(event, val);
 			};
 			inevent = evtStream.next(filteredEvent);
-			if (inevent.isNil) { ^event };
+			if (inevent.isNil) { ^cleanup.exit(event) };
+			cleanup.update(inevent);
 			event = yield(inevent);
-			if(event.isNil) { nil.yield; ^inevent }
+			// if(event.isNil) { nil.yield; ^inevent }
 		}
 	}
 }
@@ -197,18 +197,20 @@ Pset : FilterPattern {
 		^event[name] = val;
 	}
 	embedInStream { arg event;
+		var cleanup = EventStreamCleanup.new;
 		var val, inEvent;
 		var valStream = value.asStream;
 		var evtStream = pattern.asStream;
 
 		loop {
 			inEvent = evtStream.next(event);
-			if (event.isNil) { ^nil.yield };
-			if (inEvent.isNil) { ^event };
+			// if (event.isNil) { ^nil.yield };
+			if (inEvent.isNil) { ^cleanup.exit(event) };
 			val = valStream.next(inEvent);
-			if (val.isNil) { ^event };
+			if (val.isNil) { ^cleanup.exit(event) };
 
 			this.filterEvent(inEvent, val);
+			cleanup.update(inEvent);
 			event = inEvent.yield;
 		}
 	}
@@ -271,6 +273,7 @@ Pstretch : FilterPattern {
 	}
 	storeArgs { ^[value,pattern] }
 	embedInStream {  arg event;
+		var cleanup = EventStreamCleanup.new;
 		var inevent;
 		var val, delta;
 		var valStream = value.asStream;
@@ -278,15 +281,16 @@ Pstretch : FilterPattern {
 
 		loop {
 			inevent = evtStream.next(event).asEvent;
-			if (inevent.isNil) { ^event };
+			if (inevent.isNil) { ^cleanup.exit(event) };
 			val = valStream.next(inevent);
-			if (val.isNil) { ^event };
+			if (val.isNil) { ^cleanup.exit(event) };
 
 			delta = event[\delta];
 			if (delta.notNil) {
 				inevent[\delta] = delta * val;
 			};
 			inevent[\dur] = inevent[\dur] * val;
+			cleanup.update(inevent);
 			event = yield(inevent);
 		}
 	}
@@ -306,7 +310,7 @@ Pstretchp : Pstretch {
 			evtStream = pattern.asStream;
 			while {
 				inevent = evtStream.next(event);
-				if(event.isNil) { ^nil.yield };
+				// if(event.isNil) { ^nil.yield };
 				inevent.notNil
 			} {
 				delta = inevent[\delta];
@@ -342,7 +346,7 @@ Pplayer : FilterPattern {
 			event = yield(inevent);
 		}
 	}
-		// backward compatibility: unnecessary var playerPattern was removed
+	// backward compatibility: unnecessary var playerPattern was removed
 	playerPattern { ^pattern }
 	playerPattern_ { |playerPattern| pattern = playerPattern }
 }
@@ -422,7 +426,7 @@ Pfindur : FilterPattern {
 
 	embedInStream { arg event, cleanup;
 		var item, delta, elapsed = 0.0, nextElapsed, inevent,
-			localdur = dur.value(event);
+		localdur = dur.value(event);
 		var stream = pattern.asStream;
 
 		cleanup ?? { cleanup = EventStreamCleanup.new };
@@ -495,7 +499,7 @@ Pconst : FilterPattern {
 
 	embedInStream { arg inval;
 		var delta, elapsed = 0.0, nextElapsed, str=pattern.asStream,
-			localSum = sum.value(inval);
+		localSum = sum.value(inval);
 		loop ({
 			delta = str.next(inval);
 			if(delta.isNil) {
@@ -544,8 +548,9 @@ Pbindf : FilterPattern {
 	}
 	storeArgs { ^[pattern] ++ patternpairs }
 	embedInStream { arg event;
+		var cleanup = EventStreamCleanup.new;
 		var eventStream;
-		var inevent;
+		var outevent;
 		var streampairs = patternpairs.copy;
 		var endval = streampairs.size - 1;
 
@@ -555,33 +560,30 @@ Pbindf : FilterPattern {
 		eventStream = pattern.asStream;
 
 		loop{
-			if(event.isNil) {
-				eventStream.next(nil);
-				^nil.yield
-			};
-			inevent = eventStream.next(event);
+			outevent = eventStream.next(event);
+			if (outevent.isNil) { ^cleanup.exit(event) };
 
-			if (inevent.isNil) { ^event };
 			forBy (0, endval, 2) { arg i;
 				var name = streampairs[i];
 				var stream = streampairs[i+1];
-				var streamout = stream.next(inevent);
+				var streamout = stream.next(outevent);
 
-				if (streamout.isNil) { ^event };
+				if (streamout.isNil) { ^cleanup.exit(event) };
 				if (name.isSequenceableCollection) {
-				if (name.size > streamout.size) {
+					if (name.size > streamout.size) {
 						("the pattern is not providing enough values to assign to the key set:" + name).warn;
-						^inevent
+						^outevent
 					};
 					name.do { arg key, i;
-						inevent.put(key, streamout[i]);
+						outevent.put(key, streamout[i]);
 					};
 				}{
-					inevent.put(name, streamout);
+					outevent.put(name, streamout);
 				};
 
 			};
-			event = yield(inevent);
+			cleanup.update(outevent);
+			event = yield(outevent);
 		};
 	}
 }
@@ -622,17 +624,17 @@ PdurStutter : Pstutter { // float streams
 		while({
 			(dur = durs.next(event)).notNil
 			and: {(stut = stutts.next(event)).notNil}
-		},{
-			if(stut > 0,{ // 0 skips it
-				if(stut > 1,{
-					dur = dur / stut;
-					stut.do({
-						event = dur.yield;
+			},{
+				if(stut > 0,{ // 0 skips it
+					if(stut > 1,{
+						dur = dur / stut;
+						stut.do({
+							event = dur.yield;
+						})
+						},{
+							event = dur.yield
 					})
-				},{
-					event = dur.yield
 				})
-			})
 		})
 		^event;
 	}
@@ -692,8 +694,8 @@ Pwrap : FilterPattern {
 			hiVal = hiStr.next(event);
 			next = stream.next(event);
 			next.notNil and: { loVal.notNil } and: { hiVal.notNil }
-		},{
-			event = next.wrap(loVal, hiVal).yield
+			},{
+				event = next.wrap(loVal, hiVal).yield
 		});
 		^event;
 	}
@@ -715,12 +717,12 @@ Ptrace : FilterPattern {
 		} {
 			func = { |val, item, prefix|
 				if(val.isKindOf(Function) and: { item.isKindOf(Environment) })
-					{
-						val = item.use { val.value };
-						printStream << prefix << val << "\t(printed function value)\n";
-					} {
-						printStream << prefix << val << Char.nl;
-					};
+				{
+					val = item.use { val.value };
+					printStream << prefix << val << "\t(printed function value)\n";
+				} {
+					printStream << prefix << val << Char.nl;
+				};
 			}.flop;
 			collected = pattern.collect {|item|
 				var val = item.atAll(key.asArray).unbubble;

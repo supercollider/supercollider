@@ -224,14 +224,16 @@ Pswitch : Pattern {
 
 Pswitch1 : Pswitch {
 	embedInStream { arg inval;
+		var cleanup = EventStreamCleanup.new;
 		var index, outval;
 		var streamList = list.collect({ arg pattern; pattern.asStream; });
 		var indexStream = which.asStream;
 
 		loop {
-			if ((index = indexStream.next(inval)).isNil) { ^inval };
+			if ((index = indexStream.next(inval)).isNil) { ^cleanup.exit(inval) };
 			outval = streamList.wrapAt(index.asInteger).next(inval);
-			if (outval.isNil) { ^inval };
+			if (outval.isNil) { ^cleanup.exit(inval) };
+			cleanup.update(outval);
 			inval = outval.yield;
 		};
 	}
