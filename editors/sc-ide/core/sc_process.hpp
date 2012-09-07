@@ -25,13 +25,13 @@
 #include "settings/manager.hpp"
 
 #include <QAction>
+#include <QByteArray>
+#include <QDebug>
 #include <QProcess>
+#include <QThread>
+#include <QUuid>
 #include <QtNetwork/QLocalSocket>
 #include <QtNetwork/QLocalServer>
-#include <QByteArray>
-#include <QUuid>
-#include <QThread>
-#include <QDebug>
 
 namespace ScIDE {
 
@@ -98,14 +98,9 @@ public slots:
     }
 
 private slots:
-    void onNewIpcConnection()
-    {
-        mIpcSocket = mIpcServer->nextPendingConnection();
-        connect(mIpcSocket, SIGNAL(disconnected()), mIpcSocket, SLOT(deleteLater()));
-        connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
-    }
-
+    void onNewIpcConnection();
     void onIpcData();
+    void finalizeConnection();
 
 private:
     void onSclangStart();
