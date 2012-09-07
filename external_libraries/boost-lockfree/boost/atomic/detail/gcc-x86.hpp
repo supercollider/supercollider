@@ -1514,7 +1514,7 @@ private:
 
 template<typename T>
 bool
-platform_cmpxchg64_strong(T & expected, T desired, volatile T * ptr)
+platform_cmpxchg64_strong(T & expected, T desired, const volatile T * ptr)
 {
     int scratch;
     T prev = expected;
@@ -1556,7 +1556,7 @@ platform_store64(T value, volatile T * ptr)
 
 template<typename T>
 T
-platform_load64(volatile T * ptr)
+platform_load64(const volatile T * ptr)
 {
     T expected = *ptr;
     do {
