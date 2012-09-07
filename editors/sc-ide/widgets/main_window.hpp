@@ -68,6 +68,7 @@ public:
         NewSession,
         SaveSessionAs,
         ManageSessions,
+        OpenSessionSwitchDialog,
 
         // Edit
         Find,
@@ -163,6 +164,7 @@ private Q_SLOTS:
     void showMessage( QString const & string );
     void toggleServerRunning();
     void applySettings( Settings::Manager * );
+    void showSwitchSessionDialog();
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -173,6 +175,7 @@ private:
     bool promptSaveDocs();
     void updateSessionsMenu();
     void updateClockWidget( bool isFullScreen );
+    void openSession( QString const & sessionName );
 
     Main *mMain;
 

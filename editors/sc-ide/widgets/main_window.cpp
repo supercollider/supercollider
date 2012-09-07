@@ -18,24 +18,25 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "cmd_line.hpp"
+#include "doc_list.hpp"
+#include "documents_dialog.hpp"
+#include "find_replace_tool.hpp"
+#include "goto_line_tool.hpp"
+#include "lookup_dialog.hpp"
 #include "main_window.hpp"
+#include "multi_editor.hpp"
+#include "popup_text_input.hpp"
+#include "post_window.hpp"
+#include "session_switch_dialog.hpp"
+#include "sessions_dialog.hpp"
+#include "tool_box.hpp"
 #include "../core/main.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/session_manager.hpp"
 #include "../core/sc_server.hpp"
 #include "code_editor/editor.hpp"
-#include "multi_editor.hpp"
-#include "cmd_line.hpp"
-#include "find_replace_tool.hpp"
-#include "goto_line_tool.hpp"
-#include "lookup_dialog.hpp"
-#include "tool_box.hpp"
-#include "doc_list.hpp"
-#include "post_window.hpp"
 #include "settings/dialog.hpp"
-#include "documents_dialog.hpp"
-#include "sessions_dialog.hpp"
-#include "popup_text_input.hpp"
 
 #include <QAction>
 #include <QApplication>
@@ -193,8 +194,8 @@ MainWindow::MainWindow(Main * main) :
 
 void MainWindow::createActions()
 {
-    Settings::Manager *s = mMain->settings();
-    s->beginGroup("IDE/shortcuts");
+    Settings::Manager *settings = mMain->settings();
+    settings->beginGroup("IDE/shortcuts");
 
     QAction *act;
 
@@ -271,6 +272,11 @@ void MainWindow::createActions()
     mActions[ManageSessions] = act = new QAction(
         tr("&Manage Sessions..."), this);
     connect(act, SIGNAL(triggered()), this, SLOT(openSessionsDialog()));
+
+    mActions[OpenSessionSwitchDialog] = act = new QAction(
+        tr("&Switch Session..."), this);
+    connect(act, SIGNAL(triggered()), this, SLOT(showSwitchSessionDialog()));
+    act->setShortcut(tr("Ctrl+Shift+Q", "Switch Session"));
 
     // Edit
     mActions[Find] = act = new QAction(
@@ -350,11 +356,11 @@ void MainWindow::createActions()
     mActions[ToggleServerRunning] = act = new QAction(this);
     connect(act, SIGNAL(triggered()), this, SLOT(toggleServerRunning()));
 
-    s->endGroup(); // IDE/shortcuts;
+    settings->endGroup(); // IDE/shortcuts;
 
     // Add actions to settings
     for (int i = 0; i < ActionCount; ++i)
-        s->addAction( mActions[i] );
+        settings->addAction( mActions[i] );
 }
 
 void MainWindow::createMenus()
@@ -391,6 +397,7 @@ void MainWindow::createMenus()
     updateSessionsMenu();
     menu->addSeparator();
     menu->addAction( mActions[ManageSessions] );
+    menu->addAction( mActions[OpenSessionSwitchDialog] );
 
     menuBar()->addMenu(menu);
 
@@ -525,8 +532,7 @@ void MainWindow::saveCurrentSessionAs()
 
 void MainWindow::onOpenSessionAction( QAction * action )
 {
-    if (promptSaveDocs())
-        mMain->sessionManager()->openSession( action->text() );
+    openSession(action->text());
 }
 
 void MainWindow::switchSession( Session *session )
@@ -956,6 +962,12 @@ void MainWindow::updateClockWidget(bool isFullScreen)
     }
 }
 
+void MainWindow::openSession(const QString &sessionName)
+{
+    if (promptSaveDocs())
+        mMain->sessionManager()->openSession( sessionName );
+}
+
 void MainWindow::openDefinition()
 {
     QWidget * focussedWidget = QApplication::focusWidget();
@@ -1001,6 +1013,17 @@ void MainWindow::updateSessionsMenu()
     QStringList sessions = mMain->sessionManager()->availableSessions();
     foreach (const QString & session, sessions)
         mSessionsMenu->addAction( session );
+}
+
+void MainWindow::showSwitchSessionDialog()
+{
+    SessionSwitchDialog * dialog = new SessionSwitchDialog(this);
+    int result = dialog->exec();
+
+    if (result == QDialog::Accepted)
+        openSession(dialog->activeElement());
+
+    delete dialog;
 }
 
 void MainWindow::showCmdLine()
