@@ -49,7 +49,7 @@ inline int32 Hash(const char *inKey)
 }
 
 // hash function for a string that also returns the length
-inline int32 Hash(const char *inKey, int32 *outLength)
+inline int32 Hash(const char *inKey, size_t *outLength)
 {
     // the one-at-a-time hash.
     // a very good hash function. ref: a web page by Bob Jenkins.

@@ -349,7 +349,7 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 
 ///////////
 
-inline int OSCStrLen(char *str)
+inline size_t OSCStrLen(char *str)
 {
 	return (strlen(str) + 4) & ~3;
 }

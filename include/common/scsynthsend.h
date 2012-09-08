@@ -134,7 +134,7 @@ struct scpacket {
 		skip(size4);
 		wrpos[-1] = 0;
 	}
-	int size() { return (char*)wrpos - (char*)buf; }
+	size_t size() { return (char*)wrpos - (char*)buf; }
 	char* data() { return (char*)buf; }
 
 	void OpenBundle(int64 time)

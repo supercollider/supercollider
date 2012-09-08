@@ -65,7 +65,7 @@ private:
 	PyrSymbol* Make(const char *inName);
 	PyrSymbol* MakeNew(const char *inName, int inHash, int inLength);
 
-	int StrHash(const char *inName, int *outLength);
+	int StrHash(const char *inName, size_t *outLength);
 	void AllocTable();
 	void Grow();
 	PyrSymbol* Find(const char *inName, int inHash);

@@ -281,12 +281,12 @@ void getIndexedSlot(struct PyrObject *obj, PyrSlot *a, int index);
 int putIndexedSlot(struct VMGlobals *g, struct PyrObject *obj, PyrSlot *c, int index);
 int putIndexedFloat(PyrObject *obj, double val, int index);
 
-inline int ARRAYMAXINDEXSIZE(PyrObjectHdr* obj)
+inline long ARRAYMAXINDEXSIZE(PyrObjectHdr* obj)
 {
 	return (1L << obj->obj_sizeclass);
 }
 
-inline int MAXINDEXSIZE(PyrObjectHdr* obj)
+inline long MAXINDEXSIZE(PyrObjectHdr* obj)
 {
 	return ((1L << obj->obj_sizeclass) * gFormatElemCapc[ obj->obj_format ]);
 }

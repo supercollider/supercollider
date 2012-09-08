@@ -178,10 +178,10 @@ private:
 		else return (sizePlusOverhead + kAlignMask) & ~kAlignMask;
 	}
 
-	static int SmallBinIndex(size_t inSize)
+	static size_t SmallBinIndex(size_t inSize)
 		{ return inSize >> 4; }
 
-	static int BinIndex2(size_t inSize)
+	static size_t BinIndex2(size_t inSize)
 	{
 		return
 		((inSize <   1024) ?       (inSize>>4):
@@ -195,7 +195,7 @@ private:
 		 (inSize < 262144) ? 112 + (inSize>>14):127);
 	}
 
-	static int BinIndex(size_t inSize)
+	static size_t BinIndex(size_t inSize)
 	{
 		if (inSize < 1024) return inSize >> 4;
 		if (inSize >= 262144) return 127;
@@ -211,11 +211,11 @@ private:
 			mBinBlocks[word] |= bitValue;
 		}
 
-	void ClearBinBlock(int inIndex)
+	void ClearBinBlock(size_t inIndex)
 		{
-			unsigned long word = inIndex >> 5;
-			unsigned long bitPosition = inIndex & 31;
-			unsigned long bitValue = 1L << bitPosition;
+			size_t word = inIndex >> 5;
+			size_t bitPosition = inIndex & 31;
+			size_t bitValue = 1L << bitPosition;
 			mBinBlocks[word] &= ~bitValue;
 		}
 
@@ -262,7 +262,7 @@ private:
 		{
 			inChunk->RemoveLeaveDangling();
 			size_t size = inChunk->Size();
-			int index = BinIndex(size);
+			size_t index = BinIndex(size);
 			AllocChunkPtr bin = mBins + index;
 			if (bin->IsEmpty()) ClearBinBlock(index);
 		}

@@ -36,7 +36,7 @@ inline const char* OSCstrskip(const char *str)
 }
 
 // returns the number of bytes (including padding) for an OSC string.
-inline int OSCstrlen(const char *strin)
+inline size_t OSCstrlen(const char *strin)
 {
 	return OSCstrskip(strin) - strin;
 }
@@ -82,7 +82,7 @@ struct sc_msg_iter
 	size_t getbsize();
 	void getb(char* outData, size_t inSize);
 	void skipb();
-	int remain() { return endpos - rdpos; }
+	size_t remain() { return endpos - rdpos; }
 
     char nextTag(char defaultTag = 'f') { return tags ? tags[count] : defaultTag; }
 };

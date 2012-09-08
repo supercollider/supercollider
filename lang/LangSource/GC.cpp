@@ -1075,7 +1075,7 @@ bool PyrGC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
 	if (objA->IsPermanent()) return true;
 	if (objA->IsMarked()) return true;
 	if (objA->size > MAXINDEXSIZE(objA)) {
-		fprintf(stderr, "obj indexed size larger than max: %d > %d\n", objA->size, MAXINDEXSIZE(objA));
+		fprintf(stderr, "obj indexed size larger than max: %d > %ld\n", objA->size, MAXINDEXSIZE(objA));
 		//dumpObject((PyrObject*)objA);
 		return false;
 	}
