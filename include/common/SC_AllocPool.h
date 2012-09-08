@@ -203,11 +203,11 @@ private:
 		return (bits << 3) + (inSize >> bits) ;
 	}
 
-	void MarkBinBlock(int inIndex)
+	void MarkBinBlock(size_t inIndex)
 		{
-			unsigned long word = inIndex >> 5;
-			unsigned long bitPosition = inIndex & 31;
-			unsigned long bitValue = 1L << bitPosition;
+			size_t word = inIndex >> 5;
+			size_t bitPosition = inIndex & 31;
+			size_t bitValue = 1L << bitPosition;
 			mBinBlocks[word] |= bitValue;
 		}
 
