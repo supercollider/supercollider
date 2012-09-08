@@ -163,7 +163,7 @@ y.postln;
 ::
 
 method::add
-Adds an item to an ArrayedCollection if there is space. If there is not any space left in the object then this method returns a new ArrayedCollection. For this reason, you should always assign the result of add to a variable - never depend on add changing the receiver.
+Adds an item to an ArrayedCollection if there is space. This method may return a new ArrayedCollection. For this reason, you should always assign the result of add to a variable - never depend on code::add:: changing the receiver.
 code::
 (
 // z and y are the same object
@@ -185,7 +185,7 @@ y.postln;
 ::
 
 method::addAll
-Adds all the elements of aCollection to the contents of the receiver, possibly returning a new collection.
+Adds all the elements of aCollection to the contents of the receiver. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::addAll:: to a variable - never depend on add changing the receiver.
 code::
 (
 // in this case a new object is returned
@@ -198,7 +198,7 @@ y.postln;
 ::
 
 method::extend
-Extends the receiver to match strong::size:: by adding a number of strong::item::s. If strong::size:: is less than receiver size then truncate.
+Extends the object to match strong::size:: by adding a number of strong::item::s. If strong::size:: is less than receiver size then truncate. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::extend:: to a variable - never depend on add changing the receiver.
 code::
 (
 var y, z;
@@ -210,7 +210,7 @@ y.postln;
 ::
 
 method::fill
-Inserts the item into the contents of the receiver, possibly returning a new collection. note::the difference between this and link::Classes/Collection#fill#Collection's *fill::.::
+Inserts the item into the contents of the receiver. note::the difference between this and link::Classes/Collection#fill#Collection's *fill::.::
 code::
 (
 var z;
@@ -221,7 +221,7 @@ z.fill([1,2,3,4]).postln;
 ::
 
 method::insert
-Inserts the item into the contents of the receiver, possibly returning a new collection.
+Inserts the item into the contents of the receiver. This method may return a new ArrayedCollection. For this reason, you should always assign the result of code::insert:: to a variable - never depend on add changing the receiver.
 code::
 (
 // in this case a new object is returned
@@ -258,10 +258,10 @@ z.postln;
 ::
 
 method::grow
-Increase the size of the ArrayedCollection by strong::sizeIncrease:: number of slots,  possibly returning a new collection.
+Increase the size of the ArrayedCollection by strong::sizeIncrease:: number of slots, possibly returning a new collection.
 
 method::growClear
-Increase the size of the ArrayedCollection by strong::sizeIncrease:: number of slots,  returning a new collection with link::Classes/Nil::s in the added slots.
+Increase the size of the ArrayedCollection by strong::sizeIncrease:: number of slots, returning a new collection with link::Classes/Nil::s in the added slots.
 code::
 // Compare:
 [4,5,6].grow(5);

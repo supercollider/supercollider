@@ -1,21 +1,21 @@
 /*
 	SuperCollider real time audio synthesis system
-    Copyright (c) 2002 James McCartney. All rights reserved.
+	Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 /*
 
@@ -808,7 +808,6 @@ int prArrayPutSeries(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prArrayAdd(struct VMGlobals *g, int numArgsPushed);
 int prArrayAdd(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *slots;
@@ -831,7 +830,7 @@ int prArrayAdd(struct VMGlobals *g, int numArgsPushed)
 	} // else format is obj_slot, any tag is acceptable*/
 	elemsize = gFormatElemSize[format];
 	maxelems = MAXINDEXSIZE(array);
-	if (array->size >= maxelems) {
+	if (array->size >= maxelems || array->IsImmutable()) {
 		numbytes = sizeof(PyrSlot) << (array->obj_sizeclass + 1);
 		array = g->gc->New(numbytes, 0, format, true);
 		array->classptr = slotRawObject(a)->classptr;
@@ -882,14 +881,11 @@ int prArrayAdd(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int prArrayInsert(struct VMGlobals *g, int numArgsPushed);
 int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c, *slots1, *slots2;
 	PyrObject *array, *oldarray;
-	int maxelems, elemsize, format, tag;
-	int err, ival, size, index, remain, numbytes;
+	int err, ival;
 	double fval;
 
 	a = g->sp - 2;	// array
@@ -898,21 +894,20 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 	if (NotInt(b)) return errWrongType;
 
 	array = slotRawObject(a);
-	if (array->IsImmutable()) return errImmutableObject;
-	format = slotRawObject(a)->obj_format;
-	tag = gFormatElemTag[format];
+	const int format = slotRawObject(a)->obj_format;
+	const int tag = gFormatElemTag[format];
 
-	size = array->size;
-	index = slotRawInt(b);
+	const int size = array->size;
+	int index = slotRawInt(b);
 	index = sc_clip(index, 0, size);
-	remain = size - index;
+	const int remain = size - index;
 
-	elemsize = gFormatElemSize[format];
-	maxelems = MAXINDEXSIZE(array);
-	if (size+1 > maxelems) {
+	const int elemsize = gFormatElemSize[format];
+	const int maxelems = MAXINDEXSIZE(array);
+	if (size+1 > maxelems || array->IsImmutable()) {
 		oldarray = array;
 
-		numbytes = sizeof(PyrSlot) << (array->obj_sizeclass + 1);
+		const int numbytes = sizeof(PyrSlot) << (array->obj_sizeclass + 1);
 		array = g->gc->New(numbytes, 0, format, true);
 
 		array->classptr = oldarray->classptr;
@@ -921,9 +916,8 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 		SetRaw(a, array);
 		slots1 = array->slots;
 		slots2 = oldarray->slots;
-		if (index) {
+		if (index)
 			memcpy(slots1, slots2, index * elemsize);
-		}
 
 		switch (format) {
 			case obj_slot :
@@ -1069,7 +1063,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayFill(struct VMGlobals *g, int numArgsPushed);
+
 int prArrayFill(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *slots;
@@ -1154,7 +1148,6 @@ int prArrayFill(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayPop(struct VMGlobals *g, int numArgsPushed);
 int prArrayPop(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *slots;
@@ -1207,7 +1200,7 @@ int prArrayPop(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayExtend(struct VMGlobals *g, int numArgsPushed);
+
 int prArrayExtend(struct VMGlobals *g, int numArgsPushed)
 {
 	int numbytes, elemsize, format;
@@ -1215,7 +1208,7 @@ int prArrayExtend(struct VMGlobals *g, int numArgsPushed)
 
 	PyrSlot *a = g->sp - 2; // array
 	PyrSlot *b = g->sp - 1; // size
-    PyrSlot *c = g->sp;     // filler item
+	PyrSlot *c = g->sp;     // filler item
 
 
 	if (NotInt(b)) return errWrongType;
@@ -1225,9 +1218,9 @@ int prArrayExtend(struct VMGlobals *g, int numArgsPushed)
 		return errNone;
 	}
 
-    format = aobj->obj_format;
-    if (slotRawInt(b) > MAXINDEXSIZE(aobj)) {
-        elemsize = gFormatElemSize[format];
+	format = aobj->obj_format;
+	if (slotRawInt(b) > MAXINDEXSIZE(aobj) || aobj->IsImmutable()) {
+		elemsize = gFormatElemSize[format];
 		numbytes = slotRawInt(b) * elemsize;
 
 		PyrObject *obj = g->gc->New(numbytes, 0, format, true);
@@ -1235,7 +1228,7 @@ int prArrayExtend(struct VMGlobals *g, int numArgsPushed)
 		obj->size = aobj->size;
 		memcpy(obj->slots, aobj->slots, aobj->size * elemsize);
 		aobj = obj;
-        SetRaw(a, aobj);
+		SetRaw(a, aobj);
 	}
 
 
@@ -1296,7 +1289,6 @@ int prArrayExtend(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayGrow(struct VMGlobals *g, int numArgsPushed);
 int prArrayGrow(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
@@ -1325,7 +1317,6 @@ int prArrayGrow(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayGrowClear(struct VMGlobals *g, int numArgsPushed);
 int prArrayGrowClear(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
@@ -1339,7 +1330,7 @@ int prArrayGrowClear(struct VMGlobals *g, int numArgsPushed)
 	if (slotRawInt(b) <= 0) return errNone;
 	aobj = slotRawObject(a);
 
-	if (aobj->size + slotRawInt(b) <= MAXINDEXSIZE(aobj)) {
+	if (aobj->size + slotRawInt(b) <= MAXINDEXSIZE(aobj) && aobj->IsMutable()) {
 		obj = aobj;
 	} else {
 		format = aobj->obj_format;
@@ -1363,7 +1354,6 @@ int prArrayGrowClear(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayCat(struct VMGlobals *g, int numArgsPushed);
 int prArrayCat(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
@@ -1395,7 +1385,6 @@ int prArrayCat(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prArrayAddAll(struct VMGlobals *g, int numArgsPushed);
 int prArrayAddAll(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
@@ -1408,6 +1397,7 @@ int prArrayAddAll(struct VMGlobals *g, int numArgsPushed)
 
 	if (NotObj(b) || slotRawObject(a)->classptr != slotRawObject(b)->classptr) return errWrongType;
 	aobj = slotRawObject(a);
+
 	format = aobj->obj_format;
 	elemsize = gFormatElemSize[format];
 	asize = aobj->size;
@@ -1415,25 +1405,22 @@ int prArrayAddAll(struct VMGlobals *g, int numArgsPushed)
 	newindexedsize = asize + bsize;
 	newsizebytes = newindexedsize * elemsize;
 
-	if (newindexedsize > MAXINDEXSIZE(aobj)) {
+	if (newindexedsize > MAXINDEXSIZE(aobj) || aobj->IsImmutable()) {
 		obj = g->gc->New(newsizebytes, 0, format, true);
 		obj->classptr = aobj->classptr;
 		memcpy(obj->slots, aobj->slots, asize * elemsize);
 		SetObject(a, obj);
 	} else {
 		obj = aobj;
-		if (format == obj_slot && !g->gc->ObjIsGrey(obj)) {
+		if (format == obj_slot && !g->gc->ObjIsGrey(obj))
 			g->gc->ToGrey(obj);
-		}
 	}
 	obj->size = newindexedsize;
-	memcpy((char*)obj->slots + asize * elemsize,
-		slotRawObject(b)->slots, bsize * elemsize);
+	memcpy((char*)obj->slots + asize * elemsize, slotRawObject(b)->slots, bsize * elemsize);
 	return errNone;
 }
 
 
-int prArrayOverwrite(struct VMGlobals *g, int numArgsPushed);
 int prArrayOverwrite(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
@@ -1459,20 +1446,19 @@ int prArrayOverwrite(struct VMGlobals *g, int numArgsPushed)
 	newindexedsize = sc_max(asize, newindexedsize);
 	newsizebytes = newindexedsize * elemsize;
 
-	if (newindexedsize > MAXINDEXSIZE(aobj)) {
+	if (newindexedsize > MAXINDEXSIZE(aobj) || aobj->IsImmutable()) {
 		obj = g->gc->New(newsizebytes, 0, format, true);
 		obj->classptr = aobj->classptr;
 		memcpy(obj->slots, aobj->slots, asize * elemsize);
 		SetObject(a, obj);
 	} else {
 		obj = aobj;
-		if (format == obj_slot && !g->gc->ObjIsGrey(obj)) {
+		if (format == obj_slot && !g->gc->ObjIsGrey(obj))
 			g->gc->ToGrey(obj);
-		}
+
 	}
 	obj->size = newindexedsize;
-	memcpy((char*)(obj->slots) + pos * elemsize,
-		slotRawObject(b)->slots, bsize * elemsize);
+	memcpy((char*)(obj->slots) + pos * elemsize, slotRawObject(b)->slots, bsize * elemsize);
 
 	return errNone;
 }
@@ -1744,9 +1730,9 @@ int prArrayExtendLast(struct VMGlobals *g, int numArgsPushed)
 			// copy second part
 			m = obj1->size;
 			slotCopy(&last,&slots[m-1]);
-			for (i=0,j=m; j<size; ++i,++j) {
+			for (i=0,j=m; j<size; ++i,++j)
 				slotCopy(&slots[j],&last);
-			}
+
 		}
 	} else {
 		obj2 = instantiateObject(g->gc, obj1->classptr, size, true, true);
@@ -2373,7 +2359,6 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-void initArrayPrimitives();
 void initArrayPrimitives()
 {
 	int base, index;
