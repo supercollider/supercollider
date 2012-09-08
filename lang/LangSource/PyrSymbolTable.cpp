@@ -27,7 +27,6 @@
 #include "VMGlobals.h"
 #include "Hash.h"
 
-
 SC_DLLEXPORT_C PyrSymbol* getsym(const char *name)
 {
 	PyrSymbol* symbol = gMainVMGlobals->symbolTable->Make(name);

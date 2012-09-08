@@ -128,7 +128,7 @@ void restoreByteCodeArray(ByteCodes byteCodes)
 	gCompilingByteCodes = byteCodes;
 }
 
-size_t byteCodeLength(ByteCodes byteCodes)
+int byteCodeLength(ByteCodes byteCodes)
 {
     if (!byteCodes) return 0;
     return (byteCodes->ptr - byteCodes->bytes);
@@ -176,12 +176,13 @@ ByteCodes allocByteCodes()
 void reallocByteCodes(ByteCodes byteCodes)
 {
 	Byte		*newBytes;
+	int		newLen;
 
 	if (byteCodes->size != (byteCodes->ptr - byteCodes->bytes)) {
 		error("reallocByteCodes called with size != byteCode len");
 	}
 
-	size_t newLen = byteCodes->size << 1;
+	newLen = byteCodes->size << 1;
 	// pyrmalloc: I think that all bytecodes are copied to objects
 	// lifetime: kill after compile
 	newBytes = (Byte *)pyr_pool_compile->Alloc(newLen);
