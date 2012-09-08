@@ -42,7 +42,6 @@ class CodeEditor;
 class CodeEditorBox;
 class MultiSplitter;
 class SignalMultiplexer;
-class ScRequest;
 class Session;
 namespace Settings { class Manager; }
 

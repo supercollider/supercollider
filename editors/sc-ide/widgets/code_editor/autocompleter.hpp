@@ -35,7 +35,6 @@ namespace ScIDE {
 
 class CodeEditor;
 class TokenIterator;
-class ScRequest;
 class CompletionMenu;
 class MethodCallWidget;
 
