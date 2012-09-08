@@ -453,6 +453,7 @@ int basicPut(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;
 
 	obj = slotRawObject(a);
+	if (obj->IsImmutable()) return errImmutableObject;
 	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
@@ -489,6 +490,7 @@ int basicClipPut(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;
 
 	obj = slotRawObject(a);
+	if (obj->IsImmutable()) return errImmutableObject;
 	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
@@ -525,6 +527,7 @@ int basicWrapPut(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;
 
 	obj = slotRawObject(a);
+	if (obj->IsImmutable()) return errImmutableObject;
 	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
@@ -561,6 +564,7 @@ int basicFoldPut(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;
 
 	obj = slotRawObject(a);
+	if (obj->IsImmutable()) return errImmutableObject;
 	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
@@ -596,6 +600,7 @@ int prArrayPutEach(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;
 
 	obj = slotRawObject(a);
+	if (obj->IsImmutable()) return errImmutableObject;
 	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
@@ -673,6 +678,7 @@ int prArrayAssocPut(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;
 
 	obj = slotRawObject(a);
+	if (obj->IsImmutable()) return errImmutableObject;
 
 	int size = obj->size;
 	if (obj->obj_format == obj_slot) {
@@ -753,6 +759,7 @@ int prArrayPutSeries(struct VMGlobals *g, int numArgsPushed)
 	e = g->sp;
 
 	PyrObject *inobj = slotRawObject(a);
+	if (inobj->IsImmutable()) return errImmutableObject;
 
 	int size = inobj->size;
 
