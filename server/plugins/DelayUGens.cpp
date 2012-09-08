@@ -2269,7 +2269,6 @@ static inline void DelayN_delay_loop(float * out, const float * in, long & iwrph
 					LOOP(nsmps,
 						ZXP(dlywr) = ZXP(in);
 						ZXP(out) = 0.f;
-						ZXP(dlyrd);
 					);
 			} else {
 				LOOP(nsmps,
