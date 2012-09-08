@@ -21,6 +21,7 @@
 
 #include "cmd_line.hpp"
 #include "main_window.hpp"
+#include "sc_symbol_references.hpp"
 #include "../core/main.hpp"
 #include "../core/settings/manager.hpp"
 
@@ -45,6 +46,14 @@ void CmdLineEdit::openDefinition()
 {
     return Main::openDefinition(symbolUnderCursor(), MainWindow::instance());
 }
+
+void CmdLineEdit::lookupReferences()
+{
+    QString symbol = symbolUnderCursor();
+    if (symbol.size() != 0)
+        new SymbolReferenceRequest(symbol, Main::scProcess(), this);
+}
+
 
 CmdLine::CmdLine( const QString &text, int maxHist ) :
     curHistory( -1 ),

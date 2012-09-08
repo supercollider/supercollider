@@ -89,6 +89,7 @@ public:
 
         // Language
         OpenDefinition,
+        FindReferences,
 
         // Help
         Help,
@@ -161,6 +162,7 @@ private Q_SLOTS:
     void openDefinition();
     void lookupDefinition();
     void lookupDocumentation();
+    void lookupReferences();
     void showMessage( QString const & string );
     void toggleServerRunning();
     void applySettings( Settings::Manager * );

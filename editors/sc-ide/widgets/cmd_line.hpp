@@ -42,6 +42,7 @@ public:
 public Q_SLOTS:
     bool openDocumentation();
     void openDefinition();
+    void lookupReferences();
 
 private:
     QString symbolUnderCursor();

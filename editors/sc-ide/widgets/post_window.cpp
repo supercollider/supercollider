@@ -20,6 +20,7 @@
 
 #include "main_window.hpp"
 #include "post_window.hpp"
+#include "sc_symbol_references.hpp"
 #include "../core/main.hpp"
 #include "../core/settings/manager.hpp"
 
@@ -192,6 +193,13 @@ bool PostWindow::openDocumentation()
 void PostWindow::openDefinition()
 {
     Main::openDefinition(symbolUnderCursor(), MainWindow::instance());
+}
+
+void PostWindow::lookupReferences()
+{
+    QString symbol = symbolUnderCursor();
+    if (symbol.size() != 0)
+        new SymbolReferenceRequest(symbol, Main::scProcess(), this);
 }
 
 
