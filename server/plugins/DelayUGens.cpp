@@ -132,7 +132,7 @@ struct BufDelayUnit : public Unit
 	SndBuf *m_buf;
 	float m_dsamp;
 	float m_delaytime;
-	int m_iwrphase;
+	long m_iwrphase;
 	uint32 m_numoutput;
 };
 
