@@ -95,6 +95,18 @@ struct Method {
     } definition;
 };
 
+static inline QString makeFullMethodName(QString const & className, QString const & methodName)
+{
+    QString ret (className);
+    if (ret.startsWith("Meta_")) {
+        ret.remove(0, 5);
+        ret.append("-*");
+    } else
+        ret.append("-");
+    ret.append(methodName);
+    return ret;
+}
+
 class Introspection
 {
 public:

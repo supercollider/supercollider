@@ -21,6 +21,7 @@
 #include "autocompleter.hpp"
 #include "editor.hpp"
 #include "highlighter.hpp"
+#include "../sc_symbol_references.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/main.hpp"
 #include "../../core/settings/manager.hpp"
@@ -1680,7 +1681,14 @@ bool CodeEditor::openDocumentation()
 
 void CodeEditor::openDefinition()
 {
-    return Main::openDefinition(symbolUnderCursor(), this);
+    Main::openDefinition(symbolUnderCursor(), this);
+}
+
+void CodeEditor::lookupReferences()
+{
+    QString symbol = symbolUnderCursor();
+    if (symbol.size() != 0)
+        new SymbolReferenceRequest(symbol, Main::scProcess(), this);
 }
 
 void CodeEditor::hideMouseCursor()

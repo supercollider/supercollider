@@ -334,6 +334,10 @@ void MainWindow::createActions()
     act->setShortcut(tr("Ctrl+I", "Open definition of selected class or method"));
     connect(act, SIGNAL(triggered(bool)), this, SLOT(openDefinition()));
 
+    mActions[FindReferences] = act = new QAction(tr("Find References"), this);
+    act->setShortcut(tr("Ctrl+U", "Find References"));
+    connect(act, SIGNAL(triggered(bool)), this, SLOT(lookupReferences()));
+
     // Settings
     mActions[ShowSettings] = act = new QAction(tr("&Configure IDE..."), this);
     act->setStatusTip(tr("Show configuration dialog"));
@@ -418,6 +422,7 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::SelectRegion) );
     menu->addSeparator();
     menu->addAction( mActions[OpenDefinition] );
+    menu->addAction( mActions[FindReferences] );
 
     menuBar()->addMenu(menu);
 
@@ -993,6 +998,16 @@ void MainWindow::lookupDocumentation()
 
     delete dialog;
 }
+
+void MainWindow::lookupReferences()
+{
+    QWidget * focussedWidget = QApplication::focusWidget();
+
+    int indexOfMethod = focussedWidget->metaObject()->indexOfMethod("lookupReferences()");
+    if (indexOfMethod != -1)
+        QMetaObject::invokeMethod( focussedWidget, "lookupReferences", Qt::DirectConnection );
+}
+
 
 void MainWindow::showMessage( QString const & string )
 {
