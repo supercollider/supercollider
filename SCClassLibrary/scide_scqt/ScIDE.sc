@@ -228,6 +228,33 @@ ScIDE {
 		};
 	}
 
+    *findReferencesToSymbol {|requestId, symbol|
+        var methods;
+        var result = SortedList(8, subListSorter);
+        var references = Class.findAllReferences(symbol.asSymbol);
+
+        if (references.notNil) {
+            methods = IdentitySet.new;
+            references.do { | funcDef |
+                var homeContext;
+                homeContext = if(funcDef.context.isNil) {funcDef} {funcDef.context.homeContext};
+                if (homeContext.isKindOf(Method)) {
+                    methods.add(homeContext);
+                };
+            };
+            methods.do { | method |
+                result.add([
+                    method.ownerClass.name,
+                    method.name,
+                    method.filenameSymbol.asString,
+                    method.charPos + 1
+                ])
+            }
+        };
+
+        ScIDE.prSend(requestId, [symbol, result.asArray])
+    }
+
 	*prSend {|id, data|
 		_ScIDE_Send
 		this.primitiveFailed
