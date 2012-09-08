@@ -535,7 +535,7 @@ void* AllocPool::Realloc(void* inPtr, size_t inReqSize)
 void AllocPool::LinkFree(AllocChunkPtr inChunk)
 {
 	size_t size = inChunk->Size();
-	int index = BinIndex(size);
+	size_t index = BinIndex(size);
 
 	AllocChunkPtr bin = mBins + index;
 
