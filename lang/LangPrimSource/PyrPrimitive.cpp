@@ -183,7 +183,7 @@ int instVarPut(struct VMGlobals *g, int numArgsPushed)
 
 	if (NotObj(a)) return errWrongType;
 	obj = slotRawObject(a);
-	if (obj->obj_flags & obj_immutable) return errImmutableObject;
+	if (obj->IsImmutable()) return errImmutableObject;
 
 	if (IsInt(b)) {
 		index = slotRawInt(b);
