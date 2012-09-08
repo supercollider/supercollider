@@ -77,12 +77,13 @@ public:
 
 private:
 
-	void recurse(PyrObject *obj, int n)
+	void recurse(PyrObject *obj, size_t n)
 	{
 		//post("->recurse %s %08X\n", obj->classptr->name.us->name, obj);
 		PyrSlot *slot = obj->slots;
-		for (int i=0; i<n; ++i, ++slot) {
-			if (IsObj(slot)) constructObjectArray(slotRawObject(slot));
+		for (size_t i=0; i<n; ++i, ++slot) {
+			if (IsObj(slot))
+				constructObjectArray(slotRawObject(slot));
 		}
 		//post("<-recurse %s %08X\n", obj->classptr->name.us->name, obj);
 	}

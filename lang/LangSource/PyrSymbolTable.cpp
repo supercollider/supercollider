@@ -95,14 +95,14 @@ void SymbolTable::CopyFrom(SymbolTable& inTable)
 	Rehash(inTable.mTable, inTable.mMaxItems);
 }
 
-int SymbolTable::StrHash(const char *inName, int *outLength)
+int SymbolTable::StrHash(const char *inName, size_t *outLength)
 {
 	return Hash(inName, outLength);
 }
 
 PyrSymbol* SymbolTable::Find(const char *inName)
 {
-	int length;
+	size_t length;
 	int hash = StrHash(inName, &length);
 	return Find(inName, hash);
 }
@@ -144,7 +144,7 @@ PyrSymbol* SymbolTable::MakeNew(const char *inName, int inHash, int inLength)
 
 PyrSymbol* SymbolTable::Make(const char *inName)
 {
-	int length;
+	size_t length;
 	int hash = StrHash(inName, &length);
 	PyrSymbol* symbol = Find(inName, hash);
 	if (!symbol) symbol = MakeNew(inName, hash, length);

@@ -130,7 +130,7 @@ inline bool ISPOWEROFTWO(int32 x)
 // next power of two greater than or equal to x
 inline int32 NEXTPOWEROFTWO(int32 x)
 {
-	return 1L << LOG2CEIL(x);
+	return (int32)1L << LOG2CEIL(x);
 }
 
 // previous power of two less than or equal to x
@@ -138,7 +138,7 @@ inline int32 PREVIOUSPOWEROFTWO(int32 x)
 {
 	if (ISPOWEROFTWO(x))
 		return x;
-	return 1L << (LOG2CEIL(x) - 1);
+	return (int32)1L << (LOG2CEIL(x) - 1);
 }
 
 // input a series of counting integers, outputs a series of gray codes .
@@ -168,7 +168,7 @@ inline int32 MSBitPos(int32 x)
 // find most significant bit
 inline int32 MSBit(int32 x)
 {
-	return 1L << MSBitPos(x);
+	return (int32)1L << MSBitPos(x);
 }
 
 // count number of one bits
