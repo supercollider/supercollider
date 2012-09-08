@@ -167,12 +167,12 @@ abstract_group::~abstract_group(void)
 
 void abstract_group::pause(void)
 {
-    std::for_each(child_nodes.begin(), child_nodes.end(), boost::bind(&server_node::pause, _1));
+    std::for_each(child_nodes.begin(), child_nodes.end(), std::bind(&server_node::pause, std::placeholders::_1));
 }
 
 void abstract_group::resume(void)
 {
-    std::for_each(child_nodes.begin(), child_nodes.end(), boost::bind(&server_node::resume, _1));
+    std::for_each(child_nodes.begin(), child_nodes.end(), std::bind(&server_node::resume, std::placeholders::_1));
 }
 
 void abstract_group::add_child(server_node * node)

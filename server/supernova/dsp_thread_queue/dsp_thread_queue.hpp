@@ -26,7 +26,6 @@
 #include <vector>
 
 #include <boost/atomic.hpp>
-#include <boost/thread.hpp>
 #include <cstdio>
 
 #ifdef DEBUG_DSP_THREADS

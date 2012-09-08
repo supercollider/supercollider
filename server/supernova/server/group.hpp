@@ -194,15 +194,15 @@ public:
 
     void free_children(void)
     {
-        child_nodes.clear_and_dispose(boost::mem_fn(&server_node::clear_parent));
+        child_nodes.clear_and_dispose(std::mem_fn(&server_node::clear_parent));
         assert(child_synth_count == 0);
         assert(child_group_count == 0);
     }
 
     void free_synths_deep(void)
     {
-        child_nodes.remove_and_dispose_if(boost::mem_fn(&server_node::is_synth),
-                                          boost::mem_fn(&server_node::clear_parent));
+        child_nodes.remove_and_dispose_if(std::mem_fn(&server_node::is_synth),
+                                          std::mem_fn(&server_node::clear_parent));
 
         /* now there are only group classes */
         for(server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it) {
