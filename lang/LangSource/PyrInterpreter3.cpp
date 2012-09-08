@@ -465,7 +465,7 @@ static inline void handlePushClassVar(VMGlobals* g, PyrSlot *& sp, unsigned char
 static inline void handleStoreInstVar(VMGlobals* g, PyrSlot *& sp, unsigned char *& ip, unsigned int index)
 {
 	PyrObject* obj = slotRawObject(&g->receiver);
-	if (obj->obj_flags & obj_immutable)
+	if (obj->IsImmutable())
 		StoreToImmutableA(g, sp, ip);
 	else {
 		PyrSlot * slot = obj->slots + index;
@@ -971,7 +971,7 @@ HOT void Interpret(VMGlobals *g)
 		handle_op_7:
 			op2 = ip[1]; ++ip; // get inst var index
 			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
+			if (obj->IsImmutable()) { StoreToImmutableA(g, sp, ip); }
 			else {
 				slot = obj->slots + op2;
 				slotCopy(slot, sp);
@@ -2454,7 +2454,7 @@ HOT void Interpret(VMGlobals *g)
 						sp -= numArgsPushed - 1;
 						index = methraw->specialIndex;
 						obj = slotRawObject(slot);
-						if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, ip); }
+						if (obj->IsImmutable()) { StoreToImmutableB(g, sp, ip); }
 						else {
 							if (numArgsPushed >= 2) {
 								slotCopy(&obj->slots[index], sp + 1);
@@ -2598,7 +2598,7 @@ HOT void Interpret(VMGlobals *g)
 						numArgsPushed -= numKeyArgsPushed << 1;
 						index = methraw->specialIndex;
 						obj = slotRawObject(slot);
-						if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, ip); }
+						if (obj->IsImmutable()) { StoreToImmutableB(g, sp, ip); }
 						else {
 							if (numArgsPushed >= 2) {
 								slotCopy(&obj->slots[index], sp + 1);

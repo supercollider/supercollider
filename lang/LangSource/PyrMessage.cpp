@@ -110,7 +110,7 @@ HOT void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPush
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
 				obj = slotRawObject(recvrSlot);
-				if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, g->ip); }
+				if (obj->IsImmutable()) { StoreToImmutableB(g, sp, g->ip); }
 				else {
 					if (numArgsPushed >= 2) {
 						slotCopy(&obj->slots[index], sp + 1);
@@ -240,7 +240,7 @@ HOT void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
 				obj = slotRawObject(recvrSlot);
-				if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, g->ip); }
+				if (obj->IsImmutable()) { StoreToImmutableB(g, sp, g->ip); }
 				else {
 					if (numArgsPushed >= 2) {
 						slotCopy(&obj->slots[index], sp + 1);
@@ -429,7 +429,7 @@ HOT void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArg
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
 				obj = slotRawObject(recvrSlot);
-				if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, g->ip); }
+				if (obj->IsImmutable()) { StoreToImmutableB(g, sp, g->ip); }
 				else {
 					if (numArgsPushed >= 2) {
 						slotCopy(&obj->slots[index], sp + 1);
@@ -560,7 +560,7 @@ HOT void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				sp = g->sp -= numArgsPushed - 1;
 				index = methraw->specialIndex;
 				obj = slotRawObject(recvrSlot);
-				if (obj->obj_flags & obj_immutable) { StoreToImmutableB(g, sp, g->ip); }
+				if (obj->IsImmutable()) { StoreToImmutableB(g, sp, g->ip); }
 				else {
 					if (numArgsPushed >= 2) {
 						slotCopy(&obj->slots[index], sp + 1);

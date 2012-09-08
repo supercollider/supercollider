@@ -2654,7 +2654,7 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 	PyrSlot *slot;
 	switch (obj->obj_format) {
 		case obj_slot :
-			if (obj->obj_flags & obj_immutable) return errImmutableObject;
+			if (obj->IsImmutable()) return errImmutableObject;
 			slot = obj->slots + index;
 			slotCopy(slot, c);
 			g->gc->GCWrite(obj, slot);
@@ -2706,7 +2706,7 @@ int putIndexedFloat(PyrObject *obj, double val, int index)
 	PyrSlot *slot;
 	switch (obj->obj_format) {
 		case obj_slot :
-			if (obj->obj_flags & obj_immutable) return errImmutableObject;
+			if (obj->IsImmutable()) return errImmutableObject;
 			slot = obj->slots + index;
 			SetFloat(slot, val);
 			break;

@@ -85,12 +85,14 @@ struct PyrObjectHdr {
 
 	int scratch1;
 
-	int SizeClass() { return obj_sizeclass; }
+	int SizeClass()          { return obj_sizeclass; }
 
-	void SetMark() { obj_flags |= obj_marked; }
-	void ClearMark() { obj_flags &= ~obj_marked; }
-	bool IsMarked() { return ((obj_flags & obj_marked) != 0); } // BG2004-10-09 : the previous version did execute some hidden code in int -> bool conversion
-	bool IsPermanent() { return gc_color == obj_permanent; }
+	void SetMark()           { obj_flags |= obj_marked; }
+	void ClearMark()         { obj_flags &= ~obj_marked; }
+	bool IsMarked() const    { return obj_flags & obj_marked; }
+	bool IsPermanent() const { return gc_color == obj_permanent; }
+	bool IsImmutable() const { return obj_flags & obj_immutable; }
+	bool IsMutable() const   { return !IsMutable(); }
 };
 
 struct PyrObject : public PyrObjectHdr {

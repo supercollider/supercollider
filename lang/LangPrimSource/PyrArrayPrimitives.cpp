@@ -115,7 +115,7 @@ int basicSwap(struct VMGlobals *g, int numArgsPushed)
 	if (NotInt(b)) return errIndexNotAnInteger;
 	if (NotInt(c)) return errIndexNotAnInteger;
 	obj = slotRawObject(a);
-	if (obj->obj_flags & obj_immutable) return errImmutableObject;
+	if (obj->IsImmutable()) return errImmutableObject;
 	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 	i = slotRawInt(b);
@@ -194,7 +194,7 @@ int basicRemoveAt(struct VMGlobals *g, int numArgsPushed)
 	if (err) return errWrongType;
 
 	obj = slotRawObject(a);
-	if (obj->obj_flags & obj_immutable) return errImmutableObject;
+	if (obj->IsImmutable()) return errImmutableObject;
 	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
@@ -263,7 +263,7 @@ int basicTakeAt(struct VMGlobals *g, int numArgsPushed)
 	if (err) return errWrongType;
 
 	obj = slotRawObject(a);
-	if (obj->obj_flags & obj_immutable) return errImmutableObject;
+	if (obj->IsImmutable()) return errImmutableObject;
 	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
@@ -805,7 +805,6 @@ int prArrayAdd(struct VMGlobals *g, int numArgsPushed);
 int prArrayAdd(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *slots;
-	PyrObject *array;
 	int maxelems, elemsize, format, tag, numbytes;
 	int err, ival;
 	double fval;
@@ -813,8 +812,9 @@ int prArrayAdd(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
-	array = slotRawObject(a);
-	if (array->obj_flags & obj_immutable) return errImmutableObject;
+	PyrObject *array = slotRawObject(a);
+	if (array->IsImmutable()) return errImmutableObject;
+
 	format = slotRawObject(a)->obj_format;
 	tag = gFormatElemTag[format];
 	/*if (tag > 0) {
@@ -891,7 +891,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 	if (NotInt(b)) return errWrongType;
 
 	array = slotRawObject(a);
-	if (array->obj_flags & obj_immutable) return errImmutableObject;
+	if (array->IsImmutable()) return errImmutableObject;
 	format = slotRawObject(a)->obj_format;
 	tag = gFormatElemTag[format];
 
@@ -1088,7 +1088,7 @@ int prArrayFill(struct VMGlobals *g, int numArgsPushed)
 	slots = array->slots;
 	switch (format) {
 		case obj_slot :
-			if (array->obj_flags & obj_immutable) return errImmutableObject;
+			if (array->IsImmutable()) return errImmutableObject;
 			for (i=0; i<array->size; ++i) {
 				slotCopy(&slots[i],b);
 			}
@@ -1159,7 +1159,7 @@ int prArrayPop(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp;
 
 	array = slotRawObject(a);
-	if (array->obj_flags & obj_immutable) return errImmutableObject;
+	if (array->IsImmutable()) return errImmutableObject;
 	if (array->size > 0) {
 		format = array->obj_format;
 		slots = array->slots;
