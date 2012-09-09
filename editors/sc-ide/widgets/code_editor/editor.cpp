@@ -21,6 +21,7 @@
 #include "autocompleter.hpp"
 #include "editor.hpp"
 #include "highlighter.hpp"
+#include "line_indicator.hpp"
 #include "../sc_symbol_references.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/main.hpp"
@@ -37,75 +38,6 @@
 #include <QUrl>
 
 namespace ScIDE {
-
-LineIndicator::LineIndicator( CodeEditor *editor ):
-    QWidget( editor ), mEditor(editor)
-{
-    setLineCount(1);
-}
-
-void LineIndicator::setLineCount( int count )
-{
-    mLineCount = count;
-    setFixedWidth( widthForLineCount(count) );
-    Q_EMIT( widthChanged() );
-}
-
-void LineIndicator::changeEvent( QEvent *e )
-{
-    if( e->type() == QEvent::FontChange ) {
-        setFixedWidth( widthForLineCount(mLineCount) );
-        Q_EMIT( widthChanged() );
-    }
-    else
-        QWidget::changeEvent(e);
-}
-
-void LineIndicator::paintEvent( QPaintEvent *e )
-{ mEditor->paintLineIndicator(e); }
-
-void LineIndicator::mousePressEvent( QMouseEvent *e )
-{
-    QTextCursor cursor = mEditor->cursorForPosition(QPoint(0, e->pos().y()));
-    if(cursor.isNull()) {
-        mLastCursorPos = -1;
-        return;
-    }
-    mEditor->setTextCursor(cursor);
-    mLastCursorPos = cursor.position();
-}
-
-void LineIndicator::mouseMoveEvent( QMouseEvent *e )
-{
-    QTextCursor cursor = mEditor->cursorForPosition(QPoint(0, e->pos().y()));
-    if(cursor.isNull() || cursor.position() == mLastCursorPos)
-        return;
-    QTextCursor origCursor = mEditor->textCursor();
-    origCursor.setPosition( cursor.position(), QTextCursor::KeepAnchor );
-    mEditor->setTextCursor(origCursor);
-    mLastCursorPos = cursor.position();
-    // The selectionChanged() signal of the editor does not always fire here!
-    // Qt bug?
-    update();
-}
-
-void LineIndicator::mouseDoubleClickEvent( QMouseEvent *e )
-{
-    QTextCursor cursor = mEditor->cursorForPosition(QPoint(0, e->pos().y()));
-    cursor.movePosition( QTextCursor::EndOfBlock, QTextCursor::KeepAnchor );
-    mEditor->setTextCursor(cursor);
-}
-
-int LineIndicator::widthForLineCount( int lineCount )
-{
-    int digits = 2;
-    while( lineCount >= 100 ) {
-        lineCount /= 10;
-        ++digits;
-    }
-
-    return 6 + fontMetrics().width('9') * digits;
-}
 
 CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     QPlainTextEdit( parent ),
