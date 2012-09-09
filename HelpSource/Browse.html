@@ -157,7 +157,7 @@ function updateTree() {
                 res += "+";
             else if(v.installed=="missing")
                 res += "(not installed) ";
-            var link = v.oldhelp?v.oldhelp:(v.path+".html");
+            var link = v.hasOwnProperty("oldhelp")?v.oldhelp:(v.path+".html");
             res += x[0].toUpperCase()+"</span><a href='"+link+"'>"+v.title+"</a></div><div class='result_summary'>"+v.summary+"</div>";
         }
 
