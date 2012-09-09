@@ -395,21 +395,36 @@ void GenericCodeEditor::wheelEvent( QWheelEvent * e )
 
 void GenericCodeEditor::dragEnterEvent( QDragEnterEvent * event )
 {
-    foreach (QUrl url, event->mimeData()->urls()) {
-        if (url.scheme() == QString("file")) { // LATER: use isLocalFile
-            // LATER: check mime type ?
-            event->acceptProposedAction();
-            return;
+    const QMimeData * data = event->mimeData();
+    if (data->hasUrls()) {
+        foreach (QUrl url, event->mimeData()->urls()) {
+            if (url.scheme() == QString("file")) { // LATER: use isLocalFile
+                // LATER: check mime type ?
+                event->acceptProposedAction();
+                return;
+            }
         }
+        return;
     }
+
+    static QString textPlain("text/plain");
+    if (data->formats().contains(textPlain))
+        event->acceptProposedAction();
 }
 
 void GenericCodeEditor::dropEvent( QDropEvent * event )
 {
-    foreach (QUrl url, event->mimeData()->urls()) {
-        if (url.scheme() == QString("file")) // LATER: use isLocalFile
-            Main::documentManager()->open(url.toLocalFile());
+    const QMimeData * data = event->mimeData();
+    if (data->hasUrls()) {
+        foreach (QUrl url, data->urls()) {
+            if (url.scheme() == QString("file")) // LATER: use isLocalFile
+                Main::documentManager()->open(url.toLocalFile());
+        }
+        return;
     }
+
+    QTextCursor cursor = cursorForPosition(event->pos());
+    cursor.insertText(data->text());
 }
 
 
