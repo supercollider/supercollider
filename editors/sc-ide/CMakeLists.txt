@@ -38,6 +38,7 @@ set ( ide_moc_hdr
     widgets/tool_box.hpp
     widgets/code_editor/editor.hpp
     widgets/code_editor/highlighter.hpp
+    widgets/code_editor/line_indicator.hpp
     widgets/code_editor/overlay.hpp
     widgets/code_editor/autocompleter.hpp
     widgets/settings/dialog.hpp
@@ -77,6 +78,7 @@ set ( ide_src
     widgets/session_switch_dialog.cpp
     widgets/code_editor/editor.cpp
     widgets/code_editor/highlighter.cpp
+    widgets/code_editor/line_indicator.cpp
     widgets/code_editor/overlay.cpp
     widgets/code_editor/autocompleter.cpp
     widgets/settings/dialog.cpp

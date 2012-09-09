@@ -28,38 +28,11 @@
 #include <QTextBlock>
 #include <QList>
 
-namespace ScIDE
-{
+namespace ScIDE {
 
 namespace Settings { class Manager; }
 
 class Document;
-class CodeEditor;
-class AutoCompleter;
-
-class LineIndicator : public QWidget
-{
-    Q_OBJECT
-
-public:
-    LineIndicator( CodeEditor *editor );
-Q_SIGNALS:
-    void widthChanged();
-public Q_SLOTS:
-    void setLineCount( int );
-protected:
-    virtual void paintEvent( QPaintEvent *e );
-    virtual void mousePressEvent( QMouseEvent * );
-    virtual void mouseMoveEvent( QMouseEvent * );
-    virtual void mouseDoubleClickEvent( QMouseEvent * );
-    virtual void changeEvent( QEvent * );
-private:
-    int widthForLineCount( int lineCount );
-
-    CodeEditor *mEditor;
-    int mLineCount;
-    int mLastCursorPos;
-};
 
 class CodeEditor : public QPlainTextEdit
 {
@@ -168,7 +141,7 @@ private:
 
     QTextCursor cursorAt( const TokenIterator, int offset = 0 );
 
-    LineIndicator *mLineIndicator;
+    class LineIndicator *mLineIndicator;
 
     Document *mDoc;
 
@@ -183,7 +156,7 @@ private:
 
     QGraphicsScene *mOverlay;
 
-    AutoCompleter *mAutoCompleter;
+    class AutoCompleter *mAutoCompleter;
 };
 
 } // namespace ScIDE
