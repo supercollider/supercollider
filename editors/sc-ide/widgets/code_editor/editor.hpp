@@ -66,7 +66,6 @@ public Q_SLOTS:
     void setShowWhitespace(bool);
     void clearSearchHighlighting();
     void applySettings( Settings::Manager * );
-    void deleteTrailingSpaces();
     void indent();
     void triggerAutoCompletion();
     void triggerMethodCallAid();
