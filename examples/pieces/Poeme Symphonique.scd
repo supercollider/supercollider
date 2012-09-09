@@ -1,7 +1,7 @@
 
 // (thor magnusson) (c 2007)
 
-// A reinterpretation of the Poème symphonique was composed by György Ligeti (in 1962)
+// A reinterpretation of the Po√®me symphonique was composed by Gy√∂rgy Ligeti (in 1962)
 // http://www.youtube.com/watch?v=QCp7bL-AWvw
 
 (

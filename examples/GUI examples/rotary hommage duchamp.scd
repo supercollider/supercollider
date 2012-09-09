@@ -1,5 +1,5 @@
 
-// rotary hommage ˆ Duchamp
+// rotary hommage Ã  Duchamp
 // Julian Rohrhuber 2006
 (
 		var  w, width, center, bounds, a, b, c, z = 0, colors, fillOrStroke, shape;
@@ -35,5 +35,5 @@
 			
 		};
 		w.refresh;
-			fork {Êloop {Êrate.reciprocal.wait; defer {Êw.refresh; } } };		
+			fork { loop { rate.reciprocal.wait; defer { w.refresh; } } };
 )

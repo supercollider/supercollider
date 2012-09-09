@@ -1,5 +1,5 @@
 
-// SŽminaire Musical Final 2007
+// SÃ©minaire Musical Final 2007
 // julian rohrhuber
 // renate wieser
 
@@ -135,13 +135,13 @@ f_neu = {
 			nameList = indNotes; 
 		} {
 			freqs = ((0..12) + 60).midicps; 
-			if(mode == \numerical) { nameList = (0..12) } {ÊnameList = eurNotes };
+			if(mode == \numerical) { nameList = (0..12) } { nameList = eurNotes };
 		};
 		freq0 = freqs[0];
 		
 	},
 	1, {
-		nameList = {Êexprand(minFreq, 15000).round(1) } ! 13;
+		nameList = { exprand(minFreq, 15000).round(1) } ! 13;
 		freqs = nameList;
 		freq0 = 440;
 	},
@@ -243,8 +243,8 @@ f_play = { |i|
 	
 
 };
-f_playSargam = {Êv_sargam.valueAction = 1 };
-f_freeSargam = {Êv_sargam.valueAction = 0 };
+f_playSargam = { v_sargam.valueAction = 1 };
+f_freeSargam = { v_sargam.valueAction = 0 };
 
 // funktionen zu buttons
 v_neu.action = f_neu;
