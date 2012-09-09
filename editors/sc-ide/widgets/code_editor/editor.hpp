@@ -34,51 +34,93 @@ namespace Settings { class Manager; }
 
 class Document;
 
-class CodeEditor : public QPlainTextEdit
+class GenericCodeEditor : public QPlainTextEdit
 {
     Q_OBJECT
 
     friend class LineIndicator;
 
 public:
-    CodeEditor( Document *, QWidget *parent = 0 );
+    GenericCodeEditor (Document *, QWidget * parent = NULL);
+
     Document *document() { return mDoc; }
     QTextDocument *textDocument() { return QPlainTextEdit::document(); }
     void setDocument( Document * );
     bool showWhitespace();
-    void setIndentWidth( int );
     bool find( const QRegExp &expr, QTextDocument::FindFlags options = 0);
     bool replace( const QRegExp &expr, const QString &replacement, QTextDocument::FindFlags options = 0);
     int findAll( const QRegExp &expr, QTextDocument::FindFlags options = 0 );
     int replaceAll( const QRegExp &expr, const QString &replacement,
                     QTextDocument::FindFlags options = 0 );
-    QTextCursor currentRegion();
-    void blinkCode( const QTextCursor & c );
+
     void showPosition( int );
     QString symbolUnderCursor();
 
+protected:
+    virtual void keyPressEvent( QKeyEvent * );
+    virtual void wheelEvent( QWheelEvent * );
+    virtual void dragEnterEvent( QDragEnterEvent * );
+    virtual void dropEvent( QDropEvent * );
 
 public Q_SLOTS:
     void zoomIn(int steps = 1);
     void zoomOut(int steps = 1);
     void resetFontSize();
-    void setSpaceIndent(bool on) { mSpaceIndent = on; }
     void setShowWhitespace(bool);
     void clearSearchHighlighting();
-    void applySettings( Settings::Manager * );
-    void indent();
-    void triggerAutoCompletion();
-    void triggerMethodCallAid();
-    void toggleComment();
     void toggleOverwriteMode();
     void copyLineUp();
     void copyLineDown();
     void moveLineUp();
     void moveLineDown();
-    void gotoPreviousBlock();
-    void gotoNextBlock();
     void gotoPreviousEmptyLine();
     void gotoNextEmptyLine();
+
+protected Q_SLOTS:
+    void updateLayout();
+    void updateLineIndicator( QRect, int );
+    void onDocumentFontChanged();
+
+protected:
+    void resizeEvent( QResizeEvent * );
+    void paintLineIndicator( QPaintEvent * );
+    virtual void updateExtraSelections();
+    virtual void indentCurrentRegion() {}
+
+    void zoomFont(int steps);
+
+    void copyUpDown(bool up);
+    void moveLineUpDown(bool up);
+    void gotoEmptyLineUpDown(bool up);
+
+    void hideMouseCursor();
+
+    class LineIndicator *mLineIndicator;
+
+    Document *mDoc;
+    QList<QTextEdit::ExtraSelection> mSearchSelections;
+};
+
+class CodeEditor : public GenericCodeEditor
+{
+    Q_OBJECT
+
+public:
+    CodeEditor( Document *, QWidget *parent = 0 );
+    void setIndentWidth( int );
+    QTextCursor currentRegion();
+    void blinkCode( const QTextCursor & c );
+
+
+public Q_SLOTS:
+    void setSpaceIndent(bool on) { mSpaceIndent = on; }
+    void applySettings( Settings::Manager * );
+    void indent();
+    void triggerAutoCompletion();
+    void triggerMethodCallAid();
+    void toggleComment();
+    void gotoPreviousBlock();
+    void gotoNextBlock();
     void selectCurrentRegion();
     void gotoNextRegion();
     void gotoPreviousRegion();
@@ -92,17 +134,11 @@ protected:
     virtual void mouseReleaseEvent ( QMouseEvent * );
     virtual void mouseDoubleClickEvent( QMouseEvent * );
     virtual void mouseMoveEvent( QMouseEvent * );
-    virtual void wheelEvent( QWheelEvent * );
     virtual void paintEvent( QPaintEvent * );
-    virtual void dragEnterEvent( QDragEnterEvent *e );
-    virtual void dropEvent( QDropEvent *e );
 
 private Q_SLOTS:
-    void updateLayout();
-    void updateLineIndicator( QRect, int );
     void matchBrackets();
     void onOverlayChanged ( const QList<QRectF> & region );
-    void onDocumentFontChanged();
 
 private:
     struct BracketMatch {
@@ -110,22 +146,15 @@ private:
         TokenIterator second;
     };
 
-    void resizeEvent( QResizeEvent * );
-    void paintLineIndicator( QPaintEvent * );
     void matchBracket( const TokenIterator & bracket, BracketMatch & match );
     void updateExtraSelections();
-
-    void zoomFont(int steps);
+    void indentCurrentRegion();
 
     void toggleCommentSingleLine( QTextCursor );
     void toggleCommentSingleLine();
     void toggleCommentSelection();
     void addSingleLineComment( QTextCursor, int indentationLevel );
     void removeSingleLineComment( QTextCursor );
-
-    void copyUpDown(bool up);
-    void moveLineUpDown(bool up);
-    void gotoEmptyLineUpDown(bool up);
 
     QTextCursor regionAtCursor(QTextCursor);
     QTextCursor blockAtCursor(QTextCursor); // text cursor should point to bracket!
@@ -136,13 +165,7 @@ private:
     QString makeIndentationString( int level );
     int indentationLevel( const QTextCursor & );
 
-    void hideMouseCursor();
-
     QTextCursor cursorAt( const TokenIterator, int offset = 0 );
-
-    class LineIndicator *mLineIndicator;
-
-    Document *mDoc;
 
     int mIndentWidth;
     bool mSpaceIndent;
@@ -150,7 +173,6 @@ private:
     QTextCharFormat mBracketHighlight;
 
     QList<QTextEdit::ExtraSelection> mBracketSelections;
-    QList<QTextEdit::ExtraSelection> mSearchSelections;
     bool mMouseBracketMatch;
 
     QGraphicsScene *mOverlay;

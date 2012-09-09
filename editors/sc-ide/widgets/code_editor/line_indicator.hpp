@@ -30,7 +30,7 @@ class LineIndicator : public QWidget
     Q_OBJECT
 
 public:
-    LineIndicator( class CodeEditor *editor );
+    LineIndicator( class GenericCodeEditor *editor );
 Q_SIGNALS:
     void widthChanged();
 public Q_SLOTS:
@@ -44,7 +44,7 @@ protected:
 private:
     int widthForLineCount( int lineCount );
 
-    class CodeEditor *mEditor;
+    class GenericCodeEditor *mEditor;
     int mLineCount;
     int mLastCursorPos;
 };
