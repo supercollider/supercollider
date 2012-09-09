@@ -573,10 +573,6 @@ void CodeEditor::onDocumentFontChanged()
     setFont(font);
 }
 
-void CodeEditor::deleteTrailingSpaces()
-{
-    mDoc->deleteTrailingSpaces();
-}
 
 bool CodeEditor::event( QEvent *e )
 {
