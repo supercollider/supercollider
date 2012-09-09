@@ -663,9 +663,7 @@ enum {
 
 void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 {
-
 	float zreset = ZIN0(d_env_reset);
-
 
 	float *out = ZOUT(0);
 	double level = unit->m_level;
@@ -678,8 +676,6 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 	// printf("phase %f level %f \n", phase, level);
 
 	for (int i=0; i<inNumSamples; ++i) {
-
-
 
 		if (zreset > 0.f && unit->m_prevreset <= 0.f) {
 			//printf("reset: %f %f \n", zreset, unit->m_prevreset);
@@ -713,9 +709,6 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 				DoneAction(doneAction, unit);
 
 			} else {
-
-
-
 				// new time
 
 				float dur = DEMANDINPUT(d_env_dur);
@@ -735,8 +728,8 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 				shape = (int)DEMANDINPUT(d_env_shape);
 				curve = DEMANDINPUT(d_env_curve);
 
-
-				if (sc_isnan(curve)) curve = unit->m_shape;
+				if (sc_isnan(shape)) shape = unit->m_shape;
+				if (sc_isnan(curve)) curve = unit->m_curve;
 				if (phase <= 1.f) {
 					shape = 1; // shape_Linear
 					count = 1.f;
@@ -802,7 +795,7 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 					} break;
 					case shape_Curve : {
 						if (fabs(curve) < 0.001) {
-							unit->m_shape = 1; // shape_Linear
+							unit->m_shape = shape = 1; // shape_Linear
 							unit->m_grow = (endLevel - level) / count;
 						} else {
 							double a1 = (endLevel - level) / (1.0 - exp(curve));
@@ -899,25 +892,23 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 			ZXP(out) = level;
 
 	}
-			float zgate = ZIN0(d_env_gate);
-			if(zgate >= 1.f) {
-				unit->m_running = true;
-			} else if (zgate > 0.f) {
-				unit->m_running = true;
-				release = true;  // release next time.
-			} else {
-				unit->m_running = false; // sample and hold
-			}
+	float zgate = ZIN0(d_env_gate);
+	if(zgate >= 1.f) {
+		unit->m_running = true;
+	} else if (zgate > 0.f) {
+		unit->m_running = true;
+		release = true;  // release next time.
+	} else {
+		unit->m_running = false; // sample and hold
+	}
 
-			unit->m_level = level;
-			unit->m_curve = curve;
-			unit->m_shape = shape;
-			unit->m_prevreset = zreset;
-			unit->m_release = release;
+	unit->m_level = level;
+	unit->m_curve = curve;
+	unit->m_shape = shape;
+	unit->m_prevreset = zreset;
+	unit->m_release = release;
 
-			unit->m_phase = phase;
-
-
+	unit->m_phase = phase;
 }
 
 
@@ -959,7 +950,6 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 			running = true;
 
 			phase = 0.f;
-
 		}
 
 		prevreset = zreset;
@@ -977,9 +967,6 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 				DoneAction(doneAction, unit);
 
 			} else {
-
-
-
 				// new time
 
 				float dur = DEMANDINPUT_A(d_env_dur, i + 1);
@@ -994,11 +981,11 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 
 				// new shape
 				float count;
-				curve = DEMANDINPUT_A(d_env_shape, i + 1);
+				curve = DEMANDINPUT_A(d_env_curve, i + 1);
 				shape = (int)DEMANDINPUT_A(d_env_shape, i + 1);
 
 				// printf("shapes: %i \n", shape);
-				if (sc_isnan(curve)) curve = unit->m_shape;
+				if (sc_isnan(curve)) curve = unit->m_curve;
 				if (sc_isnan(shape)) shape = unit->m_shape;
 
 				if (phase <= 1.f) {
@@ -1064,7 +1051,7 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 					} break;
 					case shape_Curve : {
 						if (fabs(curve) < 0.001) {
-							unit->m_shape = 1; // shape_Linear
+							unit->m_shape = shape = 1; // shape_Linear
 							unit->m_grow = (endLevel - level) / count;
 						} else {
 							double a1 = (endLevel - level) / (1.0 - exp(curve));
@@ -1175,7 +1162,6 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 	unit->m_prevreset = prevreset;
 	unit->m_release = release;
 	unit->m_phase = phase;
-
 }
 
 
