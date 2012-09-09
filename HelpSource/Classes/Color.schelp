@@ -239,7 +239,7 @@ code::
 (
 w = Window.new.front;
 w.view.background_(Color.white);
-w.drawHook = {
+w.drawFunc = {
 	// set the Color
 	Pen.translate(200, 200);
 	30.do{

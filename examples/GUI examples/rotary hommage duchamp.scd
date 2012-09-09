@@ -11,7 +11,7 @@
 		fillOrStroke = [Pen.fillOval(_), Pen.strokeOval(_)];
 		shape = { (2 ** rrand(1, 5)).asInteger + rrand(0, 4) }.dup(rrand(5, 7));
 		shape = shape.sort.reverse;
-		w.drawHook = {
+		w.drawFunc = {
 			thisThread.randSeed = seed;
 			Pen.width = width;
 			center = 30;

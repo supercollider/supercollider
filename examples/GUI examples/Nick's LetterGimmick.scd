@@ -76,7 +76,7 @@ yellowness=rrand(0.7,0.9);
 
 penwidth=rrand(2,3);
 
-w.drawHook = {
+w.drawFunc = {
 
 	pen.use {var xoscil, xsizoscil,yoscil, todraw, usedtime;
 

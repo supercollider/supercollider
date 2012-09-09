@@ -6,7 +6,7 @@
 w = Window.new("Vera Molnar: Hommage a Duerer (1948-92)", Rect(20, 20, 720, 720), false).front;
 w.view.background_(Color.white);
 x = Array.fill2D(4, 4, _ @ _).flat.scramble * 20;
-w.drawHook = {
+w.drawFunc = {
 	Pen.strokeColor = Color.black;
 	Pen.translate(10, 10);
 	9.do {

@@ -103,7 +103,7 @@ code::
 	w = SCWindow.new;
 	w.front; // comment this to copy offscreen window
 	w.view.background_(Color.white);
-	w.drawHook = {
+	w.drawFunc = {
 		SCPen.translate(100, 100);
 		10.do{
 			// set the Color
@@ -438,7 +438,7 @@ code::
 	});
 	i.interpolation_(\none);
 	tgHeight = targetWidth * ratio;
-	w = SCWindow.new("", Rect(400,400, 450, 150)).drawHook_({
+	w = SCWindow.new("", Rect(400,400, 450, 150)).drawFunc_({
 		SCPen.setShadow(2@2, 0.4, color:Color.red);
 		i.drawInRect(Rect(5,5,targetWidth, tgHeight));
 	});
@@ -480,7 +480,7 @@ code::
 
 	w.onClose_({ i.free }); // free the image when the window is closed
 
-	w.drawHook_({
+	w.drawFunc_({
 
 		i.drawAtPoint(10@10, nil, operation, fraction);
 
@@ -511,7 +511,7 @@ code::
 
 	w = SCWindow.new("SCImage", Rect(120, 400, 360, 180)).front;
 	w.onClose_({ i.free }); // free the image when the window is closed
-	w.drawHook_({
+	w.drawFunc_({
 		i.drawInRect(Rect(10,10,50,50), Rect(10,10,50,50), 2, 1.0); // only a section
 	});
 )
@@ -540,7 +540,7 @@ code::
 
 	w = SCWindow.new("SCImage", Rect(120, 400, 360, 180)).front;
 	w.onClose_({ i.free }); // free the image when the window is closed
-	w.drawHook_({
+	w.drawFunc_({
 		i.tileInRect(w.view.bounds, nil, 2, 1.0); // all image contents
 	});
 )
