@@ -23,7 +23,7 @@
 
 using namespace ScIDE;
 
-LineIndicator::LineIndicator( CodeEditor *editor ):
+LineIndicator::LineIndicator( GenericCodeEditor *editor ):
     QWidget( editor ), mEditor(editor)
 {
     setLineCount(1);
