@@ -200,7 +200,7 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 	}
 
 	PyrSymbol * contextsym = getsym("functionCompileContext");
-	int index = slotRawInt(&class_interpreter->classIndex) + contextsym->u.index;
+	size_t index = slotRawInt(&class_interpreter->classIndex) + contextsym->u.index;
 	PyrMethod * meth = gRowTable[index];
 	if (!meth || slotRawSymbol(&meth->name) != contextsym) {
 		error("compile context method 'functionCompileContext' not found.\n");
@@ -537,7 +537,8 @@ HOT void Interpret(VMGlobals *g)
 	// byte code values
 	unsigned char *ip;
 	unsigned char op1;
-	int op2, op3, index, tag;
+	size_t index;
+	int op2, op3, tag;
 	// interpreter globals
 
 	// temporary variables used in the interpreter
@@ -2754,7 +2755,6 @@ void DumpDetailedBackTrace(VMGlobals *g)
 
 void DumpStack(VMGlobals *g, PyrSlot *sp)
 {
-	int i;
 	PyrSlot *slot;
 	char str[128];
 #if BCSTAT
@@ -2763,7 +2763,7 @@ void DumpStack(VMGlobals *g, PyrSlot *sp)
 	postfl("STACK:\n");
 	slot = sp - 64;
 	if (slot < g->gc->Stack()->slots) slot = g->gc->Stack()->slots;
-	for (i=slot - g->gc->Stack()->slots; slot<=sp; slot++, ++i) {
+	for (size_t i=slot - g->gc->Stack()->slots; slot<=sp; slot++, ++i) {
 		slotString(slot, str);
 		post("   %2d  %s\n", i, str);
 	}

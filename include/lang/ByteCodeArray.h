@@ -29,7 +29,7 @@ typedef unsigned char Byte;
 typedef struct {
 	Byte *bytes;
 	Byte *ptr;
-	long size;
+	size_t size;
 } ByteCodeArray, *ByteCodes;
 
 extern ByteCodes gCompilingByteCodes;
@@ -42,7 +42,7 @@ void copyByteCodes(Byte *dest, ByteCodes byteCodes);
 ByteCodes getByteCodes();
 ByteCodes saveByteCodeArray();
 void restoreByteCodeArray(ByteCodes byteCodes);
-int byteCodeLength(ByteCodes byteCodes);
+size_t byteCodeLength(ByteCodes byteCodes);
 void compileByteCodes(ByteCodes byteCodes);
 ByteCodes allocByteCodes();
 void reallocByteCodes(ByteCodes byteCodes);
