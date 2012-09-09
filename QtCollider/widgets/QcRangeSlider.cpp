@@ -215,6 +215,8 @@ void QcRangeSlider::mouseMoveEvent ( QMouseEvent * e )
           setHiValue( qMax(dragVal + dif, (double)_lo) ); break;
         case MoveLo:
           setLoValue( qMin(dragVal + dif, (double)_hi) ); break;
+
+        default:;
       }
     }
   }

@@ -729,14 +729,15 @@ bool MainWindow::close( Document *doc )
             QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel,
             QMessageBox::Save // the default
         );
-        switch (ret)
-        {
+
+        switch (ret) {
         case QMessageBox::Cancel:
             return false;
         case QMessageBox::Save:
             if (!MainWindow::save(doc))
                 return false;
             break;
+        default:;
         }
     }
 
