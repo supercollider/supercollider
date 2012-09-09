@@ -237,9 +237,9 @@ v = EZSlider(w, 400 @ 24, "Amp", \db,
 
 /*
 There are still some problems:
-	¥ Restarting the sound doesn't remember the slider settings.
-	¥ cmd-period doesn't change the button.
-	¥ Closing window doesn't stop the sound.
+	- Restarting the sound doesn't remember the slider settings.
+	- cmd-period doesn't change the button.
+	- Closing window doesn't stop the sound.
 Need a more comprehensive approach.
 */
 

@@ -21,7 +21,7 @@ SynthDef(\atari2600, {|out= 0, gate= 1, tone0= 5,
 	Out.ar(out, Pan2.ar(z*e, pan));
 }).add;
 )
-Ê
+
 // And a pattern to play it:
 (
 Pbind(

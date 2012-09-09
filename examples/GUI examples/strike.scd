@@ -46,7 +46,7 @@ GUI.swing;	// use Java GUI
 		if(z % mm == 0) { zz = zz + 1; mm = rrand(5, 20); alph = #[0.1, 1.0].choose };
 	};
 	w.refresh;
-	fork {Êloop {Ê0.1.wait; defer {Êw.refresh; } } };
+	fork { loop { 0.1.wait; defer { w.refresh; } } };
 )
 		
 		
@@ -118,7 +118,7 @@ GUI.swing;	// use Java GUI
 	
 		};
 		w.refresh;
-		{Êloop {Ê0.015.wait; w.refresh }}.fork( AppClock );
+		{ loop { 0.015.wait; w.refresh }}.fork( AppClock );
 )
 
 
@@ -136,7 +136,7 @@ q.sendData = {|q, data|
 	p[\out] = {
 		data.do { |array|
 			var xdata, ydata, xmul, ymul;
-			array.do {Ê|point|
+			array.do { |point|
 				xdata = xdata.add(point.x);
 				ydata = ydata.add(point.y);
 			};

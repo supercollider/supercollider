@@ -1,6 +1,6 @@
 
 
-/*Ê
+/*
 A babbling brook example, by James McCartney 2007. See
 http://www.create.ucsb.edu/pipermail/sc-users/2007-April/033231.html
 */

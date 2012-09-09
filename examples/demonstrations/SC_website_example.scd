@@ -29,9 +29,9 @@ This example comes from supercollider.sourceforge.net as of 2003. It uses a loop
   }).send(s); // send synthdef to server
 });
 )
-Ê
+
 // a process to use them.
-Ê
+
 (
 var s;
 s = Server.local;
