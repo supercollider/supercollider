@@ -196,7 +196,7 @@ var field = { |x| { |y| Complex(x / n + offset * zoom, y / n + offset * zoom) } 
 
 w = Window("Julia set", bounds:Rect(200, 200, xs, ys)).front;
 w.view.background_(Color.black);
-w.drawHook = {
+w.drawFunc = {
 	n.do { |x|
 		n.do { |y|
 			var z = field[x][y];

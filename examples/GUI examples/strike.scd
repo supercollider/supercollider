@@ -30,7 +30,7 @@ GUI.swing;	// use Java GUI
 			
 	};
 	pen = Pen;
-	w.drawHook = {
+	w.drawFunc = {
 		// set the Color
 		try { pen.smoothing_(false) };
 		pen.width = width;
@@ -96,7 +96,7 @@ GUI.swing;	// use Java GUI
 		
 		phunz.(20);
 		pen = Pen;
-		w.drawHook = {
+		w.drawFunc = {
 			
 			try { pen.smoothing_(false) };
 			

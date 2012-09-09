@@ -13,7 +13,7 @@ GUI.swing;	// use SwingGUI (Java based GUI)
 		var pen = GUI.pen;
 		w = GUI.window.new("Trochoid", Rect(128, 64, 800, 400)).front;
 		w.view.background_(Color.white);
-		w.drawHook = {
+		w.drawFunc = {
 			pen.strokeColor = Color.black;
 			pen.moveTo(0 @ 150);
 			((0..900) / 50).do { |phi|

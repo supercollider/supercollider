@@ -302,7 +302,7 @@ w.view.background_(Color.new255(153, 255, 102).vary);
 
 string = "swing ".dup(24).join;
 
-w.drawHook = Routine {
+w.drawFunc = Routine {
 	var i = 0;
 	var size = 40;
 	var func = { |i, j| sin(i * 0.07 + (j * 0.0023) + 1.5pi) * much + 1 };
