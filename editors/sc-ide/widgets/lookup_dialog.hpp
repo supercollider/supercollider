@@ -27,27 +27,40 @@
 
 namespace ScIDE {
 
-class LookupDialog : public QDialog
+class GenericLookupDialog: public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit LookupDialog(QWidget *parent = 0);
-    void query( const QString & query ) { mQueryEdit->setText(query); performQuery(); }
+    explicit GenericLookupDialog(QWidget *parent = 0);
+    void query( const QString & query ) { mQueryEdit->setText(query); this->performQuery(); }
     void clearQuery() { mQueryEdit->clear(); }
 
 private slots:
     void onAccepted();
-    void performQuery();
 
-private:
-    bool performClassQuery(const QString & className);
-    bool performMethodQuery(const QString & methodName);
+protected:
+    virtual void performQuery() = 0;
     bool eventFilter( QObject *, QEvent * );
     void paintEvent( QPaintEvent * );
 
     QTreeWidget *mResultList;
     QLineEdit *mQueryEdit;
+};
+
+class LookupDialog : public GenericLookupDialog
+{
+    Q_OBJECT
+
+public:
+    explicit LookupDialog(QWidget *parent = 0);
+
+private slots:
+    void performQuery();
+
+private:
+    bool performClassQuery(const QString & className);
+    bool performMethodQuery(const QString & methodName);
 };
 
 } // namespace ScIDE

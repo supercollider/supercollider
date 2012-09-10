@@ -31,14 +31,12 @@
 
 namespace ScIDE {
 
-LookupDialog::LookupDialog( QWidget * parent ):
+GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     QDialog(parent, Qt::Popup | Qt::FramelessWindowHint)
 {
     setWindowTitle(tr("Look Up Class or Method Definition"));
 
     mQueryEdit = new QLineEdit(this);
-    mQueryEdit->setText(tr("Enter symbol to look up"));
-    mQueryEdit->selectAll();
 
     mResultList = new QTreeWidget(this);
     mResultList->setRootIsDecorated(false);
@@ -46,7 +44,6 @@ LookupDialog::LookupDialog( QWidget * parent ):
     mResultList->setHeaderHidden(true);
     mResultList->header()->setStretchLastSection(false);
     mResultList->setColumnCount(2);
-
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(4,4,4,4);
@@ -75,6 +72,51 @@ LookupDialog::LookupDialog( QWidget * parent ):
     mQueryEdit->setFocus( Qt::OtherFocusReason );
 }
 
+void GenericLookupDialog::onAccepted()
+{
+    QTreeWidgetItem *currentItem = mResultList->currentItem();
+    if (!currentItem)
+        return;
+
+    QString path = currentItem->data( 0, Qt::UserRole ).toString();
+    int pos = currentItem->data( 0, Qt::UserRole + 1 ).toInt();
+
+    Main::documentManager()->open(path, pos);
+}
+
+bool GenericLookupDialog::eventFilter( QObject *object, QEvent *event )
+{
+    if (object == mResultList && event->type() == QEvent::KeyPress) {
+        QKeyEvent *ke = static_cast<QKeyEvent*>(event);
+        switch(ke->key()){
+        case Qt::Key_Enter:
+        case Qt::Key_Return:
+            accept();
+            return true;
+        default:;
+        }
+    }
+
+    return QDialog::eventFilter(object,event);
+}
+
+void GenericLookupDialog::paintEvent( QPaintEvent * )
+{
+    QPainter painter(this);
+    painter.setBrush(Qt::NoBrush);
+    painter.setPen(palette().color(QPalette::Dark));
+    painter.drawRect(rect().adjusted(0,0,-1,-1));
+}
+
+LookupDialog::LookupDialog( QWidget * parent ):
+    GenericLookupDialog(parent)
+{
+    setWindowTitle(tr("Look Up Class or Method Definition"));
+
+    mQueryEdit->setText(tr("Enter symbol to look up"));
+    mQueryEdit->selectAll();
+}
+
 
 void LookupDialog::performQuery()
 {
@@ -85,11 +127,8 @@ void LookupDialog::performQuery()
         return;
     }
 
-    bool result;
-    if (queryString[0].isUpper())
-        result = performClassQuery(queryString);
-    else
-        result = performMethodQuery(queryString);
+    const bool result = queryString[0].isUpper() ? performClassQuery(queryString)
+                                                 : performMethodQuery(queryString);
 
     if (result) {
         mResultList->header()->resizeSections(QHeaderView::ResizeToContents);
@@ -194,42 +233,6 @@ bool LookupDialog::performMethodQuery(const QString & methodName)
     mResultList->model()->sort(0);
 
     return true;
-}
-
-void LookupDialog::onAccepted()
-{
-    QTreeWidgetItem *currentItem = mResultList->currentItem();
-    if (!currentItem)
-        return;
-
-    QString path = currentItem->data( 0, Qt::UserRole ).toString();
-    int pos = currentItem->data( 0, Qt::UserRole + 1 ).toInt();
-
-    Main::documentManager()->open(path, pos);
-}
-
-bool LookupDialog::eventFilter( QObject *object, QEvent *event )
-{
-    if (object == mResultList && event->type() == QEvent::KeyPress) {
-        QKeyEvent *ke = static_cast<QKeyEvent*>(event);
-        switch(ke->key()){
-        case Qt::Key_Enter:
-        case Qt::Key_Return:
-            accept();
-            return true;
-        default:;
-        }
-    }
-
-    return QDialog::eventFilter(object,event);
-}
-
-void LookupDialog::paintEvent( QPaintEvent * )
-{
-    QPainter painter(this);
-    painter.setBrush(Qt::NoBrush);
-    painter.setPen(palette().color(QPalette::Dark));
-    painter.drawRect(rect().adjusted(0,0,-1,-1));
 }
 
 } // namespace ScIDE
