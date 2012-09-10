@@ -241,25 +241,29 @@ void SCProcess::onSclangStart()
 
     QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
     evaluateCode ( command, true );
-    setActiveDocument(Main::documentManager()->currentDocument());
+    sendActiveDocument();
 }
 
 void SCProcess::setActiveDocument(Document * document)
 {
+    if (document)
+        mCurrentDocumentPath = document->filePath();
+    else
+        mCurrentDocumentPath.clear();
+
+    sendActiveDocument();
+}
+
+void SCProcess::sendActiveDocument()
+{
     if (state() != QProcess::Running)
         return;
 
-    QString filePath;
-    if (document)
-        filePath = document->filePath();
-
-    if (!filePath.isEmpty())
-        evaluateCode(QString("ScIDE.currentPath_(\"%1\")").arg(filePath), true);
+    if (!mCurrentDocumentPath.isEmpty())
+        evaluateCode(QString("ScIDE.currentPath_(\"%1\")").arg(mCurrentDocumentPath), true);
     else
         evaluateCode(QString("ScIDE.currentPath_(nil)"), true);
 }
-
-
 
 void ScResponder::onResponse( const QString & selector, const QString & data )
 {
@@ -275,7 +279,7 @@ void ScResponder::onResponse( const QString & selector, const QString & data )
         emit newIntrospectionData(data);
 
     else if (selector == requestCurrentPathSymbol)
-        Main::scProcess()->setActiveDocument(Main::documentManager()->currentDocument());
+        Main::scProcess()->sendActiveDocument();
 
     else if (selector == openFileSymbol)
         handleOpenFile(data);

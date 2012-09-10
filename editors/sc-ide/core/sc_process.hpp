@@ -70,6 +70,8 @@ public:
     }
 
     void setActiveDocument(class Document *);
+    void sendActiveDocument();
+
     QAction *action(SCProcessActionRole role)
     {
         return mActions[role];
@@ -116,6 +118,8 @@ private:
     QLocalSocket *mIpcSocket;
     QString mIpcServerName;
     QByteArray mIpcData;
+
+    QString mCurrentDocumentPath;
 };
 
 class ScRequest : public QObject
