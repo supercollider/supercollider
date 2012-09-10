@@ -154,15 +154,16 @@ private slots:
     void evaluateDocument();
 
 private:
+    void makeSignalConnections();
+    void breakSignalConnections();
     void createActions();
     void updateActions();
     CodeEditorBox *newBox();
     void setCurrentBox( CodeEditorBox * );
     void setCurrentEditor( CodeEditor * );
-    void loadBoxState( CodeEditorBox *box, const QVariantList & data );
-    void loadSplitterState( QSplitter *, const QVariantMap & data );
+    void loadBoxState( CodeEditorBox *box, const QVariantList & data, const QList<Document *> & documentList );
+    void loadSplitterState( QSplitter *, const QVariantMap & data, const QList<Document *> & documentList );
 
-    DocumentManager * mDocManager;
     SignalMultiplexer * mSigMux;
     SignalMultiplexer * mBoxSigMux;
     QAction *mActions[ActionRoleCount];
