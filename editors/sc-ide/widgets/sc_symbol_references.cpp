@@ -50,8 +50,6 @@ void ReferencesDialog::performQuery()
     SymbolReferenceRequest * request = new SymbolReferenceRequest(Main::scProcess(), this);
     connect(request, SIGNAL(response(QString,QString)), this, SLOT(onResposeFromLanguage(QString,QString)));
     request->sendRequest(queryString);
-
-    connect(request, SIGNAL(symbolReferencesReceived(QString)), this, SLOT(onResposeFromLanguage(QString)));
 }
 
 void ReferencesDialog::onResposeFromLanguage(const QString &, const QString &responseData)
