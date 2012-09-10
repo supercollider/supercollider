@@ -270,6 +270,11 @@ HelpBrowser {
 				this.goTo(url);
 			};
 		};
+		if(webView.respondsTo(\onJavaScriptMsg_)) {
+			webView.onJavaScriptMsg = {|wv, err, type|
+				"JavaScript %: %".format(if(type==0,"Error","Message"),err).postln;
+			};
+		};
 
 		toggleFind = {
 				if(findView.visible.not) {
