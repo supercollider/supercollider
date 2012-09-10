@@ -139,6 +139,11 @@ public:
         return (method->ownerClass->name.get().startsWith("Meta_"));
     }
 
+    bool introspectionAvailable() const
+    {
+        return !mClassMap.empty();
+    }
+
 private:
     void initPaths();
     bool parse(const QString & yamlString );

@@ -22,8 +22,9 @@
 #define SCIDE_WIDGETS_LOOKUP_DIALOG_HPP_INCLUDED
 
 #include <QDialog>
-#include <QTreeWidget>
 #include <QLineEdit>
+#include <QStandardItemModel>
+#include <QTreeWidget>
 
 namespace ScIDE {
 
@@ -32,19 +33,22 @@ class GenericLookupDialog: public QDialog
     Q_OBJECT
 
 public:
+    static const int PathRole       = Qt::UserRole + 1;
+    static const int CharPosRole    = Qt::UserRole + 2;
+
     explicit GenericLookupDialog(QWidget *parent = 0);
     void query( const QString & query ) { mQueryEdit->setText(query); this->performQuery(); }
     void clearQuery() { mQueryEdit->clear(); }
 
 private slots:
-    void onAccepted();
+    void onAccepted(QModelIndex);
+    virtual void performQuery() = 0;
 
 protected:
-    virtual void performQuery() = 0;
     bool eventFilter( QObject *, QEvent * );
     void paintEvent( QPaintEvent * );
 
-    QTreeWidget *mResultList;
+    QTreeView *mResult;
     QLineEdit *mQueryEdit;
 };
 
@@ -59,8 +63,12 @@ private slots:
     void performQuery();
 
 private:
+    QStandardItemModel * modelForClass(const QString & className);
+    QStandardItemModel * modelForMethod(const QString & methodName);
     bool performClassQuery(const QString & className);
     bool performMethodQuery(const QString & methodName);
+
+    static QList<QStandardItem *> makeDialogItem(QString const & name, QString const & displayPath, QString const & path, int position);
 };
 
 } // namespace ScIDE
