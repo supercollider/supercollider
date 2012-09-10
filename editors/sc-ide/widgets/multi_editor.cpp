@@ -246,9 +246,6 @@ void MultiEditor::makeSignalConnections()
     connect(docManager, SIGNAL(showRequest(Document*,int)),
             this, SLOT(show(Document*,int)));
 
-    connect(this, SIGNAL(currentDocumentChanged(Document*)),
-            docManager, SLOT(activeDocumentChanged(Document*)));
-
     connect(mTabs, SIGNAL(currentChanged(int)),
             this, SLOT(onCurrentTabChanged(int)));
     connect(mTabs, SIGNAL(tabCloseRequested(int)),
