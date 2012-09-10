@@ -34,29 +34,26 @@ namespace ScIDE {
 GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     QDialog(parent, Qt::Popup | Qt::FramelessWindowHint)
 {
-    setWindowTitle(tr("Look Up Class or Method Definition"));
-
     mQueryEdit = new QLineEdit(this);
 
-    mResultList = new QTreeWidget(this);
-    mResultList->setRootIsDecorated(false);
-    mResultList->setAllColumnsShowFocus(true);
-    mResultList->setHeaderHidden(true);
-    mResultList->header()->setStretchLastSection(false);
-    mResultList->setColumnCount(2);
+    mResult = new QTreeView(this);
+    mResult->setRootIsDecorated(false);
+    mResult->setAllColumnsShowFocus(true);
+    mResult->setHeaderHidden(true);
+    mResult->header()->setStretchLastSection(false);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(4,4,4,4);
     layout->setSpacing(1);
     layout->addWidget(mQueryEdit);
-    layout->addWidget(mResultList);
+    layout->addWidget(mResult);
     setLayout(layout);
 
     connect(mQueryEdit, SIGNAL(returnPressed()), this, SLOT(performQuery()));
-    connect(mResultList, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(accept()));
-    connect(this, SIGNAL(accepted()), this, SLOT(onAccepted()));
+    connect(mResult, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onAccepted(QModelIndex)));
+    connect(mResult, SIGNAL(activated(QModelIndex)),     this, SLOT(onAccepted(QModelIndex)));
 
-    mResultList->installEventFilter(this);
+    mResult->installEventFilter(this);
 
     QRect bounds(0,0,600,300);
     if (parent) {
@@ -72,26 +69,31 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     mQueryEdit->setFocus( Qt::OtherFocusReason );
 }
 
-void GenericLookupDialog::onAccepted()
+void GenericLookupDialog::onAccepted(QModelIndex currentIndex)
 {
-    QTreeWidgetItem *currentItem = mResultList->currentItem();
-    if (!currentItem)
+    QStandardItemModel * model = qobject_cast<QStandardItemModel*>(mResult->model());
+    currentIndex = currentIndex.sibling(currentIndex.row(), 0);
+    QStandardItem *currentItem = model->itemFromIndex(currentIndex);
+    if (!currentItem) {
+        reject();
         return;
+    }
 
-    QString path = currentItem->data( 0, Qt::UserRole ).toString();
-    int pos = currentItem->data( 0, Qt::UserRole + 1 ).toInt();
+    QString path = currentItem->data( PathRole ).toString();
+    int pos      = currentItem->data( CharPosRole ).toInt();
 
     Main::documentManager()->open(path, pos);
+    accept();
 }
 
 bool GenericLookupDialog::eventFilter( QObject *object, QEvent *event )
 {
-    if (object == mResultList && event->type() == QEvent::KeyPress) {
+    if (object == mResult && event->type() == QEvent::KeyPress) {
         QKeyEvent *ke = static_cast<QKeyEvent*>(event);
         switch(ke->key()){
         case Qt::Key_Enter:
         case Qt::Key_Return:
-            accept();
+            onAccepted(mResult->currentIndex());
             return true;
         default:;
         }
@@ -117,13 +119,12 @@ LookupDialog::LookupDialog( QWidget * parent ):
     mQueryEdit->selectAll();
 }
 
-
 void LookupDialog::performQuery()
 {
     QString queryString = mQueryEdit->text();
 
     if (queryString.isEmpty()) {
-        mResultList->clear();
+        mResult->setModel(NULL);
         return;
     }
 
@@ -131,108 +132,120 @@ void LookupDialog::performQuery()
                                                  : performMethodQuery(queryString);
 
     if (result) {
-        mResultList->header()->resizeSections(QHeaderView::ResizeToContents);
-        mResultList->setFocus(Qt::OtherFocusReason);
-        mResultList->setCurrentItem( mResultList->topLevelItem(0) );
-        mResultList->scrollToItem( mResultList->topLevelItem(0) );
+        mResult->header()->resizeSections(QHeaderView::ResizeToContents);
+        mResult->setFocus(Qt::OtherFocusReason);
     }
 }
 
-bool LookupDialog::performClassQuery(const QString & className)
+QList<QStandardItem*> LookupDialog::makeDialogItem( QString const & name, QString const & displayPath,
+                                                    QString const & path, int position )
+{
+    QStandardItem * item = new QStandardItem( name );
+    item->setData( path, PathRole );
+    item->setData( position, CharPosRole );
+    QStandardItem * pathItem = new QStandardItem(displayPath);
+
+    QList<QStandardItem*> ret;
+    ret << item << pathItem;
+
+    return ret;
+}
+
+QStandardItemModel * LookupDialog::modelForClass(const QString &className)
 {
     using namespace ScLanguage;
-
-    mResultList->clear();
-
     const Introspection & introspection = Main::scProcess()->introspection();
-
     const Class *klass = introspection.findClass(className);
-    if (!klass)
-        return false;
 
-    QColor pathColor = palette().color(QPalette::Light);
+    if (!klass)
+        return NULL;
+
+    QStandardItemModel * model = new QStandardItemModel(this);
+    QStandardItem *parentItem = model->invisibleRootItem();
 
     while (klass) {
         Class *metaClass = klass->metaClass;
 
         QString displayPath = introspection.compactLibraryPath(klass->definition.path);
 
-        QTreeWidgetItem *classItem = new QTreeWidgetItem( QStringList() << klass->name.get() << displayPath );
-        classItem->setData( 0, Qt::UserRole, klass->definition.path.get() );
-        classItem->setData( 0, Qt::UserRole+1, klass->definition.position );
-        classItem->setData( 1, Qt::ForegroundRole, pathColor );
-        mResultList->addTopLevelItem(classItem);
+        parentItem->appendRow(makeDialogItem(klass->name.get(), displayPath,
+                                             klass->definition.path.get(),
+                                             klass->definition.position));
 
         foreach (const Method * method, metaClass->methods) {
             QString signature = method->signature( Method::SignatureWithoutArguments );
             QString displayPath = introspection.compactLibraryPath(method->definition.path);
 
-            QTreeWidgetItem *methodItem = new QTreeWidgetItem( QStringList() << signature << displayPath );
-            methodItem->setData( 0, Qt::UserRole, method->definition.path.get() );
-            methodItem->setData( 0, Qt::UserRole+1, method->definition.position );
-            methodItem->setData( 1, Qt::ForegroundRole, pathColor );
-            mResultList->addTopLevelItem(methodItem);
+            parentItem->appendRow(makeDialogItem( signature, displayPath,
+                                                  method->definition.path.get(),
+                                                  method->definition.position ));
         }
 
         foreach (const Method * method, klass->methods) {
             QString signature = method->signature( Method::SignatureWithoutArguments );
             QString displayPath = introspection.compactLibraryPath(method->definition.path);
 
-            QTreeWidgetItem *methodItem = new QTreeWidgetItem( QStringList() << signature << displayPath  );
-            methodItem->setData( 0, Qt::UserRole, method->definition.path.get() );
-            methodItem->setData( 0, Qt::UserRole+1, method->definition.position );
-            methodItem->setData( 1, Qt::ForegroundRole, pathColor );
-            mResultList->addTopLevelItem(methodItem);
+            parentItem->appendRow(makeDialogItem( signature, displayPath,
+                                                  method->definition.path.get(),
+                                                  method->definition.position ));
         }
 
         klass = klass->superClass;
     }
 
-    return true;
+    return model;
 }
 
-bool LookupDialog::performMethodQuery(const QString & methodName)
+QStandardItemModel * LookupDialog::modelForMethod(const QString & methodName)
 {
     using namespace ScLanguage;
+    const Introspection & introspection = Main::scProcess()->introspection();
     using std::pair;
 
-    mResultList->clear();
+    if (!introspection.introspectionAvailable()) {
+        qWarning("Introspection Data not available");
+        return NULL;
+    }
 
-    const Introspection & introspection = Main::scProcess()->introspection();
     const MethodMap & methods = introspection.methodMap();
-
-    pair<MethodMap::const_iterator, MethodMap::const_iterator> matchingMethods =
-        methods.equal_range(methodName);
+    pair<MethodMap::const_iterator, MethodMap::const_iterator> matchingMethods = methods.equal_range(methodName);
 
     if (matchingMethods.first == matchingMethods.second) {
         qWarning("Method not defined!");
-        return false;
+        return NULL;
     }
 
-    QColor pathColor = palette().color(QPalette::Light);
+    QStandardItemModel * model = new QStandardItemModel(this);
+    QStandardItem *parentItem = model->invisibleRootItem();
 
-    for (MethodMap::const_iterator it = matchingMethods.first;
-         it != matchingMethods.second; ++it) {
+    for (MethodMap::const_iterator it = matchingMethods.first; it != matchingMethods.second; ++it) {
         Method *method = it->second.data();
+        QString signature = method->signature( Method::SignatureWithoutArguments );
 
         const QString & path = method->definition.path;
         QString displayPath = introspection.compactLibraryPath(path);
 
-        QTreeWidgetItem *item = new QTreeWidgetItem (
-            mResultList,
-            QStringList()
-            << method->signature(Method::SignatureWithoutArguments)
-            << displayPath
-        );
-
-        item->setData( 0, Qt::UserRole, path );
-        item->setData( 0, Qt::UserRole + 1, method->definition.position );
-        item->setData( 1, Qt::ForegroundRole, pathColor );
+        parentItem->appendRow(makeDialogItem( signature, displayPath,
+                                              method->definition.path.get(),
+                                              method->definition.position ));
     }
 
-    mResultList->model()->sort(0);
+    model->sort(0);
+    return model;
+}
 
-    return true;
+bool LookupDialog::performClassQuery(const QString & className)
+{
+    QStandardItemModel * model = modelForClass(className);
+    mResult->setModel(model);
+    return model;
+}
+
+bool LookupDialog::performMethodQuery(const QString & methodName)
+{
+    QStandardItemModel * model = modelForMethod(methodName);
+    mResult->setModel(model);
+    return model;
 }
 
 } // namespace ScIDE
