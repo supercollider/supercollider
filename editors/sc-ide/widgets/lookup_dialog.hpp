@@ -47,6 +47,9 @@ private slots:
 protected:
     bool eventFilter( QObject *, QEvent * );
     void paintEvent( QPaintEvent * );
+    void focusResults();
+
+    static QList<QStandardItem *> makeDialogItem(QString const & name, QString const & displayPath, QString const & path, int position);
 
     QTreeView *mResult;
     QLineEdit *mQueryEdit;
@@ -67,8 +70,6 @@ private:
     QStandardItemModel * modelForMethod(const QString & methodName);
     bool performClassQuery(const QString & className);
     bool performMethodQuery(const QString & methodName);
-
-    static QList<QStandardItem *> makeDialogItem(QString const & name, QString const & displayPath, QString const & path, int position);
 };
 
 } // namespace ScIDE

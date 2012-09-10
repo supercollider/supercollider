@@ -197,9 +197,7 @@ void PostWindow::openDefinition()
 
 void PostWindow::lookupReferences()
 {
-    QString symbol = symbolUnderCursor();
-    if (symbol.size() != 0)
-        new SymbolReferenceRequest(symbol, Main::scProcess(), this);
+    Main::openReferences(symbolUnderCursor(), MainWindow::instance());
 }
 
 

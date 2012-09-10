@@ -110,6 +110,19 @@ void GenericLookupDialog::paintEvent( QPaintEvent * )
     painter.drawRect(rect().adjusted(0,0,-1,-1));
 }
 
+void GenericLookupDialog::focusResults()
+{
+    mResult->header()->resizeSections(QHeaderView::ResizeToContents);
+    mResult->setFocus(Qt::OtherFocusReason);
+
+    QStandardItemModel * model = qobject_cast<QStandardItemModel*>(mResult->model());
+    QStandardItem * firstItem = model->item(0, 0);
+    if (firstItem) {
+        QModelIndex firstIndex = model->indexFromItem(firstItem);
+        mResult->setCurrentIndex(firstIndex);
+    }
+}
+
 LookupDialog::LookupDialog( QWidget * parent ):
     GenericLookupDialog(parent)
 {
@@ -131,14 +144,12 @@ void LookupDialog::performQuery()
     const bool result = queryString[0].isUpper() ? performClassQuery(queryString)
                                                  : performMethodQuery(queryString);
 
-    if (result) {
-        mResult->header()->resizeSections(QHeaderView::ResizeToContents);
-        mResult->setFocus(Qt::OtherFocusReason);
-    }
+    if (result)
+        focusResults();
 }
 
-QList<QStandardItem*> LookupDialog::makeDialogItem( QString const & name, QString const & displayPath,
-                                                    QString const & path, int position )
+QList<QStandardItem*> GenericLookupDialog::makeDialogItem( QString const & name, QString const & displayPath,
+                                                           QString const & path, int position )
 {
     QStandardItem * item = new QStandardItem( name );
     item->setData( path, PathRole );

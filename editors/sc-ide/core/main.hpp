@@ -99,6 +99,7 @@ public:
     }
 
     static void openDefinition(const QString &string, QWidget * parent);
+    static void openReferences(const QString &string, QWidget * parent);
 
 public Q_SLOTS:
     void storeSettings() {

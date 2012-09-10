@@ -23,6 +23,7 @@
 #include "session_manager.hpp"
 #include "../widgets/lookup_dialog.hpp"
 #include "../widgets/main_window.hpp"
+#include "../widgets/sc_symbol_references.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
 
 #include "SC_DirUtils.h"
@@ -222,6 +223,17 @@ void Main::openDefinition(const QString &string, QWidget * parent)
         return;
 
     LookupDialog dialog(parent);
+    dialog.query(definitionString);
+    dialog.exec();
+}
+
+void Main::openReferences(const QString &string, QWidget * parent)
+{
+    QString definitionString = string.trimmed();
+    if (definitionString.isEmpty())
+        return;
+
+    ReferencesDialog dialog(parent);
     dialog.query(definitionString);
     dialog.exec();
 }
