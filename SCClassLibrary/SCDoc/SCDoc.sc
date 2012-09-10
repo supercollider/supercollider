@@ -34,11 +34,11 @@ SCDocEntry {
     }
     prJSONList {|stream, key, v|
         if(v.isNil) { v = "" };
-        stream << "'" << key << "': [ " << v.collect{|x|"'"++x++"'"}.join(",") << " ],\n";
+        stream << "'" << key << "': [ " << v.collect{|x|"\""++x.escapeChar(34.asAscii)++"\""}.join(",") << " ],\n";
     }
 
     toJSON {|stream|
-        stream << "'" << path << "': {\n";
+        stream << "\"" << path.escapeChar(34.asAscii) << "\": {\n";
         this.prJSONString(stream, "title", title);
         this.prJSONString(stream, "path", path);
         this.prJSONString(stream, "summary", summary);
