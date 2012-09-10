@@ -1677,9 +1677,7 @@ void CodeEditor::openDefinition()
 
 void CodeEditor::lookupReferences()
 {
-    QString symbol = symbolUnderCursor();
-    if (symbol.size() != 0)
-        new SymbolReferenceRequest(symbol, Main::scProcess(), this);
+    Main::openReferences(symbolUnderCursor(), this);
 }
 
 QTextCursor CodeEditor::cursorAt(const TokenIterator it, int offset)

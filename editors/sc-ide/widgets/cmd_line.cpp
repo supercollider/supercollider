@@ -49,9 +49,7 @@ void CmdLineEdit::openDefinition()
 
 void CmdLineEdit::lookupReferences()
 {
-    QString symbol = symbolUnderCursor();
-    if (symbol.size() != 0)
-        new SymbolReferenceRequest(symbol, Main::scProcess(), this);
+    return Main::openReferences(symbolUnderCursor(), MainWindow::instance());
 }
 
 

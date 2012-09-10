@@ -24,9 +24,9 @@
 #include <QDialog>
 #include <QListView>
 #include <QObject>
-#include <QStandardItemModel>
 
 #include "../core/sc_process.hpp"
+#include "lookup_dialog.hpp"
 
 namespace ScIDE {
 
@@ -37,38 +37,30 @@ class SymbolReferenceRequest:
     Q_OBJECT
 
 public:
-    static const int PathRole       = Qt::UserRole + 1;
-    static const int CharPosRole    = Qt::UserRole + 2;
-
-    SymbolReferenceRequest(QString const & symbol, SCProcess * process, QObject * parent = NULL):
+    SymbolReferenceRequest(SCProcess * process, QObject * parent = NULL):
         ScRequest(process, parent)
+    {}
+
+    void sendRequest(QString const & symbol)
     {
-        connect(this, SIGNAL(response(QString,QString)), this, SLOT(onSymbolReferencesReply(QString, QString)));
         send("findReferencesToSymbol", symbol);
     }
-
-private Q_SLOTS:
-    void onSymbolReferencesReply(const QString &command, const QString &responseData);
-
-private:
-    QStandardItemModel * parse(QString const & responseData, QString & symbol);
 };
 
-class ReferencesDialog: public QDialog
+class ReferencesDialog:
+    public LookupDialog
 {
     Q_OBJECT
 
 public:
-    ReferencesDialog(QString const & symbol, QStandardItemModel * model, QObject * parent = NULL);
+    explicit ReferencesDialog(QWidget * parent = NULL);
 
 private slots:
-    void onAccepted(QModelIndex);
-
-private:
-    QListView * mList;
+    void performQuery();
+    void onResposeFromLanguage(const QString &command, const QString &responseData);
+    QStandardItemModel * parse(QString const & responseData);
 };
 
 }
-
 
 #endif // SCIDE_SC_SYMBOL_REFERENCES_HPP_INCLUDED

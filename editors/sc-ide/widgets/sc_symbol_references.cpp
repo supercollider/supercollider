@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include <QVBoxLayout>
+#include <QHeaderView>
 
 #include "sc_symbol_references.hpp"
 #include "../core/main.hpp"
@@ -29,20 +29,50 @@
 
 using namespace ScIDE;
 
-void SymbolReferenceRequest::onSymbolReferencesReply(const QString &command, const QString &responseData)
+ReferencesDialog::ReferencesDialog(QWidget * parent):
+    LookupDialog(parent)
 {
-    QString symbol;
-    QStandardItemModel * model = parse(responseData, symbol);
-    if (!model)
-        return; // show error?
-    ReferencesDialog * dialog = new ReferencesDialog(symbol, model, parent());
-    dialog->exec();
+    setWindowTitle(tr("Look Up References"));
 
-    delete dialog;
+    mQueryEdit->setText(tr("Enter symbol to find references"));
+    mQueryEdit->selectAll();
 }
 
-QStandardItemModel * SymbolReferenceRequest::parse(const QString &responseData, QString & symbol)
+void ReferencesDialog::performQuery()
 {
+    QString queryString = mQueryEdit->text();
+
+    if (queryString.isEmpty()) {
+        mResult->setModel(NULL);
+        return;
+    }
+
+    SymbolReferenceRequest * request = new SymbolReferenceRequest(Main::scProcess(), this);
+    connect(request, SIGNAL(response(QString,QString)), this, SLOT(onResposeFromLanguage(QString,QString)));
+    request->sendRequest(queryString);
+
+    connect(request, SIGNAL(symbolReferencesReceived(QString)), this, SLOT(onResposeFromLanguage(QString)));
+}
+
+void ReferencesDialog::onResposeFromLanguage(const QString &, const QString &responseData)
+{
+    QStandardItemModel * model = parse(responseData);
+    mResult->setModel(model);
+
+    if (model)
+        focusResults();
+}
+
+QStandardItemModel * ReferencesDialog::parse(const QString &responseData)
+{
+    using namespace ScLanguage;
+    const Introspection & introspection = Main::scProcess()->introspection();
+
+    if (!introspection.introspectionAvailable()) {
+        qWarning() << "Introspection not available"; // just required for short path name
+        return NULL;
+    }
+
     std::stringstream stream;
     stream << responseData.toStdString();
     YAML::Parser parser(stream);
@@ -55,9 +85,10 @@ QStandardItemModel * SymbolReferenceRequest::parse(const QString &responseData, 
 
     assert (doc.Type() == YAML::NodeType::Sequence);
 
-    symbol = doc[0].to<std::string>().c_str();
+    QString symbol = doc[0].to<std::string>().c_str();
 
     QStandardItemModel * model = new QStandardItemModel(this);
+    QStandardItem *parentItem = model->invisibleRootItem();
 
     YAML::Node const & references = doc[1];
 
@@ -65,47 +96,14 @@ QStandardItemModel * SymbolReferenceRequest::parse(const QString &responseData, 
         YAML::Node const & reference = *refIt;
         QString className  = reference[0].to<std::string>().c_str();
         QString methodName = reference[1].to<std::string>().c_str();
-        QString fileName   = reference[2].to<std::string>().c_str();
+        QString path       = reference[2].to<std::string>().c_str();
         int charPos        = reference[3].to<int>();
 
+        QString displayPath = introspection.compactLibraryPath(path);
         QString fullName = ScLanguage::makeFullMethodName(className, methodName);
 
-        QStandardItem * item = new QStandardItem(fullName);
-        item->setData(fileName, PathRole);
-        item->setData(charPos, CharPosRole);
-
-        model->appendRow(item);
+        parentItem->appendRow(makeDialogItem(fullName, displayPath, path, charPos));
     }
 
     return model;
-}
-
-ReferencesDialog::ReferencesDialog(QString const & symbol, QStandardItemModel * model, QObject * parentL)
-{
-    setWindowTitle(tr("References to: ") + symbol);
-
-    mList = new QListView(this);
-    mList->setModel(model);
-    mList->setModelColumn(0);
-
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->setSpacing(1);
-    layout->addWidget(mList);
-    setLayout(layout);
-
-    connect(mList, SIGNAL(activated(QModelIndex)), this, SLOT(onAccepted(QModelIndex)));
-}
-
-
-void ReferencesDialog::onAccepted(QModelIndex currentIndex)
-{
-    QStandardItemModel * model = qobject_cast<QStandardItemModel*>(mList->model());
-    QStandardItem *currentItem = model->itemFromIndex(currentIndex);
-    if (!currentItem)
-        return;
-
-    QString path = currentItem->data( SymbolReferenceRequest::PathRole ).toString();
-    int pos      = currentItem->data( SymbolReferenceRequest::CharPosRole ).toInt();
-
-    Main::documentManager()->open(path, pos);
 }
