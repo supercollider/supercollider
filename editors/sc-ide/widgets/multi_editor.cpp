@@ -195,7 +195,6 @@ private:
 
 MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
-    mDocManager(main->documentManager()),
     mSigMux(new SignalMultiplexer(this)),
     mBoxSigMux(new SignalMultiplexer(this)),
     mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) )
@@ -219,19 +218,7 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     l->addWidget(mSplitter);
     setLayout(l);
 
-    connect(mDocManager, SIGNAL(opened(Document*, int)),
-            this, SLOT(onOpen(Document*, int)));
-    connect(mDocManager, SIGNAL(closed(Document*)),
-            this, SLOT(onClose(Document*)));
-    connect(mDocManager, SIGNAL(saved(Document*)),
-            this, SLOT(update(Document*)));
-    connect(mDocManager, SIGNAL(showRequest(Document*,int)),
-            this, SLOT(show(Document*,int))),
-
-    connect(mTabs, SIGNAL(currentChanged(int)),
-            this, SLOT(onCurrentTabChanged(int)));
-    connect(mTabs, SIGNAL(tabCloseRequested(int)),
-            this, SLOT(onCloseRequest(int)));
+    makeSignalConnections();
 
     mSigMux->connect(SIGNAL(modificationChanged(bool)),
                      this, SLOT(onModificationChanged(bool)));
@@ -239,13 +226,40 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mBoxSigMux->connect(SIGNAL(currentChanged(CodeEditor*)),
                         this, SLOT(onCurrentEditorChanged(CodeEditor*)));
 
-    connect(this, SIGNAL(currentDocumentChanged(Document*)), mDocManager, SLOT(activeDocumentChanged(Document*)));
-
     createActions();
 
     setCurrentBox( defaultBox ); // will updateActions();
 
     applySettings(main->settings());
+}
+
+void MultiEditor::makeSignalConnections()
+{
+    DocumentManager *docManager = Main::documentManager();
+
+    connect(docManager, SIGNAL(opened(Document*, int)),
+            this, SLOT(onOpen(Document*, int)));
+    connect(docManager, SIGNAL(closed(Document*)),
+            this, SLOT(onClose(Document*)));
+    connect(docManager, SIGNAL(saved(Document*)),
+            this, SLOT(update(Document*)));
+    connect(docManager, SIGNAL(showRequest(Document*,int)),
+            this, SLOT(show(Document*,int)));
+
+    connect(this, SIGNAL(currentDocumentChanged(Document*)),
+            docManager, SLOT(activeDocumentChanged(Document*)));
+
+    connect(mTabs, SIGNAL(currentChanged(int)),
+            this, SLOT(onCurrentTabChanged(int)));
+    connect(mTabs, SIGNAL(tabCloseRequested(int)),
+            this, SLOT(onCloseRequest(int)));
+}
+
+void MultiEditor::breakSignalConnections()
+{
+    DocumentManager *docManager = Main::documentManager();
+    docManager->disconnect(this);
+    mTabs->disconnect(this);
 }
 
 void MultiEditor::createActions()
@@ -541,7 +555,7 @@ void MultiEditor::applySettings( Settings::Manager *s )
     s->endGroup();
 }
 
-static QVariantList saveBoxState( CodeEditorBox *box )
+static QVariantList saveBoxState( CodeEditorBox *box, const QList<Document*> & documentList )
 {
     // save editors in reverse order - first one is last shown.
     QVariantList boxData;
@@ -549,8 +563,10 @@ static QVariantList saveBoxState( CodeEditorBox *box )
     while(idx--) {
         CodeEditor *editor = box->history()[idx];
         if (!editor->document()->filePath().isEmpty()) {
+            int documentIndex = documentList.indexOf( editor->document() );
+            Q_ASSERT(documentIndex >= 0);
             QVariantMap editorData;
-            editorData.insert("file", editor->document()->filePath());
+            editorData.insert("documentIndex", documentIndex);
             editorData.insert("position", editor->textCursor().position());
             boxData.append( editorData );
         }
@@ -558,7 +574,7 @@ static QVariantList saveBoxState( CodeEditorBox *box )
     return boxData;
 }
 
-static QVariantMap saveSplitterState( QSplitter *splitter )
+static QVariantMap saveSplitterState( QSplitter *splitter, const QList<Document*> & documentList )
 {
     QVariantMap splitterData;
 
@@ -572,14 +588,14 @@ static QVariantMap saveSplitterState( QSplitter *splitter )
 
         CodeEditorBox *box = qobject_cast<CodeEditorBox*>(child);
         if (box) {
-            QVariantList boxData = saveBoxState(box);
+            QVariantList boxData = saveBoxState(box, documentList);
             childrenData.append( QVariant(boxData) );
             continue;
         }
 
         QSplitter *childSplitter = qobject_cast<QSplitter*>(child);
         if (childSplitter) {
-            QVariantMap childSplitterData = saveSplitterState(childSplitter);
+            QVariantMap childSplitterData = saveSplitterState(childSplitter, documentList);
             childrenData.append( QVariant(childSplitterData) );
         }
     }
@@ -591,23 +607,38 @@ static QVariantMap saveSplitterState( QSplitter *splitter )
 
 void MultiEditor::saveSession( Session *session )
 {
+    QList<Document*> documentList;
+
+    QVariantList tabsData;
+    int tabCount = mTabs->count();
+    for (int tabIdx = 0; tabIdx < tabCount; ++tabIdx) {
+        Document *doc = documentForTab(tabIdx);
+        documentList << doc;
+        tabsData << doc->filePath();
+    }
+
+    session->setValue( "documents", QVariant::fromValue(tabsData) );
+
     session->remove( "editors" );
-    session->setValue( "editors", saveSplitterState(mSplitter) );
+    session->setValue( "editors", saveSplitterState(mSplitter, documentList) );
 }
 
-void MultiEditor::loadBoxState( CodeEditorBox *box, const QVariantList & data )
+void MultiEditor::loadBoxState( CodeEditorBox *box,
+                                const QVariantList & data, const QList<Document*> & documentList )
 {
-    mCurrentEditorBox = box;
+    int docCount = documentList.count();
     foreach( QVariant docVar, data )
     {
         QVariantMap docData = docVar.value<QVariantMap>();
-        QString docPath = docData.value("file").toString();
+        int docIndex = docData.value("documentIndex").toInt();
         int docPos = docData.value("position").toInt();
-        Main::documentManager()->open( docPath, docPos );
+        if (docIndex >= 0 && docIndex < docCount)
+            box->setDocument( documentList[docIndex], docPos );
     }
 }
 
-void MultiEditor::loadSplitterState( QSplitter *splitter, const QVariantMap & data )
+void MultiEditor::loadSplitterState( QSplitter *splitter,
+                                     const QVariantMap & data, const QList<Document*> & documentList )
 {
     QByteArray state = QByteArray::fromBase64( data.value("state").value<QByteArray>() );
 
@@ -617,13 +648,13 @@ void MultiEditor::loadSplitterState( QSplitter *splitter, const QVariantMap & da
             CodeEditorBox *childBox = newBox();
             splitter->addWidget(childBox);
             QVariantList childBoxData = childVar.value<QVariantList>();
-            loadBoxState( childBox, childBoxData );
+            loadBoxState( childBox, childBoxData, documentList );
         }
         else if (childVar.type() == QVariant::Map) {
             QSplitter *childSplitter = new QSplitter;
             splitter->addWidget(childSplitter);
             QVariantMap childSplitterData = childVar.value<QVariantMap>();
-            loadSplitterState( childSplitter, childSplitterData );
+            loadSplitterState( childSplitter, childSplitterData, documentList );
         }
     }
 
@@ -633,39 +664,79 @@ void MultiEditor::loadSplitterState( QSplitter *splitter, const QVariantMap & da
 
 void MultiEditor::switchSession( Session *session )
 {
+    ///// Going offline...
+
+    breakSignalConnections();
+
     DocumentManager *docManager = Main::documentManager();
-    QList<Document*> docs = docManager->documents();
-    foreach (Document *doc, docs)
+
+    QList<Document*> documentList = docManager->documents();
+
+    // close all docs
+    foreach (Document *doc, documentList)
         docManager->close(doc);
 
+    // remove all tabs
+    while (mTabs->count())
+        mTabs->removeTab(0);
+
+    // remove all editors
     delete mSplitter;
+
+    documentList.clear();
+
     mSplitter = new MultiSplitter();
 
     CodeEditorBox *firstBox = 0;
 
-    if (session && session->contains("editors")) {
-        QVariantMap splitterData = session->value("editors").value<QVariantMap>();
-        loadSplitterState( mSplitter, splitterData );
+    if (session)
+    {
+        // open documents saved in the session
+        QVariantList docDataList = session->value("documents").value<QVariantList>();
+        foreach( const QVariant & docData, docDataList ) {
+            QString filePath = docData.toString();
+            Document * doc = docManager->open(filePath, -1, false);
+            documentList << doc;
+        }
 
-        if (mSplitter->count()) {
-            firstBox = mSplitter->findChild<CodeEditorBox>();
-            if (!firstBox) {
-                qWarning("Session seems to contain invalid editor split data!");
-                delete mSplitter;
-                mSplitter = new MultiSplitter();
+        // restore tabs
+        foreach ( Document * doc, documentList ) {
+            if (!doc)
+                continue;
+            int newTabIndex = mTabs->addTab( doc->title() );
+            mTabs->setTabData( newTabIndex, QVariant::fromValue<Document*>(doc) );
+        }
+
+        // restore editors
+        if (session->contains("editors")) {
+            QVariantMap splitterData = session->value("editors").value<QVariantMap>();
+            loadSplitterState( mSplitter, splitterData, documentList );
+
+            if (mSplitter->count()) {
+                firstBox = mSplitter->findChild<CodeEditorBox>();
+                if (!firstBox) {
+                    qWarning("Session seems to contain invalid editor split data!");
+                    delete mSplitter;
+                    mSplitter = new MultiSplitter();
+                }
             }
         }
     }
 
     if (!firstBox) {
+        // Restoring the session didn't result in any editor box, so create one:
         firstBox = newBox();
         mSplitter->addWidget( firstBox );
     }
 
+    layout()->addWidget(mSplitter);
+
+    makeSignalConnections();
+
+    ///// Back online.
+
     mCurrentEditorBox = 0; // ensure complete update
     setCurrentBox( firstBox );
-
-    layout()->addWidget(mSplitter);
 
     if (!session)
         // create a document on new session

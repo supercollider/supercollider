@@ -127,7 +127,7 @@ void DocumentManager::create()
     Q_EMIT( opened(doc, 0) );
 }
 
-void DocumentManager::open( const QString & path, int initialCursorPosition, bool toRecent )
+Document *DocumentManager::open( const QString & path, int initialCursorPosition, bool toRecent )
 {
     QFileInfo info(path);
     QString cpath = info.canonicalFilePath();
@@ -135,7 +135,7 @@ void DocumentManager::open( const QString & path, int initialCursorPosition, boo
 
     if (cpath.isEmpty()) {
         qWarning() << "DocumentManager: Can not open file: canonical path is empty.";
-        return;
+        return 0;
     }
 
     // Check if file already opened
@@ -144,7 +144,7 @@ void DocumentManager::open( const QString & path, int initialCursorPosition, boo
         if(doc->mFilePath == cpath) {
             Q_EMIT( showRequest(doc, initialCursorPosition) );
             if (toRecent) addToRecent(doc);
-            return;
+            return doc;
         }
     }
 
@@ -152,7 +152,7 @@ void DocumentManager::open( const QString & path, int initialCursorPosition, boo
     QFile file(cpath);
     if(!file.open(QIODevice::ReadOnly)) {
         qWarning() << "DocumentManager: the file" << cpath << "could not be opened for reading.";
-        return;
+        return 0;
     }
     QByteArray bytes( file.readAll() );
     file.close();
@@ -184,6 +184,8 @@ void DocumentManager::open( const QString & path, int initialCursorPosition, boo
     Q_EMIT( opened(doc, initialCursorPosition) );
 
     if (toRecent) this->addToRecent(doc);
+
+    return doc;
 }
 
 bool DocumentManager::reload( Document *doc )
