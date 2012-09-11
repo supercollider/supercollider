@@ -24,8 +24,9 @@ z.free;
 Volume {
 
 	var startBus, numChans, <min, <max, server, persist, <ampSynth, <>window, <volume, spec;
-	var <lag, sdname, gui, <isPlaying, <muteamp, cpFun, <isMuted=false, <isPrepping;
+	var <lag, sdname, gui = false, <isPlaying = false, <muteamp, cpFun, <isMuted=false;
 	var <synthNumChans;	// the actual number of channels, which might be set automatically
+	var sdInitialized;
 
 	*new { arg server, startBus = 0, numChans, min = -90, max = 6, persist = false;
 		^super.newCopyArgs(startBus, numChans, min, max, server, persist).initVolume;
@@ -37,39 +38,45 @@ Volume {
 		volume = 0;
 		lag = 0.1;
 		isPlaying = false;
-		isPrepping = false;
 		gui = false;
-		ServerBoot.add ({
+		sdInitialized = Condition();
+		if (server.serverRunning) {
+			this.sendSynthDef
+		} {
+			ServerBoot.add ({
 				isPlaying = false;
 				ampSynth = nil;
-		}, server)
+				this.sendSynthDef;
+			}, server)
+		}
 	}
 
-	sendDef {
-		SynthDef(sdname = (\volumeAmpControl ++ synthNumChans).asSymbol,
-			{ arg volumeAmp = 1, volumeLag = 0.1, volumeGate=1;
-			XOut.ar(startBus,
+	sendSynthDef {
+		if(numChans.isNil) {
+			synthNumChans = server.options.numOutputBusChannels;
+		} {
+			synthNumChans = numChans;
+		};
+
+		sdname = (\volumeAmpControl ++ synthNumChans).asSymbol;
+		SynthDef(sdname,
+			{ arg volumeAmp = 1, volumeLag = 0.1, volumeGate=1, bus;
+			XOut.ar(bus,
 				Linen.kr(volumeGate, releaseTime: 0.05, doneAction:2),
-				In.ar(startBus, synthNumChans) * Lag.kr(volumeAmp, volumeLag) );
+				In.ar(bus, synthNumChans) * Lag.kr(volumeAmp, volumeLag) );
 		}).send(server);
+		fork {
+			server.sync(sdInitialized);
+			"dong".postln
+		}
 	}
 
 	play {arg mute = false;
-		var cond, nodeID;
-		cond = Condition.new;
-		(isPlaying || isPrepping).not.if({
+		var nodeID;
+		(isPlaying).not.if({
 			server.serverRunning.if({
 				Routine.run({
-					if(numChans.isNil) {
-						synthNumChans = server.options.numOutputBusChannels;
-					} {
-						synthNumChans = numChans;
-					};
-					this.sendDef;
-					isPrepping = true;
-					server.sync(cond);
 					isPlaying = true;
-					isPrepping = false;
 					cpFun.isNil.if({
 						CmdPeriod.add(cpFun = {
 							var	nodeIDToFree;
@@ -91,7 +98,7 @@ Volume {
 					nodeID = server.nodeAllocator.allocPerm(1);
 					ampSynth = Synth.basicNew(sdname, server, nodeID);
 					server.sendBundle(nil, ampSynth.newMsg(1,
-						[\volumeAmp, volume.dbamp, \volumeLag, lag],
+						[\volumeAmp, volume.dbamp, \volumeLag, lag, \bus, startBus],
 						addAction: \addAfter));
 					mute.if({this.mute});
 				})
