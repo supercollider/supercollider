@@ -52,6 +52,7 @@
 #include <QShortcut>
 #include <QStatusBar>
 #include <QVBoxLayout>
+#include <QUrl>
 
 namespace ScIDE {
 
@@ -64,6 +65,8 @@ MainWindow::MainWindow(Main * main) :
 {
     Q_ASSERT(!mInstance);
     mInstance = this;
+
+    setAcceptDrops(true);
 
     setCorner( Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
 
@@ -1148,6 +1151,30 @@ void MainWindow::toggleServerRunning()
         scServer->quit();
     else
         scServer->boot();
+}
+
+void MainWindow::dragEnterEvent( QDragEnterEvent * event )
+{
+    if (event->mimeData()->hasUrls()) {
+        foreach (QUrl url, event->mimeData()->urls()) {
+            if (url.scheme() == QString("file")) { // LATER: use isLocalFile
+                // LATER: check mime type ?
+                event->acceptProposedAction();
+                return;
+            }
+        }
+    }
+}
+
+void MainWindow::dropEvent( QDropEvent * event )
+{
+    const QMimeData * data = event->mimeData();
+    if (data->hasUrls()) {
+        foreach (QUrl url, data->urls()) {
+            if (url.scheme() == QString("file")) // LATER: use isLocalFile
+                Main::documentManager()->open(url.toLocalFile());
+        }
+    }
 }
 
 //////////////////////////// StatusLabel /////////////////////////////////

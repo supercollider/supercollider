@@ -392,41 +392,18 @@ void GenericCodeEditor::wheelEvent( QWheelEvent * e )
     QPlainTextEdit::wheelEvent(e);
 }
 
-
 void GenericCodeEditor::dragEnterEvent( QDragEnterEvent * event )
 {
     const QMimeData * data = event->mimeData();
     if (data->hasUrls()) {
-        foreach (QUrl url, event->mimeData()->urls()) {
-            if (url.scheme() == QString("file")) { // LATER: use isLocalFile
-                // LATER: check mime type ?
-                event->acceptProposedAction();
-                return;
-            }
-        }
+        // Propagate event to parent.
+        // URL drops are ultimately handled by MainWindow.
+        event->ignore();
         return;
     }
 
-    static QString textPlain("text/plain");
-    if (data->formats().contains(textPlain))
-        event->acceptProposedAction();
+    QPlainTextEdit::dragEnterEvent(event);
 }
-
-void GenericCodeEditor::dropEvent( QDropEvent * event )
-{
-    const QMimeData * data = event->mimeData();
-    if (data->hasUrls()) {
-        foreach (QUrl url, data->urls()) {
-            if (url.scheme() == QString("file")) // LATER: use isLocalFile
-                Main::documentManager()->open(url.toLocalFile());
-        }
-        return;
-    }
-
-    QTextCursor cursor = cursorForPosition(event->pos());
-    cursor.insertText(data->text());
-}
-
 
 void GenericCodeEditor::clearSearchHighlighting()
 {
