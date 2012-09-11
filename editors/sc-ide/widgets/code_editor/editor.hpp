@@ -109,6 +109,7 @@ public:
     CodeEditor( Document *, QWidget *parent = 0 );
     void setIndentWidth( int );
     QTextCursor currentRegion();
+    QTextCursor regionAtCursor( const QTextCursor & );
     void blinkCode( const QTextCursor & c );
 
 
@@ -156,8 +157,7 @@ private:
     void addSingleLineComment( QTextCursor, int indentationLevel );
     void removeSingleLineComment( QTextCursor );
 
-    QTextCursor regionAtCursor(QTextCursor);
-    QTextCursor blockAtCursor(QTextCursor); // text cursor should point to bracket!
+    QTextCursor blockAtCursor(const QTextCursor &); // text cursor should point to bracket!
 
     int indentedStartOfLine( const QTextBlock & );
     void indent( const QTextCursor & );
