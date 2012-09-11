@@ -438,7 +438,8 @@ void AutoCompleter::triggerCompletion(bool forceShow)
             case Token::Builtin:
             case Token::Symbol:
             case Token::Float:
-                // we could trigger on integers, but that conflicts with using point as comma
+            case Token::RadixFloat:
+            case Token::HexInt:
                 objectIt = it;
                 break;
 
@@ -685,8 +686,12 @@ const ScLanguage::Class * AutoCompleter::classForCompletionDescription(Completio
 
     switch (completion.tokenType) {
     case Token::Float:
+    case Token::RadixFloat:
+    case Token::HexInt:
         if (completion.base.contains(".")) // else it is an int
             return introspection.findClass("Float");
+        else if (!completion.text.isEmpty())
+            return introspection.findClass("Integer");
         else
             return NULL;
 
