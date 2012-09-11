@@ -412,103 +412,63 @@ void AutoCompleter::triggerCompletion(bool forceShow)
         mCompletion.base.truncate(3);
     }
     else {
-        // Parse method call
-        TokenIterator objectIt, dotIt, methodIt;
+        TokenIterator objectIt, dotIt, nameIt;
 
         Token::Type objectTokenType = Token::Unknown;
 
-        bool objectIsClass            = false;
-        bool objectIsInferredInstance = false;
+        if (tokenMaybeName(it.type())) {
+            nameIt = it;
+            --it;
+        }
 
-        if (triggeringToken.character == '.') {
+        if (it.isValid() && it.character() == '.') {
             dotIt = it;
             --it;
+        }
+        else
+            // don't trigger on method names without preceding dot (for now)
+            return;
 
+        if (dotIt.isValid()) {
             objectTokenType = it.type();
             switch (objectTokenType) {
             case Token::Class:
-                objectIt = it;
-                objectIsClass = true;
-                break;
-
             case Token::Char:
             case Token::String:
             case Token::Builtin:
-            case Token::Float:
-                // we could trigger on integers, but that conflicts with using point as comma
-                objectIt = it;
-                objectIsInferredInstance = true;
-                break;
-
-            default:
-                return;
-            }
-
-            TokenIterator currentIt = dotIt.next();
-            if (tokenMaybeName(currentIt.type())
-                && currentIt.block() == dotIt.block()
-                && currentIt->positionInBlock == dotIt->positionInBlock + 1)
-                    methodIt = currentIt;
-
-        } else if (tokenMaybeName(triggeringToken.type)) {
-            methodIt = it;
-            --it;
-            if (it.isValid() && it->character == '.')
-                dotIt = it;
-            else
-                return;
-            --it;
-
-            objectTokenType = it.type();
-            switch (objectTokenType) {
-            case Token::Class:
-                objectIt = it;
-                objectIsClass = true;
-                break;
-
-            case Token::Char:
             case Token::Symbol:
-            case Token::String:
-            case Token::Builtin:
             case Token::Float:
                 // we could trigger on integers, but that conflicts with using point as comma
                 objectIt = it;
-                objectIsInferredInstance = true;
                 break;
 
-            default:
-                ;
+            default:;
             }
-        } else
+        }
+
+        if (!objectIt.isValid() && (!nameIt.isValid() || nameIt->length < 3))
             return;
 
-        if (! (objectIsClass || objectIsInferredInstance) && methodIt->length < 3)
-            return;
-
-        if (methodIt.isValid()) {
-            mCompletion.pos = methodIt.position();
-            mCompletion.len = methodIt->length;
-            mCompletion.text = tokenText(methodIt);
+        if (nameIt.isValid()) {
+            mCompletion.pos = nameIt.position();
+            mCompletion.len = nameIt->length;
+            mCompletion.text = tokenText(nameIt);
         } else {
             mCompletion.pos = dotIt.position() + 1;
             mCompletion.len = 0;
             mCompletion.text.clear();
         }
 
-        if (objectIsClass) {
+        if (objectIt.isValid()) {
             mCompletion.contextPos = mCompletion.pos;
             mCompletion.base       = tokenText(objectIt);
-            mCompletion.type       = ClassMethodCompletion;
-        } else if (objectIsInferredInstance) {
-            mCompletion.contextPos = mCompletion.pos;
-            mCompletion.base       = tokenText(objectIt);
-            mCompletion.type       = InferredObjectMethodCompletion;
             mCompletion.tokenType  = objectTokenType;
-        } else {
+            mCompletion.type       = ClassMethodCompletion;
+        }
+        else {
             mCompletion.contextPos = mCompletion.pos + 3;
-            mCompletion.base = tokenText(methodIt);
-            mCompletion.base.truncate(3);
-            mCompletion.type = MethodCompletion;
+            mCompletion.base       = tokenText(nameIt);
+            mCompletion.type       = MethodCompletion;
         }
     }
 
@@ -517,6 +477,9 @@ void AutoCompleter::triggerCompletion(bool forceShow)
     qDebug() << QString("Completion: ON <%1>").arg(mCompletion.base);
 
     showCompletionMenu(forceShow);
+
+    if (mCompletion.menu.isNull())
+        mCompletion.on = false;
 }
 
 void AutoCompleter::quitCompletion( const QString & reason )
@@ -558,12 +521,8 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
     case MethodCompletion:
         menu = menuForMethodCompletion(mCompletion, mEditor);
         break;
-
-    case InferredObjectMethodCompletion:
-        qDebug() << "Inferred Object" << mCompletion.base;
-        menu = menuForInferedObjectMethodCompletion(mCompletion, mEditor);
-        break;
     }
+
 
     if (menu == NULL) return;
 
@@ -616,39 +575,54 @@ CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescripti
     using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
 
-    const ClassMap & classes = introspection.classMap();
-    ClassMap::const_iterator it = classes.find(completion.base);
-    if (it == classes.end()) {
-        qDebug() << "Completion: class not found:" << completion.base;
+    const Class *klass = NULL;
+
+    if (completion.tokenType == Token::Class) {
+        const ClassMap & classes = introspection.classMap();
+        ClassMap::const_iterator it = classes.find(completion.base);
+        if (it != classes.end())
+            klass = it->second->metaClass;
+    }
+    else {
+        klass = classForCompletionDescription(completion);
+    }
+
+    if (klass == NULL) {
+        qDebug() << "Autocompletion not implemented for" << completion.base;
         return NULL;
     }
 
-    Class *metaClass = it->second->metaClass;
-    QMap<QString, const Method*> matching;
+    QMap<QString, const Method*> relevantMethods;
     do {
-        foreach (const Method * method, metaClass->methods)
+        foreach (const Method * method, klass->methods)
         {
             QString methodName = method->name.get();
+
             // Operators are also methods, but are not valid in
             // a method call syntax, so filter them out.
             Q_ASSERT(!methodName.isEmpty());
             if (!methodName[0].isLetter())
                 continue;
 
-            if (matching.value(methodName) != 0)
+            if (relevantMethods.value(methodName) != 0)
                 continue;
 
-            matching.insert(methodName, method);
+            relevantMethods.insert(methodName, method);
         }
-        metaClass = metaClass->superClass;
-    } while (metaClass);
+        klass = klass->superClass;
+    } while (klass);
 
     CompletionMenu * menu = new CompletionMenu(editor);
+    menu->setCompletionRole(CompletionMenu::CompletionRole);
 
-    foreach(const Method *method, matching) {
-        QStandardItem *item = new QStandardItem(method->name.get());
-        item->setData( QVariant::fromValue(method),
-                       CompletionMenu::MethodRole );
+    foreach(const Method *method, relevantMethods) {
+        QString methodName = method->name.get();
+        QString detail(" [ %1 ]");
+
+        QStandardItem *item = new QStandardItem();
+        item->setText( methodName + detail.arg(method->ownerClass->name) );
+        item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
+        item->setData( methodName, CompletionMenu::CompletionRole );
         menu->addItem(item);
     }
 
@@ -704,7 +678,7 @@ CompletionMenu * AutoCompleter::menuForMethodCompletion(CompletionDescription co
     return menu;
 }
 
-const ScLanguage::Class * AutoCompleter::classForCompletionDescription(AutoCompleter::CompletionDescription const & completion)
+const ScLanguage::Class * AutoCompleter::classForCompletionDescription(CompletionDescription const & completion)
 {
     using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
@@ -767,44 +741,6 @@ const ScLanguage::Class * AutoCompleter::classForCompletionDescription(AutoCompl
     return NULL;
 }
 
-CompletionMenu * AutoCompleter::menuForInferedObjectMethodCompletion(CompletionDescription const & completion,
-                                                                     CodeEditor * editor)
-{
-    using namespace ScLanguage;
-    const Introspection & introspection = Main::scProcess()->introspection();
-
-    const MethodMap & allMethods = introspection.methodMap();
-
-    const Class * classOfObject = classForCompletionDescription(completion);
-    if (classOfObject == NULL) {
-        qDebug() << "autocompletion unimplemented for" << completion.base;
-        return NULL;
-    }
-
-    CompletionMenu *menu = new CompletionMenu(editor);
-    menu->setCompletionRole(CompletionMenu::CompletionRole);
-
-    for (MethodMap::const_iterator it = allMethods.begin(); it != allMethods.end(); ++it) {
-        const Method *method = it->second.data();
-
-        if (introspection.isClassMethod(method))
-            continue;
-
-        if ((classOfObject == method->ownerClass) || (classOfObject->isSubclassOf(method->ownerClass)) ) {
-            QStandardItem *item = new QStandardItem();
-            QString methodName = method->name.get();
-            QString detail(" [ %1 ]");
-            item->setText( methodName + detail.arg(method->ownerClass->name) );
-            item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
-
-            item->setData(methodName, CompletionMenu::CompletionRole);
-
-            menu->addItem(item);
-        }
-    }
-    return menu;
-}
-
 void AutoCompleter::updateCompletionMenu(bool forceShow)
 {
     Q_ASSERT(mCompletion.on && !mCompletion.menu.isNull());
@@ -840,29 +776,13 @@ void AutoCompleter::onCompletionMenuFinished( int result )
         QString text = mCompletion.menu->currentText();
 
         if (!text.isEmpty()) {
-#if 0
-            CompletionType type = mCompletion.type;
-            const ScLanguage::Method *method = 0;
-            if (type == MethodCompletion || type == ClassMethodCompletion)
-                method = mCompletion.menu->currentMethod();
-#endif
-
             quitCompletion("done");
 
             QTextCursor cursor( mEditor->textCursor() );
             cursor.setPosition( mCompletion.pos );
             cursor.setPosition( mCompletion.pos + mCompletion.len, QTextCursor::KeepAnchor );
             cursor.insertText(text);
-#if 0
-            if (method) {
-                cursor.insertText("(");
-                MethodCall call;
-                call.position = cursor.position() - 1;
-                call.method = method;
-                pushMethodCall(call);
-                showMethodCall(call, 0);
-            }
-#endif
+
             return;
         }
     }
