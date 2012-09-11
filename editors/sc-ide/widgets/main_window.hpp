@@ -81,6 +81,7 @@ public:
         ShowFullScreen,
         ClearPostWindow,
 
+        LookupReferences,
         LookupDefinition,
         LookupDocumentation,
 
@@ -164,6 +165,7 @@ private Q_SLOTS:
     void openDefinition();
     void lookupDefinition();
     void lookupDocumentation();
+    void findReferences();
     void lookupReferences();
     void toggleServerRunning();
     void applySettings( Settings::Manager * );

@@ -55,7 +55,7 @@ public slots:
 
     bool openDocumentation();
     void openDefinition();
-    void lookupReferences();
+    void findReferences();
 
 private slots:
     void onAutoScrollTriggered(bool);

@@ -227,7 +227,7 @@ void Main::openDefinition(const QString &string, QWidget * parent)
     dialog.exec();
 }
 
-void Main::openReferences(const QString &string, QWidget * parent)
+void Main::findReferences(const QString &string, QWidget * parent)
 {
     QString definitionString = string.trimmed();
     if (definitionString.isEmpty())

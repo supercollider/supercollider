@@ -126,7 +126,7 @@ public Q_SLOTS:
     void gotoPreviousRegion();
     bool openDocumentation();
     void openDefinition();
-    void lookupReferences();
+    void findReferences();
 
 protected:
     virtual bool event( QEvent * );
