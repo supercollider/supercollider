@@ -19,6 +19,7 @@
 */
 
 #include "lookup_dialog.hpp"
+#include "main_window.hpp"
 #include "../core/sc_introspection.hpp"
 #include "../core/main.hpp"
 
@@ -214,7 +215,7 @@ QStandardItemModel * LookupDialog::modelForMethod(const QString & methodName)
     using std::pair;
 
     if (!introspection.introspectionAvailable()) {
-        qWarning("Introspection Data not available");
+        MainWindow::instance()->showStatusMessage("Introspection Data not available");
         return NULL;
     }
 
@@ -222,7 +223,7 @@ QStandardItemModel * LookupDialog::modelForMethod(const QString & methodName)
     pair<MethodMap::const_iterator, MethodMap::const_iterator> matchingMethods = methods.equal_range(methodName);
 
     if (matchingMethods.first == matchingMethods.second) {
-        qWarning("Method not defined!");
+        MainWindow::instance()->showStatusMessage("Method not defined!");
         return NULL;
     }
 

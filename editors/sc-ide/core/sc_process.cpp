@@ -23,10 +23,11 @@
 
 #include "SC_DirUtils.h"
 
+#include "main.hpp"
+#include "main_window.hpp"
 #include "sc_introspection.hpp"
 #include "sc_process.hpp"
 #include "sc_server.hpp"
-#include "main.hpp"
 #include "settings/manager.hpp"
 
 #include "yaml-cpp/node.h"
@@ -338,6 +339,16 @@ void ScResponder::handleServerRunningChanged( const QString & data )
 
     emit serverRunningChanged (serverRunningState, QString(hostName.c_str()), port);
     return;
+}
+
+void ScIntrospectionParserWorker::process(const QString &input)
+{
+    try {
+        ScLanguage::Introspection *introspection = new ScLanguage::Introspection (input);
+        emit done(introspection);
+    } catch (std::exception & e) {
+        MainWindow::instance()->showStatusMessage(e.what());
+    }
 }
 
 } // namespace ScIDE
