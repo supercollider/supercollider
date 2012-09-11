@@ -596,9 +596,10 @@ void GenericCodeEditor::copyUpDown(bool up)
     move.setPosition(end, QTextCursor::KeepAnchor);
 
     move.endEditBlock();
-    this->indentCurrentRegion();
 
     setTextCursor(move);
+
+    this->indentCurrentRegion();
 }
 
 
@@ -673,9 +674,10 @@ void GenericCodeEditor::moveLineUpDown(bool up)
     }
 
     move.endEditBlock();
-    this->indentCurrentRegion();
 
     setTextCursor(move);
+
+    this->indentCurrentRegion();
 }
 
 void GenericCodeEditor::moveLineUp()
@@ -1482,7 +1484,7 @@ void CodeEditor::toggleCommentSelection()
 
     cursor.endEditBlock();
     cursor.beginEditBlock();
-    indent(currentRegion());
+    indentCurrentRegion();
     cursor.endEditBlock();
 }
 
