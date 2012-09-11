@@ -1537,57 +1537,41 @@ void CodeEditor::gotoNextBlock()
 {
     QTextCursor cursor = textCursor();
 
-    TokenIterator startIt (cursor.block(), cursor.positionInBlock());
-    TokenIterator previousBracket;
+    TokenIterator tokenIt = TokenIterator::rightOf( cursor.block(), cursor.positionInBlock() );
+    if (tokenIt.type() == Token::OpeningBracket
+            && tokenIt.block() == cursor.block()
+            && tokenIt->positionInBlock == cursor.positionInBlock())
+        ++tokenIt;
 
-    if (startIt.type() != Token::OpeningBracket) {
-        startIt = TokenIterator::leftOf(cursor.block(), cursor.positionInBlock());
-        previousBracket = previousOpeningBracket(startIt);
-    } else
-        previousBracket = startIt;
+    tokenIt = nextClosingBracket( tokenIt );
 
-    if (previousBracket.isValid()) {
-        TokenIterator nextBracket = nextClosingBracket(previousBracket.next());
-
-        if (nextBracket.isValid()) {
-            setTextCursor(cursorAt(nextBracket, 1));
-            return;
-        }
+    if (tokenIt.isValid())
+        setTextCursor( cursorAt(tokenIt, 1) );
+    else {
+        cursor.movePosition( QTextCursor::End );
+        setTextCursor( cursor );
     }
-
-    gotoNextRegion();
 }
 
 void CodeEditor::gotoPreviousBlock()
 {
     QTextCursor cursor = textCursor();
 
-    TokenIterator startIt;
-    if (cursor.positionInBlock())
-        startIt = TokenIterator(cursor.block(), cursor.positionInBlock() - 1);
+    TokenIterator tokenIt = TokenIterator::leftOf(cursor.block(), cursor.positionInBlock());
+    if (tokenIt.type() == Token::ClosingBracket
+            && tokenIt.block() == cursor.block()
+            && tokenIt->positionInBlock == cursor.positionInBlock() - 1)
+        --tokenIt;
+
+
+    tokenIt = previousOpeningBracket( tokenIt );
+
+    if (tokenIt.isValid())
+        setTextCursor( cursorAt(tokenIt) );
     else {
-        QTextBlock previousBlock = cursor.block().previous();
-        startIt = TokenIterator(previousBlock, previousBlock.length() - 1);
+        cursor.movePosition( QTextCursor::Start );
+        setTextCursor( cursor );
     }
-
-    TokenIterator nextBracket;
-
-    if (startIt.type() != Token::ClosingBracket) {
-        startIt = TokenIterator::rightOf(cursor.block(), cursor.positionInBlock());
-        nextBracket = nextClosingBracket(startIt);
-    } else
-        nextBracket = startIt;
-
-    if (nextBracket.isValid()) {
-        TokenIterator previousBracket = previousOpeningBracket(nextBracket.previous());
-
-        if (previousBracket.isValid()) {
-            setTextCursor(cursorAt(previousBracket));
-            return;
-        }
-    }
-
-    gotoPreviousRegion();
 }
 
 void CodeEditor::selectCurrentRegion()
