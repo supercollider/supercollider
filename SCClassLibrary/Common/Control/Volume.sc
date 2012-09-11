@@ -110,32 +110,23 @@ Volume {
 	}
 
 	mute {
+		isMuted = true;
+		muteamp = volume;
+		this.changed(\mute, true);
 		if (ampSynth.notNil) {
-			this.prmute;
+			ampSynth.set(\volumeAmp, 0);
 		} {
 			this.playVolume(true)
-		};
+		}
 	}
 
 	unmute {
-		this.prunmute;
-		(this.muteamp == 0.0).if({
-			this.free;
-		});
-	}
-
-
-	prmute {
-		isMuted = true;
-		muteamp = volume;
-		ampSynth.set(\volumeAmp, 0);
-		this.changed(\mute, true);
-	}
-
-	prunmute {
 		isMuted = false;
 		ampSynth.set(\volumeAmp, muteamp.dbamp);
 		this.changed(\mute, false);
+		if (this.muteamp == 0.0) {
+			this.free;
+		}
 	}
 
 	// sets volume back to 1 - removes the synth
