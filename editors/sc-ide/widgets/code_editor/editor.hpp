@@ -60,7 +60,6 @@ protected:
     virtual void keyPressEvent( QKeyEvent * );
     virtual void wheelEvent( QWheelEvent * );
     virtual void dragEnterEvent( QDragEnterEvent * );
-    virtual void dropEvent( QDropEvent * );
 
 public Q_SLOTS:
     void zoomIn(int steps = 1);

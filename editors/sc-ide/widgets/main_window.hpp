@@ -173,6 +173,8 @@ private Q_SLOTS:
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
+    virtual void dragEnterEvent( QDragEnterEvent * );
+    virtual void dropEvent( QDropEvent * );
 
 private:
     void createActions();
