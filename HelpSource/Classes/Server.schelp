@@ -612,6 +612,6 @@ table::
 ## d || toggle dumpOSC
 ## n || post a representation of the node tree
 ## N || post a representation of the node tree and the current control values of any synths
-## s || scope (internal server only)
+## s || scope
 ::
 
