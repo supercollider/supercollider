@@ -660,9 +660,6 @@ Server {
 			};
 
 			this.initTree;
-			if(volume.volume != 0.0) {
-				volume.play;
-			};
 		}, onFailure: onFailure ? false);
 		if (remoteControlled.not, {
 			"You will have to manually boot remote server.".inform;
