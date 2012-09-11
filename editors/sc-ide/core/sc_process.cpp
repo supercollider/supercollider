@@ -271,6 +271,7 @@ void ScResponder::onResponse( const QString & selector, const QString & data )
     static QString introspectionSymbol("introspection");
     static QString requestCurrentPathSymbol("requestCurrentPath");
     static QString openFileSymbol("openFile");
+    static QString classLibraryRecompiled("classLibraryRecompiled");
 
     if (selector == defaultServerRunningChangedSymbol)
         handleServerRunningChanged(data);
@@ -281,10 +282,12 @@ void ScResponder::onResponse( const QString & selector, const QString & data )
     else if (selector == requestCurrentPathSymbol)
         Main::scProcess()->sendActiveDocument();
 
+    else if (selector == classLibraryRecompiled)
+        Main::scProcess()->emitClassLibraryRecompiled();
+
     else if (selector == openFileSymbol)
         handleOpenFile(data);
 }
-
 
 
 void ScResponder::handleOpenFile( const QString & data ) const
