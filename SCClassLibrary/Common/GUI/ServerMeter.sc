@@ -4,7 +4,7 @@ ServerMeterView{
 	classvar serverCleanupFuncs;
 
 	var <view;
-	var inresp, outresp, synthFunc, responderFunc, server, numIns, numOuts, inmeters, outmeters;
+	var inresp, outresp, synthFunc, responderFunc, server, numIns, numOuts, inmeters, outmeters, startResponderFunc;
 
 	*new{ |aserver,parent,leftUp,numIns,numOuts|
 		^super.new.init(aserver,parent,leftUp,numIns,numOuts)
@@ -93,6 +93,7 @@ ServerMeterView{
 		});
 
 		this.setSynthFunc(inmeters, outmeters);
+		startResponderFunc = {this.startResponders};
 		this.start;
 	}
 
@@ -185,7 +186,7 @@ ServerMeterView{
 		});
 	}
 
-	start{
+	start {
 		if(serverMeterViews.isNil){
 			serverMeterViews = IdentityDictionary.new;
 		};
@@ -197,7 +198,11 @@ ServerMeterView{
 			if(server.serverRunning, synthFunc); // otherwise starts when booted
 		};
 		serverMeterViews[server].add(this);
-		server.doWhenBooted({this.startResponders});
+		if (server.serverRunning) {
+			this.startResponders
+		} {
+			ServerBoot.add (startResponderFunc, server)
+		}
 	}
 
 	stop{
@@ -210,6 +215,8 @@ ServerMeterView{
 
 		(numIns > 0).if({ inresp.free; });
 		(numOuts > 0).if({ outresp.free; });
+
+		ServerBoot.remove(startResponderFunc, server)
 	}
 
 	remove{
