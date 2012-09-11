@@ -151,6 +151,18 @@ public:
     }
 
     template<typename functor>
+    void apply_deep_on_children(functor const & f)
+    {
+        for (server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it) {
+            if (it->is_group()) {
+                abstract_group & grp = static_cast<abstract_group&>(*it);
+                grp.apply_deep_on_children(f);
+            }
+            f(*it);
+        }
+    }
+
+    template<typename functor>
     void apply_on_children(functor const & f) const
     {
         for (server_node_list::const_iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)

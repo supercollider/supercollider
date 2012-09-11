@@ -29,8 +29,7 @@
 
 #include "dsp_thread_queue/dsp_thread_queue.hpp"
 
-namespace nova
-{
+namespace nova {
 
 class node_graph
 {
@@ -128,6 +127,10 @@ public:
 
     bool group_free_all(abstract_group * group)
     {
+        group->apply_deep_on_children([&](server_node & node) {
+            release_node_id(&node);
+        });
+
         size_t synths, groups;
         boost::tie(synths, groups) = group->child_count_deep();
 
@@ -139,12 +142,22 @@ public:
 
     bool group_free_deep(abstract_group * group)
     {
+        group->apply_deep_on_children([&](server_node & node) {
+             if (node.is_synth())
+                 release_node_id(&node);
+        });
+
         size_t synths, groups;
         boost::tie(synths, groups) = group->child_count_deep();
 
         group->free_synths_deep();
         synth_count_ -= synths;
         return true;
+    }
+
+    void release_node_id(server_node * node)
+    {
+        node_set.erase(*node);
     }
 
 private:
