@@ -22,9 +22,8 @@ z.free;
 */
 
 Volume {
-
 	var startBus, numChans, <min, <max, server, persist, <ampSynth, <>window, <volume, spec;
-	var <lag, sdname, gui = false, <isPlaying = false, <muteamp, cpFun, <isMuted=false;
+	var <lag, sdname, gui = false, <muteamp, cpFun, <isMuted=false;
 	var <synthNumChans;	// the actual number of channels, which might be set automatically
 	var sdInitialized;
 
@@ -37,14 +36,12 @@ Volume {
 		server = server ?? {Server.default};
 		volume = 0;
 		lag = 0.1;
-		isPlaying = false;
 		gui = false;
 		sdInitialized = Condition();
 		if (server.serverRunning) {
 			this.sendSynthDef
 		} {
 			ServerBoot.add ({
-				isPlaying = false;
 				ampSynth = nil;
 				this.sendSynthDef;
 			}, server)
@@ -59,78 +56,59 @@ Volume {
 		};
 
 		sdname = (\volumeAmpControl ++ synthNumChans).asSymbol;
+
+		// we have permanent node IDs so we should use them
 		SynthDef(sdname,
-			{ arg volumeAmp = 1, volumeLag = 0.1, volumeGate=1, bus;
-			XOut.ar(bus,
-				Linen.kr(volumeGate, releaseTime: 0.05, doneAction:2),
-				In.ar(bus, synthNumChans) * Lag.kr(volumeAmp, volumeLag) );
+			{ arg volumeAmp = 1, volumeLag = 0.1, gate=1, bus;
+				XOut.ar(bus,
+					Linen.kr(gate, releaseTime: 0.05, doneAction:2),
+					In.ar(bus, synthNumChans) * Lag.kr(volumeAmp, volumeLag) );
 		}).send(server);
+
 		fork {
 			server.sync(sdInitialized);
-			"dong".postln
+			ServerTree.add(cpFun = {
+				ampSynth = nil;
+				if (persist) {
+					this.volume_(this.volume)
+				} {
+					this.free;
+				};
+			});
 		}
 	}
 
 	play {arg mute = false;
-		var nodeID;
-		(isPlaying).not.if({
-			server.serverRunning.if({
-				Routine.run({
-					isPlaying = true;
-					cpFun.isNil.if({
-						CmdPeriod.add(cpFun = {
-							var	nodeIDToFree;
-							ampSynth.notNil.if({
-								nodeIDToFree = ampSynth.nodeID;
-								{	server.nodeAllocator
-									.freePerm(nodeIDToFree);
-								}.defer(1.0);
-							});
-							persist.if({
-								isPlaying = false;
-								this.play(isMuted);
-							}, {
-								this.free;
-							});
-						});
-					});
-						// we have permanent node IDs so we should use them
-					nodeID = server.nodeAllocator.allocPerm(1);
-					ampSynth = Synth.basicNew(sdname, server, nodeID);
-					server.sendBundle(nil, ampSynth.newMsg(1,
-						[\volumeAmp, volume.dbamp, \volumeLag, lag, \bus, startBus],
-						addAction: \addAfter));
-					mute.if({this.mute});
-				})
-			}, {
+		if (ampSynth.isNil) {
+			if(server.serverRunning) {
+				ampSynth = Synth.after(server.defaultGroup, sdname,
+					[\volumeAmp, volume.dbamp, \volumeLag, lag, \bus, startBus]);
+				mute.if({this.mute});
+			} {
 				"Volume only works on a running Server. Please boot".warn;
-			})
-		})
+			}
+		}
 	}
 
 	free {
-		var	nodeIDToFree = ampSynth.nodeID;
-		ampSynth.set(\volumeGate, 0.0);
-		{ server.nodeAllocator.freePerm(nodeIDToFree) }.defer(1.0);
-		isPlaying = false;
-		CmdPeriod.remove(cpFun);
-		cpFun = nil;
+		ampSynth.release;
+		ampSynth = nil;
 	}
 
 	numChans { ^numChans ? synthNumChans ? server.options.numOutputBusChannels }
 	numChans_ { |num|
-		if(isPlaying and: { num != synthNumChans }) {
+		if(ampSynth.notNil and: { num != synthNumChans }) {
 			"Change in number of channels will not take effect until volume is reset to 0dB.".warn;
 		};
 		numChans = num;
 	}
 
 	mute {
-		this.isPlaying.if({
+		if (ampSynth.notNil) {
 			this.prmute;
-		}, {
+		} {
 			this.playVolume(true)
-		});
+		};
 	}
 
 	unmute {
@@ -162,27 +140,27 @@ Volume {
 	// cleaner with MVC - in db
 	volume_ { arg aVolume;
 		volume = aVolume;
-		(volume == 0.0).if({
-			(this.isPlaying and: {this.isMuted.not}).if({
+		if (volume == 0.0) {
+			if (ampSynth.notNil and: {this.isMuted.not}) {
 				this.free;
-			})
-		}, {
-			server.serverRunning.if({
+			}
+		} {
+			if (server.serverRunning) {
 				this.playVolume(isMuted);
-			})
-		});
+			}
+		};
 		volume = volume.clip(min, max);
 		if(isMuted) { muteamp = volume };
-		if(isPlaying && isMuted.not) { ampSynth.set(\volumeAmp, volume.dbamp) };
+		if(ampSynth.notNil && isMuted.not) { ampSynth.set(\volumeAmp, volume.dbamp) };
 		this.changed(\amp, volume);
 	}
 
 	playVolume { arg muted = false;
-		(this.isPlaying.not and: {
-			(volume != 0.0) or: {muted}
-		}).if({
+		if (ampSynth.isNil and: {
+			(volume != 0.0) or: {muted} }) {
+			\playVolume.postln;
 			this.play(muted);
-		})
+		}
 	}
 
 	lag_ { arg aLagTime;
@@ -198,7 +176,7 @@ Volume {
 
 
 	gui { arg window, bounds;
-//		this.debug(\gui);
+		//		this.debug(\gui);
 		^VolumeGui(this, window, bounds)
 	}
 
@@ -220,9 +198,9 @@ VolumeGui{
 		bounds = bounds ?? {Rect(100, 100, 80, 330)};
 		window = win ?? {GUI.window.new("Volume", bounds).front};
 		box = GUI.numberBox.new(window, Rect(10, 10, 60, 30))
-			.value_(model.volume) ;
+		.value_(model.volume) ;
 		slider = GUI.slider.new(window, Rect(10, 40, 60, 280))
-			.value_(spec.unmap(model.volume)) ;
+		.value_(spec.unmap(model.volume)) ;
 		slider.action_({ arg item ;
 			model.volume_(spec.map(item.value));
 		}) ;
@@ -233,14 +211,14 @@ VolumeGui{
 			simpleController.remove;
 		});
 		simpleController = SimpleController(model)
-				.put(\amp, {|changer, what, volume|
-					this.debug(volume);
-					box.value_(volume.round(0.01)) ;
-					slider.value_(spec.unmap(volume)) ;
-				})
-				.put(\ampRange, {|changer, what, min, max|
-					spec = [min, max, \db].asSpec.debug;
-					slider.value_(spec.unmap(model.volume)) ;
-				})
+		.put(\amp, {|changer, what, volume|
+			this.debug(volume);
+			box.value_(volume.round(0.01)) ;
+			slider.value_(spec.unmap(volume)) ;
+		})
+		.put(\ampRange, {|changer, what, min, max|
+			spec = [min, max, \db].asSpec.debug;
+			slider.value_(spec.unmap(model.volume)) ;
+		})
 	}
 }
