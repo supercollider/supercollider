@@ -45,7 +45,7 @@ Volume {
 				ampSynth = nil;
 				this.sendSynthDef;
 			}, server)
-		}
+		};
 	}
 
 	sendSynthDef {
@@ -57,7 +57,8 @@ Volume {
 
 		sdname = (\volumeAmpControl ++ synthNumChans).asSymbol;
 
-		// we have permanent node IDs so we should use them
+		sdInitialized = Condition();
+
 		SynthDef(sdname,
 			{ arg volumeAmp = 1, volumeLag = 0.1, gate=1, bus;
 				XOut.ar(bus,
@@ -67,14 +68,19 @@ Volume {
 
 		fork {
 			server.sync(sdInitialized);
-			ServerTree.add(cpFun = {
-				ampSynth = nil;
-				if (persist) {
-					this.volume_(this.volume)
-				} {
-					this.free;
-				};
-			});
+			if (cpFun.isNil) {
+				ServerTree.add(cpFun = {
+					ampSynth = nil;
+					if (persist) {
+						this.volume_(this.volume)
+					} {
+						this.free;
+					};
+				});
+			};
+			if (server.serverRunning.not) {
+				this.volume_(this.volume)
+			}
 		}
 	}
 
