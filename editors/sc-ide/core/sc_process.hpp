@@ -206,16 +206,8 @@ class ScIntrospectionParserWorker : public QObject
 signals:
     void done( ScLanguage::Introspection * output );
 private slots:
-    void process( const QString & input )
-    {
-        try {
-            ScLanguage::Introspection *introspection = new ScLanguage::Introspection (input);
-            emit done(introspection);
-        } catch (std::exception & e) {
-            // LATER: show message in status bar
-            qDebug() << e.what();
-        }
-    }
+    void process( const QString & input );
+
     void quit()
     {
         thread()->quit();

@@ -142,7 +142,7 @@ MainWindow::MainWindow(Main * main) :
             this, SLOT( onInterpreterStateChanged(QProcess::ProcessState) ) );
     // Interpreter: forward status messages
     connect(main->scProcess(), SIGNAL(statusMessage(const QString&)),
-            this, SLOT(showMessage(const QString&)));
+            this, SLOT(showStatusMessage(const QString&)));
 
     // Document list interaction
     connect(mDocListDock->list(), SIGNAL(clicked(Document*)),
@@ -1010,7 +1010,7 @@ void MainWindow::lookupReferences()
 }
 
 
-void MainWindow::showMessage( QString const & string )
+void MainWindow::showStatusMessage( QString const & string )
 {
     mStatusBar->showMessage(string, 3000);
 }

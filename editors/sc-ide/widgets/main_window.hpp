@@ -141,6 +141,8 @@ public Q_SLOTS:
 signals:
     void evaluateCode( const QString &, bool silent = true );
 
+public Q_SLOTS:
+    void showStatusMessage( QString const & string );
 
 private Q_SLOTS:
     void switchSession( Session *session );
@@ -163,7 +165,6 @@ private Q_SLOTS:
     void lookupDefinition();
     void lookupDocumentation();
     void lookupReferences();
-    void showMessage( QString const & string );
     void toggleServerRunning();
     void applySettings( Settings::Manager * );
     void showSwitchSessionDialog();

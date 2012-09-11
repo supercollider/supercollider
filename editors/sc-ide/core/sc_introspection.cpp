@@ -21,6 +21,7 @@
 #include "sc_introspection.hpp"
 
 #include "../common/SC_DirUtils.h"
+#include "../widgets/main_window.hpp"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -76,7 +77,7 @@ bool Introspection::parse(const QString & yamlString )
 
     YAML::Node doc;
     if(!parser.GetNextDocument(doc)) {
-        qWarning("no YAML document");
+        MainWindow::instance()->showStatusMessage("no YAML document");
         return false;
     }
 
@@ -213,13 +214,13 @@ void Introspection::inferClassLibraryPath()
 const Class * Introspection::findClass(const QString &className) const
 {
     if (mClassMap.empty()) {
-        qWarning("Sclang Introspection not available, yet!");
+        MainWindow::instance()->showStatusMessage("Sclang Introspection not available, yet!");
         return NULL;
     }
 
     ClassMap::const_iterator klass_it = mClassMap.find(className);
     if (klass_it == mClassMap.end()) {
-        qWarning("Class not defined!");
+        MainWindow::instance()->showStatusMessage("Class not defined!");
         return NULL;
     }
     return klass_it->second.data();
