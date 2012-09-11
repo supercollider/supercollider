@@ -28,6 +28,7 @@
 #include "multi_editor.hpp"
 #include "popup_text_input.hpp"
 #include "post_window.hpp"
+#include "sc_symbol_references.hpp"
 #include "session_switch_dialog.hpp"
 #include "sessions_dialog.hpp"
 #include "tool_box.hpp"
@@ -319,6 +320,11 @@ void MainWindow::createActions()
     act->setShortcut(tr("Ctrl+Shift+C", "Clear Post Window"));
     connect(act, SIGNAL(triggered()), mPostDock->mPostWindow, SLOT(clear()));
 
+    mActions[LookupReferences] = act = new QAction(
+        QIcon::fromTheme("window-lookupreferences"), tr("Lookup References"), this);
+    act->setShortcut(tr("Ctrl+Shift+U", "Lookup References"));
+    connect(act, SIGNAL(triggered()), this, SLOT(lookupReferences()));
+
     mActions[LookupDefinition] = act = new QAction(
         QIcon::fromTheme("window-lookupdefinition"), tr("Lookup Definition"), this);
     act->setShortcut(tr("Ctrl+Shift+I", "Lookup Definition"));
@@ -336,7 +342,7 @@ void MainWindow::createActions()
 
     mActions[FindReferences] = act = new QAction(tr("Find References"), this);
     act->setShortcut(tr("Ctrl+U", "Find References"));
-    connect(act, SIGNAL(triggered(bool)), this, SLOT(lookupReferences()));
+    connect(act, SIGNAL(triggered(bool)), this, SLOT(findReferences()));
 
     // Settings
     mActions[ShowSettings] = act = new QAction(tr("&Configure IDE..."), this);
@@ -457,8 +463,10 @@ void MainWindow::createMenus()
     menu->addAction( mActions[ClearPostWindow] );
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
-    menu->addAction( mActions[LookupDefinition] );
+    menu->addSeparator();
     menu->addAction( mActions[LookupDocumentation] );
+    menu->addAction( mActions[LookupDefinition] );
+    menu->addAction( mActions[LookupReferences] );
 
     menuBar()->addMenu(menu);
 
@@ -1000,13 +1008,19 @@ void MainWindow::lookupDocumentation()
     delete dialog;
 }
 
-void MainWindow::lookupReferences()
+void MainWindow::findReferences()
 {
     QWidget * focussedWidget = QApplication::focusWidget();
 
-    int indexOfMethod = focussedWidget->metaObject()->indexOfMethod("lookupReferences()");
+    int indexOfMethod = focussedWidget->metaObject()->indexOfMethod("findReferences()");
     if (indexOfMethod != -1)
-        QMetaObject::invokeMethod( focussedWidget, "lookupReferences", Qt::DirectConnection );
+        QMetaObject::invokeMethod( focussedWidget, "findReferences", Qt::DirectConnection );
+}
+
+void MainWindow::lookupReferences()
+{
+    ReferencesDialog dialog(parentWidget());
+    dialog.exec();
 }
 
 

@@ -47,9 +47,9 @@ void CmdLineEdit::openDefinition()
     return Main::openDefinition(symbolUnderCursor(), MainWindow::instance());
 }
 
-void CmdLineEdit::lookupReferences()
+void CmdLineEdit::findReferences()
 {
-    return Main::openReferences(symbolUnderCursor(), MainWindow::instance());
+    return Main::findReferences(symbolUnderCursor(), MainWindow::instance());
 }
 
 

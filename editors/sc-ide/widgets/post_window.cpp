@@ -195,9 +195,9 @@ void PostWindow::openDefinition()
     Main::openDefinition(symbolUnderCursor(), MainWindow::instance());
 }
 
-void PostWindow::lookupReferences()
+void PostWindow::findReferences()
 {
-    Main::openReferences(symbolUnderCursor(), MainWindow::instance());
+    Main::findReferences(symbolUnderCursor(), MainWindow::instance());
 }
 
 
