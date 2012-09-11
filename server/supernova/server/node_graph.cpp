@@ -95,7 +95,7 @@ void node_graph::remove_node(server_node * n)
     if (!n->is_synth())
         group_free_all(static_cast<abstract_group*>(n));
 
-    node_set.erase(*n);
+    release_node_id(n);
     /** \todo recursively remove nodes from node_set
      *        for now this is done by the auto-unlink hook
      * */
@@ -134,7 +134,7 @@ void node_graph::synth_reassign_id(int32_t node_id)
         hidden_id = -std::abs<int32_t>(hasher(node_id));
 
     assert(hidden_id < 0);
-    node_set.erase(*node);
+    release_node_id(node);
     node->reset_id(hidden_id);
     node_set.insert(*node);
 }
