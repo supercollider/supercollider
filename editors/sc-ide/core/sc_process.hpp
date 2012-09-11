@@ -77,10 +77,16 @@ public:
         return mActions[role];
     }
 
+    void emitClassLibraryRecompiled()
+    {
+        emit classLibraryRecompiled();
+    }
+
 Q_SIGNALS:
     void scPost(QString const &);
     void statusMessage(const QString &);
     void response(const QString & id, const QString & data);
+    void classLibraryRecompiled();
 
 public slots:
     void recompileClassLibrary (void);
@@ -132,6 +138,9 @@ public:
     {
         connect(mSc, SIGNAL(response(QString,QString)),
                 this, SLOT(onResponse(QString,QString)));
+
+        connect(mSc, SIGNAL(classLibraryRecompiled()),
+                this, SLOT(onCancelRequest()));
     }
 
     void send( const QString & command, const QString & data )
@@ -148,13 +157,20 @@ public:
 
 signals:
     void response( const QString & command, const QString & data );
+    void requestCanceled();
 
 private slots:
+    void onCancelRequest()
+    {
+        cancel();
+        emit requestCanceled();
+        deleteLater();
+    }
+
     void onResponse( const QString & responseId, const QString & responseData )
     {
-        if (responseId == mId.toString()) {
+        if (responseId == mId.toString())
             emit response(mCommand, responseData);
-        }
     }
 
 private:

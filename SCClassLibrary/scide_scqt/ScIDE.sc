@@ -10,22 +10,23 @@ ScIDE {
 
 		StartUp.add {
 			if (ScIDE.connected) {
-                this.handshake
+				this.handshake
 			};
 		}
 	}
 
 	*connect {|ideName|
 		this.prConnect(ideName);
-        defer {
-            this.handshake
-        }
+		defer {
+			this.handshake
+		}
 	}
 
-    *handshake {
-        this.prSend(\requestCurrentPath);
+	*handshake {
+		this.prSend(\classLibraryRecompiled);
+		this.prSend(\requestCurrentPath);
 
-        defaultServer = Server.default;
+		defaultServer = Server.default;
 
 		SimpleController(defaultServer)
 		.put(\serverRunning, { | server, what, extraArg |
@@ -33,10 +34,10 @@ ScIDE {
 			this.prSend(\defaultServerRunningChanged, [server.serverRunning, addr.hostname, addr.port])
 		});
 
-        this.prSend(\defaultServerRunningChanged, [defaultServer.serverRunning, defaultServer.addr.hostname, defaultServer.addr.port]);
+		this.prSend(\defaultServerRunningChanged, [defaultServer.serverRunning, defaultServer.addr.hostname, defaultServer.addr.port]);
 
-        this.sendIntrospection; // sending the introspection at the end, as otherwise the communication channel seems to get stuck
-    }
+		this.sendIntrospection; // sending the introspection at the end, as otherwise the communication channel seems to get stuck
+	}
 
 	*request { |id, command, data|
 		this.tryPerform(command, id, data);
@@ -118,7 +119,7 @@ ScIDE {
 					// methods include operators like "+", but those are
 					// actually not valid in the method call syntax
 					if (method.name.asString[0].isAlpha &&
-					methods[method.name].isNil)
+						methods[method.name].isNil)
 					{
 						methods.put(method.name, method);
 					};
@@ -228,32 +229,32 @@ ScIDE {
 		};
 	}
 
-    *findReferencesToSymbol {|requestId, symbol|
-        var methods;
-        var result = SortedList(8, subListSorter);
-        var references = Class.findAllReferences(symbol.asSymbol);
+	*findReferencesToSymbol {|requestId, symbol|
+		var methods;
+		var result = SortedList(8, subListSorter);
+		var references = Class.findAllReferences(symbol.asSymbol);
 
-        if (references.notNil) {
-            methods = IdentitySet.new;
-            references.do { | funcDef |
-                var homeContext;
-                homeContext = if(funcDef.context.isNil) {funcDef} {funcDef.context.homeContext};
-                if (homeContext.isKindOf(Method)) {
-                    methods.add(homeContext);
-                };
-            };
-            methods.do { | method |
-                result.add([
-                    method.ownerClass.name,
-                    method.name,
-                    method.filenameSymbol.asString,
-                    method.charPos + 1
-                ])
-            }
-        };
+		if (references.notNil) {
+			methods = IdentitySet.new;
+			references.do { | funcDef |
+				var homeContext;
+				homeContext = if(funcDef.context.isNil) {funcDef} {funcDef.context.homeContext};
+				if (homeContext.isKindOf(Method)) {
+					methods.add(homeContext);
+				};
+			};
+			methods.do { | method |
+				result.add([
+					method.ownerClass.name,
+					method.name,
+					method.filenameSymbol.asString,
+					method.charPos + 1
+				])
+			}
+		};
 
-        ScIDE.prSend(requestId, [symbol, result.asArray])
-    }
+		ScIDE.prSend(requestId, [symbol, result.asArray])
+	}
 
 	*prSend {|id, data|
 		_ScIDE_Send

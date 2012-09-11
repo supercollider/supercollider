@@ -56,6 +56,7 @@ public:
     explicit ReferencesDialog(QWidget * parent = NULL);
 
 private slots:
+    void requestCanceled();
     void performQuery();
     void onResposeFromLanguage(const QString &command, const QString &responseData);
     QStandardItemModel * parse(QString const & responseData);
