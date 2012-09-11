@@ -782,10 +782,10 @@ QTextCursor CodeEditor::currentRegion()
 }
 
 
-QTextCursor CodeEditor::regionAtCursor(QTextCursor c)
+QTextCursor CodeEditor::regionAtCursor(const QTextCursor & cursor)
 {
-    QTextBlock block(c.block());
-    int positionInBlock = c.positionInBlock();
+    QTextBlock block(cursor.block());
+    int positionInBlock = cursor.positionInBlock();
 
     TokenIterator start;
     TokenIterator end;
@@ -861,7 +861,7 @@ QTextCursor CodeEditor::regionAtCursor(QTextCursor c)
     return QTextCursor();
 }
 
-QTextCursor CodeEditor::blockAtCursor(QTextCursor cursor)
+QTextCursor CodeEditor::blockAtCursor(const QTextCursor & cursor)
 {
     TokenIterator it (cursor.block(), cursor.positionInBlock());
 
