@@ -780,7 +780,16 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
 
 QTextCursor CodeEditor::currentRegion()
 {
-    return regionAtCursor(textCursor());
+    QTextCursor cursor = textCursor();
+    QTextBlock block = cursor.block();
+    int positionInBlock = cursor.positionInBlock();
+
+    if (TokenIterator(block, positionInBlock - 1).type() == Token::ClosingBracket)
+        cursor.movePosition( QTextCursor::PreviousCharacter );
+    else if (TokenIterator(block, positionInBlock).type() == Token::OpeningBracket)
+        cursor.movePosition( QTextCursor::NextCharacter );
+
+    return regionAtCursor( cursor );
 }
 
 
