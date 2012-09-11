@@ -70,7 +70,6 @@ private:
     enum CompletionType {
         ClassCompletion,
         ClassMethodCompletion,
-        InferredObjectMethodCompletion,
         MethodCompletion,
         InvalidCompletion
     };
@@ -115,7 +114,6 @@ private:
     static CompletionMenu * menuForClassCompletion(CompletionDescription const & completion, CodeEditor * editor);
     static CompletionMenu * menuForClassMethodCompletion(CompletionDescription const & completion, CodeEditor * editor);
     static CompletionMenu * menuForMethodCompletion(CompletionDescription const & completion, CodeEditor * editor);
-    static CompletionMenu * menuForInferedObjectMethodCompletion(CompletionDescription const & completion, CodeEditor * editor);
 
     static const ScLanguage::Class * classForCompletionDescription(CompletionDescription const & completion);
 
