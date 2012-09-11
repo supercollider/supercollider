@@ -276,7 +276,8 @@ void AutoCompleter::keyPress( QKeyEvent *e )
         return;
     default:
         qDebug(">>> key");
-        if (!e->text().isEmpty() && !mCompletion.on)
+        // Only trigger completion if event produces at least 1 printable character:
+        if (!mCompletion.on && !e->text().isEmpty() && e->text()[0].isPrint() )
             triggerCompletion();
     }
 }
