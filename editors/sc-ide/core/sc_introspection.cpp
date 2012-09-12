@@ -211,12 +211,19 @@ void Introspection::inferClassLibraryPath()
     mClassLibraryPath = classLibPath;
 }
 
+bool Introspection::ensureIntrospectionData() const
+{
+    if (!introspectionAvailable()) {
+        MainWindow::instance()->showStatusMessage("Sclang Introspection not available, yet!");
+        return false;
+    } else
+        return true;
+}
+
 const Class * Introspection::findClass(const QString &className) const
 {
-    if (mClassMap.empty()) {
-        MainWindow::instance()->showStatusMessage("Sclang Introspection not available, yet!");
+    if (!ensureIntrospectionData())
         return NULL;
-    }
 
     ClassMap::const_iterator klass_it = mClassMap.find(className);
     if (klass_it == mClassMap.end()) {
@@ -224,6 +231,43 @@ const Class * Introspection::findClass(const QString &className) const
         return NULL;
     }
     return klass_it->second.data();
+}
+
+std::vector<const Class*> Introspection::findClassPartial(const QString & partialClassName) const
+{
+    std::vector<const Class*> matchingClasses;
+    if (!ensureIntrospectionData())
+        return matchingClasses;
+
+    typedef ClassMap::const_iterator class_iterator;
+
+    for (class_iterator it = mClassMap.begin(); it != mClassMap.end(); ++it) {
+        QString const & key = it->first;
+        if (key.contains(partialClassName, Qt::CaseInsensitive)) {
+            if (!key.startsWith("Meta_"))
+                matchingClasses.push_back(it->second.data());
+        }
+    }
+
+    return matchingClasses;
+}
+
+
+std::vector<const Method*> Introspection::findMethodPartial(const QString & partialMethodName) const
+{
+    std::vector<const Method*> matchingMethods;
+    if (!ensureIntrospectionData())
+        return matchingMethods;
+
+    typedef MethodMap::const_iterator class_iterator;
+
+    for (class_iterator it = mMethodMap.begin(); it != mMethodMap.end(); ++it) {
+        QString const & key = it->first;
+        if (key.contains(partialMethodName, Qt::CaseInsensitive))
+            matchingMethods.push_back(it->second.data());
+    }
+
+    return matchingMethods;
 }
 
 Introspection::ClassMethodMap Introspection::constructMethodMap(const Class * klass) const
