@@ -127,12 +127,14 @@ public:
 
     bool group_free_all(abstract_group * group)
     {
+        size_t synths = 0, groups = 0;
         group->apply_deep_on_children([&](server_node & node) {
             release_node_id(&node);
+            if (node.is_synth())
+                synths += 1;
+            else
+                groups += 1;
         });
-
-        size_t synths, groups;
-        boost::tie(synths, groups) = group->child_count_deep();
 
         group->free_children();
         synth_count_ -= synths;
@@ -142,13 +144,13 @@ public:
 
     bool group_free_deep(abstract_group * group)
     {
+        size_t synths;
         group->apply_deep_on_children([&](server_node & node) {
-             if (node.is_synth())
+             if (node.is_synth()) {
                  release_node_id(&node);
+                 synths += 1;
+             }
         });
-
-        size_t synths, groups;
-        boost::tie(synths, groups) = group->child_count_deep();
 
         group->free_synths_deep();
         synth_count_ -= synths;
