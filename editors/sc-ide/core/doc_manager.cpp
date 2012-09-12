@@ -20,6 +20,7 @@
 
 #include "doc_manager.hpp"
 #include "main.hpp"
+#include "main_window.hpp"
 #include "settings/manager.hpp"
 #include "../../common/SC_TextUtils.hpp"
 
@@ -134,7 +135,7 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     info.setFile(cpath);
 
     if (cpath.isEmpty()) {
-        qWarning() << "DocumentManager: Can not open file: canonical path is empty.";
+        MainWindow::instance()->showStatusMessage(QString("Cannot open file: %1 (file does not exist)").arg(path));
         return 0;
     }
 
@@ -151,7 +152,7 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     // Open the file
     QFile file(cpath);
     if(!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "DocumentManager: the file" << cpath << "could not be opened for reading.";
+        MainWindow::instance()->showStatusMessage(QString("Cannot open file for reading: %1").arg(cpath));
         return 0;
     }
     QByteArray bytes( file.readAll() );
@@ -197,9 +198,10 @@ bool DocumentManager::reload( Document *doc )
 
     QFile file(doc->mFilePath);
     if(!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "DocumentManager: the file" << doc->mFilePath << "could not be opened for reading.";
+        MainWindow::instance()->showStatusMessage(QString("Cannot open file for reading: %1").arg(doc->mFilePath));
         return false;
     }
+
     QByteArray bytes( file.readAll() );
     file.close();
 
