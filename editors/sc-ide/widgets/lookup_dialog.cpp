@@ -151,7 +151,7 @@ void LookupDialog::performQuery()
 
     const Introspection & introspection = Main::scProcess()->introspection();
     if (!introspection.introspectionAvailable()) {
-        MainWindow::instance()->showStatusMessage("Introspection Data not available");
+        MainWindow::instance()->showStatusMessage("Introspection data not yet available");
         return;
     }
 
@@ -175,11 +175,12 @@ void LookupDialog::performQuery()
 }
 
 QList<QStandardItem*> GenericLookupDialog::makeDialogItem( QString const & name, QString const & displayPath,
-                                                           QString const & path, int position )
+                                                           QString const & path, int position, bool isClassItem )
 {
     QStandardItem * item = new QStandardItem( name );
     item->setData( path, PathRole );
     item->setData( position, CharPosRole );
+    item->setData( isClassItem, IsClassRole );
     QStandardItem * pathItem = new QStandardItem(displayPath);
 
     QList<QStandardItem*> ret;
@@ -206,7 +207,7 @@ QStandardItemModel * LookupDialog::modelForClass(const QString &className)
 
         parentItem->appendRow(makeDialogItem(klass->name.get(), displayPath,
                                              klass->definition.path.get(),
-                                             klass->definition.position));
+                                             klass->definition.position, true ));
 
         foreach (const Method * method, metaClass->methods) {
             QString signature = method->signature( Method::SignatureWithoutArguments );
@@ -214,7 +215,7 @@ QStandardItemModel * LookupDialog::modelForClass(const QString &className)
 
             parentItem->appendRow(makeDialogItem( signature, displayPath,
                                                   method->definition.path.get(),
-                                                  method->definition.position ));
+                                                  method->definition.position, false ));
         }
 
         foreach (const Method * method, klass->methods) {
@@ -223,7 +224,7 @@ QStandardItemModel * LookupDialog::modelForClass(const QString &className)
 
             parentItem->appendRow(makeDialogItem( signature, displayPath,
                                                   method->definition.path.get(),
-                                                  method->definition.position ));
+                                                  method->definition.position, false ));
         }
 
         klass = klass->superClass;
@@ -254,7 +255,7 @@ QStandardItemModel * LookupDialog::modelForMethod(const QString & methodName)
 
         parentItem->appendRow(makeDialogItem( signature, displayPath,
                                               method->definition.path.get(),
-                                              method->definition.position ));
+                                              method->definition.position, false ));
     }
 
     model->sort(0);
@@ -286,7 +287,7 @@ QStandardItemModel * LookupDialog::modelForCaseInsensitiveQuery(const QString & 
 
         parentItem->appendRow(makeDialogItem( signature, displayPath,
                                               method->definition.path.get(),
-                                              method->definition.position ));
+                                              method->definition.position, false ));
     }
 
     for (ClassIterator it = classes.begin(); it != classes.end(); ++it) {
@@ -295,7 +296,7 @@ QStandardItemModel * LookupDialog::modelForCaseInsensitiveQuery(const QString & 
 
         parentItem->appendRow(makeDialogItem(klass->name.get(), displayPath,
                                              klass->definition.path.get(),
-                                             klass->definition.position));
+                                             klass->definition.position, true ));
     }
 
     model->sort(0);
@@ -367,8 +368,8 @@ QStandardItemModel * ReferencesDialog::parse(const QString &responseData)
     using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
 
-    if (!introspection.introspectionAvailable()) {
-        qWarning() << "Introspection not available"; // just required for short path name
+    if (!introspection.introspectionAvailable()) { // just required for short path name
+        MainWindow::instance()->showStatusMessage("Introspection data not yet available");
         return NULL;
     }
 
@@ -401,7 +402,7 @@ QStandardItemModel * ReferencesDialog::parse(const QString &responseData)
         QString displayPath = introspection.compactLibraryPath(path);
         QString fullName = ScLanguage::makeFullMethodName(className, methodName);
 
-        parentItem->appendRow(makeDialogItem(fullName, displayPath, path, charPos));
+        parentItem->appendRow(makeDialogItem(fullName, displayPath, path, charPos, false));
     }
 
     return model;
