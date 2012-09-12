@@ -95,6 +95,8 @@ protected:
     void hideMouseCursor();
 
     class LineIndicator *mLineIndicator;
+    QGraphicsScene *mOverlay;
+    QWidget *mOverlayWidget;
 
     Document *mDoc;
     QList<QTextEdit::ExtraSelection> mSearchSelections;
@@ -134,11 +136,9 @@ protected:
     virtual void mouseReleaseEvent ( QMouseEvent * );
     virtual void mouseDoubleClickEvent( QMouseEvent * );
     virtual void mouseMoveEvent( QMouseEvent * );
-    virtual void paintEvent( QPaintEvent * );
 
 private Q_SLOTS:
     void matchBrackets();
-    void onOverlayChanged ( const QList<QRectF> & region );
 
 private:
     struct BracketMatch {
@@ -173,8 +173,6 @@ private:
 
     QList<QTextEdit::ExtraSelection> mBracketSelections;
     bool mMouseBracketMatch;
-
-    QGraphicsScene *mOverlay;
 
     class AutoCompleter *mAutoCompleter;
 };

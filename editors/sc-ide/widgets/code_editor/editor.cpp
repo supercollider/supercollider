@@ -35,19 +35,33 @@
 #include <QTextBlock>
 #include <QTextDocumentFragment>
 #include <QUrl>
+#include <QGraphicsView>
 
 namespace ScIDE {
 
 GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
     QPlainTextEdit( parent ),
-    mLineIndicator( new LineIndicator(this) ),
     mDoc(doc)
 {
     Q_ASSERT(mDoc != 0);
 
     setFrameShape( QFrame::NoFrame );
 
+    mLineIndicator = new LineIndicator(this);
     mLineIndicator->move( contentsRect().topLeft() );
+
+    mOverlay = new QGraphicsScene(this);
+
+    QGraphicsView *overlayView = new QGraphicsView(mOverlay, this);
+    overlayView->setFrameShape( QFrame::NoFrame );
+    overlayView->setBackgroundBrush( Qt::NoBrush );
+    overlayView->setStyleSheet("background: transparent");
+    overlayView->setFocusPolicy( Qt::NoFocus );
+    overlayView->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    overlayView->setSceneRect(QRectF(0,0,1,1));
+    overlayView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+
+    mOverlayWidget = overlayView;
 
     connect( mDoc, SIGNAL(defaultFontChanged()), this, SLOT(onDocumentFontChanged()) );
 
@@ -68,7 +82,6 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
     onDocumentFontChanged();
     mLineIndicator->setLineCount(blockCount());
 }
-
 
 bool GenericCodeEditor::showWhitespace()
 {
@@ -459,6 +472,7 @@ void GenericCodeEditor::onDocumentFontChanged()
 void GenericCodeEditor::updateLayout()
 {
     setViewportMargins( mLineIndicator->width(), 0, 0, 0 );
+    mOverlayWidget->setGeometry( viewport()->geometry() );
 }
 
 void GenericCodeEditor::updateLineIndicator( QRect r, int dy )
@@ -482,6 +496,8 @@ void GenericCodeEditor::resizeEvent( QResizeEvent *e )
 
     QRect cr = contentsRect();
     mLineIndicator->resize( mLineIndicator->width(), cr.height() );
+
+    mOverlayWidget->setGeometry( viewport()->geometry() );
 }
 
 void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
@@ -739,7 +755,6 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     mSpaceIndent(true),
     mBlinkDuration(600),
     mMouseBracketMatch(false),
-    mOverlay( new QGraphicsScene(this) ),
     mAutoCompleter( new AutoCompleter(this) )
 {
     Q_ASSERT(mDoc != 0);
@@ -750,9 +765,6 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
 
     connect( this, SIGNAL(cursorPositionChanged()),
              this, SLOT(matchBrackets()) );
-
-    connect( mOverlay, SIGNAL(changed(const QList<QRectF>&)),
-             this, SLOT(onOverlayChanged(const QList<QRectF>&)) );
 
     connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
              this, SLOT(applySettings(Settings::Manager*)) );
@@ -1057,23 +1069,6 @@ void CodeEditor::mouseMoveEvent( QMouseEvent *e )
     // Prevent initiating a text drag:
     if(!mMouseBracketMatch)
         GenericCodeEditor::mouseMoveEvent(e);
-}
-
-
-void CodeEditor::onOverlayChanged ( const QList<QRectF> & region )
-{
-    foreach(QRectF r, region)
-    {
-        viewport()->update(r.toRect());
-    }
-}
-
-void CodeEditor::paintEvent( QPaintEvent *e )
-{
-    GenericCodeEditor::paintEvent(e);
-
-    QPainter p(viewport());
-    mOverlay->render(&p, e->rect(), e->rect());
 }
 
 void CodeEditor::matchBrackets()
