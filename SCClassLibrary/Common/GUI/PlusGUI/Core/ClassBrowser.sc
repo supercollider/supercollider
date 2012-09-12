@@ -351,7 +351,7 @@ ClassBrowser {
 				classVarView, instVarView, subclassTitle, methodTitle, subclassView,
 				methodView, argView, searchMenu];
 			buttonSet = IdentitySet[\superButton, \metaButton, \helpButton, \classSourceButton,
-				\methodSourceButton, \implementationButton, \refsButton, \svnButton];
+				\methodSourceButton, \implementationButton, \refsButton];
 				// updateProtos holds instructions to update the GUI
 				// for each kind of browser result to display
 			updateProtos = (
