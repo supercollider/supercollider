@@ -241,17 +241,14 @@ QList<QStandardItem*> GenericLookupDialog::makeDialogItem( QString const & displ
                                                            QString const & className, QString const & methodName,
                                                            bool isClassItem )
 {
-    if (isClassItem)
-        assert(!methodName.size());
-    else
-        assert(methodName.size());
-
+    // LATER: shall we just store a shared pointer to the class or method?
     QStandardItem * item = new QStandardItem( displayString );
     item->setData( path,        PathRole );
     item->setData( position,    CharPosRole );
     item->setData( isClassItem, IsClassRole );
     item->setData( className,   ClassNameRole );
     item->setData( methodName,  MethodNameRole );
+
     QStandardItem * pathItem = new QStandardItem( displayPath );
 
     QList<QStandardItem*> ret;
