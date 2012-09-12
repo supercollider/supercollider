@@ -105,11 +105,10 @@ public slots:
     void storeSettings( Settings::Manager * );
 
 Q_SIGNALS:
-
     void opened( Document *, int cursorPosition, int selectionLength );
     void closed( Document * );
     void saved( Document * );
-    void showRequest( Document *, int pos = -1 );
+    void showRequest( Document *, int pos = -1, int selectionLength = 0 );
     void changedExternally( Document * );
     void recentsChanged();
 

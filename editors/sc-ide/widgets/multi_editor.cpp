@@ -243,8 +243,8 @@ void MultiEditor::makeSignalConnections()
             this, SLOT(onClose(Document*)));
     connect(docManager, SIGNAL(saved(Document*)),
             this, SLOT(update(Document*)));
-    connect(docManager, SIGNAL(showRequest(Document*,int)),
-            this, SLOT(show(Document*,int)));
+    connect(docManager, SIGNAL(showRequest(Document*, int, int)),
+            this, SLOT(show(Document*, int, int)));
 
     connect(mTabs, SIGNAL(currentChanged(int)),
             this, SLOT(onCurrentTabChanged(int)));
@@ -801,9 +801,9 @@ void MultiEditor::onClose( Document *doc )
     // TODO: each box should switch document according to their own history
 }
 
-void MultiEditor::show( Document *doc, int pos )
+void MultiEditor::show( Document *doc, int pos, int selectionLength )
 {
-    currentBox()->setDocument(doc, pos);
+    currentBox()->setDocument(doc, pos, selectionLength);
     currentBox()->setFocus(Qt::OtherFocusReason);
 }
 
