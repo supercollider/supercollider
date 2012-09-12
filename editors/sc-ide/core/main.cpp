@@ -23,7 +23,6 @@
 #include "session_manager.hpp"
 #include "../widgets/lookup_dialog.hpp"
 #include "../widgets/main_window.hpp"
-#include "../widgets/sc_symbol_references.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
 
 #include "SC_DirUtils.h"

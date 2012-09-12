@@ -26,6 +26,8 @@
 #include <QStandardItemModel>
 #include <QTreeWidget>
 
+#include "../core/sc_process.hpp"
+
 namespace ScIDE {
 
 class GenericLookupDialog: public QDialog
@@ -72,6 +74,38 @@ private:
     bool performClassQuery(const QString & className);
     bool performMethodQuery(const QString & methodName);
     bool performPartialQuery(const QString & queryString);
+};
+
+// LATER: cache symbol references to avoid duplicate lookup
+class SymbolReferenceRequest:
+    public ScRequest
+{
+    Q_OBJECT
+
+public:
+    SymbolReferenceRequest(SCProcess * process, QObject * parent = NULL):
+        ScRequest(process, parent)
+    {}
+
+    void sendRequest(QString const & symbol)
+    {
+        send("findReferencesToSymbol", symbol);
+    }
+};
+
+class ReferencesDialog:
+    public LookupDialog
+{
+    Q_OBJECT
+
+public:
+    explicit ReferencesDialog(QWidget * parent = NULL);
+
+private slots:
+    void requestCanceled();
+    void performQuery();
+    void onResposeFromLanguage(const QString &command, const QString &responseData);
+    QStandardItemModel * parse(QString const & responseData);
 };
 
 } // namespace ScIDE

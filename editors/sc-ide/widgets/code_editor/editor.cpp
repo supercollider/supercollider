@@ -22,7 +22,6 @@
 #include "editor.hpp"
 #include "highlighter.hpp"
 #include "line_indicator.hpp"
-#include "../sc_symbol_references.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/main.hpp"
 #include "../../core/settings/manager.hpp"
