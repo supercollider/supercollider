@@ -262,7 +262,7 @@ QStandardItemModel * LookupDialog::modelForMethod(const QString & methodName)
     return model;
 }
 
-QStandardItemModel * LookupDialog::modelForCaseInsensitiveQuery(const QString & queryString)
+QStandardItemModel * LookupDialog::modelForPartialQuery(const QString & queryString)
 {
     const Introspection & introspection = Main::scProcess()->introspection();
     vector<const Class *>  classes = introspection.findClassPartial(queryString);
@@ -319,7 +319,7 @@ bool LookupDialog::performMethodQuery(const QString & methodName)
 
 bool LookupDialog::performPartialQuery(const QString & queryString)
 {
-    QStandardItemModel * model = modelForCaseInsensitiveQuery(queryString);
+    QStandardItemModel * model = modelForPartialQuery(queryString);
     mResult->setModel(model);
     return model;
 }
