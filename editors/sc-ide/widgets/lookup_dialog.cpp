@@ -132,7 +132,7 @@ using std::pair;
 using std::vector;
 
 LookupDialog::LookupDialog( QWidget * parent ):
-    GenericLookupDialog(parent)
+    GenericLookupDialog(parent), mIsPartialQuery(false)
 {
     setWindowTitle(tr("Look Up Class or Method Definition"));
 
@@ -155,6 +155,7 @@ void LookupDialog::performQuery()
         return;
     }
 
+    mIsPartialQuery = false;
     if (queryString[0].isUpper()) {
         bool success = performClassQuery(queryString);
         if (success) {
@@ -172,6 +173,33 @@ void LookupDialog::performQuery()
     bool success = performPartialQuery(queryString);
     if (success)
         focusResults();
+}
+
+void LookupDialog::onAccepted(QModelIndex currentIndex)
+{
+    if (!mIsPartialQuery)  {
+        GenericLookupDialog::onAccepted(currentIndex);
+        return;
+    }
+
+    QStandardItemModel * model = qobject_cast<QStandardItemModel*>(mResult->model());
+    currentIndex = currentIndex.sibling(currentIndex.row(), 0);
+    QStandardItem *currentItem = model->itemFromIndex(currentIndex);
+
+    if (!currentItem) {
+        reject();
+        return;
+    }
+
+    bool isClass = currentItem->data(IsClassRole).toBool();
+    if (!isClass) {
+        GenericLookupDialog::onAccepted(currentIndex);
+        return;
+    }
+
+    QString className = currentItem->text();
+    mQueryEdit->setText(className);
+    performQuery();
 }
 
 QList<QStandardItem*> GenericLookupDialog::makeDialogItem( QString const & name, QString const & displayPath,
@@ -275,6 +303,7 @@ QStandardItemModel * LookupDialog::modelForPartialQuery(const QString & queryStr
         return NULL;
     }
 
+    mIsPartialQuery = true;
     QStandardItemModel * model = new QStandardItemModel(this);
     QStandardItem *parentItem = model->invisibleRootItem();
 
