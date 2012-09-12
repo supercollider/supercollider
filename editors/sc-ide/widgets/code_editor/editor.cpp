@@ -1427,9 +1427,17 @@ void CodeEditor::toggleCommentSingleLine(QTextCursor cursor)
     indent(cursor);
 }
 
-static bool isBlockOnlySelection(QTextCursor)
+static bool isBlockOnlySelection(QTextCursor cursor)
 {
-    return true;
+    Q_ASSERT(cursor.hasSelection());
+
+    QTextCursor begin(cursor);
+    begin.setPosition(begin.anchor());
+
+    if (begin.atBlockStart() && (cursor.atBlockStart() || cursor.atBlockEnd()))
+        return true;
+    else
+        return false;
 }
 
 void CodeEditor::toggleCommentSelection()
@@ -1457,19 +1465,21 @@ void CodeEditor::toggleCommentSelection()
     } else {
         QString selectionText = cursor.selectedText();
         QTextCursor selectionCursor(cursor);
-
         if (isSelectionComment(selectionText)) {
-            selectionText = selectionText.trimmed().remove(2);
+            selectionText = selectionText.trimmed().remove(0, 2);
             selectionText.chop(2);
             selectionCursor.insertText(selectionText);
         } else {
             selectionText = QString("/* ") + selectionText + QString(" */");
             selectionCursor.insertText(selectionText);
+
+            int position = selectionCursor.position();
+            cursor.setPosition(position - selectionText.size());
+            cursor.setPosition(position, QTextCursor::KeepAnchor);
+            setTextCursor(cursor);
         }
     }
 
-    cursor.endEditBlock();
-    cursor.beginEditBlock();
     indentCurrentRegion();
     cursor.endEditBlock();
 }
