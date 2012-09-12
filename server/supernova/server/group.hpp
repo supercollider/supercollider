@@ -127,22 +127,6 @@ public:
         return child_synth_count + child_group_count;
     }
 
-    /* number of child synths and groups */
-    std::pair<std::size_t, std::size_t> child_count_deep(void) const
-    {
-        std::size_t synths = child_synth_count;
-        std::size_t groups = child_group_count;
-
-        for (group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
-        {
-            std::size_t recursive_synths, recursive_groups;
-            boost::tie(recursive_synths, recursive_groups) = it->child_count_deep();
-            groups += recursive_groups;
-            synths += recursive_synths;
-        }
-        return std::make_pair(synths, groups);
-    }
-
     template<typename functor>
     void apply_on_children(functor const & f)
     {
