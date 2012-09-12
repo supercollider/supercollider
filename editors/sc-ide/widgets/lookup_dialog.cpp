@@ -35,12 +35,22 @@
 
 namespace ScIDE {
 
+bool LookupDialogTreeView::openDocumentation()
+{
+    GenericLookupDialog * parent = qobject_cast<GenericLookupDialog*>(parentWidget());
+    parent->openDocumentation();
+
+    return true;
+}
+
 GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     QDialog(parent, Qt::Popup | Qt::FramelessWindowHint)
 {
+    addAction(MainWindow::instance()->action(MainWindow::HelpForSelection));
+
     mQueryEdit = new QLineEdit(this);
 
-    mResult = new QTreeView(this);
+    mResult = new LookupDialogTreeView(this);
     mResult->setRootIsDecorated(false);
     mResult->setAllColumnsShowFocus(true);
     mResult->setHeaderHidden(true);
@@ -71,6 +81,25 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     setGeometry(bounds);
 
     mQueryEdit->setFocus( Qt::OtherFocusReason );
+}
+
+void GenericLookupDialog::openDocumentation()
+{
+    QModelIndex currentIndex = mResult->currentIndex();
+    QStandardItemModel * model = qobject_cast<QStandardItemModel*>(mResult->model());
+    if (!model)
+        return;
+
+    currentIndex = currentIndex.sibling(currentIndex.row(), 0);
+    QStandardItem *currentItem = model->itemFromIndex(currentIndex);
+    if (!currentItem)
+        return;
+
+    bool isClass = currentItem->data(IsClassRole).toBool();
+    if (isClass) {
+        Main::openDocumentation(currentItem->text());
+        return;
+    }
 }
 
 void GenericLookupDialog::onAccepted(QModelIndex currentIndex)
