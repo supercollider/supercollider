@@ -302,14 +302,15 @@ void ScResponder::handleOpenFile( const QString & data ) const
         if (doc.Type() != YAML::NodeType::Sequence)
             return;
 
-        for (int index = 0; index != doc.size(); ++index) {
-            std::string path;
-            bool success = doc[index].Read(path);
-            if (!success)
-                return;
+        std::string path;
+        bool success = doc[0].Read(path);
+        if (!success)
+            return;
 
-            Main::documentManager()->open(QString(path.c_str()));
-        }
+        int position = -1;
+        doc[1].Read(position);
+
+        Main::documentManager()->open(QString(path.c_str()), position);
     }
 }
 
