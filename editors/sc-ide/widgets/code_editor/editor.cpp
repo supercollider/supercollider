@@ -946,12 +946,13 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
     switch (e->key()) {
     case Qt::Key_Home:
     {
-        hideMouseCursor();
         Qt::KeyboardModifiers mods(e->modifiers());
         if (mods && mods != Qt::ShiftModifier) {
-            QPlainTextEdit::keyPressEvent(e);
-            break;
+            GenericCodeEditor::keyPressEvent(e);
+            return;
         }
+
+        hideMouseCursor();
 
         QTextCursor::MoveMode mode =
             mods & Qt::ShiftModifier ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor;
@@ -981,9 +982,16 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
         return;
     }
 
-    default:
-        GenericCodeEditor::keyPressEvent(e);
+    default:;
     }
+
+    // Wrap superclass' implementation into an edit block,
+    // so it can be joined with indentation later:
+
+    QTextCursor currentCursor(textCursor());
+    currentCursor.beginEditBlock();
+    GenericCodeEditor::keyPressEvent(e);
+    currentCursor.endEditBlock();
 
     switch (e->key()) {
     case Qt::Key_Enter:
@@ -991,7 +999,9 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
     case Qt::Key_BraceRight:
     case Qt::Key_BracketRight:
     case Qt::Key_ParenRight:
+        currentCursor.joinPreviousEditBlock();
         indent();
+        currentCursor.endEditBlock();
         break;
 
     default:;
