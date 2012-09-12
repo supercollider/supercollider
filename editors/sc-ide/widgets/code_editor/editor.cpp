@@ -365,16 +365,28 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
 {
     hideMouseCursor();
 
+    QTextCursor cursor( textCursor() );
+
     switch (e->key()) {
     case Qt::Key_Enter:
     case Qt::Key_Return:
         // override to avoid entering a "soft" new line when certain modifier is held
-        textCursor().insertBlock();
-        ensureCursorVisible();
+        cursor.insertBlock();
         break;
 
     default:
         QPlainTextEdit::keyPressEvent(e);
+    }
+
+    switch (e->key()) {
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
+    case Qt::Key_Backspace:
+        cursor.setVerticalMovementX(-1);
+        setTextCursor( cursor );
+        ensureCursorVisible();
+        break;
+    default:;
     }
 }
 
@@ -984,26 +996,32 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
     default:;
     }
 
-    // Wrap superclass' implementation into an edit block,
-    // so it can be joined with indentation later:
-
-    QTextCursor currentCursor(textCursor());
-    currentCursor.beginEditBlock();
-    GenericCodeEditor::keyPressEvent(e);
-    currentCursor.endEditBlock();
-
     switch (e->key()) {
     case Qt::Key_Enter:
     case Qt::Key_Return:
     case Qt::Key_BraceRight:
     case Qt::Key_BracketRight:
-    case Qt::Key_ParenRight:
-        currentCursor.joinPreviousEditBlock();
-        indent();
-        currentCursor.endEditBlock();
-        break;
+    case Qt::Key_ParenRight: {
+        // Wrap superclass' implementation into an edit block,
+        // so it can be joined with indentation later:
 
-    default:;
+        QTextCursor cursor = textCursor();
+
+        cursor.beginEditBlock();
+        GenericCodeEditor::keyPressEvent(e);
+        cursor.endEditBlock();
+
+        cursor.joinPreviousEditBlock();
+        indent();
+        cursor.endEditBlock();
+
+        cursor.setVerticalMovementX(-1);
+        setTextCursor(cursor);
+
+        break;
+    }
+    default:
+        GenericCodeEditor::keyPressEvent(e);
     }
 
     mAutoCompleter->keyPress(e);
