@@ -143,7 +143,7 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     for( DocIterator it = mDocHash.begin(); it != mDocHash.end(); ++it ) {
         Document *doc = it.value();
         if(doc->mFilePath == cpath) {
-            Q_EMIT( showRequest(doc, initialCursorPosition) );
+            Q_EMIT( showRequest(doc, initialCursorPosition, selectionLength) );
             if (toRecent) addToRecent(doc);
             return doc;
         }

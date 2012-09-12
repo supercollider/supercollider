@@ -139,10 +139,9 @@ public slots:
     void removeAllSplits();
 
 private slots:
-
     void onOpen( Document *, int initialCursorPosition, int selectionLength );
     void onClose( Document * );
-    void show( Document *, int cursorPosition = -1 );
+    void show( Document *, int cursorPosition = -1, int selectionLenght = 0 );
     void update( Document * );
     void onCloseRequest( int index );
     void onCurrentTabChanged( int index );
