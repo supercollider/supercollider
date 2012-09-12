@@ -3,32 +3,29 @@
 		Document.new(title, this, makeListener);
 	}
 
-	openTextFile{ arg selectionStart=0, selectionLength=0;
-		if(Document.implementationClass.notNil) {
-			Document.open(this.absolutePath , selectionStart, selectionLength);
-		} {
-			this.openOS;
-		}
+	openTextFile { arg selectionStart=0, selectionLength=0;
+		this.openDocument(selectionStart, selectionLength)
 	}
+
 	openHTMLFile{ arg selectionStart=0, selectionLength=0;
 		if (Platform.openHTMLFileAction.notNil) {
 			Platform.openHTMLFileAction.value(this, selectionStart, selectionLength)
 		} {
-			this.openTextFile(selectionStart, selectionLength)
+			this.openDocument(selectionStart, selectionLength)
 		}
 	}
 
-	openDocument {
+	openDocument { arg selectionStart=0, selectionLength=0;
 		var ideClass;
 		if(Document.implementationClass.notNil) {
-			Document.open(this);
+			Document.open(this, selectionStart, selectionLength);
 			^this
 		};
 
 		ideClass = \ScIDE.asClass;
 		if ( ideClass.notNil ) {
 			if ( this.endsWith(".sc") || this.endsWith(".scd") ) {
-				ideClass.open(this);
+				ideClass.open(this, selectionStart);
 				^this
 			}
 		};
