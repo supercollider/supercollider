@@ -43,11 +43,14 @@ public:
     void query( const QString & query ) { mQueryEdit->setText(query); this->performQuery(); }
     void clearQuery() { mQueryEdit->clear(); }
 
-private slots:
-    void onAccepted(QModelIndex);
+protected Q_SLOTS:
+    virtual void onAccepted(QModelIndex);
+
+private Q_SLOTS:
     virtual void performQuery() = 0;
 
 protected:
+    QStandardItem * currentItem();
     bool eventFilter( QObject *, QEvent * );
     void paintEvent( QPaintEvent * );
     void focusResults();
@@ -68,6 +71,7 @@ public:
 
 private slots:
     void performQuery();
+    void onAccepted(QModelIndex);
 
 private:
     QStandardItemModel * modelForClass(const QString & className);
@@ -76,6 +80,8 @@ private:
     bool performClassQuery(const QString & className);
     bool performMethodQuery(const QString & methodName);
     bool performPartialQuery(const QString & queryString);
+
+    bool mIsPartialQuery;
 };
 
 // LATER: cache symbol references to avoid duplicate lookup
