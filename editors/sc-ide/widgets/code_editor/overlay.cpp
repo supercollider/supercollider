@@ -52,23 +52,23 @@ void CodeEditor::blinkCode( const QTextCursor & c )
 
     // Get the bounds of visible blocks within the cursor's selection:
 
-    QTextBlock b = firstVisibleBlock();
-    int idx = b.blockNumber();
+    QTextBlock block = firstVisibleBlock();
+    int idx = block.blockNumber();
     int sidx = startBlock.blockNumber();
 
     QTextBlock firstBlock, lastBlock;
-    firstBlock = lastBlock = b;
+    firstBlock = lastBlock = block;
 
-    QRectF geom = blockBoundingGeometry(b).translated(contentOffset());
+    QRectF geom = blockBoundingGeometry(block).translated(contentOffset());
     qreal top = geom.top();
     qreal bottom = top;
     qreal width=0;
 
-    while(b.isValid() && bottom < viewport()->rect().height())
+    while(block.isValid() && bottom < viewport()->rect().height())
     {
-        if(b.isVisible())
+        if(block.isVisible())
         {
-            QTextLayout *l = b.layout();
+            QTextLayout *l = block.layout();
             QRectF r = l->boundingRect();
             bottom += r.height();
             if(idx < sidx) {
@@ -81,15 +81,15 @@ void CodeEditor::blinkCode( const QTextCursor & c )
             }
         }
 
-        if(b == endBlock) break;
+        if(block == endBlock) break;
 
-        b = b.next();
+        block = block.next();
         ++idx;
         if(top == bottom)
-            firstBlock = b;
+            firstBlock = block;
     }
 
-    lastBlock = b;
+    lastBlock = block;
 
     if(bottom == top) {
         //qDebug("no visible block.");
@@ -105,48 +105,51 @@ void CodeEditor::blinkCode( const QTextCursor & c )
 
     QPainter painter(&pix);
     QVector<QTextLayout::FormatRange> selections;
-    b = firstBlock;
+    block = firstBlock;
     int y=0;
-    while(true)
+    while( block.isValid() )
     {
-        QRectF r = b.layout()->boundingRect();
+        if (block.isVisible())
+        {
+            QRectF blockRect = block.layout()->boundingRect();
 
-        // Use extra char formatting to hide code outside of selection
-        // and modify the appearance of selected code:
+            // Use extra char formatting to hide code outside of selection
+            // and modify the appearance of selected code:
 
-        QTextLayout::FormatRange range;
-        selections.clear();
+            QTextLayout::FormatRange range;
+            selections.clear();
 
-        int start = 0;
-        if(b == startBlock) {
-            range.start = 0;
-            range.length = startPos;
-            range.format.setForeground(QColor(0,0,0,0));
-            range.format.setBackground(Qt::NoBrush);
+            int start = 0;
+            if(block == startBlock) {
+                range.start = 0;
+                range.length = startPos;
+                range.format.setForeground(QColor(0,0,0,0));
+                range.format.setBackground(Qt::NoBrush);
+                selections.append(range);
+                start = startPos;
+            }
+
+            range.start = start;
+            range.length = (block == endBlock ? endPos : block.length() - 1) - range.start;
+            range.format = evalCodeTextFormat;
             selections.append(range);
-            start = startPos;
+
+            if(block == endBlock) {
+                range.start = range.start + range.length;
+                range.length = block.length() - 1 - range.start;
+                range.format.setForeground(QColor(0,0,0,0));
+                range.format.setBackground(Qt::NoBrush);
+                selections.append(range);
+            }
+
+            block.layout()->draw(&painter, QPointF(0,y), selections);
+
+            y += blockRect.height();
         }
 
-        range.start = start;
-        range.length = (b == endBlock ? endPos : b.length() - 1) - range.start;
-        range.format = evalCodeTextFormat;
-        selections.append(range);
+        if(block == lastBlock) break;
 
-        if(b == endBlock) {
-            range.start = range.start + range.length;
-            range.length = b.length() - 1 - range.start;
-            range.format.setForeground(QColor(0,0,0,0));
-            range.format.setBackground(Qt::NoBrush);
-            selections.append(range);
-        }
-
-        b.layout()->draw(&painter, QPointF(0,y), selections);
-
-        if(b == lastBlock) break;
-
-        y += r.height();
-
-        b = b.next();
+        block = block.next();
     }
 
     // Create an overlay item to display the pixmap, and animate it:
