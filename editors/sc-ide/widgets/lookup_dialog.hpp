@@ -49,6 +49,8 @@ public:
     static const int PathRole       = Qt::UserRole + 1;
     static const int CharPosRole    = Qt::UserRole + 2;
     static const int IsClassRole    = Qt::UserRole + 3;
+    static const int ClassNameRole  = Qt::UserRole + 4;
+    static const int MethodNameRole = Qt::UserRole + 5;
 
     explicit GenericLookupDialog(QWidget *parent = 0);
     void query( const QString & query ) { mQueryEdit->setText(query); this->performQuery(); }
@@ -69,8 +71,10 @@ protected:
     void paintEvent( QPaintEvent * );
     void focusResults();
 
-    static QList<QStandardItem *> makeDialogItem(QString const & name, QString const & displayPath,
-                                                 QString const & path, int position, bool isClassItem);
+    static QList<QStandardItem *> makeDialogItem(QString const & displayString, QString const & displayPath,
+                                                 QString const & path, int position,
+                                                 QString const & className, QString const & methodName,
+                                                 bool isClassItem);
 
     LookupDialogTreeView *mResult;
     QLineEdit *mQueryEdit;
