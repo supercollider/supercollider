@@ -3,10 +3,6 @@
 		Document.new(title, this, makeListener);
 	}
 
-	openTextFile { arg selectionStart=0, selectionLength=0;
-		this.openDocument(selectionStart, selectionLength)
-	}
-
 	openHTMLFile{ arg selectionStart=0, selectionLength=0;
 		if (Platform.openHTMLFileAction.notNil) {
 			Platform.openHTMLFileAction.value(this, selectionStart, selectionLength)
@@ -124,3 +120,8 @@
 	}
 }
 
++ Symbol {
+	openDocument { arg selectionStart=0, selectionLength=0;
+		^this.asString.openDocument(selectionStart, selectionLength)
+	}
+}
