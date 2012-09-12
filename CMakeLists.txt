@@ -195,6 +195,8 @@ endif()
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
 option(SC_OX "Try to compile with support for C++0x (experimental, mainly related to supernova)" OFF)
 
+option(SYSTEM_BOOST "Use boost libraries from system" OFF)
+
 #############################################
 # some default libraries
 
@@ -219,11 +221,13 @@ if(CURL)
 	endif()
 endif()
 
-set(Boost_USE_MULTITHREADED      ON)
-find_package( Boost 1.48.0 COMPONENTS thread system filesystem program_options regex )
+if (SYSTEM_BOOST)
+  set(Boost_USE_MULTITHREADED      ON)
+  find_package( Boost 1.48.0 COMPONENTS thread system filesystem program_options regex test )
 
-if (SC_OX)
-	set(Boost_FOUND OFF) # boost 1.48 does not like c++11
+  if (SC_OX)
+	  set(Boost_FOUND OFF) # boost 1.48 does not like c++11
+  endif()
 endif()
 
 if (Boost_FOUND)
