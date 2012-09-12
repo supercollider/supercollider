@@ -307,7 +307,7 @@ void ScResponder::handleOpenFile( const QString & data ) const
         if (!success)
             return;
 
-        int position = -1;
+        int position = 0;
         doc[1].Read(position);
 
         int selectionLength = 0;
