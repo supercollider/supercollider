@@ -99,7 +99,12 @@ void GenericLookupDialog::openDocumentation()
     if (isClass) {
         Main::openDocumentation(currentItem->text());
         return;
+    } else {
+        QString className  = currentItem->data(ClassNameRole).toString();
+        QString methodName = currentItem->data(MethodNameRole).toString();
+        Main::openDocumentationForMethod(className, methodName);
     }
+    accept();
 }
 
 void GenericLookupDialog::onAccepted(QModelIndex currentIndex)
@@ -231,14 +236,23 @@ void LookupDialog::onAccepted(QModelIndex currentIndex)
     performQuery();
 }
 
-QList<QStandardItem*> GenericLookupDialog::makeDialogItem( QString const & name, QString const & displayPath,
-                                                           QString const & path, int position, bool isClassItem )
+QList<QStandardItem*> GenericLookupDialog::makeDialogItem( QString const & displayString, QString const & displayPath,
+                                                           QString const & path, int position,
+                                                           QString const & className, QString const & methodName,
+                                                           bool isClassItem )
 {
-    QStandardItem * item = new QStandardItem( name );
-    item->setData( path, PathRole );
-    item->setData( position, CharPosRole );
+    if (isClassItem)
+        assert(!methodName.size());
+    else
+        assert(methodName.size());
+
+    QStandardItem * item = new QStandardItem( displayString );
+    item->setData( path,        PathRole );
+    item->setData( position,    CharPosRole );
     item->setData( isClassItem, IsClassRole );
-    QStandardItem * pathItem = new QStandardItem(displayPath);
+    item->setData( className,   ClassNameRole );
+    item->setData( methodName,  MethodNameRole );
+    QStandardItem * pathItem = new QStandardItem( displayPath );
 
     QList<QStandardItem*> ret;
     ret << item << pathItem;
@@ -264,7 +278,9 @@ QStandardItemModel * LookupDialog::modelForClass(const QString &className)
 
         parentItem->appendRow(makeDialogItem(klass->name.get(), displayPath,
                                              klass->definition.path.get(),
-                                             klass->definition.position, true ));
+                                             klass->definition.position,
+                                             klass->name.get(), QString(""),
+                                             true ));
 
         foreach (const Method * method, metaClass->methods) {
             QString signature = method->signature( Method::SignatureWithoutArguments );
@@ -272,7 +288,9 @@ QStandardItemModel * LookupDialog::modelForClass(const QString &className)
 
             parentItem->appendRow(makeDialogItem( signature, displayPath,
                                                   method->definition.path.get(),
-                                                  method->definition.position, false ));
+                                                  method->definition.position,
+                                                  metaClass->name.get(), method->name.get(),
+                                                  false ));
         }
 
         foreach (const Method * method, klass->methods) {
@@ -281,7 +299,9 @@ QStandardItemModel * LookupDialog::modelForClass(const QString &className)
 
             parentItem->appendRow(makeDialogItem( signature, displayPath,
                                                   method->definition.path.get(),
-                                                  method->definition.position, false ));
+                                                  method->definition.position,
+                                                  klass->name.get(), method->name.get(),
+                                                  false ));
         }
 
         klass = klass->superClass;
@@ -312,7 +332,9 @@ QStandardItemModel * LookupDialog::modelForMethod(const QString & methodName)
 
         parentItem->appendRow(makeDialogItem( signature, displayPath,
                                               method->definition.path.get(),
-                                              method->definition.position, false ));
+                                              method->definition.position,
+                                              method->ownerClass->name.get(), method->name.get(),
+                                              false ));
     }
 
     model->sort(0);
@@ -345,7 +367,9 @@ QStandardItemModel * LookupDialog::modelForPartialQuery(const QString & queryStr
 
         parentItem->appendRow(makeDialogItem( signature, displayPath,
                                               method->definition.path.get(),
-                                              method->definition.position, false ));
+                                              method->definition.position,
+                                              method->ownerClass->name.get(), method->name.get(),
+                                              false ));
     }
 
     for (ClassIterator it = classes.begin(); it != classes.end(); ++it) {
@@ -354,7 +378,9 @@ QStandardItemModel * LookupDialog::modelForPartialQuery(const QString & queryStr
 
         parentItem->appendRow(makeDialogItem(klass->name.get(), displayPath,
                                              klass->definition.path.get(),
-                                             klass->definition.position, true ));
+                                             klass->definition.position,
+                                             klass->name.get(), "",
+                                             true ));
     }
 
     model->sort(0);
@@ -460,11 +486,10 @@ QStandardItemModel * ReferencesDialog::parse(const QString &responseData)
         QString displayPath = introspection.compactLibraryPath(path);
         QString fullName = ScLanguage::makeFullMethodName(className, methodName);
 
-        parentItem->appendRow(makeDialogItem(fullName, displayPath, path, charPos, false));
+        parentItem->appendRow(makeDialogItem(fullName, displayPath, path, charPos, className, methodName, false));
     }
 
     return model;
 }
-
 
 } // namespace ScIDE

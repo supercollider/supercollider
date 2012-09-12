@@ -98,6 +98,13 @@ public:
         return true;
     }
 
+    static bool openDocumentationForMethod(const QString & className, const QString & methodName)
+    {
+        QString code = QString("HelpBrowser.openHelpForMethod( %1.findMethod(\\%2) )").arg(className, methodName);
+        evaluateCode(code, true);
+        return true;
+    }
+
     static void openDefinition(const QString &string, QWidget * parent);
     static void findReferences(const QString &string, QWidget * parent);
 
