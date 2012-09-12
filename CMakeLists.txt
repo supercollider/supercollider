@@ -152,6 +152,8 @@ option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
 option(SC_IDE "Build Qt IDE." ON)
 
+option(ENABLE_TESTSUITE "Compile testsuite." ON)
+
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
 elseif()
@@ -461,7 +463,9 @@ set_directory_properties(
 #
 # testsuite
 #
-add_subdirectory(testsuite)
+if(ENABLE_TESTSUITE)
+  add_subdirectory(testsuite)
+endif()
 
 #############################################
 # CPack support
