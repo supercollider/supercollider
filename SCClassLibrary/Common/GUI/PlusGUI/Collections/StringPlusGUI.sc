@@ -40,12 +40,6 @@
 		this.openOS
 	}
 
-//	*fromUser { arg prompt="Enter string :", default="";
-//		_GetStringFromUser
-//		^this.primitiveFailed
-//	}
-
-
 	draw {
 		this.drawAtPoint(Point(0,0), Font.default, Color.black);
 	}
