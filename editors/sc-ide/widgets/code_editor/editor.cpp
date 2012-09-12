@@ -1183,6 +1183,9 @@ void CodeEditor::indent()
 
 void CodeEditor::indent( const QTextCursor & selection )
 {
+    if (selection.isNull())
+        return;
+
     QTextCursor cursor(selection);
 
     cursor.beginEditBlock();
