@@ -47,28 +47,7 @@ code::
 {SinOscFB.ar(100*SinOscFB.ar(MouseY.kr(1,1000,'exponential'))+200,MouseX.kr(0.5pi,pi))*0.1}.play
 
 
-//JMC original example
-
-(
-var f, s;
-w = Window("scope test", Rect(128, 64, 680, 280));
-
-n = SCScope(w, Rect(10,10,640,256));
-n.background = Color.blue(0.2);
-n.resize = 5;
-w.front;
-)
-
-s = Server.internal;
-s.boot;
-
-s.sendMsg(\b_alloc, 0, 8192, 2);
-
-{
-var z;
-z = SinOscFB.ar([400,301], MouseX.kr(0,4),0.3);
-Out.ar(0, z);
-ScopeOut.ar(z, 0);
-}.play(s);
+// Scope the wave form
+{ SinOscFB.ar([400,301], MouseX.kr(0,4),0.3); }.scope;
 
 ::
