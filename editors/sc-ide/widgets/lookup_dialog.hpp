@@ -68,8 +68,10 @@ private slots:
 private:
     QStandardItemModel * modelForClass(const QString & className);
     QStandardItemModel * modelForMethod(const QString & methodName);
+    QStandardItemModel * modelForCaseInsensitiveQuery(const QString & queryString);
     bool performClassQuery(const QString & className);
     bool performMethodQuery(const QString & methodName);
+    bool performPartialQuery(const QString & queryString);
 };
 
 } // namespace ScIDE

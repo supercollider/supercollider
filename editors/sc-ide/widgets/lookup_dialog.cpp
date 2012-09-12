@@ -124,6 +124,10 @@ void GenericLookupDialog::focusResults()
     }
 }
 
+using namespace ScLanguage;
+using std::pair;
+using std::vector;
+
 LookupDialog::LookupDialog( QWidget * parent ):
     GenericLookupDialog(parent)
 {
@@ -142,10 +146,28 @@ void LookupDialog::performQuery()
         return;
     }
 
-    const bool result = queryString[0].isUpper() ? performClassQuery(queryString)
-                                                 : performMethodQuery(queryString);
+    const Introspection & introspection = Main::scProcess()->introspection();
+    if (!introspection.introspectionAvailable()) {
+        MainWindow::instance()->showStatusMessage("Introspection Data not available");
+        return;
+    }
 
-    if (result)
+    if (queryString[0].isUpper()) {
+        bool success = performClassQuery(queryString);
+        if (success) {
+            focusResults();
+            return;
+        }
+    } else {
+        bool success = performMethodQuery(queryString);
+        if (success) {
+            focusResults();
+            return;
+        }
+    }
+
+    bool success = performPartialQuery(queryString);
+    if (success)
         focusResults();
 }
 
@@ -165,7 +187,6 @@ QList<QStandardItem*> GenericLookupDialog::makeDialogItem( QString const & name,
 
 QStandardItemModel * LookupDialog::modelForClass(const QString &className)
 {
-    using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
     const Class *klass = introspection.findClass(className);
 
@@ -210,22 +231,13 @@ QStandardItemModel * LookupDialog::modelForClass(const QString &className)
 
 QStandardItemModel * LookupDialog::modelForMethod(const QString & methodName)
 {
-    using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
-    using std::pair;
-
-    if (!introspection.introspectionAvailable()) {
-        MainWindow::instance()->showStatusMessage("Introspection Data not available");
-        return NULL;
-    }
 
     const MethodMap & methods = introspection.methodMap();
     pair<MethodMap::const_iterator, MethodMap::const_iterator> matchingMethods = methods.equal_range(methodName);
 
-    if (matchingMethods.first == matchingMethods.second) {
-        MainWindow::instance()->showStatusMessage("Method not defined!");
+    if (matchingMethods.first == matchingMethods.second)
         return NULL;
-    }
 
     QStandardItemModel * model = new QStandardItemModel(this);
     QStandardItem *parentItem = model->invisibleRootItem();
@@ -246,6 +258,47 @@ QStandardItemModel * LookupDialog::modelForMethod(const QString & methodName)
     return model;
 }
 
+QStandardItemModel * LookupDialog::modelForCaseInsensitiveQuery(const QString & queryString)
+{
+    const Introspection & introspection = Main::scProcess()->introspection();
+    vector<const Class *>  classes = introspection.findClassPartial(queryString);
+    vector<const Method *> methods = introspection.findMethodPartial(queryString);
+    typedef vector<const Method *>::const_iterator MethodIterator;
+    typedef vector<const Class *>::const_iterator  ClassIterator;
+
+    if (classes.empty() && methods.empty()) {
+        MainWindow::instance()->showStatusMessage("No result for query");
+        return NULL;
+    }
+
+    QStandardItemModel * model = new QStandardItemModel(this);
+    QStandardItem *parentItem = model->invisibleRootItem();
+
+    for (MethodIterator it = methods.begin(); it != methods.end(); ++it) {
+        const Method *method = *it;
+        QString signature = method->signature( Method::SignatureWithoutArguments );
+
+        const QString & path = method->definition.path;
+        QString displayPath = introspection.compactLibraryPath(path);
+
+        parentItem->appendRow(makeDialogItem( signature, displayPath,
+                                              method->definition.path.get(),
+                                              method->definition.position ));
+    }
+
+    for (ClassIterator it = classes.begin(); it != classes.end(); ++it) {
+        const Class * klass = *it;
+        QString displayPath = introspection.compactLibraryPath(klass->definition.path);
+
+        parentItem->appendRow(makeDialogItem(klass->name.get(), displayPath,
+                                             klass->definition.path.get(),
+                                             klass->definition.position));
+    }
+
+    model->sort(0);
+    return model;
+}
+
 bool LookupDialog::performClassQuery(const QString & className)
 {
     QStandardItemModel * model = modelForClass(className);
@@ -259,5 +312,13 @@ bool LookupDialog::performMethodQuery(const QString & methodName)
     mResult->setModel(model);
     return model;
 }
+
+bool LookupDialog::performPartialQuery(const QString & queryString)
+{
+    QStandardItemModel * model = modelForCaseInsensitiveQuery(queryString);
+    mResult->setModel(model);
+    return model;
+}
+
 
 } // namespace ScIDE
