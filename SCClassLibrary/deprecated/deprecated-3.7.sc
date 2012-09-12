@@ -24,3 +24,16 @@
 	}
 }
 
+
+// openTextFile is actually the same as openDocument
++ String {
+	openTextFile { arg selectionStart=0, selectionLength=0;
+		this.openDocument(selectionStart, selectionLength)
+	}
+}
+
++ Symbol {
+	openTextFile { arg selectionStart=0, selectionLength=0;
+		^this.openDocument(selectionStart, selectionLength)
+	}
+}

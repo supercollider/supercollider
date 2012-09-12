@@ -62,10 +62,6 @@ Symbol {
 	}
 	isRest { ^this.isMap.not }
 
-	openTextFile { arg selectionStart=0, selectionLength=0;
-		^this.asString.openTextFile(selectionStart, selectionLength)
-	}
-
 	// Environment support
 	// The compiler translates use of an Environment variable like ~myvar
 	// to a call to one of these methods, for example:
