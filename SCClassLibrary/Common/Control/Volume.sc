@@ -155,7 +155,6 @@ Volume {
 	playVolume { arg muted = false;
 		if (ampSynth.isNil and: {
 			(volume != 0.0) or: {muted} }) {
-			\playVolume.postln;
 			this.play(muted);
 		}
 	}
