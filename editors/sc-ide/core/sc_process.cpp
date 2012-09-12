@@ -313,8 +313,6 @@ void ScResponder::handleOpenFile( const QString & data ) const
         int selectionLength = 0;
         doc[2].Read(selectionLength);
 
-        qDebug() << path.c_str() << position << selectionLength;
-
         Main::documentManager()->open(QString(path.c_str()), position, selectionLength);
     }
 }
