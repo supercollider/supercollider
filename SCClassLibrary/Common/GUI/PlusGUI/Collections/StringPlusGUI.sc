@@ -4,11 +4,22 @@
 	}
 
 	openHTMLFile{ arg selectionStart=0, selectionLength=0;
+		var webView;
+
 		if (Platform.openHTMLFileAction.notNil) {
-			Platform.openHTMLFileAction.value(this, selectionStart, selectionLength)
-		} {
-			this.openDocument(selectionStart, selectionLength)
-		}
+			Platform.openHTMLFileAction.value(this, selectionStart, selectionLength);
+			^this
+		};
+
+		webView = \QWebView.asClass;
+		if (webView.notNil) {
+			webView = webView.new;
+			webView.url_(this);
+			webView.front;
+			^this;
+		};
+
+		this.openDocument(selectionStart, selectionLength)
 	}
 
 	openDocument { arg selectionStart=0, selectionLength=0;
