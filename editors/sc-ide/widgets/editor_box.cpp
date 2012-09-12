@@ -41,7 +41,7 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
             this, SLOT(onDocumentClosed(Document*)));
 }
 
-void CodeEditorBox::setDocument(Document *doc, int pos)
+void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
 {
     if (!doc)
         return;
@@ -67,7 +67,7 @@ void CodeEditorBox::setDocument(Document *doc, int pos)
     }
 
     if (pos != -1)
-        editor->showPosition(pos);
+        editor->showPosition(pos, selectionLength);
 
     if (switchEditor)
         emit currentChanged(editor);

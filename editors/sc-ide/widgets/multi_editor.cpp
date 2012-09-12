@@ -237,8 +237,8 @@ void MultiEditor::makeSignalConnections()
 {
     DocumentManager *docManager = Main::documentManager();
 
-    connect(docManager, SIGNAL(opened(Document*, int)),
-            this, SLOT(onOpen(Document*, int)));
+    connect(docManager, SIGNAL(opened(Document*, int, int)),
+            this, SLOT(onOpen(Document*, int, int)));
     connect(docManager, SIGNAL(closed(Document*)),
             this, SLOT(onClose(Document*)));
     connect(docManager, SIGNAL(saved(Document*)),
@@ -692,7 +692,7 @@ void MultiEditor::switchSession( Session *session )
         QVariantList docDataList = session->value("documents").value<QVariantList>();
         foreach( const QVariant & docData, docDataList ) {
             QString filePath = docData.toString();
-            Document * doc = docManager->open(filePath, -1, false);
+            Document * doc = docManager->open(filePath, -1, 0, false);
             documentList << doc;
         }
 
@@ -778,7 +778,7 @@ void MultiEditor::switchDocument()
         box->setDocument(selectedDocument);
 }
 
-void MultiEditor::onOpen( Document *doc, int pos )
+void MultiEditor::onOpen( Document *doc, int initialCursorPosition, int selectionLength )
 {
     QTextDocument *tdoc = doc->textDocument();
 
@@ -789,7 +789,7 @@ void MultiEditor::onOpen( Document *doc, int pos )
     int newTabIndex = mTabs->addTab( icon, doc->title() );
     mTabs->setTabData( newTabIndex, QVariant::fromValue<Document*>(doc) );
 
-    currentBox()->setDocument(doc, pos);
+    currentBox()->setDocument(doc, initialCursorPosition, selectionLength);
     currentBox()->setFocus(Qt::OtherFocusReason);
 }
 

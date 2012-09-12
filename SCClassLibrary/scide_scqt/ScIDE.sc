@@ -47,8 +47,8 @@ ScIDE {
 		_ScIDE_Connected
 	}
 
-	*open { |path, charPos|
-		this.prSend(\openFile, [path, charPos])
+	*open { |path, charPos = 0, selectionLength = 0|
+		this.prSend(\openFile, [path, charPos, selectionLength])
 	}
 
 	*sendIntrospection {

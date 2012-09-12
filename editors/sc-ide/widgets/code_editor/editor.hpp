@@ -53,7 +53,7 @@ public:
     int replaceAll( const QRegExp &expr, const QString &replacement,
                     QTextDocument::FindFlags options = 0 );
 
-    void showPosition( int );
+    void showPosition( int charPosition, int selectionLength );
     QString symbolUnderCursor();
 
 protected:

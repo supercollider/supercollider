@@ -32,7 +32,7 @@
 		ideClass = \ScIDE.asClass;
 		if ( ideClass.notNil ) {
 			if ( this.endsWith(".sc") || this.endsWith(".scd") ) {
-				ideClass.open(this, selectionStart);
+				ideClass.open(this, selectionStart, selectionLength);
 				^this
 			}
 		};

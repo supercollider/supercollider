@@ -140,7 +140,7 @@ public slots:
 
 private slots:
 
-    void onOpen( Document *, int initialCursorPosition );
+    void onOpen( Document *, int initialCursorPosition, int selectionLength );
     void onClose( Document * );
     void show( Document *, int cursorPosition = -1 );
     void update( Document * );

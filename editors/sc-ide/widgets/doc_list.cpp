@@ -30,7 +30,7 @@ DocumentListWidget::DocumentListWidget(DocumentManager *manager, QWidget * paren
     QListWidget(parent),
     mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) )
 {
-    connect(manager, SIGNAL(opened(Document*, int)), this, SLOT(onOpen(Document*, int)));
+    connect(manager, SIGNAL(opened(Document*, int, int)), this, SLOT(onOpen(Document*, int, int)));
     connect(manager, SIGNAL(closed(Document*)), this, SLOT(onClose(Document*)));
     connect(manager, SIGNAL(saved(Document*)), this, SLOT(onSaved(Document*)));
     connect(&mModificationMapper, SIGNAL(mapped(QObject*)),
@@ -50,7 +50,7 @@ void DocumentListWidget::setCurrent( Document *doc )
     }
 }
 
-void DocumentListWidget::onOpen( Document *doc, int )
+void DocumentListWidget::onOpen( Document *doc, int, int )
 {
     addItemFor(doc);
 }
