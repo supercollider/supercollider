@@ -124,10 +124,10 @@ void DocumentManager::create()
 {
     Document *doc = createDocument();
 
-    Q_EMIT( opened(doc, 0) );
+    Q_EMIT( opened(doc, 0, 0) );
 }
 
-Document *DocumentManager::open( const QString & path, int initialCursorPosition, bool toRecent )
+Document *DocumentManager::open( const QString & path, int initialCursorPosition, int selectionLength, bool toRecent )
 {
     QFileInfo info(path);
     QString cpath = info.canonicalFilePath();
@@ -181,7 +181,7 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     if (!isRTF)
         mFsWatcher.addPath(cpath);
 
-    Q_EMIT( opened(doc, initialCursorPosition) );
+    Q_EMIT( opened(doc, initialCursorPosition, selectionLength) );
 
     if (toRecent) this->addToRecent(doc);
 

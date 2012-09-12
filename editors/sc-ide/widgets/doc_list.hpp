@@ -50,7 +50,7 @@ Q_SIGNALS:
 
 private Q_SLOTS:
 
-    void onOpen( Document *, int );
+    void onOpen( Document *, int, int );
     void onClose( Document * );
     void onSaved( Document * );
     void onModificationChanged(QObject*);

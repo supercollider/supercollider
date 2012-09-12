@@ -338,7 +338,7 @@ int GenericCodeEditor::replaceAll( const QRegExp &expr, const QString &replaceme
     return replacements;
 }
 
-void GenericCodeEditor::showPosition( int pos )
+void GenericCodeEditor::showPosition( int pos, int selectionLength )
 {
     if (pos < 0) return;
 
@@ -350,6 +350,9 @@ void GenericCodeEditor::showPosition( int pos )
 
     QTextCursor cursor(doc);
     cursor.setPosition(pos);
+    if (selectionLength)
+        cursor.setPosition(pos + selectionLength, QTextCursor::KeepAnchor);
+
     setTextCursor(cursor);
 }
 

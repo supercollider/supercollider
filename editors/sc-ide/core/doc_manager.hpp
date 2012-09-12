@@ -100,13 +100,13 @@ public:
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
-    Document * open( const QString & path, int initialCursorPosition = -1, bool addToRecent = true );
+    Document * open( const QString & path, int initialCursorPosition = -1, int selectionLength = -1, bool addToRecent = true );
     void clearRecents();
     void storeSettings( Settings::Manager * );
 
 Q_SIGNALS:
 
-    void opened( Document *, int );
+    void opened( Document *, int cursorPosition, int selectionLength );
     void closed( Document * );
     void saved( Document * );
     void showRequest( Document *, int pos = -1 );

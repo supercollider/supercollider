@@ -40,7 +40,7 @@ public:
 
     CodeEditorBox(QWidget *parent = 0);
 
-    void setDocument(Document *, int pos = -1);
+    void setDocument(Document *, int pos = -1, int selectionLength = 0);
 
     CodeEditor *currentEditor();
     Document *currentDocument();
