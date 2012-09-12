@@ -20,7 +20,6 @@
 
 #include "main_window.hpp"
 #include "post_window.hpp"
-#include "sc_symbol_references.hpp"
 #include "../core/main.hpp"
 #include "../core/settings/manager.hpp"
 

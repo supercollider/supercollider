@@ -32,7 +32,6 @@ set ( ide_moc_hdr
     widgets/multi_editor.hpp
     widgets/popup_text_input.hpp
     widgets/post_window.hpp
-    widgets/sc_symbol_references.hpp
     widgets/session_switch_dialog.hpp
     widgets/sessions_dialog.hpp
     widgets/tool_box.hpp
@@ -74,7 +73,6 @@ set ( ide_src
     widgets/main_window.cpp
     widgets/multi_editor.cpp
     widgets/post_window.cpp
-    widgets/sc_symbol_references.cpp
     widgets/session_switch_dialog.cpp
     widgets/code_editor/editor.cpp
     widgets/code_editor/highlighter.cpp
