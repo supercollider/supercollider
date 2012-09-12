@@ -35,7 +35,7 @@ Please use link::Classes/Platform#*resourceDir:: instead.
 
 INSTANCEMETHODS::
 
-private::prUnixCmd, prFormat, prCat, prBounds, hash, species, getSCDir, prDrawInRect, prDrawAtPoint
+private::prUnixCmd, prFormat, prCat, prBounds, hash, species, getSCDir, prDrawInRect, prDrawAtPoint, openTextFile
 
 subsection:: Accessing characters
 
@@ -685,20 +685,10 @@ code::
 ::
 
 method::openDocument
-Create a new link::Classes/Document:: from the path corresponding to this. Returns the Document.
-code::
-(
-d = "Help/Help.html".openDocument;
-d.class;
-)
-::
-
-method::openTextFile
 Create a new link::Classes/Document:: from the path corresponding to this. The selection arguments will preselect the indicated range in the new window. Returns this.
 code::
 (
-d = "Help/Help.html".openTextFile(20, 210);
-d.class;
+String.filenameSymbol.asString.openDocument(10, 20)
 )
 ::
 
