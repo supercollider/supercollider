@@ -120,6 +120,9 @@ public:
     const MethodMap & methodMap() const { return mMethodMap; }
 
     const Class * findClass( QString const & className ) const;
+    std::vector<const Class *> findClassPartial(const QString &partialClassName) const;
+    std::vector<const Method *> findMethodPartial(const QString &partialMethodName) const;
+
     ClassMethodMap constructMethodMap( const Class * klass ) const;
     ClassMethodMap constructMethodMap( QString const & className ) const
     {
@@ -148,6 +151,7 @@ private:
     void initPaths();
     bool parse(const QString & yamlString );
     void inferClassLibraryPath();
+    bool ensureIntrospectionData() const;
 
     void clear()
     {
