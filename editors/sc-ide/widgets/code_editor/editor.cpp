@@ -575,8 +575,6 @@ void GenericCodeEditor::copyUpDown(bool up)
     move.endEditBlock();
 
     setTextCursor(move);
-
-    this->indentCurrentRegion();
 }
 
 
@@ -653,8 +651,6 @@ void GenericCodeEditor::moveLineUpDown(bool up)
     move.endEditBlock();
 
     setTextCursor(move);
-
-    this->indentCurrentRegion();
 }
 
 void GenericCodeEditor::moveLineUp()
@@ -1480,7 +1476,6 @@ void CodeEditor::toggleCommentSelection()
         }
     }
 
-    indentCurrentRegion();
     cursor.endEditBlock();
 }
 
