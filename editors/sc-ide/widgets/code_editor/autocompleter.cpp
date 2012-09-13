@@ -806,6 +806,9 @@ void AutoCompleter::onCompletionMenuFinished( int result )
 
 void AutoCompleter::triggerMethodCallAid( bool force )
 {
+    using namespace ScLanguage;
+    const Introspection & introspection = Main::scProcess()->introspection();
+
     // go find the bracket that I'm currently in,
     // and count relevant commas along the way
 
@@ -853,32 +856,46 @@ void AutoCompleter::triggerMethodCallAid( bool force )
     int bracketPos;
     pos = bracketPos = it.position();
 
-    QString className, methodName;
+    // find method name and receiver class
+
+    QString methodName;
+    const Class *receiverClass = NULL;
 
     --it;
-    if (it.isValid())
-    {
-        int type = it->type;
-        if (type == Token::Class) {
-            className = tokenText(it);
-            methodName = "new";
-        }
-        else if (type == Token::Name) {
-            methodName = tokenText(it);
+    if (it.type() == Token::Name) {
+        methodName = tokenText(it);
+        --it;
+        if (it.isValid() && it.character() == '.')
             --it;
-            if (it.isValid() && it->character == '.') {
-                --it;
-                if (it.isValid() && it->type == Token::Class)
-                    className = tokenText(it);
-            }
-        }
     }
 
-    if (methodName.isEmpty())
-        return;
+    switch (it.type()) {
+    case Token::Class:
+        if (methodName.isEmpty())
+            methodName = "new";
+        receiverClass = introspection.findClass( tokenText(it) );
+        if (receiverClass)
+            receiverClass = receiverClass->metaClass;
+        break;
+    case Token::Char:
+    case Token::String:
+    case Token::Builtin:
+    case Token::Symbol:
+    case Token::Float:
+    case Token::RadixFloat:
+    case Token::HexInt:
+        if (methodName.isEmpty())
+            return;
+        receiverClass = classForToken( it.type(), tokenText(it) );
+        break;
 
-    qDebug("Method call: found call: %s.%s(%i)",
-           className.toStdString().c_str(),
+    default:;
+        if (methodName.isEmpty())
+            return;
+    }
+
+    qDebug("Method call: found call: %s:%s(%i)",
+           receiverClass ? qPrintable(receiverClass->name.get()) : "",
            methodName.toStdString().c_str(),
            argPos);
 
@@ -901,25 +918,15 @@ void AutoCompleter::triggerMethodCallAid( bool force )
     call.position = bracketPos;
     pushMethodCall(call);
 
-    using namespace ScLanguage;
     using std::pair;
-
-    const Introspection & introspection = Main::scProcess()->introspection();
 
     const Method *method = 0;
 
-    if (!className.isEmpty())
+    if (receiverClass)
     {
-        const ClassMap & classes = introspection.classMap();
-        ClassMap::const_iterator it = classes.find(className);
-        if (it == classes.end()) {
-            qDebug() << "MethodCall: class not found:" << className;
-            return;
-        }
-
-        Class *metaClass = it->second->metaClass;
+        const Class *klass = receiverClass;
         do {
-            foreach (const Method * m, metaClass->methods)
+            foreach (const Method * m, klass->methods)
             {
                 if (m->name == methodName) {
                     method = m;
@@ -927,8 +934,8 @@ void AutoCompleter::triggerMethodCallAid( bool force )
                 }
             }
             if (method) break;
-            metaClass = metaClass->superClass;
-        } while (metaClass);
+            klass = klass->superClass;
+        } while (klass);
     }
     else {
         const MethodMap & methods = introspection.methodMap();
