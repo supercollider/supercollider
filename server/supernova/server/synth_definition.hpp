@@ -86,6 +86,10 @@ protected:
         map_type * elem = new map_type(str, i);
         bool success = slot_resolver_map.insert(*elem).second;
         assert(success);
+
+        if (i >= slot_names.size())
+            slot_names.resize(i+1, nullptr);
+        slot_names[i] = elem->name();
     }
 
 public:
@@ -110,6 +114,17 @@ public:
     }
     /*@}*/
 
+    size_t number_of_slots() const
+    {
+        return slot_names.size();
+    }
+
+    const char * name_of_slot(size_t slot_index) const
+    {
+        assert(slot_index < slot_names.size());
+        return slot_names[slot_index];
+    }
+
 private:
     static const int resolver_map_bucket_count = 512;
 
@@ -118,6 +133,8 @@ private:
                                            > slot_resolver_map_t;
     slot_resolver_map_t::bucket_type buckets[resolver_map_bucket_count];
     slot_resolver_map_t slot_resolver_map;
+
+    std::vector<const char *> slot_names;
 };
 
 } /* namespace detail */
