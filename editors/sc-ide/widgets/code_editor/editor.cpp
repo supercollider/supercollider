@@ -1533,7 +1533,7 @@ static bool bracketPairDefinesRegion( const BracketPair & bracketPair )
     return true;
 }
 
-QTextCursor CodeEditor::regionAtCursor(const QTextCursor & cursor)
+QTextCursor CodeEditor::regionAroundCursor(const QTextCursor & cursor)
 {
     int cursorPosition = cursor.position();
 
@@ -1569,7 +1569,7 @@ QTextCursor CodeEditor::currentRegion()
     else if (TokenIterator(block, positionInBlock).type() == Token::OpeningBracket)
         cursor.movePosition( QTextCursor::NextCharacter );
 
-    return regionAtCursor( cursor );
+    return regionAroundCursor( cursor );
 }
 
 void CodeEditor::selectCurrentRegion()
@@ -1583,7 +1583,7 @@ void CodeEditor::gotoNextRegion()
 {
     QTextCursor cursor = textCursor();
 
-    QTextCursor regionCursor = regionAtCursor(cursor);
+    QTextCursor regionCursor = regionAroundCursor(cursor);
     if (!regionCursor.isNull()) {
         cursor = regionCursor;
         // regionCursor does not include region's closing bracket, so skip it
@@ -1612,7 +1612,7 @@ void CodeEditor::gotoPreviousRegion()
 {
     QTextCursor cursor = textCursor();
 
-    QTextCursor regionCursor = regionAtCursor(cursor);
+    QTextCursor regionCursor = regionAroundCursor(cursor);
 
     if (!regionCursor.isNull()) {
         // regionCursor does not include region's opening bracket, so skip it:
