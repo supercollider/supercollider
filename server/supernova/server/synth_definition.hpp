@@ -16,8 +16,8 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SERVER_SYNTH_PROTOTYPE_HPP
-#define SERVER_SYNTH_PROTOTYPE_HPP
+#ifndef SERVER_synth_definition_HPP
+#define SERVER_synth_definition_HPP
 
 #include <cassert>
 #include <cstdint>
@@ -124,15 +124,15 @@ private:
 
 class abstract_synth;
 
-struct synth_prototype_deleter
+struct synth_definition_deleter
 {
     template <typename T>
     void operator()(T * ptr)
     {
-        dispose (static_cast<class synth_prototype *>(ptr));
+        dispose (static_cast<class synth_definition *>(ptr));
     }
 
-    void dispose(class synth_prototype *);
+    void dispose(class synth_definition *);
 };
 
 /** prototype of a synth
@@ -140,18 +140,18 @@ struct synth_prototype_deleter
  * - works as a synth factory
  *
  * */
-class synth_prototype:
+class synth_definition:
     public aligned_class,
     public named_hash_entry,
     public intrusive_refcountable<>,
     public detail::slot_resolver
 {
 public:
-    synth_prototype(c_string const & name):
+    synth_definition(c_string const & name):
         named_hash_entry(name)
     {}
 
-    virtual ~synth_prototype(void)
+    virtual ~synth_definition(void)
     {}
 
     virtual abstract_synth * create_instance(int node_id) = 0;
@@ -160,8 +160,8 @@ public:
     static inline synth_t * allocate(void);
 };
 
-typedef boost::intrusive_ptr<synth_prototype> synth_prototype_ptr;
+typedef boost::intrusive_ptr<synth_definition> synth_definition_ptr;
 
 } /* namespace nova */
 
-#endif /* SERVER_SYNTH_PROTOTYPE_HPP */
+#endif /* SERVER_synth_definition_HPP */

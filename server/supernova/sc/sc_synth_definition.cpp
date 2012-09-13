@@ -22,7 +22,7 @@
 
 #include "sc_synth.hpp"
 #include "sc_ugen_factory.hpp"
-#include "sc_synth_prototype.hpp"
+#include "sc_synth_definition.hpp"
 
 #include "server/synth_factory.hpp"
 
@@ -35,8 +35,8 @@ void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> && def
     std::vector<sc_synthdef> synthdefs(std::move(defs));
     for (typename std::vector<sc_synthdef>::iterator it = synthdefs.begin();
          it != synthdefs.end(); ++it) {
-        sc_synth_prototype * sp = new sc_synth_prototype(std::move(*it));
-        factory.register_prototype(sp);
+        sc_synth_definition * sp = new sc_synth_definition(std::move(*it));
+        factory.register_definition(sp);
     }
 }
 
@@ -73,8 +73,8 @@ std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
     return ret;
 }
 
-sc_synth_prototype::sc_synth_prototype(sc_synthdef const & sd):
-    synth_prototype(sd.name()), sc_synthdef(sd)
+sc_synth_definition::sc_synth_definition(sc_synthdef const & sd):
+    synth_definition(sd.name()), sc_synthdef(sd)
 {
     typedef sc_synthdef::parameter_map_t::const_iterator iterator;
 
@@ -83,7 +83,7 @@ sc_synth_prototype::sc_synth_prototype(sc_synthdef const & sd):
 }
 
 
-abstract_synth * sc_synth_prototype::create_instance(int node_id)
+abstract_synth * sc_synth_definition::create_instance(int node_id)
 {
     sc_synth * synth = new sc_synth(node_id, this);
 

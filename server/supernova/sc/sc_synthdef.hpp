@@ -103,7 +103,7 @@ public:
         struct sc_ugen_def * prototype;
     };
 
-    friend class sc_synth_prototype;
+    friend class sc_synth_definition;
     friend class sc_synth;
     friend class sc_ugen_factory;
     friend class sc_ugen_def;

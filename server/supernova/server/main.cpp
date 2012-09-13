@@ -29,7 +29,7 @@
 #include "server_args.hpp"
 
 #include "../sc/sc_ugen_factory.hpp"
-#include "../sc/sc_synth_prototype.hpp"
+#include "../sc/sc_synth_definition.hpp"
 #include "../utilities/utils.hpp"
 
 #ifdef __linux__

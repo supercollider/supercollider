@@ -16,14 +16,14 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SC_SYNTH_PROTOTYPE_HPP
-#define SC_SYNTH_PROTOTYPE_HPP
+#ifndef SC_synth_definition_HPP
+#define SC_synth_definition_HPP
 
 #include <boost/filesystem/path.hpp>
 
 #include "sc_synthdef.hpp"
 
-#include "server/synth_prototype.hpp"
+#include "server/synth_definition.hpp"
 #include "utilities/sized_array.hpp"
 
 namespace nova {
@@ -34,12 +34,12 @@ using boost::filesystem::path;
 std::vector<sc_synthdef> sc_read_synthdefs_file(path const & filename);
 std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir);
 
-class sc_synth_prototype:
-    public synth_prototype,
+class sc_synth_definition:
+    public synth_definition,
     public sc_synthdef
 {
 public:
-    sc_synth_prototype(sc_synthdef const & sd);
+    sc_synth_definition(sc_synthdef const & sd);
 
 private:
     friend class sc_synth;
@@ -47,10 +47,10 @@ private:
     virtual abstract_synth * create_instance(int);
 };
 
-typedef boost::intrusive_ptr<sc_synth_prototype> sc_synth_prototype_ptr;
+typedef boost::intrusive_ptr<sc_synth_definition> sc_synth_definition_ptr;
 
 void register_synthdefs(class synth_factory & factory, std::vector<sc_synthdef> &&);
 
 } /* namespace nova */
 
-#endif /* SC_SYNTH_PROTOTYPE_HPP */
+#endif /* SC_synth_definition_HPP */

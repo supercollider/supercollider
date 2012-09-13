@@ -797,7 +797,7 @@ void status_perform(nova_endpoint const & endpoint)
       << (i32)sc_factory->ugen_count()          /* ugens */
       << (i32)instance->synth_count()           /* synths */
       << (i32)instance->group_count()           /* groups */
-      << (i32)instance->prototype_count()       /* synthdefs */
+      << (i32)instance->definition_count()       /* synthdefs */
       << average_load                           /* average cpu % */
       << peak_load                              /* peak cpu % */
       << instance->get_samplerate()             /* nominal samplerate */
@@ -1117,7 +1117,7 @@ void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_nod
 
     if (node.is_synth()) {
         sc_synth const & scsynth = static_cast<sc_synth const&>(node);
-        p << scsynth.prototype_name();
+        p << scsynth.definition_name();
 
         if (flag) {
             osc::int32 controls = scsynth.mNumControls;
@@ -1215,7 +1215,7 @@ void g_dump_node(rt_string_stream & stream, server_node & node, bool flag, int l
 
     if (node.is_synth()) {
         abstract_synth const & synth = static_cast<abstract_synth const &>(node);
-        stream << synth.id() << " " << synth.prototype_name() << endl;
+        stream << synth.id() << " " << synth.definition_name() << endl;
 
         if (flag) {
             /* dump controls */
@@ -2706,62 +2706,62 @@ void handle_c_getn(received_message const & msg, nova_endpoint const & endpoint)
 }
 
 #ifdef BOOST_HAS_RVALUE_REFS
-std::pair<sc_synth_prototype_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> && defs)
+std::pair<sc_synth_definition_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> && defs)
 {
     std::vector<sc_synthdef> synthdefs(std::move(defs));
     size_t count = synthdefs.size();
-    sc_synth_prototype_ptr * prototypes = new sc_synth_prototype_ptr [count];
+    sc_synth_definition_ptr * definitions = new sc_synth_definition_ptr [count];
 
     for (size_t i = 0; i != count; ++i)
-        prototypes[i].reset(new sc_synth_prototype(std::move(synthdefs[i])));
-    return std::make_pair(prototypes, count);
+        definitions[i].reset(new sc_synth_definition(std::move(synthdefs[i])));
+    return std::make_pair(definitions, count);
 }
 #endif
-std::pair<sc_synth_prototype_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> const & defs)
+std::pair<sc_synth_definition_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> const & defs)
 {
     size_t count = defs.size();
-    sc_synth_prototype_ptr * prototypes = new sc_synth_prototype_ptr [count];
+    sc_synth_definition_ptr * definitions = new sc_synth_definition_ptr [count];
 
     for (size_t i = 0; i != count; ++i)
-        prototypes[i].reset(new sc_synth_prototype(defs[i]));
-    return std::make_pair(prototypes, count);
+        definitions[i].reset(new sc_synth_definition(defs[i]));
+    return std::make_pair(definitions, count);
 }
 
 template <bool realtime>
-void d_recv_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
+void d_recv_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, completion_message & msg,
                 nova_endpoint const & endpoint);
-void d_recv_nrt3(sc_synth_prototype_ptr * prototypes, nova_endpoint const & endpoint);
+void d_recv_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & endpoint);
 
 template <bool realtime>
 void d_recv_nrt(movable_array<char> & def, completion_message & msg, nova_endpoint const & endpoint)
 {
     size_t count;
-    sc_synth_prototype_ptr * prototypes;
+    sc_synth_definition_ptr * definitions;
     std::vector<sc_synthdef> synthdefs (read_synthdefs(def.data()));
 
 #ifdef BOOST_HAS_RVALUE_REFS
-    boost::tie(prototypes, count) = wrap_synthdefs(std::move(synthdefs));
+    boost::tie(definitions, count) = wrap_synthdefs(std::move(synthdefs));
 #else
-    boost::tie(prototypes, count) = wrap_synthdefs(synthdefs);
+    boost::tie(definitions, count) = wrap_synthdefs(synthdefs);
 #endif
 
-    cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(d_recv_rt2<realtime>, prototypes, count, msg, endpoint));
+    cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(d_recv_rt2<realtime>, definitions, count, msg, endpoint));
 }
 
 template <bool realtime>
-void d_recv_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
+void d_recv_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, completion_message & msg,
                 nova_endpoint const & endpoint)
 {
-    std::for_each(prototypes, prototypes + prototype_count,
-                  boost::bind(&synth_factory::register_prototype, instance, _1));
+    std::for_each(definitions, definitions + definition_count,
+                  boost::bind(&synth_factory::register_definition, instance, _1));
 
     msg.handle(endpoint);
-    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(d_recv_nrt3, prototypes, endpoint));
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(d_recv_nrt3, definitions, endpoint));
 }
 
-void d_recv_nrt3(sc_synth_prototype_ptr * prototypes, nova_endpoint const & endpoint)
+void d_recv_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & endpoint)
 {
-    delete[] prototypes;
+    delete[] definitions;
     send_done_message(endpoint, "/d_recv");
 }
 
@@ -2782,35 +2782,35 @@ void handle_d_recv(received_message const & msg,
 }
 
 template <bool realtime>
-void d_load_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
+void d_load_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, completion_message & msg,
                 nova_endpoint const & endpoint);
-void d_load_nrt3(sc_synth_prototype_ptr * prototypes, nova_endpoint const & endpoint);
+void d_load_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & endpoint);
 
 template <bool realtime>
 void d_load_nrt(movable_string & path, completion_message & msg, nova_endpoint const & endpoint)
 {
     size_t count;
-    sc_synth_prototype_ptr * prototypes;
+    sc_synth_definition_ptr * definitions;
     /* todo: we need to implment some file name pattern matching */
-    boost::tie(prototypes, count) = wrap_synthdefs(sc_read_synthdefs_file(path.c_str()));
+    boost::tie(definitions, count) = wrap_synthdefs(sc_read_synthdefs_file(path.c_str()));
 
-    cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(d_load_rt2<realtime>, prototypes, count, msg, endpoint));
+    cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(d_load_rt2<realtime>, definitions, count, msg, endpoint));
 }
 
 template <bool realtime>
-void d_load_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
+void d_load_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, completion_message & msg,
                 nova_endpoint const & endpoint)
 {
-    std::for_each(prototypes, prototypes + prototype_count,
-                  boost::bind(&synth_factory::register_prototype, instance, _1));
+    std::for_each(definitions, definitions + definition_count,
+                  boost::bind(&synth_factory::register_definition, instance, _1));
 
     msg.handle(endpoint);
-    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(d_load_nrt3, prototypes, endpoint));
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(d_load_nrt3, definitions, endpoint));
 }
 
-void d_load_nrt3(sc_synth_prototype_ptr * prototypes, nova_endpoint const & endpoint)
+void d_load_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & endpoint)
 {
-    delete[] prototypes;
+    delete[] definitions;
     send_done_message(endpoint, "/d_load");
 }
 
@@ -2829,34 +2829,34 @@ void handle_d_load(received_message const & msg,
 
 
 template <bool realtime>
-void d_loadDir_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
+void d_loadDir_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, completion_message & msg,
                    nova_endpoint const & endpoint);
-void d_loadDir_nrt3(sc_synth_prototype_ptr * prototypes, nova_endpoint const & endpoint);
+void d_loadDir_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & endpoint);
 
 template <bool realtime>
 void d_loadDir_nrt1(movable_string & path, completion_message & msg, nova_endpoint const & endpoint)
 {
     size_t count;
-    sc_synth_prototype_ptr * prototypes;
-    boost::tie(prototypes, count) = wrap_synthdefs(sc_read_synthdefs_dir(path.c_str()));
+    sc_synth_definition_ptr * definitions;
+    boost::tie(definitions, count) = wrap_synthdefs(sc_read_synthdefs_dir(path.c_str()));
 
-    cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(d_loadDir_rt2<realtime>, prototypes, count, msg, endpoint));
+    cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(d_loadDir_rt2<realtime>, definitions, count, msg, endpoint));
 }
 
 template <bool realtime>
-void d_loadDir_rt2(sc_synth_prototype_ptr * prototypes, size_t prototype_count, completion_message & msg,
+void d_loadDir_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, completion_message & msg,
                    nova_endpoint const & endpoint)
 {
-    std::for_each(prototypes, prototypes + prototype_count,
-                  boost::bind(&synth_factory::register_prototype, instance, _1));
+    std::for_each(definitions, definitions + definition_count,
+                  boost::bind(&synth_factory::register_definition, instance, _1));
 
     msg.handle(endpoint);
-    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(d_loadDir_nrt3, prototypes, endpoint));
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(d_loadDir_nrt3, definitions, endpoint));
 }
 
-void d_loadDir_nrt3(sc_synth_prototype_ptr * prototypes, nova_endpoint const & endpoint)
+void d_loadDir_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & endpoint)
 {
-    delete[] prototypes;
+    delete[] definitions;
     send_done_message(endpoint, "/d_loadDir");
 }
 
@@ -2884,7 +2884,7 @@ void handle_d_free(received_message const & msg)
         const char * defname;
         args >> defname;
 
-        instance->remove_prototype(defname);
+        instance->remove_definition(defname);
     }
 }
 
