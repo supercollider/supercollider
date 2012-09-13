@@ -579,14 +579,23 @@ CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescripti
 
     const Class *klass = NULL;
 
-    if (completion.tokenType == Token::Class) {
+    switch (completion.tokenType) {
+    case Token::Class: {
         const ClassMap & classes = introspection.classMap();
         ClassMap::const_iterator it = classes.find(completion.base);
         if (it != classes.end())
             klass = it->second->metaClass;
+        break;
     }
-    else {
-        klass = classForCompletionDescription(completion);
+    case Token::Float:
+    case Token::RadixFloat:
+    case Token::HexInt:
+        if(!completion.base.contains(".") && completion.text.isEmpty()) {
+            klass = NULL;
+            break;
+        }
+    default:
+        klass = classForToken(completion.tokenType, completion.base);
     }
 
     if (klass == NULL) {
@@ -680,21 +689,19 @@ CompletionMenu * AutoCompleter::menuForMethodCompletion(CompletionDescription co
     return menu;
 }
 
-const ScLanguage::Class * AutoCompleter::classForCompletionDescription(CompletionDescription const & completion)
+const ScLanguage::Class * AutoCompleter::classForToken( Token::Type tokenType, const QString & tokenString )
 {
     using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
 
-    switch (completion.tokenType) {
+    switch (tokenType) {
     case Token::Float:
     case Token::RadixFloat:
     case Token::HexInt:
-        if (completion.base.contains(".")) // else it is an int
+        if (tokenString.contains(".")) // else it is an int
             return introspection.findClass("Float");
-        else if (!completion.text.isEmpty())
-            return introspection.findClass("Integer");
         else
-            return NULL;
+            return introspection.findClass("Integer");
 
     case Token::Char:
         return introspection.findClass("Char");
@@ -709,39 +716,37 @@ const ScLanguage::Class * AutoCompleter::classForCompletionDescription(Completio
         ;
     }
 
-    QString const & objectString = completion.base;
-
-    if (objectString == QString("true"))
+    if (tokenString == QString("true"))
         return introspection.findClass("True");
 
-    if (objectString == QString("false"))
+    if (tokenString == QString("false"))
         return introspection.findClass("False");
 
-    if (objectString == QString("nil"))
+    if (tokenString == QString("nil"))
         return introspection.findClass("Nil");
 
-    if (objectString == QString("thisProcess"))
+    if (tokenString == QString("thisProcess"))
         return introspection.findClass("Main");
 
-    if (objectString == QString("thisFunction"))
+    if (tokenString == QString("thisFunction"))
         return introspection.findClass("Function");
 
-    if (objectString == QString("thisMethod"))
+    if (tokenString == QString("thisMethod"))
         return introspection.findClass("Method");
 
-    if (objectString == QString("thisFunctionDef"))
+    if (tokenString == QString("thisFunctionDef"))
         return introspection.findClass("FunctionDef");
 
-    if (objectString == QString("thisThread"))
+    if (tokenString == QString("thisThread"))
         return introspection.findClass("Thread");
 
-    if (objectString == QString("currentEnvironment"))
+    if (tokenString == QString("currentEnvironment"))
         return introspection.findClass("Environment");
 
-    if (objectString == QString("topEnvironment"))
+    if (tokenString == QString("topEnvironment"))
         return introspection.findClass("Environment");
 
-    if (objectString == QString("inf"))
+    if (tokenString == QString("inf"))
         return introspection.findClass("Float");
 
     return NULL;

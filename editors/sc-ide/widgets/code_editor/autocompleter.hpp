@@ -115,7 +115,7 @@ private:
     static CompletionMenu * menuForClassMethodCompletion(CompletionDescription const & completion, CodeEditor * editor);
     static CompletionMenu * menuForMethodCompletion(CompletionDescription const & completion, CodeEditor * editor);
 
-    static const ScLanguage::Class * classForCompletionDescription(CompletionDescription const & completion);
+    static const ScLanguage::Class * classForToken( Token::Type type, const QString & string );
 
     // utilities
 
