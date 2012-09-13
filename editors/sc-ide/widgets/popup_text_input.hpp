@@ -49,13 +49,13 @@ public:
     }
 
 private:
-	void paintEvent( QPaintEvent * )
-	{
-		QPainter painter(this);
-		painter.setBrush(Qt::NoBrush);
-		painter.setPen(palette().color(QPalette::Dark));
-		painter.drawRect(rect().adjusted(0,0,-1,-1));
-	}
+    void paintEvent( QPaintEvent * )
+    {
+        QPainter painter(this);
+        painter.setBrush(Qt::NoBrush);
+        painter.setPen(palette().color(QPalette::Dark));
+        painter.drawRect(rect().adjusted(0,0,-1,-1));
+    }
 
     virtual void keyPressEvent(QKeyEvent * event)
     {
