@@ -628,7 +628,15 @@ void sc_osc_handler::handle_packet_async(const char * data, size_t length,
 
     if (dump_osc_packets == 1) {
         osc_received_packet packet (data, length);
-        cout << "received osc packet " << packet << endl;
+
+        if (packet.IsMessage()) {
+            received_message message (packet);
+
+            const char * address = message.AddressPattern();
+            if (strcmp(address, "/status") != 0) // we ignore /status messages
+                cout << "received osc message " << message << endl;
+        } else
+            cout << "received osc bundle " << packet << endl;
     }
 
     instance->add_sync_callback(p);

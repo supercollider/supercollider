@@ -48,6 +48,9 @@ definitionlist::
 ## double || nominal sample rate
 ## double || actual sample rate
 ::
+
+note:: teletype::/status:: messages won't be posted, if the server is in teletype::/dumpOSC:: mode::
+
 ::
 
 subsection:: /cmd - plug-in defined command
