@@ -318,7 +318,7 @@ void MultiEditor::createActions()
 
     mActions[TriggerMethodCallAid] = act = new QAction(tr("Trigger Method Call Aid"), this);
     act->setStatusTip(tr("Show arguments for currently typed method call"));
-    act->setShortcut(tr("Alt+Space", "Trigger Method Call Aid"));
+    act->setShortcut(tr("Ctrl+Shift+Space", "Trigger Method Call Aid"));
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mSigMux->connect(act, SIGNAL(triggered()), SLOT(triggerMethodCallAid()));
 
