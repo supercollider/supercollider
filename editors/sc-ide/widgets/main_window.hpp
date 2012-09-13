@@ -80,6 +80,7 @@ public:
         CloseToolBox,
         ShowFullScreen,
         ClearPostWindow,
+        FocusPostWindow,
 
         LookupReferences,
         LookupDefinition,
@@ -114,6 +115,7 @@ public:
 
     void saveWindowState();
     void restoreWindowState();
+    void focusCodeEditor();
 
     static MainWindow *instance() { return mInstance; }
 

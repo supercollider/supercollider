@@ -184,6 +184,12 @@ void PostWindow::wheelEvent( QWheelEvent * e )
     QPlainTextEdit::wheelEvent(e);
 }
 
+void PostWindow::focusOutEvent( QFocusEvent * event )
+{
+    MainWindow::instance()->focusCodeEditor();
+    event->accept();
+}
+
 bool PostWindow::openDocumentation()
 {
     return Main::openDocumentation(symbolUnderCursor());

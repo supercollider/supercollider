@@ -114,7 +114,6 @@ MainWindow::MainWindow(Main * main) :
     addDockWidget(Qt::LeftDockWidgetArea, mPostDock);
 
     // Layout
-
     QVBoxLayout *center_box = new QVBoxLayout;
     center_box->setContentsMargins(0,0,0,0);
     center_box->setSpacing(0);
@@ -322,6 +321,11 @@ void MainWindow::createActions()
     act->setShortcut(tr("Ctrl+Shift+C", "Clear Post Window"));
     connect(act, SIGNAL(triggered()), mPostDock->mPostWindow, SLOT(clear()));
 
+    mActions[FocusPostWindow] = act = new QAction( tr("Focus Post Window"), this);
+    act->setStatusTip(tr("Focus Post Window"));
+    act->setShortcut(tr("Ctrl+L", "Focus Post Window"));
+    connect(act, SIGNAL(triggered()), mPostDock->mPostWindow, SLOT(setFocus()));
+
     mActions[LookupReferences] = act = new QAction(
         QIcon::fromTheme("window-lookupreferences"), tr("Lookup References"), this);
     act->setShortcut(tr("Ctrl+Shift+U", "Lookup References"));
@@ -480,6 +484,7 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::RemoveCurrentSplit) );
     menu->addAction( mEditors->action(MultiEditor::RemoveAllSplits) );
     menu->addSeparator();
+    menu->addAction( mActions[FocusPostWindow] );
     menu->addAction( mActions[ClearPostWindow] );
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
@@ -548,6 +553,11 @@ void MainWindow::restoreWindowState()
         restoreState(state);
 
     settings->endGroup();
+}
+
+void MainWindow::focusCodeEditor()
+{
+    mEditors->currentEditor()->setFocus();
 }
 
 void MainWindow::newSession()

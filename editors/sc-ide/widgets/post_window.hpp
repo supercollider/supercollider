@@ -65,6 +65,7 @@ private:
 
     void zoomFont(int steps);
     void wheelEvent( QWheelEvent * );
+    void focusOutEvent (QFocusEvent *e);
 
     QAction * mAutoScrollAction;
     QAction * mClearAction;
