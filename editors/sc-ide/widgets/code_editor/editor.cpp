@@ -1014,46 +1014,6 @@ void CodeEditor::matchBrackets()
     updateExtraSelections();
 }
 
-void CodeEditor::matchBracket( const TokenIterator & bracket , BracketMatch & match )
-{
-    TokenIterator it(bracket);
-
-    if(it->type == Token::OpeningBracket)
-    {
-        match.first = it;
-        int level = 1;
-        while((++it).isValid())
-        {
-            Token::Type type = it->type;
-            if(type == Token::ClosingBracket)
-                --level;
-            else if(type == Token::OpeningBracket)
-                ++level;
-            if(level == 0) {
-                match.second = it;
-                return;
-            }
-        }
-    }
-    else if(it->type == Token::ClosingBracket)
-    {
-        match.second = it;
-        int level = 1;
-        while((--it).isValid())
-        {
-            Token::Type type = it->type;
-            if(type == Token::OpeningBracket)
-                --level;
-            else if(type == Token::ClosingBracket)
-                ++level;
-            if(level == 0) {
-                match.first = it;
-                return;
-            }
-        }
-    }
-}
-
 int CodeEditor::indentedStartOfLine( const QTextBlock &b )
 {
     QString t(b.text());
@@ -1432,6 +1392,22 @@ static TokenIterator nextClosingBracket(TokenIterator it)
         ++it;
     }
     return it;
+}
+
+void CodeEditor::matchBracket( const TokenIterator & bracket, BracketMatch & match )
+{
+    TokenIterator it(bracket);
+
+    if(it->type == Token::OpeningBracket)
+    {
+        match.first = it;
+        match.second = nextClosingBracket(++it);
+    }
+    else if(it->type == Token::ClosingBracket)
+    {
+        match.second = it;
+        match.first = previousOpeningBracket(--it);
+    }
 }
 
 QTextCursor CodeEditor::blockAtCursor(const QTextCursor & cursor)
