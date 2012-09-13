@@ -1582,26 +1582,20 @@ void CodeEditor::selectCurrentRegion()
 void CodeEditor::gotoNextRegion()
 {
     QTextCursor cursor = textCursor();
+    int cursorPosition = cursor.position();
 
-    QTextCursor regionCursor = regionAroundCursor(cursor);
-    if (!regionCursor.isNull()) {
-        cursor = regionCursor;
-        // regionCursor does not include region's closing bracket, so skip it
-        cursor.movePosition(QTextCursor::NextCharacter);
-    }
-
-    // Skip potential opening bracket immediately right of cursor:
-    cursor.movePosition(QTextCursor::NextCharacter);
-
-    TokenIterator it = TokenIterator::rightOf(cursor.block(), cursor.positionInBlock());
-
+    BracketPair bracketPair;
+    TokenIterator it = TokenIterator::rightOf( textDocument()->begin(), 0 );
     while (it.isValid()) {
-        if ( (it->type == Token::OpeningBracket) && (it->character == '(') &&
-             (it->positionInBlock == 0) ) {
-            setTextCursor( cursorAt(it, 1) );
+        nextBracketPair(it, bracketPair);
+        if ( bracketPair.first.isValid() && bracketPair.second.isValid()
+             && bracketPair.first.position() > cursorPosition
+             && bracketPairDefinesRegion(bracketPair))
+        {
+            setTextCursor( cursorAt(bracketPair.first) );
             return;
         }
-        ++it;
+        it = bracketPair.second;
     }
 
     cursor.movePosition(QTextCursor::End);
@@ -1611,26 +1605,28 @@ void CodeEditor::gotoNextRegion()
 void CodeEditor::gotoPreviousRegion()
 {
     QTextCursor cursor = textCursor();
+    int cursorPosition = cursor.position();
 
-    QTextCursor regionCursor = regionAroundCursor(cursor);
-
-    if (!regionCursor.isNull()) {
-        // regionCursor does not include region's opening bracket, so skip it:
-        cursor.setPosition( regionCursor.selectionStart() - 1 );
+    BracketPair prevBracketPair;
+    BracketPair bracketPair;
+    TokenIterator it = TokenIterator::rightOf( textDocument()->begin(), 0 );
+    while(it.isValid()) {
+        nextBracketPair(it, bracketPair);
+        if ( !bracketPair.second.isValid()
+             || bracketPair.second.position() >= cursorPosition - 1 )
+        {
+            break;
+        }
+        if (bracketPairDefinesRegion(bracketPair)) {
+            prevBracketPair = bracketPair;
+        }
+        it = bracketPair.second;
     }
 
-    // Skip potential closing bracket immediately left of cursor:
-    cursor.movePosition( QTextCursor::PreviousCharacter );
-
-    TokenIterator it = TokenIterator::leftOf(cursor.block(), cursor.positionInBlock());
-
-    while (it.isValid()) {
-        if ( (it->type == Token::ClosingBracket) && (it->character == ')') &&
-             (it->positionInBlock == 0) ) {
-            setTextCursor( cursorAt(it) );
-            return;
-        }
-        --it;
+    if ( prevBracketPair.first.isValid() && prevBracketPair.second.isValid() )
+    {
+        setTextCursor( cursorAt(prevBracketPair.second, 1) );
+        return;
     }
 
     cursor.movePosition(QTextCursor::Start);
