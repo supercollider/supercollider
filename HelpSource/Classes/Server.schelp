@@ -102,6 +102,13 @@ query the system for any sc-server apps and hard quit them
 method:: freeAll
 free all nodes in all registered servers
 
+method:: supernova
+
+Switches server program to use supernova. Check link::Classes/ParGroup:: how to make use of multicore hardware with the supernova server.
+
+method:: scsynth
+
+Switches server program to use supernova.
 
 
 InstanceMethods::
