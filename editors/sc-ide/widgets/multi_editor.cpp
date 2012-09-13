@@ -875,17 +875,6 @@ void MultiEditor::evaluateRegion()
         // If no selection, try current region
         cursor = editor->currentRegion();
         if (!cursor.isNull()) {
-            // if region is in a single line, evaluate complete line
-
-            QTextCursor selectionStart (cursor);
-            selectionStart.setPosition(cursor.selectionStart());
-
-            QTextCursor selectionEnd (cursor);
-            selectionEnd.setPosition(cursor.selectionEnd());
-
-            if (selectionStart.block() == selectionEnd.block())
-                cursor.select(QTextCursor::LineUnderCursor);
-
             text = cursor.selectedText();
         } else {
             // If no current region, try current line
