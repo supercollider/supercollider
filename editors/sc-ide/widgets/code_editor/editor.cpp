@@ -974,7 +974,7 @@ void CodeEditor::matchBrackets()
         ++it;
     }
 
-    BracketMatch match;
+    BracketPair match;
     if( it.isValid() && it.block() == block)
         matchBracket( it, match );
 
@@ -1394,7 +1394,7 @@ static TokenIterator nextClosingBracket(TokenIterator it)
     return it;
 }
 
-void CodeEditor::matchBracket( const TokenIterator & bracket, BracketMatch & match )
+void CodeEditor::matchBracket( const TokenIterator & bracket, BracketPair & match )
 {
     TokenIterator it(bracket);
 
@@ -1419,7 +1419,7 @@ QTextCursor CodeEditor::blockAtCursor(const QTextCursor & cursor)
         case Token::OpeningBracket:
         case Token::ClosingBracket:
         {
-            BracketMatch match;
+            BracketPair match;
             matchBracket(it, match);
 
             if (match.first.isValid() && match.second.isValid()) {
