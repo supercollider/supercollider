@@ -46,16 +46,22 @@ void ScServer::boot()
     if (isRunning())
         return;
 
-    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.boot" );
+    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.boot", true );
 }
 
 void ScServer::quit()
 {
-
     if (!isRunning())
         return;
 
-    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.quit" );
+    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.quit", true );
+}
+
+void ScServer::queryAllNodes(bool dumpControls)
+{
+    QString arg = dumpControls ? "true" : false;
+
+    Main::scProcess()->evaluateCode( QString("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
 }
 
 void ScServer::timerEvent(QTimerEvent * event)

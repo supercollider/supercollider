@@ -179,7 +179,7 @@ MainWindow::MainWindow(Main * main) :
     // Must be called after createAtions(), because it accesses an action:
     onServerRunningChanged(false, "", 0);
 
-    mServerStatus->addAction( action(ToggleServerRunning) );
+    mServerStatus->addAction( action(ServerToggleRunning) );
     mServerStatus->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     // Initialize recent documents menu
@@ -365,10 +365,24 @@ void MainWindow::createActions()
     connect(act, SIGNAL(triggered()), this, SLOT(openDocumentation()));
 
     // Server
-    mActions[ToggleServerRunning] = act = new QAction(this);
-    connect(act, SIGNAL(triggered()), this, SLOT(toggleServerRunning()));
+    mActions[ServerToggleRunning] = act = new QAction(tr("Boot or quit server"), this);
+    act->setShortcut(tr("Ctrl+B", "Boot or quit default server"));
+    connect(act, SIGNAL(triggered()), this, SLOT(serverToggleRunning()));
+
+    mActions[ServerShowMeters] = act = new QAction(tr("Show server meter"), this);
+    act->setShortcut(tr("Ctrl+M", "Show server meter"));
+    connect(act, SIGNAL(triggered()), this, SLOT(serverShowMeters()));
+
+    mActions[ServerDumpNodeTree] = act = new QAction(tr("Dump node tree"), this);
+    act->setShortcut(tr("Ctrl+T", "Dump node tree"));
+    connect(act, SIGNAL(triggered()), this, SLOT(serverDumpNodeTree()));
+
+    mActions[ServerDumpNodeTreeWithControls] = act = new QAction(tr("Dump node tree with controls"), this);
+    act->setShortcut(tr("Ctrl+Shift+T", "Dump node tree with controls"));
+    connect(act, SIGNAL(triggered()), this, SLOT(serverDumpNodeTree()));
 
     settings->endGroup(); // IDE/shortcuts;
+
 
     // Add actions to settings
     for (int i = 0; i < ActionCount; ++i)
@@ -477,6 +491,11 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scProcess()->action(SCProcess::StopSCLang) );
     menu->addAction( mMain->scProcess()->action(SCProcess::RestartSCLang) );
     menu->addAction( mMain->scProcess()->action(SCProcess::RecompileClassLibrary) );
+    menu->addSeparator();
+    menu->addAction( mActions[ServerToggleRunning] );
+    menu->addAction( mActions[ServerShowMeters] );
+    menu->addAction( mActions[ServerDumpNodeTree] );
+    menu->addAction( mActions[ServerDumpNodeTreeWithControls] );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::EvaluateCurrentDocument) );
     menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );
@@ -707,7 +726,7 @@ void MainWindow::onServerStatusReply(int ugens, int synths, int groups, int synt
 
 void MainWindow::onServerRunningChanged(bool running, const QString &, int)
 {
-    QAction *serverStatusAction = mActions[ToggleServerRunning];
+    QAction *serverStatusAction = mActions[ServerToggleRunning];
 
     mServerStatus->setTextColor( running ? Qt::green : Qt::white);
     if (!running) {
@@ -1142,7 +1161,7 @@ void MainWindow::openHelp()
     Main::scProcess()->evaluateCode(code, true);
 }
 
-void MainWindow::toggleServerRunning()
+void MainWindow::serverToggleRunning()
 {
     ScServer *scServer = Main::scServer();
 
@@ -1150,6 +1169,23 @@ void MainWindow::toggleServerRunning()
         scServer->quit();
     else
         scServer->boot();
+}
+
+void MainWindow::serverShowMeters()
+{
+    Main::evaluateCode("ScIDE.defaultServer.meter", true);
+}
+
+void MainWindow::serverDumpNodeTree()
+{
+    ScServer *scServer = Main::scServer();
+    scServer->queryAllNodes(false);
+}
+
+void MainWindow::serverDumpNodeTreeWithControls()
+{
+    ScServer *scServer = Main::scServer();
+    scServer->queryAllNodes(true);
 }
 
 void MainWindow::dragEnterEvent( QDragEnterEvent * event )
