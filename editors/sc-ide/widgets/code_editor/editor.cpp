@@ -782,134 +782,6 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     applySettings(Main::settings());
 }
 
-
-QTextCursor CodeEditor::currentRegion()
-{
-    QTextCursor cursor = textCursor();
-    QTextBlock block = cursor.block();
-    int positionInBlock = cursor.positionInBlock();
-
-    if (TokenIterator(block, positionInBlock - 1).type() == Token::ClosingBracket)
-        cursor.movePosition( QTextCursor::PreviousCharacter );
-    else if (TokenIterator(block, positionInBlock).type() == Token::OpeningBracket)
-        cursor.movePosition( QTextCursor::NextCharacter );
-
-    return regionAtCursor( cursor );
-}
-
-
-QTextCursor CodeEditor::regionAtCursor(const QTextCursor & cursor)
-{
-    QTextBlock block(cursor.block());
-    int positionInBlock = cursor.positionInBlock();
-
-    TokenIterator start;
-    TokenIterator end;
-    int topLevel = 0;
-    int level = 0;
-
-    // search suitable opening bracket
-    TokenIterator it = TokenIterator::leftOf( block, positionInBlock );
-    while(it.isValid())
-    {
-        char chr = it->character;
-        if(chr == '(') {
-            ++level;
-            if(level > topLevel) {
-                topLevel = level;
-                if (bracketDefinesRegion(it))
-                    start = it;
-            }
-        }
-        else if(chr == ')') {
-            --level;
-        }
-        --it;
-    }
-
-    if (!start.isValid())
-        return QTextCursor();
-
-    // match the found opening bracket
-    it = TokenIterator::rightOf( block, positionInBlock );
-    while(it.isValid())
-    {
-        char chr = it->character;
-        if(chr == '(')
-            ++topLevel;
-        else if(chr == ')')
-        {
-            --topLevel;
-            if(topLevel == 0)
-            {
-                if (bracketDefinesRegion(it))
-                    end = it;
-                break;
-            }
-        }
-        ++it;
-    }
-
-    if(start.isValid() && end.isValid())
-    {
-/*
-FIXME: the following should be checked for every candidate opening bracket,
-and continue searching if check fails.
-*/
-#if 0
-
-        // check whether the bracket makes part of an event
-        it = start.next();
-        if (it.isValid()) {
-            if (it->type == Token::SymbolArg)
-                return QTextCursor();
-            else {
-                ++it;
-                if (it.isValid() && it->character == ':')
-                    return QTextCursor();
-            }
-        }
-#endif
-        // ok, this is is a real top-level region
-        QTextCursor c(QPlainTextEdit::document());
-        c.setPosition(start.position() + 1);
-        c.setPosition(end.position(), QTextCursor::KeepAnchor);
-        return c;
-    }
-
-    return QTextCursor();
-}
-
-QTextCursor CodeEditor::blockAtCursor(const QTextCursor & cursor)
-{
-    TokenIterator it (cursor.block(), cursor.positionInBlock());
-
-    if (it.isValid()) {
-        switch (it->type) {
-        case Token::OpeningBracket:
-        case Token::ClosingBracket:
-        {
-            BracketMatch match;
-            matchBracket(it, match);
-
-            if (match.first.isValid()) {
-                QTextCursor selection(textDocument());
-                selection.setPosition(match.first.position());
-                selection.setPosition(match.second.position() + 1, QTextCursor::KeepAnchor);
-                return selection;
-            }
-            break;
-        }
-
-        default:
-            break;
-        }
-    }
-
-    return QTextCursor();
-}
-
-
 void CodeEditor::applySettings( Settings::Manager *settings )
 {
     settings->beginGroup("IDE/editor");
@@ -1562,6 +1434,34 @@ static TokenIterator nextClosingBracket(TokenIterator it)
     return it;
 }
 
+QTextCursor CodeEditor::blockAtCursor(const QTextCursor & cursor)
+{
+    TokenIterator it (cursor.block(), cursor.positionInBlock());
+
+    if (it.isValid()) {
+        switch (it->type) {
+        case Token::OpeningBracket:
+        case Token::ClosingBracket:
+        {
+            BracketMatch match;
+            matchBracket(it, match);
+
+            if (match.first.isValid()) {
+                QTextCursor selection(textDocument());
+                selection.setPosition(match.first.position());
+                selection.setPosition(match.second.position() + 1, QTextCursor::KeepAnchor);
+                return selection;
+            }
+            break;
+        }
+
+        default:
+            break;
+        }
+    }
+
+    return QTextCursor();
+}
 
 void CodeEditor::gotoNextBlock()
 {
@@ -1602,6 +1502,102 @@ void CodeEditor::gotoPreviousBlock()
         cursor.movePosition( QTextCursor::Start );
         setTextCursor( cursor );
     }
+}
+
+QTextCursor CodeEditor::regionAtCursor(const QTextCursor & cursor)
+{
+    QTextBlock block(cursor.block());
+    int positionInBlock = cursor.positionInBlock();
+
+    TokenIterator start;
+    TokenIterator end;
+    int topLevel = 0;
+    int level = 0;
+
+    // search suitable opening bracket
+    TokenIterator it = TokenIterator::leftOf( block, positionInBlock );
+    while(it.isValid())
+    {
+        char chr = it->character;
+        if(chr == '(') {
+            ++level;
+            if(level > topLevel) {
+                topLevel = level;
+                if (bracketDefinesRegion(it))
+                    start = it;
+            }
+        }
+        else if(chr == ')') {
+            --level;
+        }
+        --it;
+    }
+
+    if (!start.isValid())
+        return QTextCursor();
+
+    // match the found opening bracket
+    it = TokenIterator::rightOf( block, positionInBlock );
+    while(it.isValid())
+    {
+        char chr = it->character;
+        if(chr == '(')
+            ++topLevel;
+        else if(chr == ')')
+        {
+            --topLevel;
+            if(topLevel == 0)
+            {
+                if (bracketDefinesRegion(it))
+                    end = it;
+                break;
+            }
+        }
+        ++it;
+    }
+
+    if(start.isValid() && end.isValid())
+    {
+/*
+FIXME: the following should be checked for every candidate opening bracket,
+and continue searching if check fails.
+*/
+#if 0
+
+        // check whether the bracket makes part of an event
+        it = start.next();
+        if (it.isValid()) {
+            if (it->type == Token::SymbolArg)
+                return QTextCursor();
+            else {
+                ++it;
+                if (it.isValid() && it->character == ':')
+                    return QTextCursor();
+            }
+        }
+#endif
+        // ok, this is is a real top-level region
+        QTextCursor c(QPlainTextEdit::document());
+        c.setPosition(start.position() + 1);
+        c.setPosition(end.position(), QTextCursor::KeepAnchor);
+        return c;
+    }
+
+    return QTextCursor();
+}
+
+QTextCursor CodeEditor::currentRegion()
+{
+    QTextCursor cursor = textCursor();
+    QTextBlock block = cursor.block();
+    int positionInBlock = cursor.positionInBlock();
+
+    if (TokenIterator(block, positionInBlock - 1).type() == Token::ClosingBracket)
+        cursor.movePosition( QTextCursor::PreviousCharacter );
+    else if (TokenIterator(block, positionInBlock).type() == Token::OpeningBracket)
+        cursor.movePosition( QTextCursor::NextCharacter );
+
+    return regionAtCursor( cursor );
 }
 
 void CodeEditor::selectCurrentRegion()
