@@ -25,7 +25,7 @@
 #include <boost/intrusive_ptr.hpp>
 
 #include "memory_pool.hpp"
-#include "synth_prototype.hpp"
+#include "synth_definition.hpp"
 #include "utilities/static_pool.hpp"
 
 namespace nova {

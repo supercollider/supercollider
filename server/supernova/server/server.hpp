@@ -256,7 +256,7 @@ public:
     void set_node_slot(int node_id, const char * slot, float value);
     /* @} */
 
-    void register_prototype(synth_prototype_ptr const & prototype);
+    void register_definition(synth_definition_ptr const & prototype);
 
     void cpu_load(float & peak, float & average) const
     {

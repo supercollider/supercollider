@@ -23,58 +23,58 @@
 #include <string>
 
 #include "synth.hpp"
-#include "synth_prototype.hpp"
+#include "synth_definition.hpp"
 
 namespace nova {
 
 class synth_factory
 {
 public:
-    void register_prototype(synth_prototype_ptr const & prototype)
+    void register_definition(synth_definition_ptr const & prototype)
     {
-        prototype_map_type::iterator it = prototype_map.find(prototype->name(), named_hash_hash(), named_hash_equal());
-        if (it != prototype_map.end()) {
-            prototype_map.erase(it);
+        prototype_map_type::iterator it = definition_map.find(prototype->name(), named_hash_hash(), named_hash_equal());
+        if (it != definition_map.end()) {
+            definition_map.erase(it);
             it->release();
         }
 
-        prototype_map.insert(*prototype.get());
+        definition_map.insert(*prototype.get());
         prototype->add_ref();
     }
 
     abstract_synth * create_instance(const char * name, int node_id)
     {
-        prototype_map_type::iterator it = prototype_map.find(name, named_hash_hash(), named_hash_equal());
-        if (it == prototype_map.end())
+        prototype_map_type::iterator it = definition_map.find(name, named_hash_hash(), named_hash_equal());
+        if (it == definition_map.end())
             return 0;
 
         return it->create_instance(node_id);
     }
 
-    void remove_prototype(const char * name)
+    void remove_definition(const char * name)
     {
-        prototype_map_type::iterator it = prototype_map.find(name, named_hash_hash(), named_hash_equal());
-        if (it == prototype_map.end())
+        prototype_map_type::iterator it = definition_map.find(name, named_hash_hash(), named_hash_equal());
+        if (it == definition_map.end())
             return;
 
-        prototype_map.erase(it);
+        definition_map.erase(it);
         it->release();
     }
 
-    std::size_t prototype_count(void) const
+    std::size_t definition_count(void) const
     {
-        return prototype_map.size();
+        return definition_map.size();
     }
 
     synth_factory(void):
-        prototype_map(prototype_map_type::bucket_traits(buckets, bucket_count))
+        definition_map(prototype_map_type::bucket_traits(buckets, bucket_count))
     {}
 
     ~synth_factory(void)
     {
-        while(prototype_map.begin() != prototype_map.end()) {
-            prototype_map_type::iterator it = prototype_map.begin();
-            prototype_map.erase(it);
+        while(definition_map.begin() != definition_map.end()) {
+            prototype_map_type::iterator it = definition_map.begin();
+            definition_map.erase(it);
             it->release();
         }
     }
@@ -82,11 +82,11 @@ public:
 private:
     static const int bucket_count = 2048;
 
-    typedef boost::intrusive::unordered_set<synth_prototype,
+    typedef boost::intrusive::unordered_set<synth_definition,
                                             boost::intrusive::power_2_buckets<true>
                                            > prototype_map_type;
     prototype_map_type::bucket_type buckets[bucket_count];
-    prototype_map_type prototype_map;
+    prototype_map_type definition_map;
 };
 
 } /* namespace nova */

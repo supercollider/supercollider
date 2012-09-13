@@ -27,7 +27,7 @@
 
 #include "nrt_synthesis.hpp"
 
-#include "sc/sc_synth_prototype.hpp"
+#include "sc/sc_synth_definition.hpp"
 #include "sc/sc_ugen_factory.hpp"
 
 #ifdef __APPLE__
@@ -171,26 +171,26 @@ void nova_server::run_nonrt_synthesis(server_arguments const & args)
 namespace
 {
 
-struct register_prototype_cb:
+struct register_definition_cb:
     public audio_sync_callback
 {
-    register_prototype_cb (synth_prototype_ptr const & prototype):
+    register_definition_cb (synth_definition_ptr const & prototype):
         prototype(prototype)
     {}
 
     void run(void)
     {
-        instance->synth_factory::register_prototype(prototype);
+        instance->synth_factory::register_definition(prototype);
     }
 
-    synth_prototype_ptr prototype;
+    synth_definition_ptr prototype;
 };
 
 } /* namespace */
 
-void nova_server::register_prototype(synth_prototype_ptr const & prototype)
+void nova_server::register_definition(synth_definition_ptr const & prototype)
 {
-    scheduler<scheduler_hook, thread_init_functor>::add_sync_callback(new register_prototype_cb(prototype));
+    scheduler<scheduler_hook, thread_init_functor>::add_sync_callback(new register_definition_cb(prototype));
 }
 
 
@@ -269,10 +269,10 @@ void io_thread_init_functor::operator()() const
     name_thread("Network Send");
 }
 
-void synth_prototype_deleter::dispose(synth_prototype * ptr)
+void synth_definition_deleter::dispose(synth_definition * ptr)
 {
     if (instance) /// todo: hack to fix test suite
-        instance->add_system_callback(new delete_callback<synth_prototype>(ptr));
+        instance->add_system_callback(new delete_callback<synth_definition>(ptr));
     else
         delete ptr;
 }

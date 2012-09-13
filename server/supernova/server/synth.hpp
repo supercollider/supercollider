@@ -25,17 +25,17 @@
 #include <cstdint>
 
 #include "node_types.hpp"
-#include "synth_prototype.hpp"
+#include "synth_definition.hpp"
 #include "utilities/time_tag.hpp"
 
 namespace nova   {
 namespace detail {
 
 /** wrapper class implementing the functionality of synth, that accesses its prototype */
-class synth_prototype_instance
+class synth_definition_instance
 {
 public:
-    synth_prototype_instance(synth_prototype_ptr const & ptr):
+    synth_definition_instance(synth_definition_ptr const & ptr):
         class_ptr(ptr)
     {}
 
@@ -49,30 +49,30 @@ public:
         return class_ptr->resolve_slot(str, hashed_str);
     }
 
-    const char * prototype_name(void) const
+    const char * definition_name(void) const
     {
         return class_ptr->name();
     }
 
 protected:
-    synth_prototype_ptr class_ptr;
+    synth_definition_ptr class_ptr;
 };
 
 } /* namespace detail */
 
 class abstract_synth:
     public server_node,
-    public detail::synth_prototype_instance
+    public detail::synth_definition_instance
 {
 public:
     typedef float sample;
     typedef std::uint_fast16_t samplecount_t;
 
-    typedef detail::synth_prototype_instance prototype_instance;
+    typedef detail::synth_definition_instance definition_instance;
 
 protected:
-    abstract_synth(int node_id, synth_prototype_ptr const & prototype):
-        server_node(node_id, true), prototype_instance(prototype)
+    abstract_synth(int node_id, synth_definition_ptr const & definition):
+        server_node(node_id, true), definition_instance(definition)
     {}
 
 public:
@@ -89,7 +89,7 @@ public:
 
     void set(const char * slot_str, size_t hashed_str, sample val)
     {
-        slot_index_t slot_id = prototype_instance::resolve_slot(slot_str, hashed_str);
+        slot_index_t slot_id = definition_instance::resolve_slot(slot_str, hashed_str);
         if (likely(slot_id >= 0))
             this->set(slot_id, val);
     }
@@ -101,7 +101,7 @@ public:
 
     void set_control_array(const char * slot_str, size_t hashed_str, size_t count, sample * val)
     {
-        slot_index_t slot_id = prototype_instance::resolve_slot(slot_str, hashed_str);
+        slot_index_t slot_id = definition_instance::resolve_slot(slot_str, hashed_str);
         if (likely(slot_id >= 0))
             for (size_t i = 0; i != count; ++i)
                 this->set(slot_id+i, val[i]);
@@ -121,7 +121,7 @@ public:
 
     void set_control_array_element(const char * slot_str, size_t hashed_str, size_t index, sample val)
     {
-        slot_index_t slot_id = prototype_instance::resolve_slot(slot_str, hashed_str);
+        slot_index_t slot_id = definition_instance::resolve_slot(slot_str, hashed_str);
         this->set(slot_id + index, val);
     }
     /* @} */

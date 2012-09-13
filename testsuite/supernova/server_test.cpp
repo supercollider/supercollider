@@ -11,11 +11,11 @@ using namespace boost;
 
 namespace
 {
-struct test_synth_prototype:
-    public synth_prototype
+struct test_synth_definition:
+    public synth_definition
 {
-    test_synth_prototype(void):
-        synth_prototype(c_string("foo"))
+    test_synth_definition(void):
+        synth_definition(c_string("foo"))
     {}
 
     abstract_synth * create_instance(int node_id)
@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE( server_test_1 )
         nova_server server(server_arguments::initialize(0, 0));
         rt_pool.init(1024*1024);
 
-        server.synth_factory::register_prototype(new test_synth_prototype());
+        server.synth_factory::register_definition(new test_synth_definition());
 
         node_position_constraint to_root = std::make_pair(server.root_group(), insert);
 
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE( server_test_2 )
 {
     {
         nova_server server(server_arguments::initialize(0, 0));
-        server.synth_factory::register_prototype(new test_synth_prototype());
+        server.synth_factory::register_definition(new test_synth_definition());
 
         node_position_constraint to_root = std::make_pair(server.root_group(), insert);
 
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE( server_test_3 )
 {
     {
         nova_server server(server_arguments::initialize(0, 0));
-        server.synth_factory::register_prototype(new test_synth_prototype());
+        server.synth_factory::register_definition(new test_synth_definition());
 
         parallel_group * g = new parallel_group(1);
 

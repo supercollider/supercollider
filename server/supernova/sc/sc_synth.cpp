@@ -26,7 +26,7 @@
 
 namespace nova {
 
-sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
+sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
     abstract_synth(node_id, prototype), trace(0), unit_buffers(0)
 {
     World const & world = sc_factory->world;
@@ -288,7 +288,7 @@ void sc_synth::run_traced(void)
 
     scratchpad_printer printer(trace_scratchpad.data());
 
-    printer.printf("\nTRACE %d  %s    #units: %d\n", id(), this->prototype_name(), calc_unit_count);
+    printer.printf("\nTRACE %d  %s    #units: %d\n", id(), this->definition_name(), calc_unit_count);
 
     for (size_t i = 0; i != calc_unit_count; ++i) {
         Unit * unit = calc_units[i];

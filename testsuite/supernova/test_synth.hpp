@@ -6,7 +6,7 @@ class test_synth:
     public abstract_synth
 {
 public:
-    test_synth(int node_id, synth_prototype_ptr const & prototype):
+    test_synth(int node_id, synth_definition_ptr const & prototype):
         abstract_synth(node_id, prototype)
     {}
 

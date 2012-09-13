@@ -9,11 +9,11 @@ using namespace std;
 
 namespace
 {
-struct test_synth_prototype:
-    public synth_prototype
+struct test_synth_definition:
+    public synth_definition
 {
-    test_synth_prototype():
-        synth_prototype(c_string("foo"))
+    test_synth_definition():
+        synth_definition(c_string("foo"))
     {}
 
     abstract_synth * create_instance(int node_id)
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE( synth_factory_test_1 )
 
     synth_factory sf;
 
-    sf.register_prototype(new test_synth_prototype);
+    sf.register_definition(new test_synth_definition);
 
     unique_ptr<abstract_synth> s(sf.create_instance("foo", 1));
 
