@@ -157,6 +157,10 @@ void sc_synth::set_control_array(slot_index_t slot_index, size_t count, sample *
         set(slot_index+i, val[i]);
 }
 
+float sc_synth::get(slot_index_t slot_index) const
+{
+    return mControls[slot_index];
+}
 
 void sc_synth::map_control_bus_control (unsigned int slot_index, int control_bus_index)
 {

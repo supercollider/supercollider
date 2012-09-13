@@ -54,6 +54,16 @@ public:
         return class_ptr->name();
     }
 
+    size_t number_of_slots() const
+    {
+        return class_ptr->number_of_slots();
+    }
+
+    const char * name_of_slot(size_t index) const
+    {
+        return class_ptr->name_of_slot(index);
+    }
+
 protected:
     synth_definition_ptr class_ptr;
 };
@@ -77,6 +87,8 @@ protected:
 
 public:
     virtual void run(void) = 0;
+
+    virtual float get(slot_index_t slot_id) const = 0;
 
     /** set a slot */
     /* @{ */

@@ -1218,7 +1218,10 @@ void g_dump_node(rt_string_stream & stream, server_node & node, bool flag, int l
         stream << synth.id() << " " << synth.definition_name() << endl;
 
         if (flag) {
-            /* dump controls */
+            for (size_t control_index = 0; control_index != synth.number_of_slots(); ++control_index) {
+                fill_spaces(stream, level + 1);
+                stream << synth.name_of_slot(control_index) << " " << synth.get(control_index) << endl;
+            }
         }
     } else {
         abstract_group & group = static_cast<abstract_group &>(node);
