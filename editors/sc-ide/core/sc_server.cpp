@@ -64,7 +64,7 @@ void ScServer::reboot()
 
 void ScServer::queryAllNodes(bool dumpControls)
 {
-    QString arg = dumpControls ? "true" : false;
+    QString arg = dumpControls ? QString("true") : QString("false");
 
     Main::scProcess()->evaluateCode( QString("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
 }
