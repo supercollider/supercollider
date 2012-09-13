@@ -4,30 +4,28 @@ categories:: Frontends
 
 section:: Language-Specific Commands
 
+note:: For shortcuts bindings of teletype::ScIDE::, please consult the menu and/or the shortcut configuration menu.::
+
 table::
 ## strong::Functions::
 || strong::OSX::
-|| strong::Win (PsyCollider)::
 || strong::GEdit (sced):: footnote::http://artfwo.googlepages.com/sced::
 || strong::Vim (scvim):: footnote::http://www.neisis.net/%7Ealex/scvim::
 || strong::Emacs (scel):: footnote:: link::Reference/EmacsEditor:: ::
 
 ## Interpret Selection
 || enter, ctl-c, ctl-return, shift-return
-|| ctl-enter
 || ctl-e
 || F5
 || C-c C-d / C-c C-c
 
 ## Interpret current line
 || enter, ctl-c, ctl-return, shift-return
-|| ctl-enter
 || ctl-e
 || F6
 || C-c C-c
 
 ## Interactively evaluate expression...
-||
 ||
 ||
 ||
@@ -37,11 +35,9 @@ table::
 ||
 ||
 ||
-||
 || C-M-x
 
 ## Evaluate current document
-||
 ||
 ||
 ||
@@ -49,13 +45,11 @@ table::
 
 ## Stop
 || cmd-.
-|| alt-.
 || escape
 || F12
 || C-c C-s
 
 ## TempoClock.default.clear
-||
 ||
 ||
 || F7
@@ -64,20 +58,17 @@ table::
 ## s.freeAll
 ||
 ||
-||
 || F8
 ||
 
 ## Run Main-run
 || cmd-r
-|| alt-r
 ||
 ||
 || C-c C-r
 
 ## Recompile library
 || cmd-k
-|| alt-k
 ||
 || :SClangStart
 || C-c C-l
@@ -85,47 +76,40 @@ table::
 ## Stop interpreter
 ||
 ||
-||
 || :SClangKill
 || M-x sclang-stop
 
 ## Clear post window
 || cmd-sh-c
-|| alt-p
 ||
 ||
 || C-c <
 
 ## Open Help File
 || cmd-d
-|| F1
 || ctl-u
 || K or :SChelp
 || C-c C-h
 
 ## Open Class Definition (look up class file, either Class name or Class:method) e.g. Object, Object:dump
 || cmd-j
-|| alt-j
 || ctl-y
 || ^k or :SCdef
 || C-c :
 
 ## Implementations of (which objects have code that defines methods, e.g. 'play')
 || cmd-y
-|| alt-y
 ||
 ||
 || C-c :
 
 ## References to (where in the source files is e.g. the method 'play' used?)
 || cmd-sh-Y
-|| alt-sh-Y
 ||
 ||
 || C-c ;
 
 ## Dump interface
-||
 ||
 ||
 ||
@@ -135,11 +119,9 @@ table::
 ||
 ||
 ||
-||
 || C-c {
 
 ## Show method arguments
-||
 ||
 ||
 ||
@@ -149,11 +131,9 @@ table::
 ||
 ||
 ||
-||
 || C-c C-n / M-TAB
 
 ## Show server panels
-||
 ||
 ||
 ||
@@ -164,7 +144,6 @@ section:: Files
 table::
 ## strong::Functions::
 || strong::OSX::
-|| strong::Win (PsyCollider)::
 || strong::GEdit (sced)::
 || strong::Vim (scvim)::
 || strong::Emacs (scel)::
@@ -172,13 +151,11 @@ table::
 ## Open text document
 || cmd-o
 || ctl-o
-|| ctl-o
 || :e
 || C-x C-f
 
 ## New text document
 || cmd-n
-|| ctl-n
 || ctl-n
 || :enew
 || (open non-existent file w. new name)
@@ -186,13 +163,11 @@ table::
 ## Close text document
 || cmd-w
 || ctl-w
-|| ctl-w
 || :close
 || C-x k
 
 ## Save text document
 || cmd-s
-|| ctl-s
 || ctl-s
 || :w
 || C-x C-s
@@ -200,12 +175,10 @@ table::
 ## Save text document as
 || cmd-sh-s
 || ctl-sh-s
-|| ctl-sh-s
 || :sav
 || C-x C-w
 
 ## HTML doc window => code win
-||
 ||
 || ctl-t
 ||
@@ -216,7 +189,6 @@ section::Text Editing
 table::
 ## strong::Functions::
 || strong::OSX::
-|| strong::Win (PsyCollider)::
 || strong::GEdit (sced)::
 || strong::Vim (scvim)::
 || strong::Emacs (scel)::
@@ -224,13 +196,11 @@ table::
 ## Undo
 || cmd-z
 || ctl-z
-|| ctl-z
 || u
 || C-x u / C-_
 
 ## Redo
 || cmd-sh-Z
-|| ctl-y
 || ctl-sh-z
 || ^R
 || C-x u / C-_
@@ -238,13 +208,11 @@ table::
 ## Copy
 || cmd-c
 || ctl-c
-|| ctl-c
 || "+y
 || M-w
 
 ## Paste
 || cmd-v
-|| ctl-v
 || ctl-v
 || "+gP
 || C-y
@@ -252,48 +220,41 @@ table::
 ## Cut
 || cmd-x
 || ctl-x
-|| ctl-x
 || "+x
 || C-w
 
 ## Select all
 || cmd-a
 || ctl-a
-|| ctl-a
 || ggVG
 || C-x a
 
 ## Select block
 ||
-|| ctl-b
 ||
 ||
 ||
 
 ## Goto line ...
 || cmd-,
-||
 || ctl-i
 || (linenumber)G
 || M-g g
 
 ## Find ...
 || cmd-f
-||
 || ctl-f
 || / or *
 || C-s
 
 ## Find next
 || cmd-g
-||
 || ctl-g
 || *
 || C-s
 
 ## Find previous
 || cmd-d
-||
 || ctl-sh-g
 || #
 || C-r
@@ -302,12 +263,10 @@ table::
 || cmd-l
 ||
 ||
-||
 || M-%
 
 ## Replace
 || cmd-=
-||
 || ctl-h
 ||
 || M-,
@@ -317,11 +276,9 @@ table::
 ||
 ||
 ||
-||
 
 ## Paste text style only
 || cmd-alt-v
-||
 ||
 ||
 ||
@@ -331,7 +288,6 @@ section::Formatting
 table::
 ## strong::Functions::
 || strong::OSX::
-|| strong::Win (PsyCollider)::
 || strong::GEdit (sced)::
 || strong::Vim (scvim)::
 || strong::Emacs (scel)::
@@ -341,11 +297,9 @@ table::
 || auto
 || auto
 || auto
-|| auto
 
 ## Balance (find next matched parens/curly braces and select everything enclosed)
 || cmd-sh-B
-||
 ||
 ||
 || C-<space>, C-M-f
@@ -354,11 +308,9 @@ table::
 ||
 ||
 ||
-||
 || C-<space>, C-M-b
 
 ## Paren match highlight
-||
 ||
 ||
 || auto
@@ -366,28 +318,24 @@ table::
 
 ## Comment (add // in front)
 || cmd-/
-|| ctl-/
 ||
 ||
 || (select text and) M-;
 
 ## Uncomment (remove //s)
 || cmd-sh-/
-|| ctl-sh-/
 ||
 ||
 || (select text and) M-;
 
 ## Indent / Shift left (move selected text by one tab)
 || cmd-[
-|| ctl-t, tab
 ||
 ||
 || TAB (auto-aligns tabs according to code)
 
 ## Unindent / Shift right (by one tab)
 || cmd-]
-|| ctl-sh-t, shift-tab
 ||
 ||
 ||
@@ -397,11 +345,9 @@ table::
 ||
 ||
 ||
-||
 
 ## Insert []: enclose selected text with [txt]
 || cmd-alt-[
-||
 ||
 ||
 ||
@@ -411,11 +357,9 @@ table::
 ||
 ||
 ||
-||
 
 ## Insert /* */: enclose selected text with /*txt*/
 || cmd-*
-||
 ||
 ||
 ||
