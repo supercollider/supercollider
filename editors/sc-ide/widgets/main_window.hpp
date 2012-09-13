@@ -98,6 +98,7 @@ public:
 
         // Server
         ServerToggleRunning,
+        ServerReboot,
         ServerShowMeters,
         ServerDumpNodeTree,
         ServerDumpNodeTreeWithControls,
@@ -171,6 +172,7 @@ private Q_SLOTS:
     void findReferences();
     void lookupReferences();
     void serverToggleRunning();
+    void serverReboot();
     void serverDumpNodeTree();
     void serverDumpNodeTreeWithControls();
     void serverShowMeters();

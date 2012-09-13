@@ -57,6 +57,11 @@ void ScServer::quit()
     Main::scProcess()->evaluateCode( "ScIDE.defaultServer.quit", true );
 }
 
+void ScServer::reboot()
+{
+    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.reboot", true );
+}
+
 void ScServer::queryAllNodes(bool dumpControls)
 {
     QString arg = dumpControls ? "true" : false;
