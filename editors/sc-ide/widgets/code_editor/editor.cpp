@@ -1541,17 +1541,20 @@ QTextCursor CodeEditor::regionAroundCursor(const QTextCursor & cursor)
     TokenIterator it = TokenIterator::rightOf( textDocument()->begin(), 0 );
     while (it.isValid()) {
         nextBracketPair(it, bracketPair);
-        if ( bracketPairContainsPosition(bracketPair, cursorPosition) )
+        if (bracketPair.first.isValid() && bracketPair.first.position() < cursorPosition)
         {
-            if (bracketPairDefinesRegion(bracketPair))
+            if ( bracketPair.second.isValid() && bracketPair.second.position() >= cursorPosition
+                 && bracketPairDefinesRegion(bracketPair) )
             {
                 QTextCursor regionCursor(QPlainTextEdit::document());
                 regionCursor.setPosition(bracketPair.first.position() + 1);
                 regionCursor.setPosition(bracketPair.second.position(), QTextCursor::KeepAnchor);
                 return regionCursor;
             }
+        } else {
             break;
         }
+
         it = bracketPair.second;
     }
 
