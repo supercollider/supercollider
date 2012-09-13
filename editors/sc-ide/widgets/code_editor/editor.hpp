@@ -28,6 +28,8 @@
 #include <QTextBlock>
 #include <QList>
 
+#include <utility>
+
 namespace ScIDE {
 
 namespace Settings { class Manager; }
@@ -141,12 +143,9 @@ private Q_SLOTS:
     void matchBrackets();
 
 private:
-    struct BracketMatch {
-        TokenIterator first;
-        TokenIterator second;
-    };
+    typedef std::pair<TokenIterator, TokenIterator> BracketPair;
 
-    void matchBracket( const TokenIterator & bracket, BracketMatch & match );
+    void matchBracket( const TokenIterator & bracket, BracketPair & match );
     void updateExtraSelections();
     void indentCurrentRegion();
 
