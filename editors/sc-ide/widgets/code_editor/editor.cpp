@@ -748,7 +748,13 @@ void GenericCodeEditor::hideMouseCursor()
         QApplication::setOverrideCursor( Qt::BlankCursor );
 }
 
-
+inline static bool bracketDefinesRegion( const TokenIterator & it )
+{
+    Q_ASSERT(it.isValid());
+    bool result = it->positionInBlock == 0;
+    result = result && static_cast<TextBlockData*>(it.block().userData())->tokens.size() == 1;
+    return result;
+}
 
 CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     GenericCodeEditor( doc, parent ),
@@ -802,7 +808,7 @@ QTextCursor CodeEditor::regionAtCursor(const QTextCursor & cursor)
     int topLevel = 0;
     int level = 0;
 
-    // search unmatched opening bracket
+    // search suitable opening bracket
     TokenIterator it = TokenIterator::leftOf( block, positionInBlock );
     while(it.isValid())
     {
@@ -811,7 +817,8 @@ QTextCursor CodeEditor::regionAtCursor(const QTextCursor & cursor)
             ++level;
             if(level > topLevel) {
                 topLevel = level;
-                start = it;
+                if (bracketDefinesRegion(it))
+                    start = it;
             }
         }
         else if(chr == ')') {
@@ -820,8 +827,7 @@ QTextCursor CodeEditor::regionAtCursor(const QTextCursor & cursor)
         --it;
     }
 
-    if(topLevel < 1)
-        // no unmatched opening bracket
+    if (!start.isValid())
         return QTextCursor();
 
     // match the found opening bracket
@@ -836,7 +842,8 @@ QTextCursor CodeEditor::regionAtCursor(const QTextCursor & cursor)
             --topLevel;
             if(topLevel == 0)
             {
-                end = it;
+                if (bracketDefinesRegion(it))
+                    end = it;
                 break;
             }
         }
@@ -845,9 +852,11 @@ QTextCursor CodeEditor::regionAtCursor(const QTextCursor & cursor)
 
     if(start.isValid() && end.isValid())
     {
-        // only care about brackets at beginning of a line
-        if(start->positionInBlock != 0)
-            return QTextCursor();
+/*
+FIXME: the following should be checked for every candidate opening bracket,
+and continue searching if check fails.
+*/
+#if 0
 
         // check whether the bracket makes part of an event
         it = start.next();
@@ -860,7 +869,7 @@ QTextCursor CodeEditor::regionAtCursor(const QTextCursor & cursor)
                     return QTextCursor();
             }
         }
-
+#endif
         // ok, this is is a real top-level region
         QTextCursor c(QPlainTextEdit::document());
         c.setPosition(start.position() + 1);
