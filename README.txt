@@ -23,9 +23,6 @@ Platform specific comments:
 And be careful you're not using TextEdit or a web browser instead of the SuperCollider application when you try to execute code; SC's text editor interface is a lot like TextEdit, but only the SC editor can run code when you hit Enter.
 
 
-[Windows] The windows version of SuperCollider is called PsyCollider. Key commands differ from the Mac, but almost all code should work the same. The SwingOSC Java based GUI library is used here, however, for GUIs. You must use JMouseX/JMouseY in particular; PsyCollider does not support MouseX/MouseY UGens.
-
-
 [Linux] Most people use SuperCollider from emacs or gedit; there are some alternative editors available. For more information on Linux specific issues, check the "README_LINUX.txt" file included in the source package, and the README in the folder editors/scel for information on the emacs editor.
 
 
