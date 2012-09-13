@@ -1446,7 +1446,7 @@ QTextCursor CodeEditor::blockAtCursor(const QTextCursor & cursor)
             BracketMatch match;
             matchBracket(it, match);
 
-            if (match.first.isValid()) {
+            if (match.first.isValid() && match.second.isValid()) {
                 QTextCursor selection(textDocument());
                 selection.setPosition(match.first.position());
                 selection.setPosition(match.second.position() + 1, QTextCursor::KeepAnchor);
