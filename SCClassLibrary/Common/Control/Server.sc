@@ -1084,4 +1084,12 @@ Server {
 			^serverInterface.setControlBusValues(busIndex, valueArray)
 		}
 	}
+
+	*scsynth {
+		this.program = this.program.replace("supernova", "scsynth")
+	}
+
+	*supernova {
+		this.program = this.program.replace("scsynth", "supernova")
+	}
 }
