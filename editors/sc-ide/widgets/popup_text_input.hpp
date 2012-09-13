@@ -23,6 +23,7 @@
 
 #include <QInputDialog>
 #include <QKeyEvent>
+#include <QPainter>
 
 namespace ScIDE {
 
@@ -48,6 +49,14 @@ public:
     }
 
 private:
+	void paintEvent( QPaintEvent * )
+	{
+		QPainter painter(this);
+		painter.setBrush(Qt::NoBrush);
+		painter.setPen(palette().color(QPalette::Dark));
+		painter.drawRect(rect().adjusted(0,0,-1,-1));
+	}
+
     virtual void keyPressEvent(QKeyEvent * event)
     {
         switch (event->key()) {
