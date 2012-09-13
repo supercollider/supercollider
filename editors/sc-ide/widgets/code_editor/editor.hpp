@@ -104,6 +104,8 @@ protected:
     QList<QTextEdit::ExtraSelection> mSearchSelections;
 };
 
+typedef std::pair<TokenIterator, TokenIterator> BracketPair;
+
 class CodeEditor : public GenericCodeEditor
 {
     Q_OBJECT
@@ -143,9 +145,6 @@ private Q_SLOTS:
     void matchBrackets();
 
 private:
-    typedef std::pair<TokenIterator, TokenIterator> BracketPair;
-
-    void matchBracket( const TokenIterator & bracket, BracketPair & match );
     void updateExtraSelections();
     void indentCurrentRegion();
 
