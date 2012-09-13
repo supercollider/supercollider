@@ -638,6 +638,55 @@ void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *
     path.moveTo( pt1 );
     path.lineTo( pt2 );
     break;
+
+  case QcGraphElement::Quadratic: {
+    path.moveTo( pt1 );
+    const qreal sqrtBegin = std::sqrt(pt1.y());
+    const qreal sqrtEnd   = std::sqrt(pt2.y());
+    const qreal n = 100.f;
+    const qreal grow = (sqrtEnd - sqrtBegin) / n;
+
+    qreal x = pt1.x();
+    qreal y = pt1.y();
+
+    const float dx = (pt2.x() - pt1.x()) / n;
+
+    for (int i = 0; i != n; ++i) {
+        x += dx;
+        y += grow;
+        qreal yCoord = y*y;
+        path.lineTo( x, yCoord );
+    }
+
+    path.lineTo( pt2 );
+
+    break;
+  }
+
+  case QcGraphElement::Cubic: {
+    path.moveTo( pt1 );
+    const qreal cubrtBegin = std::pow(pt1.y(), qreal(1/3.0));
+    const qreal cubrtEnd   = std::pow(pt2.y(), qreal(1/3.0));
+    const qreal n = 100.f;
+    const qreal grow = (cubrtEnd - cubrtBegin) / n;
+
+    qreal x = pt1.x();
+    qreal y = pt1.y();
+
+    const float dx = (pt2.x() - pt1.x()) / n;
+
+    for (int i = 0; i != n; ++i) {
+        x += dx;
+        y += grow;
+        qreal yCoord = y*y*y;
+        path.lineTo( x, yCoord );
+    }
+
+    path.lineTo( pt2 );
+
+    break;
+  }
+
   case QcGraphElement::Sine: {
     // half of difference between end points
     float dx = (pt2.x() - pt1.x()) * 0.5f;
