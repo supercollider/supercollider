@@ -383,7 +383,7 @@ void MainWindow::createActions()
 
     mActions[ServerDumpNodeTreeWithControls] = act = new QAction(tr("Dump node tree with controls"), this);
     act->setShortcut(tr("Ctrl+Shift+T", "Dump node tree with controls"));
-    connect(act, SIGNAL(triggered()), this, SLOT(serverDumpNodeTree()));
+    connect(act, SIGNAL(triggered()), this, SLOT(serverDumpNodeTreeWithControls()));
 
     settings->endGroup(); // IDE/shortcuts;
 
