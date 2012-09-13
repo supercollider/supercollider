@@ -748,13 +748,7 @@ void GenericCodeEditor::hideMouseCursor()
         QApplication::setOverrideCursor( Qt::BlankCursor );
 }
 
-inline static bool bracketDefinesRegion( const TokenIterator & it )
-{
-    Q_ASSERT(it.isValid());
-    bool result = it->positionInBlock == 0;
-    result = result && static_cast<TextBlockData*>(it.block().userData())->tokens.size() == 1;
-    return result;
-}
+static void matchBracket( const TokenIterator & bracket, BracketPair & match );
 
 CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     GenericCodeEditor( doc, parent ),
@@ -1394,23 +1388,45 @@ static TokenIterator nextClosingBracket(TokenIterator it)
     return it;
 }
 
-void CodeEditor::matchBracket( const TokenIterator & bracket, BracketPair & match )
+static void matchBracket( const TokenIterator & bracket, BracketPair & match )
 {
-    TokenIterator it(bracket);
+    Q_ASSERT(bracket.isValid());
 
-    switch(it->type) {
+    switch(bracket->type) {
     case Token::OpeningBracket:
-        match.first = it;
-        match.second = nextClosingBracket(++it);
+        match.first = bracket;
+        match.second = nextClosingBracket(bracket.next());
         break;
     case Token::ClosingBracket:
-        match.second = it;
-        match.first = previousOpeningBracket(--it);
+        match.second = bracket;
+        match.first = previousOpeningBracket(bracket.previous());
         break;
     default:
         match.first = TokenIterator();
         match.second = TokenIterator();
     }
+}
+
+static void nextBracketPair( const TokenIterator & startIt, BracketPair & bracketPair )
+{
+    TokenIterator it( startIt );
+    while (it.isValid()) {
+        if (it->type == Token::OpeningBracket) {
+            matchBracket( it, bracketPair );
+            return;
+        }
+        ++it;
+    }
+    bracketPair = BracketPair();
+}
+
+inline static bool bracketPairContainsPosition( const BracketPair & bracketPair, int position )
+{
+    bool result =
+            bracketPair.first.isValid() && bracketPair.second.isValid()
+            && bracketPair.first.position() < position
+            && bracketPair.second.position() >= position;
+    return result;
 }
 
 QTextCursor CodeEditor::blockAtCursor(const QTextCursor & cursor)
@@ -1483,83 +1499,60 @@ void CodeEditor::gotoPreviousBlock()
     }
 }
 
+inline static bool tokenIsFirstAndOnlyInBlock( const TokenIterator & it )
+{
+    Q_ASSERT(it.isValid());
+    bool result = it->positionInBlock == 0;
+    result = result && static_cast<TextBlockData*>(it.block().userData())->tokens.size() == 1;
+    return result;
+}
+
+static bool bracketPairDefinesRegion( const BracketPair & bracketPair )
+{
+    Q_ASSERT(bracketPair.first.isValid());
+    Q_ASSERT(bracketPair.second.isValid());
+
+    if ( bracketPair.first->character != '(' || bracketPair.second->character != ')' )
+        return false;
+
+    if (!tokenIsFirstAndOnlyInBlock(bracketPair.second) || !tokenIsFirstAndOnlyInBlock(bracketPair.second))
+        return false;
+
+    // check whether this is an Event
+    TokenIterator it = bracketPair.first.next();
+    if (it.isValid()) {
+        if (it->type == Token::SymbolArg)
+            return false;
+        else {
+            ++it;
+            if (it.isValid() && it->character == ':')
+                return false;
+        }
+    }
+
+    return true;
+}
+
 QTextCursor CodeEditor::regionAtCursor(const QTextCursor & cursor)
 {
-    QTextBlock block(cursor.block());
-    int positionInBlock = cursor.positionInBlock();
+    int cursorPosition = cursor.position();
 
-    TokenIterator start;
-    TokenIterator end;
-    int topLevel = 0;
-    int level = 0;
-
-    // search suitable opening bracket
-    TokenIterator it = TokenIterator::leftOf( block, positionInBlock );
-    while(it.isValid())
-    {
-        char chr = it->character;
-        if(chr == '(') {
-            ++level;
-            if(level > topLevel) {
-                topLevel = level;
-                if (bracketDefinesRegion(it))
-                    start = it;
-            }
-        }
-        else if(chr == ')') {
-            --level;
-        }
-        --it;
-    }
-
-    if (!start.isValid())
-        return QTextCursor();
-
-    // match the found opening bracket
-    it = TokenIterator::rightOf( block, positionInBlock );
-    while(it.isValid())
-    {
-        char chr = it->character;
-        if(chr == '(')
-            ++topLevel;
-        else if(chr == ')')
+    BracketPair bracketPair;
+    TokenIterator it = TokenIterator::rightOf( textDocument()->begin(), 0 );
+    while (it.isValid()) {
+        nextBracketPair(it, bracketPair);
+        if ( bracketPairContainsPosition(bracketPair, cursorPosition) )
         {
-            --topLevel;
-            if(topLevel == 0)
+            if (bracketPairDefinesRegion(bracketPair))
             {
-                if (bracketDefinesRegion(it))
-                    end = it;
-                break;
+                QTextCursor regionCursor(QPlainTextEdit::document());
+                regionCursor.setPosition(bracketPair.first.position() + 1);
+                regionCursor.setPosition(bracketPair.second.position(), QTextCursor::KeepAnchor);
+                return regionCursor;
             }
+            break;
         }
-        ++it;
-    }
-
-    if(start.isValid() && end.isValid())
-    {
-/*
-FIXME: the following should be checked for every candidate opening bracket,
-and continue searching if check fails.
-*/
-#if 0
-
-        // check whether the bracket makes part of an event
-        it = start.next();
-        if (it.isValid()) {
-            if (it->type == Token::SymbolArg)
-                return QTextCursor();
-            else {
-                ++it;
-                if (it.isValid() && it->character == ':')
-                    return QTextCursor();
-            }
-        }
-#endif
-        // ok, this is is a real top-level region
-        QTextCursor c(QPlainTextEdit::document());
-        c.setPosition(start.position() + 1);
-        c.setPosition(end.position(), QTextCursor::KeepAnchor);
-        return c;
+        it = bracketPair.second;
     }
 
     return QTextCursor();
