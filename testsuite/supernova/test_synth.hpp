@@ -13,6 +13,11 @@ public:
     void run(void)
     {}
 
+    virtual float get(slot_index_t slot_id) const
+    {
+        return 0.f;
+    }
+
     virtual void set(slot_index_t slot_id, sample val)
     {}
 
