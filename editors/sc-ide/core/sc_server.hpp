@@ -39,8 +39,8 @@ public:
 public Q_SLOTS:
 
     void boot();
-
     void quit();
+    void queryAllNodes(bool dumpControls);
 
     void onServerRunningChanged( bool running, QString const & hostName, int port )
     {

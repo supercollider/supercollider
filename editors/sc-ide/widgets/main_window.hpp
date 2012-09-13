@@ -97,7 +97,10 @@ public:
         HelpForSelection,
 
         // Server
-        ToggleServerRunning,
+        ServerToggleRunning,
+        ServerShowMeters,
+        ServerDumpNodeTree,
+        ServerDumpNodeTreeWithControls,
 
         ActionCount
     };
@@ -167,7 +170,10 @@ private Q_SLOTS:
     void lookupDocumentation();
     void findReferences();
     void lookupReferences();
-    void toggleServerRunning();
+    void serverToggleRunning();
+    void serverDumpNodeTree();
+    void serverDumpNodeTreeWithControls();
+    void serverShowMeters();
     void applySettings( Settings::Manager * );
     void showSwitchSessionDialog();
 
