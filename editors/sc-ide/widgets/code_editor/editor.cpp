@@ -1398,15 +1398,18 @@ void CodeEditor::matchBracket( const TokenIterator & bracket, BracketPair & matc
 {
     TokenIterator it(bracket);
 
-    if(it->type == Token::OpeningBracket)
-    {
+    switch(it->type) {
+    case Token::OpeningBracket:
         match.first = it;
         match.second = nextClosingBracket(++it);
-    }
-    else if(it->type == Token::ClosingBracket)
-    {
+        break;
+    case Token::ClosingBracket:
         match.second = it;
         match.first = previousOpeningBracket(--it);
+        break;
+    default:
+        match.first = TokenIterator();
+        match.second = TokenIterator();
     }
 }
 
