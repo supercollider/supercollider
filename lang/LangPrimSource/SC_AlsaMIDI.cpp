@@ -52,8 +52,6 @@ PyrSymbol* s_midiSysexAction;
 PyrSymbol* s_midiSysrtAction;
 PyrSymbol* s_midiSMPTEAction;
 
-static int g_ivx_MIDIOut_port;
-
 const int kMaxMidiPorts = 16;
 bool gMIDIInitialized = false;
 
@@ -970,7 +968,6 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 	return sendMIDI(outputIndex, uid, length, hiStatus, loStatus, aval, bval, late);
 }
 
-int prSendSysex(VMGlobals *g, int numArgsPushed);
 int prSendSysex(VMGlobals *g, int numArgsPushed)
 {
 	int err, uid, outputIndex;
@@ -979,7 +976,9 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
 	// rcvr, uid, packet
 	PyrSlot* args = g->sp - 2;
 
-	err = slotIntVal(slotRawObject(args)->slots + g_ivx_MIDIOut_port, &outputIndex);
+	int MIDIOut_port_index = instVarOffset("MIDIOut", "port");
+
+	err = slotIntVal(slotRawObject(args)->slots + MIDIOut_port_index, &outputIndex);
 	if (err) return err;
 
 	err = slotIntVal(args+1, &uid);
@@ -1013,8 +1012,6 @@ void initMIDIPrimitives()
 	s_midiSysexAction = getsym("doSysexAction");
 	s_midiSysrtAction = getsym("doSysrtAction");
 	s_midiSMPTEAction = getsym("doSMPTEaction");
-
-	g_ivx_MIDIOut_port = instVarOffset("MIDIOut", "port");
 
 	definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);
 	definePrimitive(base, index++, "_InitMIDIClient", prInitMIDIClient, 1, 0);
