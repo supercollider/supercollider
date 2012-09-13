@@ -298,14 +298,14 @@ public:
         return *this;
     }
 
-    TokenIterator previous()
+    TokenIterator previous() const
     {
         TokenIterator it(*this);
         --it;
         return it;
     }
 
-    TokenIterator next()
+    TokenIterator next() const
     {
         TokenIterator it(*this);
         ++it;
