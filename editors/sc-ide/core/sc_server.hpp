@@ -39,6 +39,7 @@ public:
 public Q_SLOTS:
 
     void boot();
+    void reboot();
     void quit();
     void queryAllNodes(bool dumpControls);
 

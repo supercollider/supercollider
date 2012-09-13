@@ -369,6 +369,10 @@ void MainWindow::createActions()
     act->setShortcut(tr("Ctrl+B", "Boot or quit default server"));
     connect(act, SIGNAL(triggered()), this, SLOT(serverToggleRunning()));
 
+    mActions[ServerReboot] = act = new QAction(tr("Reboot server"), this);
+    act->setShortcut(tr("Ctrl+Shift+B", "Reboot default server"));
+    connect(act, SIGNAL(triggered()), this, SLOT(serverReboot()));
+
     mActions[ServerShowMeters] = act = new QAction(tr("Show server meter"), this);
     act->setShortcut(tr("Ctrl+M", "Show server meter"));
     connect(act, SIGNAL(triggered()), this, SLOT(serverShowMeters()));
@@ -493,6 +497,7 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scProcess()->action(SCProcess::RecompileClassLibrary) );
     menu->addSeparator();
     menu->addAction( mActions[ServerToggleRunning] );
+    menu->addAction( mActions[ServerReboot] );
     menu->addAction( mActions[ServerShowMeters] );
     menu->addAction( mActions[ServerDumpNodeTree] );
     menu->addAction( mActions[ServerDumpNodeTreeWithControls] );
@@ -1169,6 +1174,12 @@ void MainWindow::serverToggleRunning()
         scServer->quit();
     else
         scServer->boot();
+}
+
+void MainWindow::serverReboot()
+{
+    ScServer *scServer = Main::scServer();
+    scServer->reboot();
 }
 
 void MainWindow::serverShowMeters()
