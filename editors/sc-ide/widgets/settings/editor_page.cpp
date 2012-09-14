@@ -84,6 +84,8 @@ void EditorPage::load( Manager *s )
     s->beginGroup("font");
     QString fontFamily = s->value("family").toString();
     int fontSize = s->value("size").toInt();
+    ui->fontAntialias->setChecked( s->value("antialias").toBool() );
+
     s->endGroup();
 
     // Display info about the font that would actually be used:
@@ -201,6 +203,7 @@ void EditorPage::store( Manager *s )
     if (!fontFamily.isEmpty())
         s->setValue("family", fontFamily);
     s->setValue("size", ui->fontSize->value());
+    s->setValue("antialias", ui->fontAntialias->checkState());
     s->endGroup();
 
     s->beginGroup("colors");
@@ -253,9 +256,13 @@ QFont EditorPage::constructFont()
 {
     QString family = ui->fontCombo->currentText();
     int size = ui->fontSize->value();
+    bool antialias = (ui->fontAntialias->checkState() == Qt::Checked);
 
     QFont font(family, size);
     font.setStyleHint( QFont::TypeWriter );
+
+    if (!antialias)
+        font.setStyleStrategy(QFont::StyleStrategy(font.styleStrategy() | QFont::NoAntialias));
 
     return font;
 }

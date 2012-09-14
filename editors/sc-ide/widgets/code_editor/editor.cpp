@@ -28,6 +28,7 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <QGraphicsView>
 #include <QKeyEvent>
 #include <QPainter>
 #include <QPaintEvent>
@@ -35,7 +36,6 @@
 #include <QTextBlock>
 #include <QTextDocumentFragment>
 #include <QUrl>
-#include <QGraphicsView>
 
 namespace ScIDE {
 

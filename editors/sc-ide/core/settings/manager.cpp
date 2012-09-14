@@ -21,9 +21,9 @@
 #include "manager.hpp"
 #include "serialization.hpp"
 
-#include <QTextCharFormat>
-#include <QPalette>
 #include <QApplication>
+#include <QPalette>
+#include <QTextCharFormat>
 
 namespace ScIDE { namespace Settings {
 
@@ -156,12 +156,16 @@ QFont Manager::codeFont()
 {
     QString fontFamily = value("IDE/editor/font/family").toString();
     int fontSize = value("IDE/editor/font/size").toInt();
+    bool fontAntialas = value("IDE/editor/font/antialias").toBool();
 
     QFont font = QApplication::font("QPlainTextEdit");
     font.setStyleHint(QFont::TypeWriter);
     font.setFamily(fontFamily);
     if (fontSize > 0)
         font.setPointSize(fontSize);
+
+    if (!fontAntialas)
+        font.setStyleStrategy(QFont::StyleStrategy(font.styleStrategy() | QFont::NoAntialias));
 
     return font;
 }
