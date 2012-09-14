@@ -26,7 +26,6 @@
 #include "../../core/settings/manager.hpp"
 
 #include <QKeyEvent>
-#include <QTextBlock>
 #include <QStack>
 
 namespace ScIDE {

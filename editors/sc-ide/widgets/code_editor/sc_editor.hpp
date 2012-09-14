@@ -22,6 +22,10 @@
 #define SCIDE_WIDGETS_CODE_EDITOR_SC_EDITOR_HPP_INCLUDED
 
 #include "editor.hpp"
+#include "tokens.hpp"
+
+#include <QTextBlock>
+#include <utility>
 
 namespace ScIDE {
 

@@ -19,10 +19,9 @@
 */
 
 #include "editor.hpp"
-#include "highlighter.hpp"
 #include "line_indicator.hpp"
-#include "../../core/doc_manager.hpp"
 #include "../../core/main.hpp"
+#include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
 
 #include <QApplication>
@@ -31,10 +30,10 @@
 #include <QKeyEvent>
 #include <QPainter>
 #include <QPaintEvent>
-#include <QScrollBar>
 #include <QTextBlock>
 #include <QTextDocumentFragment>
 #include <QUrl>
+#include <QScrollBar>
 
 namespace ScIDE {
 
