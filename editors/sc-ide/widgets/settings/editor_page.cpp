@@ -374,7 +374,7 @@ void EditorPage::updateTextFormatDisplayCommons()
     if (bg != Qt::NoBrush)
         palette.setBrush( QPalette::Base, bg );
 
-    setPalette(palette);
+    ui->textFormats->setPalette(palette);
 }
 
 }} // namespace ScIDE::Settings
