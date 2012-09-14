@@ -43,7 +43,7 @@ EditorPage::EditorPage(QWidget *parent) :
     connect( ui->onlyMonoFonts, SIGNAL(toggled(bool)), this, SLOT(onMonospaceToggle(bool)) );
     connect( ui->fontCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateFontPreview()) );
     connect( ui->fontSize, SIGNAL(valueChanged(int)), this, SLOT(updateFontPreview()) );
-    connect( ui->fontAntialias, SIGNAL(valueChanged(int)), this, SLOT(updateFontPreview()) );
+    connect( ui->fontAntialias, SIGNAL(stateChanged(int)), this, SLOT(updateFontPreview()) );
 
     connect( ui->textFormats, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem*)),
              this, SLOT(updateTextFormatEdit()) );
