@@ -21,7 +21,7 @@
 #ifndef SCIDE_WIDGETS_GOTO_LINE_TOOL_HPP_INCLUDED
 #define SCIDE_WIDGETS_GOTO_LINE_TOOL_HPP_INCLUDED
 
-#include "code_editor/sc_editor.hpp"
+#include "code_editor/editor.hpp"
 #include "../core/doc_manager.hpp"
 
 #include <QWidget>
@@ -68,7 +68,7 @@ public:
         connect(mSpinBox, SIGNAL(editingFinished()), this, SLOT(onEditingFinished()));
     }
 
-    void setEditor( ScCodeEditor *editor )
+    void setEditor( GenericCodeEditor *editor )
     {
         if (mEditor)
             mEditor->disconnect( this, SLOT(setMaximum(int)) );
@@ -133,7 +133,7 @@ private slots:
 private:
 
     QSpinBox *mSpinBox;
-    QPointer<ScCodeEditor> mEditor;
+    QPointer<GenericCodeEditor> mEditor;
 };
 
 } // namespace ScIDE
