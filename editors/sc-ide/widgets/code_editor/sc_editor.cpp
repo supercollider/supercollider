@@ -33,7 +33,7 @@ namespace ScIDE {
 
 static void matchBracket( const TokenIterator & bracket, BracketPair & match );
 
-CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
+ScCodeEditor::ScCodeEditor( Document *doc, QWidget *parent ) :
     GenericCodeEditor( doc, parent ),
     mSpaceIndent(true),
     mBlinkDuration(600),
@@ -59,7 +59,7 @@ CodeEditor::CodeEditor( Document *doc, QWidget *parent ) :
     applySettings(Main::settings());
 }
 
-void CodeEditor::applySettings( Settings::Manager *settings )
+void ScCodeEditor::applySettings( Settings::Manager *settings )
 {
     settings->beginGroup("IDE/editor");
 
@@ -102,7 +102,7 @@ void CodeEditor::applySettings( Settings::Manager *settings )
     settings->endGroup();
 }
 
-bool CodeEditor::event( QEvent *e )
+bool ScCodeEditor::event( QEvent *e )
 {
     switch (e->type())
     {
@@ -125,7 +125,7 @@ bool CodeEditor::event( QEvent *e )
     return QPlainTextEdit::event(e);
 }
 
-void CodeEditor::keyPressEvent( QKeyEvent *e )
+void ScCodeEditor::keyPressEvent( QKeyEvent *e )
 {
     switch (e->key()) {
     case Qt::Key_Home:
@@ -200,7 +200,7 @@ void CodeEditor::keyPressEvent( QKeyEvent *e )
     mAutoCompleter->keyPress(e);
 }
 
-void CodeEditor::mouseReleaseEvent ( QMouseEvent *e )
+void ScCodeEditor::mouseReleaseEvent ( QMouseEvent *e )
 {
     // Prevent deselection of bracket match:
     if(!mMouseBracketMatch)
@@ -209,7 +209,7 @@ void CodeEditor::mouseReleaseEvent ( QMouseEvent *e )
     mMouseBracketMatch = false;
 }
 
-void CodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
+void ScCodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
 {
     QTextCursor cursor = cursorForPosition(e->pos());
     QTextCursor selection = blockAtCursor(cursor);
@@ -222,14 +222,14 @@ void CodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
     GenericCodeEditor::mouseDoubleClickEvent(e);
 }
 
-void CodeEditor::mouseMoveEvent( QMouseEvent *e )
+void ScCodeEditor::mouseMoveEvent( QMouseEvent *e )
 {
     // Prevent initiating a text drag:
     if(!mMouseBracketMatch)
         GenericCodeEditor::mouseMoveEvent(e);
 }
 
-void CodeEditor::matchBrackets()
+void ScCodeEditor::matchBrackets()
 {
     mBracketSelections.clear();
 
@@ -291,7 +291,7 @@ void CodeEditor::matchBrackets()
     updateExtraSelections();
 }
 
-int CodeEditor::indentedStartOfLine( const QTextBlock &b )
+int ScCodeEditor::indentedStartOfLine( const QTextBlock &b )
 {
     QString t(b.text());
     int n = t.size();
@@ -306,7 +306,7 @@ int CodeEditor::indentedStartOfLine( const QTextBlock &b )
     return i;
 }
 
-void CodeEditor::updateExtraSelections()
+void ScCodeEditor::updateExtraSelections()
 {
     QList<QTextEdit::ExtraSelection> selections;
     selections.append(mBracketSelections);
@@ -314,17 +314,17 @@ void CodeEditor::updateExtraSelections()
     setExtraSelections(selections);
 }
 
-void CodeEditor::indentCurrentRegion()
+void ScCodeEditor::indentCurrentRegion()
 {
     indent(currentRegion());
 }
 
-void CodeEditor::indent()
+void ScCodeEditor::indent()
 {
     indent(textCursor());
 }
 
-void CodeEditor::indent( const QTextCursor & selection )
+void ScCodeEditor::indent( const QTextCursor & selection )
 {
     if (selection.isNull())
         return;
@@ -400,7 +400,7 @@ void CodeEditor::indent( const QTextCursor & selection )
     cursor.endEditBlock();
 }
 
-QString CodeEditor::makeIndentationString(int level)
+QString ScCodeEditor::makeIndentationString(int level)
 {
     if (level <= 0)
         return QString();
@@ -416,7 +416,7 @@ QString CodeEditor::makeIndentationString(int level)
     }
 }
 
-QTextBlock CodeEditor::indent( const QTextBlock & block, int level )
+QTextBlock ScCodeEditor::indent( const QTextBlock & block, int level )
 {
     QTextCursor cursor(block);
     cursor.movePosition(QTextCursor::StartOfBlock);
@@ -428,7 +428,7 @@ QTextBlock CodeEditor::indent( const QTextBlock & block, int level )
     return cursor.block();
 }
 
-int CodeEditor::indentationLevel(const QTextCursor & cursor)
+int ScCodeEditor::indentationLevel(const QTextCursor & cursor)
 {
     QTextDocument *doc = QPlainTextEdit::document();
     int startBlockNum = doc->findBlock(cursor.selectionStart()).blockNumber();
@@ -480,12 +480,12 @@ int CodeEditor::indentationLevel(const QTextCursor & cursor)
     return -1;
 }
 
-void CodeEditor::triggerAutoCompletion()
+void ScCodeEditor::triggerAutoCompletion()
 {
     mAutoCompleter->triggerCompletion();
 }
 
-void CodeEditor::triggerMethodCallAid()
+void ScCodeEditor::triggerMethodCallAid()
 {
     mAutoCompleter->triggerMethodCallAid();
 }
@@ -505,7 +505,7 @@ static bool isSelectionComment(QString const & text)
         return false;
 }
 
-void CodeEditor::toggleComment()
+void ScCodeEditor::toggleComment()
 {
     QTextCursor cursor = textCursor();
 
@@ -515,7 +515,7 @@ void CodeEditor::toggleComment()
         toggleCommentSingleLine();
 }
 
-void CodeEditor::toggleCommentSingleLine()
+void ScCodeEditor::toggleCommentSingleLine()
 {
     QTextCursor cursor = textCursor();
     cursor.beginEditBlock();
@@ -525,7 +525,7 @@ void CodeEditor::toggleCommentSingleLine()
     cursor.endEditBlock();
 }
 
-void CodeEditor::addSingleLineComment(QTextCursor cursor, int indentation)
+void ScCodeEditor::addSingleLineComment(QTextCursor cursor, int indentation)
 {
     QTextBlock currentBlock(cursor.block());
     int blockIndentationLevel = indentationLevel(cursor);
@@ -541,7 +541,7 @@ void CodeEditor::addSingleLineComment(QTextCursor cursor, int indentation)
     cursor.movePosition(QTextCursor::StartOfBlock);
 }
 
-void CodeEditor::removeSingleLineComment(QTextCursor cursor)
+void ScCodeEditor::removeSingleLineComment(QTextCursor cursor)
 {
     QTextBlock currentBlock(cursor.block());
     cursor.movePosition(QTextCursor::StartOfBlock);
@@ -553,7 +553,7 @@ void CodeEditor::removeSingleLineComment(QTextCursor cursor)
     cursor.insertText("");
 }
 
-void CodeEditor::toggleCommentSingleLine(QTextCursor cursor)
+void ScCodeEditor::toggleCommentSingleLine(QTextCursor cursor)
 {
     QTextBlock currentBlock(cursor.block());
 
@@ -582,7 +582,7 @@ static bool isBlockOnlySelection(QTextCursor cursor)
         return false;
 }
 
-void CodeEditor::toggleCommentSelection()
+void ScCodeEditor::toggleCommentSelection()
 {
     QTextCursor cursor = textCursor();
     cursor.beginEditBlock();
@@ -712,7 +712,7 @@ inline static bool bracketPairContainsPosition( const BracketPair & bracketPair,
     return result;
 }
 
-QTextCursor CodeEditor::blockAtCursor(const QTextCursor & cursor)
+QTextCursor ScCodeEditor::blockAtCursor(const QTextCursor & cursor)
 {
     TokenIterator it (cursor.block(), cursor.positionInBlock());
 
@@ -741,7 +741,7 @@ QTextCursor CodeEditor::blockAtCursor(const QTextCursor & cursor)
     return QTextCursor();
 }
 
-void CodeEditor::gotoNextBlock()
+void ScCodeEditor::gotoNextBlock()
 {
     QTextCursor cursor = textCursor();
 
@@ -761,7 +761,7 @@ void CodeEditor::gotoNextBlock()
     }
 }
 
-void CodeEditor::gotoPreviousBlock()
+void ScCodeEditor::gotoPreviousBlock()
 {
     QTextCursor cursor = textCursor();
 
@@ -816,7 +816,7 @@ static bool bracketPairDefinesRegion( const BracketPair & bracketPair )
     return true;
 }
 
-QTextCursor CodeEditor::regionAroundCursor(const QTextCursor & cursor)
+QTextCursor ScCodeEditor::regionAroundCursor(const QTextCursor & cursor)
 {
     int cursorPosition = cursor.position();
 
@@ -844,7 +844,7 @@ QTextCursor CodeEditor::regionAroundCursor(const QTextCursor & cursor)
     return QTextCursor();
 }
 
-QTextCursor CodeEditor::currentRegion()
+QTextCursor ScCodeEditor::currentRegion()
 {
     QTextCursor cursor = textCursor();
     QTextBlock block = cursor.block();
@@ -858,14 +858,14 @@ QTextCursor CodeEditor::currentRegion()
     return regionAroundCursor( cursor );
 }
 
-void CodeEditor::selectCurrentRegion()
+void ScCodeEditor::selectCurrentRegion()
 {
     QTextCursor selectedRegionCursor = currentRegion();
     if (!selectedRegionCursor.isNull() && selectedRegionCursor.hasSelection())
         setTextCursor(selectedRegionCursor);
 }
 
-void CodeEditor::gotoNextRegion()
+void ScCodeEditor::gotoNextRegion()
 {
     QTextCursor cursor = textCursor();
     int cursorPosition = cursor.position();
@@ -888,7 +888,7 @@ void CodeEditor::gotoNextRegion()
     setTextCursor(cursor);
 }
 
-void CodeEditor::gotoPreviousRegion()
+void ScCodeEditor::gotoPreviousRegion()
 {
     QTextCursor cursor = textCursor();
     int cursorPosition = cursor.position();
@@ -919,22 +919,22 @@ void CodeEditor::gotoPreviousRegion()
     setTextCursor(cursor);
 }
 
-bool CodeEditor::openDocumentation()
+bool ScCodeEditor::openDocumentation()
 {
     return Main::openDocumentation(symbolUnderCursor());
 }
 
-void CodeEditor::openDefinition()
+void ScCodeEditor::openDefinition()
 {
     Main::openDefinition(symbolUnderCursor(), this);
 }
 
-void CodeEditor::findReferences()
+void ScCodeEditor::findReferences()
 {
     Main::findReferences(symbolUnderCursor(), this);
 }
 
-QTextCursor CodeEditor::cursorAt(const TokenIterator it, int offset)
+QTextCursor ScCodeEditor::cursorAt(const TokenIterator it, int offset)
 {
     Q_ASSERT(it.isValid());
 

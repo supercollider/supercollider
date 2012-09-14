@@ -68,7 +68,7 @@ public:
         connect(mSpinBox, SIGNAL(editingFinished()), this, SLOT(onEditingFinished()));
     }
 
-    void setEditor( CodeEditor *editor )
+    void setEditor( ScCodeEditor *editor )
     {
         if (mEditor)
             mEditor->disconnect( this, SLOT(setMaximum(int)) );
@@ -133,7 +133,7 @@ private slots:
 private:
 
     QSpinBox *mSpinBox;
-    QPointer<CodeEditor> mEditor;
+    QPointer<ScCodeEditor> mEditor;
 };
 
 } // namespace ScIDE

@@ -33,7 +33,7 @@
 
 namespace ScIDE {
 
-class CodeEditor;
+class ScCodeEditor;
 class TokenIterator;
 class CompletionMenu;
 class MethodCallWidget;
@@ -46,7 +46,7 @@ class AutoCompleter : public QObject
 
 public:
 
-    AutoCompleter( CodeEditor * );
+    AutoCompleter( ScCodeEditor * );
 
     void keyPress( QKeyEvent * );
     void documentChanged( QTextDocument * );
@@ -111,9 +111,9 @@ private:
     void showMethodCall( const MethodCall & call, int arg = 0 );
     void hideMethodCall();
 
-    static CompletionMenu * menuForClassCompletion(CompletionDescription const & completion, CodeEditor * editor);
-    static CompletionMenu * menuForClassMethodCompletion(CompletionDescription const & completion, CodeEditor * editor);
-    static CompletionMenu * menuForMethodCompletion(CompletionDescription const & completion, CodeEditor * editor);
+    static CompletionMenu * menuForClassCompletion(CompletionDescription const & completion, ScCodeEditor * editor);
+    static CompletionMenu * menuForClassMethodCompletion(CompletionDescription const & completion, ScCodeEditor * editor);
+    static CompletionMenu * menuForMethodCompletion(CompletionDescription const & completion, ScCodeEditor * editor);
 
     static const ScLanguage::Class * classForToken( Token::Type type, const QString & string );
 
@@ -123,7 +123,7 @@ private:
 
     // data
 
-    CodeEditor *mEditor;
+    ScCodeEditor *mEditor;
     CompletionDescription mCompletion;
     MethodCallContext mMethodCall;
 };

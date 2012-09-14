@@ -29,20 +29,20 @@
 namespace ScIDE {
 
 class Document;
-class CodeEditor;
+class ScCodeEditor;
 
 class CodeEditorBox : public QWidget
 {
     Q_OBJECT
 
 public:
-    typedef QList< CodeEditor * > History;
+    typedef QList< ScCodeEditor * > History;
 
     CodeEditorBox(QWidget *parent = 0);
 
     void setDocument(Document *, int pos = -1, int selectionLength = 0);
 
-    CodeEditor *currentEditor();
+    ScCodeEditor *currentEditor();
     Document *currentDocument();
 
     const History & history() { return mHistory; }
@@ -68,7 +68,7 @@ public:
     QSize sizeHint() const { return QSize(100, 100); }
 
 signals:
-    void currentChanged(CodeEditor*);
+    void currentChanged(ScCodeEditor*);
     void activated( CodeEditorBox *me );
 
 private slots:
@@ -76,7 +76,7 @@ private slots:
 
 private:
     int historyIndexOf(Document*);
-    CodeEditor *editorForDocument(Document*);
+    ScCodeEditor *editorForDocument(Document*);
     bool eventFilter( QObject *, QEvent * );
     void focusInEvent( QFocusEvent * );
     void paintEvent( QPaintEvent * );

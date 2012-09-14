@@ -38,7 +38,7 @@ namespace ScIDE {
 class Main;
 class Document;
 class DocumentManager;
-class CodeEditor;
+class ScCodeEditor;
 class CodeEditorBox;
 class MultiSplitter;
 class SignalMultiplexer;
@@ -108,7 +108,7 @@ public:
     Document * documentForTab( int index );
     int tabForDocument( Document * doc );
 
-    CodeEditor *currentEditor();
+    ScCodeEditor *currentEditor();
     CodeEditorBox *currentBox() { return mCurrentEditorBox; }
     void split( Qt::Orientation direction );
 
@@ -145,7 +145,7 @@ private slots:
     void update( Document * );
     void onCloseRequest( int index );
     void onCurrentTabChanged( int index );
-    void onCurrentEditorChanged( CodeEditor * );
+    void onCurrentEditorChanged( ScCodeEditor * );
     void onBoxActivated( CodeEditorBox * );
     void onModificationChanged( bool modified );
     void evaluateRegion();
@@ -159,7 +159,7 @@ private:
     void updateActions();
     CodeEditorBox *newBox();
     void setCurrentBox( CodeEditorBox * );
-    void setCurrentEditor( CodeEditor * );
+    void setCurrentEditor( ScCodeEditor * );
     void loadBoxState( CodeEditorBox *box, const QVariantList & data, const QList<Document *> & documentList );
     void loadSplitterState( QSplitter *, const QVariantMap & data, const QList<Document *> & documentList );
 
