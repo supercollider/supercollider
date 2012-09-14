@@ -19,7 +19,7 @@
 */
 
 #include "overlay.hpp"
-#include "editor.hpp"
+#include "sc_editor.hpp"
 #include "../../core/main.hpp"
 
 #include <QTextDocument>

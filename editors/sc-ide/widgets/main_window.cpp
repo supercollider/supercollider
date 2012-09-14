@@ -35,7 +35,7 @@
 #include "../core/doc_manager.hpp"
 #include "../core/session_manager.hpp"
 #include "../core/sc_server.hpp"
-#include "code_editor/editor.hpp"
+#include "code_editor/sc_editor.hpp"
 #include "settings/dialog.hpp"
 
 #include <QAction>
