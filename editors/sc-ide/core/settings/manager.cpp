@@ -56,6 +56,7 @@ void Manager::initDefaults()
     setDefault("postWindowScrollback", 1000);
 
     setDefault("font/family", "monospace");
+    setDefault("font/antialias", true);
 
     beginGroup("colors");
 
