@@ -21,14 +21,9 @@
 #ifndef SCIDE_WIDGETS_CODE_EDITOR_EDITOR_HPP_INCLUDED
 #define SCIDE_WIDGETS_CODE_EDITOR_EDITOR_HPP_INCLUDED
 
-#include "tokens.hpp"
-
-#include <QGraphicsScene>
 #include <QPlainTextEdit>
-#include <QTextBlock>
+#include <QGraphicsScene>
 #include <QList>
-
-#include <utility>
 
 namespace ScIDE {
 
