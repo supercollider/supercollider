@@ -41,19 +41,13 @@ ScCodeEditor::ScCodeEditor( Document *doc, QWidget *parent ) :
 {
     Q_ASSERT(mDoc != 0);
 
-    setFrameShape( QFrame::NoFrame );
-
-    mLineIndicator->move( contentsRect().topLeft() );
-
     connect( this, SIGNAL(cursorPositionChanged()),
              this, SLOT(matchBrackets()) );
 
     connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
              this, SLOT(applySettings(Settings::Manager*)) );
 
-    QTextDocument *tdoc = doc->textDocument();
-    mAutoCompleter->documentChanged(tdoc);
-    mLineIndicator->setLineCount(blockCount());
+    mAutoCompleter->documentChanged(textDocument());
 
     applySettings(Main::settings());
 }
