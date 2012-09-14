@@ -32,7 +32,7 @@
 
 namespace ScIDE {
 
-class ScCodeEditor;
+class GenericCodeEditor;
 
 class TextFindReplacePanel : public QWidget
 {
@@ -48,7 +48,7 @@ public:
 public:
     TextFindReplacePanel( QWidget * parent = 0 );
 
-    void setEditor( ScCodeEditor *editor ) { mEditor = editor; }
+    void setEditor( GenericCodeEditor *editor ) { mEditor = editor; }
 
     Mode mode () const { return mMode; }
     void setMode( Mode );
@@ -95,7 +95,7 @@ private:
 
     Mode mMode;
 
-    ScCodeEditor *mEditor;
+    GenericCodeEditor *mEditor;
     int mSearchPosition;
 };
 

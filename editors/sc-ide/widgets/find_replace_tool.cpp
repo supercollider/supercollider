@@ -19,9 +19,10 @@
 */
 
 #include "find_replace_tool.hpp"
-#include "code_editor/sc_editor.hpp"
+#include "code_editor/editor.hpp"
 
 #include <QApplication>
+#include <QTextBlock>
 
 namespace ScIDE {
 
