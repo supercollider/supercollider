@@ -1,0 +1,133 @@
+title:: SC-IDE: SuperCollider Integrated Development Environment
+summary:: A brief overview of the main features of the cross-platform code editor environment introduced in SuperCollider 3.6.
+categories:: Frontends
+keyword:: scide
+keyword:: editor
+
+Section:: What is SC-IDE?
+
+SC-IDE is a new code-editing environment, developed specifically for SuperCollider and introduced in version 3.6. It's written using the Qt graphic interface framework, meaning that it is compatible with any operating system supported by Qt. In the alpha release, SC-IDE works correctly in Mac OSX, Linux and Windows 7. (Issues with Windows XP remain to be solved.)
+
+note:: Throughout this document, Ctrl- indicates the modifier key for keyboard shortcuts that is used in Linux and Windows platforms. In Mac OSX, use Cmd- instead.::
+
+Section:: IDE window components
+
+The editor window contains several panels, as shown here:
+
+image::sc-ide.png::
+
+You will spend most of the time in the code editor at right. SC's posted output appears in the emphasis::Post Window:: at left. Underneath the code editor is a emphasis::Tool Panel::, which supports find/replace, go-to line and command-line functions.
+
+The Post Window is a emphasis::dock:: widget. You can grab the divider between the post window and code editor and drop the post window on any edge of the window you like.
+
+Section:: Getting help
+
+The help key is Ctrl-D (for Documentation).
+
+If the cursor is on a class or method name, the help browser will try to open help for the class or method. Otherwise the main help page will appear.
+
+If you want to go directly to help for a specific topic without entering text into the editor, press Ctrl-shift-D and type the identifier into the pop-up box.
+
+Section:: Evaluating code
+
+definitionlist::
+## Ctrl-return || The main key to evaluate code. Its behavior is "intelligent":
+## Ctrl-shift-return || Always evaluates the single line under the cursor, whether or not a code block is selected.
+::
+
+Subsection:: Regions
+
+emphasis::Regions:: make it quick and easy to evaluate longer blocks of code. A region is surrounded by parentheses.
+
+code::
+(
+Pbind(
+	\degree, Pseries(0, 1, 8),
+	\dur, 0.25
+).play;
+)
+::
+
+If the cursor is anywhere between the outermost parentheses, pressing ctrl-return will evaluate the entire block, starting with code::Pbind:: and ending with code::play;::. (This is faster even than SuperCollider.app's method of selecting a block by double-clicking inside the opening parenthesis.)
+
+Regions may be more compact visually, provided that the opening and closing parentheses are the first and last elements on their respective lines.
+
+code::
+(Pbind(
+	\degree, Pseries(0, 1, 8),
+	\dur, 0.25
+).play)
+::
+
+Any other element before or after the () delimiters means that the Bloc will not be interpreted as a region.
+
+code::
+// not a region
+(1 + 2).postln;
+::
+
+Section:: Typing code
+
+Subsection:: Automatic indentation
+
+While you are typing, SC-IDE keeps track of opening and closing brackets and automatically indents lines accordingly. You don't have to press TAB to indent or Backspace to outdent. When you close a bracket, SC-IDE will automatically push the text to the left to align with the matching opening bracket.
+
+Subsection:: Automatic completion of class and method names
+
+If you begin to type a class name, the editor will pop up a menu listing the class names that match what you have typed so far. Keep typing, and the list is filtered accordingly. At any point, use the up and down arrows to choose the completion and then press Return to choose the class. The complete class name will be entered into the code.
+
+The same happens when typing a method name after a dot. If SC-IDE can determine the class of object that will receive the method call, the list of matching methods will be appropriate for that class. Otherwise, after three characters, the list will include methods from all classes. (This is because it's often impossible to know the class of the result of an expression without evaluating the expression.)
+
+If the auto-complete menu does not appear automatically during typing, you can force it using Ctrl-space.
+
+Subsection:: Method call aid
+
+When you type an opening parenthesis after a method name, the editor will try to produce a floating pop-up listing the method's arguments. The pop-up appears automatically if the class of the receiver can be determined.
+
+If not, a pop-up menu appears listing the classes that implement the method. You can choose the desired class implementation that you intend, and then the floating pop-up will appear.
+
+If the method call aid does not appear automatically during typing, you can force it using Ctrl-shift-space.
+
+Section:: Editor features
+
+definitionlist::
+## Find/Replace || Ctrl-F brings up the Find tool panel; Ctrl-R brings up Replace. If you started with the Find panel but then want to replace, press Ctrl-R and your search string will be preserved. See also the Options menu at right. Regular expression find/replace is supported, including backreferences.
+
+## Command line || Sometimes, you need to evaluate a temporary expression that does not need to be saved in a code document. Press Ctrl-E, and a one line text box appears. Any expression you type here will be evaluated after you press Return. Up and down arrows navigate through the history of commands entered in this box.
+
+## Go to line || Press Ctrl-G, enter a line number, and the editor will jump to that line.
+
+## Focus post window || Ctrl-L gives focus to the post window. Here, you can use arrow keys and Page Up / Page Down to scroll through output from the interpreter. Press TAB to return to the code editor.
+
+## Implementation-of || Ctrl-I (for Implementation) opens a class or method definition.
+
+## References-to || Ctrl-U (for Uses) produces a list of references to a class or method.
+::
+
+Section:: Interacting with the SC language interpreter
+
+Unlike SuperCollider.app in OSX, SC-IDE is a separate process from the interpreter. This is good for stability. If you accidentally execute code that causes an infinite loop, you can use the Language menu to Stop SCLang and regain control without losing unsaved code.
+
+The Language menu contains commands to start and stop the interpreter and recompile the library.
+
+definitionlist::
+## Stop activity || Ctrl-., like Cmd-. in SuperCollider.app, stops any executing code and sound from the server.
+
+## Recompile library || Ctrl-shift-L recompiles the library.
+::
+
+Section:: Interacting with the audio server
+
+The Language menu also includes commands to boot, reboot and quit the server, as well as open a level meter and dump a list of running nodes.
+
+Section:: Sessions
+
+Sessions preserve the state of the editor environment at the time of quitting the editor, so you can resume with the same arrangement of IDE components and open documents automatically.
+
+(More to write later)
+
+Section:: Customizing
+
+Many customization options are available under Settings >> Configure IDE. In particular, fonts, colors and keyboard shortcuts may be set here.
+
+(More to write later)

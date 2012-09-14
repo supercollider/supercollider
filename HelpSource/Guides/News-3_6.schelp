@@ -2,6 +2,11 @@ title:: News in 3.6
 summary:: A summary of news in SC 3.6
 categories:: News
 
+SECTION:: ScIDE
+
+link::Guides/SCIde::
+
+
 SECTION:: Language-side news
 
 subsection:: More informative syntax errors
