@@ -99,10 +99,25 @@ PostWindow::PostWindow(QWidget* parent):
 void PostWindow::applySettings(Settings::Manager * settings)
 {
     int scrollback = settings->value("IDE/editor/postWindowScrollback").toInt();
+
     QFont font = settings->codeFont();
+
+    QPalette palette;
+    settings->beginGroup("IDE/editor/colors");
+    if (settings->contains("text")) {
+        QTextCharFormat format = settings->value("text").value<QTextCharFormat>();
+        QBrush bg = format.background();
+        QBrush fg = format.foreground();
+        if (bg.style() != Qt::NoBrush)
+            palette.setBrush(QPalette::Base, bg);
+        if (fg.style() != Qt::NoBrush)
+            palette.setBrush(QPalette::Text, fg);
+    }
+    settings->endGroup(); // colors
 
     setMaximumBlockCount(scrollback);
     setFont(font);
+    setPalette(palette);
 }
 
 QString PostWindow::symbolUnderCursor()
