@@ -456,6 +456,7 @@ PlusFreqScopeWindow {
 				})
 				.canFocus_(false)
 				.font_(font)
+				.valueAction_(1)
 			;
 
 			StaticText(window, Rect(pad[0] + rect.width, pad[2]+76, pad[1], 10))
