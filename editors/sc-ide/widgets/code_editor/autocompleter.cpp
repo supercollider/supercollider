@@ -240,7 +240,7 @@ private:
     QLabel *mLabel;
 };
 
-AutoCompleter::AutoCompleter( CodeEditor *editor ):
+AutoCompleter::AutoCompleter( ScCodeEditor *editor ):
     QObject(editor),
     mEditor(editor)
 {
@@ -543,7 +543,7 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
 }
 
 CompletionMenu * AutoCompleter::menuForClassCompletion(CompletionDescription const & completion,
-                                                       CodeEditor * editor)
+                                                       ScCodeEditor * editor)
 {
     using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
@@ -572,7 +572,7 @@ CompletionMenu * AutoCompleter::menuForClassCompletion(CompletionDescription con
 }
 
 CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescription const & completion,
-                                                             CodeEditor * editor)
+                                                             ScCodeEditor * editor)
 {
     using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
@@ -641,7 +641,7 @@ CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescripti
 }
 
 CompletionMenu * AutoCompleter::menuForMethodCompletion(CompletionDescription const & completion,
-                                                        CodeEditor * editor)
+                                                        ScCodeEditor * editor)
 {
     using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();

@@ -32,7 +32,7 @@
 
 namespace ScIDE {
 
-void CodeEditor::blinkCode( const QTextCursor & c )
+void ScCodeEditor::blinkCode( const QTextCursor & c )
 {
     if( !c.document() || !c.hasSelection() ) return;
 

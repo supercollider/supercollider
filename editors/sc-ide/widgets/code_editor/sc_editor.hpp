@@ -27,12 +27,12 @@ namespace ScIDE {
 
 typedef std::pair<TokenIterator, TokenIterator> BracketPair;
 
-class CodeEditor : public GenericCodeEditor
+class ScCodeEditor : public GenericCodeEditor
 {
     Q_OBJECT
 
 public:
-    CodeEditor( Document *, QWidget *parent = 0 );
+    ScCodeEditor( Document *, QWidget *parent = 0 );
     void setIndentWidth( int );
     QTextCursor currentRegion();
     void blinkCode( const QTextCursor & c );

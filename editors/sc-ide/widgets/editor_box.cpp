@@ -46,14 +46,14 @@ void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
     if (!doc)
         return;
 
-    CodeEditor *editor = currentEditor();
+    ScCodeEditor *editor = currentEditor();
     bool switchEditor = !editor || editor->document() != doc;
 
     if (switchEditor)
     {
         editor = editorForDocument(doc);
         if (!editor) {
-            editor = new CodeEditor(doc);
+            editor = new ScCodeEditor(doc);
             editor->installEventFilter(this);
             mHistory.prepend(editor);
             mLayout->addWidget(editor);
@@ -75,7 +75,7 @@ void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
 
 void CodeEditorBox::onDocumentClosed(Document *doc)
 {
-    CodeEditor * editor = editorForDocument(doc);
+    ScCodeEditor * editor = editorForDocument(doc);
     if (editor) {
         bool wasCurrent = editor == currentEditor();
         mHistory.removeAll(editor);
@@ -90,7 +90,7 @@ void CodeEditorBox::onDocumentClosed(Document *doc)
     }
 }
 
-CodeEditor *CodeEditorBox::currentEditor()
+ScCodeEditor *CodeEditorBox::currentEditor()
 {
     if (mHistory.count())
         return mHistory.first();
@@ -107,9 +107,9 @@ int CodeEditorBox::historyIndexOf(Document *doc)
     return -1;
 }
 
-CodeEditor *CodeEditorBox::editorForDocument(Document* doc)
+ScCodeEditor *CodeEditorBox::editorForDocument(Document* doc)
 {
-    foreach(CodeEditor *editor, mHistory)
+    foreach(ScCodeEditor *editor, mHistory)
         if (editor->document() == doc)
             return editor;
     return 0;
@@ -133,7 +133,7 @@ void CodeEditorBox::focusInEvent( QFocusEvent * )
 
 Document * CodeEditorBox::currentDocument()
 {
-    CodeEditor *editor = currentEditor();
+    ScCodeEditor *editor = currentEditor();
     return editor ? editor->document() : 0;
 }
 

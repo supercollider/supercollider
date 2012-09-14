@@ -658,7 +658,7 @@ void MainWindow::onCurrentDocumentChanged( Document * doc )
     mActions[DocSaveAs]->setEnabled(doc);
     mActions[DocClose]->setEnabled(doc);
 
-    CodeEditor *editor = mEditors->currentEditor();
+    ScCodeEditor *editor = mEditors->currentEditor();
     mFindReplaceTool->setEditor( editor );
     mGoToLineTool->setEditor( editor );
 }
@@ -849,7 +849,7 @@ void MainWindow::openDocument()
 
     dialog.setFileMode( QFileDialog::ExistingFiles );
 
-    CodeEditor * currentEditor = mEditors->currentEditor();
+    ScCodeEditor * currentEditor = mEditors->currentEditor();
     if (currentEditor) {
         Document * currentDocument = currentEditor->document();
         QFileInfo filePath (currentDocument->filePath());
@@ -873,7 +873,7 @@ void MainWindow::openDocument()
 
 void MainWindow::saveDocument()
 {
-    CodeEditor *editor = mEditors->currentEditor();
+    ScCodeEditor *editor = mEditors->currentEditor();
     if(!editor) return;
 
     Document *doc = editor->document();
@@ -884,7 +884,7 @@ void MainWindow::saveDocument()
 
 void MainWindow::saveDocumentAs()
 {
-    CodeEditor *editor = mEditors->currentEditor();
+    ScCodeEditor *editor = mEditors->currentEditor();
     if(!editor) return;
 
     Document *doc = editor->document();
@@ -903,7 +903,7 @@ void MainWindow::saveAllDocuments()
 
 void MainWindow::reloadDocument()
 {
-    CodeEditor *editor = mEditors->currentEditor();
+    ScCodeEditor *editor = mEditors->currentEditor();
     if(!editor) return;
 
     Q_ASSERT(editor->document());
@@ -912,7 +912,7 @@ void MainWindow::reloadDocument()
 
 void MainWindow::closeDocument()
 {
-    CodeEditor *editor = mEditors->currentEditor();
+    ScCodeEditor *editor = mEditors->currentEditor();
     if(!editor) return;
 
     Q_ASSERT(editor->document());
@@ -950,7 +950,7 @@ bool MainWindow::promptSaveDocs()
 void MainWindow::updateWindowTitle()
 {
     Session *session = mMain->sessionManager()->currentSession();
-    CodeEditor *editor = mEditors->currentEditor();
+    ScCodeEditor *editor = mEditors->currentEditor();
     Document *doc = editor ? editor->document() : 0;
 
     QString title;
@@ -1102,7 +1102,7 @@ void MainWindow::showCmdLine()
 
 void MainWindow::showGoToLineTool()
 {
-    CodeEditor *editor = mEditors->currentEditor();
+    ScCodeEditor *editor = mEditors->currentEditor();
     mGoToLineTool->setValue( editor ? editor->textCursor().blockNumber() + 1 : 0 );
 
     mToolBox->setCurrentWidget( mGoToLineTool );
@@ -1136,7 +1136,7 @@ void MainWindow::showReplaceTool()
 void MainWindow::hideToolBox()
 {
     mToolBox->hide();
-    CodeEditor *editor = mEditors->currentEditor();
+    ScCodeEditor *editor = mEditors->currentEditor();
     if (editor) {
         // This slot is mapped to Escape, so also clear highlighting
         // whenever invoked:
