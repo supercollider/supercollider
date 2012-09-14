@@ -21,7 +21,7 @@
 #ifndef SCIDE_WIDGETS_GOTO_LINE_TOOL_HPP_INCLUDED
 #define SCIDE_WIDGETS_GOTO_LINE_TOOL_HPP_INCLUDED
 
-#include "code_editor/editor.hpp"
+#include "code_editor/sc_editor.hpp"
 #include "../core/doc_manager.hpp"
 
 #include <QWidget>

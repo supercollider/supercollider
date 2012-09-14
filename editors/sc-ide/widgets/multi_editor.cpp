@@ -22,7 +22,7 @@
 #include "editor_box.hpp"
 #include "main_window.hpp"
 #include "lookup_dialog.hpp"
-#include "code_editor/editor.hpp"
+#include "code_editor/sc_editor.hpp"
 #include "util/multi_splitter.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/sig_mux.hpp"

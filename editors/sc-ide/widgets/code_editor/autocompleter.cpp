@@ -21,7 +21,7 @@
 #define QT_NO_DEBUG_OUTPUT
 
 #include "autocompleter.hpp"
-#include "editor.hpp"
+#include "sc_editor.hpp"
 #include "tokens.hpp"
 #include "../util/popup_widget.hpp"
 #include "../../core/sc_introspection.hpp"
