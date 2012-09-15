@@ -37,3 +37,66 @@
 		^this.openDocument(selectionStart, selectionLength)
 	}
 }
+
+// Document: themes are cocoa-specific
++ Document {
+	*theme_ { |...args|
+		this.deprecated(thisMethod);
+		this.implementationClass.tryPerform(\theme_, args)
+	}
+
+	*theme {
+		this.deprecated(thisMethod);
+		^this.implementationClass.tryPerform(\theme)
+	}
+
+	*postColor {
+		this.deprecated(thisMethod);
+		^this.implementationClass.tryPerform(\postColor)
+	}
+
+	*postColor_ {|...args|
+		this.deprecated(thisMethod);
+		^this.implementationClass.tryPerform(\postColor_, args)
+	}
+
+	*background {
+		this.deprecated(thisMethod);
+		^this.implementationClass.tryPerform(\background)
+	}
+
+	*background_ {|...args|
+		this.deprecated(thisMethod);
+		^this.implementationClass.tryPerform(\background_, args)
+	}
+
+	*selectedBackground {
+		this.deprecated(thisMethod);
+		^this.implementationClass.tryPerform(\selectedBackground)
+	}
+
+	*selectedBackground_ {|...args|
+		this.deprecated(thisMethod);
+		^this.implementationClass.tryPerform(\selectedBackground_, args)
+	}
+
+	*stringColor_ {|...args|
+		this.deprecated(thisMethod);
+		^this.implementationClass.tryPerform(\stringColor_, args)
+	}
+
+	setFont { | ...args |
+		this.deprecated(thisMethod);
+		^this.subclassResponsibility(thisMethod)
+	}
+
+	setTextColor { | ...args |
+		this.deprecated(thisMethod);
+		^this.subclassResponsibility(thisMethod)
+	}
+
+	syntaxColorize {
+		this.deprecated(thisMethod);
+		^this.subclassResponsibility(thisMethod)
+	}
+}

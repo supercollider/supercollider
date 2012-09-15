@@ -117,76 +117,6 @@ The editor implementation specific class which will handle Documents.
 argument:: value
 A class for implementing Document, e.g. link::Classes/CocoaDocument::.
 
-method:: postColor
-Get / set the listeners pen color.
-argument:: col
-An instance of link::Classes/Color::.
-discussion::
-code::
-Document.postColor; // returns current post color
-Document.postColor_(Color.red);
-Document.postColor_(Color.green);
-Document.postColor_(Color.blue);
-Document.postColor_(Color.black);
-(
-r = Routine({
-	10.do({
-		Document.postColor_(Color.rand);
-		"There is no blue without yellow and without orange.".postln;
-		0.5.rand.yield;
-	});
-	Document.postColor_(Color.black);
-});
-)
-
-r.play;
-r.stop;
-::
-
-method:: setTheme
-Sets the theme for syntax colorization.
-argument:: themeName
-A link::Classes/Symbol::, defining the name of the theme that you've put into code::Document.themes::.
-discussion::
-The Document class has a preset theme called code::'default'::, which is set as follows (default SC colors):
-code::
-themes = (
-	default: (
-		classColor: Color(0, 0, 0.75, 1),
-		textColor: Color(0, 0, 0, 1),
-		stringColor: Color(0.375, 0.375, 0.375, 1),
-		commentColor: Color(0.75, 0, 0, 1),
-		symbolColor: Color(0, 0.45, 0, 1),
-		numberColor: Color(0, 0, 0, 1)
-	)
-);
-::
-If you want to have your own themes for syntax colorization, you need to put your color set into code::Document.themes:: first (preferably in startup.rtf file) and call code::setTheme:: by giving it the name of the theme you've added to "themes" earlier:
-code::
-//putting a custom color theme into Document.themes
-Document.themes.put
-(\myTheme,
-	(
-		classColor: Color.new255(53, 74, 187),
-		textColor: Color.new255(0, 0, 0),
-		stringColor: Color.new255(96, 129, 158),
-		commentColor: Color.new255(206, 27, 28),
-		symbolColor: Color.new255(57, 154, 20),
-		numberColor: Color.new255(157, 80, 65)
-	)
-);
-
-//and then calling setTheme with the name:
-Document.setTheme('myTheme');
-//to see the current theme:
-Document.theme;
-::
-You can switch to the default theme anytime by calling:
-code::
-Document.setTheme('default');
-::
-Next time you invoke syntaxColorize, the color theme set by setTheme will be used for syntax colorization. If you want to change the background color for the document window and selected text, in order to make them fit with your syntax colorization theme, see the help for the link::Classes/Document#background:: and link::Classes/Document#selectedBackground:: methods for Document.
-
 subsection:: Path Utilities
 
 Utilities and settings for dealing with documents such as super collider code files. By default the document directory is SuperCollider's application directory.
@@ -286,18 +216,6 @@ method:: title
 Get / set the title (same as link::Classes/Document#name::).
 argument:: argName
 An instance of link::Classes/String::.
-
-method:: background
-Get / set the the Document's background color.
-argument:: color
-An instance of link::Classes/Color::.
-discussion::
-code::
-(
-a = Document("background", "'hardly see anything");
-a.background_(Color.blue(alpha:0.8)); // notice that alpha controls the window transparency
-)
-::
 
 method:: alwaysOnTop
 Get/set whether a document is always on top.
@@ -480,19 +398,6 @@ Document.current.selectRange(Document.current.selectedRangeLocation + 3, 150);
 )
 ::
 
-method:: balanceParens
-Starting from the current selection, increase the selection until matching parentheses are selected.
-argument:: level
-Do this as many times to find ever wider brackets. Set to code::inf:: for outmost.
-discussion::
-code::
-((((
-Document.current.balanceParens(1);
-Document.current.balanceParens(3);
-Document.current.balanceParens(inf);
-))))
-::
-
 method:: selectionStart
 Returns the start of a current selection.
 code::
@@ -586,42 +491,6 @@ Document.current.font_(Font("Impact", 14),
 )
 // Watch me change font
 ::
-
-method:: stringColor
-Gets or sets the string color of a specific range of already printed text. Default is the whole document. To set the listener text color for posting, see: link::Classes/Document#postColor::.
-argument:: color
-An instance of link::Classes/Color::.
-argument:: rangeStart
-An link::Classes/Integer::. Default is -1.
-argument:: rangeSize
-An link::Classes/Integer::. Default value is 0
-discussion::
-code::
-// Select the following code in parentheses and execute it
-(
-Document.current.stringColor_(Color.rand(0.2, 0.8),
-	Document.current.selectedRangeLocation + 13,
-	16);
-)
-// Watch me change color
-::
-
-method:: selectedBackground
-Gets or sets the document's background color for selected text. Applies to the whole document instance.
-argument:: color
-An instance of link::Classes/Color::.
-discussion::
-code::
-Document.current.selectedBackground; // returns default color
-(
-w = Document.new("Test", "Here is a selected text...");
-w.selectedBackground_(Color.new255(120, 180, 110));
-w.selectRange(10, 13);
-)
-::
-
-method:: syntaxColorize
-Syntax colorize a document.
 
 method:: underlineSelection
 Underlines the current selection of a Document.
