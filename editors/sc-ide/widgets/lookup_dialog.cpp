@@ -109,9 +109,7 @@ void GenericLookupDialog::openDocumentation()
 
 void GenericLookupDialog::onAccepted(QModelIndex currentIndex)
 {
-    QStandardItemModel * model = qobject_cast<QStandardItemModel*>(mResult->model());
-    currentIndex = currentIndex.sibling(currentIndex.row(), 0);
-    QStandardItem *currentItem = model->itemFromIndex(currentIndex);
+    QStandardItem *currentItem = firstItemInLine(currentIndex);
     if (!currentItem) {
         reject();
         return;
@@ -122,6 +120,15 @@ void GenericLookupDialog::onAccepted(QModelIndex currentIndex)
 
     Main::documentManager()->open(path, pos);
     accept();
+}
+
+QStandardItem * GenericLookupDialog::firstItemInLine(QModelIndex index)
+{
+    QStandardItemModel * model = qobject_cast<QStandardItemModel*>(mResult->model());
+    if (!model)
+        return NULL;
+    index = index.sibling(index.row(), 0);
+    return model->itemFromIndex(index);
 }
 
 bool GenericLookupDialog::eventFilter( QObject *object, QEvent *event )

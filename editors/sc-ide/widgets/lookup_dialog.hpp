@@ -66,7 +66,7 @@ private Q_SLOTS:
     virtual void performQuery() = 0;
 
 protected:
-    QStandardItem * currentItem();
+    QStandardItem * firstItemInLine(QModelIndex);
     bool eventFilter( QObject *, QEvent * );
     void paintEvent( QPaintEvent * );
     void focusResults();
