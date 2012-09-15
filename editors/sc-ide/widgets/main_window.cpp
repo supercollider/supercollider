@@ -557,7 +557,10 @@ void MainWindow::restoreWindowState()
 
 void MainWindow::focusCodeEditor()
 {
-    mEditors->currentEditor()->setFocus();
+    if (mEditors->currentEditor())
+        mEditors->currentEditor()->setFocus();
+    else
+        mEditors->setFocus();
 }
 
 void MainWindow::newSession()
