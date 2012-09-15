@@ -327,18 +327,18 @@ void MainWindow::createActions()
     connect(act, SIGNAL(triggered()), mPostDock->mPostWindow, SLOT(setFocus()));
 
     mActions[LookupReferences] = act = new QAction(
-        QIcon::fromTheme("window-lookupreferences"), tr("Lookup References"), this);
-    act->setShortcut(tr("Ctrl+Shift+U", "Lookup References"));
+        QIcon::fromTheme("window-lookupreferences"), tr("Look Up References"), this);
+    act->setShortcut(tr("Ctrl+Shift+U", "Look Up References"));
     connect(act, SIGNAL(triggered()), this, SLOT(lookupReferences()));
 
     mActions[LookupDefinition] = act = new QAction(
-        QIcon::fromTheme("window-lookupdefinition"), tr("Lookup Definition"), this);
-    act->setShortcut(tr("Ctrl+Shift+I", "Lookup Definition"));
+        QIcon::fromTheme("window-lookupdefinition"), tr("Look Up Definition"), this);
+    act->setShortcut(tr("Ctrl+Shift+I", "Look Up Definition"));
     connect(act, SIGNAL(triggered()), this, SLOT(lookupDefinition()));
 
     mActions[LookupDocumentation] = act = new QAction(
-        QIcon::fromTheme("window-lookupDocumentation"), tr("Lookup Documentation"), this);
-    act->setShortcut(tr("Ctrl+Shift+D", "Lookup Documentation"));
+        QIcon::fromTheme("window-lookupDocumentation"), tr("Look Up Documentation"), this);
+    act->setShortcut(tr("Ctrl+Shift+D", "Look Up Documentation"));
     connect(act, SIGNAL(triggered()), this, SLOT(lookupDocumentation()));
 
     // Language
@@ -450,9 +450,6 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::ToggleComment) );
     menu->addAction( mEditors->action(MultiEditor::ToggleOverwriteMode) );
     menu->addAction( mEditors->action(MultiEditor::SelectRegion) );
-    menu->addSeparator();
-    menu->addAction( mActions[OpenDefinition] );
-    menu->addAction( mActions[FindReferences] );
 
     menuBar()->addMenu(menu);
 
@@ -489,8 +486,9 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
     menu->addSeparator();
-    menu->addAction( mActions[LookupDocumentation] );
+    menu->addAction( mActions[OpenDefinition] );
     menu->addAction( mActions[LookupDefinition] );
+    menu->addAction( mActions[FindReferences] );
     menu->addAction( mActions[LookupReferences] );
 
     menuBar()->addMenu(menu);
@@ -524,6 +522,7 @@ void MainWindow::createMenus()
     menu = new QMenu(tr("&Help"), this);
     menu->addAction( mActions[Help] );
     menu->addAction( mActions[HelpForSelection] );
+    menu->addAction( mActions[LookupDocumentation] );
 
     menuBar()->addMenu(menu);
 }
@@ -1038,7 +1037,7 @@ void MainWindow::lookupDefinition()
 
 void MainWindow::lookupDocumentation()
 {
-    PopupTextInput * dialog = new PopupTextInput(tr("Lookup Documentation For"), this);
+    PopupTextInput * dialog = new PopupTextInput(tr("Look up Documentation For"), this);
 
     bool success = dialog->exec();
     if (success)
