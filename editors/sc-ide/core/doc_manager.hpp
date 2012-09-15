@@ -100,7 +100,7 @@ public:
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
-    Document * open( const QString & path, int initialCursorPosition = -1, int selectionLength = -1, bool addToRecent = true );
+    Document * open( const QString & path, int initialCursorPosition = -1, int selectionLength = 0, bool addToRecent = true );
     void clearRecents();
     void storeSettings( Settings::Manager * );
 
