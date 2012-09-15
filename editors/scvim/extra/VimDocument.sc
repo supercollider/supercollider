@@ -16,22 +16,19 @@ VimDocument : Document {
         this.startup;
     }
 
-    *startup { 
+    *startup {
         var post;
-        super.startup; 
-        fork({ 
-            0.2.wait; 
-            post = this.listener; 
-            if(post.notNil) { post.name_(" post ") } 
+        super.startup;
+        fork({
+            0.2.wait;
+            post = this.listener;
+            if(post.notNil) { post.name_(" post ") }
         }, AppClock);
-        this.setTheme('default');
     }
 
     *new { | title="Untitled" string="" makeListener=false |
         ^super.prBasicNew.initByString(title, string.asString, makeListener);
     }
-
-    *postColor_ { }
 
     initLast { }
     front { }
@@ -41,20 +38,19 @@ VimDocument : Document {
     syntaxColorize { }
     removeUndo { }
     promptToSave_ { | bool | }
-    promptToSave { ^true }    
+    promptToSave { ^true }
     underlineSelection { }
     isEdited { ^true }
-    
+
 
     // if range is -1 apply to whole doc
-    setFont { | font, rangeStart= -1, rangeSize=100 | 
+    setFont { | font, rangeStart= -1, rangeSize=100 |
 		//XXX this only works for the whole server as that is the way vim works
 		//only works with graphical vim
-		Vim.remote_send(servername, "<Esc>:set guifont=" ++ 
+		Vim.remote_send(servername, "<Esc>:set guifont=" ++
 			font.replace(" ", "\\\\\\ ")  ++ "<CR>");
 	}
-    setTextColor { | color,  rangeStart = -1, rangeSize = 0 | }
-    
+
     text {
         var string
 			= Vim.remote_expr(servername, "getbufline(bufnr(\"" ++ file ++ "\"), 1, \"$\")");
@@ -65,22 +61,21 @@ VimDocument : Document {
     selectUnderlinedText { | clickPos | }
     selectedRangeLocation { ^0 }
     selectedRangeSize { ^0 }
-    
+
     rangeText { | rangestart=0, rangesize=1 |
-        var string = 
-			Vim.remote_expr(servername, "getbufline(bufnr(\"" ++ file ++ "\"), " ++ 
+        var string =
+			Vim.remote_expr(servername, "getbufline(bufnr(\"" ++ file ++ "\"), " ++
 			(rangestart + 1) ++ ", " ++
 			(rangestart + rangesize) ++ ")");
         ^string.copyRange(0, (string.size - 2));
     }
-    
+
     insertTextRange { | string, rangestart, rangesize | }
     linkAtClickPos { | clickPos | ^nil }
 
     // private //
     *prnumberOfOpen { ^0 }
     *prGetIndexOfListener { ^0 }
-    *prSetSyntaxColorTheme{ |textC, classC, stringC, symbolC, commentC, numberC| }
 
     propen { | path selectionStart=0 selectionLength=0 |
         var rcfile = this.prfindRcFile;
@@ -106,7 +101,7 @@ VimDocument : Document {
     prGetLastIndex { ^idx }
     prIsEditable_{ | editable=true | }
     prSetTitle { | argName | title = argName }
-    prGetTitle { ^title }  
+    prGetTitle { ^title }
     prGetFileName { ^nil }
     prSetFileName { | apath | }
 
@@ -115,10 +110,6 @@ VimDocument : Document {
 
     prGetBounds { | argBounds | ^nil }
     prSetBounds { | argBounds | }
-    prSetBackgroundColor { | color | }
-    prGetBackgroundColor { | color | ^nil }
-    prSetSelectedBackgroundColor { | color | }
-    prGetSelectedBackgroundColor { | color | ^nil }
 
 	prGetTmpFile {
 		var tmp = "/tmp/scvimdocument-tmp" ++ idx ++ ".sc";

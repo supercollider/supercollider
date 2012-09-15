@@ -1,5 +1,7 @@
 CocoaDocument : Document {
 	classvar <defaultFont;
+	classvar <postColor;
+	classvar <theme, <themes;
 
 	*initClass{
 		Document.implementationClass = CocoaDocument;
@@ -8,6 +10,25 @@ CocoaDocument : Document {
 	*startup {
 		var post;
 		super.startup;
+
+		postColor = Color.black;
+		themes = (
+			default: (
+				classColor: Color(0, 0, 0.75, 1),
+				textColor: Color(0, 0, 0, 1),
+				stringColor: Color(0.375, 0.375, 0.375, 1),
+				commentColor: Color(0.75, 0, 0, 1),
+				symbolColor: Color(0, 0.45, 0, 1),
+				numberColor: Color(0, 0, 0, 1),
+				specialValsColor: Color(0.2, 0.2, 0.75, 1), // true false nil inf
+				specialVarsColor: Color(0.4, 0.4, 0.75, 1), // super, thisProcess
+				declColor: Color(0, 0, 1, 1), // var, const, args
+				puncColor: Color(0, 0, 0, 1),
+				environColor: Color(1.0, 0.4, 0, 1)
+				)
+			);
+		theme = themes.default;
+
 		fork({
 			0.2.wait;
 			post = this.listener;
@@ -15,6 +36,59 @@ CocoaDocument : Document {
 		}, AppClock);
 		this.setTheme('default');
 	}
+
+	*setTheme { | themeName |
+		theme = themes[themeName];
+		if(theme.proto.isNil) {
+			theme = theme.copy.parent_(themes[\default]);
+		};
+		thisProcess.platform.writeClientCSS;
+		this.prSetSyntaxColorTheme(
+			theme.textColor,
+			theme.classColor,
+			theme.stringColor,
+			theme.symbolColor,
+			theme.commentColor,
+			theme.numberColor,
+			theme.specialValsColor,
+			theme.specialVarsColor,
+			theme.declColor,
+			theme.puncColor,
+			theme.environColor
+		);
+	}
+
+	background_ { | color |
+		this.prSetBackgroundColor(color);
+	}
+	background {
+		var color;
+		color = Color.new;
+		this.prGetBackgroundColor(color);
+		^color;
+	}
+
+	selectedBackground_ { | color |
+		this.prSetSelectedBackgroundColor(color);
+	}
+
+	selectedBackground {
+		var color;
+		color = Color.new;
+		this.prGetSelectedBackgroundColor(color);
+		^color;
+	}
+
+	*postColor_ { | col |
+		postColor = col;
+		^Document.implementationClass.postColor_(col);
+	}
+
+	stringColor_ { | color, rangeStart = -1, rangeSize = 0 |
+		stringColor = color;
+		this.setTextColor(color,rangeStart, rangeSize);
+	}
+
 
 	*new { arg title="Untitled", string="", makeListener=false;
 		^super.prBasicNew.initByString(title, string.asString, makeListener);
