@@ -32,6 +32,11 @@ Section:: Evaluating code
 
 definitionlist::
 ## Ctrl-return || The main key to evaluate code. Its behavior is "intelligent":
+list::
+## If a block of code is manually selected, that block will be executed.
+## If no code is selected but the cursor is within a emphasis::region::, the entire region will be executed. See below.
+## Otherwise, the current line containing the cursor will be executed.
+::
 ## Ctrl-shift-return || Always evaluates the single line under the cursor, whether or not a code block is selected.
 ::
 
@@ -59,10 +64,11 @@ code::
 ).play)
 ::
 
-Any other element before or after the () delimiters means that the Bloc will not be interpreted as a region.
+Any other element before or after the () delimiters means that the block will not be interpreted as a region.
 
 code::
-// not a region
+// (1 + 2) is not a region:
+// the () indicate order of operations instead
 (1 + 2).postln;
 ::
 
