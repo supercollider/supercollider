@@ -110,7 +110,7 @@ void DocumentsDialog::init( Mode mode, const QList<Document*> &docs )
         btn->setIcon( QIcon::fromTheme("document-save") );
         connect(btn, SIGNAL(clicked()), this, SLOT(saveSelected()));
 
-        btn = dialogBtnBox->addButton(tr("Do &Not Save"), QDialogButtonBox::ActionRole);
+        btn = dialogBtnBox->addButton(tr("&Discard"), QDialogButtonBox::ActionRole);
         btn->setIcon( QIcon::fromTheme("window-close") );
         connect(btn, SIGNAL(clicked()), this, SLOT(ignoreSelected()));
 
