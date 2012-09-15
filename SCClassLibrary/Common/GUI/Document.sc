@@ -23,9 +23,9 @@ Document {
 	var <envir, savedEnvir;
 	var <editable;
 
-	  *initClass{
+	*initClass{
 		allDocuments = [];
-	  }
+	}
 
 	*startup {
 		var num, doc;
@@ -162,10 +162,21 @@ Document {
 	}
 
 	*listener {
-		^allDocuments[this.implementationClass.prGetIndexOfListener];
+		var index = this.prGetIndexOfListener;
+		if (index.notNil) {
+			^allDocuments[index];
+		} {
+			^nil
+		}
 	}
+
 	isListener {
-		^allDocuments.indexOf(this) == this.class.prGetIndexOfListener
+		var index = this.class.prGetIndexOfListener;
+		if (index.notNil) {
+			^allDocuments.indexOf(this) == index
+		} {
+			^False
+		}
 	}
 
 // document setup
@@ -710,9 +721,16 @@ Document {
 	}
 
 	*prGetIndexOfListener {
-		^this.subclassResponsibility(thisMethod)
-	}
+		if (this.implementationClass.isNil) {
+			^nil
+		};
 
+		if (this.implementationClass.respondsTo(\prGetIndexOfListener)) {
+			^this.implementationClass.prGetIndexOfListener
+		} {
+			^nil
+		}
+	}
 
 	//---not yet implemented
 	// ~/Documents
@@ -755,5 +773,4 @@ Document {
 	*prBasicNew {
 		^super.new
 	}
-
 }
