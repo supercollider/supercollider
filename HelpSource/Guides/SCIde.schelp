@@ -18,7 +18,7 @@ image::sc-ide.png::
 
 You will spend most of the time in the code editor at right. SC's posted output appears in the emphasis::Post Window:: at left. Underneath the code editor is a emphasis::Tool Panel::, which supports find/replace, go-to line and command-line functions.
 
-The Post Window is a emphasis::dock:: widget. You can grab the divider between the post window and code editor and drop the post window on any edge of the window you like.
+The Post Window is a emphasis::dock:: widget. You can grab the post window's title bar and drop the post window on any edge of the window you like.
 
 Section:: Getting help
 
