@@ -15,6 +15,17 @@ ClassMethods::
 
 private::initClass, prSetDefaultFont, prSetSyntaxColorTheme, prDefaultUsesAutoInOutdent_, prnumberOfOpen, prGetIndexOfListener
 
+method:: wikiBrowse
+If set to code::true::, underlining text will create a wiki link.
+argument:: value
+An instance of link::Classes/Boolean::. Default value is code::true::.
+
+method:: wikiDir
+Get/set the default wiki directory. The default is dependent on link::Classes/Document#implementationClass::.
+argument:: path
+The file system path to the directory. An instance of link::Classes/String::.
+
+
 method:: postColor
 Get / set the listeners pen color.
 argument:: col
@@ -151,4 +162,22 @@ w.selectRange(10, 13);
 
 method:: syntaxColorize
 Syntax colorize a document.
+
+method:: makeWikiPage
+Creates a wiki page.
+argument:: wikiWord
+An instance of link::Classes/String::. The name of the document.
+argument:: extension
+An instance of link::Classes/String::. The file extension.
+argument:: directory
+An instance of link::Classes/String::. The directory in which to save the page.
+discussion::
+code::
+Document.current.makeWikiPage("test1");
+::
+
+method:: openWikiPage
+Opens/creates a wiki page out of the currently selected text.
+
+
 

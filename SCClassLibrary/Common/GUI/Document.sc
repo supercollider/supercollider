@@ -4,11 +4,10 @@
 
 Document {
 
-	classvar <dir="", <wikiDir="", <allDocuments, >current;
+	classvar <dir="", <allDocuments, >current;
 	classvar <>globalKeyDownAction, <> globalKeyUpAction, <>initAction;
 
 	classvar <>autoRun = true;
-	classvar <>wikiBrowse = true;
 
 	classvar <>implementationClass;
 
@@ -64,15 +63,6 @@ Document {
 		if(path == "") { dir = path } {
 			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln } {
 				dir = path ++ "/"
-			}
-		}
-	}
-
-	*wikiDir_ { | path |
-		path = path.standardizePath;
-		if(path == "") {wikiDir = path } {
-			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln } {
-				wikiDir = path ++ "/"
 			}
 		}
 	}
@@ -312,113 +302,8 @@ Document {
 		this.restoreCurrentEnvironment;
 	}
 
-	makeWikiPage { | wikiWord, extension=(".rtf"), directory |
-		var filename, file, doc, string, dirName;
-		directory = directory ? wikiDir;
-		filename = directory ++ wikiWord ++ extension;
-		file = File(filename, "w");
-		if (file.isOpen) {
-			string = "{\\rtf1\\mac\\ansicpg10000\\cocoartf102\\n{\\fonttbl}\n"
-				"{\\colortbl;\\red255\\green255\\blue255;}\n"
-				"Write about " ++ wikiWord ++ " here.\n}";
-			file.write(string);
-			file.close;
-
-			doc = this.class.open(filename);
-			doc.path = filename;
-			doc.selectRange(0,0x7FFFFFFF);
-			doc.onClose = {
-				if(doc.string == ("Write about " ++ wikiWord ++ " here.")) {
-					unixCmd("rm" + filename)
-				};
-			};
-		} {
-			// in a second try, check if a path must be created.
-			// user makes double click on string.
-			dirName = wikiWord.dirname;
-			if(dirName != ".") {
-				dirName = directory ++ dirName;
-				"created directory: % \n".postf(dirName);
-				dirName.mkdir;
-			};
-		}
-	}
-
-	openWikiPage {
-		var selectedText, filename, index, directory;
-		var extensions = #[".rtf", ".sc", ".scd", ".txt", "", ".rtfd", ".html"];
-		selectedText = this.selectedText;
-		index = this.selectionStart;
-
-		this.selectRange(index, 0);
-
-		// refer to local link with round parens
-		if(selectedText.first == $( /*)*/ and: {/*(*/ selectedText.last == $) }) {
-				selectedText = selectedText[1 .. selectedText.size-2];
-				directory = Document.current.path.dirname ++ "/";
-		} {
-				directory = wikiDir;
-		};
-
-		case { selectedText[0] == $* }
-		{
-			// execute file
-			selectedText = selectedText.drop(1);
-			extensions.do { |ext|
-				filename = directory ++ selectedText ++ ext;
-				if (File.exists(filename)) {
-					// open existing wiki page
-					filename.load;
-					^this
-				}
-				{
-				filename = "Help/help-scripts/" ++ selectedText ++ ext;
-				if (File.exists(filename)) {
-					// open help-script document
-					filename.load;
-					^this
-				}
-				}
-			};
-		}
-		{ selectedText.first == $[ and: { selectedText.last == $] }}
-		{
-			// open help file
-			selectedText[1 .. selectedText.size-2].help
-		}
-		{ selectedText.containsStringAt(0, "http://")
-			or: { selectedText.containsStringAt(0, "file://") } }
-		{
-			// open URL
-			openOS(selectedText)
-		}
-		{ selectedText.containsStringAt(selectedText.size-1, "/") }
-		{
-			Document(selectedText,
-				pathMatch(directory ++ selectedText).collect({ |it|it.basename ++ "\n"}).join
-			)
-		}
-
-		{
-			if(index + selectedText.size > this.text.size) { ^this };
-			extensions.do { |ext|
-				filename = directory ++ selectedText ++ ext;
-				if (File.exists(filename)) {
-					// open existing wiki page
-					this.class.open(filename);
-					^this
-				}
-			};
-			// make a new wiki page
-			this.makeWikiPage(selectedText, nil, directory);
-		};
-	}
-
 	mouseUp{ | x, y, modifiers, buttonNumber, clickCount, clickPos |
-		mouseUpAction.value(this, x, y, modifiers, buttonNumber, clickCount);		if (wikiBrowse and: { this.linkAtClickPos(clickPos).not }
-			and: { this.selectUnderlinedText(clickPos) } ) {
-			^this.openWikiPage
-		};
+		mouseUpAction.value(this, x, y, modifiers, buttonNumber, clickCount)
 	}
 
 	keyDown { | character, modifiers, unicode, keycode |
