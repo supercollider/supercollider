@@ -107,11 +107,6 @@ If a document begins with the link::Classes/String::, code::"/*RUN*/"::, then th
 argument:: value
 An instance of link::Classes/Boolean::. Default value is code::true::.
 
-method:: wikiBrowse
-If set to code::true::, underlining text will create a wiki link.
-argument:: value
-An instance of link::Classes/Boolean::. Default value is code::true::.
-
 method:: implementationClass
 The editor implementation specific class which will handle Documents.
 argument:: value
@@ -130,11 +125,6 @@ In Main-startUp you can set this to a more practical directory:
 code::
 Document.dir = "~/Documents/SuperCollider";
 ::
-
-method:: wikiDir
-Get/set the default wiki directory. The default is dependent on link::Classes/Document#implementationClass::.
-argument:: path
-The file system path to the directory. An instance of link::Classes/String::.
 
 method:: standardizePath
 argument:: p
@@ -355,24 +345,6 @@ Document.current.keyUpAction = { arg ...args; args.postln };
 // now type some text
 Document.current.keyUpAction = nil;
 ::
-
-method:: makeWikiPage
-Creates a wiki page.
-argument:: wikiWord
-An instance of link::Classes/String::. The name of the document.
-argument:: extension
-An instance of link::Classes/String::. The file extension.
-argument:: directory
-An instance of link::Classes/String::. The directory in which to save the page.
-discussion::
-code::
-Document.current.makeWikiPage("test1");
-::
-
-method:: openWikiPage
-Opens/creates a wiki page out of the currently selected text.
-
-
 
 subsection:: Editing Content
 
