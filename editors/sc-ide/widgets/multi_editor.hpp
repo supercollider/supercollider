@@ -163,7 +163,7 @@ private:
     void loadBoxState( CodeEditorBox *box, const QVariantList & data, const QList<Document *> & documentList );
     void loadSplitterState( QSplitter *, const QVariantMap & data, const QList<Document *> & documentList );
 
-    SignalMultiplexer * mSigMux;
+    SignalMultiplexer * mEditorSigMux;
     SignalMultiplexer * mBoxSigMux;
     QAction *mActions[ActionRoleCount];
 
