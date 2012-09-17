@@ -53,6 +53,7 @@ void Manager::initDefaults()
     setDefault("spaceIndent", false);
     setDefault("indentWidth", 4);
     setDefault("stepForwardEvaluation", false);
+    setDefault("lineWrap", true);
 
     setDefault("blinkDuration", 600);
 

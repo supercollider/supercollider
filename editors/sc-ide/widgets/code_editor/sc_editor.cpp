@@ -60,6 +60,8 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
 
     mBlinkDuration = settings->value("blinkDuration").toInt();
 
+    bool lineWrap = settings->value("lineWrap").toBool();
+
     QPalette palette;
 
     settings->beginGroup("colors");
@@ -90,9 +92,11 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
 
     settings->endGroup(); // colors
 
+    settings->endGroup();
+
     setPalette(palette);
 
-    settings->endGroup();
+    setLineWrapMode( lineWrap ? QPlainTextEdit::WidgetWidth : QPlainTextEdit::NoWrap );
 }
 
 bool ScCodeEditor::event( QEvent *e )
