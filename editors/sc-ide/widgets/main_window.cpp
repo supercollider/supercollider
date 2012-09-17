@@ -162,6 +162,7 @@ MainWindow::MainWindow(Main * main) :
             this, SLOT(onDocumentChangedExternally(Document*)));
     connect(docMng, SIGNAL(recentsChanged()),
             this, SLOT(updateRecentDocsMenu()));
+    connect(docMng, SIGNAL(saved(Document*)), this, SLOT(updateWindowTitle()) );
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
