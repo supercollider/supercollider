@@ -19,19 +19,7 @@ code::
 
 This can be useful to check what's happening, and if you're getting the output you think you're getting.
 
-The second method, Function-scope, shows an oscilloscope-like display of the Function's output. Scoping works a little bit differently depending on the operating system and GUI framework that you're using. So far you have been using the local server. When you want to use the oscilloscope, the local server is okay for Windows, but in Mac/Linux environments, you will have to use the "internal" server for scope.
-
-If you need to use the internal server, you'll need to boot it before it will work. You can do this using the internal server window
-
-image::Scoping-and-Plotting00.png::
-
-or you can do it in code, like so:
-
-code::
-Server.internal.boot;
-::
-
-Then click on the '-> default' button on the internal server's window to set that server to be the default, and store it in the variable 's'. Thereafter, that will be the server on which all audio is played, unless you specify another one. Since Function-scope only works with the internal server, however, we want the audio play there!
+The second method, Function-scope, shows an oscilloscope-like display of the Function's output.
 
 So let's try to scope some audio:
 
@@ -59,18 +47,14 @@ Like Function-plot, Function-scope can be useful for testing purposes, and to se
 
 section::Scoping on Demand
 
-You can also scope the output of the internal server at any time, by calling 'scope' on it.
+You can also scope the output of the server at any time, by calling 'scope' on it.
 
 code::
-{ [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)] }.play(Server.internal);
-Server.internal.scope; // you could also use 's' if the internal is the default
+{ [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)] }.play;
+s.scope;
 ::
 
-You can do the same thing by clicking on the internal server window and pressing the 's' key.
-
-section::Local vs. Internal
-
-If you're wondering what's the difference between the local and the internal servers, it's relatively straightforward: The internal server runs as a process within the client app; basically a program within a program. The main advantage of this is that it allows the two applications to share memory, which allows for things like realtime scoping of audio. The disadvantage is that the two are then interdependent, so if the client crashes, so does the server.
+You can do the same thing by clicking on the server window and pressing the 's' key.
 
 For more information see:
 
