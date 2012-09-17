@@ -21,6 +21,7 @@
 
 #include "cmd_line.hpp"
 #include "main_window.hpp"
+#include "util/gui_utilities.hpp"
 #include "../core/main.hpp"
 #include "../core/settings/manager.hpp"
 
@@ -32,8 +33,12 @@ namespace ScIDE {
 
 QString CmdLineEdit::symbolUnderCursor()
 {
-    // TODO: select word under cursor
-    return selectedText();
+    if (hasSelectedText())
+        return selectedText();
+    else {
+        int position = cursorPosition();
+        return wordInStringAt( position, text() );
+    }
 }
 
 bool CmdLineEdit::openDocumentation()
