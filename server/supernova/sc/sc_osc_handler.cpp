@@ -68,7 +68,7 @@ abstract_group * find_group(int32_t target_id)
 bool check_node_id(int node_id)
 {
     if (!instance->node_id_available(node_id)) {
-        log("node id %d already in use\n", node_id);
+        log_printf("node id %d already in use\n", node_id);
         return false;
     }
     return true;
