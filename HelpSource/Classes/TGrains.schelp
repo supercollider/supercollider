@@ -56,13 +56,8 @@ interpolation.
 Examples::
 
 code::
-(
-s = Server.internal;
-Server.default = s;
+
 s.boot;
-)
-
-
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (

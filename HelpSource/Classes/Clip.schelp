@@ -33,7 +33,7 @@ Examples::
 
 code::
 
-Server.internal.boot;
+s.boot;
 
 { Clip.ar(SinOsc.ar(440, 0, 0.2), -0.07, 0.07) }.scope;
 

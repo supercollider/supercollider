@@ -25,7 +25,6 @@ code::
 
 
 // compare:
-
 (
 {
 	[
@@ -35,12 +34,11 @@ code::
 }.scope;
 )
 
-
 (
 {
 	var freq, blockSize, sampleRate;
-	blockSize = Server.internal.options.blockSize; // usually 64
-	sampleRate = Server.internal.sampleRate;
+	blockSize = s.options.blockSize; // usually 64
+	sampleRate = s.sampleRate;
 	freq = MouseX.kr(0.1, 40, 1) / blockSize * sampleRate;
 	[
 		K2A.ar(LFNoise0.kr(freq)),

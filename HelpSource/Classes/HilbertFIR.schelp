@@ -24,9 +24,8 @@ A Buffer to be used for the inter FFT processing. Best results with a size of 10
 
 
 code::
-s = Server.internal.boot;
+s = s.boot;
 s.scope;
-b - Buffer.alloc(s, 2048);
-a = {HilbertFIR.ar(SinOsc.ar(100), b)}.play(s);
+a = { HilbertFIR.ar(SinOsc.ar(100) * -20.dbamp, LocalBuf(2048) }.play;
 a.release;
 ::

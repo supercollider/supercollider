@@ -25,7 +25,6 @@ Valid parameter range from 0 to 1. Values outside this range are clipped by the 
 
 examples::
 code::
-Server.default = s = Server.internal;
 s.boot;
 
 // FreeVerb - 1x1 ugen

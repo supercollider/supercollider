@@ -33,7 +33,7 @@ Examples::
 
 code::
 
-Server.internal.boot;
+s.boot;
 
 { Wrap.ar(SinOsc.ar(440, 0, 0.2), -0.15, 0.15) }.scope;
 

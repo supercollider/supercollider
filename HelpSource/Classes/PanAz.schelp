@@ -61,7 +61,7 @@ Examples::
 code::
 
 // five channel circular panning
-Server.internal.boot;
+s.boot;
 (
 {
 	PanAz.ar(
@@ -71,8 +71,8 @@ Server.internal.boot;
 		0.5,			// level
 		3			// width
 	);
-}.play(Server.internal);
-Server.internal.scope;
+}.play;
+s.scope;
 )
 
 ::

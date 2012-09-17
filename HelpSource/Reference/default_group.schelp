@@ -25,17 +25,17 @@ a.group; // note the Group ID
 ::
 The default group serves an important purpose: It provides a predictable basic Node tree so that methods such as Server-scope, Server-record, etc. can function without running into order of execution problems. In the example below the scoping node will come after the default group.
 code::
-Server.internal.boot;
+s.boot;
 
 { SinOsc.ar(mul: 0.2) }.scope(1);
 
 // watch the post window;
-Server.internal.queryAllNodes;
+s.queryAllNodes;
 
 // our SinOsc synth is within the default group (ID 1)
 // the scope node comes after the default group, so no problems
 
-Server.internal.quit;
+s.quit;
 ::
 Note that the default group is persistent: It is created in Server's code::initTree:: method (executed along with any code stored in its tree instance variable; see Server for more detail) and is recreated upon reboot, after pressing Cmd-., and after all nodes are freed. When using osc messages this means that a target node of id 1 can always be used:
 code::

@@ -34,8 +34,6 @@ Note: The link::Browse#UGens#category browser:: contains a category for UGens, w
 
 code::
 (
-s = Server.internal;
-Server.default = s;
 s.boot;
 )
 ::

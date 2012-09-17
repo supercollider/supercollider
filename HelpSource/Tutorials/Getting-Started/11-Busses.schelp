@@ -35,7 +35,6 @@ code::
 {Out.ar(0, SinOsc.kr)}.play;
 
 // This will work as the audio rate signal is downsampled to control rate
-Server.internal.boot;
 {Out.kr(0, SinOsc.ar)}.scope;
 ::
 

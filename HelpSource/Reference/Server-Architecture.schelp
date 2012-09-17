@@ -33,9 +33,6 @@ Synths send audio signals to each other via a single global array of audio buses
 subsection:: Control Buses
 Synths can send control signals to each other via a single global array of control buses.  Buses are indexed by integers beginning with zero.
 
-subsection:: Shared Control Buses
-The internal server (which runs within the same address space as the client app) also has a number of shared control buses to which the client app has synchronous read/write access.  These buses are indexed by integers beginning with zero.
-
 subsection:: Buffers
 Buffers are arrays of 32 bit floating point values with a small descriptive header. Buffers are stored in a single global array indexed by integers beginning with zero. Buffers may be safely allocated, loaded and freed while synthesis is running, even while unit generators are using them. Buffers are used for wave tables, sample buffers, delay lines, envelopes, or for any other need which can use an array of floating point values. Sound files may be loaded into or written from buffers.
 

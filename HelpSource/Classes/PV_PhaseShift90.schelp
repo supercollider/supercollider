@@ -21,7 +21,7 @@ Examples::
 
 code::
 
-Server.internal.boot;
+s.boot;
 
 (
 { arg out=0, bufnum=0;
@@ -31,7 +31,7 @@ Server.internal.boot;
 	fft2 = FFT(LocalBuf(2048), in);
 	shifted = PV_PhaseShift90(fft);
 	Out.ar(0, [IFFT(fft2), IFFT(shifted)]);
-}.play
+}.scope
 )
 
 ::

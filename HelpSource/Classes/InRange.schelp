@@ -34,7 +34,7 @@ Examples::
 
 code::
 
-Server.internal.boot;
+s.boot;
 
 { InRange.kr(SinOsc.kr(1, 0, 0.2), -0.15, 0.15)}.scope; // see the trigger
 

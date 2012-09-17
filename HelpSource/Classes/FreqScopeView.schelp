@@ -33,8 +33,8 @@ An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code:
 discussion::
 Example:
 code::
-// Start internal server
-s = Server.internal.boot;
+// Start server
+s = s.boot;
 
 // Create analyzer in a window
 (
@@ -91,10 +91,10 @@ Returns link::Classes/SCScope::. See also Subclassing and Internal Methods in li
 warning::Cocoa specific::
 
 method:: initClass
-Sets the classvar, code::server = Server.internal::.
+Sets the classvar, code::server = Server.default::.
 
 method:: server
-A classvar. Must be code::Server.internal::.
+A classvar.
 
 instancemethods::
 
@@ -157,8 +157,8 @@ method:: bufSize
 examples::
 
 code::
-// Start internal server
-s = Server.internal.boot;
+// Start server
+s = Server.boot;
 
 
 // Create analyzer in a window

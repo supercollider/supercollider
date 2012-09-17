@@ -13,7 +13,7 @@ Input signal.
 examples::
 
 code::
-Server.internal.boot;
+s.boot;
 (
 {
     var a;

@@ -27,7 +27,7 @@ High threshold of folding. Sample values > hi will be folded. must be greater th
 Examples::
 
 code::
-Server.internal.boot;
+s.boot;
 
 { Fold.ar(SinOsc.ar(440, 0, 0.2), -0.1, 0.1) }.scope;
 ::

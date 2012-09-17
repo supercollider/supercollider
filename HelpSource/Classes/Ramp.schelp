@@ -46,7 +46,7 @@ This value will be added to the output.
 Examples::
 
 code::
-Server.internal.boot;
+s.boot;
 (
 // used to lag pitch
 {
@@ -67,8 +67,8 @@ var pulse;
 {
 	pulse = LFPulse.kr(8.772);
 	Out.kr(0,[Ramp.kr(pulse, 0.025), Lag.kr(pulse, 0.025), pulse]);
-}.play(Server.internal);
-Server.internal.scope(3, bufsize: 44100, rate: \control, zoom: 40);
+}.play;
+s.scope(3, bufsize: 44100, rate: \control, zoom: 40);
 )
 ::
 
