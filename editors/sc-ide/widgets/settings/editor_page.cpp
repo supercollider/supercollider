@@ -80,7 +80,6 @@ void EditorPage::load( Manager *s )
     ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation").toBool() );
 
     ui->blinkDuration->setValue( s->value("blinkDuration").toInt() );
-    ui->postWindowScrollback->setValue( s->value("postWindowScrollback").toInt() );
 
     s->beginGroup("font");
     QString fontFamily = s->value("family").toString();
@@ -117,6 +116,8 @@ void EditorPage::load( Manager *s )
     s->endGroup(); // highlighting
 
     s->endGroup(); // IDE/editor
+
+    ui->postWindowScrollback->setValue( s->value("IDE/postWindow/scrollback").toInt() );
 
     updateFontPreview();
     updateTextFormatDisplayCommons();
@@ -197,7 +198,6 @@ void EditorPage::store( Manager *s )
     s->setValue("stepForwardEvaluation", ui->stepForwardEvaluation->isChecked());
 
     s->setValue("blinkDuration", ui->blinkDuration->value());
-    s->setValue("postWindowScrollback", ui->postWindowScrollback->value());
 
     s->beginGroup("font");
     QString fontFamily = ui->fontCombo->currentText();
@@ -234,6 +234,8 @@ void EditorPage::store( Manager *s )
     s->endGroup(); // highlighting
 
     s->endGroup();
+
+    s->setValue("IDE/postWindow/scrollback", ui->postWindowScrollback->value());
 }
 
 void EditorPage::onCurrentTabChanged(int)

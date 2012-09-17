@@ -102,7 +102,7 @@ PostWindow::PostWindow(QWidget* parent):
 
 void PostWindow::applySettings(Settings::Manager * settings)
 {
-    int scrollback = settings->value("IDE/editor/postWindowScrollback").toInt();
+    int scrollback = settings->value("IDE/postWindow/scrollback").toInt();
 
     QFont font = settings->codeFont();
 

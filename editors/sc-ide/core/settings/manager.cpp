@@ -46,6 +46,8 @@ void Manager::initDefaults()
     setDefault("autoStart", true);
     endGroup();
 
+    setDefault("postWindow/scrollback", 1000);
+
     beginGroup("editor");
 
     setDefault("spaceIndent", false);
@@ -53,7 +55,6 @@ void Manager::initDefaults()
     setDefault("stepForwardEvaluation", false);
 
     setDefault("blinkDuration", 600);
-    setDefault("postWindowScrollback", 1000);
 
     setDefault("font/family", "monospace");
     setDefault("font/antialias", true);
