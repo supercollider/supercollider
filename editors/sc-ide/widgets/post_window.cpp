@@ -20,6 +20,7 @@
 
 #include "main_window.hpp"
 #include "post_window.hpp"
+#include "util/gui_utilities.hpp"
 #include "../core/main.hpp"
 #include "../core/settings/manager.hpp"
 
@@ -135,9 +136,14 @@ void PostWindow::storeSettings( Settings::Manager * settings )
 QString PostWindow::symbolUnderCursor()
 {
     QTextCursor cursor = textCursor();
-    if (!cursor.hasSelection())
-        cursor.select(QTextCursor::WordUnderCursor);
-    return cursor.selectedText();
+    if (cursor.hasSelection())
+        return cursor.selectedText();
+    else
+    {
+        QString blockString = cursor.block().text();
+        int position = cursor.positionInBlock();
+        return wordInStringAt( position, blockString );
+    }
 }
 
 void PostWindow::post(const QString &text)

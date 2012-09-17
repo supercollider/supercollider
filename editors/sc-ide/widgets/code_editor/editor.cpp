@@ -20,6 +20,7 @@
 
 #include "editor.hpp"
 #include "line_indicator.hpp"
+#include "../util/gui_utilities.hpp"
 #include "../../core/main.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
@@ -370,9 +371,14 @@ void GenericCodeEditor::showPosition( int pos, int selectionLength )
 QString GenericCodeEditor::symbolUnderCursor()
 {
     QTextCursor cursor = textCursor();
-    if (!cursor.hasSelection())
-        cursor.select(QTextCursor::WordUnderCursor);
-    return cursor.selectedText();
+    if (cursor.hasSelection())
+        return cursor.selectedText();
+    else
+    {
+        QString blockString = cursor.block().text();
+        int position = cursor.positionInBlock();
+        return wordInStringAt( position, blockString );
+    }
 }
 
 void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
