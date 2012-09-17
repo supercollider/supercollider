@@ -179,6 +179,7 @@ private Q_SLOTS:
     void serverDumpNodeTreeWithControls();
     void serverShowMeters();
     void applySettings( Settings::Manager * );
+    void storeSettings( Settings::Manager * );
     void showSwitchSessionDialog();
 
 protected:
