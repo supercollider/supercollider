@@ -220,11 +220,10 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
     makeSignalConnections();
 
-    mEditorSigMux->connect(SIGNAL(modificationChanged(bool)),
-                     this, SLOT(onModificationChanged(bool)));
-
     mBoxSigMux->connect(SIGNAL(currentChanged(ScCodeEditor*)),
                         this, SLOT(onCurrentEditorChanged(ScCodeEditor*)));
+
+    connect( &mDocModifiedSigMap, SIGNAL(mapped(QObject*)), this, SLOT(onDocModified(QObject*)) );
 
     createActions();
 
@@ -700,8 +699,7 @@ void MultiEditor::switchSession( Session *session )
         foreach ( Document * doc, documentList ) {
             if (!doc)
                 continue;
-            int newTabIndex = mTabs->addTab( doc->title() );
-            mTabs->setTabData( newTabIndex, QVariant::fromValue<Document*>(doc) );
+            addTab(doc);
         }
 
         // restore editors
@@ -742,6 +740,23 @@ void MultiEditor::switchSession( Session *session )
     firstBox->setFocus(Qt::OtherFocusReason); // ensure focus
 }
 
+int MultiEditor::addTab( Document * doc )
+{
+    QTextDocument *tdoc = doc->textDocument();
+
+    QIcon icon;
+    if(tdoc->isModified())
+        icon = mDocModifiedIcon;
+
+    int newTabIndex = mTabs->addTab( icon, doc->title() );
+    mTabs->setTabData( newTabIndex, QVariant::fromValue<Document*>(doc) );
+
+    mDocModifiedSigMap.setMapping(tdoc, doc);
+    connect( tdoc, SIGNAL(modificationChanged(bool)), &mDocModifiedSigMap, SLOT(map()) );
+
+    return newTabIndex;
+}
+
 void MultiEditor::setCurrent( Document *doc )
 {
     int tabIdx = tabForDocument(doc);
@@ -780,14 +795,7 @@ void MultiEditor::switchDocument()
 
 void MultiEditor::onOpen( Document *doc, int initialCursorPosition, int selectionLength )
 {
-    QTextDocument *tdoc = doc->textDocument();
-
-    QIcon icon;
-    if(tdoc->isModified())
-        icon = mDocModifiedIcon;
-
-    int newTabIndex = mTabs->addTab( icon, doc->title() );
-    mTabs->setTabData( newTabIndex, QVariant::fromValue<Document*>(doc) );
+    addTab(doc);
 
     currentBox()->setDocument(doc, initialCursorPosition, selectionLength);
     currentBox()->setFocus(Qt::OtherFocusReason);
@@ -799,6 +807,21 @@ void MultiEditor::onClose( Document *doc )
     if (tabIdx != -1)
         mTabs->removeTab(tabIdx);
     // TODO: each box should switch document according to their own history
+}
+
+void MultiEditor::onDocModified( QObject *object )
+{
+    Document *doc = qobject_cast<Document*>(object);
+    if (!doc) return;
+
+    int tabIdx = tabForDocument(doc);
+    if (tabIdx == -1) return;
+
+    QIcon icon;
+    if(doc->textDocument()->isModified())
+        icon = mDocModifiedIcon;
+
+    mTabs->setTabIcon( tabIdx, icon );
 }
 
 void MultiEditor::show( Document *doc, int pos, int selectionLength )
@@ -843,20 +866,6 @@ void MultiEditor::onCurrentEditorChanged(ScCodeEditor *editor)
 void MultiEditor::onBoxActivated(CodeEditorBox *box)
 {
     setCurrentBox(box);
-}
-
-void MultiEditor::onModificationChanged( bool modified )
-{
-    Q_ASSERT(currentEditor());
-
-    int tabIdx = tabForDocument( currentEditor()->document() );
-    if (tabIdx == -1)
-        return;
-
-    QIcon icon;
-    if(modified)
-        icon = mDocModifiedIcon;
-    mTabs->setTabIcon( tabIdx, icon );
 }
 
 void MultiEditor::evaluateRegion()

@@ -32,6 +32,7 @@
 #include <QGridLayout>
 #include <QTextDocument>
 #include <QSplitter>
+#include <QSignalMapper>
 
 namespace ScIDE {
 
@@ -147,7 +148,7 @@ private slots:
     void onCurrentTabChanged( int index );
     void onCurrentEditorChanged( ScCodeEditor * );
     void onBoxActivated( CodeEditorBox * );
-    void onModificationChanged( bool modified );
+    void onDocModified( QObject * );
     void evaluateRegion();
     void evaluateLine();
     void evaluateDocument();
@@ -157,15 +158,18 @@ private:
     void breakSignalConnections();
     void createActions();
     void updateActions();
+    int addTab( Document * );
     CodeEditorBox *newBox();
     void setCurrentBox( CodeEditorBox * );
     void setCurrentEditor( ScCodeEditor * );
     void loadBoxState( CodeEditorBox *box, const QVariantList & data, const QList<Document *> & documentList );
     void loadSplitterState( QSplitter *, const QVariantMap & data, const QList<Document *> & documentList );
 
+    QAction *mActions[ActionRoleCount];
+
     SignalMultiplexer * mEditorSigMux;
     SignalMultiplexer * mBoxSigMux;
-    QAction *mActions[ActionRoleCount];
+    QSignalMapper mDocModifiedSigMap;
 
     // gui
     QTabBar *mTabs;
