@@ -133,16 +133,12 @@ code::
 { SinOsc.ar(Duty.kr(0.5, 0, (Dseries(0, 1, inf) * 200 + 300).dpoll(label: "freq"))) * 0.1 }.play;
 ::
 
-When using the internal server (see link::Classes/Server:: help), the scope window can give valuable information about the ongoing sound (see link::Classes/Stethoscope:: help):
+The scope window can give valuable information about the ongoing sound (see link::Classes/Stethoscope:: help):
 code::
-// must use internal server
-s = Server.internal.boot;
 { SinOsc.ar(SinOsc.kr(0.2, 0, 300, 400)) * 0.1 }.scope;
 ::
 A FreqScope window can be used for observing the spectrum of the output:
 code::
-// must use internal server
-Server.default = s = Server.internal.boot;
 
 // create a new analyzer
 FreqScope.new;

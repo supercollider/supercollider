@@ -315,8 +315,6 @@ code::
 
 
 
-Server.internal.boot;
-
 // hardsyncing a saw
 (
 	{
@@ -407,4 +405,3 @@ Server.internal.boot;
 	}.play;
 )
 ::
-

@@ -23,6 +23,9 @@ argument::mul
 
 argument::add
 
+instancemethods::
+private::signalRange
+
 examples::
 
 a plot:
@@ -52,7 +55,6 @@ code::
 
 scope:
 code::
-Server.internal.boot;
 { LFPulse.ar(500, 0, MouseX.kr, 0.5) }.scope;
 ::
 

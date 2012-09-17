@@ -117,17 +117,13 @@ a.group; // Returns a Group object. Note the ID of 1 (the default group) in the 
 The default group serves an important purpose: It provides a predictable basic Node tree so that methods such as Server-scope and Server-record (which create nodes which emphasis::must:: come after everything else) can function without running into order of execution problems. In the example below the scoping node will come after the default group.
 
 code::
-Server.internal.boot;
-
 { SinOsc.ar(mul: 0.2) }.scope(1);
 
 // watch the post window;
-Server.internal.queryAllNodes;
+s.queryAllNodes;
 
 // our SinOsc synth is within the default group (ID 1)
 // the scope node ('stethoscope') comes after the default group, so no problems
-
-Server.internal.quit;
 ::
 
 In general you should add nodes to the default group, or groups contained within it, and emphasis::not:: before or after it. When adding an 'effects' synth, for instance, one should resist the temptation to add it after the default group, and instead create a separate source group within the default group. This will prevent problems with scoping or recording.

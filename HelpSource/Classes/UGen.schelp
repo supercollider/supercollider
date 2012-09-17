@@ -81,12 +81,10 @@ Zoom factor
 
 discussion::
 code::
-Server.default = s = Server.internal.boot; // scope works only for internal server
+s.boot
 
 { Ringz.ar(PinkNoise.ar([0.1, 0.2]).scope(\pink), 2000, 1, 0.25) }.play; // multichannel works
 s.scope; // can still separately scope the output of the server
-
-Server.default = s = Server.local.boot; // switch back to local server.
 ::
 
 method:: poll

@@ -10,7 +10,6 @@ playN is a multichannel play method for link::Classes/Monitor:: and link::Classe
 code::
 // examples
 
-Server.default = s = Server.internal;
 s.boot;
 
 p = ProxySpace.push;

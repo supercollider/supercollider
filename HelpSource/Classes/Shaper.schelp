@@ -18,9 +18,8 @@ The input signal.
 
 
 Examples::
-Examples use the Internal Server to show the effect of waveshaping via a scope. Use .play instead if necessary.
 code::
-Server.default = s = Server.internal; s.boot;
+s.boot;
 
 b = Buffer.alloc(s, 512, 1, { |buf| buf.chebyMsg([1,0,1,1,0,1])});
 

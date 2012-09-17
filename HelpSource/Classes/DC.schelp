@@ -31,9 +31,7 @@ code::
 {LeakDC.ar(DC.ar(0.5))}.play;
 
 
-//For these examples, you might want to boot the internal server
-Server.default =s = Server.internal;
-s.boot;
+// show scope
 s.scope
 ::
 

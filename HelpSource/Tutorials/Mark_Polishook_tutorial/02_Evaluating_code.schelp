@@ -58,8 +58,7 @@ section::Scoping sound
 To scope whatever it is you're synthesizing (create a graphical display of the waveform):
 
 numberedList::
-## make sure the internal server is running (press its boot button)
-## press the default button on the internal server window.
+## make sure the server is running (press the boot button)
 ## evaluate your code as described above.
 
 For example, run

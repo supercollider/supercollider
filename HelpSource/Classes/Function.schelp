@@ -373,7 +373,7 @@ arguments
 
 method::scope
 
-As play above, but plays it on the internal Server, and calls Server-scope to open a scope window in which to view the output.
+As play above, and calls Server-scope to open a scope window in which to view the output.
 
 code::
 { FSinOsc.ar(440, 0, 0.3) }.scope(1)

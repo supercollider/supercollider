@@ -29,7 +29,7 @@ Examples::
 
 code::
 
-s = Server.internal.boot;
+s.boot;
 
 (
 SynthDef("help-mul", { arg out=0;

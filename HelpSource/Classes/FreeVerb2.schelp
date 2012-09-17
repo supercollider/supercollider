@@ -27,7 +27,6 @@ Valid parameter range from 0 to 1. Values outside this range are clipped by the 
 
 examples::
 code::
-Server.default = s = Server.internal;
 s.boot;
 
 // FreeVerb2 - demo synthdef
@@ -43,7 +42,7 @@ SynthDef(\FreeVerb2x2, {|outbus, mix = 0.25, room = 0.15, damp = 0.5, amp = 1.0|
 			signal[1], // Right Channel
 			mix, room, damp, amp)); // same params as FreeVerb 1 chn version
 
-}).send(s);
+}).add;
 )
 
 // 2ch source

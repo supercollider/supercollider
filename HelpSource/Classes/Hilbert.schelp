@@ -31,8 +31,8 @@ This value will be added to the output.
 Examples::
 
 code::
-s = Server.internal.boot;
+s = s.boot;
 s.scope;
-a = {Hilbert.ar(SinOsc.ar(100))}.play(s);
+a = {Hilbert.ar(SinOsc.ar(100)) * -20.dbamp}.play;
 a.release;
 ::

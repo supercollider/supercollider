@@ -137,8 +137,6 @@ section::More About Synth
 Synth understands some methods which allow you to change the values of args after a synth has been created. For now we'll just look at one, 'set'. Synth-set takes pairs of arg names and values.
 
 code::
-Server.default = Server.internal;
-s = Server.default;
 s.boot;
 (
 SynthDef.new("tutorial-args", { arg freq = 440, out = 0;

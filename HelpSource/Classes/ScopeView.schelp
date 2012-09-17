@@ -72,7 +72,6 @@ SUBSECTION:: A step-by-step example
 code::
 // execute these in succession
 (
-s = Server.internal;
 s.boot;
 )
 (
@@ -128,7 +127,7 @@ This explains all the options:
 code::
 (
 
-s = Server.internal;
+
 s.waitForBoot({ 
 
     var func, sdef1, sdef2, syn1, syn2,startButton ;

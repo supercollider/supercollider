@@ -203,10 +203,9 @@ subsection:: Monitoring with an oscilloscope
 method:: scope
 Displays a bus in a link::Classes/Stethoscope::, using the Bus' link::#-numChannels::, link::#-index::, and link::#-rate:: properties.
 code::
-Server.default = s = Server.internal
 s.boot
-b=Bus.audio(s,2);
-a={SinOsc.ar([330,440], 0, 0.4)}.play(s,b) //you won't hear this if you only have two channels
+b=Bus.audio(s, 2);
+a={SinOsc.ar([330,440], 0, 0.4)}.play(s, b) //you won't hear this if you only have two channels
 b.scope
 
 a.free;
@@ -215,7 +214,6 @@ b.free;
 
 Examples::
 code::
-s = Server.local;
 s.boot;
 
 (

@@ -21,7 +21,7 @@ Examples::
 
 code::
 
-Server.internal.boot;
+s.boot;
 
 (
 {  arg out=0;
