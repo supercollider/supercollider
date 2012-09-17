@@ -79,7 +79,7 @@ PostWindow::PostWindow(QWidget* parent):
     action->setSeparator(true);
     addAction(action);
 
-    mLineWrapAction = action = new QAction(tr("Wrap Lines"), this);
+    mLineWrapAction = action = new QAction(tr("Wrap Text"), this);
     action->setCheckable(true);
     addAction(action);
     connect( action, SIGNAL(triggered(bool)), this, SLOT(setLineWrap(bool)) );
@@ -236,6 +236,7 @@ void PostWindow::setLineWrap(bool lineWrapOn)
 {
     setLineWrapMode( lineWrapOn ? QPlainTextEdit::WidgetWidth : QPlainTextEdit::NoWrap );
     mLineWrapAction->setChecked(lineWrapOn);
+    Main::settings()->setValue( "IDE/postWindow/lineWrap", lineWrapOn );
 }
 
 PostDock::PostDock(QWidget* parent):

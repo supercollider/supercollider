@@ -78,6 +78,7 @@ void EditorPage::load( Manager *s )
     ui->spaceIndent->setChecked( s->value("spaceIndent").toBool() );
     ui->indentWidth->setValue( s->value("indentWidth").toInt() );
     ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation").toBool() );
+    ui->editorLineWrap->setChecked( s->value("lineWrap").toBool() );
 
     ui->blinkDuration->setValue( s->value("blinkDuration").toInt() );
 
@@ -117,7 +118,10 @@ void EditorPage::load( Manager *s )
 
     s->endGroup(); // IDE/editor
 
-    ui->postWindowScrollback->setValue( s->value("IDE/postWindow/scrollback").toInt() );
+    s->beginGroup("IDE/postWindow");
+    ui->postWindowScrollback->setValue( s->value("scrollback").toInt() );
+    ui->postWindowLineWrap->setChecked( s->value("lineWrap").toBool() );
+    s->endGroup();
 
     updateFontPreview();
     updateTextFormatDisplayCommons();
@@ -196,6 +200,7 @@ void EditorPage::store( Manager *s )
     s->setValue("spaceIndent", ui->spaceIndent->isChecked());
     s->setValue("indentWidth", ui->indentWidth->value());
     s->setValue("stepForwardEvaluation", ui->stepForwardEvaluation->isChecked());
+    s->setValue("lineWrap", ui->editorLineWrap->isChecked());
 
     s->setValue("blinkDuration", ui->blinkDuration->value());
 
@@ -235,7 +240,10 @@ void EditorPage::store( Manager *s )
 
     s->endGroup();
 
-    s->setValue("IDE/postWindow/scrollback", ui->postWindowScrollback->value());
+    s->beginGroup("IDE/postWindow");
+    s->setValue("scrollback", ui->postWindowScrollback->value());
+    s->setValue("lineWrap", ui->postWindowLineWrap->isChecked());
+    s->endGroup();
 }
 
 void EditorPage::onCurrentTabChanged(int)
