@@ -166,6 +166,8 @@ MainWindow::MainWindow(Main * main) :
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
+    connect(main, SIGNAL(storeSettingsRequest(Settings::Manager*)),
+            this, SLOT(storeSettings(Settings::Manager*)));
 
     // ToolBox
     connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
@@ -1075,6 +1077,10 @@ void MainWindow::applySettings( Settings::Manager * settings )
     mCmdLine->applySettings(settings);
 }
 
+void MainWindow::storeSettings( Settings::Manager * settings )
+{
+    mPostDock->mPostWindow->storeSettings(settings);
+}
 
 void MainWindow::updateSessionsMenu()
 {

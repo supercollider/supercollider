@@ -39,7 +39,6 @@ PostWindow::PostWindow(QWidget* parent):
     mNewlinePending(false)
 {
     setReadOnly(true);
-    setLineWrapMode(QPlainTextEdit::NoWrap);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
@@ -80,6 +79,11 @@ PostWindow::PostWindow(QWidget* parent):
     action->setSeparator(true);
     addAction(action);
 
+    mLineWrapAction = action = new QAction(tr("Wrap Lines"), this);
+    action->setCheckable(true);
+    addAction(action);
+    connect( action, SIGNAL(triggered(bool)), this, SLOT(setLineWrap(bool)) );
+
     mAutoScrollAction = new QAction(tr("Auto Scroll"), this);
     mAutoScrollAction->setToolTip(tr("Scroll to bottom on new posts"));
     mAutoScrollAction->setCheckable(true);
@@ -115,9 +119,17 @@ void PostWindow::applySettings(Settings::Manager * settings)
     }
     settings->endGroup(); // colors
 
+    bool lineWrap = settings->value("IDE/postWindow/lineWrap").toBool();
+
     setMaximumBlockCount(scrollback);
     setFont(font);
     setPalette(palette);
+    setLineWrap( lineWrap );
+}
+
+void PostWindow::storeSettings( Settings::Manager * settings )
+{
+    settings->setValue("IDE/postWindow/lineWrap", mLineWrapAction->isChecked() );
 }
 
 QString PostWindow::symbolUnderCursor()
@@ -220,6 +232,11 @@ void PostWindow::findReferences()
     Main::findReferences(symbolUnderCursor(), MainWindow::instance());
 }
 
+void PostWindow::setLineWrap(bool lineWrapOn)
+{
+    setLineWrapMode( lineWrapOn ? QPlainTextEdit::WidgetWidth : QPlainTextEdit::NoWrap );
+    mLineWrapAction->setChecked(lineWrapOn);
+}
 
 PostDock::PostDock(QWidget* parent):
     QDockWidget(tr("Post window"), parent)

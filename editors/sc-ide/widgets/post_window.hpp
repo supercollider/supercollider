@@ -40,6 +40,7 @@ public:
     explicit PostWindow(QWidget* parent = 0);
 
     void applySettings( Settings::Manager * );
+    void storeSettings( Settings::Manager * );
 
     QSize sizeHint() const { return mSizeHint; }
     QString symbolUnderCursor();
@@ -59,6 +60,7 @@ public slots:
 
 private slots:
     void onAutoScrollTriggered(bool);
+    void setLineWrap(bool on);
 
 private:
     friend class PostDock;
@@ -69,6 +71,7 @@ private:
 
     QAction * mAutoScrollAction;
     QAction * mClearAction;
+    QAction * mLineWrapAction;
     bool mNewlinePending;
     QSize mSizeHint;
 };
