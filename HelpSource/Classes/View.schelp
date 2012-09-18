@@ -47,6 +47,7 @@ METHOD:: globalKeyDownAction
 
 	When the action object is evaluated, it is passed the following arguments: view, char, modifiers, unicode, keycode.
 
+note:: The Qt GUI by default installs a default globalKeyDownAction, that calls code::CmdPeriod.run::. ::
 
 METHOD:: globalKeyUpAction
 
