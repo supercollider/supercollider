@@ -1245,7 +1245,9 @@ void MainWindow::dropEvent( QDropEvent * event )
     if (data->hasUrls()) {
         foreach (QUrl url, data->urls()) {
             if (url.scheme() == QString("file")) { // LATER: use isLocalFile
-                Main::documentManager()->open(url.toLocalFile());
+                QString fpath = url.toLocalFile();
+                if (MainWindow::checkFileExtension(fpath))
+                    Main::documentManager()->open(fpath);
             }
         }
     }
