@@ -542,10 +542,11 @@ void ScCodeEditor::removeSingleLineComment(QTextCursor cursor)
 {
     QTextBlock currentBlock(cursor.block());
     cursor.movePosition(QTextCursor::StartOfBlock);
-    cursor.setPosition(cursor.position() + indentedStartOfLine(currentBlock) + 2, QTextCursor::KeepAnchor);
+    cursor.setPosition(cursor.position() + indentedStartOfLine(currentBlock));
+    cursor.setPosition(cursor.position() + 2, QTextCursor::KeepAnchor);
 
     if (!cursor.selectedText().endsWith(QString("//")))
-        cursor.setPosition(cursor.anchor() + indentedStartOfLine(currentBlock), QTextCursor::KeepAnchor);
+        return;
 
     cursor.insertText("");
 }
