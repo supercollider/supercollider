@@ -188,10 +188,7 @@ MainWindow::MainWindow(Main * main) :
     updateRecentDocsMenu();
 
     QIcon icon;
-    icon.addFile(":/icons/sc-cube-128");
-    icon.addFile(":/icons/sc-cube-48");
-    icon.addFile(":/icons/sc-cube-32");
-    icon.addFile(":/icons/sc-cube-16");
+    icon.addFile(":/icons/sc-ide-128");
     QApplication::setWindowIcon(icon);
 
     updateWindowTitle();
