@@ -62,10 +62,10 @@ build requirements (optional features)
 (most of these will be available in your linux distribution as packages )
 ------------------------------------------------------------------------
 
- * qt >= 4.5 (+ qtwebkit)
-   http://qt.nokia.com/
-   cross-platform graphical user interface library, for sclang's GUI
-   classes
+ * Qt >= 4.7 (+ qtwebkit)
+   http://qt-project.org/
+   cross-platform graphical user interface library, for Qt IDE and
+   sclang's Qt GUI kit
 
  * alsa
    http://www.alsa-project.org/
