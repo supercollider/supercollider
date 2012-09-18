@@ -194,6 +194,7 @@ private:
     void updateSessionsMenu();
     void updateClockWidget( bool isFullScreen );
     void openSession( QString const & sessionName );
+    bool checkFileExtension( const QString & fpath );
 
     Main *mMain;
 

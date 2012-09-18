@@ -1227,13 +1227,26 @@ void MainWindow::dragEnterEvent( QDragEnterEvent * event )
     }
 }
 
+bool MainWindow::checkFileExtension( const QString & fpath ) {
+    if (fpath.endsWith(".wav") || fpath.endsWith(".mp3") || fpath.endsWith(".aiff") || fpath.endsWith(".ogg")){
+        int ret = QMessageBox::question(this, tr("Open binary file?"),
+                tr("This file has a binary file extension. Are you sure you want to open it as a text file?"),
+                QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+        if(ret != QMessageBox::Ok)
+            return false;
+    }
+    return true;
+}
+
 void MainWindow::dropEvent( QDropEvent * event )
 {
     const QMimeData * data = event->mimeData();
     if (data->hasUrls()) {
         foreach (QUrl url, data->urls()) {
             if (url.isLocalFile()) {
-                Main::documentManager()->open(url.toLocalFile());
+                QString fpath = url.toLocalFile();
+                if(MainWindow::checkFileExtension(fpath))
+                    Main::documentManager()->open(fpath);
             }
         }
     }
