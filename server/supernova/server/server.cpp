@@ -42,8 +42,8 @@ namespace nova
 class nova_server * instance = 0;
 
 nova_server::nova_server(server_arguments const & args):
-    scheduler<nova::scheduler_hook, thread_init_functor>(args.threads, !args.non_rt),
     server_shared_memory_creator(args.port(), args.control_busses),
+    scheduler<nova::scheduler_hook, thread_init_functor>(args.threads, !args.non_rt),
     buffer_manager(1024), sc_osc_handler(args), dsp_queue_dirty(false)
 {
     assert(instance == 0);
