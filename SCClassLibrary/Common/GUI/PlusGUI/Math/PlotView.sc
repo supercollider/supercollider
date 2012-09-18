@@ -835,14 +835,18 @@ Plotter {
 				var numChan = buf.numChannels;
 				{
 					plotter.domainSpecs = ControlSpec(0, duration, units: "s");
-					minval !? { plotter.minval = minval; };
-					maxval !? { plotter.maxval = maxval };
 					plotter.setValue(
 						array.unlace(buf.numChannels).collect(_.drop(-1)),
-						findSpecs: minval.isNil and: { maxval.isNil },
-						refresh: true
+						findSpecs: true,
+						refresh: false
 					);
-
+					if(minval.isNumber && maxval.isNumber,{
+						plotter.specs = [minval, maxval].asSpec
+					},{
+						minval !? { plotter.minval = minval };
+						maxval !? { plotter.maxval = maxval };
+					});
+					plotter.refresh;
 				}.defer
 			})
 		};
@@ -866,18 +870,19 @@ Plotter {
 		);
 		this.loadToFloatArray(action: { |array, buf|
 			{
+				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units:"frames");
+				plotter.setValue(
+					array.unlace(buf.numChannels),
+					findSpecs: true,
+					refresh: false
+				);
 				if(minval.isNumber && maxval.isNumber,{
 					plotter.specs = [minval, maxval].asSpec
 				},{
 					minval !? { plotter.minval = minval };
 					maxval !? { plotter.maxval = maxval };
 				});
-				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units:"frames");
-				plotter.setValue(
-					array.unlace(buf.numChannels),
-					findSpecs: false,
-					refresh: true
-				);
+				plotter.refresh;
 			}.defer
 		});
 		^plotter
