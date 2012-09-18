@@ -493,6 +493,23 @@ static bool isSingleLineComment(QTextBlock const & block)
     return commentRegex.exactMatch(block.text());
 }
 
+static bool isSingleLineComment(QTextCursor const & selection)
+{
+    QTextCursor cursor(selection);
+    cursor.setPosition(selection.selectionStart());
+    QTextBlock startBlock = cursor.block();
+
+    cursor.setPosition(selection.selectionEnd() - 1);
+    QTextBlock endBlock = cursor.block();
+
+    for (QTextBlock block = startBlock; block != endBlock.next(); block = block.next()) {
+        if (!isSingleLineComment(block))
+            return false;
+    }
+
+    return true;
+}
+
 static bool isSelectionComment(QString const & text)
 {
     QString trimmed = text.trimmed();
@@ -586,11 +603,12 @@ void ScCodeEditor::toggleCommentSelection()
     cursor.beginEditBlock();
 
     if (isBlockOnlySelection(cursor)) {
+        const bool isComment = isSingleLineComment(cursor);
+
         QTextCursor selectionCursor(cursor);
         selectionCursor.setPosition(cursor.selectionStart());
 
         QTextBlock currentBlock = selectionCursor.block();
-        bool isComment = isSingleLineComment(currentBlock);
         int firstBlockIndentation = isComment ? 0
                                               : indentationLevel(selectionCursor);
 
