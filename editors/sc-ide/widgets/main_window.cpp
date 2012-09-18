@@ -1219,8 +1219,7 @@ void MainWindow::dragEnterEvent( QDragEnterEvent * event )
 {
     if (event->mimeData()->hasUrls()) {
         foreach (QUrl url, event->mimeData()->urls()) {
-            if (url.scheme() == QString("file")) { // LATER: use isLocalFile
-                // LATER: check mime type ?
+            if (url.isLocalFile()) {
                 event->acceptProposedAction();
                 return;
             }
@@ -1233,8 +1232,9 @@ void MainWindow::dropEvent( QDropEvent * event )
     const QMimeData * data = event->mimeData();
     if (data->hasUrls()) {
         foreach (QUrl url, data->urls()) {
-            if (url.scheme() == QString("file")) // LATER: use isLocalFile
+            if (url.isLocalFile()) {
                 Main::documentManager()->open(url.toLocalFile());
+            }
         }
     }
 }
