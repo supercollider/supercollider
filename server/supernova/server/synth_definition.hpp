@@ -31,7 +31,7 @@
 
 namespace nova {
 
-typedef std::int16_t slot_index_t;
+typedef std::int32_t slot_index_t;
 typedef c_string slot_identifier_type;
 
 namespace detail {
@@ -87,7 +87,7 @@ protected:
         bool success = slot_resolver_map.insert(*elem).second;
         assert(success);
 
-        if (i >= slot_names.size())
+        if (size_t(i) >= slot_names.size())
             slot_names.resize(i+1, nullptr);
         slot_names[i] = elem->name();
     }

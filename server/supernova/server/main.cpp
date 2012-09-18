@@ -77,7 +77,7 @@ void connect_jack_ports(void)
         else {
             vector<string> portnames;
             boost::split(portnames, input_port, is_any_of(","));
-            for (int i = 0; i != portnames.size(); ++i)
+            for (size_t i = 0; i != portnames.size(); ++i)
                 instance->connect_input(i, portnames[i].c_str());
         }
     }
@@ -91,7 +91,7 @@ void connect_jack_ports(void)
         else {
             vector<string> portnames;
             boost::split(portnames, output_port, is_any_of(","));
-            for (int i = 0; i != portnames.size(); ++i)
+            for (size_t i = 0; i != portnames.size(); ++i)
                 instance->connect_output(i, portnames[i].c_str());
         }
     }
@@ -125,7 +125,7 @@ void start_audio_backend(server_arguments const & args)
     instance->prepare_backend();
     instance->activate_audio();
 
-    int real_sampling_rate = instance->get_samplerate();
+    unsigned int real_sampling_rate = instance->get_samplerate();
 
     if (args.samplerate && args.samplerate != real_sampling_rate) {
         cout << "samplerate mismatch between command line argument and jack" << endl;

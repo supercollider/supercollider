@@ -49,7 +49,7 @@ struct asynchronous_log:
     bool log_printf(const char *fmt, va_list vargs)
     {
         std::array<char, 4096> scratchpad;
-        int print_result = vsnprintf(scratchpad.data(), scratchpad.size(), fmt, vargs);
+        size_t print_result = vsnprintf(scratchpad.data(), scratchpad.size(), fmt, vargs);
 
         if (print_result >= scratchpad.size())
             fprintf(stderr, "warning: log message truncated");
