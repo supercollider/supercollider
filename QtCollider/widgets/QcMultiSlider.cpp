@@ -182,7 +182,7 @@ void QcMultiSlider::mousePressEvent( QMouseEvent *e )
   if( !c ) return;
 
   bool horiz = ort == Qt::Horizontal;
-  double spacing;
+  qreal spacing;
 
   QRect r( valueRect( c - startIndex, spacing ) );
 
