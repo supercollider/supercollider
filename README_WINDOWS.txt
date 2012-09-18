@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------
-Supercollider 3.5 for Windows
+Supercollider 3.6 for Windows
 ------------------------------------------------------------------------
 
 This is the Windows version of James McCartney's SuperCollider synthesis 
@@ -19,19 +19,11 @@ should subscribe to the mailing lists:
 System Requirements
 ------------------------------------------------------------------------
 
-* Windows 7/Vista/XP/2000
-* (Optional) Gedit text editor
+** Operating System **
 
-The preferred way to use SuperCollider on Windows is in combination
-with the Gedit text editor. SuperCollider for Windows comes with
-Sced - a plugin for Gedit that provides syntax highlighting for
-SuperCollider code, and allows easy interaction with SuperCollider
-from within the editor.
+Windows 7/Vista/XP/2000
 
-NOTE: There is currently an issue on Windows XP that the default (local)
-synthesis server can not be started from within Gedit. To work around
-that, either use the internal server, or start up a server from command
-line and connect to it from Gedit. This issue is not present on Windows 7.
+** Sound Card **
 
 Most common sound cards will work fine - the sound card should be one
 that is supported by PortAudio (http://www.portaudio.com/). If you have
@@ -43,37 +35,21 @@ for advice on how to tune your operating system to achieve the best results
 Installation
 ------------------------------------------------------------------------
 
-If you intend to use SuperCollider in combination with Gedit, please
-install the latest Gedit version for Windows prior to installing
-SuperCollider. You can download Gedit from this address:
-
-http://ftp.gnome.org/pub/GNOME/binaries/win32/gedit/2.30/gedit-setup-2.30.1-1.exe
-
-The SuperCollider installer will ask you whether you also want to install
-Sced - the SuperCollider plugin for Gedit. If you decide so, you will be
-asked to specify the directory where you have installed Gedit (the installer
-will probably guess that automatically).
+Simply run the installer, and choose a path where all the application
+files will be unpacked.
 
 After installation, you can use SuperCollider in two ways:
-A) From within Gedit text editor (if you chose to install Sced).
-B) Via the command-line.
-
-The two ways are described below.
+* Using the provided SuperCollider IDE (recommended)
+* In command line mode
 
 ------------------------------------------------------------------------
-Using SuperCollider with Gedit text editor
+Using the SuperCollider IDE
 ------------------------------------------------------------------------
 
-This is the preferred and more powerful way.
+To start up the IDE, run the scide.exe program found within the
+installation folder.
 
-1. Start up Gedit, and first enable the Sced plugin in the preferences
-dialog: "Edit > Preferences > Plugins". You only need to do this step
-once. After that the plugin will stay enabled whenever you restart Gedit.
-
-2. To start up SuperCollider, click on the menu entry
-"Tools > SuperCollider Mode". This will start the interpreter and add
-a new menu named "SuperCollider", which gives you many options for
-further interaction with the interpreter and the sound synthesis server.
+You can get more help on using the IDE via the Help menu.
 
 ------------------------------------------------------------------------
 Using SuperCollider in command line mode
