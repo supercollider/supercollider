@@ -601,6 +601,21 @@ void ScCodeEditor::toggleCommentSelection()
                 removeSingleLineComment(blockCursor);
             currentBlock = currentBlock.next();
         } while (currentBlock.isValid() && currentBlock.position() < cursor.selectionEnd());
+
+        if (!isComment) {
+            // fix up selection
+            QTextCursor newSelection(cursor);
+            if (cursor.anchor() < cursor.position()) {
+                newSelection.setPosition(newSelection.selectionStart());
+                newSelection.movePosition(QTextCursor::StartOfBlock);
+                newSelection.setPosition(cursor.selectionEnd(), QTextCursor::KeepAnchor);
+            } else {
+                newSelection.setPosition(newSelection.selectionEnd());
+                newSelection.setPosition(cursor.selectionStart(), QTextCursor::KeepAnchor);
+                newSelection.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
+            }
+            setTextCursor(newSelection);
+        }
     } else {
         QString selectionText = cursor.selectedText();
         QTextCursor selectionCursor(cursor);
@@ -609,14 +624,21 @@ void ScCodeEditor::toggleCommentSelection()
             selectionText.chop(2);
             selectionCursor.insertText(selectionText);
         } else {
-            selectionText = QString("/* ") + selectionText + QString(" */");
+            selectionText = QString("/*") + selectionText + QString("*/");
             selectionCursor.insertText(selectionText);
+        }
 
-            int position = selectionCursor.position();
+        // fix up selection
+        const int position = selectionCursor.position();
+        const int anchor   = selectionCursor.anchor();
+        if (position > anchor) {
             cursor.setPosition(position - selectionText.size());
             cursor.setPosition(position, QTextCursor::KeepAnchor);
-            setTextCursor(cursor);
+        } else {
+            cursor.setPosition(position);
+            cursor.setPosition(position - selectionText.size(), QTextCursor::KeepAnchor);
         }
+        setTextCursor(cursor);
     }
 
     cursor.endEditBlock();
