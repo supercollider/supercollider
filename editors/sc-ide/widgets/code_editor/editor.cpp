@@ -394,6 +394,22 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
         cursor.insertBlock();
         break;
 
+    case Qt::Key_Delete:
+        if (e->modifiers() & Qt::META) {
+            cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+            cursor.removeSelectedText();
+        } else
+            QPlainTextEdit::keyPressEvent(e);
+        break;
+
+    case Qt::Key_Backspace:
+        if (e->modifiers() & Qt::META) {
+            cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
+            cursor.removeSelectedText();
+        } else
+            QPlainTextEdit::keyPressEvent(e);
+        break;
+
     default:
         QPlainTextEdit::keyPressEvent(e);
     }
