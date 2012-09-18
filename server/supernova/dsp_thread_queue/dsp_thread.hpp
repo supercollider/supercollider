@@ -72,7 +72,7 @@ public:
             if (stack_ == NULL)
                 throw std::bad_alloc();
             // touch stack to avoid page faults
-            for (int i = 0; i != stack_size; ++i)
+            for (size_t i = 0; i != stack_size; ++i)
                 stack_[i] = 0;
             mlock(stack_, stack_size);
         }

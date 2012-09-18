@@ -73,7 +73,7 @@ public:
 	{
 		segment.deallocate(control_busses_.get());
 
-		for (int i = 0; i != scope_buffers.size(); ++i)
+		for (size_t i = 0; i != scope_buffers.size(); ++i)
 			segment.deallocate(scope_buffers[i].get());
 	}
 
