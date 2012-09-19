@@ -323,7 +323,7 @@ OSCdef : OSCFunc {
 	printOn { arg stream; stream << this.class.name << "(" <<* [key, path, srcID, recvPort, argTemplate] << ")" }
 
 	*freeAll {
-		var objs = all.shallowCopy;
+		var objs = all.copy;
 		objs.do(_.free)
 	}
 }
@@ -576,7 +576,7 @@ MIDIdef : MIDIFunc {
 	printOn { arg stream; stream << this.class.name << "(" <<* [key, msgType, msgNum, chan, argTemplate] << ")" }
 
 	*freeAll {
-		var objs = all.shallowCopy;
+		var objs = all.copy;
 		objs.do(_.free)
 	}
 }
