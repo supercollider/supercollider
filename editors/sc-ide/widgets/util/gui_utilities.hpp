@@ -21,8 +21,9 @@
 #ifndef SCIDE_WIDGETS_UTIL_GUI_UTILITIES_HPP_INCLUDED
 #define SCIDE_WIDGETS_UTIL_GUI_UTILITIES_HPP_INCLUDED
 
+#include <QPlainTextEdit>
 #include <QRegExp>
-#include <QDebug>
+#include <QTextBlock>
 
 namespace ScIDE {
 
@@ -42,6 +43,33 @@ inline QString wordInStringAt ( int position, const QString & source )
     }
 
     return QString();
+}
+
+inline void extendSelectionForEnvVar(QPlainTextEdit * textEdit, QTextCursor selection)
+{
+    if (selection.hasSelection()) {
+        if (selection.selectedText() == QString("~")) {
+            QTextCursor wordAfter(selection);
+            wordAfter.movePosition(QTextCursor::NextCharacter);
+            wordAfter.select(QTextCursor::WordUnderCursor);
+            if ( wordAfter.hasSelection() && (selection.block() == wordAfter.block()) ) {
+                selection.setPosition(selection.selectionStart());
+                selection.setPosition(wordAfter.selectionEnd(), QTextCursor::KeepAnchor);
+                textEdit->setTextCursor(selection);
+            }
+        } else {
+            int positionBeforeSelection = selection.selectionStart() - 1;
+            if (positionBeforeSelection >= 0) {
+                QChar charBeforeSelection = textEdit->document()->characterAt(positionBeforeSelection);
+                if (charBeforeSelection == QChar('~')) {
+                    QTextCursor extendedSelection = textEdit->textCursor();
+                    extendedSelection.setPosition(positionBeforeSelection);
+                    extendedSelection.setPosition(selection.selectionEnd(), QTextCursor::KeepAnchor);
+                    textEdit->setTextCursor(extendedSelection);
+                }
+            }
+        }
+    }
 }
 
 } // namespace ScIDE
