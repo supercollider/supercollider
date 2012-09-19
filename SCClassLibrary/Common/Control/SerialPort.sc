@@ -69,6 +69,7 @@ SerialPort
 	}
 	close {
 		if (this.isOpen) {
+			this.doneAction.value;
 			this.prClose;
 			allPorts.remove(this);
 // 			CmdPeriod.remove(this);
@@ -121,9 +122,6 @@ SerialPort
 		}
 	}
 
-	doDoneAction{
-		doneAction.value;
-	}
 
 // 	cmdPeriod {
 // 		// remove waiting threads
@@ -156,11 +154,5 @@ SerialPort
 	prDataAvailable {
 		// callback
 		semaphore.signal;
-	}
-	prDoneAction {
-		// callback
-		this.doDoneAction;
-		// cleanup the port
-		this.prCleanup
 	}
 }
