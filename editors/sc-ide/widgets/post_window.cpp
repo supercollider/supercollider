@@ -223,6 +223,17 @@ void PostWindow::focusOutEvent( QFocusEvent * event )
     event->accept();
 }
 
+void PostWindow::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    QTextCursor cursor = textCursor();
+    cursor.beginEditBlock();
+
+    QPlainTextEdit::mouseDoubleClickEvent(e);
+    extendSelectionForEnvVar(this, textCursor());
+
+    cursor.endEditBlock();
+}
+
 bool PostWindow::openDocumentation()
 {
     return Main::openDocumentation(symbolUnderCursor());

@@ -21,6 +21,7 @@
 #include "sc_editor.hpp"
 #include "autocompleter.hpp"
 #include "line_indicator.hpp"
+#include "../util/gui_utilities.hpp"
 #include "../../core/main.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
@@ -216,7 +217,12 @@ void ScCodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
         return;
     }
 
+    cursor.beginEditBlock();
     GenericCodeEditor::mouseDoubleClickEvent(e);
+
+    extendSelectionForEnvVar(this, textCursor());
+
+    cursor.endEditBlock();
 }
 
 void ScCodeEditor::mouseMoveEvent( QMouseEvent *e )
