@@ -28,8 +28,8 @@
 #include <QTreeWidgetItem>
 #include <QKeyEvent>
 
-Q_DECLARE_METATYPE(QAction*);
-Q_DECLARE_METATYPE(QKeySequence);
+Q_DECLARE_METATYPE(QAction*)
+Q_DECLARE_METATYPE(QKeySequence)
 
 namespace ScIDE { namespace Settings {
 
