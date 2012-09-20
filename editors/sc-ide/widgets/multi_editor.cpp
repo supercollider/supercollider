@@ -531,29 +531,32 @@ void MultiEditor::updateActions()
     mActions[Copy]->setEnabled( editor && editor->textCursor().hasSelection() );
     mActions[Cut]->setEnabled( mActions[Copy]->isEnabled() );
     mActions[Paste]->setEnabled( editor );
-    mActions[ToggleComment]->setEnabled( editor );
     mActions[ToggleOverwriteMode]->setEnabled( editor );
     mActions[CopyLineUp]->setEnabled( editor );
     mActions[CopyLineDown]->setEnabled( editor );
     mActions[MoveLineUp]->setEnabled( editor );
     mActions[MoveLineDown]->setEnabled( editor );
-    mActions[GotoPreviousBlock]->setEnabled( editor );
-    mActions[GotoNextBlock]->setEnabled( editor );
-    mActions[GotoPreviousRegion]->setEnabled( editor );
-    mActions[GotoNextRegion]->setEnabled( editor );
     mActions[GotoPreviousEmptyLine]->setEnabled( editor );
     mActions[GotoNextEmptyLine]->setEnabled( editor );
-    mActions[SelectRegion]->setEnabled( editor );
-
-    mActions[IndentLineOrRegion]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
     mActions[ShrinkFont]->setEnabled( editor );
-    mActions[EvaluateCurrentDocument]->setEnabled( editor );
-    mActions[EvaluateRegion]->setEnabled( editor );
-    mActions[EvaluateLine]->setEnabled( editor );
     mActions[ResetFontSize]->setEnabled( editor );
     mActions[ShowWhitespace]->setEnabled( editor );
     mActions[ShowWhitespace]->setChecked( editor && editor->showWhitespace() );
+
+    // ScLang-specific actions
+    bool editorIsScCodeEditor = qobject_cast<ScCodeEditor*>(editor); // NOOP at the moment, but
+    mActions[ToggleComment]->setEnabled( editor && editorIsScCodeEditor );
+    mActions[GotoPreviousBlock]->setEnabled( editor && editorIsScCodeEditor );
+    mActions[GotoNextBlock]->setEnabled( editor && editorIsScCodeEditor );
+    mActions[GotoPreviousRegion]->setEnabled( editor && editorIsScCodeEditor );
+    mActions[GotoNextRegion]->setEnabled( editor && editorIsScCodeEditor );
+    mActions[SelectRegion]->setEnabled( editor && editorIsScCodeEditor );
+    mActions[IndentLineOrRegion]->setEnabled( editor && editorIsScCodeEditor );
+
+    mActions[EvaluateCurrentDocument]->setEnabled( editor && editorIsScCodeEditor );
+    mActions[EvaluateRegion]->setEnabled( editor && editorIsScCodeEditor );
+    mActions[EvaluateLine]->setEnabled( editor && editorIsScCodeEditor );
 }
 
 void MultiEditor::applySettings( Settings::Manager *s )
