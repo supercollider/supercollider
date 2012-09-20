@@ -668,9 +668,11 @@ void MainWindow::onCurrentDocumentChanged( Document * doc )
 {
     updateWindowTitle();
 
+    mActions[DocClose]->setEnabled(doc);
+    mActions[DocCloseAll]->setEnabled(doc);
+    mActions[DocReload]->setEnabled(doc);
     mActions[DocSave]->setEnabled(doc);
     mActions[DocSaveAs]->setEnabled(doc);
-    mActions[DocClose]->setEnabled(doc);
 
     ScCodeEditor *editor = mEditors->currentEditor();
     mFindReplaceTool->setEditor( editor );
