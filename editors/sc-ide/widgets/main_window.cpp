@@ -361,15 +361,23 @@ void MainWindow::createActions()
 
     // Help
     mActions[Help] = act = new QAction(
-    QIcon::fromTheme("system-help"), tr("Open Help Browser"), this);
+        QIcon::fromTheme("system-help"), tr("Open Help Browser"), this);
     act->setStatusTip(tr("Open help."));
     connect(act, SIGNAL(triggered()), this, SLOT(openHelp()));
 
     mActions[HelpForSelection] = act = new QAction(
-    QIcon::fromTheme("system-help"), tr("&Help for Selection"), this);
+        QIcon::fromTheme("system-help"), tr("&Help for Selection"), this);
     act->setShortcut(tr("Ctrl+D", "Help for selection"));
     act->setStatusTip(tr("Find help for selected text"));
     connect(act, SIGNAL(triggered()), this, SLOT(openDocumentation()));
+
+    mActions[ShowAbout] = act = new QAction(
+        QIcon::fromTheme("show-about"), tr("&About SuperCollider"), this);
+    connect(act, SIGNAL(triggered()), this, SLOT(showAbout()));
+
+    mActions[ShowAboutQT] = act = new QAction(
+        QIcon::fromTheme("show-about-qt"), tr("About &Qt"), this);
+    connect(act, SIGNAL(triggered()), this, SLOT(showAboutQT()));
 
     // Server
     mActions[ServerToggleRunning] = act = new QAction(tr("Boot or quit server"), this);
@@ -524,6 +532,9 @@ void MainWindow::createMenus()
     menu->addAction( mActions[Help] );
     menu->addAction( mActions[HelpForSelection] );
     menu->addAction( mActions[LookupDocumentation] );
+    menu->addSeparator();
+    menu->addAction( mActions[ShowAbout] );
+    menu->addAction( mActions[ShowAboutQT] );
 
     menuBar()->addMenu(menu);
 }
@@ -1099,6 +1110,26 @@ void MainWindow::showSwitchSessionDialog()
     delete dialog;
 }
 
+void MainWindow::showAbout()
+{
+    QString aboutString =
+            "<h3>SuperCollider %1</h3>"
+            "&copy; James McCartney and others.<br>"
+            "<h3>SuperCollider IDE</h3>"
+            "&copy; Jakob Leben, Tim Blechmann and others.<br>"
+            "Development partially funded by Kiberpipa."
+            ;
+    aboutString = aboutString.arg("3.6");
+
+    QMessageBox::about(this, "About SuperCollider IDE", aboutString);
+}
+
+void MainWindow::showAboutQT()
+{
+    QMessageBox::aboutQt(this);
+}
+
+
 void MainWindow::showCmdLine()
 {
     mToolBox->setCurrentWidget( mCmdLine );
@@ -1182,6 +1213,8 @@ void MainWindow::openHelp()
     QString code = QString("Help.gui");
     Main::scProcess()->evaluateCode(code, true);
 }
+
+
 
 void MainWindow::serverToggleRunning()
 {
