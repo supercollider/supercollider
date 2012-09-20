@@ -351,7 +351,10 @@ void MainWindow::createActions()
     connect(act, SIGNAL(triggered(bool)), this, SLOT(findReferences()));
 
     // Settings
-    mActions[ShowSettings] = act = new QAction(tr("&Configure IDE..."), this);
+    mActions[ShowSettings] = act = new QAction(tr("&Preferences"), this);
+#ifdef Q_OS_MAC
+    act->setShortcut(tr("Ctrl+,"), "Show configuration dialog");
+#endif
     act->setStatusTip(tr("Show configuration dialog"));
     connect(act, SIGNAL(triggered()), this, SLOT(showSettings()));
 
@@ -451,6 +454,9 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::ToggleOverwriteMode) );
     menu->addAction( mEditors->action(MultiEditor::SelectRegion) );
 
+    menu->addSeparator();
+    menu->addAction( mActions[ShowSettings] );
+
     menuBar()->addMenu(menu);
 
     menu = new QMenu(tr("&View"), this);
@@ -511,11 +517,6 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::RunMain) );
     menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::StopMain) );
-
-    menuBar()->addMenu(menu);
-
-    menu = new QMenu(tr("&Settings"), this);
-    menu->addAction( mActions[ShowSettings] );
 
     menuBar()->addMenu(menu);
 
