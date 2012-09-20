@@ -96,6 +96,8 @@ public:
         // Help
         Help,
         HelpForSelection,
+        ShowAbout,
+        ShowAboutQT,
 
         // Server
         ServerToggleRunning,
@@ -181,6 +183,8 @@ private Q_SLOTS:
     void applySettings( Settings::Manager * );
     void storeSettings( Settings::Manager * );
     void showSwitchSessionDialog();
+    void showAbout();
+    void showAboutQT();
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
