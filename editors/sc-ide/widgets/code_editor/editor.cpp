@@ -763,6 +763,9 @@ void GenericCodeEditor::gotoEmptyLineUpDown(bool up)
 
 void GenericCodeEditor::hideMouseCursor()
 {
+#ifdef Q_OS_MAC
+    return; // LATER: for some reason this crashes on osx. we should try to figure out why
+#endif
     QCursor * overrideCursor = QApplication::overrideCursor();
     if (!overrideCursor || overrideCursor->shape() != Qt::BlankCursor)
         QApplication::setOverrideCursor( Qt::BlankCursor );
