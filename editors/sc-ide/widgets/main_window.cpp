@@ -353,7 +353,7 @@ void MainWindow::createActions()
     // Settings
     mActions[ShowSettings] = act = new QAction(tr("&Preferences"), this);
 #ifdef Q_OS_MAC
-    act->setShortcut(tr("Ctrl+,"), "Show configuration dialog");
+    act->setShortcut(tr("Ctrl+,", "Show configuration dialog"));
 #endif
     act->setStatusTip(tr("Show configuration dialog"));
     connect(act, SIGNAL(triggered()), this, SLOT(showSettings()));
