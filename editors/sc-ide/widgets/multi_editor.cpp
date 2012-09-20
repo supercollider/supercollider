@@ -427,7 +427,7 @@ void MultiEditor::createActions()
 #ifndef Q_OS_MAC
     act->setShortcut( tr("Alt+Right", "Next Document"));
 #else
-    act->setShortcut( tr("Meta+Right", "Next Document"));
+    act->setShortcut( tr("Ctrl+Alt+Right", "Next Document"));
 #endif
     connect(act, SIGNAL(triggered()), this, SLOT(showNextDocument()));
 
@@ -435,7 +435,7 @@ void MultiEditor::createActions()
 #ifndef Q_OS_MAC
     act->setShortcut( tr("Alt+Left", "Previous Document"));
 #else
-    act->setShortcut( tr("Meta+Left", "Previous Document"));
+    act->setShortcut( tr("Ctrl+Alt+Left", "Previous Document"));
 #endif
     connect(act, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
 
