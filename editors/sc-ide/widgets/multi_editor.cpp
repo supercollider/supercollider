@@ -424,15 +424,27 @@ void MultiEditor::createActions()
     mEditorSigMux->connect(act, SIGNAL(triggered(bool)), SLOT(setShowWhitespace(bool)));
 
     mActions[NextDocument] = act = new QAction(tr("Next Document"), this);
+#ifndef Q_OS_MAC
     act->setShortcut( tr("Alt+Right", "Next Document"));
+#else
+    act->setShortcut( tr("Meta+Right", "Next Document"));
+#endif
     connect(act, SIGNAL(triggered()), this, SLOT(showNextDocument()));
 
     mActions[PreviousDocument] = act = new QAction(tr("Previous Document"), this);
-    act->setShortcut( tr("Alt+Left", "Next Document"));
+#ifndef Q_OS_MAC
+    act->setShortcut( tr("Alt+Left", "Previous Document"));
+#else
+    act->setShortcut( tr("Meta+Left", "Previous Document"));
+#endif
     connect(act, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
 
     mActions[SwitchDocument] = act = new QAction(tr("Switch Document"), this);
+#ifndef Q_OS_MAC
     act->setShortcut( tr("Ctrl+Tab", "Switch Document"));
+#else
+    act->setShortcut( tr("Meta+Tab", "Switch Document"));
+#endif
     connect(act, SIGNAL(triggered()), this, SLOT(switchDocument()));
 
     mActions[SplitHorizontally] = act = new QAction(tr("Split To Right"), this);
