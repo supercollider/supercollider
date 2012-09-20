@@ -132,6 +132,6 @@ private:
 
 } // namespace ScIDE
 
-Q_DECLARE_METATYPE( ScIDE::Document* );
+Q_DECLARE_METATYPE( ScIDE::Document* )
 
 #endif // SCIDE_DOC_MANAGER_HPP_INCLUDED

@@ -31,6 +31,6 @@ QSettings::Format serializationFormat();
 
 }} // namespace ScIDE::Settings
 
-Q_DECLARE_METATYPE( QTextCharFormat );
+Q_DECLARE_METATYPE( QTextCharFormat )
 
 #endif // SCIDE_CORE_SETTINGS_SERIALIZATION_HPP_INCLUDED

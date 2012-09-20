@@ -22,8 +22,8 @@
 #include "ui_settings_general.h"
 #include "../../core/settings/manager.hpp"
 
-Q_DECLARE_METATYPE(QAction*);
-Q_DECLARE_METATYPE(QKeySequence);
+Q_DECLARE_METATYPE(QAction*)
+Q_DECLARE_METATYPE(QKeySequence)
 
 namespace ScIDE { namespace Settings {
 
