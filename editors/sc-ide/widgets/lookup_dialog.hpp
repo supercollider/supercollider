@@ -67,8 +67,8 @@ private Q_SLOTS:
 
 protected:
     QStandardItem * firstItemInLine(QModelIndex);
+    virtual bool event( QEvent * );
     bool eventFilter( QObject *, QEvent * );
-    void paintEvent( QPaintEvent * );
     void focusResults();
 
     static QList<QStandardItem *> makeDialogItem(QString const & displayString, QString const & displayPath,
