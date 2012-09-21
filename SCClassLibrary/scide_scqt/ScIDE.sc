@@ -2,6 +2,7 @@ ScIDE {
 	classvar subListSorter;
 	classvar <>currentPath;
 	classvar <defaultServer;
+	classvar serverController;
 
 	*initClass {
 		subListSorter = { | a b | a[0].perform('<', b[0]) };
@@ -26,17 +27,22 @@ ScIDE {
 		this.prSend(\classLibraryRecompiled);
 		this.prSend(\requestCurrentPath);
 
-		defaultServer = Server.default;
-
-		SimpleController(defaultServer)
-		.put(\serverRunning, { | server, what, extraArg |
-			var addr = server.addr;
-			this.prSend(\defaultServerRunningChanged, [server.serverRunning, addr.hostname, addr.port])
-		});
-
-		this.prSend(\defaultServerRunningChanged, [defaultServer.serverRunning, defaultServer.addr.hostname, defaultServer.addr.port]);
-
+		this.defaultServer = Server.default;
 		this.sendIntrospection; // sending the introspection at the end, as otherwise the communication channel seems to get stuck
+	}
+
+	*defaultServer_ {|server|
+		serverController.remove;
+		serverController = SimpleController(server)
+		.put(\serverRunning, { | server, what, extraArg |
+			this.sendServerChanged(server);
+		})
+		.put(\default, { | server, what, newServer |
+			("changed default server to:" + newServer.name).postln;
+			this.defaultServer = newServer;
+		});
+		defaultServer = server;
+		this.sendServerChanged(defaultServer);
 	}
 
 	*request { |id, command, data|
@@ -49,6 +55,12 @@ ScIDE {
 
 	*open { |path, charPos = 0, selectionLength = 0|
 		this.prSend(\openFile, [path, charPos, selectionLength])
+	}
+
+	*sendServerChanged { |server|
+		this.prSend(\defaultServerRunningChanged, [
+			server.serverRunning, server.addr.hostname, server.addr.port
+		].postln);
 	}
 
 	*sendIntrospection {
