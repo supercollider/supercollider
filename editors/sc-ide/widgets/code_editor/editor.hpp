@@ -97,6 +97,9 @@ protected:
     QWidget *mOverlayWidget;
 
     Document *mDoc;
+
+    QTextCharFormat mSearchResultTextFormat;
+
     QList<QTextEdit::ExtraSelection> mSearchSelections;
 };
 

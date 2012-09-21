@@ -142,11 +142,11 @@ void EditorPage::loadGeneralTextFormats( Manager *settings )
     mGeneralFormatsItem->addChild( mCommonTextFormatItem );
 
     static char const * const keys[] = {
-        "matchingBrackets", "evaluatedCode", "lineNumbers"
+        "selection", "searchResult", "matchingBrackets", "evaluatedCode", "lineNumbers"
     };
 
     static char const * const strings[] = {
-        "Matching Brackets", "Evaluated Code", "Line Numbers"
+        "Selected Text", "Search Result", "Matching Brackets", "Evaluated Code", "Line Numbers"
     };
 
     static int count = sizeof(keys) / sizeof(keys[0]);
