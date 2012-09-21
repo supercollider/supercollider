@@ -76,10 +76,55 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
     connect( this, SIGNAL(selectionChanged()),
              mLineIndicator, SLOT(update()) );
 
+    connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
+             this, SLOT(applySettings(Settings::Manager*)) );
+
     QTextDocument *tdoc = doc->textDocument();
     QPlainTextEdit::setDocument(tdoc);
     onDocumentFontChanged();
     mLineIndicator->setLineCount(blockCount());
+
+    applySettings( Main::settings() );
+}
+
+void GenericCodeEditor::applySettings( Settings::Manager *settings )
+{
+    settings->beginGroup("IDE/editor");
+
+    bool lineWrap = settings->value("lineWrap").toBool();
+
+    QPalette palette;
+
+    settings->beginGroup("colors");
+
+    if (settings->contains("text")) {
+        QTextCharFormat format = settings->value("text").value<QTextCharFormat>();
+        QBrush bg = format.background();
+        QBrush fg = format.foreground();
+        if (bg.style() != Qt::NoBrush)
+            palette.setBrush(QPalette::Base, bg);
+        if (fg.style() != Qt::NoBrush)
+            palette.setBrush(QPalette::Text, fg);
+    }
+
+    if (settings->contains("lineNumbers")) {
+        QPalette lineNumPlt;
+        QTextCharFormat format = settings->value("lineNumbers").value<QTextCharFormat>();
+        QBrush bg = format.background();
+        QBrush fg = format.foreground();
+        if (bg.style() != Qt::NoBrush)
+            palette.setBrush(QPalette::Button, bg);
+        if (fg.style() != Qt::NoBrush)
+            palette.setBrush(QPalette::ButtonText, fg);
+        mLineIndicator->setPalette(lineNumPlt);
+    }
+
+    settings->endGroup(); // colors
+
+    settings->endGroup(); // IDE/editor
+
+    setLineWrapMode( lineWrap ? QPlainTextEdit::WidgetWidth : QPlainTextEdit::NoWrap );
+    setPalette(palette);
 }
 
 bool GenericCodeEditor::showWhitespace()

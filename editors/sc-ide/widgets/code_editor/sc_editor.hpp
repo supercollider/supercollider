@@ -42,9 +42,9 @@ public:
     void blinkCode( const QTextCursor & c );
 
 
-public Q_SLOTS:
-    void setSpaceIndent(bool on) { mSpaceIndent = on; }
+public slots:
     void applySettings( Settings::Manager * );
+    void setSpaceIndent(bool on) { mSpaceIndent = on; }
     void indent();
     void triggerAutoCompletion();
     void triggerMethodCallAid();
@@ -65,7 +65,7 @@ protected:
     virtual void mouseDoubleClickEvent( QMouseEvent * );
     virtual void mouseMoveEvent( QMouseEvent * );
 
-private Q_SLOTS:
+private slots:
     void matchBrackets();
 
 private:
