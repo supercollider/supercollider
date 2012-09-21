@@ -768,11 +768,17 @@ QTextCursor ScCodeEditor::blockAtCursor(const QTextCursor & cursor)
         {
             BracketPair match;
             matchBracket(it, match);
-
             if (match.first.isValid() && match.second.isValid()) {
+                int start = match.first.position();
+                int end = match.second.position() + 1;
                 QTextCursor selection(textDocument());
-                selection.setPosition(match.first.position());
-                selection.setPosition(match.second.position() + 1, QTextCursor::KeepAnchor);
+                if (it == match.second) {
+                    selection.setPosition(start);
+                    selection.setPosition(end, QTextCursor::KeepAnchor);
+                } else {
+                    selection.setPosition(end);
+                    selection.setPosition(start, QTextCursor::KeepAnchor);
+                }
                 return selection;
             }
             break;
