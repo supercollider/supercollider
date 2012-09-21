@@ -50,7 +50,7 @@ ScCodeEditor::ScCodeEditor( Document *doc, QWidget *parent ) :
 
     mAutoCompleter->documentChanged(textDocument());
 
-    applySettings(Main::settings());
+    applySettings( Main::settings() );
 }
 
 void ScCodeEditor::applySettings( Settings::Manager *settings )
@@ -61,43 +61,9 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
 
     mBlinkDuration = settings->value("blinkDuration").toInt();
 
-    bool lineWrap = settings->value("lineWrap").toBool();
-
-    QPalette palette;
-
-    settings->beginGroup("colors");
-
-    if (settings->contains("text")) {
-        QTextCharFormat format = settings->value("text").value<QTextCharFormat>();
-        QBrush bg = format.background();
-        QBrush fg = format.foreground();
-        if (bg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::Base, bg);
-        if (fg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::Text, fg);
-    }
-
-    if (settings->contains("lineNumbers")) {
-        QPalette lineNumPlt;
-        QTextCharFormat format = settings->value("lineNumbers").value<QTextCharFormat>();
-        QBrush bg = format.background();
-        QBrush fg = format.foreground();
-        if (bg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::Button, bg);
-        if (fg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::ButtonText, fg);
-        mLineIndicator->setPalette(lineNumPlt);
-    }
-
-    mBracketHighlight = settings->value("matchingBrackets").value<QTextCharFormat>();
-
-    settings->endGroup(); // colors
+    mBracketHighlight = settings->value("colors/matchingBrackets").value<QTextCharFormat>();
 
     settings->endGroup();
-
-    setPalette(palette);
-
-    setLineWrapMode( lineWrap ? QPlainTextEdit::WidgetWidth : QPlainTextEdit::NoWrap );
 }
 
 bool ScCodeEditor::event( QEvent *e )

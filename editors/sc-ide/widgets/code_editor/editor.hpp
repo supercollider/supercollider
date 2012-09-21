@@ -58,7 +58,8 @@ protected:
     virtual void wheelEvent( QWheelEvent * );
     virtual void dragEnterEvent( QDragEnterEvent * );
 
-public Q_SLOTS:
+public slots:
+    void applySettings( Settings::Manager * );
     void zoomIn(int steps = 1);
     void zoomOut(int steps = 1);
     void resetFontSize();
@@ -72,7 +73,7 @@ public Q_SLOTS:
     void gotoPreviousEmptyLine();
     void gotoNextEmptyLine();
 
-protected Q_SLOTS:
+protected slots:
     void updateLayout();
     void updateLineIndicator( QRect, int );
     void onDocumentFontChanged();
