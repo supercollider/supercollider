@@ -280,7 +280,7 @@ Server {
 	*default_ { |server|
 		default = server; // sync with s?
 		if (sync_s, { thisProcess.interpreter.s = server });
-		this.all.do(_.changed(\default));
+		this.all.do(_.changed(\default, server));
 	}
 
 	*new { arg name, addr, options, clientID=0;
