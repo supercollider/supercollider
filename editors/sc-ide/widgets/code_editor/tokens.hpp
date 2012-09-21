@@ -101,6 +101,12 @@ public:
     TokenIterator(): idx(-1) {}
     bool isValid() const             { return idx >= 0; }
     const QTextBlock & block() const { return blk; }
+
+    bool operator == (TokenIterator &other) const
+    {
+        return blk == other.blk && idx == other.idx;
+    }
+
     const Token & operator *()
     {
         Q_ASSERT(blk.isValid());
