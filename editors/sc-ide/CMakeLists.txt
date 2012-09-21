@@ -159,8 +159,11 @@ else()
   add_executable( ${ide_name} MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} )
 endif()
 
-
-target_link_libraries( ${ide_name} ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} yaml)
+if(APPLE)
+	target_link_libraries( ${ide_name} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTWEBKIT_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTNETWORK_LIBRARY} yaml)
+else()
+	target_link_libraries( ${ide_name} ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} yaml)
+endif()
 
 if(APPLE)
 	target_link_libraries( ${ide_name} "-framework CoreServices")
