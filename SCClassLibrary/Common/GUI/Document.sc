@@ -158,7 +158,10 @@ Document {
 	path_ { |apath|
 		this.prSetFileName(apath);
 	}
-	dir { var path = this.path; ^path !? { path.dirname } }
+	dir {
+		var path = this.path;
+		^path !? { path.dirname }
+	}
 	name {
 		^this.title
 	}
@@ -335,6 +338,10 @@ Document {
 	}
 
 	*prDefaultUsesAutoInOutdent_{|bool|
+		this.subclassResponsibility(thisMethod);
+	}
+
+	*prPostColor_{ |color|
 		this.subclassResponsibility(thisMethod);
 	}
 

@@ -201,7 +201,7 @@ CocoaDocument : Document {
 
 	*postColor_ { | col |
 		postColor = col;
-		^Document.implementationClass.postColor_(col);
+		^Document.implementationClass.prPostColor_(col);
 	}
 
 	stringColor_ { | color, rangeStart = -1, rangeSize = 0 |
@@ -282,7 +282,7 @@ CocoaDocument : Document {
 		}
 	}
 
-	*postColor_{ arg color;
+	*prPostColor_{ arg color;
 		_PostWindow_SetTextColor
 	}
 
