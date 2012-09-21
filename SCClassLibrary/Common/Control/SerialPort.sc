@@ -8,7 +8,6 @@ SerialPort
 	*initClass {
 		allPorts = Array[];
 		ShutDown.add {
-			//			this.closeAll;
 			this.cleanupAll;
 		};
 	}
@@ -60,7 +59,6 @@ SerialPort
 		  this.prOpen(*args);
 		  allPorts = allPorts.add(this);
 		  doneAction = { ("SerialPort"+args[0]+"was closed").postln; };
-// 		CmdPeriod.add(this);
 		}
 	}
 
@@ -71,7 +69,6 @@ SerialPort
 		if (this.isOpen) {
 			this.prClose;
 			allPorts.remove(this);
-// 			CmdPeriod.remove(this);
 		}
 	}
 	*closeAll {
@@ -121,15 +118,6 @@ SerialPort
 		}
 	}
 
-	doDoneAction{
-		doneAction.value;
-	}
-
-// 	cmdPeriod {
-// 		// remove waiting threads
-// 		semaphore.clear;
-// 	}
-
 	// PRIMITIVE
 	prOpen { | ... args | // was: | port, baudRate | but that misses out on all the other args?
 		_SerialPort_Open
@@ -159,7 +147,7 @@ SerialPort
 	}
 	prDoneAction {
 		// callback
-		this.doDoneAction;
+		this.doneAction.value;
 		// cleanup the port
 		this.prCleanup
 	}
