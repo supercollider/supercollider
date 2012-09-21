@@ -425,7 +425,7 @@ void SerialPort::dataAvailable()
 
 void SerialPort::doneAction()
 {
-	int status = lockLanguageOrQuit(m_running);
+	int status = lockLanguageOrQuit(m_dodone);
 	if (status == EINTR)
 		return;
 	if (status) {
@@ -446,86 +446,86 @@ void SerialPort::doneAction()
 
 void SerialPort::threadLoop()
 {
-  const int fd = m_fd;
-  const int max_fd = fd+1;
+	const int fd = m_fd;
+	const int max_fd = fd+1;
 
-  m_running = true;
-  m_rxErrors[1] = 0;
+	m_running = true;
+	m_rxErrors[1] = 0;
 
-  while (true) {
-    fd_set rfds;
+	while (true) {
+		fd_set rfds;
 
-    FD_ZERO(   &rfds);
-    FD_SET(fd, &rfds);
+		FD_ZERO(   &rfds);
+		FD_SET(fd, &rfds);
 
-    struct timeval timeout;
-    timeout.tv_sec = kReadTimeoutMs/1000;
-    timeout.tv_usec = (kReadTimeoutMs%1000)*1000;
+		struct timeval timeout;
+		timeout.tv_sec = kReadTimeoutMs/1000;
+		timeout.tv_usec = (kReadTimeoutMs%1000)*1000;
 
-    int n = select(max_fd, &rfds, 0, 0, &timeout);
-    // 	int fdset = FD_ISSET(fd, &rfds);
-    // 	printf( "fdset %i, n %i, errno %i\n", fdset, n, errno );
-    if ( m_open ){
-      if ((n > 0) && FD_ISSET(fd, &rfds)) {
-	// printf("poll input\n");
-	int nr = 0;
-	// while (true) {
-	if ( m_open ){
-	  int n2 = read(fd, m_rxbuffer, kBufferSize);
-	  //  printf("read %d, errno %i, errbadf %i, %i, %i\n", n2, errno, EBADF, EAGAIN, EIO);
-	  if (n2 > 0) {
-	    // write data to ringbuffer
-	    for (int i=0; i < n2; ++i) {
-	      if (!m_rxfifo.Put(m_rxbuffer[i])) {
-		m_rxErrors[1]++;
-		break;
-	      }
-	    }
-	    nr += n2;
-	  } else if ((n2 == 0) && (n == 1) ) { // added by nescivi, to check for disconnected device. In this case the read is 0 all the time and otherwise eats up the CPU
-	    //	printf( "done\n" );
-	    goto done;
-	  } else if ((n2 == 0) || ((n2 == -1) && (errno == EAGAIN))) {
-	    //	printf( "break\n");
-	    break;
-	  } else {
+		int n = select(max_fd, &rfds, 0, 0, &timeout);
+		// 	int fdset = FD_ISSET(fd, &rfds);
+		// 	printf( "fdset %i, n %i, errno %i\n", fdset, n, errno );
+		if ( m_open ){
+			if ((n > 0) && FD_ISSET(fd, &rfds)) {
+				// printf("poll input\n");
+				int nr = 0;
+				// while (true) {
+				if ( m_open ){
+					int n2 = read(fd, m_rxbuffer, kBufferSize);
+					//  printf("read %d, errno %i, errbadf %i, %i, %i\n", n2, errno, EBADF, EAGAIN, EIO);
+					if (n2 > 0) {
+						// write data to ringbuffer
+						for (int i=0; i < n2; ++i) {
+							if (!m_rxfifo.Put(m_rxbuffer[i])) {
+								m_rxErrors[1]++;
+								break;
+							}
+						}
+						nr += n2;
+					} else if ((n2 == 0) && (n == 1) ) { // added by nescivi, to check for disconnected device. In this case the read is 0 all the time and otherwise eats up the CPU
+						//	printf( "done\n" );
+						goto done;
+					} else if ((n2 == 0) || ((n2 == -1) && (errno == EAGAIN))) {
+						//	printf( "break\n");
+						break;
+					} else {
 #ifndef NDEBUG
-	    printf("SerialPort HUP\n");
+						printf("SerialPort HUP\n");
 #endif
-	    goto done;
-	  }
+						goto done;
+					}
+				}
+				//}
+				if (!m_running) {
+					// close and cleanup
+					goto done;
+				}
+				if (nr > 0) {
+					dataAvailable();
+				}
+			} else if (n == -1) {
+				goto done;
+			}
+		}
+		if (!m_running) {
+			// close and cleanup
+			goto done;
+		}
 	}
-	//}
-	if (!m_running) {
-	  // close and cleanup
-	  goto done;
-	}
-	if (nr > 0) {
-	  dataAvailable();
-	}
-      } else if (n == -1) {
-	goto done;
-      }
-    }
-    if (!m_running) {
-      // close and cleanup
-      goto done;
-    }
-  }
 
 done:
-  // doneAction();
-  if ( m_open ){
-    tcflush(fd, TCIOFLUSH);
-    tcsetattr(fd, TCSANOW, &m_oldtermio);
-    close(fd);
-  };
-  m_open = false;
-  m_running = false;
-  if ( m_dodone )
-    { doneAction(); }
+	// doneAction();
+	if ( m_open ){
+		tcflush(fd, TCIOFLUSH);
+		tcsetattr(fd, TCSANOW, &m_oldtermio);
+		close(fd);
+	};
+	m_open = false;
+	m_running = false;
+	if ( m_dodone )
+		doneAction();
 #ifndef NDEBUG
-  printf("SerialPort closed\n");
+	printf("SerialPort closed\n");
 #endif
 }
 
