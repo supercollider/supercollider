@@ -213,6 +213,7 @@ void ScCodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
     QTextCursor selection = blockAtCursor(cursor);
 
     if (!selection.isNull()) {
+        mMouseBracketMatch = true;
         setTextCursor(selection);
         return;
     }
@@ -758,7 +759,7 @@ inline static bool bracketPairContainsPosition( const BracketPair & bracketPair,
 
 QTextCursor ScCodeEditor::blockAtCursor(const QTextCursor & cursor)
 {
-    TokenIterator it (cursor.block(), cursor.positionInBlock());
+    TokenIterator it = TokenIterator::around( cursor.block(), cursor.positionInBlock() );
 
     if (it.isValid()) {
         switch (it->type) {
