@@ -327,27 +327,32 @@ void MainWindow::createActions()
     connect(act, SIGNAL(triggered()), mPostDock->mPostWindow, SLOT(setFocus()));
 
     mActions[LookupReferences] = act = new QAction(
-        QIcon::fromTheme("window-lookupreferences"), tr("Look Up References"), this);
+        QIcon::fromTheme("window-lookupreferences"), tr("Look Up References..."), this);
     act->setShortcut(tr("Ctrl+Shift+U", "Look Up References"));
+    act->setStatusTip(tr("Open dialog to look up references to a class or a method"));
     connect(act, SIGNAL(triggered()), this, SLOT(lookupReferences()));
 
     mActions[LookupDefinition] = act = new QAction(
-        QIcon::fromTheme("window-lookupdefinition"), tr("Look Up Definition"), this);
-    act->setShortcut(tr("Ctrl+Shift+I", "Look Up Definition"));
+        QIcon::fromTheme("window-lookupdefinition"), tr("Look Up Implementations..."), this);
+    act->setShortcut(tr("Ctrl+Shift+I", "Look Up Implementations"));
+    act->setStatusTip(tr("Open dialog to look up implementations of a class or a method"));
     connect(act, SIGNAL(triggered()), this, SLOT(lookupDefinition()));
 
     mActions[LookupDocumentation] = act = new QAction(
-        QIcon::fromTheme("window-lookupDocumentation"), tr("Look Up Documentation"), this);
+        QIcon::fromTheme("window-lookupDocumentation"), tr("Look Up Documentation..."), this);
     act->setShortcut(tr("Ctrl+Shift+D", "Look Up Documentation"));
+    act->setStatusTip(tr("Enter text to look up in documentation"));
     connect(act, SIGNAL(triggered()), this, SLOT(lookupDocumentation()));
 
     // Language
-    mActions[OpenDefinition] = act = new QAction(tr("Open Class/Method Definition"), this);
-    act->setShortcut(tr("Ctrl+I", "Open definition of selected class or method"));
+    mActions[OpenDefinition] = act = new QAction(tr("Find Implementations"), this);
+    act->setShortcut(tr("Ctrl+I", "Find Implementations"));
+    act->setStatusTip(tr("Find implementations of selected class or method"));
     connect(act, SIGNAL(triggered(bool)), this, SLOT(openDefinition()));
 
     mActions[FindReferences] = act = new QAction(tr("Find References"), this);
     act->setShortcut(tr("Ctrl+U", "Find References"));
+    act->setStatusTip(tr("Find references to selected class or method"));
     connect(act, SIGNAL(triggered(bool)), this, SLOT(findReferences()));
 
     // Settings
