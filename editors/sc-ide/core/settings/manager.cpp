@@ -72,6 +72,11 @@ void Manager::initDefaults()
     evaluatedCodeFormat.setForeground(Qt::black);
     setDefault("evaluatedCode", QVariant::fromValue(evaluatedCodeFormat));
 
+    QTextCharFormat searchResultFormat;
+    searchResultFormat.setBackground(appPlt.color(QPalette::Highlight).darker(200));
+    searchResultFormat.setForeground(appPlt.color(QPalette::HighlightedText).darker(200));
+    setDefault("searchResult", QVariant::fromValue(searchResultFormat));
+
     endGroup(); // colors
 
     beginGroup("highlighting");

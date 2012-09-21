@@ -108,7 +108,7 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
     }
 
     if (settings->contains("lineNumbers")) {
-        QPalette lineNumPlt;
+        // NOTE: the line number widget will inherit the palette from the editor
         QTextCharFormat format = settings->value("lineNumbers").value<QTextCharFormat>();
         QBrush bg = format.background();
         QBrush fg = format.foreground();
@@ -116,8 +116,19 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
             palette.setBrush(QPalette::Button, bg);
         if (fg.style() != Qt::NoBrush)
             palette.setBrush(QPalette::ButtonText, fg);
-        mLineIndicator->setPalette(lineNumPlt);
     }
+
+    if (settings->contains("selection")) {
+        QTextCharFormat format = settings->value("selection").value<QTextCharFormat>();
+        QBrush bg = format.background();
+        QBrush fg = format.foreground();
+        if (bg.style() != Qt::NoBrush)
+            palette.setBrush(QPalette::Highlight, bg);
+        if (fg.style() != Qt::NoBrush)
+            palette.setBrush(QPalette::HighlightedText, fg);
+    }
+
+    mSearchResultTextFormat = settings->value("searchResult").value<QTextCharFormat>();
 
     settings->endGroup(); // colors
 
@@ -272,7 +283,7 @@ int GenericCodeEditor::findAll( const QRegExp &expr, QTextDocument::FindFlags op
     }
 
     QTextEdit::ExtraSelection selection;
-    selection.format.setBackground(Qt::darkYellow);
+    selection.format = mSearchResultTextFormat;
 
     QTextDocument *doc = QPlainTextEdit::document();
     QTextBlock block = doc->begin();
