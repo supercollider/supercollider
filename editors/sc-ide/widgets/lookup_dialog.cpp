@@ -44,7 +44,7 @@ bool LookupDialogTreeView::openDocumentation()
 }
 
 GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
-    QDialog(parent, Qt::Popup | Qt::FramelessWindowHint)
+    QDialog(parent)
 {
     addAction(MainWindow::instance()->action(MainWindow::HelpForSelection));
 
@@ -57,7 +57,7 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     mResult->header()->setStretchLastSection(false);
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->setContentsMargins(4,4,4,4);
+    layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(1);
     layout->addWidget(mQueryEdit);
     layout->addWidget(mResult);
@@ -131,6 +131,22 @@ QStandardItem * GenericLookupDialog::firstItemInLine(QModelIndex index)
     return model->itemFromIndex(index);
 }
 
+bool GenericLookupDialog::event( QEvent *event )
+{
+    switch(event->type()) {
+    case QEvent::ShortcutOverride: {
+        QKeyEvent *kevent = static_cast<QKeyEvent*>(event);
+        if (kevent->key() == Qt::Key_Escape) {
+            accept();
+            return true;
+        }
+    }
+    default:;
+    }
+
+    return QDialog::event(event);
+}
+
 bool GenericLookupDialog::eventFilter( QObject *object, QEvent *event )
 {
     if (object == mResult && event->type() == QEvent::KeyPress) {
@@ -145,14 +161,6 @@ bool GenericLookupDialog::eventFilter( QObject *object, QEvent *event )
     }
 
     return QDialog::eventFilter(object,event);
-}
-
-void GenericLookupDialog::paintEvent( QPaintEvent * )
-{
-    QPainter painter(this);
-    painter.setBrush(Qt::NoBrush);
-    painter.setPen(palette().color(QPalette::Dark));
-    painter.drawRect(rect().adjusted(0,0,-1,-1));
 }
 
 void GenericLookupDialog::focusResults()
@@ -175,9 +183,9 @@ using std::vector;
 LookupDialog::LookupDialog( QWidget * parent ):
     GenericLookupDialog(parent), mIsPartialQuery(false)
 {
-    setWindowTitle(tr("Look Up Class or Method Definition"));
+    setWindowTitle(tr("Look Up Implementations"));
 
-    mQueryEdit->setText(tr("Enter symbol to look up"));
+    mQueryEdit->setText(tr("Enter class or method name..."));
     mQueryEdit->selectAll();
 }
 
@@ -418,7 +426,7 @@ ReferencesDialog::ReferencesDialog(QWidget * parent):
 {
     setWindowTitle(tr("Look Up References"));
 
-    mQueryEdit->setText(tr("Enter symbol to find references"));
+    mQueryEdit->setText(tr("Enter class or method name..."));
     mQueryEdit->selectAll();
 }
 
