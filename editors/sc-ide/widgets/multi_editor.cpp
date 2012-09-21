@@ -850,6 +850,11 @@ void MultiEditor::update( Document *doc )
     int tabIdx = tabForDocument(doc);
     if (tabIdx != -1)
         mTabs->setTabText(tabIdx, doc->title());
+
+    // update thisProcess.nowExecutingPath
+    GenericCodeEditor *editor = currentEditor();
+    if (editor->document() == doc)
+        Main::scProcess()->setActiveDocument(doc);
 }
 
 void MultiEditor::onCloseRequest( int index )
