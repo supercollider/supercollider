@@ -50,7 +50,7 @@ subsection:: C++-side Definition of Unit Generators
 The following code shows the C++ source of a simple unit generator.
 
 code::
-#include "SC_Plugin.h"
+#include "SC_PlugIn.h"
 
 // InterfaceTable contains pointers to functions in the host (server).
 static InterfaceTable *ft;
