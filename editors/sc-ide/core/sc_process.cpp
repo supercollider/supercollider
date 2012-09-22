@@ -216,23 +216,25 @@ void SCProcess::onIpcData()
 {
     mIpcData.append(mIpcSocket->readAll());
 
-    QBuffer receivedData ( &mIpcData );
-    receivedData.open ( QIODevice::ReadOnly );
+    while (mIpcData.size()) {
+        QBuffer receivedData ( &mIpcData );
+        receivedData.open ( QIODevice::ReadOnly );
 
-    QDataStream in ( &receivedData );
-    in.setVersion ( QDataStream::Qt_4_6 );
-    QString id, message;
-    in >> id;
-    if ( in.status() != QDataStream::Ok )
-        return;
+        QDataStream in ( &receivedData );
+        in.setVersion ( QDataStream::Qt_4_6 );
+        QString id, message;
+        in >> id;
+        if ( in.status() != QDataStream::Ok )
+            return;
 
-    in >> message;
-    if ( in.status() != QDataStream::Ok )
-        return;
+        in >> message;
+        if ( in.status() != QDataStream::Ok )
+            return;
 
-    mIpcData.remove ( 0, receivedData.pos() );
+        mIpcData.remove ( 0, receivedData.pos() );
 
-    emit response(id, message);
+        emit response(id, message);
+    }
 }
 
 void SCProcess::onSclangStart()
