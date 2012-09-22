@@ -35,14 +35,16 @@ ScIDE {
 		serverController.remove;
 		serverController = SimpleController(server)
 		.put(\serverRunning, { | server, what, extraArg |
-			this.sendServerChanged(server);
+			this.prSend(\defaultServerRunningChanged, [
+				server.serverRunning, server.addr.hostname, server.addr.port]);
 		})
 		.put(\default, { | server, what, newServer |
 			("changed default server to:" + newServer.name).postln;
 			this.defaultServer = newServer;
 		});
 		defaultServer = server;
-		this.sendServerChanged(defaultServer);
+		this.prSend(\defaultServerRunningChanged, [
+			server.serverRunning, server.addr.hostname, server.addr.port]);
 	}
 
 	*request { |id, command, data|
@@ -55,12 +57,6 @@ ScIDE {
 
 	*open { |path, charPos = 0, selectionLength = 0|
 		this.prSend(\openFile, [path, charPos, selectionLength])
-	}
-
-	*sendServerChanged { |server|
-		this.prSend(\defaultServerRunningChanged, [
-			server.serverRunning, server.addr.hostname, server.addr.port
-		].postln);
 	}
 
 	*sendIntrospection {
