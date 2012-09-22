@@ -28,7 +28,7 @@ ScIDE {
 		this.prSend(\requestCurrentPath);
 
 		this.defaultServer = Server.default;
-		this.sendIntrospection; // sending the introspection at the end, as otherwise the communication channel seems to get stuck
+		this.sendIntrospection;
 	}
 
 	*defaultServer_ {|server|
