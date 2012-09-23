@@ -305,8 +305,8 @@ void MultiEditor::createActions()
     mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(paste()));
 
     mActions[IndentLineOrRegion] = act = new QAction(
-        QIcon::fromTheme("format-indent-line"), tr("Indent Line or Region"), this);
-    act->setStatusTip(tr("Indent Line or Region"));
+        QIcon::fromTheme("format-indent-line"), tr("Autoindent Line or Region"), this);
+    act->setStatusTip(tr("Autoindent Line or Region"));
     mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(indent()));
 
     mActions[TriggerAutoCompletion] = act = new QAction(tr("Trigger Autocompletion"), this);
