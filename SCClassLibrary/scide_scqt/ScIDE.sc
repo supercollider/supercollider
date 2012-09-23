@@ -60,8 +60,7 @@ ScIDE {
 	}
 
 	*sendIntrospection {
-		var out;
-		out = [];
+		var res = [];
 		Class.allClasses.do { |class|
 			var classData;
 			classData = [
@@ -72,9 +71,9 @@ ScIDE {
 				class.charPos,
 				class.methods.collect { |m| this.serializeMethodDetailed(m) };
 			];
-			out = out.add(classData);
+			res = res.add(classData);
 		};
-		this.prSend(\introspection, out);
+		this.prSend(\introspection, res);
 	}
 
 	*sendAllClasses { |id|
@@ -104,20 +103,20 @@ ScIDE {
 	}
 
 	*completeClass { |id, text|
-		var out = [];
+		var res = [];
 		Class.allClasses.do { |class|
 			var name = class.name.asString;
 			if (name.beginsWith(text)) {
-				out = out.add(name);
+				res = res.add(name);
 			};
 		};
-		if (out.size > 0) {
-			this.prSend(id, out);
+		if (res.size > 0) {
+			this.prSend(id, res);
 		};
 	}
 
 	*completeClassMethod { |id, text|
-		var class, methods, out;
+		var class, methods, res;
 		class = text.asSymbol.asClass;
 		if (class.notNil) {
 			methods = IdentityDictionary();
@@ -134,28 +133,27 @@ ScIDE {
 				};
 				class = class.superclass;
 			};
-			out = methods.values.collect { |m| this.serializeMethod(m) };
-			if (out.size > 0) { this.prSend(id, out) };
+			res = methods.values.collect { |m| this.serializeMethod(m) };
+			if (res.size > 0) { this.prSend(id, res) };
 		}
 	}
 
 	*completeMethod { |id, text|
-		var out;
-		out = [];
+		var res = [];
 		Class.allClasses.do { |class|
 			class.methods.do { |method|
 				var signature;
 				var definition;
 				if (method.name.asString.beginsWith(text)) {
-					out = out.add( this.serializeMethod(method) );
+					res = res.add( this.serializeMethod(method) );
 				};
 			};
 		};
-		if (out.size > 0) { this.prSend(id, out) };
+		if (res.size > 0) { this.prSend(id, res) };
 	}
 
 	*findMethod { |id, text|
-		var cname, mname, tokens, out;
+		var cname, mname, tokens, res;
 		var class, method;
 
 		tokens = text.split($.);
@@ -180,14 +178,14 @@ ScIDE {
 			};
 			this.prSend(id, [this.serializeMethod(method)]);
 		}{
-			out = [];
+			res = [];
 			this.allMethodsDo { |method|
 				if (method.name.asString == mname) {
-					out = out.add( this.serializeMethod(method) );
+					res = res.add( this.serializeMethod(method) );
 				};
 			};
-			if (out.size > 0) {
-				this.prSend(id, out)
+			if (res.size > 0) {
+				this.prSend(id, res)
 			}{
 				warn("No such method:" + mname.asString);
 				^this;
