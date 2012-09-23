@@ -845,7 +845,7 @@ bool MainWindow::save( Document *doc, bool forceChoose )
 
         if (!fileIsWritable) {
             QMessageBox::warning(instance(), "Saving read-only file",
-                                 "You are trying to save a file which is read-only.",
+                                 "File is read-only. Please select a new location to save to.",
                                  QMessageBox::Ok, QMessageBox::NoButton);
 
         }
