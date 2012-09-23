@@ -841,13 +841,27 @@ bool MainWindow::save( Document *doc, bool forceChoose )
         dialog.setAcceptMode( QFileDialog::AcceptSave );
 
         QStringList filters = (QStringList()
-                               << "SuperCollider Document(*.scd)"
-                               << "SuperCollider Class file(*.sc)"
-                               << "SCDoc(*.schelp)"
-                               << "All files(*)");
+                               << "SuperCollider Document (*.scd)"
+                               << "SuperCollider Class file (*.sc)"
+                               << "SCDoc (*.schelp)"
+                               << "All files (*)");
 
         dialog.setNameFilters(filters);
-        dialog.setDefaultSuffix("scd");
+
+        if(doc->filePath().isEmpty()){
+            dialog.setDefaultSuffix("scd");
+        }else{
+            QString fp = doc->filePath();
+            if(fp.endsWith(".scd"))
+                dialog.setFilter(filters[0]);
+            else if(fp.endsWith(".sc"))
+                dialog.setFilter(filters[1]);
+            else if(fp.endsWith(".schelp"))
+                dialog.setFilter(filters[2]);
+            else
+                dialog.setFilter(filters[3]);
+            dialog.selectFile(fp);
+        }
 
         if (dialog.exec() == QDialog::Accepted)
             return mng->saveAs(doc, dialog.selectedFiles()[0]);
@@ -879,9 +893,9 @@ void MainWindow::openDocument()
 
     QStringList filters;
     filters
-        << "All files(*)"
-        << "SuperCollider(*.scd *.sc)"
-        << "SCDoc(*.schelp)";
+        << "All files (*)"
+        << "SuperCollider (*.scd *.sc)"
+        << "SCDoc (*.schelp)";
     dialog.setNameFilters(filters);
 
     if (dialog.exec())
