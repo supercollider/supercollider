@@ -839,7 +839,7 @@ bool MainWindow::save( Document *doc, bool forceChoose )
     const bool documentHasPath = !doc->filePath().isEmpty();
 
     bool fileIsWritable = true;
-    if (documentHasPath) {
+    if ((!forceChoose) && documentHasPath) {
         QFileInfo fileInfo(doc->filePath());
         fileIsWritable = fileInfo.isWritable();
 
