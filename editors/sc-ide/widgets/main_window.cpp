@@ -836,7 +836,22 @@ bool MainWindow::reload( Document *doc )
 bool MainWindow::save( Document *doc, bool forceChoose )
 {
     DocumentManager *mng = Main::instance()->documentManager();
-    if (forceChoose || doc->filePath().isEmpty()) {
+    const bool documentHasPath = !doc->filePath().isEmpty();
+
+    bool fileIsWritable = true;
+    if (documentHasPath) {
+        QFileInfo fileInfo(doc->filePath());
+        fileIsWritable = fileInfo.isWritable();
+
+        if (!fileIsWritable) {
+            QMessageBox::warning(instance(), "Saving read-only file",
+                                 "You are trying to save a file which is read-only.",
+                                 QMessageBox::Ok, QMessageBox::NoButton);
+
+        }
+    }
+
+    if (forceChoose || !documentHasPath || !fileIsWritable) {
         QFileDialog dialog(mInstance);
         dialog.setAcceptMode( QFileDialog::AcceptSave );
 
