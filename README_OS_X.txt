@@ -77,6 +77,23 @@ For the BIG universal binary (on 10.6), use:
 
 	cmake -DCMAKE_OSX_ARCHITECTURES='i386;x86_64' ..
 
+cmake -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/ -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -GXcode
+**** 10.8 warning ****
+
+On 10.8 you need to:
+
+compile against the 10.7 SDK
+build with the Xcode generator (add -GXcode to your cmake flags).
+
+Then, build the install target in Xcode.
+
+I started working on the bluetooth issues today actually, but the changes aren't trivial.
+
+For some reason, the 10.7 SDK choice doesn't seem to percolate into the makefile version created by cmake.
+
+(an example from josh on 10.8 with Xcode 4.5: cmake -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/ -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -GXcode )
+
+your build will be in the "Install" folder in the build directory.
 
 Qt GUI:
 -------
