@@ -637,7 +637,7 @@ void ScCodeEditor::toggleCommentSelection()
 }
 
 // taking nested brackets into account
-static TokenIterator previousOpeningBracket(TokenIterator it)
+TokenIterator ScCodeEditor::previousOpeningBracket(TokenIterator it)
 {
     int level = 0;
     while (it.isValid()) {
@@ -660,7 +660,7 @@ static TokenIterator previousOpeningBracket(TokenIterator it)
 }
 
 // taking nested brackets into account
-static TokenIterator nextClosingBracket(TokenIterator it)
+TokenIterator ScCodeEditor::nextClosingBracket(TokenIterator it)
 {
     int level = 0;
     while (it.isValid()) {
@@ -682,7 +682,7 @@ static TokenIterator nextClosingBracket(TokenIterator it)
     return it;
 }
 
-static void matchBracket( const TokenIterator & bracket, BracketPair & match )
+void ScCodeEditor::matchBracket( const TokenIterator & bracket, BracketPair & match )
 {
     Q_ASSERT(bracket.isValid());
 
@@ -701,7 +701,7 @@ static void matchBracket( const TokenIterator & bracket, BracketPair & match )
     }
 }
 
-static void nextBracketPair( const TokenIterator & startIt, BracketPair & bracketPair )
+void ScCodeEditor::nextBracketPair( const TokenIterator & startIt, BracketPair & bracketPair )
 {
     TokenIterator it( startIt );
     while (it.isValid()) {

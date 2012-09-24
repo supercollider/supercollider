@@ -322,7 +322,7 @@ bool AutoCompleter::eventFilter( QObject *object, QEvent *event )
 
 void AutoCompleter::onContentsChange( int pos, int removed, int added )
 {
-    qDebug(">>> contentsChange");
+    qDebug() << ">>> contentsChange:" << pos << "-" << removed << "+" << added;
 
     while (!mMethodCall.stack.isEmpty())
     {
@@ -809,95 +809,24 @@ void AutoCompleter::triggerMethodCallAid( bool force )
     using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
 
-    // go find the bracket that I'm currently in,
-    // and count relevant commas along the way
-
     QTextDocument *doc = document();
     QTextCursor cursor( mEditor->textCursor() );
 
-    int pos = cursor.position();
+    // Find the bracket that we are currently in
 
-    QTextBlock block( doc->findBlock(pos) );
-    if (!block.isValid())
-        return;
-    pos -= block.position();
-
-    TokenIterator it( TokenIterator::leftOf( block, pos ) );
-
-    int level = 1;
-    int argPos = 0;
-
-    while (it.isValid())
-    {
-        char chr = it->character;
-        Token::Type type = it->type;
-        if (chr == ',') {
-            if (level == 1)
-                ++argPos;
-        }
-        else if (type == Token::ClosingBracket)
-            ++level;
-        else if (type == Token::OpeningBracket)
-        {
-            --level;
-            if (level == 0) {
-                if (chr == '(')
-                    break;
-                else
-                    return;
-            }
-        }
-        --it;
+    TokenIterator tokenIt = TokenIterator::leftOf( cursor.block(), cursor.positionInBlock() );
+    while (true) {
+        tokenIt = ScCodeEditor::previousOpeningBracket(tokenIt);
+        if (!tokenIt.isValid() || tokenIt->character == '(')
+            break;
+        --tokenIt;
     }
-
-    if (!it.isValid())
+    if (!tokenIt.isValid())
         return;
 
-    int bracketPos;
-    pos = bracketPos = it.position();
+    int bracketPos = tokenIt.position();
 
-    // find method name and receiver class
-
-    QString methodName;
-    const Class *receiverClass = NULL;
-
-    --it;
-    if (it.type() == Token::Name) {
-        methodName = tokenText(it);
-        --it;
-        if (it.isValid() && it.character() == '.')
-            --it;
-    }
-
-    switch (it.type()) {
-    case Token::Class:
-        if (methodName.isEmpty())
-            methodName = "new";
-        receiverClass = introspection.findClass( tokenText(it) );
-        if (receiverClass)
-            receiverClass = receiverClass->metaClass;
-        break;
-    case Token::Char:
-    case Token::String:
-    case Token::Builtin:
-    case Token::Symbol:
-    case Token::Float:
-    case Token::RadixFloat:
-    case Token::HexInt:
-        if (methodName.isEmpty())
-            return;
-        receiverClass = classForToken( it.type(), tokenText(it) );
-        break;
-
-    default:;
-        if (methodName.isEmpty())
-            return;
-    }
-
-    qDebug("Method call: found call: %s:%s(%i)",
-           receiverClass ? qPrintable(receiverClass->name.get()) : "",
-           methodName.toStdString().c_str(),
-           argPos);
+    // Compare against stack, either return, or clear existing and continue
 
     if ( !mMethodCall.stack.isEmpty() && mMethodCall.stack.last().position == bracketPos )
     {
@@ -913,12 +842,58 @@ void AutoCompleter::triggerMethodCallAid( bool force )
             return;
     }
 
+    // Find method and receiver tokens, infer class of receiver
+
+    QString methodName;
+    const Class *receiverClass = NULL;
+
+    --tokenIt;
+    if (tokenIt.type() == Token::Name) {
+        methodName = tokenText(tokenIt);
+        --tokenIt;
+        if (tokenIt.isValid() && tokenIt.character() == '.')
+            --tokenIt;
+    }
+
+    switch (tokenIt.type()) {
+    case Token::Class:
+        if (methodName.isEmpty())
+            methodName = "new";
+        receiverClass = introspection.findClass( tokenText(tokenIt) );
+        if (receiverClass)
+            receiverClass = receiverClass->metaClass;
+        break;
+    case Token::Char:
+    case Token::String:
+    case Token::Builtin:
+    case Token::Symbol:
+    case Token::Float:
+    case Token::RadixFloat:
+    case Token::HexInt:
+        if (methodName.isEmpty())
+            return;
+        receiverClass = classForToken( tokenIt.type(), tokenText(tokenIt) );
+        break;
+
+    default:;
+        if (methodName.isEmpty())
+            return;
+    }
+
+    // Ok, this is a valid method call, push on stack
+
+    qDebug("Method call: found call: %s:%s",
+           receiverClass ? qPrintable(receiverClass->name.get()) : "",
+           methodName.toStdString().c_str());
+
     qDebug("Method call: new call");
     MethodCall call;
     call.position = bracketPos;
     pushMethodCall(call);
 
     using std::pair;
+
+    // Obtain method data, either by inferrence or by user-disambiguation via a menu
 
     const Method *method = 0;
 
@@ -977,6 +952,8 @@ void AutoCompleter::triggerMethodCallAid( bool force )
             delete menu;
         }
     }
+
+    // Finally, show the aid for the method
 
     if (method) {
         Q_ASSERT(!mMethodCall.stack.isEmpty());
