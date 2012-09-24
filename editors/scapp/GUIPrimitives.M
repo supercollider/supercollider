@@ -3686,7 +3686,6 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	if(!parentMenu) {
-		[label release];
 		return errWrongType;
 	}
 
@@ -3706,7 +3705,6 @@ int prNewMenuItem(struct VMGlobals *g, int numArgsPushed)
 	[parentMenu insertItem:menuItem atIndex:menIndex];
 	[menuItem retain];
 	if([menuItem hasSubmenu]) { [[menuItem submenu] release]; } // this has been retained
-	[label release];
 	return errNone;
 }
 
