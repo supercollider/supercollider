@@ -263,7 +263,7 @@ table::
 ## 3 || print both the parsed and hexadecimal representations of the contents.
 ::
 
-note:: teletype::/status:: messages won't be posted, when dumping is enabled:: mode::
+note:: teletype::/status:: messages won't be posted, when dumping is enabled::
 
 method:: queryAllNodes
 Post a representation of this Server's current node tree to the post window. See link::#-plotTree:: for a graphical variant.
