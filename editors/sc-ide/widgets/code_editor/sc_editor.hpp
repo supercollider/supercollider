@@ -36,6 +36,12 @@ class ScCodeEditor : public GenericCodeEditor
     Q_OBJECT
 
 public:
+    static TokenIterator previousOpeningBracket(TokenIterator it);
+    static TokenIterator nextClosingBracket(TokenIterator it);
+    static void matchBracket( const TokenIterator & bracket, BracketPair & match );
+    static void nextBracketPair( const TokenIterator & startIt, BracketPair & bracketPair );
+
+public:
     ScCodeEditor( Document *, QWidget *parent = 0 );
     void setIndentWidth( int );
     QTextCursor currentRegion();
