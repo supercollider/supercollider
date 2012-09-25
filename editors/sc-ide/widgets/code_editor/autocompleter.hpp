@@ -64,6 +64,7 @@ private:
     struct MethodCall {
         MethodCall(): position(0), method(0) {}
         int position;
+        bool functionalNotation;
         const ScLanguage::Method *method;
     };
 

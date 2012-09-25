@@ -580,23 +580,16 @@ CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescripti
     const Class *klass = NULL;
 
     switch (completion.tokenType) {
-    case Token::Class: {
-        const ClassMap & classes = introspection.classMap();
-        ClassMap::const_iterator it = classes.find(completion.base);
-        if (it != classes.end())
-            klass = it->second->metaClass;
-        break;
-    }
     case Token::Float:
     case Token::RadixFloat:
     case Token::HexInt:
-        if(!completion.base.contains(".") && completion.text.isEmpty()) {
-            klass = NULL;
-            break;
-        }
-    default:
-        klass = classForToken(completion.tokenType, completion.base);
+        // Only show completion if at least 1 character after dot
+        if(!completion.base.contains(".") && completion.text.isEmpty())
+            return NULL;
+    default:;
     }
+
+    klass = classForToken(completion.tokenType, completion.base);
 
     if (klass == NULL) {
         qDebug() << "Autocompletion not implemented for" << completion.base;
@@ -695,6 +688,12 @@ const ScLanguage::Class * AutoCompleter::classForToken( Token::Type tokenType, c
     const Introspection & introspection = Main::scProcess()->introspection();
 
     switch (tokenType) {
+    case Token::Class: {
+        const Class * klass = introspection.findClass(tokenString);
+        if (klass) klass = klass->metaClass;
+        return klass;
+    }
+
     case Token::Float:
     case Token::RadixFloat:
     case Token::HexInt:
@@ -845,40 +844,28 @@ void AutoCompleter::triggerMethodCallAid( bool force )
     // Find method and receiver tokens, infer class of receiver
 
     QString methodName;
+    bool functionalNotation = false;
     const Class *receiverClass = NULL;
 
     --tokenIt;
-    if (tokenIt.type() == Token::Name) {
+    Token::Type tokenType = tokenIt.type();
+    if (tokenType == Token::Name) {
         methodName = tokenText(tokenIt);
         --tokenIt;
         if (tokenIt.isValid() && tokenIt.character() == '.')
             --tokenIt;
+        else
+            functionalNotation = true;
+    }
+    else if (tokenType == Token::Class) {
+        methodName = "new";
+    }
+    else {
+        return;
     }
 
-    switch (tokenIt.type()) {
-    case Token::Class:
-        if (methodName.isEmpty())
-            methodName = "new";
-        receiverClass = introspection.findClass( tokenText(tokenIt) );
-        if (receiverClass)
-            receiverClass = receiverClass->metaClass;
-        break;
-    case Token::Char:
-    case Token::String:
-    case Token::Builtin:
-    case Token::Symbol:
-    case Token::Float:
-    case Token::RadixFloat:
-    case Token::HexInt:
-        if (methodName.isEmpty())
-            return;
-        receiverClass = classForToken( tokenIt.type(), tokenText(tokenIt) );
-        break;
-
-    default:;
-        if (methodName.isEmpty())
-            return;
-    }
+    if (!functionalNotation && tokenIt.isValid())
+            receiverClass = classForToken( tokenIt->type, tokenText(tokenIt) );
 
     // Ok, this is a valid method call, push on stack
 
@@ -889,6 +876,7 @@ void AutoCompleter::triggerMethodCallAid( bool force )
     qDebug("Method call: new call");
     MethodCall call;
     call.position = bracketPos;
+    call.functionalNotation = functionalNotation;
     pushMethodCall(call);
 
     using std::pair;
