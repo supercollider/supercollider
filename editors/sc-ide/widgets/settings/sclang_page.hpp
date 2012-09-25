@@ -43,8 +43,22 @@ public Q_SLOTS:
     void load( Manager * );
     void store( Manager * );
 
+private Q_SLOTS:
+    void addIncludePath();
+    void removeIncludePath();
+
+    void addExcludePath();
+    void removeExcludePath();
+    void markSclangConfigDirty() { sclangConfigDirty = true; }
+
 private:
+    void readLanguageConfig();
+    void writeLanguageConfig();
+    QString languageConfigFile();
+
     Ui::SclangConfigPage *ui;
+
+    bool sclangConfigDirty;
 };
 
 }} // namespace ScIDE::Settings
