@@ -205,38 +205,53 @@ public:
         setLayout(box);
     }
 
-    void showMethod( const ScLanguage::Method * method, int argNum )
+    void showMethod( const AutoCompleter::MethodCall & methodCall, int argNum )
     {
-        QString text;
+        const ScLanguage::Method *method = methodCall.method;
         int argc = method->arguments.count();
+
+        QString text;
+
+        if (methodCall.functionalNotation) {
+            addArgument(text, "receiver", QString(), argNum == 0 );
+            --argNum;
+            if (argc)
+                text += ", &nbsp;&nbsp;";
+        }
+
         for (int i = 0; i < argc; ++i)
         {
             const ScLanguage::Argument & arg = method->arguments[i];
 
-            if (i == argNum) {
-                text += QString(
-                    "<span style=\""
-                    //"text-decoration: underline;"
-                    "font-weight: bold;"
-                    "\">");
-            }
-
-            text += arg.name;
-
-            QString val = arg.defaultValue;
-            if (!val.isEmpty())
-                text += " = " + val;
-
-            if (i == argNum)
-                text += "</span>";
+            addArgument(text, arg.name, arg.defaultValue, argNum == i);
 
             if (i != argc - 1)
                 text += ", &nbsp;&nbsp;";
         }
+
         mLabel->setText(text);
     }
 
 private:
+    void static addArgument ( QString & text, const QString & argText, const QString & valText, bool highlight )
+    {
+        if (highlight) {
+            text += QString(
+                "<span style=\""
+                //"text-decoration: underline;"
+                "font-weight: bold;"
+                "\">");
+        }
+
+        text += argText;
+
+        if (!valText.isEmpty())
+            text += " = " + valText;
+
+        if (highlight)
+            text += "</span>";
+    }
+
     QLabel *mLabel;
 };
 
@@ -1017,6 +1032,8 @@ void AutoCompleter::updateMethodCall( int cursorPos )
             for (int idx = 0; idx < call.method->arguments.count(); ++idx) {
                 if (call.method->arguments[idx].name == argName) {
                     arg = idx;
+                    if (call.functionalNotation)
+                        ++arg;
                     break;
                 }
             }
@@ -1052,7 +1069,7 @@ void AutoCompleter::showMethodCall( const MethodCall & call, int arg )
 
     MethodCallWidget *w = mMethodCall.widget;
 
-    w->showMethod( call.method, arg );
+    w->showMethod( call, arg );
     w->resize(w->sizeHint());
     w->move(pos);
     w->show();
