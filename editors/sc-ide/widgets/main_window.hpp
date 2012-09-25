@@ -36,6 +36,7 @@ class TextFindReplacePanel;
 class GoToLineTool;
 class PostDock;
 class DocumentsDock;
+class HelpBrowserDockable;
 class CmdLine;
 class Document;
 class DocumentsDialog;
@@ -223,6 +224,7 @@ private:
     // Docks
     PostDock * mPostDock;
     DocumentsDock *mDocListDock;
+    HelpBrowserDockable *mHelpBrowserDockable;
 
     QSignalMapper mCodeEvalMapper;
     DocumentsDialog * mDocDialog;

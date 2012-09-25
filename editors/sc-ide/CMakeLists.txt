@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 2.8 )
 
-find_package(Qt4 4.7 REQUIRED)
+find_package(Qt4 4.7 REQUIRED COMPONENTS QtCore QtGui QtWebKit)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
@@ -35,6 +35,7 @@ set ( ide_moc_hdr
     widgets/session_switch_dialog.hpp
     widgets/sessions_dialog.hpp
     widgets/tool_box.hpp
+    widgets/help_browser.hpp
     widgets/code_editor/editor.hpp
     widgets/code_editor/sc_editor.hpp
     widgets/code_editor/highlighter.hpp
@@ -75,6 +76,7 @@ set ( ide_src
     widgets/multi_editor.cpp
     widgets/post_window.cpp
     widgets/session_switch_dialog.cpp
+    widgets/help_browser.cpp
     widgets/code_editor/editor.cpp
     widgets/code_editor/sc_editor.cpp
     widgets/code_editor/highlighter.cpp

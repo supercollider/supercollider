@@ -3,6 +3,7 @@ ScIDE {
 	classvar <>currentPath;
 	classvar <defaultServer;
 	classvar serverController;
+	classvar docRoutine;
 
 	*initClass {
 		subListSorter = { | a b | a[0].perform('<', b[0]) };
@@ -261,6 +262,76 @@ ScIDE {
 
 		ScIDE.prSend(requestId, [symbol, result.asArray])
 	}
+
+	*openHelpUrl { |url|
+		ScIDE.processUrl(url, { |processedUrl|
+			this.prSend("openHelpUrl", processedUrl)
+		});
+	}
+
+	*cmdPeriod { docRoutine.play(AppClock) }
+
+	*processUrl { |url, doneAction, brokenAction|
+		// NOTE: Copied and modified from HelpBrower:-goTo
+
+		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp",".rtf"];
+
+		plainTextExts.do {|x|
+			if(url.endsWith(x)) {
+				newPath = url.replace("%20"," ").findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
+
+				if(File.exists(newPath)) {
+					ScIDE.open(newPath);
+				}{
+					doneAction.value( SCDoc.helpTargetDir++"/BrokenLink.html#"++newPath );
+				};
+				^this;
+			}
+		};
+
+		brokenAction = brokenAction ? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
+
+		if (docRoutine.notNil) { docRoutine.stop };
+
+		docRoutine = Routine {
+			try {
+				url = SCDoc.prepareHelpForURL(url) ?? brokenAction;
+				newPath = url.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
+
+				// detect old helpfiles and open them in OldHelpWrapper
+				if(url.beginsWith("sc://")) {
+					url = SCDoc.findHelpFile(newPath);
+				} {
+					if(
+						/*
+						// this didn't work for quarks due to difference between registered old help path
+						// and the quarks symlink in Extensions.
+						// we could use File.realpath(path) below but that would double the execution time,
+						// so let's just assume any local file outside helpTargetDir is an old helpfile.
+						block{|break|
+						Help.do {|key, path|
+						if(url.endsWith(path)) {
+						break.value(true)
+						}
+						}; false
+						}*/
+						newPath.beginsWith(SCDoc.helpTargetDir).not and: { url.beginsWith("file://") }
+					) {
+						url = HelpBrowser.getOldWrapUrl(url)
+					};
+				};
+
+				doneAction.value(url);
+			} {|err|
+				err.throw;
+			};
+			CmdPeriod.remove(this);
+			docRoutine = nil;
+		}.play(AppClock);
+		CmdPeriod.add(this);
+	}
+
+	// PRIVATE ///////////////////////////////////////////////////////////
 
 	*prSend {|id, data|
 		_ScIDE_Send

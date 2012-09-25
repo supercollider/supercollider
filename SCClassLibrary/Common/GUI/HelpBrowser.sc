@@ -12,6 +12,9 @@ HelpBrowser {
 	var rout;
 
 	*initClass {
+		Class.initClassTree(SCDoc);
+		defaultHomeUrl = SCDoc.helpTargetDir ++ "/Help.html";
+
 		StartUp.add {
 			NotificationCenter.register(SCDoc, \didIndexAllDocs, this) {
 				if(WebView.implClass.respondsTo(\clearCache)) {
@@ -29,14 +32,16 @@ HelpBrowser {
 	}
 
 	*new { arg aHomeUrl, newWin;
-		if( aHomeUrl.isNil ) {
-			aHomeUrl = defaultHomeUrl ?? { SCDoc.helpTargetDir ++ "/Help.html" };
-		};
-		^super.new.init( aHomeUrl, newWin ?? { openNewWindows } );
+		^super.new.init( aHomeUrl ? defaultHomeUrl, newWin ?? { openNewWindows } );
 	}
 
 	*goTo {|url|
-		this.front.goTo(url);
+		var ideClass = \ScIDE.asClass;
+		if ( ideClass.notNil ) {
+			ideClass.openHelpUrl(url);
+		}{
+			this.front.goTo(url);
+		}
 	}
 
 	*front {
@@ -44,6 +49,8 @@ HelpBrowser {
 		w.window.front;
 		^w;
 	}
+
+	*goHome { this.goTo(defaultHomeUrl); }
 
 	*openBrowsePage {|category|
 		category = if(category.notNil) {"#"++category} {""};
@@ -54,8 +61,11 @@ HelpBrowser {
 		this.goTo(SCDoc.helpTargetDir++"/Search.html"++text);
 	}
 	*openHelpFor {|text|
+		this.goTo(SCDoc.findHelpFile(text));
+		/* The following was replaced, for compatibility with SC IDE:
 		var w = this.front;
 		{ w.startAnim; w.goTo(SCDoc.findHelpFile(text)) }.fork(AppClock);
+		*/
 	}
 	*openHelpForMethod {|method|
 		var cls = method.ownerClass;
@@ -76,6 +86,7 @@ HelpBrowser {
 			{"Classes" +/+ c ++ ".html"}
 			{"Guides/WritingHelp.html"})
 	}
+
 	cmdPeriod { rout.play(AppClock) }
 	goTo {|url, brokenAction|
 		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp",".rtf"];

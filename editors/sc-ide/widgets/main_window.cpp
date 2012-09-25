@@ -28,6 +28,7 @@
 #include "multi_editor.hpp"
 #include "popup_text_input.hpp"
 #include "post_window.hpp"
+#include "help_browser.hpp"
 #include "session_switch_dialog.hpp"
 #include "sessions_dialog.hpp"
 #include "tool_box.hpp"
@@ -108,10 +109,14 @@ MainWindow::MainWindow(Main * main) :
     addDockWidget(Qt::RightDockWidgetArea, mDocListDock);
     mDocListDock->hide();
 
-
     mPostDock = new PostDock(this);
     mPostDock->setObjectName("post-dock");
     addDockWidget(Qt::LeftDockWidgetArea, mPostDock);
+
+    mHelpBrowserDockable = new HelpBrowserDockable(this);
+    mHelpBrowserDockable->setObjectName("help-dock");
+    addDockWidget(Qt::BottomDockWidgetArea, mHelpBrowserDockable);
+    mHelpBrowserDockable->hide();
 
     // Layout
     QVBoxLayout *center_box = new QVBoxLayout;
@@ -476,6 +481,7 @@ void MainWindow::createMenus()
     submenu = new QMenu(tr("&Docks"), this);
     submenu->addAction( mPostDock->toggleViewAction() );
     submenu->addAction( mDocListDock->toggleViewAction() );
+    submenu->addAction( mHelpBrowserDockable->toggleViewAction() );
     menu->addMenu(submenu);
     menu->addSeparator();
     submenu = menu->addMenu(tr("&Tool Panels"));
@@ -1246,8 +1252,7 @@ void MainWindow::openDocumentation()
 
 void MainWindow::openHelp()
 {
-    QString code = QString("Help.gui");
-    Main::scProcess()->evaluateCode(code, true);
+    mHelpBrowserDockable->browser()->goHome();
 }
 
 
