@@ -28,7 +28,9 @@
 #include <QVBoxLayout>
 #include <QToolBar>
 #include <QWebSettings>
+#include <QWebFrame>
 #include <QStyle>
+#include <QShortcut>
 
 namespace ScIDE {
 
@@ -68,17 +70,28 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
 
     connect( mWebView, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
     connect( webPage->action(QWebPage::Reload), SIGNAL(triggered(bool)), this, SLOT(onReload()) );
-    connect( Main::scProcess(), SIGNAL(response(QString,QString)), this, SLOT(onScResponse(QString,QString)) );
+    connect( webPage, SIGNAL(jsConsoleMsg(QString,int,QString)),
+             this, SLOT(onJsConsoleMsg(QString,int,QString)) );
+    connect( Main::scProcess(), SIGNAL(response(QString,QString)),
+             this, SLOT(onScResponse(QString,QString)) );
+
+    mEvaluateShortcut = new QShortcut(this);
+    connect( mEvaluateShortcut, SIGNAL(activated()), this, SLOT(evaluateSelection()) );
 
     applySettings( Main::settings() );
 }
 
 void HelpBrowser::applySettings( Settings::Manager *settings )
 {
+    settings->beginGroup("IDE/shortcuts");
+
     mWebView->pageAction(QWebPage::Copy)
-            ->setShortcut( Main::settings()->shortcut("IDE/shortcuts/copy") );
+            ->setShortcut( Main::settings()->shortcut("copy") );
     mWebView->pageAction(QWebPage::Paste)
-            ->setShortcut( Main::settings()->shortcut("IDE/shortcuts/paste") );
+            ->setShortcut( Main::settings()->shortcut("paste") );
+    mEvaluateShortcut->setKey( Main::settings()->shortcut("evaluate_selection,_line_or_region") );
+
+    settings->endGroup();
 }
 
 void HelpBrowser::goHome()
@@ -116,6 +129,24 @@ void HelpBrowser::onScResponse( const QString & command, const QString & data )
     mWebView->load( urlString );
 
     emit urlChanged();
+}
+
+void HelpBrowser::evaluateSelection()
+{
+    static const QString javaScript("selectLine()");
+    QWebFrame *frame = mWebView->page()->currentFrame();
+    if( frame ) frame->evaluateJavaScript( javaScript );
+
+    QString code( mWebView->selectedText() );
+    if (!code.isEmpty())
+        Main::scProcess()->evaluateCode(code);
+}
+
+void HelpBrowser::onJsConsoleMsg(const QString &arg1, int arg2, const QString & arg3 )
+{
+    qWarning() << "*** ERROR in JavaScript:" << arg1;
+    qWarning() << "* line:" << arg2;
+    qWarning() << "* source ID:" << arg3;
 }
 
 } // namespace ScIDE

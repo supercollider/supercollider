@@ -23,6 +23,7 @@
 
 #include <QWebView>
 #include <QDockWidget>
+#include <QShortcut>
 
 namespace ScIDE {
 
@@ -43,8 +44,9 @@ public:
     }
 
 public slots:
-    void goHome();
     void applySettings( Settings::Manager * );
+    void goHome();
+    void evaluateSelection();
 
 signals:
     void urlChanged();
@@ -53,11 +55,13 @@ private slots:
     void onLinkClicked( const QUrl & );
     void onReload();
     void onScResponse( const QString & command, const QString & data );
+    void onJsConsoleMsg(const QString &, int, const QString & );
 
 private:
     QWebView *mWebView;
 
     ScRequest *mRequest;
+    QShortcut *mEvaluateShortcut;
 };
 
 class HelpBrowserDockable : public QDockWidget
