@@ -20,6 +20,7 @@
 ************************************************************************/
 
 #include "QcWebView.h"
+#include "web_page.hpp"
 #include "../QcWidgetFactory.h"
 #include <QWebPage>
 #include <QWebFrame>
@@ -28,7 +29,6 @@
 #include <QKeyEvent>
 #include <QApplication>
 #include <QStyle>
-#include <QClipboard>
 
 QC_DECLARE_QWIDGET_FACTORY(WebView);
 
@@ -155,27 +155,6 @@ void WebView::keyPressEvent( QKeyEvent *e )
   }
 
   QWebView::keyPressEvent( e );
-}
-
-
-void WebPage::triggerAction ( WebAction action, bool checked )
-{
-  switch ( action ) {
-    case QWebPage::Reload:
-      if( _delegateReload ) return;
-      break;
-    case QWebPage::Copy:
-      QApplication::clipboard()->setText( selectedText() );
-      return;
-    default: ;
-  }
-
-  QWebPage::triggerAction( action, checked );
-}
-
-void WebPage::javaScriptConsoleMessage ( const QString & msg, int line, const QString & src )
-{
-  Q_EMIT( jsConsoleMsg(msg,line,src) );
 }
 
 } // namespace QtCollider

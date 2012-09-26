@@ -23,17 +23,27 @@
 #include "help_browser.hpp"
 #include "../core/sc_process.hpp"
 #include "../core/main.hpp"
+#include "QtCollider/widgets/web_page.hpp"
 
 #include <QVBoxLayout>
 #include <QToolBar>
+#include <QWebSettings>
+#include <QStyle>
 
 namespace ScIDE {
 
 HelpBrowser::HelpBrowser( QWidget * parent ):
     QWidget(parent)
 {
+    QtCollider::WebPage *webPage = new QtCollider::WebPage(this);
+    webPage->setDelegateReload(true);
+    webPage->setLinkDelegationPolicy( QWebPage::DelegateAllLinks );
+
     mWebView = new QWebView;
-    mWebView->page()->setLinkDelegationPolicy( QWebPage::DelegateAllLinks );
+    mWebView->setPage( webPage );
+    // Set the style's standard palette to avoid system's palette incoherencies
+    // get in the way of rendering web pages
+    mWebView->setPalette( style()->standardPalette() );
 
     QToolBar *toolBar = new QToolBar;
     QAction *action = toolBar->addAction("Home");
@@ -51,6 +61,8 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     setLayout(layout);
 
     connect( mWebView, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
+    connect( mWebView->page()->action(QWebPage::Reload), SIGNAL(triggered(bool)),
+             this, SLOT(onReload()) );
     connect( Main::scProcess(), SIGNAL(response(QString,QString)), this, SLOT(onScResponse(QString,QString)) );
 }
 
@@ -67,6 +79,12 @@ void HelpBrowser::onLinkClicked( const QUrl & url )
                 QString("HelpBrowser.goTo(\"%1\")").arg(url.toString()) );
 }
 
+void HelpBrowser::onReload()
+{
+    QWebSettings::clearMemoryCaches();
+    onLinkClicked( mWebView->url() );
+}
+
 void HelpBrowser::onScResponse( const QString & command, const QString & data )
 {
     const QString openHelpUrlString = "openHelpUrl";
@@ -80,7 +98,7 @@ void HelpBrowser::onScResponse( const QString & command, const QString & data )
     // undress YAML string:
     urlString.remove(0,1).chop(1);
 
-    mWebView->setUrl( urlString );
+    mWebView->load( urlString );
 
     emit urlChanged();
 }
