@@ -79,6 +79,7 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
              this, SLOT(onScResponse(QString,QString)) );
 
     mEvaluateShortcut = new QShortcut(this);
+    mEvaluateShortcut->setContext( Qt::WidgetWithChildrenShortcut );
     connect( mEvaluateShortcut, SIGNAL(activated()), this, SLOT(evaluateSelection()) );
 
     applySettings( Main::settings() );
