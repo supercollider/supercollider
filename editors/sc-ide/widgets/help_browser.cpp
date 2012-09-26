@@ -41,6 +41,12 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
 
     mWebView = new QWebView;
     mWebView->setPage( webPage );
+
+    // NOTE: we assume all web page shortcuts have Qt::WidgetShortcut context
+    mWebView->setContextMenuPolicy( Qt::ActionsContextMenu );
+    mWebView->addAction( webPage->action( QWebPage::Copy ) );
+    mWebView->addAction( webPage->action( QWebPage::Paste ) );
+
     // Set the style's standard palette to avoid system's palette incoherencies
     // get in the way of rendering web pages
     mWebView->setPalette( style()->standardPalette() );
@@ -61,9 +67,18 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     setLayout(layout);
 
     connect( mWebView, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
-    connect( mWebView->page()->action(QWebPage::Reload), SIGNAL(triggered(bool)),
-             this, SLOT(onReload()) );
+    connect( webPage->action(QWebPage::Reload), SIGNAL(triggered(bool)), this, SLOT(onReload()) );
     connect( Main::scProcess(), SIGNAL(response(QString,QString)), this, SLOT(onScResponse(QString,QString)) );
+
+    applySettings( Main::settings() );
+}
+
+void HelpBrowser::applySettings( Settings::Manager *settings )
+{
+    mWebView->pageAction(QWebPage::Copy)
+            ->setShortcut( Main::settings()->shortcut("IDE/shortcuts/copy") );
+    mWebView->pageAction(QWebPage::Paste)
+            ->setShortcut( Main::settings()->shortcut("IDE/shortcuts/paste") );
 }
 
 void HelpBrowser::goHome()
