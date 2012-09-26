@@ -193,7 +193,16 @@ MainWindow::MainWindow(Main * main) :
     updateRecentDocsMenu();
 
     QIcon icon;
+    icon.addFile(":/icons/sc-ide-svg");
+    icon.addFile(":/icons/sc-ide-16");
+    icon.addFile(":/icons/sc-ide-24");
+    icon.addFile(":/icons/sc-ide-32");
+    icon.addFile(":/icons/sc-ide-48");
+    icon.addFile(":/icons/sc-ide-64");
     icon.addFile(":/icons/sc-ide-128");
+    icon.addFile(":/icons/sc-ide-256");
+    icon.addFile(":/icons/sc-ide-512");
+    icon.addFile(":/icons/sc-ide-1024");
     QApplication::setWindowIcon(icon);
 
     updateWindowTitle();
