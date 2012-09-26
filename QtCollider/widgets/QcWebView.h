@@ -88,26 +88,6 @@ private:
   bool _interpretSelection;
 };
 
-class WebPage : public QWebPage
-{
-  Q_OBJECT
-
-public:
-
-  WebPage( QObject *parent ) : QWebPage( parent ), _delegateReload(false) {}
-  virtual void triggerAction ( WebAction action, bool checked = false );
-  virtual void javaScriptConsoleMessage ( const QString &, int, const QString & );
-  bool delegateReload() const { return _delegateReload; }
-  void setDelegateReload( bool flag ) { _delegateReload = flag; }
-
-Q_SIGNALS:
-  void jsConsoleMsg( const QString &, int, const QString & );
-
-private:
-
-  bool _delegateReload;
-};
-
 } // namespace QtCollider
 
 #endif // QC_WEB_VIEW_H

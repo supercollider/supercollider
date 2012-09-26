@@ -48,6 +48,7 @@ signals:
 
 private slots:
     void onLinkClicked( const QUrl & );
+    void onReload();
     void onScResponse( const QString & command, const QString & data );
 
 private:
