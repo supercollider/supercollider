@@ -128,10 +128,13 @@ public:
     explicit ReferencesDialog(QWidget * parent = NULL);
 
 private slots:
-    void requestCanceled();
+    void requestCancelled();
     void performQuery();
     void onResposeFromLanguage(const QString &command, const QString &responseData);
     QStandardItemModel * parse(QString const & responseData);
+
+private:
+    SymbolReferenceRequest *mRequest;
 };
 
 } // namespace ScIDE
