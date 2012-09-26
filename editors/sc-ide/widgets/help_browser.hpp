@@ -28,6 +28,8 @@ namespace ScIDE {
 
 class ScRequest;
 
+namespace Settings { class Manager; }
+
 class HelpBrowser : public QWidget
 {
     Q_OBJECT
@@ -42,6 +44,7 @@ public:
 
 public slots:
     void goHome();
+    void applySettings( Settings::Manager * );
 
 signals:
     void urlChanged();

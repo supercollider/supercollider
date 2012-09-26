@@ -50,6 +50,7 @@ PostWindow::PostWindow(QWidget* parent):
     QAction *copyAction = new QAction(tr("Copy"), this);
     connect(copyAction, SIGNAL(triggered()), this, SLOT(copy()));
     copyAction->setShortcut( Main::settings()->shortcut("IDE/shortcuts/copy") );
+    copyAction->setShortcutContext( Qt::WidgetShortcut );
     addAction(copyAction);
 
     mClearAction = new QAction(tr("Clear"), this);
@@ -71,8 +72,8 @@ PostWindow::PostWindow(QWidget* parent):
     action = new QAction(tr("Shrink Post Font"), this);
     action->setIconText("-");
     action->setShortcut(tr("Ctrl+-", "Shrink Font"));
-    action->setToolTip(tr("Shrink font"));
     action->setShortcutContext( Qt::WidgetShortcut );
+    action->setToolTip(tr("Shrink font"));
     connect(action, SIGNAL(triggered()), this, SLOT(zoomOut()));
     addAction(action);
 
