@@ -424,6 +424,10 @@ bool LookupDialog::performPartialQuery(const QString & queryString)
 ReferencesDialog::ReferencesDialog(QWidget * parent):
     LookupDialog(parent)
 {
+    mRequest = new SymbolReferenceRequest(Main::scProcess(), this);
+    connect(mRequest, SIGNAL(response(QString,QString)), this, SLOT(onResposeFromLanguage(QString,QString)));
+    connect(mRequest, SIGNAL(cancelled()), this, SLOT(requestCancelled()));
+
     setWindowTitle(tr("Look Up References"));
 
     mQueryEdit->setText(tr("Enter class or method name..."));
@@ -439,13 +443,10 @@ void ReferencesDialog::performQuery()
         return;
     }
 
-    SymbolReferenceRequest * request = new SymbolReferenceRequest(Main::scProcess(), this);
-    connect(request, SIGNAL(response(QString,QString)), this, SLOT(onResposeFromLanguage(QString,QString)));
-    connect(request, SIGNAL(requestCanceled()), this, SLOT(requestCanceled()));
-    request->sendRequest(queryString);
+    mRequest->sendRequest(queryString);
 }
 
-void ReferencesDialog::requestCanceled()
+void ReferencesDialog::requestCancelled()
 {
     mResult->setModel(NULL);
 }
