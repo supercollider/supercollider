@@ -120,6 +120,8 @@ public:
     void restoreWindowState();
     void focusCodeEditor();
 
+    HelpBrowserDockable * helpBrowserDockable() { return mHelpBrowserDockable; }
+
     static MainWindow *instance() { return mInstance; }
 
     static bool close( Document * );

@@ -21,8 +21,9 @@
 #include "main.hpp"
 #include "settings/manager.hpp"
 #include "session_manager.hpp"
-#include "../widgets/lookup_dialog.hpp"
 #include "../widgets/main_window.hpp"
+#include "../widgets/help_browser.hpp"
+#include "../widgets/lookup_dialog.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
 
 #include "SC_DirUtils.h"
@@ -213,6 +214,22 @@ bool Main::eventFilter(QObject *object, QEvent *event)
     }
 
     return QObject::eventFilter(object, event);
+}
+
+bool Main::openDocumentation(const QString & string)
+{
+    QString symbol = string.trimmed();
+    if (symbol.isEmpty())
+        return false;
+
+    MainWindow::instance()->helpBrowserDockable()->browser()->gotoHelpFor(symbol);
+    return true;
+}
+
+bool Main::openDocumentationForMethod(const QString & className, const QString & methodName)
+{
+    MainWindow::instance()->helpBrowserDockable()->browser()->gotoHelpForMethod(className, methodName);
+    return true;
 }
 
 void Main::openDefinition(const QString &string, QWidget * parent)

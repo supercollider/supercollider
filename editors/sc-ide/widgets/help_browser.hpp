@@ -43,6 +43,9 @@ public:
         return QSize(500,300);
     }
 
+    void gotoHelpFor( const QString & );
+    void gotoHelpForMethod( const QString & className, const QString & methodName );
+
 public slots:
     void applySettings( Settings::Manager * );
     void goHome();
