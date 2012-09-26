@@ -38,8 +38,9 @@ class LoadProgressIndicator : public QLabel
 {
     Q_OBJECT
 public slots:
-    void start()
+    void start( const QString & msg = QString("Loading") )
     {
+        mMsg = msg;
         mDotCount = 0;
         mUpdateTimer.start(200, this);
     }
@@ -59,13 +60,14 @@ protected:
             mDotCount = 1;
 
         QString string(mDotCount, '.');
-        string.prepend(tr("Loading"));
+        string.prepend(mMsg);
 
         setText(string);
     }
 
 private:
     QBasicTimer mUpdateTimer;
+    QString mMsg;
     int mDotCount;
 };
 
