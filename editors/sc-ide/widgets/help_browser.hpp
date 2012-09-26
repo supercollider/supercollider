@@ -30,8 +30,6 @@
 
 namespace ScIDE {
 
-class ScRequest;
-
 namespace Settings { class Manager; }
 
 class LoadProgressIndicator : public QLabel
@@ -105,7 +103,6 @@ private:
 
     QWebView *mWebView;
 
-    ScRequest *mRequest;
     QShortcut *mEvaluateShortcut;
     LoadProgressIndicator *mLoadProgressIndicator;
 };
