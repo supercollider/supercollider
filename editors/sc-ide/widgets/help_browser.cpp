@@ -72,9 +72,13 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     setLayout(layout);
 
     connect( mWebView, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
+    connect( mWebView, SIGNAL(loadStarted()), mLoadProgressIndicator, SLOT(start()) );
+    connect( mWebView, SIGNAL(loadFinished(bool)), mLoadProgressIndicator, SLOT(stop()) );
+
     connect( webPage->action(QWebPage::Reload), SIGNAL(triggered(bool)), this, SLOT(onReload()) );
     connect( webPage, SIGNAL(jsConsoleMsg(QString,int,QString)),
              this, SLOT(onJsConsoleMsg(QString,int,QString)) );
+
     connect( Main::scProcess(), SIGNAL(response(QString,QString)),
              this, SLOT(onScResponse(QString,QString)) );
 
@@ -134,7 +138,7 @@ void HelpBrowser::onReload()
 
 void HelpBrowser::sendRequest( const QString &code )
 {
-    mLoadProgressIndicator->start();
+    mLoadProgressIndicator->start(tr("Sending request"));
     Main::scProcess()->evaluateCode( code, true );
 }
 
