@@ -1,0 +1,49 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1024" height="1024" viewBox="0 0 1024 1024" version="1.1">
+	<desc>SuperCollider Icon SVG - Batuhan Bozkurt 2012</desc>
+	<defs>
+		<circle id="circ0" cx="50%" cy="50%" r="45%" transform="rotate(0 512 512)"/>
+		<circle id="circ1" cx="50%" cy="50%" r="38.25%" transform="rotate(54 512 512)"/>
+		<circle id="circ2" cx="50%" cy="50%" r="31.5%" transform="rotate(108 512 512)"/>
+		<circle id="circ3" cx="50%" cy="50%" r="24.75%" transform="rotate(162 512 512)"/>
+		<circle id="circ4" cx="50%" cy="50%" r="18%" transform="rotate(216 512 512)"/>
+		<circle id="circ5" cx="50%" cy="50%" r="11.25%" transform="rotate(270 512 512)"/>
+		<circle id="circ6" cx="50%" cy="50%" r="4.5%" transform="rotate(324 512 512)"/>
+		<linearGradient id="fcirc0" x1="50%" y1="0%" x2="50%" y2="100%">
+			<stop stop-color="rgb(0,0,0)" offset="0%"/>
+			<stop stop-color="rgb(255,255,255)" offset="100%"/>
+		</linearGradient>
+		<linearGradient id="fcirc1" x1="50%" y1="0%" x2="50%" y2="100%">
+			<stop stop-color="rgb(13,13,13)" offset="0%"/>
+			<stop stop-color="rgb(255,255,255)" offset="100%"/>
+		</linearGradient>
+		<linearGradient id="fcirc2" x1="50%" y1="0%" x2="50%" y2="100%">
+			<stop stop-color="rgb(25,25,25)" offset="0%"/>
+			<stop stop-color="rgb(255,255,255)" offset="100%"/>
+		</linearGradient>
+		<linearGradient id="fcirc3" x1="50%" y1="0%" x2="50%" y2="100%">
+			<stop stop-color="rgb(38,38,38)" offset="0%"/>
+			<stop stop-color="rgb(255,255,255)" offset="100%"/>
+		</linearGradient>
+		<linearGradient id="fcirc4" x1="50%" y1="0%" x2="50%" y2="100%">
+			<stop stop-color="rgb(51,51,51)" offset="0%"/>
+			<stop stop-color="rgb(255,255,255)" offset="100%"/>
+		</linearGradient>
+		<linearGradient id="fcirc5" x1="50%" y1="0%" x2="50%" y2="100%">
+			<stop stop-color="rgb(64,64,64)" offset="0%"/>
+			<stop stop-color="rgb(255,255,255)" offset="100%"/>
+		</linearGradient>
+		<linearGradient id="fcirc6" x1="50%" y1="0%" x2="50%" y2="100%">
+			<stop stop-color="rgb(77,77,77)" offset="0%"/>
+			<stop stop-color="rgb(255,255,255)" offset="100%"/>
+		</linearGradient>
+	</defs>
+	<use xlink:href="#circ0" fill="url(#fcirc0)"/>
+	<use xlink:href="#circ1" fill="url(#fcirc1)"/>
+	<use xlink:href="#circ2" fill="url(#fcirc2)"/>
+	<use xlink:href="#circ3" fill="url(#fcirc3)"/>
+	<use xlink:href="#circ4" fill="url(#fcirc4)"/>
+	<use xlink:href="#circ5" fill="url(#fcirc5)"/>
+	<use xlink:href="#circ6" fill="url(#fcirc6)"/>
+</svg>
