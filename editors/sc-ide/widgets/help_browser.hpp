@@ -24,12 +24,50 @@
 #include <QWebView>
 #include <QDockWidget>
 #include <QShortcut>
+#include <QLabel>
+#include <QBasicTimer>
+#include <QTimerEvent>
 
 namespace ScIDE {
 
 class ScRequest;
 
 namespace Settings { class Manager; }
+
+class LoadProgressIndicator : public QLabel
+{
+    Q_OBJECT
+public slots:
+    void start()
+    {
+        mDotCount = 0;
+        mUpdateTimer.start(200, this);
+    }
+    void stop()
+    {
+        mUpdateTimer.stop(); clear();
+    }
+
+protected:
+    virtual void timerEvent( QTimerEvent *event )
+    {
+        if (event->timerId() != mUpdateTimer.timerId())
+            return;
+
+        ++mDotCount;
+        if (mDotCount > 10)
+            mDotCount = 1;
+
+        QString string(mDotCount, '.');
+        string.prepend(tr("Loading"));
+
+        setText(string);
+    }
+
+private:
+    QBasicTimer mUpdateTimer;
+    int mDotCount;
+};
 
 class HelpBrowser : public QWidget
 {
@@ -61,10 +99,13 @@ private slots:
     void onJsConsoleMsg(const QString &, int, const QString & );
 
 private:
+    void sendRequest( const QString &code );
+
     QWebView *mWebView;
 
     ScRequest *mRequest;
     QShortcut *mEvaluateShortcut;
+    LoadProgressIndicator *mLoadProgressIndicator;
 };
 
 class HelpBrowserDockable : public QDockWidget

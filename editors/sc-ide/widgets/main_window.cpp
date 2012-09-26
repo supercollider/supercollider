@@ -1263,6 +1263,7 @@ void MainWindow::openDocumentation()
 void MainWindow::openHelp()
 {
     mHelpBrowserDockable->browser()->goHome();
+    mHelpBrowserDockable->show();
 }
 
 

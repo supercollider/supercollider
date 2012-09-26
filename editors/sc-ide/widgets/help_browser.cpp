@@ -53,12 +53,16 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     // get in the way of rendering web pages
     mWebView->setPalette( style()->standardPalette() );
 
+    mLoadProgressIndicator = new LoadProgressIndicator;
+    mLoadProgressIndicator->setIndent(10);
+
     QToolBar *toolBar = new QToolBar;
     QAction *action = toolBar->addAction("Home");
     connect( action, SIGNAL(triggered()), this, SLOT(goHome()) );
     toolBar->addAction( mWebView->pageAction(QWebPage::Back) );
     toolBar->addAction( mWebView->pageAction(QWebPage::Forward) );
     toolBar->addAction( mWebView->pageAction(QWebPage::Reload) );
+    toolBar->addWidget(mLoadProgressIndicator);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(0,0,0,0);
@@ -98,33 +102,39 @@ void HelpBrowser::applySettings( Settings::Manager *settings )
 
 void HelpBrowser::goHome()
 {
-    Main::scProcess()->evaluateCode("HelpBrowser.goHome", true);
+    static QString code( "HelpBrowser.goHome" );
+    sendRequest(code);
 }
 
 void HelpBrowser::gotoHelpFor( const QString & symbol )
 {
     QString code = QString("HelpBrowser.openHelpFor(\"%1\")").arg(symbol);
-    Main::scProcess()->evaluateCode(code, true);
+    sendRequest(code);
 }
 
 void HelpBrowser::gotoHelpForMethod( const QString & className, const QString & methodName )
 {
     QString code = QString("HelpBrowser.openHelpForMethod( %1.findMethod(\\%2) )").arg(className, methodName);
-    Main::scProcess()->evaluateCode(code, true);
+    sendRequest(code);
 }
 
 void HelpBrowser::onLinkClicked( const QUrl & url )
 {
     qDebug() << "link clicked:" << url;
 
-    Main::scProcess()->evaluateCode(
-                QString("HelpBrowser.goTo(\"%1\")").arg(url.toString()) );
+    sendRequest( QString("HelpBrowser.goTo(\"%1\")").arg(url.toString()) );
 }
 
 void HelpBrowser::onReload()
 {
     QWebSettings::clearMemoryCaches();
     onLinkClicked( mWebView->url() );
+}
+
+void HelpBrowser::sendRequest( const QString &code )
+{
+    mLoadProgressIndicator->start();
+    Main::scProcess()->evaluateCode( code, true );
 }
 
 void HelpBrowser::onScResponse( const QString & command, const QString & data )
@@ -135,6 +145,8 @@ void HelpBrowser::onScResponse( const QString & command, const QString & data )
         return;
 
     qDebug() << "HelpBrowser: got response:" << data;
+
+    mLoadProgressIndicator->stop();
 
     QString urlString = data;
     // undress YAML string:
