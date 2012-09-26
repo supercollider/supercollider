@@ -63,6 +63,14 @@ Introspection::~Introspection()
     clear();
 }
 
+struct IndirectMethodCompare
+{
+    bool operator()(Method * lhs, Method * rhs) const
+    {
+        return lhs->name.get() < rhs->name.get();
+    }
+};
+
 bool Introspection::parse(const QString & yamlString )
 {
     using std::make_pair;
@@ -173,6 +181,8 @@ bool Introspection::parse(const QString & yamlString )
             klass->methods.append(method);
             mMethodMap.insert(make_pair(method->name, QSharedPointer<Method>(method)));
         }
+
+        qSort(klass->methods.begin(), klass->methods.end(), IndirectMethodCompare());
     }
 
     inferClassLibraryPath();
