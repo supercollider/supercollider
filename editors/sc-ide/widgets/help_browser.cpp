@@ -65,7 +65,6 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     layout->setSpacing(0);
     layout->addWidget(toolBar);
     layout->addWidget(mWebView);
-
     setLayout(layout);
 
     connect( mWebView, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
@@ -92,6 +91,9 @@ void HelpBrowser::applySettings( Settings::Manager *settings )
     mEvaluateShortcut->setKey( Main::settings()->shortcut("evaluate_selection,_line_or_region") );
 
     settings->endGroup();
+
+    QString codeFontFamily = settings->codeFont().family();
+    mWebView->settings()->setFontFamily( QWebSettings::FixedFont, codeFontFamily );
 }
 
 void HelpBrowser::goHome()
