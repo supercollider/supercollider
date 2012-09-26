@@ -413,8 +413,8 @@ SoundFile {
 		^buffer
 	}
 
-	cue { | ev, playNow = false |
-		var server, packet, defname = "diskIn" ++ numChannels, condition;
+	cue { | ev, playNow = false, closeWhenDone = false |
+		var server, packet, defname = "diskIn" ++ numChannels, condition, onClose;
 		ev = ev ? ();
 		if (this.numFrames == 0) { this.info };
 		fork {
@@ -442,13 +442,10 @@ SoundFile {
 							["/b_free", ev[\bufnum] ]  )
 				};
 				~setwatchers = { |ev|
-					OSCpathResponder(server.addr, ["/n_end", ev[\id][0]],
-					{ | time, resp, msg |
+					OSCFunc({
 						server.sendBundle(server.latency, ["/b_close", ev[\bufnum]],
-						["/b_read", ev[\bufnum], path, ev[\firstFrame], ev[\bufferSize], 0, 1]);
-						resp.remove;
-					}
-					).add;
+							["/b_read", ev[\bufnum], path, ev[\firstFrame], ev[\bufferSize], 0, 1]);
+					}, "/n_end", server.addr, nil, ev[\id][0]).oneShot;
 				};
 				if (playNow) {
 					packet = server.makeBundle(false, {ev.play})[0];
@@ -461,6 +458,13 @@ SoundFile {
 							["/b_read", ~bufnum, path, ~firstFrame, ~bufferSize, 0, 1, packet]
 						]);
 			};
+		};
+		if (closeWhenDone) {
+			onClose = SimpleController(ev).put(\n_end, {
+				ev.close;
+				onClose.remove;
+			});
+			ev.addDependant(onClose)
 		};
 		^ev;
 	}
