@@ -222,13 +222,17 @@ bool Main::openDocumentation(const QString & string)
     if (symbol.isEmpty())
         return false;
 
-    MainWindow::instance()->helpBrowserDockable()->browser()->gotoHelpFor(symbol);
+    HelpBrowserDockable *helpDock = MainWindow::instance()->helpBrowserDockable();
+    helpDock->browser()->gotoHelpFor(symbol);
+    helpDock->show();
     return true;
 }
 
 bool Main::openDocumentationForMethod(const QString & className, const QString & methodName)
 {
-    MainWindow::instance()->helpBrowserDockable()->browser()->gotoHelpForMethod(className, methodName);
+    HelpBrowserDockable *helpDock = MainWindow::instance()->helpBrowserDockable();
+    helpDock->browser()->gotoHelpForMethod(className, methodName);
+    helpDock->show();
     return true;
 }
 
