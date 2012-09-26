@@ -85,26 +85,8 @@ public:
         instance()->scProcess()->evaluateCode(text, silent);
     }
 
-    static bool openDocumentation(const QString & string)
-    {
-        // LATER: move to a new ScLanguage class
-
-        QString symbol = string.trimmed();
-        if (symbol.isEmpty())
-            return false;
-
-        QString code = QString("HelpBrowser.openHelpFor(\"%1\")").arg(symbol);
-        evaluateCode(code, true);
-        return true;
-    }
-
-    static bool openDocumentationForMethod(const QString & className, const QString & methodName)
-    {
-        QString code = QString("HelpBrowser.openHelpForMethod( %1.findMethod(\\%2) )").arg(className, methodName);
-        evaluateCode(code, true);
-        return true;
-    }
-
+    static bool openDocumentation(const QString & string);
+    static bool openDocumentationForMethod(const QString & className, const QString & methodName);
     static void openDefinition(const QString &string, QWidget * parent);
     static void findReferences(const QString &string, QWidget * parent);
 

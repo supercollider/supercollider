@@ -101,6 +101,18 @@ void HelpBrowser::goHome()
     Main::scProcess()->evaluateCode("HelpBrowser.goHome", true);
 }
 
+void HelpBrowser::gotoHelpFor( const QString & symbol )
+{
+    QString code = QString("HelpBrowser.openHelpFor(\"%1\")").arg(symbol);
+    Main::scProcess()->evaluateCode(code, true);
+}
+
+void HelpBrowser::gotoHelpForMethod( const QString & className, const QString & methodName )
+{
+    QString code = QString("HelpBrowser.openHelpForMethod( %1.findMethod(\\%2) )").arg(className, methodName);
+    Main::scProcess()->evaluateCode(code, true);
+}
+
 void HelpBrowser::onLinkClicked( const QUrl & url )
 {
     qDebug() << "link clicked:" << url;
