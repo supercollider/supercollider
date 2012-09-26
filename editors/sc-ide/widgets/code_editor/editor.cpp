@@ -466,6 +466,26 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
             QPlainTextEdit::keyPressEvent(e);
         break;
 
+    case Qt::Key_Down:
+    {
+        if (cursor.block() == textDocument()->lastBlock()) {
+            cursor.movePosition(QTextCursor::EndOfBlock);
+            setTextCursor(cursor);
+        } else
+            QPlainTextEdit::keyPressEvent(e);
+        break;
+    }
+
+    case Qt::Key_Up:
+    {
+        if (cursor.block() == textDocument()->firstBlock()) {
+            cursor.movePosition(QTextCursor::StartOfBlock);
+            setTextCursor(cursor);
+        } else
+            QPlainTextEdit::keyPressEvent(e);
+        break;
+    }
+
     default:
         QPlainTextEdit::keyPressEvent(e);
     }
