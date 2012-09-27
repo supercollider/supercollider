@@ -228,8 +228,6 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     createActions();
 
     setCurrentBox( defaultBox ); // will updateActions();
-
-    applySettings(main->settings());
 }
 
 void MultiEditor::makeSignalConnections()
@@ -469,21 +467,21 @@ void MultiEditor::createActions()
         QIcon::fromTheme("media-playback-start"), tr("Evaluate &File"), this);
     act->setStatusTip(tr("Evaluate current File"));
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(act, SIGNAL(triggered()), this, SLOT(evaluateDocument()));
+    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(evaluateDocument()));
 
     mActions[EvaluateRegion] = act = new QAction(
     QIcon::fromTheme("media-playback-start"), tr("&Evaluate Selection, Line or Region"), this);
     act->setShortcut(tr("Ctrl+Return", "Evaluate region"));
     act->setStatusTip(tr("Evaluate current region"));
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(act, SIGNAL(triggered()), this, SLOT(evaluateRegion()));
+    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(evaluateRegion()));
 
     mActions[EvaluateLine] = act = new QAction(
     QIcon::fromTheme("media-playback-startline"), tr("&Evaluate Line"), this);
     act->setShortcut(tr("Shift+Ctrl+Return", "Evaluate line"));
     act->setStatusTip(tr("Evaluate current line"));
     act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(act, SIGNAL(triggered()), this, SLOT(evaluateLine()));
+    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(evaluateLine()));
 
     settings->endGroup(); // IDE/shortcuts
 
@@ -557,13 +555,6 @@ void MultiEditor::updateActions()
     mActions[EvaluateCurrentDocument]->setEnabled( editor && editorIsScCodeEditor );
     mActions[EvaluateRegion]->setEnabled( editor && editorIsScCodeEditor );
     mActions[EvaluateLine]->setEnabled( editor && editorIsScCodeEditor );
-}
-
-void MultiEditor::applySettings( Settings::Manager *s )
-{
-    s->beginGroup("IDE/editor");
-    mStepForwardEvaluation = s->value("stepForwardEvaluation").toBool();
-    s->endGroup();
 }
 
 static QVariantList saveBoxState( CodeEditorBox *box, const QList<Document*> & documentList )
@@ -886,97 +877,6 @@ void MultiEditor::onCurrentEditorChanged(GenericCodeEditor *editor)
 void MultiEditor::onBoxActivated(CodeEditorBox *box)
 {
     setCurrentBox(box);
-}
-
-void MultiEditor::evaluateRegion()
-{
-    // LATER: move to ScCodeEditor
-    GenericCodeEditor * genericEditor = currentEditor();
-    ScCodeEditor * editor = qobject_cast<ScCodeEditor*>(genericEditor);
-    if (!editor)
-        return;
-
-    QString text;
-
-    // Try current selection
-    QTextCursor cursor = editor->textCursor();
-    if (cursor.hasSelection())
-        text = cursor.selectedText();
-    else {
-        // If no selection, try current region
-        cursor = editor->currentRegion();
-        if (!cursor.isNull()) {
-            text = cursor.selectedText();
-        } else {
-            // If no current region, try current line
-            cursor = editor->textCursor();
-            text = cursor.block().text();
-            if( mStepForwardEvaluation ) {
-                QTextCursor newCursor = cursor;
-                newCursor.movePosition(QTextCursor::NextBlock);
-                editor->setTextCursor(newCursor);
-            }
-            // Adjust cursor for code blinking:
-            cursor.movePosition(QTextCursor::StartOfBlock);
-            cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-        }
-    }
-
-    if (text.isEmpty())
-        return;
-
-    text.replace( QChar( 0x2029 ), QChar( '\n' ) );
-
-    Main::evaluateCode(text);
-
-    editor->blinkCode( cursor );
-}
-
-void MultiEditor::evaluateLine()
-{
-    // LATER: move to ScCodeEditor
-    GenericCodeEditor * genericEditor = currentEditor();
-    ScCodeEditor * editor = qobject_cast<ScCodeEditor*>(genericEditor);
-    if (!editor)
-        return;
-
-    QString text;
-
-    // Try current selection
-    QTextCursor cursor = editor->textCursor();
-    cursor.select(QTextCursor::LineUnderCursor);
-    text = cursor.selectedText();
-
-    if( mStepForwardEvaluation ) {
-        QTextCursor newCursor = cursor;
-        newCursor.movePosition(QTextCursor::NextBlock);
-        editor->setTextCursor(newCursor);
-    }
-
-    if (text.isEmpty())
-        return;
-
-    // Adjust cursor for code blinking:
-    cursor.movePosition(QTextCursor::StartOfBlock);
-    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-
-    text.replace( QChar( 0x2029 ), QChar( '\n' ) );
-
-    Main::evaluateCode(text);
-
-    editor->blinkCode( cursor );
-}
-
-void MultiEditor::evaluateDocument()
-{
-    // LATER: move to ScCodeEditor
-    GenericCodeEditor * genericEditor = currentEditor();
-    ScCodeEditor * editor = qobject_cast<ScCodeEditor*>(genericEditor);
-    if (!editor)
-        return;
-
-    QString documentText = editor->textDocument()->toPlainText();
-    Main::evaluateCode(documentText);
 }
 
 Document * MultiEditor::documentForTab( int index )

@@ -117,10 +117,6 @@ public:
     QAction * action( ActionRole role )
         { return mActions[role]; }
 
-    bool stepForwardEvaluation() { return mStepForwardEvaluation; }
-
-    void applySettings( Settings::Manager * );
-
     void saveSession( Session * );
     void switchSession( Session * );
 
@@ -150,9 +146,6 @@ private slots:
     void onCurrentEditorChanged( GenericCodeEditor * );
     void onBoxActivated( CodeEditorBox * );
     void onDocModified( QObject * );
-    void evaluateRegion();
-    void evaluateLine();
-    void evaluateDocument();
 
 private:
     void makeSignalConnections();
@@ -177,9 +170,6 @@ private:
     CodeEditorBox *mCurrentEditorBox;
     MultiSplitter *mSplitter;
     QIcon mDocModifiedIcon;
-
-    // settings
-    bool mStepForwardEvaluation;
 };
 
 } // namespace ScIDE

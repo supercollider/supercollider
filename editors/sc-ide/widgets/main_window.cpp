@@ -1132,7 +1132,6 @@ void MainWindow::showStatusMessage( QString const & string )
 
 void MainWindow::applySettings( Settings::Manager * settings )
 {
-    mEditors->applySettings(settings);
     mPostDock->mPostWindow->applySettings(settings);
     mHelpBrowserDockable->browser()->applySettings(settings);
     mCmdLine->applySettings(settings);
