@@ -1923,7 +1923,7 @@ static bool passOne_ProcessDir(const char *dirname, int level)
 
 	bool success = true;
 
-	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
+	if (gLanguageConfig && gLanguageConfig->pathIsExcluded(dirname)) {
 		post("\texcluding dir: '%s'\n", dirname);
 		return success;
 	}
@@ -1966,7 +1966,7 @@ bool passOne()
 		if (!passOne_ProcessDir(gCompileDir, 0))
 			return false;
 	} else
-		if (!gLibraryConfig->forEachIncludedDirectory(passOne_ProcessDir))
+		if (!gLanguageConfig->forEachIncludedDirectory(passOne_ProcessDir))
 			return false;
 
 	finiPassOne();
@@ -2005,7 +2005,7 @@ bool passOne_ProcessOneFile(const char * filenamearg, int level)
 		return success;
 	}
 
-	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(filename)) {
+	if (gLanguageConfig && gLanguageConfig->pathIsExcluded(filename)) {
 	  post("\texcluding file: '%s'\n", filename);
 	  return success;
 	}
@@ -2118,7 +2118,7 @@ SC_DLLEXPORT_C bool compileLibrary()
 	compiledOK = false;
 
 	// FIXME: the library config should have been initialized earlier!
-	if (!gLibraryConfig)
+	if (!gLanguageConfig)
 		SC_LanguageConfig::readDefaultLibraryConfig();
 
 	compileStartTime = elapsedTime();

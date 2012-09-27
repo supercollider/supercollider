@@ -105,6 +105,6 @@ private:
 	DirVector mExcludedDirectories;
 };
 
-extern SC_LanguageConfig* gLibraryConfig;
+extern SC_LanguageConfig* gLanguageConfig;
 
 #endif // SC_LIBRARYCONFIG_H_INCLUDED
