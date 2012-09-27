@@ -58,10 +58,9 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
     settings->beginGroup("IDE/editor");
 
     mSpaceIndent = settings->value("spaceIndent").toBool();
-
     mBlinkDuration = settings->value("blinkDuration").toInt();
-
     mBracketHighlight = settings->value("colors/matchingBrackets").value<QTextCharFormat>();
+    mStepForwardEvaluation = settings->value("stepForwardEvaluation").toBool();
 
     settings->endGroup();
 }
@@ -949,6 +948,79 @@ void ScCodeEditor::openDefinition()
 void ScCodeEditor::findReferences()
 {
     Main::findReferences(symbolUnderCursor(), this);
+}
+
+void ScCodeEditor::evaluateLine()
+{
+    QString text;
+
+    // Try current selection
+    QTextCursor cursor = textCursor();
+    cursor.select(QTextCursor::LineUnderCursor);
+    text = cursor.selectedText();
+
+    if( mStepForwardEvaluation ) {
+        QTextCursor newCursor = cursor;
+        newCursor.movePosition(QTextCursor::NextBlock);
+        setTextCursor(newCursor);
+    }
+
+    if (text.isEmpty())
+        return;
+
+    // Adjust cursor for code blinking:
+    cursor.movePosition(QTextCursor::StartOfBlock);
+    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+
+    text.replace( QChar( 0x2029 ), QChar( '\n' ) );
+
+    Main::evaluateCode(text);
+
+    blinkCode( cursor );
+}
+
+void ScCodeEditor::evaluateRegion()
+{
+    QString text;
+
+    // Try current selection
+    QTextCursor cursor = textCursor();
+    if (cursor.hasSelection())
+        text = cursor.selectedText();
+    else {
+        // If no selection, try current region
+        cursor = currentRegion();
+        if (!cursor.isNull()) {
+            text = cursor.selectedText();
+        } else {
+            // If no current region, try current line
+            cursor = textCursor();
+            text = cursor.block().text();
+            if( mStepForwardEvaluation ) {
+                QTextCursor newCursor = cursor;
+                newCursor.movePosition(QTextCursor::NextBlock);
+                setTextCursor(newCursor);
+            }
+            // Adjust cursor for code blinking:
+            cursor.movePosition(QTextCursor::StartOfBlock);
+            cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        }
+    }
+
+    if (text.isEmpty())
+        return;
+
+    text.replace( QChar( 0x2029 ), QChar( '\n' ) );
+
+    Main::evaluateCode(text);
+
+    blinkCode( cursor );
+}
+
+void ScCodeEditor::evaluateDocument()
+{
+    QString documentText = textDocument()->toPlainText();
+    Main::evaluateCode(documentText);
 }
 
 QTextCursor ScCodeEditor::cursorAt(const TokenIterator it, int offset)

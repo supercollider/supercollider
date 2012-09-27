@@ -63,6 +63,9 @@ public slots:
     bool openDocumentation();
     void openDefinition();
     void findReferences();
+    void evaluateLine();
+    void evaluateRegion();
+    void evaluateDocument();
 
 protected:
     virtual bool event( QEvent * );
@@ -97,6 +100,7 @@ private:
 
     int mIndentWidth;
     bool mSpaceIndent;
+    bool mStepForwardEvaluation;
     int mBlinkDuration;
     QTextCharFormat mBracketHighlight;
 
