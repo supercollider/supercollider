@@ -34,15 +34,17 @@
 
 using namespace ScIDE;
 
-Document::Document():
+Document::Document( bool isPlainText ):
     mId( QUuid::createUuid().toString().toAscii() ),
     mDoc( new QTextDocument(this) ),
     mTitle( "Untitled" ),
-    mIndentWidth(4)
+    mIndentWidth(4),
+    mHighlighter(NULL)
 {
     mDoc->setDocumentLayout( new QPlainTextDocumentLayout(mDoc) );
 
-    new SyntaxHighlighter(mDoc);
+    if (!isPlainText)
+        mHighlighter = new SyntaxHighlighter(mDoc);
 
     connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
              this, SLOT(applySettings(Settings::Manager*)) );
@@ -114,16 +116,16 @@ DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
     loadRecentDocuments( settings );
 }
 
-Document * DocumentManager::createDocument()
+Document * DocumentManager::createDocument( bool isPlainText )
 {
-    Document *doc = new Document();
+    Document *doc = new Document( isPlainText );
     mDocHash.insert( doc->id(), doc );
     return doc;
 }
 
 void DocumentManager::create()
 {
-    Document *doc = createDocument();
+    Document *doc = createDocument( false );
 
     Q_EMIT( opened(doc, 0, 0) );
 }
@@ -171,7 +173,10 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
                              QString(tr("Warning: RTF file will be converted to plain-text scd file.")));
     }
 
-    Document *doc = createDocument();
+    const bool fileIsPlainText = !(info.suffix() == QString("sc") ||
+                                   (info.suffix() == QString("scd")));
+
+    Document *doc = createDocument( fileIsPlainText );
     doc->mDoc->setPlainText( QString::fromUtf8( bytes.data(), bytes.size() ) );
     doc->mDoc->setModified(false);
     doc->mFilePath = filePath;
