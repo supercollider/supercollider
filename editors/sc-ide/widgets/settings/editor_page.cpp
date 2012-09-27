@@ -28,6 +28,7 @@
 #include <QDebug>
 #include <QListWidgetItem>
 #include <QFontDatabase>
+#include <QApplication>
 
 namespace ScIDE { namespace Settings {
 
@@ -141,12 +142,30 @@ void EditorPage::loadGeneralTextFormats( Manager *settings )
     mCommonTextFormatItem->setData( 0, TextFormatRole, settings->value( "text" ) );
     mGeneralFormatsItem->addChild( mCommonTextFormatItem );
 
+    QPalette palette = QApplication::palette();
+
+    QTextCharFormat lineNumbersDefaultFormat;
+    lineNumbersDefaultFormat.setBackground( palette.brush(QPalette::Button) );
+    lineNumbersDefaultFormat.setForeground( palette.brush(QPalette::ButtonText) );
+
+    addTextFormat( mGeneralFormatsItem, "Line Numbers", "lineNumbers",
+                   settings->value( "lineNumbers" ).value<QTextCharFormat>(),
+                   lineNumbersDefaultFormat );
+
+    QTextCharFormat selectionDefaultFormat;
+    selectionDefaultFormat.setBackground( palette.brush(QPalette::Highlight) );
+    selectionDefaultFormat.setForeground( palette.brush(QPalette::HighlightedText) );
+
+    addTextFormat( mGeneralFormatsItem, "Selected Text", "selection",
+                   settings->value( "selection" ).value<QTextCharFormat>(),
+                   selectionDefaultFormat );
+
     static char const * const keys[] = {
-        "selection", "searchResult", "matchingBrackets", "evaluatedCode", "lineNumbers"
+        "searchResult", "matchingBrackets", "evaluatedCode"
     };
 
     static char const * const strings[] = {
-        "Selected Text", "Search Result", "Matching Brackets", "Evaluated Code", "Line Numbers"
+        "Search Result", "Matching Brackets", "Evaluated Code"
     };
 
     static int count = sizeof(keys) / sizeof(keys[0]);
@@ -278,22 +297,30 @@ QFont EditorPage::constructFont()
     return font;
 }
 
-void EditorPage::addTextFormat
-( QTreeWidgetItem * parent, const QString & name, const QString &key, const QTextCharFormat & format )
+QTreeWidgetItem * EditorPage::addTextFormat
+( QTreeWidgetItem * parent, const QString & name, const QString &key,
+  const QTextCharFormat & format, const QTextCharFormat &defaultFormat )
 {
     QTreeWidgetItem *item = new QTreeWidgetItem();
     item->setText( 0, name );
     item->setData( 0, TextFormatConfigKeyRole, key );
-    setTextFormat( item, format );
+    item->setData( 0, TextFormatRole, QVariant::fromValue(format) );
+    item->setData( 0, DefaultTextFormatRole, QVariant::fromValue(defaultFormat) );
+    updateTextFormatDisplay( item );
 
     if (!parent)
         parent = ui->textFormats->invisibleRootItem();
 
     parent->addChild(item);
+
+    return item;
 }
 
-void EditorPage::setTextFormat( QTreeWidgetItem *item, const QTextCharFormat & format )
+void EditorPage::updateTextFormatDisplay( QTreeWidgetItem *item )
 {
+    QTextCharFormat format = item->data( 0, DefaultTextFormatRole ).value<QTextCharFormat>();
+    format.merge( item->data( 0, TextFormatRole ).value<QTextCharFormat>() );
+
     QBrush fg = format.foreground();
     if ( fg != Qt::NoBrush)
         item->setForeground( 0, fg );
@@ -313,8 +340,6 @@ void EditorPage::setTextFormat( QTreeWidgetItem *item, const QTextCharFormat & f
         f.setWeight( format.fontWeight() );
 
     item->setFont( 0, f );
-
-    item->setData( 0, TextFormatRole, QVariant::fromValue(format) );
 }
 
 QTextCharFormat EditorPage::constructTextFormat()
@@ -367,14 +392,12 @@ void EditorPage::updateTextFormatDisplay()
         return;
 
     QTextCharFormat format = constructTextFormat();
+    item->setData( 0, TextFormatRole, QVariant::fromValue(format) );
 
     if (item != mCommonTextFormatItem)
-        setTextFormat( item, format );
-    else {
-        // treat common text format specially
-        item->setData( 0, TextFormatRole, QVariant::fromValue(format) );
+        updateTextFormatDisplay( item );
+    else
         updateTextFormatDisplayCommons();
-    }
 }
 
 void EditorPage::updateTextFormatDisplayCommons()

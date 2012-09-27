@@ -61,7 +61,8 @@ private Q_SLOTS:
 private:
     enum TextFormatListRole {
         TextFormatConfigKeyRole = Qt::UserRole,
-        TextFormatRole
+        TextFormatRole,
+        DefaultTextFormatRole
     };
 
     void loadGeneralTextFormats( Manager * );
@@ -72,10 +73,11 @@ private:
     QFont constructFont();
     QTextCharFormat constructTextFormat();
 
-    void addTextFormat
-    ( QTreeWidgetItem * parent, const QString & name, const QString &key, const QTextCharFormat & format );
+    QTreeWidgetItem * addTextFormat
+    ( QTreeWidgetItem * parent, const QString & name, const QString &key,
+      const QTextCharFormat & format, const QTextCharFormat & defaultFormat = QTextCharFormat() );
 
-    void setTextFormat( QTreeWidgetItem *, const QTextCharFormat & format );
+    void updateTextFormatDisplay( QTreeWidgetItem * );
 
     QFontDatabase *fontDatabase;
 
