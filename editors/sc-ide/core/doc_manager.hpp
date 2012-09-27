@@ -48,7 +48,7 @@ class Document : public QObject
     friend class DocumentManager;
 
 public:
-    Document();
+    Document( bool isPlainText );
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
@@ -62,6 +62,8 @@ public:
     void setIndentWidth( int numSpaces );
 
     void deleteTrailingSpaces();
+
+    bool isPlainText() const { return mHighlighter == NULL; }
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -77,6 +79,7 @@ private:
     QString mTitle;
     QDateTime mSaveTime;
     int mIndentWidth;
+    SyntaxHighlighter * mHighlighter;
 };
 
 class DocumentManager : public QObject
@@ -116,7 +119,7 @@ private slots:
     void onFileChanged( const QString & path );
 
 private:
-    Document * createDocument();
+    Document * createDocument( bool isPlainText );
     bool doSaveAs( Document *, const QString & path );
     void addToRecent( Document * );
     void loadRecentDocuments( Settings::Manager * );

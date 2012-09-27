@@ -52,7 +52,8 @@ void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
     if (switchEditor) {
         editor = editorForDocument(doc);
         if (!editor) {
-            editor = new ScCodeEditor(doc);
+            editor = doc->isPlainText() ? new GenericCodeEditor(doc)
+                                        : new ScCodeEditor(doc);
             editor->installEventFilter(this);
             mHistory.prepend(editor);
             mLayout->addWidget(editor);
