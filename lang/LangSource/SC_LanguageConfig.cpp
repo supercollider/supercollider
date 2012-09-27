@@ -23,7 +23,6 @@
 
 #include "SC_LanguageConfig.hpp"
 #include "SCBase.h"
-#include "SC_StringBuffer.h"
 #include "SC_DirUtils.h"
 
 #include <assert.h>
@@ -150,26 +149,6 @@ void SC_LanguageConfig::removeExcludedDirectory(const char *path)
 	mExcludedDirectories.erase(end, mExcludedDirectories.end());
 }
 
-bool SC_LanguageConfig::readLibraryConfig(const char* fileName)
-{
-	freeLibraryConfig();
-	gLanguageConfig = new SC_LanguageConfig();
-
-	SC_LibraryConfigFile file(::post);
-	bool success = file.open(fileName);
-	if (!success)
-		return false;
-
-	bool error = file.read(fileName, gLanguageConfig);
-	file.close();
-
-	if (!error)
-		return true;
-
-	freeLibraryConfig();
-	return false;
-}
-
 extern bool gPostInlineWarnings;
 bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName)
 {
@@ -280,7 +259,6 @@ static bool file_exists(std::string const & fileName)
 	return file_exists(fileName.c_str());
 }
 
-
 bool SC_LanguageConfig::readDefaultLibraryConfig()
 {
 	char config_dir[PATH_MAX];
@@ -297,36 +275,12 @@ bool SC_LanguageConfig::readDefaultLibraryConfig()
 			configured = readLibraryConfigYAML(global_yaml_config_file);
 	}
 
-	std::string config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang.cfg";
-
-	// deprecated config files
-	const char* paths[4] = { config_file.c_str(), ".sclang.cfg", "~/.sclang.cfg", "/etc/sclang.cfg"};
-
-	bool deprecatedConfigFileDetected = false;
-	for (int i=0; i < 4; i++) {
-		const char * ipath = paths[i];
-		char opath[PATH_MAX];
-		if (sc_StandardizePath(ipath, opath)) {
-			if (!configured) {
-				if (file_exists(opath)) {
-					deprecatedConfigFileDetected = true;
-					postfl("reading deprecated config file: %s\n", opath);
-					configured = readLibraryConfig(opath);
-				}
-			}
-		}
-	}
-
-	if (deprecatedConfigFileDetected)
-		postfl("Please migrate your sclang config file to %s.\n", user_yaml_config_file.c_str());
-
 	if (configured)
 		return true;
 
 	SC_LanguageConfig::defaultLibraryConfig();
 	return false;
 }
-
 
 void SC_LanguageConfig::freeLibraryConfig()
 {
@@ -335,197 +289,3 @@ void SC_LanguageConfig::freeLibraryConfig()
 		gLanguageConfig = 0;
 	}
 }
-
-// =====================================================================
-// SC_LibraryConfigFile
-// =====================================================================
-
-SC_LibraryConfigFile::SC_LibraryConfigFile(ErrorFunc errorFunc)
-	: mErrorFunc(errorFunc ? errorFunc : &defaultErrorFunc),
-	  mFile(0)
-{ }
-
-bool SC_LibraryConfigFile::open(const char* filePath)
-{
-	close();
-#ifdef SC_WIN32
-	mFile = fopen(filePath, "rb");
-#else
-	mFile = fopen(filePath, "r");
-#endif
-	return mFile != 0;
-}
-
-void SC_LibraryConfigFile::close()
-{
-	if (mFile) {
-		fclose(mFile);
-		mFile = 0;
-	}
-}
-
-bool SC_LibraryConfigFile::read(const char* fileName, SC_LanguageConfig* libConf)
-{
-	return read(0, fileName, libConf);
-}
-
-bool SC_LibraryConfigFile::read(int depth, const char* fileName, SC_LanguageConfig* libConf)
-{
-	if (!mFile) return false;
-
-	bool error = false;
-	size_t lineNumber = 1;
-    SC_StringBuffer line;
-
-    while (true) {
-		int c = fgetc(mFile);
-		bool eof = c == EOF;
-
-		if (eof || (c == '\n')) {
-			line.finish();
-			// go on if line parse failed
-            error |= parseLine(depth, fileName, lineNumber, line.getData(), libConf);
-            line.reset();
-			lineNumber++;
-			if (eof) break;
-        } else {
-            line.append(c);
-        }
-    }
-
-	return error;
-}
-
-bool SC_LibraryConfigFile::parseLine(int depth, const char* fileName, int lineNumber, const char* line, SC_LanguageConfig* libConf)
-{
-	char action = 0;
-	SC_StringBuffer path;
-	SC_StringBuffer envVarName;
-	State state = kBegin;
-
-	while (true) {
-		// NOTE: in some parser states the character just read is
-		// written back to be consumed by the following state in the
-		// next iteration; this may be slightly inefficient, but makes
-		// control flow more obvious.
-
-		char c = *line++;
-
-		if ((c == '\0') || ((c == '#') && (state != kEscape))) {
-			break;
-		}
-
-		switch (state) {
-			case kBegin:
-				if (!isspace(c)) {
-					line--;
-					state = kAction;
-				}
-				break;
-			case kAction:
-				if ((c == '+') || (c == '-') || (c == ':')) {
-					action = c;
-					state = kPath;
-				} else {
-					(*mErrorFunc)("%s,%d: invalid action '%c'\n", fileName, lineNumber, c);
-					return false;
-				}
-				break;
-			case kPath:
-				if (c == '\\') {
-					state = kEscape;
-				} else if (c == '$') {
-					state = kEnvVar;
-				} else if (isspace(c)) {
-					state = kEnd;
-				} else {
-					path.append(c);
-				}
-				break;
-			case kEscape:
-				path.append(c);
-				state = kPath;
-				break;
-			case kEnvVar:
-				if (isalpha(c)) {
-					line--;
-					state = kEnvVarName;
-					envVarName.reset();
-				} else {
-					(*mErrorFunc)("%s,%d: empty variable reference\n", fileName, lineNumber);
-					return false;
-				}
-				break;
-			case kEnvVarName:
-				if (isalpha(c) || (c == '_')) {
-					envVarName.append(c);
-				} else {
-					envVarName.finish();
-					char* envVarValue = getenv(envVarName.getData());
-					if (envVarValue) {
-						line--;
-						state = kPath;
-						path.append(envVarValue);
-					} else {
-						(*mErrorFunc)("%s,%d: undefined variable '%s'\n", fileName, lineNumber, envVarName.getData());
-						return false;
-					}
-				}
-				break;
-			case kEnd:
-				if (!isspace(c)) {
-					(*mErrorFunc)("%s,%d: trailing garbage\n", fileName, lineNumber);
-					return false;
-				}
-				break;
-			default:
-				(*mErrorFunc)("%s,%d: [internal error] invalid parser state %d\n", fileName, lineNumber, state);
-				return false;
-		}
-	}
-
-	if (!action) return true;
-
-	if (path.getSize() == 0) {
-		(*mErrorFunc)("%s,%d: empty path\n", fileName, lineNumber);
-		return false;
-	}
-
-	path.finish();
-	char realPath[MAXPATHLEN];
-
-	if (sc_StandardizePath(path.getData(), realPath) == 0) {
-		(*mErrorFunc)("%s,%d: couldn't resolve path %s\n", fileName, lineNumber, path.getData());
-		return false;
-	}
-
-	if (action == ':') {
-		if (++depth > kMaxIncludeDepth) {
-			(*mErrorFunc)("%s,%d: maximum include depth of %d exceeded\n", fileName, lineNumber, kMaxIncludeDepth);
-			return false;
-		}
-		SC_LibraryConfigFile file(mErrorFunc);
-		if (!file.open(realPath)) return true;
-		const char* fileName = basename(realPath);
-		bool success = file.read(depth, fileName, libConf);
-		file.close();
-		return success;
-	}
-
-	if (action == '+') {
-		libConf->addIncludedDirectory(realPath);
-	} else if (action == '-') {
-		libConf->addExcludedDirectory(realPath);
-	}
-
-	return true;
-}
-
-void SC_LibraryConfigFile::defaultErrorFunc(const char* fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    vprintf(fmt, ap);
-}
-
-// EOF

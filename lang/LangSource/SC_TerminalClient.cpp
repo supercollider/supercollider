@@ -249,10 +249,7 @@ int SC_TerminalClient::run(int argc, char** argv)
 	// read library configuration file
 	if (opt.mLibraryConfigFile) {
 		int argLength = strlen(opt.mLibraryConfigFile);
-		if (strcmp(opt.mLibraryConfigFile + argLength - 5, ".yaml"))
-			SC_LanguageConfig::readLibraryConfig(opt.mLibraryConfigFile);
-		else
-			SC_LanguageConfig::readLibraryConfigYAML(opt.mLibraryConfigFile);
+		SC_LanguageConfig::readLibraryConfigYAML(opt.mLibraryConfigFile);
 	} else
 		SC_LanguageConfig::readDefaultLibraryConfig();
 
