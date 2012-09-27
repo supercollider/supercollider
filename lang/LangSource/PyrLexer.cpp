@@ -64,7 +64,7 @@
 #endif
 #include <string.h>
 
-#include "SC_LibraryConfig.h"
+#include "SC_LanguageConfig.hpp"
 
 #include "SC_DirUtils.h"
 #include "SC_TextUtils.hpp"

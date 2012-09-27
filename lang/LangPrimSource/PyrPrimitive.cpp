@@ -45,7 +45,7 @@
 #include "PyrDeepFreezer.h"
 //#include "Wacom.h"
 #include "InitAlloc.h"
-#include "SC_LibraryConfig.h"
+#include "../LangSource/SC_LanguageConfig.hpp"
 #include "SC_DirUtils.h"
 
 

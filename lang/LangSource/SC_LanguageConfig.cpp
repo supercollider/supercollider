@@ -21,7 +21,7 @@
  *
  */
 
-#include "SC_LibraryConfig.h"
+#include "SC_LanguageConfig.hpp"
 #include "SCBase.h"
 #include "SC_StringBuffer.h"
 #include "SC_DirUtils.h"

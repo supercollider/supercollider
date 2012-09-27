@@ -73,7 +73,7 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrParseNode.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrSignal.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrSymbolTable.cpp
-	${CMAKE_SOURCE_DIR}/lang/LangSource/SC_LibraryConfig.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/SC_LanguageConfig.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/Samp.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/SimpleStack.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/VMGlobals.cpp

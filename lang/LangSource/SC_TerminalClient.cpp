@@ -57,7 +57,7 @@
 #include "PyrSlot.h"
 #include "VMGlobals.h"
 #include "SC_DirUtils.h"   // for gIdeName
-#include "SC_LibraryConfig.h"
+#include "SC_LanguageConfig.hpp"
 
 #define STDIN_FD 0
 

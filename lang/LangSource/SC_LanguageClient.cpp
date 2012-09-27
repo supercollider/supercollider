@@ -24,7 +24,7 @@
 */
 
 #include "SC_LanguageClient.h"
-#include "SC_LibraryConfig.h"
+#include "SC_LanguageConfig.hpp"
 #include <cstring>
 #include <string>
 #include <cerrno>
