@@ -218,13 +218,6 @@ to put Extensions to the class library, in a folder called Extensions.
 the runtime directory is either the current working directory or the
 path specified with the `-d' option.
 
-for advanced setups, sclang's compilation search path can be
-customized with a library configuration file. an example is provided
-in `linux/examples/sclang.cfg'; install it as `/etc/sclang.cfg' or
-`~/.config/SuperCollider/sclang.cfg'. This config file is only needed when you want to
-_exclude_ directories from the class library. Otherwise (so in most cases)
-it is not needed.
-
 ------------------------------------------------------------------------
 environment
 ------------------------------------------------------------------------
