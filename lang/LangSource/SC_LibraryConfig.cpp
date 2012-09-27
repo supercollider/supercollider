@@ -45,7 +45,7 @@
 
 using namespace std;
 
-SC_LanguageConfig *gLibraryConfig = 0;
+SC_LanguageConfig *gLanguageConfig = 0;
 
 void SC_LanguageConfig::postExcludedDirectories(void)
 {
@@ -117,14 +117,14 @@ void SC_LanguageConfig::removeExcludedDirectory(const char *path)
 bool SC_LanguageConfig::readLibraryConfig(const char* fileName)
 {
 	freeLibraryConfig();
-	gLibraryConfig = new SC_LanguageConfig();
+	gLanguageConfig = new SC_LanguageConfig();
 
 	SC_LibraryConfigFile file(::post);
 	bool success = file.open(fileName);
 	if (!success)
 		return false;
 
-	bool error = file.read(fileName, gLibraryConfig);
+	bool error = file.read(fileName, gLanguageConfig);
 	file.close();
 
 	if (!error)
@@ -138,7 +138,7 @@ extern bool gPostInlineWarnings;
 bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName)
 {
 	freeLibraryConfig();
-	gLibraryConfig = new SC_LanguageConfig();
+	gLanguageConfig = new SC_LanguageConfig();
 
 	using namespace YAML;
 	try {
@@ -155,7 +155,7 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName)
 						continue;
 					string path;
 					pathNode.GetScalar(path);
-					gLibraryConfig->addIncludedDirectory(path.c_str());
+					gLanguageConfig->addIncludedDirectory(path.c_str());
 				}
 			}
 
@@ -167,7 +167,7 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName)
 						continue;
 					string path;
 					pathNode.GetScalar(path);
-					gLibraryConfig->addExcludedDirectory(path.c_str());
+					gLanguageConfig->addExcludedDirectory(path.c_str());
 				}
 			}
 
@@ -202,15 +202,15 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const char* fileName)
 
 	out << Key << "includePaths";
 	out << Value << BeginSeq;
-	for (DirVector::iterator it = gLibraryConfig->mIncludedDirectories.begin();
-		 it != gLibraryConfig->mIncludedDirectories.end(); ++it)
+	for (DirVector::iterator it = gLanguageConfig->mIncludedDirectories.begin();
+		 it != gLanguageConfig->mIncludedDirectories.end(); ++it)
 		out << *it;
 	out << EndSeq;
 
 	out << Key << "excludePaths";
 	out << Value << BeginSeq;
-	for (DirVector::iterator it = gLibraryConfig->mExcludedDirectories.begin();
-		 it != gLibraryConfig->mExcludedDirectories.end(); ++it)
+	for (DirVector::iterator it = gLanguageConfig->mExcludedDirectories.begin();
+		 it != gLanguageConfig->mExcludedDirectories.end(); ++it)
 		out << *it;
 	out << EndSeq;
 
@@ -226,7 +226,7 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const char* fileName)
 bool SC_LanguageConfig::defaultLibraryConfig(void)
 {
 	freeLibraryConfig();
-	gLibraryConfig = new SC_LanguageConfig();
+	gLanguageConfig = new SC_LanguageConfig();
 
 	char compileDir[MAXPATHLEN];
 	char systemExtensionDir[MAXPATHLEN];
@@ -234,14 +234,14 @@ bool SC_LanguageConfig::defaultLibraryConfig(void)
 
 	sc_GetResourceDirectory(compileDir, MAXPATHLEN-32);
 	sc_AppendToPath(compileDir, MAXPATHLEN, "SCClassLibrary");
-	gLibraryConfig->addIncludedDirectory(compileDir);
+	gLanguageConfig->addIncludedDirectory(compileDir);
 
 	if (!sc_IsStandAlone()) {
 		sc_GetSystemExtensionDirectory(systemExtensionDir, MAXPATHLEN);
-		gLibraryConfig->addIncludedDirectory(systemExtensionDir);
+		gLanguageConfig->addIncludedDirectory(systemExtensionDir);
 
 		sc_GetUserExtensionDirectory(userExtensionDir, MAXPATHLEN);
-		gLibraryConfig->addIncludedDirectory(userExtensionDir);
+		gLanguageConfig->addIncludedDirectory(userExtensionDir);
 	}
 	return true;
 }
@@ -309,9 +309,9 @@ bool SC_LanguageConfig::readDefaultLibraryConfig()
 
 void SC_LanguageConfig::freeLibraryConfig()
 {
-	if (gLibraryConfig) {
-		delete gLibraryConfig;
-		gLibraryConfig = 0;
+	if (gLanguageConfig) {
+		delete gLanguageConfig;
+		gLanguageConfig = 0;
 	}
 }
 

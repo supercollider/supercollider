@@ -3438,8 +3438,8 @@ static int prLanguageConfig_getLibraryPaths(struct VMGlobals * g, int numArgsPus
 
 	typedef SC_LanguageConfig::DirVector DirVector;
 
-	DirVector const & dirVector = (pathType == includePaths) ? gLibraryConfig->includedDirectories()
-															 : gLibraryConfig->excludedDirectories();
+	DirVector const & dirVector = (pathType == includePaths) ? gLanguageConfig->includedDirectories()
+															 : gLanguageConfig->excludedDirectories();
 
 	size_t numberOfPaths = dirVector.size();
 	PyrObject * resultArray = newPyrArray(g->gc, numberOfPaths, 0, true);
@@ -3471,9 +3471,9 @@ static int prLanguageConfig_addLibraryPath(struct VMGlobals * g, int numArgsPush
 		return errWrongType;
 
 	if (pathType == includePaths)
-		gLibraryConfig->addIncludedDirectory(path);
+		gLanguageConfig->addIncludedDirectory(path);
 	else
-		gLibraryConfig->addExcludedDirectory(path);
+		gLanguageConfig->addExcludedDirectory(path);
 	return errNone;
 }
 
@@ -3497,9 +3497,9 @@ static int prLanguageConfig_removeLibraryPath(struct VMGlobals * g, int numArgsP
 		return errWrongType;
 
 	if (pathType == includePaths)
-		gLibraryConfig->removeIncludedDirectory(path);
+		gLanguageConfig->removeIncludedDirectory(path);
 	else
-		gLibraryConfig->removeExcludedDirectory(path);
+		gLanguageConfig->removeExcludedDirectory(path);
 	return errNone;
 }
 
@@ -3527,7 +3527,7 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPus
 		sc_AppendToPath(path, MAXPATHLEN, "sclang_conf.yaml");
 	}
 
-	gLibraryConfig->writeLibraryConfigYAML(path);
+	gLanguageConfig->writeLibraryConfigYAML(path);
 	return errNone;
 }
 
