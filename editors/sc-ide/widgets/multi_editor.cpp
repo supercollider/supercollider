@@ -174,7 +174,7 @@ private:
     void populateModel( const CodeEditorBox::History & history )
     {
         QList<Document*> displayDocuments;
-        foreach(ScCodeEditor *editor, history)
+        foreach(GenericCodeEditor *editor, history)
             displayDocuments << editor->document();
 
         QList<Document*> managerDocuments =  Main::documentManager()->documents();
@@ -220,8 +220,8 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
     makeSignalConnections();
 
-    mBoxSigMux->connect(SIGNAL(currentChanged(ScCodeEditor*)),
-                        this, SLOT(onCurrentEditorChanged(ScCodeEditor*)));
+    mBoxSigMux->connect(SIGNAL(currentChanged(GenericCodeEditor*)),
+                        this, SLOT(onCurrentEditorChanged(GenericCodeEditor*)));
 
     connect( &mDocModifiedSigMap, SIGNAL(mapped(QObject*)), this, SLOT(onDocModified(QObject*)) );
 
@@ -523,7 +523,7 @@ void MultiEditor::createActions()
 
 void MultiEditor::updateActions()
 {
-    ScCodeEditor *editor = currentEditor();
+    GenericCodeEditor *editor = currentEditor();
     QTextDocument *doc = editor ? editor->textDocument() : 0;
 
     mActions[Undo]->setEnabled( doc && doc->isUndoAvailable() );
@@ -572,7 +572,7 @@ static QVariantList saveBoxState( CodeEditorBox *box, const QList<Document*> & d
     QVariantList boxData;
     int idx = box->history().count();
     while(idx--) {
-        ScCodeEditor *editor = box->history()[idx];
+        GenericCodeEditor *editor = box->history()[idx];
         if (!editor->document()->filePath().isEmpty()) {
             int documentIndex = documentList.indexOf( editor->document() );
             Q_ASSERT(documentIndex >= 0);
@@ -878,7 +878,7 @@ void MultiEditor::onCurrentTabChanged( int index )
     curBox->setFocus(Qt::OtherFocusReason);
 }
 
-void MultiEditor::onCurrentEditorChanged(ScCodeEditor *editor)
+void MultiEditor::onCurrentEditorChanged(GenericCodeEditor *editor)
 {
     setCurrentEditor(editor);
 }
@@ -890,7 +890,9 @@ void MultiEditor::onBoxActivated(CodeEditorBox *box)
 
 void MultiEditor::evaluateRegion()
 {
-    ScCodeEditor * editor = currentEditor();
+    // LATER: move to ScCodeEditor
+    GenericCodeEditor * genericEditor = currentEditor();
+    ScCodeEditor * editor = qobject_cast<ScCodeEditor*>(genericEditor);
     if (!editor)
         return;
 
@@ -932,7 +934,9 @@ void MultiEditor::evaluateRegion()
 
 void MultiEditor::evaluateLine()
 {
-    ScCodeEditor * editor = currentEditor();
+    // LATER: move to ScCodeEditor
+    GenericCodeEditor * genericEditor = currentEditor();
+    ScCodeEditor * editor = qobject_cast<ScCodeEditor*>(genericEditor);
     if (!editor)
         return;
 
@@ -965,7 +969,9 @@ void MultiEditor::evaluateLine()
 
 void MultiEditor::evaluateDocument()
 {
-    ScCodeEditor * editor = currentEditor();
+    // LATER: move to ScCodeEditor
+    GenericCodeEditor * genericEditor = currentEditor();
+    ScCodeEditor * editor = qobject_cast<ScCodeEditor*>(genericEditor);
     if (!editor)
         return;
 
@@ -1011,7 +1017,7 @@ void MultiEditor::setCurrentBox( CodeEditorBox * box )
     mCurrentEditorBox->setActive();
 }
 
-void MultiEditor::setCurrentEditor( ScCodeEditor * editor )
+void MultiEditor::setCurrentEditor( GenericCodeEditor * editor )
 {
     if (editor) {
         int tabIndex = tabForDocument(editor->document());
@@ -1027,7 +1033,7 @@ void MultiEditor::setCurrentEditor( ScCodeEditor * editor )
     emit currentDocumentChanged(currentDocument);
 }
 
-ScCodeEditor *MultiEditor::currentEditor()
+GenericCodeEditor *MultiEditor::currentEditor()
 {
     return currentBox()->currentEditor();
 }
@@ -1036,7 +1042,7 @@ void MultiEditor::split( Qt::Orientation splitDirection )
 {
     CodeEditorBox *box = newBox();
     CodeEditorBox *curBox = currentBox();
-    ScCodeEditor *curEditor = curBox->currentEditor();
+    GenericCodeEditor *curEditor = curBox->currentEditor();
 
     if (curEditor)
         box->setDocument(curEditor->document(), curEditor->textCursor().position());
