@@ -36,6 +36,7 @@
 #include <QFileOpenEvent>
 #include <QLibraryInfo>
 #include <QTranslator>
+#include <QWebSettings>
 
 using namespace ScIDE;
 
@@ -46,9 +47,13 @@ int main( int argc, char *argv[] )
     QStringList arguments (QApplication::arguments());
     arguments.pop_front(); // application path
 
+    // Pass files to existing instance and quit
+
     SingleInstanceGuard guard;
     if (guard.tryConnect(arguments))
         return 0;
+
+    // Set up translations
 
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
@@ -57,6 +62,12 @@ int main( int argc, char *argv[] )
     QTranslator scideTranslator;
     scideTranslator.load("scide_" + QLocale::system().name());
     app.installTranslator(&scideTranslator);
+
+    // QtWebKit settings
+
+    QWebSettings::globalSettings()->setAttribute( QWebSettings::LocalStorageEnabled, true );
+
+    // Go...
 
     Main * main = Main::instance();
 
