@@ -58,6 +58,7 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     mLoadProgressIndicator->setIndent(10);
 
     QToolBar *toolBar = new QToolBar;
+    toolBar->setIconSize( QSize(16,16) );
     QAction *action = toolBar->addAction("Home");
     connect( action, SIGNAL(triggered()), this, SLOT(goHome()) );
     toolBar->addAction( mWebView->pageAction(QWebPage::Back) );
