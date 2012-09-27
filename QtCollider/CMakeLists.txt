@@ -149,7 +149,7 @@ set (QT_COLLIDER_LIBS ${QT_LIBRARIES} ${MATH_LIBRARY})
 
 if(APPLE)
   list(APPEND QT_COLLIDER_LIBS "-framework Cocoa" )
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F /Library/Frameworks")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F/Library/Frameworks")
 endif()
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")

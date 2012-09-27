@@ -170,7 +170,7 @@ target_link_libraries( ${ide_name} ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} yaml)
 
 if(APPLE)
     target_link_libraries( ${ide_name} "-framework CoreServices")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F /Library/Frameworks")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F/Library/Frameworks")
 elseif(WIN32)
     target_link_libraries( ${ide_name} wsock32 )
     # The following prevents a Windows console from showing up
