@@ -1376,10 +1376,15 @@ void LeakDC_next_i_4(LeakDC* unit, int inNumSamples)
 		double x01 = ZXP(in);
 		double x02 = ZXP(in);
 		double x03 = ZXP(in);
-		ZXP(out) = y1 = x00 - x1 + b1 * y1;
-		ZXP(out) = y1 = x01 - x00 + b1 * y1;
-		ZXP(out) = y1 = x02 - x01 + b1 * y1;
-		ZXP(out) = y1 = x03 - x02 + b1 * y1;
+		float out0 = y1 = x00 - x1 + b1 * y1;
+		float out1 = y1 = x01 - x00 + b1 * y1;
+		float out2 = y1 = x02 - x01 + b1 * y1;
+		float out3 = y1 = x03 - x02 + b1 * y1;
+
+		ZXP(out) = out0;
+		ZXP(out) = out1;
+		ZXP(out) = out2;
+		ZXP(out) = out3;
 
 		x1 = x03;
 	);
