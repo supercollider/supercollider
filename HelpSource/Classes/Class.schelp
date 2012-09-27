@@ -10,7 +10,7 @@ InstanceMethods::
 
 method::browse
 
-Open a graphical browser for this Class. (OSX only). Shows methods, arguments, variables, subclasses, and has buttons for navigating to the superclass, source, helpfile, cvs, etc.
+Open a graphical browser for this Class. Shows methods, arguments, variables, subclasses, and has buttons for navigating to the superclass, source, helpfile, etc.
 
 method::findMethod
 
@@ -22,7 +22,7 @@ As above, but climb the class tree to see if the method is inherited from a supe
 
 method::dumpAllMethods
 
-Post all instance methods which instances of this class responde too, including inherited ones. this.class.dumpAllMethods will post all class methods which this class responds to.
+Post all instance methods which instances of this class responde too, including inherited ones. code::this.class.dumpAllMethods:: will post all class methods which this class responds to.
 
 method::dumpByteCodes
 
@@ -52,7 +52,9 @@ method::helpFileForMethod
 
 Opens the helpfile for the class in which the responding method is implemented.
 
+code::
 Array.helpFileForMethod('select'); // This will open the Collection helpfile
+::
 
 method::asClass
 
