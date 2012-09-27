@@ -31,6 +31,7 @@ PatternProxy : Pattern {
 		if (obj.isNil) { pat = this.class.default };
 		pattern = pat;
 		source = obj; // keep original here.
+		this.changed(\source, obj);
 	}
 
 	setSourceLikeInPbind { arg obj;
@@ -38,6 +39,7 @@ PatternProxy : Pattern {
 		if (obj.isNil) { pat = this.class.default };
 		pattern = pat.fin(inf);
 		source = obj; // keep original here.
+		this.changed(\source, obj);
 	}
 
 	defaultEvent {
@@ -280,7 +282,7 @@ Pdefn : PatternProxy {
 		key = argKey;
 		all.put(argKey, this);
 	}
-	
+
 	*hasGlobalDictionary { ^true }
 
 }
@@ -299,6 +301,7 @@ TaskProxy : PatternProxy {
 			if (obj.isNil) { pattern = this.class.default; source = obj; };
 			this.wakeUp;
 			source = obj;
+			this.changed(\source, obj);
 	}
 
 	convertFunction { arg func;
@@ -410,7 +413,7 @@ Tdef : TaskProxy {
 		key = argKey;
 		all.put(argKey, this);
 	}
-	
+
 	*hasGlobalDictionary { ^true }
 
 
@@ -436,6 +439,7 @@ EventPatternProxy : TaskProxy {
 		envir !? { pattern = pattern <> envir };
 		this.wakeUp;
 		source = obj;
+		this.changed(\source, obj);
 	}
 
 	envir_ { arg dict;
@@ -630,7 +634,7 @@ Pdef : EventPatternProxy {
 		key = argKey;
 		all.put(argKey, this);
 	}
-	
+
 	*hasGlobalDictionary { ^true }
 
 	*initClass {
@@ -805,7 +809,7 @@ Pbindef : Pdef {
 	storeArgs { ^[key]++pattern.storeArgs }
 	repositoryArgs { ^this.storeArgs }
 	quant_ { arg val; super.quant = val; source.quant = val }
-	
+
 	*hasGlobalDictionary { ^true }
 
 

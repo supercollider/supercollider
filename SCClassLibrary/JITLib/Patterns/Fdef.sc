@@ -8,7 +8,10 @@ Maybe : Ref {
 	classvar <>defaultValue=1;
 
 	source { ^value }
-	source_ { arg obj; this.value = obj }
+	source_ { arg obj;
+		this.value = obj;
+		this.changed(\source, obj)
+	}
 
 	clear { value = nil }
 

@@ -116,7 +116,8 @@ NodeProxy : BusPlug {
 
 	put { | index, obj, channelOffset = 0, extraArgs, now = true |			var container, bundle, orderIndex;
 			if(obj.isNil) { this.removeAt(index); ^this };
-			if(index.isSequenceableCollection) { 						^this.putAll(obj.asArray, index, channelOffset)
+			if(index.isSequenceableCollection) {
+				^this.putAll(obj.asArray, index, channelOffset)
 			};
 
 			orderIndex = index ? 0;
@@ -129,6 +130,7 @@ NodeProxy : BusPlug {
 					{ this.removeAllToBundle(bundle) }
 					{ this.removeToBundle(bundle, index) };
 				objects = objects.put(orderIndex, container);
+				this.changed(\source, obj, index);
 			} {
 				format("failed to add % to node proxy: %", obj, this).inform;
 				^this
@@ -180,6 +182,7 @@ NodeProxy : BusPlug {
 		if(index.isNil)
 			{ this.removeAllToBundle(bundle, fadeTime) }
 			{ this.removeToBundle(bundle, index, fadeTime) };
+		this.changed(\source, nil, index);
 		bundle.schedSend(server);
 	}
 
