@@ -43,6 +43,7 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
 
     mWebView = new QWebView;
     mWebView->setPage( webPage );
+    mWebView->settings()->setAttribute( QWebSettings::LocalStorageEnabled, true );
 
     // NOTE: we assume all web page shortcuts have Qt::WidgetShortcut context
     mWebView->setContextMenuPolicy( Qt::ActionsContextMenu );
