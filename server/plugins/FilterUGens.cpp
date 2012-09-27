@@ -4875,7 +4875,7 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 		// compute loop values
 		o = s4 + b0*(s3 + b0*(s2 + b0*s1));
 		float ins = ZXP(in);
-		float outs = (b0*b0*b0*b0*ins + o)/(1.f + b0*b0*b0*b0*k);
+		float outs = (b0*b0*b0*b0*ins + o) * sc_reciprocal(1.f + b0*b0*b0*b0*k);
 		ZXP(out) = outs;
 		u = ins - k*outs;
 
