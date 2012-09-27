@@ -36,7 +36,6 @@
 #include <QFileOpenEvent>
 #include <QLibraryInfo>
 #include <QTranslator>
-#include <QWebSettings>
 
 using namespace ScIDE;
 
@@ -62,10 +61,6 @@ int main( int argc, char *argv[] )
     QTranslator scideTranslator;
     scideTranslator.load("scide_" + QLocale::system().name());
     app.installTranslator(&scideTranslator);
-
-    // QtWebKit settings
-
-    QWebSettings::globalSettings()->setAttribute( QWebSettings::LocalStorageEnabled, true );
 
     // Go...
 
