@@ -19,6 +19,7 @@
 */
 
 #include "sig_mux.hpp"
+#include <cstring>
 
 namespace ScIDE {
 
@@ -26,12 +27,16 @@ SignalMultiplexer::SignalMultiplexer(QObject *parent) :
     QObject(parent)
 {}
 
-void SignalMultiplexer::connect(QObject *sender, const char *signal, const char *slot)
+void SignalMultiplexer::connect(QObject *sender, const char *signal, const char *slot, ConnectionMode mode)
 {
+    Q_ASSERT(strlen(signal) > 0);
+    Q_ASSERT(strlen(slot) > 0);
+
     Connection conn;
     conn.sender = sender;
     conn.signal = signal;
     conn.slot = slot;
+    conn.mode = mode;
 
     mConnections << conn;
     connect(conn);
@@ -52,12 +57,13 @@ bool SignalMultiplexer::disconnect(QObject *sender, const char *signal, const ch
     return false;
 }
 
-void SignalMultiplexer::connect(const char *signal, QObject *receiver, const char *slot)
+void SignalMultiplexer::connect(const char *signal, QObject *receiver, const char *slot, ConnectionMode mode)
 {
     Connection conn;
     conn.receiver = receiver;
     conn.signal = signal;
     conn.slot = slot;
+    conn.mode = mode;
 
     mConnections << conn;
     connect(conn);
@@ -85,10 +91,20 @@ void SignalMultiplexer::connect(const Connection &conn)
     if (!conn.sender && !conn.receiver)
         return;
 
-    if (conn.sender)
+    bool optional = conn.mode == ConnectionOptional;
+
+    // HACK: for QMetaObject::indexOfSlot/Signal we have to skip first char
+    // that's added by SLOT() and SIGNAL() macros
+
+    if (conn.sender) {
+        if (optional && (mObject->metaObject()->indexOfSlot(conn.slot+1) == -1))
+            return;
         QObject::connect((QObject*)conn.sender, conn.signal, (QObject*)mObject, conn.slot);
-    else
+    } else {
+        if (optional && (mObject->metaObject()->indexOfSignal(conn.signal+1) == -1))
+            return;
         QObject::connect((QObject*)mObject, conn.signal, (QObject*)conn.receiver, conn.slot);
+    }
 }
 
 void SignalMultiplexer::disconnect(const Connection &conn)
@@ -98,10 +114,20 @@ void SignalMultiplexer::disconnect(const Connection &conn)
     if (!conn.sender && !conn.receiver)
         return;
 
-    if (conn.sender)
+    bool optional = conn.mode == ConnectionOptional;
+
+    // HACK: for QMetaObject::indexOfSlot/Signal we have to skip first char
+    // that's added by SLOT() and SIGNAL() macros
+
+    if (conn.sender) {
+        if (optional && (mObject->metaObject()->indexOfSlot(conn.slot+1) == -1))
+            return;
         QObject::disconnect((QObject*)conn.sender, conn.signal, (QObject*)mObject, conn.slot);
-    else
+    } else {
+        if (optional && (mObject->metaObject()->indexOfSignal(conn.signal+1) == -1))
+            return;
         QObject::disconnect((QObject*)mObject, conn.signal, (QObject*)conn.receiver, conn.slot);
+    }
 }
 
 

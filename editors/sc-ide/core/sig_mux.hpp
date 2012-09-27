@@ -32,11 +32,16 @@ class SignalMultiplexer : public QObject
     Q_OBJECT
 
 public:
+    enum ConnectionMode {
+        ConnectionNecessary = 0,
+        ConnectionOptional = 1
+    };
+
     SignalMultiplexer(QObject *parent = 0);
 
-    void connect(QObject *sender, const char *signal, const char *slot);
+    void connect(QObject *sender, const char *signal, const char *slot, ConnectionMode = ConnectionNecessary);
     bool disconnect(QObject *sender, const char *signal, const char *slot);
-    void connect(const char *signal, QObject *receiver, const char *slot);
+    void connect(const char *signal, QObject *receiver, const char *slot, ConnectionMode = ConnectionNecessary);
     bool disconnect(const char *signal, QObject *receiver, const char *slot);
 
     QObject *currentObject() const { return mObject; }
@@ -51,6 +56,7 @@ private:
         QPointer<QObject> receiver;
         const char *signal;
         const char *slot;
+        ConnectionMode mode;
     };
 
     void connect(const Connection &conn);
