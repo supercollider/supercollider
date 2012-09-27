@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef SC_LIBRARYCONFIG_H_INCLUDED
-#define SC_LIBRARYCONFIG_H_INCLUDED
+#ifndef SC_LANGUAGECONFIG_HPP_INCLUDED
+#define SC_LANGUAGECONFIG_HPP_INCLUDED
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -109,4 +109,4 @@ private:
 
 extern SC_LanguageConfig* gLanguageConfig;
 
-#endif // SC_LIBRARYCONFIG_H_INCLUDED
+#endif // SC_LANGUAGECONFIG_HPP_INCLUDED
