@@ -41,11 +41,53 @@
 #endif
 
 #include <fstream>
+
+#include <boost/filesystem.hpp>
 #include "yaml-cpp/yaml.h"
 
 using namespace std;
 
 SC_LanguageConfig *gLanguageConfig = 0;
+
+static bool findPath( SC_LanguageConfig::DirVector & vec, const char * path, bool addIfMissing)
+{
+	char standardPath[PATH_MAX];
+	sc_StandardizePath(path, standardPath);
+
+	for ( SC_LanguageConfig::DirVector::iterator it = vec.begin(); it != vec.end(); ++it) {
+		typedef boost::filesystem::path Path;
+		Path stdPath(standardPath), thisPath(it->c_str());
+		stdPath = stdPath / ".";
+		thisPath = thisPath / ".";
+
+		if (boost::filesystem::absolute(stdPath) == boost::filesystem::absolute(thisPath))
+			return true;
+	}
+
+	if (addIfMissing)
+		vec.push_back(string(standardPath));
+
+	return false;
+}
+
+SC_LanguageConfig::SC_LanguageConfig()
+{
+	char classLibraryDir[MAXPATHLEN];
+	char systemExtensionDir[MAXPATHLEN];
+	char userExtensionDir[MAXPATHLEN];
+
+	sc_GetResourceDirectory(classLibraryDir, MAXPATHLEN-32);
+	sc_AppendToPath(classLibraryDir, MAXPATHLEN, "SCClassLibrary");
+	findPath(mDefaultClassLibraryDirectories, classLibraryDir, true);
+
+	if (!sc_IsStandAlone()) {
+		sc_GetSystemExtensionDirectory(systemExtensionDir, MAXPATHLEN);
+		findPath(mDefaultClassLibraryDirectories, systemExtensionDir, true);
+
+		sc_GetUserExtensionDirectory(userExtensionDir, MAXPATHLEN);
+		findPath(mDefaultClassLibraryDirectories, userExtensionDir, true);
+	}
+}
 
 void SC_LanguageConfig::postExcludedDirectories(void)
 {
@@ -58,27 +100,21 @@ void SC_LanguageConfig::postExcludedDirectories(void)
 
 bool SC_LanguageConfig::forEachIncludedDirectory(bool (*func)(const char *, int))
 {
-	DirVector &vec = mIncludedDirectories;
-	DirVector::iterator it;
-	for (it=vec.begin(); it!=vec.end(); ++it) {
-		if (!func(it->c_str(), 0)) return false;
+	for (DirVector::iterator it=mDefaultClassLibraryDirectories.begin(); it!=mDefaultClassLibraryDirectories.end(); ++it) {
+		if (!pathIsExcluded(it->c_str())) {
+			if (!func(it->c_str(), 0))
+				return false;
+		}
 	}
+
+	for (DirVector::iterator it=mIncludedDirectories.begin(); it!=mIncludedDirectories.end(); ++it) {
+		if (!pathIsExcluded(it->c_str())) {
+			if (!func(it->c_str(), 0))
+				return false;
+		}
+	}
+
 	return true;
-}
-
-static bool findPath( SC_LanguageConfig::DirVector & vec, const char * path, bool addIfMissing)
-{
-	char standardPath[PATH_MAX];
-	sc_StandardizePath(path, standardPath);
-
-	for ( SC_LanguageConfig::DirVector::iterator it = vec.begin(); it != vec.end(); ++it)
-		if (!strcmp(standardPath, it->c_str()))
-			return true;
-
-	if (addIfMissing)
-		vec.push_back(string(standardPath));
-
-	return false;
 }
 
 bool SC_LanguageConfig::pathIsExcluded(const char *path)
@@ -228,21 +264,6 @@ bool SC_LanguageConfig::defaultLibraryConfig(void)
 	freeLibraryConfig();
 	gLanguageConfig = new SC_LanguageConfig();
 
-	char compileDir[MAXPATHLEN];
-	char systemExtensionDir[MAXPATHLEN];
-	char userExtensionDir[MAXPATHLEN];
-
-	sc_GetResourceDirectory(compileDir, MAXPATHLEN-32);
-	sc_AppendToPath(compileDir, MAXPATHLEN, "SCClassLibrary");
-	gLanguageConfig->addIncludedDirectory(compileDir);
-
-	if (!sc_IsStandAlone()) {
-		sc_GetSystemExtensionDirectory(systemExtensionDir, MAXPATHLEN);
-		gLanguageConfig->addIncludedDirectory(systemExtensionDir);
-
-		sc_GetUserExtensionDirectory(userExtensionDir, MAXPATHLEN);
-		gLanguageConfig->addIncludedDirectory(userExtensionDir);
-	}
 	return true;
 }
 

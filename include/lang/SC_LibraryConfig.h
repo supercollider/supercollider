@@ -78,6 +78,7 @@ class SC_LanguageConfig
 {
 public:
 	typedef std::vector<std::string> DirVector;
+	SC_LanguageConfig();
 
 	const DirVector& includedDirectories() { return mIncludedDirectories; }
 	const DirVector& excludedDirectories() { return mExcludedDirectories; }
@@ -103,6 +104,7 @@ public:
 private:
 	DirVector mIncludedDirectories;
 	DirVector mExcludedDirectories;
+	DirVector mDefaultClassLibraryDirectories;
 };
 
 extern SC_LanguageConfig* gLanguageConfig;
