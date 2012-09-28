@@ -273,14 +273,14 @@ NodeProxy : BusPlug {
 		nodeMap.set(*args);
 		if(this.isPlaying) {
 			server.sendBundle(server.latency, [15, group.nodeID] ++ args);
-		};
+		}
 	}
 
 	setn { | ... args |
 		nodeMap.set(*args);
 		if(this.isPlaying) {
 			server.sendBundle(server.latency, group.setnMsg(*args));
-		};
+		}
 	}
 
 	setGroup { | args, useLatency = false |
@@ -297,7 +297,7 @@ NodeProxy : BusPlug {
 			nodeMap.map(*args).updateBundle;
 			nodeMap.addToBundle(bundle, group.nodeID);
 			server.listSendBundle(server.latency, bundle);
-		} { nodeMap.map(*args) }
+		} { nodeMap.map(*args) };
 	}
 
 	mapn { | ... args |
@@ -337,7 +337,7 @@ NodeProxy : BusPlug {
 		nodeMap.mapEnvir(*keys);
 		if(this.isPlaying) {
 			nodeMap.sendToNode(group);
-		}
+		};
 	}
 
 	unset { | ... keys |
@@ -345,7 +345,7 @@ NodeProxy : BusPlug {
 		this.unsetToBundle(bundle, keys);
 		if(bundle.notEmpty) {
 			server.listSendBundle(server.latency, bundle)
-		}
+		};
 	}
 
 	unmap { | ... keys |
