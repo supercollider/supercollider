@@ -48,10 +48,10 @@ PatternProxy : Pattern {
 	}
 
 	convertFunction { arg func;
-			^Prout {
-				var inval = func.def.prototypeFrame !? { inval = this.defaultEvent };
-				func.value( inval ).embedInStream(inval)
-			};
+		^Prout {
+			var inval = func.def.prototypeFrame !? { inval = this.defaultEvent };
+			func.value( inval ).embedInStream(inval)
+		}
 	}
 
 	*parallelise { arg list; ^Ptuple(list) }
@@ -297,23 +297,23 @@ TaskProxy : PatternProxy {
 	storeArgs { ^[source] }
 
 	source_ { arg obj;
-			pattern = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
-			if (obj.isNil) { pattern = this.class.default; source = obj; };
-			this.wakeUp;
-			source = obj;
-			this.changed(\source, obj);
+		pattern = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
+		if (obj.isNil) { pattern = this.class.default; source = obj; };
+		this.wakeUp;
+		source = obj;
+		this.changed(\source, obj);
 	}
 
 	convertFunction { arg func;
-			^Prout { |inevent|
-					var inval = func.def.prototypeFrame !? { this.defaultEvent };
-					if(inevent.isNumber or: {inevent.isNil} or: { inval.isNil }) {
-						inevent = inval
-					} {
-						inevent.copy.parent_(inval);
-					};
-					func.value(inevent)
-			}
+		^Prout { |inevent|
+			var inval = func.def.prototypeFrame !? { this.defaultEvent };
+			if(inevent.isNumber or: {inevent.isNil} or: { inval.isNil }) {
+				inevent = inval
+			} {
+				inevent.copy.parent_(inval);
+			};
+			func.value(inevent)
+		}
 	}
 
 
@@ -359,7 +359,7 @@ TaskProxy : PatternProxy {
 		}
 	}
 	wakeUp {
-			if(this.isPlaying) { this.play(quant:playQuant) }	}
+		if(this.isPlaying) { this.play(quant:playQuant) }	}
 	asProtected {
 		^Pprotect(this, { if(this.player.notNil) { this.player.streamError } })
 	}
