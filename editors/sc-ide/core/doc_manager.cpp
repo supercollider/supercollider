@@ -263,6 +263,12 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
 
     doc->deleteTrailingSpaces();
 
+    QFileInfo info(path);
+    QString cpath = info.canonicalFilePath();
+
+    if ( !(doc->filePath().isEmpty()) && (cpath != doc->filePath()) )
+        mFsWatcher.removePath(doc->filePath());
+
     QFile file(path);
     if(!file.open(QIODevice::WriteOnly)) {
         qWarning() << "DocumentManager: the file" << path << "could not be opened for writing.";
@@ -272,9 +278,6 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
     QString str = doc->textDocument()->toPlainText();
     file.write(str.toUtf8());
     file.close();
-
-    QFileInfo info(path);
-    QString cpath = info.canonicalFilePath();
 
     doc->mFilePath = cpath;
     doc->mTitle = info.fileName();
