@@ -850,7 +850,7 @@ bool MainWindow::reload( Document *doc )
 
 bool MainWindow::save( Document *doc, bool forceChoose )
 {
-    DocumentManager *mng = Main::instance()->documentManager();
+    DocumentManager *documentManager = Main::instance()->documentManager();
     const bool documentHasPath = !doc->filePath().isEmpty();
 
     bool fileIsWritable = true;
@@ -894,11 +894,11 @@ bool MainWindow::save( Document *doc, bool forceChoose )
         }
 
         if (dialog.exec() == QDialog::Accepted)
-            return mng->saveAs(doc, dialog.selectedFiles()[0]);
+            return documentManager->saveAs(doc, dialog.selectedFiles()[0]);
         else
             return false;
     } else
-        return mng->save(doc);
+        return documentManager->save(doc);
 }
 
 void MainWindow::newDocument()
