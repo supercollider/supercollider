@@ -18,6 +18,7 @@ NodeMap {
 	clear {
 		settings = IdentityDictionary.new;
 		upToDate = false;
+		this.changed(\clear);
 	}
 
 
@@ -26,6 +27,7 @@ NodeMap {
 			this.get(args.at(i)).map(args.at(i+1));
 		});
 		upToDate = false;
+		this.changed(\map, args);
 	}
 
 	mapa { arg ... args;
@@ -33,6 +35,7 @@ NodeMap {
 			this.get(args.at(i)).mapa(args.at(i+1));
 		});
 		upToDate = false;
+		this.changed(\map, args);
 	}
 
 	unmap { arg ... keys;
@@ -45,6 +48,7 @@ NodeMap {
 			};
 		};
 		upToDate = false;
+		this.changed(\unmap, keys);
 
 	}
 
@@ -53,6 +57,7 @@ NodeMap {
 			this.get(args.at(i)).set(args.at(i+1));
 		});
 		upToDate = false;
+		this.changed(\set, args);
 	}
 
 	setn { arg ... args; this.set(*args)  }
@@ -68,6 +73,7 @@ NodeMap {
 			};
 		};
 		upToDate = false;
+		this.changed(\unset, keys);
 	}
 
 	mapn { arg ... args;
@@ -75,6 +81,7 @@ NodeMap {
 			this.get(args.at(i)).mapn(args.at(i+1), args.at(i+2));
 		});
 		upToDate = false;
+		this.changed(\mapn, args);
 	}
 
 	mapan { arg ... args;
@@ -82,6 +89,7 @@ NodeMap {
 			this.get(args.at(i)).mapan(args.at(i+1), args.at(i+2));
 		});
 		upToDate = false;
+		this.changed(\mapan, args);
 	}
 
 	send { arg server, nodeID, latency;
@@ -262,6 +270,7 @@ ProxyNodeMap : NodeMap {
 				parents = parents.put(key, mapProxy);
 			};
 			upToDate = false;
+			this.changed(\map, args);
 		}
 
 		mapEnvir { arg ... keys;
@@ -284,6 +293,25 @@ ProxyNodeMap : NodeMap {
 				});
 			});
 			upToDate = false;
+			this.changed(\unmap, keys);
+		}
+
+		notifySettingsChange {
+			var set, map;
+			settings.do { |setting|
+				if(setting.isMapped) {
+					map = map.add(setting.key).add(setting.value)
+				} {
+					set = set.add(setting.key).add(setting.value)
+				}
+			};
+			this.changed(\clear);
+			if(set.notNil) { this.changed(\set, set) };
+			if(map.notNil) { this.changed(\map, map) };
+		}
+
+		changed { arg ... args;
+			proxy.changed(*args)
 		}
 
 }

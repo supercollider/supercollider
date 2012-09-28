@@ -68,10 +68,14 @@ PatternProxy : Pattern {
 	set { arg ... args;
 		if(envir.isNil) { this.envir = this.class.event };
 		args.pairsDo { arg key, val; envir.put(key, val) };
+		this.changed(\set, args);
 	}
 
 	unset { arg ... args;
-		if(envir.notNil) { args.do { arg key; envir.removeAt(key) } };
+		if(envir.notNil) {
+			args.do { arg key; envir.removeAt(key) };
+			this.changed(\unset, args);
+		}
 	}
 
 	get { arg key;
@@ -273,7 +277,8 @@ Pdefn : PatternProxy {
 
 	map { arg ... args;
 		if(envir.isNil) { this.envir = () };
-		args.pairsDo { |key, name| envir.put(key, Pdefn(name)) }
+		args.pairsDo { |key, name| envir.put(key, Pdefn(name)) };
+		this.changed(\map, args);
 	}
 
 	storeArgs { ^[key] } // assume it was created globally
