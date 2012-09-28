@@ -129,7 +129,22 @@ void HelpBrowser::onLinkClicked( const QUrl & url )
 {
     qDebug() << "link clicked:" << url;
 
-    sendRequest( QString("HelpBrowser.goTo(\"%1\")").arg(url.toString()) );
+    static const QStringList nonHelpFileExtensions = QStringList() << ".sc" << ".scd" << ".schelp" << ".txt" << ".rtf";
+    static const QString fileScheme("file");
+
+    QString urlString = url.toString();
+
+    foreach ( const QString & extension, nonHelpFileExtensions ) {
+        if (urlString.endsWith( extension )) {
+            if (url.scheme() == fileScheme) {
+                Main::documentManager()->open(url.path());
+                return;
+            }
+            break;
+        }
+    }
+
+    sendRequest( QString("HelpBrowser.goTo(\"%1\")").arg( urlString ) );
 }
 
 void HelpBrowser::onReload()
@@ -140,6 +155,7 @@ void HelpBrowser::onReload()
 
 void HelpBrowser::sendRequest( const QString &code )
 {
+    qDebug() << "sending request...";
     mLoadProgressIndicator->start(tr("Sending request"));
     Main::scProcess()->evaluateCode( code, true );
 }
