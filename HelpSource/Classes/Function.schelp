@@ -149,10 +149,24 @@ t.stop;
 
 method::defer
 
-Delay the evaluation of this Function by delta in seconds. Uses AppClock.
+Delay the evaluation of this Function by code::delta:: in seconds on AppClock.
+
+This is equivalent to code::AppClock.sched(0, function):: unless code::delta:: is code::nil::. In that case the function is only scheduled if current code is not running on AppClock, otherwise the function is evaluated immediately.
 
 code::
 { "2 seconds have passed.".postln; }.defer(2);
+
+(
+{ "chicken".postln }.defer(0); // schedules on the AppClock
+{ "egg".postln }.defer // evaluates immediately
+)
+
+(
+fork { // schedules on a TempoClock
+    { "chicken".postln }.defer // schedules on the AppClock
+};
+{ "egg".postln }.defer // evaluates immediately
+)
 ::
 
 method::dup
