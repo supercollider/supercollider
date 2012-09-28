@@ -21,6 +21,7 @@
 #define QT_NO_DEBUG_OUTPUT
 
 #include "help_browser.hpp"
+#include "main_window.hpp"
 #include "../core/sc_process.hpp"
 #include "../core/main.hpp"
 #include "QtCollider/widgets/web_page.hpp"
@@ -81,8 +82,12 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     connect( webPage, SIGNAL(jsConsoleMsg(QString,int,QString)),
              this, SLOT(onJsConsoleMsg(QString,int,QString)) );
 
-    connect( Main::scProcess(), SIGNAL(response(QString,QString)),
+    SCProcess * scProcess = Main::scProcess();
+    connect( scProcess, SIGNAL(response(QString,QString)),
              this, SLOT(onScResponse(QString,QString)) );
+    connect( scProcess, SIGNAL(finished(int)), mLoadProgressIndicator, SLOT(stop()) );
+    // FIXME: should actually respond to class library shutdown, but we don't have that signal
+    connect( scProcess, SIGNAL(classLibraryRecompiled()), mLoadProgressIndicator, SLOT(stop()) );
 
     mEvaluateShortcut = new QShortcut(this);
     mEvaluateShortcut->setContext( Qt::WidgetWithChildrenShortcut );
@@ -155,6 +160,13 @@ void HelpBrowser::onReload()
 
 void HelpBrowser::sendRequest( const QString &code )
 {
+    SCProcess *scProcess = Main::scProcess();
+    if (scProcess->state() == QProcess::NotRunning) {
+        qDebug() << "HelpBrowser: aborting request - sclang not running.";
+        MainWindow::instance()->showStatusMessage("Can not use help - interpreter not running!");
+        return;
+    }
+
     qDebug() << "sending request...";
     mLoadProgressIndicator->start(tr("Sending request"));
     Main::scProcess()->evaluateCode( code, true );
