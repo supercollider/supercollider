@@ -201,6 +201,10 @@ class sc_ugen_factory:
     public sc_plugin_container
 {
 public:
+    sc_ugen_factory():
+        ugen_count_(0)
+    {}
+
     ~sc_ugen_factory(void)
     {
         close_handles();
