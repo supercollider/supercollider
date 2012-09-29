@@ -263,16 +263,32 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
 
     doc->deleteTrailingSpaces();
 
-    QFileInfo info(path);
-    QString cpath = info.canonicalFilePath();
-
-    if ( !(doc->filePath().isEmpty()) && (cpath != doc->filePath()) )
-        mFsWatcher.removePath(doc->filePath());
 
     QFile file(path);
     if(!file.open(QIODevice::WriteOnly)) {
         qWarning() << "DocumentManager: the file" << path << "could not be opened for writing.";
         return false;
+    }
+
+    QFileInfo info(path);
+    QString cpath = info.canonicalFilePath();
+
+    const bool pathChanged = ( !(doc->filePath().isEmpty()) && (cpath != doc->filePath()) );
+    if (pathChanged) {
+        mFsWatcher.removePath(doc->filePath());
+
+        QFileInfo oldInfo(doc->mFilePath);
+        if (info.suffix() != oldInfo.suffix()) {
+            QMessageBox::information(MainWindow::instance(), tr("File Extension Changed"),
+                                     tr("The extension of the file has changed. Please reopen file to update editor mode")
+                                     );
+        }
+    }
+
+    if (doc->filePath().isEmpty() && (info.suffix() != "scd" || info.suffix() != "sc") ) {
+        QMessageBox::information(MainWindow::instance(), tr("File Extension Changed"),
+                                 tr("The extension of the file has changed. Please reopen file to update editor mode")
+                                 );
     }
 
     QString str = doc->textDocument()->toPlainText();
