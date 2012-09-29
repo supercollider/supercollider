@@ -236,9 +236,9 @@ extern spin_lock log_guard;
 #endif
 
 #ifdef thread_local
-static thread_local boost::array<char, 32768> trace_scratchpad;
+static thread_local boost::array<char, 262144> trace_scratchpad;
 #else
-static boost::array<char, 32768> trace_scratchpad;
+static boost::array<char, 262144> trace_scratchpad;
 #endif
 
 struct scratchpad_printer

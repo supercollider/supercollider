@@ -119,7 +119,7 @@ struct asynchronous_log:
     }
 
 private:
-    boost::lockfree::spsc_queue<char, boost::lockfree::capacity<32768> > buffer;
+    boost::lockfree::spsc_queue<char, boost::lockfree::capacity<262144> > buffer;
     nova::semaphore sem;
 };
 
