@@ -7,7 +7,7 @@ Scale {
 	}
 
 	init { | inDegrees, inPitchesPerOctave, inTuning, inName |
-		degrees = inDegrees.asArray.asInteger;
+		degrees = Int32Array.newFrom(inDegrees.asArray.asInteger);
 		pitchesPerOctave = inPitchesPerOctave ? this.guessPPO(degrees);
 		name = inName;
 		^this.tuning_(inTuning ? Tuning.default(pitchesPerOctave));
@@ -130,7 +130,7 @@ Scale {
 		^this.compareObject(that, #[\degrees, \tuning])
 	}
 
-	hash { 
+	hash {
 		^this.instVarHash(#[\degrees, \tuning])
 	}
 
@@ -161,7 +161,7 @@ Tuning {
 	var <tuning, <octaveRatio, <>name;
 
 	*new { | tuning, octaveRatio = 2.0, name = "Unknown Tuning" |
-		^super.newCopyArgs(tuning, octaveRatio, name);
+		^super.newCopyArgs(DoubleArray.newFrom(tuning), octaveRatio, name);
 	}
 
 	*newFromKey { | key |
