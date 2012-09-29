@@ -89,7 +89,6 @@ See also link::Reference/randomSeed::.
 subsection:: Histograms
 Demonstrate the various statistical distributions visually, with histograms:
 
-note:: plot may not work in non-Mac SC3 versions.::
 code::
 Array.fill(500, {  1.0.rand }).plot("Sequence of 500x 1.0.rand");
 
