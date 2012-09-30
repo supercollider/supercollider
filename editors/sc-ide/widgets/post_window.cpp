@@ -36,8 +36,7 @@
 namespace ScIDE {
 
 PostWindow::PostWindow(QWidget* parent):
-    QPlainTextEdit(parent),
-    mNewlinePending(false)
+    QPlainTextEdit(parent)
 {
     setReadOnly(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -154,21 +153,7 @@ void PostWindow::post(const QString &text)
 
     QTextCursor c(document());
     c.movePosition(QTextCursor::End);
-
-    if (mNewlinePending) {
-        c.insertBlock();
-        mNewlinePending = false;
-        c.movePosition(QTextCursor::End);
-    }
-
-    if ( text.endsWith("\n") ) {
-        QString textToInsert (text);
-        textToInsert.chop(1);
-        mNewlinePending = true;
-        c.insertText(textToInsert);
-    } else {
-        c.insertText(text);
-    }
+    c.insertText(text);
 
     if (scroll)
         emit(scrollToBottomRequest());
