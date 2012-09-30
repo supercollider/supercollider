@@ -139,7 +139,7 @@ endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
-include_directories(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
+include_directories(${YAMLCPP_INCLUDE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
@@ -166,7 +166,7 @@ else()
 endif()
 
 
-target_link_libraries( ${ide_name} ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} yaml)
+target_link_libraries( ${ide_name} ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${YAMLCPP_LIBRARY})
 
 if(APPLE)
     target_link_libraries( ${ide_name} "-framework CoreServices")

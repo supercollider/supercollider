@@ -33,7 +33,8 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/external_libraries/boost-lockfree
 	${CMAKE_SOURCE_DIR}/external_libraries/boost
 	${CMAKE_SOURCE_DIR}/external_libraries/threadpool
-	${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include
+	${YAMLCPP_INCLUDE_DIR}
+
 	${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
 	)
 
@@ -232,7 +233,7 @@ if (Boost_FOUND)
 else()
 	target_link_libraries(${scappbundlename} boost_thread)
 endif()
-target_link_libraries(${scappbundlename} yaml)
+target_link_libraries(${scappbundlename} ${YAMLCPP_LIBRARY})
 
 target_link_libraries(${scappbundlename} "-framework ApplicationServices")
 target_link_libraries(${scappbundlename} "-framework Carbon")
