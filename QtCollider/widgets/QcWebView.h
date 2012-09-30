@@ -24,6 +24,7 @@
 
 #include <QWebView>
 #include <QWebPage>
+#include <QUrl>
 
 namespace QtCollider {
 
@@ -72,9 +73,7 @@ public:
   void setInterpretSelection( bool b ) { _interpretSelection = b; }
 
   inline static QUrl urlFromString( const QString & str ) {
-    QUrl url( str );
-    if( url.scheme().isEmpty() ) url.setScheme( "file" );
-    return url;
+      return QUrl::fromUserInput(str);
   }
 
 protected:
