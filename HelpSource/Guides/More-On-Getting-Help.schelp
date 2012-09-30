@@ -57,7 +57,7 @@ code::
 Array.class.dumpAllMethods; // Only class methods that this responds to (including inherited ones)
 Array.dumpAllMethods; 		// Only instance methods (including inherited ones)
 ::
-There is also a graphical Class browser which will show all methods, arguments, subclasses, instance variables and class variables. Using the browser's buttons you can easily navigate to the class' superclass, subclasses, class source, method source, helpfile (if there is one), check references or implementation of methods, or even open a web browser to view the corresponding entry in the online SVN repository. (Note that the web repository is a backup often a day or two behind the status of what is available to developers.)
+There is also a graphical Class browser which will show all methods, arguments, subclasses, instance variables and class variables. Using the browser's buttons you can easily navigate to the class' superclass, subclasses, class source, method source, helpfile (if there is one), check references or implementation of methods.
 code::
 SequenceableCollection.browse;
 ::
@@ -69,7 +69,7 @@ Similarly, selecting any text and typing shift-cmd-y will open a window showing 
 code::
 // try it on these
 asStream
-SCWindow
+Window
 ::
 In the resulting window selecting any class and method and pressing Cmd-j will take you to that method definition in that class definition. For example try selecting Pattern-select in the window resulting from the previous example. Note that SC supports defining methods in separate files, so a class' methods may be defined in more than one place. If you try Cmd-j on the following you will see that it will open a file called dumpFullInterface.sc rather than one called Class.sc (its main class definition file). The + Class {.... syntax indicates that these are additional methods.
 code::
@@ -103,5 +103,4 @@ http://www.listarc.bham.ac.uk/lists/sc-users/search/
 
 Requests for documentation of undocumented methods or classes, as well as reports of errata, omissions, etc. in helpfiles can be sent to the user's list above. Bugs or Feature Requests can be filed here:
 
-https://sourceforge.net/tracker2/?group_id=54622
-
+https://github.com/supercollider/supercollider/issues
