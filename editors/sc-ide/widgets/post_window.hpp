@@ -73,7 +73,6 @@ private:
     QAction * mAutoScrollAction;
     QAction * mClearAction;
     QAction * mLineWrapAction;
-    bool mNewlinePending;
     QSize mSizeHint;
 };
 
