@@ -194,7 +194,8 @@ endif()
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
 option(SC_OX "Try to compile with support for C++0x (experimental, mainly related to supernova)" OFF)
 
-option(SYSTEM_BOOST "Use boost libraries from system" OFF)
+option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
+option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
 
 #############################################
 # some default libraries
@@ -206,7 +207,7 @@ if (NOT PTHREADS_FOUND)
 endif()
 include_directories(${PTHREADS_INCLUDE_DIR})
 
-if (MSVC OR MINGW)
+if(MSVC OR MINGW)
     set(MATH_LIBRARY "")
 else()
     find_library(MATH_LIBRARY m)
@@ -235,7 +236,11 @@ else()
 	message("building boost libraries manually")
 endif()
 
-
+if(SYSTEM_YAMLCPP)
+  find_package(YamlCpp)
+else()
+  set(YAMLCPP_FOUND OFF)
+endif()
 
 #############################################
 # some preprocessor flags
@@ -287,6 +292,12 @@ endif()
 #############################################
 # subdirectories
 add_subdirectory(external_libraries)
+
+if(NOT YAMLCPP_FOUND)
+  set(YAMLCPP_LIBRARY yaml)
+  set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
+endif()
+
 add_subdirectory(server)
 add_subdirectory(lang)
 add_subdirectory(editors)
