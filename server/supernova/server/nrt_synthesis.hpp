@@ -85,7 +85,7 @@ struct non_realtime_synthesis_engine
     {
         backend.activate_audio();
 
-        boost::array<char, 16384> packet_buffer;
+        std::array<char, 16384> packet_buffer;
 
         using namespace std;
 

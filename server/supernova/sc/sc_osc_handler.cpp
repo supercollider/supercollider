@@ -580,7 +580,7 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
     bool check_password = true;
 
     if (check_password) {
-        boost::array<char, 32> password;
+        std::array<char, 32> password;
         size_t size;
         uint32_t msglen;
         for (unsigned int i=0; i!=4; ++i) {
