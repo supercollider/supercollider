@@ -105,8 +105,9 @@ SCDocHTMLRenderer {
         var undocumented = false;
         if(folder==".",{folder=""});
         
+        // FIXME: use SCDoc.helpTargetDir relative to baseDir
         baseDir = ".";
-        doc.path.occurrencesOf(Platform.pathSeparator).do {
+        doc.path.occurrencesOf($/).do {
             baseDir = baseDir ++ "/..";
         };
 
