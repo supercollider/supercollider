@@ -420,7 +420,7 @@ private:
     tcp::acceptor tcp_acceptor_;
     const char * tcp_password_; /* we are not owning this! */
 
-    boost::array<char, 1<<15 > recv_buffer_;
+    std::array<char, 1<<15 > recv_buffer_;
 
     std::vector<char> overflow_vector;
     /* @} */
