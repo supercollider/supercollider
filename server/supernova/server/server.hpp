@@ -207,7 +207,7 @@ private:
             server->notification_node_ended(&node);
         else {
             abstract_group * group = static_cast<abstract_group*>(&node);
-            group->apply_on_children(boost::bind(nova_server::free_deep_notify, server, _1));
+            group->apply_on_children(std::bind(nova_server::free_deep_notify, server, std::placeholders::_1));
         }
     }
 
