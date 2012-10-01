@@ -18,8 +18,6 @@
 
 #include <cstdio>
 
-#include <boost/bind.hpp>
-
 #include "sc_synth.hpp"
 #include "sc_ugen_factory.hpp"
 #include "../server/server.hpp"

@@ -125,8 +125,8 @@ protected:
 
         input_samples.resize(input_channels);
         output_samples.resize(output_channels);
-        std::generate(input_samples.begin(), input_samples.end(), boost::bind(calloc_aligned<sample_type>, frames));
-        std::generate(output_samples.begin(), output_samples.end(), boost::bind(calloc_aligned<sample_type>, frames));
+        std::generate(input_samples.begin(), input_samples.end(), std::bind(calloc_aligned<sample_type>, frames));
+        std::generate(output_samples.begin(), output_samples.end(), std::bind(calloc_aligned<sample_type>, frames));
     }
 
     void fetch_inputs(const float ** inputs, size_t frames, int input_channels)
