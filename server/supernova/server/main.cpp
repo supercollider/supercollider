@@ -227,11 +227,7 @@ void load_synthdef_folder(nova_server & server, path const & folder, bool verbos
     if (verbose)
         std::printf("Loading synthdefs from path: %s\n", folder.c_str());
 
-#ifdef BOOST_HAS_RVALUE_REFS
     register_synthdefs(server, std::move(sc_read_synthdefs_dir(folder)));
-#else
-    register_synthdefs(server, sc_read_synthdefs_dir(folder));
-#endif
 }
 
 void load_synthdefs(nova_server & server, server_arguments const & args)
