@@ -34,6 +34,7 @@
 
 #include <boost/lockfree/stack.hpp>
 
+#include "nova-tt/pause.hpp"
 #include "nova-tt/semaphore.hpp"
 
 #include "utilities/branch_hints.hpp"
@@ -436,7 +437,7 @@ private:
         void run(void)
         {
             for (int i = 0; i != loops; ++i)
-                asm(""); // empty asm to avoid optimization
+                nova::detail::pause();
 
             loops = std::min(loops * 2, max);
         }
@@ -451,7 +452,7 @@ private:
 
     void run_item(thread_count_t index)
     {
-        backup b(256, 32768);
+        backup b(8, 32768);
         int poll_counts = 0;
 
         for (;;) {
