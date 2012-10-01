@@ -109,7 +109,10 @@ SCDocEntry {
 
     init {|node,aPath|
         var hdr, bdy;
-        path = aPath;
+        // 'path' variable is used as a key for SCDoc.documents dictionary.
+        // Make sure it always uses forward slashes.
+        // FIXME: implement & use a generic path conversion method?
+        path = aPath.replace("\\","/");
         if(node.isNil) {^this};
         #hdr, bdy = node.children;
         isExtension = false;
