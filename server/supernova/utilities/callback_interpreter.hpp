@@ -122,10 +122,11 @@ public:
 
     void start_thread(void)
     {
-        using namespace std;
         semaphore sync_sem;
         semaphore_sync<semaphore> sync(sync_sem);
-        thread thr(bind(&threaded_callback_interpreter::run_thread, this, ref(sync_sem)));
+        std::thread thr( [&]() {
+            this->run_thread(sync_sem);
+        });
         callback_thread = move(thr);
     }
 
@@ -159,7 +160,9 @@ public:
         using namespace std;
 
         for (uint16_t i = 0; i != worker_thread_count; ++i)
-            threads.emplace_back(std::bind(&callback_interpreter_threadpool::run, this, boost::ref(sync_sem)));
+            threads.emplace_back( [&] () {
+                this->run(sync_sem);
+            });
 
         for (uint16_t i = 0; i != worker_thread_count; ++i)
             sync_sem.wait();
