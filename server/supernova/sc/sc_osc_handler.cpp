@@ -860,7 +860,12 @@ static bool node_position_sanity_check(node_position_constraint const & constrai
             log_printf("Invalid position constraint (target: %d, addAction: %d)\n", target->id(), constraint.second);
             return false;
         }
+        break;
     }
+    case before:
+    case after:
+    case replace:
+        assert(false);
     }
 
     return true;
@@ -2746,11 +2751,7 @@ void d_recv_nrt(movable_array<char> & def, completion_message & msg, nova_endpoi
     sc_synth_definition_ptr * definitions;
     std::vector<sc_synthdef> synthdefs (read_synthdefs(def.data()));
 
-#ifdef BOOST_HAS_RVALUE_REFS
     boost::tie(definitions, count) = wrap_synthdefs(std::move(synthdefs));
-#else
-    boost::tie(definitions, count) = wrap_synthdefs(synthdefs);
-#endif
 
     cmd_dispatcher<realtime>::fire_rt_callback(std::bind(d_recv_rt2<realtime>, definitions, count, msg, endpoint));
 }
