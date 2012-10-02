@@ -873,6 +873,15 @@ SCDoc {
 }
 
 URI {
+    /*
+    NOTE:
+    This class attempts compliance with specification
+    Uniform Resource Identifier (URI): Generic Syntax (RFC 3986)
+    http://datatracker.ietf.org/doc/rfc3986/
+
+    If you intend to modify it, please consult the specification!
+    */
+
     classvar parseRegexp = "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?";
 
     var <>scheme, <>authority, <>path, <>query, <>fragment;
