@@ -435,7 +435,7 @@ SCDoc {
                 case
                 {f.fullPath.endsWith(".ext.schelp")} {
                     f = f.fullPath;
-                    key = f[dir.size+1 ..].drop(-11);
+                    key = f[dir.size+1 ..].drop(-11).replace("\\","/");
                     additions[key] = additions[key].add(f);
                 }
                 {f.extension=="schelp"} {
@@ -842,7 +842,7 @@ SCDoc {
 
         sym = str.asSymbol;
         if(sym.asClass.notNil) {
-            ^pfx +/+ (if(this.documents["Classes"+/+str].isUndocumentedClass) {
+            ^pfx +/+ (if(this.documents["Classes/"++str].isUndocumentedClass) {
                 (old = Help.findHelpFile(str)) !? {
                     "OldHelpWrapper.html#"++old++"?"++SCDoc.helpTargetDir +/+ "Classes" +/+ str ++ ".html"
                 }
