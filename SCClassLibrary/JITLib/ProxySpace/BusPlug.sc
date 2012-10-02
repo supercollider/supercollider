@@ -79,11 +79,11 @@ BusPlug : AbstractFunction {
 	}
 
 	asControlInput {
-			if(this.isPlaying.not) {
-				if(this.isNeutral) { this.defineBus(\control, 1) };
-				this.wakeUp
-			};
-			^this.busArg;
+		if(this.isPlaying.not) {
+			if(this.isNeutral) { this.defineBus(\control, 1) };
+			this.wakeUp
+		};
+		^this.busArg;
 	}
 	asUGenInput {
 		^this.value;
@@ -129,14 +129,14 @@ BusPlug : AbstractFunction {
 
 	// returns false if failed
 	initBus { | rate, numChannels |
-				if(rate.isNil or: { rate === 'scalar' }) { ^true }; // this is no problem
-				if(this.isNeutral) {
-					this.defineBus(rate, numChannels);
-					^true
-				} {
-					numChannels = numChannels ? this.numChannels;
-					^(bus.rate === rate) and: { numChannels <= bus.numChannels }
-				};
+		if(rate.isNil or: { rate === 'scalar' }) { ^true }; // this is no problem
+		if(this.isNeutral) {
+			this.defineBus(rate, numChannels);
+			^true
+		} {
+			numChannels = numChannels ? this.numChannels;
+			^(bus.rate === rate) and: { numChannels <= bus.numChannels }
+		}
 	}
 
 	defineBus { | rate = \audio, numChannels |
@@ -147,7 +147,6 @@ BusPlug : AbstractFunction {
 								this.class.defaultNumControl							}
 		};
 		this.bus = Bus.alloc(rate, server, numChannels);
-
 	}
 
 	freeBus {
@@ -163,16 +162,16 @@ BusPlug : AbstractFunction {
 	busArg { ^busArg ?? { this.makeBusArg } }
 
 	makeBusArg {
-			var index, numChannels, prefix;
-			if(bus.isNil) { ^busArg = "" }; // still neutral
-			prefix = if(this.rate == \audio) { "\a" } { "\c" };
-			index = this.index;
-			numChannels = this.numChannels;
-			^busArg = if(numChannels == 1) {
-				prefix ++ index
-			} {
-				{ |i| prefix ++ (index + i) }.dup(numChannels)
-			}
+		var index, numChannels, prefix;
+		if(bus.isNil) { ^busArg = "" }; // still neutral
+		prefix = if(this.rate == \audio) { "\a" } { "\c" };
+		index = this.index;
+		numChannels = this.numChannels;
+		^busArg = if(numChannels == 1) {
+			prefix ++ index
+		} {
+			{ |i| prefix ++ (index + i) }.dup(numChannels)
+		}
 	}
 	
 	asMap {
