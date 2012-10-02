@@ -602,7 +602,7 @@ SCDoc {
         };
 
         if(path.endsWith(".html")) {
-            subtarget = path.drop(this.helpTargetDir.size+1).drop(-5);
+            subtarget = path.drop(this.helpTargetDir.size+1).drop(-5).replace("\\","/");
             doc = this.documents[subtarget];
             doc !? {
                 if(doc.isUndocumentedClass) {
