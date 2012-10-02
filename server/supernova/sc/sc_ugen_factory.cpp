@@ -234,11 +234,10 @@ void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
 void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 {
     using namespace std;
+
     void * handle = dlopen(path.string().c_str(), RTLD_NOW | RTLD_LOCAL);
-    if (handle == NULL) {
-        cerr << "Cannot open plugin: " << dlerror() << endl;
+    if (handle == NULL)
         return;
-    }
 
     typedef int (*info_function)();
 
@@ -253,8 +252,16 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
         return;
     }
 
+    info_function supernova_check = reinterpret_cast<info_function>(dlsym(handle, "server_type"));
+    if (!supernova_check || (*supernova_check)() == sc_server_scsynth) {
+        // silently ignore
+        dlclose(handle);
+        return;
+    }
+
     void * load_symbol = dlsym(handle, "load");
     if (!load_symbol) {
+        cerr << "Problem when loading plugin: \"load\" function undefined" << path << endl;
         dlclose(handle);
         return;
     }
@@ -298,6 +305,18 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 
     if ((*api_version)() != sc_api_version) {
         std::cerr << "API Version Mismatch: " << filename << std::endl;
+        FreeLibrary(hinstance);
+        return;
+    }
+
+    typedef int (*info_function)();
+    info_function server_type = reinterpret_cast<info_function>(GetProcAddress( hinstance, "server_type" ));
+    if (!server_type) {
+        FreeLibrary(hinstance);
+        return;
+    }
+
+    if ((*server_type)() != sc_server_supernova) {
         FreeLibrary(hinstance);
         return;
     }

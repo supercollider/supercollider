@@ -195,25 +195,22 @@ void set_plugin_paths(void)
     } else {
 #ifdef __linux__
         path home = resolve_home();
-        sc_factory->load_plugin_folder("/usr/local/lib/supernova/plugins");
-        sc_factory->load_plugin_folder("/usr/lib/supernova/plugins");
-        sc_factory->load_plugin_folder(home / "/.local/share/SuperCollider/supernova_plugins");
-        sc_factory->load_plugin_folder(home / "share/SuperCollider/supernova_plugins");
+        sc_factory->load_plugin_folder("/usr/local/lib/SuperCollider/plugins");
+        sc_factory->load_plugin_folder("/usr/lib/SuperCollider/plugins");
+        sc_factory->load_plugin_folder(home / "/.local/share/SuperCollider/plugins");
+        sc_factory->load_plugin_folder(home / "share/SuperCollider/plugins");
 #else
         char plugin_dir[MAXPATHLEN];
         sc_GetResourceDirectory(plugin_dir, MAXPATHLEN);
-        sc_AppendToPath(plugin_dir, MAXPATHLEN, "supernova_plugins");
+        sc_AppendToPath(plugin_dir, MAXPATHLEN, "plugins");
 
-#if 0
-        // FIXME: how to load plugins from extension paths?
         char extension_dir[MAXPATHLEN];
 
         sc_GetSystemExtensionDirectory(extension_dir, MAXPATHLEN);
-        sc_factory->load_plugin_folder(path(extensions_dir) / "supernova_plugins");
+        sc_factory->load_plugin_folder(path(extensions_dir) / "plugins");
 
         sc_GetUserExtensionDirectory(extension_dir, MAXPATHLEN);
-        sc_factory->load_plugin_folder(path(extensions_dir) / "supernova_plugins");
-#endif
+        sc_factory->load_plugin_folder(path(extensions_dir) / "plugins");
 #endif
     }
 
