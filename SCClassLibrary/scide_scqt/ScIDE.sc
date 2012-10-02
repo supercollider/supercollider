@@ -265,21 +265,28 @@ ScIDE {
 
 	*openHelpUrl { |url|
 		ScIDE.processUrl(url, { |processedUrl|
-			this.prSend("openHelpUrl", processedUrl)
+			this.prSend("openHelpUrl", processedUrl.asString)
 		});
 	}
 
 	*cmdPeriod { docRoutine.play(AppClock) }
 
-	*processUrl { |url, doneAction, brokenAction|
+	*processUrl { |urlString, doneAction|
 		// NOTE: Copied and modified from HelpBrower:-goTo
+		var url, brokenFunc;
 
-		brokenAction = brokenAction ? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
+		brokenFunc = { |fragment|
+			var brokenUrl = URI.fromLocalPath( SCDoc.helpTargetDir++"/BrokenLink.html" );
+			brokenUrl.fragment = fragment;
+			brokenUrl;
+		};
+
+		url = URI.tolerant(urlString);
 
 		if (docRoutine.notNil) { docRoutine.stop };
 		docRoutine = Routine {
 			try {
-				url = SCDoc.prepareHelpForURL(url) ?? brokenAction;
+				url = SCDoc.prepareHelpForURL(url) ?? { brokenFunc.(urlString) };
 				doneAction.value(url);
 			} {|err|
 				err.throw;

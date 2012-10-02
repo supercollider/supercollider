@@ -566,19 +566,17 @@ SCDoc {
     }
 
     *prepareHelpForURL {|url|
-        var proto, path, query, anchor;
+        var path;
         var subtarget, src, c, cmd, doc, destExist, destMtime;
         var verpath = this.helpTargetDir +/+ "version";
 
-        url = url.replace("%20"," ");
-        #proto, path, query, anchor = url.findRegexp("(^\\w+://)?([^#?]+)(\\?[^#]+)?(#.*)?")[1..].flop[1];
-        if(proto.isEmpty) {proto="file://"; url = proto++url};
+        path = url.asLocalPath;
 
         // detect old helpfiles and wrap them in OldHelpWrapper
-        if(proto == "sc://") { ^SCDoc.findHelpFile(path); };
+        if(url.scheme == "sc") { ^URI.tolerant(SCDoc.findHelpFile(path)); };
 
         // just pass through remote url's
-        if(proto != "file://") {^url};
+        if(url.scheme != "file") {^url};
 
         // detect old helpfiles and wrap them in OldHelpWrapper
         if(
@@ -595,10 +593,14 @@ SCDoc {
             }*/
             path.beginsWith(SCDoc.helpTargetDir).not
         ) {
-            ^ScDoc.getOldWrapUrl(url)
+            ^SCDoc.getOldWrapUrl(url)
         };
 
-        if(destExist = File.existsCaseSensitive(path)) {
+        if(destExist =
+            if(thisProcess.platform.name === \windows)
+            { File.exists(path) }
+            { File.existsCaseSensitive(path) })
+        {
             destMtime = File.mtime(path);
         };
 
@@ -634,7 +636,7 @@ SCDoc {
             ^url;
         };
 
-        warn("SCDoc: Broken link:"+url);
+        warn("SCDoc: Broken link:" + url.asString);
         ^nil;
     }
 
@@ -836,7 +838,7 @@ SCDoc {
 
     *findHelpFile {|str|
 //        ^r.findHelpFile(str.stripWhiteSpace);
-        var old, sym, pfx = "file://" ++ SCDoc.helpTargetDir;
+        var old, sym, pfx = SCDoc.helpTargetDir;
 
         if(str.isNil or: {str.isEmpty}) { ^pfx +/+ "Help.html" };
         if(this.documents[str].notNil) { ^pfx +/+ str ++ ".html" };
@@ -856,13 +858,91 @@ SCDoc {
         } { "Search.html#" ++ str }
     }
 
-	*getOldWrapUrl {|url|
-		var c;
-		^("file://" ++ SCDoc.helpTargetDir +/+ "OldHelpWrapper.html#"++url++"?"++
-		SCDoc.helpTargetDir +/+ if((c=url.basename.split($.).first).asSymbol.asClass.notNil)
-			{"Classes" +/+ c ++ ".html"}
-			{"Guides/WritingHelp.html"})
-	}
+    *getOldWrapUrl {|url|
+        var urlString, className, newUrl;
+        urlString = url.asString;
+        newUrl = URI.fromLocalPath( SCDoc.helpTargetDir +/+ "OldHelpWrapper.html" );
+        newUrl.fragment = urlString;
+        newUrl.query =
+            SCDoc.helpTargetDir
+            ++ if((className=urlString.basename.split($.).first).asSymbol.asClass.notNil)
+                {"/Classes/" ++ className ++ ".html"}
+                {"/Guides/WritingHelp.html"}
+        ^newUrl;
+    }
+}
+
+URI {
+    classvar parseRegexp = "^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?";
+
+    var <>scheme, <>authority, <>path, <>query, <>fragment;
+
+    *new { |validUriString|
+        ^super.new.init(validUriString)
+    }
+
+    *fromLocalPath { |string|
+        var uri = super.new;
+        uri.scheme = "file";
+        uri.authority = "";
+        uri.path = string;
+        if (thisProcess.platform.name === \windows
+            and: {uri.path.size >= 2 and: {uri.path[1] == $:} } )
+        { uri.path = "/" ++ uri.path; }
+        ^ uri;
+    }
+
+    *tolerant { |string|
+        var uri;
+
+        if (thisProcess.platform.name === \windows
+            and: { string.size >= 2 and: { string[1] == $:} } )
+        {
+            uri = super.new;
+            uri.scheme = "file";
+            uri.authority = "";
+            uri.path = "/" ++ string;
+            ^ uri;
+        };
+
+        uri = this.new(string);
+        if (uri.scheme.isNil) {
+            uri.scheme = "file";
+            if (uri.authority.isNil) { uri.authority = "" }
+        };
+        ^ uri;
+    }
+
+    init { |string|
+        var result;
+        if (string.notNil) {
+            string = string.replace("%20"," ");
+            result = string.findRegexp( parseRegexp ).flop[1];
+            if (result[1].size > 0) { scheme = result[2] };
+            if (result[3].size>0) { authority = result[4] };
+            path = result[5];
+            if (result[6].size > 0) { query = result[7] };
+            if (result[8].size > 0) { fragment = result[9] };
+        };
+    }
+
+    asLocalPath {
+        if (scheme != "file") { ^nil };
+        if (thisProcess.platform.name === \windows
+            and: {path.beginsWith("/")})
+        { ^path.drop(1) };
+        ^ path;
+    }
+
+    asString {
+        var str = "";
+        if (scheme.notNil) { str = str ++ scheme ++ ":" };
+        if (authority.notNil) { str = str ++ "//" ++ authority };
+        str = str ++ path;
+        if (query.notNil) { str = str ++ "?" ++ query };
+        if (fragment.notNil) { str = str ++ "#" ++ fragment };
+        ^str;
+    }
 }
 
 + String {
@@ -884,7 +964,6 @@ SCDoc {
 
 		^lines;
 	}
-
 }
 
 + Method {
