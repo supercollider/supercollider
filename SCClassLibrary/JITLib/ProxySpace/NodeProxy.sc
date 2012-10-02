@@ -114,55 +114,55 @@ NodeProxy : BusPlug {
 		^objects.at(index).source
 	}
 
-	put { | index, obj, channelOffset = 0, extraArgs, now = true |			var container, bundle, orderIndex;
-			if(obj.isNil) { this.removeAt(index); ^this };
-			if(index.isSequenceableCollection) {
-				^this.putAll(obj.asArray, index, channelOffset)
+	put { | index, obj, channelOffset = 0, extraArgs, now = true |		var container, bundle, orderIndex;
+		if(obj.isNil) { this.removeAt(index); ^this };
+		if(index.isSequenceableCollection) {
+			^this.putAll(obj.asArray, index, channelOffset)
+		};
+
+		orderIndex = index ? 0;
+		container = obj.makeProxyControl(channelOffset, this);
+		container.build(this, orderIndex); // bus allocation happens here
+
+		if(this.shouldAddObject(container, index)) {
+			bundle = MixedBundle.new;
+			if(index.isNil)
+				{ this.removeAllToBundle(bundle) }
+				{ this.removeToBundle(bundle, index) };
+			objects = objects.put(orderIndex, container);
+			this.changed(\source, obj, index);
+		} {
+			format("failed to add % to node proxy: %", obj, this).inform;
+			^this
+		};
+
+		if(server.serverRunning) {
+			now = awake && now;
+			if(now) {
+				this.prepareToBundle(nil, bundle);
 			};
-
-			orderIndex = index ? 0;
-			container = obj.makeProxyControl(channelOffset, this);
-			container.build(this, orderIndex); // bus allocation happens here
-
-			if(this.shouldAddObject(container, index)) {
-				bundle = MixedBundle.new;
-				if(index.isNil)
-					{ this.removeAllToBundle(bundle) }
-					{ this.removeToBundle(bundle, index) };
-				objects = objects.put(orderIndex, container);
-				this.changed(\source, obj, index);
-			} {
-				format("failed to add % to node proxy: %", obj, this).inform;
-				^this
+			container.loadToBundle(bundle, server);
+			loaded = true;
+			if(now) {
+				container.wakeUpParentsToBundle(bundle);
+				this.sendObjectToBundle(bundle, container, extraArgs, index);
 			};
-
-			if(server.serverRunning) {
-				now = awake && now;
-				if(now) {
-					this.prepareToBundle(nil, bundle);
-				};
-				container.loadToBundle(bundle, server);
-				loaded = true;
-				if(now) {
-					container.wakeUpParentsToBundle(bundle);
-					this.sendObjectToBundle(bundle, container, extraArgs, index);
-				};
-				nodeMap.wakeUpParentsToBundle(bundle);
-				bundle.schedSend(server, clock ? TempoClock.default, quant);
-			} {
-				loaded = false;
-			}
+			nodeMap.wakeUpParentsToBundle(bundle);
+			bundle.schedSend(server, clock ? TempoClock.default, quant);
+		} {
+			loaded = false;
+		}
 
 	}
 
 	putAll { | list, index = (0), channelOffset = 0 |
-				channelOffset = channelOffset.asArray;
-				if(index.isSequenceableCollection) {
-					max(list.size, index.size).do { |i|
-						this.put(index.wrapAt(i), list.wrapAt(i), channelOffset.wrapAt(i))
-					}
-				}{
-					list.do { |item, i| this.put(i + index, item, channelOffset.wrapAt(i)) }				}
+		channelOffset = channelOffset.asArray;
+		if(index.isSequenceableCollection) {
+			max(list.size, index.size).do { |i|
+				this.put(index.wrapAt(i), list.wrapAt(i), channelOffset.wrapAt(i))
+			}
+		}{
+			list.do { |item, i| this.put(i + index, item, channelOffset.wrapAt(i)) }		}
 	}
 
 	putSeries { | first, second, last, value |
@@ -383,16 +383,16 @@ NodeProxy : BusPlug {
 	}
 	
 	nodeMapChanged {
-			var set, map;
-			nodeMap.settings.do { |setting|
-				if(setting.isMapped) {
-					map = map.add(setting.key).add(setting.value)
-				} {
-					set = set.add(setting.key).add(setting.value)
-				}
-			};
-			if(set.notNil) { this.changed(\set, set) };
-			if(map.notNil) { this.changed(\map, map) };
+		var set, map;
+		nodeMap.settings.do { |setting|
+			if(setting.isMapped) {
+				map = map.add(setting.key).add(setting.value)
+			} {
+				set = set.add(setting.key).add(setting.value)
+			}
+		};
+		if(set.notNil) { this.changed(\set, set) };
+		if(map.notNil) { this.changed(\map, map) };
 	}
 
 
@@ -448,37 +448,37 @@ NodeProxy : BusPlug {
 	// starting processes
 
 	spawn { | extraArgs, index = 0 |
-			var bundle, obj, i;
-			obj = objects.at(index);
-			if(obj.notNil) {
-				i = this.index;
-				bundle = this.getBundle;
-				obj.spawnToBundle(bundle, extraArgs, this);
-				nodeMap.addToBundle(bundle, -1);
-				bundle.schedSend(server);
-			}
+		var bundle, obj, i;
+		obj = objects.at(index);
+		if(obj.notNil) {
+			i = this.index;
+			bundle = this.getBundle;
+			obj.spawnToBundle(bundle, extraArgs, this);
+			nodeMap.addToBundle(bundle, -1);
+			bundle.schedSend(server);
+		}
 	}
 
 
 	send { | extraArgs, index, freeLast = true |
-			var bundle, obj;
-			if(objects.isEmpty) { ^this };
-			if(index.isNil) {
+		var bundle, obj;
+		if(objects.isEmpty) { ^this };
+		if(index.isNil) {
+			bundle = this.getBundle;
+			if(freeLast) { this.stopAllToBundle(bundle) };
+			this.sendAllToBundle(bundle, extraArgs);
+			bundle.schedSend(server);
+
+		} {
+			obj = objects.at(index);
+			if(obj.notNil) {
 				bundle = this.getBundle;
-				if(freeLast) { this.stopAllToBundle(bundle) };
-				this.sendAllToBundle(bundle, extraArgs);
+				if(freeLast) { obj.stopToBundle(bundle) };
+
+				this.sendObjectToBundle(bundle, obj, extraArgs, index);
 				bundle.schedSend(server);
-
-			} {
-				obj = objects.at(index);
-				if(obj.notNil) {
-					bundle = this.getBundle;
-					if(freeLast) { obj.stopToBundle(bundle) };
-
-					this.sendObjectToBundle(bundle, obj, extraArgs, index);
-					bundle.schedSend(server);
-				}
 			}
+		}
 	}
 
 	sendAll { | extraArgs, freeLast = true |
@@ -486,11 +486,11 @@ NodeProxy : BusPlug {
 	}
 
 	sendEach { | extraArgs, freeLast = true |
-			var bundle;
-			bundle = this.getBundle;
-			if(freeLast, { this.stopAllToBundle(bundle) });
-			this.sendEachToBundle(bundle, extraArgs);
-			bundle.schedSend(server);
+		var bundle;
+		bundle = this.getBundle;
+		if(freeLast, { this.stopAllToBundle(bundle) });
+		this.sendEachToBundle(bundle, extraArgs);
+		bundle.schedSend(server);
 
 	}
 
@@ -507,10 +507,9 @@ NodeProxy : BusPlug {
 	}
 
 	deepWakeUp {
-			var bundle;
-			bundle = MixedBundle.new;
-			this.wakeUpToBundle(bundle);
-			bundle.schedSend(server, clock ? TempoClock.default, quant)
+		var bundle = MixedBundle.new;
+		this.wakeUpToBundle(bundle);
+		bundle.schedSend(server, clock ? TempoClock.default, quant)
 	}
 
 
@@ -697,16 +696,14 @@ NodeProxy : BusPlug {
 	// derive names and default args from synthDefs
 	supplementNodeMap { | keys, replaceOldKeys=false |
 		this.controlNames.do { |el|
-					var key;
-					key = el.name;
-					if (
-						( replaceOldKeys or: { nodeMap.at(key).isNil } )
-						and:
-						{ keys.isNil or: { keys.includes(key) } }
-					) { nodeMap.set(key, el.defaultValue) }
+			var key = el.name;
+			if (
+				( replaceOldKeys or: { nodeMap.at(key).isNil } )
+				and:
+				{ keys.isNil or: { keys.includes(key) } }
+			) { nodeMap.set(key, el.defaultValue) }
 		}
 	}
-
 
 
 
@@ -722,46 +719,46 @@ NodeProxy : BusPlug {
 
 	prepareToBundle { | argGroup, bundle, addAction = \addToTail |
 		if(this.isPlaying.not) {
-				group = Group.basicNew(server, this.defaultGroupID);
-				NodeWatcher.register(group);
-				group.isPlaying = server.serverRunning;
-				if(argGroup.isNil and: { parentGroup.isPlaying }) { argGroup = parentGroup };
-				bundle.addPrepare(group.newMsg(argGroup ?? { server.asGroup }, addAction));
+			group = Group.basicNew(server, this.defaultGroupID);
+			NodeWatcher.register(group);
+			group.isPlaying = server.serverRunning;
+			if(argGroup.isNil and: { parentGroup.isPlaying }) { argGroup = parentGroup };
+			bundle.addPrepare(group.newMsg(argGroup ?? { server.asGroup }, addAction));
 		}
 	}
 
 	// bundle: apply the node map settings to the entire group
 	sendAllToBundle { | bundle, extraArgs |
-				objects.do { arg item;
-					item.playToBundle(bundle, extraArgs.value, this);
-				};
-				if(objects.notEmpty) { nodeMap.addToBundle(bundle, group) };
+		objects.do { arg item;
+			item.playToBundle(bundle, extraArgs.value, this);
+		};
+		if(objects.notEmpty) { nodeMap.addToBundle(bundle, group) };
 	}
 
 	// bundle: apply the node map settings to each synth separately
 	sendEachToBundle { | bundle, extraArgs |
-				objects.do { arg item;
-					this.sendObjectToBundle(bundle, item, extraArgs.value)
-				}
+		objects.do { arg item;
+			this.sendObjectToBundle(bundle, item, extraArgs.value)
+		}
 	}
 
 	// bundle: send single object
 	sendObjectToBundle { | bundle, object, extraArgs, index |
-				var synthID, target, nodes;
-				synthID = object.playToBundle(bundle, extraArgs.value, this);
-				if(synthID.notNil) {
-					if(index.notNil and: { objects.size > 1 }) { // if nil, all are sent anyway
-						// make list of nodeIDs following the index
-						nodes = Array(4);
-						objects.doRange({ arg obj;
-							var id = obj.nodeID;
-							if(id.notNil and: { id != synthID })
-								{ nodes = nodes ++ id ++ synthID };
-						}, index + 1);
-						if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes.reverse) };
-					};
-				nodeMap.addToBundle(bundle, synthID)
-				}
+		var synthID, target, nodes;
+		synthID = object.playToBundle(bundle, extraArgs.value, this);
+		if(synthID.notNil) {
+			if(index.notNil and: { objects.size > 1 }) { // if nil, all are sent anyway
+				// make list of nodeIDs following the index
+				nodes = Array(4);
+				objects.doRange({ arg obj;
+					var id = obj.nodeID;
+					if(id.notNil and: { id != synthID })
+						{ nodes = nodes ++ id ++ synthID };
+				}, index + 1);
+				if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes.reverse) };
+			};
+		nodeMap.addToBundle(bundle, synthID)
+		}
 	}
 
 	// bundle: remove single object
