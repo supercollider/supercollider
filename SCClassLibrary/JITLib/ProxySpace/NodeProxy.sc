@@ -369,7 +369,9 @@ NodeProxy : BusPlug {
 		bundle = MixedBundle.new;
 		old = nodeMap;
 		nodeMap = map;
+		old.clear;
 		this.linkNodeMap;
+		this.nodeMapChanged;
 		if(this.isPlaying) {
 			if(xfade) { this.sendEach(nil,true) }
 			{
@@ -378,6 +380,19 @@ NodeProxy : BusPlug {
 			bundle.schedSend(server, clock ? TempoClock.default, quant);
 			}
 		};
+	}
+	
+	nodeMapChanged {
+			var set, map;
+			nodeMap.settings.do { |setting|
+				if(setting.isMapped) {
+					map = map.add(setting.key).add(setting.value)
+				} {
+					set = set.add(setting.key).add(setting.value)
+				}
+			};
+			if(set.notNil) { this.changed(\set, set) };
+			if(map.notNil) { this.changed(\map, map) };
 	}
 
 
