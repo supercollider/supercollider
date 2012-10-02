@@ -89,13 +89,7 @@ HelpBrowser {
 
 	cmdPeriod { rout.play(AppClock) }
 	goTo {|url, brokenAction|
-		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp",".rtf"];
-
-		plainTextExts.do {|x|
-			if(url.endsWith(x)) {
-				^this.openTextFile(url);
-			}
-		};
+		var newPath, oldPath;
 
 		window.front;
 		this.startAnim;
@@ -261,17 +255,20 @@ HelpBrowser {
 		};
 		webView.onLoadFailed = { this.stopAnim };
 		webView.onLinkActivated = {|wv, url|
-			var newPath, oldPath;
-			if(openNewWin) {
-				#newPath, oldPath = [url,webView.url].collect {|x|
-					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
+			var redirected, newPath, oldPath;
+			redirected = this.redirectTextFile(url);
+			if (not(redirected)) {
+				if(openNewWin) {
+					#newPath, oldPath = [url,webView.url].collect {|x|
+						if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
+					};
 				};
-			};
-			if(newPath!=oldPath) {
-				HelpBrowser.new(newWin:true).goTo(url);
-			} {
-				this.goTo(url);
-			};
+				if(newPath!=oldPath) {
+					HelpBrowser.new(newWin:true).goTo(url);
+				} {
+					this.goTo(url);
+				};
+			}
 		};
 		if(webView.respondsTo(\onReload_)) {
 			webView.onReload = {|wv, url|
@@ -325,15 +322,25 @@ HelpBrowser {
 		};
 	}
 
-	openTextFile {|path|
-		var win, winRect, txt, file, fonts;
-		path = path.replace("%20"," ").findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
-		if(File.exists(path)) {
-			path.openDocument;
-		} {
-			webView.url = SCDoc.helpTargetDir++"/BrokenLink.html#"++path;
-			window.front;
-		}
+	redirectTextFile {|url|
+		var plainTextExts = #[".sc",".scd",".txt",".schelp",".rtf"];
+
+		plainTextExts.do {|x|
+			var path;
+			if(url.endsWith(x)) {
+				path = url.replace("%20"," ")
+					.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
+				if(File.exists(path)) {
+					path.openDocument;
+				} {
+					webView.url = SCDoc.helpTargetDir++"/BrokenLink.html#"++path;
+					window.front;
+				};
+				^true
+			}
+		};
+
+		^false
 	}
 
 	startAnim {
