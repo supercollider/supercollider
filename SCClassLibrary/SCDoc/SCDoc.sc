@@ -566,7 +566,7 @@ SCDoc {
     }
 
     *prepareHelpForURL {|url|
-        var path;
+        var path, targetBasePath, pathIsCaseInsensitive;
         var subtarget, src, c, cmd, doc, destExist, destMtime;
         var verpath = this.helpTargetDir +/+ "version";
 
@@ -577,6 +577,11 @@ SCDoc {
 
         // just pass through remote url's
         if(url.scheme != "file") {^url};
+
+        targetBasePath = SCDoc.helpTargetDir;
+        if (thisProcess.platform.name === \windows)
+            { targetBasePath = targetBasePath.replace("/","\\") };
+        pathIsCaseInsensitive = thisProcess.platform.name === \windows;
 
         // detect old helpfiles and wrap them in OldHelpWrapper
         if(
@@ -591,7 +596,7 @@ SCDoc {
             }
             }; false
             }*/
-            path.beginsWith(SCDoc.helpTargetDir).not
+            path.compare( targetBasePath, pathIsCaseInsensitive ) == -1
         ) {
             ^SCDoc.getOldWrapUrl(url)
         };
