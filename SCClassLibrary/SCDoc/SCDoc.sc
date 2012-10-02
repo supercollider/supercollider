@@ -573,8 +573,30 @@ SCDoc {
         url = url.replace("%20"," ");
         #proto, path, query, anchor = url.findRegexp("(^\\w+://)?([^#?]+)(\\?[^#]+)?(#.*)?")[1..].flop[1];
         if(proto.isEmpty) {proto="file://"; url = proto++url};
-        if(proto!="file://") {^url}; // just pass through remote url's
-        if(path.beginsWith(helpTargetDir).not) {^url}; // just pass through non-help url's
+
+        // detect old helpfiles and wrap them in OldHelpWrapper
+        if(proto == "sc://") { ^SCDoc.findHelpFile(path); };
+
+        // just pass through remote url's
+        if(proto != "file://") {^url};
+
+        // detect old helpfiles and wrap them in OldHelpWrapper
+        if(
+            /*
+            // this didn't work for quarks due to difference between registered old help path and the quarks symlink in Extensions.
+            // we could use File.realpath(path) below but that would double the execution time,
+            // so let's just assume any local file outside helpTargetDir is an old helpfile.
+            block{|break|
+            Help.do {|key, path|
+            if(url.endsWith(path)) {
+            break.value(true)
+            }
+            }; false
+            }*/
+            path.beginsWith(SCDoc.helpTargetDir).not
+        ) {
+            ^ScDoc.getOldWrapUrl(url)
+        };
 
         if(destExist = File.existsCaseSensitive(path)) {
             destMtime = File.mtime(path);
@@ -833,6 +855,14 @@ SCDoc {
             "Overviews/Methods.html#" ++ str
         } { "Search.html#" ++ str }
     }
+
+	*getOldWrapUrl {|url|
+		var c;
+		^("file://" ++ SCDoc.helpTargetDir +/+ "OldHelpWrapper.html#"++url++"?"++
+		SCDoc.helpTargetDir +/+ if((c=url.basename.split($.).first).asSymbol.asClass.notNil)
+			{"Classes" +/+ c ++ ".html"}
+			{"Guides/WritingHelp.html"})
+	}
 }
 
 + String {

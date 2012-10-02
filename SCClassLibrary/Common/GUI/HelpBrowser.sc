@@ -79,13 +79,6 @@ HelpBrowser {
 		};
 		this.goTo(SCDoc.helpTargetDir+/+"Classes"+/+cls++".html#"++met);
 	}
-	*getOldWrapUrl {|url|
-		var c;
-		^("file://" ++ SCDoc.helpTargetDir +/+ "OldHelpWrapper.html#"++url++"?"++
-		SCDoc.helpTargetDir +/+ if((c=url.basename.split($.).first).asSymbol.asClass.notNil)
-			{"Classes" +/+ c ++ ".html"}
-			{"Guides/WritingHelp.html"})
-	}
 
 	cmdPeriod { rout.play(AppClock) }
 	goTo {|url, brokenAction|
@@ -101,27 +94,6 @@ HelpBrowser {
 				url = SCDoc.prepareHelpForURL(url) ?? brokenAction;
 				#newPath, oldPath = [url,webView.url].collect {|x|
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
-				};
-				// detect old helpfiles and open them in OldHelpWrapper
-				if(url.beginsWith("sc://")) {
-					url = SCDoc.findHelpFile(newPath);
-				} {
-					if(
-						/*
-						// this didn't work for quarks due to difference between registered old help path and the quarks symlink in Extensions.
-						// we could use File.realpath(path) below but that would double the execution time,
-						// so let's just assume any local file outside helpTargetDir is an old helpfile.
-						block{|break|
-						Help.do {|key, path|
-						if(url.endsWith(path)) {
-						break.value(true)
-						}
-						}; false
-						}*/
-						newPath.beginsWith(SCDoc.helpTargetDir).not and: { url.beginsWith("file://") }
-					) {
-						url = HelpBrowser.getOldWrapUrl(url)
-					};
 				};
 				webView.url = url;
 				// needed since onLoadFinished is not called if the path did not change:

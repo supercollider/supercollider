@@ -274,40 +274,12 @@ ScIDE {
 	*processUrl { |url, doneAction, brokenAction|
 		// NOTE: Copied and modified from HelpBrower:-goTo
 
-		var newPath;
-
 		brokenAction = brokenAction ? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
 
 		if (docRoutine.notNil) { docRoutine.stop };
-
 		docRoutine = Routine {
 			try {
 				url = SCDoc.prepareHelpForURL(url) ?? brokenAction;
-				newPath = url.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
-
-				// detect old helpfiles and open them in OldHelpWrapper
-				if(url.beginsWith("sc://")) {
-					url = SCDoc.findHelpFile(newPath);
-				} {
-					if(
-						/*
-						// this didn't work for quarks due to difference between registered old help path
-						// and the quarks symlink in Extensions.
-						// we could use File.realpath(path) below but that would double the execution time,
-						// so let's just assume any local file outside helpTargetDir is an old helpfile.
-						block{|break|
-						Help.do {|key, path|
-						if(url.endsWith(path)) {
-						break.value(true)
-						}
-						}; false
-						}*/
-						newPath.beginsWith(SCDoc.helpTargetDir).not and: { url.beginsWith("file://") }
-					) {
-						url = HelpBrowser.getOldWrapUrl(url)
-					};
-				};
-
 				doneAction.value(url);
 			} {|err|
 				err.throw;
