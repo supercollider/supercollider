@@ -142,7 +142,7 @@ void HelpBrowser::onLinkClicked( const QUrl & url )
     foreach ( const QString & extension, nonHelpFileExtensions ) {
         if (urlString.endsWith( extension )) {
             if (url.scheme() == fileScheme) {
-                Main::documentManager()->open(url.path());
+                Main::documentManager()->open(url.toLocalFile());
                 return;
             }
             break;
