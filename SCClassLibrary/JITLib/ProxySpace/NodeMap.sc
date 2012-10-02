@@ -296,20 +296,6 @@ ProxyNodeMap : NodeMap {
 			this.changed(\unmap, keys);
 		}
 
-		notifySettingsChange {
-			var set, map;
-			settings.do { |setting|
-				if(setting.isMapped) {
-					map = map.add(setting.key).add(setting.value)
-				} {
-					set = set.add(setting.key).add(setting.value)
-				}
-			};
-			this.changed(\clear);
-			if(set.notNil) { this.changed(\set, set) };
-			if(map.notNil) { this.changed(\map, map) };
-		}
-
 		changed { arg ... args;
 			proxy.changed(*args)
 		}
