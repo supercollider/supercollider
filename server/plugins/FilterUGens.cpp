@@ -1703,12 +1703,18 @@ void APF_next(APF* unit, int inNumSamples)
 		float b1 = unit->m_b1;
 		float b2 = unit->m_b2;
 		LOOP(unit->mRate->mFilterLoops,
-			x0 = ZXP(in);
-			ZXP(out) = y0 = x0 + b1 * (y1 - x1) + b2 * (y2 - x2);
-			x2 = ZXP(in);
-			ZXP(out) = y2 = x2 + b1 * (y0 - x0) + b2 * (y2 - x1);
-			x1 = ZXP(in);
-			ZXP(out) = y1 = x1 + b1 * (y2 - x2) + b2 * (y2 - x0);
+			float in0 = ZXP(in);
+			float in1 = ZXP(in);
+			float in2 = ZXP(in);
+			x0 = in0;
+			float out0 = y0 = x0 + b1 * (y1 - x1) + b2 * (y2 - x2);
+			x2 = in1;
+			float out1 = y2 = x2 + b1 * (y0 - x0) + b2 * (y2 - x1);
+			x1 = in2;
+			float out2 = y1 = x1 + b1 * (y2 - x2) + b2 * (y2 - x0);
+			ZXP(out) = out0;
+			ZXP(out) = out1;
+			ZXP(out) = out2;
 		);
 		LOOP(unit->mRate->mFilterRemain,
 			x0 = ZXP(in);
