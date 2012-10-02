@@ -67,8 +67,40 @@ struct sc_distort_functor
 	}
 };
 
+struct sc_scurve_functor
+{
+	template <typename FloatType>
+	inline FloatType operator()(FloatType arg) const
+	{
+		return sc_scurve(arg);
+	}
+
+	template <typename FloatType>
+	inline nova::vec<FloatType> operator()(nova::vec<FloatType> arg) const
+	{
+		typedef nova::vec<FloatType>  vec;
+
+		vec one   (1.f);
+		vec zero  (0.f);
+		vec two   (2.f);
+		vec three (3.f);
+
+		vec result = (arg * arg) * ( three - (two * arg));
+
+		vec boundLow  = mask_lt(arg, zero);
+		vec boundHigh = mask_gt(arg, one);
+
+		result = select(result, zero, boundLow);
+		result = select(result, one, boundHigh);
+
+		return result;
+	}
+};
+
+
 namespace nova {
 NOVA_SIMD_DEFINE_UNARY_WRAPPER (distort, sc_distort_functor)
+NOVA_SIMD_DEFINE_UNARY_WRAPPER (scurve, sc_scurve_functor)
 }
 #endif
 
@@ -401,6 +433,10 @@ DEFINE_UNARY_OP_FUNCS(welwindow, sc_welwindow)
 DEFINE_UNARY_OP_FUNCS(triwindow, sc_triwindow)
 
 DEFINE_UNARY_OP_FUNCS(scurve, sc_scurve)
+#ifdef NOVA_SIMD
+NOVA_WRAPPER_CT_UNROLL(scurve, scurve)
+#endif
+
 DEFINE_UNARY_OP_FUNCS(ramp, sc_ramp)
 
 
@@ -663,7 +699,7 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opWelchWindow : func = &welwindow_a; break;
 		case opTriWindow : func = &triwindow_a; break;
 
-		case opSCurve : func = &scurve_a; break;
+		case opSCurve : func = &scurve_nova_64; break;
 		case opRamp : return &ramp_nova_64;
 
 		default : return &thru_nova_64;
@@ -713,7 +749,7 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opWelchWindow : func = &welwindow_a; break;
 		case opTriWindow : func = &triwindow_a; break;
 
-		case opSCurve : func = &scurve_a; break;
+		case opSCurve : func = &scurve_nova; break;
 		case opRamp : func = &ramp_nova; break;
 
 		default : func = &thru_nova; break;
