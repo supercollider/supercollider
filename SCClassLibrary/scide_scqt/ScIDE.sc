@@ -274,20 +274,7 @@ ScIDE {
 	*processUrl { |url, doneAction, brokenAction|
 		// NOTE: Copied and modified from HelpBrower:-goTo
 
-		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp",".rtf"];
-
-		plainTextExts.do {|x|
-			if(url.endsWith(x)) {
-				newPath = url.replace("%20"," ").findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
-
-				if(File.exists(newPath)) {
-					ScIDE.open(newPath);
-				}{
-					doneAction.value( SCDoc.helpTargetDir++"/BrokenLink.html#"++newPath );
-				};
-				^this;
-			}
-		};
+		var newPath;
 
 		brokenAction = brokenAction ? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
 
