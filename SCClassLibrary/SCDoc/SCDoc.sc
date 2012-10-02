@@ -892,9 +892,11 @@ URI {
         uri.scheme = "file";
         uri.authority = "";
         uri.path = string;
-        if (thisProcess.platform.name === \windows
-            and: {uri.path.size >= 2 and: {uri.path[1] == $:} } )
-        { uri.path = "/" ++ uri.path; }
+        if (thisProcess.platform.name === \windows) {
+            uri.path = uri.path.replace("\\","/");
+            if (uri.path.size >= 2 and: {uri.path[1] == $:})
+            { uri.path = "/" ++ uri.path; }
+        }
         ^ uri;
     }
 
@@ -904,11 +906,7 @@ URI {
         if (thisProcess.platform.name === \windows
             and: { string.size >= 2 and: { string[1] == $:} } )
         {
-            uri = super.new;
-            uri.scheme = "file";
-            uri.authority = "";
-            uri.path = "/" ++ string;
-            ^ uri;
+            ^ this.fromLocalPath(string);
         };
 
         uri = this.new(string);
@@ -933,11 +931,15 @@ URI {
     }
 
     asLocalPath {
+        var localPath;
         if (scheme != "file") { ^nil };
-        if (thisProcess.platform.name === \windows
-            and: {path.beginsWith("/")})
-        { ^path.drop(1) };
-        ^ path;
+        if (thisProcess.platform.name === \windows) {
+            localPath = path;
+            if (localPath.beginsWith("/")) { localPath = localPath.drop(1) };
+            localPath = localPath.replace("/","\\");
+            ^localPath;
+        }
+        ^ path.copy;
     }
 
     asString {
