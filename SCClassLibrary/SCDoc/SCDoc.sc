@@ -596,10 +596,7 @@ SCDoc {
             ^SCDoc.getOldWrapUrl(url)
         };
 
-        if(destExist =
-            if(thisProcess.platform.name === \windows)
-            { File.exists(path) }
-            { File.existsCaseSensitive(path) })
+        if(destExist = File.exists(path))
         {
             destMtime = File.mtime(path);
         };
