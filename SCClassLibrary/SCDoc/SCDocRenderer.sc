@@ -159,7 +159,8 @@ SCDocHTMLRenderer {
             if(currentClass.notNil) {
                 m = currentClass.filenameSymbol.asString;
                 stream << "<div id='filename'>Source: "
-                << m.dirname << "/<a href='file://" << m << "'>" << m.basename << "</a></div>";
+                << m.dirname << "/<a href='" << URI.fromLocalPath(m).asString << "'>"
+                << m.basename << "</a></div>";
                 if(currentClass != Object) {
                     stream << "<div id='superclasses'>"
                     << "Inherits from: "
@@ -303,7 +304,8 @@ SCDocHTMLRenderer {
             m !? {
                 if(m.isExtensionOf(cls) and: {icls.isNil or: {m.isExtensionOf(icls)}}) {
                     stream << "<div class='extmethod'>From extension in <a href='"
-                    << m.filenameSymbol << "'>" << m.filenameSymbol << "</a></div>\n";
+                    << URI.fromLocalPath(m.filenameSymbol.asString).asString << "'>"
+                    << m.filenameSymbol << "</a></div>\n";
                 } {
                     if(m.ownerClass == icls) {
                         stream << "<div class='supmethod'>From implementing class</div>\n";
@@ -769,8 +771,8 @@ SCDocHTMLRenderer {
     *renderFooter {|stream, doc|
         stream << "<div class='doclink'>";
         doc.fullPath !? {
-            stream << "source: <a href='file://"
-            << doc.fullPath << "'>" << doc.fullPath << "</a><br>"
+            stream << "source: <a href='" << URI.fromLocalPath(doc.fullPath).asString << "'>"
+            << doc.fullPath << "</a><br>"
         };
         stream << "link::" << doc.path << "::<br>"
         << "sc version: " << Main.version << "</div>"
