@@ -66,6 +66,7 @@ set(libsupernova_src
     ../scsynth/Samp.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
     server/buffer_manager.cpp
     server/dsp_context.cpp
