@@ -81,21 +81,26 @@ HelpBrowser {
 	}
 
 	cmdPeriod { rout.play(AppClock) }
-	goTo {|url, brokenAction|
-		var newPath, oldPath;
+	goTo {|urlString, brokenAction|
+		var url, newPath, oldPath;
 
 		window.front;
 		this.startAnim;
 
-		brokenAction = brokenAction ? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
+		brokenAction = brokenAction ? { |fragment|
+			var brokenUrl = URI.fromLocalPath( SCDoc.helpTargetDir++"/BrokenLink.html" );
+			brokenUrl.fragment = fragment;
+			brokenUrl;
+		};
+
+		url = URI.tolerant(urlString);
 
 		rout = Routine {
 			try {
-				url = SCDoc.prepareHelpForURL(url) ?? brokenAction;
-				#newPath, oldPath = [url,webView.url].collect {|x|
-					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
-				};
-				webView.url = url;
+				url = SCDoc.prepareHelpForURL(url) ?? { brokenAction.(urlString) };
+				newPath = url.path;
+				oldPath = URI(webView.url).path;
+				webView.url = url.asString;
 				// needed since onLoadFinished is not called if the path did not change:
 				if(newPath == oldPath) {webView.onLoadFinished.value};
 				webView.focus;
