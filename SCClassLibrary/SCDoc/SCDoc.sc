@@ -360,6 +360,7 @@ SCDoc {
     classvar version = 55;
 
     classvar <helpTargetDir;
+    classvar <helpTargetUrl;
     classvar <helpSourceDir;
     classvar <>verbosity = 1;
     classvar <>renderer;
@@ -534,6 +535,7 @@ SCDoc {
     *helpTargetDir_ {|path|
 //        if(path!=helpTargetDir) {didRun = false};
         helpTargetDir = path.standardizePath;
+        helpTargetUrl = URI.fromLocalPath(helpTargetDir).asString;
     }
 
     *postMsg {|txt, lvl=0|
@@ -839,25 +841,23 @@ SCDoc {
     }
 
     *findHelpFile {|str|
-//        ^r.findHelpFile(str.stripWhiteSpace);
-        var old, sym, pfx = SCDoc.helpTargetDir;
+        var old, sym, pfx = SCDoc.helpTargetUrl;
 
-        if(str.isNil or: {str.isEmpty}) { ^pfx +/+ "Help.html" };
-        if(this.documents[str].notNil) { ^pfx +/+ str ++ ".html" };
+        if(str.isNil or: {str.isEmpty}) { ^pfx ++ "/Help.html" };
+        if(this.documents[str].notNil) { ^pfx ++ "/" ++ str ++ ".html" };
 
         sym = str.asSymbol;
         if(sym.asClass.notNil) {
-            ^pfx +/+ (if(this.documents["Classes/"++str].isUndocumentedClass) {
+            ^pfx ++ (if(this.documents["Classes/"++str].isUndocumentedClass) {
                 (old = Help.findHelpFile(str)) !? {
-                    "OldHelpWrapper.html#"++old++"?"++SCDoc.helpTargetDir +/+ "Classes" +/+ str ++ ".html"
+                    "/OldHelpWrapper.html#"++old++"?"++SCDoc.helpTargetUrl ++ "/Classes/" ++ str ++ ".html"
                 }
-            } ?? { "Classes" +/+ str ++ ".html" })
+            } ?? { "/Classes/" ++ str ++ ".html" });
         };
 
         if(str.last == $_) { str = str.drop(-1) };
-        ^pfx +/+ if("^[a-z][a-zA-Z0-9_]*$|^[-<>@|&%*+/!?=]+$".matchRegexp(str)) {
-            "Overviews/Methods.html#" ++ str
-        } { "Search.html#" ++ str }
+        ^pfx ++ if("^[a-z][a-zA-Z0-9_]*$|^[-<>@|&%*+/!?=]+$".matchRegexp(str))
+            { "/Overviews/Methods.html#" } { "/Search.html#" } ++ str;
     }
 
     *getOldWrapUrl {|url|
@@ -866,7 +866,7 @@ SCDoc {
         newUrl = URI.fromLocalPath( SCDoc.helpTargetDir +/+ "OldHelpWrapper.html" );
         newUrl.fragment = urlString;
         newUrl.query =
-            SCDoc.helpTargetDir
+            SCDoc.helpTargetUrl
             ++ if((className=urlString.basename.split($.).first).asSymbol.asClass.notNil)
                 {"/Classes/" ++ className ++ ".html"}
                 {"/Guides/WritingHelp.html"}

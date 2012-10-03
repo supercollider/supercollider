@@ -13,7 +13,7 @@ HelpBrowser {
 
 	*initClass {
 		Class.initClassTree(SCDoc);
-		defaultHomeUrl = SCDoc.helpTargetDir ++ "/Help.html";
+		defaultHomeUrl = SCDoc.helpTargetUrl ++ "/Help.html";
 
 		StartUp.add {
 			NotificationCenter.register(SCDoc, \didIndexAllDocs, this) {
@@ -54,11 +54,11 @@ HelpBrowser {
 
 	*openBrowsePage {|category|
 		category = if(category.notNil) {"#"++category} {""};
-		this.goTo(SCDoc.helpTargetDir++"/Browse.html"++category);
+		this.goTo(SCDoc.helpTargetUrl++"/Browse.html"++category);
 	}
 	*openSearchPage {|text|
 		text = if(text.notNil) {"#"++text} {""};
-		this.goTo(SCDoc.helpTargetDir++"/Search.html"++text);
+		this.goTo(SCDoc.helpTargetUrl++"/Search.html"++text);
 	}
 	*openHelpFor {|text|
 		this.goTo(SCDoc.findHelpFile(text));
@@ -77,7 +77,7 @@ HelpBrowser {
 			cls = cls.name.asString;
 			met = "-"++met;
 		};
-		this.goTo(SCDoc.helpTargetDir+/+"Classes"+/+cls++".html#"++met);
+		this.goTo(SCDoc.helpTargetUrl++"/Classes/"++cls++".html#"++met);
 	}
 
 	cmdPeriod { rout.play(AppClock) }
@@ -170,7 +170,7 @@ HelpBrowser {
 		srchBox.action = {|x|
 			if(x.string.notEmpty) {
 				this.goTo(if(x.string.first==$#)
-					{SCDoc.helpTargetDir++"/Search.html#"++x.string.drop(1)}
+					{SCDoc.helpTargetUrl ++ "/Search.html" ++ x.string}
 					{SCDoc.findHelpFile(x.string)}
 				);
 			}
@@ -310,7 +310,7 @@ HelpBrowser {
 				if(File.exists(path)) {
 					path.openDocument;
 				} {
-					webView.url = SCDoc.helpTargetDir++"/BrokenLink.html#"++path;
+					webView.url = SCDoc.helpTargetUrl++"/BrokenLink.html#"++path;
 					window.front;
 				};
 				^true
