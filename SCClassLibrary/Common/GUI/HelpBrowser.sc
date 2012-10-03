@@ -93,7 +93,7 @@ HelpBrowser {
 			brokenUrl;
 		};
 
-		url = URI.tolerant(urlString);
+		url = URI(urlString);
 
 		rout = Routine {
 			try {
