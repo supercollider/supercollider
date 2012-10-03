@@ -28,7 +28,7 @@ subsection:: Library Path Handling
 
 The language configuration mechanism provides a way to add or exclude specific paths for the class library.
 
-note::Changes to the class library paths won't have any effect before recompiling the class library.::
+note::Changes to the class library paths won't have any effect before the configuration file is stored and the class library is recompiled.::
 
 METHOD:: includePaths
 Return the class library include paths.
