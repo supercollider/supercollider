@@ -60,7 +60,7 @@ public:
     Session * openSession( const QString & name );
     void removeSession( const QString & name );
     void renameSession( const QString & oldName, const QString & newName );
-    Session *currentSession() { return mSession; }
+    Session *currentSession() { return mCurrentSession; }
 
 signals:
     void saveSessionRequest(Session * session);
@@ -71,7 +71,7 @@ private:
     void closeSession();
     bool saveLastSession( const QDir & dir, const QString & file );
     DocumentManager *mDocMng;
-    Session *mSession;
+    Session *mCurrentSession;
 };
 
 } // namespace ScIDE

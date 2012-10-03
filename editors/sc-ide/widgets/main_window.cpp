@@ -596,8 +596,7 @@ void MainWindow::focusCodeEditor()
 
 void MainWindow::newSession()
 {
-    if (promptSaveDocs())
-        mMain->sessionManager()->newSession();
+    mMain->sessionManager()->newSession();
 }
 
 void MainWindow::saveCurrentSessionAs()
@@ -999,14 +998,15 @@ void MainWindow::closeAllDocuments()
 
 bool MainWindow::promptSaveDocs()
 {
+    // LATER: maybe this should go to the DocumentManager class?
+
     QList<Document*> docs = mMain->documentManager()->documents();
     QList<Document*> unsavedDocs;
     foreach(Document* doc, docs)
         if(doc->textDocument()->isModified())
             unsavedDocs.append(doc);
 
-    if (unsavedDocs.count())
-    {
+    if (unsavedDocs.isEmpty()) {
         DocumentsDialog dialog(unsavedDocs, DocumentsDialog::Quit, this);
 
         if (!dialog.exec())
@@ -1083,8 +1083,7 @@ void MainWindow::updateClockWidget(bool isFullScreen)
 
 void MainWindow::openSession(const QString &sessionName)
 {
-    if (promptSaveDocs())
-        mMain->sessionManager()->openSession( sessionName );
+    mMain->sessionManager()->openSession( sessionName );
 }
 
 void MainWindow::openDefinition()
