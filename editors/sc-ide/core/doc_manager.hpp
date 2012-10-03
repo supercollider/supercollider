@@ -64,6 +64,7 @@ public:
     void deleteTrailingSpaces();
 
     bool isPlainText() const { return mHighlighter == NULL; }
+    bool isModified() const  { return mDoc->isModified(); }
 
 public slots:
     void applySettings( Settings::Manager * );
