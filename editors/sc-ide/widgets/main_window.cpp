@@ -1006,7 +1006,7 @@ bool MainWindow::promptSaveDocs()
         if(doc->textDocument()->isModified())
             unsavedDocs.append(doc);
 
-    if (unsavedDocs.isEmpty()) {
+    if (!unsavedDocs.isEmpty()) {
         DocumentsDialog dialog(unsavedDocs, DocumentsDialog::Quit, this);
 
         if (!dialog.exec())

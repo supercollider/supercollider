@@ -166,10 +166,10 @@ Session * SessionManager::saveSessionAs( const QString & name )
 
 void SessionManager::closeSession()
 {
-    if (mCurrentSession) {
-        MainWindow::instance()->promptSaveDocs();
+    MainWindow::instance()->promptSaveDocs();
+
+    if (mCurrentSession)
         emit saveSessionRequest(mCurrentSession);
-    }
 
     delete mCurrentSession;
     mCurrentSession = 0;
