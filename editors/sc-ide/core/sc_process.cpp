@@ -30,6 +30,8 @@
 #include "sc_server.hpp"
 #include "settings/manager.hpp"
 
+#include "../widgets/help_browser.hpp"
+
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
 
@@ -245,6 +247,11 @@ void SCProcess::onSclangStart()
     QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
     evaluateCode ( command, true );
     sendActiveDocument();
+
+    if (MainWindow::instance()) {
+        HelpBrowserDockable * helpBrowser = MainWindow::instance()->helpBrowserDockable();
+        helpBrowser->browser()->goHome();
+    }
 }
 
 void SCProcess::setActiveDocument(Document * document)
