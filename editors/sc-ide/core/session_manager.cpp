@@ -18,9 +18,11 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "doc_manager.hpp"
 #include "session_manager.hpp"
 #include "settings/manager.hpp"
-#include "doc_manager.hpp"
+
+#include "../widgets/main_window.hpp"
 
 #include "SC_DirUtils.h"
 
@@ -164,8 +166,10 @@ Session * SessionManager::saveSessionAs( const QString & name )
 
 void SessionManager::closeSession()
 {
-    if (mCurrentSession)
+    if (mCurrentSession) {
+        MainWindow::instance()->promptSaveDocs();
         emit saveSessionRequest(mCurrentSession);
+    }
 
     delete mCurrentSession;
     mCurrentSession = 0;
@@ -177,10 +181,8 @@ void SessionManager::removeSession( const QString & name )
     if (dir.path().isEmpty())
         return;
 
-    if (mCurrentSession && mCurrentSession->name() == name)
-    {
-        delete mCurrentSession;
-        mCurrentSession = 0;
+    if (mCurrentSession && mCurrentSession->name() == name) {
+        closeSession();
         saveLastSession(dir, QString());
         emit switchSessionRequest(0);
     }
@@ -191,13 +193,10 @@ void SessionManager::removeSession( const QString & name )
 
 void SessionManager::renameSession( const QString & oldName, const QString & newName )
 {
-    if (mCurrentSession && mCurrentSession->name() == oldName)
-    {
+    if (mCurrentSession && mCurrentSession->name() == oldName) {
         saveSessionAs(newName);
         removeSession(oldName);
-    }
-    else
-    {
+    } else {
         QDir dir = sessionsDir();
         if (dir.path().isEmpty())
             return;

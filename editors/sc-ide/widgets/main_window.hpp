@@ -119,6 +119,7 @@ public:
     void saveWindowState();
     void restoreWindowState();
     void focusCodeEditor();
+    bool promptSaveDocs();
 
     HelpBrowserDockable * helpBrowserDockable() { return mHelpBrowserDockable; }
 
@@ -197,7 +198,6 @@ protected:
 private:
     void createActions();
     void createMenus();
-    bool promptSaveDocs();
     void updateSessionsMenu();
     void updateClockWidget( bool isFullScreen );
     void openSession( QString const & sessionName );
