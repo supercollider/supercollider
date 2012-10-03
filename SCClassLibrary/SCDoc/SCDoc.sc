@@ -598,7 +598,11 @@ SCDoc {
             }
             }; false
             }*/
-            path.compare( targetBasePath, pathIsCaseInsensitive ) == -1
+            compare(
+                path [..(targetBasePath.size-1)],
+                targetBasePath,
+                pathIsCaseInsensitive
+            ) != 0
         ) {
             ^SCDoc.getOldWrapUrl(url)
         };
