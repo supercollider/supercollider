@@ -143,7 +143,7 @@ Quark
 		};
 		p = info.helpdoc;
 		if(p.notNil) {
-			HelpBrowser.goTo(parent.local.path +/+ path +/+ p)
+			HelpBrowser.goTo(URI.fromLocalPath(parent.local.path +/+ path +/+ p).asString)
 			^this
 		};
 		HelpBrowser.openBrowsePage("Quarks>"++name);
