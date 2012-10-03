@@ -1041,8 +1041,14 @@ void MainWindow::updateWindowTitle()
             QString titleString = QString("%1 (%2)").arg(info.fileName(), pathString);
 
             title.append( titleString  );
-        } else
+
+            setWindowFilePath(doc->filePath());
+	} else {
             title.append( "Untitled" );
+            setWindowFilePath("");
+	}
+    } else {
+            setWindowFilePath("");
     }
 
     if (!title.isEmpty())
