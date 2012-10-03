@@ -49,7 +49,7 @@ static QString sessionFilePath( const QString & name )
 SessionManager::SessionManager( DocumentManager *docMng, QObject * parent ) :
     QObject(parent),
     mDocMng(docMng),
-    mSession(0)
+    mCurrentSession(0)
 {}
 
 QDir SessionManager::sessionsDir()
@@ -114,20 +114,20 @@ Session *SessionManager::openSession( const QString & name )
         return 0;
 
     QString sessionFile = dir.filePath(name + ".yaml");
-    mSession = new Session( sessionFile, name, Settings::serializationFormat() );
+    mCurrentSession = new Session( sessionFile, name, Settings::serializationFormat() );
 
     saveLastSession( dir, sessionFile );
 
-    emit switchSessionRequest(mSession);
+    emit switchSessionRequest(mCurrentSession);
 
-    return mSession;
+    return mCurrentSession;
 }
 
 void SessionManager::saveSession()
 {
-    if (mSession) {
-        emit saveSessionRequest(mSession);
-        mSession->sync();
+    if (mCurrentSession) {
+        emit saveSessionRequest(mCurrentSession);
+        mCurrentSession->sync();
     }
 }
 
@@ -137,9 +137,9 @@ Session * SessionManager::saveSessionAs( const QString & name )
     // Maybe use a different data structure for Session instead of QSettings?
     // A new class that would allow closing without saving would be nice.
 
-    if (mSession) {
-        delete mSession;
-        mSession = 0;
+    if (mCurrentSession) {
+        delete mCurrentSession;
+        mCurrentSession = 0;
     }
 
     QDir dir = sessionsDir();
@@ -149,26 +149,26 @@ Session * SessionManager::saveSessionAs( const QString & name )
     }
 
     QString sessionFile = dir.filePath(name + ".yaml");
-    mSession = new Session( sessionFile, name, Settings::serializationFormat() );
+    mCurrentSession = new Session( sessionFile, name, Settings::serializationFormat() );
 
-    emit saveSessionRequest(mSession);
+    emit saveSessionRequest(mCurrentSession);
 
-    mSession->sync();
+    mCurrentSession->sync();
 
     saveLastSession( dir, sessionFile );
 
     emit currentSessionNameChanged();
 
-    return mSession;
+    return mCurrentSession;
 }
 
 void SessionManager::closeSession()
 {
-    if (mSession)
-        emit saveSessionRequest(mSession);
+    if (mCurrentSession)
+        emit saveSessionRequest(mCurrentSession);
 
-    delete mSession;
-    mSession = 0;
+    delete mCurrentSession;
+    mCurrentSession = 0;
 }
 
 void SessionManager::removeSession( const QString & name )
@@ -177,10 +177,10 @@ void SessionManager::removeSession( const QString & name )
     if (dir.path().isEmpty())
         return;
 
-    if (mSession && mSession->name() == name)
+    if (mCurrentSession && mCurrentSession->name() == name)
     {
-        delete mSession;
-        mSession = 0;
+        delete mCurrentSession;
+        mCurrentSession = 0;
         saveLastSession(dir, QString());
         emit switchSessionRequest(0);
     }
@@ -191,7 +191,7 @@ void SessionManager::removeSession( const QString & name )
 
 void SessionManager::renameSession( const QString & oldName, const QString & newName )
 {
-    if (mSession && mSession->name() == oldName)
+    if (mCurrentSession && mCurrentSession->name() == oldName)
     {
         saveSessionAs(newName);
         removeSession(oldName);
