@@ -408,7 +408,7 @@ SCDoc {
                 } {
                     if(v.size>0) {
                         doc = SCDocEntry(nil,"Old Help"+/+v);
-                        doc.oldHelp = v;
+                        doc.oldHelp = URI.fromLocalPath(v).asString;
                         doc.title = v.basename;
                         doc.summary = "(not yet converted to new help format)";
                         doc.categories = [cat];
