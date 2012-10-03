@@ -59,7 +59,7 @@ Spawner : Pattern {
 					now = nexttime;
 				},{
 					priorityQ.clear;
-					cleanup.exit(event);
+					^cleanup.exit(event);
 				});
 			},{
 				cleanup.update(outevent);
