@@ -575,7 +575,7 @@ SCDoc {
         path = url.asLocalPath;
 
         // detect old helpfiles and wrap them in OldHelpWrapper
-        if(url.scheme == "sc") { ^URI.tolerant(SCDoc.findHelpFile(path)); };
+        if(url.scheme == "sc") { ^URI(SCDoc.findHelpFile(path)); };
 
         // just pass through remote url's
         if(url.scheme != "file") {^url};
