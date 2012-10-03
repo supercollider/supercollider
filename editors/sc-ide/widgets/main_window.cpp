@@ -850,8 +850,12 @@ bool MainWindow::reload( Document *doc )
 
 bool MainWindow::save( Document *doc, bool forceChoose )
 {
-    DocumentManager *documentManager = Main::instance()->documentManager();
     const bool documentHasPath = !doc->filePath().isEmpty();
+
+    if (!forceChoose && !(doc->isModified()) && documentHasPath)
+        return true;
+
+    DocumentManager *documentManager = Main::instance()->documentManager();
 
     bool fileIsWritable = true;
     if ((!forceChoose) && documentHasPath) {
