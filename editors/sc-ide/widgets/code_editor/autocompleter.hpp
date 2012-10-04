@@ -113,6 +113,9 @@ private:
     void pushMethodCall( const MethodCall & call );
     void showMethodCall( const MethodCall & call, int arg = 0 );
     void hideMethodCall();
+    bool trySwitchMethodCallArgument( bool backwards = false );
+    bool testMethodCall( const MethodCall &, int cursorPos,
+                         int & argNum, TokenIterator & argNameToken, bool strict = false );
 
     static CompletionMenu * menuForClassCompletion(CompletionDescription const & completion, ScCodeEditor * editor);
     static CompletionMenu * menuForClassMethodCompletion(CompletionDescription const & completion, ScCodeEditor * editor);

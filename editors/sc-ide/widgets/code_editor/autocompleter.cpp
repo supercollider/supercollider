@@ -313,7 +313,8 @@ bool AutoCompleter::eventFilter( QObject *object, QEvent *event )
         break;
     case QEvent::ShortcutOverride: {
         QKeyEvent * kevent = static_cast<QKeyEvent*>(event);
-        if (kevent->key() == Qt::Key_Escape) {
+        switch(kevent->key()) {
+        case Qt::Key_Escape:
             if (mCompletion.menu && mCompletion.menu->isVisible())
                 mCompletion.menu->reject();
             else if (mMethodCall.menu && mMethodCall.menu->isVisible())
@@ -326,6 +327,19 @@ bool AutoCompleter::eventFilter( QObject *object, QEvent *event )
             }
             else break;
             return true;
+        }
+        break;
+    }
+    case QEvent::KeyPress: {
+        QKeyEvent * kevent = static_cast<QKeyEvent*>(event);
+        switch(kevent->key()) {
+        case Qt::Key_Tab:
+        case Qt::Key_Backtab:
+            if( trySwitchMethodCallArgument(kevent->key() == Qt::Key_Backtab) ) {
+                event->accept();
+                return true;
+            }
+            break;
         }
         break;
     }
@@ -971,51 +985,12 @@ void AutoCompleter::updateMethodCall( int cursorPos )
     while (i--)
     {
         MethodCall & call = mMethodCall.stack[i];
-        if (call.position >= cursorPos) {
-            qDebug("Method call: call right of cursor. popping.");
-            mMethodCall.stack.pop();
-            continue;
-        }
-
-        QTextBlock block( document()->findBlock( call.position ) );
-        TokenIterator token = TokenIterator::rightOf(block, call.position - block.position());
-        if (!token.isValid()) {
-            qWarning("Method call: call stack out of sync!");
-            mMethodCall.stack.clear();
-            break;
-        }
-
-        ++token;
-        int arg = 0;
-        int level = 1;
+        int argNum = -1;
         TokenIterator argNameToken;
-        while( level > 0 && token.isValid() && token.position() < cursorPos )
-        {
-            char chr = token.character();
-            Token::Type type = token->type;
-            if (level == 1) {
-                if (type == Token::SymbolArg) {
-                    argNameToken = token;
-                    arg = -1;
-                }
-                else if (chr == ',') {
-                    argNameToken = TokenIterator();
-                    if (arg != -1)
-                        ++arg;
-                }
-            }
 
-            if (type == Token::OpeningBracket)
-                ++level;
-            else if (type == Token::ClosingBracket)
-                --level;
-
-            ++token;
-        }
-
-        if (level <= 0) {
+        if (!testMethodCall(call, cursorPos, argNum, argNameToken)) {
+            qDebug("Method call: popping.");
             Q_ASSERT(i == mMethodCall.stack.count() - 1);
-            qDebug("Method call: call left of cursor. popping.");
             mMethodCall.stack.pop();
             continue;
         }
@@ -1026,21 +1001,20 @@ void AutoCompleter::updateMethodCall( int cursorPos )
         }
 
         if (argNameToken.isValid()) {
-            arg = -1;
             QString argName = tokenText(argNameToken);
             argName.chop(1);
             for (int idx = 0; idx < call.method->arguments.count(); ++idx) {
                 if (call.method->arguments[idx].name == argName) {
-                    arg = idx;
+                    argNum = idx;
                     if (call.functionalNotation)
-                        ++arg;
+                        ++argNum;
                     break;
                 }
             }
         }
         qDebug("Method call: found current call: %s(%i)",
-            call.method->name.get().toStdString().c_str(), arg);
-        showMethodCall(call, arg);
+            call.method->name.get().toStdString().c_str(), argNum);
+        showMethodCall(call, argNum);
         return;
     }
 
@@ -1078,6 +1052,138 @@ void AutoCompleter::showMethodCall( const MethodCall & call, int arg )
 void AutoCompleter::hideMethodCall()
 {
     delete mMethodCall.widget;
+}
+
+bool AutoCompleter::trySwitchMethodCallArgument(bool backwards)
+{
+    using namespace ScLanguage;
+
+    QTextCursor cursor( mEditor->textCursor() );
+    if (cursor.hasSelection())
+        return false;
+
+    if (mMethodCall.stack.isEmpty()) {
+        qDebug("Insert arg name: empty stack");
+        return false;
+    }
+
+    MethodCall & call = mMethodCall.stack.top();
+    if (!call.method || !call.method->arguments.count()) {
+        qDebug("Insert arg name: no method, or method has no args");
+        return false;
+    }
+
+    int cursorPos = cursor.position();
+    int argNum = -1;
+    TokenIterator argNameToken;
+
+    static const bool strict = true;
+    bool callValid = testMethodCall( call, cursorPos, argNum, argNameToken, strict );
+    if (!callValid) {
+        qDebug("Insert arg name: call invalid");
+        return false;
+    }
+
+    bool cursorAtArgName = argNum == -1;
+
+    if (argNameToken.isValid()) {
+        qDebug("Insert arg name: have existent arg name");
+        QString argName = tokenText(argNameToken);
+        argName.chop(1);
+        for (int idx = 0; idx < call.method->arguments.count(); ++idx) {
+            if (call.method->arguments[idx].name == argName) {
+                argNum = idx;
+                break;
+            }
+        }
+    }
+
+    if (backwards) {
+        --argNum;
+        if (argNum < 0)
+            argNum = call.method->arguments.count() - 1;
+    } else {
+        ++argNum;
+        if (argNum >= call.method->arguments.count())
+            argNum = 0;
+    }
+
+    QString text = call.method->arguments[argNum].name;
+    text.append(":");
+
+    // insert argument name
+    if (argNameToken.isValid() && cursorAtArgName) {
+        int pos = argNameToken.position();
+        cursor.setPosition(pos);
+        cursor.setPosition(pos + argNameToken->length, QTextCursor::KeepAnchor);
+    }
+    cursor.insertText(text);
+
+    return true;
+}
+
+bool AutoCompleter::testMethodCall( const MethodCall &call, int cursorPos,
+                                    int &outArgNum, TokenIterator &outArgNameToken,
+                                    bool strict )
+{
+    // The 'strict' argument denotes whether the test passes if token before cursor is
+    // not a comma or an argument name - i.e. the user is typing the value of an argument
+
+    if (call.position >= cursorPos) {
+        qDebug("Method call: call right of cursor.");
+        return false;
+    }
+
+    QTextBlock block( document()->findBlock( call.position ) );
+    TokenIterator token = TokenIterator::rightOf(block, call.position - block.position());
+    if (!token.isValid())
+        qWarning("Method call: call stack out of sync!");
+    Q_ASSERT(token.isValid());
+
+    int argNum = 0;
+    int level = 1;
+    TokenIterator argNameToken;
+    bool strictlyValid = true;
+
+    ++token;
+    while( level > 0 && token.isValid() && token.position() < cursorPos )
+    {
+        strictlyValid = false;
+
+        char chr = token.character();
+        Token::Type type = token->type;
+        if (level == 1) {
+            if (type == Token::SymbolArg) {
+                argNameToken = token;
+                argNum = -1; // denote argument name
+                strictlyValid = true;
+            }
+            else if (chr == ',') {
+                if (argNum >= 0)
+                    ++argNum;
+                else
+                    argNum = -2; // denote comma after argument name
+                strictlyValid = true;
+            }
+        }
+
+        if (type == Token::OpeningBracket)
+            ++level;
+        else if (type == Token::ClosingBracket)
+            --level;
+
+        ++token;
+    }
+
+    if (level <= 0) {
+        qDebug("Method call: call left of cursor.");
+        return false;
+    }
+
+    outArgNameToken = argNameToken;
+    outArgNum = argNum;
+
+    return (strictlyValid || !strict);
 }
 
 QString AutoCompleter::tokenText( TokenIterator & it )
