@@ -322,7 +322,7 @@ bool AutoCompleter::eventFilter( QObject *object, QEvent *event )
             else if (mMethodCall.widget && mMethodCall.widget->isVisible()) {
                 // disable method call aid for current call:
                 Q_ASSERT(!mMethodCall.stack.isEmpty());
-                mMethodCall.stack.top().method = 0;
+                mMethodCall.stack.top().suppressed = true;
                 hideMethodCall();
             }
             else break;
@@ -995,8 +995,8 @@ void AutoCompleter::updateMethodCall( int cursorPos )
             continue;
         }
 
-        if (!call.method || !call.method->arguments.count()) {
-            qDebug("Method call: no info to show. skipping.");
+        if (!call.method || call.suppressed || !call.method->arguments.count()) {
+            qDebug("Method call: suppressed, or no info to show. skipping.");
             continue;
         }
 
