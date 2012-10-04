@@ -1087,7 +1087,7 @@ bool AutoCompleter::trySwitchMethodCallArgument(bool backwards)
     bool cursorAtArgName = argNum == -1;
 
     if (argNameToken.isValid()) {
-        qDebug("Insert arg name: have existent arg name");
+        qDebug("Insert arg name: have a reference arg name");
         QString argName = tokenText(argNameToken);
         argName.chop(1);
         for (int idx = 0; idx < call.method->arguments.count(); ++idx) {
@@ -1096,16 +1096,16 @@ bool AutoCompleter::trySwitchMethodCallArgument(bool backwards)
                 break;
             }
         }
-    }
-
-    if (backwards) {
-        --argNum;
-        if (argNum < 0)
-            argNum = call.method->arguments.count() - 1;
-    } else {
-        ++argNum;
-        if (argNum >= call.method->arguments.count())
-            argNum = 0;
+        // only increment/decrement if a reference name exists
+        if (backwards) {
+            --argNum;
+            if (argNum < 0)
+                argNum = call.method->arguments.count() - 1;
+        } else {
+            ++argNum;
+            if (argNum >= call.method->arguments.count())
+                argNum = 0;
+        }
     }
 
     QString text = call.method->arguments[argNum].name;
