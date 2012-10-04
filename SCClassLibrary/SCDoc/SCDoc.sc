@@ -553,7 +553,7 @@ SCDoc {
                     root.children[1].merge(add);
                 }
             };
-            this.handleCopyMethods(root);
+            this.handleCopyMethods(root,doc);
         };
         ^root;
     }
@@ -825,11 +825,15 @@ SCDoc {
         ^node;
     }
 
-    *handleCopyMethods {|node|
+    *handleCopyMethods {|node,doc|
         var found = {|n|
-            var name, met;
+            var name, met, x;
             #name, met = n.text.findRegexp("[^ ,]+").flop[1];
-            this.getMethodDoc(name, met);
+            x = this.getMethodDoc(name, met);
+            if(x.isNil) {
+                warn("  from: %".format(doc.fullPath));
+            };
+            x;
         };
 
         node.children.do{|n,i|
@@ -838,7 +842,7 @@ SCDoc {
                 \ICOPYMETHOD, { n = found.(n); n !? {n.id_(\IMETHOD); node.children[i] = n} },
                 \COPYMETHOD, { n = found.(n); n !? {n.id_(\METHOD); node.children[i] = n} },
                 {
-                    this.handleCopyMethods(n);
+                    this.handleCopyMethods(n,doc);
                 }
             );
         };
