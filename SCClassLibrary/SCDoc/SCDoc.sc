@@ -675,7 +675,7 @@ SCDoc {
     *renderAll {|includeExtensions=true|
         this.postMsg("Rendering all documents");
         this.documents.do {|doc|
-            if(includeExtensions or: {doc.isExtension.not}) {
+            if(doc.oldHelp.isNil and: {includeExtensions or: {doc.isExtension.not}}) {
                 if(doc.isUndocumentedClass) {
                     this.renderUndocClass(doc);
                 } {
