@@ -30,6 +30,7 @@ BusPlug : AbstractFunction {
 		this.stop;
 		this.freeBus;
 		monitor = nil;
+		this.changed(\clear);
 	}
 
 
@@ -173,9 +174,9 @@ BusPlug : AbstractFunction {
 			{ |i| prefix ++ (index + i) }.dup(numChannels)
 		}
 	}
-	
+
 	asMap {
-		 ^this.busArg	
+		 ^this.busArg
 	}
 
 	wakeUpToBundle {}
@@ -198,7 +199,8 @@ BusPlug : AbstractFunction {
 		};
 		this.playToBundle(bundle, out.asControlInput, numChannels, group, multi, vol, fadeTime, addAction);
 		// homeServer: multi client support: monitor only locally
-		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant)
+		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
+		this.changed(\play, [out, numChannels, group, multi, vol, fadeTime, addAction]);
 	}
 
 	playN { | outs, amps, ins, vol, fadeTime, group, addAction |
@@ -208,7 +210,8 @@ BusPlug : AbstractFunction {
 			^this
 		};
 		this.playNToBundle(bundle, outs.asControlInput, amps, ins, vol, fadeTime, group, addAction);
-		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant)
+		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
+		this.changed(\playN, [outs, amps, ins, vol, fadeTime, group, addAction]);
 	}
 
 	fadeTime { ^0.02 }
@@ -230,6 +233,7 @@ BusPlug : AbstractFunction {
 	stop { | fadeTime = 0.1, reset = false |
 		monitor.stop(fadeTime);
 		if(reset) { monitor = nil };
+		this.changed(\stop, [fadeTime, reset]);
 	}
 
 	scope { | bufsize = 4096, zoom |

@@ -26,6 +26,7 @@ NodeProxy : BusPlug {
 		monitor = nil;
 		this.freeBus;	 // free the bus from the server allocator
 		this.init;	// reset the environment
+		this.changed(\clear, [fadeTime]);
 	}
 
 	end { | fadeTime, reset = false |
@@ -34,7 +35,8 @@ NodeProxy : BusPlug {
 			this.free(dt, true);
 			(dt + (server.latency ? 0)).wait;
 			this.stop(0, reset);
-		}
+		};
+		this.changed(\end, [fadeTime, reset]);
 	}
 
 	isPlaying { ^group.isPlaying }
@@ -49,6 +51,7 @@ NodeProxy : BusPlug {
 				bundle.sched((fadeTime ? this.fadeTime) + (server.latency ? 0), { group.free });
 			};
 			bundle.send(server);
+			this.changed(\free, [fadeTime, freeGroup]);
 		}
  	}
 
@@ -59,11 +62,13 @@ NodeProxy : BusPlug {
 	pause {
 		if(this.isPlaying) { objects.do { |item| item.pause(clock, quant) } };
 		paused = true;
+		this.changed(\pause);
 	}
 
 	resume {
 		paused = false;
 		if(this.isPlaying) { objects.do { |item| item.resume(clock, quant) } };
+		this.changed(\resume);
 	}
 
 	fadeTime_ { | dur |
@@ -83,7 +88,7 @@ NodeProxy : BusPlug {
 	parentGroup_ { | node |
 		if(node.isPlaying.not) { "node not playing and registered: % \n".postf(node); ^this };
 		parentGroup = node;
-		if(group.isPlaying) { group.moveToHead(parentGroup) }
+		if(group.isPlaying) { group.moveToHead(parentGroup) };
 	}
 
 
@@ -130,7 +135,7 @@ NodeProxy : BusPlug {
 				{ this.removeAllToBundle(bundle) }
 				{ this.removeToBundle(bundle, index) };
 			objects = objects.put(orderIndex, container);
-			this.changed(\source, obj, index);
+			this.changed(\source, [obj, index, channelOffset, extraArgs, now]);
 		} {
 			format("failed to add % to node proxy: %", obj, this).inform;
 			^this
@@ -182,7 +187,7 @@ NodeProxy : BusPlug {
 		if(index.isNil)
 			{ this.removeAllToBundle(bundle, fadeTime) }
 			{ this.removeToBundle(bundle, index, fadeTime) };
-		this.changed(\source, nil, index);
+		this.changed(\source, [nil, index, fadeTime]);
 		bundle.schedSend(server);
 	}
 
@@ -381,7 +386,7 @@ NodeProxy : BusPlug {
 			}
 		};
 	}
-	
+
 	nodeMapChanged {
 		var set, map;
 		nodeMap.settings.do { |setting|
