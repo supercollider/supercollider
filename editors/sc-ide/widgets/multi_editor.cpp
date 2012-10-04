@@ -204,7 +204,7 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mTabs->setTabsClosable(true);
     mTabs->setMovable(true);
     mTabs->setUsesScrollButtons(true);
-    mTabs->setDrawBase(false);
+    mTabs->setDrawBase(true);
 
     CodeEditorBox *defaultBox = newBox();
 
