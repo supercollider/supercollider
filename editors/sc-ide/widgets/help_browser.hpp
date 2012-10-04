@@ -76,10 +76,8 @@ class HelpBrowser : public QWidget
 public:
     HelpBrowser( QWidget * parent = 0 );
 
-    QSize sizeHint() const
-    {
-        return QSize(500,300);
-    }
+    QSize sizeHint() const { return mSizeHint; }
+    QSize minimumSizeHint() const { return QSize(50,50); }
 
     void gotoHelpFor( const QString & );
     void gotoHelpForMethod( const QString & className, const QString & methodName );
@@ -105,6 +103,7 @@ private:
 
     QShortcut *mEvaluateShortcut;
     LoadProgressIndicator *mLoadProgressIndicator;
+    QSize mSizeHint;
 };
 
 class HelpBrowserDockable : public QDockWidget

@@ -68,8 +68,6 @@ MainWindow::MainWindow(Main * main) :
 
     setAcceptDrops(true);
 
-    setCorner( Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
-
     // Construct status bar:
 
     mLangStatus = new StatusLabel();
@@ -106,17 +104,17 @@ MainWindow::MainWindow(Main * main) :
     // Docks
     mDocListDock = new DocumentsDock(main->documentManager(), this);
     mDocListDock->setObjectName("documents-dock");
-    addDockWidget(Qt::RightDockWidgetArea, mDocListDock);
+    addDockWidget(Qt::LeftDockWidgetArea, mDocListDock);
     mDocListDock->hide();
-
-    mPostDock = new PostDock(this);
-    mPostDock->setObjectName("post-dock");
-    addDockWidget(Qt::LeftDockWidgetArea, mPostDock);
 
     mHelpBrowserDockable = new HelpBrowserDockable(this);
     mHelpBrowserDockable->setObjectName("help-dock");
-    addDockWidget(Qt::BottomDockWidgetArea, mHelpBrowserDockable);
-    mHelpBrowserDockable->hide();
+    addDockWidget(Qt::RightDockWidgetArea, mHelpBrowserDockable);
+    //mHelpBrowserDockable->hide();
+
+    mPostDock = new PostDock(this);
+    mPostDock->setObjectName("post-dock");
+    addDockWidget(Qt::RightDockWidgetArea, mPostDock);
 
     // Layout
     QVBoxLayout *center_box = new QVBoxLayout;
@@ -587,6 +585,11 @@ void MainWindow::restoreWindowState()
         restoreState(state);
 
     settings->endGroup();
+
+    setCorner( Qt::TopLeftCorner, Qt::LeftDockWidgetArea );
+    setCorner( Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
+    setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
+    setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
 }
 
 void MainWindow::focusCodeEditor()
@@ -642,6 +645,11 @@ void MainWindow::switchSession( Session *session )
     mEditors->switchSession(session);
 
     updateWindowTitle();
+
+    setCorner( Qt::TopLeftCorner, Qt::LeftDockWidgetArea );
+    setCorner( Qt::BottomLeftCorner, Qt::LeftDockWidgetArea );
+    setCorner( Qt::TopRightCorner, Qt::RightDockWidgetArea );
+    setCorner( Qt::BottomRightCorner, Qt::RightDockWidgetArea );
 }
 
 void MainWindow::saveSession( Session *session )

@@ -32,12 +32,17 @@
 #include <QWebFrame>
 #include <QStyle>
 #include <QShortcut>
+#include <QApplication>
+#include <QDesktopWidget>
 
 namespace ScIDE {
 
 HelpBrowser::HelpBrowser( QWidget * parent ):
     QWidget(parent)
 {
+    QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
+    mSizeHint = QSize( availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.7 );
+
     QtCollider::WebPage *webPage = new QtCollider::WebPage(this);
     webPage->setDelegateReload(true);
     webPage->setLinkDelegationPolicy( QWebPage::DelegateAllLinks );
