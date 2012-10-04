@@ -865,13 +865,19 @@ void AutoCompleter::triggerMethodCallAid( bool forceRestart )
             return;
     }
 
+    --tokenIt;
+
+    // Only trigger if there's a token to define the method call
+    // on the same line as the opening bracket
+    if (tokenIt.block() != cursor.block())
+        return;
+
     // Find method and receiver tokens, infer class of receiver
 
     QString methodName;
     bool functionalNotation = false;
     const Class *receiverClass = NULL;
 
-    --tokenIt;
     Token::Type tokenType = tokenIt.type();
     if (tokenType == Token::Name) {
         methodName = tokenText(tokenIt);
