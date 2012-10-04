@@ -38,13 +38,13 @@ namespace ScIDE {
 class Main;
 class ScIntrospectionParser;
 
-class SCProcess:
+class ScProcess:
     public QProcess
 {
     Q_OBJECT
 
 public:
-    SCProcess( Main *, Settings::Manager * );
+    ScProcess( Main *, Settings::Manager * );
 
     enum SCProcessActionRole {
         StartSCLang = 0,
@@ -128,7 +128,7 @@ class ScRequest : public QObject
 {
     Q_OBJECT
 public:
-    ScRequest( SCProcess *sc, QObject * parent = 0 ):
+    ScRequest( ScProcess *sc, QObject * parent = 0 ):
         QObject(parent),
         mSc(sc)
     {
@@ -167,7 +167,7 @@ private slots:
 private:
     QString mCommand;
     QUuid mId;
-    SCProcess *mSc;
+    ScProcess *mSc;
 };
 
 class ScIntrospectionParserWorker : public QObject

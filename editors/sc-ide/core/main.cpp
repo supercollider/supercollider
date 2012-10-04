@@ -183,7 +183,7 @@ static QString getSettingsFile()
 
 Main::Main(void) :
     mSettings( new Settings::Manager( getSettingsFile(), this ) ),
-    mSCProcess( new SCProcess(this, mSettings) ),
+    mSCProcess( new ScProcess(this, mSettings) ),
     mSCServer( new ScServer(mSCProcess, this) ),
     mDocManager( new DocumentManager(this, mSettings) ),
     mSessionManager( new SessionManager(mDocManager, this) )

@@ -73,7 +73,7 @@ public:
         return singleton;
     }
 
-    static SCProcess * scProcess()             { return instance()->mSCProcess;      }
+    static ScProcess * scProcess()             { return instance()->mSCProcess;      }
     static ScServer  * scServer()              { return instance()->mSCServer;       }
     static SessionManager * sessionManager()   { return instance()->mSessionManager; }
     static DocumentManager * documentManager() { return instance()->mDocManager;     }
@@ -114,7 +114,7 @@ private:
     void handleOpenFileScRequest( const QString & data );
 
     Settings::Manager *mSettings;
-    SCProcess * mSCProcess;
+    ScProcess * mSCProcess;
     ScServer * mSCServer;
     DocumentManager *mDocManager;
     SessionManager *mSessionManager;

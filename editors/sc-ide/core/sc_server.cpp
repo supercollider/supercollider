@@ -32,7 +32,7 @@
 
 namespace ScIDE {
 
-ScServer::ScServer(SCProcess *scLang, QObject *parent):
+ScServer::ScServer(ScProcess *scLang, QObject *parent):
     QObject(parent), mPort(0)
 {
     mUdpSocket = new QUdpSocket(this);
