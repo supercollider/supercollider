@@ -53,7 +53,7 @@ rqspec = [1, 0.001, \exp].asSpec;
 ampspec = \amp.asSpec;
 
 // gui building
-window = MultiPageLayout("Ringz tuner", Rect(150, 5, 800, 570));
+window = PageLayout("Ringz tuner", Rect(150, 5, 800, 570));
 leftview = FlowView(window, 470@490);
 rightview = FlowView(window, 280@490);
 
