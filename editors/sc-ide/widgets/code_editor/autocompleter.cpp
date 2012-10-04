@@ -832,7 +832,7 @@ void AutoCompleter::onCompletionMenuFinished( int result )
     //quitCompletion("cancelled");
 }
 
-void AutoCompleter::triggerMethodCallAid( bool force )
+void AutoCompleter::triggerMethodCallAid( bool forceRestart )
 {
     using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
@@ -843,13 +843,8 @@ void AutoCompleter::triggerMethodCallAid( bool force )
     // Find the bracket that we are currently in
 
     TokenIterator tokenIt = TokenIterator::leftOf( cursor.block(), cursor.positionInBlock() );
-    while (true) {
-        tokenIt = ScCodeEditor::previousOpeningBracket(tokenIt);
-        if (!tokenIt.isValid() || tokenIt->character == '(')
-            break;
-        --tokenIt;
-    }
-    if (!tokenIt.isValid())
+    tokenIt = ScCodeEditor::previousOpeningBracket(tokenIt);
+    if (!tokenIt.isValid() || tokenIt->character != '(')
         return;
 
     int bracketPos = tokenIt.position();
@@ -861,7 +856,7 @@ void AutoCompleter::triggerMethodCallAid( bool force )
         qDebug("Method call: call already on stack");
         // method call popup should have been updated by updateMethodCall();
 
-        if (force) {
+        if (forceRestart) {
             qDebug("Method call: forced re-trigger, popping current call.");
             mMethodCall.stack.pop();
             hideMethodCall();
