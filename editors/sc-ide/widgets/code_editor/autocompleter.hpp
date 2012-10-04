@@ -64,10 +64,11 @@ private:
     friend class MethodCallWidget;
 
     struct MethodCall {
-        MethodCall(): position(0), method(0) {}
+        MethodCall(): position(0), method(0), functionalNotation(false), suppressed(false) {}
         int position;
-        bool functionalNotation;
         const ScLanguage::Method *method;
+        bool functionalNotation;
+        bool suppressed;
     };
 
     enum CompletionType {
