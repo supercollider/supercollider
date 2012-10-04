@@ -42,7 +42,7 @@ PostWindow::PostWindow(QWidget* parent):
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
-    mSizeHint = QSize( availableScreenRect.width() / 2.7, 300 );
+    mSizeHint = QSize( availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.3 );
 
     QAction * action;
 

@@ -43,6 +43,7 @@ public:
     void storeSettings( Settings::Manager * );
 
     QSize sizeHint() const { return mSizeHint; }
+    QSize minimumSizeHint() const { return QSize(50,50); }
     QString symbolUnderCursor();
 
 signals:
