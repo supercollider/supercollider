@@ -37,13 +37,13 @@
 
 namespace ScIDE {
 
-SCProcess::SCProcess( Main *parent, ScResponder * responder, Settings::Manager * settings ):
+SCProcess::SCProcess( Main *parent, Settings::Manager * settings ):
     QProcess( parent ),
     mIpcServer( new QLocalServer(this) ),
     mIpcSocket(NULL),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid()))
 {
-    mIntrospectionParser = new ScIntrospectionParser( responder, this );
+    mIntrospectionParser = new ScIntrospectionParser( this );
     mIntrospectionParser->start();
 
     prepareActions(settings);
@@ -224,8 +224,8 @@ void SCProcess::onIpcData()
 
         QDataStream in ( &receivedData );
         in.setVersion ( QDataStream::Qt_4_6 );
-        QString id, message;
-        in >> id;
+        QString selector, message;
+        in >> selector;
         if ( in.status() != QDataStream::Ok )
             return;
 
@@ -235,8 +235,26 @@ void SCProcess::onIpcData()
 
         mIpcData.remove ( 0, receivedData.pos() );
 
-        emit response(id, message);
+        onResponse(selector, message);
+
+        emit response(selector, message);
     }
+}
+
+void SCProcess::onResponse( const QString & selector, const QString & data )
+{
+    static QString introspectionSelector("introspection");
+    static QString classLibraryRecompiledSelector("classLibraryRecompiled");
+    static QString requestCurrentPathSelector("requestCurrentPath");
+
+    if (selector == introspectionSelector)
+        mIntrospectionParser->process(data);
+
+    else if (selector == classLibraryRecompiledSelector)
+        emit classLibraryRecompiled();
+
+    else if (selector == requestCurrentPathSelector)
+        sendActiveDocument();
 }
 
 void SCProcess::onSclangStart()
@@ -273,85 +291,6 @@ void SCProcess::sendActiveDocument()
         evaluateCode(QString("ScIDE.currentPath_(\"%1\")").arg(mCurrentDocumentPath), true);
     else
         evaluateCode(QString("ScIDE.currentPath_(nil)"), true);
-}
-
-void ScResponder::onResponse( const QString & selector, const QString & data )
-{
-    static QString defaultServerRunningChangedSymbol("defaultServerRunningChanged");
-    static QString introspectionSymbol("introspection");
-    static QString requestCurrentPathSymbol("requestCurrentPath");
-    static QString openFileSymbol("openFile");
-    static QString classLibraryRecompiled("classLibraryRecompiled");
-
-    if (selector == defaultServerRunningChangedSymbol)
-        handleServerRunningChanged(data);
-
-    else if (selector == introspectionSymbol)
-        emit newIntrospectionData(data);
-
-    else if (selector == requestCurrentPathSymbol)
-        Main::scProcess()->sendActiveDocument();
-
-    else if (selector == classLibraryRecompiled)
-        Main::scProcess()->emitClassLibraryRecompiled();
-
-    else if (selector == openFileSymbol)
-        handleOpenFile(data);
-}
-
-
-void ScResponder::handleOpenFile( const QString & data ) const
-{
-    std::stringstream stream;
-    stream << data.toStdString();
-    YAML::Parser parser(stream);
-
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-
-        std::string path;
-        bool success = doc[0].Read(path);
-        if (!success)
-            return;
-
-        int position = 0;
-        doc[1].Read(position);
-
-        int selectionLength = 0;
-        doc[2].Read(selectionLength);
-
-        Main::documentManager()->open(QString(path.c_str()), position, selectionLength);
-    }
-}
-
-void ScResponder::handleServerRunningChanged( const QString & data )
-{
-    std::stringstream stream;
-    stream << data.toStdString();
-    YAML::Parser parser(stream);
-
-    bool serverRunningState;
-    std::string hostName;
-    int port;
-
-    YAML::Node doc;
-    while(parser.GetNextDocument(doc)) {
-        assert(doc.Type() == YAML::NodeType::Sequence);
-
-        bool success = doc[0].Read(serverRunningState);
-        if (!success) return; // LATER: report error?
-
-        success = doc[1].Read(hostName);
-        if (!success) return; // LATER: report error?
-
-        success = doc[2].Read(port);
-        if (!success) return; // LATER: report error?
-    }
-
-    emit serverRunningChanged (serverRunningState, QString(hostName.c_str()), port);
-    return;
 }
 
 void ScIntrospectionParserWorker::process(const QString &input)

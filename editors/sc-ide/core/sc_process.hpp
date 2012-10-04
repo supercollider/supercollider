@@ -44,7 +44,7 @@ class SCProcess:
     Q_OBJECT
 
 public:
-    SCProcess( Main *, class ScResponder * responder, Settings::Manager * );
+    SCProcess( Main *, Settings::Manager * );
 
     enum SCProcessActionRole {
         StartSCLang = 0,
@@ -77,15 +77,10 @@ public:
         return mActions[role];
     }
 
-    void emitClassLibraryRecompiled()
-    {
-        emit classLibraryRecompiled();
-    }
-
 Q_SIGNALS:
     void scPost(QString const &);
     void statusMessage(const QString &);
-    void response(const QString & id, const QString & data);
+    void response(const QString & selector, const QString & data);
     void classLibraryRecompiled();
 
 public slots:
@@ -112,6 +107,7 @@ private slots:
 
 private:
     void onSclangStart();
+    void onResponse( const QString & selector, const QString & data );
 
     void prepareActions(Settings::Manager * settings);
 
@@ -174,27 +170,6 @@ private:
     SCProcess *mSc;
 };
 
-class ScResponder : public QObject
-{
-    Q_OBJECT
-
-public:
-    ScResponder( QObject * parent = 0):
-        QObject(parent)
-    {}
-
-Q_SIGNALS:
-    void serverRunningChanged( bool serverRunning, const QString & hostName, int port );
-    void newIntrospectionData( const QString & yaml );
-
-private Q_SLOTS:
-    void onResponse( const QString & selector, const QString & data );
-
-private:
-    void handleOpenFile( const QString & data ) const;
-    void handleServerRunningChanged( const QString & data );
-};
-
 class ScIntrospectionParserWorker : public QObject
 {
     Q_OBJECT
@@ -213,10 +188,10 @@ class ScIntrospectionParser : public QThread
 {
     Q_OBJECT
 public:
-    ScIntrospectionParser( ScResponder * responder, QObject * parent = 0 ):
+    ScIntrospectionParser( QObject * parent = 0 ):
         QThread(parent)
     {
-        connect(responder, SIGNAL(newIntrospectionData(QString)),
+        connect(this, SIGNAL(newIntrospectionData(QString)),
                 &mWorker, SLOT(process(QString)), Qt::QueuedConnection);
         connect(&mWorker, SIGNAL(done(ScLanguage::Introspection*)),
                 this, SIGNAL(done(ScLanguage::Introspection*)), Qt::QueuedConnection);
@@ -228,7 +203,13 @@ public:
         wait();
     }
 
+    void process( const QString & introspectionData )
+    {
+        emit newIntrospectionData(introspectionData);
+    }
+
 signals:
+    void newIntrospectionData( const QString & data );
     void done( ScLanguage::Introspection * );
 
 private:

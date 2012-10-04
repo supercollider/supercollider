@@ -177,8 +177,10 @@ MainWindow::MainWindow(Main * main) :
     // ToolBox
     connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
 
-    connect(main->scResponder(), SIGNAL(serverRunningChanged(bool,QString,int)), this, SLOT(onServerRunningChanged(bool,QString,int)));
-    connect(main->scServer(), SIGNAL(updateServerStatus(int,int,int,int,float,float)), this, SLOT(onServerStatusReply(int,int,int,int,float,float)));
+    connect(main->scServer(), SIGNAL(runningStateChange(bool,QString,int)),
+            this, SLOT(onServerRunningChanged(bool,QString,int)));
+    connect(main->scServer(), SIGNAL(updateServerStatus(int,int,int,int,float,float)),
+            this, SLOT(onServerStatusReply(int,int,int,int,float,float)));
 
     createActions();
     createMenus();
