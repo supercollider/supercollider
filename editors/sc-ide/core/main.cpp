@@ -28,6 +28,9 @@
 
 #include "SC_DirUtils.h"
 
+#include "yaml-cpp/node.h"
+#include "yaml-cpp/parser.h"
+
 #include <QAction>
 #include <QApplication>
 #include <QBuffer>
@@ -180,16 +183,14 @@ static QString getSettingsFile()
 
 Main::Main(void) :
     mSettings( new Settings::Manager( getSettingsFile(), this ) ),
-    mSCResponder( new ScResponder(this) ),
-    mSCProcess( new SCProcess(this, mSCResponder, mSettings) ),
-    mSCServer( new ScServer(this) ),
+    mSCProcess( new SCProcess(this, mSettings) ),
+    mSCServer( new ScServer(mSCProcess, this) ),
     mDocManager( new DocumentManager(this, mSettings) ),
     mSessionManager( new SessionManager(mDocManager, this) )
 {
     new SyntaxHighlighterGlobals(this, mSettings);
 
-    connect(mSCProcess, SIGNAL(response(QString,QString)), mSCResponder, SLOT(onResponse(QString,QString)));
-    connect(mSCResponder, SIGNAL(serverRunningChanged(bool,QString,int)), mSCServer, SLOT(onServerRunningChanged(bool,QString,int)));
+    connect(mSCProcess, SIGNAL(response(QString,QString)), this, SLOT(onScLangResponse(QString,QString)));
 
     qApp->installEventFilter(this);
 }
@@ -262,4 +263,38 @@ void Main::findReferences(const QString &string, QWidget * parent)
     ReferencesDialog dialog(parent);
     dialog.query(definitionString);
     dialog.exec();
+}
+
+void Main::onScLangResponse( const QString & selector, const QString & data )
+{
+    static QString openFileSelector("openFile");
+
+    if (selector == openFileSelector)
+        handleOpenFileScRequest(data);
+}
+
+void Main::handleOpenFileScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string path;
+        bool success = doc[0].Read(path);
+        if (!success)
+            return;
+
+        int position = 0;
+        doc[1].Read(position);
+
+        int selectionLength = 0;
+        doc[2].Read(selectionLength);
+
+        mDocManager->open(QString(path.c_str()), position, selectionLength);
+    }
 }

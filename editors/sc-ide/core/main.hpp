@@ -75,7 +75,6 @@ public:
 
     static SCProcess * scProcess()             { return instance()->mSCProcess;      }
     static ScServer  * scServer()              { return instance()->mSCServer;       }
-    static ScResponder * scResponder()         { return instance()->mSCResponder;    }
     static SessionManager * sessionManager()   { return instance()->mSessionManager; }
     static DocumentManager * documentManager() { return instance()->mDocManager;     }
     static Settings::Manager *settings()       { return instance()->mSettings;       }
@@ -106,12 +105,15 @@ Q_SIGNALS:
     void storeSettingsRequest(Settings::Manager *);
     void applySettingsRequest(Settings::Manager *);
 
+private slots:
+    void onScLangResponse( const QString &, const QString & );
+
 private:
     Main(void);
     bool eventFilter(QObject *obj, QEvent *event);
+    void handleOpenFileScRequest( const QString & data );
 
     Settings::Manager *mSettings;
-    ScResponder * mSCResponder;
     SCProcess * mSCProcess;
     ScServer * mSCServer;
     DocumentManager *mDocManager;

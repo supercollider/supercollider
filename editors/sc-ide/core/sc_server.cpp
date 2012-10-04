@@ -27,9 +27,12 @@
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
 
+#include "yaml-cpp/node.h"
+#include "yaml-cpp/parser.h"
+
 namespace ScIDE {
 
-ScServer::ScServer(QObject * parent):
+ScServer::ScServer(SCProcess *scLang, QObject *parent):
     QObject(parent), mPort(0)
 {
     mUdpSocket = new QUdpSocket(this);
@@ -39,6 +42,8 @@ ScServer::ScServer(QObject * parent):
             break;
     }
     startTimer(333);
+
+    connect(scLang, SIGNAL(response(QString,QString)), this, SLOT(onScLangReponse(QString,QString)));
 }
 
 void ScServer::boot()
@@ -67,6 +72,42 @@ void ScServer::queryAllNodes(bool dumpControls)
     QString arg = dumpControls ? QString("true") : QString("false");
 
     Main::scProcess()->evaluateCode( QString("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
+}
+
+void ScServer::onScLangReponse( const QString & selector, const QString & data )
+{
+    static QString defaultServerRunningChangedSelector("defaultServerRunningChanged");
+
+    if (selector != defaultServerRunningChangedSelector)
+        return;
+
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+
+    bool serverRunningState;
+    std::string hostName;
+    int port;
+
+    YAML::Node doc;
+    while(parser.GetNextDocument(doc)) {
+        assert(doc.Type() == YAML::NodeType::Sequence);
+
+        bool success = doc[0].Read(serverRunningState);
+        if (!success) return; // LATER: report error?
+
+        success = doc[1].Read(hostName);
+        if (!success) return; // LATER: report error?
+
+        success = doc[2].Read(port);
+        if (!success) return; // LATER: report error?
+    }
+
+    QString qstrHostName( hostName.c_str() );
+
+    onRunningStateChanged( serverRunningState, qstrHostName, port );
+
+    emit runningStateChange( serverRunningState, qstrHostName, port );
 }
 
 void ScServer::timerEvent(QTimerEvent * event)

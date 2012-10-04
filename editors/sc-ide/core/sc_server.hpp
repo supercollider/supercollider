@@ -26,12 +26,14 @@
 
 namespace ScIDE {
 
+class SCProcess;
+
 class ScServer : public QObject
 {
     Q_OBJECT
 
 public:
-    ScServer(QObject * parent);
+    ScServer(SCProcess *scLang, QObject * parent);
     void timerEvent(QTimerEvent * event);
 
     bool isRunning() { return mPort != 0; }
@@ -43,7 +45,15 @@ public Q_SLOTS:
     void quit();
     void queryAllNodes(bool dumpControls);
 
-    void onServerRunningChanged( bool running, QString const & hostName, int port )
+Q_SIGNALS:
+    void runningStateChange( bool running, QString const & hostName, int port );
+    void updateServerStatus (int ugenCount, int synthCount, int groupCount, int defCount, float avgCPU, float peakCPU);
+
+private slots:
+    void onScLangReponse( const QString & selector, const QString & data );
+
+private:
+    void onRunningStateChanged( bool running, QString const & hostName, int port )
     {
         if (running) {
             mServerAddress = QHostAddress(hostName);
@@ -54,10 +64,6 @@ public Q_SLOTS:
         }
     }
 
-Q_SIGNALS:
-    void updateServerStatus (int ugenCount, int synthCount, int groupCount, int defCount, float avgCPU, float peakCPU);
-
-private:
     QUdpSocket * mUdpSocket;
     QHostAddress mServerAddress;
     int mPort;
