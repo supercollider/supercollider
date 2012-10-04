@@ -530,10 +530,10 @@ void MainWindow::createMenus()
     menuBar()->addMenu(menu);
 
     menu = new QMenu(tr("&Language"), this);
-    menu->addAction( mMain->scProcess()->action(SCProcess::StartSCLang) );
-    menu->addAction( mMain->scProcess()->action(SCProcess::StopSCLang) );
-    menu->addAction( mMain->scProcess()->action(SCProcess::RestartSCLang) );
-    menu->addAction( mMain->scProcess()->action(SCProcess::RecompileClassLibrary) );
+    menu->addAction( mMain->scProcess()->action(ScProcess::StartSCLang) );
+    menu->addAction( mMain->scProcess()->action(ScProcess::StopSCLang) );
+    menu->addAction( mMain->scProcess()->action(ScProcess::RestartSCLang) );
+    menu->addAction( mMain->scProcess()->action(ScProcess::RecompileClassLibrary) );
     menu->addSeparator();
     menu->addAction( mActions[ServerToggleRunning] );
     menu->addAction( mActions[ServerReboot] );
@@ -545,8 +545,8 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );
     menu->addAction( mEditors->action(MultiEditor::EvaluateLine) );
     menu->addSeparator();
-    menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::RunMain) );
-    menu->addAction( mMain->scProcess()->action(ScIDE::SCProcess::StopMain) );
+    menu->addAction( mMain->scProcess()->action(ScIDE::ScProcess::RunMain) );
+    menu->addAction( mMain->scProcess()->action(ScIDE::ScProcess::StopMain) );
 
     menuBar()->addMenu(menu);
 

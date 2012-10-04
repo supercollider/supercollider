@@ -82,7 +82,7 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     connect( webPage, SIGNAL(jsConsoleMsg(QString,int,QString)),
              this, SLOT(onJsConsoleMsg(QString,int,QString)) );
 
-    SCProcess * scProcess = Main::scProcess();
+    ScProcess * scProcess = Main::scProcess();
     connect( scProcess, SIGNAL(response(QString,QString)),
              this, SLOT(onScResponse(QString,QString)) );
     connect( scProcess, SIGNAL(finished(int)), mLoadProgressIndicator, SLOT(stop()) );
@@ -160,7 +160,7 @@ void HelpBrowser::onReload()
 
 void HelpBrowser::sendRequest( const QString &code )
 {
-    SCProcess *scProcess = Main::scProcess();
+    ScProcess *scProcess = Main::scProcess();
     if (scProcess->state() == QProcess::NotRunning) {
         qDebug() << "HelpBrowser: aborting request - sclang not running.";
         MainWindow::instance()->showStatusMessage("Can not use help - interpreter not running!");

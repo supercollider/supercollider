@@ -26,14 +26,14 @@
 
 namespace ScIDE {
 
-class SCProcess;
+class ScProcess;
 
 class ScServer : public QObject
 {
     Q_OBJECT
 
 public:
-    ScServer(SCProcess *scLang, QObject * parent);
+    ScServer(ScProcess *scLang, QObject * parent);
     void timerEvent(QTimerEvent * event);
 
     bool isRunning() { return mPort != 0; }

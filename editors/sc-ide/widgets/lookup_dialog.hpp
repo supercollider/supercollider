@@ -109,7 +109,7 @@ class SymbolReferenceRequest:
     Q_OBJECT
 
 public:
-    SymbolReferenceRequest(SCProcess * process, QObject * parent = NULL):
+    SymbolReferenceRequest(ScProcess * process, QObject * parent = NULL):
         ScRequest(process, parent)
     {}
 

@@ -37,7 +37,7 @@
 
 namespace ScIDE {
 
-SCProcess::SCProcess( Main *parent, Settings::Manager * settings ):
+ScProcess::ScProcess( Main *parent, Settings::Manager * settings ):
     QProcess( parent ),
     mIpcServer( new QLocalServer(this) ),
     mIpcSocket(NULL),
@@ -55,7 +55,7 @@ SCProcess::SCProcess( Main *parent, Settings::Manager * settings ):
             this, SLOT(swapIntrospection(ScLanguage::Introspection*)));
 }
 
-void SCProcess::prepareActions(Settings::Manager * settings)
+void ScProcess::prepareActions(Settings::Manager * settings)
 {
     QAction * action;
     mActions[StartSCLang] = action = new QAction(
@@ -88,7 +88,7 @@ void SCProcess::prepareActions(Settings::Manager * settings)
         settings->addAction( mActions[i] );
 }
 
-void SCProcess::startLanguage (void)
+void ScProcess::startLanguage (void)
 {
     if (state() != QProcess::NotRunning) {
         statusMessage("Interpreter is already running.");
@@ -129,7 +129,7 @@ void SCProcess::startLanguage (void)
         onSclangStart();
 }
 
-void SCProcess::recompileClassLibrary (void)
+void ScProcess::recompileClassLibrary (void)
 {
     if(state() != QProcess::Running) {
         emit statusMessage("Interpreter is not running!");
@@ -140,7 +140,7 @@ void SCProcess::recompileClassLibrary (void)
 }
 
 
-void SCProcess::stopLanguage (void)
+void ScProcess::stopLanguage (void)
 {
     if(state() != QProcess::Running) {
         emit statusMessage("Interpreter is not running!");
@@ -162,7 +162,7 @@ void SCProcess::stopLanguage (void)
     }
 }
 
-void SCProcess::restartLanguage()
+void ScProcess::restartLanguage()
 {
     stopLanguage();
     startLanguage();
@@ -170,14 +170,14 @@ void SCProcess::restartLanguage()
 
 
 
-void SCProcess::onReadyRead(void)
+void ScProcess::onReadyRead(void)
 {
     QByteArray out = QProcess::readAll();
     QString postString = QString::fromUtf8(out);
     emit scPost(postString);
 }
 
-void SCProcess::evaluateCode(QString const & commandString, bool silent)
+void ScProcess::evaluateCode(QString const & commandString, bool silent)
 {
     if(state() != QProcess::Running) {
         emit statusMessage("Interpreter is not running!");
@@ -196,7 +196,7 @@ void SCProcess::evaluateCode(QString const & commandString, bool silent)
     write( &commandChar, 1 );
 }
 
-void SCProcess::onNewIpcConnection()
+void ScProcess::onNewIpcConnection()
 {
     if (mIpcSocket)
         // we can handle only one ipc connection at a time
@@ -207,14 +207,14 @@ void SCProcess::onNewIpcConnection()
     connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
 }
 
-void SCProcess::finalizeConnection()
+void ScProcess::finalizeConnection()
 {
     mIpcData.clear();
     mIpcSocket->deleteLater();
     mIpcSocket = NULL;
 }
 
-void SCProcess::onIpcData()
+void ScProcess::onIpcData()
 {
     mIpcData.append(mIpcSocket->readAll());
 
@@ -241,7 +241,7 @@ void SCProcess::onIpcData()
     }
 }
 
-void SCProcess::onResponse( const QString & selector, const QString & data )
+void ScProcess::onResponse( const QString & selector, const QString & data )
 {
     static QString introspectionSelector("introspection");
     static QString classLibraryRecompiledSelector("classLibraryRecompiled");
@@ -257,7 +257,7 @@ void SCProcess::onResponse( const QString & selector, const QString & data )
         sendActiveDocument();
 }
 
-void SCProcess::onSclangStart()
+void ScProcess::onSclangStart()
 {
     if(!mIpcServer->isListening()) // avoid a warning on stderr
         mIpcServer->listen(mIpcServerName);
@@ -272,7 +272,7 @@ void SCProcess::onSclangStart()
     }
 }
 
-void SCProcess::setActiveDocument(Document * document)
+void ScProcess::setActiveDocument(Document * document)
 {
     if (document)
         mCurrentDocumentPath = document->filePath();
@@ -282,7 +282,7 @@ void SCProcess::setActiveDocument(Document * document)
     sendActiveDocument();
 }
 
-void SCProcess::sendActiveDocument()
+void ScProcess::sendActiveDocument()
 {
     if (state() != QProcess::Running)
         return;
