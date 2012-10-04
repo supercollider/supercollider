@@ -27,6 +27,7 @@
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QKeyEvent>
+#include <QMessageBox>
 
 Q_DECLARE_METATYPE(QAction*)
 Q_DECLARE_METATYPE(QKeySequence)
@@ -170,18 +171,67 @@ void ShortcutsPage::apply()
     applyTo( ui->actionTree->currentItem() );
 }
 
-void ShortcutsPage::applyTo( QTreeWidgetItem *item )
+void ShortcutsPage::applyTo( QTreeWidgetItem *targetItem )
 {
-    if (!item) return;
+    if (!targetItem) return;
 
-    if (ui->customOpt->isChecked()) {
-        QKeySequence seq = ui->customSeq->sequence();
-        item->setData(0, CustomSequenceRole, QVariant::fromValue<QKeySequence>(seq));
+    bool seqIsCustom = ui->customOpt->isChecked();
+
+    QKeySequence currentSeq =
+            seqIsCustom
+            ? ui->customSeq->sequence()
+            : targetItem->data(0, DefaultSequenceRole).value<QKeySequence>();
+
+    // Check for duplicates
+    if (!currentSeq.isEmpty()) {
+        int itemCount = ui->actionTree->topLevelItemCount();
+        for (int itemIdx = 0; itemIdx < itemCount; ++itemIdx) {
+            QTreeWidgetItem *item = ui->actionTree->topLevelItem(itemIdx);
+            if (item == targetItem)
+                continue;
+            QKeySequence itemSeq = activeItemSequence(item);
+            if (currentSeq == itemSeq) {
+                // Got a duplicate sequence
+                if (confirmOverride(currentSeq, item)) {
+                    item->setData(0, CustomSequenceRole, QVariant::fromValue(QKeySequence()));
+                    updateItem(item);
+                } else {
+                    seqIsCustom = true;
+                    currentSeq = QKeySequence();
+                    ui->customOpt->setChecked(true);
+                    ui->customSeq->clear();
+                }
+                break;
+            }
+        }
+    }
+
+    if (seqIsCustom) {
+        targetItem->setData(0, CustomSequenceRole, QVariant::fromValue(currentSeq));
     }
     else {
-        item->setData(0, CustomSequenceRole, QVariant());
+        targetItem->setData(0, CustomSequenceRole, QVariant());
     }
-    updateItem(item);
+
+    updateItem(targetItem);
+}
+
+bool ShortcutsPage::confirmOverride( const QKeySequence &duplicateSequence,
+                                     QTreeWidgetItem *duplicateItem )
+{
+    QString warningString = tr("Shortcut '%1' has already been assigned to '%2'.\n\n"
+                               "Would you like to override it?");
+
+    warningString = warningString.arg(duplicateSequence, duplicateItem->text(0));
+
+    QMessageBox::StandardButton result =
+            QMessageBox::warning( this,
+                                  tr("Duplicate Shortcut"),
+                                  warningString,
+                                  QMessageBox::Ok | QMessageBox::Cancel,
+                                  QMessageBox::Cancel );
+
+    return result == QMessageBox::Ok;
 }
 
 void ShortcutsPage::updateItem( QTreeWidgetItem *item )
@@ -193,6 +243,14 @@ void ShortcutsPage::updateItem( QTreeWidgetItem *item )
     QKeySequence seq = seqData.value<QKeySequence>();
 
     item->setText(1, seq.toString(QKeySequence::NativeText));
+}
+
+QKeySequence ShortcutsPage::activeItemSequence( QTreeWidgetItem * item )
+{
+    QVariant seqVar = item->data(0, CustomSequenceRole);
+    if (!seqVar.isValid())
+        seqVar = item->data(0, DefaultSequenceRole);
+    return seqVar.value<QKeySequence>();
 }
 
 }} // namespace ScIDE::Settings

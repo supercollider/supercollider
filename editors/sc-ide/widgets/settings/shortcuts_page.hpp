@@ -65,6 +65,8 @@ private:
     void addAction( QAction *, Manager * );
     void applyTo( QTreeWidgetItem * );
     void updateItem( QTreeWidgetItem * );
+    QKeySequence activeItemSequence( QTreeWidgetItem * );
+    bool confirmOverride( const QKeySequence & duplicateSequence, QTreeWidgetItem *duplicateItem );
 
     Ui::ShortcutConfigPage *ui;
     QStandardItemModel *mActionModel;
