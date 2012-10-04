@@ -832,7 +832,7 @@ void AutoCompleter::onCompletionMenuFinished( int result )
     //quitCompletion("cancelled");
 }
 
-void AutoCompleter::triggerMethodCallAid( bool forceRestart )
+void AutoCompleter::triggerMethodCallAid( bool forceReset )
 {
     using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
@@ -849,20 +849,27 @@ void AutoCompleter::triggerMethodCallAid( bool forceRestart )
 
     int bracketPos = tokenIt.position();
 
-    // Compare against stack, either return, or clear existing and continue
-
-    if ( !mMethodCall.stack.isEmpty() && mMethodCall.stack.last().position == bracketPos )
+    // Compare against stack;
+    if ( !mMethodCall.stack.isEmpty() && mMethodCall.stack.top().position == bracketPos )
     {
-        qDebug("Method call: call already on stack");
-        // method call popup should have been updated by updateMethodCall();
+        // A matching call is already on stack
+        qDebug("Method call: trigger -> call already on stack");
 
-        if (forceRestart) {
+        // If forceReset, then either retrigger disambiguation (if needed),
+        // or unsuppress it.
+        if (forceReset && !mMethodCall.stack.top().method) {
             qDebug("Method call: forced re-trigger, popping current call.");
             mMethodCall.stack.pop();
             hideMethodCall();
-        }
-        else
+        } else {
+            if (forceReset) {
+                mMethodCall.stack.top().suppressed = false;
+                updateMethodCall(cursor.position());
+            }
+            // Else, method call popup has been updated by updateMethodCall()
+            // called on cursor change, before this function.
             return;
+        }
     }
 
     --tokenIt;
@@ -996,8 +1003,13 @@ void AutoCompleter::updateMethodCall( int cursorPos )
             continue;
         }
 
-        if (!call.method || call.suppressed || !call.method->arguments.count()) {
-            qDebug("Method call: suppressed, or no info to show. skipping.");
+        if (call.suppressed) {
+            qDebug("Method call: suppressed, not showing anything");
+            break;
+        }
+
+        if (!call.method || !call.method->arguments.count()) {
+            qDebug("Method call: no info to show. skipping.");
             continue;
         }
 
