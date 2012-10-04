@@ -183,14 +183,14 @@ static QString getSettingsFile()
 
 Main::Main(void) :
     mSettings( new Settings::Manager( getSettingsFile(), this ) ),
-    mSCProcess( new ScProcess(this, mSettings) ),
-    mSCServer( new ScServer(mSCProcess, this) ),
+    mScProcess( new ScProcess(this, mSettings) ),
+    mScServer( new ScServer(mScProcess, this) ),
     mDocManager( new DocumentManager(this, mSettings) ),
     mSessionManager( new SessionManager(mDocManager, this) )
 {
     new SyntaxHighlighterGlobals(this, mSettings);
 
-    connect(mSCProcess, SIGNAL(response(QString,QString)), this, SLOT(onScLangResponse(QString,QString)));
+    connect(mScProcess, SIGNAL(response(QString,QString)), this, SLOT(onScLangResponse(QString,QString)));
 
     qApp->installEventFilter(this);
 }

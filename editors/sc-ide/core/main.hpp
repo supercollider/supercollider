@@ -73,8 +73,8 @@ public:
         return singleton;
     }
 
-    static ScProcess * scProcess()             { return instance()->mSCProcess;      }
-    static ScServer  * scServer()              { return instance()->mSCServer;       }
+    static ScProcess * scProcess()             { return instance()->mScProcess;      }
+    static ScServer  * scServer()              { return instance()->mScServer;       }
     static SessionManager * sessionManager()   { return instance()->mSessionManager; }
     static DocumentManager * documentManager() { return instance()->mDocManager;     }
     static Settings::Manager *settings()       { return instance()->mSettings;       }
@@ -114,8 +114,8 @@ private:
     void handleOpenFileScRequest( const QString & data );
 
     Settings::Manager *mSettings;
-    ScProcess * mSCProcess;
-    ScServer * mSCServer;
+    ScProcess * mScProcess;
+    ScServer * mScServer;
     DocumentManager *mDocManager;
     SessionManager *mSessionManager;
 };
