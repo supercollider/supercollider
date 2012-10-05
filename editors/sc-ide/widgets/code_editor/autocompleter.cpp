@@ -264,6 +264,8 @@ AutoCompleter::AutoCompleter( ScCodeEditor *editor ):
 
     connect(editor, SIGNAL(cursorPositionChanged()),
             this, SLOT(onCursorChanged()));
+    connect(Main::scProcess(), SIGNAL(introspectionAboutToSwap()),
+            this, SLOT(clearMethodCallStack()));
 }
 
 void AutoCompleter::documentChanged( QTextDocument * doc )
@@ -1197,6 +1199,12 @@ bool AutoCompleter::testMethodCall( const MethodCall &call, int cursorPos,
     outArgNum = argNum;
 
     return (strictlyValid || !strict);
+}
+
+void AutoCompleter::clearMethodCallStack()
+{
+    mMethodCall.stack.clear();
+    hideMethodCall();
 }
 
 QString AutoCompleter::tokenText( TokenIterator & it )

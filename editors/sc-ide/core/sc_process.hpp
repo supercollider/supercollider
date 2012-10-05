@@ -82,6 +82,7 @@ Q_SIGNALS:
     void statusMessage(const QString &);
     void response(const QString & selector, const QString & data);
     void classLibraryRecompiled();
+    void introspectionAboutToSwap();
 
 public slots:
     void recompileClassLibrary (void);
@@ -95,6 +96,7 @@ public slots:
 
     void swapIntrospection (ScLanguage::Introspection *newIntrospection)
     {
+        emit introspectionAboutToSwap();
         // LATER: use c++11/std::move
         mIntrospection = *newIntrospection;
         delete newIntrospection;

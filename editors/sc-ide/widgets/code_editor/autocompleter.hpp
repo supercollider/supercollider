@@ -59,6 +59,7 @@ private slots:
     void onContentsChange(int pos, int removed, int added);
     void onCursorChanged();
     void onCompletionMenuFinished( int result );
+    void clearMethodCallStack();
 
 private:
     friend class MethodCallWidget;
