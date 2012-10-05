@@ -21,6 +21,8 @@
 
 #include "SC_PlugIn.h"
 
+#include <boost/utility/enable_if.hpp>
+
 #ifdef NOVA_SIMD
 #include "simd_unary_arithmetic.hpp"
 #include "simd_binary_arithmetic.hpp"
@@ -78,8 +80,26 @@ struct sc_scurve_functor
 	template <typename FloatType>
 	inline nova::vec<FloatType> operator()(nova::vec<FloatType> arg) const
 	{
-		typedef nova::vec<FloatType>  vec;
+		return perform(arg);
+	}
 
+	template <typename VecType>
+	inline typename boost::disable_if_c<VecType::has_compare_bitmask, VecType >::type
+	perform(VecType arg) const
+	{
+		typedef VecType vec;
+
+		vec result;
+		for (int i = 0; i != result.size; ++i)
+			result.set(i, sc_scurve(arg.get(i)));
+		return result;
+	}
+
+	template <typename VecType>
+	inline typename boost::enable_if_c<VecType::has_compare_bitmask, VecType >::type
+	perform(VecType arg) const
+	{
+		typedef VecType vec;
 		vec one   (1.f);
 		vec zero  (0.f);
 		vec two   (2.f);
