@@ -355,14 +355,25 @@ void AutoCompleter::onContentsChange( int pos, int removed, int added )
 {
     qDebug() << ">>> contentsChange:" << pos << "-" << removed << "+" << added;
 
-    while (!mMethodCall.stack.isEmpty())
+    int callIdx = 0;
+    while (callIdx < mMethodCall.stack.count())
     {
-        MethodCall & call = mMethodCall.stack.top();
-        if (pos > call.position)
+        MethodCall & call = mMethodCall.stack[callIdx];
+        if (pos > call.position) {
             break;
-        else {
-            qDebug("Method call: change before method call. popping.");
-            mMethodCall.stack.pop();
+        } else if (pos + removed > call.position) {
+            qDebug("Method call: opening bracket deleted. popping.");
+            mMethodCall.stack.remove(callIdx);
+        } else {
+            // Adjust method call positions.
+            // FIXME: We are disregarding changes in context that defines the method call.
+            // This is for reason of simplicity, and with the benefit that (irrelevant)
+            // indentation changes don't destroy the method call stack
+            qDebug("Method call: adjusting position: %i", call.position);
+            call.position -= removed;
+            call.position += added;
+            qDebug("Method call: adjusted position: %i", call.position);
+            ++callIdx;
         }
     }
 
@@ -393,8 +404,8 @@ void AutoCompleter::onContentsChange( int pos, int removed, int added )
 
 void AutoCompleter::onCursorChanged()
 {
-    qDebug(">>> cursorChanged");
     int cursorPos = mEditor->textCursor().position();
+    qDebug(">>> cursorChanged: %i", cursorPos);
 
     // completion
     if (mCompletion.on) {
