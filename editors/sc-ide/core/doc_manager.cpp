@@ -285,7 +285,7 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
         }
     }
 
-    if (doc->filePath().isEmpty() && (info.suffix() != "scd" || info.suffix() != "sc") ) {
+    if (doc->filePath().isEmpty() && !(info.suffix() == "scd" || info.suffix() == "sc") ) {
         QMessageBox::information(MainWindow::instance(), tr("File Extension Changed"),
                                  tr("The extension of the file has changed. Please reopen file to update editor mode")
                                  );
