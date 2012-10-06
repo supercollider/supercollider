@@ -97,6 +97,7 @@ private slots:
     void onJsConsoleMsg(const QString &, int, const QString & );
 
 private:
+    bool eventFilter( QObject * object, QEvent * event);
     void sendRequest( const QString &code );
 
     QWebView *mWebView;
