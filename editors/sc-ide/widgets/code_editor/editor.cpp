@@ -469,7 +469,10 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
     case Qt::Key_Down:
     {
         if (cursor.block() == textDocument()->lastBlock()) {
-            cursor.movePosition(QTextCursor::EndOfBlock);
+            QTextCursor::MoveMode moveMode = e->modifiers() & Qt::SHIFT ? QTextCursor::KeepAnchor
+                                                                        : QTextCursor::MoveAnchor;
+
+            cursor.movePosition(QTextCursor::EndOfBlock, moveMode);
             setTextCursor(cursor);
         } else
             QPlainTextEdit::keyPressEvent(e);
@@ -479,7 +482,10 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
     case Qt::Key_Up:
     {
         if (cursor.block() == textDocument()->firstBlock()) {
-            cursor.movePosition(QTextCursor::StartOfBlock);
+            QTextCursor::MoveMode moveMode = e->modifiers() & Qt::SHIFT ? QTextCursor::KeepAnchor
+                                                                        : QTextCursor::MoveAnchor;
+
+            cursor.movePosition(QTextCursor::StartOfBlock, moveMode);
             setTextCursor(cursor);
         } else
             QPlainTextEdit::keyPressEvent(e);
