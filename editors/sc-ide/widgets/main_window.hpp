@@ -202,6 +202,7 @@ private:
     void updateClockWidget( bool isFullScreen );
     void openSession( QString const & sessionName );
     bool checkFileExtension( const QString & fpath );
+    void toggleInterpreterActions( bool enabled);
 
     Main *mMain;
 
