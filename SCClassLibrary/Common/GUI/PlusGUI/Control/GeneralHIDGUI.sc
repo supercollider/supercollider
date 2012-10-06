@@ -1,9 +1,9 @@
 GeneralHIDDeviceGUI{
 	var <win, <updater;
 	var <device;
-	var butlabels, buttons;
-	var slidlabels, sliders;
-	var rellabels, relsliders;
+	var buttons;
+	var sliders;
+	var relsliders;
 
 	var <bkeys,<akeys,<rkeys;
 
@@ -16,21 +16,17 @@ GeneralHIDDeviceGUI{
 		win = GUI.window.new( device.info.name, Rect( 0, 0, 400, 400 ));
 		win.view.decorator = FlowLayout( win.bounds );
 
-		GUI.staticText.new( win, Rect( 0, 0, 390, 20 ) ).string_( device.info.name );
+		EZText.new( win, 390@20 , "name", initVal: device.info.name );
 
-		GUI.staticText.new( win, Rect( 0, 0, 390, 20 ) ).string_( device.info.findArgs );
+		EZText.new( win, 390@20, "findArgs", initVal: device.info.findArgs );
 
 		win.view.decorator.nextLine;
 
 		// buttons:
 		if ( device.slots[1].notNil, {
 			bkeys = device.slots[1].keys.asArray.sort;
-			butlabels = bkeys.collect{ |key,it|
-				GUI.staticText.new( win, Rect( 0, 0, 30, 20 ) ).string_( device.slots[1][key].id.asString ).align_( 0 );
-			};
-			win.view.decorator.nextLine;
-			buttons = bkeys.collect{ |it|
-				GUI.button.new( win, Rect( 0, 0, 30, 20 ) ).states_( [ ["0"], ["1"] ] );
+			buttons = bkeys.collect{ |key,it|
+            EZNumber.new( win, 30@40, device.slots[1][key].id.asString, [0,1,\linear,1].asSpec, labelWidth: 30, layout: 'line2', gap:0@0, margin: 0@0 );
 			};
 		});
 		win.view.decorator.nextLine;
@@ -38,12 +34,8 @@ GeneralHIDDeviceGUI{
 		// absolute slots:
 		if ( device.slots[3].notNil, {
 			akeys = device.slots[3].keys.asArray.sort;
-			slidlabels = akeys.collect{ |key,it|
-				GUI.staticText.new( win, Rect( 0, 0, 30, 20 ) ).string_( device.slots[3][key].id.asString ).align_( 0 );
-			};
-			win.view.decorator.nextLine;
-			sliders = akeys.collect{ |it|
-				GUI.slider.new( win, Rect( 0, 0, 30, 60 ) )
+         sliders = akeys.collect{ |key,it|
+            EZSlider.new( win, 30@80, device.slots[3][key].id.asString, labelWidth: 30, layout: 'vert',gap:0@0,margin:0@0 );
 			};
 		});
 		win.view.decorator.nextLine;
@@ -52,12 +44,8 @@ GeneralHIDDeviceGUI{
 
 		if ( device.slots[2].notNil, {
 			rkeys = device.slots[2].keys.asArray.sort;
-			rellabels = rkeys.collect{ |key,it|
-				GUI.staticText.new( win, Rect( 0, 0, 30, 20 ) ).string_( device.slots[2][key].id.asString ).align_( 0 );
-			};
-			win.view.decorator.nextLine;
-			relsliders = rkeys.collect{ |it|
-				GUI.slider.new( win, Rect( 0, 0, 30, 60 ) )
+			relsliders = rkeys.collect{ |key,it|
+            EZSlider.new( win, 30@80, device.slots[2][key].id.asString, labelWidth: 30, layout: 'vert',gap:0@0,margin:0@0 );
 			};
 		});
 
