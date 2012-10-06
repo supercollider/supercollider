@@ -455,18 +455,45 @@ MIDIMessageDispatcherNV : MIDIMessageDispatcher {
 
 
 MIDIFunc : AbstractResponderFunc {
-	classvar <>defaultDispatchers;
+	classvar <>defaultDispatchers, traceFuncs, traceRunning = false;
 	var <chan, <msgNum, <msgType, <argTemplate;
 
 	*initClass {
 		defaultDispatchers = IdentityDictionary.new;
+		traceFuncs = IdentityDictionary.new;
 		[\noteOn, \noteOff, \control, \polytouch].do({|type|
 			defaultDispatchers[type] = MIDIMessageDispatcher(type);
+			traceFuncs[type] = {|src, chan, num, val|
+				"MIDI Message Received:\n\ttype: %\n\tsrc: %\n\tchan: %\n\tnum: %\n\tval: %\n\n".postf(type, src, chan, num, val);
+			};
 		});
 		[\touch, \program, \bend].do({|type|
 			defaultDispatchers[type] = MIDIMessageDispatcherNV(type);
+			traceFuncs[type] = {|src, chan, num|
+				"MIDI Message Received:\n\ttype: %\n\tsrc: %\n\tchan: %\n\tnum: %\n\n".postf(type, src, chan, num);
+			};
 		});
 	}
+
+	*trace {|bool = true|
+		if(bool, {
+			if(traceRunning.not, {
+				[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend].do({|type|
+					MIDIIn.addFuncTo(type, traceFuncs[type]);
+				});
+				CmdPeriod.add(this);
+				traceRunning = true;
+			});
+		}, {
+			[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend].do({|type|
+				MIDIIn.removeFuncFrom(type, traceFuncs[\type]);
+			});
+			CmdPeriod.remove(this);
+			traceRunning = false;
+		});
+	}
+
+	*cmdPeriod { this.trace(false) }
 
 	*new { arg func, msgNum, chan, msgType, srcID, argTemplate, dispatcher;
 		^super.new.init(func, msgNum, chan, msgType, srcID, argTemplate, dispatcher ? defaultDispatchers[msgType]);
