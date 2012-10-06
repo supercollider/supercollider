@@ -78,6 +78,11 @@ A convenience method to create a new MIDIFunc which responds to MIDI program cha
 
 returns:: A new instance of MIDIFunc which responds to MIDI program change messages.
 
+METHOD:: trace
+A convenience method which dumps all incoming MIDI messages.
+
+argument:: bool
+A link::Classes/Boolean:: indicating whether dumping is on or off.
 
 INSTANCEMETHODS::
 private:: init, printOn
