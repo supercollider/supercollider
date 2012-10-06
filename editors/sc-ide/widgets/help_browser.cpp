@@ -60,6 +60,8 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     // get in the way of rendering web pages
     mWebView->setPalette( style()->standardPalette() );
 
+    mWebView->installEventFilter(this);
+
     mLoadProgressIndicator = new LoadProgressIndicator;
     mLoadProgressIndicator->setIndent(10);
 
@@ -161,6 +163,28 @@ void HelpBrowser::onReload()
 {
     QWebSettings::clearMemoryCaches();
     onLinkClicked( mWebView->url() );
+}
+
+bool HelpBrowser::eventFilter(QObject *object, QEvent *event)
+{
+    if (object == mWebView) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent * mouseEvent = static_cast<QMouseEvent*>(event);
+            switch (mouseEvent->button()) {
+            case Qt::XButton1:
+                mWebView->pageAction(QWebPage::Back)->trigger();
+                return true;
+
+            case Qt::XButton2:
+                mWebView->pageAction(QWebPage::Forward)->trigger();
+                return true;
+
+            default:
+                return false;
+            }
+        }
+    }
+    return false;
 }
 
 void HelpBrowser::sendRequest( const QString &code )
