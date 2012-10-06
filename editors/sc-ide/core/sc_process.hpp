@@ -106,6 +106,7 @@ private slots:
     void onNewIpcConnection();
     void onIpcData();
     void finalizeConnection();
+    void onProcessStateChanged( QProcess::ProcessState state);
 
 private:
     void onSclangStart();

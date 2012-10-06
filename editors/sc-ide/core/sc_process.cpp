@@ -53,6 +53,8 @@ ScProcess::ScProcess( Main *parent, Settings::Manager * settings ):
     connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
     connect(mIntrospectionParser, SIGNAL(done(ScLanguage::Introspection*)),
             this, SLOT(swapIntrospection(ScLanguage::Introspection*)));
+
+    connect(this, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(onProcessStateChanged(QProcess::ProcessState)));
 }
 
 void ScProcess::prepareActions(Settings::Manager * settings)
@@ -86,6 +88,8 @@ void ScProcess::prepareActions(Settings::Manager * settings)
 
     for (int i = 0; i < SCProcessActionCount; ++i)
         settings->addAction( mActions[i] );
+
+    onProcessStateChanged(QProcess::NotRunning);
 }
 
 void ScProcess::startLanguage (void)
@@ -212,6 +216,35 @@ void ScProcess::finalizeConnection()
     mIpcData.clear();
     mIpcSocket->deleteLater();
     mIpcSocket = NULL;
+}
+
+void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
+{
+    switch (state) {
+    case QProcess::Starting:
+        mActions[StartSCLang]->setEnabled(false);
+        mActions[StopSCLang]->setEnabled(true);
+        mActions[RestartSCLang]->setEnabled(true);
+
+        break;
+
+    case QProcess::Running:
+        mActions[RunMain]->setEnabled(true);
+        mActions[StopMain]->setEnabled(true);
+        mActions[RecompileClassLibrary]->setEnabled(true);
+
+        break;
+
+    case QProcess::NotRunning:
+        mActions[StartSCLang]->setEnabled(true);
+        mActions[StopSCLang]->setEnabled(false);
+        mActions[RestartSCLang]->setEnabled(false);
+        mActions[RunMain]->setEnabled(false);
+        mActions[StopMain]->setEnabled(false);
+        mActions[RecompileClassLibrary]->setEnabled(false);
+
+        break;
+    }
 }
 
 void ScProcess::onIpcData()

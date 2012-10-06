@@ -185,6 +185,7 @@ MainWindow::MainWindow(Main * main) :
 
     // Must be called after createAtions(), because it accesses an action:
     onServerRunningChanged(false, "", 0);
+    toggleInterpreterActions(false);
 
     mServerStatus->addAction( action(ServerToggleRunning) );
     mServerStatus->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -753,14 +754,20 @@ void MainWindow::onInterpreterStateChanged( QProcess::ProcessState state )
 
     switch(state) {
     case QProcess::NotRunning:
+        toggleInterpreterActions(false);
+
         text = "Inactive";
         color = Qt::white;
         break;
+
     case QProcess::Starting:
         text = "Booting";
         color = QColor(255,255,0);
         break;
+
     case QProcess::Running:
+        toggleInterpreterActions(true);
+
         text = "Active";
         color = Qt::green;
         break;
@@ -1198,6 +1205,18 @@ void MainWindow::showAbout()
 void MainWindow::showAboutQT()
 {
     QMessageBox::aboutQt(this);
+}
+
+void MainWindow::toggleInterpreterActions(bool enabled)
+{
+    mActions[ServerToggleRunning]->setEnabled(enabled);
+    mActions[ServerReboot]->setEnabled(enabled);
+    mActions[ServerShowMeters]->setEnabled(enabled);
+    mActions[ServerDumpNodeTree]->setEnabled(enabled);
+    mActions[ServerDumpNodeTreeWithControls]->setEnabled(enabled);
+    mEditors->action(MultiEditor::EvaluateCurrentDocument)->setEnabled(enabled);
+    mEditors->action(MultiEditor::EvaluateLine)->setEnabled(enabled);
+    mEditors->action(MultiEditor::EvaluateRegion)->setEnabled(enabled);
 }
 
 
