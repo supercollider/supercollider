@@ -126,6 +126,10 @@ void PostWindow::applySettings(Settings::Manager * settings)
     setFont(font);
     setPalette(palette);
     setLineWrap( lineWrap );
+
+    QFontMetrics metrics (font);
+    QString stringOfSpaces (settings->value("IDE/editor/indentWidth").toInt(), QChar(' '));
+    setTabStopWidth(metrics.width(stringOfSpaces));
 }
 
 void PostWindow::storeSettings( Settings::Manager * settings )
