@@ -1,6 +1,3 @@
-GUI.cocoa;	// use CocoaGUI (Mac OS X native)
-GUI.swing;	// use SwingGUI (Java based GUI)
-
 (
 //use as table
 var size, win, data1, data2, view1, view2, swapData, data1Color, data2Color;

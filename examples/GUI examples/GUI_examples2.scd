@@ -1,6 +1,3 @@
-GUI.cocoa;		// use Mac OS X native GUI
-GUI.swing;		// use Java GUI
-
 // Creating a window.
 
 w = Window.new("a control panel", Rect(20, 400, 440, 360));
@@ -25,7 +22,7 @@ w.view.background = HiliteGradient(Color.red(0.6),Color.green,\h, 256);
 (
 Routine({
 	30.do {
-		w.view.background = 
+		w.view.background =
 			HiliteGradient(Color.rand(0.0,1.0),Color.rand(0.0,1.0),
 					[\h,\v].choose, 100, rrand(0.1,0.9));
 		0.5.wait;
@@ -59,7 +56,7 @@ b = Button(w, 75 @ 24);
 b.states = [["Backgnd", Color.white, Color.rand]];
 b.action = {
 		w.view.background = Color.rand(0.0,1.0); // fallback for SwingOSC
-		w.view.background = 
+		w.view.background =
 			HiliteGradient(Color.rand(0.0,1.0),Color.rand(0.0,1.0),
 					[\h,\v].choose, 100, rrand(0.1,0.9));
 };
@@ -85,13 +82,12 @@ b.action = {| view |
 
 // A slider that controls window transparency.
 
-// works on Mac OS X only
 (
 w.view.decorator.nextLine;
 v = Slider(w, 130 @ 24);
-v.action = {| view | 
+v.action = {| view |
 	// Sliders output values from zero to one.
-	w.alpha = view.value; 
+	w.alpha = view.value;
 };
 v.value = 1;
 )
@@ -104,7 +100,7 @@ w.front;
 (
 w.view.decorator.nextLine;
 v = Slider(w, 130 @ 24);
-v.action = {| view | 
+v.action = {| view |
 	var bounds;
 	bounds = w.bounds;
 	bounds.width = 400 + (400 * view.value);
@@ -126,8 +122,8 @@ s.boot;
 // define a synth
 SynthDef("window-test", { arg note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, gate = 1;
 		var x;
-		x = Mix.fill(4, { 
-			LFSaw.ar((note + {0.1.rand2}.dup).midicps, 0, 0.02) 
+		x = Mix.fill(4, {
+			LFSaw.ar((note + {0.1.rand2}.dup).midicps, 0, 0.02)
 		});
 		x = RLPF.ar(x, fc, rq).softclip;
 		x = RLPF.ar(x, fc, rq, amp).softclip;
@@ -204,7 +200,7 @@ v.align = \right;
 
 
 /*
-That is a lot of work for something simple, so I made a wrapper class. 
+That is a lot of work for something simple, so I made a wrapper class.
 EZSlider takes care of the details for you.
 
 
@@ -214,23 +210,23 @@ EZSlider is a wrapper for a SCStaticText, an SCSlider, and an SCNumberBox along 
 (
 // create controls.
 w.view.decorator.nextLine;
-v = EZSlider(w, 400 @ 24, "Note", ControlSpec(24, 60, \lin, 1), 
+v = EZSlider(w, 400 @ 24, "Note", ControlSpec(24, 60, \lin, 1),
 	{|ez| s.sendMsg("/n_set", 9999, "note", ez.value); });
-	
+
 w.view.decorator.nextLine;
-v = EZSlider(w, 400 @ 24, "Cutoff", ControlSpec(200, 5000, \exp), 
+v = EZSlider(w, 400 @ 24, "Cutoff", ControlSpec(200, 5000, \exp),
 	{|ez| s.sendMsg("/n_set", 9999, "fc", ez.value); });
-	
+
 w.view.decorator.nextLine;
-v = EZSlider(w, 400 @ 24, "Resonance", ControlSpec(0.1, 0.7), 
+v = EZSlider(w, 400 @ 24, "Resonance", ControlSpec(0.1, 0.7),
 	{|ez| s.sendMsg("/n_set", 9999, "rq", ez.value); });
-	
+
 w.view.decorator.nextLine;
-v = EZSlider(w, 400 @ 24, "Balance", \bipolar, 
+v = EZSlider(w, 400 @ 24, "Balance", \bipolar,
 	{|ez| s.sendMsg("/n_set", 9999, "bal", ez.value); });
-	
+
 w.view.decorator.nextLine;
-v = EZSlider(w, 400 @ 24, "Amp", \db, 
+v = EZSlider(w, 400 @ 24, "Amp", \db,
 	{|ez| s.sendMsg("/n_set", 9999, "amp", ez.value.dbamp); });
 )
 
@@ -268,7 +264,7 @@ startButton.states = [
 startButton.action = {|view|
 		if (view.value == 1) {
 			// start sound
-			s.sendMsg("/s_new", "window-test", id, 0, 0, 
+			s.sendMsg("/s_new", "window-test", id, 0, 0,
 				"note", noteControl.value,
 				"fc", cutoffControl.value,
 				"rq", resonControl.value,
@@ -283,25 +279,25 @@ startButton.action = {|view|
 
 // create controls for all parameters
 w.view.decorator.nextLine;
-noteControl = EZSlider(w, 400 @ 24, "Note", ControlSpec(24, 60, \lin, 1), 
+noteControl = EZSlider(w, 400 @ 24, "Note", ControlSpec(24, 60, \lin, 1),
 	{|ez| s.sendMsg("/n_set", id, "note", ez.value); }, 36);
-	
+
 w.view.decorator.nextLine;
-cutoffControl = EZSlider(w, 400 @ 24, "Cutoff", ControlSpec(200, 5000, \exp), 
+cutoffControl = EZSlider(w, 400 @ 24, "Cutoff", ControlSpec(200, 5000, \exp),
 	{|ez| s.sendMsg("/n_set", id, "fc", ez.value); }, 1000);
-	
+
 w.view.decorator.nextLine;
-resonControl = EZSlider(w, 400 @ 24, "Resonance", ControlSpec(0.1, 0.7), 
+resonControl = EZSlider(w, 400 @ 24, "Resonance", ControlSpec(0.1, 0.7),
 	{|ez| s.sendMsg("/n_set", id, "rq", ez.value); }, 0.2);
-	
+
 w.view.decorator.nextLine;
-balanceControl = EZSlider(w, 400 @ 24, "Balance", \bipolar, 
+balanceControl = EZSlider(w, 400 @ 24, "Balance", \bipolar,
 	{|ez| s.sendMsg("/n_set", id, "bal", ez.value); }, 0);
-	
+
 w.view.decorator.nextLine;
-ampControl = EZSlider(w, 400 @ 24, "Amp", \db, 
+ampControl = EZSlider(w, 400 @ 24, "Amp", \db,
 	{|ez| s.sendMsg("/n_set", id, "amp", ez.value.dbamp); }, -6);
-	
+
 
 // set start button to zero upon a cmd-period
 cmdPeriodFunc = { startButton.value = 0; };
