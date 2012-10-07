@@ -292,11 +292,14 @@ int GenericCodeEditor::findAll( const QRegExp &expr, QTextDocument::FindFlags op
     while (block.isValid()) {
         int blockPos = block.position();
         int offset = 0;
-        while(findInBlock(doc, block, expr, offset, options, cursor))
-        {
+        while(findInBlock(doc, block, expr, offset, options, cursor)) {
             offset = cursor.selectionEnd() - blockPos;
-            selection.cursor = cursor;
-            mSearchSelections.append(selection);
+
+            if (cursor.hasSelection()) {
+                selection.cursor = cursor;
+                mSearchSelections.append(selection);
+            } else
+                offset += 1;
         }
         block = block.next();
     }
