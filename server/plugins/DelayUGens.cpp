@@ -225,6 +225,7 @@ struct Pluck : public FeedbackDelay, CubicInterpolationUnit
 struct LocalBuf : public Unit
 {
 	SndBuf *m_buf;
+	void * chunk;
 };
 
 struct MaxLocalBufs : public Unit
@@ -664,19 +665,21 @@ inline int32 BUFMASK(int32 x)
 	return (1 << (31 - CLZ(x))) - 1;
 }
 
-
 static void LocalBuf_allocBuffer(LocalBuf *unit, SndBuf *buf, int numChannels, int numFrames)
 {
 	int numSamples = numFrames * numChannels;
 	// Print("bufnum: %i, allocating %i channels and %i frames. memsize: %i\n", (int)unit->m_fbufnum, numChannels, numFrames, numSamples * sizeof(float));
-	buf->data = (float*)RTAlloc(unit->mWorld, numSamples * sizeof(float));
+	const int alignment = 128; // in bytes
+	unit->chunk = (float*)RTAlloc(unit->mWorld, numSamples * sizeof(float) + alignment);
 
-	if (!buf->data) {
+	if (!unit->chunk) {
 		if(unit->mWorld->mVerbosity > -2){
 			Print("failed to allocate memory for LocalBuffer\n");
 		}
 		return;
 	}
+
+	buf->data = (float*) ((intptr_t)((char*)unit->chunk + (alignment - 1)) & -alignment);
 
 	buf->channels = numChannels;
 	buf->frames   = numFrames;
@@ -689,9 +692,6 @@ static void LocalBuf_allocBuffer(LocalBuf *unit, SndBuf *buf, int numChannels, i
 	buf->isLocal  = true;
 #endif
 }
-
-
-
 
 void LocalBuf_Ctor(LocalBuf *unit)
 {
@@ -718,15 +718,14 @@ void LocalBuf_Ctor(LocalBuf *unit)
 
 void LocalBuf_Dtor(LocalBuf *unit)
 {
-	RTFree(unit->mWorld, unit->m_buf->data);
+	RTFree(unit->mWorld, unit->chunk);
 	if(unit->mParent->localBufNum <= 1) { // only the last time.
 		for (int i = 0; i != unit->mParent->localMaxBufNum; ++i)
 			unit->mParent->mLocalSndBufs[i].~SndBuf();
 		RTFree(unit->mWorld, unit->mParent->mLocalSndBufs);
 		unit->mParent->localMaxBufNum = 0;
-	} else {
+	} else
 		unit->mParent->localBufNum = unit->mParent->localBufNum - 1;
-	}
 }
 
 
@@ -744,10 +743,8 @@ void MaxLocalBufs_Ctor(MaxLocalBufs *unit)
 			new(&parent->mLocalSndBufs[i]) SndBuf();
 #endif
 		parent->localMaxBufNum = maxBufNum;
-	} else {
+	} else
 		printf("warning: MaxLocalBufs - maximum number of local buffers is already declared (%i) and must remain unchanged.\n", parent->localMaxBufNum);
-	}
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
