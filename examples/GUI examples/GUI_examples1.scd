@@ -1,8 +1,4 @@
-
 // GUI examples
-
-GUI.cocoa;	// use CocoaGUI (Mac OS X native)
-GUI.swing;	// use SwingGUI (Java based GUI)
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -77,7 +73,7 @@ w = Window("mixer", Rect(128, 64, 340, 360));
 w.view.decorator = f = FlowLayout(w.view.bounds,Point(4,4),Point(4,2));
 17.do({ arg i;
 	var v, s, n, spec, p, height = 16;
-	
+
 	v = StaticText(w, Rect(0, 0, 56, height+2));
 	if (i == 0, {
 		v.font = Font("Helvetica", 13).boldVariant;
@@ -90,7 +86,7 @@ w.view.decorator = f = FlowLayout(w.view.bounds,Point(4,4),Point(4,2));
 	s = Slider(w, Rect(0, 0, 182, height));
 	s.resize = 2;
 	spec = \db.asSpec;
-	s.action = { 
+	s.action = {
 		var db;
 		db = spec.map(s.value).round(0.1);
 		//v.string = if (db < -100, { "-inf" },{ db.asString ++ " dB" });
@@ -110,10 +106,10 @@ w.view.decorator = f = FlowLayout(w.view.bounds,Point(4,4),Point(4,2));
 	});
 	n.background = Color.rand(0.1,0.5);
 	n.resize = 3;
-	
+
 	f.nextLine;
 });
-w.view.background = Color.blue;	// fallback on SwingOSC
+w.view.background = Color.blue;
 w.view.background = HiliteGradient(Color.blue, Color.green, \h, 128, 0.3);
 w.front;
 w.refresh;
@@ -175,7 +171,7 @@ z.visible = true;
 
 z.enabled = false;	// NO EFFECT WITH SWINGOSC!
 z.enabled = true;
-	
+
 b.visible = false;
 b.visible = true;
 
@@ -225,7 +221,7 @@ SynthDef("moto-rev", {
 	var x;
 	x = RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0,0.1], 0.1), 100, 0.1).clip2(0.4);
 	Out.ar(0, x);
-}).writeDefFile;
+}).add;
 )
 
 (
@@ -234,20 +230,20 @@ SynthDef("moto-rev", {
 	s = Server.local;
 	w = Window(name.asString, Rect(128, 64, 260, 80));
 	w.view.decorator = FlowLayout(w.view.bounds);
-	
+
 	b1 = Button(w, Rect(0,0, 80, 24));
 	b1.states = [["Load", Color.black, Color.green]];
-	b1.action = { arg view; 
+	b1.action = { arg view;
 		s.sendMsg("/d_load", SynthDef.synthDefDir ++ name ++ ".scsyndef");
 	};
 	b1.enabled = s.serverRunning;
-	
+
 	b2 = Button(w, Rect(0,0, 80, 24));
 	b2.states = [
 		["Play", Color.black, Color.green],
 		["Stop", Color.white, Color.red],
 	];
-	b2.action = { arg view; 
+	b2.action = { arg view;
 		if (b2.value == 1, {
 			s.sendMsg("/s_new", name, 1001, 1, 0);
 		},{
@@ -257,14 +253,14 @@ SynthDef("moto-rev", {
 	b2.enabled = s.serverRunning;
 
 	a = SimpleController(s);
-	f = { arg server; 
+	f = { arg server;
 		b1.enabled = server.serverRunning;
 		b2.enabled = server.serverRunning;
 	};
 	a.put(\serverRunning, f);
-	w.onClose = { 
+	w.onClose = {
 		a.remove;
-		s.sendMsg("/n_free", 1001);		
+		s.sendMsg("/n_free", 1001);
 	};
 	w.front;
 )
@@ -277,13 +273,12 @@ s.boot;
 // GUI to control a synth
 
 (
-SynthDef("trem", { arg freq=800, rate=8, amp=0.1; 
+SynthDef("trem", { arg freq=800, rate=8, amp=0.1;
 	var osc;
 	freq = Lag.kr(freq, 0.3);
 	osc = LFTri.ar(freq, 0, SinOsc.kr( rate + [0,0.1],0,amp).max(0));
-	Out.ar(0, osc) 
-}).writeDefFile;
-Server.local.sendMsg("/d_load", SynthDef.synthDefDir ++ "trem.scsyndef");
+	Out.ar(0, osc)
+}).add;
 )
 
 (
@@ -303,10 +298,10 @@ f = { arg name, spec = \lin, guispec;
 	v.font = Font("Helvetica", 12);
 	v.stringColor = Color.black;
 	v.align = \right;
-	
+
 	s = Slider(w, Rect(0, 0, 182, height));
 	s.resize = 2;
-	s.action = { 
+	s.action = {
 		var val, guival, step;
 		val = spec.map(s.value);
 		values.put(name, val);
@@ -317,12 +312,12 @@ f = { arg name, spec = \lin, guispec;
 	};
 	s.value = spec.unmap(spec.default);
 	s.action.value;
-	
+
 	n = StaticText(w, Rect(0, 0, 72, height));	n.string = name;
 	n.stringColor = Color.black;
 	n.font = Font("Helvetica", 12);
 	n.resize = 3;
-	
+
 	w.view.decorator.nextLine;
 };
 
@@ -332,7 +327,7 @@ w.view.decorator = d = FlowLayout(w.view.bounds);
 
 b1 = Button(w, Rect(0,0, 80, 24));
 b1.states = [["Load", Color.black, Color.green]];
-b1.action = { arg view; 
+b1.action = { arg view;
 	server.sendMsg("/d_load", "synthdefs/trem.scsyndef");
 };
 b1.enabled = server.serverRunning;
@@ -342,18 +337,18 @@ b2.states = [
 	["Play", Color.black, Color.green],
 	["Stop", Color.white, Color.red],
 ];
-b2.action = { arg view; 
+b2.action = { arg view;
 	var msg;
 	if (view.value == 1, {
 		isOn = true;
 		msg = ["/s_new", "trem", 2001, 1, 0];
-		values.keysValuesDo({ arg key, value; 
-			msg = msg.addAll([key, value]); 
+		values.keysValuesDo({ arg key, value;
+			msg = msg.addAll([key, value]);
 		});
-		server.performList(\sendMsg, msg); 
+		server.performList(\sendMsg, msg);
 	},{
 		isOn = false;
-		server.sendMsg("/n_free", 2001); 
+		server.sendMsg("/n_free", 2001);
 	});
 };
 b2.enabled = server.serverRunning;
@@ -364,13 +359,13 @@ f.value(\rate, \lofreq);
 f.value(\amp, \amp, \db);
 
 a = SimpleController(server);
-f = { arg server; 
+f = { arg server;
 	b1.enabled = server.serverRunning;
 	b2.enabled = server.serverRunning;
 	if (server.serverRunning.not, { b2.value = 0 });
 };
 a.put(\serverRunning, f);
-w.onClose = { 
+w.onClose = {
 	if (isOn, { server.sendMsg("/n_free", 2001) });
  	a.remove;
 };
