@@ -65,6 +65,7 @@ public:
 
     bool isPlainText() const { return mHighlighter == NULL; }
     bool isModified() const  { return mDoc->isModified(); }
+    bool isUntitled() const  { return mTitle == "Untitled"; }
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -124,6 +125,8 @@ private:
     bool doSaveAs( Document *, const QString & path );
     void addToRecent( Document * );
     void loadRecentDocuments( Settings::Manager * );
+    void closeSingleUntitledIfUnmodified();
+
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
 

@@ -173,6 +173,8 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
                              QString(tr("Warning: RTF file will be converted to plain-text scd file.")));
     }
 
+    closeSingleUntitledIfUnmodified();
+
     const bool fileIsPlainText = !(info.suffix() == QString("sc") ||
                                    (info.suffix() == QString("scd")));
 
@@ -359,4 +361,15 @@ void DocumentManager::storeSettings( Settings::Manager *settings )
         list << QVariant(path);
 
     settings->setValue("IDE/recentDocuments", QVariant::fromValue<QVariantList>(list));
+}
+
+void DocumentManager::closeSingleUntitledIfUnmodified()
+{
+    QList<Document*> openDocuments = documents();
+
+    if (openDocuments.size() == 1) {
+        Document * document = openDocuments.front();
+        if (document->isUntitled() && !document->isModified())
+            close(document);
+    }
 }
