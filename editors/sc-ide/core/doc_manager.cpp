@@ -369,7 +369,7 @@ void DocumentManager::closeSingleUntitledIfUnmodified()
 
     if (openDocuments.size() == 1) {
         Document * document = openDocuments.front();
-        if (document->isUntitled() && !document->isModified())
+        if (document->filePath().isEmpty() && !document->isModified())
             close(document);
     }
 }
