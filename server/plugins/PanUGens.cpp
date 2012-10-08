@@ -1484,7 +1484,7 @@ FLATTEN void PanAz_next_ak_nova(PanAz *unit, int inNumSamples)
 
 	pos = pos * 0.5f * numOutputs + width * 0.5f + orientation;
 
-	float * in = IN(0);
+	float * __restrict__ in = IN(0);
 	float * __restrict__ chanamps = unit->m_chanamp;
 
 	for (int i=0; i<numOutputs; ++i) {
@@ -1501,9 +1501,9 @@ FLATTEN void PanAz_next_ak_nova(PanAz *unit, int inNumSamples)
 
 		float *out = OUT(i);
 		if (nextchanamp == chanamp) {
-//			if (nextchanamp == 0.f)
-//				nova::zerovec_simd(out, inNumSamples);
-//			else
+			if (nextchanamp == 0.f)
+				nova::zerovec_simd(out, inNumSamples);
+			else
 				nova::times_vec_simd(out, in, chanamp, inNumSamples);
 		} else {
 			float chanampslope  = CALCSLOPE(nextchanamp, chanamp);
