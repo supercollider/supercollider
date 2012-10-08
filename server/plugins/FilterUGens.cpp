@@ -321,7 +321,8 @@ struct FreqShift : public Unit
 
 struct MoogFF : public Unit
 {
-	float m_freq, m_b0, m_a1; // Resonant freq and corresponding vals; stored because we need to compare against prev vals
+	float m_freq;
+	double m_b0, m_a1; // Resonant freq and corresponding vals; stored because we need to compare against prev vals
 	double m_wcD;
 
 	double m_s1, m_s2, m_s3, m_s4; // 1st order filter states
@@ -4874,7 +4875,7 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 	if(IN0(3)>0)
 		s1 = s2 = s3 = s4 = 0.f;
 
-	float a1 = unit->m_a1, b0 = unit->m_b0; // Filter coefficient parameters
+	double a1 = unit->m_a1, b0 = unit->m_b0; // Filter coefficient parameters
 	double o, u; // System's null response, loop input
 
 	// Update filter coefficients, but only if freq changes since it involves some expensive operations
