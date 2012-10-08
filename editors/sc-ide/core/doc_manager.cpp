@@ -182,8 +182,6 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     doc->mFilePath = filePath;
     doc->mTitle = info.fileName();
 
-    mDocHash.insert( doc->id(), doc );
-
     if (!isRTF)
         mFsWatcher.addPath(cpath);
 
