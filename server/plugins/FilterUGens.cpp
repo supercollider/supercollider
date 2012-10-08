@@ -321,7 +321,7 @@ struct FreqShift : public Unit
 
 struct MoogFF : public Unit
 {
-	float m_freq;
+	float m_freq, m_k;
 	double m_b0, m_a1; // Resonant freq and corresponding vals; stored because we need to compare against prev vals
 	double m_wcD;
 
@@ -4847,6 +4847,7 @@ void MoogFF_Ctor(MoogFF* unit)
 
 	// initialize the unit generator state variables.
 	unit->m_freq = -10000.3f; // Force the freq to update on first run
+	unit->m_k    = IN0(2);
 	unit->m_s1 = 0.f;
 	unit->m_s2 = 0.f;
 	unit->m_s3 = 0.f;
@@ -4869,7 +4870,6 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 	double s2 = unit->m_s2;
 	double s3 = unit->m_s3;
 	double s4 = unit->m_s4;
-	float freq = unit->m_freq;///
 
 	// Reset filter state if requested
 	if(IN0(3)>0)
@@ -4879,46 +4879,80 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 	double o, u; // System's null response, loop input
 
 	// Update filter coefficients, but only if freq changes since it involves some expensive operations
-	if(freq != IN0(1)) {
-		freq = IN0(1);
+
+	float freqIn = IN0(1);
+	if(unit->m_freq != freqIn) {
 		//Print("Updated freq to %g\n", freq);
 		double wcD=unit->m_wcD;
 		double T = SAMPLEDUR;
-		wcD = 2.0 * tan ( T * PI * freq ) * SAMPLERATE;
+		wcD = 2.0 * tan ( T * PI * freqIn ) * SAMPLERATE;
 		if(wcD<0)
 			wcD = 0; // Protect against negative cutoff freq
 		double TwcD = T*wcD;
 		b0 = (float)(TwcD/(TwcD + 2.));
 		a1 = (float)((TwcD - 2.)/(TwcD + 2.));
-		unit->m_freq = freq;
+		unit->m_freq = freqIn;
 		unit->m_b0 = b0;
 		unit->m_a1 = a1;
 		unit->m_wcD = wcD;
 	}
 
-	LOOP1(inNumSamples,
-		// compute loop values
-		o = s4 + b0*(s3 + b0*(s2 + b0*s1));
-		double ins = ZXP(in);
-		double outs = (b0*b0*b0*b0*ins + o) * sc_reciprocal(1.0 + b0*b0*b0*b0*k);
-		ZXP(out) = outs;
-		u = ins - k*outs;
+	if (unit->m_k == k) {
+		LOOP1(inNumSamples,
+			// compute loop values
+			o = s4 + b0*(s3 + b0*(s2 + b0*s1));
+			double ins = ZXP(in);
+			double outs = (b0*b0*b0*b0*ins + o) * sc_reciprocal(1.0 + b0*b0*b0*b0*k);
+			ZXP(out) = outs;
+			u = ins - k*outs;
 
-		// update 1st order filter states
-		double past = u;
-		double future = b0*past + s1;
-		s1 = b0*past - a1*future;
+			// update 1st order filter states
+			double past = u;
+			double future = b0*past + s1;
+			s1 = b0*past - a1*future;
 
-		past = future;
-		future = b0*past + s2;
-		s2 = b0*past - a1*future;
+			past = future;
+			future = b0*past + s2;
+			s2 = b0*past - a1*future;
 
-		past = future;
-		future = b0*past + s3;
-		s3 = b0*past - a1*future;
+			past = future;
+			future = b0*past + s3;
+			s3 = b0*past - a1*future;
 
-		s4 = b0*future - a1*outs;
-	)
+			s4 = b0*future - a1*outs;
+		)
+	} else {
+		float new_k = k;
+		float old_k = unit->m_k;
+		float slope_k = CALCSLOPE(new_k, old_k);
+		k = old_k;
+
+		LOOP1(inNumSamples,
+			// compute loop values
+			o = s4 + b0*(s3 + b0*(s2 + b0*s1));
+			double ins = ZXP(in);
+			double outs = (b0*b0*b0*b0*ins + o) * sc_reciprocal(1.0 + b0*b0*b0*b0*k);
+			ZXP(out) = outs;
+			u = ins - k*outs;
+
+			// update 1st order filter states
+			double past = u;
+			double future = b0*past + s1;
+			s1 = b0*past - a1*future;
+
+			past = future;
+			future = b0*past + s2;
+			s2 = b0*past - a1*future;
+
+			past = future;
+			future = b0*past + s3;
+			s3 = b0*past - a1*future;
+
+			s4 = b0*future - a1*outs;
+			k += slope_k;
+		);
+		unit->m_k = new_k;
+	}
 
 	// Store state
 	unit->m_s1 = s1;
