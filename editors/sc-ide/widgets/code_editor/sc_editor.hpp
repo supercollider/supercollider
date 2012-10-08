@@ -78,6 +78,10 @@ private slots:
     void matchBrackets();
 
 private:
+    QTextCursor cursorAt( const TokenIterator, int offset = 0 );
+    QTextCursor selectionForPosition( int position );
+    QTextCursor regionAroundCursor( const QTextCursor & );
+
     void updateExtraSelections();
     void indentCurrentRegion();
 
@@ -87,16 +91,11 @@ private:
     void addSingleLineComment( QTextCursor, int indentationLevel );
     void removeSingleLineComment( QTextCursor );
 
-    QTextCursor blockAtCursor(const QTextCursor &); // text cursor should point to bracket!
-    QTextCursor regionAroundCursor( const QTextCursor & );
-
     int indentedStartOfLine( const QTextBlock & );
     void indent( const QTextCursor & );
     QTextBlock indent( const QTextBlock & b, int level );
     QString makeIndentationString( int level );
     int indentationLevel( const QTextCursor & );
-
-    QTextCursor cursorAt( const TokenIterator, int offset = 0 );
 
     int mIndentWidth;
     bool mSpaceIndent;
