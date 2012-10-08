@@ -39,11 +39,8 @@ m.sendBundle(2.0, ["/chat", "Hello App 1"], ["/chat", "Hallo Wurld"]);
 m.sendBundle(0.0, ["/chat", "Hello App 1"], ["/chat", "Hallo Wurld"]);
 )
 
-// end application 2:
-m.disconnect;
-
 // end application 1:
-n.disconnect; o.remove;
+o.remove;
 ::
 
 subsection::Listening to data from _any_ client
