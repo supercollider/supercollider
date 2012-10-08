@@ -27,7 +27,7 @@ NetAddr.localAddr	// retrieve the current IP and port
 You can open additional ports using link::Classes/Main#-openUDPPort::. This will return a link::Classes/Boolean:: indicating whether SC succeeded in opening the new port. Or you can just pass a custom port as the strong::recvPort:: argument to link::Classes/OSCFunc:: and it will open it automatically if not already open.
 code::
 thisProcess.openUDPPort(1121); // attempt to open 1121
-thisProcess.customPorts; // list all open custom ports
+thisProcess.openPorts; // list all open ports
 ::
 
 To listen to incoming messages, an link::Classes/OSCFunc:: needs to be created in SuperCollider. If the sending application strong::has a fixed port it sends message from::, you can set the OSCFunc to listen only to messages coming from that IP and port:
