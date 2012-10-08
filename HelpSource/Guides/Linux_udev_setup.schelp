@@ -19,3 +19,4 @@ For a quick fix (at your own risk, any user can then get read/write access to yo
 code::
 $ cd /dev/input
 $ sudo chmod 777 event*
+::
