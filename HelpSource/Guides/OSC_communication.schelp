@@ -41,7 +41,7 @@ note:: The port 7771 above is the port the other application is sending strong::
 
 section::Receiving from an application that is sending from a variable port
 
-Some applications (notably Pd and Max) do not send messages from a fixed port, but instead use a different port each time they send out a message. In that case the OSCFunc needs to be set up, so that it listens to messages coming from anywhere. You do this by passing nil as the srcID argument.
+Some applications (notably Pd and Max) do not send messages from a fixed port, but instead use a different port each time they send out a message, or each time a patch starts up it picks a random port. In that case the OSCFunc needs to be set up, so that it listens to messages coming from anywhere. You do this by passing nil as the srcID argument.
 code::
 o = OSCFunc({ arg msg, time, addr, recvPort; [msg, time, addr, recvPort].postln; }, '/goodbye'); // create the OSCresponderNode
 o.free;	// remove the OSCresponderNode when you are done.
