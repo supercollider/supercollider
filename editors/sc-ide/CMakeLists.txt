@@ -65,6 +65,7 @@ set ( ide_src
     core/sc_process.cpp
     core/sc_server.cpp
     core/sc_introspection.cpp
+    core/sc_lexer.cpp
     core/settings/serialization.cpp
     core/settings/manager.cpp
     core/session_manager.cpp

@@ -21,7 +21,7 @@
 #ifndef SCIDE_SC_SYNTAX_HIGHLIGHTER_HPP_INCLUDED
 #define SCIDE_SC_SYNTAX_HIGHLIGHTER_HPP_INCLUDED
 
-#include "tokens.hpp"
+#include "../../core/sc_lexer.hpp"
 
 #include <QSyntaxHighlighter>
 #include <QVector>
@@ -47,15 +47,6 @@ enum SyntaxFormat
     CommentFormat,
 
     FormatCount
-};
-
-struct SyntaxRule
-{
-    SyntaxRule(): type(Token::Unknown) {}
-    SyntaxRule( Token::Type t, const QString &s ): type(t), expr(s) {}
-
-    Token::Type type;
-    QRegExp expr;
 };
 
 class SyntaxHighlighterGlobals : public QObject
@@ -86,13 +77,10 @@ Q_SIGNALS:
 private:
     friend class SyntaxHighlighter;
 
-    void initSyntaxRules();
-    void initKeywords();
-    void initBuiltins();
     void applySettings( Settings::Manager*, const QString &key, SyntaxFormat );
 
     QTextCharFormat mFormats[FormatCount];
-    QVector<SyntaxRule> mInCodeRules;
+
     QRegExp mInSymbolRegexp, mInStringRegexp;
 
     static SyntaxHighlighterGlobals *mInstance;
@@ -120,7 +108,7 @@ private:
     void highlightBlockInSymbol(const QString& text, int & currentIndex, int & currentState);
     void highlightBlockInComment(const QString& text, int & currentIndex, int & currentState);
 
-    Token::Type findMatchingRule(QString const & text, int & currentIndex, int & lengthOfMatch);
+    ScLexer mLexer;
 
     const SyntaxHighlighterGlobals *mGlobals;
 };

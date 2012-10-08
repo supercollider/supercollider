@@ -477,9 +477,10 @@ void AutoCompleter::triggerCompletion(bool forceShow)
             switch (objectTokenType) {
             case Token::Class:
             case Token::Char:
-            case Token::String:
+            case Token::StringMark:
             case Token::Builtin:
             case Token::Symbol:
+            case Token::SymbolMark:
             case Token::Float:
             case Token::RadixFloat:
             case Token::HexInt:
@@ -747,10 +748,11 @@ const ScLanguage::Class * AutoCompleter::classForToken( Token::Type tokenType, c
     case Token::Char:
         return introspection.findClass("Char");
 
-    case Token::String:
+    case Token::StringMark:
         return introspection.findClass("String");
 
     case Token::Symbol:
+    case Token::SymbolMark:
         return introspection.findClass("Symbol");
 
     default:
