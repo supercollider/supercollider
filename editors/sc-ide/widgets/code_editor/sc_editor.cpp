@@ -531,11 +531,18 @@ void ScCodeEditor::removeSingleLineComment(QTextCursor cursor)
 {
     QTextBlock currentBlock(cursor.block());
     cursor.movePosition(QTextCursor::StartOfBlock);
-    cursor.setPosition(cursor.position() + indentedStartOfLine(currentBlock));
-    cursor.setPosition(cursor.position() + 2, QTextCursor::KeepAnchor);
+    const int startPosition = cursor.position();
+    const int indentPosition = indentedStartOfLine(currentBlock);
+    const int commentStartPosition = startPosition + indentPosition;
 
-    if (!cursor.selectedText().endsWith(QString("//")))
-        return;
+    cursor.setPosition(commentStartPosition);
+    cursor.setPosition(commentStartPosition + 3, QTextCursor::KeepAnchor);
+
+    if (!cursor.selectedText().endsWith(QString("// "))) {
+        cursor.setPosition(commentStartPosition + 2, QTextCursor::KeepAnchor);
+        if (!cursor.selectedText().endsWith(QString("//")))
+            return;
+    }
 
     cursor.insertText("");
 }
