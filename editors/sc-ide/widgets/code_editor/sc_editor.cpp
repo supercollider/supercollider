@@ -175,7 +175,7 @@ void ScCodeEditor::mouseReleaseEvent ( QMouseEvent *e )
 void ScCodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
 {
     QTextCursor cursor = cursorForPosition(e->pos());
-    QTextCursor selection = blockAtCursor(cursor);
+    QTextCursor selection = selectionForPosition( cursor.position() );
 
     if (!selection.isNull()) {
         mMouseBracketMatch = true;
@@ -183,12 +183,7 @@ void ScCodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
         return;
     }
 
-    cursor.beginEditBlock();
     GenericCodeEditor::mouseDoubleClickEvent(e);
-
-    extendSelectionForEnvVar(this, textCursor());
-
-    cursor.endEditBlock();
 }
 
 void ScCodeEditor::mouseMoveEvent( QMouseEvent *e )
@@ -196,6 +191,57 @@ void ScCodeEditor::mouseMoveEvent( QMouseEvent *e )
     // Prevent initiating a text drag:
     if(!mMouseBracketMatch)
         GenericCodeEditor::mouseMoveEvent(e);
+}
+
+QTextCursor ScCodeEditor::selectionForPosition( int position )
+{
+    QTextBlock block( textDocument()->findBlock(position) );
+    if (!block.isValid())
+        return QTextCursor();
+
+    int positionInBlock = position - block.position();
+
+    TokenIterator it = TokenIterator( block, positionInBlock );
+    if (it.type() == Token::Unknown) {
+        // Token is invalid, or Token::Unknown (i.e. punctuations).
+        // Prefer token at previous position.
+        TokenIterator alternativeIt = TokenIterator( block, positionInBlock - 1 );
+        if (alternativeIt.isValid())
+            it = alternativeIt;
+    }
+
+    if (it.isValid()) {
+        switch (it->type) {
+        case Token::OpeningBracket:
+        case Token::ClosingBracket:
+        {
+            BracketPair match;
+            matchBracket(it, match);
+            if (match.first.isValid() && match.second.isValid()) {
+                int start = match.first.position();
+                int end = match.second.position() + 1;
+                QTextCursor selection(textDocument());
+                if (it == match.second) {
+                    selection.setPosition(start);
+                    selection.setPosition(end, QTextCursor::KeepAnchor);
+                } else {
+                    selection.setPosition(end);
+                    selection.setPosition(start, QTextCursor::KeepAnchor);
+                }
+                return selection;
+            }
+            break;
+        }
+
+        default:
+            QTextCursor selection( textDocument() );
+            selection.setPosition( it.position() );
+            selection.setPosition( selection.position() + it->length, QTextCursor::KeepAnchor );
+            return selection;
+        }
+    }
+
+    return QTextCursor();
 }
 
 void ScCodeEditor::matchBrackets()
@@ -727,41 +773,6 @@ inline static bool bracketPairContainsPosition( const BracketPair & bracketPair,
             && bracketPair.first.position() < position
             && bracketPair.second.position() >= position;
     return result;
-}
-
-QTextCursor ScCodeEditor::blockAtCursor(const QTextCursor & cursor)
-{
-    TokenIterator it = TokenIterator::around( cursor.block(), cursor.positionInBlock() );
-
-    if (it.isValid()) {
-        switch (it->type) {
-        case Token::OpeningBracket:
-        case Token::ClosingBracket:
-        {
-            BracketPair match;
-            matchBracket(it, match);
-            if (match.first.isValid() && match.second.isValid()) {
-                int start = match.first.position();
-                int end = match.second.position() + 1;
-                QTextCursor selection(textDocument());
-                if (it == match.second) {
-                    selection.setPosition(start);
-                    selection.setPosition(end, QTextCursor::KeepAnchor);
-                } else {
-                    selection.setPosition(end);
-                    selection.setPosition(start, QTextCursor::KeepAnchor);
-                }
-                return selection;
-            }
-            break;
-        }
-
-        default:
-            break;
-        }
-    }
-
-    return QTextCursor();
 }
 
 void ScCodeEditor::gotoNextBlock()
