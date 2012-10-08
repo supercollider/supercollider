@@ -64,9 +64,9 @@ UGen : AbstractFunction {
  	}
  	exprange { arg lo = 0.01, hi = 1.0;
 		^if (this.signalRange == \bipolar) {
-			this.linexp(-1, 1, lo, hi)
+			this.linexp(-1, 1, lo, hi, nil)
 		} {
-			this.linexp(0, 1, lo, hi)
+			this.linexp(0, 1, lo, hi, nil)
 		};
  	}
 
