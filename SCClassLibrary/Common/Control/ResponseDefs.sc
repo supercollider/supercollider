@@ -486,7 +486,7 @@ MIDIFunc : AbstractResponderFunc {
 			});
 		}, {
 			[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend].do({|type|
-				MIDIIn.removeFuncFrom(type, traceFuncs[\type]);
+				MIDIIn.removeFuncFrom(type, traceFuncs[type]);
 			});
 			CmdPeriod.remove(this);
 			traceRunning = false;
