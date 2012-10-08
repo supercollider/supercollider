@@ -65,7 +65,6 @@ public:
 
     bool isPlainText() const { return mHighlighter == NULL; }
     bool isModified() const  { return mDoc->isModified(); }
-    bool isUntitled() const  { return mTitle == "Untitled"; }
 
 public slots:
     void applySettings( Settings::Manager * );
