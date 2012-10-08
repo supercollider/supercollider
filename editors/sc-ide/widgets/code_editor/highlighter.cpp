@@ -37,97 +37,15 @@ SyntaxHighlighterGlobals::SyntaxHighlighterGlobals( Main *main, Settings::Manage
     Q_ASSERT(mInstance == 0);
     mInstance = this;
 
-    initSyntaxRules();
+    ScLexer::initLexicalRules();
+    mInSymbolRegexp.setPattern("([^\'\\\\]*(\\\\.[^\'\\\\]*)*)");
+    mInStringRegexp.setPattern("([^\"\\\\]*(\\\\.[^\"\\\\]*)*)");
 
     // initialize formats from settings:
     applySettings(settings);
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
-}
-
-void SyntaxHighlighterGlobals::initSyntaxRules()
-{
-    /* NOTE:
-
-    The highlighting algorithm demands that all regexps
-    start with a caret "^", to only match at beginning of string.
-
-    Order is important:
-    -- floatRegexp is subset of radixFloatRegex -> must come later
-    -- classRegexp and primitiveRegexp are subsets of symbolArgRegexp -> must come later
-
-    */
-
-    mInCodeRules << SyntaxRule( Token::WhiteSpace, "^\\s+" );
-
-    initKeywords();
-    initBuiltins();
-
-    mInCodeRules << SyntaxRule( Token::SymbolArg, "^\\b[A-Za-z_]\\w*\\:" );
-
-    mInCodeRules << SyntaxRule( Token::Name, "^[a-z]\\w*" );
-
-    mInCodeRules << SyntaxRule( Token::Class, "^\\b[A-Z]\\w*" );
-
-    mInCodeRules << SyntaxRule( Token::Primitive, "^\\b_\\w+" );
-
-    mInCodeRules << SyntaxRule( Token::Symbol, "^(\\\\\\w*|\\'([^\\'\\\\]*(\\\\.[^\\'\\\\]*)*)\\')" );
-
-    mInCodeRules << SyntaxRule( Token::Char, "^\\$\\\\?." );
-
-    mInCodeRules << SyntaxRule( Token::String, "^\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*)\"" );
-
-    mInCodeRules << SyntaxRule( Token::EnvVar, "^~\\w+" );
-
-    mInCodeRules << SyntaxRule( Token::RadixFloat, "^\\b\\d+r[0-9a-zA-Z]*(\\.[0-9A-Z]*)?" );
-
-    // do not include leading "-" in float highlighting, as there's no clear
-    // rule whether it is not rather a binary operator
-    mInCodeRules << SyntaxRule( Token::Float, "^\\b((\\d+(\\.\\d+)?([eE][-+]?\\d+)?(pi)?)|pi)" );
-
-    mInCodeRules << SyntaxRule( Token::HexInt, "^\\b0(x|X)(\\d|[a-f]|[A-F])+" );
-
-    mInCodeRules << SyntaxRule( Token::SingleLineComment, "^//[^\r\n]*" );
-
-    mInCodeRules << SyntaxRule( Token::MultiLineCommentStart, "^/\\*" );
-
-    mInSymbolRegexp.setPattern("([^\'\\\\]*(\\\\.[^\'\\\\]*)*)");
-    mInStringRegexp.setPattern("([^\"\\\\]*(\\\\.[^\"\\\\]*)*)");
-}
-
-void SyntaxHighlighterGlobals::initKeywords()
-{
-    QStringList keywords;
-    keywords << "arg"
-             << "classvar"
-             << "const"
-             << "super"
-             << "this"
-             << "var";
-
-    QString keywordPattern = QString("^\\b(%1)\\b").arg(keywords.join("|"));
-    mInCodeRules << SyntaxRule(Token::Keyword, keywordPattern);
-}
-
-void SyntaxHighlighterGlobals::initBuiltins()
-{
-    QStringList builtins;
-    builtins << "false"
-             << "inf"
-             << "nil"
-             << "true"
-             << "thisFunction"
-             << "thisFunctionDef"
-             << "thisMethod"
-             << "thisProcess"
-             << "thisThread"
-             << "currentEnvironment"
-             << "topEnvironment"
-                ;
-
-    QString builtinsPattern = QString("^\\b(%1)\\b").arg(builtins.join("|"));
-    mInCodeRules << SyntaxRule(Token::Builtin, builtinsPattern);
 }
 
 void SyntaxHighlighterGlobals::applySettings( Settings::Manager *s )
@@ -161,30 +79,6 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent):
     connect(mGlobals, SIGNAL(syntaxFormatsChanged()), this, SLOT(rehighlight()));
 }
 
-Token::Type SyntaxHighlighter::findMatchingRule (const QString& text, int& currentIndex, int& lengthOfMatch)
-{
-    int matchLength = -1;
-    Token::Type matchType = Token::Unknown;
-
-    QVector<SyntaxRule>::const_iterator it  = mGlobals->mInCodeRules.constBegin();
-    QVector<SyntaxRule>::const_iterator end = mGlobals->mInCodeRules.constEnd();
-
-    for (; it != end; ++it) {
-        SyntaxRule const & rule = *it;
-        int matchIndex = rule.expr.indexIn(text, currentIndex, QRegExp::CaretAtOffset);
-        // a guard to ensure all regexps match only at beginning of string:
-        assert(matchIndex <= currentIndex);
-        if (matchIndex != -1) {
-            matchType = rule.type;
-            matchLength = rule.expr.matchedLength();
-            break;
-        }
-    }
-
-    lengthOfMatch = matchType == Token::Unknown ? 0 : matchLength;
-    return matchType;
-}
-
 void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentIndex, int & currentState)
 {
     TextBlockData *blockData = static_cast<TextBlockData*>(currentBlockUserData());
@@ -193,125 +87,88 @@ void SyntaxHighlighter::highlightBlockInCode(const QString& text, int & currentI
     const QTextCharFormat * formats = mGlobals->formats();
 
     do {
-        static QString openingBrackets("({[");
-        static QString closingBrackets(")}]");
-        static QChar stringStart('\"');
-        static QChar symbolStart('\'');
-
-        QChar currentChar = text[currentIndex];
-
-        if (currentChar == stringStart) {
-            currentState = inString;
-            setFormat(currentIndex, 1, formats[StringFormat]);
-            blockData->tokens.push_back( Token(Token::String, currentIndex) );
-            currentIndex += 1;
-            return;
-        }
-
-        if (currentChar == symbolStart) {
-            currentState = inSymbol;
-            setFormat(currentIndex, 1, formats[SymbolFormat]);
-            blockData->tokens.push_back( Token(Token::Symbol, currentIndex) );
-            currentIndex += 1;
-            return;
-        }
-
-        if (openingBrackets.contains(currentChar)) {
-            blockData->tokens.push_back(
-                Token( Token::OpeningBracket,
-                       currentIndex, 1,
-                       currentChar.toAscii() ) );
-            ++currentIndex;
-            continue;
-        }
-
-        if (closingBrackets.contains(currentChar)) {
-            blockData->tokens.push_back(
-                Token( Token::ClosingBracket,
-                       currentIndex, 1,
-                       currentChar.toAscii() ) );
-            ++currentIndex;
-            continue;
-        }
-
-        int lenghtOfMatch;
-        Token::Type tokenType = findMatchingRule(text, currentIndex, lenghtOfMatch);
+        int lengthOfMatch;
+        Token::Type tokenType = mLexer.nextToken(text, currentIndex, lengthOfMatch);
 
         switch (tokenType)
         {
-        case Token::WhiteSpace:
-            // avoid inserting a token
-            currentIndex += lenghtOfMatch;
-            continue;
-
         case Token::Class:
-            setFormat(currentIndex, lenghtOfMatch, formats[ClassFormat]);
+            setFormat(currentIndex, lengthOfMatch, formats[ClassFormat]);
             break;
 
         case Token::Builtin:
-            setFormat(currentIndex, lenghtOfMatch, formats[BuiltinFormat]);
+            setFormat(currentIndex, lengthOfMatch, formats[BuiltinFormat]);
             break;
 
         case Token::Primitive:
-            setFormat(currentIndex, lenghtOfMatch, formats[PrimitiveFormat]);
+            setFormat(currentIndex, lengthOfMatch, formats[PrimitiveFormat]);
             break;
 
         case Token::Keyword:
-            setFormat(currentIndex, lenghtOfMatch, formats[KeywordFormat]);
+            setFormat(currentIndex, lengthOfMatch, formats[KeywordFormat]);
             break;
 
         case Token::Symbol:
-            setFormat(currentIndex, lenghtOfMatch, formats[SymbolFormat]);
+            setFormat(currentIndex, lengthOfMatch, formats[SymbolFormat]);
             break;
 
         case Token::SymbolArg:
-            // Omit the trailing ":" that was included in the regexp:
-            setFormat(currentIndex, lenghtOfMatch-1, formats[SymbolFormat]);
+            // Don't highlight the trailing ':'
+            setFormat(currentIndex, lengthOfMatch-1, formats[SymbolFormat]);
             break;
 
         case Token::EnvVar:
-            setFormat(currentIndex, lenghtOfMatch, formats[EnvVarFormat]);
-            break;
-
-        case Token::String:
-            setFormat(currentIndex, lenghtOfMatch, formats[StringFormat]);
+            setFormat(currentIndex, lengthOfMatch, formats[EnvVarFormat]);
             break;
 
         case Token::Char:
-            setFormat(currentIndex, lenghtOfMatch, formats[CharFormat]);
+            setFormat(currentIndex, lengthOfMatch, formats[CharFormat]);
             break;
 
         case Token::Float:
         case Token::HexInt:
         case Token::RadixFloat:
-            setFormat(currentIndex, lenghtOfMatch, formats[NumberFormat]);
+            setFormat(currentIndex, lengthOfMatch, formats[NumberFormat]);
             break;
 
         case Token::SingleLineComment:
-            setFormat(currentIndex, lenghtOfMatch, formats[CommentFormat]);
-            currentIndex += lenghtOfMatch;
-            continue;
+            setFormat(currentIndex, lengthOfMatch, formats[CommentFormat]);
+            break;
 
         case Token::MultiLineCommentStart:
-            setFormat(currentIndex, lenghtOfMatch, formats[CommentFormat]);
-            currentIndex += lenghtOfMatch;
             currentState = inComment;
-            return;
+            setFormat(currentIndex, lengthOfMatch, formats[CommentFormat]);
+            break;
 
-        case Token::Unknown:
-            blockData->tokens.push_back( Token(Token::Unknown, currentIndex, 1, currentChar.toAscii()) );
-            currentIndex += 1;
-            continue;
+        case Token::StringMark:
+            currentState = inString;
+            setFormat(currentIndex, lengthOfMatch, formats[StringFormat]);
+            break;
+
+        case Token::SymbolMark:
+            currentState = inSymbol;
+            setFormat(currentIndex, lengthOfMatch, formats[SymbolFormat]);
+            break;
 
         default:
             ;
         }
 
-        blockData->tokens.push_back( Token(tokenType, currentIndex, lenghtOfMatch) );
+        lengthOfMatch =  qMax( lengthOfMatch, 1 ); // process at least 1 character
 
-        currentIndex += lenghtOfMatch;
+        if ( (tokenType != Token::WhiteSpace) &&
+             (tokenType != Token::SingleLineComment) &&
+             (tokenType != Token::MultiLineCommentStart) )
+        {
+            Token token(tokenType, currentIndex, lengthOfMatch);
+            if (token.length == 1)
+                token.character = text[currentIndex].toAscii();
+            blockData->tokens.push_back( token );
+        }
 
-    } while (currentIndex < text.size());
+        currentIndex += lengthOfMatch;
+
+    } while (currentState == inCode && currentIndex < text.size());
 }
 
 void SyntaxHighlighter::highlightBlockInString(const QString& text, int& currentIndex, int& currentState)
