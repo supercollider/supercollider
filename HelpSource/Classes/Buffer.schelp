@@ -740,7 +740,8 @@ method:: fill, fillMsg
 Starting at the index startAt, set the next numFrames to value. Additional ranges may be included in the same message.
 
 method:: copyData, copyMsg
-Starting at the index srcSamplePos, copy numSamples samples from this to the destination buffer buf starting at dstSamplePos. If numSamples is negative, the maximum number of samples possible is copied. The default is start from 0 in the source and copy the maximum number possible starting at 0 in the destination.
+Starting at the index srcStartAt, copy numSamples samples from this to the destination buffer buf starting at dstStartAt. If numSamples is negative, the maximum number of samples possible is copied. The default is start from 0 in the source and copy the maximum number possible starting at 0 in the destination.
+
 discussion::
 Note: This method used to be called copy, but this conflicts with the method for object-copying. Therefore Buffer:copy is now intended to create a copy of the client-side Buffer object. Its use for copying buffer data on the server is deprecated. If you see a deprecation warning, the data will still be copied on the server and your code will still work, but you should update your code for the new method name.
 code::
