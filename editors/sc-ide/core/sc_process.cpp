@@ -301,7 +301,8 @@ void ScProcess::onSclangStart()
 
     if (MainWindow::instance()) {
         HelpBrowserDockable * helpBrowser = MainWindow::instance()->helpBrowserDockable();
-        helpBrowser->browser()->goHome();
+        if (helpBrowser->isVisible())
+            helpBrowser->browser()->goHome();
     }
 }
 
