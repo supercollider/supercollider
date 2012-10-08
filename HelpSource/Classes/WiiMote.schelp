@@ -13,6 +13,8 @@ Personally, I found that it works better with an external BlueTooth receiver, th
 
 The IR options, as well as the Classic controller have not been tested (due to lack of access to either complementary device by the developer).
 
+This class is not implemented for Windows, and thus will not work on that platform.
+
 ClassMethods::
 
 private::initClass, prStart, prStop, prDiscover
