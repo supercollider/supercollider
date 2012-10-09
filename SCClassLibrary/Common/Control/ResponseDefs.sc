@@ -785,6 +785,77 @@ MIDIFunc : AbstractResponderFunc {
 		allFuncProxies.add(this);
 	}
 
+	// swap out func and wait
+	learn {|learnVal = false|
+		// check for cc or noteon?
+		var learnFunc;
+		/*this.remove(func);*/
+		learnFunc = this.learnFunc(learnVal);
+		this.disable;
+		this.init(learnFunc); // keep old args if specified, so we can learn from particular channels, srcs, etc.
+	}
+
+	learnFunc {|learnVal|
+		var oldFunc, learnFunc;
+		oldFunc = func; // old funk is ultimately better than new funk
+		if([\control, \noteOn, \noteOff, \polytouch].includes(msgType), {
+			^{|val, num, chan, srcID|
+				"MIDIFunc learned: type: %\tnum: %\tval: %\tchan: %\tsrcID: %\t\n".postf(msgType, num, val, chan, srcID);
+				this.disable;
+				this.remove(learnFunc);
+				oldFunc.value(val, num, chan, srcID);// do first action
+				this.init(oldFunc, num, chan, msgType, srcID, if(learnVal, val, nil));
+			}
+		});
+
+		// noNum
+		if([\touch, \program, \bend].includes(msgType), {
+			^{|val, chan, srcID|
+				"MIDIFunc learned: type: %\tval: %\tchan: %\tsrcID: %\t\n".postf(msgType, val, chan, srcID);
+				this.disable;
+				this.remove(learnFunc);
+				oldFunc.value(val, chan, srcID);// do first action
+				this.init(oldFunc, nil, chan, msgType, srcID, if(learnVal, val, nil));
+			}
+		});
+
+		// sys with Data
+		if([\mtcQF, \smpte, \songPosition, \songSelect, \sysrt].includes(msgType), {
+			^{|val, srcID, index|
+				"MIDIFunc learned: type: %\tnum: %\tval: %\tsrcID: %\t\n".postf(msgType, index, val, srcID);
+				this.disable;
+				this.remove(learnFunc);
+				oldFunc.value(val, srcID, index);// do first action
+				this.init(oldFunc, index, nil, msgType, srcID, if(learnVal, val, nil));
+			}
+		});
+
+		// sys no Data
+		if([\tuneRequest, \midiClock, \tick, \start, \continue, \stop, \activeSense, \reset].includes(msgType), {
+			^{|srcID, index|
+				"MIDIFunc learned: type: %\tnum: %\tsrcID: %\t\n".postf(msgType, index, srcID);
+				this.disable;
+				this.remove(learnFunc);
+				oldFunc.value(srcID, index);// do first action
+				this.init(oldFunc, index, nil, msgType, srcID, nil);
+			}
+		});
+
+		// sysex
+		if(msgType == \sysex, {
+			^{|val, srcID|
+				"MIDIFunc learned: type: %\tdata: %\tsrcID: %\t\n".postf(msgType, val, srcID);
+				this.disable;
+				this.remove(learnFunc);
+				oldFunc.value(val, srcID);// do first action
+				this.init(oldFunc, nil, nil, msgType, srcID, if(learnVal, val, nil));
+			}
+		});
+
+		"msgType: % not standard, cannot learn".format(msgType).warn;
+	}
+
+
 	// post pretty
 	printOn { arg stream; stream << this.class.name << "(" <<* [msgType, msgNum, chan, argTemplate] << ")" }
 
