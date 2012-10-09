@@ -33,7 +33,14 @@ class ScLexer
 {
 public:
 
-    Token::Type nextToken ( QString const & text, int offset, int & lengthOfMatch );
+    enum State {
+        InCode = 0,
+        InString = 1,
+        InSymbol = 2,
+        InComment = 100
+        // NOTE: Values higher than InComment are reserved for multi line comments,
+        // and indicate the comment nesting level!
+    };
 
     static void initLexicalRules();
 
@@ -51,6 +58,31 @@ private:
     static void initBuiltinsRules();
 
     static QVector<LexicalRule> mLexicalRules;
+
+public:
+    ScLexer( const QString & text, int offset = 0, int state = InCode):
+        mText(text), mOffset(offset), mState(state)
+    {}
+
+    const QString & text() const { return mText; }
+
+    int state() const { return mState; }
+    void setState( int state ) { mState = state; }
+
+    int offset() const { return mOffset; }
+    void setOffset( int offset ) { mOffset = offset; }
+
+    Token::Type nextToken ( int & length );
+
+private:
+    Token::Type nextTokenInCode( int & length );
+    Token::Type nextTokenInString( int & length );
+    Token::Type nextTokenInSymbol( int & length );
+    Token::Type nextTokenInComment( int & length );
+
+    const QString & mText;
+    int mOffset;
+    int mState;
 };
 
 }

@@ -52,6 +52,7 @@ struct Token
 
         SingleLineComment,
         MultiLineCommentStart,
+        MultiLineCommentEnd,
 
         OpeningBracket,
         ClosingBracket

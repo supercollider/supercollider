@@ -81,8 +81,6 @@ private:
 
     QTextCharFormat mFormats[FormatCount];
 
-    QRegExp mInSymbolRegexp, mInStringRegexp;
-
     static SyntaxHighlighterGlobals *mInstance;
 };
 
@@ -91,24 +89,15 @@ class SyntaxHighlighter:
 {
     Q_OBJECT
 
-    static const int inCode = 0;
-    static const int inString = 1;
-    static const int inSymbol = 2;
-    static const int inComment = 100;
-    // NOTE: Integers higher than inComment are reserved for multi line comments,
-    // and indicate the comment nesting level!
-
 public:
     SyntaxHighlighter(QTextDocument *parent = 0);
 
 private:
     void highlightBlock(const QString &text);
-    void highlightBlockInCode(const QString& text, int & currentIndex, int & currentState);
-    void highlightBlockInString(const QString& text, int & currentIndex, int & currentState);
-    void highlightBlockInSymbol(const QString& text, int & currentIndex, int & currentState);
-    void highlightBlockInComment(const QString& text, int & currentIndex, int & currentState);
-
-    ScLexer mLexer;
+    void highlightBlockInCode(ScLexer & lexer);
+    void highlightBlockInString(ScLexer & lexer);
+    void highlightBlockInSymbol(ScLexer & lexer);
+    void highlightBlockInComment(ScLexer & lexer);
 
     const SyntaxHighlighterGlobals *mGlobals;
 };
