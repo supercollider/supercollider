@@ -245,8 +245,18 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
 			// system realtime events
+			case SND_SEQ_EVENT_TUNE_REQUEST:	// tuning request
+				++g->sp; SetInt(g->sp, 0x6);
+				++g->sp; SetInt(g->sp, 0);
+				runInterpreter(g, s_midiSysrtAction, 4);
+				break;
 			case SND_SEQ_EVENT_CLOCK:			// clock
 				++g->sp; SetInt(g->sp, 0x8);
+				++g->sp; SetInt(g->sp, 0);
+				runInterpreter(g, s_midiSysrtAction, 4);
+				break;
+			case SND_SEQ_EVENT_TICK:			// tick
+				++g->sp; SetInt(g->sp, 0x9);
 				++g->sp; SetInt(g->sp, 0);
 				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
