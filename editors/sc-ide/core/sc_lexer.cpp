@@ -19,6 +19,7 @@
 */
 
 #include "sc_lexer.hpp"
+#include <QDebug>
 
 namespace ScIDE {
 
@@ -50,7 +51,7 @@ void ScLexer::initLexicalRules()
 
     mLexicalRules << LexicalRule( Token::Primitive, "^\\b_\\w+" );
 
-    mLexicalRules << LexicalRule( Token::Symbol, "^(\\\\\\w*|\\'([^\\'\\\\]*(\\\\.[^\\'\\\\]*)*)\\')" );
+    mLexicalRules << LexicalRule( Token::Symbol, "^\\\\\\w*" );
 
     mLexicalRules << LexicalRule( Token::Char, "^\\$\\\\?." );
 
@@ -103,55 +104,197 @@ void ScLexer::initBuiltinsRules()
     mLexicalRules << LexicalRule(Token::Builtin, builtinsPattern);
 }
 
-Token::Type ScLexer::nextToken ( QString const & text, int offset, int & lengthOfMatch )
+Token::Type ScLexer::nextToken ( int & lengthResult )
+{
+    Q_ASSERT(mOffset < mText.size());
+
+    switch(mState) {
+    case InCode:
+        return nextTokenInCode(lengthResult);
+    case InString:
+        return nextTokenInString(lengthResult);
+    case InSymbol:
+        return nextTokenInSymbol(lengthResult);
+    default:
+        if (mState >= InComment)
+            return nextTokenInComment(lengthResult);
+    }
+
+    lengthResult = 0;
+    return Token::Unknown;
+}
+
+Token::Type ScLexer::nextTokenInCode( int & lengthResult )
 {
     static QString openingBrackets("({[");
     static QString closingBrackets(")}]");
     static QChar stringMark('\"');
     static QChar symbolMark('\'');
 
-    QChar currentChar = text[offset];
+    QChar currentChar = mText[mOffset];
+
+    Token::Type type = Token::Unknown;
+    int length = 1;
 
     if (currentChar == stringMark) {
-        lengthOfMatch = 1;
-        return Token::StringMark;
+        type = Token::StringMark;
+        mState = InString;
     }
-
-    if (currentChar == symbolMark) {
-        lengthOfMatch = 1;
-        return Token::SymbolMark;
+    else if (currentChar == symbolMark) {
+        type = Token::SymbolMark;
+        if (mOffset + 1 < mText.size()) // line break ends a symbol
+            mState = InSymbol;
     }
-
-    if (openingBrackets.contains(currentChar)) {
-        lengthOfMatch = 1;
-        return Token::OpeningBracket;
+    else if (openingBrackets.contains(currentChar)) {
+        type = Token::OpeningBracket;
     }
-
-    if (closingBrackets.contains(currentChar)) {
-        lengthOfMatch = 1;
-        return Token::ClosingBracket;
+    else if (closingBrackets.contains(currentChar)) {
+        type = Token::ClosingBracket;
     }
-
-    int matchLength = 0;
-    Token::Type matchType = Token::Unknown;
 
     QVector<LexicalRule>::const_iterator it  = mLexicalRules.constBegin();
     QVector<LexicalRule>::const_iterator end = mLexicalRules.constEnd();
 
     for (; it != end; ++it) {
         LexicalRule const & rule = *it;
-        int matchIndex = rule.expr.indexIn(text, offset, QRegExp::CaretAtOffset);
+        int matchIndex = rule.expr.indexIn(mText, mOffset, QRegExp::CaretAtOffset);
         // a guard to ensure all regexps match only at beginning of string:
-        Q_ASSERT(matchIndex <= offset);
+        Q_ASSERT(matchIndex <= mOffset);
         if (matchIndex != -1) {
-            matchType = rule.type;
-            matchLength = rule.expr.matchedLength();
+            type = rule.type;
+            length = rule.expr.matchedLength();
             break;
         }
     }
 
-    lengthOfMatch = matchLength;
-    return matchType;
+    if (type == Token::MultiLineCommentStart)
+        mState = InComment;
+
+    length = qMax( length, 1 ); // process at least 1 char
+    mOffset += length;
+
+    lengthResult = length;
+    return type;
+}
+
+Token::Type ScLexer::nextTokenInString( int & length )
+{
+    // TODO: Provide simple tokenization by word delimiters
+
+    static QChar stringMark('"');
+    static QChar escapeChar('\\');
+
+    length = 0;
+    Token::Type type = Token::Unknown;
+
+    int textLength = mText.length();
+    while (mOffset < textLength)
+    {
+        QChar chr = mText[mOffset];
+        ++mOffset;
+        if (chr == escapeChar) {
+            ++mOffset;
+        }
+        else if (chr == stringMark) {
+            length = 1;
+            type = Token::StringMark;
+            mState = InCode;
+            break;
+        }
+    }
+
+    mOffset = qMin(mOffset, textLength);
+    return type;
+}
+
+Token::Type ScLexer::nextTokenInSymbol( int & length )
+{
+    // TODO: Provide simple tokenization by word delimiters
+
+    static QChar symbolMark('\'');
+    static QChar escapeChar('\\');
+
+    length = 0;
+    Token::Type type = Token::Unknown;
+
+    int textLength = mText.length();
+    while (mOffset < textLength)
+    {
+        QChar chr = mText[mOffset];
+        ++mOffset;
+        if (chr == escapeChar) {
+            ++mOffset;
+        }
+        else if (chr == symbolMark) {
+            length = 1;
+            type = Token::SymbolMark;
+            break;
+        }
+    }
+
+    mOffset = qMin(mOffset, textLength);
+    mState = InCode;
+    return type;
+}
+
+Token::Type ScLexer::nextTokenInComment( int & lengthResult )
+{
+    // TODO: Provide tokenization using (some) lexical rules for code
+
+    int index = mOffset;
+    int maxIndex = mText.size() - 1;
+
+    static const QString commentStart("/*");
+    static const QString commentEnd("*/");
+
+    int commentStartIndex = -2;
+    int commentEndIndex   = -2;
+
+    while(index < maxIndex) {
+        if ((commentStartIndex == -2) || (commentStartIndex < index))
+            if (commentStartIndex != -1)
+                commentStartIndex = mText.indexOf(commentStart, index);
+
+        if ((commentEndIndex == -2) || (commentEndIndex < index))
+            if (commentEndIndex != -1)
+                commentEndIndex   = mText.indexOf(commentEnd, index);
+
+        if (commentStartIndex == -1) {
+            if (commentEndIndex == -1) {
+                index = maxIndex;
+            } else {
+                index = commentEndIndex + 2;
+                --mState;
+            }
+        } else {
+            if (commentEndIndex == -1) {
+                index = commentStartIndex + 2;
+                ++mState;
+            } else {
+                if (commentStartIndex < commentEndIndex) {
+                    index = commentStartIndex + 2;
+                    ++mState;
+                } else {
+                    index = commentEndIndex + 2;
+                    --mState;
+                }
+            }
+        }
+        if (mState < InComment) {
+            mState = InCode;
+            break;
+        }
+    }
+
+    if(mState == InCode) {
+        mOffset = index;
+        lengthResult = 2;
+        return Token::MultiLineCommentEnd;
+    }
+
+    mOffset = mText.size();
+    lengthResult = 0;
+    return Token::Unknown;
 }
 
 }
