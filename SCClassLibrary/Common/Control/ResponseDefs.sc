@@ -453,6 +453,26 @@ MIDIMessageDispatcherNV : MIDIMessageDispatcher {
 	}
 }
 
+// for \sysex
+MIDISysexDispatcher : MIDIMessageDispatcher {
+
+	getKeysForFuncProxy {|funcProxy| ^(funcProxy.srcID ? \all)} // chan
+
+	value {|srcID, data|
+		active[srcID].value(data, srcID);
+		active[\all].value(data, srcID);
+	}
+
+	wrapFunc {|funcProxy|
+		var func, srcID, argTemplate;
+		func = funcProxy.func;
+		srcID = funcProxy.srcID;
+		argTemplate = funcProxy.argTemplate;
+		if(argTemplate.notNil, { func = MIDIValueMatcher(argTemplate, func)});
+		^func;
+	}
+}
+
 
 MIDIFunc : AbstractResponderFunc {
 	classvar <>defaultDispatchers, traceFuncs, traceRunning = false;
@@ -467,6 +487,12 @@ MIDIFunc : AbstractResponderFunc {
 				"MIDI Message Received:\n\ttype: %\n\tsrc: %\n\tchan: %\n\tnum: %\n\tval: %\n\n".postf(type, src, chan, num, val);
 			};
 		});
+		[\sysex, \sysrt].do({|type|
+			defaultDispatchers[type] = MIDISysexDispatcher(type);
+			traceFuncs[type] = {|src, data|
+				"MIDI Message Received:\n\ttype: %\n\tsrc: %\n\tdata: %\n\n".postf(type, src, data);
+			};
+		});
 		[\touch, \program, \bend].do({|type|
 			defaultDispatchers[type] = MIDIMessageDispatcherNV(type);
 			traceFuncs[type] = {|src, chan, num|
@@ -478,14 +504,14 @@ MIDIFunc : AbstractResponderFunc {
 	*trace {|bool = true|
 		if(bool, {
 			if(traceRunning.not, {
-				[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend].do({|type|
+				[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend, \sysex].do({|type|
 					MIDIIn.addFuncTo(type, traceFuncs[type]);
 				});
 				CmdPeriod.add(this);
 				traceRunning = true;
 			});
 		}, {
-			[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend].do({|type|
+			[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend, \sysex].do({|type|
 				MIDIIn.removeFuncFrom(type, traceFuncs[type]);
 			});
 			CmdPeriod.remove(this);
@@ -526,6 +552,15 @@ MIDIFunc : AbstractResponderFunc {
 	*program { arg func, chan, srcID, argTemplate, dispatcher;
 		^this.new(func, nil, chan, \program, srcID, argTemplate, dispatcher);
 	}
+
+	*sysex { arg func, srcID, argTemplate, dispatcher;
+		^this.new(func, nil, nil, \sysex, srcID, argTemplate, dispatcher);
+	}
+
+	*sysrt { arg func, index, srcID, argTemplate, dispatcher;
+		^this.new(func, index, nil, \sysrt, srcID, argTemplate, dispatcher);
+	}
+
 
 	init {|argfunc, argmsgNum, argchan, argType, argsrcID, argtempl, argdisp|
 		msgNum = argmsgNum ? msgNum;
@@ -595,6 +630,14 @@ MIDIdef : MIDIFunc {
 		^this.new(key, func, nil, chan, \program, srcID, argTemplate, dispatcher);
 	}
 
+	*sysex { arg key, func, srcID, argTemplate, dispatcher;
+		^this.new(key, func, nil, nil, \sysex, srcID, argTemplate, dispatcher);
+	}
+
+	*sysrt { arg key, func, index, srcID, argTemplate, dispatcher;
+		^this.new(key, func, index, nil, \sysrt, srcID, argTemplate, dispatcher);
+	}
+
 	addToAll {|argkey| key = argkey; all.put(key, this) }
 
 	free { all[key] = nil; super.free; }
@@ -622,7 +665,7 @@ MIDIFuncSrcMessageMatcher : AbstractMessageMatcher {
 	}
 }
 
-// if you need to test for srcID func gets wrapped in this
+// if you need to test for chan func gets wrapped in this
 MIDIFuncChanMessageMatcher : AbstractMessageMatcher {
 	var chan;
 
