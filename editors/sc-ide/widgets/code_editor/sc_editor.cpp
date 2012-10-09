@@ -90,6 +90,24 @@ bool ScCodeEditor::event( QEvent *e )
 
 void ScCodeEditor::keyPressEvent( QKeyEvent *e )
 {
+    QTextCursor cursor( textCursor() );
+    bool cursorMoved = true;
+    if (e == QKeySequence::MoveToNextWord)
+        moveToNextToken( cursor, QTextCursor::MoveAnchor );
+    else if (e == QKeySequence::MoveToPreviousWord)
+        moveToPreviousToken( cursor, QTextCursor::MoveAnchor );
+    else if (e == QKeySequence::SelectNextWord)
+        moveToNextToken( cursor, QTextCursor::KeepAnchor );
+    else if (e == QKeySequence::SelectPreviousWord)
+        moveToPreviousToken( cursor, QTextCursor::KeepAnchor );
+    else
+        cursorMoved = false;
+
+    if (cursorMoved) {
+        setTextCursor( cursor );
+        return;
+    }
+
     switch (e->key()) {
     case Qt::Key_Home:
     {
@@ -191,6 +209,73 @@ void ScCodeEditor::mouseMoveEvent( QMouseEvent *e )
     // Prevent initiating a text drag:
     if(!mMouseBracketMatch)
         GenericCodeEditor::mouseMoveEvent(e);
+}
+
+void ScCodeEditor::moveToNextToken( QTextCursor & cursor, QTextCursor::MoveMode mode )
+{
+    if (cursor.atBlockEnd()) {
+        cursor.movePosition( QTextCursor::NextCharacter, mode );
+        return;
+    }
+
+    QTextBlock block( cursor.block() );
+    QString blockText = block.text();
+    int positionInBlock = cursor.position() - block.position();
+
+    // go to end of token or end of word
+    TokenIterator tokenIt( block, positionInBlock );
+    if (tokenIt.isValid())
+        positionInBlock = tokenIt->positionInBlock + tokenIt->length;
+    else {
+        int pos = positionInBlock;
+        if (blockText[pos].isLetterOrNumber()) {
+            ++pos;
+            while (pos < blockText.size() && blockText[pos].isLetterOrNumber())
+                ++pos;
+        } else {
+            ++pos;
+        }
+        positionInBlock = pos;
+    }
+
+    // skip whitespace
+    while (positionInBlock < blockText.size() && blockText[positionInBlock].isSpace())
+        ++positionInBlock;
+
+    cursor.setPosition( positionInBlock + block.position(), mode );
+}
+
+void ScCodeEditor::moveToPreviousToken( QTextCursor & cursor, QTextCursor::MoveMode mode )
+{
+    if (cursor.atBlockStart()) {
+        cursor.movePosition( QTextCursor::PreviousCharacter, mode );
+        return;
+    }
+
+    QTextBlock block( cursor.block() );
+    QString blockText = block.text();
+    int positionInBlock = cursor.position() - block.position() - 1;
+
+    // skip whitespace
+    while (positionInBlock > 0 && blockText[positionInBlock].isSpace())
+        --positionInBlock;
+
+    cursor.setPosition(positionInBlock + block.position(), mode);
+    if (positionInBlock == 0)
+        return;
+
+    // go to beginning of token or beginning of word
+    TokenIterator tokenIt( block, positionInBlock );
+    if (tokenIt.isValid()) {
+        cursor.setPosition( tokenIt.position(), mode );
+    } else {
+        int pos = positionInBlock;
+        if (blockText[pos].isLetterOrNumber()) {
+            while (pos > 0 && blockText[pos-1].isLetterOrNumber())
+                --pos;
+        }
+        cursor.setPosition( pos + block.position(), mode );
+    }
 }
 
 QTextCursor ScCodeEditor::selectionForPosition( int position )
