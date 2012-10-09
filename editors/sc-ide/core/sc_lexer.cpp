@@ -68,6 +68,8 @@ void ScLexer::initLexicalRules()
     mLexicalRules << LexicalRule( Token::SingleLineComment, "^//[^\r\n]*" );
 
     mLexicalRules << LexicalRule( Token::MultiLineCommentStart, "^/\\*" );
+
+    mLexicalRules << LexicalRule( Token::Operator, "^[\\+-\\*/&\\|\\^%<>=]+" );
 }
 
 void ScLexer::initKeywordsRules()
@@ -151,24 +153,25 @@ Token::Type ScLexer::nextTokenInCode( int & lengthResult )
     else if (closingBrackets.contains(currentChar)) {
         type = Token::ClosingBracket;
     }
+    else {
+        QVector<LexicalRule>::const_iterator it  = mLexicalRules.constBegin();
+        QVector<LexicalRule>::const_iterator end = mLexicalRules.constEnd();
 
-    QVector<LexicalRule>::const_iterator it  = mLexicalRules.constBegin();
-    QVector<LexicalRule>::const_iterator end = mLexicalRules.constEnd();
-
-    for (; it != end; ++it) {
-        LexicalRule const & rule = *it;
-        int matchIndex = rule.expr.indexIn(mText, mOffset, QRegExp::CaretAtOffset);
-        // a guard to ensure all regexps match only at beginning of string:
-        Q_ASSERT(matchIndex <= mOffset);
-        if (matchIndex != -1) {
-            type = rule.type;
-            length = rule.expr.matchedLength();
-            break;
+        for (; it != end; ++it) {
+            LexicalRule const & rule = *it;
+            int matchIndex = rule.expr.indexIn(mText, mOffset, QRegExp::CaretAtOffset);
+            // a guard to ensure all regexps match only at beginning of string:
+            Q_ASSERT(matchIndex <= mOffset);
+            if (matchIndex != -1) {
+                type = rule.type;
+                length = rule.expr.matchedLength();
+                break;
+            }
         }
-    }
 
-    if (type == Token::MultiLineCommentStart)
-        mState = InComment;
+        if (type == Token::MultiLineCommentStart)
+            mState = InComment;
+    }
 
     length = qMax( length, 1 ); // process at least 1 char
     mOffset += length;

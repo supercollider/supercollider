@@ -55,7 +55,8 @@ struct Token
         MultiLineCommentEnd,
 
         OpeningBracket,
-        ClosingBracket
+        ClosingBracket,
+        Operator
     };
 
     Token( Type t, int pos, int len = 0, char c = 0 ):
