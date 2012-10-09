@@ -81,6 +81,8 @@ private:
     QTextCursor cursorAt( const TokenIterator, int offset = 0 );
     QTextCursor selectionForPosition( int position );
     QTextCursor regionAroundCursor( const QTextCursor & );
+    void moveToNextToken( QTextCursor &, QTextCursor::MoveMode );
+    void moveToPreviousToken( QTextCursor &, QTextCursor::MoveMode );
 
     void updateExtraSelections();
     void indentCurrentRegion();
