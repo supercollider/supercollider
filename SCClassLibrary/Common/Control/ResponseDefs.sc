@@ -456,7 +456,7 @@ MIDIMessageDispatcherNV : MIDIMessageDispatcher {
 // for \sysex
 MIDISysexDispatcher : MIDIMessageDispatcher {
 
-	getKeysForFuncProxy {|funcProxy| ^(funcProxy.srcID ? \all)} // chan
+	getKeysForFuncProxy {|funcProxy| ^(funcProxy.srcID ? \all)}
 
 	value {|srcID, data|
 		active[srcID].value(data, srcID);
@@ -478,14 +478,16 @@ MIDISysDataDispatcher : MIDIMessageDispatcher {
 
 	register {
 		var hook;
-		hook = if(messageType == \sysex, {\sysex}, {\sysrt}); // select the correct low-level hook.
+		// select the correct low-level hook.
+		hook = if(messageType == \sysex || messageType == \mtcQF, {messageType}, {\sysrt});
 		MIDIIn.perform(hook.asSetter, MIDIIn.perform(hook.asGetter).addFunc(this));
 		registered = true;
 	}
 
 	unregister {
 		var hook;
-		hook = if(messageType == \sysex, {\sysex}, {\sysrt});
+		// select the correct low-level hook.
+		hook = if(messageType == \sysex || messageType == \mtcQF, {messageType}, {\sysrt});
 		MIDIIn.perform(hook.asSetter, MIDIIn.perform(hook.asGetter).removeFunc(this));
 		registered = false;
 	}
@@ -526,6 +528,65 @@ MIDISysNoDataDispatcher : MIDISysDataDispatcher {
 	}
 }
 
+MIDIMTCtoSMPTEDispatcher : MIDISysexDispatcher {
+
+	value {|srcID, index, data|
+		active[srcID].value(srcID, index, data);
+		active[\all].value(srcID, index, data);
+	}
+
+	wrapFunc {|funcProxy|
+		var func, srcID, argTemplate;
+		func = funcProxy.func;
+		srcID = funcProxy.srcID;
+		argTemplate = funcProxy.argTemplate;
+		if(argTemplate.notNil, { func = MIDIValueMatcher(argTemplate, func)});
+		func = MIDISMPTEAssembler(func);
+		^func;
+	}
+}
+
+// thanks to nescivi for code from MTC class!!
+MIDISMPTEAssembler :  AbstractMessageMatcher {
+	var <mtctime, <mtc_t, <mtc_v, <mtc_r, <dropFrame = false;
+
+	*new{|func|
+		^super.new.init(func);
+	}
+
+	init{|argfunc|
+		/// MTC: only deals with forward running time!
+		func = argfunc;
+		mtc_t = Array.fill(8,0);
+		mtc_v = Array.fill(4,0);
+		mtc_r = 30;
+		mtctime = 0;
+	}
+
+	// assemble MTC quarter frames into a value in seconds
+	value { arg srcID, index, data;
+		var hex;
+		mtc_t[index] = data;
+		if ( index == 7,
+			{
+				mtc_v[0] = mtc_t[1] + mtc_t[0];
+				mtc_v[1] = mtc_t[3] + mtc_t[2];
+				mtc_v[2] = mtc_t[5] + mtc_t[4];
+				mtc_v[3] = mtc_t[7].mod(2) + mtc_t[6];
+				hex = mtc_t[7].asHexString[6];
+				switch (hex,
+					$6, { mtc_r = 30; dropFrame = false},
+					$4, { mtc_r = 30; dropFrame = true},
+					$2, { mtc_r = 25; dropFrame = false},
+					$0, { mtc_r = 24; dropFrame = false}
+				);
+				mtctime = (mtc_v[0]/mtc_r) + mtc_v[1] + (mtc_v[2]*60) + (mtc_v[3]*3600);
+				func.value( mtctime, mtc_r, dropFrame, srcID );
+		});
+	}
+
+}
+
 
 MIDIFunc : AbstractResponderFunc {
 	classvar <>defaultDispatchers, traceFuncs, traceRunning = false, sysIndices;
@@ -547,7 +608,19 @@ MIDIFunc : AbstractResponderFunc {
 				"MIDI Message Received:\n\ttype: %\n\tsrc: %\n\tdata: %\n\n".postf(type, src, data);
 			};
 		});
-		[\mtcQF, \songPosition, \songSelect].do({|type|
+		[\mtcQF].do({|type|
+			defaultDispatchers[type] = MIDISysDataDispatcher(type);
+			traceFuncs[type] = {|src, ind, data|
+				"MIDI Message Received:\n\ttype: %\n\tindex: %\n\tsrc: %\n\tdata: %\n\n".postf(type, ind, src, data);
+			};
+		});
+		[\smpte].do({|type|
+			defaultDispatchers[type] = MIDIMTCtoSMPTEDispatcher(type);
+/*			traceFuncs[type] = {|src, ind, data|
+				"MIDI Message Received:\n\ttype: %\n\tsrc: %\n\tdata: %\n\n".postf(type, src, data);
+			};*/ // unneeded? Just trace raw MTC
+		});
+		[\songPosition, \songSelect].do({|type|
 			defaultDispatchers[type] = MIDISysDataDispatcher(type);
 			traceFuncs[type] = {|src, ind, data|
 				if(ind == sysIndices[type], {
@@ -643,9 +716,13 @@ MIDIFunc : AbstractResponderFunc {
 
 	// system common
 
-	// does this need to be registered on the SMPTE hook?
+	// does this need to be registered on the SMPTE hook? Yes!
 	*mtcQuarterFrame {arg func, srcID, argTemplate, dispatcher;
-		^this.new(func, 1, nil, \mtcQF, srcID, argTemplate, dispatcher);
+		^this.new(func, nil, nil, \mtcQF, srcID, argTemplate, dispatcher); // actually index 1 sysrt, but on smpte hook
+	}
+
+	*smpte {arg func, srcID, argTemplate, dispatcher;
+		^this.new(func, nil, nil, \smpte, srcID, argTemplate, dispatcher); // actually index 1 sysrt, but on smpte hook
 	}
 
 	*songPosition {arg func, srcID, argTemplate, dispatcher;
