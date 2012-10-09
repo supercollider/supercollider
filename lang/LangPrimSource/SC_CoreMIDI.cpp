@@ -201,10 +201,13 @@ static int midiProcessSystemPacket(MIDIPacket *pkt, int chan) {
 		runInterpreter(g, s_midiSysrtAction, 4);
 		return 2;
 
-	case 8 :	//clock
+	case 6:		//tunerequest
+	case 8:		//clock
+	case 9:		//tick
 	case 10:	//start
 	case 11:	//continue
 	case 12: 	//stop
+	case 14:	//activeSense
 	case 15:	//reset
 		gRunningStatus = 0; // clear running status
 		runInterpreter(g, s_midiSysrtAction, 3);
