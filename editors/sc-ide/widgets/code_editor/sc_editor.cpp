@@ -142,7 +142,7 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
     {
         hideMouseCursor();
         QTextCursor cursor = textCursor();
-        cursor.insertText("\t");
+        insertSpaceToNextTabStop( cursor );
         ensureCursorVisible();
         return;
     }
@@ -578,6 +578,19 @@ int ScCodeEditor::indentationLevel(const QTextCursor & cursor)
     }
 
     return -1;
+}
+
+void ScCodeEditor::insertSpaceToNextTabStop( QTextCursor &cursor )
+{
+    if ( mSpaceIndent ) {
+        const int indentWidth = mDoc->indentWidth();
+        if (indentWidth < 1) return;
+        const int spaces = indentWidth - (cursor.positionInBlock() % indentWidth);
+        QString spaceString (spaces, QChar(' '));
+        cursor.insertText( spaceString );
+    } else {
+        cursor.insertText("\t");
+    }
 }
 
 void ScCodeEditor::triggerAutoCompletion()

@@ -98,6 +98,7 @@ private:
     QTextBlock indent( const QTextBlock & b, int level );
     QString makeIndentationString( int level );
     int indentationLevel( const QTextCursor & );
+    void insertSpaceToNextTabStop( QTextCursor & );
 
     int mIndentWidth;
     bool mSpaceIndent;
