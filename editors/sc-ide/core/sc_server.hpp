@@ -23,50 +23,64 @@
 
 #include <QObject>
 #include <QtNetwork/QUdpSocket>
+#include <QAction>
+#include <QProcess>
 
 namespace ScIDE {
 
 class ScProcess;
+namespace Settings { class Manager; }
 
 class ScServer : public QObject
 {
     Q_OBJECT
 
 public:
-    ScServer(ScProcess *scLang, QObject * parent);
+    enum ActionRole {
+        ToggleRunning,
+        Reboot,
+        ShowMeters,
+        DumpNodeTree,
+        DumpNodeTreeWithControls,
+
+        ActionCount
+    };
+
+    ScServer(ScProcess *scLang, Settings::Manager * settings, QObject * parent);
     void timerEvent(QTimerEvent * event);
 
     bool isRunning() { return mPort != 0; }
 
-public Q_SLOTS:
+    QAction *action(ActionRole role) { return mActions[role]; }
 
+public slots:
     void boot();
     void reboot();
     void quit();
+    void toggleRunning();
+    void showMeters();
+    void dumpNodeTree();
+    void dumpNodeTreeWithControls();
     void queryAllNodes(bool dumpControls);
 
-Q_SIGNALS:
+signals:
     void runningStateChange( bool running, QString const & hostName, int port );
     void updateServerStatus (int ugenCount, int synthCount, int groupCount, int defCount, float avgCPU, float peakCPU);
 
 private slots:
+    void onScLangStateChanged( QProcess::ProcessState );
     void onScLangReponse( const QString & selector, const QString & data );
 
 private:
-    void onRunningStateChanged( bool running, QString const & hostName, int port )
-    {
-        if (running) {
-            mServerAddress = QHostAddress(hostName);
-            mPort = port;
-        } else {
-            mServerAddress.clear();
-            mPort = 0;
-        }
-    }
+    void createActions( Settings::Manager * );
+
+    void onRunningStateChanged( bool running, QString const & hostName, int port );
 
     QUdpSocket * mUdpSocket;
     QHostAddress mServerAddress;
     int mPort;
+
+    QAction * mActions[ActionCount];
 };
 
 }

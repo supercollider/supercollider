@@ -32,9 +32,11 @@
 
 namespace ScIDE {
 
-ScServer::ScServer(ScProcess *scLang, QObject *parent):
+ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *parent):
     QObject(parent), mPort(0)
 {
+    createActions(settings);
+
     mUdpSocket = new QUdpSocket(this);
     for (int port = 57140; port != 57150; ++port) {
         bool success = mUdpSocket->bind(port);
@@ -43,7 +45,40 @@ ScServer::ScServer(ScProcess *scLang, QObject *parent):
     }
     startTimer(333);
 
-    connect(scLang, SIGNAL(response(QString,QString)), this, SLOT(onScLangReponse(QString,QString)));
+    connect(scLang, SIGNAL(stateChanged(QProcess::ProcessState)),
+            this, SLOT(onScLangStateChanged(QProcess::ProcessState)));
+    connect(scLang, SIGNAL(response(QString,QString)),
+            this, SLOT(onScLangReponse(QString,QString)));
+
+    onRunningStateChanged(false, QString(), 0); // initialize ToggleRunning action
+}
+
+void ScServer::createActions(Settings::Manager * settings)
+{
+    QAction *act;
+
+    mActions[ToggleRunning] = act = new QAction(tr("Boot or quit server"), this);
+    act->setShortcut(tr("Ctrl+B", "Boot or quit default server"));
+    connect(act, SIGNAL(triggered()), this, SLOT(toggleRunning()));
+
+    mActions[Reboot] = act = new QAction(tr("Reboot server"), this);
+    act->setShortcut(tr("Ctrl+Shift+B", "Reboot default server"));
+    connect(act, SIGNAL(triggered()), this, SLOT(reboot()));
+
+    mActions[ShowMeters] = act = new QAction(tr("Show server meter"), this);
+    act->setShortcut(tr("Ctrl+M", "Show server meter"));
+    connect(act, SIGNAL(triggered()), this, SLOT(showMeters()));
+
+    mActions[DumpNodeTree] = act = new QAction(tr("Dump node tree"), this);
+    act->setShortcut(tr("Ctrl+T", "Dump node tree"));
+    connect(act, SIGNAL(triggered()), this, SLOT(dumpNodeTree()));
+
+    mActions[DumpNodeTreeWithControls] = act = new QAction(tr("Dump node tree with controls"), this);
+    act->setShortcut(tr("Ctrl+Shift+T", "Dump node tree with controls"));
+    connect(act, SIGNAL(triggered()), this, SLOT(dumpNodeTreeWithControls()));
+
+    for (int i = 0; i < ActionCount; ++i)
+        settings->addAction( mActions[i] );
 }
 
 void ScServer::boot()
@@ -67,11 +102,44 @@ void ScServer::reboot()
     Main::scProcess()->evaluateCode( "ScIDE.defaultServer.reboot", true );
 }
 
+void ScServer::toggleRunning()
+{
+    if (isRunning())
+        quit();
+    else
+        boot();
+}
+
+void ScServer::showMeters()
+{
+    Main::evaluateCode("ScIDE.defaultServer.meter", true);
+}
+
+void ScServer::dumpNodeTree()
+{
+    queryAllNodes(false);
+}
+
+void ScServer::dumpNodeTreeWithControls()
+{
+    queryAllNodes(true);
+}
+
 void ScServer::queryAllNodes(bool dumpControls)
 {
     QString arg = dumpControls ? QString("true") : QString("false");
 
     Main::scProcess()->evaluateCode( QString("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
+}
+
+void ScServer::onScLangStateChanged( QProcess::ProcessState state )
+{
+    bool langIsRunning = state == QProcess::Running;
+    mActions[ToggleRunning]->setEnabled(langIsRunning);
+    mActions[Reboot]->setEnabled(langIsRunning);
+    mActions[ShowMeters]->setEnabled(langIsRunning);
+    mActions[DumpNodeTree]->setEnabled(langIsRunning);
+    mActions[DumpNodeTreeWithControls]->setEnabled(langIsRunning);
 }
 
 void ScServer::onScLangReponse( const QString & selector, const QString & data )
@@ -151,6 +219,23 @@ void ScServer::timerEvent(QTimerEvent * event)
         packet.EndMsg();
 
         mUdpSocket->writeDatagram(packet.data(), packet.size(), mServerAddress, mPort);
+    }
+}
+
+void ScServer::onRunningStateChanged( bool running, QString const & hostName, int port )
+{
+    if (running) {
+        mServerAddress = QHostAddress(hostName);
+        mPort = port;
+
+        mActions[ToggleRunning]->setText( tr("&Quit Server") );
+        mActions[ToggleRunning]->setStatusTip(tr("Quit sound synthesis server"));
+    } else {
+        mServerAddress.clear();
+        mPort = 0;
+
+        mActions[ToggleRunning]->setText( tr("&Boot Server") );
+        mActions[ToggleRunning]->setStatusTip(tr("Boot sound synthesis server"));
     }
 }
 
