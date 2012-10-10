@@ -47,7 +47,6 @@ public:
     };
 
     ScServer(ScProcess *scLang, Settings::Manager * settings, QObject * parent);
-    void timerEvent(QTimerEvent * event);
 
     bool isRunning() { return mPort != 0; }
 
@@ -70,6 +69,9 @@ signals:
 private slots:
     void onScLangStateChanged( QProcess::ProcessState );
     void onScLangReponse( const QString & selector, const QString & data );
+
+protected:
+    virtual void timerEvent(QTimerEvent * event);
 
 private:
     void createActions( Settings::Manager * );
