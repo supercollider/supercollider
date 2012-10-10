@@ -22,7 +22,6 @@
 #define SCIDE_SC_PROCESS_HPP_INCLUDED
 
 #include "sc_introspection.hpp"
-#include "settings/manager.hpp"
 
 #include <QAction>
 #include <QByteArray>
@@ -35,6 +34,7 @@
 
 namespace ScIDE {
 
+namespace Settings { class Manager; }
 class ScIntrospectionParser;
 
 class ScProcess:
