@@ -37,7 +37,7 @@
 
 namespace ScIDE {
 
-ScProcess::ScProcess( Main *parent, Settings::Manager * settings ):
+ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
     QProcess( parent ),
     mIpcServer( new QLocalServer(this) ),
     mIpcSocket(NULL),
