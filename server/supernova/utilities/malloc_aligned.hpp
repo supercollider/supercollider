@@ -22,6 +22,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <new> // for std::bad_alloc
+
 #include <boost/noncopyable.hpp>
 
 #ifdef __SSE2__
