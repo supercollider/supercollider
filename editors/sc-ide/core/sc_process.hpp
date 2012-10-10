@@ -78,13 +78,6 @@ public:
         return mActions[role];
     }
 
-Q_SIGNALS:
-    void scPost(QString const &);
-    void statusMessage(const QString &);
-    void response(const QString & selector, const QString & data);
-    void classLibraryRecompiled();
-    void introspectionAboutToSwap();
-
 public slots:
     void toggleRunning();
     void startLanguage (void);
@@ -93,9 +86,16 @@ public slots:
     void recompileClassLibrary (void);
     void runMain(void)  { evaluateCode("thisProcess.run", false); }
     void stopMain(void) { evaluateCode("thisProcess.stop", false); }
-    void onReadyRead(void);
     void evaluateCode(QString const & commandString, bool silent = false);
 
+signals:
+    void scPost(QString const &);
+    void statusMessage(const QString &);
+    void response(const QString & selector, const QString & data);
+    void classLibraryRecompiled();
+    void introspectionAboutToSwap();
+
+private slots:
     void swapIntrospection (ScLanguage::Introspection *newIntrospection)
     {
         emit introspectionAboutToSwap();
@@ -103,12 +103,11 @@ public slots:
         mIntrospection = *newIntrospection;
         delete newIntrospection;
     }
-
-private slots:
     void onNewIpcConnection();
     void onIpcData();
     void finalizeConnection();
     void onProcessStateChanged( QProcess::ProcessState state);
+    void onReadyRead(void);
 
 private:
     void onSclangStart();
