@@ -108,10 +108,10 @@ void HelpBrowser::applySettings( Settings::Manager *settings )
     settings->beginGroup("IDE/shortcuts");
 
     mWebView->pageAction(QWebPage::Copy)
-            ->setShortcut( Main::settings()->shortcut("copy") );
+            ->setShortcut( settings->shortcut("editor-copy") );
     mWebView->pageAction(QWebPage::Paste)
-            ->setShortcut( Main::settings()->shortcut("paste") );
-    mEvaluateShortcut->setKey( Main::settings()->shortcut("evaluate_selection,_line_or_region") );
+            ->setShortcut( settings->shortcut("editor-paste") );
+    mEvaluateShortcut->setKey( settings->shortcut("editor-eval-smart") );
 
     settings->endGroup();
 

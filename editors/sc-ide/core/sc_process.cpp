@@ -61,35 +61,41 @@ void ScProcess::prepareActions(Settings::Manager * settings)
 {
     QAction * action;
 
+    const QString interpreterCategory("Interpreter");
+
     mActions[ToggleRunning] = action = new QAction(tr("Start or Stop Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()) );
+    settings->addAction( action, "interpreter-toggle-running", interpreterCategory);
 
     mActions[Start] = action = new QAction(tr("Start Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(startLanguage()) );
+    settings->addAction( action, "interpreter-start", interpreterCategory);
 
     mActions[Stop] = action = new QAction(tr("Stop Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()) );
+    settings->addAction( action, "interpreter-stop", interpreterCategory);
 
     mActions[Restart] = action = new QAction(
         QIcon::fromTheme("system-reboot"), tr("Restart Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(restartLanguage()) );
+    settings->addAction( action, "interpreter-restart", interpreterCategory);
 
     mActions[RecompileClassLibrary] = action = new QAction(
         QIcon::fromTheme("system-reboot"), tr("Recompile Class Library"), this);
     action->setShortcut(tr("Ctrl+Shift+l", "Recompile Class Library)"));
     connect(action, SIGNAL(triggered()), this, SLOT(recompileClassLibrary()) );
+    settings->addAction( action, "interpreter-recompile-lib", interpreterCategory);
 
     mActions[RunMain] = action = new QAction(
         QIcon::fromTheme("media-playback-start"), tr("Run Main"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(runMain()));
+    settings->addAction( action, "interpreter-main-run", interpreterCategory);
 
     mActions[StopMain] = action = new QAction(
         QIcon::fromTheme("process-stop"), tr("Stop Main"), this);
     action->setShortcut(tr("Ctrl+.", "Stop Main (a.k.a. cmd-period)"));
     connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
-
-    for (int i = 0; i < ActionCount; ++i)
-        settings->addAction( mActions[i] );
+    settings->addAction( action, "interpreter-main-stop", interpreterCategory);
 
     onProcessStateChanged(QProcess::NotRunning);
 }
