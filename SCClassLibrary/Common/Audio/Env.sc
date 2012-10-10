@@ -3,11 +3,11 @@ Env {
 	var <releaseNode;	// index of release level, if nil then ignore release
 	var <loopNode;	// index of loop start level, if nil then does not loop
 	var <offset; 		// an offset to all time values (only works in IEnvGen)
-	
+
 	var <array;		// cache for osc-conform data
 	classvar <shapeNames;
 
-	
+
 	*new { arg levels = #[0,1,0], times = #[1,1], curve = \lin, releaseNode, loopNode, offset = 0;
 		times = times.asArray.wrapExtend(levels.size - 1);
 		^super.newCopyArgs(levels, times, curve ? \lin, releaseNode, loopNode, offset)
@@ -75,6 +75,11 @@ Env {
 
 	duration {
 		^times.sum
+	}
+
+	totalDuration {
+		var duration = times.sum;
+		^duration.asArray.maxItem;
 	}
 
 	range { arg lo = 0.0, hi = 1.0;
@@ -197,10 +202,16 @@ Env {
 	}
 
 	asMultichannelSignal { arg length = 400, class = (Signal);
-		^this.asMultichannelArray.collect { |chan|
-			var duration, signal, ratio;
-			duration = chan[5, 9 ..].sum;
-			ratio = duration / (length - 1);
+		var multiChannelArray = this.asMultichannelArray;
+		var channelCount = multiChannelArray.size;
+
+		var totalDur = this.totalDuration;
+
+		length = max(length, levels.size);
+
+		^multiChannelArray.collect { |chan|
+			var signal, ratio;
+			ratio = totalDur / (length - 1);
 			signal = class.new(length);
 			length.do { arg i; signal.add(chan.envAt(i * ratio)) };
 			signal
@@ -384,7 +395,7 @@ Env {
 		contents.add(size);
 		contents.add(releaseNode.asUGenInput ? -99);
 		contents.add(loopNode.asUGenInput ? -99);
-		
+
 		size.do { arg i;
 			contents.add(levelArray.at(i+1));
 			contents.add(timeArray.at(i));
@@ -394,6 +405,6 @@ Env {
 
 		^contents.flop;
 	}
-	
-	
+
+
 }
