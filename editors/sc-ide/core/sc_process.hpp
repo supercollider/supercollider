@@ -46,15 +46,16 @@ class ScProcess:
 public:
     ScProcess( Main *, Settings::Manager * );
 
-    enum SCProcessActionRole {
-        StartSCLang = 0,
+    enum ActionRole {
+        ToggleRunning = 0,
+        Start,
+        Stop,
+        Restart,
         RecompileClassLibrary,
-        StopSCLang,
-        RestartSCLang,
         RunMain,
         StopMain,
 
-        SCProcessActionCount
+        ActionCount
     };
 
     const ScLanguage::Introspection & introspection() { return mIntrospection; }
@@ -72,7 +73,7 @@ public:
     void setActiveDocument(class Document *);
     void sendActiveDocument();
 
-    QAction *action(SCProcessActionRole role)
+    QAction *action(ActionRole role)
     {
         return mActions[role];
     }
@@ -85,12 +86,13 @@ Q_SIGNALS:
     void introspectionAboutToSwap();
 
 public slots:
-    void recompileClassLibrary (void);
-    void runMain(void)  { evaluateCode("thisProcess.run", false); }
-    void stopMain(void) { evaluateCode("thisProcess.stop", false); }
+    void toggleRunning();
     void startLanguage (void);
     void stopLanguage (void);
     void restartLanguage (void);
+    void recompileClassLibrary (void);
+    void runMain(void)  { evaluateCode("thisProcess.run", false); }
+    void stopMain(void) { evaluateCode("thisProcess.stop", false); }
     void onReadyRead(void);
     void evaluateCode(QString const & commandString, bool silent = false);
 
@@ -114,7 +116,7 @@ private:
 
     void prepareActions(Settings::Manager * settings);
 
-    QAction * mActions[SCProcessActionCount];
+    QAction * mActions[ActionCount];
 
     ScLanguage::Introspection mIntrospection;
     ScIntrospectionParser *mIntrospectionParser;

@@ -60,22 +60,24 @@ ScProcess::ScProcess( Main *parent, Settings::Manager * settings ):
 void ScProcess::prepareActions(Settings::Manager * settings)
 {
     QAction * action;
-    mActions[StartSCLang] = action = new QAction(
-        QIcon::fromTheme("system-run"), tr("Start SCLang"), this);
+
+    mActions[ToggleRunning] = action = new QAction(tr("Start or Stop Interpreter"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()) );
+
+    mActions[Start] = action = new QAction(tr("Start Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(startLanguage()) );
+
+    mActions[Stop] = action = new QAction(tr("Stop Interpreter"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()) );
+
+    mActions[Restart] = action = new QAction(
+        QIcon::fromTheme("system-reboot"), tr("Restart Interpreter"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(restartLanguage()) );
 
     mActions[RecompileClassLibrary] = action = new QAction(
         QIcon::fromTheme("system-reboot"), tr("Recompile Class Library"), this);
     action->setShortcut(tr("Ctrl+Shift+l", "Recompile Class Library)"));
     connect(action, SIGNAL(triggered()), this, SLOT(recompileClassLibrary()) );
-
-    mActions[StopSCLang] = action = new QAction(
-        QIcon::fromTheme("system-shutdown"), tr("Stop SCLang"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()) );
-
-    mActions[RestartSCLang] = action = new QAction(
-        QIcon::fromTheme("system-reboot"), tr("Restart SCLang"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(restartLanguage()) );
 
     mActions[RunMain] = action = new QAction(
         QIcon::fromTheme("media-playback-start"), tr("Run Main"), this);
@@ -86,10 +88,21 @@ void ScProcess::prepareActions(Settings::Manager * settings)
     action->setShortcut(tr("Ctrl+.", "Stop Main (a.k.a. cmd-period)"));
     connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
 
-    for (int i = 0; i < SCProcessActionCount; ++i)
+    for (int i = 0; i < ActionCount; ++i)
         settings->addAction( mActions[i] );
 
     onProcessStateChanged(QProcess::NotRunning);
+}
+
+void ScProcess::toggleRunning()
+{
+    switch(state()) {
+    case NotRunning:
+        startLanguage();
+        break;
+    default:
+        stopLanguage();
+    }
 }
 
 void ScProcess::startLanguage (void)
@@ -222,9 +235,11 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
 {
     switch (state) {
     case QProcess::Starting:
-        mActions[StartSCLang]->setEnabled(false);
-        mActions[StopSCLang]->setEnabled(true);
-        mActions[RestartSCLang]->setEnabled(true);
+        mActions[ToggleRunning]->setText(tr("Stop Interpreter"));
+        mActions[ToggleRunning]->setIcon(QIcon::fromTheme("system-shutdown"));
+        mActions[Start]->setEnabled(false);
+        mActions[Stop]->setEnabled(true);
+        mActions[Restart]->setEnabled(true);
 
         break;
 
@@ -236,9 +251,11 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
         break;
 
     case QProcess::NotRunning:
-        mActions[StartSCLang]->setEnabled(true);
-        mActions[StopSCLang]->setEnabled(false);
-        mActions[RestartSCLang]->setEnabled(false);
+        mActions[ToggleRunning]->setText(tr("Start Interpreter"));
+        mActions[ToggleRunning]->setIcon(QIcon::fromTheme("system-run"));
+        mActions[Start]->setEnabled(true);
+        mActions[Stop]->setEnabled(false);
+        mActions[Restart]->setEnabled(false);
         mActions[RunMain]->setEnabled(false);
         mActions[StopMain]->setEnabled(false);
         mActions[RecompileClassLibrary]->setEnabled(false);
