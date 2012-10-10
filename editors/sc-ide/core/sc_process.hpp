@@ -35,7 +35,6 @@
 
 namespace ScIDE {
 
-class Main;
 class ScIntrospectionParser;
 
 class ScProcess:
@@ -44,7 +43,7 @@ class ScProcess:
     Q_OBJECT
 
 public:
-    ScProcess( Main *, Settings::Manager * );
+    ScProcess( Settings::Manager *, QObject * parent );
 
     enum ActionRole {
         ToggleRunning = 0,
