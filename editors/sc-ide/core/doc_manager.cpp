@@ -184,6 +184,7 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     doc->mDoc->setModified(false);
     doc->mFilePath = filePath;
     doc->mTitle = info.fileName();
+    doc->mSaveTime = info.lastModified();
 
     if (!isRTF)
         mFsWatcher.addPath(cpath);
@@ -213,6 +214,9 @@ bool DocumentManager::reload( Document *doc )
 
     doc->mDoc->setPlainText( QString::fromUtf8( bytes.data(), bytes.size() ) );
     doc->mDoc->setModified(false);
+
+    QFileInfo info(doc->mFilePath);
+    doc->mSaveTime = info.lastModified();
 
     if (!mFsWatcher.files().contains(doc->mFilePath))
         mFsWatcher.addPath(doc->mFilePath);
@@ -320,6 +324,7 @@ void DocumentManager::onFileChanged( const QString & path )
             QFileInfo info(doc->mFilePath);
             if (doc->mSaveTime < info.lastModified()) {
                 doc->mDoc->setModified(true);
+                doc->mSaveTime = info.lastModified();
                 emit changedExternally(doc);
             }
         }
