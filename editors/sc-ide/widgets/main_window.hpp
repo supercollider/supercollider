@@ -100,13 +100,6 @@ public:
         ShowAbout,
         ShowAboutQT,
 
-        // Server
-        ServerToggleRunning,
-        ServerReboot,
-        ServerShowMeters,
-        ServerDumpNodeTree,
-        ServerDumpNodeTreeWithControls,
-
         ActionCount
     };
 
@@ -179,11 +172,6 @@ private Q_SLOTS:
     void lookupDocumentation();
     void findReferences();
     void lookupReferences();
-    void serverToggleRunning();
-    void serverReboot();
-    void serverDumpNodeTree();
-    void serverDumpNodeTreeWithControls();
-    void serverShowMeters();
     void applySettings( Settings::Manager * );
     void storeSettings( Settings::Manager * );
     void showSwitchSessionDialog();
