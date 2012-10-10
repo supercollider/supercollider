@@ -22,6 +22,7 @@
 #include "main.hpp"
 #include "main_window.hpp"
 #include "settings/manager.hpp"
+#include "../widgets/code_editor/highlighter.hpp"
 #include "../../common/SC_TextUtils.hpp"
 
 #include <QPlainTextDocumentLayout>

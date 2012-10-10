@@ -21,8 +21,6 @@
 #ifndef SCIDE_DOC_MANAGER_HPP_INCLUDED
 #define SCIDE_DOC_MANAGER_HPP_INCLUDED
 
-#include "../widgets/code_editor/highlighter.hpp"
-
 #include <QDateTime>
 #include <QFileSystemWatcher>
 #include <QHash>
@@ -37,6 +35,7 @@
 namespace ScIDE {
 
 namespace Settings { class Manager; }
+class SyntaxHighlighter;
 
 class Main;
 class DocumentManager;

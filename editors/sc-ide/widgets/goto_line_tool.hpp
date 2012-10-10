@@ -31,6 +31,7 @@
 #include <QKeyEvent>
 #include <QPointer>
 #include <QLabel>
+#include <QTextBlock>
 
 namespace ScIDE {
 
