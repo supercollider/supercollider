@@ -142,22 +142,35 @@ QKeySequence Manager::shortcut( const QString & key )
     return QKeySequence( value(key).toString() );
 }
 
-void Manager::addAction ( QAction *action )
+void Manager::addAction ( QAction *action, const QString &category )
 {
+    ActionData actionData;
+    actionData.category = category;
+    actionData.key = action->text().toLower().remove('&').replace(' ', '_');
+
+    if (action->data().isValid()) {
+        qWarning( "Settings::Manager: action '%s' of class '%s' has data."
+                  " It will be overridden for settings purposes!",
+                  qPrintable(action->text()),
+                  action->parent()->metaObject()->className() );
+    }
+
+    action->setData( QVariant::fromValue(actionData) );
+
     mActions.append(action);
-    QString key = keyForAction(action);
 
     beginGroup("IDE/shortcuts");
 
-    setDefault( key, QVariant::fromValue<QKeySequence>(action->shortcut()) );
-    action->setShortcut( value(key).value<QKeySequence>() );
+    setDefault( actionData.key, QVariant::fromValue(action->shortcut()) );
+    action->setShortcut( value(actionData.key).value<QKeySequence>() );
 
     endGroup();
 }
 
 QString Manager::keyForAction ( QAction *action )
 {
-    return action->text().toLower().remove('&').replace(' ', '_');
+    ActionData actionData = action->data().value<ActionData>();
+    return actionData.key;
 }
 
 QFont Manager::codeFont()
