@@ -33,6 +33,7 @@ For speed we keep this global, although this makes the code non-thread-safe.
 #include <cassert>
 
 #include "SC_fftlib.h"
+#include "../server/supernova/utilities/malloc_aligned.hpp"
 
 #ifdef NOVA_SIMD
 #include "simd_binary_arithmetic.hpp"
@@ -120,7 +121,10 @@ static float* create_cosTable(int log2n)
 {
 	int size = 1 << log2n;
 	int size2 = size / 4 + 1;
-	float *win = (float*)malloc(size2 * sizeof(float));
+	float *win = (float*)malloc_aligned(size2 * sizeof(float));
+	if (win == NULL)
+		return NULL;
+
 	double winc = twopi / size;
 	for (int i=0; i<size2; ++i) {
 		double w = i * winc;
@@ -134,14 +138,11 @@ static float* scfft_create_fftwindow(int wintype, int log2n)
 {
 	int size = 1 << log2n;
 	unsigned short i;
-#if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
-	float *win;
-	int error = posix_memalign((void**)&win, 64, size * sizeof(float)); // align by cacheline
-	if (error)
-		win = NULL;
-#else
-	float *win = (float*)malloc(size * sizeof(float));
-#endif
+
+	float * win = (float*)nova::malloc_aligned(size * sizeof(float));
+
+	if (!win) return NULL;
+
 	double winc;
 	switch(wintype) {
 		case kSineWindow:
@@ -161,7 +162,6 @@ static float* scfft_create_fftwindow(int wintype, int log2n)
 	}
 
 	return win;
-
 }
 
 static void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsize, short wintype);
@@ -240,12 +240,16 @@ static size_t scfft_trbufsize(unsigned int fullsize)
 scfft * scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype,
 					 float *indata, float *outdata, SCFFT_Direction forward, SCFFT_Allocator & alloc)
 {
-	char * chunk = (char*) alloc.alloc(sizeof(scfft) + scfft_trbufsize(fullsize));
+	const int alignment = 128; // in bytes
+	char * chunk = (char*) alloc.alloc(sizeof(scfft) + scfft_trbufsize(fullsize) + alignment);
 	if (!chunk)
 		return NULL;
 
 	scfft * f = (scfft*)chunk;
 	float *trbuf = (float*)(chunk + sizeof(scfft));
+	trbuf = (float*) ((intptr_t)((char*)trbuf + (alignment - 1)) & -alignment);
+
+	assert(nova::vec<float>::is_aligned(trbuf));
 
 	f->nfull = fullsize;
 	f->nwin  =  winsize;
@@ -261,7 +265,7 @@ scfft * scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction winty
 		scfft_ensurewindow(f->log2nfull, f->log2nwin, wintype);
 
 	// The scale factors rescale the data to unity gain. The old Green lib did this itself, meaning scalefacs would here be 1...
-	if(forward){
+	if (forward) {
 #if SC_FFT_VDSP
 		f->scalefac = 0.5f;
 #else // forward FFTW and Green factor
@@ -289,11 +293,11 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
 	// Ensure we have enough space to do our calcs
 	if(log2_fullsize > largest_log2n){
 		largest_log2n = log2_fullsize;
- 		#if SC_FFT_VDSP
-			size_t newsize = (1 << largest_log2n) * sizeof(float) / 2;
-			splitBuf.realp = (float*) realloc (splitBuf.realp, newsize);
-			splitBuf.imagp = (float*) realloc (splitBuf.imagp, newsize);
-   		#endif
+#if SC_FFT_VDSP
+		size_t newsize = (1 << largest_log2n) * sizeof(float) / 2;
+		splitBuf.realp = (float*) realloc (splitBuf.realp, newsize);
+		splitBuf.imagp = (float*) realloc (splitBuf.imagp, newsize);
+#endif
 	}
 
 	// Ensure our window has been created
