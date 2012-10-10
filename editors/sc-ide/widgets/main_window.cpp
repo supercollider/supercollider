@@ -530,9 +530,8 @@ void MainWindow::createMenus()
     menuBar()->addMenu(menu);
 
     menu = new QMenu(tr("&Language"), this);
-    menu->addAction( mMain->scProcess()->action(ScProcess::StartSCLang) );
-    menu->addAction( mMain->scProcess()->action(ScProcess::StopSCLang) );
-    menu->addAction( mMain->scProcess()->action(ScProcess::RestartSCLang) );
+    menu->addAction( mMain->scProcess()->action(ScProcess::ToggleRunning) );
+    menu->addAction( mMain->scProcess()->action(ScProcess::Restart) );
     menu->addAction( mMain->scProcess()->action(ScProcess::RecompileClassLibrary) );
     menu->addSeparator();
     menu->addAction( mActions[ServerToggleRunning] );
