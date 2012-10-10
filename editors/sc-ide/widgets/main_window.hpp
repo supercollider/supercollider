@@ -83,20 +83,19 @@ public:
         ClearPostWindow,
         FocusPostWindow,
 
-        LookupReferences,
-        LookupDefinition,
-        LookupDocumentation,
-
         // Settings
         ShowSettings,
 
         // Language
-        OpenDefinition,
-        FindReferences,
+        LookupImplementation,
+        LookupImplementationForCursor,
+        LookupReferences,
+        LookupReferencesForCursor,
 
         // Help
         Help,
-        HelpForSelection,
+        LookupDocumentationForCursor,
+        LookupDocumentation,
         ShowAbout,
         ShowAboutQT,
 
@@ -153,8 +152,6 @@ public Q_SLOTS:
 private Q_SLOTS:
     void switchSession( Session *session );
     void saveSession( Session *session );
-    void openHelp();
-    void openDocumentation();
     void onInterpreterStateChanged( QProcess::ProcessState );
     void onServerStatusReply(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU);
     void onServerRunningChanged( bool running, QString const & hostName, int port );
@@ -167,11 +164,13 @@ private Q_SLOTS:
     void onOpenSessionAction( QAction * );
     void updateWindowTitle();
     void toggleFullScreen();
-    void openDefinition();
-    void lookupDefinition();
-    void lookupDocumentation();
-    void findReferences();
+    void lookupImplementation();
+    void lookupImplementationForCursor();
     void lookupReferences();
+    void lookupReferencesForCursor();
+    void openHelp();
+    void lookupDocumentationForCursor();
+    void lookupDocumentation();
     void applySettings( Settings::Manager * );
     void storeSettings( Settings::Manager * );
     void showSwitchSessionDialog();

@@ -46,7 +46,7 @@ bool LookupDialogTreeView::openDocumentation()
 GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     QDialog(parent)
 {
-    addAction(MainWindow::instance()->action(MainWindow::HelpForSelection));
+    addAction(MainWindow::instance()->action(MainWindow::LookupDocumentationForCursor));
 
     mQueryEdit = new QLineEdit(this);
 

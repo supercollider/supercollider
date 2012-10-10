@@ -341,34 +341,28 @@ void MainWindow::createActions()
     act->setShortcut(tr("Ctrl+L", "Focus Post Window"));
     connect(act, SIGNAL(triggered()), mPostDock->mPostWindow, SLOT(setFocus()));
 
+    // Language
+    mActions[LookupImplementation] = act = new QAction(
+        QIcon::fromTheme("window-lookupdefinition"), tr("Look Up Implementations..."), this);
+    act->setShortcut(tr("Ctrl+Shift+I", "Look Up Implementations"));
+    act->setStatusTip(tr("Open dialog to look up implementations of a class or a method"));
+    connect(act, SIGNAL(triggered()), this, SLOT(lookupImplementation()));
+
+    mActions[LookupImplementationForCursor] = act = new QAction(tr("Look Up Implementations for Cursor"), this);
+    act->setShortcut(tr("Ctrl+I", "Look Up Implementations for Cursor"));
+    act->setStatusTip(tr("Look up implementations of class or method under cursor"));
+    connect(act, SIGNAL(triggered(bool)), this, SLOT(lookupImplementationForCursor()));
+
     mActions[LookupReferences] = act = new QAction(
         QIcon::fromTheme("window-lookupreferences"), tr("Look Up References..."), this);
     act->setShortcut(tr("Ctrl+Shift+U", "Look Up References"));
     act->setStatusTip(tr("Open dialog to look up references to a class or a method"));
     connect(act, SIGNAL(triggered()), this, SLOT(lookupReferences()));
 
-    mActions[LookupDefinition] = act = new QAction(
-        QIcon::fromTheme("window-lookupdefinition"), tr("Look Up Implementations..."), this);
-    act->setShortcut(tr("Ctrl+Shift+I", "Look Up Implementations"));
-    act->setStatusTip(tr("Open dialog to look up implementations of a class or a method"));
-    connect(act, SIGNAL(triggered()), this, SLOT(lookupDefinition()));
-
-    mActions[LookupDocumentation] = act = new QAction(
-        QIcon::fromTheme("window-lookupDocumentation"), tr("Look Up Documentation..."), this);
-    act->setShortcut(tr("Ctrl+Shift+D", "Look Up Documentation"));
-    act->setStatusTip(tr("Enter text to look up in documentation"));
-    connect(act, SIGNAL(triggered()), this, SLOT(lookupDocumentation()));
-
-    // Language
-    mActions[OpenDefinition] = act = new QAction(tr("Find Implementations"), this);
-    act->setShortcut(tr("Ctrl+I", "Find Implementations"));
-    act->setStatusTip(tr("Find implementations of selected class or method"));
-    connect(act, SIGNAL(triggered(bool)), this, SLOT(openDefinition()));
-
-    mActions[FindReferences] = act = new QAction(tr("Find References"), this);
-    act->setShortcut(tr("Ctrl+U", "Find References"));
-    act->setStatusTip(tr("Find references to selected class or method"));
-    connect(act, SIGNAL(triggered(bool)), this, SLOT(findReferences()));
+    mActions[LookupReferencesForCursor] = act = new QAction(tr("Look Up References for Cursor"), this);
+    act->setShortcut(tr("Ctrl+U", "Look Up References For Selection"));
+    act->setStatusTip(tr("Look up references to class or method under cursor"));
+    connect(act, SIGNAL(triggered(bool)), this, SLOT(lookupReferencesForCursor()));
 
     // Settings
     mActions[ShowSettings] = act = new QAction(tr("&Preferences"), this);
@@ -378,18 +372,23 @@ void MainWindow::createActions()
     act->setStatusTip(tr("Show configuration dialog"));
     connect(act, SIGNAL(triggered()), this, SLOT(showSettings()));
 
-
     // Help
     mActions[Help] = act = new QAction(
-        QIcon::fromTheme("system-help"), tr("Open Help Browser"), this);
+        QIcon::fromTheme("system-help"), tr("Open &Help Browser"), this);
     act->setStatusTip(tr("Open help"));
     connect(act, SIGNAL(triggered()), this, SLOT(openHelp()));
 
-    mActions[HelpForSelection] = act = new QAction(
-        QIcon::fromTheme("system-help"), tr("&Help for Selection"), this);
-    act->setShortcut(tr("Ctrl+D", "Help for selection"));
-    act->setStatusTip(tr("Find help for selected text"));
-    connect(act, SIGNAL(triggered()), this, SLOT(openDocumentation()));
+    mActions[LookupDocumentationForCursor] = act = new QAction(
+        QIcon::fromTheme("system-help"), tr("Look Up Documentation for Cursor"), this);
+    act->setShortcut(tr("Ctrl+D", "Look Up Documentation for Cursor"));
+    act->setStatusTip(tr("Look up documentation for text under cursor"));
+    connect(act, SIGNAL(triggered()), this, SLOT(lookupDocumentationForCursor()));
+
+    mActions[LookupDocumentation] = act = new QAction(
+        QIcon::fromTheme("system-help"), tr("Look Up Documentation..."), this);
+    act->setShortcut(tr("Ctrl+Shift+D", "Look Up Documentation"));
+    act->setStatusTip(tr("Enter text to look up in documentation"));
+    connect(act, SIGNAL(triggered()), this, SLOT(lookupDocumentation()));
 
     mActions[ShowAbout] = act = new QAction(
         QIcon::fromTheme("show-about"), tr("&About SuperCollider"), this);
@@ -500,11 +499,6 @@ void MainWindow::createMenus()
     menu->addAction( mActions[ClearPostWindow] );
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
-    menu->addSeparator();
-    menu->addAction( mActions[OpenDefinition] );
-    menu->addAction( mActions[LookupDefinition] );
-    menu->addAction( mActions[FindReferences] );
-    menu->addAction( mActions[LookupReferences] );
 
     menuBar()->addMenu(menu);
 
@@ -525,12 +519,17 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mMain->scProcess()->action(ScIDE::ScProcess::RunMain) );
     menu->addAction( mMain->scProcess()->action(ScIDE::ScProcess::StopMain) );
+    menu->addSeparator();
+    menu->addAction( mActions[LookupImplementationForCursor] );
+    menu->addAction( mActions[LookupImplementation] );
+    menu->addAction( mActions[LookupReferencesForCursor] );
+    menu->addAction( mActions[LookupReferences] );
 
     menuBar()->addMenu(menu);
 
     menu = new QMenu(tr("&Help"), this);
     menu->addAction( mActions[Help] );
-    menu->addAction( mActions[HelpForSelection] );
+    menu->addAction( mActions[LookupDocumentationForCursor] );
     menu->addAction( mActions[LookupDocumentation] );
     menu->addSeparator();
     menu->addAction( mActions[ShowAbout] );
@@ -1080,7 +1079,7 @@ void MainWindow::openSession(const QString &sessionName)
     mMain->sessionManager()->openSession( sessionName );
 }
 
-void MainWindow::openDefinition()
+void MainWindow::lookupImplementationForCursor()
 {
     QWidget * focussedWidget = QApplication::focusWidget();
 
@@ -1089,24 +1088,13 @@ void MainWindow::openDefinition()
         QMetaObject::invokeMethod( focussedWidget, "openDefinition", Qt::DirectConnection );
 }
 
-void MainWindow::lookupDefinition()
+void MainWindow::lookupImplementation()
 {
     LookupDialog dialog(mEditors);
     dialog.exec();
 }
 
-void MainWindow::lookupDocumentation()
-{
-    PopupTextInput * dialog = new PopupTextInput(tr("Look up Documentation For"), this);
-
-    bool success = dialog->exec();
-    if (success)
-        Main::openDocumentation(dialog->textValue());
-
-    delete dialog;
-}
-
-void MainWindow::findReferences()
+void MainWindow::lookupReferencesForCursor()
 {
     QWidget * focussedWidget = QApplication::focusWidget();
 
@@ -1248,7 +1236,19 @@ void MainWindow::showSettings()
         mMain->applySettings();
 }
 
-void MainWindow::openDocumentation()
+
+void MainWindow::lookupDocumentation()
+{
+    PopupTextInput * dialog = new PopupTextInput(tr("Look up Documentation For"), this);
+
+    bool success = dialog->exec();
+    if (success)
+        Main::openDocumentation(dialog->textValue());
+
+    delete dialog;
+}
+
+void MainWindow::lookupDocumentationForCursor()
 {
     QWidget * focussedWidget = QApplication::focusWidget();
 
