@@ -48,7 +48,7 @@ PostWindow::PostWindow(QWidget* parent):
 
     QAction *copyAction = new QAction(tr("Copy"), this);
     connect(copyAction, SIGNAL(triggered()), this, SLOT(copy()));
-    copyAction->setShortcut( Main::settings()->shortcut("IDE/shortcuts/copy") );
+    copyAction->setShortcut( Main::settings()->shortcut("IDE/shortcuts/editor-copy") );
     copyAction->setShortcutContext( Qt::WidgetShortcut );
     addAction(copyAction);
 

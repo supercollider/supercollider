@@ -55,30 +55,33 @@ ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *pare
 
 void ScServer::createActions(Settings::Manager * settings)
 {
-    QAction *act;
+    const QString synthServerCategory("Sound Synthesis Server");
+    QAction *action;
 
-    mActions[ToggleRunning] = act = new QAction(tr("Boot or quit server"), this);
-    act->setShortcut(tr("Ctrl+B", "Boot or quit default server"));
-    connect(act, SIGNAL(triggered()), this, SLOT(toggleRunning()));
+    mActions[ToggleRunning] = action = new QAction(tr("Boot or quit server"), this);
+    action->setShortcut(tr("Ctrl+B", "Boot or quit default server"));
+    connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()));
+    settings->addAction( action, "synth-server-toggle-running", synthServerCategory);
 
-    mActions[Reboot] = act = new QAction(tr("Reboot server"), this);
-    act->setShortcut(tr("Ctrl+Shift+B", "Reboot default server"));
-    connect(act, SIGNAL(triggered()), this, SLOT(reboot()));
+    mActions[Reboot] = action = new QAction(tr("Reboot server"), this);
+    action->setShortcut(tr("Ctrl+Shift+B", "Reboot default server"));
+    connect(action, SIGNAL(triggered()), this, SLOT(reboot()));
+    settings->addAction( action, "synth-server-reboot", synthServerCategory);
 
-    mActions[ShowMeters] = act = new QAction(tr("Show server meter"), this);
-    act->setShortcut(tr("Ctrl+M", "Show server meter"));
-    connect(act, SIGNAL(triggered()), this, SLOT(showMeters()));
+    mActions[ShowMeters] = action = new QAction(tr("Show server meter"), this);
+    action->setShortcut(tr("Ctrl+M", "Show server meter"));
+    connect(action, SIGNAL(triggered()), this, SLOT(showMeters()));
+    settings->addAction( action, "synth-server-meter", synthServerCategory);
 
-    mActions[DumpNodeTree] = act = new QAction(tr("Dump node tree"), this);
-    act->setShortcut(tr("Ctrl+T", "Dump node tree"));
-    connect(act, SIGNAL(triggered()), this, SLOT(dumpNodeTree()));
+    mActions[DumpNodeTree] = action = new QAction(tr("Dump node tree"), this);
+    action->setShortcut(tr("Ctrl+T", "Dump node tree"));
+    connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTree()));
+    settings->addAction( action, "synth-server-dump-nodes", synthServerCategory);
 
-    mActions[DumpNodeTreeWithControls] = act = new QAction(tr("Dump node tree with controls"), this);
-    act->setShortcut(tr("Ctrl+Shift+T", "Dump node tree with controls"));
-    connect(act, SIGNAL(triggered()), this, SLOT(dumpNodeTreeWithControls()));
-
-    for (int i = 0; i < ActionCount; ++i)
-        settings->addAction( mActions[i] );
+    mActions[DumpNodeTreeWithControls] = action = new QAction(tr("Dump node tree with controls"), this);
+    action->setShortcut(tr("Ctrl+Shift+T", "Dump node tree with controls"));
+    connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTreeWithControls()));
+    settings->addAction( action, "synth-server-dump-nodes-with-controls", synthServerCategory);
 }
 
 void ScServer::boot()

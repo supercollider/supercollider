@@ -76,7 +76,7 @@ public:
     QKeySequence shortcut( const QString & key );
 
     const QList<QAction*> & actions() { return mActions; }
-    void addAction ( QAction *action, const QString & category = QString() );
+    void addAction ( QAction *action, const QString & key, const QString & category = QString() );
     QString keyForAction ( QAction *action );
 
     QFont codeFont();

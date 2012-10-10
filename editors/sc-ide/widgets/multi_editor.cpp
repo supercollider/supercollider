@@ -259,246 +259,276 @@ void MultiEditor::breakSignalConnections()
 void MultiEditor::createActions()
 {
     Settings::Manager *settings = Main::settings();
-    settings->beginGroup("IDE/shortcuts");
 
-    QAction * act;
+    QAction * action;
+    const QString editorCategory("Text Editor");
 
     // Edit
 
-    mActions[Undo] = act = new QAction(
+    mActions[Undo] = action = new QAction(
         QIcon::fromTheme("edit-undo"), tr("&Undo"), this);
-    act->setShortcut(tr("Ctrl+Z", "Undo"));
-    act->setStatusTip(tr("Undo last editing action"));
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(undo()));
-    mEditorSigMux->connect(SIGNAL(undoAvailable(bool)), act, SLOT(setEnabled(bool)));
+    action->setShortcut(tr("Ctrl+Z", "Undo"));
+    action->setStatusTip(tr("Undo last editing action"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(undo()));
+    mEditorSigMux->connect(SIGNAL(undoAvailable(bool)), action, SLOT(setEnabled(bool)));
+    settings->addAction( action, "editor-undo", editorCategory);
 
-    mActions[Redo] = act = new QAction(
+    mActions[Redo] = action = new QAction(
         QIcon::fromTheme("edit-redo"), tr("Re&do"), this);
-    act->setShortcut(tr("Ctrl+Shift+Z", "Redo"));
-    act->setStatusTip(tr("Redo next editing action"));
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(redo()));
-    mEditorSigMux->connect(SIGNAL(redoAvailable(bool)), act, SLOT(setEnabled(bool)));
+    action->setShortcut(tr("Ctrl+Shift+Z", "Redo"));
+    action->setStatusTip(tr("Redo next editing action"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(redo()));
+    mEditorSigMux->connect(SIGNAL(redoAvailable(bool)), action, SLOT(setEnabled(bool)));
+    settings->addAction( action, "editor-redo", editorCategory);
 
-    mActions[Cut] = act = new QAction(
+    mActions[Cut] = action = new QAction(
         QIcon::fromTheme("edit-cut"), tr("Cu&t"), this);
-    act->setShortcut(tr("Ctrl+X", "Cut"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    act->setStatusTip(tr("Cut text to clipboard"));
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(cut()));
-    mEditorSigMux->connect(SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
+    action->setShortcut(tr("Ctrl+X", "Cut"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    action->setStatusTip(tr("Cut text to clipboard"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(cut()));
+    mEditorSigMux->connect(SIGNAL(copyAvailable(bool)), action, SLOT(setEnabled(bool)));
+    settings->addAction( action, "editor-cut", editorCategory);
 
-    mActions[Copy] = act = new QAction(
+    mActions[Copy] = action = new QAction(
         QIcon::fromTheme("edit-copy"), tr("&Copy"), this);
-    act->setShortcut(tr("Ctrl+C", "Copy"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    act->setStatusTip(tr("Copy text to clipboard"));
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(copy()));
-    mEditorSigMux->connect(SIGNAL(copyAvailable(bool)), act, SLOT(setEnabled(bool)));
+    action->setShortcut(tr("Ctrl+C", "Copy"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    action->setStatusTip(tr("Copy text to clipboard"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(copy()));
+    mEditorSigMux->connect(SIGNAL(copyAvailable(bool)), action, SLOT(setEnabled(bool)));
+    settings->addAction( action, "editor-copy", editorCategory);
 
-    mActions[Paste] = act = new QAction(
+    mActions[Paste] = action = new QAction(
         QIcon::fromTheme("edit-paste"), tr("&Paste"), this);
-    act->setShortcut(tr("Ctrl+V", "Paste"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    act->setStatusTip(tr("Paste text from clipboard"));
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(paste()));
+    action->setShortcut(tr("Ctrl+V", "Paste"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    action->setStatusTip(tr("Paste text from clipboard"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(paste()));
+    settings->addAction( action, "editor-paste", editorCategory);
 
-    mActions[IndentLineOrRegion] = act = new QAction(
+    mActions[IndentLineOrRegion] = action = new QAction(
         QIcon::fromTheme("format-indent-line"), tr("Autoindent Line or Region"), this);
-    act->setStatusTip(tr("Autoindent Line or Region"));
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(indent()),
+    action->setStatusTip(tr("Autoindent Line or Region"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(indent()),
                            SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-indent-auto", editorCategory);
 
-    mActions[TriggerAutoCompletion] = act = new QAction(tr("Trigger Autocompletion"), this);
-    act->setStatusTip(tr("Suggest possible completions of text at cursor"));
-    act->setShortcut(tr("Ctrl+Space", "Trigger Autocompletion"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(triggerAutoCompletion()),
+    mActions[TriggerAutoCompletion] = action = new QAction(tr("Trigger Autocompletion"), this);
+    action->setStatusTip(tr("Suggest possible completions of text at cursor"));
+    action->setShortcut(tr("Ctrl+Space", "Trigger Autocompletion"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(triggerAutoCompletion()),
                            SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-autocompletion", editorCategory);
 
-    mActions[TriggerMethodCallAid] = act = new QAction(tr("Trigger Method Call Aid"), this);
-    act->setStatusTip(tr("Show arguments for currently typed method call"));
-    act->setShortcut(tr("Ctrl+Shift+Space", "Trigger Method Call Aid"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(triggerMethodCallAid()),
+    mActions[TriggerMethodCallAid] = action = new QAction(tr("Trigger Method Call Aid"), this);
+    action->setStatusTip(tr("Show arguments for currently typed method call"));
+    action->setShortcut(tr("Ctrl+Shift+Space", "Trigger Method Call Aid"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(triggerMethodCallAid()),
                            SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-method-call-assist", editorCategory);
 
-    mActions[ToggleComment] = act = new QAction(
+    mActions[ToggleComment] = action = new QAction(
         QIcon::fromTheme("edit-comment"), tr("Toggle &Comment"), this);
-    act->setShortcut(tr("Ctrl+/", "Toggle Comment"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    act->setStatusTip(tr("Toggle Comment"));
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(toggleComment()),
+    action->setShortcut(tr("Ctrl+/", "Toggle Comment"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    action->setStatusTip(tr("Toggle Comment"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(toggleComment()),
                            SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-toggle-comment", editorCategory);
 
-    mActions[ToggleOverwriteMode] = act = new QAction(
+    mActions[ToggleOverwriteMode] = action = new QAction(
         QIcon::fromTheme("edit-overwrite"), tr("Toggle &Overwrite Mode"), this);
-    act->setShortcut(tr("Insert", "Toggle Overwrite Mode"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(toggleOverwriteMode()));
+    action->setShortcut(tr("Insert", "Toggle Overwrite Mode"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(toggleOverwriteMode()));
+    settings->addAction( action, "editor-toggle-overwrite", editorCategory);
 
-    mActions[CopyLineUp] = act = new QAction(
+    mActions[CopyLineUp] = action = new QAction(
         QIcon::fromTheme("edit-copylineup"), tr("Copy Line Up"), this);
-    act->setShortcut(tr("Ctrl+Alt+Up", "Copy Line Up"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(copyLineUp()));
+    action->setShortcut(tr("Ctrl+Alt+Up", "Copy Line Up"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(copyLineUp()));
+    settings->addAction( action, "editor-copy-line-up", editorCategory);
 
-    mActions[CopyLineDown] = act = new QAction(
+    mActions[CopyLineDown] = action = new QAction(
         QIcon::fromTheme("edit-copylinedown"), tr("Copy Line Down"), this);
-    act->setShortcut(tr("Ctrl+Alt+Down", "Copy Line Up"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(copyLineDown()));
+    action->setShortcut(tr("Ctrl+Alt+Down", "Copy Line Up"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(copyLineDown()));
+    settings->addAction( action, "editor-copy-line-down", editorCategory);
 
-    mActions[MoveLineUp] = act = new QAction(
+    mActions[MoveLineUp] = action = new QAction(
         QIcon::fromTheme("edit-movelineup"), tr("move Line Up"), this);
-    act->setShortcut(tr("Ctrl+Shift+Up", "Move Line Up"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(moveLineUp()));
+    action->setShortcut(tr("Ctrl+Shift+Up", "Move Line Up"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(moveLineUp()));
+    settings->addAction( action, "editor-move-line-up", editorCategory);
 
-    mActions[MoveLineDown] = act = new QAction(
+    mActions[MoveLineDown] = action = new QAction(
         QIcon::fromTheme("edit-movelinedown"), tr("Move Line Down"), this);
-    act->setShortcut(tr("Ctrl+Shift+Down", "Move Line Up"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(moveLineDown()));
+    action->setShortcut(tr("Ctrl+Shift+Down", "Move Line Up"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(moveLineDown()));
+    settings->addAction( action, "editor-move-line-down", editorCategory);
 
-    mActions[GotoPreviousBlock] = act = new QAction(
+    mActions[GotoPreviousBlock] = action = new QAction(
         QIcon::fromTheme("edit-gotopreviousblock"), tr("Go to Previous Block"), this);
-    act->setShortcut(tr("Ctrl+[", "Go to Previous Block"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoPreviousBlock()),
+    action->setShortcut(tr("Ctrl+[", "Go to Previous Block"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(gotoPreviousBlock()),
                            SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-go-to-prev-block", editorCategory);
 
-    mActions[GotoNextBlock] = act = new QAction(
+    mActions[GotoNextBlock] = action = new QAction(
         QIcon::fromTheme("edit-gotonextblock"), tr("Go to Next Block"), this);
-    act->setShortcut(tr("Ctrl+]", "Go to Next Block"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoNextBlock()),
+    action->setShortcut(tr("Ctrl+]", "Go to Next Block"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(gotoNextBlock()),
                            SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-go-to-next-block", editorCategory);
 
-    mActions[GotoPreviousRegion] = act = new QAction(
+    mActions[GotoPreviousRegion] = action = new QAction(
         QIcon::fromTheme("edit-gotopreviousregion"), tr("Go to Previous Region"), this);
-    act->setShortcut(tr("Alt+[", "Go to Previous Region"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoPreviousRegion()),
+    action->setShortcut(tr("Alt+[", "Go to Previous Region"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(gotoPreviousRegion()),
                            SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-go-to-prev-region", editorCategory);
 
-    mActions[GotoNextRegion] = act = new QAction(
+    mActions[GotoNextRegion] = action = new QAction(
         QIcon::fromTheme("edit-gotonextregion"), tr("Go to Next Region"), this);
-    act->setShortcut(tr("Alt+]", "Go to Next Region"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoNextRegion()),
+    action->setShortcut(tr("Alt+]", "Go to Next Region"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(gotoNextRegion()),
                            SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-go-to-next-region", editorCategory);
 
-    mActions[GotoPreviousEmptyLine] = act = new QAction( tr("Go to Previous Empty Line"), this);
-    act->setShortcut(tr("Ctrl+Up", "Go to Previous Empty Line"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoPreviousEmptyLine()));
+    mActions[GotoPreviousEmptyLine] = action = new QAction( tr("Go to Previous Empty Line"), this);
+    action->setShortcut(tr("Ctrl+Up", "Go to Previous Empty Line"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(gotoPreviousEmptyLine()));
+    settings->addAction( action, "editor-go-to-prev-empty-line", editorCategory);
 
-    mActions[GotoNextEmptyLine] = act = new QAction( tr("Go to Next Empty Line"), this);
-    act->setShortcut(tr("Ctrl+Down", "Go to Next Empty Line"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(gotoNextEmptyLine()));
+    mActions[GotoNextEmptyLine] = action = new QAction( tr("Go to Next Empty Line"), this);
+    action->setShortcut(tr("Ctrl+Down", "Go to Next Empty Line"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(gotoNextEmptyLine()));
+    settings->addAction( action, "editor-go-to-next-empty-line", editorCategory);
 
-    mActions[SelectRegion] = act = new QAction( tr("Select Region"), this);
-    act->setShortcut(tr("Ctrl+Shift+R", "Select Region"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(selectCurrentRegion()),
+    mActions[SelectRegion] = action = new QAction( tr("Select Region"), this);
+    action->setShortcut(tr("Ctrl+Shift+R", "Select Region"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(selectCurrentRegion()),
                            SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-select-region", editorCategory);
 
     // View
 
-    mActions[EnlargeFont] = act = new QAction(
+    mActions[EnlargeFont] = action = new QAction(
         QIcon::fromTheme("zoom-in"), tr("&Enlarge Font"), this);
-    act->setShortcut(tr("Ctrl++", "Enlarge font"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    act->setStatusTip(tr("Increase displayed font size"));
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomIn()));
+    action->setShortcut(tr("Ctrl++", "Enlarge font"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    action->setStatusTip(tr("Increase displayed font size"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(zoomIn()));
+    settings->addAction( action, "editor-enlarge-font", editorCategory);
 
-    mActions[ShrinkFont] = act = new QAction(
+    mActions[ShrinkFont] = action = new QAction(
         QIcon::fromTheme("zoom-out"), tr("&Shrink Font"), this);
-    act->setShortcut( tr("Ctrl+-", "Shrink font"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    act->setStatusTip(tr("Decrease displayed font size"));
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(zoomOut()));
+    action->setShortcut( tr("Ctrl+-", "Shrink font"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    action->setStatusTip(tr("Decrease displayed font size"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(zoomOut()));
+    settings->addAction( action, "editor-shrink-font", editorCategory);
 
-    mActions[ResetFontSize] = act = new QAction(
+    mActions[ResetFontSize] = action = new QAction(
         QIcon::fromTheme("zoom-reset"), tr("&Reset Font Size"), this);
-    act->setShortcut( tr("Ctrl+0", "Reset font"));
-    act->setStatusTip(tr("Reset displayed font size"));
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(resetFontSize()));
+    action->setShortcut( tr("Ctrl+0", "Reset font"));
+    action->setStatusTip(tr("Reset displayed font size"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(resetFontSize()));
+    settings->addAction( action, "editor-reset-font-size", editorCategory);
 
-    mActions[ShowWhitespace] = act = new QAction(tr("Show Spaces and Tabs"), this);
-    act->setCheckable(true);
-    mEditorSigMux->connect(act, SIGNAL(triggered(bool)), SLOT(setShowWhitespace(bool)));
+    mActions[ShowWhitespace] = action = new QAction(tr("Show Spaces and Tabs"), this);
+    action->setCheckable(true);
+    mEditorSigMux->connect(action, SIGNAL(triggered(bool)), SLOT(setShowWhitespace(bool)));
+    settings->addAction( action, "editor-toggle-show-whitespace", editorCategory);
 
-    mActions[NextDocument] = act = new QAction(tr("Next Document"), this);
+    mActions[NextDocument] = action = new QAction(tr("Next Document"), this);
 #ifndef Q_OS_MAC
-    act->setShortcut( tr("Alt+Right", "Next Document"));
+    action->setShortcut( tr("Alt+Right", "Next Document"));
 #else
     act->setShortcut( tr("Ctrl+Alt+Right", "Next Document"));
 #endif
-    connect(act, SIGNAL(triggered()), this, SLOT(showNextDocument()));
+    connect(action, SIGNAL(triggered()), this, SLOT(showNextDocument()));
+    settings->addAction( action, "editor-document-next", editorCategory);
 
-    mActions[PreviousDocument] = act = new QAction(tr("Previous Document"), this);
+    mActions[PreviousDocument] = action = new QAction(tr("Previous Document"), this);
 #ifndef Q_OS_MAC
-    act->setShortcut( tr("Alt+Left", "Previous Document"));
+    action->setShortcut( tr("Alt+Left", "Previous Document"));
 #else
     act->setShortcut( tr("Ctrl+Alt+Left", "Previous Document"));
 #endif
-    connect(act, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
+    connect(action, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
+    settings->addAction( action, "editor-document-previous", editorCategory);
 
-    mActions[SwitchDocument] = act = new QAction(tr("Switch Document"), this);
+    mActions[SwitchDocument] = action = new QAction(tr("Switch Document"), this);
 #ifndef Q_OS_MAC
-    act->setShortcut( tr("Ctrl+Tab", "Switch Document"));
+    action->setShortcut( tr("Ctrl+Tab", "Switch Document"));
 #else
     act->setShortcut( tr("Meta+Tab", "Switch Document"));
 #endif
-    connect(act, SIGNAL(triggered()), this, SLOT(switchDocument()));
+    connect(action, SIGNAL(triggered()), this, SLOT(switchDocument()));
+    settings->addAction( action, "editor-document-switch", editorCategory);
 
-    mActions[SplitHorizontally] = act = new QAction(tr("Split To Right"), this);
-    act->setShortcut( tr("Ctrl+P, 3", "Split To Right"));
-    connect(act, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
+    mActions[SplitHorizontally] = action = new QAction(tr("Split To Right"), this);
+    action->setShortcut( tr("Ctrl+P, 3", "Split To Right"));
+    connect(action, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
+    settings->addAction( action, "editor-split-right", editorCategory);
 
-    mActions[SplitVertically] = act = new QAction(tr("Split To Bottom"), this);
-    act->setShortcut( tr("Ctrl+P, 2", "Split To Bottom"));
-    connect(act, SIGNAL(triggered()), this, SLOT(splitVertically()));
+    mActions[SplitVertically] = action = new QAction(tr("Split To Bottom"), this);
+    action->setShortcut( tr("Ctrl+P, 2", "Split To Bottom"));
+    connect(action, SIGNAL(triggered()), this, SLOT(splitVertically()));
+    settings->addAction( action, "editor-split-bottom", editorCategory);
 
-    mActions[RemoveCurrentSplit] = act = new QAction(tr("Remove Current Split"), this);
-    act->setShortcut( tr("Ctrl+P, 1", "Remove Current Split"));
-    connect(act, SIGNAL(triggered()), this, SLOT(removeCurrentSplit()));
+    mActions[RemoveCurrentSplit] = action = new QAction(tr("Remove Current Split"), this);
+    action->setShortcut( tr("Ctrl+P, 1", "Remove Current Split"));
+    connect(action, SIGNAL(triggered()), this, SLOT(removeCurrentSplit()));
+    settings->addAction( action, "editor-split-remove", editorCategory);
 
-    mActions[RemoveAllSplits] = act = new QAction(tr("Remove All Splits"), this);
-    act->setShortcut( tr("Ctrl+P, 0", "Remove All Splits"));
-    connect(act, SIGNAL(triggered()), this, SLOT(removeAllSplits()));
+    mActions[RemoveAllSplits] = action = new QAction(tr("Remove All Splits"), this);
+    action->setShortcut( tr("Ctrl+P, 0", "Remove All Splits"));
+    connect(action, SIGNAL(triggered()), this, SLOT(removeAllSplits()));
+    settings->addAction( action, "editor-split-remove-all", editorCategory);
 
     // Language
 
-    mActions[EvaluateCurrentDocument] = act = new QAction(
+    mActions[EvaluateCurrentDocument] = action = new QAction(
         QIcon::fromTheme("media-playback-start"), tr("Evaluate &File"), this);
-    act->setStatusTip(tr("Evaluate current File"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(evaluateDocument()),
+    action->setStatusTip(tr("Evaluate current File"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(evaluateDocument()),
                            SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-eval-file", editorCategory);
 
-    mActions[EvaluateRegion] = act = new QAction(
+    mActions[EvaluateRegion] = action = new QAction(
     QIcon::fromTheme("media-playback-start"), tr("&Evaluate Selection, Line or Region"), this);
-    act->setShortcut(tr("Ctrl+Return", "Evaluate region"));
-    act->setStatusTip(tr("Evaluate current region"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(evaluateRegion()),
+    action->setShortcut(tr("Ctrl+Return", "Evaluate region"));
+    action->setStatusTip(tr("Evaluate current region"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(evaluateRegion()),
                            SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-eval-smart", editorCategory);
 
-    mActions[EvaluateLine] = act = new QAction(
+    mActions[EvaluateLine] = action = new QAction(
     QIcon::fromTheme("media-playback-startline"), tr("&Evaluate Line"), this);
-    act->setShortcut(tr("Shift+Ctrl+Return", "Evaluate line"));
-    act->setStatusTip(tr("Evaluate current line"));
-    act->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(act, SIGNAL(triggered()), SLOT(evaluateLine()),
+    action->setShortcut(tr("Shift+Ctrl+Return", "Evaluate line"));
+    action->setStatusTip(tr("Evaluate current line"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(evaluateLine()),
                            SignalMultiplexer::ConnectionOptional);
-
-    settings->endGroup(); // IDE/shortcuts
-
-    for (int i = 0; i < ActionRoleCount; ++i)
-        settings->addAction( mActions[i] );
+    settings->addAction( action, "editor-eval-line", editorCategory);
 
     // These actions are not added to any menu, so they have to be added
     // at least to this widget, in order for the shortcuts to always respond:

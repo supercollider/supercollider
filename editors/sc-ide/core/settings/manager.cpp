@@ -142,11 +142,11 @@ QKeySequence Manager::shortcut( const QString & key )
     return QKeySequence( value(key).toString() );
 }
 
-void Manager::addAction ( QAction *action, const QString &category )
+void Manager::addAction ( QAction *action, const QString &key, const QString &category )
 {
     ActionData actionData;
     actionData.category = category;
-    actionData.key = action->text().toLower().remove('&').replace(' ', '_');
+    actionData.key = key;
 
     if (action->data().isValid()) {
         qWarning( "Settings::Manager: action '%s' of class '%s' has data."
