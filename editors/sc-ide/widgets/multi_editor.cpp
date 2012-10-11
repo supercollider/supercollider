@@ -459,7 +459,7 @@ void MultiEditor::createActions()
 #ifndef Q_OS_MAC
     action->setShortcut( tr("Alt+Right", "Next Document"));
 #else
-    act->setShortcut( tr("Ctrl+Alt+Right", "Next Document"));
+    action->setShortcut( tr("Ctrl+Alt+Right", "Next Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(showNextDocument()));
     settings->addAction( action, "editor-document-next", editorCategory);
@@ -468,7 +468,7 @@ void MultiEditor::createActions()
 #ifndef Q_OS_MAC
     action->setShortcut( tr("Alt+Left", "Previous Document"));
 #else
-    act->setShortcut( tr("Ctrl+Alt+Left", "Previous Document"));
+    action->setShortcut( tr("Ctrl+Alt+Left", "Previous Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
     settings->addAction( action, "editor-document-previous", editorCategory);
@@ -477,7 +477,7 @@ void MultiEditor::createActions()
 #ifndef Q_OS_MAC
     action->setShortcut( tr("Ctrl+Tab", "Switch Document"));
 #else
-    act->setShortcut( tr("Meta+Tab", "Switch Document"));
+    action->setShortcut( tr("Meta+Tab", "Switch Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(switchDocument()));
     settings->addAction( action, "editor-document-switch", editorCategory);
