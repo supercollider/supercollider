@@ -57,6 +57,8 @@ protected:
     virtual void keyPressEvent( QKeyEvent * );
     virtual void wheelEvent( QWheelEvent * );
     virtual void dragEnterEvent( QDragEnterEvent * );
+    void hideMouseCursor(QKeyEvent *);
+
 
 public slots:
     void applySettings( Settings::Manager * );

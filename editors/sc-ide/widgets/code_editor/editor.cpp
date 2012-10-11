@@ -442,7 +442,7 @@ QString GenericCodeEditor::symbolUnderCursor()
 
 void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
 {
-    hideMouseCursor();
+    hideMouseCursor(e);
 
     QTextCursor cursor( textCursor() );
 
@@ -535,6 +535,25 @@ void GenericCodeEditor::dragEnterEvent( QDragEnterEvent * event )
     }
 
     QPlainTextEdit::dragEnterEvent(event);
+}
+
+void GenericCodeEditor::hideMouseCursor(QKeyEvent * event)
+{
+    switch (event->key()) {
+    case Qt::Key_Shift:
+    case Qt::Key_Control:
+    case Qt::Key_Meta:
+    case Qt::Key_Alt:
+    case Qt::Key_Super_L:
+    case Qt::Key_Super_R:
+    case Qt::Key_Hyper_L:
+    case Qt::Key_Hyper_R:
+    case Qt::Key_Menu:
+        return;
+
+    default:
+        hideMouseCursor();
+    }
 }
 
 void GenericCodeEditor::clearSearchHighlighting()
