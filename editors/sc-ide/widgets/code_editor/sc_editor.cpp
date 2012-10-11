@@ -147,15 +147,13 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         return;
     }
 
-    default:;
-    }
-
-    switch (e->key()) {
     case Qt::Key_Enter:
     case Qt::Key_Return:
     case Qt::Key_BraceRight:
     case Qt::Key_BracketRight:
     case Qt::Key_ParenRight: {
+        hideMouseCursor();
+
         // Wrap superclass' implementation into an edit block,
         // so it can be joined with indentation later:
 
