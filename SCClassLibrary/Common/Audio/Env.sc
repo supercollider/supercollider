@@ -34,6 +34,7 @@ Env {
 			\cub -> 7,
 			\cubed -> 7
 		];
+		shapeNames.freeze;
 	}
 
 	kr { arg doneAction = 0, gate = 1.0, timeScale = 1.0, mul = 1.0, add = 0.0;
