@@ -865,7 +865,7 @@ static bool node_position_sanity_check(node_position_constraint const & constrai
     case before:
     case after:
     case replace:
-        assert(false);
+        break;
     }
 
     return true;
