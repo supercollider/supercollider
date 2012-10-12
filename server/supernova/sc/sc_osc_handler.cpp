@@ -2761,7 +2761,7 @@ void d_recv_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, 
                 nova_endpoint const & endpoint)
 {
     std::for_each(definitions, definitions + definition_count, [](sc_synth_definition_ptr const & definition) {
-        instance->register_definition(definition);
+        instance->synth_factory::register_definition(definition);
     });
 
     msg.handle(endpoint);
