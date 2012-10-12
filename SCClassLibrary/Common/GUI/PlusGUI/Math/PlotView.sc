@@ -890,9 +890,10 @@ Plotter {
 }
 
 + Env {
-	plot { |size = 400, bounds, minval, maxval|
+	plot { |size = 400, bounds, minval, maxval, name|
+		var plotLabel = if (name.isNil) { "envelope plot" } { name };
 		var plotter = [this.asMultichannelSignal(size).flop]
-			.plot("envelope plot", bounds, minval: minval, maxval: maxval);
+			.plot(name, bounds, minval: minval, maxval: maxval);
 
 		var duration     = this.duration.asArray;
 		var channelCount = duration.size;
