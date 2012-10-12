@@ -114,8 +114,7 @@ std::vector<sc_synthdef> read_synthdefs(const char * buf_ptr)
 
     for (int i = 0; i != definition_count; ++i) {
         try {
-            sc_synthdef def(buf_ptr, version);
-            ret.push_back(def);
+            ret.emplace_back(buf_ptr, version);
         }
         catch (std::exception const & e) {
             std::cerr << "Exception when reading synthdef: " << e.what() << std::endl;
