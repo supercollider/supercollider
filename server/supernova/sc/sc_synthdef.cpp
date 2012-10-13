@@ -225,7 +225,7 @@ void sc_synthdef::read_synthdef(const char *& ptr, int version)
 
 namespace {
 
-template <typename Alloc = std::allocator<int16_t> >
+template <typename Alloc = std::allocator<int32_t> >
 class buffer_allocator
 {
     std::vector<size_t, Alloc> buffers; /* index: buffer id, value: last reference */
@@ -235,7 +235,7 @@ public:
      *
      *  reuse buffers, which are not used after the current ugen
      */
-    int16_t allocate_buffer(size_t current_ugen)
+    int32_t allocate_buffer(size_t current_ugen)
     {
         for (size_t i = 0; i != buffers.size(); ++i) {
             if (buffers[i] <= current_ugen)
@@ -249,7 +249,7 @@ public:
      *
      * reuse the buffers, which have been used before the current ugen
      */
-    int16_t allocate_buffer_noalias(size_t current_ugen)
+    int32_t allocate_buffer_noalias(size_t current_ugen)
     {
         for (size_t i = 0; i != buffers.size(); ++i) {
             if (buffers[i] < current_ugen)
@@ -264,7 +264,7 @@ public:
         return buffers.size();
     }
 
-    void set_last_reference (int16_t buffer_id, size_t ugen_index)
+    void set_last_reference (int32_t buffer_id, size_t ugen_index)
     {
         buffers[buffer_id] = ugen_index;
     }
@@ -328,7 +328,7 @@ void sc_synthdef::prepare(void)
         memory_requirement_ += ugen->memory_requirement();
 
         for (size_t output_index = 0; output_index != current_ugen_spec.output_specs.size(); ++output_index) {
-            int16_t buffer_id;
+            int32_t buffer_id;
             if (current_ugen_spec.output_specs[output_index] == 2) {
                 /* find last reference to this buffer */
                 size_t last_ref = ugen_index;
