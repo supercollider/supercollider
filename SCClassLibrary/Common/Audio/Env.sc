@@ -71,7 +71,7 @@ Env {
 	}
 
 	duration_ { arg dur;
-		times = times.normalizeSum * dur
+		times = times * this.totalDuration.reciprocal * dur
 	}
 
 	duration {
