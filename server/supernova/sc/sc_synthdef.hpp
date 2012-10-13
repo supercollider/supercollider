@@ -100,7 +100,7 @@ public:
                    output_specs.size() * sizeof(Wire);
         }
 
-        struct sc_ugen_def * prototype;
+        class sc_ugen_def * prototype;
     };
 
     friend class sc_synth_definition;
