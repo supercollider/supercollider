@@ -646,14 +646,14 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
 
     QTextBlock block = firstVisibleBlock();
     int blockNumber = block.blockNumber();
-    int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
-    int bottom = top + (int) blockBoundingRect(block).height();
+    qreal top = blockBoundingGeometry(block).translated(contentOffset()).top();
+    qreal bottom = top + blockBoundingRect(block).height();
 
     while (block.isValid() && top <= e->rect().bottom()) {
         if (block.isVisible() && bottom >= e->rect().top()) {
             p.save();
 
-            QRect numRect( 0, top, mLineIndicator->width() - 1, bottom - top );
+            QRectF numRect( 0, top, mLineIndicator->width() - 1, bottom - top );
 
             int num = blockNumber;
             if (num >= selStartBlock && num <= selEndBlock) {
@@ -673,7 +673,7 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
 
         block = block.next();
         top = bottom;
-        bottom = top + (int) blockBoundingRect(block).height();
+        bottom = top + blockBoundingRect(block).height();
         ++blockNumber;
     }
 }
