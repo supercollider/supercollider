@@ -6,6 +6,7 @@
 #include <mach-o/dyld.h> // for _NSGetExecutablePath
 #include <libgen.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFBundle.h>
