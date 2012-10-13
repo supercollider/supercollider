@@ -35,7 +35,7 @@ namespace nova
 
 struct nova_protocol
 {
-    typedef struct nova_endpoint endpoint;
+    typedef class nova_endpoint endpoint;
 
     int family(void) const
     {

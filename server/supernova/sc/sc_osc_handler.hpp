@@ -367,7 +367,7 @@ private:
     template <bool realtime>
     void handle_message_sym_address(received_message const & message, size_t msg_size, nova_endpoint const & endpoint);
 
-    friend class sc_scheduled_bundles::bundle_node;
+    friend struct sc_scheduled_bundles::bundle_node;
     /* @} */
 
     /* @{ */
