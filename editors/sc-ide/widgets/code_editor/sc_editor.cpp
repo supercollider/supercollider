@@ -190,13 +190,15 @@ void ScCodeEditor::mouseReleaseEvent ( QMouseEvent *e )
 
 void ScCodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
 {
-    QTextCursor cursor = cursorForPosition(e->pos());
-    QTextCursor selection = selectionForPosition( cursor.position() );
+    if (e->button() == Qt::LeftButton) {
+        QTextCursor cursor = cursorForPosition(e->pos());
+        QTextCursor selection = selectionForPosition( cursor.position() );
 
-    if (!selection.isNull()) {
-        mMouseBracketMatch = true;
-        setTextCursor(selection);
-        return;
+        if (!selection.isNull()) {
+            mMouseBracketMatch = true;
+            setTextCursor(selection);
+            return;
+        }
     }
 
     GenericCodeEditor::mouseDoubleClickEvent(e);
