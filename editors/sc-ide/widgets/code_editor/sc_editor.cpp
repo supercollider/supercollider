@@ -1072,8 +1072,7 @@ void ScCodeEditor::evaluateLine()
 
     // Try current selection
     QTextCursor cursor = textCursor();
-    cursor.select(QTextCursor::LineUnderCursor);
-    text = cursor.selectedText();
+    text = cursor.block().text();
 
     if( mStepForwardEvaluation ) {
         QTextCursor newCursor = cursor;
