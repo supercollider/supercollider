@@ -1084,6 +1084,8 @@ void AutoCompleter::hideMethodCall()
 
 bool AutoCompleter::trySwitchMethodCallArgument(bool backwards)
 {
+    // FIXME: Only cycle through argument names that have not been entered already
+
     using namespace ScLanguage;
 
     QTextCursor cursor( mEditor->textCursor() );
@@ -1125,16 +1127,17 @@ bool AutoCompleter::trySwitchMethodCallArgument(bool backwards)
             }
         }
         // only increment/decrement if a reference name exists
-        if (backwards) {
+        if (backwards)
             --argNum;
-            if (argNum < 0)
-                argNum = call.method->arguments.count() - 1;
-        } else {
+        else
             ++argNum;
-            if (argNum >= call.method->arguments.count())
-                argNum = 0;
-        }
     }
+
+    // limit / wrap
+    if (argNum < 0)
+        argNum = call.method->arguments.count() - 1;
+    else if (argNum >= call.method->arguments.count())
+        argNum = 0;
 
     QString text = call.method->arguments[argNum].name;
     text.append(":");
