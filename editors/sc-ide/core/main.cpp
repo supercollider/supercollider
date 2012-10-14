@@ -232,6 +232,7 @@ bool Main::openDocumentation(const QString & string)
     HelpBrowserDockable *helpDock = MainWindow::instance()->helpBrowserDockable();
     helpDock->browser()->gotoHelpFor(symbol);
     helpDock->show();
+    helpDock->raise();
     return true;
 }
 
