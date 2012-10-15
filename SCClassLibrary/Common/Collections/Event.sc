@@ -614,6 +614,7 @@ Event : Environment {
 						if (freqs.isRest.not) {
 							~freq = freqs;
 							~amp = ~amp.value;
+							~isPlaying = true;
 							msgFunc = ~getMsgFunc.valueEnvir;
 							instrumentName = ~synthDefName.valueEnvir;
 							bndl = msgFunc.valueEnvir;
@@ -668,7 +669,8 @@ Event : Environment {
 						} {
 							~schedBundleArray.value(~lag, ~timingOffset, server,
 								[\n_free, ~id.asControlInput].flop)
-						}
+						};
+						~isPlaying = false;
 					},
 
 					kill: #{|server|
