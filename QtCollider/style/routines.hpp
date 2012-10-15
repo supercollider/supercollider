@@ -149,7 +149,8 @@ template<typename ShapeT> void drawSunken (QPainter *p, const QPalette &plt, con
 
   // outer border
 
-  QColor c = focusColor.isValid() ? focusColor : plt.color(QPalette::Window).lighter(105);
+  QColor c = focusColor.isValid() ? focusColor : QColor(255,255,255,20);
+
   pen.setColor(c);
   p->setPen(pen);
   p->setBrush(Qt::NoBrush);
