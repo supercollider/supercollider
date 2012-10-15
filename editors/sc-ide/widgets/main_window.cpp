@@ -516,7 +516,6 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::NextDocument) );
     menu->addAction( mEditors->action(MultiEditor::PreviousDocument) );
-    menu->addAction( mEditors->action(MultiEditor::SwitchDocument) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::SplitHorizontally) );
     menu->addAction( mEditors->action(MultiEditor::SplitVertically) );
