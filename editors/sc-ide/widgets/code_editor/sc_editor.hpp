@@ -105,6 +105,7 @@ private:
     bool mStepForwardEvaluation;
     int mBlinkDuration;
     QTextCharFormat mBracketHighlight;
+    QTextCharFormat mBracketMismatchFormat;
 
     QList<QTextEdit::ExtraSelection> mBracketSelections;
     bool mMouseBracketMatch;

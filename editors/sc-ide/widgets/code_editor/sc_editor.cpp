@@ -60,6 +60,7 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
     mSpaceIndent = settings->value("spaceIndent").toBool();
     mBlinkDuration = settings->value("blinkDuration").toInt();
     mBracketHighlight = settings->value("colors/matchingBrackets").value<QTextCharFormat>();
+    mBracketMismatchFormat = settings->value("colors/mismatchedBrackets").value<QTextCharFormat>();
     mStepForwardEvaluation = settings->value("stepForwardEvaluation").toBool();
 
     settings->endGroup();
@@ -380,7 +381,7 @@ void ScCodeEditor::matchBrackets()
         }
         else {
             QTextEdit::ExtraSelection selection;
-            selection.format.setBackground(Qt::red);
+            selection.format = mBracketMismatchFormat;
             cursor.setPosition(match.first.position());
             cursor.setPosition(match.second.position()+1, QTextCursor::KeepAnchor);
             selection.cursor = cursor;
