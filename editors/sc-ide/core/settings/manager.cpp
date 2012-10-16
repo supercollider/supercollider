@@ -67,6 +67,11 @@ void Manager::initDefaults()
     matchingBracketsFormat.setFontWeight(QFont::Bold);
     setDefault("matchingBrackets", QVariant::fromValue(matchingBracketsFormat));
 
+    QTextCharFormat bracketMismatchFormat;
+    bracketMismatchFormat.setBackground(QColor(150,0,0));
+    bracketMismatchFormat.setForeground(Qt::white);
+    setDefault("mismatchedBrackets", QVariant::fromValue(bracketMismatchFormat));
+
     QTextCharFormat evaluatedCodeFormat;
     evaluatedCodeFormat.setBackground(QColor("#F8A200"));
     evaluatedCodeFormat.setForeground(Qt::black);

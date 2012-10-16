@@ -161,11 +161,11 @@ void EditorPage::loadGeneralTextFormats( Manager *settings )
                    selectionDefaultFormat );
 
     static char const * const keys[] = {
-        "searchResult", "matchingBrackets", "evaluatedCode"
+        "searchResult", "matchingBrackets", "mismatchedBrackets", "evaluatedCode"
     };
 
     static char const * const strings[] = {
-        "Search Result", "Matching Brackets", "Evaluated Code"
+        "Search Result", "Matching Brackets", "Mismatched Brackets", "Evaluated Code"
     };
 
     static int count = sizeof(keys) / sizeof(keys[0]);
