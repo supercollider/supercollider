@@ -1,4 +1,6 @@
-find_package (Qt4 4.7 COMPONENTS QtCore QtGui QtWebKit)
+set(required_qt_version 4.7)
+
+find_package (Qt4 ${required_qt_version} COMPONENTS QtCore QtGui QtWebKit)
 
 if (NOT QT4_FOUND)
     set(FIND_QT_ERROR_MSG "You are trying to compile with Qt GUI support, but a suitable version of Qt or one of its components could not be found:")
@@ -13,7 +15,7 @@ if (NOT QT4_FOUND)
       set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\n-- Missing component: QtWebKit")
     endif()
 
-    set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\nPlease either install Qt (version 4.5 or greater), or compile without Qt GUI support (add -DSC_QT=OFF to the cmake command line).")
+    set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\nPlease either install Qt (version ${required_qt_version} or greater), or compile without Qt GUI support (add -DSC_QT=OFF to the cmake command line).")
 
     message(FATAL_ERROR ${FIND_QT_ERROR_MSG})
 endif()
