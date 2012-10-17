@@ -522,9 +522,9 @@ void MultiEditor::createActions()
     settings->addAction( action, "editor-eval-smart", editorCategory);
 
     mActions[EvaluateLine] = action = new QAction(
-    QIcon::fromTheme("media-playback-startline"), tr("&Evaluate Line"), this);
-    action->setShortcut(tr("Shift+Ctrl+Return", "Evaluate line"));
-    action->setStatusTip(tr("Evaluate current line"));
+    QIcon::fromTheme("media-playback-startline"), tr("&Evaluate Selection or Line"), this);
+    action->setShortcut(tr("Shift+Ctrl+Return", "Evaluate selection/line"));
+    action->setStatusTip(tr("Evaluate current selection/line"));
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(evaluateLine()),
                            SignalMultiplexer::ConnectionOptional);
