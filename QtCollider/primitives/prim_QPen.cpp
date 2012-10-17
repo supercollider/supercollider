@@ -506,6 +506,11 @@ QC_QPEN_PRIMITIVE( QPen_Draw, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     case 4:
     default: ;
   }
+  if ( style == 1 || style == 4 ) {
+    path.setFillRule( Qt::OddEvenFill );
+  } else {
+    path.setFillRule( Qt::WindingFill );
+  }
 
   painter->drawPath( path );
 
