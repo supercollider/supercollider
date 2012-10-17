@@ -1073,20 +1073,24 @@ void ScCodeEditor::evaluateLine()
 
     // Try current selection
     QTextCursor cursor = textCursor();
-    text = cursor.block().text();
+    if (cursor.hasSelection())
+        text = cursor.selectedText();
+    else {
+        text = cursor.block().text();
+    
+        if( mStepForwardEvaluation ) {
+            QTextCursor newCursor = cursor;
+            newCursor.movePosition(QTextCursor::NextBlock);
+            setTextCursor(newCursor);
+        }
 
-    if( mStepForwardEvaluation ) {
-        QTextCursor newCursor = cursor;
-        newCursor.movePosition(QTextCursor::NextBlock);
-        setTextCursor(newCursor);
+        // Adjust cursor for code blinking:
+        cursor.movePosition(QTextCursor::StartOfBlock);
+        cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
     }
 
     if (text.isEmpty())
         return;
-
-    // Adjust cursor for code blinking:
-    cursor.movePosition(QTextCursor::StartOfBlock);
-    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
 
     text.replace( QChar( 0x2029 ), QChar( '\n' ) );
 
