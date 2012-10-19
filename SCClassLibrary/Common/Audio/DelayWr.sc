@@ -2,22 +2,21 @@ PingPong {
 	//your buffer should be the same numChannels as your inputs
 	*ar { arg  bufnum=0,  inputs, delayTime, feedback=0.7, rotate=1;
 
-		var trig, delayedSignals;
+		var delaySamps = max(0, delayTime * SampleRate.ir - ControlDur.ir).round,
+		phase, feedbackChannels, delayedSignals,
+		frames = BufFrames.kr(bufnum);
 
-		trig = Impulse.kr(delayTime.reciprocal);
+		phase = Phasor.ar(0, 1, 0, frames);
 
-		delayedSignals =
-			PlayBuf.ar(inputs.numChannels,bufnum,1.0,trig,
-				0,
-				0.0).rotate(rotate)
-			* feedback + inputs;
+		feedbackChannels = LocalIn.ar(inputs.size) * feedback;
 
-		RecordBuf.ar(delayedSignals,bufnum,0.0,1.0,0.0,1.0,0.0,trig);
+ 		delayedSignals = BufRd.ar(inputs.size, bufnum, (phase - delaySamps).wrap(0, frames), 0);
+		LocalOut.ar(delayedSignals);
 
+		BufWr.ar((inputs + feedbackChannels).rotate(rotate) <! delayedSignals.asArray.first, bufnum, phase, 1);
 		^delayedSignals
 	}
 }
-
 
 /* old sc3d5 version
 PingPong {
