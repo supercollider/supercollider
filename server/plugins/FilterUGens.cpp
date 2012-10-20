@@ -1547,8 +1547,8 @@ void TwoPole_next(TwoPole* unit, int inNumSamples)
 
 		unit->m_freq = freq;
 		unit->m_reson = reson;
-		unit->m_b1 = b1;
-		unit->m_b2 = b2;
+		unit->m_b1 = b1_next;
+		unit->m_b2 = b2_next;
 	} else {
 		double b1 = unit->m_b1;
 		double b2 = unit->m_b2;
@@ -1626,8 +1626,8 @@ void TwoZero_next(TwoZero* unit, int inNumSamples)
 
 		unit->m_freq = freq;
 		unit->m_reson = reson;
-		unit->m_b1 = b1;
-		unit->m_b2 = b2;
+		unit->m_b1 = b1_next;
+		unit->m_b2 = b2_next;
 	} else {
 		double b1 = unit->m_b1;
 		double b2 = unit->m_b2;
@@ -1716,8 +1716,8 @@ void APF_next(APF* unit, int inNumSamples)
 
 		unit->m_freq = freq;
 		unit->m_reson = reson;
-		unit->m_b1 = b1;
-		unit->m_b2 = b2;
+		unit->m_b1 = b1_next;
+		unit->m_b2 = b2_next;
 	} else {
 		double b1 = unit->m_b1;
 		double b2 = unit->m_b2;
@@ -2301,9 +2301,9 @@ void RLPF_next(RLPF* unit, int inNumSamples)
 
 		unit->m_freq = freq;
 		unit->m_reson = reson;
-		unit->m_a0 = a0;
-		unit->m_b1 = b1;
-		unit->m_b2 = b2;
+		unit->m_a0 = next_a0;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
@@ -2451,9 +2451,9 @@ void RHPF_next(RHPF* unit, int inNumSamples)
 
 		unit->m_freq = freq;
 		unit->m_reson = reson;
-		unit->m_a0 = a0;
-		unit->m_b1 = b1;
-		unit->m_b2 = b2;
+		unit->m_a0 = next_a0;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			double y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
@@ -2595,9 +2595,9 @@ void LPF_next(LPF* unit, int inNumSamples)
 		);
 
 		unit->m_freq = freq;
-		unit->m_a0 = a0;
-		unit->m_b1 = b1;
-		unit->m_b2 = b2;
+		unit->m_a0 = next_a0;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
@@ -2737,9 +2737,9 @@ void HPF_next(HPF* unit, int inNumSamples)
 		);
 
 		unit->m_freq = freq;
-		unit->m_a0 = a0;
-		unit->m_b1 = b1;
-		unit->m_b2 = b2;
+		unit->m_a0 = next_a0;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			double y0 = ZXP(in) + b1 * y1 + b2 * y2;
@@ -2878,9 +2878,9 @@ void BPF_next(BPF* unit, int inNumSamples)
 
 		unit->m_freq = freq;
 		unit->m_bw = bw;
-		unit->m_a0 = a0;
-		unit->m_b1 = b1;
-		unit->m_b2 = b2;
+		unit->m_a0 = next_a0;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
@@ -3031,9 +3031,9 @@ void BRF_next(BRF* unit, int inNumSamples)
 
 		unit->m_freq = freq;
 		unit->m_bw = bw;
-		unit->m_a0 = a0;
-		unit->m_a1 = a1;
-		unit->m_b2 = b2;
+		unit->m_a0 = next_a0;
+		unit->m_a1 = next_a1;
+		unit->m_b2 = next_b2;
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			ay = a1 * y1;
@@ -3195,9 +3195,9 @@ void MidEQ_next(MidEQ* unit, int inNumSamples)
 		unit->m_freq = freq;
 		unit->m_bw = bw;
 		unit->m_db = db;
-		unit->m_a0 = a0;
-		unit->m_b1 = b1;
-		unit->m_b2 = b2;
+		unit->m_a0 = next_a0;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
 	} else {
 		double zin;
 		LOOP(unit->mRate->mFilterLoops,
@@ -5078,11 +5078,9 @@ void BLowPass_next_kk(BLowPass *unit, int inNumSamples)
 	float nextrq = ZIN0(2);
 
 	double a0, a1, a2, b1, b2;
-	double nexta0, nexta1, nexta2, nextb1, nextb2, nextw0, nextcosw0, nexti, nextalpha, nextb0rz;
 	double y0;
 	double y1 = unit->m_y1;
 	double y2 = unit->m_y2;
-	double a0slope, a1slope, a2slope, b1slope, b2slope;
 
 	a0 = unit->m_a0;
 	a1 = unit->m_a1;
@@ -5091,21 +5089,24 @@ void BLowPass_next_kk(BLowPass *unit, int inNumSamples)
 	b2 = unit->m_b2;
 
 	if ((unit->m_freq != nextfreq) || (unit->m_rq != nextrq)){
-		nextw0 = twopi * (double)nextfreq * SAMPLEDUR;
-		nextcosw0 = cos(nextw0);
-		nexti = 1. - nextcosw0;
-		nextalpha = sin(nextw0) * 0.5 * (double)nextrq;
-		nextb0rz = 1. / (1. + nextalpha);
-		nexta0 = nexti * 0.5 * nextb0rz;
-		nexta1 = nexti * nextb0rz;
-		nexta2 = nexta0;
-		nextb1 = nextcosw0 * 2. * nextb0rz;
-		nextb2 = ((1. - nextalpha) * -nextb0rz);
-		a0slope = (nexta0 - a0) * unit->mRate->mFilterSlope;
-		a1slope = (nexta1 - a1) * unit->mRate->mFilterSlope;
-		a2slope = (nexta2 - a2) * unit->mRate->mFilterSlope;
-		b1slope = (nextb1 - b1) * unit->mRate->mFilterSlope;
-		b2slope = (nextb2 - b2) * unit->mRate->mFilterSlope;
+		double a0slope, a1slope, a2slope, b1slope, b2slope;
+		double next_a0, next_a1, next_a2, next_b1, next_b2, next_w0, next_cosw0, next_i, next_alpha, next_b0rz;
+
+		next_w0 = twopi * (double)nextfreq * SAMPLEDUR;
+		next_cosw0 = cos(next_w0);
+		next_i = 1. - next_cosw0;
+		next_alpha = sin(next_w0) * 0.5 * (double)nextrq;
+		next_b0rz = 1. / (1. + next_alpha);
+		next_a0 = next_i * 0.5 * next_b0rz;
+		next_a1 = next_i * next_b0rz;
+		next_a2 = next_a0;
+		next_b1 = next_cosw0 * 2. * next_b0rz;
+		next_b2 = ((1. - next_alpha) * -next_b0rz);
+		a0slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
+		a1slope = (next_a1 - a1) * unit->mRate->mFilterSlope;
+		a2slope = (next_a2 - a2) * unit->mRate->mFilterSlope;
+		b1slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
+		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		unit->m_freq = nextfreq;
 		unit->m_rq = nextrq;
 		LOOP(unit->mRate->mFilterLoops,
@@ -5129,8 +5130,15 @@ void BLowPass_next_kk(BLowPass *unit, int inNumSamples)
 			y2 = y1;
 			y1 = y0;
 
-			);
-    } else {
+		);
+
+		unit->m_a0 = next_a0;
+		unit->m_a1 = next_a1;
+		unit->m_a2 = next_a2;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
+
+	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
@@ -5150,11 +5158,6 @@ void BLowPass_next_kk(BLowPass *unit, int inNumSamples)
 	}
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
-	unit->m_a0 = a0;
-	unit->m_a1 = a1;
-	unit->m_a2 = a2;
-	unit->m_b1 = b1;
-	unit->m_b2 = b2;
 }
 
 struct BHiPass : public Unit
@@ -5262,43 +5265,44 @@ void BHiPass_next_aa(BHiPass *unit, int inNumSamples)
 
 void BHiPass_next_kk(BHiPass *unit, int inNumSamples)
 {
-		float *out = ZOUT(0);
-		float *in = ZIN(0);
-		float nextfreq = ZIN0(1);
-		float nextrq = ZIN0(2);
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float nextfreq = ZIN0(1);
+	float nextrq = ZIN0(2);
 
-		double a0, a1, a2, b1, b2;
-		double nexta0, nexta1, nexta2, nextb1, nextb2, nextw0, nextcosw0, nexti, nextalpha, nextb0rz;
-		double y0;
-		double y1 = unit->m_y1;
-		double y2 = unit->m_y2;
+	double a0, a1, a2, b1, b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+
+	a0 = unit->m_a0;
+	a1 = unit->m_a1;
+	a2 = unit->m_a2;
+	b1 = unit->m_b1;
+	b2 = unit->m_b2;
+
+	if ((unit->m_freq != nextfreq) || (unit->m_rq != nextrq)){
 		double a0slope, a1slope, a2slope, b1slope, b2slope;
+		double next_a0, next_a1, next_a2, next_b1, next_b2, next_w0, next_cosw0, next_i, next_alpha, next_b0rz;
 
-		a0 = unit->m_a0;
-		a1 = unit->m_a1;
-		a2 = unit->m_a2;
-		b1 = unit->m_b1;
-		b2 = unit->m_b2;
-
-		if ((unit->m_freq != nextfreq) || (unit->m_rq != nextrq)){
-		nextw0 = twopi * (double)nextfreq * SAMPLEDUR;
-		nextcosw0 = cos(nextw0);
-		nexti = 1. + nextcosw0;
-		nextalpha = sin(nextw0) * 0.5 * (double)nextrq;
-		nextb0rz = 1. / (1. + nextalpha);
-		nexta0 = nexti * 0.5 * nextb0rz;
-		nexta1 = -nexti * nextb0rz;
-		nexta2 = nexta0;
-		nextb1 = nextcosw0 * 2. * nextb0rz;
-		nextb2 = (1. - nextalpha) * -nextb0rz;
-		a0slope = (nexta0 - a0) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta0, a0);
-		a1slope = (nexta1 - a1) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta1, a1);
-		a2slope = (nexta2 - a2) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta2, a2);
-		b1slope = (nextb1 - b1) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb1, b1);
-		b2slope = (nextb2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
+		next_w0 = twopi * (double)nextfreq * SAMPLEDUR;
+		next_cosw0 = cos(next_w0);
+		next_i = 1. + next_cosw0;
+		next_alpha = sin(next_w0) * 0.5 * (double)nextrq;
+		next_b0rz = 1. / (1. + next_alpha);
+		next_a0 = next_i * 0.5 * next_b0rz;
+		next_a1 = -next_i * next_b0rz;
+		next_a2 = next_a0;
+		next_b1 = next_cosw0 * 2. * next_b0rz;
+		next_b2 = (1. - next_alpha) * -next_b0rz;
+		a0slope = (next_a0 - a0) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta0, a0);
+		a1slope = (next_a1 - a1) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta1, a1);
+		a2slope = (next_a2 - a2) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta2, a2);
+		b1slope = (next_b1 - b1) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb1, b1);
+		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
 
 		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			 y0 = ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
 			y2 = ZXP(in) + b1 * y0 + b2 * y1;
@@ -5313,41 +5317,41 @@ void BHiPass_next_kk(BHiPass *unit, int inNumSamples)
 			b2 += b2slope;
 		);
 		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
+			 y0 = ZXP(in) + b1 * y1 + b2 * y2;
+				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 			y2 = y1;
 			y1 = y0;
 		);
 		unit->m_freq = nextfreq;
 		unit->m_rq = nextrq;
-		unit->m_a0 = a0;
-		unit->m_a1 = a1;
-		unit->m_a2 = a2;
-		unit->m_b1 = b1;
-		unit->m_b2 = b2;
+		unit->m_a0 = next_a0;
+		unit->m_a1 = next_a1;
+		unit->m_a2 = next_a2;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
 
-    } else {
+	} else {
 
 		LOOP(unit->mRate->mFilterLoops,
-				y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
+			 y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
-				y2 = ZXP(in) + b1 * y0 + b2 * y1;
-				ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
+			y2 = ZXP(in) + b1 * y0 + b2 * y1;
+			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
 
-				y1 = ZXP(in) + b1 * y2 + b2 * y0;
-				ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-				);
+			y1 = ZXP(in) + b1 * y2 + b2 * y0;
+			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
+		);
 		LOOP(unit->mRate->mFilterRemain,
-				y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-				y2 = y1;
-				y1 = y0;
-				);
-    }
+			 y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
+			y2 = y1;
+			y1 = y0;
+		);
+	}
 
-    unit->m_y1 = zapgremlins(y1);
-    unit->m_y2 = zapgremlins(y2);
+	unit->m_y1 = zapgremlins(y1);
+	unit->m_y2 = zapgremlins(y2);
 }
 
 /* BBandPass */
@@ -5464,31 +5468,32 @@ void BBandPass_next_kk(BBandPass *unit, int inNumSamples)
 	float nextbw = ZIN0(2);
 
 	double a0, a1, a2, b1, b2;
-	double nexta0, nexta1, nexta2, nextb1, nextb2, nextw0, nextalpha, nextb0rz;
 	double y0;
 	double y1 = unit->m_y1;
 	double y2 = unit->m_y2;
-	double a0slope, a1slope, a2slope, b1slope, b2slope;
 
 	a0 = unit->m_a0;
 	a1 = unit->m_a1;
 	a2 = unit->m_a2;
 	b1 = unit->m_b1;
 	b2 = unit->m_b2;
-	if ((unit->m_freq != nextfreq) || (unit->m_bw != nextbw)){
-		nextw0 = twopi * (double)nextfreq * SAMPLEDUR;
-		nextalpha = sin(nextw0) * (sinh((0.34657359027997 * (double)nextbw * nextw0) / sin(nextw0)));
-		nextb0rz = 1. / (1. + nextalpha);
-		nexta0 = nextalpha * nextb0rz;
-		nexta1 = 0.;
-		nexta2 = -nexta0;
-		nextb1 = cos(nextw0) * 2. * nextb0rz;
-		nextb2 = ((1. - nextalpha) * -nextb0rz);
-		a0slope = (nexta0 - a0) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta0, a0);
-		a1slope = (nexta1 - a1) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta1, a1);
-		a2slope = (nexta2 - a2) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta2, a2);
-		b1slope = (nextb1 - b1) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb1, b1);
-		b2slope = (nextb2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
+	if ((unit->m_freq != nextfreq) || (unit->m_bw != nextbw)) {
+		double a0slope, a1slope, a2slope, b1slope, b2slope;
+		double next_a0, next_a1, next_a2, next_b1, next_b2, next_w0, next_alpha, next_b0rz;
+
+		next_w0 = twopi * (double)nextfreq * SAMPLEDUR;
+		next_alpha = sin(next_w0) * (sinh((0.34657359027997 * (double)nextbw * next_w0) / sin(next_w0)));
+		next_b0rz = 1. / (1. + next_alpha);
+		next_a0 = next_alpha * next_b0rz;
+		next_a1 = 0.;
+		next_a2 = -next_a0;
+		next_b1 = cos(next_w0) * 2. * next_b0rz;
+		next_b2 = ((1. - next_alpha) * -next_b0rz);
+		a0slope = (next_a0 - a0) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta0, a0);
+		a1slope = (next_a1 - a1) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta1, a1);
+		a2slope = (next_a2 - a2) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta2, a2);
+		b1slope = (next_b1 - b1) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb1, b1);
+		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
 		unit->m_freq = nextfreq;
 		unit->m_bw = nextbw;
 		LOOP(unit->mRate->mFilterLoops,
@@ -5512,6 +5517,11 @@ void BBandPass_next_kk(BBandPass *unit, int inNumSamples)
 				y2 = y1;
 				y1 = y0;
 		);
+		unit->m_a0 = next_a0;
+		unit->m_a1 = next_a1;
+		unit->m_a2 = next_a2;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
 				y0 = ZXP(in) + b1 * y1 + b2 * y2;
@@ -5531,11 +5541,6 @@ void BBandPass_next_kk(BBandPass *unit, int inNumSamples)
 		);
 	}
 
-	unit->m_a0 = a0;
-	unit->m_a1 = a1;
-	unit->m_a2 = a2;
-	unit->m_b1 = b1;
-	unit->m_b2 = b2;
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
 }
@@ -5647,38 +5652,39 @@ void BBandStop_next_aa(BBandStop *unit, int inNumSamples)
 
 void BBandStop_next_kk(BBandStop *unit, int inNumSamples)
 {
-		float *out = ZOUT(0);
-		float *in = ZIN(0);
-		float nextfreq = ZIN0(1);
-		float nextbw = ZIN0(2);
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float nextfreq = ZIN0(1);
+	float nextbw = ZIN0(2);
 
-		double a0, a1, a2, b1, b2;
-		double nexta0, nexta1, nexta2, nextb1, nextb2, nextw0, nextalpha, nextb0rz;
-		double y0;
-		double y1 = unit->m_y1;
-		double y2 = unit->m_y2;
+	double a0, a1, a2, b1, b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+
+	a0 = unit->m_a0;
+	a1 = unit->m_a1;
+	a2 = unit->m_a2;
+	b1 = unit->m_b1;
+	b2 = unit->m_b2;
+
+	if ((unit->m_freq != nextfreq) || (unit->m_bw != nextbw)){
 		double a0slope, a1slope, a2slope, b1slope, b2slope;
+		double next_a0, next_a1, next_a2, next_b1, next_b2, next_w0, next_alpha, next_b0rz;
 
-		a0 = unit->m_a0;
-		a1 = unit->m_a1;
-		a2 = unit->m_a2;
-		b1 = unit->m_b1;
-		b2 = unit->m_b2;
-
-		if ((unit->m_freq != nextfreq) || (unit->m_bw != nextbw)){
-		nextw0 = twopi * (double)nextfreq * SAMPLEDUR;
-		nextalpha = sin(nextw0) * (sinh((0.34657359027997 * (double)nextbw * nextw0) / sin(nextw0)));
-		nextb0rz = 1. / (1. + nextalpha);
-		nextb1 = cos(nextw0) * 2. * nextb0rz;
-		nexta0 = nextb0rz;
-		nexta1 = -nextb1;
-		nexta2 = nextb0rz;
-		nextb2 = ((1. - nextalpha) * -nextb0rz);
-		a0slope = (nexta0 - a0) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta0, a0);
-		a1slope = (nexta1 - a1) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta1, a1);
-		a2slope = (nexta2 - a2) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta2, a2);
-		b1slope = (nextb1 - b1) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb1, b1);
-		b2slope = (nextb2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
+		next_w0 = twopi * (double)nextfreq * SAMPLEDUR;
+		next_alpha = sin(next_w0) * (sinh((0.34657359027997 * (double)nextbw * next_w0) / sin(next_w0)));
+		next_b0rz = 1. / (1. + next_alpha);
+		next_b1 = cos(next_w0) * 2. * next_b0rz;
+		next_a0 = next_b0rz;
+		next_a1 = -next_b1;
+		next_a2 = next_b0rz;
+		next_b2 = ((1. - next_alpha) * -next_b0rz);
+		a0slope = (next_a0 - a0) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta0, a0);
+		a1slope = (next_a1 - a1) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta1, a1);
+		a2slope = (next_a2 - a2) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta2, a2);
+		b1slope = (next_b1 - b1) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb1, b1);
+		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
 		unit->m_freq = nextfreq;
 		unit->m_bw = nextbw;
 		LOOP(unit->mRate->mFilterLoops,
@@ -5703,7 +5709,12 @@ void BBandStop_next_kk(BBandStop *unit, int inNumSamples)
 			y1 = y0;
 		);
 
-    } else {
+		unit->m_a0 = next_a0;
+		unit->m_a1 = next_a1;
+		unit->m_a2 = next_a2;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
+	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
@@ -5722,11 +5733,6 @@ void BBandStop_next_kk(BBandStop *unit, int inNumSamples)
 		);
 	}
 
-	unit->m_a0 = a0;
-	unit->m_a1 = a1;
-	unit->m_a2 = a2;
-	unit->m_b1 = b1;
-	unit->m_b2 = b2;
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
 }
@@ -5850,7 +5856,7 @@ void BPeakEQ_next_kkk(BPeakEQ *unit, int inNumSamples)
 	float nextdb = ZIN0(3);
 
 	double a0, a1, a2, b1, b2, a, w0, alpha, b0rz;
-	double y0, y1, y2, a0slope, a1slope, a2slope, b1slope, b2slope, nexta0, nexta1, nexta2, nextb1, nextb2;
+	double y0, y1, y2;
 
 	y1 = unit->m_y1;
 	y2 = unit->m_y2;
@@ -5862,20 +5868,23 @@ void BPeakEQ_next_kkk(BPeakEQ *unit, int inNumSamples)
 	b2 = unit->m_b2;
 
 	if ((unit->m_freq != nextfreq) || (unit->m_rq != nextrq) || (unit->m_db != nextdb)) {
+		double a0slope, a1slope, a2slope, b1slope, b2slope;
+		double next_a0, next_a1, next_a2, next_b1, next_b2;
+
 		a = pow(10., (double)nextdb * 0.025);
 		w0 = twopi * (double)nextfreq * SAMPLEDUR;
 		alpha = sin(w0) * 0.5 * (double)nextrq;
 		b0rz = 1. / (1. + (alpha / a));
-		nextb1 = 2. * b0rz * cos(w0);
-		nexta0 = (1. + (alpha * a)) * b0rz;
-		nexta1 = -nextb1;
-		nexta2 = (1. - (alpha * a)) * b0rz;
-		nextb2 = (1. - (alpha / a)) * -b0rz;
-		a0slope = (nexta0 - a0) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta0, a0);
-		a1slope = (nexta1 - a1) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta1, a1);
-		a2slope = (nexta2 - a2) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta2, a2);
-		b1slope = (nextb1 - b1) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb1, b1);
-		b2slope = (nextb2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
+		next_b1 = 2. * b0rz * cos(w0);
+		next_a0 = (1. + (alpha * a)) * b0rz;
+		next_a1 = -next_b1;
+		next_a2 = (1. - (alpha * a)) * b0rz;
+		next_b2 = (1. - (alpha / a)) * -b0rz;
+		a0slope = (next_a0 - a0) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta0, a0);
+		a1slope = (next_a1 - a1) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta1, a1);
+		a2slope = (next_a2 - a2) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta2, a2);
+		b1slope = (next_b1 - b1) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb1, b1);
+		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
 		unit->m_freq = nextfreq;
 		unit->m_db = nextdb;
 		unit->m_rq = nextrq;
@@ -5903,7 +5912,12 @@ void BPeakEQ_next_kkk(BPeakEQ *unit, int inNumSamples)
 			y1 = y0;
 		);
 
-    } else {
+		unit->m_a0 = next_a0;
+		unit->m_a1 = next_a1;
+		unit->m_a2 = next_a2;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
+	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
@@ -5923,11 +5937,6 @@ void BPeakEQ_next_kkk(BPeakEQ *unit, int inNumSamples)
 		);
 	}
 
-	unit->m_a0 = a0;
-	unit->m_a1 = a1;
-	unit->m_a2 = a2;
-	unit->m_b1 = b1;
-	unit->m_b2 = b2;
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
 }
@@ -6044,11 +6053,9 @@ void BAllPass_next_kk(BAllPass *unit, int inNumSamples)
 	float nextrq = ZIN0(2);
 
 	double a0, a1, a2, b1, b2;
-	double nexta0, nexta1, nexta2, nextb1, nextb2, nextw0, nextalpha, nextb0rz;
 	double y0;
 	double y1 = unit->m_y1;
 	double y2 = unit->m_y2;
-	double a0slope, a1slope, a2slope, b1slope, b2slope;
 
 	a0 = unit->m_a0;
 	a1 = unit->m_a1;
@@ -6057,19 +6064,21 @@ void BAllPass_next_kk(BAllPass *unit, int inNumSamples)
 	b2 = unit->m_b2;
 
 	if ((unit->m_freq != nextfreq) || (unit->m_rq != nextrq)) {
-		nextw0 = twopi * (double)nextfreq * SAMPLEDUR;
-		nextalpha = sin(nextw0) * 0.5 * (double)nextrq;
-		nextb0rz = 1. / (1. + nextalpha);
-		nextb1 = cos(nextw0) * 2. * nextb0rz;
-		nexta0 = (1. - nextalpha) * nextb0rz;
-		nexta1 = -nextb1;
-		nexta2 = 1.;
-		nextb2 = -nexta0;
-		a0slope = (nexta0 - a0) * unit->mRate->mFilterSlope;
-		a1slope = (nexta1 - a1) * unit->mRate->mFilterSlope;
-		a2slope = (nexta2 - a2) * unit->mRate->mFilterSlope;
-		b1slope = (nextb1 - b1) * unit->mRate->mFilterSlope;
-		b2slope = (nextb2 - b2) * unit->mRate->mFilterSlope;
+		double a0slope, a1slope, a2slope, b1slope, b2slope;
+		double next_a0, next_a1, next_a2, next_b1, next_b2, next_w0, next_alpha, next_b0rz;
+		next_w0 = twopi * (double)nextfreq * SAMPLEDUR;
+		next_alpha = sin(next_w0) * 0.5 * (double)nextrq;
+		next_b0rz = 1. / (1. + next_alpha);
+		next_b1 = cos(next_w0) * 2. * next_b0rz;
+		next_a0 = (1. - next_alpha) * next_b0rz;
+		next_a1 = -next_b1;
+		next_a2 = 1.;
+		next_b2 = -next_a0;
+		a0slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
+		a1slope = (next_a1 - a1) * unit->mRate->mFilterSlope;
+		a2slope = (next_a2 - a2) * unit->mRate->mFilterSlope;
+		b1slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
+		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		unit->m_freq = nextfreq;
 		unit->m_rq = nextrq;
 		LOOP(unit->mRate->mFilterLoops,
@@ -6094,7 +6103,13 @@ void BAllPass_next_kk(BAllPass *unit, int inNumSamples)
 			y1 = y0;
 		);
 
-    } else {
+		unit->m_a0 = next_a0;
+		unit->m_a1 = next_a1;
+		unit->m_a2 = next_a2;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
+
+	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
@@ -6113,11 +6128,6 @@ void BAllPass_next_kk(BAllPass *unit, int inNumSamples)
 		);
 	}
 
-	unit->m_a0 = a0;
-	unit->m_a1 = a1;
-	unit->m_a2 = a2;
-	unit->m_b1 = b1;
-	unit->m_b2 = b2;
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
 }
@@ -6251,7 +6261,7 @@ void BLowShelf_next_kkk(BLowShelf *unit, int inNumSamples)
 	float nextdb = ZIN0(3);
 
 	double a0, a1, a2, b1, b2, a, w0, cosw0, sinw0, alpha, i, j, k, b0rz;
-	double y0, y1, y2, a0slope, a1slope, a2slope, b1slope, b2slope, nexta0, nexta1, nexta2, nextb1, nextb2;
+	double y0, y1, y2;
 
 	y1 = unit->m_y1;
 	y2 = unit->m_y2;
@@ -6263,6 +6273,7 @@ void BLowShelf_next_kkk(BLowShelf *unit, int inNumSamples)
 	b2 = unit->m_b2;
 
 	if ((unit->m_freq != nextfreq) || (unit->m_rs != nextrs) || (unit->m_db != nextdb)) {
+		double a0slope, a1slope, a2slope, b1slope, b2slope, nexta0, nexta1, nexta2, nextb1, nextb2;
 		a = pow(10., (double)nextdb * 0.025);
 		w0 = twopi * (double)nextfreq * SAMPLEDUR;
 		sinw0 = sin(w0);
@@ -6467,7 +6478,7 @@ void BHiShelf_next_kkk(BHiShelf *unit, int inNumSamples)
 	float nextdb = ZIN0(3);
 
 	double a0, a1, a2, b1, b2, a, w0, cosw0, sinw0, alpha, i, j, k, b0rz;
-	double y0, y1, y2, a0slope, a1slope, a2slope, b1slope, b2slope, nexta0, nexta1, nexta2, nextb1, nextb2;
+	double y0, y1, y2;
 
 	y1 = unit->m_y1;
 	y2 = unit->m_y2;
@@ -6479,6 +6490,8 @@ void BHiShelf_next_kkk(BHiShelf *unit, int inNumSamples)
 	b2 = unit->m_b2;
 
 	if ((unit->m_freq != nextfreq) || (unit->m_rs != nextrs) || (unit->m_db != nextdb)) {
+		double a0slope, a1slope, a2slope, b1slope, b2slope;
+		double next_a0, next_a1, next_a2, next_b1, next_b2;
 		a = pow(10., (double)nextdb * 0.025);
 		w0 = twopi * (double)nextfreq * SAMPLEDUR;
 		sinw0 = sin(w0);
@@ -6488,16 +6501,16 @@ void BHiShelf_next_kkk(BHiShelf *unit, int inNumSamples)
 		j = (a - 1.) * cosw0;
 		k = 2. * sqrt(a) * alpha;
 		b0rz = 1. / ((a + 1.) - j + k);
-		nexta0 = a * (( a + 1.) + j + k) * b0rz;
-		nexta1 = -2. * a * ((a - 1.) + i) * b0rz;
-		nexta2 = a * ((a + 1.) + j - k) * b0rz;
-		nextb1 = -2. * ((a - 1.) - i) * b0rz;
-		nextb2 = ((a + 1.) - j - k) * -b0rz;
-		a0slope = (nexta0 - a0) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta0, a0);
-		a1slope = (nexta1 - a1) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta1, a1);
-		a2slope = (nexta2 - a2) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta2, a2);
-		b1slope = (nextb1 - b1) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb1, b1);
-		b2slope = (nextb2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
+		next_a0 = a * (( a + 1.) + j + k) * b0rz;
+		next_a1 = -2. * a * ((a - 1.) + i) * b0rz;
+		next_a2 = a * ((a + 1.) + j - k) * b0rz;
+		next_b1 = -2. * ((a - 1.) - i) * b0rz;
+		next_b2 = ((a + 1.) - j - k) * -b0rz;
+		a0slope = (next_a0 - a0) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta0, a0);
+		a1slope = (next_a1 - a1) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta1, a1);
+		a2slope = (next_a2 - a2) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta2, a2);
+		b1slope = (next_b1 - b1) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb1, b1);
+		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
 		unit->m_freq = nextfreq;
 		unit->m_db = nextdb;
 		unit->m_rs = nextrs;
@@ -6525,32 +6538,32 @@ void BHiShelf_next_kkk(BHiShelf *unit, int inNumSamples)
 				y1 = y0;
 		);
 
-    } else {
-	LOOP(unit->mRate->mFilterLoops,
-	     y0 = ZXP(in) + b1 * y1 + b2 * y2;
-	     ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
+		unit->m_a0 = next_a0;
+		unit->m_a1 = next_a1;
+		unit->m_a2 = next_a2;
+		unit->m_b1 = next_b1;
+		unit->m_b2 = next_b2;
 
-	     y2 = ZXP(in) + b1 * y0 + b2 * y1;
-	     ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
+	} else {
+		LOOP(unit->mRate->mFilterLoops,
+			y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
-	     y1 = ZXP(in) + b1 * y2 + b2 * y0;
-	     ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
+			y2 = ZXP(in) + b1 * y0 + b2 * y1;
+			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
 
-	     );
-	LOOP(unit->mRate->mFilterRemain,
-	     y0 = ZXP(in) + b1 * y1 + b2 * y2;
-	     ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-	     y2 = y1;
-	     y1 = y0;
-	     );
-    }
-    unit->m_a0 = a0;
-    unit->m_a1 = a1;
-    unit->m_a2 = a2;
-    unit->m_b1 = b1;
-    unit->m_b2 = b2;
-    unit->m_y1 = zapgremlins(y1);
-    unit->m_y2 = zapgremlins(y2);
+			y1 = ZXP(in) + b1 * y2 + b2 * y0;
+			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
+		);
+		LOOP(unit->mRate->mFilterRemain,
+			y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
+			y2 = y1;
+			y1 = y0;
+		);
+	}
+	unit->m_y1 = zapgremlins(y1);
+	unit->m_y2 = zapgremlins(y2);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
