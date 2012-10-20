@@ -21,6 +21,11 @@
 
 #include "SC_PlugIn.h"
 
+#include <limits>
+
+// NaNs are not equal to any floating point number
+static const float uninitializedControl = std::numeric_limits<float>::quiet_NaN();
+
 #define PI 3.1415926535898f
 
 #define PUSH_LOOPVALS \
@@ -631,7 +636,7 @@ void Lag_Ctor(Lag* unit)
 	else
 		SETCALC(Lag_next);
 
-	unit->m_lag = 0.f;
+	unit->m_lag = uninitializedControl;
 	unit->m_b1 = 0.f;
 	unit->m_y1 = ZIN0(0);
 	Lag_next(unit, 1);
@@ -681,8 +686,8 @@ void LagUD_Ctor(LagUD* unit)
 {
 	SETCALC(LagUD_next);
 
-	unit->m_lagu = 0.f;
-	unit->m_lagd = 0.f;
+	unit->m_lagu = uninitializedControl;
+	unit->m_lagd = uninitializedControl;
 	unit->m_b1u = 0.f;
 	unit->m_b1d = 0.f;
 	unit->m_y1 = ZIN0(0);
@@ -774,7 +779,7 @@ void Lag2_Ctor(Lag2* unit)
 		break;
 	}
 
-	unit->m_lag = 0.f;
+	unit->m_lag = uninitializedControl;
 	unit->m_b1 = 0.f;
 	unit->m_y1a = unit->m_y1b = ZIN0(0);
 	Lag2_next_k(unit, 1);
@@ -890,7 +895,7 @@ void Lag3_Ctor(Lag3* unit)
 {
 	SETCALC(Lag3_next);
 
-	unit->m_lag = 0.f;
+	unit->m_lag = uninitializedControl;
 	unit->m_b1 = 0.f;
 	unit->m_y1a = unit->m_y1b = unit->m_y1c = ZIN0(0);
 	Lag3_next(unit, 1);
@@ -969,8 +974,8 @@ void Lag3UD_Ctor(Lag3UD* unit)
 {
 	SETCALC(Lag3UD_next);
 
-	unit->m_lagu = 0.f;
-	unit->m_lagd = 0.f;
+	unit->m_lagu = uninitializedControl;
+	unit->m_lagd = uninitializedControl;
 	unit->m_b1u = 0.f;
 	unit->m_b1d = 0.f;
 
@@ -1224,7 +1229,7 @@ void Integrator_Ctor(Integrator* unit)
 {
 	//printf("Integrator_Reset\n");
 	SETCALC(Integrator_next);
-	unit->m_b1 = 0.f;
+	unit->m_b1 = uninitializedControl;
 	unit->m_y1 = 0.f;
 	Integrator_next(unit, 1);
 }
@@ -1273,7 +1278,7 @@ void Integrator_next(Integrator* unit, int inNumSamples)
 void Decay_Ctor(Decay* unit)
 {
 	SETCALC(Decay_next);
-	unit->m_decayTime = 0.f;
+	unit->m_decayTime = uninitializedControl;
 	unit->m_b1 = 0.f;
 	unit->m_y1 = 0.f;
 	Decay_next(unit, 1);
@@ -1503,8 +1508,8 @@ void TwoPole_Ctor(TwoPole *unit)
 	unit->m_b2 = 0.f;
 	unit->m_y1 = 0.f;
 	unit->m_y2 = 0.f;
-	unit->m_freq = 0.f;
-	unit->m_reson = 0.f;
+	unit->m_freq = uninitializedControl;
+	unit->m_reson = uninitializedControl;
 	PUSH_LOOPVALS
 	TwoPole_next(unit, 1);
 	POP_LOOPVALS
@@ -1579,8 +1584,8 @@ void TwoZero_Ctor(TwoZero* unit)
 	unit->m_b2 = 0.f;
 	unit->m_x1 = 0.f;
 	unit->m_x2 = 0.f;
-	unit->m_freq = 0.f;
-	unit->m_reson = 0.f;
+	unit->m_freq = uninitializedControl;
+	unit->m_reson = uninitializedControl;
 	PUSH_LOOPVALS
 	TwoZero_next(unit, 1);
 	POP_LOOPVALS
@@ -1664,8 +1669,8 @@ void APF_Ctor(APF* unit)
 	unit->m_y2 = 0.f;
 	unit->m_x1 = 0.f;
 	unit->m_x2 = 0.f;
-	unit->m_freq = 0.f;
-	unit->m_reson = 0.f;
+	unit->m_freq = uninitializedControl;
+	unit->m_reson = uninitializedControl;
 	PUSH_LOOPVALS
 	APF_next(unit, 1);
 	POP_LOOPVALS
@@ -2239,8 +2244,8 @@ void RLPF_Ctor(RLPF* unit)
 	unit->m_b2 = 0.f;
 	unit->m_y1 = 0.f;
 	unit->m_y2 = 0.f;
-	unit->m_freq = 0.f;
-	unit->m_reson = 0.f;
+	unit->m_freq = uninitializedControl;
+	unit->m_reson = uninitializedControl;
 	RLPF_next_1(unit, 1);
 }
 
@@ -2390,8 +2395,8 @@ void RHPF_Ctor(RHPF* unit)
 	unit->m_b2 = 0.;
 	unit->m_y1 = 0.;
 	unit->m_y2 = 0.;
-	unit->m_freq = 0.f;
-	unit->m_reson = 0.f;
+	unit->m_freq = uninitializedControl;
+	unit->m_reson = uninitializedControl;
 	RHPF_next_1(unit, 1);
 }
 
@@ -2537,7 +2542,7 @@ void LPF_Ctor(LPF* unit)
 	unit->m_b2 = 0.f;
 	unit->m_y1 = 0.f;
 	unit->m_y2 = 0.f;
-	unit->m_freq = 0.f;
+	unit->m_freq = uninitializedControl;
 	LPF_next_1(unit, 1);
 }
 
@@ -2682,7 +2687,7 @@ void HPF_Ctor(HPF* unit)
 	unit->m_b2 = 0.;
 	unit->m_y1 = 0.;
 	unit->m_y2 = 0.;
-	unit->m_freq = -1e6f;
+	unit->m_freq = uninitializedControl;
 
 	HPF_next_1(unit, 1);
 }
@@ -2818,8 +2823,8 @@ void BPF_Ctor(BPF* unit)
 	unit->m_b2 = 0.f;
 	unit->m_y1 = 0.f;
 	unit->m_y2 = 0.f;
-	unit->m_freq = 0.f;
-	unit->m_bw = 0.f;
+	unit->m_freq = uninitializedControl;
+	unit->m_bw = uninitializedControl;
 
 	BPF_next_1(unit, 1);
 }
@@ -2966,8 +2971,8 @@ void BRF_Ctor(BRF* unit)
 	unit->m_b2 = 0.f;
 	unit->m_y1 = 0.f;
 	unit->m_y2 = 0.f;
-	unit->m_freq = 0.f;
-	unit->m_bw = 0.f;
+	unit->m_freq = uninitializedControl;
+	unit->m_bw = uninitializedControl;
 	BRF_next_1(unit, 1);
 }
 
@@ -3125,9 +3130,9 @@ void MidEQ_Ctor(MidEQ* unit)
 	unit->m_b2 = 0.f;
 	unit->m_y1 = 0.f;
 	unit->m_y2 = 0.f;
-	unit->m_freq = 0.f;
-	unit->m_bw = 0.f;
-	unit->m_db = 0.f;
+	unit->m_freq = uninitializedControl;
+	unit->m_bw = uninitializedControl;
+	unit->m_db = uninitializedControl;
 	PUSH_LOOPVALS
 	MidEQ_next(unit, 1);
 	POP_LOOPVALS
@@ -3313,7 +3318,7 @@ void Resonz_Ctor(Resonz* unit)
 	unit->m_b2 = 0.f;
 	unit->m_y1 = 0.f;
 	unit->m_y2 = 0.f;
-	unit->m_freq = 0.f;
+	unit->m_freq = uninitializedControl;
 	unit->m_rq = 0.f;
 	PUSH_LOOPVALS
 	Resonz_next(unit, 1);
@@ -3409,7 +3414,7 @@ void Ringz_Ctor(Ringz* unit)
 	unit->m_b2 = 0.f;
 	unit->m_y1 = 0.f;
 	unit->m_y2 = 0.f;
-	unit->m_freq = 0.f;
+	unit->m_freq = uninitializedControl;
 	unit->m_decayTime = 0.f;
 	PUSH_LOOPVALS
 	Ringz_next(unit, 1);
@@ -3508,9 +3513,9 @@ void Formlet_Ctor(Formlet* unit)
 	unit->m_b12 = 0.f;
 	unit->m_y11 = 0.f;
 	unit->m_y12 = 0.f;
-	unit->m_freq = 0.f;
-	unit->m_attackTime = 0.f;
-	unit->m_decayTime = 0.f;
+	unit->m_freq = uninitializedControl;
+	unit->m_attackTime = uninitializedControl;
+	unit->m_decayTime = uninitializedControl;
 	Formlet_next_1(unit, 1);
 }
 
@@ -4846,7 +4851,7 @@ void MoogFF_Ctor(MoogFF* unit)
 	SETCALC(MoogFF_next);
 
 	// initialize the unit generator state variables.
-	unit->m_freq = -10000.3f; // Force the freq to update on first run
+	unit->m_freq = uninitializedControl;
 	unit->m_k    = IN0(2);
 	unit->m_s1 = 0.f;
 	unit->m_s2 = 0.f;
