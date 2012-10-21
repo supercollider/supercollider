@@ -2,12 +2,13 @@ Scale {
 
 	var <degrees, <pitchesPerOctave, <tuning, <>name;
 
-	*new { | degrees, pitchesPerOctave, tuning, name = "Unknown Scale" |
-		^super.new.init(degrees ? \ionian, pitchesPerOctave, tuning, name);
+	*new { | degrees = \ionian, pitchesPerOctave, tuning, name = "Unknown Scale" |
+		if(degrees.isKindOf(Symbol)) { ^this.newFromKey(degrees, tuning) };
+		^super.new.init(degrees, pitchesPerOctave, tuning, name);
 	}
 
 	init { | inDegrees, inPitchesPerOctave, inTuning, inName |
-		degrees = Int32Array.newFrom(inDegrees.asArray.asInteger);
+		degrees = inDegrees;
 		pitchesPerOctave = inPitchesPerOctave ? this.guessPPO(degrees);
 		name = inName;
 		^this.tuning_(inTuning ? Tuning.default(pitchesPerOctave));
@@ -161,7 +162,7 @@ Tuning {
 	var <tuning, <octaveRatio, <>name;
 
 	*new { | tuning, octaveRatio = 2.0, name = "Unknown Tuning" |
-		^super.newCopyArgs(DoubleArray.newFrom(tuning), octaveRatio, name);
+		^super.newCopyArgs(tuning, octaveRatio, name);
 	}
 
 	*newFromKey { | key |
@@ -209,11 +210,11 @@ Tuning {
 	}
 
 	at { |index|
-		^tuning.at(index)
+		^if(index.isInteger) { tuning.at(index) } { tuning.blendAt(index) }
 	}
 
 	wrapAt { |index|
-		^tuning.wrapAt(index)
+		^if(index.isInteger) { tuning.wrapAt(index) } { tuning.blendAt(index, \wrapAt) }
 	}
 
 	== { |argTuning|
@@ -266,7 +267,7 @@ Tuning {
 ScaleAD : Scale {
 	var <>descScale;
 	*new { | degrees, pitchesPerOctave, descDegrees, tuning, name = "Unknown Scale" |
-		^super.new.init(degrees ? \ionian, pitchesPerOctave, tuning, name)
+		^super.new(degrees ? \ionian, pitchesPerOctave, tuning, name)
 			.descScale_(Scale(descDegrees ? \ionian, pitchesPerOctave, tuning, name ++ "desc"))
 		;
 	}
