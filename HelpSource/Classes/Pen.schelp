@@ -33,7 +33,7 @@ argument:: p2
 An instance of link::Classes/Point::
 
 method:: curveTo
-Draws a cubic bezier curve from the current position to point. 
+Draws a cubic bezier curve from the current position to point. 
 strong::cpoint1:: and strong::cpoint2:: are control points determining the curve's curvature.
 argument:: endPoint
 An instance of link::Classes/Point::
@@ -43,7 +43,7 @@ argument:: cPoint2
 An instance of link::Classes/Point::
 
 method:: quadCurveTo
-Draws a quad bezier curve from the current position to point. 
+Draws a quad bezier curve from the current position to point. 
 strong::cpoint1:: is a control point determining the curve's curvature.
 argument:: endPoint
 An instance of link::Classes/Point::
@@ -202,7 +202,7 @@ w.refresh;
 ::
 
 method:: fill
-Fill the previous defined path. 
+Fill the previous defined path. 
 discussion::
 example:
 code::
@@ -441,13 +441,13 @@ w.refresh;
 ::
 
 method:: matrix
-Set transformation matrix to transform coordinate system.
-See link::#matrix_example:: for an example.
+Gets or sets the coordinate system transformation matrix.
+note::Getter only available in Qt GUI::
+
+See link::#Matrix example:: for an example.
+
 argument:: matrixArray
-A matrix array in the form
-code::
-[ zoomX, shearingY, shearingX, zoomY, translateX, translateY ]
-::
+An array of the form code::[ zoomX, shearingY, shearingX, zoomY, translateX, translateY ]::
 
 method:: width
 Sets the width of the Pen for the whole stroke
@@ -495,7 +495,7 @@ w.refresh
 method:: path
 Make a path, consisting of the drawing made in function.
 note::
-Unfortunately not working for now... 
+Unfortunately not working for now... 
 (there's no Pen.endPath which currently is used in this method)
 ::
 
@@ -626,8 +626,8 @@ Set the blending mode to use.
 See link::#blending_modes:: for more information.
 
 method:: lineDash
-Set the line dash pattern. 
-pattern should be a link::Classes/FloatArray:: of values that specify the lengths of the painted segments and not painted segments.
+Set the line dash pattern. 
+pattern should be a link::Classes/FloatArray:: of values that specify the lengths of the painted segments and not painted segments.
 
 examples::
 Simple rotating and scaling:
@@ -752,7 +752,7 @@ w.drawFunc = {
 		rrand(6,24).do {
 			Pen.color = Color.rand(0.0,1.0).alpha_(rrand(0.1,0.7));
 			Pen.beginPath;
-			Pen.addAnnularWedge(Point(0,0), a = rrand(60,300), a + 50.rand2, 2pi.rand 
+			Pen.addAnnularWedge(Point(0,0), a = rrand(60,300), a + 50.rand2, 2pi.rand 
 				+ (phase * 2.0.rand2), 2pi.rand);
 			if (0.5.coin) {Pen.stroke}{Pen.fill};
 		};
@@ -873,7 +873,7 @@ var sliders, spex, name;
 w = Window.new.front;
 w.view.background_(Color.white);
 
-// create a controller-window 
+// create a controller-window 
 controlWindow = Window("matrix controls", Rect(400,200,350,120));
 controlWindow.front;
 
@@ -895,14 +895,14 @@ w.drawFunc = {
     Pen.line(b, d);
     Pen.stroke;
 
-    Pen.font = Font( "Helvetica-Bold", 12 );
-    Pen.stringAtPoint( "A", a - 6 );
-    Pen.stringAtPoint( "B", b - 6 );
-    Pen.stringAtPoint( "C", c - (0@6) );
-    Pen.stringAtPoint( "D", d - (0@6) );
+    Pen.font = Font( "Helvetica-Bold", 12 );
+    Pen.stringAtPoint( "A", a - 6 );
+    Pen.stringAtPoint( "B", b - 6 );
+    Pen.stringAtPoint( "C", c - (0@6) );
+    Pen.stringAtPoint( "D", d - (0@6) );
 
-    Pen.font = Font( "Helvetica", 10 );
-    Pen.stringInRect( "a matrix test", r.moveBy( 50, 50 ));
+    Pen.font = Font( "Helvetica", 10 );
+    Pen.stringInRect( "a matrix test", r.moveBy( 50, 50 ));
 };
 
 controlWindow.view.decorator = sliders = FlowLayout(controlWindow.view.bounds);
@@ -916,11 +916,11 @@ spex = [
 ];
 name = #[zoomX, shearingY, shearingX, zoomY, translateX, translateY];
 6.do { |i|
-    EZSlider(controlWindow, 300 @ 14, name[i], spex[i], { |ez| var val;
-            val = ez.value;
-            [i, val.round(10e-4)].postln;
-            matrix.put(i, val);
-            w.refresh; // reevaluate drawFunc function
+    EZSlider(controlWindow, 300 @ 14, name[i], spex[i], { |ez| var val;
+            val = ez.value;
+            [i, val.round(10e-4)].postln;
+            matrix.put(i, val);
+            w.refresh; // reevaluate drawFunc function
     }, matrix[i]);
     sliders.nextLine;
 };
