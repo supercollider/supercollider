@@ -320,7 +320,7 @@ QC_QPEN_PRIMITIVE( QPen_Transform, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     f[i] = list.data[i].value<float>();
   }
   QTransform transform( f[0], f[1], f[2], f[3], f[4], f[5] );
-  painter->setWorldTransform( transform );
+  painter->setWorldTransform( transform, true );
   return errNone;
 }
 
