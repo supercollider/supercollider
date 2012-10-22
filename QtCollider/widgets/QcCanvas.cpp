@@ -66,6 +66,7 @@ void QcCanvas::setBackground( const QColor &c )
   _bkg = c;
 
   setAttribute( Qt::WA_OpaquePaintEvent, c.isValid() && c.alpha() == 255 );
+  setAttribute( Qt::WA_TranslucentBackground, c.isValid() );
 
   if( !testAttribute(Qt::WA_WState_InPaintEvent) )
       update();
