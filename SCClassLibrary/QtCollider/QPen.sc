@@ -119,8 +119,10 @@ QPen {
     ^this.primitiveFailed;
   }
 
+  *matrix { _QPen_Transform }
+
   *matrix_ { arg matrixArray;
-    _QPen_Transform
+    _QPen_SetTransform
     ^this.primitiveFailed;
   }
 

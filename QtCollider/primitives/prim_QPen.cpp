@@ -24,6 +24,7 @@
 #include "primitives.h"
 #include "../painting.h"
 #include "../Slot.h"
+#include "PyrKernel.h"
 
 #include <QPainter>
 #include <QVector2D>
@@ -307,7 +308,7 @@ QC_QPEN_PRIMITIVE( QPen_Rotate, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
-QC_QPEN_PRIMITIVE( QPen_Transform, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_QPEN_PRIMITIVE( QPen_SetTransform, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   VariantList list = Slot::toVariantList( a );
   if( list.data.count() < 6 ) return errWrongType;
@@ -322,6 +323,25 @@ QC_QPEN_PRIMITIVE( QPen_Transform, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   QTransform transform( f[0], f[1], f[2], f[3], f[4], f[5] );
   painter->setWorldTransform( transform );
   return errNone;
+}
+
+QC_QPEN_PRIMITIVE( QPen_Transform, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+    const QTransform & transform = painter->worldTransform();
+
+    PyrDoubleArray *doubleArray = newPyrDoubleArray( g->gc, 6, 0, true );
+    SetObject( r, doubleArray );
+
+    double *val = doubleArray->d;
+    val[0] = transform.m11();
+    val[1] = transform.m12();
+    val[2] = transform.m21();
+    val[3] = transform.m22();
+    val[4] = transform.dx();
+    val[5] = transform.dy();
+    doubleArray->size = 6;
+
+    return errNone;
 }
 
 QC_QPEN_PRIMITIVE( QPen_MoveTo, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
@@ -644,6 +664,7 @@ void defineQPenPrimitives()
   definer.define<QPen_Shear>();
   definer.define<QPen_Rotate>();
   definer.define<QPen_Transform>();
+  definer.define<QPen_SetTransform>();
   definer.define<QPen_MoveTo>();
   definer.define<QPen_LineTo>();
   definer.define<QPen_CubicTo>();
