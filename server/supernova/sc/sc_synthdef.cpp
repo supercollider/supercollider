@@ -231,6 +231,11 @@ class buffer_allocator
     std::vector<size_t, Alloc> buffers; /* index: buffer id, value: last reference */
 
 public:
+    buffer_allocator(size_t size_hint)
+    {
+        buffers.reserve(size_hint);
+    }
+
     /** allocate buffer for current ugen
      *
      *  reuse buffers, which are not used after the current ugen
@@ -299,7 +304,7 @@ void sc_synthdef::prepare(void)
         }
     }
 
-    buffer_allocator<> allocator;
+    buffer_allocator<> allocator (number_of_ugens / 8);
 
     for (size_t ugen_index = 0; ugen_index != number_of_ugens; ++ugen_index) {
         unit_spec_t & current_ugen_spec = graph[ugen_index];
