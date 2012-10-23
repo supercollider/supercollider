@@ -1,6 +1,6 @@
 [submodule "external_libraries/nova-simd"]
 	path = external_libraries/nova-simd
-	url = git://supercollider.git.sourceforge.net/gitroot/supercollider/nova-simd
+	url = git://github.com/timblechmann/nova-simd.git
 [submodule "external_libraries/nova-tt"]
 	path = external_libraries/nova-tt
 	url = git://supercollider.git.sourceforge.net/gitroot/supercollider/nova-tt
