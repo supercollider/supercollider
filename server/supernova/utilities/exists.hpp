@@ -23,7 +23,7 @@ namespace nova
 {
 
 template<typename container>
-bool exists (container const & c, typename container::key_type const & k)
+bool inline exists (container const & c, typename container::key_type const & k)
 {
     return c.find(k) != c.end();
 }
