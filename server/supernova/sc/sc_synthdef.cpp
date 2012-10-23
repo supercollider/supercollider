@@ -274,9 +274,11 @@ public:
 
 void sc_synthdef::prepare(void)
 {
+    // FIXME: this currently has quadratic complexity, as buffer_allocator::allocate has linear complexity
     memory_requirement_ = 0;
 
     const size_t number_of_ugens = graph.size();
+    calc_unit_indices.reserve(number_of_ugens);
 
     // store the last references to each output buffer inside a std::map for faster lookup
     std::map<input_spec, size_t> last_buffer_references;
@@ -356,7 +358,9 @@ void sc_synthdef::prepare(void)
 
     memory_requirement_ += ctor_alloc_size;
 
-    buffer_count = uint16_t(allocator.buffer_count());
+    buffer_count = uint32_t(allocator.buffer_count());
+
+    calc_unit_indices.shrink_to_fit();
 }
 
 
