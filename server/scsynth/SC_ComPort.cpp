@@ -167,7 +167,7 @@ int recvall(int socket, void *msg, size_t len);
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
 int sendall(int socket, const void *msg, size_t len);
 
-static void dumpOSCmsg(int inSize, char* inData)
+static bool dumpOSCmsg(int inSize, char* inData)
 {
 	int size;
 	const char *data;
@@ -175,7 +175,7 @@ static void dumpOSCmsg(int inSize, char* inData)
 	if (inData[0]) {
 		const char *addr = inData;
 		if (strcmp(addr, "/status") == 0) // skip /status messages
-			return;
+			return false;
 
 		data = OSCstrskip(inData);
 		size = inSize - (data - inData);
@@ -225,6 +225,7 @@ static void dumpOSCmsg(int inSize, char* inData)
 	}
 leave:
 	scprintf(" ]");
+	return true;
 }
 
 void hexdump(int size, char* data)
@@ -285,8 +286,9 @@ static void dumpOSC(int mode, int size, char* inData)
 		}
 		else
 		{
-			dumpOSCmsg(size, inData);
-			scprintf("\n");
+			bool contentPrinted = dumpOSCmsg(size, inData);
+			if (contentPrinted)
+				scprintf("\n");
 		}
 	}
 
