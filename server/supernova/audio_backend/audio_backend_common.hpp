@@ -33,53 +33,13 @@ namespace nova   {
 namespace detail {
 
 template <typename sample_type, typename io_sample_type, bool blocking, bool managed_memory = true>
-class audio_delivery_helper:
+class audio_backend_base:
     boost::mpl::if_c<blocking, spin_lock, dummy_mutex>::type
 {
     typedef typename boost::mpl::if_c<blocking, spin_lock, dummy_mutex>::type lock_t;
     typedef std::size_t size_t;
 
 public:
-    /* to be called from the audio callback */
-    /* @{  */
-    void deliver_dac_output(const sample_type * source, size_t channel, size_t frames)
-    {
-        assert(channel < output_samples.size());
-        typename lock_t::scoped_lock lock(*this);
-        addvec_simd(output_samples[channel].get(), source, frames);
-    }
-
-    void deliver_dac_output_64(const sample_type * source, size_t channel)
-    {
-        assert(channel < output_samples.size());
-        typename lock_t::scoped_lock lock(*this);
-        addvec_simd<64>(output_samples[channel].get(), source);
-    }
-
-    void copy_dac_output(const sample_type * source, size_t channel, size_t frames)
-    {
-        assert(channel < output_samples.size());
-        copyvec_simd(output_samples[channel].get(), source, frames);
-    }
-
-    void copy_dac_output_64(const sample_type * source, size_t channel)
-    {
-        assert(channel < output_samples.size());
-        typename lock_t::scoped_lock lock(*this);
-        copyvec_simd<64>(output_samples[channel].get(), source);
-    }
-
-    void fetch_adc_input(sample_type * destination, size_t channel, size_t frames)
-    {
-        copyvec_simd(destination, input_samples[channel].get(), frames);
-    }
-
-    void fetch_adc_input_64(sample_type * destination, size_t channel)
-    {
-        copyvec_simd<64>(destination, input_samples[channel].get());
-    }
-    /* @} */
-
     /* @{ */
     /** buffers can be directly mapped to the io regions of the host application */
     template <typename Iterator>

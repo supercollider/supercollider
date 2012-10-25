@@ -45,11 +45,11 @@ template <typename engine_functor,
           bool blocking = false
          >
 class jack_backend:
-    public detail::audio_delivery_helper<sample_type, jack_default_audio_sample_t, blocking, false>,
+    public detail::audio_backend_base<sample_type, jack_default_audio_sample_t, blocking, false>,
     public detail::audio_settings_basic,
     protected engine_functor
 {
-    typedef detail::audio_delivery_helper<sample_type, jack_default_audio_sample_t, blocking, false> super;
+    typedef detail::audio_backend_base<sample_type, jack_default_audio_sample_t, blocking, false> super;
 
 public:
     jack_backend(void):

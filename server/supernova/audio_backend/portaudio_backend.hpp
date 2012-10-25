@@ -39,11 +39,11 @@ template <typename engine_functor,
           typename sample_type = float,
           bool blocking = false>
 class portaudio_backend:
-    public detail::audio_delivery_helper<sample_type, float, blocking, false>,
+    public detail::audio_backend_base<sample_type, float, blocking, false>,
     public detail::audio_settings_basic,
     protected engine_functor
 {
-    typedef detail::audio_delivery_helper<sample_type, float, blocking, false> super;
+    typedef detail::audio_backend_base<sample_type, float, blocking, false> super;
 
 public:
     portaudio_backend(void):
