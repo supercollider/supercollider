@@ -41,7 +41,8 @@ ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
     QProcess( parent ),
     mIpcServer( new QLocalServer(this) ),
     mIpcSocket(NULL),
-    mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid()))
+    mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid())),
+    mTerminationRequested(false)
 {
     mIntrospectionParser = new ScIntrospectionParser( this );
     mIntrospectionParser->start();
@@ -172,6 +173,9 @@ void ScProcess::stopLanguage (void)
 
     closeWriteChannel();
 
+    mTerminationRequested   = true;
+    mTerminationRequestTime = QDateTime::currentDateTimeUtc();
+
     bool finished = waitForFinished(200);
     if ( !finished && (state() != QProcess::NotRunning) ) {
 #ifdef Q_OS_WIN32
@@ -183,6 +187,7 @@ void ScProcess::stopLanguage (void)
         if (!reallyFinished)
             emit statusMessage(tr("Failed to stop interpreter!"));
     }
+    mTerminationRequested = false;
 }
 
 void ScProcess::restartLanguage()
@@ -195,6 +200,12 @@ void ScProcess::restartLanguage()
 
 void ScProcess::onReadyRead(void)
 {
+    if (mTerminationRequested) {
+        // when stopping the language, we don't want to post for longer than 200 ms to prevent the UI to freeze
+        if (QDateTime::currentDateTimeUtc().toMSecsSinceEpoch() - mTerminationRequestTime.toMSecsSinceEpoch() > 200)
+            return;
+    }
+
     QByteArray out = QProcess::readAll();
     QString postString = QString::fromUtf8(out);
     emit scPost(postString);

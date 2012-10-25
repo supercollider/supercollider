@@ -25,6 +25,7 @@
 
 #include <QAction>
 #include <QByteArray>
+#include <QDateTime>
 #include <QDebug>
 #include <QProcess>
 #include <QThread>
@@ -125,6 +126,8 @@ private:
     QByteArray mIpcData;
 
     QString mCurrentDocumentPath;
+    bool mTerminationRequested;
+    QDateTime mTerminationRequestTime;
 };
 
 class ScRequest : public QObject
