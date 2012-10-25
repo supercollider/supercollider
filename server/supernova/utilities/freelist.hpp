@@ -24,13 +24,13 @@
 #include <boost/noncopyable.hpp>
 
 
-namespace nova
-{
+namespace nova {
 
 /**
  * simple freelist implementation without any memory allocation features
  * */
-class freelist
+class freelist:
+    boost::noncopyable
 {
     struct freelist_node
     {

@@ -34,7 +34,7 @@ namespace nova {
 namespace asynchronous_log_impl {
 
 struct asynchronous_log:
-    noncopyable
+    boost::noncopyable
 {
     bool log_printf(const char *fmt, ...)
     {
