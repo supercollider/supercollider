@@ -1771,27 +1771,25 @@ bool SC_CoreAudioDriver::DriverStop()
 	if (UseSeparateIO()) {
 		err = AudioDeviceStop(mOutputDevice, appIOProc);
 		if (err != kAudioHardwareNoError) {
-			scprintf("AudioDeviceStop A failed %p\n", err);
+			scprintf("Output AudioDeviceStop failed %p\n", err);
 			return false;
 		}
-		//		err = AudioDeviceRemoveIOProc(mOutputDevice, appIOProc);
+
 		err = AudioDeviceDestroyIOProcID(mOutputDevice, mOutputID);
 		if (err != kAudioHardwareNoError) {
-			scprintf("AudioDeviceRemoveIOProc A failed %p\n", err);
+			scprintf("Output AudioDeviceDestroyIOProcID failed %p\n", err);
 			return false;
 		}
 
 		err = AudioDeviceStop(mInputDevice, appIOProcSeparateIn);
 		if (err != kAudioHardwareNoError) {
-			scprintf("AudioDeviceStop A failed %p\n", err);
+			scprintf("Input AudioDeviceStop failed %p\n", err);
 			return false;
 		}
 
-		// err = AudioDeviceRemoveIOProc(mInputDevice, appIOProcSeparateIn);
-		err = AudioDeviceDestroyIOProcID(mOutputDevice, mInputID);
-
+		err = AudioDeviceDestroyIOProcID(mInputDevice, mInputID);
 		if (err != kAudioHardwareNoError) {
-			scprintf("AudioDeviceRemoveIOProc A failed %p\n", err);
+			scprintf("Input AudioDeviceDestroyIOProcID failed %p\n", err);
 			return false;
 		}
 	} else {
@@ -1801,11 +1799,9 @@ bool SC_CoreAudioDriver::DriverStop()
 			return false;
 		}
 
-		// err = AudioDeviceRemoveIOProc(mOutputDevice, appIOProc);
 		err = AudioDeviceDestroyIOProcID(mOutputDevice, mOutputID);
-
 		if (err != kAudioHardwareNoError) {
-			scprintf("AudioDeviceRemoveIOProc B failed %p\n", err);
+			scprintf("AudioDeviceDestroyIOProcID B failed %p\n", err);
 			return false;
 		}
 	}
