@@ -56,7 +56,8 @@ nova_server::nova_server(server_arguments const & args):
     /** first guess: needs to be updated, once the backend is started */
     time_per_tick = time_tag::from_samples(args.blocksize, args.samplerate);
 
-    start_receive_thread();
+    if (!args.non_rt)
+        start_receive_thread();
 }
 
 void nova_server::prepare_backend(void)
