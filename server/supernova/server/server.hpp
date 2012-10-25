@@ -262,11 +262,7 @@ public:
 
     void cpu_load(float & peak, float & average) const
     {
-#if defined(JACK_BACKEND) || defined(PORTAUDIO_BACKEND)
-        return get_cpuload(peak, average);
-#else
-        peak = average = 0.f;
-#endif
+        audio_backend::get_cpuload(peak, average);
     }
 
 #if 0
