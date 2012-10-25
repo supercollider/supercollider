@@ -57,7 +57,6 @@ template <typename runnable,
           typename Alloc = std::allocator<void*>
          >
 class dsp_thread:
-    public boost::noncopyable,
     public thread_init_functor
 {
     typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
@@ -77,6 +76,9 @@ public:
             mlock(stack_, stack_size);
         }
     }
+
+    dsp_thread(dsp_thread const &) = delete;
+    dsp_thread& operator=(dsp_thread const &) = delete;
 
     ~dsp_thread(void)
     {

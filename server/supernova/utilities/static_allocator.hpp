@@ -27,10 +27,6 @@ extern "C"
 #include <exception>
 
 #include <array>
-#include <boost/noncopyable.hpp>
-#include <boost/static_assert.hpp>
-#include <boost/mpl/arithmetic.hpp>
-#include <boost/mpl/modulus.hpp>
 
 #include "nova-tt/spin_lock.hpp"
 #include "nova-tt/dummy_mutex.hpp"
@@ -49,14 +45,11 @@ template <class T,
           std::size_t count,
           bool blocking = false>
 class static_allocator
-#if 1
-    :
-    boost::noncopyable
-#endif
 {
     static const std::size_t bytes = 2 * count * sizeof(T) + 4096 * 2;
 
-    BOOST_STATIC_ASSERT((boost::mpl::modulus<boost::mpl::int_<bytes>, boost::mpl::int_<sizeof(long)> >::value == 0));
+    static_assert(bytes % sizeof(long) == 0,
+                   "static_allocator: bytes not an integer mutiple of sizeof(long)");
 
     static const std::size_t poolsize = bytes/sizeof(long);
 
@@ -100,6 +93,8 @@ public:
         data_.pool.assign(0);
         init_memory_pool(bytes, data_.pool.begin());
     }
+
+    static_allocator(static_allocator const & ) = delete;
 
 #if 0
     template <class U, std::size_t bytes_, bool b>

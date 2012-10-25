@@ -23,11 +23,9 @@
 #include <cassert>
 
 #include <type_traits>
-#include <boost/static_assert.hpp>
-
-#include "boost/noncopyable.hpp"
 
 #include <boost/intrusive_ptr.hpp>
+#include <boost/noncopyable.hpp>
 #include <boost/detail/atomic_count.hpp>
 
 #include "branch_hints.hpp"
@@ -42,7 +40,6 @@ typedef unsigned int uint;
 namespace nova {
 
 /* we're using some member of the boost namespace */
-using boost::noncopyable;
 using boost::intrusive_ptr;
 
 /* some basic math functions */
@@ -137,12 +134,14 @@ struct checked_deleter
 
 template <typename deleter = checked_deleter >
 struct intrusive_refcountable:
-    public noncopyable,
     public deleter
 {
     intrusive_refcountable(void):
         use_count_(0)
     {}
+
+    intrusive_refcountable(intrusive_refcountable const & rhs) = delete;
+    intrusive_refcountable & operator=(intrusive_refcountable const & rhs) = delete;
 
     virtual ~intrusive_refcountable(void)
     {}

@@ -28,9 +28,6 @@ extern "C"
 #include <cstring>
 #include <array>
 
-#include <boost/static_assert.hpp>
-#include <boost/mpl/modulus.hpp>
-#include <boost/mpl/arithmetic.hpp>
 #include <boost/thread/tss.hpp>
 
 #include "branch_hints.hpp"
@@ -43,7 +40,8 @@ namespace detail {
 template <std::size_t bytes>
 class tl_allocator
 {
-    BOOST_STATIC_ASSERT((boost::mpl::modulus<boost::mpl::int_<bytes>, boost::mpl::int_<sizeof(long)> >::value == 0));
+    static_assert(bytes % sizeof(long) == 0,
+                  "tl_allocator: bytes not an integer mutiple of sizeof(long)");
 
 public:
 
@@ -95,7 +93,8 @@ bool __thread tl_allocator<bytes>::initialized = false;
 template <std::size_t bytes>
 class tl_allocator
 {
-    BOOST_STATIC_ASSERT((boost::mpl::modulus<boost::mpl::int_<bytes>, boost::mpl::int_<sizeof(long)> >::value == 0));
+    static_assert(bytes % sizeof(long) == 0,
+                  "tl_allocator: bytes not an integer mutiple of sizeof(long)");
     static const std::size_t poolsize = bytes/sizeof(long);
 
     struct pool_t

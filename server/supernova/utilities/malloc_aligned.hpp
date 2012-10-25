@@ -24,8 +24,6 @@
 
 #include <new> // for std::bad_alloc
 
-#include <boost/noncopyable.hpp>
-
 #ifdef __SSE2__
 #include <xmmintrin.h>
 #elif defined(HAVE_TBB)
