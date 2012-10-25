@@ -265,19 +265,6 @@ public:
         audio_backend::get_cpuload(peak, average);
     }
 
-#if 0
-    /* node control */
-    void free_node(node_id);
-
-    /* synth control */
-    node_id add_synth(synthdef def, list<pair<slot_id, float> > args, node_position_constraint const &);
-    void set_synth_slot(node_id, slot_id, float);
-
-    /* group control */
-    node_id add_group(node_position_constraint const &);
-    void set_group_slot(node_id, slot_id, float);
-#endif
-
     void increment_logical_time(void)
     {
         sc_osc_handler::increment_logical_time(time_per_tick);
