@@ -95,17 +95,10 @@ class scheduler:
 
 protected:
     /* called from the driver callback */
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
     void reset_queue_sync(dsp_thread_queue_ptr && qptr)
     {
         threads.reset_queue(std::move(qptr));
     }
-#else
-    void reset_queue_sync(dsp_thread_queue_ptr & qptr)
-    {
-        threads.reset_queue(qptr);
-    }
-#endif
 
 public:
     /* start thread_count - 1 scheduler threads */
