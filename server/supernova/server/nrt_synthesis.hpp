@@ -83,16 +83,13 @@ struct non_realtime_synthesis_engine
 
     void run(void)
     {
-        backend.activate_audio();
-
-        std::array<char, 16384> packet_buffer;
-
         using namespace std;
+        array<char, 16384> packet_buffer;
 
         cout << "Starting non-rt synthesis" << endl;
+        backend.activate_audio();
 
-        while (!command_stream.eof())
-        {
+        while (!command_stream.eof()) {
             boost::integer::big32_t packet_size;
             command_stream.read((char*)&packet_size, sizeof(packet_size));
 
@@ -105,9 +102,9 @@ struct non_realtime_synthesis_engine
 
             while (instance->current_time() < bundle_time) {
                 if (has_inputs)
-                    backend.audio_fn(64);
+                    backend.audio_fn(samples_per_block);
                 else
-                    backend.audio_fn_noinput(64);
+                    backend.audio_fn_noinput(samples_per_block);
             }
         }
         backend.deactivate_audio();
