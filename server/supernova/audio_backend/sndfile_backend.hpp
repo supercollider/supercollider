@@ -59,15 +59,16 @@ public:
 
     size_t get_audio_blocksize(void)
     {
-        return 64;
+        return block_size_;
     }
 
 public:
     void open_client(std::string const & input_file_name, std::string const & output_file_name,
-                     float samplerate, int format, uint32_t output_channel_count)
+                     float samplerate, int format, uint32_t output_channel_count, size_t block_size)
     {
         output_channels = output_channel_count;
         samplerate_ = samplerate = std::floor(samplerate);
+        block_size_ = block_size;
 
         if (!input_file_name.empty()) {
             input_file = SndfileHandle(input_file_name.c_str(), SFM_READ);
@@ -272,6 +273,7 @@ public:
 private:
     SndfileHandle input_file, output_file;
     std::size_t read_position;
+    int block_size_;
 
     aligned_storage_ptr<sample_type> temp_buffer;
 

@@ -58,7 +58,7 @@ struct non_realtime_synthesis_engine
         if (input_file == string("_"))
             input_file.clear();
 
-        backend.open_client(input_file, args.output_file, args.samplerate, format, args.output_channels);
+        backend.open_client(input_file, args.output_file, args.samplerate, format, args.output_channels, args.blocksize);
 
         command_stream.open(args.command_file.c_str(), std::fstream::in | std::fstream::binary);
 
