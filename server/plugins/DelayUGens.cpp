@@ -2262,11 +2262,13 @@ static inline void DelayN_delay_loop(float * out, const float * in, long & iwrph
 					in += nsmps;
 					dlyrd += nsmps;
 					dlywr += nsmps;
-				} else
+				} else {
 					LOOP(nsmps,
 						ZXP(dlywr) = ZXP(in);
 						ZXP(out) = 0.f;
 					);
+					dlyrd += nsmps;
+				}
 			} else {
 				LOOP(nsmps,
 					ZXP(dlywr) = ZXP(in);
@@ -3743,6 +3745,10 @@ static bool DelayUnit_AllocDelayLine(DelayUnit *unit, const char * className)
 	if (unit->m_dlybuf)
 		RTFree(unit->mWorld, unit->m_dlybuf);
 	unit->m_dlybuf = (float*)RTAlloc(unit->mWorld, delaybufsize * sizeof(float));
+
+#if 0 // for debugging we may want to fill the buffer with nans
+	std::fill_n(unit->m_dlybuf, delaybufsize, std::numeric_limits<float>::signaling_NaN());
+#endif
 
 	if (unit->m_dlybuf == NULL) {
 		SETCALC(ft->fClearUnitOutputs);
