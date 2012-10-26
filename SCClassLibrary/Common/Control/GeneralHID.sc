@@ -178,7 +178,11 @@ GeneralHIDDevice{
 	}
 
 	setSpec{ |name|
-		spec.fromFile( name );
+      if ( name.isKindOf( Array ) ){
+         spec.fromFile( name.first.postln )
+      }{
+         spec.fromFile( name );
+      }
 	}
 
    hasSlot{ |slotid|
