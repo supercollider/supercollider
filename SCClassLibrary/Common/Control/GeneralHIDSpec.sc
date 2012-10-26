@@ -166,7 +166,7 @@ GeneralHIDSpec{
             }
          }
 		}{
-         "file contained an empty mapping".warn;
+         "file contained an empty mapping; not changing the previous mapping".warn;
       }
 	}
 
