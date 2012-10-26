@@ -182,7 +182,7 @@ GeneralHIDDevice{
 	}
 
    hasSlot{ |slotid|
-      if ( slots.at( slotid[0] ){
+      if ( slots.at( slotid[0] ).notNil ){
          if ( slots[ slotid[0] ].at( slotid[1] ).notNil ){
             ^true;
          }
@@ -191,11 +191,11 @@ GeneralHIDDevice{
    }
 
 	add{ |key, slot|
-         if ( this.hasSlot ){
-            spec.add( key, slot );
-         }{
-            "slot does not exist!".warn;
-         }
+      if ( this.hasSlot( slot ) ){
+         spec.add( key, slot );
+      }{
+         "slot does not exist!".warn;
+      }
 	}
 
 	at{ |key|
