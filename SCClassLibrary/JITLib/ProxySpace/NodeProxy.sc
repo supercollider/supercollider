@@ -282,20 +282,22 @@ NodeProxy : BusPlug {
 	set { | ... args | // pairs of keys or indices and value
 		nodeMap.set(*args);
 		if(this.isPlaying) {
-			server.sendBundle(server.latency, [15, group.nodeID] ++ args);
+			server.sendBundle(server.latency, [15, group.nodeID] ++ args.asControlInput);
 		}
 	}
 
 	setn { | ... args |
 		nodeMap.set(*args);
 		if(this.isPlaying) {
-			server.sendBundle(server.latency, group.setnMsg(*args));
+			server.sendBundle(server.latency, group.setnMsg(*args.asControlInput));
 		}
 	}
 
 	setGroup { | args, useLatency = false |
 		if(this.isPlaying) {
-			server.sendBundle(if(useLatency) { server.latency }, [15, group.nodeID] ++ args);
+			server.sendBundle(if(useLatency) { server.latency },
+				[15, group.nodeID] ++ args.asControlInput
+			);
 		};
 	}
 
@@ -316,13 +318,13 @@ NodeProxy : BusPlug {
 	}
 
 	xset { | ... args |
-		this.xFadePerform(\set, args)
+		this.xFadePerform(\set, args.asControlInput)
 	}
 	xmap { | ... args |
 		this.xFadePerform(\map, args)
 	}
 	xsetn { | ... args |
-		this.xFadePerform(\setn, args)
+		this.xFadePerform(\setn, args.asControlInput)
 	}
 	xmapn { | ... args |
 		"NodeProxy: xmapn is decrepated, please use xmap instead".postln;
