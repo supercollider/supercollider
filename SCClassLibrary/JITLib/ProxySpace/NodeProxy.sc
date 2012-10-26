@@ -88,6 +88,7 @@ NodeProxy : BusPlug {
 	asGroup { ^group.asGroup }
 	asTarget { ^group.asGroup }
 	asNodeID { ^group.asNodeID }
+	nodeID { ^group.nodeID }
 
 	parentGroup_ { | node |
 		if(node.isPlaying.not) { "node not playing and registered: % \n".postf(node); ^this };
