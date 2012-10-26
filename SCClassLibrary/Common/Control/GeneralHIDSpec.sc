@@ -66,7 +66,10 @@ GeneralHIDSpec{
 		var id1,id2;
 		id1 = map.at(key)[0];
 		id2 = map.at(key)[1];
-		^device.slots[id1][id2];
+      if ( device.hasSlot( [id1, id2] ) ){
+         ^device.slots[id1][id2];
+      };
+      ^nil
 		// map.at(key)
 	}
 
@@ -121,15 +124,20 @@ GeneralHIDSpec{
 	save{ |name|
 		var file, res = false;
 		var filename;
-		all.put( name.asSymbol, info );
-		if (  GeneralHIDSpec.checkSaveFolder.not ) {  GeneralHIDSpec.makeSaveFolder };
-		filename = folder +/+ name ++ ".spec";
-		file = File(filename, "w");
-		if (file.isOpen) {
-			res = file.write(map.asCompileString);
-			file.close;
-		};
-		this.class.saveAll;
+      if ( map.notNil ){
+         all.put( name.asSymbol, info );
+         if (  GeneralHIDSpec.checkSaveFolder.not ) {  GeneralHIDSpec.makeSaveFolder };
+         filename = folder +/+ name ++ ".spec";
+         file = File(filename, "w");
+         if (file.isOpen) {
+            res = file.write(map.asCompileString);
+            file.close;
+         };
+         this.class.saveAll;
+      }{
+         "the spec for this device is nil; something went wrong; resetting it to an empty dictionary".warn;
+         map = IdentityDictionary.new;
+      };
 		^res;
 	}
 
@@ -147,11 +155,19 @@ GeneralHIDSpec{
 	}
 
 	fromFile { |name|
+      var tempmap;
 		if (  GeneralHIDSpec.checkSaveFolder.not ) {  GeneralHIDSpec.makeSaveFolder };
-		map = (folder +/+ name++".spec").load;
-		map.keysValuesDo{ |key,it|
-			this.at( key ).key = key;
-		}
+		tempmap = (folder +/+ name++".spec").load;
+      if ( tempmap.notNil ){
+         map = tempmap;
+         map.keysValuesDo{ |key,it|
+            if ( this.at( key ).notNil ){
+               this.at( key ).key = key;
+            }
+         }
+		}{
+         "file contained an empty mapping".warn;
+      }
 	}
 
 }
