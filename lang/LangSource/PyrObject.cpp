@@ -35,6 +35,7 @@
 #include "SC_Alloca.h"
 
 #include <set>
+#include <limits>
 
 PyrClass *gClassList = NULL;
 int gNumSelectors = 0;
@@ -287,15 +288,7 @@ void initSymbols()
 	SetInt(&o_one, 1);
 	SetInt(&o_two, 2);
 	SetSymbol(&o_none, s_none);
-#ifdef SC_WIN32
-  {
-    double a = 0.0;
-    double b = 1.0/a;
-    SetFloat(&o_inf, b);
-  }
-#else
- 	SetFloat(&o_inf, INFINITY);
-#endif
+	SetFloat(&o_inf, std::numeric_limits<double>::infinity());
 
 	slotCopy(&gSpecialValues[svNil], &o_nil);
 	slotCopy(&gSpecialValues[svFalse], &o_false);
