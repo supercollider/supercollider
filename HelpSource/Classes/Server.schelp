@@ -186,7 +186,7 @@ A function to evaluate after the server has booted successfully.
 argument:: limit
 The number of times to check for a successful boot.
 argument:: onFailure
-A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.waitForBoot(onFailure: { ... custom action...; false })::.
+A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.doWhenBooted(onFailure: { ... custom action...; false })::.
 
 method:: boot
 boot the remote server, create new allocators.
