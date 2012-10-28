@@ -436,8 +436,16 @@ void MainWindow::createActions()
 
 void MainWindow::createMenus()
 {
+    QMenuBar *menuBar;
     QMenu *menu;
     QMenu *submenu;
+
+    // On Mac, create a parent-less menu bar to be shared by all windows:
+#ifdef Q_OS_MAC
+    menuBar = new QMenuBar(0);
+#else
+    menuBar = this->menuBar();
+#endif
 
     menu = new QMenu(tr("&File"), this);
     menu->addAction( mActions[DocNew] );
@@ -456,7 +464,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[Quit] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Session"), this);
     menu->addAction( mActions[NewSession] );
@@ -470,7 +478,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[ManageSessions] );
     menu->addAction( mActions[OpenSessionSwitchDialog] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Edit"), this);
     menu->addAction( mEditors->action(MultiEditor::Undo) );
@@ -491,7 +499,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[ShowSettings] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&View"), this);
     submenu = new QMenu(tr("&Docks"), this);
@@ -527,7 +535,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Language"), this);
     menu->addAction( mMain->scProcess()->action(ScProcess::ToggleRunning) );
@@ -552,7 +560,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[LookupReferencesForCursor] );
     menu->addAction( mActions[LookupReferences] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Help"), this);
     menu->addAction( mActions[Help] );
@@ -562,7 +570,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[ShowAbout] );
     menu->addAction( mActions[ShowAboutQT] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 }
 
 void MainWindow::saveWindowState()
