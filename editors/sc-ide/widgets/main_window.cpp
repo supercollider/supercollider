@@ -1302,6 +1302,7 @@ void MainWindow::openHelp()
 {
     mHelpBrowserDockable->browser()->goHome();
     mHelpBrowserDockable->show();
+    mHelpBrowserDockable->raise();
 }
 
 void MainWindow::dragEnterEvent( QDragEnterEvent * event )
