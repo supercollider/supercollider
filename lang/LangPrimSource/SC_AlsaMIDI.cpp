@@ -123,9 +123,10 @@ struct SC_AlsaMidiPort
 {
 	SC_AlsaMidiPort()
 		: uid(0)
-	{ *name = 0; }
+	{ *name = 0; *device = 0; }
 
 	char		name[kAlsaMaxPortNameLen];
+	char		device[kAlsaMaxPortNameLen];
 	int32		uid;
 };
 
@@ -672,7 +673,8 @@ int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* a)
 			if (SC_AlsaCheckPerm(pinfo, SND_SEQ_PORT_CAP_READ|SND_SEQ_PORT_CAP_SUBS_READ)) {
 				// src port
 				srcPorts.push_back(SC_AlsaMidiPort());
-				snprintf(srcPorts.back().name, kAlsaMaxPortNameLen, "%s-%s", cname, pname);
+				snprintf(srcPorts.back().name, kAlsaMaxPortNameLen, "%s", pname);
+				snprintf(srcPorts.back().device, kAlsaMaxPortNameLen, "%s", cname);
 				srcPorts.back().uid = SC_AlsaMakeUID(cid, pid);
 				//post("MIDI (ALSA): src %s-%s %d:%d %u\n", cname, pname, cid, pid, srcPorts.back().uid);
 			}
@@ -680,7 +682,8 @@ int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* a)
 			if (SC_AlsaCheckPerm(pinfo, SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE)) {
 				// dst port
 				dstPorts.push_back(SC_AlsaMidiPort());
-				snprintf(dstPorts.back().name, kAlsaMaxPortNameLen, "%s-%s", cname, pname);
+				snprintf(dstPorts.back().name, kAlsaMaxPortNameLen, "%s", pname);
+				snprintf(dstPorts.back().device, kAlsaMaxPortNameLen, "%s", cname);
 				dstPorts.back().uid = SC_AlsaMakeUID(cid, pid);
 				//post("MIDI (ALSA): dst %s-%s %d:%d %u\n", cname, pname, cid, pid, srcPorts.back().uid);
 			}
@@ -719,14 +722,15 @@ int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* a)
 
 
     for (int i=0; i<numSrc; ++i) {
-		char* name = srcPorts[i].name;
+	char* name = srcPorts[i].name;
+	char* devicename = srcPorts[i].device;
 
         PyrString *string = newPyrString(g->gc, name, 0, true);
         SetObject(namearraySo->slots+i, string);
         namearraySo->size++;
         g->gc->GCWrite(namearraySo, (PyrObject*)string);
 
-        PyrString *devstring = newPyrString(g->gc, name, 0, true);
+        PyrString *devstring = newPyrString(g->gc, devicename, 0, true);
         SetObject(devarraySo->slots+i, devstring);
         devarraySo->size++;
         g->gc->GCWrite(devarraySo, (PyrObject*)devstring);
@@ -736,13 +740,14 @@ int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* a)
     }
 
     for (int i=0; i<numDst; ++i) {
-		char* name = dstPorts[i].name;
+	char* name = dstPorts[i].name;
+	char* devicename = dstPorts[i].device;
 
         PyrString *string = newPyrString(g->gc, name, 0, true);
         SetObject(namearrayDe->slots+namearrayDe->size++, string);
         g->gc->GCWrite(namearrayDe, (PyrObject*)string);
 
-        PyrString *devstring = newPyrString(g->gc, name, 0, true);
+        PyrString *devstring = newPyrString(g->gc, devicename, 0, true);
         SetObject(devarrayDe->slots+i, devstring);
 		devarrayDe->size++;
         g->gc->GCWrite(devarrayDe, (PyrObject*)devstring);
