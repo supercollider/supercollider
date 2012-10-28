@@ -141,7 +141,7 @@ NamedControl {
 		};
 
 		^if(lags.notNil) {
-			res.control.lag(lags.asArray)
+			res.control.lag(lags.asArray).unbubble
 		} {
 			res.control
 		}
