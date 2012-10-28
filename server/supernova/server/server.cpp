@@ -47,8 +47,11 @@ nova_server::nova_server(server_arguments const & args):
     buffer_manager(args.buffers), sc_osc_handler(args), dsp_queue_dirty(false)
 {
     assert(instance == 0);
-    io_interpreter.start_thread();
     instance = this;
+
+    if (!args.non_rt)
+        io_interpreter.start_thread();
+
     sc_factory = new sc_ugen_factory;
     sc_factory->initialize(args, server_shared_memory_creator::shm->get_control_busses());
 
