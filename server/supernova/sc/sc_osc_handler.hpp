@@ -225,10 +225,12 @@ public:
         tcp_acceptor_(detail::network_thread::io_service_),
         tcp_password_(args.server_password.c_str())
     {
-        if (args.tcp_port && !open_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP, args.tcp_port))
-            throw std::runtime_error("cannot open socket");
-        if (args.udp_port && !open_socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, args.udp_port))
-            throw std::runtime_error("cannot open socket");
+        if (!args.non_rt) {
+            if (args.tcp_port && !open_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP, args.tcp_port))
+                throw std::runtime_error("cannot open socket");
+            if (args.udp_port && !open_socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, args.udp_port))
+                throw std::runtime_error("cannot open socket");
+        }
     }
 
     void start_receive_thread(void)
