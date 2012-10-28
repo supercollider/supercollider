@@ -17,7 +17,7 @@ Score {
 	}
 
 	init { arg list;
-		score = [[0.0, ["/g_new", 1]]] ++ list;
+		score = [[0.0, ["/g_new", 1, 0, 0]]] ++ list;
 		this.sort;
 	}
 
