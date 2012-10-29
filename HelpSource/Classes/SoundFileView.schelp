@@ -344,7 +344,7 @@ METHOD:: selectAll
 
 METHOD:: selectNone
 
-    Sets the size of a selectino to 0.
+    Sets the size of a selection to 0.
 
     argument:: index
         The index of the selection; an Integer between 0 an 63.
