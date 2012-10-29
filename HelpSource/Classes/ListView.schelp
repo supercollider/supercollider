@@ -28,6 +28,10 @@ METHOD:: items
 	argument::
 		An Array of Strings, each String defining the text to represent an item.
 
+METHOD:: clear
+    note:: Only available in Qt GUI ::
+    Removes all items.
+
 METHOD:: value
 	The index of the currently selected item, or nil when no item is selected.
 

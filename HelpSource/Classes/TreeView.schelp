@@ -62,6 +62,9 @@ METHOD:: removeItem
 METHOD:: numItems
 	The total number of items.
 
+METHOD:: clear
+    Removes all items.
+
 METHOD:: currentItem
 	Gets or sets the currently selected item.
 

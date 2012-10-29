@@ -32,6 +32,10 @@ QItemViewBase : QView
     this.value_(val);
     action.value(this);
   }
+
+  clear {
+    this.invokeMethod(\clear);
+  }
 }
 
 QAbstractScroll : QView {

@@ -26,6 +26,10 @@ METHOD:: items
 	argument::
 		An Array of Strings or Symbols.
 
+METHOD:: clear
+    note:: Only available in Qt GUI ::
+    Removes all items.
+
 METHOD:: item
 	The currently selected item.
 
