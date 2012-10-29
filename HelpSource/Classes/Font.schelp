@@ -62,7 +62,23 @@ returns::
 The default monospace face Font.
 
 method:: default
-Gets/sets the default Font.
+The global default Font.
+
+In Qt GUI, setting this property is equivalent to code::Font.setDefault(font)::. See link::#*setDefault:: for details.
+
+method:: setDefault
+note::Only available in Qt GUI::
+Sets the global default font. Properties of the code::font:: argument will be combined with properties of the default system font, and those of individual views.
+
+Optionally, a class can be given, so only views of that class will be affected.
+
+Note that this will immediately affect any existing views.
+
+argument:: font
+An instance of Font.
+
+argument:: class
+A Class (either QView or one of its subclasses), or code::nil::.
 
 method:: sansSerif
 Create a new sans serif face Font.
@@ -106,7 +122,11 @@ Argument::
 	A Float.
 
 method:: setDefault
-Makes the current instance of Font the default.
+Makes this instance of Font the default.
+
+In Qt GUI, this is equivalent to calling link::#*setDefault:: with this Font and the given class as arguments.
+
+In other GUI kits, this is equivalent to setting the link::#*default:: property.
 
 method:: storeArgs
 (?)
