@@ -39,6 +39,14 @@ QFont {
     ^QFont();
   }
 
+  *default_ { arg font;
+    this.setDefault(font);
+  }
+
+  *setDefault { arg font, class;
+    this.prSetDefault(font, class !? {class.qtClass});
+  }
+
   *monospace {|size, bold = false, italic = false, usePointSize = false|
      ^this.new(this.defaultMonoFace, size, bold, italic, usePointSize)
   }
@@ -53,7 +61,8 @@ QFont {
 
   /* ------------------instance------------------*/
 
-  setDefault {
+  setDefault { arg class;
+    QFont.setDefault(this, class);
   }
 
   boldVariant {
@@ -91,4 +100,8 @@ QFont {
 
   /* ------------------ private -----------------*/
 
+  *prSetDefault { arg font, className;
+    _QFont_SetDefaultFont
+    ^this.primitiveFailed;
+  }
 }

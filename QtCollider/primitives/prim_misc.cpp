@@ -99,6 +99,21 @@ QC_LANG_PRIMITIVE( Qt_AvailableFonts, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( QFont_SetDefaultFont, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+    if ( !isKindOfSlot( a+0, SC_CLASS(QFont) ) )
+        return errWrongType;
+
+    QFont font( Slot::toFont(a+0) );
+    const char *className = IsSym(a+1) ? slotRawSymbol(a+1)->name : 0;
+
+    QApplication::setFont( font, className );
+
+    return errNone;
+}
+
 QC_LANG_PRIMITIVE( Qt_GlobalPalette, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
@@ -219,6 +234,7 @@ void defineMiscPrimitives()
   definer.define<QWindow_AvailableGeometry>();
   definer.define<Qt_StringBounds>();
   definer.define<Qt_AvailableFonts>();
+  definer.define<QFont_SetDefaultFont>();
   definer.define<Qt_GlobalPalette>();
   definer.define<Qt_SetGlobalPalette>();
   definer.define<Qt_FocusWidget>();
