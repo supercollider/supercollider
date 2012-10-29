@@ -31,7 +31,6 @@
 #include <QPointer>
 #include <QScrollBar>
 #include <QShortcut>
-#include <QToolBar>
 
 namespace ScIDE {
 
@@ -40,6 +39,7 @@ PostWindow::PostWindow(QWidget* parent):
 {
     setReadOnly(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    setFrameShape( QFrame::NoFrame );
 
     QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
     mSizeHint = QSize( availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.3 );
@@ -246,38 +246,27 @@ void PostWindow::setLineWrap(bool lineWrapOn)
     Main::settings()->setValue( "IDE/postWindow/lineWrap", lineWrapOn );
 }
 
-PostDock::PostDock(QWidget* parent):
-    QDockWidget(tr("Post window"), parent)
+PostDocklet::PostDocklet(QWidget* parent):
+    Docklet(tr("Post window"), parent)
 {
     setAllowedAreas(Qt::BottomDockWidgetArea | Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
-    setFeatures(DockWidgetFloatable | DockWidgetMovable | DockWidgetClosable);
 
-    mPostWindow = new PostWindow(this);
+    mPostWindow = new PostWindow;
     setWidget(mPostWindow);
 
-    QToolBar *toolBar = new QToolBar();
-    toolBar->addAction(mPostWindow->mAutoScrollAction);
+    toolBar()->addAction( mPostWindow->mAutoScrollAction );
 
-    QWidget *titleBar = new QWidget();
-    QHBoxLayout *l = new QHBoxLayout();
-    l->setContentsMargins(5,2,5,0);
-    l->addWidget(new QLabel(windowTitle()), 1);
-    l->addWidget(toolBar);
-    titleBar->setLayout(l);
-
-    setTitleBarWidget(titleBar);
-
-    connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(onFloatingChanged(bool)));
+    //connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(onFloatingChanged(bool)));
 }
 
-void PostDock::onFloatingChanged(bool floating)
+void PostDocklet::onFloatingChanged(bool floating)
 {
     // HACK: After undocking when main window maximized, the dock widget can not be
     // resized anymore. Apparently it has to do something with the fact that the dock
     // widget spans from edge to edge of the screen.
     // The issue is avoided by slightly shrinking the dock widget.
     if (floating)
-        resize(size() - QSize(1,1));
+        dockWidget()->resize(dockWidget()->size() - QSize(1,1));
 }
 
 } // namespace ScIDE

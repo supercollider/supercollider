@@ -34,6 +34,7 @@
 #include <QShortcut>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QDebug>
 
 namespace ScIDE {
 
@@ -65,19 +66,16 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     mLoadProgressIndicator = new LoadProgressIndicator;
     mLoadProgressIndicator->setIndent(10);
 
-    QToolBar *toolBar = new QToolBar;
-    toolBar->setIconSize( QSize(16,16) );
-    QAction *action = toolBar->addAction("Home");
+    QAction *action = new QAction("Home", this);
     connect( action, SIGNAL(triggered()), this, SLOT(goHome()) );
-    toolBar->addAction( mWebView->pageAction(QWebPage::Back) );
-    toolBar->addAction( mWebView->pageAction(QWebPage::Forward) );
-    toolBar->addAction( mWebView->pageAction(QWebPage::Reload) );
-    toolBar->addWidget(mLoadProgressIndicator);
+    addAction(action);
+    addAction( mWebView->pageAction(QWebPage::Back) );
+    addAction( mWebView->pageAction(QWebPage::Forward) );
+    addAction( mWebView->pageAction(QWebPage::Reload) );
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(0);
-    layout->addWidget(toolBar);
     layout->addWidget(mWebView);
     setLayout(layout);
 
@@ -237,6 +235,22 @@ void HelpBrowser::onJsConsoleMsg(const QString &arg1, int arg2, const QString & 
     qWarning() << "*** ERROR in JavaScript:" << arg1;
     qWarning() << "* line:" << arg2;
     qWarning() << "* source ID:" << arg3;
+}
+
+HelpBrowserDocklet::HelpBrowserDocklet( QWidget *parent ):
+    Docklet("Help browser", parent)
+{
+    mHelpBrowser = new HelpBrowser;
+
+    setAllowedAreas(Qt::AllDockWidgetAreas);
+    setWidget(mHelpBrowser);
+
+    toolBar()->addWidget( mHelpBrowser->loadProgressIndicator(), 1 );
+    QList<QAction*> actions = mHelpBrowser->actions();
+    foreach(QAction *action, actions)
+        toolBar()->addAction(action);
+
+    connect( mHelpBrowser, SIGNAL(urlChanged()), this, SLOT(show()) );
 }
 
 } // namespace ScIDE

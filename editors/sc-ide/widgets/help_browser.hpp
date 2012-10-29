@@ -21,8 +21,9 @@
 #ifndef SCIDE_WIDGETS_HELP_BROWSER_HPP_INCLUDED
 #define SCIDE_WIDGETS_HELP_BROWSER_HPP_INCLUDED
 
+#include "util/docklet.hpp"
+
 #include <QWebView>
-#include <QDockWidget>
 #include <QShortcut>
 #include <QLabel>
 #include <QBasicTimer>
@@ -54,7 +55,7 @@ protected:
             return;
 
         ++mDotCount;
-        if (mDotCount > 10)
+        if (mDotCount > 6)
             mDotCount = 1;
 
         QString string(mDotCount, '.');
@@ -81,6 +82,7 @@ public:
 
     void gotoHelpFor( const QString & );
     void gotoHelpForMethod( const QString & className, const QString & methodName );
+    QWidget *loadProgressIndicator() { return mLoadProgressIndicator; }
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -107,20 +109,10 @@ private:
     QSize mSizeHint;
 };
 
-class HelpBrowserDockable : public QDockWidget
+class HelpBrowserDocklet : public Docklet
 {
 public:
-    HelpBrowserDockable( QWidget *parent = 0 ):
-        QDockWidget("Help browser", parent)
-    {
-        mHelpBrowser = new HelpBrowser;
-
-        setAllowedAreas(Qt::AllDockWidgetAreas);
-        setFeatures(DockWidgetFloatable | DockWidgetMovable | DockWidgetClosable);
-        setWidget(mHelpBrowser);
-
-        connect( mHelpBrowser, SIGNAL(urlChanged()), this, SLOT(show()) );
-    }
+    HelpBrowserDocklet( QWidget *parent = 0 );
 
     HelpBrowser *browser() { return mHelpBrowser; }
 
