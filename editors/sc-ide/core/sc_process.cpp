@@ -334,7 +334,7 @@ void ScProcess::onSclangStart()
     sendActiveDocument();
 
     if (MainWindow::instance()) {
-        HelpBrowserDockable * helpBrowser = MainWindow::instance()->helpBrowserDockable();
+        HelpBrowserDocklet * helpBrowser = MainWindow::instance()->helpBrowserDocklet();
         if (helpBrowser->isVisible())
             helpBrowser->browser()->goHome();
     }
