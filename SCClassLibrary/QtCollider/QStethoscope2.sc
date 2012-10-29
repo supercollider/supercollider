@@ -123,19 +123,19 @@ QStethoscope2 {
 
       // LAYOUT
 
-      gizmo = idxNumBox.minSizeHint.width * 2;
-      idxNumBox.minWidth = gizmo;
-      idxNumBox.maxWidth = gizmo;
-      chNumBox.minWidth = gizmo;
-      chNumBox.maxWidth = gizmo;
+      gizmo = "999".bounds( idxNumBox.font ).width + 20;
+      idxNumBox.fixedWidth = gizmo;
+      chNumBox.fixedWidth = gizmo;
+      idxNumBox.align = \center;
+      chNumBox.align = \center;
 
       view.layout =
         QGridLayout()
           .add(
             QHLayout(
               rateMenu,
-              idxNumBox.minWidth_(35),
-              chNumBox.minWidth_(35),
+              idxNumBox,
+              chNumBox,
               nil,
               styleMenu
             ).margins_(0).spacing_(2), 0, 0
