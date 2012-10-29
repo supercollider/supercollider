@@ -325,7 +325,7 @@ METHOD:: defaultKeyDownAction
 
     Implements the default behavior on key presses.
 
-    In Qt, the default behavior is defined in the C++ implementation of the view instead of this method. See link::Classes/View#Key and mouse event propagation:: for explanation of how to override the behavior.
+    In Qt, the default behavior is defined in the C++ implementation of the view instead of this method. See link::Classes/View#Key and mouse event processing:: for explanation of how to override the behavior.
 
 
 
