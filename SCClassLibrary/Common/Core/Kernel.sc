@@ -559,7 +559,6 @@ Interpreter {
 
 	interpretPrintCmdLine {
 		var res, func, code = cmdLine, doc = Document.current, ideClass = \ScIDE.asClass;
-		"\n".post;
 		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
 		func = this.compile(cmdLine);
 		if (ideClass.notNil) {
