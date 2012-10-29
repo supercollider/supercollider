@@ -283,7 +283,7 @@ y.keyUpAction = ~reset;
 ~reset.value;
 ::
 
-If a key or mouse event is not handled by the view on which it occurs, it may strong::propagate:: to the parent view, and trigger the parent's action. See link::Classes/View#key_and_mouse_event_propagation#View: Key and mouse event propagation:: for detailed explanation.
+If a key or mouse event is not handled by the view on which it occurs, it may strong::propagate:: to the parent view, and trigger the parent's action. See link::Classes/View#Key and mouse event processing:: for detailed explanation.
 
 subsection:: Drag and drop actions
 
