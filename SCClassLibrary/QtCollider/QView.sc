@@ -33,17 +33,6 @@ QView : QObject {
   *initClass {
     hSizePolicy = [1,2,3,1,2,3,1,2,3];
     vSizePolicy = [1,1,1,2,2,2,3,3,3];
-
-    if (thisProcess.platform.ideName != "scapp") {
-      globalKeyDownAction = { |view, char, modifier, keycode|
-        var platform = thisProcess.platform.name;
-        var modIsCmd = if (platform == \osx) { modifier.isCmd } { modifier.isCtrl };
-
-        if (modIsCmd and: (char == $.) ) {
-          CmdPeriod.run
-        }
-      }
-    };
   }
 
   *new { arg parent, bounds;
