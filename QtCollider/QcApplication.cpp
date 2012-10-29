@@ -30,9 +30,11 @@
 
 #include <QThread>
 #include <QFileOpenEvent>
+#include <QKeyEvent>
 #include <QIcon>
 
 extern bool compiledOK;
+extern const char * gIdeName;
 
 QcApplication * QcApplication::_instance = 0;
 QMutex QcApplication::_mutex;
@@ -56,12 +58,16 @@ static bool QtColliderUseGui(void)
 #endif
 }
 
+// undefine some interfering X11 definitions
+#undef KeyPress
+
 QcApplication::QcApplication( int & argc, char ** argv )
 : QApplication( argc, argv, QtColliderUseGui() )
 {
   _mutex.lock();
   _instance = this;
   _mutex.unlock();
+
   qRegisterMetaType<VariantList>();
   qRegisterMetaType<QcTreeWidget::ItemPtr>();
   qRegisterMetaType< QVector<double> >();
@@ -75,6 +81,8 @@ QcApplication::QcApplication( int & argc, char ** argv )
     icon.addFile(":/icons/sc-cube-16");
     setWindowIcon(icon);
   }
+
+  _handleCmdPeriod = strcmp(gIdeName, "scapp") != 0;
 }
 
 QcApplication::~QcApplication()
@@ -116,4 +124,25 @@ bool QcApplication::event( QEvent *e )
   }
 
   return QApplication::event( e );
+}
+
+bool QcApplication::notify( QObject * object, QEvent * event )
+{
+    switch (event->type()) {
+    case QEvent::KeyPress: {
+        QKeyEvent *kevent = static_cast<QKeyEvent*>(event);
+        if ( _handleCmdPeriod &&
+             (kevent->key() == Qt::Key_Period) &&
+             (kevent->modifiers() & Qt::ControlModifier) )
+        {
+            static QString cmdPeriodCommand("CmdPeriod.run");
+            interpret(cmdPeriodCommand, false);
+        }
+        break;
+    }
+    default:
+        break;
+    }
+
+    return QApplication::notify( object, event );
 }
