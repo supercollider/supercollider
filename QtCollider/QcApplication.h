@@ -60,13 +60,18 @@ class QcApplication : public QApplication
   public Q_SLOTS:
     void interpret( const QString & code, bool printResult = true );
 
+  protected:
+    virtual bool event( QEvent * );
+    virtual bool notify( QObject *, QEvent * );
+
   private:
-    bool event( QEvent * );
 
     QtCollider::EventProcessor _eventProc;
 
     static QMutex _mutex;
     static QcApplication *_instance;
+
+    bool _handleCmdPeriod;
 };
 
 #endif // QC_APPLICATION_H
