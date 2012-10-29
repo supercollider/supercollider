@@ -113,17 +113,21 @@ void QcApplication::interpret( const QString &str, bool print )
   QtCollider::unlockLang();
 }
 
-bool QcApplication::event( QEvent *e )
+bool QcApplication::event( QEvent *event )
 {
-  if( e->type() == QEvent::FileOpen ) {
-    // open the file dragged onto the application icon on Mac
-    QFileOpenEvent *fe = static_cast<QFileOpenEvent*>(e);
-    interpret( QString("Document.open(\"%1\")").arg(fe->file()), false );
+    switch (event->type()) {
+    case QEvent::FileOpen: {
+        // open the file dragged onto the application icon on Mac
+        QFileOpenEvent *fe = static_cast<QFileOpenEvent*>(event);
+        interpret( QString("Document.open(\"%1\")").arg(fe->file()), false );
+        event->accept();
+        return true;
+    }
+    default:
+        break;
+    }
 
-    return true;
-  }
-
-  return QApplication::event( e );
+    return QApplication::event( event );
 }
 
 bool QcApplication::notify( QObject * object, QEvent * event )
