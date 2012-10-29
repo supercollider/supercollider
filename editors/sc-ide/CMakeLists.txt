@@ -95,6 +95,7 @@ set ( ide_src
     widgets/util/text_format_list_widget.cpp
     widgets/util/popup_widget.cpp
     widgets/util/docklet.cpp
+    widgets/style/style.cpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
 

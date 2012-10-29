@@ -38,6 +38,7 @@
 #include <QStandardItem>
 #include <QHBoxLayout>
 #include <QApplication>
+#include <QProxyStyle>
 
 #ifdef Q_WS_X11
 # include <QGtkStyle>
@@ -184,7 +185,10 @@ public:
         mLabel->setTextFormat( Qt::RichText );
 
 #ifdef Q_WS_X11
-        if (qobject_cast<QGtkStyle*>(style()) != 0) {
+        QStyle *style = this->style();
+        if (QProxyStyle *proxyStyle = qobject_cast<QProxyStyle*>(style))
+            style = proxyStyle->baseStyle();
+        if ( qobject_cast<QGtkStyle*>(style) ) {
             QPalette p;
             p.setColor( QPalette::Window, QColor(255, 255, 220) );
             p.setColor( QPalette::WindowText, Qt::black );
