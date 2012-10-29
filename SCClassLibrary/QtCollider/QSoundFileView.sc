@@ -152,9 +152,9 @@ QSoundFileView : QView {
     this.setSelection( index, sel );
   }
 
-  selectAll { arg index; this.setSelection( this.currentSelection, [0, this.numFrames] ); }
+  selectAll { arg index; this.setSelection( index, [0, this.numFrames] ); }
 
-  selectNone { arg index; this.setSelection( this.currentSelection, [0, 0] );  }
+  selectNone { arg index; this.setSelection( index, [0, 0] ); }
 
 
   setEditableSelectionStart { arg index, editable; ^this.nonimpl("setEditableSelectionStart"); }
