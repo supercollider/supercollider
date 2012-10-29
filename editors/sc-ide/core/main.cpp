@@ -25,6 +25,7 @@
 #include "../widgets/help_browser.hpp"
 #include "../widgets/lookup_dialog.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
+#include "../widgets/style/style.hpp"
 
 #include "SC_DirUtils.h"
 
@@ -64,6 +65,10 @@ int main( int argc, char *argv[] )
     QTranslator scideTranslator;
     scideTranslator.load("scide_" + QLocale::system().name());
     app.installTranslator(&scideTranslator);
+
+    // Set up style
+
+    app.setStyle( new ScIDE::Style(app.style()) );
 
     // Go...
 

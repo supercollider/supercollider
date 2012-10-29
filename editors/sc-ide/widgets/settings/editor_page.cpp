@@ -145,7 +145,7 @@ void EditorPage::loadGeneralTextFormats( Manager *settings )
     QPalette palette = QApplication::palette();
 
     QTextCharFormat lineNumbersDefaultFormat;
-    lineNumbersDefaultFormat.setBackground( palette.brush(QPalette::Button) );
+    lineNumbersDefaultFormat.setBackground( palette.brush(QPalette::Mid) );
     lineNumbersDefaultFormat.setForeground( palette.brush(QPalette::ButtonText) );
 
     addTextFormat( mGeneralFormatsItem, "Line Numbers", "lineNumbers",

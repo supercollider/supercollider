@@ -113,7 +113,7 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
         QBrush bg = format.background();
         QBrush fg = format.foreground();
         if (bg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::Button, bg);
+            palette.setBrush(QPalette::Mid, bg);
         if (fg.style() != Qt::NoBrush)
             palette.setBrush(QPalette::ButtonText, fg);
     }
@@ -630,9 +630,11 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
     QRect r( e->rect() );
     QPainter p( mLineIndicator );
 
-    p.fillRect( r, plt.color( QPalette::Button ) );
-    p.setPen( plt.color(QPalette::ButtonText) );
+    p.fillRect( r, plt.color( QPalette::Mid ) );
+    p.setPen( plt.color(QPalette::Dark) );
     p.drawLine( r.topRight(), r.bottomRight() );
+
+    p.setPen( plt.color(QPalette::ButtonText) );
 
     QTextDocument *doc = QPlainTextEdit::document();
     QTextCursor cursor(textCursor());
