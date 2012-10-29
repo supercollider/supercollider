@@ -21,10 +21,10 @@
 #ifndef SCIDE_WIDGETS_DOC_LIST_HPP_INCLUDED
 #define SCIDE_WIDGETS_DOC_LIST_HPP_INCLUDED
 
+#include "util/docklet.hpp"
 #include "../core/doc_manager.hpp"
 
 #include <QListWidget>
-#include <QDockWidget>
 #include <QSignalMapper>
 
 namespace ScIDE {
@@ -80,17 +80,10 @@ private:
     QIcon mDocModifiedIcon;
 };
 
-class DocumentsDock : public QDockWidget
+class DocumentsDocklet : public Docklet
 {
 public:
-    DocumentsDock(DocumentManager *manager, QWidget* parent = 0):
-        QDockWidget(tr("Documents"), parent),
-        mDocList(new DocumentListWidget(manager))
-    {
-        setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-        setFeatures(DockWidgetFloatable | DockWidgetMovable | DockWidgetClosable);
-        setWidget(mDocList);
-    }
+    DocumentsDocklet(DocumentManager *manager, QWidget* parent = 0);
 
     DocumentListWidget *list() { return mDocList; }
 

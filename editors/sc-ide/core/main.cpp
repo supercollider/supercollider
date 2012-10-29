@@ -229,7 +229,7 @@ bool Main::openDocumentation(const QString & string)
     if (symbol.isEmpty())
         return false;
 
-    HelpBrowserDockable *helpDock = MainWindow::instance()->helpBrowserDockable();
+    HelpBrowserDocklet *helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpFor(symbol);
     helpDock->show();
     helpDock->raise();
@@ -238,7 +238,7 @@ bool Main::openDocumentation(const QString & string)
 
 bool Main::openDocumentationForMethod(const QString & className, const QString & methodName)
 {
-    HelpBrowserDockable *helpDock = MainWindow::instance()->helpBrowserDockable();
+    HelpBrowserDocklet *helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpForMethod(className, methodName);
     helpDock->show();
     return true;

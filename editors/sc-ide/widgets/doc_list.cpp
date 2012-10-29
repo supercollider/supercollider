@@ -30,6 +30,8 @@ DocumentListWidget::DocumentListWidget(DocumentManager *manager, QWidget * paren
     QListWidget(parent),
     mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) )
 {
+    setFrameShape( QFrame::NoFrame );
+
     connect(manager, SIGNAL(opened(Document*, int, int)), this, SLOT(onOpen(Document*, int, int)));
     connect(manager, SIGNAL(closed(Document*)), this, SLOT(onClose(Document*)));
     connect(manager, SIGNAL(saved(Document*)), this, SLOT(onSaved(Document*)));
@@ -118,6 +120,14 @@ DocumentListWidget::Item *DocumentListWidget::itemFor( QListWidgetItem *litem )
         return static_cast<Item*>(litem);
     else
         return 0;
+}
+
+DocumentsDocklet::DocumentsDocklet(DocumentManager *manager, QWidget* parent):
+    Docklet(tr("Documents"), parent),
+    mDocList(new DocumentListWidget(manager))
+{
+    setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    setWidget(mDocList);
 }
 
 } // namespace ScIDE
