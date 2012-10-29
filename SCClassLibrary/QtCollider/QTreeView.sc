@@ -20,6 +20,8 @@ QTreeView : QView {
 
   numItems { ^this.getProperty( \topLevelItemCount ); }
 
+  clear { this.invokeMethod(\clear); }
+
   currentItem {
     ^this.getProperty( \currentItem ).prValidItem(this);
   }
