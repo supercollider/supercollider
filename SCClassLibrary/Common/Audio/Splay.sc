@@ -14,7 +14,7 @@ Splay : UGen {
 			}
 		 };
 
-		^Pan2.perform(this.methodSelectorForRate(rate), inArray, positions).sum * level;
+		^Mix(Pan2.perform(this.methodSelectorForRate(rate), inArray, positions)) * level;
 	}
 
 	*kr { arg inArray, spread = 1, level = 1, center = 0.0, levelComp = true;
@@ -62,7 +62,7 @@ SplayAz : UGen {
 			level = level / n
 		};
 
-		^(PanAz.kr(numChans, inArray, pos, level, width, orientation).flop.collect(_.sum))
+		^(PanAz.kr(numChans, inArray, pos, level, width, orientation).flop.collect(Mix(_)))
 	}
 
 	*ar { arg numChans = 4, inArray, spread = 1, level = 1, width = 2, center = 0.0,
@@ -76,7 +76,7 @@ SplayAz : UGen {
 			level = level * n.reciprocal.sqrt
 		};
 
-		^(PanAz.ar(numChans, inArray, pos, level, width, orientation).flop.collect(_.sum))
+		^(PanAz.ar(numChans, inArray, pos, level, width, orientation).flop.collect(Mix(_)))
 	}
 
 	*arFill { arg numChans = 4, n, function, spread = 1, level = 1, width = 2, center = 0.0,
@@ -100,14 +100,14 @@ SplayZ {
 		"SplayZ is deprecated, because its geometry is wrong.
 		Please convert to SplayAz.".inform;
 
-		^PanAz.ar(
+		^Mix(PanAz.ar(
 			numChans,
 			inArray,
 			((0 .. n1) * (2 / n1) - 1) * spread + center,
 			1,
 			width,
 			orientation
-		).sum * level;
+		)) * level;
 	}
 
 	*arFill { arg numChans = 4, n, function, spread = 1, level = 1, width = 2, center = 0.0,
