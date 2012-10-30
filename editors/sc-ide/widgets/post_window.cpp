@@ -209,8 +209,10 @@ void PostWindow::wheelEvent( QWheelEvent * e )
 
 void PostWindow::focusOutEvent( QFocusEvent * event )
 {
-    MainWindow::instance()->focusCodeEditor();
-    event->accept();
+    if (event->reason() == Qt::TabFocusReason)
+        MainWindow::instance()->focusCodeEditor();
+    else
+        QPlainTextEdit::focusOutEvent(event);
 }
 
 void PostWindow::mouseDoubleClickEvent(QMouseEvent *e)
