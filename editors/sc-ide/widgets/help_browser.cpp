@@ -30,6 +30,9 @@
 #include <QToolBar>
 #include <QWebSettings>
 #include <QWebFrame>
+#include <QWebElement>
+#include <QAction>
+#include <QMenu>
 #include <QStyle>
 #include <QShortcut>
 #include <QApplication>
@@ -51,11 +54,7 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     mWebView = new QWebView;
     mWebView->setPage( webPage );
     mWebView->settings()->setAttribute( QWebSettings::LocalStorageEnabled, true );
-
-    // NOTE: we assume all web page shortcuts have Qt::WidgetShortcut context
-    mWebView->setContextMenuPolicy( Qt::ActionsContextMenu );
-    mWebView->addAction( webPage->action( QWebPage::Copy ) );
-    mWebView->addAction( webPage->action( QWebPage::Paste ) );
+    mWebView->setContextMenuPolicy( Qt::CustomContextMenu );
 
     // Set the style's standard palette to avoid system's palette incoherencies
     // get in the way of rendering web pages
@@ -82,6 +81,8 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     connect( mWebView, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
     connect( mWebView, SIGNAL(loadStarted()), mLoadProgressIndicator, SLOT(start()) );
     connect( mWebView, SIGNAL(loadFinished(bool)), mLoadProgressIndicator, SLOT(stop()) );
+    connect( mWebView, SIGNAL(customContextMenuRequested(QPoint)),
+             this, SLOT(onContextMenuRequest(QPoint)) );
 
     connect( webPage->action(QWebPage::Reload), SIGNAL(triggered(bool)), this, SLOT(onReload()) );
     connect( webPage, SIGNAL(jsConsoleMsg(QString,int,QString)),
@@ -235,6 +236,31 @@ void HelpBrowser::onJsConsoleMsg(const QString &arg1, int arg2, const QString & 
     qWarning() << "*** ERROR in JavaScript:" << arg1;
     qWarning() << "* line:" << arg2;
     qWarning() << "* source ID:" << arg3;
+}
+
+void HelpBrowser::onContextMenuRequest( const QPoint & pos )
+{
+    QMenu menu;
+
+    QWebHitTestResult hitTest = mWebView->page()->mainFrame()->hitTestContent( pos );
+
+    if (!hitTest.linkElement().isNull()) {
+        menu.addAction( mWebView->pageAction(QWebPage::CopyLinkToClipboard) );
+        menu.addSeparator();
+    }
+
+    if (hitTest.isContentEditable() || hitTest.isContentSelected()) {
+        menu.addAction( mWebView->pageAction(QWebPage::Copy) );
+        if (hitTest.isContentEditable())
+            menu.addAction( mWebView->pageAction(QWebPage::Paste) );
+        menu.addSeparator();
+    }
+
+    menu.addAction( mWebView->pageAction(QWebPage::Back) );
+    menu.addAction( mWebView->pageAction(QWebPage::Forward) );
+    menu.addAction( mWebView->pageAction(QWebPage::Reload) );
+
+    menu.exec( mWebView->mapToGlobal(pos) );
 }
 
 HelpBrowserDocklet::HelpBrowserDocklet( QWidget *parent ):
