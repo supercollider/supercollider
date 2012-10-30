@@ -86,7 +86,8 @@ bool ScCodeEditor::event( QEvent *e )
     }
     default:;
     }
-    return QPlainTextEdit::event(e);
+
+    return GenericCodeEditor::event(e);
 }
 
 void ScCodeEditor::keyPressEvent( QKeyEvent *e )
