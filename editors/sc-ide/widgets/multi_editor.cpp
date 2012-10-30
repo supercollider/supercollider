@@ -524,7 +524,7 @@ void MultiEditor::createActions()
 
     mActions[EvaluateLine] = action = new QAction(
     QIcon::fromTheme("media-playback-startline"), tr("&Evaluate Selection or Line"), this);
-    action->setShortcut(tr("Shift+Ctrl+Return", "Evaluate selection/line"));
+    action->setShortcut(tr("Shift+Return", "Evaluate selection/line"));
     action->setStatusTip(tr("Evaluate current selection/line"));
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(evaluateLine()),
