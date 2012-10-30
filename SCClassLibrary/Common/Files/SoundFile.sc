@@ -349,19 +349,6 @@ SoundFile {
 		^outFile
 	}
 
-		// diskIn synthdefs are now created on demand in SoundFile:cue
-//	*initClass {
-//		StartUp.add {
-//			(1..16).do { | i |
-//				SynthDef("diskIn" ++ i, { | out, amp = 1, bufnum, sustain, ar = 0, dr = 0.01 gate = 1 |
-//					Out.ar(out, DiskIn.ar(i, bufnum)
-//					* Linen.kr(gate, ar, 1, dr, 2)
-//					* EnvGen.kr(Env.linen(ar, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)
-//				}).store
-//			}
-//		};
-//	}
-
 	info { | path |
 		var flag = this.openRead;
 		if (flag) {
@@ -529,5 +516,4 @@ SoundFile {
 
 		action.value(outpath);
 	}
-
 }
