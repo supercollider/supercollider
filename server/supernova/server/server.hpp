@@ -258,8 +258,6 @@ public:
     void set_node_slot(int node_id, const char * slot, float value);
     /* @} */
 
-    void register_definition(synth_definition_ptr const & prototype);
-
     void cpu_load(float & peak, float & average) const
     {
         audio_backend::get_cpuload(peak, average);

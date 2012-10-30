@@ -680,13 +680,10 @@ void sc_osc_handler::received_packet::run(void)
 void sc_osc_handler::handle_packet(const char * data, std::size_t length, nova_endpoint const & endpoint)
 {
     osc_received_packet packet(data, length);
-    if (packet.IsBundle())
-    {
+    if (packet.IsBundle()) {
         received_bundle bundle(packet);
         handle_bundle<true> (bundle, endpoint);
-    }
-    else
-    {
+    } else {
         received_message message(packet);
         handle_message<true> (message, packet.Size(), endpoint);
     }
@@ -2761,7 +2758,7 @@ void d_recv_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, 
                 nova_endpoint const & endpoint)
 {
     std::for_each(definitions, definitions + definition_count, [](sc_synth_definition_ptr const & definition) {
-        instance->synth_factory::register_definition(definition);
+        instance->register_definition(definition);
     });
 
     msg.handle(endpoint);
