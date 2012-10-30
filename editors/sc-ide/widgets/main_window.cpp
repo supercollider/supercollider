@@ -217,7 +217,6 @@ void MainWindow::createActions()
 
     QAction *action;
     const QString ideCategory("IDE");
-    const QString postCategory("Post Window");
     const QString editorCategory("Text Editor");
     const QString helpCategory("Help");
 
@@ -355,18 +354,11 @@ void MainWindow::createActions()
     connect(action, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
     settings->addAction( action, "ide-show-fullscreen", ideCategory);
 
-    mActions[ClearPostWindow] = action = new QAction(
-        QIcon::fromTheme("window-clearpostwindow"), tr("Clear Post Window"), this);
-    action->setStatusTip(tr("Clear Post Window"));
-    action->setShortcut(tr("Ctrl+Shift+C", "Clear Post Window"));
-    connect(action, SIGNAL(triggered()), mPostDocklet->mPostWindow, SLOT(clear()));
-    settings->addAction( action, "post-clear", postCategory);
-
     mActions[FocusPostWindow] = action = new QAction( tr("Focus Post Window"), this);
     action->setStatusTip(tr("Focus Post Window"));
     action->setShortcut(tr("Ctrl+L", "Focus Post Window"));
     connect(action, SIGNAL(triggered()), mPostDocklet->mPostWindow, SLOT(setFocus()));
-    settings->addAction( action, "post-focus", postCategory);
+    settings->addAction( action, "post-focus", ideCategory);
 
     // Language
     mActions[LookupImplementation] = action = new QAction(
@@ -533,7 +525,6 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::RemoveAllSplits) );
     menu->addSeparator();
     menu->addAction( mActions[FocusPostWindow] );
-    menu->addAction( mActions[ClearPostWindow] );
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
 
