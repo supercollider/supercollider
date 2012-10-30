@@ -95,10 +95,6 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     // FIXME: should actually respond to class library shutdown, but we don't have that signal
     connect( scProcess, SIGNAL(classLibraryRecompiled()), mLoadProgressIndicator, SLOT(stop()) );
 
-    mEvaluateShortcut = new QShortcut(this);
-    mEvaluateShortcut->setContext( Qt::WidgetWithChildrenShortcut );
-    connect( mEvaluateShortcut, SIGNAL(activated()), this, SLOT(evaluateSelection()) );
-
     applySettings( Main::settings() );
 }
 
@@ -110,7 +106,11 @@ void HelpBrowser::applySettings( Settings::Manager *settings )
             ->setShortcut( settings->shortcut("editor-copy") );
     mWebView->pageAction(QWebPage::Paste)
             ->setShortcut( settings->shortcut("editor-paste") );
-    mEvaluateShortcut->setKey( settings->shortcut("editor-eval-smart") );
+
+    mEvalShortcuts.clear();
+    mEvalShortcuts.append( QKeySequence(Qt::Key_Enter) );
+    mEvalShortcuts.append( settings->shortcut("editor-eval-smart") );
+    mEvalShortcuts.append( settings->shortcut("editor-eval-line") );
 
     settings->endGroup();
 
@@ -164,10 +164,27 @@ void HelpBrowser::onReload()
     onLinkClicked( mWebView->url() );
 }
 
+static QKeySequence keySequence( QKeyEvent *event )
+{
+    int keys = event->modifiers();;
+    switch ( event->key() ) {
+    case Qt::Key_Shift:
+    case Qt::Key_Control:
+    case Qt::Key_Meta:
+    case Qt::Key_Alt:
+        break;
+    default:
+        keys |= event->key();
+    }
+
+    return QKeySequence(keys);
+}
+
 bool HelpBrowser::eventFilter(QObject *object, QEvent *event)
 {
     if (object == mWebView) {
-        if (event->type() == QEvent::MouseButtonPress) {
+        switch (event->type()) {
+        case QEvent::MouseButtonPress: {
             QMouseEvent * mouseEvent = static_cast<QMouseEvent*>(event);
             switch (mouseEvent->button()) {
             case Qt::XButton1:
@@ -179,8 +196,23 @@ bool HelpBrowser::eventFilter(QObject *object, QEvent *event)
                 return true;
 
             default:
-                return false;
+                break;
             }
+            break;
+        }
+        case QEvent::KeyPress: {
+            QKeyEvent * kevent = static_cast<QKeyEvent*>(event);
+            QKeySequence currentSequence = keySequence(kevent);
+            foreach( const QKeySequence & sequence, mEvalShortcuts ) {
+                if (currentSequence.matches(sequence) == QKeySequence::ExactMatch) {
+                    evaluateSelection();
+                    return true;
+                }
+            }
+            break;
+        }
+        default:
+            break;
         }
     }
     return false;

@@ -24,10 +24,11 @@
 #include "util/docklet.hpp"
 
 #include <QWebView>
-#include <QShortcut>
 #include <QLabel>
 #include <QBasicTimer>
 #include <QTimerEvent>
+#include <QList>
+#include <QKeySequence>
 
 namespace ScIDE {
 
@@ -105,9 +106,10 @@ private:
 
     QWebView *mWebView;
 
-    QShortcut *mEvaluateShortcut;
     LoadProgressIndicator *mLoadProgressIndicator;
     QSize mSizeHint;
+
+    QList<QKeySequence> mEvalShortcuts;
 };
 
 class HelpBrowserDocklet : public Docklet
