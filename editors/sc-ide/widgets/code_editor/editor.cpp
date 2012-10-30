@@ -446,12 +446,16 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
 
     QTextCursor cursor( textCursor() );
 
-    switch (e->key()) {
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-        // override to avoid entering a "soft" new line when certain modifier is held
+    bool updateCursor = false;
+
+    if (e == QKeySequence::InsertLineSeparator) {
+        // override to avoid entering a "soft" new line
         cursor.insertBlock();
-        break;
+        updateCursor = true;
+    }
+    else {
+
+    switch (e->key()) {
 
     case Qt::Key_Delete:
         if (e->modifiers() & Qt::META) {
@@ -465,8 +469,10 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
         if (e->modifiers() & Qt::META) {
             cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
             cursor.removeSelectedText();
-        } else
+        } else {
             QPlainTextEdit::keyPressEvent(e);
+            updateCursor = true;
+        }
         break;
 
     case Qt::Key_Down:
@@ -497,17 +503,15 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
 
     default:
         QPlainTextEdit::keyPressEvent(e);
-    }
 
-    switch (e->key()) {
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-    case Qt::Key_Backspace:
+    } // switch (e->type())
+
+    } // else...
+
+    if (updateCursor) {
         cursor.setVerticalMovementX(-1);
         setTextCursor( cursor );
         ensureCursorVisible();
-        break;
-    default:;
     }
 }
 
