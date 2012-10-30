@@ -33,9 +33,11 @@ void WebPage::triggerAction ( WebAction action, bool checked )
       if( _delegateReload ) return;
       break;
     case QWebPage::Copy:
+      // ignore text formatting, copy only plain text:
       QApplication::clipboard()->setText( selectedText() );
       return;
-    default: ;
+    default:
+      break;
   }
 
   QWebPage::triggerAction( action, checked );
