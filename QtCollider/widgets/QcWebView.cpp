@@ -171,19 +171,21 @@ void WebView::contextMenuEvent ( QContextMenuEvent * event )
 
 void WebView::keyPressEvent( QKeyEvent *e )
 {
-  if( _interpretSelection
-          && e->key() == Qt::Key_Enter
-          || ( e->key() == Qt::Key_Return &&
-               e->modifiers() & (Qt::ControlModifier|Qt::ShiftModifier) ) )
-  {
-    QString selection = selectedText();
-    if( !selection.isEmpty() ) {
-      Q_EMIT( interpret( selection ) );
-      return;
-    }
-  }
+    int key = e->key();
+    int mods = e->modifiers();
 
-  QWebView::keyPressEvent( e );
+    if( _interpretSelection &&
+            ( key == Qt::Key_Enter ||
+              ( key == Qt::Key_Return && mods & (Qt::ControlModifier|Qt::ShiftModifier) ) ) )
+    {
+        QString selection = selectedText();
+        if( !selection.isEmpty() ) {
+            Q_EMIT( interpret( selection ) );
+            return;
+        }
+    }
+
+    QWebView::keyPressEvent( e );
 }
 
 } // namespace QtCollider
