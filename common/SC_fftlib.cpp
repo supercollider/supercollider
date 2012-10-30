@@ -121,7 +121,7 @@ static float* create_cosTable(int log2n)
 {
 	int size = 1 << log2n;
 	int size2 = size / 4 + 1;
-	float *win = (float*)malloc_aligned(size2 * sizeof(float));
+	float *win = (float*)nova::malloc_aligned(size2 * sizeof(float));
 	if (win == NULL)
 		return NULL;
 
