@@ -34,6 +34,8 @@ namespace ScIDE {
 
 namespace Settings { class Manager; }
 
+class HelpBrowserDocklet;
+
 class LoadProgressIndicator : public QLabel
 {
     Q_OBJECT
@@ -76,6 +78,15 @@ class HelpBrowser : public QWidget
     Q_OBJECT
 
 public:
+    enum ActionRole {
+        GoHome,
+        ZoomIn,
+        ZoomOut,
+        Evaluate,
+
+        ActionCount
+    };
+
     HelpBrowser( QWidget * parent = 0 );
 
     QSize sizeHint() const { return mSizeHint; }
@@ -88,6 +99,8 @@ public:
 public slots:
     void applySettings( Settings::Manager * );
     void goHome();
+    void zoomIn();
+    void zoomOut();
     void evaluateSelection();
 
 signals:
@@ -101,6 +114,9 @@ private slots:
     void onJsConsoleMsg(const QString &, int, const QString & );
 
 private:
+    friend class HelpBrowserDocklet;
+
+    void createActions();
     bool eventFilter( QObject * object, QEvent * event);
     void sendRequest( const QString &code );
 
@@ -109,7 +125,7 @@ private:
     LoadProgressIndicator *mLoadProgressIndicator;
     QSize mSizeHint;
 
-    QList<QKeySequence> mEvalShortcuts;
+    QAction *mActions[ActionCount];
 };
 
 class HelpBrowserDocklet : public Docklet
