@@ -171,8 +171,10 @@ void WebView::contextMenuEvent ( QContextMenuEvent * event )
 
 void WebView::keyPressEvent( QKeyEvent *e )
 {
-  if( _interpretSelection && e->modifiers() & (Qt::ControlModifier|Qt::ShiftModifier)
-      && ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter ) )
+  if( _interpretSelection
+          && e->key() == Qt::Key_Enter
+          || ( e->key() == Qt::Key_Return &&
+               e->modifiers() & (Qt::ControlModifier|Qt::ShiftModifier) ) )
   {
     QString selection = selectedText();
     if( !selection.isEmpty() ) {
