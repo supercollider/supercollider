@@ -68,23 +68,22 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
 
 bool ScCodeEditor::event( QEvent *e )
 {
-    switch (e->type())
+    switch (e->type()) {
+    case QEvent::KeyPress:
     {
-        case QEvent::KeyPress:
-        {
-            QKeyEvent *ke = static_cast<QKeyEvent*>(e);
-            int key = ke->key();
-            switch (key)
-            {
-            case Qt::Key_Tab:
-                indent();
-                e->accept();
-                return true;
-            default:;
-            }
+        QKeyEvent *ke = static_cast<QKeyEvent*>(e);
+        switch (ke->key()) {
+        case Qt::Key_Tab:
+            indent();
+            e->accept();
+            return true;
+        default:
             break;
+        }
+        break;
     }
-    default:;
+    default:
+        break;
     }
 
     return GenericCodeEditor::event(e);
