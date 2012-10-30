@@ -65,13 +65,6 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     mLoadProgressIndicator = new LoadProgressIndicator;
     mLoadProgressIndicator->setIndent(10);
 
-    QAction *action = new QAction("Home", this);
-    connect( action, SIGNAL(triggered()), this, SLOT(goHome()) );
-    addAction(action);
-    addAction( mWebView->pageAction(QWebPage::Back) );
-    addAction( mWebView->pageAction(QWebPage::Forward) );
-    addAction( mWebView->pageAction(QWebPage::Reload) );
-
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(0);
@@ -95,22 +88,45 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     // FIXME: should actually respond to class library shutdown, but we don't have that signal
     connect( scProcess, SIGNAL(classLibraryRecompiled()), mLoadProgressIndicator, SLOT(stop()) );
 
+    createActions();
+
     applySettings( Main::settings() );
+}
+
+void HelpBrowser::createActions()
+{
+    QAction * action;
+
+    mActions[GoHome] = action = new QAction("Home", this);
+    connect( action, SIGNAL(triggered()), this, SLOT(goHome()) );
+
+    mActions[ZoomIn] = action = new QAction(tr("Zoom In"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(zoomIn()));
+
+    mActions[ZoomOut] = action = new QAction(tr("Zoom Out"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(zoomOut()));
+
+    mActions[Evaluate] = action = new QAction(tr("Evaluate as Code"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
+
+    // For the sake of display:
+    mWebView->pageAction(QWebPage::Copy)->setShortcut( QKeySequence::Copy );
+    mWebView->pageAction(QWebPage::Paste)->setShortcut( QKeySequence::Paste );
 }
 
 void HelpBrowser::applySettings( Settings::Manager *settings )
 {
     settings->beginGroup("IDE/shortcuts");
 
-    mWebView->pageAction(QWebPage::Copy)
-            ->setShortcut( settings->shortcut("editor-copy") );
-    mWebView->pageAction(QWebPage::Paste)
-            ->setShortcut( settings->shortcut("editor-paste") );
+    mActions[ZoomIn]->setShortcut( settings->shortcut("editor-enlarge-font") );
 
-    mEvalShortcuts.clear();
-    mEvalShortcuts.append( QKeySequence(Qt::Key_Enter) );
-    mEvalShortcuts.append( settings->shortcut("editor-eval-smart") );
-    mEvalShortcuts.append( settings->shortcut("editor-eval-line") );
+    mActions[ZoomOut]->setShortcut( settings->shortcut("editor-shrink-font") );
+
+    QList<QKeySequence> evalShortcuts;
+    evalShortcuts.append( settings->shortcut("editor-eval-smart") );
+    evalShortcuts.append( settings->shortcut("editor-eval-line") );
+    evalShortcuts.append( QKeySequence(Qt::Key_Enter) );
+    mActions[Evaluate]->setShortcuts( evalShortcuts );
 
     settings->endGroup();
 
@@ -164,6 +180,20 @@ void HelpBrowser::onReload()
     onLinkClicked( mWebView->url() );
 }
 
+void HelpBrowser::zoomIn()
+{
+    qreal zoomFactor = mWebView->zoomFactor();
+    zoomFactor = qMin( zoomFactor + 0.1, 2.0 );
+    mWebView->setZoomFactor(zoomFactor);
+}
+
+void HelpBrowser::zoomOut()
+{
+    qreal zoomFactor = mWebView->zoomFactor();
+    zoomFactor = qMax( zoomFactor - 0.1, 0.1 );
+    mWebView->setZoomFactor(zoomFactor);
+}
+
 static QKeySequence keySequence( QKeyEvent *event )
 {
     int keys = event->modifiers();;
@@ -200,10 +230,37 @@ bool HelpBrowser::eventFilter(QObject *object, QEvent *event)
             }
             break;
         }
+        case QEvent::ShortcutOverride: {
+            QKeyEvent * kevent = static_cast<QKeyEvent*>(event);
+            QKeySequence eventSequence = keySequence(kevent);
+            foreach( const QKeySequence & sequence, mActions[Evaluate]->shortcuts() ) {
+                if (eventSequence == sequence) {
+                    kevent->accept();
+                    return true;
+                }
+            }
+            if ( eventSequence == mActions[ZoomIn]->shortcut() ) {
+                mActions[ZoomIn]->trigger();
+                kevent->accept();
+                return true;
+            }
+            else if ( eventSequence == mActions[ZoomOut]->shortcut() ) {
+                mActions[ZoomOut]->trigger();
+                kevent->accept();
+                return true;
+            }
+            else if ( eventSequence == QKeySequence(QKeySequence::Copy) ||
+                      eventSequence == QKeySequence(QKeySequence::Paste) )
+            {
+                kevent->accept();
+                return true;
+            }
+            break;
+        }
         case QEvent::KeyPress: {
             QKeyEvent * kevent = static_cast<QKeyEvent*>(event);
             QKeySequence currentSequence = keySequence(kevent);
-            foreach( const QKeySequence & sequence, mEvalShortcuts ) {
+            foreach( const QKeySequence & sequence, mActions[Evaluate]->shortcuts() ) {
                 if (currentSequence.matches(sequence) == QKeySequence::ExactMatch) {
                     evaluateSelection();
                     return true;
@@ -278,19 +335,27 @@ void HelpBrowser::onContextMenuRequest( const QPoint & pos )
 
     if (!hitTest.linkElement().isNull()) {
         menu.addAction( mWebView->pageAction(QWebPage::CopyLinkToClipboard) );
-        menu.addSeparator();
     }
 
-    if (hitTest.isContentEditable() || hitTest.isContentSelected()) {
+    menu.addSeparator();
+
+    if (hitTest.isContentEditable() || hitTest.isContentSelected())
         menu.addAction( mWebView->pageAction(QWebPage::Copy) );
-        if (hitTest.isContentEditable())
-            menu.addAction( mWebView->pageAction(QWebPage::Paste) );
-        menu.addSeparator();
-    }
+    if (hitTest.isContentEditable())
+        menu.addAction( mWebView->pageAction(QWebPage::Paste) );
+    if (hitTest.isContentSelected())
+        menu.addAction( mActions[Evaluate] );
+
+    menu.addSeparator();
 
     menu.addAction( mWebView->pageAction(QWebPage::Back) );
     menu.addAction( mWebView->pageAction(QWebPage::Forward) );
     menu.addAction( mWebView->pageAction(QWebPage::Reload) );
+
+    menu.addSeparator();
+
+    menu.addAction( mActions[ZoomIn] );
+    menu.addAction( mActions[ZoomOut] );
 
     menu.exec( mWebView->mapToGlobal(pos) );
 }
@@ -304,9 +369,10 @@ HelpBrowserDocklet::HelpBrowserDocklet( QWidget *parent ):
     setWidget(mHelpBrowser);
 
     toolBar()->addWidget( mHelpBrowser->loadProgressIndicator(), 1 );
-    QList<QAction*> actions = mHelpBrowser->actions();
-    foreach(QAction *action, actions)
-        toolBar()->addAction(action);
+    toolBar()->addAction( mHelpBrowser->mActions[HelpBrowser::GoHome] );
+    toolBar()->addAction( mHelpBrowser->mWebView->pageAction(QWebPage::Back) );
+    toolBar()->addAction( mHelpBrowser->mWebView->pageAction(QWebPage::Forward) );
+    toolBar()->addAction( mHelpBrowser->mWebView->pageAction(QWebPage::Reload) );
 
     connect( mHelpBrowser, SIGNAL(urlChanged()), this, SLOT(show()) );
 }
