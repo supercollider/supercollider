@@ -80,7 +80,6 @@ public:
         ShowGoToLineTool,
         CloseToolBox,
         ShowFullScreen,
-        ClearPostWindow,
         FocusPostWindow,
 
         // Settings
