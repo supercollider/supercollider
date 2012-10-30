@@ -440,6 +440,28 @@ QString GenericCodeEditor::symbolUnderCursor()
     }
 }
 
+bool GenericCodeEditor::event( QEvent * event )
+{
+    switch (event->type()) {
+    case QEvent::ShortcutOverride: {
+        // Prevent overriding certain shortcuts,
+        // as they are useful in our application.
+        QKeyEvent* kevent = static_cast<QKeyEvent*>(event);
+        switch (kevent->key()) {
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+            event->ignore();
+            return true;
+        }
+        break;
+    }
+    default:
+        break;
+    }
+
+    return QPlainTextEdit::event(event);
+}
+
 void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
 {
     hideMouseCursor(e);

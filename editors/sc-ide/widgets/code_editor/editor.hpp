@@ -54,6 +54,7 @@ public:
     QString symbolUnderCursor();
 
 protected:
+    virtual bool event( QEvent * );
     virtual void keyPressEvent( QKeyEvent * );
     virtual void wheelEvent( QWheelEvent * );
     virtual void dragEnterEvent( QDragEnterEvent * );
