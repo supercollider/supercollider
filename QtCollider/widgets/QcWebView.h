@@ -78,6 +78,7 @@ public:
 
 protected:
   virtual void keyPressEvent( QKeyEvent * );
+  virtual void contextMenuEvent ( QContextMenuEvent * );
 
 private Q_SLOTS:
   void onLinkClicked( const QUrl & );

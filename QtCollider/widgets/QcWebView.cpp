@@ -24,7 +24,9 @@
 #include "../QcWidgetFactory.h"
 #include <QWebPage>
 #include <QWebFrame>
+#include <QWebElement>
 #include <QAction>
+#include <QMenu>
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QApplication>
@@ -46,10 +48,8 @@ WebView::WebView( QWidget *parent ) :
   // get in the way of rendering web pages
   setPalette( style()->standardPalette() );
 
-  QShortcut *scutCopy = new QShortcut( QKeySequence::Copy, this );
-  scutCopy->setContext( Qt::WidgetWithChildrenShortcut );
-  connect( scutCopy, SIGNAL(activated()),
-           pageAction(QWebPage::Copy), SLOT(trigger()) );
+  page->action( QWebPage::Copy )->setShortcut( QKeySequence::Copy );
+  page->action( QWebPage::Paste )->setShortcut( QKeySequence::Paste );
 
   connect( this, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
   connect( page->action(QWebPage::Reload), SIGNAL(triggered(bool)),
@@ -140,6 +140,33 @@ void WebView::onLinkClicked( const QUrl &url )
 void WebView::onPageReload()
 {
   Q_EMIT( reloadTriggered( url() ) );
+}
+
+void WebView::contextMenuEvent ( QContextMenuEvent * event )
+{
+    QMenu menu;
+
+    QPoint pos = event->pos();
+
+    QWebHitTestResult hitTest = page()->mainFrame()->hitTestContent( pos );
+
+    if (!hitTest.linkElement().isNull()) {
+        menu.addAction( pageAction(QWebPage::CopyLinkToClipboard) );
+        menu.addSeparator();
+    }
+
+    if (hitTest.isContentEditable() || hitTest.isContentSelected()) {
+        menu.addAction( pageAction(QWebPage::Copy) );
+        if (hitTest.isContentEditable())
+            menu.addAction( pageAction(QWebPage::Paste) );
+        menu.addSeparator();
+    }
+
+    menu.addAction( pageAction(QWebPage::Back) );
+    menu.addAction( pageAction(QWebPage::Forward) );
+    menu.addAction( pageAction(QWebPage::Reload) );
+
+    menu.exec( event->globalPos() );
 }
 
 void WebView::keyPressEvent( QKeyEvent *e )

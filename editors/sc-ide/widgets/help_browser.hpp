@@ -93,6 +93,7 @@ signals:
     void urlChanged();
 
 private slots:
+    void onContextMenuRequest( const QPoint & pos );
     void onLinkClicked( const QUrl & );
     void onReload();
     void onScResponse( const QString & command, const QString & data );
