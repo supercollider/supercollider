@@ -172,32 +172,6 @@ void nova_server::run_nonrt_synthesis(server_arguments const & args)
     engine.run();
 }
 
-namespace
-{
-
-struct register_definition_cb:
-    public audio_sync_callback
-{
-    register_definition_cb (synth_definition_ptr const & prototype):
-        prototype(prototype)
-    {}
-
-    void run(void)
-    {
-        instance->synth_factory::register_definition(prototype);
-    }
-
-    synth_definition_ptr prototype;
-};
-
-} /* namespace */
-
-void nova_server::register_definition(synth_definition_ptr const & prototype)
-{
-    scheduler<scheduler_hook, thread_init_functor>::add_sync_callback(new register_definition_cb(prototype));
-}
-
-
 void nova_server::rebuild_dsp_queue(void)
 {
     assert(dsp_queue_dirty);

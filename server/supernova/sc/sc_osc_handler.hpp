@@ -322,8 +322,7 @@ private:
     void handle_accept(tcp_connection::pointer new_connection,
                        const boost::system::error_code& error)
     {
-        if (!error)
-        {
+        if (!error) {
             new_connection->start(this);
             start_accept();
         }
