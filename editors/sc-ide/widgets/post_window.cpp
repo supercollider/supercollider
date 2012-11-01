@@ -23,6 +23,7 @@
 #include "util/gui_utilities.hpp"
 #include "../core/main.hpp"
 #include "../core/settings/manager.hpp"
+#include "../core/util/overriding_action.hpp"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -58,6 +59,7 @@ PostWindow::PostWindow(QWidget* parent):
 void PostWindow::createActions( Settings::Manager * settings )
 {
     QAction * action;
+    OverridingAction * ovrAction;
 
     mActions[Copy] = action = new QAction(tr("Copy"), this);
     action->setShortcut( QKeySequence::Copy );
@@ -79,19 +81,17 @@ void PostWindow::createActions( Settings::Manager * settings )
     action->setSeparator(true);
     addAction(action);
 
-    mActions[ZoomIn] = action = new QAction(tr("Enlarge Font"), this);
-    action->setIconText("+");
-    action->setShortcutContext( Qt::WidgetShortcut );
-    action->setToolTip(tr("Enlarge font"));
-    connect(action, SIGNAL(triggered()), this, SLOT(zoomIn()));
-    addAction(action);
+    mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Enlarge Font"), this);
+    ovrAction->setIconText("+");
+    ovrAction->setToolTip(tr("Enlarge font"));
+    connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomIn()));
+    ovrAction->addToWidget(this);
 
-    mActions[ZoomOut] = action = new QAction(tr("Shrink Font"), this);
-    action->setIconText("-");
-    action->setShortcutContext( Qt::WidgetShortcut );
-    action->setToolTip(tr("Shrink font"));
-    connect(action, SIGNAL(triggered()), this, SLOT(zoomOut()));
-    addAction(action);
+    mActions[ZoomOut] = ovrAction = new OverridingAction(tr("Shrink Font"), this);
+    ovrAction->setIconText("-");
+    ovrAction->setToolTip(tr("Shrink font"));
+    connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
+    ovrAction->addToWidget(this);
 
     action = new QAction(this);
     action->setSeparator(true);
@@ -213,35 +213,14 @@ void PostWindow::zoomFont(int steps)
     setFont(currentFont);
 }
 
-static QKeySequence keySequence( QKeyEvent *event )
-{
-    int keys = event->modifiers();;
-    switch ( event->key() ) {
-    case Qt::Key_Shift:
-    case Qt::Key_Control:
-    case Qt::Key_Meta:
-    case Qt::Key_Alt:
-        break;
-    default:
-        keys |= event->key();
-    }
-
-    return QKeySequence(keys);
-}
-
 bool PostWindow::event( QEvent * event )
 {
     switch (event->type()) {
     case QEvent::ShortcutOverride: {
         QKeyEvent *kevent = static_cast<QKeyEvent*>(event);
-        QKeySequence eventKeySequence = keySequence(kevent);
-        for(int idx = 0; idx < ActionCount; ++idx) {
-            if (eventKeySequence.matches( mActions[idx]->shortcut() ) == QKeySequence::ExactMatch)
-            {
-                mActions[idx]->trigger();
-                event->accept();
-                return true;
-            }
+        if (kevent == QKeySequence::Copy) {
+            event->accept();
+            return true;
         }
         break;
     }

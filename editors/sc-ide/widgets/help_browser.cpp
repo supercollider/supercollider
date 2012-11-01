@@ -24,6 +24,7 @@
 #include "main_window.hpp"
 #include "../core/sc_process.hpp"
 #include "../core/main.hpp"
+#include "../core/util/overriding_action.hpp"
 #include "QtCollider/widgets/web_page.hpp"
 
 #include <QVBoxLayout>
@@ -96,18 +97,22 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
 void HelpBrowser::createActions()
 {
     QAction * action;
+    OverridingAction *ovrAction;
 
     mActions[GoHome] = action = new QAction("Home", this);
     connect( action, SIGNAL(triggered()), this, SLOT(goHome()) );
 
-    mActions[ZoomIn] = action = new QAction(tr("Zoom In"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(zoomIn()));
+    mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Zoom In"), this);
+    connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomIn()));
+    ovrAction->addToWidget(mWebView);
 
-    mActions[ZoomOut] = action = new QAction(tr("Zoom Out"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(zoomOut()));
+    mActions[ZoomOut] = ovrAction = new OverridingAction(tr("Zoom Out"), this);
+    connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
+    ovrAction->addToWidget(mWebView);
 
-    mActions[Evaluate] = action = new QAction(tr("Evaluate as Code"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
+    mActions[Evaluate] = ovrAction = new OverridingAction(tr("Evaluate as Code"), this);
+    connect(ovrAction, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
+    ovrAction->addToWidget(mWebView);
 
     // For the sake of display:
     mWebView->pageAction(QWebPage::Copy)->setShortcut( QKeySequence::Copy );
@@ -194,22 +199,6 @@ void HelpBrowser::zoomOut()
     mWebView->setZoomFactor(zoomFactor);
 }
 
-static QKeySequence keySequence( QKeyEvent *event )
-{
-    int keys = event->modifiers();;
-    switch ( event->key() ) {
-    case Qt::Key_Shift:
-    case Qt::Key_Control:
-    case Qt::Key_Meta:
-    case Qt::Key_Alt:
-        break;
-    default:
-        keys |= event->key();
-    }
-
-    return QKeySequence(keys);
-}
-
 bool HelpBrowser::eventFilter(QObject *object, QEvent *event)
 {
     if (object == mWebView) {
@@ -232,39 +221,11 @@ bool HelpBrowser::eventFilter(QObject *object, QEvent *event)
         }
         case QEvent::ShortcutOverride: {
             QKeyEvent * kevent = static_cast<QKeyEvent*>(event);
-            QKeySequence eventSequence = keySequence(kevent);
-            foreach( const QKeySequence & sequence, mActions[Evaluate]->shortcuts() ) {
-                if (eventSequence == sequence) {
-                    kevent->accept();
-                    return true;
-                }
-            }
-            if ( eventSequence == mActions[ZoomIn]->shortcut() ) {
-                mActions[ZoomIn]->trigger();
-                kevent->accept();
-                return true;
-            }
-            else if ( eventSequence == mActions[ZoomOut]->shortcut() ) {
-                mActions[ZoomOut]->trigger();
-                kevent->accept();
-                return true;
-            }
-            else if ( eventSequence == QKeySequence(QKeySequence::Copy) ||
-                      eventSequence == QKeySequence(QKeySequence::Paste) )
+            if ( kevent == QKeySequence::Copy ||
+                 kevent == QKeySequence::Paste )
             {
                 kevent->accept();
                 return true;
-            }
-            break;
-        }
-        case QEvent::KeyPress: {
-            QKeyEvent * kevent = static_cast<QKeyEvent*>(event);
-            QKeySequence currentSequence = keySequence(kevent);
-            foreach( const QKeySequence & sequence, mActions[Evaluate]->shortcuts() ) {
-                if (currentSequence.matches(sequence) == QKeySequence::ExactMatch) {
-                    evaluateSelection();
-                    return true;
-                }
             }
             break;
         }
