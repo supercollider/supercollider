@@ -27,8 +27,8 @@ Copyright (c) 2008 Dan Stowell. All rights reserved.
 // These specify the min & max FFT sizes expected (used when creating windows, also allocating some other arrays).
 #define SC_FFT_MINSIZE 8
 #define SC_FFT_LOG2_MINSIZE 3
-#define SC_FFT_MAXSIZE 8192
-#define SC_FFT_LOG2_MAXSIZE 13
+#define SC_FFT_MAXSIZE 32768
+#define SC_FFT_LOG2_MAXSIZE 15
 
 
 // Note that things like *fftWindow actually allow for other sizes, to be created on user request.
