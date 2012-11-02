@@ -1340,7 +1340,8 @@ void MainWindow::lookupDocumentationForCursor()
 
 void MainWindow::openHelp()
 {
-    mHelpBrowserDocklet->browser()->goHome();
+    if (mHelpBrowserDocklet->browser()->url().isEmpty())
+        mHelpBrowserDocklet->browser()->goHome();
     mHelpBrowserDocklet->show();
     mHelpBrowserDocklet->raise();
 }

@@ -96,6 +96,8 @@ public:
     void gotoHelpForMethod( const QString & className, const QString & methodName );
     QWidget *loadProgressIndicator() { return mLoadProgressIndicator; }
 
+    QUrl url() const { return mWebView->url(); }
+
 public slots:
     void applySettings( Settings::Manager * );
     void goHome();
