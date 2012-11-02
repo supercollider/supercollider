@@ -189,9 +189,6 @@ MainWindow::MainWindow(Main * main) :
     onServerRunningChanged(false, "", 0);
     toggleInterpreterActions(false);
 
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::ToggleRunning) );
-    mServerStatus->setContextMenuPolicy(Qt::ActionsContextMenu);
-
     // Initialize recent documents menu
     updateRecentDocsMenu();
 
@@ -564,6 +561,13 @@ void MainWindow::createMenus()
     menu->addAction( mActions[ShowAboutQT] );
 
     menuBar->addMenu(menu);
+
+    mServerStatus->addAction( mMain->scServer()->action(ScServer::ToggleRunning) );
+    mServerStatus->addAction( mMain->scServer()->action(ScServer::Reboot) );
+    mServerStatus->addAction( mMain->scServer()->action(ScServer::ShowMeters) );
+    mServerStatus->addAction( mMain->scServer()->action(ScServer::DumpNodeTree) );
+    mServerStatus->addAction( mMain->scServer()->action(ScServer::DumpNodeTreeWithControls) );
+    mServerStatus->setContextMenuPolicy(Qt::ActionsContextMenu);
 }
 
 static void saveDetachedState( Docklet *docklet,  QVariantMap & data )
