@@ -61,6 +61,8 @@ void PostWindow::createActions( Settings::Manager * settings )
     QAction * action;
     OverridingAction * ovrAction;
 
+    QString postCategory("Post Window");
+
     mActions[Copy] = action = new QAction(tr("Copy"), this);
     action->setShortcut( QKeySequence::Copy );
     action->setShortcutContext( Qt::WidgetShortcut );
@@ -72,8 +74,8 @@ void PostWindow::createActions( Settings::Manager * settings )
     mActions[Clear] = action = new QAction(tr("Clear"), this);
     action->setStatusTip(tr("Clear post window"));
     action->setShortcutContext(Qt::ApplicationShortcut);
-    action->setShortcut(tr("Ctrl+Shift+C", "Clear Post Window"));
-    settings->addAction( action, "post-clear", "Post Window" );
+    action->setShortcut(tr("Ctrl+Shift+C", "Clear post window"));
+    settings->addAction( action, "post-clear", postCategory );
     connect(action, SIGNAL(triggered()), this, SLOT(clear()));
     addAction(action);
 
@@ -83,13 +85,13 @@ void PostWindow::createActions( Settings::Manager * settings )
 
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Enlarge Font"), this);
     ovrAction->setIconText("+");
-    ovrAction->setToolTip(tr("Enlarge font"));
+    ovrAction->setStatusTip(tr("Enlarge post window font"));
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomIn()));
     ovrAction->addToWidget(this);
 
     mActions[ZoomOut] = ovrAction = new OverridingAction(tr("Shrink Font"), this);
     ovrAction->setIconText("-");
-    ovrAction->setToolTip(tr("Shrink font"));
+    ovrAction->setStatusTip(tr("Shrink post window font"));
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
     ovrAction->addToWidget(this);
 
@@ -98,16 +100,19 @@ void PostWindow::createActions( Settings::Manager * settings )
     addAction(action);
 
     mActions[LineWrap] = action = new QAction(tr("Wrap Text"), this);
+    action->setStatusTip(tr("Wrap lines wider than the post window"));
     action->setCheckable(true);
     addAction(action);
     connect( action, SIGNAL(triggered(bool)), this, SLOT(setLineWrap(bool)) );
+    settings->addAction( action, "post-line-wrap", postCategory );
 
     mActions[AutoScroll] = action = new QAction(tr("Auto Scroll"), this);
-    action->setToolTip(tr("Scroll to bottom on new posts"));
+    action->setStatusTip(tr("Scroll to bottom on new posts"));
     action->setCheckable(true);
     action->setChecked(true);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(onAutoScrollTriggered(bool)));
     addAction(action);
+    settings->addAction( action, "post-auto-scroll", postCategory );
 }
 
 void PostWindow::updateActionShortcuts( Settings::Manager * settings )

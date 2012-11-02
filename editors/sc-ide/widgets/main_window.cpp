@@ -352,8 +352,8 @@ void MainWindow::createActions()
     settings->addAction( action, "ide-show-fullscreen", ideCategory);
 
     mActions[FocusPostWindow] = action = new QAction( tr("Focus Post Window"), this);
-    action->setStatusTip(tr("Focus Post Window"));
-    action->setShortcut(tr("Ctrl+L", "Focus Post Window"));
+    action->setStatusTip(tr("Focus post window"));
+    action->setShortcut(tr("Ctrl+L", "Focus post window"));
     connect(action, SIGNAL(triggered()), mPostDocklet->mPostWindow, SLOT(setFocus()));
     settings->addAction( action, "post-focus", ideCategory);
 
