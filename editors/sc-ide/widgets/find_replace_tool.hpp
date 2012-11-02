@@ -29,6 +29,7 @@
 #include <QTextDocument>
 #include <QAction>
 #include <QMenu>
+#include <QToolButton>
 
 namespace ScIDE {
 
@@ -81,12 +82,11 @@ private:
     QLabel *mFindLabel;
     QLineEdit *mReplaceField;
     QLabel *mReplaceLabel;
-    QPushButton *mNextBtn;
-    QPushButton *mPrevBtn;
-    QPushButton *mFindAllBtn;
-    QPushButton *mReplaceBtn;
-    QPushButton *mReplaceAllBtn;
-    QPushButton *mOptionsBtn;
+    QToolButton *mNextBtn;
+    QToolButton *mPrevBtn;
+    QToolButton *mReplaceBtn;
+    QToolButton *mReplaceAllBtn;
+    QToolButton *mOptionsBtn;
     QAction *mMatchCaseAction;
     QAction *mRegExpAction;
     QAction *mWholeWordAction;
