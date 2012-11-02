@@ -108,10 +108,14 @@ void ShortcutsPage::store( Manager *s )
 
 void ShortcutsPage::addAction( QAction *a, Manager *s )
 {
+    QString description = a->statusTip();
+    if (description.isEmpty())
+        description = a->toolTip();
+
     QTreeWidgetItem *item = new QTreeWidgetItem;
     item->setIcon(0, a->icon());
     item->setText(0, a->text().remove('&'));
-    item->setText(2, a->statusTip() );
+    item->setText(2, description );
 
     QString key = s->keyForAction(a);
 
