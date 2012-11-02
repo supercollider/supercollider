@@ -509,7 +509,7 @@ void MainWindow::createMenus()
     menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&View"), this);
-    submenu = new QMenu(tr("&Docks"), this);
+    submenu = new QMenu(tr("&Docklets"), this);
     submenu->addAction( mPostDocklet->toggleViewAction() );
     submenu->addAction( mDocumentsDocklet->toggleViewAction() );
     submenu->addAction( mHelpBrowserDocklet->toggleViewAction() );
