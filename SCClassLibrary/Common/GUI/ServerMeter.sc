@@ -207,8 +207,7 @@ ServerMeterView{
 
 	stop{
 		serverMeterViews[server].remove(this);
-
-		if(serverMeterViews[server].size == 0){
+		if(serverMeterViews[server].size == 0 and: (serverCleanupFuncs.notNil)) {
 			serverCleanupFuncs[server].value;
 			serverCleanupFuncs.removeAt(server);
 		};
