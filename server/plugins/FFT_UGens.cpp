@@ -172,6 +172,11 @@ void FFT_Ctor(FFT *unit)
 	unit->m_scfft = scfft_create(unit->m_fullbufsize, unit->m_audiosize, (SCFFT_WindowFunction)unit->m_wintype, unit->m_inbuf,
 								 unit->m_fftsndbuf->data, kForward, alloc);
 
+	if (!unit->m_scfft) {
+		SETCALC(*ClearUnitOutputs);
+		return;
+	}
+
 	memset(unit->m_inbuf, 0, audiosize);
 
 	//Print("FFT_Ctor: hopsize %i, shuntsize %i, bufsize %i, wintype %i, \n",
@@ -254,6 +259,12 @@ void IFFT_Ctor(IFFT* unit){
 	SCWorld_Allocator alloc(ft, unit->mWorld);
 	unit->m_scfft = scfft_create(unit->m_fullbufsize, unit->m_audiosize, (SCFFT_WindowFunction)unit->m_wintype, unit->m_fftsndbuf->data,
 								 unit->m_fftsndbuf->data, kBackward, alloc);
+
+	if (!unit->m_scfft) {
+		SETCALC(*ClearUnitOutputs);
+		unit->m_olabuf = 0;
+		return;
+	}
 
 	// "pos" will be reset to zero when each frame comes in. Until then, the following ensures silent output at first:
 	unit->m_pos = 0; //unit->m_audiosize;

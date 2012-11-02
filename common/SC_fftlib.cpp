@@ -240,6 +240,9 @@ static size_t scfft_trbufsize(unsigned int fullsize)
 scfft * scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype,
 					 float *indata, float *outdata, SCFFT_Direction forward, SCFFT_Allocator & alloc)
 {
+	if ( (fullsize > SC_FFT_MAXSIZE) || (fullsize < SC_FFT_MINSIZE) )
+		return NULL;
+
 	const int alignment = 128; // in bytes
 	char * chunk = (char*) alloc.alloc(sizeof(scfft) + scfft_trbufsize(fullsize) + alignment);
 	if (!chunk)
