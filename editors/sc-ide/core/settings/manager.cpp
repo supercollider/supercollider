@@ -111,7 +111,7 @@ void Manager::initHighlightingDefaults()
 
     setDefault( "keyword", makeHlFormat( QColor(0,0,230).lighter(shade), QFont::Bold ) );
     setDefault( "built-in", makeHlFormat( QColor(51,51,191).lighter(shade) ) );
-    setDefault( "env-var", makeHlFormat( QColor(255,102,0).lighter(shade) ) );
+    setDefault( "env-var", makeHlFormat( QColor(140,70,20).lighter(shade) ) );
     setDefault( "class", makeHlFormat( QColor(0,0,210).lighter(shade) ) );
     setDefault( "number", makeHlFormat( QColor(152,0,153).lighter(shade) ) );
     setDefault( "symbol", makeHlFormat( QColor(0,115,0).lighter(shade) ) );
