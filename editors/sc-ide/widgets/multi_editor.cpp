@@ -745,11 +745,8 @@ void MultiEditor::switchSession( Session *session )
         }
 
         // restore tabs
-        foreach ( Document * doc, documentList ) {
-            if (!doc)
-                continue;
+        foreach ( Document * doc, documentList )
             addTab(doc);
-        }
 
         // restore editors
         if (session->contains("editors")) {
@@ -791,19 +788,26 @@ void MultiEditor::switchSession( Session *session )
 
 int MultiEditor::addTab( Document * doc )
 {
+    if (!doc)
+        return -1;
+
+    int tabIdx = tabForDocument(doc);
+    if (tabIdx != -1)
+        return tabIdx;
+
     QTextDocument *tdoc = doc->textDocument();
 
     QIcon icon;
     if(tdoc->isModified())
         icon = mDocModifiedIcon;
 
-    int newTabIndex = mTabs->addTab( icon, doc->title() );
-    mTabs->setTabData( newTabIndex, QVariant::fromValue<Document*>(doc) );
+    tabIdx = mTabs->addTab( icon, doc->title() );
+    mTabs->setTabData( tabIdx, QVariant::fromValue<Document*>(doc) );
 
     mDocModifiedSigMap.setMapping(tdoc, doc);
     connect( tdoc, SIGNAL(modificationChanged(bool)), &mDocModifiedSigMap, SLOT(map()) );
 
-    return newTabIndex;
+    return tabIdx;
 }
 
 void MultiEditor::setCurrent( Document *doc )
