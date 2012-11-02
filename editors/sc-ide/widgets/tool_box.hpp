@@ -25,7 +25,8 @@
 
 #include <QWidget>
 #include <QToolButton>
-#include <QGridLayout>
+#include <QHBoxLayout>
+#include <QStyle>
 
 namespace ScIDE {
 
@@ -43,11 +44,12 @@ public:
 
         mStack = new QtCollider::StackLayout;
 
-        QGridLayout *grid = new QGridLayout;
-        grid->addWidget(mCloseBtn, 0, 0);
-        grid->addLayout(mStack, 0, 1, 2, 1);
+        QHBoxLayout *layout = new QHBoxLayout;
+        layout->setContentsMargins(2,2,2,2);
+        layout->addWidget(mCloseBtn, 0, Qt::AlignTop | Qt::AlignLeft);
+        layout->addLayout(mStack);
 
-        setLayout(grid);
+        setLayout(layout);
     }
 
     QAbstractButton *closeButton() { return mCloseBtn; }

@@ -71,7 +71,8 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     mReplaceLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
     mGrid = new QGridLayout();
-    mGrid->setContentsMargins(2,2,2,2);
+    mGrid->setContentsMargins(0,0,0,0);
+    mGrid->setSpacing(2);
 
     QHBoxLayout *findBtnLayout = new QHBoxLayout();
     findBtnLayout->setContentsMargins(0,0,0,0);
