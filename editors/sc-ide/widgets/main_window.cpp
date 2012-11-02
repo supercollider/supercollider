@@ -282,6 +282,7 @@ void MainWindow::createActions()
     settings->addAction( action, "ide-document-reload", ideCategory);
 
     mActions[ClearRecentDocs] = action = new QAction(tr("Clear", "Clear recent documents"), this);
+    action->setStatusTip(tr("Clear list of recent documents"));
     connect(action, SIGNAL(triggered()),
             Main::instance()->documentManager(), SLOT(clearRecents()));
     settings->addAction( action, "ide-clear-recent-documents", ideCategory);

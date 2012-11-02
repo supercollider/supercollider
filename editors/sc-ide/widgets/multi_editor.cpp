@@ -362,7 +362,7 @@ void MultiEditor::createActions()
     settings->addAction( action, "editor-copy-line-down", editorCategory);
 
     mActions[MoveLineUp] = action = new QAction(
-        QIcon::fromTheme("edit-movelineup"), tr("move Line Up"), this);
+        QIcon::fromTheme("edit-movelineup"), tr("Move Line Up"), this);
     action->setShortcut(tr("Ctrl+Shift+Up", "Move Line Up"));
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(moveLineUp()));
