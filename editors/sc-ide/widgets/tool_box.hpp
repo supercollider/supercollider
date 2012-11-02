@@ -38,7 +38,7 @@ public:
     ToolBox( QWidget * parent = 0 ): QWidget(parent)
     {
         mCloseBtn = new QToolButton;
-        mCloseBtn->setIcon(QIcon::fromTheme("window-close"));
+        mCloseBtn->setIcon( style()->standardIcon(QStyle::SP_TitleBarCloseButton) );
         mCloseBtn->setText("X");
         mCloseBtn->setAutoRaise(true);
 
