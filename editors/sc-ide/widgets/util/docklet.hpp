@@ -93,7 +93,13 @@ public:
 public slots:
     void toggleFloating();
     void toggleDetached();
-    void setVisible( bool visible ) { currentContainer()->setVisible(visible); }
+    void setVisible( bool visible )
+    {
+        QWidget *container = currentContainer();
+        container->setVisible(visible);
+        if (visible)
+            container->raise();
+    }
     void show() { setVisible(true); }
     void hide() { setVisible(false); }
     void close() { hide(); }
