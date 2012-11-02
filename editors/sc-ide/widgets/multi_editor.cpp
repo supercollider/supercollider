@@ -523,7 +523,7 @@ void MultiEditor::createActions()
     settings->addAction( action, "editor-eval-smart", editorCategory);
 
     mActions[EvaluateLine] = action = new QAction(
-    QIcon::fromTheme("media-playback-startline"), tr("&Evaluate Selection or Line"), this);
+    QIcon::fromTheme("media-playback-start"), tr("&Evaluate Selection or Line"), this);
     action->setShortcut(tr("Shift+Return", "Evaluate selection/line"));
     action->setStatusTip(tr("Evaluate current selection/line"));
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);

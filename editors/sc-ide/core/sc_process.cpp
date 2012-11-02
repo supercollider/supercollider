@@ -93,7 +93,7 @@ void ScProcess::prepareActions(Settings::Manager * settings)
     settings->addAction( action, "interpreter-main-run", interpreterCategory);
 
     mActions[StopMain] = action = new QAction(
-        QIcon::fromTheme("process-stop"), tr("Stop Main"), this);
+        QIcon::fromTheme("media-playback-stop"), tr("Stop Main"), this);
     action->setShortcut(tr("Ctrl+.", "Stop Main (a.k.a. cmd-period)"));
     connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
     settings->addAction( action, "interpreter-main-stop", interpreterCategory);
