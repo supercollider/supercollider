@@ -426,16 +426,19 @@ void MainWindow::createActions()
 
     // Add external actions to settings:
     action = mPostDocklet->toggleViewAction();
+    action->setIcon( QIcon::fromTheme("utilities-terminal"));
     action->setStatusTip(tr("Show/hide Post docklet"));
     settings->addAction( mPostDocklet->toggleViewAction(),
                          "ide-docklet-post", ideCategory );
 
     action = mDocumentsDocklet->toggleViewAction();
+    action->setIcon( QIcon::fromTheme("text-x-generic") );
     action->setStatusTip(tr("Show/hide Documents docklet"));
     settings->addAction( mDocumentsDocklet->toggleViewAction(),
                          "ide-docklet-documents", ideCategory );
 
     action = mHelpBrowserDocklet->toggleViewAction();
+    action->setIcon( QIcon::fromTheme("system-help") );
     action->setStatusTip(tr("Show/hide Help browser docklet"));
     settings->addAction( mHelpBrowserDocklet->toggleViewAction(),
                          "ide-docklet-help", ideCategory );
