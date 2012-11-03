@@ -328,7 +328,6 @@ struct MoogFF : public Unit
 {
 	float m_freq, m_k;
 	double m_b0, m_a1; // Resonant freq and corresponding vals; stored because we need to compare against prev vals
-	double m_wcD;
 
 	double m_s1, m_s2, m_s3, m_s4; // 1st order filter states
 };
@@ -4864,11 +4863,8 @@ void MoogFF_Ctor(MoogFF* unit)
 
 void MoogFF_next(MoogFF *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-
-	float *in = ZIN(0);
 	float k = IN0(2);
-	k = k > 4.f? 4.f : (k<0.f ? 0.f : k);
+	k = sc_clip(k, 0.f, 4.f);
 
 	// Load state from the struct
 	double s1 = unit->m_s1;
@@ -4881,35 +4877,35 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 		s1 = s2 = s3 = s4 = 0.f;
 
 	double a1 = unit->m_a1, b0 = unit->m_b0; // Filter coefficient parameters
-	double o, u; // System's null response, loop input
 
 	// Update filter coefficients, but only if freq changes since it involves some expensive operations
 
 	float freqIn = IN0(1);
 	if(unit->m_freq != freqIn) {
 		//Print("Updated freq to %g\n", freq);
-		double wcD=unit->m_wcD;
 		double T = SAMPLEDUR;
-		wcD = 2.0 * tan ( T * PI * freqIn ) * SAMPLERATE;
+		double wcD = 2.0 * tan ( T * PI * freqIn ) * SAMPLERATE;
 		if(wcD<0)
 			wcD = 0; // Protect against negative cutoff freq
 		double TwcD = T*wcD;
-		b0 = (float)(TwcD/(TwcD + 2.));
-		a1 = (float)((TwcD - 2.)/(TwcD + 2.));
+		b0 = TwcD/(TwcD + 2.);
+		a1 = (TwcD - 2.)/(TwcD + 2.);
 		unit->m_freq = freqIn;
 		unit->m_b0 = b0;
 		unit->m_a1 = a1;
-		unit->m_wcD = wcD;
 	}
+
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
 
 	if (unit->m_k == k) {
 		LOOP1(inNumSamples,
 			// compute loop values
-			o = s4 + b0*(s3 + b0*(s2 + b0*s1));
+			double o = s4 + b0*(s3 + b0*(s2 + b0*s1));
 			double ins = ZXP(in);
 			double outs = (b0*b0*b0*b0*ins + o) * sc_reciprocal(1.0 + b0*b0*b0*b0*k);
 			ZXP(out) = outs;
-			u = ins - k*outs;
+			double u = ins - k*outs;
 
 			// update 1st order filter states
 			double past = u;
@@ -4934,11 +4930,11 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 
 		LOOP1(inNumSamples,
 			// compute loop values
-			o = s4 + b0*(s3 + b0*(s2 + b0*s1));
+			double o = s4 + b0*(s3 + b0*(s2 + b0*s1));
 			double ins = ZXP(in);
 			double outs = (b0*b0*b0*b0*ins + o) * sc_reciprocal(1.0 + b0*b0*b0*b0*k);
 			ZXP(out) = outs;
-			u = ins - k*outs;
+			double u = ins - k*outs;
 
 			// update 1st order filter states
 			double past = u;
@@ -4960,10 +4956,10 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 	}
 
 	// Store state
-	unit->m_s1 = s1;
-	unit->m_s2 = s2;
-	unit->m_s3 = s3;
-	unit->m_s4 = s4;
+	unit->m_s1 = zapgremlins(s1);
+	unit->m_s2 = zapgremlins(s2);
+	unit->m_s3 = zapgremlins(s3);
+	unit->m_s4 = zapgremlins(s4);
 }
 
 /* BEQSuite */
