@@ -30,7 +30,7 @@ subsection::Creation
 
 strong::*major, *minor, *dorian, *chromatic, *todi, *hijaz, *partch_o1, etc.::
 
-Creates a scale from the library stored in link::Classes/ScaleInfo::. Each scale comes with an appropriate default link::Classes/Tuning::, but alternate tunings can be specified at creation time:
+Creates a scale from the library stored in the instance variable "all". Each scale comes with an appropriate default link::Classes/Tuning::, but alternate tunings can be specified at creation time:
 code::
 Scale.phrygian(\pythagorean)
 ::
@@ -42,6 +42,22 @@ Scale.directory
 ::
 
 CLASSMETHODS::
+
+method::all
+The scale repository, to which new scales can be added.
+
+code::
+Scale.all.put(\catastrophic, Scale([0, 0.01, 0.04, 11.2]));
+Scale.at(\catastrophic); // access the scale
+::
+
+method::at
+Access from the scale repository.
+code::
+Scale.all.put(\catastrophic, Scale([0, 0.01, 0.04, 11.2]));
+Scale.at(\ionian);
+Scale.newFromKey(\ionian); // access a copy of the scale for modification
+::
 
 method::choose
 Creates a random scale from the library, constrained by size and pitchsPerOctave if desired.
@@ -222,12 +238,6 @@ a.ratios;
 a.tuning.name;
 a.tuning.semitones;
 a.tuning.ratios;
-::
-
-code::
-// cmd-J to see scale and tuning dictionaries in full
-ScaleInfo
-TuningInfo
 ::
 
 code::

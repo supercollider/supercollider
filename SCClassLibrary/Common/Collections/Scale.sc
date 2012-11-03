@@ -1,9 +1,10 @@
 Scale {
 
 	var <degrees, <pitchesPerOctave, <tuning, <>name;
+	classvar <all;
 
 	*new { | degrees = \ionian, pitchesPerOctave, tuning, name = "Unknown Scale" |
-		if(degrees.isKindOf(Symbol)) { ^this.newFromKey(degrees, tuning) };
+		if(degrees.isKindOf(Symbol)) { Error("Please use Scale.at(name) instead.").throw };
 		^super.new.init(degrees, pitchesPerOctave, tuning, name);
 	}
 
@@ -14,8 +15,17 @@ Scale {
 		^this.tuning_(inTuning ? Tuning.default(pitchesPerOctave));
 	}
 
+	*at { |key|
+		^all.at(key)
+	}
+
+	*doesNotUnderstand { |selector, args|
+		var scale = this.newFromKey(selector, args).deepCopy;
+		^scale ?? { super.doesNotUnderstand(selector, args) };
+	}
+
 	*newFromKey { |key, tuning|
-		var scale = ScaleInfo.at(key);
+		var scale = this.at(key);
 		scale ?? { ("Unknown scale " ++ key.asString).warn; ^nil };
 		tuning !? { scale.tuning_(tuning.asTuning) };
 		^scale
@@ -98,25 +108,22 @@ Scale {
 	}
 
 	*choose { |size = 7, pitchesPerOctave = 12|
-		var scale = ScaleInfo.choose({
+		var scale = this.chooseFromSelected {
 			|x| (x.size == size) && (x.pitchesPerOctave == pitchesPerOctave)
-		});
-		scale.isNil.if({
-			("No known scales with size " ++ size.asString ++
-				" and pitchesPerOctave " ++ pitchesPerOctave.asString).warn;
-			^nil
-		});
+		};
+		if(scale.isNil) {
+			"No known scales with size % and pitchesPerOctave %".format(size, pitchesPerOctave).warn
+		};
 		^scale
 	}
 
-	*doesNotUnderstand { |selector, args|
-		var scale = this.newFromKey(selector, args);
-		^scale ?? { super.doesNotUnderstand(selector, args) };
+	*chooseFromSelected { |selectFunc|
+		selectFunc = selectFunc ? { true };
+		^(all ++ all.parent).select(selectFunc).choose.deepCopy;
 	}
 
-
-	*directory {
-		^ScaleInfo.directory
+	*names {
+		^(all.keys.asArray ++ all.parent.keys).sort
 	}
 
 	octaveRatio {
@@ -143,8 +150,11 @@ Scale {
 
 	storedKey {
 		// can be optimised later
-		var stored = ScaleInfo.scales.detect(_ == this);
-		^stored !? { ScaleInfo.scales.findKeyForValue(stored) }
+		^all.findKeyForValue(this)
+	}
+
+	*directory {
+		^this.names.collect({ |k| "\\ %: %".format(k, all.at(k).name) }).join("\n")
 	}
 
 	storeArgs { ^[degrees, pitchesPerOctave, tuning, name] }
@@ -160,13 +170,23 @@ Scale {
 Tuning {
 
 	var <tuning, <octaveRatio, <>name;
+	classvar <all;
 
 	*new { | tuning, octaveRatio = 2.0, name = "Unknown Tuning" |
 		^super.newCopyArgs(tuning, octaveRatio, name);
 	}
 
+	*at { |key|
+		^all.at(key)
+	}
+
+	*doesNotUnderstand { |selector, args|
+		var tuning = this.newFromKey(selector, args).deepCopy;
+		^tuning ?? { super.doesNotUnderstand(selector, args) }
+	}
+
 	*newFromKey { | key |
-		^TuningInfo.at(key)
+		^all.at(key).deepCopy
 	}
 
 	*default { | pitchesPerOctave |
@@ -186,7 +206,12 @@ Tuning {
 	}
 
 	*choose { |size = 12|
-		^TuningInfo.choose({ |x| x.size == size })
+		^this.chooseFromSelected { |x| x.size == size }
+	}
+
+	*chooseFromSelected { |selectFunc|
+		selectFunc = selectFunc ? { true };
+		^(all ++ all.parent).select(selectFunc).choose.deepCopy;
 	}
 
 	ratios {
@@ -225,15 +250,6 @@ Tuning {
 		^this.instVarHash([\tuning, \octaveRatio])
 	}
 
-	*doesNotUnderstand { |selector, args|
-		var tuning = this.newFromKey(selector, args);
-		^tuning ?? { super.doesNotUnderstand(selector, args) }
-	}
-
-	*directory {
-		^TuningInfo.directory
-	}
-
 	stepsPerOctave {
 		^octaveRatio.log2 * 12.0
 	}
@@ -254,21 +270,29 @@ Tuning {
 
 	storedKey {
 		// can be optimised later
-		var stored = TuningInfo.tunings.detect(_ == this);
-		^stored !? { TuningInfo.tunings.findKeyForValue(stored) }
+		^all.findKeyForValue(this)
 	}
 
 	storeArgs {
 		^[tuning, octaveRatio, name]
 	}
 
+	*names {
+		^(all.keys.asArray ++ all.parent.keys).sort
+	}
+
+	*directory {
+		^this.names.collect({ |k| "\\ %: %".format(k, all.at(k).name) }).join("\n")
+	}
+
+
 }
 
 ScaleAD : Scale {
 	var <>descScale;
 	*new { | degrees, pitchesPerOctave, descDegrees, tuning, name = "Unknown Scale" |
-		^super.new(degrees ? \ionian, pitchesPerOctave, tuning, name)
-			.descScale_(Scale(descDegrees ? \ionian, pitchesPerOctave, tuning, name ++ "desc"))
+		^super.new(degrees, pitchesPerOctave, tuning, name)
+			.descScale_(Scale(descDegrees, pitchesPerOctave, tuning, name ++ "desc"))
 		;
 	}
 	asStream { ^ScaleStream(this, 0) }
@@ -308,15 +332,14 @@ ScaleStream {
 	}
 }
 
-ScaleInfo {
 
-	classvar <scales, dirDoc;
++ Scale {
 
 	*initClass {
 
-		Class.initClassTree(TuningInfo);
+		Class.initClassTree(Tuning);
 
-		scales = IdentityDictionary[
+		all = IdentityDictionary[
 
 			// TWELVE TONES PER OCTAVE
 			// 5 note scales
@@ -498,46 +521,15 @@ ScaleInfo {
 			\nahawand -> ScaleAD(#[0,4,6,10,14,16,22], 24, #[0,4,6,10,14,16,20], name: "Nahawand"),
 		];
 
-	}
-
-	*at { |key|
-		var res = scales[key];
-		^res !? { res.deepCopy };
-	}
-
-	*choose {
-		|selectFunc|
-		^scales.values.select(selectFunc ? { true }).choose.deepCopy;
-	}
-
-	*names {
-		^scales.keys.asArray.sort
-	}
-	*directory {
-		var dirString = scales.keys.asArray.sort.collect({ |k|
-			"\\" ++ k ++ ": " ++ scales.at(k).name
-		}).join("\n");
-
-		if(Document.implementationClass.notNil) {
-			dirDoc = dirDoc ?? {
-				Document.new("Tuning Directory", dirString)
-				.onClose_({ dirDoc.free; dirDoc = nil });
-			};
-			dirDoc.front;
-			dirDoc.string = dirString;
-		} {
-			dirString.postln;
-		}
+		all = all.freezeAsParent;
 	}
 }
 
-TuningInfo {
-
-	classvar <tunings, dirDoc;
++ Tuning {
 
 	*initClass {
 
-		tunings = IdentityDictionary[
+		all = IdentityDictionary[
 
 			//TWELVE-TONE TUNINGS
 			\et12 -> Tuning.new((0..11), 2, "ET12"),
@@ -614,37 +606,7 @@ TuningInfo {
 				"Wendy Carlos Gamma")
 		];
 
-
+		all = all.freezeAsParent;
 	}
 
-	*choose { |selectFunc|
-		^tunings.values.select(selectFunc ? { true }).choose;
-	}
-
-	*names {
-		^tunings.keys.asArray.sort
-	}
-
-	*at { |key|
-		var res = tunings[key];
-		^res !? { res.deepCopy };
-	}
-
-	*directory {
-		var dirString = tunings.keys.asArray.sort.collect({ |k|
-			"\\" ++ k ++ ": " ++ tunings.at(k).name
-		}).join("\n");
-
-		if(Document.implementationClass.notNil) {
-			dirDoc = dirDoc ?? {
-				Document.new("Tuning Directory", dirString)
-				.onClose_({ dirDoc.free; dirDoc = nil });
-			};
-			dirDoc.front;
-			dirDoc.string = dirString;
-		} {
-			dirString.postln;
-		}
-
-	}
 }

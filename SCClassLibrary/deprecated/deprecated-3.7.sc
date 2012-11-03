@@ -1,5 +1,19 @@
 // in 3.6, both "help" and "openHelpFile" will work fine. In 3.7, "openHelpFile" will be deprecated. In 3.8 it will be gone.
 
+TuningInfo {
+	*new {
+		this.deprecated(thisMethod);
+		^Tuning
+	}
+}
+
+ScaleInfo {
+	*new {
+		this.deprecated(thisMethod);
+		^Scale
+	}
+}
+
 + Object {
 	openHelpFile {
 		this.help
