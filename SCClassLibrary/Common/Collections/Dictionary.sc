@@ -421,6 +421,11 @@ IdentityDictionary : Dictionary {
 		^array.atIdentityHashInPairs(argKey)
 	}
 
+	freezeAsParent {
+		var frozenParent = this.freeze;
+		^this.class.new(this.size, nil, frozenParent, know)
+	}
+
 	doesNotUnderstand { arg selector ... args;
 		var func;
 		if (know) {

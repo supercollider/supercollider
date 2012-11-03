@@ -47,6 +47,11 @@ subsection::The following three methods provide support for Quant
 
 method::nextTimeOnGrid, asQuant, timingOffset
 
+subsection:Garbage collection
+
+method:freezeAsParent
+For optimizing the garbage collector load, objects can be frozen and become immutable. This method creates a new dictionary with the frozen instance as a parent so that all contents can be overwritten without losing this optimization.
+
 
 EXAMPLES::
 
