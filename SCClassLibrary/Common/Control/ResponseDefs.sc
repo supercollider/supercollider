@@ -743,7 +743,7 @@ MIDIFunc : AbstractResponderFunc {
 
 	// system realtime
 
-		// generic?
+	// generic
 	*sysrt { arg func, index, srcID, argTemplate, dispatcher;
 		^this.new(func, index, nil, \sysrt, srcID, argTemplate, dispatcher);
 	}
@@ -912,12 +912,68 @@ MIDIdef : MIDIFunc {
 		^this.new(key, func, nil, chan, \program, srcID, argTemplate, dispatcher);
 	}
 
+	///// system messages
+
 	*sysex { arg key, func, srcID, argTemplate, dispatcher;
 		^this.new(key, func, nil, nil, \sysex, srcID, argTemplate, dispatcher);
 	}
 
+		// system common
+
+	// does this need to be registered on the SMPTE hook? Yes!
+	*mtcQuarterFrame {arg key, func, srcID, argTemplate, dispatcher;
+		^this.new(key, func, nil, nil, \mtcQF, srcID, argTemplate, dispatcher); // actually index 1 sysrt, but on smpte hook
+	}
+
+	*smpte {arg key, func, srcID, argTemplate, dispatcher;
+		^this.new(key, func, nil, nil, \smpte, srcID, argTemplate, dispatcher); // actually index 1 sysrt, but on smpte hook
+	}
+
+	*songPosition {arg key, func, srcID, argTemplate, dispatcher;
+		^this.new(key, func, 2, nil, \songPosition, srcID, argTemplate, dispatcher);
+	}
+
+	*songSelect {arg key, func, srcID, argTemplate, dispatcher;
+		^this.new(key, func, 3, nil, \songSelect, srcID, argTemplate, dispatcher);
+	}
+
+	*tuneRequest {arg key, func, srcID, dispatcher;
+		^this.new(key, func, 6, nil, \tuneRequest, srcID, nil, dispatcher);
+	}
+
+	*midiClock {arg key, func, srcID, dispatcher;
+		^this.new(key, func, 8, nil, \midiClock, srcID, nil, dispatcher);
+	}
+
+	// system realtime
+
+	// generic
 	*sysrt { arg key, func, index, srcID, argTemplate, dispatcher;
 		^this.new(key, func, index, nil, \sysrt, srcID, argTemplate, dispatcher);
+	}
+
+	*tick {arg key, func, srcID, dispatcher;
+		^this.new(key, func, 9, nil, \tick, srcID, nil, dispatcher);
+	}
+
+	*start {arg key, func, srcID, dispatcher;
+		^this.new(key, func, 10, nil, \start, srcID, nil, dispatcher);
+	}
+
+	*continue {arg key, func, srcID, dispatcher;
+		^this.new(key, func, 11, nil, \continue, srcID, nil, dispatcher);
+	}
+
+	*stop {arg key, func, srcID, dispatcher;
+		^this.new(key, func, 12, nil, \stop, srcID, nil, dispatcher);
+	}
+
+	*activeSense {arg key, func, srcID, dispatcher;
+		^this.new(key, func, 14, nil, \activeSense, srcID, nil, dispatcher);
+	}
+
+	*reset {arg key, func, srcID, dispatcher;
+		^this.new(key, func, 15, nil, \reset, srcID, nil, dispatcher);
 	}
 
 	addToAll {|argkey| key = argkey; all.put(key, this) }
