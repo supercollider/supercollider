@@ -132,10 +132,18 @@ private:
 
 class HelpBrowserDocklet : public Docklet
 {
+    Q_OBJECT
+
 public:
     HelpBrowserDocklet( QWidget *parent = 0 );
 
     HelpBrowser *browser() { return mHelpBrowser; }
+
+private slots:
+    void onInterpreterStart() {
+        if (isVisible() && mHelpBrowser->url().isEmpty())
+            mHelpBrowser->goHome();
+    }
 
 private:
     HelpBrowser *mHelpBrowser;

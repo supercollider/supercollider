@@ -332,12 +332,6 @@ void ScProcess::onStart()
     QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
     evaluateCode ( command, true );
     sendActiveDocument();
-
-    if (MainWindow::instance()) {
-        HelpBrowserDocklet * helpBrowser = MainWindow::instance()->helpBrowserDocklet();
-        if (helpBrowser->isVisible())
-            helpBrowser->browser()->goHome();
-    }
 }
 
 void ScProcess::setActiveDocument(Document * document)

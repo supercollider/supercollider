@@ -334,6 +334,8 @@ HelpBrowserDocklet::HelpBrowserDocklet( QWidget *parent ):
     toolBar()->addAction( mHelpBrowser->mWebView->pageAction(QWebPage::Back) );
     toolBar()->addAction( mHelpBrowser->mWebView->pageAction(QWebPage::Forward) );
     toolBar()->addAction( mHelpBrowser->mWebView->pageAction(QWebPage::Reload) );
+
+    connect(Main::scProcess(), SIGNAL(started()), this, SLOT(onInterpreterStart()));
 }
 
 } // namespace ScIDE
