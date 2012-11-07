@@ -110,7 +110,7 @@ private slots:
     void onReadyRead(void);
 
 private:
-    void onSclangStart();
+    void onStart();
     void onResponse( const QString & selector, const QString & data );
 
     void prepareActions(Settings::Manager * settings);
