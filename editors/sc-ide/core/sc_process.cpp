@@ -147,10 +147,8 @@ void ScProcess::startLanguage (void)
 
     QProcess::start(sclangCommand, sclangArguments);
     bool processStarted = QProcess::waitForStarted();
-    if (!processStarted) {
+    if (!processStarted)
         emit statusMessage(tr("Failed to start interpreter!"));
-    } else
-        onSclangStart();
 }
 
 void ScProcess::recompileClassLibrary (void)
@@ -265,6 +263,8 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
         mActions[StopMain]->setEnabled(true);
         mActions[RecompileClassLibrary]->setEnabled(true);
 
+        onStart();
+
         break;
 
     case QProcess::NotRunning:
@@ -324,7 +324,7 @@ void ScProcess::onResponse( const QString & selector, const QString & data )
         sendActiveDocument();
 }
 
-void ScProcess::onSclangStart()
+void ScProcess::onStart()
 {
     if(!mIpcServer->isListening()) // avoid a warning on stderr
         mIpcServer->listen(mIpcServerName);
