@@ -39,11 +39,14 @@ NodeMapSetting {
 		var mapPrefix;
 		if(isMapped) {
 			mapPrefix = if(mappedRate === \audio) { "a" } { "c" };
-			event.put(key, { |i| mapPrefix ++ (i + this.index) }.dup(busNumChannels))
+			event.put(key, [{ |i| mapPrefix ++ (i + this.index) }.dup(busNumChannels)])
 		} {
-			event.put(key, value)
+			if(isMultiChannel) {
+				event.put(key, [value])
+			} {
+				event.put(key, value)
+			}
 		}
-
 	}
 
 	updateNodeMap { arg nodeMap;
