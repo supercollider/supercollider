@@ -62,7 +62,7 @@ public:
     uint32_t buffers, max_nodes, max_synthdefs;
 
     uint32_t rt_pool_size;
-    uint32_t wires, randomseeds;
+    uint32_t wires, rng_count;
 
     uint16_t load_synthdefs;
     int16_t verbosity;

@@ -48,7 +48,7 @@ server_arguments::server_arguments(int argc, char * argv[])
         ("rt-memory,m", value<uint32_t>(&rt_pool_size)->default_value(8192),
          "size of real-time memory pool in kb")
         ("wires,w", value<uint32_t>(&wires)->default_value(64), "number of wire buffers")
-        ("randomseeds,r", value<uint32_t>(&randomseeds)->default_value(64), "number of random seeds")
+        ("randomseeds,r", value<uint32_t>(&rng_count)->default_value(64), "number of random number generators")
         ("load-synthdefs,D", value<uint16_t>(&load_synthdefs)->default_value(1), "load synthdefs? (1 or 0)")
         ("rendezvous,R", value<uint16_t>()->default_value(1), "publish to Rendezvous? (1 or 0)")
         ("max-logins,l", value<uint32_t>()->default_value(64), "maximum number of named return addresses")
