@@ -21,8 +21,8 @@ Main : Process {
 		GUI.fromID( this.platform.defaultGUIScheme );
 		GeneralHID.fromID( this.platform.defaultHIDScheme );
 		this.platform.startup;
-		StartUp.run;
 		openPorts = Set[NetAddr.langPort];
+		StartUp.run;
 
 		("Welcome to SuperCollider %.".format(Main.version)
 			+ (Platform.ideName.switch(
