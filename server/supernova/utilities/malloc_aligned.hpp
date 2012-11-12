@@ -22,7 +22,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include <new> // for std::bad_alloc
+#include <new>     // for std::bad_alloc
+#include <utility> // for std::forward
 
 #include <boost/noncopyable.hpp>
 
@@ -237,6 +238,14 @@ public:
     {
         ::new(p) T(val);
     }
+
+#if (__cplusplus >= 201103L)
+    template< class U, class... Args >
+    void construct(U * p, Args&& ... args)
+    {
+        ::new(p) T(std::forward<Args>(args)...);
+    }
+#endif
 
     void destroy(pointer p)
     {
