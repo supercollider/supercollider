@@ -130,11 +130,11 @@ public:
         return item ? item->data(MethodRole).value<const ScLanguage::Method*>() : 0;
     }
 
-    QString exec( const QPoint & pos )
+    QString exec( const QRect & rect )
     {
         QString result;
         QPointer<CompletionMenu> self = this;
-        if (PopUpWidget::exec(pos)) {
+        if (PopUpWidget::exec(rect)) {
             if (!self.isNull())
                 result = currentText();
         }
@@ -579,12 +579,9 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
 
     connect(menu, SIGNAL(finished(int)), this, SLOT(onCompletionMenuFinished(int)));
 
-    QTextCursor cursor(document());
-    cursor.setPosition(mCompletion.pos);
-    QPoint pos = mEditor->viewport()->mapToGlobal( mEditor->cursorRect(cursor).bottomLeft() )
-        + QPoint(0,5);
+    QRect popupTargetRect = globalCursorRect(mCompletion.pos).adjusted(0,-5,0,5);
 
-    menu->popup(pos);
+    menu->popup( popupTargetRect );
 
     updateCompletionMenu(forceShow);
 }
@@ -815,9 +812,12 @@ void AutoCompleter::updateCompletionMenu(bool forceShow)
     if (menu->model()->hasChildren()) {
         menu->model()->sort(0);
         menu->view()->setCurrentIndex( menu->model()->index(0,0) );
-        if (forceShow || menu->currentText() != mCompletion.text)
+        if (forceShow || menu->currentText() != mCompletion.text) {
+            if (!menu->isVisible())
+                menu->setTargetRect( globalCursorRect(mCompletion.pos).adjusted(0,-5,0,5) );
+            // The Show event will adjust position.
             menu->show();
-        else
+        } else
             menu->hide();
     } else
         menu->hide();
@@ -988,13 +988,9 @@ void AutoCompleter::triggerMethodCallAid( bool explicitTrigger )
                 menu->addItem(item);
             }
 
-            QTextCursor cursor(document());
-            cursor.setPosition(bracketPos);
-            QPoint pos =
-                mEditor->viewport()->mapToGlobal( mEditor->cursorRect(cursor).bottomLeft() )
-                + QPoint(0,5);
+            QRect popupTargetRect = globalCursorRect( bracketPos ).adjusted(0,-5,0,5);
 
-            if ( ! static_cast<PopUpWidget*>(menu)->exec(pos) ) {
+            if ( ! static_cast<PopUpWidget*>(menu)->exec(popupTargetRect) ) {
                 delete menu;
                 return;
             }
@@ -1254,6 +1250,15 @@ QString AutoCompleter::tokenText( TokenIterator & it )
     cursor.setPosition(pos);
     cursor.setPosition(pos + it->length, QTextCursor::KeepAnchor);
     return cursor.selectedText();
+}
+
+QRect AutoCompleter::globalCursorRect( int cursorPosition )
+{
+    QTextCursor cursor(document());
+    cursor.setPosition(cursorPosition);
+    QRect r = mEditor->cursorRect(cursor);
+    r.moveTopLeft( mEditor->viewport()->mapToGlobal( r.topLeft() ) );
+    return r;
 }
 
 } // namespace ScIDE
