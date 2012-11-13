@@ -947,8 +947,6 @@ void AutoCompleter::triggerMethodCallAid( bool explicitTrigger )
     call.functionalNotation = functionalNotation;
     pushMethodCall(call);
 
-    using std::pair;
-
     // Obtain method data, either by inferrence or by user-disambiguation via a menu
 
     const Method *method = 0;
@@ -969,40 +967,7 @@ void AutoCompleter::triggerMethodCallAid( bool explicitTrigger )
         } while (klass);
     }
     else {
-        const MethodMap & methods = introspection.methodMap();
-
-        pair<MethodMap::const_iterator, MethodMap::const_iterator> match =
-            methods.equal_range(methodName);
-
-        if (match.first == match.second) {
-            qDebug() << "MethodCall: no method matches:" << methodName;
-            return;
-        } else if (std::distance(match.first, match.second) == 1)
-            method = match.first->second.data();
-        else {
-            Q_ASSERT(mMethodCall.menu.isNull());
-            QPointer<CompletionMenu> menu = new CompletionMenu(mEditor);
-            mMethodCall.menu = menu;
-
-            for (MethodMap::const_iterator it = match.first; it != match.second; ++it)
-            {
-                const Method *method = it->second.data();
-                QStandardItem *item = new QStandardItem();
-                item->setText(method->name + " (" + method->ownerClass->name + ')');
-                item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
-                menu->addItem(item);
-            }
-
-            QRect popupTargetRect = globalCursorRect( bracketPos ).adjusted(0,-5,0,5);
-
-            if ( ! static_cast<PopUpWidget*>(menu)->exec(popupTargetRect) ) {
-                delete menu;
-                return;
-            }
-
-            method = menu->currentMethod();
-            delete menu;
-        }
+        method = disambiguateMethod( methodName, bracketPos );
     }
 
     // Finally, show the aid for the method
@@ -1012,6 +977,52 @@ void AutoCompleter::triggerMethodCallAid( bool explicitTrigger )
         mMethodCall.stack.top().method = method;
         updateMethodCall( mEditor->textCursor().position() );
     }
+}
+
+const ScLanguage::Method *AutoCompleter::disambiguateMethod
+( const QString & methodName, int cursorPos )
+{
+    Q_ASSERT(mMethodCall.menu.isNull());
+
+    using namespace ScLanguage;
+    using std::pair;
+
+    const Introspection & introspection = Main::scProcess()->introspection();
+    const MethodMap & methods = introspection.methodMap();
+
+    pair<MethodMap::const_iterator, MethodMap::const_iterator> match =
+        methods.equal_range(methodName);
+
+    const Method *method = 0;
+
+    if (match.first == match.second) {
+        qDebug() << "MethodCall: no method matches:" << methodName;
+        method = 0;
+    }
+    else if (std::distance(match.first, match.second) == 1)
+        method = match.first->second.data();
+    else {
+        QPointer<CompletionMenu> menu = new CompletionMenu(mEditor);
+        mMethodCall.menu = menu;
+
+        for (MethodMap::const_iterator it = match.first; it != match.second; ++it)
+        {
+            const Method *method = it->second.data();
+            QStandardItem *item = new QStandardItem();
+            item->setText(method->name + " (" + method->ownerClass->name + ')');
+            item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
+            menu->addItem(item);
+        }
+
+        QRect popupTargetRect = globalCursorRect( cursorPos ).adjusted(0,-5,0,5);
+
+        if ( static_cast<PopUpWidget*>(menu)->exec(popupTargetRect) )
+            method = menu->currentMethod();
+
+        delete menu;
+    }
+
+    return method;
 }
 
 void AutoCompleter::updateMethodCall( int cursorPos )
