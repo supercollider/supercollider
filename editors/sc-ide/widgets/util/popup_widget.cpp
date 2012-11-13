@@ -38,7 +38,7 @@ PopUpWidget::~PopUpWidget()
     quit();
 }
 
-int PopUpWidget::exec( const QPoint & pos )
+int PopUpWidget::exec( const QRect & targetRect )
 {
     if (mEventLoop) {
         qWarning("ScIDE::PopUpWidget: recursive exec() - suppressed!");
@@ -46,11 +46,11 @@ int PopUpWidget::exec( const QPoint & pos )
     }
 
     mResult = Rejected;
+    mTargetRect = targetRect;
 
     QEventLoop eventLoop;
     mEventLoop = &eventLoop;
 
-    move(pos);
     show();
 
     QPointer<QObject> self(this);
@@ -61,10 +61,10 @@ int PopUpWidget::exec( const QPoint & pos )
     return mResult;
 }
 
-void PopUpWidget::popup( const QPoint & pos )
+void PopUpWidget::popup( const QRect & targetRect )
 {
     mResult = Rejected;
-    move(pos);
+    mTargetRect = targetRect;
     show();
 }
 
@@ -82,17 +82,19 @@ void PopUpWidget::keyPressEvent( QKeyEvent *ke )
 void PopUpWidget::showEvent( QShowEvent *e )
 {
     QRect r = geometry();
+    r.moveTopLeft( mTargetRect.bottomLeft() );
+
     QRect screen = QApplication::desktop()->availableGeometry(this);
     if (!screen.contains(r))
     {
         if (r.right() > screen.right())
             r.moveRight( screen.right() );
-        if (r.bottom() > screen.bottom())
-            r.moveBottom( screen.bottom() );
         if (r.left() < screen.left())
             r.moveLeft( screen.left() );
+        if (r.bottom() > screen.bottom())
+            r.moveBottom( qMin( mTargetRect.top(), screen.bottom()) );
         if (r.top() < screen.top())
-            r.moveTop(screen.top());
+            r.moveTop( screen.top() );
     }
 
     move(r.topLeft());

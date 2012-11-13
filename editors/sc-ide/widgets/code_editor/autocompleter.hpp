@@ -129,6 +129,7 @@ private:
     // utilities
 
     QString tokenText( TokenIterator & it );
+    QRect globalCursorRect( int cursorPosition );
 
     // data
 
