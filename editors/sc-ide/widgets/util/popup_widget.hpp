@@ -42,9 +42,11 @@ public:
 
     virtual ~PopUpWidget();
 
-    int exec( const QPoint & pos );
+    int exec( const QRect & targetRect );
 
-    void popup( const QPoint & pos );
+    void popup( const QRect & targetRect );
+
+    void setTargetRect( const QRect & targetRect ) { mTargetRect = targetRect; }
 
 public slots:
 
@@ -92,6 +94,7 @@ private:
 
     QEventLoop *mEventLoop;
     int mResult;
+    QRect mTargetRect;
 };
 
 } // namespace ScIDE
