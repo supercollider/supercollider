@@ -51,7 +51,7 @@ namespace boost
   }
 
   const system::error_category&
-  future_category()
+  future_category() BOOST_NOEXCEPT
   {
       static thread_detail::future_error_category f;
       return f;
