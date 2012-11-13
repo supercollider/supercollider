@@ -53,7 +53,7 @@ public:
     // NOTE: default 'force' to true in the following methods
     // for the purpose of argument-less QAction::triggered() signal:
     void triggerCompletion( bool forceShow = true );
-    void triggerMethodCallAid( bool forceReset = true );
+    void triggerMethodCallAid( bool explicitly = true );
 
 private slots:
     void onContentsChange(int pos, int removed, int added);
