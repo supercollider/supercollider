@@ -112,6 +112,7 @@ private:
 
     // method call aid
 
+    const ScLanguage::Method *disambiguateMethod( const QString & methodName, int cursorPos );
     void updateMethodCall( int cursorPos );
     void pushMethodCall( const MethodCall & call );
     void showMethodCall( const MethodCall & call, int arg = 0 );
