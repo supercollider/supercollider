@@ -851,7 +851,7 @@ void AutoCompleter::onCompletionMenuFinished( int result )
     //quitCompletion("cancelled");
 }
 
-void AutoCompleter::triggerMethodCallAid( bool forceReset )
+void AutoCompleter::triggerMethodCallAid( bool explicitTrigger )
 {
     using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
@@ -859,29 +859,47 @@ void AutoCompleter::triggerMethodCallAid( bool forceReset )
     QTextDocument *doc = document();
     QTextCursor cursor( mEditor->textCursor() );
 
-    // Find the bracket that we are currently in
+    // Find the first bracket that defines a method call
+    TokenIterator tokenIt;
+    TokenIterator bracketIt = TokenIterator::leftOf( cursor.block(), cursor.positionInBlock() );
+    while (true)
+    {
+        bracketIt = ScCodeEditor::previousOpeningBracket(bracketIt);
+        if (!bracketIt.isValid())
+            return;
 
-    TokenIterator tokenIt = TokenIterator::leftOf( cursor.block(), cursor.positionInBlock() );
-    tokenIt = ScCodeEditor::previousOpeningBracket(tokenIt);
-    if (!tokenIt.isValid() || tokenIt->character != '(')
-        return;
+        if (bracketIt->character == '(') {
+            tokenIt = bracketIt.previous();
+            Token::Type tokenType = tokenIt.type();
 
-    int bracketPos = tokenIt.position();
+            if ( tokenIt.block() == bracketIt.block() &&
+                 ( tokenType == Token::Name ||
+                   tokenType == Token::Class ) )
+                break;
+        }
 
-    // Compare against stack;
+        if (!explicitTrigger)
+            return;
+
+        --bracketIt;
+    }
+
+    int bracketPos = bracketIt.position();
+
+    // Compare against stack
     if ( !mMethodCall.stack.isEmpty() && mMethodCall.stack.top().position == bracketPos )
     {
         // A matching call is already on stack
         qDebug("Method call: trigger -> call already on stack");
 
-        // If forceReset, then either retrigger disambiguation (if needed),
+        // If triggered explicitly, then either retrigger disambiguation (if needed),
         // or unsuppress it.
-        if (forceReset && !mMethodCall.stack.top().method) {
+        if (explicitTrigger && !mMethodCall.stack.top().method) {
             qDebug("Method call: forced re-trigger, popping current call.");
             mMethodCall.stack.pop();
             hideMethodCall();
         } else {
-            if (forceReset) {
+            if (explicitTrigger) {
                 mMethodCall.stack.top().suppressed = false;
                 updateMethodCall(cursor.position());
             }
@@ -891,20 +909,13 @@ void AutoCompleter::triggerMethodCallAid( bool forceReset )
         }
     }
 
-    --tokenIt;
-
-    // Only trigger if there's a token to define the method call
-    // on the same line as the opening bracket
-    if (tokenIt.block() != cursor.block())
-        return;
-
-    // Find method and receiver tokens, infer class of receiver
-
     QString methodName;
     bool functionalNotation = false;
     const Class *receiverClass = NULL;
-
     Token::Type tokenType = tokenIt.type();
+
+    Q_ASSERT( tokenType == Token::Name || tokenType == Token::Class );
+
     if (tokenType == Token::Name) {
         methodName = tokenText(tokenIt);
         --tokenIt;
@@ -913,15 +924,11 @@ void AutoCompleter::triggerMethodCallAid( bool forceReset )
         else
             functionalNotation = true;
     }
-    else if (tokenType == Token::Class) {
+    else
         methodName = "new";
-    }
-    else {
-        return;
-    }
 
     if (!functionalNotation && tokenIt.isValid())
-            receiverClass = classForToken( tokenIt->type, tokenText(tokenIt) );
+        receiverClass = classForToken( tokenIt->type, tokenText(tokenIt) );
 
     // Ok, this is a valid method call, push on stack
 
