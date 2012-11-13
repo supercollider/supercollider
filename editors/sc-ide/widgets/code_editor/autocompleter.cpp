@@ -37,6 +37,7 @@
 #include <QStandardItemModel>
 #include <QStandardItem>
 #include <QHBoxLayout>
+#include <QScrollBar>
 #include <QApplication>
 #include <QProxyStyle>
 
@@ -268,6 +269,10 @@ AutoCompleter::AutoCompleter( ScCodeEditor *editor ):
 
     connect(editor, SIGNAL(cursorPositionChanged()),
             this, SLOT(onCursorChanged()));
+    connect( editor->horizontalScrollBar(), SIGNAL(valueChanged(int)),
+             this, SLOT(hideWidgets()) );
+    connect( editor->verticalScrollBar(), SIGNAL(valueChanged(int)),
+             this, SLOT(hideWidgets()) );
     connect(Main::scProcess(), SIGNAL(introspectionAboutToSwap()),
             this, SLOT(clearMethodCallStack()));
 }
@@ -310,12 +315,7 @@ bool AutoCompleter::eventFilter( QObject *object, QEvent *event )
 
     switch(event->type()) {
     case QEvent::FocusOut:
-        if (mCompletion.menu)
-            mCompletion.menu->reject();
-        if (mMethodCall.menu)
-            mMethodCall.menu->reject();
-        if (mMethodCall.widget)
-            mMethodCall.widget->hide();
+        hideWidgets();
         break;
     case QEvent::ShortcutOverride: {
         QKeyEvent * kevent = static_cast<QKeyEvent*>(event);
@@ -1232,6 +1232,16 @@ void AutoCompleter::clearMethodCallStack()
 {
     mMethodCall.stack.clear();
     hideMethodCall();
+}
+
+void AutoCompleter::hideWidgets()
+{
+    if (mCompletion.menu)
+        mCompletion.menu->reject();
+    if (mMethodCall.menu)
+        mMethodCall.menu->reject();
+    if (mMethodCall.widget)
+        mMethodCall.widget->hide();
 }
 
 QString AutoCompleter::tokenText( TokenIterator & it )
