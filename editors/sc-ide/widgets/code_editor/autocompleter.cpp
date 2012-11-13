@@ -856,6 +856,11 @@ void AutoCompleter::triggerMethodCallAid( bool explicitTrigger )
     using namespace ScLanguage;
     const Introspection & introspection = Main::scProcess()->introspection();
 
+    if (!mMethodCall.menu.isNull()) {
+        qDebug("Method call: disambiguation menu already shown. Aborting.");
+        return;
+    }
+
     QTextDocument *doc = document();
     QTextCursor cursor( mEditor->textCursor() );
 
