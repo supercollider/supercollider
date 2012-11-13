@@ -39,6 +39,7 @@
 #include <QHBoxLayout>
 #include <QScrollBar>
 #include <QApplication>
+#include <QDesktopWidget>
 #include <QProxyStyle>
 
 #ifdef Q_WS_X11
@@ -210,7 +211,8 @@ public:
         setLayout(box);
     }
 
-    void showMethod( const AutoCompleter::MethodCall & methodCall, int argNum )
+    void showMethod( const AutoCompleter::MethodCall & methodCall,
+                     int argNum, const QRect & cursorRect )
     {
         const ScLanguage::Method *method = methodCall.method;
         int argc = method->arguments.count();
@@ -235,6 +237,11 @@ public:
         }
 
         mLabel->setText(text);
+
+        mTargetRect = cursorRect;
+
+        updateGeometry();
+        show();
     }
 
 private:
@@ -257,7 +264,29 @@ private:
             text += "</span>";
     }
 
+    void updateGeometry() {
+        QRect r;
+        r.setSize( sizeHint() );
+        r.moveBottomLeft( mTargetRect.topLeft() );
+
+        QRect screen = QApplication::desktop()->availableGeometry(this);
+        if (!screen.contains(r))
+        {
+            if (r.right() > screen.right())
+                r.moveRight( screen.right() );
+            if (r.left() < screen.left())
+                r.moveLeft( screen.left() );
+            if (r.top() < screen.top())
+                r.moveTop( qMax( mTargetRect.bottom(), screen.top() ) );
+            if (r.bottom() > screen.bottom())
+                r.moveBottom( screen.bottom() );
+        }
+
+        setGeometry(r);
+    }
+
     QLabel *mLabel;
+    QRect mTargetRect;
 };
 
 AutoCompleter::AutoCompleter( ScCodeEditor *editor ):
@@ -1083,21 +1112,12 @@ void AutoCompleter::pushMethodCall( const MethodCall & call )
 
 void AutoCompleter::showMethodCall( const MethodCall & call, int arg )
 {
-    QTextCursor cursor(document());
-    cursor.setPosition(call.position);
-    QPoint pos =
-        mEditor->viewport()->mapToGlobal( mEditor->cursorRect(cursor).topLeft() );
-    pos += QPoint(0, -20);
-
     if (mMethodCall.widget.isNull())
         mMethodCall.widget = new MethodCallWidget(mEditor);
 
     MethodCallWidget *w = mMethodCall.widget;
 
-    w->showMethod( call, arg );
-    w->resize(w->sizeHint());
-    w->move(pos);
-    w->show();
+    w->showMethod( call, arg, globalCursorRect(call.position).adjusted(0, -7, 0, 5) );
 }
 
 void AutoCompleter::hideMethodCall()
