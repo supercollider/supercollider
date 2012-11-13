@@ -183,8 +183,9 @@ public:
     MethodCallWidget( QWidget * parent = 0 ):
         QWidget( parent, Qt::ToolTip )
     {
-        mLabel = new QLabel();
+        mLabel = new QLabel(this);
         mLabel->setTextFormat( Qt::RichText );
+        mLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
 #ifdef Q_WS_X11
         QStyle *style = this->style();
@@ -204,11 +205,6 @@ public:
             setPalette(p);
             mLabel->setForegroundRole(QPalette::ToolTipText);
         }
-
-        QHBoxLayout *box = new QHBoxLayout;
-        box->setContentsMargins(5,2,5,2);
-        box->addWidget(mLabel);
-        setLayout(box);
     }
 
     void showMethod( const AutoCompleter::MethodCall & methodCall,
@@ -265,8 +261,14 @@ private:
     }
 
     void updateGeometry() {
+        static const QSize margins = QSize(5,2);
+
+        QSize labelSize = mLabel->sizeHint();
+        mLabel->move(margins.width(), margins.height());
+        mLabel->resize(labelSize);
+
         QRect r;
-        r.setSize( sizeHint() );
+        r.setSize( labelSize  + (margins * 2) );
         r.moveBottomLeft( mTargetRect.topLeft() );
 
         QRect screen = QApplication::desktop()->availableGeometry(this);
