@@ -57,6 +57,7 @@ public:
         Quit = 0,
         DocNew,
         DocOpen,
+        DocOpenStartup,
         DocSave,
         DocSaveAs,
         DocSaveAll,
@@ -127,6 +128,7 @@ public Q_SLOTS:
 
     void newDocument();
     void openDocument();
+    void openStartupFile();
     void saveDocument();
     void saveDocumentAs();
     void saveAllDocuments();
