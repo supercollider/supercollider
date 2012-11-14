@@ -342,22 +342,25 @@ inline int sc_fold(int in, int lo, int hi)
 	return c + lo;
 }
 
-inline int sc_gcd(int u, int v)
+inline int sc_gcd(int a, int b)
 {
 	int t;
-	u = sc_abs(u);
-	v = sc_abs(v);
-	if (u <= 1 || v <= 1) return 1;
-	while (u>0) {
-		if (u<v) { t=u; u=v; v=t; }
-		u = u % v;
+	a = sc_abs(a);
+	b = sc_abs(b);
+	if (a == 1 || b == 1) return 1;
+	if (a < b) { t = a; a = b; b = t; }
+	while (b > 0) {
+		t = a % b; a = b; b = t;
 	}
-	return v;
+	return a;
 }
 
-inline int sc_lcm(int u, int v)
+inline int sc_lcm(int a, int b)
 {
-	return (u * v)/sc_gcd(u,v);
+    if (a == 0 || b == 0)
+        return 0;
+    else
+        return sc_abs(a * b) / sc_gcd(a, b);
 }
 
 inline int sc_bitAnd(int a, int b)
