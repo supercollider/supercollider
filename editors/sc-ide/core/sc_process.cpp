@@ -87,11 +87,6 @@ void ScProcess::prepareActions(Settings::Manager * settings)
     connect(action, SIGNAL(triggered()), this, SLOT(recompileClassLibrary()) );
     settings->addAction( action, "interpreter-recompile-lib", interpreterCategory);
 
-    mActions[RunMain] = action = new QAction(
-        QIcon::fromTheme("media-playback-start"), tr("Run Main"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(runMain()));
-    settings->addAction( action, "interpreter-main-run", interpreterCategory);
-
     mActions[StopMain] = action = new QAction(
         QIcon::fromTheme("media-playback-stop"), tr("Stop Main"), this);
     action->setShortcut(tr("Ctrl+.", "Stop Main (a.k.a. cmd-period)"));
@@ -259,7 +254,6 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
         break;
 
     case QProcess::Running:
-        mActions[RunMain]->setEnabled(true);
         mActions[StopMain]->setEnabled(true);
         mActions[RecompileClassLibrary]->setEnabled(true);
 
@@ -273,7 +267,6 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
         mActions[Start]->setEnabled(true);
         mActions[Stop]->setEnabled(false);
         mActions[Restart]->setEnabled(false);
-        mActions[RunMain]->setEnabled(false);
         mActions[StopMain]->setEnabled(false);
         mActions[RecompileClassLibrary]->setEnabled(false);
 
