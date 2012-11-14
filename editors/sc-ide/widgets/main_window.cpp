@@ -554,7 +554,6 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );
     menu->addAction( mEditors->action(MultiEditor::EvaluateLine) );
     menu->addSeparator();
-    menu->addAction( mMain->scProcess()->action(ScIDE::ScProcess::RunMain) );
     menu->addAction( mMain->scProcess()->action(ScIDE::ScProcess::StopMain) );
     menu->addSeparator();
     menu->addAction( mActions[LookupImplementationForCursor] );

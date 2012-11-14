@@ -52,7 +52,6 @@ public:
         Stop,
         Restart,
         RecompileClassLibrary,
-        RunMain,
         StopMain,
 
         ActionCount
@@ -84,7 +83,6 @@ public slots:
     void stopLanguage (void);
     void restartLanguage (void);
     void recompileClassLibrary (void);
-    void runMain(void)  { evaluateCode("thisProcess.run", false); }
     void stopMain(void) { evaluateCode("thisProcess.stop", false); }
     void evaluateCode(QString const & commandString, bool silent = false);
 
