@@ -1973,7 +1973,7 @@ int prArraySlide(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c, *slots;
 	PyrObject *obj1, *obj2;
-	int h, i, j, k, n, m, numslots, numwin;
+	int h, i, j, k, numslots, numwin;
 
 	a = g->sp - 2;
 	b = g->sp - 1;
@@ -1983,15 +1983,17 @@ int prArraySlide(struct VMGlobals *g, int numArgsPushed)
 
 	obj1 = slotRawObject(a);
 	slots = obj1->slots;
-	m = slotRawInt(b);
-	n = slotRawInt(c);
+	int m = slotRawInt(b);
+	int n = slotRawInt(c);
+	if (n <= 0)
+		return errFailed;
+
 	numwin = (obj1->size + n - m) / n;
 	numslots = numwin * m;
 	obj2 = instantiateObject(g->gc, obj1->classptr, numslots, false, true);
 	for (i=h=k=0; i<numwin; ++i,h+=n) {
-		for (j=h; j<m+h; ++j) {
+		for (j=h; j<m+h; ++j)
 			slotCopy(&obj2->slots[k++],&slots[j]);
-		}
 	}
 	obj2->size = k;
 	SetRaw(a, obj2);
