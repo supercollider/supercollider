@@ -41,6 +41,8 @@
 #include "code_editor/sc_editor.hpp"
 #include "settings/dialog.hpp"
 
+#include "SC_DirUtils.h"
+
 #include <QAction>
 #include <QApplication>
 #include <QFileDialog>
@@ -238,6 +240,12 @@ void MainWindow::createActions()
     action->setStatusTip(tr("Open an existing file"));
     connect(action, SIGNAL(triggered()), this, SLOT(openDocument()));
     settings->addAction( action, "ide-document-open", ideCategory);
+
+    mActions[DocOpenStartup] = action = new QAction(
+        QIcon::fromTheme("document-open"), tr("Open startup file"), this);
+    action->setStatusTip(tr("Open startup file"));
+    connect(action, SIGNAL(triggered()), this, SLOT(openStartupFile()));
+    settings->addAction( action, "ide-document-open-startup", ideCategory);
 
     mActions[DocSave] = action = new QAction(
         QIcon::fromTheme("document-save"), tr("&Save"), this);
@@ -456,6 +464,7 @@ void MainWindow::createMenus()
     mRecentDocsMenu = menu->addMenu(tr("Open Recent", "Open a recent document"));
     connect(mRecentDocsMenu, SIGNAL(triggered(QAction*)),
             this, SLOT(onRecentDocAction(QAction*)));
+    menu->addAction( mActions[DocOpenStartup] );
     menu->addAction( mActions[DocSave] );
     menu->addAction( mActions[DocSaveAs] );
     menu->addAction( mActions[DocSaveAll] );
@@ -1010,6 +1019,15 @@ void MainWindow::openDocument()
         foreach(QString filename, filenames)
             mMain->documentManager()->open(filename);
     }
+}
+
+void MainWindow::openStartupFile()
+{
+    char configDir[FILENAME_MAX];
+    sc_GetUserConfigDirectory(configDir, FILENAME_MAX);
+
+    QString startUpFile = QDir::cleanPath(QString(configDir) + QDir::separator() + QString("startup.scd"));
+    mMain->documentManager()->open(startUpFile);
 }
 
 void MainWindow::saveDocument()
