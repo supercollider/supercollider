@@ -355,7 +355,7 @@ void MainWindow::createActions()
     mActions[FocusPostWindow] = action = new QAction( tr("Focus Post Window"), this);
     action->setStatusTip(tr("Focus post window"));
     action->setShortcut(tr("Ctrl+L", "Focus post window"));
-    connect(action, SIGNAL(triggered()), mPostDocklet->mPostWindow, SLOT(setFocus()));
+    connect(action, SIGNAL(triggered()), mPostDocklet, SLOT(raiseAndFocus()));
     settings->addAction( action, "post-focus", ideCategory);
 
     // Language
