@@ -1023,8 +1023,8 @@ void MainWindow::openDocument()
 
 void MainWindow::openStartupFile()
 {
-    char configDir[FILENAME_MAX];
-    sc_GetUserConfigDirectory(configDir, FILENAME_MAX);
+    char configDir[PATH_MAX];
+    sc_GetUserConfigDirectory(configDir, PATH_MAX);
 
     QString startUpFile = QDir::cleanPath(QString(configDir) + QDir::separator() + QString("startup.scd"));
     mMain->documentManager()->open(startUpFile);
