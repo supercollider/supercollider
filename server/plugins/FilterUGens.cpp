@@ -5175,13 +5175,17 @@ void BLowPass_next_kk(BLowPass *unit, int inNumSamples)
 
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			double in0 = ZXP(in);
+			double in1 = ZXP(in);
+			double in2 = ZXP(in);
+
+			y0 = in0 + b1 * y1 + b2 * y2;
 			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
+			y2 = in1 + b1 * y0 + b2 * y1;
 			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
 
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
+			y1 = in2 + b1 * y2 + b2 * y0;
 			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
 			);
 		LOOP(unit->mRate->mFilterRemain,
@@ -5368,13 +5372,16 @@ void BHiPass_next_kk(BHiPass *unit, int inNumSamples)
 	} else {
 
 		LOOP(unit->mRate->mFilterLoops,
-			 y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			double in0 = ZXP(in);
+			double in1 = ZXP(in);
+			double in2 = ZXP(in);
+			y0 = in0 + b1 * y1 + b2 * y2;
 			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
+			y2 = in1 + b1 * y0 + b2 * y1;
 			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
 
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
+			y1 = in2 + b1 * y2 + b2 * y0;
 			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
 		);
 		LOOP(unit->mRate->mFilterRemain,
