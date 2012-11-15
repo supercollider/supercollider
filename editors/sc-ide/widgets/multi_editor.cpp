@@ -453,8 +453,17 @@ void MultiEditor::createActions()
 
     mActions[ShowWhitespace] = action = new QAction(tr("Show Spaces and Tabs"), this);
     action->setCheckable(true);
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered(bool)), SLOT(setShowWhitespace(bool)));
     settings->addAction( action, "editor-toggle-show-whitespace", editorCategory);
+
+    mActions[IndentWithSpaces] = action = new QAction(tr("Use Spaces for Indentation"), this);
+    action->setCheckable(true);
+    action->setStatusTip( tr("Indent with spaces instead of tabs") );
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered(bool)), SLOT(setSpaceIndent(bool)),
+                           SignalMultiplexer::ConnectionOptional );
+    settings->addAction( action, "editor-toggle-space-indent", editorCategory );
 
     mActions[NextDocument] = action = new QAction(tr("Next Document"), this);
 #ifndef Q_OS_MAC
@@ -544,6 +553,8 @@ void MultiEditor::createActions()
     addAction(mActions[Paste]);
     addAction(mActions[EnlargeFont]);
     addAction(mActions[ShrinkFont]);
+    addAction(mActions[ShowWhitespace]);
+    addAction(mActions[IndentWithSpaces]);
     addAction(mActions[EvaluateCurrentDocument]);
     addAction(mActions[EvaluateRegion]);
     addAction(mActions[EvaluateLine]);
@@ -565,6 +576,7 @@ void MultiEditor::createActions()
 void MultiEditor::updateActions()
 {
     GenericCodeEditor *editor = currentEditor();
+    ScCodeEditor *scEditor = qobject_cast<ScCodeEditor*>(editor);
     QTextDocument *doc = editor ? editor->textDocument() : 0;
 
     mActions[Undo]->setEnabled( doc && doc->isUndoAvailable() );
@@ -584,6 +596,8 @@ void MultiEditor::updateActions()
     mActions[ResetFontSize]->setEnabled( editor );
     mActions[ShowWhitespace]->setEnabled( editor );
     mActions[ShowWhitespace]->setChecked( editor && editor->showWhitespace() );
+    mActions[IndentWithSpaces]->setEnabled( scEditor );
+    mActions[IndentWithSpaces]->setChecked( scEditor && scEditor->spaceIndent() );
 
     // ScLang-specific actions
     bool editorIsScCodeEditor = qobject_cast<ScCodeEditor*>(editor); // NOOP at the moment, but

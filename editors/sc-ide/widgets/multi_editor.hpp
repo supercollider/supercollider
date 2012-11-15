@@ -86,6 +86,7 @@ public:
         ShrinkFont,
         ResetFontSize,
         ShowWhitespace,
+        IndentWithSpaces,
 
         NextDocument,
         PreviousDocument,
