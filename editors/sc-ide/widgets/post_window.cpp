@@ -61,7 +61,7 @@ void PostWindow::createActions( Settings::Manager * settings )
     QAction * action;
     OverridingAction * ovrAction;
 
-    QString postCategory("Post Window");
+    QString postCategory(tr("Post Window"));
 
     mActions[Copy] = action = new QAction(tr("Copy"), this);
     action->setShortcut( QKeySequence::Copy );
