@@ -42,7 +42,7 @@ class LoadProgressIndicator : public QLabel
 {
     Q_OBJECT
 public slots:
-    void start( const QString & msg = QString("Loading") )
+    void start( const QString & msg = tr("Loading") )
     {
         mMsg = msg;
         mDotCount = 0;

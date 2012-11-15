@@ -100,7 +100,7 @@ void HelpBrowser::createActions()
     QAction * action;
     OverridingAction *ovrAction;
 
-    mActions[GoHome] = action = new QAction("Home", this);
+    mActions[GoHome] = action = new QAction(tr("Home"), this);
     connect( action, SIGNAL(triggered()), this, SLOT(goHome()) );
 
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Zoom In"), this);
@@ -252,7 +252,8 @@ void HelpBrowser::sendRequest( const QString &code )
     ScProcess *scProcess = Main::scProcess();
     if (scProcess->state() == QProcess::NotRunning) {
         qDebug() << "HelpBrowser: aborting request - sclang not running.";
-        MainWindow::instance()->showStatusMessage("Can not use help - interpreter not running!");
+        MainWindow::instance()->showStatusMessage(
+                    tr("Can not use help - interpreter not running!"));
         return;
     }
 
@@ -374,7 +375,7 @@ bool HelpBrowserFindBox::event( QEvent * event )
 }
 
 HelpBrowserDocklet::HelpBrowserDocklet( QWidget *parent ):
-    Docklet("Help browser", parent)
+    Docklet(tr("Help browser"), parent)
 {
     mHelpBrowser = new HelpBrowser;
 

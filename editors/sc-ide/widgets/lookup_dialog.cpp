@@ -200,7 +200,7 @@ void LookupDialog::performQuery()
 
     const Introspection & introspection = Main::scProcess()->introspection();
     if (!introspection.introspectionAvailable()) {
-        MainWindow::instance()->showStatusMessage("Introspection data not yet available");
+        MainWindow::instance()->showStatusMessage(tr("Introspection data not yet available"));
         return;
     }
 
@@ -362,7 +362,7 @@ QStandardItemModel * LookupDialog::modelForPartialQuery(const QString & queryStr
     typedef vector<const Class *>::const_iterator  ClassIterator;
 
     if (classes.empty() && methods.empty()) {
-        MainWindow::instance()->showStatusMessage("No result for query");
+        MainWindow::instance()->showStatusMessage(tr("No result for query"));
         return NULL;
     }
 
@@ -466,7 +466,7 @@ QStandardItemModel * ReferencesDialog::parse(const QString &responseData)
     const Introspection & introspection = Main::scProcess()->introspection();
 
     if (!introspection.introspectionAvailable()) { // just required for short path name
-        MainWindow::instance()->showStatusMessage("Introspection data not yet available");
+        MainWindow::instance()->showStatusMessage(tr("Introspection data not yet available"));
         return NULL;
     }
 

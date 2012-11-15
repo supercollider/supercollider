@@ -52,7 +52,7 @@ public:
         goBtn->setText(tr("Go"));
         goBtn->setAutoRaise(true);
 
-        QLabel *label = new QLabel("Line:");
+        QLabel *label = new QLabel(tr("Line:"));
 
         QHBoxLayout *layout = new QHBoxLayout;
         layout->setContentsMargins(0,0,0,0);

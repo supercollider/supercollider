@@ -32,7 +32,7 @@ using namespace ScIDE;
 SessionSwitchDialog::SessionSwitchDialog(QWidget * parent):
     QDialog(parent)
 {
-    setWindowTitle("Switch Session");
+    setWindowTitle(tr("Switch Session"));
 
     mSessions = new QListWidget(this);
 

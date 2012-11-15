@@ -62,7 +62,7 @@ void ScProcess::prepareActions(Settings::Manager * settings)
 {
     QAction * action;
 
-    const QString interpreterCategory("Interpreter");
+    const QString interpreterCategory(tr("Interpreter"));
 
     mActions[ToggleRunning] = action = new QAction(tr("Boot Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()) );
@@ -110,7 +110,7 @@ void ScProcess::toggleRunning()
 void ScProcess::startLanguage (void)
 {
     if (state() != QProcess::NotRunning) {
-        statusMessage("Interpreter is already running.");
+        statusMessage(tr("Interpreter is already running."));
         return;
     }
 
@@ -149,7 +149,7 @@ void ScProcess::startLanguage (void)
 void ScProcess::recompileClassLibrary (void)
 {
     if(state() != QProcess::Running) {
-        emit statusMessage("Interpreter is not running!");
+        emit statusMessage(tr("Interpreter is not running!"));
         return;
     }
 
@@ -160,7 +160,7 @@ void ScProcess::recompileClassLibrary (void)
 void ScProcess::stopLanguage (void)
 {
     if(state() != QProcess::Running) {
-        emit statusMessage("Interpreter is not running!");
+        emit statusMessage(tr("Interpreter is not running!"));
         return;
     }
 
@@ -207,14 +207,14 @@ void ScProcess::onReadyRead(void)
 void ScProcess::evaluateCode(QString const & commandString, bool silent)
 {
     if(state() != QProcess::Running) {
-        emit statusMessage("Interpreter is not running!");
+        emit statusMessage(tr("Interpreter is not running!"));
         return;
     }
 
     QByteArray bytesToWrite = commandString.toUtf8();
     size_t writtenBytes = write(bytesToWrite);
     if (writtenBytes != bytesToWrite.size()) {
-        emit statusMessage("Error when passing data to interpreter!");
+        emit statusMessage(tr("Error when passing data to interpreter!"));
         return;
     }
 
