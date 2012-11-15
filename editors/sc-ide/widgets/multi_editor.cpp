@@ -493,22 +493,22 @@ void MultiEditor::createActions()
     settings->addAction( action, "editor-document-switch", editorCategory);
 
     mActions[SplitHorizontally] = action = new QAction(tr("Split To Right"), this);
-    action->setShortcut( tr("Ctrl+P, 3", "Split To Right"));
+    //action->setShortcut( tr("Ctrl+P, 3", "Split To Right"));
     connect(action, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
     settings->addAction( action, "editor-split-right", editorCategory);
 
     mActions[SplitVertically] = action = new QAction(tr("Split To Bottom"), this);
-    action->setShortcut( tr("Ctrl+P, 2", "Split To Bottom"));
+    //action->setShortcut( tr("Ctrl+P, 2", "Split To Bottom"));
     connect(action, SIGNAL(triggered()), this, SLOT(splitVertically()));
     settings->addAction( action, "editor-split-bottom", editorCategory);
 
     mActions[RemoveCurrentSplit] = action = new QAction(tr("Remove Current Split"), this);
-    action->setShortcut( tr("Ctrl+P, 1", "Remove Current Split"));
+    //action->setShortcut( tr("Ctrl+P, 1", "Remove Current Split"));
     connect(action, SIGNAL(triggered()), this, SLOT(removeCurrentSplit()));
     settings->addAction( action, "editor-split-remove", editorCategory);
 
     mActions[RemoveAllSplits] = action = new QAction(tr("Remove All Splits"), this);
-    action->setShortcut( tr("Ctrl+P, 0", "Remove All Splits"));
+    //action->setShortcut( tr("Ctrl+P, 0", "Remove All Splits"));
     connect(action, SIGNAL(triggered()), this, SLOT(removeAllSplits()));
     settings->addAction( action, "editor-split-remove-all", editorCategory);
 
