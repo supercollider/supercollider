@@ -46,7 +46,7 @@ public:
     void setIndentWidth( int );
     QTextCursor currentRegion();
     void blinkCode( const QTextCursor & c );
-
+    bool spaceIndent() { return mSpaceIndent; }
 
 public slots:
     void applySettings( Settings::Manager * );
