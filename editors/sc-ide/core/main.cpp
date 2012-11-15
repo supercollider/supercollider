@@ -236,8 +236,7 @@ bool Main::openDocumentation(const QString & string)
 
     HelpBrowserDocklet *helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpFor(symbol);
-    helpDock->show();
-    helpDock->raise();
+    helpDock->raiseAndFocus();
     return true;
 }
 
@@ -245,7 +244,7 @@ bool Main::openDocumentationForMethod(const QString & className, const QString &
 {
     HelpBrowserDocklet *helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpForMethod(className, methodName);
-    helpDock->show();
+    helpDock->raiseAndFocus();
     return true;
 }
 
