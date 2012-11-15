@@ -124,8 +124,6 @@ void SclangPage::readLanguageConfig()
     QFileInfo configFileInfo(configFile);
     const bool configFileExists = configFileInfo.exists();
 
-    ui->ide_sclang_override_configuration_file->setEnabled(configFileExists);
-
     if (!configFileExists)
         return;
 
