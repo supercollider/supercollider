@@ -74,7 +74,7 @@ void PostWindow::createActions( Settings::Manager * settings )
     mActions[Clear] = action = new QAction(tr("Clear"), this);
     action->setStatusTip(tr("Clear post window"));
     action->setShortcutContext(Qt::ApplicationShortcut);
-    action->setShortcut(tr("Ctrl+Shift+C", "Clear post window"));
+    action->setShortcut(tr("Ctrl+Shift+P", "Clear post window"));
     settings->addAction( action, "post-clear", postCategory );
     connect(action, SIGNAL(triggered()), this, SLOT(clear()));
     addAction(action);
