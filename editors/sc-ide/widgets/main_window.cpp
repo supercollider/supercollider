@@ -1028,8 +1028,27 @@ void MainWindow::openStartupFile()
     char configDir[PATH_MAX];
     sc_GetUserConfigDirectory(configDir, PATH_MAX);
 
-    QString startUpFile = QDir::cleanPath(QString(configDir) + QDir::separator() + QString("startup.scd"));
-    mMain->documentManager()->open(startUpFile);
+    QDir dir;
+    // Create the config dir if non existent:
+    dir.mkpath(configDir);
+    if (!dir.cd(configDir)) {
+        qWarning() << "Could not access config dir:" << configDir;
+        return;
+    }
+
+    QString filePath = dir.filePath("startup.scd");
+    // Try creating the file if non-existent:
+    if (!QFile::exists(filePath)) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::WriteOnly)) {
+            file.close();
+            qWarning() << "Could not create startup file:" << filePath;
+            return;
+        }
+        file.close();
+    }
+
+    mMain->documentManager()->open( filePath );
 }
 
 void MainWindow::saveDocument()
