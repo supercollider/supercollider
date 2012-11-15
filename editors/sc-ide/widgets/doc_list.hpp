@@ -82,6 +82,7 @@ private:
 
 class DocumentsDocklet : public Docklet
 {
+    Q_OBJECT
 public:
     DocumentsDocklet(DocumentManager *manager, QWidget* parent = 0);
 

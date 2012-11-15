@@ -75,14 +75,14 @@ MainWindow::MainWindow(Main * main) :
     // Construct status bar:
 
     mLangStatus = new StatusLabel();
-    mLangStatus->setText("Inactive");
+    mLangStatus->setText(tr("Inactive"));
     mServerStatus = new StatusLabel();
     onServerStatusReply(0, 0, 0, 0, 0, 0);
 
     mStatusBar = statusBar();
-    mStatusBar->addPermanentWidget( new QLabel("Interpreter:") );
+    mStatusBar->addPermanentWidget( new QLabel(tr("Interpreter:")) );
     mStatusBar->addPermanentWidget( mLangStatus );
-    mStatusBar->addPermanentWidget( new QLabel("Server:") );
+    mStatusBar->addPermanentWidget( new QLabel(tr("Server:")) );
     mStatusBar->addPermanentWidget( mServerStatus );
 
     // Code editor
@@ -90,7 +90,7 @@ MainWindow::MainWindow(Main * main) :
 
     // Tools
 
-    mCmdLine = new CmdLine("Command Line:");
+    mCmdLine = new CmdLine(tr("Command Line:"));
     connect(mCmdLine, SIGNAL(invoked(QString, bool)),
             main->scProcess(), SLOT(evaluateCode(QString, bool)));
 
@@ -216,8 +216,8 @@ void MainWindow::createActions()
 
     QAction *action;
     const QString ideCategory("IDE");
-    const QString editorCategory("Text Editor");
-    const QString helpCategory("Help");
+    const QString editorCategory(tr("Text Editor"));
+    const QString helpCategory(tr("Help"));
 
     // File
     mActions[Quit] = action = new QAction(
@@ -705,8 +705,8 @@ void MainWindow::newSession()
 void MainWindow::saveCurrentSessionAs()
 {
     QString name = QInputDialog::getText( this,
-                                          "Save Current Session",
-                                          "Enter a name for the session:" );
+                                          tr("Save Current Session"),
+                                          tr("Enter a name for the session:") );
 
     if (name.isEmpty()) return;
 
@@ -830,19 +830,19 @@ void MainWindow::onInterpreterStateChanged( QProcess::ProcessState state )
     case QProcess::NotRunning:
         toggleInterpreterActions(false);
 
-        text = "Inactive";
+        text = tr("Inactive");
         color = Qt::white;
         break;
 
     case QProcess::Starting:
-        text = "Booting";
+        text = tr("Booting");
         color = QColor(255,255,0);
         break;
 
     case QProcess::Running:
         toggleInterpreterActions(true);
 
-        text = "Active";
+        text = tr("Active");
         color = Qt::green;
         break;
     }
@@ -946,8 +946,8 @@ bool MainWindow::save( Document *doc, bool forceChoose )
         fileIsWritable = fileInfo.isWritable();
 
         if (!fileIsWritable) {
-            QMessageBox::warning(instance(), "Saving read-only file",
-                                 "File is read-only. Please select a new location to save to.",
+            QMessageBox::warning(instance(), tr("Saving read-only file"),
+                                 tr("File is read-only. Please select a new location to save to."),
                                  QMessageBox::Ok, QMessageBox::NoButton);
 
         }
@@ -958,10 +958,10 @@ bool MainWindow::save( Document *doc, bool forceChoose )
         dialog.setAcceptMode( QFileDialog::AcceptSave );
 
         QStringList filters = (QStringList()
-                               << "SuperCollider Document (*.scd)"
-                               << "SuperCollider Class file (*.sc)"
+                               << tr("SuperCollider Document (*.scd)")
+                               << tr("SuperCollider Class file (*.sc)")
                                << "SCDoc (*.schelp)"
-                               << "All files (*)");
+                               << tr("All files (*)"));
 
         dialog.setNameFilters(filters);
 
@@ -1010,9 +1010,9 @@ void MainWindow::openDocument()
 
     QStringList filters;
     filters
-        << "All files (*)"
-        << "SuperCollider (*.scd *.sc)"
-        << "SCDoc (*.schelp)";
+        << tr("All files (*)")
+        << tr("SuperCollider (*.scd *.sc)")
+        << tr("SCDoc (*.schelp)");
     dialog.setNameFilters(filters);
 
     if (dialog.exec())
@@ -1137,7 +1137,7 @@ void MainWindow::updateWindowTitle()
 
             setWindowFilePath(doc->filePath());
 	} else {
-            title.append( "Untitled" );
+            title.append( tr("Untitled") );
             setWindowFilePath("");
 	}
     } else {
@@ -1263,7 +1263,7 @@ void MainWindow::showAbout()
             ;
     aboutString = aboutString.arg("3.6");
 
-    QMessageBox::about(this, "About SuperCollider IDE", aboutString);
+    QMessageBox::about(this, tr("About SuperCollider IDE"), aboutString);
 }
 
 void MainWindow::showAboutQT()

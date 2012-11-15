@@ -133,11 +133,11 @@ void EditorPage::load( Manager *s )
 void EditorPage::loadGeneralTextFormats( Manager *settings )
 {
     mGeneralFormatsItem = new QTreeWidgetItem( ui->textFormats );
-    mGeneralFormatsItem->setText(0, "General" );
+    mGeneralFormatsItem->setText(0, tr("General") );
 
     // commont text format item is special - don't set foreground and background on the item!
     mCommonTextFormatItem = new QTreeWidgetItem();
-    mCommonTextFormatItem->setText( 0, "Text" );
+    mCommonTextFormatItem->setText( 0, tr("Text") );
     mCommonTextFormatItem->setData( 0, TextFormatConfigKeyRole, "text" );
     mCommonTextFormatItem->setData( 0, TextFormatRole, settings->value( "text" ) );
     mGeneralFormatsItem->addChild( mCommonTextFormatItem );
@@ -148,7 +148,7 @@ void EditorPage::loadGeneralTextFormats( Manager *settings )
     lineNumbersDefaultFormat.setBackground( palette.brush(QPalette::Mid) );
     lineNumbersDefaultFormat.setForeground( palette.brush(QPalette::ButtonText) );
 
-    addTextFormat( mGeneralFormatsItem, "Line Numbers", "lineNumbers",
+    addTextFormat( mGeneralFormatsItem, tr("Line Numbers"), "lineNumbers",
                    settings->value( "lineNumbers" ).value<QTextCharFormat>(),
                    lineNumbersDefaultFormat );
 
@@ -156,7 +156,7 @@ void EditorPage::loadGeneralTextFormats( Manager *settings )
     selectionDefaultFormat.setBackground( palette.brush(QPalette::Highlight) );
     selectionDefaultFormat.setForeground( palette.brush(QPalette::HighlightedText) );
 
-    addTextFormat( mGeneralFormatsItem, "Selected Text", "selection",
+    addTextFormat( mGeneralFormatsItem, tr("Selected Text"), "selection",
                    settings->value( "selection" ).value<QTextCharFormat>(),
                    selectionDefaultFormat );
 
@@ -164,11 +164,11 @@ void EditorPage::loadGeneralTextFormats( Manager *settings )
         "searchResult", "matchingBrackets", "mismatchedBrackets", "evaluatedCode"
     };
 
-    static char const * const strings[] = {
-        "Search Result", "Matching Brackets", "Mismatched Brackets", "Evaluated Code"
-    };
+    static QStringList strings = QStringList()
+            << tr("Search Result") << tr("Matching Brackets")
+            << tr("Mismatched Brackets") << tr("Evaluated Code");
 
-    static int count = sizeof(keys) / sizeof(keys[0]);
+    static int count = strings.count();
 
     for (int idx = 0; idx < count; ++idx) {
         QTextCharFormat format = settings->value( keys[idx] ).value<QTextCharFormat>();
@@ -179,19 +179,19 @@ void EditorPage::loadGeneralTextFormats( Manager *settings )
 void EditorPage::loadSyntaxTextFormats( Manager *settings )
 {
     mSyntaxFormatsItem = new QTreeWidgetItem( ui->textFormats );
-    mSyntaxFormatsItem->setText(0, "Syntax Highlighting" );
+    mSyntaxFormatsItem->setText(0, tr("Syntax Highlighting") );
 
     static char const * const keys[] = {
         "keyword", "built-in", "env-var", "class", "number",
         "symbol", "string", "char", "comment", "primitive"
     };
 
-    static char const * const strings[] = {
-        "Keyword", "Built-in Value", "Environment Variable", "Class",
-        "Number", "Symbol", "String", "Char", "Comment", "Primitive"
-    };
+    static QStringList strings = QStringList()
+            << tr("Keyword") << tr("Built-in Value") << tr("Environment Variable")
+            << tr("Class") << tr("Number") << tr("Symbol") << tr("String") << tr("Char")
+            << tr("Comment") << tr("Primitive");
 
-    static int count = sizeof(keys) / sizeof(keys[0]);
+    static int count = strings.count();
 
     for (int idx = 0; idx < count; ++idx) {
         QTextCharFormat format = settings->value( keys[idx] ).value<QTextCharFormat>();

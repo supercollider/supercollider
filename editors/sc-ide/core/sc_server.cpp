@@ -55,7 +55,7 @@ ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *pare
 
 void ScServer::createActions(Settings::Manager * settings)
 {
-    const QString synthServerCategory("Sound Synthesis Server");
+    const QString synthServerCategory(tr("Sound Synthesis Server"));
     QAction *action;
 
     mActions[ToggleRunning] = action = new QAction(tr("Boot or quit server"), this);
