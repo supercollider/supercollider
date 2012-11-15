@@ -64,20 +64,20 @@ void ScProcess::prepareActions(Settings::Manager * settings)
 
     const QString interpreterCategory("Interpreter");
 
-    mActions[ToggleRunning] = action = new QAction(tr("Start or Stop Interpreter"), this);
+    mActions[ToggleRunning] = action = new QAction(tr("Boot Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()) );
     settings->addAction( action, "interpreter-toggle-running", interpreterCategory);
 
-    mActions[Start] = action = new QAction(tr("Start Interpreter"), this);
+    mActions[Start] = action = new QAction(tr("Boot Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(startLanguage()) );
     settings->addAction( action, "interpreter-start", interpreterCategory);
 
-    mActions[Stop] = action = new QAction(tr("Stop Interpreter"), this);
+    mActions[Stop] = action = new QAction(tr("Quit Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()) );
     settings->addAction( action, "interpreter-stop", interpreterCategory);
 
     mActions[Restart] = action = new QAction(
-        QIcon::fromTheme("system-reboot"), tr("Restart Interpreter"), this);
+        QIcon::fromTheme("system-reboot"), tr("Reboot Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(restartLanguage()) );
     settings->addAction( action, "interpreter-restart", interpreterCategory);
 
@@ -88,8 +88,8 @@ void ScProcess::prepareActions(Settings::Manager * settings)
     settings->addAction( action, "interpreter-recompile-lib", interpreterCategory);
 
     mActions[StopMain] = action = new QAction(
-        QIcon::fromTheme("media-playback-stop"), tr("Stop Main"), this);
-    action->setShortcut(tr("Ctrl+.", "Stop Main (a.k.a. cmd-period)"));
+        QIcon::fromTheme("media-playback-stop"), tr("Stop"), this);
+    action->setShortcut(tr("Ctrl+.", "Stop (a.k.a. cmd-period)"));
     connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
     settings->addAction( action, "interpreter-main-stop", interpreterCategory);
 
@@ -245,7 +245,7 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
 {
     switch (state) {
     case QProcess::Starting:
-        mActions[ToggleRunning]->setText(tr("Stop Interpreter"));
+        mActions[ToggleRunning]->setText(tr("Quit Interpreter"));
         mActions[ToggleRunning]->setIcon(QIcon::fromTheme("system-shutdown"));
         mActions[Start]->setEnabled(false);
         mActions[Stop]->setEnabled(true);
@@ -262,7 +262,7 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
         break;
 
     case QProcess::NotRunning:
-        mActions[ToggleRunning]->setText(tr("Start Interpreter"));
+        mActions[ToggleRunning]->setText(tr("Boot Interpreter"));
         mActions[ToggleRunning]->setIcon(QIcon::fromTheme("system-run"));
         mActions[Start]->setEnabled(true);
         mActions[Stop]->setEnabled(false);
