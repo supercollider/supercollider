@@ -83,7 +83,7 @@ TextFormatListWidget::TextFormatListWidget( QWidget * parent ):
 {
     QStandardItemModel *m = new QStandardItemModel(this);
     m->setHorizontalHeaderLabels(
-        QStringList() << "Role" << "Color" << "Background" << "B" << "I" << "U" );
+        QStringList() << tr("Role") << tr("Color") << tr("Background") << "B" << "I" << "U" );
 
     QItemSelectionModel *old_sm = selectionModel();
     QAbstractItemModel *old_m = model();
