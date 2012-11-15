@@ -272,11 +272,11 @@ void DocumentsDialog::Item::update()
     setTitle(mDoc->title());
     setPath(mDoc->filePath());
     if (!mDoc->filePath().isEmpty() && !QFile::exists(mDoc->filePath())) {
-        setStatus("Removed");
+        setStatus(tr("Removed"));
         setChecked(false);
     }
     else {
-        setStatus("Modified");
+        setStatus(tr("Modified"));
         setChecked(true);
     }
 }

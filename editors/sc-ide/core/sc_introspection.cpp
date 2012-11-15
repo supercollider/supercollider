@@ -30,6 +30,7 @@
 
 #include <QDebug>
 #include <QHash>
+#include <QObject>
 
 namespace ScIDE {
 namespace ScLanguage {
@@ -224,7 +225,8 @@ void Introspection::inferClassLibraryPath()
 bool Introspection::ensureIntrospectionData() const
 {
     if (!introspectionAvailable()) {
-        MainWindow::instance()->showStatusMessage("Sclang Introspection not available, yet!");
+        MainWindow::instance()->showStatusMessage(
+                    QObject::tr("Sclang Introspection not available, yet!"));
         return false;
     } else
         return true;
@@ -237,7 +239,8 @@ const Class * Introspection::findClass(const QString &className) const
 
     ClassMap::const_iterator klass_it = mClassMap.find(className);
     if (klass_it == mClassMap.end()) {
-        MainWindow::instance()->showStatusMessage("Class not defined!");
+        MainWindow::instance()->showStatusMessage(
+                    QObject::tr("Class not defined!"));
         return NULL;
     }
     return klass_it->second.data();

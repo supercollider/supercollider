@@ -123,12 +123,12 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     action = mActions[FindNext] = new QAction(tr("Find Next"), this);
     action->setShortcut(tr("Ctrl+G", "Find Next"));
     connect( action, SIGNAL(triggered()), this, SLOT(findNext()) );
-    settings->addAction( action, "editor-find-next", "Text Editor" );
+    settings->addAction( action, "editor-find-next", tr("Text Editor") );
 
     action = mActions[FindPrevious] = new QAction(tr("Find Previous"), this);
     action->setShortcut(tr("Ctrl+Shift+G", "Find Previous"));
     connect( action, SIGNAL(triggered()), this, SLOT(findPrevious()) );
-    settings->addAction( action, "editor-find-previous", "Text Editor" );
+    settings->addAction( action, "editor-find-previous", tr("Text Editor") );
 }
 
 void TextFindReplacePanel::setMode( Mode mode )

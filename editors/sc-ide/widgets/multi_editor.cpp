@@ -262,7 +262,7 @@ void MultiEditor::createActions()
     Settings::Manager *settings = Main::settings();
 
     QAction * action;
-    const QString editorCategory("Text Editor");
+    const QString editorCategory(tr("Text Editor"));
 
     // Edit
 

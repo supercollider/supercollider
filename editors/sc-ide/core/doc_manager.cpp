@@ -38,7 +38,7 @@ using namespace ScIDE;
 Document::Document( bool isPlainText ):
     mId( QUuid::createUuid().toString().toAscii() ),
     mDoc( new QTextDocument(this) ),
-    mTitle( "Untitled" ),
+    mTitle( tr("Untitled") ),
     mIndentWidth(4),
     mHighlighter(NULL)
 {
@@ -138,7 +138,8 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     info.setFile(cpath);
 
     if (cpath.isEmpty()) {
-        MainWindow::instance()->showStatusMessage(QString("Cannot open file: %1 (file does not exist)").arg(path));
+        MainWindow::instance()->showStatusMessage (
+                    tr("Cannot open file: %1 (file does not exist)").arg(path) );
         return 0;
     }
 
@@ -155,7 +156,8 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     // Open the file
     QFile file(cpath);
     if(!file.open(QIODevice::ReadOnly)) {
-        MainWindow::instance()->showStatusMessage(QString("Cannot open file for reading: %1").arg(cpath));
+        MainWindow::instance()->showStatusMessage(
+                    tr("Cannot open file for reading: %1").arg(cpath));
         return 0;
     }
     QByteArray bytes( file.readAll() );
@@ -205,7 +207,8 @@ bool DocumentManager::reload( Document *doc )
 
     QFile file(doc->mFilePath);
     if(!file.open(QIODevice::ReadOnly)) {
-        MainWindow::instance()->showStatusMessage(QString("Cannot open file for reading: %1").arg(doc->mFilePath));
+        MainWindow::instance()->showStatusMessage(
+                    tr("Cannot open file for reading: %1").arg(doc->mFilePath));
         return false;
     }
 
