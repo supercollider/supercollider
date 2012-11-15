@@ -503,6 +503,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[Find] );
     menu->addAction( mActions[Replace] );
     menu->addSeparator();
+    menu->addAction( mEditors->action(MultiEditor::IndentWithSpaces) );
     menu->addAction( mEditors->action(MultiEditor::IndentLineOrRegion) );
     menu->addAction( mEditors->action(MultiEditor::ToggleComment) );
     menu->addAction( mEditors->action(MultiEditor::ToggleOverwriteMode) );
