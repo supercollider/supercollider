@@ -110,6 +110,7 @@ public slots:
     {
         show();
         raise();
+        mPostWindow->setFocus();
     }
 
 private slots:

@@ -1373,8 +1373,7 @@ void MainWindow::openHelp()
 {
     if (mHelpBrowserDocklet->browser()->url().isEmpty())
         mHelpBrowserDocklet->browser()->goHome();
-    mHelpBrowserDocklet->show();
-    mHelpBrowserDocklet->raise();
+    mHelpBrowserDocklet->raiseAndFocus();
 }
 
 void MainWindow::dragEnterEvent( QDragEnterEvent * event )

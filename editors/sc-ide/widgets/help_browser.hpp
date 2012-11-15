@@ -152,9 +152,15 @@ class HelpBrowserDocklet : public Docklet
     Q_OBJECT
 
 public:
-    HelpBrowserDocklet( QWidget *parent = 0 );
-
+    explicit HelpBrowserDocklet( QWidget *parent = 0 );
     HelpBrowser *browser() { return mHelpBrowser; }
+
+    void raiseAndFocus()
+    {
+        show();
+        raise();
+        mHelpBrowser->setFocus();
+    }
 
 private slots:
     void onInterpreterStart() {
