@@ -20,6 +20,8 @@
 
 #include "find_replace_tool.hpp"
 #include "code_editor/editor.hpp"
+#include "../core/main.hpp"
+#include "../core/settings/manager.hpp"
 
 #include <QApplication>
 #include <QTextBlock>
@@ -114,6 +116,19 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     connect(mFindField, SIGNAL(returnPressed()), this, SLOT(onFindFieldReturn()));
     connect(mFindField, SIGNAL(textChanged(QString)), this, SLOT(onFindFieldTextChanged()));
     connect(mReplaceField, SIGNAL(returnPressed()), this, SLOT(replace()));
+
+    Settings::Manager *settings = Main::settings();
+    QAction *action;
+
+    action = mActions[FindNext] = new QAction(tr("Find Next"), this);
+    action->setShortcut(tr("Ctrl+G", "Find Next"));
+    connect( action, SIGNAL(triggered()), this, SLOT(findNext()) );
+    settings->addAction( action, "editor-find-next", "Text Editor" );
+
+    action = mActions[FindPrevious] = new QAction(tr("Find Previous"), this);
+    action->setShortcut(tr("Ctrl+Shift+G", "Find Previous"));
+    connect( action, SIGNAL(triggered()), this, SLOT(findPrevious()) );
+    settings->addAction( action, "editor-find-previous", "Text Editor" );
 }
 
 void TextFindReplacePanel::setMode( Mode mode )
