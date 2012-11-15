@@ -46,6 +46,13 @@ public:
         Replace
     };
 
+    enum ActionRole {
+        FindNext,
+        FindPrevious,
+
+        ActionCount
+    };
+
 public:
     TextFindReplacePanel( QWidget * parent = 0 );
 
@@ -62,6 +69,8 @@ public:
     bool wholeWords() const { return mWholeWordAction->isChecked(); }
     QRegExp regexp();
     QTextDocument::FindFlags flags();
+
+    QAction *action ( ActionRole role ) { return mActions[role]; }
 
 public Q_SLOTS:
     void findNext();
@@ -90,6 +99,7 @@ private:
     QAction *mMatchCaseAction;
     QAction *mRegExpAction;
     QAction *mWholeWordAction;
+    QAction *mActions[ActionCount];
 
     QGridLayout *mGrid;
 

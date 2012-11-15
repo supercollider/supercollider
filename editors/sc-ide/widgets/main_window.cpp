@@ -501,6 +501,8 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::Paste) );
     menu->addSeparator();
     menu->addAction( mActions[Find] );
+    menu->addAction( mFindReplaceTool->action(TextFindReplacePanel::FindNext) );
+    menu->addAction( mFindReplaceTool->action(TextFindReplacePanel::FindPrevious) );
     menu->addAction( mActions[Replace] );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::IndentWithSpaces) );
