@@ -39,6 +39,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDebug>
+#include <QKeyEvent>
 
 namespace ScIDE {
 
@@ -199,6 +200,16 @@ void HelpBrowser::zoomOut()
     mWebView->setZoomFactor(zoomFactor);
 }
 
+void HelpBrowser::findText( const QString & text, bool backwards )
+{
+    QWebPage::FindFlags flags =
+            QWebPage::FindWrapsAroundDocument;// | QWebPage::HighlightAllOccurrences;
+    if (backwards)
+        flags |= QWebPage::FindBackward;
+
+    mWebView->findText( text, flags );
+}
+
 bool HelpBrowser::eventFilter(QObject *object, QEvent *event)
 {
     if (object == mWebView) {
@@ -321,6 +332,47 @@ void HelpBrowser::onContextMenuRequest( const QPoint & pos )
     menu.exec( mWebView->mapToGlobal(pos) );
 }
 
+HelpBrowserFindBox::HelpBrowserFindBox( QWidget * parent ):
+    QLineEdit(parent)
+{
+    setPlaceholderText(tr("Find..."));
+    connect( this, SIGNAL(textChanged(QString)), this, SIGNAL(query(QString)) );
+}
+
+bool HelpBrowserFindBox::event( QEvent * event )
+{
+    switch(event->type()) {
+    case QEvent::ShortcutOverride:
+    {
+        QKeyEvent *kevent = static_cast<QKeyEvent*>(event);
+        if (kevent->key() == Qt::Key_Escape) {
+            event->accept();
+            return true;
+        }
+    }
+    case QEvent::KeyPress:
+    {
+        QKeyEvent *kevent = static_cast<QKeyEvent*>(event);
+        switch (kevent->key()) {
+        case Qt::Key_Return:
+        case Qt::Key_Enter: {
+            bool backwards = kevent->modifiers() & Qt::ShiftModifier;
+            emit query( text(), backwards );
+            return true;
+        }
+        case Qt::Key_Escape:
+            clear();
+        default:
+            break;
+        }
+    }
+    default:
+        break;
+    }
+
+    return QLineEdit::event(event);
+}
+
 HelpBrowserDocklet::HelpBrowserDocklet( QWidget *parent ):
     Docklet("Help browser", parent)
 {
@@ -329,13 +381,27 @@ HelpBrowserDocklet::HelpBrowserDocklet( QWidget *parent ):
     setAllowedAreas(Qt::AllDockWidgetAreas);
     setWidget(mHelpBrowser);
 
+    mFindBox = new HelpBrowserFindBox();
+
     toolBar()->addWidget( mHelpBrowser->loadProgressIndicator(), 1 );
     toolBar()->addAction( mHelpBrowser->mActions[HelpBrowser::GoHome] );
     toolBar()->addAction( mHelpBrowser->mWebView->pageAction(QWebPage::Back) );
     toolBar()->addAction( mHelpBrowser->mWebView->pageAction(QWebPage::Forward) );
     toolBar()->addAction( mHelpBrowser->mWebView->pageAction(QWebPage::Reload) );
+    toolBar()->addWidget( mFindBox );
+
+    connect( mFindBox, SIGNAL(query(QString, bool)),
+             mHelpBrowser, SLOT(findText(QString, bool)) );
 
     connect(Main::scProcess(), SIGNAL(started()), this, SLOT(onInterpreterStart()));
+
+    OverridingAction * action;
+    action = new OverridingAction(this);
+    action->setShortcut(QKeySequence::Find);
+    action->addToWidget(mHelpBrowser);
+    action->addToWidget(toolBar());
+    connect( action, SIGNAL(triggered(bool)), mFindBox, SLOT(setFocus()) );
+    connect( action, SIGNAL(triggered(bool)), mFindBox, SLOT(selectAll()) );
 }
 
 } // namespace ScIDE
