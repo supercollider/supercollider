@@ -25,6 +25,7 @@
 
 #include <QWebView>
 #include <QLabel>
+#include <QLineEdit>
 #include <QBasicTimer>
 #include <QTimerEvent>
 #include <QList>
@@ -35,6 +36,7 @@ namespace ScIDE {
 namespace Settings { class Manager; }
 
 class HelpBrowserDocklet;
+class HelpBrowserFindBox;
 
 class LoadProgressIndicator : public QLabel
 {
@@ -104,6 +106,7 @@ public slots:
     void zoomIn();
     void zoomOut();
     void evaluateSelection();
+    void findText( const QString & text, bool backwards = false );
 
 signals:
     void urlChanged();
@@ -123,11 +126,25 @@ private:
     void sendRequest( const QString &code );
 
     QWebView *mWebView;
-
     LoadProgressIndicator *mLoadProgressIndicator;
+
     QSize mSizeHint;
 
     QAction *mActions[ActionCount];
+};
+
+class HelpBrowserFindBox : public QLineEdit
+{
+    Q_OBJECT
+
+public:
+    HelpBrowserFindBox( QWidget * parent = 0 );
+
+signals:
+    void query( const QString & text,  bool backwards = false );
+
+protected:
+    virtual bool event( QEvent * event );
 };
 
 class HelpBrowserDocklet : public Docklet
@@ -147,6 +164,7 @@ private slots:
 
 private:
     HelpBrowser *mHelpBrowser;
+    HelpBrowserFindBox *mFindBox;
 };
 
 } // namespace ScIDE
