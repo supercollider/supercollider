@@ -158,11 +158,12 @@ AbstractFunction {
 	ref { ^this.composeUnaryOp('asRef') }
 
 	// nary operators
-	clip { arg lo, hi; ^this.composeNAryOp('clip', [lo,hi]) }
+	clip { arg lo, hi; ^this.composeNAryOp('clip', [lo,hi])  }
 	wrap { arg lo, hi; ^this.composeNAryOp('wrap', [lo,hi])  }
 	fold { arg lo, hi; ^this.composeNAryOp('fold', [lo,hi])  }
-	blend { arg that, blendFrac = 0.5; ^this.composeNAryOp('blend', [that, blendFrac]) }
-
+	blend { arg that, blendFrac = 0.5;
+		^this.composeNAryOp('blend', [that, blendFrac])
+	}
 	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		^this.composeNAryOp('linlin', [inMin, inMax, outMin, outMax, clip])
 	}

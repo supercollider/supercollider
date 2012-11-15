@@ -162,6 +162,11 @@ Wraps the receiver in a link::Classes/Fold:: UGen, folding its output at code::l
 method:: wrap
 Wraps the receiver in a link::Classes/Wrap:: UGen, wrapping its output at code::lo:: and code::hi::.
 
+method:: blend
+Blends code::this:: with code::that:: by wraping the receiver in an link::Classes/XFade2:: (if code::this:: or code::that:: are audio-rate UGens) or link::Classes/LinXFade2:: UGen.
+note:: The code::blendFrac:: argument is between 0 and 1::
+
+
 method:: lag
 Wraps the receiver in a link::Classes/Lag:: UGen, smoothing its output by code::t1:: seconds lagtime. If a second argument is given, it wraps it in a link::Classes/LagUD:: UGen.
 
