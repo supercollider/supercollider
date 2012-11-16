@@ -890,9 +890,43 @@ void Lag3_next(Lag3 *unit, int inNumSamples)
 	unit->m_y1c = zapgremlins(y1c);
 }
 
+static void Lag3_next_1_i(Lag3 *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	float lag = ZIN0(1);
+
+	double y1a = unit->m_y1a;
+	double y1b = unit->m_y1b;
+	double y1c = unit->m_y1c;
+	double b1 = unit->m_b1;
+
+	double y0a = ZXP(in);
+	y1a = y0a + b1 * (y1a - y0a);
+	y1b = y1a + b1 * (y1b - y1a);
+	y1c = y1b + b1 * (y1c - y1b);
+	ZXP(out) = y1c;
+
+	unit->m_y1a = zapgremlins(y1a);
+	unit->m_y1b = zapgremlins(y1b);
+	unit->m_y1c = zapgremlins(y1c);
+}
+
 void Lag3_Ctor(Lag3* unit)
 {
-	SETCALC(Lag3_next);
+	switch (INRATE(1)) {
+	case calc_FullRate:
+	case calc_BufRate:
+		SETCALC(Lag3_next);
+		break;
+
+	default:
+		if (BUFLENGTH == 1)
+			SETCALC(Lag3_next_1_i);
+		else
+			SETCALC(Lag3_next);
+		break;
+	}
 
 	unit->m_lag = uninitializedControl;
 	unit->m_b1 = 0.f;
