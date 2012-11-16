@@ -79,25 +79,28 @@ void PopUpWidget::keyPressEvent( QKeyEvent *ke )
     }
 }
 
-void PopUpWidget::showEvent( QShowEvent *e )
+void PopUpWidget::showEvent( QShowEvent * )
 {
-    QRect r = geometry();
-    r.moveTopLeft( mTargetRect.bottomLeft() );
+    QRect rect = geometry();
+    rect.moveTopLeft( mTargetRect.bottomLeft() );
 
-    QRect screen = QApplication::desktop()->availableGeometry(this);
-    if (!screen.contains(r))
+    QWidget * parentWid = parentWidget();
+    QWidget * referenceWidget = parentWid ? parentWid : this;
+
+    QRect screen = QApplication::desktop()->availableGeometry(referenceWidget);
+    if (!screen.contains(rect))
     {
-        if (r.right() > screen.right())
-            r.moveRight( screen.right() );
-        if (r.left() < screen.left())
-            r.moveLeft( screen.left() );
-        if (r.bottom() > screen.bottom())
-            r.moveBottom( qMin( mTargetRect.top(), screen.bottom()) );
-        if (r.top() < screen.top())
-            r.moveTop( screen.top() );
+        if (rect.right() > screen.right())
+            rect.moveRight( screen.right() );
+        if (rect.left() < screen.left())
+            rect.moveLeft( screen.left() );
+        if (rect.bottom() > screen.bottom())
+            rect.moveBottom( qMin( mTargetRect.top(), screen.bottom()) );
+        if (rect.top() < screen.top())
+            rect.moveTop( screen.top() );
     }
 
-    move(r.topLeft());
+    move(rect.topLeft());
 }
 
 } // namespace ScIDE

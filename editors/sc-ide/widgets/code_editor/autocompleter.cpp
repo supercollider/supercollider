@@ -267,24 +267,27 @@ private:
         mLabel->move(margins.width(), margins.height());
         mLabel->resize(labelSize);
 
-        QRect r;
-        r.setSize( labelSize  + (margins * 2) );
-        r.moveBottomLeft( mTargetRect.topLeft() );
+        QRect rect;
+        rect.setSize( labelSize  + (margins * 2) );
+        rect.moveBottomLeft( mTargetRect.topLeft() );
 
-        QRect screen = QApplication::desktop()->availableGeometry(this);
-        if (!screen.contains(r))
+        QWidget * parentWid = parentWidget();
+        QWidget * referenceWidget = parentWid ? parentWid : this;
+
+        QRect screen = QApplication::desktop()->availableGeometry(referenceWidget);
+        if (!screen.contains(rect))
         {
-            if (r.right() > screen.right())
-                r.moveRight( screen.right() );
-            if (r.left() < screen.left())
-                r.moveLeft( screen.left() );
-            if (r.top() < screen.top())
-                r.moveTop( qMax( mTargetRect.bottom(), screen.top() ) );
-            if (r.bottom() > screen.bottom())
-                r.moveBottom( screen.bottom() );
+            if (rect.right() > screen.right())
+                rect.moveRight( screen.right() );
+            if (rect.left() < screen.left())
+                rect.moveLeft( screen.left() );
+            if (rect.top() < screen.top())
+                rect.moveTop( qMax( mTargetRect.bottom(), screen.top() ) );
+            if (rect.bottom() > screen.bottom())
+                rect.moveBottom( screen.bottom() );
         }
 
-        setGeometry(r);
+        setGeometry(rect);
     }
 
     QLabel *mLabel;
