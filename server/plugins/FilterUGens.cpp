@@ -4999,6 +4999,66 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 /* BEQSuite */
 
 
+static void inline BPerformFilterLoop(const Unit * unit, float * out, const float * in, double & y0,
+									  double & y1, double & y2, double a0, double a1, double a2,
+									  double b1, double b2)
+{
+	LOOP(unit->mRate->mFilterLoops,
+		double in0 = ZXP(in);
+		double in1 = ZXP(in);
+		double in2 = ZXP(in);
+
+		y0 = in0 + b1 * y1 + b2 * y2;
+		ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
+
+		y2 = in1 + b1 * y0 + b2 * y1;
+		ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
+
+		y1 = in2 + b1 * y2 + b2 * y0;
+		ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
+	);
+	LOOP(unit->mRate->mFilterRemain,
+		y0 = ZXP(in) + b1 * y1 + b2 * y2;
+		ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
+		y2 = y1;
+		y1 = y0;
+	);
+}
+
+static void inline BPerformFilterLoop(const Unit * unit, float * out, const float * in, double & y0,
+									  double & y1, double & y2, double a0, double a1, double a2,
+									  double b1, double b2,
+									  double a0slope, double a1slope, double a2slope,
+									  double b1slope, double b2slope)
+{
+	LOOP(unit->mRate->mFilterLoops,
+		double in0 = ZXP(in);
+		double in1 = ZXP(in);
+		double in2 = ZXP(in);
+
+		y0 = in0 + b1 * y1 + b2 * y2;
+		ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
+
+		y2 = in1 + b1 * y0 + b2 * y1;
+		ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
+
+		y1 = in2 + b1 * y2 + b2 * y0;
+		ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
+
+		a0 += a0slope;
+		a1 += a1slope;
+		a2 += a2slope;
+		b1 += b1slope;
+		b2 += b2slope;
+	);
+	LOOP(unit->mRate->mFilterRemain,
+		y0 = ZXP(in) + b1 * y1 + b2 * y2;
+		ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
+		y2 = y1;
+		y1 = y0;
+	);
+}
+
 struct BLowPass : public Unit
 {
 	double m_y1, m_y2, m_a0, m_a1, m_a2, m_b1, m_b2;
@@ -5007,6 +5067,7 @@ struct BLowPass : public Unit
 
 extern "C"
 {
+	void BLowPass_next_ii(BLowPass *unit, int inNumSamples);
 	void BLowPass_next_kk(BLowPass *unit, int inNumSamples);
 	void BLowPass_next_aa(BLowPass *unit, int inNumSamples);
 	void BLowPass_Ctor(BLowPass* unit);
@@ -5017,8 +5078,12 @@ void BLowPass_Ctor(BLowPass* unit)
 {
 	if ((INRATE(1) == calc_FullRate) && (INRATE(2) == calc_FullRate))
 		SETCALC(BLowPass_next_aa);
-	else
-		SETCALC(BLowPass_next_kk);
+	else {
+		if ((INRATE(1) == calc_ScalarRate) && (INRATE(2) == calc_ScalarRate))
+			SETCALC(BLowPass_next_ii);
+		else
+			SETCALC(BLowPass_next_kk);
+	}
 	float rq = unit->m_rq = ZIN0(2);
 	float freq = unit->m_freq = ZIN0(1);
 	double w0 = twopi * (double)freq * SAMPLEDUR;
@@ -5144,60 +5209,42 @@ void BLowPass_next_kk(BLowPass *unit, int inNumSamples)
 		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		unit->m_freq = nextfreq;
 		unit->m_rq = nextrq;
-		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-			a0 += a0slope;
-			a1 += a1slope;
-			a2 += a2slope;
-			b1 += b1slope;
-			b2 += b2slope;
-			);
-		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-			y2 = y1;
-			y1 = y0;
-
-		);
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
 		unit->m_a2 = next_a2;
 		unit->m_b1 = next_b1;
 		unit->m_b2 = next_b2;
+	} else
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
 
-	} else {
-		LOOP(unit->mRate->mFilterLoops,
-			double in0 = ZXP(in);
-			double in1 = ZXP(in);
-			double in2 = ZXP(in);
-
-			y0 = in0 + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-
-			y2 = in1 + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-			y1 = in2 + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-			);
-		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-			y2 = y1;
-			y1 = y0;
-			);
-	}
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
 }
+
+void BLowPass_next_ii(BLowPass *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+
+	double a0, a1, a2, b1, b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+
+	a0 = unit->m_a0;
+	a1 = unit->m_a1;
+	a2 = unit->m_a2;
+	b1 = unit->m_b1;
+	b2 = unit->m_b2;
+
+	BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
+
+	unit->m_y1 = zapgremlins(y1);
+	unit->m_y2 = zapgremlins(y2);
+}
+
 
 struct BHiPass : public Unit
 {
@@ -5208,6 +5255,7 @@ struct BHiPass : public Unit
 
 extern "C"
 {
+	void BHiPass_next_ii(BHiPass *unit, int inNumSamples);
 	void BHiPass_next_kk(BHiPass *unit, int inNumSamples);
 	void BHiPass_next_aa(BHiPass *unit, int inNumSamples);
 	void BHiPass_Ctor(BHiPass* unit);
@@ -5217,8 +5265,12 @@ void BHiPass_Ctor(BHiPass* unit)
 {
 	if ((INRATE(1) == calc_FullRate) && (INRATE(2) == calc_FullRate))
 		SETCALC(BHiPass_next_aa);
-	else
-		SETCALC(BHiPass_next_kk);
+	else {
+		if ((INRATE(1) == calc_ScalarRate) && (INRATE(2) == calc_ScalarRate))
+			SETCALC(BHiPass_next_ii);
+		else
+			SETCALC(BHiPass_next_kk);
+	}
 	float freq = unit->m_freq = ZIN0(1);
 	float rq = unit->m_rq = ZIN0(2);
 	double w0 = twopi * (double)freq * SAMPLEDUR;
@@ -5339,62 +5391,45 @@ void BHiPass_next_kk(BHiPass *unit, int inNumSamples)
 		a2slope = (next_a2 - a2) * unit->mRate->mFilterSlope; //CALCSLOPE(nexta2, a2);
 		b1slope = (next_b1 - b1) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb1, b1);
 		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
-
-		LOOP(unit->mRate->mFilterLoops,
-			 y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-			a0 += a0slope;
-			a1 += a1slope;
-			a2 += a2slope;
-			b1 += b1slope;
-			b2 += b2slope;
-		);
-		LOOP(unit->mRate->mFilterRemain,
-			 y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-			y2 = y1;
-			y1 = y0;
-		);
 		unit->m_freq = nextfreq;
 		unit->m_rq = nextrq;
+
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
+
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
 		unit->m_a2 = next_a2;
 		unit->m_b1 = next_b1;
 		unit->m_b2 = next_b2;
-
-	} else {
-
-		LOOP(unit->mRate->mFilterLoops,
-			double in0 = ZXP(in);
-			double in1 = ZXP(in);
-			double in2 = ZXP(in);
-			y0 = in0 + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-
-			y2 = in1 + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-			y1 = in2 + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-		);
-		LOOP(unit->mRate->mFilterRemain,
-			 y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-			y2 = y1;
-			y1 = y0;
-		);
-	}
+	} else
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
 }
+
+void BHiPass_next_ii(BHiPass *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+
+	double a0, a1, a2, b1, b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+
+	a0 = unit->m_a0;
+	a1 = unit->m_a1;
+	a2 = unit->m_a2;
+	b1 = unit->m_b1;
+	b2 = unit->m_b2;
+
+	BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
+
+	unit->m_y1 = zapgremlins(y1);
+	unit->m_y2 = zapgremlins(y2);
+}
+
 
 /* BBandPass */
 
@@ -5538,50 +5573,16 @@ void BBandPass_next_kk(BBandPass *unit, int inNumSamples)
 		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
 		unit->m_freq = nextfreq;
 		unit->m_bw = nextbw;
-		LOOP(unit->mRate->mFilterLoops,
-				y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
-				y2 = ZXP(in) + b1 * y0 + b2 * y1;
-				ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
-				y1 = ZXP(in) + b1 * y2 + b2 * y0;
-				ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-				a0 += a0slope;
-				a1 += a1slope;
-				a2 += a2slope;
-				b1 += b1slope;
-				b2 += b2slope;
-		);
-		LOOP(unit->mRate->mFilterRemain,
-				y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-				y2 = y1;
-				y1 = y0;
-		);
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
 		unit->m_a2 = next_a2;
 		unit->m_b1 = next_b1;
 		unit->m_b2 = next_b2;
-	} else {
-		LOOP(unit->mRate->mFilterLoops,
-				y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-
-				y2 = ZXP(in) + b1 * y0 + b2 * y1;
-				ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-				y1 = ZXP(in) + b1 * y2 + b2 * y0;
-				ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-		);
-		LOOP(unit->mRate->mFilterRemain,
-				y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-				y2 = y1;
-				y1 = y0;
-		);
-	}
+	} else
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -5729,51 +5730,16 @@ void BBandStop_next_kk(BBandStop *unit, int inNumSamples)
 		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope; //CALCSLOPE(nextb2, b2);
 		unit->m_freq = nextfreq;
 		unit->m_bw = nextbw;
-		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-			a0 += a0slope;
-			a1 += a1slope;
-			a2 += a2slope;
-			b1 += b1slope;
-			b2 += b2slope;
-		);
-		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-			y2 = y1;
-			y1 = y0;
-		);
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
 		unit->m_a2 = next_a2;
 		unit->m_b1 = next_b1;
 		unit->m_b2 = next_b2;
-	} else {
-		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-		);
-		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-			y2 = y1;
-			y1 = y0;
-		);
-	}
+	} else
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -5930,54 +5896,16 @@ void BPeakEQ_next_kkk(BPeakEQ *unit, int inNumSamples)
 		unit->m_freq = nextfreq;
 		unit->m_db = nextdb;
 		unit->m_rq = nextrq;
-		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-
-			a0 += a0slope;
-			a1 += a1slope;
-			a2 += a2slope;
-			b1 += b1slope;
-			b2 += b2slope;
-
-		);
-		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-			y2 = y1;
-			y1 = y0;
-		);
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
 		unit->m_a2 = next_a2;
 		unit->m_b1 = next_b1;
 		unit->m_b2 = next_b2;
-	} else {
-		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-
-		);
-		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-			y2 = y1;
-			y1 = y0;
-		);
-	}
+	} else
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -6123,27 +6051,8 @@ void BAllPass_next_kk(BAllPass *unit, int inNumSamples)
 		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		unit->m_freq = nextfreq;
 		unit->m_rq = nextrq;
-		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-			a0 += a0slope;
-			a1 += a1slope;
-			a2 += a2slope;
-			b1 += b1slope;
-			b2 += b2slope;
-		);
-		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-			y2 = y1;
-			y1 = y0;
-		);
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
@@ -6151,24 +6060,8 @@ void BAllPass_next_kk(BAllPass *unit, int inNumSamples)
 		unit->m_b1 = next_b1;
 		unit->m_b2 = next_b2;
 
-	} else {
-		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-		);
-		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-			y2 = y1;
-			y1 = y0;
-		);
-	}
+	} else
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -6338,55 +6231,17 @@ void BLowShelf_next_kkk(BLowShelf *unit, int inNumSamples)
 		unit->m_freq = nextfreq;
 		unit->m_db = nextdb;
 		unit->m_rs = nextrs;
-		LOOP(unit->mRate->mFilterLoops,
-				y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
-				y2 = ZXP(in) + b1 * y0 + b2 * y1;
-				ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
-				y1 = ZXP(in) + b1 * y2 + b2 * y0;
-				ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
+		unit->m_a0 = a0;
+		unit->m_a1 = a1;
+		unit->m_a2 = a2;
+		unit->m_b1 = b1;
+		unit->m_b2 = b2;
+	} else
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
 
-				a0 += a0slope;
-				a1 += a1slope;
-				a2 += a2slope;
-				b1 += b1slope;
-				b2 += b2slope;
-		);
-
-		LOOP(unit->mRate->mFilterRemain,
-				y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-				y2 = y1;
-				y1 = y0;
-		);
-
-	} else {
-		LOOP(unit->mRate->mFilterLoops,
-				y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-
-				y2 = ZXP(in) + b1 * y0 + b2 * y1;
-				ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-				y1 = ZXP(in) + b1 * y2 + b2 * y0;
-				ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-
-		);
-		LOOP(unit->mRate->mFilterRemain,
-				y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-				y2 = y1;
-				y1 = y0;
-		);
-	}
-
-	unit->m_a0 = a0;
-	unit->m_a1 = a1;
-	unit->m_a2 = a2;
-	unit->m_b1 = b1;
-	unit->m_b2 = b2;
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
 }
@@ -6556,29 +6411,8 @@ void BHiShelf_next_kkk(BHiShelf *unit, int inNumSamples)
 		unit->m_freq = nextfreq;
 		unit->m_db = nextdb;
 		unit->m_rs = nextrs;
-		LOOP(unit->mRate->mFilterLoops,
-				y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
-				y2 = ZXP(in) + b1 * y0 + b2 * y1;
-				ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-				y1 = ZXP(in) + b1 * y2 + b2 * y0;
-				ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-
-				a0 += a0slope;
-				a1 += a1slope;
-				a2 += a2slope;
-				b1 += b1slope;
-				b2 += b2slope;
-		);
-
-		LOOP(unit->mRate->mFilterRemain,
-				y0 = ZXP(in) + b1 * y1 + b2 * y2;
-				ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-				y2 = y1;
-				y1 = y0;
-		);
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
@@ -6586,24 +6420,9 @@ void BHiShelf_next_kkk(BHiShelf *unit, int inNumSamples)
 		unit->m_b1 = next_b1;
 		unit->m_b2 = next_b2;
 
-	} else {
-		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
+	} else
+		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
 
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
-
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
-		);
-		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
-			y2 = y1;
-			y1 = y0;
-		);
-	}
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
 }
@@ -6679,7 +6498,6 @@ PluginLoad(Filter)
 	DefineSimpleUnit(BAllPass);
 	DefineSimpleUnit(BLowShelf);
 	DefineSimpleUnit(BHiShelf);
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
