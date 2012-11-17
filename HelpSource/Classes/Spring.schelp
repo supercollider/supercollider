@@ -4,7 +4,7 @@ categories:: UGens>Filters>Nonlinear, UGens>Generators>PhysicalModels
 related:: Classes/Ball, Classes/TBall
 
 description::
-models the force of a resonating string
+models the force of a resonating spring
 
 classmethods::
 
