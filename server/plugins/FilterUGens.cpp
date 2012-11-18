@@ -1188,7 +1188,7 @@ void OnePole_Ctor(OnePole* unit)
 	} else {
 		SETCALC(OnePole_next_k);
 	}
-	unit->m_b1 = 0.f;
+	unit->m_b1 = ZIN0(1);
 	unit->m_y1 = 0.f;
 	OnePole_next_a(unit, 1);
 }
@@ -1198,7 +1198,7 @@ void OnePole_Ctor(OnePole* unit)
 void OneZero_Ctor(OneZero* unit)
 {
 	SETCALC(OneZero_next);
-	unit->m_b1 = 0.f;
+	unit->m_b1 = ZIN0(1);
 	unit->m_x1 = ZIN0(0);
 	OneZero_next(unit, 1);
 }
