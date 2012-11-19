@@ -92,7 +92,7 @@ struct PyrObjectHdr {
 	bool IsMarked() const    { return obj_flags & obj_marked; }
 	bool IsPermanent() const { return gc_color == obj_permanent; }
 	bool IsImmutable() const { return obj_flags & obj_immutable; }
-	bool IsMutable() const   { return !IsMutable(); }
+	bool IsMutable() const   { return !IsImmutable(); }
 };
 
 struct PyrObject : public PyrObjectHdr {
