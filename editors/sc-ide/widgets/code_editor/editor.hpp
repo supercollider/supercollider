@@ -59,7 +59,7 @@ protected:
     virtual void wheelEvent( QWheelEvent * );
     virtual void dragEnterEvent( QDragEnterEvent * );
     void hideMouseCursor(QKeyEvent *);
-
+    virtual QMimeData *createMimeDataFromSelection() const;
 
 public slots:
     void applySettings( Settings::Manager * );
