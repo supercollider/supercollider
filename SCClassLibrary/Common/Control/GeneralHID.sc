@@ -179,7 +179,7 @@ GeneralHIDDevice{
 
 	setSpec{ |name|
       if ( name.isKindOf( Array ) ){
-         spec.fromFile( name.first.postln )
+         spec.fromFile( name.first )
       }{
          spec.fromFile( name );
       }
