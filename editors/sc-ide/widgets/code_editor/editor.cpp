@@ -903,4 +903,13 @@ void GenericCodeEditor::hideMouseCursor()
         QApplication::setOverrideCursor( Qt::BlankCursor );
 }
 
+QMimeData *GenericCodeEditor::createMimeDataFromSelection() const
+{
+    // Here, we bundle up just the plaintext (not HTML, as is the default) of
+    // the editor's selected contents.
+    QMimeData *data = new QMimeData;
+    data->setText(textCursor().selection().toPlainText());
+    return data;
+}
+
 } // namespace ScIDE
