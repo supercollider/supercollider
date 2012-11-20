@@ -33,6 +33,7 @@
 #include <QScrollBar>
 #include <QShortcut>
 #include <QKeyEvent>
+#include <QTextDocumentFragment>
 
 namespace ScIDE {
 
@@ -266,6 +267,15 @@ void PostWindow::mouseDoubleClickEvent(QMouseEvent *e)
     extendSelectionForEnvVar(this, textCursor());
 
     cursor.endEditBlock();
+}
+
+QMimeData *PostWindow::createMimeDataFromSelection() const
+{
+    // Here, we bundle up just the plaintext (not HTML, as is the default) of
+    // the post window's selected contents.
+    QMimeData *data = new QMimeData;
+    data->setText(textCursor().selection().toPlainText());
+    return data;
 }
 
 bool PostWindow::openDocumentation()
