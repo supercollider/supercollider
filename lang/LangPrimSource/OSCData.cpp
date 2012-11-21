@@ -1331,7 +1331,7 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_ServerShmInterface_getControlBusValues", prGetControlBusValues, 3, 0);
 
 	definePrimitive(base, index++, "_ServerShmInterface_setControlBusValue", prSetControlBusValue, 3, 0);
-	definePrimitive(base, index++, "_ServerShmInterface_setControlBusValues", prSetControlBusValues, 4, 0);
+	definePrimitive(base, index++, "_ServerShmInterface_setControlBusValues", prSetControlBusValues, 3, 0);
 
 	//post("initOSCRecs###############\n");
 	s_call = getsym("call");
