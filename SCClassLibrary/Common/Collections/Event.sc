@@ -250,12 +250,16 @@ Event : Environment {
 					// assembles a synth control list from event values
 
 				getMsgFunc: { |instrument|
-					var	synthLib, synthDesc, desc;
+					var	synthLib, desc;
 						// if user specifies a msgFunc, prefer user's choice
 					if(~msgFunc.isNil) {
-						instrument = ~instrument = instrument.asDefName;
+						instrument = ~instrument = if(instrument.class===Symbol) {
+							instrument
+						} {
+							instrument.asDefName.asSymbol
+						};
 						synthLib = ~synthLib ?? { SynthDescLib.global };
-						synthDesc = desc = synthLib.at(instrument);
+						desc = synthLib.at(instrument);
 						if (desc.notNil) {
 							~hasGate = desc.hasGate;
 							~msgFunc = desc.msgFunc;
