@@ -1,30 +1,26 @@
 + SynthDef {
-
 	asSynthDef { ^this }
-	asDefName {	^name	}
-
+	asDefName  { ^name }
 }
 
 + Object {
-
 	asSynthDef {
-		error("Cannot convert this object to a SynthDef:" + this);
+		error("Cannot convert this object to a SynthDef: " + this);
 		this.dump;
 		^nil
 	}
 	asDefName {
 		^this.asSynthDef.name
 	}
-
 }
 
 
 + String {
-	asDefName { ^this }
+	asDefName { ^this.asSymbol }
 }
 
 + Symbol {
-	asDefName { ^this.asString }
+	asDefName { ^this }
 }
 
 + Function {
@@ -50,7 +46,7 @@
 	}
 
 	asSynthDef { arg rates, prependArgs, outClass=\Out, fadeTime, name;
-		^GraphBuilder.wrapOut(name ?? { this.identityHash.abs.asString },
+		^GraphBuilder.wrapOut(name ?? { this.identityHash.abs.asSymbol },
 			this, rates, prependArgs, outClass, fadeTime
 		);
 	}
