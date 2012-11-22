@@ -33,14 +33,11 @@ SynthDef {
 	}
 
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
-		^this.prNew(name).variants_(variants).metadata_(metadata).children_(Array.new(64))
+		^super.newCopyArgs(name.asSymbol).variants_(variants).metadata_(metadata).children_(Array.new(64))
 			.build(ugenGraphFunc, rates, prependArgs)
 	}
-	*prNew { arg name;
-		^super.new.name_(name.asString)
-	}
 
-	storeArgs { ^[name.asSymbol, func] }
+	storeArgs { ^[name, func] }
 
 	build { arg ugenGraphFunc, rates, prependArgs;
 		protect {
@@ -60,6 +57,7 @@ SynthDef {
 		};
 		^UGen.buildSynthDef.buildUgenGraph(func, rates, prependArgs);
 	}
+
 	//only write if no file exists
 	*writeOnce { arg name, func, rates, prependArgs, variants, dir, metadata, mdPlugin;
 		this.new(name, func, rates, prependArgs, variants, metadata).writeOnce(dir, mdPlugin)
@@ -308,12 +306,12 @@ SynthDef {
 				.format(name), this).throw
 		}
 	}
-	
+
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
 		var allControlNamesTemp, allControlNamesMap;
 
-		file.putPascalString(name);
+		file.putPascalString(name.asString);
 
 		this.writeConstants(file);
 
@@ -380,7 +378,7 @@ SynthDef {
 			};
 		};
 	}
-	
+
 	writeConstants { arg file;
 		var array = FloatArray.newClear(constants.size);
 		constants.keysValuesDo { arg value, index;
@@ -405,12 +403,11 @@ SynthDef {
 			};
 		};
 		if(firstErr.notNil) {
-			("SynthDef" + this.name + "build failed").postln;
+			"SynthDef % build failed".format(this.name).postln;
 			Error(firstErr).throw
 		};
 		^true
 	}
-
 
 
 	// UGens do these
@@ -615,7 +612,7 @@ SynthDef {
 				lib.servers.do { arg server;
 					this.doSend(server.value, completionMsg)
 				};
-				desc = lib[this.name.asSymbol];
+				desc = lib[this.name];
 				desc.metadata = metadata;
 				SynthDesc.populateMetadataFunc.value(desc);
 				desc.writeMetadata(path, mdPlugin);
