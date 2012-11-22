@@ -253,17 +253,14 @@ Event : Environment {
 					var	synthLib, desc;
 						// if user specifies a msgFunc, prefer user's choice
 					if(~msgFunc.isNil) {
-						instrument = ~instrument = if(instrument.class===Symbol) {
-							instrument
-						} {
-							instrument.asDefName.asSymbol
-						};
+						instrument = ~instrument = instrument.asDefName;
+
 						synthLib = ~synthLib ?? { SynthDescLib.global };
 						desc = synthLib.at(instrument);
 						if (desc.notNil) {
 							~hasGate = desc.hasGate;
 							~msgFunc = desc.msgFunc;
-						}{
+						} {
 							~msgFunc = ~defaultMsgFunc;
 						};
 					} { ~msgFunc };
@@ -273,7 +270,7 @@ Event : Environment {
 					instrument = instrument.asDefName;
 					variant = variant.dereference;
 					if(variant.notNil and: { synthDesc.notNil and: { synthDesc.hasVariants } })
-						{ (instrument ++ "." ++ variant).asSymbol }
+						{ "%.%".format(instrument, variant).asSymbol }
 						{ instrument.asSymbol };
 				},
 
@@ -975,12 +972,12 @@ Event : Environment {
 				group = ~group.asControlInput;
 				addAction = Node.actionNumberFor(~addAction);
 				synthLib = ~synthLib ?? { SynthDescLib.global };
-				instrumentName = ~instrument.asSymbol;
+				instrumentName = ~instrument.asDefName;
 				desc = synthLib.synthDescs[instrumentName];
 				if (desc.notNil) {
 					msgFunc = desc.msgFunc;
 					~hasGate = desc.hasGate;
-				}{
+				} {
 					msgFunc = ~defaultMsgFunc;
 				};
 
@@ -1000,7 +997,6 @@ Event : Environment {
 					server.sendBundle(server.latency ? 0 + ~lag, *bndl);
 				} {
 					server.sendBundle(server.latency, *bndl);
-
 				};
 				~id = ids;
 				~isPlaying = true;
