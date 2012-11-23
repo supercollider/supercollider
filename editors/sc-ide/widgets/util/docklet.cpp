@@ -247,6 +247,30 @@ void Docklet::setCurrentContainer(ContainerType containerType )
     mDetachAction->setText( containerType == WindowContainer ? tr("Attach") : tr("Detach") );
 }
 
+QByteArray Docklet::saveDetachedState() const
+{
+    QByteArray data;
+
+    if (isDetached()) {
+        data.append( (char) mWindow->isVisible() );
+        data.append( mWindow->saveGeometry() );
+    }
+
+    return data;
+}
+
+void Docklet::restoreDetachedState( const QByteArray & data )
+{
+    if (!data.isEmpty()) {
+        bool visible = data.at(0) == 1;
+        setDetached( true );
+        mWindow->restoreGeometry( data.mid(1) );
+        mWindow->setVisible( visible );
+    }
+    else
+        setDetached( false );
+}
+
 void Docklet::updateDockAction()
 {
     bool docked = currentContainer() == mDockWidget && !mDockWidget->isFloating();
