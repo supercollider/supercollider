@@ -90,6 +90,9 @@ public:
         mDockWidget->setObjectName(name);
     }
 
+    QByteArray saveDetachedState() const;
+    void restoreDetachedState( const QByteArray & );
+
 public slots:
     void toggleFloating();
     void toggleDetached();
