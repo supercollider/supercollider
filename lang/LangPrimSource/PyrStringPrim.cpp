@@ -603,7 +603,16 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */)
 	err = slotStrVal(arg, key, 256);
 	if (err) return err;
 
+#ifdef _WIN32
+	char buf[1024];
+	DWORD size = GetEnvironmentVariable(key, buf, 1024);
+	if (size == 0 || size > 1024)
+		value = 0;
+	else
+		value = buf;
+#else
 	value = getenv(key);
+#endif
 
 	if (value) {
 		PyrString* pyrString = newPyrString(g->gc, value, 0, true);
