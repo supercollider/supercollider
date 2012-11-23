@@ -594,12 +594,7 @@ void MainWindow::createMenus()
 
 static void saveDetachedState( Docklet *docklet,  QVariantMap & data )
 {
-    if ( docklet->isDetached() && docklet->isVisible() ) {
-        QByteArray geometryData = docklet->window()->saveGeometry().toBase64();
-        data.insert( docklet->objectName(), geometryData );
-    }
-    else
-        data.insert( docklet->objectName(), QByteArray() );
+    data.insert( docklet->objectName(), docklet->saveDetachedState().toBase64() );
 }
 
 template <class T>
@@ -627,14 +622,8 @@ void MainWindow::saveWindowState()
 
 static void restoreDetachedState( Docklet *docklet,  const QVariantMap & data )
 {
-    QByteArray geomData = data.value( docklet->objectName() ).value<QByteArray>();
-    if (!geomData.isEmpty()) {
-        docklet->setDetached( true );
-        qDebug() << "restore win geom:" << docklet;
-        docklet->window()->restoreGeometry( QByteArray::fromBase64( geomData ) );
-    }
-    else
-        docklet->setDetached( false );
+    QByteArray base64data = data.value( docklet->objectName() ).value<QByteArray>();
+    docklet->restoreDetachedState( QByteArray::fromBase64( base64data ) );
 }
 
 template <class T>
