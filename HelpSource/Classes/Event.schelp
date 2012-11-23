@@ -41,7 +41,7 @@ Event types define alternate play functions that are selected by the value of st
 argument::type
 A name (usually a symbol) for the event type, which can be used to select it
 
-argument:func
+argument::func
 A function which optionally takes the server as a first argument
 
 code::
