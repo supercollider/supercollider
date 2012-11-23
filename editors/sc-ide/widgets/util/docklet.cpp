@@ -270,12 +270,14 @@ bool Docklet::eventFilter( QObject *object, QEvent *event )
         break;
     case QEvent::Resize:
     case QEvent::Move: {
-        if (object == mWindow) {
-            mUndockedGeom = mWindow->geometry();
-            qDebug() << "cache window geom" << mUndockedGeom << this;
-        } else if(object == mDockWidget && mDockWidget->isFloating()) {
-            mUndockedGeom = mDockWidget->geometry();
-            qDebug() << "cache dock geom"  << mUndockedGeom << this;
+        if (object == currentContainer()) {
+            if (object == mWindow) {
+                mUndockedGeom = mWindow->geometry();
+                qDebug() << "cache window geom" << mUndockedGeom << this;
+            } else if(object == mDockWidget && mDockWidget->isFloating()) {
+                mUndockedGeom = mDockWidget->geometry();
+                qDebug() << "cache dock geom"  << mUndockedGeom << this;
+            }
         }
         break;
     }
