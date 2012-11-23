@@ -25,6 +25,7 @@
 #include <stdexcept>
 
 #ifdef _WIN32
+# include <windows.h>
 # include <direct.h>
 # include "SC_Win32Utils.h"
 #else
@@ -273,6 +274,21 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 #else
 	strncpy(pathBuf, "/usr/share/SuperCollider", length);
 #endif
+}
+
+#elif defined(_WIN32)
+
+bool sc_IsStandAlone()
+{
+	return false;
+}
+
+void sc_GetResourceDirectory(char* dest, int length)
+{
+	char buf[length];
+	GetModuleFileName( NULL, buf, length );
+	char *path = win32_dirname(buf);
+	strcpy(dest, path);
 }
 
 #else
