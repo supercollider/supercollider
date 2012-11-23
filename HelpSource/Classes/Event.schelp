@@ -370,6 +370,7 @@ lag:			0.0,	// delay (in seconds) relative to current time position of Stream
 timingOffset:		0.0,	// delay (in beats) relative to current time position of Stream
 strum:			0.0	// "breaks" a chord. May be negative, playing the chord backward
 strumEndsTogether:	false	// if true, the strummed notes end together (with gated synths)
+sendGate:		nil  // override: true == always send a gate-release message; false == never send
 ::
 
 ## strong::pitchEvent keys:::
