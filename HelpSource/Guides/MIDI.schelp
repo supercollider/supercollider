@@ -3,39 +3,78 @@ summary:: about MIDI
 related:: Guides/UsingMIDI, Classes/MIDIFunc, Classes/MIDIdef
 categories:: External Control>MIDI
 
+section:: Practical usage overview
+
+Begin with the link::Guides/UsingMIDI:: help file.
+
+subsection:: Receiving MIDI input
+
+link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: are the standard, recommended way to receive MIDI note on/off, controller, pitch bend, aftertouch, poly-touch and program change messages.
+
 note::
-See the link::Guides/UsingMIDI:: helpfile for practical considerations and techniques for using MIDI in SC.
+strong::IMPORTANT: :: Before MIDI can be received, SuperCollider needs to be told to connect to the MIDI subsystem and connect to the available devices.
+
+code::
+MIDIClient.init;
+MIDIIn.connectAll;
 ::
 
-link::Classes/MIDIClient:: is a static class that starts up the MIDI service:
-It initializes with a number of virtual inports and outports.
-The default is 1 and usually no more are needed.
-The information about the hardware is stored in code::MIDIClient.sources:: and code::MIDIClient.destinations:: as link::Classes/MIDIEndPoint:: objects.
+You need to do this once after launching SuperCollider, or recompiling the class library.
+::
 
-link::Classes/MIDIIn:: represents a connection between a inport and a source of the MIDIClient.
-There are three possibilities to connect them:
-To do something with the incoming MIDI data set the actions.
+There are some examples in the wild using the MIDIIn class directly to receive MIDI. This is not recommended for normal use. The exceptions are sysex (system exclusive) and sysrt (MIDI clock) messages, which are currently supported only by MIDIIn. See the example below.
+
+subsection:: Sending MIDI output
+
+See the link::Classes/MIDIOut:: help file for details.
+
+section:: Summary of MIDI classes
+
+definitionlist::
+## link::Classes/MIDIClient:: || This class connects to the operating system's MIDI layer, and obtains the lists of available MIDI sources and destinations. The information about the hardware is stored in code::MIDIClient.sources:: and code::MIDIClient.destinations:: as link::Classes/MIDIEndPoint:: objects. MIDIClient must be initialized before MIDI can be received. See the note above.
+## link::Classes/MIDIFunc:: || The optimal way to receive the most typical MIDI messages: note on/off, controller, pitch bend, aftertouch, poly-touch and program change.
+## link::Classes/MIDIdef:: || Related to link::Classes/MIDIFunc::, this class keeps several MIDIFunc objects in global storage, by name. Especially helpful for live or interactive use.
+## link::Classes/MIDIOut:: || Supports MIDI output to hardware ports or inter-application MIDI buses.
+## link::Classes/MIDIEndPoint:: || Represents a MIDI port published by the operating system. It contains a device name, port name and unique identifier (uid).
+## link::Classes/MIDIIn:: || The lowest-level MIDI input class. MIDIFunc and MIDIdef use this class so that you don't have to. It is strongly recommended to avoid using this class directly.
+::
+
 
 Examples::
 
+MIDI input:
+
 code::
-//MIDIIn example:
 (
 MIDIClient.init;
-//There are three possibilities to connect for example to the first device:
-//MIDIIn.connect(0, MIDIClient.sources.at(0));
-//MIDIIn.connect(0, MIDIClient.sources.at(0).uid);
-MIDIIn.connect(0, 0);
-//set the action:
-MIDIIn.control = {arg src, chan, num, val;
-	val.postln;
-};
-)
+MIDIIn.connectAll;
+m = MIDIFunc.noteOn({ |vel, num|
+	"note % @ velocity %\n".postf(num, vel);
+});
 
-//MIDIOut example:
+// when finished
+m.free;
+::
+
+
+MIDI output:
+
+code::
 (
 MIDIClient.init;
 m = MIDIOut(0, MIDIClient.destinations.at(0).uid);
 m.noteOn(0, 60, 60);
 )
+::
+
+Receiving system exclusive messages:
+
+code::
+~sysexFunc = { |uid, data|
+	// 'data' holds the sysex packet as 8-bit integers
+};
+MIDIIn.addFuncTo(\sysex, ~sysexFunc);
+
+// when finished
+MIDIIn.removeFuncFrom(\sysex, ~sysexFunc);
 ::

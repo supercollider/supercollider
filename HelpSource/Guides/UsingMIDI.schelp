@@ -8,21 +8,15 @@ section::Introduction
 
 SuperCollider's out of the box MIDI support is fairly thorough (although not as complete as you'll find in commercial sequencers). All MIDI devices accessible to your operating system (CoreMIDI on OSX, ALSA on Linux, PortMIDI on Windows) are accessible to SuperCollider.
 
-note::
-This document is written from an OSX perspective. The essential behavior of the MIDI interface classes should be the same on other platforms, despite my continual reference to CoreMIDI here.
-::
-
-SuperCollider does not impose much higher-level structure on MIDI functionality. The core classes are little more than hardware abstractions (see also the link::Guides/MIDI:: helpfile):
+The main MIDI classes are:
 
 definitionList::
-## link::Classes/MIDIClient::
-|| represents SuperCollider's communications with CoreMIDI
-## link::Classes/MIDIIn::
-|| receives MIDI messages and executes functions in response to those messages
-## link::Classes/MIDIOut::
-|| sends MIDI messages out to a specific port and channel
-## link::Classes/MIDIEndPoint::
-|| a client-side representation of a CoreMIDI device, containing three variables (name, device and uid, which is a unique identifier assigned by the system)
+## link::Classes/MIDIClient:: || This class connects to the operating system's MIDI layer, and obtains the lists of available MIDI sources and destinations. The information about the hardware is stored in code::MIDIClient.sources:: and code::MIDIClient.destinations:: as link::Classes/MIDIEndPoint:: objects. MIDIClient must be initialized before MIDI can be received. See the example at link::#playing_notes_on_your_midi_keyboard#Playing notes on your MIDI keyboard::.
+## link::Classes/MIDIFunc:: || The optimal way to receive the most typical MIDI messages: note on/off, controller, pitch bend, aftertouch, poly-touch and program change.
+## link::Classes/MIDIdef:: || Related to link::Classes/MIDIFunc::, this class keeps several MIDIFunc objects in global storage, by name. Especially helpful for live or interactive use.
+## link::Classes/MIDIOut:: || Supports MIDI output to hardware ports or inter-application MIDI buses.
+## link::Classes/MIDIEndPoint:: || Represents a MIDI port published by the operating system. It contains a device name, port name and unique identifier (uid).
+## link::Classes/MIDIIn:: || The lowest-level MIDI input class. MIDIFunc and MIDIdef use this class so that you don't have to. It is strongly recommended to avoid using this class directly.
 ::
 
 In most cases, each physical MIDI connection (pair of in/out jacks on the MIDI interface) has one MIDIEndPoint object to represent it in the client.
@@ -30,7 +24,7 @@ In most cases, each physical MIDI connection (pair of in/out jacks on the MIDI i
 section::Receiving MIDI input
 subsection:: MIDIFunc and MIDIdef
 
-For most uses, the preferred way to receive MIDI input is using the link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: classes. The advantage of this approach is that any number of responders can be registered, using extremely flexible matching. (By contrast, using link::Classes/MIDIIn:: responder functions directly means that only one function can exist per incoming message type. That is not an ideal programming practice.)
+For most uses, the preferred way to receive MIDI input is using the link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: classes. The advantage of this approach is that any number of responders can be registered, using extremely flexible matching.
 
 link::Classes/MIDIFunc:: has a number of convenience methods allowing you to register for the different MIDI message types. It can  filter incoming MIDI messages to respond to a particular device, channel number, or specific message number, or ranges thereof.
 
@@ -40,50 +34,7 @@ subsection:: MIDIIn
 
 MIDIIn has a number of class variables holding functions to be evaluated when a MIDI event comes in. Technical details on each function can be found in the link::Classes/MIDIIn:: help file.
 
-list::
-## noteOn
-## noteOff
-## control
-## bend
-## touch
-## polyTouch
-## program
-## sysex
-## sysrt
-## smpte
-::
-
-To assign a response to a particular kind of MIDI message, assign a function to the class variable:
-
-code::
-MIDIIn.connect;
-MIDIIn.noteOn = { |port, chan, note, vel| [port, chan, note, vel].postln };
-MIDIIn.noteOn = nil;	// stop responding
-::
-
-MIDIIn provides the responding functions with all the information coming in from CoreMIDI:
-
-definitionList::
-## source (src)
-|| corresponds to the uid of the link::Classes/MIDIEndPoint:: from which the message is coming.
-## channel (chan)
-|| integer 0-15 representing the channel bits of the MIDI status byte.
-::
-
-... with subsequent arguments representing the data bytes. The link::Classes/MIDIIn:: help file details all the supported messages along with the arguments of the responding function for the message.
-
-Because these are class variables, you can have only one function assigned at one time. A common usage is to assign a function that looks up responses in a collection. For example, you could have a separate set of response functions for each channel.
-
-code::
-~noteOn = Array.fill(16, IdentityDictionary.new);
-MIDIIn.noteOn = { |port, chan, num, vel| ~noteOn[chan].do(_.value(port, chan, num, vel)) };
-
-	// this function will respond only on channel 0
-~noteOn[0].put(\postNoteOn, { |port, chan, num, vel| [port, chan, note, vel].postln });
-~noteOn[0].removeAt(\postNoteOn);	// stop responding
-::
-
-The advantage of this approach over using "if" or "case" statements in the response function is that you can add and remove responses without having to change the MIDIIn function. The MIDIIn function can serve as a "hook" into another structure that distributes the MIDI events to the real responders.
+Note, however, that MIDIIn provides no functionality for filtering incoming MIDI based on device, controller number or other factors. This means, for practical use, MIDIIn is significantly harder to use than link::Classes/MIDIFunc:: or link::Classes/MIDIdef::. strong::It is generally recommended to avoid using MIDIIn directly.:: The exceptions are sysex (system exclusive) and sysrt (MIDI clock) messages, which are currently supported only by MIDIIn.
 
 section::Playing notes on your MIDI keyboard
 
@@ -95,7 +46,8 @@ s.boot;
 (
 var notes, on, off;
 
-//MIDIIn.connect;
+MIDIClient.init;
+MIDIIn.connectAll;
 
 notes = Array.newClear(128);	// array has one slot per possible MIDI note
 
