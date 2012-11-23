@@ -176,6 +176,18 @@ AbstractFunction {
 	expexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		^this.composeNAryOp('expexp', [inMin, inMax, outMin, outMax, clip])
 	}
+	lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
+		^this.composeNAryOp('lincurve', [inMin, inMax, outMin, outMax, curve, clip])
+	}
+	curvelin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
+		^this.composeNAryOp('curvelin', [inMin, inMax, outMin, outMax, curve, clip])
+	}
+	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
+		^this.composeNAryOp('bilin', [inCenter, inMin, inMax, outCenter, outMin, outMax, clip])
+	}
+	biexp { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
+		^this.composeNAryOp('biexp', [inCenter, inMin, inMax, outCenter, outMin, outMax, clip])
+	}
 
 	degreeToKey { arg scale, stepsPerOctave=12;
 		^this.composeNAryOp('degreeToKey', [scale, stepsPerOctave])
