@@ -5,9 +5,9 @@ categories:: Streams-Patterns-Events>Patterns>Repetition
 
 description::
 
-note::
-Pfin is intended for event patterns. After the count elements are embedded, the stream is called with a nil input value so that link::Classes/Pmono::, link::Classes/Pfx:: and others can release resources. Ordinary value patterns should not be called in this case, so for value patterns, you should use link::Classes/Pfinval:: instead.
-::
+Limits the number of output values from the given pattern or stream. If the stream is able to output more values, Pfin will terminate it early.
+
+The number may be given as a constant, or calculated on the fly from a function or stream. See the "sequence of pitches" example below.
 
 ClassMethods::
 
@@ -38,7 +38,7 @@ SynthDef(\help_sinegrain,
 
 (
 var c, b;
-c = Pn(Pfin({ rrand(3, 5)}, Pseq([1, 2, 3, 4, 5, 6],inf)*4+65),inf);
+c = Pn(Pfin({ rrand(3, 5) }, Pseq([1, 2, 3, 4, 5, 6], inf) * 4 + 65), inf);
 b = c.asStream;
 Routine({
 	loop({
@@ -47,4 +47,14 @@ Routine({
 	})
 }).play;
 )
+
+// or, more concisely:
+
+p = Pbind(
+	\instrument, \help_sinegrain,
+	\midinote, Pn(Pfin({ rrand(3, 5) }, Pseq([1, 2, 3, 4, 5, 6], inf) * 4 + 65), inf),
+	\dur, 0.12
+).play;
+
+p.stop;
 ::
