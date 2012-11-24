@@ -32,46 +32,62 @@ code::
 o.free;  // when done, you need to clean up the OSCFunc
 ::
 
-If you need to track multiple values, you can store them in a collection of arrays and differentiate them by assigning different IDs in the SendTrig UGen.
-code::
-l = { List.new } ! 2;
-o = OSCFunc({ |msg|
-		// msg[2] is the index
-	l[msg[2]].add(msg[3]);
-}, '/tr', s.addr);
+If you need to track multiple values, SendReply can send arrays of values back to the client.
 
-{	var	freq, amp;
+code::
+l = List.new;
+o = OSCFunc({ |msg|
+		// msg[3] is the first array value
+		// [3..] means take everything in the array after that
+	l.add(msg[3..]);
+}, '/freqAmp', s.addr);
+
+a = {
+	var	freq, amp;
 	freq = LFNoise0.kr(8, 600, 800);
 	amp = LFNoise1.kr(10, 0.5, 0.5);
-		// Impulse is needed to trigger the /tr message to be sent
-	SendTrig.kr(Impulse.kr(4), 0, freq);
-	SendTrig.kr(Impulse.kr(4), 1, amp);
-	SinOsc.ar(freq, 0, 0.3) ! 2
+		// Impulse is needed to trigger the reply to be sent
+	SendReply.kr(Impulse.kr(4), '/freqAmp', [freq, amp]);
+	SinOsc.ar(freq, 0, amp) ! 2
 }.play;
 
+a.free;
 o.free;  // when done, you need to clean up the OSCFunc
 
-l[0].array.plot	// view frequencies
-l[1].array.plot	// view amps
+// plot as two channels: frequencies in the top graph, amps in the bottom
+l.flat.plot(numChannels: 2);
 ::
 
-subsection:: Shared controls (Internal server only, control rate only)
+subsection:: Trace control signals using a control bus
 
-The internal server allocates a number of control buses whose memory addresses are shared with the client. The client can poll these buses without using OSC messages.
+Another technique to watch control values is to output the signal to a control-rate bus. Then you can access the bus using link::Classes/Bus#-get:: or link::Classes/Bus#-getSynchronous::. Saving the values into an Array or List is a little more straightforward with getSynchronous.
 
-Insert a SharedOut.kr UGen into your synthdef. Then, on the client side, use s.getSharedControl(num) to read the value. If you want to track the value over time, use a routine to poll repeatedly.
 code::
-{	var	freq;
+b = Bus.control(s, 1);
+
+a = {
+	var	freq;
 	freq = LFNoise1.kr(2, 600, 800);
-	SharedOut.kr(0, freq);		// no need for Impulse here
+	Out.kr(b, freq);		// no need for Impulse here
 	SinOsc.ar(freq, 0, 0.3) ! 2
 }.play;
 
 l = List.new;
-r = fork { loop { l.add(s.getSharedControl(0)); 0.1.wait } };
+r = fork { loop { l.add(b.getSynchronous); 0.1.wait } };
+
 r.stop;
+a.free;
+
 l.array.plot;  // to view the results graphically
 ::
+
+This works only with internal or local servers. For remote servers, the routine may be rewritten as follows.
+
+code::
+r = fork { loop { b.get({ |value| l.add(value) }); 0.1.wait } };
+::
+
+note::This approach is not valid for audio buses, because the data move too quickly to support 'get'.::
 
 subsection:: Server-side trace
 
