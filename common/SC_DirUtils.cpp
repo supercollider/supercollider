@@ -27,6 +27,7 @@
 #ifdef _WIN32
 # include <windows.h>
 # include <direct.h>
+# include <shlobj.h>
 # include "SC_Win32Utils.h"
 #else
 # include <unistd.h>
@@ -337,6 +338,16 @@ void sc_GetUserHomeDirectory(char *str, int size)
 
 void sc_GetSystemAppSupportDirectory(char *str, int size)
 {
+#ifdef _WIN32
+	ITEMIDLIST * pidl;
+	char buf[MAX_PATH];
+	SHGetFolderLocation(NULL, CSIDL_COMMON_APPDATA, NULL, 0, &pidl);
+	SHGetPathFromIDList( pidl, buf );
+	ILFree(pidl);
+	strncpy(str, buf, size);
+	sc_AppendToPath(str, size, "SuperCollider");
+#else
+
 	strncpy(str,
 #if defined(SC_DATA_DIR)
 			SC_DATA_DIR,
@@ -344,16 +355,16 @@ void sc_GetSystemAppSupportDirectory(char *str, int size)
 			"/",
 #elif defined(__APPLE__)
 			"/Library/Application Support",
-#elif defined(_WIN32)
-			( getenv("SC_SYSAPPSUP_PATH")==NULL ) ? "C:\\SuperCollider" : getenv("SC_SYSAPPSUP_PATH"),
 #else
 			"/usr/local/share/SuperCollider",
 #endif
 			size);
-			
+
 #if defined(__APPLE__)
 	// Get the main bundle name for the app from the enclosed Info.plist 
 	sc_AppendBundleName(str, size);
+#endif
+
 #endif
 }
 
@@ -370,6 +381,16 @@ void sc_GetUserAppSupportDirectory(char *str, int size)
 		return;
 	}
 
+#if defined(_WIN32)
+	ITEMIDLIST * pidl;
+	char buf[MAX_PATH];
+	SHGetFolderLocation(NULL, CSIDL_APPDATA, NULL, 0, &pidl);
+	SHGetPathFromIDList( pidl, buf );
+	ILFree(pidl);
+	strncpy(str, buf, size);
+	sc_AppendToPath(str, size, "SuperCollider");
+#else
+
 	sc_GetUserHomeDirectory(str, size);
 
 #if defined(SC_IPHONE)
@@ -378,10 +399,10 @@ void sc_GetUserAppSupportDirectory(char *str, int size)
 	// Get the main bundle name for the app
 	sc_AppendToPath(str, size, "Library/Application Support");
 	sc_AppendBundleName(str, size);
-#elif defined(_WIN32)
-	sc_AppendToPath(str, size, "SuperCollider");
 #else
 	sc_AppendToPath(str, size, ".local/share/SuperCollider");
+#endif
+
 #endif
 }
 
