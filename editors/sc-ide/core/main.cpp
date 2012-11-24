@@ -132,7 +132,6 @@ bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
 
                 stream << QString("open");
                 stream << canonicalArguments;
-                socket->flush();
                 if (!socket->waitForBytesWritten(300))
                     qWarning("SingleInstanceGuard: writing data to another IDE instance timed out");
 
