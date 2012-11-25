@@ -289,7 +289,7 @@ SynthDef {
 		this.asArray.writeDef(stream);
 		^stream.collection;
 	}
-	writeDefFile { arg dir, overwrite, mdPlugin;
+	writeDefFile { arg dir, overwrite(true), mdPlugin;
 		var desc, defFileExistedBefore;
 		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
 			defFileExistedBefore = File.exists(dir +/+ name ++ ".scsyndef");

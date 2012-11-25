@@ -1,11 +1,11 @@
 SynthDefOld : SynthDef {
-	
+
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
-		^this.prNew(name).variants_(variants).metadata_(metadata).children_(Array.new(64))
+		^super.new.name_(name.asSymbol).variants_(variants).metadata_(metadata).children_(Array.new(64))
 			.build(ugenGraphFunc, rates, prependArgs)
-	}	
-	
-	writeDefFile { arg dir, overwrite;
+	}
+
+	writeDefFile { arg dir, overwrite(true);
 		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
 			super.writeDefFileOld(name, dir, overwrite);
 		} {
@@ -16,12 +16,12 @@ SynthDefOld : SynthDef {
 				.format(name), this).throw
 		}
 	}
-	
+
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
 		var allControlNamesTemp, allControlNamesMap;
 
-		file.putPascalString(name);
+		file.putPascalString(name.asString);
 
 		this.writeConstants(file);
 
@@ -88,7 +88,7 @@ SynthDefOld : SynthDef {
 			};
 		}
 	}
-	
+
 	writeConstants { arg file;
 		var array = FloatArray.newClear(constants.size);
 		constants.keysValuesDo { arg value, index;
@@ -100,7 +100,7 @@ SynthDefOld : SynthDef {
 			file.putFloat(item)
 		};
 	}
-	
+
 	asBytes {
 		var stream = CollStream.on(Int8Array.new(256));
 		this.asArray.writeDefOld(stream);
@@ -110,7 +110,7 @@ SynthDefOld : SynthDef {
 }
 
 + Collection {
-	
+
 	writeDefOld { | file |
 		file.putString("SCgf");
 		file.putInt32(1); // file version
@@ -125,7 +125,7 @@ SynthDefOld : SynthDef {
 }
 
 + UGen {
-	
+
 	writeDefOld { arg file;
 		//[\WR, this.class.name, rate, this.numInputs, this.numOutputs].postln;
 		file.putPascalString(this.name);
@@ -140,7 +140,7 @@ SynthDefOld : SynthDef {
 		this.writeOutputSpecs(file);
 		//[this.class.name, file.length].postln;
 	}
-	
+
 	writeInputSpecOld { arg file, synthDef;
 		file.putInt16(synthIndex);
 		file.putInt16(this.outputIndex);
@@ -148,7 +148,7 @@ SynthDefOld : SynthDef {
 }
 
 + SimpleNumber {
-	
+
 	writeInputSpecOld { arg file, synth;
 		var constIndex = synth.constants.at(this.asFloat);
 		if (constIndex.isNil) {
@@ -160,7 +160,7 @@ SynthDefOld : SynthDef {
 }
 
 + Object {
-	
+
 	writeDefFileOld { arg name, dir, overwrite = (true);
 
 		StartUp.defer { // make sure the synth defs are written to the right path
