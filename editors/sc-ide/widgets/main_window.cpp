@@ -1398,13 +1398,16 @@ void MainWindow::dragEnterEvent( QDragEnterEvent * event )
 }
 
 bool MainWindow::checkFileExtension( const QString & fpath ) {
-    if (fpath.endsWith(".wav") || fpath.endsWith(".mp3") || fpath.endsWith(".aiff") || fpath.endsWith(".ogg")){
-        int ret = QMessageBox::question(this, tr("Open binary file?"),
-                tr("This file has a binary file extension. Are you sure you want to open it as a text file?"),
-                QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
-        if(ret != QMessageBox::Ok)
-            return false;
+    if (fpath.endsWith(".sc") || fpath.endsWith(".scd") || fpath.endsWith(".txt") ||
+        fpath.endsWith(".schelp")) {
+        return true;
     }
+    int ret = QMessageBox::question(this, tr("Open binary file?"), fpath +
+                tr("\n\nThe file has an unrecognized extension. It may be a binary file. Would you still like to open it?"),
+                QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if(ret != QMessageBox::Ok)
+        return false;
+
     return true;
 }
 
