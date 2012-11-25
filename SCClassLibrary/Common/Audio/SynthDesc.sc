@@ -27,7 +27,7 @@ SynthDesc {
 	}
 
 	*initClass {
-		mdPlugin = AbstractMDPlugin;	// override in your startup file
+		mdPlugin = TextArchiveMDPlugin;	// override in your startup file
 	}
 
 	send { arg server, completionMsg;
@@ -153,7 +153,7 @@ SynthDesc {
 		}
 
 	}
-	
+
 	// synthdef ver 2
 	readSynthDef2 { arg stream, keepDef=false;
 		var	numControls, numConstants, numControlNames, numUGens, numVariants;
@@ -297,7 +297,7 @@ SynthDesc {
 			};
 		};
 	}
-	
+
 	// synthdef ver 2
 	readUGenSpec2 { arg stream;
 		var ugenClass, rateIndex, rate, numInputs, numOutputs, specialIndex;
@@ -449,7 +449,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 			// do not compile the string if no argnames were added
 		if(names > 0) { msgFunc = string.compile.value };
 	}
-	
+
 	msgFuncKeepGate_ { |bool = false|
 		if(bool != msgFuncKeepGate) {
 			msgFuncKeepGate = bool;
@@ -600,8 +600,10 @@ AbstractMDPlugin {
 	*writeMetadata { |metadata, synthdef, path|
 
 		this.clearMetadata(path);
-		path = this.applyExtension(path);
-		this.writeMetadataFile(metadata, synthdef, path);
+		if(metadata.notNil and: { metadata.size > 0 }) {
+			path = this.applyExtension(path);
+			this.writeMetadataFile(metadata, synthdef, path);
+		};
 	}
 	*writeMetadataFile {}
 
