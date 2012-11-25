@@ -916,6 +916,8 @@ SequenceableCollection : Collection {
 	expexp { arg ... args; ^this.multiChannelPerform('expexp', *args) }
 	lincurve { arg ... args; ^this.multiChannelPerform('lincurve', *args) }
 	curvelin { arg ... args; ^this.multiChannelPerform('curvelin', *args) }
+	bilin { arg ... args; ^this.multiChannelPerform('bilin', *args) }
+	biexp { arg ... args; ^this.multiChannelPerform('biexp', *args) }
 	range { arg ... args; ^this.multiChannelPerform('range', *args) }
 	exprange { arg ... args; ^this.multiChannelPerform('exprange', *args) }
 	unipolar { arg ... args; ^this.multiChannelPerform('unipolar', *args) }
