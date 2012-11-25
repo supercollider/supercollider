@@ -510,7 +510,7 @@ The result depends on the objects in the collection, but the main use case is fo
 
 See also link::Guides/Multichannel-Expansion::
 
-method::clip, wrap, fold, prune, linlin, linexp, explin, expexp, lincurve, curvelin, range, exprange, unipolar, bipolar, lag, lag2, lag3, lagud, lag2ud, lag3ud, varlag, slew, blend, checkBadValues
+method::clip, wrap, fold, prune, linlin, linexp, explin, expexp, lincurve, curvelin, bilin, biexp, range, exprange, unipolar, bipolar, lag, lag2, lag3, lagud, lag2ud, lag3ud, varlag, slew, blend, checkBadValues
 Calls code:: this.multiChannelPerform(selector, *args) :: where selector is the name of the message.
 
 method::multichannelExpandRef
