@@ -1882,7 +1882,7 @@ void initPassOne()
 	sClassExtFiles = 0;
 
 	void *ptr = pyr_pool_runtime->Alloc(sizeof(SymbolTable));
-	gMainVMGlobals->symbolTable  = new (ptr) SymbolTable(pyr_pool_runtime, 8192);
+	gMainVMGlobals->symbolTable  = new (ptr) SymbolTable(pyr_pool_runtime, 65536);
 
 	//gFileSymbolTable = newSymbolTable(512);
 
