@@ -292,6 +292,7 @@ SynthDef {
 	writeDefFile { arg dir, overwrite(true), mdPlugin;
 		var desc, defFileExistedBefore;
 		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
+			dir = dir ? SynthDef.synthDefDir;
 			defFileExistedBefore = File.exists(dir +/+ name ++ ".scsyndef");
 			super.writeDefFile(name, dir, overwrite);
 			if(overwrite or: { defFileExistedBefore.not }) {
