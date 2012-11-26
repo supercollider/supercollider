@@ -73,6 +73,9 @@ protected:
     virtual void mouseReleaseEvent ( QMouseEvent * );
     virtual void mouseDoubleClickEvent( QMouseEvent * );
     virtual void mouseMoveEvent( QMouseEvent * );
+    virtual void dragEnterEvent( QDragEnterEvent * );
+    virtual bool canInsertFromMimeData ( const QMimeData * data ) const;
+    virtual void insertFromMimeData ( const QMimeData * data );
 
 private slots:
     void matchBrackets();
