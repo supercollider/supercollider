@@ -86,6 +86,8 @@ private Q_SLOTS:
 private:
     void find (bool backwards);
     bool eventFilter (QObject *, QEvent *);
+    static void reportFoundOccurrencies( int count );
+    static void reportReplacedOccurrencies( int count );
 
     QLineEdit *mFindField;
     QLabel *mFindLabel;
