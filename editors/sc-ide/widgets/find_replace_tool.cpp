@@ -19,6 +19,7 @@
 */
 
 #include "find_replace_tool.hpp"
+#include "main_window.hpp"
 #include "code_editor/editor.hpp"
 #include "../core/main.hpp"
 #include "../core/settings/manager.hpp"
@@ -210,6 +211,8 @@ void TextFindReplacePanel::onFindFieldTextChanged()
         mSearchPosition = mEditor->textCursor().selectionStart();
 
     int count = mEditor->findAll(expr, flagz);
+    if (!expr.isEmpty())
+        reportFoundOccurrencies(count);
 
     QTextCursor searchCursor(mEditor->textDocument());
     searchCursor.setPosition(mSearchPosition);
@@ -253,8 +256,13 @@ void TextFindReplacePanel::findAll()
 {
     if (!mEditor) return;
 
+    QRegExp expr = regexp();
+
     // NOTE: empty expression removes any search highlighting
-    mEditor->findAll(regexp(), flags());
+    int count = mEditor->findAll(expr, flags());
+
+    if (!expr.isEmpty())
+        reportFoundOccurrencies(count);
 }
 
 void TextFindReplacePanel::replace()
@@ -274,11 +282,26 @@ void TextFindReplacePanel::replaceAll()
     if (!mEditor) return;
 
     QRegExp expr = regexp();
-    if (expr.isEmpty()) return;
+    if (expr.isEmpty())
+        return;
 
-    mEditor->replaceAll(expr, replaceString(), flags());
+    QTextDocument::FindFlags opt = flags();
+
+    int count = mEditor->replaceAll(expr, replaceString(), opt);
+
+    reportReplacedOccurrencies( count );
 
     mSearchPosition = -1;
+}
+
+void TextFindReplacePanel::reportFoundOccurrencies( int count )
+{
+    MainWindow::instance()->showStatusMessage( tr("%1 occurrencies found.").arg(count) );
+}
+
+void TextFindReplacePanel::reportReplacedOccurrencies( int count )
+{
+    MainWindow::instance()->showStatusMessage( tr("%1 occurrencies replaced.").arg(count) );
 }
 
 } // namespace ScIDE
