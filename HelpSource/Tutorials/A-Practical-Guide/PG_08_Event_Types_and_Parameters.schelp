@@ -29,6 +29,19 @@ definitionList::
 ## \sendGate || The default behavior for releasing a note is to look in the link::Classes/SynthDesc:: for an argument called \gate. If it's present, the event will send a code::node.set(\gate, 0):: message to the server. If not, no release will be sent; it's assumed that the SynthDef will release itself after a given length of time. code::\sendGate:: overrides this behavior: code::true:: means to force the release message to be sent, whether or not the argument exists, while code::false:: means to suppress the release message.
 
 It isn't typical use to override; nonetheless, for some special cases, it may be useful.
+
+## \tempo || Optional. If a value is given (in beats per second), it will change the tempo of the TempoClock playing the pattern. Here, the note duration is constant but the clock's speed changes.
+
+note::Changing the tempo will affect all patterns playing on the same clock.::
+
+code::
+Pbind(
+	\curve, Pseg(Pseq([0, 1, 0], 1), 15),
+	\degree, Pwhite(-7, 0, inf) + Pkey(\curve).linlin(0, 1, 0, 14).asInteger,
+	\dur, 0.5,
+	\tempo, Pkey(\curve).linlin(0, 1, 1, 10)
+).play;
+::
 ::
 
 subsection::Node control
