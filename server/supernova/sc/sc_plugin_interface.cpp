@@ -40,6 +40,8 @@
 #include "SC_fftlib.h"
 #include "../../common/SC_SndFileHelpers.hpp"
 
+#include <boost/math/constants/constants.hpp>
+
 // undefine the shadowed scfft functions
 #undef scfft_create
 #undef scfft_dofft
@@ -575,7 +577,7 @@ inline void initialize_rate(Rate & rate, double sample_rate, int blocksize)
 {
     rate.mSampleRate = sample_rate;
     rate.mSampleDur = 1. / sample_rate;
-    rate.mRadiansPerSample = 2 * M_PI / sample_rate;
+    rate.mRadiansPerSample = 2 * boost::math::constants::pi<double>() / sample_rate;
 
     rate.mBufLength = blocksize;
     rate.mBufDuration = blocksize / sample_rate;
