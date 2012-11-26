@@ -26,6 +26,7 @@
 #include "../core/main.hpp"
 #include "../core/util/overriding_action.hpp"
 #include "QtCollider/widgets/web_page.hpp"
+#include "QtCollider/hacks/hacks_qt.hpp"
 
 #include <QVBoxLayout>
 #include <QToolBar>
@@ -169,7 +170,7 @@ void HelpBrowser::onLinkClicked( const QUrl & url )
 
     foreach ( const QString & extension, nonHelpFileExtensions ) {
         if (urlString.endsWith( extension )) {
-            if (url.scheme() == fileScheme) {
+            if ( QURL_IS_LOCAL_FILE(url) ) {
                 Main::documentManager()->open(url.toLocalFile());
                 return;
             }
