@@ -37,6 +37,8 @@ rrand(24, 48)       // linear distribution in the given range.
 
 exprand(0.01, 1)    // exponential distribution;
                     // both numbers must have the same sign.
+                    // (Note that the distribution of numbers is not exactly an exponential distribution, 
+                    // since that would be unbounded: we might call it a logarithmic uniform distribution.)
 ::
 
 subsection:: Test them multiple times with a do loop
