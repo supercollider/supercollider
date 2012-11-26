@@ -116,6 +116,8 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     connect(mFindField, SIGNAL(returnPressed()), this, SLOT(onFindFieldReturn()));
     connect(mFindField, SIGNAL(textChanged(QString)), this, SLOT(onFindFieldTextChanged()));
     connect(mReplaceField, SIGNAL(returnPressed()), this, SLOT(replace()));
+    // Update search results when options change:
+    connect(optMenu, SIGNAL(triggered(QAction*)), this, SLOT(findAll()));
 
     Settings::Manager *settings = Main::settings();
     QAction *action;
