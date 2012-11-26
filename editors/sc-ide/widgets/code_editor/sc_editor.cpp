@@ -28,6 +28,8 @@
 
 #include <QKeyEvent>
 #include <QStack>
+#include <QMimeData>
+#include <QUrl>
 
 namespace ScIDE {
 
@@ -210,6 +212,52 @@ void ScCodeEditor::mouseMoveEvent( QMouseEvent *e )
     // Prevent initiating a text drag:
     if(!mMouseBracketMatch)
         GenericCodeEditor::mouseMoveEvent(e);
+}
+
+void ScCodeEditor::dragEnterEvent( QDragEnterEvent * event )
+{
+    // The purpose is only to bypass GenericCodeEditor::dragEnterEvent:
+    QPlainTextEdit::dragEnterEvent(event);
+}
+
+bool ScCodeEditor::canInsertFromMimeData ( const QMimeData * data ) const
+{
+    if (data->hasUrls())
+        return true;
+
+    return QPlainTextEdit::canInsertFromMimeData(data);
+}
+
+void ScCodeEditor::insertFromMimeData ( const QMimeData * data )
+{
+    if (data->hasUrls()) {
+        QTextCursor cursor = textCursor();
+        QList<QUrl> urls = data->urls();
+        bool multiple = urls.size() > 1;
+        if (multiple) {
+            cursor.insertText("[");
+            cursor.insertBlock();
+        }
+        for (int i = 0; i < urls.size(); ++ i) {
+            QUrl url = urls[i];
+            cursor.insertText("\"");
+            if (url.scheme() == QString("file"))
+                cursor.insertText(url.toLocalFile());
+            else
+                cursor.insertText(url.toString());
+            cursor.insertText("\"");
+            if (i < urls.size() - 1) {
+                cursor.insertText(",");
+                cursor.insertBlock();
+            }
+        }
+        if (multiple) {
+            cursor.insertBlock();
+            cursor.insertText("]");
+        }
+    }
+    else
+        QPlainTextEdit::insertFromMimeData(data);
 }
 
 void ScCodeEditor::moveToNextToken( QTextCursor & cursor, QTextCursor::MoveMode mode )
