@@ -41,6 +41,8 @@
 #include "code_editor/sc_editor.hpp"
 #include "settings/dialog.hpp"
 
+#include "QtCollider/hacks/hacks_qt.hpp"
+
 #include "SC_DirUtils.h"
 
 #include <QAction>
@@ -1388,7 +1390,7 @@ void MainWindow::dragEnterEvent( QDragEnterEvent * event )
 {
     if (event->mimeData()->hasUrls()) {
         foreach (QUrl url, event->mimeData()->urls()) {
-            if (url.scheme() == QString("file")) { // LATER: use isLocalFile
+            if ( QURL_IS_LOCAL_FILE(url) ) {
                 // LATER: check mime type ?
                 event->acceptProposedAction();
                 return;
@@ -1413,7 +1415,7 @@ void MainWindow::dropEvent( QDropEvent * event )
     const QMimeData * data = event->mimeData();
     if (data->hasUrls()) {
         foreach (QUrl url, data->urls()) {
-            if (url.scheme() == QString("file")) { // LATER: use isLocalFile
+            if ( QURL_IS_LOCAL_FILE(url) ) {
                 QString fpath = url.toLocalFile();
                 if (MainWindow::checkFileExtension(fpath))
                     Main::documentManager()->open(fpath);

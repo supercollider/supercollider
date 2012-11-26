@@ -26,6 +26,8 @@
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
 
+#include "QtCollider/hacks/hacks_qt.hpp"
+
 #include <QKeyEvent>
 #include <QStack>
 #include <QMimeData>
@@ -241,7 +243,7 @@ void ScCodeEditor::insertFromMimeData ( const QMimeData * data )
         for (int i = 0; i < urls.size(); ++ i) {
             QUrl url = urls[i];
             cursor.insertText("\"");
-            if (url.scheme() == QString("file"))
+            if ( QURL_IS_LOCAL_FILE(url) )
                 cursor.insertText(url.toLocalFile());
             else
                 cursor.insertText(url.toString());

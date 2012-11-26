@@ -22,6 +22,7 @@
 #include "QWidgetProxy.h"
 #include "painting.h"
 #include "Common.h"
+#include "hacks/hacks_qt.hpp"
 
 #include <QApplication>
 #include <QLayout>
@@ -415,10 +416,10 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
 
 static QString urlAsString( const QUrl & url )
 {
-  if(url.scheme() == "file")
-    return url.toLocalFile();
-  else
-    return url.toString();
+    if (QURL_IS_LOCAL_FILE(url))
+        return url.toLocalFile();
+    else
+        return url.toString();
 }
 
 static bool interpretMimeData( const QMimeData *data, QList<QVariant> &args )

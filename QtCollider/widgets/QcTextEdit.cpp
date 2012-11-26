@@ -21,6 +21,7 @@
 
 #include "QcTextEdit.h"
 #include "../QcWidgetFactory.h"
+#include "../hacks/hacks_qt.hpp"
 
 #include <QFile>
 #include <QUrl>
@@ -197,7 +198,7 @@ void QcTextEdit::insertFromMimeData ( const QMimeData * data )
     for(int i = 0; i < n; ++i)
     {
       QUrl &url = urls[i];
-      QString text = url.scheme() == "file" ? url.toLocalFile() : url.toString();
+      QString text = QURL_IS_LOCAL_FILE(url) ? url.toLocalFile() : url.toString();
       c.insertText(text);
       if(n > 1) c.insertText("\n");
     }
