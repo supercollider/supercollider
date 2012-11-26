@@ -177,7 +177,7 @@ boost::filesystem::path resolve_home(void)
 #elif defined(__APPLE__)
     path home(getenv("HOME"));
     return home;
-#elif defined(WIN32)
+#elif defined(_WIN32)
     path home(getenv("USERPROFILE"));
     return home;
 #else
@@ -207,10 +207,10 @@ void set_plugin_paths(void)
         char extension_dir[MAXPATHLEN];
 
         sc_GetSystemExtensionDirectory(extension_dir, MAXPATHLEN);
-        sc_factory->load_plugin_folder(path(extensions_dir) / "plugins");
+        sc_factory->load_plugin_folder(path(extension_dir) / "plugins");
 
         sc_GetUserExtensionDirectory(extension_dir, MAXPATHLEN);
-        sc_factory->load_plugin_folder(path(extensions_dir) / "plugins");
+        sc_factory->load_plugin_folder(path(extension_dir) / "plugins");
 #endif
     }
 
