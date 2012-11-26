@@ -52,14 +52,14 @@ TestEvent : UnitTest {
 		
 		SynthDef(\xxx_test, { |freq, zzzz, gate = 1|
 			
-		}).memStore;
+		}).add;
 		
 		this.assert(SynthDescLib.global.at(\xxx_test).canFreeSynth.not, 
 			"SynthDesc detects that Synth can't free itself");
 		
 		SynthDef(\xxx_test, { |freq, zzzz, gate = 1|
 			EnvGen.kr(Env.asr, gate, doneAction:2)
-		}).memStore;
+		}).add;
 		
 		this.assert(SynthDescLib.global.at(\xxx_test).canFreeSynth, 
 			"SynthDesc detects that Synth can free itself");
