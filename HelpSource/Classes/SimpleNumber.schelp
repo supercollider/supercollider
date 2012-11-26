@@ -862,6 +862,7 @@ returns:: A random number from -this to +this that is the result of summing thre
 
 method:: exprand
 an exponentially distributed random number in the interval ]a, b[. This is always a link::Classes/Float::.
+(Note that the distribution of numbers is not exactly an EMPHASIS::exponential distribution::, since that would be unbounded: we might call it a EMPHASIS::logarithmic uniform distribution::.)
 argument::aNumber
 the upper limit
 argument::adverb
