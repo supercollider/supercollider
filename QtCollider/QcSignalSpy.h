@@ -95,9 +95,7 @@ int qt_metacall( QMetaObject::Call call, int methodId, void **argData )
     Q_ASSERT( methodId == 0 );
 
     QList<QVariant> args;
-#if QT_VERSION >= 0x040700
     args.reserve( _argTypes.count() );
-#endif
 
     for (int i = 0; i < _argTypes.count(); ++i) {
       QMetaType::Type type = static_cast<QMetaType::Type>(_argTypes.at(i));
