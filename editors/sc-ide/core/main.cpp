@@ -81,6 +81,11 @@ int main( int argc, char *argv[] )
     Settings::Manager *settings = main->settings();
     SessionManager *sessions = main->sessionManager();
 
+    // NOTE: window has to be shown before restoring its geometry,
+    // or else restoring maximized state will fail, if it has ever before
+    // been saved un-maximized.
+    win->show();
+
     QString startSessionName = settings->value("IDE/startWithSession").toString();
     if (startSessionName == "last") {
         QString lastSession = sessions->lastSession();
@@ -96,8 +101,6 @@ int main( int argc, char *argv[] )
         win->restoreWindowState();
         sessions->newSession();
     }
-
-    win->show();
 
     foreach (QString argument, arguments) {
         main->documentManager()->open(argument);
