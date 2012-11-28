@@ -39,11 +39,40 @@ Restores link::#.currentEnvironment:: from the stack.
 
 SECTION::PseudoVariables (global variables)
 These are not methods, but global variables.
+
+warning::In general, you should not manipulate these variables directly. Instead, use the link::#-use::, link::#-push:: and link::#*pop:: methods.::
+
 method:: currentEnvironment
 determines environment used by "~" syntax, link::#.valueEnvir::, and link::#.valueArrayEnvir::
 
 method:: topEnvironment
-initial value of link::#.currentEnvironment::, can be used for 'global variables'
+initial value of link::#.currentEnvironment::. code::~environmentVariables:: placed here can be used as "global variables," as long as the topEnvironment remains the currentEnvironment.
+
+code::
+~abc = 10;  // Environment variable (acting like a global var)
+
+currentEnvironment;  // abc is there
+topEnvironment;  // and here, because...
+
+// they are the exact same environment
+currentEnvironment === topEnvironment;
+
+// a separate environment
+e = Environment.make { ~def = 20 };
+
+e.push;  // make 'e' the currentEnvironment
+
+~abc  // is now nil, because...
+
+currentEnvironment;  // this is 'e' and contains only ~def
+topEnvironment;  // still has ~abc
+
+e.pop;  // return to the previous currentEnvironment
+
+~abc  // it's back!
+::
+
+Thus, ~abc is not truly a global variable because it is inaccessible if its environment is not current.
 
 SECTION::Related Messages
 
