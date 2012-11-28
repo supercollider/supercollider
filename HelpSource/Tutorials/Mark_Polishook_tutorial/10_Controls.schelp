@@ -125,7 +125,7 @@ The array of lagtimes means that the synthdef template with two components (disc
 code::
 // a template for a synthdef with two components
 SynthDef(
-	aSynth",				// 1st arsgument is a name
+	"aSynth",				// 1st argument is a name
 	{ .... i am a ugenGraphFunc ... }	// 2nd argument is a ugenGraphFunc
 )
 ::
