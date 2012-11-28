@@ -78,18 +78,18 @@ Paths and files you may want to be aware of
 Windows 7 / Vista:
 
 - Startup file:
-  C:\Users\<USERNAME>\AppData\Roaming\SuperCollider\startup.scd
+  C:\Users\<USERNAME>\AppData\Local\SuperCollider\startup.scd
 
 - Extension folder where classes and plugins should be installed:
-  C:\Users\<USERNAME>\AppData\Roaming\SuperCollider\Extensions
+  C:\Users\<USERNAME>\AppData\Local\SuperCollider\Extensions
 
 Windows XP:
 
 - Startup file:
-  C:\Documents and Settings\<USERNAME>\Application Data\SuperCollider\startup.scd
+  C:\Documents and Settings\<USERNAME>\Local Settings\Application Data\SuperCollider\startup.scd
 
 - Extension folder where classes and plugins should be installed:
-  C:\Documents and Settings\<USERNAME>\Application Data\SuperCollider\Extensions
+  C:\Documents and Settings\<USERNAME>\Local Settings\Application Data\SuperCollider\Extensions
 
 ------------------------------------------------------------------------
 Outro
