@@ -150,8 +150,8 @@ set( translation_src
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_zh.ts
 )
 
-# Translation file for native language, used only to handle singular/plural forms
-set( native_translation_src ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_en.ts )
+# Translation file for source code native language, used only to handle singular/plural forms
+set( native_translation_src ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide.ts )
 
 # A handy target to update translation source files
 add_custom_target( update_ide_translations
