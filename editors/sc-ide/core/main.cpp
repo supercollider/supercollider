@@ -63,8 +63,12 @@ int main( int argc, char *argv[] )
     qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(&qtTranslator);
 
+    char resourcePath[PATH_MAX];
+    sc_GetResourceDirectory(resourcePath, PATH_MAX);
+    QString ideTranslationPath = QString(resourcePath) + "/translations";
+    QString ideTranslationFile = "scide_" + QLocale::system().name();
     QTranslator scideTranslator;
-    scideTranslator.load("scide_" + QLocale::system().name());
+    scideTranslator.load( ideTranslationFile, ideTranslationPath );
     app.installTranslator(&scideTranslator);
 
     // Set up style
