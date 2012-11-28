@@ -134,7 +134,7 @@ static float* create_cosTable(int log2n)
 }
 #endif
 
-static float* scfft_create_fftwindow(int wintype, int log2n)
+static inline float* scfft_create_fftwindow(int wintype, int log2n)
 {
 	int size = 1 << log2n;
 	unsigned short i;
