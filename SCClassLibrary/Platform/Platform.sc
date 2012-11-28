@@ -30,6 +30,9 @@ Platform
 	*classLibraryDir { ^thisProcess.platform.classLibraryDir }
 	*helpDir { ^thisProcess.platform.helpDir }
 
+	userHomeDir { _Platform_userHomeDir }
+	*userHomeDir { ^thisProcess.platform.userHomeDir }
+
 	systemAppSupportDir { _Platform_systemAppSupportDir }
 	*systemAppSupportDir { ^thisProcess.platform.systemAppSupportDir }
 
