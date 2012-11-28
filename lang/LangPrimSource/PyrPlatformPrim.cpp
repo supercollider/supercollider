@@ -35,6 +35,11 @@ Primitives for platform dependent directories, constants etc.
 	SetObject(a, string); \
 	return errNone
 
+static int prPlatform_userHomeDir(struct VMGlobals *g, int numArgsPushed)
+{
+	PATH_CONSTANT_PRIM_BODY(sc_GetUserHomeDirectory);
+}
+
 static int prPlatform_systemAppSupportDir(struct VMGlobals *g, int numArgsPushed)
 {
 	PATH_CONSTANT_PRIM_BODY(sc_GetSystemAppSupportDirectory);
@@ -80,6 +85,7 @@ void initPlatformPrimitives()
 
 	base = nextPrimitiveIndex();
 
+	definePrimitive(base, index++, "_Platform_userHomeDir", prPlatform_userHomeDir, 1, 0);
 	definePrimitive(base, index++, "_Platform_systemAppSupportDir", prPlatform_systemAppSupportDir, 1, 0);
 	definePrimitive(base, index++, "_Platform_userAppSupportDir", prPlatform_userAppSupportDir, 1, 0);
 	definePrimitive(base, index++, "_Platform_systemExtensionDir", prPlatform_systemExtensionDir, 1, 0);
