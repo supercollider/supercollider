@@ -66,6 +66,17 @@ int main( int argc, char *argv[] )
     char resourcePath[PATH_MAX];
     sc_GetResourceDirectory(resourcePath, PATH_MAX);
     QString ideTranslationPath = QString(resourcePath) + "/translations";
+
+    bool translationLoaded;
+
+    // Load fallback translator that only handles plural forms in English
+    QTranslator fallbackTranslator;
+    translationLoaded = fallbackTranslator.load( "scide", ideTranslationPath );
+    app.installTranslator(&fallbackTranslator);
+    if (!translationLoaded)
+        qWarning("scide warning: Failed to load fallback translation file.");
+
+    // Load translator for locale
     QString ideTranslationFile = "scide_" + QLocale::system().name();
     QTranslator scideTranslator;
     scideTranslator.load( ideTranslationFile, ideTranslationPath );
