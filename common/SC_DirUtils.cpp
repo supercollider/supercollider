@@ -384,7 +384,7 @@ void sc_GetUserAppSupportDirectory(char *str, int size)
 #if defined(_WIN32)
 	ITEMIDLIST * pidl;
 	char buf[MAX_PATH];
-	SHGetFolderLocation(NULL, CSIDL_APPDATA, NULL, 0, &pidl);
+	SHGetFolderLocation(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, &pidl);
 	SHGetPathFromIDList( pidl, buf );
 	ILFree(pidl);
 	strncpy(str, buf, size);
