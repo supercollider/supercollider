@@ -296,12 +296,14 @@ void TextFindReplacePanel::replaceAll()
 
 void TextFindReplacePanel::reportFoundOccurrencies( int count )
 {
-    MainWindow::instance()->showStatusMessage( tr("%1 occurrencies found.").arg(count) );
+    QString message = tr("%n occurrencies found.", "Find text in document...", count);
+    MainWindow::instance()->showStatusMessage( message );
 }
 
 void TextFindReplacePanel::reportReplacedOccurrencies( int count )
 {
-    MainWindow::instance()->showStatusMessage( tr("%1 occurrencies replaced.").arg(count) );
+    QString message = tr("%n occurrencies replaced.", "Find/replace text in document...", count);
+    MainWindow::instance()->showStatusMessage( message );
 }
 
 } // namespace ScIDE
