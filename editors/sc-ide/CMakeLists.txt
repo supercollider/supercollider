@@ -110,19 +110,6 @@ set( ide_forms
     forms/settings_shortcuts.ui
 )
 
-# Translation files
-SET( translations
-    translations/scide_de.ts
-    translations/scide_es.ts
-    translations/scide_fr.ts
-    translations/scide_ja.ts
-    translations/scide_pt.ts
-    translations/scide_ru.ts
-    translations/scide_sl.ts
-    translations/scide_sv.ts
-    translations/scide_zh.ts
-)
-
 # QtCollider shared sources:
 list(APPEND ide_moc_hdr
     ${CMAKE_SOURCE_DIR}/QtCollider/layouts/stack_layout.hpp
@@ -130,8 +117,6 @@ list(APPEND ide_moc_hdr
 list(APPEND ide_src
     ${CMAKE_SOURCE_DIR}/QtCollider/layouts/stack_layout.cpp
 )
-
-QT4_ADD_TRANSLATION( translations_src ${translations} )
 
 list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp)
 
@@ -152,15 +137,40 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets/util)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+# Translation files
+set( translation_src
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_de.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_es.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_fr.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_ja.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_pt.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_ru.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_sl.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_sv.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_zh.ts
+)
+
+# Translation file for native language, used only to handle singular/plural forms
+set( native_translation_src ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_en.ts )
+
+# A handy target to update translation source files
+add_custom_target( update_ide_translations
+    COMMAND lupdate ${CMAKE_CURRENT_SOURCE_DIR} -ts ${translation_src}
+            -no-obsolete
+    COMMAND lupdate ${CMAKE_CURRENT_SOURCE_DIR} -ts ${native_translation_src}
+            -no-obsolete -pluralonly
+)
+
 include( ${QT_USE_FILE} )
 
 qt4_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
 qt4_wrap_ui( ide_forms_src ${ide_forms} )
 qt4_add_resources( ide_rcc resources.qrc )
+qt4_add_translation( translations ${translation_src} ${native_translation_src} )
 
 set(ide_sources ${ide_src} ${all_hdr} )
 
-set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations_src})
+set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations})
 
 if(FINAL_BUILD)
   CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
@@ -207,6 +217,9 @@ if(APPLE)
 
     install(DIRECTORY ../../platform/mac/Resources/ DESTINATION ${scappauxresourcesdir})
 
+    install(FILES ${translations}
+            DESTINATION ${scappauxresourcesdir}/translations)
+
     install(TARGETS ${ide_name}
         DESTINATION ${scappbundlename}
         )
@@ -226,10 +239,14 @@ elseif(WIN32)
 	install(TARGETS ${ide_name}
 			DESTINATION "SuperCollider"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    install(FILES ${translations}
+            DESTINATION "SuperCollider/translations")
 else()
 	install(TARGETS ${ide_name}
 			RUNTIME DESTINATION "bin"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    install(FILES ${translations}
+            DESTINATION "share/SuperCollider/translations")
 endif()
 
 if (LINUX)
