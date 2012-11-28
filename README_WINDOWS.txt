@@ -75,10 +75,21 @@ the up and down arrow keys.
 Paths and files you may want to be aware of
 ------------------------------------------------------------------------
 
-- $USER_HOME$\SuperCollider\startup.scd : user startup file
+Windows 7 / Vista:
 
-- $USER_HOME$\SuperCollider\Extensions : user extension folder for classes,
-plugins and help files
+- Startup file:
+  C:\Users\<USERNAME>\AppData\Roaming\SuperCollider\startup.scd
+
+- Extension folder where classes and plugins should be installed:
+  C:\Users\<USERNAME>\AppData\Roaming\SuperCollider\Extensions
+
+Windows XP:
+
+- Startup file:
+  C:\Documents and Settings\<USERNAME>\Application Data\SuperCollider\startup.scd
+
+- Extension folder where classes and plugins should be installed:
+  C:\Documents and Settings\<USERNAME>\Application Data\SuperCollider\Extensions
 
 ------------------------------------------------------------------------
 Outro
