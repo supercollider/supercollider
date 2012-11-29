@@ -185,7 +185,9 @@ void SpecFlatness_next(SpecFlatness *unit, int inNumSamples)
 	mean *= oneovern;
 
 	// Store the val for output in future calls
-	unit->outval = geommean / mean;
+	unit->outval = (mean==0.f ? 0.8f : (geommean / mean));
+	// Note: for silence the value is undefined.
+	// Here, for silence we instead output an empirical value based on very quiet white noise.
 
 	ZOUT0(0) = unit->outval;
 }
