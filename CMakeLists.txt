@@ -181,11 +181,6 @@ if (SC_QT)
   message( STATUS "Compiling with Qt GUI" )
 endif (SC_QT)
 
-if(WIN32)
-    option(SC_WIN_DEP_DIRS
-        "A list of directories where dependencies will be searched for when packaging.")
-endif()
-
 if(CMAKE_COMPILER_IS_GNUCXX)
     option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines, requires gcc-4.3 or higher).")
     option(LTO "Use GCC's link time optimizer' (experimental).")
