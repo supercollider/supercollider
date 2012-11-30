@@ -9,7 +9,7 @@ WindowsPlatform : Platform
 
 	initPlatform {
 		super.initPlatform;
-		recordingsDir = this.userHomeDir +/+ "My Documents" +/+ "SuperCollider" +/+ "Recordings";
+		recordingsDir = this.myDocumentsDir +/+ "SuperCollider" +/+ "Recordings";
 	}
 
 	startup {
@@ -43,4 +43,6 @@ WindowsPlatform : Platform
 		var tmp = this.userAppSupportDir +/+ "";
 		^if(File.exists(tmp)) { tmp }
 	}
+
+	myDocumentsDir { _WinPlatform_myDocumentsDir }
 }
