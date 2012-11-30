@@ -26,6 +26,9 @@ Primitives for platform dependent directories, constants etc.
 #include "SC_DirUtils.h"
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
+#ifdef _WIN32
+# include "SC_Win32Utils.h"
+#endif
 
 #define PATH_CONSTANT_PRIM_BODY(func) \
 	PyrSlot *a = g->sp; \
@@ -70,6 +73,18 @@ static int prPlatform_resourceDir(struct VMGlobals *g, int numArgsPushed)
     PATH_CONSTANT_PRIM_BODY(sc_GetResourceDirectory);
 }
 
+#ifdef _WIN32
+static int prWinPlatform_myDocumentsDir(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	char path[PATH_MAX];
+	win32_GetKnownFolderPath(CSIDL_PERSONAL, path, PATH_MAX); \
+	PyrString* string = newPyrString(g->gc, path, 0, true); \
+	SetObject(a, string);
+	return errNone;
+}
+#endif
+
 static int prPlatform_ideName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
@@ -93,6 +108,9 @@ void initPlatformPrimitives()
 	definePrimitive(base, index++, "_Platform_userConfigDir", prPlatform_userConfigDir, 1, 0);
 	definePrimitive(base, index++, "_Platform_resourceDir", prPlatform_resourceDir, 1, 0);
 	definePrimitive(base, index++, "_Platform_ideName", prPlatform_ideName, 1, 0);
+#ifdef _WIN32
+	definePrimitive(base, index++, "_WinPlatform_myDocumentsDir", prWinPlatform_myDocumentsDir, 1, 0);
+#endif
 }
 
 // EOF
