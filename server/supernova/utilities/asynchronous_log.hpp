@@ -87,8 +87,8 @@ struct asynchronous_log:
             if (enqueued == length)
                 break;
 
-            string += total_enqueued;
-            length -= total_enqueued;
+            string += enqueued;
+            length -= enqueued;
         }
 
         return true;
