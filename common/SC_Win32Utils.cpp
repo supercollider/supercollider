@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <sys/timeb.h>
 #include <time.h>
+#include <windows.h>
 
 #include "SC_Win32Utils.h"
 
@@ -60,6 +61,15 @@ void win32_gettimeofday(timeval* tv, void*)
 	tv->tv_sec  = (* (unsigned __int64 *) &fileTime / (unsigned __int64)10000000) - secBetween1601and1970;
 	tv->tv_usec = (* (unsigned __int64 *) &fileTime % (unsigned __int64)10000000)/(unsigned __int64)10;
 
+}
+
+void win32_GetKnownFolderPath(int folderId, char *dest, int size)
+{
+	// Use a temporary buffer, as SHGetFolderLocation() requires it
+	// to be at least MAX_PATH size, but destination size may be less
+	char buf[MAX_PATH];
+	SHGetFolderPath(NULL, folderId, NULL, 0, buf);
+	strncpy(dest, buf, size);
 }
 
 void win32_GetHomeFolder(char* homeFolder, int bufLen)
