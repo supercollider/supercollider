@@ -328,7 +328,7 @@ void sc_GetUserHomeDirectory(char *str, int size)
 		strcpy(str, "./");
 	}
 #else
-	win32_GetHomeFolder(str,size);
+	win32_GetKnownFolderPath(CSIDL_PROFILE, str, size);
 #endif
 }
 

@@ -72,35 +72,6 @@ void win32_GetKnownFolderPath(int folderId, char *dest, int size)
 	strncpy(dest, buf, size);
 }
 
-void win32_GetHomeFolder(char* homeFolder, int bufLen)
-{
-  char homeFolder_[MAX_PATH];
-  const char *h = 0;
-  if (!(h = ::getenv("home")))
-    h = ::getenv("HOME");
-
-  if (h)
-    strcpy(homeFolder_,h);
-  else {
-    // for Windows NT HOME might be defined as either $(HOMESHARE)/$(HOMEPATH)
-    //                                         or     $(HOMEDRIVE)/$(HOMEPATH)
-    h = ::getenv("HOMESHARE");
-    if (!h)
-      h = ::getenv("HOMEDRIVE");
-    if (h) {
-      strcpy(homeFolder_,h);
-      h = ::getenv("HOMEPATH");
-      if (h)
-        strcat(homeFolder_,h);
-    }
-  }
-  size_t len = strlen(homeFolder_);
-  if (bufLen < len + 1)
-		fprintf(stderr, "the buffer given to win32_GetHomeFolder(...) is too small\n");
-  strncpy(homeFolder,homeFolder_,len);
-  homeFolder[len]= 0;
-}
-
 char* win32_basename(char* path)
 {
   int pathLen = strlen(path);
