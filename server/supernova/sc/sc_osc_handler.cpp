@@ -2438,7 +2438,7 @@ template <bool realtime>
 void b_close_nrt_1(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
 {
     sc_factory->buffer_close(index);
-    cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_close_rt_2<realtime>, msg, endpoint));
+    cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_close_rt_2<realtime>, index, msg, endpoint));
 }
 
 template <bool realtime>
