@@ -124,6 +124,7 @@ private:
     void addToRecent( Document * );
     void loadRecentDocuments( Settings::Manager * );
     void closeSingleUntitledIfUnmodified();
+    QString decodeDocument(QByteArray const &);
 
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
