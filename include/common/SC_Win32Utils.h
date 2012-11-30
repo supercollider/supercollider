@@ -41,10 +41,9 @@
 void win32_ReplaceCharInString(char* string, int len, char src, char dst);
 // Finds the parent folder of a specified path pattern (including trailing slash)
 void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars);
+void win32_GetKnownFolderPath(int folderId, char *dest, int size);
 void win32_synctimes();
 void win32_gettimeofday(timeval* tv, void*);
-void win32_GetKnownFolderPath(int folderId, char *dest, int size);
-void win32_GetHomeFolder(char* homeFolder, int bufLen);
 char* win32_basename(char* path);
 char* win32_dirname(char* path);
 int win32_nanosleep (const struct timespec *requested_time, struct timespec *remaining);
