@@ -12,7 +12,7 @@ install(FILES ${CMAKE_SOURCE_DIR}/README_WINDOWS.txt
 add_custom_target( bundle
     COMMAND cmake
         "-DSC_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-        "-DSC_WIN_DEP_DIRS=${SC_WIN_DEP_DIRS}"
+        "-DSC_DEPENDENCY_DIRS=${CMAKE_LIBRARY_PATH}"
         -P "${CMAKE_CURRENT_SOURCE_DIR}/bundle.cmake"
     COMMENT "Bundling the dependencies:"
     VERBATIM
