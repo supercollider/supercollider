@@ -2432,7 +2432,7 @@ void handle_b_query(received_message const & msg, nova_endpoint const & endpoint
 }
 
 template <bool realtime>
-void b_close_rt_2(completion_message & msg, nova_endpoint const & endpoint);
+void b_close_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint);
 
 template <bool realtime>
 void b_close_nrt_1(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
@@ -2442,8 +2442,10 @@ void b_close_nrt_1(uint32_t index, completion_message & msg, nova_endpoint const
 }
 
 template <bool realtime>
-void b_close_rt_2(completion_message & msg, nova_endpoint const & endpoint)
+void b_close_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
 {
+    msg.handle(endpoint);
+    cmd_dispatcher<realtime>::fire_done_message(endpoint, "/b_close", index);
 }
 
 template <bool realtime>
