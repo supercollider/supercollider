@@ -10,7 +10,7 @@ FIND_PATH(
 
 FIND_LIBRARY(
     FFTW3F_LIBRARY
-    NAMES fftw3f libfftw3f
+    NAMES fftw3f libfftw3f fftw3f-3
     HINTS $ENV{FFTW3_DIR}/lib
     PATHS /usr/local/lib
           /usr/lib
