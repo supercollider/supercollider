@@ -238,6 +238,18 @@ void send_done_message(nova_endpoint const & endpoint, const char * cmd, osc::in
     instance->send(p.Data(), p.Size(), endpoint);
 }
 
+void send_fail_message(nova_endpoint const & endpoint, const char * cmd, const char * content)
+{
+    char buffer[8192];
+    osc::OutboundPacketStream p(buffer, 8192);
+    p << osc::BeginMessage("/fail")
+      << cmd << content
+      << osc::EndMessage;
+
+    instance->send(p.Data(), p.Size(), endpoint);
+}
+
+
 template <typename Functor>
 struct fn_system_callback:
     public system_callback
@@ -340,7 +352,24 @@ void fire_notification(movable_array<char> & msg)
     instance->send_notification(msg.data(), msg.size());
 }
 
-void sc_notify_observers::notify(const char * address_pattern, const server_node * node)
+const char * sc_notify_observers::error_string(error_code error)
+{
+    switch (error) {
+    case no_error:
+        return "";
+
+    case already_registered:
+        return "notify: already registered";
+
+    case not_registered:
+        return "notify: not registered";
+
+    default:
+        assert(false);
+    }
+}
+
+void sc_notify_observers::notify(const char * address_pattern, const server_node * node) const
 {
     char buffer[128]; // 128 byte should be enough
     osc::OutboundPacketStream p(buffer, 128);
@@ -767,10 +796,16 @@ void handle_notify(received_message const & message, nova_endpoint const & endpo
     int enable = first_arg_as_int(message);
 
     cmd_dispatcher<realtime>::fire_system_callback( [=]() {
-        if (enable)
-            instance->add_observer(endpoint);
-        else
-            instance->remove_observer(endpoint);
+        if (enable) {
+            auto error_code = instance->add_observer(endpoint);
+            if (error_code)
+                send_fail_message(endpoint, "/notify", sc_notify_observers::error_string(error_code));
+        } else {
+            auto error_code = instance->remove_observer(endpoint);
+            if (error_code)
+                send_fail_message(endpoint, "/notify", sc_notify_observers::error_string(error_code));
+        }
+
         send_done_message(endpoint, "/notify");
     });
 }

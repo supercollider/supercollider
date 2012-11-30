@@ -59,24 +59,36 @@ class sc_notify_observers
     typedef std::vector<nova_endpoint> observer_vector;
 
 public:
+    typedef enum {
+        no_error = 0,
+        already_registered,
+        not_registered
+    } error_code;
+
     sc_notify_observers(boost::asio::io_service & io_service):
         udp_socket(io_service), tcp_socket(io_service)
     {}
 
-    void add_observer(nova_endpoint const & ep)
+    error_code add_observer(nova_endpoint const & ep)
     {
+        observer_vector::iterator it = std::find(observers.begin(), observers.end(), ep);
+        if (it != observers.end())
+            return already_registered;
+
         observers.push_back(ep);
+        return no_error;
     }
 
-    void remove_observer(nova_endpoint const & ep)
+    error_code remove_observer(nova_endpoint const & ep)
     {
-        observer_vector::iterator it = std::find(observers.begin(),
-                                                 observers.end(), ep);
-        assert (it != observers.end());
+        observer_vector::iterator it = std::find(observers.begin(), observers.end(), ep);
+
+        if (it == observers.end())
+            return not_registered;
 
         observers.erase(it);
+        return no_error;
     }
-
 
     /* @{ */
     /** notifications, should be called from the real-time thread */
@@ -146,8 +158,10 @@ public:
     }
     /* @} */
 
+    static const char * error_string(error_code );
+
 private:
-    void notify(const char * address_pattern, const server_node * node);
+    void notify(const char * address_pattern, const server_node * node) const;
     void send_notification(const char * data, size_t length, nova_endpoint const & endpoint);
 
     observer_vector observers;
