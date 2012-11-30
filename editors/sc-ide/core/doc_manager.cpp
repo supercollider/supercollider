@@ -182,7 +182,7 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
                                    (info.suffix() == QString("scd")));
 
     Document *doc = createDocument( fileIsPlainText );
-    doc->mDoc->setPlainText( QString::fromUtf8( bytes.data(), bytes.size() ) );
+    doc->mDoc->setPlainText( decodeDocument(bytes) );
     doc->mDoc->setModified(false);
     doc->mFilePath = filePath;
     doc->mTitle = info.fileName();
@@ -215,7 +215,7 @@ bool DocumentManager::reload( Document *doc )
     QByteArray bytes( file.readAll() );
     file.close();
 
-    doc->mDoc->setPlainText( QString::fromUtf8( bytes.data(), bytes.size() ) );
+    doc->mDoc->setPlainText( decodeDocument(bytes) );
     doc->mDoc->setModified(false);
 
     QFileInfo info(doc->mFilePath);
@@ -225,6 +225,14 @@ bool DocumentManager::reload( Document *doc )
         mFsWatcher.addPath(doc->mFilePath);
 
     return true;
+}
+
+QString DocumentManager::decodeDocument(const QByteArray & bytes)
+{
+    QTextStream stream(bytes);
+    stream.setCodec("UTF-8");
+    stream.setAutoDetectUnicode(true);
+    return stream.readAll();
 }
 
 void DocumentManager::close( Document *doc )
