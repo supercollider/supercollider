@@ -27,7 +27,6 @@
 #ifdef _WIN32
 # include <windows.h>
 # include <direct.h>
-# include <shlobj.h>
 # include "SC_Win32Utils.h"
 #else
 # include <unistd.h>
@@ -339,12 +338,7 @@ void sc_GetUserHomeDirectory(char *str, int size)
 void sc_GetSystemAppSupportDirectory(char *str, int size)
 {
 #ifdef _WIN32
-	ITEMIDLIST * pidl;
-	char buf[MAX_PATH];
-	SHGetFolderLocation(NULL, CSIDL_COMMON_APPDATA, NULL, 0, &pidl);
-	SHGetPathFromIDList( pidl, buf );
-	ILFree(pidl);
-	strncpy(str, buf, size);
+	win32_GetKnownFolderPath(CSIDL_COMMON_APPDATA, str, size);
 	sc_AppendToPath(str, size, "SuperCollider");
 #else
 
@@ -382,12 +376,7 @@ void sc_GetUserAppSupportDirectory(char *str, int size)
 	}
 
 #if defined(_WIN32)
-	ITEMIDLIST * pidl;
-	char buf[MAX_PATH];
-	SHGetFolderLocation(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, &pidl);
-	SHGetPathFromIDList( pidl, buf );
-	ILFree(pidl);
-	strncpy(str, buf, size);
+	win32_GetKnownFolderPath(CSIDL_LOCAL_APPDATA, str, size);
 	sc_AppendToPath(str, size, "SuperCollider");
 #else
 
