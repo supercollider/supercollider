@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "sc_popen.h"
+#include <cerrno>
 
 #ifndef _WIN32
 
@@ -16,7 +17,6 @@
 #include <sys/param.h>
 #include <sys/wait.h>
 #include <signal.h>
-#include <errno.h>
 #include <unistd.h>
 #include <paths.h>
 
@@ -130,7 +130,6 @@ sc_pclose(FILE *iop, pid_t mPid)
 #include <windows.h>
 #include <fcntl.h>
 #include <io.h>
-#include <errno.h>
 
 /*	The process handle allows us to get the exit code after
 	the process has died. It must be closed in sc_pclose;

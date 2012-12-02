@@ -26,23 +26,13 @@
 #include <stdarg.h>
 #include "SCBase.h"
 #include <fcntl.h>
+#include <cerrno>
+
 
 #ifndef SC_WIN32
 # include <unistd.h>
 #else
 #include "SC_Win32Utils.h"
-#endif
-
-#ifdef __linux__
-# include <errno.h>
-#endif
-
-#ifdef __FreeBSD__
-# include <errno.h>
-#endif
-
-#if defined(SC_DARWIN) || defined(SC_IPHONE)
-#include <errno.h>
 #endif
 
 // sk: determine means of blocking SIGPIPE for send(2) (implementation
