@@ -60,7 +60,7 @@ QEnvelopeView : QView
 
   lastIndex { ^this.getProperty( \lastIndex ); }
 
-  selectedIndexes { ^this.getProperty( \selectedIndexes );
+  selectedIndexes { ^this.getProperty( \selectedIndexes );}
 
   selectIndex { arg index;
     if( index < 0 ){
