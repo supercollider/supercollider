@@ -26,6 +26,7 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <stdarg.h>
+#include <cerrno>
 
 #include <sys/types.h>
 #include "OSC_Packet.h"
@@ -39,12 +40,7 @@
 #endif
 
 #if defined(__linux__) || defined(__FreeBSD__)
-	#include <errno.h>
 	#include <unistd.h>
-#endif
-
-#if defined(SC_IPHONE) || defined(__APPLE__)
-	#include <errno.h>
 #endif
 
 #ifdef USE_RENDEZVOUS
