@@ -311,6 +311,8 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
     file.write(str.toUtf8());
     file.close();
 
+    info.refresh();
+
     doc->mFilePath = cpath;
     doc->mTitle = info.fileName();
     doc->mDoc->setModified(false);
