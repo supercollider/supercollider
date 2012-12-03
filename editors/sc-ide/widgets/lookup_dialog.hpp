@@ -30,17 +30,6 @@
 
 namespace ScIDE {
 
-class LookupDialogTreeView : public QTreeView
-{
-    Q_OBJECT
-
-public:
-    LookupDialogTreeView(QWidget * parent): QTreeView(parent) {}
-
-public Q_SLOTS:
-    bool openDocumentation();
-};
-
 class GenericLookupDialog: public QDialog
 {
     Q_OBJECT
@@ -57,7 +46,7 @@ public:
     void clearQuery() { mQueryEdit->clear(); }
 
 public Q_SLOTS:
-    void openDocumentation();
+    bool openDocumentation();
 
 protected Q_SLOTS:
     virtual void onAccepted(QModelIndex);
@@ -76,7 +65,7 @@ protected:
                                                  QString const & className, QString const & methodName,
                                                  bool isClassItem);
 
-    LookupDialogTreeView *mResult;
+    QTreeView *mResult;
     QLineEdit *mQueryEdit;
 };
 
