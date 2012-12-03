@@ -144,6 +144,7 @@ option(CURL "Build with curl for remote file download." ON)
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
 option(SSE "Compile with support for SSE instructions.")
+option(SSE2 "Compile with support for SSE2 instructions.")
 option(SSE41 "Compile with support for SSE4.1 instructions.")
 option(SSE42 "Compile with support for SSE4.2 instructions.")
 
@@ -240,6 +241,10 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse -mfpmath=sse")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -mfpmath=sse")
 	endif()
+	if (SSE2)
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2")
+	endif()
 	if (SSE41)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
@@ -327,11 +332,8 @@ if(WIN32)
 	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}")
 endif()
 
-
 if(APPLE)
-
 	if(SC_SYMLINK_CLASSLIB)
-
 		#if there are folders inside SCCLassLibrary abort cmake.
 		file(GLOB classlibraryfolders "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/[^.]*")
 		foreach(onedirectory ${classlibraryfolders})
