@@ -467,6 +467,23 @@ void MainWindow::createActions()
     action->setStatusTip(tr("Show/hide Help browser docklet"));
     settings->addAction( mHelpBrowserDocklet->toggleViewAction(),
                          "ide-docklet-help", ideCategory );
+
+    // Add actions to docklets, so shortcuts work when docklets detached:
+
+    mPostDocklet->widget()->addAction(mActions[LookupDocumentation]);
+    mPostDocklet->widget()->addAction(mActions[LookupDocumentationForCursor]);
+    mPostDocklet->widget()->addAction(mActions[LookupImplementation]);
+    mPostDocklet->widget()->addAction(mActions[LookupImplementationForCursor]);
+    mPostDocklet->widget()->addAction(mActions[LookupReferences]);
+    mPostDocklet->widget()->addAction(mActions[LookupReferencesForCursor]);
+
+    mHelpBrowserDocklet->widget()->addAction(mActions[LookupDocumentation]);
+    mHelpBrowserDocklet->widget()->addAction(mActions[LookupDocumentationForCursor]);
+    mHelpBrowserDocklet->widget()->addAction(mActions[LookupImplementation]);
+    mHelpBrowserDocklet->widget()->addAction(mActions[LookupImplementationForCursor]);
+    mHelpBrowserDocklet->widget()->addAction(mActions[LookupReferences]);
+    mHelpBrowserDocklet->widget()->addAction(mActions[LookupReferencesForCursor]);
+
 }
 
 void MainWindow::createMenus()
