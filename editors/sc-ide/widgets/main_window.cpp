@@ -1239,7 +1239,7 @@ void MainWindow::lookupImplementationForCursor()
 
 void MainWindow::lookupImplementation()
 {
-    LookupDialog dialog(mEditors);
+    LookupDialog dialog( QApplication::activeWindow() );
     dialog.exec();
 }
 
@@ -1256,7 +1256,7 @@ void MainWindow::lookupReferencesForCursor()
 
 void MainWindow::lookupReferences()
 {
-    ReferencesDialog dialog(parentWidget());
+    ReferencesDialog dialog( QApplication::activeWindow() );
     dialog.exec();
 }
 
@@ -1390,7 +1390,8 @@ void MainWindow::showSettings()
 
 void MainWindow::lookupDocumentation()
 {
-    PopupTextInput * dialog = new PopupTextInput(tr("Look up Documentation For"), this);
+    PopupTextInput * dialog = new PopupTextInput(tr("Look up Documentation For"),
+                                                 QApplication::activeWindow());
 
     bool success = dialog->exec();
     if (success)

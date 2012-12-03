@@ -346,12 +346,12 @@ bool HelpBrowser::openDocumentation()
 
 void HelpBrowser::openDefinition()
 {
-    return Main::openDefinition(symbolUnderCursor(), MainWindow::instance());
+    return Main::openDefinition(symbolUnderCursor(), window());
 }
 
 void HelpBrowser::findReferences()
 {
-    return Main::findReferences(symbolUnderCursor(), MainWindow::instance());
+    return Main::findReferences(symbolUnderCursor(), window());
 }
 
 HelpBrowserFindBox::HelpBrowserFindBox( QWidget * parent ):
