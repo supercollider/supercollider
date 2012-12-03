@@ -107,6 +107,9 @@ public slots:
     void zoomOut();
     void evaluateSelection();
     void findText( const QString & text, bool backwards = false );
+    bool openDocumentation();
+    void openDefinition();
+    void findReferences();
 
 signals:
     void urlChanged();
@@ -124,6 +127,7 @@ private:
     void createActions();
     bool eventFilter( QObject * object, QEvent * event);
     void sendRequest( const QString &code );
+    QString symbolUnderCursor();
 
     QWebView *mWebView;
     LoadProgressIndicator *mLoadProgressIndicator;
