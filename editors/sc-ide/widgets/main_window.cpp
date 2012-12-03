@@ -57,8 +57,24 @@
 #include <QStatusBar>
 #include <QVBoxLayout>
 #include <QUrl>
+#include <QMetaMethod>
 
 namespace ScIDE {
+
+static QWidget * findFirstResponder
+( QWidget *widget, const char * methodSignature, int & methodIndex )
+{
+    methodIndex = -1;
+    while ( widget ) {
+        methodIndex = widget->metaObject()->indexOfMethod( methodSignature );
+        if (methodIndex != -1)
+            break;
+        if (widget->isWindow())
+            break;
+        widget = widget->parentWidget();
+    }
+    return widget;
+}
 
 MainWindow * MainWindow::mInstance = 0;
 
@@ -1195,11 +1211,13 @@ void MainWindow::openSession(const QString &sessionName)
 
 void MainWindow::lookupImplementationForCursor()
 {
-    QWidget * focussedWidget = QApplication::focusWidget();
+    static const QByteArray signature = QMetaObject::normalizedSignature("openDefinition()");
 
-    int indexOfMethod = focussedWidget->metaObject()->indexOfMethod("openDefinition()");
-    if (indexOfMethod != -1)
-        QMetaObject::invokeMethod( focussedWidget, "openDefinition", Qt::DirectConnection );
+    int methodIdx = -1;
+    QWidget * widget = findFirstResponder(
+                QApplication::focusWidget(), signature.constData(), methodIdx );
+    if (widget && methodIdx != -1)
+        widget->metaObject()->method(methodIdx).invoke( widget, Qt::DirectConnection );
 }
 
 void MainWindow::lookupImplementation()
@@ -1210,11 +1228,13 @@ void MainWindow::lookupImplementation()
 
 void MainWindow::lookupReferencesForCursor()
 {
-    QWidget * focussedWidget = QApplication::focusWidget();
+    static const QByteArray signature = QMetaObject::normalizedSignature("findReferences()");
 
-    int indexOfMethod = focussedWidget->metaObject()->indexOfMethod("findReferences()");
-    if (indexOfMethod != -1)
-        QMetaObject::invokeMethod( focussedWidget, "findReferences", Qt::DirectConnection );
+    int methodIdx = -1;
+    QWidget * widget = findFirstResponder(
+                QApplication::focusWidget(), signature.constData(), methodIdx );
+    if (widget && methodIdx != -1)
+        widget->metaObject()->method(methodIdx).invoke( widget, Qt::DirectConnection );
 }
 
 void MainWindow::lookupReferences()
@@ -1364,14 +1384,19 @@ void MainWindow::lookupDocumentation()
 
 void MainWindow::lookupDocumentationForCursor()
 {
-    QWidget * focussedWidget = QApplication::focusWidget();
+    static const QByteArray signature = QMetaObject::normalizedSignature("openDocumentation()");
 
     bool documentationOpened = false;
+    QWidget * widget = QApplication::focusWidget();
+    int methodIdx = -1;
 
-    int indexOfMethod = focussedWidget->metaObject()->indexOfMethod("openDocumentation()");
-    if (indexOfMethod != -1)
-        QMetaObject::invokeMethod( focussedWidget, "openDocumentation", Qt::DirectConnection,
-                                   Q_RETURN_ARG(bool, documentationOpened) );
+    widget = findFirstResponder( widget, signature.constData(), methodIdx );
+
+    if (widget && methodIdx != -1) {
+        widget->metaObject()->method(methodIdx).invoke(
+                    widget, Qt::DirectConnection,
+                    Q_RETURN_ARG(bool, documentationOpened) );
+    };
 
     if (!documentationOpened)
         openHelp();
