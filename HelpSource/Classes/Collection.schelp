@@ -220,8 +220,8 @@ List[1, 2, 3, 4].detectIndex({ arg item, i; item.even });
 ::
 
 method::inject
-In functional programming, the operation known as a fold.
-inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection. The strong::function:: takes two arguments and returns the new value. The accumulated value is initialzed to strong::initialValue::.
+In functional programming, the operation known as a left fold.
+inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection starting from the first element in the collection. The strong::function:: takes two arguments and returns the new value. The accumulated value is initialzed to strong::initialValue::.
 code::
 [1,2,3,4,5].inject(0, _+_); // 15
 
@@ -232,6 +232,15 @@ code::
 [1,2,3,4,5].inject([], {|a,b| [b] ++ a ++ [b]}); // [ 5, 4, 3, 2, 1, 1, 2, 3, 4, 5 ]
 [1,2,3,4,5].inject([], {|a,b| a ++ b ++ a});
 [1,2,3,4,5].inject([], {|a,b| a ++ a ++ b});
+::
+
+method::injectr
+In functional programming, the operation known as a right fold.
+inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection starting from the last element in the collection. The strong::function:: takes two arguments and returns the new value. The accumulated value is initialzed to strong::initialValue::.
+code::
+[1,2,3,4,5].injectr([], _++_); // [ 5, 4, 3, 2, 1 ]
+
+[1,2,3,4,5].inject([], _++_); // [ 1, 2, 3, 4, 5 ]
 ::
 
 method::any
