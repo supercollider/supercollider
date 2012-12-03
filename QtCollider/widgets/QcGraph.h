@@ -130,7 +130,7 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
   Q_PROPERTY( VariantList strings READ dummyVariantList WRITE setStrings );
   Q_PROPERTY( int index READ index WRITE setIndex );
   Q_PROPERTY( int lastIndex READ lastIndex );
-  Q_PROPERTY( VariantList selection READ selectionIndexes);  
+  Q_PROPERTY( VariantList selectionIndexes READ selectionIndexes);  
   Q_PROPERTY( int thumbSize READ dummyInt WRITE setThumbSize );
   Q_PROPERTY( int thumbWidth READ dummyInt WRITE setThumbWidth );
   Q_PROPERTY( int thumbHeight READ dummyInt WRITE setThumbHeight );
