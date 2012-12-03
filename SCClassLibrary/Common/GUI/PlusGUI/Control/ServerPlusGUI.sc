@@ -349,9 +349,21 @@
 	}
 
 	plotTree {|interval=0.5|
+		var onClose, window = Window.new(name.asString + "Node Tree",
+			Rect(128, 64, 400, 400),
+			scroll:true
+		).front;
+		window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9));
+		onClose = this.plotTreeView(interval, window.view, { defer {window.close}; });
+		window.onClose = {
+			onClose.value;
+		};
+	}
+
+	plotTreeView {|interval=0.5, parent, actionIfFail|
 		var resp, done = false;
 		var collectChildren, levels, countSize;
-		var window, view, bounds;
+		var view, bounds;
 		var updater, updateFunc;
 		var tabSize = 25;
 		var pen, font;
@@ -359,13 +371,7 @@
 		pen = GUI.current.pen;
 		font = Font.sansSerif(10);
 
-		window = Window.new(name.asString + "Node Tree",
-			Rect(128, 64, 400, 400),
-			scroll:true
-		).front;
-		window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9));
-
-		view = UserView.new(window, Rect(0,0,400,400));
+		view = UserView.new(parent, Rect(0,0,400,400));
 
 		view.drawFunc = {
 			var xtabs = 0, ytabs = 0, drawFunc;
@@ -381,7 +387,7 @@
 						endYTabs = ytabs + thisSize + 0.2;
 						rect = Rect(xtabs * tabSize + 0.5,
 							ytabs * tabSize + 0.5,
-							window.view.bounds.width - (xtabs * tabSize * 2),
+							parent.bounds.width - (xtabs * tabSize * 2),
 							thisSize * tabSize;
 						);
 						pen.fillColor = Color.grey(0.8);
@@ -491,16 +497,17 @@
 		};
 		updater = updateFunc.value;
 		CmdPeriod.add(updateFunc);
-		window.onClose = {
-			updater.stop;
-			CmdPeriod.remove(updateFunc);
-			resp.free;
-		};
 		SystemClock.sched(3, {
 			if(done.not, {
-				defer {window.close};
+				actionIfFail.value();
 				"Server failed to respond to Group:queryTree!".warn;
 			});
 		});
+		//action to be executed when enclosing window closes
+		^{
+			updater.stop;
+			CmdPeriod.remove(updateFunc);
+			resp.free;
+		}
 	}
 }
