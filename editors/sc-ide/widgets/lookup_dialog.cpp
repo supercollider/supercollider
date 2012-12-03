@@ -35,14 +35,6 @@
 
 namespace ScIDE {
 
-bool LookupDialogTreeView::openDocumentation()
-{
-    GenericLookupDialog * parent = qobject_cast<GenericLookupDialog*>(parentWidget());
-    parent->openDocumentation();
-
-    return true;
-}
-
 GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     QDialog(parent)
 {
@@ -50,7 +42,7 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
 
     mQueryEdit = new QLineEdit(this);
 
-    mResult = new LookupDialogTreeView(this);
+    mResult = new QTreeView(this);
     mResult->setRootIsDecorated(false);
     mResult->setAllColumnsShowFocus(true);
     mResult->setHeaderHidden(true);
@@ -83,28 +75,30 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     mQueryEdit->setFocus( Qt::OtherFocusReason );
 }
 
-void GenericLookupDialog::openDocumentation()
+bool GenericLookupDialog::openDocumentation()
 {
     QModelIndex currentIndex = mResult->currentIndex();
     QStandardItemModel * model = qobject_cast<QStandardItemModel*>(mResult->model());
     if (!model)
-        return;
+        return true;
 
     currentIndex = currentIndex.sibling(currentIndex.row(), 0);
     QStandardItem *currentItem = model->itemFromIndex(currentIndex);
     if (!currentItem)
-        return;
+        return true;
 
     bool isClass = currentItem->data(IsClassRole).toBool();
     if (isClass) {
         Main::openDocumentation(currentItem->text());
-        return;
+        return true;
     } else {
         QString className  = currentItem->data(ClassNameRole).toString();
         QString methodName = currentItem->data(MethodNameRole).toString();
         Main::openDocumentationForMethod(className, methodName);
     }
     accept();
+
+    return true;
 }
 
 void GenericLookupDialog::onAccepted(QModelIndex currentIndex)
