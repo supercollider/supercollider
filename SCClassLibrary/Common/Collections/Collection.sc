@@ -231,6 +231,14 @@ Collection {
 		};
 		^nextValue
 	}
+	injectr { | thisValue, function |
+		var size = this.size;
+		var nextValue = thisValue;
+		this.do { | item, i |
+			nextValue = function.value(nextValue, this.at(size-1-i), i);
+		};
+		^nextValue
+	}
 	count { | function |
 		var sum = 0;
 		this.do {|elem, i| if (function.value(elem, i)) { sum=sum+1 } }
