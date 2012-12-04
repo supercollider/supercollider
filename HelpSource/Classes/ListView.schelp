@@ -41,6 +41,9 @@ METHOD:: value
 METHOD:: valueAction
 	Sets link::#-value:: and triggers the link::#-action::.
 
+METHOD:: selection
+	note::Only in Qt GUI::
+	Returns an array of all selected indexes. See also: link::#-selectionMode::.
 
 
 SUBSECTION:: Appearance
