@@ -23,6 +23,7 @@
 #include "../QcWidgetFactory.h"
 
 #include <QKeyEvent>
+#include <QModelIndex>
 
 class QcListWidgetFactory : public QcWidgetFactory<QcListWidget>
 {
@@ -66,6 +67,15 @@ void QcListWidget::setCurrentRowWithoutAction( int row )
   _emitAction = false;
   setCurrentRow( row );
   _emitAction = b;
+}
+
+VariantList QcListWidget::selection() const
+{
+    QModelIndexList modelIndexes = QListView::selectedIndexes();
+    VariantList indexes;
+    Q_FOREACH( const QModelIndex & index, modelIndexes )
+        indexes.data << index.row();
+    return indexes;
 }
 
 void QcListWidget::onCurrentItemChanged()
