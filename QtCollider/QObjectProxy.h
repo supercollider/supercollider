@@ -133,7 +133,9 @@ class QObjectProxy : public QObject
 
     virtual void customEvent( QEvent * );
 
-    virtual bool filterEvent( QObject *, QEvent *, EventHandlerData &, QList<QVariant> & args );
+    virtual bool preProcessEvent( QObject *, QEvent *, EventHandlerData &, QList<QVariant> & args );
+
+    virtual bool postProcessEvent( QObject *, QEvent *, bool handled ) { return handled; }
 
     bool invokeEventHandler( QEvent *e, EventHandlerData &, QList<QVariant> & args );
 

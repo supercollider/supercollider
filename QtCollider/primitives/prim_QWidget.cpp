@@ -128,11 +128,14 @@ struct MimeData : public QMimeData {
 };
 
 QC_LANG_PRIMITIVE( QWidget_StartDrag, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
+    qcDebugMsg(1, "Starting drag...");
+
   QWidgetProxy *wProxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
   if( !wProxy->compareThread() ) return QtCollider::wrongThreadError();
 
   PyrSlot *data = a+1;
   QString str = Slot::toString(a+2);
+  QString label = Slot::toString(a);
 
   QMimeData *mime = new QtCollider::MimeData;
 
@@ -145,7 +148,7 @@ QC_LANG_PRIMITIVE( QWidget_StartDrag, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g ) 
   if( !str.isEmpty() )
     mime->setText( str );
 
-  QApplication::postEvent( wProxy, new StartDragEvent( Slot::toString(a), mime ) );
+  wProxy->setDragData( mime, label );
 
   return errNone;
 }
