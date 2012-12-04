@@ -60,6 +60,8 @@ QEnvelopeView : QView
 
   lastIndex { ^this.getProperty( \lastIndex ); }
 
+  selection { ^this.getProperty( \selectionIndexes );}
+
   selectIndex { arg index;
     if( index < 0 ){
       this.invokeMethod( \deselectAll );
