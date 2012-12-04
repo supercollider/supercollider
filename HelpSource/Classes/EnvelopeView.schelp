@@ -141,6 +141,9 @@ METHOD:: connect
 	argument:: connections
 		An Array of Integers - indexes of nodes, each to become the second end to a new connection created.
 
+METHOD:: selection
+	note::Only in Qt GUI::
+	Returns an array of indexes of all selected nodes.
 
 
 SUBSECTION:: Appearance
