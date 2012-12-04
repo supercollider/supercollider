@@ -20,6 +20,7 @@
 ************************************************************************/
 
 #include "../QcHelper.h"
+#include "../Common.h"
 #include <QListWidget>
 
 class QcListWidget : public QListWidget, QcHelper
@@ -28,12 +29,15 @@ class QcListWidget : public QListWidget, QcHelper
   Q_PROPERTY( VariantList items READ dummyVariantList WRITE setItems );
   Q_PROPERTY( VariantList colors READ dummyVariantList WRITE setColors );
   Q_PROPERTY( int currentRow READ currentRow WRITE setCurrentRowWithoutAction )
+    Q_PROPERTY( VariantList selection READ selection );
 
   public:
     QcListWidget();
     void setItems( const VariantList & );
     void setColors( const VariantList & ) const;
     void setCurrentRowWithoutAction( int );
+    VariantList selection() const;
+
   Q_SIGNALS:
     void action();
     void returnPressed();
