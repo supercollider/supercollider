@@ -13,7 +13,7 @@ QDragView : QTextField
   mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
     // Try to get drag obj and start a drag.
     // If successful, block further processing of this event.
-    if( this.beginDrag( x, y ) ) { ^false };
+    if( this.beginDrag( x, y ) ) { ^true };
 
     // else continue to handle mouse down event
     modifiers = QKeyModifiers.toCocoa(modifiers);

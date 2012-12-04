@@ -632,7 +632,7 @@ QView : QObject {
     if( (modifiers & QKeyModifiers.control) > 0 ) { // if Ctrl / Cmd mod
       // Try to get drag obj and start a drag.
       // If successful, block further processing of this event.
-      if( this.beginDrag( x, y ) ) { ^false };
+      if( this.beginDrag( x, y ) ) { ^true };
     };
 
     // else continue to handle mouse down event
@@ -646,6 +646,7 @@ QView : QObject {
   }
 
   mouseMoveEvent { arg x, y, modifiers, buttons;
+    // WARNING: Overridden in QListView!
     if( buttons != 0 ) {
       modifiers = QKeyModifiers.toCocoa(modifiers);
       ^this.mouseMove( x, y, modifiers );
@@ -671,6 +672,10 @@ QView : QObject {
 
   beginDrag { arg x, y;
     var obj, str;
+    if (currentDrag.notNil) {
+        "QView: attempt at drag-and-drop reentrance!".warn;
+        ^false;
+    };
     if( beginDragAction.notNil )
       { obj = beginDragAction.value( this, x, y ) }
       { obj = this.tryPerform( \defaultGetDrag, x, y ) };
