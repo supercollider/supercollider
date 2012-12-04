@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="fr_FR">
+<TS version="2.0" language="it_IT">
 <context>
     <name>ConfigDialog</name>
     <message>
@@ -17,13 +17,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="37"/>
-        <source>Indentation</source>
+        <location filename="../forms/settings_editor.ui" line="31"/>
+        <source>Behavior</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="92"/>
-        <source>Use spaces instead of tabs</source>
+        <location filename="../forms/settings_editor.ui" line="37"/>
+        <source>Indentation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -32,13 +32,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="31"/>
-        <source>Behavior</source>
+        <location filename="../forms/settings_editor.ui" line="61"/>
+        <source> spaces</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="61"/>
-        <source> spaces</source>
+        <location filename="../forms/settings_editor.ui" line="92"/>
+        <source>Use spaces instead of tabs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2121,13 +2121,13 @@ Would you like to override it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_sclang.ui" line="33"/>
-        <source>Runtime Directory:</source>
+        <location filename="../forms/settings_sclang.ui" line="26"/>
+        <source>Start Interpreter With IDE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_sclang.ui" line="26"/>
-        <source>Start Interpreter With IDE</source>
+        <location filename="../forms/settings_sclang.ui" line="33"/>
+        <source>Runtime Directory:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2141,16 +2141,6 @@ Would you like to override it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_sclang.ui" line="122"/>
-        <source>Exclude:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../forms/settings_sclang.ui" line="168"/>
-        <source>Post Inline Warnings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../forms/settings_sclang.ui" line="100"/>
         <location filename="../forms/settings_sclang.ui" line="146"/>
         <source>+</source>
@@ -2160,6 +2150,16 @@ Would you like to override it?</source>
         <location filename="../forms/settings_sclang.ui" line="110"/>
         <location filename="../forms/settings_sclang.ui" line="156"/>
         <source>-</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_sclang.ui" line="122"/>
+        <source>Exclude:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_sclang.ui" line="168"/>
+        <source>Post Inline Warnings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

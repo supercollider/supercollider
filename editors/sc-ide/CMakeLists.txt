@@ -142,6 +142,7 @@ set( translation_src
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_de.ts
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_es.ts
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_fr.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_it.ts
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_ja.ts
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_pt.ts
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_ru.ts
