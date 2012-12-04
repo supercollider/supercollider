@@ -464,7 +464,7 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
 
   QList<QVariant> args;
 
-  if( !filterEvent( watched, event, *d, args ) ) {
+  if( !preProcessEvent( watched, event, *d, args ) ) {
     qcProxyDebugMsg(3,QString("Event (%1, %2) not handled, forwarding to the widget")
       .arg(type)
       .arg(event->spontaneous() ? "spontaneous" : "inspontaneous") );
@@ -477,7 +477,11 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
     .arg(d->method->name)
     .arg(d->sync == Synchronous ? "sync" : "async") );
 
-  return invokeEventHandler( event, *d, args );
+  bool eventHandled = invokeEventHandler( event, *d, args );
+
+  eventHandled = postProcessEvent( watched, event, eventHandled );
+
+  return eventHandled;
 }
 
 bool QObjectProxy::invokeEventHandler( QEvent *event, EventHandlerData &eh, QList<QVariant> & args )
@@ -507,7 +511,7 @@ bool QObjectProxy::invokeEventHandler( QEvent *event, EventHandlerData &eh, QLis
   return false;
 }
 
-bool QObjectProxy::filterEvent( QObject *, QEvent *e, EventHandlerData & eh, QList<QVariant> & args )
+bool QObjectProxy::preProcessEvent( QObject *, QEvent *e, EventHandlerData & eh, QList<QVariant> & args )
 {
   return eh.enabled;
 }
