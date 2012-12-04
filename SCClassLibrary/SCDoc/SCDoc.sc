@@ -859,7 +859,7 @@ SCDoc {
         sym = str.asSymbol;
         if(sym.asClass.notNil) {
             ^pfx ++ (if(this.documents["Classes/"++str].isUndocumentedClass) {
-                (old = Help.findHelpFile(str)) !? {
+                (old = if(Help.respondsTo('findHelpFile'),{Help.findHelpFile(str)})) !? {
                     "/OldHelpWrapper.html#"++old++"?"++SCDoc.helpTargetUrl ++ "/Classes/" ++ str ++ ".html"
                 }
             } ?? { "/Classes/" ++ str ++ ".html" });
