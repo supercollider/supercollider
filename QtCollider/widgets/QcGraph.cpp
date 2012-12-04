@@ -108,6 +108,17 @@ int QcGraph::index() const
   return e ? _model.elements().indexOf(e) : -1;
 }
 
+VariantList QcGraph::selectionIndexes() const
+{
+    VariantList result;
+    int c = _model.elementCount();
+    for( int i = 0; i < c; ++i ) {
+      QcGraphElement *e = _model.elementAt(i);
+      if(e->selected) result.data.append(i);
+    }
+    return result;
+}
+
 float QcGraph::currentX() const
 {
   QcGraphElement *e = currentElement();
