@@ -99,7 +99,7 @@ SCDocEntry {
         if(SCDoc.classHasArKrIr(doc.klass)) {
             cats = cats.add("UGens>Undocumented");
         };
-        doc.klass.categories !? {
+        if(doc.klass.respondsTo('categories') and: {doc.klass.categories.notNil}) {
             cats = cats ++ doc.klass.categories;
         };
         doc.categories = cats;
@@ -482,8 +482,10 @@ SCDoc {
                 File.copy(x[0],dest);
             };
         };
-        this.postMsg("Indexing old helpfiles...");
-        this.indexOldHelp;
+        if(Help.respondsTo('tree')) {
+            this.postMsg("Indexing old helpfiles...");
+            this.indexOldHelp;
+        };
         this.postMsg("Exporting docmap.js...",1);
         this.exportDocMapJS(this.helpTargetDir +/+ "docmap.js");
         this.postMsg("Indexed % documents in % seconds".format(documents.size,round(Main.elapsedTime-now,0.01)),0);
