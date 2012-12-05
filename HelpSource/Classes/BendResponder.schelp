@@ -4,7 +4,7 @@ related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/MIDIResponder, Classes/CCRe
 categories:: External Control>MIDI
 
 Description::
-note:: SC 3.5 added the link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: classes. These are faster, and aim to have a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::. They still lack some features of the MIDIresponder classes.::
+note:: SC 3.5 added the link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: classes. These are faster, and aim to have a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::. They also provide support for all MIDI message types.::
 
 ClassMethods::
 
