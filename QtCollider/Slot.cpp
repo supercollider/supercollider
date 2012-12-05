@@ -134,11 +134,11 @@ void Slot::setTreeWidgetItem( PyrSlot *s, const SafePtr<QcTreeWidget::Item> & it
   SetObject( s, obj );
 }
 
-void Slot::setVariantList( PyrSlot *slot, const VariantList& varList )
+void Slot::setVariantList(PyrSlot *slot, const QVariantList &varList )
 {
   VMGlobals *g = gMainVMGlobals;
 
-  int count = varList.data.count();
+  int count = varList.count();
 
   PyrObject *array = newPyrArray( g->gc, count, 0, true );
   SetObject( slot, array );
@@ -146,7 +146,7 @@ void Slot::setVariantList( PyrSlot *slot, const VariantList& varList )
   int i;
   PyrSlot *s = array->slots;
   for( i = 0; i < count; ++i, ++s ) {
-    if( !Slot::setVariant( s, varList.data[i] ) ) {
+    if( !Slot::setVariant( s, varList[i] ) ) {
       qcDebugMsg(1, "WARNING: Could not set one slot of array" );
     }
     array->size++;
@@ -240,6 +240,10 @@ bool Slot::setVariant( PyrSlot *slot, const QVariant &val )
         SetInt( slot, val.toInt() );
         break;
 
+    case QMetaType::QVariantList:
+        Slot::setVariantList( slot, val.toList() );
+        break;
+
     case QMetaType::QObjectStar:
         Slot::setQObject( slot, val.value<QObject*>() );
         break;
@@ -255,9 +259,6 @@ bool Slot::setVariant( PyrSlot *slot, const QVariant &val )
     default:
         if( type == qMetaTypeId<PyrObject*>() ) {
           SetObject( slot, val.value<PyrObject*>() );
-        }
-        else if( type == qMetaTypeId<VariantList>() ) {
-          Slot::setVariantList( slot, val.value<VariantList>() );
         }
         else if( type == qMetaTypeId< QVector<double> >() ) {
           setNumericVector( slot, val.value< QVector<double> >() );
@@ -452,28 +453,28 @@ QPalette Slot::toPalette( PyrSlot *slot )
   return *p;
 }
 
-VariantList Slot::toVariantList( PyrSlot *slot )
+QVariantList Slot::toVariantList( PyrSlot *slot )
 {
   if( isKindOfSlot( slot, class_array ) ) {
     PyrObject *obj = slotRawObject( slot );
     PyrSlot *slots = obj->slots;
     int size = obj->size;
-    VariantList list;
+    QVariantList list;
     for( int i = 0; i < size; ++i, ++slots )
-      list.data << Slot::toVariant( slots );
+      list << Slot::toVariant( slots );
     return list;
   }
   else if( isKindOfSlot( slot, class_symbolarray ) ) {
     PyrSymbolArray *symarray = slotRawSymbolArray( slot );
     PyrSymbol **symbols = symarray->symbols;
     int size = symarray->size;
-    VariantList list;
+    QVariantList list;
     for( int i = 0; i < size; ++i, ++symbols )
-      list.data << QVariant( QString( (*symbols)->name) );
+      list << QVariant( QString( (*symbols)->name) );
     return list;
   }
 
-  return VariantList();
+  return QVariantList();
 }
 
 #define WRONG_OBJECT_FORMAT false
@@ -592,7 +593,7 @@ QVariant Slot::toVariant( PyrSlot *slot )
         return QVariant::fromValue<QObjectProxy*>( proxy );
       }
       else if( isKindOfSlot( slot, class_array ) || isKindOfSlot( slot, class_symbolarray ) ) {
-        return QVariant::fromValue<VariantList>( toVariantList(slot) );
+        return QVariant( toVariantList(slot) );
       }
       else if( isKindOfSlot( slot, SC_CLASS(QTreeViewItem) ) ) {
         return QVariant::fromValue<QcTreeWidget::ItemPtr>( toTreeWidgetItem(slot) );
@@ -676,8 +677,8 @@ void QtCollider::Variant::setData( PyrSlot *slot )
         _ptr = new QColor( toColor(slot) );
       }
       else if( isKindOfSlot( slot, class_array ) || isKindOfSlot( slot, class_symbolarray ) ) {
-        _type = qMetaTypeId<VariantList>();
-        _ptr = new VariantList( toVariantList(slot) );
+        _type = QMetaType::QVariantList;
+        _ptr = new QVariantList( toVariantList(slot) );
       }
       else if( isKindOfSlot( slot, SC_CLASS(QObject) ) ) {
         proxy = toObjectProxy(slot);

@@ -35,11 +35,11 @@ class QcTextEdit : public QTextEdit, QcHelper
   Q_PROPERTY( QString selectedString READ selectedString WRITE replaceSelectedText );
   Q_PROPERTY( QFont textFont READ dummyFont WRITE setTextFont );
   Q_PROPERTY( QColor textColor READ dummyColor WRITE setTextColor );
-  Q_PROPERTY( VariantList rangeColor
+  Q_PROPERTY( QVariantList rangeColor
               READ dummyVariantList WRITE setRangeColor );
-  Q_PROPERTY( VariantList rangeFont
+  Q_PROPERTY( QVariantList rangeFont
               READ dummyVariantList WRITE setRangeFont );
-  Q_PROPERTY( VariantList rangeText
+  Q_PROPERTY( QVariantList rangeText
               READ dummyVariantList WRITE setRangeText );
   Q_PROPERTY( bool enterInterpretsSelection
               READ interpretSelection WRITE setInterpretSelection );
@@ -57,9 +57,9 @@ class QcTextEdit : public QTextEdit, QcHelper
     void setInterpretSelection( bool b ) { _interpretSelection = b; }
     void setTextFont( const QFont & );
     void setTextColor( const QColor & );
-    void setRangeColor( const VariantList & );
-    void setRangeFont( const VariantList & );
-    void setRangeText( const VariantList & );
+    void setRangeColor( const QVariantList & );
+    void setRangeFont( const QVariantList & );
+    void setRangeText( const QVariantList & );
 
   Q_SIGNALS:
     void interpret( const QString & code );

@@ -121,12 +121,12 @@ void QcTextEdit::setTextColor( const QColor &color )
   cursor.setCharFormat( format );
 }
 
-void QcTextEdit::setRangeColor( const VariantList &list )
+void QcTextEdit::setRangeColor( const QVariantList &list )
 {
-  if( list.data.count() < 3 ) return;
-  QColor c = list.data[0].value<QColor>();
-  int start = list.data[1].toInt();
-  int size = list.data[2].toInt();
+  if( list.count() < 3 ) return;
+  QColor c = list[0].value<QColor>();
+  int start = list[1].toInt();
+  int size = list[2].toInt();
 
   QTextCharFormat format;
   format.setForeground( c );
@@ -137,12 +137,12 @@ void QcTextEdit::setRangeColor( const VariantList &list )
   cursor.setCharFormat( format );
 }
 
-void QcTextEdit::setRangeFont( const VariantList & list )
+void QcTextEdit::setRangeFont( const QVariantList & list )
 {
-  if( list.data.count() < 3 ) return;
-  QFont f = list.data[0].value<QFont>();
-  int start = list.data[1].toInt();
-  int size = list.data[2].toInt();
+  if( list.count() < 3 ) return;
+  QFont f = list[0].value<QFont>();
+  int start = list[1].toInt();
+  int size = list[2].toInt();
 
   QTextCharFormat format;
   format.setFont( f );
@@ -153,12 +153,12 @@ void QcTextEdit::setRangeFont( const VariantList & list )
   cursor.setCharFormat( format );
 }
 
-void QcTextEdit::setRangeText( const VariantList & list )
+void QcTextEdit::setRangeText( const QVariantList & list )
 {
-  if( list.data.count() < 3 ) return;
-  QString text = list.data[0].value<QString>();
-  int start = list.data[1].toInt();
-  int size = list.data[2].toInt();
+  if( list.count() < 3 ) return;
+  QString text = list[0].value<QString>();
+  int start = list[1].toInt();
+  int size = list[2].toInt();
 
   QTextCursor cursor( document() );
   cursor.movePosition( QTextCursor::NextCharacter, QTextCursor::MoveAnchor, start );

@@ -310,15 +310,15 @@ QC_QPEN_PRIMITIVE( QPen_Rotate, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_QPEN_PRIMITIVE( QPen_SetTransform, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  VariantList list = Slot::toVariantList( a );
-  if( list.data.count() < 6 ) return errWrongType;
+  QVariantList list = Slot::toVariantList( a );
+  if( list.count() < 6 ) return errWrongType;
   float f[6];
   int i = 6;
   while( i ) {
     --i;
-    QVariant var = list.data[i];
+    const QVariant & var = list[i];
     if( !var.canConvert( QVariant::Double ) ) return errWrongType;
-    f[i] = list.data[i].value<float>();
+    f[i] = var.value<float>();
   }
   QTransform transform( f[0], f[1], f[2], f[3], f[4], f[5] );
   painter->setWorldTransform( transform, true );

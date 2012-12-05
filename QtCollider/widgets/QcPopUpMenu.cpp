@@ -36,11 +36,11 @@ QcPopUpMenu::QcPopUpMenu() :
   connect( this, SIGNAL(activated(int)), this, SLOT(doAction(int)) );
 }
 
-void QcPopUpMenu::setItems( const VariantList & items )
+void QcPopUpMenu::setItems( const QVariantList & items )
 {
   clear();
-  Q_FOREACH( QVariant item, items.data )
-      addItem( item.toString() );
+  Q_FOREACH( const QVariant & item, items )
+    addItem( item.toString() );
 }
 
 void QcPopUpMenu::doAction( int choice )

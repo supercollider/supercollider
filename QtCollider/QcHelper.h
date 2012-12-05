@@ -6,6 +6,7 @@
 #include <QColor>
 #include <QString>
 #include <QFont>
+#include <QVariant>
 
 struct QcHelper
 {
@@ -17,7 +18,7 @@ struct QcHelper
     QString dummyString() const { return QString(); }
     QColor dummyColor() const { return QColor(); }
     QFont dummyFont() const { return QFont(); }
-    VariantList dummyVariantList() const { return VariantList(); }
+    QVariantList dummyVariantList() const { return QVariantList(); }
 };
 
 #endif

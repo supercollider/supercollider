@@ -445,10 +445,10 @@ static bool interpretMimeData( const QMimeData *data, QList<QVariant> &args )
   {
     QList<QUrl> urls = data->urls();
     if( urls.count() > 1 ) {
-      VariantList list;
+      QVariantList list;
       Q_FOREACH( QUrl url, urls )
-        list.data << urlAsString( url );
-      args << QVariant::fromValue<VariantList>(list);
+        list << urlAsString( url );
+      args << QVariant(list);
     }
     else {
       args << urlAsString( urls[0] );

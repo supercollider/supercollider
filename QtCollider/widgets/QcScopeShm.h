@@ -49,7 +49,7 @@ class QcScopeShm : public QWidget, QcHelper
   Q_PROPERTY( float xZoom READ dummyFloat WRITE setXZoom );
   Q_PROPERTY( float yZoom READ dummyFloat WRITE setYZoom );
   Q_PROPERTY( int style READ style WRITE setStyle );
-  Q_PROPERTY( VariantList waveColors READ dummyVariantList WRITE setWaveColors );
+  Q_PROPERTY( QVariantList waveColors READ dummyVariantList WRITE setWaveColors );
   Q_PROPERTY( QColor background READ background WRITE setBackground );
   Q_PROPERTY( int updateInterval READ updateInterval WRITE setUpdateInterval );
   Q_PROPERTY( bool running READ running );
@@ -66,7 +66,7 @@ class QcScopeShm : public QWidget, QcHelper
     void setYZoom( float f ) { yZoom = f; }
     int style() const { return _style; }
     void setStyle( int i ) { _style = i; }
-    void setWaveColors( const VariantList & colors );
+    void setWaveColors( const QVariantList & colors );
     QColor background() const { return _bkg; }
     void setBackground( const QColor &c ) { _bkg = c; update(); }
     int updateInterval() const;

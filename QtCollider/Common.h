@@ -39,21 +39,11 @@
 
 extern pthread_mutex_t gLangMutex;
 
-struct VariantList {
-  QList<QVariant> data;
-};
-
-Q_DECLARE_METATYPE( VariantList );
 Q_DECLARE_METATYPE( PyrObject * );
 Q_DECLARE_METATYPE( QVector<double> );
 Q_DECLARE_METATYPE( QVector<int> );
 
 namespace QtCollider {
-
-  enum MetaType {
-    Type_VariantList,
-    Type_Count
-  };
 
   enum EventType {
     Event_SCRequest_Input = QEvent::User,

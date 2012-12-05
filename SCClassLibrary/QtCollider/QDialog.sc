@@ -6,7 +6,7 @@ QFileDialog : QObject {
     var me = super.new( [fileMode, acceptMode] );
 
     if( okFunc.notNil ) {
-      me.connectFunction( 'accepted(VariantList)', {
+      me.connectFunction( 'accepted(QVariantList)', {
         |me, result|
         if( stripResult )
           { okFunc.performList(\value, result) }

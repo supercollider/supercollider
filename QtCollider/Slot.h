@@ -52,7 +52,7 @@ namespace Slot
   QColor toColor( PyrSlot * );
   QFont toFont( PyrSlot * );
   QPalette toPalette( PyrSlot * );
-  VariantList toVariantList( PyrSlot * );
+  QVariantList toVariantList( PyrSlot * );
   QObjectProxy * toObjectProxy( PyrSlot * );
   QcTreeWidget::ItemPtr toTreeWidgetItem( PyrSlot * );
   QVariant toVariant( PyrSlot * );
@@ -65,7 +65,7 @@ namespace Slot
   void setPalette( PyrSlot *, const QPalette & );
   void setQObject( PyrSlot *, QObject * );
   void setTreeWidgetItem( PyrSlot *, const QcTreeWidget::ItemPtr & );
-  void setVariantList( PyrSlot *, const VariantList& );
+  void setVariantList( PyrSlot *, const QVariantList& );
   bool setVariant( PyrSlot *, const QVariant & );
 };
 
