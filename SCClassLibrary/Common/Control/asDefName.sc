@@ -68,7 +68,6 @@
 		if(server.notified) {
 			OSCFunc({
 				server.sendMsg(\d_free, def.name);
-				resp.remove;
 			}, '/n_end', server.addr, argTemplate: [synth.nodeID]).oneShot;
 		};
 		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus] ++ args, addAction);
