@@ -50,22 +50,22 @@ bool QcButton::hitButton( const QPoint & pos ) const
 }
 #endif
 
-void QcButton::setStates( const VariantList & statesArg )
+void QcButton::setStates( const QVariantList & statesArg )
 {
-  if( !statesArg.data.count() ) return;
+  if( !statesArg.count() ) return;
 
   states.clear();
 
-  Q_FOREACH( QVariant var, statesArg.data ) {
-    VariantList stateArg = var.value<VariantList>();
-    int count = stateArg.data.size();
+  Q_FOREACH( const QVariant & var, statesArg ) {
+    QVariantList stateArg = var.toList();
+    int count = stateArg.size();
     State state;
     if( count >= 1 )
-      state.text = stateArg.data[0].toString();
+      state.text = stateArg[0].toString();
     if( count >= 2 )
-      state.textColor = stateArg.data[1].value<QColor>();
+      state.textColor = stateArg[1].value<QColor>();
     if( count >= 3 )
-      state.buttonColor = stateArg.data[2].value<QColor>();
+      state.buttonColor = stateArg[2].value<QColor>();
     states.append( state );
   }
   setState( 0 );

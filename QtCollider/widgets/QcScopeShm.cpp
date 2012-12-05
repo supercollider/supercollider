@@ -78,10 +78,10 @@ void QcScopeShm::setBufferNumber( int n )
   _scopeIndex = n;
 }
 
-void QcScopeShm::setWaveColors( const VariantList & newColors )
+void QcScopeShm::setWaveColors( const QVariantList & newColors )
 {
   colors.clear();
-  Q_FOREACH( QVariant var, newColors.data ) {
+  Q_FOREACH( const QVariant & var, newColors ) {
     QColor color = var.value<QColor>();
     if( !color.isValid() )
       colors.append( QColor( 0,0,0 ) );

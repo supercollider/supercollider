@@ -68,7 +68,6 @@ QcApplication::QcApplication( int & argc, char ** argv )
   _instance = this;
   _mutex.unlock();
 
-  qRegisterMetaType<VariantList>();
   qRegisterMetaType<QcTreeWidget::ItemPtr>();
   qRegisterMetaType< QVector<double> >();
   qRegisterMetaType< QVector<int> >();

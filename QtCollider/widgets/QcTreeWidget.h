@@ -60,7 +60,7 @@ public:
   typedef SafePtr<Item> ItemPtr;
 
   Q_OBJECT
-  Q_PROPERTY( VariantList columns READ columns WRITE setColumns )
+  Q_PROPERTY( QVariantList columns READ columns WRITE setColumns )
   Q_PROPERTY( QcTreeWidget::ItemPtr currentItem READ currentItem WRITE setCurrentItem );
 
 public:
@@ -70,14 +70,14 @@ public:
   Q_INVOKABLE int indexOfItem( const QcTreeWidget::ItemPtr & );
 
   Q_INVOKABLE QcTreeWidget::ItemPtr addItem
-  ( const QcTreeWidget::ItemPtr & parent, const VariantList & data );
+  ( const QcTreeWidget::ItemPtr & parent, const QVariantList & data );
 
   Q_INVOKABLE QcTreeWidget::ItemPtr insertItem
-  ( const QcTreeWidget::ItemPtr & parent, int index, const VariantList & data );
+  ( const QcTreeWidget::ItemPtr & parent, int index, const QVariantList & data );
 
   Q_INVOKABLE void removeItem( const QcTreeWidget::ItemPtr & );
 
-  Q_INVOKABLE VariantList strings( const QcTreeWidget::ItemPtr & );
+  Q_INVOKABLE QVariantList strings( const QcTreeWidget::ItemPtr & );
   Q_INVOKABLE void setText( const QcTreeWidget::ItemPtr &, int column, const QString & );
   Q_INVOKABLE void setColor( const QcTreeWidget::ItemPtr &, int column, const QColor & );
   Q_INVOKABLE void setTextColor( const QcTreeWidget::ItemPtr &, int column, const QColor & );
@@ -101,8 +101,8 @@ public:
   ItemPtr currentItem() const;
   void setCurrentItem( const ItemPtr & );
 
-  VariantList columns() const;
-  void setColumns( const VariantList & );
+  QVariantList columns() const;
+  void setColumns( const QVariantList & );
 
 protected:
 

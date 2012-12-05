@@ -92,11 +92,10 @@ QC_LANG_PRIMITIVE( Qt_StringBounds, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 QC_LANG_PRIMITIVE( Qt_AvailableFonts, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QFontDatabase database;
-  VariantList l;
-  Q_FOREACH( QString family, database.families() ) {
-    l.data << QVariant(family);
-  }
-  Slot::setVariantList( r, l );
+  QVariantList list;
+  Q_FOREACH( QString family, database.families() )
+      list << family;
+  Slot::setVariantList( r, list );
   return errNone;
 }
 
@@ -217,10 +216,9 @@ QC_LANG_PRIMITIVE( Qt_AvailableStyles, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
-  VariantList list;
-  Q_FOREACH( QString key, QStyleFactory::keys() ) {
-    list.data << QVariant(key);
-  }
+  QVariantList list;
+  Q_FOREACH( QString key, QStyleFactory::keys() )
+      list << key;
 
   Slot::setVariantList( r, list );
   return errNone;

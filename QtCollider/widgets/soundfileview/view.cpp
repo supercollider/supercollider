@@ -285,11 +285,11 @@ float QcWaveform::yZoom()
   return _yZoom;
 }
 
-VariantList QcWaveform::selections() const
+QVariantList QcWaveform::selections() const
 {
-  VariantList slist;
+  QVariantList slist;
   for( int i = 0; i < 64; ++i ) {
-    slist.data << QVariant::fromValue<VariantList>( selection(i) );
+    slist << QVariant( selection(i) );
   }
   return slist;
 }
@@ -300,14 +300,14 @@ void QcWaveform::setCurrentSelection( int i ) {
   update();
 }
 
-VariantList QcWaveform::selection( int i ) const
+QVariantList QcWaveform::selection( int i ) const
 {
-  VariantList l;
-  if( i < 0 || i > 63 ) return l;
+  QVariantList list;
+  if( i < 0 || i > 63 ) return list;
   const Selection &s = _selections[i];
-  l.data << QVariant(static_cast<int>(s.start - _rangeBeg));
-  l.data << QVariant(static_cast<int>(s.size));
-  return l;
+  list << QVariant(static_cast<int>(s.start - _rangeBeg));
+  list << QVariant(static_cast<int>(s.size));
+  return list;
 }
 
 void QcWaveform::setSelection( int i, sf_count_t a, sf_count_t b )
@@ -319,11 +319,11 @@ void QcWaveform::setSelection( int i, sf_count_t a, sf_count_t b )
   update();
 }
 
-void QcWaveform::setSelection( int i, VariantList l )
+void QcWaveform::setSelection( int i, QVariantList list )
 {
-  if( l.data.count() < 2 ) return;
-  sf_count_t start = l.data[0].toInt() + _rangeBeg;
-  sf_count_t end = start + l.data[1].toInt();
+  if( list.count() < 2 ) return;
+  sf_count_t start = list[0].toInt() + _rangeBeg;
+  sf_count_t end = start + list[1].toInt();
   setSelection( i, start, end );
 }
 
@@ -361,18 +361,18 @@ void QcWaveform::setSelectionColor( int i, const QColor &c )
   update();
 }
 
-VariantList QcWaveform::waveColors() const
+QVariantList QcWaveform::waveColors() const
 {
-  VariantList clist;
+  QVariantList clist;
   Q_FOREACH( QColor clr, _waveColors )
-    clist.data << QVariant(clr);
+    clist << QVariant(clr);
   return clist;
 }
 
-void QcWaveform::setWaveColors( const VariantList &list )
+void QcWaveform::setWaveColors( const QVariantList &list )
 {
   _waveColors.clear();
-  Q_FOREACH( QVariant var, list.data )
+  Q_FOREACH( const QVariant & var, list )
     _waveColors << var.value<QColor>();
   redraw();
 }

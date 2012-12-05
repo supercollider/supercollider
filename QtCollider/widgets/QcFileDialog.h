@@ -44,7 +44,7 @@ public:
 
 Q_SIGNALS:
 
-  void accepted( VariantList result );
+  void accepted( QVariantList result );
   void rejected();
 
 private Q_SLOTS:
@@ -57,9 +57,9 @@ private Q_SLOTS:
   void onFinished( int res ) {
     if( res == QDialog::Accepted ) {
       QStringList files = dialog->selectedFiles();
-      VariantList varFiles;
+      QVariantList varFiles;
       Q_FOREACH( QString f, files ) {
-        varFiles.data << QVariant( f );
+        varFiles << QVariant( f );
       }
       Q_EMIT( accepted( varFiles ) );
     }

@@ -47,24 +47,24 @@ QcTreeWidget::QcTreeWidget()
 
 }
 
-VariantList QcTreeWidget::columns() const
+QVariantList QcTreeWidget::columns() const
 {
-  VariantList varList;
+  QVariantList varList;
   QTreeWidgetItem *header = headerItem();
   if( header ) {
     for( int i = 0; i < header->columnCount(); ++i ) {
-      varList.data << header->text(i);
+      varList << header->text(i);
     }
   }
   return varList;
 }
 
-void QcTreeWidget::setColumns( const VariantList & varList )
+void QcTreeWidget::setColumns( const QVariantList & varList )
 {
-  int count = varList.data.size();
+  int count = varList.size();
   setColumnCount( count );
   QStringList labels;
-  Q_FOREACH( QVariant var, varList.data )
+  Q_FOREACH( const QVariant & var, varList )
     labels << var.toString();
   setHeaderLabels( labels );
 }
@@ -107,11 +107,11 @@ int QcTreeWidget::indexOfItem( const QcTreeWidget::ItemPtr & item )
 }
 
 QcTreeWidget::ItemPtr QcTreeWidget::addItem (
-  const QcTreeWidget::ItemPtr & parent, const VariantList & varList )
+  const QcTreeWidget::ItemPtr & parent, const QVariantList & varList )
 {
   QStringList strings;
-  for( int i = 0; i < varList.data.count(); ++i )
-    strings << varList.data[i].toString();
+  for( int i = 0; i < varList.count(); ++i )
+    strings << varList[i].toString();
 
   Item *item = new Item( strings );
   if( !parent ) addTopLevelItem( item );
@@ -121,14 +121,14 @@ QcTreeWidget::ItemPtr QcTreeWidget::addItem (
 }
 
 QcTreeWidget::ItemPtr QcTreeWidget::insertItem (
-  const QcTreeWidget::ItemPtr & parent, int index, const VariantList & varList )
+  const QcTreeWidget::ItemPtr & parent, int index, const QVariantList & varList )
 {
   int itemCount = topLevelItemCount();
   if( index < 0 || index > itemCount ) return ItemPtr();
 
   QStringList strings;
-  for( int i = 0; i < varList.data.count(); ++i )
-    strings << varList.data[i].toString();
+  for( int i = 0; i < varList.count(); ++i )
+    strings << varList[i].toString();
 
   Item *item = new Item( strings );
   if( !parent ) insertTopLevelItem( index, item );
@@ -147,12 +147,12 @@ void QcTreeWidget::removeItem( const QcTreeWidget::ItemPtr & item )
   delete item.ptr();
 }
 
-VariantList QcTreeWidget::strings( const QcTreeWidget::ItemPtr & item )
+QVariantList QcTreeWidget::strings( const QcTreeWidget::ItemPtr & item )
 {
-  VariantList varList;
+  QVariantList varList;
   if( !item ) return varList;
   for( int i = 0; i < item->columnCount(); ++i ) {
-    varList.data << item->text(i);
+    varList << item->text(i);
   }
   return varList;
 }

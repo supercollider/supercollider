@@ -61,7 +61,7 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( double viewStartFrame READ viewStartFrame WRITE scrollTo );
   Q_PROPERTY( float scrollPos READ scrollPos WRITE setScrollPos );
   Q_PROPERTY( int currentSelection READ currentSelection WRITE setCurrentSelection );
-  Q_PROPERTY( VariantList selections READ selections );
+  Q_PROPERTY( QVariantList selections READ selections );
 
   Q_PROPERTY( float yZoom READ yZoom WRITE setYZoom );
   Q_PROPERTY( float xZoom READ xZoom WRITE setXZoom );
@@ -115,19 +115,19 @@ public:
   float xZoom(); //visible seconds
   float yZoom(); //factor
 
-  VariantList selections() const;
+  QVariantList selections() const;
   int currentSelection() const { return _curSel; }
   void setCurrentSelection( int i );
   // for SC: selection start relative to first loaded frame
-  Q_INVOKABLE VariantList selection( int index ) const;
+  Q_INVOKABLE QVariantList selection( int index ) const;
   // for SC: selection start relative to first loaded frame
-  Q_INVOKABLE void setSelection( int index, VariantList data );
+  Q_INVOKABLE void setSelection( int index, QVariantList data );
   void setSelection( int i, sf_count_t a, sf_count_t b );
   Q_INVOKABLE void setSelectionStart( int i, sf_count_t frame );
   Q_INVOKABLE void setSelectionEnd( int i, sf_count_t frame );
   Q_INVOKABLE void setSelectionEditable( int index, bool editable );
   Q_INVOKABLE void setSelectionColor( int index, const QColor &clr );
-  Q_PROPERTY( VariantList waveColors READ waveColors WRITE setWaveColors );
+  Q_PROPERTY( QVariantList waveColors READ waveColors WRITE setWaveColors );
 
   bool cursorVisible() const { return _showCursor; }
   void setCursorVisible( bool b ) { _showCursor = b; update(); }
@@ -145,8 +145,8 @@ public:
 
   bool drawsWaveform() const { return _drawWaveform; }
   void setDrawsWaveform( bool b ) { _drawWaveform = b; update(); }
-  VariantList waveColors() const;
-  void setWaveColors( const VariantList & );
+  QVariantList waveColors() const;
+  void setWaveColors( const QVariantList & );
 
   const QColor & background() const { return _bkgColor; }
   void setBackground( const QColor &c )

@@ -26,9 +26,8 @@ QC_DECLARE_QOBJECT_FACTORY(QcVBoxLayout);
 QC_DECLARE_QOBJECT_FACTORY(QcGridLayout);
 QC_DECLARE_QOBJECT_FACTORY(QcStackLayout);
 
-void QcGridLayout::addItem( const VariantList &dataList )
+void QcGridLayout::addItem( const QVariantList &data )
 {
-  const QList<QVariant> &data = dataList.data;
   if( data.count() < 6 ) return;
 
   int row = data[1].toInt();

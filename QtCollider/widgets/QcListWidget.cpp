@@ -40,24 +40,24 @@ QcListWidget::QcListWidget() : _emitAction(true)
            this, SLOT( onCurrentItemChanged() ) );
 }
 
-void QcListWidget::setItems( const VariantList & items )
+void QcListWidget::setItems( const QVariantList & items )
 {
   _emitAction = false;
   clear();
-  Q_FOREACH( QVariant item, items.data )
-    addItem( item.toString() );
+  Q_FOREACH( const QVariant & item, items )
+      addItem( item.toString() );
   setCurrentRow( 0 );
   _emitAction = true;
 }
 
-void QcListWidget::setColors( const VariantList & colors ) const
+void QcListWidget::setColors( const QVariantList & colors ) const
 {
-  int cc = colors.data.count();
+  int cc = colors.count();
   int ic = count();
   for( int i=0; i<cc && i < ic; ++i ) {
-    QListWidgetItem *it = item(i);
-    QColor color( colors.data[i].value<QColor>() );
-    if( color.isValid() ) it->setBackground( color );
+      QListWidgetItem *it = item(i);
+      QColor color( colors[i].value<QColor>() );
+      if( color.isValid() ) it->setBackground( color );
   }
 }
 
@@ -69,12 +69,12 @@ void QcListWidget::setCurrentRowWithoutAction( int row )
   _emitAction = b;
 }
 
-VariantList QcListWidget::selection() const
+QVariantList QcListWidget::selection() const
 {
     QModelIndexList modelIndexes = QListView::selectedIndexes();
-    VariantList indexes;
+    QVariantList indexes;
     Q_FOREACH( const QModelIndex & index, modelIndexes )
-        indexes.data << index.row();
+        indexes << index.row();
     return indexes;
 }
 

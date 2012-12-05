@@ -37,8 +37,6 @@
 #define qcProxyDebugMsg( LEVEL, MSG ) \
   qcDebugMsg( LEVEL, QString("[%1]: ").arg(_scClassName) + QString(MSG) )
 
-struct VariantList;
-
 class QObjectProxy;
 class QcSignalSpy;
 class QcMethodSignalHandler;
