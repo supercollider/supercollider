@@ -6,7 +6,7 @@ related:: Guides/MIDI, Classes/MIDIFunc
 DESCRIPTION::
 MIDIdef provides a global reference to the functionality of its superclass link::Classes/MIDIFunc::. Essentially it stores itself at a key within a global dictionary, allowing replacement at any time. Most methods are inherited from its superclass.
 
-note:: MIDIdef and link::Classes/MIDIFunc:: aim to improve upon the MIDIresponder classes by being faster and easier to use. They were made with the intention of creating a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::. As of this time, however, they still lack some features of the MIDIresponder classes, notably the learn method. Note that unlike those classes, MIDIdefs are removed on Cmd-. by default. This can be overriden using either of the fix or permanent methods.::
+note:: MIDIdef and link::Classes/MIDIFunc:: aim to improve upon the MIDIresponder classes by being faster, easier to use, and providing support for all MIDI message types. They were made with the intention of creating a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::. Note that unlike the older classes, MIDIFuncs are removed on Cmd-. by default. This can be overriden using either of the fix or permanent methods.::
 
 
 CLASSMETHODS::
@@ -46,6 +46,9 @@ An optional instance of an appropriate subclass of link::Classes/AbstractDispatc
 
 returns:: An instance of MIDIdef.
 
+METHOD:: freeAll
+Clears and deactivates all MIDIdefs from the global collection.
+
 METHOD:: cc
 A convenience method to create a new MIDIdef which responds to MIDI control messages. See link::#*new:: for argument descriptions.
 
@@ -81,8 +84,79 @@ A convenience method to create a new MIDIdef which responds to MIDI program chan
 
 returns:: An instance of MIDIdef which responds to MIDI program change messages.
 
-METHOD:: freeAll
-Clears and deactivates all MIDIdefs from the global collection.
+METHOD:: sysex
+A convenience method to create a new MIDIFunc which responds to MIDI system exclusive messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI system exclusive messages.
+
+SUBSECTION:: System Common
+
+METHOD:: smpte
+A convenience method to create a new MIDIFunc which responds to MIDI smpte messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI smpte messages.
+
+METHOD:: mtcQuarterFrame
+A convenience method to create a new MIDIFunc which responds to MIDI Time Code Quarter Frame messages. Note that the link::#smpte:: method above automatically assembles quarter frames into time code. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI Time Code Quarter Frame messages.
+
+METHOD:: songPosition
+A convenience method to create a new MIDIFunc which responds to MIDI song position messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI song position messages.
+
+METHOD:: songSelect
+A convenience method to create a new MIDIFunc which responds to MIDI song select messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI song select messages.
+
+METHOD:: tuneRequest
+A convenience method to create a new MIDIFunc which responds to MIDI song select messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI tune request messages.
+
+METHOD:: midiClock
+A convenience method to create a new MIDIFunc which responds to MIDI clock messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI clock messages.
+
+SUBSECTION:: System Realtime
+
+METHOD:: sysrt
+A convenience method to create a new MIDIFunc which responds generically to MIDI System Realtime messages. Note that the message specific methods below are probably more convenient in most cases. Note that this does not include MIDI Time Code Quarter Frame messages (sysrt index 1). For those see link::#*mtcQuarterFrame:: and link::#*smpte::. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI System Realtime messages.
+
+METHOD:: tick
+A convenience method to create a new MIDIFunc which responds to MIDI tick messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI tick messages.
+
+METHOD:: start
+A convenience method to create a new MIDIFunc which responds to MIDI start messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI start messages.
+
+METHOD:: stop
+A convenience method to create a new MIDIFunc which responds to MIDI stop messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI stop messages.
+
+METHOD:: continue
+A convenience method to create a new MIDIFunc which responds to MIDI continue messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI continue messages.
+
+METHOD:: reset
+A convenience method to create a new MIDIFunc which responds to MIDI reset messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI reset messages.
+
+METHOD:: activeSense
+A convenience method to create a new MIDIFunc which responds to MIDI active sense messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI active sense messages.
 
 INSTANCEMETHODS::
 private:: addToAll, printOn
