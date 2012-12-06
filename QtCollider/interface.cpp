@@ -24,6 +24,7 @@
 #include "Common.h"
 #include "style/ProxyStyle.hpp"
 #include "style/style.hpp"
+#include "metatype.hpp"
 
 #include <QPlastiqueStyle>
 #include <QTimer>
@@ -54,6 +55,8 @@ void QtCollider::init() {
     initResources();
 
     QtCollider::loadFactories();
+
+    QtCollider::MetaType::initAll();
 
     QLocale::setDefault( QLocale::c() );
 

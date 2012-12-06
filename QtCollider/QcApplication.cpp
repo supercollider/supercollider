@@ -68,10 +68,6 @@ QcApplication::QcApplication( int & argc, char ** argv )
   _instance = this;
   _mutex.unlock();
 
-  qRegisterMetaType<QcTreeWidget::ItemPtr>();
-  qRegisterMetaType< QVector<double> >();
-  qRegisterMetaType< QVector<int> >();
-
   if (QtColliderUseGui()) { // avoid a crash on linux, if x is not available
     QIcon icon;
     icon.addFile(":/icons/sc-cube-128");

@@ -33,25 +33,25 @@ class QcWidgetFactory : public QcObjectFactory<QWIDGET>
 {
 public:
 
-  virtual QObjectProxy *newInstance( PyrObject *scObject, QtCollider::Variant arg[10] ) {
+  virtual QObjectProxy *newInstance( PyrObject *scObject, QtCollider::MetaValue arg[10] ) {
 
     // Omit the first two arguments - parent and bounds
 
     QWIDGET *w;
 
-    if( arg[2].type() == QMetaType::Void ) {
+    if( !arg[2].type() ) {
       w = new QWIDGET;
     }
     else {
       QObject *obj = QWIDGET::staticMetaObject.newInstance(
-        arg[2].asGenericArgument(),
-        arg[3].asGenericArgument(),
-        arg[4].asGenericArgument(),
-        arg[5].asGenericArgument(),
-        arg[6].asGenericArgument(),
-        arg[7].asGenericArgument(),
-        arg[8].asGenericArgument(),
-        arg[9].asGenericArgument()
+        arg[2].toGenericArgument(),
+        arg[3].toGenericArgument(),
+        arg[4].toGenericArgument(),
+        arg[5].toGenericArgument(),
+        arg[6].toGenericArgument(),
+        arg[7].toGenericArgument(),
+        arg[8].toGenericArgument(),
+        arg[9].toGenericArgument()
       );
 
       w = qobject_cast<QWIDGET*>(obj);

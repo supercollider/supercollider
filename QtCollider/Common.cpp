@@ -1,5 +1,5 @@
 #include "Common.h"
-#include "Slot.h"
+#include "metatype.hpp"
 
 #include <PyrKernel.h>
 #include <VMGlobals.h>
@@ -17,8 +17,10 @@ void QtCollider::runLang (
   ++g->sp;  SetObject(g->sp, receiver);
   Q_FOREACH( QVariant var, args ) {
     ++g->sp;
-    if( !Slot::setVariant( g->sp, var ) )
+    if( !QtCollider::set( g->sp, var ) ) {
+      qcErrorMsg("Failed to write a slot when trying to run interpreter!");
       SetNil( g->sp );
+    }
   }
   runInterpreter(g, method, args.size() + 1);
   g->canCallOS = false;
