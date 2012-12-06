@@ -22,7 +22,7 @@
 #include "prim_QPalette.hpp"
 #include "primitives.h"
 #include "../Common.h"
-#include "../Slot.h"
+#include "../type_codec.hpp"
 
 #include <PyrKernel.h>
 
@@ -56,8 +56,8 @@ QC_LANG_PRIMITIVE( QPalette_New, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QPalette_Auto, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  QColor button( Slot::toColor(a) );
-  QColor window( Slot::toColor(a+1) );
+  QColor button = QtCollider::get(a);
+  QColor window = QtCollider::get(a+1);
   QPalette_Init( g, slotRawObject(r), QPalette(button, window) );
   return errNone;
 }
@@ -77,10 +77,10 @@ QC_LANG_PRIMITIVE( QPalette_Color, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   if( IsInt(a+1) ) {
     QPalette::ColorGroup group = (QPalette::ColorGroup)(slotRawInt(a+1));
-    Slot::setColor( r, p->color( group, role ) );
+    QtCollider::set( r, p->color( group, role ) );
   }
   else {
-    Slot::setColor( r, p->color( role ) );
+    QtCollider::set( r, p->color( role ) );
   }
 
   return errNone;
@@ -90,7 +90,7 @@ QC_LANG_PRIMITIVE( QPalette_SetColor, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QPalette *p = QPALETTE_FROM_OBJECT(slotRawObject(r));
 
-  QColor color( Slot::toColor(a) );
+  QColor color = QtCollider::get(a);
 
   if(NotInt(a+1)) return errWrongType;
   QPalette::ColorRole role = (QPalette::ColorRole)(slotRawInt(a+1));

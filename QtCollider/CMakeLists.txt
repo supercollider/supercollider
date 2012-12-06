@@ -61,6 +61,8 @@ set( QT_COLLIDER_HDRS
 )
 
 set( QT_COLLIDER_SRCS
+  ${QT_COLLIDER_DIR}/type_codec.cpp
+  ${QT_COLLIDER_DIR}/metatype.cpp
   ${QT_COLLIDER_DIR}/debug.cpp
   ${QT_COLLIDER_DIR}/interface.cpp
   ${QT_COLLIDER_DIR}/factories.cpp
@@ -68,7 +70,6 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/Common.cpp
   ${QT_COLLIDER_DIR}/QObjectProxy.cpp
   ${QT_COLLIDER_DIR}/QWidgetProxy.cpp
-  ${QT_COLLIDER_DIR}/Slot.cpp
   ${QT_COLLIDER_DIR}/QcObjectFactory.cpp
   ${QT_COLLIDER_DIR}/hacks/hacks_x11.cpp
   ${QT_COLLIDER_DIR}/primitives/primitives.cpp

@@ -19,11 +19,14 @@
 *
 ************************************************************************/
 
+#include <QDebug>
+
 #include "QObjectProxy.h"
 #include "QcApplication.h"
 #include "Common.h"
-#include "Slot.h"
 #include "QcSignalSpy.h"
+#include "type_codec.hpp"
+#include "metatype.hpp"
 
 #include <QApplication>
 #include <QWidget>
@@ -32,6 +35,8 @@
 
 #include <PyrKernel.h>
 #include <VMGlobals.h>
+
+#include <alloca.h>
 
 using namespace QtCollider;
 
@@ -66,58 +71,88 @@ void QObjectProxy::invalidate() {
   QApplication::postEvent( this, new QEvent((QEvent::Type) QtCollider::Event_Proxy_Release) );
 }
 
-bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *argSlot,
-                                 Qt::ConnectionType ctype )
+static bool serializeSignature( QVarLengthArray<char, 512> & dst,
+                                const char *method,
+                                int argc, MetaValue *argv )
 {
-  mutex.lock();
-  if( !qObject ) {
-    mutex.unlock();
-    return true;
-  }
-
-  // the signature char array
-  QVarLengthArray<char, 512> sig;
-
   // serialize method name
   int len = qstrlen( method );
   if( len <= 0 ) {
-    mutex.unlock();
+    qcErrorMsg("Method name appears to be empty.");
     return false;
   }
-  sig.append( method, len );
-  sig.append( '(' );
-
-  // get data from argument slots
-  QtCollider::Variant argSlots[10];
-
-  if( isKindOfSlot( argSlot, class_array ) ) {
-    PyrSlot *slots = slotRawObject( argSlot )->slots;
-    int size = slotRawObject( argSlot )->size;
-    int i;
-    for( i = 0; i<size && i<10; ++i ) {
-      argSlots[i].setData( slots );
-      ++slots;
-    }
-  }
-  else argSlots[0].setData( argSlot );
+  dst.append( method, len );
+  dst.append( '(' );
 
   // serialize argument types
   int i;
-  for( i = 0; i < 10; ++i ) {
-    int type = argSlots[i].type();
-    if( type == QMetaType::Void ) break;
-    const char *typeName = QMetaType::typeName( type );
+  for( i = 0; i < argc; ++i ) {
+    int typeId = argv[i].type()->id();
+    const char *typeName = QMetaType::typeName( typeId );
     int len = qstrlen( typeName );
-    if( len <= 0 ) break;
-    sig.append( typeName, len );
-    sig.append( ',' );
+    if( len <= 0 ) {
+      qcErrorMsg("Could not get argument type name.");
+      return false;
+    }
+    dst.append( typeName, len );
+    dst.append( ',' );
   }
 
   // finalize the signature
-  if( i==0 ) sig.append( ')' );
-  else sig[sig.size() - 1] = ')';
+  if( i==0 ) dst.append( ')' );
+  else dst[dst.size() - 1] = ')';
 
-  sig.append('\0');
+  dst.append('\0');
+
+  return true;
+}
+
+bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *argSlot,
+                                 Qt::ConnectionType ctype )
+{
+  QMutexLocker locker(&mutex);
+
+  if( !qObject )
+    return true;
+
+  MetaValue args[10];
+
+  PyrSlot *argslots;
+  int argc;
+
+  if( isKindOfSlot( argSlot, class_array ) ) {
+    argslots = slotRawObject( argSlot )->slots;
+    argc = slotRawObject( argSlot )->size;
+  }
+  else if(argSlot && NotNil(argSlot)) {
+    argslots = argSlot;
+    argc = 1;
+  }
+  else {
+    argslots = 0;
+    argc = 0;
+  }
+
+  // translate args
+  for( int i = 0; i < argc; ++i )
+  {
+      MetaType *type = MetaType::find(argslots + i);
+      if(!type)
+        return false;
+
+      void *mem =  alloca(type->size());
+      if(!mem) {
+        qcErrorMsg("Could not allocate stack space for argument!");
+        return false;
+      }
+
+      args[i].read(mem, type, argslots + i);
+  }
+
+  // serialize signature
+  QVarLengthArray<char, 512> sig;
+  if ( !serializeSignature( sig, method, argc, args ) )
+    return false;
 
   // get the meta method
   const QMetaObject *mo = qObject->metaObject();
@@ -131,46 +166,54 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *
   if( mi < 0 || mi >= mo->methodCount()  ) {
     qcProxyDebugMsg( 1, QString("WARNING: No such method: %1::%2").arg( mo->className() )
                         .arg( sig.constData() ) );
-    mutex.unlock();
     return false;
   }
 
   QMetaMethod mm = mo->method( mi );
 
   // construct the return data object
-  QGenericReturnArgument retGArg;
-  const char *retTypeName = mm.typeName();
-  int retType = QMetaType::type( retTypeName );
-  void *retPtr = 0;
-  if( retSlot ) {
-    retPtr = QMetaType::construct( retType );
-    retGArg = QGenericReturnArgument( retTypeName, retPtr );
+  QGenericReturnArgument rarg;
+  const char *rtype_name = mm.typeName();
+  int rtype_id = QMetaType::type( rtype_name );
+
+  MetaValue returnVal;
+
+  if( retSlot && rtype_id != QMetaType::Void ) {
+    MetaType *type = MetaType::find(rtype_id);
+    if(!type) {
+      qcErrorMsg(QString("No translation for return type '%1'").arg(rtype_name));
+      return false;
+    }
+
+    void *mem = alloca(type->size());
+    if (!mem) {
+      qcErrorMsg("Could not allocate stack space for return value");
+      return false;
+    }
+
+    returnVal.read(mem, type, 0); // default construction
+    rarg = returnVal.toGenericReturnArgument();
   }
 
   //do it!
   bool success =
-    mm.invoke( qObject, ctype, retGArg,
-                argSlots[0].asGenericArgument(),
-                argSlots[1].asGenericArgument(),
-                argSlots[2].asGenericArgument(),
-                argSlots[3].asGenericArgument(),
-                argSlots[4].asGenericArgument(),
-                argSlots[5].asGenericArgument(),
-                argSlots[6].asGenericArgument(),
-                argSlots[7].asGenericArgument(),
-                argSlots[8].asGenericArgument(),
-                argSlots[9].asGenericArgument());
+    mm.invoke( qObject, ctype, rarg,
+               args[0].toGenericArgument(),
+               args[1].toGenericArgument(),
+               args[2].toGenericArgument(),
+               args[3].toGenericArgument(),
+               args[4].toGenericArgument(),
+               args[5].toGenericArgument(),
+               args[6].toGenericArgument(),
+               args[7].toGenericArgument(),
+               args[8].toGenericArgument(),
+               args[9].toGenericArgument() );
 
   // store the return data into the return slot
-  if( success && retPtr ) {
-    QVariant retVar( retType, retPtr );
-    Slot::setVariant( retSlot, retVar );
-  };
+  if( success && retSlot )
+    returnVal.write( retSlot );
 
-  if( retPtr )
-    QMetaType::destroy( retType, retPtr );
-
-  mutex.unlock();
+  // done
   return success;
 }
 
@@ -523,6 +566,9 @@ inline void QObjectProxy::scMethodCallEvent( ScMethodCallEvent *e )
 
 QObjectProxy * QObjectProxy::fromObject( QObject *object )
 {
+  if(!object)
+    return 0;
+
   const QObjectList &children = object->children();
   Q_FOREACH( QObject *child, children ) {
     ProxyToken *token = qobject_cast<QtCollider::ProxyToken*>( child );

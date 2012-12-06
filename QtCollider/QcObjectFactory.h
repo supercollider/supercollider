@@ -24,7 +24,7 @@
 
 #include "QObjectProxy.h"
 #include "Common.h"
-#include "Slot.h"
+#include "metatype.hpp"
 
 #include <PyrObject.h>
 
@@ -45,16 +45,16 @@ class QcAbstractFactory
 {
 public:
   virtual const QMetaObject *metaObject() = 0;
-  virtual QObjectProxy *newInstance( PyrObject *, QtCollider::Variant arg[10] ) = 0;
+  virtual QObjectProxy *newInstance( PyrObject *, QtCollider::MetaValue arg[10] ) = 0;
 };
 
-static void qcNoConstructorMsg( const QMetaObject *metaObject, int argc, QtCollider::Variant *argv )
+static void qcNoConstructorMsg( const QMetaObject *metaObject, int argc, QtCollider::MetaValue *argv )
 {
   QString str = QString("No appropriate constructor found for %1 (")
     .arg( metaObject->className() );
 
   for (int i = 0; i < argc; ++i) {
-    int t_id = argv[i].type();
+    int t_id = argv[i].type()->id();
 
     if (t_id != QMetaType::Void)
     {
@@ -78,24 +78,24 @@ public:
     return &QOBJECT::staticMetaObject;
   }
 
-  virtual QObjectProxy *newInstance( PyrObject *scObject, QtCollider::Variant arg[10] ) {
+  virtual QObjectProxy *newInstance( PyrObject *scObject, QtCollider::MetaValue arg[10] ) {
     QOBJECT *qObject;
 
-    if( arg[0].type() == QMetaType::Void ) {
+    if( !arg[0].type() ) {
       qObject = new QOBJECT;
     }
     else {
       QObject *obj = QOBJECT::staticMetaObject.newInstance(
-        arg[0].asGenericArgument(),
-        arg[1].asGenericArgument(),
-        arg[2].asGenericArgument(),
-        arg[3].asGenericArgument(),
-        arg[4].asGenericArgument(),
-        arg[5].asGenericArgument(),
-        arg[6].asGenericArgument(),
-        arg[7].asGenericArgument(),
-        arg[8].asGenericArgument(),
-        arg[9].asGenericArgument()
+        arg[0].toGenericArgument(),
+        arg[1].toGenericArgument(),
+        arg[2].toGenericArgument(),
+        arg[3].toGenericArgument(),
+        arg[4].toGenericArgument(),
+        arg[5].toGenericArgument(),
+        arg[6].toGenericArgument(),
+        arg[7].toGenericArgument(),
+        arg[8].toGenericArgument(),
+        arg[9].toGenericArgument()
       );
 
       qObject = qobject_cast<QOBJECT*>(obj);
