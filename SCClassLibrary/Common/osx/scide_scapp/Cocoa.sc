@@ -5,18 +5,6 @@ CocoaDialog {
 		OnError.add({ this.clear })
 	}
 
-	*getPaths { arg okFunc, cancelFunc, allowsMultiple=true;
-		if(result.notNil,{
-			"A CocoaDialog is already in progress.  do: [CocoaDialog.clear]".warn;
-			^nil
-		});
-
-		//result = Array.new(maxSize);
-		ok = okFunc;
-		cancel = cancelFunc;
-		this.prGetPathsDialog(allowsMultiple);
-	}
-
 	*openPanel { arg okFunc, cancelFunc, multipleSelection=false;
 		if(result.notNil,{
 			"A CocoaDialog is already in progress.  do: [CocoaDialog.clear]".warn;
