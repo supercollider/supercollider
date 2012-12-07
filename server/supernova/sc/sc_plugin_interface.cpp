@@ -900,7 +900,7 @@ SndBuf * sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, u
 void sc_plugin_interface::buffer_read_alloc(uint32_t index, const char * filename, uint32_t start, uint32_t frames)
 {
     SndfileHandle f(filename);
-    if (!f)
+    if (f.rawHandle() == nullptr)
         throw std::runtime_error(f.strError());
 
     const size_t sf_frames = f.frames();
@@ -924,7 +924,7 @@ void sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char 
                                                      const uint32_t * channel_data)
 {
     SndfileHandle f(filename);
-    if (!f)
+    if (f.rawHandle() == nullptr)
         throw std::runtime_error(f.strError());
 
     uint32_t sf_channels = uint32_t(f.channels());
@@ -974,9 +974,9 @@ int sc_plugin_interface::buffer_write(uint32_t index, const char * filename, con
     return 0;
 }
 
-static void buffer_read_verify(SndfileHandle const & sf, size_t min_length, size_t samplerate)
+static void buffer_read_verify(SndfileHandle & sf, size_t min_length, size_t samplerate)
 {
-    if (!sf)
+    if (sf.rawHandle() == nullptr)
         throw std::runtime_error(sf.strError());
     if (sf.frames() < min_length)
         throw std::runtime_error("no more frames to read");
