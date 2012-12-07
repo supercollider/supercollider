@@ -897,11 +897,11 @@ SndBuf * sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, u
     return buf;
 }
 
-int sc_plugin_interface::buffer_read_alloc(uint32_t index, const char * filename, uint32_t start, uint32_t frames)
+void sc_plugin_interface::buffer_read_alloc(uint32_t index, const char * filename, uint32_t start, uint32_t frames)
 {
     SndfileHandle f(filename);
     if (!f)
-        return -1; /* file cannot be opened */
+        throw std::runtime_error(f.strError());
 
     const size_t sf_frames = f.frames();
 
@@ -916,22 +916,21 @@ int sc_plugin_interface::buffer_read_alloc(uint32_t index, const char * filename
 
     f.seek(start, SEEK_SET);
     f.readf(buf->data, frames);
-    return 0;
 }
 
 
-int sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char * filename, uint32_t start,
-                                                    uint32_t frames, uint32_t channel_count,
-                                                    const uint32_t * channel_data)
+void sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char * filename, uint32_t start,
+                                                     uint32_t frames, uint32_t channel_count,
+                                                     const uint32_t * channel_data)
 {
     SndfileHandle f(filename);
     if (!f)
-        return -1; /* file cannot be opened */
+        throw std::runtime_error(f.strError());
 
     uint32_t sf_channels = uint32_t(f.channels());
     const uint32_t * max_chan = std::max_element(channel_data, channel_data + channel_count);
     if (*max_chan >= sf_channels)
-        return -2;
+        throw std::runtime_error("Channel out of range");
 
     const size_t sf_frames = f.frames();
 
@@ -946,8 +945,6 @@ int sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char *
 
     f.seek(start, SEEK_SET);
     read_channel(f, channel_count, channel_data, frames, buf->data);
-
-    return 0;
 }
 
 
@@ -977,32 +974,29 @@ int sc_plugin_interface::buffer_write(uint32_t index, const char * filename, con
     return 0;
 }
 
-static int buffer_read_verify(SndfileHandle const & sf, size_t min_length, size_t samplerate)
+static void buffer_read_verify(SndfileHandle const & sf, size_t min_length, size_t samplerate)
 {
     if (!sf)
-        return -1;
+        throw std::runtime_error(sf.strError());
     if (sf.frames() < min_length)
-        return -2; /* no more frames to read */
+        throw std::runtime_error("no more frames to read");
     if (sf.samplerate() != samplerate)
-        return -3; /* sample rate mismatch */
-    return 0;
+        throw std::runtime_error("sample rate mismatch");
 }
 
-int sc_plugin_interface::buffer_read(uint32_t index, const char * filename, uint32_t start_file, uint32_t frames,
-                                     uint32_t start_buffer, bool leave_open)
+void sc_plugin_interface::buffer_read(uint32_t index, const char * filename, uint32_t start_file, uint32_t frames,
+                                      uint32_t start_buffer, bool leave_open)
 {
     SndBuf * buf = World_GetNRTBuf(&world, index);
 
     if (uint32_t(buf->frames) < start_buffer)
-        return -2; /* buffer already full */
+        throw std::runtime_error("buffer already full");
 
     SndfileHandle sf(filename, SFM_READ);
-    int error = buffer_read_verify(sf, start_file, buf->samplerate);
-    if (error)
-        return error;
+    buffer_read_verify(sf, start_file, buf->samplerate);
 
     if (sf.channels() != buf->channels)
-        return -3; /* sample rate or channel count mismatch */
+        throw std::runtime_error("channel count mismatch");
 
     const uint32_t buffer_remain = buf->frames - start_buffer;
     const uint32_t file_remain = sf.frames() - start_file;
@@ -1013,41 +1007,38 @@ int sc_plugin_interface::buffer_read(uint32_t index, const char * filename, uint
 
     if (leave_open)
         buf->sndfile = sf.takeOwnership();
-    return 0;
 }
 
-int sc_plugin_interface::buffer_read_channel(uint32_t index, const char * filename, uint32_t start_file, uint32_t frames,
+void sc_plugin_interface::buffer_read_channel(uint32_t index, const char * filename, uint32_t start_file, uint32_t frames,
                                              uint32_t start_buffer, bool leave_open, uint32_t channel_count,
                                              const uint32_t * channel_data)
 {
     SndBuf * buf = World_GetNRTBuf(&world, index);
 
     if (channel_count != uint32_t(buf->channels))
-        return -2; /* channel count mismatch */
+        throw std::runtime_error("channel count mismatch");
 
     if (uint32_t(buf->frames) >= start_buffer)
-        return -2; /* buffer already full */
+        throw std::runtime_error("buffer already full");
 
     SndfileHandle sf(filename, SFM_READ);
-    int error = buffer_read_verify(sf, start_file, buf->samplerate);
-    if (error)
-        return error;
+    buffer_read_verify(sf, start_file, buf->samplerate);
 
     uint32_t sf_channels = uint32_t(sf.channels());
     const uint32_t * max_chan = std::max_element(channel_data, channel_data + channel_count);
     if (*max_chan >= sf_channels)
-        return -2;
+        throw std::runtime_error("channel count mismatch");
+
     const uint32_t buffer_remain = buf->frames - start_buffer;
     const uint32_t file_remain = sf.frames() - start_file;
 
     const uint32_t frames_to_read = std::min(frames, std::min(buffer_remain, file_remain));
 
     sf.seek(start_file, SEEK_SET);
-    read_channel(sf, channel_count, channel_data, frames, buf->data);
+    read_channel(sf, channel_count, channel_data, frames_to_read, buf->data);
 
     if (leave_open)
         buf->sndfile = sf.takeOwnership();
-    return 0;
 }
 
 void sc_plugin_interface::buffer_close(uint32_t index)
@@ -1079,7 +1070,7 @@ sample * sc_plugin_interface::buffer_generate(uint32_t buffer_index, const char*
     return sc_factory->run_bufgen(&world, cmd_name, buffer_index, &msg);
 }
 
-void sc_plugin_interface::buffer_sync(uint32_t index)
+void sc_plugin_interface::buffer_sync(uint32_t index) noexcept
 {
     sndbuf_copy(world.mSndBufs + index, world.mSndBufsNonRealTimeMirror + index);
     increment_write_updates(index);
