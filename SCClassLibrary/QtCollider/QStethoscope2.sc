@@ -75,7 +75,7 @@ QStethoscope2 {
       busSpec = if(bus.rate===\audio){aBusSpec}{cBusSpec};
     };
 
-    cycleSpec = ControlSpec( 64, maxBufSize, \exponential );
+    cycleSpec = ControlSpec( maxBufSize, 64, \exponential );
     yZoomSpec = ControlSpec( 0.125, 16, \exponential );
     cycle = cycleSpec.constrain(cycle_);
     yZoom = 1.0;
@@ -347,7 +347,7 @@ QStethoscope2 {
       // set other vars related to args
 
       busSpec = if(bus.rate === \audio) {aBusSpec} {cBusSpec};
-      cycleSpec = ControlSpec( 64, maxBufSize, \exponential );
+      cycleSpec = ControlSpec( maxBufSize, 64, \exponential );
       if(zoom.notNil)
         { cycle = cycleSpec.constrain( 1024 * zoom.asFloat.reciprocal ) };
 
