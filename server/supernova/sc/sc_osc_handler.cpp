@@ -249,6 +249,17 @@ void send_fail_message(nova_endpoint const & endpoint, const char * cmd, const c
     instance->send(p.Data(), p.Size(), endpoint);
 }
 
+void send_fail_message(nova_endpoint const & endpoint, const char * cmd, const char * content, int id)
+{
+    char buffer[8192];
+    osc::OutboundPacketStream p(buffer, 8192);
+    p << osc::BeginMessage("/fail")
+      << cmd << content << (osc::int32)id
+      << osc::EndMessage;
+
+    instance->send(p.Data(), p.Size(), endpoint);
+}
+
 
 template <typename Functor>
 struct fn_system_callback:
@@ -341,6 +352,18 @@ struct cmd_dispatcher<false>
         send_done_message (endpoint, cmd, index);
     }
 };
+
+void report_failure(nova_endpoint const & endpoint, std::exception const & error, const char * command)
+{
+    std::cout << error.what() << std::endl;
+    send_fail_message(endpoint, command, error.what());
+}
+
+void report_failure(nova_endpoint const & endpoint, std::exception const & error, const char * command, int bufnum)
+{
+    std::cout << error.what() << std::endl;
+    send_fail_message(endpoint, command, error.what(), bufnum);
+}
 
 } /* namespace */
 
@@ -1862,12 +1885,16 @@ void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, n
 void b_alloc_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endpoint);
 
 template <bool realtime>
-void b_alloc_1_nrt(uint32_t index, uint32_t frames, uint32_t channels, completion_message & msg, nova_endpoint const & endpoint)
+void b_alloc_1_nrt(uint32_t bufnum, uint32_t frames, uint32_t channels, completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
-    sample * free_buf = sc_factory->get_nrt_mirror_buffer(index);
-    sc_factory->allocate_buffer(index, frames, channels);
-    cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_alloc_2_rt<realtime>, index, msg, free_buf, endpoint));
+    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
+    try {
+        sample * free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
+        sc_factory->allocate_buffer(bufnum, frames, channels);
+        cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_alloc_2_rt<realtime>, bufnum, msg, free_buf, endpoint));
+    } catch (std::exception const & error) {
+        report_failure(endpoint, error, "/b_alloc", bufnum);
+    }
 }
 
 template <bool realtime>
@@ -1953,16 +1980,17 @@ void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_bu
 void b_allocRead_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endpoint);
 
 template <bool realtime>
-void b_allocRead_1_nrt(uint32_t index, movable_string & filename, uint32_t start, uint32_t frames, completion_message & msg,
+void b_allocRead_1_nrt(uint32_t bufnum, movable_string & filename, uint32_t start, uint32_t frames, completion_message & msg,
                        nova_endpoint const & endpoint)
 {
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
-    sample * free_buf = sc_factory->get_nrt_mirror_buffer(index);
-    int error = sc_factory->buffer_read_alloc(index, filename.c_str(), start, frames);
-    if (!error)
-        cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_allocRead_2_rt<realtime>, index, msg, free_buf, endpoint));
-    else
-        /* post nice error message */;
+    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
+    sample * free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
+    try {
+        sc_factory->buffer_read_alloc(bufnum, filename.c_str(), start, frames);
+        cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_allocRead_2_rt<realtime>, bufnum, msg, free_buf, endpoint));
+    } catch (std::exception const & error) {
+        report_failure(endpoint, error, "/b_allocRead", bufnum);
+    }
 }
 
 template <bool realtime>
@@ -2007,38 +2035,42 @@ void handle_b_allocRead(received_message const & msg, nova_endpoint const & endp
 }
 
 template <bool realtime>
-void b_allocReadChannel_2_rt(uint32_t index, completion_message & msg, sample * free_buf,
+void b_allocReadChannel_2_rt(uint32_t bufnum, completion_message & msg, sample * free_buf,
                              nova_endpoint const & endpoint);
-void b_allocReadChannel_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endpoint);
+void b_allocReadChannel_3_nrt(uint32_t bufnum, sample * free_buf, nova_endpoint const & endpoint);
 
 template <bool realtime>
-void b_allocReadChannel_1_nrt(uint32_t index, movable_string const & filename, uint32_t start, uint32_t frames,
+void b_allocReadChannel_1_nrt(uint32_t bufnum, movable_string const & filename, uint32_t start, uint32_t frames,
                               movable_array<uint32_t> const & channels, completion_message & msg,
                               nova_endpoint const & endpoint)
 {
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
-    sample * free_buf = sc_factory->get_nrt_mirror_buffer(index);
-    int error = sc_factory->buffer_alloc_read_channels(index, filename.c_str(), start, frames,
-                                                        channels.size(), channels.data());
-    if (!error)
+    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
+    sample * free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
+
+    try {
+        sc_factory->buffer_alloc_read_channels(bufnum, filename.c_str(), start, frames, channels.size(), channels.data());
+
         cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_allocReadChannel_2_rt<realtime>,
-                                                               index, msg, free_buf, endpoint));
+                                                             bufnum, msg, free_buf, endpoint));
+    } catch (std::exception const & error) {
+        report_failure(endpoint, error, "/b_allocReadChannel", bufnum);
+    }
 }
 
 template <bool realtime>
-void b_allocReadChannel_2_rt(uint32_t index, completion_message & msg, sample * free_buf,
+void b_allocReadChannel_2_rt(uint32_t bufnum, completion_message & msg, sample * free_buf,
                              nova_endpoint const & endpoint)
 {
-    sc_factory->buffer_sync(index);
+    sc_factory->buffer_sync(bufnum);
     msg.handle(endpoint);
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_allocReadChannel_3_nrt,
-                                                               index, free_buf, endpoint));
+                                                             bufnum, free_buf, endpoint));
 }
 
-void b_allocReadChannel_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endpoint)
+void b_allocReadChannel_3_nrt(uint32_t bufnum, sample * free_buf, nova_endpoint const & endpoint)
 {
     free_aligned(free_buf);
-    send_done_message(endpoint, "/b_allocReadChannel", index);
+    send_done_message(endpoint, "/b_allocReadChannel", bufnum);
 }
 
 
@@ -2047,7 +2079,7 @@ void handle_b_allocReadChannel(received_message const & msg, nova_endpoint const
 {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
 
-    osc::int32 index = arg->AsInt32(); arg++;
+    osc::int32 bufnum = arg->AsInt32(); arg++;
     const char * filename = arg->AsString(); arg++;
 
     osc::int32 start = arg->AsInt32(); arg++;
@@ -2058,8 +2090,8 @@ void handle_b_allocReadChannel(received_message const & msg, nova_endpoint const
     size_t channel_count = 0;
     sized_array<uint, rt_pool_allocator<uint> > channels(channel_args);
 
-    for (uint i = 0; i != channel_args - 1; ++i) // sclang formats the last completion message as int, so we skip the last element
-    {
+    // sclang formats the last completion message as int, so we skip the last element
+    for (uint i = 0; i != channel_args - 1; ++i)  {
         if (arg->IsInt32()) {
             channels[i] = arg->AsInt32Unchecked(); arg++;
             ++channel_count;
@@ -2073,21 +2105,25 @@ void handle_b_allocReadChannel(received_message const & msg, nova_endpoint const
     movable_string fname(filename);
 
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_allocReadChannel_1_nrt<realtime>,
-                                                           index, fname, start, frames, channel_mapping,
+                                                           bufnum, fname, start, frames, channel_mapping,
                                                            message, endpoint));
 }
 
 const char * b_write = "/b_write";
 
 template <bool realtime>
-void b_write_nrt_1(uint32_t index, movable_string const & filename, movable_string const & header_format,
+void b_write_nrt_1(uint32_t bufnum, movable_string const & filename, movable_string const & header_format,
                    movable_string const & sample_format, uint32_t start, uint32_t frames, bool leave_open,
                    completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
-    sc_factory->buffer_write(index, filename.c_str(), header_format.c_str(), sample_format.c_str(), start, frames, leave_open);
-    msg.trigger_async(endpoint);
-    cmd_dispatcher<realtime>::fire_done_message(endpoint, b_write, index);
+    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
+    try {
+        sc_factory->buffer_write(bufnum, filename.c_str(), header_format.c_str(), sample_format.c_str(), start, frames, leave_open);
+        msg.trigger_async(endpoint);
+        cmd_dispatcher<realtime>::fire_done_message(endpoint, b_write, bufnum);
+    } catch (std::exception const & error) {
+        report_failure(endpoint, error, b_write, bufnum);
+    }
 }
 
 void fire_b_write_exception(void)
@@ -2102,7 +2138,7 @@ void handle_b_write(received_message const & msg, nova_endpoint const & endpoint
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
     /* required args */
-    osc::int32 index = arg->AsInt32(); arg++;
+    osc::int32 bufnum = arg->AsInt32(); arg++;
     const char * filename = arg->AsString(); arg++;
     const char * header_format = arg->AsString(); arg++;
     const char * sample_format = arg->AsString(); arg++;
@@ -2118,24 +2154,21 @@ void handle_b_write(received_message const & msg, nova_endpoint const & endpoint
         if (!arg->IsInt32())
             fire_b_write_exception();
         frames = arg->AsInt32Unchecked(); arg++;
-    }
-    else
+    } else
         goto fire_callback;
 
     if (arg != end) {
         if (!arg->IsInt32())
             fire_b_write_exception();
         start = arg->AsInt32Unchecked(); arg++;
-    }
-    else
+    } else
         goto fire_callback;
 
     if (arg != end) {
         if (!arg->IsInt32())
             fire_b_write_exception();
         leave_open = arg->AsInt32Unchecked(); arg++;
-    }
-    else
+    } else
         goto fire_callback;
 
     if (arg != end)
@@ -2146,23 +2179,30 @@ fire_callback:
     movable_string header_f(header_format);
     movable_string sample_f(sample_format);
 
-    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_write_nrt_1<realtime>, index, fname, header_f, sample_f,
-                                               start, frames, bool(leave_open), message, endpoint));
+    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_write_nrt_1<realtime>, bufnum, fname, header_f, sample_f,
+                                                             start, frames, bool(leave_open), message, endpoint));
 }
 
-template <bool realtime>
-void b_read_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint);
-
-template <bool realtime>
-void b_read_nrt_1(uint32_t index, movable_string & filename, uint32_t start_file, uint32_t frames,
-                  uint32_t start_buffer, bool leave_open, completion_message & msg, nova_endpoint const & endpoint)
-{
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
-    sc_factory->buffer_read(index, filename.c_str(), start_file, frames, start_buffer, leave_open);
-    cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_read_rt_2<realtime>, index, msg, endpoint));
-}
 
 const char * b_read = "/b_read";
+
+template <bool realtime>
+void b_read_rt_2(uint32_t bufnum, completion_message & msg, nova_endpoint const & endpoint);
+
+template <bool realtime>
+void b_read_nrt_1(uint32_t bufnum, movable_string & filename, uint32_t start_file, uint32_t frames,
+                  uint32_t start_buffer, bool leave_open, completion_message & msg, nova_endpoint const & endpoint)
+{
+    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
+
+    try {
+        sc_factory->buffer_read(bufnum, filename.c_str(), start_file, frames, start_buffer, leave_open);
+        cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_read_rt_2<realtime>, bufnum, msg, endpoint));
+    } catch (std::exception const & error) {
+        report_failure(endpoint, error, b_read, bufnum);
+    }
+}
+
 template <bool realtime>
 void b_read_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
 {
@@ -2183,7 +2223,7 @@ void handle_b_read(received_message const & msg, nova_endpoint const & endpoint)
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
 
     /* required args */
-    osc::int32 index = arg->AsInt32(); arg++;
+    osc::int32 bufnum = arg->AsInt32(); arg++;
     const char * filename = arg->AsString(); arg++;
 
     /* optional args */
@@ -2198,32 +2238,28 @@ void handle_b_read(received_message const & msg, nova_endpoint const & endpoint)
         if (!arg->IsInt32())
             fire_b_read_exception();
         start_file = arg->AsInt32Unchecked(); arg++;
-    }
-    else
+    } else
         goto fire_callback;
 
     if (arg != end) {
         if (!arg->IsInt32())
             fire_b_read_exception();
         frames = arg->AsInt32Unchecked(); arg++;
-    }
-    else
+    } else
         goto fire_callback;
 
     if (arg != end) {
         if (!arg->IsInt32())
             fire_b_read_exception();
         start_buffer = arg->AsInt32Unchecked(); arg++;
-    }
-    else
+    } else
         goto fire_callback;
 
     if (arg != end) {
         if (!arg->IsInt32())
             fire_b_read_exception();
         leave_open = arg->AsInt32Unchecked(); arg++;
-    }
-    else
+    } else
         goto fire_callback;
 
     if (arg != end)
@@ -2232,26 +2268,30 @@ void handle_b_read(received_message const & msg, nova_endpoint const & endpoint)
 fire_callback:
     movable_string fname(filename);
 
-    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_read_nrt_1<realtime>, index, fname,
-                                                               start_file, frames, start_buffer,
-                                                               bool(leave_open), message, endpoint));
+    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_read_nrt_1<realtime>, bufnum, fname,
+                                                             start_file, frames, start_buffer,
+                                                             bool(leave_open), message, endpoint));
 }
 
+const char * b_readChannel = "/b_readChannel";
 
 template <bool realtime>
 void b_readChannel_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint);
 
 template <bool realtime>
-void b_readChannel_nrt_1(uint32_t index, movable_string & filename, uint32_t start_file, uint32_t frames,
+void b_readChannel_nrt_1(uint32_t bufnum, movable_string & filename, uint32_t start_file, uint32_t frames,
                          uint32_t start_buffer, bool leave_open, movable_array<uint32_t> & channel_map,
                          completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_factory->buffer_read_channel(index, filename.c_str(), start_file, frames, start_buffer, leave_open,
-                                     channel_map.size(), channel_map.data());
-    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_readChannel_rt_2<realtime>, index, msg, endpoint));
+    try {
+        sc_factory->buffer_read_channel(bufnum, filename.c_str(), start_file, frames, start_buffer, leave_open,
+                                        channel_map.size(), channel_map.data());
+        cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_readChannel_rt_2<realtime>, bufnum, msg, endpoint));
+    } catch (std::exception const & error) {
+        report_failure(endpoint, error, b_readChannel, bufnum);
+    }
 }
 
-const char * b_readChannel = "/b_readChannel";
 template <bool realtime>
 void b_readChannel_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
 {
