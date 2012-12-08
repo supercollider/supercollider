@@ -48,12 +48,12 @@ public:
 public:
 
   static void setGlobalEventEnabled ( GlobalEvent ev, bool b ) {
-    int mask = _globalEventMask;
+    int mask = _globalEventMask.loadAcquire();
     if(b)
       mask |= ev;
     else
       mask &= ~ev;
-    _globalEventMask = mask;
+    _globalEventMask.storeRelease( mask );
   }
 
 public:
