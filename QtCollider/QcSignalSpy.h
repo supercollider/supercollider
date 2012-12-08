@@ -138,9 +138,9 @@ protected:
   virtual void react( QList<QVariant> & args ) {
 
     qcDebugMsg( 1, QString("SIGNAL: '%1' handled by method '%2'")
-                  .arg( _proxy->object() ?
-                        _proxy->object()->metaObject()->method( _sigId ).signature() :
-                        "unknown" )
+                  .arg( _proxy->object()
+                        ? QString (_proxy->object()->metaObject()->method(_sigId).methodSignature())
+                        : QString ("unknown") )
                   .arg(_handler->name)
               );
 
@@ -165,9 +165,9 @@ protected:
   virtual void react( QList<QVariant> & args ) {
 
     qcDebugMsg( 1, QString("SIGNAL: '%1' handled by a Function")
-                  .arg( _proxy->object() ?
-                        _proxy->object()->metaObject()->method( _sigId ).signature() :
-                        "unknown" )
+                .arg( _proxy->object()
+                      ? QString(_proxy->object()->metaObject()->method(_sigId).methodSignature())
+                      : QString("unknown") )
               );
 
     args.prepend( QVariant::fromValue( _handler ) );
