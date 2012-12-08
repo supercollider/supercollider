@@ -31,6 +31,7 @@
 #include <QFontMetrics>
 #include <QUrl>
 #include <QMimeData>
+#include <QDrag>
 
 #ifdef Q_WS_X11
 # include "hacks/hacks_x11.hpp"
