@@ -992,14 +992,15 @@ bool MainWindow::save( Document *doc, bool forceChoose )
         }else{
             QString fp = doc->filePath();
             if(fp.endsWith(".scd"))
-                dialog.setFilter(filters[0]);
+                dialog.setNameFilter(filters[0]);
             else if(fp.endsWith(".sc"))
-                dialog.setFilter(filters[1]);
+                dialog.setNameFilter(filters[1]);
             else if(fp.endsWith(".schelp"))
-                dialog.setFilter(filters[2]);
+                dialog.setNameFilter(filters[2]);
             else
-                dialog.setFilter(filters[3]);
+                dialog.setNameFilter(filters[3]);
             dialog.selectFile(fp);
+
         }
 
         if (dialog.exec() == QDialog::Accepted)
