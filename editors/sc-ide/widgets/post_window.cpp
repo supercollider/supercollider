@@ -34,6 +34,7 @@
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QTextDocumentFragment>
+#include <QMimeData>
 
 namespace ScIDE {
 
