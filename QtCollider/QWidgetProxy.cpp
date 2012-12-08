@@ -254,14 +254,16 @@ bool QWidgetProxy::preProcessEvent( QObject *o, QEvent *e, EventHandlerData &eh,
 
   switch( eh.type ) {
 
-    case QEvent::KeyPress:
-      return ((_globalEventMask & KeyPress) || eh.enabled)
+    case QEvent::KeyPress: {
+      int eventMask = _globalEventMask.loadAcquire();
+      return ((eventMask & KeyPress) || eh.enabled)
         && interpretKeyEvent( o, e, args );
-
-    case QEvent::KeyRelease:
-      return ((_globalEventMask & KeyRelease) || eh.enabled)
+    }
+    case QEvent::KeyRelease: {
+      int eventMask = _globalEventMask.loadAcquire();
+      return ((eventMask & KeyRelease) || eh.enabled)
         && interpretKeyEvent( o, e, args );
-
+    }
     case QEvent::MouseButtonPress:
     case QEvent::MouseMove:
     case QEvent::MouseButtonRelease:
