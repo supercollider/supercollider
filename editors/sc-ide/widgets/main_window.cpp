@@ -57,6 +57,7 @@
 #include <QStatusBar>
 #include <QVBoxLayout>
 #include <QUrl>
+#include <QMimeData>
 #include <QMetaMethod>
 
 namespace ScIDE {
