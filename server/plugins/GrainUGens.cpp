@@ -1081,12 +1081,10 @@ void GrainFM_Dtor(GrainFM *unit)
 
 static inline bool GrainBuf_grain_cleanup(GrainBuf * unit, GrainBufG * grain)
 {
-	if (grain->counter <= 0)
-	{
+	if (grain->counter <= 0) {
 		*grain = unit->mGrains[--unit->mNumActive]; // remove grain
 		return true;
-	}
-	else
+	} else
 		return false;
 }
 
@@ -1172,16 +1170,16 @@ static inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int
 	float bufRateScale = bufSampleRate * SAMPLEDUR;
 	double loopMax = (double)bufFrames;
 
-	double counter = grain_in_at<full_rate>(unit, 1, position) * SAMPLERATE;
-	counter = sc_max(4., counter);
-	grain->counter = (int)counter;
-
 	double rate = grain->rate = grain_in_at<full_rate>(unit, 3, position) * bufRateScale;
 	double phase = grain_in_at<full_rate>(unit, 4, position) * bufFrames;
 	if (sc_isnan(phase)) {
 		GrainBuf_grain_cleanup(unit, grain);
 		return;
 	}
+
+	double counter = grain_in_at<full_rate>(unit, 1, position) * SAMPLERATE;
+	counter = sc_max(4., counter);
+	grain->counter = (int)counter;
 
 	grain->interp = (int)grain_in_at<full_rate>(unit, 5, position);
 	grain->winType = winType;
