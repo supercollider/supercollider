@@ -204,19 +204,15 @@ public:
         return value.data.hash;
     }
 
-    friend bool operator== (c_string const & lhs,
-                            c_string const & rhs)
+    friend bool operator== (c_string const & lhs, c_string const & rhs)
     {
         return lhs.data == rhs.data;
     }
 
-    friend bool operator< (c_string const & lhs,
-                            c_string const & rhs)
+    friend bool operator< (c_string const & lhs, c_string const & rhs)
     {
         return lhs.data.str < rhs.data.str;
     }
-
-
 
     symbol_data data;
 };
@@ -254,8 +250,7 @@ public:
         return name_.data.hash;
     }
 
-    friend bool operator== (named_hash_entry const & a,
-                            named_hash_entry const & b)
+    friend bool operator== (named_hash_entry const & a, named_hash_entry const & b)
     {
         return a.name_ == b.name_;
     }
@@ -278,8 +273,7 @@ struct named_hash_equal
     }
 
     template<typename def>
-    bool operator()(def const & lhs,
-                    c_string const & rhs) const
+    bool operator()(def const & lhs, c_string const & rhs) const
     {
         return operator()(lhs.name(), rhs.c_str());
     }

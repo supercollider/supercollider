@@ -33,20 +33,17 @@ using namespace std;
 void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> && defs)
 {
     std::vector<sc_synthdef> synthdefs(std::move(defs));
-    for (typename std::vector<sc_synthdef>::iterator it = synthdefs.begin();
-         it != synthdefs.end(); ++it) {
-        sc_synth_definition * sp = new sc_synth_definition(std::move(*it));
+    for (sc_synthdef & def : synthdefs) {
+        sc_synth_definition * sp = new sc_synth_definition(std::move(def));
         factory.register_definition(sp);
     }
 }
-
 
 std::vector<sc_synthdef> sc_read_synthdefs_file(path const & file)
 {
     try {
         return read_synthdef_file(file.string());
-    }
-    catch(std::exception & e)
+    } catch(std::exception const & e)
     {
         cout << "Exception when parsing synthdef: " << e.what() << endl;
         return std::vector<sc_synthdef>();
