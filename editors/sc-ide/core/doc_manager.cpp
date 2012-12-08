@@ -36,7 +36,7 @@
 using namespace ScIDE;
 
 Document::Document( bool isPlainText ):
-    mId( QUuid::createUuid().toString().toAscii() ),
+    mId( QUuid::createUuid().toString().toLatin1() ),
     mDoc( new QTextDocument(this) ),
     mTitle( tr("Untitled") ),
     mIndentWidth(4),
