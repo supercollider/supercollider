@@ -57,13 +57,13 @@ public:
     deref();
   }
 
-  T * operator-> () const { return d->ptr; }
+  T * operator-> () const { return d->ptr.load(); }
 
-  T & operator* () const { return *d->ptr; }
+  T & operator* () const { return *d->ptr.load(); }
 
-  operator T* () const { return (d ? d->ptr : 0); }
+  operator T* () const { return (d ? d->ptr.load() : 0); }
 
-  T *ptr() const { return (d ? d->ptr : 0); }
+  T *ptr() const { return (d ? d->ptr.load() : 0); }
 
   void *id() const { return (void*) d; } // useful for checking internal pointer identity
 
