@@ -156,7 +156,7 @@ void SyntaxHighlighter::highlightBlockInCode(ScLexer & lexer)
         {
             Token token(tokenType, tokenPosition, tokenLength);
             if (token.length == 1)
-                token.character = lexer.text()[tokenPosition].toAscii();
+                token.character = lexer.text()[tokenPosition].toLatin1();
             blockData->tokens.push_back( token );
         }
 
