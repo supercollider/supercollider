@@ -178,7 +178,6 @@ include(../SCDoc/CMakeLists.txt)
 list(APPEND sclang_sources ${SCDOC_SRCS})
 
 if(SC_IDE)
-	add_definitions(-DSC_IDE)
 	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
 endif()
 
@@ -282,6 +281,13 @@ target_link_libraries(libsclang ${PTHREADS_LIBRARY} ${YAMLCPP_LIBRARY})
 
 if(SC_QT)
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
+endif()
+
+if(SC_IDE)
+	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
+	find_package( Qt4 4.7 REQUIRED QtCore QtNetwork )
+	include( ${QT_USE_FILE} )
+	target_link_libraries( libsclang ${QT_LIBRARIES} )
 endif()
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp)
