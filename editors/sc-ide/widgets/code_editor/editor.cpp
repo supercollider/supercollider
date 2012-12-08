@@ -34,6 +34,7 @@
 #include <QTextBlock>
 #include <QTextDocumentFragment>
 #include <QUrl>
+#include <QMimeData>
 #include <QScrollBar>
 
 namespace ScIDE {
