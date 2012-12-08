@@ -26,7 +26,7 @@
 #include "style/style.hpp"
 #include "metatype.hpp"
 
-#include <QPlastiqueStyle>
+#include <QStyleFactory>
 #include <QTimer>
 #include <QEventLoop>
 #include <QDir>
@@ -76,7 +76,8 @@ void QtCollider::init() {
 
     qcApp->setQuitOnLastWindowClosed( false );
 
-    qcApp->setStyle( new QtCollider::Style::StyleImpl( new QPlastiqueStyle ) );
+    QStyle *baseStyle = QStyleFactory::create("fusion");
+    qcApp->setStyle( new QtCollider::Style::StyleImpl( baseStyle ) );
 
     gSystemPalette = qcApp->palette();
 
