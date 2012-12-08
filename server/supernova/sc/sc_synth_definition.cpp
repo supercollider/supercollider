@@ -17,6 +17,7 @@
 //  Boston, MA 02111-1307, USA.
 
 #include <iostream>
+#include <future>
 
 #include <boost/filesystem/operations.hpp>
 
@@ -53,20 +54,33 @@ std::vector<sc_synthdef> sc_read_synthdefs_file(path const & file)
 std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
 {
     using namespace boost::filesystem;
-    std::vector<sc_synthdef> ret;
+    using namespace std;
+
+    typedef vector<sc_synthdef> def_vector;
+    def_vector ret;
 
     if (!exists(dir))
         return ret;
 
-    directory_iterator end;
-    for (directory_iterator it(dir); it != end; ++it) {
-        std::vector<sc_synthdef> to_append;
-        if (is_directory(it->status()))
-            to_append = sc_read_synthdefs_dir(it->path());
-        else
-            to_append = sc_read_synthdefs_file(it->path());
-        ret.insert(ret.end(), to_append.begin(), to_append.end());
+    // FIXME: some kind of threadpool would be nice!
+    auto launch_policy = thread::hardware_concurrency() > 1 ? launch::async
+                                                            : launch::deferred;
+
+    vector<future<def_vector> > futures;
+
+    recursive_directory_iterator end;
+    for (recursive_directory_iterator it(dir); it != end; ++it) {
+        if (!is_directory(it->status())) {
+            auto path_name = it->path();
+            futures.emplace_back( std::move(async(launch_policy, [=]() { return sc_read_synthdefs_file(path_name);} )) );
+        }
     }
+
+    for (future<def_vector> & synthdef_future : futures) {
+        for (sc_synthdef & definition : synthdef_future.get())
+            ret.emplace_back(std::move(definition));
+    }
+
     return ret;
 }
 
