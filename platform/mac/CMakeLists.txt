@@ -219,7 +219,7 @@ else()
 endif()
 
 if(SC_QT)
-	target_link_libraries(${scappbundlename} ${QT_COLLIDER_LIBS})
+	qtcollider_prepare_target( ${scappbundlename} )
 endif()
 
 # for processing into the plist:

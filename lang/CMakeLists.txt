@@ -280,7 +280,7 @@ endif()
 target_link_libraries(libsclang ${PTHREADS_LIBRARY} ${YAMLCPP_LIBRARY})
 
 if(SC_QT)
-	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
+	qtcollider_prepare_target( libsclang )
 endif()
 
 if(SC_IDE)
