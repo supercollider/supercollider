@@ -29,7 +29,7 @@ static QAtomicInt& debugLevelInt() {
 }
 
 int QtCollider::debugLevel() {
-  int l = debugLevelInt();
+  int l = debugLevelInt().loadAcquire();
   return l;
 }
 

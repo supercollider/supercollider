@@ -79,13 +79,13 @@ private:
   void ref() {
     if( d ) {
       d->refCount.ref();
-      qcDebugMsg(2,QString("SafePtr: +refcount = %1").arg(d->refCount));
+      qcDebugMsg(2,QString("SafePtr: +refcount = %1").arg(d->refCount.loadAcquire()));
     }
   }
   void deref() {
     if( d ) {
       bool ref = d->refCount.deref();
-      qcDebugMsg(2,QString("SafePtr: -refcount = %1").arg(d->refCount));
+      qcDebugMsg(2,QString("SafePtr: -refcount = %1").arg(d->refCount.loadAcquire()));
       if( !ref ) {
         qcDebugMsg(2,"SafePtr: unreferenced!");
         delete d;
