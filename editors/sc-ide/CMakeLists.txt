@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 2.8 )
 
-find_package(Qt4 4.7 REQUIRED QtCore QtGui QtWebKit)
+find_package(Qt4 4.7 REQUIRED QtCore QtGui QtWebKit QtNetwork)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
