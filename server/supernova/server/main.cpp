@@ -229,6 +229,12 @@ void load_synthdef_folder(nova_server & server, path const & folder, bool verbos
 
 void load_synthdefs(nova_server & server, server_arguments const & args)
 {
+    using namespace std;
+
+#ifndef NDEBUG
+    auto start_time = chrono::high_resolution_clock::now();
+#endif
+
 #ifndef _WIN32
     const char pathSeparator[] = ":";
 #else
@@ -254,7 +260,11 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
             load_synthdef_folder(server, directory, args.verbosity > 0);
     }
 #ifndef NDEBUG
-    cout << "SynthDefs loaded" << endl;
+    auto end_time = chrono::high_resolution_clock::now();
+    cout << "SynthDefs loaded in "
+         << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count()
+         << " ms"
+         << endl;
 #endif
 }
 
