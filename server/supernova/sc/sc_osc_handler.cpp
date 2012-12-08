@@ -389,6 +389,7 @@ const char * sc_notify_observers::error_string(error_code error)
 
     default:
         assert(false);
+        return "";
     }
 }
 
@@ -1602,7 +1603,7 @@ void handle_n_order(received_message const & msg)
 
         abstract_group * node_parent = node->get_parent();
 
-        /** \todo this can be optimized if node_parent == target_parent */
+        /** TODO: this can be optimized if node_parent == target_parent */
         node_parent->remove_child(node);
         if (action == before ||
             action == after)
@@ -2874,7 +2875,7 @@ void d_load_nrt(movable_string & path, completion_message & msg, nova_endpoint c
 {
     size_t count;
     sc_synth_definition_ptr * definitions;
-    /* todo: we need to implment some file name pattern matching */
+    /* TODO: we need to implment some file name pattern matching */
     boost::tie(definitions, count) = wrap_synthdefs(sc_read_synthdefs_file(path.c_str()));
 
     cmd_dispatcher<realtime>::fire_rt_callback(std::bind(d_load_rt2<realtime>, definitions, count, msg, endpoint));
