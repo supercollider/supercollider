@@ -154,7 +154,7 @@ sc_synthdef::unit_spec_t::unit_spec_t(const char *& buffer, int version)
 {
     const int short_int_size = (version == 1) ? 16 : 32;
 
-    name = read_pstring(buffer);
+    name = symbol(read_pstring(buffer));
     rate = read_int8(buffer);
     int32_t input_count = read_int(buffer, short_int_size);
     int32_t output_count = read_int(buffer, short_int_size);
@@ -184,7 +184,7 @@ void sc_synthdef::read_synthdef(const char *& ptr, int version)
     const int short_int_size = (version == 1) ? 16 : 32;
 
     /* read name */
-    name_ = read_pstring(ptr);
+    name_ = symbol(read_pstring(ptr));
 
     /* read constants */
     int32_t constant_count = read_int(ptr, short_int_size);
@@ -206,7 +206,7 @@ void sc_synthdef::read_synthdef(const char *& ptr, int version)
     int32_t parameter_names_count = read_int(ptr, short_int_size);
 
     for (int i = 0; i != parameter_names_count; ++i) {
-        string data = read_pstring(ptr);
+        symbol data = symbol(read_pstring(ptr));
         int32_t index = read_int(ptr, short_int_size);
 
         parameter_map[data] = index;

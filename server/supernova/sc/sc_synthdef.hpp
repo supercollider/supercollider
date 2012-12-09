@@ -36,14 +36,13 @@ namespace nova {
 
 class sc_synthdef
 {
-    typedef c_string string;
     typedef std::vector<float, aligned_allocator<float> > fvector;
-    typedef std::vector<c_string, aligned_allocator<string> > svector;
+    typedef std::vector<symbol, aligned_allocator<symbol> > svector;
 
     typedef std::vector<char, aligned_allocator<char> > char_vector;
 
 public:
-    typedef std::map<string, int32_t, std::less<string>, aligned_allocator<string> > parameter_map_t;
+    typedef std::map<symbol, int32_t, std::less<symbol>, aligned_allocator<symbol> > parameter_map_t;
 
     struct input_spec
     {
@@ -69,7 +68,7 @@ public:
     {
         explicit unit_spec_t(const char *& buffer, int version);
 
-        unit_spec_t(string const & name, int16_t rate, int16_t special_index,
+        unit_spec_t(symbol const & name, int16_t rate, int16_t special_index,
                     input_spec_vector const & in_specs,
                     char_vector const & out_specs):
             name(name), rate(rate), special_index(special_index),
@@ -85,7 +84,7 @@ public:
         unit_spec_t(unit_spec_t const & rhs) = default;
         unit_spec_t & operator=(unit_spec_t const & rhs) = default;
 
-        string name;
+        symbol name;
         int16_t rate;           /* 0: scalar rate, 1: buffer rate, 2: full rate, 3: demand rate */
         int16_t special_index;
 
@@ -124,7 +123,7 @@ public:
 
     std::string dump(void) const;
 
-    string const & name(void) const
+    symbol const & name(void) const
     {
         return name_;
     }
@@ -156,7 +155,7 @@ private:
     /** assign buffers, collect memory requirement & cache ugen prototype */
     void prepare(void);
 
-    string name_;
+    symbol name_;
     fvector constants;
     fvector parameters;
     parameter_map_t parameter_map;
