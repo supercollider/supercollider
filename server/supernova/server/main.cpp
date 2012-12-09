@@ -55,7 +55,7 @@ void terminate(int i)
     instance->terminate();
 }
 
-void register_handles(void)
+void register_signal_handler(void)
 {
     void (*prev_fn)(int);
 
@@ -185,20 +185,18 @@ boost::filesystem::path resolve_home(void)
 #endif
 }
 
-void set_plugin_paths(void)
+void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * factory)
 {
-    server_arguments const & args = server_arguments::instance();
-
     if (!args.ugen_paths.empty()) {
         for(string const & path : args.ugen_paths)
-            sc_factory->load_plugin_folder(path);
+            factory->load_plugin_folder(path);
     } else {
 #ifdef __linux__
         path home = resolve_home();
-        sc_factory->load_plugin_folder("/usr/local/lib/SuperCollider/plugins");
-        sc_factory->load_plugin_folder("/usr/lib/SuperCollider/plugins");
-        sc_factory->load_plugin_folder(home / "/.local/share/SuperCollider/plugins");
-        sc_factory->load_plugin_folder(home / "share/SuperCollider/plugins");
+        factory->load_plugin_folder("/usr/local/lib/SuperCollider/plugins");
+        factory->load_plugin_folder("/usr/lib/SuperCollider/plugins");
+        factory->load_plugin_folder(home / "/.local/share/SuperCollider/plugins");
+        factory->load_plugin_folder(home / "share/SuperCollider/plugins");
 #else
         char plugin_dir[MAXPATHLEN];
         sc_GetResourceDirectory(plugin_dir, MAXPATHLEN);
@@ -207,10 +205,10 @@ void set_plugin_paths(void)
         char extension_dir[MAXPATHLEN];
 
         sc_GetSystemExtensionDirectory(extension_dir, MAXPATHLEN);
-        sc_factory->load_plugin_folder(path(extension_dir) / "plugins");
+        factory->load_plugin_folder(path(extension_dir) / "plugins");
 
         sc_GetUserExtensionDirectory(extension_dir, MAXPATHLEN);
-        sc_factory->load_plugin_folder(path(extension_dir) / "plugins");
+        factory->load_plugin_folder(path(extension_dir) / "plugins");
 #endif
     }
 
@@ -283,6 +281,33 @@ void enable_core_dumps(void)
 #endif
 }
 
+void lock_memory(server_arguments const & args)
+{
+#if (_POSIX_MEMLOCK - 0) >=  200112L
+    if (args.memory_locking) {
+        bool lock_memory = false;
+
+        rlimit limit;
+
+        int failure = getrlimit(RLIMIT_MEMLOCK, &limit);
+        if (failure)
+            printf("getrlimit failure\n");
+        else {
+            if (limit.rlim_cur == RLIM_INFINITY and
+                limit.rlim_max == RLIM_INFINITY)
+                lock_memory = true;
+            else
+                printf("memory locking disabled due to resource limiting\n");
+
+            if (lock_memory) {
+                if (mlockall(MCL_FUTURE) != -1)
+                    printf("memory locking enabled.\n");
+            }
+        }
+    }
+#endif
+}
+
 } /* namespace */
 
 int main(int argc, char * argv[])
@@ -293,35 +318,8 @@ int main(int argc, char * argv[])
     server_arguments::initialize(argc, argv);
     server_arguments const & args = server_arguments::instance();
 
-#if (_POSIX_MEMLOCK - 0) >=  200112L
-    if (args.memory_locking)
-    {
-        bool lock_memory = false;
-
-        rlimit limit;
-
-        int failure = getrlimit(RLIMIT_MEMLOCK, &limit);
-        if (failure)
-            printf("getrlimit failure\n");
-        else
-        {
-            if (limit.rlim_cur == RLIM_INFINITY and
-                limit.rlim_max == RLIM_INFINITY)
-                lock_memory = true;
-            else
-                printf("memory locking disabled due to resource limiting\n");
-
-            if (lock_memory)
-            {
-                if (mlockall(MCL_FUTURE) != -1)
-                    printf("memory locking enabled.\n");
-            }
-        }
-    }
-#endif
-
-
     rt_pool.init(args.rt_pool_size * 1024, args.memory_locking);
+    lock_memory(args);
 
     cout << "Supernova booting" << endl;
 #ifndef NDEBUG
@@ -330,9 +328,9 @@ int main(int argc, char * argv[])
 
     server_shared_memory_creator::cleanup(args.port());
     nova_server server(args);
-    register_handles();
+    register_signal_handler();
 
-    set_plugin_paths();
+    set_plugin_paths(args, sc_factory);
     load_synthdefs(server, args);
 
     if (!args.non_rt) {
