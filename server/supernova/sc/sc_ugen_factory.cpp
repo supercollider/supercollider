@@ -156,7 +156,7 @@ void sc_plugin_container::register_bufgen(const char * name, BufGenFunc func)
     bufgen_set.insert(*def);
 }
 
-sc_ugen_def * sc_plugin_container::find_ugen(c_string const & name)
+sc_ugen_def * sc_plugin_container::find_ugen(symbol const & name)
 {
     ugen_set_type::iterator it = ugen_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == ugen_set.end()) {
@@ -169,7 +169,7 @@ sc_ugen_def * sc_plugin_container::find_ugen(c_string const & name)
 bool sc_plugin_container::register_ugen_command_function(const char * ugen_name, const char * cmd_name,
                                                      UnitCmdFunc func)
 {
-    sc_ugen_def * def = find_ugen(c_string(ugen_name));
+    sc_ugen_def * def = find_ugen(symbol(ugen_name));
     if (def)
         return false;
     return def->add_command(cmd_name, func);
