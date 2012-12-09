@@ -293,6 +293,7 @@ public:
 
         sc_factory->initialize_synths();
         scheduler<scheduler_hook, thread_init_functor>::operator()();
+        sc_factory->update_nodegraph();
     }
 
     void rebuild_dsp_queue(void);
@@ -321,8 +322,6 @@ inline void run_scheduler_tick(void)
         sc_factory->world.mAudioBusTouched[output_channels + channel] = buf_counter;
 
     (*instance)();
-
-    sc_factory->update_nodegraph();
 
     /* wipe all untouched output buffers */
     for (int channel = 0; channel != output_channels; ++channel) {

@@ -54,18 +54,25 @@ public:
     void add_done_node(server_node * node)
     {
         spin_lock::scoped_lock lock(cmd_lock);
+        if (std::find(done_nodes.begin(), done_nodes.end(), node) != done_nodes.end())
+            return;
+
         done_nodes.push_back(node);
     }
 
     void add_freeDeep_node(abstract_group * node)
     {
         spin_lock::scoped_lock lock(cmd_lock);
+        if (std::find(freeDeep_nodes.begin(), freeDeep_nodes.end(), node) != freeDeep_nodes.end())
+            return;
         freeDeep_nodes.push_back(node);
     }
 
     void add_freeAll_node(abstract_group * node)
     {
         spin_lock::scoped_lock lock(cmd_lock);
+        if (std::find(freeAll_nodes.begin(), freeAll_nodes.end(), node) != freeAll_nodes.end())
+            return;
         freeAll_nodes.push_back(node);
     }
 
