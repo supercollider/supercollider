@@ -15,7 +15,7 @@ struct test_synth_definition:
     public synth_definition
 {
     test_synth_definition(void):
-        synth_definition(c_string("foo"))
+        synth_definition(symbol("foo"))
     {}
 
     abstract_synth * create_instance(int node_id)
