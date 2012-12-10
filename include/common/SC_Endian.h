@@ -35,9 +35,9 @@
 
 # include <machine/endian.h>
 
-#elif defined(__FreeBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__)
 
-# include <machine/endian.h>
+# include <sys/types.h>
 # include <netinet/in.h>
 
 #elif defined(_WIN32)
