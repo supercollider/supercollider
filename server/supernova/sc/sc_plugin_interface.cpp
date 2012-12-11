@@ -974,13 +974,14 @@ int sc_plugin_interface::buffer_write(uint32_t index, const char * filename, con
     return 0;
 }
 
-static void buffer_read_verify(SndfileHandle & sf, size_t min_length, size_t samplerate)
+static void buffer_read_verify(SndfileHandle & sf, size_t min_length, size_t samplerate, bool check_samplerate)
 {
     if (sf.rawHandle() == nullptr)
         throw std::runtime_error(sf.strError());
     if (sf.frames() < min_length)
         throw std::runtime_error("no more frames to read");
-    if (sf.samplerate() != samplerate)
+
+    if (check_samplerate && (sf.samplerate() != samplerate))
         throw std::runtime_error("sample rate mismatch");
 }
 
@@ -993,7 +994,7 @@ void sc_plugin_interface::buffer_read(uint32_t index, const char * filename, uin
         throw std::runtime_error("buffer already full");
 
     SndfileHandle sf(filename, SFM_READ);
-    buffer_read_verify(sf, start_file, buf->samplerate);
+    buffer_read_verify(sf, start_file, buf->samplerate, !leave_open);
 
     if (sf.channels() != buf->channels)
         throw std::runtime_error("channel count mismatch");
@@ -1022,7 +1023,7 @@ void sc_plugin_interface::buffer_read_channel(uint32_t index, const char * filen
         throw std::runtime_error("buffer already full");
 
     SndfileHandle sf(filename, SFM_READ);
-    buffer_read_verify(sf, start_file, buf->samplerate);
+    buffer_read_verify(sf, start_file, buf->samplerate, !leave_open);
 
     uint32_t sf_channels = uint32_t(sf.channels());
     const uint32_t * max_chan = std::max_element(channel_data, channel_data + channel_count);
