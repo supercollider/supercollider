@@ -186,9 +186,6 @@ argument:: mdPlugin
 (optional) The metadata plug-in class that will be used to persist metadata. If not supplied, the default plug-in is used. See the SynthDesc help file for details.
 
 
-method:: memStore
-This method has been deprecated, use add instead.
-
 method:: play
 A convenience method which compiles the def and sends it to target's server. When this asynchronous command is completed, it create one synth from this definition, using the argument values specified in the Array args.  For a list of valid addActions see link::Classes/Synth::. The default is \addToHead.
 Returns:: a corresponding Synth object.
