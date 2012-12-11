@@ -1513,14 +1513,17 @@ void handle_n_before_or_after(received_message const & msg)
         osc::int32 node_a, node_b;
         args >> node_a >> node_b;
 
-        server_node * a = find_node(node_a);
-        if (!a) continue;
+        server_node * node = find_node(node_a);
+        if (!node) continue;
 
-        server_node * b = find_node(node_b);
-        if (!b) continue;
+        server_node * target_node = find_node(node_b);
+        if (!target_node) continue;
 
-        abstract_group::move_before_or_after<Relation>(a, b);
+        abstract_group::move_before_or_after<Relation>(node, target_node);
+        instance->notification_node_moved(node);
     }
+
+    instance->update_dsp_queue();
 }
 
 
@@ -1541,7 +1544,9 @@ void handle_g_head_or_tail(received_message const & msg)
         if (!target_group) continue;
 
         abstract_group::move_to_head_or_tail<Position>(node, target_group);
+        instance->notification_node_moved(node);
     }
+    instance->update_dsp_queue();
 }
 
 
@@ -1582,8 +1587,7 @@ void handle_n_order(received_message const & msg)
         return;
 
     abstract_group * target_parent;
-    if (action == before ||
-        action == after)
+    if (action == before || action == after)
         target_parent = target->get_parent();
     else {
         if (target->is_synth())
@@ -1591,8 +1595,7 @@ void handle_n_order(received_message const & msg)
         target_parent = static_cast<abstract_group*>(target);
     }
 
-    while (!args.Eos())
-    {
+    while (!args.Eos()) {
         osc::int32 node_id;
         args >> node_id;
 
@@ -1609,6 +1612,8 @@ void handle_n_order(received_message const & msg)
             target_parent->add_child(node, make_pair(target, node_position(action)));
         else
             target_parent->add_child(node, node_position(action));
+
+        instance->notification_node_moved(node);
     }
     instance->update_dsp_queue();
 }
