@@ -33,6 +33,10 @@ Slew.scopeResponse
 			};
 		};
 
+		if (server.serverRunning.not) {
+			Error("Function-scopeResponse: server not running").throw
+		};
+
 		// Create two private busses
 		bus1 = Bus.audio(server, 1);
 		bus2 = Bus.audio(server, 1);
