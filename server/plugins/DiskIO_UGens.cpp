@@ -174,14 +174,14 @@ void* disk_io_thread_func(void* arg)
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
-	float **out = &OUT(offset);
+	float *const * const out = &OUT(offset);
 
 #define SETUP_IN(offset) \
 	if (unit->mNumInputs - (uint32)offset != bufChannels) { \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
-	float **in = &IN(offset);
+	const float *const * const in = &IN(offset);
 
 void DiskIn_Ctor(DiskIn* unit)
 {
@@ -210,21 +210,20 @@ void DiskIn_next(DiskIn *unit, int inNumSamples)
 	// buffer must be allocated as a multiple of 2*blocksize.
 	if (bufChannels > 2) {
 		for (int j=0; j<inNumSamples; ++j) {
-			for (uint32 i=0; i<bufChannels; ++i) {
-				*out[i]++ = *bufData++;
-			}
+			for (uint32 i=0; i<bufChannels; ++i)
+				out[i][j] = *bufData++;
 		}
 	} else if (bufChannels == 2) {
 		float *out0 = out[0];
 		float *out1 = out[1];
 		for (int j=0; j<inNumSamples; ++j) {
-			*out0++ = *bufData++;
-			*out1++ = *bufData++;
+			out0[j] = *bufData++;
+			out1[j] = *bufData++;
 		}
 	} else {
 		float *out0 = out[0];
 		for (int j=0; j<inNumSamples; ++j) {
-			*out0++ = *bufData++;
+			out0[j] = *bufData++;
 		}
 	}
 	if(unit->m_buf->mask1>=0 && unit->m_framepos>=unit->m_buf->mask1) unit->mDone = true;
@@ -299,31 +298,30 @@ void DiskOut_next(DiskOut *unit, int inNumSamples)
 
 //	printf("Start frames %i %i\n", unit->m_framewritten, framew );
 
-	if (unit->m_framepos >= bufFrames) {
+	if (unit->m_framepos >= bufFrames)
 		unit->m_framepos = 0;
-	}
 
 	bufData += unit->m_framepos * bufChannels;
 
 	if (bufChannels > 2) {
 		for (int j=0; j<inNumSamples; ++j) {
-			for (uint32 i=0; i<bufChannels; ++i) {
-				*bufData++ = *in[i]++;
-			}
+			for (uint32 i=0; i<bufChannels; ++i)
+				*bufData++ = in[i][j];
+
 			out[j] = framew++;
 		}
 	} else if (bufChannels == 2) {
-		float *in0 = in[0];
-		float *in1 = in[1];
+		const float *in0 = in[0];
+		const float *in1 = in[1];
 		for (int j=0; j<inNumSamples; ++j) {
-			*bufData++ = *in0++;
-			*bufData++ = *in1++;
+			*bufData++ = in0[j];
+			*bufData++ = in1[j];
 			out[j] = framew++;
 		}
 	} else {
-		float *in0 = in[0];
+		const float *in0 = in[0];
 		for (int j=0; j<inNumSamples; ++j) {
-			*bufData++ = *in0++;
+			*bufData++ = in0[j];
 			out[j] = framew++;
 		}
 	}
