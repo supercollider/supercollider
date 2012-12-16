@@ -32,8 +32,6 @@
 
 static InterfaceTable *ft;
 
-const int kMAXDISKCHANNELS = 32;
-
 enum {
 	diskinIdle,
 	diskinStartingEmpty,
@@ -170,23 +168,19 @@ void* disk_io_thread_func(void* arg)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define MAXCHANNELS 32
-
 #define SETUP_OUT(offset) \
 	if (unit->mNumOutputs != bufChannels) { \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
-	float *out[MAXCHANNELS]; \
-	for (uint32 i=0; i<bufChannels; ++i) out[i] = OUT(i+offset);
+	float **out = &OUT(offset);
 
 #define SETUP_IN(offset) \
 	if (unit->mNumInputs - (uint32)offset != bufChannels) { \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
-	float *in[MAXCHANNELS]; \
-	for (uint32 i=0; i<bufChannels; ++i) in[i] = IN(i+offset);
+	float **in = &IN(offset);
 
 void DiskIn_Ctor(DiskIn* unit)
 {
