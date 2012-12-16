@@ -364,150 +364,62 @@ void VDiskIn_Ctor(VDiskIn* unit)
 	unit->m_pchRatio = sc_max(IN0(1), 0.f);
 	unit->m_count = 0;
 
-	SETCALC(VDiskIn_first); // should be first
+	SETCALC(VDiskIn_first);
+}
+
+static void VDiskIn_request_buffer(VDiskIn * unit, float fbufnum, uint32 bufFrames2,
+								   uint32 bufChannels, double bufPos)
+{
+	if (unit->m_buf->mask>=0) unit->m_buf->mask1 = unit->m_buf->mask;
+	unit->m_count++;
+	if(unit->mWorld->mRealTime) {
+		DiskIOMsg msg;
+		msg.mWorld = unit->mWorld;
+		msg.mCommand = (int)ZIN0(2) ? kDiskCmd_ReadLoop : kDiskCmd_Read;
+		msg.mBufNum = (int)fbufnum;
+		uint32 thisPos;
+		if((uint32)bufPos >= bufFrames2) thisPos = 0; else thisPos = bufFrames2;
+		msg.mPos = thisPos;
+		msg.mFrames = bufFrames2;
+		msg.mChannels = bufChannels;
+		gDiskFifo.Write(msg);
+		gDiskFifoHasData.Signal();
+
+		if((int)ZIN0(3)) {
+			//	float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
+			float outval = bufPos + (float)(unit->m_count * bufFrames2);
+			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(3), "/diskin", 1, &outval);
+		}
+	} else {
+		SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int) fbufnum);
+		uint32 mPos;
+		if((uint32)bufPos >= bufFrames2) mPos = 0; else mPos = bufFrames2;
+		if (mPos > (uint32)bufr->frames || mPos + bufFrames2 > (uint32)bufr->frames || (uint32) bufr->channels != bufChannels) return;
+		sf_count_t count;
+
+		if ((int)ZIN0(2)) { // loop
+			if (!bufr->sndfile) memset(bufr->data + mPos * bufr->channels, 0, bufFrames2 * bufr->channels * sizeof(float));
+			count = sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2);
+			while (bufFrames2 -= count) {
+				sf_seek(bufr->sndfile, 0, SEEK_SET);
+				count = sf_readf_float(bufr->sndfile, bufr->data + (mPos + count) * bufr->channels, bufFrames2);
+			}
+		} else { // non-loop
+			count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
+			if (count < bufFrames2) {
+				memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
+				unit->m_buf->mask = mPos + count;
+			}
+		}
+	}
 }
 
 // first time through, the FIRST sample doesn't need the interpolation... the buffer won't be filled 'correctly' for
 // interpolation, so use the _first function to make this exception
-
-void VDiskIn_first(VDiskIn *unit, int inNumSamples)
+template <bool First>
+static inline void VDiskIn_next_(VDiskIn *unit, int inNumSamples)
 {
-
-	SETCALC(VDiskIn_next);
-
-	float a, b, c, d, oldBufPos;
 	bool test = false;
-
-	GET_BUF_SHARED
-
-	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
-		unit->m_framePos = 0.;
-		unit->m_count = 0;
-		ClearUnitOutputs(unit, inNumSamples);
-		return;
-	}
-
-	uint32 bufFrames2 = bufFrames >> 1;
-	float fbufFrames2 = (float)bufFrames2;
-	float fbufFrames = (float)bufFrames;
-	unit->m_rBufSize = 1. / bufFrames;
-
-	SETUP_OUT(0)
-
-	float framePos = unit->m_framePos;
-	float bufPos = unit->m_bufPos; // where we are in the DiskIn buffer
-	float newPchRatio = sc_max(IN0(1), 0.f);
-
-	if ((newPchRatio * inNumSamples * unit->m_rBufSize) >= 0.5) {
-		printf("pitch ratio is greater then max allowed (see VDiskIn help)\n");
-		ClearUnitOutputs(unit, inNumSamples);
-		SETCALC(VDiskIn_first);
-		return;
-	}
-
-	float pchRatio = unit->m_pchRatio;
-	float pchSlope = CALCSLOPE(newPchRatio, pchRatio);
-
-	for (uint32 i = 0; i < bufChannels; i++){
-	    out[i][0] = bufData[0 + i];
-	}
-
-	pchRatio += pchSlope;
-	framePos += pchRatio;
-	bufPos += pchRatio;
-
-	for (int j = 1; j < inNumSamples; j++){
-		uint32 iBufPos = (uint32)bufPos;
-		float frac = bufPos - (float)iBufPos;
-		int table1 = iBufPos * bufChannels;
-		int table0 = table1 - bufChannels;
-		int table2 = table1 + bufChannels;
-		int table3 = table2 + bufChannels;
-		while(table1 >= bufSamples) table1 -= bufSamples;
-		while(table0 < 0) table0 += bufSamples;
-		while(table2 >= bufSamples) table2 -= bufSamples;
-		while(table3 >= bufSamples) table3 -= bufSamples;
-		for (int i = 0; i < bufChannels; i++){
-			a = bufData[table0 + i];
-			b = bufData[table1 + i];
-			c = bufData[table2 + i];
-			d = bufData[table3 + i];
-			out[i][j] = cubicinterp(frac, a, b, c, d);
-		}
-		pchRatio += pchSlope;
-		framePos += pchRatio;
-		oldBufPos = bufPos;
-		bufPos += pchRatio;
-		// the +1 is needed for the cubic interpolation... make SURE the old data isn't needed any more before
-		// setting up the new buffer
-		if ((oldBufPos < (fbufFrames2 + 1)) && ((bufPos >= (fbufFrames2 + 1)))){
-			test = true;
-		}
-		if (bufPos >= (fbufFrames + 1)){
-			test = true;
-			bufPos -= fbufFrames;
-		}
-	}
-	if (unit->m_buf->mask1>=0 && bufPos>=unit->m_buf->mask1) unit->mDone = true;
-	if ( test ){
-		if (unit->m_buf->mask>=0) unit->m_buf->mask1 = unit->m_buf->mask;
-		unit->m_count++;
-		if(unit->mWorld->mRealTime) {
-			test = false;
-			DiskIOMsg msg;
-			msg.mWorld = unit->mWorld;
-			msg.mCommand = (int)ZIN0(2) ? kDiskCmd_ReadLoop : kDiskCmd_Read;
-			msg.mBufNum = (int)fbufnum;
-			uint32 thisPos;
-			if((uint32)bufPos >= bufFrames2) thisPos = 0; else thisPos = bufFrames2;
-			msg.mPos = thisPos;
-			msg.mFrames = bufFrames2;
-			msg.mChannels = bufChannels;
-			gDiskFifo.Write(msg);
-			gDiskFifoHasData.Signal();
-
-
-			if((int)ZIN0(3)) {
-			//	float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
-				float outval = bufPos + (float)(unit->m_count * bufFrames2);
-				SendNodeReply(&unit->mParent->mNode, (int)ZIN0(3), "/diskin", 1, &outval);
-			}
-
-		} else {
-			SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int) fbufnum);
-			uint32 mPos;
-			if((uint32)bufPos >= bufFrames2) mPos = 0; else mPos = bufFrames2;
-			if (mPos > (uint32)bufr->frames || mPos + bufFrames2 > (uint32)bufr->frames || (uint32) bufr->channels != bufChannels) return;
-			sf_count_t count;
-
-			if ((int)ZIN0(2)) { // loop
-				if (!bufr->sndfile) memset(bufr->data + mPos * bufr->channels, 0, bufFrames2 * bufr->channels * sizeof(float));
-				count = sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2);
-				while (bufFrames2 -= count) {
-					sf_seek(bufr->sndfile, 0, SEEK_SET);
-					count = sf_readf_float(bufr->sndfile, bufr->data + (mPos + count) * bufr->channels, bufFrames2);
-				}
-			} else { // non-loop
-				count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
-				if (count < bufFrames2) {
-					memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
-					unit->m_buf->mask = mPos + count;
-				}
-			}
-
-		}
-	}
-
-	unit->m_framePos = framePos;
-	unit->m_pchRatio = pchRatio;
-	unit->m_bufPos = bufPos;
-}
-
-void VDiskIn_next(VDiskIn *unit, int inNumSamples)
-{
-	float a, b, c, d;
-	bool test = false;
-	double oldBufPos;
 
 	GET_BUF_SHARED
 	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
@@ -517,7 +429,9 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 		return;
 	}
 
-	SETUP_OUT(0)
+	SETUP_OUT(0);
+	if (First)
+		unit->m_rBufSize = 1. / bufFrames;
 
 	double framePos = unit->m_framePos;
 	double bufPos = unit->m_bufPos; // where we are in the DiskIn buffer
@@ -534,7 +448,14 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 	double fbufFrames2 = (double)bufFrames2;
 	double fbufFrames = (double)bufFrames;
 
-	for (int j = 0; j < inNumSamples; ++j){
+	if (First) {
+		for (uint32 i = 0; i < bufChannels; i++)
+			out[i][0] = bufData[0 + i];
+	}
+
+	const int startSample = First ? 1 : 0;
+
+	for (int j = startSample; j < inNumSamples; ++j){
 		int32 iBufPos = (int32)bufPos;
 		double frac = bufPos - (double)iBufPos;
 		int table1 = iBufPos * bufChannels;
@@ -546,6 +467,7 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 		while(table2 >= bufSamples) table2 -= bufSamples;
 		while(table3 >= bufSamples) table3 -= bufSamples;
 		for (uint32 i = 0; i < bufChannels; i++){
+			float a, b, c, d;
 			a = bufData[table0 + i];
 			b = bufData[table1 + i];
 			c = bufData[table2 + i];
@@ -554,9 +476,11 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 		};
 		pchRatio += pchSlope;
 		framePos += pchRatio;
-		oldBufPos = bufPos;
+		const double oldBufPos = bufPos;
 		bufPos += pchRatio;
 
+		// the +1 is needed for the cubic interpolation... make SURE the old data isn't needed any more before
+		// setting up the new buffer
 		if ((oldBufPos < (fbufFrames2 + 1)) && ((bufPos >= (fbufFrames2 + 1)))){
 			test = true;
 		}
@@ -566,61 +490,25 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 		}
 	}
 	if (unit->m_buf->mask1>=0 && bufPos>=unit->m_buf->mask1) unit->mDone = true;
-	if ( test ){
-		if (unit->m_buf->mask>=0) unit->m_buf->mask1 = unit->m_buf->mask;
-		unit->m_count++;
-		if(unit->mWorld->mRealTime){
-				test = false;
-				DiskIOMsg msg;
-				msg.mWorld = unit->mWorld;
-				msg.mCommand = (int)ZIN0(2) ? kDiskCmd_ReadLoop : kDiskCmd_Read;
-				msg.mBufNum = (int)fbufnum;
-				uint32 thisPos;
-				if((uint32)bufPos >= bufFrames2) thisPos = 0; else thisPos = bufFrames2;
-				msg.mPos = thisPos;
-				msg.mFrames = bufFrames2;
-				msg.mChannels = bufChannels;
-				gDiskFifo.Write(msg);
-				gDiskFifoHasData.Signal();
-
-				if((int)ZIN0(3)) {
-
-					// float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
-					float outval = bufPos + (float)(unit->m_count * bufFrames2);
-					SendNodeReply(&unit->mParent->mNode, (int)ZIN0(3), "/diskin", 1, &outval);
-				}
-
-		} else {
-			SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int)fbufnum);
-			uint32 mPos;
-			if((uint32)bufPos >= bufFrames2) mPos = 0; else mPos = bufFrames2;
-			if (mPos > (uint32)bufr->frames || mPos + bufFrames2 > (uint32)bufr->frames || (uint32) bufr->channels != bufChannels) return;
-			sf_count_t count;
-
-			if ((int)ZIN0(2)) { // loop
-				if (!bufr->sndfile) memset(bufr->data + mPos * bufr->channels, 0, bufFrames2 * bufr->channels * sizeof(float));
-					count = sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2);
-				while (bufFrames2 -= count) {
-					sf_seek(bufr->sndfile, 0, SEEK_SET);
-					count = sf_readf_float(bufr->sndfile, bufr->data + (mPos + count) * bufr->channels, bufFrames2);
-				}
-			} else { // non-loop
-				count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
-				if (count < bufFrames2) {
-					memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
-					unit->m_buf->mask = mPos + count;
-				}
-			}
-
-		}
-	}
-
-
+	if ( test )
+		VDiskIn_request_buffer(unit, fbufnum, bufFrames2, bufChannels, bufPos);
 
 	unit->m_framePos = framePos;
 	unit->m_pchRatio = pchRatio;
 	unit->m_bufPos = bufPos;
 
+	if (First)
+		SETCALC(VDiskIn_next);
+}
+
+void VDiskIn_first(VDiskIn *unit, int inNumSamples)
+{
+	VDiskIn_next_<true>(unit, inNumSamples);
+}
+
+void VDiskIn_next(VDiskIn *unit, int inNumSamples)
+{
+	VDiskIn_next_<false>(unit, inNumSamples);
 }
 
 
