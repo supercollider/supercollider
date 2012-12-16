@@ -68,6 +68,7 @@ struct VDiskIn : public Unit
 	double m_framePos, m_bufPos;
 	uint32 m_count;
 	SndBuf *m_buf;
+	uint32 m_iFramePos, m_iBufPos;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,6 +84,7 @@ extern "C"
 
 	void VDiskIn_next(VDiskIn *unit, int inNumSamples);
 	void VDiskIn_first(VDiskIn *unit, int inNumSamples);
+	void VDiskIn_next_rate1(VDiskIn *unit, int inNumSamples);
 	void VDiskIn_Ctor(VDiskIn* unit);
 }
 
@@ -363,8 +365,13 @@ void VDiskIn_Ctor(VDiskIn* unit)
 	unit->m_bufPos = 0.;
 	unit->m_pchRatio = sc_max(IN0(1), 0.f);
 	unit->m_count = 0;
+	unit->m_iFramePos = 0;
+	unit->m_iBufPos = 0;
 
-	SETCALC(VDiskIn_first);
+	if (INRATE(1) == calc_ScalarRate && (unit->m_pchRatio == 1))
+		SETCALC(VDiskIn_next_rate1);
+	else
+		SETCALC(VDiskIn_first);
 }
 
 static void VDiskIn_request_buffer(VDiskIn * unit, float fbufnum, uint32 bufFrames2,
@@ -453,9 +460,9 @@ static inline void VDiskIn_next_(VDiskIn *unit, int inNumSamples)
 			out[i][0] = bufData[0 + i];
 	}
 
-	const int startSample = First ? 1 : 0;
+	const int firstLoopSample = First ? 1 : 0;
 
-	for (int j = startSample; j < inNumSamples; ++j){
+	for (int j = firstLoopSample; j < inNumSamples; ++j){
 		int32 iBufPos = (int32)bufPos;
 		double frac = bufPos - (double)iBufPos;
 		int table1 = iBufPos * bufChannels;
@@ -509,6 +516,51 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 {
 	VDiskIn_next_<false>(unit, inNumSamples);
+}
+
+void VDiskIn_next_rate1(VDiskIn *unit, int inNumSamples)
+{
+	bool test = false;
+
+	GET_BUF_SHARED
+	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
+		unit->m_iFramePos = 0.;
+		unit->m_count = 0;
+		ClearUnitOutputs(unit, inNumSamples);
+		return;
+	}
+
+	SETUP_OUT(0)
+
+	uint32 framePos = unit->m_iFramePos;
+	uint32 bufPos = unit->m_iBufPos;
+
+	uint32 bufFrames2 = bufFrames >> 1;
+
+	for (int sample = 0; sample < inNumSamples; ++sample) {
+		int bufferIndex = bufPos * bufChannels;
+
+		for (uint32 channel = 0; channel < bufChannels; channel++)
+			out[channel][sample] = bufData[bufferIndex + channel];
+
+		const uint32 oldBufPos = bufPos;
+		bufPos += 1;
+		framePos += 1;
+
+		if ((oldBufPos < bufFrames2) && (bufPos >= bufFrames2))
+			test = true;
+
+		if (bufPos >= bufFrames) {
+			test = true;
+			bufPos -= bufFrames;
+		}
+	}
+	if (unit->m_buf->mask1>=0 && bufPos>=unit->m_buf->mask1) unit->mDone = true;
+	if ( test )
+		VDiskIn_request_buffer(unit, fbufnum, bufFrames2, bufChannels, bufPos);
+
+	unit->m_iFramePos = framePos;
+	unit->m_iBufPos   = bufPos;
 }
 
 
