@@ -10,8 +10,8 @@ QStethoscope2 {
       idxNumBox, chNumBox, styleMenu, rateMenu;
 
   // static (immutable runtime environment)
-  var <server;
-  var scopeBuffer, maxBufSize;
+  var <server, synth;
+  var maxBufSize;
   var aBusSpec, cBusSpec, cycleSpec, yZoomSpec;
   var <>smallSize, <>largeSize;
 
@@ -19,9 +19,7 @@ QStethoscope2 {
   var <bus; // partly immutable; can't change numChannels at runtime
   var busSpec; // either aBusSpec or cBusSpec, depending on bus rate
   var  <cycle, <yZoom;
-  var synth, synthWatcher, defName;
   var sizeToggle=false;
-  var running = false;
 
   *implementsClass {^'Stethoscope'}
 
@@ -63,6 +61,7 @@ QStethoscope2 {
     var singleBus;
 
     server = server_;
+    synth = BusScopeSynth(server);
 
     maxBufSize = max(bufsize_, 128);
 
@@ -153,7 +152,7 @@ QStethoscope2 {
       chNumBox.action = { |me| setNumChannels.value(me.value) };
       rateMenu.action = { |me| setRate.value(me.value) };
       styleMenu.action = { |me| setStyle.value(me.value) };
-      view.asView.keyDownAction = { |v, char| this.keyDown(char) };
+      view.asView.keyDownAction = { |v, char, mod| this.keyDown(char, mod) };
       view.onClose = { view = nil; this.quit; };
 
       // LAUNCH
@@ -164,7 +163,7 @@ QStethoscope2 {
 
     setCycle = { arg val;
       cycle = val;
-      if( synth.notNil ) { synth.set(\frames, val) }
+      synth.setCycle(val);
     };
 
     setYZoom = { arg val;
@@ -175,14 +174,14 @@ QStethoscope2 {
     // NOTE: assuming a single Bus
     setIndex = { arg i;
       bus = Bus(bus.rate, i, bus.numChannels, bus.server);
-      if(synth.notNil) { synth.set(\in, i) };
+      synth.setBusIndex(i);
     };
 
     // NOTE: assuming a single Bus
     setNumChannels = { arg n;
       // we have to restart the whole thing:
-      this.stop;
       bus = Bus(bus.rate, bus.index, n, bus.server);
+      updateColors.value;
       this.run;
     };
 
@@ -192,14 +191,13 @@ QStethoscope2 {
         0, {
           bus = Bus(\audio, bus.index, bus.numChannels, bus.server);
           busSpec = aBusSpec;
-          if(synth.notNil) { synth.set(\switch, 0) };
         },
         1, {
           bus = Bus(\control, bus.index, bus.numChannels, bus.server);
           busSpec = cBusSpec;
-          if(synth.notNil) { synth.set(\switch, 1) };
         }
       );
+      synth.setRate(val);
       idxNumBox.clipLo_(busSpec.minval).clipHi_(busSpec.maxval).value_(bus.index);
       this.index = bus.index; // ensure conformance with busSpec;
       updateColors.value;
@@ -221,153 +219,90 @@ QStethoscope2 {
       scopeView.waveColors = colors;
     };
 
-    playSynthDef = { arg def, args;
-      if( synthWatcher.notNil ) {synthWatcher.stop};
-      synthWatcher = fork {
-        def.send(server);
-        server.sync;
-        synth = Synth.tail(RootNode(server), def.name, args);
-        CmdPeriod.add(this);
-        {if(view.notNil){updateColors.value; scopeView.start}}.defer;
-      };
-    };
-
     makeGui.value(parent);
+    updateColors.value;
 
-    ServerBoot.add(this, server);
+    ServerTree.add(this, server);
     ServerQuit.add(this, server);
     this.run;
   }
 
-  doOnServerBoot {
-      this.run;
+  doOnServerTree {
+    this.run;
   }
 
   doOnServerQuit {
-      this.stop;
-      scopeBuffer.free;
-      scopeBuffer = nil;
-  }
-
-  cmdPeriod {
-    synth = nil;
     this.stop;
-    CmdPeriod.remove(this);
   }
 
   run {
-    var n_chan;
-
-    if(running || server.serverRunning.not) {^this};
-
-    if(scopeBuffer.isNil){
-      scopeBuffer = ScopeBuffer.alloc(server);
-      scopeView.bufnum = scopeBuffer.index;
-      defName = "stethoscope" ++ scopeBuffer.index.asString;
+    synth.play(maxBufSize, bus, cycle);
+    if( view.notNil && synth.bufferIndex.notNil) {
+      scopeView.bufnum = synth.bufferIndex;
+      scopeView.start;
     };
-
-    n_chan = this.numChannels.asInteger;
-
-    if( bus.class === Bus ) {
-      playSynthDef.value (
-        SynthDef(defName, { arg in, switch, frames;
-          var z;
-          z = Select.ar(switch, [
-            In.ar(in, n_chan),
-            K2A.ar(In.kr(in, n_chan))]
-          );
-          ScopeOut2.ar(z, scopeBuffer.index, maxBufSize, frames );
-        }),
-        [\in, bus.index, \switch, if('audio' === bus.rate){0}{1}, \frames, cycle]
-      )
-    }{
-      playSynthDef.value (
-        SynthDef(defName, { arg frames;
-          var z = Array(n_chan);
-          bus.do { |b| z = z ++ b.ar };
-          ScopeOut2.ar(z, scopeBuffer.index, maxBufSize, frames);
-        }),
-        [\frames, cycle]
-      );
-    };
-
-    running = true;
   }
 
   stop {
     if( view.notNil ) { {scopeView.stop}.defer };
-
-    if( synthWatcher.notNil ) { synthWatcher.stop };
-
-    if( synth.notNil ) {
-      synth.free;
-      synth = nil;
-    };
-
-    running = false;
+    synth.stop;
   }
 
   quit {
     var win;
     this.stop;
-    ServerBoot.remove(this, server);
-    ServerQuit.remove(this, server);
-    CmdPeriod.remove(this);
-    if(scopeBuffer.notNil) {scopeBuffer.free; scopeBuffer=nil};
+    synth.free;
     if(window.notNil) { win = window; window = nil; { win.close }.defer; };
+    ServerTree.remove(this, server);
+    ServerQuit.remove(this, server);
   }
 
   setProperties { arg numChannels, index, bufsize, zoom, rate;
-      var new_bus;
-      var isRunning = running;
+    var new_bus;
 
-      if (isRunning) {this.stop};
+    // process args
 
-      // process args
-
-      if(index.notNil || numChannels.notNil || rate.notNil) {
-        bus = if(bus.class === Bus) {
-            Bus (
-              rate ? bus.rate,
-              index ? bus.index,
-              numChannels ? bus.numChannels,
-              server
-            )
-        }{
-            Bus (
-              rate ? \audio,
-              index ? 0,
-              numChannels ? 2,
-              server
-            )
-        };
+    if(index.notNil || numChannels.notNil || rate.notNil) {
+      bus = if(bus.class === Bus) {
+        Bus (
+          rate ? bus.rate,
+          index ? bus.index,
+          numChannels ? bus.numChannels,
+          server
+        )
+      }{
+        Bus (
+          rate ? \audio,
+          index ? 0,
+          numChannels ? 2,
+          server
+        )
       };
-      if(bufsize.notNil) { maxBufSize = max(bufsize, 128) };
+    };
+    if(bufsize.notNil) { maxBufSize = max(bufsize, 128) };
 
-      // set other vars related to args
+    // set other vars related to args
 
-      busSpec = if(bus.rate === \audio) {aBusSpec} {cBusSpec};
-      cycleSpec = ControlSpec( maxBufSize, 64, \exponential );
-      if(zoom.notNil)
-        { cycle = cycleSpec.constrain( 1024 * zoom.asFloat.reciprocal ) };
+    busSpec = if(bus.rate === \audio) {aBusSpec} {cBusSpec};
+    cycleSpec = ControlSpec( maxBufSize, 64, \exponential );
+    if(zoom.notNil)
+    { cycle = cycleSpec.constrain( 1024 * zoom.asFloat.reciprocal ) };
 
-      // update GUI
+    // update GUI
 
-      cycleSlider.value = cycleSpec.unmap(cycle);
-      rateMenu.value_(if(bus.rate === \audio){0}{1}).enabled_(true);
-      idxNumBox.clipLo_(busSpec.minval).clipHi_(busSpec.maxval).value_(bus.index).enabled_(true);
-      chNumBox.value_(bus.numChannels).enabled_(true);
+    cycleSlider.value = cycleSpec.unmap(cycle);
+    rateMenu.value_(if(bus.rate === \audio){0}{1}).enabled_(true);
+    idxNumBox.clipLo_(busSpec.minval).clipHi_(busSpec.maxval).value_(bus.index).enabled_(true);
+    chNumBox.value_(bus.numChannels).enabled_(true);
+    updateColors.value;
 
-      if (isRunning) {this.run};
+    if (synth.isRunning) { synth.play(maxBufSize, bus, cycle) };
   }
 
   bufsize { ^maxBufSize }
 
   bus_ { arg b;
     var isSingle = b.class === Bus;
-    var isRunning = running;
-
-    if (isRunning) {this.stop};
 
     bus = b;
 
@@ -386,7 +321,9 @@ QStethoscope2 {
     idxNumBox.enabled = isSingle;
     chNumBox.enabled = isSingle;
 
-    if (isRunning) {this.run};
+    updateColors.value;
+
+    if (synth.isRunning) { synth.play(maxBufSize, bus, cycle); };
   }
 
   numChannels {
@@ -483,7 +420,8 @@ QStethoscope2 {
     this.bus = Bus(\audio, 0, c, server);
   }
 
-  keyDown { arg char;
+  keyDown { arg char, mod;
+    if (mod != 0) { ^false };
     case (
       { char === $i }, { this.toInputBus },
       { char === $o }, { this.toOutputBus },
@@ -502,5 +440,115 @@ QStethoscope2 {
       { ^false }
     );
     ^true;
+  }
+}
+
+BusScopeSynth {
+  // Encapsulate management of server resources
+
+  var server, buffer, synthDefName, synth;
+  var playThread, playCond;
+
+  *new { arg server;
+    var instance;
+    server = server ? Server.default;
+    instance = super.newCopyArgs(server);
+    ServerQuit.add(instance);
+    ^instance;
+  }
+
+  play { arg bufSize, bus, cycle;
+    var synthDef;
+    var synthArgs;
+    var bufIndex;
+    var busChannels;
+
+    if(server.serverRunning.not) { ^this };
+
+    this.stop;
+
+    if (buffer.isNil) {
+      buffer = ScopeBuffer.alloc(server);
+      synthDefName = "stethoscope" ++ buffer.index.asString;
+    };
+
+    bufIndex = buffer.index.asInteger;
+
+    if( bus.class === Bus ) {
+      busChannels = bus.numChannels.asInteger;
+      synthDef = SynthDef(synthDefName, { arg busIndex, rate, cycle;
+        var z;
+        z = Select.ar(rate, [
+          In.ar(busIndex, busChannels),
+          K2A.ar(In.kr(busIndex, busChannels))]
+        );
+        ScopeOut2.ar(z, bufIndex, bufSize, cycle );
+      });
+      synthArgs = [\busIndex, bus.index.asInteger, \rate, if('audio' === bus.rate, 0, 1), \cycle, cycle];
+    }{
+      synthDef = SynthDef(synthDefName, { arg cycle;
+        var z = Array();
+        bus.do { |b| z = z ++ b.ar };
+        ScopeOut2.ar(z, bufIndex, bufSize, cycle);
+      });
+      synthArgs =	[\cycle, cycle];
+    };
+
+    playThread = fork {
+      var cond;
+      //("BufScopeSynth: waiting on previous synth...").postln;
+      if (playCond.notNil) { playCond.wait };
+      //postln("BufScopeSynth: got way.");
+      synthDef.send(server);
+      server.sync;
+      //postln("BufScopeSynth: synthdef sent.");
+      synth = Synth.tail(RootNode(server), synthDef.name, synthArgs);
+      //postln("BufScopeSynth: made synth:" + synth.nodeID);
+      playCond = cond = Condition();
+      synth.onFree { |thisSynth|
+        //postln("BufScopeSynth: Synth freed:" + thisSynth.nodeID);
+        cond.test = true; cond.signal;
+        if (synth.notNil and: {synth.nodeID == thisSynth.nodeID}) { synth = nil; }
+      }
+    }
+  }
+
+  stop {
+    if (playThread.notNil) { playThread.stop; playThread = nil };
+    if (synth.notNil) {
+      synth.free; synth = nil
+    };
+  }
+
+  isRunning { ^playThread.notNil }
+
+	bufferIndex { ^ buffer !? { buffer.index } }
+
+  setBusIndex { arg index;
+    if( synth.notNil ) { synth.set(\busIndex, index) };
+  }
+
+  setRate { arg rate; // 0 = audio, 1 = control
+    if( synth.notNil ) { synth.set(\rate, rate) };
+
+  }
+
+  setCycle { arg frames;
+    if( synth.notNil ) { synth.set(\cycle, frames) };
+  }
+
+  free {
+    this.stop;
+    if (buffer.notNil) {
+      buffer.free;
+      buffer = nil;
+    };
+    ServerQuit.remove(this, server);
+  }
+
+  doOnServerQuit {
+    buffer = nil;
+    synth = nil;
+    playCond = nil;
   }
 }
