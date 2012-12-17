@@ -243,6 +243,8 @@ ContiguousBlockAllocator {
 	free { |address|
 		var	block,
 			prev, next, temp;
+		// this 'if' prevents an error if a Buffer object is freed twice
+		if(address.isNil) { ^this };
 		((block = array[address]).notNil and: { block.used }).if({
 			block.used = false;
 			this.addToFreed(block);
