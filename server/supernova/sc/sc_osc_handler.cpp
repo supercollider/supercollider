@@ -2829,7 +2829,7 @@ void d_recv_nrt(movable_array<char> & def, completion_message & msg, nova_endpoi
 {
     size_t count;
     sc_synth_definition_ptr * definitions;
-    std::vector<sc_synthdef> synthdefs (read_synthdefs(def.data()));
+    std::vector<sc_synthdef> synthdefs (read_synthdefs(def.data(), def.data() + def.size()));
 
     boost::tie(definitions, count) = wrap_synthdefs(std::move(synthdefs));
 
