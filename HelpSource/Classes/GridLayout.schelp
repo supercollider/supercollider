@@ -49,7 +49,7 @@ METHOD:: rows
 
     You can make an item span more than one cell by wrapping it into an Array, followed by pairs of (\rows, number) and/or (\columns, number). You can also assign an alignment to an item by following it with a pair of (\align, alignment). \rows, \columns, and \align can be abbreviated with \r, \c, and \a, respectively.
 
-    The simplified syntax for placing key-value pairs into an array comes handy (see link::Reference/Syntax-Shortcuts#creating_arrays_with_key-value_pairs::, and the example below).
+    The simplified syntax for placing key-value pairs into an array comes handy (see link::Reference/Syntax-Shortcuts#Creating Arrays with key-value pairs::, and the example below).
 
     Example:
 Code::

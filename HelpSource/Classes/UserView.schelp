@@ -13,7 +13,7 @@ To define how the view is drawn you set the link::#-drawFunc:: variable to a lin
 
 This class offers convenient mechanisms for creating animations, that is, to automatically redraw itself in regular time intervals. See the link::#animation#Animation:: section of this document.
 
-For a guide to using this view, see the link::Guides/GUI-Introduction.html#custom_views#Custom Views:: section of the 'Introduction to GUI'. For a tutorial on how to write a emphasis::subclass:: of UserView to make your own custom view classes, see the link::Guides/UserView-Subclassing:: guide.
+For a guide to using this view, see link::Guides/GUI-Introduction#Custom views::. For a tutorial on how to write a emphasis::subclass:: of UserView to make your own custom view classes, see the link::Guides/UserView-Subclassing:: guide.
 
 
 
@@ -109,13 +109,13 @@ METHOD:: frame
 
 SUBSECTION:: Actions
 
-	The UserView by itself does not respond to any interaction by the user. You can define the modes of interaction entirely on your own using mouse and keyboard actions. See link::Guides/GUI-Introduction#actions_and_hooks:_make_that_button_do_something!#Actions and Hooks:: section of the 'Introduction to GUI' for detailed explanation.
+	The UserView by itself does not respond to any interaction by the user. You can define the modes of interaction entirely on your own using mouse and keyboard actions. See link::Guides/GUI-Introduction#Actions and hooks: make that button do something!#Actions and Hooks:: for detailed explanation.
 
 	Note that there is no default mode of interaction with the UserView, so link::Classes/View#-action:: will never be triggered, if you don't implement that yourself.
 
 EXAMPLES::
 
-'Introduction to GUI' contains an link::Guides/GUI-Introduction#custom_views#example:: with elaborate explanation on how to use UserView. Below are further examples.
+'Introduction to GUI' contains an link::Guides/GUI-Introduction#Custom views#example:: with elaborate explanation on how to use UserView. Below are further examples.
 
 For a tutorial on how to write a emphasis::subclass:: of UserView to make your own custom view classes, see the link::Guides/UserView-Subclassing:: guide.
 
@@ -171,7 +171,7 @@ w.refresh;
 
 SUBSECTION:: Responding to mouse clicks and movement
 
-Using the link:: Classes/View#mouse_actions#mouse actions :: you can make UserView change the way it is drawn in response to mouse interaction. The sequence of examples below will guide you through the various possibilities.
+Using link::Classes/View#Mouse actions#mouse actions:: you can make UserView change the way it is drawn in response to mouse interaction. The sequence of examples below will guide you through the various possibilities.
 
 Clicking and moving the mouse on each of the painted squares in the following example will redraw them differently. See interpreter output for posted information that you can use in the mouse actions.
 

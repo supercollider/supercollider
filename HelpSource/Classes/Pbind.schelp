@@ -8,7 +8,7 @@ description::
 Pbind combines several value streams into one event stream. Each value stream is assigned to one or more keys in the resulting event stream. It specifies a stream of strong::Events:: in terms of different patterns that are strong::bound:: to different keys in the Event.
 The patterns bound to keys are referred to as emphasis::value patterns:: and the Pbind itself is termed an event pattern.
 
-The keys used in a Pbind are usually determined by link::Classes/Event::'s default mechanism and the controls defined for the link::Classes/SynthDef:: to be played. (See link::#synthdef_and_event:: below for a brief discussion of both in relation to Pbind.)
+The keys used in a Pbind are usually determined by link::Classes/Event::'s default mechanism and the controls defined for the link::Classes/SynthDef:: to be played. (See link::#SynthDef and Event:: below for a brief discussion of both in relation to Pbind.)
 
 ClassMethods::
 

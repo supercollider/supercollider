@@ -12,7 +12,7 @@ Akin to link::Classes/StaticText:: they can store arbitrary content in the link:
 
 strong::DragSink::, specifically, strong::accepts any:: dropped data and stores it into the strong::-object:: variable, but allows strong::no dragging::.
 
-See: link::Classes/View#drag_and_drop:: for a general description of the drag and drop mechanism.
+See: link::Classes/View#Drag and drop:: for a general description of the drag and drop mechanism.
 
 
 
