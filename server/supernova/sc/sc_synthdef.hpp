@@ -64,7 +64,7 @@ public:
 
     struct unit_spec_t
     {
-        explicit unit_spec_t(const char *& buffer, int version);
+        explicit unit_spec_t(const char *& buffer, const char * buffer_end, int version);
 
         unit_spec_t(symbol const & name, int16_t rate, int16_t special_index,
                     input_spec_vector const & in_specs,
@@ -103,7 +103,7 @@ public:
     typedef std::vector<unit_spec_t, aligned_allocator<unit_spec_t> > graph_t;
     typedef std::vector<int32_t, aligned_allocator<int32_t> > calc_units_t;
 
-    sc_synthdef(const char *& buffer, int version);
+    sc_synthdef(const char *& buffer, const char * buffer_end, int version);
 
     sc_synthdef(sc_synthdef && rhs)                 = default;
     sc_synthdef(sc_synthdef const & rhs)            = default;
@@ -138,7 +138,7 @@ public:
     }
 
 private:
-    void read_synthdef(const char *&, int version);
+    void read_synthdef(const char *& data, const char * end, int version);
 
     /** assign buffers, collect memory requirement & cache ugen prototype */
     void prepare(void);
@@ -154,7 +154,7 @@ private:
     std::size_t memory_requirement_;
 };
 
-std::vector<sc_synthdef> read_synthdefs(const char * buf_ptr);
+std::vector<sc_synthdef> read_synthdefs(const char * buffer, const char * buffer_end);
 std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & filename);
 
 } /* namespace nova */
