@@ -386,7 +386,7 @@ std::string sc_synthdef::dump(void) const
         stream << "\t" << parameters[i] << endl;
 
     stream << "parameter names: " << endl;
-    for (parameter_map_t::const_iterator it = parameter_map.begin();
+    for (parameter_index_map_t::const_iterator it = parameter_map.begin();
          it != parameter_map.end(); ++it)
         stream << "\t" << it->first.c_str() << " " << it->second << endl;
 

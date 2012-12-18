@@ -36,14 +36,11 @@ namespace nova {
 
 class sc_synthdef
 {
-    typedef std::vector<float, aligned_allocator<float> > fvector;
-    typedef std::vector<symbol, aligned_allocator<symbol> > svector;
-
+    typedef std::vector<float, aligned_allocator<float> > float_vector;
     typedef std::vector<char, aligned_allocator<char> > char_vector;
+    typedef std::map<symbol, int32_t, std::less<symbol>, aligned_allocator<symbol> > parameter_index_map_t;
 
 public:
-    typedef std::map<symbol, int32_t, std::less<symbol>, aligned_allocator<symbol> > parameter_map_t;
-
     struct input_spec
     {
         input_spec(int32_t source, int32_t index):
@@ -62,6 +59,7 @@ public:
         int32_t source;   /* index of ugen or -1 for constant */
         int32_t index;    /* number of output or constant index */
     };
+
     typedef std::vector<input_spec, aligned_allocator<input_spec> > input_spec_vector;
 
     struct unit_spec_t
@@ -92,7 +90,7 @@ public:
         char_vector output_specs;      /* calculation rates */
         std::vector<int32_t, aligned_allocator<int32_t> > buffer_mapping;
 
-        std::size_t memory_requirement(void)
+        std::size_t memory_requirement(void) const
         {
             return input_specs.size()  * (sizeof(Wire*) + sizeof(float*)) +
                    output_specs.size() * (sizeof(Wire*) + sizeof(float*)) +
@@ -156,9 +154,9 @@ private:
     void prepare(void);
 
     symbol name_;
-    fvector constants;
-    fvector parameters;
-    parameter_map_t parameter_map;
+    float_vector constants;
+    float_vector parameters;
+    parameter_index_map_t parameter_map;
 
     graph_t graph;
     std::uint16_t buffer_count;
