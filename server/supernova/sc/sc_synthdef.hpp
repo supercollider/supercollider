@@ -73,13 +73,8 @@ public:
             input_specs(in_specs), output_specs(out_specs)
         {}
 
-        unit_spec_t(unit_spec_t && rhs):
-            name(std::move(rhs.name)), rate(rhs.rate), special_index(rhs.special_index),
-            input_specs(std::move(rhs.input_specs)), output_specs(std::move(rhs.output_specs)),
-            buffer_mapping(std::move(rhs.buffer_mapping)), prototype(rhs.prototype)
-        {}
-
-        unit_spec_t(unit_spec_t const & rhs) = default;
+        unit_spec_t(unit_spec_t && rhs)                  = default;
+        unit_spec_t(unit_spec_t const & rhs)             = default;
         unit_spec_t & operator=(unit_spec_t const & rhs) = default;
 
         symbol name;
@@ -110,13 +105,8 @@ public:
 
     sc_synthdef(const char *& buffer, int version);
 
-    sc_synthdef(sc_synthdef && rhs):
-        name_(std::move(rhs.name_)), constants(std::move(rhs.constants)), parameters(std::move(rhs.parameters)),
-        parameter_map(std::move(rhs.parameter_map)), graph(std::move(rhs.graph)), buffer_count(rhs.buffer_count),
-        calc_unit_indices(std::move(rhs.calc_unit_indices)), memory_requirement_(rhs.memory_requirement_)
-    {}
-
-    sc_synthdef(sc_synthdef const & rhs) = default;
+    sc_synthdef(sc_synthdef && rhs)                 = default;
+    sc_synthdef(sc_synthdef const & rhs)            = default;
     sc_synthdef& operator=(sc_synthdef const & rhs) = default;
 
     std::string dump(void) const;
