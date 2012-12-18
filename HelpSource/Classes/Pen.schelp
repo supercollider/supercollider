@@ -503,7 +503,7 @@ method:: beginPath
 Discard any previous path.
 
 method:: beginTransparencyLayer
-Begins a new transparency layer. Transparency layers are useful when you want to apply an effect to a group of objects or create a composite graphic. See link::#transparency_layer_example:: for an example.
+Begins a new transparency layer. Transparency layers are useful when you want to apply an effect to a group of objects or create a composite graphic. See link::#Transparency layer example::.
 
 method:: endTransparencyLayer
 Ends the current transparency layer.
@@ -623,7 +623,7 @@ Set the opacity level.
 
 method:: blendMode
 Set the blending mode to use.
-See link::#blending_modes:: for more information.
+See link::#Blending modes:: for more information.
 
 method:: lineDash
 Set the line dash pattern. 

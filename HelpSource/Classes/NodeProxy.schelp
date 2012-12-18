@@ -149,13 +149,13 @@ subsection::Setting the source
 
 NodeProxy keeps a number of slots which can be sources and are mixed on the same bus.. The default source is the slot 0. All objects can be exchanged while running, and also before and after. Normally, the source is active immediately. If sources are to be exchanged "quietly", set the node proxy to sleep (awake = false), or use the message prime().
 
-See the list under section link::#supported_sources::
+See the list under section link::#Supported sources::
 
 method::source
 Play a new synth through proxy and release/remove any old ones.
 
 argument::obj
-can be one of the supported inputs (see link::#supported_sources::)
+can be one of the supported inputs (see link::#Supported sources::)
 
 method::prime
 Set source without starting the synth. To start it, link::#-send:: can be used later. Running synths are released and proxy is initialized if still neutral.
@@ -176,7 +176,7 @@ argument::index
 where the object should be placed in the internal order. if code::-1::, all objects are freed
 
 argument::obj
-A valid source (see link::#supported_sources::).
+A valid source (see link::#Supported sources::).
 
 argument::channelOffset
 using a multichannel setup it can be useful to set this, when the objects numChannels is smaller than the proxy

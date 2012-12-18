@@ -131,7 +131,7 @@ code::
 
 section::Reverberation
 
-The next example is by James McCartney. It comes from the link::#why_supercollider_2.0_?#01 Why SuperCollider:: document that was part of the SuperCollider2 distribution.
+The next example is by James McCartney. It comes from the link::#Why Supercollider 2.0?#01 Why SuperCollider:: document that was part of the SuperCollider2 distribution.
 
 The example is more or less a Schroeder reverb - a signal passed through a parallel bank of comb filters which then pass through a series of allpass filters.
 
@@ -245,7 +245,7 @@ s.queryAllNodes;
 
 For context, here, below, is the complete text of the strong::01 Why SuperCollider:: document (by James McCartney) from the SuperCollider 2 distribution.
 
-section::Why SuperCollider 2.0 ?
+section::Why SuperCollider 2.0?
 
 SuperCollider version 2.0 is a new programming language. strong::Why invent a new language and not use an existing language?:: Computer music composition is a specification problem. Both sound synthesis and the composition of sounds are complex problems and demand a language which is highly expressive in order to deal with that complexity. Real time signal processing is a problem demanding an efficient implementation with bounded time operations.
 There was no language combining the features I wanted and needed for doing digital music synthesis. The SuperCollider language is most like Smalltalk. Everything is an object. It has class objects, methods, dynamic typing, full closures, default arguments, variable length argument lists, multiple assignment, etc. The implementation provides fast, constant time method lookup, real time garbage collection, and stack allocation of most function contexts while maintaining full closure semantics.

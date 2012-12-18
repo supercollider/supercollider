@@ -43,7 +43,7 @@ In general, when working with a single machine one will probably be using one of
 
 The difference between the two is that the local server runs as a separate application with its own address space, and the internal server runs within the same space as the language/client app.
 
-Both local and internal server supports link::#-scope#scoping:: and link::Classes/Bus#synchronous_control_bus_methods#synchronous bus access::.
+Both local and internal server supports link::#-scope#scoping:: and link::Classes/Bus#Synchronous control bus methods#synchronous bus access::.
 
 The local server, and any other server apps running on your local machine, have the advantage that if the language app crashes, it (and thus possibly your piece) will continue to run. It is thus an inherently more robust arrangement. But note that even if the synths on the server continue to run, any language-side sequencing and control will terminate if the language app crashes.
 
@@ -294,7 +294,7 @@ method:: pid
 Get process ID of running server (if not internal).
 
 method:: hasShmInterface
-Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#synchronous_control_bus_methods#Synchronous Control Bus Methods::.
+Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous control bus methods::.
 discussion::
 The shared memory interface is initialized after first server boot.
 
