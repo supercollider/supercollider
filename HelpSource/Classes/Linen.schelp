@@ -16,7 +16,7 @@ argument::gate
 
 This triggers the envelope and holds it open while > 0.
 
-If strong::gate:: < 0, force release with time code:: -1.0 - gate ::, see link::Classes/EnvGen#forced_release::.
+If strong::gate:: < 0, force release with time code:: -1.0 - gate ::. See link::Classes/EnvGen#Forced release::.
 
 argument::attackTime
 

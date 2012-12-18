@@ -90,7 +90,7 @@ a = Pbind(\degree, Prand([1, 2, 3, [0, 5]], inf), \bend, Pwhite(0, 76, inf));
 (a <> (type: \midi, midiout: m)).play;
 ::
 
-See link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters#midi_output#PG_08_Event_Types_and_Parameters: MIDI Output:: for a list of midi commands supported by the 'midi' event type.
+See link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters#MIDI output:: for a list of midi commands supported by the 'midi' event type.
 
 subsection::Linux specific: Connecting and disconnecting ports
 

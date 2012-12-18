@@ -46,7 +46,7 @@ The Qt layout system allows you to forget about pixels - it manages the size and
 
 SUBSECTION:: Intrinsic view sizes
 
-You may have noticed in the examples above that, besides omitting the code::parent:: argument, we sometimes omitted the code::bounds:: argument as well, at view construction. This is possible because views have intrinsically defined preferred and minimum sizes. See the link::Guides/GUI-Layout-Management#intrinsic_view_sizes#Intrinsic view sizes:: section of the Layout Management guide.
+You may have noticed in the examples above that, besides omitting the code::parent:: argument, we sometimes omitted the code::bounds:: argument as well, at view construction. This is possible because views have intrinsically defined preferred and minimum sizes. See link::Guides/GUI-Layout-Management#Intrinsic view sizes:: for further explanation.
 
 SUBSECTION:: Layout classes
 
@@ -163,7 +163,7 @@ t.mouseWheelAction = { |v,x,y,mod,dx,dy|
 
 SUBSECTION:: Hooks for position and size change
 
-Since views can be automatically repositioned and resized by link::#layout_management#layouts::, or by the user (if they are windows), it may come handy to make your view respond to these changes using link::Classes/View#-onMove:: and link::Classes/View#-onResize::.
+Since views can be automatically repositioned and resized by link::#Layout management#layouts::, or by the user (if they are windows), it may come handy to make your view respond to these changes using link::Classes/View#-onMove:: and link::Classes/View#-onResize::.
 
 code::
 (
@@ -277,7 +277,7 @@ w = Window()
 
 SUBSECTION:: ScrollView
 
-link::Classes/ScrollView:: allows to strong::replace the canvas:: that holds its child views with an arbitrary view. This allows great flexibility, including using a link::#layout_management#layout:: to manage the child views. See link::Classes/ScrollView#-canvas:: for explanation, and this link::Classes/ScrollView#examples#example::.
+link::Classes/ScrollView:: allows to strong::replace the canvas:: that holds its child views with an arbitrary view. This allows great flexibility, including using a link::#Layout management#layout:: to manage the child views. See link::Classes/ScrollView#-canvas:: for explanation, and this link::Classes/ScrollView#examples#example::.
 
 
 SECTION:: New views

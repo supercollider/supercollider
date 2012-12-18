@@ -39,7 +39,7 @@ is used as a simple trigger. If it is an sustaining envelope
 (e.g. Env.adsr, Env.asr), the envelope is held open until the
 gate becomes 0, at which point is released.
 
-If strong::gate:: < 0, force release with time code:: -1.0 - gate ::, see link::#forced_release:: below.
+If strong::gate:: < 0, force release with time code:: -1.0 - gate ::. See link::#Forced release:: below.
 
 argument::levelScale
 
