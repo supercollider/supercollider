@@ -269,7 +269,7 @@ static void dumpOSC(int mode, int size, char* inData)
 		if (strcmp(inData, "#bundle") == 0)
 		{
 			char* data = inData + 8;
-			scprintf("[ \"#bundle\", %lld, ", OSCtime(data));
+			scprintf("[ \"#bundle\", %llu, ", OSCtime(data));
 			data += 8;
 			char* dataEnd = inData + size;
 			while (data < dataEnd) {
