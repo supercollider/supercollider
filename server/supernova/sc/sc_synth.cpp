@@ -108,31 +108,23 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
     assert((char*)mControls + alloc_size <= allocator.alloc<char>()); // ensure the memory boundaries
 }
 
-namespace
-{
-
-void free_ugen(struct Unit * unit)
-{
-    sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
-    def->destruct(unit);
-}
-
-} /* namespace */
-
 sc_synth::~sc_synth(void)
 {
-    std::for_each(units, units + unit_count, free_ugen);
+    std::for_each(units, units + unit_count, [](Unit * unit) {
+        sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+        def->destruct(unit);
+    });
+
     sc_factory->free_ugens(unit_count);
     rt_pool.free(mControls);
 }
 
 void sc_synth::prepare(void)
 {
-    for (size_t i = 0; i != unit_count; ++i) {
-        struct Unit * unit = units[i];
+    std::for_each(units, units + unit_count, [](Unit * unit) {
         sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
         def->initialize(unit);
-    }
+    });
 }
 
 void sc_synth::set(slot_index_t slot_index, sample val)
@@ -292,11 +284,11 @@ void sc_synth::run_traced(void)
 
     printer.printf("\nTRACE %d  %s    #units: %d\n", id(), this->definition_name(), calc_unit_count);
 
-    for (size_t i = 0; i != calc_unit_count; ++i) {
-        Unit * unit = calc_units[i];
+    for (size_t calc_unit_index = 0; calc_unit_index != calc_unit_count; ++calc_unit_index) {
+        Unit * unit = calc_units[calc_unit_index];
 
         sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
-        printer.printf("  unit %zd %s\n    in ", i, def->name());
+        printer.printf("  unit %zd %s\n    in ", calc_unit_index, def->name());
         for (uint16_t j=0; j!=unit->mNumInputs; ++j) {
             printer.printf(" %g", unit->mInBuf[j][0]);
             if (printer.shouldFlush()) {
