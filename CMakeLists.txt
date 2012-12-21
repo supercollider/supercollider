@@ -165,8 +165,8 @@ option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable m
 option(GC_SANITYCHECK "Enable sanity checks in the sclang garbage collector.")
 
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
-
 option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
+option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)" OFF)
 
 option(SCLANG_SERVER "Build with internal server." ON)
 
@@ -285,6 +285,10 @@ endif()
 if(MINGW)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign")
+endif()
+
+if (NO_GPL3)
+	add_definitions(-DNO_GPL3)
 endif()
 
 #############################################
