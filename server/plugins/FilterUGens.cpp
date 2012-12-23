@@ -2754,13 +2754,17 @@ void HPF_next(HPF* unit, int inNumSamples)
 		double b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
 		double b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
-			double y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			double in0 = ZXP(in);
+			double in1 = ZXP(in);
+			double in2 = ZXP(in);
+
+			double y0 = in0 + b1 * y1 + b2 * y2;
 			ZXP(out) = a0 * (y0 - 2. * y1 + y2);
 
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
+			y2 = in1 + b1 * y0 + b2 * y1;
 			ZXP(out) = a0 * (y2 - 2. * y0 + y1);
 
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
+			y1 = in2 + b1 * y2 + b2 * y0;
 			ZXP(out) = a0 * (y1 - 2. * y2 + y0);
 
 			a0 += a0_slope;
@@ -2780,13 +2784,17 @@ void HPF_next(HPF* unit, int inNumSamples)
 		unit->m_b2 = next_b2;
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
-			double y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			double in0 = ZXP(in);
+			double in1 = ZXP(in);
+			double in2 = ZXP(in);
+
+			double y0 = in0 + b1 * y1 + b2 * y2;
 			ZXP(out) = a0 * (y0 - 2. * y1 + y2);
 
-			y2 = ZXP(in) + b1 * y0 + b2 * y1;
+			y2 = in1 + b1 * y0 + b2 * y1;
 			ZXP(out) = a0 * (y2 - 2. * y0 + y1);
 
-			y1 = ZXP(in) + b1 * y2 + b2 * y0;
+			y1 = in2 + b1 * y2 + b2 * y0;
 			ZXP(out) = a0 * (y1 - 2. * y2 + y0);
 		);
 		LOOP(unit->mRate->mFilterRemain,
