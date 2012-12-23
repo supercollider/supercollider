@@ -4999,7 +4999,7 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 /* BEQSuite */
 
 
-static void inline BPerformFilterLoop(const Unit * unit, float * out, const float * in, double & y0,
+static void inline BPerformFilterLoop(const Unit * unit, float * out, const float * in,
 									  double & y1, double & y2, double a0, double a1, double a2,
 									  double b1, double b2)
 {
@@ -5008,7 +5008,7 @@ static void inline BPerformFilterLoop(const Unit * unit, float * out, const floa
 		double in1 = ZXP(in);
 		double in2 = ZXP(in);
 
-		y0 = in0 + b1 * y1 + b2 * y2;
+		double y0 = in0 + b1 * y1 + b2 * y2;
 		ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
 		y2 = in1 + b1 * y0 + b2 * y1;
@@ -5018,14 +5018,14 @@ static void inline BPerformFilterLoop(const Unit * unit, float * out, const floa
 		ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
 	);
 	LOOP(unit->mRate->mFilterRemain,
-		y0 = ZXP(in) + b1 * y1 + b2 * y2;
+		double y0 = ZXP(in) + b1 * y1 + b2 * y2;
 		ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 		y2 = y1;
 		y1 = y0;
 	);
 }
 
-static void inline BPerformFilterLoop(const Unit * unit, float * out, const float * in, double & y0,
+static void inline BPerformFilterLoop(const Unit * unit, float * out, const float * in,
 									  double & y1, double & y2, double a0, double a1, double a2,
 									  double b1, double b2,
 									  double a0slope, double a1slope, double a2slope,
@@ -5036,7 +5036,7 @@ static void inline BPerformFilterLoop(const Unit * unit, float * out, const floa
 		double in1 = ZXP(in);
 		double in2 = ZXP(in);
 
-		y0 = in0 + b1 * y1 + b2 * y2;
+		double y0 = in0 + b1 * y1 + b2 * y2;
 		ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
 		y2 = in1 + b1 * y0 + b2 * y1;
@@ -5052,7 +5052,7 @@ static void inline BPerformFilterLoop(const Unit * unit, float * out, const floa
 		b2 += b2slope;
 	);
 	LOOP(unit->mRate->mFilterRemain,
-		y0 = ZXP(in) + b1 * y1 + b2 * y2;
+		double y0 = ZXP(in) + b1 * y1 + b2 * y2;
 		ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 		y2 = y1;
 		y1 = y0;
@@ -5178,7 +5178,6 @@ void BLowPass_next_kk(BLowPass *unit, int inNumSamples)
 	float nextrq = ZIN0(2);
 
 	double a0, a1, a2, b1, b2;
-	double y0;
 	double y1 = unit->m_y1;
 	double y2 = unit->m_y2;
 
@@ -5209,7 +5208,7 @@ void BLowPass_next_kk(BLowPass *unit, int inNumSamples)
 		b2slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		unit->m_freq = nextfreq;
 		unit->m_rq = nextrq;
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
@@ -5217,7 +5216,7 @@ void BLowPass_next_kk(BLowPass *unit, int inNumSamples)
 		unit->m_b1 = next_b1;
 		unit->m_b2 = next_b2;
 	} else
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -5229,7 +5228,6 @@ void BLowPass_next_ii(BLowPass *unit, int inNumSamples)
 	float *in = ZIN(0);
 
 	double a0, a1, a2, b1, b2;
-	double y0;
 	double y1 = unit->m_y1;
 	double y2 = unit->m_y2;
 
@@ -5239,7 +5237,7 @@ void BLowPass_next_ii(BLowPass *unit, int inNumSamples)
 	b1 = unit->m_b1;
 	b2 = unit->m_b2;
 
-	BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
+	BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -5362,7 +5360,6 @@ void BHiPass_next_kk(BHiPass *unit, int inNumSamples)
 	float nextrq = ZIN0(2);
 
 	double a0, a1, a2, b1, b2;
-	double y0;
 	double y1 = unit->m_y1;
 	double y2 = unit->m_y2;
 
@@ -5394,7 +5391,7 @@ void BHiPass_next_kk(BHiPass *unit, int inNumSamples)
 		unit->m_freq = nextfreq;
 		unit->m_rq = nextrq;
 
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
@@ -5402,7 +5399,7 @@ void BHiPass_next_kk(BHiPass *unit, int inNumSamples)
 		unit->m_b1 = next_b1;
 		unit->m_b2 = next_b2;
 	} else
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -5424,7 +5421,7 @@ void BHiPass_next_ii(BHiPass *unit, int inNumSamples)
 	b1 = unit->m_b1;
 	b2 = unit->m_b2;
 
-	BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
+	BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -5545,7 +5542,6 @@ void BBandPass_next_kk(BBandPass *unit, int inNumSamples)
 	float nextbw = ZIN0(2);
 
 	double a0, a1, a2, b1, b2;
-	double y0;
 	double y1 = unit->m_y1;
 	double y2 = unit->m_y2;
 
@@ -5574,7 +5570,7 @@ void BBandPass_next_kk(BBandPass *unit, int inNumSamples)
 		unit->m_freq = nextfreq;
 		unit->m_bw = nextbw;
 
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
@@ -5582,7 +5578,7 @@ void BBandPass_next_kk(BBandPass *unit, int inNumSamples)
 		unit->m_b1 = next_b1;
 		unit->m_b2 = next_b2;
 	} else
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -5701,7 +5697,6 @@ void BBandStop_next_kk(BBandStop *unit, int inNumSamples)
 	float nextbw = ZIN0(2);
 
 	double a0, a1, a2, b1, b2;
-	double y0;
 	double y1 = unit->m_y1;
 	double y2 = unit->m_y2;
 
@@ -5731,7 +5726,7 @@ void BBandStop_next_kk(BBandStop *unit, int inNumSamples)
 		unit->m_freq = nextfreq;
 		unit->m_bw = nextbw;
 
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
@@ -5739,7 +5734,7 @@ void BBandStop_next_kk(BBandStop *unit, int inNumSamples)
 		unit->m_b1 = next_b1;
 		unit->m_b2 = next_b2;
 	} else
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -5864,7 +5859,7 @@ void BPeakEQ_next_kkk(BPeakEQ *unit, int inNumSamples)
 	float nextdb = ZIN0(3);
 
 	double a0, a1, a2, b1, b2, a, w0, alpha, b0rz;
-	double y0, y1, y2;
+	double y1, y2;
 
 	y1 = unit->m_y1;
 	y2 = unit->m_y2;
@@ -5897,7 +5892,7 @@ void BPeakEQ_next_kkk(BPeakEQ *unit, int inNumSamples)
 		unit->m_db = nextdb;
 		unit->m_rq = nextrq;
 
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
@@ -5905,7 +5900,7 @@ void BPeakEQ_next_kkk(BPeakEQ *unit, int inNumSamples)
 		unit->m_b1 = next_b1;
 		unit->m_b2 = next_b2;
 	} else
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -6023,7 +6018,6 @@ void BAllPass_next_kk(BAllPass *unit, int inNumSamples)
 	float nextrq = ZIN0(2);
 
 	double a0, a1, a2, b1, b2;
-	double y0;
 	double y1 = unit->m_y1;
 	double y2 = unit->m_y2;
 
@@ -6052,7 +6046,7 @@ void BAllPass_next_kk(BAllPass *unit, int inNumSamples)
 		unit->m_freq = nextfreq;
 		unit->m_rq = nextrq;
 
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
@@ -6061,7 +6055,7 @@ void BAllPass_next_kk(BAllPass *unit, int inNumSamples)
 		unit->m_b2 = next_b2;
 
 	} else
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -6196,7 +6190,7 @@ void BLowShelf_next_kkk(BLowShelf *unit, int inNumSamples)
 	float nextdb = ZIN0(3);
 
 	double a0, a1, a2, b1, b2, a, w0, cosw0, sinw0, alpha, i, j, k, b0rz;
-	double y0, y1, y2;
+	double y1, y2;
 
 	y1 = unit->m_y1;
 	y2 = unit->m_y2;
@@ -6232,7 +6226,7 @@ void BLowShelf_next_kkk(BLowShelf *unit, int inNumSamples)
 		unit->m_db = nextdb;
 		unit->m_rs = nextrs;
 
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = a0;
 		unit->m_a1 = a1;
@@ -6240,7 +6234,7 @@ void BLowShelf_next_kkk(BLowShelf *unit, int inNumSamples)
 		unit->m_b1 = b1;
 		unit->m_b2 = b2;
 	} else
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
@@ -6375,7 +6369,7 @@ void BHiShelf_next_kkk(BHiShelf *unit, int inNumSamples)
 	float nextdb = ZIN0(3);
 
 	double a0, a1, a2, b1, b2, a, w0, cosw0, sinw0, alpha, i, j, k, b0rz;
-	double y0, y1, y2;
+	double y1, y2;
 
 	y1 = unit->m_y1;
 	y2 = unit->m_y2;
@@ -6412,7 +6406,7 @@ void BHiShelf_next_kkk(BHiShelf *unit, int inNumSamples)
 		unit->m_db = nextdb;
 		unit->m_rs = nextrs;
 
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
 		unit->m_a0 = next_a0;
 		unit->m_a1 = next_a1;
@@ -6421,7 +6415,7 @@ void BHiShelf_next_kkk(BHiShelf *unit, int inNumSamples)
 		unit->m_b2 = next_b2;
 
 	} else
-		BPerformFilterLoop(unit, out, in, y0, y1, y2, a0, a1, a2, b1, b2);
+		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2);
 
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
