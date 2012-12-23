@@ -22,6 +22,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=i686 -msse -msse2 -mfpmath=sse")
     endif()
   endif()
+
+  if(${_gcc_version} VERSION_LESS 4.7)
+    message(FATAL_ERROR "supernova requires at least gcc-4.7. please configure the build with -DSUPERNOVA=OFF")
+  endif()
+
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 
