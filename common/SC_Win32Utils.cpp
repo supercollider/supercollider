@@ -26,6 +26,7 @@
 #include <sys/timeb.h>
 #include <time.h>
 #include <windows.h>
+#include <shlobj.h>
 
 #include "SC_Win32Utils.h"
 
