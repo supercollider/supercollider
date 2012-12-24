@@ -32,9 +32,9 @@
 #endif
 
 #include "portaudio.h"
-#define SC_PA_USE_DLL true
+#define SC_PA_USE_DLL
 
-#if SC_PA_USE_DLL
+#ifdef SC_PA_USE_DLL
 #include "SC_TimeDLL.hpp"
 // =====================================================================
 // Timing
@@ -123,7 +123,7 @@ class SC_PortAudioDriver : public SC_AudioDriver
 	PaStream *mStream;
 	PaTime mPaStreamStartupTime;
 	int64 mPaStreamStartupTimeOSC;
-#if SC_PA_USE_DLL
+#ifdef SC_PA_USE_DLL
 	double mMaxOutputLatency;
 	SC_TimeDLL			mDLL;
 #endif
@@ -156,7 +156,7 @@ SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 SC_PortAudioDriver::SC_PortAudioDriver(struct World *inWorld)
 		: SC_AudioDriver(inWorld)
 		, mStream(0)
-#if SC_PA_USE_DLL
+#ifdef SC_PA_USE_DLL
 		,mMaxOutputLatency(0.)
 #endif
 {
@@ -190,7 +190,7 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 {
 	World *world = mWorld;
 	(void) frameCount, timeInfo, statusFlags; // suppress unused parameter warnings
-#if SC_PA_USE_DLL
+#ifdef SC_PA_USE_DLL
 	mDLL.Update(sc_PAOSCTimeSeconds());
 
 	#if SC_PA_DEBUG_DLL
@@ -238,7 +238,7 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 
 		int bufFramePos = 0;
 
-#if SC_PA_USE_DLL
+#ifdef SC_PA_USE_DLL
 		int64 oscTime = mOSCbuftime = (uint64)((mDLL.PeriodTime() - mMaxOutputLatency) * kSecondsToOSCunits + .5);
 // 		int64 oscInc = mOSCincrement = (int64)(mOSCincrementNumerator / mDLL.SampleRate());
 		int64 oscInc = mOSCincrement = (uint64)((mDLL.Period() / numBufs) * kSecondsToOSCunits + .5);
@@ -429,7 +429,7 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 			else {
 				fprintf(stdout,"  Sample rate: %.3f\n", psi->sampleRate);
 				fprintf(stdout,"  Latency (in/out): %.3f / %.3f sec\n", psi->inputLatency, psi->outputLatency);
-#if SC_PA_USE_DLL
+#ifdef SC_PA_USE_DLL
 				mMaxOutputLatency = psi->outputLatency;
 #endif
 			}
@@ -460,7 +460,7 @@ bool SC_PortAudioDriver::DriverStart()
 	// it would be better to do the sync here, but the timeInfo in the callback is incomplete
 	//mPaStreamStartupTimeOSC = GetCurrentOSCTime();
 	//mPaStreamStartupTime = Pa_GetStreamTime(mStream);
-#if SC_PA_USE_DLL
+#ifdef SC_PA_USE_DLL
 	mDLL.Reset(
 		mSampleRate,
 		mNumSamplesPerCallback,
