@@ -27,6 +27,7 @@
 #ifdef _WIN32
 # include <windows.h>
 # include <direct.h>
+# include <shlobj.h>
 # include "SC_Win32Utils.h"
 #else
 # include <unistd.h>
