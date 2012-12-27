@@ -151,8 +151,10 @@ public:
 
     void deactivate_audio(void)
     {
-        jack_deactivate(client);
-        is_active = false;
+        if (is_active) {
+            jack_deactivate(client);
+            is_active = false;
+        }
     }
 
     void get_cpuload(float & peak, float & average) const
