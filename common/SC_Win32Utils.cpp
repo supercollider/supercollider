@@ -55,7 +55,7 @@ void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars
 
 void win32_gettimeofday(timeval* tv, void*)
 {
-	long unsigned secBetween1601and1970 = 11644473600ULL;
+	unsigned __int64 secBetween1601and1970 = 11644473600ULL;
 	FILETIME fileTime;
 	GetSystemTimeAsFileTime(&fileTime);
 	tv->tv_sec  = (* (unsigned __int64 *) &fileTime / (unsigned __int64)10000000) - secBetween1601and1970;
