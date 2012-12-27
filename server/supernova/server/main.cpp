@@ -222,7 +222,7 @@ void set_plugin_paths(void)
 void load_synthdef_folder(nova_server & server, path const & folder, bool verbose)
 {
     if (verbose)
-        std::printf("Loading synthdefs from path: %s\n", folder.c_str());
+        std::cout << "Loading synthdefs from path: " << folder.string() << std::endl;
 
     register_synthdefs(server, std::move(sc_read_synthdefs_dir(folder)));
 }
