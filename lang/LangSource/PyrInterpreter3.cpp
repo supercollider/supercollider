@@ -68,8 +68,6 @@ int32 timeseed()
 VMGlobals gVMGlobals;
 VMGlobals *gMainVMGlobals = &gVMGlobals;
 
-extern PyrObject *gSynth;
-
 void debugf(char *fmt, ...) ;
 
 #define DEBUGINTERPRETER 0
