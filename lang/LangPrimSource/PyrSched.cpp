@@ -32,12 +32,11 @@
 #include <math.h>
 #include <limits>
 
-#ifndef SC_WIN32
-#include <sys/time.h>
-#endif
-
 #include "SC_Win32Utils.h"
 #include "SCBase.h"
+
+#define BOOST_CHRONO_HEADER_ONLY
+#include <boost/chrono.hpp>
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
@@ -220,27 +219,40 @@ const double fSECONDS_FROM_1900_to_1970 = 2208988800.; /* 17 leap years */
 #ifdef SC_DARWIN
 static void syncOSCOffsetWithTimeOfDay();
 void* resyncThread(void* arg);
-#else // !SC_DARWIN
+#endif // SC_DARWIN
 
-#ifdef SC_WIN32
+namespace chrono = boost::chrono; // we can later move to std::chrono in c++11
 
-#else
-# include <sys/time.h>
-#endif
+static boost::chrono::system_clock::time_point systemTimeOfInitialization;
+static boost::chrono::high_resolution_clock::time_point hrTimeOfInitialization;
 
-inline double GetTimeOfDay();
+template <typename DurationType>
+inline double DurToFloat(DurationType dur)
+{
+	using namespace chrono;
+	seconds secs         = duration_cast<seconds>(dur);
+	nanoseconds nanosecs = dur - secs;
+
+	return secs.count() + 1.0e-9 * nanosecs.count();
+}
+
 double GetTimeOfDay()
 {
-	struct timeval tv;
-  gettimeofday(&tv, 0);
-	return (double)tv.tv_sec + 1.0e-6 * (double)tv.tv_usec;
+	using namespace chrono;
+
+	typename system_clock::time_point now = system_clock::now();
+	typename system_clock::duration since_epoch = now.time_since_epoch();
+
+	return DurToFloat(since_epoch);
 }
-#endif // SC_DARWIN
 
 SC_DLLEXPORT_C void schedInit()
 {
 	pthread_cond_init (&gSchedCond, NULL);
 	pthread_mutex_init (&gLangMutex, NULL);
+
+	systemTimeOfInitialization = chrono::system_clock::now();
+	hrTimeOfInitialization     = chrono::high_resolution_clock::now();
 
 #ifdef SC_DARWIN
 	syncOSCOffsetWithTimeOfDay();
@@ -251,6 +263,7 @@ SC_DLLEXPORT_C void schedInit()
 #else
 	gElapsedOSCoffset = (int64)kSECONDS_FROM_1900_to_1970 << 32;
 #endif
+
 }
 
 SC_DLLEXPORT_C void schedCleanup()
@@ -269,15 +282,24 @@ double bootSeconds()
 #endif
 }
 
-double elapsedTime();
 double elapsedTime()
 {
 #ifdef SC_DARWIN
 	return 1e-9 * (double)(AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) - gHostStartNanos);
 #else
-	return GetTimeOfDay();
+	return DurToFloat(chrono::system_clock::now() - systemTimeOfInitialization);
 #endif
 }
+
+double elapsedRealTime()
+{
+#ifdef SC_DARWIN
+	return 1e-9 * (double)(AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) - gHostStartNanos);
+#else
+	return DurToFloat(chrono::high_resolution_clock::now() - hrTimeOfInitialization);
+#endif
+}
+
 
 int64 ElapsedTimeToOSC(double elapsed)
 {
@@ -286,10 +308,9 @@ int64 ElapsedTimeToOSC(double elapsed)
 
 double OSCToElapsedTime(int64 oscTime)
 {
-        return (double)(oscTime - gElapsedOSCoffset) * kOSCtoSecs;
+	return (double)(oscTime - gElapsedOSCoffset) * kOSCtoSecs;
 }
 
-void ElapsedTimeToTimespec(double elapsed, struct timespec *spec);
 void ElapsedTimeToTimespec(double elapsed, struct timespec *spec)
 {
 	int64 oscTime = ElapsedTimeToOSC(elapsed);
@@ -1360,10 +1381,9 @@ int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prElapsedTime(struct VMGlobals *g, int numArgsPushed);
 int prElapsedTime(struct VMGlobals *g, int numArgsPushed)
 {
-	SetFloat(g->sp, elapsedTime());
+	SetFloat(g->sp, elapsedRealTime());
 	return errNone;
 }
 

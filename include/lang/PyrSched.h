@@ -35,6 +35,7 @@ SC_DLLEXPORT_C void schedStop();
 SC_DLLEXPORT_C void schedClear();
 
 double elapsedTime();
+double elapsedRealTime();
 int64 OSCTime();
 
 int64 ElapsedTimeToOSC(double elapsed);
