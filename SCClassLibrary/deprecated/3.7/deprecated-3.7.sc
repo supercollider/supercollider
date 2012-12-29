@@ -114,3 +114,13 @@ ScaleInfo {
 		^this.subclassResponsibility(thisMethod)
 	}
 }
+
+// Date-bootTime
++ Date {
+	bootTime {
+		this.deprecated(thisMethod);
+	}
+	bootTime_ {
+		this.deprecated(thisMethod);
+	}
+}

@@ -236,16 +236,6 @@ inline double DurToFloat(DurationType dur)
 	return secs.count() + 1.0e-9 * nanosecs.count();
 }
 
-double GetTimeOfDay()
-{
-	using namespace chrono;
-
-	typename system_clock::time_point now = system_clock::now();
-	typename system_clock::duration since_epoch = now.time_since_epoch();
-
-	return DurToFloat(since_epoch);
-}
-
 SC_DLLEXPORT_C void schedInit()
 {
 	pthread_cond_init (&gSchedCond, NULL);
@@ -270,16 +260,6 @@ SC_DLLEXPORT_C void schedCleanup()
 {
 	pthread_mutex_destroy (&gLangMutex);
 	pthread_cond_destroy (&gSchedCond);
-}
-
-double bootSeconds();
-double bootSeconds()
-{
-#ifdef SC_DARWIN
-	return 1e-9 * (double)AudioConvertHostTimeToNanos(AudioGetCurrentHostTime());
-#else
-	return GetTimeOfDay();
-#endif
 }
 
 double elapsedTime()

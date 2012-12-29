@@ -238,9 +238,7 @@ int prUnix_Errno(struct VMGlobals *g, int numArgsPushed)
 
 #include <time.h>
 
-double bootSeconds();
 
-int prLocalTime(struct VMGlobals *g, int numArgsPushed);
 int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
@@ -259,12 +257,10 @@ int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 	SetInt(slots+5, tm->tm_sec);
 	SetInt(slots+6, tm->tm_wday);
 	SetFloat(slots+7, duration_cast<nanoseconds>(now.time_since_epoch()).count() * 1.0e-9);
-	SetFloat(slots+8, bootSeconds());
 
 	return errNone;
 }
 
-int prGMTime(struct VMGlobals *g, int numArgsPushed);
 int prGMTime(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
@@ -283,7 +279,6 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed)
 	SetInt(slots+5, tm->tm_sec);
 	SetInt(slots+6, tm->tm_wday);
 	SetFloat(slots+7, duration_cast<nanoseconds>(now.time_since_epoch()).count() * 1.0e-9);
-	SetFloat(slots+8, bootSeconds());
 
 	return errNone;
 }
