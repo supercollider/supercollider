@@ -49,7 +49,7 @@ int checkScans = 0;
 int checkPartialScans = 0;
 int checkSlotsScanned = 0;
 
-double elapsedTime();
+double elapsedRealTime();
 
 inline void PyrGC::beginPause()
 {
@@ -59,12 +59,12 @@ inline void PyrGC::beginPause()
 	checkNumToScan = mNumToScan;
 	checkPartialScans = mNumPartialScans;
 	checkSlotsScanned = mSlotsScanned;
-	pauseBeginTime = elapsedTime();
+	pauseBeginTime = elapsedRealTime();
 }
 
 inline void PyrGC::endPause()
 {
-	double pauseTime = elapsedTime() - pauseBeginTime;
+	double pauseTime = elapsedRealTime() - pauseBeginTime;
 	if (pauseTime > 0.001) numPausesGreaterThanOneMillisecond++;
 	if (pauseTime > maxPauseTime) {
 		maxPauseTime = pauseTime;
