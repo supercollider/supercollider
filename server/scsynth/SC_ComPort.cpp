@@ -19,7 +19,6 @@
 */
 
 #include "SC_Endian.h"
-#include "SC_Lock.h"
 #include "SC_HiddenWorld.h"
 #include "SC_WorldOptions.h"
 #include "sc_msg_iter.h"

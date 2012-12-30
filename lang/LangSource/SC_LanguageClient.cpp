@@ -326,12 +326,12 @@ void SC_LanguageClient::runMain() { runLibrary(s_run); }
 void SC_LanguageClient::stopMain() { runLibrary(s_stop); }
 
 // locks
-void SC_LanguageClient::lock() { pthread_mutex_lock(&gLangMutex); }
-bool SC_LanguageClient::trylock() { return pthread_mutex_trylock(&gLangMutex) == 0; }
-void SC_LanguageClient::unlock() { pthread_mutex_unlock(&gLangMutex); }
+void SC_LanguageClient::lock() { gLangMutex.lock(); }
+bool SC_LanguageClient::trylock() { return gLangMutex.try_lock(); }
+void SC_LanguageClient::unlock() { gLangMutex.unlock(); }
 
-void SC_LanguageClient::lockInstance() { gInstanceMutex.Lock(); }
-void SC_LanguageClient::unlockInstance() { gInstanceMutex.Unlock(); }
+void SC_LanguageClient::lockInstance() { gInstanceMutex.lock(); }
+void SC_LanguageClient::unlockInstance() { gInstanceMutex.unlock(); }
 
 extern bool compiledOK;
 

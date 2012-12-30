@@ -2059,7 +2059,7 @@ void compileSucceeded()
 static void runShutdown()
 {
 	//printf("->aboutToCompileLibrary\n");
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals *g = gMainVMGlobals;
 
@@ -2071,7 +2071,7 @@ static void runShutdown()
 
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 	//printf("<-aboutToCompileLibrary\n");
 }
 
@@ -2089,8 +2089,7 @@ void shutdownLibrary()
 
 	TempoClock_stopAll();
 
-	pthread_mutex_lock (&gLangMutex);
-
+	gLangMutex.lock();
 	closeAllCustomPorts();
 
 	if (compiledOK) {
@@ -2104,7 +2103,7 @@ void shutdownLibrary()
 
 	compiledOK = false;
 
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 
 	SC_LanguageConfig::freeLibraryConfig();
 }
@@ -2114,7 +2113,7 @@ SC_DLLEXPORT_C bool compileLibrary()
 	//printf("->compileLibrary\n");
 	shutdownLibrary();
 
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	gNumCompiledFiles = 0;
 	compiledOK = false;
 
@@ -2153,7 +2152,7 @@ SC_DLLEXPORT_C bool compileLibrary()
 		compiledOK = false;
 	}
 
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 	//printf("<-compileLibrary\n");
 	return compiledOK;
 }

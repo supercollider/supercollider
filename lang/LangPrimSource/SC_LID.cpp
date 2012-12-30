@@ -319,7 +319,7 @@ void SC_LID::handleEvent(struct input_event& evt, boost::atomic<bool> const & sh
 			runInterpreter(g, s_handleEvent, 4);
 			g->canCallOS = false;
 		}
-		pthread_mutex_unlock(&gLangMutex);
+		gLangMutex.unlock();
 	}
 }
 
@@ -340,7 +340,7 @@ void SC_LID::readError(boost::atomic<bool> const & shouldBeRunning)
 		runInterpreter(g, s_readError, 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 
 // =====================================================================

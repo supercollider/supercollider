@@ -23,10 +23,9 @@
 
 #include "VMGlobals.h"
 #include "SC_Export.h"
-#include <pthread.h>
-#include <errno.h>
+#include "SC_Lock.h"
 
-extern pthread_mutex_t gLangMutex;
+extern timed_mutex gLangMutex;
 
 SC_DLLEXPORT_C void schedInit();
 SC_DLLEXPORT_C void schedCleanup();
@@ -62,48 +61,23 @@ const double kOSCtoNanos  = 0.2328306436538696; // 1e9/pow(2,32)
 // if language has been locked, return 0
 inline int lockLanguageOrQuit(bool shouldBeRunning)
 {
-#ifdef __linux__
-	// we have pthread_mutex_timedlock
-
-	int status = pthread_mutex_trylock(&gLangMutex);
-	if (status == 0) {
+	bool locked = gLangMutex.try_lock();
+	if (locked) {
 		if (shouldBeRunning == false) {
-			pthread_mutex_unlock(&gLangMutex);
+			gLangMutex.unlock();
 			return EINTR;
 		}
-	} else if (status == EBUSY) {
-		do {
-			struct timespec now;
-			clock_gettime(CLOCK_REALTIME, &now);
-			now.tv_sec += 1;
-
-			status = pthread_mutex_timedlock(&gLangMutex, &now);
+	} else {
+		for (;;) {
+			locked = gLangMutex.try_lock_for(mutex_chrono::seconds(1));
 			if (shouldBeRunning == false) {
-				if (status == 0)
-					pthread_mutex_unlock(&gLangMutex);
+				if (locked)
+					gLangMutex.unlock();
 				return EINTR;
 			}
-		} while (status == ETIMEDOUT);
+		}
 	}
-	return status;
-#else
-	int status;
-	do {
-		status = pthread_mutex_trylock (&gLangMutex);
-		if (shouldBeRunning == false) {
-			if (status == 0)
-				pthread_mutex_unlock(&gLangMutex);
-			return EINTR;
-		}
-		if (status == EBUSY) {
-			struct timespec sleepTime, remain;
-			sleepTime.tv_sec = 0;
-			sleepTime.tv_nsec = 100000;
-			nanosleep(&sleepTime, &remain);
-		}
-	} while (status);
 	return 0;
-#endif
 }
 
 #endif

@@ -27,7 +27,6 @@
 #include "OSC_Packet.h"
 #include "SC_SyncCondition.h"
 #include "PriorityQueue.h"
-#include "SC_Lock.h"
 
 #define SC_AUDIO_API_COREAUDIO	1
 #define SC_AUDIO_API_JACK		2

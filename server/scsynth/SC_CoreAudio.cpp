@@ -27,6 +27,7 @@
 #include "SC_WorldOptions.h"
 #include "SC_Endian.h"
 #include "SC_Lib_Cintf.h"
+#include "SC_Lock.h"
 #include <stdlib.h>
 #include <pthread.h>
 #include <algorithm>
@@ -204,17 +205,17 @@ bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 	//scprintf("ProcessOSCPacket %d, '%s'\n", inPacket->mSize, inPacket->mData);
 	if (!inPacket) return false;
 	bool result;
-	inWorld->mDriverLock->Lock();
+	static_cast<SC_Lock*>(inWorld->mDriverLock)->lock();
 		SC_AudioDriver *driver = AudioDriver(inWorld);
 		if (!driver) {
-			inWorld->mDriverLock->Unlock();
+			static_cast<SC_Lock*>(inWorld->mDriverLock)->unlock();
 			return false;
 		}
 		inPacket->mIsBundle = gIsBundle.checkIsBundle((int32*)inPacket->mData);
 		FifoMsg fifoMsg;
 		fifoMsg.Set(inWorld, Perform_ToEngine_Msg, FreeOSCPacket, (void*)inPacket);
 		result = driver->SendOscPacketMsgToEngine(fifoMsg);
-	inWorld->mDriverLock->Unlock();
+	static_cast<SC_Lock*>(inWorld->mDriverLock)->unlock();
 	return result;
 }
 
@@ -393,7 +394,7 @@ void* SC_AudioDriver::RunThread()
 		// wait for sync
 		mAudioSync.WaitNext();
 
-		mWorld->mNRTLock->Lock();
+		reinterpret_cast<SC_Lock*>(mWorld->mNRTLock)->lock();
 
 		// send /tr messages
 		trigfifo->Perform();
@@ -410,7 +411,7 @@ void* SC_AudioDriver::RunThread()
 		// perform messages
 		mFromEngine.Perform();
 
-		mWorld->mNRTLock->Unlock();
+		reinterpret_cast<SC_Lock*>(mWorld->mNRTLock)->unlock();
 	}
 	return 0;
 }
