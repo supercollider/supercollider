@@ -696,7 +696,7 @@ void SC_WII::connected()
 		runInterpreter(g, s_wiiConnected, 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 
 bool SC_WII::wii_disconnect()
@@ -748,7 +748,7 @@ void SC_WII::disconnected()
 		runInterpreter(g, s_wiiDisconnected, 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 
 // void SC_WII::speaker_init( int format )
@@ -934,7 +934,7 @@ void SC_WII::handleEvent()
 	runInterpreter(g, s_handleEvent, 19);
 	g->canCallOS = false;
 	}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 #endif
 
@@ -949,7 +949,7 @@ void SC_WII::handleBatteryEvent( uint8_t battery ){
 		runInterpreter(g, s_handleBatteryEvent, 2);
 		g->canCallOS = false;
 		}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 #endif
 
@@ -964,7 +964,7 @@ void SC_WII::handleExtensionEvent( int ext_type ){
 		runInterpreter(g, s_handleExtensionEvent, 2);
 		g->canCallOS = false;
 		}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 #endif
 
@@ -999,7 +999,7 @@ void SC_WII::handleButtonEvent( uint16_t buttons ){
 		runInterpreter(g, s_handleButtonEvent, 2);
 		g->canCallOS = false;
 		}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 #endif
 
@@ -1016,7 +1016,7 @@ void SC_WII::handleAccEvent( uint8_t acc[3] ){
 		runInterpreter(g, s_handleAccEvent, 4);
 		g->canCallOS = false;
 		}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 #endif
 
@@ -1043,7 +1043,7 @@ void SC_WII::handleNunchukEvent( struct cwiid_nunchuk_mesg nunchuk ){
 		runInterpreter(g, s_handleNunchukEvent, 7);
 		g->canCallOS = false;
 		}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 #endif
 
@@ -1087,7 +1087,7 @@ void SC_WII::handleClassicEvent( struct cwiid_classic_mesg classic ){
 		runInterpreter(g, s_handleClassicEvent, 8);
 		g->canCallOS = false;
 		}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 #endif
 
@@ -1106,7 +1106,7 @@ void SC_WII::handleIREvent( int id, cwiid_ir_src ir ){
 		runInterpreter(g, s_handleIREvent, 6);
 		g->canCallOS = false;
 		}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 #endif
 
@@ -1120,7 +1120,7 @@ void SC_WII::readError()
 		runInterpreter(g, s_readError, 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 // 	SC_WIIManager::instance().remove( this );
 }
 

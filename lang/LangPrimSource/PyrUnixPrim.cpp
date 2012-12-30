@@ -135,7 +135,7 @@ void* string_popen_thread_func(void *data)
 
 	free(process);
 
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	if(compiledOK) {
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
@@ -145,7 +145,7 @@ void* string_popen_thread_func(void *data)
 		runInterpreter(g, s_unixCmdAction, 3);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 
 	return 0;
 }

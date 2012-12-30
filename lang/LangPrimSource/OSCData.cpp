@@ -259,7 +259,7 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 {
     bool isBundle = IsBundle(inBuf);
 
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	if (compiledOK) {
 		PyrObject *replyObj = ConvertReplyAddress(inReplyAddr);
 		if (isBundle) {
@@ -268,7 +268,7 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 			PerformOSCMessage(inSize, inBuf, replyObj, gUDPport->RealPortNum());
 		}
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 
 }
 
@@ -365,7 +365,7 @@ void netAddrTcpClientNotifyFunc(void *clientData)
 {
 	extern bool compiledOK;
 
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		PyrObject* netAddrObj = (PyrObject*)clientData;
 		VMGlobals* g = gMainVMGlobals;
@@ -374,7 +374,7 @@ void netAddrTcpClientNotifyFunc(void *clientData)
 		runInterpreter(g, getsym("prConnectionClosed"), 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 
 int prNetAddr_Connect(VMGlobals *g, int numArgsPushed);
@@ -769,7 +769,7 @@ void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
     //post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
 	inPacket->mIsBundle = IsBundle(inPacket->mData);
 
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	if (compiledOK) {
 		PyrObject *replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
 		if (compiledOK) {
@@ -780,7 +780,7 @@ void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
 			}
 		}
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 
     FreeOSCPacket(inPacket);
 }

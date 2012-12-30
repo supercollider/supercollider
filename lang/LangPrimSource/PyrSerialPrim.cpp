@@ -420,7 +420,7 @@ void SerialPort::dataAvailable()
 		runInterpreter(g, method, 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 void SerialPort::doneAction()
@@ -441,7 +441,7 @@ void SerialPort::doneAction()
 		runInterpreter(g, method, 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 void SerialPort::threadLoop()

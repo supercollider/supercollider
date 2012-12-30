@@ -72,20 +72,10 @@ SC_TerminalClient::SC_TerminalClient(const char* name)
 	  mReturnCode(0),
 	  mUseReadline(false),
 	  mSignals(0)
-{
-	pthread_cond_init (&mCond, NULL);
-	pthread_mutex_init(&mSignalMutex, NULL);
-	pthread_mutex_init(&mInputMutex, NULL);
-	pthread_cond_init(&mInputCond, NULL);
-}
+{}
 
 SC_TerminalClient::~SC_TerminalClient()
-{
-	pthread_cond_destroy (&mCond);
-	pthread_mutex_destroy(&mSignalMutex);
-	pthread_mutex_destroy(&mInputMutex);
-	pthread_cond_destroy(&mInputCond);
-}
+{}
 
 void SC_TerminalClient::postText(const char* str, size_t len)
 {
@@ -344,7 +334,7 @@ void SC_TerminalClient::interpretInput()
 		i = 0;
 	}
 	mInputBuf.reset();
-	if( mUseReadline ) pthread_cond_signal( &mInputCond );
+	if( mUseReadline ) mInputCond.notify_one();
 }
 
 void SC_TerminalClient::onLibraryStartup()
@@ -363,7 +353,7 @@ void SC_TerminalClient::sendSignal( Signal sig )
 {
 	lockSignal();
 	mSignals |= sig;
-	pthread_cond_signal( &mCond );
+	mCond.notify_one();
 	unlockSignal();
 }
 
@@ -372,21 +362,20 @@ void SC_TerminalClient::onQuit( int exitCode )
 	lockSignal();
 	postfl("main: quit request %i\n", exitCode);
 	quit( exitCode );
-	pthread_cond_signal( &mCond );
+	mCond.notify_one();
 	unlockSignal();
 }
 
-extern void ElapsedTimeToTimespec(double elapsed, struct timespec *spec);
+extern void ElapsedTimeToChrono(double elapsed, mutex_chrono::system_clock::time_point & out_time_point);
 
 void SC_TerminalClient::commandLoop()
 {
 	bool haveNext = false;
-	struct timespec nextAbsTime;
+	mutex_chrono::system_clock::time_point nextAbsTime;
 
 	lockSignal();
 
-	while( shouldBeRunning() )
-	{
+	while( shouldBeRunning() ) {
 
 		while ( mSignals ) {
 			int sig = mSignals;
@@ -411,7 +400,7 @@ void SC_TerminalClient::commandLoop()
 				flush();
 
 				//postfl("tick -> next time = %f\n", haveNext ? secs : -1);
-				ElapsedTimeToTimespec( secs, &nextAbsTime );
+				ElapsedTimeToChrono( secs, nextAbsTime );
 			}
 
 			if (sig & sig_stop) {
@@ -429,11 +418,23 @@ void SC_TerminalClient::commandLoop()
 			break;
 		}
 		else if( haveNext ) {
-			int result = pthread_cond_timedwait( &mCond, &mSignalMutex, &nextAbsTime );
-			if( result == ETIMEDOUT ) mSignals |= sig_sched;
+			unlockSignal();
+			{
+				unique_lock<SC_Lock> lock(mSignalMutex);
+
+				cv_status status = mCond.wait_until(lock, nextAbsTime);
+				if( status == cv_status::timeout )
+					mSignals |= sig_sched;
+			}
+			lockSignal();
 		}
 		else {
-			pthread_cond_wait( &mCond, &mSignalMutex );
+			unlockSignal();
+			{
+				unique_lock<SC_Lock> lock(mSignalMutex);
+				mCond.wait(lock);
+			}
+			lockSignal();
 		}
 	}
 
@@ -501,15 +502,14 @@ void SC_TerminalClient::readlineCmdLine( char *cmdLine )
 		add_history(cmdLine);
 		int len = strlen(cmdLine);
 
-		client->lockInput();
+		unique_lock<SC_Lock> lock(client->mInputMutex);
 		client->mInputBuf.append(cmdLine, len);
 		client->mInputBuf.append(kInterpretPrintCmdLine);
 		client->sendSignal(sig_input);
 		// Wait for input to be processed,
 		// so that its output is displayed before readline prompt.
 		if (client->mInputShouldBeRunning)
-			pthread_cond_wait( &client->mInputCond, &client->mInputMutex );
-		client->unlockInput();
+			client->mInputCond.wait(lock);
 	}
 }
 
@@ -789,10 +789,12 @@ void SC_TerminalClient::endInput()
 #endif
 	// wake up the input thread in case it is waiting
 	// for input to be processed
-	lockInput();
+	{
+		unique_lock<SC_Lock> lock(mInputMutex);
+
 		mInputShouldBeRunning = false;
-		pthread_cond_signal( &mInputCond );
-	unlockInput();
+		mInputCond.notify_one();
+	}
 
 #ifndef _WIN32
 	char c = 'q';

@@ -203,8 +203,8 @@ void dumpheap(PyrObject *heapArg)
 bool gRunSched = false;
 pthread_t gSchedThread;
 pthread_t gResyncThread;
-pthread_cond_t gSchedCond;
-pthread_mutex_t gLangMutex;
+condition_variable_any gSchedCond;
+timed_mutex gLangMutex;
 
 #ifdef SC_DARWIN
 int64 gHostOSCoffset = 0;
@@ -237,8 +237,6 @@ inline double DurToFloat(DurationType dur)
 
 SC_DLLEXPORT_C void schedInit()
 {
-	pthread_cond_init (&gSchedCond, NULL);
-	pthread_mutex_init (&gLangMutex, NULL);
 
 	hrTimeOfInitialization     = chrono::high_resolution_clock::now();
 
@@ -256,8 +254,6 @@ SC_DLLEXPORT_C void schedInit()
 
 SC_DLLEXPORT_C void schedCleanup()
 {
-	pthread_mutex_destroy (&gLangMutex);
-	pthread_cond_destroy (&gSchedCond);
 }
 
 double elapsedTime()
@@ -295,6 +291,24 @@ void ElapsedTimeToTimespec(double elapsed, struct timespec *spec)
 
 	spec->tv_sec = (time_t)((oscTime >> 32) - kSECONDS_FROM_1900_to_1970);
 	spec->tv_nsec = (int32)((oscTime & 0xFFFFFFFF) * kOSCtoNanos);
+}
+
+void ElapsedTimeToChrono(double elapsed, mutex_chrono::system_clock::time_point & out_time_point)
+{
+	int64 oscTime = ElapsedTimeToOSC(elapsed);
+
+	int64 secs      = ((oscTime >> 32) - kSECONDS_FROM_1900_to_1970);
+	int32 nano_secs = (int32)((oscTime & 0xFFFFFFFF) * kOSCtoNanos);
+
+
+	using namespace mutex_chrono;
+#if 0 // TODO: check system_clock precision
+	system_clock::time_point time_point = system_clock::time_point(seconds(secs) + nanoseconds(nano_secs));
+#else
+	int32 usecs = nano_secs / 1000;
+	system_clock::time_point time_point = system_clock::time_point(seconds(secs) + microseconds(usecs));
+#endif
+	out_time_point = time_point;
 }
 
 int64 OSCTime()
@@ -353,8 +367,7 @@ void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTas
 			SetFloat(&slotRawThread(inTask)->nextBeat, inSeconds);
 		}
 		if (slotRawFloat(inQueue->slots + 1) != prevTime) {
-			//post("pthread_cond_signal\n");
-			pthread_cond_signal (&gSchedCond);
+			gSchedCond.notify_all();
 		}
 	}
 }
@@ -371,14 +384,14 @@ void doubleToTimespec(double secs, struct timespec *spec)
 SC_DLLEXPORT_C void schedStop()
 {
 	//printf("->schedStop\n");
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	if (gRunSched) {
 		gRunSched = false;
-		pthread_cond_signal (&gSchedCond);
-		pthread_mutex_unlock (&gLangMutex);
+		gLangMutex.unlock();
+		gSchedCond.notify_all();
 		pthread_join(gSchedThread, 0);
 	} else {
-		pthread_mutex_unlock (&gLangMutex);
+		gLangMutex.unlock();
 	}
 	//printf("<-schedStop\n");
 }
@@ -387,9 +400,9 @@ void schedClearUnsafe();
 
 SC_DLLEXPORT_C void schedClear()
 {
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	schedClearUnsafe();
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 void schedClearUnsafe()
@@ -399,8 +412,7 @@ void schedClearUnsafe()
 		VMGlobals *g = gMainVMGlobals;
 		PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
 		inQueue->size = 1;
-		pthread_cond_signal (&gSchedCond);
-		//pthread_mutex_unlock (&gLangMutex);
+		gSchedCond.notify_all();
 	}
 	//postfl("<-schedClear %d\n", gRunSched);
 }
@@ -424,8 +436,7 @@ extern bool gTraceInterpreter;
 void* schedRunFunc(void* arg);
 void* schedRunFunc(void* arg)
 {
-	pthread_mutex_lock (&gLangMutex);
-
+	unique_lock<timed_mutex> lock(gLangMutex);
 
 	VMGlobals *g = gMainVMGlobals;
 	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
@@ -439,7 +450,7 @@ void* schedRunFunc(void* arg)
 		// wait until there is something in scheduler
 		while (inQueue->size == 1) {
 			//postfl("wait until there is something in scheduler\n");
-			pthread_cond_wait (&gSchedCond, &gLangMutex);
+			gSchedCond.wait(lock);
 			if (!gRunSched) goto leave;
 		}
 		//postfl("wait until an event is ready\n");
@@ -449,11 +460,12 @@ void* schedRunFunc(void* arg)
 		do {
 			elapsed = elapsedTime();
 			if (elapsed >= slotRawFloat(inQueue->slots + 1)) break;
-			struct timespec abstime;
-			//doubleToTimespec(inQueue->slots->uf, &abstime);
-			ElapsedTimeToTimespec(slotRawFloat(inQueue->slots + 1), &abstime);
+			mutex_chrono::system_clock::time_point absTime;
+
+			ElapsedTimeToChrono(slotRawFloat(inQueue->slots + 1), absTime);
+
 			//postfl("wait until an event is ready\n");
-			pthread_cond_timedwait (&gSchedCond, &gLangMutex, &abstime);
+			gSchedCond.wait_until(lock, absTime);
 			if (!gRunSched) goto leave;
 			//postfl("time diff %g\n", elapsedTime() - inQueue->slots->uf);
 		} while (inQueue->size > 1);
@@ -492,7 +504,6 @@ void* schedRunFunc(void* arg)
 	}
 	//postfl("exitloop\n");
 leave:
-	pthread_mutex_unlock (&gLangMutex);
 	return 0;
 }
 
@@ -711,7 +722,7 @@ public:
 	double mBaseBeats;
 	volatile bool mRun;
 	pthread_t mThread;
-	pthread_cond_t mCondition;
+	condition_variable_any mCondition;
 	TempoClock *mPrev, *mNext;
 
 	static TempoClock *sAll;
@@ -764,7 +775,6 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	mQueue = (PyrHeap*)slotRawObject(&mTempoClockObj->slots[0]);
 	mQueue->size = 1;
 	SetInt(&mQueue->count, 0);
-	pthread_cond_init (&mCondition, NULL);
 
 	int err = pthread_create (&mThread, NULL, TempoClock_run_func, (void*)this);
 	if (err)
@@ -806,27 +816,23 @@ void TempoClock::StopReq()
 void TempoClock::Stop()
 {
 	//printf("->TempoClock::Stop\n");
-	pthread_mutex_lock (&gLangMutex);
-	//printf("Stop mRun %d\n", mRun);
-	if (mRun) {
-		mRun = false;
+	{
+		lock_guard<timed_mutex> lock(gLangMutex);
 
-		// unlink
-		if (mPrev) mPrev->mNext = mNext;
-		else sAll = mNext;
-		if (mNext) mNext->mPrev = mPrev;
+		//printf("Stop mRun %d\n", mRun);
+		if (mRun) {
+			mRun = false;
 
-		//printf("Stop pthread_cond_signal\n");
-		pthread_cond_signal (&mCondition);
-		//printf("Stop pthread_mutex_unlock\n");
-		pthread_mutex_unlock (&gLangMutex);
-		//printf("Stop pthread_join\n");
-		pthread_join(mThread, 0);
-	} else {
-		pthread_mutex_unlock (&gLangMutex);
+			// unlink
+			if (mPrev) mPrev->mNext = mNext;
+			else sAll = mNext;
+			if (mNext) mNext->mPrev = mPrev;
+
+			mCondition.notify_all();
+		}
 	}
-	//printf("Stop pthread_cond_destroy\n");
-	pthread_cond_destroy (&mCondition);
+	pthread_join(mThread, 0);
+
 	//printf("<-TempoClock::Stop\n");
 }
 
@@ -836,7 +842,7 @@ void TempoClock::SetAll(double inTempo, double inBeats, double inSeconds)
 	mBaseBeats = inBeats;
 	mTempo = inTempo;
 	mBeatDur = 1. / mTempo;
-	pthread_cond_signal (&mCondition);
+	mCondition.notify_one();
 }
 
 void TempoClock::SetTempoAtBeat(double inTempo, double inBeats)
@@ -845,7 +851,7 @@ void TempoClock::SetTempoAtBeat(double inTempo, double inBeats)
 	mBaseBeats = inBeats;
 	mTempo = inTempo;
 	mBeatDur = 1. / mTempo;
-	pthread_cond_signal (&mCondition);
+	mCondition.notify_one();
 }
 
 void TempoClock::SetTempoAtTime(double inTempo, double inSeconds)
@@ -854,7 +860,7 @@ void TempoClock::SetTempoAtTime(double inTempo, double inSeconds)
 	mBaseSeconds = inSeconds;
 	mTempo = inTempo;
 	mBeatDur = 1. / mTempo;
-	pthread_cond_signal (&mCondition);
+	mCondition.notify_one();
 }
 
 double TempoClock::ElapsedBeats()
@@ -865,7 +871,8 @@ double TempoClock::ElapsedBeats()
 void* TempoClock::Run()
 {
 	//printf("->TempoClock::Run\n");
-	pthread_mutex_lock (&gLangMutex);
+	unique_lock<timed_mutex> lock(gLangMutex);
+
 	while (mRun) {
 		assert(mQueue->size);
 		//printf("tempo %g  dur %g  beats %g\n", mTempo, mBeatDur, mBeats);
@@ -873,7 +880,7 @@ void* TempoClock::Run()
 		// wait until there is something in scheduler
 		while (mQueue->size == 1) {
 			//printf("wait until there is something in scheduler\n");
-			pthread_cond_wait (&mCondition, &gLangMutex);
+			mCondition.wait(gLangMutex);
 			//printf("mRun a %d\n", mRun);
 			if (!mRun) goto leave;
 		}
@@ -884,13 +891,15 @@ void* TempoClock::Run()
 		do {
 			elapsedBeats = ElapsedBeats();
 			if (elapsedBeats >= slotRawFloat(mQueue->slots)) break;
-			struct timespec abstime;
-			//doubleToTimespec(mQueue->slots->uf, &abstime);
+
+			mutex_chrono::system_clock::time_point absTime;
+
 			//printf("event ready at %g . elapsed beats %g\n", mQueue->slots->uf, elapsedBeats);
 			double wakeTime = BeatsToSecs(slotRawFloat(mQueue->slots));
-			ElapsedTimeToTimespec(wakeTime, &abstime);
+			ElapsedTimeToChrono(wakeTime, absTime);
+
 			//printf("wait until an event is ready. wake %g  now %g\n", wakeTime, elapsedTime());
-			pthread_cond_timedwait (&mCondition, &gLangMutex, &abstime);
+			mCondition.wait_until(lock, absTime);
 			//printf("mRun b %d\n", mRun);
 			if (!mRun) goto leave;
 			//printf("time diff %g\n", elapsedTime() - mQueue->slots->uf);
@@ -927,7 +936,6 @@ void* TempoClock::Run()
 	}
 leave:
 	//printf("<-TempoClock::Run\n");
-	pthread_mutex_unlock (&gLangMutex);
 	return 0;
 }
 
@@ -968,9 +976,8 @@ void TempoClock::Add(double inBeats, PyrSlot* inTask)
 		if (isKindOfSlot(inTask, class_thread)) {
 			SetFloat(&slotRawThread(inTask)->nextBeat, inBeats);
 		}
-		if (slotRawFloat(mQueue->slots) != prevBeats) {
-			pthread_cond_signal (&mCondition);
-		}
+		if (slotRawFloat(mQueue->slots) != prevBeats)
+			mCondition.notify_one();
 	}
 }
 
@@ -978,7 +985,7 @@ void TempoClock::Clear()
 {
 	if (mRun) {
 		mQueue->size = 1;
-		pthread_cond_signal (&mCondition);
+		mCondition.notify_one();
 	}
 }
 
