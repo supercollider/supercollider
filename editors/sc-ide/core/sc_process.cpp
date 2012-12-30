@@ -165,6 +165,7 @@ void ScProcess::stopLanguage (void)
         return;
     }
 
+    evaluateCode("0.exit", true);
     closeWriteChannel();
 
     mTerminationRequested   = true;
