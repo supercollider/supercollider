@@ -8,7 +8,7 @@ A Ref holds an object which may be retrieved and altered with the messages value
 The backquote code:: ` :: is a unary operator that is equivalent to calling code::Ref.new(obj)::.
 
 Refs are most commonly used to prevent multi-channel expansion in link::Classes/SynthDef::s and link::Classes/Pattern::s (see link::Classes/Klank:: for an example).
-Refs can also be used to simplify the coding of co-routines used in EventStreams (see link::Classes/Proutine:: for an example).
+Refs can also be used to simplify the coding of co-routines used in EventStreams (see link::Classes/Prout:: for an example).
 
 code::
 

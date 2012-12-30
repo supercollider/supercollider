@@ -41,7 +41,7 @@ method::set
 set arguments in the environment. If there is none, it is created and the routine pattern is rebuilt.
 
 method::endless
-returns a link::Classes/Proutine:: that plays the proxy endlessly, replacing strong::nil:: with a strong::default:: value (1 s. wait time). This allows to create streams that idle on until a new pattern is inserted.
+returns a link::Classes/Prout:: that plays the proxy endlessly, replacing strong::nil:: with a strong::default:: value (1 s. wait time). This allows to create streams that idle on until a new pattern is inserted.
 
 subsection::a) using it as stream reference
 

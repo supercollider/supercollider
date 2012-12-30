@@ -129,7 +129,7 @@ list::
 What are some disadvantages?
 list::
 ## Patterns are a new vocabulary to learn. Until you know a critical mass of them, it can be hard to trust them. That's the purpose of this guide!
-## If there isn't a pattern that does quite what you want, then it might take some ingenuity to combine patterns into new designs. (Custom behaviors can always be written using Proutine.)
+## If there isn't a pattern that does quite what you want, then it might take some ingenuity to combine patterns into new designs. (Custom behaviors can always be written using Prout.)
 ::
 
 Using patterns for sequencing might seem to be an advanced usage, but for many uses they are easier than the equivalent code written out step by step. They can serve as a bridge for new and advanced users alike, to represent a musical conception more directly with less connective tissue explicitly stated.
