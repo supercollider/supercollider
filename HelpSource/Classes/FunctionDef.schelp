@@ -1,6 +1,7 @@
 class::FunctionDef
 summary:: FunctionDefs contain code which can be executed from a Function.
 categories::Core>Kernel
+related::Classes/Function
 
 instanceMethods::
 
