@@ -1,6 +1,8 @@
 class::Function
 summary::Implements a function
 categories::Core>Kernel
+related::Classes/FunctionDef
+
 
 description::
 A Function is a reference to a FunctionDef and its defining context Frame. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method. See the Functions help file for a basic introduction.
