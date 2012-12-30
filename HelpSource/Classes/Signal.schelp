@@ -1,7 +1,7 @@
 CLASS::Signal
 summary::Sampled audio buffer
 related::Classes/Wavetable
-categories:: Signals
+categories:: Collections>Ordered
 
 DESCRIPTION::
 A Signal is a FloatArray that represents a sampled function of time buffer.  Signals support math operations.

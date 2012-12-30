@@ -1,7 +1,7 @@
 CLASS::Wavetable
 summary::sampled audio buffer in wavetable format
 related::Classes/Signal
-categories:: Signals
+categories:: Collections>Ordered
 
 DESCRIPTION::
 A Wavetable is a FloatArray in a special format used by SuperCollider's interpolating oscillators. Wavetables cannot be created by strong::new::.
