@@ -54,13 +54,13 @@ Pchain(
 	Ppar([
 		Pbind(
 			\octave, [5, 6] + Prand([0, 0, \r], inf),
-			\degree, Proutine({ | ev | loop { ev = Pseq(ev[\degree]).embedInStream } }),
-			\dur,	Proutine({ loop { Pseq([0.2, 0.2, 0.2, 0.2, 0.3].scramble).embedInStream } })
+			\degree, Prout({ | ev | loop { ev = Pseq(ev[\degree]).embedInStream } }),
+			\dur,	Prout({ loop { Pseq([0.2, 0.2, 0.2, 0.2, 0.3].scramble).embedInStream } })
 		),
 		Pbind(
 			\octave, 4,
 			\legato, 1.2,
-			\dur, Proutine({ loop { Pseq([0.2, 0.2, 0.2, 0.2, 0.3].scramble * 5).embedInStream }})
+			\dur, Prout({ loop { Pseq([0.2, 0.2, 0.2, 0.2, 0.3].scramble * 5).embedInStream }})
 		),
 	]),
 	Pstep(Pbind(
