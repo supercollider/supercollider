@@ -43,63 +43,6 @@
 struct PyrSymbol;
 struct VMGlobals;
 
-extern bool compiledOK;
-
-extern pthread_mutex_t gLangMutex;
-extern VMGlobals* gMainVMGlobals;
-
-
-// lock language,
-// if shouldBeRunning == false, return EINTR
-// if language has been locked, return 0
-template <typename FlagType>
-static inline int lockLanguageOrQuit(FlagType const & shouldBeRunning)
-{
-#ifdef __linux__
-	// we have pthread_mutex_timedlock
-
-	int status = pthread_mutex_trylock(&gLangMutex);
-	if (status == 0) {
-		if (shouldBeRunning == false) {
-			pthread_mutex_unlock(&gLangMutex);
-			return EINTR;
-		}
-	} else if (status == EBUSY) {
-		do {
-			struct timespec now;
-			clock_gettime(CLOCK_REALTIME, &now);
-			now.tv_sec += 1;
-
-			status = pthread_mutex_timedlock(&gLangMutex, &now);
-			if (shouldBeRunning == false) {
-				if (status == 0)
-					pthread_mutex_unlock(&gLangMutex);
-				return EINTR;
-			}
-		} while (status == ETIMEDOUT);
-	}
-	return status;
-#else
-	int status;
-	do {
-		status = pthread_mutex_trylock (&gLangMutex);
-		if (shouldBeRunning == false) {
-			if (status == 0)
-				pthread_mutex_unlock(&gLangMutex);
-			return EINTR;
-		}
-		if (status == EBUSY) {
-			struct timespec sleepTime, remain;
-			sleepTime.tv_sec = 0;
-			sleepTime.tv_nsec = 100000;
-			nanosleep(&sleepTime, &remain);
-		}
-	} while (status);
-	return 0;
-#endif
-}
-
-
 class SC_DLLEXPORT SC_LanguageClient
 {
 public:
@@ -124,8 +67,8 @@ public:
 	virtual ~SC_LanguageClient();
 
 	// singleton instance access locking
-	static void lockInstance() { gInstanceMutex.Lock(); }
-	static void unlockInstance() { gInstanceMutex.Unlock(); }
+	static void lockInstance();
+	static void unlockInstance();
 
 	// return the singleton instance
 	static SC_LanguageClient* instance() { return gInstance; }
@@ -139,17 +82,17 @@ public:
 	const char* getName() const { return mName; }
 
 	// library startup/shutdown
-	bool isLibraryCompiled() { return compiledOK; }
+	bool isLibraryCompiled();
 	void compileLibrary();
 	void shutdownLibrary();
 	void recompileLibrary();
 
 	// interpreter access
-	void lock() { pthread_mutex_lock(&gLangMutex); }
-	bool trylock() { return pthread_mutex_trylock(&gLangMutex) == 0; }
-	void unlock() { pthread_mutex_unlock(&gLangMutex); }
+	void lock();
+	bool trylock();
+	void unlock();
 
-	VMGlobals* getVMGlobals() { return gMainVMGlobals; }
+    struct VMGlobals* getVMGlobals();
 
 	void setCmdLine(const char* buf, size_t size);
 	void setCmdLine(const char* str);
@@ -157,11 +100,11 @@ public:
 	void setCmdLinef(const char* fmt, ...);
 	void runLibrary(PyrSymbol* pyrSymbol);
 	void runLibrary(const char* methodName);
-	void interpretCmdLine() { runLibrary(s_interpretCmdLine); }
-	void interpretPrintCmdLine() { runLibrary(s_interpretPrintCmdLine); }
+	void interpretCmdLine();
+	void interpretPrintCmdLine();
 	void executeFile(const char* fileName);
-	void runMain() { runLibrary(s_run); }
-	void stopMain() { runLibrary(s_stop); }
+	void runMain();
+	void stopMain();
 
 	// post file access
 	FILE* getPostFile() { return mPostFile; }
@@ -219,7 +162,6 @@ private:
 	SC_StringBuffer				mScratch;
 	bool						mRunning;
 	static SC_LanguageClient*	gInstance;
-	static SC_Lock gInstanceMutex;
 };
 
 // =====================================================================

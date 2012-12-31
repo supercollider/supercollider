@@ -33,9 +33,9 @@
 #include "SC_Errors.h"
 #include <stdio.h>
 #include "SC_Prototypes.h"
-#include "SC_Samp.h"
 #include "SC_DirUtils.h"
 #include "../../common/SC_SndFileHelpers.hpp"
+#include "../../common/Samp.hpp"
 #include "SC_StringParser.h"
 #ifdef _WIN32
 # include <direct.h>

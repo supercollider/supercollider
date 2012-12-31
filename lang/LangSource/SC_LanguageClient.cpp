@@ -43,6 +43,7 @@
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
+#include "PyrSched.h"
 #include "GC.h"
 #include "VMGlobals.h"
 #include "SC_DirUtils.h"
@@ -59,7 +60,7 @@ extern PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, long c
 // =====================================================================
 
 SC_LanguageClient* SC_LanguageClient::gInstance = 0;
-SC_Lock SC_LanguageClient::gInstanceMutex;
+SC_Lock gInstanceMutex;
 
 PyrSymbol* SC_LanguageClient::s_interpretCmdLine = 0;
 PyrSymbol* SC_LanguageClient::s_interpretPrintCmdLine = 0;
@@ -313,6 +314,25 @@ void SC_LanguageClient::onLibraryShutdown()
 void SC_LanguageClient::onInterpStartup()
 {
 }
+
+// runLibrary methods
+void SC_LanguageClient::interpretCmdLine() { runLibrary(s_interpretCmdLine); }
+void SC_LanguageClient::interpretPrintCmdLine() { runLibrary(s_interpretPrintCmdLine); }
+void SC_LanguageClient::runMain() { runLibrary(s_run); }
+void SC_LanguageClient::stopMain() { runLibrary(s_stop); }
+
+// locks
+void SC_LanguageClient::lock() { pthread_mutex_lock(&gLangMutex); }
+bool SC_LanguageClient::trylock() { return pthread_mutex_trylock(&gLangMutex) == 0; }
+void SC_LanguageClient::unlock() { pthread_mutex_unlock(&gLangMutex); }
+
+void SC_LanguageClient::lockInstance() { gInstanceMutex.Lock(); }
+void SC_LanguageClient::unlockInstance() { gInstanceMutex.Unlock(); }
+
+extern bool compiledOK;
+
+bool SC_LanguageClient::isLibraryCompiled() { return compiledOK; }
+
 
 // =====================================================================
 // library functions

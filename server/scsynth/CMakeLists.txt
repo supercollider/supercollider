@@ -62,13 +62,11 @@ endif()
 message(STATUS "Audio API: ${AUDIOAPI}")
 
 set(scsynth_sources
-	Samp.cpp
 	SC_BufGen.cpp
 	SC_Carbon.cpp
 
 	SC_ComPort.cpp
 	SC_CoreAudio.cpp
-	SC_Errors.cpp
 	SC_Graph.cpp
 	SC_GraphDef.cpp
 	SC_Group.cpp
@@ -87,11 +85,13 @@ set(scsynth_sources
 	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Errors.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Sem.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
+	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 
@@ -114,7 +114,9 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/common
                     ${CMAKE_SOURCE_DIR}/include/server
-                    ${CMAKE_SOURCE_DIR}/include/plugin_interface)
+                    ${CMAKE_SOURCE_DIR}/include/plugin_interface
+                    .
+)
 
 include_directories (${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src)
 
