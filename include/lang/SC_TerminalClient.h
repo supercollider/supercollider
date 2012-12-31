@@ -27,12 +27,12 @@
 #define SC_TERMINALCLIENT_H_INCLUDED
 
 #include "SC_LanguageClient.h"
-#include "SC_StringBuffer.h"
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
 // =====================================================================
 
+// TODO: move locks out of the header, possibly using pimpl
 class SC_DLLEXPORT SC_TerminalClient : public SC_LanguageClient
 {
 public:
@@ -91,7 +91,7 @@ protected:
 	bool parseOptions(int& argc, char**& argv, Options& opt);
 	void printUsage();
 
-	void interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine);
+	void interpretCmdLine(PyrSymbol* method, class SC_StringBuffer& cmdLine);
 	void interpretCmdLine(PyrSymbol* method, const char* cmdLine);
 	void interpretCmdLine(PyrSymbol* method, const char *buf, size_t size);
 

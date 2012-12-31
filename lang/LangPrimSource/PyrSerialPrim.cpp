@@ -41,7 +41,7 @@
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
-#include "SC_LanguageClient.h"
+#include "PyrSched.h"
 #include "SCBase.h"
 
 #include "SC_FIFO.h"

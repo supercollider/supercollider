@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
-    Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+  SuperCollider real time audio synthesis system
+  Copyright (c) 2002 James McCartney. All rights reserved.
+  http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,19 +18,11 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#ifndef _OSCData_
+#define _OSCData_
 
-#ifndef _SC_Samp_
-#define _SC_Samp_
+#include "PyrObject.h"
 
-#include "SC_Types.h"
-
-const int kSineSize = 8192;
-const int kSineMask = kSineSize - 1;
-
-extern float32 gSine[kSineSize+1];
-extern float32 gInvSine[kSineSize+1];
-extern float32 gSineWavetable[2*kSineSize];
-
-void SignalAsWavetable(float32* signal, float32* wavetable, long inSize);
+#include "../common/SC_Endian.h"
 
 #endif
