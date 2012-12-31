@@ -304,7 +304,7 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 		world->hw = (HiddenWorld*)zalloc(1, sizeof(HiddenWorld));
 
 		world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
-		world->hw->mQuitProgram = new SC_Semaphore(0);
+		world->hw->mQuitProgram = new nova::semaphore(0);
 		world->hw->mTerminating = false;
 
 		HiddenWorld *hw = world->hw;
@@ -710,7 +710,7 @@ Bail:
 SC_DLLEXPORT_C void World_WaitForQuit(struct World *inWorld)
 {
 	try {
-		inWorld->hw->mQuitProgram->Acquire();
+		inWorld->hw->mQuitProgram->wait();
 		World_Cleanup(inWorld);
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_WaitForQuit: %s\n", exc.what());

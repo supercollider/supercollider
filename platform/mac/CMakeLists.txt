@@ -96,7 +96,6 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_Sem.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp

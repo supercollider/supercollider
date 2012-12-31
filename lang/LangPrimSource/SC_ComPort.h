@@ -31,8 +31,8 @@ typedef int socklen_t;
 #endif
 
 #include "SC_Msg.h"
-#include "SC_Sem.h"
 #include "boost/atomic.hpp"
+#include "nova-tt/semaphore.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -110,8 +110,8 @@ public:
 
 class SC_TcpInPort : public SC_ComPort
 {
-        SC_Semaphore mConnectionAvailable;
-        int mBacklog;
+	nova::semaphore mConnectionAvailable;
+	int mBacklog;
 
 protected:
 	virtual ReplyFunc GetReplyFunc();
@@ -119,9 +119,9 @@ protected:
 public:
 	SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog);
 
-        virtual void* Run();
+	virtual void* Run();
 
-        void ConnectionTerminated();
+	void ConnectionTerminated();
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

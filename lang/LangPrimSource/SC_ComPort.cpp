@@ -455,24 +455,24 @@ SC_TcpInPort::SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog)
 
 void* SC_TcpInPort::Run()
 {
-    while (true)
-    {
-        mConnectionAvailable.Acquire();
-        struct sockaddr_in address; /* Internet socket address stuct */
-        int addressSize=sizeof(struct sockaddr_in);
-        int socket = accept(mSocket,(struct sockaddr*)&address,(socklen_t*)&addressSize);
-        if (socket < 0) {
-        	mConnectionAvailable.Release();
-        } else {
-        	new SC_TcpConnectionPort(this, socket);
-        }
-    }
-    return 0;
+	while (true)
+	{
+		mConnectionAvailable.wait();
+		struct sockaddr_in address; /* Internet socket address stuct */
+		int addressSize=sizeof(struct sockaddr_in);
+		int socket = accept(mSocket,(struct sockaddr*)&address,(socklen_t*)&addressSize);
+		if (socket < 0) {
+			mConnectionAvailable.post();
+		} else {
+			new SC_TcpConnectionPort(this, socket);
+		}
+	}
+	return 0;
 }
 
 void SC_TcpInPort::ConnectionTerminated()
 {
-        mConnectionAvailable.Release();
+	mConnectionAvailable.post();
 }
 
 ReplyFunc SC_TcpInPort::GetReplyFunc()

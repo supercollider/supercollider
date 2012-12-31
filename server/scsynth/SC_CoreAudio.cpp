@@ -19,7 +19,6 @@
 */
 
 #include "SC_CoreAudio.h"
-#include "SC_Sem.h"
 #include <stdarg.h>
 #include "SC_SequencedCommand.h"
 #include "SC_Prototypes.h"

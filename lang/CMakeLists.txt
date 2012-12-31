@@ -11,6 +11,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
                     LangSource
                     LangPrimSource
+
+                    ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     LangSource/Bison)
 
 if (Boost_FOUND)
@@ -71,15 +73,14 @@ set(sclang_sources
 	LangSource/dumpByteCodes.cpp
 
 	${CMAKE_SOURCE_DIR}/common/fftlib.c
+	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_Sem.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
-	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 
 	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
@@ -126,6 +127,7 @@ if(UNIX)
 			LangPrimSource/SC_CoreAudioPrim.cpp
 			LangPrimSource/SC_Speech.M
 			)
+		add_definitions(-DHAVE_SPEECH)
 		if (CMAKE_COMPILER_IS_GNUCXX)
 			set_source_files_properties(LangPrimSource/SC_Speech.M
 										PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")

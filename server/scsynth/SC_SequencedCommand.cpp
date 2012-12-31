@@ -25,7 +25,6 @@
 #include "scsynthsend.h"
 #include "SC_Prototypes.h"
 #include "SC_HiddenWorld.h"
-#include "SC_Sem.h"
 #include "SC_DirUtils.h"
 #include "SC_StringParser.h"
 #include "../../common/SC_SndFileHelpers.hpp"
@@ -1204,7 +1203,7 @@ bool AudioQuitCmd::Stage3()
 void AudioQuitCmd::Stage4()
 {
 	SendDone("/quit");
-	mWorld->hw->mQuitProgram->Release();
+	mWorld->hw->mQuitProgram->post();
 }
 
 ///////////////////////////////////////////////////////////////////////////
