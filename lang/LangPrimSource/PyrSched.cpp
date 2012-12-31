@@ -223,7 +223,6 @@ void* resyncThread(void* arg);
 
 namespace chrono = boost::chrono; // we can later move to std::chrono in c++11
 
-static boost::chrono::system_clock::time_point systemTimeOfInitialization;
 static boost::chrono::high_resolution_clock::time_point hrTimeOfInitialization;
 
 template <typename DurationType>
@@ -241,7 +240,6 @@ SC_DLLEXPORT_C void schedInit()
 	pthread_cond_init (&gSchedCond, NULL);
 	pthread_mutex_init (&gLangMutex, NULL);
 
-	systemTimeOfInitialization = chrono::system_clock::now();
 	hrTimeOfInitialization     = chrono::high_resolution_clock::now();
 
 #ifdef SC_DARWIN
@@ -267,7 +265,7 @@ double elapsedTime()
 #ifdef SC_DARWIN
 	return 1e-9 * (double)(AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) - gHostStartNanos);
 #else
-	return DurToFloat(chrono::system_clock::now() - systemTimeOfInitialization);
+	return DurToFloat(chrono::system_clock::now().time_since_epoch());
 #endif
 }
 
