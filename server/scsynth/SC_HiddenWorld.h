@@ -23,7 +23,6 @@
 #define _SC_HiddenWorld_
 
 #include "SC_Types.h"
-#include "SC_Sem.h"
 #include "SC_Rate.h"
 #include "SC_SndBuf.h"
 #include "SC_RGen.h"
@@ -31,6 +30,8 @@
 #include "SC_World.h"
 #include "SC_Reply.h"
 #include "MsgFifo.h"
+
+#include "nova-tt/semaphore.hpp"
 
 #include "../../common/server_shm.hpp"
 
@@ -106,7 +107,7 @@ struct HiddenWorld
 	NodeEndsFifo mNodeEnds;
 	DeleteGraphDefsFifo mDeleteGraphDefs;
 
-	SC_Semaphore* mQuitProgram;
+	nova::semaphore * mQuitProgram;
 	bool mTerminating;
 
 #ifndef NO_LIBSNDFILE

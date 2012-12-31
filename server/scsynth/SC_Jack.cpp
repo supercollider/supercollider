@@ -213,7 +213,7 @@ void sc_jack_shutdown_cb(void* arg)
 	scprintf("%s: killed by jack\n", kJackDriverIdent);
 	World * world = (World*)arg;
 	world->hw->mTerminating = true;
-	world->hw->mQuitProgram->Release();
+	world->hw->mQuitProgram->post();
 }
 
 // =====================================================================
