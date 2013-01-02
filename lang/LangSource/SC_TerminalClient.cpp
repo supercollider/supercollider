@@ -63,8 +63,6 @@
 
 static FILE* gPostDest = stdout;
 
-static const int ticks_per_second = 50; // every 20 milliseconds
-
 SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
 	  mShouldBeRunning(false),
