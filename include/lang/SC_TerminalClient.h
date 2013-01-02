@@ -27,6 +27,8 @@
 #define SC_TERMINALCLIENT_H_INCLUDED
 
 #include "SC_LanguageClient.h"
+#include "SC_Lock.h"
+#include <pthread.h>
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.

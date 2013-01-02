@@ -25,6 +25,7 @@
 
 #include "SC_LanguageClient.h"
 #include "SC_LanguageConfig.hpp"
+#include "SC_Lock.h"
 #include <cstring>
 #include <string>
 #include <cerrno>
@@ -62,13 +63,25 @@ extern PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, long c
 SC_LanguageClient* SC_LanguageClient::gInstance = 0;
 SC_Lock gInstanceMutex;
 
+class HiddenLanguageClient
+{
+public:
+	HiddenLanguageClient():
+		mPostFile(0),
+		mScratch(0),
+		mRunning(false)
+	{}
+
+	std::string					mName;
+	FILE*						mPostFile;
+	SC_StringBuffer				mScratch;
+	bool						mRunning;
+};
 
 SC_LanguageClient::SC_LanguageClient(const char* name)
-	: mName(0),
-	  mPostFile(0),
-	  mScratch(0),
-	  mRunning(false)
 {
+	mHiddenClient = new HiddenLanguageClient;
+
 	lockInstance();
 
 	if (gInstance) {
@@ -77,7 +90,7 @@ SC_LanguageClient::SC_LanguageClient(const char* name)
 		abort();
 	}
 
-	mName = strdup(name);
+	mHiddenClient->mName = name;
 	gInstance = this;
 
 	unlockInstance();
@@ -86,7 +99,6 @@ SC_LanguageClient::SC_LanguageClient(const char* name)
 SC_LanguageClient::~SC_LanguageClient()
 {
 	lockInstance();
-	free(mName);
 	gInstance = 0;
 	unlockInstance();
 }
@@ -94,7 +106,7 @@ SC_LanguageClient::~SC_LanguageClient()
 void SC_LanguageClient::initRuntime(const Options& opt)
 {
 	// start virtual machine
-	if (!mRunning) {
+	if (!mHiddenClient->mRunning) {
 #ifdef __linux__
 		char deprecatedSupportDirectory[PATH_MAX];
 		sc_GetUserHomeDirectory(deprecatedSupportDirectory, PATH_MAX);
@@ -110,7 +122,7 @@ void SC_LanguageClient::initRuntime(const Options& opt)
 		}
 #endif
 
-		mRunning = true;
+		mHiddenClient->mRunning = true;
 		if (opt.mRuntimeDir) {
 			int err = chdir(opt.mRuntimeDir);
 			if (err)
@@ -176,10 +188,10 @@ void SC_LanguageClient::setCmdLinef(const char* fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	mScratch.reset();
-	mScratch.vappendf(fmt, ap);
+	mHiddenClient->mScratch.reset();
+	mHiddenClient->mScratch.vappendf(fmt, ap);
 	va_end(ap);
-	setCmdLine(mScratch);
+	setCmdLine(mHiddenClient->mScratch);
 }
 
 void SC_LanguageClient::runLibrary(PyrSymbol* symbol)
@@ -325,6 +337,11 @@ void SC_LanguageClient::lockInstance() { gInstanceMutex.Lock(); }
 void SC_LanguageClient::unlockInstance() { gInstanceMutex.Unlock(); }
 
 extern bool compiledOK;
+
+const char* SC_LanguageClient::getName() const { return mHiddenClient->mName.c_str(); }
+
+FILE* SC_LanguageClient::getPostFile()           { return mHiddenClient->mPostFile; }
+void  SC_LanguageClient::setPostFile(FILE* file) { mHiddenClient->mPostFile = file; }
 
 bool SC_LanguageClient::isLibraryCompiled() { return compiledOK; }
 
