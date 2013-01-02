@@ -1361,7 +1361,7 @@ int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 
 int prElapsedTime(struct VMGlobals *g, int numArgsPushed)
 {
-	SetFloat(g->sp, elapsedRealTime());
+	SetFloat(g->sp, elapsedTime());
 	return errNone;
 }
 
