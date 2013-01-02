@@ -318,8 +318,6 @@ void SC_LanguageClient::onInterpStartup()
 // library functions
 // =====================================================================
 
-// this is defined in PySCLang
-#ifndef PYSCLANG
 void setPostFile(FILE* file)
 {
 	SC_LanguageClient::instance()->setPostFile(file);
@@ -441,5 +439,4 @@ long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2)
 {
     return 0;
 }
-#endif
 // EOF
