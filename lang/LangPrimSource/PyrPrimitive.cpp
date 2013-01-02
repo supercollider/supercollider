@@ -4161,13 +4161,22 @@ void initUnixPrimitives();
 void init_OSC_primitives();
 	init_OSC_primitives();
 
-/*  these probably should be moved out of the Lang code
-into an App init primitives section */
+#ifdef SC_APP
 void initGUIPrimitives();
 	initGUIPrimitives();
 
 void initSCViewPrimitives();
 	initSCViewPrimitives();
+
+void initRendezvousPrimitives();
+	initRendezvousPrimitives();
+
+void initCocoaFilePrimitives();
+	initCocoaFilePrimitives();
+
+void initCocoaBridgePrimitives();
+	initCocoaBridgePrimitives();
+#endif
 
 void initSchedPrimitives();
 	initSchedPrimitives();
@@ -4181,15 +4190,6 @@ void initMIDIPrimitives();
 void initHIDPrimitives();
 	initHIDPrimitives();
 
-void initSpeechPrimitives();
-	initSpeechPrimitives();
-
-void initCocoaFilePrimitives();
-	initCocoaFilePrimitives();
-
-void initCocoaBridgePrimitives();
-	initCocoaBridgePrimitives();
-
 void initSerialPrimitives();
 	initSerialPrimitives();
 
@@ -4202,13 +4202,14 @@ void initCoreAudioPrimitives();
 	initCoreAudioPrimitives();
 #endif
 
-// CR ADDED
-void initRendezvousPrimitives();
-	initRendezvousPrimitives();
-
 #ifdef SCOGL_COMPILE
 void initOpenGLPrimitives();
 	initOpenGLPrimitives();
+#endif
+
+#ifdef __APPLE__
+	void initSpeechPrimitives();
+		initSpeechPrimitives();
 #endif
 
 #ifdef SC_QT
@@ -4224,7 +4225,6 @@ void initOpenGLPrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
 	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
-
 }
 
 

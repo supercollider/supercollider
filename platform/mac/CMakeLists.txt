@@ -198,7 +198,9 @@ endif()
 
 set(scapp_parser_source ${CMAKE_SOURCE_DIR}/lang/LangSource/Bison/lang11d_tab.cpp)
 
-add_definitions(-DYYSTACK_USE_ALLOCA -DHAVE_SPEECH)
+add_definitions(-DYYSTACK_USE_ALLOCA)
+
+add_definitions(-DSC_APP) # configure sclang for scapp
 
 # set how it shows up in the Info.plist file
 SET(MACOSX_BUNDLE_ICON_FILE SCcube.icns)
