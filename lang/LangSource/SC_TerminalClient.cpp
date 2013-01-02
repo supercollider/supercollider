@@ -290,26 +290,34 @@ void SC_TerminalClient::quit(int code)
 	mShouldBeRunning = false;
 }
 
-void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine)
+static PyrSymbol * resolveMethodSymbol(bool silent)
+{
+	if (silent)
+		return s_interpretCmdLine;
+	else
+		return s_interpretPrintCmdLine;
+}
+
+void SC_TerminalClient::interpretCmdLine(SC_StringBuffer& cmdLine, bool silent)
 {
 	setCmdLine(cmdLine);
 	cmdLine.reset();
-	runLibrary(method);
+	runLibrary(resolveMethodSymbol(silent));
 	flush();
 }
 
-void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, const char* cmdLine)
+void SC_TerminalClient::interpretCmdLine(const char* cmdLine, bool silent)
 {
 	setCmdLine(cmdLine);
-	runLibrary(method);
+	runLibrary(resolveMethodSymbol(silent));
 	flush();
 }
 
 
-void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, const char *cmdLine, size_t size)
+void SC_TerminalClient::interpretCmdLine(const char *cmdLine, size_t size, bool silent)
 {
 	setCmdLine(cmdLine, size);
-	runLibrary(method);
+	runLibrary(resolveMethodSymbol(silent));
 	flush();
 }
 
@@ -322,10 +330,10 @@ void SC_TerminalClient::interpretInput()
 	while( i < c ) {
 		switch (data[i]) {
 		case kInterpretCmdLine:
-			interpretCmdLine(s_interpretCmdLine, data, i);
+			interpretCmdLine(data, i, true);
 			break;
 		case kInterpretPrintCmdLine:
-			interpretCmdLine(s_interpretPrintCmdLine, data, i);
+			interpretCmdLine(data, i, false);
 			break;
 
 		case kRecompileLibrary:
