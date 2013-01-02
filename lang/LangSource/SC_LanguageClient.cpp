@@ -62,11 +62,6 @@ extern PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, long c
 SC_LanguageClient* SC_LanguageClient::gInstance = 0;
 SC_Lock gInstanceMutex;
 
-PyrSymbol* SC_LanguageClient::s_interpretCmdLine = 0;
-PyrSymbol* SC_LanguageClient::s_interpretPrintCmdLine = 0;
-PyrSymbol* SC_LanguageClient::s_run = 0;
-PyrSymbol* SC_LanguageClient::s_stop = 0;
-static PyrSymbol* s_tick = 0;
 
 SC_LanguageClient::SC_LanguageClient(const char* name)
 	: mName(0),
@@ -419,11 +414,6 @@ void initGUI()
 
 void initGUIPrimitives()
 {
-	SC_LanguageClient::s_interpretCmdLine = getsym("interpretCmdLine");
-	SC_LanguageClient::s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
-	SC_LanguageClient::s_run = getsym("run");
-	SC_LanguageClient::s_stop = getsym("stop");
-    s_tick = getsym("tick");
 	SC_LanguageClient::instance()->onLibraryStartup();
 }
 

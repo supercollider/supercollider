@@ -40,7 +40,6 @@
 // SC_LanguageClient - abstract sclang client.
 // =====================================================================
 
-struct PyrSymbol;
 struct VMGlobals;
 
 class SC_DLLEXPORT SC_LanguageClient
@@ -98,7 +97,6 @@ public:
 	void setCmdLine(const char* str);
 	void setCmdLine(const SC_StringBuffer& strBuf);
 	void setCmdLinef(const char* fmt, ...);
-	void runLibrary(PyrSymbol* pyrSymbol);
 	void runLibrary(const char* methodName);
 	void interpretCmdLine();
 	void interpretPrintCmdLine();
@@ -118,13 +116,6 @@ public:
 	// flush post buffer contents to screen.
 	//     only called from the main language thread.
 	virtual void flush() = 0;
-
-	// common symbols
-	//     only valid after the library has been compiled.
-	static PyrSymbol* s_interpretCmdLine;
-	static PyrSymbol* s_interpretPrintCmdLine;
-	static PyrSymbol* s_run;
-	static PyrSymbol* s_stop;
 
 	// command line argument handling utilities
 	static void snprintMemArg(char* dst, size_t size, int arg);
@@ -150,6 +141,8 @@ protected:
 	virtual void onLibraryShutdown();
 	// called after the interpreter has been started
 	virtual void onInterpStartup();
+
+	void runLibrary(struct PyrSymbol* pyrSymbol);
 
 private:
 	friend void closeAllGUIScreens();
