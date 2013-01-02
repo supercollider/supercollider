@@ -147,27 +147,6 @@ void initGUIPrimitives()
 {
 }
 
-void initSCViewPrimitives();
-void initSCViewPrimitives()
-{
-}
-
-void initCocoaFilePrimitives();
-void initCocoaFilePrimitives()
-{
-}
-
-void initCocoaBridgePrimitives();
-void initCocoaBridgePrimitives()
-{
-}
-
-// CR ADDED
-void initRendezvousPrimitives();
-void initRendezvousPrimitives()
-{
-}
-
 int main();
 int main()
 {

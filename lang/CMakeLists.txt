@@ -126,7 +126,6 @@ if(UNIX)
 			LangPrimSource/SC_CoreAudioPrim.cpp
 			LangPrimSource/SC_Speech.M
 			)
-		add_definitions(-DHAVE_SPEECH)
 		if (CMAKE_COMPILER_IS_GNUCXX)
 			set_source_files_properties(LangPrimSource/SC_Speech.M
 										PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
