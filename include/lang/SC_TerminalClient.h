@@ -91,9 +91,9 @@ protected:
 	bool parseOptions(int& argc, char**& argv, Options& opt);
 	void printUsage();
 
-	void interpretCmdLine(struct PyrSymbol* method, class SC_StringBuffer& cmdLine);
-	void interpretCmdLine(struct PyrSymbol* method, const char* cmdLine);
-	void interpretCmdLine(struct PyrSymbol* method, const char *buf, size_t size);
+	void interpretCmdLine(class SC_StringBuffer& cmdLine, bool silent);
+	void interpretCmdLine(const char* cmdLine, bool silent);
+	void interpretCmdLine(const char *buf, size_t size, bool silent);
 
 	void lockInput() { pthread_mutex_lock(&mInputMutex); }
 	void unlockInput() { pthread_mutex_unlock(&mInputMutex); }
