@@ -26,15 +26,10 @@
 #ifndef SC_LANGUAGECLIENT_H_INCLUDED
 #define SC_LANGUAGECLIENT_H_INCLUDED
 
-#include "SC_StringBuffer.h"
 #include "SC_Export.h"
-#include "SC_Lock.h"
-#include "SC_Win32Utils.h"
+#include "SC_StringBuffer.h"
 
-#include <pthread.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <errno.h>
+#include <cstdio>
 
 // =====================================================================
 // SC_LanguageClient - abstract sclang client.
@@ -78,7 +73,7 @@ public:
 	void shutdownRuntime();
 
 	// return application name
-	const char* getName() const { return mName; }
+	const char* getName() const;
 
 	// library startup/shutdown
 	bool isLibraryCompiled();
@@ -105,8 +100,8 @@ public:
 	void stopMain();
 
 	// post file access
-	FILE* getPostFile() { return mPostFile; }
-	void setPostFile(FILE* file) { mPostFile = file; }
+	FILE* getPostFile();
+	void setPostFile(FILE* file);
 
 	// post buffer output (subclass responsibility)
 	//     should be thread-save.
@@ -150,10 +145,7 @@ private:
 	friend void initGUI();
 
 private:
-	char*						mName;
-	FILE*						mPostFile;
-	SC_StringBuffer				mScratch;
-	bool						mRunning;
+	struct HiddenLanguageClient * mHiddenClient;
 	static SC_LanguageClient*	gInstance;
 };
 
