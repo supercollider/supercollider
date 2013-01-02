@@ -209,7 +209,7 @@ extern PyrSymbol *s_linear, *s_exponential, *s_gate;
 extern PyrSymbol *s_env;
 
 extern PyrSymbol *s_audio, *s_control, *s_scalar;
-extern PyrSymbol *s_run;
+extern PyrSymbol *s_run, *s_stop, *s_tick;
 extern PyrSymbol *s_next;
 extern PyrSymbol *s_at;
 extern PyrSymbol *s_put;
@@ -226,6 +226,7 @@ extern PyrSymbol *s_awake;
 extern PyrSymbol *s_appclock;
 extern PyrSymbol *s_systemclock;
 extern PyrSymbol *s_server_shm_interface;
+extern PyrSymbol *s_interpretCmdLine, *s_interpretPrintCmdLine;
 
 
 extern int gFormatElemSize[NUMOBJFORMATS];
