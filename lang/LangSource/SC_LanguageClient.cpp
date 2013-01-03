@@ -49,6 +49,7 @@
 #include "VMGlobals.h"
 #include "SC_DirUtils.h"
 #include "SCBase.h"
+#include "SC_StringBuffer.h"
 
 void closeAllGUIScreens();
 void initGUI();
@@ -179,19 +180,15 @@ void SC_LanguageClient::setCmdLine(const char* str)
 	setCmdLine(str, strlen(str));
 }
 
-void SC_LanguageClient::setCmdLine(const SC_StringBuffer& strBuf)
-{
-	setCmdLine(strBuf.getData(), strBuf.getSize());
-}
-
 void SC_LanguageClient::setCmdLinef(const char* fmt, ...)
 {
+	SC_StringBuffer & scratch = mHiddenClient->mScratch;
 	va_list ap;
 	va_start(ap, fmt);
-	mHiddenClient->mScratch.reset();
-	mHiddenClient->mScratch.vappendf(fmt, ap);
+	scratch.reset();
+	scratch.vappendf(fmt, ap);
 	va_end(ap);
-	setCmdLine(mHiddenClient->mScratch);
+	setCmdLine(scratch.getData());
 }
 
 void SC_LanguageClient::runLibrary(PyrSymbol* symbol)

@@ -1,6 +1,7 @@
 /*  -*- c++ -*-
 	Abstract interpreter interface.
 	Copyright (c) 2003 2004 stefan kersten.
+	Copyright (c) 2013 tim blechmann.
 
 	====================================================================
 
@@ -27,8 +28,6 @@
 #define SC_LANGUAGECLIENT_H_INCLUDED
 
 #include "SC_Export.h"
-#include "SC_StringBuffer.h"
-
 #include <cstdio>
 
 // =====================================================================
@@ -90,7 +89,6 @@ public:
 
 	void setCmdLine(const char* buf, size_t size);
 	void setCmdLine(const char* str);
-	void setCmdLine(const SC_StringBuffer& strBuf);
 	void setCmdLinef(const char* fmt, ...);
 	void runLibrary(const char* methodName);
 	void interpretCmdLine();

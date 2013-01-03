@@ -298,14 +298,6 @@ static PyrSymbol * resolveMethodSymbol(bool silent)
 		return s_interpretPrintCmdLine;
 }
 
-void SC_TerminalClient::interpretCmdLine(SC_StringBuffer& cmdLine, bool silent)
-{
-	setCmdLine(cmdLine);
-	cmdLine.reset();
-	runLibrary(resolveMethodSymbol(silent));
-	flush();
-}
-
 void SC_TerminalClient::interpretCmdLine(const char* cmdLine, bool silent)
 {
 	setCmdLine(cmdLine);

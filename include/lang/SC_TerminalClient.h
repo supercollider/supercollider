@@ -27,7 +27,7 @@
 #define SC_TERMINALCLIENT_H_INCLUDED
 
 #include "SC_LanguageClient.h"
-#include "SC_Lock.h"
+#include "SC_StringBuffer.h"
 #include <pthread.h>
 
 // =====================================================================
@@ -93,7 +93,6 @@ protected:
 	bool parseOptions(int& argc, char**& argv, Options& opt);
 	void printUsage();
 
-	void interpretCmdLine(class SC_StringBuffer& cmdLine, bool silent);
 	void interpretCmdLine(const char* cmdLine, bool silent);
 	void interpretCmdLine(const char *buf, size_t size, bool silent);
 
