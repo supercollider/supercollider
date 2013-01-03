@@ -342,6 +342,10 @@ void  SC_LanguageClient::setPostFile(FILE* file) { mHiddenClient->mPostFile = fi
 
 bool SC_LanguageClient::isLibraryCompiled() { return compiledOK; }
 
+int SC_LanguageClient::run(int argc, char **argv)
+{
+	throw std::runtime_error("SC_LanguageClient::run only supported on terminal client");
+}
 
 // =====================================================================
 // library functions

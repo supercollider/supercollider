@@ -24,6 +24,7 @@
 */
 
 #include "SC_TerminalClient.h"
+#include "../../QtCollider/LanguageClient.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -874,4 +875,23 @@ int SC_TerminalClient::prRecompile(struct VMGlobals *, int)
 	static_cast<SC_TerminalClient*>(instance())->sendSignal(sig_recompile);
 	return errNone;
 }
+
+SC_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
+{
+	if (SC_LanguageClient::instance())
+		return NULL;
+
+#ifdef SC_QT
+	return new QtCollider::LangClient(name);
+#else
+	return new SC_TerminalClient(name);
+#endif
+}
+
+SC_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient * languageClient)
+{
+	delete languageClient;
+}
+
+
 // EOF
