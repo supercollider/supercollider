@@ -34,7 +34,8 @@
 // SC_LanguageClient - abstract sclang client.
 // =====================================================================
 
-struct VMGlobals;
+SC_DLLEXPORT class SC_LanguageClient * createLanguageClient(const char * name);
+SC_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient *);
 
 class SC_DLLEXPORT SC_LanguageClient
 {
@@ -54,11 +55,13 @@ public:
 		char*			mRuntimeDir;			// runtime directory
 	};
 
-public:
+protected:
 	// create singleton instance
 	SC_LanguageClient(const char* name);
 	virtual ~SC_LanguageClient();
+	friend void destroyLanguageClient(class SC_LanguageClient *);
 
+public:
 	// singleton instance access locking
 	static void lockInstance();
 	static void unlockInstance();
@@ -100,6 +103,9 @@ public:
 	// post file access
 	FILE* getPostFile();
 	void setPostFile(FILE* file);
+
+	// run (in case of a terminal client)
+	virtual int run(int argc, char** argv);
 
 	// post buffer output (subclass responsibility)
 	//     should be thread-save.
