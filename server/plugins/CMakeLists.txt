@@ -6,6 +6,7 @@ else()
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
+                    ${CMAKE_SOURCE_DIR}/common
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface)
 
 if (NOVA_SIMD)
