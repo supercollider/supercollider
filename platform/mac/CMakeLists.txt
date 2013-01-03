@@ -24,6 +24,10 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/include/plugin_interface
 	${CMAKE_SOURCE_DIR}/include/server
 	${CMAKE_SOURCE_DIR}/common
+	${CMAKE_SOURCE_DIR}/server/scsynth
+	${CMAKE_SOURCE_DIR}/lang/LangSource
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource
+
 	${CMAKE_SOURCE_DIR}/editors/scapp/include
 	${CMAKE_SOURCE_DIR}/editors/scapp/include/SMLAdvancedFind
 	${CMAKE_SOURCE_DIR}/editors/scapp/include/SMLAdvancedFind/ICU
