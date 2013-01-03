@@ -37,6 +37,7 @@
 #include "SC_Unit.h"
 #include "clz.h"
 #include "SC_fftlib.h"
+#include "SC_Lock.h"
 #include "../../common/Samp.hpp"
 #include "../../common/SC_SndFileHelpers.hpp"
 
