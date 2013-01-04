@@ -329,10 +329,9 @@ PlusFreqScopeWindow {
 		if(scopeOpen != true, { // block the stacking up of scope windows
 			//make scope
 
-			scopeOpen = true;
+			scopeColor = scopeColor ?? { Color.new255(255, 218, 000) };
 
-			if(scopeColor.isNil, { scopeColor = Color.green });
-			if(bgColor.isNil, { bgColor = Color.green(0.1) });
+			scopeOpen = true;
 
 			rect = Rect(0, 0, width, height);
 			pad = [30, 48, 14, 10]; // l,r,t,b
@@ -385,7 +384,6 @@ PlusFreqScopeWindow {
 				;
 				StaticText(window, Rect(pad[0] + (i*freqLabelDist), pad[2], 1, rect.height))
 					.string_("")
-					.background_(scopeColor.alpha_(0.25))
 				;
 			});
 
@@ -396,7 +394,6 @@ PlusFreqScopeWindow {
 				;
 				StaticText(window, Rect(pad[0], dbLabel[i].bounds.top, rect.width, 1))
 					.string_("")
-					.background_(scopeColor.alpha_(0.25))
 				;
 			});
 
@@ -466,11 +463,14 @@ PlusFreqScopeWindow {
 			scope
 				.inBus_(busNum)
 				.active_(true)
-				.background_(bgColor)
 				.style_(1)
 				.waveColors_([scopeColor.alpha_(1)])
 				.canFocus_(false)
 			;
+
+			if (bgColor.notNil) {
+				scope.background_(bgColor)
+			};
 
 			window.onClose_({
 				scope.kill;
