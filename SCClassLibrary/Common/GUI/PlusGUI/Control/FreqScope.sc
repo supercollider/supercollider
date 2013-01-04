@@ -1,7 +1,3 @@
-// PlusFreqScope and PlusFreqScopeWindow
-// by Lance Putnam
-// cross-platform port by Tim Blechmann
-
 PlusFreqScope {
 	classvar <server;
 
@@ -194,6 +190,7 @@ PlusFreqScope {
 		rate = 4;
 		freqMode = 0;
 		bufSize = 2048;
+		ServerQuit.add(this, server);
         ^this;
 	}
 
@@ -205,8 +202,6 @@ PlusFreqScope {
 		} {
 			Buffer.alloc(server, bufSize/4, 1, { |sbuf|
 				scope.bufnum = sbuf.bufnum;
-				("FreqScope: Buffer allocated ("
-					++ sbuf.bufnum.asString ++ ")").postln;
 				scopebuf = sbuf;
 				this.start;
 			});
@@ -214,10 +209,9 @@ PlusFreqScope {
 	}
 
 	freeBuffers {
-		if( scopebuf.notNil, {
-			("FreqScope: Buffer freed (" ++ scopebuf.bufnum.asString ++ ")").postln;
+		if (scopebuf.notNil) {
 			scopebuf.free; scopebuf = nil;
-		});
+		};
 	}
 
 	start {
@@ -231,31 +225,39 @@ PlusFreqScope {
 	kill {
 		this.active_(false);
 		this.freeBuffers;
+		ServerQuit.remove(this, server);
 	}
 
-	active_ { arg bool;
-		if(server.serverRunning, { // don't do anything unless server is running
-
-			if(bool, {
-				if(active.not, {
-					CmdPeriod.add(this);
-					if(scopebuf.isNil) { // first activation
-						this.allocBuffersAndStart;
-					} {
-						this.start;
-					};
-				});
-			}, {
-				if(active, {
-					if (scope.class.name === \QScope2) { scope.stop };
-					synth.free;
-					CmdPeriod.remove(this);
-				});
-			});
-			active=bool;
-
-		});
+	active_ { arg activate;
+		if (activate) {
+			ServerTree.add(this, server);
+			if (server.serverRunning) {
+				this.doOnServerTree;
+			}
+		} {
+			ServerTree.remove(this, server);
+			if (server.serverRunning and: active) {
+				if (scope.class.name === \QScope2) { scope.stop };
+				synth.free;
+			};
+		};
+		active=activate;
 		^this
+	}
+
+	doOnServerTree {
+		if (active) {
+			if (scopebuf.isNil) {
+				this.allocBuffersAndStart;
+			} {
+				this.start;
+			}
+		}
+	}
+
+	doOnServerQuit {
+		scope.stop;
+		scopebuf = synth = nil;
 	}
 
 	inBus_ { arg num;
@@ -279,19 +281,6 @@ PlusFreqScope {
 		if(active, {
 			synth.free;
 			this.start;
-		});
-	}
-
-	cmdPeriod {
-		this.changed(\cmdPeriod);
-		if(active == true, {
-			CmdPeriod.remove(this);
-			active = false;
-			// needs to be deferred to build up synth again properly
-			{
-				server.sync;
-				this.active_(true);
-			}.fork(AppClock)
 		});
 	}
 
@@ -483,7 +472,8 @@ PlusFreqScopeWindow {
 				.canFocus_(false)
 			;
 
-			window.onClose_({ scope.kill;
+			window.onClose_({
+				scope.kill;
 				scopeOpen = false;
 			}).front;
 			^super.newCopyArgs(scope, window)
