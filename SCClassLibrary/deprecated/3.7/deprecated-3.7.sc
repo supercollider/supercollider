@@ -1,5 +1,3 @@
-// in 3.6, both "help" and "openHelpFile" will work fine. In 3.7, "openHelpFile" will be deprecated. In 3.8 it will be gone.
-
 TuningInfo {
 	*new {
 		this.deprecated(thisMethod);
@@ -7,12 +5,23 @@ TuningInfo {
 	}
 }
 
+
+
 ScaleInfo {
 	*new {
 		this.deprecated(thisMethod);
 		^Scale
 	}
 }
+
+Proutine : Prout {
+	*new { |routineFunc|
+		this.deprecated(thisMethod, Prout.findMethod(\new));
+		^Prout(routineFunc)
+	}
+}
+
+// in 3.6, both "help" and "openHelpFile" will work fine. In 3.7, "openHelpFile" will be deprecated. In 3.8 it will be gone.
 
 + Object {
 	openHelpFile {
@@ -112,5 +121,15 @@ ScaleInfo {
 	syntaxColorize {
 		this.deprecated(thisMethod);
 		^this.subclassResponsibility(thisMethod)
+	}
+}
+
+// Date-bootTime
++ Date {
+	bootTime {
+		this.deprecated(thisMethod);
+	}
+	bootTime_ {
+		this.deprecated(thisMethod);
 	}
 }

@@ -67,10 +67,6 @@
 #endif
 
 
-#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
-#include "portaudio.h"
-#endif
-
 const double kSecondsToOSCunits = 4294967296.; // pow(2,32)
 const double kMicrosToOSCunits = 4294.967296; // pow(2,32)/1e6
 const double kNanosToOSCunits  = 4.294967296; // pow(2,32)/1e9
@@ -317,38 +313,6 @@ inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 }
 #endif // SC_AUDIO_API_COREAUDIOIPHONE
 
-
-#if SC_AUDIO_API == SC_AUDIO_API_PORTAUDIO
-class SC_PortAudioDriver : public SC_AudioDriver
-{
-
-	int mInputChannelCount, mOutputChannelCount;
-	PaStream *mStream;
-	PaTime mPaStreamStartupTime;
-	int64 mPaStreamStartupTimeOSC;
-
-protected:
-	// Driver interface methods
-	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
-	virtual bool DriverStart();
-	virtual bool DriverStop();
-
-public:
-    SC_PortAudioDriver(struct World *inWorld);
-	virtual ~SC_PortAudioDriver();
-
-	int PortAudioCallback( const void *input, void *output,
-            unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
-            PaStreamCallbackFlags statusFlags );
-private:
-	void GetPaDeviceFromName(const char* device, int* mInOut);
-};
-
-inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
-{
-    return new SC_PortAudioDriver(inWorld);
-}
-#endif // SC_AUDIO_API_PORTAUDIO
 
 #if SC_AUDIO_API == SC_AUDIO_API_ANDROIDJNI
 

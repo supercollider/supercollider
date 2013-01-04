@@ -25,13 +25,14 @@
 #include <stdio.h>
 #include <winsock2.h>
 #include <pthread.h>
-#include <shlobj.h>
 
 // wrappers for unix replacements
 #define gettimeofday win32_gettimeofday
 #define basename win32_basename
 #define dirname win32_dirname
-#define nanosleep win32_nanosleep
+#ifndef __MINGW64_VERSION_MAJOR //defined in stdio.h mingw64 for 64 and 32 bits
+#define nanosleep sc_win32_nanosleep
+#endif
 #define pipe win32_pipe
 
 #if _MSC_VER

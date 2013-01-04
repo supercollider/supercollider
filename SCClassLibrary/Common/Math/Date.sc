@@ -1,16 +1,16 @@
 Date {
 	var <>year=2000, <>month=1, <>day=1, <>hour=0, <>minute=0, <>second=0, <>dayOfWeek=6,
-		<>rawSeconds=0, <>bootSeconds=0;
+		<>rawSeconds=0;
 
 	*getDate { ^this.localtime }
 	*localtime { ^this.new.localtime }
 	*gmtime { ^this.new.gmtime }
-	*new { arg year, month, day, hour, minute, second, dayOfWeek, rawSeconds, bootSeconds;
+	*new { arg year, month, day, hour, minute, second, dayOfWeek, rawSeconds;
 		^super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek,
-				rawSeconds, bootSeconds);
+				rawSeconds);
 	}
 	storeArgs {
-		^[year, month, day, hour, minute, second, dayOfWeek, rawSeconds, bootSeconds]
+		^[year, month, day, hour, minute, second, dayOfWeek, rawSeconds]
 	}
 	localtime {
 		_LocalTime

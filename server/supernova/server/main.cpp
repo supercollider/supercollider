@@ -43,6 +43,11 @@
 #endif
 
 #include "SC_DirUtils.h"
+#ifndef _WIN32
+    const char pathSeparator[] = ":";
+#else
+    const char pathSeparator[] = ";";
+#endif
 
 using namespace nova;
 using namespace std;
@@ -188,8 +193,13 @@ boost::filesystem::path resolve_home(void)
 void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * factory)
 {
     if (!args.ugen_paths.empty()) {
-        for(string const & path : args.ugen_paths)
-            factory->load_plugin_folder(path);
+        for(path const & path1 : args.ugen_paths){
+            vector<std::string> directories;
+            boost::split(directories, path1.string(), boost::is_any_of(pathSeparator));
+            for(string const & path : directories){
+                factory->load_plugin_folder(path);
+            }
+        }
     } else {
 #ifdef __linux__
         path home = resolve_home();
@@ -220,7 +230,7 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
 void load_synthdef_folder(nova_server & server, path const & folder, bool verbose)
 {
     if (verbose)
-        std::printf("Loading synthdefs from path: %s\n", folder.c_str());
+        std::cout << "Loading synthdefs from path: " << folder.string() << std::endl;
 
     register_synthdefs(server, std::move(sc_read_synthdefs_dir(folder)));
 }
@@ -233,11 +243,6 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
     auto start_time = chrono::high_resolution_clock::now();
 #endif
 
-#ifndef _WIN32
-    const char pathSeparator[] = ":";
-#else
-    const char pathSeparator[] = ";";
-#endif
 
     if (args.load_synthdefs) {
         const char * env_synthdef_path = getenv("SC_SYNTHDEF_PATH");

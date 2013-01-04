@@ -39,11 +39,8 @@
 #include <string.h>
 # include <signal.h>
 
-#ifdef SC_WIN32
-# include "SC_Win32Utils.h"
-#else
-# include <sys/time.h>
-#endif
+#define BOOST_CHRONO_HEADER_ONLY
+#include <boost/chrono.hpp>
 
 #include <float.h>
 #define kBigBigFloat DBL_MAX
@@ -60,15 +57,21 @@ double timeNow();
 
 int32 timeseed()
 {
-	struct timeval tv;
-	gettimeofday(&tv, 0);
-	return tv.tv_sec ^ tv.tv_usec;
+	using namespace boost::chrono;
+
+	high_resolution_clock::time_point now = high_resolution_clock::now();
+	high_resolution_clock::duration since_epoch = now.time_since_epoch();
+
+	seconds     secs     = duration_cast<seconds>(since_epoch);
+	nanoseconds nanosecs = since_epoch - secs;
+
+	boost::int_least64_t seed = secs.count() ^ nanosecs.count();
+
+	return (int32)seed;
 }
 
 VMGlobals gVMGlobals;
 VMGlobals *gMainVMGlobals = &gVMGlobals;
-
-extern PyrObject *gSynth;
 
 void debugf(char *fmt, ...) ;
 

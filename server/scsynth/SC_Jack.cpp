@@ -45,68 +45,7 @@ static const char* kJackDefaultClientName = "SuperCollider";
 
 // =====================================================================
 // Timing
-
-// =====================================================================
-// SC_JackDLL
-//
-//   Delay-Locked-Loop after
-//   Fons Adriaensen, "Using a DLL to filter time"
-
-#define SC_JACK_DLL_BW 0.012
-
-class SC_JackDLL
-{
-public:
-	SC_JackDLL()
-		: m_b(0.), m_c(0.),
-		  m_t0(0.), m_t1(0.), m_e2(0.),
-		  m_np(0), m_ei(0.), m_ec(0)
-	{ }
-
-	void Reset(double sampleRate, jack_nframes_t periodFrames, double bandWidth, double t)
-	{
-		// compute coefficients
-		m_np = periodFrames;
-		m_b = 2*M_PI*bandWidth*m_np/sampleRate;
-		m_c = m_b*m_b/2.;
-		// initialize filter
-		double tp = m_np/sampleRate;
-		m_e2 = tp;
-		m_t0 = t;
-		m_t1 = t + tp;
-		// initialize statistics
-		m_ei = 0.;
-		m_ec = 0;
-	}
-
-	void Update(double t)
-	{
-		// compute error
-		double e = m_e = t - m_t1;
-		// update filter
-		m_t0 = m_t1;
-		m_t1 += m_b * e + m_e2;
-		m_e2 += m_c * e;
-		// collect statistics
-		m_ei += e;
-		m_ec++;
-	}
-
-	double PeriodTime() const { return m_t0; }
-	double NextPeriodTime() const { return m_t1; }
-	double Period() const { return m_t1 - m_t0; }
-	double SampleRate() const { return m_np/Period(); }
-	double Error() const { return m_e; }
-	double AvgError() const { return m_ec > 0 ? m_ei/m_ec : 0; }
-
-private:
-	double m_b, m_c;
-	double m_t0, m_t1, m_e, m_e2;
-	jack_nframes_t m_np;
-	double m_ei;
-	int m_ec;
-};
-
+#include "SC_TimeDLL.hpp"
 static inline int64 sc_JackOSCTime(const struct timeval& tv)
 {
 	return ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
@@ -165,24 +104,24 @@ struct SC_JackPortList
 
 class SC_JackDriver : public SC_AudioDriver
 {
-    jack_client_t		*mClient;
+	jack_client_t		*mClient;
 	SC_JackPortList		*mInputList;
 	SC_JackPortList		*mOutputList;
 	double				mMaxOutputLatency;
-	SC_JackDLL			mDLL;
+	SC_TimeDLL			mDLL;
 
 protected:
-    // driver interface methods
+	// driver interface methods
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
 	virtual bool DriverStart();
 	virtual bool DriverStop();
 
 public:
-    SC_JackDriver(struct World *inWorld);
+	SC_JackDriver(struct World *inWorld);
 	virtual ~SC_JackDriver();
 
 	// process loop
-    void Run();
+	void Run();
 
 	// reset state
 	void Reset(double sampleRate, int bufferSize);
@@ -209,7 +148,7 @@ private:
 
 SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 {
-    return new SC_JackDriver(inWorld);
+	return new SC_JackDriver(inWorld);
 }
 
 // =====================================================================
@@ -282,10 +221,10 @@ void sc_jack_shutdown_cb(void* arg)
 
 SC_JackDriver::SC_JackDriver(struct World *inWorld)
 	: SC_AudioDriver(inWorld),
-	  mClient(0),
-	  mInputList(0),
-	  mOutputList(0),
-	  mMaxOutputLatency(0.)
+	mClient(0),
+	mInputList(0),
+	mOutputList(0),
+	mMaxOutputLatency(0.)
 { }
 
 SC_JackDriver::~SC_JackDriver()
@@ -374,48 +313,48 @@ bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 
 void SC_JackDriver::ConnectClientInputs(const char * pattern)
 {
-    const char **ports = jack_get_ports (mClient, pattern, NULL, JackPortIsOutput);
-    jack_port_t ** ourports = mInputList->mPorts;
+	const char **ports = jack_get_ports (mClient, pattern, NULL, JackPortIsOutput);
+	jack_port_t ** ourports = mInputList->mPorts;
 
-    if (!ports)
-        return;
+	if (!ports)
+		return;
 
-    int i = 0;
-    while (ports[i]) {
-        if (i == mInputList->mSize)
-            break;
+	int i = 0;
+	while (ports[i]) {
+		if (i == mInputList->mSize)
+			break;
 
-        const char * src = ports[i];
-        const char * dst = jack_port_name(ourports[i]);
+		const char * src = ports[i];
+		const char * dst = jack_port_name(ourports[i]);
 
-        ConnectPorts(src, dst);
-        ++i;
-    }
+		ConnectPorts(src, dst);
+		++i;
+	}
 
-    free(ports);
+	free(ports);
 }
 
 void SC_JackDriver::ConnectClientOutputs(const char * pattern)
 {
-    const char **ports = jack_get_ports (mClient, pattern, NULL, JackPortIsInput);
-    jack_port_t ** ourports = mOutputList->mPorts;
+	const char **ports = jack_get_ports (mClient, pattern, NULL, JackPortIsInput);
+	jack_port_t ** ourports = mOutputList->mPorts;
 
-    if (!ports)
-        return;
+	if (!ports)
+		return;
 
-    int i = 0;
-    while (ports[i]) {
-        if (i == mOutputList->mSize)
-            break;
+	int i = 0;
+	while (ports[i]) {
+		if (i == mOutputList->mSize)
+			break;
 
-        const char * src = jack_port_name(ourports[i]);
-        const char * dst = ports[i];
+		const char * src = jack_port_name(ourports[i]);
+		const char * dst = ports[i];
 
-        ConnectPorts(src, dst);
-        ++i;
-    }
+		ConnectPorts(src, dst);
+		++i;
+	}
 
-    free(ports);
+	free(ports);
 }
 
 bool SC_JackDriver::DriverStart()
@@ -483,7 +422,7 @@ void SC_JackDriver::Run()
 	jack_client_t* client = mClient;
 	World* world = mWorld;
 
-#if SC_JACK_USE_DLL
+#ifdef SC_JACK_USE_DLL
 	mDLL.Update(sc_JackOSCTimeSeconds());
 #if SC_JACK_DEBUG_DLL
 	static int tick = 0;
@@ -560,7 +499,7 @@ void SC_JackDriver::Run()
 		}
 
 		// main loop
-#if SC_JACK_USE_DLL
+#ifdef SC_JACK_USE_DLL
 		int64 oscTime = mOSCbuftime = (int64)((mDLL.PeriodTime() - mMaxOutputLatency) * kSecondsToOSCunits + .5);
 // 		int64 oscInc = mOSCincrement = (int64)(mOSCincrementNumerator / mDLL.SampleRate());
 		int64 oscInc = mOSCincrement = (int64)((mDLL.Period() / numBufs) * kSecondsToOSCunits + .5);
@@ -653,11 +592,11 @@ void SC_JackDriver::Reset(double sampleRate, int bufferSize)
 	mMaxPeakCounter = (int)mBuffersPerSecond;
 	mOSCincrement = (int64)(mOSCincrementNumerator / mSampleRate);
 
-#if SC_JACK_USE_DLL
+#ifdef SC_JACK_USE_DLL
 	mDLL.Reset(
 		mSampleRate,
 		mNumSamplesPerCallback,
-		SC_JACK_DLL_BW,
+		SC_TIME_DLL_BW,
 		sc_JackOSCTimeSeconds());
 #endif
 }

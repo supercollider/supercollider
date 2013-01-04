@@ -295,10 +295,10 @@ Ptrace(r, \freq).play;
 
 Pn(Pseed(44, Pbindf(q, \ctranspose, Pbrown(-3.0, 3.0, 10) ) ) ).play;
 
-//Proutine(function) - on exit, the function must return the last value returned by yield
+//Prout(function) - on exit, the function must return the last value returned by yield
 // (otherwise, the pattern cannot be reliably manipulated by other patterns)
 
-Proutine({ arg inval;
+Prout({ arg inval;
 	inval = p.embedInStream(inval);
 	inval = Event.silent(4).yield;
 	inval = q.embedInStream(inval);
@@ -306,7 +306,7 @@ Proutine({ arg inval;
 	inval;
 }).play
 
-//Pfunc(function) - the function should not have calls to embedInStream, use Proutine instead.
+//Pfunc(function) - the function should not have calls to embedInStream, use Prout instead.
 
 Pn(Pbindf(q, \legato, Pfunc({ arg inval; if (inval.at(\degree)== 5) {4} {0.2}; })) ).play
 

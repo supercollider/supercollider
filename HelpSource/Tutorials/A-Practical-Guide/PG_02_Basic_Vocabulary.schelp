@@ -35,7 +35,7 @@ definitionList::
 
 ## code::Pfunc(nextFunc, resetFunc):: || Get the stream values from a user-supplied function.
 ## code::Pfuncn(func, repeats):: || Get values from the function, but stop after code::repeats:: items.
-## code::Proutine(routineFunc):: || Use the function like a routine. The function should return values using code::.yield:: or code::.embedInStream::.
+## code::Prout(routineFunc):: || Use the function like a routine. The function should return values using code::.yield:: or code::.embedInStream::.
 ::
 
 subsection::Additional List Patterns
@@ -310,7 +310,7 @@ definitionList::
 
 ## code::Pfuncn(func, repeats):: || Like Pfunc, output values come from evaluating the function. Pfuncn, however, returns exactly code::repeats:: values and then stops. The default number of repeats is 1.
 
-## code::Proutine(routineFunc):: || Use the code::routineFunc:: in a routine. The stream's output values are whatever this function code::.yield::s. Proutine ends when it yields code::nil::.
+## code::Prout(routineFunc):: || Use the code::routineFunc:: in a routine. The stream's output values are whatever this function code::.yield::s. Prout ends when it yields code::nil::.
 ::
 
 Next, we'll look at the central pattern for audio sequencing: link::Classes/Pbind::.

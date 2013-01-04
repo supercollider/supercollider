@@ -27,7 +27,7 @@ class dependency_graph_generator
 {
     typedef node_graph::dsp_thread_queue dsp_thread_queue;
     typedef thread_queue_item::successor_list successor_container;
-    typedef std::vector<server_node*, rt_pool_allocator<abstract_synth*> > sequential_child_list;
+    typedef std::vector<server_node*, rt_pool_allocator<server_node*> > sequential_child_list;
 
 public:
     dsp_thread_queue * operator()(node_graph * graph)

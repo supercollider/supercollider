@@ -1064,7 +1064,7 @@ int compareColDescs(const void *va, const void *vb)
 
 #define CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME 0
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
-double elapsedTime();
+double elapsedRealTime();
 #endif
 
 static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable);
@@ -1169,7 +1169,7 @@ void buildBigMethodMatrix()
 	//post("allocate arrays\n");
 
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
-	double t0 = elapsedTime();
+	double t0 = elapsedRealTime();
 #endif
 
 	// pyrmalloc:
@@ -1282,7 +1282,7 @@ void buildBigMethodMatrix()
 	//post("popSum %d\n", popSum);
 
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
-	post("building table took %.3g seconds\n", elapsedTime() - t0);
+	post("building table took %.3g seconds\n", elapsedRealTime() - t0);
 	{
 		int numFilled = 0;
 		for (i=0; i<rowTableSize/sizeof(PyrMethod*); ++i) {
