@@ -127,13 +127,12 @@ Pchain(
 
 subsection:: Explanation
 
-We need to measure the current metric position against some reference point. The most logical is the time when the pattern started processing. link::Classes/Prout:: allows variables to persist for the entire length of its stream (unlike link::Classes/Pfunc::), so the first thing in the routine should be to remember the starting time.
+We need to measure the current metric position against some reference point. The most logical is the time when the pattern started processing. link::Classes/Prout:: allows variables to persist for the entire length of its stream (unlike link::Classes/Pfunc::).
 
 code::
 (
 ~swingify = Prout({ |ev|
-	var started = thisThread.beats,
-	now, nextTime, thisShouldSwing, nextShouldSwing = false, adjust;
+	var now, nextTime = 0, thisShouldSwing, nextShouldSwing = false, adjust;
 ::
 
 ~~
