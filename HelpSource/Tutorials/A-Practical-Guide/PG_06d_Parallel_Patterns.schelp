@@ -1,4 +1,4 @@
-title:: PG_06d_Parallel_Patterns
+title:: Pattern Guide 06d: Parallel Patterns
 summary:: Running multiple event patterns simultaneously
 related:: Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns, Tutorials/A-Practical-Guide/PG_06e_Language_Control
 categories:: Streams-Patterns-Events>A-Practical-Guide

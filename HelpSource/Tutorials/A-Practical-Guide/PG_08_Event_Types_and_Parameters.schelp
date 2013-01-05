@@ -1,4 +1,4 @@
-title:: PG_08_Event_Types_and_Parameters
+title:: Pattern Guide 08: Event Types and Parameters
 summary:: Describes the event types defined in the default event, and the parameters they expect
 related:: Tutorials/A-Practical-Guide/PG_07_Value_Conversions, Tutorials/A-Practical-Guide/PG_Cookbook01_Basic_Sequencing
 categories:: Streams-Patterns-Events>A-Practical-Guide

@@ -1,4 +1,4 @@
-title:: PG_Ref01_Pattern_Internals
+title:: Pattern Guide Reference 01: Pattern Internals
 summary:: Details of pattern implementation, with guidance on writing new pattern classes
 related:: Tutorials/A-Practical-Guide/PG_Cookbook07_Rhythmic_Variations
 categories:: Streams-Patterns-Events>A-Practical-Guide

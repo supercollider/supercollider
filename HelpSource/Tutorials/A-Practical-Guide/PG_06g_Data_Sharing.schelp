@@ -1,4 +1,4 @@
-title:: PG_06g_Data_Sharing
+title:: Pattern Guide 06g: Data Sharing
 summary:: Writing patterns to use information from other patterns
 related:: Tutorials/A-Practical-Guide/PG_06f_Server_Control, Tutorials/A-Practical-Guide/PG_07_Value_Conversions
 categories:: Streams-Patterns-Events>A-Practical-Guide
