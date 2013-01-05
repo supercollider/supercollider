@@ -58,8 +58,7 @@ void ScServer::createActions(Settings::Manager * settings)
     const QString synthServerCategory(tr("Sound Synthesis Server"));
     QAction *action;
 
-    mActions[ToggleRunning] = action = new QAction(tr("Boot or quit server"), this);
-    action->setShortcut(tr("Ctrl+B", "Boot or quit default server"));
+    mActions[ToggleRunning] = action = new QAction(tr("Boot or quit default server"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()));
     settings->addAction( action, "synth-server-toggle-running", synthServerCategory);
 
