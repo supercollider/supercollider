@@ -370,6 +370,7 @@ extern "C"
 	void OneZero_Ctor(OneZero* unit);
 
 	void Integrator_next(Integrator *unit, int inNumSamples);
+	void Integrator_next_i(Integrator *unit, int inNumSamples);
 	void Integrator_Ctor(Integrator* unit);
 
 	void Decay_next(Decay *unit, int inNumSamples);
@@ -1260,25 +1261,52 @@ void OneZero_next(OneZero* unit, int inNumSamples)
 
 void Integrator_Ctor(Integrator* unit)
 {
-	//printf("Integrator_Reset\n");
-	SETCALC(Integrator_next);
-	unit->m_b1 = uninitializedControl;
+	if (INRATE(1) == calc_ScalarRate)
+		SETCALC(Integrator_next_i);
+	else
+		SETCALC(Integrator_next);
+	unit->m_b1 = ZIN0(1);
 	unit->m_y1 = 0.f;
 	Integrator_next(unit, 1);
 }
 
-void Integrator_next(Integrator* unit, int inNumSamples)
+void Integrator_next_i(Integrator* unit, int inNumSamples)
 {
-	//printf("Integrator_next_a\n");
+	float *out   = ZOUT(0);
+	float *in    = ZIN(0);
 
-	float *out = ZOUT(0);
-	float *in = ZIN(0);
 	double b1 = unit->m_b1;
-	unit->m_b1 = ZIN0(1);
-
 	double y1 = unit->m_y1;
 
-	if (b1 == unit->m_b1) {
+	if (b1 == 1.f) {
+		LOOP1(inNumSamples,
+			double y0 = ZXP(in);
+			ZXP(out) = y1 = y0 + y1;
+		);
+	} else if (b1 == 0.f) {
+		LOOP1(inNumSamples,
+			double y0 = ZXP(in);
+			ZXP(out) = y1 = y0;
+		);
+	} else {
+		LOOP1(inNumSamples,
+			double y0 = ZXP(in);
+			ZXP(out) = y1 = y0 + b1 * y1;
+		);
+	}
+	unit->m_y1 = zapgremlins(y1);
+}
+
+void Integrator_next(Integrator* unit, int inNumSamples)
+{
+	float *out   = ZOUT(0);
+	float *in    = ZIN(0);
+	double newB1 = ZIN0(1);
+
+	double b1 = unit->m_b1;
+	double y1 = unit->m_y1;
+
+	if (b1 == newB1) {
 		if (b1 == 1.f) {
 			LOOP1(inNumSamples,
 				double y0 = ZXP(in);
@@ -1296,12 +1324,14 @@ void Integrator_next(Integrator* unit, int inNumSamples)
 			);
 		}
 	} else {
-		double b1_slope = CALCSLOPE(unit->m_b1, b1);
+		double b1_slope = CALCSLOPE(newB1, b1);
 		LOOP1(inNumSamples,
 			double y0 = ZXP(in);
 			ZXP(out) = y1 = y0 + b1 * y1;
 			b1 += b1_slope;
 		);
+
+		unit->m_b1 = newB1;
 	}
 	unit->m_y1 = zapgremlins(y1);
 }
