@@ -244,6 +244,21 @@ inline void ZAccum(int numSamples, float *out, float *in)
 	LOOP(numSamples, ZXP(out) += ZXP(in); );
 }
 
+template <typename Functor>
+inline void loop(int length, Functor const & f)
+{
+	for (int i=0; i < length; ++i)
+		f();
+}
 
+template <typename Functor>
+inline void loop1(int length, Functor const & f)
+{
+	assert(length > 0);
+	int i = length;
+	do {
+		f();
+	} while (--i);
+}
 
 #endif
