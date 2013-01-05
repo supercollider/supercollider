@@ -298,6 +298,10 @@ if(NOT YAMLCPP_FOUND)
   set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
 endif()
 
+
+configure_file(common/SC_Version.hpp.in common/SC_Version.hpp)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/common)
+
 add_subdirectory(server)
 add_subdirectory(lang)
 add_subdirectory(editors)
@@ -389,9 +393,6 @@ else()
 		PATTERN "*#" EXCLUDE
 	)
 endif()
-
-configure_file(platform/SCVersion.sc.in SCVersion/SCVersion.sc)
-install(DIRECTORY "${CMAKE_BINARY_DIR}/SCVersion" DESTINATION "${auxresourcesdir}/SCClassLibrary")
 
 install(DIRECTORY sounds
 	DESTINATION ${auxresourcesdir}

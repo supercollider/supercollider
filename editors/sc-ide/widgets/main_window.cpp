@@ -42,6 +42,7 @@
 #include "settings/dialog.hpp"
 
 #include "SC_DirUtils.h"
+#include "SC_Version.hpp"
 
 #include <QAction>
 #include <QApplication>
@@ -1308,7 +1309,7 @@ void MainWindow::showAbout()
             "&copy; Jakob Leben, Tim Blechmann and others.<br>"
             "Development partially funded by Kiberpipa."
             ;
-    aboutString = aboutString.arg("3.6");
+    aboutString = aboutString.arg(SC_VersionString().c_str());
 
     QMessageBox::about(this, tr("About SuperCollider IDE"), aboutString);
 }
