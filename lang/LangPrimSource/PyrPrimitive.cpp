@@ -47,7 +47,7 @@
 #include "InitAlloc.h"
 #include "../LangSource/SC_LanguageConfig.hpp"
 #include "SC_DirUtils.h"
-
+#include "SC_Version.hpp"
 
 #ifdef SC_WIN32
 # include <direct.h>
@@ -3554,6 +3554,28 @@ static int prLanguageConfig_setPostInlineWarnings(struct VMGlobals * g, int numA
 }
 
 
+static int prVersionMajor(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *result = g->sp;
+	SetInt(result, SC_VersionMajor);
+	return errNone;
+}
+
+static int prVersionMinor(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *result = g->sp;
+	SetInt(result, SC_VersionMinor);
+	return errNone;
+}
+
+static int prVersionPatch(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *result = g->sp;
+	SetObject(result, newPyrString(g->gc, SC_VersionPatch, 0, 1));
+	return errNone;
+}
+
+
 #define PRIMGROWSIZE 480
 PrimitiveTable gPrimitiveTable;
 
@@ -4117,6 +4139,10 @@ void initPrimitives()
 	definePrimitive(base, index++, "_LanguageConfig_writeConfigFile", prLanguageConfig_writeConfigFile, 2, 0);
 	definePrimitive(base, index++, "_LanguageConfig_getPostInlineWarnings", prLanguageConfig_getPostInlineWarnings, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_setPostInlineWarnings", prLanguageConfig_setPostInlineWarnings, 2, 0);
+
+	definePrimitive(base, index++, "_SC_VersionMajor", prVersionMajor, 1, 0);
+	definePrimitive(base, index++, "_SC_VersionMinor", prVersionMinor, 1, 0);
+	definePrimitive(base, index++, "_SC_VersionPatch", prVersionPatch, 1, 0);
 
 	//void initOscilPrimitives();
 	//void initControllerPrimitives();
