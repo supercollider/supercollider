@@ -23,3 +23,23 @@
 		currentFullScreen.notNil.if({currentFullScreen.endFullScreen;});
 	}
 }
+
++ Main {
+	newSCWindow {
+		var win, palette;
+		win = SCWindow("construction");
+		win.front;
+		win.toggleEditMode;
+	}
+
+	preferences {
+		this.platform.preferencesAction.value(this)
+	}
+	preferencesAction_ { arg f;
+		this.platform.preferencesAction_(f)
+	}
+	preferencesAction {
+		^this.platform.preferencesAction
+	}
+
+}
