@@ -232,7 +232,9 @@ PlusFreqScope {
 		if (activate) {
 			ServerTree.add(this, server);
 			if (server.serverRunning) {
+				active=activate;
 				this.doOnServerTree;
+				^this
 			}
 		} {
 			ServerTree.remove(this, server);
