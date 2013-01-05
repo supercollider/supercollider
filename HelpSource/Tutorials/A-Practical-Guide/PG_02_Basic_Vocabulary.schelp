@@ -1,4 +1,4 @@
-title:: PG_02_Basic_Vocabulary
+title:: Pattern Guide 02: Basic Vocabulary
 summary:: Common patterns to generate streams of single values
 related:: Tutorials/A-Practical-Guide/PG_01_Introduction, Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind
 categories:: Streams-Patterns-Events>A-Practical-Guide
