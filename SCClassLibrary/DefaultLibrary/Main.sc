@@ -107,13 +107,6 @@ Main : Process {
 		^false
 	}
 
-	newSCWindow {
-		var win, palette;
-		win = SCWindow("construction");
-		win.front;
-		win.toggleEditMode;
-	}
-
 //	override in platform specific extension
 //
 //	platformClass {

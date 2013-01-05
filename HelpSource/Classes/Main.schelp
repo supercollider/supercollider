@@ -150,6 +150,7 @@ method::pid
 Returns:: The operating system's pid (process ID) for the process.
 
 method::preferencesAction
+note::SCApp only!::
 
 A function to evaluate when the SuperCollider preferences menu is selected.
 
