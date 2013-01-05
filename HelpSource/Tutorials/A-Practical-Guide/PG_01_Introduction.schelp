@@ -69,6 +69,9 @@ definitionList::
 ## link::Tutorials/A-Practical-Guide/PG_Cookbook07_Rhythmic_Variations:: || list::
 	## An ever-changing drumbeat
 ::
+## link::Tutorials/A-Practical-Guide/PG_Cookbook08_Swing:: || list::
+	## Emulating quantize-with-swing from conventional sequencers
+::
 ::
 
 subsection::Reference material
