@@ -197,6 +197,8 @@ void thread_init_functor::operator()(int thread_index)
         int priority = instance->realtime_priority();
         if (priority < 0)
             success = false;
+#elif _WIN32
+        int priority = thread_priority_interval_rt().second;
 #else
         int min, max;
         boost::tie(min, max) = thread_priority_interval_rt();
