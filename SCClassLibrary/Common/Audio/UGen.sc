@@ -70,6 +70,14 @@ UGen : AbstractFunction {
 		};
  	}
 
+	curverange { arg lo = 0.00, hi = 1.0, curve = -4;
+		^if (this.signalRange == \bipolar) {
+			this.lincurve(-1, 1, lo, hi, curve, nil)
+		} {
+			this.lincurve(0, 1, lo, hi, curve, nil)
+		};
+	}
+
  	unipolar { arg mul = 1;
  		^this.range(0, mul)
  	}

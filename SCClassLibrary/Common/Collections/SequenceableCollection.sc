@@ -920,6 +920,7 @@ SequenceableCollection : Collection {
 	biexp { arg ... args; ^this.multiChannelPerform('biexp', *args) }
 	range { arg ... args; ^this.multiChannelPerform('range', *args) }
 	exprange { arg ... args; ^this.multiChannelPerform('exprange', *args) }
+	curverange { arg ... args; ^this.multiChannelPerform('curverange', *args) }
 	unipolar { arg ... args; ^this.multiChannelPerform('unipolar', *args) }
 	bipolar { arg ... args; ^this.multiChannelPerform('bipolar', *args) }
 	lag { arg ... args; ^this.multiChannelPerform('lag', *args) }
