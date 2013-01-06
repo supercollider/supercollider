@@ -91,6 +91,10 @@ Env {
 		^this.copy.levels_(levels.linexp(levels.minItem, levels.maxItem, lo, hi))
 	}
 
+	curverange { arg lo = 0.0, hi = 1.0, curve = -4;
+		^this.copy.levels_(levels.lincurve(levels.minItem, levels.maxItem, lo, hi, curve))
+	}
+
 	// methods to make some typical shapes :
 
 	// fixed duration envelopes
