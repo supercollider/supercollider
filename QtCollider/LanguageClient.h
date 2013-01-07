@@ -23,7 +23,6 @@
 #define QC_LANGUAGE_CLIENT_H
 
 #include "SC_TerminalClient.h"
-#include "QC_Export.h"
 #include "Common.h"
 
 #include <QObject>
