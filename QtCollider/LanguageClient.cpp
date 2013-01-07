@@ -34,7 +34,6 @@ extern double elapsedTime();
 
 using namespace QtCollider;
 
-QC_PUBLIC
 int QtCollider::run(int argc, char** argv) {
   QtCollider::LangClient app("sclang");
   return app.run(argc, argv);

@@ -25,6 +25,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -DQC_DEBUG")
 
 set(QT_COLLIDER_DIR ${CMAKE_SOURCE_DIR}/QtCollider)
 
+include_directories( ${QT_COLLIDER_DIR} )
+
 set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/QcApplication.h
   ${QT_COLLIDER_DIR}/QObjectProxy.h
@@ -131,11 +133,6 @@ if( CMAKE_COMPILER_IS_GNUCXX )
 endif()
 
 include(${QT_USE_FILE})
-
-set( SC_HEADERS_DIR "${CMAKE_SOURCE_DIR}/include" )
-include_directories(
-  "${SC_HEADERS_DIR}/QtCollider"
-)
 
 qt4_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
 qt4_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )

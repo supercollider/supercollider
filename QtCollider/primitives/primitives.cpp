@@ -21,7 +21,6 @@
 
 #include "primitives.h"
 #include "../Common.h"
-#include "QC_Export.h"
 #include "QtCollider.h"
 
 #include <SCBase.h>
@@ -38,7 +37,6 @@ void defineMiscPrimitives();
 void defineQWidgetPrimitives();
 void defineQPalettePrimitives();
 
-QC_PUBLIC
 void initPrimitives () {
   QtCollider::init();
 

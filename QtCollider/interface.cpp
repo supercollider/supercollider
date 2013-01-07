@@ -47,7 +47,6 @@ inline void initResources() { Q_INIT_RESOURCE(resources); }
 static QPalette gSystemPalette;
 QPalette QtCollider::systemPalette() { return gSystemPalette; }
 
-QC_PUBLIC
 void QtCollider::init() {
   if( !QApplication::instance() ) {
     qcDebugMsg( 1, "Initializing QtCollider" );
@@ -89,7 +88,6 @@ void QtCollider::init() {
   }
 }
 
-QC_PUBLIC
 int QtCollider::exec( int argc, char** argv ) {
   QtCollider::init();
   Q_ASSERT( qApp );
