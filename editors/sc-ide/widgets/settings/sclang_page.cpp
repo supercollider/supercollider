@@ -27,7 +27,7 @@
 #include "ui_settings_sclang.h"
 #include "../../core/settings/manager.hpp"
 
-#include "include/common/SC_DirUtils.h"
+#include "common/SC_DirUtils.h"
 
 #include "yaml-cpp/yaml.h"
 

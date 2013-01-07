@@ -32,8 +32,6 @@
 
 #include <boost/scoped_array.hpp>
 
-#include "../../common/SC_SndFileHelpers.hpp"
-
 namespace nova {
 
 class sc_done_action_handler

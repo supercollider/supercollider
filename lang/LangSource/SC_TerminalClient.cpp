@@ -24,6 +24,7 @@
 */
 
 #include "SC_TerminalClient.h"
+#include "../../QtCollider/LanguageClient.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -290,26 +291,26 @@ void SC_TerminalClient::quit(int code)
 	mShouldBeRunning = false;
 }
 
-void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine)
+static PyrSymbol * resolveMethodSymbol(bool silent)
+{
+	if (silent)
+		return s_interpretCmdLine;
+	else
+		return s_interpretPrintCmdLine;
+}
+
+void SC_TerminalClient::interpretCmdLine(const char* cmdLine, bool silent)
 {
 	setCmdLine(cmdLine);
-	cmdLine.reset();
-	runLibrary(method);
+	runLibrary(resolveMethodSymbol(silent));
 	flush();
 }
 
-void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, const char* cmdLine)
-{
-	setCmdLine(cmdLine);
-	runLibrary(method);
-	flush();
-}
 
-
-void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, const char *cmdLine, size_t size)
+void SC_TerminalClient::interpretCmdLine(const char *cmdLine, size_t size, bool silent)
 {
 	setCmdLine(cmdLine, size);
-	runLibrary(method);
+	runLibrary(resolveMethodSymbol(silent));
 	flush();
 }
 
@@ -322,10 +323,10 @@ void SC_TerminalClient::interpretInput()
 	while( i < c ) {
 		switch (data[i]) {
 		case kInterpretCmdLine:
-			interpretCmdLine(s_interpretCmdLine, data, i);
+			interpretCmdLine(data, i, true);
 			break;
 		case kInterpretPrintCmdLine:
-			interpretCmdLine(s_interpretPrintCmdLine, data, i);
+			interpretCmdLine(data, i, false);
 			break;
 
 		case kRecompileLibrary:
@@ -874,4 +875,23 @@ int SC_TerminalClient::prRecompile(struct VMGlobals *, int)
 	static_cast<SC_TerminalClient*>(instance())->sendSignal(sig_recompile);
 	return errNone;
 }
+
+SC_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
+{
+	if (SC_LanguageClient::instance())
+		return NULL;
+
+#ifdef SC_QT
+	return new QtCollider::LangClient(name);
+#else
+	return new SC_TerminalClient(name);
+#endif
+}
+
+SC_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient * languageClient)
+{
+	delete languageClient;
+}
+
+
 // EOF

@@ -28,11 +28,13 @@
 
 #include "SC_LanguageClient.h"
 #include "SC_StringBuffer.h"
+#include <pthread.h>
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
 // =====================================================================
 
+// TODO: move locks out of the header, possibly using pimpl
 class SC_DLLEXPORT SC_TerminalClient : public SC_LanguageClient
 {
 public:
@@ -91,9 +93,8 @@ protected:
 	bool parseOptions(int& argc, char**& argv, Options& opt);
 	void printUsage();
 
-	void interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine);
-	void interpretCmdLine(PyrSymbol* method, const char* cmdLine);
-	void interpretCmdLine(PyrSymbol* method, const char *buf, size_t size);
+	void interpretCmdLine(const char* cmdLine, bool silent);
+	void interpretCmdLine(const char *buf, size_t size, bool silent);
 
 	void lockInput() { pthread_mutex_lock(&mInputMutex); }
 	void unlockInput() { pthread_mutex_unlock(&mInputMutex); }
