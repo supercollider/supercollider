@@ -17,30 +17,42 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
-
 /*
 
-Samp is a typedef for the output sample type.
-Should be defined to be either float or double.
+A PyrSymbol is a unique string that resides in a global hash table.
 
 */
 
-#ifndef _Samp_
-#define _Samp_
+#ifndef _PYRSYMBOL_H_
+#define _PYRSYMBOL_H_
 
 #include "SC_Types.h"
 
-const long kSineSize = 8192;
-const long kSineMask = kSineSize - 1;
-const double kSinePhaseScale = kSineSize / (2.0 * 3.1415926535897932384626433832795);
+struct PyrSymbol {
+	char *name;
+	long hash;
+	short specialIndex;
+	uint8 flags;
+	uint8 length;
+	union {
+		long index; // index in row table or primitive table
+		struct PyrClass *classobj;	// pointer to class with this name.
+		char *source; // source code for sym_Filename; used only during compilation.
+	} u;
+	struct classdep *classdep;
+};
 
-extern float32 gSine[kSineSize+1];
-extern float32 gPMSine[kSineSize+1];
-extern float32 gInvSine[kSineSize+1];
-extern float32 gSineWavetable[2*kSineSize];
+enum {
+	sym_Selector = 1,
+	sym_Class = 2,
+	sym_Compiled = 4,
+	sym_Called = 8,
+	sym_Primitive = 16,
+	sym_Setter = 32,
+	sym_MetaClass = 64,
+	sym_Filename = 128
+};
 
-void SignalAsWavetable(float32* signal, float32* wavetable, long inSize);
-void WavetableAsSignal(float32* wavetable, float32* signal, long inSize);
 
 #endif
 

@@ -18,7 +18,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "OSCData.h"
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #include "PyrInterpreter.h"
@@ -46,6 +45,7 @@ typedef int socklen_t;
 #include <pthread.h>
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
+#include "SCBase.h"
 #include "SC_ComPort.h"
 #include "SC_WorldOptions.h"
 #include "SC_SndBuf.h"
@@ -58,6 +58,9 @@ typedef int socklen_t;
 #endif
 
 #include "../../../common/server_shm.hpp"
+
+#include "../common/SC_Endian.h"
+
 
 struct InternalSynthServerGlobals
 {
