@@ -180,8 +180,8 @@ public:
 
         if (!successors.empty()) {
             printf("\tsuccessors:\n");
-            for(dsp_thread_queue_item * item : successors) {
-                printf("\t\t%p\n", item);
+			for (size_t i = 0; i != successors.size(); ++i) {
+                printf("\t\t%p\n", successors[i]);
             }
         }
         printf("\n");
@@ -251,10 +251,10 @@ public:
         using namespace std;
 
         printf("queue %p\n items:\n", this);
-        BOOST_FOREACH(dsp_thread_queue_item * item, queue_items)
-            item->dump_item();
+		for (std::size_t i = 0; i != total_node_count; ++i)
+			queue_items[i].dump_item();
         printf("\ninitial items:\n", this);
-        BOOST_FOREACH(dsp_thread_queue_item * item, initially_runnable_items)
+		for(dsp_thread_queue_item * item : initially_runnable_items)
             item->dump_item();
 
         printf("\n");
