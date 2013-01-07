@@ -4187,10 +4187,10 @@ void initUnixPrimitives();
 void init_OSC_primitives();
 	init_OSC_primitives();
 
-#ifdef SC_APP
 void initGUIPrimitives();
 	initGUIPrimitives();
 
+#ifdef SC_APP
 void initSCViewPrimitives();
 	initSCViewPrimitives();
 
