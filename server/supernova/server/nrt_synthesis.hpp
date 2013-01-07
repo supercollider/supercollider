@@ -29,6 +29,8 @@
 #include "audio_backend/sndfile_backend.hpp"
 #include "sc/sc_plugin_interface.hpp"
 
+#include "../../common/SC_SndFileHelpers.hpp"
+
 namespace nova {
 
 struct non_rt_functor

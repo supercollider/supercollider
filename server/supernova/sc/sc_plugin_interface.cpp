@@ -33,12 +33,12 @@
 #include "../utilities/malloc_aligned.hpp"
 #include "../utilities/sized_array.hpp"
 
-#include "SC_Samp.h"
 #include "SC_Prototypes.h"
-#include "SC_Errors.h"
 #include "SC_Unit.h"
 #include "clz.h"
 #include "SC_fftlib.h"
+#include "SC_Lock.h"
+#include "../../common/Samp.hpp"
 #include "../../common/SC_SndFileHelpers.hpp"
 
 #include <boost/math/constants/constants.hpp>

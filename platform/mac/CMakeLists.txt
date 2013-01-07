@@ -24,6 +24,10 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/include/plugin_interface
 	${CMAKE_SOURCE_DIR}/include/server
 	${CMAKE_SOURCE_DIR}/common
+	${CMAKE_SOURCE_DIR}/server/scsynth
+	${CMAKE_SOURCE_DIR}/lang/LangSource
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource
+
 	${CMAKE_SOURCE_DIR}/editors/scapp/include
 	${CMAKE_SOURCE_DIR}/editors/scapp/include/SMLAdvancedFind
 	${CMAKE_SOURCE_DIR}/editors/scapp/include/SMLAdvancedFind/ICU
@@ -75,7 +79,6 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrSignal.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrSymbolTable.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/SC_LanguageConfig.cpp
-	${CMAKE_SOURCE_DIR}/lang/LangSource/Samp.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/SimpleStack.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/VMGlobals.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/dumpByteCodes.cpp
@@ -89,6 +92,7 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_CoreAudioPrim.cpp
 
 	${CMAKE_SOURCE_DIR}/common/fftlib.c
+	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
@@ -198,7 +202,9 @@ endif()
 
 set(scapp_parser_source ${CMAKE_SOURCE_DIR}/lang/LangSource/Bison/lang11d_tab.cpp)
 
-add_definitions(-DYYSTACK_USE_ALLOCA -DHAVE_SPEECH)
+add_definitions(-DYYSTACK_USE_ALLOCA)
+
+add_definitions(-DSC_APP) # configure sclang for scapp
 
 # set how it shows up in the Info.plist file
 SET(MACOSX_BUNDLE_ICON_FILE SCcube.icns)

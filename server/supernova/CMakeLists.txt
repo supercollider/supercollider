@@ -62,8 +62,10 @@ if(APPLE)
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface
-                    ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/include/common
+                    ${CMAKE_SOURCE_DIR}/common
+                    ${CMAKE_SOURCE_DIR}/include/server
+                    ${CMAKE_SOURCE_DIR}/server/scsynth
                     .
                     )
 
@@ -74,7 +76,7 @@ set(libsupernova_src
     sc/sc_synth.cpp
     sc/sc_synthdef.cpp
     sc/sc_ugen_factory.cpp
-    ../scsynth/Samp.cpp
+    ${CMAKE_SOURCE_DIR}/common/Samp.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp

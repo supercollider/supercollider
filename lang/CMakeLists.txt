@@ -9,6 +9,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost-lockfree
                     ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
+                    LangSource
+                    LangPrimSource
                     LangSource/Bison)
 
 if (Boost_FOUND)
@@ -64,7 +66,6 @@ set(sclang_sources
 	LangSource/SC_LanguageClient.cpp
 	LangSource/SC_LanguageConfig.cpp
 	LangSource/SC_TerminalClient.cpp
-	LangSource/Samp.cpp
 	LangSource/SimpleStack.cpp
 	LangSource/VMGlobals.cpp
 	LangSource/dumpByteCodes.cpp
@@ -78,6 +79,7 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 
 	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
@@ -124,7 +126,6 @@ if(UNIX)
 			LangPrimSource/SC_CoreAudioPrim.cpp
 			LangPrimSource/SC_Speech.M
 			)
-		add_definitions(-DHAVE_SPEECH)
 		if (CMAKE_COMPILER_IS_GNUCXX)
 			set_source_files_properties(LangPrimSource/SC_Speech.M
 										PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
