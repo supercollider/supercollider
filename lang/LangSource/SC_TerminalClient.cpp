@@ -389,6 +389,7 @@ void SC_TerminalClient::commandLoop()
 
 		while ( mSignals ) {
 			int sig = mSignals;
+			mSignals = 0;
 
 			unlockSignal();
 
@@ -396,10 +397,6 @@ void SC_TerminalClient::commandLoop()
 				//postfl("input\n");
 				lockInput();
 				interpretInput();
-				// clear input signal, as we've processed anything signalled so far.
-				lockSignal();
-				mSignals &= ~sig_input;
-				unlockSignal();
 				unlockInput();
 			}
 
@@ -408,11 +405,6 @@ void SC_TerminalClient::commandLoop()
 				double secs;
 				lock();
 				haveNext = tickLocked( &secs );
-				// clear scheduler signal, as we've processed all items scheduled up to this time.
-				// and will enter the wait according to schedule.
-				lockSignal();
-				mSignals &= ~sig_sched;
-				unlockSignal();
 				unlock();
 
 				flush();
@@ -423,16 +415,10 @@ void SC_TerminalClient::commandLoop()
 
 			if (sig & sig_stop) {
 				stopMain();
-				lockSignal();
-				mSignals &= ~sig_stop;
-				unlockSignal();
 			}
 
 			if (sig & sig_recompile) {
 				recompileLibrary();
-				lockSignal();
-				mSignals &= ~sig_recompile;
-				unlockSignal();
 			}
 
 			lockSignal();
