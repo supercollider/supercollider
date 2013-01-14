@@ -70,6 +70,7 @@ public slots:
 
     bool openDocumentation();
     void openDefinition();
+    void openCommandLine();
     void findReferences();
 
 protected:

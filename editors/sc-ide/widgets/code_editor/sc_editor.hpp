@@ -62,6 +62,7 @@ public slots:
     void gotoPreviousRegion();
     bool openDocumentation();
     void openDefinition();
+    void openCommandLine();
     void findReferences();
     void evaluateLine();
     void evaluateRegion();

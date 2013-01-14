@@ -361,6 +361,12 @@ void MainWindow::createActions()
     connect(action, SIGNAL(triggered()), this, SLOT(showCmdLine()));
     settings->addAction( action, "ide-command-line-show", ideCategory);
 
+    mActions[CmdLineForCursor] = action = new QAction(tr("&Command Line from selection"), this);
+    action->setShortcut(tr("Ctrl+Shift+E", "Fill command line with current selection"));
+    connect(action, SIGNAL(triggered()), this, SLOT(cmdLineForCursor()));
+    settings->addAction( action, "ide-command-line-fill", ideCategory);
+
+
     mActions[ShowGoToLineTool] = action = new QAction(tr("&Go To Line"), this);
     action->setStatusTip(tr("Tool to jump to a line by number"));
     action->setShortcut(tr("Ctrl+L", "Show go-to-line tool"));
@@ -564,6 +570,7 @@ void MainWindow::createMenus()
     submenu->addAction( mActions[Find] );
     submenu->addAction( mActions[Replace] );
     submenu->addAction( mActions[ShowCmdLine] );
+    submenu->addAction( mActions[CmdLineForCursor] );
     submenu->addAction( mActions[ShowGoToLineTool] );
     submenu->addSeparator();
     submenu->addAction( mActions[CloseToolBox] );
@@ -1182,10 +1189,10 @@ void MainWindow::updateWindowTitle()
             title.append( titleString  );
 
             setWindowFilePath(doc->filePath());
-	} else {
+        } else {
             title.append( tr("Untitled") );
             setWindowFilePath("");
-	}
+        }
     } else {
             setWindowFilePath("");
     }
@@ -1335,6 +1342,23 @@ void MainWindow::showCmdLine()
     mToolBox->show();
 
     mCmdLine->setFocus(Qt::OtherFocusReason);
+}
+
+void MainWindow::showCmdLine( const QString & cmd)
+{
+    mCmdLine->setText(cmd);
+    showCmdLine();
+}
+
+void MainWindow::cmdLineForCursor()
+{
+    static const QByteArray signature = QMetaObject::normalizedSignature("openCommandLine()");
+
+    int methodIdx = -1;
+    QWidget * widget = findFirstResponder(
+                QApplication::focusWidget(), signature.constData(), methodIdx );
+    if (widget && methodIdx != -1)
+        widget->metaObject()->method(methodIdx).invoke( widget, Qt::DirectConnection );
 }
 
 void MainWindow::showGoToLineTool()
