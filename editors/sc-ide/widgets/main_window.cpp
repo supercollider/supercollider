@@ -80,6 +80,15 @@ static QWidget * findFirstResponder
     return widget;
 }
 
+static void invokeMethodOnFirstResponder(QByteArray const & signature)
+{
+    int methodIdx = -1;
+    QWidget * widget = findFirstResponder(
+                QApplication::focusWidget(), signature.constData(), methodIdx );
+    if (widget && methodIdx != -1)
+        widget->metaObject()->method(methodIdx).invoke( widget, Qt::DirectConnection );
+}
+
 MainWindow * MainWindow::mInstance = 0;
 
 MainWindow::MainWindow(Main * main) :
@@ -1242,11 +1251,7 @@ void MainWindow::lookupImplementationForCursor()
 {
     static const QByteArray signature = QMetaObject::normalizedSignature("openDefinition()");
 
-    int methodIdx = -1;
-    QWidget * widget = findFirstResponder(
-                QApplication::focusWidget(), signature.constData(), methodIdx );
-    if (widget && methodIdx != -1)
-        widget->metaObject()->method(methodIdx).invoke( widget, Qt::DirectConnection );
+    invokeMethodOnFirstResponder(signature);
 }
 
 void MainWindow::lookupImplementation()
@@ -1259,11 +1264,7 @@ void MainWindow::lookupReferencesForCursor()
 {
     static const QByteArray signature = QMetaObject::normalizedSignature("findReferences()");
 
-    int methodIdx = -1;
-    QWidget * widget = findFirstResponder(
-                QApplication::focusWidget(), signature.constData(), methodIdx );
-    if (widget && methodIdx != -1)
-        widget->metaObject()->method(methodIdx).invoke( widget, Qt::DirectConnection );
+    invokeMethodOnFirstResponder(signature);
 }
 
 void MainWindow::lookupReferences()
@@ -1354,11 +1355,7 @@ void MainWindow::cmdLineForCursor()
 {
     static const QByteArray signature = QMetaObject::normalizedSignature("openCommandLine()");
 
-    int methodIdx = -1;
-    QWidget * widget = findFirstResponder(
-                QApplication::focusWidget(), signature.constData(), methodIdx );
-    if (widget && methodIdx != -1)
-        widget->metaObject()->method(methodIdx).invoke( widget, Qt::DirectConnection );
+    invokeMethodOnFirstResponder(signature);
 }
 
 void MainWindow::showGoToLineTool()
