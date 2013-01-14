@@ -6266,11 +6266,11 @@ void BLowShelf_next_kkk(BLowShelf *unit, int inNumSamples)
 
 		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2, a0slope, a1slope, a2slope, b1slope, b2slope);
 
-		unit->m_a0 = a0;
-		unit->m_a1 = a1;
-		unit->m_a2 = a2;
-		unit->m_b1 = b1;
-		unit->m_b2 = b2;
+		unit->m_a0 = nexta0;
+		unit->m_a1 = nexta1;
+		unit->m_a2 = nexta2;
+		unit->m_b1 = nextb1;
+		unit->m_b2 = nextb2;
 	} else
 		BPerformFilterLoop(unit, out, in, y1, y2, a0, a1, a2, b1, b2);
 
