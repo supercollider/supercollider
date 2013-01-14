@@ -289,6 +289,11 @@ void PostWindow::openDefinition()
     Main::openDefinition(symbolUnderCursor(), window());
 }
 
+void PostWindow::openCommandLine()
+{
+    Main::openCommandLine(symbolUnderCursor());
+}
+
 void PostWindow::findReferences()
 {
     Main::findReferences(symbolUnderCursor(), window());

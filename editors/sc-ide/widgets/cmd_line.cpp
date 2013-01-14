@@ -51,6 +51,11 @@ void CmdLineEdit::openDefinition()
     return Main::openDefinition(symbolUnderCursor(), MainWindow::instance());
 }
 
+void CmdLineEdit::openCommandLine()
+{
+    return Main::openCommandLine(symbolUnderCursor());
+}
+
 void CmdLineEdit::findReferences()
 {
     return Main::findReferences(symbolUnderCursor(), MainWindow::instance());
@@ -81,6 +86,11 @@ void CmdLine::applySettings( Settings::Manager *settings )
 {
     QFont codeFont = settings->codeFont();
     expr->setFont( codeFont );
+}
+
+void CmdLine::setText(const QString &text)
+{
+    expr->setText(text);
 }
 
 bool CmdLine::eventFilter( QObject *, QEvent *e )

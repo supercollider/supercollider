@@ -1112,6 +1112,11 @@ void ScCodeEditor::openDefinition()
     Main::openDefinition(symbolUnderCursor(), this);
 }
 
+void ScCodeEditor::openCommandLine()
+{
+    Main::openCommandLine(symbolUnderCursor());
+}
+
 void ScCodeEditor::findReferences()
 {
     Main::findReferences(symbolUnderCursor(), this);
