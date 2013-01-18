@@ -20,8 +20,8 @@ Examples::
 
 compare:
 code::
-{ BrownNoise.ar(0.5) }.play;
-{ WhiteNoise.ar(0.5) }.play;
+{ BrownNoise.ar(0.1) }.play;
+{ WhiteNoise.ar(0.1) }.play;
 ::
 
 brownian noise as a frequency modulator:
@@ -33,4 +33,3 @@ filtered brown noise:
 code::
 { BPF.ar(BrownNoise.ar(0.1.dup), MouseX.kr(40, 17000, 1), 0.2) }.play;
 ::
-
