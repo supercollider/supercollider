@@ -94,8 +94,7 @@ public:
     void initialize(class server_arguments const & args, float * control_busses);
     void reset_sampling_rate(int sr);
 
-    sc_plugin_interface(void):
-        synths_to_initialize(false)
+    sc_plugin_interface(void)
     {}
 
     ~sc_plugin_interface(void);
@@ -212,30 +211,6 @@ public:
             r_values[i] = world.mControlBus[i];
     }
     /* @}*/
-
-    /* @{ */
-    /** synth initialization. called in the beginning of each dsp tick */
-    void initialize_synths(void)
-    {
-        if (likely(!synths_to_initialize))
-            return; // fast-path
-
-        initialize_synths_perform();
-    }
-
-    void schedule_for_preparation(abstract_synth * synth)
-    {
-        synths_to_initialize = true;
-        uninitialized_synths.push_back(synth);
-        synth->add_ref();
-    }
-
-private:
-    bool synths_to_initialize;
-
-    void initialize_synths_perform(void);
-    std::vector<abstract_synth*, rt_pool_allocator<abstract_synth*> > uninitialized_synths;
-    /* @} */
 };
 
 } /* namespace nova */

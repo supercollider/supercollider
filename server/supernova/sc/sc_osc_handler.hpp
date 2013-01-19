@@ -252,9 +252,6 @@ public:
         detail::network_thread::start_receive();
     }
 
-    ~sc_osc_handler(void)
-    {}
-
     typedef osc::ReceivedPacket osc_received_packet;
     typedef osc::ReceivedBundle received_bundle;
     typedef osc::ReceivedMessage received_message;

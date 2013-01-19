@@ -56,6 +56,9 @@ public:
 
     HOT inline void perform(void)
     {
+        if (unlikely (!initialized))
+            prepare();
+
         if (likely(trace == 0)) {
             const size_t count = calc_unit_count;
             Unit ** units = calc_units;
@@ -216,6 +219,7 @@ private:
 
     friend class sc_ugen_def;
 
+    bool initialized;
     int_fast8_t trace;
     Unit ** calc_units;
     sample * unit_buffers;
