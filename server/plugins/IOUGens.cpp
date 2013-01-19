@@ -574,11 +574,7 @@ void In_Ctor(IOUnit* unit)
 		SETCALC(In_next_a);
 		unit->m_bus = world->mAudioBus;
 		unit->m_busTouched = world->mAudioBusTouched;
-//#ifdef IPHONE_VEC
-//		vIn_next_a(unit, 1);
-//#else
 		In_next_a(unit, 1);
-//#endif
 	} else {
 		SETCALC(In_next_k);
 		unit->m_bus = world->mControlBus;
