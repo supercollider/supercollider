@@ -28,6 +28,74 @@ class SCUnit:
 	public Unit
 {
 public:
+	///@{
+	/// generic signal wrapper
+	template <typename FloatType>
+	struct ScalarSignal
+	{
+		explicit ScalarSignal(FloatType value):
+			value(value)
+		{}
+
+		FloatType consume() const
+		{
+			return value;
+		}
+
+		FloatType value;
+	};
+
+	template <typename FloatType>
+	struct SlopeSignal
+	{
+		SlopeSignal(FloatType value, FloatType slope):
+			value(value), slope(slope)
+		{}
+
+		FloatType consume()
+		{
+			FloatType ret = value;
+			value += slope;
+			return ret;
+		}
+
+		FloatType value, slope;
+	};
+
+	template <typename FloatType>
+	struct AudioSignal
+	{
+		explicit AudioSignal(const FloatType * pointer):
+			pointer(pointer)
+		{}
+
+		FloatType consume()
+		{
+			return *pointer++;
+		}
+
+		const FloatType * pointer;
+	};
+
+	template <typename FloatType>
+	inline ScalarSignal<FloatType> makeScalar(FloatType value) const
+	{
+		return ScalarSignal<FloatType>(value);
+	}
+
+	template <typename FloatType>
+	inline SlopeSignal<FloatType> makeSlope(FloatType last, FloatType next) const
+	{
+		return SlopeSignal<FloatType>(last, calcSlope(next, last));
+	}
+
+	inline AudioSignal<float> makeSignal(int index) const
+	{
+		const float * input = in(index);
+		return AudioSignal<float>(input);
+	}
+	///@}
+
 	const float * in(int index) const
 	{
 		const Unit * unit = this;
