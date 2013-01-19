@@ -393,14 +393,10 @@ void LagControl_Dtor(LagControl* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef NOVA_SIMD
-FLATTEN void In_next_a_nova(IOUnit *unit, int inNumSamples)
-{
-	World *world = unit->mWorld;
-	int bufLength = world->mBufLength;
-	int numChannels = unit->mNumOutputs;
 
-	float fbusChannel = ZIN0(0);
+static inline void IO_a_update_channels(IOUnit * unit, World * world, float fbusChannel,
+										int numChannels, int bufLength)
+{
 	if (fbusChannel != unit->m_fbusChannel) {
 		unit->m_fbusChannel = fbusChannel;
 		int busChannel = (uint32)fbusChannel;
@@ -411,19 +407,71 @@ FLATTEN void In_next_a_nova(IOUnit *unit, int inNumSamples)
 			unit->m_busTouched = world->mAudioBusTouched + busChannel;
 		}
 	}
+}
+
+template <bool LockShared>
+struct AudioBusGuard
+{
+	AudioBusGuard(const Unit * unit, int32 currentChannel, int32 maxChannel):
+		unit(unit),
+		mCurrentChannel(currentChannel),
+		isValid(currentChannel < maxChannel)
+	{
+		if (isValid)
+			lock();
+	}
+
+	~AudioBusGuard()
+	{
+		if (isValid)
+			unlock();
+	}
+
+	void lock()
+	{
+		if (LockShared)
+			ACQUIRE_BUS_AUDIO_SHARED(mCurrentChannel);
+		else
+			ACQUIRE_BUS_AUDIO(mCurrentChannel);
+	}
+
+	void unlock()
+	{
+		if (LockShared)
+			RELEASE_BUS_AUDIO_SHARED(mCurrentChannel);
+		else
+			RELEASE_BUS_AUDIO(mCurrentChannel);
+	}
+
+	const Unit * unit;
+	const int32 mCurrentChannel;
+	const bool isValid;
+};
+
+#ifdef NOVA_SIMD
+FLATTEN void In_next_a_nova(IOUnit *unit, int inNumSamples)
+{
+	World *world = unit->mWorld;
+	int bufLength = world->mBufLength;
+	int numChannels = unit->mNumOutputs;
+
+	float fbusChannel = ZIN0(0);
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float *in = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
 
 	for (int i=0; i<numChannels; ++i, in += bufLength) {
-		ACQUIRE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
+		AudioBusGuard<true> guard (unit, fbusChannel + i, maxChannel);
+
 		float *out = OUT(i);
-		if (touched[i] == bufCounter)
+
+		if (guard.isValid && (touched[i] == bufCounter))
 			nova::copyvec_simd(out, in, inNumSamples);
 		else
 			nova::zerovec_simd(out, inNumSamples);
-		RELEASE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
 	}
 }
 
@@ -434,29 +482,21 @@ FLATTEN void In_next_a_nova_64(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumOutputs;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		int busChannel = (uint32)fbusChannel;
-		int lastChannel = busChannel + numChannels;
-
-		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float *in = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
 
 	for (int i=0; i<numChannels; ++i, in += bufLength) {
-		ACQUIRE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
+		AudioBusGuard<true> guard (unit, fbusChannel + i, maxChannel);
+
 		float *out = OUT(i);
-		if (touched[i] == bufCounter)
+		if (guard.isValid && (touched[i] == bufCounter))
 			nova::copyvec_simd<64>(out, in);
 		else
 			nova::zerovec_simd<64>(out);
-		RELEASE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
 	}
 }
 
@@ -469,27 +509,19 @@ void In_next_a(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumOutputs;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
-
-		if (!(lastChannel > world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float *in = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
 
 	for (int i=0; i<numChannels; ++i, in += bufLength) {
-		ACQUIRE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
+		AudioBusGuard<true> guard (unit, fbusChannel + i, maxChannel);
+
 		float *out = OUT(i);
-		if (touched[i] == bufCounter) Copy(inNumSamples, out, in);
+		if (guard.isValid && (touched[i] == bufCounter)) Copy(inNumSamples, out, in);
 		else Fill(inNumSamples, out, 0.f);
-		RELEASE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
 	}
 }
 
@@ -501,36 +533,26 @@ void vIn_next_a(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumOutputs;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		int busChannel = (uint32)fbusChannel;
-		int lastChannel = busChannel + numChannels;
-
-		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float *in = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
 
 	for (int i=0; i<numChannels; ++i, in += bufLength) {
-		ACQUIRE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
+		AudioBusGuard<true> guard (unit, fbusChannel + i, maxChannel);
+
 		float *out = OUT(i);
-		if (touched[i] == bufCounter)
-		{
+		if (guard.isValid && (touched[i] == bufCounter))
 			vcopy(out, in, inNumSamples);
-		}
 		else
-		{
 			vfill(out, 0.f, inNumSamples);
-		}
-		RELEASE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
 	}
 }
 #endif
+
+// FIXME: add safety checks for control bus access
 
 void In_next_k(IOUnit *unit, int inNumSamples)
 {
@@ -561,7 +583,7 @@ void In_Ctor(IOUnit* unit)
 {
 //Print("->In_Ctor\n");
 	World *world = unit->mWorld;
-	unit->m_fbusChannel = -1.;
+	unit->m_fbusChannel = std::numeric_limits<float>::quiet_NaN();
 
 	if (unit->mCalcRate == calc_FullRate) {
 #ifdef NOVA_SIMD
@@ -672,28 +694,22 @@ void InFeedback_next_a(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumOutputs;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
-
-		if (!(lastChannel > world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float *in = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
 
 	for (int i=0; i<numChannels; ++i, in += bufLength) {
-		ACQUIRE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
+		AudioBusGuard<true> guard (unit, fbusChannel + i, maxChannel);
+
 		float *out = OUT(i);
 		int diff = bufCounter - touched[i];
-		if (diff == 1 || diff == 0) Copy(inNumSamples, out, in);
-		else Fill(inNumSamples, out, 0.f);
-		RELEASE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
+		if (guard.isValid && (diff == 1 || diff == 0))
+			Copy(inNumSamples, out, in);
+		else
+			Fill(inNumSamples, out, 0.f);
 	}
 }
 
@@ -766,29 +782,25 @@ void ReplaceOut_next_a(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs - 1;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
-
-		if (!(lastChannel > world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float *out = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
+
 	for (int i=0; i<numChannels; ++i, out+=bufLength) {
-		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-		float *in = IN(i+1);
-		Copy(inNumSamples, out, in);
-		touched[i] = bufCounter;
-		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
+		AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+
+		if (guard.isValid) {
+			float *in = IN(i+1);
+			Copy(inNumSamples, out, in);
+			touched[i] = bufCounter;
+		}
 	}
 }
 
+// FIXME: guard control bus & prevent buffer overflow
 void ReplaceOut_next_k(IOUnit *unit, int inNumSamples)
 {
 	World *world = unit->mWorld;
@@ -826,26 +838,21 @@ FLATTEN void ReplaceOut_next_a_nova(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs - 1;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
-
-		if (!(lastChannel > world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float *out = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
+
 	for (int i=0; i<numChannels; ++i, out+=bufLength) {
-		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-		float *in = IN(i+1);
-		nova::copyvec_simd(out, in, inNumSamples);
-		touched[i] = bufCounter;
-		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
+		AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+
+		if (guard.isValid) {
+			float *in = IN(i+1);
+			nova::copyvec_simd(out, in, inNumSamples);
+			touched[i] = bufCounter;
+		}
 	}
 }
 
@@ -856,26 +863,21 @@ FLATTEN void ReplaceOut_next_a_nova_64(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs - 1;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
-
-		if (!(lastChannel > world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float *out = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
+
 	for (int i=0; i<numChannels; ++i, out+=bufLength) {
-		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-		float *in = IN(i+1);
-		nova::copyvec_simd<64>(out, in);
-		touched[i] = bufCounter;
-		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
+		AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+
+		if (guard.isValid) {
+			float *in = IN(i+1);
+			nova::copyvec_simd<64>(out, in);
+			touched[i] = bufCounter;
+		}
 	}
 }
 
@@ -914,30 +916,24 @@ void Out_next_a(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs - 1;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
-
-		if (!(lastChannel > world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float *out = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
+
 	for (int i=0; i<numChannels; ++i, out+=bufLength) {
-		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-		float *in = IN(i+1);
-		if (touched[i] == bufCounter) Accum(inNumSamples, out, in);
-		else {
-			Copy(inNumSamples, out, in);
-			touched[i] = bufCounter;
+		AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+
+		if (guard.isValid) {
+			float *in = IN(i+1);
+			if (touched[i] == bufCounter) Accum(inNumSamples, out, in);
+			else {
+				Copy(inNumSamples, out, in);
+				touched[i] = bufCounter;
+			}
 		}
-		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
-		//Print("out %d %g %g\n", i, in[0], out[0]);
 	}
 }
 
@@ -952,34 +948,23 @@ void vOut_next_a(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs - 1;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		int busChannel = (int)fbusChannel;
-		int lastChannel = busChannel + numChannels;
-
-		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float *out = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out+=bufLength) {
-		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-		float *in = IN(i+1);
-		if (touched[i] == bufCounter)
-		{
-			vadd(out, out, in, inNumSamples);
+		AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+
+		if (guard.isValid) {
+			float *in = IN(i+1);
+			if (touched[i] == bufCounter) {
+				vadd(out, out, in, inNumSamples);
+			} else {
+				vcopy(out, in, inNumSamples);
+				touched[i] = bufCounter;
+			}
 		}
-		else
-		{
-			vcopy(out, in, inNumSamples);
-			touched[i] = bufCounter;
-		}
-		//Print("out %d %g %g\n", i, in[0], out[0]);
-		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 	}
 }
 #endif
@@ -988,37 +973,30 @@ void vOut_next_a(IOUnit *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 FLATTEN void Out_next_a_nova(IOUnit *unit, int inNumSamples)
 {
-	//Print("Out_next_a %d\n", unit->mNumInputs);
 	World *world = unit->mWorld;
 	int bufLength = world->mBufLength;
 	int numChannels = unit->mNumInputs - 1;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		int busChannel = (int)fbusChannel;
-		int lastChannel = busChannel + numChannels;
-
-		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float *out = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
+
 	for (int i=0; i<numChannels; ++i, out+=bufLength) {
-		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-		float *in = IN(i+1);
-		if (touched[i] == bufCounter)
-			nova::addvec_simd(out, in, inNumSamples);
-		else {
-			nova::copyvec_simd(out, in, inNumSamples);
-			touched[i] = bufCounter;
+		AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+
+		if (guard.isValid) {
+			float *in = IN(i+1);
+			if (touched[i] == bufCounter)
+				nova::addvec_simd(out, in, inNumSamples);
+			else {
+				nova::copyvec_simd(out, in, inNumSamples);
+				touched[i] = bufCounter;
+			}
 		}
-		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
-		//Print("out %d %g %g\n", i, in[0], out[0]);
 	}
 }
 
@@ -1030,31 +1008,25 @@ FLATTEN void Out_next_a_nova_64(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs - 1;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		int busChannel = (int)fbusChannel;
-		int lastChannel = busChannel + numChannels;
-
-		if (!(busChannel < 0 || lastChannel > (int)world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float *out = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
+
 	for (int i=0; i<numChannels; ++i, out+=bufLength) {
-		float *in = IN(i+1);
-		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-		if (touched[i] == bufCounter)
-			nova::addvec_simd<64>(out, in);
-		else {
-			nova::copyvec_simd<64>(out, in);
-			touched[i] = bufCounter;
+		AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+
+		if (guard.isValid) {
+			float *in = IN(i+1);
+			if (touched[i] == bufCounter)
+				nova::addvec_simd<64>(out, in);
+			else {
+				nova::copyvec_simd<64>(out, in);
+				touched[i] = bufCounter;
+			}
 		}
-		//Print("out %d %g %g\n", i, in[0], out[0]);
-		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 	}
 }
 #endif
@@ -1135,78 +1107,76 @@ void XOut_next_a(XOut *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs - 2;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
-
-		if (!(lastChannel > world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float next_xfade = ZIN0(1);
 	float xfade0 = unit->m_xfade;
 	float *out = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
+
 	if (xfade0 != next_xfade) {
 		float slope = CALCSLOPE(next_xfade, xfade0);
 		for (int i=0; i<numChannels; ++i) {
-			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-			float xfade = xfade0;
-			float *in = IN(i+2);
-			if (touched[i] == bufCounter) {
-				LOOP1(inNumSamples,
-					float zin = *in;
-					float zout = *out;
+			AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+
+			if (guard.isValid) {
+				float xfade = xfade0;
+				float *in = IN(i+2);
+				if (touched[i] == bufCounter) {
+					LOOP1(inNumSamples,
+						  float zin = *in;
+							float zout = *out;
 					*out = zout + xfade * (zin - zout);
 					//if (xxi==0) Print("x %d %d %g %g %g %g\n", bufCounter, i, zin, zout, xfade, *out);
 					xfade += slope;
 					++out; ++in;
-				);
-			} else {
-				LOOP1(inNumSamples,
-					float zin = *in;
-					*out = xfade * zin;
+					);
+				} else {
+					LOOP1(inNumSamples,
+						  float zin = *in;
+							*out = xfade * zin;
 					xfade += slope;
 					++out; ++in;
-				);
-				touched[i] = bufCounter;
+					);
+					touched[i] = bufCounter;
+				}
 			}
-			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		}
 	} else if (xfade0 == 1.f) {
 		for (int i=0; i<numChannels; ++i, out+=bufLength) {
-			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-			float *in = IN(i+2);
-			Copy(inNumSamples, out, in);
-			touched[i] = bufCounter;
-			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
+			AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+
+			if (guard.isValid) {
+				float *in = IN(i+2);
+				Copy(inNumSamples, out, in);
+				touched[i] = bufCounter;
+			}
 		}
 	} else if (xfade0 == 0.f) {
 		// do nothing.
 	} else {
 		for (int i=0; i<numChannels; ++i) {
-			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-			float *in = IN(i+2);
-			if (touched[i] == bufCounter) {
-				LOOP1(inNumSamples,
-					float zin = *in;
-					float zout = *out;
+			AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+			if (guard.isValid) {
+				float *in = IN(i+2);
+				if (touched[i] == bufCounter) {
+					LOOP1(inNumSamples,
+						  float zin = *in;
+							float zout = *out;
 					*out = zout + xfade0 * (zin - zout);
 					++out; ++in;
-				);
-			} else {
-				LOOP1(inNumSamples,
-					float zin = *in;
-					*out = xfade0 * zin;
+					);
+				} else {
+					LOOP1(inNumSamples,
+						  float zin = *in;
+							*out = xfade0 * zin;
 					++out; ++in;
-				);
-				touched[i] = bufCounter;
+					);
+					touched[i] = bufCounter;
+				}
 			}
-			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		}
 	}
 	unit->m_xfade = next_xfade;
@@ -1220,58 +1190,56 @@ FLATTEN void XOut_next_a_nova(XOut *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs - 2;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
-
-		if (!(lastChannel > world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	float next_xfade = ZIN0(1);
 	float xfade0 = unit->m_xfade;
 	float *out = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
+
 	if (xfade0 != next_xfade) {
 		float slope = CALCSLOPE(next_xfade, xfade0);
 		for (int i=0; i<numChannels; ++i) {
-			float xfade = xfade0;
-			float *in = IN(i+2);
-			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-			if (touched[i] == bufCounter)
-				nova::mix_vec_simd(out, out, slope_argument(1-xfade0, -slope), in, slope_argument(xfade0, slope), inNumSamples);
-			else {
-				nova::times_vec_simd(out, in, slope_argument(xfade, slope), inNumSamples);
-				touched[i] = bufCounter;
+			AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+
+			if (guard.isValid) {
+				float xfade = xfade0;
+				float *in = IN(i+2);
+				if (touched[i] == bufCounter)
+					nova::mix_vec_simd(out, out, slope_argument(1-xfade0, -slope), in, slope_argument(xfade0, slope), inNumSamples);
+				else {
+					nova::times_vec_simd(out, in, slope_argument(xfade, slope), inNumSamples);
+					touched[i] = bufCounter;
+				}
 			}
-			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		}
 		unit->m_xfade = next_xfade;
 	} else if (xfade0 == 1.f) {
 		for (int i=0; i<numChannels; ++i, out+=bufLength) {
-			float *in = IN(i+2);
-			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-			nova::copyvec_simd(out, in, inNumSamples);
-			touched[i] = bufCounter;
-			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
+			AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+
+			if (guard.isValid) {
+				float *in = IN(i+2);
+				nova::copyvec_simd(out, in, inNumSamples);
+				touched[i] = bufCounter;
+			}
 		}
 	} else if (xfade0 == 0.f) {
 		// do nothing.
 	} else {
 		for (int i=0; i<numChannels; ++i) {
-			float *in = IN(i+2);
-			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
-			if (touched[i] == bufCounter)
-				nova::mix_vec_simd(out, out, 1-xfade0, in, xfade0, inNumSamples);
-			else {
-				nova::times_vec_simd(out, in, xfade0, inNumSamples);
-				touched[i] = bufCounter;
+			AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+			if (guard.isValid) {
+				float *in = IN(i+2);
+				if (touched[i] == bufCounter)
+					nova::mix_vec_simd(out, out, 1-xfade0, in, xfade0, inNumSamples);
+				else {
+					nova::times_vec_simd(out, in, xfade0, inNumSamples);
+					touched[i] = bufCounter;
+				}
 			}
-			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		}
 	}
 }
@@ -1347,16 +1315,7 @@ void OffsetOut_next_a(OffsetOut *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs - 1;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
-
-		if (!(lastChannel > world->mNumAudioBusChannels)) {
-			unit->m_bus = world->mAudioBus + (busChannel * bufLength);
-			unit->m_busTouched = world->mAudioBusTouched + busChannel;
-		}
-	}
+	IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
 	int32 offset = unit->mParent->mSampleOffset;
 	int32 remain = BUFLENGTH - offset;
@@ -1364,33 +1323,39 @@ void OffsetOut_next_a(OffsetOut *unit, int inNumSamples)
 	float *out = unit->m_bus;
 	float *saved = unit->m_saved;
 	int32 *touched = unit->m_busTouched;
-	int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 bufCounter = unit->mWorld->mBufCounter;
+	const int32 maxChannel = world->mNumAudioBusChannels;
+
 	for (int i=0; i<numChannels; ++i, out+=bufLength, saved += offset) {
-		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
+		AudioBusGuard<false> guard (unit, fbusChannel + i, maxChannel);
+
 		float *in = IN(i+1);
 		//Print("out %d  %d %d  %d %d\n",
 		//	i, touched[i] == bufCounter, unit->m_empty,
 		//	offset, remain);
 
-		if (touched[i] == bufCounter) {
-			if (unit->m_empty) {
-				//Print("touched offset %d\n", offset);
+		if (guard.isValid) {
+			if (touched[i] == bufCounter) {
+				if (unit->m_empty) {
+					//Print("touched offset %d\n", offset);
+				} else {
+					Accum(offset, out, saved);
+				}
+				Accum(remain, out + offset, in);
 			} else {
-				Accum(offset, out, saved);
+				if (unit->m_empty) {
+					Clear(offset, out);
+					//Print("untouched offset %d\n", offset);
+				} else {
+					Copy(offset, out, saved);
+				}
+				Copy(remain, out + offset, in);
+				touched[i] = bufCounter;
 			}
-			Accum(remain, out + offset, in);
-		} else {
-			if (unit->m_empty) {
-				Clear(offset, out);
-				//Print("untouched offset %d\n", offset);
-			} else {
-				Copy(offset, out, saved);
-			}
-			Copy(remain, out + offset, in);
-			touched[i] = bufCounter;
 		}
+
 		Copy(offset, saved, in + remain);
-		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
+
 		//Print("out %d %d %d  %g %g\n", i, in[0], out[0]);
 	}
 	unit->m_empty = false;
