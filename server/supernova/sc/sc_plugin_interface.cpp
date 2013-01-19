@@ -54,6 +54,8 @@ spin_lock log_guard; // needs to be acquired for logging from the helper threads
 
 namespace {
 
+spin_lock rt_pool_guard;
+
 inline Node * as_Node(server_node * node)
 {
     if (node == NULL)
@@ -321,8 +323,7 @@ void release_scope_buffer(World *inWorld, ScopeBufferHnd &hnd)
 } /* namespace */
 } /* namespace nova */
 
-extern "C"
-{
+extern "C" {
 
 bool define_unit(const char *inUnitClassName, size_t inAllocSize,
                  UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
@@ -354,7 +355,6 @@ bool define_unitcmd(const char * unitClassName, const char * cmdName, UnitCmdFun
     return nova::sc_factory->register_ugen_command_function(unitClassName, cmdName, inFunc);
 }
 
-
 bool define_plugincmd(const char * name, PlugInCmdFunc func, void * user_data)
 {
     return nova::sc_factory->register_cmd_plugin(name, func, user_data);
@@ -362,6 +362,7 @@ bool define_plugincmd(const char * name, PlugInCmdFunc func, void * user_data)
 
 void * rt_alloc(World * dummy, size_t size)
 {
+    nova::spin_lock::scoped_lock lock(nova::rt_pool_guard);
     if (size)
         return nova::rt_pool.malloc(size);
     else
@@ -370,11 +371,13 @@ void * rt_alloc(World * dummy, size_t size)
 
 void * rt_realloc(World * dummy, void * ptr, size_t size)
 {
+    nova::spin_lock::scoped_lock lock(nova::rt_pool_guard);
     return nova::rt_pool.realloc(ptr, size);
 }
 
 void rt_free(World * dummy, void * ptr)
 {
+    nova::spin_lock::scoped_lock lock(nova::rt_pool_guard);
     if (ptr)
         nova::rt_pool.free(ptr);
 }
