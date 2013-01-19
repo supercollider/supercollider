@@ -97,8 +97,6 @@ sc_synth_definition::sc_synth_definition(sc_synthdef const & sd):
 abstract_synth * sc_synth_definition::create_instance(int node_id)
 {
     sc_synth * synth = new sc_synth(node_id, this);
-
-    sc_factory->schedule_for_preparation(synth);
     return synth;
 }
 

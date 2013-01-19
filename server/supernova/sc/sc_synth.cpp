@@ -25,7 +25,7 @@
 namespace nova {
 
 sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
-    abstract_synth(node_id, prototype), trace(0), unit_buffers(0)
+    abstract_synth(node_id, prototype), initialized(false), trace(0), unit_buffers(0)
 {
     World const & world = sc_factory->world;
     mNode.mWorld = &sc_factory->world;
@@ -125,6 +125,7 @@ void sc_synth::prepare(void)
         sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
         def->initialize(unit);
     });
+    initialized = true;
 }
 
 void sc_synth::set(slot_index_t slot_index, sample val)

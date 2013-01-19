@@ -274,7 +274,6 @@ public:
         if (unlikely(dsp_queue_dirty))
             rebuild_dsp_queue();
 
-        sc_factory->initialize_synths();
         scheduler<scheduler_hook, thread_init_functor>::operator()();
         sc_factory->update_nodegraph();
     }
