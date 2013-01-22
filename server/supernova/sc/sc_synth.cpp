@@ -121,13 +121,20 @@ sc_synth::~sc_synth(void)
     rt_pool.free(mControls);
 }
 
+// FIXME: for some reason, we cannot initialize multiple synths in parallel
+static spin_lock scsynth_preparation_lock;
+
 void sc_synth::prepare(void)
 {
     assert(!initialized);
+
+    scsynth_preparation_lock.lock();
     std::for_each(units, units + unit_count, [](Unit * unit) {
         sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
         def->initialize(unit);
     });
+    scsynth_preparation_lock.unlock();
+
     initialized = true;
 }
 
