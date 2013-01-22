@@ -43,7 +43,7 @@ class nova_server * instance = 0;
 
 nova_server::nova_server(server_arguments const & args):
     server_shared_memory_creator(args.port(), args.control_busses),
-    scheduler<nova::scheduler_hook, thread_init_functor>(args.threads, !args.non_rt),
+    scheduler<thread_init_functor>(args.threads, !args.non_rt),
     buffer_manager(args.buffers), sc_osc_handler(args), dsp_queue_dirty(false)
 {
     assert(instance == 0);
@@ -96,7 +96,7 @@ nova_server::~nova_server(void)
     deactivate_audio();
 #endif
 
-    scheduler<scheduler_hook, thread_init_functor>::terminate();
+    scheduler<thread_init_functor>::terminate();
     io_interpreter.join_thread();
     instance = 0;
 }
@@ -174,7 +174,7 @@ void nova_server::rebuild_dsp_queue(void)
 {
     assert(dsp_queue_dirty);
     node_graph::dsp_thread_queue_ptr new_queue = node_graph::generate_dsp_queue();
-    scheduler<scheduler_hook, thread_init_functor>::reset_queue_sync(std::move(new_queue));
+    scheduler<thread_init_functor>::reset_queue_sync(std::move(new_queue));
     dsp_queue_dirty = false;
 }
 
