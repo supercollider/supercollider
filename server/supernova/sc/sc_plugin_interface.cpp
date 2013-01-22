@@ -742,7 +742,7 @@ void sc_plugin_interface::reset_sampling_rate(int sr)
 }
 
 
-void sc_done_action_handler::update_nodegraph(void)
+void sc_done_action_handler::apply_done_actions(void)
 {
     for (server_node * node : done_nodes)
         instance->free_node(node);

@@ -48,11 +48,6 @@ struct audio_sync_callback:
     virtual void run(void) = 0;
 };
 
-struct nop_hook
-{
-    void operator()(void) {}
-};
-
 /** scheduler class of the nova server
  *
  *  - provides a callback system to place callbacks in the scheduler
@@ -64,11 +59,8 @@ struct nop_hook
  *  thread_init_functor: helper thread initialization functor
  *
  * */
-template<class scheduler_hook = nop_hook,
-         class thread_init_functor = nop_thread_init
-        >
-class scheduler:
-    protected scheduler_hook
+template<class thread_init_functor = nop_thread_init>
+class scheduler
 {
     typedef nova::dsp_threads<queue_node, thread_init_functor, rt_pool_allocator<void*> > dsp_threads;
     typedef typename dsp_threads::dsp_thread_queue_ptr dsp_thread_queue_ptr;
@@ -125,10 +117,13 @@ public:
     }
 
     /* called from the audio driver */
-    void operator()(void)
+    void run_callbacks()
     {
         cbs.run_callbacks();
-        scheduler_hook::operator()();
+    }
+
+    void compute_audio()
+    {
         threads.run();
     }
 

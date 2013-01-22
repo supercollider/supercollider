@@ -114,16 +114,6 @@ struct io_thread_init_functor
     void operator()() const;
 };
 
-/** scheduler hook
- *
- *  evaluate scheduled bundles
- *
- * */
-struct scheduler_hook
-{
-    inline void operator()(void);
-};
-
 namespace detail {
 #if defined(PORTAUDIO_BACKEND)
 typedef portaudio_backend<realtime_engine_functor, float, false> audio_backend;
@@ -139,7 +129,7 @@ class nova_server:
     public asynchronous_log_thread,
     public node_graph,
     public server_shared_memory_creator,
-    public scheduler<scheduler_hook, thread_init_functor>,
+    public scheduler<thread_init_functor>,
     public detail::audio_backend,
     public synth_factory,
     public buffer_manager,
@@ -269,17 +259,16 @@ public:
     }
 
 public:
-    HOT void operator()(void)
+    HOT void tick()
     {
-        scheduler<scheduler_hook, thread_init_functor>::operator()();
-        sc_factory->update_nodegraph();
-    }
-
-    void before_dsp_tick()
-    {
+        sc_factory->apply_done_actions();
+        run_callbacks();
         execute_scheduled_bundles();
+
         if (unlikely(dsp_queue_dirty))
             rebuild_dsp_queue();
+
+        compute_audio();
     }
 
     void rebuild_dsp_queue(void);
@@ -307,7 +296,7 @@ inline void run_scheduler_tick(void)
     for (int channel = 0; channel != input_channels; ++channel)
         sc_factory->world.mAudioBusTouched[output_channels + channel] = buf_counter;
 
-    (*instance)();
+    instance->tick();
 
     /* wipe all untouched output buffers */
     for (int channel = 0; channel != output_channels; ++channel) {
@@ -325,11 +314,6 @@ inline void realtime_engine_functor::run_tick(void)
 {
     run_scheduler_tick();
     instance->increment_logical_time();
-}
-
-inline void scheduler_hook::operator()(void)
-{
-    instance->before_dsp_tick();
 }
 
 inline bool log_printf(const char *fmt, ...)

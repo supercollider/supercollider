@@ -74,7 +74,7 @@ public:
         freeAll_nodes.push_back(node);
     }
 
-    void update_nodegraph(void);
+    void apply_done_actions(void);
 
 protected:
     typedef rt_pool_allocator<server_node*> server_node_alloc;
