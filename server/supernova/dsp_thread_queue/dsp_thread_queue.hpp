@@ -20,6 +20,7 @@
 #define DSP_THREAD_QUEUE_DSP_THREAD_QUEUE_HPP
 
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <iostream>
 #include <memory>
@@ -343,6 +344,7 @@ public:
         if (!runnable_set.is_lock_free())
             std::cout << "Warning: scheduler queue is not lockfree!" << std::endl;
 
+        calibrate_backoff(10);
         set_thread_count(tc);
     }
 
@@ -450,6 +452,32 @@ private:
         int min, max, loops;
     };
 
+    void calibrate_backoff(int timeout_in_seconds)
+    {
+        using namespace std;
+        using namespace std::chrono;
+
+        const int backoff_iterations = 100;
+
+        vector<nanoseconds> measured_values;
+        generate_n(back_inserter(measured_values), 16, [] {
+            backup b(32768, 32768);
+            auto start = high_resolution_clock::now();
+
+            for (int i = 0; i != backoff_iterations; ++i)
+                b.run();
+            auto end = high_resolution_clock::now();
+            auto diff = duration_cast<nanoseconds>(end - start);
+
+            return diff;
+        });
+
+        std::sort(measured_values.begin(), measured_values.end());
+        auto median = measured_values[measured_values.size()/2];
+
+        watchdog_iterations = (seconds(timeout_in_seconds) / median) * backoff_iterations;
+    }
+
     void run_item(thread_count_t index)
     {
         backup b(8, 32768);
@@ -474,8 +502,7 @@ private:
                 poll_counts = 0;
             }
 
-            if (poll_counts == 50000) {
-                // the maximum poll count is system-dependent. 50000 should be high enough for recent machines
+            if (poll_counts == watchdog_iterations) {
                 std::printf("nova::dsp_queue_interpreter::run_item: possible lookup detected\n");
                 abort();
             }
@@ -498,11 +525,14 @@ private:
 
     void wait_for_end(void)
     {
+        backup b(8, 32768);
+        const int iterations = watchdog_iterations * 2;
         int count = 0;
         while (node_count.load(boost::memory_order_acquire) != 0) {
+            b.run();
             ++count;
-            if (count == 1000000) {
-                std::printf("nova::dsp_queue_interpreter::run_item: possible lookup detected\n");
+            if (count == iterations) {
+                std::printf("nova::dsp_queue_interpreter::wait_for_end: possible lookup detected\n");
                 abort();
             }
         } // busy-wait for helper threads to finish
@@ -554,6 +584,7 @@ private:
 
     boost::lockfree::stack<dsp_thread_queue_item*,  boost::lockfree::capacity<32768> > runnable_set;
     boost::atomic<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
+    int watchdog_iterations;
 };
 
 } /* namespace nova */
