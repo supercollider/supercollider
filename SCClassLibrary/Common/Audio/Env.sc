@@ -13,9 +13,13 @@ Env {
 		^super.newCopyArgs(levels, times, curve ? \lin, releaseNode, loopNode, offset)
 	}
 
-	*newClear { arg numSegments = 8;
+	*newClear { arg numSegments = 8, numChannels = 1;
 		// make an envelope for filling in later.
-		^this.new(Array.fill(numSegments + 1, 0), Array.fill(numSegments, 1))
+		if (numChannels == 1) {
+			^this.new(Array.fill(numSegments + 1, 0), Array.fill(numSegments, 1))
+		} {
+			^this.new(Array.fill(numSegments + 1, {0 ! numChannels} ), Array.fill(numSegments, {1 ! numChannels} ), Array.fill(numSegments, {\lin ! numChannels}))
+		}
 	}
 
 	*initClass {
