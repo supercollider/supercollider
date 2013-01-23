@@ -142,7 +142,7 @@ fork {
 			timer = Sweep.ar(1);
 			// 'i' must be audio-rate for BufWr.ar
 			BufWr.ar(timer, resultbuf, K2A.ar(i), loop: 0);
-			BufWr.ar(i, resultbuf, DC.ar(0), 0);  // # of points in index 0
+			BufWr.kr(i, resultbuf, DC.kr(0), 0);  // # of points in index 0
 		}).asBytes]],
 		[0, Synth.basicNew(\onsets, s, 1000).newMsg],
 		[dur, resultbuf.writeMsg(resultpath, headerFormat: "AIFF", sampleFormat: "float")]
