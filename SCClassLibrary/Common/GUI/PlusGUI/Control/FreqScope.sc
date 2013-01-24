@@ -258,7 +258,10 @@ PlusFreqScope {
 	}
 
 	doOnServerQuit {
-		scope.stop;
+		var thisScope = scope;
+		defer {
+			thisScope.stop;
+		};
 		scopebuf = synth = nil;
 	}
 
