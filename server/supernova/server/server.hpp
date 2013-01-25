@@ -175,6 +175,7 @@ public:
     void terminate(void)
     {
         system_interpreter.terminate();
+        quit_requested_ = true;
     }
     /* @} */
 
@@ -278,7 +279,13 @@ public:
         dsp_queue_dirty = true;
     }
 
+    bool quit_requested()
+    {
+        return quit_requested_.load();
+    }
+
 private:
+    std::atomic<bool> quit_requested_;
     bool dsp_queue_dirty;
 
     callback_interpreter<system_callback, false> system_interpreter; // rt to system thread
