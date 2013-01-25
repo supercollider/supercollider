@@ -141,7 +141,6 @@ void start_audio_backend(server_arguments const & args)
     }
 
     connect_jack_ports();
-    instance->start_dsp_threads();
 }
 
 #elif defined(PORTAUDIO_BACKEND)
@@ -158,7 +157,6 @@ void start_audio_backend(server_arguments const & args)
     cout << "opened portaudio device name:" << args.hw_name << endl;
     instance->prepare_backend();
     instance->activate_audio();
-    instance->start_dsp_threads();
 }
 
 #else
