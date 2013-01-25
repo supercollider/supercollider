@@ -205,21 +205,25 @@ public:
     // element access
     reference operator[](size_type i)
     {
+        assert(i < size());
         return data_[i];
     }
 
     const_reference operator[](size_type i) const
     {
+        assert(i < size());
         return data_[i];
     }
 
     reference at(size_type i)
     {
+        assert(i < size());
         return data_[i];
     }
 
     const_reference at(size_type i) const
     {
+        assert(i < size());
         return data_[i];
     }
 
