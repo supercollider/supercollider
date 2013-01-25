@@ -166,6 +166,7 @@ void nova_server::free_node(server_node * node)
 
 void nova_server::run_nonrt_synthesis(server_arguments const & args)
 {
+    start_dsp_threads();
     non_realtime_synthesis_engine engine(args);
     engine.run();
 }

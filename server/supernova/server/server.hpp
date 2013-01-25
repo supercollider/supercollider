@@ -174,6 +174,7 @@ public:
 
     void run(void)
     {
+        start_dsp_threads();
         system_interpreter.run();
     }
 
