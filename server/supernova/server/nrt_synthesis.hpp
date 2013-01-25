@@ -103,12 +103,17 @@ struct non_realtime_synthesis_engine
             cout << "Next OSC bundle " << bundle_time.get_secs() << "." << bundle_time.get_nanoseconds() << endl;
 
             while (instance->current_time() < bundle_time) {
+                if (instance->quit_requested())
+                    goto done;
+
                 if (has_inputs)
                     backend.audio_fn(samples_per_block);
                 else
                     backend.audio_fn_noinput(samples_per_block);
             }
         }
+
+    done:
         backend.deactivate_audio();
         cout << "Non-rt synthesis finished" << endl;
     }

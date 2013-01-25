@@ -138,8 +138,10 @@ public:
 
     void join_thread(void)
     {
-        super::terminate();
-        callback_thread.join();
+        if (super::running.load()) {
+            super::terminate();
+            callback_thread.join();
+        }
     }
 };
 
