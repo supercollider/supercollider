@@ -18,7 +18,7 @@
 #ifndef SERVER_NRT_SYNTHESIS_HPP
 #define SERVER_NRT_SYNTHESIS_HPP
 
-#include <iostream>
+#include <cstdio>
 #include <fstream>
 #include <string>
 
@@ -86,7 +86,7 @@ struct non_realtime_synthesis_engine
         using namespace std;
         array<char, 16384> packet_buffer;
 
-        cout << "Starting non-rt synthesis" << endl;
+        printf("Starting non-rt synthesis");
         backend.activate_audio();
 
         while (!command_stream.eof()) {
@@ -98,7 +98,9 @@ struct non_realtime_synthesis_engine
 
             time_tag bundle_time = instance->handle_bundle_nrt(packet_buffer.data(), packet_size);
 
-            cout << "Next OSC bundle " << bundle_time.get_secs() << "." << bundle_time.get_nanoseconds() << endl;
+            size_t seconds = bundle_time.get_secs();
+            size_t nano_seconds = bundle_time.get_nanoseconds();
+            printf("Next OSC bundle: %zu.%09zu\n", seconds, nano_seconds);
 
             while (instance->current_time() < bundle_time) {
                 if (has_inputs)
@@ -108,7 +110,7 @@ struct non_realtime_synthesis_engine
             }
         }
         backend.deactivate_audio();
-        cout << "Non-rt synthesis finished" << endl;
+        printf("Non-rt synthesis finished");
     }
 
     sndfile_backend<non_rt_functor, float, true> backend;
