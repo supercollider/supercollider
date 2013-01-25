@@ -58,6 +58,7 @@ public:
         DocNew,
         DocOpen,
         DocOpenStartup,
+        DocOpenSupportDir,
         DocSave,
         DocSaveAs,
         DocSaveAll,
@@ -128,7 +129,6 @@ public Q_SLOTS:
 
     void newDocument();
     void openDocument();
-    void openStartupFile();
     void saveDocument();
     void saveDocumentAs();
     void saveAllDocuments();
@@ -151,6 +151,9 @@ public Q_SLOTS:
     void showStatusMessage( QString const & string );
 
 private Q_SLOTS:
+    void openStartupFile();
+    void openUserSupportDirectory();
+
     void switchSession( Session *session );
     void saveSession( Session *session );
     void onInterpreterStateChanged( QProcess::ProcessState );

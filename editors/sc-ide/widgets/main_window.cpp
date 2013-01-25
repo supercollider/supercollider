@@ -46,6 +46,7 @@
 
 #include <QAction>
 #include <QApplication>
+#include <QDesktopServices>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QGridLayout>
@@ -264,6 +265,12 @@ void MainWindow::createActions()
     action->setStatusTip(tr("Open startup file"));
     connect(action, SIGNAL(triggered()), this, SLOT(openStartupFile()));
     settings->addAction( action, "ide-document-open-startup", ideCategory);
+
+    mActions[DocOpenSupportDir] = action = new QAction(
+        QIcon::fromTheme("document-open"), tr("Open user support directory"), this);
+    action->setStatusTip(tr("Open user support directory"));
+    connect(action, SIGNAL(triggered()), this, SLOT(openUserSupportDirectory()));
+    settings->addAction( action, "ide-document-open-support-directory", ideCategory);
 
     mActions[DocSave] = action = new QAction(
         QIcon::fromTheme("document-save"), tr("&Save"), this);
@@ -500,6 +507,7 @@ void MainWindow::createMenus()
     connect(mRecentDocsMenu, SIGNAL(triggered(QAction*)),
             this, SLOT(onRecentDocAction(QAction*)));
     menu->addAction( mActions[DocOpenStartup] );
+    menu->addAction( mActions[DocOpenSupportDir] );
     menu->addAction( mActions[DocSave] );
     menu->addAction( mActions[DocSaveAs] );
     menu->addAction( mActions[DocSaveAll] );
@@ -1074,6 +1082,15 @@ void MainWindow::openStartupFile()
     }
 
     mMain->documentManager()->open( filePath );
+}
+
+void MainWindow::openUserSupportDirectory()
+{
+    char appSupportDir[PATH_MAX];
+    sc_GetUserAppSupportDirectory(appSupportDir, PATH_MAX);
+
+    QUrl dirUrl = QUrl::fromLocalFile(QString(appSupportDir));
+    QDesktopServices::openUrl(dirUrl);
 }
 
 void MainWindow::saveDocument()
