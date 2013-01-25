@@ -53,7 +53,7 @@ class jack_backend:
 
 public:
     jack_backend(void):
-        client(NULL), time_is_synced(false)
+        client(NULL), is_active(false), time_is_synced(false)
     {}
 
     ~jack_backend(void)
