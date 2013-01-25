@@ -93,7 +93,7 @@ public:
 
         super::output_samples.resize(output_channel_count);
 
-        temp_buffer.reset(calloc_aligned<float>(std::max(input_channels, output_channels) * 64));
+        temp_buffer.reset(calloc_aligned<float>(std::max(input_channels, output_channels) * block_size));
 
     }
 
