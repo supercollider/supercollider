@@ -148,6 +148,10 @@ void* gstate_update_func(void* arg)
 	requested_time.tv_sec = 0;
 	requested_time.tv_nsec = 17000 * 1000;
 
+	// NOTE: should not be required as this is the only thread accessing the x11 API
+	//       but omitting seems to cause troubles.
+	XInitThreads();
+
 	d = XOpenDisplay ( NULL );
 	if (!d) return 0;
 
