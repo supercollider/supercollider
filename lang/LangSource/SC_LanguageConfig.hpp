@@ -47,16 +47,22 @@ public:
 	void removeExcludedDirectory(const char *name);
 
 	// convenience functions to access the global library config
+	static void setConfigFile(std::string const & fileName)
+	{
+		gConfigFile = fileName;
+	}
+
 	static bool readLibraryConfigYAML(const char* fileName);
 	static bool writeLibraryConfigYAML(const char* fileName);
 	static void freeLibraryConfig();
 	static bool defaultLibraryConfig(void);
-	static bool readDefaultLibraryConfig();
+	static bool readLibraryConfig();
 
 private:
 	DirVector mIncludedDirectories;
 	DirVector mExcludedDirectories;
 	DirVector mDefaultClassLibraryDirectories;
+	static std::string gConfigFile;
 };
 
 extern SC_LanguageConfig* gLanguageConfig;

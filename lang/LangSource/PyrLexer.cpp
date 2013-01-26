@@ -2106,6 +2106,8 @@ void shutdownLibrary()
 	compiledOK = false;
 
 	pthread_mutex_unlock (&gLangMutex);
+
+	SC_LanguageConfig::freeLibraryConfig();
 }
 
 SC_DLLEXPORT_C bool compileLibrary()
@@ -2117,7 +2119,7 @@ SC_DLLEXPORT_C bool compileLibrary()
 	gNumCompiledFiles = 0;
 	compiledOK = false;
 
-    SC_LanguageConfig::readDefaultLibraryConfig();
+	SC_LanguageConfig::readLibraryConfig();
 
 	compileStartTime = elapsedTime();
 

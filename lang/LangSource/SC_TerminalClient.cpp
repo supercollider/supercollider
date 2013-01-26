@@ -247,11 +247,10 @@ int SC_TerminalClient::run(int argc, char** argv)
 	opt.mArgv = argv;
 
 	// read library configuration file
-	if (opt.mLibraryConfigFile) {
-		int argLength = strlen(opt.mLibraryConfigFile);
-		SC_LanguageConfig::readLibraryConfigYAML(opt.mLibraryConfigFile);
-	} else
-		SC_LanguageConfig::readDefaultLibraryConfig();
+	if (opt.mLibraryConfigFile)
+		SC_LanguageConfig::setConfigFile(opt.mLibraryConfigFile);
+
+	SC_LanguageConfig::readLibraryConfig();
 
 	// initialize runtime
 	initRuntime(opt);
