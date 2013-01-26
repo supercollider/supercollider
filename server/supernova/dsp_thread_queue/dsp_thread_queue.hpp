@@ -527,7 +527,7 @@ private:
                 poll_counts = 0;
             }
 
-            if (poll_counts == watchdog_iterations) {
+            if (!YieldBackoff && (poll_counts == watchdog_iterations)) {
                 std::printf("nova::dsp_queue_interpreter::run_item: possible lookup detected\n");
                 abort();
             }
@@ -563,7 +563,7 @@ private:
         while (node_count.load(boost::memory_order_acquire) != 0) {
             b.run();
             ++count;
-            if (count == iterations) {
+            if (!YieldBackoff && (count == iterations)) {
                 std::printf("nova::dsp_queue_interpreter::wait_for_end: possible lookup detected\n");
                 abort();
             }
