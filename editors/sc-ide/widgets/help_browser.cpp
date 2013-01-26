@@ -350,6 +350,11 @@ void HelpBrowser::openDefinition()
     return Main::openDefinition(symbolUnderCursor(), window());
 }
 
+void HelpBrowser::openCommandLine()
+{
+    return Main::openCommandLine(symbolUnderCursor());
+}
+
 void HelpBrowser::findReferences()
 {
     return Main::findReferences(symbolUnderCursor(), window());
