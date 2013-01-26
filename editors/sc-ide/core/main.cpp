@@ -280,6 +280,11 @@ void Main::openDefinition(const QString &string, QWidget * parent)
     dialog.exec();
 }
 
+void Main::openCommandLine(const QString &string)
+{
+    MainWindow::instance()->showCmdLine(string);
+}
+
 void Main::findReferences(const QString &string, QWidget * parent)
 {
     QString definitionString = string.trimmed();

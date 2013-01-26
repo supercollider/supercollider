@@ -109,6 +109,7 @@ public slots:
     void findText( const QString & text, bool backwards = false );
     bool openDocumentation();
     void openDefinition();
+    void openCommandLine();
     void findReferences();
 
 signals:
