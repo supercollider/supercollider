@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <iostream>
 #include <memory>
+#include <thread>
 #include <vector>
 
 #include <boost/atomic.hpp>
@@ -34,6 +35,7 @@
 #endif
 
 #include <boost/lockfree/stack.hpp>
+#include <boost/mpl/if.hpp>
 
 #include "nova-tt/pause.hpp"
 #include "nova-tt/semaphore.hpp"
@@ -181,7 +183,7 @@ public:
 
         if (!successors.empty()) {
             printf("\tsuccessors:\n");
-			for (size_t i = 0; i != successors.size(); ++i) {
+            for (size_t i = 0; i != successors.size(); ++i) {
                 printf("\t\t%p\n", successors[i]);
             }
         }
@@ -241,7 +243,7 @@ class dsp_thread_queue
     typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
     typedef std::vector<dsp_thread_queue_item*,
                         typename Alloc::template rebind<dsp_thread_queue_item*>::other
-                       > item_vector_t;
+    > item_vector_t;
 
     typedef typename Alloc::template rebind<dsp_thread_queue_item>::other item_allocator;
 
@@ -252,10 +254,10 @@ public:
         using namespace std;
 
         printf("queue %p\n items:\n", this);
-		for (std::size_t i = 0; i != total_node_count; ++i)
-			queue_items[i].dump_item();
+        for (std::size_t i = 0; i != total_node_count; ++i)
+            queue_items[i].dump_item();
         printf("\ninitial items:\n", this);
-		for(dsp_thread_queue_item * item : initially_runnable_items)
+        for(dsp_thread_queue_item * item : initially_runnable_items)
             item->dump_item();
 
         printf("\n");
@@ -338,8 +340,8 @@ public:
 
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
-    dsp_queue_interpreter(thread_count_t tc):
-        node_count(0)
+    dsp_queue_interpreter(thread_count_t tc, bool yield_if_busy):
+        node_count(0), yield_if_busy(yield_if_busy)
     {
         if (!runnable_set.is_lock_free())
             std::cout << "Warning: scheduler queue is not lockfree!" << std::endl;
@@ -427,14 +429,16 @@ public:
 
     void tick(thread_count_t thread_index)
     {
-        run_item(thread_index);
+        if (yield_if_busy)
+            run_item<true>(thread_index);
+        else
+            run_item<false>(thread_index);
     }
 
-
 private:
-    struct backup
+    struct backoff
     {
-        backup(int min, int max): min(min), max(max), loops(min) {}
+        backoff(int min, int max): min(min), max(max), loops(min) {}
 
         void run(void)
         {
@@ -452,6 +456,24 @@ private:
         int min, max, loops;
     };
 
+    struct yield_backoff
+    {
+        yield_backoff(int dummy_min, int dummy_max){}
+
+        void run()
+        {
+            std::this_thread::yield();
+        }
+
+        void reset(){}
+    };
+
+    template <bool YieldBackoff>
+    struct select_backoff
+    {
+        typedef typename boost::mpl::if_c<YieldBackoff, yield_backoff, backoff>::type type;
+    };
+
     void calibrate_backoff(int timeout_in_seconds)
     {
         using namespace std;
@@ -461,7 +483,7 @@ private:
 
         vector<nanoseconds> measured_values;
         generate_n(back_inserter(measured_values), 16, [] {
-            backup b(32768, 32768);
+            backoff b(32768, 32768);
             auto start = high_resolution_clock::now();
 
             for (int i = 0; i != backoff_iterations; ++i)
@@ -478,9 +500,12 @@ private:
         watchdog_iterations = (seconds(timeout_in_seconds) / median) * backoff_iterations;
     }
 
+    template <bool YieldBackoff>
     void run_item(thread_count_t index)
     {
-        backup b(8, 32768);
+        typedef typename select_backoff<YieldBackoff>::type backoff_t;
+
+        backoff_t b(8, 32768);
         int poll_counts = 0;
 
         for (;;) {
@@ -512,20 +537,27 @@ private:
 public:
     void tick_master(void)
     {
-        run_item_master();
+        if (yield_if_busy)
+            run_item_master<true>();
+        else
+            run_item_master<false>();
     }
 
 private:
+    template <bool YieldBackoff>
     void run_item_master(void)
     {
-        run_item(0);
-        wait_for_end();
+        run_item<YieldBackoff>(0);
+        wait_for_end<YieldBackoff>();
         assert(runnable_set.empty());
     }
 
+    template <bool YieldBackoff>
     void wait_for_end(void)
     {
-        backup b(8, 32768);
+        typedef typename select_backoff<YieldBackoff>::type backoff_t;
+
+        backoff_t b(8, 32768);
         const int iterations = watchdog_iterations * 2;
         int count = 0;
         while (node_count.load(boost::memory_order_acquire) != 0) {
@@ -585,6 +617,7 @@ private:
     boost::lockfree::stack<dsp_thread_queue_item*,  boost::lockfree::capacity<32768> > runnable_set;
     boost::atomic<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
     int watchdog_iterations;
+    bool yield_if_busy;
 };
 
 } /* namespace nova */

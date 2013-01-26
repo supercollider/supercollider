@@ -95,7 +95,7 @@ protected:
 public:
     /* start thread_count - 1 scheduler threads */
     scheduler(thread_count_t thread_count = 1, bool realtime = false):
-        threads(thread_count, thread_init_functor(realtime))
+        threads(thread_count, !realtime, thread_init_functor(realtime))
     {}
 
     void start_dsp_threads(void)
