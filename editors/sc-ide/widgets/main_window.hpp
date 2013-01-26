@@ -79,6 +79,7 @@ public:
 
         // View
         ShowCmdLine,
+        CmdLineForCursor,
         ShowGoToLineTool,
         CloseToolBox,
         ShowFullScreen,
@@ -137,6 +138,7 @@ public Q_SLOTS:
     void closeAllDocuments();
 
     void showCmdLine();
+    void showCmdLine( const QString & );
     void showFindTool();
     void showReplaceTool();
     void showGoToLineTool();
@@ -180,6 +182,7 @@ private Q_SLOTS:
     void showSwitchSessionDialog();
     void showAbout();
     void showAboutQT();
+    void cmdLineForCursor();
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
