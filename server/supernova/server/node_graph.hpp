@@ -144,7 +144,7 @@ public:
 
     bool group_free_deep(abstract_group * group)
     {
-        size_t synths;
+        size_t synths = 0;
         group->apply_deep_on_children([&](server_node & node) {
              if (node.is_synth()) {
                  release_node_id(&node);
