@@ -340,7 +340,7 @@ public:
 
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
-    dsp_queue_interpreter(thread_count_t tc, bool yield_if_busy):
+    dsp_queue_interpreter(thread_count_t tc, bool yield_if_busy = false):
         node_count(0), yield_if_busy(yield_if_busy)
     {
         if (!runnable_set.is_lock_free())
