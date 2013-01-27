@@ -784,26 +784,26 @@ bool blankUnparsedChars(unichar* buffer, int length, bool process)
 
 - (IBAction)openCode:(id)sender
 {
-    [[self delegate] sendSelection: "openCodeFile"];
+    [[self delegate] sendSelection: @"openCodeFile"];
 }
 
 - (IBAction) showHelpFor: (id) sender
 {
-	[[self delegate] sendSelection: "showHelp"];
+	[[self delegate] sendSelection: @"showHelp"];
 }
 
 - (IBAction)showHelpSearch:(id)sender {
-	[[self delegate] sendSelection: "showHelpSearch"];
+	[[self delegate] sendSelection: @"showHelpSearch"];
 }
 
 - (IBAction)methodTemplates: (id)sender
 {
-    [[self delegate] sendSelection: "methodTemplates"];
+    [[self delegate] sendSelection: @"methodTemplates"];
 }
 
 - (IBAction)methodReferences: (id)sender
 {
-    [[self delegate] sendSelection: "methodReferences"];
+    [[self delegate] sendSelection: @"methodReferences"];
 }
 
 - (void)print:(id)sender
