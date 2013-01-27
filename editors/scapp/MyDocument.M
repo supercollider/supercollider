@@ -104,7 +104,7 @@ NSFont *defaultFont = nil;
 
 - (void)addDocument
 {
-    [self sendSelection: "addDocument"];
+    [self sendSelection: @"addDocument"];
 }
 
 
@@ -155,17 +155,17 @@ NSFont *defaultFont = nil;
 
 - (void)openCode:(id)sender
 {
-    [self sendSelection: "openCodeFile"];
+    [self sendSelection: @"openCodeFile"];
 }
 
 - (void)methodTemplates: (id)sender
 {
-    [self sendSelection: "methodTemplates"];
+    [self sendSelection: @"methodTemplates"];
 }
 
 - (void)methodReferences: (id)sender
 {
-    [self sendSelection: "methodReferences"];
+    [self sendSelection: @"methodReferences"];
 }
 
 - (void)balanceParens: (id)sender
@@ -471,7 +471,7 @@ void SyntaxColorize(NSTextView* textView);
 
 - (IBAction) executeSelection: (id) sender
 {
-    [self sendSelection: "interpretPrintCmdLine" ];
+    [self sendSelection: @"interpretPrintCmdLine" ];
 }
 
 NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile, NSString* helpFolderPath)
@@ -659,11 +659,11 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 - (IBAction) showHelpFor: (id) sender
 {
-	[self sendSelection: "showHelp"];
+	[self sendSelection: @"showHelp"];
 }
 
 - (IBAction)showClassBrowser:(id)sender {
-	[self sendSelection: "showClassBrowser"];
+	[self sendSelection: @"showClassBrowser"];
 }
 
 // LINK SUPPORT
@@ -800,12 +800,13 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 }
 
 
-- (void)sendSelection: (const char*) methodName
+- (void)sendSelection: (NSString*) nsmethodName
 {
     if (!compiledOK) {
         return;
     }
 
+    const char *methodName = [nsmethodName UTF8String];
 	NSRange selectedRange;
 	NSString* selection = [activeTextView currentlySelectedTextOrLine: &selectedRange];
     const char *text = [selection UTF8String];

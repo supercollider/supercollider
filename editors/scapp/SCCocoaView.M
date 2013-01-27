@@ -82,7 +82,7 @@ extern PyrSymbol *s_scview;
 - (IBAction) executeSelection: (id) sender
 {
 	if(enterExecutesSelection)
-    [self sendSelection: @"interpretPrintCmdLine" ];
+    [self sendSelection: @"interpretPrintCmdLine"];
 }
 
 - (void)sendSelection: (NSString*) nsmethodName
