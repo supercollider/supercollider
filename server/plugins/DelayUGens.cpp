@@ -1367,7 +1367,7 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 		}
 		if (run > 0.f) {
 			int nsmps = bufSamples - writepos;
-			nsmps = sc_clip(nsmps, 0, inNumSamples);
+			nsmps = sc_clip(nsmps, 0, inNumSamples * bufChannels);
 			if (bufChannels == 1) {
 				for (int32 k=0; k<nsmps; ++k) {
 					float* table0 = bufData + writepos;
@@ -1404,9 +1404,9 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 			}
 		} else if (run < 0.f) {
 			int nsmps = writepos;
-			nsmps = sc_clip(nsmps, 0, inNumSamples);
+			nsmps = sc_clip(nsmps, 0, inNumSamples * bufChannels);
 			if (bufChannels == 1) {
-				for (int32 k=0; k<inNumSamples; ++k) {
+				for (int32 k=0; k<nsmps; ++k) {
 					float* table0 = bufData + writepos;
 					table0[0] = *++(in[0]) * recLevel + table0[0] * preLevel;
 					writepos -= bufChannels;
@@ -1415,7 +1415,8 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 					preLevel += preLevel_slope;
 				}
 			} else if (bufChannels == 2 && numInputs == 2) {
-				for (int32 k=0; k<inNumSamples; ++k) {
+				nsmps = nsmps/2;
+				for (int32 k=0; k<nsmps; ++k) {
 					float* table0 = bufData + writepos;
 					table0[0] = *++(in[0]) * recLevel + table0[0] * preLevel;
 					table0[1] = *++(in[1]) * recLevel + table0[1] * preLevel;
@@ -1425,7 +1426,8 @@ void RecordBuf_next(RecordBuf *unit, int inNumSamples)
 					preLevel += preLevel_slope;
 				}
 			} else {
-				for (int32 k=0; k<inNumSamples; ++k) {
+				nsmps = nsmps/bufChannels;
+				for (int32 k=0; k<nsmps; ++k) {
 					float* table0 = bufData + writepos;
 					for (uint32 i=0; i<numInputs; ++i) {
 						float *samp = table0 + i;
@@ -1532,7 +1534,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 		}
 		if (run > 0.f) {
 			int nsmps = bufSamples - writepos;
-			nsmps = sc_clip(nsmps, 0, inNumSamples);
+			nsmps = sc_clip(nsmps, 0, inNumSamples * bufChannels);
 			if (bufChannels == 1) {
 				for (int32 k=0; k<nsmps; ++k) {
 					float* table0 = bufData + writepos;
@@ -1560,16 +1562,16 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 			}
 		} else if (run < 0.f) {
 			int nsmps = writepos;
-			nsmps = sc_clip(nsmps, 0, inNumSamples);
+			nsmps = sc_clip(nsmps, 0, inNumSamples * bufChannels);
 			if (bufChannels == 1) {
-				for (int32 k=0; k<inNumSamples; ++k) {
+				for (int32 k=0; k<nsmps; ++k) {
 					float* table0 = bufData + writepos;
 					table0[0] = *++(in[0]);
 					writepos -= 1;
 				}
 			} else if (bufChannels == 2) {
 				nsmps = nsmps/2;
-				for (int32 k=0; k<inNumSamples; ++k) {
+				for (int32 k=0; k<nsmps; ++k) {
 					float* table0 = bufData + writepos;
 					table0[0] = *++(in[0]);
 					table0[1] = *++(in[1]);
@@ -1577,7 +1579,7 @@ void RecordBuf_next_10(RecordBuf *unit, int inNumSamples)
 				}
 			} else {
 				nsmps = nsmps/bufChannels;
-				for (int32 k=0; k<inNumSamples; ++k) {
+				for (int32 k=0; k<nsmps; ++k) {
 					float* table0 = bufData + writepos;
 					for (uint32 i=0; i<bufChannels; ++i) {
 						float *samp = table0 + i;
