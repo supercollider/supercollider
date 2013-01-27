@@ -92,9 +92,24 @@ NodeWatcher : BasicNodeWatcher {
 	*initClass {
 		all = IdentityDictionary.new;
 		CmdPeriod.add(this);
+		ServerBoot.add(this);
+		ServerQuit.add(this);
 	}
 
 	*cmdPeriod { all.do { arg item; item.clear } }
+
+	*doOnServerQuit {|aServer|
+		this.doOnServerBoot(aServer)
+	}
+
+	*doOnServerBoot {|aServer|
+		var serverName = aServer.name;
+		var serverNodeWatchers = all.removeAt(serverName);
+
+		if (serverNodeWatchers.notNil) {
+			serverNodeWatchers.clear
+		}
+	}
 
 	*newFrom { arg server;
 		var res;
