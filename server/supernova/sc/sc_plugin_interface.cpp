@@ -398,6 +398,23 @@ void nrt_free(void * ptr)
     free(ptr);
 }
 
+void * nrt_alloc_2(World * dummy, size_t size)
+{
+    return malloc(size);
+}
+
+void * nrt_realloc_2(World * dummy, void * ptr, size_t size)
+{
+    return realloc(ptr, size);
+}
+
+void nrt_free_2(World * dummy, void * ptr)
+{
+    free(ptr);
+}
+
+
+
 void clear_outputs(Unit *unit, int samples)
 {
     size_t outputs = unit->mNumOutputs;
@@ -600,6 +617,8 @@ inline void initialize_rate(Rate & rate, double sample_rate, int blocksize)
 
 void sc_plugin_interface::initialize(server_arguments const & args, float * control_busses)
 {
+    const bool nrt_mode = args.non_rt;
+
     done_nodes.reserve(64);
     pause_nodes.reserve(16);
     resume_nodes.reserve(16);
@@ -633,9 +652,15 @@ void sc_plugin_interface::initialize(server_arguments const & args, float * cont
     sc_interface.mSineWavetable = gSineWavetable;
 
     /* memory allocation */
-    sc_interface.fRTAlloc = &rt_alloc;
-    sc_interface.fRTRealloc = &rt_realloc;
-    sc_interface.fRTFree = &rt_free;
+    if (!nrt_mode) {
+        sc_interface.fRTAlloc = &rt_alloc;
+        sc_interface.fRTRealloc = &rt_realloc;
+        sc_interface.fRTFree = &rt_free;
+    } else {
+        sc_interface.fRTAlloc = &nrt_alloc_2;
+        sc_interface.fRTRealloc = &nrt_realloc_2;
+        sc_interface.fRTFree = &nrt_free_2;
+    }
 
     sc_interface.fNRTAlloc = &nrt_alloc;
     sc_interface.fNRTRealloc = &nrt_realloc;
