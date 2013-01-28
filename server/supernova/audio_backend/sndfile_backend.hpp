@@ -20,7 +20,9 @@
 #define AUDIO_BACKEND_SNDFILE_BACKEND_HPP
 
 #include <atomic>
+#include <chrono>
 #include <cmath>
+#include <deque>
 #include <string>
 #include <thread>
 
@@ -53,9 +55,11 @@ class sndfile_backend:
     typedef detail::audio_backend_base<sample_type, float, blocking, false> super;
     typedef std::size_t size_t;
 
+    static const size_t queue_size = 10*1024*1024; // 30 MB
+
 public:
     sndfile_backend(void):
-        read_frames(65536), write_frames(65536), running(false), reader_running(false), writer_running(false)
+        read_frames(queue_size), write_frames(queue_size), running(false), reader_running(false), writer_running(false)
     {}
 
     size_t get_audio_blocksize(void)
@@ -234,6 +238,8 @@ private:
             count -= consumed;
             buffer += consumed;
             write_semaphore.post();
+            if (!consumed)
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
         } while (count);
     }
 
@@ -242,21 +248,50 @@ private:
         nova::name_thread("sndfile writer");
 
         const size_t frames_per_tick = get_audio_blocksize();
-        sized_array<sample_type, aligned_allocator<sample_type> > data_to_write(output_channels * frames_per_tick, 0.f);
+        const size_t deque_per_tick  = output_channels * frames_per_tick * 64;
+
+        aligned_storage_ptr<sample_type> data_to_write(deque_per_tick);
+        size_t pending_samples = 0;
 
         for (;;) {
             write_semaphore.wait();
-            for (;;) {
-                size_t dequeued = write_frames.pop(data_to_write.c_array(), data_to_write.size());
-
-                if (dequeued == 0)
-                    break;
-                output_file.write(data_to_write.c_array(), dequeued);
-            }
+            poll_writer_queue(data_to_write.get(), deque_per_tick, pending_samples);
             if (unlikely(writer_running.load(std::memory_order_acquire) == false))
-                return;
+                break;
         }
 
+        while (poll_writer_queue(data_to_write.get(), deque_per_tick, pending_samples))
+        {}
+    }
+
+    bool poll_writer_queue(sample_type * data_to_write, const size_t buffer_samples, size_t & pending_samples)
+    {
+        bool consumed_item = false;
+        for (;;) {
+            const size_t available_space = buffer_samples - pending_samples;
+            const size_t dequeued = write_frames.pop(data_to_write + pending_samples, available_space);
+
+            if (dequeued == 0)
+                break;
+
+            consumed_item = true;
+
+            const size_t samples_to_write = pending_samples + dequeued;
+            const size_t frames_to_write  = samples_to_write / output_channels;
+
+            const sf_count_t written_frames = output_file.writef(data_to_write, frames_to_write);
+            if (written_frames == -1)
+                throw std::runtime_error(std::string("sndfile write failed: ") + output_file.strError());
+
+            const size_t written_samples = written_frames * output_channels;
+            pending_samples = samples_to_write - written_samples;
+
+            // copy pending samples to the start
+            if (pending_samples)
+                std::memmove(data_to_write, data_to_write + written_samples, pending_samples * sizeof(sample_type));
+        }
+
+        return consumed_item;
     }
 
 public:
