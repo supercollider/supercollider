@@ -28,6 +28,7 @@
 
 #include <sndfile.hh>
 
+#include "nova-tt/name_thread.hpp"
 #include "nova-tt/semaphore.hpp"
 #include "utilities/branch_hints.hpp"
 
@@ -184,6 +185,7 @@ private:
 
     void sndfile_read_thread(void)
     {
+        nova::name_thread("sndfile reader");
         assert(input_file);
 
         const size_t frames_per_tick = get_audio_blocksize();
@@ -237,6 +239,8 @@ private:
 
     void sndfile_write_thread(void)
     {
+        nova::name_thread("sndfile writer");
+
         const size_t frames_per_tick = get_audio_blocksize();
         sized_array<sample_type, aligned_allocator<sample_type> > data_to_write(output_channels * frames_per_tick, 0.f);
 
