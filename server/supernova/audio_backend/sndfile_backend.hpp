@@ -19,11 +19,11 @@
 #ifndef AUDIO_BACKEND_SNDFILE_BACKEND_HPP
 #define AUDIO_BACKEND_SNDFILE_BACKEND_HPP
 
+#include <atomic>
 #include <cmath>
 #include <string>
 #include <thread>
 
-#include <boost/atomic.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
 
 #include <sndfile.hh>
@@ -110,18 +110,18 @@ public:
 
     bool audio_is_active(void)
     {
-        return running.load(boost::memory_order_acquire);
+        return running.load(std::memory_order_acquire);
     }
 
     void activate_audio(void)
     {
         running.store(true);
 
-        if (input_file)
-        {
+        if (input_file) {
             reader_running.store(true);
             reader_thread = std::thread(std::bind(&sndfile_backend::sndfile_read_thread, this));
         }
+
 
         writer_running.store(true);
         writer_thread = std::thread(std::bind(&sndfile_backend::sndfile_write_thread, this));
@@ -146,7 +146,7 @@ private:
     /* read input fifo from the rt context */
     void read_input_buffers(size_t frames_per_tick)
     {
-        if (reader_running.load(boost::memory_order_acquire))
+        if (reader_running.load(std::memory_order_acquire))
         {
             const size_t total_samples = input_channels * frames_per_tick;
             size_t remaining = total_samples;
@@ -156,7 +156,7 @@ private:
                 remaining -= read_frames.pop(temp_buffer.get(), remaining);
 
                 if (unlikely(read_frames.empty() &&
-                             !reader_running.load(boost::memory_order_acquire)))
+                             !reader_running.load(std::memory_order_acquire)))
                 {
                     /* at the end, we are not able to read a full sample block, clear the final parts */
                     const size_t last_frame = (total_samples - remaining) / input_channels;
@@ -190,7 +190,7 @@ private:
         sized_array<sample_type, aligned_allocator<sample_type> > data_to_read(input_channels * frames_per_tick, 0.f);
 
         for (;;) {
-            if (unlikely(reader_running.load(boost::memory_order_acquire) == false))
+            if (unlikely(reader_running.load(std::memory_order_acquire) == false))
                 return;
 
             if (read_position < (size_t)input_file.frames())
@@ -211,7 +211,7 @@ private:
                 read_semaphore.post();
             }
             else
-                reader_running.store(false, boost::memory_order_release);
+                reader_running.store(false, std::memory_order_release);
         }
     }
 
@@ -249,7 +249,7 @@ private:
                     break;
                 output_file.write(data_to_write.c_array(), dequeued);
             }
-            if (unlikely(writer_running.load(boost::memory_order_acquire) == false))
+            if (unlikely(writer_running.load(std::memory_order_acquire) == false))
                 return;
         }
 
@@ -280,7 +280,7 @@ private:
     std::thread reader_thread, writer_thread;
     boost::lockfree::spsc_queue< sample_type > read_frames, write_frames;
     nova::semaphore read_semaphore, write_semaphore;
-    boost::atomic<bool> running, reader_running, writer_running;
+    std::atomic<bool> running, reader_running, writer_running;
 };
 
 } /* namespace nova */
