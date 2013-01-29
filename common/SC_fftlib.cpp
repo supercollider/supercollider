@@ -250,7 +250,7 @@ scfft * scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction winty
 
 	scfft * f = (scfft*)chunk;
 	float *trbuf = (float*)(chunk + sizeof(scfft));
-	trbuf = (float*) ((intptr_t)((char*)trbuf + (alignment - 1)) & -alignment);
+	trbuf = (float*) ((size_t)((char*)trbuf + (alignment - 1)) & -alignment); // FIXME: should be intptr_t instead of size_t once we use c++11
 
 #ifdef NOVA_SIMD
 	assert(nova::vec<float>::is_aligned(trbuf));
