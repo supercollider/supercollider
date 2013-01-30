@@ -82,7 +82,7 @@ struct SpecCentroid : FFTAnalyser_Unit
 		buf = world->mSndBufs + ibufnum; \
 	} \
 	LOCK_SNDBUF(buf); \
-	int numbins = buf->samples - 2 >> 1;
+	int numbins = (buf->samples - 2) >> 1;
 
 // Copied from FFT_UGens.cpp
 #define GET_BINTOFREQ \
