@@ -42,7 +42,7 @@ static inline SCPolarBuf* ToPolarApx(SndBuf *buf)
 {
 	if (buf->coord == coord_Complex) {
 		SCComplexBuf* p = (SCComplexBuf*)buf->data;
-		int numbins = buf->samples - 2 >> 1;
+		int numbins = (buf->samples - 2) >> 1;
 		for (int i=0; i<numbins; ++i) {
 			p->bin[i].ToPolarApxInPlace();
 		}
@@ -56,7 +56,7 @@ static inline SCComplexBuf* ToComplexApx(SndBuf *buf)
 {
 	if (buf->coord == coord_Polar) {
 		SCPolarBuf* p = (SCPolarBuf*)buf->data;
-		int numbins = buf->samples - 2 >> 1;
+		int numbins = (buf->samples - 2) >> 1;
 		for (int i=0; i<numbins; ++i) {
 			p->bin[i].ToComplexApxInPlace();
 		}
@@ -92,7 +92,7 @@ struct PV_Unit : Unit
 		buf = world->mSndBufs + ibufnum; \
 	} \
 	LOCK_SNDBUF(buf); \
-	int numbins = buf->samples - 2 >> 1; \
+	int numbins = (buf->samples - 2) >> 1; \
 
 
 // for operation on two input buffers, result goes in first one.
@@ -130,7 +130,7 @@ struct PV_Unit : Unit
 	} \
 	LOCK_SNDBUF2(buf1, buf2); \
 	if (buf1->samples != buf2->samples) return; \
-	int numbins = buf1->samples - 2 >> 1;
+	int numbins = (buf1->samples - 2) >> 1;
 
 #define MAKE_TEMP_BUF \
 	if (!unit->m_tempbuf) { \

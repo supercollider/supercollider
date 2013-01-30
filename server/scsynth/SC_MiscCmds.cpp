@@ -1737,7 +1737,7 @@ SCErr meth_s_getn(World *inWorld, int inSize, char *inData, ReplyAddress* inRepl
 
 	// figure out how many tags to allocate
 	int numcontrols = 0;
-	int numheads = msg.tags ? strlen(msg.tags) - 1 >> 1 : msg.remain() >> 3;
+	int numheads = msg.tags ? (strlen(msg.tags) - 1) >> 1 : msg.remain() >> 3;
 
 	while (msg.remain()) {
 		msg.geti(); // skip start

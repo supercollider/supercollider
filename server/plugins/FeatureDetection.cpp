@@ -97,7 +97,7 @@ extern "C"
 	} else { \
 		buf = world->mSndBufs + ibufnum; \
 	} \
-	int numbins = buf->samples - 2 >> 1; \
+	int numbins = (buf->samples - 2) >> 1; \
 	if (!buf->data) { \
 		if(unit->mWorld->mVerbosity > -1){ Print("FFT Ctor error: Buffer %i not initialised.\n", ibufnum); } \
 		bufOK = 0; \
