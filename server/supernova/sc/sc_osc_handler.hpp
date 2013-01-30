@@ -23,6 +23,10 @@
 #include <mutex>
 #include <vector>
 
+#ifdef __clang__ // clang workaround
+#define BOOST_ASIO_HAS_STD_ARRAY
+#endif
+
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/date_time/microsec_time_clock.hpp>
 #include <boost/intrusive/treap_set.hpp>
