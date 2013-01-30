@@ -233,6 +233,7 @@ private:
         sample_type * buffer = temp_buffer.get();
 
         size_t count = total_samples;
+
         do {
             size_t consumed = write_frames.push(buffer, count);
             count -= consumed;
@@ -249,8 +250,8 @@ private:
 
         const size_t frames_per_tick = get_audio_blocksize();
         const size_t deque_per_tick  = output_channels * frames_per_tick * 64;
-
         aligned_storage_ptr<sample_type> data_to_write(deque_per_tick);
+
         size_t pending_samples = 0;
 
         for (;;) {
@@ -268,27 +269,26 @@ private:
     {
         bool consumed_item = false;
         for (;;) {
-            const size_t available_space = buffer_samples - pending_samples;
-            const size_t dequeued = write_frames.pop(data_to_write + pending_samples, available_space);
+            const size_t available_samples = write_frames.read_available();
+            const size_t available_frames  = available_samples / output_channels;
 
-            if (dequeued == 0)
-                break;
+            if (available_frames == 0)
+                return consumed_item;
+
+            const size_t buffer_frames = buffer_samples / output_channels;
+            const size_t frames_to_read = std::min(available_frames, buffer_frames);
+
+            const size_t samples_to_read = frames_to_read * output_channels;
+            const size_t dequeued = write_frames.pop(data_to_write, samples_to_read);
+
+            assert(dequeued == samples_to_read);
 
             consumed_item = true;
 
-            const size_t samples_to_write = pending_samples + dequeued;
-            const size_t frames_to_write  = samples_to_write / output_channels;
-
-            const sf_count_t written_frames = output_file.writef(data_to_write, frames_to_write);
+            const sf_count_t written_frames = output_file.writef(data_to_write, frames_to_read);
+            assert(frames_to_read == written_frames);
             if (written_frames == -1)
                 throw std::runtime_error(std::string("sndfile write failed: ") + output_file.strError());
-
-            const size_t written_samples = written_frames * output_channels;
-            pending_samples = samples_to_write - written_samples;
-
-            // copy pending samples to the start
-            if (pending_samples)
-                std::memmove(data_to_write, data_to_write + written_samples, pending_samples * sizeof(sample_type));
         }
 
         return consumed_item;
