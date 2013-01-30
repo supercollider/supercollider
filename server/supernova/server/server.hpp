@@ -19,6 +19,8 @@
 #ifndef SERVER_NOVA_SERVER_HPP
 #define SERVER_NOVA_SERVER_HPP
 
+#include <atomic>
+
 #include "buffer_manager.hpp"
 #include "memory_pool.hpp"
 #include "node_graph.hpp"
