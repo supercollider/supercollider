@@ -72,6 +72,20 @@ protected:
         return ret;
     }
 
+    size_t read_available(size_t max_size) const
+    {
+        size_t write_index = write_index_.load(memory_order_relaxed);
+        const size_t read_index  = read_index_.load(memory_order_relaxed);
+        return read_available(write_index, read_index, max_size);
+    }
+
+    size_t write_available(size_t max_size) const
+    {
+        size_t write_index = write_index_.load(memory_order_relaxed);
+        const size_t read_index  = read_index_.load(memory_order_relaxed);
+        return write_available(write_index, read_index, max_size);
+    }
+
     bool push(T const & t, T * buffer, size_t max_size)
     {
         size_t write_index = write_index_.load(memory_order_relaxed);  // only written from push thread
@@ -274,27 +288,32 @@ private:
     }
 };
 
-template <typename T, std::size_t max_size>
+template <typename T, std::size_t MaxSize>
 class compile_time_sized_ringbuffer:
     public ringbuffer_base<T>
 {
     typedef std::size_t size_t;
-    boost::array<T, max_size> array_;
+    boost::array<T, MaxSize> array_;
+
+    size_t max_size() const
+    {
+        return max_size();
+    }
 
 public:
     bool push(T const & t)
     {
-        return ringbuffer_base<T>::push(t, array_.c_array(), max_size);
+        return ringbuffer_base<T>::push(t, array_.c_array(), MaxSize);
     }
 
     bool pop(T & ret)
     {
-        return ringbuffer_base<T>::pop(ret, array_.c_array(), max_size);
+        return ringbuffer_base<T>::pop(ret, array_.c_array(), MaxSize);
     }
 
     size_t push(T const * t, size_t size)
     {
-        return ringbuffer_base<T>::push(t, size, array_.c_array(), max_size);
+        return ringbuffer_base<T>::push(t, size, array_.c_array(), MaxSize);
     }
 
     template <size_t size>
@@ -306,12 +325,12 @@ public:
     template <typename ConstIterator>
     ConstIterator push(ConstIterator begin, ConstIterator end)
     {
-        return ringbuffer_base<T>::push(begin, end, array_.c_array(), max_size);
+        return ringbuffer_base<T>::push(begin, end, array_.c_array(), MaxSize);
     }
 
     size_t pop(T * ret, size_t size)
     {
-        return ringbuffer_base<T>::pop(ret, size, array_.c_array(), max_size);
+        return ringbuffer_base<T>::pop(ret, size, array_.c_array(), MaxSize);
     }
 
     template <size_t size>
@@ -323,7 +342,7 @@ public:
     template <typename OutputIterator>
     size_t pop(OutputIterator it)
     {
-        return ringbuffer_base<T>::pop(it, array_.c_array(), max_size);
+        return ringbuffer_base<T>::pop(it, array_.c_array(), MaxSize);
     }
 };
 
@@ -336,6 +355,12 @@ class runtime_sized_ringbuffer:
     size_t max_elements_;
     typedef typename Alloc::pointer pointer;
     pointer array_;
+
+protected:
+    size_t max_size() const
+    {
+        return max_elements_;
+    }
 
 public:
     explicit runtime_sized_ringbuffer(size_t max_elements):
@@ -640,6 +665,88 @@ public:
     size_type pop(OutputIterator it)
     {
         return base_type::pop(it);
+    }
+
+    /** get number of elements that are available for read
+     *
+     * \return number of available elements that can be popped from the spsc_queue
+     *
+     * \note Thread-safe and wait-free, should only be called from the producer thread
+     * */
+    size_t read_available() const
+    {
+        return base_type::read_available(base_type::max_size());
+    }
+
+    /** get write space to write elements
+     *
+     * \return number of elements that can be pushed to the spsc_queue
+     *
+     * \note Thread-safe and wait-free, should only be called from the consumer thread
+     * */
+    size_t write_available() const
+    {
+        return base_type::write_available(base_type::max_size());
+    }
+
+    /** consumes one element via a functor
+     *
+     *  pops one element from the queue and applies the functor on this object
+     *
+     * \returns true, if one element was consumed
+     *
+     * \note Thread-safe and non-blocking, if functor is thread-safe and non-blocking
+     * */
+    template <typename Functor>
+    bool consume_one(Functor & f)
+    {
+        T element;
+        bool success = pop(element);
+        if (success)
+            f(element);
+
+        return success;
+    }
+
+    /// \copydoc boost::lockfree::spsc_queue::consume_one(Functor & rhs)
+    template <typename Functor>
+    bool consume_one(Functor const & f)
+    {
+        T element;
+        bool success = pop(element);
+        if (success)
+            f(element);
+
+        return success;
+    }
+
+    /** consumes all elements via a functor
+     *
+     * sequentially pops all elements from the queue and applies the functor on each object
+     *
+     * \returns number of elements that are consumed
+     *
+     * \note Thread-safe and non-blocking, if functor is thread-safe and non-blocking
+     * */
+    template <typename Functor>
+    size_t consume_all(Functor & f)
+    {
+        size_t element_count = 0;
+        while (consume_one(f))
+            element_count += 1;
+
+        return element_count;
+    }
+
+    /// \copydoc boost::lockfree::spsc_queue::consume_all(Functor & rhs)
+    template <typename Functor>
+    size_t consume_all(Functor const & f)
+    {
+        size_t element_count = 0;
+        while (consume_one(f))
+            element_count += 1;
+
+        return element_count;
     }
 };
 
