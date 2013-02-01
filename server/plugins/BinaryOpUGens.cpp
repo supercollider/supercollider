@@ -2164,7 +2164,7 @@ FLATTEN void div_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
 		nova::over_vec_simd(OUT(0), slope_argument(xa, slope), IN(1), inNumSamples);
-		unit->mPrevA = xa;
+		unit->mPrevA = next_a;
 	}
 }
 
