@@ -1,5 +1,4 @@
 Scale {
-
 	var <degrees, <pitchesPerOctave, <tuning, <>name;
 	classvar <all;
 
@@ -284,8 +283,6 @@ Tuning {
 	*directory {
 		^this.names.collect({ |k| "\\ %: %".format(k, all.at(k).name) }).join("\n")
 	}
-
-
 }
 
 ScaleAD : Scale {
@@ -437,7 +434,8 @@ ScaleStream {
 			\ahirbhairav -> Scale.new(#[0,1,4,5,7,9,10], 12, name: "Ahirbhairav"),
 
 			\superLocrian -> Scale.new(#[0,1,3,4,6,8,10], 12, name: "Super Locrian"),
-			\romanianMinor -> Scale.new(#[0,2,3,6,7,9,10], 12, name: "Romanian Minor"),			\hungarianMinor -> Scale.new(#[0,2,3,6,7,8,11], 12, name: "Hungarian Minor"),
+			\romanianMinor -> Scale.new(#[0,2,3,6,7,9,10], 12, name: "Romanian Minor"),
+			\hungarianMinor -> Scale.new(#[0,2,3,6,7,8,11], 12, name: "Hungarian Minor"),
 			\neapolitanMinor -> Scale.new(#[0,1,3,5,7,8,11], 12, name: "Neapolitan Minor"),
 			\enigmatic -> Scale.new(#[0,1,4,6,8,10,11], 12, name: "Enigmatic"),
 			\spanish -> Scale.new(#[0,1,4,5,7,8,10], 12, name: "Spanish"),
