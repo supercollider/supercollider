@@ -30,6 +30,12 @@ Scale {
 		^scale
 	}
 
+	*chromatic {|tuning = \et12|
+		var tuningObject = tuning.asTuning;
+		var steps = tuningObject.size;
+		^Scale.new(Array.series(steps), steps, tuningObject, name: "Chromatic % (%)".format(steps, tuningObject.name))
+	}
+
 	checkTuningForMismatch { |aTuning|
 		^pitchesPerOctave == aTuning.size;
 	}
@@ -162,8 +168,6 @@ Scale {
 	printOn { |stream|
 		this.storeOn(stream)
 	}
-
-
 }
 
 Tuning {

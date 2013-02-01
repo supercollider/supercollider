@@ -79,6 +79,10 @@ Scale.new(#[0, 3, 7, 10, 15, 19, 22], name: "My Quarter-Tone");	// will be in ET
 Scale.new(#[0, 6, 17, 21, 30, 39], 43, \partch, "My Partch");
 ::
 
+method::chromatic
+
+Returns a chromatic scale for a specific tuning.
+
 INSTANCEMETHODS::
 
 private::storeOn, storedKey, storeArgs, printOn
