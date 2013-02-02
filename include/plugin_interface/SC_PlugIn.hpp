@@ -138,6 +138,26 @@ public:
 		return INRATE(index);
 	}
 
+	bool isScalarRateIn(int index) const
+	{
+		return inRate(index) == calc_ScalarRate;
+	}
+
+	bool isDemandRateIn(int index) const
+	{
+		return inRate(index) == calc_DemandRate;
+	}
+
+	bool isControlRateIn(int index) const
+	{
+		return inRate(index) == calc_BufRate;
+	}
+
+	bool isAudioRateIn(int index) const
+	{
+		return inRate(index) == calc_FullRate;
+	}
+
 	int inBufferSize(int index) const
 	{
 		const Unit * unit = this;
