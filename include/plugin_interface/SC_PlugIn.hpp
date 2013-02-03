@@ -22,6 +22,7 @@
 #define SC_PLUGIN_HPP
 
 #include "SC_PlugIn.h"
+#include "function_attributes.h"
 
 // c++ wrapper for Unit struct
 class SCUnit:
@@ -239,7 +240,7 @@ public:
 
 private:
 	template <typename UnitType, void (UnitType::*PointerToMember)(int)>
-	static void run_member_function(struct Unit * unit, int inNumSamples)
+	HOT static void run_member_function(struct Unit * unit, int inNumSamples)
 	{
 		UnitType * realUnit = static_cast<UnitType*>(unit);
 		((realUnit)->*(PointerToMember))(inNumSamples);
