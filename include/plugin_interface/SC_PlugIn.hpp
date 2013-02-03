@@ -85,7 +85,7 @@ public:
 	}
 
 	template <typename FloatType>
-	inline SlopeSignal<FloatType> makeSlope(FloatType last, FloatType next) const
+	inline SlopeSignal<FloatType> makeSlope(FloatType next, FloatType last) const
 	{
 		return SlopeSignal<FloatType>(last, calcSlope(next, last));
 	}
