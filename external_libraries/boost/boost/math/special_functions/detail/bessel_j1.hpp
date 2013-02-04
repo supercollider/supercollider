@@ -166,13 +166,24 @@ T bessel_j1(T x)
     {
         T y = 8 / w;
         T y2 = y * y;
-        T z = w - 0.75f * pi<T>();
         BOOST_ASSERT(sizeof(PC) == sizeof(QC));
         BOOST_ASSERT(sizeof(PS) == sizeof(QS));
         rc = evaluate_rational(PC, QC, y2);
         rs = evaluate_rational(PS, QS, y2);
         factor = sqrt(2 / (w * pi<T>()));
-        value = factor * (rc * cos(z) - y * rs * sin(z));
+        //
+        // What follows is really just:
+        //
+        // T z = w - 0.75f * pi<T>();
+        // value = factor * (rc * cos(z) - y * rs * sin(z));
+        //
+        // but using the sin/cos addition rules plus constants
+        // for the values of sin/cos of 3PI/4.
+        //
+        T sx = sin(x);
+        T cx = cos(x);
+        value = factor * (rc * (cx * -constants::one_div_root_two<T>() + sx * constants::half_root_two<T>()) 
+           - y * rs * (sx * -constants::one_div_root_two<T>() - cx * constants::half_root_two<T>()));
     }
 
     if (x < 0)

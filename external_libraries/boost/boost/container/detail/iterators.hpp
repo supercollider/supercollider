@@ -20,7 +20,7 @@
 
 #include "config_begin.hpp"
 #include <boost/container/detail/workaround.hpp>
-#include <boost/move/move.hpp>
+#include <boost/move/utility.hpp>
 #include <boost/container/allocator_traits.hpp>
 #include <boost/container/detail/type_traits.hpp>
 

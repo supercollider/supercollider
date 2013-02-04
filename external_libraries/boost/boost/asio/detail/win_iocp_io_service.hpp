@@ -33,6 +33,7 @@
 #include <boost/asio/detail/wait_op.hpp>
 #include <boost/asio/detail/win_iocp_io_service_fwd.hpp>
 #include <boost/asio/detail/win_iocp_operation.hpp>
+#include <boost/asio/detail/win_iocp_thread_info.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -107,7 +108,7 @@ public:
   // Return whether a handler can be dispatched immediately.
   bool can_dispatch()
   {
-    return call_stack<win_iocp_io_service>::contains(this) != 0;
+    return thread_call_stack::contains(this) != 0;
   }
 
   // Request invocation of the given handler.
@@ -237,6 +238,11 @@ private:
   // Flag to indicate whether the event loop has been stopped.
   mutable long stopped_;
 
+  // Flag to indicate whether there is an in-flight stop event. Every event
+  // posted using PostQueuedCompletionStatus consumes non-paged pool, so to
+  // avoid exhausting this resouce we limit the number of outstanding events.
+  long stop_event_posted_;
+
   // Flag to indicate whether the service has been shut down.
   long shutdown_;
 
@@ -285,6 +291,10 @@ private:
 
   // The operations that are ready to dispatch.
   op_queue<win_iocp_operation> completed_ops_;
+
+  // Per-thread call stack to track the state of each thread in the io_service.
+  typedef call_stack<win_iocp_io_service,
+      win_iocp_thread_info> thread_call_stack;
 };
 
 } // namespace detail

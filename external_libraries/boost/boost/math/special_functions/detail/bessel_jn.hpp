@@ -42,6 +42,11 @@ T bessel_jn(int n, T x, const Policy& pol)
     {
         factor = 1;
     }
+    if(x < 0)
+    {
+        factor *= (n & 0x1) ? -1 : 1;  // J_{n}(-z) = (-1)^n J_n(z)
+        x = -x;
+    }
     //
     // Special cases:
     //

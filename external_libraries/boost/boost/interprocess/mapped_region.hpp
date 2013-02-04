@@ -841,6 +841,9 @@ struct null_mapped_region_function
 {
    bool operator()(void *, std::size_t , bool) const
       {   return true;   }
+
+   std::size_t get_min_size() const
+   {  return 0;  }
 };
 
 /// @endcond

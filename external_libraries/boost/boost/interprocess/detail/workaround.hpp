@@ -22,7 +22,7 @@
 
    #if defined(_POSIX_THREAD_PROCESS_SHARED) && ((_POSIX_THREAD_PROCESS_SHARED - 0) > 0)
       //Cygwin defines _POSIX_THREAD_PROCESS_SHARED but does not implement it.
-      //Mac Os X >= Leopard defines _POSIX_THREAD_PROCESS_SHARED but does not seems to work.
+      //Mac Os X >= Leopard defines _POSIX_THREAD_PROCESS_SHARED but does not seem to work.
       #if !defined(__CYGWIN__) && !defined(__APPLE__)
          #define BOOST_INTERPROCESS_POSIX_PROCESS_SHARED
       #endif
@@ -117,7 +117,7 @@
    #endif
 #endif   //!defined(BOOST_INTERPROCESS_WINDOWS)
 
-#if    !defined(BOOST_NO_RVALUE_REFERENCES) && !defined(BOOST_NO_VARIADIC_TEMPLATES)
+#if    !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
    #define BOOST_INTERPROCESS_PERFECT_FORWARDING
 #endif
 
@@ -154,6 +154,17 @@
    #define BOOST_INTERPROCESS_NEVER_INLINE __attribute__((__noinline__))
 #endif
 
+#if defined(BOOST_NO_CXX11_NOEXCEPT)
+   #if defined(BOOST_MSVC)
+      #define BOOST_INTERPROCESS_NOEXCEPT throw()
+   #else
+      #define BOOST_INTERPROCESS_NOEXCEPT
+   #endif
+   #define BOOST_INTERPROCESS_NOEXCEPT_IF(x)
+#else
+   #define BOOST_INTERPROCESS_NOEXCEPT    noexcept
+   #define BOOST_INTERPROCESS_NOEXCEPT_IF(x) noexcept(x)
+#endif
 
 #include <boost/interprocess/detail/config_end.hpp>
 

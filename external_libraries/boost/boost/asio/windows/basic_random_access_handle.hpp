@@ -58,7 +58,7 @@ public:
   /// Construct a basic_random_access_handle without opening it.
   /**
    * This constructor creates a random-access handle without opening it. The
-   * handle needs to be opened before data can be written to or or read from it.
+   * handle needs to be opened before data can be written to or read from it.
    *
    * @param io_service The io_service object that the random-access handle will
    * use to dispatch handlers for any asynchronous operations performed on the

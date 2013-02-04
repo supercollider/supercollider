@@ -102,6 +102,13 @@ public:
     return 0;
   }
 
+  // Obtain the value at the top of the stack.
+  static Value* top()
+  {
+    context* elem = top_;
+    return elem ? elem->value_ : 0;
+  }
+
 private:
   // The top of the stack of calls for the current thread.
   static tss_ptr<context> top_;
