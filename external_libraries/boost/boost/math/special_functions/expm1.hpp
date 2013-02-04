@@ -305,7 +305,7 @@ inline float expm1(float x, const policies::policy<>&){ return ::expm1f(x); }
 inline long double expm1(long double x, const policies::policy<>&){ return ::expm1l(x); }
 #     endif
 #  else
-inline float expm1(float x, const policies::policy<>&){ return ::expm1(x); }
+inline float expm1(float x, const policies::policy<>&){ return static_cast<float>(::expm1(x)); }
 #  endif
 inline double expm1(double x, const policies::policy<>&){ return ::expm1(x); }
 #endif

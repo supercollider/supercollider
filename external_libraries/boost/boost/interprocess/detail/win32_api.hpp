@@ -21,7 +21,7 @@
 #include <vector>
 #include <memory>
 
-#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#if defined (_MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
 #  pragma comment( lib, "advapi32.lib" )
 #  pragma comment( lib, "oleaut32.lib" )

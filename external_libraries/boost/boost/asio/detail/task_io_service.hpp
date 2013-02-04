@@ -128,7 +128,7 @@ public:
 
 private:
   // Structure containing information about an idle thread.
-  struct thread_info;
+  typedef task_io_service_thread_info thread_info;
 
   // Request invocation of the given operation, avoiding the thread-private
   // queue, and return immediately. Assumes that work_started() has not yet

@@ -183,7 +183,8 @@ std::size_t sync_read(int d, state_type state, buf* bufs,
   {
     // Try to complete the operation without blocking.
     errno = 0;
-    int bytes = error_wrapper(::readv(d, bufs, static_cast<int>(count)), ec);
+    signed_size_type bytes = error_wrapper(::readv(
+          d, bufs, static_cast<int>(count)), ec);
 
     // Check if operation succeeded.
     if (bytes > 0)
@@ -215,7 +216,8 @@ bool non_blocking_read(int d, buf* bufs, std::size_t count,
   {
     // Read some data.
     errno = 0;
-    int bytes = error_wrapper(::readv(d, bufs, static_cast<int>(count)), ec);
+    signed_size_type bytes = error_wrapper(::readv(
+          d, bufs, static_cast<int>(count)), ec);
 
     // Check for end of stream.
     if (bytes == 0)
@@ -267,7 +269,8 @@ std::size_t sync_write(int d, state_type state, const buf* bufs,
   {
     // Try to complete the operation without blocking.
     errno = 0;
-    int bytes = error_wrapper(::writev(d, bufs, static_cast<int>(count)), ec);
+    signed_size_type bytes = error_wrapper(::writev(
+          d, bufs, static_cast<int>(count)), ec);
 
     // Check if operation succeeded.
     if (bytes > 0)
@@ -292,7 +295,8 @@ bool non_blocking_write(int d, const buf* bufs, std::size_t count,
   {
     // Write some data.
     errno = 0;
-    int bytes = error_wrapper(::writev(d, bufs, static_cast<int>(count)), ec);
+    signed_size_type bytes = error_wrapper(::writev(
+          d, bufs, static_cast<int>(count)), ec);
 
     // Retry operation if interrupted by signal.
     if (ec == boost::asio::error::interrupted)
@@ -357,7 +361,7 @@ int ioctl(int d, state_type& state, long cmd,
   return result;
 }
 
-int fcntl(int d, long cmd, boost::system::error_code& ec)
+int fcntl(int d, int cmd, boost::system::error_code& ec)
 {
   if (d == -1)
   {
@@ -372,7 +376,7 @@ int fcntl(int d, long cmd, boost::system::error_code& ec)
   return result;
 }
 
-int fcntl(int d, long cmd, long arg, boost::system::error_code& ec)
+int fcntl(int d, int cmd, long arg, boost::system::error_code& ec)
 {
   if (d == -1)
   {

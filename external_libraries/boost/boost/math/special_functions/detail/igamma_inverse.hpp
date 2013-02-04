@@ -378,7 +378,7 @@ struct gamma_p_inverse_func
          f2 = -f2;
       }
 
-      return boost::math::make_tuple(f - p, f1, f2);
+      return boost::math::make_tuple(static_cast<T>(f - p), f1, f2);
    }
 private:
    T a, p;

@@ -35,12 +35,12 @@ struct temme_root_finder
       if(y == 0)
       {
          T big = tools::max_value<T>() / 4;
-         return boost::math::make_tuple(-big, -big);
+         return boost::math::make_tuple(static_cast<T>(-big), static_cast<T>(-big));
       }
       if(x == 0)
       {
          T big = tools::max_value<T>() / 4;
-         return boost::math::make_tuple(-big, big);
+         return boost::math::make_tuple(static_cast<T>(-big), big);
       }
       T f = log(x) + a * log(y) + t;
       T f1 = (1 / x) - (a / (y));

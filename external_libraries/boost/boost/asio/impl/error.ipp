@@ -31,7 +31,7 @@ namespace detail {
 class netdb_category : public boost::system::error_category
 {
 public:
-  const char* name() const
+  const char* name() const BOOST_ASIO_ERROR_CATEGORY_NOEXCEPT
   {
     return "asio.netdb";
   }
@@ -63,7 +63,7 @@ namespace detail {
 class addrinfo_category : public boost::system::error_category
 {
 public:
-  const char* name() const
+  const char* name() const BOOST_ASIO_ERROR_CATEGORY_NOEXCEPT
   {
     return "asio.addrinfo";
   }
@@ -93,7 +93,7 @@ namespace detail {
 class misc_category : public boost::system::error_category
 {
 public:
-  const char* name() const
+  const char* name() const BOOST_ASIO_ERROR_CATEGORY_NOEXCEPT
   {
     return "asio.misc";
   }

@@ -20,6 +20,8 @@ namespace asio {
 namespace detail {
 
 class task_io_service;
+class task_io_service_operation;
+struct task_io_service_thread_info;
 
 } // namespace detail
 } // namespace asio

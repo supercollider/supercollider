@@ -855,7 +855,7 @@ T gamma_incomplete_imp(T a, T x, bool normalised, bool invert,
    BOOST_ASSERT((p_derivative == 0) || (normalised == true));
 
    bool is_int, is_half_int;
-   bool is_small_a = (a < 30) && (a <= x + 1);
+   bool is_small_a = (a < 30) && (a <= x + 1) && (x < tools::log_max_value<T>());
    if(is_small_a)
    {
       T fa = floor(a);
