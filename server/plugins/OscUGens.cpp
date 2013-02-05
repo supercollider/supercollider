@@ -390,7 +390,7 @@ void TableLookup_SetTable(TableLookup* unit, int32 inSize, float* inTable)
 
 void DegreeToKey_Ctor(DegreeToKey *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(DegreeToKey_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -653,7 +653,7 @@ void TWindex_next_ak(TWindex *unit, int inNumSamples)
 
 void Index_Ctor(Index *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(Index_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -717,7 +717,7 @@ void Index_next_a(Index *unit, int inNumSamples)
 
 void IndexL_Ctor(IndexL *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(IndexL_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -800,7 +800,7 @@ void IndexL_next_a(IndexL *unit, int inNumSamples)
 
 void FoldIndex_Ctor(FoldIndex *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(FoldIndex_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -863,7 +863,7 @@ void FoldIndex_next_a(FoldIndex *unit, int inNumSamples)
 
 void WrapIndex_Ctor(WrapIndex *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(WrapIndex_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -939,7 +939,7 @@ static float IndexInBetween_FindIndex(const float* table, float in, int32 maxind
 
 void IndexInBetween_Ctor(IndexInBetween *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(IndexInBetween_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -1009,7 +1009,7 @@ static int32 DetectIndex_FindIndex(const float* table, float in, int32 maxindex)
 
 void DetectIndex_Ctor(DetectIndex *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(DetectIndex_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -1096,7 +1096,7 @@ void DetectIndex_next_a(DetectIndex *unit, int inNumSamples)
 
 void Shaper_Ctor(Shaper *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(Shaper_next_1);
 	} else if (INRATE(1) == calc_FullRate) {
@@ -1195,7 +1195,7 @@ void Shaper_next_a(Shaper *unit, int inNumSamples)
 
 void SigOsc_Ctor(SigOsc *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(SigOsc_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -2154,7 +2154,7 @@ void OscN_next_nak(OscN *unit, int inNumSamples)
 
 void COsc_Ctor(COsc *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	SETCALC(COsc_next);
 	unit->m_phase1 = 0;
 	unit->m_phase2 = 0;
