@@ -343,21 +343,21 @@ void Klank_next(Klank *unit, int inNumSamples);
 			uint32 bufnum = (uint32)fbufnum; \
 			World *world = unit->mWorld; \
 			if (bufnum >= world->mNumSndBufs) { \
-			int localBufNum = bufnum - world->mNumSndBufs; \
-			Graph *parent = unit->mParent; \
-			if(localBufNum <= parent->localBufNum) { \
-				unit->m_buf = parent->mLocalSndBufs + localBufNum; \
+				uint32 localBufNum = bufnum - world->mNumSndBufs; \
+				Graph *parent = unit->mParent; \
+				if(localBufNum <= parent->localBufNum) { \
+					unit->m_buf = parent->mLocalSndBufs + localBufNum; \
+				} else { \
+					bufnum = 0; \
+					unit->m_buf = world->mSndBufs + bufnum; \
+				} \
 			} else { \
-				bufnum = 0; \
 				unit->m_buf = world->mSndBufs + bufnum; \
 			} \
-		} else { \
-			unit->m_buf = world->mSndBufs + bufnum; \
-		} \
-		unit->m_fbufnum = fbufnum; \
+			unit->m_fbufnum = fbufnum; \
 		} \
 		const SndBuf *buf = unit->m_buf; \
-        if(!buf) { \
+		if(!buf) { \
 			ClearUnitOutputs(unit, inNumSamples); \
 			return; \
 		} \
