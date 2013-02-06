@@ -1,5 +1,5 @@
 //  file-based backend (via libsndfile)
-//  Copyright (C) 2010 Tim Blechmann
+//  Copyright (C) 2010-2013 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <deque>
 #include <string>
 #include <thread>
+#include <vector>
 
 #include <boost/lockfree/spsc_queue.hpp>
 
@@ -62,9 +63,14 @@ public:
         read_frames(queue_size), write_frames(queue_size), running(false), reader_running(false), writer_running(false)
     {}
 
-    size_t get_audio_blocksize(void)
+    size_t get_audio_blocksize(void) const
     {
         return block_size_;
+    }
+
+    std::vector<sample_type> const & get_peaks() const
+    {
+        return max_peaks;
     }
 
 public:
@@ -72,6 +78,7 @@ public:
                      float samplerate, int format, uint32_t output_channel_count, size_t block_size)
     {
         output_channels = output_channel_count;
+        max_peaks.assign(output_channels, 0);
         samplerate_ = samplerate = std::floor(samplerate);
         block_size_ = block_size;
 
@@ -289,6 +296,16 @@ private:
             assert(frames_to_read == written_frames);
             if (written_frames == -1)
                 throw std::runtime_error(std::string("sndfile write failed: ") + output_file.strError());
+
+            for (size_t frame = 0; frame != frames_to_read; ++frame) {
+                for (size_t channel = 0; channel != output_channels; ++channel) {
+                    const sample_type current_sample = data_to_write[frame * output_channels + channel];
+
+                    sample_type current_peak = max_peaks[channel];
+
+                    max_peaks[channel] = std::max(current_peak, std::abs(current_sample));
+                }
+            }
         }
 
         return consumed_item;
@@ -320,6 +337,7 @@ private:
     boost::lockfree::spsc_queue< sample_type > read_frames, write_frames;
     nova::semaphore read_semaphore, write_semaphore;
     std::atomic<bool> running, reader_running, writer_running;
+    std::vector<sample_type> max_peaks;
 };
 
 } /* namespace nova */

@@ -1,4 +1,4 @@
-//  Copyright (C) 2010 Tim Blechmann
+//  Copyright (C) 2010-2013 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 #include "sc/sc_plugin_interface.hpp"
 
 #include "../../common/SC_SndFileHelpers.hpp"
+#include "../../include/plugin_interface/SC_InlineUnaryOp.h"
 
 namespace nova {
 
@@ -117,7 +118,14 @@ struct non_realtime_synthesis_engine
 
     done:
         backend.deactivate_audio();
-        printf("Non-rt synthesis finished");
+        printf("Non-rt synthesis finished\n");
+
+        auto peaks = backend.get_peaks();
+        printf("Peak summary:\n");
+        for (size_t channel = 0; channel != peaks.size(); ++channel) {
+            auto amplitude = peaks[channel];
+            printf("Channel %zu: %gdB\n", channel, sc_ampdb(amplitude));
+        }
     }
 
     sndfile_backend<non_rt_functor, float, true> backend;
