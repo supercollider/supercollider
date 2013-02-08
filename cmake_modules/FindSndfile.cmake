@@ -27,9 +27,13 @@ elseif (APPLE)
 	add_definitions("-DLIBSNDFILE_1018")
 
 else()
-	find_path(SNDFILE_INCLUDE_DIR sndfile.h)
+	find_path(SNDFILE_INCLUDE_DIR sndfile.h
+		PATHS "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/include"
+	)
 
-	find_library(SNDFILE_LIBRARY NAMES sndfile sndfile-1)
+	find_library(SNDFILE_LIBRARY NAMES sndfile sndfile-1 libsndfile libsndfile-1
+		PATHS "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
+	)
 
 	# Handle the QUIETLY and REQUIRED arguments and set SNDFILE_FOUND to TRUE if
 	# all listed variables are TRUE.
