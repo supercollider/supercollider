@@ -41,9 +41,6 @@ int64 OSCTime();
 int64 ElapsedTimeToOSC(double elapsed);
 double OSCToElapsedTime(int64 oscTime);
 
-void doubleToTimespec(double secs, struct timespec *spec);
-
-
 bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task);
 bool lookheap(PyrObject *heap, double *schedtime, PyrSlot *task) ;
 bool getheap(VMGlobals *g, PyrObject *heap, double *schedtime, PyrSlot *task) ;

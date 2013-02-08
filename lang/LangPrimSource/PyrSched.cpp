@@ -290,14 +290,6 @@ double OSCToElapsedTime(int64 oscTime)
 	return (double)(oscTime - gElapsedOSCoffset) * kOSCtoSecs;
 }
 
-void ElapsedTimeToTimespec(double elapsed, struct timespec *spec)
-{
-	int64 oscTime = ElapsedTimeToOSC(elapsed);
-
-	spec->tv_sec = (time_t)((oscTime >> 32) - kSECONDS_FROM_1900_to_1970);
-	spec->tv_nsec = (int32)((oscTime & 0xFFFFFFFF) * kOSCtoNanos);
-}
-
 void ElapsedTimeToChrono(double elapsed, mutex_chrono::system_clock::time_point & out_time_point)
 {
 	int64 oscTime = ElapsedTimeToOSC(elapsed);
@@ -375,15 +367,6 @@ void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTas
 			gSchedCond.notify_all();
 		}
 	}
-}
-
-
-void doubleToTimespec(double secs, struct timespec *spec);
-void doubleToTimespec(double secs, struct timespec *spec)
-{
-	double isecs = floor(secs);
-	spec->tv_sec = (long)isecs;
-	spec->tv_nsec = (long)floor(1000000000. * (secs - isecs));
 }
 
 SC_DLLEXPORT_C void schedStop()
