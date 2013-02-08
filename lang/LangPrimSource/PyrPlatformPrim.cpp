@@ -28,6 +28,7 @@ Primitives for platform dependent directories, constants etc.
 #include "PyrKernel.h"
 #ifdef _WIN32
 # include "SC_Win32Utils.h"
+# include "Shlobj.h"
 #endif
 
 #define PATH_CONSTANT_PRIM_BODY(func) \
