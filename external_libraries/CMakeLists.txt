@@ -12,12 +12,11 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		aux_source_directory(boost/libs/thread/src/win32/ boost_thread_platform )
 		add_definitions(-DBOOST_THREAD_BUILD_LIB)
 	elseif(PTHREADS_FOUND)
+		include_directories(${PTHREADS_INCLUDE_DIR})
 		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
 	else()
 		message(SEND_ERROR "we need to implement boost_thread")
 	endif()
-
-	include_directories(${PTHREADS_INCLUDE_DIR})
 
 	if (SUPERNOVA)
 		aux_source_directory(boost/libs/program_options/src/ boost_program_options )

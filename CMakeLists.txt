@@ -193,12 +193,14 @@ option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
 #############################################
 # some default libraries
 
-find_package(Pthreads)
+if (NOT WIN32)
+	find_package(Pthreads)
 
-if (NOT PTHREADS_FOUND)
-    message(SEND_ERROR "cannot find libpthreads")
+	if (NOT PTHREADS_FOUND)
+	    message(SEND_ERROR "cannot find libpthreads")
+	endif()
+	include_directories(${PTHREADS_INCLUDE_DIR})
 endif()
-include_directories(${PTHREADS_INCLUDE_DIR})
 
 if(MSVC OR MINGW)
     set(MATH_LIBRARY "")
