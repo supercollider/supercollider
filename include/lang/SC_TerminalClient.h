@@ -30,6 +30,8 @@
 #include "SC_StringBuffer.h"
 #include "SC_Lock.h"
 
+#include <boost/thread.hpp>
+
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
 // =====================================================================
@@ -165,7 +167,7 @@ private:
 #else
 	void * mQuitInputEvent;
 #endif
-	pthread_t mInputThread;
+	boost::thread mInputThread;
 	SC_Lock mInputMutex;
 	condition_variable_any mInputCond;
 };

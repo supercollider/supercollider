@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#ifdef _WIN32
-#include <pthread.h>
-#else
+#ifndef _WIN32
 #include <unistd.h>
 #include <sys/wait.h>
 #endif

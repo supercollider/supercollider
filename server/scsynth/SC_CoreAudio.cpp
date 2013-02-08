@@ -28,8 +28,9 @@
 #include "SC_Lib_Cintf.h"
 #include "SC_Lock.h"
 #include <stdlib.h>
-#include <pthread.h>
 #include <algorithm>
+
+#include <boost/thread/thread.hpp>
 
 #ifdef _WIN32
 
@@ -46,11 +47,12 @@
 #include "SC_Win32Utils.h"
 #endif
 
+#include "nova-tt/thread_priority.hpp"
+
+
 int64 gStartupOSCTime = -1;
 
 void sc_SetDenormalFlags();
-
-void set_real_time_priority(pthread_t thread);
 
 double gSampleRate, gSampleDur;
 
@@ -115,9 +117,16 @@ static void syncOSCOffsetWithTimeOfDay()
 	//scprintf("gOSCoffset %016llX\n", gOSCoffset);
 }
 
-void* resyncThreadFunc(void* arg);
-void* resyncThreadFunc(void* /*arg*/)
+static void resyncThreadFunc()
 {
+#ifdef NOVA_TT_PRIORITY_RT
+	std::pair<int, int> priorities = nova::thread_priority_interval_rt();
+	nova::thread_set_priority_rt((priorities.first + priorities.second)/2);
+#else
+	std::pair<int, int> priorities = nova::thread_priority_interval();
+	nova::thread_set_priority(priorities.second);
+#endif
+
 	while (true) {
 		sleep(20);
 		syncOSCOffsetWithTimeOfDay();
@@ -129,9 +138,8 @@ void initializeScheduler()
 {
 	syncOSCOffsetWithTimeOfDay();
 
-	pthread_t resyncThread;
-	pthread_create (&resyncThread, NULL, resyncThreadFunc, (void*)0);
-	set_real_time_priority(resyncThread);
+	boost::thread resyncThread(resyncThreadFunc);
+	resyncThread.detach();
 }
 #endif // SC_AUDIO_API_COREAUDIO
 
@@ -371,19 +379,19 @@ SC_AudioDriver::~SC_AudioDriver()
 {
     mRunThreadFlag = false;
 	mAudioSync.Signal();
-	pthread_join(mThread, 0);
+	mThread.join();
 }
 
-void* audio_driver_thread_func(void* arg);
-void* audio_driver_thread_func(void* arg)
+void SC_AudioDriver::RunThread()
 {
-	SC_AudioDriver *ca = (SC_AudioDriver*)arg;
-	void* result = ca->RunThread();
-	return result;
-}
+#ifdef NOVA_TT_PRIORITY_RT
+	std::pair<int, int> priorities = nova::thread_priority_interval_rt();
+	nova::thread_set_priority_rt((priorities.first + priorities.second)/2);
+#else
+	std::pair<int, int> priorities = nova::thread_priority_interval();
+	nova::thread_set_priority(priorities.second);
+#endif
 
-void* SC_AudioDriver::RunThread()
-{
 	TriggersFifo *trigfifo = &mWorld->hw->mTriggers;
 	NodeReplyFifo *nodereplyfifo = &mWorld->hw->mNodeMsgs;
 	NodeEndsFifo *nodeendfifo = &mWorld->hw->mNodeEnds;
@@ -412,7 +420,6 @@ void* SC_AudioDriver::RunThread()
 
 		reinterpret_cast<SC_Lock*>(mWorld->mNRTLock)->unlock();
 	}
-	return 0;
 }
 
 bool SC_AudioDriver::SendMsgFromEngine(FifoMsg& inMsg)
@@ -455,8 +462,7 @@ void SC_ScheduledEvent::Perform()
 bool SC_AudioDriver::Setup()
 {
 	mRunThreadFlag = true;
-	pthread_create (&mThread, NULL, audio_driver_thread_func, (void*)this);
-	set_real_time_priority(mThread);
+	mThread = boost::move(boost::thread(boost::bind(&SC_AudioDriver::RunThread, this)));
 
 	int numSamples;
 	double sampleRate;
