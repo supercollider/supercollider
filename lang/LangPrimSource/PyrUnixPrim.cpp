@@ -25,7 +25,6 @@ Primitives for Unix.
 
 #include <cstring>
 #include <errno.h>
-#include <pthread.h>
 #include <signal.h>
 
 #include "PyrPrimitive.h"
@@ -41,6 +40,8 @@ Primitives for Unix.
 
 #define BOOST_CHRONO_HEADER_ONLY
 #include <boost/chrono.hpp>
+
+#include <boost/thread.hpp> // LATER: move to std::thread
 
 #ifdef SC_WIN32
 #include "SC_Win32Utils.h"
@@ -112,10 +113,8 @@ struct sc_process {
 	bool postOutput;
 };
 
-void* string_popen_thread_func(void *data);
-void* string_popen_thread_func(void *data)
+static void string_popen_thread_func(struct sc_process *process)
 {
-	struct sc_process *process = (struct sc_process *)data;
 	FILE *stream = process->stream;
 	pid_t pid = process->pid;
 	char buf[1024];
@@ -146,8 +145,6 @@ void* string_popen_thread_func(void *data)
 		g->canCallOS = false;
 	}
 	gLangMutex.unlock();
-
-	return 0;
 }
 
 int prString_POpen(struct VMGlobals *g, int numArgsPushed);
@@ -185,9 +182,8 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	pthread_t thread;
-	pthread_create(&thread, NULL, string_popen_thread_func, (void*)process);
-	pthread_detach(thread);
+	boost::thread thread(boost::bind(string_popen_thread_func, process));
+	thread.detach();
 
 	SetInt(a, process->pid);
 	return errNone;

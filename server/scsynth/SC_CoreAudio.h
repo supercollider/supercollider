@@ -28,6 +28,8 @@
 #include "SC_SyncCondition.h"
 #include "PriorityQueue.h"
 
+#include <boost/thread/thread.hpp> // LATER: use std::thread
+
 #define SC_AUDIO_API_COREAUDIO	1
 #define SC_AUDIO_API_JACK		2
 #define SC_AUDIO_API_PORTAUDIO  3
@@ -135,7 +137,7 @@ protected:
 	EngineFifo mFromEngine, mToEngine;
 	EngineFifo mOscPacketsToEngine;
 	SC_SyncCondition mAudioSync;
-	pthread_t mThread;
+	boost::thread mThread;
 	bool mRunThreadFlag;
 	uint32 mSafetyOffset;
 	PriorityQueueT<SC_ScheduledEvent, 2048> mScheduler;
@@ -187,7 +189,7 @@ public:
 	void ClearSched() { mScheduler.Empty(); }
 
 	void RunNonRealTime(float *in, float *out, int numSamples, int64 oscTime);
-	void* RunThread();
+	void RunThread();
 
 	int SafetyOffset() const { return mSafetyOffset; }
 	int NumSamplesPerCallback() const { return mNumSamplesPerCallback; }

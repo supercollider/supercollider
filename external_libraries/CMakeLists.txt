@@ -37,7 +37,11 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		endif()
 	endif()
 
-	add_library(boost_thread STATIC ${boost_thread_src} ${boost_thread_platform})
+	add_library(boost_thread SHARED ${boost_thread_src} ${boost_thread_platform})
+
+    if (LINUX)
+        target_link_libraries(boost_thread rt)
+    endif()
 
 	if(LTO)
 		set_property(TARGET boost_thread

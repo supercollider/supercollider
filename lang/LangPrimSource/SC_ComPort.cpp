@@ -199,16 +199,9 @@ SC_ComPort::~SC_ComPort()
 #endif
 }
 
-static void* com_thread_func(void* arg)
-{
-    SC_CmdPort *thread = (SC_CmdPort*)arg;
-    void* result = thread->Run();
-    return result;
-}
-
 void SC_CmdPort::Start()
 {
-    pthread_create (&mThread, NULL, com_thread_func, (void*)this);
+	mThread = boost::move(boost::thread(boost::bind(&SC_CmdPort::Run, this)));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,7 +281,7 @@ SC_UdpCustomInPort::SC_UdpCustomInPort(int inPortNum)
 SC_UdpCustomInPort::~SC_UdpCustomInPort()
 {
 	mRunning.store(false);
-	pthread_join(mThread, NULL);
+	mThread.join();
 #ifdef SC_WIN32
 	if (mSocket != -1) closesocket(mSocket);
 #else
@@ -604,7 +597,7 @@ void* SC_TcpClientPort::Run()
 
 	bool cmdClose = false;
 
-	pthread_detach(mThread);
+	mThread.join();
 
 	while (true) {
 		fd_set rfds;
@@ -683,9 +676,9 @@ int recvall(int socket, void *msg, size_t len)
 	while (total < len)
 	{
 #ifdef SC_WIN32
-    int numbytes = recv(socket, reinterpret_cast<char*>(msg), len - total, 0);
+		int numbytes = recv(socket, reinterpret_cast<char*>(msg), len - total, 0);
 #else
-    int numbytes = recv(socket, msg, len - total, 0);
+		int numbytes = recv(socket, msg, len - total, 0);
 #endif
 		if (numbytes <= 0) return total;
 		total += numbytes;

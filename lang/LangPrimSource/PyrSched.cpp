@@ -32,11 +32,17 @@
 #include <math.h>
 #include <limits>
 
+#if defined(SC_DARWIN) || defined(__linux__)
+# include <pthread.h>
+#endif
+
+
 #include "SC_Win32Utils.h"
 #include "SCBase.h"
 
 #define BOOST_CHRONO_HEADER_ONLY
 #include <boost/chrono.hpp>
+#include <boost/thread.hpp> // LATER: use std::thread
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
@@ -201,8 +207,8 @@ void dumpheap(PyrObject *heapArg)
 
 
 bool gRunSched = false;
-pthread_t gSchedThread;
-pthread_t gResyncThread;
+boost::thread gSchedThread;
+boost::thread gResyncThread;
 condition_variable_any gSchedCond;
 timed_mutex gLangMutex;
 
@@ -237,12 +243,11 @@ inline double DurToFloat(DurationType dur)
 
 SC_DLLEXPORT_C void schedInit()
 {
-
 	hrTimeOfInitialization     = chrono::high_resolution_clock::now();
 
 #ifdef SC_DARWIN
 	syncOSCOffsetWithTimeOfDay();
-	pthread_create (&gResyncThread, NULL, resyncThread, (void*)0);
+	gResyncThread = boost::move(boost::thread(resyncThread));
 
 	gHostStartNanos = AudioConvertHostTimeToNanos(AudioGetCurrentHostTime());
 	gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
@@ -389,7 +394,7 @@ SC_DLLEXPORT_C void schedStop()
 		gRunSched = false;
 		gLangMutex.unlock();
 		gSchedCond.notify_all();
-		pthread_join(gSchedThread, 0);
+		gSchedThread.join();
 	} else {
 		gLangMutex.unlock();
 	}
@@ -433,8 +438,7 @@ void* resyncThread(void* arg)
 
 extern bool gTraceInterpreter;
 
-void* schedRunFunc(void* arg);
-void* schedRunFunc(void* arg)
+static void schedRunFunc()
 {
 	unique_lock<timed_mutex> lock(gLangMutex);
 
@@ -504,7 +508,7 @@ void* schedRunFunc(void* arg)
 	}
 	//postfl("exitloop\n");
 leave:
-	return 0;
+	return;
 }
 
 #ifdef SC_DARWIN
@@ -623,40 +627,40 @@ static void SC_LinuxSetRealtimePriority(pthread_t thread, int priority)
 
 SC_DLLEXPORT_C void schedRun()
 {
-	pthread_create (&gSchedThread, NULL, schedRunFunc, (void*)0);
+	gSchedThread = boost::move(boost::thread(schedRunFunc));
 
 #ifdef SC_DARWIN
         int policy;
         struct sched_param param;
 
         //pthread_t thread = pthread_self ();
-        pthread_getschedparam (gSchedThread, &policy, &param);
+        pthread_getschedparam (gSchedThread.native_handle(), &policy, &param);
         //post("param.sched_priority %d\n", param.sched_priority);
 
         policy = SCHED_RR;         // round-robin, AKA real-time scheduling
 
         int machprio;
         boolean_t timeshare;
-        GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread), &machprio, &timeshare);
+        GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread.native_handle()), &machprio, &timeshare);
         //post("mach priority %d   timeshare %d\n", machprio, timeshare);
 
         // what priority should gSchedThread use?
 
-        RescheduleStdThread(pthread_mach_thread_np(gSchedThread), 62, false);
+        RescheduleStdThread(pthread_mach_thread_np(gSchedThread.native_handle()), 62, false);
 
-        GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread), &machprio, &timeshare);
+        GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread.native_handle()), &machprio, &timeshare);
         //post("mach priority %d   timeshare %d\n", machprio, timeshare);
 
         //param.sched_priority = 70; // you'll have to play with this to see what it does
         //pthread_setschedparam (gSchedThread, policy, &param);
 
-        pthread_getschedparam (gSchedThread, &policy, &param);
+        pthread_getschedparam (gSchedThread.native_handle(), &policy, &param);
 
 		//post("param.sched_priority %d\n", param.sched_priority);
 #endif // SC_DARWIN
 
 #ifdef __linux__
-		SC_LinuxSetRealtimePriority(gSchedThread, 1);
+		SC_LinuxSetRealtimePriority(gSchedThread.native_handle(), 1);
 #endif // __linux__
 }
 
@@ -692,6 +696,11 @@ public:
 	~TempoClock() {}
 	void StopReq();
 	void Stop();
+	void StopAndDelete()
+	{
+		Stop();
+		delete this;
+	}
 
 	void* Run();
 
@@ -721,7 +730,7 @@ public:
 	double mBaseSeconds;
 	double mBaseBeats;
 	volatile bool mRun;
-	pthread_t mThread;
+	boost::thread mThread;
 	condition_variable_any mCondition;
 	TempoClock *mPrev, *mNext;
 
@@ -730,24 +739,6 @@ public:
 };
 
 TempoClock *TempoClock::sAll = 0;
-
-
-void* TempoClock_run_func(void* p)
-{
-	TempoClock* clock = (TempoClock*)p;
-	return clock->Run();
-}
-
-void* TempoClock_stop_func(void* p)
-{
-	//printf("->TempoClock_stop_func\n");
-	TempoClock* clock = (TempoClock*)p;
-	clock->Stop();
-	//printf("delete\n");
-	delete clock;
-	//printf("<-TempoClock_stop_func\n");
-	return 0;
-}
 
 void TempoClock_stopAll(void)
 {
@@ -776,23 +767,19 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	mQueue->size = 1;
 	SetInt(&mQueue->count, 0);
 
-	int err = pthread_create (&mThread, NULL, TempoClock_run_func, (void*)this);
-	if (err)
-	{
-		post("Couldn't start thread for TempoClock: %s\n", strerror(err));
-		return;
-	}
+	mThread = boost::move(boost::thread(boost::bind(&TempoClock::Run, this)));
+
 #ifdef SC_DARWIN
 	int machprio;
 	boolean_t timeshare;
-	GetStdThreadSchedule(pthread_mach_thread_np(mThread), &machprio, &timeshare);
+	GetStdThreadSchedule(pthread_mach_thread_np(mThread.native_handle()), &machprio, &timeshare);
 	//post("mach priority %d   timeshare %d\n", machprio, timeshare);
 
 	// what priority should gSchedThread use?
 
-	RescheduleStdThread(pthread_mach_thread_np(mThread), 10, false);
+	RescheduleStdThread(pthread_mach_thread_np(mThread.native_handle()), 10, false);
 
-	GetStdThreadSchedule(pthread_mach_thread_np(mThread), &machprio, &timeshare);
+	GetStdThreadSchedule(pthread_mach_thread_np(mThread.native_handle()), &machprio, &timeshare);
 	//post("mach priority %d   timeshare %d\n", machprio, timeshare);
 
 	//param.sched_priority = 70; // you'll have to play with this to see what it does
@@ -800,16 +787,16 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 #endif // SC_DARWIN
 
 #ifdef __linux__
-	SC_LinuxSetRealtimePriority(mThread, 1);
+	SC_LinuxSetRealtimePriority(mThread.native_handle(), 1);
 #endif // __linux__
 }
 
 void TempoClock::StopReq()
 {
 	//printf("->TempoClock::StopReq\n");
-	pthread_t stopThread;
-	pthread_create (&stopThread, NULL, TempoClock_stop_func, (void*)this);
-	pthread_detach(stopThread);
+	boost::thread stopThread(boost::bind(&TempoClock::StopAndDelete, this));
+	stopThread.detach();
+
 	//printf("<-TempoClock::StopReq\n");
 }
 
@@ -831,7 +818,7 @@ void TempoClock::Stop()
 			mCondition.notify_all();
 		}
 	}
-	pthread_join(mThread, 0);
+	mThread.join();
 
 	//printf("<-TempoClock::Stop\n");
 }

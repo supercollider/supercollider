@@ -773,10 +773,10 @@ void SC_TerminalClient::startInput()
 	mInputShouldBeRunning = true;
 #ifdef HAVE_READLINE
 	if( mUseReadline )
-		pthread_create( &mInputThread, NULL, &SC_TerminalClient::readlineFunc, this );
+		mInputThread = boost::move(boost::thread(boost::bind(readlineFunc, this)));
 	else
 #endif
-		pthread_create( &mInputThread, NULL, &SC_TerminalClient::pipeFunc, this );
+		mInputThread = boost::move(boost::thread(boost::bind(pipeFunc, this)));
 }
 
 void SC_TerminalClient::endInput()
@@ -806,7 +806,7 @@ void SC_TerminalClient::endInput()
 #endif
 
 	postfl("main: waiting for input thread to join...\n");
-	pthread_join( mInputThread, NULL );
+	mInputThread.join();
 
 #ifdef _WIN32
 	} // if (mUseReadline)

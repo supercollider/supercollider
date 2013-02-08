@@ -29,7 +29,6 @@
 #include "clz.h"
 #include <stdexcept>
 #ifdef _WIN32
-# include <pthread.h>
 # include <winsock2.h>
 #else
 # include <sys/wait.h>
@@ -130,11 +129,6 @@ int main(int argc, char* argv[])
     setlinebuf(stdout);
 
 #ifdef _WIN32
-#ifdef SC_WIN32_STATIC_PTHREADS
-    // initialize statically linked pthreads library
-    pthread_win32_process_attach_np();
-#endif
-
     // initialize winsock
     WSAData wsaData;
 	int nCode;
@@ -365,10 +359,6 @@ int main(int argc, char* argv[])
     // clean up winsock
     WSACleanup();
 
-#ifdef SC_WIN32_STATIC_PTHREADS
-    // clean up statically linked pthreads
-    pthread_win32_process_detach_np();
-#endif // SC_WIN32_STATIC_PTHREADS
 #endif // _WIN32
 
 	return 0;

@@ -42,7 +42,6 @@ typedef int socklen_t;
 # include <netdb.h>
 #endif
 
-#include <pthread.h>
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
 #include "SCBase.h"
@@ -50,6 +49,8 @@ typedef int socklen_t;
 #include "SC_WorldOptions.h"
 #include "SC_SndBuf.h"
 #include "SC_Endian.h"
+
+#include <boost/thread/thread.hpp> // LATER: use std::thread
 
 #ifndef SC_DARWIN
 # ifndef SC_WIN32
@@ -998,12 +999,10 @@ int getScopeBuf(uint32 index, SndBuf *buf, bool& didChange)
 	}
 	return errNone;
 }
-void* wait_for_quit(void* thing);
-void* wait_for_quit(void* thing)
+
+static void wait_for_quit(World* world)
 {
-	World *world = (World*)thing;
 	World_WaitForQuit(world);
-	return 0;
 }
 
 int prQuitInProcessServer(VMGlobals *g, int numArgsPushed);
@@ -1015,9 +1014,9 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 		World *world = gInternalSynthServer.mWorld;
 		gInternalSynthServer.mWorld = 0;
 
-        pthread_t thread;
-        pthread_create(&thread, NULL, wait_for_quit, (void*)world);
-		pthread_detach(thread);
+		boost::thread thread(boost::bind(wait_for_quit, world));
+
+		thread.detach();
 	}
 
 	return errNone;
