@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include "SC_Prototypes.h"
 #include "SC_DirUtils.h"
+#include "SC_Lib_Cintf.h"
 #include "../../common/SC_SndFileHelpers.hpp"
 #include "../../common/Samp.hpp"
 #include "SC_StringParser.h"
@@ -304,8 +305,6 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 		world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
 		world->hw->mQuitProgram = new SC_Semaphore(0);
 		world->hw->mTerminating = false;
-
-		extern Malloc gMalloc;
 
 		HiddenWorld *hw = world->hw;
 		hw->mGraphDefLib = new HashTable<struct GraphDef, Malloc>(&gMalloc, inOptions->mMaxGraphDefs, false);
