@@ -24,7 +24,9 @@
 */
 
 #include "SC_TerminalClient.h"
+#ifdef SC_QT
 #include "../../QtCollider/LanguageClient.h"
+#endif
 
 #include <errno.h>
 #include <fcntl.h>
