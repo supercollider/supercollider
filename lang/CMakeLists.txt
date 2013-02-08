@@ -280,7 +280,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
 
-target_link_libraries(libsclang ${PTHREADS_LIBRARY} ${YAMLCPP_LIBRARY})
+target_link_libraries(libsclang boost_thread ${YAMLCPP_LIBRARY})
 
 if(SC_QT)
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})

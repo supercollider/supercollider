@@ -3,7 +3,6 @@ if (WIN32)
 	find_package(Portaudio)
 endif()
 
-
 # here we choose who provides us with the FFT lib
 if (APPLE)
 	add_definitions("-DSC_FFT_VDSP")
