@@ -113,21 +113,6 @@ char* win32_dirname(char* path)
   return path;
 }
 
-int win32_nanosleep (const struct timespec *requested_time,
-		  struct timespec *remaining)
-{
-  DWORD milliseconds = requested_time->tv_sec * 1000
-  	+ (requested_time->tv_nsec) / 1000000;
-  if (requested_time->tv_nsec < 0 || requested_time->tv_nsec > 1000000) {
-  	errno = EINVAL;
-    return -1;
-  }
-  Sleep (milliseconds);
-  remaining->tv_sec = 0;
-  remaining->tv_nsec = 0;
-  return 0;
-}
-
 /* Based on code from PostgreSQL (pgsql/src/port/pipe.c)
  *  This is a replacement version of pipe for Win32 which allows
  *  returned handles to be used in select(). Note that read/write calls
