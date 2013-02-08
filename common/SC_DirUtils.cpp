@@ -286,7 +286,7 @@ bool sc_IsStandAlone()
 
 void sc_GetResourceDirectory(char* dest, int length)
 {
-	char buf[length];
+	char buf[PATH_MAX];
 	GetModuleFileName( NULL, buf, length );
 	char *path = win32_dirname(buf);
 	strcpy(dest, path);

@@ -24,7 +24,6 @@
 #ifdef _WIN32
 #include <stdio.h>
 #include <winsock2.h>
-#include <pthread.h>
 
 // wrappers for unix replacements
 #define gettimeofday win32_gettimeofday
@@ -34,6 +33,7 @@
 #define nanosleep sc_win32_nanosleep
 #endif
 #define pipe win32_pipe
+typedef int pid_t;
 
 #if _MSC_VER
 #define snprintf _snprintf
@@ -47,7 +47,6 @@ void win32_synctimes();
 void win32_gettimeofday(timeval* tv, void*);
 char* win32_basename(char* path);
 char* win32_dirname(char* path);
-int win32_nanosleep (const struct timespec *requested_time, struct timespec *remaining);
 int win32_pipe(int handles[2]);
 int win32_piperead(int s, char *buf, int len);
 int win32_pipewrite(int s, char *buf, int len);
