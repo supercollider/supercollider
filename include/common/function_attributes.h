@@ -72,4 +72,11 @@
 #ifndef FLATTEN
 #define FLATTEN /*FLATTEN*/
 #endif
+
+#if defined(__GNUC__) || defined(__CLANG__)
+// __restrict__ defined
+#else
+#define __restrict__ /* __restrict */
+#endif
+
 #endif /* FUNCTION_ATTRIBUTES_H */
