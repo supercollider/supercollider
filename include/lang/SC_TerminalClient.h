@@ -162,7 +162,7 @@ private:
 #ifndef _WIN32
 	int mInputCtlPipe[2];
 #else
-	HANDLE mQuitInputEvent;
+	void * mQuitInputEvent;
 #endif
 	pthread_t mInputThread;
 	pthread_mutex_t mInputMutex;
