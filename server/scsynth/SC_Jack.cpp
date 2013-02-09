@@ -28,6 +28,8 @@
 #include "SC_Prototypes.h"
 #include "SC_StringParser.h"
 #include "SC_WorldOptions.h"
+#include "SC_TimeDLL.hpp"
+#include "SC_Time.hpp"
 
 #include <jack/jack.h>
 #include <math.h>
@@ -43,39 +45,16 @@
 static const char* kJackDriverIdent = "JackDriver";
 static const char* kJackDefaultClientName = "SuperCollider";
 
-// =====================================================================
-// Timing
-#include "SC_TimeDLL.hpp"
-static inline int64 sc_JackOSCTime(const struct timeval& tv)
-{
-	return ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
-		+ (int64)(tv.tv_usec * kMicrosToOSCunits);
-}
-
-static inline int64 sc_JackOSCTime()
-{
-	struct timeval tv;
-	gettimeofday(&tv, 0);
-	return sc_JackOSCTime(tv);
-}
-
-static inline double sc_JackOSCTimeSeconds()
-{
-	return (uint64)sc_JackOSCTime() * kOSCtoSecs;
-}
-
 int32 server_timeseed()
 {
-	static int32 count = 0;
-	struct timeval tv;
-	gettimeofday(&tv, 0);
-	return (int32)tv.tv_sec ^ (int32)tv.tv_usec ^ count--;
+	return timeSeed();
 }
 
 int64 oscTimeNow()
 {
-	return sc_JackOSCTime();
+	return OSCTime(getTime());
 }
+
 
 void initializeScheduler()
 {
@@ -423,7 +402,7 @@ void SC_JackDriver::Run()
 	World* world = mWorld;
 
 #ifdef SC_JACK_USE_DLL
-	mDLL.Update(sc_JackOSCTimeSeconds());
+	mDLL.Update(secondsSinceEpoch(getTime()));
 #if SC_JACK_DEBUG_DLL
 	static int tick = 0;
 	if (++tick >= 10) {
@@ -434,10 +413,9 @@ void SC_JackDriver::Run()
 	}
 #endif
 #else
-	struct timeval hostTime;
-	gettimeofday(&hostTime, 0);
+	HostTime hostTime = getTime();
 
-	double hostSecs = (double)hostTime.tv_sec + (double)hostTime.tv_usec * 1e-6;
+	double hostSecs = secondsSinceEpoch(hostTime);
 	double sampleTime = (double)(jack_frame_time(client) + jack_frames_since_cycle_start(client));
 
 	if (mStartHostSecs == 0) {
@@ -506,7 +484,7 @@ void SC_JackDriver::Run()
 		mSmoothSampleRate = mDLL.SampleRate();
 		double oscToSamples = mOSCtoSamples = mSmoothSampleRate * kOSCtoSecs /* 1/pow(2,32) */;
 #else
-		int64 oscTime = mOSCbuftime = sc_JackOSCTime(hostTime) - (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
+		int64 oscTime = mOSCbuftime = OSCTime(hostTime) - (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
 		int64 oscInc = mOSCincrement;
 		double oscToSamples = mOSCtoSamples;
 #endif
@@ -597,7 +575,7 @@ void SC_JackDriver::Reset(double sampleRate, int bufferSize)
 		mSampleRate,
 		mNumSamplesPerCallback,
 		SC_TIME_DLL_BW,
-		sc_JackOSCTimeSeconds());
+		secondsSinceEpoch(getTime()));
 #endif
 }
 

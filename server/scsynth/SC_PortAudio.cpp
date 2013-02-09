@@ -22,47 +22,31 @@
 #include "SC_Prototypes.h"
 #include "SC_HiddenWorld.h"
 #include "SC_WorldOptions.h"
+#include "SC_Time.hpp"
 #include <math.h>
 #include <stdlib.h>
 
-#ifdef _WIN32
-#include "SC_Win32Utils.h"
-#else
-#include <sys/time.h>
-#endif
-
 #include "portaudio.h"
 #define SC_PA_USE_DLL
+
+int32 server_timeseed()
+{
+	return timeSeed();
+}
 
 #ifdef SC_PA_USE_DLL
 #include "SC_TimeDLL.hpp"
 // =====================================================================
 // Timing
 
-static inline int64 sc_PAOSCTime(const struct timeval& tv)
-{
-	return ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
-		+ (int64)(tv.tv_usec * kMicrosToOSCunits);
-}
-
 static inline int64 sc_PAOSCTime()
 {
-	struct timeval tv;
-	gettimeofday(&tv, 0);
-	return sc_PAOSCTime(tv);
+	return OSCTime(getTime());
 }
 
 static inline double sc_PAOSCTimeSeconds()
 {
 	return (uint64)sc_PAOSCTime() * kOSCtoSecs;
-}
-
-int32 server_timeseed()
-{
-	static int32 count = 0;
-	struct timeval tv;
-	gettimeofday(&tv, 0);
-	return (int32)tv.tv_sec ^ (int32)tv.tv_usec ^ count--;
 }
 
 int64 oscTimeNow()
@@ -80,19 +64,7 @@ int64 gOSCoffset = 0;
 
 static inline int64 GetCurrentOSCTime()
 {
-	struct timeval tv;
-	uint64 s, f;
-	gettimeofday(&tv, 0);
-	s = (uint64)tv.tv_sec + (uint64)kSECONDS_FROM_1900_to_1970;
-	f = (uint64)((double)tv.tv_usec * kMicrosToOSCunits);
-
-	return (s << 32) + f;
-}
-
-int32 server_timeseed()
-{
-	int64 time = GetCurrentOSCTime();
-	return Hash((int32)(time >> 32) + Hash((int32)time));
+	return OSCTime(getTime());
 }
 
 int64 oscTimeNow()

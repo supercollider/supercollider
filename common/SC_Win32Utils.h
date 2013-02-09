@@ -46,7 +46,6 @@
 #endif
 
 // wrappers for unix replacements
-#define gettimeofday sc_win32_gettimeofday
 #define basename win32_basename
 #define dirname win32_dirname
 #define pipe win32_pipe
@@ -61,7 +60,6 @@ void win32_ReplaceCharInString(char* string, int len, char src, char dst);
 void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars);
 void win32_GetKnownFolderPath(int folderId, char *dest, int size);
 void win32_synctimes();
-void sc_win32_gettimeofday(timeval* tv, void*);
 char* win32_basename(char* path);
 char* win32_dirname(char* path);
 int win32_pipe(int handles[2]);
