@@ -224,7 +224,7 @@ const double fSECONDS_FROM_1900_to_1970 = 2208988800.; /* 17 leap years */
 
 #ifdef SC_DARWIN
 static void syncOSCOffsetWithTimeOfDay();
-void* resyncThread(void* arg);
+void resyncThread();
 #endif // SC_DARWIN
 
 namespace chrono = boost::chrono; // we can later move to std::chrono in c++11
@@ -409,14 +409,13 @@ void schedClearUnsafe()
 void post(const char *fmt, ...);
 
 #ifdef SC_DARWIN
-void* resyncThread(void* arg)
+void resyncThread()
 {
 	while (true) {
 		sleep(20);
 		syncOSCOffsetWithTimeOfDay();
 		gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
 	}
-	return 0;
 }
 #endif
 
