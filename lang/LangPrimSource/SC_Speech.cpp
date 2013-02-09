@@ -55,7 +55,7 @@ pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRe
 {
     //call action here;
     // post("text done");
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	VMGlobals *g = gMainVMGlobals;
 	g->canCallOS = true;
 	++g->sp; SetObject(g->sp, s_speech->u.classobj); // Set the class
@@ -67,13 +67,13 @@ pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRe
 		speechStrings[(int) inRefCon] = NULL;
 	}
     g->canCallOS = false;
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, long inWordPos, short inWordLen);
 pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, long inWordPos, short inWordLen) {
     //post("word done");
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	VMGlobals *g = gMainVMGlobals;
 	g->canCallOS = true;
 	++g->sp; SetObject(g->sp, s_speech->u.classobj);
@@ -82,7 +82,7 @@ pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, 
 	runInterpreter(g, s_speechwordAction, 2);
 
     g->canCallOS = false;
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 int prInitSpeech(struct VMGlobals *g, int numArgsPushed);

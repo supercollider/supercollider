@@ -817,9 +817,9 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSRange newSelectedRange = NSMakeRange(selectedRange.location + selectedRange.length, 0);
     [activeTextView setSelectedRange: newSelectedRange];
 
-    pthread_mutex_lock(&gLangMutex);
+    gLangMutex.lock();
     runLibrary(getsym(methodName));
-    pthread_mutex_unlock(&gLangMutex);
+    gLangMutex.unlock();
 
 }
 
@@ -1127,7 +1127,7 @@ extern PyrSymbol * s_didResignKey;
 
 }
 - (void) callSCLangWithMethod: (PyrSymbol*) method {
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	if(compiledOK) {
 		struct PyrObject *scobj = [self getSCObject];
 		if (scobj) {
@@ -1139,7 +1139,7 @@ extern PyrSymbol * s_didResignKey;
 			g->canCallOS = false;
 		}
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 - (void)windowWillClose:(NSNotification *)aNotification
 {

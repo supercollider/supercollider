@@ -164,7 +164,7 @@ extern bool compiledOK;
 		unsigned int keycode = [event keyCode];
 		PyrObject * pobj = (PyrObject*)[[self delegate] getSCObject];
 		if (pobj) {
-			pthread_mutex_lock (&gLangMutex);
+			gLangMutex.lock();
 			PyrSymbol *documentclass = getsym([langClassToCall cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			PyrObject *classobj = (PyrObject*) documentclass->u.classobj;		
 			if(NotNil(pobj->slots+objectKeyUpActionIndex) || NotNil(classobj->slots+keyUpActionIndex)){
@@ -181,7 +181,7 @@ extern bool compiledOK;
 					g->canCallOS = false;
 				}	
 			}
-			pthread_mutex_unlock (&gLangMutex);
+			gLangMutex.unlock();
 		} 
 	}
     if ([characters isEqual: @"\03"]) {
@@ -206,7 +206,7 @@ extern bool compiledOK;
 		PyrObject * pobj = (PyrObject*)[[self delegate] getSCObject];
 
 		if (pobj) {
-			pthread_mutex_lock (&gLangMutex);
+			gLangMutex.lock();
 			PyrSymbol *documentclass = getsym([langClassToCall cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			PyrObject *classobj = (PyrObject*) documentclass->u.classobj;			
 			if(NotNil(pobj->slots+objectKeyDownActionIndex) || NotNil(classobj->slots+keyDownActionIndex)){
@@ -223,7 +223,7 @@ extern bool compiledOK;
 					g->canCallOS = false;
 				}
 			}
-			pthread_mutex_unlock (&gLangMutex);
+			gLangMutex.unlock();
 		}
 	}
 		// shift- or control-return added by hjh
@@ -373,7 +373,7 @@ extern PyrSymbol * s_mouseUp;
 	//	SCPoint scpoint = SCMakePoint(mouseLoc.x, mouseLoc.y);
 	int clickCount = [theEvent clickCount];
 	int buttonNum = [theEvent buttonNumber];	
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	PyrObject * pobj = (PyrObject*)[[self delegate] getSCObject];
 	if (pobj) {
 		VMGlobals *g = gMainVMGlobals;
@@ -388,7 +388,7 @@ extern PyrSymbol * s_mouseUp;
 		runInterpreter(g, s_mouseUp, 7);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 - (void)setDefaultTabsTo:(float)value {
 	NSTextStorage *text = [self textStorage];
