@@ -247,7 +247,8 @@ SC_DLLEXPORT_C void schedInit()
 
 #ifdef SC_DARWIN
 	syncOSCOffsetWithTimeOfDay();
-	gResyncThread = boost::move(boost::thread(resyncThread));
+	boost::thread thread(resyncThread);
+	gResyncThread = boost::move(thread);
 
 	gHostStartNanos = AudioConvertHostTimeToNanos(AudioGetCurrentHostTime());
 	gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
@@ -610,7 +611,8 @@ static void SC_LinuxSetRealtimePriority(pthread_t thread, int priority)
 
 SC_DLLEXPORT_C void schedRun()
 {
-	gSchedThread = boost::move(boost::thread(schedRunFunc));
+	boost::thread thread(schedRunFunc);
+	gSchedThread = boost::move(thread);
 
 #ifdef SC_DARWIN
         int policy;
@@ -750,7 +752,8 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	mQueue->size = 1;
 	SetInt(&mQueue->count, 0);
 
-	mThread = boost::move(boost::thread(boost::bind(&TempoClock::Run, this)));
+	boost::thread thread(boost::bind(&TempoClock::Run, this));
+	mThread = boost::move(thread);
 
 #ifdef SC_DARWIN
 	int machprio;

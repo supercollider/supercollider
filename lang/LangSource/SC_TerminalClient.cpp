@@ -772,11 +772,16 @@ void SC_TerminalClient::startInput()
 {
 	mInputShouldBeRunning = true;
 #ifdef HAVE_READLINE
-	if( mUseReadline )
-		mInputThread = boost::move(boost::thread(boost::bind(readlineFunc, this)));
+	if( mUseReadline ) {
+		boost::thread thread(boost::bind(readlineFunc, this));
+		mInputThread = boost::move(thread);
+	}
 	else
 #endif
-		mInputThread = boost::move(boost::thread(boost::bind(pipeFunc, this)));
+	{
+		boost::thread thread(boost::bind(pipeFunc, this));
+		mInputThread = boost::move(thread);
+	}
 }
 
 void SC_TerminalClient::endInput()
