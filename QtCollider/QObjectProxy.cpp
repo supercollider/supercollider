@@ -36,7 +36,11 @@
 #include <PyrKernel.h>
 #include <VMGlobals.h>
 
-#include <alloca.h>
+#ifdef _WIN32
+# include "SC_Win32Utils.h"
+#else
+# include <alloca.h>
+#endif
 
 using namespace QtCollider;
 
