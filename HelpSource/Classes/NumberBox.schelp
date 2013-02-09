@@ -252,7 +252,7 @@ s.waitForBoot({
     }.play;
 
     w = Window("Use arrow keys to change the frequency by steps", Rect(100, 500, 500, 120));
-    b =     NumberBox(w, Rect(200, 10, 100, 20));
+    b = NumberBox(w, Rect(200, 10, 100, 20));
     b.value = 220;
     b.action = {arg numb; n.set(\freq,numb.value); };
     b.step=55; //make the step a fraction of the freq
