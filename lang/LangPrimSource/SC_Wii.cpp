@@ -52,8 +52,6 @@
 
 #ifdef HAVE_WII
 
-#include <pthread.h> // WII is only supported on posix systems anyway
-
 #ifdef SC_DARWIN
 	#include <mach/mach.h>
 	#include <mach/mach_error.h>
@@ -690,7 +688,7 @@ void SC_WII::connected()
 //		wii_disconnect();
 #endif
 // 	post("WII: wiiremote connected\n");
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
@@ -742,7 +740,7 @@ void SC_WII::disconnected()
 {
 	m_connected = false;
 	m_searching = 0;
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
@@ -800,7 +798,7 @@ void SC_WII::handleEvent()
 	if (m_wiiremote->device == NULL)
 		return;	// do nothing
 
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
@@ -942,7 +940,7 @@ void SC_WII::handleEvent()
 
 #ifdef __linux__
 void SC_WII::handleBatteryEvent( uint8_t battery ){
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
@@ -957,7 +955,7 @@ void SC_WII::handleBatteryEvent( uint8_t battery ){
 
 #ifdef __linux__
 void SC_WII::handleExtensionEvent( int ext_type ){
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
@@ -972,7 +970,7 @@ void SC_WII::handleExtensionEvent( int ext_type ){
 
 #ifdef __linux__
 void SC_WII::handleButtonEvent( uint16_t buttons ){
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
@@ -1007,7 +1005,7 @@ void SC_WII::handleButtonEvent( uint16_t buttons ){
 
 #ifdef __linux__
 void SC_WII::handleAccEvent( uint8_t acc[3] ){
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
@@ -1024,7 +1022,7 @@ void SC_WII::handleAccEvent( uint8_t acc[3] ){
 
 #ifdef __linux__
 void SC_WII::handleNunchukEvent( struct cwiid_nunchuk_mesg nunchuk ){
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
@@ -1051,7 +1049,7 @@ void SC_WII::handleNunchukEvent( struct cwiid_nunchuk_mesg nunchuk ){
 
 #ifdef __linux__
 void SC_WII::handleClassicEvent( struct cwiid_classic_mesg classic ){
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
@@ -1095,7 +1093,7 @@ void SC_WII::handleClassicEvent( struct cwiid_classic_mesg classic ){
 
 #ifdef __linux__
 void SC_WII::handleIREvent( int id, cwiid_ir_src ir ){
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
@@ -1114,7 +1112,7 @@ void SC_WII::handleIREvent( int id, cwiid_ir_src ir ){
 
 void SC_WII::readError()
 {
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
