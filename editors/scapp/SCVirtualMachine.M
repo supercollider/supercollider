@@ -181,9 +181,9 @@ static id sharedSCVM = nil;
 
 - (void)doClockTask: (NSTimer*) timer
 {
-   if (pthread_mutex_trylock(&gLangMutex) == 0) {
+   if (gLangMutex.try_lock()) {
         if (compiledOK) runLibrary(s_tick);
-        pthread_mutex_unlock(&gLangMutex);
+        gLangMutex.unlock();
     }
     flushPostBuf();
 }
@@ -195,7 +195,7 @@ static id sharedSCVM = nil;
 		postfl("The library has not been compiled successfully.\n");
 		return;
 	}
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals *g = gMainVMGlobals;
 
@@ -206,14 +206,14 @@ static id sharedSCVM = nil;
 		SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strobj);
 		g->gc->GCWrite(slotRawObject(&g->process->interpreter), strobj);
 	}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 
 - (void)sendMain: (const char*) methodName
 {
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	runLibrary(getsym(methodName));
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 
 - (void)compileLibrary:(id)sender

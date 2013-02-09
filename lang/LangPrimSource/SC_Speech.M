@@ -69,7 +69,7 @@ pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRe
 	//call action here;
 	// post("text done");
 #ifdef useCarbonSpeech
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	VMGlobals *g = gMainVMGlobals;
 	g->canCallOS = true;
 	++g->sp; SetObject(g->sp, s_speech->u.classobj); // Set the class
@@ -81,7 +81,7 @@ pascal void OurSpeechDoneCallBackProc ( SpeechChannel inSpeechChannel, long inRe
 		speechStrings[(int) inRefCon] = NULL;
 	}
 	g->canCallOS = false;
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 #endif
 }
 
@@ -89,7 +89,7 @@ pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, 
 pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, long inWordPos, short inWordLen) {
     //post("word done");
 #ifdef useCarbonSpeech
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	VMGlobals *g = gMainVMGlobals;
 	g->canCallOS = true;
 	++g->sp; SetObject(g->sp, s_speech->u.classobj);
@@ -98,7 +98,7 @@ pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, 
 	runInterpreter(g, s_speechwordAction, 2);
 
     g->canCallOS = false;
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 #endif
 }
 
@@ -171,7 +171,7 @@ int prSpeakText(struct VMGlobals *g, int numArgsPushed){
 		theErr = SpeakText( fCurSpeechChannel[chan], speechStrings[chan], strlen(speechStrings[chan]));
 	}
 #else
-//    pthread_mutex_lock (&gLangMutex);
+//    gLangMutex.lock();
 
 	NSAutoreleasePool *autoreleasepool= [[NSAutoreleasePool alloc] init];
 	NSSpeechSynthesizer * spsynth = [speechSynthsArray objectAtIndex: chan];
@@ -183,7 +183,7 @@ int prSpeakText(struct VMGlobals *g, int numArgsPushed){
 //	[nsstring release];
 //	[nsstring release];
 	[autoreleasepool release];
-//    pthread_mutex_unlock (&gLangMutex);
+//    gLangMutex.unlock();
 
 #endif
 	return errNone;
