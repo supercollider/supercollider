@@ -41,9 +41,6 @@
 #include "SCBase.h"
 #include "InitAlloc.h"
 
-//double log2 ( double x );
-//double hypot ( double x, double y );
-
 float gSlopeFactor[32];
 long gWrapMask[32];
 
@@ -961,19 +958,12 @@ PyrObject* signal_log(VMGlobals *g, PyrObject *inPyrSignal)
 	return outc;
 }
 
-#ifdef SC_WIN32
-// in PyrMathSupport.cpp
-double log2(double x);
-#elif defined(__FreeBSD__)
- double log2(double x);
-#endif
-
 PyrObject* signal_log2(VMGlobals *g, PyrObject *inPyrSignal)
 {
 	float *in = (float*)(inPyrSignal->slots) - 1;
 	PyrObject *outc = newPyrSignal(g, inPyrSignal->size);
 	float *out = (float*)(outc->slots) - 1;
-	UNROLL1_CODE(inPyrSignal->size, out, *++out = log2(*++in);)
+	UNROLL1_CODE(inPyrSignal->size, out, *++out = sc_log2(*++in);)
 	return outc;
 }
 
