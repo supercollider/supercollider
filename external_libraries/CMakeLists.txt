@@ -38,11 +38,11 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 	endif()
 
 	add_library(boost_thread STATIC ${boost_thread_src} ${boost_thread_platform})
-	target_link_libraries(boost_thread rt boost_system)
+	target_link_libraries(boost_thread boost_system)
 
-	if (LINUX)
+	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 		add_definitions(-fPIC)
-		target_link_libraries(boost_thread rt boost_system)
+		target_link_libraries(boost_thread rt)
 	endif()
 
 	if(LTO)
