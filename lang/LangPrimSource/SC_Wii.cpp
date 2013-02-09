@@ -52,6 +52,8 @@
 
 #ifdef HAVE_WII
 
+#include <pthread.h> // WII is only supported on posix systems anyway
+
 #ifdef SC_DARWIN
 	#include <mach/mach.h>
 	#include <mach/mach_error.h>
