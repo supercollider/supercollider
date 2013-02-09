@@ -18,12 +18,12 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		message(SEND_ERROR "we need to implement boost_thread")
 	endif()
 
+	aux_source_directory(boost/libs/system/src/ boost_system )
+	add_library(boost_system STATIC ${boost_system})
+
 	if (SUPERNOVA)
 		aux_source_directory(boost/libs/program_options/src/ boost_program_options )
 		add_library(boost_program_options STATIC ${boost_program_options})
-
-		aux_source_directory(boost/libs/system/src/ boost_system )
-		add_library(boost_system STATIC ${boost_system})
 
 		aux_source_directory(boost/libs/filesystem/src boost_filesystem_src)
 		add_library(boost_filesystem STATIC ${boost_filesystem_src})
@@ -37,11 +37,13 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		endif()
 	endif()
 
-	add_library(boost_thread SHARED ${boost_thread_src} ${boost_thread_platform})
+	add_library(boost_thread STATIC ${boost_thread_src} ${boost_thread_platform})
+	target_link_libraries(boost_thread rt boost_system)
 
-    if (LINUX)
-        target_link_libraries(boost_thread rt)
-    endif()
+	if (LINUX)
+		add_definitions(-fPIC)
+		target_link_libraries(boost_thread rt boost_system)
+	endif()
 
 	if(LTO)
 		set_property(TARGET boost_thread
