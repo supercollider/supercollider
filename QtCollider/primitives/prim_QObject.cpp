@@ -36,7 +36,11 @@
 #include <QMetaProperty>
 #include <QMetaMethod>
 
-#include <alloca.h>
+#ifdef _WIN32
+# include "SC_Win32Utils.h"
+#else
+# include <alloca.h>
+#endif
 
 #define IS_OBJECT_NIL( a ) \
   IsNil( slotRawObject(a)->slots )

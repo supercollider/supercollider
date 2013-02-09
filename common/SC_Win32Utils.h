@@ -52,5 +52,11 @@ int win32_pipe(int handles[2]);
 int win32_piperead(int s, char *buf, int len);
 int win32_pipewrite(int s, char *buf, int len);
 
+// alloca
+#include <malloc.h>
+#ifndef alloca // MinGW has alloca defined in malloc.h, MSVC not
+# define alloca _alloca
+#endif
+
 #endif //_WIN32
 #endif // SC_WIN32UTILS_H
