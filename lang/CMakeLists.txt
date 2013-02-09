@@ -222,10 +222,10 @@ else()
 		)
 endif()
 
-
-set_property(TARGET libsclang
-	PROPERTY OUTPUT_NAME sclang)
-
+if (NOT WIN32)
+	set_property(TARGET libsclang
+		PROPERTY OUTPUT_NAME sclang)
+endif()
 
 ## external libraries
 if(READLINE_FOUND)
