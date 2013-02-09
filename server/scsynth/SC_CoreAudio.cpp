@@ -27,24 +27,18 @@
 #include "SC_Endian.h"
 #include "SC_Lib_Cintf.h"
 #include "SC_Lock.h"
+#include "SC_Time.hpp"
 #include <stdlib.h>
 #include <algorithm>
 
 #include <boost/thread/thread.hpp>
 
-#ifdef _WIN32
-
-#else
+#ifndef _WIN32
 #include <sys/time.h>
 #endif
 
 #ifdef SC_IPHONE
 #include "SC_VFP11.h"
-#endif
-
-
-#ifdef _WIN32
-#include "SC_Win32Utils.h"
 #endif
 
 #include "nova-tt/thread_priority.hpp"
