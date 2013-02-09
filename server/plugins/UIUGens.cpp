@@ -28,6 +28,7 @@
 #  include <time.h>
 #  include <X11/Intrinsic.h>
 # else
+#include "SC_Win32Utils.h"
 #include <windows.h>
 # endif
 #endif

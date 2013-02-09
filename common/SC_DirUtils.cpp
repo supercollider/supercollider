@@ -25,10 +25,10 @@
 #include <stdexcept>
 
 #ifdef _WIN32
+# include "SC_Win32Utils.h"
 # include <windows.h>
 # include <direct.h>
 # include <shlobj.h>
-# include "SC_Win32Utils.h"
 #else
 # include <unistd.h>
 # include <dirent.h>

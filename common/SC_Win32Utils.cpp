@@ -20,6 +20,8 @@
 
 #ifdef _WIN32
 
+#include "SC_Win32Utils.h"
+
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
@@ -28,7 +30,6 @@
 #include <windows.h>
 #include <shlobj.h>
 
-#include "SC_Win32Utils.h"
 
 void win32_ReplaceCharInString(char* string, int len, char src, char dst)
 {
