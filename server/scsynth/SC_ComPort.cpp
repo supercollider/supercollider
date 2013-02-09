@@ -388,7 +388,8 @@ void com_thread_func(SC_CmdPort *thread)
 
 void SC_CmdPort::Start()
 {
-	mThread = boost::move(boost::thread(boost::bind(com_thread_func, this)));
+	boost::thread thread(boost::bind(com_thread_func, this));
+	mThread = boost::move(thread);
 }
 
 #ifdef USE_RENDEZVOUS
@@ -442,7 +443,8 @@ SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 
 #ifdef USE_RENDEZVOUS
 	if(inWorld->mRendezvous){
-		mRendezvousThread = boost::move(boost::thread(rendezvous_thread_func, this));
+		boost::thread thread(rendezvous_thread_func, this);
+		mRendezvousThread = boost::move(thread);
 	}
 #endif
 }
@@ -577,7 +579,8 @@ SC_TcpInPort::SC_TcpInPort(struct World *inWorld, int inPortNum, int inMaxConnec
     Start();
 #ifdef USE_RENDEZVOUS
 	if(inWorld->mRendezvous) {
-		mRendezvousThread = boost::move(boost::thread(rendezvous_thread_func, this));
+		boost::thread thread(rendezvous_thread_func, this);
+		mRendezvousThread = boost::move(thread);
 	}
 #endif
 }

@@ -456,7 +456,8 @@ void SC_ScheduledEvent::Perform()
 bool SC_AudioDriver::Setup()
 {
 	mRunThreadFlag = true;
-	mThread = boost::move(boost::thread(boost::bind(&SC_AudioDriver::RunThread, this)));
+	boost::thread thread(boost::bind(&SC_AudioDriver::RunThread, this));
+	mThread = boost::move(thread);
 
 	int numSamples;
 	double sampleRate;
