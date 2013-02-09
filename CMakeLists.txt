@@ -125,7 +125,7 @@ if(WIN32)
     # correctly link the static Boost Thread library:
     add_definitions(-DBOOST_THREAD_USE_LIB)
 	#avoid unnecesary autolink
-	add_definitions(-DBOOST_DATE_TIME_NO_LIB)
+	add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
     add_definitions(-DBOOST_CHRONO_HEADER_ONLY)
 endif()
