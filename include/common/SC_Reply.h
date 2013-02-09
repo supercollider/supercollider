@@ -22,11 +22,8 @@
 #ifndef _SC_Reply_
 #define _SC_Reply_
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #if defined(_WIN32)
-# include <winsock2.h>
+# include "SC_Win32Utils.h"
 #else
 # include <netinet/in.h>
 #endif // _WIN32

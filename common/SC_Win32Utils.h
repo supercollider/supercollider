@@ -22,16 +22,33 @@
 #define _SC_WIN32UTILS_H
 
 #ifdef _WIN32
+
+#ifdef IN
+#define SC_IN IN
+#undef IN
+#endif
+
+#ifdef OUT
+#define SC_OUT OUT
+#undef OUT
+#endif
+
 #include <stdio.h>
 #include <winsock2.h>
+#undef IN
+#undef OUT
+#ifdef SC_IN
+#define IN SC_IN
+#endif
+
+#ifdef SC_OUT
+#define OUT SC_OUT
+#endif
 
 // wrappers for unix replacements
 #define gettimeofday win32_gettimeofday
 #define basename win32_basename
 #define dirname win32_dirname
-#ifndef __MINGW64_VERSION_MAJOR //defined in stdio.h mingw64 for 64 and 32 bits
-#define nanosleep sc_win32_nanosleep
-#endif
 #define pipe win32_pipe
 typedef int pid_t;
 
