@@ -125,7 +125,6 @@ static void resyncThreadFunc()
 		sleep(20);
 		syncOSCOffsetWithTimeOfDay();
 	}
-	return 0;
 }
 
 void initializeScheduler()
