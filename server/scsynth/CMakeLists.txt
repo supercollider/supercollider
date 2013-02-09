@@ -194,13 +194,6 @@ else()
 	target_link_libraries(libscsynth boost_thread)
 endif()
 
-
-# TODO: do we still require pthreads?
-if(PTHREADS_FOUND)
-	target_link_libraries(libscsynth ${PTHREADS_LIBRARIES})
-endif()
-
-
 if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm)
 endif()
@@ -229,7 +222,7 @@ endif()
 file(GLOB_RECURSE all_headers ../../*hpp)
 
 add_executable(scsynth scsynth_main.cpp ${all_headers})
-target_link_libraries(scsynth libscsynth ${PTHREADS_LIBRARY})
+target_link_libraries(scsynth libscsynth)
 
 if(LTO)
     set_property(TARGET scsynth libscsynth
