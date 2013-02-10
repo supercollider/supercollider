@@ -25,10 +25,10 @@
 #include <stdexcept>
 
 #ifdef _WIN32
+# include "SC_Win32Utils.h"
 # include <windows.h>
 # include <direct.h>
 # include <shlobj.h>
-# include "SC_Win32Utils.h"
 #else
 # include <unistd.h>
 # include <dirent.h>
@@ -286,7 +286,7 @@ bool sc_IsStandAlone()
 
 void sc_GetResourceDirectory(char* dest, int length)
 {
-	char buf[length];
+	char buf[PATH_MAX];
 	GetModuleFileName( NULL, buf, length );
 	char *path = win32_dirname(buf);
 	strcpy(dest, path);

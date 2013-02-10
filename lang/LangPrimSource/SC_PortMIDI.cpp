@@ -45,6 +45,7 @@ added prRestartMIDI
 #include "SC_InlineBinaryOp.h"
 #include "PyrSched.h"
 #include "GC.h"
+#include "SC_Lock.h"
 #include <map>
 
 // symbols to call back into lang
@@ -75,15 +76,7 @@ std::map<int,int> gMidiInputIndexToPmDevIndex;
 std::map<int,int> gMidiOutputIndexToPmDevIndex;
 std::map<int,int> gMidiPmDevIndexToInputIndex;
 std::map<int,int> gMidiPmDevIndexToOutputIndex;
-pthread_mutex_t gPmStreamMutex;
-
-struct ScopeMutexLock {
-	pthread_mutex_t* mutex_;
-	ScopeMutexLock(pthread_mutex_t* mutex) : mutex_(mutex) {
-		pthread_mutex_lock(mutex_); }
-	~ScopeMutexLock( ) {
-		pthread_mutex_unlock(mutex_); }
-};
+SC_Lock gPmStreamMutex;
 
 /* if INPUT_BUFFER_SIZE is 0, PortMidi uses a default value */
 #define PMSTREAM_INPUT_BUFFER_SIZE 0
@@ -105,7 +98,7 @@ inline void TPmErr(PmError err) {
 /* timer "interrupt" for processing midi data */
 static void PMProcessMidi(PtTimestamp timestamp, void *userData)
 {
-	ScopeMutexLock mulo(&gPmStreamMutex);
+	lock_guard<SC_Lock> mulo(&gPmStreamMutex);
 	PmError result;
 	PmEvent buffer; /* just one message at a time */
 
@@ -129,7 +122,7 @@ static void PMProcessMidi(PtTimestamp timestamp, void *userData)
 				// +---------------------------------------------+
 				// | Lock the interp. mutex and dispatch message |
 				// +---------------------------------------------+
-				pthread_mutex_lock (&gLangMutex); // it is needed  -jamesmcc
+				gLangMutex.lock();
 				if (compiledOK) 
 				{
 					VMGlobals *g = gMainVMGlobals;
@@ -200,7 +193,7 @@ static void PMProcessMidi(PtTimestamp timestamp, void *userData)
 					}
 					g->canCallOS = false;
 				} 
-				pthread_mutex_unlock (&gLangMutex); 
+				gLangMutex.unlock();
 			}
 		} // if (midi_in)
 	} // for loop until numMIDIInPorts
@@ -257,7 +250,7 @@ int initMIDI()
 */
 void midiCleanUp()
 {
-	ScopeMutexLock mulo(&gPmStreamMutex);
+	lock_guard<SC_Lock> mulo(&gPmStreamMutex);
 
 	if(gMIDIInitialized) {
 		for (int i=0; i<gNumMIDIOutPorts; ++i) {
@@ -390,7 +383,7 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 
 int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 {
-	ScopeMutexLock mulo(&gPmStreamMutex);
+	lock_guard<SC_Lock> mulo(&gPmStreamMutex);
 
 	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -426,7 +419,7 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 */
 int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 {
-	ScopeMutexLock mulo(&gPmStreamMutex); 
+	lock_guard<SC_Lock> mulo(&gPmStreamMutex);
 
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
@@ -518,7 +511,7 @@ return errNone;
 */
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 {
-	ScopeMutexLock mulo(&gPmStreamMutex);
+	lock_guard<SC_Lock> mulo(&gPmStreamMutex);
 	//port, uid, len, hiStatus, loStatus, a, b, latency
 	//PyrSlot *m = g->sp - 8;
 	PyrSlot *p = g->sp - 7;

@@ -35,6 +35,7 @@
 
 #include "SC_Prototypes.h"
 #include "SC_Unit.h"
+#include "SC_Lock.h"
 #include "clz.h"
 #include "SC_fftlib.h"
 #include "SC_Lock.h"
@@ -553,12 +554,12 @@ void send_trigger(Node * unit, int trigger_id, float value)
 
 void world_lock(World *world)
 {
-    world->mNRTLock->Lock();
+	reinterpret_cast<SC_Lock*>(world->mNRTLock)->lock();
 }
 
 void world_unlock(World *world)
 {
-    world->mNRTLock->Unlock();
+	reinterpret_cast<SC_Lock*>(world->mNRTLock)->unlock();
 }
 
 Node * get_node(World *world, int id)
@@ -799,7 +800,7 @@ sc_plugin_interface::~sc_plugin_interface(void)
     delete[] world.mSndBufsNonRealTimeMirror;
     delete[] world.mSndBufUpdates;
     delete[] world.mRGen;
-    delete world.mNRTLock;
+    delete reinterpret_cast<SC_Lock*>(world.mNRTLock);
 }
 
 namespace {

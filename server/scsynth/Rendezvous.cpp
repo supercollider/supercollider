@@ -88,9 +88,9 @@ void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 # include <avahi-common/malloc.h>
 # include <avahi-common/thread-watch.h>
 # include <avahi-common/timeval.h>
-# include <pthread.h>
 # include <stdlib.h>
 # include <stdio.h>
+# include <SC_Lock.h>
 
 struct AvahiEntry
 {
@@ -119,7 +119,7 @@ struct AvahiSession
 	AvahiClient*		mClient;
 	AvahiEntryGroup*	mGroup;
 	AvahiEntry*			mEntries;
-	pthread_mutex_t		mMutex;
+	SC_Lock				mMutex;
 	char*				mServiceName;
 };
 
@@ -157,7 +157,6 @@ AvahiSession::AvahiSession()
 {
 	int err;
 
-	pthread_mutex_init(&mMutex, 0);
 	mServiceName = avahi_strdup(kSCRendezvousServiceName);
 
 	mPoll = avahi_threaded_poll_new();
@@ -193,48 +192,47 @@ AvahiSession::~AvahiSession()
 		}
 	}
 	free(mServiceName);
-	pthread_mutex_destroy(&mMutex);
 }
 
 void AvahiSession::client_cb(AvahiClient* client, AvahiClientState state, void* data)
 {
-    AvahiSession* self = (AvahiSession*)data;
+	AvahiSession* self = (AvahiSession*)data;
 
-    switch (state) {
-        case AVAHI_CLIENT_S_RUNNING:
-			self->CreateServices(client);
-            break;
-        case AVAHI_CLIENT_S_COLLISION:
-			self->ResetServices();
-            break;
-        case AVAHI_CLIENT_FAILURE:
-            scprintf("Zeroconf: client failure: %s\n",
-					 avahi_strerror(avahi_client_errno(self->mClient)));
-            break;
-        case AVAHI_CLIENT_CONNECTING:
-        case AVAHI_CLIENT_S_REGISTERING:
-            break;
-    }
+	switch (state) {
+	case AVAHI_CLIENT_S_RUNNING:
+		self->CreateServices(client);
+		break;
+	case AVAHI_CLIENT_S_COLLISION:
+		self->ResetServices();
+		break;
+	case AVAHI_CLIENT_FAILURE:
+		scprintf("Zeroconf: client failure: %s\n",
+				 avahi_strerror(avahi_client_errno(self->mClient)));
+		break;
+	case AVAHI_CLIENT_CONNECTING:
+	case AVAHI_CLIENT_S_REGISTERING:
+		break;
+	}
 }
 
 void AvahiSession::group_cb(AVAHI_GCC_UNUSED AvahiEntryGroup*, AvahiEntryGroupState state, void* data)
 {
 	AvahiSession* self = (AvahiSession*)data;
 
-    switch (state) {
-        case AVAHI_ENTRY_GROUP_ESTABLISHED:
-            scprintf("Zeroconf: registered service '%s'\n", self->mServiceName);
-            break;
-        case AVAHI_ENTRY_GROUP_COLLISION: {
-			self->RenameService();
-            self->CreateServices();
-            break;
-        }
-        case AVAHI_ENTRY_GROUP_FAILURE:
-        case AVAHI_ENTRY_GROUP_UNCOMMITED:
-        case AVAHI_ENTRY_GROUP_REGISTERING:
-            break;
-    }
+	switch (state) {
+	case AVAHI_ENTRY_GROUP_ESTABLISHED:
+		scprintf("Zeroconf: registered service '%s'\n", self->mServiceName);
+		break;
+	case AVAHI_ENTRY_GROUP_COLLISION: {
+		self->RenameService();
+		self->CreateServices();
+		break;
+	}
+	case AVAHI_ENTRY_GROUP_FAILURE:
+	case AVAHI_ENTRY_GROUP_UNCOMMITED:
+	case AVAHI_ENTRY_GROUP_REGISTERING:
+		break;
+	}
 }
 
 void AvahiSession::modify_cb(AVAHI_GCC_UNUSED AvahiTimeout* e, void* data)
@@ -253,10 +251,10 @@ void AvahiSession::PublishPort(SCRendezvousProtocol proto, short port)
 	entry->mPort = port;
 	entry->mRegistered = false;
 
-	pthread_mutex_lock(&mMutex);
+	mMutex.lock();
 	entry->mNext = mEntries;
 	mEntries = entry;
-	pthread_mutex_unlock(&mMutex);
+	mMutex.unlock();
 
 	avahi_threaded_poll_lock(mPoll);
 	struct timeval tv;
@@ -275,15 +273,15 @@ void AvahiSession::CreateServices(AvahiClient* client)
 	if (mGroup) {
 		avahi_entry_group_reset(mGroup);
 	} else {
-        mGroup = avahi_entry_group_new(client, group_cb, this);
+		mGroup = avahi_entry_group_new(client, group_cb, this);
 		if (!mGroup) {
-            scprintf("Zeroconf: failed to create entry group: %s\n",
+			scprintf("Zeroconf: failed to create entry group: %s\n",
 					 avahi_strerror(avahi_client_errno(client)));
 			return;
-        }
-    }
+		}
+	}
 
-	pthread_mutex_lock(&mMutex);
+	mMutex.lock();
 	AvahiEntry* entry = mEntries;
 	while (entry) {
 		const char* type = SCRendezvousProtocolString(entry->mProto);
@@ -308,7 +306,7 @@ void AvahiSession::CreateServices(AvahiClient* client)
 		}
 		entry = entry->mNext;
 	}
-	pthread_mutex_unlock(&mMutex);
+	mMutex.unlock();
 
 	if (!avahi_entry_group_is_empty(mGroup)) {
 		err = avahi_entry_group_commit(mGroup);
@@ -340,7 +338,7 @@ void PublishPortToRendezvous(SCRendezvousProtocol proto, short port)
 #elif HAVE_HOWL
 # include <howl.h>
 # include <sys/poll.h>
-# include <pthread.h>
+# include <SC_Lock.h>
 
 struct HowlSession
 {
@@ -351,7 +349,7 @@ struct HowlSession
 	void PublishPort(sw_discovery session, SCRendezvousProtocol protocol, short portNum);
 
 	sw_discovery		mSession;
-	pthread_mutex_t		mMutex;
+	SC_Lock				mMutex;
 };
 
 struct HowlSessionInstance
@@ -381,22 +379,19 @@ static HowlSessionInstance gHowlSession;
 
 HowlSession::HowlSession()
 	: mSession(0)
-{
-	pthread_mutex_init(&mMutex, 0);
-}
+{}
 
 HowlSession::~HowlSession()
 {
 	if (mSession) sw_discovery_fina(mSession);
-	pthread_mutex_destroy(&mMutex);
 }
 
 void HowlSession::PublishPort(SCRendezvousProtocol protocol, short portNum)
 {
-	pthread_mutex_lock(&mMutex);
+	mMutex.lock();
 	if (!mSession) sw_discovery_init(&mSession);
 	if (mSession) PublishPort(mSession, protocol, portNum);
-	pthread_mutex_unlock(&mMutex);
+	mMutex.unlock();
 }
 
 sw_result

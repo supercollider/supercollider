@@ -73,7 +73,7 @@ extern pthread_mutex_t gLangMutex;
 {
     [gUserPanels removeObject: self];
 
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
     if (scobject) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
@@ -81,7 +81,7 @@ extern pthread_mutex_t gLangMutex;
         runInterpreter(g, s_closed, 1);
         g->canCallOS = false;
     }
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 
 - (void)setSCObject: (struct PyrObject*)inObject { scobject = inObject; }
@@ -114,7 +114,7 @@ void post(const char *fmt, ...);
         cstring = (char*)[[hitThing stringValue] cStringUsingEncoding:[NSString defaultCStringEncoding]];
     }
     
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
     if (scobject) {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
@@ -130,7 +130,7 @@ void post(const char *fmt, ...);
         runInterpreter(g, s_doaction, 4);
         g->canCallOS = false;
     }
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 
 

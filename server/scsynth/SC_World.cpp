@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include "SC_Prototypes.h"
 #include "SC_DirUtils.h"
+#include "SC_Lock.h"
 #include "SC_Lib_Cintf.h"
 #include "../../common/SC_SndFileHelpers.hpp"
 #include "../../common/Samp.hpp"
@@ -303,7 +304,7 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 		world->hw = (HiddenWorld*)zalloc(1, sizeof(HiddenWorld));
 
 		world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
-		world->hw->mQuitProgram = new SC_Semaphore(0);
+		world->hw->mQuitProgram = new nova::semaphore(0);
 		world->hw->mTerminating = false;
 
 		HiddenWorld *hw = world->hw;
@@ -442,7 +443,7 @@ SC_DLLEXPORT_C int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, 
 	if (!onlyIfChanged || didChange)
 	{
 
-		world->mNRTLock->Lock();
+		reinterpret_cast<SC_Lock*>(world->mNRTLock)->lock();
 
 		SndBuf *buf = world->mSndBufsNonRealTimeMirror + index;
 
@@ -479,7 +480,7 @@ SC_DLLEXPORT_C int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, 
 
 		updates->reads = updates->writes;
 
-		world->mNRTLock->Unlock();
+		reinterpret_cast<SC_Lock*>(world->mNRTLock)->unlock();
 	}
 
 	if (outDidChange) *outDidChange = didChange;
@@ -709,7 +710,7 @@ Bail:
 SC_DLLEXPORT_C void World_WaitForQuit(struct World *inWorld)
 {
 	try {
-		inWorld->hw->mQuitProgram->Acquire();
+		inWorld->hw->mQuitProgram->wait();
 		World_Cleanup(inWorld);
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_WaitForQuit: %s\n", exc.what());
@@ -958,14 +959,14 @@ SC_DLLEXPORT_C void World_Cleanup(World *world)
 
 	if (world->mTopGroup) Group_DeleteAll(world->mTopGroup);
 
-	world->mDriverLock->Lock(); // never unlock..
+	reinterpret_cast<SC_Lock*>(world->mDriverLock)->lock(); // never unlock..
 	if (hw) {
 		sc_free(hw->mWireBufSpace);
 		delete hw->mAudioDriver;
 		hw->mAudioDriver = 0;
 	}
-	delete world->mNRTLock;
-	delete world->mDriverLock;
+	delete reinterpret_cast<SC_Lock*>(world->mNRTLock);
+	delete reinterpret_cast<SC_Lock*>(world->mDriverLock);
 	World_Free(world, world->mTopGroup);
 
 	for (uint32 i=0; i<world->mNumSndBufs; ++i) {
@@ -1012,12 +1013,12 @@ SC_DLLEXPORT_C void World_Cleanup(World *world)
 
 void World_NRTLock(World *world)
 {
-	world->mNRTLock->Lock();
+	reinterpret_cast<SC_Lock*>(world->mNRTLock)->lock();
 }
 
 void World_NRTUnlock(World *world)
 {
-	world->mNRTLock->Unlock();
+	reinterpret_cast<SC_Lock*>(world->mNRTLock)->unlock();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

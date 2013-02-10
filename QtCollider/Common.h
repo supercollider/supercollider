@@ -34,10 +34,7 @@
 #include <SCBase.h>
 #include <PyrSymbol.h>
 #include <PyrObject.h>
-
-#include <pthread.h>
-
-extern pthread_mutex_t gLangMutex;
+#include <PyrSched.h>
 
 Q_DECLARE_METATYPE( PyrObject * );
 Q_DECLARE_METATYPE( QVector<double> );
@@ -69,13 +66,13 @@ namespace QtCollider {
   inline void lockLang()
   {
     qcDebugMsg(2,"locking lang!");
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
     qcDebugMsg(2,"locked");
   }
 
   inline void unlockLang()
   {
-    pthread_mutex_unlock(&gLangMutex);
+    gLangMutex.unlock();
     qcDebugMsg(2,"unlocked");
   }
 

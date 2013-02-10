@@ -12,19 +12,18 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		aux_source_directory(boost/libs/thread/src/win32/ boost_thread_platform )
 		add_definitions(-DBOOST_THREAD_BUILD_LIB)
 	elseif(PTHREADS_FOUND)
+		include_directories(${PTHREADS_INCLUDE_DIR})
 		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
 	else()
 		message(SEND_ERROR "we need to implement boost_thread")
 	endif()
 
-	include_directories(${PTHREADS_INCLUDE_DIR})
+	aux_source_directory(boost/libs/system/src/ boost_system )
+	add_library(boost_system STATIC ${boost_system})
 
 	if (SUPERNOVA)
 		aux_source_directory(boost/libs/program_options/src/ boost_program_options )
 		add_library(boost_program_options STATIC ${boost_program_options})
-
-		aux_source_directory(boost/libs/system/src/ boost_system )
-		add_library(boost_system STATIC ${boost_system})
 
 		aux_source_directory(boost/libs/filesystem/src boost_filesystem_src)
 		add_library(boost_filesystem STATIC ${boost_filesystem_src})
@@ -39,6 +38,12 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 	endif()
 
 	add_library(boost_thread STATIC ${boost_thread_src} ${boost_thread_platform})
+	target_link_libraries(boost_thread boost_system)
+
+	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+		add_definitions(-fPIC)
+		target_link_libraries(boost_thread rt)
+	endif()
 
 	if(LTO)
 		set_property(TARGET boost_thread

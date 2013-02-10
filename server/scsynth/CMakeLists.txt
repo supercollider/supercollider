@@ -3,7 +3,6 @@ if (WIN32)
 	find_package(Portaudio)
 endif()
 
-
 # here we choose who provides us with the FFT lib
 if (APPLE)
 	add_definitions("-DSC_FFT_VDSP")
@@ -63,6 +62,10 @@ elseif(AUDIOAPI STREQUAL portaudio)
 endif()
 message(STATUS "Audio API: ${AUDIOAPI}")
 
+if (NOT Boost_FOUND)
+	file(GLOB boost_system_sources ../../external_libraries/boost/libs/system/src/*cpp)
+endif()
+
 set(scsynth_sources
 	SC_BufGen.cpp
 	SC_Carbon.cpp
@@ -89,7 +92,6 @@ set(scsynth_sources
 	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Errors.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_Sem.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
@@ -98,6 +100,7 @@ set(scsynth_sources
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 
 	${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src/tlsf.c
+	${boost_system_sources}
 )
 
 if(WIN32)
@@ -185,10 +188,11 @@ elseif(AUDIOAPI STREQUAL coreaudio)
 	target_link_libraries(libscsynth "-framework CoreAudio")
 endif()
 
-if(PTHREADS_FOUND)
-	target_link_libraries(libscsynth ${PTHREADS_LIBRARIES})
+if (Boost_FOUND)
+	target_link_libraries(libscsynth ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+else()
+	target_link_libraries(libscsynth boost_thread)
 endif()
-
 
 if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm)
@@ -218,7 +222,7 @@ endif()
 file(GLOB_RECURSE all_headers ../../*hpp)
 
 add_executable(scsynth scsynth_main.cpp ${all_headers})
-target_link_libraries(scsynth libscsynth ${PTHREADS_LIBRARY})
+target_link_libraries(scsynth libscsynth)
 
 if(LTO)
     set_property(TARGET scsynth libscsynth

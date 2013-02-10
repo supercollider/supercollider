@@ -27,7 +27,8 @@
 #include "OSC_Packet.h"
 #include "SC_SyncCondition.h"
 #include "PriorityQueue.h"
-#include "SC_Lock.h"
+
+#include <boost/thread/thread.hpp> // LATER: use std::thread
 
 #define SC_AUDIO_API_COREAUDIO	1
 #define SC_AUDIO_API_JACK		2
@@ -66,13 +67,6 @@
 #include <AudioToolbox/AUGraph.h>
 #endif
 
-
-const double kSecondsToOSCunits = 4294967296.; // pow(2,32)
-const double kMicrosToOSCunits = 4294.967296; // pow(2,32)/1e6
-const double kNanosToOSCunits  = 4.294967296; // pow(2,32)/1e9
-
-const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years */
-const double kOSCtoSecs = 2.328306436538696e-10;
 
 struct SC_ScheduledEvent
 {
@@ -136,7 +130,7 @@ protected:
 	EngineFifo mFromEngine, mToEngine;
 	EngineFifo mOscPacketsToEngine;
 	SC_SyncCondition mAudioSync;
-	pthread_t mThread;
+	boost::thread mThread;
 	bool mRunThreadFlag;
 	uint32 mSafetyOffset;
 	PriorityQueueT<SC_ScheduledEvent, 2048> mScheduler;
@@ -188,7 +182,7 @@ public:
 	void ClearSched() { mScheduler.Empty(); }
 
 	void RunNonRealTime(float *in, float *out, int numSamples, int64 oscTime);
-	void* RunThread();
+	void RunThread();
 
 	int SafetyOffset() const { return mSafetyOffset; }
 	int NumSamplesPerCallback() const { return mNumSamplesPerCallback; }

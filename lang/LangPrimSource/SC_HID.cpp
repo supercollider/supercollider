@@ -464,7 +464,7 @@ void PushQueueEvents_RawValue (){
 			CFRelease(value_ref);
 //#endif
 			VMGlobals *g = gMainVMGlobals;
-			pthread_mutex_lock (&gLangMutex);
+			gLangMutex.lock();
 			g->canCallOS = false; // cannot call the OS
 			++g->sp; SetObject(g->sp, s_hid->u.classobj); // Set the class HIDService
 			//set arguments:
@@ -475,7 +475,7 @@ void PushQueueEvents_RawValue (){
 			++g->sp;SetInt(g->sp, value);
 			runInterpreter(g, s_hidAction, 6);
 			g->canCallOS = false; // cannot call the OS
-			pthread_mutex_unlock (&gLangMutex);
+			gLangMutex.unlock();
 		}
 
 	/* FIXME: this does not seem to be working
@@ -484,13 +484,13 @@ void PushQueueEvents_RawValue (){
 		 post("HID: read Error\n");
 			int locID = pCurrentHIDDevice->locID;
 			VMGlobals *g = gMainVMGlobals;
-			pthread_mutex_lock (&gLangMutex);
+			gLangMutex.lock();
 			g->canCallOS = false; // cannot call the OS
 			++g->sp; SetObject(g->sp, s_hid->u.classobj); // Set the class HIDService
 			++g->sp;SetInt(g->sp, locID);
 			runInterpreter(g, s_readError, 2);
 			g->canCallOS = false; // cannot call the OS
-			pthread_mutex_unlock (&gLangMutex);
+			gLangMutex.unlock();
 		}
 		*/
 	pCurrentHIDDevice = HIDGetNextDevice(pCurrentHIDDevice);
@@ -543,7 +543,7 @@ void PushQueueEvents_CalibratedValue (){
 //#endif
 			//find element to calibrate
 			VMGlobals *g = gMainVMGlobals;
-			pthread_mutex_lock (&gLangMutex);
+			gLangMutex.lock();
 			g->canCallOS = false; // cannot call the OS
 			++g->sp; SetObject(g->sp, s_hid->u.classobj); // Set the class HIDService
 			//set arguments:
@@ -554,7 +554,7 @@ void PushQueueEvents_CalibratedValue (){
 			++g->sp;SetInt(g->sp, value);
 			runInterpreter(g, s_hidAction, 6);
 			g->canCallOS = false; // cannot call the OS
-			pthread_mutex_unlock (&gLangMutex);
+			gLangMutex.unlock();
 			}
 		}
 	/* FIXME: this does not seem to be working!
@@ -563,13 +563,13 @@ void PushQueueEvents_CalibratedValue (){
 		 post("HID: read Error\n");
 			int locID = pCurrentHIDDevice->locID;
 			VMGlobals *g = gMainVMGlobals;
-			pthread_mutex_lock (&gLangMutex);
+			gLangMutex.lock();
 			g->canCallOS = false; // cannot call the OS
 			++g->sp; SetObject(g->sp, s_hid->u.classobj); // Set the class HIDService
 			++g->sp;SetInt(g->sp, locID);
 			runInterpreter(g, s_readError, 2);
 			g->canCallOS = false; // cannot call the OS
-			pthread_mutex_unlock (&gLangMutex);
+			gLangMutex.unlock();
 		}*/
 	pCurrentHIDDevice = HIDGetNextDevice(pCurrentHIDDevice);
 	}

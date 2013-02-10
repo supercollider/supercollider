@@ -22,49 +22,38 @@
 #ifndef _SC_SyncCondition_
 #define _SC_SyncCondition_
 
-#include <pthread.h>
+#include "SC_Lock.h"
 
 class SC_SyncCondition
 {
 public:
 	SC_SyncCondition()
 		: read(0), write(0)
-	{
-		// the mutex is only for pthread_cond_wait, which requires it.
-		// since there is only supposed to be one signaller and one waiter
-		// there is nothing to mutually exclude.
-		pthread_mutex_init (&mutex, NULL);
-		pthread_cond_init (&available, NULL);
-	}
+	{}
 
 	~SC_SyncCondition()
-	{
-		pthread_mutex_destroy (&mutex);
-		pthread_cond_destroy (&available);
-	}
+	{}
 
 	void WaitEach()
 	{
 		// waits if it has caught up.
 		// not very friendly, may be trying in vain to keep up.
-		pthread_mutex_lock (&mutex);
+		unique_lock<SC_Lock> lock(mutex);
 		while (read == write)
-			pthread_cond_wait (&available, &mutex);
+			available.wait(lock);
 		++read;
-		pthread_mutex_unlock (&mutex);
 	}
 
 	void WaitOnce()
 	{
 		// waits if not signaled since last time.
 		// if only a little late then can still go.
-		int writeSnapshot;
-		pthread_mutex_lock (&mutex);
-		writeSnapshot = write;
+
+		unique_lock<SC_Lock> lock(mutex);
+		int writeSnapshot  = write;
 		while (read == writeSnapshot)
-			pthread_cond_wait (&available, &mutex);
+			available.wait(lock);
 		read = writeSnapshot;
-		pthread_mutex_unlock (&mutex);
 	}
 
 	void WaitNext()
@@ -72,24 +61,25 @@ public:
 		// will wait for the next signal after the read = write statement
 		// this is the friendliest to other tasks, because if it is
 		// late upon entry, then it has to lose a turn.
-		pthread_mutex_lock (&mutex);
+		unique_lock<SC_Lock> lock(mutex);
 		read = write;
 		while (read == write)
-			pthread_cond_wait (&available, &mutex);
-		pthread_mutex_unlock (&mutex);
+			available.wait(lock);
 	}
 
 	void Signal()
 	{
 		++write;
-		pthread_cond_signal (&available);
+		available.notify_one();
 	}
 
 private:
-	pthread_cond_t available;
-	pthread_mutex_t mutex;
+	// the mutex is only for pthread_cond_wait, which requires it.
+	// since there is only supposed to be one signaller and one waiter
+	// there is nothing to mutually exclude.
+	condition_variable_any available;
+	SC_Lock mutex;
 	int read, write;
 };
 
 #endif
-

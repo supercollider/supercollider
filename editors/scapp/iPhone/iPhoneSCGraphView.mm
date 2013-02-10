@@ -503,7 +503,7 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, NSString* labe
 	[[iSCLangController sharedInstance] removeDeferredOperationsFor: [self window]];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
     if (mWindowObj) {
         SetPtr(mWindowObj->slots + 0, self);
         VMGlobals *g = gMainVMGlobals;
@@ -513,7 +513,7 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, NSString* labe
         g->canCallOS = false;
         mWindowObj = 0;
     }
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
     
     delete mTopView;
 	mTopView = 0;
@@ -563,7 +563,7 @@ const int circDiam = 20;
 			mTopView->drawIfNecessary(screct);
 		} 
 	   }
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
     if (mWindowObj && NotNil(mWindowObj->slots+6)) {
         CGRect cgrect = *(CGRect*)&drawBounds;
         CGContextRef cgc = (CGContextRef)UIGraphicsGetCurrentContext();
@@ -578,7 +578,7 @@ const int circDiam = 20;
 
         CGContextRestoreGState(cgc);
     }
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 
 /*

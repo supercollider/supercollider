@@ -22,17 +22,31 @@
 #ifndef _SC_Lock_
 #define _SC_Lock_
 
-#include <pthread.h>
+#if __cplusplus < 201103L
+#include <boost/chrono.hpp>
+#include <boost/thread/condition_variable.hpp>
+#include <boost/thread/mutex.hpp>
 
-class SC_Lock
-{
-public:
-	SC_Lock() { pthread_mutex_init (&mutex, NULL); }
-	~SC_Lock() { pthread_mutex_destroy (&mutex); }
-	void Lock() { pthread_mutex_lock (&mutex); }
-	void Unlock() { pthread_mutex_unlock (&mutex); }
-private:
-	pthread_mutex_t mutex;
-};
+typedef boost::mutex SC_Lock;
+typedef boost::timed_mutex timed_mutex;
+using boost::lock_guard;
+using boost::unique_lock;
+using boost::cv_status;
+typedef boost::condition_variable_any condition_variable_any;
+namespace mutex_chrono = boost::chrono;
+
+#else
+#include <chrono>
+#include <condition_variable>
+#include <mutex>
+
+typedef std::mutex SC_Lock;
+typedef std::timed_mutex timed_mutex;
+using std::lock_guard;
+using std::unique_lock;
+using std::cv_status;
+typedef std::condition_variable_any condition_variable_any;
+namespace mutex_chrono = std::chrono;
+#endif
 
 #endif

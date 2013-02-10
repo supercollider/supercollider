@@ -28,7 +28,9 @@
 
 #include "SC_LanguageClient.h"
 #include "SC_StringBuffer.h"
-#include <pthread.h>
+#include "SC_Lock.h"
+
+#include <boost/thread.hpp>
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
@@ -96,8 +98,8 @@ protected:
 	void interpretCmdLine(const char* cmdLine, bool silent);
 	void interpretCmdLine(const char *buf, size_t size, bool silent);
 
-	void lockInput() { pthread_mutex_lock(&mInputMutex); }
-	void unlockInput() { pthread_mutex_unlock(&mInputMutex); }
+	void lockInput() { mInputMutex.lock(); }
+	void unlockInput() { mInputMutex.unlock(); }
 
 	// --------------------------------------------------------------
 
@@ -144,16 +146,16 @@ private:
 	void cleanupInput();
 
 	// helpers
-	void lockSignal() { pthread_mutex_lock(&mSignalMutex); }
-	void unlockSignal() { pthread_mutex_unlock(&mSignalMutex); }
+	void lockSignal() { mSignalMutex.lock(); }
+	void unlockSignal() { mSignalMutex.unlock(); }
 
 	bool				mShouldBeRunning;
 	int					mReturnCode;
 	Options				mOptions;
 
 	// signals to main thread
-	pthread_mutex_t mSignalMutex;
-	pthread_cond_t mCond;
+	SC_Lock mSignalMutex;
+	condition_variable_any mCond;
 	int mSignals;
 
 	// command input
@@ -165,9 +167,9 @@ private:
 #else
 	void * mQuitInputEvent;
 #endif
-	pthread_t mInputThread;
-	pthread_mutex_t mInputMutex;
-	pthread_cond_t mInputCond;
+	boost::thread mInputThread;
+	SC_Lock mInputMutex;
+	condition_variable_any mInputCond;
 };
 
 #endif // SC_TERMINALCLIENT_H_INCLUDED
