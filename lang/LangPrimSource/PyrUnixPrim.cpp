@@ -38,7 +38,6 @@ Primitives for Unix.
 #include "sc_popen.h"
 #include "SCBase.h"
 
-#define BOOST_CHRONO_HEADER_ONLY
 #include <boost/chrono.hpp>
 
 #include <boost/thread.hpp> // LATER: move to std::thread
