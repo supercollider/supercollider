@@ -1,17 +1,3 @@
-if (FFT_GREEN)
-    add_definitions("-DSC_FFT_GREEN")
-elseif (APPLE)
-    add_definitions("-DSC_FFT_VDSP")
-else()
-    find_package(FFTW3f 3.3)
-    if (FFTW3F_FOUND)
-        add_definitions("-DSC_FFT_FFTW")
-        include_directories (${FFTW3F_INCLUDE_DIR})
-    else()
-        message(SEND_ERROR "Cannot find libfftw3f")
-    endif()
-endif()
-
 if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-4096")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
@@ -88,6 +74,11 @@ set(libsupernova_src
     server/server.cpp
     server/server_args.cpp
 )
+
+
+if (FFT_GREEN)
+	list(APPEND libsupernova_src ../../common/fftlib.c)
+endif()
 
 if(WIN32)
     list(APPEND libsupernova_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
