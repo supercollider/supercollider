@@ -39,7 +39,6 @@
 #include <string.h>
 # include <signal.h>
 
-#define BOOST_CHRONO_HEADER_ONLY
 #include <boost/chrono.hpp>
 
 #include <float.h>

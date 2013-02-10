@@ -23,7 +23,6 @@
 #define _SC_Lock_
 
 #if __cplusplus < 201103L
-#define BOOST_CHRONO_HEADER_ONLY
 #include <boost/chrono.hpp>
 #include <boost/thread/condition_variable.hpp>
 #include <boost/thread/mutex.hpp>

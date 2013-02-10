@@ -127,9 +127,9 @@ if(WIN32)
 	#avoid unnecesary autolink
 	add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
-    add_definitions(-DBOOST_CHRONO_HEADER_ONLY)
 endif()
 
+add_definitions(-DBOOST_CHRONO_HEADER_ONLY)
 
 #############################################
 # Options
