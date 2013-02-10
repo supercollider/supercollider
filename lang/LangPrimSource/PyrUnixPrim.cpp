@@ -25,7 +25,6 @@ Primitives for Unix.
 
 #include <cstring>
 #include <errno.h>
-#include <pthread.h>
 #include <signal.h>
 
 #include "PyrPrimitive.h"
@@ -39,8 +38,9 @@ Primitives for Unix.
 #include "sc_popen.h"
 #include "SCBase.h"
 
-#define BOOST_CHRONO_HEADER_ONLY
 #include <boost/chrono.hpp>
+
+#include <boost/thread.hpp> // LATER: move to std::thread
 
 #ifdef SC_WIN32
 #include "SC_Win32Utils.h"
@@ -112,10 +112,8 @@ struct sc_process {
 	bool postOutput;
 };
 
-void* string_popen_thread_func(void *data);
-void* string_popen_thread_func(void *data)
+static void string_popen_thread_func(struct sc_process *process)
 {
-	struct sc_process *process = (struct sc_process *)data;
 	FILE *stream = process->stream;
 	pid_t pid = process->pid;
 	char buf[1024];
@@ -135,7 +133,7 @@ void* string_popen_thread_func(void *data)
 
 	free(process);
 
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	if(compiledOK) {
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
@@ -145,9 +143,7 @@ void* string_popen_thread_func(void *data)
 		runInterpreter(g, s_unixCmdAction, 3);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
-
-	return 0;
+	gLangMutex.unlock();
 }
 
 int prString_POpen(struct VMGlobals *g, int numArgsPushed);
@@ -185,9 +181,8 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	pthread_t thread;
-	pthread_create(&thread, NULL, string_popen_thread_func, (void*)process);
-	pthread_detach(thread);
+	boost::thread thread(boost::bind(string_popen_thread_func, process));
+	thread.detach();
 
 	SetInt(a, process->pid);
 	return errNone;

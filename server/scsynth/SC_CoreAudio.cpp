@@ -19,7 +19,6 @@
 */
 
 #include "SC_CoreAudio.h"
-#include "SC_Sem.h"
 #include <stdarg.h>
 #include "SC_SequencedCommand.h"
 #include "SC_Prototypes.h"
@@ -27,13 +26,14 @@
 #include "SC_WorldOptions.h"
 #include "SC_Endian.h"
 #include "SC_Lib_Cintf.h"
+#include "SC_Lock.h"
+#include "SC_Time.hpp"
 #include <stdlib.h>
-#include <pthread.h>
 #include <algorithm>
 
-#ifdef _WIN32
+#include <boost/thread/thread.hpp>
 
-#else
+#ifndef _WIN32
 #include <sys/time.h>
 #endif
 
@@ -41,16 +41,12 @@
 #include "SC_VFP11.h"
 #endif
 
+#include "nova-tt/thread_priority.hpp"
 
-#ifdef _WIN32
-#include "SC_Win32Utils.h"
-#endif
 
 int64 gStartupOSCTime = -1;
 
 void sc_SetDenormalFlags();
-
-void set_real_time_priority(pthread_t thread);
 
 double gSampleRate, gSampleDur;
 
@@ -115,23 +111,28 @@ static void syncOSCOffsetWithTimeOfDay()
 	//scprintf("gOSCoffset %016llX\n", gOSCoffset);
 }
 
-void* resyncThreadFunc(void* arg);
-void* resyncThreadFunc(void* /*arg*/)
+static void resyncThreadFunc()
 {
+#ifdef NOVA_TT_PRIORITY_RT
+	std::pair<int, int> priorities = nova::thread_priority_interval_rt();
+	nova::thread_set_priority_rt((priorities.first + priorities.second)/2);
+#else
+	std::pair<int, int> priorities = nova::thread_priority_interval();
+	nova::thread_set_priority(priorities.second);
+#endif
+
 	while (true) {
 		sleep(20);
 		syncOSCOffsetWithTimeOfDay();
 	}
-	return 0;
 }
 
 void initializeScheduler()
 {
 	syncOSCOffsetWithTimeOfDay();
 
-	pthread_t resyncThread;
-	pthread_create (&resyncThread, NULL, resyncThreadFunc, (void*)0);
-	set_real_time_priority(resyncThread);
+	boost::thread resyncThread(resyncThreadFunc);
+	resyncThread.detach();
 }
 #endif // SC_AUDIO_API_COREAUDIO
 
@@ -204,17 +205,17 @@ bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 	//scprintf("ProcessOSCPacket %d, '%s'\n", inPacket->mSize, inPacket->mData);
 	if (!inPacket) return false;
 	bool result;
-	inWorld->mDriverLock->Lock();
+	static_cast<SC_Lock*>(inWorld->mDriverLock)->lock();
 		SC_AudioDriver *driver = AudioDriver(inWorld);
 		if (!driver) {
-			inWorld->mDriverLock->Unlock();
+			static_cast<SC_Lock*>(inWorld->mDriverLock)->unlock();
 			return false;
 		}
 		inPacket->mIsBundle = gIsBundle.checkIsBundle((int32*)inPacket->mData);
 		FifoMsg fifoMsg;
 		fifoMsg.Set(inWorld, Perform_ToEngine_Msg, FreeOSCPacket, (void*)inPacket);
 		result = driver->SendOscPacketMsgToEngine(fifoMsg);
-	inWorld->mDriverLock->Unlock();
+	static_cast<SC_Lock*>(inWorld->mDriverLock)->unlock();
 	return result;
 }
 
@@ -371,19 +372,19 @@ SC_AudioDriver::~SC_AudioDriver()
 {
     mRunThreadFlag = false;
 	mAudioSync.Signal();
-	pthread_join(mThread, 0);
+	mThread.join();
 }
 
-void* audio_driver_thread_func(void* arg);
-void* audio_driver_thread_func(void* arg)
+void SC_AudioDriver::RunThread()
 {
-	SC_AudioDriver *ca = (SC_AudioDriver*)arg;
-	void* result = ca->RunThread();
-	return result;
-}
+#ifdef NOVA_TT_PRIORITY_RT
+	std::pair<int, int> priorities = nova::thread_priority_interval_rt();
+	nova::thread_set_priority_rt((priorities.first + priorities.second)/2);
+#else
+	std::pair<int, int> priorities = nova::thread_priority_interval();
+	nova::thread_set_priority(priorities.second);
+#endif
 
-void* SC_AudioDriver::RunThread()
-{
 	TriggersFifo *trigfifo = &mWorld->hw->mTriggers;
 	NodeReplyFifo *nodereplyfifo = &mWorld->hw->mNodeMsgs;
 	NodeEndsFifo *nodeendfifo = &mWorld->hw->mNodeEnds;
@@ -393,7 +394,7 @@ void* SC_AudioDriver::RunThread()
 		// wait for sync
 		mAudioSync.WaitNext();
 
-		mWorld->mNRTLock->Lock();
+		reinterpret_cast<SC_Lock*>(mWorld->mNRTLock)->lock();
 
 		// send /tr messages
 		trigfifo->Perform();
@@ -410,9 +411,8 @@ void* SC_AudioDriver::RunThread()
 		// perform messages
 		mFromEngine.Perform();
 
-		mWorld->mNRTLock->Unlock();
+		reinterpret_cast<SC_Lock*>(mWorld->mNRTLock)->unlock();
 	}
-	return 0;
 }
 
 bool SC_AudioDriver::SendMsgFromEngine(FifoMsg& inMsg)
@@ -455,8 +455,8 @@ void SC_ScheduledEvent::Perform()
 bool SC_AudioDriver::Setup()
 {
 	mRunThreadFlag = true;
-	pthread_create (&mThread, NULL, audio_driver_thread_func, (void*)this);
-	set_real_time_priority(mThread);
+	boost::thread thread(boost::bind(&SC_AudioDriver::RunThread, this));
+	mThread = boost::move(thread);
 
 	int numSamples;
 	double sampleRate;

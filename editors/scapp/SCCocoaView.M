@@ -102,9 +102,9 @@ extern PyrSymbol *s_scview;
     NSRange newSelectedRange = NSMakeRange(selectedRange.location + selectedRange.length, 0);
     [txtView setSelectedRange: newSelectedRange];
 
-    pthread_mutex_lock(&gLangMutex);
+    gLangMutex.lock();
     runLibrary(getsym(methodName));
-    pthread_mutex_unlock(&gLangMutex);
+    gLangMutex.unlock();
 
 }
 
@@ -345,7 +345,7 @@ extern PyrSymbol *s_scview;
 //- (void)controlTextDidEndEditing:(NSNotification *)aNotification
 //{
 //	if(textReallyChanged){
-//		pthread_mutex_lock (&gLangMutex);
+//		gLangMutex.lock();
 //		PyrSymbol *method = getsym("doAction");
 //		PyrObject *mObj;
 //		if (mObj = mSCViewObject->GetSCObj()) {
@@ -355,7 +355,7 @@ extern PyrSymbol *s_scview;
 //			runInterpreter(g, method, 1);
 //			g->canCallOS = false;
 //		}
-//		pthread_mutex_unlock (&gLangMutex);
+//		gLangMutex.unlock();
 //		textReallyChanged = false;
 //	}
 //}
@@ -754,7 +754,7 @@ const int circDiam = 20;
 	} else if (aSelector == @selector(insertNewline:)){
 		[[self window] endEditingFor:self];
 		// fire the action
-		pthread_mutex_lock (&gLangMutex);
+		gLangMutex.lock();
 		PyrSymbol *method = getsym("doAction");
 		PyrObject *mObj;
 		if ((mObj = mSCViewObject->GetSCObj())) {
@@ -764,7 +764,7 @@ const int circDiam = 20;
 			runInterpreter(g, method, 1);
 			g->canCallOS = false;
 		}
-		pthread_mutex_unlock (&gLangMutex);
+		gLangMutex.unlock();
 		//NSLog(@"sv: %@", [self superview]);
 		[self setEditingInactive:YES];
 		[[self window] makeFirstResponder:[self superview]];
@@ -796,7 +796,7 @@ const int circDiam = 20;
 		NSString *nsstring = [pboard stringForType: NSStringPboardType];
 		if (!nsstring) return NSDragOperationNone;
 
-		pthread_mutex_lock (&gLangMutex);
+		gLangMutex.lock();
 		VMGlobals *g = gMainVMGlobals;
 		PyrString* pstrobj = newPyrString(g->gc, [nsstring UTF8String], 0, true);
 		int classVarIndex = slotRawInt(&getsym("SCView")->u.classobj->classVarIndex);
@@ -808,7 +808,7 @@ const int circDiam = 20;
 		//runInterpreter(g, method, 1);
 		//g->canCallOS = false;
 
-		pthread_mutex_unlock (&gLangMutex);
+		gLangMutex.unlock();
 
 		int fakeData;
 		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
@@ -817,7 +817,7 @@ const int circDiam = 20;
 	} else if ([[pboard types] containsObject: NSFilenamesPboardType]) {
 		NSArray *files = [pboard propertyListForType: NSFilenamesPboardType];
 		if (!files) return NSDragOperationNone;
-		pthread_mutex_lock (&gLangMutex);
+		gLangMutex.lock();
 		VMGlobals *g = gMainVMGlobals;
 		int size = [files count];
 		PyrObject* array = newPyrArray(g->gc, size, 0, true);
@@ -834,7 +834,7 @@ const int circDiam = 20;
 		SetObject(&g->classvars->slots[classVarIndex+0], array);
 		g->gc->GCWrite(g->classvars, array);
 
-		pthread_mutex_unlock (&gLangMutex);
+		gLangMutex.unlock();
 
 		int fakeData;
 		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
@@ -923,7 +923,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 - (void)doAction: (id)sender
 {
 	//	post("doAction \n");
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
@@ -934,7 +934,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 
 @end
@@ -1294,9 +1294,9 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	
 	[self setSelection];
 	
-    pthread_mutex_lock(&gLangMutex);
+    gLangMutex.lock();
     runLibrary(getsym(methodName));
-    pthread_mutex_unlock(&gLangMutex);
+    gLangMutex.unlock();
 	
 }
 
@@ -1850,7 +1850,7 @@ extern int ivxSCTextView_linkAction;
 bool SCCocoaTextView::linkAction(NSString *url)
 {
 	if(NotNil(mObj->slots + ivxSCTextView_linkAction)){
-		pthread_mutex_lock (&gLangMutex);
+		gLangMutex.lock();
 		PyrSymbol *method = getsym("doLinkAction");
 		if (mObj) {
 			VMGlobals *g = gMainVMGlobals;
@@ -1863,7 +1863,7 @@ bool SCCocoaTextView::linkAction(NSString *url)
 			runInterpreter(g, method, 3);
 			g->canCallOS = false;
 		}
-		pthread_mutex_unlock (&gLangMutex);
+		gLangMutex.unlock();
 		return true;
 	} else return false; // handle the link in the responder
 }
@@ -2666,7 +2666,7 @@ void SCWebView::setBounds(SCRect screct)
 
 void SCWebView::doOnLoadAction()
 {
-	pthread_mutex_lock (&gLangMutex);			
+	gLangMutex.lock();			
 	if(compiledOK){
 		PyrSymbol *method = getsym("didLoad");
 		VMGlobals *g = gMainVMGlobals;
@@ -2675,12 +2675,12 @@ void SCWebView::doOnLoadAction()
 		runInterpreter(g, method, 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 void SCWebView::doLoadFailedAction()
 {
-	pthread_mutex_lock (&gLangMutex);			
+	gLangMutex.lock();			
 	if(compiledOK){
 		PyrSymbol *method = getsym("didFail");
 		VMGlobals *g = gMainVMGlobals;
@@ -2689,12 +2689,12 @@ void SCWebView::doLoadFailedAction()
 		runInterpreter(g, method, 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 void SCWebView::doLinkClickedAction(PyrString* pstring)
 {
-	pthread_mutex_lock (&gLangMutex);			
+	gLangMutex.lock();			
 	if(compiledOK){
 		PyrSymbol *method = getsym("linkActivated");
 		VMGlobals *g = gMainVMGlobals;
@@ -2704,7 +2704,7 @@ void SCWebView::doLinkClickedAction(PyrString* pstring)
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
@@ -3253,7 +3253,7 @@ void SCTextField::beginDrag(SCPoint where)
 	PyrSlot stringSlot;
 	NSString *string = 0;
 	NSString *label = 0;
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	if (mObj) {
 		VMGlobals *g = gMainVMGlobals;
 		int classVarIndex = slotRawInt(&getsym("SCView")->u.classobj->classVarIndex);
@@ -3266,7 +3266,7 @@ void SCTextField::beginDrag(SCPoint where)
 		}
 		if(mDragLabel) label = mDragLabel;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 
 	//mTop->beginDragCallback(where, &slot, string, label);
 	NSPoint point = NSMakePoint(where.x, where.y);

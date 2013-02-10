@@ -227,7 +227,7 @@ void setCmdLine(const char *buf)
 {
 	int size = strlen(buf);
 	if (compiledOK) {
-		pthread_mutex_lock(&gLangMutex);
+		gLangMutex.lock();
 		if (compiledOK) {
 			VMGlobals *g = gMainVMGlobals;
 
@@ -237,7 +237,7 @@ void setCmdLine(const char *buf)
 			SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strobj);
 			g->gc->GCWrite(slotRawObject(&g->process->interpreter), strobj);
 		}
-		pthread_mutex_unlock(&gLangMutex);
+		gLangMutex.unlock();
 	}
 }
 
@@ -461,10 +461,10 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 	[string getCString:cmd maxLength:length+1 encoding:NSASCIIStringEncoding];
 	setCmdLine(cmd);
 
-	if (pthread_mutex_trylock(&gLangMutex) == 0)
+	if (gLangMutex.try_lock())
 	{
 		runLibrary(s_interpretPrintCmdLine);
-		pthread_mutex_unlock(&gLangMutex);
+		gLangMutex.unlock();
 	}
 	free(cmd);
 }
@@ -488,20 +488,20 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 
 - (void)doClockTask: (NSTimer*) timer
 {
-	if (pthread_mutex_trylock(&gLangMutex) == 0)
+	if (gLangMutex.try_lock())
 	{
 		if (compiledOK) runLibrary(s_tick);
-		pthread_mutex_unlock(&gLangMutex);
+		gLangMutex.unlock();
     }
     flushPostBuf();
 }
 
 - (void) triggerStop:(id)sender
 {
-	if (pthread_mutex_trylock(&gLangMutex) == 0)
+	if (gLangMutex.try_lock())
 	{
         runLibrary(s_stop);
-        pthread_mutex_unlock(&gLangMutex);
+        gLangMutex.unlock();
 	}
 }
 

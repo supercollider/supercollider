@@ -308,7 +308,7 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 		}
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 void* SC_AlsaMidiClient::inputThreadFunc(void* arg)

@@ -28,6 +28,7 @@
 #include <sndfile.h>
 
 #include <new>
+#include <boost/thread.hpp>
 
 static InterfaceTable *ft;
 
@@ -156,13 +157,12 @@ leave:
 MsgFifoNoFree<DiskIOMsg, 256> gDiskFifo;
 SC_SyncCondition gDiskFifoHasData;
 
-void* disk_io_thread_func(void* arg)
+void disk_io_thread_func()
 {
 	while (true) {
 		gDiskFifoHasData.WaitEach();
 		gDiskFifo.Perform();
 	}
-	return 0;
 }
 
 }
@@ -572,8 +572,7 @@ PluginLoad(DiskIO)
 	new(&gDiskFifoHasData)  SC_SyncCondition();
 #endif
 
-	pthread_t diskioThread;
-	pthread_create (&diskioThread, NULL, disk_io_thread_func, (void*)0);
+	boost::thread diskIoThread (disk_io_thread_func);
 
 	DefineSimpleUnit(DiskIn);
 	DefineSimpleUnit(DiskOut);

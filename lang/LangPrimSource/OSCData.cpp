@@ -42,7 +42,6 @@ typedef int socklen_t;
 # include <netdb.h>
 #endif
 
-#include <pthread.h>
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
 #include "SCBase.h"
@@ -50,6 +49,8 @@ typedef int socklen_t;
 #include "SC_WorldOptions.h"
 #include "SC_SndBuf.h"
 #include "SC_Endian.h"
+
+#include <boost/thread/thread.hpp> // LATER: use std::thread
 
 #ifndef SC_DARWIN
 # ifndef SC_WIN32
@@ -259,7 +260,7 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 {
     bool isBundle = IsBundle(inBuf);
 
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	if (compiledOK) {
 		PyrObject *replyObj = ConvertReplyAddress(inReplyAddr);
 		if (isBundle) {
@@ -268,7 +269,7 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 			PerformOSCMessage(inSize, inBuf, replyObj, gUDPport->RealPortNum());
 		}
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 
 }
 
@@ -365,7 +366,7 @@ void netAddrTcpClientNotifyFunc(void *clientData)
 {
 	extern bool compiledOK;
 
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		PyrObject* netAddrObj = (PyrObject*)clientData;
 		VMGlobals* g = gMainVMGlobals;
@@ -374,7 +375,7 @@ void netAddrTcpClientNotifyFunc(void *clientData)
 		runInterpreter(g, getsym("prConnectionClosed"), 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 
 int prNetAddr_Connect(VMGlobals *g, int numArgsPushed);
@@ -769,7 +770,7 @@ void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
     //post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
 	inPacket->mIsBundle = IsBundle(inPacket->mData);
 
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	if (compiledOK) {
 		PyrObject *replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
 		if (compiledOK) {
@@ -780,7 +781,7 @@ void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
 			}
 		}
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 
     FreeOSCPacket(inPacket);
 }
@@ -998,12 +999,10 @@ int getScopeBuf(uint32 index, SndBuf *buf, bool& didChange)
 	}
 	return errNone;
 }
-void* wait_for_quit(void* thing);
-void* wait_for_quit(void* thing)
+
+static void wait_for_quit(World* world)
 {
-	World *world = (World*)thing;
 	World_WaitForQuit(world);
-	return 0;
 }
 
 int prQuitInProcessServer(VMGlobals *g, int numArgsPushed);
@@ -1015,9 +1014,9 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 		World *world = gInternalSynthServer.mWorld;
 		gInternalSynthServer.mWorld = 0;
 
-        pthread_t thread;
-        pthread_create(&thread, NULL, wait_for_quit, (void*)world);
-		pthread_detach(thread);
+		boost::thread thread(boost::bind(wait_for_quit, world));
+
+		thread.detach();
 	}
 
 	return errNone;

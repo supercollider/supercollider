@@ -225,7 +225,7 @@ static void midiProcessPacket(MIDIPacket *pkt, size_t uid)
 {
 //jt
 	if(pkt) {
-	pthread_mutex_lock (&gLangMutex); //dont know if this is really needed/seems to be more stable..
+	gLangMutex.lock(); //dont know if this is really needed/seems to be more stable..
 		// it is needed  -jamesmcc
 	if (compiledOK) {
 			VMGlobals *g = gMainVMGlobals;
@@ -303,7 +303,7 @@ static void midiProcessPacket(MIDIPacket *pkt, size_t uid)
 		}
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 	}
 }
 

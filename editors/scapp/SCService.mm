@@ -50,9 +50,9 @@ extern pthread_mutex_t gLangMutex;
 
     [[SCVirtualMachine sharedInstance] setCmdLine: text length: [pboardString length]];
     
-    pthread_mutex_lock(&gLangMutex);
+    gLangMutex.lock();
     runLibrary(getsym("interpretPrintCmdLine"));
-    pthread_mutex_unlock(&gLangMutex);
+    gLangMutex.unlock();
 
 	return;
 }

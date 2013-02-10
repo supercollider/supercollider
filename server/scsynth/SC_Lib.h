@@ -23,7 +23,6 @@
 #define _SC_Lib_
 
 #include "SC_Errors.h"
-#include "SC_Lock.h"
 #include "SC_Types.h"
 #include "Hash.h"
 #include "HashTable.h"

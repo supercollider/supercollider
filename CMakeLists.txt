@@ -125,11 +125,11 @@ if(WIN32)
     # correctly link the static Boost Thread library:
     add_definitions(-DBOOST_THREAD_USE_LIB)
 	#avoid unnecesary autolink
-	add_definitions(-DBOOST_DATE_TIME_NO_LIB)
+	add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
-    add_definitions(-DBOOST_CHRONO_HEADER_ONLY)
 endif()
 
+add_definitions(-DBOOST_CHRONO_HEADER_ONLY)
 
 #############################################
 # Options
@@ -193,12 +193,14 @@ option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
 #############################################
 # some default libraries
 
-find_package(Pthreads)
+if (NOT WIN32)
+	find_package(Pthreads)
 
-if (NOT PTHREADS_FOUND)
-    message(SEND_ERROR "cannot find libpthreads")
+	if (NOT PTHREADS_FOUND)
+	    message(SEND_ERROR "cannot find libpthreads")
+	endif()
+	include_directories(${PTHREADS_INCLUDE_DIR})
 endif()
-include_directories(${PTHREADS_INCLUDE_DIR})
 
 if(MSVC OR MINGW)
     set(MATH_LIBRARY "")
