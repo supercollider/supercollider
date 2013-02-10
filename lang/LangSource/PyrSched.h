@@ -72,6 +72,8 @@ inline int lockLanguageOrQuit(bool shouldBeRunning)
 					gLangMutex.unlock();
 				return EINTR;
 			}
+			if (locked)
+				return 0;
 		}
 	}
 	return 0;
