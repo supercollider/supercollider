@@ -3,22 +3,6 @@ if (WIN32)
 	find_package(Portaudio)
 endif()
 
-# here we choose who provides us with the FFT lib
-if (APPLE)
-	add_definitions("-DSC_FFT_VDSP")
-else()
-    find_package(FFTW3f 3.3)
-
-	if (NOT FFTW3F_FOUND OR FFT_GREEN)
-		message("using green fft")
-		set(FFT_GREEN 1)
-		add_definitions("-DSC_FFT_GREEN")
-	else()
-		message("using fftw3f")
-		add_definitions("-DSC_FFT_FFTW")
-	endif()
-endif()
-
 if(NOVA_SIMD)
 	add_definitions(-DNOVA_SIMD)
 endif()
