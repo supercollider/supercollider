@@ -712,7 +712,7 @@ public:
 	double mBeats; // beats
 	double mBaseSeconds;
 	double mBaseBeats;
-	volatile bool mRun;
+	bool mRun;
 	boost::thread mThread;
 	condition_variable_any mCondition;
 	TempoClock *mPrev, *mNext;
