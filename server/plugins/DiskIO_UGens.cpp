@@ -21,7 +21,6 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "MsgFifo.h"
 #include "SC_SyncCondition.h"
 #include "SC_PlugIn.h"
 
@@ -29,6 +28,9 @@
 
 #include <new>
 #include <boost/thread.hpp>
+
+#include <boost/lockfree/queue.hpp>
+#include <boost/lockfree/spsc_queue.hpp>
 
 static InterfaceTable *ft;
 
@@ -97,8 +99,7 @@ enum {
 	kDiskCmd_ReadLoop,
 };
 
-namespace
-{
+namespace {
 
 struct DiskIOMsg
 {
@@ -154,16 +155,62 @@ leave:
 	NRTUnlock(mWorld);
 }
 
-MsgFifoNoFree<DiskIOMsg, 256> gDiskFifo;
-SC_SyncCondition gDiskFifoHasData;
-
-void disk_io_thread_func()
+struct DiskIOThread
 {
-	while (true) {
-		gDiskFifoHasData.WaitEach();
-		gDiskFifo.Perform();
+	SC_SyncCondition mDiskFifoHasData;
+
+#ifdef SUPERNOVA
+	boost::lockfree::queue<DiskIOMsg, boost::lockfree::capacity<256> > mDiskFifo;
+#else
+	boost::lockfree::spsc_queue<DiskIOMsg, boost::lockfree::capacity<256> > mDiskFifo;
+#endif
+
+	boost::atomic_bool mRunning;
+	boost::thread mThread;
+
+	DiskIOThread():
+		mRunning(false)
+	{}
+
+	~DiskIOThread()
+	{
+		if (mRunning) {
+			mRunning.store(false);
+			mThread.join();
+		}
 	}
-}
+
+	void launchThread()
+	{
+		mRunning.store(true);
+
+		boost::thread thread(boost::bind(&DiskIOThread::ioThreadFunc, this));
+		mThread = boost::move(thread);
+	}
+
+	bool Write(DiskIOMsg& data)
+	{
+		bool pushSucceeded = mDiskFifo.push(data);
+		if (pushSucceeded)
+			mDiskFifoHasData.Signal();
+		return pushSucceeded;
+	}
+
+	void ioThreadFunc()
+	{
+		while (mRunning.load()) {
+			mDiskFifoHasData.WaitEach();
+
+			DiskIOMsg msg;
+			bool popSucceeded = mDiskFifo.pop(msg);
+
+			if (popSucceeded)
+				msg.Perform();
+		}
+	}
+};
+
+DiskIOThread gDiskIO;
 
 }
 
@@ -244,8 +291,7 @@ sendMessage:
 			msg.mPos = bufFrames2 - unit->m_framepos;
 			msg.mFrames = bufFrames2;
 			msg.mChannels = bufChannels;
-			gDiskFifo.Write(msg);
-			gDiskFifoHasData.Signal();
+			gDiskIO.Write(msg);
 		} else {
 			SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int) fbufnum);
 			uint32 mPos = bufFrames2 - unit->m_framepos;
@@ -347,8 +393,7 @@ sendMessage:
 		msg.mFrames = bufFrames2;
 		msg.mChannels = bufChannels;
 		//printf("sendMessage %d  %d %d %d\n", msg.mBufNum, msg.mPos, msg.mFrames, msg.mChannels);
-		gDiskFifo.Write(msg);
-		gDiskFifoHasData.Signal();
+		gDiskIO.Write(msg);
 	}
 
 }
@@ -386,8 +431,7 @@ static void VDiskIn_request_buffer(VDiskIn * unit, float fbufnum, uint32 bufFram
 		msg.mPos = thisPos;
 		msg.mFrames = bufFrames2;
 		msg.mChannels = bufChannels;
-		gDiskFifo.Write(msg);
-		gDiskFifoHasData.Signal();
+		gDiskIO.Write(msg);
 
 		if((int)ZIN0(3)) {
 			//	float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
@@ -568,11 +612,10 @@ PluginLoad(DiskIO)
 	ft = inTable;
 
 #ifdef _WIN32
-	new(&gDiskFifo) MsgFifoNoFree<DiskIOMsg, 256>();
-	new(&gDiskFifoHasData)  SC_SyncCondition();
+	new(&gDiskIO) DiskIOThread();
 #endif
 
-	boost::thread diskIoThread (disk_io_thread_func);
+	gDiskIO.launchThread();
 
 	DefineSimpleUnit(DiskIn);
 	DefineSimpleUnit(DiskOut);
