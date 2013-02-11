@@ -672,10 +672,6 @@ QView : QObject {
 
   beginDrag { arg x, y;
     var obj, str;
-    if (currentDrag.notNil) {
-        "QView: attempt at drag-and-drop reentrance!".warn;
-        ^false;
-    };
     if( beginDragAction.notNil )
       { obj = beginDragAction.value( this, x, y ) }
       { obj = this.tryPerform( \defaultGetDrag, x, y ) };
