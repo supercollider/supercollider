@@ -40,6 +40,7 @@
 #include <QDesktopWidget>
 #include <QStyleFactory>
 #include <QWebSettings>
+#include <QCursor>
 
 namespace QtCollider {
 
@@ -264,6 +265,14 @@ QC_LANG_PRIMITIVE( Qt_IsMethodOverridden, 2, PyrSlot *r, PyrSlot *a, VMGlobals *
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( Qt_CursorPosition, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+    Slot::setPoint(r, QCursor::pos());
+    return errNone;
+}
+
 void defineMiscPrimitives()
 {
   LangPrimitiveDefiner definer;
@@ -282,6 +291,7 @@ void defineMiscPrimitives()
   definer.define<Qt_AvailableStyles>();
   definer.define<Qt_IsMethodOverridden>();
   definer.define<QWebView_ClearMemoryCaches>();
+  definer.define<Qt_CursorPosition>();
 }
 
 } // namespace QtCollider

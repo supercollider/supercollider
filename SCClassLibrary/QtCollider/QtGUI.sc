@@ -94,6 +94,8 @@ QtGUI {
 
   //////////////////////////////////////////////////////////////////////
 
+  *cursorPosition { _Qt_CursorPosition }
+
   *availableStyles {
     _Qt_AvailableStyles
     ^this.primitiveFailed;
