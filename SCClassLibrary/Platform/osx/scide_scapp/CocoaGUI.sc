@@ -91,6 +91,13 @@ CocoaGUI {
 
 	///////////////// extras /////////////////
 
+	*cursorPosition { ^this.prGetMouseCoords(Point.new) }
+
+	*prGetMouseCoords {|point|
+		_Mouse_getCoords
+		^this.primitiveFailed
+	}
+
 //	checkBox: SCCheckBox,
 //	tabbedPane: SCTabbedPane
 
