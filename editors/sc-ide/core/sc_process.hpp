@@ -106,6 +106,7 @@ private slots:
     void finalizeConnection();
     void onProcessStateChanged( QProcess::ProcessState state);
     void onReadyRead(void);
+    void updateToggleRunningAction();
 
 private:
     void onStart();
