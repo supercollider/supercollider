@@ -51,15 +51,6 @@ OSXPlatform : UnixPlatform
 		^string.findHelpFile;
 	}
 
-	getMouseCoords {
-		^this.prGetMouseCoords(Point.new);
-	}
-
-	prGetMouseCoords {|point|
-		_Mouse_getCoords
-		^this.primitiveFailed
-	}
-
 	// for now just write syntax colours. Could be other things.
 	writeClientCSS {
 		var theme, file, string;
