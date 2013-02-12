@@ -64,6 +64,7 @@ void ScServer::createActions(Settings::Manager * settings)
 
     mActions[Boot] = action =
         new QAction(QIcon::fromTheme("system-run"), tr("&Boot Server"), this);
+    action->setShortcut(tr("Ctrl+B", "Boot default server"));
     connect(action, SIGNAL(triggered()), this, SLOT(boot()));
     settings->addAction( action, "synth-server-boot", synthServerCategory);
 
@@ -74,7 +75,6 @@ void ScServer::createActions(Settings::Manager * settings)
 
     mActions[Reboot] = action =
         new QAction( QIcon::fromTheme("system-reboot"), tr("&Reboot Server"), this);
-    action->setShortcut(tr("Ctrl+Shift+B", "Reboot default server"));
     connect(action, SIGNAL(triggered()), this, SLOT(reboot()));
     settings->addAction( action, "synth-server-reboot", synthServerCategory);
 
