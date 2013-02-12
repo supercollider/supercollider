@@ -60,9 +60,20 @@ void ScServer::createActions(Settings::Manager * settings)
 
     mActions[ToggleRunning] = action = new QAction(tr("Boot or quit default server"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()));
-    settings->addAction( action, "synth-server-toggle-running", synthServerCategory);
+    //settings->addAction( action, "synth-server-toggle-running", synthServerCategory);
 
-    mActions[Reboot] = action = new QAction(tr("Reboot server"), this);
+    mActions[Boot] = action =
+        new QAction(QIcon::fromTheme("system-run"), tr("&Boot Server"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(boot()));
+    settings->addAction( action, "synth-server-boot", synthServerCategory);
+
+    mActions[Quit] = action =
+        new QAction(QIcon::fromTheme("system-shutdown"), tr("&Quit Server"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(quit()));
+    settings->addAction( action, "synth-server-quit", synthServerCategory);
+
+    mActions[Reboot] = action =
+        new QAction( QIcon::fromTheme("system-reboot"), tr("&Reboot Server"), this);
     action->setShortcut(tr("Ctrl+Shift+B", "Reboot default server"));
     connect(action, SIGNAL(triggered()), this, SLOT(reboot()));
     settings->addAction( action, "synth-server-reboot", synthServerCategory);
@@ -81,6 +92,19 @@ void ScServer::createActions(Settings::Manager * settings)
     action->setShortcut(tr("Ctrl+Shift+T", "Dump node tree with controls"));
     connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTreeWithControls()));
     settings->addAction( action, "synth-server-dump-nodes-with-controls", synthServerCategory);
+
+    connect( mActions[Boot], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
+    connect( mActions[Quit], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
+
+    updateToggleRunningAction();
+}
+
+void ScServer::updateToggleRunningAction()
+{
+    QAction *targetAction = isRunning() ? mActions[Quit] : mActions[Boot];
+    mActions[ToggleRunning]->setText( targetAction->text() );
+    mActions[ToggleRunning]->setIcon( targetAction->icon() );
+    mActions[ToggleRunning]->setShortcut( targetAction->shortcut() );
 }
 
 void ScServer::boot()
@@ -229,16 +253,12 @@ void ScServer::onRunningStateChanged( bool running, QString const & hostName, in
     if (running) {
         mServerAddress = QHostAddress(hostName);
         mPort = port;
-
-        mActions[ToggleRunning]->setText( tr("&Quit Server") );
-        mActions[ToggleRunning]->setStatusTip(tr("Quit sound synthesis server"));
     } else {
         mServerAddress.clear();
         mPort = 0;
-
-        mActions[ToggleRunning]->setText( tr("&Boot Server") );
-        mActions[ToggleRunning]->setStatusTip(tr("Boot sound synthesis server"));
     }
+
+    updateToggleRunningAction();
 }
 
 }
