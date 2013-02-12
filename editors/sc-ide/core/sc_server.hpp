@@ -38,6 +38,8 @@ class ScServer : public QObject
 public:
     enum ActionRole {
         ToggleRunning,
+        Boot,
+        Quit,
         Reboot,
         ShowMeters,
         DumpNodeTree,
@@ -69,6 +71,7 @@ signals:
 private slots:
     void onScLangStateChanged( QProcess::ProcessState );
     void onScLangReponse( const QString & selector, const QString & data );
+    void updateToggleRunningAction();
 
 protected:
     virtual void timerEvent(QTimerEvent * event);
