@@ -34,12 +34,13 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/unicode/
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}
-	${CMAKE_SOURCE_DIR}/external_libraries/boost-lockfree
 	${CMAKE_SOURCE_DIR}/external_libraries/boost
 	${CMAKE_SOURCE_DIR}/external_libraries/threadpool
 	${YAMLCPP_INCLUDE_DIR}
 
 	${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
+
+    ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
 	)
 
 find_package(Sndfile)
