@@ -269,7 +269,8 @@ QC_LANG_PRIMITIVE( Qt_CursorPosition, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
     if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
-    Slot::setPoint(r, QCursor::pos());
+    QtCollider::set(r, QCursor::pos());
+
     return errNone;
 }
 
