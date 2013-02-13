@@ -26,6 +26,7 @@
 #import "SCGeom.h"
 #import "SCVirtualMachine.h"
 #import "GC.h"
+#include "../../lang/LangSource/PyrSched.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,7 +46,6 @@ extern int allocSlotStrVal(PyrSlot *slot, char **str);
 extern int slotColorVal(PyrSlot *slot, SCColor *sccolor);
 extern int slotStrLen(PyrSlot* slot);
 
-extern pthread_mutex_t	gLangMutex; // in case
 PyrSymbol				*s_scimage;
 PyrSymbol				*s_scfilter;
 PyrSymbol				*s_scimagekernel;

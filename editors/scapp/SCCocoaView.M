@@ -46,8 +46,7 @@
 #import "MyDocument.h"
 #import "SCImage.h"
 
-
-extern pthread_mutex_t gLangMutex;
+#include "../../lang/LangSource/PyrSched.h"
 extern bool compiledOK;
 
 // SCImage support

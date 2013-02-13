@@ -24,7 +24,7 @@
 #include <pthread.h>
 #import "PyrSymbolTable.h"
 #import "PyrLexer.h"
-extern pthread_mutex_t gLangMutex;
+#include "../../lang/LangSource/PyrSched.h"
 
 @implementation SCNSWindow
 - (BOOL) canBecomeKeyWindow { if(mHasBorders) return YES; else return [super canBecomeKeyWindow]; }
