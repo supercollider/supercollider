@@ -176,6 +176,7 @@ struct DiskIOThread
 	{
 		if (mRunning) {
 			mRunning.store(false);
+			mDiskFifoHasData.Signal();
 			mThread.join();
 		}
 	}
