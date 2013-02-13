@@ -29,6 +29,7 @@
 #include "GC.h"
 #include "VMGlobals.h"
 #include <pthread.h>
+#include "../../lang/LangSource/PyrSched.h"
 
 #if (MAC_OS_X_VERSION_MIN_REQUIRED <= MAC_OS_X_VERSION_10_4)
 #define class_getName(a)	((a)->name)
@@ -37,7 +38,6 @@
 NSMutableArray *gUserPanels = nil;
 extern PyrSymbol *s_doaction;
 extern PyrSymbol *s_closed;
-extern pthread_mutex_t gLangMutex;
 
 @implementation UserPanel
 

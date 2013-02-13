@@ -36,6 +36,7 @@
 #include "VMGlobals.h"
 #include "UserPanel.h"
 #include "SC_DirUtils.h"   // for gIdeName
+#include "../../lang/LangSource/PyrSched.h"
 
 #include <pthread.h>
 
@@ -46,7 +47,6 @@
 ChangeCounter gUIChangeCounter;
 
 extern bool compiledOK;
-extern pthread_mutex_t gLangMutex;
 extern PyrSymbol *s_tick;
 
 PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, bool collect);

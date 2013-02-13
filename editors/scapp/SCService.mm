@@ -18,10 +18,10 @@
 
 #import <AppKit/NSPasteboard.h>
 #include <pthread.h>
+#include "../../lang/LangSource/PyrSched.h"
 
 
 extern bool compiledOK;
-extern pthread_mutex_t gLangMutex;
 
 @implementation SCService
 

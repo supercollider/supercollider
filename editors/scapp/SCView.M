@@ -34,6 +34,7 @@
 #include "SC_InlineBinaryOp.h"
 #include "SCGraphView.h"
 #import "SCVirtualMachine.h"
+#include "../../lang/LangSource/PyrSched.h"
 
 
 #include "SCView.h"
@@ -65,8 +66,6 @@ PyrSymbol* s_mouseDown;
 PyrSymbol* s_mouseUp;
 PyrSymbol* s_callDrawFunc;
 PyrSymbol* s_toggleEditMode;
-
-extern pthread_mutex_t gLangMutex;
 
 int stringDrawCenteredInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
 int stringDrawLeftInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);

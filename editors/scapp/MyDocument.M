@@ -44,11 +44,11 @@
 #include "PyrKernel.h"
 #include "GC.h"
 #include "VMGlobals.h"
+#include "../../lang/LangSource/PyrSched.h"
 
 bool firstWindow = true;
 bool needBlankWindow = true;
 extern NSTextView *gPostView;
-extern pthread_mutex_t gLangMutex;
 extern bool compiledOK;
 
 bool docCreatedFromLang = false; //if this is true addDocument is not called
