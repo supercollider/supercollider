@@ -133,3 +133,14 @@ Proutine : Prout {
 		this.deprecated(thisMethod);
 	}
 }
+
++ Platform {
+	getMouseCoords {
+		this.deprecated(thisMethod, GUI.findMethod(\cursorPosition));
+		^GUI.cursorPosition
+	}
+	*getMouseCoords {
+		this.deprecated(thisMethod, GUI.findMethod(\cursorPosition));
+		^GUI.cursorPosition
+	}
+}

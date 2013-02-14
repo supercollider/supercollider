@@ -71,9 +71,6 @@ Platform
 	clearMetadata { |path| ^this.subclassResponsibility }
 	*clearMetadata { |path| ^thisProcess.platform.clearMetadata(path) }
 
-	getMouseCoords { ^Platform.getMouseCoords }
-	*getMouseCoords { ^GUI.cursorPosition }
-
 	// startup/shutdown hooks
 	startup { }
 	shutdown { }
