@@ -2,9 +2,11 @@ title:: News in 3.6
 summary:: A summary of news in SC 3.6
 categories:: News
 
-SECTION:: ScIDE
+SECTION:: SuperCollider IDE
 
-link::Guides/SCIde::
+A new cross-platform SuperCollider coding environment.
+
+Read link::Guides/SCIde##the guide::!
 
 
 SECTION:: Language-side news
@@ -25,7 +27,7 @@ ERROR: syntax error, unexpected BINOP, expecting ']'
        ^
   123;
 -----------------------------------
-ERROR: Command line parse failed 
+ERROR: Command line parse failed
 ::
 
 subsection:: Remove old syntax
@@ -55,8 +57,8 @@ Positioning of SplayAz was broken. The semantics of the TELETYPE::spread:: and T
 been changed in order to fix the behavior.
 
 subsection:: Array primitives respect mutability
-The array primitives now respect object mutability: writing to an immutable object now fails and changing an 
-immutable object with TELETYPE::add::, TELETYPE::addAll::, TELETYPE::insert::, TELETYPE::extend::, 
+The array primitives now respect object mutability: writing to an immutable object now fails and changing an
+immutable object with TELETYPE::add::, TELETYPE::addAll::, TELETYPE::insert::, TELETYPE::extend::,
 TELETYPE::growClear:: and TELETYPE::overwrite:: will return a newly allocated object.
 
 SECTION:: Server-side news
