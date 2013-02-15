@@ -217,6 +217,18 @@ teletype:: IMAGE\:: ::
 teletype::
 image::foo.png::
 ::
+Optionally an image caption can be given:
+teletype::
+image::foo.png#Figure 1::
+::
+
+And, the image can be clickable and link to another page:
+teletype::
+image::foo.png#click this image#Classes/SinOsc::
+::
+
+Just leave the caption empty if you want a link but no caption.
+
 ::
 
 The following tags (CODE, TELETYPE and MATH) can be written in two forms, either inline or block.
