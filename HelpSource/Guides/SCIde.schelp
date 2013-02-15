@@ -17,9 +17,12 @@ Section:: Overview
 
 note:: Throughout this document, strong::Ctrl:: indicates the modifier key for keyboard shortcuts that is used on Linux and Windows platforms. strong::On Mac OSX, use Cmd instead::.::
 
-Here is an annotated screenshot describing various components of the IDE:
+Here is an annotated screenshot describing various components of the IDE.
+Click link::Guides/sc_ide_overview.png##here:: for a natural-size version.
 
-image::sc_ide_overview.png::
+image::sc_ide_overview_scaled.png::
+
+
 
 Subsection:: Central components
 
