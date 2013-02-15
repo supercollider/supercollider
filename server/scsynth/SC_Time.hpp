@@ -32,11 +32,11 @@ const double kSecondsToOSCunits = 4294967296.; // pow(2,32)
 const double kMicrosToOSCunits = 4294.967296; // pow(2,32)/1e6
 const double kNanosToOSCunits  = 4.294967296; // pow(2,32)/1e9
 
-typedef mutex_chrono::high_resolution_clock::time_point HostTime;
+typedef mutex_chrono::system_clock::time_point HostTime;
 
-static inline mutex_chrono::high_resolution_clock::time_point getTime()
+static inline mutex_chrono::system_clock::time_point getTime()
 {
-	return mutex_chrono::high_resolution_clock::now();
+	return mutex_chrono::system_clock::now();
 }
 
 template <typename TimePoint>
