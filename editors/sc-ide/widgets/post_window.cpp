@@ -45,6 +45,8 @@ PostWindow::PostWindow(QWidget* parent):
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setFrameShape( QFrame::NoFrame );
 
+    viewport()->setAttribute( Qt::WA_MacNoClickThrough, true );
+
     QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
     mSizeHint = QSize( availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.3 );
 
