@@ -96,6 +96,7 @@ public:
 
         // Help
         Help,
+        HelpAboutIDE,
         LookupDocumentationForCursor,
         LookupDocumentation,
         ShowAbout,
@@ -175,6 +176,7 @@ private Q_SLOTS:
     void lookupReferences();
     void lookupReferencesForCursor();
     void openHelp();
+    void openHelpAboutIDE();
     void lookupDocumentationForCursor();
     void lookupDocumentation();
     void applySettings( Settings::Manager * );
