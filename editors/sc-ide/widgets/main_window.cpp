@@ -47,6 +47,7 @@
 #include <QAction>
 #include <QApplication>
 #include <QDesktopServices>
+#include <QDesktopWidget>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QGridLayout>
@@ -428,28 +429,32 @@ void MainWindow::createActions()
     settings->addAction( action, "ide-settings-dialog", ideCategory);
 
     // Help
-    mActions[Help] = action = new QAction(
-        QIcon::fromTheme("system-help"), tr("Open &Help Browser"), this);
-    action->setStatusTip(tr("Open help"));
+    mActions[Help] = action = new QAction(tr("Show &Help Browser"), this);
+    action->setStatusTip(tr("Show and focus the Help Browser"));
     connect(action, SIGNAL(triggered()), this, SLOT(openHelp()));
-    settings->addAction( action, "help-show", helpCategory);
+    settings->addAction( action, "help-browser", helpCategory);
 
-    mActions[LookupDocumentationForCursor] = action = new QAction(
-        QIcon::fromTheme("system-help"), tr("Look Up Documentation for Cursor"), this);
+    mActions[HelpAboutIDE]  = action =
+            new QAction(QIcon::fromTheme("system-help"), tr("How to Use SuperCollider IDE"), this);
+    action->setStatusTip(tr("Open the SuperCollider IDE guide"));
+    connect(action, SIGNAL(triggered()), this, SLOT(openHelpAboutIDE()));
+
+    mActions[LookupDocumentationForCursor] = action =
+            new QAction(tr("Look Up Documentation for Cursor"), this);
     action->setShortcut(tr("Ctrl+D", "Look Up Documentation for Cursor"));
     action->setStatusTip(tr("Look up documentation for text under cursor"));
     connect(action, SIGNAL(triggered()), this, SLOT(lookupDocumentationForCursor()));
     settings->addAction( action, "help-lookup-for-cursor", helpCategory);
 
-    mActions[LookupDocumentation] = action = new QAction(
-        QIcon::fromTheme("system-help"), tr("Look Up Documentation..."), this);
+    mActions[LookupDocumentation] = action =
+            new QAction(tr("Look Up Documentation..."), this);
     action->setShortcut(tr("Ctrl+Shift+D", "Look Up Documentation"));
     action->setStatusTip(tr("Enter text to look up in documentation"));
     connect(action, SIGNAL(triggered()), this, SLOT(lookupDocumentation()));
     settings->addAction( action, "help-lookup", helpCategory);
 
     mActions[ShowAbout] = action = new QAction(
-        QIcon::fromTheme("show-about"), tr("&About SuperCollider"), this);
+        QIcon::fromTheme("help-about"), tr("&About SuperCollider"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(showAbout()));
     settings->addAction( action, "ide-about", ideCategory);
 
@@ -618,6 +623,8 @@ void MainWindow::createMenus()
     menuBar()->addMenu(menu);
 
     menu = new QMenu(tr("&Help"), this);
+    menu->addAction( mActions[HelpAboutIDE] );
+    menu->addSeparator();
     menu->addAction( mActions[Help] );
     menu->addAction( mActions[LookupDocumentationForCursor] );
     menu->addAction( mActions[LookupDocumentation] );
@@ -1444,6 +1451,22 @@ void MainWindow::openHelp()
 {
     if (mHelpBrowserDocklet->browser()->url().isEmpty())
         mHelpBrowserDocklet->browser()->goHome();
+    mHelpBrowserDocklet->raiseAndFocus();
+}
+
+void MainWindow::openHelpAboutIDE()
+{
+    mHelpBrowserDocklet->browser()->gotoHelpFor("Guides/SCIde");
+
+    mHelpBrowserDocklet->setDetached(true);
+
+    QRect availableGeometry = QApplication::desktop()->availableGeometry(mHelpBrowserDocklet->window());
+    QRect geometry;
+    geometry.setWidth( qMin(700, availableGeometry.width()) );
+    geometry.setHeight( availableGeometry.height() - 150 );
+    geometry.moveCenter( availableGeometry.center() );
+
+    mHelpBrowserDocklet->window()->setGeometry( geometry );
     mHelpBrowserDocklet->raiseAndFocus();
 }
 
