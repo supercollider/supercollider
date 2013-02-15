@@ -169,7 +169,14 @@ void Docklet::toggleFloating()
 
     if (undock) {
         qDebug() << "dock: set geom (toggleFloating):" << undockedGeom << this;
-        mDockWidget->setGeometry( undockedGeom );
+        if (undockedGeom.isNull()) {
+            // Looks like resize or move event does not always occur,
+            // so store the undocked geometry here.
+            mUndockedGeom = mDockWidget->geometry();
+        }
+        else {
+            mDockWidget->setGeometry( undockedGeom );
+        }
     }
 
     updateDockAction();
