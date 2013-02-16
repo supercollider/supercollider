@@ -19,10 +19,12 @@
 */
 
 #include <QDebug>
+#include <QWidgetAction>
 
 #include "sc_server.hpp"
 #include "sc_process.hpp"
 #include "main.hpp"
+#include "../widgets/util/volume_widget.hpp"
 
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
@@ -57,6 +59,7 @@ void ScServer::createActions(Settings::Manager * settings)
 {
     const QString synthServerCategory(tr("Sound Synthesis Server"));
     QAction *action;
+    QWidgetAction *widgetAction;
 
     mActions[ToggleRunning] = action = new QAction(tr("Boot or quit default server"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()));
@@ -92,6 +95,33 @@ void ScServer::createActions(Settings::Manager * settings)
     action->setShortcut(tr("Ctrl+Shift+T", "Dump node tree with controls"));
     connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTreeWithControls()));
     settings->addAction( action, "synth-server-dump-nodes-with-controls", synthServerCategory);
+
+    mActions[Mute] = action = new QAction(tr("Mute"), this);
+    action->setShortcut(tr("Ctrl+Alt+End", "Mute sound output."));
+    action->setCheckable(true);
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(sendMuted(bool)));
+    settings->addAction( action, "synth-server-mute", synthServerCategory);
+
+    mVolumeWidget = new VolumeWidget;
+
+    mActions[Volume] = widgetAction = new QWidgetAction(this);
+    widgetAction->setDefaultWidget( mVolumeWidget );
+    connect( mVolumeWidget, SIGNAL(volumeChanged(float)), this, SLOT(sendVolume(float)) );
+
+    mActions[VolumeUp] = action = new QAction(tr("Increase Volume"), this);
+    action->setShortcut(tr("Ctrl+Alt+PgUp", "Increase volume"));
+    connect(action, SIGNAL(triggered()), this, SLOT(increaseVolume()));
+    settings->addAction( action, "synth-server-volume-up", synthServerCategory);
+
+    mActions[VolumeDown] = action = new QAction(tr("Decrease Volume"), this);
+    action->setShortcut(tr("Ctrl+Alt+PgDown", "Decrease volume"));
+    connect(action, SIGNAL(triggered()), this, SLOT(decreaseVolume()));
+    settings->addAction( action, "synth-server-volume-down", synthServerCategory);
+
+    mActions[VolumeRestore] = action = new QAction(tr("Restore Volume to 0 dB"), this);
+    action->setShortcut(tr("Ctrl+Alt+Home", "Restore volume"));
+    connect(action, SIGNAL(triggered()), this, SLOT(restoreVolume()));
+    settings->addAction( action, "synth-server-volume-restore", synthServerCategory);
 
     connect( mActions[Boot], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
     connect( mActions[Quit], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
@@ -158,6 +188,40 @@ void ScServer::queryAllNodes(bool dumpControls)
     Main::scProcess()->evaluateCode( QString("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
 }
 
+void ScServer::sendMuted(bool muted)
+{
+    static const QString muteCommand("ScIDE.defaultServer.mute");
+    static const QString unmuteCommand("ScIDE.defaultServer.unmute");
+
+    Main::scProcess()->evaluateCode( muted ? muteCommand : unmuteCommand, true );
+}
+
+void ScServer::sendVolume( float volume )
+{
+    Main::scProcess()->evaluateCode( QString("ScIDE.setServerVolume(%1)").arg(volume), true );
+}
+
+void ScServer::increaseVolume()
+{
+    float volume = mVolumeWidget->volume() + 1.5f;
+    mVolumeWidget->setVolume( volume );
+    sendVolume(volume);
+}
+
+void ScServer::decreaseVolume()
+{
+    float volume = mVolumeWidget->volume() - 1.5f;
+    mVolumeWidget->setVolume( volume );
+    sendVolume(volume);
+}
+
+void ScServer::restoreVolume()
+{
+    float volume = 0.0f;
+    mVolumeWidget->setVolume( volume );
+    sendVolume(volume);
+}
+
 void ScServer::onScLangStateChanged( QProcess::ProcessState state )
 {
     bool langIsRunning = state == QProcess::Running;
@@ -171,10 +235,40 @@ void ScServer::onScLangStateChanged( QProcess::ProcessState state )
 void ScServer::onScLangReponse( const QString & selector, const QString & data )
 {
     static QString defaultServerRunningChangedSelector("defaultServerRunningChanged");
+    static QString mutedSelector("serverMuted");
+    static QString unmutedSelector("serverUnmuted");
+    static QString ampSelector("serverAmp");
+    static QString ampRangeSelector("serverAmpRange");
 
-    if (selector != defaultServerRunningChangedSelector)
-        return;
+    if (selector == defaultServerRunningChangedSelector)
+        handleRuningStateChangedMsg(data);
+    else if(selector == mutedSelector) {
+        mActions[Mute]->setChecked(true);
+    } else if (selector == unmutedSelector) {
+        mActions[Mute]->setChecked(false);
+    }
+    else if (selector == ampSelector) {
+        bool ok;
+        float volume = data.mid(1, data.size() - 2).toFloat(&ok);
+        if (ok) {
+            mVolumeWidget->setVolume(volume);
+        }
+    }
+    else if (selector == ampRangeSelector) {
+        bool ok;
+        QStringList dataList = data.mid(1, data.size() - 2).split(',');
+        if (dataList.size() < 2)
+            return;
+        float min = dataList[0].toFloat(&ok);
+        if (!ok) return;
+        float max = dataList[1].toFloat(&ok);
+        if (!ok) return;
+        mVolumeWidget->setRange( min, max );
+    }
+}
 
+void ScServer::handleRuningStateChangedMsg( const QString & data )
+{
     std::stringstream stream;
     stream << data.toStdString();
     YAML::Parser parser(stream);

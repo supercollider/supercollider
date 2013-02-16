@@ -53,6 +53,7 @@ set ( ide_moc_hdr
     widgets/util/popup_widget.hpp
     widgets/util/color_widget.hpp
     widgets/util/docklet.hpp
+    widgets/util/volume_widget.hpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
 )
@@ -95,6 +96,7 @@ set ( ide_src
     widgets/util/text_format_list_widget.cpp
     widgets/util/popup_widget.cpp
     widgets/util/docklet.cpp
+    widgets/util/volume_widget.cpp
     widgets/style/style.cpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp

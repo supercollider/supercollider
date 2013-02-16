@@ -29,6 +29,7 @@
 namespace ScIDE {
 
 class ScProcess;
+class VolumeWidget;
 namespace Settings { class Manager; }
 
 class ScServer : public QObject
@@ -44,6 +45,12 @@ public:
         ShowMeters,
         DumpNodeTree,
         DumpNodeTreeWithControls,
+        Mute,
+        Volume,
+        VolumeUp,
+        VolumeDown,
+        VolumeRestore,
+
 
         ActionCount
     };
@@ -63,6 +70,9 @@ public slots:
     void dumpNodeTree();
     void dumpNodeTreeWithControls();
     void queryAllNodes(bool dumpControls);
+    void increaseVolume();
+    void decreaseVolume();
+    void restoreVolume();
 
 signals:
     void runningStateChange( bool running, QString const & hostName, int port );
@@ -72,6 +82,8 @@ private slots:
     void onScLangStateChanged( QProcess::ProcessState );
     void onScLangReponse( const QString & selector, const QString & data );
     void updateToggleRunningAction();
+    void sendMuted( bool muted );
+    void sendVolume( float volume );
 
 protected:
     virtual void timerEvent(QTimerEvent * event);
@@ -79,6 +91,7 @@ protected:
 private:
     void createActions( Settings::Manager * );
 
+    void handleRuningStateChangedMsg( const QString & data );
     void onRunningStateChanged( bool running, QString const & hostName, int port );
 
     QUdpSocket * mUdpSocket;
@@ -86,6 +99,8 @@ private:
     int mPort;
 
     QAction * mActions[ActionCount];
+
+    VolumeWidget *mVolumeWidget;
 };
 
 }
