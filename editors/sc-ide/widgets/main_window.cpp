@@ -627,6 +627,10 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scServer()->action(ScServer::ShowMeters) );
     menu->addAction( mMain->scServer()->action(ScServer::DumpNodeTree) );
     menu->addAction( mMain->scServer()->action(ScServer::DumpNodeTreeWithControls) );
+    menu->addAction( mMain->scServer()->action(ScServer::VolumeUp) );
+    menu->addAction( mMain->scServer()->action(ScServer::VolumeDown) );
+    menu->addAction( mMain->scServer()->action(ScServer::VolumeRestore) );
+    menu->addAction( mMain->scServer()->action(ScServer::Mute) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::EvaluateCurrentDocument) );
     menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );
@@ -657,6 +661,11 @@ void MainWindow::createMenus()
     mServerStatus->addAction( mMain->scServer()->action(ScServer::ShowMeters) );
     mServerStatus->addAction( mMain->scServer()->action(ScServer::DumpNodeTree) );
     mServerStatus->addAction( mMain->scServer()->action(ScServer::DumpNodeTreeWithControls) );
+    mServerStatus->addAction( mMain->scServer()->action(ScServer::VolumeUp) );
+    mServerStatus->addAction( mMain->scServer()->action(ScServer::VolumeDown) );
+    mServerStatus->addAction( mMain->scServer()->action(ScServer::VolumeRestore) );
+    mServerStatus->addAction( mMain->scServer()->action(ScServer::Mute) );
+    mServerStatus->addAction( mMain->scServer()->action(ScServer::Volume) );
     mServerStatus->setContextMenuPolicy(Qt::ActionsContextMenu);
 }
 
