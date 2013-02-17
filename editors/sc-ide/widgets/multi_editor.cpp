@@ -393,7 +393,7 @@ void MultiEditor::createActions()
 
     mActions[GotoPreviousRegion] = action = new QAction(
         QIcon::fromTheme("edit-gotopreviousregion"), tr("Go to Previous Region"), this);
-    action->setShortcut(tr("Alt+[", "Go to Previous Region"));
+    action->setShortcut(tr("Ctrl+Alt+[", "Go to Previous Region"));
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(gotoPreviousRegion()),
                            SignalMultiplexer::ConnectionOptional);
@@ -401,7 +401,7 @@ void MultiEditor::createActions()
 
     mActions[GotoNextRegion] = action = new QAction(
         QIcon::fromTheme("edit-gotonextregion"), tr("Go to Next Region"), this);
-    action->setShortcut(tr("Alt+]", "Go to Next Region"));
+    action->setShortcut(tr("Ctrl+Alt+]", "Go to Next Region"));
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(gotoNextRegion()),
                            SignalMultiplexer::ConnectionOptional);
