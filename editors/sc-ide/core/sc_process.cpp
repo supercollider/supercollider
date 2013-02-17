@@ -204,6 +204,10 @@ void ScProcess::restartLanguage()
     startLanguage();
 }
 
+void ScProcess::stopMain(void)
+{
+    evaluateCode("thisProcess.stop", true);
+}
 
 
 void ScProcess::onReadyRead(void)
