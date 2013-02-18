@@ -188,6 +188,41 @@ void ScServer::queryAllNodes(bool dumpControls)
     Main::scProcess()->evaluateCode( QString("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
 }
 
+bool ScServer::isMuted() const { return mActions[Mute]->isChecked(); }
+
+void ScServer::setMuted( bool muted )
+{
+    mActions[Mute]->setChecked(muted);
+    sendMuted(muted);
+}
+
+float ScServer::volume() const { return mVolumeWidget->volume(); }
+
+void ScServer::setVolume( float volume )
+{
+    mVolumeWidget->setVolume( volume );
+    sendVolume(volume);
+}
+
+void ScServer::increaseVolume()
+{
+    setVolume( volume() + 1.5f );
+}
+
+void ScServer::decreaseVolume()
+{
+    setVolume( volume() - 1.5f );
+}
+
+void ScServer::restoreVolume()
+{
+    float volume = 0.0f;
+    mVolumeWidget->setVolume( volume );
+    sendVolume(volume);
+
+    unmute();
+}
+
 void ScServer::sendMuted(bool muted)
 {
     static const QString muteCommand("ScIDE.defaultServer.mute");
@@ -200,28 +235,6 @@ void ScServer::sendVolume( float volume )
 {
     Main::scProcess()->evaluateCode( QString("ScIDE.setServerVolume(%1)").arg(volume), true );
 }
-
-void ScServer::increaseVolume()
-{
-    float volume = mVolumeWidget->volume() + 1.5f;
-    mVolumeWidget->setVolume( volume );
-    sendVolume(volume);
-}
-
-void ScServer::decreaseVolume()
-{
-    float volume = mVolumeWidget->volume() - 1.5f;
-    mVolumeWidget->setVolume( volume );
-    sendVolume(volume);
-}
-
-void ScServer::restoreVolume()
-{
-    float volume = 0.0f;
-    mVolumeWidget->setVolume( volume );
-    sendVolume(volume);
-}
-
 void ScServer::onScLangStateChanged( QProcess::ProcessState state )
 {
     bool langIsRunning = state == QProcess::Running;
