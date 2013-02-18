@@ -25,6 +25,8 @@
 #include <QtNetwork/QUdpSocket>
 #include <QAction>
 #include <QProcess>
+#include <QTimer>
+#include <boost/chrono/system_clocks.hpp>
 
 namespace ScIDE {
 
@@ -50,7 +52,7 @@ public:
         VolumeUp,
         VolumeDown,
         VolumeRestore,
-
+        Record,
 
         ActionCount
     };
@@ -67,6 +69,8 @@ public:
     bool isMuted() const;
     void setMuted( bool muted );
 
+    bool isRecording() const;
+    boost::chrono::seconds recordingTime() const;
 
 public slots:
     void boot();
@@ -82,6 +86,7 @@ public slots:
     void restoreVolume();
     void mute() { setMuted(true); }
     void unmute() { setMuted(false); }
+    void setRecording( bool active );
 
 signals:
     void runningStateChange( bool running, QString const & hostName, int port );
@@ -91,6 +96,8 @@ private slots:
     void onScLangStateChanged( QProcess::ProcessState );
     void onScLangReponse( const QString & selector, const QString & data );
     void updateToggleRunningAction();
+    void updateRecordingAction();
+    void updateEnabledActions();
     void sendMuted( bool muted );
     void sendVolume( float volume );
 
@@ -99,9 +106,10 @@ protected:
 
 private:
     void createActions( Settings::Manager * );
-
     void handleRuningStateChangedMsg( const QString & data );
     void onRunningStateChanged( bool running, QString const & hostName, int port );
+
+    ScProcess *mLang;
 
     QUdpSocket * mUdpSocket;
     QHostAddress mServerAddress;
@@ -110,6 +118,9 @@ private:
     QAction * mActions[ActionCount];
 
     VolumeWidget *mVolumeWidget;
+    QTimer mRecordTimer;
+    boost::chrono::system_clock::time_point mRecordTime;
+    bool mIsRecording;
 };
 
 }
