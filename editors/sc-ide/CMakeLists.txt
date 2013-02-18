@@ -188,7 +188,14 @@ else()
 endif()
 
 
-target_link_libraries( ${ide_name} ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${YAMLCPP_LIBRARY})
+target_link_libraries( ${ide_name} ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${YAMLCPP_LIBRARY} )
+
+if(Boost_FOUND)
+    target_link_libraries( ${ide_name} ${Boost_SYSTEM_LIBRARY} )
+else()
+    # in-house-built boost system
+    target_link_libraries( ${ide_name} boost_system )
+endif()
 
 if(APPLE)
     target_link_libraries( ${ide_name} "-framework CoreServices")

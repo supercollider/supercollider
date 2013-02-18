@@ -32,10 +32,20 @@
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
 
+#include <sstream>
+#include <iomanip>
+#include <boost/chrono/chrono_io.hpp>
+
+using namespace std;
+using namespace boost::chrono;
+
 namespace ScIDE {
 
 ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *parent):
-    QObject(parent), mPort(0)
+    QObject(parent),
+    mLang(scLang),
+    mPort(0),
+    mIsRecording(false)
 {
     createActions(settings);
 
@@ -47,12 +57,13 @@ ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *pare
     }
     startTimer(333);
 
+    mRecordTimer.setInterval(1000);
+    connect( &mRecordTimer, SIGNAL(timeout()), this, SLOT(updateRecordingAction()) );
+
     connect(scLang, SIGNAL(stateChanged(QProcess::ProcessState)),
             this, SLOT(onScLangStateChanged(QProcess::ProcessState)));
     connect(scLang, SIGNAL(response(QString,QString)),
             this, SLOT(onScLangReponse(QString,QString)));
-
-    onRunningStateChanged(false, QString(), 0); // initialize ToggleRunning action
 }
 
 void ScServer::createActions(Settings::Manager * settings)
@@ -123,10 +134,16 @@ void ScServer::createActions(Settings::Manager * settings)
     connect(action, SIGNAL(triggered()), this, SLOT(restoreVolume()));
     settings->addAction( action, "synth-server-volume-restore", synthServerCategory);
 
+    mActions[Record] = action = new QAction(this);
+    action->setCheckable(true);
+    connect( action, SIGNAL(triggered(bool)), this, SLOT(setRecording(bool)) );
+
     connect( mActions[Boot], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
     connect( mActions[Quit], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
 
     updateToggleRunningAction();
+    updateRecordingAction();
+    updateEnabledActions();
 }
 
 void ScServer::updateToggleRunningAction()
@@ -142,7 +159,7 @@ void ScServer::boot()
     if (isRunning())
         return;
 
-    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.boot", true );
+    mLang->evaluateCode( "ScIDE.defaultServer.boot", true );
 }
 
 void ScServer::quit()
@@ -150,12 +167,12 @@ void ScServer::quit()
     if (!isRunning())
         return;
 
-    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.quit", true );
+    mLang->evaluateCode( "ScIDE.defaultServer.quit", true );
 }
 
 void ScServer::reboot()
 {
-    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.reboot", true );
+    mLang->evaluateCode( "ScIDE.defaultServer.reboot", true );
 }
 
 void ScServer::toggleRunning()
@@ -168,7 +185,7 @@ void ScServer::toggleRunning()
 
 void ScServer::showMeters()
 {
-    Main::evaluateCode("ScIDE.defaultServer.meter", true);
+   mLang->evaluateCode("ScIDE.defaultServer.meter", true);
 }
 
 void ScServer::dumpNodeTree()
@@ -185,7 +202,7 @@ void ScServer::queryAllNodes(bool dumpControls)
 {
     QString arg = dumpControls ? QString("true") : QString("false");
 
-    Main::scProcess()->evaluateCode( QString("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
+    mLang->evaluateCode( QString("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
 }
 
 bool ScServer::isMuted() const { return mActions[Mute]->isChecked(); }
@@ -228,21 +245,70 @@ void ScServer::sendMuted(bool muted)
     static const QString muteCommand("ScIDE.defaultServer.mute");
     static const QString unmuteCommand("ScIDE.defaultServer.unmute");
 
-    Main::scProcess()->evaluateCode( muted ? muteCommand : unmuteCommand, true );
+    mLang->evaluateCode( muted ? muteCommand : unmuteCommand, true );
 }
 
 void ScServer::sendVolume( float volume )
 {
-    Main::scProcess()->evaluateCode( QString("ScIDE.setServerVolume(%1)").arg(volume), true );
+    mLang->evaluateCode( QString("ScIDE.setServerVolume(%1)").arg(volume), true );
 }
-void ScServer::onScLangStateChanged( QProcess::ProcessState state )
+
+bool ScServer::isRecording() const { return mIsRecording; }
+
+void ScServer::setRecording( bool doRecord )
 {
-    bool langIsRunning = state == QProcess::Running;
-    mActions[ToggleRunning]->setEnabled(langIsRunning);
-    mActions[Reboot]->setEnabled(langIsRunning);
-    mActions[ShowMeters]->setEnabled(langIsRunning);
-    mActions[DumpNodeTree]->setEnabled(langIsRunning);
-    mActions[DumpNodeTreeWithControls]->setEnabled(langIsRunning);
+    static const QString startRecordingCommand("ScIDE.defaultServer.record");
+    static const QString stopRecordingCommand("ScIDE.defaultServer.stopRecording");
+
+    if (!isRunning() || mIsRecording == doRecord)
+        return;
+
+    mIsRecording = doRecord;
+
+    if (doRecord) {
+        mLang->evaluateCode( startRecordingCommand );
+        mRecordTime = system_clock::now();
+        mRecordTimer.start();
+    }
+    else {
+        mLang->evaluateCode( stopRecordingCommand );
+        mRecordTimer.stop();
+    }
+
+    updateRecordingAction();
+}
+
+seconds ScServer::recordingTime() const
+{
+    if (isRecording())
+        return duration_cast<seconds>( system_clock::now() - mRecordTime );
+    else
+        return seconds(0);
+}
+
+void ScServer::updateRecordingAction()
+{
+    if (isRecording()) {
+        seconds time = recordingTime();
+        hours h = duration_cast<hours>(time);
+        minutes m = duration_cast<minutes>(time - h);
+        seconds s = (time - m);
+        ostringstream msg;
+        msg << "Recording: ";
+        msg << setw(2) << setfill('0') << h.count() << ':';
+        msg << setw(2) << setfill('0') << m.count() << ':';
+        msg << setw(2) << setfill('0') << s.count();
+        mActions[Record]->setText( msg.str().c_str() );
+    }
+    else {
+        mActions[Record]->setText( "Start Recording" );
+    }
+    mActions[Record]->setChecked( isRecording() );
+}
+
+void ScServer::onScLangStateChanged( QProcess::ProcessState )
+{
+    updateEnabledActions();
 }
 
 void ScServer::onScLangReponse( const QString & selector, const QString & data )
@@ -363,9 +429,31 @@ void ScServer::onRunningStateChanged( bool running, QString const & hostName, in
     } else {
         mServerAddress.clear();
         mPort = 0;
+        mIsRecording = false;
+        mRecordTimer.stop();
     }
 
     updateToggleRunningAction();
+    updateRecordingAction();
+    updateEnabledActions();
+}
+
+void ScServer::updateEnabledActions()
+{
+    bool langRunning = mLang->state() == QProcess::Running;
+    bool langAndServerRunning = langRunning && isRunning();
+
+    mActions[ToggleRunning]->setEnabled(langRunning);
+    mActions[Reboot]->setEnabled(langRunning);
+    mActions[ShowMeters]->setEnabled(langRunning);
+    mActions[DumpNodeTree]->setEnabled(langAndServerRunning);
+    mActions[DumpNodeTreeWithControls]->setEnabled(langAndServerRunning);
+    mActions[Mute]->setEnabled(langAndServerRunning);
+    mActions[VolumeUp]->setEnabled(langAndServerRunning);
+    mActions[VolumeDown]->setEnabled(langAndServerRunning);
+    mActions[Volume]->setEnabled(langAndServerRunning);
+    mActions[VolumeRestore]->setEnabled(langAndServerRunning);
+    mActions[Record]->setEnabled(langAndServerRunning);
 }
 
 }
