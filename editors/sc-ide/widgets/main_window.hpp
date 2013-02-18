@@ -236,6 +236,9 @@ public:
     StatusLabel(QWidget *parent = 0);
     void setBackground(const QBrush &);
     void setTextColor(const QColor &);
+protected:
+    void showContextMenu();
+    virtual void mousePressEvent( QMouseEvent * );
 };
 
 class StatusClockLabel : public StatusLabel

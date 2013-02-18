@@ -1541,6 +1541,22 @@ void StatusLabel::setTextColor(const QColor & color)
     setPalette(plt);
 }
 
+void StatusLabel::showContextMenu()
+{
+    QList<QAction*> actions = this->actions();
+    if (actions.count()) {
+        QMenu menu;
+        foreach( QAction *action, actions )
+            menu.addAction(action);
+        menu.exec( mapToGlobal(QPoint(0, -menu.sizeHint().height() - 2)) );
+    }
+}
+
+void StatusLabel::mousePressEvent( QMouseEvent * )
+{
+    showContextMenu();
+}
+
 //////////////////////////// StatusClockLabel ////////////////////////////
 
 StatusClockLabel::StatusClockLabel(QWidget * parent):
