@@ -634,6 +634,10 @@ void MainWindow::createMenus()
 
     menuBar()->addMenu(menu);
 
+    mLangStatus->addAction( mMain->scProcess()->action(ScProcess::ToggleRunning) );
+    mLangStatus->addAction( mMain->scProcess()->action(ScProcess::Restart) );
+    mLangStatus->addAction( mMain->scProcess()->action(ScProcess::RecompileClassLibrary) );
+
     mServerStatus->addAction( mMain->scServer()->action(ScServer::ToggleRunning) );
     mServerStatus->addAction( mMain->scServer()->action(ScServer::Reboot) );
     mServerStatus->addAction( mMain->scServer()->action(ScServer::ShowMeters) );
