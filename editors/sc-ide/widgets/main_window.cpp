@@ -34,6 +34,8 @@
 #include "session_switch_dialog.hpp"
 #include "sessions_dialog.hpp"
 #include "tool_box.hpp"
+#include "audio_status_box.hpp"
+#include "lang_status_box.hpp"
 #include "../core/main.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/session_manager.hpp"
@@ -105,10 +107,8 @@ MainWindow::MainWindow(Main * main) :
 
     // Construct status bar:
 
-    mLangStatus = new StatusLabel();
-    mLangStatus->setText(tr("Inactive"));
-    mServerStatus = new StatusLabel();
-    onServerStatusReply(0, 0, 0, 0, 0, 0);
+    mLangStatus = new LangStatusBox( main->scProcess() );
+    mServerStatus = new AudioStatusBox( main->scServer() );
 
     mStatusBar = statusBar();
     mStatusBar->addPermanentWidget( new QLabel(tr("Interpreter:")) );
@@ -210,16 +210,10 @@ MainWindow::MainWindow(Main * main) :
     // ToolBox
     connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
 
-    connect(main->scServer(), SIGNAL(runningStateChange(bool,QString,int)),
-            this, SLOT(onServerRunningChanged(bool,QString,int)));
-    connect(main->scServer(), SIGNAL(updateServerStatus(int,int,int,int,float,float)),
-            this, SLOT(onServerStatusReply(int,int,int,int,float,float)));
-
     createActions();
     createMenus();
 
     // Must be called after createAtions(), because it accesses an action:
-    onServerRunningChanged(false, "", 0);
     toggleInterpreterActions(false);
 
     // Initialize recent documents menu
@@ -655,18 +649,6 @@ void MainWindow::createMenus()
     menu->addAction( mActions[ShowAboutQT] );
 
     menuBar()->addMenu(menu);
-
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::ToggleRunning) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::Reboot) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::ShowMeters) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::DumpNodeTree) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::DumpNodeTreeWithControls) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::VolumeUp) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::VolumeDown) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::VolumeRestore) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::Mute) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::Volume) );
-    mServerStatus->setContextMenuPolicy(Qt::ActionsContextMenu);
 }
 
 static void saveDetachedState( Docklet *docklet,  QVariantMap & data )
@@ -889,54 +871,16 @@ void MainWindow::onRecentDocAction( QAction *action )
 
 void MainWindow::onInterpreterStateChanged( QProcess::ProcessState state )
 {
-    QString text;
-    QColor color;
-
     switch(state) {
     case QProcess::NotRunning:
         toggleInterpreterActions(false);
 
-        text = tr("Inactive");
-        color = Qt::white;
-        break;
-
     case QProcess::Starting:
-        text = tr("Booting");
-        color = QColor(255,255,0);
         break;
 
     case QProcess::Running:
         toggleInterpreterActions(true);
-
-        text = tr("Active");
-        color = Qt::green;
         break;
-    }
-
-    mLangStatus->setText(text);
-    mLangStatus->setTextColor(color);
-}
-
-
-void MainWindow::onServerStatusReply(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU)
-{
-    QString statusString =
-            QString("%1% %2% %3u %4s %5g %6d")
-            .arg(avgCPU,  5, 'f', 2)
-            .arg(peakCPU, 5, 'f', 2)
-            .arg(ugens,     4)
-            .arg(synths,    4)
-            .arg(groups,    4)
-            .arg(synthDefs, 4);
-
-    mServerStatus->setText(statusString);
-}
-
-void MainWindow::onServerRunningChanged(bool running, const QString &, int)
-{
-    mServerStatus->setTextColor( running ? Qt::green : Qt::white);
-    if (!running) {
-        onServerStatusReply(0, 0, 0, 0, 0, 0);
     }
 }
 
@@ -1269,7 +1213,7 @@ void MainWindow::updateClockWidget(bool isFullScreen)
         }
     } else {
         if (mClockLabel == NULL) {
-            mClockLabel = new StatusClockLabel(this);
+            mClockLabel = new ClockStatusBox(this);
             statusBar()->insertWidget(0, mClockLabel);
         }
     }
@@ -1543,74 +1487,28 @@ void MainWindow::dropEvent( QDropEvent * event )
     }
 }
 
-//////////////////////////// StatusLabel /////////////////////////////////
+//////////////////////////// ClockStatusBox ////////////////////////////
 
-StatusLabel::StatusLabel(QWidget *parent) : QLabel(parent)
-{
-    setAutoFillBackground(true);
-    setMargin(3);
-    setAlignment(Qt::AlignCenter);
-    setBackground(Qt::black);
-    setTextColor(Qt::white);
-
-    QFont font("Monospace");
-    font.setStyleHint(QFont::Monospace);
-    font.setBold(true);
-    setFont(font);
-}
-
-void StatusLabel::setBackground(const QBrush & brush)
-{
-    QPalette plt(palette());
-    plt.setBrush(QPalette::Window, brush);
-    setPalette(plt);
-}
-
-void StatusLabel::setTextColor(const QColor & color)
-{
-    QPalette plt(palette());
-    plt.setColor(QPalette::WindowText, color);
-    setPalette(plt);
-}
-
-void StatusLabel::showContextMenu()
-{
-    QList<QAction*> actions = this->actions();
-    if (actions.count()) {
-        QMenu menu;
-        foreach( QAction *action, actions )
-            menu.addAction(action);
-        menu.exec( mapToGlobal(QPoint(0, -menu.sizeHint().height() - 2)) );
-    }
-}
-
-void StatusLabel::mousePressEvent( QMouseEvent * )
-{
-    showContextMenu();
-}
-
-//////////////////////////// StatusClockLabel ////////////////////////////
-
-StatusClockLabel::StatusClockLabel(QWidget * parent):
-    StatusLabel(parent)
+ClockStatusBox::ClockStatusBox(QWidget * parent):
+    StatusBox(parent)
 {
     setTextColor(Qt::green);
     mTimerId = startTimer(1000);
     updateTime();
 }
 
-StatusClockLabel::~StatusClockLabel()
+ClockStatusBox::~ClockStatusBox()
 {
     killTimer(mTimerId);
 }
 
-void StatusClockLabel::timerEvent(QTimerEvent *e)
+void ClockStatusBox::timerEvent(QTimerEvent *e)
 {
     if (e->timerId() == mTimerId)
         updateTime();
 }
 
-void StatusClockLabel::updateTime()
+void ClockStatusBox::updateTime()
 {
     setText(QTime::currentTime().toString());
 }

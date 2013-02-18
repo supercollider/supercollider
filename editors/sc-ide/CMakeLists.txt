@@ -36,6 +36,8 @@ set ( ide_moc_hdr
     widgets/sessions_dialog.hpp
     widgets/tool_box.hpp
     widgets/help_browser.hpp
+    widgets/audio_status_box.hpp
+    widgets/lang_status_box.hpp
     widgets/code_editor/editor.hpp
     widgets/code_editor/sc_editor.hpp
     widgets/code_editor/highlighter.hpp
@@ -82,6 +84,8 @@ set ( ide_src
     widgets/post_window.cpp
     widgets/session_switch_dialog.cpp
     widgets/help_browser.cpp
+    widgets/audio_status_box.cpp
+    widgets/lang_status_box.cpp
     widgets/code_editor/editor.cpp
     widgets/code_editor/sc_editor.cpp
     widgets/code_editor/highlighter.cpp
@@ -97,6 +101,7 @@ set ( ide_src
     widgets/util/popup_widget.cpp
     widgets/util/docklet.cpp
     widgets/util/volume_widget.cpp
+    widgets/util/status_box.cpp
     widgets/style/style.cpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
