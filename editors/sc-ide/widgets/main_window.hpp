@@ -27,6 +27,8 @@
 #include <QSignalMapper>
 #include <QStatusBar>
 
+#include "util/status_box.hpp"
+
 namespace ScIDE {
 
 class Main;
@@ -41,8 +43,9 @@ class CmdLine;
 class Document;
 class DocumentsDialog;
 struct Session;
-class StatusLabel;
-class StatusClockLabel;
+class ClockStatusBox;
+class ScServer;
+class ScProcess;
 
 namespace Settings { class Manager; }
 
@@ -160,8 +163,6 @@ private Q_SLOTS:
     void switchSession( Session *session );
     void saveSession( Session *session );
     void onInterpreterStateChanged( QProcess::ProcessState );
-    void onServerStatusReply(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU);
-    void onServerRunningChanged( bool running, QString const & hostName, int port );
     void onQuit();
     void onCurrentDocumentChanged( Document * );
     void onDocumentChangedExternally( Document * );
@@ -218,9 +219,9 @@ private:
 
     // Status bar
     QStatusBar  *mStatusBar;
-    StatusLabel *mLangStatus;
-    StatusLabel *mServerStatus;
-    StatusClockLabel *mClockLabel;
+    StatusBox *mLangStatus;
+    StatusBox *mServerStatus;
+    ClockStatusBox *mClockLabel;
 
     // Docks
     PostDocklet * mPostDocklet;
@@ -233,22 +234,11 @@ private:
     static MainWindow *mInstance;
 };
 
-class StatusLabel : public QLabel
+class ClockStatusBox : public StatusBox
 {
 public:
-    StatusLabel(QWidget *parent = 0);
-    void setBackground(const QBrush &);
-    void setTextColor(const QColor &);
-protected:
-    void showContextMenu();
-    virtual void mousePressEvent( QMouseEvent * );
-};
-
-class StatusClockLabel : public StatusLabel
-{
-public:
-    StatusClockLabel (QWidget * parent = 0);
-    ~StatusClockLabel();
+    ClockStatusBox (QWidget * parent = 0);
+    ~ClockStatusBox();
 
 private:
     void timerEvent(QTimerEvent *);
