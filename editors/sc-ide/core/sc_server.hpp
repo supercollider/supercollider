@@ -61,6 +61,13 @@ public:
 
     QAction *action(ActionRole role) { return mActions[role]; }
 
+    float volume() const;
+    void setVolume( float volume );
+
+    bool isMuted() const;
+    void setMuted( bool muted );
+
+
 public slots:
     void boot();
     void reboot();
@@ -73,6 +80,8 @@ public slots:
     void increaseVolume();
     void decreaseVolume();
     void restoreVolume();
+    void mute() { setMuted(true); }
+    void unmute() { setMuted(false); }
 
 signals:
     void runningStateChange( bool running, QString const & hostName, int port );
