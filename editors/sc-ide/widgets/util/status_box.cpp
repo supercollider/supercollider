@@ -54,9 +54,8 @@ void StatusBox::showContextMenu()
 {
     QList<QAction*> actions = this->actions();
     if (actions.count()) {
-        QMenu menu;
-        foreach( QAction *action, actions )
-            menu.addAction(action);
+        StatusBoxMenu menu;
+        menu.addActions(actions);
         menu.exec( mapToGlobal(QPoint(0, -menu.sizeHint().height() - 2)) );
     }
 }
