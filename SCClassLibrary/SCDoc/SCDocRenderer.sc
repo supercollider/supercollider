@@ -350,7 +350,7 @@ SCDocHTMLRenderer {
     }
 
     *renderSubTree {|stream, node|
-        var f, z;
+        var f, z, img;
         switch(node.id,
             \PROSE, {
                 if(noParBreak) {
@@ -412,7 +412,6 @@ SCDocHTMLRenderer {
                 << "\\)</span>";
             },
             \IMAGE, {
-                var img;
                 f = node.text.split($#);
                 stream << "<div class='image'>";
                 img = "<img src='" ++ f[0] ++ "'/>";
