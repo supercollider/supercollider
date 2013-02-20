@@ -67,11 +67,11 @@ Char : Magnitude {
 	}
 	isUpper {
 		// is upper case alphabetic character
-		^this == this.toUpper
+		_IsUpper
 	}
 	isLower {
 		// is lower case alphabetic character
-		^this == this.toLower
+		_IsLower
 	}
 	isFileSafe {
 		if(this.isPrint.not,{ ^false });
