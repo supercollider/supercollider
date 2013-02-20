@@ -52,6 +52,26 @@ int prToUpper(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prIsLower(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+
+	if (islower(slotRawChar(a))) { SetTrue(a); }
+	else { SetFalse(a); }
+
+	return errNone;
+}
+
+int prIsUpper(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+
+	if (isupper(slotRawChar(a))) { SetTrue(a); }
+	else { SetFalse(a); }
+
+	return errNone;
+}
+
 int prIsAlpha(struct VMGlobals *g, int numArgsPushed);
 int prIsAlpha(struct VMGlobals *g, int numArgsPushed)
 {
@@ -222,6 +242,8 @@ void initCharPrimitives()
 	definePrimitive(base, index++, "_AsDigit", prAsDigit, 1, 0);
 	definePrimitive(base, index++, "_ToLower", prToLower, 1, 0);
 	definePrimitive(base, index++, "_ToUpper", prToUpper, 1, 0);
+	definePrimitive(base, index++, "_IsLower", prIsLower, 1, 0);
+	definePrimitive(base, index++, "_IsUpper", prIsUpper, 1, 0);
 	definePrimitive(base, index++, "_IsAlpha", prIsAlpha, 1, 0);
 	definePrimitive(base, index++, "_IsAlphaNum", prIsAlphaNum, 1, 0);
 	definePrimitive(base, index++, "_IsPrint", prIsPrint, 1, 0);
