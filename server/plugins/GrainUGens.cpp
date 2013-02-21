@@ -1172,7 +1172,7 @@ static inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int
 
 	double rate = grain->rate = grain_in_at<full_rate>(unit, 3, position) * bufRateScale;
 	double phase = grain_in_at<full_rate>(unit, 4, position) * bufFrames;
-	if (sc_isnan(phase)) {
+	if (!sc_isfinite(phase)) {
 		GrainBuf_grain_cleanup(unit, grain);
 		return;
 	}
