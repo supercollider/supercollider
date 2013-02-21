@@ -5,9 +5,11 @@ related::Classes/AppClock, Classes/TempoClock
 
 DESCRIPTION::
 
-SystemClock is more accurate, but cannot call Cocoa primitives. AppClock is less accurate (uses NSTimers) but can call Cocoa primitives.
+SystemClock is more accurate than AppClock, but cannot call GUI primitives.
 
 CLASSMETHODS::
+
+private::prClear
 
 method::sched
 The float you return specifies the delta to resched the function for. Returning nil will stop the task from being rescheduled.
@@ -45,7 +47,7 @@ SystemClock.schedAbs( (thisThread.seconds + 4.0).round(1.0),{ arg time;
 ::
 
 method::play
-Calls to the cocoa framework (including all GUI) may not be made directly from actions triggered by SystemClock or incoming socket messages (OSCFunc).
+Calls to the GUI may not be made directly from actions triggered by SystemClock or incoming socket messages (OSCFunc).
 
 To get around this, use code::{ }.defer ::. This will execute the function using the AppClock and is equivalent to code::AppClock.sched(0, function)::
 
