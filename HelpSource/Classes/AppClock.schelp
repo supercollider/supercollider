@@ -4,13 +4,13 @@ summary::Clock running on main application thread
 related::Classes/SystemClock, Classes/TempoClock
 
 DESCRIPTION::
-SystemClock is more accurate, but cannot call Cocoa primitives. AppClock is less accurate (uses NSTimers) but can call Cocoa primitives.
+SystemClock is more accurate, but cannot call GUI primitives.
 
 You will need to use the link::Classes/SystemClock:: to get accurate/musical scheduling.
 
 CLASSMETHODS::
 
-private::initClass
+private::initClass, prSchedNotify
 
 method::sched
 The float you return specifies the delta to resched the function for. Returning nil will stop the task from being rescheduled.
@@ -59,4 +59,4 @@ AppClock.play(r);
 ::
 
 method::tick
-AppClock.tick is called periodically by the SuperCollider application itself. This updates the link::Classes/Scheduler:: and causes any scheduled tasks to be executed. You should never call this method yourself.
+AppClock.tick is called periodically by the SuperCollider language interpreter. This updates the link::Classes/Scheduler:: and causes any scheduled tasks to be executed. You should never call this method yourself.
