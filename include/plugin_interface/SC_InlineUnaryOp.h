@@ -311,16 +311,16 @@ inline float32 sc_floor(float32 x)
 inline float32 sc_reciprocal(float32 x)
 {
 #ifdef __SSE__
-    // adapted from AP-803 Newton-Raphson Method with Streaming SIMD Extensions
-    // 23 bit accuracy (out of 24bit)
-    const __m128 arg = _mm_set_ss(x);
-    const __m128 approx = _mm_rcp_ss(arg);
-    const __m128 muls = _mm_mul_ss(_mm_mul_ss(arg, approx), approx);
-    const __m128 doubleApprox = _mm_add_ss(approx, approx);
-    const __m128 result = _mm_sub_ss(doubleApprox, muls);
-    return _mm_cvtss_f32(result);
+	// adapted from AP-803 Newton-Raphson Method with Streaming SIMD Extensions
+	// 23 bit accuracy (out of 24bit)
+	const __m128 arg = _mm_set_ss(x);
+	const __m128 approx = _mm_rcp_ss(arg);
+	const __m128 muls = _mm_mul_ss(_mm_mul_ss(arg, approx), approx);
+	const __m128 doubleApprox = _mm_add_ss(approx, approx);
+	const __m128 result = _mm_sub_ss(doubleApprox, muls);
+	return _mm_cvtss_f32(result);
 #else
-    return 1.f/x;
+	return 1.f/x;
 #endif
 }
 
@@ -582,7 +582,7 @@ inline float64 sc_floor(float64 x)
 
 inline float64 sc_reciprocal(float64 x)
 {
-    return 1. / x;
+	return 1. / x;
 }
 
 
