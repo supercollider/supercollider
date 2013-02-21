@@ -1107,6 +1107,19 @@ void Shaper_Ctor(Shaper *unit)
 	Shaper_next_1(unit, 1);
 }
 
+static float inline ShaperPerform(const float * table0, const float * table1, float in, float offset, float fmaxindex)
+{
+	float findex = offset + in * offset;
+	findex = sc_clip(findex, 0.f, fmaxindex);
+	int32 index = (int32)findex;
+	float pfrac = findex - (index - 1);
+	index <<= 3;
+	float val1 = *(const float*)((const char*)table0 + index);
+	float val2 = *(const float*)((const char*)table1 + index);
+	float val = val1 + val2 * pfrac;
+	return val;
+}
+
 void Shaper_next_1(Shaper *unit, int inNumSamples)
 {
 	// get table
@@ -1116,18 +1129,7 @@ void Shaper_next_1(Shaper *unit, int inNumSamples)
 		float fmaxindex = (float)(tableSize>>1) - 0.001;
 		float offset = tableSize * 0.25;
 
-	float val;
-
-	float fin = ZIN0(1);
-	float findex = offset + fin * offset;
-	findex = sc_clip(findex, 0.f, fmaxindex);
-	int32 index = (int32)findex;
-	float pfrac = findex - (index - 1);
-	index <<= 3;
-	float val1 = *(float*)((char*)table0 + index);
-	float val2 = *(float*)((char*)table1 + index);
-	val = val1 + val2 * pfrac;
-	ZOUT0(0) = val;
+	ZOUT0(0) = ShaperPerform(table0, table1, ZIN0(1), offset, fmaxindex);
 }
 
 void Shaper_next_k(Shaper *unit, int inNumSamples)
@@ -1140,25 +1142,21 @@ void Shaper_next_k(Shaper *unit, int inNumSamples)
 		float offset = tableSize * 0.25;
 
 	float *out = ZOUT(0);
-
-	float val;
-
 	float fin = ZIN0(1);
-	float phaseinc = (fin - unit->mPrevIn) * offset;
-	unit->mPrevIn = fin;
 
-	LOOP1(inNumSamples,
-		float findex = offset + fin * offset;
-		findex = sc_clip(findex, 0.f, fmaxindex);
-		int32 index = (int32)findex;
-		float pfrac = findex - (index - 1);
-		index <<= 3;
-		float val1 = *(float*)((char*)table0 + index);
-		float val2 = *(float*)((char*)table1 + index);
-		val = val1 + val2 * pfrac;
-		ZXP(out) = val;
-		fin += phaseinc;
-	);
+	if (fin == unit->mPrevIn) {
+		LOOP1(inNumSamples,
+			ZXP(out) = ShaperPerform(table0, table1, fin, offset, fmaxindex);
+		);
+	} else {
+		float phaseinc = (fin - unit->mPrevIn) * offset;
+		unit->mPrevIn = fin;
+
+		LOOP1(inNumSamples,
+			ZXP(out) = ShaperPerform(table0, table1, fin, offset, fmaxindex);
+			fin += phaseinc;
+		);
+	}
 }
 
 void Shaper_next_a(Shaper *unit, int inNumSamples)
@@ -1171,24 +1169,13 @@ void Shaper_next_a(Shaper *unit, int inNumSamples)
 		float offset = tableSize * 0.25;
 
 	float *out = ZOUT(0);
-	float *in = ZIN(1);
-	float val;
+	const float *in = ZIN(1);
 
 	LOOP1(inNumSamples,
 		float fin = ZXP(in);
-		float findex = offset + fin * offset;
-		findex = sc_clip(findex, 0.f, fmaxindex);
-		int32 index = (int32)findex;
-		float pfrac = findex - (index - 1);
-		index <<= 3;
-		float val1 = *(float*)((char*)table0 + index);
-		float val2 = *(float*)((char*)table1 + index);
-		val = val1 + val2 * pfrac;
-		ZXP(out) = val;
+		ZXP(out) = ShaperPerform(table0, table1, fin, offset, fmaxindex);
 	);
 }
-
-
 
 ////////////////////////////////////////////////////////////////////////////////////
 
