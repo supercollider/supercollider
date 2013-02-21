@@ -723,13 +723,16 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 
 
 				// new shape
+				float fshape = DEMANDINPUT(d_env_shape);
+				if (sc_isnan(fshape))
+					shape = unit->m_shape;
+				else
+					shape = (int)fshape;
+
+				curve = DEMANDINPUT(d_env_curve);
+				if (sc_isnan(curve)) curve = unit->m_curve;
 
 				float count;
-				shape = (int)DEMANDINPUT(d_env_shape);
-				curve = DEMANDINPUT(d_env_curve);
-
-				if (sc_isnan(shape)) shape = unit->m_shape;
-				if (sc_isnan(curve)) curve = unit->m_curve;
 				if (phase <= 1.f) {
 					shape = 1; // shape_Linear
 					count = 1.f;
@@ -982,11 +985,15 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 				// new shape
 				float count;
 				curve = DEMANDINPUT_A(d_env_curve, i + 1);
-				shape = (int)DEMANDINPUT_A(d_env_shape, i + 1);
 
 				// printf("shapes: %i \n", shape);
 				if (sc_isnan(curve)) curve = unit->m_curve;
-				if (sc_isnan(shape)) shape = unit->m_shape;
+
+				float fshape = DEMANDINPUT_A(d_env_shape, i + 1);
+				if (sc_isnan(fshape))
+					shape = unit->m_shape;
+				else
+					shape = (int)fshape;
 
 				if (phase <= 1.f) {
 					shape = 1; // shape_Linear
