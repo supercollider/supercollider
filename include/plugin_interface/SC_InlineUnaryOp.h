@@ -25,6 +25,7 @@
 #include "SC_Constants.h"
 
 #include <cmath>
+#include <limits>
 
 #ifdef __SSE__
 #include <xmmintrin.h>
@@ -34,6 +35,7 @@
 #include <smmintrin.h>
 #endif
 
+// FIXME: we should use better detection methods or remove c++98 support
 #if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE /* c99 compliant compiler */
 #define HAVE_C99
 #endif
@@ -54,10 +56,37 @@ inline float_type trunc(float_type arg)
 
 inline bool sc_isnan(float x)
 {
-#if defined(__cplusplus) && defined(__GNUC__) && _GLIBCXX_HAVE_ISNAN
+#if __cplusplus >= 201103L
 	return std::isnan(x);
 #else
 	return (!(x >= 0.f || x <= 0.f));
+#endif
+}
+
+inline bool sc_isnan(double x)
+{
+#if __cplusplus >= 201103L
+	return std::isnan(x);
+#else
+	return (!(x >= 0.0 || x <= 0.0));
+#endif
+}
+
+inline bool sc_isfinite(float x)
+{
+#if __cplusplus >= 201103L
+	return std::isfinite(x);
+#else
+	return !sc_isnan(x) && (std::abs(x) == std::numeric_limits<float>::infinity());
+#endif
+}
+
+inline bool sc_isfinite(double x)
+{
+#if __cplusplus >= 201103L
+	return std::isfinite(x);
+#else
+	return !sc_isnan(x) && (std::abs(x) != std::numeric_limits<double>::infinity());
 #endif
 }
 
