@@ -88,13 +88,6 @@ struct Shaper : public BufUnit
 	float mPrevIn;
 };
 
-struct SigOsc : public BufUnit
-{
-	int32 mTableSize;
-	double m_cpstoinc;
-	float mPhase;
-};
-
 struct FSinOsc : public Unit
 {
 	double m_b1, m_y1, m_y2, m_freq;
@@ -272,11 +265,6 @@ void IndexInBetween_next_1(IndexInBetween *unit, int inNumSamples);
 void IndexInBetween_next_k(IndexInBetween *unit, int inNumSamples);
 void IndexInBetween_next_a(IndexInBetween *unit, int inNumSamples);
 
-
-void SigOsc_Ctor(SigOsc *unit);
-void SigOsc_next_1(SigOsc *unit, int inNumSamples);
-void SigOsc_next_k(SigOsc *unit, int inNumSamples);
-void SigOsc_next_a(SigOsc *unit, int inNumSamples);
 
 void FSinOsc_Ctor(FSinOsc *unit);
 void FSinOsc_next(FSinOsc *unit, int inNumSamples);
@@ -1177,122 +1165,6 @@ void Shaper_next_a(Shaper *unit, int inNumSamples)
 	);
 }
 
-////////////////////////////////////////////////////////////////////////////////////
-
-void SigOsc_Ctor(SigOsc *unit)
-{
-	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
-	if (BUFLENGTH == 1) {
-		SETCALC(SigOsc_next_1);
-	} else if (INRATE(0) == calc_FullRate) {
-		SETCALC(SigOsc_next_a);
-	} else {
-		SETCALC(SigOsc_next_k);
-	}
-	unit->mPhase = 0.f;
-	SigOsc_next_1(unit, 1);
-}
-
-
-void SigOsc_next_1(SigOsc *unit, int inNumSamples)
-{
-	// get table
-	GET_TABLE
-		const float *table0 = bufData;
-		const float *table1 = table0 + 1;
-		int32 maxindex = tableSize - 1;
-		float maxphase = (float)maxindex;
-		if (tableSize != unit->mTableSize) {
-			unit->mTableSize = tableSize;
-			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
-		}
-
-	float phase = unit->mPhase;
-
-	while (phase < 0.f) phase += maxphase;
-	while (phase >= maxphase) phase -= maxphase;
-	int32 iphase = (int32)phase;
-	float pfrac = phase - iphase;
-	float val1 = *(float*)((char*)table0 + iphase);
-	float val2 = *(float*)((char*)table1 + iphase);
-	float val = lininterp(pfrac, val1, val2);
-	phase += ZIN0(1) * unit->m_cpstoinc;
-
-	ZOUT0(0) = val;
-
-	unit->mPhase = phase;
-}
-
-void SigOsc_next_k(SigOsc *unit, int inNumSamples)
-{
-	// get table
-	GET_TABLE
-		const float *table0 = bufData;
-		const float *table1 = table0 + 1;
-		int32 maxindex = tableSize - 1;
-		float maxphase = (float)maxindex;
-		if (tableSize != unit->mTableSize) {
-			unit->mTableSize = tableSize;
-			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
-		}
-
-	float *out = ZOUT(0);
-
-	float phase = unit->mPhase;
-
-	float freq = ZIN0(1) * unit->m_cpstoinc;
-
-	LOOP1(inNumSamples,
-		while (phase < 0.f) phase += maxphase;
-		while (phase >= maxphase) phase -= maxphase;
-		int32 iphase = (int32)phase;
-		float pfrac = phase - iphase;
-		float val1 = *(float*)((char*)table0 + iphase);
-		float val2 = *(float*)((char*)table1 + iphase);
-		float val = lininterp(pfrac, val1, val2);
-		phase += freq;
-
-		ZXP(out) = val;
-	);
-
-	unit->mPhase = phase;
-}
-
-void SigOsc_next_a(SigOsc *unit, int inNumSamples)
-{
-	// get table
-	GET_TABLE
-		const float *table0 = bufData;
-		const float *table1 = table0 + 1;
-		int32 maxindex = tableSize - 1;
-		float maxphase = (float)maxindex;
-		if (tableSize != unit->mTableSize) {
-			unit->mTableSize = tableSize;
-			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
-		}
-
-	float *out = ZOUT(0);
-	float *freqin = ZIN(1);
-	float phase = unit->mPhase;
-	float cpstoinc = unit->m_cpstoinc;
-
-	LOOP1(inNumSamples,
-		while (phase < 0.f) phase += maxphase;
-		while (phase >= maxphase) phase -= maxphase;
-		int32 iphase = (int32)phase;
-		float pfrac = phase - iphase;
-		float val1 = *(float*)((char*)table0 + iphase);
-		float val2 = *(float*)((char*)table1 + iphase);
-		float val = lininterp(pfrac, val1, val2);
-		phase += ZXP(freqin) * cpstoinc;
-
-		ZXP(out) = val;
-	);
-
-	unit->mPhase = phase;
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void FSinOsc_Ctor(FSinOsc *unit)
@@ -1821,7 +1693,7 @@ void Osc_next_ikk(Osc *unit, int inNumSamples)
 			int tableSize2 = tableSize >> 1;
 			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
 			unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
+			// Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
 			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
 		}
 
@@ -1855,7 +1727,7 @@ void Osc_next_ika(Osc *unit, int inNumSamples)
 			int tableSize2 = tableSize >> 1;
 			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
 			unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
+			// Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
 			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
 		}
 
@@ -1889,7 +1761,7 @@ void Osc_next_iaa(Osc *unit, int inNumSamples)
 			int tableSize2 = tableSize >> 1;
 			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
 			unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
+			// Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
 			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
 		}
 
@@ -1925,7 +1797,7 @@ void Osc_next_iak(Osc *unit, int inNumSamples)
 			int tableSize2 = tableSize >> 1;
 			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
 			unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
+			// Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
 			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
 		}
 
@@ -2155,7 +2027,7 @@ void COsc_next(COsc *unit, int inNumSamples)
 			unit->mTableSize = tableSize;
 			int tableSize2 = tableSize >> 1;
 			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
+			// Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
 			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
 		}
 
@@ -3902,7 +3774,6 @@ PluginLoad(Osc)
 	DefineSimpleUnit(IndexInBetween);
 	DefineSimpleUnit(DetectIndex);
 	DefineSimpleUnit(Shaper);
-	DefineSimpleUnit(SigOsc);
 	DefineSimpleUnit(FSinOsc);
 	DefineSimpleUnit(SinOsc);
 	DefineSimpleUnit(SinOscFB);
