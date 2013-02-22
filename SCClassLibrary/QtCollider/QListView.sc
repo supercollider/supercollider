@@ -1,6 +1,6 @@
 QListView : QItemViewBase {
   var <colors;
-  var <enterKeyAction;
+  var <enterKeyAction, <selectionAction;
 
   *qtClass { ^'QcListWidget' }
 
@@ -92,6 +92,11 @@ QListView : QItemViewBase {
 
   enterKey {
     enterKeyAction.value( this );
+  }
+
+  selectionAction_ { arg func;
+    this.manageFunctionConnection( selectionAction, func, 'itemSelectionChanged()' );
+    selectionAction = func;
   }
 
   colors_ { arg colorArray;
