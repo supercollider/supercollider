@@ -1515,15 +1515,25 @@ inline void Osc_iak_perform(OscType *unit, const float * table0, const float * t
 	float cpstoinc = unit->m_cpstoinc;
 	float radtoinc = unit->m_radtoinc;
 	float phasemod = unit->m_phasein;
-	float phaseslope = CALCSLOPE(phasein, phasemod);
 
-	LOOP1(inNumSamples,
-		int32 pphase = phase + (int32)(radtoinc * phasemod);
-		phasemod += phaseslope;
-		float z = lookupi1(table0, table1, pphase, lomask);
-		phase += (int32)(cpstoinc * ZXP(freqin));
-		ZXP(out) = z;
-	);
+	if (phasein != phasemod) {
+		float phaseslope = CALCSLOPE(phasein, phasemod);
+
+		LOOP1(inNumSamples,
+			int32 pphase = phase + (int32)(radtoinc * phasemod);
+			phasemod += phaseslope;
+			float z = lookupi1(table0, table1, pphase, lomask);
+			phase += (int32)(cpstoinc * ZXP(freqin));
+			ZXP(out) = z;
+		);
+	} else {
+		LOOP1(inNumSamples,
+			int32 pphase = phase + (int32)(radtoinc * phasemod);
+			float z = lookupi1(table0, table1, pphase, lomask);
+			phase += (int32)(cpstoinc * ZXP(freqin));
+			ZXP(out) = z;
+		);
+	}
 	unit->m_phase = phase;
 	unit->m_phasein = phasein;
 }
