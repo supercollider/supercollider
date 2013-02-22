@@ -5,9 +5,12 @@ categories:: GUI>Views
 
 DESCRIPTION::
 
-A view that displays a list of text items and allows one of them to be selected.
+A view that displays a list of text items and allows one or more of them to be selected, depending on link::#-selectionMode::.
 
-An item can be selected by clicking on it. Pressing the up or down arrow keys while an item is selected will select the previous or next item respectively (if available).
+In default selection mode (single item selection), clicking on an item will select it, and pressing the up or down arrow keys will move selection to previous or next item, respectively. Other selection modes allow more complex interaction.
+
+There is a difference between the concepts of link::#-value#current:: item, end link::#-selection#selected:: items. In default selection mode they will always be the same, but not so in other modes.
+
 
 CLASSMETHODS::
 
@@ -33,7 +36,7 @@ METHOD:: clear
     Removes all items.
 
 METHOD:: value
-	The index of the currently selected item, or nil when no item is selected.
+	The index of the current item, or nil when there is no current item. Note that this may be different than link::#-selection:: when link::#-selectionMode:: allows multiple items to be selected.
 
 	argument::
 		An Integer or nil.
@@ -43,7 +46,7 @@ METHOD:: valueAction
 
 METHOD:: selection
 	note::Only in Qt GUI::
-	Returns an array of all selected indexes. See also: link::#-selectionMode::.
+	An array of all selected indexes. Note that this may be different than link::#-value:: when link::#-selectionMode:: allows multiple items to be selected.
 
 
 SUBSECTION:: Appearance
@@ -99,7 +102,11 @@ METHOD:: selectionMode
 SUBSECTION:: Actions
 
 METHOD:: action
-	The action object evaluated whenever the user changes the item selection.
+	The action object evaluated whenever the user changes the emphasis::current:: item, i.e. when link::#-value:: changes as a result of GUI interaction.
+
+METHOD:: selectionAction
+	note::Only in Qt GUI::
+	The action object evaluated whenever link::#-selection:: changes.
 
 METHOD:: enterKeyAction
 	The action object evaluated whenever the user presses the Enter (Return) key.
