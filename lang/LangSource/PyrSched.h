@@ -27,13 +27,6 @@
 
 extern timed_mutex gLangMutex;
 
-SC_DLLEXPORT_C void schedInit();
-SC_DLLEXPORT_C void schedCleanup();
-
-SC_DLLEXPORT_C void schedRun();
-SC_DLLEXPORT_C void schedStop();
-SC_DLLEXPORT_C void schedClear();
-
 double elapsedTime();
 double elapsedRealTime();
 int64 OSCTime();
