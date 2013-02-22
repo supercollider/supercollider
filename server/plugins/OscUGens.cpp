@@ -40,8 +40,6 @@ struct TableLookup : public BufUnit
 
 struct DegreeToKey : public BufUnit
 {
-	SndBuf *m_buf;
-	float m_fbufnum;
 	int32 mPrevIndex;
 	float mPrevKey;
 	int32 mOctave;
