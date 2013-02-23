@@ -46,8 +46,6 @@
 
 int64 gStartupOSCTime = -1;
 
-void sc_SetDenormalFlags();
-
 double gSampleRate, gSampleDur;
 
 // =====================================================================
