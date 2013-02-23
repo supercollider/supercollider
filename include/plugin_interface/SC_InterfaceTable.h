@@ -128,7 +128,7 @@ struct InterfaceTable
 	void (*fNRTLock)(World *inWorld);
 	void (*fNRTUnlock)(World *inWorld);
 
-	bool mAltivecAvailable;
+	bool mUnused0;
 
 	void (*fGroup_DeleteAll)(struct Group* group);
 	void (*fDoneAction)(int doneAction, struct Unit *unit);
@@ -269,6 +269,5 @@ public:
 		RTFree(world, ptr);
 	}
 };
-
 
 #endif
