@@ -19,6 +19,7 @@
 */
 
 #include "SC_PlugIn.h"
+#include "function_attributes.h"
 #include "SC_Altivec.h"
 #include <limits>
 #include <string.h>
@@ -1357,11 +1358,7 @@ void FSinOsc_next(FSinOsc *unit, int inNumSamples)
 
 void FSinOsc_next_i(FSinOsc *unit, int inNumSamples)
 {
-#ifdef __GNUC__
 	float * __restrict__ out = ZOUT(0);
-#else
-	float * out = ZOUT(0);
-#endif
 	double b1 = unit->m_b1;
 
 	double y0;
