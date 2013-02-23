@@ -73,10 +73,28 @@
 #define FLATTEN /*FLATTEN*/
 #endif
 
+// provide c99-style __restrict__
 #if defined(__GNUC__) || defined(__CLANG__)
 // __restrict__ defined
 #else
 #define __restrict__ /* __restrict */
 #endif
+
+// force inlining in release mode
+#ifndef NDEBUG
+#define force_inline inline
+#else
+
+#if defined(__GNUC__)
+#define force_inline inline  __attribute__((always_inline))
+#elif defined(_MSVER)
+#define force_inline __forceinline
+#else
+#define force_inline inline
+#endif
+
+#endif
+
+
 
 #endif /* FUNCTION_ATTRIBUTES_H */
