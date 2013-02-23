@@ -20,6 +20,7 @@
 
 
 #include "SC_PlugIn.h"
+#include "function_attributes.h"
 
 #ifdef NOVA_SIMD
 #include "simd_memory.hpp"
@@ -27,8 +28,6 @@
 #include "simd_pan.hpp"
 #include "simd_mix.hpp"
 using nova::slope_argument;
-
-#include "function_attributes.h"
 
 #endif
 
