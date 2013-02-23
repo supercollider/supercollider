@@ -78,8 +78,6 @@ bool SendMsgToEngine(World *inWorld, FifoMsg& inMsg);
 bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 }
 
-void sc_SetDenormalFlags();
-
 ////////////////////////////////////////////////////////////////////////////////
 
 inline void* sc_malloc(size_t size)
@@ -152,6 +150,34 @@ void zfree(void * ptr)
 	return free(ptr);
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Set denormal FTZ mode on CPUs that need/support it.
+void sc_SetDenormalFlags();
+
+#ifdef __SSE2__
+#include <xmmintrin.h>
+
+void sc_SetDenormalFlags()
+{
+	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+	_mm_setcsr(_mm_getcsr() | 0x40); // DAZ
+}
+
+#elif defined(__SSE__)
+#include <xmmintrin.h>
+
+void sc_SetDenormalFlags()
+{
+	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+}
+
+#else
+
+void sc_SetDenormalFlags()
+{
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
