@@ -78,7 +78,6 @@ bool SendMsgToEngine(World *inWorld, FifoMsg& inMsg);
 bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 }
 
-bool sc_UseVectorUnit();
 void sc_SetDenormalFlags();
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -209,7 +208,7 @@ void InterfaceTable_Init()
 	ft->fNRTLock = &World_NRTLock;
 	ft->fNRTUnlock = &World_NRTUnlock;
 
-	ft->mAltivecAvailable = sc_UseVectorUnit();
+	ft->mUnused0 = false;
 
 	ft->fGroup_DeleteAll = &Group_DeleteAll;
 	ft->fDoneAction = &Unit_DoneAction;

@@ -31,14 +31,6 @@
 #include <string.h>
 #include "SC_World.h"
 
-// Return true if CPU has vector unit.
-bool sc_HasVectorUnit();
-
-// Return true if vector unit is present and should be used.
-// Vectorisation can be turned off by exporting SC_NOVEC in the
-// process environment.
-bool sc_UseVectorUnit();
-
 // Set denormal FTZ mode on CPUs that need/support it.
 void sc_SetDenormalFlags();
 
@@ -54,14 +46,6 @@ bool sc_UseVectorUnit()
 #if defined(__APPLE__) && !defined(SC_IPHONE)
 # include <Carbon/Carbon.h>
 #include <TargetConditionals.h>
-
-bool sc_HasVectorUnit()
-{
-	SInt32 response;
-	Gestalt(gestaltPowerPCProcessorFeatures, &response);
-	//printf("HasAltivec %p %d\n", response, response & (1<<gestaltPowerPCHasVectorInstructions));
-	return response & (1<<gestaltPowerPCHasVectorInstructions);
-}
 
 #ifdef __SSE__
 #include <xmmintrin.h>
@@ -105,24 +89,6 @@ static void sigIllHandler(int sig)
 	}
 	sigIllCanJump = 0;
 	siglongjmp(sigIllJmpBuf, 1);
-}
-
-bool sc_HasVectorUnit()
-{
-	sigIllOldHandler = signal(SIGILL, sigIllHandler);
-
-	if (sigsetjmp(sigIllJmpBuf, 1)) {
-		signal(SIGILL, sigIllOldHandler);
-	} else {
-		sigIllCanJump = 1;
-		asm volatile ("mtspr 256, %0\n\t"
-					  "vand %%v0, %%v0, %%v0"
-					  :
-					  : "r" (-1));
-		signal(SIGILL, sigIllOldHandler);
-		return true;
-	}
-	return false;
 }
 
 void sc_SetDenormalFlags()
@@ -233,19 +199,6 @@ static bool cpuid(
 # error Unknown SSE CPU
 # endif
 
-bool sc_HasVectorUnit()
-{
-	// SSE detection from steve harris
-	// http://www.ecs.soton.ac.uk/~swh/denormal-finder/
-	// <sk>
-	uint32_t a, b, c, d;
-	if (cpuid(1, &a, &b, &c, &d)) {
-		// SSE support
-		return d & 1<<25;
-	}
-	return false;
-}
-
 void sc_SetDenormalFlags()
 {
 	// SSE denormal setup from steve harris
@@ -278,10 +231,6 @@ void sc_SetDenormalFlags()
     }
 }
 #else
-bool sc_HasVectorUnit()
-{
-	return false;
-}
 void sc_SetDenormalFlags()
 {
 }
