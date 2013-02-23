@@ -324,8 +324,8 @@ void Klank_next(Klank *unit, int inNumSamples);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-static inline bool UnitGetTable(BufUnit * unit, int inNumSamples, const SndBuf * & buf,
-								const float * & bufData, int & tableSize)
+force_inline bool UnitGetTable(BufUnit * unit, int inNumSamples, const SndBuf * & buf,
+							   const float * & bufData, int & tableSize)
 {
 	float fbufnum = ZIN0(0);
 	if (fbufnum != unit->m_fbufnum) {
@@ -1108,7 +1108,7 @@ void Shaper_Ctor(Shaper *unit)
 	Shaper_next_1(unit, 1);
 }
 
-static float inline ShaperPerform(const float * table0, const float * table1, float in, float offset, float fmaxindex)
+float force_inline ShaperPerform(const float * table0, const float * table1, float in, float offset, float fmaxindex)
 {
 	float findex = offset + in * offset;
 	findex = sc_clip(findex, 0.f, fmaxindex);
@@ -1355,7 +1355,7 @@ void PSinGrain_next(PSinGrain *unit, int inNumSamples)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename OscType, int FreqInputIndex>
-inline void Osc_ikk_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
+force_inline void Osc_ikk_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float freqin = ZIN0(FreqInputIndex);
@@ -1443,7 +1443,7 @@ void vSinOsc_next_ikk(SinOsc *unit, int inNumSamples)
 
 
 template <typename OscType, int FreqInputIndex>
-inline void Osc_ika_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
+force_inline void Osc_ika_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float freqin = ZIN0(FreqInputIndex);
@@ -1471,7 +1471,7 @@ void SinOsc_next_ika(SinOsc *unit, int inNumSamples)
 
 
 template <typename OscType, int FreqInputIndex>
-inline void Osc_iaa_perform(OscType * unit, const float * table0, const float * table1, int inNumSamples)
+force_inline void Osc_iaa_perform(OscType * unit, const float * table0, const float * table1, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *freqin = ZIN(FreqInputIndex);
@@ -1503,7 +1503,7 @@ void SinOsc_next_iaa(SinOsc *unit, int inNumSamples)
 
 
 template <typename OscType, int FreqInputIndex>
-inline void Osc_iak_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
+force_inline void Osc_iak_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *freqin = ZIN(FreqInputIndex);
@@ -1548,7 +1548,7 @@ void SinOsc_next_iak(SinOsc *unit, int inNumSamples)
 
 
 template <typename OscType, int FreqInputIndex>
-inline void Osc_iai_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
+force_inline void Osc_iai_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *freqin = ZIN(FreqInputIndex);
@@ -1727,7 +1727,7 @@ void Osc_Ctor(Osc *unit)
 	Osc_next_ikk(unit, 1);
 }
 
-static inline bool Osc_get_table(Osc *unit, const float *& table0, const float *& table1, int inNumSamples)
+force_inline bool Osc_get_table(Osc *unit, const float *& table0, const float *& table1, int inNumSamples)
 {
 	const SndBuf * buf;
 	const float * bufData;
