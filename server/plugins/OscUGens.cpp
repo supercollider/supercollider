@@ -369,6 +369,25 @@ force_inline bool UnitGetTable(BufUnit * unit, int inNumSamples, const SndBuf * 
 		if (!tableValid) return; \
 	} while (0);
 
+static inline bool verify_wavetable(Unit * unit, const char * name, int tableSize, int inNumSamples)
+{
+	// phase computation is not precise for large wavetables.
+	if (tableSize > 131072) {
+		if (unit->mWorld->mVerbosity >= -1)
+			Print("Warning: wave table too big (%s)\n", name);
+		ClearUnitOutputs(unit, inNumSamples);
+		return false;
+	}
+
+	if (!ISPOWEROFTWO(tableSize)) {
+		if (unit->mWorld->mVerbosity >= -1)
+			Print("Warning: size of wavetable not a power of two (%s)\n", name);
+		ClearUnitOutputs(unit, inNumSamples);
+		return false;
+	}
+
+	return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1746,6 +1765,7 @@ force_inline bool Osc_get_table(Osc *unit, const float *& table0, const float *&
 		// Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
 		unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
 	}
+	if (!verify_wavetable(unit, "Osc", tableSize, inNumSamples)) return false;
 
 	return true;
 }
@@ -1856,6 +1876,8 @@ void OscN_next_nkk(OscN *unit, int inNumSamples)
 			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
 		}
 
+	if (!verify_wavetable(unit, "OscN", tableSize, inNumSamples)) return;
+
 	float *out = ZOUT(0);
 	float freqin = ZIN0(1);
 	float phasein = ZIN0(2);
@@ -1888,6 +1910,8 @@ void OscN_next_nka(OscN *unit, int inNumSamples)
 			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
 		}
 
+	if (!verify_wavetable(unit, "OscN", tableSize, inNumSamples)) return;
+
 	float *out = ZOUT(0);
 	float freqin = ZIN0(1);
 	float *phasein = ZIN(2);
@@ -1916,6 +1940,8 @@ void OscN_next_naa(OscN *unit, int inNumSamples)
 			unit->m_radtoinc = tableSize * (rtwopi * 65536.);
 			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
 		}
+
+	if (!verify_wavetable(unit, "OscN", tableSize, inNumSamples)) return;
 
 	float *out = ZOUT(0);
 	float *freqin = ZIN(1);
@@ -1947,6 +1973,8 @@ void OscN_next_nak(OscN *unit, int inNumSamples)
 			unit->m_radtoinc = tableSize * (rtwopi * 65536.);
 			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
 		}
+
+	if (!verify_wavetable(unit, "OscN", tableSize, inNumSamples)) return;
 
 	float *out = ZOUT(0);
 	float *freqin = ZIN(1);
@@ -1997,6 +2025,7 @@ void COsc_next(COsc *unit, int inNumSamples)
 			// Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
 			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
 		}
+	if (!verify_wavetable(unit, "COsc", tableSize, inNumSamples)) return;
 
 	float *out = ZOUT(0);
 	float freqin = ZIN0(1);
@@ -2094,6 +2123,8 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 
 		VOSC_GET_BUF
 
+		if (!verify_wavetable(unit, "VOsc", tableSize, inNumSamples)) return;
+
 		const float *table0  = bufs[0].data;
 		const float *table2  = bufs[1].data;
 		if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
@@ -2143,6 +2174,7 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 			int32 bufnum = (int32)sc_floor(cur);
 
 			VOSC_GET_BUF
+			if (!verify_wavetable(unit, "VOsc", tableSize, inNumSamples)) return;
 
 			const float *table0  = bufs[0].data;
 			const float *table2  = bufs[1].data;
@@ -2232,6 +2264,7 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 		int bufnum = (int)cur;
 
 		VOSC_GET_BUF
+		if (!verify_wavetable(unit, "VOsc", tableSize, inNumSamples)) return;
 
 		const float *table0  = bufs[0].data;
 		const float *table2  = bufs[1].data;
@@ -2306,6 +2339,7 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 			int bufnum = (int)cur;
 
 			VOSC_GET_BUF
+			if (!verify_wavetable(unit, "VOsc", tableSize, inNumSamples)) return;
 
 			const float *table0  = bufs[0].data;
 			const float *table2  = bufs[1].data;
