@@ -409,6 +409,23 @@ static inline void IO_a_update_channels(IOUnit * unit, World * world, float fbus
 	}
 }
 
+template <bool UpdateTouched>
+static inline void IO_k_update_channels(IOUnit * unit, World * world, float fbusChannel,
+										int numChannels)
+{
+	if (fbusChannel != unit->m_fbusChannel) {
+		unit->m_fbusChannel = fbusChannel;
+		int busChannel = (int)fbusChannel;
+		int lastChannel = busChannel + numChannels;
+
+		if (!(busChannel < 0 || lastChannel > (int)world->mNumControlBusChannels)) {
+			unit->m_bus = world->mControlBus + busChannel;
+			if (UpdateTouched)
+				unit->m_busTouched = world->mControlBusTouched + busChannel;
+		}
+	}
+}
+
 template <bool LockShared>
 struct AudioBusGuard
 {
@@ -552,31 +569,27 @@ void vIn_next_a(IOUnit *unit, int inNumSamples)
 }
 #endif
 
-// FIXME: add safety checks for control bus access
+static inline float readControlBus(const float * bus, int channelIndex, int maxChannel)
+{
+	if (channelIndex < maxChannel)
+		return *bus;
+	else
+		return 0;
+}
 
 void In_next_k(IOUnit *unit, int inNumSamples)
 {
-//Print("->In_next_k\n");
 	World *world = unit->mWorld;
 	uint32 numChannels = unit->mNumOutputs;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
+	IO_k_update_channels<false>(unit, world, fbusChannel, numChannels);
+	const int32 maxChannel = world->mNumControlBusChannels;
+	const int32 firstOutputChannel = (int) fbusChannel;
 
-		if (!(lastChannel > world->mNumControlBusChannels)) {
-			unit->m_bus = world->mControlBus + busChannel;
-		}
-	}
-
-	float *in = unit->m_bus;
-	for (uint32 i=0; i<numChannels; ++i, in++) {
-		float *out = OUT(i);
-		*out = *in;
-	}
-//Print("<-In_next_k\n");
+	const float *in = unit->m_bus;
+	for (uint32 i=0; i<numChannels; ++i, in++)
+		OUT0(i) = readControlBus(in, firstOutputChannel + i, maxChannel);
 }
 
 void In_Ctor(IOUnit* unit)
@@ -611,62 +624,43 @@ void In_Ctor(IOUnit* unit)
 
 void LagIn_next_k(LagIn *unit, int inNumSamples)
 {
-//Print("->LagIn_next_k\n");
 	World *world = unit->mWorld;
 	int numChannels = unit->mNumOutputs;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
+	IO_k_update_channels<false>(unit, world, fbusChannel, numChannels);
+	const int32 maxChannel = world->mNumControlBusChannels;
+	const int32 firstOutputChannel = (int) fbusChannel;
 
-		if (!(lastChannel > world->mNumControlBusChannels)) {
-			unit->m_bus = world->mControlBus + busChannel;
-		}
-	}
-
-	float *in = unit->m_bus;
+	const float *in = unit->m_bus;
 	float b1 = unit->m_b1;
 	float *y1 = unit->m_y1;
+
 	for (int i=0; i<numChannels; ++i, in++) {
-		float *out = OUT(i);
-		float z = *in;
+		float z = readControlBus(in, firstOutputChannel + i, maxChannel);
 		float x = z + b1 * (y1[i] - z);
-		*out = y1[i] = zapgremlins(x);
+		OUT0(i) = y1[i] = zapgremlins(x);
 	}
-//Print("<-In_next_k\n");
 }
 
 void LagIn_next_0(LagIn *unit, int inNumSamples)
 {
-//Print("->LagIn_next_k\n");
 	World *world = unit->mWorld;
 	int numChannels = unit->mNumOutputs;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
+	IO_k_update_channels<false>(unit, world, fbusChannel, numChannels);
+	const int32 maxChannel = world->mNumControlBusChannels;
+	const int32 firstOutputChannel = (int) fbusChannel;
 
-		if (!(lastChannel > world->mNumControlBusChannels)) {
-			unit->m_bus = world->mControlBus + busChannel;
-		}
-	}
-
-	float *in = unit->m_bus;
+	const float *in = unit->m_bus;
 	float *y1 = unit->m_y1;
-	for (int i=0; i<numChannels; ++i, in++) {
-		float *out = OUT(i);
-		*out = y1[i] = *in;
-	}
-//Print("<-In_next_k\n");
+	for (int i=0; i<numChannels; ++i, in++)
+		OUT0(i) = y1[i] = readControlBus(in, firstOutputChannel + i, maxChannel);
 }
 
 void LagIn_Ctor(LagIn* unit)
 {
-//Print("->LagIn_Ctor\n");
 	World *world = unit->mWorld;
 	unit->m_fbusChannel = -1.;
 
@@ -675,12 +669,9 @@ void LagIn_Ctor(LagIn* unit)
 
 	SETCALC(LagIn_next_k);
 	unit->m_bus = world->mControlBus;
-	//unit->m_busTouched = world->mControlBusTouched;
 	LagIn_next_0(unit, 1);
-//Print("<-LagIn_Ctor\n");
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void InFeedback_next_a(IOUnit *unit, int inNumSamples)
@@ -731,23 +722,16 @@ void InTrig_next_k(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumOutputs;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
+	IO_k_update_channels<true>(unit, world, fbusChannel, numChannels);
+	const int32 maxChannel = world->mNumControlBusChannels;
+	const int32 firstOutputChannel = (int) fbusChannel;
 
-		if (!(lastChannel > world->mNumControlBusChannels)) {
-			unit->m_bus = world->mControlBus + busChannel;
-			unit->m_busTouched = world->mControlBusTouched + busChannel;
-		}
-	}
-
-	float *in = unit->m_bus;
+	const float *in = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, in++) {
 		float *out = OUT(i);
-		if (touched[i] == bufCounter) *out = *in;
+		if (touched[i] == bufCounter) *out = readControlBus(in, firstOutputChannel + i, maxChannel);
 		else *out = 0.f;
 	}
 }
@@ -796,33 +780,27 @@ void ReplaceOut_next_a(IOUnit *unit, int inNumSamples)
 	}
 }
 
-// FIXME: guard control bus & prevent buffer overflow
 void ReplaceOut_next_k(IOUnit *unit, int inNumSamples)
 {
 	World *world = unit->mWorld;
 	int numChannels = unit->mNumInputs - 1;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
-
-		if (!(lastChannel > world->mNumControlBusChannels)) {
-			unit->m_bus = world->mControlBus + busChannel;
-			unit->m_busTouched = world->mControlBusTouched + busChannel;
-		}
-	}
+	IO_k_update_channels<true>(unit, world, fbusChannel, numChannels);
+	const int32 maxChannel = world->mNumControlBusChannels;
+	const int32 firstOutputChannel = (int) fbusChannel;
 
 	float *out = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out++) {
-		float *in = IN(i+1);
-		ACQUIRE_BUS_CONTROL((int32)fbusChannel + i);
-		*out = *in;
-		touched[i] = bufCounter;
-		RELEASE_BUS_CONTROL((int32)fbusChannel + i);
+		if (firstOutputChannel + i < maxChannel) {
+			float *in = IN(i+1);
+			ACQUIRE_BUS_CONTROL((int32)fbusChannel + i);
+			*out = *in;
+			touched[i] = bufCounter;
+			RELEASE_BUS_CONTROL((int32)fbusChannel + i);
+		}
 	}
 }
 
@@ -1034,29 +1012,25 @@ void Out_next_k(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs - 1;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
+	IO_k_update_channels<true>(unit, world, fbusChannel, numChannels);
+	const int32 maxChannel = world->mNumControlBusChannels;
+	const int32 firstOutputChannel = (int) fbusChannel;
 
-		if (!(lastChannel > world->mNumControlBusChannels)) {
-			unit->m_bus = world->mControlBus + busChannel;
-			unit->m_busTouched = world->mControlBusTouched + busChannel;
-		}
-	}
 	float *out = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out++) {
-		float *in = IN(i+1);
-		ACQUIRE_BUS_CONTROL((int32)fbusChannel + i);
-		if (touched[i] == bufCounter)
-			*out += *in;
-		else {
-			*out = *in;
-			touched[i] = bufCounter;
+		if (firstOutputChannel + i < maxChannel) {
+			float *in = IN(i+1);
+			ACQUIRE_BUS_CONTROL((int32)fbusChannel + i);
+			if (touched[i] == bufCounter)
+				*out += *in;
+			else {
+				*out = *in;
+				touched[i] = bufCounter;
+			}
+			RELEASE_BUS_CONTROL((int32)fbusChannel + i);
 		}
-		RELEASE_BUS_CONTROL((int32)fbusChannel + i);
 	}
 }
 
@@ -1250,33 +1224,28 @@ void XOut_next_k(XOut *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs - 2;
 
 	float fbusChannel = ZIN0(0);
-	if (fbusChannel != unit->m_fbusChannel) {
-		unit->m_fbusChannel = fbusChannel;
-		uint32 busChannel = (uint32)fbusChannel;
-		uint32 lastChannel = busChannel + numChannels;
-
-		if (!(lastChannel > world->mNumControlBusChannels)) {
-			unit->m_bus = world->mControlBus + busChannel;
-			unit->m_busTouched = world->mControlBusTouched + busChannel;
-		}
-	}
+	IO_k_update_channels<true>(unit, world, fbusChannel, numChannels);
+	const int32 maxChannel = world->mNumControlBusChannels;
+	const int32 firstOutputChannel = (int) fbusChannel;
 
 	float xfade = ZIN0(1);
 	float *out = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out++) {
-		float *in = IN(i+2);
-		ACQUIRE_BUS_CONTROL((int32)fbusChannel + i);
-		if (touched[i] == bufCounter) {
-			float zin = *in;
-			float zout = *out;
-			*out = zout + xfade * (zin - zout);
-		} else {
-			*out = xfade * *in;
-			touched[i] = bufCounter;
+		if (firstOutputChannel + i < maxChannel) {
+			float *in = IN(i+2);
+			ACQUIRE_BUS_CONTROL((int32)fbusChannel + i);
+			if (touched[i] == bufCounter) {
+				float zin = *in;
+				float zout = *out;
+				*out = zout + xfade * (zin - zout);
+			} else {
+				*out = xfade * *in;
+				touched[i] = bufCounter;
+			}
+			RELEASE_BUS_CONTROL((int32)fbusChannel + i);
 		}
-		RELEASE_BUS_CONTROL((int32)fbusChannel + i);
 	}
 }
 
