@@ -34,14 +34,6 @@ struct Spring : public Unit
 	float m_pos;
 	float m_vel;
 };
-/*
-struct Friction : public Unit
-{
-	float m_pos;
-	float m_vel;
-	int m_state;
-};
-*/
 
 struct Ball : public Unit
 {
@@ -111,98 +103,7 @@ void Spring_next(Spring *unit, int inNumSamples)
 	unit->m_vel = vel;
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////
-
-/*
-void Friction_Ctor(Friction *unit)
-{
-	SETCALC(Friction_next);
-	unit->m_vel = 0.f;
-	unit->m_pos = 0.f;
-	unit->m_state = 0;
-	Friction_next(unit, 1);
-
-}
-
-// in, spring, damping
-
-void Friction_next(Friction *unit, int inNumSamples)
-{
-	float pos = unit->m_pos;
-	float vel = unit->m_vel;
-	int state = unit->m_state;
-...
-void Index_next_a(Index *unit, int inNumSamples)
-{
-	// get table
-	GET_TABLE
-		float *table = bufData;
-		int32 maxindex = tableSize - 1;
-
-	float *out = ZOUT(0);
-	float *in = ZIN(1);
-
-	LOOP1(inNumSamples,
-		int32 index = (int32)ZXP(in);
-		index = sc_clip(index, 0, maxindex);
-		ZXP(out) = table[index];
-	);
-
-}
-...
-
-	float *out = ZOUT(0); 			// out force
-	float *in = ZIN(0); 			// in displacement
-	float spring = ZIN0(1);			// spring constant
-	float damping = 1.f - ZIN0(2);	// friction -> replace by buffer number for friction table
-	float c = SAMPLEDUR;
-	float rc = SAMPLERATE;
-	spring *= c;
-	LOOP1(inNumSamples,
-		float inpos = ZXP(in) * c;
-		float force = inpos + pos * spring;
-		state = (vel > damping) ?  1 : 0; //  friction table here
-		if(state) { // stuck
-			vel = 0.f;
-			pos += inpos;
-		} else {   // loose
-			vel += force;
-			pos -= vel;
-		}
-		ZXP(out) = force * rc;
-	);
-
-	unit->m_pos = pos;
-	unit->m_vel = vel;
-	unit->m_state = state;
-
-}
-
-#define GET_TABLE \
-		float fbufnum = ZIN0(0); \
-		if (fbufnum != unit->m_fbufnum) { \
-			uint32 bufnum = (uint32)fbufnum; \
-			World *world = unit->mWorld; \
-			if (bufnum >= world->mNumSndBufs) bufnum = 0; \
-			unit->m_buf = world->mSndBufs + bufnum; \
-		} \
-		SndBuf *buf = unit->m_buf; \
-        if(!buf) { \
-			ClearUnitOutputs(unit, inNumSamples); \
-			return; \
-		} \
-		LOCK_SNDBUF(buf); \
-		float *bufData __attribute__((__unused__)) = buf->data; \
-		if (!bufData) { \
-			ClearUnitOutputs(unit, inNumSamples); \
-			return; \
-		} \
-		int tableSize = buf->samples;
-
-*/
-//////////////////////////////////////////////////////////////////////////////////////////
-
 
 void Ball_Ctor(Ball *unit)
 {
@@ -359,7 +260,6 @@ PluginLoad(PhysicalModeling)
 	ft = inTable;
 
 	DefineSimpleUnit(Spring);
-//	DefineSimpleUnit(Friction);
 	DefineSimpleUnit(Ball);
 	DefineSimpleUnit(TBall);
 }
