@@ -266,7 +266,8 @@ definitionList::
 
 ## Resource Locking || SuperCollider's buffers and busses are global data structures, and access needs to be synchronized.
     This is done internally by using reader-writer spinlocks. This is done by using the code::ACQUIRE_::, code::RELEASE_::, and
-    code::LOCK_:: macros, which are defined in SC_Unit.h.
+    code::LOCK_:: macros, which are defined in SC_Unit.h. As exception, buffers in the wavetable format are not required to be
+    locked.
 ::
 
 subsection:: Deadlock Prevention

@@ -350,7 +350,7 @@ force_inline bool UnitGetTable(BufUnit * unit, int inNumSamples, const SndBuf * 
 		ClearUnitOutputs(unit, inNumSamples);
 		return false;
 	}
-	LOCK_SNDBUF_SHARED(buf);
+
 	bufData = buf->data;
 	if (!bufData) {
 		ClearUnitOutputs(unit, inNumSamples);
@@ -2022,7 +2022,7 @@ void COsc_next(COsc *unit, int inNumSamples)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define VOSC_GET_BUF_UNLOCKED						\
+#define VOSC_GET_BUF								\
 const SndBuf *bufs;									\
 if (bufnum < 0)										\
 	bufnum = 0;										\
@@ -2042,10 +2042,6 @@ if (bufnum+1 >= world->mNumSndBufs) {				\
 	bufs = world->mSndBufs + sc_max(0, bufnum);		\
 }
 
-#define VOSC_GET_BUF			\
-	VOSC_GET_BUF_UNLOCKED 		\
-	LOCK_SNDBUF_SHARED(bufs);
-
 void VOsc_Ctor(VOsc *unit)
 {
 	SETCALC(VOsc_next_ik);
@@ -2055,7 +2051,7 @@ void VOsc_Ctor(VOsc *unit)
 	int bufnum = sc_floor(nextbufpos);
 	World *world = unit->mWorld;
 
-	VOSC_GET_BUF_UNLOCKED
+	VOSC_GET_BUF
 
 	int tableSize = bufs[0].samples;
 
