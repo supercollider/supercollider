@@ -24,13 +24,13 @@
 #include "SC_PlugIn.h"
 #include "function_attributes.h"
 
-// c++ wrapper for Unit struct
+/// c++ wrapper for Unit struct
 class SCUnit:
 	public Unit
 {
 public:
 	///@{
-	/// generic signal wrapper
+	/// generic signal wrappers
 	template <typename FloatType>
 	struct ScalarSignal
 	{
@@ -97,117 +97,135 @@ public:
 	}
 	///@}
 
+	/// get input signal at index
 	const float * in(int index) const
 	{
 		const Unit * unit = this;
 		return IN(index);
 	}
 
+	/// get input signal at index (to be used with ZXP)
 	const float * zin(int index) const
 	{
 		const Unit * unit = this;
 		return ZIN(index);
 	}
 
-	float const & in0(int index) const
+	/// get first sample of input signal
+	const float in0(int index) const
 	{
 		const Unit * unit = this;
 		return IN0(index);
 	}
 
+	/// get output signal at index
 	float * out(int index) const
 	{
 		const Unit * unit = this;
 		return OUT(index);
 	}
 
+	/// get output signal at index (to be used with ZXP)
 	float * zout(int index) const
 	{
 		const Unit * unit = this;
 		return ZOUT(index);
 	}
 
+	/// get reference to first sample of output signal
 	float & out0(int index) const
 	{
 		const Unit * unit = this;
 		return OUT0(index);
 	}
 
+	/// get rate of input signal
 	int inRate(int index) const
 	{
 		const Unit * unit = this;
 		return INRATE(index);
 	}
 
+	/// test if input signal at index is scalar rate
 	bool isScalarRateIn(int index) const
 	{
 		return inRate(index) == calc_ScalarRate;
 	}
 
+	/// test if input signal at index is demand rate
 	bool isDemandRateIn(int index) const
 	{
 		return inRate(index) == calc_DemandRate;
 	}
 
+	/// test if input signal at index is control rate
 	bool isControlRateIn(int index) const
 	{
 		return inRate(index) == calc_BufRate;
 	}
 
+	/// test if input signal at index is audio rate
 	bool isAudioRateIn(int index) const
 	{
 		return inRate(index) == calc_FullRate;
 	}
 
+	/// get the blocksize of the input
 	int inBufferSize(int index) const
 	{
 		const Unit * unit = this;
 		return INBUFLENGTH(index);
 	}
 
-	/// @{
+	/// get sample rate of ugen
 	double sampleRate() const
 	{
 		const Unit * unit = this;
 		return SAMPLERATE;
 	}
 
+	/// get sample duration
 	double sampleDur() const
 	{
 		const Unit * unit = this;
 		return SAMPLEDUR;
 	}
 
+	/// get buffer size of ugen
 	int bufferSize() const
 	{
 		return mBufLength;
 	}
 
+	/// get control rate
 	double controlRate() const
 	{
 		const Unit * unit = this;
 		return BUFRATE;
 	}
 
+	/// get duration of a control block
 	double controlDur() const
 	{
 		const Unit * unit = this;
 		return BUFDUR;
 	}
 
+	/// get sampling rate of audio signal
 	double fullSampleRate() const
 	{
 		const Unit * unit = this;
 		return FULLRATE;
 	}
 
+	/// get buffer size of audio signals
 	int fullBufferSize() const
 	{
 		const Unit * unit = this;
 		return FULLBUFLENGTH;
 	}
-	/// @}
 
+	/// calculate slope value
 	template <typename FloatType>
 	FloatType calcSlope(FloatType next, FloatType prev) const
 	{
@@ -221,7 +239,6 @@ public:
 		return &run_member_function<UnitType, PointerToMember>;
 	}
 
-	/// @{
 	/// set calc function & compute initial sample
 	template <typename UnitType, void (UnitType::*PointerToMember)(int)>
 	void set_calc_function(void)
@@ -230,6 +247,7 @@ public:
 		(mCalcFunc)(this, 1);
 	}
 
+	/// set calc function & compute initial sample
 	template <typename UnitType, void (UnitType::*VectorCalcFunc)(int), void (UnitType::*ScalarCalcFunc)(int)>
 	void set_vector_calc_function(void)
 	{
@@ -247,7 +265,7 @@ private:
 	}
 };
 
-// define Ctor/Dtor functions
+/// define Ctor/Dtor functions for a class
 #define DEFINE_XTORS(CLASSNAME)         \
 void CLASSNAME##_Ctor(CLASSNAME * unit) \
 {                                       \
