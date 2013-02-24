@@ -132,11 +132,7 @@ void Ball_next(Ball *unit, int inNumSamples)
 	float inter = c * 1000.f;
 	RGen& rgen = *unit->mParent->mRGen;
 	float g = c * g_in;
-#ifdef _MSC_VER
-	k *= g_in; // stickyness proportional to gravity
-#else //#ifdef _MSC_VER
 	k = (double) k * (double) g_in; // stickyness proportional to gravity
-#endif //#ifdef _MSC_VER
 
 	LOOP1(inNumSamples,
 		float floor = ZXP(in);
@@ -206,11 +202,7 @@ void TBall_next(TBall *unit, int inNumSamples)
 	float inter = c * 10000.f;
 	RGen& rgen = *unit->mParent->mRGen;
 	float g = c * g_in;
-#ifdef _MSC_VER
-	k *= g_in; // stickyness proportional to gravity
-#else //#ifdef _MSC_VER
 	k = (double) k * (double) g_in; // stickyness proportional to gravity
-#endif //#ifdef _MSC_VER
 
 	LOOP1(inNumSamples,
 		double floor = ZXP(in);
