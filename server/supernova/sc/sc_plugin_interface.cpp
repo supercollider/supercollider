@@ -554,12 +554,12 @@ void send_trigger(Node * unit, int trigger_id, float value)
 
 void world_lock(World *world)
 {
-	reinterpret_cast<SC_Lock*>(world->mNRTLock)->lock();
+    reinterpret_cast<SC_Lock*>(world->mNRTLock)->lock();
 }
 
 void world_unlock(World *world)
 {
-	reinterpret_cast<SC_Lock*>(world->mNRTLock)->unlock();
+    reinterpret_cast<SC_Lock*>(world->mNRTLock)->unlock();
 }
 
 Node * get_node(World *world, int id)
@@ -736,6 +736,7 @@ void sc_plugin_interface::initialize(server_arguments const & args, float * cont
     world.mNumOutputs = args.output_channels;
 
     world.mRealTime = !args.non_rt;
+    world.mVerbosity = args.verbosity;
 
     /* rngs */
     world.mNumRGens = args.rng_count;
