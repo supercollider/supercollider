@@ -21,9 +21,9 @@ else()
     include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 endif()
 
-if(APPLE)
-	include_directories("LangPrimSource/${HID_UTIL_DIR}")
-elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+# if(APPLE)
+# 	include_directories("LangPrimSource/${HID_UTIL_DIR}")
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
 elseif(WIN32)
 	find_package(Portmidi)
@@ -114,15 +114,36 @@ set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 add_definitions(-DYYSTACK_USE_ALLOCA)
 
+
+# sdl
+# pkg_check_modules(sdl2 REQUIRED sdl2)
+# find_package( sdl )
+Find_Package(SDL REQUIRED)
+# pkg_check_modules(sdl2 REQUIRED sdl2)
+
+## FIXME: add an if, in case sdl library not found
+list(APPEND sclang_sources
+   LangPrimSource/SC_HID_SDL.cpp
+   )
+# add_definitions(-DHAVE_SDL_HID)
+## FIXME: add linking?
+include_directories(
+  ${sdl2_INCLUDE_DIRS}
+)
+
+link_directories(
+  ${sdl2_LIBRARY_DIRS}
+)
+
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
 			LangPrimSource/WiiMote_OSX/wiiremote.c
-			LangPrimSource/SC_HID.cpp
-			LangPrimSource/${HID_UTIL_DIR}/HID_Utilities.c
-			LangPrimSource/${HID_UTIL_DIR}/HID_Name_Lookup.c
-			LangPrimSource/${HID_UTIL_DIR}/HID_Queue_Utilities.c
-			LangPrimSource/${HID_UTIL_DIR}/HID_Error_Handler.c
+# 			LangPrimSource/SC_HID.cpp
+# 			LangPrimSource/${HID_UTIL_DIR}/HID_Utilities.c
+# 			LangPrimSource/${HID_UTIL_DIR}/HID_Name_Lookup.c
+# 			LangPrimSource/${HID_UTIL_DIR}/HID_Queue_Utilities.c
+# 			LangPrimSource/${HID_UTIL_DIR}/HID_Error_Handler.c
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
 			LangPrimSource/SC_Speech.M
@@ -132,17 +153,17 @@ if(UNIX)
 			set_source_files_properties(LangPrimSource/SC_Speech.M
 										PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 		endif()
-		if(NOT (HID_UTIL_DIR MATCHES "HID_Utilities_10_4"))
-			list(APPEND sclang_sources
-				LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c
-				LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c
-			)
-		endif()
+# 		if(NOT (HID_UTIL_DIR MATCHES "HID_Utilities_10_4"))
+# 			list(APPEND sclang_sources
+# 				LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c
+# 				LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c
+# 			)
+# 		endif()
 	else(APPLE)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
 		endif()
-		if(LINUX)
+		if(LINUX) #still use LID for access to mice and keyboards
 			list(APPEND sclang_sources LangPrimSource/SC_LID.cpp)
 			add_definitions(-DHAVE_LID)
 		endif(LINUX)
@@ -243,7 +264,7 @@ if (APPLE)
 	target_link_libraries(libsclang "-framework Carbon")
 	target_link_libraries(libsclang "-framework CoreAudio")
 	target_link_libraries(libsclang "-framework CoreMIDI")
-	target_link_libraries(libsclang "-framework IOKit")
+# 	target_link_libraries(libsclang "-framework IOKit")
 	target_link_libraries(libsclang "-framework CoreServices")
 endif()
 
