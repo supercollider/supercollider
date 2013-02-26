@@ -9,6 +9,9 @@ Description::
 Strict convolution with fixed kernel which can be updated using a trigger
 signal.
 
+Internally, this unit uses FFT to accelerate the calculation, which means that
+(a) you must specify a "framesize", and
+(b) if the kernel is longer than this framesize, the end of it will be ignored.
 
 See also  link::http://www.dspguide.com/ch18.htm::  by Steven W.
 Smith.
