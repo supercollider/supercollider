@@ -4216,6 +4216,9 @@ void initMIDIPrimitives();
 void initHIDPrimitives();
 	initHIDPrimitives();
 
+void initHIDSDLPrimitives();
+	initHIDSDLPrimitives();
+
 void initSerialPrimitives();
 	initSerialPrimitives();
 
