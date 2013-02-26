@@ -50,11 +50,14 @@ extern bool compiledOK;
 
 #include <boost/thread.hpp>
 #include <map>
-#include <SDL2/SDL.h>
+// #include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 typedef std::map<int,SDL_Joystick*> joy_map_t;
 
 typedef std::map<int,SDL_Joystick*>::const_iterator joy_map_iterator;
+
+PyrSymbol * s_sdlhid;
 
 struct SC_HID_SDLManager
 {
@@ -71,17 +74,6 @@ public:
 
 	void close_all_joysticks();
 
-private:
-	SC_HID_SDLManager();
-	~SC_HID_SDLManager();
-	
-	int initialize_SDL();
-	
-	void threadLoop(void*);
-	void handleEvent(SDL_Event& evt, boost::atomic<bool> const & shouldBeRunning);
-	void joystickClosed();
-// 	void joystickInfo();
-
 	static PyrSymbol* s_joystickAxis;
 	static PyrSymbol* s_joystickButton;
 	static PyrSymbol* s_joystickHat;
@@ -89,8 +81,24 @@ private:
 	static PyrSymbol* s_joystickClosed;
 // 	static PyrSymbol* s_joystickInfo;
 
-// private:
+public:
+	SC_HID_SDLManager();
+	~SC_HID_SDLManager();
+	
+	int initialize_SDL();
+
+protected:	
+	void threadLoop(void*);
+	void handleEvent(SDL_Event * evt, boost::atomic<bool> const & shouldBeRunning);
+	void joystickClosed(int, boost::atomic<bool> const & shouldBeRunning);
+// 	void joystickInfo();
+
+
+private:
 	joy_map_t joysticks;    // declares a vector of joysticks
+
+	// language interface
+	PyrObject*		m_obj;
 
 	boost::thread		m_thread;
 	boost::atomic<bool>	m_running;
@@ -102,7 +110,7 @@ PyrSymbol* SC_HID_SDLManager::s_joystickButton = 0;
 PyrSymbol* SC_HID_SDLManager::s_joystickHat = 0;
 PyrSymbol* SC_HID_SDLManager::s_joystickBall = 0;
 PyrSymbol* SC_HID_SDLManager::s_joystickClosed = 0;
-PyrSymbol* SC_HID_SDLManager::s_joystickInfo = 0;
+// PyrSymbol* SC_HID_SDLManager::s_joystickInfo = 0;
 
 void SC_HID_SDLManager::close_all_joysticks(){
   joy_map_t::const_iterator it;
@@ -128,17 +136,19 @@ int SC_HID_SDLManager::open_joystick( int joy_idx ){
 
 int SC_HID_SDLManager::close_joystick( int joy_idx ){
   if ( joysticks.count( joy_idx ) >= 0 ){
+  /* this is SDL2.0 stuff
     if ( !SDL_JoystickGetAttached( joysticks.find( joy_idx )->second ) ){
         // FIXME: use sc-standard for printing errors
       fprintf(stderr, "HID SDL : joystick was already closed %d\n", joy_idx);
       return 0;
     } else {
+    */
     // FIXME: add closed action call?
 //    joystickClosed( joy_idx, mShouldBeRunning );
       SDL_JoystickClose( joysticks.find( joy_idx )->second );
       joysticks.erase( joysticks.find( joy_idx ) );
       return 1;
-    }
+    //}
   } else {
       fprintf(stderr, "HID SDL : joystick was not open %d\n", joy_idx);
       return 0;
@@ -149,13 +159,15 @@ SDL_Joystick * SC_HID_SDLManager::get_joystick( int joy_idx ){
   SDL_Joystick * myjoy;
   if ( joysticks.count( joy_idx ) >= 0 ){
     myjoy = joysticks.find( joy_idx )->second;
+    /* this is SDL2 stuff
     if ( !SDL_JoystickGetAttached( myjoy ) ){
         // FIXME: use sc-standard for printing errors
       fprintf(stderr, "HID SDL : joystick was closed %d\n", joy_idx);
       return NULL;
     } else {
+    */
       return myjoy;
-    }
+    //}
   } else {
       fprintf(stderr, "HID SDL : joystick was not open %d\n", joy_idx);
       return NULL;
@@ -212,8 +224,8 @@ int SC_HID_SDLManager::initialize_SDL(){
   m_running = false;
   // FIXME: make a define check based on the library version of the SDL library
   // FIXED: We don't need video, but without it SDL will fail to work in SDL_WaitEvent()
-  //   if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
-  if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_EVENT | SDL_INIT_JOYSTICK) < 0)
+  if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
+  //if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_EVENT | SDL_INIT_JOYSTICK) < 0)
   {
     // FIXME: use sc-standard for printing errors
     fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
@@ -233,19 +245,21 @@ int SC_HID_SDLManager::initialize_SDL(){
 
 int SC_HID_SDLManager::buildDeviceList(){
   int num_joysticks = SDL_NumJoysticks();
+  /*
   int joy_idx;
   for(joy_idx = 0; joy_idx < num_joysticks; ++joy_idx){
-    if ( mymap.count( joy_idx )>0 ){
+    if ( joysticks.count( joy_idx )>0 ){
       SDL_Joystick * joy = joysticks.find( joy_idx )->second;
       // joystick is open and we just send the info back
-      joystickInfo( joy_idx, joy, mShouldBeRunning );
+      //joystickInfo( joy_idx, joy, mShouldBeRunning );
     } else {
       // open and close joystick, and send info
       SDL_Joystick * newjoy = SDL_JoystickOpen( joy_idx );
-      joystickInfo( joy_idx, newjoy, mShouldBeRunning );
+      //joystickInfo( joy_idx, newjoy, mShouldBeRunning );
       SDL_JoystickClose( newjoy );
     }
   }
+  */
   return num_joysticks;
 }
 
@@ -297,7 +311,7 @@ void SC_HID_SDLManager::joystickClosed( int joy_idx, boost::atomic<bool> const &
   gLangMutex.unlock();  
 }
 
-void SC_HID_SDLManager::handleEvent( SDL_Event& evt, boost::atomic<bool> const & shouldBeRunning ){
+void SC_HID_SDLManager::handleEvent( SDL_Event * evt, boost::atomic<bool> const & shouldBeRunning ){
   int status = lockLanguageOrQuit(shouldBeRunning);
   if (status == EINTR)
     return;
@@ -305,15 +319,15 @@ void SC_HID_SDLManager::handleEvent( SDL_Event& evt, boost::atomic<bool> const &
     postfl("error when locking language (%d)\n", status);
     return;
   }
-  switch ( event.type ){
+  switch ( evt->type ){
     case SDL_JOYAXISMOTION:
       if (compiledOK) {
 	VMGlobals* g = gMainVMGlobals;
 	g->canCallOS = false;
 	++g->sp; SetObject(g->sp, m_obj);
-	++g->sp; SetInt(g->sp, evt.jaxis.which);
-	++g->sp; SetInt(g->sp, evt.jaxis.axis);
-	++g->sp; SetInt(g->sp, evt.jaxis.value);
+	++g->sp; SetInt(g->sp, evt->jaxis.which);
+	++g->sp; SetInt(g->sp, evt->jaxis.axis);
+	++g->sp; SetInt(g->sp, evt->jaxis.value);
 	runInterpreter(g, s_joystickAxis, 4);
 	g->canCallOS = false;    
       }
@@ -324,9 +338,9 @@ void SC_HID_SDLManager::handleEvent( SDL_Event& evt, boost::atomic<bool> const &
 	VMGlobals* g = gMainVMGlobals;
 	g->canCallOS = false;
 	++g->sp; SetObject(g->sp, m_obj);
-	++g->sp; SetInt(g->sp, evt.jbutton.which);
-	++g->sp; SetInt(g->sp, evt.jbutton.button);
-	++g->sp; SetInt(g->sp, evt.jbutton.state);
+	++g->sp; SetInt(g->sp, evt->jbutton.which);
+	++g->sp; SetInt(g->sp, evt->jbutton.button);
+	++g->sp; SetInt(g->sp, evt->jbutton.state);
 	runInterpreter(g, s_joystickButton, 4);
 	g->canCallOS = false;    
       }
@@ -336,9 +350,9 @@ void SC_HID_SDLManager::handleEvent( SDL_Event& evt, boost::atomic<bool> const &
 	VMGlobals* g = gMainVMGlobals;
 	g->canCallOS = false;
 	++g->sp; SetObject(g->sp, m_obj);
-	++g->sp; SetInt(g->sp, evt.jhat.which);
-	++g->sp; SetInt(g->sp, evt.jhat.hat);
-	++g->sp; SetInt(g->sp, evt.jhat.value);
+	++g->sp; SetInt(g->sp, evt->jhat.which);
+	++g->sp; SetInt(g->sp, evt->jhat.hat);
+	++g->sp; SetInt(g->sp, evt->jhat.value);
 	runInterpreter(g, s_joystickButton, 4);
 	g->canCallOS = false;    
       }
@@ -348,10 +362,10 @@ void SC_HID_SDLManager::handleEvent( SDL_Event& evt, boost::atomic<bool> const &
 	VMGlobals* g = gMainVMGlobals;
 	g->canCallOS = false;
 	++g->sp; SetObject(g->sp, m_obj);
-	++g->sp; SetInt(g->sp, evt.jball.which);
-	++g->sp; SetInt(g->sp, evt.jball.ball);
-	++g->sp; SetInt(g->sp, evt.jball.xrel);
-	++g->sp; SetInt(g->sp, evt.jball.yrel);
+	++g->sp; SetInt(g->sp, evt->jball.which);
+	++g->sp; SetInt(g->sp, evt->jball.ball);
+	++g->sp; SetInt(g->sp, evt->jball.xrel);
+	++g->sp; SetInt(g->sp, evt->jball.yrel);
 	runInterpreter(g, s_joystickBall, 5);
 	g->canCallOS = false;    
       }
@@ -361,7 +375,7 @@ void SC_HID_SDLManager::handleEvent( SDL_Event& evt, boost::atomic<bool> const &
 }
 
 // this updates the joystick states each step of the loop
-void SC_HID_SDLManager::threadLoop(){
+void SC_HID_SDLManager::threadLoop(void*){
   SDL_Event event;
   while(m_running ){
     while( SDL_PollEvent(&event) ){
@@ -377,12 +391,14 @@ void SC_HID_SDLManager::threadLoop(){
 	  fprintf(stderr, "HID SDL Error: Unhandled event type: %d\n", event.type);
 	  break;
       }
+    /*  SDL2 stuff
       // check that joysticks are still attached:
       joy_map_iterator itr;
       for(itr = joysticks.begin(); itr != joysticks.end(); ++itr)
 	if ( !SDL_JoystickGetAttached( itr->second ) ){
 	  joystickClosed( itr->first, mShouldBeRunning );
 	}
+	*/
       SDL_Delay(1); // 1ms delay, is that useful??
     }
   }
@@ -406,7 +422,7 @@ int prHID_SDL_Stop(VMGlobals* g, int numArgsPushed)
 
 int prHID_SDL_BuildDeviceList(VMGlobals* g, int numArgsPushed){
   PyrSlot *args = g->sp - numArgsPushed + 1;
-  PyrSlot self = args + 0;
+  PyrSlot *self = args + 0;
   // no arguments
   
   int err;
@@ -416,11 +432,11 @@ int prHID_SDL_BuildDeviceList(VMGlobals* g, int numArgsPushed){
   if ( result > 0 ){
 	// populate array with found devices and their names:
 	PyrObject* allDevsArray = newPyrArray(g->gc, result * sizeof(PyrObject), 0 , true);
-	for ( int joy_idx=0; joy_idx < result; joy_idx++ ){
-	  PyrString *devname = newPyrString(g->gc, SDL_JoystickNameForIndex( joy_idx ), 0, true);
-	  SetObject(allDevsArray->slots+allDevsArray->size++, devname);
-	  g->gc->GCWrite(allDevsArray, (PyrObject*) devname);
-	}
+//	for ( int joy_idx=0; joy_idx < result; joy_idx++ ){
+//	  PyrString *devname = newPyrString(g->gc, SDL_JoystickNameForIndex( joy_idx ), 0, true);
+//	  SetObject(allDevsArray->slots+allDevsArray->size++, devname);
+//	  g->gc->GCWrite(allDevsArray, (PyrObject*) devname);
+//	}
 	SetObject( self, allDevsArray );
   } else {
 	// send back info that no devices were found, or empty array
@@ -437,7 +453,7 @@ int prHID_SDL_Open( VMGlobals* g, int numArgsPushed ){
   int err;
   int joyid;
   
-  err = SlotIntVal( arg, &joyid );
+  err = slotIntVal( arg, &joyid );
   if ( err != errNone ) return err;
   
   // open device
@@ -457,7 +473,7 @@ int prHID_SDL_Close( VMGlobals* g, int numArgsPushed ){
   int joyid;
   
   
-  err = SlotIntVal( arg, &joyid );
+  err = slotIntVal( arg, &joyid );
   if ( err != errNone ) return err;
   
   // open device
@@ -476,7 +492,7 @@ int prHID_SDL_GetInfo( VMGlobals* g, int numArgsPushed ){
   int err;
   int joyid;
     
-  err = SlotIntVal( arg, &joyid );
+  err = slotIntVal( arg, &joyid );
   if ( err != errNone ) return err;
   
   SDL_Joystick * joy = SC_HID_SDLManager::instance().get_joystick( joyid );
@@ -485,7 +501,8 @@ int prHID_SDL_GetInfo( VMGlobals* g, int numArgsPushed ){
     // populate array with found devices and their names:
     PyrObject* devInfo = newPyrArray(g->gc, 6 * sizeof(PyrObject), 0 , true);
 
-    PyrString *devname = newPyrString(g->gc, SDL_JoystickNameForIndex( joyid ), 0, true);
+//    PyrString *devname = newPyrString(g->gc, SDL_JoystickNameForIndex( joyid ), 0, true);
+    PyrString *devname = newPyrString(g->gc, SDL_JoystickName( joyid ), 0, true);
     SetObject(devInfo->slots+devInfo->size++, devname);
     g->gc->GCWrite(devInfo, (PyrObject*) devname);
 
@@ -500,8 +517,8 @@ int prHID_SDL_GetInfo( VMGlobals* g, int numArgsPushed ){
     SetInt(devInfo->slots+devInfo->size++, numballs);
     
     char guid[64]; //TODO: is this large enough for all possible GUIDs?
-    SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(joy), guid, sizeof (guid));
-    PyrString *devguid = newPyrString(g->gc, SDL_JoystickNameForIndex( joyid ), 0, true);
+//    SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(joy), guid, sizeof (guid));
+    PyrString *devguid = newPyrString(g->gc, guid, 0, true);
     SetObject(devInfo->slots+devInfo->size++, devguid);
     g->gc->GCWrite(devInfo, (PyrObject*) devguid);
 
@@ -522,7 +539,7 @@ int prHID_SDL_GetDeviceMap( VMGlobals* g, int numArgsPushed ){
   int joyid;
   
   
-  err = SlotIntVal( arg, &joyid );
+  err = slotIntVal( arg, &joyid );
   if ( err != errNone ) return err;
   
   SDL_Joystick * joy = SC_HID_SDLManager::instance().get_joystick( joyid );
@@ -593,6 +610,11 @@ void initHIDSDLPrimitives()
   
   SC_HID_SDLManager::s_joystickClosed = getsym("prJoystickClosed"); // send back that device was closed
 //   SC_HID_SDLManager::s_joystickInfo = getsym("prJoystickInfo");   
+}
+
+void initHIDPrimitives()
+{
+	//other platforms?
 }
 
 #else // no SDL HID
