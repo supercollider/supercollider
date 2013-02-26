@@ -530,12 +530,11 @@ void PreparePartConv(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 		if(i<(numpartitions-1))
 		//memset(inputbuf, 0, sizeof(float)*fftsize);
 			memcpy(inputbuf, data2+indexnow, nover2 * sizeof(float));
-		else
-		{
-			int takenow= frames2%nover2;
-
-			if(frames2==nover2)
-				takenow= nover2;
+		else{
+			int takenow = frames2 % nover2;
+			if(takenow == 0){
+				takenow = nover2;
+			}
 
 			memcpy(inputbuf, data2+indexnow, takenow * sizeof(float));
 
