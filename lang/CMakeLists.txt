@@ -125,15 +125,15 @@ Find_Package(SDL REQUIRED)
 list(APPEND sclang_sources
    LangPrimSource/SC_HID_SDL.cpp
    )
-# add_definitions(-DHAVE_SDL_HID)
+add_definitions(-DHAVE_SDL_HID)
 ## FIXME: add linking?
-include_directories(
-  ${sdl2_INCLUDE_DIRS}
-)
+#include_directories(
+#  ${sdl2_INCLUDE_DIRS}
+#)
 
-link_directories(
-  ${sdl2_LIBRARY_DIRS}
-)
+#link_directories(
+#  ${sdl2_LIBRARY_DIRS}
+#)
 
 if(UNIX)
 	if(APPLE)
