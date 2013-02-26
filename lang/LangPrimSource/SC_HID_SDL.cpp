@@ -88,7 +88,7 @@ public:
 	int initialize_SDL();
 
 protected:	
-	void threadLoop(void*);
+	void threadLoop();
 	void handleEvent(SDL_Event * evt, boost::atomic<bool> const & shouldBeRunning);
 	void joystickClosed(int, boost::atomic<bool> const & shouldBeRunning);
 // 	void joystickInfo();
@@ -375,7 +375,7 @@ void SC_HID_SDLManager::handleEvent( SDL_Event * evt, boost::atomic<bool> const 
 }
 
 // this updates the joystick states each step of the loop
-void SC_HID_SDLManager::threadLoop(void*){
+void SC_HID_SDLManager::threadLoop(void){
   SDL_Event event;
   while(m_running ){
     while( SDL_PollEvent(&event) ){
