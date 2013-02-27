@@ -208,6 +208,11 @@ file(GLOB_RECURSE all_headers ../../*hpp)
 add_executable(scsynth scsynth_main.cpp ${all_headers})
 target_link_libraries(scsynth libscsynth)
 
+if (ARCHLINUX)
+    set_property(TARGET scsynth
+                 APPEND PROPERTY LINK_FLAGS "-lpthread")
+endif()
+
 if(LTO)
     set_property(TARGET scsynth libscsynth
                  APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
