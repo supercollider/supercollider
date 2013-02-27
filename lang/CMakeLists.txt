@@ -307,6 +307,11 @@ set_property(TARGET sclang
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS USE_SC_TERMINAL_CLIENT BUILDING_SUPERCOLLIDER)
 
+if (ARCHLINUX)
+    set_property(TARGET sclang
+                 APPEND PROPERTY LINK_FLAGS "-lpthread")
+endif()
+
 if(LTO)
 	set_property(TARGET sclang libsclang
 					APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
