@@ -63,6 +63,40 @@ code::
 12r4A.A
 ::
 
+subsection::Scale Degrees
+Integer numbers as scale degrees supports accidentals notation by adding the suffixes strong::s:: for sharp and strong::b:: for flat. Accidentals are represented as floating point values.
+
+code::
+2s == 2.1  // scale degree two, sharp
+2b == 1.9  // scale degree two, flat
+2ss == 2.2 // scale degree two, double sharp
+2bb == 1.8 // scale degree two, double flat
+::
+
+Up to four:
+
+code::
+2ssss == 2.4
+2bbbb == 1.6
+::
+
+With negative scale degrees it reverses:
+
+code::
+-2s == -1.9
+-2b == -2.1
+-2ss == -1.8
+-2bb == -2.2
+::
+
+Accidentals can also specify cents deviation up to 499 cents:
+
+code::
+2b50 == 1.95 // scale degree two, fifty cents flat
+2s204 == 2.204 // scale degree two, 204 cents sharp
+::
+
+
 section::Characters
 
 Characters are preceded by a dollar sign:
