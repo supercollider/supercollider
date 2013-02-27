@@ -45,7 +45,7 @@ struct Convolution : Unit
 
 struct Convolution2 : Unit
 {
-	int m_pos, m_insize, m_fftsize; //,m_mask;
+	int m_pos, m_framesize, m_fftsize; //,m_mask;
 									//int m_log2n;
 	float m_prevtrig;
 	float *m_inbuf1, *m_fftbuf1, *m_fftbuf2, *m_outbuf,*m_overlapbuf;
@@ -293,29 +293,20 @@ handle_failure:
 void Convolution2_Ctor(Convolution2 *unit)
 {
 	//require size N+M-1 to be a power of two
-
-	unit->m_insize=(int)ZIN0(3);	//could be input parameter
-									// 	printf( "unit->m_insize %i\n", unit->m_insize );
-									// 	printf( "unit->mWorld->mFullRate.mBufLength %i\n", unit->mWorld->mFullRate.mBufLength );
-
-	//float fbufnum  = ZIN0(1);
-	uint32 bufnum = (int)ZIN0(1); //fbufnum;
+	unit->m_framesize=(int)ZIN0(3);
+	uint32 kernelbufnum = (int)ZIN0(1);
 	World *world = unit->mWorld;
 
-	//before added check for LocalBuf
-	//if (bufnum >= world->mNumSndBufs) bufnum = 0;
-	//	SndBuf *buf = world->mSndBufs + bufnum;
+	SndBuf *kernelbuf = ConvGetBuffer(unit, kernelbufnum, "Convolution2", 1);
 
-	SndBuf *buf = ConvGetBuffer(unit, bufnum, "Convolution2", 1);
+	if(kernelbuf) {
+		if ( unit->m_framesize <= 0 ){ // if smaller than zero, we use the size of the buffer
+			unit->m_framesize=kernelbuf->frames;
+		}
 
-	if(buf) {
-		if ( unit->m_insize <= 0 ) // if smaller than zero, equal to size of buffer
-			unit->m_insize=buf->frames;	//could be input parameter
-
-		unit->m_fftsize=2*(unit->m_insize);
-		//printf("hello %i, %i\n", unit->m_insize, unit->m_fftsize);
-		//just use memory for the input buffers and fft buffers
-		int insize = unit->m_insize * sizeof(float);
+		unit->m_fftsize=2*(unit->m_framesize);
+		// allocate memory internally for the input buffers and fft buffers
+		int insize = unit->m_framesize * sizeof(float);
 		int fftsize = unit->m_fftsize * sizeof(float);
 		unit->m_inbuf1 = (float*)RTAlloc(world, insize);
 		unit->m_fftbuf1 = (float*)RTAlloc(world, fftsize);
@@ -337,9 +328,9 @@ void Convolution2_Ctor(Convolution2 *unit)
 		unit->m_scfftR = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_outbuf, kBackward, alloc);
 
 		//calculate fft for kernel straight away
-		memcpy(unit->m_fftbuf2, buf->data, insize);
+		memcpy(unit->m_fftbuf2, kernelbuf->data, insize);
 		//zero pad second part of buffer to allow for convolution
-		memset(unit->m_fftbuf2+unit->m_insize, 0, insize);
+		memset(unit->m_fftbuf2+unit->m_framesize, 0, insize);
 
 		scfft_dofft(unit->m_scfft2);
 
@@ -348,10 +339,7 @@ void Convolution2_Ctor(Convolution2 *unit)
 		unit->m_prevtrig = 0.f;
 		unit->m_prevtrig = ZIN0(2);
 
-		// 	printf( "unit->m_insize %i\n", unit->m_insize );
-		// 	printf( "world->mFullRate.mBufLength %i\n", world->mFullRate.mBufLength );
-
-		if ( unit->m_insize >= world->mFullRate.mBufLength )
+		if ( unit->m_framesize >= world->mFullRate.mBufLength )
 		{
 			// 		printf( "insize bigger than blocksize\n" );
 			SETCALC(Convolution2_next);
@@ -390,7 +378,7 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 	float *out1 = unit->m_inbuf1 + unit->m_pos;
 
 	int numSamples = unit->mWorld->mFullRate.mBufLength;
-	uint32 insize=unit->m_insize * sizeof(float);
+	uint32 framesize_f =unit->m_framesize * sizeof(float);
 
 	// copy input
 	Copy(numSamples, out1, in1);
@@ -398,39 +386,26 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 	unit->m_pos += numSamples;
 
 	if (unit->m_prevtrig <= 0.f && curtrig > 0.f){
-		//float fbufnum  = ZIN0(1);
-		//int log2n2 = unit->m_log2n;
-		//uint32 bufnum = (int)fbufnum;
-		//printf("bufnum %i \n", bufnum);
-		//World *world = unit->mWorld;
-		//if (bufnum >= world->mNumSndBufs) bufnum = 0;
-		//SndBuf *buf = world->mSndBufs + bufnum;
-
-		SndBuf *buf = ConvGetBuffer(unit,(uint32)ZIN0(1), "Convolution2", numSamples);
-		if (!buf)
+		SndBuf *kernelbuf = ConvGetBuffer(unit,(uint32)ZIN0(1), "Convolution2", numSamples);
+		if (!kernelbuf)
 			return;
-		LOCK_SNDBUF_SHARED(buf);
+		LOCK_SNDBUF_SHARED(kernelbuf);
 
-		memcpy(unit->m_fftbuf2, buf->data, insize);
-		memset(unit->m_fftbuf2+unit->m_insize, 0, insize);
-	    //rffts(unit->m_fftbuf2, log2n2, 1, cosTable[log2n2]);
+		memcpy(unit->m_fftbuf2, kernelbuf->data, framesize_f);
+		memset(unit->m_fftbuf2 + unit->m_framesize, 0, framesize_f);
 
 		scfft_dofft(unit->m_scfft2);
 	}
 
-	if (unit->m_pos & unit->m_insize) {
-
+	if (unit->m_pos & unit->m_framesize) { // <-- what is this check meant to do? bitwise ops are hard to comprehend
 		//have collected enough samples to transform next frame
 		unit->m_pos = 0; //reset collection counter
 
 		// copy to fftbuf
-		//int log2n = unit->m_log2n;
-
-		memcpy(unit->m_fftbuf1, unit->m_inbuf1, insize);
+		memcpy(unit->m_fftbuf1, unit->m_inbuf1, framesize_f);
 
 		//zero pad second part of buffer to allow for convolution
-		memset(unit->m_fftbuf1+unit->m_insize, 0, insize);
-		//if (unit->m_prevtrig <= 0.f && curtrig > 0.f)
+		memset(unit->m_fftbuf1+unit->m_framesize, 0, framesize_f);
 
 		scfft_dofft(unit->m_scfft1);
 
@@ -455,7 +430,7 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 		}
 
 		//copy second part from before to overlap
-		memcpy(unit->m_overlapbuf, unit->m_outbuf+unit->m_insize, insize);
+		memcpy(unit->m_overlapbuf, unit->m_outbuf+unit->m_framesize, framesize_f);
 
 		//inverse fft into outbuf
 		memcpy(unit->m_outbuf, unit->m_fftbuf1, unit->m_fftsize * sizeof(float));
