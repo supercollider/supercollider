@@ -290,8 +290,6 @@ handle_failure:
 	return NULL;
 }
 
-
-
 void Convolution2_Ctor(Convolution2 *unit)
 {
 	//require size N+M-1 to be a power of two
@@ -319,15 +317,6 @@ void Convolution2_Ctor(Convolution2 *unit)
 		//just use memory for the input buffers and fft buffers
 		int insize = unit->m_insize * sizeof(float);
 		int fftsize = unit->m_fftsize * sizeof(float);
-
-		//
-		//	unit->m_inbuf1 = (float*)RTAlloc(unit->mWorld, insize);
-		////         unit->m_inbuf2 = (float*)RTAlloc(unit->mWorld, insize);
-		//
-		//        unit->m_fftbuf1 = (float*)RTAlloc(unit->mWorld, fftsize);
-		//        unit->m_fftbuf2 = (float*)RTAlloc(unit->mWorld, fftsize);
-
-
 		unit->m_inbuf1 = (float*)RTAlloc(world, insize);
 		unit->m_fftbuf1 = (float*)RTAlloc(world, fftsize);
 		unit->m_fftbuf2 = (float*)RTAlloc(world, fftsize);
@@ -337,8 +326,6 @@ void Convolution2_Ctor(Convolution2 *unit)
 
 		memset(unit->m_outbuf, 0, fftsize);
 		memset(unit->m_overlapbuf, 0, insize);
-
-		//unit->m_log2n = LOG2CEIL(unit->m_fftsize);
 
 		unit->m_pos = 0;
 		memset(unit->m_outbuf, 0, fftsize);
@@ -358,16 +345,6 @@ void Convolution2_Ctor(Convolution2 *unit)
 
 		unit->m_pos = 0;
 
-		//	unit->m_log2n = LOG2CEIL(unit->m_fftsize);
-		//
-		//        int log2n = unit->m_log2n;
-		//
-		//	//test for full input buffer
-		//	//unit->m_mask = unit->m_insize;
-		//
-		//	//in place transform for now
-		//		rffts(unit->m_fftbuf2, log2n, 1, cosTable[log2n]);
-
 		unit->m_prevtrig = 0.f;
 		unit->m_prevtrig = ZIN0(2);
 
@@ -384,7 +361,6 @@ void Convolution2_Ctor(Convolution2 *unit)
 			printf( "Convolution2 framesize smaller than blocksize \n" );
 			SETCALC(*ClearUnitOutputs);
 			unit->mDone = true;
-			//SETCALC(Convolution2_next2);
 		}
 	} else {
 		unit->m_scfft2 = unit->m_scfft1 = unit->m_scfftR = NULL;
@@ -394,7 +370,6 @@ void Convolution2_Ctor(Convolution2 *unit)
 void Convolution2_Dtor(Convolution2 *unit)
 {
 	RTFree(unit->mWorld, unit->m_inbuf1);
-	// 	RTFree(unit->mWorld, unit->m_inbuf2);
 	RTFree(unit->mWorld, unit->m_fftbuf1);
 	RTFree(unit->mWorld, unit->m_fftbuf2);
 	RTFree(unit->mWorld, unit->m_outbuf);
@@ -410,11 +385,9 @@ void Convolution2_Dtor(Convolution2 *unit)
 void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 {
 	float *in1 = IN(0);
-	//float *in2 = IN(1);
 	float curtrig = ZIN0(2);
 
 	float *out1 = unit->m_inbuf1 + unit->m_pos;
-	// 	float *out2 = unit->m_inbuf2 + unit->m_pos;
 
 	int numSamples = unit->mWorld->mFullRate.mBufLength;
 	uint32 insize=unit->m_insize * sizeof(float);
@@ -461,11 +434,8 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 
 		scfft_dofft(unit->m_scfft1);
 
-		//in place transform for now
-		//		rffts(unit->m_fftbuf1, log2n, 1, cosTable[log2n]);
-
 		//complex multiply time
-		int numbins = unit->m_fftsize >> 1; //unit->m_fftsize - 2 >> 1;
+		int numbins = unit->m_fftsize >> 1;
 
 		float * p1= unit->m_fftbuf1;
 		float * p2= unit->m_fftbuf2;
@@ -480,7 +450,7 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 			realind= 2*i; imagind= realind+1;
 			real= p1[realind]*p2[realind]- p1[imagind]*p2[imagind];
 			imag= p1[realind]*p2[imagind]+ p1[imagind]*p2[realind];
-			p1[realind] = real; //p2->bin[i];
+			p1[realind] = real;
 			p1[imagind]= imag;
 		}
 
@@ -489,9 +459,6 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 
 		//inverse fft into outbuf
 		memcpy(unit->m_outbuf, unit->m_fftbuf1, unit->m_fftsize * sizeof(float));
-
-		//in place
-		//riffts(unit->m_outbuf, log2n, 1, cosTable[log2n]);
 
 		scfft_doifft(unit->m_scfftR);
 
@@ -508,101 +475,6 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 	for (int i=0; i<numSamples; ++i)
 		ZXP(output) = out[i] + overlap[i];
 }
-
-
-
-// flawed since assumes framesize at least divides blocksize. framesize has to be power of two anyway: commenting out pending deletion
-//// if kernel size is smaller than server block size (note: this is not working yet...
-//void Convolution2_next2(Convolution2 *unit, int wrongNumSamples)
-//{
-//
-//	float *in1 = IN(0);
-//	//float *in2 = IN(1);
-//	float curtrig = ZIN0(2);
-//
-//	float *out1 = unit->m_inbuf1; //  unit->m_pos is now a pointer into the *in1 buffer
-//// 	float *out2 = unit->m_inbuf2 + unit->m_pos;
-//
-//	unit->m_pos = 0;
-//
-//	int numSamples = unit->mWorld->mFullRate.mBufLength;
-//	uint32 insize=unit->m_insize * sizeof(float);
-//
-//	int numTimes = numSamples / unit->m_insize;
-//
-//// replace buffer if there was a trigger
-//	if (unit->m_prevtrig <= 0.f && curtrig > 0.f){
-//		float fbufnum  = ZIN0(1);
-//		int log2n2 = unit->m_log2n;
-//		uint32 bufnum = (int)fbufnum;
-//		//printf("bufnum %i \n", bufnum);
-//		World *world = unit->mWorld;
-//		if (bufnum >= world->mNumSndBufs) bufnum = 0;
-//		SndBuf *buf = world->mSndBufs + bufnum;
-//
-//		memcpy(unit->m_fftbuf2, buf->data, insize);
-//		memset(unit->m_fftbuf2+unit->m_insize, 0, insize);
-//		//DoWindowing(log2n2, unit->m_fftbuf2, unit->m_fftsize);
-//		rffts(unit->m_fftbuf2, log2n2, 1, cosTable[log2n2]);
-//	}
-//
-//	for ( int i=0; i < numTimes; i++ )
-//		{
-//		// copy input
-//		Copy(unit->m_insize, out1, in1 + unit->m_pos);
-//		unit->m_pos += unit->m_insize;
-//
-//        	//have collected enough samples to transform next frame
-//        	// copy to fftbuf
-//		int log2n = unit->m_log2n;
-//
-//		memcpy(unit->m_fftbuf1, unit->m_inbuf1, insize);
-//		//zero pad second part of buffer to allow for convolution
-//		memset(unit->m_fftbuf1+unit->m_insize, 0, insize);
-//
-//		//in place transform for now
-//		rffts(unit->m_fftbuf1, log2n, 1, cosTable[log2n]);
-//
-//		//complex multiply time
-//		int numbins = unit->m_fftsize >> 1; //unit->m_fftsize - 2 >> 1;
-//
-//		float * p1= unit->m_fftbuf1;
-//		float * p2= unit->m_fftbuf2;
-//
-//		p1[0] *= p2[0];
-//		p1[1] *= p2[1];
-//
-//		//complex multiply
-//		for (int i=1; i<numbins; ++i) {
-//			float real,imag;
-//			int realind,imagind;
-//			realind= 2*i; imagind= realind+1;
-//			real= p1[realind]*p2[realind]- p1[imagind]*p2[imagind];
-//			imag= p1[realind]*p2[imagind]+ p1[imagind]*p2[realind];
-//			p1[realind] = real; //p2->bin[i];
-//			p1[imagind]= imag;
-//		}
-//
-//		//copy second part from before to overlap
-//		memcpy(unit->m_overlapbuf, unit->m_outbuf+unit->m_insize, unit->m_insize * sizeof(float));
-//
-//		//inverse fft into outbuf
-//		memcpy(unit->m_outbuf, unit->m_fftbuf1, unit->m_fftsize * sizeof(float));
-//
-//		//in place
-//		riffts(unit->m_outbuf, log2n, 1, cosTable[log2n]);
-//
-//		//write out samples copied from outbuf, with overlap added in
-//		float *output = ZOUT(0);
-//		float *out= unit->m_outbuf;
-//		float *overlap= unit->m_overlapbuf;
-//
-//		for (int i=0; i<unit->m_insize; ++i) {
-//			*++output = *++out + *++overlap;
-//		}
-//	}
-//	unit->m_prevtrig = curtrig;
-//}
 
 void Convolution2L_Ctor(Convolution2L *unit)
 {
