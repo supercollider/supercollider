@@ -378,7 +378,8 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 	float *out1 = unit->m_inbuf1 + unit->m_pos;
 
 	int numSamples = unit->mWorld->mFullRate.mBufLength;
-	uint32 framesize_f =unit->m_framesize * sizeof(float);
+	uint32 framesize = unit->m_framesize;
+	uint32 framesize_f = framesize * sizeof(float);
 
 	// copy input
 	Copy(numSamples, out1, in1);
@@ -391,8 +392,10 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 			return;
 		LOCK_SNDBUF_SHARED(kernelbuf);
 
-		memcpy(unit->m_fftbuf2, kernelbuf->data, framesize_f);
-		memset(unit->m_fftbuf2 + unit->m_framesize, 0, framesize_f);
+		// we cannot use a kernel larger than the fft size, so truncate if needed. the kernel may be smaller though.
+		size_t kernelcopysize = sc_min(kernelbuf->frames, framesize);
+		memcpy(unit->m_fftbuf2, kernelbuf->data, kernelcopysize * sizeof(float));
+		memset(unit->m_fftbuf2 + kernelcopysize, 0, (2 * framesize - kernelcopysize) * sizeof(float));
 
 		scfft_dofft(unit->m_scfft2);
 	}
