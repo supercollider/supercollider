@@ -46,7 +46,9 @@ METHOD:: valueAction
 
 METHOD:: selection
 	note::Only in Qt GUI::
-	An array of all selected indexes. Note that this may be different than link::#-value:: when link::#-selectionMode:: allows multiple items to be selected.
+	An array of all selected indexes. When setting selection, either an array or a single integer may be used.
+
+	Note that this may be different than link::#-value:: when link::#-selectionMode:: allows multiple items to be selected. When setting selection in single-item selection mode, only the last index will remain selected.
 
 
 SUBSECTION:: Appearance
