@@ -298,14 +298,11 @@ void Convolution2_Ctor(Convolution2 *unit)
 		unit->m_fftbuf2 = (float*)RTAlloc(world, fftsize_f);
 
 		unit->m_outbuf = (float*)RTAlloc(world, fftsize_f);
-		unit->m_overlapbuf = (float*)RTAlloc(world, framesize_f);
-
 		memset(unit->m_outbuf, 0, fftsize_f);
+		unit->m_overlapbuf = (float*)RTAlloc(world, framesize_f);
 		memset(unit->m_overlapbuf, 0, framesize_f);
 
 		unit->m_pos = 0;
-		memset(unit->m_outbuf, 0, fftsize_f);
-		memset(unit->m_overlapbuf, 0, framesize_f);
 
 		SCWorld_Allocator alloc(ft, unit->mWorld);
 		unit->m_scfft1 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_fftbuf1, kForward, alloc);
@@ -313,9 +310,12 @@ void Convolution2_Ctor(Convolution2 *unit)
 		unit->m_scfftR = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_outbuf, kBackward, alloc);
 
 		//calculate fft for kernel straight away
-		memcpy(unit->m_fftbuf2, kernelbuf->data, framesize_f);
+		// we cannot use a kernel larger than the fft size, so truncate if needed. the kernel may be smaller though.
+		uint32 framesize = unit->m_framesize;
+		size_t kernelcopysize = sc_min(kernelbuf->frames, framesize);
+		memcpy(unit->m_fftbuf2, kernelbuf->data, kernelcopysize * sizeof(float));
 		//zero pad second part of buffer to allow for convolution
-		memset(unit->m_fftbuf2+unit->m_framesize, 0, framesize_f);
+		memset(unit->m_fftbuf2 + kernelcopysize, 0, (2 * framesize - kernelcopysize) * sizeof(float));
 
 		scfft_dofft(unit->m_scfft2);
 
@@ -418,10 +418,7 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 
 		//copy second part from before to overlap
 		memcpy(unit->m_overlapbuf, unit->m_outbuf+unit->m_framesize, framesize_f);
-
 		//inverse fft into outbuf
-		memcpy(unit->m_outbuf, unit->m_fftbuf1, unit->m_fftsize * sizeof(float));
-
 		scfft_doifft(unit->m_scfftR);
 	}
 
