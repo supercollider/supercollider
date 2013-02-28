@@ -52,7 +52,6 @@ endif()
 
 set(scsynth_sources
 	SC_BufGen.cpp
-	SC_Carbon.cpp
 
 	SC_ComPort.cpp
 	SC_CoreAudio.cpp

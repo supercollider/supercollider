@@ -179,6 +179,8 @@ void sc_SetDenormalFlags()
 {
 }
 
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool getScopeBuffer(World *inWorld, int index, int channels, int maxFrames, ScopeBufferHnd &hnd);
@@ -420,9 +422,6 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 
 		world->mRestrictedPath = inOptions->mRestrictedPath;
 
-		if(inOptions->mVerbosity >= 1) {
-			scprintf("Using vector unit: %s\n", sc_UseVectorUnit() ? "yes" : "no");
-		}
 		sc_SetDenormalFlags();
 
 		if (world->mRealTime) {
