@@ -78,9 +78,6 @@ bool SendMsgToEngine(World *inWorld, FifoMsg& inMsg);
 bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 }
 
-bool sc_UseVectorUnit();
-void sc_SetDenormalFlags();
-
 ////////////////////////////////////////////////////////////////////////////////
 
 inline void* sc_malloc(size_t size)
@@ -156,6 +153,34 @@ void zfree(void * ptr)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// Set denormal FTZ mode on CPUs that need/support it.
+void sc_SetDenormalFlags();
+
+#ifdef __SSE2__
+#include <xmmintrin.h>
+
+void sc_SetDenormalFlags()
+{
+	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+	_mm_setcsr(_mm_getcsr() | 0x40); // DAZ
+}
+
+#elif defined(__SSE__)
+#include <xmmintrin.h>
+
+void sc_SetDenormalFlags()
+{
+	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+}
+
+#else
+
+void sc_SetDenormalFlags()
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 static bool getScopeBuffer(World *inWorld, int index, int channels, int maxFrames, ScopeBufferHnd &hnd);
 static void pushScopeBuffer(World *inWorld, ScopeBufferHnd &hnd, int frames);
 static void releaseScopeBuffer(World *inWorld, ScopeBufferHnd &hnd);
@@ -209,7 +234,7 @@ void InterfaceTable_Init()
 	ft->fNRTLock = &World_NRTLock;
 	ft->fNRTUnlock = &World_NRTUnlock;
 
-	ft->mAltivecAvailable = sc_UseVectorUnit();
+	ft->mUnused0 = false;
 
 	ft->fGroup_DeleteAll = &Group_DeleteAll;
 	ft->fDoneAction = &Unit_DoneAction;

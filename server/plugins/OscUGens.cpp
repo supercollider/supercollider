@@ -20,7 +20,6 @@
 
 #include "SC_PlugIn.h"
 #include "function_attributes.h"
-#include "SC_Altivec.h"
 #include <limits>
 #include <string.h>
 
@@ -1402,64 +1401,6 @@ void SinOsc_next_ikk(SinOsc *unit, int inNumSamples)
 	Osc_ikk_perform<SinOsc, 0>(unit, table0, table1, inNumSamples);
 }
 
-#if __VEC__
-
-void vSinOsc_next_ikk(SinOsc *unit, int inNumSamples)
-{
-	vfloat32 *vout = (vfloat32*)OUT(0);
-	float freqin = ZIN0(0);
-	float phasein = ZIN0(1);
-
-	float *table0 = ft->mSineWavetable;
-	float *table1 = table0 + 1;
-
-	int32 phase = unit->m_phase;
-	int32 lomask = unit->m_lomask;
-
-	int32 freq = (int32)(unit->m_cpstoinc * freqin);
-	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
-	unit->m_phasein = phasein;
-
-	vint32 vphase = vload(phase, phase+phaseinc, phase+2*phaseinc, phase+3*phaseinc);
-	vint32 vphaseinc = vload(phaseinc << 2);
-	vint32 v3F800000 = (vint32)vinit(0x3F800000);
-	vint32 v007FFF80 = (vint32)vinit(0x007FFF80);
-	vint32 vlomask = vload(lomask);
-	vuint32 vxlobits1 = (vuint32)vinit(xlobits1);
-	vuint32 v7 = (vuint32)vinit(7);
-
-	vint32 vtable0 = vload((int32)table0); // assuming 32 bit pointers
-	vint32 vtable1 = vload((int32)table1); // assuming 32 bit pointers
-
-	int len = inNumSamples << 2;
-	for (int i=0; i<len; i+=16) {
-
-		vfloat32 vfrac = (vfloat32)(vec_or(v3F800000, vec_and(v007FFF80, vec_sl(vphase, v7))));
-		vint32 vindex = vec_and(vec_sr(vphase, vxlobits1), vlomask);
-		vec_union vaddr0, vaddr1;
-		vaddr0.vi = vec_add(vindex, vtable0);
-		vaddr1.vi = vec_add(vindex, vtable1);
-
-		vec_union vval1, vval2;
-		vval1.f[0] = *(float*)(vaddr0.i[0]);
-		vval2.f[0] = *(float*)(vaddr1.i[0]);
-		vval1.f[1] = *(float*)(vaddr0.i[1]);
-		vval2.f[1] = *(float*)(vaddr1.i[1]);
-		vval1.f[2] = *(float*)(vaddr0.i[2]);
-		vval2.f[2] = *(float*)(vaddr1.i[2]);
-		vval1.f[3] = *(float*)(vaddr0.i[3]);
-		vval2.f[3] = *(float*)(vaddr1.i[3]);
-
-		vec_st(vec_madd(vval2.vf, vfrac, vval1.vf), i, vout);
-		vphase = vec_add(vphase, vphaseinc);
-	}
-	unit->m_phase = phase + inNumSamples * phaseinc;
-
-}
-
-#endif
-
-
 
 template <typename OscType, int FreqInputIndex>
 force_inline void Osc_ika_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
@@ -1619,18 +1560,7 @@ void SinOsc_Ctor(SinOsc *unit)
 			SETCALC(SinOsc_next_ika);
 			unit->m_phase = 0;
 		} else {
-#if __VEC__
-			if (USEVEC) {
-				//Print("vSinOsc_next_ikk\n");
-				SETCALC(vSinOsc_next_ikk);
-			} else {
-				//Print("SinOsc_next_ikk\n");
-				SETCALC(SinOsc_next_ikk);
-			}
-#else
-			//Print("next_ikk\n");
 			SETCALC(SinOsc_next_ikk);
-#endif
 			unit->m_phase = (int32)(unit->m_phasein * unit->m_radtoinc);
 		}
 	}
