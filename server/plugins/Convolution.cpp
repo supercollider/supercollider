@@ -290,6 +290,12 @@ void Convolution2_Ctor(Convolution2 *unit)
 		}
 
 		unit->m_fftsize=2*(unit->m_framesize);
+
+		if(unit->m_fftsize > SC_FFT_MAXSIZE){
+			printf( "Convolution2: FFT size is larger than SC_FFT_MAXSIZE, cannot run. We suggest PartConv instead.\n" );
+			SETCALC(*ClearUnitOutputs);
+		}
+
 		// allocate memory internally for the input buffers and fft buffers
 		int framesize_f = unit->m_framesize * sizeof(float);
 		int fftsize_f = unit->m_fftsize * sizeof(float);
