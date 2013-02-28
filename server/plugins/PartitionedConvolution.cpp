@@ -399,7 +399,6 @@ void PreparePartConv(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 		int indexout= fftsize*i;
 
 		if(i<(numpartitions-1)){
-//rm			printf("partition %i: copying %i floats from data2[%i..] to inputbuf\n", i, nover2, indexnow);
 			memcpy(inputbuf, data2+indexnow, nover2 * sizeof(float));
 		}else{
 			int takenow = frames2 % nover2;
@@ -407,10 +406,8 @@ void PreparePartConv(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 				takenow = nover2;
 			}
 
-//rm			printf("finally, copying %i floats from data2[%i..] to inputbuf\n", takenow, indexnow);
 			memcpy(inputbuf, data2+indexnow, takenow * sizeof(float));
 			if(takenow<nover2){
-//rm				printf("takenow<nover2 - zeroing inputbuf[%i..%i]\n", takenow, nover2);
 				memset(inputbuf+takenow, 0, (nover2-takenow)*sizeof(float));
 			}
 		}

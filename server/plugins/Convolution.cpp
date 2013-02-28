@@ -333,6 +333,8 @@ void Convolution2_Ctor(Convolution2 *unit)
 		}
 	} else {
 		unit->m_scfft2 = unit->m_scfft1 = unit->m_scfftR = NULL;
+		printf("Convolution2_Ctor: can't get kernel buffer, giving up.\n");
+		SETCALC(*ClearUnitOutputs);
 	}
 }
 
@@ -356,14 +358,14 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 	float *in1 = IN(0);
 	float curtrig = ZIN0(2);
 
-	float *out1 = unit->m_inbuf1 + unit->m_pos;
+	float *inbuf1writepos = unit->m_inbuf1 + unit->m_pos;
 
 	int numSamples = unit->mWorld->mFullRate.mBufLength;
 	uint32 framesize = unit->m_framesize;
 	uint32 framesize_f = framesize * sizeof(float);
 
 	// copy input
-	Copy(numSamples, out1, in1);
+	Copy(numSamples, inbuf1writepos, in1);
 
 	unit->m_pos += numSamples;
 
@@ -381,7 +383,7 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 		scfft_dofft(unit->m_scfft2);
 	}
 
-	if (unit->m_pos & unit->m_framesize) { // <-- what is this check meant to do? bitwise ops are hard to comprehend
+	if (unit->m_pos >= framesize) {
 		//have collected enough samples to transform next frame
 		unit->m_pos = 0; //reset collection counter
 
@@ -406,7 +408,8 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 		for (int i=1; i<numbins; ++i) {
 			float real,imag;
 			int realind,imagind;
-			realind= 2*i; imagind= realind+1;
+			realind= 2*i;
+			imagind= realind+1;
 			real= p1[realind]*p2[realind]- p1[imagind]*p2[imagind];
 			imag= p1[realind]*p2[imagind]+ p1[imagind]*p2[realind];
 			p1[realind] = real;
