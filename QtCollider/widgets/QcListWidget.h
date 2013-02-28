@@ -29,7 +29,7 @@ class QcListWidget : public QListWidget, QcHelper
   Q_PROPERTY( VariantList items READ dummyVariantList WRITE setItems );
   Q_PROPERTY( VariantList colors READ dummyVariantList WRITE setColors );
   Q_PROPERTY( int currentRow READ currentRow WRITE setCurrentRowWithoutAction )
-    Q_PROPERTY( VariantList selection READ selection );
+    Q_PROPERTY( VariantList selection READ selection WRITE setSelection );
 
   public:
     QcListWidget();
@@ -37,6 +37,7 @@ class QcListWidget : public QListWidget, QcHelper
     void setColors( const VariantList & ) const;
     void setCurrentRowWithoutAction( int );
     VariantList selection() const;
+    void setSelection( const VariantList & );
 
   Q_SIGNALS:
     void action();

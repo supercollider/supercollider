@@ -78,6 +78,18 @@ VariantList QcListWidget::selection() const
     return indexes;
 }
 
+void QcListWidget::setSelection( const VariantList & list )
+{
+    clearSelection();
+    Q_FOREACH( const QVariant & var, list.data )
+    {
+        int row = var.toInt();
+        QListWidgetItem *item = QListWidget::item(row);
+        if (item)
+            item->setSelected(true);
+    }
+}
+
 void QcListWidget::onCurrentItemChanged()
 {
   if( _emitAction ) Q_EMIT( action() );

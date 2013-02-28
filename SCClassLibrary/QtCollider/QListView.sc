@@ -58,6 +58,11 @@ QListView : QItemViewBase {
 
   selection { ^ this.getProperty(\selection) }
 
+  selection_  { arg indexes;
+        if (indexes.isNumber) { indexes = [indexes] };
+        this.setProperty(\selection, indexes)
+    }
+
   background { ^this.palette.base; }
   background_ { arg color; this.palette = this.palette.base_(color); }
 
