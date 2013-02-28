@@ -48,6 +48,9 @@ int64 gStartupOSCTime = -1;
 
 double gSampleRate, gSampleDur;
 
+void sc_SetDenormalFlags();
+
+
 // =====================================================================
 // Timing (CoreAudio)
 
@@ -1198,6 +1201,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 		mOSCbuftime = oscTime;
 
 #ifdef __APPLE__
+		// FIXME: aren't denormal flags set per-process?
 		sc_SetDenormalFlags();
 #endif
 
@@ -2168,6 +2172,7 @@ void SC_iCoreAudioDriver::Run(const AudioBufferList* inInputData,
 		mOSCbuftime = oscTime;
 
 #ifdef __APPLE__
+		// FIXME: does iOS support x86?
 		sc_SetDenormalFlags();
 #endif
 
