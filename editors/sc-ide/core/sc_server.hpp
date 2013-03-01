@@ -45,8 +45,11 @@ public:
         Quit,
         Reboot,
         ShowMeters,
+        ShowScope,
+        ShowFreqScope,
         DumpNodeTree,
         DumpNodeTreeWithControls,
+        PlotTree,
         Mute,
         Volume,
         VolumeUp,
@@ -78,8 +81,11 @@ public slots:
     void quit();
     void toggleRunning();
     void showMeters();
+    void showScope();
+    void showFreqScope();
     void dumpNodeTree();
     void dumpNodeTreeWithControls();
+    void plotTree();
     void queryAllNodes(bool dumpControls);
     void increaseVolume();
     void decreaseVolume();
