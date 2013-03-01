@@ -250,8 +250,8 @@ OSCFunc : AbstractResponderFunc {
 			if(traceRunning.not, {
 				traceFunc = if(hideStatusMsg, {
 					{|msg, time, addr, recvPort|
-						if((msg[0] !== '/status.reply'), {
-							"OSC Message Received:\n\ttime: %\n\taddress: %\n\trecvPort: %\n\tmsg: %\n\n".postf(time, addr, recvPort, msg);
+						if(((msg[0] === '/status.reply' and: {Server.all.any{|it|it.addr == addr}})).not, {
+"OSC Message Received:\n\ttime: %\n\taddress: %\n\trecvPort: %\n\tmsg: %\n\n".postf(time, addr, recvPort, msg);
 						});
 					}
 					}, {
