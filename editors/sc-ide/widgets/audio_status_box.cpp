@@ -35,8 +35,11 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     addAction( server->action(ScServer::Reboot) );
     addActionSeparator();
     addAction( server->action(ScServer::ShowMeters) );
+    addAction( server->action(ScServer::ShowScope) );
+    addAction( server->action(ScServer::ShowFreqScope) );
     addAction( server->action(ScServer::DumpNodeTree) );
     addAction( server->action(ScServer::DumpNodeTreeWithControls) );
+    addAction( server->action(ScServer::PlotTree) );
     addActionSeparator();
     addAction( server->action(ScServer::Record) );
     addActionSeparator();

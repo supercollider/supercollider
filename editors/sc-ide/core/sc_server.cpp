@@ -97,6 +97,14 @@ void ScServer::createActions(Settings::Manager * settings)
     connect(action, SIGNAL(triggered()), this, SLOT(showMeters()));
     settings->addAction( action, "synth-server-meter", synthServerCategory);
 
+    mActions[ShowScope] = action = new QAction(tr("Show scope"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(showScope()));
+    settings->addAction( action, "synth-server-scope", synthServerCategory);
+
+    mActions[ShowFreqScope] = action = new QAction(tr("Show freqscope"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(showFreqScope()));
+    settings->addAction( action, "synth-server-freqscope", synthServerCategory);
+
     mActions[DumpNodeTree] = action = new QAction(tr("Dump node tree"), this);
     action->setShortcut(tr("Ctrl+T", "Dump node tree"));
     connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTree()));
@@ -106,6 +114,10 @@ void ScServer::createActions(Settings::Manager * settings)
     action->setShortcut(tr("Ctrl+Shift+T", "Dump node tree with controls"));
     connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTreeWithControls()));
     settings->addAction( action, "synth-server-dump-nodes-with-controls", synthServerCategory);
+
+    mActions[PlotTree] = action = new QAction(tr("Plot tree"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(plotTree()));
+    settings->addAction( action, "synth-server-plot-tree", synthServerCategory);
 
     mActions[Mute] = action = new QAction(tr("Mute"), this);
     action->setShortcut(tr("Ctrl+Alt+End", "Mute sound output."));
@@ -188,6 +200,16 @@ void ScServer::showMeters()
    mLang->evaluateCode("ScIDE.defaultServer.meter", true);
 }
 
+void ScServer::showScope()
+{
+   mLang->evaluateCode("ScIDE.defaultServer.scope(ScIDE.defaultServer.options.numOutputBusChannels)", true);
+}
+
+void ScServer::showFreqScope()
+{
+   mLang->evaluateCode("ScIDE.defaultServer.freqscope", true);
+}
+
 void ScServer::dumpNodeTree()
 {
     queryAllNodes(false);
@@ -203,6 +225,11 @@ void ScServer::queryAllNodes(bool dumpControls)
     QString arg = dumpControls ? QString("true") : QString("false");
 
     mLang->evaluateCode( QString("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
+}
+
+void ScServer::plotTree()
+{
+    mLang->evaluateCode("ScIDE.defaultServer.plotTree", true );
 }
 
 bool ScServer::isMuted() const { return mActions[Mute]->isChecked(); }
@@ -446,8 +473,11 @@ void ScServer::updateEnabledActions()
     mActions[ToggleRunning]->setEnabled(langRunning);
     mActions[Reboot]->setEnabled(langRunning);
     mActions[ShowMeters]->setEnabled(langRunning);
+    mActions[ShowScope]->setEnabled(langRunning);
+    mActions[ShowFreqScope]->setEnabled(langRunning);
     mActions[DumpNodeTree]->setEnabled(langAndServerRunning);
     mActions[DumpNodeTreeWithControls]->setEnabled(langAndServerRunning);
+    mActions[PlotTree]->setEnabled(langAndServerRunning);
     mActions[Mute]->setEnabled(langAndServerRunning);
     mActions[VolumeUp]->setEnabled(langAndServerRunning);
     mActions[VolumeDown]->setEnabled(langAndServerRunning);

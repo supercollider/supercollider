@@ -619,8 +619,11 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scServer()->action(ScServer::ToggleRunning) );
     menu->addAction( mMain->scServer()->action(ScServer::Reboot) );
     menu->addAction( mMain->scServer()->action(ScServer::ShowMeters) );
+    menu->addAction( mMain->scServer()->action(ScServer::ShowScope) );
+    menu->addAction( mMain->scServer()->action(ScServer::ShowFreqScope) );
     menu->addAction( mMain->scServer()->action(ScServer::DumpNodeTree) );
     menu->addAction( mMain->scServer()->action(ScServer::DumpNodeTreeWithControls) );
+    menu->addAction( mMain->scServer()->action(ScServer::PlotTree) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeUp) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeDown) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeRestore) );
