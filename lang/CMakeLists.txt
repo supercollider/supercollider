@@ -307,6 +307,10 @@ set_property(TARGET sclang
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS USE_SC_TERMINAL_CLIENT BUILDING_SUPERCOLLIDER)
 
+if (PTHREADS_FOUND)
+	target_link_libraries(sclang ${PTHREADS_LIBRARIES})
+endif()
+
 if(LTO)
 	set_property(TARGET sclang libsclang
 					APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
