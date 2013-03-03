@@ -107,14 +107,17 @@ PmonoStream : Stream {
 
 PmonoArticStream : PmonoStream {
 	embedInStream { |inevent|
-		var	sustain, rearticulating = false;
+		var	sustain, rearticulating = true;
 		inevent ?? { ^nil.yield };
 
-		this.prInit(inevent)
-			.prInitNode;
+		this.prInit(inevent);
 
 		loop {
 			if(this.prDoStreams) {
+				if(rearticulating) {
+					event[\id] = nil;
+					this.prInitNode;
+				};
 				sustain = event.use { ~sustain.value };
 				if(sustain.notNil and: { sustain < event.delta }) {
 					event[\removeFromCleanup] = event[\removeFromCleanup].add(currentCleanupFunc);
@@ -126,10 +129,6 @@ PmonoArticStream : PmonoStream {
 				cleanup.update(event);
 				inevent = event.yield;
 				this.prSetNextEvent(inevent);
-				if(rearticulating) {
-					event[\id] = nil;
-					this.prInitNode;
-				};
 			} {
 				^cleanup.exit(inevent)
 			}
