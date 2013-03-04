@@ -877,14 +877,19 @@ void handle_sync(received_message const & message, nova_endpoint const & endpoin
 {
     int id = first_arg_as_int(message);
 
+    // ping pong: we go through the nrt->rt channel to ensure that earlier messages have been completely dispatched
     cmd_dispatcher<realtime>::fire_system_callback([=]() {
-        char buffer[128];
-        osc::OutboundPacketStream p(buffer, 128);
-        p << osc::BeginMessage("/synced")
-          << id
-          << osc::EndMessage;
+        cmd_dispatcher<realtime>::fire_rt_callback([=]() {
+            cmd_dispatcher<realtime>::fire_io_callback([=]() {
+                char buffer[128];
+                osc::OutboundPacketStream p(buffer, 128);
+                p << osc::BeginMessage("/synced")
+                  << id
+                  << osc::EndMessage;
 
-        instance->send(p.Data(), p.Size(), endpoint);
+                instance->send(p.Data(), p.Size(), endpoint);
+            });
+        });
     });
 }
 
