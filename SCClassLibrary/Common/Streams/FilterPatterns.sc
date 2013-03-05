@@ -122,7 +122,6 @@ Pfset : FuncFilterPattern {
 		var once = true;
 
 		loop {
-			inevent = inevent.copy;
 			inevent.putAll(envir);
 			event = stream.next(inevent);
 			if(once) {
