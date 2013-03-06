@@ -598,8 +598,6 @@ void* SC_TcpClientPort::Run()
 
 	bool cmdClose = false;
 
-	mThread.join();
-
 	while (true) {
 		fd_set rfds;
 		FD_ZERO(&rfds);
@@ -649,7 +647,7 @@ leave:
 		(*mClientNotifyFunc)(mClientData);
 	}
 	delete this;
-    return 0;
+	return 0;
 }
 
 void SC_TcpClientPort::Close()
