@@ -86,9 +86,9 @@ void ScServer::createActions(Settings::Manager * settings)
         new QAction(QIcon::fromTheme("system-shutdown"), tr("&Quit Server"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(quit()));
     settings->addAction( action, "synth-server-quit", synthServerCategory);
-    
+
     mActions[KillAll] = action =
-    new QAction(QIcon::fromTheme("system-killall"), tr("&Kill all servers"), this);
+    new QAction(QIcon::fromTheme("system-killall"), tr("&Kill All Servers"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(killAll()));
     settings->addAction( action, "synth-server-killall", synthServerCategory);
 
@@ -97,30 +97,30 @@ void ScServer::createActions(Settings::Manager * settings)
     connect(action, SIGNAL(triggered()), this, SLOT(reboot()));
     settings->addAction( action, "synth-server-reboot", synthServerCategory);
 
-    mActions[ShowMeters] = action = new QAction(tr("Show server meter"), this);
+    mActions[ShowMeters] = action = new QAction(tr("Show Server Meter"), this);
     action->setShortcut(tr("Ctrl+M", "Show server meter"));
     connect(action, SIGNAL(triggered()), this, SLOT(showMeters()));
     settings->addAction( action, "synth-server-meter", synthServerCategory);
 
-    mActions[ShowScope] = action = new QAction(tr("Show scope"), this);
+    mActions[ShowScope] = action = new QAction(tr("Show Scope"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(showScope()));
     settings->addAction( action, "synth-server-scope", synthServerCategory);
 
-    mActions[ShowFreqScope] = action = new QAction(tr("Show freqscope"), this);
+    mActions[ShowFreqScope] = action = new QAction(tr("Show Freqscope"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(showFreqScope()));
     settings->addAction( action, "synth-server-freqscope", synthServerCategory);
 
-    mActions[DumpNodeTree] = action = new QAction(tr("Dump node tree"), this);
+    mActions[DumpNodeTree] = action = new QAction(tr("Dump Node Tree"), this);
     action->setShortcut(tr("Ctrl+T", "Dump node tree"));
     connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTree()));
     settings->addAction( action, "synth-server-dump-nodes", synthServerCategory);
 
-    mActions[DumpNodeTreeWithControls] = action = new QAction(tr("Dump node tree with controls"), this);
+    mActions[DumpNodeTreeWithControls] = action = new QAction(tr("Dump Node Tree with Controls"), this);
     action->setShortcut(tr("Ctrl+Shift+T", "Dump node tree with controls"));
     connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTreeWithControls()));
     settings->addAction( action, "synth-server-dump-nodes-with-controls", synthServerCategory);
 
-    mActions[PlotTree] = action = new QAction(tr("Plot tree"), this);
+    mActions[PlotTree] = action = new QAction(tr("Plot Node Tree"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(plotTree()));
     settings->addAction( action, "synth-server-plot-tree", synthServerCategory);
 
@@ -186,11 +186,11 @@ void ScServer::quit()
 
     mLang->evaluateCode( "ScIDE.defaultServer.quit", true );
 }
-    
+
 void ScServer::killAll()
 {
     mLang->evaluateCode( "Server.killAll", true );
-}    
+}
 
 void ScServer::reboot()
 {
