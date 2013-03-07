@@ -86,6 +86,11 @@ void ScServer::createActions(Settings::Manager * settings)
         new QAction(QIcon::fromTheme("system-shutdown"), tr("&Quit Server"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(quit()));
     settings->addAction( action, "synth-server-quit", synthServerCategory);
+    
+    mActions[KillAll] = action =
+    new QAction(QIcon::fromTheme("system-killall"), tr("&Kill all servers"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(killAll()));
+    settings->addAction( action, "synth-server-killall", synthServerCategory);
 
     mActions[Reboot] = action =
         new QAction( QIcon::fromTheme("system-reboot"), tr("&Reboot Server"), this);
@@ -181,6 +186,11 @@ void ScServer::quit()
 
     mLang->evaluateCode( "ScIDE.defaultServer.quit", true );
 }
+    
+void ScServer::killAll()
+{
+    mLang->evaluateCode( "Server.killAll", true );
+}    
 
 void ScServer::reboot()
 {
@@ -471,6 +481,7 @@ void ScServer::updateEnabledActions()
     bool langAndServerRunning = langRunning && isRunning();
 
     mActions[ToggleRunning]->setEnabled(langRunning);
+    mActions[KillAll]->setEnabled(langRunning);
     mActions[Reboot]->setEnabled(langRunning);
     mActions[ShowMeters]->setEnabled(langRunning);
     mActions[ShowScope]->setEnabled(langRunning);
