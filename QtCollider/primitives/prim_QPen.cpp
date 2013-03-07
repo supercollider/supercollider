@@ -657,9 +657,7 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   float opacity = QtCollider::read<float>(a+4);
 
   PyrSlot *imgSlot = a+1;
-  if( NotObj(imgSlot) )
-    return errWrongType;
-  if( slotRawObject(imgSlot)->classptr != SC_CLASS(QImage) )
+  if( NotObj(imgSlot) || slotRawObject(imgSlot)->classptr != SC_CLASS(QImage) )
     return errWrongType;
 
   QImage * image = reinterpret_cast<QImage*>( slotRawPtr(slotRawObject(imgSlot)->slots) );
