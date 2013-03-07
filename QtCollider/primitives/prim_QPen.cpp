@@ -654,7 +654,7 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( NotInt(a+3) ) return errWrongType;
   if( NotFloat(a+4) ) return errWrongType;
   int composition = QtCollider::read<int>(a+3);
-  float fraction = QtCollider::read<float>(a+4);
+  float opacity = QtCollider::read<float>(a+4);
 
   PyrSlot *imgSlot = a+1;
   if( NotObj(imgSlot) )
@@ -667,7 +667,7 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   painter->save();
   painter->setCompositionMode((QPainter::CompositionMode)composition);
-  painter->setOpacity(fraction);
+  painter->setOpacity(opacity);
   painter->drawImage(target, *image, source);
   painter->restore();
 
