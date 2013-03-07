@@ -190,15 +190,11 @@ QImage {
 		^(this.arMode == 'ignoreAspectRatio');
 	}
 	scalesWhenResized_ { arg flag, mode; // FIX: compatibility behavior
-		if(flag, {
+		if(flag) {
 			this.arMode = 'ignoreAspectRatio';
-		}, {
-			if(mode.notNil, {
-				this.arMode = mode;
-			}, {
-				this.arMode = 'keepAspectRatio';
-			});
-		});
+		}{
+			this.arMode = mode ? 'keepAspectRatio';
+		};
 	}
 
 	width {
