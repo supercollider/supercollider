@@ -35,7 +35,7 @@ the number of overlaping windows.
 
 argument::windowRandRatio
 the amount of randomness to the windowing function.  Must be between 0 (no
-randomness) to 1.0 (probably to random actually)
+randomness) to 1.0 (probably too random actually)
 
 argument::interp
 the interpolation method used for pitchshifting grains. 1 = no interpolation. 2 = linear.
@@ -78,5 +78,20 @@ x.set(\envbuf, z)
 x.set(\envbuf, -1);
 
 x.free;
+::
+
+code::
+(
+b.free;
+b= Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
+SynthDef(\warp2, {|buffer|
+	var pointer = Phasor.ar(0, SampleDur.ir/BufDur.ir(buffer)*XLine.kr(1, 0.25, 20));
+	var out = Warp1.ar(1, buffer, pointer, 1, 0.3, -1, 16, Line.kr(0, 1, 40), 4);
+	Out.ar(0, Pan2.ar(out, pointer*2-1, 0.25));
+}).add;
+)
+x = Synth(\warp2, [\buffer, b])
+x.free
+b.free
 ::
 
