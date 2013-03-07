@@ -21,7 +21,7 @@
 #include "primitives.h"
 #include "../QcApplication.h"
 #include "../Common.h"
-#include "../Slot.h"
+#include "../type_codec.hpp"
 #include "../painting.h"
 
 #include <PyrKernel.h>
@@ -43,9 +43,18 @@ static QPainter *imgPainter = 0;
 
 #define QIMAGE_FROM_OBJECT( OBJ ) reinterpret_cast<QImage*>( slotRawPtr(OBJ->slots) );
 
+namespace QC = QtCollider;
+
 namespace QtCollider {
 
-inline void initQImage( struct VMGlobals *g, struct PyrObject *obj, QImage *img )
+int QImage_Finalize( struct VMGlobals *g, struct PyrObject *obj )
+{
+  delete QIMAGE_FROM_OBJECT( obj );
+  SetNil( obj->slots+0 );
+  return errNone;
+}
+
+inline void QImage_Init( struct VMGlobals *g, struct PyrObject *obj, QImage *img )
 {
     assert( IsNil( obj->slots ) && IsNil( obj->slots+1 ) );
 
@@ -58,13 +67,6 @@ inline void initQImage( struct VMGlobals *g, struct PyrObject *obj, QImage *img 
     InstallFinalizer( g, obj, 1, QImage_Finalize ); // finalizer
 }
 
-int QImage_Finalize( struct VMGlobals *g, struct PyrObject *obj )
-{
-  delete QIMAGE_FROM_OBJECT( obj );
-  SetNil( obj->slots+0 );
-  return errNone;
-}
-
 bool QImage_InitPath( struct VMGlobals *g, struct PyrObject *obj,
                   const QString &path )
 {
@@ -74,7 +76,7 @@ bool QImage_InitPath( struct VMGlobals *g, struct PyrObject *obj,
       return false;
   }
 
-  initQImage(g, obj, img);
+  QImage_Init(g, obj, img);
 
   return true;
 }
@@ -89,7 +91,7 @@ bool QImage_InitFromData( struct VMGlobals *g, struct PyrObject *obj,
       return false;
   }
 
-  initQImage(g, obj, img);
+  QImage_Init(g, obj, img);
 
   return true;
 }
@@ -99,19 +101,19 @@ void QImage_InitEmpty( struct VMGlobals *g, struct PyrObject *obj,
 {
   QImage *img = new QImage( width, height, QImage::Format_ARGB32_Premultiplied );
   img->fill( QColor(Qt::transparent).rgba() );
-  initQImage(g, obj, img);
+  QImage_Init(g, obj, img);
 }
 
 void QImage_InitWindow( struct VMGlobals *g, struct PyrObject *obj,
                         QWidget *widget, const QRect &rect )
 {
   QImage *img = new QImage(QPixmap::grabWidget( widget, rect ).toImage());
-  initQImage(g, obj, img);
+  QImage_Init(g, obj, img);
 }
 
 QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  QString path( Slot::toString(a) );
+  QString path( QtCollider::get<QString>(a) );
   if( QImage_InitPath( g, slotRawObject(r), path ) ) {
     return errNone;
   } else {
@@ -122,7 +124,7 @@ QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  QUrl url( Slot::toString(a) );
+  QUrl url( QtCollider::get<QString>(a) );
   if( !url.isValid() || url.isEmpty() ) {
     qcErrorMsg("QImage invalid or empty URL");
     return errFailed;
@@ -138,7 +140,8 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   }
 
   if( !IsFloat(a+1) && !IsInt(a+1) ) return errWrongType;
-  float timeout = Slot::toFloat(a+1);
+  // Take a safe read to allow Integers:
+  float timeout = QtCollider::get(a+1);
 
   QNetworkAccessManager *manager = new QNetworkAccessManager();
   QNetworkReply *reply = manager->get( QNetworkRequest( url ) );
@@ -185,8 +188,8 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 QC_LANG_PRIMITIVE( QImage_NewEmpty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( NotInt(a) || NotInt(a+1) ) return errWrongType;
-  int width = Slot::toInt(a);
-  int height = Slot::toInt(a+1);
+  int width = QtCollider::read<int>(a);
+  int height = QtCollider::read<int>(a+1);
 
   QImage_InitEmpty( g, slotRawObject(r), width, height );
 
@@ -195,15 +198,13 @@ QC_LANG_PRIMITIVE( QImage_NewEmpty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_NewFromWindow, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( NotObj(a) || NotObj(a+1) ) return errWrongType;
-
-  QObjectProxy *proxy = Slot::toObjectProxy(a);
+  QObjectProxy *proxy = QtCollider::get(a);
   if( !proxy ) return errWrongType;
   QWidget *widget = qobject_cast<QWidget *>( proxy->object() );
   if( !widget ) return errWrongType;
 
-  if( slotRawObject(a+1)->classptr != SC_CLASS(Rect) ) return errWrongType;
-  QRect rect = Slot::toRect(a+1).toRect();
+  if( NotObj(a+1) || slotRawObject(a+1)->classptr != SC_CLASS(Rect) ) return errWrongType;
+  QRect rect = QtCollider::read<QRect>(a+1);
 
   QImage_InitWindow( g, slotRawObject(r), widget, rect );
 
@@ -238,9 +239,9 @@ QC_LANG_PRIMITIVE( QImage_Height, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 QC_LANG_PRIMITIVE( QImage_SetSize, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( NotInt(a) || NotInt(a+1) || NotInt(a+2) || NotInt(a+3) ) return errWrongType;
-  QSize newSize = QSize( Slot::toInt(a), Slot::toInt(a+1) );
-  int arMode = Slot::toInt(a+2);
-  int trMode = Slot::toInt(a+3);
+  QSize newSize( QtCollider::read<int>(a), QtCollider::read<int>(a+1) );
+  int arMode = QtCollider::read<int>(a+2);
+  int trMode = QtCollider::read<int>(a+3);
 
   QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
   QImage *res = new QImage(
@@ -256,11 +257,11 @@ QC_LANG_PRIMITIVE( QImage_Write, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
 
-  QString path( Slot::toString(a) );
-  QString format( Slot::toString(a+1) );
+  QString path = QC::get(a);
+  QString format = QC::get(a+1);
 
   if(NotInt(a+2)) return errWrongType;
-  int quality = Slot::toInt(a+2);
+  int quality = QC::read<int>(a+2);
 
   if( img->save(path, format.toUpper().toStdString().c_str(), quality) )
     return errNone;
@@ -307,8 +308,8 @@ QC_LANG_PRIMITIVE( QImage_GetPixel, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( NotInt(a) || NotInt(a+1)) return errWrongType;
 
   QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
-  int x = Slot::toInt(a);
-  int y = Slot::toInt(a+1);
+  int x = QC::read<int>(a);
+  int y = QC::read<int>(a+1);
 
   if( x >= img->width() || y >= img->height() )
     return errIndexOutOfRange;
@@ -324,9 +325,9 @@ QC_LANG_PRIMITIVE( QImage_SetPixel, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( NotInt(a) || NotInt(a+1) || NotInt(a+2) ) return errWrongType;
 
   QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
-  int argb = Slot::toInt(a);
-  int x = Slot::toInt(a+1);
-  int y = Slot::toInt(a+2);
+  int argb = QC::read<int>(a);
+  int x = QC::read<int>(a+1);
+  int y = QC::read<int>(a+2);
 
   if( x >= img->width() || y >= img->height() )
     return errIndexOutOfRange;
@@ -345,9 +346,9 @@ QC_LANG_PRIMITIVE( QImage_LoadPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   }
 
   if( NotInt(a+2) ) return errWrongType;
-  int start = Slot::toInt(a+2);
+  int start = QC::read<int>(a+2);
   if( !(IsTrue(a+3) || IsFalse(a+3)) ) return errWrongType;
-  int geset = Slot::toBool(a+3); // t/f g/s
+  bool geset = IsTrue(a+3); // t/f g/s
 
   QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
   QRect imgRect = QRect(0, 0, img->width(), img->height());
@@ -355,9 +356,11 @@ QC_LANG_PRIMITIVE( QImage_LoadPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   if( IsNil(a+1) ) {
     rect = imgRect;
-  } else {
-    if( slotRawObject(a+1)->classptr != SC_CLASS(Rect) ) return errWrongType;
-    rect = Slot::toRect(a+1).toRect();
+  }
+  else {
+    if( NotObj(a+1) || slotRawObject(a+1)->classptr != SC_CLASS(Rect) )
+        return errWrongType;
+    rect = QC::read<QRect>(a+1);
     if( !rect.isValid() || !imgRect.contains(rect) ) {
       qcErrorMsg("QImage_LoadPixels no valid Rect");
       return errReturn;
@@ -403,10 +406,10 @@ QC_LANG_PRIMITIVE( QImage_LoadPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( NotObj(a) ) return errWrongType;
-  if( slotRawObject(a)->classptr != SC_CLASS(Color) ) return errWrongType;
+  if( NotObj(a) || slotRawObject(a)->classptr != SC_CLASS(Color) )
+      return errWrongType;
 
-  QRgb color = Slot::toColor(a).rgba();
+  QRgb color = QC::read<QColor>(a).rgba();
   QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
   img->fill(color);
 
@@ -416,7 +419,7 @@ QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 QC_LANG_PRIMITIVE( QImage_Formats, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( NotInt(a) ) return errWrongType;
-  int rw = Slot::toInt(a);
+  int rw = QC::read<int>(a);
 
   QList<QByteArray> formats;
   if( rw ) {
