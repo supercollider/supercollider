@@ -31,6 +31,7 @@ set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/QcApplication.h
   ${QT_COLLIDER_DIR}/QObjectProxy.h
   ${QT_COLLIDER_DIR}/QWidgetProxy.h
+  ${QT_COLLIDER_DIR}/QtDownload.h
   ${QT_COLLIDER_DIR}/widgets/BasicWidgets.h
   ${QT_COLLIDER_DIR}/widgets/QcButton.h
   ${QT_COLLIDER_DIR}/widgets/QcCheckBox.h
@@ -73,6 +74,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/QObjectProxy.cpp
   ${QT_COLLIDER_DIR}/QWidgetProxy.cpp
   ${QT_COLLIDER_DIR}/QcObjectFactory.cpp
+  ${QT_COLLIDER_DIR}/QtDownload.cpp
   ${QT_COLLIDER_DIR}/hacks/hacks_x11.cpp
   ${QT_COLLIDER_DIR}/primitives/primitives.cpp
   ${QT_COLLIDER_DIR}/primitives/prim_QObject.cpp
