@@ -43,21 +43,20 @@ static QPainter *imgPainter = 0;
 
 #define QIMAGE_FROM_OBJECT( OBJ ) reinterpret_cast<QImage*>( slotRawPtr(OBJ->slots) );
 
-#define INIT_ASSERT \
-  assert( obj->classptr == SC_CLASS( QImage ) ); \
-  assert( IsNil( obj->slots ) && IsNil( obj->slots+1 ) );
-
-#define INIT_SETUP \
-  if( img->format() != QImage::Format_ARGB32_Premultiplied ) { \
-    QImage *aux = img; \
-    img = new QImage( img->convertToFormat( QImage::Format_ARGB32_Premultiplied ) ); \
-    delete aux; \
-  } \
-  SetPtr( obj->slots, img ); // dataptr \
-  InstallFinalizer( g, obj, 1, QImage_Finalize ); // finalizer
-
-
 namespace QtCollider {
+
+inline void initQImage( struct VMGlobals *g, struct PyrObject *obj, QImage *img )
+{
+    assert( IsNil( obj->slots ) && IsNil( obj->slots+1 ) );
+
+    if( img->format() != QImage::Format_ARGB32_Premultiplied ) {
+        QImage *aux = img;
+        img = new QImage( img->convertToFormat( QImage::Format_ARGB32_Premultiplied ) );
+        delete aux;
+    }
+    SetPtr( obj->slots, img ); // dataptr
+    InstallFinalizer( g, obj, 1, QImage_Finalize ); // finalizer
+}
 
 int QImage_Finalize( struct VMGlobals *g, struct PyrObject *obj )
 {
@@ -69,23 +68,20 @@ int QImage_Finalize( struct VMGlobals *g, struct PyrObject *obj )
 bool QImage_InitPath( struct VMGlobals *g, struct PyrObject *obj,
                   const QString &path )
 {
-  INIT_ASSERT
-
   QImage *img = new QImage( path );
   if( img->isNull() ) {
       delete img;
       return false;
   }
 
-  INIT_SETUP
+  initQImage(g, obj, img);
+
   return true;
 }
 
 bool QImage_InitFromData( struct VMGlobals *g, struct PyrObject *obj,
                           const QByteArray &byteArray )
 {
-  INIT_ASSERT
-
   QImage *img = new QImage();
   img->loadFromData( byteArray );
   if( img->isNull() ) {
@@ -93,25 +89,24 @@ bool QImage_InitFromData( struct VMGlobals *g, struct PyrObject *obj,
       return false;
   }
 
-  INIT_SETUP
+  initQImage(g, obj, img);
+
   return true;
 }
 
 void QImage_InitEmpty( struct VMGlobals *g, struct PyrObject *obj,
                        int width, int height )
 {
-  INIT_ASSERT
   QImage *img = new QImage( width, height, QImage::Format_ARGB32_Premultiplied );
   img->fill( QColor(Qt::transparent).rgba() );
-  INIT_SETUP
+  initQImage(g, obj, img);
 }
 
 void QImage_InitWindow( struct VMGlobals *g, struct PyrObject *obj,
                         QWidget *widget, const QRect &rect )
 {
-  INIT_ASSERT
   QImage *img = new QImage(QPixmap::grabWidget( widget, rect ).toImage());
-  INIT_SETUP
+  initQImage(g, obj, img);
 }
 
 QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
