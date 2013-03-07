@@ -643,6 +643,37 @@ QC_QPEN_PRIMITIVE( QPen_StringInRect, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( IsNil(a) ) return errNone;
+  if( IsNil(a+2) ) return errNone;
+  QRectF target = Slot::toRect(a+0);
+  QRectF source = Slot::toRect(a+2);
+  if( target.size() == QSize() || source.size() == QSize() ) return errNone;
+
+  if( NotInt(a+3) ) return errWrongType;
+  if( NotFloat(a+4) ) return errWrongType;
+  int composition = Slot::toInt(a+3);
+  float fraction = Slot::toFloat(a+4);
+
+  PyrSlot *imgSlot = a+1;
+  if( NotObj(imgSlot) )
+    return errWrongType;
+  if( slotRawObject(imgSlot)->classptr != SC_CLASS(QImage) )
+    return errWrongType;
+
+  QImage * image = reinterpret_cast<QImage*>( slotRawPtr(slotRawObject(imgSlot)->slots) );
+  if( !image ) return errReturn;
+
+  painter->save();
+  painter->setCompositionMode((QPainter::CompositionMode)composition);
+  painter->setOpacity(fraction);
+  painter->drawImage(target, *image, source);
+  painter->restore();
+
+  return errNone;
+}
+
 void defineQPenPrimitives()
 {
   LangPrimitiveDefiner definer;
@@ -681,6 +712,7 @@ void defineQPenPrimitives()
   definer.define<QPen_FillRadialGradient>();
   definer.define<QPen_StringAtPoint>();
   definer.define<QPen_StringInRect>();
+  definer.define<QPen_DrawImage>();
 }
 
 } // namespace QtCollider
