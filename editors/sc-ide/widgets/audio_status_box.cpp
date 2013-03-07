@@ -32,8 +32,8 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
 
     QAction *separator;
     addAction( server->action(ScServer::ToggleRunning) );
-    addAction( server->action(ScServer::KillAll) );
     addAction( server->action(ScServer::Reboot) );
+    addAction( server->action(ScServer::KillAll) );
     addActionSeparator();
     addAction( server->action(ScServer::ShowMeters) );
     addAction( server->action(ScServer::ShowScope) );

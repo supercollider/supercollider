@@ -617,8 +617,9 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scProcess()->action(ScProcess::RecompileClassLibrary) );
     menu->addSeparator();
     menu->addAction( mMain->scServer()->action(ScServer::ToggleRunning) );
-    menu->addAction( mMain->scServer()->action(ScServer::KillAll) );
     menu->addAction( mMain->scServer()->action(ScServer::Reboot) );
+    menu->addAction( mMain->scServer()->action(ScServer::KillAll) );
+    menu->addSeparator();
     menu->addAction( mMain->scServer()->action(ScServer::ShowMeters) );
     menu->addAction( mMain->scServer()->action(ScServer::ShowScope) );
     menu->addAction( mMain->scServer()->action(ScServer::ShowFreqScope) );
