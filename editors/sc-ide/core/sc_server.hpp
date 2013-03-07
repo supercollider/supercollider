@@ -43,6 +43,7 @@ public:
         ToggleRunning,
         Boot,
         Quit,
+        KillAll,
         Reboot,
         ShowMeters,
         ShowScope,
@@ -79,6 +80,7 @@ public slots:
     void boot();
     void reboot();
     void quit();
+    void killAll();
     void toggleRunning();
     void showMeters();
     void showScope();
