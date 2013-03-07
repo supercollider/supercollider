@@ -647,14 +647,14 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( IsNil(a) ) return errNone;
   if( IsNil(a+2) ) return errNone;
-  QRectF target = Slot::toRect(a+0);
-  QRectF source = Slot::toRect(a+2);
+  QRectF target = QtCollider::get(a+0);
+  QRectF source = QtCollider::get(a+2);
   if( target.size() == QSize() || source.size() == QSize() ) return errNone;
 
   if( NotInt(a+3) ) return errWrongType;
   if( NotFloat(a+4) ) return errWrongType;
-  int composition = Slot::toInt(a+3);
-  float fraction = Slot::toFloat(a+4);
+  int composition = QtCollider::read<int>(a+3);
+  float fraction = QtCollider::read<float>(a+4);
 
   PyrSlot *imgSlot = a+1;
   if( NotObj(imgSlot) )
