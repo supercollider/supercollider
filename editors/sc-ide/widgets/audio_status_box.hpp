@@ -21,6 +21,8 @@
 #ifndef SCIDE_WIDGETS_AUDIO_STATUS_BOX_INCLUDED
 #define SCIDE_WIDGETS_AUDIO_STATUS_BOX_INCLUDED
 
+#include <QWheelEvent>
+
 #include "util/status_box.hpp"
 
 namespace ScIDE {
@@ -36,6 +38,12 @@ private slots:
     void onServerStatusReply(int ugens, int synths, int groups, int synthDefs,
                              float avgCPU, float peakCPU);
     void onServerRunningChanged( bool running, QString const & hostName, int port );
+
+protected:
+    void wheelEvent(QWheelEvent *);
+
+private:
+    struct ScServer * mServer;
 };
 
 } // namespace ScIDE
