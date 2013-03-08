@@ -91,6 +91,7 @@ public slots:
     void queryAllNodes(bool dumpControls);
     void increaseVolume();
     void decreaseVolume();
+    void changeVolume(float);
     void restoreVolume();
     void mute() { setMuted(true); }
     void unmute() { setMuted(false); }
