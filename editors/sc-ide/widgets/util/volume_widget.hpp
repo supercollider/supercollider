@@ -33,7 +33,7 @@ class VolumeWidget : public QWidget
 public:
     VolumeWidget( QWidget * parent = 0 );
     float volume() const { return mVolume; }
-    void setVolume( float volume );
+    float setVolume( float volume );
     void setRange( float min, float max );
 signals:
     void volumeChanged( float volumet );

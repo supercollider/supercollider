@@ -56,11 +56,12 @@ VolumeWidget::VolumeWidget( QWidget *parent ):
     connect( mVolumeSlider, SIGNAL(actionTriggered(int)), this, SLOT(onVolumeSliderAction()) );
 }
 
-void VolumeWidget::setVolume( float volume )
+float VolumeWidget::setVolume( float volume )
 {
     mVolume = qBound(mVolumeMin, volume, mVolumeMax);
     mVolumeSlider->setValue( volumeToSlider(mVolume) );
     updateVolumeLabel(mVolume);
+    return mVolume;
 }
 
 void VolumeWidget::setRange( float min, float max )

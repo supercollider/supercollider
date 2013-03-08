@@ -254,18 +254,23 @@ float ScServer::volume() const { return mVolumeWidget->volume(); }
 
 void ScServer::setVolume( float volume )
 {
-    mVolumeWidget->setVolume( volume );
-    sendVolume(volume);
+    float realVolume = mVolumeWidget->setVolume( volume );
+    sendVolume(realVolume);
 }
 
 void ScServer::increaseVolume()
 {
-    setVolume( volume() + 1.5f );
+    changeVolume( +1.5 );
 }
 
 void ScServer::decreaseVolume()
 {
-    setVolume( volume() - 1.5f );
+    changeVolume( -1.5 );
+}
+
+void ScServer::changeVolume(float difference)
+{
+    setVolume( volume() + difference);
 }
 
 void ScServer::restoreVolume()

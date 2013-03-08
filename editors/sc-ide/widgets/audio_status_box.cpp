@@ -82,10 +82,8 @@ void AudioStatusBox::onServerRunningChanged(bool running, const QString &, int)
 void AudioStatusBox::wheelEvent(QWheelEvent * event)
 {
     if (event->orientation() == Qt::Vertical) {
-        if (event->delta() > 0)
-            mServer->increaseVolume();
-        else
-            mServer->decreaseVolume();
+        const float diff = (event->delta() > 0) ? 0.2 : -0.2;
+        mServer->changeVolume(diff);
     }
 }
 
