@@ -24,7 +24,7 @@
 namespace ScIDE {
 
 AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
-    StatusBox(parent)
+    StatusBox(parent), mServer(server)
 {
     server->action(ScServer::Record)->setProperty("keep_menu_open", true);
     server->action(ScServer::VolumeRestore)->setProperty("keep_menu_open", true);
@@ -76,6 +76,16 @@ void AudioStatusBox::onServerRunningChanged(bool running, const QString &, int)
     setTextColor( running ? Qt::green : Qt::white);
     if (!running) {
         onServerStatusReply(0, 0, 0, 0, 0, 0);
+    }
+}
+
+void AudioStatusBox::wheelEvent(QWheelEvent * event)
+{
+    if (event->orientation() == Qt::Vertical) {
+        if (event->delta() > 0)
+            mServer->increaseVolume();
+        else
+            mServer->decreaseVolume();
     }
 }
 
