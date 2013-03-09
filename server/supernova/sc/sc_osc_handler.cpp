@@ -35,6 +35,8 @@
 namespace nova {
 
 using namespace std;
+using nova::detail::nova_endpoint;
+using nova::detail::endpoint_ptr;
 
 namespace {
 
@@ -205,17 +207,17 @@ private:
     T * data_;
 };
 
-void send_done_message(nova_endpoint const & endpoint)
+void send_done_message(endpoint_ptr const & endpoint)
 {
     char buffer[128];
     osc::OutboundPacketStream p(buffer, 128);
     p << osc::BeginMessage("/done")
       << osc::EndMessage;
 
-    instance->send(p.Data(), p.Size(), endpoint);
+    endpoint->send(p.Data(), p.Size());
 }
 
-void send_done_message(nova_endpoint const & endpoint, const char * cmd)
+void send_done_message(endpoint_ptr const & endpoint, const char * cmd)
 {
     char buffer[128];
     osc::OutboundPacketStream p(buffer, 128);
@@ -223,10 +225,10 @@ void send_done_message(nova_endpoint const & endpoint, const char * cmd)
       << cmd
       << osc::EndMessage;
 
-    instance->send(p.Data(), p.Size(), endpoint);
+    endpoint->send(p.Data(), p.Size());
 }
 
-void send_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
+void send_done_message(endpoint_ptr const & endpoint, const char * cmd, osc::int32 index)
 {
     char buffer[128];
     osc::OutboundPacketStream p(buffer, 128);
@@ -235,10 +237,10 @@ void send_done_message(nova_endpoint const & endpoint, const char * cmd, osc::in
       << index
       << osc::EndMessage;
 
-    instance->send(p.Data(), p.Size(), endpoint);
+    endpoint->send(p.Data(), p.Size());
 }
 
-void send_fail_message(nova_endpoint const & endpoint, const char * cmd, const char * content)
+void send_fail_message(endpoint_ptr const & endpoint, const char * cmd, const char * content)
 {
     char buffer[8192];
     osc::OutboundPacketStream p(buffer, 8192);
@@ -246,10 +248,10 @@ void send_fail_message(nova_endpoint const & endpoint, const char * cmd, const c
       << cmd << content
       << osc::EndMessage;
 
-    instance->send(p.Data(), p.Size(), endpoint);
+    endpoint->send(p.Data(), p.Size());
 }
 
-void send_fail_message(nova_endpoint const & endpoint, const char * cmd, const char * content, int id)
+void send_fail_message(endpoint_ptr const & endpoint, const char * cmd, const char * content, int id)
 {
     char buffer[8192];
     osc::OutboundPacketStream p(buffer, 8192);
@@ -257,7 +259,7 @@ void send_fail_message(nova_endpoint const & endpoint, const char * cmd, const c
       << cmd << content << (osc::int32)id
       << osc::EndMessage;
 
-    instance->send(p.Data(), p.Size(), endpoint);
+    endpoint->send(p.Data(), p.Size());
 }
 
 
@@ -318,11 +320,23 @@ struct cmd_dispatcher
         instance->add_sync_callback(new fn_sync_callback<Functor>(f));
     }
 
-    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
+    // CHECK: can we pass endpoint by reference?
+    static void fire_done_message(endpoint_ptr endpoint, const char * cmd, osc::int32 index)
     {
-        fire_io_callback([=]() {
-            send_done_message(endpoint, cmd, index);
-        });
+        if (endpoint) {
+            fire_io_callback([=]() {
+                send_done_message(endpoint, cmd, index);
+            });
+        }
+    }
+
+    static void fire_message(endpoint_ptr endpoint, movable_array<char> & message)
+    {
+        if (endpoint) {
+            fire_io_callback([=]() {
+                endpoint->send(message.data(), message.size());
+            });
+        }
     }
 };
 
@@ -347,19 +361,25 @@ struct cmd_dispatcher<false>
         f();
     }
 
-    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
+    static void fire_done_message(endpoint_ptr const & endpoint, const char * cmd, osc::int32 index)
     {
         send_done_message (endpoint, cmd, index);
     }
+
+    static void fire_message(endpoint_ptr & endpoint, movable_array<char> & message)
+    {
+        if (endpoint)
+            endpoint->send(message.data(), message.size());
+    }
 };
 
-void report_failure(nova_endpoint const & endpoint, std::exception const & error, const char * command)
+void report_failure(endpoint_ptr const & endpoint, std::exception const & error, const char * command)
 {
     std::cout << error.what() << std::endl;
     send_fail_message(endpoint, command, error.what());
 }
 
-void report_failure(nova_endpoint const & endpoint, std::exception const & error, const char * command, int bufnum)
+void report_failure(endpoint_ptr const & endpoint, std::exception const & error, const char * command, int bufnum)
 {
     std::cout << error.what() << std::endl;
     send_fail_message(endpoint, command, error.what(), bufnum);
@@ -373,6 +393,27 @@ using nova::log;
 void fire_notification(movable_array<char> & msg)
 {
     instance->send_notification(msg.data(), msg.size());
+}
+
+sc_notify_observers::error_code sc_notify_observers::add_observer(endpoint_ptr const & ep)
+{
+    observer_vector::iterator it = find(ep);
+    if (it != observers.end())
+        return already_registered;
+
+    observers.push_back(ep);
+    return no_error;
+}
+
+sc_notify_observers::error_code sc_notify_observers::remove_observer(endpoint_ptr const & ep)
+{
+    observer_vector::iterator it = find(ep);
+
+    if (it == observers.end())
+        return not_registered;
+
+    observers.erase(it);
+    return no_error;
 }
 
 const char * sc_notify_observers::error_string(error_code error)
@@ -392,6 +433,31 @@ const char * sc_notify_observers::error_string(error_code error)
         return "";
     }
 }
+
+sc_notify_observers::observer_vector::iterator sc_notify_observers::find(endpoint_ptr const & ep)
+{
+    for (observer_vector::iterator it = observers.begin(); it != observers.end(); ++it) {
+
+        udp_endpoint * elemUDP = dynamic_cast<udp_endpoint*>(it->get());
+        udp_endpoint * testUDP = dynamic_cast<udp_endpoint*>(ep.get());
+        if (elemUDP && testUDP) {
+            if (*elemUDP == *testUDP)
+                return it;
+        }
+
+        typedef sc_osc_handler::tcp_connection tcp_connection;
+
+        tcp_connection * elemTCP = dynamic_cast<tcp_connection*>(it->get());
+        tcp_connection * testTCP = dynamic_cast<tcp_connection*>(ep.get());
+        if (elemTCP && testTCP) {
+            if (*elemTCP == *testTCP)
+                return it;
+        }
+
+    }
+    return observers.end();
+}
+
 
 void sc_notify_observers::notify(const char * address_pattern, const server_node * node) const
 {
@@ -464,24 +530,21 @@ void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const c
 
 void sc_notify_observers::send_notification(const char * data, size_t length)
 {
-    for (size_t i = 0; i != observers.size(); ++i)
-        send_notification(data, length, observers[i]);
+    for (auto & observer: observers)
+        observer->send(data, length);
 }
 
-void sc_notify_observers::send_notification(const char * data, size_t length, nova_endpoint const & endpoint)
+void udp_endpoint::send(const char *data, size_t length)
 {
-    nova_protocol const & prot = endpoint.protocol();
-    if (prot.family() == AF_INET && prot.type() == SOCK_DGRAM)
-    {
-        udp::endpoint ep(endpoint.address(), endpoint.port());
-        send_udp(data, length, ep);
-    }
-    else if (prot.family() == AF_INET && prot.type() == SOCK_STREAM)
-    {
-        tcp::endpoint ep(endpoint.address(), endpoint.port());
-        send_tcp(data, length, ep);
-    }
+    instance->sc_notify_observers::send_udp(data, length, endpoint_);
 }
+
+void sc_notify_observers::send_udp(const char * data, size_t size, udp::endpoint const & receiver)
+{
+    std::lock_guard<std::mutex> lock(udp_mutex);
+    sc_notify_observers::udp_socket.send_to(boost::asio::buffer(data, size), receiver);
+}
+
 
 
 
@@ -503,7 +566,7 @@ void sc_scheduled_bundles::bundle_node::run(void)
 }
 
 void sc_scheduled_bundles::insert_bundle(time_tag const & timeout, const char * data, size_t length,
-                                         nova_endpoint const & endpoint)
+                                         endpoint_ptr const & endpoint)
 {
     /* allocate chunk from realtime pool */
     void * chunk = rt_pool.malloc(sizeof(bundle_node) + length+4);
@@ -597,7 +660,7 @@ bool sc_osc_handler::open_socket(int family, int type, int protocol, unsigned in
 }
 
 void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error,
-                        std::size_t bytes_transferred)
+                                        std::size_t bytes_transferred)
 {
     if (unlikely(error == error::operation_aborted))
         return;    /* we're done */
@@ -614,15 +677,14 @@ void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error,
         return;
     }
 
+    udp_remote_endpoint_;
+
+    // FIXME: correct endpoint
     if (overflow_vector.empty())
-        handle_packet_async(recv_buffer_.begin(), bytes_transferred, udp_remote_endpoint_);
+        handle_packet_async(recv_buffer_.begin(), bytes_transferred, make_shared<udp_endpoint>(udp_remote_endpoint_));
     else {
         overflow_vector.insert(overflow_vector.end(), recv_buffer_.begin(), recv_buffer_.end());
-#ifdef __PATHCC__
-        handle_packet_async(&overflow_vector.front(), overflow_vector.size(), udp_remote_endpoint_);
-#else
-        handle_packet_async(overflow_vector.data(), overflow_vector.size(), udp_remote_endpoint_);
-#endif
+        handle_packet_async(overflow_vector.data(), overflow_vector.size(), make_shared<udp_endpoint>(udp_remote_endpoint_));
         overflow_vector.clear();
     }
 
@@ -676,12 +738,14 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
     if (transfered != size_t(msglen))
         throw std::runtime_error("socket read sanity check failure");
 
+    // FIXME: endpoint
     self->handle_packet_async(recv_vector.data()+sizeof(uint32_t), recv_vector.size()-sizeof(uint32_t),
-                              socket_.remote_endpoint());
+                              shared_from_this());
 }
 
 void sc_osc_handler::start_tcp_accept(void)
 {
+    printf("start_tcp_accept\n");
     tcp_connection::pointer new_connection = tcp_connection::create(tcp_acceptor_.get_io_service());
 
     tcp_acceptor_.async_accept(new_connection->socket(),
@@ -692,6 +756,7 @@ void sc_osc_handler::start_tcp_accept(void)
 void sc_osc_handler::handle_tcp_accept(tcp_connection::pointer new_connection,
                                        const boost::system::error_code& error)
 {
+    printf("handle_tcp_accept\n");
     if (!error) {
         new_connection->start(this);
         start_tcp_accept();
@@ -701,7 +766,7 @@ void sc_osc_handler::handle_tcp_accept(tcp_connection::pointer new_connection,
 
 
 void sc_osc_handler::handle_packet_async(const char * data, size_t length,
-                                         nova_endpoint const & endpoint)
+                                         endpoint_ptr const & endpoint)
 {
     received_packet * p = received_packet::alloc_packet(data, length, endpoint);
 
@@ -728,14 +793,14 @@ time_tag sc_osc_handler::handle_bundle_nrt(const char * data, size_t length)
         throw std::runtime_error("packet needs to be an osc bundle");
 
     received_bundle bundle(packet);
-    handle_bundle<false> (bundle, nova_endpoint());
+    handle_bundle<false> (bundle, nullptr);
     return bundle.TimeTag();
 }
 
 
 sc_osc_handler::received_packet *
 sc_osc_handler::received_packet::alloc_packet(const char * data, size_t length,
-                                              nova_endpoint const & remote_endpoint)
+                                              endpoint_ptr const & remote_endpoint)
 {
     /* received_packet struct and data array are located in one memory chunk */
     void * chunk = received_packet::allocate(sizeof(received_packet) + length);
@@ -752,7 +817,7 @@ void sc_osc_handler::received_packet::run(void)
     instance->handle_packet(data, length, endpoint_);
 }
 
-void sc_osc_handler::handle_packet(const char * data, std::size_t length, nova_endpoint const & endpoint)
+void sc_osc_handler::handle_packet(const char * data, std::size_t length, endpoint_ptr const & endpoint)
 {
     osc_received_packet packet(data, length);
     if (packet.IsBundle()) {
@@ -765,7 +830,7 @@ void sc_osc_handler::handle_packet(const char * data, std::size_t length, nova_e
 }
 
 template <bool realtime>
-void sc_osc_handler::handle_bundle(received_bundle const & bundle, nova_endpoint const & endpoint)
+void sc_osc_handler::handle_bundle(received_bundle const & bundle, endpoint_ptr const & endpoint)
 {
     time_tag bundle_time = bundle.TimeTag();
 
@@ -794,7 +859,7 @@ void sc_osc_handler::handle_bundle(received_bundle const & bundle, nova_endpoint
 
 template <bool realtime>
 void sc_osc_handler::handle_message(received_message const & message, size_t msg_size,
-                                    nova_endpoint const & endpoint)
+                                    endpoint_ptr const & endpoint)
 {
     try {
         if (message.AddressPatternIsUInt32())
@@ -810,9 +875,10 @@ namespace {
 
 typedef sc_osc_handler::received_message received_message;
 
-void send_udp_message(movable_array<char> data, nova_endpoint const & endpoint)
+// FIXME: remove?
+void send_udp_message(movable_array<char> data, endpoint_ptr & endpoint)
 {
-    instance->send(data.data(), data.size(), endpoint);
+    endpoint->send(data.data(), data.size());
 }
 
 int first_arg_as_int(received_message const & message)
@@ -826,7 +892,7 @@ int first_arg_as_int(received_message const & message)
 }
 
 template <bool realtime>
-void handle_quit(nova_endpoint const & endpoint)
+void handle_quit(endpoint_ptr endpoint)
 {
     instance->quit_received = true;
     cmd_dispatcher<realtime>::fire_system_callback( [=] () {
@@ -837,7 +903,7 @@ void handle_quit(nova_endpoint const & endpoint)
 }
 
 template <bool realtime>
-void handle_notify(received_message const & message, nova_endpoint const & endpoint)
+void handle_notify(received_message const & message, endpoint_ptr endpoint)
 {
     int enable = first_arg_as_int(message);
 
@@ -857,7 +923,7 @@ void handle_notify(received_message const & message, nova_endpoint const & endpo
 }
 
 template <bool realtime>
-void handle_status(nova_endpoint const & endpoint)
+void handle_status(endpoint_ptr endpoint)
 {
     cmd_dispatcher<realtime>::fire_io_callback([=]() {
         if (unlikely(instance->quit_received)) // we don't reply once we are about to quit
@@ -882,7 +948,7 @@ void handle_status(nova_endpoint const & endpoint)
           << instance->get_samplerate()             /* actual samplerate */
           << osc::EndMessage;
 
-        instance->send(p.Data(), p.Size(), endpoint);
+        endpoint->send(p.Data(), p.Size());
     });
 }
 
@@ -895,7 +961,7 @@ void handle_dumpOSC(received_message const & message)
 }
 
 template <bool realtime>
-void handle_sync(received_message const & message, nova_endpoint const & endpoint)
+void handle_sync(received_message const & message, endpoint_ptr endpoint)
 {
     int id = first_arg_as_int(message);
 
@@ -909,7 +975,7 @@ void handle_sync(received_message const & message, nova_endpoint const & endpoin
                   << id
                   << osc::EndMessage;
 
-                instance->send(p.Data(), p.Size(), endpoint);
+                endpoint->send(p.Data(), p.Size());
             });
         });
     });
@@ -1227,7 +1293,7 @@ void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_nod
 }
 
 template <bool realtime>
-void g_query_tree(int node_id, bool flag, nova_endpoint const & endpoint)
+void g_query_tree(int node_id, bool flag, endpoint_ptr endpoint)
 {
     server_node * node = find_node(node_id);
     if (!node || node->is_synth())
@@ -1255,7 +1321,7 @@ void g_query_tree(int node_id, bool flag, nova_endpoint const & endpoint)
             p << osc::EndMessage;
 
             movable_array<char> message(p.Size(), data.c_array());
-            cmd_dispatcher<realtime>::fire_io_callback(std::bind(send_udp_message, message, endpoint));
+            cmd_dispatcher<realtime>::fire_message(endpoint, message);
             return;
         }
         catch(...)
@@ -1266,7 +1332,7 @@ void g_query_tree(int node_id, bool flag, nova_endpoint const & endpoint)
 }
 
 template <bool realtime>
-void handle_g_queryTree(received_message const & msg, nova_endpoint const & endpoint)
+void handle_g_queryTree(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1578,13 +1644,12 @@ void handle_g_head_or_tail(received_message const & msg)
 }
 
 
-
-void handle_n_query(received_message const & msg, nova_endpoint const & endpoint)
+template <bool realtime>
+void handle_n_query(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    while(!args.Eos())
-    {
+    while(!args.Eos()) {
         osc::int32 node_id;
         args >> node_id;
 
@@ -1598,7 +1663,7 @@ void handle_n_query(received_message const & msg, nova_endpoint const & endpoint
         fill_notification(node, p);
 
         movable_array<char> message(p.Size(), p.Data());
-        cmd_dispatcher<true>::fire_system_callback(std::bind(send_udp_message, message, endpoint));
+        cmd_dispatcher<realtime>::fire_message(endpoint, message);
     }
 }
 
@@ -1731,7 +1796,7 @@ int32_t get_control_index(sc_synth * s, osc::ReceivedMessageArgumentIterator & i
 }
 
 template <bool realtime>
-void handle_s_get(received_message const & msg, size_t msg_size, nova_endpoint const & endpoint)
+void handle_s_get(received_message const & msg, size_t msg_size, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
@@ -1762,11 +1827,11 @@ void handle_s_get(received_message const & msg, size_t msg_size, nova_endpoint c
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    cmd_dispatcher<realtime>::fire_io_callback(std::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_message(endpoint, message);
 }
 
 template <bool realtime>
-void handle_s_getn(received_message const & msg, size_t msg_size, nova_endpoint const & endpoint)
+void handle_s_getn(received_message const & msg, size_t msg_size, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
@@ -1818,7 +1883,7 @@ void handle_s_getn(received_message const & msg, size_t msg_size, nova_endpoint 
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    cmd_dispatcher<realtime>::fire_io_callback(std::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_message(endpoint, message);
 }
 
 
@@ -1864,7 +1929,7 @@ struct completion_message
     /** handle package in the rt thread
      *  not to be called from the rt thread
      */
-    void trigger_async(nova_endpoint const & endpoint)
+    void trigger_async(endpoint_ptr endpoint)
     {
         if (size_) {
             sc_osc_handler::received_packet * p =
@@ -1876,7 +1941,7 @@ struct completion_message
     /** handle package directly
      *  only to be called from the rt thread
      */
-    void handle(nova_endpoint const & endpoint)
+    void handle(endpoint_ptr endpoint)
     {
         if (size_)
             instance->handle_packet((char*)data_, size_, endpoint);
@@ -1914,11 +1979,11 @@ completion_message extract_completion_message(osc::ReceivedMessageArgumentIterat
 
 
 template <bool realtime>
-void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, nova_endpoint const & endpoint);
-void b_alloc_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endpoint);
+void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, endpoint_ptr endpoint);
+void b_alloc_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint);
 
 template <bool realtime>
-void b_alloc_1_nrt(uint32_t bufnum, uint32_t frames, uint32_t channels, completion_message & msg, nova_endpoint const & endpoint)
+void b_alloc_1_nrt(uint32_t bufnum, uint32_t frames, uint32_t channels, completion_message & msg, endpoint_ptr endpoint)
 {
     sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
     try {
@@ -1931,21 +1996,21 @@ void b_alloc_1_nrt(uint32_t bufnum, uint32_t frames, uint32_t channels, completi
 }
 
 template <bool realtime>
-void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, nova_endpoint const & endpoint)
+void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, endpoint_ptr endpoint)
 {
     sc_factory->buffer_sync(index);
     msg.handle(endpoint);
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_alloc_3_nrt, index, free_buf, endpoint));
 }
 
-void b_alloc_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endpoint)
+void b_alloc_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint)
 {
     free_aligned(free_buf);
     send_done_message(endpoint, "/b_alloc", index);
 }
 
 template <bool realtime>
-void handle_b_alloc(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_alloc(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1965,13 +2030,13 @@ void handle_b_alloc(received_message const & msg, nova_endpoint const & endpoint
 }
 
 template <bool realtime>
-void b_free_1_nrt(uint32_t index, completion_message & msg, nova_endpoint const & endpoint);
+void b_free_1_nrt(uint32_t index, completion_message & msg, endpoint_ptr endpoint);
 template <bool realtime>
-void b_free_2_rt(uint32_t index, sample * free_buf, completion_message & msg, nova_endpoint const & endpoint);
-void b_free_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endpoint);
+void b_free_2_rt(uint32_t index, sample * free_buf, completion_message & msg, endpoint_ptr endpoint);
+void b_free_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint);
 
 template <bool realtime>
-void b_free_1_nrt(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
+void b_free_1_nrt(uint32_t index, completion_message & msg, endpoint_ptr endpoint)
 {
     sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
     sample * free_buf = sc_factory->get_nrt_mirror_buffer(index);
@@ -1981,14 +2046,14 @@ void b_free_1_nrt(uint32_t index, completion_message & msg, nova_endpoint const 
 }
 
 template <bool realtime>
-void b_free_2_rt(uint32_t index, sample * free_buf, completion_message & msg, nova_endpoint const & endpoint)
+void b_free_2_rt(uint32_t index, sample * free_buf, completion_message & msg, endpoint_ptr endpoint)
 {
     sc_factory->buffer_sync(index);
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_free_3_nrt, index, free_buf, endpoint));
     msg.handle(endpoint);
 }
 
-void b_free_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endpoint)
+void b_free_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint)
 {
     free_aligned(free_buf);
     send_done_message(endpoint, "/b_free", index);
@@ -1996,7 +2061,7 @@ void b_free_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endpo
 
 
 template <bool realtime>
-void handle_b_free(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_free(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -2009,12 +2074,12 @@ void handle_b_free(received_message const & msg, nova_endpoint const & endpoint)
 }
 
 template <bool realtime>
-void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_buf, nova_endpoint const & endpoint);
-void b_allocRead_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endpoint);
+void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_buf, endpoint_ptr endpoint);
+void b_allocRead_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint);
 
 template <bool realtime>
 void b_allocRead_1_nrt(uint32_t bufnum, movable_string & filename, uint32_t start, uint32_t frames, completion_message & msg,
-                       nova_endpoint const & endpoint)
+                       endpoint_ptr endpoint)
 {
     sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
     sample * free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
@@ -2028,21 +2093,21 @@ void b_allocRead_1_nrt(uint32_t bufnum, movable_string & filename, uint32_t star
 
 template <bool realtime>
 void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_buf,
-                      nova_endpoint const & endpoint)
+                      endpoint_ptr endpoint)
 {
     sc_factory->buffer_sync(index);
     msg.handle(endpoint);
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_allocRead_3_nrt, index, free_buf, endpoint));
 }
 
-void b_allocRead_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endpoint)
+void b_allocRead_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint)
 {
     free_aligned(free_buf);
     send_done_message(endpoint, "/b_allocRead", index);
 }
 
 template <bool realtime>
-void handle_b_allocRead(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_allocRead(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -2069,13 +2134,13 @@ void handle_b_allocRead(received_message const & msg, nova_endpoint const & endp
 
 template <bool realtime>
 void b_allocReadChannel_2_rt(uint32_t bufnum, completion_message & msg, sample * free_buf,
-                             nova_endpoint const & endpoint);
-void b_allocReadChannel_3_nrt(uint32_t bufnum, sample * free_buf, nova_endpoint const & endpoint);
+                             endpoint_ptr endpoint);
+void b_allocReadChannel_3_nrt(uint32_t bufnum, sample * free_buf, endpoint_ptr endpoint);
 
 template <bool realtime>
 void b_allocReadChannel_1_nrt(uint32_t bufnum, movable_string const & filename, uint32_t start, uint32_t frames,
                               movable_array<uint32_t> const & channels, completion_message & msg,
-                              nova_endpoint const & endpoint)
+                              endpoint_ptr endpoint)
 {
     sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
     sample * free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
@@ -2092,7 +2157,7 @@ void b_allocReadChannel_1_nrt(uint32_t bufnum, movable_string const & filename, 
 
 template <bool realtime>
 void b_allocReadChannel_2_rt(uint32_t bufnum, completion_message & msg, sample * free_buf,
-                             nova_endpoint const & endpoint)
+                             endpoint_ptr endpoint)
 {
     sc_factory->buffer_sync(bufnum);
     msg.handle(endpoint);
@@ -2100,7 +2165,7 @@ void b_allocReadChannel_2_rt(uint32_t bufnum, completion_message & msg, sample *
                                                              bufnum, free_buf, endpoint));
 }
 
-void b_allocReadChannel_3_nrt(uint32_t bufnum, sample * free_buf, nova_endpoint const & endpoint)
+void b_allocReadChannel_3_nrt(uint32_t bufnum, sample * free_buf, endpoint_ptr endpoint)
 {
     free_aligned(free_buf);
     send_done_message(endpoint, "/b_allocReadChannel", bufnum);
@@ -2108,7 +2173,7 @@ void b_allocReadChannel_3_nrt(uint32_t bufnum, sample * free_buf, nova_endpoint 
 
 
 template <bool realtime>
-void handle_b_allocReadChannel(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_allocReadChannel(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
 
@@ -2147,7 +2212,7 @@ const char * b_write = "/b_write";
 template <bool realtime>
 void b_write_nrt_1(uint32_t bufnum, movable_string const & filename, movable_string const & header_format,
                    movable_string const & sample_format, uint32_t start, uint32_t frames, bool leave_open,
-                   completion_message & msg, nova_endpoint const & endpoint)
+                   completion_message & msg, endpoint_ptr endpoint)
 {
     sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
     try {
@@ -2165,7 +2230,7 @@ void fire_b_write_exception(void)
 }
 
 template <bool realtime>
-void handle_b_write(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_write(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
@@ -2220,11 +2285,11 @@ fire_callback:
 const char * b_read = "/b_read";
 
 template <bool realtime>
-void b_read_rt_2(uint32_t bufnum, completion_message & msg, nova_endpoint const & endpoint);
+void b_read_rt_2(uint32_t bufnum, completion_message & msg, endpoint_ptr endpoint);
 
 template <bool realtime>
 void b_read_nrt_1(uint32_t bufnum, movable_string & filename, uint32_t start_file, uint32_t frames,
-                  uint32_t start_buffer, bool leave_open, completion_message & msg, nova_endpoint const & endpoint)
+                  uint32_t start_buffer, bool leave_open, completion_message & msg, endpoint_ptr endpoint)
 {
     sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
 
@@ -2237,7 +2302,7 @@ void b_read_nrt_1(uint32_t bufnum, movable_string & filename, uint32_t start_fil
 }
 
 template <bool realtime>
-void b_read_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
+void b_read_rt_2(uint32_t index, completion_message & msg, endpoint_ptr endpoint)
 {
     sc_factory->buffer_sync(index);
     msg.handle(endpoint);
@@ -2250,7 +2315,7 @@ void fire_b_read_exception(void)
 }
 
 template <bool realtime>
-void handle_b_read(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_read(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
@@ -2309,12 +2374,12 @@ fire_callback:
 const char * b_readChannel = "/b_readChannel";
 
 template <bool realtime>
-void b_readChannel_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint);
+void b_readChannel_rt_2(uint32_t index, completion_message & msg, endpoint_ptr endpoint);
 
 template <bool realtime>
 void b_readChannel_nrt_1(uint32_t bufnum, movable_string & filename, uint32_t start_file, uint32_t frames,
                          uint32_t start_buffer, bool leave_open, movable_array<uint32_t> & channel_map,
-                         completion_message & msg, nova_endpoint const & endpoint)
+                         completion_message & msg, endpoint_ptr endpoint)
 {
     try {
         sc_factory->buffer_read_channel(bufnum, filename.c_str(), start_file, frames, start_buffer, leave_open,
@@ -2326,7 +2391,7 @@ void b_readChannel_nrt_1(uint32_t bufnum, movable_string & filename, uint32_t st
 }
 
 template <bool realtime>
-void b_readChannel_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
+void b_readChannel_rt_2(uint32_t index, completion_message & msg, endpoint_ptr endpoint)
 {
     sc_factory->buffer_sync(index);
     msg.handle(endpoint);
@@ -2339,7 +2404,7 @@ void fire_b_readChannel_exception(void)
 }
 
 template <bool realtime>
-void handle_b_readChannel(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_readChannel(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
@@ -2416,10 +2481,10 @@ fire_callback:
 
 
 template <bool realtime>
-void b_zero_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint);
+void b_zero_rt_2(uint32_t index, completion_message & msg, endpoint_ptr endpoint);
 
 template <bool realtime>
-void b_zero_nrt_1(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
+void b_zero_nrt_1(uint32_t index, completion_message & msg, endpoint_ptr endpoint)
 {
     sc_factory->buffer_zero(index);
     cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_zero_rt_2<realtime>, index, msg, endpoint));
@@ -2427,7 +2492,7 @@ void b_zero_nrt_1(uint32_t index, completion_message & msg, nova_endpoint const 
 
 const char * b_zero = "/b_zero";
 template <bool realtime>
-void b_zero_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
+void b_zero_rt_2(uint32_t index, completion_message & msg, endpoint_ptr endpoint)
 {
     sc_factory->increment_write_updates(index);
     msg.handle(endpoint);
@@ -2435,7 +2500,7 @@ void b_zero_rt_2(uint32_t index, completion_message & msg, nova_endpoint const &
 }
 
 template <bool realtime>
-void handle_b_zero(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_zero(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -2507,7 +2572,7 @@ void handle_b_fill(received_message const & msg)
 }
 
 template <bool realtime>
-void handle_b_query(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_query(received_message const & msg, endpoint_ptr endpoint)
 {
     const size_t elem_size = 3*sizeof(int) * sizeof(float);
 
@@ -2535,29 +2600,28 @@ void handle_b_query(received_message const & msg, nova_endpoint const & endpoint
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), data.c_array());
-
-    cmd_dispatcher<realtime>::fire_io_callback(std::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_message(endpoint, message);
 }
 
 template <bool realtime>
-void b_close_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint);
+void b_close_rt_2(uint32_t index, completion_message & msg, endpoint_ptr endpoint);
 
 template <bool realtime>
-void b_close_nrt_1(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
+void b_close_nrt_1(uint32_t index, completion_message & msg, endpoint_ptr endpoint)
 {
     sc_factory->buffer_close(index);
     cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_close_rt_2<realtime>, index, msg, endpoint));
 }
 
 template <bool realtime>
-void b_close_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
+void b_close_rt_2(uint32_t index, completion_message & msg, endpoint_ptr endpoint)
 {
     msg.handle(endpoint);
     cmd_dispatcher<realtime>::fire_done_message(endpoint, "/b_close", index);
 }
 
 template <bool realtime>
-void handle_b_close(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_close(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
     osc::int32 index;
@@ -2568,7 +2632,7 @@ void handle_b_close(received_message const & msg, nova_endpoint const & endpoint
 }
 
 template <bool realtime>
-void handle_b_get(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_get(received_message const & msg, endpoint_ptr endpoint)
 {
     const size_t elem_size = sizeof(int) * sizeof(float);
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -2603,7 +2667,7 @@ void handle_b_get(received_message const & msg, nova_endpoint const & endpoint)
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    cmd_dispatcher<realtime>::fire_io_callback(std::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_message(endpoint, message);
 }
 
 template<typename Alloc>
@@ -2622,7 +2686,7 @@ struct getn_data
 };
 
 template <bool realtime>
-void handle_b_getn(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_getn(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -2666,16 +2730,16 @@ void handle_b_getn(received_message const & msg, nova_endpoint const & endpoint)
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    cmd_dispatcher<realtime>::fire_io_callback(std::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_message(endpoint, message);
 }
 
 
 template <bool realtime>
-void b_gen_rt_2(uint32_t index, sample * free_buf, nova_endpoint const & endpoint);
-void b_gen_nrt_3(uint32_t index, sample * free_buf, nova_endpoint const & endpoint);
+void b_gen_rt_2(uint32_t index, sample * free_buf, endpoint_ptr endpoint);
+void b_gen_nrt_3(uint32_t index, sample * free_buf, endpoint_ptr endpoint);
 
 template <bool realtime>
-void b_gen_nrt_1(movable_array<char> & message, nova_endpoint const & endpoint)
+void b_gen_nrt_1(movable_array<char> & message, endpoint_ptr endpoint)
 {
     const char * data = (char*)message.data();
     const char * msg_data = OSCstrskip(data); // skip address
@@ -2703,20 +2767,20 @@ void b_gen_nrt_1(movable_array<char> & message, nova_endpoint const & endpoint)
 }
 
 template <bool realtime>
-void b_gen_rt_2(uint32_t index, sample * free_buf, nova_endpoint const & endpoint)
+void b_gen_rt_2(uint32_t index, sample * free_buf, endpoint_ptr endpoint)
 {
     sc_factory->buffer_sync(index);
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_gen_nrt_3, index, free_buf, endpoint));
 }
 
-void b_gen_nrt_3(uint32_t index, sample * free_buf, nova_endpoint const & endpoint)
+void b_gen_nrt_3(uint32_t index, sample * free_buf, endpoint_ptr endpoint)
 {
     free_aligned(free_buf);
     send_done_message(endpoint, "/b_gen", index);
 }
 
 template <bool realtime>
-void handle_b_gen(received_message const & msg, size_t msg_size, nova_endpoint const & endpoint)
+void handle_b_gen(received_message const & msg, size_t msg_size, endpoint_ptr endpoint)
 {
     movable_array<char> cmd (msg_size, msg.AddressPattern());
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_gen_nrt_1<realtime>, cmd, endpoint));
@@ -2766,7 +2830,7 @@ void handle_c_fill(received_message const & msg)
 
 template <bool realtime>
 void handle_c_get(received_message const & msg,
-                  nova_endpoint const & endpoint)
+                  endpoint_ptr endpoint)
 {
     const size_t elem_size = sizeof(int) + sizeof(float);
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -2789,11 +2853,11 @@ void handle_c_get(received_message const & msg,
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    cmd_dispatcher<realtime>::fire_io_callback(std::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_message(endpoint, message);
 }
 
 template <bool realtime>
-void handle_c_getn(received_message const & msg, nova_endpoint const & endpoint)
+void handle_c_getn(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -2821,7 +2885,7 @@ void handle_c_getn(received_message const & msg, nova_endpoint const & endpoint)
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    cmd_dispatcher<realtime>::fire_io_callback(std::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_message(endpoint, message);
 }
 
 #ifdef BOOST_HAS_RVALUE_REFS
@@ -2848,11 +2912,11 @@ std::pair<sc_synth_definition_ptr *, size_t> wrap_synthdefs(std::vector<sc_synth
 
 template <bool realtime>
 void d_recv_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, completion_message & msg,
-                nova_endpoint const & endpoint);
-void d_recv_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & endpoint);
+                endpoint_ptr endpoint);
+void d_recv_nrt3(sc_synth_definition_ptr * definitions, endpoint_ptr endpoint);
 
 template <bool realtime>
-void d_recv_nrt(movable_array<char> & def, completion_message & msg, nova_endpoint const & endpoint)
+void d_recv_nrt(movable_array<char> & def, completion_message & msg, endpoint_ptr endpoint)
 {
     size_t count;
     sc_synth_definition_ptr * definitions;
@@ -2865,7 +2929,7 @@ void d_recv_nrt(movable_array<char> & def, completion_message & msg, nova_endpoi
 
 template <bool realtime>
 void d_recv_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, completion_message & msg,
-                nova_endpoint const & endpoint)
+                endpoint_ptr endpoint)
 {
     std::for_each(definitions, definitions + definition_count, [](sc_synth_definition_ptr const & definition) {
         instance->register_definition(definition);
@@ -2875,7 +2939,7 @@ void d_recv_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, 
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(d_recv_nrt3, definitions, endpoint));
 }
 
-void d_recv_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & endpoint)
+void d_recv_nrt3(sc_synth_definition_ptr * definitions, endpoint_ptr endpoint)
 {
     delete[] definitions;
     send_done_message(endpoint, "/d_recv");
@@ -2883,7 +2947,7 @@ void d_recv_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & en
 
 template <bool realtime>
 void handle_d_recv(received_message const & msg,
-                   nova_endpoint const & endpoint)
+                   endpoint_ptr endpoint)
 {
     const void * synthdef_data;
     unsigned long synthdef_size;
@@ -2899,11 +2963,11 @@ void handle_d_recv(received_message const & msg,
 
 template <bool realtime>
 void d_load_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, completion_message & msg,
-                nova_endpoint const & endpoint);
-void d_load_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & endpoint);
+                endpoint_ptr endpoint);
+void d_load_nrt3(sc_synth_definition_ptr * definitions, endpoint_ptr endpoint);
 
 template <bool realtime>
-void d_load_nrt(movable_string & path, completion_message & msg, nova_endpoint const & endpoint)
+void d_load_nrt(movable_string & path, completion_message & msg, endpoint_ptr endpoint)
 {
     size_t count;
     sc_synth_definition_ptr * definitions;
@@ -2915,7 +2979,7 @@ void d_load_nrt(movable_string & path, completion_message & msg, nova_endpoint c
 
 template <bool realtime>
 void d_load_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, completion_message & msg,
-                nova_endpoint const & endpoint)
+                endpoint_ptr endpoint)
 {
     std::for_each(definitions, definitions + definition_count, [](sc_synth_definition_ptr const & definition) {
         instance->register_definition(definition);
@@ -2925,7 +2989,7 @@ void d_load_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, 
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(d_load_nrt3, definitions, endpoint));
 }
 
-void d_load_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & endpoint)
+void d_load_nrt3(sc_synth_definition_ptr * definitions, endpoint_ptr endpoint)
 {
     delete[] definitions;
     send_done_message(endpoint, "/d_load");
@@ -2934,7 +2998,7 @@ void d_load_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & en
 
 template <bool realtime>
 void handle_d_load(received_message const & msg,
-                   nova_endpoint const & endpoint)
+                   endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin();
     const char * path = args->AsString(); args++;
@@ -2947,11 +3011,11 @@ void handle_d_load(received_message const & msg,
 
 template <bool realtime>
 void d_loadDir_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, completion_message & msg,
-                   nova_endpoint const & endpoint);
-void d_loadDir_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & endpoint);
+                   endpoint_ptr endpoint);
+void d_loadDir_nrt3(sc_synth_definition_ptr * definitions, endpoint_ptr endpoint);
 
 template <bool realtime>
-void d_loadDir_nrt1(movable_string & path, completion_message & msg, nova_endpoint const & endpoint)
+void d_loadDir_nrt1(movable_string & path, completion_message & msg, endpoint_ptr endpoint)
 {
     size_t count;
     sc_synth_definition_ptr * definitions;
@@ -2962,7 +3026,7 @@ void d_loadDir_nrt1(movable_string & path, completion_message & msg, nova_endpoi
 
 template <bool realtime>
 void d_loadDir_rt2(sc_synth_definition_ptr * definitions, size_t definition_count, completion_message & msg,
-                   nova_endpoint const & endpoint)
+                   endpoint_ptr endpoint)
 {
     std::for_each(definitions, definitions + definition_count, [](sc_synth_definition_ptr const & definition) {
         instance->register_definition(definition);
@@ -2972,7 +3036,7 @@ void d_loadDir_rt2(sc_synth_definition_ptr * definitions, size_t definition_coun
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(d_loadDir_nrt3, definitions, endpoint));
 }
 
-void d_loadDir_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const & endpoint)
+void d_loadDir_nrt3(sc_synth_definition_ptr * definitions, endpoint_ptr endpoint)
 {
     delete[] definitions;
     send_done_message(endpoint, "/d_loadDir");
@@ -2980,7 +3044,7 @@ void d_loadDir_nrt3(sc_synth_definition_ptr * definitions, nova_endpoint const &
 
 template <bool realtime>
 void handle_d_loadDir(received_message const & msg,
-                      nova_endpoint const & endpoint)
+                      endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
     const char * path;
@@ -3056,20 +3120,21 @@ void handle_u_cmd(received_message const & msg, int size)
     synth->apply_unit_cmd(cmd_name, ugen_index, &args);
 }
 
-void handle_cmd(received_message const & msg, int size, nova_endpoint const & endpoint, int skip_bytes)
+void handle_cmd(received_message const & msg, int size, endpoint_ptr endpoint, int skip_bytes)
 {
     sc_msg_iter args(size, msg.AddressPattern() + skip_bytes);
 
     const char * cmd = args.gets();
 
-    sc_factory->run_cmd_plugin(&sc_factory->world, cmd, &args, const_cast<nova_endpoint*>(&endpoint));
+    // FIXME: how to handle endpoints?
+    sc_factory->run_cmd_plugin(&sc_factory->world, cmd, &args, nullptr/*endpoint.get()*/);
 }
 
 } /* namespace */
 
 template <bool realtime>
 void sc_osc_handler::handle_message_int_address(received_message const & message,
-                                                size_t msg_size, nova_endpoint const & endpoint)
+                                                size_t msg_size, endpoint_ptr const & endpoint)
 {
     uint32_t address = message.AddressPatternAsUInt32();
 
@@ -3180,7 +3245,7 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_n_query:
-        handle_n_query(message, endpoint);
+        handle_n_query<realtime>(message, endpoint);
         break;
 
     case cmd_n_order:
@@ -3325,7 +3390,7 @@ namespace
 
 template <bool realtime>
 void dispatch_group_commands(const char * address, received_message const & message,
-                             nova_endpoint const & endpoint)
+                             endpoint_ptr const & endpoint)
 {
     assert(address[1] == 'g');
     assert(address[2] == '_');
@@ -3363,7 +3428,7 @@ void dispatch_group_commands(const char * address, received_message const & mess
 
 template <bool realtime>
 void dispatch_node_commands(const char * address, received_message const & message,
-                            nova_endpoint const & endpoint)
+                            endpoint_ptr const & endpoint)
 {
     assert(address[1] == 'n');
     assert(address[2] == '_');
@@ -3429,7 +3494,7 @@ void dispatch_node_commands(const char * address, received_message const & messa
     }
 
     if (strcmp(address+3, "query") == 0) {
-        handle_n_query(message, endpoint);
+        handle_n_query<realtime>(message, endpoint);
         return;
     }
 
@@ -3441,7 +3506,7 @@ void dispatch_node_commands(const char * address, received_message const & messa
 
 template <bool realtime>
 void dispatch_buffer_commands(const char * address, received_message const & message,
-                              size_t msg_size, nova_endpoint const & endpoint)
+                              size_t msg_size, endpoint_ptr const & endpoint)
 {
     assert(address[1] == 'b');
     assert(address[2] == '_');
@@ -3528,7 +3593,7 @@ void dispatch_buffer_commands(const char * address, received_message const & mes
 
 template <bool realtime>
 void dispatch_control_bus_commands(const char * address, received_message const & message,
-                                   nova_endpoint const & endpoint)
+                                   endpoint_ptr const & endpoint)
 {
     assert(address[1] == 'c');
     assert(address[2] == '_');
@@ -3561,7 +3626,7 @@ void dispatch_control_bus_commands(const char * address, received_message const 
 
 template <bool realtime>
 void dispatch_synthdef_commands(const char * address, received_message const & message,
-                                nova_endpoint const & endpoint)
+                                endpoint_ptr const & endpoint)
 {
     assert(address[1] == 'd');
     assert(address[2] == '_');
@@ -3589,7 +3654,7 @@ void dispatch_synthdef_commands(const char * address, received_message const & m
 
 template <bool realtime>
 void dispatch_synth_commands(const char * address, received_message const & message, size_t msg_size,
-                             nova_endpoint const & endpoint)
+                             endpoint_ptr const & endpoint)
 {
     assert(address[1] == 's');
     assert(address[2] == '_');
@@ -3619,7 +3684,7 @@ void dispatch_synth_commands(const char * address, received_message const & mess
 
 template <bool realtime>
 void sc_osc_handler::handle_message_sym_address(received_message const & message,
-                                                size_t msg_size, nova_endpoint const & endpoint)
+                                                size_t msg_size, endpoint_ptr const & endpoint)
 {
     const char * address = message.AddressPattern();
 
@@ -3724,7 +3789,7 @@ void handle_asynchronous_plugin_cleanup(World * world, void *cmdData,
 
 template <bool realtime>
 void handle_asynchronous_plugin_stage4(World * world, const char * cmdName, void *cmdData, AsyncStageFn stage4,
-                                       AsyncFreeFn cleanup, completion_message & msg, nova_endpoint const & endpoint)
+                                       AsyncFreeFn cleanup, completion_message & msg, endpoint_ptr endpoint)
 {
     if (stage4)
         (stage4)(world, cmdData);
@@ -3737,7 +3802,7 @@ void handle_asynchronous_plugin_stage4(World * world, const char * cmdName, void
 
 template <bool realtime>
 void handle_asynchronous_plugin_stage3(World * world, const char * cmdName, void *cmdData, AsyncStageFn stage3, AsyncStageFn stage4,
-                                       AsyncFreeFn cleanup, completion_message & msg, nova_endpoint const & endpoint)
+                                       AsyncFreeFn cleanup, completion_message & msg, endpoint_ptr endpoint)
 {
     if (stage3) {
         bool success = (stage3)(world, cmdData);
@@ -3751,7 +3816,7 @@ void handle_asynchronous_plugin_stage3(World * world, const char * cmdName, void
 template <bool realtime>
 void handle_asynchronous_plugin_stage2(World * world, const char * cmdName, void *cmdData, AsyncStageFn stage2,
                                        AsyncStageFn stage3, AsyncStageFn stage4,
-                                       AsyncFreeFn cleanup, completion_message & msg, nova_endpoint const & endpoint)
+                                       AsyncFreeFn cleanup, completion_message & msg, endpoint_ptr endpoint)
 {
     if (stage2)
         (stage2)(world, cmdData);
@@ -3766,8 +3831,10 @@ void sc_osc_handler::do_asynchronous_command(World * world, void* replyAddr, con
                                              int completionMsgSize, void* completionMsgData)
 {
     completion_message msg(completionMsgSize, completionMsgData);
-    nova_endpoint endpoint = replyAddr ? (*static_cast<nova_endpoint*>(replyAddr))
-                                       : nova_endpoint();
+//    nova_endpoint * endpoint = replyAddr ? static_cast<nova_endpoint*>(replyAddr)
+//                                         : nullptr;
+
+    endpoint_ptr endpoint; // FIXME: how to pass endpoints through asynchronous commands?
 
     if (world->mRealTime)
         cmd_dispatcher<true>::fire_system_callback(std::bind(handle_asynchronous_plugin_stage2<true>, world, cmdName,
