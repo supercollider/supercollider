@@ -552,8 +552,10 @@ void sc_scheduled_bundles::execute_bundles(time_tag const & last, time_tag const
 void sc_osc_handler::open_tcp_acceptor(tcp const & protocol, unsigned int port)
 {
     tcp_acceptor_.open(protocol);
+
     tcp_acceptor_.bind(tcp::endpoint(protocol, port));
     tcp_acceptor_.listen();
+    start_tcp_accept();
 }
 
 void sc_osc_handler::open_udp_socket(udp const & protocol, unsigned int port)
@@ -630,7 +632,7 @@ void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error,
 
 void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
 {
-    bool check_password = true;
+    const bool check_password = self->tcp_password_;
 
     if (check_password) {
         std::array<char, 32> password;
@@ -674,8 +676,28 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
     if (transfered != size_t(msglen))
         throw std::runtime_error("socket read sanity check failure");
 
-    self->handle_packet_async(recv_vector.data(), recv_vector.size(), socket_.remote_endpoint());
+    self->handle_packet_async(recv_vector.data()+sizeof(uint32_t), recv_vector.size()-sizeof(uint32_t),
+                              socket_.remote_endpoint());
 }
+
+void sc_osc_handler::start_tcp_accept(void)
+{
+    tcp_connection::pointer new_connection = tcp_connection::create(tcp_acceptor_.get_io_service());
+
+    tcp_acceptor_.async_accept(new_connection->socket(),
+        boost::bind(&sc_osc_handler::handle_tcp_accept, this, new_connection,
+        boost::asio::placeholders::error));
+}
+
+void sc_osc_handler::handle_tcp_accept(tcp_connection::pointer new_connection,
+                                       const boost::system::error_code& error)
+{
+    if (!error) {
+        new_connection->start(this);
+        start_tcp_accept();
+    }
+}
+
 
 
 void sc_osc_handler::handle_packet_async(const char * data, size_t length,
