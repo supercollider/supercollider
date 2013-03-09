@@ -124,9 +124,10 @@ QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  QUrl url( QtCollider::get<QString>(a) );
+  QString url_str = QtCollider::get(a);
+  QUrl url(url_str);
   if( !url.isValid() || url.isEmpty() ) {
-    qcErrorMsg("QImage invalid or empty URL");
+    qcErrorMsg( QString("QImage: invalid or empty URL: ") + url_str );
     return errFailed;
   }
 
@@ -134,7 +135,7 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     if( QImage_InitPath( g, slotRawObject(r), url.toLocalFile() ) ) {
       return errNone;
     } else {
-      qcErrorMsg("QImage file doesn't exist or can't be open");
+      qcErrorMsg( QString("QImage: file doesn't exist or can't be opened: ") + url_str );
       return errFailed;
     }
   }
@@ -143,44 +144,36 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   // Take a safe read to allow Integers:
   float timeout = QtCollider::get(a+1);
 
-  QNetworkAccessManager *manager = new QNetworkAccessManager();
-  QNetworkReply *reply = manager->get( QNetworkRequest( url ) );
+  QNetworkAccessManager manager;
+  QScopedPointer<QNetworkReply> reply( manager.get( QNetworkRequest(url) ) );
 
   QEventLoop loop;
+  QcApplication::connect( &manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()) );
+  QcApplication::connect( reply.data(), SIGNAL(error(QNetworkReply::NetworkError)), &loop, SLOT(quit()) );
   QTimer::singleShot( 100 * timeout, &loop, SLOT(quit()) );
-  QcApplication::connect( manager, SIGNAL(finished(QNetworkReply*)), &loop, SLOT(quit()) );
-  QcApplication::connect( reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop, SLOT(quit()) );
   loop.exec(); // blocks
 
   if( reply->error() != QNetworkReply::NoError ) {
-    qcErrorMsg(QString("QImage error in download from ").append(url.toString()));
-    manager->deleteLater();
-    reply->deleteLater();
+    qcErrorMsg( QString("QImage: error trying to download: ") + url_str );
     return errFailed;
-  } else if( !reply->isFinished() ) {
-    qcErrorMsg("QImage download timeout");
+  }
+  else if( !reply->isFinished() ) {
+    qcErrorMsg( QString("QImage: timeout while trying to download: ") + url_str );
     reply->abort();
-    manager->deleteLater();
-    reply->deleteLater();
     return errFailed;
   }
 
   QByteArray byteArray = reply->readAll();
   if( byteArray.isEmpty() ) {
-    qcErrorMsg("QImage information could not be read");
-    manager->deleteLater();
-    reply->deleteLater();
+    qcErrorMsg( QString("QImage: no data received: ") + url_str );
     return errFailed;
   }
 
   if( QImage_InitFromData( g, slotRawObject(r), byteArray ) ) {
-    manager->deleteLater();
-    reply->deleteLater();
     return errNone;
-  } else {
-    qcErrorMsg("QImage url bynary data is not an image file");
-    manager->deleteLater();
-    reply->deleteLater();
+  }
+  else {
+    qcErrorMsg( QString("QImage: failed trying to open downloaded data: ") + url_str );
     return errFailed;
   }
 }
