@@ -319,8 +319,7 @@ QImage {
 	unlockFocus { "unlockFocus not implemented".warn }
 
 	drawAtPoint { arg point, fromRect, operation = 'sourceOver', fraction = 1.0;
-		var size = Point(this.width, this.height);
-		Pen.drawImage(Rect(point, size), this, Rect(0@0, size), operation, fraction);
+		Pen.drawImage( point, this, fromRect, operation, fraction );
 	}
 
 	drawInRect { arg rect, fromRect, operation = 'sourceOver', fraction = 1.0;
