@@ -645,31 +645,48 @@ QC_QPEN_PRIMITIVE( QPen_StringInRect, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( IsNil(a) ) return errNone;
-  if( IsNil(a+2) ) return errNone;
-  QRectF target = QtCollider::get(a+0);
-  QRectF source = QtCollider::get(a+2);
-  if( target.size() == QSize() || source.size() == QSize() ) return errNone;
+    PyrSlot *imgSlot = a+1;
+    if( NotObj(imgSlot) || slotRawObject(imgSlot)->classptr != SC_CLASS(QImage) )
+      return errWrongType;
 
-  if( NotInt(a+3) ) return errWrongType;
-  if( NotFloat(a+4) ) return errWrongType;
-  int composition = QtCollider::read<int>(a+3);
-  float opacity = QtCollider::read<float>(a+4);
+    QImage * image = reinterpret_cast<QImage*>( slotRawPtr(slotRawObject(imgSlot)->slots) );
+    if( !image ) return errReturn;
 
-  PyrSlot *imgSlot = a+1;
-  if( NotObj(imgSlot) || slotRawObject(imgSlot)->classptr != SC_CLASS(QImage) )
-    return errWrongType;
 
-  QImage * image = reinterpret_cast<QImage*>( slotRawPtr(slotRawObject(imgSlot)->slots) );
-  if( !image ) return errReturn;
+    QRectF target;
+    QRectF source;
 
-  painter->save();
-  painter->setCompositionMode((QPainter::CompositionMode)composition);
-  painter->setOpacity(opacity);
-  painter->drawImage(target, *image, source);
-  painter->restore();
+    if (isKindOfSlot(a+0, SC_CLASS(Point))) {
+        QPointF point = QtCollider::read<QPointF>(a+0);
+        target = QRectF(point.x(), point.y(), image->width(), image->height());
+    }
+    else if (isKindOfSlot(a+0, SC_CLASS(Rect))) {
+        target = QtCollider::read<QRectF>(a+0);
+    }
+    else
+        return errWrongType;
 
-  return errNone;
+    if (IsNil(a+2)) {
+        source = QRectF( image->rect() );
+    }
+    else if (isKindOfSlot(a+2, SC_CLASS(Rect))) {
+        source = QtCollider::read<QRectF>(a+2);
+    }
+    else
+        return errWrongType;
+
+    if( NotInt(a+3) ) return errWrongType;
+    if( NotFloat(a+4) ) return errWrongType;
+    int composition = QtCollider::read<int>(a+3);
+    float opacity = QtCollider::read<float>(a+4);
+
+    painter->save();
+    painter->setCompositionMode((QPainter::CompositionMode)composition);
+    painter->setOpacity(opacity);
+    painter->drawImage(target, *image, source);
+    painter->restore();
+
+    return errNone;
 }
 
 void defineQPenPrimitives()
