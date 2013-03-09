@@ -409,7 +409,7 @@ QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( NotObj(a) || slotRawObject(a)->classptr != SC_CLASS(Color) )
       return errWrongType;
 
-  QRgb color = QC::read<QColor>(a).rgba();
+  QColor color = QC::read<QColor>(a);
   QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
   img->fill(color);
 
