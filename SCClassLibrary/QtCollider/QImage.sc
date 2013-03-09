@@ -242,8 +242,7 @@ QImage {
 
 	loadPixels {arg array, region = nil, start = 0;
 		if(array.isKindOf(Int32Array).not, {
-			"QImage: array should be an Int32Array".warn;
-			^nil;
+			Error("QImage: array should be an Int32Array").throw;
 		});
 		this.prLoadPixels(array, region, start, true);
 		^this;
