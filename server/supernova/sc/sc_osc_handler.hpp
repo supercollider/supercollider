@@ -31,6 +31,8 @@
 #include <boost/date_time/microsec_time_clock.hpp>
 #include <boost/intrusive/treap_set.hpp>
 
+#include <boost/integer/endian.hpp>
+
 #include "osc/OscReceivedElements.h"
 
 #include "../server/memory_pool.hpp"
@@ -260,14 +262,7 @@ public:
 private:
     /* @{ */
     /** udp socket handling */
-    void start_receive_udp(void)
-    {
-        sc_notify_observers::udp_socket.async_receive_from(
-            buffer(recv_buffer_), udp_remote_endpoint_,
-            boost::bind(&sc_osc_handler::handle_receive_udp, this,
-                        placeholders::error, placeholders::bytes_transferred));
-    }
-
+    void start_receive_udp();
     void handle_receive_udp(const boost::system::error_code& error,
                             std::size_t bytes_transferred);
     /* @} */
@@ -300,15 +295,19 @@ public:
 
     private:
         tcp_connection(boost::asio::io_service& io_service)
-            : socket_(io_service)
+            : socket_(io_service), pending_size(0)
         {}
 
-        void send(const char *data, size_t length)
-        {
-            socket_.send(boost::asio::buffer(data, length));
-        }
+        void send(const char *data, size_t length);
+        void read_more();
+        void handle_read(const boost::system::error_code& error, size_t bytes_transferred);
+        void read_message_start(const char * buffer, size_t length);
 
         tcp::socket socket_;
+        size_t pending_size;
+        sc_osc_handler * osc_handler;
+        std::array<char, 1<<15 > recv_buffer_;
+        std::vector<char> overflow_vector;
     };
 
 private:
@@ -409,7 +408,6 @@ private:
     const char * tcp_password_; /* we are not owning this! */
 
     std::array<char, 1<<15 > recv_buffer_;
-
     std::vector<char> overflow_vector;
     /* @} */
 };

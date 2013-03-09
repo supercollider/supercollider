@@ -659,6 +659,15 @@ bool sc_osc_handler::open_socket(int family, int type, int protocol, unsigned in
     return false;
 }
 
+void sc_osc_handler::start_receive_udp()
+{
+    using namespace boost;
+    sc_notify_observers::udp_socket.async_receive_from(
+                buffer(recv_buffer_), udp_remote_endpoint_,
+                bind(&sc_osc_handler::handle_receive_udp, this,
+                     asio::placeholders::error, asio::placeholders::bytes_transferred));
+}
+
 void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error,
                                         std::size_t bytes_transferred)
 {
@@ -679,7 +688,6 @@ void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error,
 
     udp_remote_endpoint_;
 
-    // FIXME: correct endpoint
     if (overflow_vector.empty())
         handle_packet_async(recv_buffer_.begin(), bytes_transferred, make_shared<udp_endpoint>(udp_remote_endpoint_));
     else {
@@ -694,26 +702,28 @@ void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error,
 
 void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
 {
+    using namespace boost;
+    typedef boost::integer::big32_t big32_t;
+    asio::ip::tcp::no_delay option(true);
+    socket_.set_option(option);
+
     const bool check_password = self->tcp_password_;
 
     if (check_password) {
         std::array<char, 32> password;
-        size_t size;
-        uint32_t msglen;
+        big32_t msglen;
         for (unsigned int i=0; i!=4; ++i) {
-            size = socket_.receive(boost::asio::buffer(&msglen, 4));
-            if (size != 4)
+            size_t size = socket_.receive(asio::buffer(&msglen, 4));
+            if (size != sizeof(big32_t))
                 return;
 
-            msglen = ntohl(msglen);
             if (msglen > password.size())
                 return;
 
-            size = socket_.receive(boost::asio::buffer(password.data(), msglen));
+            size = socket_.receive(asio::buffer(password.data(), msglen));
 
             bool verified = true;
-            if (size != msglen ||
-                strcmp(password.data(), self->tcp_password_) != 0)
+            if (size != msglen || strcmp(password.data(), self->tcp_password_) != 0)
                 verified = false;
 
             if (!verified)
@@ -721,48 +731,98 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
         }
     }
 
-    size_t size;
-    uint32_t msglen;
-    size = socket_.receive(boost::asio::buffer(&msglen, 4));
-    if (size != sizeof(uint32_t))
-        throw std::runtime_error("read error");
+    osc_handler = self;
 
-    msglen = ntohl(msglen);
-
-    sized_array<char> recv_vector(msglen + sizeof(uint32_t));
-
-    std::memcpy((void*)recv_vector.data(), &msglen, sizeof(uint32_t));
-    size_t transfered = socket_.read_some(boost::asio::buffer((void*)(recv_vector.data()+sizeof(uint32_t)),
-                                          recv_vector.size()-sizeof(uint32_t)));
-
-    if (transfered != size_t(msglen))
-        throw std::runtime_error("socket read sanity check failure");
-
-    // FIXME: endpoint
-    self->handle_packet_async(recv_vector.data()+sizeof(uint32_t), recv_vector.size()-sizeof(uint32_t),
-                              shared_from_this());
+    read_more();
 }
+
+
+void sc_osc_handler::tcp_connection::send(const char *data, size_t length)
+{
+    boost::integer::big32_t len(length);
+
+    socket_.send(boost::asio::buffer(&len, sizeof(len)));
+    size_t written = socket_.send(boost::asio::buffer(data, length));
+    assert(length == written);
+}
+
+void sc_osc_handler::tcp_connection::read_more()
+{
+    using namespace boost;
+    socket_.async_read_some(asio::buffer(recv_buffer_),
+                            bind(&sc_osc_handler::tcp_connection::handle_read, this,
+                                 asio::placeholders::error,
+                                 asio::placeholders::bytes_transferred));
+}
+
+
+void sc_osc_handler::tcp_connection::handle_read(const boost::system::error_code& error, size_t bytes_transferred)
+{
+    typedef boost::integer::big32_t big32_t;
+    if (error) {
+        cout << "tcp_connection received error code " << error << endl;
+        return;
+    }
+
+    if (pending_size == 0 && bytes_transferred >= sizeof(big32_t)) {
+        read_message_start(recv_buffer_.data(), bytes_transferred);
+        read_more();
+        return;
+    }
+
+    if (overflow_vector.size() + bytes_transferred < pending_size) {
+        overflow_vector.insert(overflow_vector.end(), recv_buffer_.data(), recv_buffer_.data() + bytes_transferred);
+    } else {
+        const size_t remaining_msg_bytes = pending_size - overflow_vector.size();
+        const size_t overflow_bytes = bytes_transferred - remaining_msg_bytes;
+
+        overflow_vector.insert(overflow_vector.end(), recv_buffer_.data(), recv_buffer_.data() + remaining_msg_bytes);
+        assert(overflow_vector.size() == pending_size);
+
+        osc_handler->handle_packet_async(overflow_vector.data(), pending_size, shared_from_this());
+        overflow_vector.clear();
+
+        read_message_start(recv_buffer_.data() + remaining_msg_bytes, overflow_bytes);
+    }
+    read_more();
+}
+
+void sc_osc_handler::tcp_connection::read_message_start(const char * buffer, size_t length)
+{
+    assert(pending_size == 0);
+    typedef boost::integer::big32_t big32_t;
+
+    big32_t msglen;
+    memcpy(&msglen, buffer, sizeof(big32_t));
+
+    if (length == msglen + sizeof(big32_t)) {
+        osc_handler->handle_packet_async(buffer + sizeof(big32_t),
+                                         length - sizeof(big32_t), shared_from_this());
+    } else {
+        pending_size = msglen;
+        overflow_vector.insert(overflow_vector.end(),
+                               buffer + sizeof(big32_t), buffer + length);
+    }
+}
+
 
 void sc_osc_handler::start_tcp_accept(void)
 {
-    printf("start_tcp_accept\n");
     tcp_connection::pointer new_connection = tcp_connection::create(tcp_acceptor_.get_io_service());
 
     tcp_acceptor_.async_accept(new_connection->socket(),
-        boost::bind(&sc_osc_handler::handle_tcp_accept, this, new_connection,
-        boost::asio::placeholders::error));
+                               boost::bind(&sc_osc_handler::handle_tcp_accept, this, new_connection,
+                                           boost::asio::placeholders::error));
 }
 
 void sc_osc_handler::handle_tcp_accept(tcp_connection::pointer new_connection,
                                        const boost::system::error_code& error)
 {
-    printf("handle_tcp_accept\n");
-    if (!error) {
+    if (!error)
         new_connection->start(this);
-        start_tcp_accept();
-    }
-}
 
+    start_tcp_accept();
+}
 
 
 void sc_osc_handler::handle_packet_async(const char * data, size_t length,
@@ -874,12 +934,6 @@ void sc_osc_handler::handle_message(received_message const & message, size_t msg
 namespace {
 
 typedef sc_osc_handler::received_message received_message;
-
-// FIXME: remove?
-void send_udp_message(movable_array<char> data, endpoint_ptr & endpoint)
-{
-    endpoint->send(data.data(), data.size());
-}
 
 int first_arg_as_int(received_message const & message)
 {
