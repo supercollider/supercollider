@@ -172,6 +172,11 @@ QImage {
 	}
 
 	// Instance methods
+
+	isValid {
+		^dataptr.notNil;
+	}
+
 	arMode {
 		^aspectRatioModes.at(arm);
 	}
@@ -201,6 +206,24 @@ QImage {
 		}{
 			this.arMode = mode ? 'keepAspectRatio';
 		};
+	}
+
+	interpolation { "interpolations not implemented".warn }
+	interpolation_ { arg mode; "interpolations not implemented".warn }
+
+	accelerated { "accelerated not implemented".warn }
+	accelerated_ { arg aBool; "accelerated not implemented".warn }
+
+	url_ { arg newURL;
+		if(newURL.isKindOf(String), {
+			url = newURL.standardizePath.replace(" ", "%20");
+		}, {
+			url = "";
+		});
+	}
+
+	bounds {
+		^Rect(0, 0, this.width, this.height);
 	}
 
 	width {
@@ -288,13 +311,11 @@ QImage {
 		^new
 	}
 
-	isValid {
-		^dataptr.notNil;
-	}
+	crop { arg aRect; "crop not implemented".warn }
+	invert { "invert not implemented".warn }
 
-	bounds {
-		^Rect(0, 0, this.width, this.height);
-	}
+	lockFocus { "lockFocus not implemented".warn }
+	unlockFocus { "unlockFocus not implemented".warn }
 
 	draw { arg aFunction;
 		this.prSetPainter;
@@ -304,27 +325,6 @@ QImage {
 			this.prUnsetPainter;
 		});
 	}
-
-	// scimage interface
-	url_ { arg newURL;
-		if(newURL.isKindOf(String), {
-			url = newURL.standardizePath.replace(" ", "%20");
-		}, {
-			url = "";
-		});
-	}
-
-	crop { arg aRect; "crop not implemented".warn }
-	invert { "invert not implemented".warn }
-
-	interpolation { "interpolations not implemented".warn }
-	interpolation_ { arg mode; "interpolations not implemented".warn }
-
-	accelerated { "accelerated not implemented".warn }
-	accelerated_ { arg aBool; "accelerated not implemented".warn }
-
-	lockFocus { "lockFocus not implemented".warn }
-	unlockFocus { "unlockFocus not implemented".warn }
 
 	drawAtPoint { arg point, fromRect, operation = 'sourceOver', fraction = 1.0;
 		Pen.drawImage( point, this, fromRect, operation, fraction );
