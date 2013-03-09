@@ -86,7 +86,6 @@ QImage {
 				ret = this.open(multiple);
 			}, {
 				ret = this.openURL(multiple);
-				ret.url = multiple;
 			});
 		}
 
@@ -119,8 +118,8 @@ QImage {
 		^super.new.prNewPath(path);
 	}
 
-	*openURL { arg path, timeout = 60;
-		^super.new.prNewURL(path, timeout);
+	*openURL { arg url, timeout = 60;
+		^super.new.prNewURL(url, timeout).url_(url);
 	}
 
 	*fromImage { arg image;
