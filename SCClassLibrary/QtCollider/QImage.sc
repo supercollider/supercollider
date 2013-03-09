@@ -70,16 +70,16 @@ QImage {
 	*new { arg multiple, height = nil;
 		var ret;
 
-		case(
-		{ multiple.isKindOf(Point) }, {
+		case
+		{ multiple.isKindOf(Point) } {
 			ret = this.newEmpty(multiple.x, multiple.y);
-		},
+		}
 
-		{ multiple.isKindOf(Number) }, {
+		{ multiple.isKindOf(Number) } {
 			ret = this.newEmpty(multiple, height ? multiple);
-		},
+		}
 
-		{ multiple.isKindOf(String) }, {
+		{ multiple.isKindOf(String) } {
 			if (multiple.beginsWith("http://").not
 				and:{ multiple.beginsWith("file://").not }
 				and:{ multiple.beginsWith("ftp://").not  }, {
@@ -88,15 +88,15 @@ QImage {
 				ret = this.openURL(multiple);
 				ret.url = multiple;
 			});
-		});
+		}
 
-		if(ret.isNil, {
-			^nil;
-		}, {
-			ret.arMode = 'keepAspectRatio';
-			ret.trMode = 'fastTransformation';
-			^ret;
-		});
+		{
+			Error("QImage: wrong arguments to constructor").throw
+		};
+
+		ret.arMode = 'keepAspectRatio';
+		ret.trMode = 'fastTransformation';
+		^ret;
 	}
 
 	*newEmpty { arg width, height;
@@ -116,15 +116,11 @@ QImage {
 
 	*open { arg path;
 		path = path.standardizePath;
-		^try({
-			super.new.prNewPath(path);
-		});
+		^super.new.prNewPath(path);
 	}
 
 	*openURL { arg path, timeout = 60;
-		^try({
-			super.new.prNewURL(path, timeout);
-		});
+		^super.new.prNewURL(path, timeout);
 	}
 
 	*fromImage { arg image;
