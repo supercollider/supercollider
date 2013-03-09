@@ -241,7 +241,7 @@ public:
         sc_notify_observers(detail::network_thread::io_service_),
         dump_osc_packets(0), error_posting(1), quit_received(false),
         tcp_acceptor_(detail::network_thread::io_service_),
-        tcp_password_(args.server_password.c_str())
+        tcp_password_(args.server_password.size() ? args.server_password.c_str() : nullptr)
     {
         if (!args.non_rt) {
             if (args.tcp_port && !open_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP, args.tcp_port))
@@ -325,23 +325,10 @@ private:
         tcp::socket socket_;
     };
 
-    void start_accept(void)
-    {
-        tcp_connection::pointer new_connection = tcp_connection::create(tcp_acceptor_.get_io_service());
+    void start_tcp_accept(void);
 
-        tcp_acceptor_.async_accept(new_connection->socket(),
-            boost::bind(&sc_osc_handler::handle_accept, this, new_connection,
-            boost::asio::placeholders::error));
-    }
-
-    void handle_accept(tcp_connection::pointer new_connection,
-                       const boost::system::error_code& error)
-    {
-        if (!error) {
-            new_connection->start(this);
-            start_accept();
-        }
-    }
+    void handle_tcp_accept(tcp_connection::pointer new_connection,
+                           const boost::system::error_code& error);
     /* @} */
 
 public:
