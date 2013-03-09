@@ -153,12 +153,22 @@ QImage {
 		^[]; // TODO
 	}
 
-	*colorToPixel { arg col;
-		^Integer.fromRGBA(
-			(col.red * 255 ).asInteger,
-			(col.green * 255).asInteger,
-			(col.blue * 255 ).asInteger,
-			(col.alpha * 255 ).asInteger);
+	*colorToPixel { arg color;
+		^(
+			((color.alpha * 255).asInteger & 16r000000FF << 24) |
+			((color.red * 255).asInteger & 16r000000FF << 16) |
+			((color.green * 255).asInteger & 16r000000FF << 8) |
+			((color.blue * 255).asInteger & 16r000000FF)
+		);
+	}
+
+	*pixelToColor { arg pixel;
+		^ Color.new255 (
+			(pixel >> 16 & 16r000000FF),
+			(pixel >> 8 & 16r000000FF),
+			(pixel & 16r000000FF),
+			(pixel >> 24 & 16r000000FF)
+		)
 	}
 
 	// Instance methods
@@ -225,11 +235,11 @@ QImage {
 	}
 
 	setColor { arg color, x, y;
-		^this.setPixel(color.asInteger, x, y);
+		^this.setPixel( this.colorToPixel(color), x, y );
 	}
 
 	getColor {arg x, y;
-		^this.getPixel(x, y).asColor;
+		^this.pixelToColor( this.getPixel(x, y) );
 	}
 
 	pixels {
@@ -451,70 +461,6 @@ QImage {
 	}
 }
 
-// integer additions to retrieve 8-bit pixel component from RGBA packed data
-// values were rotated to Qt's ARGB order
-
-+Integer {
-	*fromRGBA { arg r, g = 0, b = 0, a = 255;
-		^(
-			((a.asInteger & 16r000000FF) << 24) |
-			((r.asInteger & 16r000000FF) << 16) |
-			((g.asInteger & 16r000000FF) << 8) |
-			(b.asInteger & 16r000000FF)
-		);
-	}
-
-	*fromColor {|color|
-		^this.fromRGBA(
-			(color.red * 255).asInteger,
-			(color.green * 255).asInteger,
-			(color.blue * 255).asInteger,
-			(color.alpha * 255).asInteger
-		)
-	}
-
-	asColor {
-		^Color.new255(this.red, this.green, this.blue, this.alpha);
-	}
-
-	rgbaArray {
-		^[this.red, this.green, this.blue, this.alpha];
-	}
-
-	alpha {
-		^((this >> 24) & 16r000000FF);
-	}
-
-	red {
-		^((this >> 16) & 16r000000FF);
-	}
-
-	green {
-		^((this >> 8) & 16r000000FF);
-	}
-
-	blue {
-		^(this & 16r000000FF);
-	}
-}
-
-+Array {
-	asRGBA {
-		^Integer.fromRGBA(this.at(0)?0,this.at(1)?0, this.at(2)?0, this.at(3)?0);
-	}
-}
-
-+Color {
-	asInteger {
-		^Integer.fromRGBA(
-			(this.red * 255).asInteger,
-			(this.green * 255).asInteger,
-			(this.blue * 255).asInteger,
-			(this.alpha * 255).asInteger
-		);
-	}
-}
-
 /*
 	SCView:backgroundImage
 
@@ -548,11 +494,4 @@ QImage {
 	}
 }
 */
-
-+Rect {
-	outsetBy {arg h, v;
-		if(v.isNil, {v=h});
-		^this.class.new(left - h, top - v, width + h + h, height + v + v);
-	}
-}
 
