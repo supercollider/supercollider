@@ -314,8 +314,25 @@ QC_LANG_PRIMITIVE( QImage_GetPixel, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( x >= img->width() || y >= img->height() )
     return errIndexOutOfRange;
 
-  QRgb *line = (QRgb *)img->scanLine(y);
-  SetInt(r, (int)line[x]);
+  int *line = reinterpret_cast<int*>( img->scanLine(y) );
+  SetInt( r, line[x] );
+
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QImage_GetColor, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( NotInt(a) || NotInt(a+1)) return errWrongType;
+
+  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
+  int x = QC::read<int>(a);
+  int y = QC::read<int>(a+1);
+
+  if( x >= img->width() || y >= img->height() )
+    return errIndexOutOfRange;
+
+  QRgb *line = reinterpret_cast<QRgb*>( img->scanLine(y) );
+  QC::set(r, QColor( line[x] ) );
 
   return errNone;
 }
@@ -325,15 +342,35 @@ QC_LANG_PRIMITIVE( QImage_SetPixel, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( NotInt(a) || NotInt(a+1) || NotInt(a+2) ) return errWrongType;
 
   QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
-  int argb = QC::read<int>(a);
+  int pixel = QC::read<int>(a);
   int x = QC::read<int>(a+1);
   int y = QC::read<int>(a+2);
 
   if( x >= img->width() || y >= img->height() )
     return errIndexOutOfRange;
 
-  QRgb *line = (QRgb *)img->scanLine(y);
-  line[x] = argb;
+  int *line = reinterpret_cast<int*>( img->scanLine(y) );
+  line[x] = pixel;
+
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QImage_SetColor, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if ( NotObj(a) || slotRawObject(a)->classptr != SC_CLASS(Color)
+       || NotInt(a+1) || NotInt(a+2) )
+    return errWrongType;
+
+  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
+  QColor color( QC::read<QColor>(a) );
+  int x = QC::read<int>(a+1);
+  int y = QC::read<int>(a+2);
+
+  if( x >= img->width() || y >= img->height() )
+    return errIndexOutOfRange;
+
+  QRgb *line = reinterpret_cast<QRgb*>( img->scanLine(y) );
+  line[x] = color.rgba();
 
   return errNone;
 }
@@ -455,7 +492,9 @@ void defineQImagePrimitives()
   definer.define<QImage_SetPainter>();
   definer.define<QImage_UnsetPainter>();
   definer.define<QImage_GetPixel>();
+  definer.define<QImage_GetColor>();
   definer.define<QImage_SetPixel>();
+  definer.define<QImage_SetColor>();
   definer.define<QImage_TransferPixels>();
   definer.define<QImage_Fill>();
   definer.define<QImage_Formats>();

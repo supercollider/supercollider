@@ -235,11 +235,13 @@ QImage {
 	}
 
 	setColor { arg color, x, y;
-		^this.setPixel( this.colorToPixel(color), x, y );
+		_QImage_SetColor
+		^this.primitiveFailed
 	}
 
-	getColor {arg x, y;
-		^this.pixelToColor( this.getPixel(x, y) );
+	getColor { arg x, y;
+		_QImage_GetColor
+		^this.primitiveFailed;
 	}
 
 	pixels {
