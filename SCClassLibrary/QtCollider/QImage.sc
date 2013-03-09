@@ -236,15 +236,12 @@ QImage {
 		var pixelArray;
 		if(this.width == 0 or: { this.height == 0 }, { ^nil });
 		pixelArray = Int32Array.newClear(this.width * this.height);
-		this.prLoadPixels(pixelArray, nil, 0, true);
+		this.loadPixels(pixelArray);
 		^pixelArray;
 	}
 
 	loadPixels {arg array, region = nil, start = 0;
-		if(array.isKindOf(Int32Array).not, {
-			Error("QImage: array should be an Int32Array").throw;
-		});
-		this.prLoadPixels(array, region, start, true);
+		this.prTransferPixels(array, region, start, false);
 		^this;
 	}
 
@@ -253,7 +250,7 @@ QImage {
 	}
 
 	setPixels { arg array, region = nil, start = 0;
-		this.prLoadPixels(array, region, start, false);
+		this.prTransferPixels(array, region, start, true);
 	}
 
 	fill { arg color;
@@ -448,8 +445,8 @@ QImage {
 		^this.primitiveFailed
 	}
 
-	prLoadPixels {arg array, region, start, geset;
-		_QImage_LoadPixels
+	prTransferPixels { arg array, region, start, store = false;
+		_QImage_TransferPixels
 		^this.primitiveFailed
 	}
 }

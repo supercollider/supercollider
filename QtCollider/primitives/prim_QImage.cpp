@@ -338,70 +338,70 @@ QC_LANG_PRIMITIVE( QImage_SetPixel, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( QImage_LoadPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( QImage_TransferPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( slotRawObject(a)->classptr != class_int32array ) {
-      qcErrorMsg("QImage_LoadPixels array argument is not a Int32Array");
-      return errWrongType;
-  }
-
-  if( NotInt(a+2) ) return errWrongType;
-  int start = QC::read<int>(a+2);
-  if( !(IsTrue(a+3) || IsFalse(a+3)) ) return errWrongType;
-  bool geset = IsTrue(a+3); // t/f g/s
-
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
-  QRect imgRect = QRect(0, 0, img->width(), img->height());
-  QRect rect;
-
-  if( IsNil(a+1) ) {
-    rect = imgRect;
-  }
-  else {
-    if( NotObj(a+1) || slotRawObject(a+1)->classptr != SC_CLASS(Rect) )
+    if (!isKindOfSlot(a, class_int32array)) {
+        qcErrorMsg("QImage: array argument is not a Int32Array");
         return errWrongType;
-    rect = QC::read<QRect>(a+1);
-    if( !rect.isValid() || !imgRect.contains(rect) ) {
-      qcErrorMsg("QImage_LoadPixels no valid Rect");
-      return errReturn;
     }
-  }
 
-  PyrInt32Array* allocatedPixelArray = (PyrInt32Array*)slotRawObject(a);
-  QRgb *pixelData = ( (QRgb *)allocatedPixelArray->i ) + start;
+    if( NotInt(a+2) ) return errWrongType;
+    int start = QC::read<int>(a+2);
 
-  int x = rect.x();
-  int y = rect.y();
-  int width = rect.width();
-  int height = rect.height();
-  int size = width * height;
-  int sizex = width + x;
-  int sizey = height + y;
+    if( !(IsTrue(a+3) || IsFalse(a+3)) ) return errWrongType;
+    bool store = IsTrue(a+3); // t/f g/s
 
-  if( allocatedPixelArray->size - start < size ) {
-    return errIndexOutOfRange;
-  }
+    QImage *image = QIMAGE_FROM_OBJECT( slotRawObject(r) );
+    QRect rect;
 
-  QRgb *auxPixels;
-  if(geset) {
-    for( int iy = y; iy < sizey; ++iy ) {
-      for( int ix = x; ix < sizex; ++ix ) {
-        auxPixels = ( (QRgb *)img->scanLine( iy ) ) + ix;
-        *pixelData = *auxPixels;
-        ++pixelData;
-      }
+    if( IsNil(a+1) ) {
+        rect = image->rect();
     }
-  } else {
-    for( int iy = y; iy < y + height; ++iy ) {
-      for( int ix = x; ix < x + width; ++ix ) {
-        auxPixels = ( (QRgb *)img->scanLine( iy ) ) + ix;
-        *auxPixels = *pixelData;
-        ++pixelData;
-      }
+    else {
+        if (!isKindOfSlot(a+1, SC_CLASS(Rect)))
+            return errWrongType;
+        rect = QC::read<QRect>(a+1);
+        if (rect.isEmpty())
+            return errNone;
+        if( !image->rect().contains(rect) ) {
+            qcErrorMsg("QImage: source rectangle out of image bounds");
+            return errFailed;
+        }
     }
-  }
 
-  return errNone;
+    PyrInt32Array* array = reinterpret_cast<PyrInt32Array*>( slotRawObject(a) );
+    QRgb *pixelData = reinterpret_cast<QRgb*>( array->i ) + start;
+
+    int width = rect.width();
+    int height = rect.height();
+    int size = width * height;
+    int x = rect.x();
+    int y = rect.y();
+    int max_x = width + x;
+    int max_y = height + y;
+
+    if( array->size - start < size )
+        return errIndexOutOfRange;
+
+    if(store) {
+        for( int iy = y; iy < max_y; ++iy ) {
+            QRgb *line = reinterpret_cast<QRgb*>( image->scanLine(iy) );
+            for( int ix = x; ix < max_x; ++ix ) {
+                line[ix] = *pixelData;
+                ++pixelData;
+            }
+        }
+    } else {
+        for( int iy = y; iy < max_y; ++iy ) {
+            QRgb *line = reinterpret_cast<QRgb*>( image->scanLine(iy) );
+            for( int ix = x; ix < max_x; ++ix ) {
+                *pixelData = line[ix];
+                ++pixelData;
+            }
+        }
+    }
+
+    return errNone;
 }
 
 QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
@@ -456,7 +456,7 @@ void defineQImagePrimitives()
   definer.define<QImage_UnsetPainter>();
   definer.define<QImage_GetPixel>();
   definer.define<QImage_SetPixel>();
-  definer.define<QImage_LoadPixels>();
+  definer.define<QImage_TransferPixels>();
   definer.define<QImage_Fill>();
   definer.define<QImage_Formats>();
 }
