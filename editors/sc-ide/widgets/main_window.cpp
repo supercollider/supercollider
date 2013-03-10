@@ -1495,7 +1495,7 @@ void MainWindow::dropEvent( QDropEvent * event )
 //////////////////////////// ClockStatusBox ////////////////////////////
 
 ClockStatusBox::ClockStatusBox(QWidget * parent):
-    StatusBox(parent)
+    StatusLabel(parent)
 {
     setTextColor(Qt::green);
     mTimerId = startTimer(1000);

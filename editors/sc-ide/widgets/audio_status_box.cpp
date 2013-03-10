@@ -21,11 +21,38 @@
 #include "audio_status_box.hpp"
 #include "../core/sc_server.hpp"
 
+#include <QHBoxLayout>
+#include <QWheelEvent>
+
 namespace ScIDE {
 
 AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
-    StatusBox(parent), mServer(server)
+    StatusBox(parent),
+    mServer(server),
+    m_avg_cpu(0.f),
+    m_peak_cpu(0.f),
+    m_ugens(0),
+    m_synths(0),
+    m_groups(0),
+    m_synthdefs(0)
 {
+    mStatisticsLabel = new StatusLabel;
+    mVolumeLabel = new StatusLabel;
+    mMuteLabel = new StatusLabel;
+    mMuteLabel->setText("M");
+    mRecordLabel = new StatusLabel;
+    mRecordLabel->setText("R");
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->setContentsMargins(0,0,0,0);
+    layout->setSpacing(1);
+    layout->addWidget(mStatisticsLabel);
+    layout->addWidget(mVolumeLabel);
+    layout->addWidget(mMuteLabel);
+    layout->addWidget(mRecordLabel);
+
+    setLayout(layout);
+
     server->action(ScServer::Record)->setProperty("keep_menu_open", true);
     server->action(ScServer::VolumeRestore)->setProperty("keep_menu_open", true);
     server->action(ScServer::Mute)->setProperty("keep_menu_open", true);
@@ -52,39 +79,76 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
             this, SLOT(onServerRunningChanged(bool,QString,int)));
     connect(server, SIGNAL(updateServerStatus(int,int,int,int,float,float)),
             this, SLOT(onServerStatusReply(int,int,int,int,float,float)));
+    connect(server, SIGNAL(volumeChanged(float)), this, SLOT(updateVolumeLabel(float)));
+    connect(server, SIGNAL(mutedChanged(bool)), this, SLOT(updateMuteLabel(bool)));
+    connect(server, SIGNAL(recordingChanged(bool)), this, SLOT(updateRecordLabel(bool)));
 
     onServerRunningChanged(false, "", 0);
+    updateVolumeLabel( mServer->volume() );
+    updateMuteLabel( mServer->isMuted() );
+    updateRecordLabel( mServer->isRecording() );
 }
 
 void AudioStatusBox::onServerStatusReply(int ugens, int synths, int groups, int synthDefs,
                                          float avgCPU, float peakCPU)
 {
-    QString statusString =
-            QString("%1% %2% %3u %4s %5g %6d")
-            .arg(avgCPU,  5, 'f', 2)
-            .arg(peakCPU, 5, 'f', 2)
-            .arg(ugens,     4)
-            .arg(synths,    4)
-            .arg(groups,    4)
-            .arg(synthDefs, 4);
+    m_avg_cpu = avgCPU;
+    m_peak_cpu = peakCPU;
+    m_ugens = ugens;
+    m_synths = synths;
+    m_groups = groups;
+    m_synthdefs = synthDefs;
 
-    setText(statusString);
+    updateStatistics();
 }
 
 void AudioStatusBox::onServerRunningChanged(bool running, const QString &, int)
 {
-    setTextColor( running ? Qt::green : Qt::white);
-    if (!running) {
+    mStatisticsLabel->setTextColor( running ? Qt::green : Qt::white);
+    mVolumeLabel->setTextColor( running ? Qt::green : Qt::white );
+
+    if (!running)
         onServerStatusReply(0, 0, 0, 0, 0, 0);
-    }
 }
 
 void AudioStatusBox::wheelEvent(QWheelEvent * event)
 {
     if (event->orientation() == Qt::Vertical) {
-        const float diff = (event->delta() > 0) ? 0.2 : -0.2;
-        mServer->changeVolume(diff);
+        if (event->delta() > 0)
+            mServer->changeVolume(0.2);
+        else
+            mServer->changeVolume(-0.2);
     }
+    StatusBox::wheelEvent(event);
+}
+
+void AudioStatusBox::updateStatistics()
+{
+    QString statusString =
+            QString("%1% %2% %3u %4s %5g %6d ")
+            .arg(m_avg_cpu,  5, 'f', 2)
+            .arg(m_peak_cpu, 5, 'f', 2)
+            .arg(m_ugens,     4)
+            .arg(m_synths,    4)
+            .arg(m_groups,    4)
+            .arg(m_synthdefs, 4);
+
+    mStatisticsLabel->setText(statusString);
+}
+
+void AudioStatusBox::updateVolumeLabel( float volume )
+{
+    mVolumeLabel->setText( QString("%1dB ").arg( volume, 5, 'f', 1) );
+}
+
+void AudioStatusBox::updateMuteLabel( bool muted )
+{
+    mMuteLabel->setTextColor( muted ? Qt::red : QColor(30,30,30) );
+}
+
+void AudioStatusBox::updateRecordLabel( bool recording )
+{
+    mRecordLabel->setTextColor( recording ? Qt::red : QColor(30,30,30) );
 }
 
 } // namespace ScIDE

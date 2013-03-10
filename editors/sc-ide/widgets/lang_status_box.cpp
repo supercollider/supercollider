@@ -21,11 +21,19 @@
 #include "lang_status_box.hpp"
 #include "../core/sc_process.hpp"
 
+#include <QHBoxLayout>
+
 namespace ScIDE {
 
 LangStatusBox::LangStatusBox(ScProcess *lang, QWidget *parent):
     StatusBox(parent)
 {
+    mLabel = new StatusLabel;
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->setContentsMargins(0,0,0,0);
+    layout->addWidget(mLabel);
+    setLayout(layout);
+
     addAction( lang->action(ScProcess::ToggleRunning) );
     addAction( lang->action(ScProcess::Restart) );
     addAction( lang->action(ScProcess::RecompileClassLibrary) );
@@ -58,8 +66,8 @@ void LangStatusBox::onInterpreterStateChanged( QProcess::ProcessState state )
         break;
     }
 
-    setText(text);
-    setTextColor(color);
+    mLabel->setText(text);
+    mLabel->setTextColor(color);
 }
 
 } // namespace ScIDE

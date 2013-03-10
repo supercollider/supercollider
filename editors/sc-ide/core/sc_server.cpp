@@ -128,6 +128,7 @@ void ScServer::createActions(Settings::Manager * settings)
     action->setShortcut(tr("Ctrl+Alt+End", "Mute sound output."));
     action->setCheckable(true);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(sendMuted(bool)));
+    connect(action, SIGNAL(toggled(bool)), this, SIGNAL(mutedChanged(bool)));
     settings->addAction( action, "synth-server-mute", synthServerCategory);
 
     mVolumeWidget = new VolumeWidget;
@@ -135,6 +136,7 @@ void ScServer::createActions(Settings::Manager * settings)
     mActions[Volume] = widgetAction = new QWidgetAction(this);
     widgetAction->setDefaultWidget( mVolumeWidget );
     connect( mVolumeWidget, SIGNAL(volumeChanged(float)), this, SLOT(sendVolume(float)) );
+    connect( mVolumeWidget, SIGNAL(volumeChanged(float)), this, SIGNAL(volumeChanged(float)) );
 
     mActions[VolumeUp] = action = new QAction(tr("Increase Volume"), this);
     action->setShortcut(tr("Ctrl+Alt+PgUp", "Increase volume"));
@@ -154,6 +156,7 @@ void ScServer::createActions(Settings::Manager * settings)
     mActions[Record] = action = new QAction(this);
     action->setCheckable(true);
     connect( action, SIGNAL(triggered(bool)), this, SLOT(setRecording(bool)) );
+    connect( action, SIGNAL(toggled(bool)), this, SIGNAL(recordingChanged(bool)) );
 
     connect( mActions[Boot], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
     connect( mActions[Quit], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
@@ -369,9 +372,9 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
         float volume = data.mid(1, data.size() - 2).toFloat(&ok);
         if (ok) {
             bool signals_blocked = mVolumeWidget->blockSignals(true);
-            mVolumeWidget->setVolume(volume);
+            volume = mVolumeWidget->setVolume(volume);
             mVolumeWidget->blockSignals(signals_blocked);
-
+            emit volumeChanged(volume);
         }
     }
     else if (selector == ampRangeSelector) {
@@ -386,6 +389,7 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
         bool signals_blocked = mVolumeWidget->blockSignals(true);
         mVolumeWidget->setRange( min, max );
         mVolumeWidget->blockSignals(signals_blocked);
+        emit volumeChanged(mVolumeWidget->volume());
     }
 }
 

@@ -234,7 +234,7 @@ private:
     static MainWindow *mInstance;
 };
 
-class ClockStatusBox : public StatusBox
+class ClockStatusBox : public StatusLabel
 {
 public:
     ClockStatusBox (QWidget * parent = 0);
