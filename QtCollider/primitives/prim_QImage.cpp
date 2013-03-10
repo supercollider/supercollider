@@ -23,6 +23,7 @@
 #include "../Common.h"
 #include "../type_codec.hpp"
 #include "../painting.h"
+#include "../hacks/hacks_qt.hpp"
 
 #include <PyrKernel.h>
 #include <QImage>
@@ -131,7 +132,7 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     return errFailed;
   }
 
-  if( url.isLocalFile() ) {
+  if( QURL_IS_LOCAL_FILE(url) ) {
     if( QImage_InitPath( g, slotRawObject(r), url.toLocalFile() ) ) {
       return errNone;
     } else {
@@ -441,7 +442,7 @@ QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   QColor color = QC::read<QColor>(a);
   QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
-  img->fill(color);
+  img->fill(color.rgba());
 
   return errNone;
 }
