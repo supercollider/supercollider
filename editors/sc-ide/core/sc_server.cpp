@@ -254,8 +254,7 @@ float ScServer::volume() const { return mVolumeWidget->volume(); }
 
 void ScServer::setVolume( float volume )
 {
-    float realVolume = mVolumeWidget->setVolume( volume );
-    sendVolume(realVolume);
+    mVolumeWidget->setVolume( volume );
 }
 
 void ScServer::increaseVolume()
@@ -275,10 +274,7 @@ void ScServer::changeVolume(float difference)
 
 void ScServer::restoreVolume()
 {
-    float volume = 0.0f;
-    mVolumeWidget->setVolume( volume );
-    sendVolume(volume);
-
+    setVolume( 0.0f );
     unmute();
 }
 
@@ -372,7 +368,10 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
         bool ok;
         float volume = data.mid(1, data.size() - 2).toFloat(&ok);
         if (ok) {
+            bool signals_blocked = mVolumeWidget->blockSignals(true);
             mVolumeWidget->setVolume(volume);
+            mVolumeWidget->blockSignals(signals_blocked);
+
         }
     }
     else if (selector == ampRangeSelector) {
@@ -384,7 +383,9 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
         if (!ok) return;
         float max = dataList[1].toFloat(&ok);
         if (!ok) return;
+        bool signals_blocked = mVolumeWidget->blockSignals(true);
         mVolumeWidget->setRange( min, max );
+        mVolumeWidget->blockSignals(signals_blocked);
     }
 }
 

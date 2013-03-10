@@ -58,23 +58,37 @@ VolumeWidget::VolumeWidget( QWidget *parent ):
 
 float VolumeWidget::setVolume( float volume )
 {
-    mVolume = qBound(mVolumeMin, volume, mVolumeMax);
+    volume = qBound(mVolumeMin, volume, mVolumeMax);
+    if (volume == mVolume)
+        return mVolume;
+    mVolume = volume;
     mVolumeSlider->setValue( volumeToSlider(mVolume) );
     updateVolumeLabel(mVolume);
+    emit volumeChanged( mVolume );
     return mVolume;
 }
 
 void VolumeWidget::setRange( float min, float max )
 {
+    if (min == mVolumeMin && max == mVolumeMax)
+        return;
     mVolumeMin = min;
     mVolumeMax = max;
+    float old_volume = mVolume;
+    mVolume = qBound(mVolumeMin, old_volume, mVolumeMax);
     mVolumeSlider->setValue( volumeToSlider(mVolume) );
-    updateVolumeLabel(mVolume);
+    if (old_volume != mVolume) {
+        updateVolumeLabel(mVolume);
+        emit volumeChanged( mVolume );
+    }
 }
 
 void VolumeWidget::onVolumeSliderAction()
 {
-    mVolume = volumeFromSlider( mVolumeSlider->sliderPosition() );
+    float volume = volumeFromSlider( mVolumeSlider->sliderPosition() );
+    if (volume == mVolume)
+        return;
+    mVolume = volume;
     updateVolumeLabel( mVolume );
     emit volumeChanged( mVolume );
 }
