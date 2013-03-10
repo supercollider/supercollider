@@ -25,8 +25,6 @@ Volume {
 					}{
 						ampSynth.set(\volumeAmp, amp);
 					}
-				}{
-					"Volume only works on a running Server. Please boot".warn;
 				}
 			}{
 				if (ampSynth.notNil) { ampSynth.release; ampSynth = nil }
