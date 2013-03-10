@@ -35,6 +35,8 @@ public:
     LangStatusBox(ScProcess *, QWidget *parent = 0);
 private slots:
     void onInterpreterStateChanged( QProcess::ProcessState );
+private:
+    StatusLabel *mLabel;
 };
 
 } // namespace ScIDE

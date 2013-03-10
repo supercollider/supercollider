@@ -21,8 +21,6 @@
 #ifndef SCIDE_WIDGETS_AUDIO_STATUS_BOX_INCLUDED
 #define SCIDE_WIDGETS_AUDIO_STATUS_BOX_INCLUDED
 
-#include <QWheelEvent>
-
 #include "util/status_box.hpp"
 
 namespace ScIDE {
@@ -39,11 +37,28 @@ private slots:
                              float avgCPU, float peakCPU);
     void onServerRunningChanged( bool running, QString const & hostName, int port );
 
+    void updateStatistics();
+    void updateVolumeLabel(float volume);
+    void updateMuteLabel(bool muted);
+    void updateRecordLabel(bool recording);
+
 protected:
     void wheelEvent(QWheelEvent *);
 
 private:
     struct ScServer * mServer;
+
+    float m_avg_cpu;
+    float m_peak_cpu;
+    int m_ugens;
+    int m_synths;
+    int m_groups;
+    int m_synthdefs;
+
+    StatusLabel *mStatisticsLabel;
+    StatusLabel *mVolumeLabel;
+    StatusLabel *mMuteLabel;
+    StatusLabel *mRecordLabel;
 };
 
 } // namespace ScIDE

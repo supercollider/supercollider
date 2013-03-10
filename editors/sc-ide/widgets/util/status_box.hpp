@@ -49,16 +49,23 @@ protected:
     }
 };
 
-class StatusBox : public QLabel
+class StatusLabel : public QLabel
 {
 public:
-    StatusBox(QWidget *parent = 0);
+    StatusLabel(QWidget *parent = 0);
     void setBackground(const QBrush &);
     void setTextColor(const QColor &);
+};
+
+class StatusBox : public QWidget
+{
+public:
+    StatusBox(QWidget * parent = 0);
 protected:
     void addActionSeparator();
     void showContextMenu();
     virtual void mousePressEvent( QMouseEvent * );
+    StatusBoxMenu * mMenu;
 };
 
 } // namespace ScIDE
