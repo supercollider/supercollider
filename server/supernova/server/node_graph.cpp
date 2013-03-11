@@ -34,6 +34,7 @@ void node_graph::add_node(server_node * n, node_position_constraint const & cons
     node_position position = constraint.second;
 
     std::pair< node_set_type::iterator, bool > inserted = node_set.insert(*n);
+    n->add_ref();
 
     assert(inserted.second == true); /* node id already present (should be checked earlier)! */
 
@@ -134,7 +135,8 @@ void node_graph::synth_reassign_id(int32_t node_id)
         hidden_id = -std::abs<int32_t>(hasher(node_id));
 
     assert(hidden_id < 0);
-    release_node_id(node);
+
+    node_set.erase(*node);
     node->reset_id(hidden_id);
     node_set.insert(*node);
 }

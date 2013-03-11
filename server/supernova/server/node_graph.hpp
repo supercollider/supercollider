@@ -50,12 +50,9 @@ public:
         root_group_(0), generated_id(-2), synth_count_(0), group_count_(1),
         node_set(node_set_type::bucket_traits(node_buckets, node_set_bucket_count))
     {
-        root_group_.add_ref();
         node_set.insert(root_group_);
+        root_group_.add_ref();
     }
-
-    ~node_graph(void)
-    {}
 
     uint32_t synth_count(void) const
     {
@@ -67,7 +64,6 @@ public:
         return group_count_;
     }
 
-
     void add_node(server_node * s, node_position_constraint const & constraint);
     void add_node(server_node * s);
 
@@ -77,7 +73,7 @@ public:
 
     group * root_group(void)
     {
-        return &root_group_/* .get() */;
+        return &root_group_;
     }
 
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
@@ -160,6 +156,7 @@ public:
     void release_node_id(server_node * node)
     {
         node_set.erase(*node);
+        node->release();
     }
 
 private:
