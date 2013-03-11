@@ -200,11 +200,14 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
         }
     } else {
 #ifdef __linux__
-        path home = resolve_home();
-        factory->load_plugin_folder("/usr/local/lib/SuperCollider/plugins");
-        factory->load_plugin_folder("/usr/lib/SuperCollider/plugins");
-        factory->load_plugin_folder(home / "/.local/share/SuperCollider/plugins");
-        factory->load_plugin_folder(home / "share/SuperCollider/plugins");
+        const path home = resolve_home();
+        std::vector<path> folders = { "/usr/local/lib/SuperCollider/plugins",
+                                      "/usr/lib/SuperCollider/plugins",
+                                      home / "/.local/share/SuperCollider/Extensions",
+                                      home / "share/SuperCollider/plugins" };
+
+        for (path const & folder : folders)
+            factory->load_plugin_folder(folder);
 #else
         char plugin_dir[MAXPATHLEN];
         sc_GetResourceDirectory(plugin_dir, MAXPATHLEN);
@@ -240,7 +243,6 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
 #ifndef NDEBUG
     auto start_time = chrono::high_resolution_clock::now();
 #endif
-
 
     if (args.load_synthdefs) {
         const char * env_synthdef_path = getenv("SC_SYNTHDEF_PATH");
