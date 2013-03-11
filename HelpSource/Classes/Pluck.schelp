@@ -11,7 +11,7 @@ method:: ar
 argument:: in
 an excitation signal.
 argument:: trig
-upon a negative to positive transition, the excitation signal will be fed into the delay line.
+upon a negative to positive transition, emphasis::n:: samples of the excitation signal will be fed into the delay line, where emphasis::n = delaytime * sample_rate / 2::, using a rectangular envelope (no fading).
 argument:: maxdelaytime
 the max delay time in seconds (initializes the internal delay buffer).
 argument:: delaytime
