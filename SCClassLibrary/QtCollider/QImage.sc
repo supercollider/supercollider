@@ -132,8 +132,8 @@ QImage {
 
 	*fromWindow { arg window, rect;
 		^super.new.prNewFromWindow(
-			window,
-			rect ?? { window.bounds.moveTo(0, 0) }
+			window.asView,
+			rect ?? { window.asView.bounds }
 		);
 	}
 
