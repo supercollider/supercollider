@@ -334,8 +334,8 @@ QImage {
 		Pen.drawImage(rect, this, fromRect, operation, fraction);
 	}
 
-	tileInRect { arg rect, fromRect, operation = 'sourceOver', fraction = 1.0;
-		"tileInRect not implemented".warn
+	tileInRect { arg rect, fromRect, operation = 'sourceOver', opacity = 1.0;
+		Pen.tileImage(rect, this, fromRect, operation, opacity);
 	}
 
 	drawStringAtPoint { arg string, point, font, color;

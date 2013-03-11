@@ -652,13 +652,20 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     QImage * image = reinterpret_cast<QImage*>( slotRawPtr(slotRawObject(imgSlot)->slots) );
     if( !image ) return errReturn;
 
+    QRectF source;
+
+    if (IsNil(a+2))
+        source = QRectF( image->rect() );
+    else if (isKindOfSlot(a+2, SC_CLASS(Rect)))
+        source = QtCollider::read<QRectF>(a+2);
+    else
+        return errWrongType;
 
     QRectF target;
-    QRectF source;
 
     if (isKindOfSlot(a+0, SC_CLASS(Point))) {
         QPointF point = QtCollider::read<QPointF>(a+0);
-        target = QRectF(point.x(), point.y(), image->width(), image->height());
+        target = QRectF(point.x(), point.y(), source.width(), source.height());
     }
     else if (isKindOfSlot(a+0, SC_CLASS(Rect))) {
         target = QtCollider::read<QRectF>(a+0);
@@ -666,24 +673,73 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     else
         return errWrongType;
 
-    if (IsNil(a+2)) {
-        source = QRectF( image->rect() );
-    }
-    else if (isKindOfSlot(a+2, SC_CLASS(Rect))) {
-        source = QtCollider::read<QRectF>(a+2);
-    }
-    else
-        return errWrongType;
-
-    if( NotInt(a+3) ) return errWrongType;
-    if( NotFloat(a+4) ) return errWrongType;
-    int composition = QtCollider::read<int>(a+3);
-    float opacity = QtCollider::read<float>(a+4);
+    int composition = QtCollider::get(a+3);
+    float opacity = QtCollider::get(a+4);
 
     painter->save();
     painter->setCompositionMode((QPainter::CompositionMode)composition);
     painter->setOpacity(opacity);
     painter->drawImage(target, *image, source);
+    painter->restore();
+
+    return errNone;
+}
+
+QC_QPEN_PRIMITIVE( QPen_TileImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+    PyrSlot *imgSlot = a+1;
+    if( NotObj(imgSlot) || slotRawObject(imgSlot)->classptr != SC_CLASS(QImage) )
+      return errWrongType;
+
+    QImage * image = reinterpret_cast<QImage*>( slotRawPtr(slotRawObject(imgSlot)->slots) );
+    if( !image ) return errReturn;
+
+    QRectF source;
+
+    if (IsNil(a+2))
+        source = QRectF( image->rect() );
+    else if (isKindOfSlot(a+2, SC_CLASS(Rect)))
+        source = QtCollider::read<QRectF>(a+2);
+    else
+        return errWrongType;
+
+    QRectF target;
+
+    if (isKindOfSlot(a+0, SC_CLASS(Rect)))
+        target = QtCollider::read<QRectF>(a+0);
+    else
+        return errWrongType;
+
+    if (target.isEmpty() || source.isEmpty())
+        return errNone;
+
+    int composition = QtCollider::get(a+3);
+    float opacity = QtCollider::get(a+4);
+
+    painter->save();
+    painter->setCompositionMode((QPainter::CompositionMode)composition);
+    painter->setOpacity(opacity);
+    painter->setClipRect( target );
+
+    QRectF area = source;
+    area.moveTo( target.topLeft() );
+    float max_x = target.right();
+    float max_y = target.bottom();
+    int iter_x, iter_y;
+    for( iter_y = 0; ; ++iter_y )
+    {
+        area.moveTop(iter_y * source.height() + target.top() );
+        if (area.top() > max_y)
+            break;
+        for ( iter_x = 0; ; ++iter_x )
+        {
+            area.moveLeft( iter_x * source.width() + target.left() );
+            if (area.left() > max_x)
+                break;
+            painter->drawImage(area, *image, source);
+        }
+    }
+
     painter->restore();
 
     return errNone;
@@ -728,6 +784,7 @@ void defineQPenPrimitives()
   definer.define<QPen_StringAtPoint>();
   definer.define<QPen_StringInRect>();
   definer.define<QPen_DrawImage>();
+  definer.define<QPen_TileImage>();
 }
 
 } // namespace QtCollider
