@@ -1,7 +1,7 @@
 class:: SendTrig
 summary:: Send a trigger message from the server back to the client.
 categories::  UGens>Triggers
-related:: Classes/OSCFunc
+related:: Classes/OSCFunc, Classes/SendReply
 
 
 Description::
