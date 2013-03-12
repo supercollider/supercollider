@@ -57,6 +57,7 @@
 #endif
 
 #include <string.h>
+#include <assert.h>
 
 #ifndef TLSF_USE_LOCKS
 #define	TLSF_USE_LOCKS 	(0)
@@ -132,7 +133,7 @@
 #undef  BLOCK_ALIGN
 #define BLOCK_ALIGN 32
 
-#define MAX_FLI		(30)
+#define MAX_FLI		(34)
 #define MAX_LOG2_SLI	(5)
 #define MAX_SLI		(1 << MAX_LOG2_SLI)     /* MAX_SLI = 2^MAX_LOG2_SLI */
 
@@ -373,6 +374,7 @@ static __inline__ bhdr_t *FIND_SUITABLE_BLOCK(tlsf_t * _tlsf, int *_fl, int *_sl
         _b = _tlsf->matrix[*_fl][*_sl];
     } else {
         *_fl = ls_bit(_tlsf->fl_bitmap & (~0 << (*_fl + 1)));
+        assert(*_fl < REAL_FLI);
         if (*_fl > 0) {         /* likely */
             *_sl = ls_bit(_tlsf->sl_bitmap[*_fl]);
             _b = _tlsf->matrix[*_fl][*_sl];
