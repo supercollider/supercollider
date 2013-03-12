@@ -1,7 +1,7 @@
 class:: SendReply
 summary:: Send an array of values from the server to all notified clients
 categories:: UGens>Triggers
-related:: Classes/SendTrig, Classes/OSCFunc, Classes/SendReply, Classes/SendTrig
+related:: Classes/SendTrig, Classes/OSCFunc
 
 description::
 A message is sent to all notified clients. See link::Classes/Server::.
