@@ -27,6 +27,7 @@
 #include <sndfile.h>
 
 #include <new>
+#include <boost/atomic.hpp>
 #include <boost/thread.hpp>
 
 #include <boost/lockfree/queue.hpp>
