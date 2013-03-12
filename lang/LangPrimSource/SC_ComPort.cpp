@@ -49,10 +49,10 @@
 # define HAVE_MSG_NOSIGNAL 1
 #endif
 
-int recvall(int socket, void *msg, size_t len);
-int recvallfrom(int socket, void *msg, size_t len, struct sockaddr *fromaddr, int addrlen);
-int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
-int sendall(int socket, const void *msg, size_t len);
+int recvall(int socket, char *msg, size_t len);
+int recvallfrom(int socket, char *msg, size_t len, struct sockaddr *fromaddr, int addrlen);
+int sendallto(int socket, const char *msg, size_t len, struct sockaddr *toaddr, int addrlen);
+int sendall(int socket, const char *msg, size_t len);
 
 void ProcessOSCPacket(OSC_Packet *inPacket, int inPortNum);
 
@@ -227,15 +227,15 @@ SC_UdpInPort::SC_UdpInPort(int inPortNum)
 	mBindSockAddr.sin_family = AF_INET;
 	mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-        bool bound = false;
-        for (int i=0; i<10 && !bound; ++i) {
-			mPortNum = mPortNum+i;
-            mBindSockAddr.sin_port = htons(mPortNum);
-            if (bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) >= 0) {
-                bound = true;
-            }
+	bool bound = false;
+	for (int i=0; i<10 && !bound; ++i) {
+		mPortNum = mPortNum+i;
+		mBindSockAddr.sin_port = htons(mPortNum);
+		if (bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) >= 0) {
+			bound = true;
+		}
 	}
-        if (!bound) throw std::runtime_error("unable to bind udp socket\n");
+	if (!bound) throw std::runtime_error("unable to bind udp socket\n");
 	Start();
 }
 
@@ -322,7 +322,6 @@ int32 Hash(ReplyAddress *inReplyAddress)
 }
 */
 
-void udp_reply_func(struct ReplyAddress *addr, char* msg, int size);
 void udp_reply_func(struct ReplyAddress *addr, char* msg, int size)
 {
 	printf("->udp_reply_func\n");
@@ -422,29 +421,29 @@ void* SC_UdpCustomInPort::Run()
 
 SC_TcpInPort::SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog)
 	: SC_ComPort(inPortNum), mConnectionAvailable(inMaxConnections),
-        mBacklog(inBacklog)
+	  mBacklog(inBacklog)
 {
 
-    if((mSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        throw std::runtime_error("failed to create tcp socket\n");
-    }
-    //setsockopt(mSocket, SOL_SOCKET, TCP_NODELAY);
+	if((mSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+		throw std::runtime_error("failed to create tcp socket\n");
+	}
+	//setsockopt(mSocket, SOL_SOCKET, TCP_NODELAY);
 
-    bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
-    mBindSockAddr.sin_family = AF_INET;
-    mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    mBindSockAddr.sin_port = htons(mPortNum);
+	bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
+	mBindSockAddr.sin_family = AF_INET;
+	mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	mBindSockAddr.sin_port = htons(mPortNum);
 
-    if(bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) < 0)
-    {
-        throw std::runtime_error("unable to bind tcp socket\n");
-    }
-    if(listen(mSocket, mBacklog) < 0)
-    {
-        throw std::runtime_error("unable to listen tcp socket\n");
-    }
+	if(bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) < 0)
+	{
+		throw std::runtime_error("unable to bind tcp socket\n");
+	}
+	if(listen(mSocket, mBacklog) < 0)
+	{
+		throw std::runtime_error("unable to listen tcp socket\n");
+	}
 
-    Start();
+	Start();
 }
 
 void* SC_TcpInPort::Run()
@@ -477,10 +476,10 @@ ReplyFunc SC_TcpInPort::GetReplyFunc()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_TcpConnectionPort::SC_TcpConnectionPort(SC_TcpInPort *inParent, int inSocket)
-    : SC_ComPort(0), mParent(inParent)
+	: SC_ComPort(0), mParent(inParent)
 {
-    mSocket = inSocket;
-    Start();
+	mSocket = inSocket;
+	Start();
 }
 
 SC_TcpConnectionPort::~SC_TcpConnectionPort()
@@ -490,7 +489,7 @@ SC_TcpConnectionPort::~SC_TcpConnectionPort()
 #else
 	close(mSocket);
 #endif
-    mParent->ConnectionTerminated();
+	mParent->ConnectionTerminated();
 }
 
 void tcp_reply_func(struct ReplyAddress *addr, char* msg, int size);
@@ -517,7 +516,7 @@ void* SC_TcpConnectionPort::Run()
 		if (!packet) {
 			packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 		}
-		size = recvall(mSocket, &msglen, sizeof(int32));
+		size = recvall(mSocket, (char*)&msglen, sizeof(int32));
 		if (size < 0) goto leave;
 
 		// sk: msglen is in network byte order
@@ -535,8 +534,8 @@ void* SC_TcpConnectionPort::Run()
 		packet = 0;
 	}
 leave:
-    delete this; // ohh this could cause a crash if a reply tries to access it..
-    return 0;
+	delete this; // ohh this could cause a crash if a reply tries to access it..
+	return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -615,7 +614,7 @@ void* SC_TcpClientPort::Run()
 
 		packet->mData = 0;
 
-		size = recvall(sockfd, &msglen, sizeof(int32));
+		size = recvall(sockfd, (char*)&msglen, sizeof(int32));
 		if (size < (int32)sizeof(int32)) goto leave;
 
 		// msglen is in network byte order
@@ -669,80 +668,60 @@ ReplyFunc SC_TcpClientPort::GetReplyFunc()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int recvall(int socket, void *msg, size_t len)
+int recvall(int socket, char *msg, size_t len)
 {
 	size_t total = 0;
-	while (total < len)
-	{
-#ifdef SC_WIN32
-		int numbytes = recv(socket, reinterpret_cast<char*>(msg), len - total, 0);
-#else
+	while (total < len) {
 		int numbytes = recv(socket, msg, len - total, 0);
-#endif
 		if (numbytes <= 0) return total;
 		total += numbytes;
-		msg = (void*)((char*)msg + numbytes);
+		msg   += numbytes;
 	}
 	return total;
 }
 
-int recvallfrom(int socket, void *msg, size_t len, struct sockaddr *fromaddr, int addrlen)
+int recvallfrom(int socket, char *msg, size_t len, struct sockaddr *fromaddr, int addrlen)
 {
 	size_t total = 0;
-	while (total < len)
-	{
+	while (total < len) {
 		socklen_t addrlen2 = addrlen;
-#ifdef SC_WIN32
-		int numbytes = recvfrom(socket, reinterpret_cast<char*>(msg), len - total, 0, fromaddr, &addrlen2);
-#else
 		int numbytes = recvfrom(socket, msg, len - total, 0, fromaddr, &addrlen2);
-#endif
 		if (numbytes < 0) return total;
 		total += numbytes;
-		msg = (void*)((char*)msg + numbytes);
+		msg   += numbytes;
 	}
 	return total;
 }
 
-int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen)
+int sendallto(int socket, const char *msg, size_t len, struct sockaddr *toaddr, int addrlen)
 {
 	size_t total = 0;
-	while (total < len)
-	{
-#ifdef SC_WIN32
-		int numbytes = sendto(socket, reinterpret_cast<const char*>(msg), len - total, 0, toaddr, addrlen);
-#else
+	while (total < len) {
 		int numbytes = sendto(socket, msg, len - total, 0, toaddr, addrlen);
-#endif
 		//printf("numbytes %d  total %d  len %d\n", numbytes, total, len);
 		if (numbytes < 0) {
 			printf("******* errno %d %s\n", errno, strerror(errno));
 			return total;
 		}
 		total += numbytes;
-		msg = (void*)((char*)msg + numbytes);
+		msg   += numbytes;
 	}
 	return total;
 }
 
-int sendall(int socket, const void *msg, size_t len)
+int sendall(int socket, const char *msg, size_t len)
 {
 	size_t total = 0;
-	while (total < len)
-	{
+	while (total < len) {
 #if HAVE_MSG_NOSIGNAL
 		int flags = MSG_NOSIGNAL;
 #else
 		int flags = 0;
 #endif // HAVE_MSG_NOSIGNAL
-#ifdef SC_WIN32
-    int numbytes = send(socket, reinterpret_cast<const char*>(msg), len - total, flags);
-#else
 		int numbytes = send(socket, msg, len - total, flags);
-#endif
 		if (numbytes < 0) return total;
 		total += numbytes;
-		msg = (void*)((char*)msg + numbytes);
+		msg   += numbytes;
 	}
 	return total;
 }
