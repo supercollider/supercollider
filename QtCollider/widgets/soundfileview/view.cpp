@@ -763,11 +763,10 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
     if( _fpp > 1.0 ) {
 
       // draw min-max regions and RMS
-
-      short minBuffer[width];
-      short maxBuffer[width];
-      short minRMS[width];
-      short maxRMS[width];
+      short * minBuffer = (short*)alloca(width * sizeof(short));
+      short * maxBuffer = (short*)alloca(width * sizeof(short));;
+      short * minRMS = (short*)alloca(width * sizeof(short));;
+      short * maxRMS = (short*)alloca(width * sizeof(short));;
 
       bool ok = soundStream->displayData( ch, f_beg, f_dur,
                                         minBuffer, maxBuffer,
