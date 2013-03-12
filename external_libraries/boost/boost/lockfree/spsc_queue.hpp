@@ -673,7 +673,7 @@ public:
      *
      * \note Thread-safe and wait-free, should only be called from the producer thread
      * */
-    size_t read_available() const
+    size_type read_available() const
     {
         return base_type::read_available(base_type::max_size());
     }
@@ -684,7 +684,7 @@ public:
      *
      * \note Thread-safe and wait-free, should only be called from the consumer thread
      * */
-    size_t write_available() const
+    size_type write_available() const
     {
         return base_type::write_available(base_type::max_size());
     }
