@@ -42,7 +42,7 @@ class DocumentManager;
 class GenericCodeEditor;
 class Main;
 class MultiSplitter;
-class Session;
+struct Session;
 class SignalMultiplexer;
 
 namespace Settings { class Manager; }

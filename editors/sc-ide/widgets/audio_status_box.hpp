@@ -46,7 +46,7 @@ protected:
     void wheelEvent(QWheelEvent *);
 
 private:
-    struct ScServer * mServer;
+    class ScServer * mServer;
 
     float m_avg_cpu;
     float m_peak_cpu;
