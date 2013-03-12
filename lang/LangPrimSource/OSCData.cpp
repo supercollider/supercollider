@@ -102,8 +102,8 @@ const int ivxNetAddr_Hostname = 2;
 const int ivxNetAddr_Socket = 3;
 
 void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port);
-int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
-int sendall(int socket, const void *msg, size_t len);
+int sendallto(int socket, const char *msg, size_t len, struct sockaddr *toaddr, int addrlen);
+int sendall(int socket, const char *msg, size_t len);
 static int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size);
 int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
 
@@ -317,7 +317,7 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 		if (sendMsgLen) {
 			// send length of message in network byte-order
 			int32 sizebuf = htonl(msglen);
-			sendall(tcpSocket, &sizebuf, sizeof(int32));
+			sendall(tcpSocket, (char*)&sizebuf, sizeof(int32));
 		}
 
 		sendall(tcpSocket, bufptr, msglen);
