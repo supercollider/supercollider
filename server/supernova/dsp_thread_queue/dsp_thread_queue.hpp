@@ -270,14 +270,16 @@ public:
         total_node_count(0), has_parallelism_(has_parallelism)
     {
         initially_runnable_items.reserve(node_count);
-        queue_items = item_allocator().allocate(node_count * sizeof(dsp_thread_queue_item));
+        queue_items = node_count ? item_allocator().allocate(node_count * sizeof(dsp_thread_queue_item))
+                                 : nullptr;
     }
 
     ~dsp_thread_queue(void)
     {
         for (std::size_t i = 0; i != total_node_count; ++i)
             queue_items[i].~dsp_thread_queue_item();
-        item_allocator().deallocate(queue_items, total_node_count * sizeof(dsp_thread_queue_item));
+        if (queue_items)
+            item_allocator().deallocate(queue_items, total_node_count * sizeof(dsp_thread_queue_item));
     }
 
     void add_initially_runnable(dsp_thread_queue_item * item)
@@ -291,6 +293,7 @@ public:
                         typename dsp_thread_queue_item::successor_list const & successors,
                         typename dsp_thread_queue_item::activation_limit_t activation_limit)
     {
+        assert(queue_items);
         dsp_thread_queue_item * ret = queue_items + total_node_count;
         ++total_node_count;
 
