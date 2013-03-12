@@ -228,7 +228,7 @@ void QcNumberBox::stepBy( int steps, double stepSize )
 double QcNumberBox::roundedVal( double val )
 {
   double k = pow( 10, _maxDec );
-  return round( val * k ) / k;
+  return qRound( val * k ) / k;
 }
 
 QString QcNumberBox::stringForVal( double val )

@@ -26,6 +26,7 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QApplication>
+#include <QtCore/qmath.h>
 
 #include <cmath>
 
@@ -471,7 +472,7 @@ inline static void qc_graph_round( double &val, double &step, bool &grid )
     val = 0.0;
   }
   else if ( grid ) {
-    double ratio = ( val + (step*0.5) > 1.0 ) ? floor(1.0/step) : round(val/step);
+    double ratio = ( val + (step*0.5) > 1.0 ) ? qFloor(1.0/step) : qRound(val/step);
     val = ratio * step;
   }
   else if ( val > 1.0 ) {
