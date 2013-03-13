@@ -193,6 +193,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="disableBlinkingCursor">
+          <property name="text">
+           <string>Disable blinking cursor</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QLabel" name="label_12">

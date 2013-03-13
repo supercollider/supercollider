@@ -1263,6 +1263,13 @@ void MainWindow::showStatusMessage( QString const & string )
 
 void MainWindow::applySettings( Settings::Manager * settings )
 {
+    const bool disableBlinkingCursor = settings->value("IDE/editor/disableBlinkingCursor").toBool();
+
+    if (disableBlinkingCursor)
+        QApplication::setCursorFlashTime(0);
+    else
+        QApplication::setCursorFlashTime( settings->defaultCursorFlashTime() );
+
     mPostDocklet->mPostWindow->applySettings(settings);
     mHelpBrowserDocklet->browser()->applySettings(settings);
     mCmdLine->applySettings(settings);

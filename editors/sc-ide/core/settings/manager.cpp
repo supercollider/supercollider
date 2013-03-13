@@ -29,7 +29,8 @@ namespace ScIDE { namespace Settings {
 
 Manager::Manager( const QString & filename, QObject * parent ):
     QObject(parent),
-    mSettings( new QSettings(filename, serializationFormat(), this) )
+    mSettings( new QSettings(filename, serializationFormat(), this) ),
+    mDefaultCursorFlashTime(QApplication::cursorFlashTime())
 {
     initDefaults();
 }
@@ -54,6 +55,7 @@ void Manager::initDefaults()
     setDefault("indentWidth", 4);
     setDefault("stepForwardEvaluation", false);
     setDefault("lineWrap", true);
+    setDefault("disableBlinkinCursor", false);
 
     setDefault("blinkDuration", 600);
 
