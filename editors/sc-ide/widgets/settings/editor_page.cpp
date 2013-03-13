@@ -80,6 +80,7 @@ void EditorPage::load( Manager *s )
     ui->indentWidth->setValue( s->value("indentWidth").toInt() );
     ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation").toBool() );
     ui->editorLineWrap->setChecked( s->value("lineWrap").toBool() );
+    ui->disableBlinkingCursor->setChecked( s->value("disableBlinkingCursor").toBool() );
 
     ui->blinkDuration->setValue( s->value("blinkDuration").toInt() );
 
@@ -220,6 +221,7 @@ void EditorPage::store( Manager *s )
     s->setValue("indentWidth", ui->indentWidth->value());
     s->setValue("stepForwardEvaluation", ui->stepForwardEvaluation->isChecked());
     s->setValue("lineWrap", ui->editorLineWrap->isChecked());
+    s->setValue("disableBlinkingCursor", ui->disableBlinkingCursor->isChecked());
 
     s->setValue("blinkDuration", ui->blinkDuration->value());
 
