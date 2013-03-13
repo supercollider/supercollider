@@ -194,18 +194,19 @@ PlusFreqScope {
         ^this;
 	}
 
-	allocBuffersAndStart {
+	allocBuffers {
+		// Free old buf only after allocating new one, to ensure index is changed.
+		var old_buf = scopebuf;
 		if (this.shmScopeAvailable) {
 			scopebuf = ScopeBuffer.alloc(server);
 			scope.bufnum = scopebuf.bufnum;
-			this.start;
 		} {
 			Buffer.alloc(server, bufSize/4, 1, { |sbuf|
 				scope.bufnum = sbuf.bufnum;
 				scopebuf = sbuf;
-				this.start;
 			});
-		}
+		};
+		if (old_buf.notNil) { old_buf.free; }
 	}
 
 	freeBuffers {
@@ -215,8 +216,17 @@ PlusFreqScope {
 	}
 
 	start {
-		var defname = specialSynthDef ?? {"freqScope" ++ freqMode.asString ++ if (this.shmScopeAvailable) {"_shm"} {""}};
-		var args = [\in, inBus, \dbFactor, dbFactor, \rate, 4, \fftBufSize, bufSize,
+		var defname, args;
+		// Never leave a man behind:
+		if (synth.notNil) { synth.free };
+		// Always reallocate buffer, because the older ScopeBuffer will not be
+		// freed until the old Synth is destroyed (asynchronously):
+		this.allocBuffers;
+
+		defname = specialSynthDef ?? {
+			"freqScope" ++ freqMode.asString ++ if (this.shmScopeAvailable) {"_shm"} {""}
+		};
+		args = [\in, inBus, \dbFactor, dbFactor, \rate, 4, \fftBufSize, bufSize,
 			\scopebufnum, scopebuf.bufnum] ++ specialSynthArgs;
 		synth = Synth.tail(RootNode(server), defname, args);
 		if (scope.class.name === \QScope2) { scope.start };
@@ -241,6 +251,7 @@ PlusFreqScope {
 			if (server.serverRunning and: active) {
 				if (scope.class.name === \QScope2) { scope.stop };
 				synth.free;
+				synth = nil;
 			};
 		};
 		active=activate;
@@ -248,13 +259,8 @@ PlusFreqScope {
 	}
 
 	doOnServerTree {
-		if (active) {
-			if (scopebuf.isNil) {
-				this.allocBuffersAndStart;
-			} {
-				this.start;
-			}
-		}
+		synth = nil;
+		if (active) { this.start; }
 	}
 
 	doOnServerQuit {
@@ -284,7 +290,6 @@ PlusFreqScope {
 	freqMode_ { arg mode;
 		freqMode = mode.asInteger.clip(0,1);
 		if(active, {
-			synth.free;
 			this.start;
 		});
 	}
@@ -300,7 +305,6 @@ PlusFreqScope {
 		this.specialSynthDef_(defname);
 		this.specialSynthArgs_(extraargs);
 		if(active, {
-			synth.free;
 			this.start;
 		});
 	}
