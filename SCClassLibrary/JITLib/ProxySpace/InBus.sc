@@ -123,15 +123,16 @@ Monitor {
 
 	stop { | argFadeTime |
 		var oldGroup = group;
-		group = nil;
 		fadeTime = argFadeTime ? fadeTime;
 		synthIDs = [];
 		synthAmps = [];
 		if(oldGroup.isPlaying) {
 			oldGroup.release(fadeTime);
-			SystemClock.sched(fadeTime, {
-				oldGroup.free(true, true)
-			})
+			SystemClock.sched(fadeTime, { oldGroup.free })
+		};
+		if (group.notNil) {
+			group.isPlaying = false;
+			group = nil;
 		};
 	}
 

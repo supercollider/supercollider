@@ -25,14 +25,10 @@ Node {
 
 	*actionNumberFor { |addAction = (\addToHead)| ^addActions[addAction] }
 
-	free { arg sendFlag = true, sendBundle = false;
-		if(sendFlag) {
-			if(sendBundle) {
-				server.sendMsg(11, nodeID)  //"/n_free"
-			} {
-				server.sendBundle(server.latency, [11, nodeID])
-			}
-		};
+	free { arg sendFlag=true;
+		if(sendFlag, {
+			server.sendMsg(11, nodeID);  //"/n_free"
+		});
 		group = nil;
 		isPlaying = false;
 		isRunning = false;
