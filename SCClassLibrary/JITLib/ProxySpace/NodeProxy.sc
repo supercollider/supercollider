@@ -43,12 +43,15 @@ NodeProxy : BusPlug {
 
 	free { | fadeTime, freeGroup = true |
 		var bundle;
+		var oldGroup = group;
 		if(this.isPlaying) {
 			bundle = MixedBundle.new;
 			if(fadeTime.notNil) { bundle.add([15, group.nodeID, "fadeTime", fadeTime]) };
 			this.stopAllToBundle(bundle, fadeTime);
 			if(freeGroup) {
-				bundle.sched((fadeTime ? this.fadeTime) + (server.latency ? 0), { group.free });
+				oldGroup = group;
+				group = nil;
+				bundle.sched((fadeTime ? this.fadeTime) + (server.latency ? 0), { oldGroup.free });
 			};
 			bundle.send(server);
 			this.changed(\free, [fadeTime, freeGroup]);
