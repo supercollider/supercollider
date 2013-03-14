@@ -1,5 +1,5 @@
 Buffer {
-	classvar	serverCaches;
+	classvar serverCaches;
 
 	// don't use the setter methods for the vars below
 	// they're private and have no effect on the server
@@ -73,7 +73,7 @@ Buffer {
 	allocReadChannelMsg { arg argpath,startFrame = 0,numFrames = -1, channels, completionMessage;
 		this.cache;
 		path = argpath;
-		^["/b_allocReadChannel",bufnum, path,startFrame, (numFrames ? -1).asInt] ++ channels ++ 			[completionMessage.value(this)]
+		^["/b_allocReadChannel",bufnum, path,startFrame, (numFrames ? -1).asInt] ++ channels ++ [completionMessage.value(this)]
 	}
 
 	// read whole file into memory for PlayBuf etc.
@@ -84,17 +84,14 @@ Buffer {
 		if(bufnum.isNil) {
 			Error("No more buffer numbers -- free some buffers before allocating more.").throw
 		};
-		^super.newCopyArgs(server, bufnum)
-					.doOnInfo_(action).cache
-					.allocRead(path,startFrame,numFrames,{|buf|["/b_query",buf.bufnum]});
+		^super.newCopyArgs(server, bufnum).cache
+					.allocRead(path, startFrame, numFrames, action);
 	}
 	read { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, action;
 		this.cache;
-		doOnInfo = action;
 		server.listSendMsg(
-			this.readMsg(argpath,fileStartFrame,numFrames,bufStartFrame,
-						leaveOpen,{|buf|["/b_query",buf.bufnum]} )
+			this.readMsg(argpath, fileStartFrame, numFrames, bufStartFrame, leaveOpen, action)
 		);
 	}
 	*readChannel { arg server,path,startFrame = 0,numFrames = -1, channels, action, bufnum;
@@ -104,17 +101,13 @@ Buffer {
 			Error("No more buffer numbers -- free some buffers before allocating more.").throw
 		};
 		^super.newCopyArgs(server, bufnum)
-					.doOnInfo_(action).cache
-					.allocReadChannel(path,startFrame,numFrames,channels,
-						{|buf|["/b_query",buf.bufnum]});
+					.allocReadChannel(path, startFrame, numFrames, channels, action);
 	}
 	readChannel { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, channels, action;
 		this.cache;
-		doOnInfo = action;
 		server.listSendMsg(
-			this.readChannelMsg(argpath,fileStartFrame,numFrames,bufStartFrame,
-						leaveOpen,channels,{|buf|["/b_query",buf.bufnum]} )
+			this.readChannelMsg(argpath, fileStartFrame, numFrames, bufStartFrame, leaveOpen, channels, action)
 		);
 	}
 	*readNoUpdate { arg server,path,startFrame = 0,numFrames = -1, bufnum, completionMessage;
@@ -186,11 +179,11 @@ Buffer {
 					sndfile.writeData(collection);
 					sndfile.close;
 					^super.newCopyArgs(server, bufnum)
-						.cache.doOnInfo_({ |buf|
+						.cache.allocRead(path, 0, -1, { |buf|
 							if(File.delete(path), { buf.path = nil},
 								{("Could not delete data file:" + path).warn;});
 							action.value(buf);
-						}).allocRead(path, 0, -1,{|buf|["/b_query",buf.bufnum]});
+					});
 
 				}, {"Failed to write data".warn; ^nil}
 			);
@@ -619,8 +612,7 @@ Buffer {
 		};
 		buffer = super.newCopyArgs(server, bufnum).cache;
 		File.openDialog("Select a file...",{ arg path;
-			buffer.doOnInfo_(action)
-				.allocRead(path,startFrame,numFrames, {["/b_query",buffer.bufnum]})
+			buffer.allocRead(path, startFrame, numFrames, action)
 		});
 		^buffer;
 	}

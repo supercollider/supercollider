@@ -2127,6 +2127,30 @@ void handle_b_free(received_message const & msg, endpoint_ptr endpoint)
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_free_1_nrt<realtime>, index, message, endpoint));
 }
 
+
+template <bool realtime>
+static void send_buffer_info(int buffer_index, endpoint_ptr & endpoint)
+{
+	const size_t elem_size = 3*sizeof(int) * sizeof(float);
+	const size_t size = elem_size + 128; /* should be more than required */
+    sized_array<char, rt_pool_allocator<char> > data(size);
+
+    osc::OutboundPacketStream p(data.c_array(), size);
+    p << osc::BeginMessage("/b_info");
+
+    SndBuf * buf = sc_factory->get_buffer_struct(buffer_index);
+
+    p << buffer_index
+      << osc::int32(buf->frames)
+      << osc::int32(buf->channels)
+      << float (buf->samplerate);
+
+    p << osc::EndMessage;
+
+    movable_array<char> message(p.Size(), data.c_array());
+    cmd_dispatcher<realtime>::fire_message(endpoint, message);
+}
+
 template <bool realtime>
 void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_buf, endpoint_ptr endpoint);
 void b_allocRead_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint);
@@ -2150,6 +2174,7 @@ void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_bu
                       endpoint_ptr endpoint)
 {
     sc_factory->buffer_sync(index);
+    send_buffer_info<realtime>(index, endpoint);
     msg.handle(endpoint);
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_allocRead_3_nrt, index, free_buf, endpoint));
 }
@@ -2215,6 +2240,7 @@ void b_allocReadChannel_2_rt(uint32_t bufnum, completion_message & msg, sample *
 {
     sc_factory->buffer_sync(bufnum);
     msg.handle(endpoint);
+    send_buffer_info<realtime>(bufnum, endpoint);
     cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_allocReadChannel_3_nrt,
                                                              bufnum, free_buf, endpoint));
 }
@@ -2280,7 +2306,7 @@ void b_write_nrt_1(uint32_t bufnum, movable_string const & filename, movable_str
 
 void fire_b_write_exception(void)
 {
-    throw std::runtime_error("wrong arguments for /b_allocReadChannel");
+    throw std::runtime_error("wrong arguments for /b_write");
 }
 
 template <bool realtime>
@@ -2360,6 +2386,7 @@ void b_read_rt_2(uint32_t index, completion_message & msg, endpoint_ptr endpoint
 {
     sc_factory->buffer_sync(index);
     msg.handle(endpoint);
+    send_buffer_info<realtime>(index, endpoint);
     cmd_dispatcher<realtime>::fire_done_message(endpoint, b_read, index);
 }
 
@@ -2449,6 +2476,7 @@ void b_readChannel_rt_2(uint32_t index, completion_message & msg, endpoint_ptr e
 {
     sc_factory->buffer_sync(index);
     msg.handle(endpoint);
+    send_buffer_info<realtime>(index, endpoint);
     cmd_dispatcher<realtime>::fire_done_message(endpoint, b_readChannel, index);
 }
 

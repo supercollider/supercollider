@@ -39,17 +39,18 @@
 #include <new>
 
 #define CallSequencedCommand(T, inWorld, inSize, inData, inReply)	\
-	void* space = World_Alloc(inWorld, sizeof(T)); \
-	T *cmd = new (space) T(inWorld, inReply); \
-	if (!cmd) return kSCErr_Failed; \
-	int err = cmd->Init(inData, inSize); \
-	if (err) { \
-		cmd->~T(); \
-		World_Free(inWorld, space); \
-		return err; \
-	} \
-	if (inWorld->mRealTime) cmd->CallNextStage(); \
-	else cmd->CallEveryStage();
+	do { void* space = World_Alloc(inWorld, sizeof(T)); \
+		T *cmd = new (space) T(inWorld, inReply); \
+		if (!cmd) return kSCErr_Failed; \
+		int err = cmd->Init(inData, inSize); \
+		if (err) { \
+			cmd->~T(); \
+			World_Free(inWorld, space); \
+			return err; \
+		} \
+		if (inWorld->mRealTime) cmd->CallNextStage(); \
+		else cmd->CallEveryStage(); \
+	} while (0);
 
 
 class SC_SequencedCommand

@@ -108,6 +108,31 @@ char* allocAndRestrictPath(World *mWorld, const char* inPath, const char* restri
 	return saferPath;
 }
 
+static int send_b_info(World *inWorld, int bufindex, ReplyAddress *inReply)
+{
+	small_scpacket packet;
+
+	packet.adds("/b_info");
+	packet.maketags(5);
+	packet.addtag(',');
+
+	SndBuf* buf = World_GetBuf(inWorld, bufindex);
+
+	packet.addtag('i');
+	packet.addtag('i');
+	packet.addtag('i');
+	packet.addtag('f');
+	packet.addi(bufindex);
+	packet.addi(buf->frames);
+	packet.addi(buf->channels);
+	packet.addf(buf->samplerate);
+
+	if (packet.size())
+		CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+	return 0;
+}
+
+
 SC_SequencedCommand::SC_SequencedCommand(World *inWorld, ReplyAddress *inReplyAddress)
 	: mNextStage(1), mWorld(inWorld),
 	mMsgSize(0), mMsgData(0)
@@ -129,12 +154,12 @@ int SC_SequencedCommand::Init(char* /*inData*/, int /*inSize*/)
 void SC_SequencedCommand::SendDone(const char *inCommandName)
 {
 	::SendDone(&mReplyAddress, inCommandName);
-};
+}
 
 void SC_SequencedCommand::SendDoneWithIntValue(const char *inCommandName, int value)
 {
 	::SendDoneWithIntValue(&mReplyAddress, inCommandName, value);
-};
+}
 
 void SC_SequencedCommand::CallEveryStage()
 {
@@ -688,6 +713,7 @@ bool BufReadCmd::Stage3()
 
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
+
 	return true;
 }
 
