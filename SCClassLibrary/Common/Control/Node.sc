@@ -89,7 +89,6 @@ Node {
 	}
 
 	setMsg { arg ... args;
-//		^[15, nodeID] ++ args.unbubble.asControlInput;
 		^[15, nodeID] ++ args.asOSCArgArray; 	 //"/n_set"
 	}
 
@@ -190,7 +189,6 @@ Node {
 	}
 
 	// message creating methods
-
 	moveBeforeMsg { arg aNode;
 		group = aNode.group;
 		^[18, nodeID, aNode.nodeID];//"/n_before"
@@ -412,9 +410,6 @@ Synth : Node {
 		synth = this.basicNew(defName, server);
 
 		if((addNum < 2), { synth.group = inTarget; }, { synth.group = inTarget.group; });
-//		server.sendMsg(59, //"s_newargs"
-//			defName, synth.nodeID, addNum, inTarget.nodeID,
-//			*Node.setnMsgArgs(*args));
 		server.sendMsg(9, //"s_new"
 			defName, synth.nodeID, addNum, inTarget.nodeID,
 			*(args.asOSCArgArray)
@@ -499,7 +494,7 @@ Synth : Node {
 			action.value(msg.at(3)); r.remove }).add;
 		server.sendMsg(44, nodeID, index);	//"/s_get"
 	}
-	
+
 	getMsg { arg index;
 		^[44, nodeID, index];	//"/s_get"
 	}
@@ -518,7 +513,7 @@ Synth : Node {
 		var msg = Array.new(args.size div: 3 * 2);
 		var synthDesc = SynthDescLib.at(defName.asSymbol);
 		if(synthDesc.isNil) {
-			"message seti failed, because SynthDef % was not added.".format(defName).warn; 
+			"message seti failed, because SynthDef % was not added.".format(defName).warn;
 			^this
 		};
 		forBy(0, args.size-1, 3, { |i|
