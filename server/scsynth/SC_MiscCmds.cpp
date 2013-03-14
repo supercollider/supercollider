@@ -1875,9 +1875,9 @@ void initMiscCommands()
 	//NEW_COMMAND(n_cmd);
 	NEW_COMMAND(n_map);
 	NEW_COMMAND(n_mapn);
-        NEW_COMMAND(n_mapa);
-        NEW_COMMAND(n_mapan);
-        NEW_COMMAND(n_set);
+	NEW_COMMAND(n_mapa);
+	NEW_COMMAND(n_mapan);
+	NEW_COMMAND(n_set);
 	NEW_COMMAND(n_setn);
 	NEW_COMMAND(n_fill);
 
@@ -1933,5 +1933,3 @@ void initMiscCommands()
 
 	NEW_COMMAND(error);
 }
-
-
