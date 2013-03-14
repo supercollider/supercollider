@@ -434,7 +434,7 @@ Event : Environment {
 
 				freeServerNode: #{
 					if(~id.notNil) {
-						~server.sendMsg("/n_free", *~id);
+						~server.sendBundle(~server.latency, ["/n_free"] ++ ~id);
 						~isPlaying = false;
 					};
 				},
