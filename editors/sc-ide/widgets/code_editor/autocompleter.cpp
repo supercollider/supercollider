@@ -354,6 +354,11 @@ bool AutoCompleter::eventFilter( QObject *object, QEvent *event )
     case QEvent::ShortcutOverride: {
         QKeyEvent * kevent = static_cast<QKeyEvent*>(event);
         switch(kevent->key()) {
+        case Qt::Key_Left:
+        case Qt::Key_Right:
+            if (mCompletion.menu && mCompletion.menu->isVisible())
+                mCompletion.menu->reject();
+            break;
         case Qt::Key_Escape:
             if (mCompletion.menu && mCompletion.menu->isVisible())
                 mCompletion.menu->reject();
