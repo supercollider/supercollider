@@ -191,7 +191,7 @@ private:
     {
         bool success = (this->*fn)(group);
         if (success)
-            update_dsp_queue();
+            request_dsp_queue_update();
         return success;
     }
 
@@ -215,25 +215,27 @@ public:
 
     void free_node(server_node * node);
 
-    bool group_free_all(abstract_group * group)
+    void group_free_all(abstract_group * group)
     {
-        /// todo: later we want to traverse the node graph only once
-        group->apply_on_children( [&](server_node const & node) {
-            this->notification_node_ended(&node);
-        });
-
-        return group_free_implementation<&node_graph::group_free_all>(group);
-    }
-
-    bool group_free_deep(abstract_group * group)
-    {
-        /// todo: later we want to traverse the node graph only once
+        std::vector<server_node *, rt_pool_allocator<void*>> nodes_to_free;
 
         group->apply_on_children( [&](server_node & node) {
-            free_deep_notify(this, node);
+            nodes_to_free.push_back(&node);
         });
 
-        return group_free_implementation<&node_graph::group_free_deep>(group);
+        for (server_node * node: nodes_to_free)
+            free_node(node);
+    }
+
+    void group_free_deep(abstract_group * group)
+    {
+        std::vector<server_node *, rt_pool_allocator<void*>> nodes_to_free;
+        group->apply_deep_on_children( [&](server_node & node) {
+            if (node.is_synth())
+                nodes_to_free.push_back(&node);
+        });
+        for (server_node * node: nodes_to_free)
+            free_node(node);
     }
 
     void node_pause(server_node * node)
@@ -277,7 +279,7 @@ public:
 
     void rebuild_dsp_queue(void);
 
-    void update_dsp_queue(void)
+    void request_dsp_queue_update(void)
     {
         dsp_queue_dirty = true;
     }
@@ -288,6 +290,8 @@ public:
     }
 
 private:
+    void perform_node_add(server_node * node, node_position_constraint const & constraints, bool update_dsp_queue);
+    void finalize_node(server_node & node);
     std::atomic<bool> quit_requested_;
     bool dsp_queue_dirty;
 

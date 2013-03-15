@@ -54,6 +54,8 @@ public:
      */
     void prepare(void);
 
+    void finalize(void);
+
     HOT inline void perform(void)
     {
         if (unlikely (!initialized))

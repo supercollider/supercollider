@@ -1280,10 +1280,7 @@ void handle_g_freeall(received_message const & msg)
         if (!group)
             continue;
 
-        bool success = instance->group_free_all(group);
-
-        if (!success)
-            log("/g_freeAll failue\n");
+        instance->group_free_all(group);
     }
 }
 
@@ -1300,10 +1297,7 @@ void handle_g_deepFree(received_message const & msg)
         if (!group)
             continue;
 
-        bool success = instance->group_free_deep(group);
-
-        if (!success)
-            log("/g_freeDeep failue\n");
+        instance->group_free_deep(group);
     }
 }
 
@@ -1671,10 +1665,8 @@ void handle_n_before_or_after(received_message const & msg)
         instance->notification_node_moved(node);
     }
 
-    instance->update_dsp_queue();
+    instance->request_dsp_queue_update();
 }
-
-
 
 template <nova::node_position Position>
 void handle_g_head_or_tail(received_message const & msg)
@@ -1694,9 +1686,8 @@ void handle_g_head_or_tail(received_message const & msg)
         abstract_group::move_to_head_or_tail<Position>(node, target_group);
         instance->notification_node_moved(node);
     }
-    instance->update_dsp_queue();
+    instance->request_dsp_queue_update();
 }
-
 
 template <bool realtime>
 void handle_n_query(received_message const & msg, endpoint_ptr endpoint)
@@ -1762,7 +1753,7 @@ void handle_n_order(received_message const & msg)
 
         instance->notification_node_moved(node);
     }
-    instance->update_dsp_queue();
+    instance->request_dsp_queue_update();
 }
 
 
