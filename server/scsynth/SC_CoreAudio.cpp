@@ -259,13 +259,8 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket)
 		data += msgSize;
 	}
 
-		// reset so next command uses permanent error notification status
+	// reset so next command uses permanent error notification status
 	inWorld->mLocalErrorNotification = 0;
-
-//		// 0 is a temporary change, so reset the local error flag
-//	if(!inWorld->mLocalErrorNotification) {
-//		inWorld->mLocalErrorNotification = inWorld->mErrorNotification;
-//	};
 
 	//scprintf("<-PerformOSCBundle %d\n", inPacket->mSize);
 }
@@ -277,9 +272,6 @@ PacketStatus PerformOSCPacket(World *world, OSC_Packet *packet, SC_ScheduledEven
 	if (!packet->mIsBundle) {
 		PerformOSCMessage(world, packet->mSize, packet->mData, &packet->mReplyAddr);
 		world->mLocalErrorNotification = 0;
-//		if(!world->mLocalErrorNotification) {
-//			world->mLocalErrorNotification = world->mErrorNotification;
-//		};
 		return PacketPerformed;
 	} else {
 		// in real time engine, schedule the packet
@@ -371,7 +363,7 @@ SC_AudioDriver::SC_AudioDriver(struct World *inWorld)
 
 SC_AudioDriver::~SC_AudioDriver()
 {
-    mRunThreadFlag = false;
+	mRunThreadFlag = false;
 	mAudioSync.Signal();
 	mThread.join();
 }
