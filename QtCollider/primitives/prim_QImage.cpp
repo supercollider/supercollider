@@ -1,7 +1,8 @@
 /************************************************************************
 *
-* This file is a contribution to SuperCollider Qt GUI.
-* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
+* This file is part of SuperCollider Qt GUI.
+*
+* Copyright 2013 Jakob Leben (jakob.leben@gmail.com)
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,6 +20,7 @@
 ************************************************************************/
 
 #include "primitives.h"
+#include "../image.h"
 #include "../QcApplication.h"
 #include "../Common.h"
 #include "../type_codec.hpp"
@@ -41,91 +43,57 @@
 
 #include <cassert>
 
-static QPainter *imgPainter = 0;
-
-#define QIMAGE_FROM_OBJECT( OBJ ) reinterpret_cast<QImage*>( slotRawPtr(OBJ->slots) );
-
 namespace QC = QtCollider;
 
 namespace QtCollider {
 
-int QImage_Finalize( struct VMGlobals *g, struct PyrObject *obj )
+QPainter *imgPainter = 0;
+
+inline QC::Image * to_image( struct PyrObject * obj )
 {
-  delete QIMAGE_FROM_OBJECT( obj );
+    return reinterpret_cast<QC::Image*>( slotRawPtr(obj->slots) );
+}
+
+inline QC::Image * to_image( PyrSlot * slot )
+{
+    return to_image( slotRawObject(slot) );
+}
+
+int finalize_image_object( struct VMGlobals *g, struct PyrObject *obj )
+{
+  delete to_image( obj );
   SetNil( obj->slots+0 );
   return errNone;
 }
 
-inline void QImage_Init( struct VMGlobals *g, struct PyrObject *obj, QImage *img )
+void initialize_image_object( struct VMGlobals *g, struct PyrObject *obj, Image *image )
 {
     assert( IsNil( obj->slots ) && IsNil( obj->slots+1 ) );
-
-    if( img->format() != QImage::Format_ARGB32_Premultiplied ) {
-        QImage *aux = img;
-        img = new QImage( img->convertToFormat( QImage::Format_ARGB32_Premultiplied ) );
-        delete aux;
-    }
-    SetPtr( obj->slots, img ); // dataptr
-    InstallFinalizer( g, obj, 1, QImage_Finalize ); // finalizer
-}
-
-bool QImage_InitPath( struct VMGlobals *g, struct PyrObject *obj,
-                  const QString &path )
-{
-  QImage *img = new QImage( path );
-  if( img->isNull() ) {
-      delete img;
-      return false;
-  }
-
-  QImage_Init(g, obj, img);
-
-  return true;
-}
-
-bool QImage_InitFromData( struct VMGlobals *g, struct PyrObject *obj,
-                          const QByteArray &byteArray )
-{
-  QImage *img = new QImage();
-  img->loadFromData( byteArray );
-  if( img->isNull() ) {
-      delete img;
-      return false;
-  }
-
-  QImage_Init(g, obj, img);
-
-  return true;
-}
-
-void QImage_InitEmpty( struct VMGlobals *g, struct PyrObject *obj,
-                       int width, int height )
-{
-  QImage *img = new QImage( width, height, QImage::Format_ARGB32_Premultiplied );
-  img->fill( QColor(Qt::transparent).rgba() );
-  QImage_Init(g, obj, img);
-}
-
-void QImage_InitWindow( struct VMGlobals *g, struct PyrObject *obj,
-                        QWidget *widget, const QRect &rect )
-{
-  QImage *img = new QImage(QPixmap::grabWidget( widget, rect ).toImage());
-  QImage_Init(g, obj, img);
+    SetPtr( obj->slots, image ); // dataptr
+    InstallFinalizer( g, obj, 1, finalize_image_object ); // finalizer
 }
 
 QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QString path( QtCollider::get<QString>(a) );
-  if( QImage_InitPath( g, slotRawObject(r), path ) ) {
-    return errNone;
-  } else {
-    qcErrorMsg("QImage file doesn't exist or can't be open");
-    return errFailed;
-  }
+  QPixmap pixmap(path);
+  if (pixmap.isNull())
+      return errFailed;
+
+  Image *image = new Image();
+  image->setPixmap(pixmap);
+  initialize_image_object(g, slotRawObject(r), image);
+  return errNone;
 }
 
 QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    // FIXME:
+    // We can not run an event loop while waiting to receive data, because that
+    // would allow GUI to try and call into the language, resulting in a deadlock.
+    qcErrorMsg("QImage: loading from URL not yet implemented.");
+    return errFailed;
+#if 0
   QString url_str = QtCollider::get(a);
   QUrl url(url_str);
   if( !url.isValid() || url.isEmpty() ) {
@@ -178,6 +146,7 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     qcErrorMsg( QString("QImage: failed trying to open downloaded data: ") + url_str );
     return errFailed;
   }
+#endif
 }
 
 QC_LANG_PRIMITIVE( QImage_NewEmpty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
@@ -186,7 +155,12 @@ QC_LANG_PRIMITIVE( QImage_NewEmpty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   int width = QtCollider::read<int>(a);
   int height = QtCollider::read<int>(a+1);
 
-  QImage_InitEmpty( g, slotRawObject(r), width, height );
+  QImage qimage(width, height, QImage::Format_ARGB32_Premultiplied);
+  qimage.fill( QColor(Qt::transparent).rgba() );
+
+  Image *image = new Image;
+  image->setImage(qimage);
+  initialize_image_object(g, slotRawObject(r), image);
 
   return errNone;
 }
@@ -198,36 +172,46 @@ QC_LANG_PRIMITIVE( QImage_NewFromWindow, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g
   QWidget *widget = qobject_cast<QWidget *>( proxy->object() );
   if( !widget ) return errWrongType;
 
-  if( NotObj(a+1) || slotRawObject(a+1)->classptr != SC_CLASS(Rect) ) return errWrongType;
-  QRect rect = QtCollider::read<QRect>(a+1);
+  QRect rect;
+  if( IsObj(a+1) && slotRawObject(a+1)->classptr == SC_CLASS(Rect) )
+      rect = QtCollider::read<QRect>(a+1);
+  else if (NotNil(a+1))
+      return errWrongType;
 
-  QImage_InitWindow( g, slotRawObject(r), widget, rect );
+  QPixmap pixmap = QPixmap::grabWidget( widget, rect );
+  if (pixmap.isNull())
+      return errFailed;
+
+  Image *image = new Image;
+  image->setPixmap(pixmap);
+  initialize_image_object(g, slotRawObject(r), image);
 
   return errNone;
 }
 
 QC_LANG_PRIMITIVE( QImage_Free, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
+  Image *image = to_image(r);
+  if (image->isPainting()) {
+      qcErrorMsg("QImage: can not free while being painted.");
+      return errFailed;
+  }
 
-  delete img;
-  img = new QImage(); // null image, all parameters to zero
-  SetPtr( slotRawObject(r)->slots, img );
-
+  image->clear();
   return errNone;
 }
 
 QC_LANG_PRIMITIVE( QImage_Width, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
-  SetInt( r, img->width() );
+  Image *image = to_image(r);
+  SetInt( r, image->width() );
   return errNone;
 }
 
 QC_LANG_PRIMITIVE( QImage_Height, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
-  SetInt( r, img->height() );
+  Image *image = to_image(r);
+  SetInt( r, image->height() );
   return errNone;
 }
 
@@ -238,31 +222,34 @@ QC_LANG_PRIMITIVE( QImage_SetSize, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   int arMode = QtCollider::read<int>(a+2);
   int trMode = QtCollider::read<int>(a+3);
 
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
-  QImage *res = new QImage(
-    img->scaled( newSize, (Qt::AspectRatioMode)arMode, (Qt::TransformationMode)trMode ) );
+  Image *image = to_image(r);
+  if (image->isPainting()) {
+      qcErrorMsg("QImage: can not resize while being painted.");
+      return errFailed;
+  }
 
-  SetPtr( slotRawObject(r)->slots, res );
-  delete img;
+  QImage scaled_image = image->image().scaled( newSize,
+                                       (Qt::AspectRatioMode)arMode,
+                                       (Qt::TransformationMode)trMode );
+  image->setImage(scaled_image);
 
   return errNone;
 }
 
 QC_LANG_PRIMITIVE( QImage_Write, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
-
   QString path = QC::get(a);
   QString format = QC::get(a+1);
 
   if(NotInt(a+2)) return errWrongType;
   int quality = QC::read<int>(a+2);
 
-  if( img->save(path, format.toUpper().toStdString().c_str(), quality) )
+  QImage & image = to_image(r)->image();
+  if( image.save(path, format.toUpper().toStdString().c_str(), quality) )
     return errNone;
 
-  qcErrorMsg( QString("QImage can't write file: ").append(path) );
-  return errNone;
+  qcErrorMsg( QString("QImage: Failed to write to file: ") + path );
+  return errFailed;
 }
 
 QC_LANG_PRIMITIVE( QImage_SetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
@@ -272,16 +259,18 @@ QC_LANG_PRIMITIVE( QImage_SetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   if( QtCollider::paintingAnnounced() ) {
     qcDebugMsg(1, "WARNING: Custom painting already in progress. Will not paint." );
-    return errNone;
+    return errFailed;
   }
 
+  Image *image = to_image(r);
+  assert( !image->isPainting() );
+
   assert( imgPainter == 0 );
-
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
-  imgPainter = new QPainter(img);
-
+  imgPainter = new QPainter( &image->image() );
   QtCollider::announcePainting();
   QtCollider::beginPainting( imgPainter );
+
+  image->setPainting(true);
 
   return errNone;
 }
@@ -291,6 +280,12 @@ QC_LANG_PRIMITIVE( QImage_UnsetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   if( !QcApplication::compareThread )
     return QtCollider::wrongThreadError();
 
+  Image *image = to_image(r);
+
+  assert( image->isPainting() );
+  image->setPainting(false);
+
+  assert( imgPainter != 0 );
   QtCollider::endPainting();
   delete imgPainter;
   imgPainter = 0;
@@ -301,15 +296,15 @@ QC_LANG_PRIMITIVE( QImage_UnsetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 QC_LANG_PRIMITIVE( QImage_GetPixel, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( NotInt(a) || NotInt(a+1)) return errWrongType;
-
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
   int x = QC::read<int>(a);
   int y = QC::read<int>(a+1);
 
-  if( x >= img->width() || y >= img->height() )
+  QImage & image = to_image(r)->image();
+
+  if( x >= image.width() || y >= image.height() )
     return errIndexOutOfRange;
 
-  int *line = reinterpret_cast<int*>( img->scanLine(y) );
+  int *line = reinterpret_cast<int*>( image.scanLine(y) );
   SetInt( r, line[x] );
 
   return errNone;
@@ -318,15 +313,15 @@ QC_LANG_PRIMITIVE( QImage_GetPixel, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 QC_LANG_PRIMITIVE( QImage_GetColor, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( NotInt(a) || NotInt(a+1)) return errWrongType;
-
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
   int x = QC::read<int>(a);
   int y = QC::read<int>(a+1);
 
-  if( x >= img->width() || y >= img->height() )
+  QImage & image = to_image(r)->image();
+
+  if( x >= image.width() || y >= image.height() )
     return errIndexOutOfRange;
 
-  QRgb *line = reinterpret_cast<QRgb*>( img->scanLine(y) );
+  QRgb *line = reinterpret_cast<QRgb*>( image.scanLine(y) );
   QC::set(r, QColor( line[x] ) );
 
   return errNone;
@@ -335,16 +330,16 @@ QC_LANG_PRIMITIVE( QImage_GetColor, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 QC_LANG_PRIMITIVE( QImage_SetPixel, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( NotInt(a) || NotInt(a+1) || NotInt(a+2) ) return errWrongType;
-
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
   int pixel = QC::read<int>(a);
   int x = QC::read<int>(a+1);
   int y = QC::read<int>(a+2);
 
-  if( x >= img->width() || y >= img->height() )
+  QImage & image = to_image(r)->image();
+
+  if( x >= image.width() || y >= image.height() )
     return errIndexOutOfRange;
 
-  int *line = reinterpret_cast<int*>( img->scanLine(y) );
+  int *line = reinterpret_cast<int*>( image.scanLine(y) );
   line[x] = pixel;
 
   return errNone;
@@ -355,16 +350,16 @@ QC_LANG_PRIMITIVE( QImage_SetColor, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if ( NotObj(a) || slotRawObject(a)->classptr != SC_CLASS(Color)
        || NotInt(a+1) || NotInt(a+2) )
     return errWrongType;
-
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
   QColor color( QC::read<QColor>(a) );
   int x = QC::read<int>(a+1);
   int y = QC::read<int>(a+2);
 
-  if( x >= img->width() || y >= img->height() )
+  QImage & image = to_image(r)->image();
+
+  if( x >= image.width() || y >= image.height() )
     return errIndexOutOfRange;
 
-  QRgb *line = reinterpret_cast<QRgb*>( img->scanLine(y) );
+  QRgb *line = reinterpret_cast<QRgb*>( image.scanLine(y) );
   line[x] = color.rgba();
 
   return errNone;
@@ -383,11 +378,11 @@ QC_LANG_PRIMITIVE( QImage_TransferPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *
     if( !(IsTrue(a+3) || IsFalse(a+3)) ) return errWrongType;
     bool store = IsTrue(a+3); // t/f g/s
 
-    QImage *image = QIMAGE_FROM_OBJECT( slotRawObject(r) );
+    QImage &image = to_image(r)->image();
     QRect rect;
 
     if( IsNil(a+1) ) {
-        rect = image->rect();
+        rect = image.rect();
     }
     else {
         if (!isKindOfSlot(a+1, SC_CLASS(Rect)))
@@ -395,7 +390,7 @@ QC_LANG_PRIMITIVE( QImage_TransferPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *
         rect = QC::read<QRect>(a+1);
         if (rect.isEmpty())
             return errNone;
-        if( !image->rect().contains(rect) ) {
+        if( !image.rect().contains(rect) ) {
             qcErrorMsg("QImage: source rectangle out of image bounds");
             return errFailed;
         }
@@ -417,7 +412,7 @@ QC_LANG_PRIMITIVE( QImage_TransferPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *
 
     if(store) {
         for( int iy = y; iy < max_y; ++iy ) {
-            QRgb *line = reinterpret_cast<QRgb*>( image->scanLine(iy) );
+            QRgb *line = reinterpret_cast<QRgb*>( image.scanLine(iy) );
             for( int ix = x; ix < max_x; ++ix ) {
                 line[ix] = *pixelData;
                 ++pixelData;
@@ -425,7 +420,7 @@ QC_LANG_PRIMITIVE( QImage_TransferPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *
         }
     } else {
         for( int iy = y; iy < max_y; ++iy ) {
-            QRgb *line = reinterpret_cast<QRgb*>( image->scanLine(iy) );
+            QRgb *line = reinterpret_cast<QRgb*>( image.scanLine(iy) );
             for( int ix = x; ix < max_x; ++ix ) {
                 *pixelData = line[ix];
                 ++pixelData;
@@ -442,8 +437,8 @@ QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
       return errWrongType;
 
   QColor color = QC::read<QColor>(a);
-  QImage *img = QIMAGE_FROM_OBJECT( slotRawObject(r) );
-  img->fill(color.rgba());
+  QImage &image = to_image(r)->image();
+  image.fill(color.rgba());
 
   return errNone;
 }

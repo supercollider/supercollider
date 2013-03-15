@@ -1,7 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
-*
+* Copyright 2010-2013 Jakob Leben (jakob.leben@gmail.com)
 * Copyright 2010 Ivan Leben (ivan.leben@gmail.com) (QPen_ArcTo)
 *
 * This file is part of SuperCollider Qt GUI.
@@ -23,6 +22,7 @@
 
 #include "primitives.h"
 #include "../painting.h"
+#include "../image.h"
 #include "../type_codec.hpp"
 #include "PyrKernel.h"
 
@@ -649,13 +649,18 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     if( NotObj(imgSlot) || slotRawObject(imgSlot)->classptr != SC_CLASS(QImage) )
       return errWrongType;
 
-    QImage * image = reinterpret_cast<QImage*>( slotRawPtr(slotRawObject(imgSlot)->slots) );
-    if( !image ) return errReturn;
+    QtCollider::Image *image = reinterpret_cast<Image*>( slotRawPtr(slotRawObject(imgSlot)->slots) );
+    if (image->isPainting()) {
+        qcErrorMsg("QImage: can not draw while being painted.");
+        return errFailed;
+    }
+
+    QPixmap & pixmap = image->pixmap();
 
     QRectF source;
 
     if (IsNil(a+2))
-        source = QRectF( image->rect() );
+        source = QRectF( pixmap.rect() );
     else if (isKindOfSlot(a+2, SC_CLASS(Rect)))
         source = QtCollider::read<QRectF>(a+2);
     else
@@ -679,7 +684,7 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     painter->save();
     painter->setCompositionMode((QPainter::CompositionMode)composition);
     painter->setOpacity(opacity);
-    painter->drawImage(target, *image, source);
+    painter->drawPixmap(target, pixmap, source);
     painter->restore();
 
     return errNone;
@@ -691,13 +696,18 @@ QC_QPEN_PRIMITIVE( QPen_TileImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     if( NotObj(imgSlot) || slotRawObject(imgSlot)->classptr != SC_CLASS(QImage) )
       return errWrongType;
 
-    QImage * image = reinterpret_cast<QImage*>( slotRawPtr(slotRawObject(imgSlot)->slots) );
-    if( !image ) return errReturn;
+    QtCollider::Image *image = reinterpret_cast<Image*>( slotRawPtr(slotRawObject(imgSlot)->slots) );
+    if (image->isPainting()) {
+        qcErrorMsg("QImage: can not draw while being painted.");
+        return errFailed;
+    }
+
+    QPixmap & pixmap = image->pixmap();
 
     QRectF source;
 
     if (IsNil(a+2))
-        source = QRectF( image->rect() );
+        source = QRectF( pixmap.rect() );
     else if (isKindOfSlot(a+2, SC_CLASS(Rect)))
         source = QtCollider::read<QRectF>(a+2);
     else
@@ -736,7 +746,7 @@ QC_QPEN_PRIMITIVE( QPen_TileImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
             area.moveLeft( iter_x * source.width() + target.left() );
             if (area.left() > max_x)
                 break;
-            painter->drawImage(area, *image, source);
+            painter->drawPixmap(area, pixmap, source);
         }
     }
 
