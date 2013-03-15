@@ -1056,7 +1056,7 @@ Server {
 
 	getControlBusValue {|busIndex|
 		if (serverInterface.isNil) {
-			Error("Server-getControlBusValue only supports local servers").throw;
+			Error("Server-getControlBusValue only works for servers with a shared memory interface.").throw;
 		} {
 			^serverInterface.getControlBusValue(busIndex)
 		}
@@ -1064,7 +1064,7 @@ Server {
 
 	getControlBusValues {|busIndex, busChannels|
 		if (serverInterface.isNil) {
-			Error("Server-getControlBusValues only supports local servers").throw;
+			Error("Server-getControlBusValues only works for servers with a shared memory interface.").throw;
 		} {
 			^serverInterface.getControlBusValues(busIndex, busChannels)
 		}
@@ -1072,7 +1072,7 @@ Server {
 
 	setControlBusValue {|busIndex, value|
 		if (serverInterface.isNil) {
-			Error("Server-getControlBusValue only supports local servers").throw;
+			Error("Server-setControlBusValue only works for servers with a shared memory interface.").throw;
 		} {
 			^serverInterface.setControlBusValue(busIndex, value)
 		}
@@ -1080,7 +1080,7 @@ Server {
 
 	setControlBusValues {|busIndex, valueArray|
 		if (serverInterface.isNil) {
-			Error("Server-getControlBusValues only supports local servers").throw;
+			Error("Server-setControlBusValues only works for servers with a shared memory interface.").throw;
 		} {
 			^serverInterface.setControlBusValues(busIndex, valueArray)
 		}
