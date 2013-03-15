@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE( free_all_test )
     BOOST_REQUIRE(n.find_node(s2->id()));
     BOOST_REQUIRE(n.find_node(g2->id()));
 
-    BOOST_REQUIRE(n.group_free_all(g));
+    n.group_free_all(g);
 
     BOOST_REQUIRE(!n.find_node(s->id()));
     BOOST_REQUIRE(!n.find_node(s2->id()));
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE( free_deep_test )
     BOOST_REQUIRE(n.find_node(s2->id()));
     BOOST_REQUIRE(n.find_node(g2->id()));
 
-    BOOST_REQUIRE(n.group_free_deep(g));
+    n.group_free_deep(g);
 
     BOOST_REQUIRE(!n.find_node(s->id()));
     BOOST_REQUIRE(!n.find_node(s2->id()));

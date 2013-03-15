@@ -110,15 +110,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
 
 sc_synth::~sc_synth(void)
 {
-    if (initialized) {
-        std::for_each(units, units + unit_count, [](Unit * unit) {
-            sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
-            def->destruct(unit);
-        });
-    }
-
-    sc_factory->free_ugens(unit_count);
-    rt_pool.free(mControls);
+    assert(!initialized);
 }
 
 // FIXME: for some reason, we cannot initialize multiple synths in parallel
@@ -136,6 +128,21 @@ void sc_synth::prepare(void)
     scsynth_preparation_lock.unlock();
 
     initialized = true;
+}
+
+
+void sc_synth::finalize()
+{
+    if (initialized) {
+        std::for_each(units, units + unit_count, [](Unit * unit) {
+            sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+            def->destruct(unit);
+        });
+    }
+
+    sc_factory->free_ugens(unit_count);
+    rt_pool.free(mControls);
+    initialized = false;
 }
 
 void sc_synth::set(slot_index_t slot_index, sample val)

@@ -102,19 +102,25 @@ nova_server::~nova_server(void)
     instance = 0;
 }
 
+void nova_server::perform_node_add(server_node *node, node_position_constraint const & constraints, bool update_dsp_queue)
+{
+    node_graph::add_node(node, constraints, [&](server_node & node) {
+        finalize_node(node);
+    });
+
+    if (constraints.second == replace || update_dsp_queue)
+        request_dsp_queue_update();
+
+    notification_node_started(node);
+}
+
 abstract_synth * nova_server::add_synth(const char * name, int id, node_position_constraint const & constraints)
 {
     abstract_synth * ret = synth_factory::create_instance(name, id);
-
     if (ret == 0)
         return 0;
 
-    if (constraints.second == replace)
-        notification_node_ended(constraints.first);
-
-    node_graph::add_node(ret, constraints);
-    update_dsp_queue();
-    notification_node_started(ret);
+    perform_node_add(ret, constraints, true);
     return ret;
 }
 
@@ -124,9 +130,7 @@ group * nova_server::add_group(int id, node_position_constraint const & constrai
     if (g == 0)
         return 0;
 
-    instance->add_node(g, constraints);
-    /* no need to update the dsp queue */
-    notification_node_started(g);
+    perform_node_add(g, constraints, false);
     return g;
 }
 
@@ -135,9 +139,8 @@ parallel_group * nova_server::add_parallel_group(int id, node_position_constrain
     parallel_group * g = new parallel_group(id);
     if (g == 0)
         return 0;
-    instance->add_node(g, constraints);
-    /* no need to update the dsp queue */
-    notification_node_started(g);
+
+    perform_node_add(g, constraints, false);
     return g;
 }
 
@@ -156,13 +159,25 @@ void nova_server::set_node_slot(int node_id, const char * slot, float value)
         node->set(slot, value);
 }
 
+void nova_server::finalize_node(server_node & node)
+{
+    if (node.is_synth()) {
+        sc_synth & synth = static_cast<sc_synth&>(node);
+        synth.finalize();
+    }
+    notification_node_ended(&node);
+}
+
+
 void nova_server::free_node(server_node * node)
 {
     if (node->get_parent() == NULL)
         return; // has already been freed by a different event
-    notification_node_ended(node);
-    node_graph::remove_node(node);
-    update_dsp_queue();
+
+    node_graph::remove_node(node, [&] (server_node & node) {
+        finalize_node(node);
+    });
+    request_dsp_queue_update();
 }
 
 void nova_server::run_nonrt_synthesis(server_arguments const & args)
