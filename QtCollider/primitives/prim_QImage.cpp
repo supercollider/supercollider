@@ -26,12 +26,13 @@
 #include "../hacks/hacks_qt.hpp"
 
 #include <PyrKernel.h>
+#include <GC.h>
+
 #include <QImage>
 #include <QUrl>
 #include <QPainter>
 #include <QImageReader>
 #include <QImageWriter>
-
 #include <QEventLoop>
 #include <QTimer>
 #include <QtNetwork/QNetworkAccessManager>
@@ -449,26 +450,22 @@ QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_Formats, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( NotInt(a) ) return errWrongType;
-  int rw = QC::read<int>(a);
+    if( NotInt(a) ) return errWrongType;
+    int rw = QC::read<int>(a);
 
-  QList<QByteArray> formats;
-  if( rw ) {
-      formats = QImageWriter::supportedImageFormats();
-  } else {
-      formats = QImageReader::supportedImageFormats();
-  }
+    QList<QByteArray> formats =
+            rw ? QImageWriter::supportedImageFormats() : QImageReader::supportedImageFormats();
 
-  PyrObject *arr = instantiateObject( g->gc, s_array->u.classobj, formats.size(), true, true );
-  SetObject(r, arr);
+    PyrObject *array = newPyrArray( g->gc, formats.size(), 0, true );
+    SetObject(r, array);
+    for( int i = 0; i < formats.size(); ++i ) {
+        PyrString *str = newPyrString( g->gc, formats[i].constData(), obj_immutable, false );
+        SetObject(array->slots+i, str);
+        ++array->size;
+        g->gc->GCWrite( array, array->slots+i );
+    }
 
-  for( int i = 0; i < formats.size(); i++ ) {
-    QString qstr = QString(formats.at(i));
-    PyrString *str = newPyrString( g->gc, qstr.toStdString().c_str(), obj_immutable, false );
-    SetObject(arr->slots+i, str);
-  }
-
-  return errNone;
+    return errNone;
 }
 
 void defineQImagePrimitives()
