@@ -185,58 +185,16 @@ public:
     /** non-rt synthesis */
     void run_nonrt_synthesis(server_arguments const & arguments);
 
-private:
-    template <bool (node_graph::*fn)(abstract_group*)>
-    bool group_free_implementation(abstract_group * group)
-    {
-        bool success = (this->*fn)(group);
-        if (success)
-            request_dsp_queue_update();
-        return success;
-    }
-
-    static void free_deep_notify(nova_server * server, server_node & node)
-    {
-        if (node.is_synth())
-            server->notification_node_ended(&node);
-        else {
-            abstract_group * group = static_cast<abstract_group*>(&node);
-            group->apply_on_children(std::bind(nova_server::free_deep_notify, server, std::placeholders::_1));
-        }
-    }
-
 public:
     /* @{ */
     /** node control */
     abstract_synth * add_synth(const char * name, int id, node_position_constraint const & constraints);
-
     group * add_group(int id, node_position_constraint const & constraints);
     parallel_group * add_parallel_group(int id, node_position_constraint const & constraints);
 
     void free_node(server_node * node);
-
-    void group_free_all(abstract_group * group)
-    {
-        std::vector<server_node *, rt_pool_allocator<void*>> nodes_to_free;
-
-        group->apply_on_children( [&](server_node & node) {
-            nodes_to_free.push_back(&node);
-        });
-
-        for (server_node * node: nodes_to_free)
-            free_node(node);
-    }
-
-    void group_free_deep(abstract_group * group)
-    {
-        std::vector<server_node *, rt_pool_allocator<void*>> nodes_to_free;
-        group->apply_deep_on_children( [&](server_node & node) {
-            if (node.is_synth())
-                nodes_to_free.push_back(&node);
-        });
-        for (server_node * node: nodes_to_free)
-            free_node(node);
-    }
+    void group_free_all(abstract_group * group);
+    void group_free_deep(abstract_group * group);
 
     void node_pause(server_node * node)
     {
