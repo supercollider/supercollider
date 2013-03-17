@@ -136,7 +136,7 @@ SCErr SC_LibCmd::Perform(struct World *inWorld, int inSize, char *inData, ReplyA
 		err = kSCErr_Failed;
 	}
 	if (err && (inWorld->mLocalErrorNotification <= 0 && inWorld->mErrorNotification)) {
-		char errstr[25];
+		char errstr[128];
 		SC_ErrorString(err, errstr);
 		CallSendFailureCommand(inWorld, (char*)Name(), errstr, inReply);
 		scprintf("FAILURE IN SERVER %s %s\n", (char*)Name(), errstr);
