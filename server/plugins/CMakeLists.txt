@@ -227,7 +227,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 		message(FATAL_ERROR "libxt not found")
 	endif()
 
-	include_directories(X11_Xt_INCLUDE_PATH)
+	include_directories(${X11_Xt_INCLUDE_PATH})
 
 	foreach (ugen ${uiugens})
 		target_link_libraries(${ugen} ${X11_X11_LIB})
