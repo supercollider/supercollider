@@ -54,6 +54,11 @@ public:
         root_group_.add_ref();
     }
 
+    ~node_graph()
+    {
+        assert(root_group_.child_count() == 0);
+    }
+
     uint32_t synth_count(void) const
     {
         return synth_count_;
@@ -136,23 +141,24 @@ public:
     }
 
     template <typename Functor>
-    void remove_node(server_node * n, Functor const & doOnFree)
+    void remove_node(server_node * node, Functor const & doOnFree)
     {
-        if (!n->is_synth())
-            group_free_all(static_cast<abstract_group*>(n), doOnFree);
+        if (!node->is_synth())
+            group_free_all(static_cast<abstract_group*>(node), doOnFree);
 
-        release_node_id(n);
         /** \todo recursively remove nodes from node_set
          *        for now this is done by the auto-unlink hook
          * */
 
-        doOnFree(*n);
-        abstract_group * parent = n->parent_;
-        parent->remove_child(n);
-        if (n->is_synth())
+        doOnFree(*node);
+        abstract_group * parent = node->parent_;
+        parent->remove_child(node);
+        if (node->is_synth())
             synth_count_ -= 1;
         else
             group_count_ -= 1;
+
+        release_node_id(node);
     }
 
     void dump(std::string const & filename);

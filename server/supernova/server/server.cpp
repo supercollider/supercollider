@@ -97,6 +97,8 @@ nova_server::~nova_server(void)
     deactivate_audio();
 #endif
 
+    group_free_all(static_cast<abstract_group*>(find_node(0))); // free the root group
+
     scheduler<thread_init_functor>::terminate();
     io_interpreter.join_thread();
     instance = 0;
