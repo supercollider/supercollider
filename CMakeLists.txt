@@ -136,8 +136,6 @@ add_definitions(-DBOOST_CHRONO_HEADER_ONLY)
 option(NOVA_SIMD "Build with nova-simd support." ON)
 option(FINAL_BUILD "Build as single source file." OFF)
 
-option(CURL "Build with curl for remote file download." ON)
-
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
 option(SSE "Compile with support for SSE instructions.")
@@ -213,14 +211,6 @@ if(MSVC OR MINGW)
     set(MATH_LIBRARY "")
 else()
     find_library(MATH_LIBRARY m)
-endif()
-
-if(CURL)
-	find_package(CURL)
-	if(CURL_FOUND)
-		add_definitions("-DHAVE_LIBCURL")
-		include_directories(${CURL_INCLUDE_DIRS})
-	endif()
 endif()
 
 if(SYSTEM_BOOST)
