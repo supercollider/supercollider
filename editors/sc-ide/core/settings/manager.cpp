@@ -55,7 +55,7 @@ void Manager::initDefaults()
     setDefault("indentWidth", 4);
     setDefault("stepForwardEvaluation", false);
     setDefault("lineWrap", true);
-    setDefault("disableBlinkinCursor", false);
+    setDefault("disableBlinkingCursor", false);
 
     setDefault("blinkDuration", 600);
 
