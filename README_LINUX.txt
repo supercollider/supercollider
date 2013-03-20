@@ -53,10 +53,6 @@ build requirements
    http://www.X.org/
    X toolkit intrinsics
 
- * libicu
-   http://www.icu-project.org/
-   unicode libraries
-
 ------------------------------------------------------------------------
 build requirements (optional features)
 (most of these will be available in your linux distribution as packages )
@@ -297,4 +293,3 @@ software publically and freely available.
 ------------------------------------------------------------------------
 eof
 ------------------------------------------------------------------------
-
