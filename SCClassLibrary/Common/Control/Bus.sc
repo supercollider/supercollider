@@ -84,12 +84,14 @@ Bus {
 	}
 
 	get { arg action;
-		if(numChannels == 1, {
+		if(numChannels == 1) {
 			action = action ? { |vals| "Bus % index: % value: %.\n".postf(rate, index, vals); };
 			OSCpathResponder(server.addr,['/c_set',index], { arg time, r, msg;
 				action.value(msg.at(2)); r.remove }).add;
 			server.listSendMsg(["/c_get",index]);
-		}, {this.getn(action)});
+		} {
+			this.getn(numChannels, action)
+		};
 	}
 
 	getn { arg count, action;
