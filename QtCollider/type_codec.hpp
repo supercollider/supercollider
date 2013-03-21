@@ -49,7 +49,7 @@ namespace QtCollider {
 
 template <typename T> struct TypeCodec { };
 
-// Forwarding fomr QtCollider namespace to TypeCodec
+// Forwarding from QtCollider namespace to TypeCodec
 
 template <typename T> inline
 T read( PyrSlot *slot )
