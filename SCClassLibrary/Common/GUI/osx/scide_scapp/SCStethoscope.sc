@@ -7,7 +7,10 @@ SCStethoscope {
 
 
 	*new { arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
-		if(server.inProcess.not, { "scope works only with internal server".error; ^nil });		^super.newCopyArgs(server, numChannels, rate ? \audio).makeWindow(view)
+		numChannels = min(numChannels, 16);
+
+		if(server.inProcess.not, { "scope works only with internal server".error; ^nil });
+		^super.newCopyArgs(server, numChannels, rate ? \audio).makeWindow(view)
 		.index_(index ? 0).zoom_(zoom).allocBuffer(bufsize, bufnum).run;
 	}
 
