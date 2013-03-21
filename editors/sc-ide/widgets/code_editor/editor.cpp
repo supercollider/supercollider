@@ -793,6 +793,10 @@ void GenericCodeEditor::copyUpDown(bool up)
 void GenericCodeEditor::toggleOverwriteMode()
 {
     setOverwriteMode(!overwriteMode());
+
+    // FIXME: reset cursor to the same position in to force a repaint
+    //        there might be a nicer solution for this issue, though
+    setTextCursor(textCursor());
 }
 
 
