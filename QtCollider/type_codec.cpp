@@ -25,6 +25,7 @@
 #include "QObjectProxy.h"
 #include "widgets/QcTreeWidget.h"
 #include "primitives/prim_QPalette.hpp"
+#include "image.h"
 
 #include <PyrObject.h>
 #include <PyrKernel.h>
@@ -458,6 +459,29 @@ void TypeCodec<QcTreeWidget::ItemPtr>::write( PyrSlot *slot, const QcTreeWidget:
   PyrObject *obj = instantiateObject( gMainVMGlobals->gc, SC_CLASS(QTreeViewItem), 0, true, true );
   QcTreeWidget::Item::initialize( gMainVMGlobals, obj, item );
   SetObject( slot, obj );
+}
+
+QPixmap TypeCodec<QPixmap>::read( PyrSlot * slot )
+{
+    Image *image = reinterpret_cast<Image*>( slotRawPtr( slotRawObject(slot)->slots+0 ) );
+    if (image->isPainting()) {
+        qWarning("WARNING: QtCollider: can not use Image while being painted.");
+        return QPixmap();
+    }
+    return image->pixmap();
+}
+
+QPixmap TypeCodec<QPixmap>::safeRead( PyrSlot * slot )
+{
+    if (!isKindOfSlot(slot, SC_CLASS(QImage)))
+        return QPixmap();
+    else
+        return read(slot);
+}
+
+void TypeCodec<QPixmap>::write( PyrSlot *slot, const QPixmap & val )
+{
+    qWarning("WARNING: QtCollider: writing QPixmap to PyrSlot not supported.");
 }
 
 } // namespace QtCollider
