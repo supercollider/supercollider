@@ -233,7 +233,7 @@ MainWindow::MainWindow(Main * main) :
     QApplication::setWindowIcon(icon);
 
     updateWindowTitle();
-    applyCursorBlinkingSettings();
+    applyCursorBlinkingSettings(main->settings());
 }
 
 void MainWindow::createActions()
@@ -1264,16 +1264,15 @@ void MainWindow::showStatusMessage( QString const & string )
 
 void MainWindow::applySettings( Settings::Manager * settings )
 {
-    applyCursorBlinkingSettings();
+    applyCursorBlinkingSettings( settings );
 
     mPostDocklet->mPostWindow->applySettings(settings);
     mHelpBrowserDocklet->browser()->applySettings(settings);
     mCmdLine->applySettings(settings);
 }
 
-void MainWindow::applyCursorBlinkingSettings()
+void MainWindow::applyCursorBlinkingSettings( Settings::Manager * settings )
 {
-    Settings::Manager * settings = mMain->settings();
     const bool disableBlinkingCursor = settings->value("IDE/editor/disableBlinkingCursor").toBool();
     const int defaultCursorFlashTime = settings->defaultCursorFlashTime();
     QApplication::setCursorFlashTime( disableBlinkingCursor ? 0 : defaultCursorFlashTime );

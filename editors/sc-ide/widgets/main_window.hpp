@@ -202,7 +202,7 @@ private:
     void openSession( QString const & sessionName );
     bool checkFileExtension( const QString & fpath );
     void toggleInterpreterActions( bool enabled);
-    void applyCursorBlinkingSettings();
+    void applyCursorBlinkingSettings( Settings::Manager * );
 
     Main *mMain;
 
