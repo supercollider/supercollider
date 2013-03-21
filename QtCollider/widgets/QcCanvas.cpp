@@ -72,6 +72,18 @@ void QcCanvas::setBackground( const QColor &c )
       update();
 }
 
+Q_INVOKABLE void QcCanvas::setBackgroundImage( const QPixmap & pixmap, const QRectF & rect,
+                                               int tileMode, double opacity )
+{
+    _bkg_image.setPixmap( pixmap,
+                          rect,
+                          (QtCollider::ImagePainter::TileMode) tileMode,
+                          opacity );
+
+    if( !testAttribute(Qt::WA_WState_InPaintEvent) )
+        update();
+}
+
 void QcCanvas::refresh()
 {
   _repaintNeeded = true;
@@ -149,13 +161,16 @@ void QcCanvas::paintEvent( QPaintEvent *e )
     }
   }
 
-  QPainter p(this);
+  QPainter painter(this);
   QPalette plt(palette());
 
   if( _bkg.isValid() )
-      p.fillRect( e->rect(), _bkg );
+      painter.fillRect( e->rect(), _bkg );
 
-  if( _paint ) p.drawPixmap( e->rect(), _pixmap, e->rect() );
+  if (_bkg_image.isValid())
+      _bkg_image.paint( &painter );
+
+  if( _paint ) painter.drawPixmap( e->rect(), _pixmap, e->rect() );
 }
 
 void QcCanvas::timerEvent( QTimerEvent *e )

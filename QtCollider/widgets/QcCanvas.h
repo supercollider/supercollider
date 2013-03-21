@@ -22,6 +22,8 @@
 #ifndef QC_CANVAS_H
 #define QC_CANVAS_H
 
+#include "image_painter.h"
+
 #include <QWidget>
 #include <QPixmap>
 #include <QBasicTimer>
@@ -47,6 +49,8 @@ public:
   int frameCount() const { return _frameCount; }
   QColor background() const { return _bkg; }
   void setBackground( const QColor &c );
+  Q_INVOKABLE void setBackgroundImage( const QPixmap & pixmap, const QRectF & rect,
+                                       int tileMode, double opacity );
 public Q_SLOTS:
   void refresh();
   void clear();
@@ -79,6 +83,7 @@ private:
   int _meterFrames;
 
   QColor _bkg;
+  QtCollider::ImagePainter _bkg_image;
 };
 
 #endif
