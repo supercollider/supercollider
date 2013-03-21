@@ -477,60 +477,72 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
         // override to avoid entering a "soft" new line
         cursor.insertBlock();
         updateCursor = true;
-    }
-    else {
+    } else {
+        switch (e->key()) {
 
-    switch (e->key()) {
+        case Qt::Key_Delete:
+            if (e->modifiers() & Qt::META) {
+                cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+                cursor.removeSelectedText();
+            } else
+                QPlainTextEdit::keyPressEvent(e);
+            break;
 
-    case Qt::Key_Delete:
-        if (e->modifiers() & Qt::META) {
-            cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-            cursor.removeSelectedText();
-        } else
-            QPlainTextEdit::keyPressEvent(e);
-        break;
+        case Qt::Key_Backspace:
+            if (e->modifiers() & Qt::META) {
+                cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
+                cursor.removeSelectedText();
+            } else {
+                if ( !overwriteMode()
+                     || (cursor.positionInBlock() == 0)
+                     || cursor.hasSelection() ) {
+                    QPlainTextEdit::keyPressEvent(e);
+                } else {
+                    // in overwrite mode, backspace should insert a space
+                    cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
+                    QString selectedText = cursor.selectedText();
+                    if (selectedText == QString(" ") ||
+                        selectedText == QString("\t") ) {
+                        cursor.clearSelection();
+                    } else {
+                        cursor.insertText(QString(QChar(' ')));
+                        cursor.movePosition(QTextCursor::PreviousCharacter);
+                    }
+                }
+                updateCursor = true;
+            }
+            break;
 
-    case Qt::Key_Backspace:
-        if (e->modifiers() & Qt::META) {
-            cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
-            cursor.removeSelectedText();
-        } else {
-            QPlainTextEdit::keyPressEvent(e);
-            updateCursor = true;
+        case Qt::Key_Down:
+        {
+            if (cursor.block() == textDocument()->lastBlock()) {
+                QTextCursor::MoveMode moveMode = e->modifiers() & Qt::SHIFT ? QTextCursor::KeepAnchor
+                                                                            : QTextCursor::MoveAnchor;
+
+                cursor.movePosition(QTextCursor::EndOfBlock, moveMode);
+                setTextCursor(cursor);
+            } else
+                QPlainTextEdit::keyPressEvent(e);
+            break;
         }
-        break;
 
-    case Qt::Key_Down:
-    {
-        if (cursor.block() == textDocument()->lastBlock()) {
-            QTextCursor::MoveMode moveMode = e->modifiers() & Qt::SHIFT ? QTextCursor::KeepAnchor
-                                                                        : QTextCursor::MoveAnchor;
+        case Qt::Key_Up:
+        {
+            if (cursor.block() == textDocument()->firstBlock()) {
+                QTextCursor::MoveMode moveMode = e->modifiers() & Qt::SHIFT ? QTextCursor::KeepAnchor
+                                                                            : QTextCursor::MoveAnchor;
 
-            cursor.movePosition(QTextCursor::EndOfBlock, moveMode);
-            setTextCursor(cursor);
-        } else
+                cursor.movePosition(QTextCursor::StartOfBlock, moveMode);
+                setTextCursor(cursor);
+            } else
+                QPlainTextEdit::keyPressEvent(e);
+            break;
+        }
+
+        default:
             QPlainTextEdit::keyPressEvent(e);
-        break;
-    }
 
-    case Qt::Key_Up:
-    {
-        if (cursor.block() == textDocument()->firstBlock()) {
-            QTextCursor::MoveMode moveMode = e->modifiers() & Qt::SHIFT ? QTextCursor::KeepAnchor
-                                                                        : QTextCursor::MoveAnchor;
-
-            cursor.movePosition(QTextCursor::StartOfBlock, moveMode);
-            setTextCursor(cursor);
-        } else
-            QPlainTextEdit::keyPressEvent(e);
-        break;
-    }
-
-    default:
-        QPlainTextEdit::keyPressEvent(e);
-
-    } // switch (e->type())
-
+        }
     } // else...
 
     if (updateCursor) {
