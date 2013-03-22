@@ -72,7 +72,7 @@ void QcCanvas::setBackground( const QColor &c )
       update();
 }
 
-Q_INVOKABLE void QcCanvas::setBackgroundImage( const QPixmap & pixmap, const QRectF & rect,
+void QcCanvas::setBackgroundImage( const QPixmap & pixmap, const QRectF & rect,
                                                int tileMode, double opacity )
 {
     _bkg_image.setPixmap( pixmap, rect, tileMode, opacity );
