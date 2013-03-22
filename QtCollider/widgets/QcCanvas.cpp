@@ -75,10 +75,7 @@ void QcCanvas::setBackground( const QColor &c )
 Q_INVOKABLE void QcCanvas::setBackgroundImage( const QPixmap & pixmap, const QRectF & rect,
                                                int tileMode, double opacity )
 {
-    _bkg_image.setPixmap( pixmap,
-                          rect,
-                          (QtCollider::ImagePainter::TileMode) tileMode,
-                          opacity );
+    _bkg_image.setPixmap( pixmap, rect, tileMode, opacity );
 
     if( !testAttribute(Qt::WA_WState_InPaintEvent) )
         update();
@@ -168,7 +165,7 @@ void QcCanvas::paintEvent( QPaintEvent *e )
       painter.fillRect( e->rect(), _bkg );
 
   if (_bkg_image.isValid())
-      _bkg_image.paint( &painter );
+      _bkg_image.paint( &painter, rect() );
 
   if( _paint ) painter.drawPixmap( e->rect(), _pixmap, e->rect() );
 }
