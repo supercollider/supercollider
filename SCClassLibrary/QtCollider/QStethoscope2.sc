@@ -447,7 +447,7 @@ BusScopeSynth {
   // Encapsulate management of server resources
 
   var server, buffer, synthDefName, synth;
-  var playThread, playCond;
+  var playThread;
 
   *new { arg server;
     var instance;
@@ -495,29 +495,15 @@ BusScopeSynth {
     };
 
     playThread = fork {
-      var cond;
-      //("BufScopeSynth: waiting on previous synth...").postln;
-      if (playCond.notNil) { playCond.wait };
-      //postln("BufScopeSynth: got way.");
       synthDef.send(server);
       server.sync;
-      //postln("BufScopeSynth: synthdef sent.");
       synth = Synth.tail(RootNode(server), synthDef.name, synthArgs);
-      //postln("BufScopeSynth: made synth:" + synth.nodeID);
-      playCond = cond = Condition();
-      synth.onFree { |thisSynth|
-        //postln("BufScopeSynth: Synth freed:" + thisSynth.nodeID);
-        cond.test = true; cond.signal;
-        if (synth.notNil and: {synth.nodeID == thisSynth.nodeID}) { synth = nil; }
-      }
     }
   }
 
   stop {
     if (playThread.notNil) { playThread.stop; playThread = nil };
-    if (synth.notNil) {
-      synth.free; synth = nil
-    };
+    if (synth.notNil) { synth.free; synth = nil };
   }
 
   isRunning { ^playThread.notNil }
@@ -549,6 +535,5 @@ BusScopeSynth {
   doOnServerQuit {
     buffer = nil;
     synth = nil;
-    playCond = nil;
   }
 }
