@@ -13,14 +13,6 @@ QUserView : QView {
     ^Point(150,150);
   }
 
-  backgroundImage_ { arg image; this.setBackgroundImage(image) }
-
-  setBackgroundImage { arg image, tileMode=1, alpha=1.0, fromRect;
-    this.invokeMethod(\setBackgroundImage, [
-      image, fromRect ?? {Rect()}, tileMode.asInteger, alpha.asFloat
-    ]);
-  }
-
   drawingEnabled_ { arg boolean;
     // Allow setting the property apart from the instance variable
     // to optimize when drawFunc is nil. See drawFunc_ implementation.
