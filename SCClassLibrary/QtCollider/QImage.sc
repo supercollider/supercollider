@@ -461,38 +461,3 @@ QImage {
 		^this.primitiveFailed
 	}
 }
-
-/*
-	SCView:backgroundImage
-
-	modes :
-	1 - fixed to left, fixed to top
-	2 - horizontally tile, fixed to top
-	3 - fixed to right, fixed to top
-	4 - fixed to left, vertically tile
-	5 - horizontally tile, vertically tile
-	6 - fixed to right, vertically tile
-	7 - fixed to left, fixed to bottom
-	8 - horizontally tile, fixed to bottom
-	9 - fixed to right, fixed to bottom
-	10 - fit
-	11 - center, center (scale)
-	12 - center , fixed to top
-	13 - center , fixed to bottom
-	14 - fixed to left, center
-	15 - fixed to right, center
-	16 - center, center (no scale)
-*/
-
-/*
-+SCView {
-	backgroundImage_ { arg image, tileMode=1, alpha=1.0, fromRect;
-		this.setProperty(\backgroundImage, [image, tileMode, alpha, fromRect])
-	}
-	refreshInRect {|b|
-		_SCView_RefreshInRect
-		^this.primitiveFailed
-	}
-}
-*/
-
