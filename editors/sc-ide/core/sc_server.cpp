@@ -103,10 +103,12 @@ void ScServer::createActions(Settings::Manager * settings)
     settings->addAction( action, "synth-server-meter", synthServerCategory);
 
     mActions[ShowScope] = action = new QAction(tr("Show Scope"), this);
+    action->setShortcut(tr("Ctrl+Shift+M", "Show scope"));
     connect(action, SIGNAL(triggered()), this, SLOT(showScope()));
     settings->addAction( action, "synth-server-scope", synthServerCategory);
 
     mActions[ShowFreqScope] = action = new QAction(tr("Show Freqscope"), this);
+    action->setShortcut(tr("Ctrl+Alt+M", "Show freqscope"));
     connect(action, SIGNAL(triggered()), this, SLOT(showFreqScope()));
     settings->addAction( action, "synth-server-freqscope", synthServerCategory);
 
@@ -121,6 +123,7 @@ void ScServer::createActions(Settings::Manager * settings)
     settings->addAction( action, "synth-server-dump-nodes-with-controls", synthServerCategory);
 
     mActions[PlotTree] = action = new QAction(tr("Plot Node Tree"), this);
+    action->setShortcut(tr("Ctrl+Alt+T", "Plot node tree"));
     connect(action, SIGNAL(triggered()), this, SLOT(plotTree()));
     settings->addAction( action, "synth-server-plot-tree", synthServerCategory);
 
