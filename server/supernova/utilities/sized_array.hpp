@@ -19,6 +19,7 @@
 #ifndef UTILITIES_SIZED_ARRAY_HPP
 #define UTILITIES_SIZED_ARRAY_HPP
 
+#include <algorithm>
 #include <cassert>
 #include <memory>               /* std::allocator */
 #include <type_traits>
@@ -271,7 +272,7 @@ public:
         for (size_type i = 0; i != new_size; ++i)
             Allocator::construct(new_data+i, t);
 
-        std::copy(data_, data_+std::min(new_size, size_), new_data);
+        std::copy(data_, data_+(std::min)(new_size, size_), new_data);
 
         T * old_data = data_;
         data_ = new_data;

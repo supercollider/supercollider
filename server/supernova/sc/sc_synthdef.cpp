@@ -240,7 +240,7 @@ void sc_synthdef::read_synthdef(const char *& buffer, const char* buffer_end, in
 
 namespace {
 
-template <typename Alloc = std::allocator<int32_t> >
+template <typename Alloc = std::allocator<size_t> >
 class buffer_allocator
 {
     std::vector<size_t, Alloc> buffers; /* index: buffer id, value: last reference */

@@ -38,7 +38,7 @@ class sc_synthdef
 {
     typedef std::vector<float, aligned_allocator<float> > float_vector;
     typedef std::vector<char, aligned_allocator<char> > char_vector;
-    typedef std::map<symbol, int32_t, std::less<symbol>, aligned_allocator<symbol> > parameter_index_map_t;
+    typedef std::map<symbol, int32_t, std::less<symbol>, aligned_allocator<std::pair<symbol, int32_t>>> parameter_index_map_t;
 
 public:
     struct input_spec

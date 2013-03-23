@@ -184,7 +184,7 @@ void nova_server::free_node(server_node * node)
 
 void nova_server::group_free_all(abstract_group * group)
 {
-    std::vector<server_node *, rt_pool_allocator<void*>> nodes_to_free;
+    std::vector<server_node *, rt_pool_allocator<server_node*>> nodes_to_free;
 
     group->apply_on_children( [&](server_node & node) {
         nodes_to_free.push_back(&node);
@@ -196,7 +196,7 @@ void nova_server::group_free_all(abstract_group * group)
 
 void nova_server::group_free_deep(abstract_group * group)
 {
-    std::vector<server_node *, rt_pool_allocator<void*>> nodes_to_free;
+    std::vector<server_node *, rt_pool_allocator<server_node*>> nodes_to_free;
     group->apply_deep_on_children( [&](server_node & node) {
         if (node.is_synth())
             nodes_to_free.push_back(&node);
