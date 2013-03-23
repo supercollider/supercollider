@@ -60,11 +60,11 @@ void run_test_2(void)
 {
     int size = 1024;
 
-    std::vector<int, Alloc1> vec;
+    std::vector<int, typename Alloc1::template rebind<int>::other> vec;
     for (int i = 0; i != size; ++i)
         vec.push_back(-i);
 
-    sized_array<int, Alloc2> array(vec);
+    sized_array<int, typename Alloc2::template rebind<int>::other> array(vec);
 
     for (int i = 0; i != size; ++i)
         BOOST_REQUIRE_EQUAL( vec[i], array[i] );

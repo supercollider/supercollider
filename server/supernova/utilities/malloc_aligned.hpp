@@ -241,7 +241,7 @@ public:
     template< class U, class... Args >
     void construct(U * p, Args&& ... args)
     {
-        ::new(p) T(std::forward<Args>(args)...);
+        ::new(p) U(std::forward<Args>(args)...);
     }
 #endif
 

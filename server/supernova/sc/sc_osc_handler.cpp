@@ -686,8 +686,6 @@ void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error,
         return;
     }
 
-    udp_remote_endpoint_;
-
     if (overflow_vector.empty())
         handle_packet_async(recv_buffer_.begin(), bytes_transferred, make_shared<udp_endpoint>(udp_remote_endpoint_));
     else {
