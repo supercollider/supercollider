@@ -632,7 +632,7 @@ SynthDef {
 		var	lib, stream = CollStream(this.asBytes);
 		libname ?? { libname = \global };
 		lib = SynthDescLib.getLib(libname);
-		SynthDesc.readFile(stream, keepDef, lib.synthDescs);
+		lib.readStream(stream, keepDef);
 		desc = lib[name.asSymbol];
 		if(keepDef) { desc.def = this };
 		if(metadata.notNil) { desc.metadata = metadata };
