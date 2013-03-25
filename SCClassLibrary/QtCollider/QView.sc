@@ -94,12 +94,16 @@ QView : QObject {
   backgroundImage_ { arg image; this.setBackgroundImage(image) }
 
   setBackgroundImage { arg image, tileMode=1, alpha=1.0, fromRect;
-    this.invokeMethod(\setBackgroundImage, [
-			image,
-			fromRect ?? { if(image.notNil){image.bounds}{Rect()} },
-			tileMode.asInteger,
-			alpha.asFloat
-    ]);
+    if (image.notNil) {
+      this.invokeMethod(\setBackgroundImage, [
+        image,
+        fromRect ?? { image.bounds },
+        tileMode.asInteger,
+        alpha.asFloat
+      ]);
+    }{
+      this.invokeMethod(\removeBackgroundImage);
+    };
   }
 
   absoluteBounds {
