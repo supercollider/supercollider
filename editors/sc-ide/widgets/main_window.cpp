@@ -1335,7 +1335,6 @@ void MainWindow::showAbout()
             "&copy; James McCartney and others.<br>"
             "<h3>SuperCollider IDE</h3>"
             "&copy; Jakob Leben, Tim Blechmann and others.<br>"
-            "Development partially funded by Kiberpipa."
             ;
     aboutString = aboutString.arg(SC_VersionString().c_str());
 
