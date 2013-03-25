@@ -51,30 +51,39 @@ QPainter *imgPainter = 0;
 
 inline QC::Image * to_image( struct PyrObject * obj )
 {
-    return reinterpret_cast<QC::Image*>( slotRawPtr(obj->slots) );
+    SharedImage *shared_image_ptr =
+            reinterpret_cast<SharedImage*>( slotRawPtr(obj->slots) );
+    return shared_image_ptr->data();
 }
 
 inline QC::Image * to_image( PyrSlot * slot )
 {
-    return to_image( slotRawObject(slot) );
+    SharedImage *shared_image_ptr =
+            reinterpret_cast<SharedImage*>( slotRawPtr( slotRawObject(slot)->slots ) );
+    return shared_image_ptr->data();
 }
 
 int finalize_image_object( struct VMGlobals *g, struct PyrObject *obj )
 {
-  delete to_image( obj );
-  SetNil( obj->slots+0 );
-  return errNone;
+    SharedImage *shared_image_ptr =
+            reinterpret_cast<SharedImage*>( slotRawPtr(obj->slots) );
+    delete shared_image_ptr;
+    SetNil( obj->slots+0 );
+    return errNone;
 }
 
 void initialize_image_object( struct VMGlobals *g, struct PyrObject *obj, Image *image )
 {
     assert( IsNil( obj->slots ) && IsNil( obj->slots+1 ) );
-    SetPtr( obj->slots, image ); // dataptr
+    SharedImage *shared_image_ptr = new SharedImage(image);
+    SetPtr( obj->slots, shared_image_ptr ); // dataptr
     InstallFinalizer( g, obj, 1, finalize_image_object ); // finalizer
 }
 
 QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   QString path( QtCollider::get<QString>(a) );
   QPixmap pixmap(path);
   if (pixmap.isNull())
@@ -151,6 +160,8 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_NewEmpty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   if( NotInt(a) || NotInt(a+1) ) return errWrongType;
   int width = QtCollider::read<int>(a);
   int height = QtCollider::read<int>(a+1);
@@ -167,6 +178,8 @@ QC_LANG_PRIMITIVE( QImage_NewEmpty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_NewFromWindow, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   QObjectProxy *proxy = QtCollider::get(a);
   if( !proxy ) return errWrongType;
   QWidget *widget = qobject_cast<QWidget *>( proxy->object() );
@@ -191,6 +204,8 @@ QC_LANG_PRIMITIVE( QImage_NewFromWindow, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g
 
 QC_LANG_PRIMITIVE( QImage_Free, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   Image *image = to_image(r);
   if (image->isPainting()) {
       qcErrorMsg("QImage: can not free while being painted.");
@@ -203,6 +218,8 @@ QC_LANG_PRIMITIVE( QImage_Free, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_Width, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   Image *image = to_image(r);
   SetInt( r, image->width() );
   return errNone;
@@ -210,6 +227,8 @@ QC_LANG_PRIMITIVE( QImage_Width, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_Height, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   Image *image = to_image(r);
   SetInt( r, image->height() );
   return errNone;
@@ -217,6 +236,8 @@ QC_LANG_PRIMITIVE( QImage_Height, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_SetSize, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   if( NotInt(a) || NotInt(a+1) || NotInt(a+2) || NotInt(a+3) ) return errWrongType;
   QSize newSize( QtCollider::read<int>(a), QtCollider::read<int>(a+1) );
   int arMode = QtCollider::read<int>(a+2);
@@ -238,6 +259,8 @@ QC_LANG_PRIMITIVE( QImage_SetSize, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_Write, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   QString path = QC::get(a);
   QString format = QC::get(a+1);
 
@@ -295,6 +318,8 @@ QC_LANG_PRIMITIVE( QImage_UnsetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
 QC_LANG_PRIMITIVE( QImage_GetPixel, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   if( NotInt(a) || NotInt(a+1)) return errWrongType;
   int x = QC::read<int>(a);
   int y = QC::read<int>(a+1);
@@ -312,6 +337,8 @@ QC_LANG_PRIMITIVE( QImage_GetPixel, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_GetColor, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   if( NotInt(a) || NotInt(a+1)) return errWrongType;
   int x = QC::read<int>(a);
   int y = QC::read<int>(a+1);
@@ -329,6 +356,8 @@ QC_LANG_PRIMITIVE( QImage_GetColor, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_SetPixel, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   if( NotInt(a) || NotInt(a+1) || NotInt(a+2) ) return errWrongType;
   int pixel = QC::read<int>(a);
   int x = QC::read<int>(a+1);
@@ -347,6 +376,8 @@ QC_LANG_PRIMITIVE( QImage_SetPixel, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_SetColor, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   if ( NotObj(a) || slotRawObject(a)->classptr != SC_CLASS(Color)
        || NotInt(a+1) || NotInt(a+2) )
     return errWrongType;
@@ -367,6 +398,8 @@ QC_LANG_PRIMITIVE( QImage_SetColor, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_TransferPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
     if (!isKindOfSlot(a, class_int32array)) {
         qcErrorMsg("QImage: array argument is not a Int32Array");
         return errWrongType;
@@ -433,6 +466,8 @@ QC_LANG_PRIMITIVE( QImage_TransferPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *
 
 QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
   if( NotObj(a) || slotRawObject(a)->classptr != SC_CLASS(Color) )
       return errWrongType;
 
@@ -445,6 +480,8 @@ QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_Formats, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+
     if( NotInt(a) ) return errWrongType;
     int rw = QC::read<int>(a);
 

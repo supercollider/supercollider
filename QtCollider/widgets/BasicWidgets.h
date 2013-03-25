@@ -35,7 +35,7 @@ public:
   const QColor & background() const { return _bkg; }
   void setBackground( const QColor &c );
   Q_INVOKABLE
-  void setBackgroundImage( const QPixmap & pixmap, const QRectF & rect,
+  void setBackgroundImage( const QtCollider::SharedImage & image, const QRectF & rect,
                            int tileMode, double opacity );
 protected:
   virtual void paintEvent( QPaintEvent * );

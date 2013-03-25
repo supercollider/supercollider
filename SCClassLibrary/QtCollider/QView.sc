@@ -95,7 +95,10 @@ QView : QObject {
 
   setBackgroundImage { arg image, tileMode=1, alpha=1.0, fromRect;
     this.invokeMethod(\setBackgroundImage, [
-      image, fromRect ?? {Rect()}, tileMode.asInteger, alpha.asFloat
+			image,
+			fromRect ?? { if(image.notNil){image.bounds}{Rect()} },
+			tileMode.asInteger,
+			alpha.asFloat
     ]);
   }
 
