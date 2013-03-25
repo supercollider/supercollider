@@ -72,10 +72,10 @@ void QcCanvas::setBackground( const QColor &c )
       update();
 }
 
-void QcCanvas::setBackgroundImage( const QPixmap & pixmap, const QRectF & rect,
-                                               int tileMode, double opacity )
+void QcCanvas::setBackgroundImage( const QtCollider::SharedImage & image, const QRectF & rect,
+                                   int tileMode, double opacity )
 {
-    _bkg_image.setPixmap( pixmap, rect, tileMode, opacity );
+    _bkg_image.setImage( image, rect, tileMode, opacity );
 
     if( !testAttribute(Qt::WA_WState_InPaintEvent) )
         update();

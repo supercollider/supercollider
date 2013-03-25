@@ -23,6 +23,7 @@
 #define QT_COLLIDER_TYPE_CODEC_INCLUDED
 
 #include "widgets/QcTreeWidget.h"
+#include "image.h"
 
 #include <PyrSlot.h>
 
@@ -38,7 +39,6 @@
 #include <QColor>
 #include <QFont>
 #include <QPalette>
-#include <QPixmap>
 #include <QWidget>
 #include <QVector>
 #include <QVariantList>
@@ -392,11 +392,11 @@ template <> struct TypeCodec<QcTreeWidget::ItemPtr>
   static void write( PyrSlot *slot, const QcTreeWidget::ItemPtr & );
 };
 
-template <> struct TypeCodec<QPixmap>
+template <> struct TypeCodec<SharedImage>
 {
-    static QPixmap read( PyrSlot * slot );
-    static QPixmap safeRead( PyrSlot * slot );
-    static void write ( PyrSlot *slot, const QPixmap & val );
+    static SharedImage read( PyrSlot * slot );
+    static SharedImage safeRead( PyrSlot * slot );
+    static void write ( PyrSlot *slot, SharedImage image );
 };
 
 template <> struct TypeCodec< QVector<int> >

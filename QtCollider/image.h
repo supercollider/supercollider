@@ -24,6 +24,8 @@
 
 #include <QImage>
 #include <QPixmap>
+#include <QSharedPointer>
+#include <QMetaType>
 #include <cassert>
 
 namespace QtCollider {
@@ -102,27 +104,37 @@ public:
     int width() const
     {
         switch (m_state) {
-        case Null:
-            return 0;
         case ImageState:
             return m_image.width();
         case PixmapState:
             return m_pixmap.width();
+        default:
+            return 0;
         }
-        return 0;
     }
 
     int height() const
     {
         switch (m_state) {
-        case Null:
-            return 0;
         case ImageState:
             return m_image.height();
         case PixmapState:
             return m_pixmap.height();
+        default:
+            return 0;
         }
-        return 0;
+    }
+
+    QRect rect() const
+    {
+        switch (m_state) {
+        case ImageState:
+            return m_image.rect();
+        case PixmapState:
+            return m_pixmap.rect();
+        default:
+            return QRect();
+        }
     }
 
     bool isPainting() const { return m_painting; }
@@ -136,6 +148,10 @@ private:
     bool m_painting;
 };
 
+typedef QSharedPointer<QtCollider::Image> SharedImage;
+
 } // namespace QtCollider
+
+Q_DECLARE_METATYPE( QtCollider::SharedImage );
 
 #endif // QT_COLLIDER_IMAGE_INCLUDED

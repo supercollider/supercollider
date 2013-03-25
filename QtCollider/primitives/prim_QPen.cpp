@@ -645,11 +645,10 @@ QC_QPEN_PRIMITIVE( QPen_StringInRect, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    PyrSlot *imgSlot = a+1;
-    if( NotObj(imgSlot) || slotRawObject(imgSlot)->classptr != SC_CLASS(QImage) )
+    QtCollider::SharedImage image = QtCollider::get(a+1);
+    if (!image)
       return errWrongType;
 
-    QtCollider::Image *image = reinterpret_cast<Image*>( slotRawPtr(slotRawObject(imgSlot)->slots) );
     if (image->isPainting()) {
         qcErrorMsg("QImage: can not draw while being painted.");
         return errFailed;
@@ -692,11 +691,10 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_QPEN_PRIMITIVE( QPen_TileImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    PyrSlot *imgSlot = a+1;
-    if( NotObj(imgSlot) || slotRawObject(imgSlot)->classptr != SC_CLASS(QImage) )
+    QtCollider::SharedImage image = QtCollider::get(a+1);
+    if (!image)
       return errWrongType;
 
-    QtCollider::Image *image = reinterpret_cast<Image*>( slotRawPtr(slotRawObject(imgSlot)->slots) );
     if (image->isPainting()) {
         qcErrorMsg("QImage: can not draw while being painted.");
         return errFailed;

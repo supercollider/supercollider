@@ -461,27 +461,23 @@ void TypeCodec<QcTreeWidget::ItemPtr>::write( PyrSlot *slot, const QcTreeWidget:
   SetObject( slot, obj );
 }
 
-QPixmap TypeCodec<QPixmap>::read( PyrSlot * slot )
+SharedImage TypeCodec<SharedImage>::read( PyrSlot * slot )
 {
-    Image *image = reinterpret_cast<Image*>( slotRawPtr( slotRawObject(slot)->slots+0 ) );
-    if (image->isPainting()) {
-        qWarning("WARNING: QtCollider: can not use Image while being painted.");
-        return QPixmap();
-    }
-    return image->pixmap();
+    SharedImage *ptr = reinterpret_cast<SharedImage*>( slotRawPtr( slotRawObject(slot)->slots+0 ) );
+    return *ptr;
 }
 
-QPixmap TypeCodec<QPixmap>::safeRead( PyrSlot * slot )
+SharedImage TypeCodec<SharedImage>::safeRead( PyrSlot * slot )
 {
     if (!isKindOfSlot(slot, SC_CLASS(QImage)))
-        return QPixmap();
+        return SharedImage();
     else
         return read(slot);
 }
 
-void TypeCodec<QPixmap>::write( PyrSlot *slot, const QPixmap & val )
+void TypeCodec<SharedImage>::write( PyrSlot *slot, SharedImage image )
 {
-    qWarning("WARNING: QtCollider: writing QPixmap to PyrSlot not supported.");
+    qWarning("WARNING: QtCollider: writing SharedImage to PyrSlot not supported.");
 }
 
 } // namespace QtCollider

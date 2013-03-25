@@ -49,7 +49,7 @@ public:
   int frameCount() const { return _frameCount; }
   QColor background() const { return _bkg; }
   void setBackground( const QColor &c );
-  Q_INVOKABLE void setBackgroundImage( const QPixmap & pixmap, const QRectF & rect,
+  Q_INVOKABLE void setBackgroundImage( const QtCollider::SharedImage & image, const QRectF & rect,
                                        int tileMode, double opacity );
 public Q_SLOTS:
   void refresh();

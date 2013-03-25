@@ -22,8 +22,10 @@
 #ifndef QT_COLLIDER_IMAGE_PAINTER_INCLUDED
 #define QT_COLLIDER_IMAGE_PAINTER_INCLUDED
 
+#include "../image.h"
+#include "../debug.h"
+
 #include <QPainter>
-#include <QPixmap>
 
 namespace QtCollider {
 
@@ -45,7 +47,7 @@ struct ImagePainter
         StretchVertically
     };
 
-    QPixmap pixmap;
+    SharedImage image;
     QRectF sourceRect;
     HorizontalMode horizontalMode;
     VerticalMode verticalMode;
@@ -59,19 +61,29 @@ struct ImagePainter
         opacity(1.0)
     {}
 
-    bool isValid() const { return !pixmap.isNull(); }
+    bool isValid() const { return !image.isNull(); }
 
-    void setPixmap( const QPixmap & pixmap, const QRectF & rect = QRectF(),
+    void setImage( const SharedImage & image, const QRectF & rect = QRectF(),
                     int tileMode = 1, qreal opacity = 1.0 )
     {
-        this->pixmap = pixmap;
-        this->sourceRect = rect.isNull() ? pixmap.rect() : rect;
+        this->image = image;
+        this->sourceRect = rect;
         this->opacity = opacity;
         setTileMode(tileMode);
     }
 
     void paint ( QPainter * painter, const QRectF & targetRect )
     {
+        if (!image)
+            return;
+
+        if (image->isPainting()) {
+            qcErrorMsg("Can not draw image while being painted.");
+            return;
+        }
+
+        const QPixmap & pixmap = image->pixmap();
+
         if (sourceRect.isNull() || targetRect.isNull())
             return;
 
