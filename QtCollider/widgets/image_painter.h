@@ -72,6 +72,8 @@ struct ImagePainter
         setTileMode(tileMode);
     }
 
+    void clear() { image.clear(); }
+
     void paint ( QPainter * painter, const QRectF & targetRect )
     {
         if (!image)

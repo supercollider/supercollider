@@ -37,6 +37,9 @@ public:
   Q_INVOKABLE
   void setBackgroundImage( const QtCollider::SharedImage & image, const QRectF & rect,
                            int tileMode, double opacity );
+  Q_INVOKABLE
+  void removeBackgroundImage() { _bkg_image.clear(); update(); }
+
 protected:
   virtual void paintEvent( QPaintEvent * );
 
