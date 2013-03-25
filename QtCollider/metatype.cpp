@@ -44,6 +44,7 @@ void MetaType::initAll()
   qRegisterMetaType<QcTreeWidget::ItemPtr>();
   qRegisterMetaType< QVector<double> >();
   qRegisterMetaType< QVector<int> >();
+  qRegisterMetaType<QPixmap>();
 
   gMetaTypes.reserve(20);
 
@@ -67,6 +68,7 @@ void MetaType::initAll()
   qc_init_metatype<QWidget*>();
   qc_init_metatype<PyrObject*>();
   qc_init_metatype<QcTreeWidget::ItemPtr>();
+  qc_init_metatype<QPixmap>();
   qc_init_metatype< QVector<double> >();
   qc_init_metatype< QVector<int> >();
   qc_init_metatype< QVariantList >();
@@ -130,6 +132,9 @@ MetaType *MetaType::find( PyrSlot *slot )
       }
       else if( isKindOfSlot( slot, SC_CLASS(QTreeViewItem) ) ) {
         return metaType<QcTreeWidget::ItemPtr>();
+      }
+      else if( isKindOfSlot( slot, SC_CLASS(QImage) ) ) {
+          return metaType<QPixmap>();
       }
       else {
         QString className = TypeCodec<QString>::read( &slotRawObject(slot)->classptr->name );

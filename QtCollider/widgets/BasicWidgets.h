@@ -24,6 +24,7 @@
 
 #include "QcCanvas.h"
 #include "../layouts/classic_layouts.hpp"
+#include "image_painter.h"
 
 class QcSimpleWidget : public QWidget
 {
@@ -33,12 +34,15 @@ class QcSimpleWidget : public QWidget
 public:
   const QColor & background() const { return _bkg; }
   void setBackground( const QColor &c );
-
+  Q_INVOKABLE
+  void setBackgroundImage( const QPixmap & pixmap, const QRectF & rect,
+                           int tileMode, double opacity );
 protected:
   virtual void paintEvent( QPaintEvent * );
 
 private:
   QColor _bkg;
+  QtCollider::ImagePainter _bkg_image;
 };
 
 class QcDefaultWidget : public QcSimpleWidget

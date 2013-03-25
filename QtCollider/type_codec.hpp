@@ -38,6 +38,7 @@
 #include <QColor>
 #include <QFont>
 #include <QPalette>
+#include <QPixmap>
 #include <QWidget>
 #include <QVector>
 #include <QVariantList>
@@ -48,7 +49,7 @@ namespace QtCollider {
 
 template <typename T> struct TypeCodec { };
 
-// Forwarding fomr QtCollider namespace to TypeCodec
+// Forwarding from QtCollider namespace to TypeCodec
 
 template <typename T> inline
 T read( PyrSlot *slot )
@@ -389,6 +390,13 @@ template <> struct TypeCodec<QcTreeWidget::ItemPtr>
   static QcTreeWidget::ItemPtr read( PyrSlot *slot );
 
   static void write( PyrSlot *slot, const QcTreeWidget::ItemPtr & );
+};
+
+template <> struct TypeCodec<QPixmap>
+{
+    static QPixmap read( PyrSlot * slot );
+    static QPixmap safeRead( PyrSlot * slot );
+    static void write ( PyrSlot *slot, const QPixmap & val );
 };
 
 template <> struct TypeCodec< QVector<int> >

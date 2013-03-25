@@ -91,6 +91,14 @@ QView : QObject {
     this.background = color;
   }
 
+  backgroundImage_ { arg image; this.setBackgroundImage(image) }
+
+  setBackgroundImage { arg image, tileMode=1, alpha=1.0, fromRect;
+    this.invokeMethod(\setBackgroundImage, [
+      image, fromRect ?? {Rect()}, tileMode.asInteger, alpha.asFloat
+    ]);
+  }
+
   absoluteBounds {
     ^this.bounds.moveToPoint( this.mapToGlobal( 0@0 ) );
   }

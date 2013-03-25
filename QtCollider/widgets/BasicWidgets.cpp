@@ -38,12 +38,22 @@ void QcSimpleWidget::setBackground( const QColor &c )
   update();
 }
 
+void QcSimpleWidget::setBackgroundImage( const QPixmap & pixmap, const QRectF & rect,
+                                         int tileMode, double opacity )
+{
+    _bkg_image.setPixmap( pixmap, rect, tileMode, opacity );
+    update();
+}
+
 void QcSimpleWidget::paintEvent( QPaintEvent *e )
 {
-  if (!_bkg.isValid()) return;
+  QPainter painter(this);
 
-  QPainter p(this);
-  p.fillRect(e->rect(), _bkg);
+  if (_bkg.isValid())
+      painter.fillRect(e->rect(), _bkg);
+
+  if (_bkg_image.isValid())
+      _bkg_image.paint( &painter, rect() );
 }
 
 class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>

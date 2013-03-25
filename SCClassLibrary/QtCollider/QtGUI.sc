@@ -83,7 +83,7 @@ QtGUI {
   *pen { ^QPen }
 
   *font { ^QFont }
-  *image { ^this.notImplemented( "Image" ) }
+  *image { ^QImage }
 
   *speech { ^'Speech'.asClass }
 
