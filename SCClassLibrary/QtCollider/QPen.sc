@@ -286,6 +286,16 @@ QPen {
     this.stringInRect( string, rect, font, color, QAlignment(\right) );
   }
 
+  *drawImage { arg target, image, source, operation = 'sourceOver', opacity = 1.0;
+    operation = QImage.compositingOperations.indexOf(operation) ? 0;
+    this.prDrawImage(target, image, source, operation, opacity);
+  }
+
+  *tileImage { arg target, image, source, operation = 'sourceOver', opacity = 1.0;
+    operation = QImage.compositingOperations.indexOf(operation) ? 0;
+    this.prTileImage(target, image, source, operation, opacity);
+  }
+
 //---------------------- PRIVATE! -- Painter on/off-----------------------------
 
   *prBegin { arg aQView;
@@ -295,6 +305,16 @@ QPen {
 
   *prEnd {
     _QPen_End
+    ^this.primitiveFailed;
+  }
+
+  *prDrawImage { arg target, image, source, operation, opacity;
+    _QPen_DrawImage
+    ^this.primitiveFailed;
+  }
+
+  *prTileImage { arg target, image, source, operation, opacity;
+    _QPen_TileImage
     ^this.primitiveFailed;
   }
 

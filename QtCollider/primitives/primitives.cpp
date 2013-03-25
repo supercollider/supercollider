@@ -36,6 +36,7 @@ void defineQPenPrimitives();
 void defineMiscPrimitives();
 void defineQWidgetPrimitives();
 void defineQPalettePrimitives();
+void defineQImagePrimitives();
 
 void initPrimitives () {
   QtCollider::init();
@@ -47,6 +48,7 @@ void initPrimitives () {
   defineQPenPrimitives();
   defineMiscPrimitives();
   defineQPalettePrimitives();
+  defineQImagePrimitives();
 
 #define QC_DO_SYMBOL(SYM) sym_##SYM = getsym(#SYM);
 QC_DO_SYMBOLS
