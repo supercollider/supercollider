@@ -38,10 +38,7 @@ METHOD:: setBoth
 SUBSECTION:: Appearance
 
 METHOD:: align
-	The alignment of the displayed text.
-
-	argument::
-		One of the following symbols: \centered, \left, or \right.
+	The alignment of the displayed text. See link::Reference/gui_alignments:: for possible values.
 
 METHOD:: font
 	The font used to display the text.
