@@ -63,6 +63,37 @@ inline QC::Image * to_image( PyrSlot * slot )
     return shared_image_ptr->data();
 }
 
+inline QRgb color_to_pixel( const QColor & color )
+{
+    int r, g, b, a;
+    color.getRgb( &r, &g, &b, &a );
+    qreal k = a / 255.f;
+    r *= k;
+    g *= k;
+    b *= k;
+    QRgb pixel = (a << 24) | (r << 16) | (g << 8) | b;
+    return pixel;
+}
+
+inline QColor pixel_to_color( QRgb pixel )
+{
+    int r, g, b, a;
+    int mask = 0xFF;
+    a = pixel >> 24 & mask;
+    r = pixel >> 16 & mask;
+    g = pixel << 8 & mask;
+    b = pixel & mask;
+    if ( a > 0 ) {
+        qreal k = a > 0 ? 255.f / a : 0.f;
+        r *= k;
+        g *= k;
+        b *= k;
+        return QColor(r,g,b,a);
+    }
+    else
+        return QColor(0,0,0,0);
+}
+
 int finalize_image_object( struct VMGlobals *g, struct PyrObject *obj )
 {
     SharedImage *shared_image_ptr =
@@ -362,7 +393,7 @@ QC_LANG_PRIMITIVE( QImage_GetColor, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     return errIndexOutOfRange;
 
   QRgb *line = reinterpret_cast<QRgb*>( image.scanLine(y) );
-  QC::set(r, QColor( line[x] ) );
+  QC::set(r, pixel_to_color(line[x]) );
 
   return errNone;
 }
@@ -404,7 +435,7 @@ QC_LANG_PRIMITIVE( QImage_SetColor, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     return errIndexOutOfRange;
 
   QRgb *line = reinterpret_cast<QRgb*>( image.scanLine(y) );
-  line[x] = color.rgba();
+  line[x] = color_to_pixel(color);
 
   return errNone;
 }
@@ -486,7 +517,7 @@ QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   QColor color = QC::read<QColor>(a);
   QImage &image = to_image(r)->image();
-  image.fill(color.rgba());
+  image.fill( color_to_pixel(color) );
 
   return errNone;
 }
@@ -513,6 +544,24 @@ QC_LANG_PRIMITIVE( QImage_Formats, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     return errNone;
 }
 
+QC_LANG_PRIMITIVE( QImage_PixelToColor, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+    if( NotInt(a) ) return errWrongType;
+    QRgb pixel = static_cast<QRgb>( QC::read<int>(a) );
+    QC::set( r, pixel_to_color(pixel) );
+    return errNone;
+}
+
+QC_LANG_PRIMITIVE( QImage_ColorToPixel, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+   if ( NotObj(a) || slotRawObject(a)->classptr != SC_CLASS(Color) )
+       return errWrongType;
+   QColor color = QC::read<QColor>(a);
+   int pixel = static_cast<int>( color_to_pixel(color) );
+   QC::set( r, pixel );
+   return errNone;
+}
+
 void defineQImagePrimitives()
 {
   LangPrimitiveDefiner definer;
@@ -536,6 +585,8 @@ void defineQImagePrimitives()
   definer.define<QImage_TransferPixels>();
   definer.define<QImage_Fill>();
   definer.define<QImage_Formats>();
+  definer.define<QImage_PixelToColor>();
+  definer.define<QImage_ColorToPixel>();
 }
 
 } // namespace QtCollider

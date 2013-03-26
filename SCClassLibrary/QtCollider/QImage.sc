@@ -146,21 +146,13 @@ QImage {
 	}
 
 	*colorToPixel { arg color;
-		^(
-			((color.alpha * 255).asInteger & 16r000000FF << 24) |
-			((color.red * 255).asInteger & 16r000000FF << 16) |
-			((color.green * 255).asInteger & 16r000000FF << 8) |
-			((color.blue * 255).asInteger & 16r000000FF)
-		);
+		_QImage_ColorToPixel;
+		^this.primitiveFailed;
 	}
 
 	*pixelToColor { arg pixel;
-		^ Color.new255 (
-			(pixel >> 16 & 16r000000FF),
-			(pixel >> 8 & 16r000000FF),
-			(pixel & 16r000000FF),
-			(pixel >> 24 & 16r000000FF)
-		)
+		_QImage_PixelToColor;
+		^this.primitiveFailed;
 	}
 
 	// Instance methods
