@@ -56,6 +56,7 @@ void Manager::initDefaults()
     setDefault("stepForwardEvaluation", false);
     setDefault("lineWrap", true);
     setDefault("disableBlinkingCursor", false);
+    setDefault("autoPair", false);
 
     setDefault("blinkDuration", 600);
 

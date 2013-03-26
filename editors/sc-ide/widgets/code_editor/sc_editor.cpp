@@ -66,6 +66,7 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
     mBracketHighlight = settings->value("colors/matchingBrackets").value<QTextCharFormat>();
     mBracketMismatchFormat = settings->value("colors/mismatchedBrackets").value<QTextCharFormat>();
     mStepForwardEvaluation = settings->value("stepForwardEvaluation").toBool();
+    mAutoPair = settings->value("autoPair").toBool();
 
     settings->endGroup();
 }
@@ -113,16 +114,21 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         return;
     }
 
-    switch (e->key()) {
-    // auto-pair ', ", (, {, [
-    case Qt::Key_Apostrophe:
-    case Qt::Key_BraceLeft:
-    case Qt::Key_BracketLeft:
-    case Qt::Key_ParenLeft:
-    case Qt::Key_QuoteDbl: {
-        keyAutoPair(e);
-        return;
+    if (mAutoPair) {
+        switch (e->key()) {
+        case Qt::Key_Apostrophe:
+        case Qt::Key_QuoteDbl:
+        case Qt::Key_BraceLeft:
+        case Qt::Key_BracketLeft:
+        case Qt::Key_ParenLeft:
+            keyAutoPair(e);
+            return;
+        default:
+            break;
+        }
     }
+
+    switch (e->key()) {
     case Qt::Key_Home:
     {
         Qt::KeyboardModifiers mods(e->modifiers());
@@ -1185,7 +1191,7 @@ void ScCodeEditor::evaluateLine()
         text = cursor.selectedText();
     else {
         text = cursor.block().text();
-    
+
         if( mStepForwardEvaluation ) {
             QTextCursor newCursor = cursor;
             newCursor.movePosition(QTextCursor::NextBlock);
