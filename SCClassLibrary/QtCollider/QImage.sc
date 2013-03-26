@@ -1,18 +1,8 @@
 /*
-	Port to Qt of the SCImage class.
-	Some methods are verbatim, no methods
-	were harmed during porting (I hope).
-
-	Currently there are no equivalent for
-	SCImageFilter or SCImageKernel.
-*/
-
-/*
-	TODO:
-		- check representations
-		- tileInRect
-		- on screen interpolations (?)
-		- lock/unlockFocus (?)
+TODO:
+- filtering
+- lock/unlockFocus (QPen stack)
+- accelerated (control over QImage/QPixmap conversion; necessary?)
 */
 
 QImage {
@@ -175,9 +165,6 @@ QImage {
 	smooth { _QImage_HasSmoothTransformation; ^this.primitiveFailed }
 	smooth_ { arg smooth; _QImage_SetSmoothTransformation; ^this.primitiveFailed }
 
-	accelerated { "accelerated not implemented".warn }
-	accelerated_ { arg aBool; "accelerated not implemented".warn }
-
 	url_ { arg newURL;
 		if(newURL.isKindOf(String), {
 			url = newURL.standardizePath.replace(" ", "%20");
@@ -281,12 +268,6 @@ QImage {
 		});
 		^new
 	}
-
-	crop { arg aRect; "crop not implemented".warn }
-	invert { "invert not implemented".warn }
-
-	lockFocus { "lockFocus not implemented".warn }
-	unlockFocus { "unlockFocus not implemented".warn }
 
 	draw { arg aFunction;
 		this.prSetPainter;
