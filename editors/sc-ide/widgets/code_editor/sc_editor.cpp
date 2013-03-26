@@ -114,6 +114,15 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
     }
 
     switch (e->key()) {
+    // auto-pair ', ", (, {, [
+    case Qt::Key_Apostrophe:
+    case Qt::Key_BraceLeft:
+    case Qt::Key_BracketLeft:
+    case Qt::Key_ParenLeft:
+    case Qt::Key_QuoteDbl: {
+        keyAutoPair(e);
+        return;
+    }
     case Qt::Key_Home:
     {
         Qt::KeyboardModifiers mods(e->modifiers());
@@ -180,6 +189,50 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
     default:
         GenericCodeEditor::keyPressEvent(e);
     }
+
+    mAutoCompleter->keyPress(e);
+}
+
+void ScCodeEditor::keyAutoPair( QKeyEvent *e)
+{
+    QString key = e->text();
+    QString nextKey = e->text();
+
+    switch (e->key()) {
+    case Qt::Key_BraceLeft: {
+        nextKey = "}";
+        break;
+    }
+    case Qt::Key_BracketLeft: {
+        nextKey = "]";
+        break;
+    }
+    case Qt::Key_ParenLeft: {
+        nextKey = ")";
+        break;
+    }
+    default:
+        break;
+    }
+
+    QTextCursor cursor = textCursor();
+    if (cursor.hasSelection()) {
+        int start = cursor.selectionStart();
+        int end = cursor.selectionEnd();
+
+        cursor.beginEditBlock();
+        cursor.setPosition(start);
+        cursor.insertText(key);
+        cursor.setPosition(end + 1);
+        cursor.insertText(nextKey);
+        cursor.endEditBlock();
+    } else {
+        GenericCodeEditor::keyPressEvent(e);
+        cursor.insertText(nextKey);
+        cursor.movePosition(QTextCursor::PreviousCharacter);
+    }
+
+    setTextCursor(cursor);
 
     mAutoCompleter->keyPress(e);
 }
