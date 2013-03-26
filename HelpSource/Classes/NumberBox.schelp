@@ -113,7 +113,7 @@ METHOD:: align
 	The alignment of the displayed value.
 
 	argument::
-		One of the following symbols: \centered, \left, or \right.
+		One of the following symbols: \center, \left, or \right.
 
 METHOD:: stringColor
 	The color used to display the value before it is ever changed by user interaction.
