@@ -24,6 +24,7 @@
 
 #include <QImage>
 #include <QPixmap>
+#include <QPainter>
 #include <QSharedPointer>
 #include <QMetaType>
 #include <cassert>
@@ -135,6 +136,52 @@ public:
             return m_pixmap.rect();
         default:
             return QRect();
+        }
+    }
+
+    void resize( const QSize &new_size, int resize_mode )
+    {
+        assert(!m_painting);
+
+        if (m_state == Null)
+            return;
+
+        switch (resize_mode) {
+        case 0:
+        {
+            if (m_state == ImageState) {
+                QImage new_image( new_size, QImage::Format_ARGB32_Premultiplied );
+                new_image.fill( Qt::transparent );
+                QPainter painter(&new_image);
+                painter.drawImage( QPointF(0,0), m_image );
+                painter.end();
+                m_image = new_image;
+            }
+            else {
+                QPixmap new_pixmap( new_size );
+                new_pixmap.fill( Qt::transparent );
+                QPainter painter(&new_pixmap);
+                painter.drawPixmap( QPointF(0,0), m_pixmap );
+                painter.end();
+                m_pixmap = new_pixmap;
+            }
+            break;
+        }
+        case 1:
+        case 2:
+        case 3:
+        {
+            Qt::AspectRatioMode aspectRatioMode = (Qt::AspectRatioMode)(resize_mode - 1);
+            if (m_state == ImageState) {
+                m_image = m_image.scaled( new_size, aspectRatioMode, transformationMode );
+            }
+            else {
+                m_pixmap = m_pixmap.scaled( new_size, aspectRatioMode, transformationMode );
+            }
+            break;
+        }
+        default:
+            break;
         }
     }
 
