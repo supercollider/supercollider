@@ -81,7 +81,7 @@ void EditorPage::load( Manager *s )
     ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation").toBool() );
     ui->editorLineWrap->setChecked( s->value("lineWrap").toBool() );
     ui->disableBlinkingCursor->setChecked( s->value("disableBlinkingCursor").toBool() );
-
+    ui->autoPair->setChecked( s->value("autoPair").toBool() );
     ui->blinkDuration->setValue( s->value("blinkDuration").toInt() );
 
     s->beginGroup("font");
@@ -222,6 +222,7 @@ void EditorPage::store( Manager *s )
     s->setValue("stepForwardEvaluation", ui->stepForwardEvaluation->isChecked());
     s->setValue("lineWrap", ui->editorLineWrap->isChecked());
     s->setValue("disableBlinkingCursor", ui->disableBlinkingCursor->isChecked());
+    s->setValue("autoPair", ui->autoPair->isChecked());
 
     s->setValue("blinkDuration", ui->blinkDuration->value());
 

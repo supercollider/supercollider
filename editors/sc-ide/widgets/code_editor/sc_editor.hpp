@@ -109,6 +109,7 @@ private:
     bool mSpaceIndent;
     bool mStepForwardEvaluation;
     int mBlinkDuration;
+    bool mAutoPair;
     QTextCharFormat mBracketHighlight;
     QTextCharFormat mBracketMismatchFormat;
 
