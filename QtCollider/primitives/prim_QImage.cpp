@@ -216,6 +216,23 @@ QC_LANG_PRIMITIVE( QImage_Free, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( QImage_HasSmoothTransformation, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    Image *image = to_image(r);
+    QC::write<bool>( r, image->transformationMode == Qt::SmoothTransformation );
+    return errNone;
+}
+
+QC_LANG_PRIMITIVE( QImage_SetSmoothTransformation, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    bool smooth = QC::get(a);
+    Image *image = to_image(r);
+    image->transformationMode = smooth ? Qt::SmoothTransformation : Qt::FastTransformation;
+    return errNone;
+}
+
 QC_LANG_PRIMITIVE( QImage_Width, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
     if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
@@ -234,14 +251,13 @@ QC_LANG_PRIMITIVE( QImage_Height, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( QImage_SetSize, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( QImage_SetSize, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
     if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
 
-  if( NotInt(a) || NotInt(a+1) || NotInt(a+2) || NotInt(a+3) ) return errWrongType;
+  if( NotInt(a) || NotInt(a+1) || NotInt(a+2) ) return errWrongType;
   QSize newSize( QtCollider::read<int>(a), QtCollider::read<int>(a+1) );
   int arMode = QtCollider::read<int>(a+2);
-  int trMode = QtCollider::read<int>(a+3);
 
   Image *image = to_image(r);
   if (image->isPainting()) {
@@ -251,7 +267,7 @@ QC_LANG_PRIMITIVE( QImage_SetSize, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   QImage scaled_image = image->image().scaled( newSize,
                                        (Qt::AspectRatioMode)arMode,
-                                       (Qt::TransformationMode)trMode );
+                                       image->transformationMode );
   image->setImage(scaled_image);
 
   return errNone;
@@ -508,6 +524,8 @@ void defineQImagePrimitives()
   definer.define<QImage_NewEmpty>();
   definer.define<QImage_NewFromWindow>();
   definer.define<QImage_Free>();
+  definer.define<QImage_HasSmoothTransformation>();
+  definer.define<QImage_SetSmoothTransformation>();
   definer.define<QImage_Width>();
   definer.define<QImage_Height>();
   definer.define<QImage_SetSize>();

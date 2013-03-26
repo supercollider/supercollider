@@ -682,6 +682,8 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
     painter->save();
     painter->setCompositionMode((QPainter::CompositionMode)composition);
+    painter->setRenderHint( QPainter::SmoothPixmapTransform,
+                            image->transformationMode == Qt::SmoothTransformation );
     painter->setOpacity(opacity);
     painter->drawPixmap(target, pixmap, source);
     painter->restore();
@@ -726,6 +728,8 @@ QC_QPEN_PRIMITIVE( QPen_TileImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
     painter->save();
     painter->setCompositionMode((QPainter::CompositionMode)composition);
+    painter->setRenderHint( QPainter::SmoothPixmapTransform,
+                            image->transformationMode == Qt::SmoothTransformation );
     painter->setOpacity(opacity);
     painter->setClipRect( target );
 

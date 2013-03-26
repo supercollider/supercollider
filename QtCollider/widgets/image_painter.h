@@ -89,8 +89,10 @@ struct ImagePainter
         if (sourceRect.isNull() || targetRect.isNull())
             return;
 
-        qreal old_opacity = painter->opacity();
+        painter->save();
         painter->setOpacity(opacity);
+        painter->setRenderHint( QPainter::SmoothPixmapTransform,
+                                image->transformationMode == Qt::SmoothTransformation );
 
         QRectF rect = sourceRect;
 
@@ -162,7 +164,7 @@ struct ImagePainter
                 break;
         } while (rect.left() <= targetRect.right());
 
-        painter->setOpacity(old_opacity);
+        painter->restore();
     }
 
     void setTileMode( const int mode )
