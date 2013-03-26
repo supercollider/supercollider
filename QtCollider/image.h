@@ -41,7 +41,8 @@ class Image
 public:
     Image():
         m_state(Null),
-        m_painting(false)
+        m_painting(false),
+        transformationMode(Qt::FastTransformation)
     {
 
     }
@@ -138,8 +139,9 @@ public:
     }
 
     bool isPainting() const { return m_painting; }
-
     void setPainting( bool painting ) { m_painting = painting; }
+
+    Qt::TransformationMode transformationMode;
 
 private:
     QImage m_image;

@@ -16,10 +16,10 @@
 */
 
 QImage {
-	classvar <compositingOperations, <allPlotWindows, <aspectRatioModes, <transformModes;
+	classvar <compositingOperations, <allPlotWindows, <aspectRatioModes;
 	var dataptr, finalizer;
 	var <>name, <url;
-	var arm, trm;
+	var arm;
 
 	*initClass {
 		compositingOperations = [
@@ -60,11 +60,6 @@ QImage {
 			'keepAspectRatio',
 			'keepAspectRatioByExpanding'
 		];
-
-		transformModes = [
-			'fastTransformation',
-			'smoothTransformation'
-		];
 	}
 
 	*new { arg multiple, height = nil;
@@ -94,7 +89,6 @@ QImage {
 		};
 
 		ret.arMode = 'keepAspectRatio';
-		ret.trMode = 'fastTransformation';
 		^ret;
 	}
 
@@ -149,7 +143,7 @@ QImage {
 	}
 
 	*interpolations {
-		^[]; // TODO
+		^[\fast, \smooth]; // TODO
 	}
 
 	*colorToPixel { arg color;
@@ -186,16 +180,6 @@ QImage {
 		});
 	}
 
-	trMode {
-		^transformModes.at(trm);
-	}
-	trMode_ { arg m;
-		var res;
-		if((res = transformModes.indexOf(m)).notNil, {
-			trm = res;
-		});
-	}
-
 	scalesWhenResized { // FIX: compatibility behavior
 		^(this.arMode == 'ignoreAspectRatio');
 	}
@@ -207,8 +191,19 @@ QImage {
 		};
 	}
 
-	interpolation { "interpolations not implemented".warn }
-	interpolation_ { arg mode; "interpolations not implemented".warn }
+	interpolation {
+		^if(this.smooth, \smooth, \fast);
+	}
+	interpolation_ { arg mode;
+		switch (mode,
+			\smooth, { this.smooth = true },
+			\fast, { this.smooth = false },
+			{ Error("QImage: Interpolation mode invalid").throw }
+		);
+	}
+
+	smooth { _QImage_HasSmoothTransformation; ^this.primitiveFailed }
+	smooth_ { arg smooth; _QImage_SetSmoothTransformation; ^this.primitiveFailed }
 
 	accelerated { "accelerated not implemented".warn }
 	accelerated_ { arg aBool; "accelerated not implemented".warn }
@@ -242,7 +237,7 @@ QImage {
 	}
 
 	setSize { arg width, height;
-		this.prSetSize(width, height, arm, trm);
+		this.prSetSize(width, height, arm);
 	}
 
 	// pixel manipulation
@@ -451,7 +446,7 @@ QImage {
 		^this.primitiveFailed
 	}
 
-	prSetSize { arg width, height, arMode, trMode;
+	prSetSize { arg width, height, arMode;
 		_QImage_SetSize
 		^this.primitiveFailed
 	}
