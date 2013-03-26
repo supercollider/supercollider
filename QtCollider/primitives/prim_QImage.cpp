@@ -255,22 +255,19 @@ QC_LANG_PRIMITIVE( QImage_SetSize, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
     if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
 
-  if( NotInt(a) || NotInt(a+1) || NotInt(a+2) ) return errWrongType;
-  QSize newSize( QtCollider::read<int>(a), QtCollider::read<int>(a+1) );
-  int arMode = QtCollider::read<int>(a+2);
+    if( NotInt(a) || NotInt(a+1) || NotInt(a+2) ) return errWrongType;
+    QSize new_size( QtCollider::read<int>(a), QtCollider::read<int>(a+1) );
+    int resize_mode = QtCollider::read<int>(a+2);
 
-  Image *image = to_image(r);
-  if (image->isPainting()) {
-      qcErrorMsg("QImage: can not resize while being painted.");
-      return errFailed;
-  }
+    Image *image = to_image(r);
+    if (image->isPainting()) {
+        qcErrorMsg("QImage: can not resize while being painted.");
+        return errFailed;
+    }
 
-  QImage scaled_image = image->image().scaled( newSize,
-                                       (Qt::AspectRatioMode)arMode,
-                                       image->transformationMode );
-  image->setImage(scaled_image);
+    image->resize( new_size, resize_mode );
 
-  return errNone;
+    return errNone;
 }
 
 QC_LANG_PRIMITIVE( QImage_Write, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )

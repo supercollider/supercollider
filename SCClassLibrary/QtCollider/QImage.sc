@@ -16,10 +16,9 @@
 */
 
 QImage {
-	classvar <compositingOperations, <allPlotWindows, <aspectRatioModes;
+	classvar <compositingOperations, <allPlotWindows, <resizeModes;
 	var dataptr, finalizer;
-	var <>name, <url;
-	var arm;
+	var <>name, <url, <>scalesWhenResized=false;
 
 	*initClass {
 		compositingOperations = [
@@ -55,7 +54,8 @@ QImage {
 			// 24-32 RasterOp
 		];
 
-		aspectRatioModes = [
+		resizeModes = [
+			'doNotScale',
 			'ignoreAspectRatio',
 			'keepAspectRatio',
 			'keepAspectRatioByExpanding'
@@ -88,7 +88,6 @@ QImage {
 			Error("QImage: wrong arguments to constructor").throw
 		};
 
-		ret.arMode = 'keepAspectRatio';
 		^ret;
 	}
 
@@ -170,27 +169,6 @@ QImage {
 		^dataptr.notNil;
 	}
 
-	arMode {
-		^aspectRatioModes.at(arm);
-	}
-	arMode_ { arg m;
-		var res;
-		if((res = aspectRatioModes.indexOf(m)).notNil, {
-			arm = res;
-		});
-	}
-
-	scalesWhenResized { // FIX: compatibility behavior
-		^(this.arMode == 'ignoreAspectRatio');
-	}
-	scalesWhenResized_ { arg flag, mode; // FIX: compatibility behavior
-		if(flag) {
-			this.arMode = 'ignoreAspectRatio';
-		}{
-			this.arMode = mode ? 'keepAspectRatio';
-		};
-	}
-
 	interpolation {
 		^if(this.smooth, \smooth, \fast);
 	}
@@ -236,8 +214,15 @@ QImage {
 		this.setSize(this.width, h);
 	}
 
-	setSize { arg width, height;
-		this.prSetSize(width, height, arm);
+	setSize { arg width, height, resizeMode;
+		if (resizeMode.isNil) {
+			resizeMode = if (scalesWhenResized, \ignoreAspectRatio, \doNotScale);
+		};
+		resizeMode = resizeModes.indexOf(resizeMode);
+		if (resizeMode.isNil) {
+			Error("QImage: invalid resize mode.").throw;
+		};
+		this.prSetSize(width, height, resizeMode);
 	}
 
 	// pixel manipulation
@@ -446,7 +431,7 @@ QImage {
 		^this.primitiveFailed
 	}
 
-	prSetSize { arg width, height, arMode;
+	prSetSize { arg width, height, resizeMode;
 		_QImage_SetSize
 		^this.primitiveFailed
 	}
