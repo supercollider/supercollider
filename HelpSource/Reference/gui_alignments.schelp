@@ -1,0 +1,22 @@
+title:: Alignment
+summary:: Alignment options within the GUI system
+categories:: GUI
+
+Alignment in GUI classes is represented with the following symbols:
+
+list::
+## \left
+## \center
+## \right
+::
+
+Additionally, the following symbols are available in Qt GUI:
+
+list::
+## \topLeft
+## \top
+## \topRight
+## \bottomLeft
+## \bottom
+## \bottomRight
+::
