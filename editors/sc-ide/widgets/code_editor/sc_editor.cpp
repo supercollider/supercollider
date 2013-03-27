@@ -158,7 +158,7 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
     case Qt::Key_BraceLeft:
     case Qt::Key_BracketLeft:
     case Qt::Key_ParenLeft:
-        if (mInsertMatchingTokens)
+        if (mInsertMatchingTokens && !overwriteMode())
             insertMatchingTokens(e->text());
         else
             GenericCodeEditor::keyPressEvent(e);
