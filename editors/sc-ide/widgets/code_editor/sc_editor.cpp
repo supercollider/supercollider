@@ -66,7 +66,7 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
     mBracketHighlight = settings->value("colors/matchingBrackets").value<QTextCharFormat>();
     mBracketMismatchFormat = settings->value("colors/mismatchedBrackets").value<QTextCharFormat>();
     mStepForwardEvaluation = settings->value("stepForwardEvaluation").toBool();
-    mAutoPair = settings->value("autoPair").toBool();
+    mInsertMatchingTokens = settings->value("insertMatchingTokens").toBool();
 
     settings->endGroup();
 }
@@ -98,6 +98,8 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
 {
     QTextCursor cursor( textCursor() );
     bool cursorMoved = true;
+    bool tokenMatched = false;
+
     if (e == QKeySequence::MoveToNextWord)
         moveToNextToken( cursor, QTextCursor::MoveAnchor );
     else if (e == QKeySequence::MoveToPreviousWord)
@@ -114,15 +116,16 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         return;
     }
 
-    if (mAutoPair) {
+    if (mInsertMatchingTokens) {
         switch (e->key()) {
         case Qt::Key_Apostrophe:
         case Qt::Key_QuoteDbl:
         case Qt::Key_BraceLeft:
         case Qt::Key_BracketLeft:
         case Qt::Key_ParenLeft:
-            keyAutoPair(e);
-            return;
+            insertMatchingTokens(e->text());
+            tokenMatched = true;
+            break;
         default:
             break;
         }
@@ -193,33 +196,26 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         break;
     }
     default:
-        GenericCodeEditor::keyPressEvent(e);
+        if (!tokenMatched)
+            GenericCodeEditor::keyPressEvent(e);
     }
 
     mAutoCompleter->keyPress(e);
 }
 
-void ScCodeEditor::keyAutoPair( QKeyEvent *e)
+void ScCodeEditor::insertMatchingTokens( QString token)
 {
-    QString key = e->text();
-    QString nextKey = e->text();
+    QString matchingToken;
 
-    switch (e->key()) {
-    case Qt::Key_BraceLeft: {
-        nextKey = "}";
-        break;
-    }
-    case Qt::Key_BracketLeft: {
-        nextKey = "]";
-        break;
-    }
-    case Qt::Key_ParenLeft: {
-        nextKey = ")";
-        break;
-    }
-    default:
-        break;
-    }
+    if (token == "{")
+        matchingToken = "}";
+    else if (token == "[")
+        matchingToken = "]";
+    else if (token == "(")
+        matchingToken = ")";
+    else
+        // `"` or `'`
+        matchingToken = token;
 
     QTextCursor cursor = textCursor();
     if (cursor.hasSelection()) {
@@ -228,19 +224,17 @@ void ScCodeEditor::keyAutoPair( QKeyEvent *e)
 
         cursor.beginEditBlock();
         cursor.setPosition(start);
-        cursor.insertText(key);
+        cursor.insertText(token);
         cursor.setPosition(end + 1);
-        cursor.insertText(nextKey);
+        cursor.insertText(matchingToken);
         cursor.endEditBlock();
     } else {
-        GenericCodeEditor::keyPressEvent(e);
-        cursor.insertText(nextKey);
+        cursor.insertText(token);
+        cursor.insertText(matchingToken);
         cursor.movePosition(QTextCursor::PreviousCharacter);
     }
 
     setTextCursor(cursor);
-
-    mAutoCompleter->keyPress(e);
 }
 
 void ScCodeEditor::mouseReleaseEvent ( QMouseEvent *e )

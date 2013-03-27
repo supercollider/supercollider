@@ -200,7 +200,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="autoPair">
+         <widget class="QCheckBox" name="insertMatchingTokens">
           <property name="text">
            <string>Auto insert matching parentheses, brackets, quotes</string>
           </property>
