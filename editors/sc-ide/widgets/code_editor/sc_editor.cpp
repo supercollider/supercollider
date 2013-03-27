@@ -98,7 +98,6 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
 {
     QTextCursor cursor( textCursor() );
     bool cursorMoved = true;
-    bool tokenMatched = false;
 
     if (e == QKeySequence::MoveToNextWord)
         moveToNextToken( cursor, QTextCursor::MoveAnchor );
@@ -114,21 +113,6 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
     if (cursorMoved) {
         setTextCursor( cursor );
         return;
-    }
-
-    if (mInsertMatchingTokens) {
-        switch (e->key()) {
-        case Qt::Key_Apostrophe:
-        case Qt::Key_QuoteDbl:
-        case Qt::Key_BraceLeft:
-        case Qt::Key_BracketLeft:
-        case Qt::Key_ParenLeft:
-            insertMatchingTokens(e->text());
-            tokenMatched = true;
-            break;
-        default:
-            break;
-        }
     }
 
     switch (e->key()) {
@@ -169,7 +153,16 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         ensureCursorVisible();
         return;
     }
-
+    case Qt::Key_Apostrophe:
+    case Qt::Key_QuoteDbl:
+    case Qt::Key_BraceLeft:
+    case Qt::Key_BracketLeft:
+    case Qt::Key_ParenLeft:
+        if (mInsertMatchingTokens)
+            insertMatchingTokens(e->text());
+        else
+            GenericCodeEditor::keyPressEvent(e);
+        break;
     case Qt::Key_Enter:
     case Qt::Key_Return:
     case Qt::Key_BraceRight:
@@ -196,8 +189,7 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         break;
     }
     default:
-        if (!tokenMatched)
-            GenericCodeEditor::keyPressEvent(e);
+        GenericCodeEditor::keyPressEvent(e);
     }
 
     mAutoCompleter->keyPress(e);
