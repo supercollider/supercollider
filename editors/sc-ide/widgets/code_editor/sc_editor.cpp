@@ -387,7 +387,6 @@ bool ScCodeEditor::insertMatchingTokens( const QString & text )
         if (isClosingToken && document->characterAt(cursorPosition) == token) {
             cursor.movePosition(QTextCursor::NextCharacter);
             cursor.setVerticalMovementX(-1);
-            setTextCursor(cursor);
         }
         else if (isOpeningToken) {
             cursor.beginEditBlock();
@@ -396,11 +395,12 @@ bool ScCodeEditor::insertMatchingTokens( const QString & text )
             cursor.endEditBlock();
             cursor.movePosition(QTextCursor::PreviousCharacter);
             cursor.setVerticalMovementX(-1);
-            setTextCursor(cursor);
         }
         else
             return false;
     }
+
+    setTextCursor(cursor);
 
     return true;
 }
