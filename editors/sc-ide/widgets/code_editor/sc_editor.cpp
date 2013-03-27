@@ -153,6 +153,12 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         ensureCursorVisible();
         return;
     }
+    case Qt::Key_Backspace:
+        if (mInsertMatchingTokens && !overwriteMode() && e->modifiers() == 0)
+            if (removeMatchingTokens())
+                break;
+        GenericCodeEditor::keyPressEvent(e);
+        break;
     case Qt::Key_Apostrophe:
     case Qt::Key_QuoteDbl:
     case Qt::Key_BraceLeft:
@@ -193,40 +199,6 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
     }
 
     mAutoCompleter->keyPress(e);
-}
-
-void ScCodeEditor::insertMatchingTokens( QString token)
-{
-    QString matchingToken;
-
-    if (token == "{")
-        matchingToken = "}";
-    else if (token == "[")
-        matchingToken = "]";
-    else if (token == "(")
-        matchingToken = ")";
-    else
-        // `"` or `'`
-        matchingToken = token;
-
-    QTextCursor cursor = textCursor();
-    if (cursor.hasSelection()) {
-        int start = cursor.selectionStart();
-        int end = cursor.selectionEnd();
-
-        cursor.beginEditBlock();
-        cursor.setPosition(start);
-        cursor.insertText(token);
-        cursor.setPosition(end + 1);
-        cursor.insertText(matchingToken);
-        cursor.endEditBlock();
-    } else {
-        cursor.insertText(token);
-        cursor.insertText(matchingToken);
-        cursor.movePosition(QTextCursor::PreviousCharacter);
-    }
-
-    setTextCursor(cursor);
 }
 
 void ScCodeEditor::mouseReleaseEvent ( QMouseEvent *e )
@@ -372,6 +344,73 @@ void ScCodeEditor::moveToPreviousToken( QTextCursor & cursor, QTextCursor::MoveM
         }
         cursor.setPosition( pos + block.position(), mode );
     }
+}
+
+void ScCodeEditor::insertMatchingTokens( const QString & token )
+{
+    QString matchingToken;
+
+    if (token == "{")
+        matchingToken = "}";
+    else if (token == "[")
+        matchingToken = "]";
+    else if (token == "(")
+        matchingToken = ")";
+    else
+        // `"` or `'`
+        matchingToken = token;
+
+    QTextCursor cursor = textCursor();
+    if (cursor.hasSelection()) {
+        int start = cursor.selectionStart();
+        int end = cursor.selectionEnd();
+
+        cursor.beginEditBlock();
+        cursor.setPosition(start);
+        cursor.insertText(token);
+        cursor.setPosition(end + 1);
+        cursor.insertText(matchingToken);
+        cursor.endEditBlock();
+    } else {
+        cursor.insertText(token);
+        cursor.insertText(matchingToken);
+        cursor.movePosition(QTextCursor::PreviousCharacter);
+    }
+
+    setTextCursor(cursor);
+}
+
+bool ScCodeEditor::removeMatchingTokens()
+{
+    QTextCursor cursor = textCursor();
+    QTextDocument *document = cursor.document();
+    int cursorPosition = cursor.position();
+    if (cursorPosition == 0)
+        return false;
+
+    QChar previousChar = document->characterAt(cursorPosition-1);
+    QChar nextChar;
+    if (previousChar == '{')
+        nextChar = '}';
+    else if (previousChar == '[')
+        nextChar = ']';
+    else if (previousChar == '(')
+        nextChar = ')';
+    else if (previousChar == '\'' || previousChar == '"')
+        nextChar = previousChar;
+    else
+        return false;
+
+    if (document->characterAt(cursorPosition) != nextChar)
+        return false;
+
+    cursor.beginEditBlock();
+    cursor.deletePreviousChar();
+    cursor.deleteChar();
+    cursor.endEditBlock();
+
+    setTextCursor(cursor);
+    return true;
 }
 
 QTextCursor ScCodeEditor::selectionForPosition( int position )

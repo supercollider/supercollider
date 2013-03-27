@@ -77,7 +77,6 @@ protected:
     virtual void dragEnterEvent( QDragEnterEvent * );
     virtual bool canInsertFromMimeData ( const QMimeData * data ) const;
     virtual void insertFromMimeData ( const QMimeData * data );
-    virtual void insertMatchingTokens( QString );
 
 private slots:
     void matchBrackets();
@@ -104,6 +103,9 @@ private:
     QString makeIndentationString( int level );
     int indentationLevel( const QTextCursor & );
     void insertSpaceToNextTabStop( QTextCursor & );
+
+    void insertMatchingTokens(const QString & token);
+    bool removeMatchingTokens();
 
     int mIndentWidth;
     bool mSpaceIndent;
