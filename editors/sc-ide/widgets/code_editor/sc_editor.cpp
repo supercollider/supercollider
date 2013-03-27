@@ -96,6 +96,8 @@ bool ScCodeEditor::event( QEvent *e )
 
 void ScCodeEditor::keyPressEvent( QKeyEvent *e )
 {
+    hideMouseCursor(e);
+
     QTextCursor cursor( textCursor() );
     bool cursorMoved = true;
 
@@ -115,6 +117,9 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         return;
     }
 
+    bool indent_needed = false;
+    bool handled = true;
+
     switch (e->key()) {
     case Qt::Key_Home:
     {
@@ -123,8 +128,6 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
             GenericCodeEditor::keyPressEvent(e);
             return;
         }
-
-        hideMouseCursor();
 
         QTextCursor::MoveMode mode =
             mods & Qt::ShiftModifier ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor;
@@ -147,7 +150,6 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
 
     case Qt::Key_Backtab:
     {
-        hideMouseCursor();
         QTextCursor cursor = textCursor();
         insertSpaceToNextTabStop( cursor );
         ensureCursorVisible();
@@ -159,43 +161,33 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
                 break;
         GenericCodeEditor::keyPressEvent(e);
         break;
-    case Qt::Key_Apostrophe:
-    case Qt::Key_QuoteDbl:
-    case Qt::Key_BraceLeft:
-    case Qt::Key_BracketLeft:
-    case Qt::Key_ParenLeft:
-        if (mInsertMatchingTokens && !overwriteMode())
-            insertMatchingTokens(e->text());
-        else
-            GenericCodeEditor::keyPressEvent(e);
-        break;
     case Qt::Key_Enter:
     case Qt::Key_Return:
     case Qt::Key_BraceRight:
     case Qt::Key_BracketRight:
-    case Qt::Key_ParenRight: {
-        hideMouseCursor();
+    case Qt::Key_ParenRight:
+        indent_needed = true;
+    default:
+        handled = false;
+    }
 
-        // Wrap superclass' implementation into an edit block,
-        // so it can be joined with indentation later:
-
-        QTextCursor cursor = textCursor();
-
+    if (indent_needed)
         cursor.beginEditBlock();
-        GenericCodeEditor::keyPressEvent(e);
-        cursor.endEditBlock();
 
+    if (!handled && mInsertMatchingTokens && !overwriteMode())
+        handled = insertMatchingTokens(e->text());
+
+    if (!handled)
+        GenericCodeEditor::keyPressEvent(e);
+
+    if (indent_needed)
+    {
+        // end previous block, to apply changes,
+        // then join a new one for the sake of undo
+        cursor.endEditBlock();
         cursor.joinPreviousEditBlock();
         indent();
         cursor.endEditBlock();
-
-        cursor.setVerticalMovementX(-1);
-        setTextCursor(cursor);
-
-        break;
-    }
-    default:
-        GenericCodeEditor::keyPressEvent(e);
     }
 
     mAutoCompleter->keyPress(e);
@@ -346,38 +338,71 @@ void ScCodeEditor::moveToPreviousToken( QTextCursor & cursor, QTextCursor::MoveM
     }
 }
 
-void ScCodeEditor::insertMatchingTokens( const QString & token )
+bool ScCodeEditor::insertMatchingTokens( const QString & text )
 {
-    QString matchingToken;
-
-    if (token == "{")
-        matchingToken = "}";
-    else if (token == "[")
-        matchingToken = "]";
-    else if (token == "(")
-        matchingToken = ")";
-    else
-        // `"` or `'`
-        matchingToken = token;
+    if (text.isEmpty())
+        return false;
 
     QTextCursor cursor = textCursor();
-    if (cursor.hasSelection()) {
-        int start = cursor.selectionStart();
-        int end = cursor.selectionEnd();
+    QTextDocument *document = cursor.document();
+    int cursorPosition = cursor.position();
 
-        cursor.beginEditBlock();
-        cursor.setPosition(start);
-        cursor.insertText(token);
-        cursor.setPosition(end + 1);
-        cursor.insertText(matchingToken);
-        cursor.endEditBlock();
-    } else {
-        cursor.insertText(token);
-        cursor.insertText(matchingToken);
-        cursor.movePosition(QTextCursor::PreviousCharacter);
+    QChar token = text[0];
+    QChar matchingToken;
+
+    static QString openingTokens("([{'\"");
+    static QString closingTokens(")]}'\"");
+
+    bool isOpeningToken, isClosingToken;
+
+    int idx;
+    if ( (idx = openingTokens.indexOf(token)) != -1 ) {
+        matchingToken = closingTokens[idx];
+        isOpeningToken = true;
+        isClosingToken = token == matchingToken;
+    }
+    else if ( (idx = closingTokens.indexOf(token)) != -1 ) {
+        matchingToken = openingTokens[idx];
+        isClosingToken = true;
+        isOpeningToken = token == matchingToken;
+    }
+    else
+        return false;
+
+    if (cursor.hasSelection()) {
+        if (isOpeningToken) {
+            int start = cursor.selectionStart();
+            int end = cursor.selectionEnd();
+            cursor.beginEditBlock();
+            cursor.setPosition(start);
+            cursor.insertText(token);
+            cursor.setPosition(end + 1);
+            cursor.insertText(matchingToken);
+            cursor.endEditBlock();
+        }
+        else
+            return false;
+    }
+    else {
+        if (isClosingToken && document->characterAt(cursorPosition) == token) {
+            cursor.movePosition(QTextCursor::NextCharacter);
+            cursor.setVerticalMovementX(-1);
+            setTextCursor(cursor);
+        }
+        else if (isOpeningToken) {
+            cursor.beginEditBlock();
+            cursor.insertText(token);
+            cursor.insertText(matchingToken);
+            cursor.endEditBlock();
+            cursor.movePosition(QTextCursor::PreviousCharacter);
+            cursor.setVerticalMovementX(-1);
+            setTextCursor(cursor);
+        }
+        else
+            return false;
     }
 
-    setTextCursor(cursor);
+    return true;
 }
 
 bool ScCodeEditor::removeMatchingTokens()
