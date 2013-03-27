@@ -77,7 +77,7 @@ protected:
     virtual void dragEnterEvent( QDragEnterEvent * );
     virtual bool canInsertFromMimeData ( const QMimeData * data ) const;
     virtual void insertFromMimeData ( const QMimeData * data );
-    virtual void keyAutoPair( QKeyEvent * );
+    virtual void insertMatchingTokens( QString );
 
 private slots:
     void matchBrackets();
@@ -109,7 +109,7 @@ private:
     bool mSpaceIndent;
     bool mStepForwardEvaluation;
     int mBlinkDuration;
-    bool mAutoPair;
+    bool mInsertMatchingTokens;
     QTextCharFormat mBracketHighlight;
     QTextCharFormat mBracketMismatchFormat;
 
