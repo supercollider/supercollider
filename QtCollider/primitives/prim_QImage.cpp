@@ -113,7 +113,7 @@ void initialize_image_object( struct VMGlobals *g, struct PyrObject *obj, Image 
 
 QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   QString path( QtCollider::get<QString>(a) );
   QPixmap pixmap(path);
@@ -191,7 +191,7 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_NewEmpty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   if( NotInt(a) || NotInt(a+1) ) return errWrongType;
   int width = QtCollider::read<int>(a);
@@ -209,7 +209,7 @@ QC_LANG_PRIMITIVE( QImage_NewEmpty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_NewFromWindow, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   QObjectProxy *proxy = QtCollider::get(a);
   if( !proxy ) return errWrongType;
@@ -235,7 +235,7 @@ QC_LANG_PRIMITIVE( QImage_NewFromWindow, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g
 
 QC_LANG_PRIMITIVE( QImage_Free, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   Image *image = to_image(r);
   if (image->isPainting()) {
@@ -249,7 +249,7 @@ QC_LANG_PRIMITIVE( QImage_Free, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_HasSmoothTransformation, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
     Image *image = to_image(r);
     QC::write<bool>( r, image->transformationMode == Qt::SmoothTransformation );
     return errNone;
@@ -257,7 +257,7 @@ QC_LANG_PRIMITIVE( QImage_HasSmoothTransformation, 0, PyrSlot *r, PyrSlot *a, VM
 
 QC_LANG_PRIMITIVE( QImage_SetSmoothTransformation, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
     bool smooth = QC::get(a);
     Image *image = to_image(r);
     image->transformationMode = smooth ? Qt::SmoothTransformation : Qt::FastTransformation;
@@ -266,7 +266,7 @@ QC_LANG_PRIMITIVE( QImage_SetSmoothTransformation, 1, PyrSlot *r, PyrSlot *a, VM
 
 QC_LANG_PRIMITIVE( QImage_Width, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   Image *image = to_image(r);
   SetInt( r, image->width() );
@@ -275,7 +275,7 @@ QC_LANG_PRIMITIVE( QImage_Width, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_Height, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   Image *image = to_image(r);
   SetInt( r, image->height() );
@@ -284,7 +284,7 @@ QC_LANG_PRIMITIVE( QImage_Height, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_SetSize, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
     if( NotInt(a) || NotInt(a+1) || NotInt(a+2) ) return errWrongType;
     QSize new_size( QtCollider::read<int>(a), QtCollider::read<int>(a+1) );
@@ -303,7 +303,7 @@ QC_LANG_PRIMITIVE( QImage_SetSize, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_Write, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   QString path = QC::get(a);
   QString format = QC::get(a+1);
@@ -321,7 +321,7 @@ QC_LANG_PRIMITIVE( QImage_Write, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_SetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( !QcApplication::compareThread )
+  if( !QcApplication::compareThread() )
     return QtCollider::wrongThreadError();
 
   if( QtCollider::paintingAnnounced() ) {
@@ -344,7 +344,7 @@ QC_LANG_PRIMITIVE( QImage_SetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_UnsetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( !QcApplication::compareThread )
+  if( !QcApplication::compareThread() )
     return QtCollider::wrongThreadError();
 
   Image *image = to_image(r);
@@ -362,7 +362,7 @@ QC_LANG_PRIMITIVE( QImage_UnsetPainter, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
 QC_LANG_PRIMITIVE( QImage_GetPixel, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   if( NotInt(a) || NotInt(a+1)) return errWrongType;
   int x = QC::read<int>(a);
@@ -381,7 +381,7 @@ QC_LANG_PRIMITIVE( QImage_GetPixel, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_GetColor, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   if( NotInt(a) || NotInt(a+1)) return errWrongType;
   int x = QC::read<int>(a);
@@ -400,7 +400,7 @@ QC_LANG_PRIMITIVE( QImage_GetColor, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_SetPixel, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   if( NotInt(a) || NotInt(a+1) || NotInt(a+2) ) return errWrongType;
   int pixel = QC::read<int>(a);
@@ -420,7 +420,7 @@ QC_LANG_PRIMITIVE( QImage_SetPixel, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_SetColor, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   if ( NotObj(a) || slotRawObject(a)->classptr != SC_CLASS(Color)
        || NotInt(a+1) || NotInt(a+2) )
@@ -442,7 +442,7 @@ QC_LANG_PRIMITIVE( QImage_SetColor, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_TransferPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
     if (!isKindOfSlot(a, class_int32array)) {
         qcErrorMsg("QImage: array argument is not a Int32Array");
@@ -510,7 +510,7 @@ QC_LANG_PRIMITIVE( QImage_TransferPixels, 4, PyrSlot *r, PyrSlot *a, VMGlobals *
 
 QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   if( NotObj(a) || slotRawObject(a)->classptr != SC_CLASS(Color) )
       return errWrongType;
@@ -524,7 +524,7 @@ QC_LANG_PRIMITIVE( QImage_Fill, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QImage_Formats, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread ) return QtCollider::wrongThreadError();
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
     if( NotInt(a) ) return errWrongType;
     int rw = QC::read<int>(a);
