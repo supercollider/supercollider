@@ -229,6 +229,15 @@ UGen : AbstractFunction {
 		^log((b - scaled) / a) / curve
 	}
 
+	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
+		^Select.perform(this.methodSelectorForRate, this < inCenter,
+			[
+				this.linlin(inCenter, inMax, outCenter, outMax, clip),
+				this.linlin(inMin, inCenter, outMin, outCenter, clip)
+			]
+		)
+	}
+
 	signalRange { ^\bipolar }
 	@ { arg y; ^Point.new(this, y) } // dynamic geometry support
 

@@ -280,6 +280,30 @@ code::
 { Line.ar(-1, 5, 0.1).curvelin(0, 3, -1, 1, curve: -4) }.plot(0.1);
 ::
 
+
+method:: bilin
+Map the receiver from two assumed linear input ranges (inMin..inCenter) and (inCenter..inMax) to two linear output ranges (outMin..outCenter) and (outCenter..outMax). If the input exceeds the input range, the following behaviours are specified by the clip argument.
+argument::inCenter
+argument::inMin
+assumed input minimum
+argument::inMax
+assumed input maximum
+argument::outCenter
+argument::outMin
+output minimum
+argument::outMax
+output maximum
+argument::clip
+nil (don't clip)
+\max (clip ceiling)
+\min (clip floor)
+\minmax (clip both - this is default).
+discussion::
+code::
+{Line.kr(0, 10, 0.1).bilin(1, 0, 10, 0.6, 0, 1)}.plot(0.1)
+::
+
+
 method:: prune
 Limits the receiver range to one of the four clip modes, see code::linlin:: above.
 
