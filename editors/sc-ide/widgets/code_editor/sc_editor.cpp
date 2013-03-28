@@ -163,6 +163,32 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         break;
     case Qt::Key_Enter:
     case Qt::Key_Return:
+    {
+        QTextBlock cursorBlock = cursor.block();
+        int cursorPosInBlock = cursor.position() - cursorBlock.position();
+        TokenIterator prevToken = TokenIterator::leftOf(cursorBlock, cursorPosInBlock);
+        TokenIterator nextToken = TokenIterator::rightOf(cursorBlock, cursorPosInBlock);
+        if ( prevToken.block() == cursorBlock && prevToken.type() == Token::OpeningBracket &&
+             nextToken.block() == cursorBlock && nextToken.type() == Token::ClosingBracket )
+        {
+            cursor.beginEditBlock();
+            cursor.insertBlock();
+            cursor.insertBlock();
+            cursor.endEditBlock();
+            cursor.movePosition( QTextCursor::PreviousBlock, QTextCursor::KeepAnchor );
+            indent(cursor, JoinEditBlock);
+            cursor.movePosition( QTextCursor::EndOfBlock );
+            setTextCursor(cursor);
+        }
+        else {
+            cursor.beginEditBlock();
+            cursor.insertBlock();
+            cursor.endEditBlock();
+            indent(cursor, JoinEditBlock);
+            ensureCursorVisible();
+        }
+        break;
+    }
     case Qt::Key_BraceRight:
     case Qt::Key_BracketRight:
     case Qt::Key_ParenRight:
@@ -185,9 +211,7 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         // end previous block, to apply changes,
         // then join a new one for the sake of undo
         cursor.endEditBlock();
-        cursor.joinPreviousEditBlock();
-        indent();
-        cursor.endEditBlock();
+        indent(JoinEditBlock);
     }
 
     mAutoCompleter->keyPress(e);
@@ -579,19 +603,22 @@ void ScCodeEditor::indentCurrentRegion()
     indent(currentRegion());
 }
 
-void ScCodeEditor::indent()
+void ScCodeEditor::indent( EditBlockMode editBlockMode )
 {
-    indent(textCursor());
+    indent(textCursor(), editBlockMode);
 }
 
-void ScCodeEditor::indent( const QTextCursor & selection )
+void ScCodeEditor::indent( const QTextCursor & selection, EditBlockMode editBlockMode )
 {
     if (selection.isNull())
         return;
 
     QTextCursor cursor(selection);
 
-    cursor.beginEditBlock();
+    if (editBlockMode == NewEditBlock)
+        cursor.beginEditBlock();
+    else
+        cursor.joinPreviousEditBlock();
 
     QTextDocument *doc = QPlainTextEdit::document();
     int startBlockNum = doc->findBlock(cursor.selectionStart()).blockNumber();

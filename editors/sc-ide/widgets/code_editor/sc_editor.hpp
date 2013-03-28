@@ -36,6 +36,12 @@ class ScCodeEditor : public GenericCodeEditor
     Q_OBJECT
 
 public:
+    enum EditBlockMode {
+        NewEditBlock,
+        JoinEditBlock
+    };
+
+public:
     static TokenIterator previousOpeningBracket(TokenIterator it);
     static TokenIterator nextClosingBracket(TokenIterator it);
     static void matchBracket( const TokenIterator & bracket, BracketPair & match );
@@ -51,7 +57,7 @@ public:
 public slots:
     void applySettings( Settings::Manager * );
     void setSpaceIndent(bool on) { mSpaceIndent = on; }
-    void indent();
+    void indent( EditBlockMode = NewEditBlock );
     void triggerAutoCompletion();
     void triggerMethodCallAid();
     void toggleComment();
@@ -98,7 +104,7 @@ private:
     void removeSingleLineComment( QTextCursor );
 
     int indentedStartOfLine( const QTextBlock & );
-    void indent( const QTextCursor & );
+    void indent( const QTextCursor &, EditBlockMode = NewEditBlock );
     QTextBlock indent( const QTextBlock & b, int level );
     QString makeIndentationString( int level );
     int indentationLevel( const QTextCursor & );
