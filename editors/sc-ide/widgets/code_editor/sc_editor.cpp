@@ -599,17 +599,13 @@ void ScCodeEditor::indent( const QTextCursor & selection )
         doc->findBlock(cursor.selectionEnd()).blockNumber() : startBlockNum;
 
     QStack<int> stack;
-    int level = 0;
+    int global_level = 0;
     int blockNum = 0;
     QTextBlock block = QPlainTextEdit::document()->begin();
     while (block.isValid())
     {
-        if (level > 0) {
-            stack.push(level);
-            level = 0;
-        }
-
         int initialStackSize = stack.size();
+        int level = 0;
 
         TextBlockData *data = static_cast<TextBlockData*>(block.userData());
         if (data)
@@ -622,15 +618,15 @@ void ScCodeEditor::indent( const QTextCursor & selection )
                 {
                 case Token::OpeningBracket:
                     if (token.character != '(' || stack.size() || token.positionInBlock)
-                        level += 1;
+                        ++level;
                     break;
 
                 case Token::ClosingBracket:
                     if (level)
-                        level -= 1;
-                    else if(!stack.isEmpty()) {
-                        stack.top() -= 1;
-                        if (stack.top() <= 0)
+                        --level;
+                    else if (global_level) {
+                        --global_level;
+                        if (!stack.isEmpty() && global_level < stack.top())
                             stack.pop();
                     }
                     break;
@@ -655,6 +651,11 @@ void ScCodeEditor::indent( const QTextCursor & selection )
 
         block = block.next();
         ++blockNum;
+
+        if (level) {
+            global_level += level;
+            stack.push(global_level);
+        }
     }
 
     cursor.endEditBlock();
