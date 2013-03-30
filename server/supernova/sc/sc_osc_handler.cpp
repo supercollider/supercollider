@@ -3181,8 +3181,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 {
     uint32_t address = message.AddressPatternAsUInt32();
 
-    switch (address)
-    {
+    switch (address) {
+    case cmd_none:
+        break;
+
     case cmd_quit:
         handle_quit<realtime>(endpoint);
         break;
@@ -3817,6 +3819,9 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
         handle_cmd(message, msg_size, endpoint, 8);
         return;
     }
+
+    if (strcmp(address+1, "none") == 0)
+        return;
 
     handle_unhandled_message(message);
 }
