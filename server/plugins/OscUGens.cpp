@@ -1981,24 +1981,28 @@ void COsc_next(COsc *unit, int inNumSamples)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define VOSC_GET_BUF								\
-const SndBuf *bufs;									\
-if (bufnum < 0)										\
-	bufnum = 0;										\
-													\
-if (bufnum+1 >= world->mNumSndBufs) {				\
-	int localBufNum = bufnum - world->mNumSndBufs;	\
-	Graph *parent = unit->mParent;					\
-	if(localBufNum <= parent->localBufNum) {		\
-		bufs = parent->mLocalSndBufs + localBufNum; \
-	} else {										\
-		bufnum = 0;									\
-		bufs = world->mSndBufs + bufnum;			\
-	}												\
-} else {											\
-	if (bufnum >= world->mNumSndBufs)				\
-		bufnum = 0;									\
-	bufs = world->mSndBufs + sc_max(0, bufnum);		\
+
+static inline const SndBuf * VOscGetBuf(int & bufnum, World * world, Unit * unit)
+{
+	if (bufnum < 0)
+		bufnum = 0;
+
+	const SndBuf * bufs;
+	if (bufnum+1 >= world->mNumSndBufs) {
+		int localBufNum = bufnum - world->mNumSndBufs;
+		Graph *parent = unit->mParent;
+		if(localBufNum <= parent->localBufNum) {
+			bufs = parent->mLocalSndBufs + localBufNum;
+		} else {
+			bufnum = 0;
+			bufs = world->mSndBufs + bufnum;
+		}
+	} else {
+		if (bufnum >= world->mNumSndBufs)
+			bufnum = 0;
+		bufs = world->mSndBufs + sc_max(0, bufnum);
+	}
+	return bufs;
 }
 
 void VOsc_Ctor(VOsc *unit)
@@ -2010,7 +2014,7 @@ void VOsc_Ctor(VOsc *unit)
 	int bufnum = sc_floor(nextbufpos);
 	World *world = unit->mWorld;
 
-	VOSC_GET_BUF
+	const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
 
 	int tableSize = bufs[0].samples;
 
@@ -2049,10 +2053,9 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 
 	if (bufdiff == 0.f) {
 		float level = cur - sc_floor(cur);
-		uint32 bufnum = (int)sc_floor(cur);
+		int32 bufnum = (int)sc_floor(cur);
 
-		VOSC_GET_BUF
-
+		const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
 		if (!verify_wavetable(unit, "VOsc", tableSize, inNumSamples)) return;
 
 		const float *table0  = bufs[0].data;
@@ -2102,8 +2105,7 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 			float slope = sweepdiff / (float)nsmps;
 
 			int32 bufnum = (int32)sc_floor(cur);
-
-			VOSC_GET_BUF
+			const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
 			if (!verify_wavetable(unit, "VOsc", tableSize, inNumSamples)) return;
 
 			const float *table0  = bufs[0].data;
@@ -2149,7 +2151,7 @@ void VOsc3_Ctor(VOsc3 *unit)
 	int32 bufnum = (int32)sc_floor(nextbufpos);
 	World *world = unit->mWorld;
 
-	VOSC_GET_BUF
+	const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
 	int tableSize = bufs[0].samples;
 
 	unit->mTableSize = tableSize;
@@ -2193,8 +2195,8 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 
 		int bufnum = (int)cur;
 
-		VOSC_GET_BUF
-		if (!verify_wavetable(unit, "VOsc", tableSize, inNumSamples)) return;
+		const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
+		if (!verify_wavetable(unit, "VOsc3", tableSize, inNumSamples)) return;
 
 		const float *table0  = bufs[0].data;
 		const float *table2  = bufs[1].data;
@@ -2268,8 +2270,8 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 
 			int bufnum = (int)cur;
 
-			VOSC_GET_BUF
-			if (!verify_wavetable(unit, "VOsc", tableSize, inNumSamples)) return;
+			const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
+			if (!verify_wavetable(unit, "VOsc3", tableSize, inNumSamples)) return;
 
 			const float *table0  = bufs[0].data;
 			const float *table2  = bufs[1].data;
