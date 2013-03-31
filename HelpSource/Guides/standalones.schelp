@@ -1,0 +1,212 @@
+TITLE:: Creating Standalone Applications
+SUMMARY:: A guide to creating SuperCollider-based applications
+CATEGORIES:: Platform>OSX, Tutorials
+KEYWORD:: standalones, stand-alones
+
+NOTE:: The concept of standalone applications is only relevant on Mac OS X. There is no such concept on other platforms. ::
+
+Standalone applications are applications that run SuperCollider code in an opaque way, in the sense that the user does not need to install SuperCollider, manually run SuperCollider code, or even know that SuperCollider is involved. This is useful for distributing applications to the general public, or for creating special-purpose applications for your own use. There is one important restriction: the entire application must be open-source and comply with the GNU General Public License.
+
+On Mac OS X, applications are special directories with an ".app" extension, known as emphasis::bundles::. SuperCollider emphasis::standalone applications:: are bundles that contain your SuperCollider code, as well as a copy of SuperCollider itself to run your code.
+
+There are two ways of making standalone applications:
+
+LIST::
+## Modifying an existing Standalone Template.app by editing the contents in its folder, which does not require XCode or any other development environment.
+
+## Creating a standalone application from scratch.
+::
+
+SECTION:: Modifying the Template
+
+If you do not have or use Apple Developer tools, the easiest way to create a standalone application is to modify an existing one. Here are instructions how to modify the basic template compiled from the SuperCollider source code:
+
+NUMBEREDLIST::
+
+## strong::Obtain the Template::
+
+	Obtain the compiled 'Standalone Template.app' for the desired version of SuperCollider, and make a copy of it for modification.
+
+## strong::Name Your Application::
+
+	LIST::
+	## In the Finder, rename the copy of 'Standalone Template.app' to e.g. YourApp.app
+	## Alt-click on YourApp.app, and select 'Show package contents'; this opens the folder inside the app.
+	## Open the file Contents/Info.plist (with PropertyListEditor if you have it, or any text editor).
+	## warning:: For safety, keep  a copy of the file Info.plist. around. ::
+	## In the section:
+teletype::
+...
+<key>CFBundleName</key>
+<string>Standalone Template</string>
+...
+::
+	replace 'Standalone Template' with YourApp
+	::
+
+## strong::Credits::
+
+	In Resources/English.lproj/Credits.rtf, add credits for all contributors to YourApp.
+
+## strong::Customize Help::
+
+	Edit Resources/HelpSource/Help.schelp to inform users about YourApp.
+
+## strong:: Add Resources, Extensions, etc.::
+
+	LIST::
+	## Put any soundfiles you intend to use in /Contents/Resources/sounds
+	## Put any extra UGen plugin libraries your app requires in (e.g. Kloink.scx) in Resources/plugins
+	## Put any classes for YourApp in Resources/SCClassLibrary
+	::
+
+## strong::Startup File::
+
+	In Resources/SCClassLibrary/, modify the file modifyStartup.sc to do anything your app needs at startup, such as boot the server, instantiate classes and run code... See the section link::#Custom Startup:: below.
+
+## strong::Test Your Application::
+
+	Start YourApp and test that it works. You can recompile, edit scripts, add classes, as in SuperCollider itself.
+
+## When your app works as desired - strong::Share and Enjoy!::
+
+::
+
+section:: Creating from Scratch
+
+subsection:: Basic Setup and Building
+
+NUMBEREDLIST::
+
+## strong::Obtain SuperCollider Source Code::
+
+	The easiest way to do so is to download the latest source release from SourceForge:
+	http://supercollider.sourceforge.net/downloads/
+
+## strong::Open XCode Project::
+
+	Open the XCode project located at strong::platform/mac/Language.xcodeproj:: within the SuperCollider sources.
+
+## strong::Name Your Application::
+
+	Rename the "Standalone Template" target by control-clicking it and choosing "Rename". This target name is used for both the .app name and for the name presented in the menu bar.
+
+image::standalones_rename.png::
+
+## strong::Add Resources::
+
+	Customize the "Standalone Resources" directory, which is located at the root of the SuperCollider source directory. Any files you put in this directory will override the files originating from the SuperCollider source at the same destination.
+
+	For example:
+	LIST::
+	## If you wanted to create your own version of Array.sc you would need to create the following path (creating folders where necessary):
+
+	teletype::Standalone Resources/SCClassLibrary/Common/Collections/Array.sc::
+
+	Your version of Array.sc will now overide the default.
+
+	## teletype::Standalone Resources/SCcube.icns:: can be overridden to provide a custom icon.
+
+	## teletype::Standalone Resources/English.lproj/MainMenu.nib:: can be overriden to provide a custom menu bar
+
+	## teletype::Standalone Resources/English.lproj/Credits.rtf:: can be overidden to provide a new about box.
+	::
+
+	The template "Standalone Resources" directory implements an application that shows a window with a button that generates a tone when clicked.
+
+## strong::Build Application::
+
+	Build the standalone application by control-clicking on the target and choosing "Build [target name]". This will place your standalone app in the build directory.
+
+image::standalones_build.png::
+
+::
+
+NOTE:: It is recommended that you develop your entire SuperCollider code in a normal SuperCollider environment before creating a standalone application.::
+
+subsection:: Custom Startup
+
+You've now created an application that behaves exactly like SuperCollider. To run your own code on launch and simulate an ordinary application, you'll need to modify the startup-related methods, which are overwritten in (Standalone Resources)/SCClassLibrary/modifyStartup.sc.
+
+Here's an example (the same code used by the SC_StandAlone target):
+
+code::
++ OSXPlatform {
+
+	startupFiles {
+//		var filename = "startup.rtf";
+//		^[this.systemAppSupportDir +/+ filename, this.userAppSupportDir +/+ filename];
+			// look for startup files inside the app Contents directory
+		var filename = "startup.*";
+		^(String.scDir +/+ filename).pathMatch;
+	}
+
+	startup {
+		Document.implementationClass.startup;
+		// make a server window for the internal if you like
+		Server.internal.makeWindow;
+//		Server.local.makeWindow;
+		// uncomment if you use a startup file
+//		this.loadStartupFiles;
+		// uncomment if you have multiple help files
+//		Help.addToMenu;
+	}
+}
+
++ Main {
+	startup {
+		platform = this.platformClass.new;
+		platform.initPlatform;
+
+		super.startup;
+
+		GUI.fromID( this.platform.defaultGUIScheme );
+		GeneralHID.fromID( this.platform.defaultHIDScheme );
+
+		// Set Server.default and the 's' interpreter variable to the internal server.
+		// You should use the internal server for standalone applications --
+		// otherwise, if your application has a problem, the user will
+		// be stuck with a process, possibly making sound, that he won't know
+		// how to kill.
+		Server.default = Server.internal;
+		interpreter.s = Server.default;
+
+			// some folder paths that should point inside the app's Contents folder
+		SynthDef.synthDefDir = String.scDir +/+ "synthdefs/";
+		Archive.archiveDir = String.scDir;
+
+		this.platform.startup;
+
+		// from here on, you should customize what should happen...
+
+		StartUp.run;
+
+		// One can boot the server, then use .load to evaluate a file
+		// OR - put things into a class... like the SCSA_Demo
+
+		"Welcome to Standalone Demo made with SuperCollider, type cmd-d for help.".postln;
+
+		Server.default.boot;
+
+		Server.default.waitForBoot({
+			SCSA_Demo.new("The Cheese Stands Alone", Rect(400, 400, 300, 200), interpreter.s).front;
+//			(String.scDir.dirname ++ "/MFBSD.rtf").load;
+		});
+		// close post window if user should not have it
+//		Document.listener.close
+	}
+
+}
+::
+
+The class SCSA_Demo in the code above is supposed to contain the entire application, including the main window. This is the tidiest way to work, and requires the least modification to SuperCollider. If you don't want to write a class, you can execute an .scd file instead:
+code::
+load(Platform.resourceDir ++ "/myapp.scd");
+::
+However, any sizable application will benefit from encapsulation in classes.
+
+Note that the example uses the internal server. This is part and parcel of keeping the application stand-alone; it shouldn't call extraneous processes behind the user's back that will persist if the application fails. If you need to use the local server for some reason, make sure scsynth is in your resources folder.
+
+subsection:: Managing Multiple Standalone Applications
+
+To manage several standalone applications simply create several targets in the XCode project, and several resources directories. The resources directories should be named according to "[target name] Resources". If a resources directory is found when building that matches the target name, that directory will be used instead of the default "Standalone Resources" directory.
