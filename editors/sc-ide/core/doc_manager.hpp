@@ -73,6 +73,8 @@ signals:
     void defaultFontChanged();
 
 private:
+    void setPlainText(bool flag);
+
     QByteArray mId;
     QTextDocument *mDoc;
     QString mFilePath;

@@ -50,7 +50,7 @@ public:
     int replaceAll( const QRegExp &expr, const QString &replacement,
                     QTextDocument::FindFlags options = 0 );
 
-    void showPosition( int charPosition, int selectionLength );
+    void showPosition( int charPosition, int selectionLength = 0 );
     QString symbolUnderCursor();
 
 protected:
