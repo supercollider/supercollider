@@ -83,7 +83,8 @@ void LangClient::doSchedule()
 void LangClient::commandLoop()
 {
   doSchedule();
-  QcApplication::instance()->exec();
+  int exit_code = QcApplication::instance()->exec();
+  SC_TerminalClient::quit(exit_code);
 }
 
 void LangClient::daemonLoop()
