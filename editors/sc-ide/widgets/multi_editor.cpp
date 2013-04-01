@@ -391,6 +391,14 @@ void MultiEditor::createActions()
                            SignalMultiplexer::ConnectionOptional);
     settings->addAction( action, "editor-go-to-next-block", editorCategory);
 
+    mActions[SelectEnclosingBlock] = action = new QAction(tr("Select Enclosing Block"), this);
+    action->setShortcut(tr("Ctrl+Shift+B", "Select Enclosing Block"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    action->setStatusTip(tr("Select everything between brackets that contain cursor"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(selectBlockAroundCursor()),
+                           SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-select-enclosing-block", editorCategory);
+
     mActions[GotoPreviousRegion] = action = new QAction(
         QIcon::fromTheme("edit-gotopreviousregion"), tr("Go to Previous Region"), this);
     action->setShortcut(tr("Ctrl+Alt+[", "Go to Previous Region"));
@@ -566,6 +574,7 @@ void MultiEditor::createActions()
     addAction(mActions[MoveLineDown]);
     addAction(mActions[GotoPreviousBlock]);
     addAction(mActions[GotoNextBlock]);
+    addAction(mActions[SelectEnclosingBlock]);
     addAction(mActions[GotoPreviousRegion]);
     addAction(mActions[GotoNextRegion]);
     addAction(mActions[GotoPreviousEmptyLine]);
@@ -604,6 +613,7 @@ void MultiEditor::updateActions()
     mActions[ToggleComment]->setEnabled( editor && editorIsScCodeEditor );
     mActions[GotoPreviousBlock]->setEnabled( editor && editorIsScCodeEditor );
     mActions[GotoNextBlock]->setEnabled( editor && editorIsScCodeEditor );
+    mActions[SelectEnclosingBlock]->setEnabled( editor && editorIsScCodeEditor );
     mActions[GotoPreviousRegion]->setEnabled( editor && editorIsScCodeEditor );
     mActions[GotoNextRegion]->setEnabled( editor && editorIsScCodeEditor );
     mActions[SelectRegion]->setEnabled( editor && editorIsScCodeEditor );
