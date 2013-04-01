@@ -163,10 +163,8 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
     {
         QTextBlock cursorBlock = cursor.block();
         int cursorPosInBlock = cursor.position() - cursorBlock.position();
-        TokenIterator prevToken = TokenIterator::leftOf(cursorBlock, cursorPosInBlock);
         TokenIterator nextToken = TokenIterator::rightOf(cursorBlock, cursorPosInBlock);
-        if ( prevToken.block() == cursorBlock && prevToken.type() == Token::OpeningBracket &&
-             nextToken.block() == cursorBlock && nextToken.type() == Token::ClosingBracket )
+        if ( nextToken.block() == cursorBlock && nextToken.type() == Token::ClosingBracket )
         {
             cursor.beginEditBlock();
             cursor.insertBlock();
