@@ -301,35 +301,47 @@ ClassBrowser {
 					^this	// just to force early exit
 				};
 			};
-		case { string.isEmpty } {
-			result = pool.sort({ |a, b| a.name < b.name });
+		if (isClassSearch)
+		{
+			result = case (
+				{string.isEmpty}, pool,
+				{matchCase},
+				{
+					pool.select({ |class|
+						class.isMetaClass.not and: { class.name.asString.contains(string) }
+					})
+				},
+				//else
+				{
+					pool.select({ |class|
+						class.isMetaClass.not and: { class.name.asString.containsi(string) }
+					})
+				}
+			).sort({ |a, b| a.name < b.name });
 		}
-		{ isClassSearch } {
-			result = (if(matchCase) {
-				pool.select({ |class|
-					class.isMetaClass.not and: { class.name.asString.contains(string) }
-				})
-			} {
-				pool.select({ |class|
-					class.isMetaClass.not and: { class.name.asString.containsi(string) }
-				})
-			}).sort({ |a, b| a.name < b.name });
-		}
-		{	// default case - method search
+		{	// else - method search
 			result = Array.new;
-			if(matchCase) {
-				pool.do({ |class|
-					result = result.addAll(class.methods.select({ |method|
-						method.name.asString.contains(string)
-					}));
-				});
-			} {
-				pool.do({ |class|
-					result = result.addAll(class.methods.select({ |method|
-						method.name.asString.containsi(string)
-					}));
-				});
-			};
+			case (
+				{string.isEmpty}, {
+					pool.do { |class|
+						result = result.addAll(class.methods);
+					}
+				},
+				{matchCase}, {
+					pool.do({ |class|
+						result = result.addAll(class.methods.select({ |method|
+							method.name.asString.contains(string)
+						}));
+					});
+				},
+				{
+					pool.do({ |class|
+						result = result.addAll(class.methods.select({ |method|
+							method.name.asString.containsi(string)
+						}));
+					});
+				}
+			);
 			result = result.sort({ |a, b|
 				if(a.name == b.name) { a.ownerClass.name < b.ownerClass.name }
 					{ a.name < b.name };
