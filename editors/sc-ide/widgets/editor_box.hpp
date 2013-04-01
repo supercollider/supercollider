@@ -73,6 +73,7 @@ signals:
 
 private slots:
     void onDocumentClosed(Document*);
+    void onDocumentSaved(Document*);
 
 private:
     int historyIndexOf(Document*);

@@ -23,6 +23,7 @@
 #include "../../core/main.hpp"
 
 #include <QPainter>
+#include <QScrollBar>
 
 namespace ScIDE {
 
@@ -39,6 +40,8 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
 
     connect(Main::documentManager(), SIGNAL(closed(Document*)),
             this, SLOT(onDocumentClosed(Document*)));
+    connect(Main::documentManager(), SIGNAL(saved(Document*)),
+            this, SLOT(onDocumentSaved(Document*)));
 }
 
 void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
@@ -88,6 +91,50 @@ void CodeEditorBox::onDocumentClosed(Document *doc)
             emit currentChanged(editor);
         }
     }
+}
+
+void CodeEditorBox::onDocumentSaved(Document *doc)
+{
+    // Check whether the document type still matches the editor type.
+    // If not, replace the editor.
+
+    int history_idx = historyIndexOf(doc);
+    if (history_idx == -1)
+        return;
+
+    GenericCodeEditor * editor = mHistory[history_idx];
+    if (doc->isPlainText() == (qobject_cast<ScCodeEditor*>(editor) == 0))
+        return;
+
+    bool was_current = editor == currentEditor();
+    bool was_focused = editor->window()->focusWidget() == editor;
+    int cursor_position = editor->textCursor().position();
+    int scroll_position = editor->verticalScrollBar()->value();
+
+    mHistory.removeAt(history_idx);
+    delete editor;
+
+    editor = doc->isPlainText() ? new GenericCodeEditor(doc)
+                                : new ScCodeEditor(doc);
+    editor->installEventFilter(this);
+    mHistory.insert(history_idx, editor);
+    mLayout->addWidget(editor);
+
+    QTextCursor cursor( editor->textDocument() );
+    cursor.setPosition(cursor_position);
+    editor->setTextCursor(cursor);
+
+    editor->verticalScrollBar()->setValue( scroll_position );
+
+    if (was_current) {
+        mLayout->setCurrentWidget(editor);
+        setFocusProxy(editor);
+    }
+
+    if (was_focused)
+        editor->setFocus(Qt::OtherFocusReason);
+
+    emit currentChanged(editor);
 }
 
 GenericCodeEditor *CodeEditorBox::currentEditor()
