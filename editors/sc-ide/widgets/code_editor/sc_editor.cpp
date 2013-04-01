@@ -963,12 +963,21 @@ void ScCodeEditor::gotoPreviousBlock()
     }
 }
 
-inline static bool tokenIsFirstAndOnlyInBlock( const TokenIterator & it )
+inline static bool tokenMaybeRegionStart( const TokenIterator & it )
 {
     Q_ASSERT(it.isValid());
-    bool result = it->positionInBlock == 0;
-    result = result && static_cast<TextBlockData*>(it.block().userData())->tokens.size() == 1;
-    return result;
+    return ( it->character == '(' && it->positionInBlock == 0 );
+}
+
+inline static bool tokenMaybeRegionEnd( const TokenIterator & it )
+{
+    Q_ASSERT(it.isValid());
+    if (it->character != ')')
+        return false;
+    TokenIterator next_it = it.next();
+    return (!next_it.isValid() ||
+            next_it.block() != it.block() ||
+            next_it->character == ';');
 }
 
 static bool bracketPairDefinesRegion( const BracketPair & bracketPair )
@@ -976,10 +985,7 @@ static bool bracketPairDefinesRegion( const BracketPair & bracketPair )
     Q_ASSERT(bracketPair.first.isValid());
     Q_ASSERT(bracketPair.second.isValid());
 
-    if ( bracketPair.first->character != '(' || bracketPair.second->character != ')' )
-        return false;
-
-    if (!tokenIsFirstAndOnlyInBlock(bracketPair.second) || !tokenIsFirstAndOnlyInBlock(bracketPair.second))
+    if (!tokenMaybeRegionStart(bracketPair.first) || !tokenMaybeRegionEnd(bracketPair.second))
         return false;
 
     // check whether this is an Event
