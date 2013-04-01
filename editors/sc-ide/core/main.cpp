@@ -272,11 +272,10 @@ bool Main::openDocumentationForMethod(const QString & className, const QString &
 void Main::openDefinition(const QString &string, QWidget * parent)
 {
     QString definitionString = string.trimmed();
-    if (definitionString.isEmpty())
-        return;
 
     LookupDialog dialog(parent);
-    dialog.query(definitionString);
+    if (!definitionString.isEmpty())
+        dialog.query(definitionString);
     dialog.exec();
 }
 
@@ -288,11 +287,10 @@ void Main::openCommandLine(const QString &string)
 void Main::findReferences(const QString &string, QWidget * parent)
 {
     QString definitionString = string.trimmed();
-    if (definitionString.isEmpty())
-        return;
 
     ReferencesDialog dialog(parent);
-    dialog.query(definitionString);
+    if (!definitionString.isEmpty())
+        dialog.query(definitionString);
     dialog.exec();
 }
 

@@ -1239,8 +1239,7 @@ void MainWindow::lookupImplementationForCursor()
 
 void MainWindow::lookupImplementation()
 {
-    LookupDialog dialog( QApplication::activeWindow() );
-    dialog.exec();
+    Main::openDefinition(QString(), QApplication::activeWindow());
 }
 
 void MainWindow::lookupReferencesForCursor()
@@ -1252,10 +1251,8 @@ void MainWindow::lookupReferencesForCursor()
 
 void MainWindow::lookupReferences()
 {
-    ReferencesDialog dialog( QApplication::activeWindow() );
-    dialog.exec();
+    Main::findReferences(QString(), QApplication::activeWindow());
 }
-
 
 void MainWindow::showStatusMessage( QString const & string )
 {
