@@ -286,9 +286,23 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
         mActions[StopMain]->setEnabled(false);
         mActions[RecompileClassLibrary]->setEnabled(false);
         updateToggleRunningAction();
+        postQuitNotification();
 
         break;
     }
+}
+
+void ScProcess::postQuitNotification()
+{
+    QString message;
+    switch (exitStatus()) {
+    case QProcess::CrashExit:
+        message = tr("Interpreter has crashed or stopped forcefully. [Exit code: %1]\n").arg(exitCode());
+        break;
+    default:
+        message = tr("Interpreter has quit. [Exit code: %1]\n").arg(exitCode());
+    }
+    emit scPost(message);
 }
 
 void ScProcess::onIpcData()
