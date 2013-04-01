@@ -74,6 +74,8 @@ public:
 
         GotoPreviousBlock,
         GotoNextBlock,
+        SelectEnclosingBlock,
+
         GotoPreviousRegion,
         GotoNextRegion,
         GotoPreviousEmptyLine,

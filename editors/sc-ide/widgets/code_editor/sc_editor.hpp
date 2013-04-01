@@ -57,6 +57,7 @@ public slots:
     void toggleComment();
     void gotoPreviousBlock();
     void gotoNextBlock();
+    void selectBlockAroundCursor();
     void selectCurrentRegion();
     void gotoNextRegion();
     void gotoPreviousRegion();
@@ -84,6 +85,7 @@ private:
     QTextCursor cursorAt( const TokenIterator, int offset = 0 );
     QTextCursor selectionForPosition( int position );
     QTextCursor regionAroundCursor( const QTextCursor & );
+    QTextCursor blockAroundCursor( const QTextCursor & );
     void moveToNextToken( QTextCursor &, QTextCursor::MoveMode );
     void moveToPreviousToken( QTextCursor &, QTextCursor::MoveMode );
 

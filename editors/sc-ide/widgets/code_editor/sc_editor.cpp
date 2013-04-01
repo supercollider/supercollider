@@ -963,6 +963,32 @@ void ScCodeEditor::gotoPreviousBlock()
     }
 }
 
+QTextCursor ScCodeEditor::blockAroundCursor( const QTextCursor & cursor )
+{
+    TokenIterator left_bracket =
+            previousOpeningBracket(
+                TokenIterator::leftOf(cursor.block(), cursor.positionInBlock()) );
+    if (!left_bracket.isValid())
+        return QTextCursor();
+    TokenIterator right_bracket =
+            nextClosingBracket(
+                TokenIterator::rightOf(cursor.block(), cursor.positionInBlock()) );
+    if (!right_bracket.isValid())
+        return QTextCursor();
+
+    QTextCursor block_cursor = cursor;
+    block_cursor.setPosition( left_bracket.position() );
+    block_cursor.setPosition( right_bracket.position() + 1, QTextCursor::KeepAnchor );
+    return block_cursor;
+}
+
+void ScCodeEditor::selectBlockAroundCursor()
+{
+    QTextCursor block_cursor = blockAroundCursor(textCursor());
+    if (!block_cursor.isNull())
+        setTextCursor(block_cursor);
+}
+
 inline static bool tokenMaybeRegionStart( const TokenIterator & it )
 {
     Q_ASSERT(it.isValid());
@@ -1131,7 +1157,7 @@ void ScCodeEditor::evaluateLine()
         text = cursor.selectedText();
     else {
         text = cursor.block().text();
-    
+
         if( mStepForwardEvaluation ) {
             QTextCursor newCursor = cursor;
             newCursor.movePosition(QTextCursor::NextBlock);

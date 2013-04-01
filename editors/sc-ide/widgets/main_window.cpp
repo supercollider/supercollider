@@ -558,6 +558,7 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::ToggleComment) );
     menu->addAction( mEditors->action(MultiEditor::ToggleOverwriteMode) );
     menu->addAction( mEditors->action(MultiEditor::SelectRegion) );
+    menu->addAction( mEditors->action(MultiEditor::SelectEnclosingBlock) );
 
     menu->addSeparator();
     menu->addAction( mActions[ShowSettings] );
