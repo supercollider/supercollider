@@ -103,11 +103,11 @@ Pspawn : FilterPattern {
 						event.spawner.wait(event.delta)
 					}
 					{ #[seq, par].includes(event.method) } {
-						child = event.pattern;
+						child = event[\pattern];
 						if(child.isKindOf(Symbol)) {
 							child = (event[\dict] ? Pdef).at(child);
 						};
-						event.spawner.perform(event.method, child.value);
+						event.spawner.perform(event.method, child.value(event));
 						if(event.delta > 0) {
 							event.spawner.wait(event.delta)
 						}
