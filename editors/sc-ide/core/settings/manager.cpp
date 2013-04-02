@@ -24,6 +24,7 @@
 #include <QApplication>
 #include <QPalette>
 #include <QTextCharFormat>
+#include <QDebug>
 
 namespace ScIDE { namespace Settings {
 
@@ -81,6 +82,18 @@ void Manager::initDefaults()
     evaluatedCodeFormat.setBackground(QColor("#F8A200"));
     evaluatedCodeFormat.setForeground(Qt::black);
     setDefault("evaluatedCode", QVariant::fromValue(evaluatedCodeFormat));
+
+    QTextCharFormat currentLineFormat;
+    {
+        QColor bkg = appPlt.color(QPalette::Base);
+        int value = bkg.value();
+        if (value > 40)
+            bkg.setHsv( bkg.hue(), bkg.saturation(), value - 11);
+        else
+            bkg.setHsv( bkg.hue(), bkg.saturation(), value + 20 );
+        currentLineFormat.setBackground(bkg.toRgb());
+    }
+    setDefault("currentLine", QVariant::fromValue(currentLineFormat));
 
     QTextCharFormat searchResultFormat;
     searchResultFormat.setBackground(appPlt.color(QPalette::Highlight).darker(200));

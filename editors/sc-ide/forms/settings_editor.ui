@@ -216,6 +216,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="highlightCurrentLine">
+          <property name="text">
+           <string>Highlight current line</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QCheckBox" name="highlightBracketContents">
           <property name="toolTip">
            <string>Highlight background of entire contents of matching brackets</string>
