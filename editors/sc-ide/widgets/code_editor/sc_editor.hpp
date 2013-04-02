@@ -122,6 +122,7 @@ private:
     bool mInsertMatchingTokens;
     QTextCharFormat mBracketHighlight;
     QTextCharFormat mBracketMismatchFormat;
+    bool mHighlightBracketContents;
 
     QList<QTextEdit::ExtraSelection> mBracketSelections;
     bool mMouseBracketMatch;

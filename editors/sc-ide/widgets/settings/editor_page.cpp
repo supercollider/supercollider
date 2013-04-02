@@ -83,6 +83,7 @@ void EditorPage::load( Manager *s )
     ui->disableBlinkingCursor->setChecked( s->value("disableBlinkingCursor").toBool() );
     ui->insertMatchingTokens->setChecked( s->value("insertMatchingTokens").toBool() );
     ui->blinkDuration->setValue( s->value("blinkDuration").toInt() );
+    ui->highlightBracketContents->setChecked( s->value("highlightBracketContents").toBool() );
 
     s->beginGroup("font");
     QString fontFamily = s->value("family").toString();
@@ -223,6 +224,7 @@ void EditorPage::store( Manager *s )
     s->setValue("lineWrap", ui->editorLineWrap->isChecked());
     s->setValue("disableBlinkingCursor", ui->disableBlinkingCursor->isChecked());
     s->setValue("insertMatchingTokens", ui->insertMatchingTokens->isChecked());
+    s->setValue("highlightBracketContents", ui->highlightBracketContents->isChecked());
 
     s->setValue("blinkDuration", ui->blinkDuration->value());
 

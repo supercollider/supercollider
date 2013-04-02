@@ -67,6 +67,7 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
     mBracketMismatchFormat = settings->value("colors/mismatchedBrackets").value<QTextCharFormat>();
     mStepForwardEvaluation = settings->value("stepForwardEvaluation").toBool();
     mInsertMatchingTokens = settings->value("insertMatchingTokens").toBool();
+    mHighlightBracketContents = settings->value("highlightBracketContents").toBool();
 
     settings->endGroup();
 }
@@ -532,7 +533,6 @@ void ScCodeEditor::matchBrackets()
         ){
             QTextEdit::ExtraSelection selection;
             selection.format = mBracketHighlight;
-
             cursor.setPosition(match.first.position());
             cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
             selection.cursor = cursor;
@@ -542,6 +542,16 @@ void ScCodeEditor::matchBrackets()
             cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
             selection.cursor = cursor;
             mBracketSelections.append(selection);
+
+            if (mHighlightBracketContents) {
+                QTextCharFormat format;
+                format.setBackground( mBracketHighlight.background() );
+                selection.format = format;
+                cursor.setPosition(match.first.position()+1);
+                cursor.setPosition(match.second.position(), QTextCursor::KeepAnchor);
+                selection.cursor = cursor;
+                mBracketSelections.append(selection);
+            }
         }
         else {
             QTextEdit::ExtraSelection selection;
