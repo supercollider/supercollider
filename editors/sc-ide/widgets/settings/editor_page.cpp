@@ -83,6 +83,7 @@ void EditorPage::load( Manager *s )
     ui->disableBlinkingCursor->setChecked( s->value("disableBlinkingCursor").toBool() );
     ui->insertMatchingTokens->setChecked( s->value("insertMatchingTokens").toBool() );
     ui->blinkDuration->setValue( s->value("blinkDuration").toInt() );
+    ui->highlightCurrentLine->setChecked( s->value("highlightCurrentLine").toBool() );
     ui->highlightBracketContents->setChecked( s->value("highlightBracketContents").toBool() );
 
     s->beginGroup("font");
@@ -163,11 +164,11 @@ void EditorPage::loadGeneralTextFormats( Manager *settings )
                    selectionDefaultFormat );
 
     static char const * const keys[] = {
-        "searchResult", "matchingBrackets", "mismatchedBrackets", "evaluatedCode"
+        "currentLine", "searchResult", "matchingBrackets", "mismatchedBrackets", "evaluatedCode"
     };
 
     static QStringList strings = QStringList()
-            << tr("Search Result") << tr("Matching Brackets")
+            << tr("Current Line") << tr("Search Result") << tr("Matching Brackets")
             << tr("Mismatched Brackets") << tr("Evaluated Code");
 
     static int count = strings.count();
@@ -224,6 +225,7 @@ void EditorPage::store( Manager *s )
     s->setValue("lineWrap", ui->editorLineWrap->isChecked());
     s->setValue("disableBlinkingCursor", ui->disableBlinkingCursor->isChecked());
     s->setValue("insertMatchingTokens", ui->insertMatchingTokens->isChecked());
+    s->setValue("highlightCurrentLine", ui->highlightCurrentLine->isChecked());
     s->setValue("highlightBracketContents", ui->highlightBracketContents->isChecked());
 
     s->setValue("blinkDuration", ui->blinkDuration->value());

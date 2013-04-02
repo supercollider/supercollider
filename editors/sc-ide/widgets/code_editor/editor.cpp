@@ -41,7 +41,8 @@ namespace ScIDE {
 
 GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
     QPlainTextEdit( parent ),
-    mDoc(doc)
+    mDoc(doc),
+    mLastCursorBlock(-1)
 {
     Q_ASSERT(mDoc != 0);
 
@@ -78,6 +79,8 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
 
     connect( this, SIGNAL(selectionChanged()),
              mLineIndicator, SLOT(update()) );
+    connect( this, SIGNAL(cursorPositionChanged()),
+             this, SLOT(onCursorPositionChanged()) );
 
     connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
              this, SLOT(applySettings(Settings::Manager*)) );
@@ -131,9 +134,13 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
             palette.setBrush(QPalette::HighlightedText, fg);
     }
 
+    mCurrentLineTextFormat = settings->value("currentLine").value<QTextCharFormat>();
     mSearchResultTextFormat = settings->value("searchResult").value<QTextCharFormat>();
 
     settings->endGroup(); // colors
+
+    mHighlightCurrentLine = settings->value("highlightCurrentLine").toBool();
+    updateCurrentLineHighlighting();
 
     settings->endGroup(); // IDE/editor
 
@@ -663,6 +670,39 @@ void GenericCodeEditor::updateLineIndicator( QRect r, int dy )
         mLineIndicator->update(0, r.y(), mLineIndicator->width(), r.height() );
 }
 
+void GenericCodeEditor::onCursorPositionChanged()
+{
+    if (mHighlightCurrentLine)
+        updateCurrentLineHighlighting();
+    mLastCursorBlock = textCursor().blockNumber();
+}
+
+void GenericCodeEditor::updateCurrentLineHighlighting()
+{
+    int currentCursorBlock = textCursor().blockNumber();
+    int first_block_num = qMin(mLastCursorBlock, currentCursorBlock);
+    int second_block_num = qMax(mLastCursorBlock, currentCursorBlock);
+
+    QRegion region(0,0,0,0);
+
+    QTextBlock block = firstVisibleBlock();
+    int block_num = block.blockNumber();
+    qreal top = blockBoundingGeometry(block).translated(contentOffset()).top();
+    qreal max_top = viewport()->rect().bottom();
+    while (block.isValid() && block_num <= second_block_num && top <= max_top)
+    {
+        QRectF block_rect = blockBoundingRect(block);
+        if (block_num == first_block_num || block_num == second_block_num) {
+            region += block_rect.translated(0, top).toRect();
+        }
+        top += block_rect.height();
+        block = block.next();
+        ++block_num;
+    }
+
+    viewport()->update( region );
+}
+
 void GenericCodeEditor::updateExtraSelections()
 {
     QList<QTextEdit::ExtraSelection> selections;
@@ -734,6 +774,35 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
         bottom = top + blockBoundingRect(block).height();
         ++blockNumber;
     }
+}
+
+void GenericCodeEditor::paintEvent( QPaintEvent *event )
+{
+    if (mHighlightCurrentLine)
+    {
+        int cursor_block_num = textCursor().blockNumber();
+        QTextBlock block = firstVisibleBlock();
+        int block_num = block.blockNumber();
+        qreal top = blockBoundingGeometry(block).translated(contentOffset()).top();
+        qreal max_top = event->rect().bottom();
+        while (block.isValid() && block_num <= cursor_block_num && top <= max_top)
+        {
+            QRectF block_rect = blockBoundingRect(block);
+            if (block_num == cursor_block_num) {
+                QPainter painter(viewport());
+                painter.fillRect(
+                            block_rect.translated(0, top),
+                            mCurrentLineTextFormat.background().color() );
+                painter.end();
+                break;
+            }
+            top += block_rect.height();
+            block = block.next();
+            ++block_num;
+        }
+    }
+
+    QPlainTextEdit::paintEvent(event);
 }
 
 void GenericCodeEditor::copyUpDown(bool up)
