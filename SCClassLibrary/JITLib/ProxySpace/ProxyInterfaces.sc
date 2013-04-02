@@ -95,9 +95,7 @@ PatternControl : StreamControl {
 	var fadeTime, <array;
 
 	playStream { | str |
-		var dt;
-		dt = fadeTime.value;
-		array = array.add(str);
+		var dt = fadeTime.value;
 		if(dt <= 0.02) {
 			str.play(clock, false, 0.0)
 		} {
@@ -120,7 +118,8 @@ PatternControl : StreamControl {
 
 	build { | proxy, orderIndex = 0 |
 		fadeTime = { proxy.fadeTime }; // needed for pattern xfade
-		stream = source.buildForProxy(proxy, channelOffset, orderIndex); 		clock = proxy.clock ? TempoClock.default;
+		stream = source.buildForProxy(proxy, channelOffset, orderIndex);
+		clock = proxy.clock ? TempoClock.default;
 		paused = proxy.paused;
 		^stream.notNil
 	}
@@ -143,16 +142,17 @@ PatternControl : StreamControl {
 	}
 
 	playToBundle { | bundle, args, proxy, addAction = 1 |
+		var str, event;
 		if(paused.not and: { stream.isPlaying.not })
 		{
-			// no latency (latency is in stream already)
-			bundle.onSend {
-				var str, event;
-				str = source.buildForProxy(proxy, channelOffset);
-				if(args.notNil) {
+			str = source.buildForProxy(proxy, channelOffset);
+			if(args.notNil) {
 					event = str.event;
 					args.pairsDo { arg key, val; event[key] = val }
-				};
+			};
+			array = array.add(str);
+			// no latency (latency is in stream already)
+			bundle.onSend {
 				this.playStream(str)
 			}
 		}
