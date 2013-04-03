@@ -1,6 +1,6 @@
 /*
     SuperCollider Qt IDE
-    Copyright (c) 2012 Jakob Leben & Tim Blechmann
+    Copyright (c) 2012-2013 Jakob Leben & Tim Blechmann
     http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
@@ -71,6 +71,8 @@ inline void extendSelectionForEnvVar(QPlainTextEdit * textEdit, QTextCursor sele
         }
     }
 }
+
+QRect fittedToScreen( const QRect & rect, QWidget * referenceWidget );
 
 } // namespace ScIDE
 
