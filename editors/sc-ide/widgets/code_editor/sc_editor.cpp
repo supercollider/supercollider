@@ -189,9 +189,8 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         break;
     }
     default:
-        if (mInsertMatchingTokens && !overwriteMode())
-            if (insertMatchingTokens(e->text()))
-                break;
+        if (!overwriteMode() && insertMatchingTokens(e->text()))
+            break;
         GenericCodeEditor::keyPressEvent(e);
     }
 
@@ -376,30 +375,35 @@ bool ScCodeEditor::insertMatchingTokens( const QString & text )
 
     cursor.beginEditBlock();
 
-    if (cursor.hasSelection()) {
-        if (isOpeningToken) {
-            int start = cursor.selectionStart();
-            int end = cursor.selectionEnd();
-            cursor.setPosition(start);
-            cursor.insertText(token);
-            cursor.setPosition(end + 1);
-            cursor.insertText(matchingToken);
+    if (mInsertMatchingTokens)
+    {
+        if (cursor.hasSelection()) {
+            if (isOpeningToken) {
+                int start = cursor.selectionStart();
+                int end = cursor.selectionEnd();
+                cursor.setPosition(start);
+                cursor.insertText(token);
+                cursor.setPosition(end + 1);
+                cursor.insertText(matchingToken);
+            }
+            else
+                cursor.insertText(token);
         }
-        else
-            cursor.insertText(token);
+        else {
+            if (isClosingToken && document->characterAt(cursorPosition) == token) {
+                cursor.movePosition(QTextCursor::NextCharacter);
+            }
+            else if (isOpeningToken) {
+                cursor.insertText(token);
+                cursor.insertText(matchingToken);
+                cursor.movePosition(QTextCursor::PreviousCharacter);
+            }
+            else
+                cursor.insertText(token);
+        }
     }
-    else {
-        if (isClosingToken && document->characterAt(cursorPosition) == token) {
-            cursor.movePosition(QTextCursor::NextCharacter);
-        }
-        else if (isOpeningToken) {
-            cursor.insertText(token);
-            cursor.insertText(matchingToken);
-            cursor.movePosition(QTextCursor::PreviousCharacter);
-        }
-        else
-            cursor.insertText(token);
-    }
+    else
+        cursor.insertText(token);
 
     cursor.endEditBlock();
 
