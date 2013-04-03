@@ -152,34 +152,27 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         ensureCursorVisible();
         return;
     }
-
-    case Qt::Key_Enter:
-    case Qt::Key_Return:
-    case Qt::Key_BraceRight:
-    case Qt::Key_BracketRight:
-    case Qt::Key_ParenRight: {
-        hideMouseCursor();
-
-        // Wrap superclass' implementation into an edit block,
-        // so it can be joined with indentation later:
-
-        QTextCursor cursor = textCursor();
-
-        cursor.beginEditBlock();
-        GenericCodeEditor::keyPressEvent(e);
-        cursor.endEditBlock();
-
-        cursor.joinPreviousEditBlock();
-        indent();
-        cursor.endEditBlock();
-
-        cursor.setVerticalMovementX(-1);
-        setTextCursor(cursor);
-
-        break;
-    }
     default:
+    {
+        static const QString closingBrackets(")]}");
+
+        bool indentCurrentLine =
+                e->key() == Qt::Key_Enter ||
+                e->key() == Qt::Key_Return ||
+                ( !e->text().isEmpty() && closingBrackets.contains(e->text()) );
+
+        if (indentCurrentLine)
+            cursor.beginEditBlock();
+
         GenericCodeEditor::keyPressEvent(e);
+
+        if (indentCurrentLine) {
+            cursor.endEditBlock();
+            cursor.joinPreviousEditBlock();
+            indent();
+            cursor.endEditBlock();
+        }
+    }
     }
 
     mAutoCompleter->keyPress(e);
