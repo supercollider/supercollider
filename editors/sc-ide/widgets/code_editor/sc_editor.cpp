@@ -70,6 +70,9 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
     mHighlightBracketContents = settings->value("highlightBracketContents").toBool();
 
     settings->endGroup();
+
+    // update bracket match highlighting:
+    matchBrackets();
 }
 
 bool ScCodeEditor::event( QEvent *e )
