@@ -51,6 +51,10 @@ METHOD:: setString
 	argument:: rangeSize
 		An Integer amount of characters.
 
+METHOD:: currentLine
+	NOTE::Only in Qt GUI::
+	The plain text of the line at text cursor.
+
 METHOD:: setFont
 	Applies the code::font:: to code::rangeSize:: amount of characters following the code::rangeStart:: position.
 
@@ -82,11 +86,14 @@ SUBSECTION:: Text Selection
 METHOD:: selectedString
 	The plain text contained in the current selection.
 
-	argument::
-		A String. Setting this variable will replace text in the selection with the argument, or do nothing if there is no selection.
-	returns::
-		A String. If no text is currently selected, an empty String is returned.
+	When getting this variable and there is no selection, the entire line at text cursor is returned (equivalent to link::#-currentLine::).
 
+	Setting this variable will replace text in the selection with the argument, or do nothing if there is no selection.
+
+	argument::
+		A String.
+	returns::
+		A String.
 
 METHOD:: selectionStart
 	The starting position of the selection. If no text is selected this variable represents the cursor position.

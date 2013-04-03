@@ -33,6 +33,7 @@ class QcTextEdit : public QTextEdit, QcHelper
   Q_PROPERTY( int selectionStart READ selectionStart );
   Q_PROPERTY( int selectionSize READ selectionSize );
   Q_PROPERTY( QString selectedString READ selectedString WRITE replaceSelectedText );
+  Q_PROPERTY( QString currentLine READ currentLine );
   Q_PROPERTY( QFont textFont READ dummyFont WRITE setTextFont );
   Q_PROPERTY( QColor textColor READ dummyColor WRITE setTextColor );
   Q_PROPERTY( VariantList rangeColor
@@ -53,6 +54,7 @@ class QcTextEdit : public QTextEdit, QcHelper
     Q_INVOKABLE void select( int start, int size );
     QString selectedString() const;
     void replaceSelectedText( const QString & );
+    QString currentLine() const;
     bool interpretSelection() const { return _interpretSelection; }
     void setInterpretSelection( bool b ) { _interpretSelection = b; }
     void setTextFont( const QFont & );
