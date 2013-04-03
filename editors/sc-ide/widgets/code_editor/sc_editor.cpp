@@ -66,6 +66,9 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
     mStepForwardEvaluation = settings->value("stepForwardEvaluation").toBool();
 
     settings->endGroup();
+
+    // update bracket match highlighting:
+    matchBrackets();
 }
 
 bool ScCodeEditor::event( QEvent *e )
