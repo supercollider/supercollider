@@ -1,6 +1,6 @@
 /*
     SuperCollider Qt IDE
-    Copyright (c) 2012 Jakob Leben & Tim Blechmann
+    Copyright (c) 2012-2013 Jakob Leben & Tim Blechmann
     http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
 #define QT_NO_DEBUG_OUTPUT
 
 #include "docklet.hpp"
+#include "gui_utilities.hpp"
 
 #include <QWidget>
 #include <QToolButton>
@@ -294,9 +295,17 @@ bool Docklet::eventFilter( QObject *object, QEvent *event )
 {
     switch(event->type()) {
     case QEvent::Show:
+        //qDebug() << "shown:" << object;
         mVisibilityAction->setChecked(true);
+#ifdef Q_OS_MAC
+        if (object == mDockWidget && mDockWidget->isFloating()) {
+            //qDebug("fitting geometry");
+            mDockWidget->setGeometry( fittedToScreen( mDockWidget->geometry(), mDockWidget ) );
+        }
+#endif
         break;
     case QEvent::Hide:
+        //qDebug() << "hidden:" << object;
         mVisibilityAction->setChecked(false);
         break;
     case QEvent::Resize:
