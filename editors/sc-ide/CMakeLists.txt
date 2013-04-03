@@ -92,6 +92,7 @@ set ( ide_src
     widgets/settings/sclang_page.cpp
     widgets/settings/editor_page.cpp
     widgets/settings/shortcuts_page.cpp
+    widgets/util/gui_utilities.cpp
     widgets/util/text_format_list_widget.cpp
     widgets/util/popup_widget.cpp
     widgets/util/docklet.cpp
