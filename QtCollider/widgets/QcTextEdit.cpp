@@ -26,6 +26,7 @@
 #include <QUrl>
 #include <QKeyEvent>
 #include <QApplication>
+#include <QTextBlock>
 
 class QcTextEditFactory : public QcWidgetFactory<QcTextEdit>
 {
@@ -96,6 +97,11 @@ void QcTextEdit::replaceSelectedText( const QString &string )
     cursor.removeSelectedText();
     cursor.insertText( string );
   }
+}
+
+QString QcTextEdit::currentLine() const
+{
+    return textCursor().block().text();
 }
 
 void QcTextEdit::setTextFont( const QFont &f )
