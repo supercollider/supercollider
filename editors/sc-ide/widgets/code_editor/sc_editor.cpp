@@ -177,15 +177,15 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
             cursor.movePosition( QTextCursor::PreviousBlock, QTextCursor::KeepAnchor );
             indent(cursor, JoinEditBlock);
             cursor.movePosition( QTextCursor::EndOfBlock );
-            setTextCursor(cursor);
         }
         else {
             cursor.beginEditBlock();
             cursor.insertBlock();
             cursor.endEditBlock();
             indent(cursor, JoinEditBlock);
-            ensureCursorVisible();
         }
+        cursor.setVerticalMovementX(-1);
+        setTextCursor(cursor);
         break;
     }
     default:
