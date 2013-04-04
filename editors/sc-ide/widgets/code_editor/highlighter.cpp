@@ -170,6 +170,17 @@ void SyntaxHighlighter::highlightBlockInString(ScLexer & lexer)
     Token::Type tokenType = lexer.nextToken(tokenLength);
     int range = lexer.offset() - originalOffset;
     setFormat(originalOffset, range, mGlobals->format(StringFormat));
+
+    if (tokenType == Token::Unknown)
+        return;
+
+    Q_ASSERT(tokenType == Token::StringMark);
+    Token token(tokenType, lexer.offset() - 1, 1);
+    token.character = '"';
+
+    TextBlockData *blockData = static_cast<TextBlockData*>(currentBlockUserData());
+    Q_ASSERT(blockData);
+    blockData->tokens.push_back( token );
 }
 
 void SyntaxHighlighter::highlightBlockInSymbol(ScLexer & lexer)
@@ -179,6 +190,17 @@ void SyntaxHighlighter::highlightBlockInSymbol(ScLexer & lexer)
     Token::Type tokenType = lexer.nextToken(tokenLength);
     int range = lexer.offset() - originalOffset;
     setFormat(originalOffset, range, mGlobals->format(SymbolFormat));
+
+    if (tokenType == Token::Unknown)
+        return;
+
+    Q_ASSERT(tokenType == Token::SymbolMark);
+    Token token(tokenType, lexer.offset() - 1, 1);
+    token.character = '\'';
+
+    TextBlockData *blockData = static_cast<TextBlockData*>(currentBlockUserData());
+    Q_ASSERT(blockData);
+    blockData->tokens.push_back( token );
 }
 
 void SyntaxHighlighter::highlightBlockInComment(ScLexer & lexer)
