@@ -94,6 +94,8 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     createActions();
 
     applySettings( Main::settings() );
+
+    setFocusProxy(mWebView);
 }
 
 void HelpBrowser::createActions()
