@@ -34,6 +34,7 @@ class Main;
 
 enum SyntaxFormat
 {
+    WhitespaceFormat,
     PlainFormat,
     ClassFormat,
     KeywordFormat,
