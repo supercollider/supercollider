@@ -466,8 +466,9 @@ Psync : FilterPattern {
 			inevent = stream.next(event).asEvent;
 			if(inevent.isNil) {
 				if(localquant.notNil) {
-					event = Event.silent(elapsed.roundUp(localquant) - elapsed, event);
-					^cleanup.exit(event).yield;
+					delta = elapsed.roundUp(localquant) - elapsed;
+					if(delta > 0) { Event.silent(delta, event).yield };
+					^cleanup.exit(event);
 				};
 			};
 			cleanup.update(inevent);
