@@ -652,21 +652,23 @@ void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *
 
   case QcGraphElement::Quadratic: {
     path.moveTo( pt1 );
-    const qreal sqrtBegin = std::sqrt(pt1.y());
-    const qreal sqrtEnd   = std::sqrt(pt2.y());
-    const qreal n = 100.f;
-    const qreal grow = (sqrtEnd - sqrtBegin) / n;
 
-    qreal x = pt1.x();
-    qreal y = pt1.y();
+    const qreal x1 = pt1.x();
+    const qreal x2 = pt2.x();
+    const qreal y1 = std::sqrt(pt1.y());
+    const qreal y2 = std::sqrt(pt2.y());
+    static const int n = 100;
 
-    const float dx = (pt2.x() - pt1.x()) / n;
+    const qreal dx = x2 - x1;
+    const qreal dy = y2 - y1;
+    const qreal k = dx != 0.0 ? dy / dx : 0.0;
+    const qreal a = y1 - x1 * k;
+    const qreal kx = dx / n;
 
-    for (int i = 0; i != n; ++i) {
-        x += dx;
-        y += grow;
-        qreal yCoord = y*y;
-        path.lineTo( x, yCoord );
+    for (int i = 1; i < n; ++i) {
+        qreal x = i * kx + x1;
+        qreal y = k * x + a;
+        path.lineTo( x, y*y );
     }
 
     path.lineTo( pt2 );
@@ -676,21 +678,23 @@ void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *
 
   case QcGraphElement::Cubic: {
     path.moveTo( pt1 );
-    const qreal cubrtBegin = std::pow(pt1.y(), qreal(1/3.0));
-    const qreal cubrtEnd   = std::pow(pt2.y(), qreal(1/3.0));
-    const qreal n = 100.f;
-    const qreal grow = (cubrtEnd - cubrtBegin) / n;
 
-    qreal x = pt1.x();
-    qreal y = pt1.y();
+    const qreal x1 = pt1.x();
+    const qreal x2 = pt2.x();
+    const qreal y1 = std::pow(pt1.y(), qreal(1/3.0));
+    const qreal y2 = std::pow(pt2.y(), qreal(1/3.0));
+    static const int n = 100;
 
-    const float dx = (pt2.x() - pt1.x()) / n;
+    const qreal dx = x2 - x1;
+    const qreal dy = y2 - y1;
+    const qreal k = dx != 0.0 ? dy / dx : 0.0;
+    const qreal a = y1 - x1 * k;
+    const qreal kx = dx / n;
 
-    for (int i = 0; i != n; ++i) {
-        x += dx;
-        y += grow;
-        qreal yCoord = y*y*y;
-        path.lineTo( x, yCoord );
+    for (int i = 1; i < n; ++i) {
+        qreal x = i * kx + x1;
+        qreal y = k * x + a;
+        path.lineTo( x, y*y*y );
     }
 
     path.lineTo( pt2 );
@@ -740,13 +744,24 @@ void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *
       path.lineTo( pt2 );
     }
     else {
-      const float n = 100.f;
-      const float yratio = pt2.y() / pt1.y();
-      for( float ph=1/n; ph<=(1-1/n); ph+=1/n ) {
-        qreal y = pt1.y() * pow( yratio, ph );
-        path.lineTo( pt1.x() + (dx * ph), y );
-      }
-      path.lineTo( pt2 );
+        static const int n = 100;
+        const qreal x1 = pt1.x();
+        const qreal x2 = pt2.x();
+        const qreal y1 = pt1.y();
+        const qreal y2 = pt2.y();
+
+        const qreal kx = (x2 - x1) / n;
+        const double ky = y1 != 0.0 ? std::pow(y2 / y1, 1.0 / n) : 1.f;
+        double y = y1;
+
+        for (int i = 1; i < n; ++i)
+        {
+            qreal x = i * kx + x1;
+            y = y * ky;
+            path.lineTo(x, y);
+        }
+
+        path.lineTo( pt2 );
     }
 
     break;
