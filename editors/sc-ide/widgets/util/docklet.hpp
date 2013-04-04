@@ -107,6 +107,13 @@ public slots:
     void hide() { setVisible(false); }
     void close() { hide(); }
     void raise() { currentContainer()->raise(); }
+    void focus()
+    {
+        show();
+        raise();
+        mWidget->setFocus();
+        mWidget->activateWindow();
+    }
 
 private slots:
     void onFeaturesChanged ( QDockWidget::DockWidgetFeatures features );
