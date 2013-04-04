@@ -159,13 +159,6 @@ public:
     explicit HelpBrowserDocklet( QWidget *parent = 0 );
     HelpBrowser *browser() { return mHelpBrowser; }
 
-    void raiseAndFocus()
-    {
-        show();
-        raise();
-        mHelpBrowser->setFocus();
-    }
-
 private slots:
     void onInterpreterStart() {
         if (isVisible() && mHelpBrowser->url().isEmpty())

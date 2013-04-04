@@ -106,14 +106,6 @@ class PostDocklet:
 public:
     PostDocklet(QWidget* parent = 0);
 
-public slots:
-    void raiseAndFocus()
-    {
-        show();
-        raise();
-        mPostWindow->setFocus();
-    }
-
 private slots:
     void onFloatingChanged(bool floating);
 

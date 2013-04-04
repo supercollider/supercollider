@@ -389,7 +389,7 @@ void MainWindow::createActions()
     mActions[FocusPostWindow] = action = new QAction( tr("Focus Post Window"), this);
     action->setStatusTip(tr("Focus post window"));
     action->setShortcut(tr("Ctrl+P", "Focus post window"));
-    connect(action, SIGNAL(triggered()), mPostDocklet, SLOT(raiseAndFocus()));
+    connect(action, SIGNAL(triggered()), mPostDocklet, SLOT(focus()));
     settings->addAction( action, "post-focus", ideCategory);
 
     // Language
@@ -1452,7 +1452,7 @@ void MainWindow::openHelp()
 {
     if (mHelpBrowserDocklet->browser()->url().isEmpty())
         mHelpBrowserDocklet->browser()->goHome();
-    mHelpBrowserDocklet->raiseAndFocus();
+    mHelpBrowserDocklet->focus();
 }
 
 void MainWindow::openHelpAboutIDE()
@@ -1468,7 +1468,7 @@ void MainWindow::openHelpAboutIDE()
     geometry.moveCenter( availableGeometry.center() );
 
     mHelpBrowserDocklet->window()->setGeometry( geometry );
-    mHelpBrowserDocklet->raiseAndFocus();
+    mHelpBrowserDocklet->focus();
 }
 
 void MainWindow::dragEnterEvent( QDragEnterEvent * event )
