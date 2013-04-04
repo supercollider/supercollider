@@ -626,11 +626,13 @@ void ScCodeEditor::indent( const QTextCursor & selection, EditBlockMode editBloc
     QStack<int> stack;
     int global_level = 0;
     int blockNum = 0;
+    bool in_string = false;
     QTextBlock block = QPlainTextEdit::document()->begin();
     while (block.isValid())
     {
         int initialStackSize = stack.size();
         int level = 0;
+        bool block_start_in_string = in_string;
 
         TextBlockData *data = static_cast<TextBlockData*>(block.userData());
         if (data)
@@ -656,8 +658,12 @@ void ScCodeEditor::indent( const QTextCursor & selection, EditBlockMode editBloc
                     }
                     break;
 
+                case Token::StringMark:
+                    in_string = !in_string;
+                    break;
+
                 default:
-                    ;
+                    break;
                 }
             }
         }
@@ -666,8 +672,10 @@ void ScCodeEditor::indent( const QTextCursor & selection, EditBlockMode editBloc
             int indentLevel;
             if (data && data->tokens.size() && data->tokens[0].type == Token::ClosingBracket)
                 indentLevel = stack.size();
-            else
+            else if (!block_start_in_string)
                 indentLevel = initialStackSize;
+            else
+                indentLevel = 0;
             block = indent(block, indentLevel);
         }
 
