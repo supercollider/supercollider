@@ -125,8 +125,15 @@ void Manager::initHighlightingDefaults()
 {
     QPalette plt( QApplication::palette() );
     QColor base = plt.color(QPalette::Base);
+    QColor text = plt.color(QPalette::Text);
     int shade = (base.red() + base.green() + base.blue() < 380) ? 160 : 100;
 
+    QColor whitespace_color(
+                (base.red() + text.red()) / 2,
+                (base.green() + text.green()) / 2,
+                (base.blue() + text.blue()) / 2 );
+
+    setDefault( "whitespace", makeHlFormat( whitespace_color ) );
     setDefault( "keyword", makeHlFormat( QColor(0,0,230).lighter(shade), QFont::Bold ) );
     setDefault( "built-in", makeHlFormat( QColor(51,51,191).lighter(shade) ) );
     setDefault( "env-var", makeHlFormat( QColor(140,70,20).lighter(shade) ) );

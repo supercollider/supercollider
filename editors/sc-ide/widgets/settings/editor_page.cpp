@@ -185,11 +185,12 @@ void EditorPage::loadSyntaxTextFormats( Manager *settings )
     mSyntaxFormatsItem->setText(0, tr("Syntax Highlighting") );
 
     static char const * const keys[] = {
-        "keyword", "built-in", "env-var", "class", "number",
+        "whitespace", "keyword", "built-in", "env-var", "class", "number",
         "symbol", "string", "char", "comment", "primitive"
     };
 
     static QStringList strings = QStringList()
+            << tr("Whitespace")
             << tr("Keyword") << tr("Built-in Value") << tr("Environment Variable")
             << tr("Class") << tr("Number") << tr("Symbol") << tr("String") << tr("Char")
             << tr("Comment") << tr("Primitive");
