@@ -139,7 +139,10 @@ public slots:
     void removeCurrentSplit();
     void removeAllSplits();
 
+    void setShowWhitespace(bool on);
+
 private slots:
+    void applySettings( Settings::Manager * );
     void onOpen( Document *, int initialCursorPosition, int selectionLength );
     void onClose( Document * );
     void show( Document *, int cursorPosition = -1, int selectionLenght = 0 );

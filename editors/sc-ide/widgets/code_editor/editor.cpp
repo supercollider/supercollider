@@ -98,6 +98,7 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
     settings->beginGroup("IDE/editor");
 
     bool lineWrap = settings->value("lineWrap").toBool();
+    bool showWhitespace = settings->value("showWhitespace").toBool();
 
     QPalette palette;
 
@@ -145,6 +146,7 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
     settings->endGroup(); // IDE/editor
 
     setLineWrapMode( lineWrap ? QPlainTextEdit::WidgetWidth : QPlainTextEdit::NoWrap );
+    setShowWhitespace( showWhitespace );
     setPalette(palette);
 }
 
