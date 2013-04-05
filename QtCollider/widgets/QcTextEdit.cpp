@@ -37,7 +37,7 @@ class QcTextEditFactory : public QcWidgetFactory<QcTextEdit>
 
 QC_DECLARE_FACTORY( QcTextEdit, QcTextEditFactory );
 
-QcTextEdit::QcTextEdit() : _interpretSelection(false)
+QcTextEdit::QcTextEdit() : _interpretSelection(true)
 {
   connect( this, SIGNAL(interpret(QString)),
            qApp, SLOT(interpret(QString)),
