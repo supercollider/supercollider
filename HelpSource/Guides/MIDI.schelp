@@ -51,6 +51,7 @@ MIDIIn.connectAll;
 m = MIDIFunc.noteOn({ |vel, num|
 	"note % @ velocity %\n".postf(num, vel);
 });
+)
 
 // when finished
 m.free;
