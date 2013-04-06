@@ -6,7 +6,7 @@ categories::  UGens>Multichannel>Panners
 
 Description::
 
-Equal power panning balances two channels; by panning, you are favouring one or other channel in the mix, and the other loses power.
+Equal power panning balances two channels. By panning from left (pos=-1) to right (pos=1) you are decrementing the level of the left channel from 1 to 0 taking the square root of the linear scaling factor, while at the same time incrementing the level of the right channel from 0 to 1 using the same curve. In the center position (pos=0) this results in a level for both channels of 0.5.sqrt (~=0.707 or -3dB). The output of Balance2 remains a stereo signal.  
 
 classmethods::
 private:: categories
@@ -26,7 +26,36 @@ argument::level
 a control rate level input.
 
 discussion::
-The middle pan position (pos=0.0) corresponds to the original stereo mix; full left (pos of -1) is essentially just left channel playing, full right (pos of 1) just the right. The output of Balance2 remains a stereo signal.
+Panning and the pan law
+
+The pan law determines how an audio signal's volume level is modified across the stereo field. To illustrate, if you pan a mono track to the right, the sound comes out your right speaker only, then if you pan the track to the center, the sound comes out of both speakers. If the same volume level is used when panned right and in the center, the center would be 6dbB louder than the right because the same level is now coming out both speakers. (This also applies in a similar way to stereo tracks, although it gets a bit more complicated as some content of the two channels might cancel each other out, in effect making the centered signal less loud. )
+
+The pan law creates a consistent and smooth volume transition when panning from right or left to the center in a stereo field. This compensation is done by reducing the level of the audio channel the closer it’s panned to the center. The two main variations are linear panning and equal power panning. 
+
+With linear panning (LinPan2, for mono signals) the signal is lowered as it approaches center using a straight line from 1 (left or right) to 0.5 (center) for a 6dB reduction in the middle. A problem inherent to linear panning is that the perceived volume of the signal drops in the middle. Pan2 (for mono signals) and Balance2 (for stereo signals) solve this by taking the square root of the linear scaling factor going from 1 (left or right) to 0.5.sqrt (~=0.707) in the center, which is about 3dB reduction. This is equal power panning. 
+
+There was research completed in the 1930’s by Disney which suggested that a 3 dB reduction in the center is optimal for the listener, however a different study done by the BBC in the 1970’s suggests that 4.5 dB is better. What is “best” is up for debate and will depend largely on the listener, listening environment, speaker placement and the speakers themselves (including headphones). 
+
+Info taken from:
+http://blogs.adobe.com/audition/2010/10/following-the-letter-of-the-pan-law.html
+http://www.harmonycentral.com/t5/Lessons-Theory/Panning-Laws-Revealed/ba-p/34642227
+
+Examples 
+
+// a stereo signal, both channels at 0dB
+{[SinOsc.ar(440), SinOsc.ar(440)]}.play
+
+// using Balance on a stereo signal with the position parameter at 0, effectively the same sound but both channels at -3dB
+{Balance2.ar(SinOsc.ar(440), SinOsc.ar(440), 0)}.play
+
+// pan sweep from left to right
+{Balance2.ar(SinOsc.ar(440), SinOsc.ar(1000), Line.kr(-1,1,5))}.play
+
+// hear the difference, LinPan having a slight drop in the middle (yeah, it's subtle)...
+{LinPan2.ar(SinOsc.ar(440), Line.kr(-1,1,5))}.play
+
+// ... whereas Pan2 is more smooth
+{Pan2.ar(SinOsc.ar(440), Line.kr(-1,1,5))}.play
 
 Examples::
 code::
