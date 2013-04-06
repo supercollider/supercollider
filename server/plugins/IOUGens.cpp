@@ -1653,12 +1653,13 @@ void LocalOut_next_a(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs;
 
 	LocalIn *localIn = (LocalIn*)unit->mParent->mLocalAudioBusUnit;
-	if (!localIn || numChannels != localIn->mNumOutputs)
-	{
-		ClearUnitOutputs(unit, inNumSamples);
-	}
+	if (!localIn)
+		return;
 
 	float *out = localIn->m_bus;
+	if ((out == NULL) || (numChannels != localIn->mNumOutputs))
+		return;
+
 	int32 *touched = localIn->m_busTouched;
 
 	int32 bufCounter = unit->mWorld->mBufCounter;
@@ -1682,12 +1683,13 @@ FLATTEN void LocalOut_next_a_nova(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs;
 
 	LocalIn *localIn = (LocalIn*)unit->mParent->mLocalAudioBusUnit;
-	if (!localIn || numChannels != localIn->mNumOutputs)
-	{
-		ClearUnitOutputs(unit, inNumSamples);
-	}
+	if (!localIn)
+		return;
 
 	float *out = localIn->m_bus;
+	if ((out == NULL) || (numChannels != localIn->mNumOutputs))
+		return;
+
 	int32 *touched = localIn->m_busTouched;
 
 	int32 bufCounter = unit->mWorld->mBufCounter;
@@ -1711,12 +1713,13 @@ void LocalOut_next_a_nova_64(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs;
 
 	LocalIn *localIn = (LocalIn*)unit->mParent->mLocalAudioBusUnit;
-	if (!localIn || numChannels != localIn->mNumOutputs)
-	{
-		ClearUnitOutputs(unit, inNumSamples);
-	}
+	if (!localIn)
+		return;
 
 	float *out = localIn->m_bus;
+	if ((out == NULL) || (numChannels != localIn->mNumOutputs))
+		return;
+
 	int32 *touched = localIn->m_busTouched;
 
 	int32 bufCounter = unit->mWorld->mBufCounter;
@@ -1739,12 +1742,13 @@ void LocalOut_next_k(IOUnit *unit, int inNumSamples)
 	int numChannels = unit->mNumInputs;
 
 	LocalIn *localIn = (LocalIn*)unit->mParent->mLocalControlBusUnit;
-	if (!localIn || numChannels != localIn->mNumOutputs)
-	{
-		ClearUnitOutputs(unit, inNumSamples);
-	}
+	if (!localIn)
+		return;
 
 	float *out = localIn->m_bus;
+	if ((out == NULL) || (numChannels != localIn->mNumOutputs))
+		return;
+
 	int32 *touched = localIn->m_busTouched;
 
 	int32 bufCounter = unit->mWorld->mBufCounter;
@@ -1774,12 +1778,8 @@ void LocalOut_Ctor(IOUnit* unit)
 		else
 #endif
 		SETCALC(LocalOut_next_a);
-		unit->m_bus = world->mAudioBus;
-		unit->m_busTouched = world->mAudioBusTouched;
 	} else {
 		SETCALC(LocalOut_next_k);
-		unit->m_bus = world->mControlBus;
-		unit->m_busTouched = world->mControlBusTouched;
 	}
 	//Print("<-LocalOut_Ctor\n");
 }
