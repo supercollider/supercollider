@@ -241,7 +241,7 @@ void PyrBlockNode::dump(int level)
 
 void dumpPyrSlot(PyrSlot* slot)
 {
-	char str[128];
+	char str[1024];
 	slotString(slot, str);
 	post("   %s\n", str);
 }
