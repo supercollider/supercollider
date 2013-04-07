@@ -483,6 +483,13 @@ code::
 Pbind(\degree, p {:[x, y].postln, x<-(0..10), y<-(0..10), (x + y).isPrime }, \dur, 0.3).play;
 ::
 
+subsection::Related keywords
+
+method:: thisFunction
+The global pseudo-variable code::thisFunction:: returns current enclosing Function. 
+Be aware of inline optimizations (link::Reference/Control-Structures::). 
+See also: link::Classes/FunctionDef#-thisFunctionDef::.
+
 examples::
 
 subsection::Exception Handling
