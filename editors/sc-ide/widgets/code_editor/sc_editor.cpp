@@ -208,6 +208,9 @@ void ScCodeEditor::mouseReleaseEvent ( QMouseEvent *e )
 
 void ScCodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
 {
+    // Always pass to superclass so as to handle line selection on triple click
+    GenericCodeEditor::mouseDoubleClickEvent(e);
+
     if (e->button() == Qt::LeftButton) {
         QTextCursor cursor = cursorForPosition(e->pos());
         QTextCursor selection = selectionForPosition( cursor.position() );
@@ -218,8 +221,6 @@ void ScCodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
             return;
         }
     }
-
-    GenericCodeEditor::mouseDoubleClickEvent(e);
 }
 
 void ScCodeEditor::mouseMoveEvent( QMouseEvent *e )
