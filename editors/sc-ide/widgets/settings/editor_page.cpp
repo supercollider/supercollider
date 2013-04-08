@@ -273,7 +273,22 @@ void EditorPage::onCurrentTabChanged(int)
 
 void EditorPage::onMonospaceToggle(bool onlyMonospaced)
 {
+    QString fontFamily = ui->fontCombo->currentText();
+
+    bool signals_blocked = ui->fontCombo->blockSignals(true);
+
     populateFontList( onlyMonospaced );
+
+    if (!fontFamily.isEmpty()) {
+        int fontFamilyIndex = ui->fontCombo->findText( fontFamily, Qt::MatchFixedString );
+        if (fontFamilyIndex == -1)
+            fontFamilyIndex = 0;
+        ui->fontCombo->setCurrentIndex( fontFamilyIndex );
+    }
+
+    ui->fontCombo->blockSignals(signals_blocked);
+
+    updateFontPreview();
 }
 
 void EditorPage::updateFontPreview()
