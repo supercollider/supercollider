@@ -2928,25 +2928,18 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Klang_Dtor(Klang *unit)
-{
-	RTFree(unit->mWorld, unit->m_coefs);
-}
-
-static float Klang_SetCoefs(Klang *unit);
-
-void Klang_Ctor(Klang *unit)
-{
-	SETCALC(Klang_next);
-	ZOUT0(0) = Klang_SetCoefs(unit);
-}
-
-float Klang_SetCoefs(Klang *unit)
+static float Klang_SetCoefs(Klang *unit)
 {
 	unit->m_numpartials = (unit->mNumInputs - 2)/3;
 
 	int numcoefs = unit->m_numpartials * 3;
 	unit->m_coefs = (float*)RTAlloc(unit->mWorld, numcoefs * sizeof(float));
+
+	if (!unit->m_coefs) {
+		Print("Klang: RT memory allocation failed\n");
+		SETCALC(ClearUnitOutputs);
+		return 0.f;
+	}
 
 	float freqscale = ZIN0(0) * unit->mRate->mRadiansPerSample;
 	float freqoffset = ZIN0(1) * unit->mRate->mRadiansPerSample;
@@ -2969,6 +2962,17 @@ float Klang_SetCoefs(Klang *unit)
 		*++coefs = 2. * cos(w);		// b1
 	}
 	return outf;
+}
+
+void Klang_Ctor(Klang *unit)
+{
+	SETCALC(Klang_next);
+	ZOUT0(0) = Klang_SetCoefs(unit);
+}
+
+void Klang_Dtor(Klang *unit)
+{
+	RTFree(unit->mWorld, unit->m_coefs);
 }
 
 void Klang_next(Klang *unit, int inNumSamples)
@@ -3126,30 +3130,19 @@ void Klang_next(Klang *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-void Klank_Dtor(Klank *unit)
-{
-	RTFree(unit->mWorld, unit->m_coefs);
-}
-
-static void Klank_SetCoefs(Klank *unit);
-
-void Klank_Ctor(Klank *unit)
-{
-	SETCALC(Klank_next);
-	unit->m_x1 = unit->m_x2 = 0.f;
-	Klank_SetCoefs(unit);
-	ZOUT0(0) = 0.f;
-}
-
-void Klank_SetCoefs(Klank *unit)
+static void Klank_SetCoefs(Klank *unit)
 {
 	int numpartials = (unit->mNumInputs - 4) / 3;
 	unit->m_numpartials = numpartials;
 
 	int numcoefs = ((unit->m_numpartials + 3) & ~3) * 5;
 	unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
+	if (!unit->m_coefs) {
+		Print("Klang: RT memory allocation failed\n");
+		SETCALC(ClearUnitOutputs);
+		return;
+	}
+
 	unit->m_buf = unit->m_coefs + numcoefs;
 
 	float freqscale = ZIN0(1) * unit->mRate->mRadiansPerSample;
@@ -3180,6 +3173,18 @@ void Klank_SetCoefs(Klank *unit)
 	}
 }
 
+void Klank_Ctor(Klank *unit)
+{
+	SETCALC(Klank_next);
+	unit->m_x1 = unit->m_x2 = 0.f;
+	Klank_SetCoefs(unit);
+	ZOUT0(0) = 0.f;
+}
+
+void Klank_Dtor(Klank *unit)
+{
+	RTFree(unit->mWorld, unit->m_coefs);
+}
 
 void Klank_next(Klank *unit, int inNumSamples)
 {
