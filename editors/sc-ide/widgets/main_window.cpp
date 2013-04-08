@@ -998,7 +998,20 @@ bool MainWindow::save( Document *doc, bool forceChoose )
 
         }
 
-        if (dialog.exec() == QDialog::Accepted)
+#ifdef Q_OS_MAC
+        QWidget *last_active_window = QApplication::activeWindow();
+#endif
+
+        int result = dialog.exec();
+
+        // FIXME: workaround for Qt bug 25295
+        // See SC issue #678
+#ifdef Q_OS_MAC
+        if (last_active_window)
+            last_active_window->activateWindow();
+#endif
+
+        if (result == QDialog::Accepted)
             return documentManager->saveAs(doc, dialog.selectedFiles()[0]);
         else
             return false;
@@ -1033,12 +1046,23 @@ void MainWindow::openDocument()
         << tr("SCDoc (*.schelp)");
     dialog.setNameFilters(filters);
 
+#ifdef Q_OS_MAC
+    QWidget *last_active_window = QApplication::activeWindow();
+#endif
+
     if (dialog.exec())
     {
         QStringList filenames = dialog.selectedFiles();
         foreach(QString filename, filenames)
             mMain->documentManager()->open(filename);
     }
+
+    // FIXME: workaround for Qt bug 25295
+    // See SC issue #678
+#ifdef Q_OS_MAC
+    if (last_active_window)
+        last_active_window->activateWindow();
+#endif
 }
 
 void MainWindow::openStartupFile()
