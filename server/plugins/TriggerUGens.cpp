@@ -2833,6 +2833,11 @@ struct SendPeakRMS:
 		size_t cmdNameAllocSize = (cmdNameSize + 1) * sizeof(char);
 
 		void * allocData = RTAlloc(unit->mWorld, channelDataAllocSize + cmdNameAllocSize);
+		if (!allocData) {
+			Print("SendPeakRMS: RT memory allocation failed\n");
+			SETCALC(Unit_next_nop);
+			return;
+		}
 
 		memset(allocData, 0, channelDataAllocSize);
 		mChannelData = (float*)allocData;
