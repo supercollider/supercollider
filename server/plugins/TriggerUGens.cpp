@@ -781,6 +781,9 @@ void SendTrig_next_aka(SendTrig *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+static void SendReply_next_nop(SendReply * unit, int inNumSamples)
+{}
+
 void SendReply_Ctor(SendReply *unit)
 {
 	const int kVarOffset = 3;
@@ -788,29 +791,37 @@ void SendReply_Ctor(SendReply *unit)
 	unit->m_prevtrig = 0.f;
 	unit->m_cmdNameSize = IN0(2);
 	unit->m_valueSize = unit->mNumInputs - unit->m_cmdNameSize - kVarOffset;
+	unit->m_valueOffset = kVarOffset + unit->m_cmdNameSize;
 
 	// allocations
-	unit->m_cmdName = (char*)RTAlloc(unit->mWorld, (unit->m_cmdNameSize + 1) * sizeof(char));
-	for(int i = 0; i < (int)unit->m_cmdNameSize; i++){
+	const int cmdNameAllocSize = (unit->m_cmdNameSize + 1) * sizeof(char);
+	const int valuesAllocSize = unit->m_valueSize * sizeof(float);
+	char * chunk = (char*)RTAlloc(unit->mWorld,cmdNameAllocSize + valuesAllocSize);
+
+	if (!chunk) {
+		Print("SendReply: RT memory allocation failed\n");
+		SETCALC(SendReply_next_nop);
+		return;
+	}
+
+	unit->m_cmdName = chunk;
+	unit->m_values  = (float*)(chunk + cmdNameAllocSize);
+
+	for(int i = 0; i < (int)unit->m_cmdNameSize; i++)
 		unit->m_cmdName[i] = (char)IN0(kVarOffset+i);
-	};
+
 	// terminate string
 	unit->m_cmdName[unit->m_cmdNameSize] = 0;
 
-	unit->m_valueOffset = kVarOffset + unit->m_cmdNameSize;
-	unit->m_values = (float*)RTAlloc(unit->mWorld, unit->m_valueSize * sizeof(float));
-
-	if (INRATE(0) == calc_FullRate) {
+	if (INRATE(0) == calc_FullRate)
 		SETCALC(SendReply_next_aka);
-	} else {
+	else
 		SETCALC(SendReply_next);
-	}
 }
 
 void SendReply_Dtor(SendReply* unit)
 {
 	RTFree(unit->mWorld, unit->m_values);
-	RTFree(unit->mWorld, unit->m_cmdName);
 }
 
 
@@ -824,9 +835,9 @@ void SendReply_next(SendReply *unit, int inNumSamples)
 	for(int j = 0; j < inNumSamples; j++) {
 		float curtrig = trig[j];
 		if (curtrig > 0.f && prevtrig <= 0.f) {
-			for(int i=0; i<valueSize; i++) {
+			for (int i=0; i<valueSize; i++)
 				values[i] = IN(i + valueOffset)[0];
-			}
+
 			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(1), unit->m_cmdName, unit->m_valueSize, values);
 		}
 		prevtrig = curtrig;
@@ -844,7 +855,7 @@ void SendReply_next_aka(SendReply *unit, int inNumSamples)
 	for(int j = 0; j < inNumSamples; j++) {
 		float curtrig = trig[j];
 		if (curtrig > 0.f && prevtrig <= 0.f) {
-			for(int i=0; i<valueSize; i++) {
+			for (int i=0; i<valueSize; i++) {
 				int offset = INRATE( i + valueOffset ) != calc_FullRate ? 0 : j;
 				values[i] = IN(i + valueOffset)[offset];
 			}
