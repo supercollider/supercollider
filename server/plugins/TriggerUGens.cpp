@@ -69,7 +69,7 @@ struct Poll : public Unit
 {
 	int m_samplesRemain, m_intervalSamples;
 	float m_trig;
-	float m_lastPoll, m_id;
+	float m_lastPoll;
 	char *m_id_string;
 	bool m_mayprint;
 };
@@ -781,7 +781,7 @@ void SendTrig_next_aka(SendTrig *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void SendReply_next_nop(SendReply * unit, int inNumSamples)
+static void Unit_next_nop(SendReply * unit, int inNumSamples)
 {}
 
 void SendReply_Ctor(SendReply *unit)
@@ -800,7 +800,7 @@ void SendReply_Ctor(SendReply *unit)
 
 	if (!chunk) {
 		Print("SendReply: RT memory allocation failed\n");
-		SETCALC(SendReply_next_nop);
+		SETCALC(Unit_next_nop);
 		return;
 	}
 
@@ -874,21 +874,27 @@ void Poll_Ctor(Poll* unit)
 	if (INRATE(0) == calc_FullRate){
 		if (INRATE(1) == calc_FullRate){
 			SETCALC(Poll_next_aa);
-			} else {
-			SETCALC(Poll_next_ak);
-			}
 		} else {
-		SETCALC(Poll_next_kk);
+			SETCALC(Poll_next_ak);
 		}
+	} else {
+		SETCALC(Poll_next_kk);
+	}
 
 	unit->m_trig = IN0(0);
-	unit->m_id = IN0(3); // number of chars in the id string
-	unit->m_id_string = (char*)RTAlloc(unit->mWorld, ((int)unit->m_id + 1) * sizeof(char));
-	for(int i = 0; i < (int)unit->m_id; i++){
-		unit->m_id_string[i] = (char)IN0(4+i);
-		};
-	unit->m_id_string[(int)unit->m_id] = '\0';
+	const int idSize = (int)IN0(3); // number of chars in the id string
+	unit->m_id_string = (char*)RTAlloc(unit->mWorld, (idSize + 1) * sizeof(char));
 
+	if (!unit->m_id_string) {
+		Print("Poll: RT memory allocation failed\n");
+		SETCALC(Unit_next_nop);
+		return;
+	}
+
+	for(int i = 0; i < idSize; i++)
+		unit->m_id_string[i] = (char)IN0(4+i);
+
+	unit->m_id_string[idSize] = '\0';
 	unit->m_mayprint = unit->mWorld->mVerbosity >= -1;
 
 	Poll_next_kk(unit, 1);
@@ -899,17 +905,19 @@ void Poll_Dtor(Poll* unit)
 	RTFree(unit->mWorld, unit->m_id_string);
 }
 
-void Poll_next_aa(Poll *unit, int inNumSamples){
+void Poll_next_aa(Poll *unit, int inNumSamples)
+{
 	float* in = IN(1);
 	float* trig = IN(0);
 	float lasttrig = unit->m_trig;
-	for(int i = 0; i < inNumSamples; i++){
+	for (int i = 0; i < inNumSamples; i++){
 		if((lasttrig <= 0.0) && (trig[i] > 0.0)){
-			if(unit->m_mayprint){
+			if (unit->m_mayprint)
 				Print("%s: %g\n", unit->m_id_string, in[i]);
-			}
-			if(IN0(2) >= 0.0) SendTrigger(&unit->mParent->mNode, (int)IN0(2), in[i]);
-			}
+
+			if (IN0(2) >= 0.0)
+				SendTrigger(&unit->mParent->mNode, (int)IN0(2), in[i]);
+		}
 		lasttrig = trig[i];
 	}
 	unit->m_trig = lasttrig;
@@ -919,10 +927,11 @@ void Poll_next_kk(Poll *unit, int inNumSamples){
 	float in = IN0(1);
 	float trig = IN0(0);
 	if((unit->m_trig <= 0.0) && (trig > 0.0)){
-		if(unit->m_mayprint){
+		if(unit->m_mayprint)
 			Print("%s: %g\n", unit->m_id_string, in);
-		}
-		if(IN0(2) >= 0.0) SendTrigger(&unit->mParent->mNode, (int)IN0(2), in);
+
+		if(IN0(2) >= 0.0)
+			SendTrigger(&unit->mParent->mNode, (int)IN0(2), in);
 	}
 	unit->m_trig = trig;
 }
