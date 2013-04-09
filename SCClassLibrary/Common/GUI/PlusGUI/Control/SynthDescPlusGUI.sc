@@ -25,7 +25,7 @@
 		sliders = IdentityDictionary(numControls);
 
 		// make the window
-		w = gui.window.new("another control panel", Rect(20, 400, 440, numControls * 28 + 32));
+		w = gui.window.new("SynthDesc:" + name, Rect(20, 400, 440, numControls * 28 + 32));
 		w.view.decorator = FlowLayout(w.view.bounds);
 
 		w.view.background = Color.rand(0.5, 1.0);
