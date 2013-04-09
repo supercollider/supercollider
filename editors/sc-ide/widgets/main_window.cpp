@@ -975,6 +975,22 @@ bool MainWindow::reload( Document *doc )
     return Main::instance()->documentManager()->reload(doc);
 }
 
+QString MainWindow::documentSavePath( Document *document ) const
+{
+    if (!document->filePath().isEmpty())
+        return document->filePath();
+
+    if (!mLastDocumentSavePath.isEmpty())
+        return QFileInfo(mLastDocumentSavePath).path();
+
+    QString interpreterWorkingDir =
+            Main::settings()->value("IDE/interpreter/runtimeDir").toString();
+    if (!interpreterWorkingDir.isEmpty())
+        return interpreterWorkingDir;
+
+    return QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
+}
+
 bool MainWindow::save( Document *doc, bool forceChoose )
 {
     const bool documentHasPath = !doc->filePath().isEmpty();
@@ -998,8 +1014,10 @@ bool MainWindow::save( Document *doc, bool forceChoose )
     }
 
     if (forceChoose || !documentHasPath || !fileIsWritable) {
+
         QFileDialog dialog(mInstance);
         dialog.setAcceptMode( QFileDialog::AcceptSave );
+        dialog.setFileMode( QFileDialog::AnyFile );
 
         QStringList filters = (QStringList()
                                << tr("SuperCollider Document (*.scd)")
@@ -1009,20 +1027,22 @@ bool MainWindow::save( Document *doc, bool forceChoose )
 
         dialog.setNameFilters(filters);
 
-        if(doc->filePath().isEmpty()){
+        QString path = mInstance->documentSavePath(doc);
+        QFileInfo path_info(path);
+
+        if (path_info.isDir()) {
             dialog.setDefaultSuffix("scd");
-        }else{
-            QString fp = doc->filePath();
-            if(fp.endsWith(".scd"))
+            dialog.setDirectory(path);
+        } else {
+            if(path.endsWith(".scd"))
                 dialog.setNameFilter(filters[0]);
-            else if(fp.endsWith(".sc"))
+            else if(path.endsWith(".sc"))
                 dialog.setNameFilter(filters[1]);
-            else if(fp.endsWith(".schelp"))
+            else if(path.endsWith(".schelp"))
                 dialog.setNameFilter(filters[2]);
             else
                 dialog.setNameFilter(filters[3]);
-            dialog.selectFile(fp);
-
+            dialog.selectFile(path);
         }
 
 #ifdef Q_OS_MAC
@@ -1038,9 +1058,10 @@ bool MainWindow::save( Document *doc, bool forceChoose )
             last_active_window->activateWindow();
 #endif
 
-        if (result == QDialog::Accepted)
-            return documentManager->saveAs(doc, dialog.selectedFiles()[0]);
-        else
+        if (result == QDialog::Accepted) {
+            QString savePath = mInstance->mLastDocumentSavePath = dialog.selectedFiles()[0];
+            return documentManager->saveAs(doc, savePath);
+        } else
             return false;
     } else
         return documentManager->save(doc);
@@ -1051,6 +1072,27 @@ void MainWindow::newDocument()
     mMain->documentManager()->create();
 }
 
+QString MainWindow::documentOpenPath() const
+{
+    GenericCodeEditor * currentEditor = mEditors->currentEditor();
+    if (currentEditor) {
+        QString currentEditorPath = currentEditor->document()->filePath();
+        if (!currentEditorPath.isEmpty())
+            return currentEditorPath;
+    }
+
+    const QStringList & recentDocuments = Main::documentManager()->recents();
+    if (!recentDocuments.isEmpty())
+        return recentDocuments[0];
+
+    QString interpreterWorkingDir =
+            Main::settings()->value("IDE/interpreter/runtimeDir").toString();
+    if (!interpreterWorkingDir.isEmpty())
+        return interpreterWorkingDir;
+
+    return QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
+}
+
 void MainWindow::openDocument()
 {
     QFileDialog dialog (this, Qt::Dialog);
@@ -1059,12 +1101,12 @@ void MainWindow::openDocument()
 
     dialog.setFileMode( QFileDialog::ExistingFiles );
 
-    GenericCodeEditor * currentEditor = mEditors->currentEditor();
-    if (currentEditor) {
-        Document * currentDocument = currentEditor->document();
-        QFileInfo filePath (currentDocument->filePath());
-        dialog.setDirectory(filePath.dir());
-    }
+    QString path = documentOpenPath();
+    QFileInfo path_info(path);
+    if (path_info.isDir())
+        dialog.setDirectory(path);
+    else
+        dialog.setDirectory(path_info.dir());
 
     QStringList filters;
     filters

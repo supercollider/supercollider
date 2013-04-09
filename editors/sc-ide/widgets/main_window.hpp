@@ -198,6 +198,8 @@ private:
     void openSession( QString const & sessionName );
     bool checkFileExtension( const QString & fpath );
     void toggleInterpreterActions( bool enabled);
+    QString documentOpenPath() const;
+    QString documentSavePath( Document * ) const;
 
     Main *mMain;
 
@@ -226,6 +228,8 @@ private:
 
     QSignalMapper mCodeEvalMapper;
     DocumentsDialog * mDocDialog;
+
+    QString mLastDocumentSavePath;
 
     static MainWindow *mInstance;
 };
