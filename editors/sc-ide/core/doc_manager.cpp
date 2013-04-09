@@ -369,8 +369,11 @@ void DocumentManager::loadRecentDocuments( Settings::Manager *settings )
 {
     QVariantList list = settings->value("IDE/recentDocuments").value<QVariantList>();
     mRecent.clear();
-    foreach (const QVariant & var, list)
-        mRecent << var.toString();
+    foreach (const QVariant & var, list) {
+        QString filePath = var.toString();
+        if (QFile::exists(filePath))
+            mRecent << filePath;
+    }
 }
 
 void DocumentManager::storeSettings( Settings::Manager *settings )
