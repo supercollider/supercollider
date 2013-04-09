@@ -131,7 +131,9 @@
 		updateSynthDefData = {
 			var synthDesc;
 
-			synthDesc = synthDescList[synthDescListView.value];
+			if ( synthDescListView.value.notNil ){
+				synthDesc = synthDescList[synthDescListView.value];
+			};
 
 			if (synthDesc.isNil) {
 				ugensListView.items = [];
