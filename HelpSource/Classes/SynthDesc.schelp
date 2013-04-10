@@ -134,7 +134,7 @@ classmethods::
 private:: initClass
 
 method:: read
-adds all synthDescs in a path to a dict
+Adds all synthDescs in a path to a dict. You should not use this method or *readFile to read SynthDescs into a SynthDescLib. Use link::Classes/SynthDescLib#read:: or link::Classes/SynthDescLib#readStream:: instead.
 
 instancemethods::
 
