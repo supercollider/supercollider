@@ -397,9 +397,13 @@ void ScCodeEditor::matchBrackets()
         ++it;
     }
 
+    if (!it.isValid() || it.block() != block) {
+        updateExtraSelections();
+        return;
+    }
+
     BracketPair match;
-    if( it.isValid() && it.block() == block)
-        matchBracket( it, match );
+    matchBracket( it, match );
 
     if( match.first.isValid() && match.second.isValid() )
     {
@@ -432,6 +436,21 @@ void ScCodeEditor::matchBrackets()
             selection.cursor = cursor;
             mBracketSelections.append(selection);
         }
+    }
+    else
+    {
+        if ( it.type() == Token::OpeningBracket ) {
+            cursor.setPosition(it.position());
+            cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+        }
+        else {
+            cursor.setPosition(it.position() + 1);
+            cursor.movePosition(QTextCursor::Start, QTextCursor::KeepAnchor);
+        }
+        QTextEdit::ExtraSelection selection;
+        selection.format = mBracketMismatchFormat;
+        selection.cursor = cursor;
+        mBracketSelections.append(selection);
     }
 
     updateExtraSelections();
