@@ -1019,31 +1019,27 @@ bool MainWindow::save( Document *doc, bool forceChoose )
         dialog.setAcceptMode( QFileDialog::AcceptSave );
         dialog.setFileMode( QFileDialog::AnyFile );
 
-        QStringList filters = (QStringList()
-                               << tr("SuperCollider Document (*.scd)")
-                               << tr("SuperCollider Class file (*.sc)")
-                               << "SCDoc (*.schelp)"
-                               << tr("All files (*)"));
+        QStringList filters = QStringList()
+                              << tr("All Files (*)")
+                              << tr("SuperCollider Document (*.scd)")
+                              << tr("SuperCollider Class File (*.sc)")
+                              << tr("SuperCollider Help Source (*.schelp)");
 
         dialog.setNameFilters(filters);
 
         QString path = mInstance->documentSavePath(doc);
         QFileInfo path_info(path);
 
-        if (path_info.isDir()) {
-            dialog.setDefaultSuffix("scd");
+        if (path_info.isDir())
+            // FIXME:
+            // KDE native file dialog shows parent directory instead (KDE bug 229375)
             dialog.setDirectory(path);
-        } else {
-            if(path.endsWith(".scd"))
-                dialog.setNameFilter(filters[0]);
-            else if(path.endsWith(".sc"))
-                dialog.setNameFilter(filters[1]);
-            else if(path.endsWith(".schelp"))
-                dialog.setNameFilter(filters[2]);
-            else
-                dialog.setNameFilter(filters[3]);
+        else
             dialog.selectFile(path);
-        }
+
+        // NOTE: do not use QFileDialog::setDefaultSuffix(), because it only adds
+        // the suffix after the dialog is closed, without showing a warning if the
+        // filepath with added suffix already exists!
 
 #ifdef Q_OS_MAC
         QWidget *last_active_window = QApplication::activeWindow();
@@ -1110,9 +1106,9 @@ void MainWindow::openDocument()
 
     QStringList filters;
     filters
-        << tr("All files (*)")
+        << tr("All Files (*)")
         << tr("SuperCollider (*.scd *.sc)")
-        << tr("SCDoc (*.schelp)");
+        << tr("SuperCollider Help Source (*.schelp)");
     dialog.setNameFilters(filters);
 
 #ifdef Q_OS_MAC
