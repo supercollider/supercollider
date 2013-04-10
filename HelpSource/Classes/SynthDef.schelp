@@ -136,7 +136,7 @@ method:: add
 Adds the synthdef to the link::Classes/SynthDescLib:: specified by libname, and sends it to the library's servers. No defFile is written; all operations take place in memory.
 
 discussion::
-After using this method, the synthdef can be used with event streams as in code::store()::, but without the permanent artifact of a file on disk.
+After using this method, the synthdef can be used with event streams as in code::store()::, but without the permanent artifact of a file on disk. Calling this method triggers an update message with the key code::\synthDescAdded:: for any dependants the library may have. This can be used to trigger additional behaviour every time a def/desc is added. See link::Classes/Object#Dependancy::.
 
 A server can be added by code:: SynthDescLib.global.addServer(server) ::.
 
