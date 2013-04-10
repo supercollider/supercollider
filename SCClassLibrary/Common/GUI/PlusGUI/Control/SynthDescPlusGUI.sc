@@ -1,14 +1,14 @@
 +SynthDesc {
-	makeWindow{
+	makeWindow{ |parent,color|
 		if (Platform.makeSynthDescWindowAction.notNil) {
 			^Platform.makeSynthDescWindowAction.value(this)
 		} {
-			^this.makeGui;
+			^this.makeGui(parent,color);
 		}
 	}
 
-	makeGui {
-		var w, startButton, sliders;
+	makeGui { |parent,color|
+		var w, sv, view, startButton, sliders;
 		var synth, cmdPeriodFunc;
 		var usefulControls, numControls;
 		var getSliderValues, gui;
@@ -25,10 +25,16 @@
 		sliders = IdentityDictionary(numControls);
 
 		// make the window
-		w = gui.window.new("SynthDesc:" + name, Rect(20, 400, 440, numControls * 28 + 32));
-		w.view.decorator = FlowLayout(w.view.bounds);
+		if ( parent.isNil ){
+			w = gui.window.new("SynthDesc:" + name, Rect(20, 400, 440, numControls * 28 + 32));
+			view = w.view;
+		}{
+			w = gui.compositeView.new( parent, Rect(0, 0, 430, numControls * 28 + 32) );
+			view = w;
+		};
+		view.decorator = FlowLayout(view.bounds);
 
-		w.view.background = Color.rand(0.5, 1.0);
+		view.background = color ? Color.rand(0.5, 1.0);
 
 		// add a button to start and stop the sound.
 		startButton = gui.button.new(w, 75 @ 24);
@@ -36,6 +42,9 @@
 			["Start", Color.black, Color.green],
 			["Stop", Color.white, Color.red]
 		];
+
+		// add a label with the name of the synth
+		gui.staticText.new( w, 200 @ 24 ).string_( this.name ).background_( Color.grey );
 
 		getSliderValues = {
 			var envir;
@@ -80,8 +89,8 @@
 			var ctlname, ctlname2, capname, spec, controlIndex, slider;
 			ctlname = controlName.name;
 			capname = ctlname.asString;
-			capname[0] = capname[0].toUpper;
-			w.view.decorator.nextLine;
+			//capname[0] = capname[0].toUpper;
+			view.decorator.nextLine;
 			ctlname = ctlname.asSymbol;
 			if((spec = metadata.tryPerform(\at, \specs).tryPerform(\at, ctlname)).notNil) {
 				spec = spec.asSpec

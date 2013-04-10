@@ -1,6 +1,6 @@
 + SynthDescLib {
 	browse {
-		var w;
+		var w,wleft,wright, synthView;
 		var synthDescLib;
 		var synthDescLibListView;
 		var synthDescListView;
@@ -12,6 +12,7 @@
 		var hvBold12;
 		var updateSynthDefs;
 		var updateSynthDefData;
+		var updateSynthWindow;
 		var btn, testFn;
 		var fntMono, gui;
 
@@ -21,10 +22,15 @@
 		fntMono	= Font.monospace( 10 );
 
 		w = gui.window.new("SynthDef browser", Rect(128, (gui.window.screenBounds.height - 638).clip(0, 320),
-			700, 608));
-		w.view.decorator = FlowLayout(w.view.bounds);
+			680+440, 608));
+		w.view.decorator = FlowLayout(w.view.bounds,0@0,0@0 );
 
-		w.view.decorator.shift(220);
+		wleft = CompositeView.new( w, 680@608 );
+		wleft.decorator = FlowLayout(wleft.bounds);
+
+		wright = ScrollView.new( w, 440@608 );
+
+		wleft.decorator.shift(220);
 
 		testFn = {
 			var synth, item;
@@ -41,11 +47,11 @@
 			};
 		};
 
-		btn = gui.button.new(w, 48 @ 20);
+		btn = gui.button.new(wleft, 48 @ 20);
 		btn.states = [["test"]];
 		btn.action = testFn;
 
-		btn = gui.button.new(w, 48 @ 20);
+		btn = gui.button.new(wleft, 48 @ 20);
 		btn.states = [["window"]];
 		btn.action = {
 			var item;
@@ -55,31 +61,31 @@
 			}
 		};
 
-		w.view.decorator.nextLine;
-		gui.staticText.new(w, Rect(0,0,220,24)).string_("SynthDescLibs").font_(hvBold12);
-		gui.staticText.new(w, Rect(0,0,220,24)).string_("SynthDefs").font_(hvBold12);
-		gui.staticText.new(w, Rect(0,0,220,24)).string_("UGens").font_(hvBold12);
-		w.view.decorator.nextLine;
+		wleft.decorator.nextLine;
+		gui.staticText.new(wleft, Rect(0,0,220,24)).string_("SynthDescLibs").font_(hvBold12);
+		gui.staticText.new(wleft, Rect(0,0,220,24)).string_("SynthDefs").font_(hvBold12);
+		gui.staticText.new(wleft, Rect(0,0,220,24)).string_("UGens").font_(hvBold12);
+		wleft.decorator.nextLine;
 
-		synthDescLibListView = gui.listView.new(w, Rect(0,0, 220, 320)).focus;
-		synthDescListView = gui.listView.new(w, Rect(0,0, 220, 320));
+		synthDescLibListView = gui.listView.new(wleft, Rect(0,0, 220, 320)).focus;
+		synthDescListView = gui.listView.new(wleft, Rect(0,0, 220, 320));
 		synthDescListView.beginDragAction_({arg v;
 			v.items[v.value].asSymbol;
 		});
-		ugensListView = gui.listView.new(w, Rect(0,0, 220, 320));
+		ugensListView = gui.listView.new(wleft, Rect(0,0, 220, 320));
 
-		w.view.decorator.nextLine;
-		gui.staticText.new(w, Rect(0,0,240,24)).string_("SynthDef Controls")
+		wleft.decorator.nextLine;
+		gui.staticText.new(wleft, Rect(0,0,240,24)).string_("SynthDef Controls")
 			.font_(hvBold12).align_(\center);
-		gui.staticText.new(w, Rect(0,0,200,24)).string_("SynthDef Inputs")
+		gui.staticText.new(wleft, Rect(0,0,200,24)).string_("SynthDef Inputs")
 			.font_(hvBold12).align_(\center);
-		gui.staticText.new(w, Rect(0,0,200,24)).string_("SynthDef Outputs")
+		gui.staticText.new(wleft, Rect(0,0,200,24)).string_("SynthDef Outputs")
 			.font_(hvBold12).align_(\center);
-		w.view.decorator.nextLine;
+		wleft.decorator.nextLine;
 
-		controlsListView = gui.listView.new(w, Rect(0,0, 240, 160));
-		inputsListView = gui.listView.new(w, Rect(0,0, 200, 160));
-		outputsListView = gui.listView.new(w, Rect(0,0, 200, 160));
+		controlsListView = gui.listView.new(wleft, Rect(0,0, 240, 160));
+		inputsListView = gui.listView.new(wleft, Rect(0,0, 200, 160));
+		outputsListView = gui.listView.new(wleft, Rect(0,0, 200, 160));
 		controlsListView.resize = 4;
 		inputsListView.resize = 4;
 		outputsListView.resize = 4;
@@ -102,7 +108,7 @@
 		inputsListView.font	= fntMono;
 		outputsListView.font	= fntMono;
 
-		w.view.decorator.nextLine;
+		wleft.decorator.nextLine;
 
 		synthDescLibListView.items_(SynthDescLib.all.keys.asArray.sort)
 			.value_(synthDescLibListView.items.indexOf(name) ? 0);
@@ -114,6 +120,7 @@
 		synthDescListView.items = [];
 		synthDescListView.action = {
 			updateSynthDefData.value;
+			updateSynthWindow.value;
 		};
 		synthDescListView.enterKeyAction = testFn;
 
@@ -126,6 +133,17 @@
 			synthDescListView.items = synthDescList.collect {|desc| desc.name.asString };
 
 			updateSynthDefData.value;
+		};
+
+		updateSynthWindow = {
+			var synthDesc;
+			wright.removeAll; // remove the children windows
+			if ( synthDescListView.value.notNil ){
+				synthDesc = synthDescList[synthDescListView.value];
+			};
+			if (synthDesc.notNil) {
+				synthDesc.makeWindow( wright, Color.yellow(0.95) ); // create a new window
+			}
 		};
 
 		updateSynthDefData = {
