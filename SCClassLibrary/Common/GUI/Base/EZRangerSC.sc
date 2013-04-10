@@ -18,7 +18,7 @@ EZRanger : EZGui {
 			labelHeight, argLayout, argGap,argMargin;
 
 		var labelBounds, hiBounds,loBounds, unitBounds,rangerBounds;
-		var numberStep;
+		var numberStep, decimalPlaces;
 
 		// Set Margin and Gap
 		this.prMakeMarginGap(parentView, argMargin, argGap);
@@ -82,6 +82,10 @@ EZRanger : EZGui {
 			loBox.alt_scale = 1.0;
 			rangeSlider.alt_scale = 1.0;
 		};
+
+		decimalPlaces = numberStep.guessDecimalPlaces;
+		loBox.maxDecimals_( decimalPlaces );
+		hiBox.maxDecimals_( decimalPlaces );
 
 		hiBox.step=numberStep;
 		loBox.step=numberStep;
