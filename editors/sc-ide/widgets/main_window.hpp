@@ -203,6 +203,8 @@ private:
     bool checkFileExtension( const QString & fpath );
     void toggleInterpreterActions( bool enabled);
     void applyCursorBlinkingSettings( Settings::Manager * );
+    QString documentOpenPath() const;
+    QString documentSavePath( Document * ) const;
 
     Main *mMain;
 
@@ -231,6 +233,8 @@ private:
 
     QSignalMapper mCodeEvalMapper;
     DocumentsDialog * mDocDialog;
+
+    QString mLastDocumentSavePath;
 
     static MainWindow *mInstance;
 };
