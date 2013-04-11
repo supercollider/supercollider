@@ -145,6 +145,7 @@ else()
 endif()
 
 if (FFTW3F_FOUND)
+	include_directories (${FFTW3F_INCLUDE_DIR})
 	target_link_libraries(libsupernova ${FFTW3F_LIBRARY})
 endif()
 
