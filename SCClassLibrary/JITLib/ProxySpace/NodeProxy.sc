@@ -644,8 +644,8 @@ NodeProxy : BusPlug {
 		var nodeMapSettingKeys, nodeMapMappingKeys, keysToUnset, keysToUnmap, currentKeys;
 		if (nodeMap.isNil) { ^this };
 
-		nodeMapSettingKeys = difference(nodeMap.settingKeys, this.internalKeys);
-		nodeMapMappingKeys = difference(nodeMap.mappingKeys, this.internalKeys);
+		nodeMapSettingKeys = difference(nodeMap.settingKeys ? [], this.internalKeys);
+		nodeMapMappingKeys = difference(nodeMap.mappingKeys ? [], this.internalKeys);
 		currentKeys = this.controlNames(addNodeMap: false).collect(_.name);
 		keysToUnset = difference(nodeMapSettingKeys, currentKeys);
 		keysToUnmap = difference(nodeMapMappingKeys, currentKeys);
