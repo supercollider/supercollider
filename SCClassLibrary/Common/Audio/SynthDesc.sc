@@ -626,6 +626,23 @@ SynthDescLib {
 		resultSet.do({|newDesc| this.changed(\synthDescAdded, newDesc); });
 		^resultSet
 	}
+
+	readDescFromDef {arg stream, keepDef=true, def, metadata;
+		var desc, numDefs, version;
+		stream.getInt32; // 'SCgf'
+		version = stream.getInt32; // version
+		numDefs = stream.getInt16; // should be 1
+		if(version >= 2, {
+			desc = SynthDesc.new.readSynthDef2(stream, keepDef);
+		},{
+			desc = SynthDesc.new.readSynthDef(stream, keepDef);
+		});
+		if(keepDef) { desc.def = def };
+		if(metadata.notNil) { desc.metadata = metadata };
+		synthDescs.put(desc.name.asSymbol, desc);
+		this.changed(\synthDescAdded, desc);
+		^desc
+	}
 }
 
 
