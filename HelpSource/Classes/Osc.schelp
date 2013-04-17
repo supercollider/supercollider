@@ -36,6 +36,7 @@ Frequency in Hertz.
 
 argument::phase
 Phase offset or modulator in radians.
+(Note: phase values should be within the range +-8pi. If your phase values are larger then simply use code::.mod(2pi):: to wrap them.)
 
 argument::mul
 Output will be multiplied by this value.
