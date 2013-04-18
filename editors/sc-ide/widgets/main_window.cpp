@@ -228,6 +228,9 @@ MainWindow::MainWindow(Main * main) :
     QApplication::setWindowIcon(icon);
 
     updateWindowTitle();
+
+    // Custom event handling:
+    qApp->installEventFilter(this);
 }
 
 void MainWindow::createActions()
@@ -1586,6 +1589,30 @@ void MainWindow::dropEvent( QDropEvent * event )
             }
         }
     }
+}
+
+bool MainWindow::eventFilter( QObject *object, QEvent *event )
+{
+    switch(event->type()) {
+    case QEvent::ShortcutOverride:
+    {
+        QKeyEvent *key_event = static_cast<QKeyEvent*>(event);
+        if (key_event->key() == 0) {
+            // FIXME:
+            // On Mac OS, for some global menu items, there is a  ShortcutOverride event with
+            // key == 0, which seems like a Qt bug.
+            // Text widgets override all events with key < Qt::Key_Escape, which includes 0.
+            // Instead, prevent overriding such events:
+            event->ignore();
+            return true;
+        }
+        break;
+    }
+    default:
+        break;
+    }
+
+    return QMainWindow::eventFilter(object, event);
 }
 
 //////////////////////////// StatusLabel /////////////////////////////////

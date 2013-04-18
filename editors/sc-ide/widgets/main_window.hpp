@@ -187,6 +187,7 @@ protected:
     virtual void closeEvent(QCloseEvent *event);
     virtual void dragEnterEvent( QDragEnterEvent * );
     virtual void dropEvent( QDropEvent * );
+    virtual bool eventFilter( QObject *, QEvent * );
 
 private:
     void createActions();
