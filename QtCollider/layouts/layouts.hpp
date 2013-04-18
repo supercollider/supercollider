@@ -86,6 +86,12 @@ public:
 
     QLayout *l2 = qobject_cast<QLayout*>( p->object() );
     if(l2) {
+      if (l2->parent()) {
+        // FIXME: inserting layout that already has parent is broken in Qt.
+        // See Qt bug 30758.
+        qcErrorMsg("Can not insert a layout that already has a parent into another layout!");
+        return;
+      }
       BOXLAYOUT::addLayout( l2, stretch );
       return;
     }
