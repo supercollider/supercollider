@@ -85,8 +85,9 @@ QLayoutItem *StackLayout::takeAt(int index)
     } else if (index < _index) {
         --_index;
     }
-    if (item->widget())
-        item->widget()->hide();
+    // NOTE: Here, the Qt implementation hides item->widget() if it exists and is not being
+    // deleted. We can't reproduce this, because we can't access private info on whether the
+    // widget is being deleted.
     return item;
 }
 
