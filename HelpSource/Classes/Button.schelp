@@ -149,7 +149,7 @@ s.waitForBoot({
 ::
 
 
-If you drag a function to a button, the the button's action is set to that function. you can us this for swapping functions.
+If you drag a function to a button, the button's action is set to that function. you can us this for swapping functions.
 code::
 (
 s.waitForBoot({
