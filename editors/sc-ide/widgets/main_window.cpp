@@ -482,6 +482,12 @@ void MainWindow::createActions()
     settings->addAction( mHelpBrowserDocklet->toggleViewAction(),
                          "ide-docklet-help", ideCategory );
 
+    // In Mac OS, all menu item shortcuts need a modifier, so add the action with
+    // the "Escape" default shortcut to the main window widget.
+    // FIXME: This is not perfect, as any other action customized to "Escape" will
+    // still not work.
+    addAction( mActions[CloseToolBox] );
+
     // Add actions to docklets, so shortcuts work when docklets detached:
 
     mPostDocklet->widget()->addAction(mActions[LookupDocumentation]);
