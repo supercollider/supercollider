@@ -90,7 +90,6 @@ bool GenericLookupDialog::openDocumentation()
     bool isClass = currentItem->data(IsClassRole).toBool();
     if (isClass) {
         Main::openDocumentation(currentItem->text());
-        return true;
     } else {
         QString className  = currentItem->data(ClassNameRole).toString();
         QString methodName = currentItem->data(MethodNameRole).toString();

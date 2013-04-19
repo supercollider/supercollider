@@ -233,7 +233,11 @@ MainWindow::MainWindow(Main * main) :
     QApplication::setWindowIcon(icon);
 
     updateWindowTitle();
+
     applyCursorBlinkingSettings(main->settings());
+
+    // Custom event handling:
+    qApp->installEventFilter(this);
 }
 
 void MainWindow::createActions()
@@ -494,6 +498,12 @@ void MainWindow::createActions()
     settings->addAction( mHelpBrowserDocklet->toggleViewAction(),
                          "ide-docklet-help", ideCategory );
 
+    // In Mac OS, all menu item shortcuts need a modifier, so add the action with
+    // the "Escape" default shortcut to the main window widget.
+    // FIXME: This is not perfect, as any other action customized to "Escape" will
+    // still not work.
+    addAction( mActions[CloseToolBox] );
+
     // Add actions to docklets, so shortcuts work when docklets detached:
 
     mPostDocklet->widget()->addAction(mActions[LookupDocumentation]);
@@ -514,8 +524,16 @@ void MainWindow::createActions()
 
 void MainWindow::createMenus()
 {
+    QMenuBar *menuBar;
     QMenu *menu;
     QMenu *submenu;
+
+    // On Mac, create a parent-less menu bar to be shared by all windows:
+#ifdef Q_OS_MAC
+    menuBar = new QMenuBar(0);
+#else
+    menuBar = this->menuBar();
+#endif
 
     menu = new QMenu(tr("&File"), this);
     menu->addAction( mActions[DocNew] );
@@ -536,7 +554,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[Quit] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Session"), this);
     menu->addAction( mActions[NewSession] );
@@ -550,7 +568,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[ManageSessions] );
     menu->addAction( mActions[OpenSessionSwitchDialog] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Edit"), this);
     menu->addAction( mEditors->action(MultiEditor::Undo) );
@@ -575,7 +593,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[ShowSettings] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&View"), this);
     submenu = new QMenu(tr("&Docklets"), this);
@@ -611,7 +629,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Language"), this);
     menu->addAction( mMain->scProcess()->action(ScProcess::ToggleRunning) );
@@ -643,7 +661,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[LookupReferencesForCursor] );
     menu->addAction( mActions[LookupReferences] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Help"), this);
     menu->addAction( mActions[HelpAboutIDE] );
@@ -655,7 +673,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[ShowAbout] );
     menu->addAction( mActions[ShowAboutQT] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 }
 
 static void saveDetachedState( Docklet *docklet,  QVariantMap & data )
@@ -1559,6 +1577,30 @@ void MainWindow::dropEvent( QDropEvent * event )
             }
         }
     }
+}
+
+bool MainWindow::eventFilter( QObject *object, QEvent *event )
+{
+    switch(event->type()) {
+    case QEvent::ShortcutOverride:
+    {
+        QKeyEvent *key_event = static_cast<QKeyEvent*>(event);
+        if (key_event->key() == 0) {
+            // FIXME:
+            // On Mac OS, for some global menu items, there is a  ShortcutOverride event with
+            // key == 0, which seems like a Qt bug.
+            // Text widgets override all events with key < Qt::Key_Escape, which includes 0.
+            // Instead, prevent overriding such events:
+            event->ignore();
+            return true;
+        }
+        break;
+    }
+    default:
+        break;
+    }
+
+    return QMainWindow::eventFilter(object, event);
 }
 
 //////////////////////////// ClockStatusBox ////////////////////////////
