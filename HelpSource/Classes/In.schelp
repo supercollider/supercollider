@@ -1,6 +1,6 @@
 class:: In
 summary:: Read a signal from a bus.
-related:: Classes/InFeedback, Classes/LagIn, Classes/AudioIn
+related:: Classes/InFeedback, Classes/LagIn, Classes/SoundIn
 categories::  UGens>InOut
 
 
@@ -129,7 +129,7 @@ z = Synth.head(s, "help-Outfreq", [\bus, b.index, \freq, 800]);
 c = Bus.control(s, 1);
 
 // now y receives x's data even though z is still there
-y.set(\bus, c.index); x.set(\bus, c.index);
+y.set(\bus, c.index); x.set(\bus, c.index);	// WARNING! gets loud!
 
 x.free; y.free; z.free;
 ::
