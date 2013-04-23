@@ -99,6 +99,10 @@ void PostWindow::createActions( Settings::Manager * settings )
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
     ovrAction->addToWidget(this);
 
+    mActions[ResetZoom] = ovrAction = new OverridingAction(tr("Reset Font Size"), this);
+    connect(ovrAction, SIGNAL(triggered()), this, SLOT(resetZoom()));
+    ovrAction->addToWidget(this);
+
     action = new QAction(this);
     action->setSeparator(true);
     addAction(action);
@@ -124,6 +128,7 @@ void PostWindow::updateActionShortcuts( Settings::Manager * settings )
     settings->beginGroup("IDE/shortcuts");
     mActions[ZoomIn]->setShortcut( settings->shortcut("editor-enlarge-font") );
     mActions[ZoomOut]->setShortcut( settings->shortcut("editor-shrink-font") );
+    mActions[ResetZoom]->setShortcut( settings->shortcut("editor-reset-font-size") );
     settings->endGroup();
 }
 
@@ -220,6 +225,14 @@ void PostWindow::zoomFont(int steps)
         return;
     currentFont.setPointSize(newSize);
     setFont(currentFont);
+}
+
+void PostWindow::resetZoom()
+{
+    QFont font = this->font();
+    QFont defaultFont = Main::settings()->codeFont();
+    font.setPointSize( defaultFont.pointSize() );
+    setFont(font);
 }
 
 bool PostWindow::event( QEvent * event )
