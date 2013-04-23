@@ -1,5 +1,5 @@
 + Server {
-	scope { arg numChannels, index = 0, bufsize = 4096, zoom = 1, rate = \audio;
+	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio;
 		numChannels = numChannels ?? { if (index == 0) { options.numOutputBusChannels } { 2 } };
 
 		if(scopeWindow.isNil) {
