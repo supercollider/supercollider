@@ -84,6 +84,7 @@ public:
         GoHome,
         ZoomIn,
         ZoomOut,
+        ResetZoom,
         Evaluate,
 
         ActionCount
@@ -105,6 +106,7 @@ public slots:
     void goHome();
     void zoomIn();
     void zoomOut();
+    void resetZoom();
     void evaluateSelection();
     void findText( const QString & text, bool backwards = false );
     bool openDocumentation();

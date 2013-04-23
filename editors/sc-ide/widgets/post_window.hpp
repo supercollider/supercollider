@@ -42,6 +42,7 @@ public:
         Clear,
         ZoomIn,
         ZoomOut,
+        ResetZoom,
         LineWrap,
         AutoScroll,
 
@@ -67,6 +68,7 @@ public slots:
     void scrollToBottom();
     void zoomIn(int steps = 1);
     void zoomOut(int steps = 1);
+    void resetZoom();
 
     bool openDocumentation();
     void openDefinition();
