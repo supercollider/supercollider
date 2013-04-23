@@ -113,6 +113,10 @@ void HelpBrowser::createActions()
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
     ovrAction->addToWidget(mWebView);
 
+    mActions[ResetZoom] = ovrAction = new OverridingAction(tr("Reset Zoom"), this);
+    connect(ovrAction, SIGNAL(triggered()), this, SLOT(resetZoom()));
+    ovrAction->addToWidget(mWebView);
+
     mActions[Evaluate] = ovrAction = new OverridingAction(tr("Evaluate as Code"), this);
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
     ovrAction->addToWidget(mWebView);
@@ -129,6 +133,8 @@ void HelpBrowser::applySettings( Settings::Manager *settings )
     mActions[ZoomIn]->setShortcut( settings->shortcut("editor-enlarge-font") );
 
     mActions[ZoomOut]->setShortcut( settings->shortcut("editor-shrink-font") );
+
+    mActions[ResetZoom]->setShortcut( settings->shortcut("editor-reset-font-size") );
 
     QList<QKeySequence> evalShortcuts;
     evalShortcuts.append( settings->shortcut("editor-eval-smart") );
@@ -200,6 +206,11 @@ void HelpBrowser::zoomOut()
     qreal zoomFactor = mWebView->zoomFactor();
     zoomFactor = qMax( zoomFactor - 0.1, 0.1 );
     mWebView->setZoomFactor(zoomFactor);
+}
+
+void HelpBrowser::resetZoom()
+{
+    mWebView->setZoomFactor(1.0);
 }
 
 void HelpBrowser::findText( const QString & text, bool backwards )
@@ -331,6 +342,7 @@ void HelpBrowser::onContextMenuRequest( const QPoint & pos )
 
     menu.addAction( mActions[ZoomIn] );
     menu.addAction( mActions[ZoomOut] );
+    menu.addAction( mActions[ResetZoom] );
 
     menu.exec( mWebView->mapToGlobal(pos) );
 }
