@@ -674,7 +674,8 @@ CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescripti
         return NULL;
     }
 
-    QMap<QString, const Method*> relevantMethods;
+    QMap<QString, const Method*> methodMap; // for quick lookup
+    QList<const Method*> methodList; // to keep order by class hierarchy
     do {
         foreach (const Method * method, klass->methods)
         {
@@ -686,10 +687,11 @@ CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescripti
             if (!methodName[0].isLetter())
                 continue;
 
-            if (relevantMethods.value(methodName) != 0)
+            if (methodMap.value(methodName) != 0)
                 continue;
 
-            relevantMethods.insert(methodName, method);
+            methodMap.insert(methodName, method);
+            methodList.append(method);
         }
         klass = klass->superClass;
     } while (klass);
@@ -697,7 +699,7 @@ CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescripti
     CompletionMenu * menu = new CompletionMenu(editor);
     menu->setCompletionRole(CompletionMenu::CompletionRole);
 
-    foreach(const Method *method, relevantMethods) {
+    foreach(const Method *method, methodList) {
         QString methodName = method->name.get();
         QString detail(" [ %1 ]");
 
@@ -844,7 +846,6 @@ void AutoCompleter::updateCompletionMenu(bool forceShow)
         menu->model()->setFilterRegExp(QString());
 
     if (menu->model()->hasChildren()) {
-        menu->model()->sort(0);
         menu->view()->setCurrentIndex( menu->model()->index(0,0) );
         if (forceShow || menu->currentText() != mCompletion.text) {
             if (!menu->isVisible())
