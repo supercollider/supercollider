@@ -564,6 +564,10 @@ ScaleStream {
 				27/16, 7/4, 15/8].ratiomidi, 2, "Wendy Carlos Harmonic"),
 			\wcSJ -> Tuning.new([1, 17/16, 9/8, 6/5, 5/4, 4/3, 11/8, 3/2, 13/8, 5/3,
 				7/4, 15/8].ratiomidi, 2, "Wendy Carlos Super Just"),
+			\lu ->Tuning( [
+				1, 2187/2048, 9/8, 19683/16384, 81/64, 177147/131072, 729/612, 3/2, 6561/4096,
+				27/16, 59049/32768, 243/128
+			].ratiomidi, 2, "Chinese Shi-er-lu scale"),
 
 			//MORE THAN TWELVE-TONE ET
 			\et19 -> Tuning.new((0 .. 18) * 12/19, 2, "ET19"),
