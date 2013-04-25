@@ -1104,6 +1104,31 @@ int prTempoClock_Beats(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prTempoClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
+
+	double beats, seconds;
+	int err;
+
+	err = slotDoubleVal(b, &beats);
+	if (err) return errWrongType;
+
+	err = slotDoubleVal(&g->thread->seconds, &seconds);
+	if (err) return errWrongType;
+
+	clock->SetAll(clock->mTempo, beats, seconds);
+
+	return errNone;
+}
+
 int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed);
 int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1359,6 +1384,7 @@ void initSchedPrimitives()
 	definePrimitive(base, index++, "_TempoClock_BeatDur", prTempoClock_BeatDur, 1, 0);
 	definePrimitive(base, index++, "_TempoClock_ElapsedBeats", prTempoClock_ElapsedBeats, 1, 0);
 	definePrimitive(base, index++, "_TempoClock_Beats", prTempoClock_Beats, 1, 0);
+	definePrimitive(base, index++, "_TempoClock_SetBeats", prTempoClock_SetBeats, 2, 0);
 	definePrimitive(base, index++, "_TempoClock_SetTempoAtBeat", prTempoClock_SetTempoAtBeat, 3, 0);
 	definePrimitive(base, index++, "_TempoClock_SetTempoAtTime", prTempoClock_SetTempoAtTime, 3, 0);
 	definePrimitive(base, index++, "_TempoClock_SetAll", prTempoClock_SetAll, 4, 0);
