@@ -2189,26 +2189,3 @@ SC_DLLEXPORT_C void runLibrary(PyrSymbol* selector)
 	}
 	g->canCallOS = false;
 }
-
-void interpretCmdLine(const char *textbuf, int textlen, char *methodname)
-{
-	PyrString *string;
-
-	if (compiledOK) {
-		PyrSlot slot;
-
-		string = newPyrStringN(gMainVMGlobals->gc, textlen, 0, false);
-		memcpy(string->s, textbuf, textlen);
-		SetObject(&slotRawInterpreter(&gMainVMGlobals->process->interpreter)->cmdLine, string);
-		gMainVMGlobals->gc->GCWrite(slotRawObject(&gMainVMGlobals->process->interpreter), string);
-		SetObject(&slot, gMainVMGlobals->process);
-		slotCopy((++gMainVMGlobals->sp), &slot);
-		runInterpreter(gMainVMGlobals, getsym(methodname), 1);
-	} else {
-		postfl("Library has not been compiled successfully.\n");
-	}
-}
-
-void init_SuperCollider()
-{
-}
