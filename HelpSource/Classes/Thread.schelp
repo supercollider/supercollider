@@ -1,16 +1,33 @@
 class::Thread
-summary::represents an individual operating system thread
+summary::The context of code evaluation
 categories::Core>Kernel
 related:: Classes/Routine
 
 description::
 
-Normally there is no need to instantiate a Thread, but its subclass Routine is very useful.
+A Thread represents the context within which code runs. It has:
+list::
+## An associated link::#-clock#clock::
+## Associated logical time (link::#-beats#beats:: and link::#-seconds#seconds::)
+## Own link::#-randSeed#random number seed::
+## Own link::#-exceptionHandler#exception handler::
+::
 
-It is wise not to fiddle with the source code for this class; see the warnings in the class file.
+There is always one strong::main thread:: belonging to the link::Classes/Process##process::.
+Code evaluated in code editor, on command line, scheduled on clocks, or evaluated in
+response to incoming OSC and MIDI messages runs within the main thread. A strong::new thread::
+ is created by instantiating the Thread's subclass link::Classes/Routine:: which will run a
+link::Classes/Function:: in the context of its own thread (there is no use in instantiating
+the Thread itself).
+
+Threads are in strong::hierarchical:: relationships - as parents and children: when code on
+a thread starts or resumes another thread, the former thread becomes the latter's
+link::#-parent#parent::. Some aspects of threads are inherited by their children.
+
 
 method:: thisThread
-The global pseudo-variable code::thisThread:: always returns the enclosing thread running the given code. A Thread is aware of its own attached clock and associated beats and seconds timing, and has an individual random number seed and exception handler.
+The global pseudo-variable code::thisThread:: always returns the enclosing thread running
+the current code.
 
 code::
 // example
@@ -40,14 +57,85 @@ defaults to 64 depth call stack.
 
 instanceMethods::
 
+method:: parent
+The parent thread that started or resumed this thread.
+
+discussion::
+
+Threads are in hierarchical relationships - as parents and children: when code
+on a thread starts or resumes another thread (Routine), the former thread becomes
+the latter's parent.
+
+Some aspects of threads are inherited by their children:
+list::
+## associated link::#-clock#clock::
+## associated link::#-beats#logical time::
+::
+
+
 method::beats
-Get or set the elapsed beats (logical time) of the thread.
+Get or set the current logical time of the thread in beats. This will be the same
+as the time in seconds, unless this thread's link::#-clock#clock:: is
+link::Classes/TempoClock::, and the clock's link::Classes/TempoClock#-tempo#tempo::
+ is other than code::1::. Setting code::beats:: also sets link::#-seconds:: to
+code:: thisThread.clock.beats2secs(beats) ::.
+
+discussion::
+
+There are several sources of logical time:
+list::
+## When code is run from the code editor, the command line, or in response to OSC
+and MIDI messages, the current thread's logical time is set to the current
+strong::real time:: (see link::Classes/Process#*elapsedTime::).
+
+## When code strong::scheduled:: on a clock is run, the clock sets the logical time
+of the current thread to the time the code was scheduled for.
+
+## Child threads strong::inherit:: logical time from their link::#-parent#parents::
+ - whenever a thread (Routine) is started or resumed, its logical time is set to
+that of the parent thread.
+::
+
+However, a thread's logical time may also be set strong::manually:: (using this
+method or link::#-seconds::). It may be useful to change the strong::current:: thread's
+time in order to manipulate behavior of streams that use the current logical time for
+their operation (e.g. streams created by link::Classes/Pstep:: and
+link::Classes/Pseg:: patterns). This will affect all code running within the current
+thread, as well as any child threads, due to logical time inheritance. Note however
+that changing strong::another:: thread's time will have no effect, because the time
+will be overridden by inheritance as soon as the thread is run; likewise, any changes
+to the current thread's time only have effect until the thread is suspended
+(it link::Classes/Object#-yield#yields::) and resumed again.
+
 
 method::seconds
-Get or set the elapsed seconds (logical time) of the thread.
+Get or set the current logical time of the thread in seconds. Setting code::seconds::
+ also sets link::#-beats:: to code::thisThread.clock.secs2beats(seconds)::.
+
+See link::#-beats:: for discussion on logical time.
 
 method::clock
-Get or set the thread's clock.
+Get or set the thread's associated link::Classes/Clock::.
+
+discussion::
+
+There are several ways a clock becomes associated with a thread:
+list::
+## When code is run from the code editor, the command line, or in response to OSC and
+MIDI messages, the current thread's clock is set to link::Classes/SystemClock::.
+
+## When code strong::scheduled:: on a clock is run, that clock becomes the current
+thread's clock.
+
+## Child threads strong::inherit:: the associated clock from their
+link::#-parent#parents::.
+::
+
+A thread's clock may also be manually set using this method. Setting the
+strong::current:: thread's clock is useful to manipulate further behavior of the
+thread or its child threads, but the clock will be reset the next time the thread
+is resumed, due to clock inheritance. For the same reason, setting
+strong::another:: thread's clock will have no effect on code running on it.
 
 method::isPlaying
 Returns:: true if it is playing.
