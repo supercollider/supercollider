@@ -13,21 +13,31 @@ list::
 ## Own link::#-exceptionHandler#exception handler::
 ::
 
-There is always one strong::main thread:: belonging to the link::Classes/Process##process::.
-Code evaluated in code editor, on command line, scheduled on clocks, or evaluated in
-response to incoming OSC and MIDI messages runs within the main thread. A strong::new thread::
- is created by instantiating the Thread's subclass link::Classes/Routine:: which will run a
-link::Classes/Function:: in the context of its own thread (there is no use in instantiating
-the Thread itself).
+The emphasis::current thread:: may be accessed using link::#.thisThread#thisThread::.
+The current thread's logical time provides a reference in relation to which relative
+scheduling on clocks is performed (using e.g. link::Classes/SystemClock#-sched::).
+A clock is associated with a thread to indicate how the thread's logical time should
+be converted from seconds to beats and the other way around (see link::#-beats::).
 
-Threads are in strong::hierarchical:: relationships - as parents and children: when code on
-a thread starts or resumes another thread, the former thread becomes the latter's
-link::#-parent#parent::. Some aspects of threads are inherited by their children.
+There is always one link::Classes/Process#-mainThread#main thread:: belonging to
+the link::Classes/Process##process::. A new thread is created by instantiating the
+Thread's subclass link::Classes/Routine:: which will run a link::Classes/Function::
+ in the context of its own thread (there is no use in instantiating the Thread itself).
+
+Threads are in hierarchical relationships - as parents and children: when code on
+a thread starts or resumes another thread (link::Classes/Routine::), the former
+thread becomes the latter's link::#-parent#parent::. Some aspects of threads are
+inherited by their children.
 
 
 method:: thisThread
-The global pseudo-variable code::thisThread:: always returns the enclosing thread running
-the current code.
+
+The global pseudo-variable code::thisThread:: always represents the
+emphasis::current thread::, i.e. the context in which the current code is running. It can
+be either the emphasis::main thread:: (see: link::Classes/Process#-mainThread::), or the
+link::Classes/Routine:: running the current code.
+
+See also: link::Classes/Clock#Scheduling and Threads::.
 
 code::
 // example
@@ -63,8 +73,8 @@ The parent thread that started or resumed this thread.
 discussion::
 
 Threads are in hierarchical relationships - as parents and children: when code
-on a thread starts or resumes another thread (Routine), the former thread becomes
-the latter's parent.
+on a thread starts or resumes another thread (link::Classes/Routine::), the former
+thread becomes the latter's parent.
 
 Some aspects of threads are inherited by their children:
 list::
@@ -107,6 +117,7 @@ will be overridden by inheritance as soon as the thread is run; likewise, any ch
 to the current thread's time only have effect until the thread is suspended
 (it link::Classes/Object#-yield#yields::) and resumed again.
 
+See also: link::Classes/Clock#Scheduling and Threads::.
 
 method::seconds
 Get or set the current logical time of the thread in seconds. Setting code::seconds::
@@ -136,6 +147,8 @@ strong::current:: thread's clock is useful to manipulate further behavior of the
 thread or its child threads, but the clock will be reset the next time the thread
 is resumed, due to clock inheritance. For the same reason, setting
 strong::another:: thread's clock will have no effect on code running on it.
+
+See also: link::Classes/Clock#Scheduling and Threads::.
 
 method::isPlaying
 Returns:: true if it is playing.
