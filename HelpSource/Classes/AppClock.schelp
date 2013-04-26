@@ -8,6 +8,8 @@ SystemClock is more accurate, but cannot call Cocoa primitives. AppClock is less
 
 You will need to use the link::Classes/SystemClock:: to get accurate/musical scheduling.
 
+See link::Classes/Clock:: for general explanation of how clocks operate.
+
 CLASSMETHODS::
 
 private::initClass

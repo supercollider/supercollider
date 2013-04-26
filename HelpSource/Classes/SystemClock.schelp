@@ -7,6 +7,8 @@ DESCRIPTION::
 
 SystemClock is more accurate, but cannot call Cocoa primitives. AppClock is less accurate (uses NSTimers) but can call Cocoa primitives.
 
+See link::Classes/Clock:: for general explanation of how clocks operate.
+
 CLASSMETHODS::
 
 method::sched
