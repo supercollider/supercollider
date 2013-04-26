@@ -4,11 +4,17 @@ summary:: Functions that can return in the middle and then resume where they lef
 related:: Classes/Stream
 
 description::
-Routines are functions that can return in the middle and then resume where
-they left off when called again. Routines can be used to implement co-routines
-as found in Scheme and some other languages.
-Routines are useful for writing things that behave like Streams.
-Routines inherit behaviour for math operations and filtering from Stream.
+A Routine runs a link::Classes/Function:: and allows it to return in the middle
+(using link::Classes/Object#-yield::) and be resumed again where it left off
+(using link::#-resume:: etc.). Effectively, Routines can be used to implement
+co-routines as found in Scheme and some other languages.
+
+Routine inherits from link::Classes/Stream::, and thus shares its ability to be
+combined using math operations and "filtered".
+
+Routine also inherits from link::Classes/Thread::, so it has its own associated
+link::Classes/Thread#-beats#logical time::, etc.
+
 
 classMethods::
 
