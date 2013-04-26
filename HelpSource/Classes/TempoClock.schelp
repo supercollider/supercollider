@@ -7,6 +7,8 @@ DESCRIPTION::
 
 TempoClock is a scheduler like link::Classes/SystemClock::, but it schedules relative to a strong::tempo:: in beats per second.
 
+See link::Classes/Clock:: for general explanation of how clocks operate.
+
 CLASSMETHODS::
 
 private::initClass

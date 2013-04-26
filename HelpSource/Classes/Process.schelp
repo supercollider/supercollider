@@ -24,3 +24,12 @@ method::run
 
 called when the user chooses the Run menu command. Override this in class link::Classes/Main:: to do whatever you want.
 
+method::mainThread
+
+Returns the main link::Classes/Thread:: belonging to the process.
+
+discussion::
+Code evaluated in code editor, on command line, scheduled on clocks, or evaluated
+in response to incoming OSC and MIDI messages initially runs within the main thread.
+However, as soon as a link::Classes/Routine:: is started, it becomes the
+link::Classes/Thread#.thisThread#current thread::.

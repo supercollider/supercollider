@@ -6,14 +6,19 @@ related:: Classes/Stream
 description::
 A Routine runs a link::Classes/Function:: and allows it to return in the middle
 (using link::Classes/Object#-yield::) and be resumed again where it left off
-(using link::#-resume:: etc.). Effectively, Routines can be used to implement
+(using link::#-next:: and synonyms). Effectively, Routines can be used to implement
 co-routines as found in Scheme and some other languages.
 
-Routine inherits from link::Classes/Stream::, and thus shares its ability to be
-combined using math operations and "filtered".
+When a Routine is scheduled on a Clock (e.g. using link::#-play::), its function
+will in turn be started or resumed at the scheduled time (see link::#-awake::).
 
-Routine also inherits from link::Classes/Thread::, so it has its own associated
-link::Classes/Thread#-beats#logical time::, etc.
+Routine inherits from link::Classes/Thread::, so it has its own associated
+link::Classes/Thread#-beats#logical time::, etc. When a Routine is started or
+resumed, it becomes the link::Classes/Thread#.thisThread#current thread::
+ (see link::#-next::).
+
+Routine also inherits from link::Classes/Stream::, and thus shares its ability to be
+combined using math operations and "filtered".
 
 
 classMethods::
@@ -37,9 +42,17 @@ instanceMethods::
 method::next
 
 The Routine function is either started if it has not been called yet, or it is
-resumed from where it left off. The argument inval is passed as the argument
-to the Routine function if it is being started, or as the result of the code::yield::
-method if it is being resumed from a yield.
+resumed from where it left off. The argument code::inval:: is passed as the argument
+to the Routine function if it is being started, or as the result of the
+link::Classes/Object#-yield:: method if it is being resumed.
+
+Since Routine inherits from link::Classes/Thread::, it will become the
+emphasis::current thread:: when this method is called. i.e.
+link::Classes/Thread#.thisThread#thisThread:: used in the Routine function will return
+the Routine. It will inherit the parent thread's logical time and clock
+(see link::Classes/Thread#-parent::).
+
+Synonyms for code::next:: are link::#-value:: and link::#-resume::.
 
 returns:: The value that the Routine yields.
 
@@ -94,11 +107,11 @@ r = Routine { arg inval;
 
 method::value
 
-same as code::next::
+Equivalent to link::#-next::.
 
 method::resume
 
-same as code::next::
+Equivalent to link::#-next::.
 
 method::reset
 
@@ -160,6 +173,25 @@ fork {
 }
 );
 ::
+
+method:: awake
+
+This method is called by a link::Classes/Clock:: on which the Routine was scheduled
+when its scheduling time is up. It calls link::#-next::, passing on the scheduling
+time in beats as an argument.
+
+argument:: inBeats
+The scheduling time in beats. This is equal to the current logical time
+(link::Classes/Thread#-beats::).
+
+argument:: inSeconds
+The scheduling time in seconds. This is equal to the current logical time
+(link::Classes/Thread#-seconds::).
+
+argument:: inClock
+The clock which awoke the Routine.
+
+
 
 subsection::Accessible instance variables
 
