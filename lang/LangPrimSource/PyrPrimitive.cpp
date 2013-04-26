@@ -3025,8 +3025,14 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 
 	stacksize = std::max(stacksize, EVALSTACKDEPTH);
 
+	double beats, seconds;
+	err = slotDoubleVal(&g->thread->beats, &beats);
+	if (err) return err;
+	err = slotDoubleVal(&g->thread->seconds, &seconds);
+	if (err) return err;
+
 	initPyrThread(g, thread, b, stacksize, (PyrInt32Array*)(slotRawObject(&g->thread->randData)),
-	slotRawFloat(&g->thread->beats), slotRawFloat(&g->thread->seconds), &g->thread->clock, true);
+	beats, seconds, &g->thread->clock, true);
 
 	//postfl("<-prThreadInit\n");
 	//assert(g->gc->SanityCheck());
@@ -3230,9 +3236,11 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		SetObject(&thread->parent, g->thread);
 		g->gc->GCWrite(thread, g->thread);
 
-		SetRaw(&thread->beats, slotRawFloat(&g->thread->beats));
-		SetRaw(&thread->seconds, slotRawFloat(&g->thread->seconds));
+		slotCopy(&thread->beats, &g->thread->beats);
+		slotCopy(&thread->seconds, &g->thread->seconds);
 		slotCopy(&thread->clock, &g->thread->clock);
+		g->gc->GCWrite(thread, &g->thread->beats);
+		g->gc->GCWrite(thread, &g->thread->seconds);
 		g->gc->GCWrite(thread, &g->thread->clock);
 
 		//postfl("start into thread %p from parent %p\n", thread, g->thread);
@@ -3253,9 +3261,11 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		}
 		g->gc->GCWrite(thread, g->thread);
 
-		SetRaw(&thread->beats, slotRawFloat(&g->thread->beats));
-		SetRaw(&thread->seconds, slotRawFloat(&g->thread->seconds));
+		slotCopy(&thread->beats, &g->thread->beats);
+		slotCopy(&thread->seconds, &g->thread->seconds);
 		slotCopy(&thread->clock,&g->thread->clock);
+		g->gc->GCWrite(thread, &g->thread->beats);
+		g->gc->GCWrite(thread, &g->thread->seconds);
 		g->gc->GCWrite(thread, &g->thread->clock);
 
 		slotCopy(&value,b);
