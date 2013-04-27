@@ -67,4 +67,4 @@ subsection:: SynthDef2 fileformat
 
 subsection:: C++ base class for Unit Generators
 
-A new C++ base class has been introduced, which extends the plain c-style Unit struct by a moden C++ interface.
+A new C++ base class has been introduced, which extends the plain c-style Unit struct by a C++ interface.
