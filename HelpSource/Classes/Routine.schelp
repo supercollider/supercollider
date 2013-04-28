@@ -4,18 +4,27 @@ summary:: Functions that can return in the middle and then resume where they lef
 related:: Classes/Stream
 
 description::
-A Routine runs a link::Classes/Function:: and allows it to return in the middle
-(using link::Classes/Object#-yield::) and be resumed again where it left off
-(using link::#-next:: and synonyms). Effectively, Routines can be used to implement
+A Routine runs a link::Classes/Function:: and allows it to be suspended in the middle
+and be resumed again where it left off. This functionality is supported by the Routine's
+superclass link::Classes/Thread::. Effectively, Routines can be used to implement
 co-routines as found in Scheme and some other languages.
 
-When a Routine is scheduled on a Clock (e.g. using link::#-play::), its function
-will in turn be started or resumed at the scheduled time (see link::#-awake::).
+A Routine is strong::started:: the first time link::#-next:: is called, which will run
+the Function from the beginning. It is strong::suspended:: when it "yields"
+(using link::Classes/Object#-yield:: within the Function), and then strong::resumed::
+ using link::#-next:: again. When the Function returns, the Routine is considered
+strong::stopped::, and calling link::#-next:: will have no effect - unless the Routine is
+strong::reset:: using link::#-reset::, which will rewind the Function to the beginning.
+You can stop a Routine before its Function returns using link::#-stop::.
 
-Routine inherits from link::Classes/Thread::, so it has its own associated
+When a Routine is strong::scheduled:: on a link::Classes/Clock:: (e.g. using
+link::#-play::), it will be started or resumed at the scheduled time. The value yielded
+by the Routine will be used as the time difference for rescheduling the Routine. (See
+link::#-awake::).
+
+Since Routine inherits from link::Classes/Thread::, it has its own associated
 link::Classes/Thread#-beats#logical time::, etc. When a Routine is started or
-resumed, it becomes the link::Classes/Thread#.thisThread#current thread::
- (see link::#-next::).
+resumed, it becomes the link::Classes/Thread#.thisThread#current thread::.
 
 Routine also inherits from link::Classes/Stream::, and thus shares its ability to be
 combined using math operations and "filtered".
@@ -25,11 +34,15 @@ classMethods::
 
 method::new
 
-Creates a Routine instance with the given function.
+Creates an instance of Routine, passing it the Function with code to run.
+
+argument::func
+A Function with code for the Thread to run.
+
+argument::stackSize
+Call stack size (an Integer).
 
 discussion::
-The stackSize and random seed may be overridden if desired.
-
 code::
 a = Routine.new({ 1.yield; 2.yield; });
 a.next.postln;
@@ -41,27 +54,37 @@ instanceMethods::
 
 method::next
 
-The Routine function is either started if it has not been called yet, or it is
-resumed from where it left off. The argument code::inval:: is passed as the argument
-to the Routine function if it is being started, or as the result of the
-link::Classes/Object#-yield:: method if it is being resumed.
+This method performs differently according to the Routine's state:
+list::
+## Starts the Routine, if it has not been started yet or it has been
+link::#-reset#reset::; i.e runs its Function from the beginning, passing on the
+code::inval:: argument.
+## Resumes the Routine, if it has been suspended (it has yielded); i.e. resumes its
+Function from the point where link::Classes/Object#-yield#yield:: was called on an Object,
+passing the code::inval:: argument as the return value of code::yield::.
+## Does nothing if the Routine has stopped (because its Function has returned, or
+link::#-stop:: has been called).
+::
 
 Since Routine inherits from link::Classes/Thread::, it will become the
-emphasis::current thread:: when this method is called. i.e.
-link::Classes/Thread#.thisThread#thisThread:: used in the Routine function will return
+emphasis::current thread:: when it is started or resumed; i.e.
+link::Classes/Thread#.thisThread#thisThread:: used in the Routine Function will return
 the Routine. It will inherit the parent thread's logical time and clock
 (see link::Classes/Thread#-parent::).
 
 Synonyms for code::next:: are link::#-value:: and link::#-resume::.
 
-returns:: The value that the Routine yields.
+returns::
+list::
+## Either the value that the Routine yields (the Object on which
+link::Classes/Object#-yield#yield:: is called within the Routine Function),
+## ...or code::nil::, if the Routine has stopped.
+::
 
 discussion::
-There are basically 2 conditions for a Routine: one is when the routine starts. The other case is
-that the routine continues after it has yielded.
 
-When the routine starts (by calling the above methods), you are passing in a first inval.
-This inval is accessible as the routine function argument:
+When a Routine is started by a call to this method (or one of its synonyms), the method's
+argument is passed on as the argument to the Routine Function:
 
 code::
 Routine { arg inval;
@@ -69,9 +92,11 @@ Routine { arg inval;
 }.value("hello routine");
 ::
 
-When there is a yield in the routine, the next time you call next (or synonym), the routine continues
-from there, and you get a chance to pass in a value from the outside. To access that value within the
-continuing routine, you have to assign the result of the yield call to a variable. Typically the name inval (or inevent) is reused, instead of declaring a variable like "valuePassedInbyYield":
+After the Routine has yielded (it has been suspended at the point in its Function where
+code::yield:: is called on an Object), a call to this method (or its synonyms) resumes
+executing the Function and the argument to this method becomes the return value of
+code::yield::. To access that value within the Function, you have to assign it to a
+variable - typically, the argument of the Function is reused:
 
 code::
 (
@@ -83,24 +108,25 @@ r = Routine { arg inval;
 )
 
 r.value("hello routine");
-r.value("goodbye world");
+r.value("goodbye routine");
 ::
 
-Typically a routine uses a multiple yield, in which the inval is reassigned repeatedly:
+Typically, a Routine yields multiple times, and each time the result of the yield is
+reassigning to the argument of its Function.
 
 code::
 (
 r = Routine { arg inval;
-	inval.postln;
+	inval.postln; // Post the value passed in when started.
 	5.do { arg i;
 		inval = (i + 10).yield;
-		inval.postln;
+		inval.postln; // Post the value passed in when resumed.
 	}
 }
 )
 (
 5.do {
-	r.value("hello routine").postln;
+	r.value("hello routine").postln; // Post the value that the Routine yields.
 }
 )
 ::
@@ -113,14 +139,26 @@ method::resume
 
 Equivalent to link::#-next::.
 
+method::stop
+
+Equivalent to the Routine Function reaching its end or returning: after this, the Routine
+will never run again (the link::#-next:: method has no effect and returns code::nil::),
+unless link::#-reset:: is called.
+
 method::reset
 
-Causes the Routine to start from the beginning next time it is called.
-A Routine cannot reset itself except by calling the code::yieldAndReset:: method.
+Causes the Routine to start from the beginning next time link::#-next:: is called.
 
-See also code::yield, yieldAndReset, alwaysYield:: in class link::Classes/Object::
+discussion::
 
-If a Routine's function returns then it will always yield nil until reset.
+If a Routine is stopped (its Function has returned or link::#-stop:: has been called), it
+will never run again (the link::#-next:: method has no effect and returns code::nil::),
+unless this method is called.
+
+A Routine cannot reset itself, except by calling link::Classes/Object#-yieldAndReset::.
+
+See also: link::Classes/Object#-yield::, link::Classes/Object#-alwaysYield::
+
 
 method::play
 
@@ -178,7 +216,9 @@ method:: awake
 
 This method is called by a link::Classes/Clock:: on which the Routine was scheduled
 when its scheduling time is up. It calls link::#-next::, passing on the scheduling
-time in beats as an argument.
+time in beats as an argument. The value returned by code::next:: (the value yielded
+by the Routine) will in turn be returned by this method, thus determining the time
+which the Routine will be rescheduled for.
 
 argument:: inBeats
 The scheduling time in beats. This is equal to the current logical time
