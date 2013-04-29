@@ -93,7 +93,29 @@ method::permanent
 Sets or gets a link::Classes/Boolean:: value indicating whether the clock will survive cmd-period. If false the clock is stopped (and thus removed) on cmd-period. If true the clock survives cmd-period. It is false by default.
 
 method::beats
-Returns the appropriate beat time of the clock from any thread. If the receiver is the clock of the current thread, this returns the current logical time: code::thisThread.beats::. If the receiver is not the current thread's clock then this translates the current thread's logical time in seconds to this clock's logical time in beats.
+
+Gets or sets the current logical time in beats according to this clock.
+
+When strong::getting:: code::beats::, if this clock is the current Thread's
+link::Classes/Thread#-clock#associated clock::, the Thread's own
+link::Classes/Thread#-beats#time in beats:: is returned, otherwise the Thread's
+link::Classes/Thread#-seconds#time in seconds:: converted to beats according to this
+clock is returned.
+
+After strong::changing:: code::beats:: towards the strong::future::, the clock will
+immediately perform all tasks scheduled until the new time. Likewise, when changing
+code::beats:: towards the strong::past::, already scheduled tasks will be postponed, so
+they will still be performed at the scheduled time in beats.
+
+note::
+When changing code::beats::, you are only changing the clocks's notion of time, and not
+the current Thread's link::Classes/Thread#-beats#logical time::, which will stay the
+same while the Thread is running. Hence, if this clock is the current Thread's
+link::Classes/Thread#-clock#associated clock::, and you ask the clock for time in beats
+just after changing it, you will see no effect. Nevertheless, the effect will be visible
+immediately on a different Thread.
+::
+
 
 method::schedAbs
 
