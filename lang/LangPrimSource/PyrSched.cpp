@@ -993,7 +993,10 @@ int prTempoClock_New(struct VMGlobals *g, int numArgsPushed)
 
 	double seconds;
 	err = slotDoubleVal(d, &seconds);
-	if (err) seconds = elapsedTime();
+	if (err) {
+		err = slotDoubleVal(&g->thread->seconds, &seconds);
+		if (err) return err;
+	}
 
 	TempoClock* clock = new TempoClock(g, slotRawObject(a), tempo, beats, seconds);
 	SetPtr(slotRawObject(a)->slots+1, clock);
@@ -1144,13 +1147,15 @@ int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	if (!SlotEq(&g->thread->clock, a)) {
-		beats = clock->ElapsedBeats();
-		//post("shouldn't call TempoClock-sched from a different clock. Use schedAbs.\n");
-		//return errFailed;
-	} else {
+	if (SlotEq(&g->thread->clock, a)) {
 		err = slotDoubleVal(&g->thread->beats, &beats);
 		if (err) return errNone; // return nil OK, just don't schedule
+	}
+	else {
+		double seconds;
+		err = slotDoubleVal(&g->thread->seconds, &seconds);
+		if (err) return errNone;
+		beats = clock->SecsToBeats(seconds);
 	}
 
 	err = slotDoubleVal(b, &delta);
