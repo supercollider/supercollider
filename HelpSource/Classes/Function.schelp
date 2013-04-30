@@ -29,6 +29,21 @@ code::
 ((lambda (x) x) 1) // Lisp
 ::
 
+subsection:: Related Keywords
+
+method:: thisFunction
+The global pseudo-variable code::thisFunction:: always evaluates to the current
+enclosing Function.
+
+note::
+Be aware of link::Reference/Control-Structures#Inline
+optimization#inline optimizations:: which will be reflected in the value of
+code::thisFunction::.
+::
+
+See also: link::Classes/FunctionDef#.thisFunctionDef#thisFunctionDef::
+
+
 classMethods::
 
 private::new
@@ -483,12 +498,6 @@ code::
 Pbind(\degree, p {:[x, y].postln, x<-(0..10), y<-(0..10), (x + y).isPrime }, \dur, 0.3).play;
 ::
 
-subsection::Related keywords
-
-method:: thisFunction
-The global pseudo-variable code::thisFunction:: returns current enclosing Function. 
-Be aware of inline optimizations (link::Reference/Control-Structures::). 
-See also: link::Classes/FunctionDef#-thisFunctionDef::.
 
 examples::
 
