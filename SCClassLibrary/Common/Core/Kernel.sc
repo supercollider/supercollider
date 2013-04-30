@@ -618,6 +618,7 @@ Interpreter {
 		});
 		text = file.readAllString;
 		file.close;
+		preProcessor !? { text = preProcessor.value(text, this) };
 		if (text.beginsWith("#!"), {
 			// comment out shebang to preserve line count
 			text.overWrite("//");
