@@ -317,7 +317,10 @@ add_subdirectory(platform)
 if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
     install(DIRECTORY include/common include/plugin_interface include/server include/lang
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
-        FILES_MATCHING PATTERN "*.h"
+	FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
+    )
+    install(FILES SCVersion.txt
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
     )
 endif()
 
