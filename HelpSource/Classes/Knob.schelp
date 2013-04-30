@@ -252,7 +252,7 @@ var size = 28;
 w = Window.new("Knobs", Rect(250,500,270,70));
 w.acceptsMouseOver=true; // must be true in parent window!
 w.view.decorator = FlowLayout(w.view.bounds);
-h = StaticText(w, 150 @ 20);
+h = StaticText(w, 150 @ 10);
 w.view.decorator.nextLine;
 k = Array(8);
 8.do({|item, i|
