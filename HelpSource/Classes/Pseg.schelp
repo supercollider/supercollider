@@ -15,7 +15,7 @@ argument::levels
 A link::Classes/Pattern:: that returns the levels. The first level is the initial value of the envelope, all subsequent values are interpolated.
 
 argument::durs
-A link::Classes/Pattern:: that returns segments durations in seconds.
+A link::Classes/Pattern:: that returns segments durations in beats.
 
 argument::curves
 a link::Classes/Symbol::, link::Classes/Float::, or an link::Classes/Array:: of those. Determines the shape of the segments.
