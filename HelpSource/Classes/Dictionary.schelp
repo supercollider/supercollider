@@ -23,6 +23,12 @@ d= Dictionary.newFrom(List[\a, 1, \b, 2, \c, 4]);
 argument::aCollection
 any Object that responds to keysValuesDo (usually a List or an Array).
 
+discussion::
+A new Dictionary can also be created from an array of link::Classes/Association::s:
+code::
+Dictionary.with(*[\a->1,\b->2,\c->3])
+::
+
 INSTANCEMETHODS::
 
 subsection::Adding and Removing
