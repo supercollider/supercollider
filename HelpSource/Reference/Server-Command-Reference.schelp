@@ -553,7 +553,7 @@ table::
 ::
 Allocates buffer to number of channels of file and number of samples requested, or fewer if sound file is smaller than requested. Reads sound file data from the given starting frame in the file. If the number of frames argument is less than or equal to zero, the entire file is read.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/b_info:: and strong::/done:: when complete.
 ::
 
 subsection:: /b_allocReadChannel
@@ -572,7 +572,7 @@ table::
 
 As b_allocRead, but reads individual channels into the allocated buffer in the order specified.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/b_info:: and strong::/done:: when complete.
 ::
 
 
@@ -590,7 +590,7 @@ table::
 Reads sound file data from the given starting frame in the file and writes it to the given starting frame in the buffer. If number of frames is less than zero, the entire file is read.
 If reading a file to be used by link::Classes/DiskIn:: ugen then you will want to set "leave file open" to one, otherwise set it to zero.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/b_info:: and strong::/done::when complete.
 ::
 
 
@@ -612,7 +612,7 @@ table::
 
 As strong::b_read::, but reads individual channels in the order specified. The number of channels requested must match the number of channels in the buffer.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/b_info:: and strong::/done:: when complete.
 ::
 
 
