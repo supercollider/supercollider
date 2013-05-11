@@ -118,6 +118,7 @@ PmonoArticStream : PmonoStream {
 				if(rearticulating and: { event.isRest.not }) {
 					event[\id] = nil;
 					this.prInitNode;
+					rearticulating = false;
 				};
 				sustain = event.use { ~sustain.value };
 				if(sustain.notNil and: { sustain < event.delta }) {
@@ -126,7 +127,7 @@ PmonoArticStream : PmonoStream {
 						currentCleanupFunc.value(true);
 						rearticulating = true;
 					});
-				} { rearticulating = false };
+				};
 				cleanup.update(event);
 				inevent = event.yield;
 				this.prSetNextEvent(inevent);
