@@ -821,7 +821,7 @@ void SendReply_Ctor(SendReply *unit)
 
 void SendReply_Dtor(SendReply* unit)
 {
-	RTFree(unit->mWorld, unit->m_values);
+	RTFree(unit->mWorld, unit->m_cmdName);
 }
 
 
