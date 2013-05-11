@@ -39,6 +39,8 @@ ServerOptions
 
 	var <numPrivateAudioBusChannels=112;
 
+	var <>pingsBeforeConsideredDead = 5;
+
 	device {
 		^if(inDevice == outDevice)
 		{
@@ -484,7 +486,7 @@ Server {
 						if(reallyDeadCount <= 0) {
 							ServerBoot.run(this);
 						};
-						reallyDeadCount = 5;
+						reallyDeadCount = this.options.pingsBeforeConsideredDead;
 					};
 					{ this.changed(\serverRunning); }.defer;
 				}
