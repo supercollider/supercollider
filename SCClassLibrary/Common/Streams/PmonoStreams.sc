@@ -67,7 +67,8 @@ PmonoStream : Stream {
 						hasGate: hasGate,
 						schedBundleArray: schedBundleArray,
 						schedBundle: schedBundle).play
-					}
+					};
+					currentCleanupFunc = nil;
 				});
 			};
 			// this should happen whether or not ~id is nil
@@ -114,7 +115,7 @@ PmonoArticStream : PmonoStream {
 
 		loop {
 			if(this.prDoStreams) {
-				if(rearticulating) {
+				if(rearticulating and: { event.isRest.not }) {
 					event[\id] = nil;
 					this.prInitNode;
 				};
