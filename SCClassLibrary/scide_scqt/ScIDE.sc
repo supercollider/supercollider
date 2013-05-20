@@ -336,3 +336,18 @@ ScIDE {
 		this.primitiveFailed
 	}
 }
+
+// This is just a stub to provide oft-used functionality such as Document.open()
+ScIDEDocument : Document {
+        *initClass{
+                Document.implementationClass = this;
+        }
+	*new {|title, string, makeListener, envir|
+		^this.notImplemented("Document.new")
+	}
+	propen {|path, selectionStart, selectionLength, envir|
+		if(envir != nil){"ScIDE does not set an environment per document".warn};
+		^ScIDE.open(path, selectionStart, selectionLength)
+	}
+}
+
