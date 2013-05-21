@@ -114,7 +114,9 @@
 
 // Compliant C++11 compilers put noexcept specifiers on error_category members.
 #if !defined(BOOST_ASIO_ERROR_CATEGORY_NOEXCEPT)
-# if defined(__GNUC__)
+# if (BOOST_VERSION >= 105300)
+#  define BOOST_ASIO_ERROR_CATEGORY_NOEXCEPT BOOST_NOEXCEPT
+# elif defined(__GNUC__)
 #  if ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 7)) || (__GNUC__ > 4)
 #   if defined(__GXX_EXPERIMENTAL_CXX0X__)
 #     define BOOST_ASIO_ERROR_CATEGORY_NOEXCEPT noexcept(true)
@@ -385,5 +387,14 @@
 #  endif // defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
 # endif // defined(__linux__)
 #endif // !defined(BOOST_ASIO_DISABLE_THREAD_KEYWORD_EXTENSION)
+
+// Support for POSIX ssize_t typedef.
+#if !defined(BOOST_ASIO_DISABLE_SSIZE_T)
+# if defined(__linux__) \
+   || (defined(__MACH__) && defined(__APPLE__))
+#  define BOOST_ASIO_HAS_SSIZE_T 1
+# endif // defined(__linux__)
+        //   || (defined(__MACH__) && defined(__APPLE__))
+#endif // !defined(BOOST_ASIO_DISABLE_SSIZE_T)
 
 #endif // BOOST_ASIO_DETAIL_CONFIG_HPP

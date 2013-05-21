@@ -24,3 +24,23 @@ method::run
 
 called when the user chooses the Run menu command. Override this in class link::Classes/Main:: to do whatever you want.
 
+method::mainThread
+
+The top-level link::Classes/Thread::, i.e the link::Classes/Thread#-parent#parent:: of all
+other Threads. This instance of Thread always exists and is created with the Process when
+SuperCollider starts.
+
+discussion::
+
+All SuperCollider code initially runs in the context of the main Thread:
+
+list::
+## Code evaluated in code editor
+## Code evaluated on command line
+## Tasks scheduled on any link::Classes/Clock::
+## Functions evaluated in response to incoming OSC and MIDI messages
+::
+
+This means that link::Classes/Thread#.thisThread#thisThread:: will always initially point
+to the main Thread. However, when some code starts a link::Classes/Routine::, the Routine
+becomes the current Thread, with the main Thread as its parent.

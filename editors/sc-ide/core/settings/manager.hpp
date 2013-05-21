@@ -35,37 +35,28 @@ class Manager : public QObject
     Q_OBJECT
 
 public:
-    Manager( const QString & filename, QObject * parent = 0 );
+    explicit Manager( const QString & filename, QObject * parent = 0 );
 
     // forwarded
-
     void beginGroup ( const QString & prefix ) { mSettings->beginGroup(prefix); }
-
     void endGroup () { mSettings->endGroup(); }
 
     QString group() const { return mSettings->group(); }
-
     QStringList childGroups () const { return mSettings->childGroups(); }
-
     QStringList childKeys () const { return mSettings->childKeys(); }
-
     QStringList allKeys() const { return mSettings->allKeys(); }
 
     void sync() { mSettings->sync(); }
-
     void remove ( const QString &key ) { mSettings->remove(key); }
 
     // extended
-
     bool contains ( const QString & key ) const;
-
     bool isOverridden( const QString & key ) const
     {
         return mSettings->contains( key );
     }
 
     QVariant value ( const QString & key ) const;
-
     QVariant defaultValue ( const QString & key ) const
     {
         return mDefaults.value(resolvedKey(key));
@@ -80,6 +71,8 @@ public:
     QString keyForAction ( QAction *action );
 
     QFont codeFont();
+
+    int defaultCursorFlashTime() const { return mDefaultCursorFlashTime; }
 
 private:
     void setDefault ( const QString & key, const QVariant & value )
@@ -103,6 +96,7 @@ private:
     QSettings *mSettings;
     SettingsMap mDefaults;
     QList<QAction*> mActions;
+    const int mDefaultCursorFlashTime;
 };
 
 struct ActionData {

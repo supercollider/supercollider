@@ -83,7 +83,9 @@ QtGUI {
   *pen { ^QPen }
 
   *font { ^QFont }
-  *image { ^this.notImplemented( "Image" ) }
+  *image { ^QImage }
+
+  *speech { ^'Speech'.asClass }
 
   *notImplemented { arg class;
     //("QtGUI: " ++ class.asString ++ " is not implemented yet").postln;
@@ -91,6 +93,8 @@ QtGUI {
   }
 
   //////////////////////////////////////////////////////////////////////
+
+  *cursorPosition { _Qt_CursorPosition }
 
   *availableStyles {
     _Qt_AvailableStyles

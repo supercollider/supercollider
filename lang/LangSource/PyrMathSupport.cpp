@@ -50,21 +50,6 @@ void pyrmath_init_globs()
 
 // 1/440 = 0.0022727272727     1/12 = 0.083333333333
 
-// These are built in on OSX and Linux
-#if !(SC_DARWIN || __linux__)
-double log2(double x);
-double log2(double x)
-{
-	return log(x) * rlog2;
-}
-
-double hypot(double x, double y);
-double hypot(double x, double y)
-{
-	return sqrt(x*x + y*y);
-}
-#endif // !SC_DARWIN && !__linux__
-
 #define SQRT2M1 0.41421356f
 
 double hypotx(double x, double y);

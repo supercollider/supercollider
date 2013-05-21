@@ -44,10 +44,20 @@ using std::size_t;
 
 namespace {
 
-std::string read_pstring(const char *& buffer)
+void verify_synthdef_buffer(const char * buffer, const char *buffer_end)
 {
+    if (buffer >= buffer_end)
+        throw std::runtime_error("corrupted synthdef");
+}
+
+std::string read_pstring(const char *& buffer, const char *buffer_end)
+{
+    verify_synthdef_buffer(buffer, buffer_end);
+
     char str[256+1];
     char name_size = *buffer++;
+    verify_synthdef_buffer(buffer + name_size, buffer_end);
+
     memcpy(str, buffer, name_size);
     str[int(name_size)] = 0;
 
@@ -55,10 +65,12 @@ std::string read_pstring(const char *& buffer)
     return std::string(str);
 }
 
-float read_float(const char *& ptr)
+float read_float(const char *& buffer, const char *buffer_end)
 {
-    big32_t data = *(big32_t*)ptr;
-    ptr += 4;
+    verify_synthdef_buffer(buffer, buffer_end);
+
+    big32_t data = *(big32_t*)buffer;
+    buffer += 4;
 
     union {
         int32_t i;
@@ -69,58 +81,61 @@ float read_float(const char *& ptr)
     return cast.f;
 }
 
-int8_t read_int8(const char *& ptr)
+int8_t read_int8(const char *& buffer, const char *buffer_end)
 {
-    big8_t data = *(big8_t*)ptr;
-    ptr += 1;
+    verify_synthdef_buffer(buffer, buffer_end);
+
+    big8_t data = *(big8_t*)buffer;
+    buffer += 1;
     return data;
 }
 
-int16_t read_int16(const char *& ptr)
+
+int16_t read_int16(const char *& buffer, const char *buffer_end)
 {
-    big16_t data = *(big16_t*)ptr;
-    ptr += 2;
+    verify_synthdef_buffer(buffer, buffer_end);
+
+    big16_t data = *(big16_t*)buffer;
+    buffer += 2;
     return data;
 }
 
-int32_t read_int32(const char *& ptr)
+int32_t read_int32(const char *& buffer, const char *buffer_end)
 {
-    big32_t data = *(big32_t*)ptr;
-    ptr += 4;
+    verify_synthdef_buffer(buffer, buffer_end);
+
+    big32_t data = *(big32_t*)buffer;
+    buffer += 4;
     return data;
 }
 
-int32_t read_int(const char *& ptr, int size)
+int32_t read_int(const char *& buffer, const char *buffer_end, int size)
 {
     if (size == 32)
-        return read_int32(ptr);
+        return read_int32(buffer, buffer_end);
 
     if (size == 16)
-        return read_int16(ptr);
+        return read_int16(buffer, buffer_end);
     assert(false);
     return 0;
 }
 
 } /* namespace */
 
-std::vector<sc_synthdef> read_synthdefs(const char * buf_ptr)
+std::vector<sc_synthdef> read_synthdefs(const char * buffer, const char * buffer_end)
 {
-    /* int32 header = */ read_int32(buf_ptr);
-    int32 version =  read_int32(buf_ptr);
+    /* int32 header = */ read_int32(buffer, buffer_end);
+    int32 version =  read_int32(buffer, buffer_end);
 
-    int16 definition_count = read_int16(buf_ptr);
+    int16 definition_count = read_int16(buffer, buffer_end);
 
     std::vector<sc_synthdef> ret;
 
     for (int i = 0; i != definition_count; ++i) {
         try {
-            ret.emplace_back(buf_ptr, version);
-        }
-        catch (std::exception const & e) {
+            ret.emplace_back(buffer, buffer_end, version);
+        } catch (std::exception const & e) {
             std::cerr << "Exception when reading synthdef: " << e.what() << std::endl;
-        }
-        catch (...) {
-            std::cerr << "Exception when reading synthdef" << std::endl;
         }
     }
     return ret;
@@ -147,76 +162,76 @@ std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & file
     stream.read(buffer.c_array(), length);
     stream.close();
 
-    return read_synthdefs(buffer.c_array());
+    return read_synthdefs(buffer.begin(), buffer.end());
 }
 
-sc_synthdef::unit_spec_t::unit_spec_t(const char *& buffer, int version)
+sc_synthdef::unit_spec_t::unit_spec_t(const char *& buffer, const char * buffer_end, int version)
 {
     const int short_int_size = (version == 1) ? 16 : 32;
 
-    name = read_pstring(buffer);
-    rate = read_int8(buffer);
-    int32_t input_count = read_int(buffer, short_int_size);
-    int32_t output_count = read_int(buffer, short_int_size);
-    special_index = read_int16(buffer);
+    name = symbol(read_pstring(buffer, buffer_end));
+    rate = read_int8(buffer, buffer_end);
+    int32_t input_count = read_int(buffer, buffer_end, short_int_size);
+    int32_t output_count = read_int(buffer, buffer_end, short_int_size);
+    special_index = read_int16(buffer, buffer_end);
 
     for (int i = 0; i != input_count; ++i) {
-        int16_t source = read_int(buffer, short_int_size);
-        int16_t index = read_int(buffer, short_int_size);
+        int16_t source = read_int(buffer, buffer_end, short_int_size);
+        int16_t index = read_int(buffer, buffer_end, short_int_size);
         input_spec spec(source, index);
         input_specs.push_back(spec);
     }
 
     for (int i = 0; i != output_count; ++i) {
-        char rate = read_int8(buffer);
+        char rate = read_int8(buffer, buffer_end);
         output_specs.push_back(rate);
     }
 }
 
-sc_synthdef::sc_synthdef(const char*& data, int version)
+sc_synthdef::sc_synthdef(const char*& buffer, const char* buffer_end, int version)
 {
-    read_synthdef(data, version);
+    read_synthdef(buffer, buffer_end, version);
 }
 
-void sc_synthdef::read_synthdef(const char *& ptr, int version)
+void sc_synthdef::read_synthdef(const char *& buffer, const char* buffer_end, int version)
 {
     using namespace std;
     const int short_int_size = (version == 1) ? 16 : 32;
 
     /* read name */
-    name_ = read_pstring(ptr);
+    name_ = symbol(read_pstring(buffer, buffer_end));
 
     /* read constants */
-    int32_t constant_count = read_int(ptr, short_int_size);
+    int32_t constant_count = read_int(buffer, buffer_end, short_int_size);
 
     for (int i = 0; i != constant_count; ++i) {
-        float data = read_float(ptr);
+        float data = read_float(buffer, buffer_end);
         constants.push_back(data);
     }
 
     /* read parameters */
-    int32_t paramenter_count = read_int(ptr, short_int_size);
+    int32_t paramenter_count = read_int(buffer, buffer_end, short_int_size);
 
     for (int i = 0; i != paramenter_count; ++i) {
-        float data = read_float(ptr);
+        float data = read_float(buffer, buffer_end);
         parameters.push_back(data);
     }
 
     /* read parameter names */
-    int32_t parameter_names_count = read_int(ptr, short_int_size);
+    int32_t parameter_names_count = read_int(buffer, buffer_end, short_int_size);
 
     for (int i = 0; i != parameter_names_count; ++i) {
-        string data = read_pstring(ptr);
-        int32_t index = read_int(ptr, short_int_size);
+        symbol data = symbol(read_pstring(buffer, buffer_end));
+        int32_t index = read_int(buffer, buffer_end, short_int_size);
 
         parameter_map[data] = index;
     }
 
-    int32_t ugen_count = read_int(ptr, short_int_size);
+    int32_t ugen_count = read_int(buffer, buffer_end, short_int_size);
     graph.reserve(ugen_count);
 
     for (int i = 0; i != ugen_count; ++i) {
-        unit_spec_t data(ptr, version);
+        unit_spec_t data(buffer, buffer_end, version);
         graph.push_back(data);
     }
 
@@ -225,7 +240,7 @@ void sc_synthdef::read_synthdef(const char *& ptr, int version)
 
 namespace {
 
-template <typename Alloc = std::allocator<int32_t> >
+template <typename Alloc = std::allocator<size_t> >
 class buffer_allocator
 {
     std::vector<size_t, Alloc> buffers; /* index: buffer id, value: last reference */
@@ -386,7 +401,7 @@ std::string sc_synthdef::dump(void) const
         stream << "\t" << parameters[i] << endl;
 
     stream << "parameter names: " << endl;
-    for (parameter_map_t::const_iterator it = parameter_map.begin();
+    for (parameter_index_map_t::const_iterator it = parameter_map.begin();
          it != parameter_map.end(); ++it)
         stream << "\t" << it->first.c_str() << " " << it->second << endl;
 

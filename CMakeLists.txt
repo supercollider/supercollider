@@ -106,10 +106,7 @@ if(APPLE)
 	set_property(DIRECTORY
 		APPEND
 		PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
-elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
-elseif(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
-	add_definitions("-DSC_FREEBSD")
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR CMAKE_SYSTEM_NAME MATCHES "OpenBSD")
 	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
 endif()
 
@@ -128,18 +125,16 @@ if(WIN32)
     # correctly link the static Boost Thread library:
     add_definitions(-DBOOST_THREAD_USE_LIB)
 	#avoid unnecesary autolink
-	add_definitions(-DBOOST_DATE_TIME_NO_LIB)
+	add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
-    add_definitions(-DBOOST_CHRONO_HEADER_ONLY)
 endif()
 
+add_definitions(-DBOOST_CHRONO_HEADER_ONLY)
 
 #############################################
 # Options
 option(NOVA_SIMD "Build with nova-simd support." ON)
 option(FINAL_BUILD "Build as single source file." OFF)
-
-option(CURL "Build with curl for remote file download." ON)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
@@ -149,7 +144,14 @@ option(SSE41 "Compile with support for SSE4.1 instructions.")
 option(SSE42 "Compile with support for SSE4.2 instructions.")
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
-option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
+
+if(NOT WIN32)
+	option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
+else()
+	# libscsynth has unresolved symbols, which are resolved when linked with server executable.
+	# On Windows, this is not supported for static libraries, so we build dynamic by default.
+	option(LIBSCSYNTH "Compile libscsynth as shared library" ON)
+endif()
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
@@ -168,8 +170,8 @@ option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable m
 option(GC_SANITYCHECK "Enable sanity checks in the sclang garbage collector.")
 
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
-
 option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
+option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)" OFF)
 
 option(SCLANG_SERVER "Build with internal server." ON)
 
@@ -182,13 +184,16 @@ if (SC_QT)
   message( STATUS "Compiling with Qt GUI" )
 endif (SC_QT)
 
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+    option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines).")
+endif()
+
 if(CMAKE_COMPILER_IS_GNUCXX)
-    option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines, requires gcc-4.3 or higher).")
     option(LTO "Use GCC's link time optimizer' (experimental).")
 endif()
 
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
-option(SC_OX "Try to compile with support for C++0x (experimental, mainly related to supernova)" OFF)
+option(SC_CPP11 "Compile in C++11 mode" OFF)
 
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
 option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
@@ -196,25 +201,19 @@ option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
 #############################################
 # some default libraries
 
-find_package(Pthreads)
+if (NOT WIN32)
+	find_package(Pthreads)
 
-if (NOT PTHREADS_FOUND)
-    message(SEND_ERROR "cannot find libpthreads")
+	if (NOT PTHREADS_FOUND)
+	    message(SEND_ERROR "cannot find libpthreads")
+	endif()
+	include_directories(${PTHREADS_INCLUDE_DIR})
 endif()
-include_directories(${PTHREADS_INCLUDE_DIR})
 
 if(MSVC OR MINGW)
     set(MATH_LIBRARY "")
 else()
     find_library(MATH_LIBRARY m)
-endif()
-
-if(CURL)
-	find_package(CURL)
-	if(CURL_FOUND)
-		add_definitions("-DHAVE_LIBCURL")
-		include_directories(${CURL_INCLUDE_DIRS})
-	endif()
 endif()
 
 if(SYSTEM_BOOST)
@@ -258,8 +257,11 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 	endif()
 
-	if (SC_OX)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+	if (SC_CPP11)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+		if(CMAKE_COMPILER_IS_CLANG)
+			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+		endif()
 	endif()
 endif()
 
@@ -271,8 +273,8 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	elseif (SSE)
 		add_definitions(-mia32)
 	endif()
-	if (SC_OX)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+	if (SC_CPP11)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 	endif()
 
 	# disable warnings
@@ -290,6 +292,10 @@ if(MINGW)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign")
 endif()
 
+if (NO_GPL3)
+	add_definitions(-DNO_GPL3)
+endif()
+
 #############################################
 # subdirectories
 add_subdirectory(external_libraries)
@@ -299,6 +305,10 @@ if(NOT YAMLCPP_FOUND)
   set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
 endif()
 
+
+configure_file(common/SC_Version.hpp.in common/SC_Version.hpp)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/common)
+
 add_subdirectory(server)
 add_subdirectory(lang)
 add_subdirectory(editors)
@@ -307,7 +317,10 @@ add_subdirectory(platform)
 if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
     install(DIRECTORY include/common include/plugin_interface include/server include/lang
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
-        FILES_MATCHING PATTERN "*.h"
+	FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
+    )
+    install(FILES SCVersion.txt
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
     )
 endif()
 
@@ -387,9 +400,6 @@ else()
 		PATTERN "*#" EXCLUDE
 	)
 endif()
-
-configure_file(platform/SCVersion.sc.in SCVersion/SCVersion.sc)
-install(DIRECTORY "${CMAKE_BINARY_DIR}/SCVersion" DESTINATION "${auxresourcesdir}/SCClassLibrary")
 
 install(DIRECTORY sounds
 	DESTINATION ${auxresourcesdir}

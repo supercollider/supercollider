@@ -15,7 +15,7 @@ struct test_synth_definition:
     public synth_definition
 {
     test_synth_definition(void):
-        synth_definition(c_string("foo"))
+        synth_definition(symbol("foo"))
     {}
 
     abstract_synth * create_instance(int node_id)
@@ -54,9 +54,9 @@ BOOST_AUTO_TEST_CASE( server_test_2 )
         node_position_constraint to_root = std::make_pair(server.root_group(), insert);
 
         abstract_synth * s = server.add_synth("foo", 1, to_root);
-        server();
-        server();
-        server();
+        server.tick();
+        server.tick();
+        server.tick();
         server.free_node(s);
     }
 
@@ -78,9 +78,9 @@ BOOST_AUTO_TEST_CASE( server_test_3 )
         abstract_synth * s1 = server.add_synth("foo", 2, to_group);
         abstract_synth * s2 = server.add_synth("foo", 3, to_group);
         abstract_synth * s3 = server.add_synth("foo", 4, to_group);
-        server();
-        server();
-        server();
+        server.tick();
+        server.tick();
+        server.tick();
         server.free_node(s1);
         server.free_node(s2);
         server.free_node(s3);

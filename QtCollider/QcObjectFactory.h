@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -53,13 +53,13 @@ static void qcNoConstructorMsg( const QMetaObject *metaObject, int argc, QtColli
   QString str = QString("No appropriate constructor found for %1 (")
     .arg( metaObject->className() );
 
-  for (int i = 0; i < argc; ++i) {
-    int t_id = argv[i].type()->id();
-
-    if (t_id != QMetaType::Void)
+  for (int i = 0; i < argc; ++i)
+  {
+    MetaType *type = argv[i].type();
+    if (type)
     {
       if (i > 0) str += ", ";
-      str += QMetaType::typeName(t_id);
+      str += QMetaType::typeName( type->id() );
     }
     else
       break;

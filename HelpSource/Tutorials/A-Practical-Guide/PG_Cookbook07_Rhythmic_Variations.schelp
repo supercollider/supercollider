@@ -1,6 +1,6 @@
-title:: PG_Cookbook07_Rhythmic_Variations
+title:: Pattern Guide Cookbook 07: Rhythmic Variations
 summary:: An ever-changing drumbeat
-related:: Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network, Tutorials/A-Practical-Guide/PG_Ref01_Pattern_Internals
+related:: Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network, Tutorials/A-Practical-Guide/PG_Cookbook08_Swing
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Creating variations on a base rhythmic pattern
@@ -227,4 +227,4 @@ t.schedAbs(t.nextTimeOnGrid(4, -0.001), {
 
 Previous:	link::Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network::
 
-Next:		link::Tutorials/A-Practical-Guide/PG_Ref01_Pattern_Internals::
+Next:		link::Tutorials/A-Practical-Guide/PG_Cookbook08_Swing::

@@ -25,7 +25,6 @@ Primitives for Unix.
 
 #include <cstring>
 #include <errno.h>
-#include <pthread.h>
 #include <signal.h>
 
 #include "PyrPrimitive.h"
@@ -38,6 +37,10 @@ Primitives for Unix.
 #include "SC_DirUtils.h"
 #include "sc_popen.h"
 #include "SCBase.h"
+
+#include <boost/chrono.hpp>
+
+#include <boost/thread.hpp> // LATER: move to std::thread
 
 #ifdef SC_WIN32
 #include "SC_Win32Utils.h"
@@ -66,41 +69,41 @@ int prString_System(struct VMGlobals *g, int numArgsPushed)
 int prString_Basename(struct VMGlobals *g, int numArgsPushed);
 int prString_Basename(struct VMGlobals *g, int numArgsPushed)
 {
-        PyrSlot *a = g->sp;
+	PyrSlot *a = g->sp;
 
-        char path[PATH_MAX];
-        int err = slotStrVal(a, path, PATH_MAX);
-        if (err) return err;
+	char path[PATH_MAX];
+	int err = slotStrVal(a, path, PATH_MAX);
+	if (err) return err;
 
-		char *basename0 = basename(path);
+	char *basename0 = basename(path);
 
-        int size = strlen(basename0);
-        PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
-        memcpy(strobj->s, basename0, size);
+	int size = strlen(basename0);
+	PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
+	memcpy(strobj->s, basename0, size);
 
-        SetObject(a, strobj);
+	SetObject(a, strobj);
 
-        return errNone;
+	return errNone;
 }
 
 int prString_Dirname(struct VMGlobals *g, int numArgsPushed);
 int prString_Dirname(struct VMGlobals *g, int numArgsPushed)
 {
-        PyrSlot *a = g->sp;
+	PyrSlot *a = g->sp;
 
-        char path[PATH_MAX];
-        int err = slotStrVal(a, path, PATH_MAX);
-        if (err) return err;
+	char path[PATH_MAX];
+	int err = slotStrVal(a, path, PATH_MAX);
+	if (err) return err;
 
-        char *dirname0 = dirname(path);
+	char *dirname0 = dirname(path);
 
-        int size = strlen(dirname0);
-        PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
-        memcpy(strobj->s, dirname0, size);
+	int size = strlen(dirname0);
+	PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
+	memcpy(strobj->s, dirname0, size);
 
-        SetObject(a, strobj);
+	SetObject(a, strobj);
 
-        return errNone;
+	return errNone;
 }
 
 struct sc_process {
@@ -109,10 +112,8 @@ struct sc_process {
 	bool postOutput;
 };
 
-void* string_popen_thread_func(void *data);
-void* string_popen_thread_func(void *data)
+static void string_popen_thread_func(struct sc_process *process)
 {
-	struct sc_process *process = (struct sc_process *)data;
 	FILE *stream = process->stream;
 	pid_t pid = process->pid;
 	char buf[1024];
@@ -132,8 +133,8 @@ void* string_popen_thread_func(void *data)
 
 	free(process);
 
-    pthread_mutex_lock (&gLangMutex);
-    if(compiledOK) {
+	gLangMutex.lock();
+	if(compiledOK) {
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
 		++g->sp;  SetObject(g->sp, class_string);
@@ -142,9 +143,7 @@ void* string_popen_thread_func(void *data)
 		runInterpreter(g, s_unixCmdAction, 3);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);
-
-	return 0;
+	gLangMutex.unlock();
 }
 
 int prString_POpen(struct VMGlobals *g, int numArgsPushed);
@@ -182,9 +181,8 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	pthread_t thread;
-	pthread_create(&thread, NULL, string_popen_thread_func, (void*)process);
-	pthread_detach(thread);
+	boost::thread thread(boost::bind(string_popen_thread_func, process));
+	thread.detach();
 
 	SetInt(a, process->pid);
 	return errNone;
@@ -235,22 +233,11 @@ int prUnix_Errno(struct VMGlobals *g, int numArgsPushed)
 
 #include <time.h>
 
-#ifndef SC_WIN32
-#include <sys/time.h>
-#endif
+namespace chrono = boost::chrono;
 
-double bootSeconds();
-
-int prLocalTime(struct VMGlobals *g, int numArgsPushed);
-int prLocalTime(struct VMGlobals *g, int numArgsPushed)
+static void fillSlotsFromTime(PyrSlot * result, struct tm* tm, boost::chrono::system_clock::time_point const & now)
 {
-	PyrSlot *a = g->sp;
-	PyrSlot *slots = slotRawObject(a)->slots;
-
-	struct timeval tv;
-	gettimeofday(&tv, 0);
-
-	struct tm* tm = localtime((const time_t*)&tv.tv_sec);
+	PyrSlot *slots = slotRawObject(result)->slots;
 
 	SetInt(slots+0, tm->tm_year + 1900);
 	SetInt(slots+1, tm->tm_mon + 1); // 0 based month ??
@@ -259,33 +246,29 @@ int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 	SetInt(slots+4, tm->tm_min);
 	SetInt(slots+5, tm->tm_sec);
 	SetInt(slots+6, tm->tm_wday);
-	SetFloat(slots+7, tv.tv_sec + 1e-6 * tv.tv_usec);
-	SetFloat(slots+8, bootSeconds());
+	SetFloat(slots+7, chrono::duration_cast<chrono::nanoseconds>(now.time_since_epoch()).count() * 1.0e-9);
+}
+
+int prLocalTime(struct VMGlobals *g, int numArgsPushed)
+{
+	using namespace chrono;
+	system_clock::time_point now = system_clock::now();
+	time_t now_time_t = system_clock::to_time_t(now);
+	struct tm* tm = localtime(&now_time_t);
+
+	fillSlotsFromTime(g->sp, tm,  now);
 
 	return errNone;
 }
 
-int prGMTime(struct VMGlobals *g, int numArgsPushed);
 int prGMTime(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp;
-	PyrSlot *slots = slotRawObject(a)->slots;
+	using namespace chrono;
+	system_clock::time_point now = system_clock::now();
+	time_t now_time_t = system_clock::to_time_t(now);
+	struct tm* tm = gmtime(&now_time_t);
 
-	struct timeval tv;
-	gettimeofday(&tv, 0);
-
-	struct tm* tm = gmtime((const time_t*)&tv.tv_sec);
-
-	SetInt(slots+0, tm->tm_year + 1900);
-	SetInt(slots+1, tm->tm_mon + 1);
-	SetInt(slots+2, tm->tm_mday);
-	SetInt(slots+3, tm->tm_hour);
-	SetInt(slots+4, tm->tm_min);
-	SetInt(slots+5, tm->tm_sec);
-	SetInt(slots+6, tm->tm_wday);
-	SetFloat(slots+7, tv.tv_sec + 1e-6 * tv.tv_usec);
-	SetFloat(slots+8, bootSeconds());
-
+	fillSlotsFromTime(g->sp, tm, now);
 	return errNone;
 }
 
@@ -397,7 +380,7 @@ void initUnixPrimitives()
 
 	base = nextPrimitiveIndex();
 
-    s_unixCmdAction = getsym("doUnixCmdAction");
+	s_unixCmdAction = getsym("doUnixCmdAction");
 
 	definePrimitive(base, index++, "_String_System", prString_System, 1, 0);
 	definePrimitive(base, index++, "_String_Basename", prString_Basename, 1, 0);

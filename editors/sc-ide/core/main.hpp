@@ -87,6 +87,7 @@ public:
     static bool openDocumentation(const QString & string);
     static bool openDocumentationForMethod(const QString & className, const QString & methodName);
     static void openDefinition(const QString &string, QWidget * parent);
+    static void openCommandLine(const QString &string);
     static void findReferences(const QString &string, QWidget * parent);
 
 public Q_SLOTS:

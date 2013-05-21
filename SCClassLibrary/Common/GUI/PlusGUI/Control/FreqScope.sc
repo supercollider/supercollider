@@ -1,7 +1,3 @@
-// PlusFreqScope and PlusFreqScopeWindow
-// by Lance Putnam
-// cross-platform port by Tim Blechmann
-
 PlusFreqScope {
 	classvar <server;
 
@@ -194,35 +190,38 @@ PlusFreqScope {
 		rate = 4;
 		freqMode = 0;
 		bufSize = 2048;
+		ServerQuit.add(this, server);
         ^this;
 	}
 
-	allocBuffersAndStart {
+	allocBuffers {
 		if (this.shmScopeAvailable) {
 			scopebuf = ScopeBuffer.alloc(server);
 			scope.bufnum = scopebuf.bufnum;
-			this.start;
 		} {
 			Buffer.alloc(server, bufSize/4, 1, { |sbuf|
 				scope.bufnum = sbuf.bufnum;
-				("FreqScope: Buffer allocated ("
-					++ sbuf.bufnum.asString ++ ")").postln;
 				scopebuf = sbuf;
-				this.start;
 			});
-		}
+		};
 	}
 
 	freeBuffers {
-		if( scopebuf.notNil, {
-			("FreqScope: Buffer freed (" ++ scopebuf.bufnum.asString ++ ")").postln;
+		if (scopebuf.notNil) {
 			scopebuf.free; scopebuf = nil;
-		});
+		};
 	}
 
 	start {
-		var defname = specialSynthDef ?? {"freqScope" ++ freqMode.asString ++ if (this.shmScopeAvailable) {"_shm"} {""}};
-		var args = [\in, inBus, \dbFactor, dbFactor, \rate, 4, \fftBufSize, bufSize,
+		var defname, args;
+
+		if (synth.notNil) { synth.free };
+		if (scopebuf.isNil) { this.allocBuffers };
+
+		defname = specialSynthDef ?? {
+			"freqScope" ++ freqMode.asString ++ if (this.shmScopeAvailable) {"_shm"} {""}
+		};
+		args = [\in, inBus, \dbFactor, dbFactor, \rate, 4, \fftBufSize, bufSize,
 			\scopebufnum, scopebuf.bufnum] ++ specialSynthArgs;
 		synth = Synth.tail(RootNode(server), defname, args);
 		if (scope.class.name === \QScope2) { scope.start };
@@ -231,31 +230,40 @@ PlusFreqScope {
 	kill {
 		this.active_(false);
 		this.freeBuffers;
+		ServerQuit.remove(this, server);
 	}
 
-	active_ { arg bool;
-		if(server.serverRunning, { // don't do anything unless server is running
-
-			if(bool, {
-				if(active.not, {
-					CmdPeriod.add(this);
-					if(scopebuf.isNil) { // first activation
-						this.allocBuffersAndStart;
-					} {
-						this.start;
-					};
-				});
-			}, {
-				if(active, {
-					if (scope.class.name === \QScope2) { scope.stop };
-					synth.free;
-					CmdPeriod.remove(this);
-				});
-			});
-			active=bool;
-
-		});
+	active_ { arg activate;
+		if (activate) {
+			ServerTree.add(this, server);
+			if (server.serverRunning) {
+				active=activate;
+				this.doOnServerTree;
+				^this
+			}
+		} {
+			ServerTree.remove(this, server);
+			if (server.serverRunning and: active) {
+				if (scope.class.name === \QScope2) { scope.stop };
+				synth.free;
+				synth = nil;
+			};
+		};
+		active=activate;
 		^this
+	}
+
+	doOnServerTree {
+		synth = nil;
+		if (active) { this.start; }
+	}
+
+	doOnServerQuit {
+		var thisScope = scope;
+		defer {
+			thisScope.stop;
+		};
+		scopebuf = synth = nil;
 	}
 
 	inBus_ { arg num;
@@ -277,21 +285,7 @@ PlusFreqScope {
 	freqMode_ { arg mode;
 		freqMode = mode.asInteger.clip(0,1);
 		if(active, {
-			synth.free;
 			this.start;
-		});
-	}
-
-	cmdPeriod {
-		this.changed(\cmdPeriod);
-		if(active == true, {
-			CmdPeriod.remove(this);
-			active = false;
-			// needs to be deferred to build up synth again properly
-			{
-				server.sync;
-				this.active_(true);
-			}.fork(AppClock)
 		});
 	}
 
@@ -306,7 +300,6 @@ PlusFreqScope {
 		this.specialSynthDef_(defname);
 		this.specialSynthArgs_(extraargs);
 		if(active, {
-			synth.free;
 			this.start;
 		});
 	}
@@ -340,10 +333,9 @@ PlusFreqScopeWindow {
 		if(scopeOpen != true, { // block the stacking up of scope windows
 			//make scope
 
-			scopeOpen = true;
+			scopeColor = scopeColor ?? { Color.new255(255, 218, 000) };
 
-			if(scopeColor.isNil, { scopeColor = Color.green });
-			if(bgColor.isNil, { bgColor = Color.green(0.1) });
+			scopeOpen = true;
 
 			rect = Rect(0, 0, width, height);
 			pad = [30, 48, 14, 10]; // l,r,t,b
@@ -396,7 +388,6 @@ PlusFreqScopeWindow {
 				;
 				StaticText(window, Rect(pad[0] + (i*freqLabelDist), pad[2], 1, rect.height))
 					.string_("")
-					.background_(scopeColor.alpha_(0.25))
 				;
 			});
 
@@ -407,7 +398,6 @@ PlusFreqScopeWindow {
 				;
 				StaticText(window, Rect(pad[0], dbLabel[i].bounds.top, rect.width, 1))
 					.string_("")
-					.background_(scopeColor.alpha_(0.25))
 				;
 			});
 
@@ -477,13 +467,17 @@ PlusFreqScopeWindow {
 			scope
 				.inBus_(busNum)
 				.active_(true)
-				.background_(bgColor)
 				.style_(1)
 				.waveColors_([scopeColor.alpha_(1)])
 				.canFocus_(false)
 			;
 
-			window.onClose_({ scope.kill;
+			if (bgColor.notNil) {
+				scope.background_(bgColor)
+			};
+
+			window.onClose_({
+				scope.kill;
 				scopeOpen = false;
 			}).front;
 			^super.newCopyArgs(scope, window)

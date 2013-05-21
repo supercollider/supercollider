@@ -29,43 +29,43 @@ Point {
 	+ { arg delta;
 		var deltaPoint;
 		deltaPoint = delta.asPoint;
-		^(this.x + deltaPoint.x) @ (this.y + deltaPoint.y)
+		^Point(this.x + deltaPoint.x, this.y + deltaPoint.y)
 	}
 	- { arg delta;
 		var deltaPoint;
 		deltaPoint = delta.asPoint;
-		^(this.x - deltaPoint.x) @ (this.y - deltaPoint.y)
+		^Point(this.x - deltaPoint.x, this.y - deltaPoint.y)
 	}
 
 	* { arg scale;
 		var scalePoint;
 		scalePoint = scale.asPoint;
-		^(this.x * scalePoint.x) @ (this.y * scalePoint.y)
+		^Point(this.x * scalePoint.x, this.y * scalePoint.y)
 	}
 	/ { arg scale;
 		var scalePoint;
 		scalePoint = scale.asPoint;
-		^(this.x / scalePoint.x) @ (this.y / scalePoint.y)
+		^Point(this.x / scalePoint.x, this.y / scalePoint.y)
 	}
 	div { arg scale;
 		var scalePoint;
 		scalePoint = scale.asPoint;
-		^(this.x div: scalePoint.x) @ (this.y div: scalePoint.y)
+		^Point(this.x div: scalePoint.x, this.y div: scalePoint.y)
 	}
 	translate { arg delta;
-		^(this.x + delta.x) @ (this.y + delta.y)
+		^Point(this.x + delta.x, this.y + delta.y)
 	}
 	scale { arg scale;
-		^(this.x * scale.x) @ (this.y * scale.y)
+		^Point(this.x * scale.x, this.y * scale.y)
 	}
 	rotate { arg angle; // in radians
 		var sinr, cosr;
 		sinr = angle.sin;
 		cosr = angle.cos;
-		^((x * cosr) - (y * sinr)) @ ((y * cosr) + (x * sinr))
+		^Point((x * cosr) - (y * sinr), (y * cosr) + (x * sinr))
 	}
 
-	abs { ^x.abs @ y.abs }
+	abs { ^Point(x.abs, y.abs) }
 
 	rho { ^hypot(x, y) }
 	theta { ^atan2(y, x) }
@@ -74,21 +74,21 @@ Point {
 		aPoint = aPoint.asPoint;
 		^hypot(x - aPoint.x, y - aPoint.y)
 	}
-	transpose { ^y @ x }
+	transpose { ^Point(y, x) }
 
 	round { arg quant;
 		quant = quant.asPoint;
-		^x.round(quant.x) @ y.round(quant.y)
+		^Point(x.round(quant.x), y.round(quant.y))
 	}
 	trunc { arg quant;
 		quant = quant.asPoint;
-		^x.trunc(quant.x) @ y.trunc(quant.y)
+		^Point(x.trunc(quant.x), y.trunc(quant.y))
 	}
 
 	mod {|that|
 		var thatPoint;
 		thatPoint = that.asPoint;
-		^(this.x mod: thatPoint.x) @ (this.y mod: thatPoint.y)
+		^Point(this.x mod: thatPoint.x, this.y mod: thatPoint.y)
 	}
 
 	printOn { arg stream;

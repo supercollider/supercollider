@@ -50,7 +50,7 @@ public:
     int replaceAll( const QRegExp &expr, const QString &replacement,
                     QTextDocument::FindFlags options = 0 );
 
-    void showPosition( int charPosition, int selectionLength );
+    void showPosition( int charPosition, int selectionLength = 0 );
     QString symbolUnderCursor();
 
 protected:
@@ -80,11 +80,14 @@ protected slots:
     void updateLayout();
     void updateLineIndicator( QRect, int );
     void onDocumentFontChanged();
+    void onCursorPositionChanged();
 
 protected:
     void resizeEvent( QResizeEvent * );
     void paintLineIndicator( QPaintEvent * );
+    virtual void paintEvent( QPaintEvent * );
     virtual void updateExtraSelections();
+    void updateCurrentLineHighlighting();
     virtual void indentCurrentRegion() {}
 
     void zoomFont(int steps);
@@ -100,6 +103,10 @@ protected:
     QWidget *mOverlayWidget;
 
     Document *mDoc;
+
+    bool mHighlightCurrentLine;
+    int mLastCursorBlock;
+    QTextCharFormat mCurrentLineTextFormat;
 
     QTextCharFormat mSearchResultTextFormat;
 

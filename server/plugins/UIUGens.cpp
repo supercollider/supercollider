@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include <boost/thread.hpp>
 
 #ifdef __APPLE__
 #include <Carbon/Carbon.h>
@@ -27,6 +28,7 @@
 #  include <time.h>
 #  include <X11/Intrinsic.h>
 # else
+#include "SC_Win32Utils.h"
 #include <windows.h>
 # endif
 #endif
@@ -65,7 +67,7 @@ struct MouseInputUGen : public Unit
 
 #ifdef __APPLE__
 
-void* gstate_update_func(void* arg)
+void gstate_update_func()
 {
 #if (__x86_64__)
 	CGDirectDisplayID display = kCGDirectMainDisplay; // to grab the main display ID
@@ -100,12 +102,12 @@ void* gstate_update_func(void* arg)
 		usleep(17000);
 	}
 
-	return 0;
+	return;
 }
 
 #elif defined(_WIN32)
 
-void* gstate_update_func(void* arg)
+void gstate_update_func()
 {
 	POINT p;
 	int mButton;
@@ -135,12 +137,11 @@ void* gstate_update_func(void* arg)
 		gMouseUGenGlobals.mouseButton = (GetKeyState(mButton) < 0);
 		::Sleep(17); // 17msec.
 	}
-	return 0;
 }
 
 # else
 static Display * d = 0;
-void* gstate_update_func(void* arg)
+void gstate_update_func()
 {
 	Window r;
 	struct timespec requested_time , remaining_time;
@@ -148,8 +149,12 @@ void* gstate_update_func(void* arg)
 	requested_time.tv_sec = 0;
 	requested_time.tv_nsec = 17000 * 1000;
 
+	// NOTE: should not be required as this is the only thread accessing the x11 API
+	//       but omitting seems to cause troubles.
+	XInitThreads();
+
 	d = XOpenDisplay ( NULL );
-	if (!d) return 0;
+	if (!d) return;
 
 	Window rep_root, rep_child;
 	XWindowAttributes attributes;
@@ -179,8 +184,6 @@ void* gstate_update_func(void* arg)
 
 		nanosleep ( &requested_time , &remaining_time );
 	}
-
-	return 0;
 }
 #endif
 
@@ -469,8 +472,7 @@ PluginLoad(UIUGens)
 {
 	ft = inTable;
 
-	pthread_t uiListenThread;
-	pthread_create (&uiListenThread, NULL, gstate_update_func, (void*)0);
+	boost::thread uiListenThread( gstate_update_func );
 
 	DefineSimpleUnit(KeyState);
 

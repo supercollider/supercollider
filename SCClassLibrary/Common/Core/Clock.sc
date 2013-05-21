@@ -233,6 +233,10 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 			^this.secs2beats(thisThread.seconds)
 		*/
 	}
+	beats_ { arg beats;
+		_TempoClock_SetBeats
+		^this.primitiveFailed
+	}
 
 	seconds { ^thisThread.seconds }
 
@@ -322,7 +326,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	}
 
 	// PRIVATE
-	prStart { arg tempo;
+	prStart { arg tempo, beats, seconds;
 		_TempoClock_New
 		^this.primitiveFailed
 	}

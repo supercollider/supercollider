@@ -1,5 +1,4 @@
 Scale {
-
 	var <degrees, <pitchesPerOctave, <tuning, <>name;
 	classvar <all;
 
@@ -29,6 +28,12 @@ Scale {
 		scale ?? { ("Unknown scale " ++ key.asString).warn; ^nil };
 		tuning !? { scale.tuning_(tuning.asTuning) };
 		^scale
+	}
+
+	*chromatic {|tuning = \et12|
+		var tuningObject = tuning.asTuning;
+		var steps = tuningObject.size;
+		^Scale.new(Array.series(steps), steps, tuningObject, name: "Chromatic % (%)".format(steps, tuningObject.name))
 	}
 
 	checkTuningForMismatch { |aTuning|
@@ -163,12 +168,9 @@ Scale {
 	printOn { |stream|
 		this.storeOn(stream)
 	}
-
-
 }
 
 Tuning {
-
 	var <tuning, <octaveRatio, <>name;
 	classvar <all;
 
@@ -251,7 +253,7 @@ Tuning {
 	}
 
 	stepsPerOctave {
-		^octaveRatio.log2 * 12.0
+		^this.size
 	}
 
 	asTuning {
@@ -284,8 +286,6 @@ Tuning {
 	*directory {
 		^this.names.collect({ |k| "\\ %: %".format(k, all.at(k).name) }).join("\n")
 	}
-
-
 }
 
 ScaleAD : Scale {
@@ -437,7 +437,8 @@ ScaleStream {
 			\ahirbhairav -> Scale.new(#[0,1,4,5,7,9,10], 12, name: "Ahirbhairav"),
 
 			\superLocrian -> Scale.new(#[0,1,3,4,6,8,10], 12, name: "Super Locrian"),
-			\romanianMinor -> Scale.new(#[0,2,3,6,7,9,10], 12, name: "Romanian Minor"),			\hungarianMinor -> Scale.new(#[0,2,3,6,7,8,11], 12, name: "Hungarian Minor"),
+			\romanianMinor -> Scale.new(#[0,2,3,6,7,9,10], 12, name: "Romanian Minor"),
+			\hungarianMinor -> Scale.new(#[0,2,3,6,7,8,11], 12, name: "Hungarian Minor"),
 			\neapolitanMinor -> Scale.new(#[0,1,3,5,7,8,11], 12, name: "Neapolitan Minor"),
 			\enigmatic -> Scale.new(#[0,1,4,6,8,10,11], 12, name: "Enigmatic"),
 			\spanish -> Scale.new(#[0,1,4,5,7,8,10], 12, name: "Spanish"),
@@ -563,6 +564,10 @@ ScaleStream {
 				27/16, 7/4, 15/8].ratiomidi, 2, "Wendy Carlos Harmonic"),
 			\wcSJ -> Tuning.new([1, 17/16, 9/8, 6/5, 5/4, 4/3, 11/8, 3/2, 13/8, 5/3,
 				7/4, 15/8].ratiomidi, 2, "Wendy Carlos Super Just"),
+			\lu ->Tuning( [
+				1, 2187/2048, 9/8, 19683/16384, 81/64, 177147/131072, 729/612, 3/2, 6561/4096,
+				27/16, 59049/32768, 243/128
+			].ratiomidi, 2, "Chinese Shi-er-lu scale"),
 
 			//MORE THAN TWELVE-TONE ET
 			\et19 -> Tuning.new((0 .. 18) * 12/19, 2, "ET19"),
@@ -592,6 +597,13 @@ ScaleStream {
 			\sruti -> Tuning.new([1, 256/243, 16/15, 10/9, 9/8, 32/27, 6/5, 5/4, 81/64,
 				4/3, 27/20, 45/32, 729/512, 3/2, 128/81, 8/5, 5/3, 27/16, 16/9, 9/5,
 				15/8, 243/128].ratiomidi, 2, "Sruti"),
+			\perret -> Tuning([1, 21/20, 35/32, 9/8, 7/6, 6/5, 5/4, 21/16, 4/3, 7/5, 35/24,
+				3/2, 63/40, 8/5, 5/3, 7/4, 9/5, 15/8, 63/32].ratiomidi, 2, "Wilfrid Perret"),
+			\michael_harrison -> Tuning( [1, 28/27, 135/128, 16/15, 243/224, 9/8, 8/7, 7/6,
+				32/27, 6/5, 135/112, 5/4, 81/64, 9/7, 21/16, 4/3, 112/81, 45/32, 64/45, 81/56,
+				3/2, 32/21, 14/9, 128/81, 8/5, 224/135, 5/3, 27/16, 12/7, 7/4, 16/9, 15/8,
+				243/128, 27/14].ratiomidi, 2, "Michael Harrison 24 tone 7-limit"),
+
 
 			//HARMONIC SERIES -- length arbitary
 			\harmonic -> Tuning.new((1 .. 24).ratiomidi, 2, "Harmonic Series 24"),

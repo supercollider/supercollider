@@ -24,7 +24,7 @@
 #include <pthread.h>
 #import "PyrSymbolTable.h"
 #import "PyrLexer.h"
-extern pthread_mutex_t gLangMutex;
+#include "../../lang/LangSource/PyrSched.h"
 
 @implementation SCNSWindow
 - (BOOL) canBecomeKeyWindow { if(mHasBorders) return YES; else return [super canBecomeKeyWindow]; }
@@ -33,9 +33,9 @@ extern pthread_mutex_t gLangMutex;
 - (void) setSCGraphView: (NSView*)view {mSCGraphView = view;}
 - (NSView*) getSCGraphView {return mSCGraphView;}
 - (IBAction) escape:(id)sender {
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
     runLibrary(getsym("escapeWindow"));
-    pthread_mutex_unlock(&gLangMutex);
+    gLangMutex.unlock();
 }
 - (void)keyDown:(NSEvent *)event
 {

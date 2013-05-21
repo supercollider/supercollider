@@ -27,6 +27,8 @@
 #include <QSignalMapper>
 #include <QStatusBar>
 
+#include "util/status_box.hpp"
+
 namespace ScIDE {
 
 class Main;
@@ -41,8 +43,9 @@ class CmdLine;
 class Document;
 class DocumentsDialog;
 struct Session;
-class StatusLabel;
-class StatusClockLabel;
+class ClockStatusBox;
+class ScServer;
+class ScProcess;
 
 namespace Settings { class Manager; }
 
@@ -58,6 +61,7 @@ public:
         DocNew,
         DocOpen,
         DocOpenStartup,
+        DocOpenSupportDir,
         DocSave,
         DocSaveAs,
         DocSaveAll,
@@ -78,6 +82,7 @@ public:
 
         // View
         ShowCmdLine,
+        CmdLineForCursor,
         ShowGoToLineTool,
         CloseToolBox,
         ShowFullScreen,
@@ -94,6 +99,7 @@ public:
 
         // Help
         Help,
+        HelpAboutIDE,
         LookupDocumentationForCursor,
         LookupDocumentation,
         ShowAbout,
@@ -128,7 +134,6 @@ public Q_SLOTS:
 
     void newDocument();
     void openDocument();
-    void openStartupFile();
     void saveDocument();
     void saveDocumentAs();
     void saveAllDocuments();
@@ -137,6 +142,7 @@ public Q_SLOTS:
     void closeAllDocuments();
 
     void showCmdLine();
+    void showCmdLine( const QString & );
     void showFindTool();
     void showReplaceTool();
     void showGoToLineTool();
@@ -151,11 +157,12 @@ public Q_SLOTS:
     void showStatusMessage( QString const & string );
 
 private Q_SLOTS:
+    void openStartupFile();
+    void openUserSupportDirectory();
+
     void switchSession( Session *session );
     void saveSession( Session *session );
     void onInterpreterStateChanged( QProcess::ProcessState );
-    void onServerStatusReply(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU);
-    void onServerRunningChanged( bool running, QString const & hostName, int port );
     void onQuit();
     void onCurrentDocumentChanged( Document * );
     void onDocumentChangedExternally( Document * );
@@ -170,6 +177,7 @@ private Q_SLOTS:
     void lookupReferences();
     void lookupReferencesForCursor();
     void openHelp();
+    void openHelpAboutIDE();
     void lookupDocumentationForCursor();
     void lookupDocumentation();
     void applySettings( Settings::Manager * );
@@ -177,11 +185,13 @@ private Q_SLOTS:
     void showSwitchSessionDialog();
     void showAbout();
     void showAboutQT();
+    void cmdLineForCursor();
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
     virtual void dragEnterEvent( QDragEnterEvent * );
     virtual void dropEvent( QDropEvent * );
+    virtual bool eventFilter( QObject *, QEvent * );
 
 private:
     void createActions();
@@ -193,6 +203,9 @@ private:
     void openSession( QString const & sessionName );
     bool checkFileExtension( const QString & fpath );
     void toggleInterpreterActions( bool enabled);
+    void applyCursorBlinkingSettings( Settings::Manager * );
+    QString documentOpenPath() const;
+    QString documentSavePath( Document * ) const;
 
     Main *mMain;
 
@@ -210,9 +223,9 @@ private:
 
     // Status bar
     QStatusBar  *mStatusBar;
-    StatusLabel *mLangStatus;
-    StatusLabel *mServerStatus;
-    StatusClockLabel *mClockLabel;
+    StatusBox *mLangStatus;
+    StatusBox *mServerStatus;
+    ClockStatusBox *mClockLabel;
 
     // Docks
     PostDocklet * mPostDocklet;
@@ -222,22 +235,16 @@ private:
     QSignalMapper mCodeEvalMapper;
     DocumentsDialog * mDocDialog;
 
+    QString mLastDocumentSavePath;
+
     static MainWindow *mInstance;
 };
 
-class StatusLabel : public QLabel
+class ClockStatusBox : public StatusLabel
 {
 public:
-    StatusLabel(QWidget *parent = 0);
-    void setBackground(const QBrush &);
-    void setTextColor(const QColor &);
-};
-
-class StatusClockLabel : public StatusLabel
-{
-public:
-    StatusClockLabel (QWidget * parent = 0);
-    ~StatusClockLabel();
+    ClockStatusBox (QWidget * parent = 0);
+    ~ClockStatusBox();
 
 private:
     void timerEvent(QTimerEvent *);

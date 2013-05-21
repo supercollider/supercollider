@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -70,6 +70,15 @@ void QcCanvas::setBackground( const QColor &c )
 
   if( !testAttribute(Qt::WA_WState_InPaintEvent) )
       update();
+}
+
+void QcCanvas::setBackgroundImage( const QtCollider::SharedImage & image, const QRectF & rect,
+                                   int tileMode, double opacity )
+{
+    _bkg_image.setImage( image, rect, tileMode, opacity );
+
+    if( !testAttribute(Qt::WA_WState_InPaintEvent) )
+        update();
 }
 
 void QcCanvas::refresh()
@@ -149,13 +158,16 @@ void QcCanvas::paintEvent( QPaintEvent *e )
     }
   }
 
-  QPainter p(this);
+  QPainter painter(this);
   QPalette plt(palette());
 
   if( _bkg.isValid() )
-      p.fillRect( e->rect(), _bkg );
+      painter.fillRect( e->rect(), _bkg );
 
-  if( _paint ) p.drawPixmap( e->rect(), _pixmap, e->rect() );
+  if (_bkg_image.isValid())
+      _bkg_image.paint( &painter, rect() );
+
+  if( _paint ) painter.drawPixmap( e->rect(), _pixmap, e->rect() );
 }
 
 void QcCanvas::timerEvent( QTimerEvent *e )

@@ -20,6 +20,7 @@
 
 
 #include "SC_PlugIn.h"
+#include "function_attributes.h"
 
 #ifdef NOVA_SIMD
 #include "simd_memory.hpp"
@@ -27,8 +28,6 @@
 #include "simd_pan.hpp"
 #include "simd_mix.hpp"
 using nova::slope_argument;
-
-#include "function_attributes.h"
 
 #endif
 
@@ -1397,11 +1396,18 @@ void PanAz_Ctor(PanAz *unit)
 		SETCALC(PanAz_next_aa);
 	} else {
 		int numOutputs = unit->mNumOutputs;
-		unit->m_chanamp = (float*)RTAlloc(unit->mWorld, numOutputs*sizeof(float));
-		for (int i=0; i<numOutputs; ++i) {
-			unit->m_chanamp[i] = 0;
+		for (int i=0; i<numOutputs; ++i)
 			ZOUT0(i) = 0.f;
+
+		unit->m_chanamp = (float*)RTAlloc(unit->mWorld, numOutputs*sizeof(float));
+		if (!unit->m_chanamp) {
+			Print("PanAz: RT memory allocation failed\n");
+			SETCALC(ClearUnitOutputs);
+			return;
 		}
+
+		std::fill_n(unit->m_chanamp, numOutputs, 0);
+
 #ifdef NOVA_SIMD
 		if (!(BUFLENGTH & 15))
 			SETCALC(PanAz_next_ak_nova);

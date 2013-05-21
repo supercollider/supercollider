@@ -41,12 +41,14 @@ namespace ScIDE {
 
 GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
     QPlainTextEdit( parent ),
-    mDoc(doc)
+    mDoc(doc),
+    mLastCursorBlock(-1)
 {
     Q_ASSERT(mDoc != 0);
 
     setFrameShape( QFrame::NoFrame );
-    setAttribute( Qt::WA_MacNoClickThrough, true );
+
+    viewport()->setAttribute( Qt::WA_MacNoClickThrough, true );
 
     mLineIndicator = new LineIndicator(this);
     mLineIndicator->move( contentsRect().topLeft() );
@@ -77,6 +79,8 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
 
     connect( this, SIGNAL(selectionChanged()),
              mLineIndicator, SLOT(update()) );
+    connect( this, SIGNAL(cursorPositionChanged()),
+             this, SLOT(onCursorPositionChanged()) );
 
     connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
              this, SLOT(applySettings(Settings::Manager*)) );
@@ -94,6 +98,7 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
     settings->beginGroup("IDE/editor");
 
     bool lineWrap = settings->value("lineWrap").toBool();
+    bool showWhitespace = settings->value("showWhitespace").toBool();
 
     QPalette palette;
 
@@ -130,13 +135,18 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
             palette.setBrush(QPalette::HighlightedText, fg);
     }
 
+    mCurrentLineTextFormat = settings->value("currentLine").value<QTextCharFormat>();
     mSearchResultTextFormat = settings->value("searchResult").value<QTextCharFormat>();
 
     settings->endGroup(); // colors
 
+    mHighlightCurrentLine = settings->value("highlightCurrentLine").toBool();
+    updateCurrentLineHighlighting();
+
     settings->endGroup(); // IDE/editor
 
     setLineWrapMode( lineWrap ? QPlainTextEdit::WidgetWidth : QPlainTextEdit::NoWrap );
+    setShowWhitespace( showWhitespace );
     setPalette(palette);
 }
 
@@ -476,60 +486,72 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
         // override to avoid entering a "soft" new line
         cursor.insertBlock();
         updateCursor = true;
-    }
-    else {
+    } else {
+        switch (e->key()) {
 
-    switch (e->key()) {
+        case Qt::Key_Delete:
+            if (e->modifiers() & Qt::META) {
+                cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+                cursor.removeSelectedText();
+            } else
+                QPlainTextEdit::keyPressEvent(e);
+            break;
 
-    case Qt::Key_Delete:
-        if (e->modifiers() & Qt::META) {
-            cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-            cursor.removeSelectedText();
-        } else
-            QPlainTextEdit::keyPressEvent(e);
-        break;
+        case Qt::Key_Backspace:
+            if (e->modifiers() & Qt::META) {
+                cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
+                cursor.removeSelectedText();
+            } else {
+                if ( !overwriteMode()
+                     || (cursor.positionInBlock() == 0)
+                     || cursor.hasSelection() ) {
+                    QPlainTextEdit::keyPressEvent(e);
+                } else {
+                    // in overwrite mode, backspace should insert a space
+                    cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
+                    QString selectedText = cursor.selectedText();
+                    if (selectedText == QString(" ") ||
+                        selectedText == QString("\t") ) {
+                        cursor.clearSelection();
+                    } else {
+                        cursor.insertText(QString(QChar(' ')));
+                        cursor.movePosition(QTextCursor::PreviousCharacter);
+                    }
+                }
+                updateCursor = true;
+            }
+            break;
 
-    case Qt::Key_Backspace:
-        if (e->modifiers() & Qt::META) {
-            cursor.movePosition(QTextCursor::StartOfBlock, QTextCursor::KeepAnchor);
-            cursor.removeSelectedText();
-        } else {
-            QPlainTextEdit::keyPressEvent(e);
-            updateCursor = true;
+        case Qt::Key_Down:
+        {
+            if (cursor.block() == textDocument()->lastBlock()) {
+                QTextCursor::MoveMode moveMode = e->modifiers() & Qt::SHIFT ? QTextCursor::KeepAnchor
+                                                                            : QTextCursor::MoveAnchor;
+
+                cursor.movePosition(QTextCursor::EndOfBlock, moveMode);
+                setTextCursor(cursor);
+            } else
+                QPlainTextEdit::keyPressEvent(e);
+            break;
         }
-        break;
 
-    case Qt::Key_Down:
-    {
-        if (cursor.block() == textDocument()->lastBlock()) {
-            QTextCursor::MoveMode moveMode = e->modifiers() & Qt::SHIFT ? QTextCursor::KeepAnchor
-                                                                        : QTextCursor::MoveAnchor;
+        case Qt::Key_Up:
+        {
+            if (cursor.block() == textDocument()->firstBlock()) {
+                QTextCursor::MoveMode moveMode = e->modifiers() & Qt::SHIFT ? QTextCursor::KeepAnchor
+                                                                            : QTextCursor::MoveAnchor;
 
-            cursor.movePosition(QTextCursor::EndOfBlock, moveMode);
-            setTextCursor(cursor);
-        } else
+                cursor.movePosition(QTextCursor::StartOfBlock, moveMode);
+                setTextCursor(cursor);
+            } else
+                QPlainTextEdit::keyPressEvent(e);
+            break;
+        }
+
+        default:
             QPlainTextEdit::keyPressEvent(e);
-        break;
-    }
 
-    case Qt::Key_Up:
-    {
-        if (cursor.block() == textDocument()->firstBlock()) {
-            QTextCursor::MoveMode moveMode = e->modifiers() & Qt::SHIFT ? QTextCursor::KeepAnchor
-                                                                        : QTextCursor::MoveAnchor;
-
-            cursor.movePosition(QTextCursor::StartOfBlock, moveMode);
-            setTextCursor(cursor);
-        } else
-            QPlainTextEdit::keyPressEvent(e);
-        break;
-    }
-
-    default:
-        QPlainTextEdit::keyPressEvent(e);
-
-    } // switch (e->type())
-
+        }
     } // else...
 
     if (updateCursor) {
@@ -541,6 +563,20 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
 
 void GenericCodeEditor::wheelEvent( QWheelEvent * e )
 {
+    // FIXME: Disable zooming for now, to avoid nasty effect when Ctrl
+    // is unintentionally pressed while inertial scrolling is going on.
+
+    // Moreover, Ctrl|Shift + Wheel scrolls by pages, which is also
+    // rather annoying.
+
+    // So rather just forward the event without modifiers.
+
+    QWheelEvent modifiedEvent( e->pos(), e->globalPos(), e->delta(),
+                               e->buttons(), 0, e->orientation() );
+    QPlainTextEdit::wheelEvent( &modifiedEvent );
+    return;
+
+#if 0
     if (e->modifiers() == Qt::ControlModifier) {
         if (e->delta() > 0)
             zoomIn();
@@ -550,6 +586,7 @@ void GenericCodeEditor::wheelEvent( QWheelEvent * e )
     }
 
     QPlainTextEdit::wheelEvent(e);
+#endif
 }
 
 void GenericCodeEditor::dragEnterEvent( QDragEnterEvent * event )
@@ -635,6 +672,39 @@ void GenericCodeEditor::updateLineIndicator( QRect r, int dy )
         mLineIndicator->update(0, r.y(), mLineIndicator->width(), r.height() );
 }
 
+void GenericCodeEditor::onCursorPositionChanged()
+{
+    if (mHighlightCurrentLine)
+        updateCurrentLineHighlighting();
+    mLastCursorBlock = textCursor().blockNumber();
+}
+
+void GenericCodeEditor::updateCurrentLineHighlighting()
+{
+    int currentCursorBlock = textCursor().blockNumber();
+    int first_block_num = qMin(mLastCursorBlock, currentCursorBlock);
+    int second_block_num = qMax(mLastCursorBlock, currentCursorBlock);
+
+    QRegion region(0,0,0,0);
+
+    QTextBlock block = firstVisibleBlock();
+    int block_num = block.blockNumber();
+    qreal top = blockBoundingGeometry(block).translated(contentOffset()).top();
+    qreal max_top = viewport()->rect().bottom();
+    while (block.isValid() && block_num <= second_block_num && top <= max_top)
+    {
+        QRectF block_rect = blockBoundingRect(block);
+        if (block_num == first_block_num || block_num == second_block_num) {
+            region += block_rect.translated(0, top).toRect();
+        }
+        top += block_rect.height();
+        block = block.next();
+        ++block_num;
+    }
+
+    viewport()->update( region );
+}
+
 void GenericCodeEditor::updateExtraSelections()
 {
     QList<QTextEdit::ExtraSelection> selections;
@@ -708,6 +778,35 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
     }
 }
 
+void GenericCodeEditor::paintEvent( QPaintEvent *event )
+{
+    if (mHighlightCurrentLine)
+    {
+        int cursor_block_num = textCursor().blockNumber();
+        QTextBlock block = firstVisibleBlock();
+        int block_num = block.blockNumber();
+        qreal top = blockBoundingGeometry(block).translated(contentOffset()).top();
+        qreal max_top = event->rect().bottom();
+        while (block.isValid() && block_num <= cursor_block_num && top <= max_top)
+        {
+            QRectF block_rect = blockBoundingRect(block);
+            if (block_num == cursor_block_num) {
+                QPainter painter(viewport());
+                painter.fillRect(
+                            block_rect.translated(0, top),
+                            mCurrentLineTextFormat.background().color() );
+                painter.end();
+                break;
+            }
+            top += block_rect.height();
+            block = block.next();
+            ++block_num;
+        }
+    }
+
+    QPlainTextEdit::paintEvent(event);
+}
+
 void GenericCodeEditor::copyUpDown(bool up)
 {
     // directly taken from qtcreator
@@ -765,6 +864,10 @@ void GenericCodeEditor::copyUpDown(bool up)
 void GenericCodeEditor::toggleOverwriteMode()
 {
     setOverwriteMode(!overwriteMode());
+
+    // FIXME: reset cursor to the same position in to force a repaint
+    //        there might be a nicer solution for this issue, though
+    setTextCursor(textCursor());
 }
 
 

@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -27,6 +27,7 @@
 #include <QUrl>
 #include <QKeyEvent>
 #include <QApplication>
+#include <QTextBlock>
 
 class QcTextEditFactory : public QcWidgetFactory<QcTextEdit>
 {
@@ -37,7 +38,7 @@ class QcTextEditFactory : public QcWidgetFactory<QcTextEdit>
 
 QC_DECLARE_FACTORY( QcTextEdit, QcTextEditFactory );
 
-QcTextEdit::QcTextEdit() : _interpretSelection(false)
+QcTextEdit::QcTextEdit() : _interpretSelection(true)
 {
   connect( this, SIGNAL(interpret(QString)),
            qApp, SLOT(interpret(QString)),
@@ -97,6 +98,11 @@ void QcTextEdit::replaceSelectedText( const QString &string )
     cursor.removeSelectedText();
     cursor.insertText( string );
   }
+}
+
+QString QcTextEdit::currentLine() const
+{
+    return textCursor().block().text();
 }
 
 void QcTextEdit::setTextFont( const QFont &f )

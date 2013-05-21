@@ -184,7 +184,7 @@ public:
 
     void register_bufgen(const char * name, BufGenFunc func);
 
-    sc_ugen_def * find_ugen(c_string const & name);
+    sc_ugen_def * find_ugen(symbol const & name);
 
     bool register_ugen_command_function(const char * ugen_name, const char * cmd_name, UnitCmdFunc);
     bool register_cmd_plugin(const char * cmd_name, PlugInCmdFunc func, void * user_data);

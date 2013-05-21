@@ -34,6 +34,7 @@
 #include "SC_InlineBinaryOp.h"
 #include "SCGraphView.h"
 #import "SCVirtualMachine.h"
+#include "../../lang/LangSource/PyrSched.h"
 
 
 #include "SCView.h"
@@ -65,8 +66,6 @@ PyrSymbol* s_mouseDown;
 PyrSymbol* s_mouseUp;
 PyrSymbol* s_callDrawFunc;
 PyrSymbol* s_toggleEditMode;
-
-extern pthread_mutex_t gLangMutex;
 
 int stringDrawCenteredInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
 int stringDrawLeftInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
@@ -284,7 +283,7 @@ int slotBackgroundImageVal(PyrSlot *slot, DrawBackground **ioPtr)
 
 #define TABLETTRACK(METHOD,X,Y) \
     if (mObj) { \
-        pthread_mutex_lock (&gLangMutex); \
+        gLangMutex.lock(); \
         VMGlobals *g = gMainVMGlobals; \
         g->canCallOS = true; \
         ++g->sp;  SetObject(g->sp, mObj); \
@@ -302,7 +301,7 @@ int slotBackgroundImageVal(PyrSlot *slot, DrawBackground **ioPtr)
         SetFloat(++g->sp,[theEvent rotationInDegrees]); \
         runInterpreter(g, METHOD, 11); \
         g->canCallOS = false; \
-        pthread_mutex_unlock (&gLangMutex); \
+        gLangMutex.unlock(); \
     } \
 
 
@@ -382,7 +381,7 @@ bool SCView::hit(SCPoint where) const
 
 void SCView::keyDown(int character, int modifiers, unsigned short keycode)
 {
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	PyrSymbol *method = getsym("keyDown");
 	if (mObj) {
 		VMGlobals *g = gMainVMGlobals;
@@ -395,12 +394,12 @@ void SCView::keyDown(int character, int modifiers, unsigned short keycode)
 		runInterpreter(g, method, 5);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 void SCView::keyUp(int character, int modifiers, unsigned short keycode)
 {
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	PyrSymbol *method = getsym("keyUp");
 	if (mObj) {
 		VMGlobals *g = gMainVMGlobals;
@@ -413,12 +412,12 @@ void SCView::keyUp(int character, int modifiers, unsigned short keycode)
 		runInterpreter(g, method, 5);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 void SCView::keyModifiersChanged(int modifiers)
 {
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	PyrSymbol *method = getsym("keyModifiersChanged");
 	if (mObj) {
 		VMGlobals *g = gMainVMGlobals;
@@ -428,13 +427,13 @@ void SCView::keyModifiersChanged(int modifiers)
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 
 }
 
 void SCView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	PyrSymbol *method = getsym("mouseDown");
 	int clickCount = [theEvent clickCount];
 	int buttonNum = [theEvent buttonNumber];
@@ -453,11 +452,11 @@ void SCView::mouseDownAction(SCPoint where, int modifiers, NSEvent *theEvent)
 		runInterpreter(g, method, 6);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 void SCView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	PyrSymbol *method = getsym("mouseMove");
 	if (mObj) {
 		VMGlobals *g = gMainVMGlobals;
@@ -472,11 +471,11 @@ void SCView::mouseMoveAction(SCPoint where, int modifiers, NSEvent *theEvent)
 		runInterpreter(g, method, 4);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 void SCView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
 {
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	PyrSymbol *method = getsym("mouseUp");
 	if (mObj) {
 		VMGlobals *g = gMainVMGlobals;
@@ -491,7 +490,7 @@ void SCView::mouseUpAction(SCPoint where, int modifiers, NSEvent *theEvent)
 		runInterpreter(g, method, 4);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 void SCView::setConstructionModeFromPoint(SCPoint where)
@@ -544,7 +543,7 @@ void SCView::mouseEndTrack(SCPoint where, int modifiers, NSEvent *theEvent)
 
 void SCView::mouseOver(SCPoint where, int modifiers, NSEvent *theEvent )
 {
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	PyrSymbol *method = getsym("mouseOver");
 	if (mObj) {
 		VMGlobals *g = gMainVMGlobals;
@@ -559,7 +558,7 @@ void SCView::mouseOver(SCPoint where, int modifiers, NSEvent *theEvent )
 		runInterpreter(g, method, 4);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 bool SCView::canReceiveDrag()
@@ -819,7 +818,7 @@ void SCView::sendMessage(PyrSymbol *method, int numargs, PyrSlot *args, PyrSlot 
 {
 	//CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 	//CGContextSaveGState(cgc);
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	if (mObj) {
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
@@ -832,7 +831,7 @@ void SCView::sendMessage(PyrSymbol *method, int numargs, PyrSlot *args, PyrSlot 
 		g->canCallOS = false;
 		if (result) slotCopy(result, &g->result);
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 
 	//CGContextRestoreGState(cgc);
 }
@@ -1025,7 +1024,7 @@ void SCView::beginDrag(SCPoint where)
 	PyrSlot stringSlot;
 	NSString *string = 0;
 	NSString *label = 0;
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	if (mObj) {
 		VMGlobals *g = gMainVMGlobals;
 		int classVarIndex = slotRawInt(&getsym("SCView")->u.classobj->classVarIndex);
@@ -1038,7 +1037,7 @@ void SCView::beginDrag(SCPoint where)
 		}
 		if(mDragLabel) label = mDragLabel;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 
 	mTop->beginDragCallback(where, &slot, string, label);
 }

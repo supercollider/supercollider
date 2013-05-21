@@ -42,6 +42,7 @@ public:
         Clear,
         ZoomIn,
         ZoomOut,
+        ResetZoom,
         LineWrap,
         AutoScroll,
 
@@ -67,9 +68,11 @@ public slots:
     void scrollToBottom();
     void zoomIn(int steps = 1);
     void zoomOut(int steps = 1);
+    void resetZoom();
 
     bool openDocumentation();
     void openDefinition();
+    void openCommandLine();
     void findReferences();
 
 protected:
@@ -105,14 +108,6 @@ class PostDocklet:
 
 public:
     PostDocklet(QWidget* parent = 0);
-
-public slots:
-    void raiseAndFocus()
-    {
-        show();
-        raise();
-        mPostWindow->setFocus();
-    }
 
 private slots:
     void onFloatingChanged(bool floating);

@@ -1,6 +1,6 @@
 class:: Prout
 summary:: routine pattern
-related:: Classes/Proutine, Classes/Routine
+related:: Classes/Routine
 categories:: Streams-Patterns-Events>Patterns>Function
 
 description::

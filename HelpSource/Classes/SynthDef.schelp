@@ -136,7 +136,7 @@ method:: add
 Adds the synthdef to the link::Classes/SynthDescLib:: specified by libname, and sends it to the library's servers. No defFile is written; all operations take place in memory.
 
 discussion::
-After using this method, the synthdef can be used with event streams as in code::store()::, but without the permanent artifact of a file on disk.
+After using this method, the synthdef can be used with event streams as in code::store()::, but without the permanent artifact of a file on disk. Calling this method triggers an update message with the key code::\synthDescAdded:: for any dependants the library may have. This can be used to trigger additional behaviour every time a def/desc is added. See link::Classes/Object#Dependancy::.
 
 A server can be added by code:: SynthDescLib.global.addServer(server) ::.
 
@@ -185,9 +185,6 @@ argument:: completionMsg
 argument:: mdPlugin
 (optional) The metadata plug-in class that will be used to persist metadata. If not supplied, the default plug-in is used. See the SynthDesc help file for details.
 
-
-method:: memStore
-This method has been deprecated, use add instead.
 
 method:: play
 A convenience method which compiles the def and sends it to target's server. When this asynchronous command is completed, it create one synth from this definition, using the argument values specified in the Array args.  For a list of valid addActions see link::Classes/Synth::. The default is \addToHead.

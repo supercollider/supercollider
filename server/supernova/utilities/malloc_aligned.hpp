@@ -241,7 +241,7 @@ public:
     template< class U, class... Args >
     void construct(U * p, Args&& ... args)
     {
-        ::new(p) T(std::forward<Args>(args)...);
+        ::new(p) U(std::forward<Args>(args)...);
     }
 #endif
 
@@ -272,6 +272,10 @@ class aligned_storage_ptr
 public:
     explicit aligned_storage_ptr(T * p = 0):
         ptr(p)
+    {}
+
+    explicit aligned_storage_ptr(size_t count):
+        ptr(malloc_aligned<T>(count))
     {}
 
     ~aligned_storage_ptr(void)

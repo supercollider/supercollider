@@ -1,6 +1,17 @@
 class::FunctionDef
 summary:: FunctionDefs contain code which can be executed from a Function.
 categories::Core>Kernel
+related::Classes/Function
+
+description::
+
+subsection:: Related Keywords
+
+method:: thisFunctionDef
+The global pseudo-variable code::thisFunctionDef:: always evaluates to the
+current enclosing FunctionDef.
+
+See also: link::Classes/Function#.thisFunction#thisFunction::
 
 instanceMethods::
 
@@ -74,5 +85,3 @@ subsection::Utilities
 method::dumpByteCodes
 
 "Disassemble" and post the FunctionDef's byte code instructions to the text window.
-
-

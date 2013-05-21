@@ -6,6 +6,7 @@ else()
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
+                    ${CMAKE_SOURCE_DIR}/common
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface)
 
 if (NOVA_SIMD)
@@ -63,7 +64,6 @@ endif()
 
 if (${CMAKE_COMPILER_IS_GNUCXX})
 	add_definitions(-fno-finite-math-only)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions")
 	if(NOT WIN32)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility-inlines-hidden")
 	endif()
@@ -119,7 +119,7 @@ if(NOT NO_LIBSNDFILE)
 
 	if(SNDFILE_FOUND)
 		include_directories(${SNDFILE_INCLUDE_DIR})
-		target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${PTHREADS_LIBRARY})
+		target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} boost_thread)
 
 		list(APPEND plugins DiskIO_UGens)
 	else()
@@ -188,7 +188,7 @@ if (SUPERNOVA)
 
 		if(SNDFILE_FOUND)
 			include_directories(${SNDFILE_INCLUDE_DIR})
-			target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${PTHREADS_LIBRARY})
+			target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} boost_thread)
 			list(APPEND supernova_plugins DiskIO_UGens_supernova)
 		else()
 			message(SEND_ERROR "Cannot find libsndfile")
@@ -205,7 +205,7 @@ foreach(ugen ${fft_ugens})
 endforeach()
 
 foreach (ugen ${uiugens})
-    target_link_libraries(${ugen} ${PTHREADS_LIBRARY})
+    target_link_libraries(${ugen} boost_thread)
 endforeach()
 
 foreach (plugin ${plugins})
@@ -227,7 +227,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 		message(FATAL_ERROR "libxt not found")
 	endif()
 
-	include_directories(X11_Xt_INCLUDE_PATH)
+	include_directories(${X11_Xt_INCLUDE_PATH})
 
 	foreach (ugen ${uiugens})
 		target_link_libraries(${ugen} ${X11_X11_LIB})

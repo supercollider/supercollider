@@ -433,22 +433,28 @@ void Demand_Ctor(Demand *unit)
 		}
 	}
 
-	unit->m_prevout = (float*) RTAlloc(unit->mWorld, unit->mNumOutputs * sizeof(float));
-	unit->m_out = (float**) RTAlloc(unit->mWorld, unit->mNumOutputs * sizeof(float*));
+	for (int i=0; i<unit->mNumOutputs; ++i)
+		OUT0(i) = 0.f;
 
-	//Print("Demand_Ctor calc %p\n", unit->mCalcFunc);
+	char * memoryChunk = (char*)RTAlloc(unit->mWorld, unit->mNumOutputs * (sizeof(float) + sizeof(float*)));
+
+	if (!memoryChunk) {
+		Print("Demand: RT memory allocation failed\n");
+		SETCALC(ClearUnitOutputs);
+		return;
+	}
+
+	unit->m_prevout = (float*)memoryChunk;
+	unit->m_out = (float**)(memoryChunk + unit->mNumOutputs * sizeof(float));
+
 	unit->m_prevtrig = 0.f;
 	unit->m_prevreset = 0.f;
-	for (int i=0; i<unit->mNumOutputs; ++i) {
-		unit->m_prevout[i] = 0.f;
-		OUT0(i) = 0.f;
-	}
+	std::fill_n(unit->m_prevout, unit->mNumOutputs, 0.f);
 }
 
 void Demand_Dtor(Demand* unit)
 {
 	if(unit->m_prevout) RTFree(unit->mWorld, unit->m_prevout);
-	if(unit->m_out)     RTFree(unit->mWorld, unit->m_out);
 }
 
 
@@ -723,13 +729,16 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 
 
 				// new shape
+				float fshape = DEMANDINPUT(d_env_shape);
+				if (sc_isnan(fshape))
+					shape = unit->m_shape;
+				else
+					shape = (int)fshape;
+
+				curve = DEMANDINPUT(d_env_curve);
+				if (sc_isnan(curve)) curve = unit->m_curve;
 
 				float count;
-				shape = (int)DEMANDINPUT(d_env_shape);
-				curve = DEMANDINPUT(d_env_curve);
-
-				if (sc_isnan(shape)) shape = unit->m_shape;
-				if (sc_isnan(curve)) curve = unit->m_curve;
 				if (phase <= 1.f) {
 					shape = 1; // shape_Linear
 					count = 1.f;
@@ -982,11 +991,15 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 				// new shape
 				float count;
 				curve = DEMANDINPUT_A(d_env_curve, i + 1);
-				shape = (int)DEMANDINPUT_A(d_env_shape, i + 1);
 
 				// printf("shapes: %i \n", shape);
 				if (sc_isnan(curve)) curve = unit->m_curve;
-				if (sc_isnan(shape)) shape = unit->m_shape;
+
+				float fshape = DEMANDINPUT_A(d_env_shape, i + 1);
+				if (sc_isnan(fshape))
+					shape = unit->m_shape;
+				else
+					shape = (int)fshape;
 
 				if (phase <= 1.f) {
 					shape = 1; // shape_Linear
@@ -1914,19 +1927,22 @@ void Dshuf_scramble(Dshuf *unit) {
 
 void Dshuf_Ctor(Dshuf *unit)
 {
-	int32 i, size;
+	OUT0(0) = 0.f;
 
-	size = (int32)(unit->mNumInputs) - 1;
-
+	uint32 size = (unit->mNumInputs) - 1;
 	unit->m_indices = (int32*)RTAlloc(unit->mWorld, size * sizeof(int32));
 
-	for(i=0; i < size; ++i) {
-		unit->m_indices[i] = i + 1;
+	if (!unit->m_indices) {
+		Print("Dshuf: RT memory allocation failed\n");
+		SETCALC(ClearUnitOutputs);
+		return;
 	}
+
+	for(uint32 i=0; i < size; ++i)
+		unit->m_indices[i] = i + 1;
 
 	SETCALC(Dshuf_next);
 	Dshuf_next(unit, 0);
-	OUT0(0) = 0.f;
 }
 
 void Dshuf_Dtor(Dshuf *unit)
@@ -2066,13 +2082,23 @@ void Dpoll_next(Dpoll *unit, int inNumSamples)
 
 void Dpoll_Ctor(Dpoll *unit)
 {
-	SETCALC(Dpoll_next);
-	unit->m_id = IN0(3); // number of chars in the id string
-	unit->m_id_string = (char*)RTAlloc(unit->mWorld, ((int)unit->m_id + 1) * sizeof(char));
-	for(int i = 0; i < (int)unit->m_id; i++) {
-		unit->m_id_string[i] = (char)IN0(4+i);
+	OUT0(0) = 0.f;
+
+	const int idStringSize = (int)IN0(3);
+
+	unit->m_id_string = (char*)RTAlloc(unit->mWorld, (idStringSize + 1) * sizeof(char));
+
+	if (!unit->m_id_string) {
+		Print("Dpoll: RT memory allocation failed\n");
+		SETCALC(ClearUnitOutputs);
+		return;
 	}
-	unit->m_id_string[(int)unit->m_id] = '\0';
+
+	for(int i = 0; i < idStringSize; i++)
+		unit->m_id_string[i] = (char)IN0(4+i);
+
+	SETCALC(Dpoll_next);
+	unit->m_id_string[idStringSize] = '\0';
 	unit->m_mayprint = unit->mWorld->mVerbosity >= -1;
 	OUT0(0) = 0.f;
 }

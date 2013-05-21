@@ -20,14 +20,16 @@
 
 #ifdef _WIN32
 
+#include "SC_Win32Utils.h"
+
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
 #include <sys/timeb.h>
 #include <time.h>
 #include <windows.h>
+#include <shlobj.h>
 
-#include "SC_Win32Utils.h"
 
 void win32_ReplaceCharInString(char* string, int len, char src, char dst)
 {
@@ -50,17 +52,6 @@ void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars
   }
   if( !backSlashFound )
     folder[0] = 0;
-}
-
-
-void win32_gettimeofday(timeval* tv, void*)
-{
-	long unsigned secBetween1601and1970 = 11644473600ULL;
-	FILETIME fileTime;
-	GetSystemTimeAsFileTime(&fileTime);
-	tv->tv_sec  = (* (unsigned __int64 *) &fileTime / (unsigned __int64)10000000) - secBetween1601and1970;
-	tv->tv_usec = (* (unsigned __int64 *) &fileTime % (unsigned __int64)10000000)/(unsigned __int64)10;
-
 }
 
 void win32_GetKnownFolderPath(int folderId, char *dest, int size)
@@ -110,21 +101,6 @@ char* win32_dirname(char* path)
 	path[lastPathSepFoundPos]=0;
 
   return path;
-}
-
-int win32_nanosleep (const struct timespec *requested_time,
-		  struct timespec *remaining)
-{
-  DWORD milliseconds = requested_time->tv_sec * 1000
-  	+ (requested_time->tv_nsec) / 1000000;
-  if (requested_time->tv_nsec < 0 || requested_time->tv_nsec > 1000000) {
-  	errno = EINVAL;
-    return -1;
-  }
-  Sleep (milliseconds);
-  remaining->tv_sec = 0;
-  remaining->tv_nsec = 0;
-  return 0;
 }
 
 /* Based on code from PostgreSQL (pgsql/src/port/pipe.c)

@@ -6,9 +6,9 @@ related:: Classes/ServerOptions, Reference/Server-Architecture, Reference/Server
 description::
 
 A Server object is the client-side representation of a server app and is used to control the app from the SuperCollider language application. (See link::Guides/ClientVsServer:: for more details on the distinction.)
-It forwards osc-messages and has a number of allocators that keep track of IDs for nodes, buses and buffers.
+It forwards OSC messages and has a number of allocators that keep track of IDs for nodes, buses and buffers.
 
-The server application is a commandline program, so all commands apart from osc-messages are unix commands.
+The server application is a commandline program, so all commands apart from OSC messages are unix commands.
 
 The server application represented by a Server object might be running on the same machine as the client (in the same address space as the language application or separately; see below), or it may be running on a remote machine.
 
@@ -43,7 +43,7 @@ In general, when working with a single machine one will probably be using one of
 
 The difference between the two is that the local server runs as a separate application with its own address space, and the internal server runs within the same space as the language/client app.
 
-Both local and internal server supports link::#-scope#scoping:: and link::Classes/Bus#synchronous_control_bus_methods#synchronous bus access::.
+Both local and internal server supports link::#-scope#scoping:: and link::Classes/Bus#Synchronous control bus methods#synchronous bus access::.
 
 The local server, and any other server apps running on your local machine, have the advantage that if the language app crashes, it (and thus possibly your piece) will continue to run. It is thus an inherently more robust arrangement. But note that even if the synths on the server continue to run, any language-side sequencing and control will terminate if the language app crashes.
 
@@ -116,14 +116,14 @@ InstanceMethods::
 private:: doSend
 
 method:: sendMsg
-send an osc message to the server.
+send an OSC-message to the server.
 discussion::
 code::
 s.sendMsg("/s_new", "default", s.nextNodeID, 0, 1);
 ::
 
 method:: sendBundle
-send an osc bundle to the server.
+send an OSC-bundle to the server.
 discussion::
 Since the network may have irregular performance, time allows for the bundle to be evaluated at a specified point in the future.
 Thus all messages are synchronous relative to each other, but delayed by a constant offset.
@@ -225,7 +225,7 @@ method:: defaultGroup
 returns:: this Server's default group.
 
 method:: volume
-Get an instance of Volume that runs after the defualt group, or sets the Volume of the Server's output to level. Level is in db.
+Get an instance of Volume that runs after the default group, or sets the Volume of the Server's output to level. Level is in db.
 
 method:: mute
 mute the server's output. This can also be toggled from the Server window with the 'm' key.
@@ -294,7 +294,7 @@ method:: pid
 Get process ID of running server (if not internal).
 
 method:: hasShmInterface
-Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#synchronous_control_bus_methods#Synchronous Control Bus Methods::.
+Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous control bus methods::.
 discussion::
 The shared memory interface is initialized after first server boot.
 
@@ -324,7 +324,7 @@ SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
 }).add;
 )
 
-// all OSC commands generated in the function contained below will be added to a bundle
+// all OSC-commands generated in the function contained below will be added to a bundle
 // and executed simultaneously after 2 seconds.
 (
 s.makeBundle(2.0, {
@@ -380,6 +380,7 @@ code::
 (
 s.bind {
 	a = { |freq=100| SinOsc.ar(freq, LFTri.ar(freq)) * 0.2 }.play;
+    s.sync;
 	a.set(\freq, 400);
 }
 )
@@ -569,7 +570,7 @@ Get/set the sample format (string) of the output file. The default is "float". M
 
 subsection:: Asynchronous Commands
 
-Server provides support for waiting on the completion of asynchronous OSC commands such as reading or writing soundfiles. N.B. The following methods must be called from within a running link::Classes/Routine::. Explicitly passing in a link::Classes/Condition:: allows multiple elements to depend on different conditions. The examples below should make clear how all this works.
+Server provides support for waiting on the completion of asynchronous OSC-commands such as reading or writing soundfiles. N.B. The following methods must be called from within a running link::Classes/Routine::. Explicitly passing in a link::Classes/Condition:: allows multiple elements to depend on different conditions. The examples below should make clear how all this works.
 
 method:: bootSync
 Boot the Server and wait until it has completed before resuming the thread.

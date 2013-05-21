@@ -145,9 +145,7 @@ template <typename runnable,
 class dsp_threads
 {
     typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
-
     typedef nova::dsp_thread<runnable, thread_init_functor, Alloc> dsp_thread;
-
 
 public:
     typedef typename dsp_queue_interpreter::node_count_t node_count_t;
@@ -155,8 +153,9 @@ public:
 
     typedef std::unique_ptr<dsp_thread_queue<runnable, Alloc> > dsp_thread_queue_ptr;
 
-    dsp_threads(thread_count_t count, thread_init_functor const & init_functor = thread_init_functor()):
-        interpreter(std::min(count, (thread_count_t)std::thread::hardware_concurrency()))
+    dsp_threads(thread_count_t count, bool yield_if_busy = false,
+                thread_init_functor const & init_functor = thread_init_functor()):
+        interpreter(std::min(count, (thread_count_t)std::thread::hardware_concurrency()), yield_if_busy)
     {
         set_dsp_thread_count(interpreter.get_thread_count(), init_functor);
     }
@@ -289,4 +288,3 @@ private:
 } /* namespace nova */
 
 #endif /* DSP_THREAD_QUEUE_DSP_THREAD_HPP */
-

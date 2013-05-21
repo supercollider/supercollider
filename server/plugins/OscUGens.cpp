@@ -19,7 +19,7 @@
 */
 
 #include "SC_PlugIn.h"
-#include "SC_Altivec.h"
+#include "function_attributes.h"
 #include <limits>
 #include <string.h>
 
@@ -40,8 +40,6 @@ struct TableLookup : public BufUnit
 
 struct DegreeToKey : public BufUnit
 {
-	SndBuf *m_buf;
-	float m_fbufnum;
 	int32 mPrevIndex;
 	float mPrevKey;
 	int32 mOctave;
@@ -87,13 +85,6 @@ struct Shaper : public BufUnit
 {
 	float mOffset;
 	float mPrevIn;
-};
-
-struct SigOsc : public BufUnit
-{
-	int32 mTableSize;
-	double m_cpstoinc;
-	float mPhase;
 };
 
 struct FSinOsc : public Unit
@@ -274,11 +265,6 @@ void IndexInBetween_next_k(IndexInBetween *unit, int inNumSamples);
 void IndexInBetween_next_a(IndexInBetween *unit, int inNumSamples);
 
 
-void SigOsc_Ctor(SigOsc *unit);
-void SigOsc_next_1(SigOsc *unit, int inNumSamples);
-void SigOsc_next_k(SigOsc *unit, int inNumSamples);
-void SigOsc_next_a(SigOsc *unit, int inNumSamples);
-
 void FSinOsc_Ctor(FSinOsc *unit);
 void FSinOsc_next(FSinOsc *unit, int inNumSamples);
 void FSinOsc_next_i(FSinOsc *unit, int inNumSamples);
@@ -337,38 +323,70 @@ void Klank_next(Klank *unit, int inNumSamples);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define GET_TABLE \
-		float fbufnum = ZIN0(0); \
-		if (fbufnum != unit->m_fbufnum) { \
-			uint32 bufnum = (uint32)fbufnum; \
-			World *world = unit->mWorld; \
-			if (bufnum >= world->mNumSndBufs) { \
-			int localBufNum = bufnum - world->mNumSndBufs; \
-			Graph *parent = unit->mParent; \
-			if(localBufNum <= parent->localBufNum) { \
-				unit->m_buf = parent->mLocalSndBufs + localBufNum; \
-			} else { \
-				bufnum = 0; \
-				unit->m_buf = world->mSndBufs + bufnum; \
-			} \
-		} else { \
-			unit->m_buf = world->mSndBufs + bufnum; \
-		} \
-		unit->m_fbufnum = fbufnum; \
-		} \
-		const SndBuf *buf = unit->m_buf; \
-        if(!buf) { \
-			ClearUnitOutputs(unit, inNumSamples); \
-			return; \
-		} \
-		LOCK_SNDBUF_SHARED(buf); \
-		const float *bufData __attribute__((__unused__)) = buf->data; \
-		if (!bufData) { \
-			ClearUnitOutputs(unit, inNumSamples); \
-			return; \
-		} \
-		int tableSize = buf->samples;
+force_inline bool UnitGetTable(BufUnit * unit, int inNumSamples, const SndBuf * & buf,
+							   const float * & bufData, int & tableSize)
+{
+	float fbufnum = ZIN0(0);
+	if (fbufnum != unit->m_fbufnum) {
+		uint32 bufnum = (uint32)fbufnum;
+		World *world = unit->mWorld;
+		if (bufnum >= world->mNumSndBufs) {
+			uint32 localBufNum = bufnum - world->mNumSndBufs;
+			Graph *parent = unit->mParent;
+			if(localBufNum <= parent->localBufNum)
+				unit->m_buf = parent->mLocalSndBufs + localBufNum;
+			else {
+				bufnum = 0;
+				unit->m_buf = world->mSndBufs + bufnum;
+			}
+		} else
+			unit->m_buf = world->mSndBufs + bufnum;
 
+		unit->m_fbufnum = fbufnum;
+	}
+	buf = unit->m_buf;
+	if(!buf) {
+		ClearUnitOutputs(unit, inNumSamples);
+		return false;
+	}
+
+	bufData = buf->data;
+	if (!bufData) {
+		ClearUnitOutputs(unit, inNumSamples);
+		return false;
+	}
+	tableSize = buf->samples;
+	return true;
+}
+
+#define GET_TABLE \
+	const SndBuf * buf; \
+	const float * bufData; \
+	int tableSize; \
+	do { \
+		bool tableValid = UnitGetTable(unit, inNumSamples, buf, bufData, tableSize); \
+		if (!tableValid) return; \
+	} while (0);
+
+static inline bool verify_wavetable(Unit * unit, const char * name, int tableSize, int inNumSamples)
+{
+	// phase computation is not precise for large wavetables.
+	if (tableSize > 131072) {
+		if (unit->mWorld->mVerbosity >= -1)
+			Print("Warning: wave table too big (%s)\n", name);
+		ClearUnitOutputs(unit, inNumSamples);
+		return false;
+	}
+
+	if (!ISPOWEROFTWO(tableSize)) {
+		if (unit->mWorld->mVerbosity >= -1)
+			Print("Warning: size of wavetable not a power of two (%s)\n", name);
+		ClearUnitOutputs(unit, inNumSamples);
+		return false;
+	}
+
+	return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -390,7 +408,7 @@ void TableLookup_SetTable(TableLookup* unit, int32 inSize, float* inTable)
 
 void DegreeToKey_Ctor(DegreeToKey *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(DegreeToKey_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -653,7 +671,7 @@ void TWindex_next_ak(TWindex *unit, int inNumSamples)
 
 void Index_Ctor(Index *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(Index_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -717,7 +735,7 @@ void Index_next_a(Index *unit, int inNumSamples)
 
 void IndexL_Ctor(IndexL *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(IndexL_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -800,7 +818,7 @@ void IndexL_next_a(IndexL *unit, int inNumSamples)
 
 void FoldIndex_Ctor(FoldIndex *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(FoldIndex_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -863,7 +881,7 @@ void FoldIndex_next_a(FoldIndex *unit, int inNumSamples)
 
 void WrapIndex_Ctor(WrapIndex *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(WrapIndex_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -939,7 +957,7 @@ static float IndexInBetween_FindIndex(const float* table, float in, int32 maxind
 
 void IndexInBetween_Ctor(IndexInBetween *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(IndexInBetween_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -1009,7 +1027,7 @@ static int32 DetectIndex_FindIndex(const float* table, float in, int32 maxindex)
 
 void DetectIndex_Ctor(DetectIndex *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(DetectIndex_next_1);
 	} else if (INRATE(0) == calc_FullRate) {
@@ -1096,7 +1114,7 @@ void DetectIndex_next_a(DetectIndex *unit, int inNumSamples)
 
 void Shaper_Ctor(Shaper *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(Shaper_next_1);
 	} else if (INRATE(1) == calc_FullRate) {
@@ -1108,6 +1126,19 @@ void Shaper_Ctor(Shaper *unit)
 	Shaper_next_1(unit, 1);
 }
 
+float force_inline ShaperPerform(const float * table0, const float * table1, float in, float offset, float fmaxindex)
+{
+	float findex = offset + in * offset;
+	findex = sc_clip(findex, 0.f, fmaxindex);
+	int32 index = (int32)findex;
+	float pfrac = findex - (index - 1);
+	index <<= 3;
+	float val1 = *(const float*)((const char*)table0 + index);
+	float val2 = *(const float*)((const char*)table1 + index);
+	float val = val1 + val2 * pfrac;
+	return val;
+}
+
 void Shaper_next_1(Shaper *unit, int inNumSamples)
 {
 	// get table
@@ -1117,18 +1148,7 @@ void Shaper_next_1(Shaper *unit, int inNumSamples)
 		float fmaxindex = (float)(tableSize>>1) - 0.001;
 		float offset = tableSize * 0.25;
 
-	float val;
-
-	float fin = ZIN0(1);
-	float findex = offset + fin * offset;
-	findex = sc_clip(findex, 0.f, fmaxindex);
-	int32 index = (int32)findex;
-	float pfrac = findex - (index - 1);
-	index <<= 3;
-	float val1 = *(float*)((char*)table0 + index);
-	float val2 = *(float*)((char*)table1 + index);
-	val = val1 + val2 * pfrac;
-	ZOUT0(0) = val;
+	ZOUT0(0) = ShaperPerform(table0, table1, ZIN0(1), offset, fmaxindex);
 }
 
 void Shaper_next_k(Shaper *unit, int inNumSamples)
@@ -1141,25 +1161,21 @@ void Shaper_next_k(Shaper *unit, int inNumSamples)
 		float offset = tableSize * 0.25;
 
 	float *out = ZOUT(0);
-
-	float val;
-
 	float fin = ZIN0(1);
-	float phaseinc = (fin - unit->mPrevIn) * offset;
-	unit->mPrevIn = fin;
 
-	LOOP1(inNumSamples,
-		float findex = offset + fin * offset;
-		findex = sc_clip(findex, 0.f, fmaxindex);
-		int32 index = (int32)findex;
-		float pfrac = findex - (index - 1);
-		index <<= 3;
-		float val1 = *(float*)((char*)table0 + index);
-		float val2 = *(float*)((char*)table1 + index);
-		val = val1 + val2 * pfrac;
-		ZXP(out) = val;
-		fin += phaseinc;
-	);
+	if (fin == unit->mPrevIn) {
+		LOOP1(inNumSamples,
+			ZXP(out) = ShaperPerform(table0, table1, fin, offset, fmaxindex);
+		);
+	} else {
+		float phaseinc = (fin - unit->mPrevIn) * offset;
+		unit->mPrevIn = fin;
+
+		LOOP1(inNumSamples,
+			ZXP(out) = ShaperPerform(table0, table1, fin, offset, fmaxindex);
+			fin += phaseinc;
+		);
+	}
 }
 
 void Shaper_next_a(Shaper *unit, int inNumSamples)
@@ -1172,140 +1188,13 @@ void Shaper_next_a(Shaper *unit, int inNumSamples)
 		float offset = tableSize * 0.25;
 
 	float *out = ZOUT(0);
-	float *in = ZIN(1);
-	float val;
+	const float *in = ZIN(1);
 
 	LOOP1(inNumSamples,
 		float fin = ZXP(in);
-		float findex = offset + fin * offset;
-		findex = sc_clip(findex, 0.f, fmaxindex);
-		int32 index = (int32)findex;
-		float pfrac = findex - (index - 1);
-		index <<= 3;
-		float val1 = *(float*)((char*)table0 + index);
-		float val2 = *(float*)((char*)table1 + index);
-		val = val1 + val2 * pfrac;
-		ZXP(out) = val;
+		ZXP(out) = ShaperPerform(table0, table1, fin, offset, fmaxindex);
 	);
 }
-
-
-
-////////////////////////////////////////////////////////////////////////////////////
-
-void SigOsc_Ctor(SigOsc *unit)
-{
-	unit->m_fbufnum = -1e9f;
-	if (BUFLENGTH == 1) {
-		SETCALC(SigOsc_next_1);
-	} else if (INRATE(0) == calc_FullRate) {
-		SETCALC(SigOsc_next_a);
-	} else {
-		SETCALC(SigOsc_next_k);
-	}
-	unit->mPhase = 0.f;
-	SigOsc_next_1(unit, 1);
-}
-
-
-void SigOsc_next_1(SigOsc *unit, int inNumSamples)
-{
-	// get table
-	GET_TABLE
-		const float *table0 = bufData;
-		const float *table1 = table0 + 1;
-		int32 maxindex = tableSize - 1;
-		float maxphase = (float)maxindex;
-		if (tableSize != unit->mTableSize) {
-			unit->mTableSize = tableSize;
-			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
-		}
-
-	float phase = unit->mPhase;
-
-	while (phase < 0.f) phase += maxphase;
-	while (phase >= maxphase) phase -= maxphase;
-	int32 iphase = (int32)phase;
-	float pfrac = phase - iphase;
-	float val1 = *(float*)((char*)table0 + iphase);
-	float val2 = *(float*)((char*)table1 + iphase);
-	float val = lininterp(pfrac, val1, val2);
-	phase += ZIN0(1) * unit->m_cpstoinc;
-
-	ZOUT0(0) = val;
-
-	unit->mPhase = phase;
-}
-
-void SigOsc_next_k(SigOsc *unit, int inNumSamples)
-{
-	// get table
-	GET_TABLE
-		const float *table0 = bufData;
-		const float *table1 = table0 + 1;
-		int32 maxindex = tableSize - 1;
-		float maxphase = (float)maxindex;
-		if (tableSize != unit->mTableSize) {
-			unit->mTableSize = tableSize;
-			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
-		}
-
-	float *out = ZOUT(0);
-
-	float phase = unit->mPhase;
-
-	float freq = ZIN0(1) * unit->m_cpstoinc;
-
-	LOOP1(inNumSamples,
-		while (phase < 0.f) phase += maxphase;
-		while (phase >= maxphase) phase -= maxphase;
-		int32 iphase = (int32)phase;
-		float pfrac = phase - iphase;
-		float val1 = *(float*)((char*)table0 + iphase);
-		float val2 = *(float*)((char*)table1 + iphase);
-		float val = lininterp(pfrac, val1, val2);
-		phase += freq;
-
-		ZXP(out) = val;
-	);
-
-	unit->mPhase = phase;
-}
-
-void SigOsc_next_a(SigOsc *unit, int inNumSamples)
-{
-	// get table
-	GET_TABLE
-		const float *table0 = bufData;
-		const float *table1 = table0 + 1;
-		int32 maxindex = tableSize - 1;
-		float maxphase = (float)maxindex;
-		if (tableSize != unit->mTableSize) {
-			unit->mTableSize = tableSize;
-			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
-		}
-
-	float *out = ZOUT(0);
-	float *freqin = ZIN(1);
-	float phase = unit->mPhase;
-	float cpstoinc = unit->m_cpstoinc;
-
-	LOOP1(inNumSamples,
-		while (phase < 0.f) phase += maxphase;
-		while (phase >= maxphase) phase -= maxphase;
-		int32 iphase = (int32)phase;
-		float pfrac = phase - iphase;
-		float val1 = *(float*)((char*)table0 + iphase);
-		float val2 = *(float*)((char*)table1 + iphase);
-		float val = lininterp(pfrac, val1, val2);
-		phase += ZXP(freqin) * cpstoinc;
-
-		ZXP(out) = val;
-	);
-
-	unit->mPhase = phase;
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1359,11 +1248,7 @@ void FSinOsc_next(FSinOsc *unit, int inNumSamples)
 
 void FSinOsc_next_i(FSinOsc *unit, int inNumSamples)
 {
-#ifdef __GNUC__
 	float * __restrict__ out = ZOUT(0);
-#else
-	float * out = ZOUT(0);
-#endif
 	double b1 = unit->m_b1;
 
 	double y0;
@@ -1487,16 +1372,12 @@ void PSinGrain_next(PSinGrain *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////!!!
-
-void SinOsc_next_ikk(SinOsc *unit, int inNumSamples)
+template <typename OscType, int FreqInputIndex>
+force_inline void Osc_ikk_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
 {
 	float *out = ZOUT(0);
-	float freqin = ZIN0(0);
-	float phasein = ZIN0(1);
-
-	float *table0 = ft->mSineWavetable;
-	float *table1 = table0 + 1;
+	float freqin = ZIN0(FreqInputIndex);
+	float phasein = ZIN0(FreqInputIndex + 1);
 
 	int32 phase = unit->m_phase;
 	int32 lomask = unit->m_lomask;
@@ -1512,103 +1393,55 @@ void SinOsc_next_ikk(SinOsc *unit, int inNumSamples)
 	unit->m_phase = phase;
 }
 
-#if __VEC__
-
-void vSinOsc_next_ikk(SinOsc *unit, int inNumSamples)
+void SinOsc_next_ikk(SinOsc *unit, int inNumSamples)
 {
-	vfloat32 *vout = (vfloat32*)OUT(0);
-	float freqin = ZIN0(0);
-	float phasein = ZIN0(1);
-
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
 
-	int32 phase = unit->m_phase;
-	int32 lomask = unit->m_lomask;
-
-	int32 freq = (int32)(unit->m_cpstoinc * freqin);
-	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
-	unit->m_phasein = phasein;
-
-	vint32 vphase = vload(phase, phase+phaseinc, phase+2*phaseinc, phase+3*phaseinc);
-	vint32 vphaseinc = vload(phaseinc << 2);
-	vint32 v3F800000 = (vint32)vinit(0x3F800000);
-	vint32 v007FFF80 = (vint32)vinit(0x007FFF80);
-	vint32 vlomask = vload(lomask);
-	vuint32 vxlobits1 = (vuint32)vinit(xlobits1);
-	vuint32 v7 = (vuint32)vinit(7);
-
-	vint32 vtable0 = vload((int32)table0); // assuming 32 bit pointers
-	vint32 vtable1 = vload((int32)table1); // assuming 32 bit pointers
-
-	int len = inNumSamples << 2;
-	for (int i=0; i<len; i+=16) {
-
-		vfloat32 vfrac = (vfloat32)(vec_or(v3F800000, vec_and(v007FFF80, vec_sl(vphase, v7))));
-		vint32 vindex = vec_and(vec_sr(vphase, vxlobits1), vlomask);
-		vec_union vaddr0, vaddr1;
-		vaddr0.vi = vec_add(vindex, vtable0);
-		vaddr1.vi = vec_add(vindex, vtable1);
-
-		vec_union vval1, vval2;
-		vval1.f[0] = *(float*)(vaddr0.i[0]);
-		vval2.f[0] = *(float*)(vaddr1.i[0]);
-		vval1.f[1] = *(float*)(vaddr0.i[1]);
-		vval2.f[1] = *(float*)(vaddr1.i[1]);
-		vval1.f[2] = *(float*)(vaddr0.i[2]);
-		vval2.f[2] = *(float*)(vaddr1.i[2]);
-		vval1.f[3] = *(float*)(vaddr0.i[3]);
-		vval2.f[3] = *(float*)(vaddr1.i[3]);
-
-		vec_st(vec_madd(vval2.vf, vfrac, vval1.vf), i, vout);
-		vphase = vec_add(vphase, vphaseinc);
-	}
-	unit->m_phase = phase + inNumSamples * phaseinc;
-
+	Osc_ikk_perform<SinOsc, 0>(unit, table0, table1, inNumSamples);
 }
 
-#endif
 
-void SinOsc_next_ika(SinOsc *unit, int inNumSamples)
+template <typename OscType, int FreqInputIndex>
+force_inline void Osc_ika_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
 {
 	float *out = ZOUT(0);
-	float freqin = ZIN0(0);
-	float *phasein = ZIN(1);
-
-	float *table0 = ft->mSineWavetable;
-	float *table1 = table0 + 1;
+	float freqin = ZIN0(FreqInputIndex);
+	float *phasein = ZIN(FreqInputIndex + 1);
 
 	int32 phase = unit->m_phase;
 	int32 lomask = unit->m_lomask;
 
 	int32 freq = (int32)(unit->m_cpstoinc * freqin);
 	float radtoinc = unit->m_radtoinc;
-	//Print("SinOsc_next_ika %d %g %d\n", inNumSamples, radtoinc, phase);
 	LOOP1(inNumSamples,
 		int32 phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
 		ZXP(out) = lookupi1(table0, table1, phaseoffset, lomask);
 		phase += freq;
 	);
 	unit->m_phase = phase;
-	//unit->m_phasein = phasein;
-
 }
 
-void SinOsc_next_iaa(SinOsc *unit, int inNumSamples)
+void SinOsc_next_ika(SinOsc *unit, int inNumSamples)
+{
+	const float *table0 = ft->mSineWavetable;
+	const float *table1 = table0 + 1;
+	Osc_ika_perform<SinOsc, 0>(unit, table0, table1, inNumSamples);
+}
+
+
+template <typename OscType, int FreqInputIndex>
+force_inline void Osc_iaa_perform(OscType * unit, const float * table0, const float * table1, int inNumSamples)
 {
 	float *out = ZOUT(0);
-	float *freqin = ZIN(0);
-	float *phasein = ZIN(1);
-
-	float *table0 = ft->mSineWavetable;
-	float *table1 = table0 + 1;
+	float *freqin = ZIN(FreqInputIndex);
+	float *phasein = ZIN(FreqInputIndex + 1);
 
 	int32 phase = unit->m_phase;
 	int32 lomask = unit->m_lomask;
 
 	float cpstoinc = unit->m_cpstoinc;
 	float radtoinc = unit->m_radtoinc;
-	//Print("SinOsc_next_iaa %d %g %g %d\n", inNumSamples, cpstoinc, radtoinc, phase);
 	LOOP1(inNumSamples,
 		float phaseIn = ZXP(phasein);
 		float freqIn  = ZXP(freqin);
@@ -1618,18 +1451,23 @@ void SinOsc_next_iaa(SinOsc *unit, int inNumSamples)
 		ZXP(out) = z;
 	);
 	unit->m_phase = phase;
-	//unit->m_phasein = ZX(phasein);
+}
+
+void SinOsc_next_iaa(SinOsc *unit, int inNumSamples)
+{
+	const float *table0 = ft->mSineWavetable;
+	const float *table1 = table0 + 1;
+
+	Osc_iaa_perform<SinOsc, 0>(unit, table0, table1, inNumSamples);
 }
 
 
-void SinOsc_next_iak(SinOsc *unit, int inNumSamples)
+template <typename OscType, int FreqInputIndex>
+force_inline void Osc_iak_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
 {
 	float *out = ZOUT(0);
-	float *freqin = ZIN(0);
-	float phasein = ZIN0(1);
-
-	float *table0 = ft->mSineWavetable;
-	float *table1 = table0 + 1;
+	float *freqin = ZIN(FreqInputIndex);
+	float phasein = ZIN0(FreqInputIndex + 1);
 
 	int32 phase = unit->m_phase;
 	int32 lomask = unit->m_lomask;
@@ -1637,26 +1475,43 @@ void SinOsc_next_iak(SinOsc *unit, int inNumSamples)
 	float cpstoinc = unit->m_cpstoinc;
 	float radtoinc = unit->m_radtoinc;
 	float phasemod = unit->m_phasein;
-	float phaseslope = CALCSLOPE(phasein, phasemod);
 
-	LOOP1(inNumSamples,
-		int32 pphase = phase + (int32)(radtoinc * phasemod);
-		phasemod += phaseslope;
-		float z = lookupi1(table0, table1, pphase, lomask);
-		phase += (int32)(cpstoinc * ZXP(freqin));
-		ZXP(out) = z;
-	);
+	if (phasein != phasemod) {
+		float phaseslope = CALCSLOPE(phasein, phasemod);
+
+		LOOP1(inNumSamples,
+			int32 pphase = phase + (int32)(radtoinc * phasemod);
+			phasemod += phaseslope;
+			float z = lookupi1(table0, table1, pphase, lomask);
+			phase += (int32)(cpstoinc * ZXP(freqin));
+			ZXP(out) = z;
+		);
+	} else {
+		LOOP1(inNumSamples,
+			int32 pphase = phase + (int32)(radtoinc * phasemod);
+			float z = lookupi1(table0, table1, pphase, lomask);
+			phase += (int32)(cpstoinc * ZXP(freqin));
+			ZXP(out) = z;
+		);
+	}
 	unit->m_phase = phase;
 	unit->m_phasein = phasein;
 }
 
-void SinOsc_next_iai(SinOsc *unit, int inNumSamples)
+void SinOsc_next_iak(SinOsc *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-	float *freqin = ZIN(0);
-
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
+
+	Osc_iak_perform<SinOsc, 0>(unit, table0, table1, inNumSamples);
+}
+
+
+template <typename OscType, int FreqInputIndex>
+force_inline void Osc_iai_perform(OscType *unit, const float * table0, const float * table1, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *freqin = ZIN(FreqInputIndex);
 
 	int32 phase = unit->m_phase;
 	int32 lomask = unit->m_lomask;
@@ -1674,6 +1529,12 @@ void SinOsc_next_iai(SinOsc *unit, int inNumSamples)
 	unit->m_phase = phase;
 }
 
+void SinOsc_next_iai(SinOsc *unit, int inNumSamples)
+{
+	float *table0 = ft->mSineWavetable;
+	float *table1 = table0 + 1;
+	Osc_iai_perform<SinOsc, 0>(unit, table0, table1, inNumSamples);
+}
 
 
 void SinOsc_Ctor(SinOsc *unit)
@@ -1699,18 +1560,7 @@ void SinOsc_Ctor(SinOsc *unit)
 			SETCALC(SinOsc_next_ika);
 			unit->m_phase = 0;
 		} else {
-#if __VEC__
-			if (USEVEC) {
-				//Print("vSinOsc_next_ikk\n");
-				SETCALC(vSinOsc_next_ikk);
-			} else {
-				//Print("SinOsc_next_ikk\n");
-				SETCALC(SinOsc_next_ikk);
-			}
-#else
-			//Print("next_ikk\n");
 			SETCALC(SinOsc_next_ikk);
-#endif
 			unit->m_phase = (int32)(unit->m_phasein * unit->m_radtoinc);
 		}
 	}
@@ -1826,148 +1676,69 @@ void Osc_Ctor(Osc *unit)
 	Osc_next_ikk(unit, 1);
 }
 
-//////////////!!!
+force_inline bool Osc_get_table(Osc *unit, const float *& table0, const float *& table1, int inNumSamples)
+{
+	const SndBuf * buf;
+	const float * bufData;
+	int tableSize;
+	bool tableValid = UnitGetTable(unit, inNumSamples, buf, bufData, tableSize);
+	if (!tableValid)
+		return false;
+
+	table0 = bufData;
+	table1 = table0 + 1;
+	if (tableSize != unit->mTableSize) {
+		unit->mTableSize = tableSize;
+		int tableSize2 = tableSize >> 1;
+		unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
+		unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
+		// Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
+		unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
+	}
+	if (!verify_wavetable(unit, "Osc", tableSize, inNumSamples)) return false;
+
+	return true;
+}
 
 void Osc_next_ikk(Osc *unit, int inNumSamples)
 {
-	// get table
-	GET_TABLE
-		const float *table0 = bufData;
-		const float *table1 = table0 + 1;
-		if (tableSize != unit->mTableSize) {
-			unit->mTableSize = tableSize;
-			int tableSize2 = tableSize >> 1;
-			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
-			unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
-			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
-		}
+	const float * table0;
+	const float * table1;
+	bool tableValid = Osc_get_table(unit, table0, table1, inNumSamples);
+	if (!tableValid) return;
 
-	float *out = ZOUT(0);
-	float freqin = ZIN0(1);
-	float phasein = ZIN0(2);
-
-	int32 phase = unit->m_phase;
-	int32 lomask = unit->m_lomask;
-
-	int32 freq = (int32)(unit->m_cpstoinc * freqin);
-	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
-	unit->m_phasein = phasein;
-
-	LOOP1(inNumSamples,
-		ZXP(out) = lookupi1(table0, table1, phase, lomask);
-		phase += phaseinc;
-	);
-	unit->m_phase = phase;
+	Osc_ikk_perform<Osc, 1>(unit, table0, table1, inNumSamples);
 }
-
 
 void Osc_next_ika(Osc *unit, int inNumSamples)
 {
-	// get table
-	GET_TABLE
-		const float *table0 = bufData;
-		const float *table1 = table0 + 1;
-		if (tableSize != unit->mTableSize) {
-			unit->mTableSize = tableSize;
-			int tableSize2 = tableSize >> 1;
-			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
-			unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
-			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
-		}
+	const float * table0;
+	const float * table1;
+	bool tableValid = Osc_get_table(unit, table0, table1, inNumSamples);
+	if (!tableValid) return;
 
-	float *out = ZOUT(0);
-	float freqin = ZIN0(1);
-	float *phasein = ZIN(2);
-
-	int32 phase = unit->m_phase;
-	int32 lomask = unit->m_lomask;
-
-	int32 freq = (int32)(unit->m_cpstoinc * freqin);
-	float radtoinc = unit->m_radtoinc;
-	//Print("Osc_next_ika %d %g %d\n", inNumSamples, radtoinc, phase);
-	LOOP1(inNumSamples,
-		int32 phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
-		ZXP(out) = lookupi1(table0, table1, phaseoffset, lomask);
-		phase += freq;
-	);
-	unit->m_phase = phase;
-	//unit->m_phasein = phasein;
+	Osc_ika_perform<Osc, 1>(unit, table0, table1, inNumSamples);
 }
 
 void Osc_next_iaa(Osc *unit, int inNumSamples)
 {
-	// get table
-	GET_TABLE
-		const float *table0 = bufData;
-		const float *table1 = table0 + 1;
-		if (tableSize != unit->mTableSize) {
-			unit->mTableSize = tableSize;
-			int tableSize2 = tableSize >> 1;
-			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
-			unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
-			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
-		}
+	const float * table0;
+	const float * table1;
+	bool tableValid = Osc_get_table(unit, table0, table1, inNumSamples);
+	if (!tableValid) return;
 
-	float *out = ZOUT(0);
-	float *freqin = ZIN(1);
-	float *phasein = ZIN(2);
-
-	int32 phase = unit->m_phase;
-	int32 lomask = unit->m_lomask;
-
-	float cpstoinc = unit->m_cpstoinc;
-	float radtoinc = unit->m_radtoinc;
-	//Print("Osc_next_iaa %d %g %g %d\n", inNumSamples, cpstoinc, radtoinc, phase);
-	LOOP1(inNumSamples,
-		int32 phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
-		float z = lookupi1(table0, table1, phaseoffset, lomask);
-		phase += (int32)(cpstoinc * ZXP(freqin));
-		ZXP(out) = z;
-	);
-	unit->m_phase = phase;
-	//unit->m_phasein = ZX(phasein);
+	Osc_iaa_perform<Osc, 1>(unit, table0, table1, inNumSamples);
 }
 
 
 void Osc_next_iak(Osc *unit, int inNumSamples)
 {
-	// get table
-	GET_TABLE
-		const float *table0 = bufData;
-		const float *table1 = table0 + 1;
-		if (tableSize != unit->mTableSize) {
-			unit->mTableSize = tableSize;
-			int tableSize2 = tableSize >> 1;
-			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
-			unit->m_radtoinc = tableSize2 * (rtwopi * 65536.); // Osc, OscN, PMOsc
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
-			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
-		}
+	const float * table0;
+	const float * table1;
+	bool tableValid = Osc_get_table(unit, table0, table1, inNumSamples);
+	if (!tableValid) return;
 
-	float *out = ZOUT(0);
-	float *freqin = ZIN(1);
-	float phasein = ZIN0(2);
-
-	int32 phase = unit->m_phase;
-	int32 lomask = unit->m_lomask;
-
-	float cpstoinc = unit->m_cpstoinc;
-	float radtoinc = unit->m_radtoinc;
-	float phasemod = unit->m_phasein;
-	float phaseslope = CALCSLOPE(phasein, phasemod);
-
-	LOOP1(inNumSamples,
-		int32 pphase = phase + (int32)(radtoinc * phasemod);
-		phasemod += phaseslope;
-		float z = lookupi1(table0, table1, pphase, lomask);
-		phase += (int32)(cpstoinc * ZXP(freqin));
-		ZXP(out) = z;
-	);
-	unit->m_phase = phase;
-	unit->m_phasein = phasein;
+	Osc_iak_perform<Osc, 1>(unit, table0, table1, inNumSamples);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2035,6 +1806,8 @@ void OscN_next_nkk(OscN *unit, int inNumSamples)
 			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
 		}
 
+	if (!verify_wavetable(unit, "OscN", tableSize, inNumSamples)) return;
+
 	float *out = ZOUT(0);
 	float freqin = ZIN0(1);
 	float phasein = ZIN0(2);
@@ -2067,6 +1840,8 @@ void OscN_next_nka(OscN *unit, int inNumSamples)
 			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
 		}
 
+	if (!verify_wavetable(unit, "OscN", tableSize, inNumSamples)) return;
+
 	float *out = ZOUT(0);
 	float freqin = ZIN0(1);
 	float *phasein = ZIN(2);
@@ -2095,6 +1870,8 @@ void OscN_next_naa(OscN *unit, int inNumSamples)
 			unit->m_radtoinc = tableSize * (rtwopi * 65536.);
 			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
 		}
+
+	if (!verify_wavetable(unit, "OscN", tableSize, inNumSamples)) return;
 
 	float *out = ZOUT(0);
 	float *freqin = ZIN(1);
@@ -2127,6 +1904,8 @@ void OscN_next_nak(OscN *unit, int inNumSamples)
 			unit->m_cpstoinc = tableSize * SAMPLEDUR * 65536.;
 		}
 
+	if (!verify_wavetable(unit, "OscN", tableSize, inNumSamples)) return;
+
 	float *out = ZOUT(0);
 	float *freqin = ZIN(1);
 	float phasein = ZIN0(2);
@@ -2154,7 +1933,7 @@ void OscN_next_nak(OscN *unit, int inNumSamples)
 
 void COsc_Ctor(COsc *unit)
 {
-	unit->m_fbufnum = -1e9f;
+	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	SETCALC(COsc_next);
 	unit->m_phase1 = 0;
 	unit->m_phase2 = 0;
@@ -2173,9 +1952,10 @@ void COsc_next(COsc *unit, int inNumSamples)
 			unit->mTableSize = tableSize;
 			int tableSize2 = tableSize >> 1;
 			unit->m_lomask = (tableSize2 - 1) << 3; // Osc, OscN, COsc, COsc, COsc2, OscX4, OscX2
-			// SigOsc, Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
+			// Osc, OscN, PMOsc, COsc, COsc2, OscX4, OscX2
 			unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
 		}
+	if (!verify_wavetable(unit, "COsc", tableSize, inNumSamples)) return;
 
 	float *out = ZOUT(0);
 	float freqin = ZIN0(1);
@@ -2201,29 +1981,29 @@ void COsc_next(COsc *unit, int inNumSamples)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define VOSC_GET_BUF_UNLOCKED						\
-const SndBuf *bufs;									\
-if (bufnum < 0)										\
-	bufnum = 0;										\
-													\
-if (bufnum+1 >= world->mNumSndBufs) {				\
-	int localBufNum = bufnum - world->mNumSndBufs;	\
-	Graph *parent = unit->mParent;					\
-	if(localBufNum <= parent->localBufNum) {		\
-		bufs = parent->mLocalSndBufs + localBufNum; \
-	} else {										\
-		bufnum = 0;									\
-		bufs = world->mSndBufs + bufnum;			\
-	}												\
-} else {											\
-	if (bufnum >= world->mNumSndBufs)				\
-		bufnum = 0;									\
-	bufs = world->mSndBufs + sc_max(0, bufnum);		\
-}
 
-#define VOSC_GET_BUF			\
-	VOSC_GET_BUF_UNLOCKED 		\
-	LOCK_SNDBUF_SHARED(bufs);
+static inline const SndBuf * VOscGetBuf(int & bufnum, World * world, Unit * unit)
+{
+	if (bufnum < 0)
+		bufnum = 0;
+
+	const SndBuf * bufs;
+	if (bufnum+1 >= world->mNumSndBufs) {
+		int localBufNum = bufnum - world->mNumSndBufs;
+		Graph *parent = unit->mParent;
+		if(localBufNum <= parent->localBufNum) {
+			bufs = parent->mLocalSndBufs + localBufNum;
+		} else {
+			bufnum = 0;
+			bufs = world->mSndBufs + bufnum;
+		}
+	} else {
+		if (bufnum >= world->mNumSndBufs)
+			bufnum = 0;
+		bufs = world->mSndBufs + sc_max(0, bufnum);
+	}
+	return bufs;
+}
 
 void VOsc_Ctor(VOsc *unit)
 {
@@ -2234,7 +2014,7 @@ void VOsc_Ctor(VOsc *unit)
 	int bufnum = sc_floor(nextbufpos);
 	World *world = unit->mWorld;
 
-	VOSC_GET_BUF_UNLOCKED
+	const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
 
 	int tableSize = bufs[0].samples;
 
@@ -2273,9 +2053,10 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 
 	if (bufdiff == 0.f) {
 		float level = cur - sc_floor(cur);
-		uint32 bufnum = (int)sc_floor(cur);
+		int32 bufnum = (int)sc_floor(cur);
 
-		VOSC_GET_BUF
+		const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
+		if (!verify_wavetable(unit, "VOsc", tableSize, inNumSamples)) return;
 
 		const float *table0  = bufs[0].data;
 		const float *table2  = bufs[1].data;
@@ -2324,8 +2105,8 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 			float slope = sweepdiff / (float)nsmps;
 
 			int32 bufnum = (int32)sc_floor(cur);
-
-			VOSC_GET_BUF
+			const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
+			if (!verify_wavetable(unit, "VOsc", tableSize, inNumSamples)) return;
 
 			const float *table0  = bufs[0].data;
 			const float *table2  = bufs[1].data;
@@ -2370,7 +2151,7 @@ void VOsc3_Ctor(VOsc3 *unit)
 	int32 bufnum = (int32)sc_floor(nextbufpos);
 	World *world = unit->mWorld;
 
-	VOSC_GET_BUF
+	const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
 	int tableSize = bufs[0].samples;
 
 	unit->mTableSize = tableSize;
@@ -2414,7 +2195,8 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 
 		int bufnum = (int)cur;
 
-		VOSC_GET_BUF
+		const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
+		if (!verify_wavetable(unit, "VOsc3", tableSize, inNumSamples)) return;
 
 		const float *table0  = bufs[0].data;
 		const float *table2  = bufs[1].data;
@@ -2488,7 +2270,8 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 
 			int bufnum = (int)cur;
 
-			VOSC_GET_BUF
+			const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
+			if (!verify_wavetable(unit, "VOsc3", tableSize, inNumSamples)) return;
 
 			const float *table0  = bufs[0].data;
 			const float *table2  = bufs[1].data;
@@ -3145,25 +2928,18 @@ void Pulse_next(Pulse *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Klang_Dtor(Klang *unit)
-{
-	RTFree(unit->mWorld, unit->m_coefs);
-}
-
-static float Klang_SetCoefs(Klang *unit);
-
-void Klang_Ctor(Klang *unit)
-{
-	SETCALC(Klang_next);
-	ZOUT0(0) = Klang_SetCoefs(unit);
-}
-
-float Klang_SetCoefs(Klang *unit)
+static float Klang_SetCoefs(Klang *unit)
 {
 	unit->m_numpartials = (unit->mNumInputs - 2)/3;
 
 	int numcoefs = unit->m_numpartials * 3;
 	unit->m_coefs = (float*)RTAlloc(unit->mWorld, numcoefs * sizeof(float));
+
+	if (!unit->m_coefs) {
+		Print("Klang: RT memory allocation failed\n");
+		SETCALC(ClearUnitOutputs);
+		return 0.f;
+	}
 
 	float freqscale = ZIN0(0) * unit->mRate->mRadiansPerSample;
 	float freqoffset = ZIN0(1) * unit->mRate->mRadiansPerSample;
@@ -3186,6 +2962,17 @@ float Klang_SetCoefs(Klang *unit)
 		*++coefs = 2. * cos(w);		// b1
 	}
 	return outf;
+}
+
+void Klang_Ctor(Klang *unit)
+{
+	SETCALC(Klang_next);
+	ZOUT0(0) = Klang_SetCoefs(unit);
+}
+
+void Klang_Dtor(Klang *unit)
+{
+	RTFree(unit->mWorld, unit->m_coefs);
 }
 
 void Klang_next(Klang *unit, int inNumSamples)
@@ -3343,30 +3130,19 @@ void Klang_next(Klang *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-void Klank_Dtor(Klank *unit)
-{
-	RTFree(unit->mWorld, unit->m_coefs);
-}
-
-static void Klank_SetCoefs(Klank *unit);
-
-void Klank_Ctor(Klank *unit)
-{
-	SETCALC(Klank_next);
-	unit->m_x1 = unit->m_x2 = 0.f;
-	Klank_SetCoefs(unit);
-	ZOUT0(0) = 0.f;
-}
-
-void Klank_SetCoefs(Klank *unit)
+static void Klank_SetCoefs(Klank *unit)
 {
 	int numpartials = (unit->mNumInputs - 4) / 3;
 	unit->m_numpartials = numpartials;
 
 	int numcoefs = ((unit->m_numpartials + 3) & ~3) * 5;
 	unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
+	if (!unit->m_coefs) {
+		Print("Klang: RT memory allocation failed\n");
+		SETCALC(ClearUnitOutputs);
+		return;
+	}
+
 	unit->m_buf = unit->m_coefs + numcoefs;
 
 	float freqscale = ZIN0(1) * unit->mRate->mRadiansPerSample;
@@ -3397,6 +3173,18 @@ void Klank_SetCoefs(Klank *unit)
 	}
 }
 
+void Klank_Ctor(Klank *unit)
+{
+	SETCALC(Klank_next);
+	unit->m_x1 = unit->m_x2 = 0.f;
+	Klank_SetCoefs(unit);
+	ZOUT0(0) = 0.f;
+}
+
+void Klank_Dtor(Klank *unit)
+{
+	RTFree(unit->mWorld, unit->m_coefs);
+}
 
 void Klank_next(Klank *unit, int inNumSamples)
 {
@@ -3920,7 +3708,6 @@ PluginLoad(Osc)
 	DefineSimpleUnit(IndexInBetween);
 	DefineSimpleUnit(DetectIndex);
 	DefineSimpleUnit(Shaper);
-	DefineSimpleUnit(SigOsc);
 	DefineSimpleUnit(FSinOsc);
 	DefineSimpleUnit(SinOsc);
 	DefineSimpleUnit(SinOscFB);

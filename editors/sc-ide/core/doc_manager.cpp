@@ -53,6 +53,18 @@ Document::Document( bool isPlainText ):
     applySettings( Main::settings() );
 }
 
+void Document::setPlainText(bool set_plain_text)
+{
+    if (isPlainText() == set_plain_text)
+        return;
+
+    delete mHighlighter;
+    mHighlighter = 0;
+
+    if (!set_plain_text)
+        mHighlighter = new SyntaxHighlighter(mDoc);
+}
+
 void Document::applySettings( Settings::Manager *settings )
 {
     QFont font = settings->codeFont();
@@ -290,22 +302,8 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
     QString cpath = info.canonicalFilePath();
 
     const bool pathChanged = ( !(doc->filePath().isEmpty()) && (cpath != doc->filePath()) );
-    if (pathChanged) {
+    if (pathChanged)
         mFsWatcher.removePath(doc->filePath());
-
-        QFileInfo oldInfo(doc->mFilePath);
-        if (info.suffix() != oldInfo.suffix()) {
-            QMessageBox::information(MainWindow::instance(), tr("File Extension Changed"),
-                                     tr("The extension of the file has changed. Please reopen file to update editor mode")
-                                     );
-        }
-    }
-
-    if (doc->filePath().isEmpty() && !(info.suffix() == "scd" || info.suffix() == "sc") ) {
-        QMessageBox::information(MainWindow::instance(), tr("File Extension Changed"),
-                                 tr("The extension of the file has changed. Please reopen file to update editor mode")
-                                 );
-    }
 
     QString str = doc->textDocument()->toPlainText();
     file.write(str.toUtf8());
@@ -313,10 +311,14 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
 
     info.refresh();
 
+    const bool fileIsPlainText = !(info.suffix() == QString("sc") ||
+                                   (info.suffix() == QString("scd")));
+
     doc->mFilePath = cpath;
     doc->mTitle = info.fileName();
     doc->mDoc->setModified(false);
     doc->mSaveTime = info.lastModified();
+    doc->setPlainText(fileIsPlainText);
 
     // Always try to start watching, because the file could have been removed:
     if (!mFsWatcher.files().contains(cpath))
@@ -369,8 +371,11 @@ void DocumentManager::loadRecentDocuments( Settings::Manager *settings )
 {
     QVariantList list = settings->value("IDE/recentDocuments").value<QVariantList>();
     mRecent.clear();
-    foreach (const QVariant & var, list)
-        mRecent << var.toString();
+    foreach (const QVariant & var, list) {
+        QString filePath = var.toString();
+        if (QFile::exists(filePath))
+            mRecent << filePath;
+    }
 }
 
 void DocumentManager::storeSettings( Settings::Manager *settings )

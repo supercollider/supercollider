@@ -26,7 +26,6 @@
 #include "SC_Rate.h"
 #include "SC_SndBuf.h"
 #include "SC_RGen.h"
-#include "SC_Lock.h"
 
 #ifdef SUPERNOVA
 namespace nova
@@ -82,7 +81,7 @@ struct World
 	uint32 mNumUnits, mNumGraphs, mNumGroups;
 	int mSampleOffset; // offset in the buffer of current event time.
 
-	SC_Lock* mNRTLock;
+	void * mNRTLock;
 
 	uint32 mNumSharedControls;
 	float *mSharedControls;
@@ -91,7 +90,7 @@ struct World
 	bool mRunning;
 	int mDumpOSC;
 
-	SC_Lock* mDriverLock;
+	void* mDriverLock;
 
 	float mSubsampleOffset; // subsample accurate offset in the buffer of current event time.
 

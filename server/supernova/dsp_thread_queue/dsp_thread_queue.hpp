@@ -20,9 +20,11 @@
 #define DSP_THREAD_QUEUE_DSP_THREAD_QUEUE_HPP
 
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <iostream>
 #include <memory>
+#include <thread>
 #include <vector>
 
 #include <boost/atomic.hpp>
@@ -33,6 +35,7 @@
 #endif
 
 #include <boost/lockfree/stack.hpp>
+#include <boost/mpl/if.hpp>
 
 #include "nova-tt/pause.hpp"
 #include "nova-tt/semaphore.hpp"
@@ -180,8 +183,8 @@ public:
 
         if (!successors.empty()) {
             printf("\tsuccessors:\n");
-            for(dsp_thread_queue_item * item : successors) {
-                printf("\t\t%p\n", item);
+            for (size_t i = 0; i != successors.size(); ++i) {
+                printf("\t\t%p\n", successors[i]);
             }
         }
         printf("\n");
@@ -240,7 +243,7 @@ class dsp_thread_queue
     typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
     typedef std::vector<dsp_thread_queue_item*,
                         typename Alloc::template rebind<dsp_thread_queue_item*>::other
-                       > item_vector_t;
+    > item_vector_t;
 
     typedef typename Alloc::template rebind<dsp_thread_queue_item>::other item_allocator;
 
@@ -251,10 +254,10 @@ public:
         using namespace std;
 
         printf("queue %p\n items:\n", this);
-        BOOST_FOREACH(dsp_thread_queue_item * item, queue_items)
-            item->dump_item();
+        for (std::size_t i = 0; i != total_node_count; ++i)
+            queue_items[i].dump_item();
         printf("\ninitial items:\n", this);
-        BOOST_FOREACH(dsp_thread_queue_item * item, initially_runnable_items)
+        for(dsp_thread_queue_item * item : initially_runnable_items)
             item->dump_item();
 
         printf("\n");
@@ -267,14 +270,16 @@ public:
         total_node_count(0), has_parallelism_(has_parallelism)
     {
         initially_runnable_items.reserve(node_count);
-        queue_items = item_allocator().allocate(node_count * sizeof(dsp_thread_queue_item));
+        queue_items = node_count ? item_allocator().allocate(node_count * sizeof(dsp_thread_queue_item))
+                                 : nullptr;
     }
 
     ~dsp_thread_queue(void)
     {
         for (std::size_t i = 0; i != total_node_count; ++i)
             queue_items[i].~dsp_thread_queue_item();
-        item_allocator().deallocate(queue_items, total_node_count * sizeof(dsp_thread_queue_item));
+        if (queue_items)
+            item_allocator().deallocate(queue_items, total_node_count * sizeof(dsp_thread_queue_item));
     }
 
     void add_initially_runnable(dsp_thread_queue_item * item)
@@ -288,6 +293,7 @@ public:
                         typename dsp_thread_queue_item::successor_list const & successors,
                         typename dsp_thread_queue_item::activation_limit_t activation_limit)
     {
+        assert(queue_items);
         dsp_thread_queue_item * ret = queue_items + total_node_count;
         ++total_node_count;
 
@@ -337,12 +343,13 @@ public:
 
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
-    dsp_queue_interpreter(thread_count_t tc):
-        node_count(0)
+    dsp_queue_interpreter(thread_count_t tc, bool yield_if_busy = false):
+        node_count(0), yield_if_busy(yield_if_busy)
     {
         if (!runnable_set.is_lock_free())
             std::cout << "Warning: scheduler queue is not lockfree!" << std::endl;
 
+        calibrate_backoff(10);
         set_thread_count(tc);
     }
 
@@ -425,14 +432,16 @@ public:
 
     void tick(thread_count_t thread_index)
     {
-        run_item(thread_index);
+        if (yield_if_busy)
+            run_item<true>(thread_index);
+        else
+            run_item<false>(thread_index);
     }
 
-
 private:
-    struct backup
+    struct backoff
     {
-        backup(int min, int max): min(min), max(max), loops(min) {}
+        backoff(int min, int max): min(min), max(max), loops(min) {}
 
         void run(void)
         {
@@ -450,9 +459,56 @@ private:
         int min, max, loops;
     };
 
+    struct yield_backoff
+    {
+        yield_backoff(int dummy_min, int dummy_max){}
+
+        void run()
+        {
+            std::this_thread::yield();
+        }
+
+        void reset(){}
+    };
+
+    template <bool YieldBackoff>
+    struct select_backoff
+    {
+        typedef typename boost::mpl::if_c<YieldBackoff, yield_backoff, backoff>::type type;
+    };
+
+    void calibrate_backoff(int timeout_in_seconds)
+    {
+        using namespace std;
+        using namespace std::chrono;
+
+        const int backoff_iterations = 100;
+
+        vector<nanoseconds> measured_values;
+        generate_n(back_inserter(measured_values), 16, [] {
+            backoff b(32768, 32768);
+            auto start = high_resolution_clock::now();
+
+            for (int i = 0; i != backoff_iterations; ++i)
+                b.run();
+            auto end = high_resolution_clock::now();
+            auto diff = duration_cast<nanoseconds>(end - start);
+
+            return diff;
+        });
+
+        std::sort(measured_values.begin(), measured_values.end());
+        auto median = measured_values[measured_values.size()/2];
+
+        watchdog_iterations = (seconds(timeout_in_seconds) / median) * backoff_iterations;
+    }
+
+    template <bool YieldBackoff>
     void run_item(thread_count_t index)
     {
-        backup b(8, 32768);
+        typedef typename select_backoff<YieldBackoff>::type backoff_t;
+
+        backoff_t b(8, 32768);
         int poll_counts = 0;
 
         for (;;) {
@@ -474,8 +530,7 @@ private:
                 poll_counts = 0;
             }
 
-            if (poll_counts == 50000) {
-                // the maximum poll count is system-dependent. 50000 should be high enough for recent machines
+            if (!YieldBackoff && (poll_counts == watchdog_iterations)) {
                 std::printf("nova::dsp_queue_interpreter::run_item: possible lookup detected\n");
                 abort();
             }
@@ -485,24 +540,34 @@ private:
 public:
     void tick_master(void)
     {
-        run_item_master();
+        if (yield_if_busy)
+            run_item_master<true>();
+        else
+            run_item_master<false>();
     }
 
 private:
+    template <bool YieldBackoff>
     void run_item_master(void)
     {
-        run_item(0);
-        wait_for_end();
+        run_item<YieldBackoff>(0);
+        wait_for_end<YieldBackoff>();
         assert(runnable_set.empty());
     }
 
+    template <bool YieldBackoff>
     void wait_for_end(void)
     {
+        typedef typename select_backoff<YieldBackoff>::type backoff_t;
+
+        backoff_t b(8, 32768);
+        const int iterations = watchdog_iterations * 2;
         int count = 0;
         while (node_count.load(boost::memory_order_acquire) != 0) {
+            b.run();
             ++count;
-            if (count == 1000000) {
-                std::printf("nova::dsp_queue_interpreter::run_item: possible lookup detected\n");
+            if (!YieldBackoff && (count == iterations)) {
+                std::printf("nova::dsp_queue_interpreter::wait_for_end: possible lookup detected\n");
                 abort();
             }
         } // busy-wait for helper threads to finish
@@ -554,6 +619,8 @@ private:
 
     boost::lockfree::stack<dsp_thread_queue_item*,  boost::lockfree::capacity<32768> > runnable_set;
     boost::atomic<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
+    int watchdog_iterations;
+    bool yield_if_busy;
 };
 
 } /* namespace nova */

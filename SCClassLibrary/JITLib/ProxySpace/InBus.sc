@@ -129,9 +129,7 @@ Monitor {
 		synthAmps = [];
 		if(oldGroup.isPlaying) {
 			oldGroup.release(fadeTime);
-			SystemClock.sched(fadeTime, {
-				oldGroup.free(true, true)
-			})
+			SystemClock.sched(fadeTime, { oldGroup.server.bind { oldGroup.free } })
 		};
 	}
 
@@ -247,7 +245,7 @@ Monitor {
 		};
 		synthIDs = [];
 		synthAmps = [];
-		
+
 		inGroup = inGroup.asGroup;
 		server = group.server;
 

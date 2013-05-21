@@ -178,6 +178,45 @@ using nova::slope_argument;
 	}
 
 
+#define DEFINE_TEMPLATE_FUNCTOR(NAME)									\
+struct NAME##_functor													\
+{																		\
+	template <typename FloatType>										\
+	inline FloatType operator()(FloatType a, FloatType b) const			\
+	{																	\
+		return NAME(a, b);												\
+	}																	\
+																		\
+	template <typename FloatType>										\
+	inline nova::vec<FloatType> operator()(nova::vec<FloatType> a,		\
+										   nova::vec<FloatType> b) const \
+	{																	\
+		return NAME(a, b);												\
+	}																	\
+};
+
+DEFINE_TEMPLATE_FUNCTOR(sc_ring1)
+DEFINE_TEMPLATE_FUNCTOR(sc_ring2)
+DEFINE_TEMPLATE_FUNCTOR(sc_ring3)
+DEFINE_TEMPLATE_FUNCTOR(sc_ring4)
+
+DEFINE_TEMPLATE_FUNCTOR(sc_difsqr)
+DEFINE_TEMPLATE_FUNCTOR(sc_sumsqr)
+DEFINE_TEMPLATE_FUNCTOR(sc_sqrsum)
+DEFINE_TEMPLATE_FUNCTOR(sc_sqrdif)
+
+namespace nova {
+NOVA_SIMD_DEFINE_BINARY_WRAPPER (sc_ring1, sc_ring1_functor)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER (sc_ring2, sc_ring2_functor)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER (sc_ring3, sc_ring3_functor)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER (sc_ring4, sc_ring4_functor)
+
+NOVA_SIMD_DEFINE_BINARY_WRAPPER (sc_difsqr, sc_difsqr_functor)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER (sc_sumsqr, sc_sumsqr_functor)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER (sc_sqrsum, sc_sqrsum_functor)
+NOVA_SIMD_DEFINE_BINARY_WRAPPER (sc_sqrdif, sc_sqrdif_functor)
+}
+
 #endif
 
 using namespace std; // for math functions
@@ -2164,7 +2203,7 @@ FLATTEN void div_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
 		nova::over_vec_simd(OUT(0), slope_argument(xa, slope), IN(1), inNumSamples);
-		unit->mPrevA = xa;
+		unit->mPrevA = next_a;
 	}
 }
 
@@ -3240,6 +3279,13 @@ FLATTEN void pow_ai_nova(BinaryOpUGen *unit, int inNumSamples)
 }
 #endif
 
+#ifdef NOVA_SIMD
+NOVA_BINARY_WRAPPER(ring1, sc_ring1)
+NOVA_BINARY_WRAPPER(ring2, sc_ring2)
+NOVA_BINARY_WRAPPER(ring3, sc_ring3)
+NOVA_BINARY_WRAPPER(ring4, sc_ring4)
+#endif
+
 
 void ring1_aa(BinaryOpUGen *unit, int inNumSamples)
 {
@@ -3341,8 +3387,6 @@ void ring1_ai(BinaryOpUGen *unit, int inNumSamples)
 	);
 	unit->mPrevB = xb;
 }
-
-
 
 
 void ring2_aa(BinaryOpUGen *unit, int inNumSamples)
@@ -4670,6 +4714,12 @@ void neq_ai(BinaryOpUGen *unit, int inNumSamples)
 	unit->mPrevB = xb;
 }
 
+#ifdef NOVA_SIMD
+NOVA_BINARY_WRAPPER_K(sumsqr, sc_sumsqr)
+NOVA_BINARY_WRAPPER_K(difsqr, sc_difsqr)
+NOVA_BINARY_WRAPPER_K(sqrsum, sc_sqrsum)
+NOVA_BINARY_WRAPPER_K(sqrdif, sc_sqrdif)
+#endif
 
 void sumsqr_aa(BinaryOpUGen *unit, int inNumSamples)
 {
@@ -6002,7 +6052,7 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 						case opExpRandRange : func = &exprand_aa; break;
 						case opFirstArg : func = &firstarg_aa; break;
 						//case opSecondArg : func = &secondarg_aa; break;
-						
+
 
 						default : func = &add_aa; break;
 					}
@@ -6055,8 +6105,8 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 						case opExpRandRange : func = &exprand_ak; break;
 						case opFirstArg : func = &firstarg_aa; break;
 						//case opSecondArg : func = &secondarg_aa; break;
-						
-						
+
+
 						default : func = &add_ak; break;
 					}
 					break;
@@ -6268,14 +6318,14 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 						case opHypot : func = &hypot_aa; break;
 						case opHypotx : func = &hypotx_aa; break;
 						case opPow	 : func = &pow_aa_nova; break;
-						case opRing1 : func = &ring1_aa; break;
-						case opRing2 : func = &ring2_aa; break;
-						case opRing3 : func = &ring3_aa; break;
-						case opRing4 : func = &ring4_aa; break;
-						case opDifSqr : func = &difsqr_aa; break;
-						case opSumSqr : func = &sumsqr_aa; break;
-						case opSqrSum : func = &sqrsum_aa; break;
-						case opSqrDif : func = &sqrdif_aa; break;
+						case opRing1 : func = &ring1_aa_nova_64; break;
+						case opRing2 : func = &ring2_aa_nova_64; break;
+						case opRing3 : func = &ring3_aa_nova_64; break;
+						case opRing4 : func = &ring4_aa_nova_64; break;
+						case opDifSqr : func = &difsqr_aa_nova_64; break;
+						case opSumSqr : func = &sumsqr_aa_nova_64; break;
+						case opSqrSum : func = &sqrsum_aa_nova_64; break;
+						case opSqrDif : func = &sqrdif_aa_nova_64; break;
 						case opAbsDif : func = &absdif_aa; break;
 						case opThresh : func = &thresh_aa; break;
 						case opAMClip : func = &amclip_aa; break;
@@ -6323,10 +6373,10 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 						case opRing2 : func = &ring2_ak; break;
 						case opRing3 : func = &ring3_ak; break;
 						case opRing4 : func = &ring4_ak; break;
-						case opDifSqr : func = &difsqr_ak; break;
-						case opSumSqr : func = &sumsqr_ak; break;
-						case opSqrSum : func = &sqrsum_ak; break;
-						case opSqrDif : func = &sqrdif_ak; break;
+						case opDifSqr : func = &difsqr_ak_nova_64; break;
+						case opSumSqr : func = &sumsqr_ak_nova_64; break;
+						case opSqrSum : func = &sqrsum_ak_nova_64; break;
+						case opSqrDif : func = &sqrdif_ak_nova_64; break;
 						case opAbsDif : func = &absdif_ak; break;
 						case opThresh : func = &thresh_ak; break;
 						case opAMClip : func = &amclip_ak; break;
@@ -6370,14 +6420,14 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 						case opHypot : func = &hypot_ai; break;
 						case opHypotx : func = &hypotx_ai; break;
 						case opPow	 : func = &pow_ai_nova; break;
-						case opRing1 : func = &ring1_ai; break;
-						case opRing2 : func = &ring2_ai; break;
-						case opRing3 : func = &ring3_ai; break;
-						case opRing4 : func = &ring4_ai; break;
-						case opDifSqr : func = &difsqr_ai; break;
-						case opSumSqr : func = &sumsqr_ai; break;
-						case opSqrSum : func = &sqrsum_ai; break;
-						case opSqrDif : func = &sqrdif_ai; break;
+						case opRing1 : func = &ring1_ai_nova_64; break;
+						case opRing2 : func = &ring2_ai_nova_64; break;
+						case opRing3 : func = &ring3_ai_nova_64; break;
+						case opRing4 : func = &ring4_ai_nova_64; break;
+						case opDifSqr : func = &difsqr_ai_nova_64; break;
+						case opSumSqr : func = &sumsqr_ai_nova_64; break;
+						case opSqrSum : func = &sqrsum_ai_nova_64; break;
+						case opSqrDif : func = &sqrdif_ai_nova_64; break;
 						case opAbsDif : func = &absdif_ai; break;
 						case opThresh : func = &thresh_ai; break;
 						case opAMClip : func = &amclip_ai; break;
@@ -6427,10 +6477,10 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 					case opRing2 : func = &ring2_ka; break;
 					case opRing3 : func = &ring3_ka; break;
 					case opRing4 : func = &ring4_ka; break;
-					case opDifSqr : func = &difsqr_ka; break;
-					case opSumSqr : func = &sumsqr_ka; break;
-					case opSqrSum : func = &sqrsum_ka; break;
-					case opSqrDif : func = &sqrdif_ka; break;
+					case opDifSqr : func = &difsqr_ka_nova_64; break;
+					case opSumSqr : func = &sumsqr_ka_nova_64; break;
+					case opSqrSum : func = &sqrsum_ka_nova_64; break;
+					case opSqrDif : func = &sqrdif_ka_nova_64; break;
 					case opAbsDif : func = &absdif_ka; break;
 					case opThresh : func = &thresh_ka; break;
 					case opAMClip : func = &amclip_ka; break;
@@ -6479,14 +6529,14 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 					case opHypot : func = &hypot_ia; break;
 					case opHypotx : func = &hypotx_ia; break;
 					case opPow	 : func = &pow_ia_nova; break;
-					case opRing1 : func = &ring1_ia; break;
-					case opRing2 : func = &ring2_ia; break;
-					case opRing3 : func = &ring3_ia; break;
-					case opRing4 : func = &ring4_ia; break;
-					case opDifSqr : func = &difsqr_ia; break;
-					case opSumSqr : func = &sumsqr_ia; break;
-					case opSqrSum : func = &sqrsum_ia; break;
-					case opSqrDif : func = &sqrdif_ia; break;
+					case opRing1 : func = &ring1_ia_nova_64; break;
+					case opRing2 : func = &ring2_ia_nova_64; break;
+					case opRing3 : func = &ring3_ia_nova_64; break;
+					case opRing4 : func = &ring4_ia_nova_64; break;
+					case opDifSqr : func = &difsqr_ia_nova_64; break;
+					case opSumSqr : func = &sumsqr_ia_nova_64; break;
+					case opSqrSum : func = &sqrsum_ia_nova_64; break;
+					case opSqrDif : func = &sqrdif_ia_nova_64; break;
 					case opAbsDif : func = &absdif_ia; break;
 					case opThresh : func = &thresh_ia; break;
 					case opAMClip : func = &amclip_ia; break;
@@ -6553,14 +6603,14 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 						case opHypot : func = &hypot_aa; break;
 						case opHypotx : func = &hypotx_aa; break;
 						case opPow	 : func = &pow_aa_nova; break;
-						case opRing1 : func = &ring1_aa; break;
-						case opRing2 : func = &ring2_aa; break;
-						case opRing3 : func = &ring3_aa; break;
-						case opRing4 : func = &ring4_aa; break;
-						case opDifSqr : func = &difsqr_aa; break;
-						case opSumSqr : func = &sumsqr_aa; break;
-						case opSqrSum : func = &sqrsum_aa; break;
-						case opSqrDif : func = &sqrdif_aa; break;
+						case opRing1 : func = &ring1_aa_nova; break;
+						case opRing2 : func = &ring2_aa_nova; break;
+						case opRing3 : func = &ring3_aa_nova; break;
+						case opRing4 : func = &ring4_aa_nova; break;
+						case opDifSqr : func = &difsqr_aa_nova; break;
+						case opSumSqr : func = &sumsqr_aa_nova; break;
+						case opSqrSum : func = &sqrsum_aa_nova; break;
+						case opSqrDif : func = &sqrdif_aa_nova; break;
 						case opAbsDif : func = &absdif_aa; break;
 						case opThresh : func = &thresh_aa; break;
 						case opAMClip : func = &amclip_aa; break;
@@ -6608,10 +6658,10 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 						case opRing2 : func = &ring2_ak; break;
 						case opRing3 : func = &ring3_ak; break;
 						case opRing4 : func = &ring4_ak; break;
-						case opDifSqr : func = &difsqr_ak; break;
-						case opSumSqr : func = &sumsqr_ak; break;
-						case opSqrSum : func = &sqrsum_ak; break;
-						case opSqrDif : func = &sqrdif_ak; break;
+						case opDifSqr : func = &difsqr_ak_nova; break;
+						case opSumSqr : func = &sumsqr_ak_nova; break;
+						case opSqrSum : func = &sqrsum_ak_nova; break;
+						case opSqrDif : func = &sqrdif_ak_nova; break;
 						case opAbsDif : func = &absdif_ak; break;
 						case opThresh : func = &thresh_ak; break;
 						case opAMClip : func = &amclip_ak; break;
@@ -6655,14 +6705,14 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 						case opHypot : func = &hypot_ai; break;
 						case opHypotx : func = &hypotx_ai; break;
 						case opPow	 : func = &pow_ai_nova; break;
-						case opRing1 : func = &ring1_ai; break;
-						case opRing2 : func = &ring2_ai; break;
-						case opRing3 : func = &ring3_ai; break;
-						case opRing4 : func = &ring4_ai; break;
-						case opDifSqr : func = &difsqr_ai; break;
-						case opSumSqr : func = &sumsqr_ai; break;
-						case opSqrSum : func = &sqrsum_ai; break;
-						case opSqrDif : func = &sqrdif_ai; break;
+						case opRing1 : func = &ring1_ai_nova; break;
+						case opRing2 : func = &ring2_ai_nova; break;
+						case opRing3 : func = &ring3_ai_nova; break;
+						case opRing4 : func = &ring4_ai_nova; break;
+						case opDifSqr : func = &difsqr_ai_nova; break;
+						case opSumSqr : func = &sumsqr_ai_nova; break;
+						case opSqrSum : func = &sqrsum_ai_nova; break;
+						case opSqrDif : func = &sqrdif_ai_nova; break;
 						case opAbsDif : func = &absdif_ai; break;
 						case opThresh : func = &thresh_ai; break;
 						case opAMClip : func = &amclip_ai; break;
@@ -6712,10 +6762,10 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 					case opRing2 : func = &ring2_ka; break;
 					case opRing3 : func = &ring3_ka; break;
 					case opRing4 : func = &ring4_ka; break;
-					case opDifSqr : func = &difsqr_ka; break;
-					case opSumSqr : func = &sumsqr_ka; break;
-					case opSqrSum : func = &sqrsum_ka; break;
-					case opSqrDif : func = &sqrdif_ka; break;
+					case opDifSqr : func = &difsqr_ka_nova; break;
+					case opSumSqr : func = &sumsqr_ka_nova; break;
+					case opSqrSum : func = &sqrsum_ka_nova; break;
+					case opSqrDif : func = &sqrdif_ka_nova; break;
 					case opAbsDif : func = &absdif_ka; break;
 					case opThresh : func = &thresh_ka; break;
 					case opAMClip : func = &amclip_ka; break;
@@ -6764,14 +6814,14 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 					case opHypot : func = &hypot_ia; break;
 					case opHypotx : func = &hypotx_ia; break;
 					case opPow	 : func = &pow_ia_nova; break;
-					case opRing1 : func = &ring1_ia; break;
-					case opRing2 : func = &ring2_ia; break;
-					case opRing3 : func = &ring3_ia; break;
-					case opRing4 : func = &ring4_ia; break;
-					case opDifSqr : func = &difsqr_ia; break;
-					case opSumSqr : func = &sumsqr_ia; break;
-					case opSqrSum : func = &sqrsum_ia; break;
-					case opSqrDif : func = &sqrdif_ia; break;
+					case opRing1 : func = &ring1_ia_nova; break;
+					case opRing2 : func = &ring2_ia_nova; break;
+					case opRing3 : func = &ring3_ia_nova; break;
+					case opRing4 : func = &ring4_ia_nova; break;
+					case opDifSqr : func = &difsqr_ia_nova; break;
+					case opSumSqr : func = &sumsqr_ia_nova; break;
+					case opSqrSum : func = &sqrsum_ia_nova; break;
+					case opSqrDif : func = &sqrdif_ia_nova; break;
 					case opAbsDif : func = &absdif_ia; break;
 					case opThresh : func = &thresh_ia; break;
 					case opAMClip : func = &amclip_ia; break;

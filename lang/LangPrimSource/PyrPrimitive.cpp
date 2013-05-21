@@ -47,7 +47,7 @@
 #include "InitAlloc.h"
 #include "../LangSource/SC_LanguageConfig.hpp"
 #include "SC_DirUtils.h"
-
+#include "SC_Version.hpp"
 
 #ifdef SC_WIN32
 # include <direct.h>
@@ -3025,8 +3025,14 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 
 	stacksize = std::max(stacksize, EVALSTACKDEPTH);
 
+	double beats, seconds;
+	err = slotDoubleVal(&g->thread->beats, &beats);
+	if (err) return err;
+	err = slotDoubleVal(&g->thread->seconds, &seconds);
+	if (err) return err;
+
 	initPyrThread(g, thread, b, stacksize, (PyrInt32Array*)(slotRawObject(&g->thread->randData)),
-	slotRawFloat(&g->thread->beats), slotRawFloat(&g->thread->seconds), &g->thread->clock, true);
+	beats, seconds, &g->thread->clock, true);
 
 	//postfl("<-prThreadInit\n");
 	//assert(g->gc->SanityCheck());
@@ -3230,9 +3236,11 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		SetObject(&thread->parent, g->thread);
 		g->gc->GCWrite(thread, g->thread);
 
-		SetRaw(&thread->beats, slotRawFloat(&g->thread->beats));
-		SetRaw(&thread->seconds, slotRawFloat(&g->thread->seconds));
+		slotCopy(&thread->beats, &g->thread->beats);
+		slotCopy(&thread->seconds, &g->thread->seconds);
 		slotCopy(&thread->clock, &g->thread->clock);
+		g->gc->GCWrite(thread, &g->thread->beats);
+		g->gc->GCWrite(thread, &g->thread->seconds);
 		g->gc->GCWrite(thread, &g->thread->clock);
 
 		//postfl("start into thread %p from parent %p\n", thread, g->thread);
@@ -3253,9 +3261,11 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		}
 		g->gc->GCWrite(thread, g->thread);
 
-		SetRaw(&thread->beats, slotRawFloat(&g->thread->beats));
-		SetRaw(&thread->seconds, slotRawFloat(&g->thread->seconds));
+		slotCopy(&thread->beats, &g->thread->beats);
+		slotCopy(&thread->seconds, &g->thread->seconds);
 		slotCopy(&thread->clock,&g->thread->clock);
+		g->gc->GCWrite(thread, &g->thread->beats);
+		g->gc->GCWrite(thread, &g->thread->seconds);
 		g->gc->GCWrite(thread, &g->thread->clock);
 
 		slotCopy(&value,b);
@@ -3550,6 +3560,28 @@ static int prLanguageConfig_setPostInlineWarnings(struct VMGlobals * g, int numA
 	else
 		return errWrongType;
 
+	return errNone;
+}
+
+
+static int prVersionMajor(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *result = g->sp;
+	SetInt(result, SC_VersionMajor);
+	return errNone;
+}
+
+static int prVersionMinor(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *result = g->sp;
+	SetInt(result, SC_VersionMinor);
+	return errNone;
+}
+
+static int prVersionPatch(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *result = g->sp;
+	SetObject(result, newPyrString(g->gc, SC_VersionPatch, 0, 1));
 	return errNone;
 }
 
@@ -4118,6 +4150,10 @@ void initPrimitives()
 	definePrimitive(base, index++, "_LanguageConfig_getPostInlineWarnings", prLanguageConfig_getPostInlineWarnings, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_setPostInlineWarnings", prLanguageConfig_setPostInlineWarnings, 2, 0);
 
+	definePrimitive(base, index++, "_SC_VersionMajor", prVersionMajor, 1, 0);
+	definePrimitive(base, index++, "_SC_VersionMinor", prVersionMinor, 1, 0);
+	definePrimitive(base, index++, "_SC_VersionPatch", prVersionPatch, 1, 0);
+
 	//void initOscilPrimitives();
 	//void initControllerPrimitives();
 
@@ -4161,13 +4197,22 @@ void initUnixPrimitives();
 void init_OSC_primitives();
 	init_OSC_primitives();
 
-/*  these probably should be moved out of the Lang code
-into an App init primitives section */
 void initGUIPrimitives();
 	initGUIPrimitives();
 
+#ifdef SC_APP
 void initSCViewPrimitives();
 	initSCViewPrimitives();
+
+void initRendezvousPrimitives();
+	initRendezvousPrimitives();
+
+void initCocoaFilePrimitives();
+	initCocoaFilePrimitives();
+
+void initCocoaBridgePrimitives();
+	initCocoaBridgePrimitives();
+#endif
 
 void initSchedPrimitives();
 	initSchedPrimitives();
@@ -4177,18 +4222,9 @@ void initMIDIPrimitives();
 	initMIDIPrimitives();
 #endif
 
-#if !defined(SC_WIN32) && !defined(SC_IPHONE)
+#if !defined(SC_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__)
 void initHIDPrimitives();
 	initHIDPrimitives();
-
-void initSpeechPrimitives();
-	initSpeechPrimitives();
-
-void initCocoaFilePrimitives();
-	initCocoaFilePrimitives();
-
-void initCocoaBridgePrimitives();
-	initCocoaBridgePrimitives();
 
 void initSerialPrimitives();
 	initSerialPrimitives();
@@ -4202,13 +4238,14 @@ void initCoreAudioPrimitives();
 	initCoreAudioPrimitives();
 #endif
 
-// CR ADDED
-void initRendezvousPrimitives();
-	initRendezvousPrimitives();
-
 #ifdef SCOGL_COMPILE
 void initOpenGLPrimitives();
 	initOpenGLPrimitives();
+#endif
+
+#ifdef __APPLE__
+	void initSpeechPrimitives();
+		initSpeechPrimitives();
 #endif
 
 #ifdef SC_QT
@@ -4224,7 +4261,6 @@ void initOpenGLPrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
 	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
-
 }
 
 

@@ -3,6 +3,8 @@ find_package(Qt5WebKitWidgets REQUIRED)
 
 set(QT_COLLIDER_DIR ${CMAKE_SOURCE_DIR}/QtCollider)
 
+include_directories( ${QT_COLLIDER_DIR} )
+
 set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/QcApplication.h
   ${QT_COLLIDER_DIR}/QObjectProxy.h
@@ -56,6 +58,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/primitives/prim_misc.cpp
   ${QT_COLLIDER_DIR}/primitives/prim_QWidget.cpp
   ${QT_COLLIDER_DIR}/primitives/prim_QPalette.cpp
+  ${QT_COLLIDER_DIR}/primitives/prim_QImage.cpp
   ${QT_COLLIDER_DIR}/widgets/BasicWidgets.cpp
   ${QT_COLLIDER_DIR}/widgets/QcButton.cpp
   ${QT_COLLIDER_DIR}/widgets/QcCheckBox.h

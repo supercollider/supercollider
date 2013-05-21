@@ -396,7 +396,7 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, NSString* labe
 	[[SCVirtualMachine sharedInstance] removeDeferredOperationsFor: [self window]];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
     if (mWindowObj) {
         SetPtr(mWindowObj->slots + 0, self);
         VMGlobals *g = gMainVMGlobals;
@@ -406,7 +406,7 @@ void dragFunc(SCPoint where, PyrSlot *inSlot, NSString* inString, NSString* labe
         g->canCallOS = false;
         mWindowObj = 0;
     }
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 
     delete mTopView;
 	mTopView = 0;
@@ -416,7 +416,7 @@ extern PyrSymbol * s_didResignKey;
 - (void) didResignKey{
 	if (mWindowObj) {
 		if(NotNil(mWindowObj->slots + 11)){ // check whether endFrontAction is nil
-			pthread_mutex_lock (&gLangMutex);
+			gLangMutex.lock();
 			SetPtr(mWindowObj->slots + 0, self);
 			VMGlobals *g = gMainVMGlobals;
 			g->canCallOS = true;
@@ -424,7 +424,7 @@ extern PyrSymbol * s_didResignKey;
 			++g->sp;  SetObject(g->sp, mWindowObj); // push window obj
 			runInterpreter(g, s_didResignKey, 1);
 			g->canCallOS = false;
-			pthread_mutex_unlock (&gLangMutex);
+			gLangMutex.unlock();
 		}
 	}
 }
@@ -433,14 +433,14 @@ extern PyrSymbol * s_didResignKey;
     if (mWindowObj) {
 		if(NotNil(mWindowObj->slots + 10)){
 
-			pthread_mutex_lock (&gLangMutex);
+			gLangMutex.lock();
 			SetPtr(mWindowObj->slots + 0, self);
 			VMGlobals *g = gMainVMGlobals;
 			g->canCallOS = true;
 			++g->sp;  SetObject(g->sp, mWindowObj); // push window obj
 			runInterpreter(g, s_didBecomeKey, 1);
 			g->canCallOS = false;
-			pthread_mutex_unlock (&gLangMutex);
+			gLangMutex.unlock();
 		}
 	}
 }
@@ -579,7 +579,7 @@ const int circDiam = 20;
 	} else if ([[pboard types] containsObject: NSStringPboardType]) {
 		NSString *nsstring = [pboard stringForType: NSStringPboardType];
 		if (!nsstring) return NSDragOperationNone;
-		pthread_mutex_lock (&gLangMutex);
+		gLangMutex.lock();
 			VMGlobals *g = gMainVMGlobals;
 			PyrString* pstrobj = newPyrString(g->gc, [nsstring UTF8String], 0, true);
 			int classVarIndex = slotRawInt(&getsym("SCView")->u.classobj->classVarIndex);
@@ -592,7 +592,7 @@ const int circDiam = 20;
 			//runInterpreter(g, method, 1);
 			//g->canCallOS = false;
 
-		pthread_mutex_unlock (&gLangMutex);
+		gLangMutex.unlock();
 
 		int fakeData;
 		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
@@ -601,7 +601,7 @@ const int circDiam = 20;
 	} else if ([[pboard types] containsObject: NSFilenamesPboardType]) {
 		NSArray *files = [pboard propertyListForType: NSFilenamesPboardType];
 		if (!files) return NSDragOperationNone;
-		pthread_mutex_lock (&gLangMutex);
+		gLangMutex.lock();
 		VMGlobals *g = gMainVMGlobals;
 		int size = [files count];
 		PyrObject* array = newPyrArray(g->gc, size, 0, true);
@@ -618,7 +618,7 @@ const int circDiam = 20;
 		SetObject(&g->classvars->slots[classVarIndex+0], array);
 		g->gc->GCWrite(g->classvars, array);
 
-		pthread_mutex_unlock (&gLangMutex);
+		gLangMutex.unlock();
 
 		int fakeData;
 		NSData *data = [NSData dataWithBytes: &fakeData length: sizeof(int)];
@@ -798,7 +798,7 @@ const int circDiam = 20;
 		CGContextRestoreGState(cgc);
     }
 
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
     if (mWindowObj && NotNil(mWindowObj->slots+6)) {
         CGRect cgrect = *(CGRect*)&drawBounds;
         CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
@@ -813,7 +813,7 @@ const int circDiam = 20;
 
         CGContextRestoreGState(cgc);
     }
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 
 

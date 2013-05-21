@@ -19,7 +19,6 @@
 */
 
 #include "SC_Endian.h"
-#include "SC_Lock.h"
 #include "SC_HiddenWorld.h"
 #include "SC_WorldOptions.h"
 #include "sc_msg_iter.h"
@@ -31,15 +30,21 @@
 #include <sys/types.h>
 #include "OSC_Packet.h"
 
+#include <boost/thread.hpp> // LATER: move to std::thread
+
+#include "nova-tt/thread_priority.hpp"
+
 #ifdef _WIN32
 	# include <winsock2.h>
 	typedef int socklen_t;
 	# define bzero( ptr, count ) memset( ptr, 0, count )
 #else
 	#include <netinet/tcp.h>
+	#include <sys/types.h>
+	#include <sys/socket.h>
 #endif
 
-#if defined(__linux__) || defined(__FreeBSD__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__)
 	#include <unistd.h>
 #endif
 
@@ -56,7 +61,7 @@ namespace {
 class SC_CmdPort
 {
 protected:
-	pthread_t mThread;
+	boost::thread mThread;
 	struct World *mWorld;
 
 	void Start();
@@ -78,7 +83,7 @@ protected:
 	struct sockaddr_in mBindSockAddr;
 
 	#ifdef USE_RENDEZVOUS
-	pthread_t mRendezvousThread;
+	boost::thread mRendezvousThread;
 	#endif
 
 public:
@@ -123,7 +128,7 @@ public:
 
 class SC_TcpInPort : public SC_ComPort
 {
-	SC_Semaphore mConnectionAvailable;
+	nova::semaphore mConnectionAvailable;
 	int mBacklog;
 
 protected:
@@ -267,7 +272,7 @@ static void dumpOSC(int mode, int size, char* inData)
 		if (strcmp(inData, "#bundle") == 0)
 		{
 			char* data = inData + 8;
-			scprintf("[ \"#bundle\", %lld, ", OSCtime(data));
+			scprintf("[ \"#bundle\", %llu, ", OSCtime(data));
 			data += 8;
 			char* dataEnd = inData + size;
 			while (data < dataEnd) {
@@ -344,30 +349,6 @@ SC_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxCon
 	return false;
 }
 
-void set_real_time_priority(pthread_t thread)
-{
-	int policy;
-	struct sched_param param;
-
-	pthread_getschedparam (thread, &policy, &param);
-#ifdef __linux__
-	policy = SCHED_FIFO;
-	const char* env = getenv("SC_SCHED_PRIO");
-	// jack uses a priority of 10 in realtime mode, so this is a good default
-	const int defprio = 5;
-	const int minprio = sched_get_priority_min(policy);
-	const int maxprio = sched_get_priority_max(policy);
-	const int prio = env ? atoi(env) : defprio;
-	param.sched_priority = sc_clip(prio, minprio, maxprio);
-#else
-	policy = SCHED_RR;         // round-robin, AKA real-time scheduling
-	param.sched_priority = 63; // you'll have to play with this to see what it does
-#endif
-	pthread_setschedparam (thread, policy, &param);
-}
-
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 namespace {
@@ -392,27 +373,29 @@ SC_ComPort::~SC_ComPort()
 #endif
 }
 
-void* com_thread_func(void* arg);
-void* com_thread_func(void* arg)
+void com_thread_func(SC_CmdPort *thread)
 {
-    SC_CmdPort *thread = (SC_CmdPort*)arg;
-    void* result = thread->Run();
-    return result;
+#ifdef NOVA_TT_PRIORITY_RT
+	std::pair<int, int> priorities = nova::thread_priority_interval_rt();
+	nova::thread_set_priority_rt((priorities.first + priorities.second)/2);
+#else
+	std::pair<int, int> priorities = nova::thread_priority_interval();
+	nova::thread_set_priority(priorities.second);
+#endif
+
+	thread->Run();
 }
 
 void SC_CmdPort::Start()
 {
-    pthread_create (&mThread, NULL, com_thread_func, (void*)this);
-    set_real_time_priority(mThread);
+	boost::thread thread(boost::bind(com_thread_func, this));
+	mThread = boost::move(thread);
 }
 
 #ifdef USE_RENDEZVOUS
-void* rendezvous_thread_func(void* arg);
-void* rendezvous_thread_func(void* arg)
+void rendezvous_thread_func(SC_ComPort* port)
 {
-	SC_ComPort* port = reinterpret_cast<SC_ComPort*>(arg);
 	port->PublishToRendezvous();
-	return NULL;
 }
 
 void SC_UdpInPort::PublishToRendezvous()
@@ -460,10 +443,8 @@ SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 
 #ifdef USE_RENDEZVOUS
 	if(inWorld->mRendezvous){
-		pthread_create(&mRendezvousThread,
-			NULL,
-			rendezvous_thread_func,
-			(void*)this);
+		boost::thread thread(rendezvous_thread_func, this);
+		mRendezvousThread = boost::move(thread);
 	}
 #endif
 }
@@ -597,35 +578,32 @@ SC_TcpInPort::SC_TcpInPort(struct World *inWorld, int inPortNum, int inMaxConnec
 
     Start();
 #ifdef USE_RENDEZVOUS
-	if(inWorld->mRendezvous){
-		pthread_create(&mRendezvousThread,
-			NULL,
-			rendezvous_thread_func,
-			(void*)this);
+	if(inWorld->mRendezvous) {
+		boost::thread thread(rendezvous_thread_func, this);
+		mRendezvousThread = boost::move(thread);
 	}
 #endif
 }
 
 void* SC_TcpInPort::Run()
 {
-    while (true)
-    {
-        mConnectionAvailable.Acquire();
-        struct sockaddr_in address; /* Internet socket address stuct */
-        socklen_t addressSize=sizeof(struct sockaddr_in);
-        int socket = accept(mSocket,(struct sockaddr*)&address,&addressSize);
-        if (socket < 0) {
-        	mConnectionAvailable.Release();
-        } else {
-        	new SC_TcpConnectionPort(mWorld, this, socket);
-        }
-    }
-    return 0;
+	while (true) {
+		mConnectionAvailable.wait();
+		struct sockaddr_in address; /* Internet socket address stuct */
+		socklen_t addressSize=sizeof(struct sockaddr_in);
+		int socket = accept(mSocket,(struct sockaddr*)&address,&addressSize);
+		if (socket < 0) {
+			mConnectionAvailable.post();
+		} else {
+			new SC_TcpConnectionPort(mWorld, this, socket);
+		}
+	}
+	return 0;
 }
 
 void SC_TcpInPort::ConnectionTerminated()
 {
-        mConnectionAvailable.Release();
+	mConnectionAvailable.post();
 }
 
 ReplyFunc SC_TcpInPort::GetReplyFunc()

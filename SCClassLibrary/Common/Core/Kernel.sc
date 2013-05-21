@@ -185,11 +185,6 @@ Process {
 	var schedulerQueue;
 	var <>nowExecutingPath;
 
-	// SCVersion.sc overrides these for Main
-	*scVersionMajor { ^123 }
-	*scVersionMinor { ^0 }
-	*scVersionPostfix { ^"unknown" }
-
 	startup {
 		var time;
 
@@ -623,6 +618,7 @@ Interpreter {
 		});
 		text = file.readAllString;
 		file.close;
+		preProcessor !? { text = preProcessor.value(text, this) };
 		if (text.beginsWith("#!"), {
 			// comment out shebang to preserve line count
 			text.overWrite("//");

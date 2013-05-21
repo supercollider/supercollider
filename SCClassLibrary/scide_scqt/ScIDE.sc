@@ -3,6 +3,7 @@ ScIDE {
 	classvar <>currentPath;
 	classvar <defaultServer;
 	classvar serverController;
+	classvar volumeController, suppressAmpResponse = false;
 	classvar docRoutine;
 
 	*initClass {
@@ -43,9 +44,28 @@ ScIDE {
 			("changed default server to:" + newServer.name).postln;
 			this.defaultServer = newServer;
 		});
+
+		volumeController.remove;
+		volumeController = SimpleController(server.volume)
+		.put(\mute, { | volume, what, muted |
+			this.prSend( if(muted, \serverMuted, \serverUnmuted) );
+		})
+		.put(\amp, { | volume, what, amp |
+			if (not(suppressAmpResponse)) {
+				this.prSend( \serverAmp, amp.asString );
+			};
+		})
+		.put(\ampRange, { |volume, what, min, max|
+			this.prSend( \serverAmpRange, "%,%".format(min, max) );
+		});
+
 		defaultServer = server;
+
 		this.prSend(\defaultServerRunningChanged, [
 			server.serverRunning, server.addr.hostname, server.addr.port]);
+		this.prSend( if (server.volume.isMuted, \serverMuted, \serverUnmuted) );
+		this.prSend( \serverAmpRange, "%,%".format(server.volume.min, server.volume.max) );
+		this.prSend( \serverAmp, server.volume.volume.asString );
 	}
 
 	*request { |id, command, data|
@@ -58,6 +78,13 @@ ScIDE {
 
 	*open { |path, charPos = 0, selectionLength = 0|
 		this.prSend(\openFile, [path, charPos, selectionLength])
+	}
+
+	*setServerVolume { arg volume;
+		var suppressed = suppressAmpResponse;
+		suppressAmpResponse = true;
+		defaultServer.volume = volume;
+		suppressAmpResponse = suppressed;
 	}
 
 	*sendIntrospection {

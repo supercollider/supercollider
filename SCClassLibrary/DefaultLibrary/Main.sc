@@ -107,13 +107,6 @@ Main : Process {
 		^false
 	}
 
-	newSCWindow {
-		var win, palette;
-		win = SCWindow("construction");
-		win.front;
-		win.toggleEditMode;
-	}
-
 //	override in platform specific extension
 //
 //	platformClass {
@@ -142,6 +135,10 @@ Main : Process {
 	}
 
 	*version {^[this.scVersionMajor, ".", this.scVersionMinor, this.scVersionPostfix].join}
+
+	*scVersionMajor   { _SC_VersionMajor }
+	*scVersionMinor   { _SC_VersionMinor }
+	*scVersionPostfix { _SC_VersionPatch }
 
 	*versionAtLeast { |maj, min|
 		^if((maj==this.scVersionMajor) and:{min.notNil}){

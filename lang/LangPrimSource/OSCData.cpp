@@ -18,7 +18,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "OSCData.h"
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #include "PyrInterpreter.h"
@@ -43,13 +42,15 @@ typedef int socklen_t;
 # include <netdb.h>
 #endif
 
-#include <pthread.h>
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
+#include "SCBase.h"
 #include "SC_ComPort.h"
 #include "SC_WorldOptions.h"
 #include "SC_SndBuf.h"
 #include "SC_Endian.h"
+
+#include <boost/thread/thread.hpp> // LATER: use std::thread
 
 #ifndef SC_DARWIN
 # ifndef SC_WIN32
@@ -58,6 +59,9 @@ typedef int socklen_t;
 #endif
 
 #include "../../../common/server_shm.hpp"
+
+#include "../common/SC_Endian.h"
+
 
 struct InternalSynthServerGlobals
 {
@@ -98,8 +102,8 @@ const int ivxNetAddr_Hostname = 2;
 const int ivxNetAddr_Socket = 3;
 
 void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port);
-int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
-int sendall(int socket, const void *msg, size_t len);
+int sendallto(int socket, const char *msg, size_t len, struct sockaddr *toaddr, int addrlen);
+int sendall(int socket, const char *msg, size_t len);
 static int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size);
 int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
 
@@ -256,7 +260,7 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 {
     bool isBundle = IsBundle(inBuf);
 
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	if (compiledOK) {
 		PyrObject *replyObj = ConvertReplyAddress(inReplyAddr);
 		if (isBundle) {
@@ -265,7 +269,7 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 			PerformOSCMessage(inSize, inBuf, replyObj, gUDPport->RealPortNum());
 		}
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 
 }
 
@@ -313,7 +317,7 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 		if (sendMsgLen) {
 			// send length of message in network byte-order
 			int32 sizebuf = htonl(msglen);
-			sendall(tcpSocket, &sizebuf, sizeof(int32));
+			sendall(tcpSocket, (char*)&sizebuf, sizeof(int32));
 		}
 
 		sendall(tcpSocket, bufptr, msglen);
@@ -362,7 +366,7 @@ void netAddrTcpClientNotifyFunc(void *clientData)
 {
 	extern bool compiledOK;
 
-	pthread_mutex_lock(&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		PyrObject* netAddrObj = (PyrObject*)clientData;
 		VMGlobals* g = gMainVMGlobals;
@@ -371,7 +375,7 @@ void netAddrTcpClientNotifyFunc(void *clientData)
 		runInterpreter(g, getsym("prConnectionClosed"), 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock(&gLangMutex);
+	gLangMutex.unlock();
 }
 
 int prNetAddr_Connect(VMGlobals *g, int numArgsPushed);
@@ -766,7 +770,7 @@ void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
     //post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
 	inPacket->mIsBundle = IsBundle(inPacket->mData);
 
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	if (compiledOK) {
 		PyrObject *replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
 		if (compiledOK) {
@@ -777,7 +781,7 @@ void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
 			}
 		}
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 
     FreeOSCPacket(inPacket);
 }
@@ -995,12 +999,10 @@ int getScopeBuf(uint32 index, SndBuf *buf, bool& didChange)
 	}
 	return errNone;
 }
-void* wait_for_quit(void* thing);
-void* wait_for_quit(void* thing)
+
+static void wait_for_quit(World* world)
 {
-	World *world = (World*)thing;
 	World_WaitForQuit(world);
-	return 0;
 }
 
 int prQuitInProcessServer(VMGlobals *g, int numArgsPushed);
@@ -1012,9 +1014,9 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 		World *world = gInternalSynthServer.mWorld;
 		gInternalSynthServer.mWorld = 0;
 
-        pthread_t thread;
-        pthread_create(&thread, NULL, wait_for_quit, (void*)world);
-		pthread_detach(thread);
+		boost::thread thread(boost::bind(wait_for_quit, world));
+
+		thread.detach();
 	}
 
 	return errNone;

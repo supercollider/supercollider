@@ -47,6 +47,7 @@
 using namespace std;
 
 SC_LanguageConfig *gLanguageConfig = 0;
+string SC_LanguageConfig::gConfigFile;
 
 static bool findPath( SC_LanguageConfig::DirVector & vec, const char * path, bool addIfMissing)
 {
@@ -259,10 +260,17 @@ static bool file_exists(std::string const & fileName)
 	return file_exists(fileName.c_str());
 }
 
-bool SC_LanguageConfig::readDefaultLibraryConfig()
+bool SC_LanguageConfig::readLibraryConfig()
 {
-	char config_dir[PATH_MAX];
 	bool configured = false;
+
+	if (!gConfigFile.empty() && file_exists(gConfigFile)) {
+		configured = readLibraryConfigYAML(gConfigFile.c_str());
+		if (configured)
+			return true;
+	}
+
+	char config_dir[PATH_MAX];
 	sc_GetUserConfigDirectory(config_dir, PATH_MAX);
 
 	std::string user_yaml_config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang_conf.yaml";

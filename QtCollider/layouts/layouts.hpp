@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -88,6 +88,12 @@ public:
 
     QLayout *l2 = qobject_cast<QLayout*>( p->object() );
     if(l2) {
+      if (l2->parent()) {
+        // FIXME: inserting layout that already has parent is broken in Qt.
+        // See Qt bug 30758.
+        qcErrorMsg("Can not insert a layout that already has a parent into another layout!");
+        return;
+      }
       BOXLAYOUT::addLayout( l2, stretch );
       return;
     }

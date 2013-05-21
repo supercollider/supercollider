@@ -42,7 +42,8 @@ NodeProxy : BusPlug {
 	isPlaying { ^group.isPlaying }
 
 	free { | fadeTime, freeGroup = true |
-		var bundle, oldGroup;
+		var bundle;
+		var oldGroup = group;
 		if(this.isPlaying) {
 			bundle = MixedBundle.new;
 			if(fadeTime.notNil) { bundle.add([15, group.nodeID, "fadeTime", fadeTime]) };
@@ -50,9 +51,7 @@ NodeProxy : BusPlug {
 			if(freeGroup) {
 				oldGroup = group;
 				group = nil;
-				bundle.sched((fadeTime ? this.fadeTime) + (server.latency ? 0), { 
-					oldGroup.free(true, true)
-				});
+				bundle.sched((fadeTime ? this.fadeTime) + (server.latency ? 0), { oldGroup.free });
 			};
 			bundle.send(server);
 			this.changed(\free, [fadeTime, freeGroup]);
@@ -647,8 +646,8 @@ NodeProxy : BusPlug {
 		var nodeMapSettingKeys, nodeMapMappingKeys, keysToUnset, keysToUnmap, currentKeys;
 		if (nodeMap.isNil) { ^this };
 
-		nodeMapSettingKeys = difference(nodeMap.settingKeys, this.internalKeys);
-		nodeMapMappingKeys = difference(nodeMap.mappingKeys, this.internalKeys);
+		nodeMapSettingKeys = difference(nodeMap.settingKeys ? [], this.internalKeys);
+		nodeMapMappingKeys = difference(nodeMap.mappingKeys ? [], this.internalKeys);
 		currentKeys = this.controlNames(addNodeMap: false).collect(_.name);
 		keysToUnset = difference(nodeMapSettingKeys, currentKeys);
 		keysToUnmap = difference(nodeMapMappingKeys, currentKeys);

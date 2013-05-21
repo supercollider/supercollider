@@ -42,6 +42,7 @@ public:
 public Q_SLOTS:
     bool openDocumentation();
     void openDefinition();
+    void openCommandLine();
     void findReferences();
 
 private:
@@ -55,6 +56,7 @@ class CmdLine : public QWidget
 public:
     CmdLine( const QString &text, int maxHistory = 30 );
     void applySettings( Settings::Manager * );
+    void setText( const QString & text);
 
 signals:
     void invoked( const QString &, bool silent );

@@ -52,7 +52,14 @@ EnvGen : UGen { // envelope generator
 		^this.multiNewList(['control', gate, levelScale, levelBias, timeScale, doneAction, envelope])
 	}
 	*convertEnv { arg env;
-		if(env.isSequenceableCollection) { ^env.reference }; // raw envelope data
+		if(env.isSequenceableCollection) {
+			if (env.shape.size == 1) {
+				^env.reference
+			} {
+				// multi-channel envelope
+				^env.collect(_.reference)
+			};
+		};
 		^env.asMultichannelArray.collect(_.reference).unbubble
 	}
 	*new1 { arg rate, gate, levelScale, levelBias, timeScale, doneAction, envArray;

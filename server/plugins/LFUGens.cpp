@@ -2614,6 +2614,50 @@ enum {
 	shape_Sustain = 9999
 };
 
+static inline bool check_gate(EnvGen * unit, float prevGate, float gate, int & counter, double level, int counterOffset = 0)
+{
+	if (prevGate <= 0.f && gate > 0.f) {
+		unit->m_stage = -1;
+		unit->m_released = false;
+		unit->mDone = false;
+		counter = counterOffset;
+		return false;
+	} else if (gate <= -1.f && prevGate > -1.f && !unit->m_released) {
+		// cutoff
+		int numstages = (int)ZIN0(kEnvGen_numStages);
+		float dur = -gate - 1.f;
+		counter  = (int32)(dur * SAMPLERATE);
+		counter  = sc_max(1, counter) + counterOffset;
+		unit->m_stage = numstages;
+		unit->m_shape = shape_Linear;
+		// first ZIN0 gets the last envelope node's level, then apply levelScale and levelBias
+		unit->m_endLevel = ZIN0(unit->mNumInputs - 4) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
+		unit->m_grow = (unit->m_endLevel - level) / counter;
+		unit->m_released = true;
+		return false;
+	} else if (prevGate > 0.f && gate <= 0.f
+			   && unit->m_releaseNode >= 0 && !unit->m_released) {
+		counter = counterOffset;
+		unit->m_stage = unit->m_releaseNode - 1;
+		unit->m_released = true;
+		return false;
+	}
+
+	return true;
+}
+
+static inline bool check_gate_ar(EnvGen * unit, int i, float & prevGate, float *& gatein, int &nsmps, int & counter, double level)
+{
+	const float gate = ZXP(gatein);
+	const bool result = check_gate(unit, prevGate, gate, counter, level, i);
+	if (!result) {
+		--gatein;
+		nsmps = i;
+	}
+	prevGate = gate;
+	return result;
+}
+
 void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 {
 	float *out = OUT(0);
@@ -2622,30 +2666,8 @@ void EnvGen_next_k(EnvGen *unit, int inNumSamples)
 	int counter = unit->m_counter;
 	double level = unit->m_level;
 
-	if (unit->m_prevGate <= 0. && gate > 0.) {
-		unit->m_stage = -1;
-		unit->mDone = false;
-		unit->m_released = false;
-		counter = 0;
-	} else if (gate <= -1.f && unit->m_prevGate > -1.f) {
-		// cutoff
-		int numstages = (int)ZIN0(kEnvGen_numStages);
-		float dur = -gate - 1.f;
-		counter  = (int32)(dur * SAMPLERATE);
-		counter  = sc_max(1, counter);
-		unit->m_stage = numstages;
-		unit->m_shape = shape_Linear;
-			// first ZIN0 gets the last envelope node's level, then apply levelScale and levelBias
-		unit->m_endLevel = ZIN0(unit->mNumInputs - 4) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
-		unit->m_grow = (unit->m_endLevel - level) / counter;
-	} else if (unit->m_prevGate > 0.f && gate <= 0.f
-			&& unit->m_releaseNode >= 0 && !unit->m_released) {
-		counter = 0;
-		unit->m_stage = unit->m_releaseNode - 1;
-		unit->m_released = true;
-	}
+	check_gate(unit, unit->m_prevGate, gate, counter, level);
 	unit->m_prevGate = gate;
-
 
 	// gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale
 	// level0, numstages, releaseNode, loopNode,
@@ -2841,27 +2863,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 	int counter = unit->m_counter;
 	double level = unit->m_level;
 
-	if (unit->m_prevGate <= 0. && gate > 0.) {
-		unit->m_stage = -1;
-		unit->mDone = false;
-		unit->m_released = false;
-		counter = 0;
-	} else if (gate <= -1.f && unit->m_prevGate > -1.f) {
-		// cutoff
-		int numstages = (int)ZIN0(kEnvGen_numStages);
-		float dur = -gate - 1.f;
-		counter  = (int32)(dur * SAMPLERATE);
-		counter  = sc_max(1, counter);
-		unit->m_stage = numstages;
-		unit->m_shape = shape_Linear;
-		unit->m_endLevel = ZIN0(unit->mNumInputs - 4) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
-		unit->m_grow = (unit->m_endLevel - level) / counter;
-	} else if (unit->m_prevGate > 0.f && gate <= 0.f
-			&& unit->m_releaseNode >= 0 && !unit->m_released) {
-		counter = 0;
-		unit->m_stage = unit->m_releaseNode - 1;
-		unit->m_released = true;
-	}
+	check_gate(unit, unit->m_prevGate, gate, counter, level);
 	unit->m_prevGate = gate;
 
 	int remain = inNumSamples;
@@ -3076,27 +3078,7 @@ FLATTEN void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
 	int counter = unit->m_counter;
 	double level = unit->m_level;
 
-	if (unit->m_prevGate <= 0. && gate > 0.) {
-		unit->m_stage = -1;
-		unit->mDone = false;
-		unit->m_released = false;
-		counter = 0;
-	} else if (gate <= -1.f && unit->m_prevGate > -1.f) {
-		// cutoff
-		int numstages = (int)ZIN0(kEnvGen_numStages);
-		float dur = -gate - 1.f;
-		counter = (int32)(dur * SAMPLERATE);
-		counter = sc_max(1, counter);
-		unit->m_stage = numstages;
-		unit->m_shape = shape_Linear;
-		unit->m_endLevel = ZIN0(unit->mNumInputs - 4) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
-		unit->m_grow = (unit->m_endLevel - level) / counter;
-	} else if (unit->m_prevGate > 0.f && gate <= 0.f
-			&& unit->m_releaseNode >= 0 && !unit->m_released) {
-		counter = 0;
-		unit->m_stage = unit->m_releaseNode - 1;
-		unit->m_released = true;
-	}
+	check_gate(unit, unit->m_prevGate, gate, counter, level);
 	unit->m_prevGate = gate;
 
 	int remain = inNumSamples;
@@ -3330,39 +3312,6 @@ FLATTEN void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
 }
 #endif
 
-#define CHECK_GATE \
-        float prevGate = gate; \
-        gate = ZXP(gatein); \
-        if (prevGate <= 0.f && gate > 0.f) { \
-                gatein--; \
-                unit->m_stage = -1; \
-                unit->m_released = false; \
-                unit->mDone = false; \
-                counter = i; \
-                nsmps = i; \
-                break; \
-        } else if (gate <= -1.f && unit->m_prevGate > -1.f) { \
-                int numstages = (int)ZIN0(kEnvGen_numStages); \
-                float dur = -gate - 1.f; \
-                gatein--; \
-                counter  = (int32)(dur * SAMPLERATE); \
-                counter  = sc_max(1, counter) + i; \
-                unit->m_stage = numstages; \
-                unit->m_shape = shape_Linear; \
-				unit->m_endLevel = ZIN0(unit->mNumInputs - 4) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias); \
-				unit->m_grow = (unit->m_endLevel - level) / counter; \
-                nsmps = i; \
-                break; \
-        } else if (prevGate > 0.f && gate <= 0.f \
-                        && unit->m_releaseNode >= 0 && !unit->m_released) { \
-                gatein--; \
-                counter = i; \
-                unit->m_stage = unit->m_releaseNode - 1; \
-                unit->m_released = true; \
-                nsmps = i; \
-                break; \
-        } \
-
 
 void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 {
@@ -3481,100 +3430,108 @@ void EnvGen_next_aa(EnvGen *unit, int inNumSamples)
 		int nsmps = sc_min(remain, counter);
 
 		switch (unit->m_shape) {
-			case shape_Step : {
-				for (int i=0; i<nsmps; ++i) {
-					CHECK_GATE
+		case shape_Step : {
+			for (int i=0; i<nsmps; ++i) {
+				if (!check_gate_ar(unit, i, gate, gatein, nsmps, counter, level))
+					break;
+				ZXP(out) = level;
+			}
+		} break;
+		case shape_Linear : {
+			double grow = unit->m_grow;
+			for (int i=0; i<nsmps; ++i) {
+				if (!check_gate_ar(unit, i, gate, gatein, nsmps, counter, level))
+					break;
+				ZXP(out) = level;
+				level += grow;
+			}
+		} break;
+		case shape_Exponential : {
+			double grow = unit->m_grow;
+			for (int i=0; i<nsmps; ++i) {
+				if (!check_gate_ar(unit, i, gate, gatein, nsmps, counter, level))
+					break;
+				ZXP(out) = level;
+				level *= grow;
+			}
+		} break;
+		case shape_Sine : {
+			double a2 = unit->m_a2;
+			double b1 = unit->m_b1;
+			double y2 = unit->m_y2;
+			double y1 = unit->m_y1;
+			for (int i=0; i<nsmps; ++i) {
+				if (!check_gate_ar(unit, i, gate, gatein, nsmps, counter, level))
+					break;
+				ZXP(out) = level;
+				double y0 = b1 * y1 - y2;
+				level = a2 - y0;
+				y2 = y1;
+				y1 = y0;
+			}
+			unit->m_y1 = y1;
+			unit->m_y2 = y2;
+		} break;
+		case shape_Welch : {
+			double a2 = unit->m_a2;
+			double b1 = unit->m_b1;
+			double y2 = unit->m_y2;
+			double y1 = unit->m_y1;
+			for (int i=0; i<nsmps; ++i) {
+				if (!check_gate_ar(unit, i, gate, gatein, nsmps, counter, level))
+					break;
+				ZXP(out) = level;
+				double y0 = b1 * y1 - y2;
+				level = a2 + y0;
+				y2 = y1;
+				y1 = y0;
+			}
+			unit->m_y1 = y1;
+			unit->m_y2 = y2;
+		} break;
+		case shape_Curve : {
+			double a2 = unit->m_a2;
+			double b1 = unit->m_b1;
+			double grow = unit->m_grow;
+			for (int i=0; i<nsmps; ++i) {
+				if (!check_gate_ar(unit, i, gate, gatein, nsmps, counter, level))
+					break;
+				ZXP(out) = level;
+				b1 *= grow;
+				level = a2 - b1;
+			}
+			unit->m_b1 = b1;
+		} break;
+		case shape_Squared : {
+			double grow = unit->m_grow;
+			double y1 = unit->m_y1;
+			for (int i=0; i<nsmps; ++i) {
+				if (!check_gate_ar(unit, i, gate, gatein, nsmps, counter, level))
+					break;
+				ZXP(out) = level;
+				y1 += grow;
+				level = y1*y1;
+			}
+			unit->m_y1 = y1;
+		} break;
+		case shape_Cubed : {
+			double grow = unit->m_grow;
+			double y1 = unit->m_y1;
+			for (int i=0; i<nsmps; ++i) {
+				if (!check_gate_ar(unit, i, gate, gatein, nsmps, counter, level))
+					break;
+				ZXP(out) = level;
+				y1 += grow;
+				level = y1*y1*y1;
+			}
+			unit->m_y1 = y1;
+		} break;
+		case shape_Sustain : {
+			for (int i=0; i<nsmps; ++i) {
+				if (check_gate_ar(unit, i, gate, gatein, nsmps, counter, level))
 					ZXP(out) = level;
-				}
-			} break;
-			case shape_Linear : {
-				double grow = unit->m_grow;
-				for (int i=0; i<nsmps; ++i) {
-					CHECK_GATE
-					ZXP(out) = level;
-					level += grow;
-				}
-			} break;
-			case shape_Exponential : {
-				double grow = unit->m_grow;
-				for (int i=0; i<nsmps; ++i) {
-					CHECK_GATE
-					ZXP(out) = level;
-					level *= grow;
-				}
-			} break;
-			case shape_Sine : {
-				double a2 = unit->m_a2;
-				double b1 = unit->m_b1;
-				double y2 = unit->m_y2;
-				double y1 = unit->m_y1;
-				for (int i=0; i<nsmps; ++i) {
-					CHECK_GATE
-					ZXP(out) = level;
-					double y0 = b1 * y1 - y2;
-					level = a2 - y0;
-					y2 = y1;
-					y1 = y0;
-				}
-				unit->m_y1 = y1;
-				unit->m_y2 = y2;
-			} break;
-			case shape_Welch : {
-				double a2 = unit->m_a2;
-				double b1 = unit->m_b1;
-				double y2 = unit->m_y2;
-				double y1 = unit->m_y1;
-				for (int i=0; i<nsmps; ++i) {
-					CHECK_GATE
-					ZXP(out) = level;
-					double y0 = b1 * y1 - y2;
-					level = a2 + y0;
-					y2 = y1;
-					y1 = y0;
-				}
-				unit->m_y1 = y1;
-				unit->m_y2 = y2;
-			} break;
-			case shape_Curve : {
-				double a2 = unit->m_a2;
-				double b1 = unit->m_b1;
-				double grow = unit->m_grow;
-				for (int i=0; i<nsmps; ++i) {
-					CHECK_GATE
-					ZXP(out) = level;
-					b1 *= grow;
-					level = a2 - b1;
-				}
-				unit->m_b1 = b1;
-			} break;
-			case shape_Squared : {
-				double grow = unit->m_grow;
-				double y1 = unit->m_y1;
-				for (int i=0; i<nsmps; ++i) {
-					CHECK_GATE
-					ZXP(out) = level;
-					y1 += grow;
-					level = y1*y1;
-				}
-				unit->m_y1 = y1;
-			} break;
-			case shape_Cubed : {
-				double grow = unit->m_grow;
-				double y1 = unit->m_y1;
-				for (int i=0; i<nsmps; ++i) {
-					CHECK_GATE
-					ZXP(out) = level;
-					y1 += grow;
-					level = y1*y1*y1;
-				}
-				unit->m_y1 = y1;
-			} break;
-			case shape_Sustain : {
-				for (int i=0; i<nsmps; ++i) {
-					CHECK_GATE
-					ZXP(out) = level;
-				}
-			} break;
+			}
+		} break;
 		}
 		remain -= nsmps;
 		counter -= nsmps;

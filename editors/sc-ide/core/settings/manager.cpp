@@ -24,12 +24,14 @@
 #include <QApplication>
 #include <QPalette>
 #include <QTextCharFormat>
+#include <QDebug>
 
 namespace ScIDE { namespace Settings {
 
 Manager::Manager( const QString & filename, QObject * parent ):
     QObject(parent),
-    mSettings( new QSettings(filename, serializationFormat(), this) )
+    mSettings( new QSettings(filename, serializationFormat(), this) ),
+    mDefaultCursorFlashTime(QApplication::cursorFlashTime())
 {
     initDefaults();
 }
@@ -54,6 +56,9 @@ void Manager::initDefaults()
     setDefault("indentWidth", 4);
     setDefault("stepForwardEvaluation", false);
     setDefault("lineWrap", true);
+    setDefault("disableBlinkingCursor", false);
+    setDefault("highlightBracketContents", true);
+    setDefault("insertMatchingTokens", false);
 
     setDefault("blinkDuration", 600);
 
@@ -77,6 +82,18 @@ void Manager::initDefaults()
     evaluatedCodeFormat.setBackground(QColor("#F8A200"));
     evaluatedCodeFormat.setForeground(Qt::black);
     setDefault("evaluatedCode", QVariant::fromValue(evaluatedCodeFormat));
+
+    QTextCharFormat currentLineFormat;
+    {
+        QColor bkg = appPlt.color(QPalette::Base);
+        int value = bkg.value();
+        if (value > 40)
+            bkg.setHsv( bkg.hue(), bkg.saturation(), value - 11);
+        else
+            bkg.setHsv( bkg.hue(), bkg.saturation(), value + 20 );
+        currentLineFormat.setBackground(bkg.toRgb());
+    }
+    setDefault("currentLine", QVariant::fromValue(currentLineFormat));
 
     QTextCharFormat searchResultFormat;
     searchResultFormat.setBackground(appPlt.color(QPalette::Highlight).darker(200));
@@ -108,8 +125,15 @@ void Manager::initHighlightingDefaults()
 {
     QPalette plt( QApplication::palette() );
     QColor base = plt.color(QPalette::Base);
+    QColor text = plt.color(QPalette::Text);
     int shade = (base.red() + base.green() + base.blue() < 380) ? 160 : 100;
 
+    QColor whitespace_color(
+                (base.red() + text.red()) / 2,
+                (base.green() + text.green()) / 2,
+                (base.blue() + text.blue()) / 2 );
+
+    setDefault( "whitespace", makeHlFormat( whitespace_color ) );
     setDefault( "keyword", makeHlFormat( QColor(0,0,230).lighter(shade), QFont::Bold ) );
     setDefault( "built-in", makeHlFormat( QColor(51,51,191).lighter(shade) ) );
     setDefault( "env-var", makeHlFormat( QColor(140,70,20).lighter(shade) ) );

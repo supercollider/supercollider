@@ -257,7 +257,7 @@ bool Main::openDocumentation(const QString & string)
 
     HelpBrowserDocklet *helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpFor(symbol);
-    helpDock->raiseAndFocus();
+    helpDock->focus();
     return true;
 }
 
@@ -265,29 +265,32 @@ bool Main::openDocumentationForMethod(const QString & className, const QString &
 {
     HelpBrowserDocklet *helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpForMethod(className, methodName);
-    helpDock->raiseAndFocus();
+    helpDock->focus();
     return true;
 }
 
 void Main::openDefinition(const QString &string, QWidget * parent)
 {
     QString definitionString = string.trimmed();
-    if (definitionString.isEmpty())
-        return;
 
     LookupDialog dialog(parent);
-    dialog.query(definitionString);
+    if (!definitionString.isEmpty())
+        dialog.query(definitionString);
     dialog.exec();
+}
+
+void Main::openCommandLine(const QString &string)
+{
+    MainWindow::instance()->showCmdLine(string);
 }
 
 void Main::findReferences(const QString &string, QWidget * parent)
 {
     QString definitionString = string.trimmed();
-    if (definitionString.isEmpty())
-        return;
 
     ReferencesDialog dialog(parent);
-    dialog.query(definitionString);
+    if (!definitionString.isEmpty())
+        dialog.query(definitionString);
     dialog.exec();
 }
 

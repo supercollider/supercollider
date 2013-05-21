@@ -17,6 +17,7 @@
 //  Boston, MA 02111-1307, USA.
 
 #include <iostream>
+#include <future>
 
 #include <boost/filesystem/operations.hpp>
 
@@ -33,20 +34,17 @@ using namespace std;
 void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> && defs)
 {
     std::vector<sc_synthdef> synthdefs(std::move(defs));
-    for (typename std::vector<sc_synthdef>::iterator it = synthdefs.begin();
-         it != synthdefs.end(); ++it) {
-        sc_synth_definition * sp = new sc_synth_definition(std::move(*it));
+    for (sc_synthdef & def : synthdefs) {
+        sc_synth_definition * sp = new sc_synth_definition(std::move(def));
         factory.register_definition(sp);
     }
 }
-
 
 std::vector<sc_synthdef> sc_read_synthdefs_file(path const & file)
 {
     try {
         return read_synthdef_file(file.string());
-    }
-    catch(std::exception & e)
+    } catch(std::exception const & e)
     {
         cout << "Exception when parsing synthdef: " << e.what() << endl;
         return std::vector<sc_synthdef>();
@@ -56,27 +54,40 @@ std::vector<sc_synthdef> sc_read_synthdefs_file(path const & file)
 std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
 {
     using namespace boost::filesystem;
-    std::vector<sc_synthdef> ret;
+    using namespace std;
+
+    typedef vector<sc_synthdef> def_vector;
+    def_vector ret;
 
     if (!exists(dir))
         return ret;
 
-    directory_iterator end;
-    for (directory_iterator it(dir); it != end; ++it) {
-        std::vector<sc_synthdef> to_append;
-        if (is_directory(it->status()))
-            to_append = sc_read_synthdefs_dir(it->path());
-        else
-            to_append = sc_read_synthdefs_file(it->path());
-        ret.insert(ret.end(), to_append.begin(), to_append.end());
+    // FIXME: some kind of threadpool would be nice!
+    auto launch_policy = thread::hardware_concurrency() > 1 ? launch::async
+                                                            : launch::deferred;
+
+    vector<future<def_vector> > futures;
+
+    recursive_directory_iterator end;
+    for (recursive_directory_iterator it(dir); it != end; ++it) {
+        if (!is_directory(it->status())) {
+            auto path_name = it->path();
+            futures.emplace_back( std::move(async(launch_policy, [=]() { return sc_read_synthdefs_file(path_name);} )) );
+        }
     }
+
+    for (future<def_vector> & synthdef_future : futures) {
+        for (sc_synthdef & definition : synthdef_future.get())
+            ret.emplace_back(std::move(definition));
+    }
+
     return ret;
 }
 
 sc_synth_definition::sc_synth_definition(sc_synthdef const & sd):
     synth_definition(sd.name()), sc_synthdef(sd)
 {
-    typedef sc_synthdef::parameter_map_t::const_iterator iterator;
+    typedef sc_synthdef::parameter_index_map_t::const_iterator iterator;
 
     for (iterator it = parameter_map.begin(); it != parameter_map.end(); ++it)
         slot_resolver::register_slot(it->first, it->second);
@@ -86,8 +97,6 @@ sc_synth_definition::sc_synth_definition(sc_synthdef const & sd):
 abstract_synth * sc_synth_definition::create_instance(int node_id)
 {
     sc_synth * synth = new sc_synth(node_id, this);
-
-    sc_factory->schedule_for_preparation(synth);
     return synth;
 }
 

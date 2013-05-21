@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -38,12 +38,22 @@ void QcSimpleWidget::setBackground( const QColor &c )
   update();
 }
 
+void QcSimpleWidget::setBackgroundImage( const QtCollider::SharedImage & image, const QRectF & rect,
+                                         int tileMode, double opacity )
+{
+    _bkg_image.setImage( image, rect, tileMode, opacity );
+    update();
+}
+
 void QcSimpleWidget::paintEvent( QPaintEvent *e )
 {
-  if (!_bkg.isValid()) return;
+  QPainter painter(this);
 
-  QPainter p(this);
-  p.fillRect(e->rect(), _bkg);
+  if (_bkg.isValid())
+      painter.fillRect(e->rect(), _bkg);
+
+  if (_bkg_image.isValid())
+      _bkg_image.paint( &painter, rect() );
 }
 
 class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>

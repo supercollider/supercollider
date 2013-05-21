@@ -19,10 +19,12 @@
 */
 
 #include <QDebug>
+#include <QWidgetAction>
 
 #include "sc_server.hpp"
 #include "sc_process.hpp"
 #include "main.hpp"
+#include "../widgets/util/volume_widget.hpp"
 
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
@@ -30,10 +32,20 @@
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
 
+#include <sstream>
+#include <iomanip>
+#include <boost/chrono/chrono_io.hpp>
+
+using namespace std;
+using namespace boost::chrono;
+
 namespace ScIDE {
 
 ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *parent):
-    QObject(parent), mPort(0)
+    QObject(parent),
+    mLang(scLang),
+    mPort(0),
+    mIsRecording(false)
 {
     createActions(settings);
 
@@ -45,43 +57,124 @@ ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *pare
     }
     startTimer(333);
 
+    mRecordTimer.setInterval(1000);
+    connect( &mRecordTimer, SIGNAL(timeout()), this, SLOT(updateRecordingAction()) );
+
     connect(scLang, SIGNAL(stateChanged(QProcess::ProcessState)),
             this, SLOT(onScLangStateChanged(QProcess::ProcessState)));
     connect(scLang, SIGNAL(response(QString,QString)),
             this, SLOT(onScLangReponse(QString,QString)));
-
-    onRunningStateChanged(false, QString(), 0); // initialize ToggleRunning action
 }
 
 void ScServer::createActions(Settings::Manager * settings)
 {
     const QString synthServerCategory(tr("Sound Synthesis Server"));
     QAction *action;
+    QWidgetAction *widgetAction;
 
-    mActions[ToggleRunning] = action = new QAction(tr("Boot or quit server"), this);
-    action->setShortcut(tr("Ctrl+B", "Boot or quit default server"));
+    mActions[ToggleRunning] = action = new QAction(tr("Boot or quit default server"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()));
-    settings->addAction( action, "synth-server-toggle-running", synthServerCategory);
+    //settings->addAction( action, "synth-server-toggle-running", synthServerCategory);
 
-    mActions[Reboot] = action = new QAction(tr("Reboot server"), this);
-    action->setShortcut(tr("Ctrl+Shift+B", "Reboot default server"));
+    mActions[Boot] = action =
+        new QAction(QIcon::fromTheme("system-run"), tr("&Boot Server"), this);
+    action->setShortcut(tr("Ctrl+B", "Boot default server"));
+    connect(action, SIGNAL(triggered()), this, SLOT(boot()));
+    settings->addAction( action, "synth-server-boot", synthServerCategory);
+
+    mActions[Quit] = action =
+        new QAction(QIcon::fromTheme("system-shutdown"), tr("&Quit Server"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(quit()));
+    settings->addAction( action, "synth-server-quit", synthServerCategory);
+
+    mActions[KillAll] = action =
+    new QAction(QIcon::fromTheme("system-killall"), tr("&Kill All Servers"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(killAll()));
+    settings->addAction( action, "synth-server-killall", synthServerCategory);
+
+    mActions[Reboot] = action =
+        new QAction( QIcon::fromTheme("system-reboot"), tr("&Reboot Server"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(reboot()));
     settings->addAction( action, "synth-server-reboot", synthServerCategory);
 
-    mActions[ShowMeters] = action = new QAction(tr("Show server meter"), this);
+    mActions[ShowMeters] = action = new QAction(tr("Show Server Meter"), this);
     action->setShortcut(tr("Ctrl+M", "Show server meter"));
     connect(action, SIGNAL(triggered()), this, SLOT(showMeters()));
     settings->addAction( action, "synth-server-meter", synthServerCategory);
 
-    mActions[DumpNodeTree] = action = new QAction(tr("Dump node tree"), this);
+    mActions[ShowScope] = action = new QAction(tr("Show Scope"), this);
+    action->setShortcut(tr("Ctrl+Shift+M", "Show scope"));
+    connect(action, SIGNAL(triggered()), this, SLOT(showScope()));
+    settings->addAction( action, "synth-server-scope", synthServerCategory);
+
+    mActions[ShowFreqScope] = action = new QAction(tr("Show Freqscope"), this);
+    action->setShortcut(tr("Ctrl+Alt+M", "Show freqscope"));
+    connect(action, SIGNAL(triggered()), this, SLOT(showFreqScope()));
+    settings->addAction( action, "synth-server-freqscope", synthServerCategory);
+
+    mActions[DumpNodeTree] = action = new QAction(tr("Dump Node Tree"), this);
     action->setShortcut(tr("Ctrl+T", "Dump node tree"));
     connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTree()));
     settings->addAction( action, "synth-server-dump-nodes", synthServerCategory);
 
-    mActions[DumpNodeTreeWithControls] = action = new QAction(tr("Dump node tree with controls"), this);
+    mActions[DumpNodeTreeWithControls] = action = new QAction(tr("Dump Node Tree with Controls"), this);
     action->setShortcut(tr("Ctrl+Shift+T", "Dump node tree with controls"));
     connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTreeWithControls()));
     settings->addAction( action, "synth-server-dump-nodes-with-controls", synthServerCategory);
+
+    mActions[PlotTree] = action = new QAction(tr("Plot Node Tree"), this);
+    action->setShortcut(tr("Ctrl+Alt+T", "Plot node tree"));
+    connect(action, SIGNAL(triggered()), this, SLOT(plotTree()));
+    settings->addAction( action, "synth-server-plot-tree", synthServerCategory);
+
+    mActions[Mute] = action = new QAction(tr("Mute"), this);
+    action->setShortcut(tr("Ctrl+Alt+End", "Mute sound output."));
+    action->setCheckable(true);
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(sendMuted(bool)));
+    connect(action, SIGNAL(toggled(bool)), this, SIGNAL(mutedChanged(bool)));
+    settings->addAction( action, "synth-server-mute", synthServerCategory);
+
+    mVolumeWidget = new VolumeWidget;
+
+    mActions[Volume] = widgetAction = new QWidgetAction(this);
+    widgetAction->setDefaultWidget( mVolumeWidget );
+    connect( mVolumeWidget, SIGNAL(volumeChanged(float)), this, SLOT(sendVolume(float)) );
+    connect( mVolumeWidget, SIGNAL(volumeChanged(float)), this, SIGNAL(volumeChanged(float)) );
+
+    mActions[VolumeUp] = action = new QAction(tr("Increase Volume"), this);
+    action->setShortcut(tr("Ctrl+Alt+PgUp", "Increase volume"));
+    connect(action, SIGNAL(triggered()), this, SLOT(increaseVolume()));
+    settings->addAction( action, "synth-server-volume-up", synthServerCategory);
+
+    mActions[VolumeDown] = action = new QAction(tr("Decrease Volume"), this);
+    action->setShortcut(tr("Ctrl+Alt+PgDown", "Decrease volume"));
+    connect(action, SIGNAL(triggered()), this, SLOT(decreaseVolume()));
+    settings->addAction( action, "synth-server-volume-down", synthServerCategory);
+
+    mActions[VolumeRestore] = action = new QAction(tr("Restore Volume to 0 dB"), this);
+    action->setShortcut(tr("Ctrl+Alt+Home", "Restore volume"));
+    connect(action, SIGNAL(triggered()), this, SLOT(restoreVolume()));
+    settings->addAction( action, "synth-server-volume-restore", synthServerCategory);
+
+    mActions[Record] = action = new QAction(this);
+    action->setCheckable(true);
+    connect( action, SIGNAL(triggered(bool)), this, SLOT(setRecording(bool)) );
+    connect( action, SIGNAL(toggled(bool)), this, SIGNAL(recordingChanged(bool)) );
+
+    connect( mActions[Boot], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
+    connect( mActions[Quit], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
+
+    updateToggleRunningAction();
+    updateRecordingAction();
+    updateEnabledActions();
+}
+
+void ScServer::updateToggleRunningAction()
+{
+    QAction *targetAction = isRunning() ? mActions[Quit] : mActions[Boot];
+    mActions[ToggleRunning]->setText( targetAction->text() );
+    mActions[ToggleRunning]->setIcon( targetAction->icon() );
+    mActions[ToggleRunning]->setShortcut( targetAction->shortcut() );
 }
 
 void ScServer::boot()
@@ -89,7 +182,7 @@ void ScServer::boot()
     if (isRunning())
         return;
 
-    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.boot", true );
+    mLang->evaluateCode( "ScIDE.defaultServer.boot", true );
 }
 
 void ScServer::quit()
@@ -97,12 +190,17 @@ void ScServer::quit()
     if (!isRunning())
         return;
 
-    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.quit", true );
+    mLang->evaluateCode( "ScIDE.defaultServer.quit", true );
+}
+
+void ScServer::killAll()
+{
+    mLang->evaluateCode( "Server.killAll", true );
 }
 
 void ScServer::reboot()
 {
-    Main::scProcess()->evaluateCode( "ScIDE.defaultServer.reboot", true );
+    mLang->evaluateCode( "ScIDE.defaultServer.reboot", true );
 }
 
 void ScServer::toggleRunning()
@@ -115,7 +213,17 @@ void ScServer::toggleRunning()
 
 void ScServer::showMeters()
 {
-    Main::evaluateCode("ScIDE.defaultServer.meter", true);
+   mLang->evaluateCode("ScIDE.defaultServer.meter", true);
+}
+
+void ScServer::showScope()
+{
+   mLang->evaluateCode("ScIDE.defaultServer.scope(ScIDE.defaultServer.options.numOutputBusChannels)", true);
+}
+
+void ScServer::showFreqScope()
+{
+   mLang->evaluateCode("ScIDE.defaultServer.freqscope", true);
 }
 
 void ScServer::dumpNodeTree()
@@ -132,26 +240,164 @@ void ScServer::queryAllNodes(bool dumpControls)
 {
     QString arg = dumpControls ? QString("true") : QString("false");
 
-    Main::scProcess()->evaluateCode( QString("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
+    mLang->evaluateCode( QString("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
 }
 
-void ScServer::onScLangStateChanged( QProcess::ProcessState state )
+void ScServer::plotTree()
 {
-    bool langIsRunning = state == QProcess::Running;
-    mActions[ToggleRunning]->setEnabled(langIsRunning);
-    mActions[Reboot]->setEnabled(langIsRunning);
-    mActions[ShowMeters]->setEnabled(langIsRunning);
-    mActions[DumpNodeTree]->setEnabled(langIsRunning);
-    mActions[DumpNodeTreeWithControls]->setEnabled(langIsRunning);
+    mLang->evaluateCode("ScIDE.defaultServer.plotTree", true );
+}
+
+bool ScServer::isMuted() const { return mActions[Mute]->isChecked(); }
+
+void ScServer::setMuted( bool muted )
+{
+    mActions[Mute]->setChecked(muted);
+    sendMuted(muted);
+}
+
+float ScServer::volume() const { return mVolumeWidget->volume(); }
+
+void ScServer::setVolume( float volume )
+{
+    mVolumeWidget->setVolume( volume );
+}
+
+void ScServer::increaseVolume()
+{
+    changeVolume( +1.5 );
+}
+
+void ScServer::decreaseVolume()
+{
+    changeVolume( -1.5 );
+}
+
+void ScServer::changeVolume(float difference)
+{
+    setVolume( volume() + difference);
+}
+
+void ScServer::restoreVolume()
+{
+    setVolume( 0.0f );
+    unmute();
+}
+
+void ScServer::sendMuted(bool muted)
+{
+    static const QString muteCommand("ScIDE.defaultServer.mute");
+    static const QString unmuteCommand("ScIDE.defaultServer.unmute");
+
+    mLang->evaluateCode( muted ? muteCommand : unmuteCommand, true );
+}
+
+void ScServer::sendVolume( float volume )
+{
+    mLang->evaluateCode( QString("ScIDE.setServerVolume(%1)").arg(volume), true );
+}
+
+bool ScServer::isRecording() const { return mIsRecording; }
+
+void ScServer::setRecording( bool doRecord )
+{
+    static const QString startRecordingCommand("ScIDE.defaultServer.record");
+    static const QString stopRecordingCommand("ScIDE.defaultServer.stopRecording");
+
+    if (!isRunning() || mIsRecording == doRecord)
+        return;
+
+    mIsRecording = doRecord;
+
+    if (doRecord) {
+        mLang->evaluateCode( startRecordingCommand );
+        mRecordTime = system_clock::now();
+        mRecordTimer.start();
+    }
+    else {
+        mLang->evaluateCode( stopRecordingCommand );
+        mRecordTimer.stop();
+    }
+
+    updateRecordingAction();
+}
+
+seconds ScServer::recordingTime() const
+{
+    if (isRecording())
+        return duration_cast<seconds>( system_clock::now() - mRecordTime );
+    else
+        return seconds(0);
+}
+
+void ScServer::updateRecordingAction()
+{
+    if (isRecording()) {
+        seconds time = recordingTime();
+        hours h = duration_cast<hours>(time);
+        minutes m = duration_cast<minutes>(time - h);
+        seconds s = (time - m);
+        ostringstream msg;
+        msg << "Recording: ";
+        msg << setw(2) << setfill('0') << h.count() << ':';
+        msg << setw(2) << setfill('0') << m.count() << ':';
+        msg << setw(2) << setfill('0') << s.count();
+        mActions[Record]->setText( msg.str().c_str() );
+    }
+    else {
+        mActions[Record]->setText( "Start Recording" );
+    }
+    mActions[Record]->setChecked( isRecording() );
+}
+
+void ScServer::onScLangStateChanged( QProcess::ProcessState )
+{
+    updateEnabledActions();
 }
 
 void ScServer::onScLangReponse( const QString & selector, const QString & data )
 {
     static QString defaultServerRunningChangedSelector("defaultServerRunningChanged");
+    static QString mutedSelector("serverMuted");
+    static QString unmutedSelector("serverUnmuted");
+    static QString ampSelector("serverAmp");
+    static QString ampRangeSelector("serverAmpRange");
 
-    if (selector != defaultServerRunningChangedSelector)
-        return;
+    if (selector == defaultServerRunningChangedSelector)
+        handleRuningStateChangedMsg(data);
+    else if(selector == mutedSelector) {
+        mActions[Mute]->setChecked(true);
+    } else if (selector == unmutedSelector) {
+        mActions[Mute]->setChecked(false);
+    }
+    else if (selector == ampSelector) {
+        bool ok;
+        float volume = data.mid(1, data.size() - 2).toFloat(&ok);
+        if (ok) {
+            bool signals_blocked = mVolumeWidget->blockSignals(true);
+            volume = mVolumeWidget->setVolume(volume);
+            mVolumeWidget->blockSignals(signals_blocked);
+            emit volumeChanged(volume);
+        }
+    }
+    else if (selector == ampRangeSelector) {
+        bool ok;
+        QStringList dataList = data.mid(1, data.size() - 2).split(',');
+        if (dataList.size() < 2)
+            return;
+        float min = dataList[0].toFloat(&ok);
+        if (!ok) return;
+        float max = dataList[1].toFloat(&ok);
+        if (!ok) return;
+        bool signals_blocked = mVolumeWidget->blockSignals(true);
+        mVolumeWidget->setRange( min, max );
+        mVolumeWidget->blockSignals(signals_blocked);
+        emit volumeChanged(mVolumeWidget->volume());
+    }
+}
 
+void ScServer::handleRuningStateChangedMsg( const QString & data )
+{
     std::stringstream stream;
     stream << data.toStdString();
     YAML::Parser parser(stream);
@@ -230,16 +476,38 @@ void ScServer::onRunningStateChanged( bool running, QString const & hostName, in
     if (running) {
         mServerAddress = QHostAddress(hostName);
         mPort = port;
-
-        mActions[ToggleRunning]->setText( tr("&Quit Server") );
-        mActions[ToggleRunning]->setStatusTip(tr("Quit sound synthesis server"));
     } else {
         mServerAddress.clear();
         mPort = 0;
-
-        mActions[ToggleRunning]->setText( tr("&Boot Server") );
-        mActions[ToggleRunning]->setStatusTip(tr("Boot sound synthesis server"));
+        mIsRecording = false;
+        mRecordTimer.stop();
     }
+
+    updateToggleRunningAction();
+    updateRecordingAction();
+    updateEnabledActions();
+}
+
+void ScServer::updateEnabledActions()
+{
+    bool langRunning = mLang->state() == QProcess::Running;
+    bool langAndServerRunning = langRunning && isRunning();
+
+    mActions[ToggleRunning]->setEnabled(langRunning);
+    mActions[KillAll]->setEnabled(langRunning);
+    mActions[Reboot]->setEnabled(langRunning);
+    mActions[ShowMeters]->setEnabled(langRunning);
+    mActions[ShowScope]->setEnabled(langRunning);
+    mActions[ShowFreqScope]->setEnabled(langRunning);
+    mActions[DumpNodeTree]->setEnabled(langAndServerRunning);
+    mActions[DumpNodeTreeWithControls]->setEnabled(langAndServerRunning);
+    mActions[PlotTree]->setEnabled(langAndServerRunning);
+    mActions[Mute]->setEnabled(langAndServerRunning);
+    mActions[VolumeUp]->setEnabled(langAndServerRunning);
+    mActions[VolumeDown]->setEnabled(langAndServerRunning);
+    mActions[Volume]->setEnabled(langAndServerRunning);
+    mActions[VolumeRestore]->setEnabled(langAndServerRunning);
+    mActions[Record]->setEnabled(langAndServerRunning);
 }
 
 }

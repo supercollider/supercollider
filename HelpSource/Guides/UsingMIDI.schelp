@@ -11,7 +11,7 @@ SuperCollider's out of the box MIDI support is fairly thorough (although not as 
 The main MIDI classes are:
 
 definitionList::
-## link::Classes/MIDIClient:: || This class connects to the operating system's MIDI layer, and obtains the lists of available MIDI sources and destinations. The information about the hardware is stored in code::MIDIClient.sources:: and code::MIDIClient.destinations:: as link::Classes/MIDIEndPoint:: objects. MIDIClient must be initialized before MIDI can be received. See the example at link::#playing_notes_on_your_midi_keyboard#Playing notes on your MIDI keyboard::.
+## link::Classes/MIDIClient:: || This class connects to the operating system's MIDI layer, and obtains the lists of available MIDI sources and destinations. The information about the hardware is stored in code::MIDIClient.sources:: and code::MIDIClient.destinations:: as link::Classes/MIDIEndPoint:: objects. MIDIClient must be initialized before MIDI can be received. See the example link::#Playing notes on your MIDI keyboard::.
 ## link::Classes/MIDIFunc:: || The optimal way to receive the most typical MIDI messages: note on/off, controller, pitch bend, aftertouch, poly-touch and program change.
 ## link::Classes/MIDIdef:: || Related to link::Classes/MIDIFunc::, this class keeps several MIDIFunc objects in global storage, by name. Especially helpful for live or interactive use.
 ## link::Classes/MIDIOut:: || Supports MIDI output to hardware ports or inter-application MIDI buses.
@@ -28,7 +28,7 @@ For most uses, the preferred way to receive MIDI input is using the link::Classe
 
 link::Classes/MIDIFunc:: has a number of convenience methods allowing you to register for the different MIDI message types. It can  filter incoming MIDI messages to respond to a particular device, channel number, or specific message number, or ranges thereof.
 
-See link::#playing_notes_on_your_midi_keyboard#Playing notes on your MIDI keyboard:: below for a simple example using the note-on and note-off MIDIFuncs.
+See link::#Playing notes on your MIDI keyboard:: below for a simple example using the note-on and note-off MIDIFuncs.
 
 subsection:: MIDIIn
 
@@ -69,7 +69,7 @@ q.value;
 
 The link::Classes/MIDIIn:: help file contains a more elaborate example.
 
-SuperCollider does not have a built-in class to handle this automatically. However, emphasis::dewdrop_lib::, a third party library mentioned link::#third_party_libraries#below::, includes Voicer (to simplify note on-off bookkeeping) and VoicerMIDISocket (to trigger Voicer notes by MIDI). Users interested in this functionality may wish to examine that library.
+SuperCollider does not have a built-in class to handle this automatically. However, emphasis::dewdrop_lib::, a third party library mentioned link::#Third party libraries#below::, includes Voicer (to simplify note on-off bookkeeping) and VoicerMIDISocket (to trigger Voicer notes by MIDI). Users interested in this functionality may wish to examine that library.
 
 section::Sending MIDI out
 

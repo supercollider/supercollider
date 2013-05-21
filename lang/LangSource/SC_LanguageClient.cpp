@@ -25,6 +25,7 @@
 
 #include "SC_LanguageClient.h"
 #include "SC_LanguageConfig.hpp"
+#include "SC_Lock.h"
 #include <cstring>
 #include <string>
 #include <cerrno>
@@ -43,10 +44,12 @@
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
+#include "PyrSched.h"
 #include "GC.h"
 #include "VMGlobals.h"
 #include "SC_DirUtils.h"
 #include "SCBase.h"
+#include "SC_StringBuffer.h"
 
 void closeAllGUIScreens();
 void initGUI();
@@ -59,20 +62,27 @@ extern PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, long c
 // =====================================================================
 
 SC_LanguageClient* SC_LanguageClient::gInstance = 0;
-SC_Lock SC_LanguageClient::gInstanceMutex;
+SC_Lock gInstanceMutex;
 
-PyrSymbol* SC_LanguageClient::s_interpretCmdLine = 0;
-PyrSymbol* SC_LanguageClient::s_interpretPrintCmdLine = 0;
-PyrSymbol* SC_LanguageClient::s_run = 0;
-PyrSymbol* SC_LanguageClient::s_stop = 0;
-static PyrSymbol* s_tick = 0;
+class HiddenLanguageClient
+{
+public:
+	HiddenLanguageClient():
+		mPostFile(0),
+		mScratch(0),
+		mRunning(false)
+	{}
+
+	std::string					mName;
+	FILE*						mPostFile;
+	SC_StringBuffer				mScratch;
+	bool						mRunning;
+};
 
 SC_LanguageClient::SC_LanguageClient(const char* name)
-	: mName(0),
-	  mPostFile(0),
-	  mScratch(0),
-	  mRunning(false)
 {
+	mHiddenClient = new HiddenLanguageClient;
+
 	lockInstance();
 
 	if (gInstance) {
@@ -81,7 +91,7 @@ SC_LanguageClient::SC_LanguageClient(const char* name)
 		abort();
 	}
 
-	mName = strdup(name);
+	mHiddenClient->mName = name;
 	gInstance = this;
 
 	unlockInstance();
@@ -90,7 +100,6 @@ SC_LanguageClient::SC_LanguageClient(const char* name)
 SC_LanguageClient::~SC_LanguageClient()
 {
 	lockInstance();
-	free(mName);
 	gInstance = 0;
 	unlockInstance();
 }
@@ -98,7 +107,7 @@ SC_LanguageClient::~SC_LanguageClient()
 void SC_LanguageClient::initRuntime(const Options& opt)
 {
 	// start virtual machine
-	if (!mRunning) {
+	if (!mHiddenClient->mRunning) {
 #ifdef __linux__
 		char deprecatedSupportDirectory[PATH_MAX];
 		sc_GetUserHomeDirectory(deprecatedSupportDirectory, PATH_MAX);
@@ -114,7 +123,7 @@ void SC_LanguageClient::initRuntime(const Options& opt)
 		}
 #endif
 
-		mRunning = true;
+		mHiddenClient->mRunning = true;
 		if (opt.mRuntimeDir) {
 			int err = chdir(opt.mRuntimeDir);
 			if (err)
@@ -171,19 +180,15 @@ void SC_LanguageClient::setCmdLine(const char* str)
 	setCmdLine(str, strlen(str));
 }
 
-void SC_LanguageClient::setCmdLine(const SC_StringBuffer& strBuf)
-{
-	setCmdLine(strBuf.getData(), strBuf.getSize());
-}
-
 void SC_LanguageClient::setCmdLinef(const char* fmt, ...)
 {
+	SC_StringBuffer & scratch = mHiddenClient->mScratch;
 	va_list ap;
 	va_start(ap, fmt);
-	mScratch.reset();
-	mScratch.vappendf(fmt, ap);
+	scratch.reset();
+	scratch.vappendf(fmt, ap);
 	va_end(ap);
-	setCmdLine(mScratch);
+	setCmdLine(scratch.getData());
 }
 
 void SC_LanguageClient::runLibrary(PyrSymbol* symbol)
@@ -314,12 +319,38 @@ void SC_LanguageClient::onInterpStartup()
 {
 }
 
+// runLibrary methods
+void SC_LanguageClient::interpretCmdLine() { runLibrary(s_interpretCmdLine); }
+void SC_LanguageClient::interpretPrintCmdLine() { runLibrary(s_interpretPrintCmdLine); }
+void SC_LanguageClient::runMain() { runLibrary(s_run); }
+void SC_LanguageClient::stopMain() { runLibrary(s_stop); }
+
+// locks
+void SC_LanguageClient::lock() { gLangMutex.lock(); }
+bool SC_LanguageClient::trylock() { return gLangMutex.try_lock(); }
+void SC_LanguageClient::unlock() { gLangMutex.unlock(); }
+
+void SC_LanguageClient::lockInstance() { gInstanceMutex.lock(); }
+void SC_LanguageClient::unlockInstance() { gInstanceMutex.unlock(); }
+
+extern bool compiledOK;
+
+const char* SC_LanguageClient::getName() const { return mHiddenClient->mName.c_str(); }
+
+FILE* SC_LanguageClient::getPostFile()           { return mHiddenClient->mPostFile; }
+void  SC_LanguageClient::setPostFile(FILE* file) { mHiddenClient->mPostFile = file; }
+
+bool SC_LanguageClient::isLibraryCompiled() { return compiledOK; }
+
+int SC_LanguageClient::run(int argc, char **argv)
+{
+	throw std::runtime_error("SC_LanguageClient::run only supported on terminal client");
+}
+
 // =====================================================================
 // library functions
 // =====================================================================
 
-// this is defined in PySCLang
-#ifndef PYSCLANG
 void setPostFile(FILE* file)
 {
 	SC_LanguageClient::instance()->setPostFile(file);
@@ -401,45 +432,12 @@ void initGUI()
 
 void initGUIPrimitives()
 {
-	SC_LanguageClient::s_interpretCmdLine = getsym("interpretCmdLine");
-	SC_LanguageClient::s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
-	SC_LanguageClient::s_run = getsym("run");
-	SC_LanguageClient::s_stop = getsym("stop");
-    s_tick = getsym("tick");
 	SC_LanguageClient::instance()->onLibraryStartup();
 }
-
-void initSCViewPrimitives();
-void initSCViewPrimitives()
-{
-}
-
-void initCocoaFilePrimitives();
-void initCocoaFilePrimitives()
-{
-}
-
-void initCocoaBridgePrimitives();
-void initCocoaBridgePrimitives()
-{
-}
-
-void initRendezvousPrimitives();
-void initRendezvousPrimitives()
-{
-}
-
-#if !defined(HAVE_SPEECH)
-void initSpeechPrimitives();
-void initSpeechPrimitives()
-{
-}
-#endif // HAVE_SPEECH
 
 long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2);
 long scMIDIout(int port, int len, int statushi, int chan, int data1, int data2)
 {
     return 0;
 }
-#endif
 // EOF

@@ -1,7 +1,6 @@
 + Server {
-	scope { arg numChannels, index = 0, bufsize = 4096, zoom = 1, rate = \audio;
-		numChannels = (numChannels ? 2).min(16);
-		zoom = zoom ? 1.0;
+	scope { arg numChannels, index = 0, bufsize = 4096, zoom = (1), rate = \audio;
+		numChannels = numChannels ?? { if (index == 0) { options.numOutputBusChannels } { 2 } };
 
 		if(scopeWindow.isNil) {
 			scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,

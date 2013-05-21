@@ -32,7 +32,7 @@
 namespace nova {
 
 typedef std::int32_t slot_index_t;
-typedef c_string slot_identifier_type;
+typedef symbol slot_identifier_type;
 
 namespace detail {
 
@@ -80,7 +80,7 @@ protected:
         slot_resolver_map.clear_and_dispose(boost::checked_deleter<map_type>());
     }
 
-    void register_slot(c_string const & str, slot_index_t i)
+    void register_slot(symbol const & str, slot_index_t i)
     {
         assert(not exists(str.c_str()));
         map_type * elem = new map_type(str, i);
@@ -164,7 +164,7 @@ class synth_definition:
     public detail::slot_resolver
 {
 public:
-    synth_definition(c_string const & name):
+    synth_definition(symbol const & name):
         named_hash_entry(name)
     {}
 

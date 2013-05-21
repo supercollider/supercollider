@@ -15,15 +15,16 @@ code::
 
 section:: Master Controls
 
-subsection:: /quit - quit program
+subsection:: /quit
 
-Exits the synthesis server.
+Quit program. Exits the synthesis server.
 
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: just before completion.
 ::
 
-subsection:: /notify - register to receive notifications from server
+subsection:: /notify
+Register to receive notifications from server
 table::
 ## strong::int:: || one to receive notifications, zero to stop receiving them.
 ::
@@ -33,9 +34,9 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
 ::
 
-subsection:: /status - query the status
+subsection:: /status
 
-Replies to sender with the following message:
+Query the status. Replies to sender with the following message:
 definitionlist::
 ## /status.reply || table::
 ## int || 1. unused.
@@ -53,14 +54,16 @@ note:: teletype::/status:: messages won't be posted, if the server is in teletyp
 
 ::
 
-subsection:: /cmd - plug-in defined command
+subsection:: /cmd
+Plug-in defined command.
 table::
 ## strong::string:: || command name
 ## strong::...:: || any arguments
 ::
 Commands are defined by plug-ins.
 
-subsection:: /dumpOSC - display incoming OSC messages
+subsection:: /dumpOSC
+Display incoming OSC messages.
 table::
 ## strong::int:: || code
 ::
@@ -74,7 +77,8 @@ table::
 ## 3 || print both the parsed and hexadecimal representations of the contents.
 ::
 
-subsection:: /sync - notify when async commands have completed.
+subsection:: /sync
+Notify when async commands have completed.
 table::
 ## strong::int:: || a unique number identifying this command.
 ::
@@ -84,11 +88,12 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong:: /synced, ID :: when complete.
 ::
 
-subsection:: /clearSched - clear all scheduled bundles.
+subsection:: /clearSched
 
-Removes all bundles from the scheduling queue.
+Clear all scheduled bundles. Removes all bundles from the scheduling queue.
 
-subsection:: /error - enable/disable error message posting
+subsection:: /error
+Enable/disable error message posting.
 table::
 ## strong::int:: || mode
 ::
@@ -112,7 +117,8 @@ Temporary error suppression may not affect asynchronous commands in every case.
 
 section:: Synth Definition Commands
 
-subsection:: /d_recv - receive a synth definition file
+subsection:: /d_recv
+Receive a synth definition file.
 table::
 ## strong::bytes:: || buffer of data.
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
@@ -123,7 +129,8 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
 ::
 
-subsection:: /d_load - load synth definition
+subsection:: /d_load
+Load synth definition.
 table::
 ## strong::string:: || pathname of file. Can be a pattern like code:: "synthdefs/perc-*" ::
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
@@ -134,7 +141,8 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
 ::
 
-subsection:: /d_loadDir - load a directory of synth definitions
+subsection:: /d_loadDir
+Load a directory of synth definitions.
 table::
 ## strong::string:: || pathname of directory.
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
@@ -145,7 +153,8 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
 ::
 
-subsection:: /d_free - delete synth definition
+subsection:: /d_free
+Delete synth definition.
 table::
 ## N * strong::string:: || synth def name
 ::
@@ -154,14 +163,16 @@ Removes a synth definition. The definition is removed immediately, and does not 
 
 section:: Node Commands
 
-subsection:: /n_free - delete a node.
+subsection:: /n_free
+Delete a node.
 table::
 ## N * strong::int:: || node ID
 ::
 
 Stops a node abruptly, removes it from its group, and frees its memory. A list of node IDs may be specified. Using this method can cause a click if the node is not silent at the time it is freed.
 
-subsection:: /n_run - turn node on or off
+subsection:: /n_run
+Turn node on or off.
 table::
 ## N * || table::
     ## strong::int:: || node ID
@@ -174,7 +185,8 @@ list::
 ::
 Using this method to start and stop nodes can cause a click if the node is not silent at the time run flag is toggled.
 
-subsection:: /n_set - set a node's control value(s)
+subsection:: /n_set
+Set a node's control value(s).
 table::
 ## strong::int:: || node ID
 ## N * || table::
@@ -187,8 +199,8 @@ Takes a list of pairs of control indices and values and sets the controls to tho
 
 This message now supports array type tags ($[ and $]) in the control/value component of the OSC message.  Arrayed control values are applied in the manner of n_setn (i.e., sequentially starting at the indexed or named control).
 
-subsection:: /n_setn - set ranges of a node's control value(s)
-
+subsection:: /n_setn
+Set ranges of a node's control value(s).
 table::
 ## strong::int:: || node ID
 ## N * || table::
@@ -200,7 +212,8 @@ table::
 
 Set contiguous ranges of control indices to sets of values. For each range, the starting control index is given followed by the number of controls to change, followed by the values. If the node is a group, then it sets the controls of every node in the group.
 
-subsection:: /n_fill - fill ranges of a node's control value(s)
+subsection:: /n_fill
+Fill ranges of a node's control value(s).
 table::
 ## strong::int:: || node ID
 ## N * || table::
@@ -212,7 +225,8 @@ table::
 
 Set contiguous ranges of control indices to single values. For each range, the starting control index is given followed by the number of controls to change, followed by the value to fill. If the node is a group, then it sets the controls of every node in the group.
 
-subsection:: /n_map - map a node's controls to read from a bus
+subsection:: /n_map
+Map a node's controls to read from a bus.
 table::
 ## strong::int:: || node ID
 ## N * || table::
@@ -223,7 +237,8 @@ table::
 
 Takes a list of pairs of control names or indices and bus indices and causes those controls to be read continuously from a global control bus. If the node is a group, then it maps the controls of every node in the group. If the control bus index is -1 then any current mapping is undone. Any n_set, n_setn and n_fill command will also unmap the control.
 
-subsection:: /n_mapn - map a node's controls to read from buses
+subsection:: /n_mapn
+Map a node's controls to read from buses.
 table::
 ## strong::int:: || node ID
 ## N * || table::
@@ -235,7 +250,8 @@ table::
 
 Takes a list of triplets of control names or indices, bus indices, and number of controls to map and causes those controls to be mapped sequentially to buses. If the node is a group, then it maps the controls of every node in the group. If the control bus index is -1 then any current mapping is undone. Any n_set, n_setn and n_fill command will also unmap the control.
 
-subsection:: /n_mapa - map a node's controls to read from an audio bus
+subsection:: /n_mapa
+Map a node's controls to read from an audio bus.
 table::
 ## strong::int:: || node ID
 ## N * || table::
@@ -246,7 +262,8 @@ table::
 
 Takes a list of pairs of control names or indices and audio bus indices and causes those controls to be read continuously from a global audio bus. If the node is a group, then it maps the controls of every node in the group. If the audio bus index is -1 then any current mapping is undone. Any n_set, n_setn and n_fill command will also unmap the control. For the full audio rate signal, the argument must have its rate set to \ar.
 
-subsection:: /n_mapan - map a node's controls to read from audio buses
+subsection:: /n_mapan
+Map a node's controls to read from audio buses.
 table::
 ## strong:: int:: || node ID
 ## N * || table::
@@ -258,7 +275,8 @@ table::
 
 Takes a list of triplets of control names or indices, audio bus indices, and number of controls to map and causes those controls to be mapped sequentially to buses. If the node is a group, then it maps the controls of every node in the group. If the audio bus index is -1 then any current mapping is undone. Any n_set, n_setn and n_fill command will also unmap the control. For the full audio rate signal, the argument must have its rate set to \ar.
 
-subsection:: /n_before - place a node before another
+subsection:: /n_before
+Place a node before another.
 table::
 ## N * || table::
     ## strong::int:: || the ID of the node to place (A)
@@ -267,7 +285,8 @@ table::
 ::
 Places node A in the same group as node B, to execute immediately before node B.
 
-subsection:: /n_after - place a node after another
+subsection:: /n_after
+Place a node after another.
 table::
 ## N * || table::
     ## strong::int:: || the ID of the node to place (A)
@@ -276,21 +295,24 @@ table::
 ::
 Places node A in the same group as node B, to execute immediately after node B.
 
-subsection:: /n_query - get info about a node
+subsection:: /n_query
+Get info about a node.
 table::
 ## N * strong::int:: || node ID
 ::
 The server sends an /n_info message for each node to registered clients.
 See Node Notifications below for the format of the /n_info message.
 
-subsection:: /n_trace - trace a node
+subsection:: /n_trace
+Trace a node.
 table::
 ## N * strong::int:: || node IDs
 ::
 
 Causes a synth to print out the values of the inputs and outputs of its unit generators for one control period. Causes a group to print the node IDs and names of each node in the group for one control period.
 
-subsection:: /n_order - move and order a list of nodes
+subsection:: /n_order
+Move and order a list of nodes.
 table::
 ## strong::int:: || add action (0,1,2, 3 or 4 see below)
 ## strong::int:: || add target ID
@@ -309,7 +331,8 @@ definitionlist::
 
 section:: Synth Commands
 
-subsection:: /s_new - create a new synth
+subsection:: /s_new
+Create a new synth.
 table::
 ## strong::string:: || synth definition name
 ## strong::int:: || synth ID
@@ -340,7 +363,8 @@ If you use a node ID of -1 for any other command, such as strong::/n_map::, then
 
 This message now supports array type tags ($[ and $]) in the control/value component of the OSC message.  Arrayed control values are applied in the manner of n_setn (i.e., sequentially starting at the indexed or named control). See the link::Guides/NodeMessaging:: helpfile.
 
-subsection:: /s_get - get control value(s)
+subsection:: /s_get
+Get control value(s).
 table::
 ## strong::int:: || synth ID
 ## N * strong::int:: or strong::string:: || a control index or name
@@ -348,7 +372,8 @@ table::
 
 Replies to sender with the corresponding strong::/n_set:: command.
 
-subsection:: /s_getn - get ranges of control value(s)
+subsection:: /s_getn
+Get ranges of control value(s).
 table::
 ## strong::int:: || synth ID
 ## N * || table::
@@ -358,7 +383,8 @@ table::
 ::
 Get contiguous ranges of controls. Replies to sender with the corresponding strong::/n_setn:: command.
 
-subsection:: /s_noid - auto-reassign synth's ID to a reserved value
+subsection:: /s_noid
+Auto-reassign synth's ID to a reserved value.
 table::
 ## N * strong::int:: || synth IDs
 ::
@@ -367,7 +393,8 @@ This command is used when the client no longer needs to communicate with the syn
 
 section:: Group Commands
 
-subsection:: /g_new - create a new group
+subsection:: /g_new
+Create a new group.
 table::
 ## N * || table::
     ## strong::int:: || new group ID
@@ -389,7 +416,8 @@ definitionlist::
 ::
 Multiple groups may be created in one command by adding arguments.
 
-subsection:: /p_new - create a new parallel group
+subsection:: /p_new
+Create a new parallel group.
 table::
 ## N * || table::
     ## strong::int:: || new group ID
@@ -410,7 +438,8 @@ definitionlist::
 ::
 Multiple groups may be created in one command by adding arguments.
 
-subsection:: /g_head - add node to head of group
+subsection:: /g_head
+Add node to head of group.
 table::
 ## N * || table::
     ## strong::int:: || group ID
@@ -420,7 +449,8 @@ table::
 
 Adds the node to the head (first to be executed) of the group.
 
-subsection:: /g_tail - add node to tail of group
+subsection:: /g_tail
+Add node to tail of group.
 table::
 ## N * || table::
     ## strong::int:: || group ID
@@ -429,19 +459,22 @@ table::
 ::
 Adds the node to the tail (last to be executed) of the group.
 
-subsection:: /g_freeAll - delete all nodes in a group.
+subsection:: /g_freeAll
+Delete all nodes in a group.
 table::
 ## N * strong::int:: || group ID(s)
 ::
 Frees all nodes in the group. A list of groups may be specified.
 
-subsection:: /g_deepFree - free all synths in this group and all its sub-groups.
+subsection:: /g_deepFree
+Free all synths in this group and all its sub-groups.
 table::
 ## N * strong::int:: || group ID(s)
 ::
 Traverses all groups below this group and frees all the synths. Sub-groups are not freed. A list of groups may be specified.
 
-subsection:: /g_dumpTree - post a representation of this group's node subtree.
+subsection:: /g_dumpTree
+Post a representation of this group's node subtree.
 table::
 ## N * || table::
     ## strong::int:: || group ID
@@ -451,7 +484,8 @@ table::
 
 Posts a representation of this group's node subtree, i.e. all the groups and synths contained within it, optionally including the current control values for synths.
 
-subsection:: /g_queryTree - get a representation of this group's node subtree.
+subsection:: /g_queryTree
+Get a representation of this group's node subtree.
 table::
 ## N * || table::
     ## strong::int:: || group ID
@@ -481,7 +515,8 @@ N.B. The order of nodes corresponds to their execution order on the server. Thus
 
 section:: Unit Generator Commands
 
-subsection:: /u_cmd - send a command to a unit generator
+subsection:: /u_cmd
+Send a command to a unit generator.
 table::
 ## strong::int:: || node ID
 ## strong::int:: || unit generator index
@@ -494,7 +529,8 @@ section:: Buffer Commands
 
 Buffers are stored in a global array, indexed by integers starting at zero.
 
-subsection:: /b_alloc - allocate buffer space.
+subsection:: /b_alloc
+Allocate buffer space.
 table::
 ## strong::int:: || buffer number
 ## strong::int:: || number of frames
@@ -506,7 +542,8 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
 ::
 
-subsection:: /b_allocRead - allocate buffer space and read a sound file.
+subsection:: /b_allocRead
+Allocate buffer space and read a sound file.
 table::
 ## strong::int:: || buffer number
 ## strong::string:: || path name of a sound file.
@@ -519,7 +556,8 @@ definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
 ::
 
-subsection:: /b_allocReadChannel - allocate buffer space and read channels from a sound file.
+subsection:: /b_allocReadChannel
+Allocate buffer space and read channels from a sound file.
 table::
 ## strong::int:: || buffer number
 ## strong::string:: || path name of a sound file
@@ -538,7 +576,8 @@ definitionlist::
 ::
 
 
-subsection:: /b_read - read sound file data into an existing buffer.
+subsection:: /b_read
+Read sound file data into an existing buffer.
 table::
 ## strong::int:: || buffer number
 ## strong::string:: || path name of a sound file.
@@ -555,7 +594,8 @@ definitionlist::
 ::
 
 
-subsection:: /b_readChannel - read sound file channel data into an existing buffer
+subsection:: /b_readChannel
+Read sound file channel data into an existing buffer.
 table::
 ## strong::int:: || buffer number
 ## strong::string:: || path name of a sound file
@@ -576,7 +616,8 @@ definitionlist::
 ::
 
 
-subsection:: /b_write - write sound file data.
+subsection:: /b_write
+Write sound file data.
 table::
 ## strong::int:: || buffer number
 ## strong::string:: || path name of a sound file.
@@ -601,7 +642,8 @@ definitionlist::
 ::
 
 
-subsection:: /b_free - free buffer data.
+subsection:: /b_free
+Free buffer data.
 table::
 ## strong::int:: || buffer number
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
@@ -612,7 +654,8 @@ definitionlist::
 ::
 
 
-subsection:: /b_zero - zero sample data
+subsection:: /b_zero
+Zero sample data.
 table::
 ## strong::int:: || buffer number
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
@@ -623,7 +666,8 @@ definitionlist::
 ::
 
 
-subsection:: /b_set - set sample value(s)
+subsection:: /b_set
+Set sample value(s).
 table::
 ## strong::int:: || buffer number
 ## N * || table::
@@ -633,7 +677,8 @@ table::
 ::
 Takes a list of pairs of sample indices and values and sets the samples to those values.
 
-subsection:: /b_setn - set ranges of sample value(s)
+subsection:: /b_setn
+Set ranges of sample value(s).
 table::
 ## strong::int:: || buffer number
 ## N * || table::
@@ -644,7 +689,8 @@ table::
 ::
 Set contiguous ranges of sample indices to sets of values. For each range, the starting sample index is given followed by the number of samples to change, followed by the values.
 
-subsection:: /b_fill - fill ranges of sample value(s)
+subsection:: /b_fill
+Fill ranges of sample value(s).
 table::
 ## strong::int:: || buffer number
 ## N * || table::
@@ -656,7 +702,8 @@ table::
 Set contiguous ranges of sample indices to single values. For each range, the starting sample index is given followed by the number of samples to change, followed by the value to fill. This is only meant for setting a few samples, not whole buffers or large sections.
 
 
-subsection:: /b_gen - call a command to fill a buffer
+subsection:: /b_gen
+Call a command to fill a buffer.
 table::
 ## strong::int:: || buffer number
 ## strong::string:: || command name
@@ -668,7 +715,8 @@ definitionlist::
 ::
 
 
-subsection:: /b_close - close soundfile
+subsection:: /b_close
+Close soundfile.
 table::
 ## strong::int:: || buffer number
 ::
@@ -678,7 +726,8 @@ definitionlist::
 ::
 
 
-subsection:: /b_query - get buffer info
+subsection:: /b_query
+Get buffer info.
 table::
 ## N * strong::int:: || buffer number(s)
 ::
@@ -693,7 +742,8 @@ table::
     ::
 ::
 
-subsection:: /b_get - get sample value(s)
+subsection:: /b_get
+Get sample value(s).
 table::
 ## strong::int:: || buffer number
 ## N * strong::int:: || a sample index
@@ -701,7 +751,8 @@ table::
 
 Replies to sender with the corresponding strong::/b_set:: command.
 
-subsection:: /b_getn - get ranges of sample value(s)
+subsection:: /b_getn
+Get ranges of sample value(s).
 table::
 ## strong::int:: || buffer number
 ## N * || table::
@@ -715,7 +766,8 @@ Get contiguous ranges of samples. Replies to sender with the corresponding stron
 
 section:: Control Bus Commands
 
-subsection:: /c_set - set bus value(s)
+subsection:: /c_set
+Set bus value(s).
 table::
 ## N * || table::
     ## strong::int:: || a bus index
@@ -724,7 +776,8 @@ table::
 ::
 Takes a list of pairs of bus indices and values and sets the buses to those values.
 
-subsection:: /c_setn - set ranges of bus value(s)
+subsection:: /c_setn
+Set ranges of bus value(s).
 table::
 ## N * || table::
     ## strong::int:: || starting bus index
@@ -736,7 +789,8 @@ table::
 ::
 Set contiguous ranges of buses to sets of values. For each range, the starting bus index is given followed by the number of channels to change, followed by the values.
 
-subsection:: /c_fill - fill ranges of bus value(s)
+subsection:: /c_fill
+Fill ranges of bus value(s).
 table::
 ## N * || table::
     ## strong::int:: || starting bus index
@@ -746,13 +800,15 @@ table::
 ::
 Set contiguous ranges of buses to single values. For each range, the starting sample index is given followed by the number of buses to change, followed by the value to fill.
 
-subsection:: /c_get - get bus value(s)
+subsection:: /c_get
+Get bus value(s).
 table::
 ## N * strong::int:: || a bus index
 ::
 Takes a list of buses and replies to sender with the corresponding strong::/c_set:: command.
 
-subsection:: /c_getn - get ranges of bus value(s)
+subsection:: /c_getn
+Get ranges of bus value(s).
 table::
 ## N * || table::
     ## strong::int:: || starting bus index
@@ -764,8 +820,8 @@ Get contiguous ranges of buses. Replies to sender with the corresponding strong:
 
 section:: Non Real Time Mode Commands
 
-subsection:: /nrt_end - end real time mode, close file
-not yet implemented
+subsection:: /nrt_end
+End real time mode, close file.  Not yet implemented.
 
 This message should be sent in a bundle in non real time mode.
 The bundle timestamp will establish the ending time of the file.
@@ -777,20 +833,23 @@ section:: Replies to Commands
 
 These messages are sent by the server in reponse to some commands.
 
-subsection:: /done - an asynchronous message has completed.
+subsection:: /done
+An asynchronous message has completed.
 table::
 ## strong::string:: || the name of the command
 ::
 Sent in response to all asynchronous commands. Sent only to the sender of the original message.
 
-subsection:: /fail - an error occurred.
+subsection:: /fail
+An error occurred.
 table::
 ## strong::string:: || the name of the command
 ## strong::string:: || the error message.
 ::
 There was a problem. Sent only to the sender of the original message.
 
-subsection:: /late - a command was received too late.
+subsection:: /late
+A command was received too late.
 not yet implemented
 table::
 ## strong::int:: || the high 32 bits of the original time stamp.
@@ -816,29 +875,36 @@ table::
 ## strong::int:: || the ID of the tail node, -1 if there is no tail node.
 ::
 
-subsection:: /n_go - a node was started
+subsection:: /n_go
+A node was started.
 This command is sent to all registered clients when a node is created.
 
-subsection:: /n_end - a node ended
+subsection:: /n_end
+A node ended.
 This command is sent to all registered clients when a node ends and is deallocated.
 
-subsection:: /n_off - a node was turned off
+subsection:: /n_off
+A node was turned off.
 This command is sent to all registered clients when a node is turned off.
 
-subsection:: /n_on - a node was turned on
+subsection:: /n_on
+A node was turned on.
 This command is sent to all registered clients when a node is turned on.
 
-subsection:: /n_move - a node was moved
+subsection:: /n_move
+A node was moved.
 This command is sent to all registered clients when a node is moved.
 
-subsection:: /n_info - reply to /n_query
+subsection:: /n_info
+Reply to /n_query.
 This command is sent to all registered clients in response to an strong::/n_query:: command.
 
 
 section:: Trigger Notification
 These messages are sent as notification of some event to all clients who have registered via the strong::/notify:: command.
 
-subsection:: /tr - a trigger message
+subsection:: /tr
+A trigger message.
 table::
 ## strong::int:: || node ID
 ## strong::int:: || trigger ID

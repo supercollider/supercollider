@@ -46,18 +46,18 @@ ServerMeterView{
 		(numIns > 0).if({
 			// ins
 			StaticText(view, Rect(10, 5, 100, 15))
-				.font_(Font.sansSerif(10).boldVariant)
-				.string_("Inputs");
+			.font_(Font.sansSerif(10).boldVariant)
+			.string_("Inputs");
 			inmeters = Array.fill( numIns, { arg i;
 				var comp;
 				comp = CompositeView(innerView, Rect(0,0,meterWidth,195)).resize_(5);
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
-					.font_(Font.sansSerif(9).boldVariant)
-					.string_(i.asString);
+				.font_(Font.sansSerif(9).boldVariant)
+				.string_(i.asString);
 				levelIndic = LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
-					.drawsPeak_(true)
-					.numTicks_(9)
-					.numMajorTicks_(3);
+				.drawsPeak_(true)
+				.numTicks_(9)
+				.numMajorTicks_(3);
 			});
 		});
 
@@ -77,18 +77,18 @@ ServerMeterView{
 		// outs
 		(numOuts > 0).if({
 			StaticText(view, Rect(10 + if(numIns > 0 , ((numIns + 2) * (meterWidth + gapWidth)), 0), 5, 100, 15))
-				.font_(Font.sansSerif(10).boldVariant)
-				.string_("Outputs");
+			.font_(Font.sansSerif(10).boldVariant)
+			.string_("Outputs");
 			outmeters = Array.fill( numOuts, { arg i;
 				var comp;
 				comp = CompositeView(innerView, Rect(0,0,meterWidth,195));
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
-					.font_(Font.sansSerif(9).boldVariant)
-					.string_(i.asString);
+				.font_(Font.sansSerif(9).boldVariant)
+				.string_(i.asString);
 				levelIndic = LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
-					.drawsPeak_(true)
-					.numTicks_(9)
-					.numMajorTicks_(3);
+				.drawsPeak_(true)
+				.numTicks_(9)
+				.numMajorTicks_(3);
 			});
 		});
 
@@ -151,9 +151,11 @@ ServerMeterView{
 							var peakLevel = msg.at(baseIndex);
 							var rmsValue  = msg.at(baseIndex + 1);
 							var meter = inmeters.at(channel);
-							if (meter.isClosed.not) {
-								meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1, \min);
-								meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
+							if (meter.notNil) {
+								if (meter.isClosed.not) {
+									meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1, \min);
+									meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
+								}
 							}
 						}
 					} { |error|
@@ -173,9 +175,11 @@ ServerMeterView{
 							var peakLevel = msg.at(baseIndex);
 							var rmsValue  = msg.at(baseIndex + 1);
 							var meter = outmeters.at(channel);
-							if (meter.isClosed.not) {
-								meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1, \min);
-								meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
+							if (meter.notNil) {
+								if (meter.isClosed.not) {
+									meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1, \min);
+									meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
+								}
 							}
 						}
 					} { |error|
@@ -219,7 +223,7 @@ ServerMeterView{
 	}
 
 	remove{
-	 	view.remove
+		view.remove
 	}
 }
 
@@ -235,8 +239,8 @@ ServerMeter{
 		numOuts = numOuts ?? { server.options.numOutputBusChannels };
 
 		window = Window.new(server.name ++ " levels (dBFS)",
-							Rect(5, 305, ServerMeterView.getWidth(numIns,numOuts), ServerMeterView.height),
-							false);
+			Rect(5, 305, ServerMeterView.getWidth(numIns,numOuts), ServerMeterView.height),
+			false);
 
 		meterView = ServerMeterView(server, window, 0@0, numIns, numOuts);
 		meterView.view.keyDownAction_({ arg view, char, modifiers;

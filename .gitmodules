@@ -3,4 +3,4 @@
 	url = git://github.com/timblechmann/nova-simd.git
 [submodule "external_libraries/nova-tt"]
 	path = external_libraries/nova-tt
-	url = git://supercollider.git.sourceforge.net/gitroot/supercollider/nova-tt
+	url = git://github.com/timblechmann/nova-tt.git

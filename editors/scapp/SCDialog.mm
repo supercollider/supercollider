@@ -72,7 +72,7 @@
 	int count = [urls count];
 
 	VMGlobals *g = gMainVMGlobals;
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	PyrObject* array = newPyrArray(g->gc, count, 0, true);
 	for (i = 0; i < count; i++)
 	{
@@ -89,7 +89,7 @@
 	SetObject(&g->classvars->slots[classVarIndex+0], array);
 	g->gc->GCWrite(g->classvars, array);
 
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 
 	[self ok];
 }
@@ -113,10 +113,10 @@
 		return;
 	}
 
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	memcpy(result->slots,[path cStringUsingEncoding:[NSString defaultCStringEncoding]], size);
 	result->size = size;
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 
 	[self ok];
 }
@@ -141,38 +141,38 @@
 // all responses
 -(void)ok
 {
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 		PyrSymbol *method = getsym("ok");
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, receiver );
         runInterpreter(g, method, 1);
         g->canCallOS = false;
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 
 -(void)cancel
 {
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 		PyrSymbol *method = getsym("cancel");
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, receiver );
         runInterpreter(g, method, 1);
         g->canCallOS = false;
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 
 -(void)error
 {
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 		PyrSymbol *method = getsym("errir");
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, receiver );
         runInterpreter(g, method, 1);
         g->canCallOS = false;
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 
 

@@ -229,7 +229,7 @@ Views and windows can be assigned strong::actions:: that they will perform whene
 
 Objects can also be given to views and windows to evalute on events that are not a direct result of user's interaction, but convey useful information about the view's operation and the state it moved in. In this case they are often differentiated from actions and called strong::hooks::.
 
-Here, we will give an overview of different kinds of actions and hooks. See link::Classes/View#actions_in_general:: and following sections for precise explanation of how to assign and make use of them.
+Here, we will give an overview of different kinds of actions and hooks. See link::Classes/View#Actions in general:: and following sections for precise explanation of how to assign and make use of them.
 
 
 subsection:: Default actions
@@ -252,7 +252,7 @@ All the views can be assigned actions to specific mouse and keyboard events, no 
 
 You can assign actions to strong::mouse events:: generated when the mouse pointer enters the space of a view, when it moves over them, and when a mouse button is pressed or released.
 
-See link::Classes/View#mouse_actions#View: Mouse Actions:: for details.
+See link::Classes/View#Mouse actions:: for details.
 
 In the following example the StaticText will report whether the Button is pressed or released.
 
@@ -266,7 +266,7 @@ b.mouseUpAction = { t.string = "Button released" };
 
 You can assign actions to strong::keyboard events:: generated whenever a key is pressed or released while the view has keyboard focus. Keyboard focus is a state of a view in which it has exclusive priority to respond to keyboard events. A view that has keyboard focus typically in a way visually indicates so. On most platforms, pressing the Tab key will switch the keyboard focus between views in the active window and clicking on a view will give it focus.
 
-See link::Classes/View#key_actions#View: Key Actions:: for details.
+See link::Classes/View#Key actions:: for details.
 
 Typing text into any of the TextFields in the following example will change the color of the rectangle bellow, for each TextField a different color.
 
@@ -291,7 +291,7 @@ When a mouse button is pressed on a view together with Cmd(Mac OS) or Ctrl(Other
 
 It is possible to customize what object a view exports when dragged from and how a view reacts to objects dropped by assigning custom drag and drop actions.
 
-See link::Classes/View#drag_and_drop:: for details.
+See link::Classes/View#Drag and drop:: for details.
 
 code::
 (

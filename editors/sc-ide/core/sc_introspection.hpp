@@ -45,10 +45,10 @@ namespace ScLanguage {
 
 typedef boost::flyweight<QString> FlyweightString;
 
-typedef std::map<QString, QSharedPointer<class Class> > ClassMap;
-typedef std::multimap<QString, QSharedPointer<class Method> > MethodMap;
-typedef QVector<class Argument> ArgumentVector;
-typedef QVector<class Method*> MethodVector;
+typedef std::map<QString, QSharedPointer<struct Class> > ClassMap;
+typedef std::multimap<QString, QSharedPointer<struct Method> > MethodMap;
+typedef QVector<struct Argument> ArgumentVector;
+typedef QVector<struct Method*> MethodVector;
 
 struct Argument {
     FlyweightString name;

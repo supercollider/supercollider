@@ -1,4 +1,4 @@
-title:: PG_06e_Language_Control
+title:: Pattern Guide 06e: Language Control
 summary:: Patterns that mimic some language-side control structures
 related:: Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns, Tutorials/A-Practical-Guide/PG_06f_Server_Control
 categories:: Streams-Patterns-Events>A-Practical-Guide

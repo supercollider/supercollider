@@ -5,16 +5,55 @@ related::Classes/AppClock, Classes/SystemClock
 
 DESCRIPTION::
 
-TempoClock is a scheduler like link::Classes/SystemClock::, but it schedules relative to a strong::tempo:: in beats per second.
+TempoClock is a scheduler like link::Classes/SystemClock::, but it schedules relative to a
+strong::tempo:: in beats per second.
+
+See link::Classes/Clock:: for general explanation of how clocks operate.
 
 CLASSMETHODS::
 
 private::initClass
 
 method::new
-Creates a new TempoClock scheduler with the given tempo and starting times. If not supplied, strong::tempo:: defaults to one, strong::beats:: defaults to zero and strong::seconds:: defaults to the current elapsed time since SuperCollider startup. The default queueSize is 256, see link::#-queue::.
+Creates a new instance of TempoClock.
+
+argument:: tempo
+The initial link::#-tempo#tempo::. Defaults to code::1::.
+
+argument:: beats
+The time in beats, corresponding to the reference time given with the code::seconds:: argument.
+Defaults to code::0::.
+
+argument:: seconds
+The reference time in seconds, to which the code::beats:: argument corresponds.
+Defaults to the current Thread's logical time
+(see link::Classes/Thread#-seconds::).
+
+argument:: queueSize
+The storage size of the scheduling queue. Each scheduled item takes 2 counts of space, so this size
+divided by 2 gives the amount of items that can be scheduled at a time. See also link::#-queue::.
+
+discussion::
+The TempoClock will be created strong::as if:: it started counting beats at the time given in the
+code::seconds:: argument with the starting amount given in the code::beats:: argument. The current
+count of beats will thus be equal to that starting amount plus the amount of beats that would be
+counted since the given reference time in seconds, according to the given tempo.
+
+The default arguments create a TempoClock that starts counting beats with code::0:: at the current
+logical time.
+
 code::
-t = TempoClock.new(1, 0, Main.elapsedTime.ceil);
+// Create a TempoClock that starts counting beats with 5 now.
+(
+t = TempoClock.new(2, 5);
+"current beats:" + t.beats;
+)
+
+// Create a TempoClock, as if it started counting beats 5 seconds ago with 0.
+(
+t = TempoClock.new(2, 0, thisThread.seconds - 5);
+"current beats:" + t.beats;
+)
 ::
 
 method::default
@@ -23,7 +62,10 @@ code::
 TempoClock.default.beats // beats since default TempoClock was started
 ::
 
-subsection::Methods that allow TempoClock to act as TempoClock.default
+subsection:: Forwarding to the default instance
+
+The following methods only forward to the link::#*default#default instance::, allowing you to use
+the TempoClock class itself in place of code::TempoClock.default::.
 
 method::stop, play, sched, schedAbs, clear, tempo, etempo, beats, beats2secs, secs2beats, nextTimeOnGrid, timeToNextBeat, setTempoAtBeat, setTempoAtSec, setMeterAtBeat, beatsPerBar, baseBarBeat, baseBar, playNextBar, beatDur, elapsedBeats, beats2bars, bars2beats, bar, nextBar, beatInBar
 
@@ -51,15 +93,59 @@ method::permanent
 Sets or gets a link::Classes/Boolean:: value indicating whether the clock will survive cmd-period. If false the clock is stopped (and thus removed) on cmd-period. If true the clock survives cmd-period. It is false by default.
 
 method::beats
-Returns the appropriate beat time of the clock from any thread. If the receiver is the clock of the current thread, this returns the current logical time: code::thisThread.beats::. If the receiver is not the current thread's clock then this translates the current thread's logical time in seconds to this clock's logical time in beats.
+
+Gets or sets the current logical time in beats according to this clock.
+
+When strong::getting:: code::beats::, if this clock is the current Thread's
+link::Classes/Thread#-clock#associated clock::, the Thread's own
+link::Classes/Thread#-beats#time in beats:: is returned, otherwise the Thread's
+link::Classes/Thread#-seconds#time in seconds:: converted to beats according to this
+clock is returned.
+
+After strong::changing:: code::beats:: towards the strong::future::, the clock will
+immediately perform all tasks scheduled until the new time. Likewise, when changing
+code::beats:: towards the strong::past::, already scheduled tasks will be postponed, so
+they will still be performed at the scheduled time in beats.
+
+note::
+When changing code::beats::, you are only changing the clocks's notion of time, and not
+the current Thread's link::Classes/Thread#-beats#logical time::, which will stay the
+same while the Thread is running. Hence, if this clock is the current Thread's
+link::Classes/Thread#-clock#associated clock::, and you ask the clock for time in beats
+just after changing it, you will see no effect. Nevertheless, the effect will be visible
+immediately on a different Thread.
+::
+
 
 method::schedAbs
-Schedules a function to be evaluated at a particular strong::beat::. If the function returns an link::Classes/Integer:: or a link::Classes/Float::, it will be re-evaluated at the logical time plus the returned value. The function receives a number of default arguments, see link::#-play:: example below.
+
+Schedules a task to be performed at a particular time in strong::beats::.
+
+When the scheduling time is up, the task's code::awake:: method is called. If the method
+returns a number, the task will be rescheduled for the time equal to the last scheduling
+time plus the returned value.
+
+See also: link::Classes/Clock#Scheduling::, link::Classes/Object#-awake::.
+
 
 method::sched
-Schedules a function to be evaluated strong::delta:: beats from the current logical time in this clock. If the receiver is the clock of the current thread, the delta is applied to the current logical time. If the receiver is not the current thread's clock then the delta is applied to the clock's elapsed time.
+
+Schedules a task to be performed code::delta:: amount of strong::beats:: after the
+current Thread's logical time. If this clock is the current Thread's
+link::Classes/Thread#-clock#associated clock::, the Thread's
+link::Classes/Thread#-beats#time in beats:: is used, otherwise the Thread's
+link::Classes/Thread#-seconds#time in seconds:: is converted to beats according to this
+clock's tempo and time of origin.
+
+When the scheduling time is up, the task's code::awake:: method is called. If the method
+returns a number, the task will be rescheduled for the time equal to the last scheduling
+time plus the returned value.
+
+See also: link::Classes/Clock#Scheduling::, link::Classes/Object#-awake::.
+
 
 method::play
+
 Plays task (a function) at the next beat, where strong::quant:: is 1 by default. Shortcut for link::#-schedAbs::; see link::#-seconds:: and link::#-nextTimeOnGrid:: for further details on time and quant.
 code::
 t= TempoClock.default;

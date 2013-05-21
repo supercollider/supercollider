@@ -843,7 +843,7 @@ public:
    * ...
    * boost::asio::ip::tcp::socket::keep_alive option;
    * socket.get_option(option);
-   * bool is_set = option.get();
+   * bool is_set = option.value();
    * @endcode
    */
   template <typename GettableSocketOption>
@@ -891,7 +891,7 @@ public:
    * {
    *   // An error occurred.
    * }
-   * bool is_set = option.get();
+   * bool is_set = option.value();
    * @endcode
    */
   template <typename GettableSocketOption>

@@ -452,12 +452,12 @@ g.close;
 ::
 
 method::split
-Returns an Array of Strings split at the separator. The separator is a link::Classes/Char::, a link::Classes/String::, or anything that can be converted into a string. It is strong::not:: included in the output array. The default separator is $/, handy for Unix paths.
+Returns an Array of Strings split at the separator. The separator is a link::Classes/Char::, and is strong::not:: included in the output array.
 code::
-"This/could/be/a/Unix/path".split;
 "These are several words".split($ );
-"These are several words".split(" ");
-"accgcagcttag".split("gc");
+
+// The default separator $/ is handy for Unix paths.
+"This/could/be/a/Unix/path".split;
 ::
 
 subsection:: Stream support

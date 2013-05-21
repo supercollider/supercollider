@@ -237,7 +237,7 @@ void PackFFT_next(PackFFT *unit, int inNumSamples)
 	}
 	LOCK_SNDBUF(buf);
 
-	int numbins = buf->samples - 2 >> 1;
+	int numbins = (buf->samples - 2) >> 1;
 	/////////////////// cf PV_GET_BUF
 
 //RM	Print("PackFFT_next: fbufnum = %g\n", fbufnum);

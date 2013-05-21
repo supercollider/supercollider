@@ -25,8 +25,8 @@
 #include "PyrKernel.h"
 #include "GC.h"
 #include "VMGlobals.h"
+#include "../../lang/LangSource/PyrSched.h"
 
-extern pthread_mutex_t gLangMutex;
 extern PyrSymbol *s_closed;
 
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1060
@@ -87,7 +87,7 @@ extern PyrSymbol *s_closed;
     atIndex: (unsigned) charIndex;
 - (IBAction) createLink: (id) sender;
 
-- (void)sendSelection: (const char*) methodName;
+- (void)sendSelection: (NSString*) methodName;
 
 - (NSString *)windowNibName;
 

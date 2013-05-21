@@ -84,6 +84,7 @@ public:
         GoHome,
         ZoomIn,
         ZoomOut,
+        ResetZoom,
         Evaluate,
 
         ActionCount
@@ -105,10 +106,12 @@ public slots:
     void goHome();
     void zoomIn();
     void zoomOut();
+    void resetZoom();
     void evaluateSelection();
     void findText( const QString & text, bool backwards = false );
     bool openDocumentation();
     void openDefinition();
+    void openCommandLine();
     void findReferences();
 
 signals:
@@ -158,13 +161,6 @@ class HelpBrowserDocklet : public Docklet
 public:
     explicit HelpBrowserDocklet( QWidget *parent = 0 );
     HelpBrowser *browser() { return mHelpBrowser; }
-
-    void raiseAndFocus()
-    {
-        show();
-        raise();
-        mHelpBrowser->setFocus();
-    }
 
 private slots:
     void onInterpreterStart() {

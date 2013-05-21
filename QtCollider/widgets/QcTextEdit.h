@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -33,6 +33,7 @@ class QcTextEdit : public QTextEdit, QcHelper
   Q_PROPERTY( int selectionStart READ selectionStart );
   Q_PROPERTY( int selectionSize READ selectionSize );
   Q_PROPERTY( QString selectedString READ selectedString WRITE replaceSelectedText );
+  Q_PROPERTY( QString currentLine READ currentLine );
   Q_PROPERTY( QFont textFont READ dummyFont WRITE setTextFont );
   Q_PROPERTY( QColor textColor READ dummyColor WRITE setTextColor );
   Q_PROPERTY( QVariantList rangeColor
@@ -53,6 +54,7 @@ class QcTextEdit : public QTextEdit, QcHelper
     Q_INVOKABLE void select( int start, int size );
     QString selectedString() const;
     void replaceSelectedText( const QString & );
+    QString currentLine() const;
     bool interpretSelection() const { return _interpretSelection; }
     void setInterpretSelection( bool b ) { _interpretSelection = b; }
     void setTextFont( const QFont & );

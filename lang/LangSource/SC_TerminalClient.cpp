@@ -24,6 +24,9 @@
 */
 
 #include "SC_TerminalClient.h"
+#ifdef SC_QT
+#include "../../QtCollider/LanguageClient.h"
+#endif
 
 #include <errno.h>
 #include <fcntl.h>
@@ -63,28 +66,16 @@
 
 static FILE* gPostDest = stdout;
 
-static const int ticks_per_second = 50; // every 20 milliseconds
-
 SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
 	  mShouldBeRunning(false),
 	  mReturnCode(0),
 	  mUseReadline(false),
 	  mSignals(0)
-{
-	pthread_cond_init (&mCond, NULL);
-	pthread_mutex_init(&mSignalMutex, NULL);
-	pthread_mutex_init(&mInputMutex, NULL);
-	pthread_cond_init(&mInputCond, NULL);
-}
+{}
 
 SC_TerminalClient::~SC_TerminalClient()
-{
-	pthread_cond_destroy (&mCond);
-	pthread_mutex_destroy(&mSignalMutex);
-	pthread_mutex_destroy(&mInputMutex);
-	pthread_cond_destroy(&mInputCond);
-}
+{}
 
 void SC_TerminalClient::postText(const char* str, size_t len)
 {
@@ -247,11 +238,10 @@ int SC_TerminalClient::run(int argc, char** argv)
 	opt.mArgv = argv;
 
 	// read library configuration file
-	if (opt.mLibraryConfigFile) {
-		int argLength = strlen(opt.mLibraryConfigFile);
-		SC_LanguageConfig::readLibraryConfigYAML(opt.mLibraryConfigFile);
-	} else
-		SC_LanguageConfig::readDefaultLibraryConfig();
+	if (opt.mLibraryConfigFile)
+		SC_LanguageConfig::setConfigFile(opt.mLibraryConfigFile);
+
+	SC_LanguageConfig::readLibraryConfig();
 
 	// initialize runtime
 	initRuntime(opt);
@@ -292,26 +282,26 @@ void SC_TerminalClient::quit(int code)
 	mShouldBeRunning = false;
 }
 
-void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine)
+static PyrSymbol * resolveMethodSymbol(bool silent)
+{
+	if (silent)
+		return s_interpretCmdLine;
+	else
+		return s_interpretPrintCmdLine;
+}
+
+void SC_TerminalClient::interpretCmdLine(const char* cmdLine, bool silent)
 {
 	setCmdLine(cmdLine);
-	cmdLine.reset();
-	runLibrary(method);
+	runLibrary(resolveMethodSymbol(silent));
 	flush();
 }
 
-void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, const char* cmdLine)
-{
-	setCmdLine(cmdLine);
-	runLibrary(method);
-	flush();
-}
 
-
-void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, const char *cmdLine, size_t size)
+void SC_TerminalClient::interpretCmdLine(const char *cmdLine, size_t size, bool silent)
 {
 	setCmdLine(cmdLine, size);
-	runLibrary(method);
+	runLibrary(resolveMethodSymbol(silent));
 	flush();
 }
 
@@ -324,10 +314,10 @@ void SC_TerminalClient::interpretInput()
 	while( i < c ) {
 		switch (data[i]) {
 		case kInterpretCmdLine:
-			interpretCmdLine(s_interpretCmdLine, data, i);
+			interpretCmdLine(data, i, true);
 			break;
 		case kInterpretPrintCmdLine:
-			interpretCmdLine(s_interpretPrintCmdLine, data, i);
+			interpretCmdLine(data, i, false);
 			break;
 
 		case kRecompileLibrary:
@@ -344,7 +334,7 @@ void SC_TerminalClient::interpretInput()
 		i = 0;
 	}
 	mInputBuf.reset();
-	if( mUseReadline ) pthread_cond_signal( &mInputCond );
+	if( mUseReadline ) mInputCond.notify_one();
 }
 
 void SC_TerminalClient::onLibraryStartup()
@@ -363,7 +353,7 @@ void SC_TerminalClient::sendSignal( Signal sig )
 {
 	lockSignal();
 	mSignals |= sig;
-	pthread_cond_signal( &mCond );
+	mCond.notify_one();
 	unlockSignal();
 }
 
@@ -372,24 +362,24 @@ void SC_TerminalClient::onQuit( int exitCode )
 	lockSignal();
 	postfl("main: quit request %i\n", exitCode);
 	quit( exitCode );
-	pthread_cond_signal( &mCond );
+	mCond.notify_one();
 	unlockSignal();
 }
 
-extern void ElapsedTimeToTimespec(double elapsed, struct timespec *spec);
+extern void ElapsedTimeToChrono(double elapsed, mutex_chrono::system_clock::time_point & out_time_point);
 
 void SC_TerminalClient::commandLoop()
 {
 	bool haveNext = false;
-	struct timespec nextAbsTime;
+	mutex_chrono::system_clock::time_point nextAbsTime;
 
 	lockSignal();
 
-	while( shouldBeRunning() )
-	{
+	while( shouldBeRunning() ) {
 
 		while ( mSignals ) {
 			int sig = mSignals;
+			mSignals = 0;
 
 			unlockSignal();
 
@@ -397,10 +387,6 @@ void SC_TerminalClient::commandLoop()
 				//postfl("input\n");
 				lockInput();
 				interpretInput();
-				// clear input signal, as we've processed anything signalled so far.
-				lockSignal();
-				mSignals &= ~sig_input;
-				unlockSignal();
 				unlockInput();
 			}
 
@@ -409,31 +395,20 @@ void SC_TerminalClient::commandLoop()
 				double secs;
 				lock();
 				haveNext = tickLocked( &secs );
-				// clear scheduler signal, as we've processed all items scheduled up to this time.
-				// and will enter the wait according to schedule.
-				lockSignal();
-				mSignals &= ~sig_sched;
-				unlockSignal();
 				unlock();
 
 				flush();
 
 				//postfl("tick -> next time = %f\n", haveNext ? secs : -1);
-				ElapsedTimeToTimespec( secs, &nextAbsTime );
+				ElapsedTimeToChrono( secs, nextAbsTime );
 			}
 
 			if (sig & sig_stop) {
 				stopMain();
-				lockSignal();
-				mSignals &= ~sig_stop;
-				unlockSignal();
 			}
 
 			if (sig & sig_recompile) {
 				recompileLibrary();
-				lockSignal();
-				mSignals &= ~sig_recompile;
-				unlockSignal();
 			}
 
 			lockSignal();
@@ -443,11 +418,23 @@ void SC_TerminalClient::commandLoop()
 			break;
 		}
 		else if( haveNext ) {
-			int result = pthread_cond_timedwait( &mCond, &mSignalMutex, &nextAbsTime );
-			if( result == ETIMEDOUT ) mSignals |= sig_sched;
+			unlockSignal();
+			{
+				unique_lock<SC_Lock> lock(mSignalMutex);
+
+				cv_status status = mCond.wait_until(lock, nextAbsTime);
+				if( status == cv_status::timeout )
+					mSignals |= sig_sched;
+			}
+			lockSignal();
 		}
 		else {
-			pthread_cond_wait( &mCond, &mSignalMutex );
+			unlockSignal();
+			{
+				unique_lock<SC_Lock> lock(mSignalMutex);
+				mCond.wait(lock);
+			}
+			lockSignal();
 		}
 	}
 
@@ -515,15 +502,14 @@ void SC_TerminalClient::readlineCmdLine( char *cmdLine )
 		add_history(cmdLine);
 		int len = strlen(cmdLine);
 
-		client->lockInput();
+		unique_lock<SC_Lock> lock(client->mInputMutex);
 		client->mInputBuf.append(cmdLine, len);
 		client->mInputBuf.append(kInterpretPrintCmdLine);
 		client->sendSignal(sig_input);
 		// Wait for input to be processed,
 		// so that its output is displayed before readline prompt.
 		if (client->mInputShouldBeRunning)
-			pthread_cond_wait( &client->mInputCond, &client->mInputMutex );
-		client->unlockInput();
+			client->mInputCond.wait(lock);
 	}
 }
 
@@ -786,11 +772,16 @@ void SC_TerminalClient::startInput()
 {
 	mInputShouldBeRunning = true;
 #ifdef HAVE_READLINE
-	if( mUseReadline )
-		pthread_create( &mInputThread, NULL, &SC_TerminalClient::readlineFunc, this );
+	if( mUseReadline ) {
+		boost::thread thread(boost::bind(readlineFunc, this));
+		mInputThread = boost::move(thread);
+	}
 	else
 #endif
-		pthread_create( &mInputThread, NULL, &SC_TerminalClient::pipeFunc, this );
+	{
+		boost::thread thread(boost::bind(pipeFunc, this));
+		mInputThread = boost::move(thread);
+	}
 }
 
 void SC_TerminalClient::endInput()
@@ -803,10 +794,12 @@ void SC_TerminalClient::endInput()
 #endif
 	// wake up the input thread in case it is waiting
 	// for input to be processed
-	lockInput();
+	{
+		unique_lock<SC_Lock> lock(mInputMutex);
+
 		mInputShouldBeRunning = false;
-		pthread_cond_signal( &mInputCond );
-	unlockInput();
+		mInputCond.notify_one();
+	}
 
 #ifndef _WIN32
 	char c = 'q';
@@ -818,7 +811,7 @@ void SC_TerminalClient::endInput()
 #endif
 
 	postfl("main: waiting for input thread to join...\n");
-	pthread_join( mInputThread, NULL );
+	mInputThread.join();
 
 #ifdef _WIN32
 	} // if (mUseReadline)
@@ -876,4 +869,23 @@ int SC_TerminalClient::prRecompile(struct VMGlobals *, int)
 	static_cast<SC_TerminalClient*>(instance())->sendSignal(sig_recompile);
 	return errNone;
 }
+
+SC_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
+{
+	if (SC_LanguageClient::instance())
+		return NULL;
+
+#ifdef SC_QT
+	return new QtCollider::LangClient(name);
+#else
+	return new SC_TerminalClient(name);
+#endif
+}
+
+SC_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient * languageClient)
+{
+	delete languageClient;
+}
+
+
 // EOF

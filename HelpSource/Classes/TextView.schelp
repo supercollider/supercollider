@@ -51,6 +51,10 @@ METHOD:: setString
 	argument:: rangeSize
 		An Integer amount of characters.
 
+METHOD:: currentLine
+	NOTE::Only in Qt GUI::
+	The plain text of the line at text cursor.
+
 METHOD:: setFont
 	Applies the code::font:: to code::rangeSize:: amount of characters following the code::rangeStart:: position.
 
@@ -82,11 +86,14 @@ SUBSECTION:: Text Selection
 METHOD:: selectedString
 	The plain text contained in the current selection.
 
-	argument::
-		A String. Setting this variable will replace text in the selection with the argument, or do nothing if there is no selection.
-	returns::
-		A String. If no text is currently selected, an empty String is returned.
+	When getting this variable and there is no selection, the entire line at text cursor is returned (equivalent to link::#-currentLine::).
 
+	Setting this variable will replace text in the selection with the argument, or do nothing if there is no selection.
+
+	argument::
+		A String.
+	returns::
+		A String.
 
 METHOD:: selectionStart
 	The starting position of the selection. If no text is selected this variable represents the cursor position.
@@ -189,7 +196,7 @@ METHOD:: autohidesScrollers
 
 SUBSECTION:: Drag and Drop
 
-note:: Default drag-and-drop behavior of TextView is not defined in standard SC methods (see link::Classes/View#subclassing::), but in the view implementation instead (except for link::#-defaultGetDrag:: in Qt GUI). It may or may not be overridable by adding your own handlers (see link::Classes/View#drag_and_drop::), depending on the GUI kit in use.
+note:: Default drag-and-drop behavior of TextView is not defined in standard SC methods (see link::Classes/View#subclassing::), but in the view implementation instead (except for link::#-defaultGetDrag:: in Qt GUI). It may or may not be overridable by adding your own handlers (see link::Classes/View#Drag and drop::), depending on the GUI kit in use.
 ::
 
 Dragging from TextView will give the selected text in a String as drag data, while dropping will accept any object and insert it link::Classes/Object#-asString#as String:: at the drop location.

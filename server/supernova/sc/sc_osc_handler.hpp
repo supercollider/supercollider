@@ -23,13 +23,18 @@
 #include <mutex>
 #include <vector>
 
+#ifdef __clang__ // clang workaround
+#define BOOST_ASIO_HAS_STD_ARRAY
+#endif
+
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/date_time/microsec_time_clock.hpp>
 #include <boost/intrusive/treap_set.hpp>
 
+#include <boost/integer/endian.hpp>
+
 #include "osc/OscReceivedElements.h"
 
-#include "../server/dynamic_endpoint.hpp"
 #include "../server/memory_pool.hpp"
 #include "../server/server_args.hpp"
 #include "../server/server_scheduler.hpp"
@@ -48,15 +53,39 @@ namespace detail {
 using namespace boost::asio;
 using namespace boost::asio::ip;
 
+struct nova_endpoint:
+    public std::enable_shared_from_this<nova_endpoint>
+{
+    virtual void send(const char * data, size_t length) = 0;
+};
+
+class udp_endpoint:
+    public nova_endpoint
+{
+public:
+    udp_endpoint(udp::endpoint const & ep):
+        endpoint_(ep)
+    {}
+
+    bool operator ==(udp_endpoint const & rhs) const
+    {
+        return endpoint_ == rhs.endpoint_;
+    }
+
+private:
+    void send(const char * data, size_t length);
+
+    udp::endpoint endpoint_;
+};
+
+typedef std::shared_ptr<nova_endpoint> endpoint_ptr;
 
 /**
  * observer to receive osc notifications
- *
- * \todo shall we use a separate thread for observer notifications?
  * */
 class sc_notify_observers
 {
-    typedef std::vector<nova_endpoint> observer_vector;
+    typedef std::vector<endpoint_ptr> observer_vector;
 
 public:
     typedef enum {
@@ -66,29 +95,11 @@ public:
     } error_code;
 
     sc_notify_observers(boost::asio::io_service & io_service):
-        udp_socket(io_service), tcp_socket(io_service)
+        udp_socket(io_service)
     {}
 
-    error_code add_observer(nova_endpoint const & ep)
-    {
-        observer_vector::iterator it = std::find(observers.begin(), observers.end(), ep);
-        if (it != observers.end())
-            return already_registered;
-
-        observers.push_back(ep);
-        return no_error;
-    }
-
-    error_code remove_observer(nova_endpoint const & ep)
-    {
-        observer_vector::iterator it = std::find(observers.begin(), observers.end(), ep);
-
-        if (it == observers.end())
-            return not_registered;
-
-        observers.erase(it);
-        return no_error;
-    }
+    error_code add_observer(endpoint_ptr const & ep);
+    error_code remove_observer(endpoint_ptr const & ep);
 
     /* @{ */
     /** notifications, should be called from the real-time thread */
@@ -125,51 +136,21 @@ public:
     /** send notifications, should not be called from the real-time thread */
     void send_notification(const char * data, size_t length);
 
-    /* @{ */
-    /** sending functions */
-    void send(const char * data, size_t size, nova_endpoint const & endpoint)
-    {
-        if (!endpoint.is_valid())
-            return;
-        nova_protocol prot = endpoint.protocol();
-        if (prot.family() == AF_INET && prot.type() == SOCK_DGRAM)
-        {
-            udp::endpoint ep(endpoint.address(), endpoint.port());
-            send_udp(data, size, ep);
-        }
-        else if (prot.family() == AF_INET && prot.type() == SOCK_STREAM)
-        {
-            tcp::endpoint ep(endpoint.address(), endpoint.port());
-            send_tcp(data, size, ep);
-        }
-    }
+    void send_udp(const char * data, size_t size, udp::endpoint const & receiver);
 
-    void send_udp(const char * data, unsigned int size, udp::endpoint const & receiver)
-    {
-        std::lock_guard<std::mutex> lock(udp_mutex);
-        sc_notify_observers::udp_socket.send_to(boost::asio::buffer(data, size), receiver);
-    }
-
-    void send_tcp(const char * data, unsigned int size, tcp::endpoint const & receiver)
-    {
-        std::lock_guard<std::mutex> lock(tcp_mutex);
-        tcp_socket.connect(receiver);
-        boost::asio::write(tcp_socket, boost::asio::buffer(data, size));
-    }
-    /* @} */
-
-    static const char * error_string(error_code );
+    static const char * error_string(error_code);
 
 private:
+    observer_vector::iterator find(endpoint_ptr const & ep);
+
     void notify(const char * address_pattern, const server_node * node) const;
-    void send_notification(const char * data, size_t length, nova_endpoint const & endpoint);
+    void send_notification(const char * data, size_t length, nova_endpoint * endpoint);
 
     observer_vector observers;
 
 protected:
     udp::socket udp_socket;
-    tcp::socket tcp_socket;
-    std::mutex udp_mutex, tcp_mutex;
+    std::mutex udp_mutex;
 };
 
 class sc_scheduled_bundles
@@ -178,7 +159,7 @@ public:
     struct bundle_node:
         public boost::intrusive::bs_set_base_hook<>
     {
-        bundle_node(time_tag const & timeout, const char * data, nova_endpoint const & endpoint):
+        bundle_node(time_tag const & timeout, const char * data, endpoint_ptr const & endpoint):
             timeout_(timeout), data_(data), endpoint_(endpoint)
         {}
 
@@ -186,7 +167,7 @@ public:
 
         const time_tag timeout_;
         const char * const data_;
-        const nova_endpoint endpoint_;
+        endpoint_ptr endpoint_;
 
         friend bool operator< (const bundle_node & lhs, const bundle_node & rhs)
         {
@@ -202,7 +183,7 @@ public:
     typedef boost::intrusive::treap_multiset<bundle_node> bundle_queue_t;
 
     void insert_bundle(time_tag const & timeout, const char * data, size_t length,
-                       nova_endpoint const & endpoint);
+                       endpoint_ptr const & endpoint);
 
     void execute_bundles(time_tag const & last, time_tag const & now);
 
@@ -237,7 +218,7 @@ public:
         sc_notify_observers(detail::network_thread::io_service_),
         dump_osc_packets(0), error_posting(1), quit_received(false),
         tcp_acceptor_(detail::network_thread::io_service_),
-        tcp_password_(args.server_password.c_str())
+        tcp_password_(args.server_password.size() ? args.server_password.c_str() : nullptr)
     {
         if (!args.non_rt) {
             if (args.tcp_port && !open_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP, args.tcp_port))
@@ -252,9 +233,6 @@ public:
         detail::network_thread::start_receive();
     }
 
-    ~sc_osc_handler(void)
-    {}
-
     typedef osc::ReceivedPacket osc_received_packet;
     typedef osc::ReceivedBundle received_bundle;
     typedef osc::ReceivedMessage received_message;
@@ -262,7 +240,7 @@ public:
     struct received_packet:
         public audio_sync_callback
     {
-        received_packet(const char * dat, size_t length, nova_endpoint const & endpoint):
+        received_packet(const char * dat, size_t length, endpoint_ptr const & endpoint):
             data(dat), length(length), endpoint_(endpoint)
         {}
 
@@ -272,34 +250,28 @@ public:
         }
 
         static received_packet * alloc_packet(const char * data, size_t length,
-                                              nova_endpoint const & remote_endpoint);
+                                              endpoint_ptr const & remote_endpoint);
 
         void run(void);
 
         const char * const data;
         const size_t length;
-        const nova_endpoint endpoint_;
+        endpoint_ptr endpoint_;
     };
 
 private:
     /* @{ */
     /** udp socket handling */
-    void start_receive_udp(void)
-    {
-        sc_notify_observers::udp_socket.async_receive_from(
-            buffer(recv_buffer_), udp_remote_endpoint_,
-            boost::bind(&sc_osc_handler::handle_receive_udp, this,
-                        placeholders::error, placeholders::bytes_transferred));
-    }
-
+    void start_receive_udp();
     void handle_receive_udp(const boost::system::error_code& error,
                             std::size_t bytes_transferred);
     /* @} */
 
     /* @{ */
     /** tcp connection handling */
+public:
     class tcp_connection:
-        public boost::enable_shared_from_this<tcp_connection>
+        public nova_endpoint
     {
     public:
         typedef std::shared_ptr<tcp_connection> pointer;
@@ -316,31 +288,32 @@ private:
 
         void start(sc_osc_handler * self);
 
+        bool operator==(tcp_connection const & rhs) const
+        {
+            return &rhs == this;
+        }
+
     private:
         tcp_connection(boost::asio::io_service& io_service)
-            : socket_(io_service)
+            : socket_(io_service), pending_size(0)
         {}
 
+        void send(const char *data, size_t length);
+        void read_more();
+        void handle_read(const boost::system::error_code& error, size_t bytes_transferred);
+        void read_message_start(const char * buffer, size_t length);
+
         tcp::socket socket_;
+        size_t pending_size;
+        sc_osc_handler * osc_handler;
+        std::array<char, 1<<15 > recv_buffer_;
+        std::vector<char> overflow_vector;
     };
 
-    void start_accept(void)
-    {
-        tcp_connection::pointer new_connection = tcp_connection::create(tcp_acceptor_.get_io_service());
-
-        tcp_acceptor_.async_accept(new_connection->socket(),
-            boost::bind(&sc_osc_handler::handle_accept, this, new_connection,
-            boost::asio::placeholders::error));
-    }
-
-    void handle_accept(tcp_connection::pointer new_connection,
-                       const boost::system::error_code& error)
-    {
-        if (!error) {
-            new_connection->start(this);
-            start_accept();
-        }
-    }
+private:
+    void start_tcp_accept(void);
+    void handle_tcp_accept(tcp_connection::pointer new_connection,
+                           const boost::system::error_code& error);
     /* @} */
 
 public:
@@ -368,19 +341,19 @@ private:
     /* @{ */
     /** packet handling */
 public:
-    void handle_packet_async(const char* data, size_t length, nova::nova_endpoint const & endpoint);
-    void handle_packet(const char* data, size_t length, nova::nova_endpoint const & endpoint);
+    void handle_packet_async(const char* data, size_t length, endpoint_ptr const & endpoint);
+    void handle_packet(const char* data, size_t length, endpoint_ptr const & endpoint);
     time_tag handle_bundle_nrt(const char * data_, std::size_t length);
 
 private:
     template <bool realtime>
-    void handle_bundle(received_bundle const & bundle, nova_endpoint const & endpoint);
+    void handle_bundle(received_bundle const & bundle, endpoint_ptr const & endpoint);
     template <bool realtime>
-    void handle_message(received_message const & message, size_t msg_size, nova_endpoint const & endpoint);
+    void handle_message(received_message const & message, size_t msg_size, endpoint_ptr const & endpoint);
     template <bool realtime>
-    void handle_message_int_address(received_message const & message, size_t msg_size, nova_endpoint const & endpoint);
+    void handle_message_int_address(received_message const & message, size_t msg_size, endpoint_ptr const & endpoint);
     template <bool realtime>
-    void handle_message_sym_address(received_message const & message, size_t msg_size, nova_endpoint const & endpoint);
+    void handle_message_sym_address(received_message const & message, size_t msg_size, endpoint_ptr const & endpoint);
 
     friend struct sc_scheduled_bundles::bundle_node;
     /* @} */
@@ -429,14 +402,12 @@ public:
 
 private:
     /* @{ */
-/*    udp::socket udp_socket_;*/
     udp::endpoint udp_remote_endpoint_;
 
     tcp::acceptor tcp_acceptor_;
     const char * tcp_password_; /* we are not owning this! */
 
     std::array<char, 1<<15 > recv_buffer_;
-
     std::vector<char> overflow_vector;
     /* @} */
 };

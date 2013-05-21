@@ -91,6 +91,21 @@ QView : QObject {
     this.background = color;
   }
 
+  backgroundImage_ { arg image; this.setBackgroundImage(image) }
+
+  setBackgroundImage { arg image, tileMode=1, alpha=1.0, fromRect;
+    if (image.notNil) {
+      this.invokeMethod(\setBackgroundImage, [
+        image,
+        fromRect ?? { image.bounds },
+        tileMode.asInteger,
+        alpha.asFloat
+      ]);
+    }{
+      this.invokeMethod(\removeBackgroundImage);
+    };
+  }
+
   absoluteBounds {
     ^this.bounds.moveToPoint( this.mapToGlobal( 0@0 ) );
   }
@@ -672,10 +687,6 @@ QView : QObject {
 
   beginDrag { arg x, y;
     var obj, str;
-    if (currentDrag.notNil) {
-        "QView: attempt at drag-and-drop reentrance!".warn;
-        ^false;
-    };
     if( beginDragAction.notNil )
       { obj = beginDragAction.value( this, x, y ) }
       { obj = this.tryPerform( \defaultGetDrag, x, y ) };

@@ -66,10 +66,9 @@
 			// if notifications are enabled on the server,
 			// use the n_end signal to remove the temp synthdef
 		if(server.notified) {
-			OSCpathResponder(server.addr, ['/n_end', synth.nodeID], { |time, resp, msg|
+			OSCFunc({
 				server.sendMsg(\d_free, def.name);
-				resp.remove;
-			}).add;
+			}, '/n_end', server.addr, argTemplate: [synth.nodeID]).oneShot;
 		};
 		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus] ++ args, addAction);
 		def.doSend(server, synthMsg);

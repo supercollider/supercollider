@@ -67,7 +67,8 @@ PmonoStream : Stream {
 						hasGate: hasGate,
 						schedBundleArray: schedBundleArray,
 						schedBundle: schedBundle).play
-					}
+					};
+					currentCleanupFunc = nil;
 				});
 			};
 			// this should happen whether or not ~id is nil
@@ -107,14 +108,18 @@ PmonoStream : Stream {
 
 PmonoArticStream : PmonoStream {
 	embedInStream { |inevent|
-		var	sustain, rearticulating = false;
+		var	sustain, rearticulating = true;
 		inevent ?? { ^nil.yield };
 
-		this.prInit(inevent)
-			.prInitNode;
+		this.prInit(inevent);
 
 		loop {
 			if(this.prDoStreams) {
+				if(rearticulating and: { event.isRest.not }) {
+					event[\id] = nil;
+					this.prInitNode;
+					rearticulating = false;
+				};
 				sustain = event.use { ~sustain.value };
 				if(sustain.notNil and: { sustain < event.delta }) {
 					event[\removeFromCleanup] = event[\removeFromCleanup].add(currentCleanupFunc);
@@ -122,14 +127,10 @@ PmonoArticStream : PmonoStream {
 						currentCleanupFunc.value(true);
 						rearticulating = true;
 					});
-				} { rearticulating = false };
+				};
 				cleanup.update(event);
 				inevent = event.yield;
 				this.prSetNextEvent(inevent);
-				if(rearticulating) {
-					event[\id] = nil;
-					this.prInitNode;
-				};
 			} {
 				^cleanup.exit(inevent)
 			}

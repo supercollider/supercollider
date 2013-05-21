@@ -110,10 +110,7 @@ METHOD:: decimals
 SUBSECTION:: Appearance
 
 METHOD:: align
-	The alignment of the displayed value.
-
-	argument::
-		One of the following symbols: \centered, \left, or \right.
+	The alignment of the displayed value. See link::Reference/gui_alignments:: for possible values.
 
 METHOD:: stringColor
 	The color used to display the value before it is ever changed by user interaction.
@@ -252,7 +249,7 @@ s.waitForBoot({
     }.play;
 
     w = Window("Use arrow keys to change the frequency by steps", Rect(100, 500, 500, 120));
-    b =     NumberBox(w, Rect(200, 10, 100, 20));
+    b = NumberBox(w, Rect(200, 10, 100, 20));
     b.value = 220;
     b.action = {arg numb; n.set(\freq,numb.value); };
     b.step=55; //make the step a fraction of the freq

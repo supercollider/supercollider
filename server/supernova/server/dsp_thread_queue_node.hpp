@@ -39,13 +39,8 @@ public:
         node(static_cast<sc_synth*>(node))
     {}
 
-    queue_node_data(queue_node_data const & rhs):
-        node(rhs.node)
-    {}
-
-    queue_node_data(queue_node_data const && rhs):
-        node(std::move(rhs.node))
-    {}
+    queue_node_data(queue_node_data const & rhs)  = default;
+    queue_node_data(queue_node_data && rhs)       = default;
 
     void operator()(thread_count_type index)
     {

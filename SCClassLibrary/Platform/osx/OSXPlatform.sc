@@ -1,6 +1,6 @@
 OSXPlatform : UnixPlatform
 {
-	var <>preferencesAction;
+	var <>preferencesAction; // Warning: scapp only
 	var <>sleepAction, <>wakeAction, <>isSleeping=false;
 
 	initPlatform {
@@ -49,15 +49,6 @@ OSXPlatform : UnixPlatform
 
 	findHelpFile { | string |
 		^string.findHelpFile;
-	}
-
-	getMouseCoords {
-		^this.prGetMouseCoords(Point.new);
-	}
-
-	prGetMouseCoords {|point|
-		_Mouse_getCoords
-		^this.primitiveFailed
 	}
 
 	// for now just write syntax colours. Could be other things.

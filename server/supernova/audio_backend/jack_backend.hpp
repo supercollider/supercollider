@@ -53,7 +53,7 @@ class jack_backend:
 
 public:
     jack_backend(void):
-        client(NULL), time_is_synced(false)
+        client(NULL), is_active(false), time_is_synced(false)
     {}
 
     ~jack_backend(void)
@@ -151,8 +151,10 @@ public:
 
     void deactivate_audio(void)
     {
-        jack_deactivate(client);
-        is_active = false;
+        if (is_active) {
+            jack_deactivate(client);
+            is_active = false;
+        }
     }
 
     void get_cpuload(float & peak, float & average) const

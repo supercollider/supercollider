@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -44,6 +44,7 @@ void MetaType::initAll()
   qRegisterMetaType<QcTreeWidget::ItemPtr>();
   qRegisterMetaType< QVector<double> >();
   qRegisterMetaType< QVector<int> >();
+  qRegisterMetaType<SharedImage>();
 
   gMetaTypes.reserve(20);
 
@@ -67,6 +68,7 @@ void MetaType::initAll()
   qc_init_metatype<QWidget*>();
   qc_init_metatype<PyrObject*>();
   qc_init_metatype<QcTreeWidget::ItemPtr>();
+  qc_init_metatype<SharedImage>();
   qc_init_metatype< QVector<double> >();
   qc_init_metatype< QVector<int> >();
   qc_init_metatype< QVariantList >();
@@ -130,6 +132,9 @@ MetaType *MetaType::find( PyrSlot *slot )
       }
       else if( isKindOfSlot( slot, SC_CLASS(QTreeViewItem) ) ) {
         return metaType<QcTreeWidget::ItemPtr>();
+      }
+      else if( isKindOfSlot( slot, SC_CLASS(QImage) ) ) {
+          return metaType<SharedImage>();
       }
       else {
         QString className = TypeCodec<QString>::read( &slotRawObject(slot)->classptr->name );

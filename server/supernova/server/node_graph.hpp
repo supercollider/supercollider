@@ -50,12 +50,14 @@ public:
         root_group_(0), generated_id(-2), synth_count_(0), group_count_(1),
         node_set(node_set_type::bucket_traits(node_buckets, node_set_bucket_count))
     {
-        root_group_.add_ref();
         node_set.insert(root_group_);
+        root_group_.add_ref();
     }
 
-    ~node_graph(void)
-    {}
+    ~node_graph()
+    {
+        assert(root_group_.child_count() == 0);
+    }
 
     uint32_t synth_count(void) const
     {
@@ -67,17 +69,103 @@ public:
         return group_count_;
     }
 
+    template <typename Functor>
+    void add_node(server_node * node, node_position_constraint const & constraint, Functor const & doOnFree)
+    {
+        server_node * reference_node = constraint.first;
+        node_position position = constraint.second;
 
-    void add_node(server_node * s, node_position_constraint const & constraint);
+        std::pair< node_set_type::iterator, bool > inserted = node_set.insert(*node);
+        node->add_ref();
+
+        assert(inserted.second == true); /* node id already present (should be checked earlier)! */
+
+        switch (position) {
+        case before:
+        case after: {
+            abstract_group * parent = reference_node->parent_;
+            parent->add_child(node, constraint);
+            break;
+        }
+
+        case head:
+        case tail: {
+            abstract_group * group = static_cast<abstract_group*>(reference_node);
+            group->add_child(node, position);
+            break;
+        }
+
+        case insert: {
+            abstract_group * group = static_cast<abstract_group*>(reference_node);
+            group->add_child(node);
+            break;
+        }
+
+        case replace: {
+            const bool reference_node_is_group = reference_node->is_group();
+            if (reference_node_is_group) {
+                abstract_group * reference_group = static_cast<abstract_group*>(reference_node);
+                reference_group->apply_deep_on_children( [&] (server_node & node) {
+                    doOnFree(node);
+                });
+            }
+            doOnFree(*reference_node);
+
+            abstract_group * node_parent = reference_node->parent_;
+            node_parent->replace_child(node, reference_node);
+
+            if (reference_node_is_group)
+                group_count_ -= 1;
+            else
+                synth_count_ -= 1;
+
+            break;
+        }
+
+        default:
+            assert(false);      /* this point should not be reached! */
+        }
+
+        if (node->is_synth())
+            synth_count_ += 1;
+        else
+            group_count_ += 1;
+    }
+
+    void add_node(server_node * node, node_position_constraint const & constraint);
     void add_node(server_node * s);
 
-    void remove_node(server_node * n);
+    void remove_node(server_node * n)
+    {
+        remove_node(n, [](server_node &){});
+    }
+
+    template <typename Functor>
+    void remove_node(server_node * node, Functor const & doOnFree)
+    {
+        if (!node->is_synth())
+            group_free_all(static_cast<abstract_group*>(node), doOnFree);
+
+        /** \todo recursively remove nodes from node_set
+         *        for now this is done by the auto-unlink hook
+         * */
+
+        doOnFree(*node);
+        abstract_group * parent = node->parent_;
+        parent->remove_child(node);
+        if (node->is_synth())
+            synth_count_ -= 1;
+        else
+            group_count_ -= 1;
+
+        release_node_id(node);
+    }
 
     void dump(std::string const & filename);
 
     group * root_group(void)
     {
-        return &root_group_/* .get() */;
+        return &root_group_;
     }
 
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
@@ -125,7 +213,18 @@ public:
             return NULL;
     }
 
-    bool group_free_all(abstract_group * group)
+    void group_free_all(abstract_group * group)
+    {
+        group_free_all(group, [](server_node &){});
+    }
+
+    void group_free_deep(abstract_group * group)
+    {
+        group_free_deep(group, [](server_node &){});
+    }
+
+    template <typename Functor>
+    void group_free_all(abstract_group * group, Functor const & doOnFree)
     {
         size_t synths = 0, groups = 0;
         group->apply_deep_on_children([&](server_node & node) {
@@ -134,32 +233,34 @@ public:
                 synths += 1;
             else
                 groups += 1;
+            doOnFree(node);
         });
 
         group->free_children();
         synth_count_ -= synths;
         group_count_ -= groups;
-        return true;
     }
 
-    bool group_free_deep(abstract_group * group)
+    template <typename Functor>
+    void group_free_deep(abstract_group * group, Functor const & doOnFree)
     {
-        size_t synths;
+        size_t synths = 0;
         group->apply_deep_on_children([&](server_node & node) {
              if (node.is_synth()) {
                  release_node_id(&node);
                  synths += 1;
              }
+             doOnFree(node);
         });
 
         group->free_synths_deep();
         synth_count_ -= synths;
-        return true;
     }
 
     void release_node_id(server_node * node)
     {
         node_set.erase(*node);
+        node->release();
     }
 
 private:

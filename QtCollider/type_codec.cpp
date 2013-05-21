@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -25,6 +25,7 @@
 #include "QObjectProxy.h"
 #include "widgets/QcTreeWidget.h"
 #include "primitives/prim_QPalette.hpp"
+#include "image.h"
 
 #include <PyrObject.h>
 #include <PyrKernel.h>
@@ -458,6 +459,25 @@ void TypeCodec<QcTreeWidget::ItemPtr>::write( PyrSlot *slot, const QcTreeWidget:
   PyrObject *obj = instantiateObject( gMainVMGlobals->gc, SC_CLASS(QTreeViewItem), 0, true, true );
   QcTreeWidget::Item::initialize( gMainVMGlobals, obj, item );
   SetObject( slot, obj );
+}
+
+SharedImage TypeCodec<SharedImage>::read( PyrSlot * slot )
+{
+    SharedImage *ptr = reinterpret_cast<SharedImage*>( slotRawPtr( slotRawObject(slot)->slots+0 ) );
+    return *ptr;
+}
+
+SharedImage TypeCodec<SharedImage>::safeRead( PyrSlot * slot )
+{
+    if (!isKindOfSlot(slot, SC_CLASS(QImage)))
+        return SharedImage();
+    else
+        return read(slot);
+}
+
+void TypeCodec<SharedImage>::write( PyrSlot *slot, SharedImage image )
+{
+    qWarning("WARNING: QtCollider: writing SharedImage to PyrSlot not supported.");
 }
 
 } // namespace QtCollider

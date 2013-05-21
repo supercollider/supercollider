@@ -25,6 +25,7 @@
 #include "SC_Constants.h"
 
 #include <cmath>
+#include <limits>
 
 #ifdef __SSE__
 #include <xmmintrin.h>
@@ -34,6 +35,7 @@
 #include <smmintrin.h>
 #endif
 
+// FIXME: we should use better detection methods or remove c++98 support
 #if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE /* c99 compliant compiler */
 #define HAVE_C99
 #endif
@@ -54,10 +56,37 @@ inline float_type trunc(float_type arg)
 
 inline bool sc_isnan(float x)
 {
-#if defined(__cplusplus) && defined(__GNUC__) && _GLIBCXX_HAVE_ISNAN
+#if __cplusplus >= 201103L
 	return std::isnan(x);
 #else
 	return (!(x >= 0.f || x <= 0.f));
+#endif
+}
+
+inline bool sc_isnan(double x)
+{
+#if __cplusplus >= 201103L
+	return std::isnan(x);
+#else
+	return (!(x >= 0.0 || x <= 0.0));
+#endif
+}
+
+inline bool sc_isfinite(float x)
+{
+#if __cplusplus >= 201103L
+	return std::isfinite(x);
+#else
+	return !sc_isnan(x) && (std::abs(x) == std::numeric_limits<float>::infinity());
+#endif
+}
+
+inline bool sc_isfinite(double x)
+{
+#if __cplusplus >= 201103L
+	return std::isfinite(x);
+#else
+	return !sc_isnan(x) && (std::abs(x) != std::numeric_limits<double>::infinity());
 #endif
 }
 
@@ -282,16 +311,16 @@ inline float32 sc_floor(float32 x)
 inline float32 sc_reciprocal(float32 x)
 {
 #ifdef __SSE__
-    // adapted from AP-803 Newton-Raphson Method with Streaming SIMD Extensions
-    // 23 bit accuracy (out of 24bit)
-    const __m128 arg = _mm_set_ss(x);
-    const __m128 approx = _mm_rcp_ss(arg);
-    const __m128 muls = _mm_mul_ss(_mm_mul_ss(arg, approx), approx);
-    const __m128 doubleApprox = _mm_add_ss(approx, approx);
-    const __m128 result = _mm_sub_ss(doubleApprox, muls);
-    return _mm_cvtss_f32(result);
+	// adapted from AP-803 Newton-Raphson Method with Streaming SIMD Extensions
+	// 23 bit accuracy (out of 24bit)
+	const __m128 arg = _mm_set_ss(x);
+	const __m128 approx = _mm_rcp_ss(arg);
+	const __m128 muls = _mm_mul_ss(_mm_mul_ss(arg, approx), approx);
+	const __m128 doubleApprox = _mm_add_ss(approx, approx);
+	const __m128 result = _mm_sub_ss(doubleApprox, muls);
+	return _mm_cvtss_f32(result);
 #else
-    return 1.f/x;
+	return 1.f/x;
 #endif
 }
 
@@ -553,7 +582,7 @@ inline float64 sc_floor(float64 x)
 
 inline float64 sc_reciprocal(float64 x)
 {
-    return 1. / x;
+	return 1. / x;
 }
 
 

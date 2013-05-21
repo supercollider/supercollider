@@ -1,4 +1,4 @@
-title:: PG_07_Value_Conversions
+title:: Pattern Guide 07: Value Conversions
 summary:: Describes the default event's conversions for pitch, rhythm and amplitude
 related:: Tutorials/A-Practical-Guide/PG_06g_Data_Sharing, Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters
 categories:: Streams-Patterns-Events>A-Practical-Guide

@@ -54,29 +54,61 @@ public:
      */
     void prepare(void);
 
-    inline void perform(void)
+    void finalize(void);
+
+    HOT inline void perform(void)
     {
-        if (likely(trace == 0))
-        {
-            size_t count = calc_unit_count;
+        if (unlikely (!initialized))
+            prepare();
+
+        if (likely(trace == 0)) {
+            const size_t count = calc_unit_count;
             Unit ** units = calc_units;
 
-            size_t preroll = count & 7;
+            // FIXME: do some more benchmarking. unrolling seems to harm performance
+#if 0
+            const size_t preroll = count & 7;
 
-            for (size_t i = 0; i != preroll; ++i)
-            {
-                Unit * unit = units[i];
-                (unit->mCalcFunc)(unit, unit->mBufLength);
+            const size_t unroll4  = preroll & 4;
+            const size_t unroll2  = preroll & 2;
+            const size_t unroll1 = preroll & 1;
+
+            if (unroll4) {
+                for (size_t i = 0; i != 4; ++i) {
+                    Unit * unit = units[0];
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+                    unit = units[1];
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+                    unit = units[2];
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+                    unit = units[3];
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+                }
+                units += 4;
             }
 
-            size_t unroll = count >> 3;
+            if (unroll2) {
+                for (size_t i = 0; i != 2; ++i) {
+                    Unit * unit = units[0];
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+                    unit = units[1];
+                    (unit->mCalcFunc)(unit, unit->mBufLength);
+                }
+                units += 2;
+            }
+
+            if (unroll1) {
+                Unit * unit = units[0];
+                (unit->mCalcFunc)(unit, unit->mBufLength);
+
+                units += 1;
+            }
+
+            const size_t unroll = count >> 3;
             if (unroll == 0)
                 return;
 
-            units += preroll;
-
-            for (size_t i = 0; i != unroll; ++i)
-            {
+            for (size_t i = 0; i != unroll; ++i) {
                 Unit * unit = units[0];
                 (unit->mCalcFunc)(unit, unit->mBufLength);
                 unit = units[1];
@@ -95,6 +127,12 @@ public:
                 (unit->mCalcFunc)(unit, unit->mBufLength);
                 units += 8;
             }
+#else
+            for (size_t i = 0; i != count; ++i) {
+                Unit * unit = units[i];
+                (unit->mCalcFunc)(unit, unit->mBufLength);
+            }
+#endif
         }
         else
             run_traced();
@@ -183,6 +221,7 @@ private:
 
     friend class sc_ugen_def;
 
+    bool initialized;
     int_fast8_t trace;
     Unit ** calc_units;
     sample * unit_buffers;

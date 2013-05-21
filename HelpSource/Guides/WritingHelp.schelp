@@ -321,3 +321,21 @@ For more filters, see link::Browse#UGens>Filters::
 ::
 Renders as: For more filters, see link::Browse#UGens>Filters::
 
+section:: Contributing with the documentation
+
+The easiest way to contribute to the documentation is:
+
+    1. Fork the supercolider respository https://github.com/supercollider/supercollider
+    2. Clone your repository
+    code::
+    git clone --recursive git://github.com/{your_username}/supercollider.git
+    ::
+    3. Create a branch for doc updates
+    code::
+    git checkout -b doc_updates
+    ::
+    4. Do your update, commit your changes and push to github
+    code::
+    git push origin -u doc_updates
+    ::
+    5. Submit your pull request through github, from your branch doc_updates to supercollider master

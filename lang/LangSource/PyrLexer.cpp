@@ -757,7 +757,7 @@ symbol3 : {
 		for (;yylen<MAXYYLEN;) {
 			c = input();
 			if (c == '\n' || c == '\r') {
-                asRelativePath(curfilename,extPath);
+				asRelativePath(curfilename,extPath);
 				post("Symbol open at end of line on line %d in file '%s'\n",
 					startline+errLineOffset, extPath);
 				yylen = 0;
@@ -771,7 +771,7 @@ symbol3 : {
 			if (c == 0) break;
 		}
 		if (c == 0) {
-            asRelativePath(curfilename,extPath);
+			asRelativePath(curfilename,extPath);
 			post("Open ended symbol ... started on line %d in file '%s'\n",
 				startline+errLineOffset, extPath);
 			yylen = 0;
@@ -806,7 +806,7 @@ string1 : {
 			if (c == 0) break;
 		}
 		if (c == 0) {
-            asRelativePath(curfilename,extPath);
+			asRelativePath(curfilename,extPath);
 			post("Open ended string ... started on line %d in file '%s'\n",
 				startline+errLineOffset, extPath);
 			yylen = 0;
@@ -849,7 +849,7 @@ comment2 : {
 		} while (c != 0);
 		yylen = 0;
 		if (c == 0) {
-            asRelativePath(curfilename,extPath);
+			asRelativePath(curfilename,extPath);
 			post("Open ended comment ... started on line %d in file '%s'\n",
 				startline+errLineOffset, extPath);
 			r = 0;
@@ -863,7 +863,7 @@ error1:
 
 	yytext[yylen] = 0;
 
-    asRelativePath(curfilename, extPath);
+	asRelativePath(curfilename, extPath);
 	post("illegal input string '%s' \n   at '%s' line %d char %d\n",
 		yytext, extPath, lineno+errLineOffset, charno);
 	post("code %d\n", c);
@@ -871,7 +871,7 @@ error1:
 	//postfl("%d\n", strchr(binopchars, c));
 
 error2:
-    asRelativePath(curfilename, extPath);
+	asRelativePath(curfilename, extPath);
 	post("  in file '%s' line %d char %d\n", extPath, lineno+errLineOffset, charno);
 	r = BADTOKEN;
 	goto leave;
@@ -1119,7 +1119,7 @@ int processfloat(char *s, int sawpi)
 	else  { SetFloat(&slot, atof(s)); }
 	node = newPyrSlotNode(&slot);
 	zzval = (long)node;
-    return SC_FLOAT;
+	return SC_FLOAT;
 }
 
 
@@ -1462,10 +1462,10 @@ symbol3 : {
 			}
 		} while (c != endchar && c != 0);
 		if (c == 0) {
-            char extPath[MAXPATHLEN];
-            asRelativePath(curfilename, extPath);
+			char extPath[MAXPATHLEN];
+			asRelativePath(curfilename, extPath);
 			post("Open ended symbol ... started on line %d in file '%s'\n",
-				startline, extPath);
+				 startline, extPath);
 			goto error2;
 		}
 		goto start;
@@ -1483,10 +1483,10 @@ string1 : {
 			}
 		} while (c != endchar && c != 0);
 		if (c == 0) {
-            char extPath[MAXPATHLEN];
-            asRelativePath(curfilename, extPath);
+			char extPath[MAXPATHLEN];
+			asRelativePath(curfilename, extPath);
 			post("Open ended string ... started on line %d in file '%s'\n",
-				startline, extPath);
+				 startline, extPath);
 			goto error2;
 		}
 		goto start;
@@ -1511,18 +1511,18 @@ comment2 : {
 			prevc = c;
 		} while (c != 0);
 		if (c == 0) {
-            char extPath[MAXPATHLEN];
-            asRelativePath(curfilename, extPath);
+			char extPath[MAXPATHLEN];
+			asRelativePath(curfilename, extPath);
 			post("Open ended comment ... started on line %d in file '%s'\n",
-				startline, extPath);
+				 startline, extPath);
 			goto error2;
 		}
 		goto start;
 	}
 
 error1:
-    char extPath[MAXPATHLEN];
-    asRelativePath(curfilename, extPath);
+	char extPath[MAXPATHLEN];
+	asRelativePath(curfilename, extPath);
 	post("  in file '%s' line %d char %d\n", extPath, lineno, charno);
 	res = false;
 	goto leave;
@@ -1571,8 +1571,8 @@ ClassDependancy* newClassDependancy(PyrSymbol *className, PyrSymbol *superClassN
 	numClassDeps++;
 	if (className->classdep) {
 		error("duplicate Class found: '%s' \n", className->name);
-                post("%s\n",className->classdep->fileSym->name);
-                postfl("%s\n\n",fileSym->name);
+		post("%s\n",className->classdep->fileSym->name);
+		postfl("%s\n\n",fileSym->name);
 		return className->classdep;
 	}
 	classdep = (ClassDependancy*)pyr_pool_compile->Alloc(sizeof(ClassDependancy));
@@ -1651,7 +1651,7 @@ void traverseDepTree(ClassDependancy *classdep, int level)
 {
 	ClassDependancy *subclassdep;
 
-        if (!classdep) return;
+	if (!classdep) return;
 
 	subclassdep = classdep->subclasses;
 	for (; subclassdep; subclassdep = subclassdep->next) {
@@ -1745,14 +1745,14 @@ void traverseFullDepTree2()
 		setSelectorFlags();
 		if (2*numClassDeps != gNumClasses) {
 			error("There is a discrepancy.\n");
-                    /* not always correct
-                    if(2*numClassDeps < gNumClasses) {
-                        post("Duplicate files may exist in the directory structure.\n");
-                    } else {
-                        post("Some class files may be missing.\n");
-                    }
-                    */
-                    post("numClassDeps %d   gNumClasses %d\n", numClassDeps, gNumClasses);
+			/* not always correct
+					if(2*numClassDeps < gNumClasses) {
+						post("Duplicate files may exist in the directory structure.\n");
+					} else {
+						post("Some class files may be missing.\n");
+					}
+					*/
+			post("numClassDeps %d   gNumClasses %d\n", numClassDeps, gNumClasses);
 			findDiscrepancy();
 			compileErrors++;
 		} else {
@@ -1763,9 +1763,9 @@ void traverseFullDepTree2()
 			post("\tByte Code Size %d\n", totalByteCodes);
 			//elapsed = TickCount() - compileStartTime;
 			//elapsed = 0;
-                        elapsed = elapsedTime() - compileStartTime;
-                        post("\tcompiled %d files in %.2f seconds\n",
-				gNumCompiledFiles, elapsed );
+			elapsed = elapsedRealTime() - compileStartTime;
+			post("\tcompiled %d files in %.2f seconds\n",
+				 gNumCompiledFiles, elapsed );
 			if(numOverwrites == 1){
 				post("\nInfo: One method is currently overwritten by an extension. To see which, execute:\nMethodOverride.printAll\n\n");
 			}
@@ -1907,9 +1907,9 @@ void initPassOne()
 
 void finiPassOne()
 {
-    //postfl("->finiPassOne\n");
-    freeParserPool();
-    //postfl("<-finiPassOne\n");
+	//postfl("->finiPassOne\n");
+	freeParserPool();
+	//postfl("<-finiPassOne\n");
 }
 
 static bool passOne_ProcessDir(const char *dirname, int level)
@@ -1978,7 +1978,7 @@ bool isValidSourceFileName(char *filename)
 {
 	int len = strlen(filename);
 	bool validExtension = (len>3 && strncmp(filename+len-3, ".sc", 3) == 0)
-            || (len>7 && strncmp(filename+len-7, ".sc.rtf", 7) == 0);
+						  || (len>7 && strncmp(filename+len-7, ".sc.rtf", 7) == 0);
 	if (!validExtension)
 		return false;
 
@@ -2048,7 +2048,7 @@ void compileSucceeded()
 
 			++g->sp; SetObject(g->sp, g->process);
 			runInterpreter(g, s_startup, 1);
-                        g->canCallOS = false;
+			g->canCallOS = false;
 
 			schedRun();
 		}
@@ -2056,11 +2056,10 @@ void compileSucceeded()
 	}
 }
 
-void aboutToCompileLibrary();
-void aboutToCompileLibrary()
+static void runShutdown()
 {
 	//printf("->aboutToCompileLibrary\n");
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	if (compiledOK) {
 		VMGlobals *g = gMainVMGlobals;
 
@@ -2072,7 +2071,7 @@ void aboutToCompileLibrary()
 
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 	//printf("<-aboutToCompileLibrary\n");
 }
 
@@ -2086,12 +2085,11 @@ void shutdownLibrary()
 
 	schedStop();
 
-	aboutToCompileLibrary();
+	runShutdown();
 
 	TempoClock_stopAll();
 
-	pthread_mutex_lock (&gLangMutex);
-
+	gLangMutex.lock();
 	closeAllCustomPorts();
 
 	if (compiledOK) {
@@ -2105,7 +2103,9 @@ void shutdownLibrary()
 
 	compiledOK = false;
 
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
+
+	SC_LanguageConfig::freeLibraryConfig();
 }
 
 SC_DLLEXPORT_C bool compileLibrary()
@@ -2113,13 +2113,13 @@ SC_DLLEXPORT_C bool compileLibrary()
 	//printf("->compileLibrary\n");
 	shutdownLibrary();
 
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	gNumCompiledFiles = 0;
 	compiledOK = false;
 
-    SC_LanguageConfig::readDefaultLibraryConfig();
+	SC_LanguageConfig::readLibraryConfig();
 
-	compileStartTime = elapsedTime();
+	compileStartTime = elapsedRealTime();
 
 	totalByteCodes = 0;
 
@@ -2152,7 +2152,7 @@ SC_DLLEXPORT_C bool compileLibrary()
 		compiledOK = false;
 	}
 
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 	//printf("<-compileLibrary\n");
 	return compiledOK;
 }
@@ -2163,11 +2163,11 @@ void dumpByteCodes(PyrBlock *theBlock);
 
 SC_DLLEXPORT_C void runLibrary(PyrSymbol* selector)
 {
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
+	VMGlobals *g = gMainVMGlobals;
+	g->canCallOS = true;
 	try {
 		if (compiledOK) {
-                        ++g->sp; SetObject(g->sp, g->process);
+			++g->sp; SetObject(g->sp, g->process);
 			runInterpreter(g, selector, 1);
 		} else {
 			postfl("Library has not been compiled successfully.\n");
@@ -2177,8 +2177,8 @@ SC_DLLEXPORT_C void runLibrary(PyrSymbol* selector)
 		if (meth) {
 			int ip = slotRawInt8Array(&meth->code) ? g->ip - slotRawInt8Array(&meth->code)->b : -1;
 			post("caught exception in runLibrary %s:%s %3d\n",
-				slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name, ip
-			);
+				 slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name, ip
+				 );
 			dumpByteCodes(meth);
 		} else {
 			post("caught exception in runLibrary\n");
@@ -2187,35 +2187,5 @@ SC_DLLEXPORT_C void runLibrary(PyrSymbol* selector)
 	} catch (...) {
 		postfl("DANGER: OUT of MEMORY. Operation failed.\n");
 	}
-        g->canCallOS = false;
-}
-
-void interpretCmdLine(const char *textbuf, int textlen, char *methodname)
-{
-	PyrString *string;
-
-	if (compiledOK) {
-		PyrSlot slot;
-
-		string = newPyrStringN(gMainVMGlobals->gc, textlen, 0, false);
-		memcpy(string->s, textbuf, textlen);
-		SetObject(&slotRawInterpreter(&gMainVMGlobals->process->interpreter)->cmdLine, string);
-		gMainVMGlobals->gc->GCWrite(slotRawObject(&gMainVMGlobals->process->interpreter), string);
-		SetObject(&slot, gMainVMGlobals->process);
-//#if __profile__
-//		ProfilerInit(collectSummary, microsecondsTimeBase, 500, 100);
-//#endif
-		slotCopy((++gMainVMGlobals->sp), &slot);
-		runInterpreter(gMainVMGlobals, getsym(methodname), 1);
-//#if __profile__
-//		ProfilerDump("\pErase2.prof");
-//		ProfilerTerm();
-//#endif
-	} else {
-		postfl("Library has not been compiled successfully.\n");
-	}
-}
-
-void init_SuperCollider()
-{
+	g->canCallOS = false;
 }

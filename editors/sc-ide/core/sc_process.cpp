@@ -64,15 +64,17 @@ void ScProcess::prepareActions(Settings::Manager * settings)
 
     const QString interpreterCategory(tr("Interpreter"));
 
-    mActions[ToggleRunning] = action = new QAction(tr("Boot Interpreter"), this);
+    mActions[ToggleRunning] = action = new QAction(tr("Boot or Quit Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()) );
-    settings->addAction( action, "interpreter-toggle-running", interpreterCategory);
+    //settings->addAction( action, "interpreter-toggle-running", interpreterCategory);
 
-    mActions[Start] = action = new QAction(tr("Boot Interpreter"), this);
+    mActions[Start] = action =
+        new QAction(QIcon::fromTheme("system-run"), tr("Boot Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(startLanguage()) );
     settings->addAction( action, "interpreter-start", interpreterCategory);
 
-    mActions[Stop] = action = new QAction(tr("Quit Interpreter"), this);
+    mActions[Stop] = action =
+        new QAction(QIcon::fromTheme("system-shutdown"), tr("Quit Interpreter"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()) );
     settings->addAction( action, "interpreter-stop", interpreterCategory);
 
@@ -94,7 +96,19 @@ void ScProcess::prepareActions(Settings::Manager * settings)
     connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
     settings->addAction( action, "interpreter-main-stop", interpreterCategory);
 
+    connect( mActions[Start], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
+    connect( mActions[Stop], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
+
     onProcessStateChanged(QProcess::NotRunning);
+}
+
+void ScProcess::updateToggleRunningAction()
+{
+    QAction *targetAction = state() == QProcess::NotRunning ? mActions[Start] : mActions[Stop];
+
+    mActions[ToggleRunning]->setText( targetAction->text() );
+    mActions[ToggleRunning]->setIcon( targetAction->icon() );
+    mActions[ToggleRunning]->setShortcut( targetAction->shortcut() );
 }
 
 void ScProcess::toggleRunning()
@@ -165,6 +179,7 @@ void ScProcess::stopLanguage (void)
         return;
     }
 
+    evaluateCode("0.exit", true);
     closeWriteChannel();
 
     mTerminationRequested   = true;
@@ -190,6 +205,10 @@ void ScProcess::restartLanguage()
     startLanguage();
 }
 
+void ScProcess::stopMain(void)
+{
+    evaluateCode("thisProcess.stop", true);
+}
 
 
 void ScProcess::onReadyRead(void)
@@ -246,11 +265,10 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
 {
     switch (state) {
     case QProcess::Starting:
-        mActions[ToggleRunning]->setText(tr("Quit Interpreter"));
-        mActions[ToggleRunning]->setIcon(QIcon::fromTheme("system-shutdown"));
         mActions[Start]->setEnabled(false);
         mActions[Stop]->setEnabled(true);
         mActions[Restart]->setEnabled(true);
+        updateToggleRunningAction();
 
         break;
 
@@ -263,16 +281,29 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
         break;
 
     case QProcess::NotRunning:
-        mActions[ToggleRunning]->setText(tr("Boot Interpreter"));
-        mActions[ToggleRunning]->setIcon(QIcon::fromTheme("system-run"));
         mActions[Start]->setEnabled(true);
         mActions[Stop]->setEnabled(false);
         mActions[Restart]->setEnabled(false);
         mActions[StopMain]->setEnabled(false);
         mActions[RecompileClassLibrary]->setEnabled(false);
+        updateToggleRunningAction();
+        postQuitNotification();
 
         break;
     }
+}
+
+void ScProcess::postQuitNotification()
+{
+    QString message;
+    switch (exitStatus()) {
+    case QProcess::CrashExit:
+        message = tr("Interpreter has crashed or stopped forcefully. [Exit code: %1]\n").arg(exitCode());
+        break;
+    default:
+        message = tr("Interpreter has quit. [Exit code: %1]\n").arg(exitCode());
+    }
+    emit scPost(message);
 }
 
 void ScProcess::onIpcData()

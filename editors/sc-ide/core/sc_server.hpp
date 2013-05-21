@@ -25,10 +25,13 @@
 #include <QtNetwork/QUdpSocket>
 #include <QAction>
 #include <QProcess>
+#include <QTimer>
+#include <boost/chrono/system_clocks.hpp>
 
 namespace ScIDE {
 
 class ScProcess;
+class VolumeWidget;
 namespace Settings { class Manager; }
 
 class ScServer : public QObject
@@ -38,10 +41,22 @@ class ScServer : public QObject
 public:
     enum ActionRole {
         ToggleRunning,
+        Boot,
+        Quit,
+        KillAll,
         Reboot,
         ShowMeters,
+        ShowScope,
+        ShowFreqScope,
         DumpNodeTree,
         DumpNodeTreeWithControls,
+        PlotTree,
+        Mute,
+        Volume,
+        VolumeUp,
+        VolumeDown,
+        VolumeRestore,
+        Record,
 
         ActionCount
     };
@@ -52,37 +67,72 @@ public:
 
     QAction *action(ActionRole role) { return mActions[role]; }
 
+    float volume() const;
+    void setVolume( float volume );
+
+    bool isMuted() const;
+    void setMuted( bool muted );
+
+    bool isRecording() const;
+    boost::chrono::seconds recordingTime() const;
+
 public slots:
     void boot();
     void reboot();
     void quit();
+    void killAll();
     void toggleRunning();
     void showMeters();
+    void showScope();
+    void showFreqScope();
     void dumpNodeTree();
     void dumpNodeTreeWithControls();
+    void plotTree();
     void queryAllNodes(bool dumpControls);
+    void increaseVolume();
+    void decreaseVolume();
+    void changeVolume(float);
+    void restoreVolume();
+    void mute() { setMuted(true); }
+    void unmute() { setMuted(false); }
+    void setRecording( bool active );
 
 signals:
     void runningStateChange( bool running, QString const & hostName, int port );
     void updateServerStatus (int ugenCount, int synthCount, int groupCount, int defCount, float avgCPU, float peakCPU);
+    void volumeChanged( float volume );
+    void mutedChanged( bool muted );
+    void recordingChanged( bool recording );
 
 private slots:
     void onScLangStateChanged( QProcess::ProcessState );
     void onScLangReponse( const QString & selector, const QString & data );
+    void updateToggleRunningAction();
+    void updateRecordingAction();
+    void updateEnabledActions();
+    void sendMuted( bool muted );
+    void sendVolume( float volume );
 
 protected:
     virtual void timerEvent(QTimerEvent * event);
 
 private:
     void createActions( Settings::Manager * );
-
+    void handleRuningStateChangedMsg( const QString & data );
     void onRunningStateChanged( bool running, QString const & hostName, int port );
+
+    ScProcess *mLang;
 
     QUdpSocket * mUdpSocket;
     QHostAddress mServerAddress;
     int mPort;
 
     QAction * mActions[ActionCount];
+
+    VolumeWidget *mVolumeWidget;
+    QTimer mRecordTimer;
+    boost::chrono::system_clock::time_point mRecordTime;
+    bool mIsRecording;
 };
 
 }

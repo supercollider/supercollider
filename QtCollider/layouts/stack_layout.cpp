@@ -10,7 +10,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -85,8 +85,9 @@ QLayoutItem *StackLayout::takeAt(int index)
     } else if (index < _index) {
         --_index;
     }
-    if (item->widget())
-        item->widget()->hide();
+    // NOTE: Here, the Qt implementation hides item->widget() if it exists and is not being
+    // deleted. We can't reproduce this, because we can't access private info on whether the
+    // widget is being deleted.
     return item;
 }
 

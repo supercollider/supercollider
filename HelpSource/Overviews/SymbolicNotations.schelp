@@ -192,15 +192,15 @@ code:: ?? { } :: is generally recommended. code::?:: always evaluates the second
 code:: ?? :: evaluates the function conditionally (only when needed).
 If the function defines no variables, the function will be inlined for speed.
 
-Especially useful when the absence of an object requires a new object to be created. In this example, it's critical that a new SCSlider not be created if the object was already passed in.
+Especially useful when the absence of an object requires a new object to be created. In this example, it's critical that a new Slider not be created if the object was already passed in.
 code::
 f = { |slider, parent|
-    slider = slider ?? { SCSlider.new(parent, Rect(0, 0, 100, 20)) };
+    slider = slider ?? { Slider.new(parent, Rect(0, 0, 100, 20)) };
     slider.value_(0);
 };
 ::
 If the first line inside the function instead read code::
-slider = slider ? SCSlider.new(parent, Rect(0, 0, 100, 20));
+slider = slider ? Slider.new(parent, Rect(0, 0, 100, 20));
 ::
 , a new slider would be created even if it is not needed, or used.
 

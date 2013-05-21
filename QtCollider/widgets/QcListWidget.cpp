@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -76,6 +76,18 @@ QVariantList QcListWidget::selection() const
     Q_FOREACH( const QModelIndex & index, modelIndexes )
         indexes << index.row();
     return indexes;
+}
+
+void QcListWidget::setSelection( const QVariantList & list )
+{
+    clearSelection();
+    Q_FOREACH( const QVariant & var, list )
+    {
+        int row = var.toInt();
+        QListWidgetItem *item = QListWidget::item(row);
+        if (item)
+            item->setSelected(true);
+    }
 }
 
 void QcListWidget::onCurrentItemChanged()

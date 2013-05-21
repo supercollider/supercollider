@@ -48,7 +48,6 @@ extern NSTextView* gPostView;
 PyrSymbol *s_draw;
 PyrSymbol *s_font;
 PyrSymbol *s_closed;
-PyrSymbol *s_tick;
 PyrSymbol *s_doaction;
 PyrSymbol *s_didBecomeKey;
 PyrSymbol *s_didResignKey;
@@ -3915,7 +3914,6 @@ void initGUIPrimitives()
         s_draw = getsym("draw");
         s_font = getsym("SCFont");
         s_closed = getsym("closed");
-        s_tick = getsym("tick");
         s_doaction = getsym("doAction");
 		s_didBecomeKey = getsym("didBecomeKey");
         s_didResignKey = getsym("didResignKey");

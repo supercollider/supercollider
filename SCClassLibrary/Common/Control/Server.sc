@@ -39,6 +39,8 @@ ServerOptions
 
 	var <numPrivateAudioBusChannels=112;
 
+	var <>pingsBeforeConsideredDead = 5;
+
 	device {
 		^if(inDevice == outDevice)
 		{
@@ -277,6 +279,8 @@ Server {
 	var <pid;
 	var serverInterface;
 
+	var reallyDeadCount = 0;
+
 	*default_ { |server|
 		default = server; // sync with s?
 		if (sync_s, { thisProcess.interpreter.s = server });
@@ -446,36 +450,43 @@ Server {
 	}
 
 	serverRunning_ { arg val;
+		// var countNotRunning = 0;
 		if(addr.hasBundle) {
 			{ this.changed(\bundling); }.defer;
 		} {
-			if (val != serverRunning) {
+			// We should not have a hair trigger for ServerQuit and ServerBoot.
+			// One or two unanswered /status messages are a temporary glitch.
+			// So here, require 5 consecutive "not running" calls
+			// before panicking. 5 * 0.7 = 3.5 sec
+			// Aside: If you explicitly shut down the server then newAllocators
+			// and the \newAllocators notification will happen immediately
+			if(val.not) {
+				reallyDeadCount = reallyDeadCount - 1;
+			};
+			if (val != serverRunning or: { reallyDeadCount == 0 }) {
 				if(thisProcess.platform.isSleeping.not) {
 					serverRunning = val;
+
 					if (serverRunning.not) {
+						if(reallyDeadCount <= 0) {
+							ServerQuit.run(this);
 
-						ServerQuit.run(this);
-
-						if (serverInterface.notNil) {
-							serverInterface.disconnect;
-							serverInterface = nil;
-						};
-
-						AppClock.sched(5.0, {
-							// still down after 5 seconds, assume server is really dead
-							// if you explicitly shut down the server then newAllocators
-							// and the \newAllocators notification will happen immediately
-							if(serverRunning.not) {
-								NotificationCenter.notify(this,\didQuit);
+							if (serverInterface.notNil) {
+								serverInterface.disconnect;
+								serverInterface = nil;
 							};
-							recordNode = nil;
-							if(this.isLocal.not){
-								notified = false;
-							}
-						})
 
-					}{
-						ServerBoot.run(this);
+							NotificationCenter.notify(this, \didQuit);
+							recordNode = nil;
+							if(this.isLocal.not) {
+								notified = false;
+							};
+						};
+					} {
+						if(reallyDeadCount <= 0) {
+							ServerBoot.run(this);
+						};
+						reallyDeadCount = this.options.pingsBeforeConsideredDead;
 					};
 					{ this.changed(\serverRunning); }.defer;
 				}
@@ -637,7 +648,6 @@ Server {
 	}
 
 	boot { arg startAliveThread=true, recover=false, onFailure;
-		var resp;
 		if (serverRunning, { "server already running".inform; ^this });
 		if (serverBooting, { "server already booting".inform; ^this });
 
@@ -674,22 +684,19 @@ Server {
 	}
 
 	bootServerApp {
-		if (inProcess, {
+		if (inProcess) {
 			"booting internal".inform;
 			this.bootInProcess;
-			//alive = true;
-			//this.serverRunning = true;
 			pid = thisProcess.pid;
-		},{
+		} {
 			if (serverInterface.notNil) {
 				serverInterface.disconnect;
 				serverInterface = nil;
 			};
 
 			pid = (program ++ options.asOptionsString(addr.port)).unixCmd;
-			//unixCmd(program ++ options.asOptionsString(addr.port)).postln;
 			("booting " ++ addr.port.asString).inform;
-		});
+		};
 	}
 
 	reboot { arg func; // func is evaluated when server is off
@@ -777,6 +784,7 @@ Server {
 		pid = nil;
 		serverBooting = false;
 		sendQuit = nil;
+		reallyDeadCount = 0;  // force serverRunning_ to act on the quit NOW
 		this.serverRunning = false;
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		if(volume.isPlaying) {

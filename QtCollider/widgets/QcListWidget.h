@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -29,7 +29,7 @@ class QcListWidget : public QListWidget, QcHelper
   Q_PROPERTY( QVariantList items READ dummyVariantList WRITE setItems );
   Q_PROPERTY( QVariantList colors READ dummyVariantList WRITE setColors );
   Q_PROPERTY( int currentRow READ currentRow WRITE setCurrentRowWithoutAction )
-    Q_PROPERTY( QVariantList selection READ selection );
+    Q_PROPERTY( QVariantList selection READ selection WRITE setSelection );
 
   public:
     QcListWidget();
@@ -37,6 +37,7 @@ class QcListWidget : public QListWidget, QcHelper
     void setColors( const QVariantList & ) const;
     void setCurrentRowWithoutAction( int );
     QVariantList selection() const;
+    void setSelection( const QVariantList & );
 
   Q_SIGNALS:
     void action();

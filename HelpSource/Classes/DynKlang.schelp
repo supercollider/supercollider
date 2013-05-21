@@ -16,8 +16,8 @@ method:: ar, kr
 argument:: specificationsArrayRef
 a Ref to an Array of three Arrays:
 definitionlist::
-## frequencies || an Array of filter frequencies.
-## amplitudes || an Array of filter amplitudes, or nil. If nil, then amplitudes default to 1.0
+## frequencies || an Array of oscillator frequencies.
+## amplitudes || an Array of oscillator amplitudes, or nil. If nil, then amplitudes default to 1.0
 ## phases || an Array of initial phases, or nil. If nil, then phases default to 0.0
 ::
 argument:: freqscale

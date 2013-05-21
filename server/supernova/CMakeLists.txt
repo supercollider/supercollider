@@ -1,17 +1,3 @@
-if (FFT_GREEN)
-    add_definitions("-DSC_FFT_GREEN")
-elseif (APPLE)
-    add_definitions("-DSC_FFT_VDSP")
-else()
-    find_package(FFTW3f 3.3)
-    if (FFTW3F_FOUND)
-        add_definitions("-DSC_FFT_FFTW")
-        include_directories (${FFTW3F_INCLUDE_DIR})
-    else()
-        message(SEND_ERROR "Cannot find libfftw3f")
-    endif()
-endif()
-
 if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-4096")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
@@ -22,6 +8,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=i686 -msse -msse2 -mfpmath=sse")
     endif()
   endif()
+
+  if(${_gcc_version} VERSION_LESS 4.7)
+    message(FATAL_ERROR "supernova requires at least gcc-4.7. please configure the build with -DSUPERNOVA=OFF")
+  endif()
+
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 
@@ -57,8 +48,10 @@ if(APPLE)
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface
-                    ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/include/common
+                    ${CMAKE_SOURCE_DIR}/common
+                    ${CMAKE_SOURCE_DIR}/include/server
+                    ${CMAKE_SOURCE_DIR}/server/scsynth
                     .
                     )
 
@@ -69,7 +62,7 @@ set(libsupernova_src
     sc/sc_synth.cpp
     sc/sc_synthdef.cpp
     sc/sc_ugen_factory.cpp
-    ../scsynth/Samp.cpp
+    ${CMAKE_SOURCE_DIR}/common/Samp.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
@@ -81,6 +74,11 @@ set(libsupernova_src
     server/server.cpp
     server/server_args.cpp
 )
+
+
+if (FFT_GREEN)
+	list(APPEND libsupernova_src ../../common/fftlib.c)
+endif()
 
 if(WIN32)
     list(APPEND libsupernova_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
@@ -145,6 +143,7 @@ else()
 endif()
 
 if (FFTW3F_FOUND)
+	include_directories (${FFTW3F_INCLUDE_DIR})
 	target_link_libraries(libsupernova ${FFTW3F_LIBRARY})
 endif()
 

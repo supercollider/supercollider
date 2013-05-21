@@ -13,9 +13,13 @@ Env {
 		^super.newCopyArgs(levels, times, curve ? \lin, releaseNode, loopNode, offset)
 	}
 
-	*newClear { arg numSegments = 8;
+	*newClear { arg numSegments = 8, numChannels = 1;
 		// make an envelope for filling in later.
-		^this.new(Array.fill(numSegments + 1, 0), Array.fill(numSegments, 1))
+		if (numChannels == 1) {
+			^this.new(Array.fill(numSegments + 1, 0), Array.fill(numSegments, 1))
+		} {
+			^this.new(Array.fill(numSegments + 1, {0 ! numChannels} ), Array.fill(numSegments, {1 ! numChannels} ), Array.fill(numSegments, {\lin ! numChannels}))
+		}
 	}
 
 	*initClass {
@@ -89,6 +93,10 @@ Env {
 
 	exprange { arg lo = 0.01, hi = 1.0;
 		^this.copy.levels_(levels.linexp(levels.minItem, levels.maxItem, lo, hi))
+	}
+
+	curverange { arg lo = 0.0, hi = 1.0, curve = -4;
+		^this.copy.levels_(levels.lincurve(levels.minItem, levels.maxItem, lo, hi, curve))
 	}
 
 	// methods to make some typical shapes :

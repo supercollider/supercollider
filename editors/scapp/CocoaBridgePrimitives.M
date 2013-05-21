@@ -449,7 +449,7 @@ extern bool compiledOK;
 - (void) doAction: (id) sender
 {
 //	post("doAction \n");
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
@@ -460,12 +460,12 @@ extern bool compiledOK;
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 - (void) doStateAction: (id) sender
 {
 //	post("doAction \n");
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
@@ -477,12 +477,12 @@ extern bool compiledOK;
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 
 }
 - (void) doIntAction: (id) sender
 {
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
@@ -493,12 +493,12 @@ extern bool compiledOK;
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 
 }
 - (void) doArrayAction: (id) sender
 {
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
@@ -516,14 +516,14 @@ extern bool compiledOK;
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 
 }
 
 /* experimental ! */
 - (void) doFloatArrayAction: (id) sender
 {
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
@@ -541,12 +541,12 @@ extern bool compiledOK;
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 /* experimental ! */
 - (void) doSCObjectAction: (id) sender
 {
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
@@ -560,7 +560,7 @@ extern bool compiledOK;
 		runInterpreter(g, method, 2);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 
 - (void) keyUp: (NSEvent*) event
@@ -585,7 +585,7 @@ extern bool compiledOK;
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
-   pthread_mutex_lock (&gLangMutex);
+   gLangMutex.lock();
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doAction");
@@ -595,7 +595,7 @@ extern bool compiledOK;
 		runInterpreter(g, method, 1);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 
 
@@ -604,7 +604,7 @@ extern bool compiledOK;
 - (void)notificationReceived:(NSNotification*)aNotification
 {
 	//post("notification received by delegate\n");
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 		PyrSymbol *method = getsym("doNotificationAction");
@@ -621,7 +621,7 @@ extern bool compiledOK;
 		runInterpreter(g, method, 4);
 		g->canCallOS = false;
 	}
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 
 /*
@@ -654,7 +654,7 @@ extern bool compiledOK;
 	const char* retType = [[inv methodSignature]methodReturnType];
 	const char* csel = sel_getName(selector);
 
-	pthread_mutex_lock (&gLangMutex);
+	gLangMutex.lock();
 	PyrObject * pobj = [self getSCObject];
 	if(compiledOK && pobj){
 
@@ -952,7 +952,7 @@ extern bool compiledOK;
 			[inv setReturnValue:retbuffer];
 		} // End Of RetValue
 	} // End Of Compiled ok
-    pthread_mutex_unlock (&gLangMutex);
+    gLangMutex.unlock();
 }
 
 -(void)dummy{

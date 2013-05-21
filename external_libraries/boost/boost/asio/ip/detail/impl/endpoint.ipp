@@ -81,7 +81,8 @@ endpoint::endpoint(const boost::asio::ip::address& addr,
       boost::asio::detail::socket_ops::host_to_network_short(port_num);
     data_.v4.sin_addr.s_addr =
       boost::asio::detail::socket_ops::host_to_network_long(
-          addr.to_v4().to_ulong());
+          static_cast<boost::asio::detail::u_long_type>(
+            addr.to_v4().to_ulong()));
   }
   else
   {
@@ -92,7 +93,9 @@ endpoint::endpoint(const boost::asio::ip::address& addr,
     boost::asio::ip::address_v6 v6_addr = addr.to_v6();
     boost::asio::ip::address_v6::bytes_type bytes = v6_addr.to_bytes();
     memcpy(data_.v6.sin6_addr.s6_addr, bytes.data(), 16);
-    data_.v6.sin6_scope_id = v6_addr.scope_id();
+    data_.v6.sin6_scope_id =
+      static_cast<boost::asio::detail::u_long_type>(
+        v6_addr.scope_id());
   }
 }
 

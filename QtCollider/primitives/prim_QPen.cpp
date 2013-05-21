@@ -1,14 +1,13 @@
 /************************************************************************
 *
-* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
-*
+* Copyright 2010-2013 Jakob Leben (jakob.leben@gmail.com)
 * Copyright 2010 Ivan Leben (ivan.leben@gmail.com) (QPen_ArcTo)
 *
 * This file is part of SuperCollider Qt GUI.
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -23,6 +22,7 @@
 
 #include "primitives.h"
 #include "../painting.h"
+#include "../image.h"
 #include "../type_codec.hpp"
 #include "PyrKernel.h"
 
@@ -643,6 +643,120 @@ QC_QPEN_PRIMITIVE( QPen_StringInRect, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+    QtCollider::SharedImage image = QtCollider::get(a+1);
+    if (!image)
+      return errWrongType;
+
+    if (image->isPainting()) {
+        qcErrorMsg("QImage: can not draw while being painted.");
+        return errFailed;
+    }
+
+    QPixmap & pixmap = image->pixmap();
+
+    QRectF source;
+
+    if (IsNil(a+2))
+        source = QRectF( pixmap.rect() );
+    else if (isKindOfSlot(a+2, SC_CLASS(Rect)))
+        source = QtCollider::read<QRectF>(a+2);
+    else
+        return errWrongType;
+
+    QRectF target;
+
+    if (isKindOfSlot(a+0, SC_CLASS(Point))) {
+        QPointF point = QtCollider::read<QPointF>(a+0);
+        target = QRectF(point.x(), point.y(), source.width(), source.height());
+    }
+    else if (isKindOfSlot(a+0, SC_CLASS(Rect))) {
+        target = QtCollider::read<QRectF>(a+0);
+    }
+    else
+        return errWrongType;
+
+    int composition = QtCollider::get(a+3);
+    float opacity = QtCollider::get(a+4);
+
+    painter->save();
+    painter->setCompositionMode((QPainter::CompositionMode)composition);
+    painter->setRenderHint( QPainter::SmoothPixmapTransform,
+                            image->transformationMode == Qt::SmoothTransformation );
+    painter->setOpacity(opacity);
+    painter->drawPixmap(target, pixmap, source);
+    painter->restore();
+
+    return errNone;
+}
+
+QC_QPEN_PRIMITIVE( QPen_TileImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+    QtCollider::SharedImage image = QtCollider::get(a+1);
+    if (!image)
+      return errWrongType;
+
+    if (image->isPainting()) {
+        qcErrorMsg("QImage: can not draw while being painted.");
+        return errFailed;
+    }
+
+    QPixmap & pixmap = image->pixmap();
+
+    QRectF source;
+
+    if (IsNil(a+2))
+        source = QRectF( pixmap.rect() );
+    else if (isKindOfSlot(a+2, SC_CLASS(Rect)))
+        source = QtCollider::read<QRectF>(a+2);
+    else
+        return errWrongType;
+
+    QRectF target;
+
+    if (isKindOfSlot(a+0, SC_CLASS(Rect)))
+        target = QtCollider::read<QRectF>(a+0);
+    else
+        return errWrongType;
+
+    if (target.isEmpty() || source.isEmpty())
+        return errNone;
+
+    int composition = QtCollider::get(a+3);
+    float opacity = QtCollider::get(a+4);
+
+    painter->save();
+    painter->setCompositionMode((QPainter::CompositionMode)composition);
+    painter->setRenderHint( QPainter::SmoothPixmapTransform,
+                            image->transformationMode == Qt::SmoothTransformation );
+    painter->setOpacity(opacity);
+    painter->setClipRect( target );
+
+    QRectF area = source;
+    area.moveTo( target.topLeft() );
+    float max_x = target.right();
+    float max_y = target.bottom();
+    int iter_x, iter_y;
+    for( iter_y = 0; ; ++iter_y )
+    {
+        area.moveTop(iter_y * source.height() + target.top() );
+        if (area.top() > max_y)
+            break;
+        for ( iter_x = 0; ; ++iter_x )
+        {
+            area.moveLeft( iter_x * source.width() + target.left() );
+            if (area.left() > max_x)
+                break;
+            painter->drawPixmap(area, pixmap, source);
+        }
+    }
+
+    painter->restore();
+
+    return errNone;
+}
+
 void defineQPenPrimitives()
 {
   LangPrimitiveDefiner definer;
@@ -681,6 +795,8 @@ void defineQPenPrimitives()
   definer.define<QPen_FillRadialGradient>();
   definer.define<QPen_StringAtPoint>();
   definer.define<QPen_StringInRect>();
+  definer.define<QPen_DrawImage>();
+  definer.define<QPen_TileImage>();
 }
 
 } // namespace QtCollider

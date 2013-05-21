@@ -27,8 +27,7 @@
 #include "freelist.hpp"
 #include "static_pool.hpp"
 
-namespace nova
-{
+namespace nova {
 
 /**
  * base class for a class, which uses a static memory pool for
@@ -75,7 +74,7 @@ private:
      *  \return true if freelist is empty
      *
      * */
-    static inline bool free_disposed_object(void)
+    static inline bool free_one_disposed_object(void)
     {
         void * chunk = disposed_objects.pop();
         if (chunk == NULL)
@@ -98,18 +97,17 @@ private:
         static void * allocate(std::size_t size)
         {
             for (unsigned int i = 0; i != recover_count; ++i) {
-                bool freelist_empty = free_disposed_object();
+                bool freelist_empty = free_one_disposed_object();
                 if (freelist_empty)
                     break;
             }
 
-            for (;;)
-            {
+            for (;;) {
                 void * ret = object_pool.malloc(size);
 
                 if (ret)
                     return ret;
-                if (free_disposed_object())
+                if (free_one_disposed_object())
                     return NULL; /* no object in freelist, we  */
             }
         }
@@ -142,7 +140,7 @@ public:
     static inline void free_disposed_objects(void)
     {
         for(;;) {
-            if (free_disposed_object())
+            if (free_one_disposed_object())
                 return;
         }
     }

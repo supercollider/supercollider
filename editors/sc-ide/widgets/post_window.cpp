@@ -45,6 +45,8 @@ PostWindow::PostWindow(QWidget* parent):
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setFrameShape( QFrame::NoFrame );
 
+    viewport()->setAttribute( Qt::WA_MacNoClickThrough, true );
+
     QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
     mSizeHint = QSize( availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.3 );
 
@@ -97,6 +99,10 @@ void PostWindow::createActions( Settings::Manager * settings )
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
     ovrAction->addToWidget(this);
 
+    mActions[ResetZoom] = ovrAction = new OverridingAction(tr("Reset Font Size"), this);
+    connect(ovrAction, SIGNAL(triggered()), this, SLOT(resetZoom()));
+    ovrAction->addToWidget(this);
+
     action = new QAction(this);
     action->setSeparator(true);
     addAction(action);
@@ -122,6 +128,7 @@ void PostWindow::updateActionShortcuts( Settings::Manager * settings )
     settings->beginGroup("IDE/shortcuts");
     mActions[ZoomIn]->setShortcut( settings->shortcut("editor-enlarge-font") );
     mActions[ZoomOut]->setShortcut( settings->shortcut("editor-shrink-font") );
+    mActions[ResetZoom]->setShortcut( settings->shortcut("editor-reset-font-size") );
     settings->endGroup();
 }
 
@@ -220,6 +227,14 @@ void PostWindow::zoomFont(int steps)
     setFont(currentFont);
 }
 
+void PostWindow::resetZoom()
+{
+    QFont font = this->font();
+    QFont defaultFont = Main::settings()->codeFont();
+    font.setPointSize( defaultFont.pointSize() );
+    setFont(font);
+}
+
 bool PostWindow::event( QEvent * event )
 {
     switch (event->type()) {
@@ -240,6 +255,20 @@ bool PostWindow::event( QEvent * event )
 
 void PostWindow::wheelEvent( QWheelEvent * e )
 {
+    // FIXME: Disable zooming for now, to avoid nasty effect when Ctrl
+    // is unintentionally pressed while inertial scrolling is going on.
+
+    // Moreover, Ctrl|Shift + Wheel scrolls by pages, which is also
+    // rather annoying.
+
+    // So rather just forward the event without modifiers.
+
+    QWheelEvent modifiedEvent( e->pos(), e->globalPos(), e->delta(),
+                               e->buttons(), 0, e->orientation() );
+    QPlainTextEdit::wheelEvent( &modifiedEvent );
+    return;
+
+#if 0
     if (e->modifiers() == Qt::ControlModifier) {
         if (e->delta() > 0)
             zoomIn();
@@ -249,6 +278,7 @@ void PostWindow::wheelEvent( QWheelEvent * e )
     }
 
     QPlainTextEdit::wheelEvent(e);
+#endif
 }
 
 void PostWindow::focusOutEvent( QFocusEvent * event )
@@ -287,6 +317,11 @@ bool PostWindow::openDocumentation()
 void PostWindow::openDefinition()
 {
     Main::openDefinition(symbolUnderCursor(), window());
+}
+
+void PostWindow::openCommandLine()
+{
+    Main::openCommandLine(symbolUnderCursor());
 }
 
 void PostWindow::findReferences()

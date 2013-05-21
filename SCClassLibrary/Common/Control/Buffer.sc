@@ -355,9 +355,12 @@ Buffer {
 		server.listSendMsg( this.freeMsg(completionMessage) );
 	}
 	freeMsg { arg completionMessage;
+		var msg;
 		this.uncache;
 		server.bufferAllocator.free(bufnum);
-		^["/b_free", bufnum, completionMessage.value(this)];
+		msg = ["/b_free", bufnum, completionMessage.value(this)];
+		bufnum = numFrames = numChannels = sampleRate = path = nil;
+		^msg
 	}
 	*freeAll { arg server;
 		var b;

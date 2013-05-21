@@ -124,12 +124,13 @@ PyrSymbol *s_awake;
 PyrSymbol *s_appclock;
 PyrSymbol *s_systemclock;
 PyrSymbol *s_server_shm_interface;
+PyrSymbol *s_interpretCmdLine, *s_interpretPrintCmdLine;
 
 PyrSymbol *s_nocomprendo;
 PyrSymbol *s_curProcess, *s_curMethod, *s_curBlock, *s_curClosure, *s_curThread;
 //PyrSymbol *s_sampleRate;
 //PyrSymbol *s_audioClock, *s_logicalClock;
-PyrSymbol *s_run;
+PyrSymbol *s_run, *s_stop, *s_tick;
 PyrSymbol *s_startup;
 PyrSymbol *s_docmdline;
 PyrSymbol *s_audio;
@@ -237,6 +238,10 @@ void initSymbols()
 	s_hardwaresetup = getsym("hardwareSetup");
 	s_shutdown = getsym("shutdown");
 
+	s_interpretCmdLine = getsym("interpretCmdLine");
+	s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
+
+
 	s_nocomprendo = getsym("doesNotUnderstand");
 
 	s_curProcess = getsym("thisProcess");
@@ -251,6 +256,8 @@ void initSymbols()
 	s_control = getsym("control");
 	s_scalar = getsym("scalar");
 	s_run = getsym("run");
+	s_stop = getsym("stop");
+	s_tick = getsym("tick");
 	s_startup = getsym("startup");
 	s_docmdline = getsym("doCmdLine");
 	s_next = getsym("next");
@@ -1064,7 +1071,7 @@ int compareColDescs(const void *va, const void *vb)
 
 #define CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME 0
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
-double elapsedTime();
+double elapsedRealTime();
 #endif
 
 static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable);
@@ -1169,7 +1176,7 @@ void buildBigMethodMatrix()
 	//post("allocate arrays\n");
 
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
-	double t0 = elapsedTime();
+	double t0 = elapsedRealTime();
 #endif
 
 	// pyrmalloc:
@@ -1282,7 +1289,7 @@ void buildBigMethodMatrix()
 	//post("popSum %d\n", popSum);
 
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
-	post("building table took %.3g seconds\n", elapsedTime() - t0);
+	post("building table took %.3g seconds\n", elapsedRealTime() - t0);
 	{
 		int numFilled = 0;
 		for (i=0; i<rowTableSize/sizeof(PyrMethod*); ++i) {

@@ -680,6 +680,36 @@ x[0][0] === x[1][0] // true: doesn't deepCopy receiver
 { 1.0.rand }.dup(5) // other objects respond differently to dup
 ::
 
+subsection:: Scheduling
+
+method:: awake
+
+This method is called by a link::Classes/Clock:: on which the object was
+scheduled when its scheduling time is up. It calls link::#-next::, passing
+on the scheduling time in beats as an argument.
+
+argument:: beats
+The scheduling time in beats. This is equal to the current logical time
+(link::Classes/Thread#-beats::).
+
+argument:: seconds
+The scheduling time in seconds. This is equal to the current logical time
+(link::Classes/Thread#-seconds::).
+
+argument:: clock
+The clock on which the object was scheduled.
+
+
+subsection:: Stream Support
+
+method:: next
+
+Does nothing; simply returns the object itself.
+
+method:: reset
+
+Does nothing; simply returns the object itself.
+
 
 subsection::Routine Support
 

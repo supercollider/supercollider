@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -23,6 +23,7 @@
 #define QT_COLLIDER_TYPE_CODEC_INCLUDED
 
 #include "widgets/QcTreeWidget.h"
+#include "image.h"
 
 #include <PyrSlot.h>
 
@@ -48,7 +49,7 @@ namespace QtCollider {
 
 template <typename T> struct TypeCodec { };
 
-// Forwarding fomr QtCollider namespace to TypeCodec
+// Forwarding from QtCollider namespace to TypeCodec
 
 template <typename T> inline
 T read( PyrSlot *slot )
@@ -389,6 +390,13 @@ template <> struct TypeCodec<QcTreeWidget::ItemPtr>
   static QcTreeWidget::ItemPtr read( PyrSlot *slot );
 
   static void write( PyrSlot *slot, const QcTreeWidget::ItemPtr & );
+};
+
+template <> struct TypeCodec<SharedImage>
+{
+    static SharedImage read( PyrSlot * slot );
+    static SharedImage safeRead( PyrSlot * slot );
+    static void write ( PyrSlot *slot, SharedImage image );
 };
 
 template <> struct TypeCodec< QVector<int> >

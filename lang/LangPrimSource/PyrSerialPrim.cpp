@@ -34,6 +34,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <boost/atomic.hpp>
+#include <boost/thread.hpp>
 
 #include <stdexcept>
 #include <sstream>
@@ -41,7 +42,7 @@
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
-#include "SC_LanguageClient.h"
+#include "PyrSched.h"
 #include "SCBase.h"
 
 #include "SC_FIFO.h"
@@ -116,7 +117,6 @@ public:
 	void cleanup();
 
 protected:
-	static void* threadFunc(void*);
 	void threadLoop();
 
 	void dataAvailable();
@@ -142,7 +142,7 @@ private:
 
 	// rx thread
 	boost::atomic<bool>	m_running;
-	pthread_t			m_thread;
+	boost::thread		m_thread;
 };
 
 PyrSymbol* SerialPort::s_dataAvailable = 0;
@@ -336,10 +336,12 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 
 	m_rxErrors[0] = m_rxErrors[1] = 0;
 
-	int e = pthread_create(&m_thread, 0, threadFunc, this);
-	if (e != 0) {
+	try {
+		boost::thread thread(boost::bind(&SerialPort::threadLoop, this));
+		m_thread = boost::move(thread);
+	} catch(std::exception & e) {
 		close(m_fd);
-		throw SysError(e);
+		throw e;
 	}
 
 	m_open = true;
@@ -355,8 +357,8 @@ SerialPort::~SerialPort()
 		tcsetattr(m_fd, TCSANOW, &m_oldtermio);
 		close(m_fd);
 		m_open = false;
-	};
-	pthread_join(m_thread, 0);
+	}
+	m_thread.join();
 }
 
 void SerialPort::stop(){
@@ -396,12 +398,6 @@ int SerialPort::rxErrors()
 	return res;
 }
 
-void* SerialPort::threadFunc(void* self)
-{
-	((SerialPort*)self)->threadLoop();
-	return 0;
-}
-
 void SerialPort::dataAvailable()
 {
 	int status = lockLanguageOrQuit(m_running);
@@ -420,7 +416,7 @@ void SerialPort::dataAvailable()
 		runInterpreter(g, method, 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 void SerialPort::doneAction()
@@ -441,7 +437,7 @@ void SerialPort::doneAction()
 		runInterpreter(g, method, 1);
 		g->canCallOS = false;
 	}
-	pthread_mutex_unlock (&gLangMutex);
+	gLangMutex.unlock();
 }
 
 void SerialPort::threadLoop()

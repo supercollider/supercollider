@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -21,6 +21,8 @@
 
 #ifndef QC_CANVAS_H
 #define QC_CANVAS_H
+
+#include "image_painter.h"
 
 #include <QWidget>
 #include <QPixmap>
@@ -47,6 +49,12 @@ public:
   int frameCount() const { return _frameCount; }
   QColor background() const { return _bkg; }
   void setBackground( const QColor &c );
+  Q_INVOKABLE
+  void setBackgroundImage( const QtCollider::SharedImage & image, const QRectF & rect,
+                           int tileMode, double opacity );
+  Q_INVOKABLE
+  void removeBackgroundImage() { _bkg_image.clear(); update(); }
+
 public Q_SLOTS:
   void refresh();
   void clear();
@@ -79,6 +87,7 @@ private:
   int _meterFrames;
 
   QColor _bkg;
+  QtCollider::ImagePainter _bkg_image;
 };
 
 #endif

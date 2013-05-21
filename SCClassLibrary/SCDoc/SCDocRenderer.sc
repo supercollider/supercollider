@@ -27,14 +27,15 @@ SCDocHTMLRenderer {
         ^x;
     }
 
-    *htmlForLink {|link|
+    *htmlForLink {|link,escape=true|
         var n, m, f, c, doc;
         // FIXME: how slow is this? can we optimize
         #n, m, f = link.split($#); // link, anchor, label
         ^if ("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first==$/)) {
             if(f.size<1) {f=link};
             c = if(m.size>0) {n++"#"++m} {n};
-            "<a href=\""++c++"\">"++this.escapeSpecialChars(f)++"</a>";
+            if(escape) { f = this.escapeSpecialChars(f) };
+            "<a href=\""++c++"\">"++f++"</a>";
         } {
             if(n.size>0) {
                 c = baseDir+/+n;
@@ -69,7 +70,8 @@ SCDocHTMLRenderer {
                     f = if(m.size>0) {m} {"(empty link)"};
                 };
             };
-            "<a href=\""++c++"\">"++this.escapeSpecialChars(f)++"</a>";
+            if(escape) { f = this.escapeSpecialChars(f) };
+            "<a href=\""++c++"\">"++f++"</a>";
         };
     }
 
@@ -348,7 +350,7 @@ SCDocHTMLRenderer {
     }
 
     *renderSubTree {|stream, node|
-        var f, z;
+        var f, z, img;
         switch(node.id,
             \PROSE, {
                 if(noParBreak) {
@@ -411,7 +413,13 @@ SCDocHTMLRenderer {
             },
             \IMAGE, {
                 f = node.text.split($#);
-                stream << "<div class='image'><img src='" << f[0] << "'/>";
+                stream << "<div class='image'>";
+                img = "<img src='" ++ f[0] ++ "'/>";
+                if(f[2].isNil) {
+                    stream << img;
+                } {
+                    stream << this.htmlForLink(f[2]++"#"++(f[3]?"")++"#"++img,false);
+                };
                 f[1] !? { stream << "<br><b>" << f[1] << "</b>" }; // ugly..
                 stream << "</div>\n";
             },

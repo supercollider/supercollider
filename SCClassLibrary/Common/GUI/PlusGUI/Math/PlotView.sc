@@ -836,7 +836,7 @@ Plotter {
 				{
 					plotter.domainSpecs = ControlSpec(0, duration, units: "s");
 					plotter.setValue(
-						array.unlace(buf.numChannels).collect(_.drop(-1)),
+						array.unlace(numChan).collect(_.drop(-1)),
 						findSpecs: true,
 						refresh: false
 					);

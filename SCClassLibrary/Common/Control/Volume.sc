@@ -1,29 +1,6 @@
-/*
-
-s.boot;
-
-a = Volume(s, 0, s.options.numOutputBusChannels);
-a.play;
-
-z = {SinOsc.ar(440, 0, 0.1)}.play
-
-s.volume.volume_(-9);
-s.volume.volume;
-a.mute;
-a.unmute;
-a.volume_(0);
-
-a.gui;
-
-a.free;
-
-z.free;
-
-*/
-
 Volume {
 	var startBus, numChans, <min, <max, server, persist, <ampSynth, <>window, <volume, spec;
-	var <lag, sdname, gui = false, <muteamp, cpFun, <isMuted=false;
+	var <lag, sdname, gui = false, cpFun, updateSynth, <isMuted=false;
 	var <synthNumChans;	// the actual number of channels, which might be set automatically
 	var sdInitialized;
 
@@ -37,6 +14,23 @@ Volume {
 		volume = 0;
 		lag = 0.1;
 		gui = false;
+		updateSynth = {
+			var amp = if (isMuted.not) { volume.dbamp } { 0.0 };
+			var active = amp != 1.0;
+			if (active) {
+				if(server.serverRunning) {
+					if (ampSynth.isNil) {
+						ampSynth = Synth.after(server.defaultGroup, sdname,
+							[\volumeAmp, amp, \volumeLag, lag, \bus, startBus]);
+					}{
+						ampSynth.set(\volumeAmp, amp);
+					}
+				}
+			}{
+				if (ampSynth.notNil) { ampSynth.release; ampSynth = nil }
+			}
+		};
+
 		sdInitialized = Condition();
 		if (server.serverRunning) {
 			this.sendSynthDef
@@ -71,34 +65,10 @@ Volume {
 			if (cpFun.isNil) {
 				ServerTree.add(cpFun = {
 					ampSynth = nil;
-					if (persist) {
-						this.volume_(this.volume)
-					} {
-						this.free;
-					};
+					if (persist) { updateSynth.value; }
 				});
 			};
-			if (server.serverRunning.not) {
-				this.volume_(this.volume)
-			}
 		}
-	}
-
-	play {arg mute = false;
-		if (ampSynth.isNil) {
-			if(server.serverRunning) {
-				ampSynth = Synth.after(server.defaultGroup, sdname,
-					[\volumeAmp, volume.dbamp, \volumeLag, lag, \bus, startBus]);
-				mute.if({this.mute});
-			} {
-				"Volume only works on a running Server. Please boot".warn;
-			}
-		}
-	}
-
-	free {
-		ampSynth.release;
-		ampSynth = nil;
 	}
 
 	numChans { ^numChans ? synthNumChans ? server.options.numOutputBusChannels }
@@ -110,64 +80,47 @@ Volume {
 	}
 
 	mute {
-		isMuted = true;
-		muteamp = volume;
-		this.changed(\mute, true);
-		if (ampSynth.notNil) {
-			ampSynth.set(\volumeAmp, 0);
-		} {
-			this.playVolume(true)
+		if (isMuted.not) {
+			isMuted = true;
+			this.changed(\mute, true);
+			updateSynth.value;
 		}
 	}
 
 	unmute {
-		isMuted = false;
-		ampSynth.set(\volumeAmp, muteamp.dbamp);
-		this.changed(\mute, false);
-		if (this.muteamp == 0.0) {
-			this.free;
+		if (isMuted) {
+			isMuted = false;
+			this.changed(\mute, false);
+			updateSynth.value;
 		}
 	}
 
 	// sets volume back to 1 - removes the synth
 	reset {
-		this.free;
+		isMuted = false;
+		volume = 0.0;
+		updateSynth.value;
 	}
 
 	// cleaner with MVC - in db
 	volume_ { arg aVolume;
-		volume = aVolume;
-		if (volume == 0.0) {
-			if (ampSynth.notNil and: {this.isMuted.not}) {
-				this.free;
-			}
-		} {
-			if (server.serverRunning) {
-				this.playVolume(isMuted);
-			}
-		};
-		volume = volume.clip(min, max);
-		if(isMuted) { muteamp = volume };
-		if(ampSynth.notNil && isMuted.not) { ampSynth.set(\volumeAmp, volume.dbamp) };
+		volume = aVolume.clip(min, max);
 		this.changed(\amp, volume);
-	}
-
-	playVolume { arg muted = false;
-		if (ampSynth.isNil and: {
-			(volume != 0.0) or: {muted} }) {
-			this.play(muted);
-		}
+		updateSynth.value;
 	}
 
 	lag_ { arg aLagTime;
 		lag = aLagTime;
-		ampSynth.set(\volumeLag, lag);
+		if (ampSynth.notNil) { ampSynth.set(\volumeLag, lag) };
 	}
 
 	setVolumeRange { arg argMin, argMax;
+		var clippedVolume;
 		argMin !? { min = argMin };
 		argMax !? { max = argMax };
 		this.changed(\ampRange, min, max);
+		clippedVolume = volume.clip(min, max);
+		if (clippedVolume != volume) { this.volume_(clippedVolume) }
 	}
 
 

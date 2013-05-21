@@ -34,6 +34,8 @@
 #include "session_switch_dialog.hpp"
 #include "sessions_dialog.hpp"
 #include "tool_box.hpp"
+#include "audio_status_box.hpp"
+#include "lang_status_box.hpp"
 #include "../core/main.hpp"
 #include "../core/doc_manager.hpp"
 #include "../core/session_manager.hpp"
@@ -44,9 +46,12 @@
 #include "QtCollider/hacks/hacks_qt.hpp"
 
 #include "SC_DirUtils.h"
+#include "SC_Version.hpp"
 
 #include <QAction>
 #include <QApplication>
+#include <QDesktopServices>
+#include <QDesktopWidget>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QGridLayout>
@@ -61,6 +66,10 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QMetaMethod>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QStandardPaths>
+#endif
 
 namespace ScIDE {
 
@@ -79,6 +88,15 @@ static QWidget * findFirstResponder
     return widget;
 }
 
+static void invokeMethodOnFirstResponder(QByteArray const & signature)
+{
+    int methodIdx = -1;
+    QWidget * widget = findFirstResponder(
+                QApplication::focusWidget(), signature.constData(), methodIdx );
+    if (widget && methodIdx != -1)
+        widget->metaObject()->method(methodIdx).invoke( widget, Qt::DirectConnection );
+}
+
 MainWindow * MainWindow::mInstance = 0;
 
 MainWindow::MainWindow(Main * main) :
@@ -93,10 +111,8 @@ MainWindow::MainWindow(Main * main) :
 
     // Construct status bar:
 
-    mLangStatus = new StatusLabel();
-    mLangStatus->setText(tr("Inactive"));
-    mServerStatus = new StatusLabel();
-    onServerStatusReply(0, 0, 0, 0, 0, 0);
+    mLangStatus = new LangStatusBox( main->scProcess() );
+    mServerStatus = new AudioStatusBox( main->scServer() );
 
     mStatusBar = statusBar();
     mStatusBar->addPermanentWidget( new QLabel(tr("Interpreter:")) );
@@ -198,16 +214,10 @@ MainWindow::MainWindow(Main * main) :
     // ToolBox
     connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
 
-    connect(main->scServer(), SIGNAL(runningStateChange(bool,QString,int)),
-            this, SLOT(onServerRunningChanged(bool,QString,int)));
-    connect(main->scServer(), SIGNAL(updateServerStatus(int,int,int,int,float,float)),
-            this, SLOT(onServerStatusReply(int,int,int,int,float,float)));
-
     createActions();
     createMenus();
 
     // Must be called after createAtions(), because it accesses an action:
-    onServerRunningChanged(false, "", 0);
     toggleInterpreterActions(false);
 
     // Initialize recent documents menu
@@ -227,6 +237,11 @@ MainWindow::MainWindow(Main * main) :
     QApplication::setWindowIcon(icon);
 
     updateWindowTitle();
+
+    applyCursorBlinkingSettings(main->settings());
+
+    // Custom event handling:
+    qApp->installEventFilter(this);
 }
 
 void MainWindow::createActions()
@@ -265,6 +280,12 @@ void MainWindow::createActions()
     action->setStatusTip(tr("Open startup file"));
     connect(action, SIGNAL(triggered()), this, SLOT(openStartupFile()));
     settings->addAction( action, "ide-document-open-startup", ideCategory);
+
+    mActions[DocOpenSupportDir] = action = new QAction(
+        QIcon::fromTheme("document-open"), tr("Open user support directory"), this);
+    action->setStatusTip(tr("Open user support directory"));
+    connect(action, SIGNAL(triggered()), this, SLOT(openUserSupportDirectory()));
+    settings->addAction( action, "ide-document-open-support-directory", ideCategory);
 
     mActions[DocSave] = action = new QAction(
         QIcon::fromTheme("document-save"), tr("&Save"), this);
@@ -360,6 +381,12 @@ void MainWindow::createActions()
     connect(action, SIGNAL(triggered()), this, SLOT(showCmdLine()));
     settings->addAction( action, "ide-command-line-show", ideCategory);
 
+    mActions[CmdLineForCursor] = action = new QAction(tr("&Command Line from selection"), this);
+    action->setShortcut(tr("Ctrl+Shift+E", "Fill command line with current selection"));
+    connect(action, SIGNAL(triggered()), this, SLOT(cmdLineForCursor()));
+    settings->addAction( action, "ide-command-line-fill", ideCategory);
+
+
     mActions[ShowGoToLineTool] = action = new QAction(tr("&Go To Line"), this);
     action->setStatusTip(tr("Tool to jump to a line by number"));
     action->setShortcut(tr("Ctrl+L", "Show go-to-line tool"));
@@ -382,7 +409,7 @@ void MainWindow::createActions()
     mActions[FocusPostWindow] = action = new QAction( tr("Focus Post Window"), this);
     action->setStatusTip(tr("Focus post window"));
     action->setShortcut(tr("Ctrl+P", "Focus post window"));
-    connect(action, SIGNAL(triggered()), mPostDocklet, SLOT(raiseAndFocus()));
+    connect(action, SIGNAL(triggered()), mPostDocklet, SLOT(focus()));
     settings->addAction( action, "post-focus", ideCategory);
 
     // Language
@@ -422,28 +449,32 @@ void MainWindow::createActions()
     settings->addAction( action, "ide-settings-dialog", ideCategory);
 
     // Help
-    mActions[Help] = action = new QAction(
-        QIcon::fromTheme("system-help"), tr("Open &Help Browser"), this);
-    action->setStatusTip(tr("Open help"));
+    mActions[Help] = action = new QAction(tr("Show &Help Browser"), this);
+    action->setStatusTip(tr("Show and focus the Help Browser"));
     connect(action, SIGNAL(triggered()), this, SLOT(openHelp()));
-    settings->addAction( action, "help-show", helpCategory);
+    settings->addAction( action, "help-browser", helpCategory);
 
-    mActions[LookupDocumentationForCursor] = action = new QAction(
-        QIcon::fromTheme("system-help"), tr("Look Up Documentation for Cursor"), this);
+    mActions[HelpAboutIDE]  = action =
+            new QAction(QIcon::fromTheme("system-help"), tr("How to Use SuperCollider IDE"), this);
+    action->setStatusTip(tr("Open the SuperCollider IDE guide"));
+    connect(action, SIGNAL(triggered()), this, SLOT(openHelpAboutIDE()));
+
+    mActions[LookupDocumentationForCursor] = action =
+            new QAction(tr("Look Up Documentation for Cursor"), this);
     action->setShortcut(tr("Ctrl+D", "Look Up Documentation for Cursor"));
     action->setStatusTip(tr("Look up documentation for text under cursor"));
     connect(action, SIGNAL(triggered()), this, SLOT(lookupDocumentationForCursor()));
     settings->addAction( action, "help-lookup-for-cursor", helpCategory);
 
-    mActions[LookupDocumentation] = action = new QAction(
-        QIcon::fromTheme("system-help"), tr("Look Up Documentation..."), this);
+    mActions[LookupDocumentation] = action =
+            new QAction(tr("Look Up Documentation..."), this);
     action->setShortcut(tr("Ctrl+Shift+D", "Look Up Documentation"));
     action->setStatusTip(tr("Enter text to look up in documentation"));
     connect(action, SIGNAL(triggered()), this, SLOT(lookupDocumentation()));
     settings->addAction( action, "help-lookup", helpCategory);
 
     mActions[ShowAbout] = action = new QAction(
-        QIcon::fromTheme("show-about"), tr("&About SuperCollider"), this);
+        QIcon::fromTheme("help-about"), tr("&About SuperCollider"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(showAbout()));
     settings->addAction( action, "ide-about", ideCategory);
 
@@ -471,6 +502,12 @@ void MainWindow::createActions()
     settings->addAction( mHelpBrowserDocklet->toggleViewAction(),
                          "ide-docklet-help", ideCategory );
 
+    // In Mac OS, all menu item shortcuts need a modifier, so add the action with
+    // the "Escape" default shortcut to the main window widget.
+    // FIXME: This is not perfect, as any other action customized to "Escape" will
+    // still not work.
+    addAction( mActions[CloseToolBox] );
+
     // Add actions to docklets, so shortcuts work when docklets detached:
 
     mPostDocklet->widget()->addAction(mActions[LookupDocumentation]);
@@ -491,8 +528,16 @@ void MainWindow::createActions()
 
 void MainWindow::createMenus()
 {
+    QMenuBar *menuBar;
     QMenu *menu;
     QMenu *submenu;
+
+    // On Mac, create a parent-less menu bar to be shared by all windows:
+#ifdef Q_OS_MAC
+    menuBar = new QMenuBar(0);
+#else
+    menuBar = this->menuBar();
+#endif
 
     menu = new QMenu(tr("&File"), this);
     menu->addAction( mActions[DocNew] );
@@ -501,6 +546,7 @@ void MainWindow::createMenus()
     connect(mRecentDocsMenu, SIGNAL(triggered(QAction*)),
             this, SLOT(onRecentDocAction(QAction*)));
     menu->addAction( mActions[DocOpenStartup] );
+    menu->addAction( mActions[DocOpenSupportDir] );
     menu->addAction( mActions[DocSave] );
     menu->addAction( mActions[DocSaveAs] );
     menu->addAction( mActions[DocSaveAll] );
@@ -512,7 +558,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[Quit] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Session"), this);
     menu->addAction( mActions[NewSession] );
@@ -526,7 +572,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[ManageSessions] );
     menu->addAction( mActions[OpenSessionSwitchDialog] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Edit"), this);
     menu->addAction( mEditors->action(MultiEditor::Undo) );
@@ -546,11 +592,12 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::ToggleComment) );
     menu->addAction( mEditors->action(MultiEditor::ToggleOverwriteMode) );
     menu->addAction( mEditors->action(MultiEditor::SelectRegion) );
+    menu->addAction( mEditors->action(MultiEditor::SelectEnclosingBlock) );
 
     menu->addSeparator();
     menu->addAction( mActions[ShowSettings] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&View"), this);
     submenu = new QMenu(tr("&Docklets"), this);
@@ -563,6 +610,7 @@ void MainWindow::createMenus()
     submenu->addAction( mActions[Find] );
     submenu->addAction( mActions[Replace] );
     submenu->addAction( mActions[ShowCmdLine] );
+    submenu->addAction( mActions[CmdLineForCursor] );
     submenu->addAction( mActions[ShowGoToLineTool] );
     submenu->addSeparator();
     submenu->addAction( mActions[CloseToolBox] );
@@ -585,7 +633,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Language"), this);
     menu->addAction( mMain->scProcess()->action(ScProcess::ToggleRunning) );
@@ -594,9 +642,18 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mMain->scServer()->action(ScServer::ToggleRunning) );
     menu->addAction( mMain->scServer()->action(ScServer::Reboot) );
+    menu->addAction( mMain->scServer()->action(ScServer::KillAll) );
+    menu->addSeparator();
     menu->addAction( mMain->scServer()->action(ScServer::ShowMeters) );
+    menu->addAction( mMain->scServer()->action(ScServer::ShowScope) );
+    menu->addAction( mMain->scServer()->action(ScServer::ShowFreqScope) );
     menu->addAction( mMain->scServer()->action(ScServer::DumpNodeTree) );
     menu->addAction( mMain->scServer()->action(ScServer::DumpNodeTreeWithControls) );
+    menu->addAction( mMain->scServer()->action(ScServer::PlotTree) );
+    menu->addAction( mMain->scServer()->action(ScServer::VolumeUp) );
+    menu->addAction( mMain->scServer()->action(ScServer::VolumeDown) );
+    menu->addAction( mMain->scServer()->action(ScServer::VolumeRestore) );
+    menu->addAction( mMain->scServer()->action(ScServer::Mute) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::EvaluateCurrentDocument) );
     menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );
@@ -608,9 +665,11 @@ void MainWindow::createMenus()
     menu->addAction( mActions[LookupReferencesForCursor] );
     menu->addAction( mActions[LookupReferences] );
 
-    menuBar()->addMenu(menu);
+    menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Help"), this);
+    menu->addAction( mActions[HelpAboutIDE] );
+    menu->addSeparator();
     menu->addAction( mActions[Help] );
     menu->addAction( mActions[LookupDocumentationForCursor] );
     menu->addAction( mActions[LookupDocumentation] );
@@ -618,14 +677,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[ShowAbout] );
     menu->addAction( mActions[ShowAboutQT] );
 
-    menuBar()->addMenu(menu);
-
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::ToggleRunning) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::Reboot) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::ShowMeters) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::DumpNodeTree) );
-    mServerStatus->addAction( mMain->scServer()->action(ScServer::DumpNodeTreeWithControls) );
-    mServerStatus->setContextMenuPolicy(Qt::ActionsContextMenu);
+    menuBar->addMenu(menu);
 }
 
 static void saveDetachedState( Docklet *docklet,  QVariantMap & data )
@@ -848,54 +900,16 @@ void MainWindow::onRecentDocAction( QAction *action )
 
 void MainWindow::onInterpreterStateChanged( QProcess::ProcessState state )
 {
-    QString text;
-    QColor color;
-
     switch(state) {
     case QProcess::NotRunning:
         toggleInterpreterActions(false);
 
-        text = tr("Inactive");
-        color = Qt::white;
-        break;
-
     case QProcess::Starting:
-        text = tr("Booting");
-        color = QColor(255,255,0);
         break;
 
     case QProcess::Running:
         toggleInterpreterActions(true);
-
-        text = tr("Active");
-        color = Qt::green;
         break;
-    }
-
-    mLangStatus->setText(text);
-    mLangStatus->setTextColor(color);
-}
-
-
-void MainWindow::onServerStatusReply(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU)
-{
-    QString statusString =
-            QString("%1% %2% %3u %4s %5g %6d")
-            .arg(avgCPU,  5, 'f', 2)
-            .arg(peakCPU, 5, 'f', 2)
-            .arg(ugens,     4)
-            .arg(synths,    4)
-            .arg(groups,    4)
-            .arg(synthDefs, 4);
-
-    mServerStatus->setText(statusString);
-}
-
-void MainWindow::onServerRunningChanged(bool running, const QString &, int)
-{
-    mServerStatus->setTextColor( running ? Qt::green : Qt::white);
-    if (!running) {
-        onServerStatusReply(0, 0, 0, 0, 0, 0);
     }
 }
 
@@ -956,6 +970,26 @@ bool MainWindow::reload( Document *doc )
     return Main::instance()->documentManager()->reload(doc);
 }
 
+QString MainWindow::documentSavePath( Document *document ) const
+{
+    if (!document->filePath().isEmpty())
+        return document->filePath();
+
+    if (!mLastDocumentSavePath.isEmpty())
+        return QFileInfo(mLastDocumentSavePath).path();
+
+    QString interpreterWorkingDir =
+            Main::settings()->value("IDE/interpreter/runtimeDir").toString();
+    if (!interpreterWorkingDir.isEmpty())
+        return interpreterWorkingDir;
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    return QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
+#else
+	return QStandardPaths::standardLocations(QStandardPaths::HomeLocation).front();
+#endif
+}
+
 bool MainWindow::save( Document *doc, bool forceChoose )
 {
     const bool documentHasPath = !doc->filePath().isEmpty();
@@ -979,36 +1013,50 @@ bool MainWindow::save( Document *doc, bool forceChoose )
     }
 
     if (forceChoose || !documentHasPath || !fileIsWritable) {
+
         QFileDialog dialog(mInstance);
         dialog.setAcceptMode( QFileDialog::AcceptSave );
+        dialog.setFileMode( QFileDialog::AnyFile );
 
-        QStringList filters = (QStringList()
-                               << tr("SuperCollider Document (*.scd)")
-                               << tr("SuperCollider Class file (*.sc)")
-                               << "SCDoc (*.schelp)"
-                               << tr("All files (*)"));
+        QStringList filters = QStringList()
+                              << tr("All Files (*)")
+                              << tr("SuperCollider Document (*.scd)")
+                              << tr("SuperCollider Class File (*.sc)")
+                              << tr("SuperCollider Help Source (*.schelp)");
 
         dialog.setNameFilters(filters);
 
-        if(doc->filePath().isEmpty()){
-            dialog.setDefaultSuffix("scd");
-        }else{
-            QString fp = doc->filePath();
-            if(fp.endsWith(".scd"))
-                dialog.setNameFilter(filters[0]);
-            else if(fp.endsWith(".sc"))
-                dialog.setNameFilter(filters[1]);
-            else if(fp.endsWith(".schelp"))
-                dialog.setNameFilter(filters[2]);
-            else
-                dialog.setNameFilter(filters[3]);
-            dialog.selectFile(fp);
+        QString path = mInstance->documentSavePath(doc);
+        QFileInfo path_info(path);
 
-        }
-
-        if (dialog.exec() == QDialog::Accepted)
-            return documentManager->saveAs(doc, dialog.selectedFiles()[0]);
+        if (path_info.isDir())
+            // FIXME:
+            // KDE native file dialog shows parent directory instead (KDE bug 229375)
+            dialog.setDirectory(path);
         else
+            dialog.selectFile(path);
+
+        // NOTE: do not use QFileDialog::setDefaultSuffix(), because it only adds
+        // the suffix after the dialog is closed, without showing a warning if the
+        // filepath with added suffix already exists!
+
+#ifdef Q_OS_MAC
+        QWidget *last_active_window = QApplication::activeWindow();
+#endif
+
+        int result = dialog.exec();
+
+        // FIXME: workaround for Qt bug 25295
+        // See SC issue #678
+#ifdef Q_OS_MAC
+        if (last_active_window)
+            last_active_window->activateWindow();
+#endif
+
+        if (result == QDialog::Accepted) {
+            QString savePath = mInstance->mLastDocumentSavePath = dialog.selectedFiles()[0];
+            return documentManager->saveAs(doc, savePath);
+        } else
             return false;
     } else
         return documentManager->save(doc);
@@ -1019,6 +1067,31 @@ void MainWindow::newDocument()
     mMain->documentManager()->create();
 }
 
+QString MainWindow::documentOpenPath() const
+{
+    GenericCodeEditor * currentEditor = mEditors->currentEditor();
+    if (currentEditor) {
+        QString currentEditorPath = currentEditor->document()->filePath();
+        if (!currentEditorPath.isEmpty())
+            return currentEditorPath;
+    }
+
+    const QStringList & recentDocuments = Main::documentManager()->recents();
+    if (!recentDocuments.isEmpty())
+        return recentDocuments[0];
+
+    QString interpreterWorkingDir =
+            Main::settings()->value("IDE/interpreter/runtimeDir").toString();
+    if (!interpreterWorkingDir.isEmpty())
+        return interpreterWorkingDir;
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    return QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
+#else
+	return QStandardPaths::standardLocations(QStandardPaths::HomeLocation).front();
+#endif
+}
+
 void MainWindow::openDocument()
 {
     QFileDialog dialog (this, Qt::Dialog);
@@ -1027,19 +1100,23 @@ void MainWindow::openDocument()
 
     dialog.setFileMode( QFileDialog::ExistingFiles );
 
-    GenericCodeEditor * currentEditor = mEditors->currentEditor();
-    if (currentEditor) {
-        Document * currentDocument = currentEditor->document();
-        QFileInfo filePath (currentDocument->filePath());
-        dialog.setDirectory(filePath.dir());
-    }
+    QString path = documentOpenPath();
+    QFileInfo path_info(path);
+    if (path_info.isDir())
+        dialog.setDirectory(path);
+    else
+        dialog.setDirectory(path_info.dir());
 
     QStringList filters;
     filters
-        << tr("All files (*)")
+        << tr("All Files (*)")
         << tr("SuperCollider (*.scd *.sc)")
-        << tr("SCDoc (*.schelp)");
+        << tr("SuperCollider Help Source (*.schelp)");
     dialog.setNameFilters(filters);
+
+#ifdef Q_OS_MAC
+    QWidget *last_active_window = QApplication::activeWindow();
+#endif
 
     if (dialog.exec())
     {
@@ -1047,6 +1124,13 @@ void MainWindow::openDocument()
         foreach(QString filename, filenames)
             mMain->documentManager()->open(filename);
     }
+
+    // FIXME: workaround for Qt bug 25295
+    // See SC issue #678
+#ifdef Q_OS_MAC
+    if (last_active_window)
+        last_active_window->activateWindow();
+#endif
 }
 
 void MainWindow::openStartupFile()
@@ -1075,6 +1159,15 @@ void MainWindow::openStartupFile()
     }
 
     mMain->documentManager()->open( filePath );
+}
+
+void MainWindow::openUserSupportDirectory()
+{
+    char appSupportDir[PATH_MAX];
+    sc_GetUserAppSupportDirectory(appSupportDir, PATH_MAX);
+
+    QUrl dirUrl = QUrl::fromLocalFile(QString(appSupportDir));
+    QDesktopServices::openUrl(dirUrl);
 }
 
 void MainWindow::saveDocument()
@@ -1181,10 +1274,10 @@ void MainWindow::updateWindowTitle()
             title.append( titleString  );
 
             setWindowFilePath(doc->filePath());
-	} else {
+        } else {
             title.append( tr("Untitled") );
             setWindowFilePath("");
-	}
+        }
     } else {
             setWindowFilePath("");
     }
@@ -1219,7 +1312,7 @@ void MainWindow::updateClockWidget(bool isFullScreen)
         }
     } else {
         if (mClockLabel == NULL) {
-            mClockLabel = new StatusClockLabel(this);
+            mClockLabel = new ClockStatusBox(this);
             statusBar()->insertWidget(0, mClockLabel);
         }
     }
@@ -1234,36 +1327,25 @@ void MainWindow::lookupImplementationForCursor()
 {
     static const QByteArray signature = QMetaObject::normalizedSignature("openDefinition()");
 
-    int methodIdx = -1;
-    QWidget * widget = findFirstResponder(
-                QApplication::focusWidget(), signature.constData(), methodIdx );
-    if (widget && methodIdx != -1)
-        widget->metaObject()->method(methodIdx).invoke( widget, Qt::DirectConnection );
+    invokeMethodOnFirstResponder(signature);
 }
 
 void MainWindow::lookupImplementation()
 {
-    LookupDialog dialog( QApplication::activeWindow() );
-    dialog.exec();
+    Main::openDefinition(QString(), QApplication::activeWindow());
 }
 
 void MainWindow::lookupReferencesForCursor()
 {
     static const QByteArray signature = QMetaObject::normalizedSignature("findReferences()");
 
-    int methodIdx = -1;
-    QWidget * widget = findFirstResponder(
-                QApplication::focusWidget(), signature.constData(), methodIdx );
-    if (widget && methodIdx != -1)
-        widget->metaObject()->method(methodIdx).invoke( widget, Qt::DirectConnection );
+    invokeMethodOnFirstResponder(signature);
 }
 
 void MainWindow::lookupReferences()
 {
-    ReferencesDialog dialog( QApplication::activeWindow() );
-    dialog.exec();
+    Main::findReferences(QString(), QApplication::activeWindow());
 }
-
 
 void MainWindow::showStatusMessage( QString const & string )
 {
@@ -1272,9 +1354,18 @@ void MainWindow::showStatusMessage( QString const & string )
 
 void MainWindow::applySettings( Settings::Manager * settings )
 {
+    applyCursorBlinkingSettings( settings );
+
     mPostDocklet->mPostWindow->applySettings(settings);
     mHelpBrowserDocklet->browser()->applySettings(settings);
     mCmdLine->applySettings(settings);
+}
+
+void MainWindow::applyCursorBlinkingSettings( Settings::Manager * settings )
+{
+    const bool disableBlinkingCursor = settings->value("IDE/editor/disableBlinkingCursor").toBool();
+    const int defaultCursorFlashTime = settings->defaultCursorFlashTime();
+    QApplication::setCursorFlashTime( disableBlinkingCursor ? 0 : defaultCursorFlashTime );
 }
 
 void MainWindow::storeSettings( Settings::Manager * settings )
@@ -1308,9 +1399,8 @@ void MainWindow::showAbout()
             "&copy; James McCartney and others.<br>"
             "<h3>SuperCollider IDE</h3>"
             "&copy; Jakob Leben, Tim Blechmann and others.<br>"
-            "Development partially funded by Kiberpipa."
             ;
-    aboutString = aboutString.arg("3.6");
+    aboutString = aboutString.arg(SC_VersionString().c_str());
 
     QMessageBox::about(this, tr("About SuperCollider IDE"), aboutString);
 }
@@ -1334,6 +1424,19 @@ void MainWindow::showCmdLine()
     mToolBox->show();
 
     mCmdLine->setFocus(Qt::OtherFocusReason);
+}
+
+void MainWindow::showCmdLine( const QString & cmd)
+{
+    mCmdLine->setText(cmd);
+    showCmdLine();
+}
+
+void MainWindow::cmdLineForCursor()
+{
+    static const QByteArray signature = QMetaObject::normalizedSignature("openCommandLine()");
+
+    invokeMethodOnFirstResponder(signature);
 }
 
 void MainWindow::showGoToLineTool()
@@ -1428,7 +1531,23 @@ void MainWindow::openHelp()
 {
     if (mHelpBrowserDocklet->browser()->url().isEmpty())
         mHelpBrowserDocklet->browser()->goHome();
-    mHelpBrowserDocklet->raiseAndFocus();
+    mHelpBrowserDocklet->focus();
+}
+
+void MainWindow::openHelpAboutIDE()
+{
+    mHelpBrowserDocklet->browser()->gotoHelpFor("Guides/SCIde");
+
+    mHelpBrowserDocklet->setDetached(true);
+
+    QRect availableGeometry = QApplication::desktop()->availableGeometry(mHelpBrowserDocklet->window());
+    QRect geometry;
+    geometry.setWidth( qMin(700, availableGeometry.width()) );
+    geometry.setHeight( availableGeometry.height() - 150 );
+    geometry.moveCenter( availableGeometry.center() );
+
+    mHelpBrowserDocklet->window()->setGeometry( geometry );
+    mHelpBrowserDocklet->focus();
 }
 
 void MainWindow::dragEnterEvent( QDragEnterEvent * event )
@@ -1472,39 +1591,33 @@ void MainWindow::dropEvent( QDropEvent * event )
     }
 }
 
-//////////////////////////// StatusLabel /////////////////////////////////
-
-StatusLabel::StatusLabel(QWidget *parent) : QLabel(parent)
+bool MainWindow::eventFilter( QObject *object, QEvent *event )
 {
-    setAutoFillBackground(true);
-    setMargin(3);
-    setAlignment(Qt::AlignCenter);
-    setBackground(Qt::black);
-    setTextColor(Qt::white);
+    switch(event->type()) {
+    case QEvent::ShortcutOverride:
+    {
+        QKeyEvent *key_event = static_cast<QKeyEvent*>(event);
+        if (key_event->key() == 0) {
+            // FIXME:
+            // On Mac OS, for some global menu items, there is a  ShortcutOverride event with
+            // key == 0, which seems like a Qt bug.
+            // Text widgets override all events with key < Qt::Key_Escape, which includes 0.
+            // Instead, prevent overriding such events:
+            event->ignore();
+            return true;
+        }
+        break;
+    }
+    default:
+        break;
+    }
 
-    QFont font("Monospace");
-    font.setStyleHint(QFont::Monospace);
-    font.setBold(true);
-    setFont(font);
+    return QMainWindow::eventFilter(object, event);
 }
 
-void StatusLabel::setBackground(const QBrush & brush)
-{
-    QPalette plt(palette());
-    plt.setBrush(QPalette::Window, brush);
-    setPalette(plt);
-}
+//////////////////////////// ClockStatusBox ////////////////////////////
 
-void StatusLabel::setTextColor(const QColor & color)
-{
-    QPalette plt(palette());
-    plt.setColor(QPalette::WindowText, color);
-    setPalette(plt);
-}
-
-//////////////////////////// StatusClockLabel ////////////////////////////
-
-StatusClockLabel::StatusClockLabel(QWidget * parent):
+ClockStatusBox::ClockStatusBox(QWidget * parent):
     StatusLabel(parent)
 {
     setTextColor(Qt::green);
@@ -1512,18 +1625,18 @@ StatusClockLabel::StatusClockLabel(QWidget * parent):
     updateTime();
 }
 
-StatusClockLabel::~StatusClockLabel()
+ClockStatusBox::~ClockStatusBox()
 {
     killTimer(mTimerId);
 }
 
-void StatusClockLabel::timerEvent(QTimerEvent *e)
+void ClockStatusBox::timerEvent(QTimerEvent *e)
 {
     if (e->timerId() == mTimerId)
         updateTime();
 }
 
-void StatusClockLabel::updateTime()
+void ClockStatusBox::updateTime()
 {
     setText(QTime::currentTime().toString());
 }

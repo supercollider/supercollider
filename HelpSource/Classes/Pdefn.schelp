@@ -193,7 +193,7 @@ Pdefn(\deg, { loop { yield(0.1.rand.round(0.01) + [2, 3, 9].choose) } });
 
 // equivalent to:
 
-Pdefn(\deg, Proutine { loop { yield(0.1.rand.round(0.01) + [2, 3, 9].choose) } });
+Pdefn(\deg, Prout { loop { yield(0.1.rand.round(0.01) + [2, 3, 9].choose) } });
 
 // this is not exactly true, see below..
 ::

@@ -35,9 +35,9 @@
 
 # include <machine/endian.h>
 
-#elif defined(__FreeBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__)
 
-# include <machine/endian.h>
+# include <sys/types.h>
 # include <netinet/in.h>
 
 #elif defined(_WIN32)
@@ -45,9 +45,7 @@
 # define LITTLE_ENDIAN 1234
 # define BIG_ENDIAN 4321
 # define BYTE_ORDER LITTLE_ENDIAN
-# include <winsock2.h>
-# undef IN
-# undef OUT
+# include "SC_Win32Utils.h"
 
 #elif defined(__linux__)
 

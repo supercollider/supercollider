@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -34,10 +34,7 @@
 #include <SCBase.h>
 #include <PyrSymbol.h>
 #include <PyrObject.h>
-
-#include <pthread.h>
-
-extern pthread_mutex_t gLangMutex;
+#include <PyrSched.h>
 
 Q_DECLARE_METATYPE( PyrObject * );
 Q_DECLARE_METATYPE( QVector<double> );
@@ -69,13 +66,13 @@ namespace QtCollider {
   inline void lockLang()
   {
     qcDebugMsg(2,"locking lang!");
-    pthread_mutex_lock (&gLangMutex);
+    gLangMutex.lock();
     qcDebugMsg(2,"locked");
   }
 
   inline void unlockLang()
   {
-    pthread_mutex_unlock(&gLangMutex);
+    gLangMutex.unlock();
     qcDebugMsg(2,"unlocked");
   }
 
@@ -105,7 +102,8 @@ namespace QtCollider {
   QC_DO_SYMBOL(QLayout); \
   QC_DO_SYMBOL(QTreeViewItem); \
   QC_DO_SYMBOL(Gradient); \
-  QC_DO_SYMBOL(HiliteGradient);
+  QC_DO_SYMBOL(HiliteGradient); \
+  QC_DO_SYMBOL(QImage);
 
 #define QC_DO_SYMBOL(SYM) extern PyrSymbol * sym_##SYM
 QC_DO_SYMBOLS

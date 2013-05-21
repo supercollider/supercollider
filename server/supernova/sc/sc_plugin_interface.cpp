@@ -17,6 +17,7 @@
 //  Boston, MA 02111-1307, USA.
 
 #include <cstdarg>
+#include <random>
 
 #include "sndfile.hh"
 
@@ -32,12 +33,13 @@
 #include "../utilities/malloc_aligned.hpp"
 #include "../utilities/sized_array.hpp"
 
-#include "SC_Samp.h"
 #include "SC_Prototypes.h"
-#include "SC_Errors.h"
 #include "SC_Unit.h"
+#include "SC_Lock.h"
 #include "clz.h"
 #include "SC_fftlib.h"
+#include "SC_Lock.h"
+#include "../../common/Samp.hpp"
 #include "../../common/SC_SndFileHelpers.hpp"
 
 #include <boost/math/constants/constants.hpp>
@@ -53,6 +55,8 @@ namespace nova {
 spin_lock log_guard; // needs to be acquired for logging from the helper threads!
 
 namespace {
+
+spin_lock rt_pool_guard;
 
 inline Node * as_Node(server_node * node)
 {
@@ -321,8 +325,7 @@ void release_scope_buffer(World *inWorld, ScopeBufferHnd &hnd)
 } /* namespace */
 } /* namespace nova */
 
-extern "C"
-{
+extern "C" {
 
 bool define_unit(const char *inUnitClassName, size_t inAllocSize,
                  UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
@@ -354,7 +357,6 @@ bool define_unitcmd(const char * unitClassName, const char * cmdName, UnitCmdFun
     return nova::sc_factory->register_ugen_command_function(unitClassName, cmdName, inFunc);
 }
 
-
 bool define_plugincmd(const char * name, PlugInCmdFunc func, void * user_data)
 {
     return nova::sc_factory->register_cmd_plugin(name, func, user_data);
@@ -362,6 +364,7 @@ bool define_plugincmd(const char * name, PlugInCmdFunc func, void * user_data)
 
 void * rt_alloc(World * dummy, size_t size)
 {
+    nova::spin_lock::scoped_lock lock(nova::rt_pool_guard);
     if (size)
         return nova::rt_pool.malloc(size);
     else
@@ -370,11 +373,13 @@ void * rt_alloc(World * dummy, size_t size)
 
 void * rt_realloc(World * dummy, void * ptr, size_t size)
 {
+    nova::spin_lock::scoped_lock lock(nova::rt_pool_guard);
     return nova::rt_pool.realloc(ptr, size);
 }
 
 void rt_free(World * dummy, void * ptr)
 {
+    nova::spin_lock::scoped_lock lock(nova::rt_pool_guard);
     if (ptr)
         nova::rt_pool.free(ptr);
 }
@@ -393,6 +398,23 @@ void nrt_free(void * ptr)
 {
     free(ptr);
 }
+
+void * nrt_alloc_2(World * dummy, size_t size)
+{
+    return malloc(size);
+}
+
+void * nrt_realloc_2(World * dummy, void * ptr, size_t size)
+{
+    return realloc(ptr, size);
+}
+
+void nrt_free_2(World * dummy, void * ptr)
+{
+    free(ptr);
+}
+
+
 
 void clear_outputs(Unit *unit, int samples)
 {
@@ -532,12 +554,12 @@ void send_trigger(Node * unit, int trigger_id, float value)
 
 void world_lock(World *world)
 {
-    world->mNRTLock->Lock();
+    reinterpret_cast<SC_Lock*>(world->mNRTLock)->lock();
 }
 
 void world_unlock(World *world)
 {
-    world->mNRTLock->Unlock();
+    reinterpret_cast<SC_Lock*>(world->mNRTLock)->unlock();
 }
 
 Node * get_node(World *world, int id)
@@ -596,6 +618,8 @@ inline void initialize_rate(Rate & rate, double sample_rate, int blocksize)
 
 void sc_plugin_interface::initialize(server_arguments const & args, float * control_busses)
 {
+    const bool nrt_mode = args.non_rt;
+
     done_nodes.reserve(64);
     pause_nodes.reserve(16);
     resume_nodes.reserve(16);
@@ -629,9 +653,15 @@ void sc_plugin_interface::initialize(server_arguments const & args, float * cont
     sc_interface.mSineWavetable = gSineWavetable;
 
     /* memory allocation */
-    sc_interface.fRTAlloc = &rt_alloc;
-    sc_interface.fRTRealloc = &rt_realloc;
-    sc_interface.fRTFree = &rt_free;
+    if (!nrt_mode) {
+        sc_interface.fRTAlloc = &rt_alloc;
+        sc_interface.fRTRealloc = &rt_realloc;
+        sc_interface.fRTFree = &rt_free;
+    } else {
+        sc_interface.fRTAlloc = &nrt_alloc_2;
+        sc_interface.fRTRealloc = &nrt_realloc_2;
+        sc_interface.fRTFree = &nrt_free_2;
+    }
 
     sc_interface.fNRTAlloc = &nrt_alloc;
     sc_interface.fNRTRealloc = &nrt_realloc;
@@ -706,6 +736,7 @@ void sc_plugin_interface::initialize(server_arguments const & args, float * cont
     world.mNumOutputs = args.output_channels;
 
     world.mRealTime = !args.non_rt;
+    world.mVerbosity = args.verbosity;
 
     /* rngs */
     world.mNumRGens = args.rng_count;
@@ -738,7 +769,7 @@ void sc_plugin_interface::reset_sampling_rate(int sr)
 }
 
 
-void sc_done_action_handler::update_nodegraph(void)
+void sc_done_action_handler::apply_done_actions(void)
 {
     for (server_node * node : done_nodes)
         instance->free_node(node);
@@ -770,7 +801,7 @@ sc_plugin_interface::~sc_plugin_interface(void)
     delete[] world.mSndBufsNonRealTimeMirror;
     delete[] world.mSndBufUpdates;
     delete[] world.mRGen;
-    delete world.mNRTLock;
+    delete reinterpret_cast<SC_Lock*>(world.mNRTLock);
 }
 
 namespace {
@@ -974,13 +1005,14 @@ int sc_plugin_interface::buffer_write(uint32_t index, const char * filename, con
     return 0;
 }
 
-static void buffer_read_verify(SndfileHandle & sf, size_t min_length, size_t samplerate)
+static void buffer_read_verify(SndfileHandle & sf, size_t min_length, size_t samplerate, bool check_samplerate)
 {
     if (sf.rawHandle() == nullptr)
         throw std::runtime_error(sf.strError());
     if (sf.frames() < min_length)
         throw std::runtime_error("no more frames to read");
-    if (sf.samplerate() != samplerate)
+
+    if (check_samplerate && (sf.samplerate() != samplerate))
         throw std::runtime_error("sample rate mismatch");
 }
 
@@ -993,7 +1025,7 @@ void sc_plugin_interface::buffer_read(uint32_t index, const char * filename, uin
         throw std::runtime_error("buffer already full");
 
     SndfileHandle sf(filename, SFM_READ);
-    buffer_read_verify(sf, start_file, buf->samplerate);
+    buffer_read_verify(sf, start_file, buf->samplerate, !leave_open);
 
     if (sf.channels() != buf->channels)
         throw std::runtime_error("channel count mismatch");
@@ -1022,7 +1054,7 @@ void sc_plugin_interface::buffer_read_channel(uint32_t index, const char * filen
         throw std::runtime_error("buffer already full");
 
     SndfileHandle sf(filename, SFM_READ);
-    buffer_read_verify(sf, start_file, buf->samplerate);
+    buffer_read_verify(sf, start_file, buf->samplerate, !leave_open);
 
     uint32_t sf_channels = uint32_t(sf.channels());
     const uint32_t * max_chan = std::max_element(channel_data, channel_data + channel_count);
@@ -1082,19 +1114,6 @@ void sc_plugin_interface::free_buffer(uint32_t index)
     if (buf->sndfile)
         sf_close(buf->sndfile);
     sndbuf_init(buf);
-}
-
-void sc_plugin_interface::initialize_synths_perform(void)
-{
-    for (std::size_t i = 0; i != uninitialized_synths.size(); ++i)
-    {
-        sc_synth * synth = static_cast<sc_synth*>(uninitialized_synths[i]);
-        if (likely(synth->get_parent())) // it is possible to remove a synth before it is initialized
-            synth->prepare();
-        synth->release();
-    }
-    synths_to_initialize = false;
-    uninitialized_synths.clear();
 }
 
 } /* namespace nova */

@@ -49,6 +49,7 @@ SyntaxHighlighterGlobals::SyntaxHighlighterGlobals( Main *main, Settings::Manage
 void SyntaxHighlighterGlobals::applySettings( Settings::Manager *s )
 {
     QString key("IDE/editor/highlighting");
+    applySettings( s, key + "/whitespace", WhitespaceFormat );
     applySettings( s, key + "/normal", PlainFormat );
     applySettings( s, key + "/keyword", KeywordFormat );
     applySettings( s, key + "/built-in", BuiltinFormat );
@@ -91,6 +92,10 @@ void SyntaxHighlighter::highlightBlockInCode(ScLexer & lexer)
 
         switch (tokenType)
         {
+        case Token::WhiteSpace:
+            setFormat(tokenPosition, tokenLength, formats[WhitespaceFormat]);
+            break;
+
         case Token::Class:
             setFormat(tokenPosition, tokenLength, formats[ClassFormat]);
             break;
@@ -170,6 +175,17 @@ void SyntaxHighlighter::highlightBlockInString(ScLexer & lexer)
     Token::Type tokenType = lexer.nextToken(tokenLength);
     int range = lexer.offset() - originalOffset;
     setFormat(originalOffset, range, mGlobals->format(StringFormat));
+
+    if (tokenType == Token::Unknown)
+        return;
+
+    Q_ASSERT(tokenType == Token::StringMark);
+    Token token(tokenType, lexer.offset() - 1, 1);
+    token.character = '"';
+
+    TextBlockData *blockData = static_cast<TextBlockData*>(currentBlockUserData());
+    Q_ASSERT(blockData);
+    blockData->tokens.push_back( token );
 }
 
 void SyntaxHighlighter::highlightBlockInSymbol(ScLexer & lexer)
@@ -179,6 +195,17 @@ void SyntaxHighlighter::highlightBlockInSymbol(ScLexer & lexer)
     Token::Type tokenType = lexer.nextToken(tokenLength);
     int range = lexer.offset() - originalOffset;
     setFormat(originalOffset, range, mGlobals->format(SymbolFormat));
+
+    if (tokenType == Token::Unknown)
+        return;
+
+    Q_ASSERT(tokenType == Token::SymbolMark);
+    Token token(tokenType, lexer.offset() - 1, 1);
+    token.character = '\'';
+
+    TextBlockData *blockData = static_cast<TextBlockData*>(currentBlockUserData());
+    Q_ASSERT(blockData);
+    blockData->tokens.push_back( token );
 }
 
 void SyntaxHighlighter::highlightBlockInComment(ScLexer & lexer)

@@ -9,6 +9,7 @@
 	}
 
 	startup {
+		openPorts = Set[NetAddr.langPort];
 		Document.implementationClass.startup;
 		// make a server window for the internal if you like
 		Server.internal.makeWindow;

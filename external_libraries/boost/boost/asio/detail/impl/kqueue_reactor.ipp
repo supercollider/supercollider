@@ -367,7 +367,7 @@ void kqueue_reactor::run(bool block, op_queue<operation>& ops)
   // Dispatch the waiting events.
   for (int i = 0; i < num_events; ++i)
   {
-    int descriptor = events[i].ident;
+    int descriptor = static_cast<int>(events[i].ident);
     void* ptr = reinterpret_cast<void*>(events[i].udata);
     if (ptr == &interrupter_)
     {
@@ -397,7 +397,8 @@ void kqueue_reactor::run(bool block, op_queue<operation>& ops)
             {
               if (events[i].flags & EV_ERROR)
               {
-                op->ec_ = boost::system::error_code(events[i].data,
+                op->ec_ = boost::system::error_code(
+                    static_cast<int>(events[i].data),
                     boost::asio::error::get_system_category());
                 descriptor_data->op_queue_[j].pop();
                 ops.push(op);

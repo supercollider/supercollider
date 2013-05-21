@@ -42,7 +42,7 @@ class DocumentManager;
 class GenericCodeEditor;
 class Main;
 class MultiSplitter;
-class Session;
+struct Session;
 class SignalMultiplexer;
 
 namespace Settings { class Manager; }
@@ -74,6 +74,8 @@ public:
 
         GotoPreviousBlock,
         GotoNextBlock,
+        SelectEnclosingBlock,
+
         GotoPreviousRegion,
         GotoNextRegion,
         GotoPreviousEmptyLine,
@@ -137,7 +139,10 @@ public slots:
     void removeCurrentSplit();
     void removeAllSplits();
 
+    void setShowWhitespace(bool on);
+
 private slots:
+    void applySettings( Settings::Manager * );
     void onOpen( Document *, int initialCursorPosition, int selectionLength );
     void onClose( Document * );
     void show( Document *, int cursorPosition = -1, int selectionLenght = 0 );

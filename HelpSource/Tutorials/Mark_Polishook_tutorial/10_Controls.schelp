@@ -88,15 +88,17 @@ SynthDef("resetMyControls", { arg freq = 440, mul = 0.22;
 ~aSynth.set(\freq, 600, \mul, 0.25);
 ::
 
-section::Global variables
+section::Environment variables
 
-The '~' character before aSynth in the previous example defines a global variable. An advantage to using a global variable is that it doesn't have to be declared explicitly, as in
+The '~' character before aSynth in the previous example defines an environment variable. An advantage to using an environment variable is that it doesn't have to be declared explicitly, as in
 
 code::
 var aSynth; // variables without the '~' MUST first be declared!!
 ::
 
 More precisely, the ~ character puts a variable named 'aSynth' into an instance of an object known as the currentEnvironment. For further information, see the link::Classes/Environment:: document in the SuperCollider help system.
+
+In this usage, ~aSynth behaves like a global variable in other programming languages. By the strict definition, it isn't precisely emphasis::global::, but it may be used as such in SuperCollider.
 
 section::Lag times
 
@@ -123,7 +125,7 @@ The array of lagtimes means that the synthdef template with two components (disc
 code::
 // a template for a synthdef with two components
 SynthDef(
-	aSynth",				// 1st arsgument is a name
+	"aSynth",				// 1st argument is a name
 	{ .... i am a ugenGraphFunc ... }	// 2nd argument is a ugenGraphFunc
 )
 ::

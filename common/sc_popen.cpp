@@ -130,6 +130,7 @@ sc_pclose(FILE *iop, pid_t mPid)
 #include <windows.h>
 #include <fcntl.h>
 #include <io.h>
+#include "SC_Lock.h"
 
 /*	The process handle allows us to get the exit code after
 	the process has died. It must be closed in sc_pclose;
@@ -142,10 +143,11 @@ static struct process {
 	FILE *fp;
 	HANDLE handle;
 } *processlist;
-static pthread_mutex_t processlist_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-#define	THREAD_LOCK()	pthread_mutex_lock(&processlist_mutex)
-#define	THREAD_UNLOCK()	pthread_mutex_unlock(&processlist_mutex)
+static SC_Lock processlist_mutex;
+
+#define	THREAD_LOCK()	processlist_mutex.lock()
+#define	THREAD_UNLOCK()	processlist_mutex.unlock()
 
 FILE *
 sc_popen(const char *cmd, pid_t *pid, const char *mode)

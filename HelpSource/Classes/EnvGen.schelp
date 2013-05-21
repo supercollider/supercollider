@@ -39,7 +39,7 @@ is used as a simple trigger. If it is an sustaining envelope
 (e.g. Env.adsr, Env.asr), the envelope is held open until the
 gate becomes 0, at which point is released.
 
-If strong::gate:: < 0, force release with time code:: -1.0 - gate ::, see link::#forced_release:: below.
+If strong::gate:: < 0, force release with time code:: -1.0 - gate ::. See link::#Forced release:: below.
 
 argument::levelScale
 
@@ -88,14 +88,14 @@ code::
 )
 // EnvGen multichannel expands when passed a multichannel envelope
 (
-{ 
+{
 	SinOsc.ar(
 		EnvGen.kr(
 			Env.circle([0, 1, 0, (2..4), 0, LFNoise1.kr(0.1 ! 5) * 10, 0], [0.01, 0.6])
-		) 
+		)
 		* 240 + 300
-	).sum * 0.2 
-}.play; 
+	).sum * 0.2
+}.play;
 )
 ::
 
@@ -144,17 +144,6 @@ fork {
 )
 
 
-// turn on
-a.set(\gate, 1);
-
-// turn off
-a.set(\gate, 0);
-
-// it does not matter to what value the gate is set, as long as it is > 0
-a.set(\gate, 2);
-
-a.free;
-
 // using a gated envelope to gate a sound:
 (
 SynthDef(\env_help, { | out, gate = 0, freq = 440, doneAction = 0 |
@@ -189,9 +178,9 @@ SynthDef(\help_Env_newClear, { |out = 0|
 	env = Env.newClear(4);
 	// create a control argument array
 	envctl = \env.kr(env.asArray);
-	Out.ar(out, 
+	Out.ar(out,
 		SinOsc.ar(EnvGen.kr(envctl, \gate.tr), 0, 0.3) // the gate control is a trigger
-	); 
+	);
 }).add;
 )
 
@@ -289,13 +278,13 @@ code::
 (
 SynthDef(\env, { arg i_outbus=0;
 	var env, envctl;
-	
+
 	// make a dummy 8 segment envelope
 	env = Env.newClear(8);
-	
+
 	// create a control argument array
 	envctl = \env.kr( env.asArray );
-	
+
 	ReplaceOut.kr(i_outbus, EnvGen.kr(envctl, doneAction: 2));
 }).add;
 )

@@ -9,6 +9,10 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost-lockfree
                     ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
+                    LangSource
+                    LangPrimSource
+
+                    ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     LangSource/Bison)
 
 if (Boost_FOUND)
@@ -64,16 +68,15 @@ set(sclang_sources
 	LangSource/SC_LanguageClient.cpp
 	LangSource/SC_LanguageConfig.cpp
 	LangSource/SC_TerminalClient.cpp
-	LangSource/Samp.cpp
 	LangSource/SimpleStack.cpp
 	LangSource/VMGlobals.cpp
 	LangSource/dumpByteCodes.cpp
 
 	${CMAKE_SOURCE_DIR}/common/fftlib.c
+	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_Sem.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
@@ -139,8 +142,10 @@ if(UNIX)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
 		endif()
-		list(APPEND sclang_sources LangPrimSource/SC_LID.cpp)
-		add_definitions(-DHAVE_LID)
+		if(LINUX)
+			list(APPEND sclang_sources LangPrimSource/SC_LID.cpp)
+			add_definitions(-DHAVE_LID)
+		endif(LINUX)
 	endif(APPLE)
 else(UNIX)
 endif(UNIX)
@@ -219,10 +224,10 @@ else()
 		)
 endif()
 
-
-set_property(TARGET libsclang
-	PROPERTY OUTPUT_NAME sclang)
-
+if (NOT WIN32)
+	set_property(TARGET libsclang
+		PROPERTY OUTPUT_NAME sclang)
+endif()
 
 ## external libraries
 if(READLINE_FOUND)
@@ -277,7 +282,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
 
-target_link_libraries(libsclang ${PTHREADS_LIBRARY} ${YAMLCPP_LIBRARY})
+target_link_libraries(libsclang boost_thread ${YAMLCPP_LIBRARY})
 
 if(SC_QT)
 	qtcollider_prepare_target( libsclang )
@@ -300,6 +305,10 @@ endif()
 set_property(TARGET sclang
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS USE_SC_TERMINAL_CLIENT BUILDING_SUPERCOLLIDER)
+
+if (PTHREADS_FOUND)
+	target_link_libraries(sclang ${PTHREADS_LIBRARIES})
+endif()
 
 if(LTO)
 	set_property(TARGET sclang libsclang

@@ -28,85 +28,17 @@
 
 namespace nova {
 
-void node_graph::add_node(server_node * n, node_position_constraint const & constraint)
-{
-    server_node * node = constraint.first;
-    node_position position = constraint.second;
-
-    std::pair< node_set_type::iterator, bool > inserted = node_set.insert(*n);
-
-    assert(inserted.second == true); /* node id already present (should be checked earlier)! */
-
-    switch (position) {
-    case before:
-    case after: {
-        abstract_group * parent = node->parent_;
-        parent->add_child(n, constraint);
-        break;
-    }
-
-    case head:
-    case tail: {
-        abstract_group * group = static_cast<abstract_group*>(node);
-        group->add_child(n, position);
-        break;
-    }
-
-    case insert: {
-        abstract_group * group = static_cast<abstract_group*>(node);
-        group->add_child(n);
-        break;
-    }
-
-    case replace: {
-        abstract_group * node_parent = node->parent_;
-        node_parent->replace_child(n, node);
-
-        if (node->is_synth())
-            synth_count_ -= 1;
-        else
-            group_count_ -= 1;
-
-        break;
-    }
-
-    default:
-        assert(false);      /* this point should not be reached! */
-    }
-
-    if (n->is_synth())
-        synth_count_ += 1;
-    else
-        group_count_ += 1;
-}
-
 void node_graph::add_node(server_node * n)
 {
-    node_position_constraint to_root;
-
-    to_root.first = &root_group_;
-    to_root.second = head;
-
-    add_node(n, to_root);
+    node_position_constraint to_root = std::make_pair(&root_group_, head);
+    add_node(n, to_root, [](server_node & node){});
 }
 
-void node_graph::remove_node(server_node * n)
+void node_graph::add_node(server_node * n, node_position_constraint const & constraint)
 {
-    if (!n->is_synth())
-        group_free_all(static_cast<abstract_group*>(n));
-
-    release_node_id(n);
-    /** \todo recursively remove nodes from node_set
-     *        for now this is done by the auto-unlink hook
-     * */
-
-    abstract_group * parent = n->parent_;
-    parent->remove_child(n);
-    if (n->is_synth())
-        synth_count_ -= 1;
-    else
-        group_count_ -= 1;
+    add_node(n, constraint, [](server_node & node){});
 }
+
 
 node_graph::dsp_thread_queue_ptr node_graph::generate_dsp_queue(void)
 {
@@ -134,7 +66,8 @@ void node_graph::synth_reassign_id(int32_t node_id)
         hidden_id = -std::abs<int32_t>(hasher(node_id));
 
     assert(hidden_id < 0);
-    release_node_id(node);
+
+    node_set.erase(*node);
     node->reset_id(hidden_id);
     node_set.insert(*node);
 }

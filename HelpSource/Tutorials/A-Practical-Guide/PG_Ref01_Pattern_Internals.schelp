@@ -1,6 +1,6 @@
-title:: PG_Ref01_Pattern_Internals
+title:: Pattern Guide Reference 01: Pattern Internals
 summary:: Details of pattern implementation, with guidance on writing new pattern classes
-related:: Tutorials/A-Practical-Guide/PG_Cookbook07_Rhythmic_Variations
+related:: Tutorials/A-Practical-Guide/PG_Cookbook08_Swing
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Inner workings of patterns
@@ -272,4 +272,4 @@ If the pattern creates something on the server (bus, group, synth, buffer etc.),
 
 Or, if there is a chance of the pattern stopping before one or more child patterns has stopped on its own, EventStreamCleanup is important so that the pattern is aware of cleanup actions from the children. For example, in a construction like code::Pfindur(10, Pmono(name, pairs...)):: , Pmono may continue for more than 10 beats, in which case Pfindur will cut it off. The Pmono needs to end its synth, but it doesn't know that a pattern higher up in the chain is making it stop. It becomes the parent's responsibility to clean up after the children. As illustrated above, EventStreamCleanup handles this with only minimal intrusion into normal pattern logic.
 
-Previous:	link::Tutorials/A-Practical-Guide/PG_Cookbook07_Rhythmic_Variations::
+Previous:	link::Tutorials/A-Practical-Guide/PG_Cookbook08_Swing::

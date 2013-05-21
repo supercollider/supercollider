@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -21,7 +21,6 @@
 
 #include "primitives.h"
 #include "../Common.h"
-#include "QC_Export.h"
 #include "QtCollider.h"
 
 #include <SCBase.h>
@@ -37,8 +36,8 @@ void defineQPenPrimitives();
 void defineMiscPrimitives();
 void defineQWidgetPrimitives();
 void defineQPalettePrimitives();
+void defineQImagePrimitives();
 
-QC_PUBLIC
 void initPrimitives () {
   QtCollider::init();
 
@@ -49,6 +48,7 @@ void initPrimitives () {
   defineQPenPrimitives();
   defineMiscPrimitives();
   defineQPalettePrimitives();
+  defineQImagePrimitives();
 
 #define QC_DO_SYMBOL(SYM) sym_##SYM = getsym(#SYM);
 QC_DO_SYMBOLS

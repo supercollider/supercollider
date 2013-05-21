@@ -80,8 +80,11 @@ void EditorPage::load( Manager *s )
     ui->indentWidth->setValue( s->value("indentWidth").toInt() );
     ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation").toBool() );
     ui->editorLineWrap->setChecked( s->value("lineWrap").toBool() );
-
+    ui->disableBlinkingCursor->setChecked( s->value("disableBlinkingCursor").toBool() );
+    ui->insertMatchingTokens->setChecked( s->value("insertMatchingTokens").toBool() );
     ui->blinkDuration->setValue( s->value("blinkDuration").toInt() );
+    ui->highlightCurrentLine->setChecked( s->value("highlightCurrentLine").toBool() );
+    ui->highlightBracketContents->setChecked( s->value("highlightBracketContents").toBool() );
 
     s->beginGroup("font");
     QString fontFamily = s->value("family").toString();
@@ -161,11 +164,11 @@ void EditorPage::loadGeneralTextFormats( Manager *settings )
                    selectionDefaultFormat );
 
     static char const * const keys[] = {
-        "searchResult", "matchingBrackets", "mismatchedBrackets", "evaluatedCode"
+        "currentLine", "searchResult", "matchingBrackets", "mismatchedBrackets", "evaluatedCode"
     };
 
     static QStringList strings = QStringList()
-            << tr("Search Result") << tr("Matching Brackets")
+            << tr("Current Line") << tr("Search Result") << tr("Matching Brackets")
             << tr("Mismatched Brackets") << tr("Evaluated Code");
 
     static int count = strings.count();
@@ -182,11 +185,12 @@ void EditorPage::loadSyntaxTextFormats( Manager *settings )
     mSyntaxFormatsItem->setText(0, tr("Syntax Highlighting") );
 
     static char const * const keys[] = {
-        "keyword", "built-in", "env-var", "class", "number",
+        "whitespace", "keyword", "built-in", "env-var", "class", "number",
         "symbol", "string", "char", "comment", "primitive"
     };
 
     static QStringList strings = QStringList()
+            << tr("Whitespace")
             << tr("Keyword") << tr("Built-in Value") << tr("Environment Variable")
             << tr("Class") << tr("Number") << tr("Symbol") << tr("String") << tr("Char")
             << tr("Comment") << tr("Primitive");
@@ -220,6 +224,10 @@ void EditorPage::store( Manager *s )
     s->setValue("indentWidth", ui->indentWidth->value());
     s->setValue("stepForwardEvaluation", ui->stepForwardEvaluation->isChecked());
     s->setValue("lineWrap", ui->editorLineWrap->isChecked());
+    s->setValue("disableBlinkingCursor", ui->disableBlinkingCursor->isChecked());
+    s->setValue("insertMatchingTokens", ui->insertMatchingTokens->isChecked());
+    s->setValue("highlightCurrentLine", ui->highlightCurrentLine->isChecked());
+    s->setValue("highlightBracketContents", ui->highlightBracketContents->isChecked());
 
     s->setValue("blinkDuration", ui->blinkDuration->value());
 
@@ -273,7 +281,22 @@ void EditorPage::onCurrentTabChanged(int)
 
 void EditorPage::onMonospaceToggle(bool onlyMonospaced)
 {
+    QString fontFamily = ui->fontCombo->currentText();
+
+    bool signals_blocked = ui->fontCombo->blockSignals(true);
+
     populateFontList( onlyMonospaced );
+
+    if (!fontFamily.isEmpty()) {
+        int fontFamilyIndex = ui->fontCombo->findText( fontFamily, Qt::MatchFixedString );
+        if (fontFamilyIndex == -1)
+            fontFamilyIndex = 0;
+        ui->fontCombo->setCurrentIndex( fontFamilyIndex );
+    }
+
+    ui->fontCombo->blockSignals(signals_blocked);
+
+    updateFontPreview();
 }
 
 void EditorPage::updateFontPreview()

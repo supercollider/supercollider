@@ -19,6 +19,8 @@
 #ifndef SERVER_NOVA_SERVER_HPP
 #define SERVER_NOVA_SERVER_HPP
 
+#include <atomic>
+
 #include "buffer_manager.hpp"
 #include "memory_pool.hpp"
 #include "node_graph.hpp"
@@ -114,16 +116,6 @@ struct io_thread_init_functor
     void operator()() const;
 };
 
-/** scheduler hook
- *
- *  evaluate scheduled bundles
- *
- * */
-struct scheduler_hook
-{
-    inline void operator()(void);
-};
-
 namespace detail {
 #if defined(PORTAUDIO_BACKEND)
 typedef portaudio_backend<realtime_engine_functor, float, false> audio_backend;
@@ -139,7 +131,7 @@ class nova_server:
     public asynchronous_log_thread,
     public node_graph,
     public server_shared_memory_creator,
-    public scheduler<scheduler_hook, thread_init_functor>,
+    public scheduler<thread_init_functor>,
     public detail::audio_backend,
     public synth_factory,
     public buffer_manager,
@@ -174,6 +166,7 @@ public:
 
     void run(void)
     {
+        start_dsp_threads();
         system_interpreter.run();
     }
 
@@ -185,62 +178,23 @@ public:
     void terminate(void)
     {
         system_interpreter.terminate();
+        quit_requested_ = true;
     }
     /* @} */
 
     /** non-rt synthesis */
     void run_nonrt_synthesis(server_arguments const & arguments);
 
-private:
-    template <bool (node_graph::*fn)(abstract_group*)>
-    bool group_free_implementation(abstract_group * group)
-    {
-        bool success = (this->*fn)(group);
-        if (success)
-            update_dsp_queue();
-        return success;
-    }
-
-    static void free_deep_notify(nova_server * server, server_node & node)
-    {
-        if (node.is_synth())
-            server->notification_node_ended(&node);
-        else {
-            abstract_group * group = static_cast<abstract_group*>(&node);
-            group->apply_on_children(std::bind(nova_server::free_deep_notify, server, std::placeholders::_1));
-        }
-    }
-
 public:
     /* @{ */
     /** node control */
     abstract_synth * add_synth(const char * name, int id, node_position_constraint const & constraints);
-
     group * add_group(int id, node_position_constraint const & constraints);
     parallel_group * add_parallel_group(int id, node_position_constraint const & constraints);
 
     void free_node(server_node * node);
-
-    bool group_free_all(abstract_group * group)
-    {
-        /// todo: later we want to traverse the node graph only once
-        group->apply_on_children( [&](server_node const & node) {
-            this->notification_node_ended(&node);
-        });
-
-        return group_free_implementation<&node_graph::group_free_all>(group);
-    }
-
-    bool group_free_deep(abstract_group * group)
-    {
-        /// todo: later we want to traverse the node graph only once
-
-        group->apply_on_children( [&](server_node & node) {
-            free_deep_notify(this, node);
-        });
-
-        return group_free_implementation<&node_graph::group_free_deep>(group);
-    }
+    void group_free_all(abstract_group * group);
+    void group_free_deep(abstract_group * group);
 
     void node_pause(server_node * node)
     {
@@ -269,23 +223,34 @@ public:
     }
 
 public:
-    HOT void operator()(void)
+    HOT void tick()
     {
+        sc_factory->apply_done_actions();
+        run_callbacks();
+        execute_scheduled_bundles();
+
         if (unlikely(dsp_queue_dirty))
             rebuild_dsp_queue();
 
-        sc_factory->initialize_synths();
-        scheduler<scheduler_hook, thread_init_functor>::operator()();
+        compute_audio();
     }
 
     void rebuild_dsp_queue(void);
 
-    void update_dsp_queue(void)
+    void request_dsp_queue_update(void)
     {
         dsp_queue_dirty = true;
     }
 
+    bool quit_requested()
+    {
+        return quit_requested_.load();
+    }
+
 private:
+    void perform_node_add(server_node * node, node_position_constraint const & constraints, bool update_dsp_queue);
+    void finalize_node(server_node & node);
+    std::atomic<bool> quit_requested_;
     bool dsp_queue_dirty;
 
     callback_interpreter<system_callback, false> system_interpreter; // rt to system thread
@@ -303,9 +268,7 @@ inline void run_scheduler_tick(void)
     for (int channel = 0; channel != input_channels; ++channel)
         sc_factory->world.mAudioBusTouched[output_channels + channel] = buf_counter;
 
-    (*instance)();
-
-    sc_factory->update_nodegraph();
+    instance->tick();
 
     /* wipe all untouched output buffers */
     for (int channel = 0; channel != output_channels; ++channel) {
@@ -323,11 +286,6 @@ inline void realtime_engine_functor::run_tick(void)
 {
     run_scheduler_tick();
     instance->increment_logical_time();
-}
-
-inline void scheduler_hook::operator()(void)
-{
-    instance->execute_scheduled_bundles();
 }
 
 inline bool log_printf(const char *fmt, ...)

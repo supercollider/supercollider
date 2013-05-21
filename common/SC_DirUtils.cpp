@@ -25,9 +25,10 @@
 #include <stdexcept>
 
 #ifdef _WIN32
+# include "SC_Win32Utils.h"
 # include <windows.h>
 # include <direct.h>
-# include "SC_Win32Utils.h"
+# include <shlobj.h>
 #else
 # include <unistd.h>
 # include <dirent.h>
@@ -148,7 +149,7 @@ bool sc_IsNonHostPlatformDir(const char *name)
 	const char a[] = "linux", b[] = "windows", c[]="iphone";
 #elif defined(__linux__)
 	const char a[] = "osx", b[] = "windows", c[]="iphone";
-#elif defined(__FreeBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__)
 	const char a[] = "osx", b[] = "windows", c[]="iphone";
 #elif defined(_WIN32)
 	const char a[] = "osx", b[] = "linux", c[]="iphone";
@@ -285,7 +286,7 @@ bool sc_IsStandAlone()
 
 void sc_GetResourceDirectory(char* dest, int length)
 {
-	char buf[length];
+	char buf[PATH_MAX];
 	GetModuleFileName( NULL, buf, length );
 	char *path = win32_dirname(buf);
 	strcpy(dest, path);

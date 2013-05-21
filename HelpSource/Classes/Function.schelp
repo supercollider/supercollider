@@ -1,6 +1,8 @@
 class::Function
 summary::Implements a function
 categories::Core>Kernel
+related::Classes/FunctionDef
+
 
 description::
 A Function is a reference to a FunctionDef and its defining context Frame. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method. See the Functions help file for a basic introduction.
@@ -28,6 +30,21 @@ code::
 [:x | x ] value: 1 // Smalltalk
 ((lambda (x) x) 1) // Lisp
 ::
+
+subsection:: Related Keywords
+
+method:: thisFunction
+The global pseudo-variable code::thisFunction:: always evaluates to the current
+enclosing Function.
+
+note::
+Be aware of link::Reference/Control-Structures#Inline
+optimization#inline optimizations:: which will be reflected in the value of
+code::thisFunction::.
+::
+
+See also: link::Classes/FunctionDef#.thisFunctionDef#thisFunctionDef::
+
 
 classMethods::
 
@@ -482,6 +499,7 @@ This is useful for using ListComprehensions in Patterns:
 code::
 Pbind(\degree, p {:[x, y].postln, x<-(0..10), y<-(0..10), (x + y).isPrime }, \dur, 0.3).play;
 ::
+
 
 examples::
 

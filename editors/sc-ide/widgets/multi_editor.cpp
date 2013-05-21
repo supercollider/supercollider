@@ -226,9 +226,14 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
     connect( &mDocModifiedSigMap, SIGNAL(mapped(QObject*)), this, SLOT(onDocModified(QObject*)) );
 
+    connect( main, SIGNAL(applySettingsRequest(Settings::Manager*)),
+             this, SLOT(applySettings(Settings::Manager*)) );
+
     createActions();
 
     setCurrentBox( defaultBox ); // will updateActions();
+
+    applySettings( main->settings() );
 }
 
 void MultiEditor::makeSignalConnections()
@@ -391,9 +396,17 @@ void MultiEditor::createActions()
                            SignalMultiplexer::ConnectionOptional);
     settings->addAction( action, "editor-go-to-next-block", editorCategory);
 
+    mActions[SelectEnclosingBlock] = action = new QAction(tr("Select Enclosing Block"), this);
+    action->setShortcut(tr("Ctrl+Shift+B", "Select Enclosing Block"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    action->setStatusTip(tr("Select everything between brackets that contain cursor"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(selectBlockAroundCursor()),
+                           SignalMultiplexer::ConnectionOptional);
+    settings->addAction( action, "editor-select-enclosing-block", editorCategory);
+
     mActions[GotoPreviousRegion] = action = new QAction(
         QIcon::fromTheme("edit-gotopreviousregion"), tr("Go to Previous Region"), this);
-    action->setShortcut(tr("Alt+[", "Go to Previous Region"));
+    action->setShortcut(tr("Ctrl+Alt+[", "Go to Previous Region"));
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(gotoPreviousRegion()),
                            SignalMultiplexer::ConnectionOptional);
@@ -401,7 +414,7 @@ void MultiEditor::createActions()
 
     mActions[GotoNextRegion] = action = new QAction(
         QIcon::fromTheme("edit-gotonextregion"), tr("Go to Next Region"), this);
-    action->setShortcut(tr("Alt+]", "Go to Next Region"));
+    action->setShortcut(tr("Ctrl+Alt+]", "Go to Next Region"));
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(gotoNextRegion()),
                            SignalMultiplexer::ConnectionOptional);
@@ -454,7 +467,7 @@ void MultiEditor::createActions()
     mActions[ShowWhitespace] = action = new QAction(tr("Show Spaces and Tabs"), this);
     action->setCheckable(true);
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    mEditorSigMux->connect(action, SIGNAL(triggered(bool)), SLOT(setShowWhitespace(bool)));
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowWhitespace(bool)));
     settings->addAction( action, "editor-toggle-show-whitespace", editorCategory);
 
     mActions[IndentWithSpaces] = action = new QAction(tr("Use Spaces for Indentation"), this);
@@ -566,6 +579,7 @@ void MultiEditor::createActions()
     addAction(mActions[MoveLineDown]);
     addAction(mActions[GotoPreviousBlock]);
     addAction(mActions[GotoNextBlock]);
+    addAction(mActions[SelectEnclosingBlock]);
     addAction(mActions[GotoPreviousRegion]);
     addAction(mActions[GotoNextRegion]);
     addAction(mActions[GotoPreviousEmptyLine]);
@@ -594,8 +608,6 @@ void MultiEditor::updateActions()
     mActions[EnlargeFont]->setEnabled( editor );
     mActions[ShrinkFont]->setEnabled( editor );
     mActions[ResetFontSize]->setEnabled( editor );
-    mActions[ShowWhitespace]->setEnabled( editor );
-    mActions[ShowWhitespace]->setChecked( editor && editor->showWhitespace() );
     mActions[IndentWithSpaces]->setEnabled( scEditor );
     mActions[IndentWithSpaces]->setChecked( scEditor && scEditor->spaceIndent() );
 
@@ -604,6 +616,7 @@ void MultiEditor::updateActions()
     mActions[ToggleComment]->setEnabled( editor && editorIsScCodeEditor );
     mActions[GotoPreviousBlock]->setEnabled( editor && editorIsScCodeEditor );
     mActions[GotoNextBlock]->setEnabled( editor && editorIsScCodeEditor );
+    mActions[SelectEnclosingBlock]->setEnabled( editor && editorIsScCodeEditor );
     mActions[GotoPreviousRegion]->setEnabled( editor && editorIsScCodeEditor );
     mActions[GotoNextRegion]->setEnabled( editor && editorIsScCodeEditor );
     mActions[SelectRegion]->setEnabled( editor && editorIsScCodeEditor );
@@ -612,6 +625,12 @@ void MultiEditor::updateActions()
     mActions[EvaluateCurrentDocument]->setEnabled( editor && editorIsScCodeEditor );
     mActions[EvaluateRegion]->setEnabled( editor && editorIsScCodeEditor );
     mActions[EvaluateLine]->setEnabled( editor && editorIsScCodeEditor );
+}
+
+void MultiEditor::applySettings( Settings::Manager * settings )
+{
+    bool show_whitespace = settings->value("IDE/editor/showWhitespace").toBool();
+    mActions[ShowWhitespace]->setChecked( show_whitespace );
 }
 
 static QVariantList saveBoxState( CodeEditorBox *box, const QList<Document*> & documentList )
@@ -1046,6 +1065,12 @@ void MultiEditor::removeAllSplits()
     layout()->addWidget(newSplitter);
 
     box->setFocus( Qt::OtherFocusReason );
+}
+
+void MultiEditor::setShowWhitespace(bool showWhitespace)
+{
+    Main::settings()->setValue("IDE/editor/showWhitespace", showWhitespace);
+    Main::instance()->applySettings();
 }
 
 } // namespace ScIDE

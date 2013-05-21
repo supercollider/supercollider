@@ -1,5 +1,5 @@
 //  nova server
-//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
+//  Copyright (C) 2008 - 2012 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -43,8 +43,9 @@ class nova_server * instance = 0;
 
 nova_server::nova_server(server_arguments const & args):
     server_shared_memory_creator(args.port(), args.control_busses),
-    scheduler<nova::scheduler_hook, thread_init_functor>(args.threads, !args.non_rt),
-    buffer_manager(args.buffers), sc_osc_handler(args), dsp_queue_dirty(false)
+    scheduler<thread_init_functor>(args.threads, !args.non_rt),
+    buffer_manager(args.buffers), sc_osc_handler(args), dsp_queue_dirty(false),
+    quit_requested_(false)
 {
     assert(instance == 0);
     instance = this;
@@ -92,30 +93,36 @@ void nova_server::prepare_backend(void)
 
 nova_server::~nova_server(void)
 {
-#if defined(JACK_BACKEND)
-    if (audio_is_active())
-        deactivate_audio();
-
-    close_client();
+#if defined(JACK_BACKEND) || defined(PORTAUDIO_BACKEND)
+    deactivate_audio();
 #endif
-    scheduler<scheduler_hook, thread_init_functor>::terminate();
+
+    group_free_all(static_cast<abstract_group*>(find_node(0))); // free the root group
+
+    scheduler<thread_init_functor>::terminate();
     io_interpreter.join_thread();
     instance = 0;
+}
+
+void nova_server::perform_node_add(server_node *node, node_position_constraint const & constraints, bool update_dsp_queue)
+{
+    node_graph::add_node(node, constraints, [&](server_node & node) {
+        finalize_node(node);
+    });
+
+    if (constraints.second == replace || update_dsp_queue)
+        request_dsp_queue_update();
+
+    notification_node_started(node);
 }
 
 abstract_synth * nova_server::add_synth(const char * name, int id, node_position_constraint const & constraints)
 {
     abstract_synth * ret = synth_factory::create_instance(name, id);
-
     if (ret == 0)
         return 0;
 
-    if (constraints.second == replace)
-        notification_node_ended(constraints.first);
-
-    node_graph::add_node(ret, constraints);
-    update_dsp_queue();
-    notification_node_started(ret);
+    perform_node_add(ret, constraints, true);
     return ret;
 }
 
@@ -125,9 +132,7 @@ group * nova_server::add_group(int id, node_position_constraint const & constrai
     if (g == 0)
         return 0;
 
-    instance->add_node(g, constraints);
-    /* no need to update the dsp queue */
-    notification_node_started(g);
+    perform_node_add(g, constraints, false);
     return g;
 }
 
@@ -136,9 +141,8 @@ parallel_group * nova_server::add_parallel_group(int id, node_position_constrain
     parallel_group * g = new parallel_group(id);
     if (g == 0)
         return 0;
-    instance->add_node(g, constraints);
-    /* no need to update the dsp queue */
-    notification_node_started(g);
+
+    perform_node_add(g, constraints, false);
     return g;
 }
 
@@ -157,17 +161,54 @@ void nova_server::set_node_slot(int node_id, const char * slot, float value)
         node->set(slot, value);
 }
 
+void nova_server::finalize_node(server_node & node)
+{
+    if (node.is_synth()) {
+        sc_synth & synth = static_cast<sc_synth&>(node);
+        synth.finalize();
+    }
+    notification_node_ended(&node);
+}
+
+
 void nova_server::free_node(server_node * node)
 {
     if (node->get_parent() == NULL)
         return; // has already been freed by a different event
-    notification_node_ended(node);
-    node_graph::remove_node(node);
-    update_dsp_queue();
+
+    node_graph::remove_node(node, [&] (server_node & node) {
+        finalize_node(node);
+    });
+    request_dsp_queue_update();
 }
+
+void nova_server::group_free_all(abstract_group * group)
+{
+    std::vector<server_node *, rt_pool_allocator<server_node*>> nodes_to_free;
+
+    group->apply_on_children( [&](server_node & node) {
+        nodes_to_free.push_back(&node);
+    });
+
+    for (server_node * node: nodes_to_free)
+        free_node(node);
+}
+
+void nova_server::group_free_deep(abstract_group * group)
+{
+    std::vector<server_node *, rt_pool_allocator<server_node*>> nodes_to_free;
+    group->apply_deep_on_children( [&](server_node & node) {
+        if (node.is_synth())
+            nodes_to_free.push_back(&node);
+    });
+    for (server_node * node: nodes_to_free)
+        free_node(node);
+}
+
 
 void nova_server::run_nonrt_synthesis(server_arguments const & args)
 {
+    start_dsp_threads();
     non_realtime_synthesis_engine engine(args);
     engine.run();
 }
@@ -176,7 +217,7 @@ void nova_server::rebuild_dsp_queue(void)
 {
     assert(dsp_queue_dirty);
     node_graph::dsp_thread_queue_ptr new_queue = node_graph::generate_dsp_queue();
-    scheduler<scheduler_hook, thread_init_functor>::reset_queue_sync(std::move(new_queue));
+    scheduler<thread_init_functor>::reset_queue_sync(std::move(new_queue));
     dsp_queue_dirty = false;
 }
 
@@ -199,6 +240,8 @@ void thread_init_functor::operator()(int thread_index)
         int priority = instance->realtime_priority();
         if (priority < 0)
             success = false;
+#elif _WIN32
+        int priority = thread_priority_interval_rt().second;
 #else
         int min, max;
         boost::tie(min, max) = thread_priority_interval_rt();

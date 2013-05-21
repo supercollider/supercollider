@@ -33,9 +33,11 @@
 #include "SC_Errors.h"
 #include <stdio.h>
 #include "SC_Prototypes.h"
-#include "SC_Samp.h"
 #include "SC_DirUtils.h"
+#include "SC_Lock.h"
+#include "SC_Lib_Cintf.h"
 #include "../../common/SC_SndFileHelpers.hpp"
+#include "../../common/Samp.hpp"
 #include "SC_StringParser.h"
 #ifdef _WIN32
 # include <direct.h>
@@ -75,9 +77,6 @@ struct SF_INFO {};
 bool SendMsgToEngine(World *inWorld, FifoMsg& inMsg);
 bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 }
-
-bool sc_UseVectorUnit();
-void sc_SetDenormalFlags();
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -154,6 +153,36 @@ void zfree(void * ptr)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// Set denormal FTZ mode on CPUs that need/support it.
+void sc_SetDenormalFlags();
+
+#ifdef __SSE2__
+#include <xmmintrin.h>
+
+void sc_SetDenormalFlags()
+{
+	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+	_mm_setcsr(_mm_getcsr() | 0x40); // DAZ
+}
+
+#elif defined(__SSE__)
+#include <xmmintrin.h>
+
+void sc_SetDenormalFlags()
+{
+	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+}
+
+#else
+
+void sc_SetDenormalFlags()
+{
+}
+
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+
 static bool getScopeBuffer(World *inWorld, int index, int channels, int maxFrames, ScopeBufferHnd &hnd);
 static void pushScopeBuffer(World *inWorld, ScopeBufferHnd &hnd, int frames);
 static void releaseScopeBuffer(World *inWorld, ScopeBufferHnd &hnd);
@@ -207,7 +236,7 @@ void InterfaceTable_Init()
 	ft->fNRTLock = &World_NRTLock;
 	ft->fNRTUnlock = &World_NRTUnlock;
 
-	ft->mAltivecAvailable = sc_UseVectorUnit();
+	ft->mUnused0 = false;
 
 	ft->fGroup_DeleteAll = &Group_DeleteAll;
 	ft->fDoneAction = &Unit_DoneAction;
@@ -302,10 +331,8 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 		world->hw = (HiddenWorld*)zalloc(1, sizeof(HiddenWorld));
 
 		world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
-		world->hw->mQuitProgram = new SC_Semaphore(0);
+		world->hw->mQuitProgram = new nova::semaphore(0);
 		world->hw->mTerminating = false;
-
-		extern Malloc gMalloc;
 
 		HiddenWorld *hw = world->hw;
 		hw->mGraphDefLib = new HashTable<struct GraphDef, Malloc>(&gMalloc, inOptions->mMaxGraphDefs, false);
@@ -395,9 +422,6 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 
 		world->mRestrictedPath = inOptions->mRestrictedPath;
 
-		if(inOptions->mVerbosity >= 1) {
-			scprintf("Using vector unit: %s\n", sc_UseVectorUnit() ? "yes" : "no");
-		}
 		sc_SetDenormalFlags();
 
 		if (world->mRealTime) {
@@ -443,7 +467,7 @@ SC_DLLEXPORT_C int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, 
 	if (!onlyIfChanged || didChange)
 	{
 
-		world->mNRTLock->Lock();
+		reinterpret_cast<SC_Lock*>(world->mNRTLock)->lock();
 
 		SndBuf *buf = world->mSndBufsNonRealTimeMirror + index;
 
@@ -480,7 +504,7 @@ SC_DLLEXPORT_C int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, 
 
 		updates->reads = updates->writes;
 
-		world->mNRTLock->Unlock();
+		reinterpret_cast<SC_Lock*>(world->mNRTLock)->unlock();
 	}
 
 	if (outDidChange) *outDidChange = didChange;
@@ -710,7 +734,7 @@ Bail:
 SC_DLLEXPORT_C void World_WaitForQuit(struct World *inWorld)
 {
 	try {
-		inWorld->hw->mQuitProgram->Acquire();
+		inWorld->hw->mQuitProgram->wait();
 		World_Cleanup(inWorld);
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_WaitForQuit: %s\n", exc.what());
@@ -959,14 +983,14 @@ SC_DLLEXPORT_C void World_Cleanup(World *world)
 
 	if (world->mTopGroup) Group_DeleteAll(world->mTopGroup);
 
-	world->mDriverLock->Lock(); // never unlock..
+	reinterpret_cast<SC_Lock*>(world->mDriverLock)->lock(); // never unlock..
 	if (hw) {
 		sc_free(hw->mWireBufSpace);
 		delete hw->mAudioDriver;
 		hw->mAudioDriver = 0;
 	}
-	delete world->mNRTLock;
-	delete world->mDriverLock;
+	delete reinterpret_cast<SC_Lock*>(world->mNRTLock);
+	delete reinterpret_cast<SC_Lock*>(world->mDriverLock);
 	World_Free(world, world->mTopGroup);
 
 	for (uint32 i=0; i<world->mNumSndBufs; ++i) {
@@ -1013,12 +1037,12 @@ SC_DLLEXPORT_C void World_Cleanup(World *world)
 
 void World_NRTLock(World *world)
 {
-	world->mNRTLock->Lock();
+	reinterpret_cast<SC_Lock*>(world->mNRTLock)->lock();
 }
 
 void World_NRTUnlock(World *world)
 {
-	world->mNRTLock->Unlock();
+	reinterpret_cast<SC_Lock*>(world->mNRTLock)->unlock();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

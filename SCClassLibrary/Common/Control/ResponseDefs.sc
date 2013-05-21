@@ -245,9 +245,21 @@ OSCFunc : AbstractResponderFunc {
 		^super.new.init(func, path, srcID, recvPort, argTemplate, defaultMatchingDispatcher);
 	}
 
-	*trace {|bool = true|
+	*trace {|bool = true, hideStatusMsg = false|
 		if(bool, {
 			if(traceRunning.not, {
+				traceFunc = if(hideStatusMsg, {
+					{|msg, time, addr, recvPort|
+						if(((msg[0] === '/status.reply' and: {Server.all.any{|it|it.addr == addr}})).not, {
+"OSC Message Received:\n\ttime: %\n\taddress: %\n\trecvPort: %\n\tmsg: %\n\n".postf(time, addr, recvPort, msg);
+						});
+					}
+					}, {
+						{|msg, time, addr, recvPort|
+							"OSC Message Received:\n\ttime: %\n\taddress: %\n\trecvPort: %\n\tmsg: %\n\n".postf(time, addr, recvPort, msg);
+						}
+
+				});
 				thisProcess.addOSCRecvFunc(traceFunc);
 				CmdPeriod.add(this);
 				traceRunning = true;

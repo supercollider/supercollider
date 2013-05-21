@@ -94,13 +94,13 @@ EZSlider : EZGui {
 		}{
 			this.value_(initVal);
 		};
-		
+
 		if (labelView.notNil) {
 			labelView.mouseDownAction = {|view, x, y, modifiers, buttonNumber, clickCount|
 				if(clickCount == 2, {this.editSpec});
 			}
 		};
-		
+
 		this.prSetViewParams;
 
 	}
@@ -282,7 +282,7 @@ EZSlider : EZGui {
 
 		^[labelBounds, numBounds, sliderBounds, unitBounds].collect{arg v; v.moveBy(margin.x,margin.y)}
 	}
-	
+
 	update {arg changer, what ...moreArgs;
 		var oldValue;
 		if(changer === controlSpec, {
@@ -291,21 +291,24 @@ EZSlider : EZGui {
 			if(this.value != oldValue, { this.doAction });
 		});
 	}
-	
+
 	editSpec {
-		var ezspec;
+		var ezspec, val;
+		val = this.value;
 		[labelView, sliderView, numberView, unitView].do({|view|
 			view.notNil.if({ view.enabled_(false).visible_(false)});
 		});
-		ezspec = EZControlSpecEditor(view, view.bounds.moveTo(0,0), controlSpec: controlSpec, layout: layout);
+		ezspec = EZControlSpecEditor(view, view.bounds.moveTo(0,0), controlSpec: controlSpec.copy, layout: layout);
 		ezspec.labelView.mouseDownAction = {|view, x, y, modifiers, buttonNumber, clickCount|
 			if(clickCount == 2, {
+				controlSpec = ezspec.controlSpec;
 				ezspec.remove;
 				[labelView, sliderView, numberView, unitView].do({|view|
 					view.notNil.if({ view.enabled_(true).visible_(true)});
 				});
+				this.value = val;
 			});
-		};			
+		};
 	}
 
 }

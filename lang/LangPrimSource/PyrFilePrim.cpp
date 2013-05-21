@@ -1326,12 +1326,7 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 ////////
 
 #ifndef NO_LIBSNDFILE
-
-#ifdef SC_WIN32
-	#include <sndfile-win.h>
-#else
-	#include <sndfile.h>
-#endif
+#include <sndfile.h>
 
 
 int sampleFormatToString(struct SF_INFO *info, const char **string);

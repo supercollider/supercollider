@@ -39,6 +39,8 @@ set ( ide_moc_hdr
     widgets/sessions_dialog.hpp
     widgets/tool_box.hpp
     widgets/help_browser.hpp
+    widgets/audio_status_box.hpp
+    widgets/lang_status_box.hpp
     widgets/code_editor/editor.hpp
     widgets/code_editor/sc_editor.hpp
     widgets/code_editor/highlighter.hpp
@@ -56,6 +58,7 @@ set ( ide_moc_hdr
     widgets/util/popup_widget.hpp
     widgets/util/color_widget.hpp
     widgets/util/docklet.hpp
+    widgets/util/volume_widget.hpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
 )
@@ -84,6 +87,8 @@ set ( ide_src
     widgets/post_window.cpp
     widgets/session_switch_dialog.cpp
     widgets/help_browser.cpp
+    widgets/audio_status_box.cpp
+    widgets/lang_status_box.cpp
     widgets/code_editor/editor.cpp
     widgets/code_editor/sc_editor.cpp
     widgets/code_editor/highlighter.cpp
@@ -95,9 +100,12 @@ set ( ide_src
     widgets/settings/sclang_page.cpp
     widgets/settings/editor_page.cpp
     widgets/settings/shortcuts_page.cpp
+    widgets/util/gui_utilities.cpp
     widgets/util/text_format_list_widget.cpp
     widgets/util/popup_widget.cpp
     widgets/util/docklet.cpp
+    widgets/util/volume_widget.cpp
+    widgets/util/status_box.cpp
     widgets/style/style.cpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
@@ -130,6 +138,7 @@ elseif(WIN32)
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
+include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
 include_directories(${YAMLCPP_INCLUDE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
@@ -184,6 +193,13 @@ qt5_use_modules( ${ide_name} Widgets WebKitWidgets Network )
 
 target_link_libraries( ${ide_name} ${YAMLCPP_LIBRARY})
 
+if(Boost_FOUND)
+    target_link_libraries( ${ide_name} ${Boost_SYSTEM_LIBRARY} )
+else()
+    # in-house-built boost system
+    target_link_libraries( ${ide_name} boost_system )
+endif()
+
 if(APPLE)
     target_link_libraries( ${ide_name} "-framework CoreServices")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F/Library/Frameworks")
@@ -234,8 +250,8 @@ if(APPLE)
 
     include(InstallRequiredSystemLibraries)
 
-    #include(DeployQt4)
-    #install_qt4_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
+    include(DeployQt4)
+    install_qt4_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
 
 elseif(WIN32)
 	install(TARGETS ${ide_name}

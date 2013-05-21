@@ -1,4 +1,4 @@
-//  Copyright (C) 2011 Tim Blechmann
+//  Copyright (C) 2011-2012 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -45,7 +45,9 @@ PURE inline bool strequal(const char * lhs, const char * rhs)
     }
 }
 
-struct c_string
+// thread-safe symbol
+// warning: don't use from different DSOs
+struct symbol
 {
 private:
     static const char * duplicate_string(const char * str, std::size_t length)
@@ -59,11 +61,6 @@ private:
         return string;
     }
 
-    static const char * duplicate_string(const char * str)
-    {
-        return duplicate_string(str, strlen(str));
-    }
-
     struct symbol_data
     {
         explicit symbol_data(const char * str):
@@ -74,9 +71,7 @@ private:
             str(str), hash(hash)
         {}
 
-        symbol_data(symbol_data const & rhs):
-            str(rhs.str), hash(rhs.hash)
-        {}
+        symbol_data(symbol_data const & rhs) = default;
 
         friend size_t hash_value(symbol_data const & value)
         {
@@ -174,49 +169,43 @@ public:
     }
 
 public:
-    c_string ():
+    symbol ():
         data(NULL, 0)
     {}
 
-    explicit c_string (const char * str):
+    explicit symbol (const char * str):
         data(lookup_string(str))
     {}
 
-    c_string (std::string const & str):
+    explicit symbol (std::string const & str):
         data(lookup_string(str.c_str(), str.size()))
     {}
 
-    c_string (const char * str, std::size_t length):
+    symbol (const char * str, std::size_t length):
         data(lookup_string(str, length))
     {}
 
-    c_string (c_string const & rhs):
-        data(rhs.data)
-    {}
+    symbol (symbol const & rhs) = default;
 
     const char * c_str(void) const
     {
         return data.str;
     }
 
-    friend std::size_t hash_value(c_string const & value)
+    friend std::size_t hash_value(symbol const & value)
     {
         return value.data.hash;
     }
 
-    friend bool operator== (c_string const & lhs,
-                            c_string const & rhs)
+    friend bool operator== (symbol const & lhs, symbol const & rhs)
     {
         return lhs.data == rhs.data;
     }
 
-    friend bool operator< (c_string const & lhs,
-                            c_string const & rhs)
+    friend bool operator< (symbol const & lhs, symbol const & rhs)
     {
         return lhs.data.str < rhs.data.str;
     }
-
-
 
     symbol_data data;
 };
@@ -224,14 +213,14 @@ public:
 class named_hash_entry:
     public bi::unordered_set_base_hook<>
 {
-    const c_string name_;
+    const symbol name_;
 
 public:
     named_hash_entry(const char * name):
         name_(name)
     {}
 
-    named_hash_entry(c_string const & name):
+    named_hash_entry(symbol const & name):
         name_(name)
     {}
 
@@ -254,8 +243,7 @@ public:
         return name_.data.hash;
     }
 
-    friend bool operator== (named_hash_entry const & a,
-                            named_hash_entry const & b)
+    friend bool operator== (named_hash_entry const & a, named_hash_entry const & b)
     {
         return a.name_ == b.name_;
     }
@@ -278,14 +266,13 @@ struct named_hash_equal
     }
 
     template<typename def>
-    bool operator()(def const & lhs,
-                    c_string const & rhs) const
+    bool operator()(def const & lhs, symbol const & rhs) const
     {
         return operator()(lhs.name(), rhs.c_str());
     }
 
     template<typename def>
-    bool operator()(c_string const & lhs,
+    bool operator()(symbol const & lhs,
                     def const & rhs) const
     {
         return operator()(lhs.c_str(), rhs.name());

@@ -41,6 +41,7 @@ SynthDesc {
 		outputs.do {|output| stream << "   O "; output.printOn(stream); $\n.printOn(stream) };
 	}
 
+	// don't use *read or *readFile to read into a SynthDescLib. Use SynthDescLib:read or SynthDescLib:readStream instead
 	*read { arg path, keepDefs=false, dict;
 		dict = dict ?? { IdentityDictionary.new };
 		path.pathMatch.do { |filename|
@@ -539,6 +540,7 @@ SynthDescLib {
 
 	add { |synthdesc|
 		synthDescs.put(synthdesc.name.asSymbol, synthdesc);
+		this.changed(\synthDescAdded, synthdesc);
 	}
 
 	removeAt { |name|
@@ -579,11 +581,67 @@ SynthDescLib {
 		};
 	}
 
-	read { arg path;
+	read { arg path, keepDefs=true;
 		if (path.isNil) {
 			path = SynthDef.synthDefDir ++ "*.scsyndef";
 		};
-		synthDescs = SynthDesc.read(path, true, synthDescs);
+		path.pathMatch.do { |filename|
+			var file, result;
+			file = File(filename, "r");
+			protect {
+				this.readStream(file, keepDefs, filename);
+			}{
+				file.close;
+			};
+		};
+	}
+
+	readStream { arg stream, keepDefs=true, path;
+		var numDefs, version, resultSet;
+		stream.getInt32; // 'SCgf'
+		version = stream.getInt32; // version
+		numDefs = stream.getInt16;
+		resultSet = Set.new(numDefs);
+		numDefs.do {
+			var desc;
+			if(version >= 2, {
+				desc = SynthDesc.new.readSynthDef2(stream, keepDefs);
+			},{
+				desc = SynthDesc.new.readSynthDef(stream, keepDefs);
+			});
+			synthDescs.put(desc.name.asSymbol, desc);
+			resultSet.add(desc);
+				// AbstractMDPlugin dynamically determines the md archive type
+				// from the file extension
+			if(path.notNil) {
+				desc.metadata = AbstractMDPlugin.readMetadata(path);
+			};
+			SynthDesc.populateMetadataFunc.value(desc);
+			if(desc.def.notNil and: { stream.isKindOf(CollStream).not }) {
+				desc.def.metadata ?? { desc.def.metadata = () };
+				desc.def.metadata.put(\shouldNotSend, true)
+					.put(\loadPath, path);
+			};
+		};
+		resultSet.do({|newDesc| this.changed(\synthDescAdded, newDesc); });
+		^resultSet
+	}
+
+	readDescFromDef {arg stream, keepDef=true, def, metadata;
+		var desc, numDefs, version;
+		stream.getInt32; // 'SCgf'
+		version = stream.getInt32; // version
+		numDefs = stream.getInt16; // should be 1
+		if(version >= 2, {
+			desc = SynthDesc.new.readSynthDef2(stream, keepDef);
+		},{
+			desc = SynthDesc.new.readSynthDef(stream, keepDef);
+		});
+		if(keepDef) { desc.def = def };
+		if(metadata.notNil) { desc.metadata = metadata };
+		synthDescs.put(desc.name.asSymbol, desc);
+		this.changed(\synthDescAdded, desc);
+		^desc
 	}
 }
 

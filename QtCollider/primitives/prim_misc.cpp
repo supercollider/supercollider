@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -40,6 +40,7 @@
 #include <QDesktopWidget>
 #include <QStyleFactory>
 #include <QWebSettings>
+#include <QCursor>
 
 namespace QtCollider {
 
@@ -264,6 +265,15 @@ QC_LANG_PRIMITIVE( Qt_IsMethodOverridden, 2, PyrSlot *r, PyrSlot *a, VMGlobals *
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( Qt_CursorPosition, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+    QtCollider::set(r, QCursor::pos());
+
+    return errNone;
+}
+
 void defineMiscPrimitives()
 {
   LangPrimitiveDefiner definer;
@@ -282,6 +292,7 @@ void defineMiscPrimitives()
   definer.define<Qt_AvailableStyles>();
   definer.define<Qt_IsMethodOverridden>();
   definer.define<QWebView_ClearMemoryCaches>();
+  definer.define<Qt_CursorPosition>();
 }
 
 } // namespace QtCollider

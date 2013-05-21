@@ -159,6 +159,22 @@
          </widget>
         </item>
         <item>
+         <widget class="QGroupBox" name="groupBox_5">
+          <property name="title">
+           <string>Completion</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_completion">
+           <item>
+            <widget class="QCheckBox" name="insertMatchingTokens">
+             <property name="text">
+              <string>Auto insert matching parentheses, brackets, quotes</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -189,6 +205,30 @@
          <widget class="QCheckBox" name="postWindowLineWrap">
           <property name="text">
            <string>Wrap text in post window</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="disableBlinkingCursor">
+          <property name="text">
+           <string>Disable blinking cursor</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="highlightCurrentLine">
+          <property name="text">
+           <string>Highlight current line</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="highlightBracketContents">
+          <property name="toolTip">
+           <string>Highlight background of entire contents of matching brackets</string>
+          </property>
+          <property name="text">
+           <string>Highlight bracket contents</string>
           </property>
          </widget>
         </item>
@@ -248,8 +288,8 @@
           </property>
           <property name="sizeHint" stdset="0">
            <size>
-            <width>20</width>
-            <height>346</height>
+            <width>588</width>
+            <height>296</height>
            </size>
           </property>
          </spacer>

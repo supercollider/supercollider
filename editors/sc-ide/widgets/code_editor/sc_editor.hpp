@@ -36,6 +36,12 @@ class ScCodeEditor : public GenericCodeEditor
     Q_OBJECT
 
 public:
+    enum EditBlockMode {
+        NewEditBlock,
+        JoinEditBlock
+    };
+
+public:
     static TokenIterator previousOpeningBracket(TokenIterator it);
     static TokenIterator nextClosingBracket(TokenIterator it);
     static void matchBracket( const TokenIterator & bracket, BracketPair & match );
@@ -51,17 +57,19 @@ public:
 public slots:
     void applySettings( Settings::Manager * );
     void setSpaceIndent(bool on) { mSpaceIndent = on; }
-    void indent();
+    void indent( EditBlockMode = NewEditBlock );
     void triggerAutoCompletion();
     void triggerMethodCallAid();
     void toggleComment();
     void gotoPreviousBlock();
     void gotoNextBlock();
+    void selectBlockAroundCursor();
     void selectCurrentRegion();
     void gotoNextRegion();
     void gotoPreviousRegion();
     bool openDocumentation();
     void openDefinition();
+    void openCommandLine();
     void findReferences();
     void evaluateLine();
     void evaluateRegion();
@@ -84,6 +92,7 @@ private:
     QTextCursor cursorAt( const TokenIterator, int offset = 0 );
     QTextCursor selectionForPosition( int position );
     QTextCursor regionAroundCursor( const QTextCursor & );
+    QTextCursor blockAroundCursor( const QTextCursor & );
     void moveToNextToken( QTextCursor &, QTextCursor::MoveMode );
     void moveToPreviousToken( QTextCursor &, QTextCursor::MoveMode );
 
@@ -97,18 +106,23 @@ private:
     void removeSingleLineComment( QTextCursor );
 
     int indentedStartOfLine( const QTextBlock & );
-    void indent( const QTextCursor & );
+    void indent( const QTextCursor &, EditBlockMode = NewEditBlock );
     QTextBlock indent( const QTextBlock & b, int level );
     QString makeIndentationString( int level );
     int indentationLevel( const QTextCursor & );
     void insertSpaceToNextTabStop( QTextCursor & );
 
+    bool insertMatchingTokens(const QString & token);
+    bool removeMatchingTokens();
+
     int mIndentWidth;
     bool mSpaceIndent;
     bool mStepForwardEvaluation;
     int mBlinkDuration;
+    bool mInsertMatchingTokens;
     QTextCharFormat mBracketHighlight;
     QTextCharFormat mBracketMismatchFormat;
+    bool mHighlightBracketContents;
 
     QList<QTextEdit::ExtraSelection> mBracketSelections;
     bool mMouseBracketMatch;

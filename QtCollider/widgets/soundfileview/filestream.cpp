@@ -6,7 +6,7 @@
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * This program is distributed in the hope that it will be useful,
@@ -20,6 +20,7 @@
 ************************************************************************/
 
 #include "view.hpp"
+#include <limits>
 
 SoundFileStream::SoundFileStream() : _data(0), _dataSize(0), _dataOffset(0)
 {}
@@ -44,7 +45,21 @@ void SoundFileStream::load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, sf
 
   _data = new short [_dataSize * info.channels];
   sf_seek( sf, _dataOffset, SEEK_SET);
-  _dataSize = sf_readf_short( sf, _data, _dataSize );
+
+  if (info.format & SF_FORMAT_FLOAT || info.format & SF_FORMAT_DOUBLE)
+  {
+    // libsndfile reading float into short is broken for non-power-of-two channel counts
+    int sampleCount = _dataSize * info.channels;
+    float *tmp = new float [sampleCount];
+    _dataSize = sf_readf_float( sf, tmp, _dataSize );
+    for (int i = 0; i < sampleCount; ++i)
+        _data[i] = std::max( -1.f, std::min( 1.f, tmp[i] ) ) * std::numeric_limits<short>::max();
+    delete[] tmp;
+  }
+  else
+  {
+    _dataSize = sf_readf_short( sf, _data, _dataSize );
+  }
 
   _ch = info.channels;
   _beg = _dataOffset;

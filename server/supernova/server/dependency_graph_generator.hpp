@@ -27,7 +27,7 @@ class dependency_graph_generator
 {
     typedef node_graph::dsp_thread_queue dsp_thread_queue;
     typedef thread_queue_item::successor_list successor_container;
-    typedef std::vector<server_node*, rt_pool_allocator<abstract_synth*> > sequential_child_list;
+    typedef std::vector<server_node*, rt_pool_allocator<server_node*> > sequential_child_list;
 
 public:
     dsp_thread_queue * operator()(node_graph * graph)
@@ -161,7 +161,7 @@ private:
     successor_container fill_queue_recursive(parallel_group & g, successor_container const & successors_from_parent, size_t previous_activation_limit)
     {
         assert (g.has_synth_children());
-        std::vector<thread_queue_item*, rt_pool_allocator<void*> > collected_nodes;
+        std::vector<thread_queue_item*, rt_pool_allocator<thread_queue_item*> > collected_nodes;
         collected_nodes.reserve(g.child_synth_count + g.child_group_count * 16); // pessimize
 
         for (server_node_list::iterator it = g.child_nodes.begin(); it != g.child_nodes.end(); ++it) {

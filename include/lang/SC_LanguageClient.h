@@ -1,6 +1,7 @@
 /*  -*- c++ -*-
 	Abstract interpreter interface.
 	Copyright (c) 2003 2004 stefan kersten.
+	Copyright (c) 2013 tim blechmann.
 
 	====================================================================
 
@@ -26,79 +27,16 @@
 #ifndef SC_LANGUAGECLIENT_H_INCLUDED
 #define SC_LANGUAGECLIENT_H_INCLUDED
 
-#include "SC_StringBuffer.h"
 #include "SC_Export.h"
-#include "SC_Lock.h"
-#include "SC_Win32Utils.h"
-
-#include <pthread.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <errno.h>
+#include <cstdio>
+#include <cstdarg>
 
 // =====================================================================
 // SC_LanguageClient - abstract sclang client.
 // =====================================================================
 
-struct PyrSymbol;
-struct VMGlobals;
-
-extern bool compiledOK;
-
-extern pthread_mutex_t gLangMutex;
-extern VMGlobals* gMainVMGlobals;
-
-
-// lock language,
-// if shouldBeRunning == false, return EINTR
-// if language has been locked, return 0
-template <typename FlagType>
-static inline int lockLanguageOrQuit(FlagType const & shouldBeRunning)
-{
-#ifdef __linux__
-	// we have pthread_mutex_timedlock
-
-	int status = pthread_mutex_trylock(&gLangMutex);
-	if (status == 0) {
-		if (shouldBeRunning == false) {
-			pthread_mutex_unlock(&gLangMutex);
-			return EINTR;
-		}
-	} else if (status == EBUSY) {
-		do {
-			struct timespec now;
-			clock_gettime(CLOCK_REALTIME, &now);
-			now.tv_sec += 1;
-
-			status = pthread_mutex_timedlock(&gLangMutex, &now);
-			if (shouldBeRunning == false) {
-				if (status == 0)
-					pthread_mutex_unlock(&gLangMutex);
-				return EINTR;
-			}
-		} while (status == ETIMEDOUT);
-	}
-	return status;
-#else
-	int status;
-	do {
-		status = pthread_mutex_trylock (&gLangMutex);
-		if (shouldBeRunning == false) {
-			if (status == 0)
-				pthread_mutex_unlock(&gLangMutex);
-			return EINTR;
-		}
-		if (status == EBUSY) {
-			struct timespec sleepTime, remain;
-			sleepTime.tv_sec = 0;
-			sleepTime.tv_nsec = 100000;
-			nanosleep(&sleepTime, &remain);
-		}
-	} while (status);
-	return 0;
-#endif
-}
-
+SC_DLLEXPORT class SC_LanguageClient * createLanguageClient(const char * name);
+SC_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient *);
 
 class SC_DLLEXPORT SC_LanguageClient
 {
@@ -118,14 +56,16 @@ public:
 		char*			mRuntimeDir;			// runtime directory
 	};
 
-public:
+protected:
 	// create singleton instance
 	SC_LanguageClient(const char* name);
 	virtual ~SC_LanguageClient();
+	friend void destroyLanguageClient(class SC_LanguageClient *);
 
+public:
 	// singleton instance access locking
-	static void lockInstance() { gInstanceMutex.Lock(); }
-	static void unlockInstance() { gInstanceMutex.Unlock(); }
+	static void lockInstance();
+	static void unlockInstance();
 
 	// return the singleton instance
 	static SC_LanguageClient* instance() { return gInstance; }
@@ -136,36 +76,37 @@ public:
 	void shutdownRuntime();
 
 	// return application name
-	const char* getName() const { return mName; }
+	const char* getName() const;
 
 	// library startup/shutdown
-	bool isLibraryCompiled() { return compiledOK; }
+	bool isLibraryCompiled();
 	void compileLibrary();
 	void shutdownLibrary();
 	void recompileLibrary();
 
 	// interpreter access
-	void lock() { pthread_mutex_lock(&gLangMutex); }
-	bool trylock() { return pthread_mutex_trylock(&gLangMutex) == 0; }
-	void unlock() { pthread_mutex_unlock(&gLangMutex); }
+	void lock();
+	bool trylock();
+	void unlock();
 
-	VMGlobals* getVMGlobals() { return gMainVMGlobals; }
+    struct VMGlobals* getVMGlobals();
 
 	void setCmdLine(const char* buf, size_t size);
 	void setCmdLine(const char* str);
-	void setCmdLine(const SC_StringBuffer& strBuf);
 	void setCmdLinef(const char* fmt, ...);
-	void runLibrary(PyrSymbol* pyrSymbol);
 	void runLibrary(const char* methodName);
-	void interpretCmdLine() { runLibrary(s_interpretCmdLine); }
-	void interpretPrintCmdLine() { runLibrary(s_interpretPrintCmdLine); }
+	void interpretCmdLine();
+	void interpretPrintCmdLine();
 	void executeFile(const char* fileName);
-	void runMain() { runLibrary(s_run); }
-	void stopMain() { runLibrary(s_stop); }
+	void runMain();
+	void stopMain();
 
 	// post file access
-	FILE* getPostFile() { return mPostFile; }
-	void setPostFile(FILE* file) { mPostFile = file; }
+	FILE* getPostFile();
+	void setPostFile(FILE* file);
+
+	// run (in case of a terminal client)
+	virtual int run(int argc, char** argv);
 
 	// post buffer output (subclass responsibility)
 	//     should be thread-save.
@@ -175,13 +116,6 @@ public:
 	// flush post buffer contents to screen.
 	//     only called from the main language thread.
 	virtual void flush() = 0;
-
-	// common symbols
-	//     only valid after the library has been compiled.
-	static PyrSymbol* s_interpretCmdLine;
-	static PyrSymbol* s_interpretPrintCmdLine;
-	static PyrSymbol* s_run;
-	static PyrSymbol* s_stop;
 
 	// command line argument handling utilities
 	static void snprintMemArg(char* dst, size_t size, int arg);
@@ -208,18 +142,16 @@ protected:
 	// called after the interpreter has been started
 	virtual void onInterpStartup();
 
+	void runLibrary(struct PyrSymbol* pyrSymbol);
+
 private:
 	friend void closeAllGUIScreens();
 	friend void initGUIPrimitives();
 	friend void initGUI();
 
 private:
-	char*						mName;
-	FILE*						mPostFile;
-	SC_StringBuffer				mScratch;
-	bool						mRunning;
+	struct HiddenLanguageClient * mHiddenClient;
 	static SC_LanguageClient*	gInstance;
-	static SC_Lock gInstanceMutex;
 };
 
 // =====================================================================

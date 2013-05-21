@@ -88,9 +88,9 @@ BOOST_ASIO_DECL bool non_blocking_write(int d,
 BOOST_ASIO_DECL int ioctl(int d, state_type& state, long cmd,
     ioctl_arg_type* arg, boost::system::error_code& ec);
 
-BOOST_ASIO_DECL int fcntl(int d, long cmd, boost::system::error_code& ec);
+BOOST_ASIO_DECL int fcntl(int d, int cmd, boost::system::error_code& ec);
 
-BOOST_ASIO_DECL int fcntl(int d, long cmd,
+BOOST_ASIO_DECL int fcntl(int d, int cmd,
     long arg, boost::system::error_code& ec);
 
 BOOST_ASIO_DECL int poll_read(int d,
