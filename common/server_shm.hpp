@@ -59,7 +59,7 @@ public:
 		scope_buffers(scope_buffer_ptr_allocator(segment.get_segment_manager()))
 	{
 		control_busses_ = (float*)segment.allocate(control_busses * sizeof(float));
-		std::fill(control_busses_.get(), control_busses_.get() + control_busses, 0);
+		std::fill(control_busses_.get(), control_busses_.get() + control_busses, 0.f);
 
 		for (int i = 0; i != num_scope_buffers; ++i) {
 			scope_buffer * raw_scope_ptr = (scope_buffer*)segment.allocate(sizeof(scope_buffer));

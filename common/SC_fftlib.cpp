@@ -349,7 +349,7 @@ static void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fu
 #if SC_FFT_VDSP
 	vDSP_vsmul(data, 1, &scalefac, data, 1, winsize);
 #else
-	for(int i=0; i<winsize; ++i){
+	for(unsigned int i=0; i<winsize; ++i){
 		data[i] *= scalefac;
 	}
 #endif
