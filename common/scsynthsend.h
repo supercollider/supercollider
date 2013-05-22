@@ -58,7 +58,7 @@ struct scpacket {
 	void addi(int i)
 	{
 		if (wrpos >= endpos) throw_overflow_exception();
-		*wrpos++ = htonl(i);
+		*wrpos++ = sc_htonl(i);
 	}
 	void addii(int64 ii)
 	{
@@ -73,15 +73,15 @@ struct scpacket {
 		if (wrpos >= endpos) throw_overflow_exception();
 		elem32 slot;
 		slot.f = f;
-		*wrpos++ = htonl(slot.i);
+		*wrpos++ = sc_htonl(slot.i);
 	}
 	void addd(double f)
 	{
 		if (wrpos >= endpos) throw_overflow_exception();
 		elem64 slot;
 		slot.f = f;
-		*wrpos++ = htonl(slot.i >> 32);
-		*wrpos++ = htonl(slot.i & 0x00000000FFFFFFFF);
+		*wrpos++ = sc_htonl(slot.i >> 32);
+		*wrpos++ = sc_htonl(slot.i & 0x00000000FFFFFFFF);
 	}
 	void adds(const char *src)
 	{
@@ -117,7 +117,7 @@ struct scpacket {
 		if (wrpos + (len4 + 1) > endpos) throw_overflow_exception();
 		wrpos[len4 - 1] = 0;
 		int32 swaplen = len;
-		*wrpos++ = htonl(swaplen);
+		*wrpos++ = sc_htonl(swaplen);
 		memcpy(wrpos, src, len);
 		wrpos += len4;
 	}
@@ -158,7 +158,7 @@ struct scpacket {
 	void EndMsg()
 	{
 		if (inbundle) {
-			*msgsizepos = htonl(((wrpos - msgsizepos) - 1) * sizeof(int32));
+			*msgsizepos = sc_htonl(((wrpos - msgsizepos) - 1) * sizeof(int32));
 		}
 	}
 };

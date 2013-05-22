@@ -252,7 +252,7 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket)
 	char* dataEnd = inPacket->mData + inPacket->mSize;
 
 	while (data < dataEnd) {
-		int32 msgSize = ntohl(*(int32*)data);
+		int32 msgSize = sc_ntohl(*(int32*)data);
 		data += sizeof(int32);
 		//scprintf("msgSize %d\n", msgSize);
 		PerformOSCMessage(inWorld, msgSize, data, &inPacket->mReplyAddr);

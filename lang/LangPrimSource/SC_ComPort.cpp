@@ -225,12 +225,12 @@ SC_UdpInPort::SC_UdpInPort(int inPortNum)
 
 	bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
 	mBindSockAddr.sin_family = AF_INET;
-	mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	mBindSockAddr.sin_addr.s_addr = sc_htonl(INADDR_ANY);
 
 	bool bound = false;
 	for (int i=0; i<10 && !bound; ++i) {
 		mPortNum = mPortNum+i;
-		mBindSockAddr.sin_port = htons(mPortNum);
+		mBindSockAddr.sin_port = sc_htons(mPortNum);
 		if (bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) >= 0) {
 			bound = true;
 		}
@@ -268,10 +268,10 @@ SC_UdpCustomInPort::SC_UdpCustomInPort(int inPortNum)
 
 	bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
 	mBindSockAddr.sin_family = AF_INET;
-	mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	mBindSockAddr.sin_addr.s_addr = sc_htonl(INADDR_ANY);
 
 	bool bound = false;
-	mBindSockAddr.sin_port = htons(mPortNum);
+	mBindSockAddr.sin_port = sc_htons(mPortNum);
 	if (bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) >= 0) {
 		bound = true;
 	}
@@ -431,8 +431,8 @@ SC_TcpInPort::SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog)
 
 	bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
 	mBindSockAddr.sin_family = AF_INET;
-	mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	mBindSockAddr.sin_port = htons(mPortNum);
+	mBindSockAddr.sin_addr.s_addr = sc_htonl(INADDR_ANY);
+	mBindSockAddr.sin_port = sc_htons(mPortNum);
 
 	if(bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) < 0)
 	{
@@ -520,7 +520,7 @@ void* SC_TcpConnectionPort::Run()
 		if (size < 0) goto leave;
 
 		// sk: msglen is in network byte order
-		msglen = ntohl(msglen);
+		msglen = sc_ntohl(msglen);
 
 		char *data = (char*)malloc(msglen);
 		size = recvall(mSocket, data, msglen);
@@ -556,8 +556,8 @@ SC_TcpClientPort::SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc, vo
 	if (getpeername(mSocket, (struct sockaddr*)&mReplySockAddr, &sockAddrLen) == -1) {
 		memset(&mReplySockAddr, 0, sizeof(mReplySockAddr));
 		mReplySockAddr.sin_family = AF_INET;
-		mReplySockAddr.sin_addr.s_addr = htonl(INADDR_NONE);
-		mReplySockAddr.sin_port = htons(0);
+		mReplySockAddr.sin_addr.s_addr = sc_htonl(INADDR_NONE);
+		mReplySockAddr.sin_port = sc_htons(0);
 	}
 
 #if HAVE_SO_NOSIGPIPE
@@ -618,7 +618,7 @@ void* SC_TcpClientPort::Run()
 		if (size < (int32)sizeof(int32)) goto leave;
 
 		// msglen is in network byte order
-		msglen = ntohl(msglen);
+		msglen = sc_ntohl(msglen);
 
 		packet->mData = (char*)malloc(msglen);
 		if (!packet->mData) goto leave;

@@ -32,13 +32,10 @@
 void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port)
 {
     toaddr.sin_family = AF_INET;     // host byte order
-    toaddr.sin_port = htons(port); // short, network byte order
-    toaddr.sin_addr.s_addr = htonl(addr);
+    toaddr.sin_port = sc_htons(port); // short, network byte order
+    toaddr.sin_addr.s_addr = sc_htonl(addr);
     bzero(&(toaddr.sin_zero), 8);    // zero the rest of the struct
 }
 
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
 int sendall(int socket, const void *msg, size_t len);
-
-
-

@@ -400,12 +400,12 @@ void rendezvous_thread_func(SC_ComPort* port)
 
 void SC_UdpInPort::PublishToRendezvous()
 {
-	PublishPortToRendezvous(kSCRendezvous_UDP, htons(mPortNum));
+	PublishPortToRendezvous(kSCRendezvous_UDP, sc_htons(mPortNum));
 }
 
 void SC_TcpInPort::PublishToRendezvous()
 {
-	PublishPortToRendezvous(kSCRendezvous_TCP, htons(mPortNum));
+	PublishPortToRendezvous(kSCRendezvous_TCP, sc_htons(mPortNum));
 }
 
 #endif
@@ -432,8 +432,8 @@ SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 
 	bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
 	mBindSockAddr.sin_family = AF_INET;
-	mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	mBindSockAddr.sin_port = htons(mPortNum);
+	mBindSockAddr.sin_addr.s_addr = sc_htonl(INADDR_ANY);
+	mBindSockAddr.sin_port = sc_htons(mPortNum);
 
 	if (bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) < 0) {
 		throw std::runtime_error("unable to bind udp socket\n");
@@ -563,8 +563,8 @@ SC_TcpInPort::SC_TcpInPort(struct World *inWorld, int inPortNum, int inMaxConnec
 
     bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
     mBindSockAddr.sin_family = AF_INET;
-    mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    mBindSockAddr.sin_port = htons(mPortNum);
+    mBindSockAddr.sin_addr.s_addr = sc_htonl(INADDR_ANY);
+    mBindSockAddr.sin_port = sc_htons(mPortNum);
 
     if(bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) < 0)
     {
@@ -645,7 +645,7 @@ void tcp_reply_func(struct ReplyAddress *addr, char* msg, int size)
     uint32 u ;
     // Write size as 32bit unsigned network-order integer
 	u = size;
-    u = htonl ( u ) ;
+    u = sc_htonl ( u ) ;
     sendall ( addr->mSocket , &u , 4 ) ;
     // Write message.
     sendall ( addr->mSocket , msg , size ) ;
@@ -672,7 +672,7 @@ void* SC_TcpConnectionPort::Run()
 		size = recvall(mSocket, &msglen, sizeof(int32) );
 		if (size < 0) goto leave;
 
-		msglen = ntohl(msglen);
+		msglen = sc_ntohl(msglen);
 		if (msglen > kMaxPasswordLen) break;
 
 		size = recvall(mSocket, buf, msglen);
@@ -695,7 +695,7 @@ void* SC_TcpConnectionPort::Run()
 			if (size != sizeof(int32)) goto leave;
 
 			// sk: msglen is in network byte order
-			msglen = ntohl(msglen);
+			msglen = sc_ntohl(msglen);
 
 			char *data = (char*)malloc(msglen);
 			size = recvall(mSocket, data, msglen);
