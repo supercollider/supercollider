@@ -121,15 +121,15 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 			switch (classification)
 			{
 				case FP_INFINITE:
-					printf("Infinite number found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id);
+					Print("Infinite number found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id);
 					ZXP(out) = 2;
 					break;
 				case FP_NAN:
-					printf("NaN found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id);
+					Print("NaN found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id);
 					ZXP(out) = 1;
 					break;
 				case FP_SUBNORMAL:
-					printf("Denormal found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id);
+					Print("Denormal found in Synth %d, ID: %d\n", unit->mParent->mNode.mID, (int)id);
 					ZXP(out) = 3;
 					break;
 				default:
@@ -143,10 +143,10 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 			classification = CheckBadValues_fold_fpclasses(sc_fpclassify(samp));
 			if(classification != unit->prevclass) {
 				if(unit->sameCount == 0) {
-					printf("CheckBadValues: %s found in Synth %d, ID %d\n",
+					Print("CheckBadValues: %s found in Synth %d, ID %d\n",
 						CheckBadValues_fpclassString(classification), unit->mParent->mNode.mID, (int)id);
 				} else {
-					printf("CheckBadValues: %s found in Synth %d, ID %d (previous %d values were %s)\n",
+					Print("CheckBadValues: %s found in Synth %d, ID %d (previous %d values were %s)\n",
 						CheckBadValues_fpclassString(classification), unit->mParent->mNode.mID, (int)id,
 						(int)unit->sameCount, CheckBadValues_fpclassString(unit->prevclass)
 					);
@@ -229,8 +229,5 @@ inline int CheckBadValues_fold_fpclasses(int fpclass)
 PluginLoad(Test)
 {
 	ft = inTable;
-
 	DefineSimpleUnit(CheckBadValues);
 }
-
-
