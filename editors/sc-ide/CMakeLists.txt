@@ -1,5 +1,6 @@
 cmake_minimum_required( VERSION 2.8 )
 
+set(QT_USE_QTMAIN TRUE)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5WebKitWidgets REQUIRED)
 find_package(Qt5Network REQUIRED)
@@ -8,6 +9,13 @@ find_package(Qt5LinguistTools REQUIRED)
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
 endif()
+
+if(WIN32)
+    set(GUI_TYPE WIN32)
+endif(WIN32)
+if(APPLE)
+    set(GUI_TYPE MACOSX_BUNDLE)
+endif(APPLE)
 
 if (APPLE)
   include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
@@ -184,14 +192,18 @@ set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations})
 
 if(FINAL_BUILD)
   CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
-  add_executable( ${ide_name} MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} )
+  add_executable( ${ide_name} ${GUI_TYPE} scide_final.cpp ${ide_rc_sources} )
 else()
-  add_executable( ${ide_name} MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} )
+  add_executable( ${ide_name} ${GUI_TYPE} ${ide_sources} ${ide_rc_sources} )
 endif()
 
 qt5_use_modules( ${ide_name} Widgets WebKitWidgets Network )
 
 target_link_libraries( ${ide_name} ${YAMLCPP_LIBRARY})
+
+if(WIN32)
+    target_link_libraries( ${ide_name} Qt5::WinMain )
+endif()
 
 if(Boost_FOUND)
     target_link_libraries( ${ide_name} ${Boost_SYSTEM_LIBRARY} )
