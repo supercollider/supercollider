@@ -45,24 +45,24 @@ inline size_t OSCstrlen(const char *strin)
 inline float32 OSCfloat(const char* inData)
 {
 	elem32 elem;
-	elem.u = ntohl(*(uint32*)inData);
+	elem.u = sc_ntohl(*(uint32*)inData);
 	return elem.f;
 }
 
 inline int32 OSCint(const char* inData)
 {
-	return (int32)ntohl(*(uint32*)inData);
+	return (int32)sc_ntohl(*(uint32*)inData);
 }
 
 inline int64 OSCtime(const char* inData)
 {
-	return ((int64)ntohl(*(uint32*)inData) << 32) + (ntohl(*(uint32*)(inData + 4)));
+	return ((int64)sc_ntohl(*(uint32*)inData) << 32) + (sc_ntohl(*(uint32*)(inData + 4)));
 }
 
 inline float64 OSCdouble(const char* inData)
 {
 	elem64 slot;
-	slot.i = ((int64)ntohl(*(uint32*)inData) << 32) + (ntohl(*(uint32*)(inData + 4)));
+	slot.i = ((int64)sc_ntohl(*(uint32*)inData) << 32) + (sc_ntohl(*(uint32*)(inData + 4)));
 	return slot.f;
 }
 

@@ -316,7 +316,7 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 
 		if (sendMsgLen) {
 			// send length of message in network byte-order
-			int32 sizebuf = htonl(msglen);
+			int32 sizebuf = sc_htonl(msglen);
 			sendall(tcpSocket, (char*)&sizebuf, sizeof(int32));
 		}
 
@@ -682,8 +682,8 @@ PyrObject* ConvertReplyAddress(ReplyAddress *inReply)
     VMGlobals *g = gMainVMGlobals;
     PyrObject *obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
     PyrSlot *slots = obj->slots;
-    SetInt(slots+0, ntohl(inReply->mSockAddr.sin_addr.s_addr));
-    SetInt(slots+1, ntohs(inReply->mSockAddr.sin_port));
+    SetInt(slots+0, sc_ntohl(inReply->mSockAddr.sin_addr.s_addr));
+    SetInt(slots+1, sc_ntohs(inReply->mSockAddr.sin_port));
     return obj;
 }
 
@@ -866,7 +866,7 @@ int prGetHostByName(VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	SetInt(a, ntohl(*(int*)he->h_addr));
+	SetInt(a, sc_ntohl(*(int*)he->h_addr));
 
 	return errNone;
 }
