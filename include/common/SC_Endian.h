@@ -61,54 +61,54 @@
 
 #ifndef SC_NO_ENDIAN_FUNCTIONS
 
-static inline int sc_htonl(int arg)
+static inline unsigned int sc_htonl(unsigned int arg)
 {
 	return htonl(arg);
 }
 
-static inline short sc_htons(short arg)
+static inline unsigned short sc_htons(unsigned short arg)
 {
 	return htons(arg);
 }
 
-static inline int sc_ntohl(int arg)
+static inline unsigned int sc_ntohl(unsigned int arg)
 {
 	return ntohl(arg);
 }
 
-static inline short sc_ntohs(short arg)
+static inline unsigned short sc_ntohs(unsigned short arg)
 {
 	return ntohs(arg);
 }
 
 #else
 
-static inline int sc_htonl(int x)
+static inline unsigned int sc_htonl(unsigned int x)
 {
 #if BYTE_ORDER == LITTLE_ENDIAN
-	char *s = (char *)&x;
-	return (int)(s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3]);
+	unsigned char *s = (unsigned char *)&x;
+	return (unsigned int)(s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3]);
 #else
 	return x;
 #endif
 }
 
-static inline short sc_htons(short x)
+static inline unsigned short sc_htons(unsigned short x)
 {
 #if BYTE_ORDER == LITTLE_ENDIAN
-	char *s = (char *) &x;
-	return (short)(s[0] << 8 | s[1]);
+	unsigned char *s = (unsigned char *) &x;
+	return (unsigned short)(s[0] << 8 | s[1]);
 #else
 	return x;
 #endif
 }
 
-static inline int sc_ntohl(int x)
+static inline unsigned int sc_ntohl(unsigned int x)
 {
 	return sc_htonl(x);
 }
 
-static inline short sc_ntohs(short x)
+static inline unsigned short sc_ntohs(unsigned short x)
 {
 	return sc_htons(x);
 }
