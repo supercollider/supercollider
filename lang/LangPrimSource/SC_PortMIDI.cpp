@@ -595,7 +595,6 @@ void initMIDIPrimitives()
 	definePrimitive(base, index++, "_RestartMIDI", prRestartMIDI, 1, 0);
 	definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
 	definePrimitive(base, index++, "_SendSysex", prSendSysex, 3, 0);
-	pthread_mutex_init (&gPmStreamMutex, NULL);
 	midiCleanUp();
 }
 
