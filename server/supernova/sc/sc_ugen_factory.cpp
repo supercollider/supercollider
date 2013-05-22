@@ -21,6 +21,8 @@
 
 #ifdef DLOPEN
 #include <dlfcn.h>
+#elif defined(_WIN32)
+#include "Windows.h"
 #endif
 
 #include <boost/filesystem.hpp>
@@ -283,7 +285,8 @@ void sc_ugen_factory::close_handles(void)
 #endif
 }
 
-#else
+#elif defined(_WIN32)
+
 void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 {
     //std::cout << "try open plugin: " << path << std::endl;
@@ -344,6 +347,8 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 
 void sc_ugen_factory::close_handles(void)
 {}
+#else
+
 #endif
 
 } /* namespace nova */
