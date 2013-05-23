@@ -1,6 +1,6 @@
 class:: Shaper
 summary:: Wave shaper.
-related:: Classes/Index, Classes/WrapIndex
+related:: Classes/Index, Classes/WrapIndex, Classes/Wavetable
 categories::  UGens>Buffer
 
 Description::
@@ -145,10 +145,4 @@ b.plot // wavetable format!
 )
 ::
 
-subsection:: Advanced notes: wavetable format
-code::
-Signal: [a0, a1, a2...]
-Wavetable: [2*a0-a1, a1-a0, 2*a1-a2, a2-a1, 2*a2-a3, a3-a2...]
-::
-This strange format is not a standard linear interpolation (integer + frac), but for (integer part -1) and (1+frac))  due to some efficient maths for integer to float conversion in the underlying C code.
 

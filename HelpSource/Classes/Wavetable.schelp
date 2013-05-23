@@ -59,3 +59,16 @@ Convert the Wavetable into a Signal.
 code::
 Wavetable.sineFill(512, [1]).asSignal.plot;
 ::
+
+
+
+subsection:: Advanced notes: wavetable format
+code::
+Signal: [a0, a1, a2...]
+Wavetable: [2*a0-a1, a1-a0, 2*a1-a2, a2-a1, 2*a2-a3, a3-a2...]
+::
+This strange format is not a standard linear interpolation (integer + frac), but for (integer part -1) and (1+frac))  due to some efficient maths for integer to float conversion in the underlying C code.
+
+
+
+
