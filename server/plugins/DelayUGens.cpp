@@ -6168,6 +6168,7 @@ void Pluck_Ctor(Pluck *unit)
 //	FeedbackDelay_Reset(unit);
 	unit->m_maxdelaytime = IN0(2);
 	unit->m_delaytime = IN0(3);
+	unit->m_decaytime = IN0(4);
 	unit->m_dlybuf = 0;
 	bool allocationSucessful = DelayUnit_AllocDelayLine(unit, "Pluck");
 	if (!allocationSucessful)
