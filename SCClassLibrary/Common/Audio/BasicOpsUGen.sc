@@ -364,8 +364,9 @@ BinaryOpUGen : BasicOpUGen {
 
 MulAdd : UGen {
 	*new { arg in, mul = 1.0, add = 0.0;
-		var rate = [in, mul, add].rate;
-		^this.multiNew(rate, in, mul, add)
+		var args =  [in, mul, add].asUGenInput(this);
+		var rate = args.rate;
+		^this.multiNewList([rate] ++ args)
 	}
 	*new1 { arg rate, in, mul, add;
 		var minus, nomul, noadd;
