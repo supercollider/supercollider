@@ -23,81 +23,84 @@
 
 #include <stdio.h>
 #include <math.h>
-// #include <stdexcept>
+#include <limits>
 
 #define SANITYCHECK 0
 
-#if defined(_WIN32) && !defined(__MINGW32__)
-const int64 kMaxInt64 = 0x7FFFFFFFFFFFFFFF;
-#else
-const int64 kMaxInt64 = ~(1LL<<63);
-#endif
+const int64 kMaxInt64 = std::numeric_limits<int64>::max();
 
 template <class Event, int N>
 class PriorityQueueT
 {
 public:
-	PriorityQueueT() {
+	PriorityQueueT()
+	{
 		Empty();
 	}
 
 	bool Add(Event& inEvent)
-		{
-			if (mSize >= N) return false;
-			long mom = mSize++;
-			long me = mom;
-			for (; mom>0;) {	/* percolate up heap */
-				mom = (mom - 1) >> 1;
-				if (inEvent.mTime < mEvents[mom].mTime) {
-					mEvents[me] = mEvents[mom];
-					me = mom;
-				} else break;
-			}
-			mEvents[me] = inEvent;
+	{
+		if (mSize >= N) return false;
+
+		inEvent.mStabilityCount = mStabilityCounter++;
+
+		long mom = mSize++;
+		long me = mom;
+		for (; mom>0;) {	/* percolate up heap */
+			mom = (mom - 1) >> 1;
+			if (inEvent.key() < mEvents[mom].key()) {
+				mEvents[me] = mEvents[mom];
+				me = mom;
+			} else break;
+		}
+		mEvents[me] = inEvent;
 #if SANITYCHECK
-			SanityCheck();
+		SanityCheck();
 #endif
-			return true;
-		}
+		return true;
+	}
 	void Perform(int64 inTime)
-		{
-			while (NextTime() <= inTime) {
-				Event event = Remove();
-				event.Perform();
-			}
+	{
+		while (NextTime() <= inTime) {
+			Event event = Remove();
+			event.Perform();
 		}
+	}
+
 	int64 NextTime() { return mEvents[0].mTime; }
 	bool Ready(int64 inTime) { return NextTime() <= inTime; }
 	void Flush() { Perform(kMaxInt64); }
 	void Empty() { mSize = 0; SetEmptyTime(); }
-	void SetEmptyTime() { mEvents[0].mTime = kMaxInt64; }
+	void SetEmptyTime() { mEvents[0].mTime = kMaxInt64; mStabilityCounter = 0; }
 	int Size() { return mSize; }
 
 	Event Remove()
-		{
-			Event event = mEvents[0];
-			if (--mSize == 0) SetEmptyTime();
-			else {
-				Event temp = mEvents[mSize];
-				long mom = 0;
-				long me = 1;
-				for (;me < mSize;) { /* demote heap */
-					if (me+1 < mSize && mEvents[me].mTime > mEvents[me+1].mTime) {
-						me ++;
-					}
-					if (temp.mTime > mEvents[me].mTime) {
-						mEvents[mom] = mEvents[me];
-						mom = me;
-						me = (me << 1) + 1;
-					} else break;
+	{
+		Event event = mEvents[0];
+		if (--mSize == 0)
+			SetEmptyTime();
+		else {
+			Event temp = mEvents[mSize];
+			long mom = 0;
+			long me = 1;
+			for (;me < mSize;) { /* demote heap */
+				if (me+1 < mSize && mEvents[me].key() > mEvents[me+1].key() ) {
+					me ++;
 				}
-				mEvents[mom] = temp;
+				if (temp.key() > mEvents[me].key()) {
+					mEvents[mom] = mEvents[me];
+					mom = me;
+					me = (me << 1) + 1;
+				} else break;
 			}
-#if SANITYCHECK
-			SanityCheck();
-#endif
-			return event;
+			mEvents[mom] = temp;
 		}
+#if SANITYCHECK
+		SanityCheck();
+#endif
+		return event;
+	}
+
 	void SanityCheck()
 	{
 		for (int i=0; i<mSize; ++i)
@@ -117,6 +120,7 @@ public:
 private:
 	int mSize;
 	Event mEvents[N];
+	int64 mStabilityCounter;
 };
 
 #endif

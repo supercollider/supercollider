@@ -85,7 +85,44 @@ struct SC_ScheduledEvent
 	int64 Time() { return mTime; }
 	void Perform();
 
+	struct key_t
+	{
+		int64 time, stabilityCount;
+
+		bool operator<(key_t const & rhs) const
+		{
+			if (time < rhs.time)
+				return true;
+			if (time > rhs.time)
+				return false;
+			return stabilityCount < rhs.stabilityCount;
+		}
+
+		bool operator>(key_t const & rhs) const
+		{
+			if (time > rhs.time)
+				return true;
+			if (time < rhs.time)
+				return false;
+			return stabilityCount > rhs.stabilityCount;
+		}
+
+		bool operator==(key_t const & rhs) const
+		{
+			return (time == rhs.time) && (stabilityCount == rhs.stabilityCount);
+		}
+	};
+
+	key_t key() const
+	{
+		key_t ret;
+		ret.time = mTime;
+		ret.stabilityCount = mStabilityCount;
+		return ret;
+	}
+
 	int64 mTime;
+	int64 mStabilityCount;
 	OSC_Packet *mPacket;
 	PacketFreeFunc mPacketFreeFunc;
 	struct World *mWorld;
