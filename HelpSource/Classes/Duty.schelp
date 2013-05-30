@@ -6,7 +6,7 @@ categories::  UGens>Demand
 
 Description::
 
-A value is demanded each UGen in the list and output according to a
+A value is demanded of each UGen in the list and output according to a
 stream of duration values. The unit generators in the list should be
 'demand' rate.
 
