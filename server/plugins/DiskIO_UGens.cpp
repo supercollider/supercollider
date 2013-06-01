@@ -28,7 +28,7 @@
 
 #include <new>
 #include <boost/atomic.hpp>
-#include <boost/thread.hpp>
+#include <SC_Lock.h>
 
 #include <boost/lockfree/queue.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
@@ -167,7 +167,7 @@ struct DiskIOThread
 #endif
 
 	boost::atomic_bool mRunning;
-	boost::thread mThread;
+	thread mThread;
 
 	DiskIOThread():
 		mRunning(false)
@@ -186,8 +186,8 @@ struct DiskIOThread
 	{
 		mRunning.store(true);
 
-		boost::thread thread(boost::bind(&DiskIOThread::ioThreadFunc, this));
-		mThread = boost::move(thread);
+		thread thread(thread_namespace::bind(&DiskIOThread::ioThreadFunc, this));
+		mThread = thread_namespace::move(thread);
 	}
 
 	bool Write(DiskIOMsg& data)

@@ -33,14 +33,14 @@ typedef int socklen_t;
 #include "SC_Msg.h"
 #include "boost/atomic.hpp"
 #include "nova-tt/semaphore.hpp"
-#include "boost/thread.hpp"
+#include "SC_Lock.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class SC_CmdPort
 {
 protected:
-	boost::thread mThread;
+	thread mThread;
 
 	void Start();
 	virtual ReplyFunc GetReplyFunc()=0;

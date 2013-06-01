@@ -33,6 +33,7 @@
 #include "Hash.h"
 #include "SC_Constants.h"
 #include "SC_Alloca.h"
+#include "SC_Lock.h"
 
 #include <set>
 #include <limits>
@@ -854,7 +855,7 @@ static PyrClass * sortClasses(PyrClass * aClassList)
 
 #include <boost/threadpool.hpp>
 
-static int cpuCount = boost::thread::hardware_concurrency();
+static int cpuCount = thread::hardware_concurrency();
 static int helperThreadCount = cpuCount - 1;
 static boost::threadpool::fifo_pool compileThreadPool;
 

@@ -31,8 +31,6 @@
 #include <stdlib.h>
 #include <algorithm>
 
-#include <boost/thread/thread.hpp>
-
 #ifndef _WIN32
 #include <sys/time.h>
 #endif
@@ -132,7 +130,7 @@ void initializeScheduler()
 {
 	syncOSCOffsetWithTimeOfDay();
 
-	boost::thread resyncThread(resyncThreadFunc);
+	thread resyncThread(resyncThreadFunc);
 	resyncThread.detach();
 }
 #endif // SC_AUDIO_API_COREAUDIO
@@ -448,8 +446,8 @@ void SC_ScheduledEvent::Perform()
 bool SC_AudioDriver::Setup()
 {
 	mRunThreadFlag = true;
-	boost::thread thread(boost::bind(&SC_AudioDriver::RunThread, this));
-	mThread = boost::move(thread);
+	thread thread(thread_namespace::bind(&SC_AudioDriver::RunThread, this));
+	mThread = thread_namespace::move(thread);
 
 	int numSamples;
 	double sampleRate;

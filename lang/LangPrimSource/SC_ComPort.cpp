@@ -201,8 +201,8 @@ SC_ComPort::~SC_ComPort()
 
 void SC_CmdPort::Start()
 {
-	boost::thread thread(boost::bind(&SC_CmdPort::Run, this));
-	mThread = boost::move(thread);
+	thread thread(thread_namespace::bind(&SC_CmdPort::Run, this));
+	mThread = thread_namespace::move(thread);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

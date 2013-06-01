@@ -30,13 +30,11 @@
 #include "SC_StringBuffer.h"
 #include "SC_Lock.h"
 
-#include <boost/thread.hpp>
-
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
 // =====================================================================
 
-// TODO: move locks out of the header, possibly using pimpl
+// TODO: move locks & thread out of the header, possibly using pimpl
 class SC_DLLEXPORT SC_TerminalClient : public SC_LanguageClient
 {
 public:
@@ -167,7 +165,7 @@ private:
 #else
 	void * mQuitInputEvent;
 #endif
-	boost::thread mInputThread;
+	thread mInputThread;
 	SC_Lock mInputMutex;
 	condition_variable_any mInputCond;
 };
