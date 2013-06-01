@@ -282,7 +282,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
 
-target_link_libraries(libsclang boost_thread ${YAMLCPP_LIBRARY})
+target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
 
 if(SC_QT)
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
@@ -300,7 +300,7 @@ add_executable(sclang LangSource/cmdLineFuncs.cpp)
 if (Boost_FOUND)
 	target_link_libraries(sclang libsclang ${Boost_THREAD_LIBRARY})
 else()
-	target_link_libraries(sclang libsclang boost_thread)
+        target_link_libraries(sclang libsclang boost_thread)
 endif()
 
 set_property(TARGET sclang

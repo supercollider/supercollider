@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include <boost/thread.hpp>
+#include <SC_Lock.h>
 
 #ifdef __APPLE__
 #include <Carbon/Carbon.h>
@@ -467,12 +467,14 @@ void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, voi
  */
 
 
+thread uiListenThread;
 
 PluginLoad(UIUGens)
 {
 	ft = inTable;
 
-	boost::thread uiListenThread( gstate_update_func );
+	thread thread( gstate_update_func );
+	uiListenThread = thread_namespace::move(thread);
 
 	DefineSimpleUnit(KeyState);
 

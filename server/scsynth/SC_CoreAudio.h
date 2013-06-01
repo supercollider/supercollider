@@ -28,7 +28,7 @@
 #include "SC_SyncCondition.h"
 #include "PriorityQueue.h"
 
-#include <boost/thread/thread.hpp> // LATER: use std::thread
+#include <SC_Lock.h>
 
 #define SC_AUDIO_API_COREAUDIO	1
 #define SC_AUDIO_API_JACK		2
@@ -167,7 +167,7 @@ protected:
 	EngineFifo mFromEngine, mToEngine;
 	EngineFifo mOscPacketsToEngine;
 	SC_SyncCondition mAudioSync;
-	boost::thread mThread;
+	thread mThread;
 	bool mRunThreadFlag;
 	uint32 mSafetyOffset;
 	PriorityQueueT<SC_ScheduledEvent, 2048> mScheduler;

@@ -40,8 +40,7 @@
 #include "SC_Win32Utils.h"
 #include "SCBase.h"
 
-#include <boost/chrono.hpp>
-#include <boost/thread.hpp> // LATER: use std::thread
+#include "SC_Lock.h"
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
@@ -206,8 +205,8 @@ void dumpheap(PyrObject *heapArg)
 
 
 bool gRunSched = false;
-boost::thread gSchedThread;
-boost::thread gResyncThread;
+thread gSchedThread;
+thread gResyncThread;
 condition_variable_any gSchedCond;
 timed_mutex gLangMutex;
 
@@ -226,9 +225,7 @@ static void syncOSCOffsetWithTimeOfDay();
 void resyncThread();
 #endif // SC_DARWIN
 
-namespace chrono = boost::chrono; // we can later move to std::chrono in c++11
-
-static boost::chrono::high_resolution_clock::time_point hrTimeOfInitialization;
+static chrono::high_resolution_clock::time_point hrTimeOfInitialization;
 
 template <typename DurationType>
 inline double DurToFloat(DurationType dur)
@@ -246,8 +243,8 @@ SC_DLLEXPORT_C void schedInit()
 
 #ifdef SC_DARWIN
 	syncOSCOffsetWithTimeOfDay();
-	boost::thread thread(resyncThread);
-	gResyncThread = boost::move(thread);
+	thread thread(resyncThread);
+	gResyncThread = thread_namespace::move(thread);
 
 	gHostStartNanos = AudioConvertHostTimeToNanos(AudioGetCurrentHostTime());
 	gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
@@ -609,8 +606,8 @@ static void SC_LinuxSetRealtimePriority(pthread_t thread, int priority)
 
 SC_DLLEXPORT_C void schedRun()
 {
-	boost::thread thread(schedRunFunc);
-	gSchedThread = boost::move(thread);
+	thread thread(schedRunFunc);
+	gSchedThread = thread_namespace::move(thread);
 
 #ifdef SC_DARWIN
         int policy;
@@ -713,7 +710,7 @@ public:
 	double mBaseSeconds;
 	double mBaseBeats;
 	bool mRun;
-	boost::thread mThread;
+	thread mThread;
 	condition_variable_any mCondition;
 	TempoClock *mPrev, *mNext;
 
@@ -750,8 +747,8 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	mQueue->size = 1;
 	SetInt(&mQueue->count, 0);
 
-	boost::thread thread(boost::bind(&TempoClock::Run, this));
-	mThread = boost::move(thread);
+	thread thread(thread_namespace::bind(&TempoClock::Run, this));
+	mThread = thread_namespace::move(thread);
 
 #ifdef SC_DARWIN
 	int machprio;
@@ -778,7 +775,7 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 void TempoClock::StopReq()
 {
 	//printf("->TempoClock::StopReq\n");
-	boost::thread stopThread(boost::bind(&TempoClock::StopAndDelete, this));
+	thread stopThread(thread_namespace::bind(&TempoClock::StopAndDelete, this));
 	stopThread.detach();
 
 	//printf("<-TempoClock::StopReq\n");

@@ -174,7 +174,7 @@ endif()
 if (Boost_FOUND)
 	target_link_libraries(libscsynth ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 else()
-	target_link_libraries(libscsynth boost_thread)
+        target_link_libraries(libscsynth ${Boost_THREAD_LIBRARY})
 endif()
 
 if (WIN32)

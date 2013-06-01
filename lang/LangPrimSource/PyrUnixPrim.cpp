@@ -38,9 +38,7 @@ Primitives for Unix.
 #include "sc_popen.h"
 #include "SCBase.h"
 
-#include <boost/chrono.hpp>
-
-#include <boost/thread.hpp> // LATER: move to std::thread
+#include "SC_Lock.h"
 
 #ifdef SC_WIN32
 #include "SC_Win32Utils.h"
@@ -181,7 +179,7 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	boost::thread thread(boost::bind(string_popen_thread_func, process));
+	thread thread(thread_namespace::bind(string_popen_thread_func, process));
 	thread.detach();
 
 	SetInt(a, process->pid);
@@ -233,9 +231,7 @@ int prUnix_Errno(struct VMGlobals *g, int numArgsPushed)
 
 #include <time.h>
 
-namespace chrono = boost::chrono;
-
-static void fillSlotsFromTime(PyrSlot * result, struct tm* tm, boost::chrono::system_clock::time_point const & now)
+static void fillSlotsFromTime(PyrSlot * result, struct tm* tm, chrono::system_clock::time_point const & now)
 {
 	PyrSlot *slots = slotRawObject(result)->slots;
 

@@ -50,7 +50,7 @@ typedef int socklen_t;
 #include "SC_SndBuf.h"
 #include "SC_Endian.h"
 
-#include <boost/thread/thread.hpp> // LATER: use std::thread
+#include <SC_Lock.h>
 
 #ifndef SC_DARWIN
 # ifndef SC_WIN32
@@ -1014,7 +1014,7 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 		World *world = gInternalSynthServer.mWorld;
 		gInternalSynthServer.mWorld = 0;
 
-		boost::thread thread(boost::bind(wait_for_quit, world));
+		thread thread(thread_namespace::bind(wait_for_quit, world));
 
 		thread.detach();
 	}

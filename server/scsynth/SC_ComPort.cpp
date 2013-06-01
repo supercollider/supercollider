@@ -30,7 +30,8 @@
 #include <sys/types.h>
 #include "OSC_Packet.h"
 
-#include <boost/thread.hpp> // LATER: move to std::thread
+
+#include "SC_Lock.h"
 
 #include "nova-tt/thread_priority.hpp"
 
@@ -61,7 +62,7 @@ namespace {
 class SC_CmdPort
 {
 protected:
-	boost::thread mThread;
+	thread mThread;
 	struct World *mWorld;
 
 	void Start();
@@ -83,7 +84,7 @@ protected:
 	struct sockaddr_in mBindSockAddr;
 
 	#ifdef USE_RENDEZVOUS
-	boost::thread mRendezvousThread;
+	thread mRendezvousThread;
 	#endif
 
 public:
@@ -388,8 +389,8 @@ void com_thread_func(SC_CmdPort *thread)
 
 void SC_CmdPort::Start()
 {
-	boost::thread thread(boost::bind(com_thread_func, this));
-	mThread = boost::move(thread);
+	thread thread(thread_namespace::bind(com_thread_func, this));
+	mThread = thread_namespace::move(thread);
 }
 
 #ifdef USE_RENDEZVOUS
@@ -443,8 +444,8 @@ SC_UdpInPort::SC_UdpInPort(struct World *inWorld, int inPortNum)
 
 #ifdef USE_RENDEZVOUS
 	if(inWorld->mRendezvous){
-		boost::thread thread(rendezvous_thread_func, this);
-		mRendezvousThread = boost::move(thread);
+		thread thread(rendezvous_thread_func, this);
+		mRendezvousThread = thread_namespace::move(thread);
 	}
 #endif
 }
@@ -579,8 +580,8 @@ SC_TcpInPort::SC_TcpInPort(struct World *inWorld, int inPortNum, int inMaxConnec
     Start();
 #ifdef USE_RENDEZVOUS
 	if(inWorld->mRendezvous) {
-		boost::thread thread(rendezvous_thread_func, this);
-		mRendezvousThread = boost::move(thread);
+		thread thread(rendezvous_thread_func, this);
+		mRendezvousThread = thread_namespace::move(thread);
 	}
 #endif
 }

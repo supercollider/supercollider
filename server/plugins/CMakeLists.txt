@@ -1,4 +1,3 @@
-
 if(NOT NO_LIBSNDFILE)
 	find_package(Sndfile)
 else()
@@ -119,7 +118,7 @@ if(NOT NO_LIBSNDFILE)
 
 	if(SNDFILE_FOUND)
 		include_directories(${SNDFILE_INCLUDE_DIR})
-		target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} boost_thread)
+                target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
 
 		list(APPEND plugins DiskIO_UGens)
 	else()
@@ -188,7 +187,7 @@ if (SUPERNOVA)
 
 		if(SNDFILE_FOUND)
 			include_directories(${SNDFILE_INCLUDE_DIR})
-			target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} boost_thread)
+                        target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
 			list(APPEND supernova_plugins DiskIO_UGens_supernova)
 		else()
 			message(SEND_ERROR "Cannot find libsndfile")
@@ -205,7 +204,7 @@ foreach(ugen ${fft_ugens})
 endforeach()
 
 foreach (ugen ${uiugens})
-    target_link_libraries(${ugen} boost_thread)
+    target_link_libraries(${ugen} ${Boost_THREAD_LIBRARY})
 endforeach()
 
 foreach (plugin ${plugins})
