@@ -37,22 +37,21 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		endif()
 	endif()
 
-	if (NOT SC_CPP11)
-		add_library(boost_thread STATIC ${boost_thread_src} ${boost_thread_platform})
-		target_link_libraries(boost_thread boost_system)
+	# still required by threadpool
+	add_library(boost_thread STATIC ${boost_thread_src} ${boost_thread_platform})
+	target_link_libraries(boost_thread boost_system)
 
-		if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-			add_definitions(-fPIC)
-			target_link_libraries(boost_thread rt)
-		endif()
+	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+		add_definitions(-fPIC)
+		target_link_libraries(boost_thread rt)
+	endif()
 
-		if(LTO)
-			set_property(TARGET boost_thread
-				APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+	if(LTO)
+		set_property(TARGET boost_thread
+			APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-			set_property(TARGET boost_thread
-				  APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
-		endif()
+		set_property(TARGET boost_thread
+			  APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 endif()
 
