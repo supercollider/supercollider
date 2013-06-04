@@ -164,7 +164,7 @@ method::add
 Add a new source to the present ones
 
 method::removeAt
-Remove the object at index i and its synths, if they exist.
+Remove the object at index i and its synths, if they exist. If no index is supplied, remove them all.
 
 method::removeLast
 Remove the last object and its synths, if they exist.
