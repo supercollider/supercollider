@@ -96,16 +96,16 @@ Object  {
 	performWithEnvir { |selector, envir|
 		var argNames, args;
 		var method = this.class.findRespondingMethodFor(selector);
-		
+
 		if(method.isNil) { ^this.doesNotUnderstand(selector) };
-		
+
 		argNames = method.argNames.drop(1);
 		args = method.prototypeFrame.drop(1);
 		argNames.do { |name, i|
 			var val = envir[name];
 			val !? { args[i] = val };
 		};
-		
+
 		^this.performList(selector, args)
 	}
 
