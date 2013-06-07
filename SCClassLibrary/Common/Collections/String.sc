@@ -87,6 +87,9 @@ String[char] : RawArray {
 	performBinaryOpOnComplex { arg aSelector, aComplex;
 		^aComplex.asString.perform(aSelector, this);
 	}
+	multiChannelPerform { arg selector ... args;
+		Error("String:multiChannelPerform. Cannot expand strings.").throw;
+	}
 
 	isString { ^true }
 	asString { ^this }
