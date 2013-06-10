@@ -285,6 +285,7 @@ endif()
 
 if (SC_MEMORY_DEBUGGING)
 	add_definitions(-DDISABLE_MEMORY_POOLS)
+	add_definitions(-DENABLE_MEMORY_CHECKS)
 endif()
 
 if(MINGW)
