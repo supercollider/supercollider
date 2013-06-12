@@ -10,10 +10,10 @@ QuarkSVNRepository
 	classvar <>svnpath="/usr/local/bin/svn";
 	var <url, <local;
 
-	*initClass {
+	*initSVNDetails {
 		var res;
 		svnpath = [svnpath, "/usr/local/bin/svn", "/usr/bin/svn", "/opt/local/bin/svn", "/sw/bin/svn"].detect({ |path|
-			File.exists(path);
+			try { File.exists(path) } { false }
 		});
 		if(svnpath.isNil and:{thisProcess.platform.hasFeature(\unixPipes)}){
 			// Try and detect whether svn is in the path, and could be called just via "svn"
@@ -25,6 +25,7 @@ QuarkSVNRepository
 	}
 
 	*new { | url, local |
+		QuarkSVNRepository.initSVNDetails;
 		if(svnpath.isNil) {
 			if(thisProcess.platform.name==\windows){
 				Post
