@@ -1810,10 +1810,7 @@ FLATTEN void sub_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		if (xa == 0.f)
-			nova::copyvec_simd(OUT(0), IN(1), inNumSamples);
-		else
-			nova::minus_vec_simd(OUT(0), xa, IN(1), inNumSamples);
+		nova::minus_vec_simd(OUT(0), xa, IN(1), inNumSamples);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
 		nova::minus_vec_simd(OUT(0), slope_argument(xa, slope), IN(1), inNumSamples);
@@ -1827,10 +1824,7 @@ FLATTEN void sub_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
-		if (xa == 0.f)
-			nova::copyvec_simd<64>(OUT(0), IN(1));
-		else
-			nova::minus_vec_simd<64>(OUT(0), xa, IN(1));
+		nova::minus_vec_simd<64>(OUT(0), xa, IN(1));
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
 		nova::minus_vec_simd(OUT(0), slope_argument(xa, slope), IN(1), inNumSamples);
