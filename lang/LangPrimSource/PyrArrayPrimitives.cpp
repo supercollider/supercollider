@@ -2103,6 +2103,7 @@ int prArrayNormalizeSum(struct VMGlobals *g, int numArgsPushed)
 		sum += w;
 		SetFloat(&slots2[i], w);
 	}
+	sum = sc_abs(sum);
 	rsum = 1./sum;
 	for (i=0; i<size; ++i) {
 		double d = slotRawFloat(&slots2[i]);
