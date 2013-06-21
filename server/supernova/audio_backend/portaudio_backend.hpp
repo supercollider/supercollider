@@ -255,7 +255,7 @@ private:
             processed += blocksize_;
         }
 
-        cpu_time_accumulator.update(Pa_GetStreamCpuLoad(stream));
+        cpu_time_accumulator.update(Pa_GetStreamCpuLoad(stream) * 100.0);
         return paContinue;
     }
 

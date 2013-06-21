@@ -2779,7 +2779,7 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 		scprintf("SC_PortAudioDriver: unknown exception in real time\n");
 	}
 
-	double cpuUsage = (double)Pa_GetStreamCpuLoad(mStream);
+	double cpuUsage = Pa_GetStreamCpuLoad(mStream) * 100.0;
 	mAvgCPU = mAvgCPU + 0.1 * (cpuUsage - mAvgCPU);
 	if (cpuUsage > mPeakCPU || --mPeakCounter <= 0)
 	{
