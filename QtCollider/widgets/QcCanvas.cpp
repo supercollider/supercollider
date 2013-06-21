@@ -105,7 +105,7 @@ void QcCanvas::customEvent( QEvent *e )
 {
   if( e->type() == (QEvent::Type) QtCollider::Event_Refresh ) {
     e->accept();
-    if(_paint) refresh();
+    refresh();
   }
 }
 
