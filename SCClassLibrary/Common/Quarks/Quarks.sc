@@ -40,7 +40,7 @@ Quarks
 		Class.initClassTree( Platform );
 		allInstances = List(1);
 		known = Dictionary[
-			"https://quarks.svn.sourceforge.net/svnroot/quarks" -> (Platform.userAppSupportDir +/+ "quarks"),
+			"https://svn.code.sf.net/p/quarks/code" -> (Platform.userAppSupportDir +/+ "quarks"),
 			"https://svn.sonenvir.at/svnroot/SonEnvir/trunk/src/quarks-sonenvir" -> (Platform.userAppSupportDir +/+ "quarks-sonenvir"),
 			"https://sc3-plugins.svn.sourceforge.net/svnroot/sc3-plugins/build" -> (Platform.userAppSupportDir +/+ "SC3plugins")
 			];
