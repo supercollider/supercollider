@@ -40,7 +40,7 @@ QuarkSVNRepository
 				<< 	"\n\n\t\t" << "http://subversion.tigris.org/project_packages.html\n"
 			}
 		};
-		^this.newCopyArgs(url ? "https://quarks.svn.sourceforge.net/svnroot/quarks", local ?? {Quarks.local})
+		^this.newCopyArgs(url ? "https://svn.code.sf.net/p/quarks/code", local ?? {Quarks.local})
 	}
 
 	// returns true if some change was performed
