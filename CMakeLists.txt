@@ -92,14 +92,25 @@ if (${CMAKE_CXX_COMPILER} MATCHES icpc)
 	add_definitions(-simd)
 endif()
 
-if (${CMAKE_CXX_COMPILER} MATCHES clang)
-	option(DSO_VISIBILITY "DSO visibility support for clang" OFF)
 
-	if (DSO_VISIBILITY)
-		add_definitions(-fvisibility=hidden)
-	endif()
+if(${CMAKE_CXX_COMPILER} MATCHES clang)
+    set(CMAKE_COMPILER_IS_CLANG 1)
+else()
+    if(UNIX)
+        exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _compiler_version_info)
+    endif()
 
-	set(CMAKE_COMPILER_IS_CLANG 1)
+    if( ${_compiler_version_info} MATCHES clang )
+        set(CMAKE_COMPILER_IS_CLANG 1)
+    endif()
+endif()
+
+if(CMAKE_COMPILER_IS_CLANG)
+    option(DSO_VISIBILITY "DSO visibility support for clang" OFF)
+
+    if(DSO_VISIBILITY)
+        add_definitions(-fvisibility=hidden)
+    endif()
 endif()
 
 if(APPLE)
