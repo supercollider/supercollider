@@ -619,6 +619,8 @@ static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg )
 	return obj ;
 }
 
+static const double dInfinity = std::numeric_limits<double>::infinity();
+
 PyrObject* ConvertOSCMessage(int inSize, char *inData)
 {
 	char *cmdName = inData;
@@ -661,16 +663,38 @@ PyrObject* ConvertOSCMessage(int inSize, char *inData)
                     SetSymbol(slots+i+1, getsym(msg.gets()));
                     //post("sym '%s'\n", slots[i+1].us->name);
                     break;
-                case 'b' :
-					SetObject(slots+i+1, (PyrObject*)MsgToInt8Array(msg));
-                    break;
-				case 'c':
-					SetChar(slots+i+1, (char)msg.geti());
-					break;
-				// else add the type tag as a char (jrhb 2009)
-				default:
-					SetChar(slots+i+1, tag);
-					msg.gets();
+								case 'b' : // fall through
+								case 'm' :
+										SetObject(slots+i+1, (PyrObject*)MsgToInt8Array(msg));
+										break;
+								case 'c':
+										SetChar(slots+i+1, (char)msg.geti());
+										break;
+								case 't' :
+										SetFloat(slots+i+1, OSCToElapsedTime(msg.gett()));
+										break;
+										
+								// argument tags without any associated value
+								case 'T' :
+										SetTrue(slots+i+1);
+										msg.count ++;
+										break;
+								case 'F' :
+										SetFalse(slots+i+1);
+										msg.count ++;
+										break;
+								case 'I' :
+										SetFloat(slots+i+1, dInfinity);
+										msg.count ++;
+										break;
+								case 'N' :
+										SetNil(slots+i+1);
+										msg.count ++;
+										break;
+								// else add the type tag as a char (jrhb 2009)
+								default:
+										SetChar(slots+i+1, tag);
+										msg.gets();
             }
         }
         obj->size = numElems + 1;
