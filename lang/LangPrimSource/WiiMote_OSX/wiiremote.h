@@ -2,7 +2,7 @@
 // Copyright by Masayuki Akamatsu
 // Based on "DarwiinRemote" by Hiroaki Kimura
 
-#define BLUETOOTH_VERSION_USE_CURRENT
+//#define BLUETOOTH_VERSION_USE_CURRENT
 //#include <AvailabilityMacros.h>
 #include <math.h>
 #include <CoreFoundation/CoreFoundation.h>
