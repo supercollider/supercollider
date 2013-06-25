@@ -1405,6 +1405,34 @@ void fill_spaces(rt_string_stream & stream, int level)
         stream << ' ';
 }
 
+void dump_controls(rt_string_stream & stream, abstract_synth const & synth, int indentation_level)
+{
+    const size_t number_of_slots = synth.number_of_slots();
+
+    bool eol_pending = false;
+
+    for (size_t control_index = 0; control_index != number_of_slots; ++control_index) {
+        const char * name_of_slot = synth.name_of_slot(control_index);
+
+        if (name_of_slot) {
+            if (eol_pending) {
+                stream << endl;
+                eol_pending = false;
+            }
+
+            fill_spaces(stream, indentation_level);
+            stream << synth.name_of_slot(control_index) << ": ";
+            eol_pending = true;
+        } else
+            stream << ", ";
+
+
+        stream << synth.get(control_index);
+    }
+    if (eol_pending)
+        stream << endl;
+}
+
 void g_dump_node(rt_string_stream & stream, server_node & node, bool flag, int level)
 {
     using namespace std;
@@ -1414,12 +1442,9 @@ void g_dump_node(rt_string_stream & stream, server_node & node, bool flag, int l
         abstract_synth const & synth = static_cast<abstract_synth const &>(node);
         stream << synth.id() << " " << synth.definition_name() << endl;
 
-        if (flag) {
-            for (size_t control_index = 0; control_index != synth.number_of_slots(); ++control_index) {
-                fill_spaces(stream, level + 1);
-                stream << synth.name_of_slot(control_index) << " " << synth.get(control_index) << endl;
-            }
-        }
+        if (flag)
+            dump_controls(stream, synth, level + 1);
+
     } else {
         abstract_group & group = static_cast<abstract_group &>(node);
         stream << group.id();
