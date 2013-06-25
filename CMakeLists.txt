@@ -84,20 +84,21 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 	elseif(NOT (WIN32 AND NOT CYGWIN))
 		add_definitions("-pthread")
 	endif()
-endif ()
 
-if (${CMAKE_CXX_COMPILER} MATCHES icpc)
+elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
 	set(CMAKE_COMPILER_IS_INTEL 1)
 	add_definitions(-Wno-unknown-pragmas)
 	add_definitions(-simd)
-endif()
 
-
-if(${CMAKE_CXX_COMPILER} MATCHES clang)
+elseif(${CMAKE_CXX_COMPILER} MATCHES clang)
     set(CMAKE_COMPILER_IS_CLANG 1)
+
+elseif(MSVC)
+
 else()
     if(UNIX)
-        exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _compiler_version_info)
+        execute_process(COMMAND ${CMAKE_CXX_COMPILER} -v
+                        OUTPUT_VARIABLE _compiler_version_info)
     endif()
 
     if( ${_compiler_version_info} MATCHES clang )
