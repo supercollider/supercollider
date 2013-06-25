@@ -107,7 +107,7 @@ Boolean HIDGetVendorNameFromVendorID( long inVendorID, char * outCStrName )
 #if FAKE_MISSING_NAMES
 	sprintf( outCStrName, "#{ V: %ld}#", inVendorID );
 	result = TRUE;
-#endif FAKE_MISSING_NAMES
+#endif // FAKE_MISSING_NAMES
 	return result;
 }	// HIDGetVendorNameFromVendorID
 
@@ -137,7 +137,7 @@ Boolean HIDGetProductNameFromVendorProductID( long inVendorID, long inProductID,
 #if FAKE_MISSING_NAMES
 	sprintf( outCStrName, "#{ V: %ld, P: %ld, U: %ld: %ld}#", inVendorID, inProductID, inUsagePage, inUsage );
 	result = TRUE;
-#endif FAKE_MISSING_NAMES
+#endif // FAKE_MISSING_NAMES
 	return result;
 }	// HIDGetProductNameFromVendorProductID
 
@@ -168,7 +168,7 @@ Boolean HIDGetElementNameFromVendorProductCookie (int inVendorID, int inProductI
 	sprintf( outCStrName, "#{ V: %ld, P: %ld, C: %ld}#", inVendorID, inProductID, inCookie );
 #else
 	result = FALSE;
-#endif FAKE_MISSING_NAMES
+#endif // FAKE_MISSING_NAMES
 	return result;
 }	// HIDGetElementNameFromVendorProductCookie
 
@@ -198,7 +198,7 @@ Boolean HIDGetElementNameFromVendorProductUsage( long inVendorID, long inProduct
 #if FAKE_MISSING_NAMES
 	sprintf( outCStrName, "#{ V: %ld, P: %ld, U: %ld: %ld}#", inVendorID, inProductID, inUsagePage, inUsage );
 	result = TRUE;
-#endif FAKE_MISSING_NAMES
+#endif // FAKE_MISSING_NAMES
 	return result;
 }	// HIDGetElementNameFromVendorProductUsage
 
@@ -1215,14 +1215,14 @@ static Boolean hu_XMLSearchForElementNameByCookie( long inVendorID, long inProdu
 							fullCFStringRef = CFStringCreateWithFormat( kCFAllocatorDefault, NULL, CFSTR( "%@ %@ %@" ), vendorCFStringRef, productCFStringRef, cookieCFStringRef );
 #else
 							fullCFStringRef = CFStringCreateWithFormat( kCFAllocatorDefault, NULL, CFSTR( "%@" ), cookieCFStringRef );
-#endif VERBOSE_ELEMENT_NAMES
+#endif // VERBOSE_ELEMENT_NAMES
 							// CFShow( cookieCFStringRef );
 						}
 #if FAKE_MISSING_NAMES
 						else {
 							fullCFStringRef = CFStringCreateWithFormat( kCFAllocatorDefault, NULL, CFSTR( "%@ %@ # %@" ), vendorCFStringRef, productCFStringRef, cookieKeyCFStringRef );
 						}
-#endif FAKE_MISSING_NAMES
+#endif // FAKE_MISSING_NAMES
 						if ( fullCFStringRef ) {
 							// CFShow( fullCFStringRef );
 							results = CFStringGetCString( fullCFStringRef, outCStr, CFStringGetLength( fullCFStringRef ) * sizeof( UniChar ) + 1, kCFStringEncodingUTF8 );
@@ -1295,14 +1295,14 @@ static Boolean hu_XMLSearchForElementNameByUsage( long inVendorID, long inProduc
 							fullCFStringRef = CFStringCreateWithFormat( kCFAllocatorDefault, NULL, CFSTR( "%@ %@ %@" ), vendorCFStringRef, productCFStringRef, usageCFStringRef );
 #else
 							fullCFStringRef = CFStringCreateWithFormat( kCFAllocatorDefault, NULL, CFSTR( "%@" ), usageCFStringRef );
-#endif VERBOSE_ELEMENT_NAMES
+#endif // VERBOSE_ELEMENT_NAMES
 							// CFShow( usageCFStringRef );
 						}
 #if FAKE_MISSING_NAMES
 						else {
 							fullCFStringRef = CFStringCreateWithFormat( kCFAllocatorDefault, NULL, CFSTR( "%@ %@ # %@" ), vendorCFStringRef, productCFStringRef, usageKeyCFStringRef );
 						}
-#endif FAKE_MISSING_NAMES
+#endif // FAKE_MISSING_NAMES
 
 						if ( fullCFStringRef ) {
 							// CFShow( fullCFStringRef );
