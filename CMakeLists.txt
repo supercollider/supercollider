@@ -182,7 +182,9 @@ option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)"
 option(SCLANG_SERVER "Build with internal server." ON)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	option(SC_WII "Build sclang with WII support" ON)
+    option(SC_WII "Build sclang with WII support" ON)
+elif(APPLE)
+    option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
 endif()
 
 option(SC_QT "Build SuperCollider with Qt GUI" ON)
@@ -208,12 +210,12 @@ option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
 # some default libraries
 
 if (NOT WIN32)
-	find_package(Pthreads)
+    find_package(Pthreads)
 
-	if (NOT PTHREADS_FOUND)
-	    message(SEND_ERROR "cannot find libpthreads")
-	endif()
-	include_directories(${PTHREADS_INCLUDE_DIR})
+    if (NOT PTHREADS_FOUND)
+        message(SEND_ERROR "cannot find libpthreads")
+    endif()
+    include_directories(${PTHREADS_INCLUDE_DIR})
 endif()
 
 if(MSVC OR MINGW)

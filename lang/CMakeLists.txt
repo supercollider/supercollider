@@ -116,7 +116,6 @@ add_definitions(-DYYSTACK_USE_ALLOCA)
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
-			LangPrimSource/WiiMote_OSX/wiiremote.c
 			LangPrimSource/SC_HID.cpp
 			LangPrimSource/${HID_UTIL_DIR}/HID_Utilities.c
 			LangPrimSource/${HID_UTIL_DIR}/HID_Name_Lookup.c
@@ -137,6 +136,7 @@ if(UNIX)
 				LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c
 			)
 		endif()
+
 	else(APPLE)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
@@ -159,7 +159,7 @@ if(WIN32)
 	endif()
 endif()
 
-if (SC_WII OR APPLE)
+if(SC_WII)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 		find_package(CWiid)
 		find_package(Bluetooth)
@@ -172,9 +172,9 @@ if (SC_WII OR APPLE)
 			message(SEND_ERROR "Cannot find libcwiid or libbluetooth.\n (If Wii support is not required, then set SC_WII=no)")
 		endif()
 	elseif(APPLE)
-		add_definitions(-DHAVE_WII)
-		list(APPEND sclang_sources LangPrimSource/WiiMote_OSX/wiiremote.c)
-		include_directories(LangPrimSource/WiiMote_OSX)
+                add_definitions(-DHAVE_WII)
+                list(APPEND sclang_sources LangPrimSource/WiiMote_OSX/wiiremote.c)
+                include_directories(LangPrimSource/WiiMote_OSX)
 	endif()
 endif()
 
