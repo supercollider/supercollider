@@ -184,7 +184,7 @@ option(SCLANG_SERVER "Build with internal server." ON)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     option(SC_WII "Build sclang with WII support" ON)
-elif(APPLE)
+elseif(APPLE)
     option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
 endif()
 
