@@ -147,8 +147,6 @@ option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommende
 
 option(SSE "Compile with support for SSE instructions.")
 option(SSE2 "Compile with support for SSE2 instructions.")
-option(SSE41 "Compile with support for SSE4.1 instructions.")
-option(SSE42 "Compile with support for SSE4.2 instructions.")
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
 
@@ -253,14 +251,6 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2")
 	endif()
-	if (SSE41)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
-	endif()
-	if (SSE42)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2")
-	endif()
 	if (NATIVE)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
@@ -275,11 +265,7 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 endif()
 
 if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
-	if (SSE42)
-		add_definitions(-xSSE4.2)
-	elseif (SSE41)
-		add_definitions(-xSSE4.1)
-	elseif (SSE)
+	if (SSE)
 		add_definitions(-mia32)
 	endif()
 	if (SC_CPP11)
@@ -289,7 +275,6 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	# disable warnings
 	add_definitions(-diag-disable 170) # pointer points outside of underlying object ... used heavily in sclang
 	add_definitions(-diag-disable 279) # controlling expression is constant
-
 endif()
 
 if (SC_MEMORY_DEBUGGING)
