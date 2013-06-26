@@ -782,9 +782,8 @@ PbindProxy : Pattern {
 
 
 Pbindef : Pdef {
-	*new { arg ... pairs;
-		var key, pat, src;
-		key = pairs.removeAt(0);
+	*new { arg key ... pairs;
+		var pat, src;
 		pat = super.new(key);
 		src = pat.source;
 		if(pairs.isEmpty.not) {
