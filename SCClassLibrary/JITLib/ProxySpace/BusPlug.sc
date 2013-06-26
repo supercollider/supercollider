@@ -87,7 +87,7 @@ BusPlug : AbstractFunction {
 		^this.busArg;
 	}
 	asUGenInput {
-		^this.value;
+		^this.value(nil);
 	}
 
 
