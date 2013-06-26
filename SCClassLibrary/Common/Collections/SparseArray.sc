@@ -23,6 +23,8 @@ Order : SequenceableCollection {
 
 	asArray { ^array.copy }
 
+	species { ^this.class }
+
 	do { arg function;
 		indices.do { |index, i|
 			function.value(array.at(i), index, i)

@@ -140,7 +140,7 @@ SequenceableCollection : Collection {
 		var newColl;
 		var i = start;
 		newColl = this.species.new(end - start);
-		while ({ i < end },{
+		while ({ i <= end },{
 			newColl.add(this.at(i));
 			i = i + 1;
 		});
