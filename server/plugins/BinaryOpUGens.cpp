@@ -3221,8 +3221,6 @@ FLATTEN void pow_aa_nova(BinaryOpUGen *unit, int inNumSamples)
 
 FLATTEN void pow_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-	float *a = ZIN(0);
 	float xb = unit->mPrevB;
 	float next_b = ZIN0(1);
 
@@ -3237,9 +3235,7 @@ FLATTEN void pow_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 
 FLATTEN void pow_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
 	float xa = unit->mPrevA;
-	float *b = ZIN(1);
 	float next_a = ZIN0(0);
 
 	if (xa == next_a) {
