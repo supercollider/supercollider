@@ -36,6 +36,7 @@ using boost::cv_status;
 typedef boost::condition_variable_any condition_variable_any;
 namespace mutex_chrono = boost::chrono;
 using boost::thread;
+namespace this_thread = boost::this_thread;
 namespace chrono = boost::chrono;
 namespace thread_namespace = boost;
 
@@ -53,6 +54,7 @@ using std::cv_status;
 typedef std::condition_variable_any condition_variable_any;
 namespace mutex_chrono = std::chrono;
 using std::thread;
+namespace this_thread = std::this_thread;
 namespace chrono = std::chrono;
 namespace thread_namespace = std;
 
