@@ -2956,7 +2956,6 @@ void handle_c_getn(received_message const & msg, endpoint_ptr endpoint)
     cmd_dispatcher<realtime>::fire_message(endpoint, message);
 }
 
-#ifdef BOOST_HAS_RVALUE_REFS
 std::pair<sc_synth_definition_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> && defs)
 {
     std::vector<sc_synthdef> synthdefs(std::move(defs));
@@ -2967,7 +2966,7 @@ std::pair<sc_synth_definition_ptr *, size_t> wrap_synthdefs(std::vector<sc_synth
         definitions[i].reset(new sc_synth_definition(std::move(synthdefs[i])));
     return std::make_pair(definitions, count);
 }
-#endif
+
 std::pair<sc_synth_definition_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> const & defs)
 {
     size_t count = defs.size();
