@@ -26,6 +26,7 @@
 #include "PyrSymbol.h"
 #ifdef SC_DARWIN
 # include <CoreAudio/HostTime.h>
+# include <sys/time.h>
 #endif
 #include <stdarg.h>
 #include <stdlib.h>
@@ -408,7 +409,8 @@ void post(const char *fmt, ...);
 void resyncThread()
 {
 	while (true) {
-		sleep(20);
+		this_thread::sleep_for(chrono::seconds(20));
+
 		syncOSCOffsetWithTimeOfDay();
 		gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
 	}
