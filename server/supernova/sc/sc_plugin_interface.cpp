@@ -815,11 +815,6 @@ sample * allocate_buffer(size_t samples)
     return ret;
 }
 
-void free_buffer(sample * chunk)
-{
-    free_aligned(chunk);
-}
-
 inline int32 bufmask(int32 x)
 {
     return (1 << (31 - CLZ(x))) - 1;
@@ -1113,6 +1108,7 @@ void sc_plugin_interface::free_buffer(uint32_t index)
     SndBuf * buf = world.mSndBufsNonRealTimeMirror + index;
     if (buf->sndfile)
         sf_close(buf->sndfile);
+
     sndbuf_init(buf);
 }
 
