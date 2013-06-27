@@ -90,20 +90,11 @@ elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
 	add_definitions(-Wno-unknown-pragmas)
 	add_definitions(-simd)
 
-elseif(${CMAKE_CXX_COMPILER} MATCHES clang)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CMAKE_COMPILER_IS_CLANG 1)
 
-elseif(MSVC)
-
 else()
-    if(UNIX)
-        execute_process(COMMAND ${CMAKE_CXX_COMPILER} -v
-                        OUTPUT_VARIABLE _compiler_version_info)
-    endif()
 
-    if( ${_compiler_version_info} MATCHES clang )
-        set(CMAKE_COMPILER_IS_CLANG 1)
-    endif()
 endif()
 
 if(CMAKE_COMPILER_IS_CLANG)
