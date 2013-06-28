@@ -60,6 +60,8 @@ protected:
 	int mSocket;
 	struct sockaddr_in mBindSockAddr;
 
+	void closeSocket();
+
 public:
 	SC_ComPort(int inPortNum);
 	virtual ~SC_ComPort();
@@ -84,7 +86,6 @@ class SC_UdpInPort : public SC_ComPort
 
 public:
 	SC_UdpInPort(int inPortNum);
-	~SC_UdpInPort();
 
 	int PortNum() const { return mPortNum; }
 

@@ -213,18 +213,25 @@ SC_CmdPort::~SC_CmdPort()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 SC_ComPort::SC_ComPort(int inPortNum)
 	: mPortNum(inPortNum), mSocket(-1)
 {
 }
 
-SC_ComPort::~SC_ComPort()
+void SC_ComPort::closeSocket()
 {
 #ifdef SC_WIN32
-    if (mSocket != -1) closesocket(mSocket);
+	if (mSocket != -1) closesocket(mSocket);
 #else
-    if (mSocket != -1) close(mSocket);
+	if (mSocket != -1) close(mSocket);
 #endif
+	mSocket = -1;
+}
+
+SC_ComPort::~SC_ComPort()
+{
+	closeSocket();
 }
 
 void SC_CmdPort::Start()
@@ -267,15 +274,6 @@ SC_UdpInPort::SC_UdpInPort(int inPortNum)
 	Start();
 }
 
-SC_UdpInPort::~SC_UdpInPort()
-{
-#ifdef SC_WIN32
-	if (mSocket != -1) closesocket(mSocket);
-#else
-	if (mSocket != -1) close(mSocket);
-#endif
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_UdpCustomInPort::SC_UdpCustomInPort(int inPortNum)
@@ -310,13 +308,8 @@ SC_UdpCustomInPort::SC_UdpCustomInPort(int inPortNum)
 SC_UdpCustomInPort::~SC_UdpCustomInPort()
 {
 	mRunning.store(false);
+	closeSocket();
 	mThread.join();
-#ifdef SC_WIN32
-	if (mSocket != -1) closesocket(mSocket);
-#else
-	if (mSocket != -1) close(mSocket);
-#endif
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -397,6 +390,7 @@ void* SC_UdpInPort::Run()
 void SC_UdpInPort::terminate()
 {
 	mRunning = false;
+	closeSocket();
 	mThread.join();
 }
 
@@ -518,11 +512,7 @@ SC_TcpConnectionPort::SC_TcpConnectionPort(SC_TcpInPort *inParent, int inSocket)
 
 SC_TcpConnectionPort::~SC_TcpConnectionPort()
 {
-#ifdef SC_WIN32
-	closesocket(mSocket);
-#else
-	close(mSocket);
-#endif
+	closeSocket();
 	mParent->ConnectionTerminated();
 }
 
@@ -611,11 +601,9 @@ SC_TcpClientPort::~SC_TcpClientPort()
 #ifdef SC_WIN32
 	closesocket(mCmdFifo[0]);
 	closesocket(mCmdFifo[1]);
-	closesocket(mSocket);
 #else
 	close(mCmdFifo[0]);
 	close(mCmdFifo[1]);
-	close(mSocket);
 #endif
 }
 
