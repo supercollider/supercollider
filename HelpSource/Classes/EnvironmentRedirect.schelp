@@ -4,16 +4,16 @@ categories:: Libraries>JITLib>Environments
 related:: Classes/Environment
 
 description::
-Environment that redirects access ( strong::put:: ) and assignment ( strong::at:: ).
+Environment that redirects access (strong::put::) and assignment (strong::at::). It is used as a base class for redirecing Environments. For example uses, see link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
 
 ClassMethods::
 
 method::new
-create new redirect, if envir is given it is used.
+Create new environment redirect, if envir is given, it is used as a basis.
 
 subsection:: replacing Environment class methods
 
-EnvironmentRedirect implements some of the interface of link::Classes/Environment::, which it can replace where needed.
+EnvironmentRedirect implements some of the interface of link::Classes/Environment::
 
 method::push, pop, make, use
 
@@ -21,6 +21,11 @@ InstanceMethods::
 
 method::envir
 return or replace the source environment
+code::
+e = LazyEnvir.new;
+e.put(\x, 9);
+e.envir; // look into the envir itself: for a LazyEnvir it contains Maybe as placeholders
+::
 
 subsection::redirecting objects
 
