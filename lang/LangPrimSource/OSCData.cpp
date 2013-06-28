@@ -810,7 +810,6 @@ void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
     FreeOSCPacket(inPacket);
 }
 
-void init_OSC(int port);
 void init_OSC(int port)
 {
     postfl("init_OSC\n");
@@ -866,6 +865,7 @@ void closeAllCustomPorts()
 void cleanup_OSC()
 {
 	postfl( "cleaning up OSC\n");
+	gUDPport->terminate();
 #ifdef _WIN32
 	WSACleanup();
 #endif
