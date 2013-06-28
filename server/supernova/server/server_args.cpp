@@ -22,6 +22,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 
+#include "nova-tt/physical_concurrency.hpp"
+
 #include "server_args.hpp"
 
 namespace nova {
@@ -64,7 +66,7 @@ server_arguments::server_arguments(int argc, char * argv[])
         ("ugen-search-path,U", value<std::vector<std::string> >(&ugen_paths), "a colon-separated list of paths\n"
                                                                  "if -U is specified, the standard paths are NOT searched for plugins.")
         ("restricted-path,P", value<std::vector<std::string> >(&restrict_paths), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
-        ("threads,T", value<uint16_t>(&threads)->default_value(std::thread::hardware_concurrency()), "number of audio threads")
+        ("threads,T", value<uint16_t>(&threads)->default_value(nova::physical_concurrency()), "number of audio threads")
         ;
 
     options_description audio_options("audio options");
