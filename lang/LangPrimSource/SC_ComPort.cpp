@@ -107,7 +107,7 @@ static void dumpOSCmsg(int inSize, char* inData)
 				printf(" %c", (char)msg.geti());
 				break;
 			case 't' :
-				printf(" %ld", msg.gett());
+				printf(" %lld", msg.gett());
 				break;
 			case 'T' :
 				printf(" true");
