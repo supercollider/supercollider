@@ -153,6 +153,13 @@ EnvironmentRedirect {
 		^this[selector].functionPerformList(\value, this, args);
 	}
 
+	printOn { | stream |
+		if (stream.atLimit) { ^this };
+		stream << this.class.name << "[ " ;
+		envir.printItemsOn(stream);
+		stream << " ]" ;
+	}
+
 	linkDoc { arg doc, pushNow=true;
 		doc = doc ? Document.current;
 		doc.envir_(this);
@@ -212,12 +219,6 @@ LazyEnvir : EnvironmentRedirect {
 		this.at(key).source_(obj);
 	}
 
-	printOn { | stream |
-		if (stream.atLimit) { ^this };
-		stream << this.class.name << "[ " ;
-		envir.printItemsOn(stream);
-		stream << " ]" ;
-	}
 	storeOn { | stream |
 		if (stream.atLimit) { ^this };
 		stream << this.class.name << ".newFrom([" ;
