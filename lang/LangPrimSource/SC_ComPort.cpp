@@ -236,7 +236,7 @@ void SC_CmdPort::Start()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_UdpInPort::SC_UdpInPort(int inPortNum)
-	: SC_ComPort(inPortNum)
+	: SC_ComPort(inPortNum), mRunning(true)
 {
 	if ((mSocket = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		throw std::runtime_error("failed to create udp socket\n");
