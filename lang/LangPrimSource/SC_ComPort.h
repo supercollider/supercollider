@@ -80,6 +80,8 @@ class SC_UdpInPort : public SC_ComPort
 	struct sockaddr_in mReplySockAddr;
 	virtual ReplyFunc GetReplyFunc();
 
+	boost::atomic<bool> mRunning;
+
 public:
 	SC_UdpInPort(int inPortNum);
 	~SC_UdpInPort();
@@ -87,6 +89,7 @@ public:
 	int PortNum() const { return mPortNum; }
 
 	void* Run();
+	void terminate();
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

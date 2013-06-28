@@ -369,7 +369,7 @@ void* SC_UdpInPort::Run()
 
 	//printf("SC_UdpInPort::Run\n"); fflush(stdout);
 
-	while (true) {
+	while (mRunning.load()) {
 		if (!packet) {
 			packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 		}
@@ -392,6 +392,12 @@ void* SC_UdpInPort::Run()
 		}
 	}
 	return 0;
+}
+
+void SC_UdpInPort::terminate()
+{
+	mRunning = false;
+	mThread.join();
 }
 
 ReplyFunc SC_UdpCustomInPort::GetReplyFunc()
