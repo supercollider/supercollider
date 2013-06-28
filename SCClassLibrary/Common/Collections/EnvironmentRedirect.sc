@@ -101,18 +101,25 @@ EnvironmentRedirect {
 	keysValuesArrayDo { arg argArray, function;
 		envir.keysValuesArrayDo(argArray, function);
 	}
+
 	findKeyForValue { arg val;
 		^envir.findKeyForValue(val)
 	}
+
 	sortedKeysValuesDo { arg function;
 		envir.sortedKeysValuesDo(function);
 	}
+
 	putAll { arg ... dictionaries;
 		dictionaries.do {|dict|
 			dict.keysValuesDo { arg key, value;
 				this.put(key, value)
 			}
 		}
+	}
+
+	add { arg anAssociation;
+		this.put(anAssociation.key, anAssociation.value);
 	}
 
 	choose {
@@ -205,5 +212,17 @@ LazyEnvir : EnvironmentRedirect {
      	this.at(key).source_(obj);
      }
 
+	printOn { | stream |
+		if (stream.atLimit) { ^this };
+		stream << this.class.name << "[ " ;
+		envir.printItemsOn(stream);
+		stream << " ]" ;
+	}
+	storeOn { | stream |
+		if (stream.atLimit) { ^this };
+		stream << this.class.name << ".newFrom([" ;
+		stream <<<* envir.getPairs.collect { |x, i| if(i.even) { x } { x.source } };
+		stream << "])" ;
+	}
 
 }
