@@ -32,8 +32,8 @@ EnvironmentRedirect {
 	}
 
 	localPut { arg key, obj;
-     	envir.put(key, obj)
-     }
+		envir.put(key, obj)
+	}
 
 	removeAt { arg key;
 		^envir.removeAt(key)
@@ -123,15 +123,15 @@ EnvironmentRedirect {
 	}
 
 	choose {
-        ^envir.choose
-     }
+		^envir.choose
+	}
 
-     clear { envir.clear }
+	clear { envir.clear }
 
-     know_ { arg flag; envir.know = flag }
-     know { ^envir.know }
+	know_ { arg flag; envir.know = flag }
+	know { ^envir.know }
 
-    	doesNotUnderstand { arg selector ... args;
+	doesNotUnderstand { arg selector ... args;
 		var func;
 		if (this.know) {
 			if (selector.isSetter) {
@@ -153,21 +153,21 @@ EnvironmentRedirect {
 		^this[selector].functionPerformList(\value, this, args);
 	}
 
-     linkDoc { arg doc, pushNow=true;
-     	doc = doc ? Document.current;
-     	doc.envir_(this);
-     	if(pushNow and: { currentEnvironment !== this }) { this.push };
-     }
+	linkDoc { arg doc, pushNow=true;
+		doc = doc ? Document.current;
+		doc.envir_(this);
+		if(pushNow and: { currentEnvironment !== this }) { this.push };
+	}
 
-     unlinkDoc { arg doc, popNow = false;
-     	doc = doc ? Document.current;
-     	if(doc.envir === this) { doc.envir_(nil) };
-     	if(popNow and:  { currentEnvironment === this }) { this.pop };
-     }
+	unlinkDoc { arg doc, popNow = false;
+		doc = doc ? Document.current;
+		if(doc.envir === this) { doc.envir_(nil) };
+		if(popNow and:  { currentEnvironment === this }) { this.pop };
+	}
 
-     // networking
-     dispatch_ { arg disp;
-     	     dispatch = disp.envir_(this);
+	// networking
+	dispatch_ { arg disp;
+		dispatch = disp.envir_(this);
 	}
 	envir_ { arg argEnvir;
 		envir = argEnvir;
@@ -209,8 +209,8 @@ LazyEnvir : EnvironmentRedirect {
 	}
 
 	localPut { arg key, obj;
-     	this.at(key).source_(obj);
-     }
+		this.at(key).source_(obj);
+	}
 
 	printOn { | stream |
 		if (stream.atLimit) { ^this };
