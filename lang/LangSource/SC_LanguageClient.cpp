@@ -136,9 +136,13 @@ void SC_LanguageClient::initRuntime(const Options& opt)
 	}
 }
 
+
+extern thread gResyncThread;
+
 void SC_LanguageClient::shutdownRuntime()
 {
 	cleanup_OSC();
+	gResyncThread.detach(); // leak!
 }
 
 void SC_LanguageClient::compileLibrary()
