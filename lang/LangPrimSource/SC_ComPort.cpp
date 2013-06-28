@@ -97,6 +97,34 @@ static void dumpOSCmsg(int inSize, char* inData)
 				printf(" DATA[%zu]", msg.getbsize());
 				msg.skipb();
 				break;
+			case 'm' : {
+				char midi [4];
+				msg.getb (midi, 4);
+				printf(" MIDI[0x%02x 0x%02x 0x%02x 0x%02x]", midi[0], midi[1], midi[2], midi[3]);
+				break;
+			}
+			case 'c' :
+				printf(" %c", (char)msg.geti());
+				break;
+			case 't' :
+				printf(" %ld", msg.gett());
+				break;
+			case 'T' :
+				printf(" true");
+				msg.count ++;
+				break;
+			case 'F' :
+				printf(" false");
+				msg.count ++;
+				break;
+			case 'I' :
+				printf(" infinitum");
+				msg.count ++;
+				break;
+			case 'N' :
+				printf(" nil");
+				msg.count ++;
+				break;
 			default :
 				printf(" !unknown tag '%c' 0x%02x !", isprint(c)?c:'?', (unsigned char)c & 255);
 				goto leave;
