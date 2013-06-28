@@ -33,13 +33,13 @@ l = LazyEnvir.push;
 
 // default objects are created on access
 ~a;
-~a.value; // defaults to 1
+~a.value; // defaults to nil
 
 // operations on placeholders
 (
 ~c = ~a + ~b;
 
-~c.value;
+~c.value; // doesn't fail, instead returns nil
 )
 
 // variables can be assigned later
