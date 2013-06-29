@@ -1,295 +1,280 @@
--*-text-*---------------------------------------------------------------
-supercollider 3 for linux
-------------------------------------------------------------------------
+# Supercollider 3 for linux
 
-------------------------------------------------------------------------
-intro
-------------------------------------------------------------------------
+## Intro
 
 SuperCollider is a synthesis engine (scsynth) and programming language
 (sclang), originally Mac-based but now very widely used on Linux
 (since Stefan Kersten ported the code in 2003). SuperCollider is free
 software under the GPL - its main homepage is at
 
-   http://supercollider.sourceforge.net
+[http://supercollider.github.com](http://supercollider.github.com)
 
-to get further information on supercollider usage or development, you
+To get further information on supercollider usage or development, you
 might consider subscribing to the mailing lists
 
-  http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
+[http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml](http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml)
 
-------------------------------------------------------------------------
-build requirements
+## Build requirements
 (most of these will be available in your linux distribution as packages )
-------------------------------------------------------------------------
 
  * gcc >= 3.0
-   http://www.gnu.org/software/gcc/
-   gcc versions < 3.0 are missing some required c++ features
+   * [http://www.gnu.org/software/gcc](http://www.gnu.org/software/gcc)
+   * gcc versions < 3.0 are missing some required c++ features
 
  * jack and libjack
-   http://jackit.sourceforge.net/
-   jack audio connection kit
+   * [http://jackit.sourceforge.net](http://jackit.sourceforge.net)
+   * jack audio connection kit
 
  * libsndfile >= 1.0
-   http://www.mega-nerd.com/libsndfile/
-   _the_ soundfile i/o library
+   * [http://www.mega-nerd.com/libsndfile](http://www.mega-nerd.com/libsndfile)
+   * _the_ soundfile i/o library
 
  * pkg-config >= 0.14.0
-   http://www.freedesktop.org/software/pkgconfig/
-   facilitates checking for installed packages when compiling from
-   source
+   * [http://www.freedesktop.org/software/pkgconfig](http://www.freedesktop.org/software/pkgconfig)
+   * facilitates checking for installed packages when compiling from source
 
  * cmake >= 2.8
-   http://www.cmake.org/
-   cross-platform build system
+   * [http://www.cmake.org](http://www.cmake.org)
+   * cross-platform build system
 
  * fftw >= 3.0
-   http://www.fftw.org/
-   fast FFT transform library (for frequency-domain analysis,
-                                        phase-vocoder effects)
+   * [http://www.fftw.org](http://www.fftw.org)
+   * fast FFT transform library (for frequency-domain analysis, phase-vocoder effects)
 
  * libxt
-   http://www.X.org/
-   X toolkit intrinsics
+   * [http://www.X.org](http://www.X.org)
+   * X toolkit intrinsics
 
-------------------------------------------------------------------------
-build requirements (optional features)
+## Build requirements (optional features)
 (most of these will be available in your linux distribution as packages )
-------------------------------------------------------------------------
 
  * Qt >= 4.7 (+ qtwebkit)
-   http://qt-project.org/
-   cross-platform graphical user interface library, for Qt IDE and
-   sclang's Qt GUI kit
+   * [http://qt-project.org](http://qt-project.org)
+   * cross-platform graphical user interface library, for Qt IDE and sclang's Qt GUI kit
 
  * alsa
-   http://www.alsa-project.org/
-   advanced linux sound architecture drivers and library, for sclang's
-   MIDI interface
+   * [http://www.alsa-project.org](http://www.alsa-project.org)
+   * advanced linux sound architecture drivers and library, for sclang's MIDI interface
 
  * libreadline >= 5
-   http://savannah.gnu.org/projects/readline
-   provides convenient CLI interface for sclang
+   * [http://savannah.gnu.org/projects/readline](http://savannah.gnu.org/projects/readline)
+   * provides convenient CLI interface for sclang
 
  * libavahi-client
-   http://www.avahi.org/
-   a more powerful zeroconf service discovery implementation
+   * [http://www.avahi.org](http://www.avahi.org)
+   * a more powerful zeroconf service discovery implementation
 
  * libcwiid
-   http://abstrakraft.org/cwiid/
-   library for wiimote support
+   * [http://abstrakraft.org/cwiid](http://abstrakraft.org/cwiid)
+   * library for wiimote support
 
  * linux kernel >= 2.6
-   http://www.kernel.org/
-   for sclang's linux input device (LID) interface
+   * [http://www.kernel.org](http://www.kernel.org)
+   * for sclang's linux input device (LID) interface
 
- * for scel: the Emacs interface see the README in the directory
-   `editors/scel'
+ * for `scel`: the **emacs** interface see [editors/scel/README.md](editors/scel/README.md)
 
- * for sced: the gedit interface see the README in the directory
-   `editors/sced'
+ * for `sced`: the **gedit** interface see [editors/sced/README.md](editors/sced/README.md)
 
- * for scvim: the vim interface see the README in the directory
-   `editors/scvim'
+ * for `scvim`: the **vim** interface see [editors/scvim/README.md](editors/scvim/README.md)
 
+## Build requirements (debian users)
 
-------------------------------------------------------------------------
-build requirements (debian users)
-------------------------------------------------------------------------
-
-on debian (unstable) you can install the following packages and be set
+On debian (unstable) you can install the following packages and be set
 for building supercollider:
 
-   build-essential
-   libqt4-dev
-   libqtwebkit-dev
-   libjack-dev or libjack-jackd2-dev
-   libsndfile1-dev
-   libasound2-dev
-   libavahi-client-dev
-   libicu-dev
-   libreadline6-dev
-   libfftw3-dev
-   libxt-dev
-   libcwiid-dev (for wiimote support)
-   pkg-config
-   cmake
-   subversion (required by the Quarks class at run-time)
+ - build-essential
+ - libqt4-dev
+ - libqtwebkit-dev
+ - libjack-dev or libjack-jackd2-dev
+ - libsndfile1-dev
+ - libasound2-dev
+ - libavahi-client-dev
+ - libicu-dev
+ - libreadline6-dev
+ - libfftw3-dev
+ - libxt-dev
+ - libcwiid-dev (for wiimote support)
+ - pkg-config
+ - cmake
+ - subversion (required by the Quarks class at run-time)
 
-------------------------------------------------------------------------
-building
-------------------------------------------------------------------------
+## Building
 
-to build supercollider with cmake, it is suggested to do out-of-tree
+ - to build supercollider with cmake, it is suggested to do out-of-tree
 builds in a specific build directory:
 
-mkdir build
-cd build
-cmake ..
+   ```bash
+   $> mkdir build
+   $> cd build
+   $> cmake ..
+   ```
 
-to run the build process run:
-make
+ - to run the build process run:
 
-the build process can be configured using the cmake program, cmake
-frontends like ccmake or cmake-gui, or by simply editing the
-build/CMakeCache.txt file.
+   ```bash
+   $> make
+   ```
 
-for example to enable a release build run the following in your build
-directory:
-cmake -DCMAKE_BUILD_TYPE=Release ..
+   The build process can be configured using the cmake program, cmake
+   frontends like ccmake or cmake-gui, or by simply editing the
+   build/CMakeCache.txt file.
 
-to install the whole program, run:
-make install
+   For example to enable a release build run the following in your build
+   directory:
 
-for the above step you will probably need super-user privileges,
-e.g. using "sudo".
+   ```bash
+   $> cmake -DCMAKE_BUILD_TYPE=Release ..
+   ```
 
-also, please run "sudo ldconfig" after installing for the first time.
+ - to install the whole program, run:
 
-to uninstall:
-make uninstall
+   ```bash
+   $> make install
+   ```
 
-Qt GUI:
--------
+   For the above step you will probably need super-user privileges,
+   e.g. using "sudo".
+
+   Also, please run
+
+   ```bash
+   $> sudo ldconfig
+   ```
+   after installing for the first time.
+
+ - to uninstall:
+
+   ```bash
+   $> make uninstall
+   ```
+
+### Qt GUI
 
 By default the experimental Qt GUI support will be built into sclang.
 If you want to build without it configure cmake like this:
 
-        cmake -DSC_QT=OFF ..
+```bash
+$> cmake -DSC_QT=OFF ..
+```
 
-------------------------------------------------------------------------
-Building a Debian package
-------------------------------------------------------------------------
+## Building a Debian package
 
-The most up-to-date debian packaging rules are maintained by the 
+The most up-to-date debian packaging rules are maintained by the
 Debian Multimedia team. Repository (with debian/ folder):
 
-  http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
+[http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary](http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary)
 
 At time of writing they support 3.4.x, but we expect updates once 3.5
 is available.
 
-------------------------------------------------------------------------
-running scsynth (standalone)
-------------------------------------------------------------------------
+## Running scsynth (standalone)
 
-run scsynth without options to get an option summary. don't forget to
-start jackd before trying to use scsynth. if you want to add
+Run `scsynth` without options to get an option summary. Don't forget to
+start jackd before trying to use scsynth. If you want to add
 directories to supercollider's search path or assign default jack
 ports, set up your environment as described below.
 
-you can specify the number of jack input/output channels created with
-the options -i and -o, respectively.
+You can specify the number of jack input/output channels created with
+the options `-i` and `-o`, respectively.
 
-the -H option can be used to specify a jack server to connect to and
-to set the jack client identifier. the format is either
+the `-H` option can be used to specify a jack server to connect to and
+to set the jack client identifier. The format is either
 
-    <SERVER-NAME>:<CLIENT-NAME>
+    `<SERVER-NAME>:<CLIENT-NAME>`
 
 or just
 
-    <CLIENT-NAME>
+    `<CLIENT-NAME>`
 
 when connecting to the default server.
 
-------------------------------------------------------------------------
-running sclang
-------------------------------------------------------------------------
+## Running sclang
 
-it is recommended to use sclang in combination with your preferred text
-editor out of emacs/vim/gedit. see the README files in `linux/*' for
+It is recommended to use sclang in combination with your preferred text
+editor out of emacs/vim/gedit. See the README files in `linux/*` for
 installation and usage. as an alternative you can simply run the
-`sclang' executable which will provide a readline-based interface.
+`sclang` executable which will provide a readline-based interface.
 
-sclang executes the startup file `~/.config/SuperCollider/startup.scd' after class library
-initialization. this file can contain statements to set up your
-supercollider environment, like setting default variables. an example can
-be found in `linux/examples/sclang.sc'.
+`sclang` executes the startup file `~/.config/SuperCollider/startup.scd` after class library
+initialization. This file can contain statements to set up your
+supercollider environment, like setting default variables. An example can
+be found in `linux/examples/sclang.sc`.
 
-you _have_ to have a directory `~/.local/share/SuperCollider/'. This is where
+You _have_ to have a directory `~/.local/share/SuperCollider`. This is where
 automatically a synthdefs directory is created. It is also the place
 to put Extensions to the class library, in a folder called Extensions.
 
-the runtime directory is either the current working directory or the
-path specified with the `-d' option.
+The runtime directory is either the current working directory or the
+path specified with the `-d` option.
 
-------------------------------------------------------------------------
-environment
-------------------------------------------------------------------------
+## Environment
 
-the jack audio driver interface is configured based on various
+The jack audio driver interface is configured based on various
 environment variables:
 
- * SC_JACK_DEFAULT_INPUTS comma separated list of jack ports that
-   scsynth's inputs should connect to by default
+ * SC_JACK_DEFAULT_INPUTS comma separated list of jack ports that scsynth's inputs should connect to by default
 
-   $ export SC_JACK_DEFAULT_INPUTS="system:capture_1,system:capture_2"
+   ```bash
+   $> export SC_JACK_DEFAULT_INPUTS="system:capture_1,system:capture_2"
+   ```
 
-   in order to connect the first ports of one jack client, it is possible
-   to specify only the client name
+   in order to connect the first ports of one jack client, it is possible to specify only the client name
 
-   $ export SC_JACK_DEFAULT_INPUTS="system"
+   ```bash
+   $> export SC_JACK_DEFAULT_INPUTS="system"
+   ```
 
- * SC_JACK_DEFAULT_OUTPUTS comma separated list of jack ports that
-   scsynth's outputs should be connected to by default.
+ * SC_JACK_DEFAULT_OUTPUTS comma separated list of jack ports that scsynth's outputs should be connected to by default.
 
-   $ export SC_JACK_DEFAULT_OUTPUTS="system:playback_1,system:playback_2"
+   ```bash
+   $> export SC_JACK_DEFAULT_OUTPUTS="system:playback_1,system:playback_2"
+   ```
 
-   in order to connect the first ports of one jack client, it is possible
-   to specify only the client name
+   In order to connect the first ports of one jack client, it is possible to specify only the client name
 
-   $ export SC_JACK_DEFAULT_OUTPUTS="system"
+   ```bash
+   $> export SC_JACK_DEFAULT_OUTPUTS="system"
+   ```
 
-two additional environment variables substitute directories for the default
-search path for plugins and synth definitions, respectively. directory
+Two additional environment variables substitute directories for the default
+search path for plugins and synth definitions, respectively. Directory
 names are separated by ':' as in the unix PATH variable:
 
  * SC_PLUGIN_PATH, SC_SYNTHDEF_PATH
 
-   $ export SC_SYNTHDEF_PATH="./synthdefs:/home/sk/SuperCollider/synthdefs"
+   ```bash
+   $> export SC_SYNTHDEF_PATH="./synthdefs:/home/sk/SuperCollider/synthdefs"
+   ```
 
-------------------------------------------------------------------------
-documentation
-------------------------------------------------------------------------
+## Documentation
 
-apart from the sites listed above, some more documentation links ...
+Apart from the sites listed above, some more documentation links...
 
-a wiki for supercollider, set up by julian rohrhuber, is at
+ - a wiki for supercollider, set up by julian rohrhuber, is at
 
-    http://swiki.hfbk-hamburg.de/MusicTechnology/6
+    [http://swiki.hfbk-hamburg.de/MusicTechnology/6](http://swiki.hfbk-hamburg.de/MusicTechnology/6)
 
-linux specific information can be found at
+ - linux specific information can be found at
 
-    http://swiki.hfbk-hamburg.de/MusicTechnology/478
+    [http://swiki.hfbk-hamburg.de/MusicTechnology/478](http://swiki.hfbk-hamburg.de/MusicTechnology/478)
 
-------------------------------------------------------------------------
-reporting bugs
-------------------------------------------------------------------------
+## Reporting bugs
 
-please report bugs either to the sc-users or sc-dev mailing lists.
+Please report bugs either to the sc-users or sc-dev mailing lists.
 
-------------------------------------------------------------------------
-contributors to this document
-------------------------------------------------------------------------
+## Contributors to this document
 
-stefan kersten <sk AT k-hornz DOT de>
-andi pieper
-maurizio umberto puxeddu
-rohan drape
-mario lang
-john yates
-nescivi (marije baalman)
-dan stowell
-tim blechmann
+- stefan kersten <sk AT k-hornz DOT de>
+- andi pieper
+- maurizio umberto puxeddu
+- rohan drape
+- mario lang
+- john yates
+- nescivi (marije baalman)
+- dan stowell
+- tim blechmann
 
-------------------------------------------------------------------------
-outro
-------------------------------------------------------------------------
+## Outro
 
-thanks to james mccartney, for making this great piece of audio
-software publically and freely available.
-
-------------------------------------------------------------------------
-eof
-------------------------------------------------------------------------
+Thanks to james mccartney, for making this great piece of audio software publically and freely available.
