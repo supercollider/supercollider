@@ -1,6 +1,6 @@
 class:: Punop
 summary:: unary operator pattern
-related:: Classes/Pbinop, Classes/Pnaryop, Classes/UnaryOpFunction
+related:: Classes/Pbinop, Classes/Pnaryop, Classes/UnaryOpFunction, Overviews/Operators
 categories:: Streams-Patterns-Events>Patterns>Math
 
 description::
