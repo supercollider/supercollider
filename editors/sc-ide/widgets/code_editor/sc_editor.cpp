@@ -1179,18 +1179,6 @@ static bool bracketPairDefinesRegion( const BracketPair & bracketPair )
     if (!tokenMaybeRegionStart(bracketPair.first) || !tokenMaybeRegionEnd(bracketPair.second))
         return false;
 
-    // check whether this is an Event
-    TokenIterator it = bracketPair.first.next();
-    if (it.isValid()) {
-        if (it->type == Token::SymbolArg)
-            return false;
-        else {
-            ++it;
-            if (it.isValid() && it->character == ':')
-                return false;
-        }
-    }
-
     return true;
 }
 
