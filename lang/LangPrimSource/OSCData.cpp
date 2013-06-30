@@ -395,9 +395,9 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 	struct sockaddr_in toaddr;
 	makeSockAddr(toaddr, addr, port);
 
-    int aSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	int aSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (aSocket == -1) {
-        //post("\nCould not create socket\n");
+		//post("\nCould not create socket\n");
 		return errFailed;
 	}
 
@@ -405,9 +405,9 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 #ifdef SC_WIN32
 	if (setsockopt( aSocket, IPPROTO_TCP, TCP_NODELAY, (const char*)&on, sizeof(on)) != 0) {
 #else
-  if (setsockopt( aSocket, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on)) != 0) {
+	if (setsockopt( aSocket, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on)) != 0) {
 #endif
-    //post("\nCould not setsockopt TCP_NODELAY\n");
+		//post("\nCould not setsockopt TCP_NODELAY\n");
 #ifdef SC_WIN32
 		closesocket(aSocket);
 #else
@@ -417,16 +417,16 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 	};
 
 
-    if(connect(aSocket,(struct sockaddr*)&toaddr,sizeof(toaddr)) != 0)
-    {
-        //post("\nCould not connect socket\n");
+	if(connect(aSocket,(struct sockaddr*)&toaddr,sizeof(toaddr)) != 0)
+	{
+		//post("\nCould not connect socket\n");
 #ifdef SC_WIN32
-		    closesocket(aSocket);
+		closesocket(aSocket);
 #else
-    		close(aSocket);
+		close(aSocket);
 #endif
-        return errFailed;
-    }
+		return errFailed;
+	}
 
 	SC_TcpClientPort *comPort = new SC_TcpClientPort(aSocket, netAddrTcpClientNotifyFunc, netAddrObj);
 	SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
@@ -628,154 +628,152 @@ PyrObject* ConvertOSCMessage(int inSize, char *inData)
 	sc_msg_iter msg(inSize - cmdNameLen, inData + cmdNameLen);
 
 	int numElems;
-        if (inSize == cmdNameLen) {
-            numElems = 0;
-        } else {
-			if (!msg.tags) {
-				numElems = 0;
-				error("OSC messages must have type tags.  %s\n", cmdName);
-			} else {
-				numElems = strlen(msg.tags);
-			}
-        }
-        //post("tags %s %d\n", msg.tags, numElems);
+	if (inSize == cmdNameLen) {
+		numElems = 0;
+	} else {
+		if (!msg.tags) {
+			numElems = 0;
+			error("OSC messages must have type tags.  %s\n", cmdName);
+		} else {
+			numElems = strlen(msg.tags);
+		}
+	}
+	//post("tags %s %d\n", msg.tags, numElems);
 
-        VMGlobals *g = gMainVMGlobals;
-        PyrObject *obj = newPyrArray(g->gc, numElems + 1, 0, false);
-        PyrSlot *slots = obj->slots;
+	VMGlobals *g = gMainVMGlobals;
+	PyrObject *obj = newPyrArray(g->gc, numElems + 1, 0, false);
+	PyrSlot *slots = obj->slots;
 
-        SetSymbol(slots+0, getsym(cmdName));
+	SetSymbol(slots+0, getsym(cmdName));
 
-        for (int i=0; i<numElems; ++i) {
-            char tag = msg.nextTag();
-            //post("%d %c\n", i, tag);
-            switch (tag) {
-                case 'i' :
-                    SetInt(slots+i+1, msg.geti());
-                    break;
-                case 'f' :
-                    SetFloat(slots+i+1, msg.getf());
-                    break;
-                case 'd' :
-                    SetFloat(slots+i+1, msg.getd());
-                    break;
-                case 's' :
-                    SetSymbol(slots+i+1, getsym(msg.gets()));
-                    //post("sym '%s'\n", slots[i+1].us->name);
-                    break;
-								case 'b' : // fall through
-								case 'm' :
-										SetObject(slots+i+1, (PyrObject*)MsgToInt8Array(msg));
-										break;
-								case 'c':
-										SetChar(slots+i+1, (char)msg.geti());
-										break;
-								case 't' :
-										SetFloat(slots+i+1, OSCToElapsedTime(msg.gett()));
-										break;
-										
-								// argument tags without any associated value
-								case 'T' :
-										SetTrue(slots+i+1);
-										msg.count ++;
-										break;
-								case 'F' :
-										SetFalse(slots+i+1);
-										msg.count ++;
-										break;
-								case 'I' :
-										SetFloat(slots+i+1, dInfinity);
-										msg.count ++;
-										break;
-								case 'N' :
-										SetNil(slots+i+1);
-										msg.count ++;
-										break;
-								// else add the type tag as a char (jrhb 2009)
-								default:
-										SetChar(slots+i+1, tag);
-										msg.gets();
-            }
-        }
-        obj->size = numElems + 1;
-        return obj;
+	for (int i=0; i<numElems; ++i) {
+		char tag = msg.nextTag();
+		//post("%d %c\n", i, tag);
+		switch (tag) {
+		case 'i' :
+			SetInt(slots+i+1, msg.geti());
+			break;
+		case 'f' :
+			SetFloat(slots+i+1, msg.getf());
+			break;
+		case 'd' :
+			SetFloat(slots+i+1, msg.getd());
+			break;
+		case 's' :
+			SetSymbol(slots+i+1, getsym(msg.gets()));
+			//post("sym '%s'\n", slots[i+1].us->name);
+			break;
+		case 'b' : // fall through
+		case 'm' :
+			SetObject(slots+i+1, (PyrObject*)MsgToInt8Array(msg));
+			break;
+		case 'c':
+			SetChar(slots+i+1, (char)msg.geti());
+			break;
+		case 't' :
+			SetFloat(slots+i+1, OSCToElapsedTime(msg.gett()));
+			break;
+
+			// argument tags without any associated value
+		case 'T' :
+			SetTrue(slots+i+1);
+			msg.count ++;
+			break;
+		case 'F' :
+			SetFalse(slots+i+1);
+			msg.count ++;
+			break;
+		case 'I' :
+			SetFloat(slots+i+1, dInfinity);
+			msg.count ++;
+			break;
+		case 'N' :
+			SetNil(slots+i+1);
+			msg.count ++;
+			break;
+			// else add the type tag as a char (jrhb 2009)
+		default:
+			SetChar(slots+i+1, tag);
+			msg.gets();
+		}
+	}
+	obj->size = numElems + 1;
+	return obj;
 }
 
 PyrObject* ConvertReplyAddress(ReplyAddress *inReply)
 {
-    VMGlobals *g = gMainVMGlobals;
-    PyrObject *obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
-    PyrSlot *slots = obj->slots;
-    SetInt(slots+0, sc_ntohl(inReply->mSockAddr.sin_addr.s_addr));
-    SetInt(slots+1, sc_ntohs(inReply->mSockAddr.sin_port));
-    return obj;
+	VMGlobals *g = gMainVMGlobals;
+	PyrObject *obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
+	PyrSlot *slots = obj->slots;
+	SetInt(slots+0, sc_ntohl(inReply->mSockAddr.sin_addr.s_addr));
+	SetInt(slots+1, sc_ntohs(inReply->mSockAddr.sin_port));
+	return obj;
 }
 
 void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj, int inPortNum)
 {
-    // convert all data to arrays
+	// convert all data to arrays
 
-    int64 oscTime = OSCtime(inData + 8);
-    double seconds = OSCToElapsedTime(oscTime);
+	int64 oscTime = OSCtime(inData + 8);
+	double seconds = OSCToElapsedTime(oscTime);
 
-    VMGlobals *g = gMainVMGlobals;
-    char *data = inData + 16;
-    char* dataEnd = inData + inSize;
-    while (data < dataEnd) {
-        int32 msgSize = OSCint(data);
-        data += sizeof(int32);
-        if (IsBundle(data))
-        {
-            PerformOSCBundle(msgSize, data, replyObj, inPortNum);
-        }
-        else // is a message
-        {
-            ++g->sp; SetObject(g->sp, g->process);
-            ++g->sp; SetFloat(g->sp, seconds);
-            ++g->sp; SetObject(g->sp, replyObj);
-            ++g->sp; SetInt(g->sp, inPortNum);
+	VMGlobals *g = gMainVMGlobals;
+	char *data = inData + 16;
+	char* dataEnd = inData + inSize;
+	while (data < dataEnd) {
+		int32 msgSize = OSCint(data);
+		data += sizeof(int32);
+		if (IsBundle(data))
+		{
+			PerformOSCBundle(msgSize, data, replyObj, inPortNum);
+		}
+		else // is a message
+		{
+			++g->sp; SetObject(g->sp, g->process);
+			++g->sp; SetFloat(g->sp, seconds);
+			++g->sp; SetObject(g->sp, replyObj);
+			++g->sp; SetInt(g->sp, inPortNum);
 
-            PyrObject *arrayObj = ConvertOSCMessage(msgSize, data);
-            ++g->sp; SetObject(g->sp, arrayObj);
-            runInterpreter(g, s_recvoscmsg, 5);
-        }
-        data += msgSize;
-    }
+			PyrObject *arrayObj = ConvertOSCMessage(msgSize, data);
+			++g->sp; SetObject(g->sp, arrayObj);
+			runInterpreter(g, s_recvoscmsg, 5);
+		}
+		data += msgSize;
+	}
 }
 
 void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj, int inPortNum)
 {
 
-    PyrObject *arrayObj = ConvertOSCMessage(inSize, inData);
+	PyrObject *arrayObj = ConvertOSCMessage(inSize, inData);
 
-    // call virtual machine to handle message
-    VMGlobals *g = gMainVMGlobals;
-    ++g->sp; SetObject(g->sp, g->process);
-    ++g->sp; SetFloat(g->sp, elapsedTime());	// time
-    ++g->sp; SetObject(g->sp, replyObj);
+	// call virtual machine to handle message
+	VMGlobals *g = gMainVMGlobals;
+	++g->sp; SetObject(g->sp, g->process);
+	++g->sp; SetFloat(g->sp, elapsedTime());	// time
+	++g->sp; SetObject(g->sp, replyObj);
 	++g->sp; SetInt(g->sp, inPortNum);
-    ++g->sp; SetObject(g->sp, arrayObj);
+	++g->sp; SetObject(g->sp, arrayObj);
 
-    runInterpreter(g, s_recvoscmsg, 5);
-
-
+	runInterpreter(g, s_recvoscmsg, 5);
 }
 
 void FreeOSCPacket(OSC_Packet *inPacket)
 {
-    //post("->FreeOSCPacket %p\n", inPacket);
-    if (inPacket) {
-            free(inPacket->mData);
-            free(inPacket);
-    }
+	//post("->FreeOSCPacket %p\n", inPacket);
+	if (inPacket) {
+		free(inPacket->mData);
+		free(inPacket);
+	}
 }
 
 void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
 {
-    //post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
+	//post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
 	inPacket->mIsBundle = IsBundle(inPacket->mData);
 
-    gLangMutex.lock();
+	gLangMutex.lock();
 	if (compiledOK) {
 		PyrObject *replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
 		if (compiledOK) {
@@ -786,14 +784,14 @@ void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
 			}
 		}
 	}
-    gLangMutex.unlock();
+	gLangMutex.unlock();
 
-    FreeOSCPacket(inPacket);
+	FreeOSCPacket(inPacket);
 }
 
 void init_OSC(int port)
 {
-    postfl("init_OSC\n");
+	postfl("init_OSC\n");
 
 #ifdef _WIN32
 	WSAData wsaData;
@@ -803,11 +801,11 @@ void init_OSC(int port)
 	}
 #endif
 
-    try {
-        gUDPport = new SC_UdpInPort(port);
-    } catch (...) {
-        postfl("No networking.");
-    }
+	try {
+		gUDPport = new SC_UdpInPort(port);
+	} catch (...) {
+		postfl("No networking.");
+	}
 }
 
 int prOpenUDPPort(VMGlobals *g, int numArgsPushed);
@@ -825,10 +823,10 @@ int prOpenUDPPort(VMGlobals *g, int numArgsPushed)
 		SetTrue(a);
 		newUDPport = new SC_UdpCustomInPort(port);
 		gCustomUdpPorts.push_back(newUDPport);
-    } catch (...) {
+	} catch (...) {
 		SetFalse(a);
-        postfl("Could not bind to requested port. This may mean it is in use already by another application.\n");
-    }
+		postfl("Could not bind to requested port. This may mean it is in use already by another application.\n");
+	}
 	return errNone;
 }
 
@@ -902,7 +900,6 @@ extern "C" {
 }
 
 #ifndef NO_INTERNAL_SERVER
-int prBootInProcessServer(VMGlobals *g, int numArgsPushed);
 int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
@@ -1005,12 +1002,6 @@ int getScopeBuf(uint32 index, SndBuf *buf, bool& didChange)
 	return errNone;
 }
 
-static void wait_for_quit(World* world)
-{
-	World_WaitForQuit(world);
-}
-
-int prQuitInProcessServer(VMGlobals *g, int numArgsPushed);
 int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 {
 	//PyrSlot *a = g->sp;
@@ -1019,22 +1010,20 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 		World *world = gInternalSynthServer.mWorld;
 		gInternalSynthServer.mWorld = 0;
 
-		thread thread(thread_namespace::bind(wait_for_quit, world));
+		thread thread(thread_namespace::bind(World_WaitForQuit, world));
 
 		thread.detach();
 	}
 
 	return errNone;
 }
-#else   // is windows
-int prQuitInProcessServer(VMGlobals *g, int numArgsPushed);
+#else // NO_INTERNAL_SERVER
 int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 {
 	// no-op. Better to have this than to overwrite in lang.
 	return errNone;
 }
-#endif
-//#ifndef SC_WIN32
+#endif // NO_INTERNAL_SERVER
 
 inline int32 BUFMASK(int32 x)
 {
@@ -1347,5 +1336,3 @@ void init_OSC_primitives()
 	s_recvoscbndl = getsym("recvOSCbundle");
 	s_netaddr = getsym("NetAddr");
 }
-
-
