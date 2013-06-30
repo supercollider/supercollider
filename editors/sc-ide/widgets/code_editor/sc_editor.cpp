@@ -1208,8 +1208,8 @@ QTextCursor ScCodeEditor::regionAroundCursor(const QTextCursor & cursor)
                  && bracketPairDefinesRegion(bracketPair) )
             {
                 QTextCursor regionCursor(QPlainTextEdit::document());
-                regionCursor.setPosition(bracketPair.first.position() + 1);
-                regionCursor.setPosition(bracketPair.second.position(), QTextCursor::KeepAnchor);
+                regionCursor.setPosition(bracketPair.first.position());
+                regionCursor.setPosition(bracketPair.second.position() + 1, QTextCursor::KeepAnchor);
                 return regionCursor;
             }
         } else {
