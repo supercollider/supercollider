@@ -15,7 +15,7 @@ definitionList::
 ## \table || load ~amps directly into a buffer
 ## \sine1 || generate a buffer from ~amps
 ## \sine2 || generate a buffer from ~freqs, ~amps
-## \sine3 || generate a buffer from ~freqs, ~amps, ~pahses
+## \sine3 || generate a buffer from ~freqs, ~amps, ~phases
 ## \cheby || generate a waveshape buffer from ~amps
 ## \audioBus || allocate ~channels consecutive audio buses
 ## \controlBus || allocate ~channels consecutive control buses
