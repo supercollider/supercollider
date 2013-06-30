@@ -1,7 +1,7 @@
 class:: BinaryOpFunction
 summary:: represent a binary operation on a function
 categories:: Core
-related:: Classes/UnaryOpFunction,Classes/NAryOpFunction,Classes/BinaryOpStream,Classes/Pbinop
+related:: Classes/UnaryOpFunction, Classes/NAryOpFunction, Classes/BinaryOpStream, Classes/Pbinop, Overviews/Operators
 
 description::
 
