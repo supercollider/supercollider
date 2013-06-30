@@ -719,45 +719,26 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj, int inPortN
     double seconds = OSCToElapsedTime(oscTime);
 
     VMGlobals *g = gMainVMGlobals;
-    ++g->sp; SetObject(g->sp, g->process);
-    ++g->sp; SetFloat(g->sp, seconds);
-    ++g->sp; SetObject(g->sp, replyObj);
-	++g->sp; SetInt(g->sp, inPortNum);
-
-    PyrSlot *stackBase = g->sp;
     char *data = inData + 16;
     char* dataEnd = inData + inSize;
     while (data < dataEnd) {
         int32 msgSize = OSCint(data);
         data += sizeof(int32);
-        PyrObject *arrayObj = ConvertOSCMessage(msgSize, data);
-        ++g->sp; SetObject(g->sp, arrayObj);
-        data += msgSize;
-    }
+        if (IsBundle(data))
+        {
+            PerformOSCBundle(msgSize, data, replyObj, inPortNum);
+        }
+        else // is a message
+        {
+            ++g->sp; SetObject(g->sp, g->process);
+            ++g->sp; SetFloat(g->sp, seconds);
+            ++g->sp; SetObject(g->sp, replyObj);
+            ++g->sp; SetInt(g->sp, inPortNum);
 
-	int numMsgs = g->sp - stackBase;
-
-    runInterpreter(g, s_recvoscbndl, 4+numMsgs);
-}
-
-void ConvertOSCBundle(int inSize, char* inData, PyrObject *replyObj)
-{
-    // convert all data to arrays
-
-    //int64 oscTime = OSCtime(inData + 8);
-    //double seconds = OSCToElapsedTime(oscTime);
-
-    VMGlobals *g = gMainVMGlobals;
-
-    int numMsgs = 0;
-    char *data = inData + 16;
-    char* dataEnd = inData + inSize;
-    while (data < dataEnd) {
-        int32 msgSize = OSCint(data);
-        data += sizeof(int32);
-        PyrObject *arrayObj = ConvertOSCMessage(msgSize, data);
-        ++g->sp; SetObject(g->sp, arrayObj);
-        numMsgs++;
+            PyrObject *arrayObj = ConvertOSCMessage(msgSize, data);
+            ++g->sp; SetObject(g->sp, arrayObj);
+            runInterpreter(g, s_recvoscmsg, 5);
+        }
         data += msgSize;
     }
 }

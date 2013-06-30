@@ -79,13 +79,6 @@ Main : Process {
 		OSCresponder.respond(time, replyAddr, msg);
 	}
 
-	recvOSCbundle { arg time, replyAddr, recvPort ... msgs;
-		// this method is called when an OSC bundle is received.
-		msgs.do({ arg msg;
-			this.recvOSCmessage(time, replyAddr, recvPort, msg);
-		});
-	}
-
 	addOSCRecvFunc { |func| prRecvOSCFunc = prRecvOSCFunc.addFunc(func) }
 
 	removeOSCRecvFunc { |func| prRecvOSCFunc = prRecvOSCFunc.removeFunc(func) }
