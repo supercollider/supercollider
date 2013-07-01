@@ -2,7 +2,7 @@
 
 Created by Alex Norman, it is in its early stages, use at your own risk
 This is SCVIM-git
-The webpage is here: [http://www.x37v.info/projects/scvim](http://www.x37v.info/projects/scvim)
+The webpage is here: http://www.x37v.info/projects/scvim
 If you have improvements/suggestions email `alex at x37v dot info`
 
 ## Requirements

@@ -9,7 +9,7 @@ January 2011
 
 4. Get a free developer account from Apple and download and install XCode
 
-5. Disable code signing. For sdk 3.0 and above you need to disable code signing by editing the file `/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.0.sdk/SDKSettings.plist`. Follow the instructions at [http://thebigboss.org/hosting-repository/submit-your-app/compile-for-cydia-submission](http://thebigboss.org/hosting-repository/submit-your-app/compile-for-cydia-submission)
+5. Disable code signing. For sdk 3.0 and above you need to disable code signing by editing the file `/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.0.sdk/SDKSettings.plist`. Follow the instructions at http://thebigboss.org/hosting-repository/submit-your-app/compile-for-cydia-submission
 
 6. Open the iphone xcode projects,  in the project and in the SuperCollider target settings -> build, set code signing to “Don’t code sign”.
 
@@ -22,7 +22,7 @@ January 2011
 
 	Then replace the SuperCollider executable inside your app folder with the "thinned" one. Of course, you have to also name it SuperCollider. And I'm sure there's also a lipo command that automatically replaces the original file.
 
-8. Get the App on the iDevice. You can either use Cyberduck or follow these directions: [http://blog.paulbetts.org/index.php/2008/07/22/running-your-iphone-sdk-app-on-iphone-without-the-app-store](http://blog.paulbetts.org/index.php/2008/07/22/running-your-iphone-sdk-app-on-iphone-without-the-app-store)
+8. Get the App on the iDevice. You can either use Cyberduck or follow these directions: http://blog.paulbetts.org/index.php/2008/07/22/running-your-iphone-sdk-app-on-iphone-without-the-app-store
 
 9. Follow the instructions in the link above to code sign the app. That will be:
 	```bash

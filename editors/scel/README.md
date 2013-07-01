@@ -10,22 +10,22 @@ For the HTML help system, you will need emacs-w3m support.
 
 By default emacs-lisp files are installed in
 
-    `$prefix/share/emacs/site-lisp`
+`$prefix/share/emacs/site-lisp`
 
 SuperCollider files are put in
 
-    `$prefix/share/SuperCollider/Extensions/scel`
+`$prefix/share/SuperCollider/Extensions/scel`
 
 The only thing you need to do is loading the sclang interface in your `~/.emacs`:
 
-	```lisp
-    (require 'sclang)
-    ```
+```lisp
+(require 'sclang)
+```
 
 For the HTML help system to fully function also add
-	```lisp
-	(require 'w3m)
-	```
+```lisp
+(require 'w3m)
+```
 
 ## Installation (detailed)
 
@@ -39,9 +39,9 @@ file is called):
 ```
 
 for the HTML help system to fully function also add
-	```lisp
-	(require 'w3m)
-	```
+```lisp
+(require 'w3m)
+```
 
 now put all `*.sc` files in sclang's library path, e.g. if you put them
 in a non-standard location, such as `~/SuperCollider/Emacs`, add the
