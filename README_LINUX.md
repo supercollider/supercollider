@@ -129,7 +129,7 @@ builds in a specific build directory:
 
    The build process can be configured using the cmake program, cmake
    frontends like ccmake or cmake-gui, or by simply editing the
-   build/CMakeCache.txt file.
+   `build/CMakeCache.txt` file.
 
    For example to enable a release build run the following in your build
    directory:
@@ -196,11 +196,11 @@ the options `-i` and `-o`, respectively.
 the `-H` option can be used to specify a jack server to connect to and
 to set the jack client identifier. The format is either
 
-    `<SERVER-NAME>:<CLIENT-NAME>`
+`<SERVER-NAME>:<CLIENT-NAME>`
 
 or just
 
-    `<CLIENT-NAME>`
+`<CLIENT-NAME>`
 
 when connecting to the default server.
 
@@ -208,9 +208,15 @@ when connecting to the default server.
 Running sclang
 --------------
 
-It is recommended to use sclang in combination with your preferred text
-editor out of emacs/vim/gedit. See the README files in `linux/*` for
-installation and usage. as an alternative you can simply run the
+Supercollider comes with its own powerful IDE. Run it with:
+
+```
+$> scide
+```
+
+Alternatively you can use sclang in combination with your preferred text
+editor out of emacs/vim/gedit. See the `README.md` files in `editors/*` for
+installation and usage. Another alternative is to simply run the
 `sclang` executable which will provide a readline-based interface.
 
 `sclang` executes the startup file `~/.config/SuperCollider/startup.scd` after class library
@@ -219,7 +225,7 @@ supercollider environment, like setting default variables. An example can
 be found in `linux/examples/sclang.sc`.
 
 You _have_ to have a directory `~/.local/share/SuperCollider`. This is where
-automatically a synthdefs directory is created. It is also the place
+a synthdefs directory is automatically created. It is also the place
 to put Extensions to the class library, in a folder called Extensions.
 
 The runtime directory is either the current working directory or the
