@@ -33,7 +33,10 @@
 #include <locale>
 #include <string.h>
 
-#define  BOOST_CHRONO_INTERNAL_TIMEGM defined BOOST_WINDOWS && ! defined(__CYGWIN__)
+#define  BOOST_CHRONO_INTERNAL_TIMEGM \
+  ( defined BOOST_WINDOWS && ! defined(__CYGWIN__) ) || \
+  ( (defined(sun) || defined(__sun)) && defined __GNUC__)
+
 #define  BOOST_CHRONO_INTERNAL_GMTIME defined BOOST_WINDOWS && ! defined(__CYGWIN__)
 
 #define  BOOST_CHRONO_USES_INTERNAL_TIME_GET

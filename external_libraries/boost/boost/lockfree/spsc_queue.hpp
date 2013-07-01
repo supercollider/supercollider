@@ -14,7 +14,9 @@
 
 #include <boost/array.hpp>
 #include <boost/assert.hpp>
+#ifdef BOOST_NO_CXX11_DELETED_FUNCTIONS
 #include <boost/noncopyable.hpp>
+#endif
 #include <boost/static_assert.hpp>
 
 #include <boost/lockfree/detail/atomic.hpp>
@@ -32,8 +34,10 @@ typedef parameter::parameters<boost::parameter::optional<tag::capacity>,
                              > ringbuffer_signature;
 
 template <typename T>
-class ringbuffer_base:
-    boost::noncopyable
+class ringbuffer_base
+#ifdef BOOST_NO_CXX11_DELETED_FUNCTIONS
+        : boost::noncopyable
+#endif
 {
 #ifndef BOOST_DOXYGEN_INVOKED
     typedef std::size_t size_t;
@@ -41,6 +45,12 @@ class ringbuffer_base:
     atomic<size_t> write_index_;
     char padding1[padding_size]; /* force read_index and write_index to different cache lines */
     atomic<size_t> read_index_;
+
+#ifndef BOOST_NO_CXX11_DELETED_FUNCTIONS
+    ringbuffer_base(ringbuffer_base const &) = delete;
+    ringbuffer_base(ringbuffer_base &&)      = delete;
+    const ringbuffer_base& operator=( const ringbuffer_base& ) = delete;
+#endif
 
 protected:
     ringbuffer_base(void):
@@ -70,20 +80,6 @@ protected:
         if (write_index >= read_index)
             ret += max_size;
         return ret;
-    }
-
-    size_t read_available(size_t max_size) const
-    {
-        size_t write_index = write_index_.load(memory_order_relaxed);
-        const size_t read_index  = read_index_.load(memory_order_relaxed);
-        return read_available(write_index, read_index, max_size);
-    }
-
-    size_t write_available(size_t max_size) const
-    {
-        size_t write_index = write_index_.load(memory_order_relaxed);
-        const size_t read_index  = read_index_.load(memory_order_relaxed);
-        return write_available(write_index, read_index, max_size);
     }
 
     bool push(T const & t, T * buffer, size_t max_size)
@@ -235,7 +231,7 @@ protected:
             size_t count0 = max_size - read_index;
             size_t count1 = avail - count0;
 
-            std::copy(internal_buffer + read_index, internal_buffer + max_size, it);
+            it = std::copy(internal_buffer + read_index, internal_buffer + max_size, it);
             std::copy(internal_buffer, internal_buffer + count1, it);
 
             new_read_index -= max_size;
@@ -293,27 +289,23 @@ class compile_time_sized_ringbuffer:
     public ringbuffer_base<T>
 {
     typedef std::size_t size_t;
-    boost::array<T, MaxSize> array_;
-
-    size_t max_size() const
-    {
-        return max_size();
-    }
+    static const std::size_t max_size = MaxSize + 1;
+    boost::array<T, max_size> array_;
 
 public:
     bool push(T const & t)
     {
-        return ringbuffer_base<T>::push(t, array_.c_array(), MaxSize);
+        return ringbuffer_base<T>::push(t, array_.c_array(), max_size);
     }
 
     bool pop(T & ret)
     {
-        return ringbuffer_base<T>::pop(ret, array_.c_array(), MaxSize);
+        return ringbuffer_base<T>::pop(ret, array_.c_array(), max_size);
     }
 
     size_t push(T const * t, size_t size)
     {
-        return ringbuffer_base<T>::push(t, size, array_.c_array(), MaxSize);
+        return ringbuffer_base<T>::push(t, size, array_.c_array(), max_size);
     }
 
     template <size_t size>
@@ -325,12 +317,12 @@ public:
     template <typename ConstIterator>
     ConstIterator push(ConstIterator begin, ConstIterator end)
     {
-        return ringbuffer_base<T>::push(begin, end, array_.c_array(), MaxSize);
+        return ringbuffer_base<T>::push(begin, end, array_.c_array(), max_size);
     }
 
     size_t pop(T * ret, size_t size)
     {
-        return ringbuffer_base<T>::pop(ret, size, array_.c_array(), MaxSize);
+        return ringbuffer_base<T>::pop(ret, size, array_.c_array(), max_size);
     }
 
     template <size_t size>
@@ -342,7 +334,7 @@ public:
     template <typename OutputIterator>
     size_t pop(OutputIterator it)
     {
-        return ringbuffer_base<T>::pop(it, array_.c_array(), MaxSize);
+        return ringbuffer_base<T>::pop(it, array_.c_array(), max_size);
     }
 };
 
@@ -356,38 +348,32 @@ class runtime_sized_ringbuffer:
     typedef typename Alloc::pointer pointer;
     pointer array_;
 
-protected:
-    size_t max_size() const
-    {
-        return max_elements_;
-    }
-
 public:
     explicit runtime_sized_ringbuffer(size_t max_elements):
-        max_elements_(max_elements)
+        max_elements_(max_elements + 1)
     {
         // TODO: we don't necessarily need to construct all elements
-        array_ = Alloc::allocate(max_elements);
-        for (size_t i = 0; i != max_elements; ++i)
+        array_ = Alloc::allocate(max_elements_);
+        for (size_t i = 0; i != max_elements_; ++i)
             Alloc::construct(array_ + i, T());
     }
 
     template <typename U>
     runtime_sized_ringbuffer(typename Alloc::template rebind<U>::other const & alloc, size_t max_elements):
-        Alloc(alloc), max_elements_(max_elements)
+        Alloc(alloc), max_elements_(max_elements + 1)
     {
         // TODO: we don't necessarily need to construct all elements
-        array_ = Alloc::allocate(max_elements);
-        for (size_t i = 0; i != max_elements; ++i)
+        array_ = Alloc::allocate(max_elements_);
+        for (size_t i = 0; i != max_elements_; ++i)
             Alloc::construct(array_ + i, T());
     }
 
     runtime_sized_ringbuffer(Alloc const & alloc, size_t max_elements):
-        Alloc(alloc), max_elements_(max_elements)
+        Alloc(alloc), max_elements_(max_elements + 1)
     {
         // TODO: we don't necessarily need to construct all elements
-        array_ = Alloc::allocate(max_elements);
-        for (size_t i = 0; i != max_elements; ++i)
+        array_ = Alloc::allocate(max_elements_);
+        for (size_t i = 0; i != max_elements_; ++i)
             Alloc::construct(array_ + i, T());
     }
 
@@ -667,28 +653,6 @@ public:
         return base_type::pop(it);
     }
 
-    /** get number of elements that are available for read
-     *
-     * \return number of available elements that can be popped from the spsc_queue
-     *
-     * \note Thread-safe and wait-free, should only be called from the producer thread
-     * */
-    size_type read_available() const
-    {
-        return base_type::read_available(base_type::max_size());
-    }
-
-    /** get write space to write elements
-     *
-     * \return number of elements that can be pushed to the spsc_queue
-     *
-     * \note Thread-safe and wait-free, should only be called from the consumer thread
-     * */
-    size_type write_available() const
-    {
-        return base_type::write_available(base_type::max_size());
-    }
-
     /** consumes one element via a functor
      *
      *  pops one element from the queue and applies the functor on this object
@@ -729,9 +693,9 @@ public:
      * \note Thread-safe and non-blocking, if functor is thread-safe and non-blocking
      * */
     template <typename Functor>
-    size_t consume_all(Functor & f)
+    size_type consume_all(Functor & f)
     {
-        size_t element_count = 0;
+        size_type element_count = 0;
         while (consume_one(f))
             element_count += 1;
 
@@ -740,9 +704,9 @@ public:
 
     /// \copydoc boost::lockfree::spsc_queue::consume_all(Functor & rhs)
     template <typename Functor>
-    size_t consume_all(Functor const & f)
+    size_type consume_all(Functor const & f)
     {
-        size_t element_count = 0;
+        size_type element_count = 0;
         while (consume_one(f))
             element_count += 1;
 
