@@ -1,4 +1,5 @@
-# Supercollider 3.6 for OS X
+Supercollider 3.6 for OS X
+==========================
 
 This is the Mac OS X version of James McCartney's SuperCollider
 synthesis engine (scsynth) and programming language (sclang).
@@ -14,13 +15,16 @@ should subscribe to the mailing lists:
 
 http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
 
-## Special characters on mac:
+
+Special characters on mac
+-------------------------
 
 Please do not use non-ASCII characters (above code point 127) in your SuperCollider program path (i.e. the names of the folders containing SuperCollider).
 Doing so will break options to open class or method files automatically.
 
 
-## Compiling SuperCollider from the source code
+Compiling SuperCollider from the source code
+--------------------------------------------
 
 Requirements:
  * Mac OS X 10.4.9 or greater
@@ -86,6 +90,7 @@ $> cmake -DCMAKE_OSX_ARCHITECTURES='i386;x86_64' ..
 $> cmake -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/ -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -GXcode
 ```
 
+
 ### 10.8 warning
 
 On 10.8 you need to:
@@ -114,7 +119,9 @@ Finally - a cmake command that builds on 10.8 currently:
 $> cmake -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/ -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 -DCMAKE_CXX_FLAGS="-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/"  -DCMAKE_C_FLAGS="-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/" -DCMAKE_BUILD_TYPE="Release"  ..
 ```
 
-## Qt GUI
+
+Qt GUI
+------
 
 By default the new Qt GUI support will be built into sclang and
 SuperCollider application. If you want to build without it, configure
@@ -124,7 +131,9 @@ cmake like this:
 $> cmake -DSC_QT=OFF ..
 ```
 
-## Standalones
+
+Standalones
+-----------
 
 To create a "standalone" app using cmake, you need to use the "standalone" flag.
 For example, to create a standalone whose name is MyFabApp:
@@ -145,7 +154,9 @@ set that value as an empty string:
 $> cmake -D standalone="" ..
 ```
 
-## On libsndfile
+
+On libsndfile
+-------------
 
 Compiling a universal binary of libsndfile requires access to both a
 i386 and PPC Mac. The reasons for this are described here:
@@ -155,6 +166,8 @@ http://www.mega-nerd.com/libsndfile/FAQ.html#Q018
 Because of this, libsndfile is included with the source as a precompiled
 universal binary. This UB contains ppc, i386 and x86_64 archs.
 
-## Outro
+
+Outro
+-----
 
 Thanks to James McCartney, for making this great piece of audio software publicly and freely available.

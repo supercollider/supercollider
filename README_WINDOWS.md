@@ -1,4 +1,5 @@
-# Supercollider 3.6 for Windows
+Supercollider 3.6 for Windows
+=============================
 
 This is the Windows version of James McCartney's SuperCollider synthesis
 engine (scsynth) and programming language (sclang).
@@ -13,7 +14,9 @@ To get further information on SuperCollider usage or development, you
 should subscribe to the mailing lists:
    http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
 
-## System Requirements
+
+System Requirements
+-------------------
 
 ### Operating System
 
@@ -21,6 +24,7 @@ should subscribe to the mailing lists:
  - Windows Vista
  - Windows XP
  - Windows 2000
+
 
 ### Sound card
 
@@ -30,7 +34,9 @@ issues with latency, consult http://www.portaudio.com/docs/latency.html
 for advice on how to tune your operating system to achieve the best results
 (in short: use ASIO drivers wherever possible).
 
-## Installation
+
+Installation
+------------
 
 Simply run the installer, and choose a path where all the application
 files will be unpacked.
@@ -43,14 +49,18 @@ NOTE: Location of extensions and configuration files has changed in 3.6.1.
 If you want to keep those from previous versions, please read the section
 about changed locations below.
 
-## Using the SuperCollider IDE
+
+Using the SuperCollider IDE
+---------------------------
 
 To start up the IDE, run the scide.exe program found within the
 installation folder.
 
 You can get more help on using the IDE via the Help menu.
 
-## Using SuperCollider in command line mode
+
+Using SuperCollider in command line mode
+----------------------------------------
 
 1. Open a Windows command line window (the cmd.exe program).
 
@@ -68,7 +78,9 @@ the up and down arrow keys.
 - `Ctrl+X`: to recompile the class library
 - `Ctrl+D`: to quit the SuperCollider command line
 
-## NOTE: Changed location of extensions and configuration files
+
+NOTE: Changed location of extensions and configuration files
+------------------------------------------------------------
 
 The location of application-related user data has moved in accordance
 with Windows policies. This means that from version 3.6.1 on, SuperCollider
@@ -86,6 +98,7 @@ please copy the contents of the old directory to the new one, given below:
 
 #### Windows XP:
   `C:\Documents and Settings\<USERNAME>\Local Settings\Application Data\SuperCollider`
+
 
 ### The old directories
 
@@ -109,6 +122,8 @@ please copy the contents of the old directory to the new one, given below:
 
 `C:\Documents and Settings\<USERNAME>\SuperCollider`
 
-## Outro
+
+Outro
+-----
 
 Thanks to James McCartney, for making this great piece of audio software publically and freely available.

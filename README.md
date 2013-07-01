@@ -1,4 +1,5 @@
-# Welcome to SuperCollider 3!
+Welcome to SuperCollider 3!
+===========================
 
 **SuperCollider** is an environment and programming language for real time audio
 synthesis and algorithmic composition. It provides an interpreted
@@ -10,14 +11,15 @@ many years. It is now an open source GPL'd project maintained and developed by
 James and various others. It is used by musicians, scientists, and artists
 working with sound.
 
-http://supercollider.githb.com
+http://supercollider.github.com
 
 This README is a first help for anyone new to SuperCollider. There are many
 good resources available for learning SuperCollider, with up to date links from
 the site listed above, including links to forums and mailing lists.
 
 
-## Usage
+Usage
+-----
 
 Since version 3.6 SuperCollider consists of three separate components:
 - sound synthesiser (audio server)
@@ -50,7 +52,8 @@ Also, please explore the IDE menus, which will let you discover a lot of
 functionality of the coding environment.
 
 
-## Building the Source Code
+Building the Source Code
+------------------------
 
 Platform specific build and install instructions can be found in the following files:
 
@@ -63,7 +66,8 @@ Platform specific build and install instructions can be found in the following f
 We hope you enjoy SuperCollider; please get involved in the active community!
 
 
-## License
+License
+-------
 
 SuperCollider is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
