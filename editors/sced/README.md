@@ -1,10 +1,13 @@
-# Sced
+Sced
+====
 
 This is Sced, a SuperCollider interaction plugin for gedit.
 
 Sced aims to simplify SuperCollider experience on Linux systems as far as possible.
 
-## Installation
+
+Installation
+------------
 
 To install sced via cmake, configure the build directory with
 ```bash
@@ -30,7 +33,9 @@ $> ln -sf /usr/local/lib/gedit/plugins/supercollider.plugin .
 $> ln -sf /usr/local/lib/gedit/plugins/supercollider.py .
 ```
 
-## OSX
+
+OSX
+---
 
 Sced works fine for gedit3 on OSX, if you follow these instructions:
 
@@ -62,7 +67,9 @@ $> chmod +x sclang
 $> chmod +x scsynth
 ```
 
-## Usage
+
+Usage
+-----
 
 To enable sced, open gedit's preferences and go to the Plugins tab and
 check the SuperCollider plugin checkbox. You only need to do this once.

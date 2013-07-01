@@ -1,11 +1,14 @@
-# Scvim
+Scvim
+=====
 
 Created by Alex Norman, it is in its early stages, use at your own risk
 This is SCVIM-git
 The webpage is here: http://www.x37v.info/projects/scvim
 If you have improvements/suggestions email `alex at x37v dot info`
 
-## Requirements
+
+Requirements
+------------
 
 - vim
 - supercollider (sclang)
@@ -16,7 +19,9 @@ If you have improvements/suggestions email `alex at x37v dot info`
 
 - gvim or MacVim
 
-## Installation steps
+
+Installation steps
+------------------
 
 Note: If you installed SuperCollider from source and didn't disable scvim when running cmake, scvim should already be installed.
 
@@ -37,7 +42,9 @@ $> cmake .. && sudo make install
 
 Now you should be ready to use scvim, e.g. by running `scvim` or `scvim -g` from a command prompt.
 
-## Optional extra installation steps
+
+Optional extra installation steps
+---------------------------------
 
 * If you want to be able to read supercollider files with syntax highlighting, 
 have the ability to start the language and have the keybindings you've set
@@ -68,7 +75,9 @@ set it to something else you can set the bash environment variable
 `strings, symbols and chars variations on the same color but all look
 different.  Feel free to use/modify it to your liking.
 
-## Usage
+
+Usage
+-----
 
 Defaults (most work in both command and insert mode):
 
@@ -92,7 +101,9 @@ on a word (this also has tab completion)
 
 These key bindings can all be changed through editing your scvimrc file.
 
-## Help docs
+
+Help docs
+---------
 
 `scvim` uses preprocessed versions of the help files (converted to plain-text),
 and to update these help files from the main files you can run the following
@@ -102,7 +113,9 @@ line in sclang:
   SCVim.updateHelpCache;
   ```
 
-## Troubleshooting
+
+Troubleshooting
+---------------
 
 If you cannot find the scvim executable, make sure that `/usr/local/bin` is
 in your PATH, this is where scvim is installed by default.
@@ -124,7 +137,9 @@ Instance of File { (B7837DD0, gc=40, fmt=00, flg=00, set=01)
 }
 ```
 
-## Thanks
+
+Thanks
+------
 
 - Dan Stowell for his help:
 Converting the SuperCollider code into a class, improving the README,

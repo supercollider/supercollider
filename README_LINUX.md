@@ -1,6 +1,8 @@
-# Supercollider 3 for linux
+Supercollider 3 for linux
+=========================
 
-## Intro
+Intro
+-----
 
 SuperCollider is a synthesis engine (scsynth) and programming language
 (sclang), originally Mac-based but now very widely used on Linux
@@ -14,7 +16,10 @@ might consider subscribing to the mailing lists
 
 http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
 
-## Build requirements
+
+Build requirements
+------------------
+
 (most of these will be available in your linux distribution as packages )
 
  * gcc >= 3.0
@@ -45,8 +50,10 @@ http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
    * http://www.X.org
    * X toolkit intrinsics
 
-## Build requirements (optional features)
-(most of these will be available in your linux distribution as packages )
+
+Build requirements (optional features)
+--------------------------------------
+(most of these will be available in your linux distribution as packages)
 
  * Qt >= 4.7 (+ qtwebkit)
    * http://qt-project.org
@@ -78,7 +85,9 @@ http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
 
  * for `scvim`: the **vim** interface see [editors/scvim/README.md](editors/scvim/README.md)
 
-## Build requirements (debian users)
+
+Build requirements (debian users)
+---------------------------------
 
 On debian (unstable) you can install the following packages and be set
 for building supercollider:
@@ -99,7 +108,9 @@ for building supercollider:
  - cmake
  - subversion (required by the Quarks class at run-time)
 
-## Building
+
+Building
+--------
 
  - to build supercollider with cmake, it is suggested to do out-of-tree
 builds in a specific build directory:
@@ -158,7 +169,9 @@ If you want to build without it configure cmake like this:
 $> cmake -DSC_QT=OFF ..
 ```
 
-## Building a Debian package
+
+Building a Debian package
+-------------------------
 
 The most up-to-date debian packaging rules are maintained by the
 Debian Multimedia team. Repository (with debian/ folder):
@@ -168,7 +181,9 @@ http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
 At time of writing they support 3.4.x, but we expect updates once 3.5
 is available.
 
-## Running scsynth (standalone)
+
+Running scsynth (standalone)
+----------------------------
 
 Run `scsynth` without options to get an option summary. Don't forget to
 start jackd before trying to use scsynth. If you want to add
@@ -189,7 +204,9 @@ or just
 
 when connecting to the default server.
 
-## Running sclang
+
+Running sclang
+--------------
 
 It is recommended to use sclang in combination with your preferred text
 editor out of emacs/vim/gedit. See the README files in `linux/*` for
@@ -208,7 +225,9 @@ to put Extensions to the class library, in a folder called Extensions.
 The runtime directory is either the current working directory or the
 path specified with the `-d` option.
 
-## Environment
+
+Environment
+-----------
 
 The jack audio driver interface is configured based on various
 environment variables:
@@ -247,7 +266,9 @@ names are separated by ':' as in the unix PATH variable:
    $> export SC_SYNTHDEF_PATH="./synthdefs:/home/sk/SuperCollider/synthdefs"
    ```
 
-## Documentation
+
+Documentation
+-------------
 
 Apart from the sites listed above, some more documentation links...
 
@@ -259,11 +280,15 @@ Apart from the sites listed above, some more documentation links...
 
     http://swiki.hfbk-hamburg.de/MusicTechnology/478
 
-## Reporting bugs
+
+Reporting bugs
+--------------
 
 Please report bugs either to the sc-users or sc-dev mailing lists.
 
-## Contributors to this document
+
+Contributors to this document
+-----------------------------
 
 - stefan kersten <sk AT k-hornz DOT de>
 - andi pieper
@@ -275,6 +300,8 @@ Please report bugs either to the sc-users or sc-dev mailing lists.
 - dan stowell
 - tim blechmann
 
-## Outro
+
+Outro
+-----
 
 Thanks to james mccartney, for making this great piece of audio software publically and freely available.

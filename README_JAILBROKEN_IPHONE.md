@@ -1,4 +1,6 @@
-# Installing SuperCollider in a Jailbroken iDevice
+Installing SuperCollider in a Jailbroken iDevice
+================================================
+
 January 2011
 
 1. Jailbreak your iDevice (both blackrain on iphone and redsn0w for iOS 4.1 on 2nd gen iPod Touch are reported to work)

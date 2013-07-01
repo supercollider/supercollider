@@ -1,12 +1,17 @@
-# Scel
+Scel
+====
 
 SuperCollider/Emacs interface
 
-## Installation requirements
+
+Installation requirements
+-------------------------
 
 For the HTML help system, you will need emacs-w3m support.
 
-## Installation (default)
+
+Installation (default)
+----------------------
 
 By default emacs-lisp files are installed in
 
@@ -27,7 +32,9 @@ For the HTML help system to fully function also add
 (require 'w3m)
 ```
 
-## Installation (detailed)
+
+Installation (detailed)
+-----------------------
 
 Put all `*.el` files in emacs' load-path. e.g. if you put them in
 `~/emacs/`, add the following lines to `~/.emacs` (or whatever your init
@@ -56,7 +63,8 @@ includePaths:
 path during installation with scons).
 
 
-## Usage
+Usage
+-----
 
 In order to automatically start sclang when invoking emacs, use the following command line:
 
@@ -66,7 +74,9 @@ $> emacs -sclang
 
 you're now ready to edit, inspect and execute sclang code!
 
-# Getting help
+
+Getting help
+------------
 
 Inside an sclang-mode buffer (e.g. by editing a .sc file), execute
 
@@ -97,7 +107,8 @@ in your `~/.emacs`:
 This ensures that the arrow keys are just for moving through the document, and not from hyperlink to hyperlink, which is the default in w3m-mode.
 
 
-## Customization
+Customization
+-------------
 
 To fine-tune the installation from within emacs' graphical customization interface, type:
 
@@ -105,7 +116,9 @@ To fine-tune the installation from within emacs' graphical customization interfa
 
 In particular, you will have to customize `sclang-runtime-directory'.
 
-## Server control
+
+Server control
+--------------
 
 In the post buffer window, right-click on the server name; by default the two servers `internal` and `localhost` are available. You will get a menu with common server control operations.
 
