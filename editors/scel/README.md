@@ -23,12 +23,12 @@ SuperCollider files are put in
 
 The only thing you need to do is loading the sclang interface in your `~/.emacs`:
 
-```lisp
+```
 (require 'sclang)
 ```
 
 For the HTML help system to fully function also add
-```lisp
+```
 (require 'w3m)
 ```
 
@@ -40,13 +40,13 @@ Put all `*.el` files in emacs' load-path. e.g. if you put them in
 `~/emacs/`, add the following lines to `~/.emacs` (or whatever your init
 file is called):
 
-```lisp
+```
 (add-to-list 'load-path "~/emacs")
 (require 'sclang)
 ```
 
 for the HTML help system to fully function also add
-```lisp
+```
 (require 'w3m)
 ```
 
@@ -54,7 +54,7 @@ now put all `*.sc` files in sclang's library path, e.g. if you put them
 in a non-standard location, such as `~/SuperCollider/Emacs`, add the
 following to `~/.config/SuperCollider/sclang.conf.yaml`:
 
-```yaml
+```
 includePaths:
     [~/SuperCollider/Emacs]
 ```
@@ -68,7 +68,7 @@ Usage
 
 In order to automatically start sclang when invoking emacs, use the following command line:
 
-```bash
+```
 $> emacs -sclang
 ```
 
@@ -95,7 +95,7 @@ and a window with key bindings in sclang-mode will pop up.
 To enable moving around in the help file with arrow keys add the following
 in your `~/.emacs`:
 
-```lisp
+```
 (eval-after-load "w3m"
  '(progn
  (define-key w3m-mode-map [left] 'backward-char)

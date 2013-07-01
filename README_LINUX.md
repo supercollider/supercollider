@@ -115,7 +115,7 @@ Building
  - to build supercollider with cmake, it is suggested to do out-of-tree
 builds in a specific build directory:
 
-   ```bash
+   ```
    $> mkdir build
    $> cd build
    $> cmake ..
@@ -123,7 +123,7 @@ builds in a specific build directory:
 
  - to run the build process run:
 
-   ```bash
+   ```
    $> make
    ```
 
@@ -134,13 +134,13 @@ builds in a specific build directory:
    For example to enable a release build run the following in your build
    directory:
 
-   ```bash
+   ```
    $> cmake -DCMAKE_BUILD_TYPE=Release ..
    ```
 
  - to install the whole program, run:
 
-   ```bash
+   ```
    $> make install
    ```
 
@@ -149,14 +149,14 @@ builds in a specific build directory:
 
    Also, please run
 
-   ```bash
+   ```
    $> sudo ldconfig
    ```
    after installing for the first time.
 
  - to uninstall:
 
-   ```bash
+   ```
    $> make uninstall
    ```
 
@@ -165,7 +165,7 @@ builds in a specific build directory:
 By default the experimental Qt GUI support will be built into sclang.
 If you want to build without it configure cmake like this:
 
-```bash
+```
 $> cmake -DSC_QT=OFF ..
 ```
 
@@ -234,25 +234,25 @@ environment variables:
 
  * SC_JACK_DEFAULT_INPUTS comma separated list of jack ports that scsynth's inputs should connect to by default
 
-   ```bash
+   ```
    $> export SC_JACK_DEFAULT_INPUTS="system:capture_1,system:capture_2"
    ```
 
    in order to connect the first ports of one jack client, it is possible to specify only the client name
 
-   ```bash
+   ```
    $> export SC_JACK_DEFAULT_INPUTS="system"
    ```
 
  * SC_JACK_DEFAULT_OUTPUTS comma separated list of jack ports that scsynth's outputs should be connected to by default.
 
-   ```bash
+   ```
    $> export SC_JACK_DEFAULT_OUTPUTS="system:playback_1,system:playback_2"
    ```
 
    In order to connect the first ports of one jack client, it is possible to specify only the client name
 
-   ```bash
+   ```
    $> export SC_JACK_DEFAULT_OUTPUTS="system"
    ```
 
@@ -262,7 +262,7 @@ names are separated by ':' as in the unix PATH variable:
 
  * SC_PLUGIN_PATH, SC_SYNTHDEF_PATH
 
-   ```bash
+   ```
    $> export SC_SYNTHDEF_PATH="./synthdefs:/home/sk/SuperCollider/synthdefs"
    ```
 

@@ -27,7 +27,7 @@ January 2011
 8. Get the App on the iDevice. You can either use Cyberduck or follow these directions: http://blog.paulbetts.org/index.php/2008/07/22/running-your-iphone-sdk-app-on-iphone-without-the-app-store
 
 9. Follow the instructions in the link above to code sign the app. That will be:
-	```bash
+	```
 	$> chmod 755 /Applications/SuperCollider.app
 	$> ldid -S /Applications/SuperCollider.app/SuperCollider
 	```
@@ -35,7 +35,7 @@ January 2011
 10. Logout of your device and close SSH
 
 11. Restart the springboard:
-	```bash
+	```
 	$> killall SpringBoard
 	```
 
