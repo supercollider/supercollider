@@ -36,7 +36,7 @@ To build SuperCollider with Cmake, it is recommended to create a "build"
 folder (to keep the built files neatly all together) in the root of the
 SuperCollider source, then run "cmake" from within that folder. Like this:
 
-```bash
+```
 $> cd ~/SuperCollider3
 $> mkdir build
 $> cd build
@@ -45,7 +45,7 @@ $> cmake ..
 
 Then to run the build process run:
 
-```bash
+```
 $> make install
 ```
 
@@ -61,7 +61,7 @@ frontends like "ccmake" or "cmake-gui", or by simply editing the
 For example, by default cmake will create a "release" build, but if you want a
 "debug" build (with optimisations turned off etc), configure cmake like this:
 
-```bash
+```
 $> cmake -DCMAKE_BUILD_TYPE=Debug ..
 ```
 
@@ -69,24 +69,24 @@ By default the SCClassLibrary is copied into place. There is a cmake option to c
 symlinks of the SCClassLibrary instead so that changes to code in the class library are reflected in git.
 To turn on the symlinking do:
 
-```bash
+```
 $> cmake -DSC_SYMLINK_CLASSLIB=ON ..
 ```
 
 For a 32bit build on a 64bit machine (i.e. recent Mac systems), you need to
 configure cmake like this:
 
-```bash
+```
 $> cmake -DCMAKE_OSX_ARCHITECTURES='i386' ..
 ```
 
 For the BIG universal binary (on 10.6), use:
 
-```bash
+```
 $> cmake -DCMAKE_OSX_ARCHITECTURES='i386;x86_64' ..
 ```
 
-```bash
+```
 $> cmake -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/ -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -GXcode
 ```
 
@@ -115,7 +115,7 @@ Or add the following flags for isysroot:
 
 Finally - a cmake command that builds on 10.8 currently:
 
-```bash
+```
 $> cmake -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/ -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 -DCMAKE_CXX_FLAGS="-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/"  -DCMAKE_C_FLAGS="-isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/" -DCMAKE_BUILD_TYPE="Release"  ..
 ```
 
@@ -127,7 +127,7 @@ By default the new Qt GUI support will be built into sclang and
 SuperCollider application. If you want to build without it, configure
 cmake like this:
 
-```bash
+```
 $> cmake -DSC_QT=OFF ..
 ```
 
@@ -138,7 +138,7 @@ Standalones
 To create a "standalone" app using cmake, you need to use the "standalone" flag.
 For example, to create a standalone whose name is MyFabApp:
 
-```bash
+```
 $> cmake -D standalone="MyFabApp" ..
 ```
 
@@ -150,7 +150,7 @@ any special resources you might have created in the folder
 If you've built a standalone and want to go back to normal build mode, just
 set that value as an empty string:
 
-```bash
+```
 $> cmake -D standalone="" ..
 ```
 

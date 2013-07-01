@@ -27,7 +27,7 @@ Note: If you installed SuperCollider from source and didn't disable scvim when r
 
 If you'd like to install scvim directly, without using the whole SuperCollider install process you can do:
 
-```bash
+```
 $> cmake . && sudo make install
 ```
 
@@ -35,7 +35,7 @@ You will have to enter your password in order to finalize the installation.
 
 Some people prefer to use a build directory [though scvim doesn't actually build anything, but cmake does create some output files] to do that, from the scvim directory, type:
 
-```bash
+```
 $> mkdir build && cd build
 $> cmake .. && sudo make install
 ```
@@ -58,7 +58,7 @@ For example, if you have a `~/.scvimrc` file you could put this line in your `~/
 * I put this in my `~/.config/SuperCollider/startup.scd` so that each time I start sclang I have updated
 Object completion and highlighting, as well as Object Definition Lookup:
 
-  ```javascript
+  ```
   //set up the scvim stuff
   SCVim.updateCaches;
   ```
@@ -109,7 +109,7 @@ Help docs
 and to update these help files from the main files you can run the following
 line in sclang:
 
-  ```javascript
+  ```
   SCVim.updateHelpCache;
   ```
 

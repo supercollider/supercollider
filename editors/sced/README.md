@@ -10,7 +10,7 @@ Installation
 ------------
 
 To install sced via cmake, configure the build directory with
-```bash
+```
 $> cmake -DSC_ED=ON
 ```
 
@@ -18,7 +18,7 @@ This will install sced for the most recent version of gedit available on your pl
 
 If you specifically want to install sced for gedit version 2 instead of 3,
 configure the build directory with
-```bash
+```
 $> cmake -DSC_ED=2
 ```
 
@@ -26,7 +26,7 @@ When installing into `/usr/local` (which is the default), gedit won't find
 the plugin since it only looks in `/usr`. To fix this, simply symlink
 the plugin-files to `~/.local/share/gedit/plugins`:
 
-```bash
+```
 $> mkdir -p ~/.local/share/gedit/plugins
 $> cd ~/.local/share/gedit/plugins
 $> ln -sf /usr/local/lib/gedit/plugins/supercollider.plugin .
@@ -46,7 +46,7 @@ Place wrapper-scripts for sclang and scsynth into `/usr/local/bin`.
 
  - for sclang:
 
-```sh
+```
 #!/bin/sh
 cd /full/path/to/SuperCollider.app/Contents/Resources
 exec ./sclang $*
@@ -54,7 +54,7 @@ exec ./sclang $*
 
  - for scsynth:
 
-```sh
+```
 #!/bin/sh
 cd /full/path/to/SuperCollider.app/Contents/Resources
 exec ./scsynth $*
@@ -62,7 +62,7 @@ exec ./scsynth $*
 
 You need to make the scripts executable:
 
-```bash
+```
 $> chmod +x sclang
 $> chmod +x scsynth
 ```
