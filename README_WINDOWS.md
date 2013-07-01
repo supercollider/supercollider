@@ -3,15 +3,15 @@
 This is the Windows version of James McCartney's SuperCollider synthesis
 engine (scsynth) and programming language (sclang).
 Supercollider's main homepage is at
-   [http://supercollider.github.com](http://supercollider.github.com)
+   http://supercollider.github.com
 
 There is a lot of useful information and tutorials in the SuperCollider
 documentation which you can access online at
-    [http://doc.sccode.org](http://doc.sccode.org)
+    http://doc.sccode.org
 
 To get further information on SuperCollider usage or development, you
 should subscribe to the mailing lists:
-   [http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml](http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml)
+   http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
 
 ## System Requirements
 
@@ -25,8 +25,8 @@ should subscribe to the mailing lists:
 ### Sound card
 
 Most common sound cards will work fine - the sound card should be one
-that is supported by PortAudio ([http://www.portaudio.com](http://www.portaudio.com)). If you have
-issues with latency, consult [http://www.portaudio.com/docs/latency.html](http://www.portaudio.com/docs/latency.html)
+that is supported by PortAudio (http://www.portaudio.com). If you have
+issues with latency, consult http://www.portaudio.com/docs/latency.html
 for advice on how to tune your operating system to achieve the best results
 (in short: use ASIO drivers wherever possible).
 

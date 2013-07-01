@@ -5,12 +5,12 @@ synthesis and algorithmic composition. It provides an interpreted
 object-oriented language which functions as a network client to a state of the
 art, realtime sound synthesis server.
 
-SuperCollider was written by James McCartney ([audiosynth.com](http://audiosynth.com)) over a period of
+SuperCollider was written by James McCartney (http://audiosynth.com) over a period of
 many years. It is now an open source GPL'd project maintained and developed by
 James and various others. It is used by musicians, scientists, and artists
 working with sound.
 
-[http://supercollider.githb.io](http://supercollider.githb.io)
+http://supercollider.githb.com
 
 This README is a first help for anyone new to SuperCollider. There are many
 good resources available for learning SuperCollider, with up to date links from

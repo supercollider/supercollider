@@ -7,69 +7,69 @@ SuperCollider is a synthesis engine (scsynth) and programming language
 (since Stefan Kersten ported the code in 2003). SuperCollider is free
 software under the GPL - its main homepage is at
 
-[http://supercollider.github.com](http://supercollider.github.com)
+http://supercollider.github.com
 
 To get further information on supercollider usage or development, you
 might consider subscribing to the mailing lists
 
-[http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml](http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml)
+http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
 
 ## Build requirements
 (most of these will be available in your linux distribution as packages )
 
  * gcc >= 3.0
-   * [http://www.gnu.org/software/gcc](http://www.gnu.org/software/gcc)
+   * http://www.gnu.org/software/gcc
    * gcc versions < 3.0 are missing some required c++ features
 
  * jack and libjack
-   * [http://jackit.sourceforge.net](http://jackit.sourceforge.net)
+   * http://jackit.sourceforge.net
    * jack audio connection kit
 
  * libsndfile >= 1.0
-   * [http://www.mega-nerd.com/libsndfile](http://www.mega-nerd.com/libsndfile)
+   * http://www.mega-nerd.com/libsndfile
    * _the_ soundfile i/o library
 
  * pkg-config >= 0.14.0
-   * [http://www.freedesktop.org/software/pkgconfig](http://www.freedesktop.org/software/pkgconfig)
+   * http://www.freedesktop.org/software/pkgconfig
    * facilitates checking for installed packages when compiling from source
 
  * cmake >= 2.8
-   * [http://www.cmake.org](http://www.cmake.org)
+   * http://www.cmake.org
    * cross-platform build system
 
  * fftw >= 3.0
-   * [http://www.fftw.org](http://www.fftw.org)
+   * http://www.fftw.org
    * fast FFT transform library (for frequency-domain analysis, phase-vocoder effects)
 
  * libxt
-   * [http://www.X.org](http://www.X.org)
+   * http://www.X.org
    * X toolkit intrinsics
 
 ## Build requirements (optional features)
 (most of these will be available in your linux distribution as packages )
 
  * Qt >= 4.7 (+ qtwebkit)
-   * [http://qt-project.org](http://qt-project.org)
+   * http://qt-project.org
    * cross-platform graphical user interface library, for Qt IDE and sclang's Qt GUI kit
 
  * alsa
-   * [http://www.alsa-project.org](http://www.alsa-project.org)
+   * http://www.alsa-project.org
    * advanced linux sound architecture drivers and library, for sclang's MIDI interface
 
  * libreadline >= 5
-   * [http://savannah.gnu.org/projects/readline](http://savannah.gnu.org/projects/readline)
+   * http://savannah.gnu.org/projects/readline
    * provides convenient CLI interface for sclang
 
  * libavahi-client
-   * [http://www.avahi.org](http://www.avahi.org)
+   * http://www.avahi.org
    * a more powerful zeroconf service discovery implementation
 
  * libcwiid
-   * [http://abstrakraft.org/cwiid](http://abstrakraft.org/cwiid)
+   * http://abstrakraft.org/cwiid
    * library for wiimote support
 
  * linux kernel >= 2.6
-   * [http://www.kernel.org](http://www.kernel.org)
+   * http://www.kernel.org
    * for sclang's linux input device (LID) interface
 
  * for `scel`: the **emacs** interface see [editors/scel/README.md](editors/scel/README.md)
@@ -163,7 +163,7 @@ $> cmake -DSC_QT=OFF ..
 The most up-to-date debian packaging rules are maintained by the
 Debian Multimedia team. Repository (with debian/ folder):
 
-[http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary](http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary)
+http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
 
 At time of writing they support 3.4.x, but we expect updates once 3.5
 is available.
@@ -253,11 +253,11 @@ Apart from the sites listed above, some more documentation links...
 
  - a wiki for supercollider, set up by julian rohrhuber, is at
 
-    [http://swiki.hfbk-hamburg.de/MusicTechnology/6](http://swiki.hfbk-hamburg.de/MusicTechnology/6)
+    http://swiki.hfbk-hamburg.de/MusicTechnology/6
 
  - linux specific information can be found at
 
-    [http://swiki.hfbk-hamburg.de/MusicTechnology/478](http://swiki.hfbk-hamburg.de/MusicTechnology/478)
+    http://swiki.hfbk-hamburg.de/MusicTechnology/478
 
 ## Reporting bugs
 

@@ -4,7 +4,7 @@ This is the Mac OS X version of James McCartney's SuperCollider
 synthesis engine (scsynth) and programming language (sclang).
 Supercollider's main homepage is at:
 
-[http://supercollider.github.com](http://supercollider.github.com)
+http://supercollider.github.com
 
 The help files contain a lot of useful information and tutorials for getting
 started - see the file "Help.html" for a starting point.
@@ -12,8 +12,7 @@ started - see the file "Help.html" for a starting point.
 To get further information on SuperCollider usage or development, you
 should subscribe to the mailing lists:
 
- [http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml](http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml)
-
+http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
 
 ## Special characters on mac:
 
@@ -27,7 +26,7 @@ Requirements:
  * Mac OS X 10.4.9 or greater
  * Cmake 2.7 or greater
  * Xcode Tools 2.4.1 or greater
- * Qt libraries 4.7 or greater: [http://qt-project.org/downloads](http://qt-project.org/downloads)
+ * Qt libraries 4.7 or greater: http://qt-project.org/downloads
 
 To build SuperCollider with Cmake, it is recommended to create a "build"
 folder (to keep the built files neatly all together) in the root of the
@@ -151,7 +150,7 @@ $> cmake -D standalone="" ..
 Compiling a universal binary of libsndfile requires access to both a
 i386 and PPC Mac. The reasons for this are described here:
 
-[http://www.mega-nerd.com/libsndfile/FAQ.html#Q018](http://www.mega-nerd.com/libsndfile/FAQ.html#Q018)
+http://www.mega-nerd.com/libsndfile/FAQ.html#Q018
 
 Because of this, libsndfile is included with the source as a precompiled
 universal binary. This UB contains ppc, i386 and x86_64 archs.
