@@ -133,16 +133,16 @@ public:
 
 class SC_TcpConnectionPort : public SC_ComPort
 {
-        SC_TcpInPort *mParent;
+	SC_TcpInPort *mParent;
 
 protected:
 	virtual ReplyFunc GetReplyFunc();
 
 public:
 	SC_TcpConnectionPort(SC_TcpInPort *inParent, int inSocket);
-        virtual ~SC_TcpConnectionPort();
+	virtual ~SC_TcpConnectionPort();
 
-        virtual void* Run();
+	virtual void* Run();
 };
 
 
