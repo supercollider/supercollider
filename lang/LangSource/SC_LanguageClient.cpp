@@ -142,7 +142,9 @@ extern thread gResyncThread;
 void SC_LanguageClient::shutdownRuntime()
 {
 	cleanup_OSC();
+#if __APPLE__
 	gResyncThread.detach(); // leak!
+#endif
 }
 
 void SC_LanguageClient::compileLibrary()
