@@ -309,7 +309,7 @@ SC_UdpCustomInPort::~SC_UdpCustomInPort()
 {
 	mRunning.store(false);
 	closeSocket();
-	mThread.join();
+	mThread.detach();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -391,7 +391,7 @@ void SC_UdpInPort::terminate()
 {
 	mRunning = false;
 	closeSocket();
-	mThread.join();
+	mThread.detach();
 }
 
 ReplyFunc SC_UdpCustomInPort::GetReplyFunc()
