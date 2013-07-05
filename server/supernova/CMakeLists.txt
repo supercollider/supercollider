@@ -154,9 +154,9 @@ endif()
 target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES})
 
 if (Boost_FOUND)
-    target_link_libraries(libsupernova   ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
+    target_link_libraries(libsupernova ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
 else()
-    target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options)
+    target_link_libraries(libsupernova boost_thread boost_system boost_filesystem boost_program_options)
 endif()
 
 target_link_libraries(supernova libsupernova)
