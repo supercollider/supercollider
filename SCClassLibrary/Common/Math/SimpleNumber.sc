@@ -313,6 +313,13 @@ SimpleNumber : Number {
 			this.explin(inMin, inCenter, outMin, outCenter, \none);
 		}
 	}
+
+	moddif { arg aNumber = 0.0, mod = 1.0;
+		var diff = absdif(this, aNumber) % mod;
+		var modhalf = mod * 0.5;
+		^modhalf - absdif(diff, modhalf)
+	}
+
 	lcurve { arg a = 1.0, m = 0.0, n = 1.0, tau = 1.0;
 		var rTau, x = this.neg;
 		^if(tau == 1.0) {

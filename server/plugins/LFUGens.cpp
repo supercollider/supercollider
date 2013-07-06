@@ -133,6 +133,11 @@ struct Unwrap : public Unit
 	float m_range, m_half, m_offset, m_prev;
 };
 
+struct ModDif : public Unit
+{
+	float m_dif, m_mod;
+};
+
 struct AmpComp : public Unit
 {
 	float m_rootmul, m_exponent;
@@ -273,6 +278,12 @@ extern "C"
 
 	void Unwrap_next(Unwrap* unit, int inNumSamples);
 	void Unwrap_Ctor(Unwrap* unit);
+
+	void ModDif_next_kk(ModDif *unit, int inNumSamples);
+	void ModDif_next_ak(ModDif *unit, int inNumSamples);
+	void ModDif_next_ka(ModDif *unit, int inNumSamples);
+	void ModDif_next_aa(ModDif *unit, int inNumSamples);
+	void ModDif_Ctor(ModDif* unit);
 
 	void AmpComp_next(AmpComp *unit, int inNumSamples);
 	void AmpComp_Ctor(AmpComp* unit);
@@ -2203,6 +2214,112 @@ void Unwrap_Ctor(Unwrap* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+void ModDif_next_kk(ModDif* unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float next_dif = ZIN0(1);
+	float next_mod = ZIN0(2);
+	float dif = unit->m_dif;
+	float dif_slope = CALCSLOPE(next_dif, dif);
+	float mod = unit->m_mod;
+	float mod_slope = CALCSLOPE(next_mod, mod);
+
+	LOOP1(inNumSamples,
+		float inval = ZXP(in);
+		float diff = std::fmod(std::abs(inval - dif), mod);
+		float modhalf = mod * 0.5;
+		ZXP(out) = modhalf - std::fabs(diff - modhalf);
+		dif += dif_slope;
+		mod += mod_slope;
+		);
+	unit->m_dif = dif;
+	unit->m_mod = mod;
+}
+
+void ModDif_next_ka(ModDif* unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float next_dif = ZIN0(1);
+	float *mod = ZIN(2);
+	float dif = unit->m_dif;
+	float dif_slope = CALCSLOPE(next_dif, dif);
+
+	LOOP1(inNumSamples,
+		float inval = ZXP(in);
+		float curmod = ZXP(mod);
+		float diff = std::fmod(std::abs(inval - dif), curmod);
+		float modhalf = curmod * 0.5;
+		ZXP(out) = modhalf - std::abs(diff - modhalf);
+		dif += dif_slope;
+	);
+	unit->m_dif = dif;
+}
+
+void ModDif_next_ak(ModDif* unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float *dif = ZIN(1);
+	float next_mod = ZIN0(2);
+	float mod = unit->m_mod;
+	float mod_slope = CALCSLOPE(next_mod, mod);
+
+	LOOP1(inNumSamples,
+		float inval = ZXP(in);
+		float diff = std::fmod(std::abs(inval - ZXP(dif)), mod);
+		float modhalf = mod * 0.5;
+		ZXP(out) = modhalf - std::abs(diff - modhalf);
+		mod += mod_slope;
+	);
+	unit->m_mod = mod;
+}
+
+void ModDif_next_aa(ModDif* unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float *dif = ZIN(1);
+	float *mod = ZIN(2);
+
+	LOOP1(inNumSamples,
+		float inval = ZXP(in);
+		float curmod = ZXP(mod);
+		float diff = std::fmod(std::abs(inval - ZXP(dif)), curmod);
+		float modhalf = curmod * 0.5;
+		ZXP(out) = modhalf - std::abs(diff - modhalf);
+	);
+}
+
+void ModDif_Ctor(ModDif* unit)
+{
+	if(BUFLENGTH == 1) {
+		// _aa? Well, yes - that calc func doesn't interpolate
+		// and interpolation is not needed for kr (1 sample/block)
+		SETCALC(ModDif_next_aa);
+	} else {
+		if(INRATE(1) == calc_FullRate) {
+			if(INRATE(2) == calc_FullRate)
+				SETCALC(ModDif_next_aa);
+			else
+				SETCALC(ModDif_next_ak);
+		} else {
+			if(INRATE(2) == calc_FullRate)
+				SETCALC(ModDif_next_ka);
+			else
+				SETCALC(ModDif_next_kk);
+		}
+	}
+
+	unit->m_dif = ZIN0(1);
+	unit->m_mod = ZIN0(2);
+
+	ModDif_next_kk(unit, 1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 void AmpComp_next(AmpComp *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -4027,6 +4144,7 @@ PluginLoad(LF)
 	DefineSimpleUnit(Fold);
 	DefineSimpleUnit(Clip);
 	DefineSimpleUnit(Unwrap);
+	DefineSimpleUnit(ModDif);
 	DefineSimpleUnit(AmpComp);
 	DefineSimpleUnit(AmpCompA);
 	DefineSimpleUnit(InRange);

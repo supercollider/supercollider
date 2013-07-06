@@ -4,16 +4,29 @@ categories:: UGens>Multichannel>Select
 related:: Classes/Select, Classes/SelectX, Classes/LinSelectX
 
 description::
-The output is mixed from an array of inputs, linearly interpolating from a number of adjacent channels.
-
-A focus argument allows to control how many adjacent sources are mixed. (by adc)
+The output is mixed from an array of inputs, linearly interpolating from a number of adjacent channels. A focus argument allows to control how many adjacent sources are mixed.
 
 classmethods::
 method:: ar, kr
 
 argument:: which
+Index of the selected input, which is also the center of the selection for a focus < 1.
 argument:: array
+A collection of inputs.
 argument:: focus
+The "fuzziness" of the selection: the larger the focus, the more adjacent inputs are mixed in.
+argument:: wrap
+If set to true, index will wrap around the array of inputs (see also: link::Classes/Array#-wrapAt::).
+
+code::
+(
+{
+	var array = { Saw.ar(rrand(1.0, 3.0)) * Saw.ar(rrand(100.0, 3000.0)) } ! 8;
+	SelectXFocus.ar(MouseX.kr(-20, 20), array, 0.3, true) * 0.1
+}.play
+)
+::
+
 
 examples::
 code::

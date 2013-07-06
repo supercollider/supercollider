@@ -246,6 +246,18 @@ Clip : InRange {}
 Wrap : InRange {}
 Schmidt : InRange {}
 
+ModDif : UGen {
+	*ar { arg x = 0.0, y = 0.0, mod = 1.0;
+		^this.multiNew('audio', x, y, mod)
+	}
+	*kr { arg x = 0.0, y = 0.0, mod = 1.0;
+		^this.multiNew('control', x, y, mod)
+	}
+	*ir { arg x = 0.0, y = 0.0, mod = 1.0;
+		^this.multiNew('scalar', x, y, mod)
+	}
+}
+
 MostChange : UGen
 {
 	*ar { arg a = 0.0, b = 0.0;

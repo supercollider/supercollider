@@ -255,6 +255,10 @@ UGen : AbstractFunction {
 		)
 	}
 
+	moddif { |that = 0.0, mod = 1.0|
+		^ModDif.multiNew(this.rate, this, that, mod)
+	}
+
 	signalRange { ^\bipolar }
 	@ { arg y; ^Point.new(this, y) } // dynamic geometry support
 
