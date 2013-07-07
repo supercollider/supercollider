@@ -224,9 +224,8 @@ UGen : AbstractFunction {
 		grow = exp(curve);
 		a = outMax - outMin / (1.0 - grow);
 		b = outMin + a;
-		scaled = (this.prune(inMin, inMax, clip) - inMin) / (inMax - inMin);
 
-		^log((b - scaled) / a) / curve
+		^(log( (b - this.prune(inMin, inMax, clip)) / a ) * (inMax - inMin) / curve + inMin)
 	}
 
 	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
