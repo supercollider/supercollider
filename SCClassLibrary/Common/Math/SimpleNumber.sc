@@ -268,9 +268,8 @@ SimpleNumber : Number {
 		grow = exp(curve);
 		a = outMax - outMin / (1.0 - grow);
 		b = outMin + a;
-		scaled = (this - inMin) / (inMax - inMin);
 
-		^log((b - scaled) / a) / curve
+		^(log( (b - this)) / a ) * (inMax - inMin) / curve + inMin
 	}
 
 	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
