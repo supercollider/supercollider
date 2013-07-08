@@ -32,16 +32,6 @@
 #include <new>
 #include <vector>
 
-#ifdef SC_WIN32
-# include <winsock2.h>
-typedef int socklen_t;
-# define bzero( ptr, count ) memset( ptr, 0, count )
-#else
-# include <sys/socket.h>
-# include <netinet/tcp.h>
-# include <netdb.h>
-#endif
-
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
 #include "SCBase.h"
@@ -51,12 +41,6 @@ typedef int socklen_t;
 #include "SC_Endian.h"
 
 #include <SC_Lock.h>
-
-#ifndef SC_DARWIN
-# ifndef SC_WIN32
-#  include <unistd.h>
-# endif
-#endif
 
 #include "../../../common/server_shm.hpp"
 
@@ -505,33 +489,34 @@ int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
 	return netAddrSend(netAddrObj, msglen, bufptr, false);
 }
 
-int prNetAddr_GetBroadcastFlag(VMGlobals *g, int numArgsPushed);
-int prNetAddr_GetBroadcastFlag(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_GetBroadcastFlag(VMGlobals *g, int numArgsPushed)
 {
-	if (gUDPport == 0) return errFailed;
-	int opt;
-	socklen_t optlen = sizeof(opt);
-#ifdef SC_WIN32
-	if (getsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, (char *)&opt, &optlen) == -1)
-#else
-	if (getsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, &opt, &optlen) == -1)
-#endif
-	return errFailed;
-	SetBool(g->sp, opt);
+	if (gUDPport == 0)
+		return errFailed;
+
+	boost::system::error_code ec;
+	boost::asio::socket_base::broadcast option;
+	gUDPport->udpSocket.get_option(option, ec);
+
+	if (ec)
+		return errFailed;
+
+	SetBool(g->sp, option.value());
 	return errNone;
 }
 
-int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed);
-int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed)
 {
-	if (gUDPport == 0) return errFailed;
-	int opt = IsTrue(g->sp);
-#ifdef SC_WIN32
-	if (setsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, (char *)&opt, sizeof(opt)) == -1)
-#else
-	if (setsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, &opt, sizeof(opt)) == -1)
-#endif
+	if (gUDPport == 0)
 		return errFailed;
+
+	boost::system::error_code ec;
+	boost::asio::socket_base::broadcast option(IsTrue(g->sp));
+	gUDPport->udpSocket.set_option(option, ec);
+
+	if (ec)
+		return errFailed;
+
 	return errNone;
 }
 

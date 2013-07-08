@@ -24,15 +24,6 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 
-#ifdef _WIN32
-# include <winsock2.h>
-typedef int socklen_t;
-# define bzero( ptr, count ) memset( ptr, 0, count )
-#else
-#include <sys/types.h>
-#include <sys/socket.h>
-#endif
-
 #include "SC_Msg.h"
 #include "boost/atomic.hpp"
 #include "nova-tt/semaphore.hpp"
@@ -85,7 +76,6 @@ class SC_UdpInPort
 	boost::array<char, kTextBufSize> recvBuffer;
 
 	boost::asio::ip::udp::endpoint remoteEndpoint;
-	boost::asio::ip::udp::socket udpSocket;
 
 	void handleReceivedUDP(const boost::system::error_code& error,
 						   std::size_t bytes_transferred);
@@ -93,6 +83,8 @@ class SC_UdpInPort
 	void startReceiveUDP();
 
 public:
+	boost::asio::ip::udp::socket udpSocket;
+
 	int RealPortNum() const { return mPortNum; }
 	int Socket() { return udpSocket.native_handle(); }
 
