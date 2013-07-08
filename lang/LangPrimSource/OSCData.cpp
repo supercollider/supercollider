@@ -24,8 +24,6 @@
 #include "PyrSched.h"
 #include "PyrSymbol.h"
 #include "GC.h"
-//#include "PyrOMS.h"
-//#include "MidiQ.h"
 #include <string.h>
 #include <math.h>
 #include <stdexcept>
@@ -65,7 +63,6 @@ SC_UdpInPort* gUDPport = 0;
 PyrString* newPyrString(VMGlobals *g, char *s, int flags, bool collect);
 
 PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr;
-const char* gPassword;
 extern bool compiledOK;
 
 std::vector<SC_UdpCustomInPort *> gCustomUdpPorts;
