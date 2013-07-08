@@ -145,24 +145,32 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class SC_TcpClientPort : public SC_ComPort
+
+class SC_TcpClientPort
 {
 public:
 	typedef void (*ClientNotifyFunc)(void* clientData);
 
 public:
-	SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc=0, void* clientData=0);
-	virtual ~SC_TcpClientPort();
-
-	virtual void* Run();
+	SC_TcpClientPort(long inAddress, int inPort, ClientNotifyFunc notifyFunc=0, void* clientData=0);
 	void Close();
 
-protected:
-	virtual ReplyFunc GetReplyFunc();
+	int Socket() { return socket.native_handle(); }
 
 private:
-	struct sockaddr_in	mReplySockAddr;
-	int					mCmdFifo[2];
+	int32 OSCMsgLength;
+	char * data;
+
+	void startReceive();
+	void handleLengthReceived(const boost::system::error_code& error,
+							  size_t bytes_transferred);
+
+	void handleMsgReceived(const boost::system::error_code& error,
+						   size_t bytes_transferred);
+
+	boost::asio::ip::tcp::socket socket;
+	boost::asio::ip::tcp::endpoint endpoint;
+
 	ClientNotifyFunc	mClientNotifyFunc;
 	void*				mClientData;
 };
