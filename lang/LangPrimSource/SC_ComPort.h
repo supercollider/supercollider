@@ -111,36 +111,43 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class SC_TcpInPort : public SC_ComPort
+class SC_TcpConnection
 {
-	nova::semaphore mConnectionAvailable;
-	int mBacklog;
-
-protected:
-	virtual ReplyFunc GetReplyFunc();
-
 public:
-	SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog);
+	typedef boost::shared_ptr<SC_TcpConnection> pointer;
+	boost::asio::ip::tcp::socket socket;
 
-	virtual void* Run();
+	SC_TcpConnection(boost::asio::io_service & ioService,
+					 class SC_TcpInPort * parent):
+		socket(ioService), mParent(parent)
+	{}
 
-	void ConnectionTerminated();
+	void start();
+
+private:
+	int32 OSCMsgLength;
+	char * data;
+	class SC_TcpInPort * mParent;
+
+	void handleLengthReceived(const boost::system::error_code& error,
+							  size_t bytes_transferred);
+
+	void handleMsgReceived(const boost::system::error_code& error,
+						   size_t bytes_transferred);
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class SC_TcpConnectionPort : public SC_ComPort
+class SC_TcpInPort
 {
-	SC_TcpInPort *mParent;
-
-protected:
-	virtual ReplyFunc GetReplyFunc();
+	boost::asio::ip::tcp::acceptor acceptor;
 
 public:
-	SC_TcpConnectionPort(SC_TcpInPort *inParent, int inSocket);
-	virtual ~SC_TcpConnectionPort();
+	const int mPortNum;
 
-	virtual void* Run();
+	SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog);
+
+	void startAccept();
+	void handleAccept(SC_TcpConnection::pointer new_connection,
+					  const boost::system::error_code& error);
 };
 
 
