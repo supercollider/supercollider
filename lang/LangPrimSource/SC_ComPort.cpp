@@ -285,6 +285,11 @@ void udp_reply_func(struct ReplyAddress *addr, char* msg, int size)
 	if (total < size) DumpReplyAddress(addr);
 }
 
+void tcp_reply_func(struct ReplyAddress *addr, char* msg, int size)
+{
+	sendall(addr->mSocket, msg, size);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_UdpInPort::SC_UdpInPort(int inPortNum, int portsToCheck):
@@ -364,119 +369,77 @@ SC_UdpCustomInPort::~SC_UdpCustomInPort()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_TcpInPort::SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog)
-	: SC_ComPort(inPortNum), mConnectionAvailable(inMaxConnections),
-	  mBacklog(inBacklog)
+SC_TcpInPort::SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog):
+	acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), inPortNum)),
+	mPortNum(inPortNum)
 {
+	// FIXME: handle max connections
+	// FIXME: backlog???
 
-	if((mSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-		throw std::runtime_error("failed to create tcp socket\n");
+	startAccept();
+}
+
+void SC_TcpInPort::startAccept()
+{
+	SC_TcpConnection::pointer newConnection (new SC_TcpConnection(ioService, this));
+
+	acceptor.async_accept(newConnection->socket,
+						  boost::bind(&SC_TcpInPort::handleAccept, this, newConnection,
+									  boost::asio::placeholders::error));
+}
+
+void SC_TcpInPort::handleAccept(SC_TcpConnection::pointer newConnection, const boost::system::error_code &error)
+{
+	if (!error)
+		newConnection->start();
+	startAccept();
+}
+
+void SC_TcpConnection::start()
+{
+	namespace ba = boost::asio;
+	socket.async_read_some(ba::buffer(&OSCMsgLength, sizeof(OSCMsgLength)),
+						   boost::bind(&SC_TcpConnection::handleLengthReceived, this,
+									ba::placeholders::error,
+									ba::placeholders::bytes_transferred));
+}
+
+void SC_TcpConnection::handleLengthReceived(const boost::system::error_code &error, size_t bytes_transferred)
+{
+	if (error)
+		return;
+
+	namespace ba = boost::asio;
+	// msglen is in network byte order
+	OSCMsgLength = sc_ntohl(OSCMsgLength);
+
+	data = (char*)malloc(OSCMsgLength);
+
+	socket.async_read_some(ba::buffer(data, OSCMsgLength),
+						   boost::bind(&SC_TcpConnection::handleMsgReceived, this,
+									   ba::placeholders::error,
+									   ba::placeholders::bytes_transferred));
+}
+
+void SC_TcpConnection::handleMsgReceived(const boost::system::error_code &error, size_t bytes_transferred)
+{
+	if (error) {
+		free(data);
+		return;
 	}
-	//setsockopt(mSocket, SOL_SOCKET, TCP_NODELAY);
 
-	bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
-	mBindSockAddr.sin_family = AF_INET;
-	mBindSockAddr.sin_addr.s_addr = sc_htonl(INADDR_ANY);
-	mBindSockAddr.sin_port = sc_htons(mPortNum);
+	assert(bytes_transferred == OSCMsgLength);
 
-	if(bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) < 0)
-	{
-		throw std::runtime_error("unable to bind tcp socket\n");
-	}
-	if(listen(mSocket, mBacklog) < 0)
-	{
-		throw std::runtime_error("unable to listen tcp socket\n");
-	}
+	OSC_Packet * packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 
-	Start();
-}
+	packet->mReplyAddr.mReplyFunc = tcp_reply_func;
+	packet->mSize = OSCMsgLength;
+	packet->mData = data;
+	packet->mReplyAddr.mSocket    = socket.native_handle();
 
-void* SC_TcpInPort::Run()
-{
-	while (true)
-	{
-		mConnectionAvailable.wait();
-		struct sockaddr_in address; /* Internet socket address stuct */
-		int addressSize=sizeof(struct sockaddr_in);
-		int socket = accept(mSocket,(struct sockaddr*)&address,(socklen_t*)&addressSize);
-		if (socket < 0) {
-			mConnectionAvailable.post();
-		} else {
-			new SC_TcpConnectionPort(this, socket);
-		}
-	}
-	return 0;
-}
+	ProcessOSCPacket(packet, mParent->mPortNum);
 
-void SC_TcpInPort::ConnectionTerminated()
-{
-	mConnectionAvailable.post();
-}
-
-ReplyFunc SC_TcpInPort::GetReplyFunc()
-{
-	return null_reply_func;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-SC_TcpConnectionPort::SC_TcpConnectionPort(SC_TcpInPort *inParent, int inSocket)
-	: SC_ComPort(0), mParent(inParent)
-{
-	mSocket = inSocket;
-	Start();
-}
-
-SC_TcpConnectionPort::~SC_TcpConnectionPort()
-{
-	closeSocket();
-	mParent->ConnectionTerminated();
-}
-
-void tcp_reply_func(struct ReplyAddress *addr, char* msg, int size);
-void tcp_reply_func(struct ReplyAddress *addr, char* msg, int size)
-{
-	sendall(addr->mSocket, msg, size);
-}
-
-ReplyFunc SC_TcpConnectionPort::GetReplyFunc()
-{
-	return tcp_reply_func;
-}
-
-extern const char* gPassword;
-
-void* SC_TcpConnectionPort::Run()
-{
-	OSC_Packet *packet = 0;
-	// wait for login message
-	int32 size;
-	int32 msglen;
-
-	while (true) {
-		if (!packet) {
-			packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-		}
-		size = recvall(mSocket, (char*)&msglen, sizeof(int32));
-		if (size < 0) goto leave;
-
-		// sk: msglen is in network byte order
-		msglen = sc_ntohl(msglen);
-
-		char *data = (char*)malloc(msglen);
-		size = recvall(mSocket, data, msglen);
-		if (size < msglen) goto leave;
-
-		packet->mReplyAddr.mReplyFunc = tcp_reply_func;
-		packet->mSize = msglen;
-		packet->mData = data;
-		packet->mReplyAddr.mSocket = mSocket;
-		ProcessOSCPacket(packet, mPortNum);
-		packet = 0;
-	}
-leave:
-	delete this; // ohh this could cause a crash if a reply tries to access it..
-	return 0;
+	start();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
