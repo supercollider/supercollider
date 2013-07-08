@@ -359,8 +359,7 @@ void netAddrTcpClientNotifyFunc(void *clientData)
 	gLangMutex.unlock();
 }
 
-int prNetAddr_Connect(VMGlobals *g, int numArgsPushed);
-int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = slotRawObject(netAddrSlot);
@@ -373,50 +372,17 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
 	if (err) return err;
 
-	struct sockaddr_in toaddr;
-	makeSockAddr(toaddr, addr, port);
-
-	int aSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (aSocket == -1) {
-		//post("\nCould not create socket\n");
+	try {
+		SC_TcpClientPort *comPort = new SC_TcpClientPort(addr, port, netAddrTcpClientNotifyFunc, netAddrObj);
+		SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
+	} catch (std::exception const & ) {
 		return errFailed;
 	}
-
-	const int on = 1;
-#ifdef SC_WIN32
-	if (setsockopt( aSocket, IPPROTO_TCP, TCP_NODELAY, (const char*)&on, sizeof(on)) != 0) {
-#else
-	if (setsockopt( aSocket, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on)) != 0) {
-#endif
-		//post("\nCould not setsockopt TCP_NODELAY\n");
-#ifdef SC_WIN32
-		closesocket(aSocket);
-#else
-		close(aSocket);
-#endif
-		return errFailed;
-	};
-
-
-	if(connect(aSocket,(struct sockaddr*)&toaddr,sizeof(toaddr)) != 0)
-	{
-		//post("\nCould not connect socket\n");
-#ifdef SC_WIN32
-		closesocket(aSocket);
-#else
-		close(aSocket);
-#endif
-		return errFailed;
-	}
-
-	SC_TcpClientPort *comPort = new SC_TcpClientPort(aSocket, netAddrTcpClientNotifyFunc, netAddrObj);
-	SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
 
 	return errNone;
 }
 
-int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed);
-int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = slotRawObject(netAddrSlot);

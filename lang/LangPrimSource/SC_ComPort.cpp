@@ -444,128 +444,84 @@ void SC_TcpConnection::handleMsgReceived(const boost::system::error_code &error,
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifndef SC_WIN32
-# include <sys/select.h>
-#endif
-//SC_WIN32
-
-SC_TcpClientPort::SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc, void *clientData)
-	: SC_ComPort(0),
-	  mClientNotifyFunc(notifyFunc),
-	  mClientData(clientData)
+SC_TcpClientPort::SC_TcpClientPort(long inAddress, int inPort, ClientNotifyFunc notifyFunc, void *clientData):
+	socket(ioService),
+	endpoint(boost::asio::ip::address_v4(inAddress), inPort),
+	mClientNotifyFunc(notifyFunc),
+	mClientData(clientData)
 {
-	mSocket = inSocket;
-	socklen_t sockAddrLen = sizeof(mReplySockAddr);
+	using namespace boost::asio;
 
-	if (getpeername(mSocket, (struct sockaddr*)&mReplySockAddr, &sockAddrLen) == -1) {
-		memset(&mReplySockAddr, 0, sizeof(mReplySockAddr));
-		mReplySockAddr.sin_family = AF_INET;
-		mReplySockAddr.sin_addr.s_addr = sc_htonl(INADDR_NONE);
-		mReplySockAddr.sin_port = sc_htons(0);
-	}
+	boost::system::error_code error;
+	ip::tcp::no_delay noDelayOption(true);
+	socket.set_option(noDelayOption, error);
 
-#if HAVE_SO_NOSIGPIPE
-	int sockopt = 1;
-	setsockopt(mSocket, SOL_SOCKET, SO_NOSIGPIPE, &sockopt, sizeof(sockopt));
-#endif // HAVE_SO_NOSIGPIPE
+	socket.connect(endpoint);
 
-	if (pipe(mCmdFifo) == -1) {
-		mCmdFifo[0] = mCmdFifo[1] = -1;
-	}
-
-	Start();
+	startReceive();
 }
 
-SC_TcpClientPort::~SC_TcpClientPort()
+void SC_TcpClientPort::startReceive()
 {
-#ifdef SC_WIN32
-	closesocket(mCmdFifo[0]);
-	closesocket(mCmdFifo[1]);
-#else
-	close(mCmdFifo[0]);
-	close(mCmdFifo[1]);
-#endif
+	namespace ba = boost::asio;
+	socket.async_read_some(ba::buffer(&OSCMsgLength, sizeof(OSCMsgLength)),
+						   boost::bind(&SC_TcpClientPort::handleLengthReceived, this,
+									ba::placeholders::error,
+									ba::placeholders::bytes_transferred));
 }
 
-void* SC_TcpClientPort::Run()
+void SC_TcpClientPort::handleLengthReceived(const boost::system::error_code &error, size_t bytes_transferred)
 {
-	OSC_Packet *packet = 0;
-	int32 size;
-	int32 msglen;
-
-	int cmdfd = mCmdFifo[0];
-	int sockfd = mSocket;
-	int nfds = sc_max(cmdfd, sockfd) + 1;
-
-	bool cmdClose = false;
-
-	while (true) {
-		fd_set rfds;
-		FD_ZERO(&rfds);
-		FD_SET(cmdfd, &rfds);
-		FD_SET(sockfd, &rfds);
-
-		if ((select(nfds, &rfds, 0, 0, 0) == -1) || (cmdClose = FD_ISSET(cmdfd, &rfds)))
-			goto leave;
-
-		if (!FD_ISSET(sockfd, &rfds))
-			continue;
-
-		packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-		if (!packet) goto leave;
-
-		packet->mData = 0;
-
-		size = recvall(sockfd, (char*)&msglen, sizeof(int32));
-		if (size < (int32)sizeof(int32)) goto leave;
-
-		// msglen is in network byte order
-		msglen = sc_ntohl(msglen);
-
-		packet->mData = (char*)malloc(msglen);
-		if (!packet->mData) goto leave;
-
-		size = recvall(sockfd, packet->mData, msglen);
-		if (size < msglen) goto leave;
-
-		memcpy(&packet->mReplyAddr.mSockAddr, &mReplySockAddr, sizeof(mReplySockAddr));
-		packet->mReplyAddr.mSockAddrLen = sizeof(mReplySockAddr);
-		packet->mReplyAddr.mSocket = sockfd;
-		packet->mReplyAddr.mReplyFunc = tcp_reply_func;
-		packet->mSize = msglen;
-		ProcessOSCPacket(packet, mPortNum);
-
-		packet = 0;
+	if (error == boost::asio::error::connection_aborted) {
+		if (mClientNotifyFunc)
+			(*mClientNotifyFunc)(mClientData);
 	}
 
-leave:
-	if (packet) {
-		free(packet->mData);
-		free(packet);
+	if (error)
+		return;
+
+	// msglen is in network byte order
+	OSCMsgLength = sc_ntohl(OSCMsgLength);
+	data = (char*)malloc(OSCMsgLength);
+
+	namespace ba = boost::asio;
+	socket.async_read_some(ba::buffer(data, OSCMsgLength),
+						   boost::bind(&SC_TcpClientPort::handleMsgReceived, this,
+									   ba::placeholders::error,
+									   ba::placeholders::bytes_transferred));
+}
+
+void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code &error, size_t bytes_transferred)
+{
+	if (error == boost::asio::error::connection_aborted) {
+		if (mClientNotifyFunc)
+			(*mClientNotifyFunc)(mClientData);
 	}
-	// Only call notify function when not closed explicitly
-	if (!cmdClose && mClientNotifyFunc) {
-		(*mClientNotifyFunc)(mClientData);
+
+	if (error) {
+		free(data);
+		return;
 	}
-	delete this;
-	return 0;
+
+	assert(bytes_transferred == OSCMsgLength);
+
+	OSC_Packet * packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
+
+	packet->mReplyAddr.mReplyFunc = tcp_reply_func;
+	packet->mSize                 = OSCMsgLength;
+	packet->mData                 = data;
+	packet->mReplyAddr.mSocket    = socket.native_handle();
+	packet->mReplyAddr.mSockAddr.sin_port        = sc_htons(socket.remote_endpoint().port());
+	packet->mReplyAddr.mSockAddr.sin_addr.s_addr = sc_htonl(socket.remote_endpoint().address().to_v4().to_ulong());
+
+	ProcessOSCPacket(packet, endpoint.port());
+
+	startReceive();
 }
 
 void SC_TcpClientPort::Close()
 {
-	char cmd = 0;
-#ifdef SC_WIN32
-	win32_pipewrite(mCmdFifo[1], &cmd, sizeof(cmd));
-#else
-	size_t written = write(mCmdFifo[1], &cmd, sizeof(cmd));
-	if (written != sizeof(cmd))
-		post("warning: invalid write in SC_TcpClientPort::Close");
-#endif
-}
-
-ReplyFunc SC_TcpClientPort::GetReplyFunc()
-{
-	return tcp_reply_func;
+	socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -629,4 +585,3 @@ int sendall(int socket, const char *msg, size_t len)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
