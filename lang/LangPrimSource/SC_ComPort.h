@@ -25,46 +25,6 @@
 #include <boost/array.hpp>
 
 #include "SC_Msg.h"
-#include "boost/atomic.hpp"
-#include "nova-tt/semaphore.hpp"
-#include "SC_Lock.h"
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class SC_CmdPort
-{
-protected:
-	thread mThread;
-
-	void Start();
-	virtual ReplyFunc GetReplyFunc()=0;
-public:
-	SC_CmdPort(){}
-	virtual ~SC_CmdPort();
-
-	virtual void* Run()=0;
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class SC_ComPort : public SC_CmdPort
-{
-protected:
-	int mPortNum;
-	int mSocket;
-	struct sockaddr_in mBindSockAddr;
-
-	void closeSocket();
-
-public:
-	SC_ComPort(int inPortNum);
-	virtual ~SC_ComPort();
-
-	int Socket() { return mSocket; }
-
-	int PortNum() const { return mPortNum; }
-	int RealPortNum() const { return sc_ntohs(mBindSockAddr.sin_port); }
-};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -178,4 +138,3 @@ private:
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif
-

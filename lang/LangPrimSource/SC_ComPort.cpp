@@ -25,18 +25,13 @@
 #include <stdexcept>
 #include <stdarg.h>
 #include "SCBase.h"
-#include <fcntl.h>
 #include <cerrno>
+
+#include "SC_Lock.h"
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/typeof/typeof.hpp>
-
-#ifndef SC_WIN32
-# include <unistd.h>
-#else
-#include "SC_Win32Utils.h"
-#endif
 
 // sk: determine means of blocking SIGPIPE for send(2) (implementation
 // dependent)
@@ -225,40 +220,7 @@ void startAsioThread()
 void stopAsioThread()
 {
 	ioService.stop();
-    gAsioThread.join();
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-SC_CmdPort::~SC_CmdPort()
-{}
-
-
-SC_ComPort::SC_ComPort(int inPortNum)
-	: mPortNum(inPortNum), mSocket(-1)
-{
-}
-
-void SC_ComPort::closeSocket()
-{
-#ifdef SC_WIN32
-	if (mSocket != -1) closesocket(mSocket);
-#else
-	if (mSocket != -1) close(mSocket);
-#endif
-	mSocket = -1;
-}
-
-SC_ComPort::~SC_ComPort()
-{
-	closeSocket();
-}
-
-void SC_CmdPort::Start()
-{
-	thread thread(thread_namespace::bind(&SC_CmdPort::Run, this));
-	mThread = thread_namespace::move(thread);
+	gAsioThread.join();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -333,13 +295,13 @@ void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error,
 									 std::size_t bytesTransferred)
 {
 	if (error == boost::asio::error::operation_aborted)
-        return;    /* we're done */
+		return;    /* we're done */
 
 	if (error) {
-        std::cout << "sc_osc_handler received error code " << error << std::endl;
+		std::cout << "sc_osc_handler received error code " << error << std::endl;
 		startReceiveUDP();
-        return;
-    }
+		return;
+	}
 
 	OSC_Packet * packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 
@@ -400,8 +362,8 @@ void SC_TcpConnection::start()
 	namespace ba = boost::asio;
 	socket.async_read_some(ba::buffer(&OSCMsgLength, sizeof(OSCMsgLength)),
 						   boost::bind(&SC_TcpConnection::handleLengthReceived, this,
-									ba::placeholders::error,
-									ba::placeholders::bytes_transferred));
+									   ba::placeholders::error,
+									   ba::placeholders::bytes_transferred));
 }
 
 void SC_TcpConnection::handleLengthReceived(const boost::system::error_code &error, size_t bytes_transferred)
@@ -466,8 +428,8 @@ void SC_TcpClientPort::startReceive()
 	namespace ba = boost::asio;
 	socket.async_read_some(ba::buffer(&OSCMsgLength, sizeof(OSCMsgLength)),
 						   boost::bind(&SC_TcpClientPort::handleLengthReceived, this,
-									ba::placeholders::error,
-									ba::placeholders::bytes_transferred));
+									   ba::placeholders::error,
+									   ba::placeholders::bytes_transferred));
 }
 
 void SC_TcpClientPort::handleLengthReceived(const boost::system::error_code &error, size_t bytes_transferred)
