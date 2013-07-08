@@ -22,34 +22,7 @@
 #ifndef _SC_Reply_
 #define _SC_Reply_
 
-#if defined(_WIN32)
-# include "SC_Win32Utils.h"
-#else
-# include <netinet/in.h>
-#endif // _WIN32
-
 struct ReplyAddress;
-
 typedef void (*ReplyFunc)(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize);
-
-void null_reply_func(struct ReplyAddress* addr, char* msg, int size);
-
-struct ReplyAddress
-{
-	struct sockaddr_in mSockAddr;
-	int mSockAddrLen;
-	int mSocket;
-	ReplyFunc mReplyFunc;
-	void *mReplyData;
-};
-
-#if defined(__cplusplus)
-bool operator==(const ReplyAddress& a, const ReplyAddress& b);
-#endif // __cplusplus
-
-inline void SendReply(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
-{
-	(inReplyAddr->mReplyFunc)(inReplyAddr, inBuf, inSize);
-}
 
 #endif
