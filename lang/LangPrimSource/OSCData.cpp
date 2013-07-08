@@ -768,6 +768,7 @@ void FreeOSCPacket(OSC_Packet *inPacket)
 	}
 }
 
+// takes ownership of inPacket
 void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
 {
 	//post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
@@ -789,6 +790,9 @@ void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
 	FreeOSCPacket(inPacket);
 }
 
+void startAsioThread();
+void stopAsioThread();
+
 void init_OSC(int port)
 {
 	postfl("init_OSC\n");
@@ -800,6 +804,8 @@ void init_OSC(int port)
 		error( "sclang: init_OSC: WSAStartup() failed with error code %d.\n", nCode );
 	}
 #endif
+
+	startAsioThread();
 
 	try {
 		gUDPport = new SC_UdpInPort(port);
@@ -844,7 +850,9 @@ void closeAllCustomPorts()
 void cleanup_OSC()
 {
 	postfl( "cleaning up OSC\n");
-	gUDPport->terminate();
+
+	stopAsioThread();
+
 #ifdef _WIN32
 	WSACleanup();
 #endif

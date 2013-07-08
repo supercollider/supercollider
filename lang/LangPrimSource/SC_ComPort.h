@@ -21,6 +21,9 @@
 #ifndef _SC_ComPort_
 #define _SC_ComPort_
 
+#include <boost/asio.hpp>
+#include <boost/array.hpp>
+
 #ifdef _WIN32
 # include <winsock2.h>
 typedef int socklen_t;
@@ -45,7 +48,7 @@ protected:
 	void Start();
 	virtual ReplyFunc GetReplyFunc()=0;
 public:
-	SC_CmdPort();
+	SC_CmdPort(){}
 	virtual ~SC_CmdPort();
 
 	virtual void* Run()=0;
@@ -76,39 +79,34 @@ public:
 
 const int kTextBufSize = 65536;
 
-class SC_UdpInPort : public SC_ComPort
+class SC_UdpInPort
 {
-	char buf[kTextBufSize];
-	struct sockaddr_in mReplySockAddr;
-	virtual ReplyFunc GetReplyFunc();
+	int mPortNum;
+	boost::array<char, kTextBufSize> recvBuffer;
 
-	boost::atomic<bool> mRunning;
+	boost::asio::ip::udp::endpoint remoteEndpoint;
+	boost::asio::ip::udp::socket udpSocket;
+
+	void handleReceivedUDP(const boost::system::error_code& error,
+						   std::size_t bytes_transferred);
+
+	void startReceiveUDP();
 
 public:
-	SC_UdpInPort(int inPortNum);
+	int RealPortNum() const { return mPortNum; }
+	int Socket() { return udpSocket.native_handle(); }
 
-	int PortNum() const { return mPortNum; }
+	virtual void* Run(){return 0;} // remove
 
-	void* Run();
-	void terminate();
+	SC_UdpInPort(int inPortNum, int portsToCheck = 10);
+	~SC_UdpInPort();
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class SC_UdpCustomInPort : public SC_ComPort
+class SC_UdpCustomInPort : public SC_UdpInPort
 {
-	char buf[kTextBufSize];
-	struct sockaddr_in mReplySockAddr;
-	virtual ReplyFunc GetReplyFunc();
-	boost::atomic<bool> mRunning;
-
 public:
 	SC_UdpCustomInPort(int inPortNum);
 	~SC_UdpCustomInPort();
-
-	int PortNum() const { return mPortNum; }
-
-	void* Run();
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
