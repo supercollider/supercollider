@@ -24,31 +24,22 @@
 */
 
 #include <atomic>
-
-#include <errno.h>
-#include <fcntl.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/select.h>
-#include <termios.h>
-#include <unistd.h>
-#include <boost/atomic.hpp>
-#include <functional>
-
 #include <stdexcept>
 #include <sstream>
 
-#include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
 #include "PyrSched.h"
 #include "SCBase.h"
 
-#include "SC_FIFO.h"
-#include "SC_Lock.h"
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <boost/cstdint.hpp>
+#include <boost/lockfree/spsc_queue.hpp>
+
+using boost::uint8_t;
+
+extern boost::asio::io_service ioService; // defined in SC_ComPort.cpp
 
 class SerialPort
 {
@@ -83,460 +74,165 @@ public:
 
 	static const int kNumOptions = 7;
 	static const int kBufferSize = 8192;
-	static const int kReadTimeoutMs = 1000;
 
-	typedef SC_FIFO<uint8_t,kBufferSize> FIFO;
-
-	struct Error : std::runtime_error
-	{
-		explicit Error(const char* what)
-			: std::runtime_error(what)
-		{ }
-	};
-
-	struct SysError : public Error
-	{
-		explicit SysError(int e=errno)
-			: Error(strerror(e))
-		{ }
-	};
+	typedef boost::lockfree::spsc_queue<uint8_t, boost::lockfree::capacity<kBufferSize> > FIFO;
 
 	static PyrSymbol* s_dataAvailable;
 	static PyrSymbol* s_doneAction;
 
 public:
-	SerialPort(PyrObject* obj, const char* serialport, const Options& options);
-	~SerialPort();
+	SerialPort(PyrObject* obj, const char* serialport, const Options& options):
+		m_obj(obj),
+		m_options(options),
+		m_port(ioService, serialport)
+	{
+		using namespace boost::asio;
 
-	bool isRunning() const { return m_running; }
-	int fd() const { return m_fd; }
+		m_port.set_option(serial_port::baud_rate(options.baudrate));
+
+		switch (options.parity) {
+		case kNoParity:
+			m_port.set_option(serial_port::parity(serial_port::parity::none));
+			break;
+		case kEvenParity:
+			m_port.set_option(serial_port::parity(serial_port::parity::even));
+			break;
+		case kOddParity:
+			m_port.set_option(serial_port::parity(serial_port::parity::odd));
+			break;
+		}
+
+		m_port.set_option(serial_port::character_size(options.databits));
+
+		// FIXME: flow control / xonxoff
+		// FIXME: stop bits
+	}
+
+	~SerialPort()
+	{
+		stop();
+	}
+
+	void startRead()
+	{
+		m_port.async_write_some(boost::asio::buffer(m_rxbuffer, kBufferSize),
+								boost::bind(&SerialPort::doRead, this,
+											boost::asio::placeholders::error,
+											boost::asio::placeholders::bytes_transferred)
+								);
+	}
+
 	const Options& options() const { return m_options; }
 
-	bool put(uint8_t byte);
-	bool get(uint8_t* byte);
-	int rxErrors();
+	bool put(uint8_t byte)
+	{
+		return m_port.write_some(boost::asio::buffer(&byte, sizeof(byte))) == sizeof(byte);
+	}
 
-	void stop();
-	void cleanup();
-	bool isCurrentThread() const;
+	bool get(uint8_t* byte)
+	{
+		uint8_t ret;
 
-protected:
-	void threadLoop();
+		bool success = m_rxfifo.pop(ret);
+		if (!success)
+			return false;
 
-	void dataAvailable();
-	void doneAction();
+		*byte = ret & 0xFF;
+		return true;
+	}
+
+	int rxErrors()
+	{
+		// errors since last query
+		int x         = m_rxErrors[1];
+		int res       = x-m_rxErrors[0];
+		m_rxErrors[0] = x;
+		return res;
+	}
+
+	void stop()
+	{
+		m_port.cancel();
+		m_port.close();
+	}
 
 private:
+	void dataAvailable()
+	{
+		gLangMutex.lock();
+		PyrSymbol *method = s_dataAvailable;
+		if (m_obj) {
+			VMGlobals *g = gMainVMGlobals;
+			g->canCallOS = true;
+			++g->sp; SetObject(g->sp, m_obj);
+			runInterpreter(g, method, 1);
+			g->canCallOS = false;
+		}
+		gLangMutex.unlock();
+	}
+
+	void doneAction()
+	{
+		gLangMutex.lock();
+		PyrSymbol *method = s_doneAction;
+		if (m_obj) {
+			VMGlobals *g = gMainVMGlobals;
+			g->canCallOS = true;
+			++g->sp; SetObject(g->sp, m_obj);
+			runInterpreter(g, method, 1);
+			g->canCallOS = false;
+		}
+		gLangMutex.unlock();
+	}
+
+	void doRead(const boost::system::error_code& error,
+				std::size_t bytesTransferred)
+	{
+
+#if 0
+		// FIXME: when?
+		if (error == ???) {
+			if ( m_dodone )
+				doneAction();
+			return;
+		}
+#endif
+
+		if (error) {
+			// what to do?
+			printf("SerialPort::doRead error: %s", error.message().c_str());
+			startRead();
+			return;
+		}
+
+		for (std::size_t index; index != bytesTransferred; ++index) {
+			uint8_t byte = m_rxbuffer[index];
+			bool putSuccessful = m_rxfifo.push(byte);
+			if (!putSuccessful)
+				m_rxErrors[1]++;
+		}
+
+		dataAvailable();
+
+		startRead();
+	}
+
+
 	// language interface
 	PyrObject*		m_obj;
-
-	std::atomic<bool>	m_dodone;
+	boost::asio::serial_port m_port;
 
 	// serial interface
 	Options			m_options;
-	int			m_fd;
-	std::atomic<bool>	m_open;
-	struct termios		m_termio;
-	struct termios		m_oldtermio;
 
 	// rx buffers
 	int			m_rxErrors[2];
-	FIFO			m_rxfifo;
-	uint8_t			m_rxbuffer[kBufferSize];
-
-	// rx thread
-	std::atomic<bool>	m_running;
-	SC_Thread				m_thread;
+	FIFO		m_rxfifo;
+	uint8_t		m_rxbuffer[kBufferSize];
 };
 
 PyrSymbol* SerialPort::s_dataAvailable = 0;
 PyrSymbol* SerialPort::s_doneAction = 0;
-
-SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& options)
-	: m_obj(obj),
-	  m_options(options),
-	  m_fd(-1)
-{
-	// open non blocking
-	m_fd = open(serialport, O_RDWR | O_NOCTTY | O_NDELAY);
-	if (m_fd == -1)  {
-		throw SysError(errno);
-	}
-
-	// exclusiveness
-#if defined(TIOCEXCL)
-	if (m_options.exclusive) {
-		if (ioctl(m_fd, TIOCEXCL) == -1) {
-			throw SysError(errno);
-		}
-	}
-#endif // TIOCEXCL
-
-	if (fcntl(m_fd, F_SETFL, O_NONBLOCK) == -1) {
-		int e = errno;
-		close(m_fd);
-		throw SysError(e);
-	}
-
-	// initialize serial connection
-
-	// get current settings and remember them
-	struct termios toptions;
-	if (tcgetattr(m_fd, &toptions) < 0) {
-		int e = errno;
-		close(m_fd);
-		throw SysError(e);
-	}
-	memcpy(&m_oldtermio, &toptions, sizeof(toptions));
-
-	// baudrate
-	speed_t brate;
-	switch (m_options.baudrate) {
-		case 1200:
-			brate = B1200;
-			break;
-		case 1800:
-			brate = B1800;
-			break;
-		case 2400:
-			brate = B2400;
-			break;
-		case 4800:
-			brate = B4800;
-			break;
-		case 9600:
-			brate = B9600;
-			break;
-		case 19200:
-			brate = B19200;
-			break;
-		case 38400:
-			brate = B38400;
-			break;
-// #ifndef _POSIX_C_SOURCE
-#if defined(B7200)
-		case 7200:
-			brate = B7200;
-			break;
-#endif
-#if defined(B7200)
-		case 14400:
-			brate = B14400;
-			break;
-#endif
-#if defined(B28800)
-		case 28800:
-			brate = B28800;
-			break;
-#endif
-#if defined(B57600)
-		case 57600:
-			brate = B57600;
-			break;
-#endif
-#if defined(B76800)
-		case 76800:
-			brate = B76800;
-			break;
-#endif
-#if defined(B115200)
-		case 115200:
-			brate = B115200;
-			break;
-#endif
-#if defined(B230400)
-		case 230400:
-			brate = B230400;
-			break;
-#endif
-// #endif // !_POSIX_C_SOURCE
-		default:
-			close(m_fd);
-			throw Error("unsupported baudrate");
-	}
-
-	cfsetispeed(&toptions, brate);
-	cfsetospeed(&toptions, brate);
-
-	// data bits
-	toptions.c_cflag &= ~CSIZE;
-	switch (m_options.databits)
-	{
-		case 5:
-			toptions.c_cflag |= CS5;
-			break;
-		case 6:
-			toptions.c_cflag |= CS6;
-			break;
-		case 7:
-			toptions.c_cflag |= CS7;
-			break;
-		default:
-			m_options.databits = 8;
-			toptions.c_cflag |= CS8;
-			break;
-	}
-
-	// stop bit
-	if (m_options.stopbit) {
-		toptions.c_cflag |= CSTOPB;
-	} else {
-		toptions.c_cflag &= ~CSTOPB;
-	}
-
-	// parity
-	switch (m_options.parity)
-	{
-		case kNoParity:
-			toptions.c_cflag &= ~PARENB;
-			break;
-		case kEvenParity:
-			toptions.c_cflag |= PARENB;
-			toptions.c_cflag &= ~PARODD;
-			break;
-		case kOddParity:
-			toptions.c_cflag |= (PARENB | PARODD);
-			break;
-	}
-
-	// h/w flow control
-#if !defined(_POSIX_C_SOURCE) || defined(__USE_MISC)
-	if (m_options.crtscts) {
-		toptions.c_cflag &= ~CRTSCTS;
-	} else {
-		toptions.c_cflag |= CRTSCTS;
-	}
-#endif // !_POSIX_C_SOURCE || __USE_MISC
-
-	// s/w flow control
-	if (m_options.xonxoff) {
-		toptions.c_iflag |= (IXON | IXOFF | IXANY);
-	} else {
-		toptions.c_iflag &= ~(IXON | IXOFF | IXANY);
-	}
-
-	// (nescivi) by default carriage returns are translated to line feeds,
-	// we don't want that
-	toptions.c_iflag &= ~ICRNL;
-
-	// enable READ & ignore ctrl lines
-	toptions.c_cflag |= (CREAD | CLOCAL);
-	// non-canonical (raw) i/o
-	toptions.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
-	// disable post processing
-	toptions.c_oflag &= ~OPOST;
-
-	// see:  http://unixwiz.net/techtips/termios-vmin-vtime.html
-	// NOTE: unused for non-blocking reads
-// 	toptions.c_cc[VMIN]  = 0;
-// 	toptions.c_cc[VTIME] = 20;
-
-	if (tcsetattr(m_fd, TCSAFLUSH, &toptions) < 0) {
-		int e = errno;
-		close(m_fd);
-		throw SysError(e);
-	}
-	memcpy(&m_termio, &toptions, sizeof(toptions));
-
-	m_rxErrors[0] = m_rxErrors[1] = 0;
-
-	try {
-		SC_Thread thread(std::bind(&SerialPort::threadLoop, this));
-		m_thread = std::move(thread);
-	} catch(std::exception & e) {
-		close(m_fd);
-		throw e;
-	}
-
-	m_open = true;
-	m_dodone = true;
-}
-
-SerialPort::~SerialPort()
-{
-	m_running = false;
-
-	if ( m_open ){
-		tcflush(m_fd, TCIOFLUSH);
-		tcsetattr(m_fd, TCSANOW, &m_oldtermio);
-		close(m_fd);
-		m_open = false;
-	}
-
-	if (m_thread.joinable() && m_thread.get_id() != std::this_thread::get_id()) {
-		m_thread.join();
-	} else {
-		assert(0 && "We're about to destroy m_thread from it's own thread, and without first joining!");
-	}
-}
-
-void SerialPort::stop(){
-	m_running = false;
-}
-
-void SerialPort::cleanup(){
-	m_running = false;
-	m_dodone = false;
-	if ( m_open ){
-		tcflush(m_fd, TCIOFLUSH);
-		tcsetattr(m_fd, TCSANOW, &m_oldtermio);
-		close(m_fd);
-		m_open = false;
-	};
-}
-
-bool SerialPort::isCurrentThread() const {
-	return m_thread.get_id() == std::this_thread::get_id();
-}
-
-bool SerialPort::put(uint8_t byte)
-{
-	return write(m_fd, &byte, sizeof(byte)) == sizeof(byte);
-}
-
-bool SerialPort::get(uint8_t* byte)
-{
-	if (m_rxfifo.IsEmpty())
-		return false;
-	*byte = m_rxfifo.Get() & 0xFF;
-	return true;
-}
-
-int SerialPort::rxErrors()
-{
-	// errors since last query
-	int x         = m_rxErrors[1];
-	int res       = x-m_rxErrors[0];
-	m_rxErrors[0] = x;
-	return res;
-}
-
-void SerialPort::dataAvailable()
-{
-	int status = lockLanguageOrQuit(m_running);
-	if (status == EINTR)
-		return;
-	if (status) {
-		postfl("error when locking language (%d)\n", status);
-		return;
-	}
-
-	PyrSymbol *method = s_dataAvailable;
-	if (m_obj) {
-		VMGlobals *g = gMainVMGlobals;
-		g->canCallOS = true;
-		++g->sp; SetObject(g->sp, m_obj);
-		runInterpreter(g, method, 1);
-		g->canCallOS = false;
-	}
-	gLangMutex.unlock();
-}
-
-void SerialPort::doneAction()
-{
-	int status = lockLanguageOrQuit(m_dodone);
-	if (status == EINTR)
-		return;
-	if (status) {
-		postfl("error when locking language (%d)\n", status);
-		return;
-	}
-
-	PyrSymbol *method = s_doneAction;
-	if (m_obj) {
-		VMGlobals *g = gMainVMGlobals;
-		g->canCallOS = true;
-		++g->sp; SetObject(g->sp, m_obj);
-		runInterpreter(g, method, 1);
-		g->canCallOS = false;
-	}
-	gLangMutex.unlock();
-}
-
-void SerialPort::threadLoop()
-{
-	const int fd = m_fd;
-	const int max_fd = fd+1;
-
-	m_running = true;
-	m_rxErrors[1] = 0;
-
-	while (true) {
-		fd_set rfds;
-
-		FD_ZERO(   &rfds);
-		FD_SET(fd, &rfds);
-
-		struct timeval timeout;
-		timeout.tv_sec = kReadTimeoutMs/1000;
-		timeout.tv_usec = (kReadTimeoutMs%1000)*1000;
-
-		int n = select(max_fd, &rfds, 0, 0, &timeout);
-		// 	int fdset = FD_ISSET(fd, &rfds);
-		// 	printf( "fdset %i, n %i, errno %i\n", fdset, n, errno );
-		if ( m_open ){
-			if ((n > 0) && FD_ISSET(fd, &rfds)) {
-				// printf("poll input\n");
-				int nr = 0;
-				// while (true) {
-				if ( m_open ){
-					int n2 = read(fd, m_rxbuffer, kBufferSize);
-					//  printf("read %d, errno %i, errbadf %i, %i, %i\n", n2, errno, EBADF, EAGAIN, EIO);
-					if (n2 > 0) {
-						// write data to ringbuffer
-						for (int i=0; i < n2; ++i) {
-							if (!m_rxfifo.Put(m_rxbuffer[i])) {
-								m_rxErrors[1]++;
-								break;
-							}
-						}
-						nr += n2;
-					} else if ((n2 == 0) && (n == 1) ) { // added by nescivi, to check for disconnected device. In this case the read is 0 all the time and otherwise eats up the CPU
-						//	printf( "done\n" );
-						goto done;
-					} else if ((n2 == 0) || ((n2 == -1) && (errno == EAGAIN))) {
-						//	printf( "break\n");
-						break;
-					} else {
-#ifndef NDEBUG
-						printf("SerialPort HUP\n");
-#endif
-						goto done;
-					}
-				}
-				//}
-				if (!m_running) {
-					// close and cleanup
-					goto done;
-				}
-				if (nr > 0) {
-					dataAvailable();
-				}
-			} else if (n == -1) {
-				goto done;
-			}
-		}
-		if (!m_running) {
-			// close and cleanup
-			goto done;
-		}
-	}
-
-done:
-	// doneAction();
-	if ( m_open ){
-		tcflush(fd, TCIOFLUSH);
-		tcsetattr(fd, TCSANOW, &m_oldtermio);
-		close(fd);
-	};
-	m_open = false;
-	m_running = false;
-	if ( m_dodone )
-		doneAction();
-#ifndef NDEBUG
-	printf("SerialPort closed\n");
-#endif
-}
 
 // =====================================================================
 // primitives
@@ -591,7 +287,7 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 
 	try {
 		port = new SerialPort(slotRawObject(self), portName, options);
-	} catch (SerialPort::Error& e) {
+	} catch (std::exception & e) {
 		std::ostringstream os;
 		os << "SerialPort Error: " << e.what();
 		post(os.str().c_str());
@@ -622,10 +318,6 @@ static int prSerialPort_Cleanup(struct VMGlobals *g, int numArgsPushed)
 		post("Cannot cleanup SerialPort from this thread. Call from AppClock thread.");
 		return errFailed;
 	}
-
-	port->cleanup();
-
-	post("SerialPort Cleanup\n");
 
 	delete port;
 	SetNil(slotRawObject(self)->slots+0);
@@ -699,5 +391,3 @@ void initSerialPrimitives()
 	SerialPort::s_dataAvailable = getsym("prDataAvailable");
 	SerialPort::s_doneAction = getsym("prDoneAction");
 }
-
-// EOF
