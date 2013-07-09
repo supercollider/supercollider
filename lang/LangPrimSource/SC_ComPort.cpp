@@ -298,7 +298,7 @@ void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error,
 		return;    /* we're done */
 
 	if (error) {
-		std::cout << "sc_osc_handler received error code " << error << std::endl;
+		printf("SC_UdpInPort: received error - %s", error.message().c_str());
 		startReceiveUDP();
 		return;
 	}
