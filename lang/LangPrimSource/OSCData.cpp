@@ -757,8 +757,9 @@ void init_OSC(int port)
 
 	try {
 		gUDPport = new SC_UdpInPort(port);
-	} catch (...) {
-		postfl("No networking.");
+	} catch (std::exception const & e) {
+
+		postfl("No networking: %s", e.what());
 	}
 }
 
