@@ -10,6 +10,8 @@ WidthFirstUGen : UGen
 			synthDef.widthFirstUGens = synthDef.widthFirstUGens.add(this);
 		});
 	}
+
+	addCopiesIfNeeded { }
 }
 
 
@@ -18,6 +20,8 @@ FFT : PV_ChainUGen
 	*new { | buffer, in = 0.0 , hop = 0.5, wintype = 0 , active = 1, winsize=0|
 		^this.multiNew('control', buffer, in, hop, wintype, active, winsize)
 	}
+
+	fftSize { ^BufFrames.ir(inputs[0]) }
 }
 
 IFFT : WidthFirstUGen
