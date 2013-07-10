@@ -271,7 +271,7 @@ SynthDef {
 	}
 
 	finishBuild {
-
+		this.addCopiesIfNeeded;
 		this.optimizeGraph;
 		this.collectConstants;
 		this.checkInputs;// will die on error
@@ -280,6 +280,15 @@ SynthDef {
 		this.topologicalSort;
 		this.indexUGens;
 		UGen.buildSynthDef = nil;
+	}
+
+	addCopiesIfNeeded {
+		// could also have PV_UGens store themselves in a separate collection
+		widthFirstUGens.do({|child|
+			if(child.isKindOf(PV_ChainUGen), {
+				child.addCopiesIfNeeded;
+			});
+		});
 	}
 
 	asBytes {

@@ -28,6 +28,8 @@ PackFFT : PV_ChainUGen {
 		^this.multiNewList(['control', chain, bufsize, frombin, tobin, zeroothers, magsphases.size] ++ magsphases.asArray)
 	}
 
+	fftSize {^this.inputs[1]}
+
 }
 
 // Conveniences to apply calculations to an FFT chain
@@ -76,4 +78,40 @@ PV_ChainUGen : WidthFirstUGen {
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);
 	}
 
+	addCopiesIfNeeded {
+		var directDescendants;
+		// find UGens that have me as an input
+		directDescendants = buildSynthDef.children.select ({ |child|
+			var inputs;
+			child.isKindOf(PV_Copy).not and: { child.isKindOf(Unpack1FFT).not } and: {
+				inputs = child.inputs;
+				inputs.notNil and: { inputs.includes(this) }
+			}
+		});
+		if(directDescendants.size > 1, {
+			// insert a PV_Copy for all but the last one
+			directDescendants.drop(-1).do({|desc|
+				desc.inputs.do({ arg input, j;
+					if (input === this, {
+						var frames, buf, copy;
+						frames = this.fftSize;
+						frames.widthFirstAntecedents = nil;
+						buf = LocalBuf(frames);
+						buf.widthFirstAntecedents = nil;
+						copy = PV_Copy(this, buf);
+						copy.widthFirstAntecedents = widthFirstAntecedents ++ [buf];
+						desc.inputs[j] = copy;
+						buildSynthDef.children = buildSynthDef.children.drop(-3).insert(this.synthIndex + 1, frames);
+						buildSynthDef.children = buildSynthDef.children.insert(this.synthIndex + 2, buf);
+						buildSynthDef.children = buildSynthDef.children.insert(this.synthIndex + 3, copy);
+						buildSynthDef.indexUGens;
+					});
+				});
+			});
+		});
+	}
+
+	// return a BufFrames
+	// any PV UGens which don't take the chain as first arg will need to override
+	fftSize { ^inputs[0].fftSize }
 }
