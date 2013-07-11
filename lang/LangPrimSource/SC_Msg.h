@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "SC_Reply.h"
+#include "SC_ReplyImpl.hpp"
 #include "sc_msg_iter.h"
 
 class SC_Msg;
