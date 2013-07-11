@@ -218,7 +218,7 @@ UGen : AbstractFunction {
 		if (curve.rate == \scalar) {
 			^curvedResult
 		} {
-			^Select.multiNew(this.rate, abs(curve) >= 0.125, [
+			^Select.perform(this.methodSelectorForRate, abs(curve) >= 0.125, [
 				this.linlin(inMin, inMax, outMin, outMax, clip),
 				curvedResult
 			])
@@ -239,7 +239,7 @@ UGen : AbstractFunction {
 		if (curve.rate == \scalar) {
 			^linResult
 		} {
-			^Select.multiNew(this.rate, abs(curve) >= 0.125, [
+			^Select.perform(this.methodSelectorForRate, abs(curve) >= 0.125, [
 				this.linlin(inMin, inMax, outMin, outMax, clip),
 				linResult
 			])
@@ -247,7 +247,7 @@ UGen : AbstractFunction {
 	}
 
 	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
-		^Select.multiNew(this.rate, this < inCenter,
+		^Select.perform(this.methodSelectorForRate, this < inCenter,
 			[
 				this.linlin(inCenter, inMax, outCenter, outMax, clip),
 				this.linlin(inMin, inCenter, outMin, outCenter, clip)
