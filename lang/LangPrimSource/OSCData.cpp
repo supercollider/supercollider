@@ -24,23 +24,11 @@
 #include "PyrSched.h"
 #include "PyrSymbol.h"
 #include "GC.h"
-//#include "PyrOMS.h"
-//#include "MidiQ.h"
 #include <string.h>
 #include <math.h>
 #include <stdexcept>
 #include <new>
 #include <vector>
-
-#ifdef SC_WIN32
-# include <winsock2.h>
-typedef int socklen_t;
-# define bzero( ptr, count ) memset( ptr, 0, count )
-#else
-# include <sys/socket.h>
-# include <netinet/tcp.h>
-# include <netdb.h>
-#endif
 
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
@@ -51,12 +39,6 @@ typedef int socklen_t;
 #include "SC_Endian.h"
 
 #include <SC_Lock.h>
-
-#ifndef SC_DARWIN
-# ifndef SC_WIN32
-#  include <unistd.h>
-# endif
-#endif
 
 #include "../../../common/server_shm.hpp"
 
@@ -81,7 +63,6 @@ SC_UdpInPort* gUDPport = 0;
 PyrString* newPyrString(VMGlobals *g, char *s, int flags, bool collect);
 
 PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr;
-const char* gPassword;
 extern bool compiledOK;
 
 std::vector<SC_UdpCustomInPort *> gCustomUdpPorts;
@@ -378,8 +359,7 @@ void netAddrTcpClientNotifyFunc(void *clientData)
 	gLangMutex.unlock();
 }
 
-int prNetAddr_Connect(VMGlobals *g, int numArgsPushed);
-int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = slotRawObject(netAddrSlot);
@@ -392,50 +372,17 @@ int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
 	if (err) return err;
 
-	struct sockaddr_in toaddr;
-	makeSockAddr(toaddr, addr, port);
-
-	int aSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (aSocket == -1) {
-		//post("\nCould not create socket\n");
+	try {
+		SC_TcpClientPort *comPort = new SC_TcpClientPort(addr, port, netAddrTcpClientNotifyFunc, netAddrObj);
+		SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
+	} catch (std::exception const & ) {
 		return errFailed;
 	}
-
-	const int on = 1;
-#ifdef SC_WIN32
-	if (setsockopt( aSocket, IPPROTO_TCP, TCP_NODELAY, (const char*)&on, sizeof(on)) != 0) {
-#else
-	if (setsockopt( aSocket, IPPROTO_TCP, TCP_NODELAY, &on, sizeof(on)) != 0) {
-#endif
-		//post("\nCould not setsockopt TCP_NODELAY\n");
-#ifdef SC_WIN32
-		closesocket(aSocket);
-#else
-		close(aSocket);
-#endif
-		return errFailed;
-	};
-
-
-	if(connect(aSocket,(struct sockaddr*)&toaddr,sizeof(toaddr)) != 0)
-	{
-		//post("\nCould not connect socket\n");
-#ifdef SC_WIN32
-		closesocket(aSocket);
-#else
-		close(aSocket);
-#endif
-		return errFailed;
-	}
-
-	SC_TcpClientPort *comPort = new SC_TcpClientPort(aSocket, netAddrTcpClientNotifyFunc, netAddrObj);
-	SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
 
 	return errNone;
 }
 
-int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed);
-int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = slotRawObject(netAddrSlot);
@@ -505,33 +452,34 @@ int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
 	return netAddrSend(netAddrObj, msglen, bufptr, false);
 }
 
-int prNetAddr_GetBroadcastFlag(VMGlobals *g, int numArgsPushed);
-int prNetAddr_GetBroadcastFlag(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_GetBroadcastFlag(VMGlobals *g, int numArgsPushed)
 {
-	if (gUDPport == 0) return errFailed;
-	int opt;
-	socklen_t optlen = sizeof(opt);
-#ifdef SC_WIN32
-	if (getsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, (char *)&opt, &optlen) == -1)
-#else
-	if (getsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, &opt, &optlen) == -1)
-#endif
-	return errFailed;
-	SetBool(g->sp, opt);
+	if (gUDPport == 0)
+		return errFailed;
+
+	boost::system::error_code ec;
+	boost::asio::socket_base::broadcast option;
+	gUDPport->udpSocket.get_option(option, ec);
+
+	if (ec)
+		return errFailed;
+
+	SetBool(g->sp, option.value());
 	return errNone;
 }
 
-int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed);
-int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed)
 {
-	if (gUDPport == 0) return errFailed;
-	int opt = IsTrue(g->sp);
-#ifdef SC_WIN32
-	if (setsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, (char *)&opt, sizeof(opt)) == -1)
-#else
-	if (setsockopt(gUDPport->Socket(), SOL_SOCKET, SO_BROADCAST, &opt, sizeof(opt)) == -1)
-#endif
+	if (gUDPport == 0)
 		return errFailed;
+
+	boost::system::error_code ec;
+	boost::asio::socket_base::broadcast option(IsTrue(g->sp));
+	gUDPport->udpSocket.set_option(option, ec);
+
+	if (ec)
+		return errFailed;
+
 	return errNone;
 }
 
@@ -768,6 +716,7 @@ void FreeOSCPacket(OSC_Packet *inPacket)
 	}
 }
 
+// takes ownership of inPacket
 void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
 {
 	//post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
@@ -789,6 +738,9 @@ void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
 	FreeOSCPacket(inPacket);
 }
 
+void startAsioThread();
+void stopAsioThread();
+
 void init_OSC(int port)
 {
 	postfl("init_OSC\n");
@@ -801,10 +753,13 @@ void init_OSC(int port)
 	}
 #endif
 
+	startAsioThread();
+
 	try {
 		gUDPport = new SC_UdpInPort(port);
-	} catch (...) {
-		postfl("No networking.");
+	} catch (std::exception const & e) {
+
+		postfl("No networking: %s", e.what());
 	}
 }
 
@@ -844,7 +799,9 @@ void closeAllCustomPorts()
 void cleanup_OSC()
 {
 	postfl( "cleaning up OSC\n");
-	gUDPport->terminate();
+
+	stopAsioThread();
+
 #ifdef _WIN32
 	WSACleanup();
 #endif
