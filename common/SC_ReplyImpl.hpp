@@ -1,7 +1,7 @@
 /*
 	SuperCollider real time audio synthesis system
 	Copyright (c) 2002 James McCartney. All rights reserved.
-	Copyright (c) 2012 Tim Blechmann
+	Copyright (c) 2013 Tim Blechmann.
 	http://www.audiosynth.com
 
 	This program is free software; you can redistribute it and/or modify
@@ -19,19 +19,33 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#ifndef SC_REPLYIMPL_HPP
+#define SC_REPLYIMPL_HPP
+
 #include "SC_Reply.h"
-#include "SC_ReplyImpl.hpp"
 
-void null_reply_func(struct ReplyAddress *addr, char* msg, int size)
-{}
+#if defined(_WIN32)
+# include "SC_Win32Utils.h"
+#else
+# include <netinet/in.h>
+#endif // _WIN32
 
-bool operator==(const ReplyAddress& a, const ReplyAddress& b)
+struct ReplyAddress
 {
-	return a.mSockAddr.sin_addr.s_addr == b.mSockAddr.sin_addr.s_addr
-	&& a.mSockAddr.sin_family == b.mSockAddr.sin_family
-	&& a.mSockAddr.sin_port == b.mSockAddr.sin_port
-	#ifdef __APPLE__
-	&& a.mSockAddr.sin_len == b.mSockAddr.sin_len
-	#endif
-	&& a.mSocket == b.mSocket;
+	struct sockaddr_in mSockAddr;
+	int mSockAddrLen;
+	int mSocket;
+	ReplyFunc mReplyFunc;
+	void *mReplyData;
+};
+
+void null_reply_func(struct ReplyAddress* addr, char* msg, int size);
+
+bool operator==(const ReplyAddress& a, const ReplyAddress& b);
+
+inline void SendReply(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
+{
+	(inReplyAddr->mReplyFunc)(inReplyAddr, inBuf, inSize);
 }
+
+#endif // SC_REPLYIMPL_HPP
