@@ -136,6 +136,7 @@ void SclangPage::readLanguageConfig()
         while(parser.GetNextDocument(doc)) {
             const Node * includePaths = doc.FindValue("includePaths");
             if (includePaths && includePaths->Type() == NodeType::Sequence) {
+                ui->sclang_include_directories->clear();
                 for (Iterator it = includePaths->begin(); it != includePaths->end(); ++it) {
                     Node const & pathNode = *it;
                     if (pathNode.Type() != NodeType::Scalar)
@@ -148,6 +149,7 @@ void SclangPage::readLanguageConfig()
 
             const Node * excludePaths = doc.FindValue("excludePaths");
             if (excludePaths && excludePaths->Type() == NodeType::Sequence) {
+                ui->sclang_exclude_directories->clear();
                 for (Iterator it = excludePaths->begin(); it != excludePaths->end(); ++it) {
                     Node const & pathNode = *it;
                     if (pathNode.Type() != NodeType::Scalar)
