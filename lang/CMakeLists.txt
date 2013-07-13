@@ -126,10 +126,6 @@ if(UNIX)
 			LangPrimSource/SC_Speech.mm
 			)
 		add_definitions(-DHAVE_SPEECH)
-		if (CMAKE_COMPILER_IS_GNUCXX)
-			set_source_files_properties(LangPrimSource/SC_Speech.mm
-										PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
-		endif()
 		if(NOT (HID_UTIL_DIR MATCHES "HID_Utilities_10_4"))
 			list(APPEND sclang_sources
 				LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c
