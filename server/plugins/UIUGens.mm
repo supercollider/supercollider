@@ -18,26 +18,16 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-// ********** this version for windows and linux. for mac see UIUGens.mm
+// ********** this version for mac. for windows and linux see UIUGens.cpp
 
 #include <SC_Lock.h>
 
-# ifndef _WIN32
-#  include <time.h>
-#  include <X11/Intrinsic.h>
-# else
-#include "SC_Win32Utils.h"
-#include <windows.h>
-# endif
-
+#import <AppKit/AppKit.h>
+#include <unistd.h>
 
 #include "SC_PlugIn.h"
 
 static InterfaceTable *ft;
-
-struct KeyboardUGenGlobalState {
-	uint8 keys[32];
-} gKeyStateGlobals;
 
 struct KeyState : public Unit
 {
@@ -58,98 +48,34 @@ struct MouseInputUGen : public Unit
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WIN32
 
 void gstate_update_func()
 {
-	POINT p;
-	int mButton;
-
-	if(GetSystemMetrics(SM_SWAPBUTTON))
-		mButton = VK_RBUTTON; // if  swapped
-	else
-		mButton = VK_LBUTTON; // not swapped (normal)
-
-	int screenWidth  = GetSystemMetrics( SM_CXSCREEN );
-	int screenHeight = GetSystemMetrics( SM_CYSCREEN );
-	// default: SM_CX/CYSCREEN gets the size of a primary screen.
-	// lines uncommented below are just for a specially need on multi-display.
-	//int screenWidth  = GetSystemMetrics( SM_CXVIRTUALSCREEN );
-	//int screenHeight = GetSystemMetrics( SM_CYVIRTUALSCREEN );
-	float r_screenWidth  = 1.f / (float)(screenWidth  -1);
-	float r_screenHeight = 1.f / (float)(screenHeight -1);
-
-
-	for(;;) {
-		// "KeyState" is disabled for now, on Windows...
-		//GetKey((long*)gstate->keys);
-
-		GetCursorPos(&p);
-		gMouseUGenGlobals.mouseX = (float)p.x * r_screenWidth;
-		gMouseUGenGlobals.mouseY = 1.f - (float)p.y * r_screenHeight;
-		gMouseUGenGlobals.mouseButton = (GetKeyState(mButton) < 0);
-		::Sleep(17); // 17msec.
-	}
-}
-
-# else
-static Display * d = 0;
-void gstate_update_func()
-{
-	Window r;
-	struct timespec requested_time , remaining_time;
-
-	requested_time.tv_sec = 0;
-	requested_time.tv_nsec = 17000 * 1000;
-
-	// NOTE: should not be required as this is the only thread accessing the x11 API
-	//       but omitting seems to cause troubles.
-	XInitThreads();
-
-	d = XOpenDisplay ( NULL );
-	if (!d) return;
-
-	Window rep_root, rep_child;
-	XWindowAttributes attributes;
-	int rep_rootx, rep_rooty ;
-	unsigned int rep_mask;
-	int dx, dy;
-	float r_width;
-	float r_height;
-
-	r = DefaultRootWindow ( d );
-	XGetWindowAttributes ( d, r, &attributes );
-	r_width = 1.0 / (float)attributes.width;
-	r_height = 1.0 / (float)attributes.height;
+	CGDirectDisplayID display = kCGDirectMainDisplay; // to grab the main display ID
+	CGRect bounds = CGDisplayBounds(display);
+	float rscreenWidth = 1. / bounds.size.width;
+	float rscreenHeight = 1. / bounds.size.height;
 
 	for (;;) {
-		XQueryKeymap ( d , (char *) (gKeyStateGlobals.keys) );
-		XQueryPointer ( d, r,
-						&rep_root, &rep_child,
-				  &rep_rootx, &rep_rooty,
-				  &dx, &dy,
-				  &rep_mask);
 
-		gMouseUGenGlobals.mouseX = (float)dx * r_width;
-		gMouseUGenGlobals.mouseY = 1.f - ( (float)dy * r_height );
+		NSPoint p;
+		p = [NSEvent mouseLocation];
+		gMouseUGenGlobals.mouseX = (float)p.x * rscreenWidth;
+		gMouseUGenGlobals.mouseY = (float)p.y * rscreenHeight;
+		gMouseUGenGlobals.mouseButton = (bool)[NSEvent pressedMouseButtons];
 
-		gMouseUGenGlobals.mouseButton = (bool) ( rep_mask & Button1Mask );
-
-		nanosleep ( &requested_time , &remaining_time );
+		usleep(17000);
 	}
+
+	return;
 }
-#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void KeyState_next(KeyState *unit, int inNumSamples)
 {
-	// minval, maxval, warp, lag
-	uint8 *keys = (uint8*)gKeyStateGlobals.keys;
-	int keynum = (int)ZIN0(0);
-	int byte = (keynum >> 3) & 31;
-	int bit = keynum & 7;
-	int val = keys[byte] & (1 << bit);
+	CGKeyCode keynum = (CGKeyCode)ZIN0(0);
+    int val = CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState, keynum);
 
 	float minval = ZIN0(1);
 	float maxval = ZIN0(2);
@@ -164,7 +90,7 @@ void KeyState_next(KeyState *unit, int inNumSamples)
 	}
 	float y0 = val ? maxval : minval;
 	ZOUT0(0) = y1 = y0 + b1 * (y1 - y0);
-	unit->m_y1 = zapgremlins(y1);
+    unit->m_y1 = zapgremlins(y1);
 }
 
 void KeyState_Ctor(KeyState *unit)
@@ -436,11 +362,3 @@ PluginLoad(UIUGens)
 	gMyPlugin.b = 3.4f;
 	DefinePlugInCmd("pluginCmdDemo", cmdDemoFunc, (void*)&gMyPlugin);
 }
-
-#ifdef __GNUC__ && !defined(_WIN32)
-static void __attribute__ ((destructor)) finalize(void)
-{
-	if (d)
-		XCloseDisplay(d);
-}
-#endif

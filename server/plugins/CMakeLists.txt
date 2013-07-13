@@ -49,8 +49,6 @@ set(plugin_sources
 	TriggerUGens.cpp
 	UnaryOpUGens.cpp
 	UnpackFFTUGens.cpp
-
-	UIUGens.cpp
 )
 
 set(plugins "")
@@ -75,6 +73,14 @@ foreach(plugin ${plugin_sources})
 endforeach(plugin)
 
 set(uiugens UIUGens)
+
+if (APPLE)
+ add_library(UIUGens MODULE UIUGens.mm)
+else()
+ add_library(UIUGens MODULE UIUGens.cpp)
+endif()
+
+list(APPEND plugins UIUGens)
 
 if (WIN32)
     if(MSVC)
@@ -178,6 +184,13 @@ if (SUPERNOVA)
 
 	list(APPEND fft_ugens FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova)
 	list(APPEND supernova_plugins FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova)
+	
+	if (APPLE)
+		add_library(UIUGens_supernova MODULE UIUGens.mm)
+	else()
+		add_library(UIUGens_supernova MODULE UIUGens.cpp)
+	endif()
+	set_property(TARGET UIUGens_supernova APPEND PROPERTY COMPILE_DEFINITIONS "SUPERNOVA")
 
 	if(NOT NO_LIBSNDFILE)
 		add_library(DiskIO_UGens_supernova MODULE
@@ -233,7 +246,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	endforeach()
 elseif (APPLE)
 	foreach (ugen ${uiugens})
-		target_link_libraries(${ugen} "-framework CoreServices -framework Carbon")
+		target_link_libraries(${ugen} "-framework CoreServices -framework AppKit")
 	endforeach()
 
 	if(NOT NO_LIBSNDFILE)
