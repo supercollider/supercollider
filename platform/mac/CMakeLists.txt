@@ -64,7 +64,7 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrStringPrim.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrSymbolPrim.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrUnixPrim.cpp
-	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.M
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.mm
 	${CMAKE_SOURCE_DIR}/lang/LangSource/AdvancingAllocPool.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/ByteCodeArray.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/DumpParseNode.cpp
@@ -151,7 +151,7 @@ include(${CMAKE_SOURCE_DIR}/SCDoc/CMakeLists.txt)
 list(APPEND scapp_sources ${SCDOC_SRCS})
 
 set(objcpp_sources
-	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.M
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.mm
 	${CMAKE_SOURCE_DIR}/editors/scapp/main.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaBridgePrimitives.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaFilePrimitives.M

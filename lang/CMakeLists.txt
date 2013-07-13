@@ -123,11 +123,11 @@ if(UNIX)
 			LangPrimSource/${HID_UTIL_DIR}/HID_Error_Handler.c
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
-			LangPrimSource/SC_Speech.M
+			LangPrimSource/SC_Speech.mm
 			)
 		add_definitions(-DHAVE_SPEECH)
 		if (CMAKE_COMPILER_IS_GNUCXX)
-			set_source_files_properties(LangPrimSource/SC_Speech.M
+			set_source_files_properties(LangPrimSource/SC_Speech.mm
 										PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 		endif()
 		if(NOT (HID_UTIL_DIR MATCHES "HID_Utilities_10_4"))
