@@ -266,59 +266,168 @@ void hexdump(int size, char* data)
 	scprintf("\n");
 }
 
+static bool dumpOSCbndl(int indent, int size, char *inData)
+{
+	int i;
+	char* data = inData + 8;
+	char* dataEnd = inData + size;
+
+	scprintf("[ \"#bundle\", %llu, ", OSCtime(data));
+	data += 8;
+	while (data < dataEnd) {
+		int contentPrinted;
+
+		int32 msgSize = OSCint(data);
+		data += sizeof(int32);
+
+		scprintf("\n");
+		for (i=0; i<indent+1; i++) scprintf("  ");
+
+		if (!strcmp(data, "#bundle"))
+			contentPrinted = dumpOSCbndl(indent+1, msgSize, data);
+		else
+			contentPrinted = dumpOSCmsg(msgSize, data);
+		data += msgSize;
+		if ( (data < dataEnd) && contentPrinted) scprintf(",");
+	}
+	scprintf("\n");
+	for (i=0; i<indent; i++) scprintf("  ");
+	scprintf("]");
+
+	return true;
+}
+
 static void dumpOSC(int mode, int size, char* inData)
 {
 	if (mode & 1)
 	{
+		int indent = 0;
+		bool contentPrinted;
+
 		if (strcmp(inData, "#bundle") == 0)
-		{
-			char* data = inData + 8;
-			scprintf("[ \"#bundle\", %llu, ", OSCtime(data));
-			data += 8;
-			char* dataEnd = inData + size;
-			while (data < dataEnd) {
-				int32 msgSize = OSCint(data);
-				data += sizeof(int32);
-				scprintf("\n    ");
-				dumpOSCmsg(msgSize, data);
-				data += msgSize;
-				if (data < dataEnd) scprintf(",");
-			}
-			scprintf("\n]\n");
-		}
+			contentPrinted = dumpOSCbndl(indent, size, inData);
 		else
-		{
-			bool contentPrinted = dumpOSCmsg(size, inData);
-			if (contentPrinted)
-				scprintf("\n");
-		}
+			contentPrinted = dumpOSCmsg(size, inData);
+
+		if (contentPrinted)
+			scprintf("\n");
 	}
 
 	if (mode & 2) hexdump(size, inData);
+}
+
+static bool UnrollOSCPacket(World *inWorld, int inSize, char *inData, OSC_Packet *inPacket)
+{
+	if (!strcmp(inData, "#bundle")) { // is a bundle
+		char *data;
+		char *dataEnd = inData + inSize;
+		int len = 16;
+		bool hasNestedBundle = false;
+
+		// get len of nested messages only, without len of nested bundle(s)
+		data = inData + 16; // skip bundle header
+		while (data < dataEnd) {
+			int32 msgSize = OSCint(data);
+			data += sizeof(int32);
+			if (strcmp(data, "#bundle")) // is a message
+				len += sizeof(int32) + msgSize;
+			else
+				hasNestedBundle = true;
+			data += msgSize;
+		}
+
+		if (hasNestedBundle) {
+			if (len > 16) { // not an empty bundle
+				// add nested messages to bundle buffer
+				char *buf = (char*)malloc(len);
+				inPacket->mSize = len;
+				inPacket->mData = buf;
+
+				memcpy(buf, inData, 16); // copy bundle header
+				data = inData + 16; // skip bundle header
+				while (data < dataEnd) {
+					int32 msgSize = OSCint(data);
+					data += sizeof(int32);
+					if (strcmp(data, "#bundle")) { // is a message
+						memcpy(buf, data-sizeof(int32), sizeof(int32) + msgSize);
+						buf += msgSize;
+					}
+					data += msgSize;
+				}
+
+				// process this packet without its nested bundle(s)
+				if(!ProcessOSCPacket(inWorld, inPacket)) {
+					scprintf("command FIFO full\n");
+					free(buf);
+					return false;
+				}
+			}
+
+			// process nested bundle(s)
+			data = inData + 16; // skip bundle header
+			while (data < dataEnd) {
+				int32 msgSize = OSCint(data);
+				data += sizeof(int32);
+				if (!strcmp(data, "#bundle")) { // is a bundle
+					OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
+					memcpy(packet, inPacket, sizeof(OSC_Packet)); // clone inPacket
+
+					if(!UnrollOSCPacket(inWorld, msgSize, data, packet)) {
+						free(packet);
+						return false;
+					}
+				}
+				data += msgSize;
+			}
+		} else { // !hasNestedBundle
+			char *buf = (char*)malloc(inSize);
+			inPacket->mSize = inSize;
+			inPacket->mData = buf;
+			memcpy(buf, inData, inSize);
+
+			if(!ProcessOSCPacket(inWorld, inPacket)) {
+				scprintf("command FIFO full\n");
+				free(buf);
+				return false;
+			}
+		}
+	} else { // is a message
+		char *buf = (char*)malloc(inSize);
+		inPacket->mSize = inSize;
+		inPacket->mData = buf;
+		memcpy(buf, inData, inSize);
+
+		if(!ProcessOSCPacket(inWorld, inPacket)) {
+			scprintf("command FIFO full\n");
+			free(buf);
+			return false;
+		}
+	}
+
+	return true;
 }
 
 }
 
 SC_DLLEXPORT_C bool World_SendPacketWithContext(World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext)
 {
-	bool result = false;
 	if (inSize > 0) {
 		if (inWorld->mDumpOSC) dumpOSC(inWorld->mDumpOSC, inSize, inData);
 
 		OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-		char *data = (char*)malloc(inSize);
+
 		packet->mReplyAddr.mSockAddr.sin_addr.s_addr = 0;
 		packet->mReplyAddr.mSockAddr.sin_port = 0;
 		packet->mReplyAddr.mReplyFunc = inFunc;
 		packet->mReplyAddr.mReplyData = inContext;
-		packet->mSize = inSize;
-		packet->mData = data;
 		packet->mReplyAddr.mSocket = 0;
-		memcpy(data, inData, inSize);
 
-		result = ProcessOSCPacket(inWorld, packet);
+		if(!UnrollOSCPacket(inWorld, inSize, inData, packet)) {
+			free(packet);
+			return false;
+		}
 	}
-	return result;
+	return true;
 }
 
 SC_DLLEXPORT_C bool World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc)
@@ -526,24 +635,15 @@ void* SC_UdpInPort::Run()
 								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
 
 		if (size > 0) {
-			char *data = (char*)malloc(size);
-			memcpy(data, mReadBuf, size);
-			if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, size, data);
+			if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, size, (char *)mReadBuf);
 
 			packet->mReplyAddr.mReplyFunc = udp_reply_func;
 			packet->mReplyAddr.mReplyData = 0;
-			packet->mSize = size;
-			packet->mData = data;
 			packet->mReplyAddr.mSocket = mSocket;
 
-			if (!ProcessOSCPacket(mWorld, packet))
-			{
-				scprintf("command FIFO full\n");
-				free(data);
+			if (!UnrollOSCPacket(mWorld, size, (char *)mReadBuf, packet))
 				free(packet);
-			}
 			packet = 0;
-			data = 0;
 		}
 	}
 	return 0;
@@ -706,15 +806,12 @@ void* SC_TcpConnectionPort::Run()
 
 			packet->mReplyAddr.mReplyFunc = tcp_reply_func;
 			packet->mReplyAddr.mReplyData = 0;
-			packet->mSize = msglen;
-			packet->mData = data;
 			packet->mReplyAddr.mSocket = mSocket;
-			if (!ProcessOSCPacket(mWorld, packet)) {
-				scprintf("command FIFO full\n");
-				free(data);
+
+			if (!UnrollOSCPacket(mWorld, msglen, data, packet))
 				free(packet);
-			}
 			packet = 0;
+			free(data);
 		}
 	}
 leave:
