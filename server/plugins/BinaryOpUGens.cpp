@@ -727,6 +727,18 @@ void div_d(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
+void idiv_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : (int)a / (int)b;
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
 void mod_d(BinaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
@@ -1234,6 +1246,11 @@ void mul_1(BinaryOpUGen *unit, int inNumSamples)
 void div_1(BinaryOpUGen *unit, int inNumSamples)
 {
 	ZOUT0(0) = ZIN0(0) / ZIN0(1);
+}
+
+void idiv_1(BinaryOpUGen *unit, int inNumSamples)
+{
+	ZOUT0(0) = (int)ZIN0(0) / (int)ZIN0(1);
 }
 
 void mod_1(BinaryOpUGen *unit, int inNumSamples)
@@ -2204,6 +2221,83 @@ FLATTEN void div_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 #endif
 
 
+void idiv_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float *b = ZIN(1);
+
+	LOOP1(inNumSamples,
+		ZXP(out) = (int)ZXP(a) / (int)ZXP(b);
+	);
+}
+
+void idiv_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = unit->mPrevB;
+	float next_b = ZIN0(1);
+
+	if (xb == next_b) {
+		ZXP(out) = (int)ZXP(a) / (int)xb;
+	} else {
+		float slope = CALCSLOPE(next_b, xb);
+		LOOP1(inNumSamples,
+			ZXP(out) = (int)ZXP(a) / (int)xb;
+			xb += slope;
+		);
+		unit->mPrevB = xb;
+	}
+}
+
+void idiv_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = unit->mPrevA;
+	float *b = ZIN(1);
+	float next_a = ZIN0(0);
+
+	if (xa == next_a) {
+		if (xa == 0.f) {
+			ZClear(inNumSamples, out);
+		} else {
+			LOOP1(inNumSamples,
+				ZXP(out) = (int)xa / (int)ZXP(b);
+			);
+		}
+	} else {
+		float slope = CALCSLOPE(next_a, xa);
+		LOOP1(inNumSamples,
+			ZXP(out) = (int)xa / (int)ZXP(b);
+			xa += slope;
+		);
+		unit->mPrevA = xa;
+	}
+}
+
+void idiv_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = ZIN0(0);
+	float *b = ZIN(1);
+
+	LOOP1(inNumSamples,
+		ZXP(out) = (int)xa / (int)ZXP(b);
+	);
+}
+
+
+void idiv_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = ZIN0(1);
+
+	LOOP1(inNumSamples,
+		ZXP(out) = (int)ZXP(a) / (int)xb;
+	);
+}
 
 
 
@@ -5879,6 +5973,7 @@ static BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen *unit)
 		case opSub : func = &sub_1; break;
 		case opMul : func = &mul_1; break;
 		case opFDiv : func = &div_1; break;
+		case opIDiv : func = &idiv_1; break;
 		case opMod : func = &mod_1; break;
 		case opEQ  : func = &eq_1; break;
 		case opNE  : func = &neq_1; break;
@@ -5936,6 +6031,7 @@ static BinaryOpFunc ChooseDemandFunc(BinaryOpUGen *unit)
 		case opSub : func = &sub_d; break;
 		case opMul : func = &mul_d; break;
 		case opFDiv : func = &div_d; break;
+		case opIDiv : func = &idiv_d; break;
 		case opMod : func = &mod_d; break;
 		case opEQ  : func = &eq_d; break;
 		case opNE  : func = &neq_d; break;
@@ -6001,6 +6097,7 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 						case opSub : func = &sub_aa; break;
 						case opMul : func = &mul_aa; break;
 						case opFDiv : func = &div_aa; break;
+						case opIDiv : func = &idiv_aa; break;
 						case opMod : func = &mod_aa; break;
 						case opEQ  : func = &eq_aa; break;
 						case opNE  : func = &neq_aa; break;
@@ -6054,6 +6151,7 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 						case opSub : func = &sub_ak; break;
 						case opMul : func = &mul_ak; break;
 						case opFDiv : func = &div_ak; break;
+						case opIDiv : func = &idiv_ak; break;
 						case opMod : func = &mod_ak; break;
 						case opEQ  : func = &eq_ak; break;
 						case opNE  : func = &neq_ak; break;
@@ -6107,6 +6205,7 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 						case opSub : func = &sub_ai; break;
 						case opMul : func = &mul_ai; break;
 						case opFDiv : func = &div_ai; break;
+						case opIDiv : func = &idiv_ai; break;
 						case opMod : func = &mod_ai; break;
 						case opEQ  : func = &eq_ai; break;
 						case opNE  : func = &neq_ai; break;
@@ -6160,6 +6259,7 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 					case opSub : func = &sub_ka; break;
 					case opMul : func = &mul_ka; break;
 					case opFDiv : func = &div_ka; break;
+					case opIDiv : func = &idiv_ka; break;
 					case opMod : func = &mod_ka; break;
 					case opEQ  : func = &eq_ka; break;
 					case opNE  : func = &neq_ka; break;
@@ -6216,6 +6316,7 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 					case opSub : func = &sub_ia; break;
 					case opMul : func = &mul_ia; break;
 					case opFDiv : func = &div_ia; break;
+					case opIDiv : func = &idiv_ia; break;
 					case opMod : func = &mod_ia; break;
 					case opEQ  : func = &eq_ia; break;
 					case opNE  : func = &neq_ia; break;
@@ -6287,6 +6388,7 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 						case opSub : func = &sub_aa_nova_64; break;
 						case opMul : func = &mul_aa_nova_64; break;
 						case opFDiv : func = &div_aa_nova; break;
+						case opIDiv : func = &idiv_aa; break;
 						case opMod : func = &mod_aa; break;
 						case opEQ  : func = &eq_aa_nova_64; break;
 						case opNE  : func = &neq_aa_nova_64; break;
@@ -6338,6 +6440,7 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 						case opSub : func = &sub_ak_nova_64; break;
 						case opMul : func = &mul_ak_nova_64; break;
 						case opFDiv : func = &div_ak_nova; break;
+						case opIDiv : func = &idiv_ak; break;
 						case opMod : func = &mod_ak; break;
 						case opEQ  : func = &eq_ak_nova_64; break;
 						case opNE  : func = &neq_ak_nova_64; break;
@@ -6389,6 +6492,7 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 						case opSub : func = &sub_ai_nova_64; break;
 						case opMul : func = &mul_ai_nova_64; break;
 						case opFDiv : func = &div_ai_nova; break;
+						case opIDiv : func = &idiv_ai; break;
 						case opMod : func = &mod_ai; break;
 						case opEQ  : func = &eq_ai_nova_64; break;
 						case opNE  : func = &neq_ai_nova_64; break;
@@ -6442,6 +6546,7 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 					case opSub : func = &sub_ka_nova_64; break;
 					case opMul : func = &mul_ka_nova_64; break;
 					case opFDiv : func = &div_ka_nova; break;
+					case opIDiv : func = &idiv_ka; break;
 					case opMod : func = &mod_ka; break;
 					case opEQ  : func = &eq_ka_nova_64; break;
 					case opNE  : func = &neq_ka_nova_64; break;
@@ -6498,6 +6603,7 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 					case opSub : func = &sub_ia_nova_64; break;
 					case opMul : func = &mul_ia_nova_64; break;
 					case opFDiv : func = &div_ia_nova; break;
+					case opIDiv : func = &idiv_ia; break;
 					case opMod : func = &mod_ia; break;
 					case opEQ  : func = &eq_ia_nova_64; break;
 					case opNE  : func = &neq_ia_nova_64; break;
@@ -6572,6 +6678,7 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 						case opSub : func = &sub_aa_nova; break;
 						case opMul : func = &mul_aa_nova; break;
 						case opFDiv : func = &div_aa_nova; break;
+						case opIDiv : func = &idiv_aa; break;
 						case opMod : func = &mod_aa; break;
 						case opEQ  : func = &eq_aa_nova; break;
 						case opNE  : func = &neq_aa_nova; break;
@@ -6623,6 +6730,7 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 						case opSub : func = &sub_ak_nova; break;
 						case opMul : func = &mul_ak_nova; break;
 						case opFDiv : func = &div_ak_nova; break;
+						case opIDiv : func = &idiv_ak; break;
 						case opMod : func = &mod_ak; break;
 						case opEQ  : func = &eq_ak_nova; break;
 						case opNE  : func = &neq_ak_nova; break;
@@ -6674,6 +6782,7 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 						case opSub : func = &sub_ai_nova; break;
 						case opMul : func = &mul_ai_nova; break;
 						case opFDiv : func = &div_ai_nova; break;
+						case opIDiv : func = &idiv_ai; break;
 						case opMod : func = &mod_ai; break;
 						case opEQ  : func = &eq_ai_nova; break;
 						case opNE  : func = &neq_ai_nova; break;
@@ -6727,6 +6836,7 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 					case opSub : func = &sub_ka_nova; break;
 					case opMul : func = &mul_ka_nova; break;
 					case opFDiv : func = &div_ka_nova; break;
+					case opIDiv : func = &idiv_ka; break;
 					case opMod : func = &mod_ka; break;
 					case opEQ  : func = &eq_ka_nova; break;
 					case opNE  : func = &neq_ka_nova; break;
@@ -6783,6 +6893,7 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 					case opSub : func = &sub_ia_nova; break;
 					case opMul : func = &mul_ia_nova; break;
 					case opFDiv : func = &div_ia_nova; break;
+					case opIDiv : func = &idiv_ia; break;
 					case opMod : func = &mod_ia; break;
 					case opEQ  : func = &eq_ia_nova; break;
 					case opNE  : func = &neq_ia_nova; break;
