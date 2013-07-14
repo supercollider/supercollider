@@ -21,7 +21,7 @@ else()
 endif()
 
 if(APPLE)
-	include_directories("LangPrimSource/${HID_UTIL_DIR}")
+	include_directories("LangPrimSource/HID_Utilities")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
 elseif(WIN32)
@@ -113,26 +113,22 @@ set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 add_definitions(-DYYSTACK_USE_ALLOCA)
 
+
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
 			LangPrimSource/SC_HID.cpp
-			LangPrimSource/${HID_UTIL_DIR}/HID_Utilities.c
-			LangPrimSource/${HID_UTIL_DIR}/HID_Name_Lookup.c
-			LangPrimSource/${HID_UTIL_DIR}/HID_Queue_Utilities.c
-			LangPrimSource/${HID_UTIL_DIR}/HID_Error_Handler.c
+			LangPrimSource/HID_Utilities/HID_Utilities.c
+			LangPrimSource/HID_Utilities/HID_Name_Lookup.c
+			LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
+			LangPrimSource/HID_Utilities/HID_Error_Handler.c
+			LangPrimSource/HID_Utilities/IOHIDElement_.c
+			LangPrimSource/HID_Utilities/IOHIDDevice_.c
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
 			LangPrimSource/SC_Speech.mm
 			)
 		add_definitions(-DHAVE_SPEECH)
-		if(NOT (HID_UTIL_DIR MATCHES "HID_Utilities_10_4"))
-			list(APPEND sclang_sources
-				LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c
-				LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c
-			)
-		endif()
-
 	else(APPLE)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
