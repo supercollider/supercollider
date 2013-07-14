@@ -84,7 +84,6 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangSource/SimpleStack.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/VMGlobals.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/dumpByteCodes.cpp
-	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/WiiMote_OSX/wiiremote.c
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_HID.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Utilities.c
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Name_Lookup.c
@@ -243,7 +242,6 @@ target_link_libraries(${scappbundlename} "-framework Cocoa")
 target_link_libraries(${scappbundlename} "-framework CoreAudio")
 target_link_libraries(${scappbundlename} "-framework CoreMIDI")
 target_link_libraries(${scappbundlename} "-framework CoreServices")
-target_link_libraries(${scappbundlename} "-framework IOBluetooth")
 target_link_libraries(${scappbundlename} "-framework IOKit")
 target_link_libraries(${scappbundlename} "-framework Quartz")
 target_link_libraries(${scappbundlename} "-framework QuartzCore")
