@@ -584,31 +584,44 @@ subsection::Printing and Introspection
 method::post
 
 Print a string representation of the receiver to the post window.
+code::
 "hello".post; "hello".post; "";
+::
 
 method::postln
 
 Print a string representation of the receiver followed by a newline.
+code::
 "hello".postln; "hello".postln; "";
+::
 
 method::postc
 
 Print a string representation of the receiver preceded by comments.
+code::
 "hello".postc; "hello".postc; "";
+::
 
 method::postcln
 
 Print a string representation of the receiver preceded by comments, followed by a newline.
+code::
 "hello".postcln; "hello".postcln; "";
+::
 
 method::postcs
 
 Print the compile string representation of the receiver, followed by a newline.
+code::
 "hello".postcs; "hello".postcs; "";
+::
 
 method::dump
 
 Print a detailed low level representation of the receiver to the post window.
+code::
+List[1, 2, 3].dump;
+::
 
 subsection::System Information
 
@@ -734,28 +747,53 @@ Yields the receiver
 
 method::idle
 
-within a routine, return values (the receiver) until this time is over. (for an example, see Routine)
+within a routine, return values (the receiver) until this time is over. (see also link::Classes/Routine#play::)
 Time is measured relative to the thread's clock.
+code::
+a = Routine { 1.yield; 0.idle(3); 400.yield };
+fork { loop { a.next.postln; 0.5.wait } };
+::
 
 method::iter
 
-Returns a OneShotStream with the receiver as return value.
+Returns a link::Classes/OneShotStream:: with the receiver as return value.
+code::
+a = 9.iter;
+a.nextN(4);
+::
 
 method::cyc
 
 Embeds the receiver in the stream n times (default: inf), each time resetting it.
+code::
+a = 9.cyc(2);
+a.nextN(4);
+::
 
 method::fin
 
 Calls next with the receiver n times only (default: 1), yielding the result.
+code::
+a = (10..0).iter.fin(2);
+a.nextN(4);
+::
 
 method::repeat
 
 Repeatedly embeds the receiver in the stream using a Pn (may thus be used for patterns and other objects alike)
+code::
+a = (0..3).iter.repeat(2);
+a.nextN(9)
+::
 
 method::loop
 
 Indefinitely embeds the receiver in the stream
+
+code::
+a = (0..3).iter.loop;
+a.nextN(9)
+::
 
 subsection::FunctionList
 
