@@ -13,33 +13,38 @@ private::do, reverseDo, pairsDo, collect, select, reject, detect, collectAs, sel
 
 
 method::isNil
-Answers true because this is nil. In class Object this message is defined to answer false.
+Answers true because this is nil. In class link::Classes/Object:: this message is defined to answer false.
+code::
+[1, 2, nil, 3].collect(_.isNil);
+::
 
 method::notNil
-Answer false. In class Object this message answers true.
+Answer false. In class link::Classes/Object:: this message answers true.
+code::
+[1, 2, nil, 3].collect(_.notNil);
+::
 
 method::?
-
 return first non-nil argument. Since this IS nil then return anObject.
 In class link::Classes/Object::, ? is defined to answer the receiver.
+code::
+[1, 2, nil, 3].collect { |x| x ? -1 }; // replace nil by -1
+::
 
 method::??
-If the receiver is nil, value the function and return the result.  Since this IS nil, then value the function and return the result. In class Object, ?? is defined to answer the receiver.
+If the receiver is nil, evaluate the function and return the result.  Since this IS nil, then evaluate the function and return the result. In class link::Classes/Object::, ?? is defined to answer the receiver.
 
-method::add
-Returns an array with the value. This makes it unecessary to initialize when adding to a variable.
-
-method::addAll
-Returns an array with all the values. This makes it unecessary to initialize when adding to a variable.
-
-method::remove
-Returns nil. This makes it unecessary to initialize when adding to a variable.
-
-method::++
-Returns an array with all the values. This makes it unecessary to initialize when adding to a variable.
+code::
+[nil, 2, nil, 3].collect { |x| x ?? { 100.rand } }; // replace nil by a random number
+::
 
 method::booleanValue
 Returns false.
+code::
+[1, 2, nil, 3].collect(_.booleanValue);
+// compare:
+[true, false, false, true].collect(_.binaryValue);
+::
 
 method::rate
 Returns nil.
@@ -53,9 +58,6 @@ Returns false.
 method::dependants
 Returns an empty IdentitySet.
 
-method::transformEvent
-Return the argument.
-
 method::awake
 Returns nil.
 
@@ -67,15 +69,12 @@ Returns Quant.default.
 
 method::matchItem
 Returns true.
+code::
+[3, 2, 1].select(nil.matchItem(_))); // returns all
+// compare:
+[3, 2, 1].select([1, -1, 2].matchItem(_))); // returns only those in the key collection
+::
 
-method::add
-Returns an array with item.
-
-method::addAll
-Returns array.asArray.
-
-method::++
-Returns array.
 
 method::asCollection
 Returns empty array.
@@ -83,11 +82,6 @@ Returns empty array.
 method::get
 Returns prevVal.
 
-method::addFunc
-Returns the function or a FunctionList.
-
-method::removeFunc
-Returns Nil.
 
 method::asSpec
 Returns the default ControlSpec
@@ -109,5 +103,80 @@ to do nothing. This eliminates the need to check for nil when sending dependancy
 subsection::Other Methods
 
 Many other messages are defined in class Nil to do nothing. This eliminates the need to check for nil.
+
+subsection::Generic Collectors
+
+There are a number of methods that can be applied to nil so that variables do not need to be initialized. Nil is just the "ground" (default case) from which the rest is bootstrapped.
+
+method::add
+Returns an array with the value. This makes it unecessary to initialize when adding to a variable.
+code::
+x = nil;
+x = x.add(8);  // returns an array
+x = x.add(7); // appends to the array
+::
+
+method::addAll
+Returns an array with all the values. This makes it unecessary to initialize when adding to a variable.
+code::
+x = nil;
+x = x.addAll([0, 2, 1, 2]);  // returns an array
+x = x.addAll(7); // single objects are converted
+::
+
+method::remove
+For nil, it just returns nil. This makes it unecessary to initialize when removing from a variable and adding to it again.
+code::
+x = nil;
+x.remove(1); // stays nil, returns nil
+x = x.addAll([0, 2, 1, 2]);  // returns an array
+x.remove(1); // returns 1
+x;
+::
+
+method::++
+Returns an array with all the values. This makes it unecessary to initialize when adding to a variable.
+code::
+x = nil;
+x = x ++ [7, 8, 9]; // returns the reciever
+x = x ++ [3, 0, 1, 2]; // adds to the array
+::
+
+method::addFunc
+Returns a function or a FunctionList.
+This method is used to add multiple functions to already existing ones.
+code::
+f = nil;
+f = f.addFunc { "----------****".scramble };
+f = f.addFunc { 1.0.rand };
+f.value;
+::
+
+method::removeFunc
+This method is used to remove multiple functions from already existing ones. For Nil, it just returns itself.
+
+code::
+f = { 1.0.rand };
+g = { "you have produced a random value".postln };
+f = f.addFunc(g);
+f.value;
+f.removeFunc(g);
+f.value;
+::
+
+
+method::transformEvent
+This method is used to operate on events which are passed through the system as an argument.
+
+code::
+// for Nil: return the argument unmodified (an event).
+nil.transformEvent((x: 8));
+// for Dictionary (and thus for Event): add to the argument.
+(y: 100, z: 1).transformEvent((x: 8));
+// for Association: add the association to the event
+(\a -> \x).transformEvent((x: 8));
+// for Function: use the function receive the event as argument.
+{ |event| event.use { ~x = ~x + 1 }; event }.transformEvent((x: 8));
+::
 
 
