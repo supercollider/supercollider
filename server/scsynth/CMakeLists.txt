@@ -86,6 +86,10 @@ set(scsynth_sources
 	${boost_system_sources}
 )
 
+if(APPLE)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+endif()
+
 if(WIN32)
     list(APPEND scsynth_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 endif()
@@ -195,7 +199,7 @@ if (FFTW3F_FOUND)
 endif()
 
 if (APPLE)
-	target_link_libraries(libscsynth "-framework vecLib -framework CoreServices")
+	target_link_libraries(libscsynth "-framework vecLib -framework CoreServices -framework Foundation")
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")

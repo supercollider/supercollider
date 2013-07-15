@@ -174,6 +174,7 @@ set(objcpp_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/UserPanel.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/post_queue.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/syntaxColorize.M
+	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
 	)
 
 set(objc_sources

@@ -85,6 +85,10 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
 
+if(APPLE)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+endif()
+
 if (NOT Boost_FOUND)
 	file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
 	file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/src/*cpp)
