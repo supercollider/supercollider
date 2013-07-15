@@ -186,36 +186,36 @@ bool sc_SkipDirectory(const char *name)
 
 int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length)
 {
-    isAlias = false;
+	isAlias = false;
 #if defined(__APPLE__) && !defined(SC_IPHONE)
-    NSString *nsstringPath = [NSString stringWithCString: path encoding: NSUTF8StringEncoding];
-    BOOL isDirectory;
-    // does the file exist? If not just copy and bail
-    if([[NSFileManager defaultManager] fileExistsAtPath: nsstringPath isDirectory: &isDirectory]) {
-        NSError *error;
+	NSString *nsstringPath = [NSString stringWithCString: path encoding: NSUTF8StringEncoding];
+	BOOL isDirectory;
+	// does the file exist? If not just copy and bail
+	if([[NSFileManager defaultManager] fileExistsAtPath: nsstringPath isDirectory: &isDirectory]) {
+		NSError *error;
 
-        NSData *bookmark = [NSURL bookmarkDataWithContentsOfURL: [NSURL fileURLWithPath:nsstringPath isDirectory: isDirectory] error: &error];
-        
-        // is it an alias? If not just copy and bail
-        if(bookmark) {
-            NSError *resolvedURLError;
-            BOOL isStale;
-            NSURL *resolvedURL = [NSURL URLByResolvingBookmarkData: bookmark options: NSURLBookmarkResolutionWithoutUI relativeToURL: nil bookmarkDataIsStale: &isStale error: &resolvedURLError];
-            // does it actually lead to something?
-            if(isStale) {
-                printf("Error: Target missing for alias at %s\n", path);
-                return -1;
-            }
-            
-            NSString *resolvedString = [resolvedURL path];
-            
-            const char *resolvedPath = [resolvedString cStringUsingEncoding: NSUTF8StringEncoding];
-            isAlias = true;
-            strncpy(returnPath, resolvedPath, length);
-            return 0;
-        }
-    }
-    
+		NSData *bookmark = [NSURL bookmarkDataWithContentsOfURL: [NSURL fileURLWithPath:nsstringPath isDirectory: isDirectory] error: &error];
+
+		// is it an alias? If not just copy and bail
+		if(bookmark) {
+			NSError *resolvedURLError;
+			BOOL isStale;
+			NSURL *resolvedURL = [NSURL URLByResolvingBookmarkData: bookmark options: NSURLBookmarkResolutionWithoutUI relativeToURL: nil bookmarkDataIsStale: &isStale error: &resolvedURLError];
+			// does it actually lead to something?
+			if(isStale) {
+				printf("Error: Target missing for alias at %s\n", path);
+				return -1;
+			}
+
+			NSString *resolvedString = [resolvedURL path];
+
+			const char *resolvedPath = [resolvedString cStringUsingEncoding: NSUTF8StringEncoding];
+			isAlias = true;
+			strncpy(returnPath, resolvedPath, length);
+			return 0;
+		}
+	}
+
 #endif
 	strcpy(returnPath, path);
 	return 0;
