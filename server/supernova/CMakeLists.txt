@@ -75,6 +75,10 @@ set(libsupernova_src
     server/server_args.cpp
 )
 
+if(APPLE)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+endif()
+
 
 if (FFT_GREEN)
 	list(APPEND libsupernova_src ../../common/fftlib.c)
@@ -189,5 +193,5 @@ endif()
 
 if (APPLE)
     target_link_libraries(libsupernova "-framework vecLib")
-    target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices")
+    target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices -framework Foundation")
 endif()
