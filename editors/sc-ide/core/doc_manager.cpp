@@ -53,6 +53,25 @@ Document::Document( bool isPlainText ):
     applySettings( Main::settings() );
 }
 
+// alternate constructor for lang created Doc
+Document::Document( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string ):
+mIndentWidth(4),
+mHighlighter(NULL)
+{
+    mDoc = new QTextDocument(string, this);
+    mId = quuid;
+    mTitle = title;
+    mDoc->setDocumentLayout( new QPlainTextDocumentLayout(mDoc) );
+	
+    if (!isPlainText)
+        mHighlighter = new SyntaxHighlighter(mDoc);
+	
+    connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
+			this, SLOT(applySettings(Settings::Manager*)) );
+	
+    applySettings( Main::settings() );
+}
+
 void Document::setPlainText(bool set_plain_text)
 {
     if (isPlainText() == set_plain_text)
@@ -136,10 +155,26 @@ Document * DocumentManager::createDocument( bool isPlainText )
     return doc;
 }
 
+// alternate method for lang created Doc
+Document * DocumentManager::createDocument( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string  )
+{
+    Document *doc = new Document( isPlainText, quuid, title, string );
+    mDocHash.insert( doc->id(), doc );
+    return doc;
+}
+
 void DocumentManager::create()
 {
     Document *doc = createDocument( false );
 
+    Q_EMIT( opened(doc, 0, 0) );
+}
+
+// alternate method for lang created Doc
+void DocumentManager::create(const QByteArray & quuid, const QString & title, const QString & string)
+{
+    Document *doc = createDocument( false, quuid, title, string );
+    
     Q_EMIT( opened(doc, 0, 0) );
 }
 
