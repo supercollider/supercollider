@@ -324,6 +324,22 @@ ScIDE {
 		CmdPeriod.add(this);
 	}
 
+	// Document Support //////////////////////////////////////////////////
+
+	// already done
+/*	*openDocument {|path, selectionStart=0, selectionLength=0|
+		this.prSend(\openDocument, [path, selectionStart, selectionLength]);
+	}*/
+
+	*newDocument {|title="Untitled", string="", id|
+		this.prSend(\newDocument, [title, string, id]);
+	}
+
+	*getQUuid {
+		_ScIDE_GetQUuid
+		this.primitiveFailed
+	}
+
 	// PRIVATE ///////////////////////////////////////////////////////////
 
 	*prSend {|id, data|
@@ -339,12 +355,18 @@ ScIDE {
 
 // This is just a stub to provide oft-used functionality such as Document.open()
 ScIDEDocument : Document {
-        *initClass{
-                Document.implementationClass = this;
-        }
-	*new {|title, string, makeListener, envir|
-		^this.notImplemented("Document.new")
+	var quuid;
+	*initClass{
+		Document.implementationClass = this;
 	}
+	*new {|title, string, makeListener, envir|
+		var quuid = ScIDE.getQUuid;
+		ScIDE.newDocument(title, string, quuid);
+		^super.prBasicNew.initID(quuid);
+	}
+
+	initID {|id| quuid = id }
+
 	propen {|path, selectionStart, selectionLength, envir|
 		if(envir != nil){"ScIDE does not set an environment per document".warn};
 		^ScIDE.open(path, selectionStart, selectionLength)

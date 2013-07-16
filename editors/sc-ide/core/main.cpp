@@ -297,9 +297,13 @@ void Main::findReferences(const QString &string, QWidget * parent)
 void Main::onScLangResponse( const QString & selector, const QString & data )
 {
     static QString openFileSelector("openFile");
-
+	static QString newDocSelector("newDocument");
+	
     if (selector == openFileSelector)
         handleOpenFileScRequest(data);
+	
+	if (selector == newDocSelector)
+        handleNewDocScRequest(data);
 }
 
 void Main::handleOpenFileScRequest( const QString & data )
@@ -325,5 +329,35 @@ void Main::handleOpenFileScRequest( const QString & data )
         doc[2].Read(selectionLength);
 
         mDocManager->open(QString(path.c_str()), position, selectionLength);
+    }
+}
+
+void Main::handleNewDocScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+	
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+		
+        std::string title;
+        bool success = doc[0].Read(title);
+        if (!success)
+            return;
+		
+		std::string initString;
+        success = doc[1].Read(initString);
+        if (!success)
+            return;
+		
+		std::string quuid;
+        success = doc[2].Read(quuid);
+        if (!success)
+            return;
+		
+        mDocManager->create(QByteArray(quuid.c_str()), QString(title.c_str()), QString(initString.c_str()));
     }
 }
