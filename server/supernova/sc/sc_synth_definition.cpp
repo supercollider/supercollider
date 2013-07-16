@@ -46,7 +46,7 @@ std::vector<sc_synthdef> sc_read_synthdefs_file(path const & file)
         return read_synthdef_file(file.string());
     } catch(std::exception const & e)
     {
-        cout << "Exception when parsing synthdef: " << e.what() << endl;
+        cout << "Exception when parsing synthdef file " << file.string() << ": " << e.what() << endl;
         return std::vector<sc_synthdef>();
     }
 }
