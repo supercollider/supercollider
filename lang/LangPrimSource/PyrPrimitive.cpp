@@ -61,6 +61,11 @@
 
 #include "SCDocPrim.h"
 
+
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Warray-bounds"
+#endif
+
 int yyparse();
 
 extern bool gTraceInterpreter;
