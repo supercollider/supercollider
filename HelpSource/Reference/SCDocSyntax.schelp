@@ -231,7 +231,7 @@ Just leave the caption empty if you want a link but no caption.
 
 ::
 
-The following tags (CODE, TELETYPE and MATH) can be written in two forms, either inline or block.
+The following tags (CODE and TELETYPE) can be written in two forms, either inline or block.
 strong::Inline:: form has the end-tag on the same line, and need any enclosed double-colons that should be part of the text to be escaped with backslash (teletype:: \ ::).
 strong::Block:: form has the tag and end-tag on lines by themselves, and can take multi-line text. In block form, only a single end-tag on its own line counts and any end-tags inside the text should not be escaped (except if it's on a single line). Example:
 teletype::
@@ -250,21 +250,6 @@ teletype:: CODE\:: ::
 ## keyword:: teletype\::
 teletype:: TELETYPE\:: ::
 || Render monospace text.
-## keyword:: math\::
-teletype:: MATH\:: ::
-|| Render mathematics given in TeX syntax. Example:
-teletype::
-This is inline math::2\pi:: and below is block display math:
-math::
-1\over\sqrt{x^\pi}
-\::
-::
-Renders:
-
-This is inline math::2\pi:: and below is block display math:
-math::
-1\over\sqrt{x^\pi}
-::
 ::
 
 subsection:: Lists and tables
@@ -422,11 +407,9 @@ inlinetag         ::= "LINK::"
                     | "EMPHASIS::"
                     | "CODE::"
                     | "TELETYPE::"
-                    | "MATH::"
                     | "ANCHOR::"
 blocktag          ::= CODEBLOCK
                     | TELETYPEBLOCK
-                    | MATHBLOCK
 listtag           ::= "LIST::"
                     | "TREE::"
                     | "NUMBEREDLIST::"

@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 2.5.  */
+/* A Bison parser, made by GNU Bison 2.7.12-4996.  */
 
 /* Bison interface for Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989-1990, 2000-2011 Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,6 +30,15 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
+#ifndef YY_SCDOC_SCDOC_TAB_HPP_INCLUDED
+# define YY_SCDOC_SCDOC_TAB_HPP_INCLUDED
+/* Enabling traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int scdocdebug;
+#endif
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -72,36 +81,32 @@
      SOFT = 289,
      IMAGE = 290,
      TELETYPE = 291,
-     MATH = 292,
-     STRONG = 293,
-     EMPHASIS = 294,
-     CODEBLOCK = 295,
-     TELETYPEBLOCK = 296,
-     MATHBLOCK = 297,
-     TAGSYM = 298,
-     BARS = 299,
-     HASHES = 300,
-     TEXT = 301,
-     URL = 302,
-     COMMA = 303,
-     METHODNAME = 304,
-     METHODARGS = 305,
-     NEWLINE = 306,
-     EMPTYLINES = 307,
-     BAD_METHODNAME = 308,
-     START_FULL = 309,
-     START_PARTIAL = 310,
-     START_METADATA = 311
+     STRONG = 292,
+     EMPHASIS = 293,
+     CODEBLOCK = 294,
+     TELETYPEBLOCK = 295,
+     TAGSYM = 296,
+     BARS = 297,
+     HASHES = 298,
+     TEXT = 299,
+     URL = 300,
+     COMMA = 301,
+     METHODNAME = 302,
+     METHODARGS = 303,
+     NEWLINE = 304,
+     EMPTYLINES = 305,
+     BAD_METHODNAME = 306,
+     START_FULL = 307,
+     START_PARTIAL = 308,
+     START_METADATA = 309
    };
 #endif
-
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 {
-
-/* Line 2068 of yacc.c  */
+/* Line 2053 of yacc.c  */
 #line 55 "SCDoc.y"
 
     int i;
@@ -110,16 +115,13 @@ typedef union YYSTYPE
     DocNode *doc_node;
 
 
-
-/* Line 2068 of yacc.c  */
-#line 116 "SCDoc.tab.hpp"
+/* Line 2053 of yacc.c  */
+#line 120 "SCDoc.tab.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 #endif
-
-extern YYSTYPE scdoclval;
 
 #if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
 typedef struct YYLTYPE
@@ -134,5 +136,20 @@ typedef struct YYLTYPE
 # define YYLTYPE_IS_TRIVIAL 1
 #endif
 
+extern YYSTYPE scdoclval;
 extern YYLTYPE scdoclloc;
+#ifdef YYPARSE_PARAM
+#if defined __STDC__ || defined __cplusplus
+int scdocparse (void *YYPARSE_PARAM);
+#else
+int scdocparse ();
+#endif
+#else /* ! YYPARSE_PARAM */
+#if defined __STDC__ || defined __cplusplus
+int scdocparse (void);
+#else
+int scdocparse ();
+#endif
+#endif /* ! YYPARSE_PARAM */
 
+#endif /* !YY_SCDOC_SCDOC_TAB_HPP_INCLUDED  */
