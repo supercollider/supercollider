@@ -112,7 +112,9 @@ inline float32 zapgremlins(float32 x)
 
 inline float32 sc_log2(float32 x)
 {
-#ifdef HAVE_C99
+#if __cplusplus >= 201103L
+	return std::log2(x);
+#elif defined(HAVE_C99)
 	return ::log2f(std::abs(x));
 #else
 	return static_cast<float32>(std::log(std::abs(x)) * (float32)rlog2);
