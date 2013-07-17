@@ -50,27 +50,38 @@ For speed we keep this global, although this makes the code non-thread-safe.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Constants and structs
 
-// Decisions here about which FFT library to use - vDSP only exists on Mac BTW.
+// Decisions here about which FFT library to use.
 // We include the relevant libs but also ensure that one, and only one, of them is active...
-#if SC_FFT_NONE
-	// "SC_FFT_NONE" allows compilation without FFT support; only expected to be used on very limited platforms
-	#define SC_FFT_FFTW 0
-	#define SC_FFT_VDSP 0
-	#define SC_FFT_GREEN 0
-#elif SC_FFT_GREEN
-	#define SC_FFT_FFTW 0
-	#define SC_FFT_VDSP 0
-	#define SC_FFT_GREEN 1
-#elif !SC_FFT_FFTW && defined(__APPLE__)
-	#define SC_FFT_FFTW 0
-	#define SC_FFT_VDSP 1
-	#define SC_FFT_GREEN 0
+#ifdef SC_FFT_FFTW
+
+#define SC_FFT_FFTW 1
+#define SC_FFT_VDSP 0
+#define SC_FFT_GREEN 0
+
+#include <fftw3.h>
+
+#elif defined(SC_FFT_GREEN)
+
+#define SC_FFT_FFTW 0
+#define SC_FFT_VDSP 0
+#define SC_FFT_GREEN 1
+
+extern "C" {
+#include "fftlib.h"
+}
+
+#elif defined(__APPLE__)
+
+#define SC_FFT_FFTW 0
+#define SC_FFT_VDSP 1
+#define SC_FFT_GREEN 0
+
 #else
-//#elif SC_FFT_FFTW
-	#define SC_FFT_FFTW 1
-	#define SC_FFT_VDSP 0
-	#define SC_FFT_GREEN 0
-	#include <fftw3.h>
+
+#define SC_FFT_FFTW 0
+#define SC_FFT_VDSP 0
+#define SC_FFT_GREEN 0
+
 #endif
 
 // Note that things like *fftWindow actually allow for other sizes, to be created on user request.
@@ -96,10 +107,7 @@ static float *fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 #endif
 
 #if SC_FFT_GREEN
-	extern "C" {
-		#include "fftlib.h"
-		static float *cosTable[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
-	}
+	static float *cosTable[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 #endif
 
 #if SC_FFT_FFTW
