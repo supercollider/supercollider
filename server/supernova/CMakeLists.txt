@@ -88,11 +88,6 @@ if(WIN32)
     list(APPEND libsupernova_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 endif()
 
-
-if(FFT_GREEN)
-    list(APPEND libsupernova_src ../../common/fftlib.c)
-endif()
-
 file(GLOB_RECURSE supernova_headers *hpp)
 
 if(COMPACT_BUILD)
