@@ -144,7 +144,8 @@ static int FFTBase_Ctor(FFTBase *unit, int frmsizinput)
 
 void FFT_Ctor(FFT *unit)
 {
-	unit->m_wintype = (int)ZIN0(3); // wintype may be used by the base ctor
+	int winType = sc_clip((int)ZIN0(3), -1, 1); // wintype may be used by the base ctor
+	unit->m_wintype = winType;
 	if(!FFTBase_Ctor(unit, 5)){
 		SETCALC(FFT_ClearUnitOutputs);
 		// These zeroes are to prevent the dtor freeing things that don't exist:
@@ -244,7 +245,9 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 void IFFT_Ctor(IFFT* unit){
-	unit->m_wintype = (int)ZIN0(1); // wintype may be used by the base ctor
+	int winType = sc_clip((int)ZIN0(1), -1, 1); // wintype may be used by the base ctor
+	unit->m_wintype = winType;
+
 	if(!FFTBase_Ctor(unit, 2)){
 		SETCALC(*ClearUnitOutputs);
 		// These zeroes are to prevent the dtor freeing things that don't exist:
