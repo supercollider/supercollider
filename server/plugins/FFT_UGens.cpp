@@ -213,7 +213,6 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 	float *in = IN(1);
 	float *out = unit->m_inbuf + unit->m_pos + unit->m_shuntsize;
 
-// 	int numSamples = unit->mWorld->mFullRate.mBufLength;
 	int numSamples = unit->m_numSamples;
 
 	// copy input
@@ -298,7 +297,7 @@ void IFFT_next(IFFT *unit, int wrongNumSamples)
 	// Load state from struct into local scope
 	int pos     = unit->m_pos;
 	int audiosize = unit->m_audiosize;
-// 	int numSamples = unit->mWorld->mFullRate.mBufLength;
+
 	int numSamples = unit->m_numSamples;
 	float *olabuf = unit->m_olabuf;
 	float fbufnum = ZIN0(0);
