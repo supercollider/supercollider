@@ -123,7 +123,6 @@ SCDocHTMLRenderer {
         << "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
         << "<script src='" << baseDir << "/prettify.js' type='text/javascript'></script>\n"
         << "<script src='" << baseDir << "/lang-sc.js' type='text/javascript'></script>\n"
-        << "<script src='" << baseDir << "/MathJax/MathJax.js?config=TeX-AMS_HTML,scmathjax' type='text/javascript'></script>\n"
         << "<script type='text/javascript'>var helpRoot='" << baseDir << "';</script>\n"
         << "</head>\n";
 
@@ -400,16 +399,6 @@ SCDocHTMLRenderer {
                 node.children.do {|child|
                     stream << "<a class='anchor' name='kw_" << child.text << "'>&nbsp;</a>";
                 }
-            },
-            \MATHBLOCK, { // uses MathJax to typeset TeX math
-                stream << "<span class='math'>\\[\n"
-                << this.escapeSpecialChars(node.text)
-                << "\n\\]\n</span>";
-            },
-            \MATH, {
-                stream << "<span class='math'>\\("
-                << this.escapeSpecialChars(node.text)
-                << "\\)</span>";
             },
             \IMAGE, {
                 f = node.text.split($#);
