@@ -238,7 +238,7 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 			ZOUT0(0) = -1;
 		}
 		// Shunt input buf down
-		memcpy(unit->m_inbuf, unit->m_inbuf + unit->m_hopsize, unit->m_shuntsize * sizeof(float));
+		memmove(unit->m_inbuf, unit->m_inbuf + unit->m_hopsize, unit->m_shuntsize * sizeof(float));
 	}
 }
 
@@ -316,7 +316,7 @@ void IFFT_next(IFFT *unit, int wrongNumSamples)
 		int hopsamps = pos;
 		int shuntsamps = audiosize - hopsamps;
 		if(hopsamps != audiosize)  // There's only copying to be done if the position isn't all the way to the end of the buffer
-			memcpy(olabuf, olabuf+hopsamps, shuntsamps * sizeof(float));
+			memmove(olabuf, olabuf+hopsamps, shuntsamps * sizeof(float));
 
 		// Then mix the "new" time-domain data in - adding at first, then just setting (copying) where the "old" is supposed to be zero.
 		#if defined(__APPLE__) && !defined(SC_IPHONE)
