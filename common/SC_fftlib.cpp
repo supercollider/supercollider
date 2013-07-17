@@ -145,28 +145,27 @@ static float* create_cosTable(int log2n)
 static inline float* scfft_create_fftwindow(int wintype, int log2n)
 {
 	int size = 1 << log2n;
-	unsigned short i;
 
 	float * win = (float*)nova::malloc_aligned(size * sizeof(float));
 
 	if (!win) return NULL;
 
 	double winc;
-	switch(wintype) {
-		case kSineWindow:
-			winc = pi / size;
-			for (i=0; i<size; ++i) {
-				double w = i * winc;
-				win[i] = sin(w);
-			}
-			break;
-		case kHannWindow:
-			winc = twopi / size;
-			for (i=0; i<size; ++i) {
-				double w = i * winc;
-				win[i] = 0.5 - 0.5 * cos(w);
-			}
-			break;
+	switch (wintype) {
+	case kSineWindow:
+		winc = pi / size;
+		for (int i=0; i<size; ++i) {
+			double w = i * winc;
+			win[i] = sin(w);
+		}
+		break;
+	case kHannWindow:
+		winc = twopi / size;
+		for (int i=0; i<size; ++i) {
+			double w = i * winc;
+			win[i] = 0.5 - 0.5 * cos(w);
+		}
+		break;
 	}
 
 	return win;
@@ -314,7 +313,7 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
 	}
 
 	// Ensure our window has been created
-	if((wintype != -1) && (fftWindow[wintype][log2_winsize] == 0)){
+	if ( (wintype != kRectWindow) && (fftWindow[wintype][log2_winsize] == 0)){
 		fftWindow[wintype][log2_winsize] = scfft_create_fftwindow(wintype, log2_winsize);
 	}
 
@@ -329,7 +328,6 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
 }
 
 // these do the main jobs.
-// Note: you DON"T need to call the windowing function yourself, it'll be applied by the _dofft and _doifft funcs.
 static void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fullsize, unsigned short log2_winsize,
 							  short wintype, float scalefac)
 {
