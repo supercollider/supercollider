@@ -268,7 +268,6 @@ void hexdump(int size, char* data)
 
 static bool dumpOSCbndl(int indent, int size, char *inData)
 {
-	int i;
 	char* data = inData + 8;
 	char* dataEnd = inData + size;
 
@@ -281,7 +280,7 @@ static bool dumpOSCbndl(int indent, int size, char *inData)
 		data += sizeof(int32);
 
 		scprintf("\n");
-		for (i=0; i<indent+1; i++) scprintf("  ");
+		for (int i=0; i<indent+1; i++) scprintf("  ");
 
 		if (!strcmp(data, "#bundle"))
 			contentPrinted = dumpOSCbndl(indent+1, msgSize, data);
@@ -291,7 +290,7 @@ static bool dumpOSCbndl(int indent, int size, char *inData)
 		if ( (data < dataEnd) && contentPrinted) scprintf(",");
 	}
 	scprintf("\n");
-	for (i=0; i<indent; i++) scprintf("  ");
+	for (int i=0; i<indent; i++) scprintf("  ");
 	scprintf("]");
 
 	return true;
@@ -357,7 +356,6 @@ static bool UnrollOSCPacket(World *inWorld, int inSize, char *inData, OSC_Packet
 
 				// process this packet without its nested bundle(s)
 				if(!ProcessOSCPacket(inWorld, inPacket)) {
-					scprintf("command FIFO full\n");
 					free(buf);
 					return false;
 				}
@@ -386,7 +384,6 @@ static bool UnrollOSCPacket(World *inWorld, int inSize, char *inData, OSC_Packet
 			memcpy(buf, inData, inSize);
 
 			if(!ProcessOSCPacket(inWorld, inPacket)) {
-				scprintf("command FIFO full\n");
 				free(buf);
 				return false;
 			}
@@ -398,7 +395,6 @@ static bool UnrollOSCPacket(World *inWorld, int inSize, char *inData, OSC_Packet
 		memcpy(buf, inData, inSize);
 
 		if(!ProcessOSCPacket(inWorld, inPacket)) {
-			scprintf("command FIFO full\n");
 			free(buf);
 			return false;
 		}
