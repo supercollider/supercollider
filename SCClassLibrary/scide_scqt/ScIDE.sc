@@ -355,9 +355,11 @@ ScIDE {
 
 // This is just a stub to provide oft-used functionality such as Document.open()
 ScIDEDocument : Document {
-	var quuid;
+	classvar <asyncActions;
+	var <quuid;
 	*initClass{
 		Document.implementationClass = this;
+		asyncActions = IdentityDictionary.new;
 	}
 	*new {|title, string, makeListener, envir|
 		var quuid = ScIDE.getQUuid;
@@ -365,6 +367,12 @@ ScIDEDocument : Document {
 		^super.prBasicNew.initID(quuid);
 	}
 
+	*executeAsyncResponse {|funcID ...args|
+		var func;
+		func = asyncActions[funcID];
+		asyncActions[funcID] = nil;
+		func.value(*args);
+	}
 	initID {|id| quuid = id }
 
 	propen {|path, selectionStart, selectionLength, envir|
