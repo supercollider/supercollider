@@ -182,6 +182,8 @@ option(SC_CPP11 "Compile in C++11 mode" OFF)
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
 option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
 
+option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
+
 #############################################
 # some default libraries
 
@@ -242,6 +244,10 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 		if(CMAKE_COMPILER_IS_CLANG)
 			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 		endif()
+	endif()
+
+	if(FORTIFY)
+		add_definitions( -D_FORTIFY_SOURCE=2 )
 	endif()
 endif()
 
