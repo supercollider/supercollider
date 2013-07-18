@@ -215,6 +215,8 @@ bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 		fifoMsg.Set(inWorld, Perform_ToEngine_Msg, FreeOSCPacket, (void*)inPacket);
 		result = driver->SendOscPacketMsgToEngine(fifoMsg);
 	static_cast<SC_Lock*>(inWorld->mDriverLock)->unlock();
+	if (!result)
+		scprintf("command FIFO full\n");
 	return result;
 }
 
