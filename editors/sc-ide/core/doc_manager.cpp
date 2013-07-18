@@ -432,3 +432,17 @@ void DocumentManager::closeSingleUntitledIfUnmodified()
             close(document);
     }
 }
+
+// ScIDEDocument support
+
+const QString DocumentManager::getTextForID(const QByteArray docID, int start, int range)
+{
+    QTextCursor cursor = QTextCursor(getDocByID(docID)->textDocument());
+    cursor.setPosition(start, QTextCursor::MoveAnchor);
+    if(range == -1){
+        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor, 1);
+    } else {
+        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, range);
+    }
+    return cursor.selectedText();
+}

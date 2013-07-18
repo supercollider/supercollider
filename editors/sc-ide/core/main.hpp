@@ -114,6 +114,7 @@ private:
     bool eventFilter(QObject *obj, QEvent *event);
     void handleOpenFileScRequest( const QString & data );
 	void handleNewDocScRequest( const QString & data );
+    void handleGetDocTextScRequest( const QString & data );
 
     Settings::Manager *mSettings;
     ScProcess * mScProcess;
