@@ -298,12 +298,16 @@ void Main::onScLangResponse( const QString & selector, const QString & data )
 {
     static QString openFileSelector("openFile");
 	static QString newDocSelector("newDocument");
+    static QString getDocTextSelector("getDocumentText");
 	
     if (selector == openFileSelector)
         handleOpenFileScRequest(data);
 	
 	if (selector == newDocSelector)
         handleNewDocScRequest(data);
+    
+    if (selector == getDocTextSelector)
+        handleGetDocTextScRequest(data);
 }
 
 void Main::handleOpenFileScRequest( const QString & data )
@@ -359,5 +363,42 @@ void Main::handleNewDocScRequest( const QString & data )
             return;
 		
         mDocManager->create(QByteArray(quuid.c_str()), QString(title.c_str()), QString(initString.c_str()));
+    }
+}
+
+void Main::handleGetDocTextScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+	
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+		
+        std::string quuid;
+        bool success = doc[0].Read(quuid);
+        if (!success)
+            return;
+        
+        std::string funcID;
+        success = doc[1].Read(funcID);
+        if (!success)
+            return;
+        
+        int start;
+        doc[2].Read(start);
+        
+        int range;
+        doc[3].Read(range);
+        
+        QByteArray docID = QByteArray(quuid.c_str());
+        
+        const QString docText = mDocManager->getTextForID(docID, start, range);
+        
+        QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\', \"%2\")").arg(QString(funcID.c_str()), docText);
+        mScProcess->evaluateCode ( command, true );
+        
     }
 }

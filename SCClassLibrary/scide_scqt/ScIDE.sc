@@ -326,11 +326,6 @@ ScIDE {
 
 	// Document Support //////////////////////////////////////////////////
 
-	// already done
-/*	*openDocument {|path, selectionStart=0, selectionLength=0|
-		this.prSend(\openDocument, [path, selectionStart, selectionLength]);
-	}*/
-
 	*newDocument {|title="Untitled", string="", id|
 		this.prSend(\newDocument, [title, string, id]);
 	}
@@ -338,6 +333,10 @@ ScIDE {
 	*getQUuid {
 		_ScIDE_GetQUuid
 		this.primitiveFailed
+	}
+
+	*getTextByQUuid {|quuid, funcID, start = 0, range = -1|
+		this.prSend(\getDocumentText, [quuid, funcID, start, range]);
 	}
 
 	// PRIVATE ///////////////////////////////////////////////////////////
@@ -378,6 +377,18 @@ ScIDEDocument : Document {
 	propen {|path, selectionStart, selectionLength, envir|
 		if(envir != nil){"ScIDE does not set an environment per document".warn};
 		^ScIDE.open(path, selectionStart, selectionLength)
+	}
+
+	// range -1 means to the end of the Document
+	getText {|action, start = 0, range -1|
+		var funcID;
+		funcID = ScIDE.getQUuid; // a unique id for this function
+		asyncActions[funcID] = action; // pass the text
+		ScIDE.getTextByQUuid(quuid, funcID, start, range);
+	}
+
+	getChar {|action, index = 0|
+		this.getText(action, index, 1);
 	}
 }
 
