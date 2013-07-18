@@ -134,7 +134,8 @@ public:
     void set_control_array_element(const char * slot_str, size_t hashed_str, size_t index, sample val)
     {
         slot_index_t slot_id = definition_instance::resolve_slot(slot_str, hashed_str);
-        this->set(slot_id + index, val);
+        if (likely(slot_id >= 0))
+            this->set(slot_id + index, val);
     }
     /* @} */
 };
