@@ -339,6 +339,10 @@ ScIDE {
 		this.prSend(\getDocumentText, [quuid, funcID, start, range]);
 	}
 
+	*setTextByQUuid {|quuid, funcID, text, start = 0, range = -1|
+		this.prSend(\getDocumentText, [quuid, funcID, text, start, range]);
+	}
+
 	// PRIVATE ///////////////////////////////////////////////////////////
 
 	*prSend {|id, data|
@@ -387,8 +391,27 @@ ScIDEDocument : Document {
 		ScIDE.getTextByQUuid(quuid, funcID, start, range);
 	}
 
+	setText {|text, action, start = 0, range -1|
+		var funcID;
+		funcID = ScIDE.getQUuid; // a unique id for this function
+		asyncActions[funcID] = action; // pass the text
+		ScIDE.setTextByQUuid(quuid, funcID, text, start, range);
+	}
+
+	insertText {|text, action, index = 0|
+		this.setText(text, action, index, 0);
+	}
+
 	getChar {|action, index = 0|
 		this.getText(action, index, 1);
+	}
+
+	setChar {|char, action, index = 0|
+		this.setText(char.asString, action, index, 1);
+	}
+
+	insertChar {|char, action, index = 0|
+		this.setText(char.asString, action, index, 0);
 	}
 }
 

@@ -299,6 +299,7 @@ void Main::onScLangResponse( const QString & selector, const QString & data )
     static QString openFileSelector("openFile");
 	static QString newDocSelector("newDocument");
     static QString getDocTextSelector("getDocumentText");
+    static QString setDocTextSelector("setDocumentText");
 	
     if (selector == openFileSelector)
         handleOpenFileScRequest(data);
@@ -308,6 +309,9 @@ void Main::onScLangResponse( const QString & selector, const QString & data )
     
     if (selector == getDocTextSelector)
         handleGetDocTextScRequest(data);
+    
+    if (selector == getDocTextSelector)
+        handleSetDocTextScRequest(data);
 }
 
 void Main::handleOpenFileScRequest( const QString & data )
@@ -398,6 +402,48 @@ void Main::handleGetDocTextScRequest( const QString & data )
         const QString docText = mDocManager->getTextForID(docID, start, range);
         
         QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\', \"%2\")").arg(QString(funcID.c_str()), docText);
+        mScProcess->evaluateCode ( command, true );
+        
+    }
+}
+
+void Main::handleSetDocTextScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+	
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+		
+        std::string quuid;
+        bool success = doc[0].Read(quuid);
+        if (!success)
+            return;
+        
+        std::string funcID;
+        success = doc[1].Read(funcID);
+        if (!success)
+            return;
+        
+        std::string text;
+        success = doc[2].Read(text);
+        if (!success)
+            return;
+        
+        int start;
+        doc[3].Read(start);
+        
+        int range;
+        doc[4].Read(range);
+        
+        QByteArray docID = QByteArray(quuid.c_str());
+        
+        mDocManager->setTextForID(docID, QString(text.c_str()), start, range);
+        
+        QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\')").arg(QString(funcID.c_str()));
         mScProcess->evaluateCode ( command, true );
         
     }

@@ -106,6 +106,7 @@ public:
     const QStringList & recents() const { return mRecent; }
     Document * getDocByID(const QByteArray docID) { return mDocHash[docID];}
     const QString getTextForID(const QByteArray docID, int start, int range);
+    void setTextForID(const QByteArray docID, const QString text, int start, int range);
 
 
 public slots:

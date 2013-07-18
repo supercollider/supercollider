@@ -115,6 +115,7 @@ private:
     void handleOpenFileScRequest( const QString & data );
 	void handleNewDocScRequest( const QString & data );
     void handleGetDocTextScRequest( const QString & data );
+    void handleSetDocTextScRequest( const QString & data );
 
     Settings::Manager *mSettings;
     ScProcess * mScProcess;
