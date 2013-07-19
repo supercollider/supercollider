@@ -113,6 +113,7 @@ private:
     Main(void);
     bool eventFilter(QObject *obj, QEvent *event);
     void handleOpenFileScRequest( const QString & data );
+    void handleDocListScRequest();
 	void handleNewDocScRequest( const QString & data );
     void handleGetDocTextScRequest( const QString & data );
     void handleSetDocTextScRequest( const QString & data );

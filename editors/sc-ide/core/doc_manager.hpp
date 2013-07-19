@@ -96,6 +96,9 @@ public:
     QList<Document*> documents() {
         return mDocHash.values();
     }
+    QList<QByteArray> documentIDs() {
+        return mDocHash.uniqueKeys();
+    }
 
     void create();
     void create(const QByteArray & quuid, const QString & title, const QString & string);
@@ -107,7 +110,6 @@ public:
     Document * getDocByID(const QByteArray docID) { return mDocHash[docID];}
     const QString getTextForID(const QByteArray docID, int start, int range);
     void setTextForID(const QByteArray docID, const QString text, int start, int range);
-
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
