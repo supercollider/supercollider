@@ -392,10 +392,14 @@ void Main::handleGetDocTextScRequest( const QString & data )
             return;
         
         int start;
-        doc[2].Read(start);
+        success = doc[2].Read(start);
+        if (!success)
+            return;
         
         int range;
-        doc[3].Read(range);
+        success = doc[3].Read(range);
+        if (!success)
+            return;
         
         QByteArray docID = QByteArray(quuid.c_str());
         
@@ -434,10 +438,14 @@ void Main::handleSetDocTextScRequest( const QString & data )
             return;
         
         int start;
-        doc[3].Read(start);
+        success = doc[3].Read(start);
+        if (!success)
+            return;
         
         int range;
-        doc[4].Read(range);
+        success = doc[4].Read(range);
+        if (!success)
+            return;
         
         QByteArray docID = QByteArray(quuid.c_str());
         
