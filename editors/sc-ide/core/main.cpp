@@ -217,6 +217,7 @@ Main::Main(void) :
     new SyntaxHighlighterGlobals(this, mSettings);
 
     connect(mScProcess, SIGNAL(response(QString,QString)), this, SLOT(onScLangResponse(QString,QString)));
+    connect(mDocManager, SIGNAL(closed(Document*)), this, SLOT(onClose(Document*)));
 
     qApp->installEventFilter(this);
 }
@@ -292,6 +293,12 @@ void Main::findReferences(const QString &string, QWidget * parent)
     if (!definitionString.isEmpty())
         dialog.query(definitionString);
     dialog.exec();
+}
+
+void Main::onClose(Document* doc)
+{
+    QString command = QString("ScIDEDocument.findByQUuid(\'%1\').closed").arg(doc->id().constData());
+    mScProcess->evaluateCode ( command, true );
 }
 
 void Main::onScLangResponse( const QString & selector, const QString & data )
