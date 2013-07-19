@@ -28,6 +28,7 @@ ScIDE {
 	*handshake {
 		this.prSend(\classLibraryRecompiled);
 		this.prSend(\requestCurrentPath);
+		this.prSend(\requestDocumentList);
 
 		this.defaultServer = Server.default;
 		this.sendIntrospection;
@@ -365,9 +366,23 @@ ScIDEDocument : Document {
 		asyncActions = IdentityDictionary.new;
 	}
 	*new {|title, string, makeListener, envir|
-		var quuid = ScIDE.getQUuid;
+		var quuid = ScIDE.getQUuid, doc;
 		ScIDE.newDocument(title, string, quuid);
-		^super.prBasicNew.initID(quuid);
+		doc = super.prBasicNew.initID(quuid);
+		allDocuments = allDocuments.add(doc);
+		^doc
+	}
+
+	*newFromIDE {|quuid|
+		var doc;
+		if(this.findByQUuid(quuid).isNil, {
+			doc = super.prBasicNew.initID(quuid);
+			allDocuments = allDocuments.add(doc);
+		});
+	}
+
+	*syncDocs {|quuids|
+		quuids.do({|quuid| this.newFromIDE(quuid) });
 	}
 
 	*executeAsyncResponse {|funcID ...args|
@@ -376,6 +391,11 @@ ScIDEDocument : Document {
 		asyncActions[funcID] = nil;
 		func.value(*args);
 	}
+
+	*findByQUuid {|quuid|
+		^allDocuments.detect({|doc| doc.quuid == quuid });
+	}
+
 	initID {|id| quuid = id }
 
 	propen {|path, selectionStart, selectionLength, envir|

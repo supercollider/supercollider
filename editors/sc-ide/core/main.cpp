@@ -297,12 +297,16 @@ void Main::findReferences(const QString &string, QWidget * parent)
 void Main::onScLangResponse( const QString & selector, const QString & data )
 {
     static QString openFileSelector("openFile");
+    static QString requestDocListSelector("requestDocumentList");
 	static QString newDocSelector("newDocument");
     static QString getDocTextSelector("getDocumentText");
     static QString setDocTextSelector("setDocumentText");
 	
     if (selector == openFileSelector)
         handleOpenFileScRequest(data);
+    
+    if (selector == requestDocListSelector)
+        handleDocListScRequest();
 	
 	if (selector == newDocSelector)
         handleNewDocScRequest(data);
@@ -338,6 +342,20 @@ void Main::handleOpenFileScRequest( const QString & data )
 
         mDocManager->open(QString(path.c_str()), position, selectionLength);
     }
+}
+
+void Main::handleDocListScRequest()
+{
+    QList<QByteArray> ids = mDocManager->documentIDs();
+    QList<QByteArray>::Iterator it;
+    QString command = QString("ScIDEDocument.syncDocs([");
+    for (it = ids.begin(); it != ids.end(); ++it) {
+        QByteArray id = *it;
+        QString idAsSymbol = QString("\'%1\',").arg(id.constData());
+        command = command.append(idAsSymbol);
+    }
+    command = command.append("]);");
+    mScProcess->evaluateCode ( command, true );
 }
 
 void Main::handleNewDocScRequest( const QString & data )
