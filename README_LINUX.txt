@@ -58,7 +58,7 @@ build requirements (optional features)
 (most of these will be available in your linux distribution as packages )
 ------------------------------------------------------------------------
 
- * Qt >= 4.7 (+ qtwebkit)
+ * Qt >= 4.7 (+ qtwebkit)  and < 5.0
    http://qt-project.org/
    cross-platform graphical user interface library, for Qt IDE and
    sclang's Qt GUI kit
@@ -116,6 +116,8 @@ for building supercollider:
    pkg-config
    cmake
    subversion (required by the Quarks class at run-time)
+
+Note: if both qt4 and qt5 are installed in the same machine, set QT_QMAKE_EXECUTABLE to qmake-qt4.
 
 ------------------------------------------------------------------------
 building
