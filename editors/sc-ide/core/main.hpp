@@ -107,6 +107,7 @@ Q_SIGNALS:
     void applySettingsRequest(Settings::Manager *);
 
 private slots:
+    void onClose(Document* doc);
     void onScLangResponse( const QString &, const QString & );
 
 private:
