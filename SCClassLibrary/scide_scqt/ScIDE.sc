@@ -27,8 +27,8 @@ ScIDE {
 
 	*handshake {
 		this.prSend(\classLibraryRecompiled);
-		this.prSend(\requestCurrentPath);
 		this.prSend(\requestDocumentList);
+		this.prSend(\requestCurrentPath);
 
 		this.defaultServer = Server.default;
 		this.sendIntrospection;
@@ -394,6 +394,16 @@ ScIDEDocument : Document {
 
 	*findByQUuid {|quuid|
 		^allDocuments.detect({|doc| doc.quuid == quuid });
+	}
+
+	*setActiveDocByQUuid {|quuid|
+		var newCurrent, current;
+		newCurrent = this.findByQUuid(quuid);
+		current = this.current;
+		if((newCurrent === current).not, {
+			if(current.notNil, {current.didResignKey});
+			newCurrent.didBecomeKey;
+		});
 	}
 
 	initID {|id| quuid = id }

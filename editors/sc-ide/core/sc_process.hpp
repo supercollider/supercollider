@@ -126,6 +126,7 @@ private:
     QByteArray mIpcData;
 
     QString mCurrentDocumentPath;
+    class Document * mCurrentDocument;
     bool mTerminationRequested;
     QDateTime mTerminationRequestTime;
 };
