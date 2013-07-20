@@ -42,6 +42,7 @@ ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
     mIpcServer( new QLocalServer(this) ),
     mIpcSocket(NULL),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid())),
+    mCurrentDocument(NULL),
     mTerminationRequested(false)
 {
     mIntrospectionParser = new ScIntrospectionParser( this );
@@ -361,8 +362,11 @@ void ScProcess::onStart()
 
 void ScProcess::setActiveDocument(Document * document)
 {
+    if(mCurrentDocument)
+        disconnect(mCurrentDocument->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
     if (document){
         mCurrentDocumentPath = document->filePath();
+        connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
         mCurrentDocument = document;
     } else {
         mCurrentDocumentPath.clear();
@@ -383,6 +387,12 @@ void ScProcess::sendActiveDocument()
         evaluateCode(command, true);
     } else
         evaluateCode(QString("ScIDE.currentPath_(nil); ScIDEDocument.current = nil;"), true);
+}
+    
+void ScProcess::updateCurrentDocContents ( int position, int charsRemoved, int charsAdded )
+{
+    QString addedChars = mCurrentDocument->textAsSCArrayOfCharCodes(position, charsAdded);
+    evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').updateText(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
 }
 
 void ScIntrospectionParserWorker::process(const QString &input)

@@ -341,7 +341,7 @@ ScIDE {
 	}
 
 	*setTextByQUuid {|quuid, funcID, text, start = 0, range = -1|
-		this.prSend(\getDocumentText, [quuid, funcID, text, start, range]);
+		this.prSend(\setDocumentText, [quuid, funcID, text, start, range]);
 	}
 
 	// PRIVATE ///////////////////////////////////////////////////////////
@@ -373,12 +373,13 @@ ScIDEDocument : Document {
 		^doc
 	}
 
-	*syncFromIDE {|quuid, title, string|
+	*syncFromIDE {|quuid, title, chars|
 		var doc;
-		if(doc = this.findByQUuid(quuid).isNil, {
-			doc = super.prBasicNew.init(quuid, title, string);
+		chars = chars.asAscii;
+		if((doc = this.findByQUuid(quuid)).isNil, {
+			doc = super.prBasicNew.init(quuid, title, chars);
 			allDocuments = allDocuments.add(doc);
-		}, {doc.init(quuid, title, string)});
+		}, {doc.init(quuid, title, chars)});
 	}
 
 	*syncDocs {|docInfo| // [quuid, title, string]
@@ -414,11 +415,17 @@ ScIDEDocument : Document {
 
 	initText {|string| text = string }
 
+	updateText {|index, numCharsRemoved, addedChars|
+		addedChars = addedChars.asAscii;
+		text = text.keep(index) ++ addedChars ++ text.drop(index + numCharsRemoved);
+	}
+
 	propen {|path, selectionStart, selectionLength, envir|
 		if(envir != nil){"ScIDE does not set an environment per document".warn};
 		^ScIDE.open(path, selectionStart, selectionLength)
 	}
 
+	// asynchronous get
 	// range -1 means to the end of the Document
 	getText {|action, start = 0, range -1|
 		var funcID;
@@ -427,27 +434,33 @@ ScIDEDocument : Document {
 		ScIDE.getTextByQUuid(quuid, funcID, start, range);
 	}
 
-	setText {|text, action, start = 0, range -1|
+	// asynchronous set
+	prSetText {|text, action, start = 0, range -1|
 		var funcID;
 		funcID = ScIDE.getQUuid; // a unique id for this function
 		asyncActions[funcID] = action; // pass the text
 		ScIDE.setTextByQUuid(quuid, funcID, text, start, range);
 	}
 
-	insertText {|text, action, index = 0|
-		this.setText(text, action, index, 0);
+	text_ {|string|
+		text = string;
+		this.prSetText(text);
 	}
 
-	getChar {|action, index = 0|
-		this.getText(action, index, 1);
+	insertText {|string, index = 0|
+		text = text.insert(index, string);
+		this.prSetText(string, nil, index, 0);
 	}
 
-	setChar {|char, action, index = 0|
-		this.setText(char.asString, action, index, 1);
+	getChar {|index = 0|
+		^text[index];
 	}
 
-	insertChar {|char, action, index = 0|
-		this.setText(char.asString, action, index, 0);
+	setChar {|char, index = 0|
+		text = text.keep(index) ++ char ++ text.drop(index + 1);
+		this.prSetText(char.asString, nil, index, 1);
 	}
+
+	== { |that| ^(this.quuid === that.quuid);}
 }
 

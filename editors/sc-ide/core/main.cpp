@@ -298,7 +298,7 @@ void Main::findReferences(const QString &string, QWidget * parent)
 
 void Main::onOpen(Document* doc, int cursorPosition, int selectionLength)
 {
-    QString command = QString("ScIDEDocument.syncFromIDE(\'%1\', \"%2\", \"%3\")").arg(doc->id().constData(), doc->title(), doc->textDocument()->toPlainText().replace(QChar('"'), QString("\\\"")));
+    QString command = QString("ScIDEDocument.syncFromIDE(\'%1\', \'%2\', %3)").arg(doc->id().constData(), doc->title(), doc->textAsSCArrayOfCharCodes(0, -1));
     mScProcess->evaluateCode ( command, true );
 }
 
@@ -328,7 +328,7 @@ void Main::onScLangResponse( const QString & selector, const QString & data )
     if (selector == getDocTextSelector)
         handleGetDocTextScRequest(data);
     
-    if (selector == getDocTextSelector)
+    if (selector == setDocTextSelector)
         handleSetDocTextScRequest(data);
 }
 
@@ -365,7 +365,7 @@ void Main::handleDocListScRequest()
     QString command = QString("ScIDEDocument.syncDocs([");
     for (it = docs.begin(); it != docs.end(); ++it) {
         Document * doc = *it;
-        QString docData = QString("[\'%1\', \"%2\", \"%3\"],").arg(doc->id().constData(), doc->title(), doc->textDocument()->toPlainText().replace(QChar('"'), QString("\\\"")));
+        QString docData = QString("[\'%1\', \'%2\', %3],").arg(doc->id().constData(), doc->title(), doc->textAsSCArrayOfCharCodes(0, -1));
         command = command.append(docData);
     }
     command = command.append("]);");
@@ -435,10 +435,13 @@ void Main::handleGetDocTextScRequest( const QString & data )
         
         QByteArray docID = QByteArray(quuid.c_str());
         
-        const QString docText = mDocManager->getTextForID(docID, start, range);
-        
-        QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\', \"%2\")").arg(QString(funcID.c_str()), docText);
-        mScProcess->evaluateCode ( command, true );
+        Document *document = mDocManager->getDocByID(docID);
+        if(document){
+            QString docText = document->textAsSCArrayOfCharCodes(start, range);
+            
+            QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\', %2.asAscii)").arg(QString(funcID.c_str()), docText);
+            mScProcess->evaluateCode ( command, true );
+        }
         
     }
 }
@@ -481,10 +484,13 @@ void Main::handleSetDocTextScRequest( const QString & data )
         
         QByteArray docID = QByteArray(quuid.c_str());
         
-        mDocManager->setTextForID(docID, QString(text.c_str()), start, range);
+        Document *document = mDocManager->getDocByID(docID);
+        if(document){
+            document->setTextInRange(QString(text.c_str()), start, range);
         
-        QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\')").arg(QString(funcID.c_str()));
-        mScProcess->evaluateCode ( command, true );
+            QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\')").arg(QString(funcID.c_str()));
+            mScProcess->evaluateCode ( command, true );
+        } 
         
     }
 }

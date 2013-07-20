@@ -136,6 +136,37 @@ void Document::setIndentWidth( int numSpaces )
     mDoc->setDefaultTextOption(options);
 }
 
+QString Document::textAsSCArrayOfCharCodes(int start = 0, int range = -1)
+{
+    QTextCursor cursor = QTextCursor(mDoc);
+    cursor.setPosition(start, QTextCursor::MoveAnchor);
+    if(range == -1){
+        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor, 1);
+    } else {
+        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, range);
+    }
+    
+    QByteArray stringBytes = cursor.selectedText().replace(QChar(0x2029), QChar('\n')).toUtf8();
+    QString returnString = QString("[");
+    for (int i = 0; i < stringBytes.size(); ++i) {
+        returnString = returnString.append(QString::number(static_cast<int>(stringBytes.at(i)))).append(',');
+    }
+    returnString = returnString.append(QString("]"));
+    return returnString;
+}
+
+void Document::setTextInRange(const QString text, int start, int range)
+{
+    QTextCursor cursor = QTextCursor(mDoc);
+    cursor.setPosition(start, QTextCursor::MoveAnchor);
+    if(range == -1){
+        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor, 1);
+    } else {
+        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, range);
+    }
+    cursor.insertText(text);
+}
+
 
 DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
     QObject(main)
@@ -272,6 +303,13 @@ bool DocumentManager::reload( Document *doc )
         mFsWatcher.addPath(doc->mFilePath);
 
     return true;
+}
+
+Document * DocumentManager::getDocByID(const QByteArray docID)
+{
+    Document * doc = mDocHash[docID];
+    if(!doc) MainWindow::instance()->showStatusMessage(QString("Lookup failed for Document %1").arg(docID.constData()));
+    return doc;
 }
 
 QString DocumentManager::decodeDocument(const QByteArray & bytes)
@@ -431,30 +469,4 @@ void DocumentManager::closeSingleUntitledIfUnmodified()
         if (document->filePath().isEmpty() && !document->isModified())
             close(document);
     }
-}
-
-// ScIDEDocument support
-
-const QString DocumentManager::getTextForID(const QByteArray docID, int start, int range)
-{
-    QTextCursor cursor = QTextCursor(getDocByID(docID)->textDocument());
-    cursor.setPosition(start, QTextCursor::MoveAnchor);
-    if(range == -1){
-        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor, 1);
-    } else {
-        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, range);
-    }
-    return cursor.selectedText();
-}
-
-void DocumentManager::setTextForID(const QByteArray docID, const QString text, int start, int range)
-{
-    QTextCursor cursor = QTextCursor(getDocByID(docID)->textDocument());
-    cursor.setPosition(start, QTextCursor::MoveAnchor);
-    if(range == -1){
-        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor, 1);
-    } else {
-        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, range);
-    }
-    cursor.insertText(text);
 }
