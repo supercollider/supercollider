@@ -361,10 +361,13 @@ void ScProcess::onStart()
 
 void ScProcess::setActiveDocument(Document * document)
 {
-    if (document)
+    if (document){
         mCurrentDocumentPath = document->filePath();
-    else
+        mCurrentDocument = document;
+    } else {
         mCurrentDocumentPath.clear();
+        mCurrentDocument = NULL;
+    }
 
     sendActiveDocument();
 }
@@ -373,11 +376,13 @@ void ScProcess::sendActiveDocument()
 {
     if (state() != QProcess::Running)
         return;
-
-    if (!mCurrentDocumentPath.isEmpty())
-        evaluateCode(QString("ScIDE.currentPath_(\"%1\")").arg(mCurrentDocumentPath), true);
-    else
-        evaluateCode(QString("ScIDE.currentPath_(nil)"), true);
+    if(mCurrentDocument){
+        QString command = QString("ScIDEDocument.setActiveDocByQUuid(\'%1\');").arg(mCurrentDocument->id().constData());
+        if (!mCurrentDocumentPath.isEmpty())
+            command = command.append(QString("ScIDE.currentPath_(\"%1\");").arg(mCurrentDocumentPath));
+        evaluateCode(command, true);
+    } else
+        evaluateCode(QString("ScIDE.currentPath_(nil); ScIDEDocument.current = nil;"), true);
 }
 
 void ScIntrospectionParserWorker::process(const QString &input)
