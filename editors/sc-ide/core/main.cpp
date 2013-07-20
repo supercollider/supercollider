@@ -298,7 +298,7 @@ void Main::findReferences(const QString &string, QWidget * parent)
 
 void Main::onOpen(Document* doc, int cursorPosition, int selectionLength)
 {
-    QString command = QString("ScIDEDocument.newFromIDE(\'%1\')").arg(doc->id().constData());
+    QString command = QString("ScIDEDocument.syncFromIDE(\'%1\', \"%2\", \"%3\")").arg(doc->id().constData(), doc->title(), doc->textDocument()->toPlainText().replace(QChar('"'), QString("\\\"")));
     mScProcess->evaluateCode ( command, true );
 }
 
@@ -360,13 +360,13 @@ void Main::handleOpenFileScRequest( const QString & data )
 
 void Main::handleDocListScRequest()
 {
-    QList<QByteArray> ids = mDocManager->documentIDs();
-    QList<QByteArray>::Iterator it;
+    QList<Document*> docs = mDocManager->documents();
+    QList<Document*>::Iterator it;
     QString command = QString("ScIDEDocument.syncDocs([");
-    for (it = ids.begin(); it != ids.end(); ++it) {
-        QByteArray id = *it;
-        QString idAsSymbol = QString("\'%1\',").arg(id.constData());
-        command = command.append(idAsSymbol);
+    for (it = docs.begin(); it != docs.end(); ++it) {
+        Document * doc = *it;
+        QString docData = QString("[\'%1\', \"%2\", \"%3\"],").arg(doc->id().constData(), doc->title(), doc->textDocument()->toPlainText().replace(QChar('"'), QString("\\\"")));
+        command = command.append(docData);
     }
     command = command.append("]);");
     mScProcess->evaluateCode ( command, true );

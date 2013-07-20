@@ -360,29 +360,29 @@ ScIDE {
 // This is just a stub to provide oft-used functionality such as Document.open()
 ScIDEDocument : Document {
 	classvar <asyncActions;
-	var <quuid;
+	var <quuid, <title, <text;
 	*initClass{
 		Document.implementationClass = this;
 		asyncActions = IdentityDictionary.new;
 	}
-	*new {|title, string, makeListener, envir|
+	*new {|title = "untitled", string = "", makeListener, envir|
 		var quuid = ScIDE.getQUuid, doc;
 		ScIDE.newDocument(title, string, quuid);
-		doc = super.prBasicNew.initID(quuid);
+		doc = super.prBasicNew.init(quuid, title, string);
 		allDocuments = allDocuments.add(doc);
 		^doc
 	}
 
-	*newFromIDE {|quuid|
+	*syncFromIDE {|quuid, title, string|
 		var doc;
-		if(this.findByQUuid(quuid).isNil, {
-			doc = super.prBasicNew.initID(quuid);
+		if(doc = this.findByQUuid(quuid).isNil, {
+			doc = super.prBasicNew.init(quuid, title, string);
 			allDocuments = allDocuments.add(doc);
-		});
+		}, {doc.init(quuid, title, string)});
 	}
 
-	*syncDocs {|quuids|
-		quuids.do({|quuid| this.newFromIDE(quuid) });
+	*syncDocs {|docInfo| // [quuid, title, string]
+		docInfo.do({|info| this.syncFromIDE(*info) });
 	}
 
 	*executeAsyncResponse {|funcID ...args|
@@ -406,7 +406,13 @@ ScIDEDocument : Document {
 		});
 	}
 
-	initID {|id| quuid = id }
+	init {|id, argtitle, argstring|
+		quuid = id;
+		title = argtitle;
+		text = argstring;
+	}
+
+	initText {|string| text = string }
 
 	propen {|path, selectionStart, selectionLength, envir|
 		if(envir != nil){"ScIDE does not set an environment per document".warn};
