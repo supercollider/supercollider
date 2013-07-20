@@ -65,6 +65,9 @@ public:
 
     bool isPlainText() const { return mHighlighter == NULL; }
     bool isModified() const  { return mDoc->isModified(); }
+    
+    QString textAsSCArrayOfCharCodes(int start, int range);
+    void setTextInRange(const QString text, int start, int range);
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -107,9 +110,7 @@ public:
     bool saveAs( Document *, const QString & path );
     bool reload( Document * );
     const QStringList & recents() const { return mRecent; }
-    Document * getDocByID(const QByteArray docID) { return mDocHash[docID];}
-    const QString getTextForID(const QByteArray docID, int start, int range);
-    void setTextForID(const QByteArray docID, const QString text, int start, int range);
+    Document * getDocByID(const QByteArray docID);
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"

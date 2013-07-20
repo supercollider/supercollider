@@ -107,6 +107,7 @@ private slots:
     void onProcessStateChanged( QProcess::ProcessState state);
     void onReadyRead(void);
     void updateToggleRunningAction();
+    void updateCurrentDocContents ( int position, int charsRemoved, int charsAdded );
 
 private:
     void onStart();
