@@ -234,6 +234,48 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     setCurrentBox( defaultBox ); // will updateActions();
 
     applySettings( main->settings() );
+
+
+    // A signal mapper to avoid creating custom slots for each tab
+    QSignalMapper *mapper = new QSignalMapper(this);
+
+    // Shortcuts for tabs (1 to 8)
+    QShortcut *s1 = new QShortcut(QKeySequence("Alt+1"), this);
+    connect( s1, SIGNAL(activated()), mapper, SLOT(map()) );
+    mapper->setMapping(s1, 0);
+
+    QShortcut *s2 = new QShortcut(QKeySequence("Alt+2"), this);
+    connect( s2, SIGNAL(activated()), mapper, SLOT(map()) );
+    mapper->setMapping(s2, 1);
+
+    QShortcut *s3 = new QShortcut(QKeySequence("Alt+3"), this);
+    connect( s3, SIGNAL(activated()), mapper, SLOT(map()) );
+    mapper->setMapping(s3, 2);
+
+    QShortcut *s4 = new QShortcut(QKeySequence("Alt+4"), this);
+    connect( s4, SIGNAL(activated()), mapper, SLOT(map()) );
+    mapper->setMapping(s4, 3);
+
+    QShortcut *s5 = new QShortcut(QKeySequence("Alt+5"), this);
+    connect( s5, SIGNAL(activated()), mapper, SLOT(map()) );
+    mapper->setMapping(s5, 4);
+
+    QShortcut *s6 = new QShortcut(QKeySequence("Alt+6"), this);
+    connect( s6, SIGNAL(activated()), mapper, SLOT(map()) );
+    mapper->setMapping(s6, 5);
+
+    QShortcut *s7 = new QShortcut(QKeySequence("Alt+7"), this);
+    connect( s7, SIGNAL(activated()), mapper, SLOT(map()) );
+    mapper->setMapping(s7, 6);
+
+    QShortcut *s8 = new QShortcut(QKeySequence("Alt+8"), this);
+    connect( s8, SIGNAL(activated()), mapper, SLOT(map()) );
+    mapper->setMapping(s8, 7);
+    // Last tab
+    QShortcut *s9 = new QShortcut(QKeySequence("Alt+9"), this);
+    connect( s9, SIGNAL(activated()), this, SLOT(showLastDocument()) );
+
+    connect( mapper, SIGNAL(mapped(int)), mTabs, SLOT(setCurrentIndex(int)) );
 }
 
 void MultiEditor::makeSignalConnections()
@@ -860,6 +902,11 @@ void MultiEditor::showPreviousDocument()
 {
     int currentIndex = mTabs->currentIndex();
     mTabs->setCurrentIndex( qMax(0, currentIndex - 1) );
+}
+
+void MultiEditor::showLastDocument()
+{
+    mTabs->setCurrentIndex( mTabs->count() - 1 );
 }
 
 void MultiEditor::switchDocument()
