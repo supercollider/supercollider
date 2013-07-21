@@ -68,7 +68,7 @@ signals:
     void currentSessionNameChanged();
 
 private:
-    void closeSession();
+    bool closeSession();
     bool saveLastSession( const QDir & dir, const QString & file );
     DocumentManager *mDocMng;
     Session *mCurrentSession;
