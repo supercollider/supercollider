@@ -96,7 +96,8 @@ QString SessionManager::lastSession()
 
 void SessionManager::newSession()
 {
-    closeSession();
+    if (!closeSession())
+      return;
 
     QDir dir = sessionsDir();
     if (!dir.path().isEmpty())
@@ -109,7 +110,8 @@ Session *SessionManager::openSession( const QString & name )
 {
     // NOTE: This will create a session if it doesn't exists
 
-    closeSession();
+    if (!closeSession())
+      return 0;
 
     QDir dir = sessionsDir();
     if (dir.path().isEmpty())
@@ -164,15 +166,17 @@ Session * SessionManager::saveSessionAs( const QString & name )
     return mCurrentSession;
 }
 
-void SessionManager::closeSession()
+bool SessionManager::closeSession()
 {
-    MainWindow::instance()->promptSaveDocs();
+    if (!MainWindow::instance()->promptSaveDocs())
+      return false;
 
     if (mCurrentSession)
         emit saveSessionRequest(mCurrentSession);
 
     delete mCurrentSession;
     mCurrentSession = 0;
+    return true;
 }
 
 void SessionManager::removeSession( const QString & name )
@@ -182,7 +186,8 @@ void SessionManager::removeSession( const QString & name )
         return;
 
     if (mCurrentSession && mCurrentSession->name() == name) {
-        closeSession();
+        if (!closeSession())
+          return;
         saveLastSession(dir, QString());
         emit switchSessionRequest(0);
     }
