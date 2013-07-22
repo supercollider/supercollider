@@ -123,7 +123,7 @@ endif()
 
 if(APPLE)
   set( QT_COLLIDER_OBJCPP_SRCS
-      ${QT_COLLIDER_DIR}/hacks/hacks_mac.M
+      ${QT_COLLIDER_DIR}/hacks/hacks_mac.mm
   )
 endif()
 
