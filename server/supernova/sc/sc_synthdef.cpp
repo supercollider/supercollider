@@ -133,7 +133,13 @@ std::vector<sc_synthdef> read_synthdefs(const char * buffer, const char * buffer
 
     for (int i = 0; i != definition_count; ++i) {
         try {
+#ifdef __clang__
+            // clang does not like to emplace_back
+            sc_synthdef def(buffer, buffer_end, version);
+            ret.push_back(def);
+#else
             ret.emplace_back(buffer, buffer_end, version);
+#endif
         } catch (std::exception const & e) {
             std::cerr << "Exception when reading synthdef: " << e.what() << std::endl;
         }
