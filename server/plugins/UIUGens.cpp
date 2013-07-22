@@ -437,7 +437,7 @@ PluginLoad(UIUGens)
 	DefinePlugInCmd("pluginCmdDemo", cmdDemoFunc, (void*)&gMyPlugin);
 }
 
-#ifdef __GNUC__ && !defined(_WIN32)
+#if defined(__GNUC__) && !defined(_WIN32)
 static void __attribute__ ((destructor)) finalize(void)
 {
 	if (d)
