@@ -217,7 +217,6 @@ endif()
 
 if(APPLE)
     target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F/Library/Frameworks")
 elseif(WIN32)
     target_link_libraries( ${ide_name} wsock32 )
     # The following prevents a Windows console from showing up
@@ -267,6 +266,20 @@ if(APPLE)
 
     include(DeployQt4)
     install_qt4_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
+
+    # install Qt plugins (adapted from kvirc)
+    set(plugin_dest_dir ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Plugins)
+    set(QT_PLUGINS_DIR "${Qt5Widgets_DIR}/../../../plugins")
+    install(DIRECTORY "${QT_PLUGINS_DIR}/" DESTINATION ${plugin_dest_dir} COMPONENT Runtime
+                       FILES_MATCHING REGEX "(platforms)/[^_]*\\.dylib")
+
+    install(CODE "
+           file(GLOB_RECURSE QTPLUGINS
+                  \"${plugin_dest_dir}/*.dylib\")
+                include(BundleUtilities)
+                fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\" \"\${QTPLUGINS}\" \"${QT_LIBRARY_DIR}\")
+                " COMPONENT Runtime)
+
 
 elseif(WIN32)
 	install(TARGETS ${ide_name}
