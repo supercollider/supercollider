@@ -85,9 +85,22 @@ endif()
 
 # portaudio
 if (WIN32 OR APPLE)
-    add_subdirectory(portaudio)
+    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/portaudio/include)
+    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/portaudio/src/common)
 
-#    aux_source_directory( portaudio/src/common pa_common )
-#    aux_source_directory( portaudio/src/os/win pa_common )
+    aux_source_directory( portaudio/src/common pa_common )
+
+    if (APPLE)
+        aux_source_directory( portaudio/src/os/unix pa_platform )
+        aux_source_directory( portaudio/src/hostapi/coreaudio pa_hostapi )
+    endif()
+
+    add_library(portaudio STATIC ${pa_common} ${pa_platform} ${pa_hostapi})
+
+    if (APPLE)
+        set_target_properties(portaudio
+                              PROPERTIES COMPILE_DEFINITIONS PA_USE_COREAUDIO)
+        target_link_libraries(portaudio "-framework CoreAudio -framework AudioUnit -framework AudioToolbox")
+    endif()
 
 endif()
