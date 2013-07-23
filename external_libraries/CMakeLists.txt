@@ -82,3 +82,12 @@ if(NOT YAMLCPP_FOUND)
 
   add_library(yaml STATIC ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
 endif()
+
+# portaudio
+if (WIN32 OR APPLE)
+    add_subdirectory(portaudio)
+
+#    aux_source_directory( portaudio/src/common pa_common )
+#    aux_source_directory( portaudio/src/os/win pa_common )
+
+endif()
