@@ -45,24 +45,24 @@ inline size_t OSCstrlen(const char *strin)
 inline float32 OSCfloat(const char* inData)
 {
 	elem32 elem;
-	elem.u = ntohl(*(uint32*)inData);
+	elem.u = sc_ntohl(*(uint32*)inData);
 	return elem.f;
 }
 
 inline int32 OSCint(const char* inData)
 {
-	return (int32)ntohl(*(uint32*)inData);
+	return (int32)sc_ntohl(*(uint32*)inData);
 }
 
 inline int64 OSCtime(const char* inData)
 {
-	return ((int64)ntohl(*(uint32*)inData) << 32) + (ntohl(*(uint32*)(inData + 4)));
+	return ((int64)sc_ntohl(*(uint32*)inData) << 32) + (sc_ntohl(*(uint32*)(inData + 4)));
 }
 
 inline float64 OSCdouble(const char* inData)
 {
 	elem64 slot;
-	slot.i = ((int64)ntohl(*(uint32*)inData) << 32) + (ntohl(*(uint32*)(inData + 4)));
+	slot.i = ((int64)sc_ntohl(*(uint32*)inData) << 32) + (sc_ntohl(*(uint32*)(inData + 4)));
 	return slot.f;
 }
 
@@ -70,10 +70,11 @@ struct sc_msg_iter
 {
 	const char *data, *rdpos, *endpos, *tags;
 	int size, count;
-
+	
 	sc_msg_iter();
 	sc_msg_iter(int inSize, const char* inData);
 	void init(int inSize, const char* inData);
+	int64 gett(int64 defaultValue = 1);
 	int32 geti(int32 defaultValue = 0);
 	float32 getf(float32 defaultValue = 0.f);
 	float64 getd(float64 defaultValue = 0.f);
@@ -109,6 +110,28 @@ inline void sc_msg_iter::init(int inSize, const char* inData)
 		tags = 0;
 		rdpos = data;
 	}
+}
+
+inline int64 sc_msg_iter::gett(int64 defaultValue)
+{
+	int64 value;
+	if (remain() <= 0) return defaultValue;
+	if (tags) {
+		if (tags[count] == 't') {
+			value = OSCtime(rdpos);
+			rdpos += sizeof(int64);
+		} else {
+			/* this is dangerous, as rdpos is not
+			   advanced accordingly while count++ takes
+				 place */
+			value = defaultValue;
+		}
+	} else {
+		value = OSCtime(rdpos);
+		rdpos += sizeof(int64);
+	}
+	count++;
+	return value;
 }
 
 inline int32 sc_msg_iter::geti(int32 defaultValue)
@@ -254,16 +277,28 @@ inline int32* sc_msg_iter::gets4(char* defaultValue)
 
 inline size_t sc_msg_iter::getbsize()
 {
+	size_t len = 0;
 	if (remain() <= 0) return 0;
-	if (tags && tags[count] != 'b') return 0;
-	return (size_t)OSCint(rdpos);
+	if (tags) {
+		if (tags[count] == 'b')
+			len = OSCint(rdpos);
+		else if (tags[count] == 'm')
+			len = 4;
+	}
+	return len;
 }
 
 inline void sc_msg_iter::getb(char* outArray, size_t size)
 {
-	size_t len = OSCint(rdpos);
-	if (size < len) return;
-	rdpos += sizeof(int32);
+	size_t len = 0;
+	if (tags[count] == 'b') {
+		len = OSCint(rdpos);
+		if (size < len) return;
+		rdpos += sizeof(int32);
+	}	else if (tags[count] == 'm') {
+		len = 4;
+		if (size < len) return;
+	}
 	size_t len4 = (len + 3) & (size_t)-4;
 	memcpy(outArray, rdpos, size);
 	rdpos += len4;
@@ -272,8 +307,13 @@ inline void sc_msg_iter::getb(char* outArray, size_t size)
 
 inline void sc_msg_iter::skipb()
 {
-	size_t len = OSCint(rdpos);
-	rdpos += sizeof(int32);
+	size_t len = 0;
+	if (tags[count] == 'b')
+	{
+		len = OSCint(rdpos);
+		rdpos += sizeof(int32);
+	} else if (tags[count] == 'm')
+		len = 4;
 	size_t len4 = (len + 3) & (size_t)-4;
 	rdpos += len4;
 	count ++;

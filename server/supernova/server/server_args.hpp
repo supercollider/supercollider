@@ -66,7 +66,7 @@ public:
 
     uint16_t load_synthdefs;
     int16_t verbosity;
-    std::string hw_name;
+    std::vector<std::string> hw_name;
     bool memory_locking;
     uint16_t threads;
 

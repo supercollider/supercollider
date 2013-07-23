@@ -1,7 +1,7 @@
 class::NAryOpFunction
 summary::represent a n-ary oparation on a function
 categories::Core
-related::Classes/BinaryOpFunction, Classes/UnaryOpFunction, Classes/NAryOpStream, Classes/Pnaryop
+related::Classes/BinaryOpFunction, Classes/UnaryOpFunction, Classes/NAryOpStream, Classes/Pnaryop, Overviews/Operators
 
 description::
 Operating on functions instead of numbers, what results is not a result of the calculation, but a structure that represents that calculation.

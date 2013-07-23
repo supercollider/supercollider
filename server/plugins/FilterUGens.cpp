@@ -471,6 +471,7 @@ extern "C"
 	void FOS_next_1(FOS *unit, int inNumSamples);
 	void FOS_Ctor(FOS* unit);
 
+	void SOS_next_i(SOS *unit, int inNumSamples);
 	void SOS_next_k(SOS *unit, int inNumSamples);
 	void SOS_next_a(SOS *unit, int inNumSamples);
 	void SOS_next_1(SOS *unit, int inNumSamples);
@@ -3880,10 +3881,14 @@ void SOS_Ctor(SOS* unit)
 			&& INRATE(4) == calc_FullRate
 			&& INRATE(5) == calc_FullRate) {
 			SETCALC(SOS_next_a);
-		//	printf("SOS_next_a\n");
+		} else if (INRATE(1) == calc_ScalarRate
+				   && INRATE(2) == calc_ScalarRate
+				   && INRATE(3) == calc_ScalarRate
+				   && INRATE(4) == calc_ScalarRate
+				   && INRATE(5) == calc_ScalarRate) {
+			SETCALC(SOS_next_i);
 		} else {
 			SETCALC(SOS_next_k);
-		//	printf("SOS_next_k\n");
 		}
 	} else {
 		SETCALC(SOS_next_1);
@@ -3891,11 +3896,11 @@ void SOS_Ctor(SOS* unit)
 	}
 	unit->m_y1 = 0.f;
 	unit->m_y2 = 0.f;
-	unit->m_a0 = 0.f;
-	unit->m_a1 = 0.f;
-	unit->m_a2 = 0.f;
-	unit->m_b1 = 0.f;
-	unit->m_b2 = 0.f;
+	unit->m_a0 = ZIN0(1);
+	unit->m_a1 = ZIN0(2);
+	unit->m_a2 = ZIN0(3);
+	unit->m_b1 = ZIN0(4);
+	unit->m_b2 = ZIN0(5);
 	SOS_next_1(unit, 1);
 }
 
@@ -3957,13 +3962,16 @@ void SOS_next_k(SOS *unit, int inNumSamples)
 	double b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
 	double b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 	LOOP(unit->mRate->mFilterLoops,
-		y0 = ZXP(in) + b1 * y1 + b2 * y2;
+		float in0 = ZXP(in);
+		float in1 = ZXP(in);
+		float in2 = ZXP(in);
+		y0 = in0 + b1 * y1 + b2 * y2;
 		ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
 
-		y2 = ZXP(in) + b1 * y0 + b2 * y1;
+		y2 = in1 + b1 * y0 + b2 * y1;
 		ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
 
-		y1 = ZXP(in) + b1 * y2 + b2 * y0;
+		y1 = in2 + b1 * y2 + b2 * y0;
 		ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
 
 		a0 += a0_slope;
@@ -3987,6 +3995,44 @@ void SOS_next_k(SOS *unit, int inNumSamples)
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
 }
+
+void SOS_next_i(SOS *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double a1 = unit->m_a1;
+	double a2 = unit->m_a2;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
+	LOOP(unit->mRate->mFilterLoops,
+		float in0 = ZXP(in);
+		float in1 = ZXP(in);
+		float in2 = ZXP(in);
+		y0 = in0 + b1 * y1 + b2 * y2;
+		ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
+
+		y2 = in1 + b1 * y0 + b2 * y1;
+		ZXP(out) = a0 * y2 + a1 * y0 + a2 * y1;
+
+		y1 = in2 + b1 * y2 + b2 * y0;
+		ZXP(out) = a0 * y1 + a1 * y2 + a2 * y0;
+	);
+	LOOP(unit->mRate->mFilterRemain,
+		y0 = ZXP(in) + b1 * y1 + b2 * y2;
+		ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
+		y2 = y1;
+		y1 = y0;
+	);
+
+	unit->m_y1 = zapgremlins(y1);
+	unit->m_y2 = zapgremlins(y2);
+}
+
 
 void SOS_next_1(SOS *unit, int inNumSamples)	// optimized for SOS.kr
 {

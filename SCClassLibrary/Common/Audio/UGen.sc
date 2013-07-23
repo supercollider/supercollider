@@ -204,8 +204,8 @@ UGen : AbstractFunction {
 	}
 
 	lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
-		var grow, a, b, scaled;
-		if (curve.isNumber and: { abs(curve) < 0.25 }) {
+		var grow, a, b, scaled, curvedResult;
+		if (curve.isNumber and: { abs(curve) < 0.125 }) {
 			^this.linlin(inMin, inMax, outMin, outMax, clip)
 		};
 		grow = exp(curve);
@@ -213,20 +213,37 @@ UGen : AbstractFunction {
 		b = outMin + a;
 		scaled = (this.prune(inMin, inMax, clip) - inMin) / (inMax - inMin);
 
-		^b - (a * pow(grow, scaled));
+		curvedResult = b - (a * pow(grow, scaled));
+
+		if (curve.rate == \scalar) {
+			^curvedResult
+		} {
+			^Select.perform(this.methodSelectorForRate, abs(curve) >= 0.125, [
+				this.linlin(inMin, inMax, outMin, outMax, clip),
+				curvedResult
+			])
+		}
 	}
 
 	curvelin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
-		var grow, a, b, scaled;
-		if (curve.isNumber and: { abs(curve) < 0.25 }) {
+		var grow, a, b, scaled, linResult;
+		if (curve.isNumber and: { abs(curve) < 0.125 }) {
 			^this.linlin(inMin, inMax, outMin, outMax, clip)
 		};
 		grow = exp(curve);
 		a = outMax - outMin / (1.0 - grow);
 		b = outMin + a;
-		scaled = (this.prune(inMin, inMax, clip) - inMin) / (inMax - inMin);
 
-		^log((b - scaled) / a) / curve
+		linResult = log( (b - this.prune(inMin, inMax, clip)) / a ) * (inMax - inMin) / curve + inMin;
+
+		if (curve.rate == \scalar) {
+			^linResult
+		} {
+			^Select.perform(this.methodSelectorForRate, abs(curve) >= 0.125, [
+				this.linlin(inMin, inMax, outMin, outMax, clip),
+				linResult
+			])
+		}
 	}
 
 	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
@@ -236,6 +253,10 @@ UGen : AbstractFunction {
 				this.linlin(inMin, inCenter, outMin, outCenter, clip)
 			]
 		)
+	}
+
+	moddif { |that = 0.0, mod = 1.0|
+		^ModDif.multiNew(this.rate, this, that, mod)
 	}
 
 	signalRange { ^\bipolar }

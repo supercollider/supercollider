@@ -14,13 +14,15 @@
 #include <boost/chrono/thread_clock.hpp>
 #include <cassert>
 
+#if !defined(__VXWORKS__)
 # include <sys/times.h>
+#endif
 # include <pthread.h>
 # include <unistd.h>
 
 namespace boost { namespace chrono {
 
-    inline thread_clock::time_point thread_clock::now( ) BOOST_NOEXCEPT
+    thread_clock::time_point thread_clock::now( ) BOOST_NOEXCEPT
     {
       struct timespec ts;
 #if defined CLOCK_THREAD_CPUTIME_ID
@@ -46,7 +48,7 @@ namespace boost { namespace chrono {
     }
 
 #if !defined BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
-    inline thread_clock::time_point thread_clock::now( system::error_code & ec )
+    thread_clock::time_point thread_clock::now( system::error_code & ec )
     {
       struct timespec ts;
 #if defined CLOCK_THREAD_CPUTIME_ID

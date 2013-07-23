@@ -203,6 +203,7 @@ void FreeVerb_next(FreeVerb *unit, int inNumSamples)
     float* input0  = IN(0);
     float* output0 = OUT(0);
 
+
     float ftemp0 = IN0(1); // mix
     if (ftemp0 > 1.) ftemp0 = 1.;
     if (ftemp0 < 0.) ftemp0 = 0.;
@@ -274,67 +275,87 @@ void FreeVerb_next(FreeVerb *unit, int inNumSamples)
     for (int i=0; i<inNumSamples; i++) {
 	    float ftemp2 = input0[i];
 	    float ftemp4 = (1.500000e-02f * ftemp2);
+
+
+
 	    if (++iota0 == 225) iota0=0;
 	    float T0 = dline0[iota0];
+
 	    if (++iota1 == 341) iota1=0;
 	    float T1 = dline1[iota1];
+
 	    if (++iota2 == 441) iota2=0;
 	    float T2 = dline2[iota2];
+
 	    if (++iota3 == 556) iota3=0;
 	    float T3 = dline3[iota3];
+
+
 	    if (++iota4 == 1617) iota4=0;
 	    float T4 = dline4[iota4];
-
 	    R5_0 = ((ftemp7 * R4_0) + (ftemp6 * R5_0));
 	    dline4[iota4] = (ftemp4 + (ftemp5 * R5_0));
 	    R4_0 = T4;
+
 	    if (++iota5 == 1557) iota5=0;
 	    float T5 = dline5[iota5];
 	    R7_0 = ((ftemp7 * R6_0) + (ftemp6 * R7_0));
 	    dline5[iota5] = (ftemp4 + (ftemp5 * R7_0));
 	    R6_0 = T5;
+
 	    if (++iota6 == 1491) iota6=0;
 	    float T6 = dline6[iota6];
 	    R9_0 = ((ftemp7 * R8_0) + (ftemp6 * R9_0));
 	    dline6[iota6] = (ftemp4 + (ftemp5 * R9_0));
 	    R8_0 = T6;
+
 	    if (++iota7 == 1422) iota7=0;
 	    float T7 = dline7[iota7];
 	    R11_0 = ((ftemp7 * R10_0) + (ftemp6 * R11_0));
 	    dline7[iota7] = (ftemp4 + (ftemp5 * R11_0));
 	    R10_0 = T7;
+
 	    if (++iota8 == 1277) iota8=0;
 	    float T8 = dline8[iota8];
 	    R13_0 = ((ftemp7 * R12_0) + (ftemp6 * R13_0));
 	    dline8[iota8] = (ftemp4 + (ftemp5 * R13_0));
 	    R12_0 = T8;
+
 	    if (++iota9 == 1116) iota9=0;
 	    float T9 = dline9[iota9];
 	    R15_0 = ((ftemp7 * R14_0) + (ftemp6 * R15_0));
 	    dline9[iota9] = (ftemp4 + (ftemp5 * R15_0));
 	    R14_0 = T9;
+
 	    if (++iota10 == 1188) iota10=0;
 	    float T10 = dline10[iota10];
 	    R17_0 = ((ftemp7 * R16_0) + (ftemp6 * R17_0));
 	    dline10[iota10] = (ftemp4 + (ftemp5 * R17_0));
 	    R16_0 = T10;
+
 	    if (++iota11 == 1356) iota11=0;
 	    float T11 = dline11[iota11];
 	    R19_0 = ((ftemp7 * R18_0) + (ftemp6 * R19_0));
 	    dline11[iota11] = (ftemp4 + (ftemp5 * R19_0));
 	    R18_0 = T11;
+
 	    float ftemp8 = (R16_0 + R18_0);
+
 	    dline3[iota3] = ((((0.500000f * R3_0) + R4_0) + (R6_0 + R8_0)) + ((R10_0 + R12_0) + (R14_0 + ftemp8)));
 	    R3_0 = T3;
+
 	    R3_1 = (R3_0 - (((R4_0 + R6_0) + (R8_0 + R10_0)) + ((R12_0 + R14_0) + ftemp8)));
 	    dline2[iota2] = ((0.500000f * R2_0) + R3_1);
 	    R2_0 = T2;
+
 	    R2_1 = (R2_0 - R3_1);
 	    dline1[iota1] = ((0.500000f * R1_0) + R2_1);
 	    R1_0 = T1;
+
 	    R1_1 = (R1_0 - R2_1);
 	    dline0[iota0] = ((0.500000f * R0_0) + R1_1);
 	    R0_0 = T0;
+
 	    R0_1 = (R0_0 - R1_1);
 	    output0[i] = ((ftemp1 * ftemp2) + (ftemp0 * R0_1));
 

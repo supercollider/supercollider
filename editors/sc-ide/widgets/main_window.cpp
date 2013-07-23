@@ -1053,11 +1053,38 @@ bool MainWindow::save( Document *doc, bool forceChoose )
             last_active_window->activateWindow();
 #endif
 
+        QString save_path;
+
         if (result == QDialog::Accepted) {
-            QString savePath = mInstance->mLastDocumentSavePath = dialog.selectedFiles()[0];
-            return documentManager->saveAs(doc, savePath);
-        } else
+            save_path = dialog.selectedFiles()[0];
+
+            if (save_path.indexOf('.') == -1 && !QFile::exists(save_path)) {
+                save_path.append(".scd");
+                QFileInfo save_path_info(save_path);
+                if (save_path_info.exists())
+                {
+                    QString msg =
+                            tr("Extenstion \".scd\" was automatically added to the "
+                               "selected file name, but the file \"%1\" already exists.\n\n"
+                               "Do you wish to overwrite it?")
+                            .arg(save_path_info.fileName());
+                    QMessageBox::StandardButton result =
+                            QMessageBox::warning(mInstance,
+                                                 tr("Overwrite File?"),
+                                                 msg,
+                                                 QMessageBox::Yes | QMessageBox::No);
+                    if (result != QMessageBox::Yes)
+                        save_path.clear();
+                }
+            }
+        }
+
+        if (!save_path.isEmpty()) {
+            mInstance->mLastDocumentSavePath = save_path;
+            return documentManager->saveAs(doc, save_path);
+        } else {
             return false;
+        }
     } else
         return documentManager->save(doc);
 }

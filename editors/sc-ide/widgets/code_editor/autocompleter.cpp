@@ -609,6 +609,9 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
     case MethodCompletion:
         menu = menuForMethodCompletion(mCompletion, mEditor);
         break;
+
+    default:
+        break;
     }
 
 

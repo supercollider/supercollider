@@ -31,25 +31,6 @@ CONFIGURE_FILE(
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
-if(APPLE)
-	STRING(REGEX REPLACE "^.*MacOSX10.([0-9]+).*$" "\\1" MAC_OSX_SDK_VERSION  "${CMAKE_OSX_SYSROOT}")
-
-	if(CMAKE_OSX_DEPLOYMENT_TARGET)
-		if (CMAKE_OSX_DEPLOYMENT_TARGET GREATER 10.4)
-			set(HID_UTIL_DIR "HID_Utilities")
-		else()
-			set(HID_UTIL_DIR "HID_Utilities_10_4")
-		endif()
-	else()
-		if (${MAC_OSX_SDK_VERSION} GREATER 4)
-			set(HID_UTIL_DIR "HID_Utilities")
-		else()
-			set(HID_UTIL_DIR "HID_Utilities_10_4")
-		endif()
-	endif()
-	MESSAGE( STATUS "Using HID Utilities from folder '${HID_UTIL_DIR}'")
-endif()
-
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
 endif()
@@ -84,22 +65,25 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 	elseif(NOT (WIN32 AND NOT CYGWIN))
 		add_definitions("-pthread")
 	endif()
-endif ()
 
-if (${CMAKE_CXX_COMPILER} MATCHES icpc)
+elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
 	set(CMAKE_COMPILER_IS_INTEL 1)
 	add_definitions(-Wno-unknown-pragmas)
 	add_definitions(-simd)
+
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_COMPILER_IS_CLANG 1)
+
+else()
+
 endif()
 
-if (${CMAKE_CXX_COMPILER} MATCHES clang)
-	option(DSO_VISIBILITY "DSO visibility support for clang" OFF)
+if(CMAKE_COMPILER_IS_CLANG)
+    option(DSO_VISIBILITY "DSO visibility support for clang" OFF)
 
-	if (DSO_VISIBILITY)
-		add_definitions(-fvisibility=hidden)
-	endif()
-
-	set(CMAKE_COMPILER_IS_CLANG 1)
+    if(DSO_VISIBILITY)
+        add_definitions(-fvisibility=hidden)
+    endif()
 endif()
 
 if(APPLE)
@@ -117,11 +101,6 @@ if(WIN32)
 
     add_definitions(-DWIN32_LEAN_AND_MEAN)
 
-    if(MSVC)
-        SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-        SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-    endif()
-
     # correctly link the static Boost Thread library:
     add_definitions(-DBOOST_THREAD_USE_LIB)
 	#avoid unnecesary autolink
@@ -138,10 +117,8 @@ option(FINAL_BUILD "Build as single source file." OFF)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-option(SSE "Compile with support for SSE instructions.")
-option(SSE2 "Compile with support for SSE2 instructions.")
-option(SSE41 "Compile with support for SSE4.1 instructions.")
-option(SSE42 "Compile with support for SSE4.2 instructions.")
+option(SSE "Compile with support for SSE instructions." ON)
+option(SSE2 "Compile with support for SSE2 instructions." ON)
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
 
@@ -176,7 +153,9 @@ option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)"
 option(SCLANG_SERVER "Build with internal server." ON)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	option(SC_WII "Build sclang with WII support" ON)
+    option(SC_WII "Build sclang with WII support" ON)
+elseif(APPLE)
+    option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
 endif()
 
 option(SC_QT "Build SuperCollider with Qt GUI" ON)
@@ -202,12 +181,12 @@ option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
 # some default libraries
 
 if (NOT WIN32)
-	find_package(Pthreads)
+    find_package(Pthreads)
 
-	if (NOT PTHREADS_FOUND)
-	    message(SEND_ERROR "cannot find libpthreads")
-	endif()
-	include_directories(${PTHREADS_INCLUDE_DIR})
+    if (NOT PTHREADS_FOUND)
+        message(SEND_ERROR "cannot find libpthreads")
+    endif()
+    include_directories(${PTHREADS_INCLUDE_DIR})
 endif()
 
 if(MSVC OR MINGW)
@@ -237,20 +216,16 @@ endif()
 # some preprocessor flags
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 	if (SSE)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse -mfpmath=sse")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -mfpmath=sse")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   -msse")
+		set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -msse")
+		if(NOT APPLE)
+			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpmath=sse")
+			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpmath=sse")
+		endif()
 	endif()
 	if (SSE2)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse2")
-	endif()
-	if (SSE41)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
-	endif()
-	if (SSE42)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2")
 	endif()
 	if (NATIVE)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
@@ -266,11 +241,7 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 endif()
 
 if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
-	if (SSE42)
-		add_definitions(-xSSE4.2)
-	elseif (SSE41)
-		add_definitions(-xSSE4.1)
-	elseif (SSE)
+	if (SSE)
 		add_definitions(-mia32)
 	endif()
 	if (SC_CPP11)
@@ -280,11 +251,11 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	# disable warnings
 	add_definitions(-diag-disable 170) # pointer points outside of underlying object ... used heavily in sclang
 	add_definitions(-diag-disable 279) # controlling expression is constant
-
 endif()
 
 if (SC_MEMORY_DEBUGGING)
 	add_definitions(-DDISABLE_MEMORY_POOLS)
+	add_definitions(-DENABLE_MEMORY_CHECKS)
 endif()
 
 if(MINGW)

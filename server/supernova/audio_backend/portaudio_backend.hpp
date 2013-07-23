@@ -1,5 +1,5 @@
 //  portaudio backend
-//  Copyright (C) 2006, 2007, 2008, 2012 Tim Blechmann
+//  Copyright (C) 2006 - 2013 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #define _PORTAUDIO_HPP
 
 #include <cstdio>
+#include <string>
+#include <algorithm>
 
 #include "portaudio.h"
 #ifdef HAVE_PORTAUDIO_CONFIG_H
@@ -104,15 +106,14 @@ public:
         printf("\n");
     }
 
-    static bool match_device (std::string const & device_name, int & r_device_index)
+    bool match_device (std::string const & device, int & r_device_index)
     {
         int device_number = Pa_GetDeviceCount();
         if (device_number < 0)
             report_error(device_number);
 
         for (int i = 0; i != device_number; ++i) {
-            const PaDeviceInfo * device_info = Pa_GetDeviceInfo(i);
-            if (std::string(device_info->name) == device_name) {
+            if (device_name(i) == device) {
                 r_device_index = i;
                 return true;
             }
@@ -131,18 +132,26 @@ public:
         PaStreamParameters in_parameters, out_parameters;
 
         if (inchans) {
-            in_parameters.channelCount = inchans;
+            const PaDeviceInfo* device_info = Pa_GetDeviceInfo(output_device_index);
+
+            inchans = std::min(inchans, (unsigned int)device_info->maxInputChannels);
+
             in_parameters.device = input_device_index;
+            in_parameters.channelCount = inchans;
             in_parameters.sampleFormat = paFloat32 | paNonInterleaved;
-            in_parameters.suggestedLatency = Pa_GetDeviceInfo(in_parameters.device)->defaultLowInputLatency;
+            in_parameters.suggestedLatency = device_info->defaultLowInputLatency;
             in_parameters.hostApiSpecificStreamInfo = NULL;
         }
 
         if (outchans) {
-            out_parameters.channelCount = outchans;
+            const PaDeviceInfo* device_info = Pa_GetDeviceInfo(output_device_index);
+
+            outchans = std::min(outchans, (unsigned int)device_info->maxOutputChannels);
+
             out_parameters.device = output_device_index;
+            out_parameters.channelCount = outchans;
             out_parameters.sampleFormat = paFloat32 | paNonInterleaved;
-            out_parameters.suggestedLatency = Pa_GetDeviceInfo(out_parameters.device)->defaultLowOutputLatency;
+            out_parameters.suggestedLatency = device_info->defaultLowOutputLatency;
             out_parameters.hostApiSpecificStreamInfo = NULL;
         }
 
@@ -223,8 +232,23 @@ public:
         cpu_time_accumulator.get(peak, average);
     }
 
+    std::pair<std::string, std::string> default_device_names()
+    {
+        const PaDeviceIndex default_input = Pa_GetDefaultInputDevice();
+        const PaDeviceIndex default_output = Pa_GetDefaultOutputDevice();
+
+        std::cout << default_input << " " << default_output;
+
+        return std::make_pair(device_name(default_input), device_name(default_output));
+    }
 
 private:
+    std::string device_name(PaDeviceIndex device_index)
+    {
+        const PaDeviceInfo * device_info = Pa_GetDeviceInfo(device_index);
+        return std::string(device_info->name);
+    }
+
     int perform(const void *inputBuffer, void *outputBuffer, unsigned long frames,
                 const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags)
     {
@@ -255,7 +279,7 @@ private:
             processed += blocksize_;
         }
 
-        cpu_time_accumulator.update(Pa_GetStreamCpuLoad(stream));
+        cpu_time_accumulator.update(Pa_GetStreamCpuLoad(stream) * 100.0);
         return paContinue;
     }
 

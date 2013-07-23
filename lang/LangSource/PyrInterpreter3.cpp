@@ -50,6 +50,11 @@
 #include "InitAlloc.h"
 #include "function_attributes.h"
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Warray-bounds"
+#endif
+
+
 //void tellPlugInsAboutToRun();
 double timeNow();
 

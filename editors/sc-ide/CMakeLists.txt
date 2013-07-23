@@ -138,6 +138,9 @@ list(APPEND ide_src
 )
 
 list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp)
+if(APPLE)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+endif()
 
 if(APPLE)
 	list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp)
@@ -213,7 +216,7 @@ else()
 endif()
 
 if(APPLE)
-    target_link_libraries( ${ide_name} "-framework CoreServices")
+    target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F/Library/Frameworks")
 elseif(WIN32)
     target_link_libraries( ${ide_name} wsock32 )

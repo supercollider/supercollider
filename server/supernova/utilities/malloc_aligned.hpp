@@ -64,6 +64,20 @@ inline void free_aligned(void *ptr)
     free(ptr);
 }
 
+#elif defined(__SSE2__)
+
+const int malloc_memory_alignment = 64;
+
+inline void* MALLOC malloc_aligned(std::size_t nbytes)
+{
+    return _mm_malloc(nbytes, malloc_memory_alignment);
+}
+
+inline void free_aligned(void *ptr)
+{
+    _mm_free(ptr);
+}
+
 #elif defined(__APPLE__)
 
 const int malloc_memory_alignment = 64;
@@ -79,20 +93,6 @@ inline void free_aligned(void *ptr)
     free(ptr);
 }
 
-
-#elif defined(__SSE2__)
-
-const int malloc_memory_alignment = 64;
-
-inline void* MALLOC malloc_aligned(std::size_t nbytes)
-{
-    return _mm_malloc(nbytes, malloc_memory_alignment);
-}
-
-inline void free_aligned(void *ptr)
-{
-    _mm_free(ptr);
-}
 
 #elif defined(_MSC_VER)
 

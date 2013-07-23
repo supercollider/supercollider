@@ -1,7 +1,7 @@
 class:: LazyEnvir
 summary:: lazy environment
 categories:: Libraries>JITLib>Environments
-related:: Classes/Environment, Classes/EnvironmentRedirect, Classes/ProxySpace, Overviews/JITLib
+related:: Classes/Maybe, Classes/Fdef, Classes/Environment, Classes/ProxySpace, Overviews/JITLib
 
 description::
 Environment with deferred evaluation and default values.
@@ -9,30 +9,38 @@ Environment with deferred evaluation and default values.
 Consequently, calculations can be done with nonexisting objects which can then be assigned later.
 Per default, a LazyEnvir returns instances of link::Classes/Maybe::. See also link::Classes/Fdef::.
 
+note::While the method put is treated as transparent and implicitly creates a placeholder, all other methods, like at, collect, do, etc. pass the placeholder. In order to retrieve the object itself, use .source - in order to reduce it to a value, use: value::
+
+code::
+e = LazyEnvir.new;
+e.use { ~x = ~y + ~z };
+e.at(\x);
+e.at(\x).source; // the source is a binary operation (addition on the placeholders)
+e.use { ~y = 5; ~z = 7 };
+e.at(\x).value; // the value is 12
+::
+
 InstanceMethods::
 
 method::put
-sets the value of the reference at key.
+Sets the value of the reference at key.
 
 method::at
-returns a reference to the object at key.
-
-Examples::
+Returns a reference to the object at key.
 
 code::
 l = LazyEnvir.push;
 
 // default objects are created on access
 ~a;
-~a.value; // defaults to 1
+~a.value; // defaults to nil
 
 // operations on placeholders
 (
 ~c = ~a + ~b;
 
-~c.value;
+~c.value; // doesn't fail, instead returns nil
 )
-
 
 // variables can be assigned later
 (
@@ -42,15 +50,23 @@ l = LazyEnvir.push;
 ~c.value;
 )
 
-
 // variables can be exchanged later
 (
 ~b = { 1000.rand };
 ~c.value;
 )
+::
 
 
-// making pattern space using LazyEnvir
+method::localPut
+Sets the value of the key directly. This method is mainly used internally.
+
+method::proxyClass
+Specify what placeholder object the environment uses by supplying a class name (link::Classes/Symbol::). The default is a link::Classes/Maybe::. Any object that responds to the methods source, source_ and clear can be a placeholder.
+
+code::
+
+// making a pattern space using LazyEnvir
 
 a = LazyEnvir.new;
 a.proxyClass=\PatternProxy;
@@ -72,3 +88,9 @@ z.next;
 
 a.pop;
 ::
+
+method::removeAt
+Removes the placeholder from the environment and clears it.
+
+method::makeProxy
+Returns a new placeholder object. This is used internally and can be overridden to implement other lazy environments.

@@ -19,6 +19,7 @@
 */
 
 
+#include "SC_Win32Utils.h"
 #include "SC_Graph.h"
 #include "SC_GraphDef.h"
 #include "SC_Unit.h"

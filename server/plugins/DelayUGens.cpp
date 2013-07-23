@@ -6165,9 +6165,9 @@ Pluck - Karplus-Strong
 */
 void Pluck_Ctor(Pluck *unit)
 {
-//	FeedbackDelay_Reset(unit);
 	unit->m_maxdelaytime = IN0(2);
 	unit->m_delaytime = IN0(3);
+	unit->m_decaytime = IN0(4);
 	unit->m_dlybuf = 0;
 	bool allocationSucessful = DelayUnit_AllocDelayLine(unit, "Pluck");
 	if (!allocationSucessful)
@@ -6186,7 +6186,7 @@ void Pluck_Ctor(Pluck *unit)
 			SETCALC(Pluck_next_ak_z); //ak
 		}
 	} else {
-	    if(INRATE(5) == calc_FullRate){
+		if(INRATE(5) == calc_FullRate){
 			SETCALC(Pluck_next_ka_z); //ka
 		} else {
 			SETCALC(Pluck_next_kk_z); //kk
@@ -6220,22 +6220,22 @@ void Pluck_next_aa(Pluck *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-	for(int i = 0; i < inNumSamples; i++){
+		for(int i = 0; i < inNumSamples; i++){
 			curtrig = trig[i];
 			if ((prevtrig <= 0.f) && (curtrig > 0.f)) {
-			    inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
-			    }
+				inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
+			}
 			prevtrig = curtrig;
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			float d0 = dlybuf[irdphase0 & mask];
 			float d1 = dlybuf[irdphase1 & mask];
 			float d2 = dlybuf[irdphase2 & mask];
@@ -6255,11 +6255,11 @@ void Pluck_next_aa(Pluck *unit, int inNumSamples)
 		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-	    for(int i = 0; i < inNumSamples; i++){
+		for(int i = 0; i < inNumSamples; i++){
 			curtrig = trig[i];
 			if ((prevtrig <= 0.f) && (curtrig > 0.f)) {
-			    inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
-			    }
+				inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
+			}
 			prevtrig = curtrig;
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
@@ -6269,11 +6269,11 @@ void Pluck_next_aa(Pluck *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			float d0 = dlybuf[irdphase0 & mask];
 			float d1 = dlybuf[irdphase1 & mask];
 			float d2 = dlybuf[irdphase2 & mask];
@@ -6326,19 +6326,19 @@ void Pluck_next_aa_z(Pluck *unit, int inNumSamples)
 		for(int i = 0; i < inNumSamples; i++){
 			curtrig = trig[i];
 			if ((prevtrig <= 0.f) && (curtrig > 0.f)) {
-			    inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
-			    }
+				inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
+			}
 			prevtrig = curtrig;
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			if (irdphase0 < 0) {
 				dlybuf[iwrphase & mask] = thisin;
 				out[i] = 0.f;
@@ -6362,10 +6362,10 @@ void Pluck_next_aa_z(Pluck *unit, int inNumSamples)
 					d3 = dlybuf[irdphase3 & mask];
 				}
 				float value = cubicinterp(frac, d0, d1, d2, d3);
-			float thiscoef = coef[i];
-			float onepole = ((1. - fabs(thiscoef)) * value) + (thiscoef * lastsamp);
-			dlybuf[iwrphase & mask] = thisin + feedbk * onepole;
-			out[i] = lastsamp = onepole;
+				float thiscoef = coef[i];
+				float onepole = ((1. - fabs(thiscoef)) * value) + (thiscoef * lastsamp);
+				dlybuf[iwrphase & mask] = thisin + feedbk * onepole;
+				out[i] = lastsamp = onepole;
 			}
 			iwrphase++;
 		};
@@ -6380,8 +6380,8 @@ void Pluck_next_aa_z(Pluck *unit, int inNumSamples)
 		for(int i = 0; i < inNumSamples; i++) {
 			curtrig = trig[i];
 			if ((prevtrig <= 0.f) && (curtrig > 0.f)) {
-			    inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
-			    }
+				inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
+			}
 			prevtrig = curtrig;
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
@@ -6391,15 +6391,15 @@ void Pluck_next_aa_z(Pluck *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			if (irdphase0 < 0) {
 				dlybuf[iwrphase & mask] = thisin;
 				out[i] = 0.f;
-			    } else {
+			} else {
 				if (irdphase1 < 0) {
 					d1 = d2 = d3 = 0.f;
 					d0 = dlybuf[irdphase0 & mask];
@@ -6419,10 +6419,10 @@ void Pluck_next_aa_z(Pluck *unit, int inNumSamples)
 					d3 = dlybuf[irdphase3 & mask];
 				}
 				float value = cubicinterp(frac, d0, d1, d2, d3);
-			float thiscoef = coef[i];
-			float onepole = ((1. - fabs(thiscoef)) * value) + (thiscoef * lastsamp);
-			dlybuf[iwrphase & mask] = thisin + feedbk * onepole;
-			out[i] = lastsamp = onepole;
+				float thiscoef = coef[i];
+				float onepole = ((1. - fabs(thiscoef)) * value) + (thiscoef * lastsamp);
+				dlybuf[iwrphase & mask] = thisin + feedbk * onepole;
+				out[i] = lastsamp = onepole;
 			}
 			feedbk += feedbk_slope;
 			iwrphase++;
@@ -6463,25 +6463,25 @@ void Pluck_next_kk(Pluck *unit, int inNumSamples)
 	float thisin;
 
 	if ((unit->m_prevtrig <= 0.f) && (trig > 0.f)) {
-	    inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
-	    }
+		inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
+	}
 	unit->m_prevtrig = trig;
 
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime && coef == unit->m_coef) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
 
-	    for(int i = 0; i < inNumSamples; i++){
+		for(int i = 0; i < inNumSamples; i++){
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			float d0 = dlybuf[irdphase0 & mask];
 			float d1 = dlybuf[irdphase1 & mask];
 			float d2 = dlybuf[irdphase2 & mask];
@@ -6503,7 +6503,7 @@ void Pluck_next_kk(Pluck *unit, int inNumSamples)
 		float curcoef = unit->m_coef;
 		float coef_slope = CALCSLOPE(coef, curcoef);
 
-	    for(int i = 0; i < inNumSamples; i++){
+		for(int i = 0; i < inNumSamples; i++){
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -6512,11 +6512,11 @@ void Pluck_next_kk(Pluck *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			float d0 = dlybuf[irdphase0 & mask];
 			float d1 = dlybuf[irdphase1 & mask];
 			float d2 = dlybuf[irdphase2 & mask];
@@ -6563,8 +6563,8 @@ void Pluck_next_kk_z(Pluck *unit, int inNumSamples)
 	unsigned long inputsamps = unit->m_inputsamps;
 
 	if ((unit->m_prevtrig <= 0.f) && (trig > 0.f)) {
-	    inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
-	    }
+		inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
+	}
 	unit->m_prevtrig = trig;
 
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime && coef == unit->m_coef) {
@@ -6577,11 +6577,11 @@ void Pluck_next_kk_z(Pluck *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			if (irdphase0 < 0) {
 				dlybuf[iwrphase & mask] = thisin;
 				out[i] = 0.f;
@@ -6605,9 +6605,9 @@ void Pluck_next_kk_z(Pluck *unit, int inNumSamples)
 					d3 = dlybuf[irdphase3 & mask];
 				}
 				float value = cubicinterp(frac, d0, d1, d2, d3);
-			float onepole = ((1. - fabs(coef)) * value) + (coef * lastsamp);
-			dlybuf[iwrphase & mask] = thisin + (feedbk * onepole);
-			out[i] = lastsamp = onepole; //value;
+				float onepole = ((1. - fabs(coef)) * value) + (coef * lastsamp);
+				dlybuf[iwrphase & mask] = thisin + (feedbk * onepole);
+				out[i] = lastsamp = onepole; //value;
 			}
 			iwrphase++;
 		};
@@ -6631,15 +6631,15 @@ void Pluck_next_kk_z(Pluck *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			if (irdphase0 < 0) {
 				dlybuf[iwrphase & mask] = thisin;
 				out[i] = 0.f;
-			    } else {
+			} else {
 				if (irdphase1 < 0) {
 					d1 = d2 = d3 = 0.f;
 					d0 = dlybuf[irdphase0 & mask];
@@ -6658,10 +6658,10 @@ void Pluck_next_kk_z(Pluck *unit, int inNumSamples)
 					d2 = dlybuf[irdphase2 & mask];
 					d3 = dlybuf[irdphase3 & mask];
 				}
-			float value = cubicinterp(frac, d0, d1, d2, d3);
-			float onepole = ((1. - fabs(curcoef)) * value) + (curcoef * lastsamp);
-			dlybuf[iwrphase & mask] = thisin + (feedbk * onepole);
-			out[i] = lastsamp = onepole; //value;
+				float value = cubicinterp(frac, d0, d1, d2, d3);
+				float onepole = ((1. - fabs(curcoef)) * value) + (curcoef * lastsamp);
+				dlybuf[iwrphase & mask] = thisin + (feedbk * onepole);
+				out[i] = lastsamp = onepole; //value;
 			}
 			feedbk += feedbk_slope;
 			curcoef += coef_slope;
@@ -6706,22 +6706,22 @@ void Pluck_next_ak(Pluck *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-	for(int i = 0; i < inNumSamples; i++){
+		for(int i = 0; i < inNumSamples; i++){
 			curtrig = trig[i];
 			if ((prevtrig <= 0.f) && (curtrig > 0.f)) {
-			    inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
-			    }
+				inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
+			}
 			prevtrig = curtrig;
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			float d0 = dlybuf[irdphase0 & mask];
 			float d1 = dlybuf[irdphase1 & mask];
 			float d2 = dlybuf[irdphase2 & mask];
@@ -6743,11 +6743,11 @@ void Pluck_next_ak(Pluck *unit, int inNumSamples)
 		float curcoef = unit->m_coef;
 		float coef_slope = CALCSLOPE(coef, curcoef);
 
-	    for(int i = 0; i < inNumSamples; i++){
+		for(int i = 0; i < inNumSamples; i++){
 			curtrig = trig[i];
 			if ((prevtrig <= 0.f) && (curtrig > 0.f)) {
-			    inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
-			    }
+				inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
+			}
 			prevtrig = curtrig;
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
@@ -6757,11 +6757,11 @@ void Pluck_next_ak(Pluck *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			float d0 = dlybuf[irdphase0 & mask];
 			float d1 = dlybuf[irdphase1 & mask];
 			float d2 = dlybuf[irdphase2 & mask];
@@ -6815,19 +6815,19 @@ void Pluck_next_ak_z(Pluck *unit, int inNumSamples)
 		for(int i = 0; i < inNumSamples; i++){
 			curtrig = trig[i];
 			if ((prevtrig <= 0.f) && (curtrig > 0.f)) {
-			    inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
-			    }
+				inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
+			}
 			prevtrig = curtrig;
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			if (irdphase0 < 0) {
 				dlybuf[iwrphase & mask] = thisin;
 				out[i] = 0.f;
@@ -6851,9 +6851,9 @@ void Pluck_next_ak_z(Pluck *unit, int inNumSamples)
 					d3 = dlybuf[irdphase3 & mask];
 				}
 				float value = cubicinterp(frac, d0, d1, d2, d3);
-			float onepole = ((1. - fabs(coef)) * value) + (coef * lastsamp);
-			dlybuf[iwrphase & mask] = thisin + feedbk * onepole;
-			out[i] = lastsamp = onepole;
+				float onepole = ((1. - fabs(coef)) * value) + (coef * lastsamp);
+				dlybuf[iwrphase & mask] = thisin + feedbk * onepole;
+				out[i] = lastsamp = onepole;
 			}
 			iwrphase++;
 		};
@@ -6871,8 +6871,8 @@ void Pluck_next_ak_z(Pluck *unit, int inNumSamples)
 		for(int i = 0; i < inNumSamples; i++) {
 			curtrig = trig[i];
 			if ((prevtrig <= 0.f) && (curtrig > 0.f)) {
-			    inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
-			    }
+				inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
+			}
 			prevtrig = curtrig;
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
@@ -6882,15 +6882,15 @@ void Pluck_next_ak_z(Pluck *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			if (irdphase0 < 0) {
 				dlybuf[iwrphase & mask] = thisin;
 				out[i] = 0.f;
-			    } else {
+			} else {
 				if (irdphase1 < 0) {
 					d1 = d2 = d3 = 0.f;
 					d0 = dlybuf[irdphase0 & mask];
@@ -6910,9 +6910,9 @@ void Pluck_next_ak_z(Pluck *unit, int inNumSamples)
 					d3 = dlybuf[irdphase3 & mask];
 				}
 				float value = cubicinterp(frac, d0, d1, d2, d3);
-			float onepole = ((1. - fabs(curcoef)) * value) + (curcoef * lastsamp);
-			dlybuf[iwrphase & mask] = thisin + feedbk * onepole;
-			out[i] = lastsamp = onepole;
+				float onepole = ((1. - fabs(curcoef)) * value) + (curcoef * lastsamp);
+				dlybuf[iwrphase & mask] = thisin + feedbk * onepole;
+				out[i] = lastsamp = onepole;
 			}
 			feedbk += feedbk_slope;
 			curcoef +=coef_slope;
@@ -6956,24 +6956,24 @@ void Pluck_next_ka(Pluck *unit, int inNumSamples)
 	float thisin;
 
 	if ((unit->m_prevtrig <= 0.f) && (trig > 0.f)) {
-	    inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
-	    }
+		inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
+	}
 	unit->m_prevtrig = trig;
 
 	if (delaytime == unit->m_delaytime && decaytime == unit->m_decaytime) {
 		long idsamp = (long)dsamp;
 		float frac = dsamp - idsamp;
-	for(int i = 0; i < inNumSamples; i++){
+		for(int i = 0; i < inNumSamples; i++){
 			long irdphase1 = iwrphase - idsamp;
 			long irdphase2 = irdphase1 - 1;
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			float d0 = dlybuf[irdphase0 & mask];
 			float d1 = dlybuf[irdphase1 & mask];
 			float d2 = dlybuf[irdphase2 & mask];
@@ -6993,7 +6993,7 @@ void Pluck_next_ka(Pluck *unit, int inNumSamples)
 		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
 		float feedbk_slope = CALCSLOPE(next_feedbk, feedbk);
 
-	    for(int i = 0; i < inNumSamples; i++){
+		for(int i = 0; i < inNumSamples; i++){
 			dsamp += dsamp_slope;
 			long idsamp = (long)dsamp;
 			float frac = dsamp - idsamp;
@@ -7002,11 +7002,11 @@ void Pluck_next_ka(Pluck *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			float d0 = dlybuf[irdphase0 & mask];
 			float d1 = dlybuf[irdphase1 & mask];
 			float d2 = dlybuf[irdphase2 & mask];
@@ -7052,8 +7052,8 @@ void Pluck_next_ka_z(Pluck *unit, int inNumSamples)
 	unsigned long inputsamps = unit->m_inputsamps;
 
 	if ((unit->m_prevtrig <= 0.f) && (trig > 0.f)) {
-	    inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
-	    }
+		inputsamps = (long)(delaytime * unit->mRate->mSampleRate + .5f);
+	}
 
 	unit->m_prevtrig = trig;
 
@@ -7066,11 +7066,11 @@ void Pluck_next_ka_z(Pluck *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			if (irdphase0 < 0) {
 				dlybuf[iwrphase & mask] = thisin;
 				out[i] = 0.f;
@@ -7094,10 +7094,10 @@ void Pluck_next_ka_z(Pluck *unit, int inNumSamples)
 					d3 = dlybuf[irdphase3 & mask];
 				}
 				float value = cubicinterp(frac, d0, d1, d2, d3);
-			float thiscoef = coef[i];
-			float onepole = ((1. - fabs(thiscoef)) * value) + (thiscoef * lastsamp);
-			dlybuf[iwrphase & mask] = thisin + feedbk * onepole;
-			out[i] = lastsamp = onepole;
+				float thiscoef = coef[i];
+				float onepole = ((1. - fabs(thiscoef)) * value) + (thiscoef * lastsamp);
+				dlybuf[iwrphase & mask] = thisin + feedbk * onepole;
+				out[i] = lastsamp = onepole;
 			}
 			iwrphase++;
 		};
@@ -7118,15 +7118,15 @@ void Pluck_next_ka_z(Pluck *unit, int inNumSamples)
 			long irdphase3 = irdphase1 - 2;
 			long irdphase0 = irdphase1 + 1;
 			if (inputsamps > 0) {
-			    thisin = in[i];
-			    --inputsamps;
-			    } else {
-			    thisin = 0.f;
-			    }
+				thisin = in[i];
+				--inputsamps;
+			} else {
+				thisin = 0.f;
+			}
 			if (irdphase0 < 0) {
 				dlybuf[iwrphase & mask] = thisin;
 				out[i] = 0.f;
-			    } else {
+			} else {
 				if (irdphase1 < 0) {
 					d1 = d2 = d3 = 0.f;
 					d0 = dlybuf[irdphase0 & mask];
@@ -7146,10 +7146,10 @@ void Pluck_next_ka_z(Pluck *unit, int inNumSamples)
 					d3 = dlybuf[irdphase3 & mask];
 				}
 				float value = cubicinterp(frac, d0, d1, d2, d3);
-			float thiscoef = coef[i];
-			float onepole = ((1. - fabs(thiscoef)) * value) + (thiscoef * lastsamp);
-			dlybuf[iwrphase & mask] = thisin + feedbk * onepole;
-			out[i] = lastsamp = onepole;
+				float thiscoef = coef[i];
+				float onepole = ((1. - fabs(thiscoef)) * value) + (thiscoef * lastsamp);
+				dlybuf[iwrphase & mask] = thisin + feedbk * onepole;
+				out[i] = lastsamp = onepole;
 			}
 			feedbk += feedbk_slope;
 			iwrphase++;

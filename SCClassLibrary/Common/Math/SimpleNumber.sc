@@ -268,9 +268,8 @@ SimpleNumber : Number {
 		grow = exp(curve);
 		a = outMax - outMin / (1.0 - grow);
 		b = outMin + a;
-		scaled = (this - inMin) / (inMax - inMin);
 
-		^log((b - scaled) / a) / curve
+		^(log( (b - this)) / a ) * (inMax - inMin) / curve + inMin
 	}
 
 	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
@@ -314,6 +313,13 @@ SimpleNumber : Number {
 			this.explin(inMin, inCenter, outMin, outCenter, \none);
 		}
 	}
+
+	moddif { arg aNumber = 0.0, mod = 1.0;
+		var diff = absdif(this, aNumber) % mod;
+		var modhalf = mod * 0.5;
+		^modhalf - absdif(diff, modhalf)
+	}
+
 	lcurve { arg a = 1.0, m = 0.0, n = 1.0, tau = 1.0;
 		var rTau, x = this.neg;
 		^if(tau == 1.0) {

@@ -4,7 +4,7 @@ Buffer {
 	// don't use the setter methods for the vars below
 	// they're private and have no effect on the server
 	var <server, <bufnum, <>numFrames, <>numChannels, <>sampleRate;
-	var <>path, >doOnInfo;
+	var <>path, <>startFrame, >doOnInfo;
 
 	*initClass { serverCaches = IdentityDictionary.new }
 
@@ -54,10 +54,12 @@ Buffer {
 	}
 	allocRead { arg argpath,startFrame = 0,numFrames = -1, completionMessage;
 		path = argpath;
+		this.startFrame = startFrame;
 		server.listSendMsg(this.allocReadMsg( argpath,startFrame,numFrames, completionMessage));
 	}
 	allocReadChannel { arg argpath,startFrame,numFrames = 0, channels = -1, completionMessage;
 		path = argpath;
+		this.startFrame = startFrame;
 		server.listSendMsg(this.allocReadChannelMsg( argpath,startFrame,numFrames, channels,
 			completionMessage));
 	}
@@ -68,11 +70,13 @@ Buffer {
 	allocReadMsg { arg argpath,startFrame = 0,numFrames = -1, completionMessage;
 		this.cache;
 		path = argpath;
+		this.startFrame = startFrame;
 		^["/b_allocRead",bufnum, path,startFrame,(numFrames ? -1).asInt, completionMessage.value(this)]
 	}
 	allocReadChannelMsg { arg argpath,startFrame = 0,numFrames = -1, channels, completionMessage;
 		this.cache;
 		path = argpath;
+		this.startFrame = startFrame;
 		^["/b_allocReadChannel",bufnum, path,startFrame, (numFrames ? -1).asInt] ++ channels ++ 			[completionMessage.value(this)]
 	}
 
@@ -359,7 +363,7 @@ Buffer {
 		this.uncache;
 		server.bufferAllocator.free(bufnum);
 		msg = ["/b_free", bufnum, completionMessage.value(this)];
-		bufnum = numFrames = numChannels = sampleRate = path = nil;
+		bufnum = numFrames = numChannels = sampleRate = path = startFrame = nil;
 		^msg
 	}
 	*freeAll { arg server;

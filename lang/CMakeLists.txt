@@ -6,7 +6,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 
                     ${YAMLCPP_INCLUDE_DIR}
 
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost-lockfree
                     ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
                     LangSource
@@ -22,7 +21,7 @@ else()
 endif()
 
 if(APPLE)
-	include_directories("LangPrimSource/${HID_UTIL_DIR}")
+	include_directories("LangPrimSource/HID_Utilities")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
 elseif(WIN32)
@@ -86,6 +85,10 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
 
+if(APPLE)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+endif()
+
 if (NOT Boost_FOUND)
 	file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
 	file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/src/*cpp)
@@ -114,30 +117,22 @@ set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 add_definitions(-DYYSTACK_USE_ALLOCA)
 
+
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
-			LangPrimSource/WiiMote_OSX/wiiremote.c
 			LangPrimSource/SC_HID.cpp
-			LangPrimSource/${HID_UTIL_DIR}/HID_Utilities.c
-			LangPrimSource/${HID_UTIL_DIR}/HID_Name_Lookup.c
-			LangPrimSource/${HID_UTIL_DIR}/HID_Queue_Utilities.c
-			LangPrimSource/${HID_UTIL_DIR}/HID_Error_Handler.c
+			LangPrimSource/HID_Utilities/HID_Utilities.c
+			LangPrimSource/HID_Utilities/HID_Name_Lookup.c
+			LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
+			LangPrimSource/HID_Utilities/HID_Error_Handler.c
+			LangPrimSource/HID_Utilities/IOHIDElement_.c
+			LangPrimSource/HID_Utilities/IOHIDDevice_.c
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
-			LangPrimSource/SC_Speech.M
+			LangPrimSource/SC_Speech.mm
 			)
 		add_definitions(-DHAVE_SPEECH)
-		if (CMAKE_COMPILER_IS_GNUCXX)
-			set_source_files_properties(LangPrimSource/SC_Speech.M
-										PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
-		endif()
-		if(NOT (HID_UTIL_DIR MATCHES "HID_Utilities_10_4"))
-			list(APPEND sclang_sources
-				LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c
-				LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c
-			)
-		endif()
 	else(APPLE)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
@@ -160,7 +155,7 @@ if(WIN32)
 	endif()
 endif()
 
-if (SC_WII OR APPLE)
+if(SC_WII)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 		find_package(CWiid)
 		find_package(Bluetooth)
@@ -173,9 +168,9 @@ if (SC_WII OR APPLE)
 			message(SEND_ERROR "Cannot find libcwiid or libbluetooth.\n (If Wii support is not required, then set SC_WII=no)")
 		endif()
 	elseif(APPLE)
-		add_definitions(-DHAVE_WII)
-		list(APPEND sclang_sources LangPrimSource/WiiMote_OSX/wiiremote.c)
-		include_directories(LangPrimSource/WiiMote_OSX)
+                add_definitions(-DHAVE_WII)
+                list(APPEND sclang_sources LangPrimSource/WiiMote_OSX/wiiremote.c)
+                include_directories(LangPrimSource/WiiMote_OSX)
 	endif()
 endif()
 
@@ -282,7 +277,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libsclang rt)
 endif()
 
-target_link_libraries(libsclang boost_thread ${YAMLCPP_LIBRARY})
+target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
 
 if(SC_QT)
 	qtcollider_prepare_target( libsclang )
@@ -299,7 +294,7 @@ add_executable(sclang LangSource/cmdLineFuncs.cpp)
 if (Boost_FOUND)
 	target_link_libraries(sclang libsclang ${Boost_THREAD_LIBRARY})
 else()
-	target_link_libraries(sclang libsclang boost_thread)
+        target_link_libraries(sclang libsclang boost_thread)
 endif()
 
 set_property(TARGET sclang

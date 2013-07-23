@@ -31,9 +31,7 @@ static const int sc_api_version = 2;
 #include "SC_fftlib.h"
 #include "SC_Export.h"
 
-#ifndef NO_LIBSNDFILE
-#include <sndfile.h>
-#endif
+typedef	struct SF_INFO SF_INFO ;
 
 struct World;
 
@@ -113,13 +111,8 @@ struct InterfaceTable
 	bool (*fSendMsgToRT)(World *inWorld, struct FifoMsg& inMsg);
 
 	// libsndfile support
-#ifdef NO_LIBSNDFILE
-	int (*fSndFileFormatInfoFromStrings)(void *info,
-		const char *headerFormatString, const char *sampleFormatString);
-#else
 	int (*fSndFileFormatInfoFromStrings)(SF_INFO *info,
 		const char *headerFormatString, const char *sampleFormatString);
-#endif
 
 	// get nodes by id
 	struct Node* (*fGetNode)(World *inWorld, int inID);

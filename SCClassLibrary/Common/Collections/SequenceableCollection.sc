@@ -140,7 +140,7 @@ SequenceableCollection : Collection {
 		var newColl;
 		var i = start;
 		newColl = this.species.new(end - start);
-		while ({ i < end },{
+		while ({ i <= end },{
 			newColl.add(this.at(i));
 			i = i + 1;
 		});
@@ -918,6 +918,7 @@ SequenceableCollection : Collection {
 	curvelin { arg ... args; ^this.multiChannelPerform('curvelin', *args) }
 	bilin { arg ... args; ^this.multiChannelPerform('bilin', *args) }
 	biexp { arg ... args; ^this.multiChannelPerform('biexp', *args) }
+	moddif { arg ... args; ^this.multiChannelPerform('moddif', *args) }
 	range { arg ... args; ^this.multiChannelPerform('range', *args) }
 	exprange { arg ... args; ^this.multiChannelPerform('exprange', *args) }
 	curverange { arg ... args; ^this.multiChannelPerform('curverange', *args) }

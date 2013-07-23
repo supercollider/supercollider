@@ -29,7 +29,7 @@
    Requests are `small' if both the corresponding and the next bin are small
 */
 
-#if DEBUG
+#ifdef ENABLE_MEMORY_CHECKS
 #define check_pool()  DoCheckPool()
 #define check_free_chunk(P)  DoCheckFreeChunk(P)
 #define check_inuse_chunk(P) DoCheckInUseChunk(P)

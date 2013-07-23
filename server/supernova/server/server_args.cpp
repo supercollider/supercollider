@@ -22,6 +22,8 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 
+#include "nova-tt/physical_concurrency.hpp"
+
 #include "server_args.hpp"
 
 namespace nova {
@@ -52,19 +54,19 @@ server_arguments::server_arguments(int argc, char * argv[])
         ("load-synthdefs,D", value<uint16_t>(&load_synthdefs)->default_value(1), "load synthdefs? (1 or 0)")
         ("rendezvous,R", value<uint16_t>()->default_value(1), "publish to Rendezvous? (1 or 0)")
         ("max-logins,l", value<uint32_t>()->default_value(64), "maximum number of named return addresses")
-        ("password,p", value<std::string>(&server_password)->default_value(""),
+        ("password,p", value<string>(&server_password)->default_value(""),
                                                             "When using TCP, the session password must be the first command sent.\n"
                                                             "The default is no password.\n"
                                                             "UDP ports never require passwords, so for security use TCP.")
-        ("nrt,N", value<std::vector<std::string> >()->multitoken(), "nrt synthesis <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>")
+        ("nrt,N", value<vector<string> >()->multitoken(), "nrt synthesis <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>")
         ("memory-locking,L", "enable memory locking")
-        ("hardware-device-name,H", value<std::string>(&hw_name)->default_value(""), "hardware device name")
+        ("hardware-device-name,H", value<vector<string> >(&hw_name), "hardware device name")
         ("verbose,v", value<int16_t>(&verbosity)->default_value(0), "verbosity: 0 is normal behaviour\n-1 suppresses informational messages\n"
                                                          "-2 suppresses informational and many error messages")
-        ("ugen-search-path,U", value<std::vector<std::string> >(&ugen_paths), "a colon-separated list of paths\n"
-                                                                 "if -U is specified, the standard paths are NOT searched for plugins.")
-        ("restricted-path,P", value<std::vector<std::string> >(&restrict_paths), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
-        ("threads,T", value<uint16_t>(&threads)->default_value(std::thread::hardware_concurrency()), "number of audio threads")
+        ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "a colon-separated list of paths\n"
+                                                                    "if -U is specified, the standard paths are NOT searched for plugins.")
+        ("restricted-path,P", value<vector<string> >(&restrict_paths), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
+        ("threads,T", value<uint16_t>(&threads)->default_value(nova::physical_concurrency()), "number of audio threads")
         ;
 
     options_description audio_options("audio options");

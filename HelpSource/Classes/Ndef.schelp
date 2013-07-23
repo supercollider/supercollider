@@ -22,11 +22,11 @@ Ndef(\a).play; // play to hardware output.
 Ndef(\a).fadeTime = 2; // fadeTime specifies crossfade
 // set the source
 Ndef(\a, { SinOsc.ar([350, 351.3], 0, 0.2) });
-Ndef(\a, { Pulse.ar([350, 351.3] / 4, 0.4) * 0.2 });
+Ndef(\a, { Pulse.ar([350, 351.3] / 4, 0.4, 0.2) });
 Ndef(\a, Pbind(\dur, 0.03, \freq, Pbrown(0, 1, 0.1, inf).linexp(0, 1, 200, 350)));
 
-Ndef(\a, { Ringz.ar(Ndef.ar(\b), [350, 351.3] * 8, 0.2) * 4 });
-Ndef(\b, { Impulse.ar([5, 7]/2, [0, 0.5]) });
+Ndef(\a, { Ringz.ar(Ndef.ar(\b), [350, 351.3] * 2, 0.4) });
+Ndef(\b, { Impulse.ar([5, 7]/2, [0, 0.5], 0.15) });
 
 Ndef.clear(3); // clear all after 3 seconds
 ::
@@ -89,7 +89,7 @@ Ndef(\sound).map(\freq, Ndef(\lfo));
 Ndef(\sound, { arg freq; SinOsc.ar([600, 635] + freq, 0, SinOsc.kr(2 * 3).max(0) * 0.2) });
 Ndef(\lfo, { LFNoise1.kr(300, 400, 800) });
 
-Ndef.clear; //clear all
+Ndef.clear; //clear all Ndefs
 ::
 
 subsection::Simple audio routing with the <<> operator
@@ -101,20 +101,22 @@ Ndef(\sound, {
 		\in1.ar([0, 0]) * \in2.ar([0, 0]),
 		\freq.kr(6000, 2),
 		\rq.kr(0.2)
-	) * 10
+	) * 7
 }).play;
-);
+Ndef(\sound).fadeTime = 0.2;	// avoid harsh clicks
+)
 
 Ndef(\a, { SinOsc.ar(MouseX.kr(300, 1000, 1) * [1, 1.2], \phase.ar([0, 0]) * 0.2) });
 Ndef(\b, { LFDNoise3.ar(MouseY.kr(3, 1000, 1) * [1, 1.2]) });
 Ndef(\c, { LFTri.ar(MouseY.kr(3, 10, 1) * [1, 1.2]).max(0) });
+Ndef(\a).fadeTime = 0.2;	// avoid harsh clicks again
 
 Ndef(\sound) <<>.in1 Ndef(\a);
 Ndef(\sound) <<>.in2 Ndef(\b);
 Ndef(\sound) <<>.in2 Ndef(\c);
 Ndef(\a) <<>.phase Ndef(\sound);
 Ndef(\a) <<>.phase nil;	// unmap
-Ndef.clear(3);		// clear all Ndefs
+Ndef.clear(3);		// fade out and clear all Ndefs
 ::
 
 subsection::Recursion
@@ -122,14 +124,15 @@ subsection::Recursion
 Ndefs can be used recursively. A structure like the following works:
 
 code::
-Ndef(\sound, { SinOsc.ar([600, 635], Ndef.ar(\sound) * 10, LFNoise1.kr(2).max(0) * 0.2) });
+Ndef(\sound, { SinOsc.ar([600, 635], Ndef.ar(\sound), LFNoise1.kr(2).max(0) * 0.2) });
 Ndef(\sound).play;
+Ndef.clear;
 ::
 
 This is because there is a feedback delay (the server's strong::block size::), usually 64 samples, so that calculation can reiterate over its own outputs. For single sample feedback, see:
 
 code::
-Document.open("Examples/demonstrations/single_sample_feedback.scd")
+(Platform.resourceDir +/+ "examples/demonstrations/single_sample_feedback.scd").openDocument;
 ::
 
 subsection::Using different servers
@@ -143,8 +146,10 @@ Ndef(\sound -> \foo, { SinOsc.ar([700, 745]) * SinOsc.kr(2).max(0) * 0.2 }).play
 // clear definitions
 Ndef(\sound -> \foo).clear(3);
 Ndef(\sound).clear(3);
-::
 
+a.dump;	// display settings of new server
+a.quit;	// terminate new server
+::
 subsection::GUI
 
 code::
@@ -154,10 +159,11 @@ Ndef(\sound).edit
 Ndef(\sound, { |freq = 440, rate = 2|
 	SinOsc.ar(freq * [1, 1.625]) * SinOsc.kr(rate).max(0) * 0.2
 }).play;
-);
+)
 
 // set lags for controls:
 Ndef(\sound).lag(\freq, 0.2, \rate, 0.5);
+Ndef(\sound).clear(1);
 
 // create a mixer for all Ndefs:
 NdefMixer(s);

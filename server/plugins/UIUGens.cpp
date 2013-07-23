@@ -18,12 +18,10 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include <boost/thread.hpp>
+// ********** this version for windows and linux. for mac see UIUGens.mm
 
-#ifdef __APPLE__
-#include <Carbon/Carbon.h>
-#include <unistd.h>
-#else
+#include <SC_Lock.h>
+
 # ifndef _WIN32
 #  include <time.h>
 #  include <X11/Intrinsic.h>
@@ -31,19 +29,14 @@
 #include "SC_Win32Utils.h"
 #include <windows.h>
 # endif
-#endif
+
 
 #include "SC_PlugIn.h"
 
 static InterfaceTable *ft;
 
 struct KeyboardUGenGlobalState {
-#ifdef __APPLE__
-//	uint8 keys[16];
-	KeyMap keys;
-#else
 	uint8 keys[32];
-#endif
 } gKeyStateGlobals;
 
 struct KeyState : public Unit
@@ -65,47 +58,7 @@ struct MouseInputUGen : public Unit
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef __APPLE__
-
-void gstate_update_func()
-{
-#if (__x86_64__)
-	CGDirectDisplayID display = kCGDirectMainDisplay; // to grab the main display ID
-	CGRect bounds = CGDisplayBounds(display);
-	float rscreenWidth = 1. / bounds.size.width;
-	float rscreenHeight = 1. / bounds.size.height;
-#else
-	RgnHandle rgn = GetGrayRgn();
-	Rect screenBounds;
-	GetRegionBounds(rgn, &screenBounds);
-	float rscreenWidth = 1. / (screenBounds.right - screenBounds.left);
-	float rscreenHeight = 1. / (screenBounds.bottom - screenBounds.top);
-#endif
-	for (;;) {
-		GetKeys(gKeyStateGlobals.keys);
-
-#if (__x86_64__)
-		HIPoint point;
-		HICoordinateSpace space = 2;
-		HIGetMousePosition(space, NULL, &point);
-
-		gMouseUGenGlobals.mouseX = point.x * rscreenWidth; //(float)p.h * rscreenWidth;
-		gMouseUGenGlobals.mouseY = point.y * rscreenHeight; //(float)p.v * rscreenHeight;
-		gMouseUGenGlobals.mouseButton = GetCurrentButtonState();
-#else
-		Point p;
-		GetGlobalMouse(&p);
-		gMouseUGenGlobals.mouseX = (float)p.h * rscreenWidth;
-		gMouseUGenGlobals.mouseY = (float)p.v * rscreenHeight;
-		gMouseUGenGlobals.mouseButton = Button();
-#endif
-		usleep(17000);
-	}
-
-	return;
-}
-
-#elif defined(_WIN32)
+#ifdef _WIN32
 
 void gstate_update_func()
 {
@@ -194,11 +147,7 @@ void KeyState_next(KeyState *unit, int inNumSamples)
 	// minval, maxval, warp, lag
 	uint8 *keys = (uint8*)gKeyStateGlobals.keys;
 	int keynum = (int)ZIN0(0);
-#ifdef __APPLE__
-	int byte = (keynum >> 3) & 15;
-#else
 	int byte = (keynum >> 3) & 31;
-#endif
 	int bit = keynum & 7;
 	int val = keys[byte] & (1 << bit);
 
@@ -467,12 +416,14 @@ void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, voi
  */
 
 
+thread uiListenThread;
 
 PluginLoad(UIUGens)
 {
 	ft = inTable;
 
-	boost::thread uiListenThread( gstate_update_func );
+	thread thread( gstate_update_func );
+	uiListenThread = thread_namespace::move(thread);
 
 	DefineSimpleUnit(KeyState);
 
@@ -486,12 +437,10 @@ PluginLoad(UIUGens)
 	DefinePlugInCmd("pluginCmdDemo", cmdDemoFunc, (void*)&gMyPlugin);
 }
 
-#ifdef __GNUC__
-#if !defined(__APPLE__) && !defined(_WIN32)
+#if defined(__GNUC__) && !defined(_WIN32)
 static void __attribute__ ((destructor)) finalize(void)
 {
 	if (d)
 		XCloseDisplay(d);
 }
-#endif
 #endif

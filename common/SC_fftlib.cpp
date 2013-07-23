@@ -50,27 +50,38 @@ For speed we keep this global, although this makes the code non-thread-safe.
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Constants and structs
 
-// Decisions here about which FFT library to use - vDSP only exists on Mac BTW.
+// Decisions here about which FFT library to use.
 // We include the relevant libs but also ensure that one, and only one, of them is active...
-#if SC_FFT_NONE
-	// "SC_FFT_NONE" allows compilation without FFT support; only expected to be used on very limited platforms
-	#define SC_FFT_FFTW 0
-	#define SC_FFT_VDSP 0
-	#define SC_FFT_GREEN 0
-#elif SC_FFT_GREEN
-	#define SC_FFT_FFTW 0
-	#define SC_FFT_VDSP 0
-	#define SC_FFT_GREEN 1
-#elif !SC_FFT_FFTW && defined(__APPLE__)
-	#define SC_FFT_FFTW 0
-	#define SC_FFT_VDSP 1
-	#define SC_FFT_GREEN 0
+#ifdef SC_FFT_FFTW
+
+#define SC_FFT_FFTW 1
+#define SC_FFT_VDSP 0
+#define SC_FFT_GREEN 0
+
+#include <fftw3.h>
+
+#elif defined(SC_FFT_GREEN)
+
+#define SC_FFT_FFTW 0
+#define SC_FFT_VDSP 0
+#define SC_FFT_GREEN 1
+
+extern "C" {
+#include "fftlib.h"
+}
+
+#elif defined(__APPLE__)
+
+#define SC_FFT_FFTW 0
+#define SC_FFT_VDSP 1
+#define SC_FFT_GREEN 0
+
 #else
-//#elif SC_FFT_FFTW
-	#define SC_FFT_FFTW 1
-	#define SC_FFT_VDSP 0
-	#define SC_FFT_GREEN 0
-	#include <fftw3.h>
+
+#define SC_FFT_FFTW 0
+#define SC_FFT_VDSP 0
+#define SC_FFT_GREEN 0
+
 #endif
 
 // Note that things like *fftWindow actually allow for other sizes, to be created on user request.
@@ -96,10 +107,7 @@ static float *fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 #endif
 
 #if SC_FFT_GREEN
-	extern "C" {
-		#include "fftlib.h"
-		static float *cosTable[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
-	}
+	static float *cosTable[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 #endif
 
 #if SC_FFT_FFTW
@@ -137,28 +145,27 @@ static float* create_cosTable(int log2n)
 static inline float* scfft_create_fftwindow(int wintype, int log2n)
 {
 	int size = 1 << log2n;
-	unsigned short i;
 
 	float * win = (float*)nova::malloc_aligned(size * sizeof(float));
 
 	if (!win) return NULL;
 
 	double winc;
-	switch(wintype) {
-		case kSineWindow:
-			winc = pi / size;
-			for (i=0; i<size; ++i) {
-				double w = i * winc;
-				win[i] = sin(w);
-			}
-			break;
-		case kHannWindow:
-			winc = twopi / size;
-			for (i=0; i<size; ++i) {
-				double w = i * winc;
-				win[i] = 0.5 - 0.5 * cos(w);
-			}
-			break;
+	switch (wintype) {
+	case kSineWindow:
+		winc = pi / size;
+		for (int i=0; i<size; ++i) {
+			double w = i * winc;
+			win[i] = sin(w);
+		}
+		break;
+	case kHannWindow:
+		winc = twopi / size;
+		for (int i=0; i<size; ++i) {
+			double w = i * winc;
+			win[i] = 0.5 - 0.5 * cos(w);
+		}
+		break;
 	}
 
 	return win;
@@ -306,7 +313,7 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
 	}
 
 	// Ensure our window has been created
-	if((wintype != -1) && (fftWindow[wintype][log2_winsize] == 0)){
+	if ( (wintype != kRectWindow) && (fftWindow[wintype][log2_winsize] == 0)){
 		fftWindow[wintype][log2_winsize] = scfft_create_fftwindow(wintype, log2_winsize);
 	}
 
@@ -321,7 +328,6 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
 }
 
 // these do the main jobs.
-// Note: you DON"T need to call the windowing function yourself, it'll be applied by the _dofft and _doifft funcs.
 static void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fullsize, unsigned short log2_winsize,
 							  short wintype, float scalefac)
 {
@@ -346,13 +352,14 @@ static void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fu
 	}
 
 	// scale factor is different for different libs. But the compiler switch here is about using vDSP's fast multiplication method.
+	if (scalefac != 1.f) {
 #if SC_FFT_VDSP
-	vDSP_vsmul(data, 1, &scalefac, data, 1, winsize);
+		vDSP_vsmul(data, 1, &scalefac, data, 1, winsize);
 #else
-	for(int i=0; i<winsize; ++i){
-		data[i] *= scalefac;
-	}
+		for(unsigned int i=0; i<winsize; ++i)
+			data[i] *= scalefac;
 #endif
+	}
 
 	// Zero-padding:
 	memset(data + winsize, 0, (fullsize - winsize) * sizeof(float));

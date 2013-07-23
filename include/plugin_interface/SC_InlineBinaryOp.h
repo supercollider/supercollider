@@ -283,11 +283,6 @@ inline double sc_hypotx(double x, double y)
 	return x + y - kDSQRT2M1 * minxy;
 }
 
-#ifndef _WIN32
-#pragma mark -
-#endif //_WIN32
-
-
 inline int sc_div(int a, int b)
 {
 	int c;
@@ -544,10 +539,6 @@ inline T sc_sqrdif(T a, T b)
 	T z = a-b;
 	return z*z;
 }
-
-#ifndef _WIN32
-#pragma mark -
-#endif //_WIN32
 
 #if 0
 

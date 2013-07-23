@@ -33,7 +33,8 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/editors/scapp/include/SMLAdvancedFind/ICU
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/unicode/
-	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities
+
 	${CMAKE_SOURCE_DIR}/external_libraries/boost
 	${CMAKE_SOURCE_DIR}/external_libraries/threadpool
 	${YAMLCPP_INCLUDE_DIR}
@@ -64,7 +65,7 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrStringPrim.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrSymbolPrim.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrUnixPrim.cpp
-	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.M
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.mm
 	${CMAKE_SOURCE_DIR}/lang/LangSource/AdvancingAllocPool.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/ByteCodeArray.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/DumpParseNode.cpp
@@ -83,12 +84,13 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangSource/SimpleStack.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/VMGlobals.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangSource/dumpByteCodes.cpp
-	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/WiiMote_OSX/wiiremote.c
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_HID.cpp
-	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/HID_Utilities.c
-	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/HID_Name_Lookup.c
-	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/HID_Queue_Utilities.c
-	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/HID_Error_Handler.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Utilities.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Name_Lookup.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Error_Handler.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/IOHIDElement_.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/IOHIDDevice_.c
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_CoreMIDI.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_CoreAudioPrim.cpp
 
@@ -151,7 +153,7 @@ include(${CMAKE_SOURCE_DIR}/SCDoc/CMakeLists.txt)
 list(APPEND scapp_sources ${SCDOC_SRCS})
 
 set(objcpp_sources
-	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.M
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.mm
 	${CMAKE_SOURCE_DIR}/editors/scapp/main.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaBridgePrimitives.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaFilePrimitives.M
@@ -172,6 +174,7 @@ set(objcpp_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/UserPanel.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/post_queue.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/syntaxColorize.M
+	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
 	)
 
 set(objc_sources
@@ -191,13 +194,6 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 								PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 	set_source_files_properties(${objc_sources}
 								PROPERTIES COMPILE_FLAGS "-fobjc-exceptions")
-endif()
-
-if(NOT (HID_UTIL_DIR MATCHES "HID_Utilities_10_4"))
-	list(APPEND scapp_sources
-		"${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c"
-		"${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c"
-	)
 endif()
 
 set(scapp_parser_source ${CMAKE_SOURCE_DIR}/lang/LangSource/Bison/lang11d_tab.cpp)
@@ -247,7 +243,6 @@ target_link_libraries(${scappbundlename} "-framework Cocoa")
 target_link_libraries(${scappbundlename} "-framework CoreAudio")
 target_link_libraries(${scappbundlename} "-framework CoreMIDI")
 target_link_libraries(${scappbundlename} "-framework CoreServices")
-target_link_libraries(${scappbundlename} "-framework IOBluetooth")
 target_link_libraries(${scappbundlename} "-framework IOKit")
 target_link_libraries(${scappbundlename} "-framework Quartz")
 target_link_libraries(${scappbundlename} "-framework QuartzCore")

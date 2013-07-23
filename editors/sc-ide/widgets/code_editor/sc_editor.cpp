@@ -1179,18 +1179,6 @@ static bool bracketPairDefinesRegion( const BracketPair & bracketPair )
     if (!tokenMaybeRegionStart(bracketPair.first) || !tokenMaybeRegionEnd(bracketPair.second))
         return false;
 
-    // check whether this is an Event
-    TokenIterator it = bracketPair.first.next();
-    if (it.isValid()) {
-        if (it->type == Token::SymbolArg)
-            return false;
-        else {
-            ++it;
-            if (it.isValid() && it->character == ':')
-                return false;
-        }
-    }
-
     return true;
 }
 
@@ -1208,8 +1196,8 @@ QTextCursor ScCodeEditor::regionAroundCursor(const QTextCursor & cursor)
                  && bracketPairDefinesRegion(bracketPair) )
             {
                 QTextCursor regionCursor(QPlainTextEdit::document());
-                regionCursor.setPosition(bracketPair.first.position() + 1);
-                regionCursor.setPosition(bracketPair.second.position(), QTextCursor::KeepAnchor);
+                regionCursor.setPosition(bracketPair.first.position());
+                regionCursor.setPosition(bracketPair.second.position() + 1, QTextCursor::KeepAnchor);
                 return regionCursor;
             }
         } else {

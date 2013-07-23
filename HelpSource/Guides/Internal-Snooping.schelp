@@ -15,9 +15,9 @@ note:: Any keypresses that open files identify the files using SuperCollider str
 
 Selecting the name of any method (e.g. play) and typing cmd-y will open a window showing all implementations of that method and their arguments. Selecting one of those classes and methods (e.g. Sample:play) and typing cmd-j will open the class definition at that method. (Note that cmd-y only shows implementations, and does not indicate inheritance).
 
-Selecting any text (e.g. SCWindow or asStream) and typing shift-cmd-y will open a window showing all references to the selected text, i.e. each place it is used within the class library. (This will not find methods calls compiled with special byte codes like 'value'.)
+Selecting any text (e.g. Window or asStream) and typing shift-cmd-y will open a window showing all references to the selected text, i.e. each place it is used within the class library. (This will not find methods calls compiled with special byte codes like 'value'.)
 
-SC has a graphical Class browser which will show all methods, arguments, subclasses, instance variables and class variables. Using the browser's buttons you can easily navigate to the class' superclass, subclasses, class source, method source, helpfile (if there is one), check references or implementation of methods, or even open a web browser to view the corresponding entry in the online SVN repository.
+SC has a graphical Class browser which will show all methods, arguments, subclasses, instance variables and class variables. Using the browser's buttons you can easily navigate to the class' superclass, subclasses, class source, method source, helpfile (if there is one), check references or implementation of methods.
 code::
 SequenceableCollection.browse;
 ::
@@ -49,11 +49,11 @@ Collection.dumpClassSubtree;    // dump all subclasses of this class
 
 Collection.dumpSubclassList;    // dump all subclasses, in alphabetical order
 
-SCWindow.instVarNames.dump;     // dump all instance variable names of this class
+Server.instVarNames.dump;     // dump all instance variable names of this class
 
-SCWindow.classVarNames.dump;    // dump all class variable names of this class
+Server.classVarNames.dump;    // dump all class variable names of this class
 
-SCWindow.filenameSymbol.postln; // the path to the file that defined this class
+Server.filenameSymbol.postln; // the path to the file that defined this class
 
 (
 // print all classes whose names start with 'F'

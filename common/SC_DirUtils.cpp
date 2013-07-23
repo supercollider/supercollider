@@ -24,6 +24,10 @@
 #include <stdio.h>
 #include <stdexcept>
 
+#ifdef __APPLE__
+#import <Foundation/Foundation.h>
+#endif
+
 #ifdef _WIN32
 # include "SC_Win32Utils.h"
 # include <windows.h>
@@ -39,7 +43,6 @@
 #endif
 
 #include "SC_DirUtils.h"
-
 #if defined(__APPLE__) || defined(SC_IPHONE)
 #ifndef _SC_StandAloneInfo_
 # include "SC_StandAloneInfo_Darwin.h"
@@ -185,29 +188,34 @@ int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int len
 {
 	isAlias = false;
 #if defined(__APPLE__) && !defined(SC_IPHONE)
-	FSRef dirRef;
-	OSStatus osStatusErr = FSPathMakeRef ((const UInt8 *) path, &dirRef, NULL);
-	if ( !osStatusErr ) {
-		Boolean isFolder;
-		Boolean wasAliased;
-		OSErr err = FSResolveAliasFile (&dirRef, true, &isFolder, &wasAliased);
-		if (err)
-		{
-			return -1;
-		}
-		isAlias = wasAliased;
-		if (wasAliased)
-		{
-			UInt8 resolvedPath[PATH_MAX];
-			osStatusErr = FSRefMakePath (&dirRef, resolvedPath, length);
-			if (osStatusErr)
-			{
+	NSString *nsstringPath = [NSString stringWithCString: path encoding: NSUTF8StringEncoding];
+	BOOL isDirectory;
+	// does the file exist? If not just copy and bail
+	if([[NSFileManager defaultManager] fileExistsAtPath: nsstringPath isDirectory: &isDirectory]) {
+		NSError *error;
+
+		NSData *bookmark = [NSURL bookmarkDataWithContentsOfURL: [NSURL fileURLWithPath:nsstringPath isDirectory: isDirectory] error: &error];
+
+		// is it an alias? If not just copy and bail
+		if(bookmark) {
+			NSError *resolvedURLError;
+			BOOL isStale;
+			NSURL *resolvedURL = [NSURL URLByResolvingBookmarkData: bookmark options: NSURLBookmarkResolutionWithoutUI relativeToURL: nil bookmarkDataIsStale: &isStale error: &resolvedURLError];
+			// does it actually lead to something?
+			if(isStale) {
+				printf("Error: Target missing for alias at %s\n", path);
 				return -1;
 			}
-			strncpy(returnPath, (char *) resolvedPath, length);
+
+			NSString *resolvedString = [resolvedURL path];
+
+			const char *resolvedPath = [resolvedString cStringUsingEncoding: NSUTF8StringEncoding];
+			isAlias = true;
+			strncpy(returnPath, resolvedPath, length);
 			return 0;
 		}
 	}
+
 #endif
 	strcpy(returnPath, path);
 	return 0;

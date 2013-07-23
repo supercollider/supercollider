@@ -106,9 +106,9 @@ void get_jack_names(server_arguments const & args, string & server_name, string 
 {
     client_name = "supernova";
 
-    if (!args.hw_name.empty()) {
+    if (!args.hw_name.empty() && !args.hw_name[0].empty()) {
         vector<string> names;
-        boost::split(names, args.hw_name, boost::algorithm::is_any_of(":"));
+        boost::split(names, args.hw_name[0], boost::algorithm::is_any_of(":"));
 
         if (names.size() == 1) {
             server_name = names[0];
@@ -147,14 +147,45 @@ void start_audio_backend(server_arguments const & args)
 
 void start_audio_backend(server_arguments const & args)
 {
-    bool success = instance->open_stream(args.hw_name, args.input_channels, args.hw_name, args.output_channels,
+    int input_channels = args.input_channels;
+    int output_channels = args.output_channels;
+
+    std::string input_device, output_device;
+    if (args.hw_name.empty()) {
+        boost::tie(input_device, output_device) = instance->default_device_names();
+    } else if (args.hw_name.size() == 1) {
+        input_device = output_device = args.hw_name[0];
+    } else {
+        input_device = args.hw_name[0];
+        output_device = args.hw_name[0];
+    }
+
+    cout << "opening portaudio device name: ";
+    cout << input_device << " / " << output_device << endl;
+
+    if (input_device == "nil") {
+        input_device.clear();
+        input_channels = 0;
+    }
+
+    if (output_device == "nil") {
+        output_device.clear();
+        output_channels = 0;
+    }
+
+    cout << "opening portaudio device name: ";
+    cout << input_device << " / " << output_device << endl;
+
+
+    bool success = instance->open_stream(input_device, input_channels, output_device, output_channels,
         args.samplerate, args.blocksize, args.blocksize);
 
     if (!success) {
-        cout << "could not open portaudio device name:" << args.hw_name << endl;
+        cout << "could not open portaudio device name: " << input_device << " / " << output_device << endl;
         exit(1);
     }
-    cout << "opened portaudio device name:" << args.hw_name << endl;
+    cout << "opened portaudio device name: ";
+    cout << input_device << " / " << output_device << endl;
     instance->prepare_backend();
     instance->activate_audio();
 }

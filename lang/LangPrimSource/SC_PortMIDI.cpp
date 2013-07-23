@@ -47,6 +47,9 @@ added prRestartMIDI
 #include "GC.h"
 #include "SC_Lock.h"
 #include <map>
+#include <cstring>
+
+using std::memset;
 
 // symbols to call back into lang
 PyrSymbol* s_domidiaction;
@@ -98,7 +101,7 @@ inline void TPmErr(PmError err) {
 /* timer "interrupt" for processing midi data */
 static void PMProcessMidi(PtTimestamp timestamp, void *userData)
 {
-	lock_guard<SC_Lock> mulo(&gPmStreamMutex);
+	lock_guard<SC_Lock> mulo(gPmStreamMutex);
 	PmError result;
 	PmEvent buffer; /* just one message at a time */
 
@@ -250,7 +253,7 @@ int initMIDI()
 */
 void midiCleanUp()
 {
-	lock_guard<SC_Lock> mulo(&gPmStreamMutex);
+	lock_guard<SC_Lock> mulo(gPmStreamMutex);
 
 	if(gMIDIInitialized) {
 		for (int i=0; i<gNumMIDIOutPorts; ++i) {
@@ -383,7 +386,7 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 
 int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 {
-	lock_guard<SC_Lock> mulo(&gPmStreamMutex);
+	lock_guard<SC_Lock> mulo(gPmStreamMutex);
 
 	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -419,7 +422,7 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 */
 int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 {
-	lock_guard<SC_Lock> mulo(&gPmStreamMutex);
+	lock_guard<SC_Lock> mulo(gPmStreamMutex);
 
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
@@ -511,7 +514,7 @@ return errNone;
 */
 int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 {
-	lock_guard<SC_Lock> mulo(&gPmStreamMutex);
+	lock_guard<SC_Lock> mulo(gPmStreamMutex);
 	//port, uid, len, hiStatus, loStatus, a, b, latency
 	//PyrSlot *m = g->sp - 8;
 	PyrSlot *p = g->sp - 7;
@@ -595,7 +598,6 @@ void initMIDIPrimitives()
 	definePrimitive(base, index++, "_RestartMIDI", prRestartMIDI, 1, 0);
 	definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
 	definePrimitive(base, index++, "_SendSysex", prSendSysex, 3, 0);
-	pthread_mutex_init (&gPmStreamMutex, NULL);
 	midiCleanUp();
 }
 

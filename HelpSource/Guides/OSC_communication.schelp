@@ -57,7 +57,7 @@ OSCFunc.trace(false); // Turn posting off
 
 section::Custom OSC message processing
 
-All incoming OSC messages call the message recvOSCmessage, or recvOSCbundle in link::Classes/Main::. If needed, one can add a custom link::Classes/Function:: or other object to Main's recvOSCFunc variable. Although one can do this directly using the corresponding setter, it is better to use the link::Classes/Main#-addOSCRecvFunc:: and link::Classes/Main#-removeOSCRecvFunc:: to avoid overwriting any other functions that may have been added by class code.
+All incoming OSC messages call the message recvOSCmessage in link::Classes/Main::. If needed, one can add a custom link::Classes/Function:: or other object to Main's recvOSCFunc variable. Although one can do this directly using the corresponding setter, it is better to use the link::Classes/Main#-addOSCRecvFunc:: and link::Classes/Main#-removeOSCRecvFunc:: to avoid overwriting any other functions that may have been added by class code.
 code::
 // this example is basically like OSCFunc.trace but filters out
 // /status.reply messages

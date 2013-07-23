@@ -2,7 +2,7 @@
 // detail/socket_ops.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2012 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2013 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -106,8 +106,9 @@ BOOST_ASIO_DECL int connect(socket_type s, const socket_addr_type* addr,
 BOOST_ASIO_DECL void sync_connect(socket_type s, const socket_addr_type* addr,
     std::size_t addrlen, boost::system::error_code& ec);
 
-BOOST_ASIO_DECL bool non_blocking_connect(
-    socket_type s, boost::system::error_code& ec);
+BOOST_ASIO_DECL bool non_blocking_connect(socket_type s,
+    const socket_addr_type* addr, std::size_t addrlen,
+    boost::system::error_code& ec);
 
 BOOST_ASIO_DECL int socketpair(int af, int type, int protocol,
     socket_type sv[2], boost::system::error_code& ec);
@@ -119,11 +120,11 @@ BOOST_ASIO_DECL size_t available(socket_type s, boost::system::error_code& ec);
 BOOST_ASIO_DECL int listen(socket_type s,
     int backlog, boost::system::error_code& ec);
 
-#if defined(BOOST_WINDOWS) || defined(__CYGWIN__)
+#if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
 typedef WSABUF buf;
-#else // defined(BOOST_WINDOWS) || defined(__CYGWIN__)
+#else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
 typedef iovec buf;
-#endif // defined(BOOST_WINDOWS) || defined(__CYGWIN__)
+#endif // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
 
 BOOST_ASIO_DECL void init_buf(buf& b, void* data, size_t size);
 

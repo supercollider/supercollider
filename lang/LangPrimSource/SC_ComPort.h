@@ -21,147 +21,116 @@
 #ifndef _SC_ComPort_
 #define _SC_ComPort_
 
-#ifdef _WIN32
-# include <winsock2.h>
-typedef int socklen_t;
-# define bzero( ptr, count ) memset( ptr, 0, count )
-#else
-#include <sys/types.h>
-#include <sys/socket.h>
-#endif
+#include <boost/asio.hpp>
+#include <boost/array.hpp>
 
 #include "SC_Msg.h"
-#include "boost/atomic.hpp"
-#include "nova-tt/semaphore.hpp"
-#include "boost/thread.hpp"
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class SC_CmdPort
-{
-protected:
-	boost::thread mThread;
-
-	void Start();
-	virtual ReplyFunc GetReplyFunc()=0;
-public:
-	SC_CmdPort();
-	virtual ~SC_CmdPort();
-
-	virtual void* Run()=0;
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class SC_ComPort : public SC_CmdPort
-{
-protected:
-	int mPortNum;
-	int mSocket;
-	struct sockaddr_in mBindSockAddr;
-
-public:
-	SC_ComPort(int inPortNum);
-	virtual ~SC_ComPort();
-
-	int Socket() { return mSocket; }
-
-	int PortNum() const { return mPortNum; }
-	int RealPortNum() const { return ntohs(mBindSockAddr.sin_port); }
-};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const int kTextBufSize = 65536;
 
-class SC_UdpInPort : public SC_ComPort
+class SC_UdpInPort
 {
-	char buf[kTextBufSize];
-	struct sockaddr_in mReplySockAddr;
-	virtual ReplyFunc GetReplyFunc();
+	int mPortNum;
+	boost::array<char, kTextBufSize> recvBuffer;
+
+	boost::asio::ip::udp::endpoint remoteEndpoint;
+
+	void handleReceivedUDP(const boost::system::error_code& error,
+						   std::size_t bytes_transferred);
+
+	void startReceiveUDP();
 
 public:
-	SC_UdpInPort(int inPortNum);
+	boost::asio::ip::udp::socket udpSocket;
+
+	int RealPortNum() const { return mPortNum; }
+	int Socket() { return udpSocket.native_handle(); }
+
+	virtual void* Run(){return 0;} // remove
+
+	SC_UdpInPort(int inPortNum, int portsToCheck = 10);
 	~SC_UdpInPort();
-
-	int PortNum() const { return mPortNum; }
-
-	void* Run();
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class SC_UdpCustomInPort : public SC_ComPort
+class SC_UdpCustomInPort : public SC_UdpInPort
 {
-	char buf[kTextBufSize];
-	struct sockaddr_in mReplySockAddr;
-	virtual ReplyFunc GetReplyFunc();
-	boost::atomic<bool> mRunning;
-
 public:
 	SC_UdpCustomInPort(int inPortNum);
 	~SC_UdpCustomInPort();
-
-	int PortNum() const { return mPortNum; }
-
-	void* Run();
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class SC_TcpInPort : public SC_ComPort
+class SC_TcpConnection
 {
-	nova::semaphore mConnectionAvailable;
-	int mBacklog;
+public:
+	typedef boost::shared_ptr<SC_TcpConnection> pointer;
+	boost::asio::ip::tcp::socket socket;
 
-protected:
-	virtual ReplyFunc GetReplyFunc();
+	SC_TcpConnection(boost::asio::io_service & ioService,
+					 class SC_TcpInPort * parent):
+		socket(ioService), mParent(parent)
+	{}
+
+	void start();
+
+private:
+	int32 OSCMsgLength;
+	char * data;
+	class SC_TcpInPort * mParent;
+
+	void handleLengthReceived(const boost::system::error_code& error,
+							  size_t bytes_transferred);
+
+	void handleMsgReceived(const boost::system::error_code& error,
+						   size_t bytes_transferred);
+};
+
+class SC_TcpInPort
+{
+	boost::asio::ip::tcp::acceptor acceptor;
 
 public:
+	const int mPortNum;
+
 	SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog);
 
-	virtual void* Run();
-
-	void ConnectionTerminated();
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class SC_TcpConnectionPort : public SC_ComPort
-{
-        SC_TcpInPort *mParent;
-
-protected:
-	virtual ReplyFunc GetReplyFunc();
-
-public:
-	SC_TcpConnectionPort(SC_TcpInPort *inParent, int inSocket);
-        virtual ~SC_TcpConnectionPort();
-
-        virtual void* Run();
+	void startAccept();
+	void handleAccept(SC_TcpConnection::pointer new_connection,
+					  const boost::system::error_code& error);
 };
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class SC_TcpClientPort : public SC_ComPort
+
+class SC_TcpClientPort
 {
 public:
 	typedef void (*ClientNotifyFunc)(void* clientData);
 
 public:
-	SC_TcpClientPort(int inSocket, ClientNotifyFunc notifyFunc=0, void* clientData=0);
-	virtual ~SC_TcpClientPort();
-
-	virtual void* Run();
+	SC_TcpClientPort(long inAddress, int inPort, ClientNotifyFunc notifyFunc=0, void* clientData=0);
 	void Close();
 
-protected:
-	virtual ReplyFunc GetReplyFunc();
+	int Socket() { return socket.native_handle(); }
 
 private:
-	struct sockaddr_in	mReplySockAddr;
-	int					mCmdFifo[2];
+	int32 OSCMsgLength;
+	char * data;
+
+	void startReceive();
+	void handleLengthReceived(const boost::system::error_code& error,
+							  size_t bytes_transferred);
+
+	void handleMsgReceived(const boost::system::error_code& error,
+						   size_t bytes_transferred);
+
+	boost::asio::ip::tcp::socket socket;
+	boost::asio::ip::tcp::endpoint endpoint;
+
 	ClientNotifyFunc	mClientNotifyFunc;
 	void*				mClientData;
 };
@@ -169,4 +138,3 @@ private:
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif
-

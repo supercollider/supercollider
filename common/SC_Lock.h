@@ -26,6 +26,7 @@
 #include <boost/chrono.hpp>
 #include <boost/thread/condition_variable.hpp>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread.hpp>
 
 typedef boost::mutex SC_Lock;
 typedef boost::timed_mutex timed_mutex;
@@ -34,11 +35,16 @@ using boost::unique_lock;
 using boost::cv_status;
 typedef boost::condition_variable_any condition_variable_any;
 namespace mutex_chrono = boost::chrono;
+using boost::thread;
+namespace this_thread = boost::this_thread;
+namespace chrono = boost::chrono;
+namespace thread_namespace = boost;
 
 #else
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
+#include <thread>
 
 typedef std::mutex SC_Lock;
 typedef std::timed_mutex timed_mutex;
@@ -47,6 +53,11 @@ using std::unique_lock;
 using std::cv_status;
 typedef std::condition_variable_any condition_variable_any;
 namespace mutex_chrono = std::chrono;
+using std::thread;
+namespace this_thread = std::this_thread;
+namespace chrono = std::chrono;
+namespace thread_namespace = std;
+
 #endif
 
 #endif

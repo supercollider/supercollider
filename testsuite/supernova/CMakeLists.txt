@@ -37,6 +37,11 @@ else()
     message(FATAL_ERROR "unknown compiler. supernova testsuite cannot be compiled")
 endif()
 
+
+if(APPLE AND CMAKE_COMPILER_IS_CLANG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+endif()
+
 find_package(Sndfile REQUIRED)
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
@@ -45,7 +50,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/server/supernova
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost-lockfree
                     ${CMAKE_SOURCE_DIR}/external_libraries/oscpack
                     ${CMAKE_SOURCE_DIR}/external_libraries/
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt

@@ -1,4 +1,3 @@
-
 if(NOT NO_LIBSNDFILE)
 	find_package(Sndfile)
 else()
@@ -50,8 +49,6 @@ set(plugin_sources
 	TriggerUGens.cpp
 	UnaryOpUGens.cpp
 	UnpackFFTUGens.cpp
-
-	UIUGens.cpp
 )
 
 set(plugins "")
@@ -75,7 +72,16 @@ foreach(plugin ${plugin_sources})
 	list(APPEND plugins ${plugin_name})
 endforeach(plugin)
 
+
+if (APPLE)
+ add_library(UIUGens MODULE UIUGens.mm)
+else()
+ add_library(UIUGens MODULE UIUGens.cpp)
+endif()
+
 set(uiugens UIUGens)
+
+list(APPEND plugins UIUGens)
 
 if (WIN32)
     if(MSVC)
@@ -119,7 +125,7 @@ if(NOT NO_LIBSNDFILE)
 
 	if(SNDFILE_FOUND)
 		include_directories(${SNDFILE_INCLUDE_DIR})
-		target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} boost_thread)
+                target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
 
 		list(APPEND plugins DiskIO_UGens)
 	else()
@@ -143,7 +149,6 @@ if (SUPERNOVA)
                     APPEND PROPERTY COMPILE_DEFINITIONS  "SUPERNOVA")
 	endforeach(plugin)
 
-	list(APPEND uiugens UIUGens_supernova)
 
 	add_library(FFT_UGens_supernova MODULE
 				FFTInterfaceTable.cpp
@@ -179,6 +184,14 @@ if (SUPERNOVA)
 
 	list(APPEND fft_ugens FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova)
 	list(APPEND supernova_plugins FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova)
+	
+	if (APPLE)
+		add_library(UIUGens_supernova MODULE UIUGens.mm)
+	else()
+		add_library(UIUGens_supernova MODULE UIUGens.cpp)
+	endif()
+	set_property(TARGET UIUGens_supernova APPEND PROPERTY COMPILE_DEFINITIONS "SUPERNOVA")
+	list(APPEND uiugens UIUGens_supernova)
 
 	if(NOT NO_LIBSNDFILE)
 		add_library(DiskIO_UGens_supernova MODULE
@@ -188,7 +201,7 @@ if (SUPERNOVA)
 
 		if(SNDFILE_FOUND)
 			include_directories(${SNDFILE_INCLUDE_DIR})
-			target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} boost_thread)
+                        target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
 			list(APPEND supernova_plugins DiskIO_UGens_supernova)
 		else()
 			message(SEND_ERROR "Cannot find libsndfile")
@@ -205,7 +218,7 @@ foreach(ugen ${fft_ugens})
 endforeach()
 
 foreach (ugen ${uiugens})
-    target_link_libraries(${ugen} boost_thread)
+    target_link_libraries(${ugen} ${Boost_THREAD_LIBRARY})
 endforeach()
 
 foreach (plugin ${plugins})
@@ -234,7 +247,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	endforeach()
 elseif (APPLE)
 	foreach (ugen ${uiugens})
-		target_link_libraries(${ugen} "-framework CoreServices -framework Carbon")
+		target_link_libraries(${ugen} "-framework CoreServices -framework AppKit")
 	endforeach()
 
 	if(NOT NO_LIBSNDFILE)
@@ -251,12 +264,6 @@ if (APPLE)
 	install(TARGETS ${plugins} ${supernova_plugins}
 			DESTINATION "${scappauxresourcesdir}/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
-        if (SUPERNOVA)
-                install(TARGETS ${supernova_plugins}
-                        DESTINATION "${scappauxresourcesdir}/supernova_plugins"
-                        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-        endif()
 elseif (WIN32)
 	install(TARGETS ${plugins} ${supernova_plugins}
 			DESTINATION "SuperCollider/plugins"

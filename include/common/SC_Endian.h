@@ -20,12 +20,11 @@
 
 /* NOTE: This file should declare/define the following functions/macros:
 
-	htonl
-	htons
-	ntohl
-	ntohs
+	sc_htonl
+	sc_htons
+	sc_ntohl
+	sc_ntohs
 
-   either explicitly or implicitly by including system headers.
 */
 
 #ifndef SC_ENDIAN_H_INCLUDED
@@ -45,7 +44,8 @@
 # define LITTLE_ENDIAN 1234
 # define BIG_ENDIAN 4321
 # define BYTE_ORDER LITTLE_ENDIAN
-# include "SC_Win32Utils.h"
+
+#define SC_NO_ENDIAN_FUNCTIONS
 
 #elif defined(__linux__)
 
@@ -57,6 +57,64 @@
 # error cannot find endianess on this platform
 
 #endif
+
+
+#ifndef SC_NO_ENDIAN_FUNCTIONS
+
+static inline unsigned int sc_htonl(unsigned int arg)
+{
+	return htonl(arg);
+}
+
+static inline unsigned short sc_htons(unsigned short arg)
+{
+	return htons(arg);
+}
+
+static inline unsigned int sc_ntohl(unsigned int arg)
+{
+	return ntohl(arg);
+}
+
+static inline unsigned short sc_ntohs(unsigned short arg)
+{
+	return ntohs(arg);
+}
+
+#else
+
+static inline unsigned int sc_htonl(unsigned int x)
+{
+#if BYTE_ORDER == LITTLE_ENDIAN
+	unsigned char *s = (unsigned char *)&x;
+	return (unsigned int)(s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3]);
+#else
+	return x;
+#endif
+}
+
+static inline unsigned short sc_htons(unsigned short x)
+{
+#if BYTE_ORDER == LITTLE_ENDIAN
+	unsigned char *s = (unsigned char *) &x;
+	return (unsigned short)(s[0] << 8 | s[1]);
+#else
+	return x;
+#endif
+}
+
+static inline unsigned int sc_ntohl(unsigned int x)
+{
+	return sc_htonl(x);
+}
+
+static inline unsigned short sc_ntohs(unsigned short x)
+{
+	return sc_htons(x);
+}
+
+#endif
+
 
 #ifndef BYTE_ORDER
 # error BYTE_ORDER undefined, check __FILE__

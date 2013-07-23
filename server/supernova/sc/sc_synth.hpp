@@ -180,6 +180,8 @@ public:
     void map_control_bus(const char * slot_name, int bus_index)
     {
         int slot_index = resolve_slot(slot_name);
+        if (slot_index == -1)
+            return;
         map_control_bus<ControlBusIsAudio>(slot_index, bus_index);
     }
 
@@ -187,6 +189,8 @@ public:
     void map_control_buses(const char * slot_name, int bus_index, int count)
     {
         int slot_index = resolve_slot(slot_name);
+        if (slot_index == -1)
+            return;
         map_control_buses<ControlBusIsAudio>(slot_index, bus_index, count);
     }
 
@@ -199,7 +203,10 @@ public:
     template <bool ControlBusIsAudio>
     void map_control_bus(const char * slot_name, size_t arrayed_slot_index, int bus_index)
     {
-        size_t slot_index = resolve_slot(slot_name) + arrayed_slot_index;
+        int slot_base_index = resolve_slot(slot_name);
+        if (slot_base_index == -1)
+            return;
+        size_t slot_index = slot_base_index + arrayed_slot_index;
         map_control_bus<ControlBusIsAudio>(slot_index, bus_index);
     }
     /* @} */

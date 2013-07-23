@@ -75,6 +75,10 @@ set(libsupernova_src
     server/server_args.cpp
 )
 
+if(APPLE)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+endif()
+
 
 if (FFT_GREEN)
 	list(APPEND libsupernova_src ../../common/fftlib.c)
@@ -82,11 +86,6 @@ endif()
 
 if(WIN32)
     list(APPEND libsupernova_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
-endif()
-
-
-if(FFT_GREEN)
-    list(APPEND libsupernova_src ../../common/fftlib.c)
 endif()
 
 file(GLOB_RECURSE supernova_headers *hpp)
@@ -154,9 +153,9 @@ endif()
 target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES})
 
 if (Boost_FOUND)
-    target_link_libraries(libsupernova   ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
+    target_link_libraries(libsupernova ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
 else()
-    target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options)
+    target_link_libraries(libsupernova boost_thread boost_system boost_filesystem boost_program_options)
 endif()
 
 target_link_libraries(supernova libsupernova)
@@ -189,5 +188,5 @@ endif()
 
 if (APPLE)
     target_link_libraries(libsupernova "-framework vecLib")
-    target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices")
+    target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices -framework Foundation")
 endif()

@@ -4,7 +4,6 @@ if (NOT APPLE AND NOT WIN32)
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries
-					${CMAKE_SOURCE_DIR}/external_libraries/boost-lockfree
 					${CMAKE_SOURCE_DIR}/external_libraries/nova-simd
 					${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
 					)
@@ -14,6 +13,11 @@ if (Boost_FOUND)
 	include_directories(${Boost_INCLUDE_DIRS})
 else()
 	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
+        set(Boost_THREAD_LIBRARY boost_thread)
+endif()
+
+if (SC_CPP11)
+  set(Boost_THREAD_LIBRARY "")
 endif()
 
 # here we choose who provides us with the FFT lib
