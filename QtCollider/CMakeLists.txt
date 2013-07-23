@@ -135,7 +135,6 @@ macro( qtcollider_prepare_target _target )
 
   if(APPLE)
     target_link_libraries( ${_target} "-framework Cocoa" )
-    set_property( TARGET ${_target} APPEND LINK_FLAGS "-F/Library/Frameworks" )
   endif()
 
   if(CMAKE_SYSTEM_NAME MATCHES "Linux")
