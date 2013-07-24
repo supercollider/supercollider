@@ -93,9 +93,31 @@ if (WIN32 OR APPLE)
     if (APPLE)
         aux_source_directory( portaudio/src/os/unix pa_platform )
         aux_source_directory( portaudio/src/hostapi/coreaudio pa_hostapi )
+    elseif(WIN32)
+        if(NOT ASIOSDK_ROOT_DIR)
+            message(FATAL_ERROR "Please set ASIOSDK_ROOT_DIR!")
+        endif()
+        aux_source_directory( portaudio/src/os/win pa_platform )
+        #aux_source_directory( portaudio/src/hostapi/wmme pa_wmme )
+        #aux_source_directory( portaudio/src/hostapi/wmme pa_asio )
+        set( pa_asio
+            portaudio/src/hostapi/asio/pa_asio.cpp
+            ${ASIOSDK_ROOT_DIR}/common/asio.cpp
+            ${ASIOSDK_ROOT_DIR}/host/pc/asiolist.cpp
+            ${ASIOSDK_ROOT_DIR}/host/asiodrivers.cpp
+        )
+        set( pa_hostapi ${pa_wmme} ${pa_asio} )
+        include_directories(${ASIOSDK_ROOT_DIR}/common)
+        include_directories(${ASIOSDK_ROOT_DIR}/host)
+        include_directories(${ASIOSDK_ROOT_DIR}/host/pc)
+        include_directories(src/os/win)
     endif()
 
     add_library(portaudio STATIC ${pa_common} ${pa_platform} ${pa_hostapi})
+
+    if (WIN32)
+        set_target_properties(portaudio PROPERTIES COMPILE_DEFINITIONS "PA_USE_ASIO;UNICODE;_UNICODE")
+    endif()
 
     if (APPLE)
         set_target_properties(portaudio
