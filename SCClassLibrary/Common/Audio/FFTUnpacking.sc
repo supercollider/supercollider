@@ -79,7 +79,7 @@ PV_ChainUGen : WidthFirstUGen {
 	}
 
 	addCopiesIfNeeded {
-		var directDescendants;
+		var directDescendants, frames, buf, copy;
 		// find UGens that have me as an input
 		directDescendants = buildSynthDef.children.select ({ |child|
 			var inputs;
@@ -93,7 +93,6 @@ PV_ChainUGen : WidthFirstUGen {
 			directDescendants.drop(-1).do({|desc|
 				desc.inputs.do({ arg input, j;
 					if (input === this, {
-						var frames, buf, copy;
 						frames = this.fftSize;
 						frames.widthFirstAntecedents = nil;
 						buf = LocalBuf(frames);
