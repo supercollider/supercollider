@@ -37,7 +37,7 @@ if(AUDIOAPI STREQUAL jack)
 	endif()
 elseif(AUDIOAPI STREQUAL portaudio)
 
-    set(${PORTAUDIO_INCLUDE_DIRS} ../../external_libraries/portaudio/include )
+    set(PORTAUDIO_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/external_libraries/portaudio/include)
 
 endif()
 message(STATUS "Audio API: ${AUDIOAPI}")

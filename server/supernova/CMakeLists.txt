@@ -116,7 +116,7 @@ endif()
 
 if (WIN32 OR APPLE)
     add_definitions(-DPORTAUDIO_BACKEND)
-    set(${PORTAUDIO_INCLUDE_DIRS} ../../external_libraries/portaudio/include )
+    set(PORTAUDIO_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/external_libraries/portaudio/include)
     include_directories(${PORTAUDIO_INCLUDE_DIRS})
     target_link_libraries(libsupernova portaudio)
 else()
