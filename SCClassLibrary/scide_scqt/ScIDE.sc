@@ -464,5 +464,15 @@ ScIDEDocument : Document {
 	}
 
 	== { |that| ^(this.quuid === that.quuid);}
+
+	keyDown { | character, modifiers, unicode, keycode, key |
+		this.class.globalKeyDownAction.value(this,character, modifiers, unicode, keycode);
+		keyDownAction.value(this,character, modifiers, unicode, keycode, key);
+	}
+
+	keyUp { | character, modifiers, unicode, keycode, key |
+		this.class.globalKeyUpAction.value(this,character, modifiers, unicode, keycode);
+		keyUpAction.value(this,character, modifiers, unicode, keycode, key);
+	}
 }
 
