@@ -626,6 +626,63 @@ void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
     Main::evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').%2(\"%3\", %4, %5, %6, %7)").arg(mDoc->id().constData()).arg(type).arg(character).arg(mods).arg(unicode).arg(keycode).arg(key), true);
     
 }
+    
+void GenericCodeEditor::mousePressEvent(QMouseEvent * e)
+{
+    QPlainTextEdit::mousePressEvent(e);
+    int button;
+    
+    switch( e->button() ) {
+        case Qt::LeftButton:
+            button = 0; break;
+        case Qt::RightButton:
+            button = 1; break;
+        case Qt::MidButton:
+            button = 2; break;
+        default:
+            button = -1;
+    }
+    
+    Main::evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+}
+    
+void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent * e)
+{
+    QPlainTextEdit::mouseDoubleClickEvent(e);
+    int button;
+    
+    switch( e->button() ) {
+        case Qt::LeftButton:
+            button = 0; break;
+        case Qt::RightButton:
+            button = 1; break;
+        case Qt::MidButton:
+            button = 2; break;
+        default:
+            button = -1;
+    }
+    
+    Main::evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+}
+    
+void GenericCodeEditor::mouseReleaseEvent(QMouseEvent * e)
+{
+    QPlainTextEdit::mouseReleaseEvent(e);
+    int button;
+    
+    switch( e->button() ) {
+        case Qt::LeftButton:
+            button = 0; break;
+        case Qt::RightButton:
+            button = 1; break;
+        case Qt::MidButton:
+            button = 2; break;
+        default:
+            button = -1;
+    }
+    
+    Main::evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+}
 
 void GenericCodeEditor::wheelEvent( QWheelEvent * e )
 {

@@ -474,5 +474,13 @@ ScIDEDocument : Document {
 		this.class.globalKeyUpAction.value(this,character, modifiers, unicode, keycode);
 		keyUpAction.value(this,character, modifiers, unicode, keycode, key);
 	}
+
+	mouseDown{ | x, y, modifiers, buttonNumber, clickCount |
+		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount)
+	}
+
+	mouseUp{ | x, y, modifiers, buttonNumber |
+		mouseUpAction.value(this, x, y, modifiers, buttonNumber)
+	}
 }
 
