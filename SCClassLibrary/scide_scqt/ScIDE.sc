@@ -357,7 +357,6 @@ ScIDE {
 	}
 }
 
-// This is just a stub to provide oft-used functionality such as Document.open()
 ScIDEDocument : Document {
 	classvar <asyncActions;
 	var <quuid, <title, <text;
