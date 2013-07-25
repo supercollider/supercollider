@@ -361,6 +361,7 @@ ScIDE {
 ScIDEDocument : Document {
 	classvar <asyncActions;
 	var <quuid, <title, <text;
+	var <>textChangedAction;
 	*initClass{
 		Document.implementationClass = this;
 		asyncActions = IdentityDictionary.new;
@@ -418,6 +419,7 @@ ScIDEDocument : Document {
 	updateText {|index, numCharsRemoved, addedChars|
 		addedChars = addedChars.asAscii;
 		text = text.keep(index) ++ addedChars ++ text.drop(index + numCharsRemoved);
+		textChangedAction.value(this, index, numCharsRemoved, addedChars);
 	}
 
 	propen {|path, selectionStart, selectionLength, envir|
