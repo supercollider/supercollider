@@ -83,6 +83,12 @@ public:
     {
         instance()->scProcess()->evaluateCode(text, silent);
     }
+    
+    static void evaluateCodeIfCompiled(QString const & text, bool silent = false)
+    {
+        if(instance()->scProcess()->compiled())
+            evaluateCode(text, silent);
+    }
 
     static bool openDocumentation(const QString & string);
     static bool openDocumentationForMethod(const QString & className, const QString & methodName);

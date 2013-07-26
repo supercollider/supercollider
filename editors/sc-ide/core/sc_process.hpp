@@ -76,6 +76,8 @@ public:
     {
         return mActions[role];
     }
+    
+    bool compiled() { return mCompiled; }
 
 public slots:
     void toggleRunning();
@@ -130,6 +132,7 @@ private:
     class Document * mCurrentDocument;
     bool mTerminationRequested;
     QDateTime mTerminationRequestTime;
+    bool mCompiled;
 };
 
 class ScRequest : public QObject

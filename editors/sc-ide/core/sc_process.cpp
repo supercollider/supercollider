@@ -43,7 +43,8 @@ ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
     mIpcSocket(NULL),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid())),
     mCurrentDocument(NULL),
-    mTerminationRequested(false)
+    mTerminationRequested(false),
+    mCompiled(false)
 {
     mIntrospectionParser = new ScIntrospectionParser( this );
     mIntrospectionParser->start();
@@ -168,7 +169,7 @@ void ScProcess::recompileClassLibrary (void)
         emit statusMessage(tr("Interpreter is not running!"));
         return;
     }
-
+    mCompiled = false;
     write("\x18");
 }
 
@@ -182,7 +183,8 @@ void ScProcess::stopLanguage (void)
 
     evaluateCode("0.exit", true);
     closeWriteChannel();
-
+    
+    mCompiled = false;
     mTerminationRequested   = true;
     mTerminationRequestTime = QDateTime::currentDateTimeUtc();
 
@@ -202,6 +204,7 @@ void ScProcess::stopLanguage (void)
 
 void ScProcess::restartLanguage()
 {
+    mCompiled = false;
     stopLanguage();
     startLanguage();
 }
@@ -289,7 +292,7 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
         mActions[RecompileClassLibrary]->setEnabled(false);
         updateToggleRunningAction();
         postQuitNotification();
-
+        mCompiled = false;
         break;
     }
 }
@@ -343,8 +346,10 @@ void ScProcess::onResponse( const QString & selector, const QString & data )
     if (selector == introspectionSelector)
         mIntrospectionParser->process(data);
 
-    else if (selector == classLibraryRecompiledSelector)
+    else if (selector == classLibraryRecompiledSelector){
+        mCompiled = true;
         emit classLibraryRecompiled();
+    }
 
     else if (selector == requestCurrentPathSelector)
         sendActiveDocument();
