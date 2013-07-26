@@ -111,6 +111,7 @@ public:
     bool reload( Document * );
     const QStringList & recents() const { return mRecent; }
     Document * getDocByID(const QByteArray docID);
+    void showDocument(Document * doc) { Q_EMIT( showRequest(doc, 0, -1) ); }
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
