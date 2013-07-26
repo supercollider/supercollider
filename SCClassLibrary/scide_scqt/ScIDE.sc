@@ -344,6 +344,10 @@ ScIDE {
 		this.prSend(\setDocumentText, [quuid, funcID, text, start, range]);
 	}
 
+	*setCurrentDocumentByQUuid {|quuid|
+		this.prSend(\setCurrentDocument, [quuid]);
+	}
+
 	// PRIVATE ///////////////////////////////////////////////////////////
 
 	*prSend {|id, data|
@@ -398,13 +402,22 @@ ScIDEDocument : Document {
 	}
 
 	*setActiveDocByQUuid {|quuid|
-		var newCurrent, current;
+		var newCurrent;
 		newCurrent = this.findByQUuid(quuid);
+		this.prCurrent_(newCurrent);
+	}
+
+	*prCurrent_ {|newCurrent|
 		current = this.current;
 		if((newCurrent === current).not, {
 			if(current.notNil, {current.didResignKey});
 			newCurrent.didBecomeKey;
 		});
+	}
+
+	front {
+		this.class.prCurrent_(this);
+		ScIDE.setCurrentDocumentByQUuid(quuid);
 	}
 
 	init {|id, argtitle, argstring|
