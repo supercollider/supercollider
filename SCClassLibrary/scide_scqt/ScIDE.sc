@@ -348,6 +348,10 @@ ScIDE {
 		this.prSend(\setCurrentDocument, [quuid]);
 	}
 
+	*close {|quuid|
+		this.prSend(\closeDocument, [quuid]);
+	}
+
 	// PRIVATE ///////////////////////////////////////////////////////////
 
 	*prSend {|id, data|
@@ -438,6 +442,8 @@ ScIDEDocument : Document {
 		if(envir != nil){"ScIDE does not set an environment per document".warn};
 		^ScIDE.open(path, selectionStart, selectionLength)
 	}
+
+	prclose { ScIDE.close(quuid); }
 
 	// asynchronous get
 	// range -1 means to the end of the Document

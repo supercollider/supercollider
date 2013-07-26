@@ -126,6 +126,7 @@ private:
     void handleGetDocTextScRequest( const QString & data );
     void handleSetDocTextScRequest( const QString & data );
     void handleSetCurrentDocScRequest( const QString & data );
+    void handleCloseDocScRequest( const QString & data );
 
     Settings::Manager *mSettings;
     ScProcess * mScProcess;
