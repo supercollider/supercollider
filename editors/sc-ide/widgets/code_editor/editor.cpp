@@ -623,7 +623,7 @@ void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
         type = QString("keyUp");
     }
 
-    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').%2(\"%3\", %4, %5, %6, %7)").arg(mDoc->id().constData()).arg(type).arg(character).arg(mods).arg(unicode).arg(keycode).arg(key), true);
+    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').%2(%3, %4, %5, %6)").arg(mDoc->id().constData()).arg(type).arg(mods).arg(unicode).arg(keycode).arg(key), true);
     
 }
     
