@@ -629,7 +629,6 @@ void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
     
 void GenericCodeEditor::mousePressEvent(QMouseEvent * e)
 {
-    QPlainTextEdit::mousePressEvent(e);
     int button;
     
     switch( e->button() ) {
@@ -644,11 +643,11 @@ void GenericCodeEditor::mousePressEvent(QMouseEvent * e)
     }
     
     Main::evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+    QPlainTextEdit::mousePressEvent(e);
 }
     
 void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent * e)
 {
-    QPlainTextEdit::mouseDoubleClickEvent(e);
     int button;
     
     switch( e->button() ) {
@@ -663,11 +662,11 @@ void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent * e)
     }
     
     Main::evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+    QPlainTextEdit::mouseDoubleClickEvent(e);
 }
     
 void GenericCodeEditor::mouseReleaseEvent(QMouseEvent * e)
 {
-    QPlainTextEdit::mouseReleaseEvent(e);
     int button;
     
     switch( e->button() ) {
@@ -682,6 +681,7 @@ void GenericCodeEditor::mouseReleaseEvent(QMouseEvent * e)
     }
     
     Main::evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+    QPlainTextEdit::mouseReleaseEvent(e);
 }
 
 void GenericCodeEditor::wheelEvent( QWheelEvent * e )
