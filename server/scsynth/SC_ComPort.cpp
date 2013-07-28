@@ -18,6 +18,17 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+
+#ifdef _WIN32
+    # include <winsock2.h>
+    typedef int socklen_t;
+    # define bzero( ptr, count ) memset( ptr, 0, count )
+#else
+    #include <netinet/tcp.h>
+    #include <sys/types.h>
+    #include <sys/socket.h>
+#endif
+
 #include "SC_Endian.h"
 #include "SC_HiddenWorld.h"
 #include "SC_WorldOptions.h"
@@ -35,15 +46,6 @@
 
 #include "nova-tt/thread_priority.hpp"
 
-#ifdef _WIN32
-	# include <winsock2.h>
-	typedef int socklen_t;
-	# define bzero( ptr, count ) memset( ptr, 0, count )
-#else
-	#include <netinet/tcp.h>
-	#include <sys/types.h>
-	#include <sys/socket.h>
-#endif
 
 #if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__)
 	#include <unistd.h>

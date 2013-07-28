@@ -50,13 +50,6 @@ Primitives for File i/o.
 # include <unistd.h>
 #else
 # include <direct.h>
-# include <malloc.h>
-#endif
-
-#ifdef _WIN32
-#include <stdio.h>
-#include "SC_Win32Utils.h"
-#include "SC_DirUtils.h"
 #endif
 
 #include <fcntl.h>

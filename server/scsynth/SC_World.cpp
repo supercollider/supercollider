@@ -18,6 +18,9 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#ifdef _WIN32
+#include "SC_Win32Utils.h"
+#endif
 
 #include "SC_World.h"
 #include "SC_WorldOptions.h"
