@@ -111,6 +111,11 @@ if (WIN32 OR APPLE)
         include_directories(${ASIOSDK_ROOT_DIR}/host/pc)
         include_directories(portaudio/src/os/win)
 
+        if (MINGW)
+            list(REMOVE_ITEM pa_platform portaudio/src/os/win/pa_x86_plain_converters.c)
+        endif()
+
+
         set_property(SOURCE ${pa_asio} PROPERTY COMPILE_DEFINITIONS "interface=__interface")
 
     endif()
