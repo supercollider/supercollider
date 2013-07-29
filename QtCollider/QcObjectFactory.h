@@ -120,11 +120,9 @@ protected:
 };
 
 #define QC_DECLARE_FACTORY( QOBJECT, FACTORY ) \
-  namespace QtCollider { \
-    void add_factory_##QOBJECT () { \
-      QcAbstractFactory *factory = new FACTORY; \
-      factories().insert( factory->metaObject()->className(), factory ); \
-    } \
+  void add_factory_##QOBJECT () { \
+    QcAbstractFactory *factory = new FACTORY; \
+    factories().insert( factory->metaObject()->className(), factory ); \
   }
 
 #define QC_DECLARE_QOBJECT_FACTORY( QOBJECT ) QC_DECLARE_FACTORY( QOBJECT, QcObjectFactory<QOBJECT> )
