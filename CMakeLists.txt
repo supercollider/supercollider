@@ -1,5 +1,14 @@
-cmake_minimum_required (VERSION 2.8.10)
 project (SuperCollider)
+
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+	set(LINUX 1)
+endif()
+
+if (LINUX)
+	cmake_minimum_required (VERSION 2.8)
+else()
+	cmake_minimum_required (VERSION 2.8.10)
+endif()
 
 include("SCVersion.txt")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
@@ -30,10 +39,6 @@ CONFIGURE_FILE(
 
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
-
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-	set(LINUX 1)
-endif()
 
 #############################################
 # Compiler flags etc
