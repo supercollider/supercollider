@@ -104,7 +104,6 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
 
-	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaBridgePrimitives.M
