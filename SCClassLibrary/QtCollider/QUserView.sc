@@ -36,7 +36,7 @@ QUserView : QView {
     drawFunc.value(this);
   }
 
-  animate_ { arg bool; this.invokeMethod( \animate, bool ); animate = true; }
+  animate_ { arg bool; this.invokeMethod( \animate, bool ); animate = bool; }
 
   frameRate_ { arg fps; this.setProperty( \frameRate, fps.asFloat ); }
   frameRate { ^this.getProperty( \frameRate ); }
