@@ -24,17 +24,20 @@
 
 #include "SC_Reply.h"
 
-#if defined(_WIN32)
-# include "SC_Win32Utils.h"
-#else
-# include <netinet/in.h>
-#endif // _WIN32
+#include <boost/asio.hpp>
+
+enum Protocol {
+	kUDP,
+	kTCP
+};
 
 struct ReplyAddress
 {
-	struct sockaddr_in mSockAddr;
-	int mSockAddrLen;
+	boost::asio::ip::address mAddress;
+	enum Protocol mProtocol;
+	int mPort;
 	int mSocket;
+
 	ReplyFunc mReplyFunc;
 	void *mReplyData;
 };

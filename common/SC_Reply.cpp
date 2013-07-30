@@ -27,11 +27,5 @@ void null_reply_func(struct ReplyAddress *addr, char* msg, int size)
 
 bool operator==(const ReplyAddress& a, const ReplyAddress& b)
 {
-	return a.mSockAddr.sin_addr.s_addr == b.mSockAddr.sin_addr.s_addr
-	&& a.mSockAddr.sin_family == b.mSockAddr.sin_family
-	&& a.mSockAddr.sin_port == b.mSockAddr.sin_port
-	#ifdef __APPLE__
-	&& a.mSockAddr.sin_len == b.mSockAddr.sin_len
-	#endif
-	&& a.mSocket == b.mSocket;
+	return a == b;
 }

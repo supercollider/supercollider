@@ -37,7 +37,9 @@
 //
 //   Delay-Locked-Loop after
 //   Fons Adriaensen, "Using a DLL to filter time"
+#ifndef M_PI
 #define M_PI		3.14159265358979323846
+#endif
 #define SC_TIME_DLL_BW 0.012
 
 class SC_TimeDLL
