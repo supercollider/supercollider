@@ -102,6 +102,11 @@ Section "Core" core_sect
 	WriteRegStr HKCR "SuperCollider.HelpFile\DefaultIcon" "" "$INSTDIR\sclang.exe,0"
 	WriteRegStr HKCR "SuperCollider.HelpFile\shell\open\command" "" '"$INSTDIR\scide.exe" "%1"'
 
+	; Create Startmenu item
+	SetShellVarContext all
+	createDirectory "$SMPROGRAMS\SuperCollider"
+	createShortCut "$SMPROGRAMS\SuperCollider\SuperCollider-${SC_VERSION}.lnk" "$INSTDIR\scide.exe" "" "$INSTDIR\scide.exe"
+
 	; Refresh shell-icons
 	Call RefreshShellIcons
 
@@ -149,6 +154,11 @@ Section "Uninstall"
 	DeleteRegKey HKCR ".schelp"
 	DeleteRegKey HKCR "SuperCollider.HelpFile"
 	
+	;Try to remove StartMenu item
+	SetShellVarContext all
+	delete "$SMPROGRAMS\SuperCollider\SuperCollider-${SC_VERSION}.lnk"
+	rmDir "$SMPROGRAMS\SuperCollider"
+
 	;Remove from Add-/remove programs
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}"
 
