@@ -21,7 +21,7 @@ System Requirements
 
 ** Operating System **
 
-Windows 7/Vista/XP/2000
+Windows 8/7/Vista/XP/2000
 
 ** Sound Card **
 
@@ -50,10 +50,15 @@ about changed locations below.
 Using the SuperCollider IDE
 ------------------------------------------------------------------------
 
-To start up the IDE, run the scide.exe program found within the
-installation folder.
+To start up the IDE use the Startmenu link or run the scide.exe program 
+found within the installation folder.
 
 You can get more help on using the IDE via the Help menu.
+
+On first startup expect several firewall warnings to pop up. The
+SuperCollider components communicate through the network, so you will
+get a warning for each oc scide, sclang, scsynth and - if available -
+supernova.
 
 ------------------------------------------------------------------------
 Using SuperCollider in command line mode
@@ -76,12 +81,30 @@ the up and down arrow keys.
 - Ctrl+D: to quit the SuperCollider command line
 
 ------------------------------------------------------------------------
+Uninstall
+------------------------------------------------------------------------
+Should you ever decide to uninstall SuperCollider, it is the easiest to
+use the uninstaller executable provided in the application folder, or to 
+use the uninstall service provided in the 'Add-/Remove Programs' dialogue. 
+This will remove all files from the application folder, and the SC
+registry settings - provided things were not changed manually since last 
+install. The support files (in AppData\SuperCollider) are *not* 
+removed automatically, because they usually contain user specific data
+that might be useful in a subsequent install. If they bother you, you 
+need to remove them manually. The AppData folder is hidden by default,
+so you might need to unhide it to find your folder. In case of an update
+or reinstall pay also attention to plugins residing in the support folders. 
+They are minor-version specific and cause error messages if they do not 
+fit the installed SuperCollider version.
+
+
+------------------------------------------------------------------------
 NOTE: Changed location of extensions and configuration files
 ------------------------------------------------------------------------
 
 The location of application-related user data has moved in accordance
 with Windows policies. This means that from version 3.6.1 on, SuperCollider
-will not pickup extensions, startup file, and configuration files from
+will not pick up extensions, startup file, and configuration files from
 locations used by previous versions.
 
 To continue using extensions and configuration from versions prior to 3.6.1,
