@@ -14,6 +14,10 @@ InstallDir $PROGRAMFILES\SuperCollider-${SC_VERSION}
 ;Var GEDIT_DIR
 ;!endif
 
+;Addition to refresh shell-icons
+!define SHCNE_ASSOCCHANGED 0x08000000
+!define SHCNF_IDLIST 0
+
 ; --- PAGES ---
 
 !define MUI_PAGE_HEADER_TEXT "License"
@@ -81,6 +85,25 @@ Section "Core" core_sect
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "DisplayIcon" "$INSTDIR\sclang.exe"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "NoModify" 1
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "NoRepair" 1
+	
+	;Associate file-types scd, sc and schelp with SuperCollider
+	WriteRegStr HKCR ".scd" "" "SuperCollider.Document"
+	WriteRegStr HKCR "SuperCollider.Document" "" "SuperCollider Document"
+	WriteRegStr HKCR "SuperCollider.Document\DefaultIcon" "" "$INSTDIR\sclang.exe,0"
+	WriteRegStr HKCR "SuperCollider.Document\shell\open\command" "" '"$INSTDIR\scide.exe" "%1"'
+
+	WriteRegStr HKCR ".sc" "" "SuperCollider.ClassFile"
+	WriteRegStr HKCR "SuperCollider.ClassFile" "" "SuperCollider ClassFile"
+	WriteRegStr HKCR "SuperCollider.ClassFile\DefaultIcon" "" "$INSTDIR\sclang.exe,0"
+	WriteRegStr HKCR "SuperCollider.ClassFile\shell\open\command" "" '"$INSTDIR\scide.exe" "%1"'
+
+	WriteRegStr HKCR ".schelp" "" "SuperCollider.HelpFile"
+	WriteRegStr HKCR "SuperCollider.HelpFile" "" "SuperCollider HelpFile"
+	WriteRegStr HKCR "SuperCollider.HelpFile\DefaultIcon" "" "$INSTDIR\sclang.exe,0"
+	WriteRegStr HKCR "SuperCollider.HelpFile\shell\open\command" "" '"$INSTDIR\scide.exe" "%1"'
+
+	; Refresh shell-icons
+	Call RefreshShellIcons
 
 SectionEnd
 
@@ -116,7 +139,17 @@ Section "Uninstall"
 
     ;DeleteRegKey HKLM "Software\SuperCollider\${SC_VERSION}"
 	
-	; Remove from Add-/remove programs
+	;Remove filetype associations
+	DeleteRegKey HKCR ".scd"
+	DeleteRegKey HKCR "SuperCollider.Document"
+
+	DeleteRegKey HKCR ".sc"
+	DeleteRegKey HKCR "SuperCollider.ClassFile"
+
+	DeleteRegKey HKCR ".schelp"
+	DeleteRegKey HKCR "SuperCollider.HelpFile"
+	
+	;Remove from Add-/remove programs
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}"
 
 SectionEnd
@@ -138,6 +171,13 @@ SectionEnd
 Function .onInit
     IntOp $0 ${SF_SELECTED} | ${SF_RO}
     SectionSetFlags ${core_sect} $0
+FunctionEnd
+
+; Addition to refresh shell icons
+Function RefreshShellIcons
+  ; By jerome tremblay - april 2003
+  System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v \
+  (${SHCNE_ASSOCCHANGED}, ${SHCNF_IDLIST}, 0, 0)'
 FunctionEnd
 
 ;!ifdef SC_ED
