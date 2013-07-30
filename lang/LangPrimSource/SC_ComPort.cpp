@@ -66,35 +66,6 @@ void stopAsioThread()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-void udp_reply_func(struct ReplyAddress *addr, char* msg, int size)
-{
-	using namespace boost::asio;
-
-	ip::udp::socket socket(ioService, ip::udp::v4(), (ip::udp::socket::native_handle_type)addr->mPort);
-	ip::udp::endpoint endpoint (addr->mAddress, addr->mPort);
-
-	socket.send_to( buffer(msg, size), endpoint );
-}
-
-void tcp_reply_func(struct ReplyAddress *addr, char* msg, int size)
-{
-	using namespace boost::asio;
-
-	ip::tcp::socket socket(ioService, ip::tcp::v4(), (ip::tcp::socket::native_handle_type)addr->mPort);
-
-#if 0
-	ip::tcp::socket::message_flags flags = 0;
-#ifdef MSG_NOSIGNAL
-	flags = MSG_NOSIGNAL;
-#endif
-#endif
-
-	write( socket, buffer(&msg, size) );
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 SC_UdpInPort::SC_UdpInPort(int inPortNum, int portsToCheck):
 	mPortNum(inPortNum), udpSocket(ioService)
 {
@@ -150,7 +121,6 @@ void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error,
 	packet->mReplyAddr.mAddress   = remoteEndpoint.address();
 	packet->mReplyAddr.mPort      = sc_htons(remoteEndpoint.port());
 	packet->mReplyAddr.mSocket    = udpSocket.native_handle();
-	packet->mReplyAddr.mReplyFunc = udp_reply_func;
 
 	char *data = (char*)malloc(bytesTransferred);
 	packet->mSize = bytesTransferred;
@@ -237,7 +207,6 @@ void SC_TcpConnection::handleMsgReceived(const boost::system::error_code &error,
 
 	packet->mReplyAddr.mProtocol  = kTCP;
 	packet->mReplyAddr.mSocket    = socket.native_handle();
-	packet->mReplyAddr.mReplyFunc = tcp_reply_func;
 	packet->mSize = OSCMsgLength;
 	packet->mData = data;
 
@@ -313,7 +282,6 @@ void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code &error,
 
 	packet->mReplyAddr.mProtocol = kTCP;
 	packet->mReplyAddr.mSocket   = socket.native_handle();
-	packet->mReplyAddr.mReplyFunc = tcp_reply_func;
 
 	packet->mSize                 = OSCMsgLength;
 	packet->mData                 = data;
@@ -327,5 +295,3 @@ void SC_TcpClientPort::Close()
 {
 	socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
