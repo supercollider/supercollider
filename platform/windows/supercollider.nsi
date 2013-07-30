@@ -4,11 +4,17 @@
 !include "FileFunc.nsh"
 !include "WordFunc.nsh"
 !include "MUI2.nsh"
-!insertmacro MUI_LANGUAGE "English"
+
 
 Name "SuperCollider ${SC_VERSION}"
 OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}-win32.exe
 InstallDir $PROGRAMFILES\SuperCollider-${SC_VERSION}
+
+!define MUI_ICON "../../icons/sc_cube.ico"
+!define MUI_UNICON "../../icons/sc_cube.ico"
+
+; Get install-dir from registry if available
+InstallDirRegKey HKCU "Software\SuperCollider\${SC_VERSION}" ""
 
 ;!ifdef SC_ED
 ;Var GEDIT_DIR
@@ -18,29 +24,26 @@ InstallDir $PROGRAMFILES\SuperCollider-${SC_VERSION}
 !define SHCNE_ASSOCCHANGED 0x08000000
 !define SHCNF_IDLIST 0
 
+;Interface Settings
+!define MUI_ABORTWARNING
+
 ; --- PAGES ---
 
-!define MUI_PAGE_HEADER_TEXT "License"
-!define MUI_LICENSEPAGE_TEXT_TOP "Please review the license below."
-!define MUI_LICENSEPAGE_TEXT_BOTTOM \
-    "By installing this software you implicitely agree with this license."
+!insertmacro MUI_PAGE_WELCOME
+
 !insertmacro MUI_PAGE_LICENSE SuperCollider\LICENSE.txt
 
-!define MUI_PAGE_HEADER_TEXT "Instructions"
-!define MUI_PAGE_HEADER_SUBTEXT \
-    "Useful information regarding installation and usage"
-!define MUI_LICENSEPAGE_TEXT_BOTTOM \
-    "These instructions will be available after installation \
-    in a README.txt file."
+; --- Hack to display Readme.txt easily ---
+!define MUI_PAGE_HEADER_TEXT "Read me!"
+!define MUI_PAGE_HEADER_SUBTEXT "Find below useful information regarding installation and usage"
+!define MUI_LICENSEPAGE_TEXT_TOP "Press Page Down to see the rest of the information"
+!define MUI_LICENSEPAGE_TEXT_BOTTOM "This information will be available in your SuperCollider application folder as README.txt"
 !define MUI_LICENSEPAGE_BUTTON "Next >"
-;!define MUI_LICENSEPAGE_TEXT_BOTTOM \
-    ;"By installing this software you implicitely agree with this license."
 !insertmacro MUI_PAGE_LICENSE SuperCollider\README.txt
 
-;!define MUI_PAGE_HEADER_TEXT "Installation components"
+; No components defined
 ;!insertmacro MUI_PAGE_COMPONENTS
 
-!define MUI_PAGE_HEADER_TEXT "Installation Folder"
 !insertmacro MUI_PAGE_DIRECTORY
 
 ;!ifdef SC_ED
@@ -58,9 +61,17 @@ InstallDir $PROGRAMFILES\SuperCollider-${SC_VERSION}
 
 !insertmacro MUI_PAGE_INSTFILES
 
+!insertmacro MUI_UNPAGE_WELCOME
+
 !insertmacro MUI_UNPAGE_CONFIRM
 
 !insertmacro MUI_UNPAGE_INSTFILES
+
+!insertmacro MUI_UNPAGE_FINISH
+
+; --- LANGUAGE ---
+
+!insertmacro MUI_LANGUAGE "English"
 
 ; --- SECTIONS ---
 
@@ -71,6 +82,7 @@ Section "Core" core_sect
     ;Store installation folder
     ;Does not work!
     ;WriteRegStr HKLM "Software\SuperCollider\${SC_VERSION}" "intall-dir" $INSTDIR
+	WriteRegStr HKCU "Software\SuperCollider\${SC_VERSION}" "" $INSTDIR
 
     ;Create uninstaller
     WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -142,8 +154,9 @@ Section "Uninstall"
 ;    doneDeleteSced:
 ;    !endif
 
-    ;DeleteRegKey HKLM "Software\SuperCollider\${SC_VERSION}"
-	
+	DeleteRegKey HKCU "Software\SuperCollider\${SC_VERSION}"
+	DeleteRegKey /ifempty HKCU "Software\SuperCollider"
+
 	;Remove filetype associations
 	DeleteRegKey HKCR ".scd"
 	DeleteRegKey HKCR "SuperCollider.Document"
