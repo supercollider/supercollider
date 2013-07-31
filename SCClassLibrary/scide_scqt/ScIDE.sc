@@ -371,7 +371,7 @@ ScIDE {
 
 ScIDEDocument : Document {
 	classvar <asyncActions;
-	var <quuid, <title, <text;
+	var <quuid, <title, <text, <isEdited = false;
 	var <>textChangedAction;
 	*initClass{
 		Document.implementationClass = this;
@@ -385,16 +385,17 @@ ScIDEDocument : Document {
 		^doc
 	}
 
-	*syncFromIDE {|quuid, title, chars|
+	*syncFromIDE {|quuid, title, chars, isEdited|
 		var doc;
+		isEdited = isEdited.booleanValue;
 		chars = chars.asAscii;
 		if((doc = this.findByQUuid(quuid)).isNil, {
-			doc = super.prBasicNew.init(quuid, title, chars);
+			doc = super.prBasicNew.init(quuid, title, chars, isEdited);
 			allDocuments = allDocuments.add(doc);
-		}, {doc.init(quuid, title, chars)});
+		}, {doc.init(quuid, title, chars, isEdited)});
 	}
 
-	*syncDocs {|docInfo| // [quuid, title, string]
+	*syncDocs {|docInfo| // [quuid, title, string, isEdited]
 		docInfo.do({|info| this.syncFromIDE(*info) });
 	}
 
@@ -428,10 +429,11 @@ ScIDEDocument : Document {
 		ScIDE.setCurrentDocumentByQUuid(quuid);
 	}
 
-	init {|id, argtitle, argstring|
+	init {|id, argtitle, argstring, argisEdited|
 		quuid = id;
 		title = argtitle;
 		text = argstring;
+		isEdited = argisEdited;
 	}
 
 	initText {|string| text = string }
@@ -510,6 +512,10 @@ ScIDEDocument : Document {
 	prSetTitle {|newTitle|
 		title = newTitle;
 		ScIDE.setDocumentTitle(quuid, newTitle);
+	}
+
+	prSetEdited {|flag|
+		isEdited = flag.booleanValue;
 	}
 }
 
