@@ -175,7 +175,6 @@ set(ide_sources ${ide_src} ${all_hdr} )
 set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations})
 
 # This sets up the exe icon for windows under mingw.
-set(RES_FILES "")
 if(MINGW)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
  set(CMAKE_RC_COMPILER_INIT windres)
