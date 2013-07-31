@@ -352,6 +352,10 @@ ScIDE {
 		this.prSend(\closeDocument, [quuid]);
 	}
 
+	*setDocumentTitle {|quuid, newTitle|
+		this.prSend(\setDocumentTitle, [quuid, newTitle]);
+	}
+
 	// PRIVATE ///////////////////////////////////////////////////////////
 
 	*prSend {|id, data|
@@ -501,6 +505,11 @@ ScIDEDocument : Document {
 
 	mouseUp{ | x, y, modifiers, buttonNumber |
 		mouseUpAction.value(this, x, y, modifiers, buttonNumber)
+	}
+
+	prSetTitle {|newTitle|
+		title = newTitle;
+		ScIDE.setDocumentTitle(quuid, newTitle);
 	}
 }
 

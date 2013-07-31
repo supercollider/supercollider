@@ -312,6 +312,12 @@ Document * DocumentManager::getDocByID(const QByteArray docID)
     return doc;
 }
 
+void DocumentManager::changeDocumentTitle(Document * doc, const QString & title)
+{
+    doc->setTitle(title);
+    Q_EMIT(titleChanged(doc));
+}
+
 QString DocumentManager::decodeDocument(const QByteArray & bytes)
 {
     QTextStream stream(bytes);
