@@ -248,6 +248,8 @@ void MultiEditor::makeSignalConnections()
             this, SLOT(update(Document*)));
     connect(docManager, SIGNAL(showRequest(Document*, int, int)),
             this, SLOT(show(Document*, int, int)));
+    connect(docManager, SIGNAL(titleChanged(Document*)),
+            this, SLOT(update(Document*)) );
 
     connect(mTabs, SIGNAL(currentChanged(int)),
             this, SLOT(onCurrentTabChanged(int)));
@@ -903,10 +905,13 @@ void MultiEditor::onDocModified( QObject *object )
     int tabIdx = tabForDocument(doc);
     if (tabIdx == -1) return;
 
+    bool isModified = doc->textDocument()->isModified();
     QIcon icon;
-    if(doc->textDocument()->isModified())
+    if(isModified)
         icon = mDocModifiedIcon;
 
+    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').prSetEdited(%2)").arg(doc->id().constData()).arg(isModified), true);
+    
     mTabs->setTabIcon( tabIdx, icon );
 }
 

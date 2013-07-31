@@ -48,11 +48,13 @@ class Document : public QObject
 
 public:
     Document( bool isPlainText );
+	Document( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string );
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
     const QString & filePath() { return mFilePath; }
     const QString & title() { return mTitle; }
+    void setTitle(const QString & title) { mTitle = title; }
 
     QFont defaultFont() const { return mDoc->defaultFont(); }
     void setDefaultFont( const QFont & font );
@@ -64,6 +66,9 @@ public:
 
     bool isPlainText() const { return mHighlighter == NULL; }
     bool isModified() const  { return mDoc->isModified(); }
+    
+    QString textAsSCArrayOfCharCodes(int start, int range);
+    void setTextInRange(const QString text, int start, int range);
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -95,13 +100,20 @@ public:
     QList<Document*> documents() {
         return mDocHash.values();
     }
+    QList<QByteArray> documentIDs() {
+        return mDocHash.uniqueKeys();
+    }
 
     void create();
+    void create(const QByteArray & quuid, const QString & title, const QString & string);
     void close( Document * );
     bool save( Document * );
     bool saveAs( Document *, const QString & path );
     bool reload( Document * );
     const QStringList & recents() const { return mRecent; }
+    Document * getDocByID(const QByteArray docID);
+    void showDocument(Document * doc) { Q_EMIT( showRequest(doc, 0, -1) ); }
+    void changeDocumentTitle(Document * doc, const QString &);
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
@@ -116,12 +128,14 @@ Q_SIGNALS:
     void showRequest( Document *, int pos = -1, int selectionLength = 0 );
     void changedExternally( Document * );
     void recentsChanged();
+    void titleChanged( Document * );
 
 private slots:
     void onFileChanged( const QString & path );
 
 private:
     Document * createDocument( bool isPlainText );
+    Document * createDocument( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string  );
     bool doSaveAs( Document *, const QString & path );
     void addToRecent( Document * );
     void loadRecentDocuments( Settings::Manager * );
