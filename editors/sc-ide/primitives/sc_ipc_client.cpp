@@ -20,6 +20,7 @@
 
 #include <QLocalSocket>
 #include <QDataStream>
+#include <QUuid>
 
 #include <cstdlib>
 
@@ -199,6 +200,15 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int ScIDE_GetQUuid(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot * returnSlot = g->sp - numArgsPushed + 1;
+	
+    SetSymbol(returnSlot, getsym(QUuid::createUuid().toString().toLatin1().constData()));
+	
+    return errNone;
+}
+
 
 void initScIDEPrimitives()
 {
@@ -207,4 +217,5 @@ void initScIDEPrimitives()
     definePrimitive(base, index++, "_ScIDE_Connect",   ScIDE_Connect, 2, 0);
     definePrimitive(base, index++, "_ScIDE_Connected", ScIDE_Connected, 1, 0);
     definePrimitive(base, index++, "_ScIDE_Send",      ScIDE_Send, 3, 0);
+	definePrimitive(base, index++, "_ScIDE_GetQUuid", ScIDE_GetQUuid, 0, 0);
 }

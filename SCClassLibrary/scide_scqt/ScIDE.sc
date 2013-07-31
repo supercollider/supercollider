@@ -27,6 +27,7 @@ ScIDE {
 
 	*handshake {
 		this.prSend(\classLibraryRecompiled);
+		this.prSend(\requestDocumentList);
 		this.prSend(\requestCurrentPath);
 
 		this.defaultServer = Server.default;
@@ -324,6 +325,37 @@ ScIDE {
 		CmdPeriod.add(this);
 	}
 
+	// Document Support //////////////////////////////////////////////////
+
+	*newDocument {|title="Untitled", string="", id|
+		this.prSend(\newDocument, [title, string, id]);
+	}
+
+	*getQUuid {
+		_ScIDE_GetQUuid
+		this.primitiveFailed
+	}
+
+	*getTextByQUuid {|quuid, funcID, start = 0, range = -1|
+		this.prSend(\getDocumentText, [quuid, funcID, start, range]);
+	}
+
+	*setTextByQUuid {|quuid, funcID, text, start = 0, range = -1|
+		this.prSend(\setDocumentText, [quuid, funcID, text, start, range]);
+	}
+
+	*setCurrentDocumentByQUuid {|quuid|
+		this.prSend(\setCurrentDocument, [quuid]);
+	}
+
+	*close {|quuid|
+		this.prSend(\closeDocument, [quuid]);
+	}
+
+	*setDocumentTitle {|quuid, newTitle|
+		this.prSend(\setDocumentTitle, [quuid, newTitle]);
+	}
+
 	// PRIVATE ///////////////////////////////////////////////////////////
 
 	*prSend {|id, data|
@@ -337,17 +369,153 @@ ScIDE {
 	}
 }
 
-// This is just a stub to provide oft-used functionality such as Document.open()
 ScIDEDocument : Document {
-        *initClass{
-                Document.implementationClass = this;
-        }
-	*new {|title, string, makeListener, envir|
-		^this.notImplemented("Document.new")
+	classvar <asyncActions;
+	var <quuid, <title, <text, <isEdited = false;
+	var <>textChangedAction;
+	*initClass{
+		Document.implementationClass = this;
+		asyncActions = IdentityDictionary.new;
 	}
+	*new {|title = "untitled", string = "", makeListener, envir|
+		var quuid = ScIDE.getQUuid, doc;
+		ScIDE.newDocument(title, string, quuid);
+		doc = super.prBasicNew.init(quuid, title, string);
+		allDocuments = allDocuments.add(doc);
+		^doc
+	}
+
+	*syncFromIDE {|quuid, title, chars, isEdited|
+		var doc;
+		isEdited = isEdited.booleanValue;
+		chars = chars.asAscii;
+		if((doc = this.findByQUuid(quuid)).isNil, {
+			doc = super.prBasicNew.init(quuid, title, chars, isEdited);
+			allDocuments = allDocuments.add(doc);
+		}, {doc.init(quuid, title, chars, isEdited)});
+	}
+
+	*syncDocs {|docInfo| // [quuid, title, string, isEdited]
+		docInfo.do({|info| this.syncFromIDE(*info) });
+	}
+
+	*executeAsyncResponse {|funcID ...args|
+		var func;
+		func = asyncActions[funcID];
+		asyncActions[funcID] = nil;
+		func.value(*args);
+	}
+
+	*findByQUuid {|quuid|
+		^allDocuments.detect({|doc| doc.quuid == quuid });
+	}
+
+	*setActiveDocByQUuid {|quuid|
+		var newCurrent;
+		newCurrent = this.findByQUuid(quuid);
+		this.prCurrent_(newCurrent);
+	}
+
+	*prCurrent_ {|newCurrent|
+		current = this.current;
+		if((newCurrent === current).not, {
+			if(current.notNil, {current.didResignKey});
+			newCurrent.didBecomeKey;
+		});
+	}
+
+	front {
+		this.class.prCurrent_(this);
+		ScIDE.setCurrentDocumentByQUuid(quuid);
+	}
+
+	init {|id, argtitle, argstring, argisEdited|
+		quuid = id;
+		title = argtitle;
+		text = argstring;
+		isEdited = argisEdited;
+	}
+
+	initText {|string| text = string }
+
+	updateText {|index, numCharsRemoved, addedChars|
+		addedChars = addedChars.asAscii;
+		text = text.keep(index) ++ addedChars ++ text.drop(index + numCharsRemoved);
+		textChangedAction.value(this, index, numCharsRemoved, addedChars);
+	}
+
 	propen {|path, selectionStart, selectionLength, envir|
 		if(envir != nil){"ScIDE does not set an environment per document".warn};
 		^ScIDE.open(path, selectionStart, selectionLength)
+	}
+
+	prclose { ScIDE.close(quuid); }
+
+	// asynchronous get
+	// range -1 means to the end of the Document
+	getText {|action, start = 0, range -1|
+		var funcID;
+		funcID = ScIDE.getQUuid; // a unique id for this function
+		asyncActions[funcID] = action; // pass the text
+		ScIDE.getTextByQUuid(quuid, funcID, start, range);
+	}
+
+	// asynchronous set
+	prSetText {|text, action, start = 0, range -1|
+		var funcID;
+		funcID = ScIDE.getQUuid; // a unique id for this function
+		asyncActions[funcID] = action; // pass the text
+		ScIDE.setTextByQUuid(quuid, funcID, text, start, range);
+	}
+
+	text_ {|string|
+		text = string;
+		this.prSetText(text);
+	}
+
+	insertText {|string, index = 0|
+		text = text.insert(index, string);
+		this.prSetText(string, nil, index, 0);
+	}
+
+	getChar {|index = 0|
+		^text[index];
+	}
+
+	setChar {|char, index = 0|
+		text = text.keep(index) ++ char ++ text.drop(index + 1);
+		this.prSetText(char.asString, nil, index, 1);
+	}
+
+	== { |that| ^(this.quuid === that.quuid);}
+
+	keyDown { | modifiers, unicode, keycode, key |
+		var character = unicode.asAscii;
+		this.class.globalKeyDownAction.value(this,character, modifiers, unicode, keycode);
+		keyDownAction.value(this,character, modifiers, unicode, keycode, key);
+	}
+
+	keyUp { | modifiers, unicode, keycode, key |
+		var character = unicode.asAscii;
+		this.class.globalKeyUpAction.value(this,character, modifiers, unicode, keycode);
+		keyUpAction.value(this,character, modifiers, unicode, keycode, key);
+	}
+
+	mouseDown{ | x, y, modifiers, buttonNumber, clickCount |
+		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount)
+	}
+
+	mouseUp{ | x, y, modifiers, buttonNumber |
+		mouseUpAction.value(this, x, y, modifiers, buttonNumber)
+	}
+
+	prSetTitle {|newTitle|
+		title = newTitle;
+		ScIDE.setDocumentTitle(quuid, newTitle);
+	}
+
+	prSetEdited {|flag|
+		isEdited = flag.booleanValue;
 	}
 }
 

@@ -83,6 +83,12 @@ public:
     {
         instance()->scProcess()->evaluateCode(text, silent);
     }
+    
+    static void evaluateCodeIfCompiled(QString const & text, bool silent = false)
+    {
+        if(instance()->scProcess()->compiled())
+            evaluateCode(text, silent);
+    }
 
     static bool openDocumentation(const QString & string);
     static bool openDocumentationForMethod(const QString & className, const QString & methodName);
@@ -107,12 +113,21 @@ Q_SIGNALS:
     void applySettingsRequest(Settings::Manager *);
 
 private slots:
+    void onOpen(Document* doc, int cursorPosition, int selectionLength);
+    void onClose(Document* doc);
     void onScLangResponse( const QString &, const QString & );
 
 private:
     Main(void);
     bool eventFilter(QObject *obj, QEvent *event);
     void handleOpenFileScRequest( const QString & data );
+    void handleDocListScRequest();
+	void handleNewDocScRequest( const QString & data );
+    void handleGetDocTextScRequest( const QString & data );
+    void handleSetDocTextScRequest( const QString & data );
+    void handleSetCurrentDocScRequest( const QString & data );
+    void handleCloseDocScRequest( const QString & data );
+    void handleSetDocTitleScRequest( const QString & data );
 
     Settings::Manager *mSettings;
     ScProcess * mScProcess;
