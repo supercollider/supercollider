@@ -156,7 +156,6 @@ if(WIN32)
 endif()
 
 # This sets up the exe icon for windows under mingw.
-set(RES_FILES "")
 if(MINGW)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
  set(CMAKE_RC_COMPILER_INIT windres)
