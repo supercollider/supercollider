@@ -248,6 +248,8 @@ void MultiEditor::makeSignalConnections()
             this, SLOT(update(Document*)));
     connect(docManager, SIGNAL(showRequest(Document*, int, int)),
             this, SLOT(show(Document*, int, int)));
+    connect(docManager, SIGNAL(titleChanged(Document*)),
+            this, SLOT(update(Document*)) );
 
     connect(mTabs, SIGNAL(currentChanged(int)),
             this, SLOT(onCurrentTabChanged(int)));

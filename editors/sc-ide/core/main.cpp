@@ -317,6 +317,7 @@ void Main::onScLangResponse( const QString & selector, const QString & data )
     static QString setDocTextSelector("setDocumentText");
     static QString setCurrentDocSelector("setCurrentDocument");
     static QString closeDocSelector("closeDocument");
+    static QString setDocTitleSelector("setDocumentTitle");
 	
     if (selector == openFileSelector)
         handleOpenFileScRequest(data);
@@ -338,6 +339,9 @@ void Main::onScLangResponse( const QString & selector, const QString & data )
     
     if (selector == closeDocSelector)
         handleCloseDocScRequest(data);
+    
+    if (selector == setDocTitleSelector)
+        handleSetDocTitleScRequest(data);
 }
 
 void Main::handleOpenFileScRequest( const QString & data )
@@ -552,4 +556,36 @@ void Main::handleCloseDocScRequest( const QString & data )
             mDocManager->close(document);
         }
     }
+}
+
+void Main::handleSetDocTitleScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+	
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+		
+        std::string quuid;
+        bool success = doc[0].Read(quuid);
+        if (!success)
+            return;
+        
+        std::string title;
+        success = doc[1].Read(title);
+        if (!success)
+            return;
+        
+        QByteArray docID = QByteArray(quuid.c_str());
+        
+        Document *document = mDocManager->getDocByID(docID);
+        if(document){
+            mDocManager->changeDocumentTitle(document, QString(title.c_str()));
+        }
+        
+    }
+
 }

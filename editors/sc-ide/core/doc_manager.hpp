@@ -54,6 +54,7 @@ public:
     const QByteArray & id() { return mId; }
     const QString & filePath() { return mFilePath; }
     const QString & title() { return mTitle; }
+    void setTitle(const QString & title) { mTitle = title; }
 
     QFont defaultFont() const { return mDoc->defaultFont(); }
     void setDefaultFont( const QFont & font );
@@ -112,6 +113,7 @@ public:
     const QStringList & recents() const { return mRecent; }
     Document * getDocByID(const QByteArray docID);
     void showDocument(Document * doc) { Q_EMIT( showRequest(doc, 0, -1) ); }
+    void changeDocumentTitle(Document * doc, const QString &);
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
@@ -126,6 +128,7 @@ Q_SIGNALS:
     void showRequest( Document *, int pos = -1, int selectionLength = 0 );
     void changedExternally( Document * );
     void recentsChanged();
+    void titleChanged( Document * );
 
 private slots:
     void onFileChanged( const QString & path );
