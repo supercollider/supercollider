@@ -298,7 +298,7 @@ void Main::findReferences(const QString &string, QWidget * parent)
 
 void Main::onOpen(Document* doc, int cursorPosition, int selectionLength)
 {
-    QString command = QString("ScIDEDocument.syncFromIDE(\'%1\', \'%2\', %3)").arg(doc->id().constData(), doc->title(), doc->textAsSCArrayOfCharCodes(0, -1));
+    QString command = QString("ScIDEDocument.syncFromIDE(\'%1\', \'%2\', %3, %4)").arg(doc->id().constData()).arg(doc->title()).arg(doc->textAsSCArrayOfCharCodes(0, -1)).arg(doc->isModified());
     mScProcess->evaluateCode ( command, true );
 }
 
@@ -377,7 +377,7 @@ void Main::handleDocListScRequest()
     QString command = QString("ScIDEDocument.syncDocs([");
     for (it = docs.begin(); it != docs.end(); ++it) {
         Document * doc = *it;
-        QString docData = QString("[\'%1\', \'%2\', %3],").arg(doc->id().constData(), doc->title(), doc->textAsSCArrayOfCharCodes(0, -1));
+        QString docData = QString("[\'%1\', \'%2\', %3, %4],").arg(doc->id().constData()).arg(doc->title()).arg(doc->textAsSCArrayOfCharCodes(0, -1)).arg(doc->isModified());
         command = command.append(docData);
     }
     command = command.append("]);");
