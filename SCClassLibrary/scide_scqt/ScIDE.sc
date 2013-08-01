@@ -371,8 +371,9 @@ ScIDE {
 
 ScIDEDocument : Document {
 	classvar <asyncActions;
-	var <quuid, <title, <text, <isEdited = false;
+	var <quuid, <title, <text, <isEdited = false, <path;
 	var <>textChangedAction;
+
 	*initClass{
 		Document.implementationClass = this;
 		asyncActions = IdentityDictionary.new;
@@ -445,7 +446,6 @@ ScIDEDocument : Document {
 	}
 
 	propen {|path, selectionStart, selectionLength, envir|
-		if(envir != nil){"ScIDE does not set an environment per document".warn};
 		^ScIDE.open(path, selectionStart, selectionLength)
 	}
 
@@ -471,6 +471,10 @@ ScIDEDocument : Document {
 	text_ {|string|
 		text = string;
 		this.prSetText(text);
+	}
+
+	rangeText { | rangestart=0, rangesize=1 |
+		^text.copy(rangestart, rangestart + rangesize);
 	}
 
 	insertText {|string, index = 0|
@@ -516,6 +520,42 @@ ScIDEDocument : Document {
 
 	prSetEdited {|flag|
 		isEdited = flag.booleanValue;
+	}
+
+	initFromPath { | path, selectionStart, selectionLength |
+		var doc;
+		path = this.class.standardizePath(path);
+		this.propen(path, selectionStart, selectionLength);
+		this.class.allDocuments.do{ |d|
+			if(d.path == path.absolutePath){
+				doc = d
+			};
+		};
+		if(doc.notNil, { ^doc });
+		this.prReadTextFromFile(path);
+		^this.prAdd;
+	}
+
+	prReadTextFromFile {|path|
+		var file;
+		file = File.new(path, "r");
+		if (file.isNil, {
+			error("Document open failed\n");
+		});
+		text = file.readAllString;
+		file.close;
+	}
+
+	prAdd {
+		allDocuments = allDocuments.add(this);
+		if (autoRun) {
+			if (this.rangeText(0,7) == "/*RUN*/")
+			{
+				this.text.interpret;
+			}
+		};
+		current = this;
+		initAction.value(this);
 	}
 }
 
