@@ -389,7 +389,7 @@ ScIDEDocument : Document {
 	*syncFromIDE {|quuid, title, chars, isEdited|
 		var doc;
 		isEdited = isEdited.booleanValue;
-		chars = chars.asAscii;
+		chars = String.fill(chars.size, {|i| chars[i].asAscii});
 		if((doc = this.findByQUuid(quuid)).isNil, {
 			doc = super.prBasicNew.init(quuid, title, chars, isEdited);
 			allDocuments = allDocuments.add(doc);
@@ -440,7 +440,7 @@ ScIDEDocument : Document {
 	initText {|string| text = string }
 
 	updateText {|index, numCharsRemoved, addedChars|
-		addedChars = addedChars.asAscii;
+		addedChars = String.fill(addedChars.size, {|i| addedChars[i].asAscii});
 		text = text.keep(index) ++ addedChars ++ text.drop(index + numCharsRemoved);
 		textChangedAction.value(this, index, numCharsRemoved, addedChars);
 	}
