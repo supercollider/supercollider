@@ -139,7 +139,7 @@ public:
             in_parameters.device = input_device_index;
             in_parameters.channelCount = inchans;
             in_parameters.sampleFormat = paFloat32 | paNonInterleaved;
-            in_parameters.suggestedLatency = device_info->defaultLowInputLatency;
+            in_parameters.suggestedLatency = device_info->defaultHighInputLatency;
             in_parameters.hostApiSpecificStreamInfo = NULL;
         }
 
@@ -151,7 +151,7 @@ public:
             out_parameters.device = output_device_index;
             out_parameters.channelCount = outchans;
             out_parameters.sampleFormat = paFloat32 | paNonInterleaved;
-            out_parameters.suggestedLatency = device_info->defaultLowOutputLatency;
+            out_parameters.suggestedLatency = device_info->defaultHighOutputLatency;
             out_parameters.hostApiSpecificStreamInfo = NULL;
         }
 
