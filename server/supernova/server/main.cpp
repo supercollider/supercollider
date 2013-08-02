@@ -157,7 +157,7 @@ void start_audio_backend(server_arguments const & args)
         input_device = output_device = args.hw_name[0];
     } else {
         input_device = args.hw_name[0];
-        output_device = args.hw_name[0];
+        output_device = args.hw_name[1];
     }
 
     cout << "opening portaudio device name: ";
