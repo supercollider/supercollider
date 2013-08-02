@@ -55,7 +55,9 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
 {
     Q_ASSERT(mDoc != 0);
 
-    setFrameShape( QFrame::NoFrame );
+    setLineWidth(1);
+    setFrameShape(QFrame::Box);
+    setFrameShadow(QFrame::Raised);
 
     viewport()->setAttribute( Qt::WA_MacNoClickThrough, true );
 
@@ -711,6 +713,18 @@ void GenericCodeEditor::wheelEvent( QWheelEvent * e )
     QPlainTextEdit::wheelEvent(e);
 #endif
 }
+    
+void GenericCodeEditor::focusInEvent( QFocusEvent * e )
+{
+    setFrameShadow(QFrame::Sunken);
+    setFrameShape(QFrame::Box);
+}
+    
+void GenericCodeEditor::focusOutEvent( QFocusEvent * e )
+{
+    setFrameShape(QFrame::Box);
+    setFrameShadow(QFrame::Raised);
+}
 
 void GenericCodeEditor::dragEnterEvent( QDragEnterEvent * event )
 {
@@ -851,12 +865,20 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
     QRect r( e->rect() );
     QPainter p( mLineIndicator );
 
-    p.fillRect( r, plt.color( QPalette::Mid ) );
+    if(hasFocus()) {
+        p.fillRect( r, plt.color( QPalette::Midlight ) );
+    } else {
+        p.fillRect( r, plt.color( QPalette::Mid ) );
+    }
+
     p.setPen( plt.color(QPalette::Dark) );
     p.drawLine( r.topRight(), r.bottomRight() );
 
-    p.setPen( plt.color(QPalette::ButtonText) );
-
+    if(hasFocus()) {
+        p.setPen( plt.color(QPalette::ButtonText) );
+    } else {
+        p.setPen( plt.color(QPalette::Midlight) );
+    }
     QTextDocument *doc = QPlainTextEdit::document();
     QTextCursor cursor(textCursor());
     int selStartBlock, selEndBlock;
