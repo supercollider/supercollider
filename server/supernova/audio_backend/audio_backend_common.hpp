@@ -19,6 +19,8 @@
 #ifndef AUDIO_BACKEND_AUDIO_BACKEND_COMMON_HPP
 #define AUDIO_BACKEND_AUDIO_BACKEND_COMMON_HPP
 
+#include <vector>
+
 #include <boost/mpl/if.hpp>
 
 #include "nova-simd/simd_memory.hpp"
@@ -26,7 +28,6 @@
 #include "nova-tt/spin_lock.hpp"
 
 #include "utilities/malloc_aligned.hpp"
-#include "utilities/sized_array.hpp"
 
 
 namespace nova   {
@@ -135,8 +136,8 @@ protected:
         return !(count & (vec<float>::objects_per_cacheline - 1));
     }
 
-    sized_array<aligned_storage_ptr<sample_type, managed_memory>,
-                aligned_allocator<sample_type> > input_samples, output_samples;
+    std::vector<aligned_storage_ptr<sample_type, managed_memory>,
+                aligned_allocator<aligned_storage_ptr<sample_type, managed_memory>> > input_samples, output_samples;
 };
 
 class audio_settings_basic

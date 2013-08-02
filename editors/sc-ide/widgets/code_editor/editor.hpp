@@ -56,6 +56,11 @@ public:
 protected:
     virtual bool event( QEvent * );
     virtual void keyPressEvent( QKeyEvent * );
+    virtual void keyReleaseEvent( QKeyEvent * );
+    void doKeyAction( QKeyEvent * );
+    virtual void mousePressEvent( QMouseEvent * );
+    virtual void mouseDoubleClickEvent( QMouseEvent * );
+    virtual void mouseReleaseEvent( QMouseEvent * );
     virtual void wheelEvent( QWheelEvent * );
     virtual void dragEnterEvent( QDragEnterEvent * );
     void hideMouseCursor(QKeyEvent *);

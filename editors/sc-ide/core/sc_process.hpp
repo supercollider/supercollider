@@ -76,6 +76,8 @@ public:
     {
         return mActions[role];
     }
+    
+    bool compiled() { return mCompiled; }
 
 public slots:
     void toggleRunning();
@@ -107,6 +109,7 @@ private slots:
     void onProcessStateChanged( QProcess::ProcessState state);
     void onReadyRead(void);
     void updateToggleRunningAction();
+    void updateCurrentDocContents ( int position, int charsRemoved, int charsAdded );
 
 private:
     void onStart();
@@ -126,8 +129,10 @@ private:
     QByteArray mIpcData;
 
     QString mCurrentDocumentPath;
+    class Document * mCurrentDocument;
     bool mTerminationRequested;
     QDateTime mTerminationRequestTime;
+    bool mCompiled;
 };
 
 class ScRequest : public QObject

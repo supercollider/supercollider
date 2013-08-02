@@ -157,7 +157,7 @@ void start_audio_backend(server_arguments const & args)
         input_device = output_device = args.hw_name[0];
     } else {
         input_device = args.hw_name[0];
-        output_device = args.hw_name[0];
+        output_device = args.hw_name[1];
     }
 
     cout << "opening portaudio device name: ";
@@ -242,10 +242,9 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
 #else
         char plugin_dir[MAXPATHLEN];
         sc_GetResourceDirectory(plugin_dir, MAXPATHLEN);
-        sc_AppendToPath(plugin_dir, MAXPATHLEN, "plugins");
+        factory->load_plugin_folder(path(plugin_dir) / "plugins");
 
         char extension_dir[MAXPATHLEN];
-
         sc_GetSystemExtensionDirectory(extension_dir, MAXPATHLEN);
         factory->load_plugin_folder(path(extension_dir) / "plugins");
 

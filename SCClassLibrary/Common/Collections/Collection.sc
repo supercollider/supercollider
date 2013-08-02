@@ -464,7 +464,7 @@ Collection {
 		};
 		^res
 	}
-	
+
 	deepCollect { | depth = 1, function, index = 0, rank = 0 |
 		if(depth.isNil) {
 			rank = rank + 1;

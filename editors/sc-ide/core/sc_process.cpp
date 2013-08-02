@@ -42,7 +42,9 @@ ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
     mIpcServer( new QLocalServer(this) ),
     mIpcSocket(NULL),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid())),
-    mTerminationRequested(false)
+    mCurrentDocument(NULL),
+    mTerminationRequested(false),
+    mCompiled(false)
 {
     mIntrospectionParser = new ScIntrospectionParser( this );
     mIntrospectionParser->start();
@@ -167,7 +169,7 @@ void ScProcess::recompileClassLibrary (void)
         emit statusMessage(tr("Interpreter is not running!"));
         return;
     }
-
+    mCompiled = false;
     write("\x18");
 }
 
@@ -181,7 +183,8 @@ void ScProcess::stopLanguage (void)
 
     evaluateCode("0.exit", true);
     closeWriteChannel();
-
+    
+    mCompiled = false;
     mTerminationRequested   = true;
     mTerminationRequestTime = QDateTime::currentDateTimeUtc();
 
@@ -201,6 +204,7 @@ void ScProcess::stopLanguage (void)
 
 void ScProcess::restartLanguage()
 {
+    mCompiled = false;
     stopLanguage();
     startLanguage();
 }
@@ -288,7 +292,7 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
         mActions[RecompileClassLibrary]->setEnabled(false);
         updateToggleRunningAction();
         postQuitNotification();
-
+        mCompiled = false;
         break;
     }
 }
@@ -342,8 +346,10 @@ void ScProcess::onResponse( const QString & selector, const QString & data )
     if (selector == introspectionSelector)
         mIntrospectionParser->process(data);
 
-    else if (selector == classLibraryRecompiledSelector)
+    else if (selector == classLibraryRecompiledSelector){
+        mCompiled = true;
         emit classLibraryRecompiled();
+    }
 
     else if (selector == requestCurrentPathSelector)
         sendActiveDocument();
@@ -361,10 +367,16 @@ void ScProcess::onStart()
 
 void ScProcess::setActiveDocument(Document * document)
 {
-    if (document)
+    if(mCurrentDocument)
+        disconnect(mCurrentDocument->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
+    if (document){
         mCurrentDocumentPath = document->filePath();
-    else
+        connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
+        mCurrentDocument = document;
+    } else {
         mCurrentDocumentPath.clear();
+        mCurrentDocument = NULL;
+    }
 
     sendActiveDocument();
 }
@@ -373,11 +385,19 @@ void ScProcess::sendActiveDocument()
 {
     if (state() != QProcess::Running)
         return;
-
-    if (!mCurrentDocumentPath.isEmpty())
-        evaluateCode(QString("ScIDE.currentPath_(\"%1\")").arg(mCurrentDocumentPath), true);
-    else
-        evaluateCode(QString("ScIDE.currentPath_(nil)"), true);
+    if(mCurrentDocument){
+        QString command = QString("ScIDEDocument.setActiveDocByQUuid(\'%1\');").arg(mCurrentDocument->id().constData());
+        if (!mCurrentDocumentPath.isEmpty())
+            command = command.append(QString("ScIDE.currentPath_(\"%1\");").arg(mCurrentDocumentPath));
+        evaluateCode(command, true);
+    } else
+        evaluateCode(QString("ScIDE.currentPath_(nil); ScIDEDocument.current = nil;"), true);
+}
+    
+void ScProcess::updateCurrentDocContents ( int position, int charsRemoved, int charsAdded )
+{
+    QString addedChars = mCurrentDocument->textAsSCArrayOfCharCodes(position, charsAdded);
+    evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').updateText(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
 }
 
 void ScIntrospectionParserWorker::process(const QString &input)

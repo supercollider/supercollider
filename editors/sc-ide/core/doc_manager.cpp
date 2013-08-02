@@ -53,6 +53,25 @@ Document::Document( bool isPlainText ):
     applySettings( Main::settings() );
 }
 
+// alternate constructor for lang created Doc
+Document::Document( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string ):
+mIndentWidth(4),
+mHighlighter(NULL)
+{
+    mDoc = new QTextDocument(string, this);
+    mId = quuid;
+    mTitle = title;
+    mDoc->setDocumentLayout( new QPlainTextDocumentLayout(mDoc) );
+	
+    if (!isPlainText)
+        mHighlighter = new SyntaxHighlighter(mDoc);
+	
+    connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
+			this, SLOT(applySettings(Settings::Manager*)) );
+	
+    applySettings( Main::settings() );
+}
+
 void Document::setPlainText(bool set_plain_text)
 {
     if (isPlainText() == set_plain_text)
@@ -117,6 +136,37 @@ void Document::setIndentWidth( int numSpaces )
     mDoc->setDefaultTextOption(options);
 }
 
+QString Document::textAsSCArrayOfCharCodes(int start = 0, int range = -1)
+{
+    QTextCursor cursor = QTextCursor(mDoc);
+    cursor.setPosition(start, QTextCursor::MoveAnchor);
+    if(range == -1){
+        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor, 1);
+    } else {
+        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, range);
+    }
+    
+    QByteArray stringBytes = cursor.selectedText().replace(QChar(0x2029), QChar('\n')).toUtf8();
+    QString returnString = QString("[");
+    for (int i = 0; i < stringBytes.size(); ++i) {
+        returnString = returnString.append(QString::number(static_cast<int>(stringBytes.at(i)))).append(',');
+    }
+    returnString = returnString.append(QString("]"));
+    return returnString;
+}
+
+void Document::setTextInRange(const QString text, int start, int range)
+{
+    QTextCursor cursor = QTextCursor(mDoc);
+    cursor.setPosition(start, QTextCursor::MoveAnchor);
+    if(range == -1){
+        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor, 1);
+    } else {
+        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, range);
+    }
+    cursor.insertText(text);
+}
+
 
 DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
     QObject(main)
@@ -136,10 +186,26 @@ Document * DocumentManager::createDocument( bool isPlainText )
     return doc;
 }
 
+// alternate method for lang created Doc
+Document * DocumentManager::createDocument( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string  )
+{
+    Document *doc = new Document( isPlainText, quuid, title, string );
+    mDocHash.insert( doc->id(), doc );
+    return doc;
+}
+
 void DocumentManager::create()
 {
     Document *doc = createDocument( false );
 
+    Q_EMIT( opened(doc, 0, 0) );
+}
+
+// alternate method for lang created Doc
+void DocumentManager::create(const QByteArray & quuid, const QString & title, const QString & string)
+{
+    Document *doc = createDocument( false, quuid, title, string );
+    
     Q_EMIT( opened(doc, 0, 0) );
 }
 
@@ -237,6 +303,19 @@ bool DocumentManager::reload( Document *doc )
         mFsWatcher.addPath(doc->mFilePath);
 
     return true;
+}
+
+Document * DocumentManager::getDocByID(const QByteArray docID)
+{
+    Document * doc = mDocHash[docID];
+    if(!doc) MainWindow::instance()->showStatusMessage(QString("Lookup failed for Document %1").arg(docID.constData()));
+    return doc;
+}
+
+void DocumentManager::changeDocumentTitle(Document * doc, const QString & title)
+{
+    doc->setTitle(title);
+    Q_EMIT(titleChanged(doc));
 }
 
 QString DocumentManager::decodeDocument(const QByteArray & bytes)

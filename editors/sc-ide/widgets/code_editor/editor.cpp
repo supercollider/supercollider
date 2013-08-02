@@ -37,6 +37,15 @@
 #include <QMimeData>
 #include <QScrollBar>
 
+#ifdef Q_WS_X11
+# include "hacks/hacks_x11.hpp"
+# include <QX11Info>
+# include <X11/Xlib.h>
+// X11 defines the following, clashing with QEvent::Type enum
+# undef KeyPress
+# undef KeyRelease
+#endif
+
 namespace ScIDE {
 
 GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
@@ -559,6 +568,120 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
         setTextCursor( cursor );
         ensureCursorVisible();
     }
+    doKeyAction(e);
+}
+    
+void GenericCodeEditor::keyReleaseEvent(QKeyEvent * e)
+{
+    doKeyAction(e);
+}
+    
+void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
+{
+    int key = ke->key();
+    
+    int mods = ke->modifiers();
+    
+    QChar character;
+    
+#ifdef Q_WS_MAC
+    bool isLetter = key >= Qt::Key_A && key <= Qt::Key_Z;
+    if (mods & Qt::MetaModifier && isLetter)
+    {
+        character = QChar(key - Qt::Key_A + 1);
+    }
+    else if(mods & Qt::AltModifier && isLetter)
+    {
+        character = (mods & Qt::ShiftModifier) ? QChar(key) : QChar(key - Qt::Key_A + 97 );
+    }
+    else
+#endif
+    {
+        QString text( ke->text() );
+        if (text.count()){
+            character = text[0];
+        } else {
+            character = QChar(QChar::ReplacementCharacter);
+        }
+    }
+    
+    int unicode = character.unicode();
+    
+#ifdef Q_WS_X11
+    KeySym sym = ke->nativeVirtualKey();
+    int keycode = XKeysymToKeycode( QX11Info::display(), sym );
+#else
+    // FIXME: On Mac OS X, this does not work for modifier keys
+    int keycode = ke->nativeVirtualKey();
+#endif
+    QString type;
+    
+    if(ke->type() == QEvent::KeyPress)
+    {
+        type = QString("keyDown");
+    } else {
+        type = QString("keyUp");
+    }
+
+    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').%2(%3, %4, %5, %6)").arg(mDoc->id().constData()).arg(type).arg(mods).arg(unicode).arg(keycode).arg(key), true);
+    
+}
+    
+void GenericCodeEditor::mousePressEvent(QMouseEvent * e)
+{
+    int button;
+    
+    switch( e->button() ) {
+        case Qt::LeftButton:
+            button = 0; break;
+        case Qt::RightButton:
+            button = 1; break;
+        case Qt::MidButton:
+            button = 2; break;
+        default:
+            button = -1;
+    }
+    
+    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+    QPlainTextEdit::mousePressEvent(e);
+}
+    
+void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent * e)
+{
+    int button;
+    
+    switch( e->button() ) {
+        case Qt::LeftButton:
+            button = 0; break;
+        case Qt::RightButton:
+            button = 1; break;
+        case Qt::MidButton:
+            button = 2; break;
+        default:
+            button = -1;
+    }
+    
+    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+    QPlainTextEdit::mouseDoubleClickEvent(e);
+}
+    
+void GenericCodeEditor::mouseReleaseEvent(QMouseEvent * e)
+{
+    int button;
+    
+    switch( e->button() ) {
+        case Qt::LeftButton:
+            button = 0; break;
+        case Qt::RightButton:
+            button = 1; break;
+        case Qt::MidButton:
+            button = 2; break;
+        default:
+            button = -1;
+    }
+    
+    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+    QPlainTextEdit::mouseReleaseEvent(e);
 }
 
 void GenericCodeEditor::wheelEvent( QWheelEvent * e )

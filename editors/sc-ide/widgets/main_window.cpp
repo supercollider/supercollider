@@ -201,6 +201,7 @@ MainWindow::MainWindow(Main * main) :
     connect(docMng, SIGNAL(recentsChanged()),
             this, SLOT(updateRecentDocsMenu()));
     connect(docMng, SIGNAL(saved(Document*)), this, SLOT(updateWindowTitle()) );
+    connect(docMng, SIGNAL(titleChanged(Document*)), this, SLOT(updateWindowTitle()) );
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
