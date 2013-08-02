@@ -3,9 +3,13 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
 
   if(APPLE)
-    if (CMAKE_SIZEOF_VOID_P MATCHES "4")
+    if(CMAKE_SIZEOF_VOID_P MATCHES "4")
       # cmpxchg8b is available on all intel apples
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=i686 -msse -msse2 -mfpmath=sse")
+    endif()
+
+    if(NOT SC_CPP11)
+      message(FATAL_ERROR "supernova/osx requires c++11 support. please configure the build with -DSC_CPP11=ON")
     endif()
   endif()
 
