@@ -123,7 +123,8 @@ server_arguments::server_arguments(int argc, char * argv[])
         sample_format = nrt_options[5];
     }
 
-    hw_name = vm["hardware-device-name"].as<std::vector<std::string> >();
+    if (vm.count("hardware-device-name"))
+        hw_name = vm["hardware-device-name"].as<std::vector<std::string> >();
 }
 
 std::unique_ptr<server_arguments> server_arguments::instance_;
