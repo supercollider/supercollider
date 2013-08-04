@@ -6,7 +6,7 @@ endif()
 
 execute_process( COMMAND makensis
     /DSC_VERSION=${SC_VERSION}
-    /DSC_SRC_DIR="${NATIVE_INSTALL_PREFIX}"
+    /DSC_INSTALL_ROOT="${NATIVE_INSTALL_PREFIX}"
     # FIXME: Does not support spaces in path:
     /DSC_DST_DIR=${NATIVE_INSTALL_PREFIX}
     ${DEFINE_SC_ED}
