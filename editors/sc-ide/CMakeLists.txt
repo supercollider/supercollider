@@ -214,14 +214,10 @@ endif()
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     target_link_libraries(${ide_name} rt)
 
-    find_package(X11)
+    find_package(X11 REQUIRED)
 
-    if(X11_FOUND)
-        include_directories(${X11_INCLUDE_DIR})
-        target_link_libraries(${ide_name} ${X11_X11_LIB})
-    elseif()
-        message(SEND_ERROR "Cannot find libx11")
-    endif()
+    include_directories(${X11_INCLUDE_DIR})
+    target_link_libraries(${ide_name} ${X11_X11_LIB})
 endif()
 
 if(PTHREADS_FOUND)
