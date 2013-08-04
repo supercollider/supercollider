@@ -1,4 +1,4 @@
-!cd ${SC_SRC_DIR}
+!cd ${SC_INSTALL_ROOT}
 
 !include "Sections.nsh"
 !include "FileFunc.nsh"
@@ -10,8 +10,8 @@ Name "SuperCollider ${SC_VERSION}"
 OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}-win32.exe
 InstallDir $PROGRAMFILES\SuperCollider-${SC_VERSION}
 
-!define MUI_ICON "../../icons/sc_cube.ico"
-!define MUI_UNICON "../../icons/sc_cube.ico"
+!define MUI_ICON "sc_cube.ico"
+!define MUI_UNICON "sc_cube.ico"
 
 ; Get install-dir from registry if available
 InstallDirRegKey HKCU "Software\SuperCollider\${SC_VERSION}" ""
