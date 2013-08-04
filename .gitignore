@@ -8,6 +8,7 @@ platform/mac/build
 
 # Windows related files
 *Thumbs.db
+CMakeLists.txt.user
 
 # working files made by packager script
 common/Packager/LinuxExclusions.txt
