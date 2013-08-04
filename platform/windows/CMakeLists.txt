@@ -6,6 +6,9 @@ install(FILES ${CMAKE_SOURCE_DIR}/README_WINDOWS.txt
     DESTINATION SuperCollider
     RENAME README.txt
 )
+install(FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sc_cube.ico
+    DESTINATION .
+)
 
 # This target invokes fixup_bundle to copy dependencies
 # into the installation directory:
