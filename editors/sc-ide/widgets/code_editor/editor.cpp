@@ -716,12 +716,14 @@ void GenericCodeEditor::focusInEvent( QFocusEvent * e )
 {
     setFrameShadow(QFrame::Sunken);
     setFrameShape(QFrame::Box);
+    QPlainTextEdit::focusInEvent(e);
 }
     
 void GenericCodeEditor::focusOutEvent( QFocusEvent * e )
 {
     setFrameShape(QFrame::Box);
     setFrameShadow(QFrame::Raised);
+    QPlainTextEdit::focusOutEvent(e);
 }
 
 void GenericCodeEditor::dragEnterEvent( QDragEnterEvent * event )
