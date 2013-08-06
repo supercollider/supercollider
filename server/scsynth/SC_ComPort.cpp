@@ -50,7 +50,7 @@
 
 bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
 
-namespace {
+namespace scsynth {
 
 const size_t kMaxUDPSize = 65535;
 
@@ -465,6 +465,8 @@ void stopAsioThread()
 
 }
 
+using namespace scsynth;
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -495,7 +497,6 @@ SC_DLLEXPORT_C bool World_SendPacket(World *inWorld, int inSize, char *inData, R
 
 SC_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort)
 {
-	startAsioThread();
 	try {
 		new SC_UdpInPort(inWorld, inPort);
 		return true;
@@ -508,7 +509,6 @@ SC_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort)
 
 SC_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog)
 {
-	startAsioThread();
 	try {
 		new SC_TcpInPort(inWorld, inPort, inMaxConnections, inBacklog);
 		return true;

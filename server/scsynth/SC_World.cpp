@@ -289,6 +289,12 @@ void World_LoadGraphDefs(World* world)
 
 }
 
+namespace scsynth {
+void startAsioThread();
+void stopAsioThread();
+}
+
+
 SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 {
 #if (_POSIX_MEMLOCK - 0) >=  200112L
@@ -451,6 +457,8 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 		} else {
 			hw->mAudioDriver = 0;
 		}
+
+		scsynth::startAsioThread();
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_New: %s\n", exc.what());
 		World_Cleanup(world);
@@ -985,6 +993,8 @@ SC_DLLEXPORT_C void World_Cleanup(World *world)
 	world->mRunning = false;
 
 	if (world->mTopGroup) Group_DeleteAll(world->mTopGroup);
+
+	scsynth::stopAsioThread();
 
 	reinterpret_cast<SC_Lock*>(world->mDriverLock)->lock(); // never unlock..
 	if (hw) {
