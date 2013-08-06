@@ -59,6 +59,8 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
     setFrameShape(QFrame::Box);
     setFrameShadow(QFrame::Raised);
 
+    viewport()->setAttribute( Qt::WA_MacNoClickThrough, true );
+
     mLineIndicator = new LineIndicator(this);
     mLineIndicator->move( contentsRect().topLeft() );
 
