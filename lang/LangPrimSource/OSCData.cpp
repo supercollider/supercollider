@@ -807,11 +807,11 @@ static int prGetHostByName(VMGlobals *g, int numArgsPushed)
 
 	boost::asio::ip::address address;
 	boost::system::error_code err_c;
-	using boost::asio::ip::icmp;
+	using boost::asio::ip::udp;
 
-	icmp::resolver resolver(ioService);
-	icmp::resolver::query query(icmp::v4(), hostname, "");
-	icmp::resolver::iterator iterator = resolver.resolve(query, err_c);
+	udp::resolver resolver(ioService);
+	udp::resolver::query query(hostname, "");
+	udp::resolver::iterator iterator = resolver.resolve(query, err_c);
 
 	if (err_c) {
 		error("cmp::resolver::query: %s\n", err_c.message().c_str());
