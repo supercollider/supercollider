@@ -197,7 +197,11 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
     mEditorSigMux(new SignalMultiplexer(this)),
     mBoxSigMux(new SignalMultiplexer(this)),
+#ifdef SC_DARWIN
     mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DriveHDIcon) )
+#else
+    mDocModifiedIcon( QIcon::fromTheme("document-save") )
+#endif
 {
     mTabs = new QTabBar;
     mTabs->setDocumentMode(true);

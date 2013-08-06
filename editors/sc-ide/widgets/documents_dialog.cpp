@@ -107,7 +107,7 @@ void DocumentsDialog::init( Mode mode, const QList<Document*> &docs )
     }
     else {
         defaultBtn = btn = dialogBtnBox->addButton(tr("&Save"), QDialogButtonBox::ActionRole);
-        btn->setIcon( QApplication::style()->standardIcon(QStyle::SP_DriveHDIcon) );
+        btn->setIcon( QIcon::fromTheme("document-save") );
         connect(btn, SIGNAL(clicked()), this, SLOT(saveSelected()));
 
         btn = dialogBtnBox->addButton(tr("&Discard"), QDialogButtonBox::ActionRole);

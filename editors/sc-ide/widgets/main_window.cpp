@@ -285,21 +285,21 @@ void MainWindow::createActions()
     settings->addAction( action, "ide-document-open-support-directory", ideCategory);
 
     mActions[DocSave] = action = new QAction(
-        QApplication::style()->standardIcon(QStyle::SP_DriveHDIcon), tr("&Save"), this);
+        QIcon::fromTheme("document-save"), tr("&Save"), this);
     action->setShortcut(tr("Ctrl+S", "Save document"));
     action->setStatusTip(tr("Save the current document"));
     connect(action, SIGNAL(triggered()), this, SLOT(saveDocument()));
     settings->addAction( action, "ide-document-save", ideCategory);
 
     mActions[DocSaveAs] = action = new QAction(
-        QApplication::style()->standardIcon(QStyle::SP_DriveHDIcon), tr("Save &As..."), this);
+        QIcon::fromTheme("document-save-as"), tr("Save &As..."), this);
     action->setShortcut(tr("Ctrl+Shift+S", "Save &As..."));
     action->setStatusTip(tr("Save the current document into a different file"));
     connect(action, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
     settings->addAction( action, "ide-document-save-as", ideCategory);
 
     mActions[DocSaveAll] = action = new QAction(
-        QApplication::style()->standardIcon(QStyle::SP_DriveHDIcon), tr("Save All..."), this);
+        QIcon::fromTheme("document-save"), tr("Save All..."), this);
     action->setShortcut(tr("Ctrl+Alt+S", "Save all documents"));
     action->setStatusTip(tr("Save all open documents"));
     connect(action, SIGNAL(triggered()), this, SLOT(saveAllDocuments()));
