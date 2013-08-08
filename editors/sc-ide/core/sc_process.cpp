@@ -396,8 +396,29 @@ void ScProcess::sendActiveDocument()
     
 void ScProcess::updateCurrentDocContents ( int position, int charsRemoved, int charsAdded )
 {
-    QString addedChars = mCurrentDocument->textAsSCArrayOfCharCodes(position, charsAdded);
-    evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').updateText(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
+    //QString addedChars = mCurrentDocument->textAsSCArrayOfCharCodes(position, charsAdded);
+//    evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').updateText(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
+    
+    QVariantList argList;
+    
+    argList.append(QVariant(mCurrentDocument->id()));
+    argList.append(QVariant(position));
+    argList.append(QVariant(charsRemoved));
+    
+    QTextCursor cursor = QTextCursor(mCurrentDocument->textDocument());
+    cursor.setPosition(position, QTextCursor::MoveAnchor);
+    cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, charsAdded);
+    
+    argList.append(QVariant(cursor.selectedText()));
+    
+    try {
+        QDataStream stream(mIpcSocket);
+        stream.setVersion(QDataStream::Qt_4_6);
+        stream << QString("updateDocText");
+        stream << argList;
+    } catch (std::exception const & e) {
+        scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
+    }
 }
 
 void ScIntrospectionParserWorker::process(const QString &input)
