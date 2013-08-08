@@ -71,6 +71,7 @@ public:
 
     void setActiveDocument(class Document *);
     void sendActiveDocument();
+    Document * activeDocument() { return mCurrentDocument; }
 
     QAction *action(ActionRole role)
     {

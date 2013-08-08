@@ -371,7 +371,7 @@ ScIDE {
 
 ScIDEDocument : Document {
 	classvar <asyncActions;
-	var <quuid, <title, <text, <isEdited = false, <path;
+	var <quuid, <title, text, <isEdited = false, <path;
 	var <>textChangedAction;
 
 	*initClass{
@@ -391,9 +391,9 @@ ScIDEDocument : Document {
 		isEdited = isEdited.booleanValue;
 		chars = String.fill(chars.size, {|i| chars[i].asAscii});
 		if((doc = this.findByQUuid(quuid)).isNil, {
-			doc = super.prBasicNew.init(quuid, title, chars, isEdited);
+			doc = super.prBasicNew.initFromIDE(quuid, title, chars, isEdited);
 			allDocuments = allDocuments.add(doc);
-		}, {doc.init(quuid, title, chars, isEdited)});
+		}, {doc.initFromIDE(quuid, title, chars, isEdited)});
 	}
 
 	*syncDocs {|docInfo| // [quuid, title, string, isEdited]
@@ -433,15 +433,20 @@ ScIDEDocument : Document {
 	init {|id, argtitle, argstring, argisEdited|
 		quuid = id;
 		title = argtitle;
-		text = argstring;
+		this.text = argstring;
 		isEdited = argisEdited;
 	}
 
-	initText {|string| text = string }
+	initFromIDE {|id, argtitle, argstring, argisEdited|
+		quuid = id;
+		title = argtitle;
+		this.prSetTextMirror(id, argstring, 0, -1);
+		isEdited = argisEdited;
+	}
 
 	updateText {|index, numCharsRemoved, addedChars|
-		addedChars = String.fill(addedChars.size, {|i| addedChars[i].asAscii});
-		text = text.keep(index) ++ addedChars ++ text.drop(index + numCharsRemoved);
+		/*addedChars = String.fill(addedChars.size, {|i| addedChars[i].asAscii});
+		text = text.keep(index) ++ addedChars ++ text.drop(index + numCharsRemoved);*/
 		textChangedAction.value(this, index, numCharsRemoved, addedChars);
 	}
 
@@ -451,27 +456,44 @@ ScIDEDocument : Document {
 
 	prclose { ScIDE.close(quuid); }
 
-	// asynchronous get
+/*	// asynchronous get
 	// range -1 means to the end of the Document
 	getText {|action, start = 0, range -1|
 		var funcID;
 		funcID = ScIDE.getQUuid; // a unique id for this function
 		asyncActions[funcID] = action; // pass the text
 		ScIDE.getTextByQUuid(quuid, funcID, start, range);
+	}*/
+
+	getText {|action, start = 0, range -1|
+		^prGetTextFromMirror(quuid, start, range);
+	}
+
+	prGetTextFromMirror {|id, start=0, range = -1|
+		_ScIDE_GetDocTextMirror
 	}
 
 	// asynchronous set
 	prSetText {|text, action, start = 0, range -1|
 		var funcID;
+		// first set the back end mirror
+		this.prSetTextMirror(quuid, text, start, range);
 		funcID = ScIDE.getQUuid; // a unique id for this function
 		asyncActions[funcID] = action; // pass the text
+		// set the SCIDE Document
 		ScIDE.setTextByQUuid(quuid, funcID, text, start, range);
 	}
 
+	// set the backend mirror
+	prSetTextMirror {|quuid, text, start, range|
+		_ScIDE_SetDocTextMirror
+	}
+
 	text_ {|string|
-		text = string;
 		this.prSetText(text);
 	}
+
+	text { ^this.prGetTextFromMirror(quuid, 0, -1); }
 
 	rangeText { | rangestart=0, rangesize=1 |
 		^text.copy(rangestart, rangestart + rangesize);
