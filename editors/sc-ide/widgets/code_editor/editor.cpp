@@ -55,9 +55,7 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
 {
     Q_ASSERT(mDoc != 0);
 
-    setLineWidth(1);
-    setFrameShape(QFrame::Box);
-    setFrameShadow(QFrame::Raised);
+    setFrameShape(QFrame::NoFrame);
 
     viewport()->setAttribute( Qt::WA_MacNoClickThrough, true );
 
@@ -712,20 +710,6 @@ void GenericCodeEditor::wheelEvent( QWheelEvent * e )
 
     QPlainTextEdit::wheelEvent(e);
 #endif
-}
-    
-void GenericCodeEditor::focusInEvent( QFocusEvent * e )
-{
-    setFrameShadow(QFrame::Sunken);
-    setFrameShape(QFrame::Box);
-    QPlainTextEdit::focusInEvent(e);
-}
-    
-void GenericCodeEditor::focusOutEvent( QFocusEvent * e )
-{
-    setFrameShape(QFrame::Box);
-    setFrameShadow(QFrame::Raised);
-    QPlainTextEdit::focusOutEvent(e);
 }
 
 void GenericCodeEditor::dragEnterEvent( QDragEnterEvent * event )

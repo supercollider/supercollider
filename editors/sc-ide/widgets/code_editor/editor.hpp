@@ -63,8 +63,6 @@ protected:
     virtual void mouseReleaseEvent( QMouseEvent * );
     virtual void wheelEvent( QWheelEvent * );
     virtual void dragEnterEvent( QDragEnterEvent * );
-    virtual void focusInEvent( QFocusEvent * );
-    virtual void focusOutEvent( QFocusEvent * );
     void hideMouseCursor(QKeyEvent *);
     virtual QMimeData *createMimeDataFromSelection() const;
 
