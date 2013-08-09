@@ -935,12 +935,6 @@ void GenericCodeEditor::paintEvent( QPaintEvent *event )
     }
 
     QPlainTextEdit::paintEvent(event);
-    
-    if (!hasFocus()) {
-        QRect r( viewport()->rect() );
-        QPainter p( viewport() );
-        p.fillRect(r, QColor(128,128,128,40));
-    }
 }
 
 void GenericCodeEditor::copyUpDown(bool up)
