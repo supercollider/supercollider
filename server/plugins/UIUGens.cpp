@@ -424,6 +424,7 @@ PluginLoad(UIUGens)
 
 	thread thread( gstate_update_func );
 	uiListenThread = thread_namespace::move(thread);
+	uiListenThread.detach();
 
 	DefineSimpleUnit(KeyState);
 
