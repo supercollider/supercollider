@@ -52,10 +52,16 @@ void OverlayAnimator::setBackgroundColor( const QColor & color )
 void OverlayAnimator::setActiveAppearance( bool active )
 {
     QColor color = mEditor->palette().color(QPalette::Base);
+    if(color.lightness() >= 128)
+        color = color.darker(30);
+    else
+        color = color.lighter(40);
+    
     if (active)
         color.setAlpha(0);
     else
-        color.setAlpha(120);
+        color.setAlpha(64);
+
 
     mBackgroundAnimation.stop();
 
