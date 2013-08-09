@@ -20,6 +20,7 @@
 
 #include "editor.hpp"
 #include "line_indicator.hpp"
+#include "overlay.hpp"
 #include "../util/gui_utilities.hpp"
 #include "../../core/main.hpp"
 #include "../../core/doc_manager.hpp"
@@ -63,16 +64,20 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
 
     mOverlay = new QGraphicsScene(this);
 
+    QPalette overlayPalette;
+    overlayPalette.setBrush(QPalette::Base, Qt::NoBrush);
+
     QGraphicsView *overlayView = new QGraphicsView(mOverlay, this);
     overlayView->setFrameShape( QFrame::NoFrame );
-    overlayView->setBackgroundBrush( Qt::NoBrush );
-    overlayView->setStyleSheet("background: transparent");
+    overlayView->setPalette(overlayPalette);
     overlayView->setFocusPolicy( Qt::NoFocus );
     overlayView->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     overlayView->setSceneRect(QRectF(0,0,1,1));
     overlayView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
     mOverlayWidget = overlayView;
+
+    mOverlayAnimator = new OverlayAnimator(this, mOverlay);
 
     connect( mDoc, SIGNAL(defaultFontChanged()), this, SLOT(onDocumentFontChanged()) );
 
@@ -1136,6 +1141,11 @@ void GenericCodeEditor::hideMouseCursor()
     QCursor * overrideCursor = QApplication::overrideCursor();
     if (!overrideCursor || overrideCursor->shape() != Qt::BlankCursor)
         QApplication::setOverrideCursor( Qt::BlankCursor );
+}
+
+void GenericCodeEditor::setActiveAppearance(bool active)
+{
+    mOverlayAnimator->setActiveAppearance(active);
 }
 
 QMimeData *GenericCodeEditor::createMimeDataFromSelection() const

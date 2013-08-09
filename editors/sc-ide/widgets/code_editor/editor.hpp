@@ -30,12 +30,14 @@ namespace ScIDE {
 namespace Settings { class Manager; }
 
 class Document;
+class OverlayAnimator;
 
 class GenericCodeEditor : public QPlainTextEdit
 {
     Q_OBJECT
 
     friend class LineIndicator;
+    friend class OverlayAnimator;
 
 public:
     GenericCodeEditor (Document *, QWidget * parent = NULL);
@@ -80,6 +82,7 @@ public slots:
     void moveLineDown();
     void gotoPreviousEmptyLine();
     void gotoNextEmptyLine();
+    void setActiveAppearance(bool active);
 
 protected slots:
     void updateLayout();
@@ -106,6 +109,7 @@ protected:
     class LineIndicator *mLineIndicator;
     QGraphicsScene *mOverlay;
     QWidget *mOverlayWidget;
+    OverlayAnimator *mOverlayAnimator;
 
     Document *mDoc;
 
