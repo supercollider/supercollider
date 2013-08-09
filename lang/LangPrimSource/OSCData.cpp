@@ -290,13 +290,25 @@ static int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sen
 		// send TCP
 		ip::tcp::socket & socket = comPort->Socket();
 
+		boost::system::error_code errc;
+
 		if (sendMsgLen) {
 			// send length of message in network byte-order
 			int32 sizebuf = sc_htonl(msglen);
-			write( socket, buffer(&sizebuf, sizeof(int32)) );
+			write( socket, buffer(&sizebuf, sizeof(int32)), errc );
 		}
 
-		write( socket, buffer(bufptr, msglen) );
+		if (!errc)
+			write( socket, buffer(bufptr, msglen), errc );
+
+		if (errc)
+		{
+			::error("Error in netAddrSend: %s\n", errc.message().c_str());
+			return errFailed;
+		}
+
+		return errNone;
+
 	} else {
 		if (gUDPport == 0) return errFailed;
 
