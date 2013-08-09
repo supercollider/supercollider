@@ -335,6 +335,9 @@ private:
 							  size_t bytes_transferred)
 	{
 		if (error) {
+			if (error == boost::asio::error::eof)
+				return; // connection closed
+
 			printf("handleLengthReceived: error %s", error.message().c_str());
 			return;
 		}
@@ -355,8 +358,11 @@ private:
 						   size_t bytes_transferred)
 	{
 		if (error) {
-			printf("handleMsgReceived: error %s", error.message().c_str());
 			free(data);
+			if (error == boost::asio::error::eof)
+				return; // connection closed
+
+			printf("handleMsgReceived: error %s", error.message().c_str());
 			return;
 		}
 
@@ -426,12 +432,19 @@ public:
 			newConnection->start();
 		startAccept();
 	}
+
+	void connectionDestroyed()
+	{
+		if (!mWorld->mRunning)
+			return;
+		mAvailableConnections += 1;
+		startAccept();
+	}
 };
 
 SC_TcpConnection::~SC_TcpConnection()
 {
-	mParent->mAvailableConnections += 1;
-	mParent->startAccept();
+	mParent->connectionDestroyed();
 }
 
 
