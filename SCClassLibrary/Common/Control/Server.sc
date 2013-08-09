@@ -757,7 +757,9 @@ Server {
 			if(notified) {
 				serverReallyQuitWatcher = OSCFunc({ |msg|
 					if(msg[1] == '/quit') {
-						statusWatcher.enable;
+						if (statusWatcher.notNil) {
+							statusWatcher.enable;
+						};
 						serverReallyQuit = true;
 						serverReallyQuitWatcher.free;
 					};
