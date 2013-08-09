@@ -300,10 +300,10 @@ static int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sen
 	} else {
 		if (gUDPport == 0) return errFailed;
 
-		int err, port, addr;
 
 		// send UDP
-		err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
+		int addr;
+		int err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
 		if (err) return err;
 
 		if (addr == 0) {
@@ -315,11 +315,14 @@ static int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sen
 			return errNone;
 		}
 
+		int port;
 		err = slotIntVal(netAddrObj->slots + ivxNetAddr_PortID, &port);
 		if (err) return err;
 
+		unsigned long ulAddress = (unsigned int)addr;
+
 		using namespace boost::asio;
-		ip::udp::endpoint address(ip::address_v4(addr), port);
+		ip::udp::endpoint address(ip::address_v4(ulAddress), port);
 
 		gUDPport->Socket().send_to( buffer(bufptr, msglen), address );
 	}
@@ -400,8 +403,6 @@ static int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
 	int error = makeSynthMsgWithTags(&packet, args, numargs);
 	if (error != errNone)
 		return error;
-
-	//for (int i=0; i<packet.size()/4; i++) post("%d %p\n", i, packet.buf[i]);
 
 	return netAddrSend(slotRawObject(netAddrSlot), packet.size(), (char*)packet.buf);
 }
