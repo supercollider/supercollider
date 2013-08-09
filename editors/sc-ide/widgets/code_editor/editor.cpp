@@ -161,6 +161,8 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
     setLineWrapMode( lineWrap ? QPlainTextEdit::WidgetWidth : QPlainTextEdit::NoWrap );
     setShowWhitespace( showWhitespace );
     setPalette(palette);
+    
+    setActiveAppearance(hasFocus());
 }
 
 bool GenericCodeEditor::showWhitespace()
