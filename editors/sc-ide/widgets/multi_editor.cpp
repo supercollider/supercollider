@@ -506,7 +506,7 @@ void MultiEditor::createActions()
 #ifndef Q_OS_MAC
     action->setShortcut( tr("Ctrl+Tab", "Switch Document"));
 #else
-    action->setShortcut( tr("Meta+Tab", "Switch Document"));
+    action->setShortcut( tr("Alt+Tab", "Switch Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(switchDocument()));
     settings->addAction( action, "editor-document-switch", editorCategory);
