@@ -857,20 +857,12 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
     QRect r( e->rect() );
     QPainter p( mLineIndicator );
 
-    if(hasFocus()) {
-        p.fillRect( r, plt.color( QPalette::Midlight ) );
-    } else {
-        p.fillRect( r, plt.color( QPalette::Mid ) );
-    }
-
+    p.fillRect( r, plt.color( QPalette::Mid ) );
     p.setPen( plt.color(QPalette::Dark) );
     p.drawLine( r.topRight(), r.bottomRight() );
 
-    if(hasFocus()) {
-        p.setPen( plt.color(QPalette::ButtonText) );
-    } else {
-        p.setPen( plt.color(QPalette::Midlight) );
-    }
+    p.setPen( plt.color(QPalette::ButtonText) );
+
     QTextDocument *doc = QPlainTextEdit::document();
     QTextCursor cursor(textCursor());
     int selStartBlock, selEndBlock;
@@ -912,6 +904,17 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
         top = bottom;
         bottom = top + blockBoundingRect(block).height();
         ++blockNumber;
+    }
+    
+    if(!hasFocus()) {
+        QColor color = plt.color(QPalette::Mid);
+        if(color.lightness() >= 128)
+            color = color.darker(30);
+        else
+            color = color.lighter(40);
+        
+        color.setAlpha(64);
+        p.fillRect( r, color );
     }
 }
 
