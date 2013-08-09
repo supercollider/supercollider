@@ -818,6 +818,22 @@ static int prGetHostByName(VMGlobals *g, int numArgsPushed)
 	int err = slotStrVal(a, hostname, 255);
 	if (err) return err;
 
+#if 1
+	struct hostent *he = gethostbyname(hostname);
+	if (!he) {
+#ifdef _WIN32
+		int err = WSAGetLastError();
+		error("gethostbyname(\"%s\") failed with error code %i.\n",
+			hostname, err);
+#endif
+		return errFailed;
+	}
+
+	SetInt(a, sc_ntohl(*(int*)he->h_addr));
+
+	return errNone;
+
+#else
 	boost::asio::ip::address address;
 	boost::system::error_code err_c;
 	using boost::asio::ip::udp;
@@ -833,6 +849,7 @@ static int prGetHostByName(VMGlobals *g, int numArgsPushed)
 		SetInt(a, iterator->endpoint().address().to_v4().to_ulong() );
 
 	return errNone;
+#endif
 }
 
 int prGetLangPort(VMGlobals *g, int numArgsPushed);
