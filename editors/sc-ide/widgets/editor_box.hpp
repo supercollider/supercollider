@@ -31,6 +31,24 @@ namespace ScIDE {
 class Document;
 class GenericCodeEditor;
 
+/*
+A CodeEditorBox represents an IDE document split view: it contains a stack
+(history) of documents displayed in that split, and an editor widget for each
+of those documents. Using the document tabs, or the "Switch Document" action
+one is effectively changing which of those editors is displayed, and thus
+reordering the viewing history of the CodeEditorBox (the last displayed always
+moves on top of the stack).
+
+A CodeEditorBox becomes "active" when any of its editors receives focus, but
+it does *not* become inactive when its editors loose focus: it only becomes
+inactive when another EditorBox becomes active. That allows a CodeEditorBox to
+be active even if no editor widget in the IDE has focus.
+
+The purpose of the "active" CodeEditorBox is for the IDE to direct certain
+actions to it: e.g. it is the one where newly created and opened documents will
+be displayed.
+*/
+
 class CodeEditorBox : public QWidget
 {
     Q_OBJECT
