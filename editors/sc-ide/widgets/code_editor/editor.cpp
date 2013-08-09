@@ -38,7 +38,6 @@
 #include <QScrollBar>
 
 #ifdef Q_WS_X11
-# include "hacks/hacks_x11.hpp"
 # include <QX11Info>
 # include <X11/Xlib.h>
 // X11 defines the following, clashing with QEvent::Type enum

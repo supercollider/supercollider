@@ -200,7 +200,9 @@ private:
         assert(input_file);
 
         const size_t frames_per_tick = get_audio_blocksize();
-        sized_array<sample_type, aligned_allocator<sample_type> > data_to_read(input_channels * frames_per_tick, 0.f);
+
+        // something like autobuffer might be good
+        std::vector<sample_type, aligned_allocator<sample_type> > data_to_read(input_channels * frames_per_tick, 0.f);
 
         for (;;) {
             if (unlikely(reader_running.load(std::memory_order_acquire) == false))
@@ -212,14 +214,14 @@ private:
                 if (frames > frames_per_tick)
                     frames = frames_per_tick;
 
-                input_file.readf(data_to_read.c_array(), frames);
+                input_file.readf(data_to_read.data(), frames);
                 read_position += frames;
 
                 const size_t item_to_enqueue = input_channels * frames;
                 size_t remaining = item_to_enqueue;
 
                 do {
-                    remaining -= read_frames.push(data_to_read.c_array(), remaining);
+                    remaining -= read_frames.push(data_to_read.data(), remaining);
                 } while(remaining);
                 read_semaphore.post();
             }

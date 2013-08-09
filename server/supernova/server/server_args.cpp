@@ -60,7 +60,7 @@ server_arguments::server_arguments(int argc, char * argv[])
                                                             "UDP ports never require passwords, so for security use TCP.")
         ("nrt,N", value<vector<string> >()->multitoken(), "nrt synthesis <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>")
         ("memory-locking,L", "enable memory locking")
-        ("hardware-device-name,H", value<vector<string> >(&hw_name), "hardware device name")
+        ("hardware-device-name,H", value<vector<string> >()->multitoken(), "hardware device name")
         ("verbose,v", value<int16_t>(&verbosity)->default_value(0), "verbosity: 0 is normal behaviour\n-1 suppresses informational messages\n"
                                                          "-2 suppresses informational and many error messages")
         ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "a colon-separated list of paths\n"
@@ -100,16 +100,14 @@ server_arguments::server_arguments(int argc, char * argv[])
 
     memory_locking = vm.count("memory-locking");
 
-    if (vm.count("help"))
-    {
-        cout << cmdline_options<< endl;
+    if (vm.count("help")) {
+        cout << cmdline_options << endl;
         std::exit(EXIT_SUCCESS);
     }
 
     non_rt = vm.count("nrt");
 
-    if (non_rt)
-    {
+    if (non_rt) {
         std::vector<std::string> const & nrt_options = vm["nrt"].as<std::vector<std::string> >();
         if (nrt_options.size() != 6)
         {
@@ -124,6 +122,9 @@ server_arguments::server_arguments(int argc, char * argv[])
         header_format = nrt_options[4];
         sample_format = nrt_options[5];
     }
+
+    if (vm.count("hardware-device-name"))
+        hw_name = vm["hardware-device-name"].as<std::vector<std::string> >();
 }
 
 std::unique_ptr<server_arguments> server_arguments::instance_;

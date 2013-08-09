@@ -33,17 +33,16 @@
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
 #include "SCBase.h"
+#include "server_shm.hpp"
+
 #include "SC_ComPort.h"
-#include "SC_WorldOptions.h"
-#include "SC_SndBuf.h"
 #include "SC_Endian.h"
+#include "SC_Lock.h"
+#include "SC_Msg.h"
+#include "SC_SndBuf.h"
+#include "SC_WorldOptions.h"
 
-#include <SC_Lock.h>
-
-#include "../../../common/server_shm.hpp"
-
-#include "../common/SC_Endian.h"
-
+#include <boost/asio.hpp>
 
 struct InternalSynthServerGlobals
 {
@@ -82,10 +81,8 @@ const int ivxNetAddr_PortID = 1;
 const int ivxNetAddr_Hostname = 2;
 const int ivxNetAddr_Socket = 3;
 
-void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port);
-int sendallto(int socket, const char *msg, size_t len, struct sockaddr *toaddr, int addrlen);
-int sendall(int socket, const char *msg, size_t len);
 static int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size);
+
 int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
 
 static int addMsgSlot(big_scpacket *packet, PyrSlot *slot)
@@ -234,14 +231,13 @@ static int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size)
 
 void PerformOSCBundle(int inSize, char *inData, PyrObject *inReply, int inPortNum);
 void PerformOSCMessage(int inSize, char *inData, PyrObject *inReply, int inPortNum);
-PyrObject* ConvertReplyAddress(ReplyAddress *inReply);
+static PyrObject* ConvertReplyAddress(ReplyAddress *inReply);
 
-void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize);
-void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
+static void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
 {
-    bool isBundle = IsBundle(inBuf);
+	bool isBundle = IsBundle(inBuf);
 
-    gLangMutex.lock();
+	gLangMutex.lock();
 	if (compiledOK) {
 		PyrObject *replyObj = ConvertReplyAddress(inReplyAddr);
 		if (isBundle) {
@@ -250,7 +246,7 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 			PerformOSCMessage(inSize, inBuf, replyObj, gUDPport->RealPortNum());
 		}
 	}
-    gLangMutex.unlock();
+	gLangMutex.unlock();
 
 }
 
@@ -284,27 +280,27 @@ int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElap
 	return errNone;
 }
 
-int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen=true);
-int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen)
+static int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen = true)
 {
-	int err, port, addr;
+	using namespace boost::asio;
 
 	if (IsPtr(netAddrObj->slots + ivxNetAddr_Socket)) {
 		SC_TcpClientPort* comPort = (SC_TcpClientPort*)slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket);
 
 		// send TCP
-		int tcpSocket = comPort->Socket();
+		ip::tcp::socket & socket = comPort->Socket();
 
 		if (sendMsgLen) {
 			// send length of message in network byte-order
 			int32 sizebuf = sc_htonl(msglen);
-			sendall(tcpSocket, (char*)&sizebuf, sizeof(int32));
+			write( socket, buffer(&sizebuf, sizeof(int32)) );
 		}
 
-		sendall(tcpSocket, bufptr, msglen);
-
+		write( socket, buffer(bufptr, msglen) );
 	} else {
 		if (gUDPport == 0) return errFailed;
+
+		int err, port, addr;
 
 		// send UDP
 		err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
@@ -322,10 +318,10 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 		err = slotIntVal(netAddrObj->slots + ivxNetAddr_PortID, &port);
 		if (err) return err;
 
-		struct sockaddr_in toaddr;
-		makeSockAddr(toaddr, addr, port);
+		using namespace boost::asio;
+		ip::udp::endpoint address(ip::address_v4(addr), port);
 
-		sendallto(gUDPport->Socket(), bufptr, msglen, (sockaddr*)&toaddr, sizeof(toaddr));
+		gUDPport->Socket().send_to( buffer(bufptr, msglen), address );
 	}
 
 	return errNone;
@@ -342,8 +338,7 @@ inline size_t OSCStrLen(char *str)
 
 int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
 
-static void netAddrTcpClientNotifyFunc(void *clientData);
-void netAddrTcpClientNotifyFunc(void *clientData)
+static void netAddrTcpClientNotifyFunc(void *clientData)
 {
 	extern bool compiledOK;
 
@@ -375,7 +370,8 @@ static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 	try {
 		SC_TcpClientPort *comPort = new SC_TcpClientPort(addr, port, netAddrTcpClientNotifyFunc, netAddrObj);
 		SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
-	} catch (std::exception const & ) {
+	} catch (std::exception const & e) {
+		scprintf("NetAddr-Connect failed with exception: %s\n", e.what());
 		return errFailed;
 	}
 
@@ -394,8 +390,7 @@ static int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
 }
 
 
-int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed);
-int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* netAddrSlot = g->sp - numArgsPushed + 1;
 	PyrSlot* args = netAddrSlot + 1;
@@ -412,8 +407,7 @@ int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
 }
 
 
-int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed);
-int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* netAddrSlot = g->sp - numArgsPushed + 1;
 	PyrSlot* args = netAddrSlot + 1;
@@ -433,8 +427,7 @@ int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
 	return netAddrSend(slotRawObject(netAddrSlot), packet.size(), (char*)packet.buf);
 }
 
-int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed);
-int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* netAddrSlot = g->sp - 1;
 	PyrSlot* arraySlot = g->sp;
@@ -483,8 +476,7 @@ static int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed);
-int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* args = g->sp;
 	big_scpacket packet;
@@ -495,8 +487,7 @@ int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed);
-int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* args = g->sp;
 	big_scpacket packet;
@@ -511,9 +502,7 @@ int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int prNetAddr_UseDoubles(VMGlobals *g, int numArgsPushed);
-int prNetAddr_UseDoubles(VMGlobals *g, int numArgsPushed)
+static int prNetAddr_UseDoubles(VMGlobals *g, int numArgsPushed)
 {
 	//PyrSlot* netAddrSlot = g->sp - 1;
 	PyrSlot* flag = g->sp;
@@ -523,8 +512,7 @@ int prNetAddr_UseDoubles(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArray_OSCBytes(VMGlobals *g, int numArgsPushed);
-int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
+static int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* a = g->sp;
 	PyrObject *array = slotRawObject(a);
@@ -569,7 +557,7 @@ static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg )
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
-PyrObject* ConvertOSCMessage(int inSize, char *inData)
+static PyrObject* ConvertOSCMessage(int inSize, char *inData)
 {
 	char *cmdName = inData;
 	int cmdNameLen = OSCstrlen(cmdName);
@@ -649,13 +637,13 @@ PyrObject* ConvertOSCMessage(int inSize, char *inData)
 	return obj;
 }
 
-PyrObject* ConvertReplyAddress(ReplyAddress *inReply)
+static PyrObject* ConvertReplyAddress(ReplyAddress *inReply)
 {
 	VMGlobals *g = gMainVMGlobals;
 	PyrObject *obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
 	PyrSlot *slots = obj->slots;
-	SetInt(slots+0, sc_ntohl(inReply->mSockAddr.sin_addr.s_addr));
-	SetInt(slots+1, sc_ntohs(inReply->mSockAddr.sin_port));
+	SetInt(slots+0, inReply->mAddress.to_v4().to_ulong());
+	SetInt(slots+1, sc_ntohs(inReply->mPort));
 	return obj;
 }
 
@@ -807,8 +795,9 @@ void cleanup_OSC()
 #endif
 }
 
-int prGetHostByName(VMGlobals *g, int numArgsPushed);
-int prGetHostByName(VMGlobals *g, int numArgsPushed)
+extern boost::asio::io_service ioService;
+
+static int prGetHostByName(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	char hostname[256];
@@ -816,17 +805,19 @@ int prGetHostByName(VMGlobals *g, int numArgsPushed)
 	int err = slotStrVal(a, hostname, 255);
 	if (err) return err;
 
-	struct hostent *he = gethostbyname(hostname);
-	if (!he) {
-#ifdef _WIN32
-		int err = WSAGetLastError();
-		error("gethostbyname(\"%s\") failed with error code %i.\n",
-			hostname, err);
-#endif
-		return errFailed;
-	}
+	boost::asio::ip::address address;
+	boost::system::error_code err_c;
+	using boost::asio::ip::udp;
 
-	SetInt(a, sc_ntohl(*(int*)he->h_addr));
+	udp::resolver resolver(ioService);
+	udp::resolver::query query(hostname, "");
+	udp::resolver::iterator iterator = resolver.resolve(query, err_c);
+
+	if (err_c) {
+		error("cmp::resolver::query: %s\n", err_c.message().c_str());
+		return errFailed;
+	} else
+		SetInt(a, iterator->endpoint().address().to_v4().to_ulong() );
 
 	return errNone;
 }

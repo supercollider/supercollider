@@ -27,14 +27,6 @@
 #include <cstring>
 #include <string>
 
-struct netaddr {
-	int socket;
-	int addr;
-	int port;
-};
-typedef struct netaddr netaddr;
-
-
 template <int MaxPacketSize = 8192>
 struct scpacket {
 	static const int kBufSize = MaxPacketSize / sizeof(int32); // round down
