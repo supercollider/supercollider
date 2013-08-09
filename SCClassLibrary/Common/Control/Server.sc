@@ -772,6 +772,7 @@ Server {
 			};
 		};
 		addr.sendMsg("/quit");
+		this.stopAliveThread;
 		if (inProcess, {
 			this.quitInProcess;
 			"quit done\n".inform;
