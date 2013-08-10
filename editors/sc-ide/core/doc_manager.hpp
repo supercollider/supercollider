@@ -55,7 +55,6 @@ public:
     const QByteArray & id() { return mId; }
     const QString & filePath() { return mFilePath; }
     const QString & title() { return mTitle; }
-    void setTitle(const QString & title) { mTitle = title; }
 
     QFont defaultFont() const { return mDoc->defaultFont(); }
     void setDefaultFont( const QFont & font );
@@ -106,17 +105,13 @@ public:
     }
 
     void create();
-    void create(const QByteArray & id,
-                const QString & title = QString(),
-                const QString & text = QString());
     void close( Document * );
     bool save( Document * );
     bool saveAs( Document *, const QString & path );
     bool reload( Document * );
     const QStringList & recents() const { return mRecent; }
-    Document * getDocByID(const QByteArray docID);
+    Document * documentForId(const QByteArray id);
     void showDocument(Document * doc) { Q_EMIT( showRequest(doc, 0, -1) ); }
-    void changeDocumentTitle(Document * doc, const QString &);
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
