@@ -35,32 +35,19 @@
 
 using namespace ScIDE;
 
-Document::Document( bool isPlainText ):
-    mId( QUuid::createUuid().toString().toLatin1() ),
-    mDoc( new QTextDocument(this) ),
-    mTitle( tr("Untitled") ),
+Document::Document(bool isPlainText, const QByteArray & id,
+                    const QString & title, const QString & text ):
+    mId(id),
+    mDoc(new QTextDocument(text, this)),
+    mTitle(title),
     mIndentWidth(4),
-    mHighlighter(NULL)
+    mHighlighter(0)
 {
-    mDoc->setDocumentLayout( new QPlainTextDocumentLayout(mDoc) );
+    if (mId.isEmpty())
+        mId = QUuid::createUuid().toString().toLatin1();
+    if (mTitle.isEmpty())
+        mTitle = tr("Untitled");
 
-    if (!isPlainText)
-        mHighlighter = new SyntaxHighlighter(mDoc);
-
-    connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
-             this, SLOT(applySettings(Settings::Manager*)) );
-
-    applySettings( Main::settings() );
-}
-
-// alternate constructor for lang created Doc
-Document::Document( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string ):
-    mIndentWidth(4),
-    mHighlighter(NULL)
-{
-    mDoc = new QTextDocument(string, this);
-    mId = quuid;
-    mTitle = title;
     mDoc->setDocumentLayout( new QPlainTextDocumentLayout(mDoc) );
 
     if (!isPlainText)
@@ -179,32 +166,26 @@ DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
     loadRecentDocuments( settings );
 }
 
-Document * DocumentManager::createDocument( bool isPlainText )
+Document * DocumentManager::createDocument(bool isPlainText, const QByteArray & id,
+                                           const QString & title, const QString & text  )
 {
-    Document *doc = new Document( isPlainText );
-    mDocHash.insert( doc->id(), doc );
-    return doc;
-}
-
-// alternate method for lang created Doc
-Document * DocumentManager::createDocument( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string  )
-{
-    Document *doc = new Document( isPlainText, quuid, title, string );
+    Document *doc = new Document( isPlainText, id, title, text );
     mDocHash.insert( doc->id(), doc );
     return doc;
 }
 
 void DocumentManager::create()
 {
-    Document *doc = createDocument( false );
+    Document *doc = createDocument();
 
     Q_EMIT( opened(doc, 0, 0) );
 }
 
 // alternate method for lang created Doc
-void DocumentManager::create(const QByteArray & quuid, const QString & title, const QString & string)
+void DocumentManager::create(const QByteArray & id,
+                             const QString & title, const QString & text)
 {
-    Document *doc = createDocument( false, quuid, title, string );
+    Document *doc = createDocument( false, id, title, text );
     
     Q_EMIT( opened(doc, 0, 0) );
 }

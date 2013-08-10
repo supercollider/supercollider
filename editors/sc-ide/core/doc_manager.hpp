@@ -47,8 +47,9 @@ class Document : public QObject
     friend class DocumentManager;
 
 public:
-    Document( bool isPlainText );
-    Document( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string );
+    Document( bool isPlainText, const QByteArray & id = QByteArray(),
+              const QString & title = QString(),
+              const QString & text = QString() );
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
@@ -105,7 +106,9 @@ public:
     }
 
     void create();
-    void create(const QByteArray & quuid, const QString & title, const QString & string);
+    void create(const QByteArray & id,
+                const QString & title = QString(),
+                const QString & text = QString());
     void close( Document * );
     bool save( Document * );
     bool saveAs( Document *, const QString & path );
@@ -134,8 +137,10 @@ private slots:
     void onFileChanged( const QString & path );
 
 private:
-    Document * createDocument( bool isPlainText );
-    Document * createDocument( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string  );
+    Document * createDocument( bool isPlainText = false,
+                               const QByteArray & id = QByteArray(),
+                               const QString & title = QString(),
+                               const QString & text = QString()  );
     bool doSaveAs( Document *, const QString & path );
     void addToRecent( Document * );
     void loadRecentDocuments( Settings::Manager * );
