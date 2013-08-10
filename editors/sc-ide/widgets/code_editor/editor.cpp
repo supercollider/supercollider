@@ -910,9 +910,9 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
     if(!mEditorBoxIsActive) {
         QColor color = plt.color(QPalette::Mid);
         if(color.lightness() >= 128)
-            color = color.darker(30);
+            color = color.darker(60);
         else
-            color = color.lighter(40);
+            color = color.lighter(50);
         
         color.setAlpha(64);
         p.fillRect( r, color );

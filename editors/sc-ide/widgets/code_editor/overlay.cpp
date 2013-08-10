@@ -53,9 +53,9 @@ void OverlayAnimator::setActiveAppearance( bool active )
 {
     QColor color = mEditor->palette().color(QPalette::Base);
     if(color.lightness() >= 128)
-        color = color.darker(30);
+        color = color.darker(60);
     else
-        color = color.lighter(40);
+        color = color.lighter(50);
     
     if (active)
         color.setAlpha(0);
