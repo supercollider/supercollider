@@ -114,6 +114,7 @@ protected:
     Document *mDoc;
 
     bool mHighlightCurrentLine;
+    bool mEditorBoxIsActive;
     int mLastCursorBlock;
     QTextCharFormat mCurrentLineTextFormat;
 

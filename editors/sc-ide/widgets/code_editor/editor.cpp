@@ -51,6 +51,7 @@ namespace ScIDE {
 GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
     QPlainTextEdit( parent ),
     mDoc(doc),
+    mEditorBoxIsActive(false),
     mLastCursorBlock(-1)
 {
     Q_ASSERT(mDoc != 0);
@@ -906,7 +907,7 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
         ++blockNumber;
     }
     
-    if(!hasFocus()) {
+    if(!mEditorBoxIsActive) {
         QColor color = plt.color(QPalette::Mid);
         if(color.lightness() >= 128)
             color = color.darker(30);
@@ -1151,6 +1152,7 @@ void GenericCodeEditor::hideMouseCursor()
 void GenericCodeEditor::setActiveAppearance(bool active)
 {
     mOverlayAnimator->setActiveAppearance(active);
+    mEditorBoxIsActive = active;
 }
 
 QMimeData *GenericCodeEditor::createMimeDataFromSelection() const
