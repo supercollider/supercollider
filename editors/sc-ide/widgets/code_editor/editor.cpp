@@ -113,6 +113,7 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
 
     bool lineWrap = settings->value("lineWrap").toBool();
     bool showWhitespace = settings->value("showWhitespace").toBool();
+    mInactiveFadeAlpha = settings->value("inactiveEditorFadeAlpha").toInt();
 
     QPalette palette;
 
@@ -930,7 +931,7 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
         else
             color = color.lighter(50);
         
-        color.setAlpha(64);
+        color.setAlpha(inactiveFadeAlpha());
         p.fillRect( r, color );
     }
 }

@@ -54,6 +54,7 @@ public:
 
     void showPosition( int charPosition, int selectionLength = 0 );
     QString symbolUnderCursor();
+    int inactiveFadeAlpha() { return mInactiveFadeAlpha; }
 
 protected:
     virtual bool event( QEvent * );
@@ -125,6 +126,8 @@ protected:
     QList<QTextEdit::ExtraSelection> mSearchSelections;
     
     QGraphicsRectItem *mFocusRect = 0;
+    
+    int mInactiveFadeAlpha = 0;
 };
 
 } // namespace ScIDE

@@ -60,8 +60,7 @@ void OverlayAnimator::setActiveAppearance( bool active )
     if (active)
         color.setAlpha(0);
     else
-        color.setAlpha(64);
-
+        color.setAlpha(mEditor->inactiveFadeAlpha());
 
     mBackgroundAnimation.stop();
 
