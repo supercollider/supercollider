@@ -220,8 +220,6 @@ Main::Main(void) :
             this, SLOT(onScLangResponse(QString,QString)));
     connect(mScProcess, SIGNAL(response(QString,QString)),
             mDocManager, SLOT(handleScLangMessage(QString,QString)));
-    connect(mDocManager, SIGNAL(closed(Document*)), this, SLOT(onClose(Document*)));
-    connect(mDocManager, SIGNAL(opened(Document*, int, int)), this, SLOT(onOpen(Document*, int, int)));
 
     qApp->installEventFilter(this);
 }
@@ -297,18 +295,6 @@ void Main::findReferences(const QString &string, QWidget * parent)
     if (!definitionString.isEmpty())
         dialog.query(definitionString);
     dialog.exec();
-}
-
-void Main::onOpen(Document* doc, int cursorPosition, int selectionLength)
-{
-    QString command = QString("ScIDEDocument.syncFromIDE(\'%1\', \'%2\', %3, %4)").arg(doc->id().constData()).arg(doc->title()).arg(doc->textAsSCArrayOfCharCodes(0, -1)).arg(doc->isModified());
-    mScProcess->evaluateCode ( command, true );
-}
-
-void Main::onClose(Document* doc)
-{
-    QString command = QString("ScIDEDocument.findByQUuid(\'%1\').closed").arg(doc->id().constData());
-    mScProcess->evaluateCode ( command, true );
 }
 
 void Main::onScLangResponse( const QString & selector, const QString & data )

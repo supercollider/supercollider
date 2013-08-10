@@ -181,6 +181,7 @@ void DocumentManager::create()
 {
     Document *doc = createDocument();
 
+    syncLangDocument(doc);
     Q_EMIT( opened(doc, 0, 0) );
 }
 
@@ -244,6 +245,7 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     if (!isRTF)
         mFsWatcher.addPath(cpath);
 
+    syncLangDocument(doc);
     Q_EMIT( opened(doc, initialCursorPosition, selectionLength) );
 
     if (toRecent) this->addToRecent(doc);
@@ -308,6 +310,12 @@ void DocumentManager::close( Document *doc )
         mFsWatcher.removePath(doc->mFilePath);
 
     Q_EMIT( closed(doc) );
+
+    QString command =
+            QString("ScIDEDocument.findByQUuid(\'%1\').closed")
+            .arg(doc->id().constData());
+    Main::scProcess()->evaluateCode ( command, true );
+
     delete doc;
 }
 
@@ -521,6 +529,7 @@ void DocumentManager::handleNewDocScRequest( const QString & data )
         Document *document = createDocument( false, id.c_str(),
                                              QString::fromUtf8(title.c_str()),
                                              QString::fromUtf8(text.c_str()) );
+        syncLangDocument(document);
         Q_EMIT( opened(document, 0, 0) );
     }
 }
@@ -690,4 +699,15 @@ void DocumentManager::handleSetDocTitleScRequest( const QString & data )
 
     }
 
+}
+
+void DocumentManager::syncLangDocument(Document *doc)
+{
+    QString command =
+            QString("ScIDEDocument.syncFromIDE(\'%1\', \'%2\', %3, %4)")
+            .arg(doc->id().constData())
+            .arg(doc->title())
+            .arg(doc->textAsSCArrayOfCharCodes(0, -1))
+            .arg(doc->isModified());
+    Main::scProcess()->evaluateCode ( command, true );
 }

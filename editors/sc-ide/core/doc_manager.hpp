@@ -148,6 +148,7 @@ private:
     void handleSetCurrentDocScRequest( const QString & data );
     void handleCloseDocScRequest( const QString & data );
     void handleSetDocTitleScRequest( const QString & data );
+    void syncLangDocument( Document * );
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
 
