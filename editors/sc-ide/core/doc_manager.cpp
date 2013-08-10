@@ -494,8 +494,8 @@ void DocumentManager::handleDocListScRequest()
 
 void DocumentManager::handleNewDocScRequest( const QString & data )
 {
-    std::stringstream stream;
-    stream << data.toStdString();
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
     YAML::Parser parser(stream);
 
     YAML::Node doc;
@@ -536,8 +536,8 @@ void DocumentManager::handleGetDocTextScRequest( const QString & data )
         if (doc.Type() != YAML::NodeType::Sequence)
             return;
 
-        std::string quuid;
-        bool success = doc[0].Read(quuid);
+        std::string id;
+        bool success = doc[0].Read(id);
         if (!success)
             return;
 
@@ -556,13 +556,11 @@ void DocumentManager::handleGetDocTextScRequest( const QString & data )
         if (!success)
             return;
 
-        QByteArray docID = QByteArray(quuid.c_str());
-
-        Document *document = documentForId(docID);
+        Document *document = documentForId(id.c_str());
         if(document){
             QString docText = document->textAsSCArrayOfCharCodes(start, range);
 
-            QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\', %2.asAscii)").arg(QString(funcID.c_str()), docText);
+            QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\', %2.asAscii)").arg(funcID.c_str(), docText);
             Main::scProcess()->evaluateCode ( command, true );
         }
 
@@ -571,8 +569,8 @@ void DocumentManager::handleGetDocTextScRequest( const QString & data )
 
 void DocumentManager::handleSetDocTextScRequest( const QString & data )
 {
-    std::stringstream stream;
-    stream << data.toStdString();
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
     YAML::Parser parser(stream);
 
     YAML::Node doc;
@@ -580,8 +578,8 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
         if (doc.Type() != YAML::NodeType::Sequence)
             return;
 
-        std::string quuid;
-        bool success = doc[0].Read(quuid);
+        std::string id;
+        bool success = doc[0].Read(id);
         if (!success)
             return;
 
@@ -605,13 +603,11 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
         if (!success)
             return;
 
-        QByteArray docID = QByteArray(quuid.c_str());
-
-        Document *document = documentForId(docID);
+        Document *document = documentForId(id.c_str());
         if(document){
-            document->setTextInRange(QString(text.c_str()), start, range);
+            document->setTextInRange(QString::fromUtf8(text.c_str()), start, range);
 
-            QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\')").arg(QString(funcID.c_str()));
+            QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\')").arg(funcID.c_str());
             Main::scProcess()->evaluateCode ( command, true );
         }
 
@@ -629,14 +625,12 @@ void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
         if (doc.Type() != YAML::NodeType::Sequence)
             return;
 
-        std::string quuid;
-        bool success = doc[0].Read(quuid);
+        std::string id;
+        bool success = doc[0].Read(id);
         if (!success)
             return;
 
-        QByteArray docID = QByteArray(quuid.c_str());
-
-        Document *document = documentForId(docID);
+        Document *document = documentForId(id.c_str());
         if(document){
             showDocument(document);
         }
@@ -655,14 +649,12 @@ void DocumentManager::handleCloseDocScRequest( const QString & data )
         if (doc.Type() != YAML::NodeType::Sequence)
             return;
 
-        std::string quuid;
-        bool success = doc[0].Read(quuid);
+        std::string id;
+        bool success = doc[0].Read(id);
         if (!success)
             return;
 
-        QByteArray docID = QByteArray(quuid.c_str());
-
-        Document *document = documentForId(docID);
+        Document *document = documentForId(id.c_str());
         if(document){
             close(document);
         }
@@ -671,8 +663,8 @@ void DocumentManager::handleCloseDocScRequest( const QString & data )
 
 void DocumentManager::handleSetDocTitleScRequest( const QString & data )
 {
-    std::stringstream stream;
-    stream << data.toStdString();
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
     YAML::Parser parser(stream);
 
     YAML::Node doc;
@@ -680,8 +672,8 @@ void DocumentManager::handleSetDocTitleScRequest( const QString & data )
         if (doc.Type() != YAML::NodeType::Sequence)
             return;
 
-        std::string quuid;
-        bool success = doc[0].Read(quuid);
+        std::string id;
+        bool success = doc[0].Read(id);
         if (!success)
             return;
 
@@ -690,12 +682,10 @@ void DocumentManager::handleSetDocTitleScRequest( const QString & data )
         if (!success)
             return;
 
-        QByteArray docID = QByteArray(quuid.c_str());
-
-        Document *document = documentForId(docID);
+        Document *document = documentForId(id.c_str());
         if(document)
         {
-            document->mTitle = QString(title.c_str());
+            document->mTitle = QString::fromUtf8(title.c_str());
             Q_EMIT(titleChanged(document));
         }
 
