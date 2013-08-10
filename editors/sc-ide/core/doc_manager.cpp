@@ -184,15 +184,6 @@ void DocumentManager::create()
     Q_EMIT( opened(doc, 0, 0) );
 }
 
-// alternate method for lang created Doc
-void DocumentManager::create(const QByteArray & id,
-                             const QString & title, const QString & text)
-{
-    Document *doc = createDocument( false, id, title, text );
-    
-    Q_EMIT( opened(doc, 0, 0) );
-}
-
 Document *DocumentManager::open( const QString & path, int initialCursorPosition, int selectionLength, bool toRecent )
 {
     QFileInfo info(path);
@@ -289,17 +280,11 @@ bool DocumentManager::reload( Document *doc )
     return true;
 }
 
-Document * DocumentManager::getDocByID(const QByteArray docID)
+Document * DocumentManager::documentForId(const QByteArray docID)
 {
     Document * doc = mDocHash[docID];
     if(!doc) MainWindow::instance()->showStatusMessage(QString("Lookup failed for Document %1").arg(docID.constData()));
     return doc;
-}
-
-void DocumentManager::changeDocumentTitle(Document * doc, const QString & title)
-{
-    doc->setTitle(title);
-    Q_EMIT(titleChanged(doc));
 }
 
 QString DocumentManager::decodeDocument(const QByteArray & bytes)
@@ -523,17 +508,20 @@ void DocumentManager::handleNewDocScRequest( const QString & data )
         if (!success)
             return;
 
-        std::string initString;
-        success = doc[1].Read(initString);
+        std::string text;
+        success = doc[1].Read(text);
         if (!success)
             return;
 
-        std::string quuid;
-        success = doc[2].Read(quuid);
+        std::string id;
+        success = doc[2].Read(id);
         if (!success)
             return;
 
-        create(QByteArray(quuid.c_str()), QString(title.c_str()), QString(initString.c_str()));
+        Document *document = createDocument( false, id.c_str(),
+                                             QString::fromUtf8(title.c_str()),
+                                             QString::fromUtf8(text.c_str()) );
+        Q_EMIT( opened(document, 0, 0) );
     }
 }
 
@@ -570,7 +558,7 @@ void DocumentManager::handleGetDocTextScRequest( const QString & data )
 
         QByteArray docID = QByteArray(quuid.c_str());
 
-        Document *document = getDocByID(docID);
+        Document *document = documentForId(docID);
         if(document){
             QString docText = document->textAsSCArrayOfCharCodes(start, range);
 
@@ -619,7 +607,7 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
 
         QByteArray docID = QByteArray(quuid.c_str());
 
-        Document *document = getDocByID(docID);
+        Document *document = documentForId(docID);
         if(document){
             document->setTextInRange(QString(text.c_str()), start, range);
 
@@ -648,7 +636,7 @@ void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
 
         QByteArray docID = QByteArray(quuid.c_str());
 
-        Document *document = getDocByID(docID);
+        Document *document = documentForId(docID);
         if(document){
             showDocument(document);
         }
@@ -674,7 +662,7 @@ void DocumentManager::handleCloseDocScRequest( const QString & data )
 
         QByteArray docID = QByteArray(quuid.c_str());
 
-        Document *document = getDocByID(docID);
+        Document *document = documentForId(docID);
         if(document){
             close(document);
         }
@@ -704,9 +692,11 @@ void DocumentManager::handleSetDocTitleScRequest( const QString & data )
 
         QByteArray docID = QByteArray(quuid.c_str());
 
-        Document *document = getDocByID(docID);
-        if(document){
-            changeDocumentTitle(document, QString(title.c_str()));
+        Document *document = documentForId(docID);
+        if(document)
+        {
+            document->mTitle = QString(title.c_str());
+            Q_EMIT(titleChanged(document));
         }
 
     }
