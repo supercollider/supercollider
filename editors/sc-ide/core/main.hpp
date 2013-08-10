@@ -121,13 +121,6 @@ private:
     Main(void);
     bool eventFilter(QObject *obj, QEvent *event);
     void handleOpenFileScRequest( const QString & data );
-    void handleDocListScRequest();
-    void handleNewDocScRequest( const QString & data );
-    void handleGetDocTextScRequest( const QString & data );
-    void handleSetDocTextScRequest( const QString & data );
-    void handleSetCurrentDocScRequest( const QString & data );
-    void handleCloseDocScRequest( const QString & data );
-    void handleSetDocTitleScRequest( const QString & data );
 
     Settings::Manager *mSettings;
     ScProcess * mScProcess;
