@@ -631,9 +631,8 @@ void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
             return;
 
         Document *document = documentForId(id.c_str());
-        if(document){
-            showDocument(document);
-        }
+        if(document)
+            Q_EMIT( showRequest(document) );
     }
 
 }
