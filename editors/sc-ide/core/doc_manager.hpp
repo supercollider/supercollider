@@ -48,7 +48,7 @@ class Document : public QObject
 
 public:
     Document( bool isPlainText );
-	Document( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string );
+    Document( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string );
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }

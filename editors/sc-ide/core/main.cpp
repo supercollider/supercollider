@@ -312,20 +312,20 @@ void Main::onScLangResponse( const QString & selector, const QString & data )
 {
     static QString openFileSelector("openFile");
     static QString requestDocListSelector("requestDocumentList");
-	static QString newDocSelector("newDocument");
+    static QString newDocSelector("newDocument");
     static QString getDocTextSelector("getDocumentText");
     static QString setDocTextSelector("setDocumentText");
     static QString setCurrentDocSelector("setCurrentDocument");
     static QString closeDocSelector("closeDocument");
     static QString setDocTitleSelector("setDocumentTitle");
-	
+
     if (selector == openFileSelector)
         handleOpenFileScRequest(data);
     
     if (selector == requestDocListSelector)
         handleDocListScRequest();
-	
-	if (selector == newDocSelector)
+
+    if (selector == newDocSelector)
         handleNewDocScRequest(data);
     
     if (selector == getDocTextSelector)
@@ -389,27 +389,27 @@ void Main::handleNewDocScRequest( const QString & data )
     std::stringstream stream;
     stream << data.toStdString();
     YAML::Parser parser(stream);
-	
+
     YAML::Node doc;
     if (parser.GetNextDocument(doc)) {
         if (doc.Type() != YAML::NodeType::Sequence)
             return;
-		
+
         std::string title;
         bool success = doc[0].Read(title);
         if (!success)
             return;
-		
-		std::string initString;
+
+        std::string initString;
         success = doc[1].Read(initString);
         if (!success)
             return;
-		
-		std::string quuid;
+
+        std::string quuid;
         success = doc[2].Read(quuid);
         if (!success)
             return;
-		
+
         mDocManager->create(QByteArray(quuid.c_str()), QString(title.c_str()), QString(initString.c_str()));
     }
 }
@@ -419,12 +419,12 @@ void Main::handleGetDocTextScRequest( const QString & data )
     std::stringstream stream;
     stream << data.toStdString();
     YAML::Parser parser(stream);
-	
+
     YAML::Node doc;
     if (parser.GetNextDocument(doc)) {
         if (doc.Type() != YAML::NodeType::Sequence)
             return;
-		
+
         std::string quuid;
         bool success = doc[0].Read(quuid);
         if (!success)
@@ -463,12 +463,12 @@ void Main::handleSetDocTextScRequest( const QString & data )
     std::stringstream stream;
     stream << data.toStdString();
     YAML::Parser parser(stream);
-	
+
     YAML::Node doc;
     if (parser.GetNextDocument(doc)) {
         if (doc.Type() != YAML::NodeType::Sequence)
             return;
-		
+
         std::string quuid;
         bool success = doc[0].Read(quuid);
         if (!success)
@@ -499,10 +499,10 @@ void Main::handleSetDocTextScRequest( const QString & data )
         Document *document = mDocManager->getDocByID(docID);
         if(document){
             document->setTextInRange(QString(text.c_str()), start, range);
-        
+
             QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\')").arg(QString(funcID.c_str()));
             mScProcess->evaluateCode ( command, true );
-        } 
+        }
         
     }
 }
@@ -512,12 +512,12 @@ void Main::handleSetCurrentDocScRequest( const QString & data )
     std::stringstream stream;
     stream << data.toStdString();
     YAML::Parser parser(stream);
-	
+
     YAML::Node doc;
     if (parser.GetNextDocument(doc)) {
         if (doc.Type() != YAML::NodeType::Sequence)
             return;
-		
+
         std::string quuid;
         bool success = doc[0].Read(quuid);
         if (!success)
@@ -538,12 +538,12 @@ void Main::handleCloseDocScRequest( const QString & data )
     std::stringstream stream;
     stream << data.toStdString();
     YAML::Parser parser(stream);
-	
+
     YAML::Node doc;
     if (parser.GetNextDocument(doc)) {
         if (doc.Type() != YAML::NodeType::Sequence)
             return;
-		
+
         std::string quuid;
         bool success = doc[0].Read(quuid);
         if (!success)
@@ -563,12 +563,12 @@ void Main::handleSetDocTitleScRequest( const QString & data )
     std::stringstream stream;
     stream << data.toStdString();
     YAML::Parser parser(stream);
-	
+
     YAML::Node doc;
     if (parser.GetNextDocument(doc)) {
         if (doc.Type() != YAML::NodeType::Sequence)
             return;
-		
+
         std::string quuid;
         bool success = doc[0].Read(quuid);
         if (!success)
