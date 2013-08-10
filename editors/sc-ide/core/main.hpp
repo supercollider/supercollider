@@ -113,8 +113,6 @@ Q_SIGNALS:
     void applySettingsRequest(Settings::Manager *);
 
 private slots:
-    void onOpen(Document* doc, int cursorPosition, int selectionLength);
-    void onClose(Document* doc);
     void onScLangResponse( const QString &, const QString & );
 
 private:
