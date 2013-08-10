@@ -123,6 +123,7 @@ public slots:
     Document * open( const QString & path, int initialCursorPosition = -1, int selectionLength = 0, bool addToRecent = true );
     void clearRecents();
     void storeSettings( Settings::Manager * );
+    void handleScLangMessage( const QString &selector, const QString &data );
 
 Q_SIGNALS:
     void opened( Document *, int cursorPosition, int selectionLength );
@@ -146,7 +147,13 @@ private:
     void loadRecentDocuments( Settings::Manager * );
     void closeSingleUntitledIfUnmodified();
     QString decodeDocument(QByteArray const &);
-
+    void handleDocListScRequest();
+    void handleNewDocScRequest( const QString & data );
+    void handleGetDocTextScRequest( const QString & data );
+    void handleSetDocTextScRequest( const QString & data );
+    void handleSetCurrentDocScRequest( const QString & data );
+    void handleCloseDocScRequest( const QString & data );
+    void handleSetDocTitleScRequest( const QString & data );
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
 
