@@ -81,6 +81,47 @@ the up and down arrow keys.
 - Ctrl+D: to quit the SuperCollider command line
 
 ------------------------------------------------------------------------
+Quarks
+------------------------------------------------------------------------
+Quarks are an community driven extensions system for SuperCollider. On 
+OSX and Linux, SC provides a GUI to download and update Quarks. It is 
+started by evaluating `Quarks.gui`. This GUI cannot be used on Windows. 
+You need to download Quarks manually and make them available to SC. 
+The most common way of doing this is:
+
+1. Download Quarks with your preferred svn-client by running:
+
+svn co https://quarks.svn.sourceforge.net/svnroot/quarks
+
+You can later use svn to update your quarks:
+
+svn update
+
+The complete collection of Quarks will be downloaded into a folder 
+`quarks`at the location where you ran above svn-command. Within that 
+folder you will find many folders, one for each Quark.
+The Quarks you want to install need to be copied or "hardlinked" into
+a folder where SC can find them. Usually a folder called Extensions in
+the user application support directory is used for this purpose. It
+is located within the folder:
+
+C:\Users\<USERNAME>\AppData\Local\SuperCollider
+
+See below for the variations of this location on different Windows
+versions. 
+
+2. If you don't find an Extensions folder, create it manually as:
+
+C:\Users\<USERNAME>\AppData\Local\SuperCollider\Extensions
+
+3. Copy or "hardlink" the folder containing each Quark you want to install
+into this folder (you create a subfolder within the Extensions folder 
+to bundle your Quarks there)
+
+4. After recompiling your class library or restarting SC your Quarks should
+be available.
+
+------------------------------------------------------------------------
 Uninstall
 ------------------------------------------------------------------------
 Should you ever decide to uninstall SuperCollider, it is the easiest to
