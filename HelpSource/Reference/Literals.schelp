@@ -72,7 +72,7 @@ $B
 $C
 ::
 
-Tab, linefeed, carriage return, and backslash are preceded by a backslash:
+Tab, linefeed, carriage return, and backslash are preceded by a backslash. See link::#Escape character:: below.
 code::
 $\t
 $\n
@@ -80,8 +80,9 @@ $\r
 $\\
 ::
 
-section::Symbols
+section::Symbols and Strings
 
+subsection::Symbols
 A symbol is written as a string enclosed in single quotes.
 examples of symbols:
 code::
@@ -100,7 +101,7 @@ code::
 \BigSwiftyAndAssoc
 ::
 
-section::Strings
+subsection::Strings
 
 Strings are written in double quotes:
 code::
@@ -121,12 +122,23 @@ string.
 "
 ::
 
+subsection::Escape character
+
+As in C and Java, a backslash, \, is the emphasis::escape character::. Escaping has two main purposes:
+
+list::
+## To insert non-printing characters into a string: teletype::\n:: for newline, teletype::\t:: for tab, teletype::\l:: for linefeed, teletype::\r:: for carriage return. (This usage is valid only for Strings, not Symbols.)
+## To allow a string or symbol delimiter to be included in the contents. That is, for strings, normally double-quote marks indicate the beginning and ending of the string literal. To put a double-quote in the middle of the string, the normal meaning of double-quote should be suspended -- "escaped" -- as in code::"He repeated, \"Madam, I'm Adam,\" only this time he had said it backward."::
+::
+
+In all cases, the \ as an escape character does not appear in the string or symbol. This is a frequent source of confusion for Windows file paths, e.g., code::"C:\Users\Somebody\SuperCollider":: translates into teletype::C:UsersSomebodySuperCollider::. Backslashes that should appear need to be escaped themselves: code::"C:\\Users\\Somebody\\SuperCollider"::. (Note, however, that it is preferable to write file paths using forward slashes, regardless of platform, as in Java: code::"C:/Users/Somebody/SuperCollider"::.)
+
 section::Identifiers
 
 Names of methods and variables begin with a lower case alphabetic character, followed by zero or more
-alphanumeric characters:
+alphanumeric characters. An underscore is also valid in an identifier.
 code::
-var abc, z123, func;
+var abc, z123, trigger_func;
 ::
 
 section::Class Names
