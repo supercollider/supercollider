@@ -20,6 +20,7 @@
 #define SERVER_DEPENDENCY_GRAPH_GENERATOR_HPP
 
 #include "node_graph.hpp"
+#include "function_attributes.h"
 
 namespace nova {
 
@@ -51,7 +52,7 @@ private:
     }
 
     template <typename reverse_iterator>
-    static inline int get_previous_activation_count(reverse_iterator it, reverse_iterator end, int previous_activation_limit)
+    HOT static inline int get_previous_activation_count(reverse_iterator it, reverse_iterator end, int previous_activation_limit)
     {
         reverse_iterator prev = it;
 
@@ -75,7 +76,7 @@ private:
         }
     }
 
-    successor_container fill_queue_recursive(abstract_group & grp, successor_container const & successors, size_t activation_limit)
+	successor_container fill_queue_recursive(abstract_group & grp, successor_container const & successors, size_t activation_limit)
     {
         if (grp.is_parallel())
             return fill_queue_recursive(static_cast<parallel_group&>(grp), successors, activation_limit);
@@ -83,7 +84,7 @@ private:
             return fill_queue_recursive(static_cast<group&>(grp), successors, activation_limit);
     }
 
-    successor_container fill_queue_recursive(group & g, successor_container const & successors_from_parent, size_t previous_activation_limit)
+    HOT successor_container fill_queue_recursive(group & g, successor_container const & successors_from_parent, size_t previous_activation_limit)
     {
         assert (g.has_synth_children());
 
@@ -158,7 +159,7 @@ private:
         return successors;
     }
 
-    successor_container fill_queue_recursive(parallel_group & g, successor_container const & successors_from_parent, size_t previous_activation_limit)
+    HOT successor_container fill_queue_recursive(parallel_group & g, successor_container const & successors_from_parent, size_t previous_activation_limit)
     {
         assert (g.has_synth_children());
         std::vector<thread_queue_item*, rt_pool_allocator<thread_queue_item*> > collected_nodes;
