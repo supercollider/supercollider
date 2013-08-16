@@ -141,7 +141,7 @@ std::vector<sc_synthdef> read_synthdefs(const char * buffer, const char * buffer
             ret.emplace_back(buffer, buffer_end, version);
 #endif
         } catch (std::exception const & e) {
-            std::cerr << "Exception when reading synthdef: " << e.what() << std::endl;
+            std::cout << "Exception when reading synthdef: " << e.what() << std::endl;
         }
     }
     return ret;

@@ -89,7 +89,7 @@ private:
             runme->run();
             ret = true;
         } catch(std::exception const & e) {
-            std::cerr << "unhandled exception while running callback: "  << e.what() << std::endl;
+            std::cout << "unhandled exception while running callback: "  << e.what() << std::endl;
             ret = false;
         }
         callback_deleter::operator()(runme);

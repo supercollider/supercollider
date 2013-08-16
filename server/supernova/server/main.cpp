@@ -305,7 +305,7 @@ void drop_rt_scheduling()
 {
     bool success = nova::thread_set_priority(0);
     if (!success)
-        cerr << "Warning: cannot drop rt priority" << endl;
+        cout << "Warning: cannot drop rt priority" << endl;
 }
 
 void enable_core_dumps(void)

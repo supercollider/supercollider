@@ -266,11 +266,11 @@ void thread_init_functor::operator()(int thread_index)
 #endif
 
         if (!success)
-            std::cerr << "Warning: cannot raise thread priority" << std::endl;
+            std::cout << "Warning: cannot raise thread priority" << std::endl;
     }
 
     if (!thread_set_affinity(thread_index))
-        std::cerr << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
+        std::cout << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
 }
 
 void io_thread_init_functor::operator()() const
