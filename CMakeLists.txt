@@ -55,12 +55,6 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 #		add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
 #	endif()
 
-	option(DSO_VISIBILITY "DSO visibility support for gcc" OFF)
-
-	if (DSO_VISIBILITY)
-		add_definitions(-fvisibility=hidden)
-	endif()
-
 	if(APPLE)
 		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
 		if ("${_gcc_version_info}" MATCHES "Apple")
@@ -81,14 +75,6 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 
 else()
 
-endif()
-
-if(CMAKE_COMPILER_IS_CLANG)
-    option(DSO_VISIBILITY "DSO visibility support for clang" OFF)
-
-    if(DSO_VISIBILITY)
-        add_definitions(-fvisibility=hidden)
-    endif()
 endif()
 
 if(APPLE)
@@ -249,6 +235,8 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 	if(FORTIFY)
 		add_definitions( -D_FORTIFY_SOURCE=2 )
 	endif()
+
+	add_definitions(-fvisibility=hidden)
 endif()
 
 if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
