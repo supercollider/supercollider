@@ -113,6 +113,13 @@ NamedControl {
 		this.initDict;
 		res = currentControls.at(name);
 
+		lags = lags.deepCollect(inf, {|elem|
+			if (elem == 0) { nil } { elem }
+		});
+
+		if (lags.rate == \scalar) {
+			fixedLag = true;
+		};
 
 		if(res.isNil) {
 			values = (values ? 0.0).asArray;
@@ -188,6 +195,4 @@ NamedControl {
 			currentControls = IdentityDictionary.new;
 		};
 	}
-
-
 }
