@@ -56,6 +56,11 @@ protected:
   virtual void onLibraryShutdown();
 
   virtual void customEvent( QEvent * );
+  virtual void timerEvent( QTimerEvent * );
+private:
+  void tick();
+  QBasicTimer appClockTimer;
+
 };
 
 } // namespace QtCollider

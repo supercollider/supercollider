@@ -44,6 +44,7 @@ namespace QtCollider {
 
   enum EventType {
     Event_SCRequest_Work = QEvent::User,
+    Event_SCRequest_Tick,
     Event_SCRequest_Quit,
     Event_ScMethodCall,
     Event_Refresh,
