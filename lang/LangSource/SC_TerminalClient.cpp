@@ -60,6 +60,7 @@ SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
 	  mReturnCode(0),
 	  mUseReadline(false),
+      mWork(mIoService),
 	  mTimer(mIoService),
 #ifndef _WIN32
 	  mStdIn(mInputService, STDIN_FILENO)
@@ -397,7 +398,6 @@ void SC_TerminalClient::tick( const boost::system::error_code& error )
 
 void SC_TerminalClient::commandLoop()
 {
-	boost::asio::io_service::work work_(mIoService);
 	mIoService.run();
 }
 
