@@ -109,7 +109,8 @@ void LangClient::tick()
     int ti = qMax(0, qCeil(secs));
     qcDebugMsg(2, QString("next at %1").arg(ti) );
     appClockTimer.start( ti, this );
-  }
+  } else
+	  appClockTimer.stop();
 }
 
 void LangClient::timerEvent(QTimerEvent * e)
