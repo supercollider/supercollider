@@ -349,20 +349,19 @@ void SC_TerminalClient::sendSignal( Signal sig )
 {
 	switch (sig) {
 	case sig_input:
-		mIoService.dispatch( boost::bind(&SC_TerminalClient::interpretInput, this) );
+		mIoService.post( boost::bind(&SC_TerminalClient::interpretInput, this) );
 		break;
 
 	case sig_recompile:
-		mIoService.dispatch( boost::bind(&SC_TerminalClient::recompileLibrary, this) );
+		mIoService.post( boost::bind(&SC_TerminalClient::recompileLibrary, this) );
 		break;
 
 	case sig_sched:
-		mTimer.cancel();
-		mIoService.dispatch( boost::bind(&SC_TerminalClient::tick, this, boost::system::error_code()) );
+		mIoService.post( boost::bind(&SC_TerminalClient::tick, this, boost::system::error_code()) );
 		break;
 
 	case sig_stop:
-		mIoService.dispatch( boost::bind(&SC_TerminalClient::stopMain, this) );
+		mIoService.post( boost::bind(&SC_TerminalClient::stopMain, this) );
 		break;
 	}
 }
@@ -378,6 +377,8 @@ extern void ElapsedTimeToChrono(double elapsed, mutex_chrono::system_clock::time
 
 void SC_TerminalClient::tick( const boost::system::error_code& error )
 {
+	mTimer.cancel();
+
 	double secs;
 	lock();
 	bool haveNext = tickLocked( &secs );
@@ -535,7 +536,8 @@ void SC_TerminalClient::onInputRead(const boost::system::error_code &error, std:
 void SC_TerminalClient::inputThreadFn()
 {
 #if HAVE_READLINE
-	readlineInit();
+	if (mUseReadline)
+		readlineInit();
 #endif
 
 	startInputRead();
