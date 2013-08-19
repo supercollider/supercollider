@@ -52,8 +52,12 @@ void LangClient::daemonLoop()
 
 void LangClient::sendSignal( Signal sig )
 {
-  SC_TerminalClient::sendSignal( sig );
-  QApplication::postEvent( this, new SCRequestEvent(Event_SCRequest_Work) );
+  if (sig == sig_sched) {
+    QApplication::postEvent( this, new SCRequestEvent(Event_SCRequest_Tick) );
+  } else {
+    SC_TerminalClient::sendSignal( sig );
+    QApplication::postEvent( this, new SCRequestEvent(Event_SCRequest_Work) );
+  }
 }
 
 void LangClient::onQuit( int exitCode )
@@ -72,6 +76,9 @@ void LangClient::customEvent( QEvent *e )
 {
   int type = e->type();
   switch( type ) {
+  case Event_SCRequest_Tick:
+    tick();
+
   case Event_SCRequest_Work:
     QApplication::removePostedEvents( this, Event_SCRequest_Work );
     mIoService.poll();
@@ -85,4 +92,28 @@ void LangClient::customEvent( QEvent *e )
   }
   default: ;
   }
+}
+
+void LangClient::tick()
+{
+  double secs;
+  lock();
+  bool haveNext = tickLocked( &secs );
+  unlock();
+
+  flush();
+
+  if( haveNext ) {
+    secs -= elapsedTime();
+    secs *= 1000;
+    int ti = qMax(0, qCeil(secs));
+    qcDebugMsg(2, QString("next at %1").arg(ti) );
+    appClockTimer.start( ti, this );
+  }
+}
+
+void LangClient::timerEvent(QTimerEvent * e)
+{
+  if( e->timerId() == appClockTimer.timerId() )
+    tick();
 }
