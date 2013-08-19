@@ -1,26 +1,27 @@
 /*
 	Commandline interpreter interface.
 	Copyright (c) 2003-2006 stefan kersten.
+	Copyright (c) 2013 tim blechmann.
 
 	====================================================================
 
 	SuperCollider real time audio synthesis system
-    Copyright (c) 2002 James McCartney. All rights reserved.
+	Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
 #include "SC_TerminalClient.h"
@@ -28,8 +29,7 @@
 #include "../../QtCollider/LanguageClient.h"
 #endif
 
-#include <errno.h>
-#include <fcntl.h>
+#include <boost/bind.hpp>
 
 #ifdef SC_WIN32
 # define __GNU_LIBRARY__
@@ -37,10 +37,6 @@
 # include "SC_Win32Utils.h"
 # include <io.h>
 # include <windows.h>
-#else
-# include <sys/param.h>
-# include <sys/poll.h>
-# include <unistd.h>
 #endif
 
 #ifdef HAVE_READLINE
@@ -48,10 +44,6 @@
 # include <readline/history.h>
 # include <signal.h>
 #endif
-
-
-#include <string.h>
-#include <time.h>
 
 #include "GC.h"
 #include "PyrKernel.h"
@@ -62,16 +54,18 @@
 #include "SC_DirUtils.h"   // for gIdeName
 #include "SC_LanguageConfig.hpp"
 
-#define STDIN_FD 0
-
 static FILE* gPostDest = stdout;
 
 SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
-	  mShouldBeRunning(false),
 	  mReturnCode(0),
 	  mUseReadline(false),
-	  mSignals(0)
+	  mTimer(mIoService),
+#ifndef _WIN32
+	  mStdIn(mInputService, STDIN_FILENO)
+#else
+	  mStdIn(mInputService, GetStdHandle(STD_INPUT_HANDLE))
+#endif
 {}
 
 SC_TerminalClient::~SC_TerminalClient()
@@ -247,7 +241,6 @@ int SC_TerminalClient::run(int argc, char** argv)
 	initRuntime(opt);
 
 	// startup library
-	mShouldBeRunning = true;
 	compileLibrary();
 
 	// enter main loop
@@ -259,8 +252,8 @@ int SC_TerminalClient::run(int argc, char** argv)
 	}
 	else {
 		initInput();
-		if( shouldBeRunning() ) startInput();
-		if( shouldBeRunning() ) commandLoop();
+		startInput();
+		commandLoop();
 		endInput();
 		cleanupInput();
 	}
@@ -279,7 +272,6 @@ int SC_TerminalClient::run(int argc, char** argv)
 void SC_TerminalClient::quit(int code)
 {
 	mReturnCode = code;
-	mShouldBeRunning = false;
 }
 
 static PyrSymbol * resolveMethodSymbol(bool silent)
@@ -305,7 +297,7 @@ void SC_TerminalClient::interpretCmdLine(const char *cmdLine, size_t size, bool 
 	flush();
 }
 
-// WARNING: Call with input locked!
+// Note: called only if the input thread does not perform an asynchronous read operation
 void SC_TerminalClient::interpretInput()
 {
 	char *data = mInputBuf.getData();
@@ -334,7 +326,11 @@ void SC_TerminalClient::interpretInput()
 		i = 0;
 	}
 	mInputBuf.reset();
-	if( mUseReadline ) mInputCond.notify_one();
+
+	if (mUseReadline)
+		mReadlineSem.post();
+	else
+		startInputRead();
 }
 
 void SC_TerminalClient::onLibraryStartup()
@@ -351,94 +347,57 @@ void SC_TerminalClient::onLibraryStartup()
 
 void SC_TerminalClient::sendSignal( Signal sig )
 {
-	lockSignal();
-	mSignals |= sig;
-	mCond.notify_one();
-	unlockSignal();
+	switch (sig) {
+	case sig_input:
+		mIoService.dispatch( boost::bind(&SC_TerminalClient::interpretInput, this) );
+		break;
+
+	case sig_recompile:
+		mIoService.dispatch( boost::bind(&SC_TerminalClient::recompileLibrary, this) );
+		break;
+
+	case sig_sched:
+		mTimer.cancel();
+		mIoService.dispatch( boost::bind(&SC_TerminalClient::tick, this, boost::system::error_code()) );
+		break;
+
+	case sig_stop:
+		mIoService.dispatch( boost::bind(&SC_TerminalClient::stopMain, this) );
+		break;
+	}
 }
 
 void SC_TerminalClient::onQuit( int exitCode )
 {
-	lockSignal();
 	postfl("main: quit request %i\n", exitCode);
 	quit( exitCode );
-	mCond.notify_one();
-	unlockSignal();
+	stop();
 }
 
 extern void ElapsedTimeToChrono(double elapsed, mutex_chrono::system_clock::time_point & out_time_point);
 
+void SC_TerminalClient::tick( const boost::system::error_code& error )
+{
+	double secs;
+	lock();
+	bool haveNext = tickLocked( &secs );
+	unlock();
+
+	flush();
+
+	mutex_chrono::system_clock::time_point nextAbsTime;
+	ElapsedTimeToChrono( secs, nextAbsTime );
+
+	if (haveNext) {
+		mTimer.expires_at(nextAbsTime);
+		mTimer.async_wait(boost::bind(&SC_TerminalClient::tick, this, _1));
+	}
+}
+
 void SC_TerminalClient::commandLoop()
 {
-	bool haveNext = false;
-	mutex_chrono::system_clock::time_point nextAbsTime;
-
-	lockSignal();
-
-	while( shouldBeRunning() ) {
-
-		while ( mSignals ) {
-			int sig = mSignals;
-			mSignals = 0;
-
-			unlockSignal();
-
-			if (sig & sig_input) {
-				//postfl("input\n");
-				lockInput();
-				interpretInput();
-				unlockInput();
-			}
-
-			if (sig & sig_sched) {
-				//postfl("tick\n");
-				double secs;
-				lock();
-				haveNext = tickLocked( &secs );
-				unlock();
-
-				flush();
-
-				//postfl("tick -> next time = %f\n", haveNext ? secs : -1);
-				ElapsedTimeToChrono( secs, nextAbsTime );
-			}
-
-			if (sig & sig_stop) {
-				stopMain();
-			}
-
-			if (sig & sig_recompile) {
-				recompileLibrary();
-			}
-
-			lockSignal();
-		}
-
-		if( !shouldBeRunning() ) {
-			break;
-		}
-		else if( haveNext ) {
-			unlockSignal();
-			{
-				unique_lock<SC_Lock> lock(mSignalMutex);
-
-				cv_status status = mCond.wait_until(lock, nextAbsTime);
-				if( status == cv_status::timeout )
-					mSignals |= sig_sched;
-			}
-			lockSignal();
-		}
-		else {
-			unlockSignal();
-			{
-				unique_lock<SC_Lock> lock(mSignalMutex);
-				mCond.wait(lock);
-			}
-			lockSignal();
-		}
-	}
-
-	unlockSignal();
+	boost::asio::io_service::work work_(mIoService);
+	mIoService.run();
 }
 
 void SC_TerminalClient::daemonLoop()
@@ -497,19 +456,15 @@ void SC_TerminalClient::readlineCmdLine( char *cmdLine )
 		return;
 	}
 
-	if(*cmdLine!=0){
+	if( *cmdLine != 0 ) {
 		// If line wasn't empty, store it so that uparrow retrieves it
 		add_history(cmdLine);
 		int len = strlen(cmdLine);
 
-		unique_lock<SC_Lock> lock(client->mInputMutex);
 		client->mInputBuf.append(cmdLine, len);
 		client->mInputBuf.append(kInterpretPrintCmdLine);
 		client->sendSignal(sig_input);
-		// Wait for input to be processed,
-		// so that its output is displayed before readline prompt.
-		if (client->mInputShouldBeRunning)
-			client->mInputCond.wait(lock);
+		client->mReadlineSem.wait();
 	}
 }
 
@@ -536,221 +491,89 @@ void SC_TerminalClient::readlineInit()
 #endif
 }
 
-#ifndef _WIN32
-
-void *SC_TerminalClient::readlineFunc( void *arg )
-{
-	readlineInit();
-
-	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(arg);
-
-	fd_set fds;
-	FD_ZERO(&fds);
-
-	while(true) {
-		FD_SET(STDIN_FD, &fds);
-		FD_SET(client->mInputCtlPipe[0], &fds);
-
-		if( select(FD_SETSIZE, &fds, NULL, NULL, NULL) < 0 ) {
-			if( errno == EINTR ) continue;
-			postfl("readline: select() error:\n%s\n", strerror(errno));
-			client->onQuit(1);
-			break;
-		}
-
-		if( FD_ISSET(client->mInputCtlPipe[0], &fds) ) {
-			postfl("readline: quit requested\n");
-			break;
-		}
-
-		if( FD_ISSET(STDIN_FD, &fds) ) {
-			rl_callback_read_char();
-		}
-	}
-
-	postfl("readline: stopped.\n");
-
-	return NULL;
-}
-
-#else
-
-void *SC_TerminalClient::readlineFunc( void *arg )
-{
-	readlineInit();
-
-	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(arg);
-
-	HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
-	HANDLE hnds[] = { client->mQuitInputEvent, hStdIn };
-
-	bool shouldRun = true;
-	while (shouldRun) {
-		DWORD result = WaitForMultipleObjects( 2, hnds, false, INFINITE );
-
-		if( result == WAIT_FAILED ) {
-			postfl("readline: wait error.\n");
-			client->onQuit(1);
-			break;
-		}
-
-		int hIndex = result - WAIT_OBJECT_0;
-
-		if( hIndex == 0 ) {
-			postfl("readline: quit requested.\n");
-			break;
-		}
-
-		if( hIndex == 1 ) {
-			rl_callback_read_char();
-		}
-	}
-
-	postfl("readline: stopped.\n");
-
-	return NULL;
-}
-#endif // !_WIN32
-
 #endif // HAVE_READLINE
 
-#ifndef _WIN32
-
-void *SC_TerminalClient::pipeFunc( void *arg )
+void SC_TerminalClient::startInputRead()
 {
-	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(arg);
-
-	ssize_t bytes;
-	const size_t toRead = 256;
-	char buf[toRead];
-	SC_StringBuffer stack;
-
-	fd_set fds;
-	FD_ZERO(&fds);
-
-	bool shouldRead = true;
-	while(shouldRead) {
-		FD_SET(STDIN_FD, &fds);
-		FD_SET(client->mInputCtlPipe[0], &fds);
-
-		if( select(FD_SETSIZE, &fds, NULL, NULL, NULL) < 0 ) {
-			if( errno == EINTR ) continue;
-			postfl("pipe-in: select() error: %s\n", strerror(errno));
-			client->onQuit(1);
-			break;
-		}
-
-		if( FD_ISSET(client->mInputCtlPipe[0], &fds) ) {
-			postfl("pipe-in: quit requested\n");
-			break;
-		}
-
-		if( FD_ISSET(STDIN_FD, &fds) ) {
-
-			while(true) {
-				bytes = read( STDIN_FD, buf, toRead );
-
-				if( bytes > 0 ) {
-					client->pushCmdLine( stack, buf, bytes );
-				}
-				else if( bytes == 0 ) {
-					postfl("pipe-in: EOF. Will quit.\n");
-					client->onQuit(0);
-					shouldRead = false;
-					break;
-				}
-				else {
-					if( errno == EAGAIN ) {
-						break; // no more to read this time;
-					}
-					else if( errno != EINTR ){
-						postfl("pipe-in: read() error: %s\n", strerror(errno));
-						client->onQuit(1);
-						shouldRead = false;
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	postfl("pipe-in: stopped.\n");
-
-	return NULL;
+	if (mUseReadline)
+		mStdIn.async_read_some(boost::asio::null_buffers(), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
+	else
+		mStdIn.async_read_some(boost::asio::buffer(inputBuffer), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
 }
 
-#else
-
-void *SC_TerminalClient::pipeFunc( void *arg )
+void SC_TerminalClient::onInputRead(const boost::system::error_code &error, std::size_t bytes_transferred)
 {
-	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(arg);
-	SC_StringBuffer stack;
-	HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
-	char buf[256];
-	while(1) {
-		DWORD n;
-		BOOL ok = ReadFile( hStdIn, &buf, 256, &n, NULL );
-		if(ok) {
-			client->pushCmdLine( stack, buf, n );
-		}
-		else {
-			postfl("pipe-in: ERROR (ReadFile): %i\n", GetLastError());
-			client->onQuit(1);
-			break;
-		}
+	if (error == boost::asio::error::operation_aborted) {
+		postfl("SCLang Input: Quit requested\n");
+		return;
 	}
-	return NULL;
+
+	if (error == boost::asio::error::eof) {
+		postfl("SCLang Input: EOF. Will quit.\n");
+		onQuit(0);
+		return;
+	}
+
+	if (error) {
+		postfl("SCLang Input: %s.\n", error.message().c_str());
+		onQuit(1);
+		return;
+	}
+
+	if (!error) {
+#if HAVE_READLINE
+		if (mUseReadline) {
+			rl_callback_read_char();
+			startInputRead();
+			return;
+		}
+#endif
+		pushCmdLine( inputBuffer.data(), bytes_transferred );
+	}
 }
 
+void SC_TerminalClient::inputThreadFn()
+{
+#if HAVE_READLINE
+	readlineInit();
 #endif
 
-void SC_TerminalClient::pushCmdLine( SC_StringBuffer &buf, const char *newData, size_t size)
+	startInputRead();
+
+	boost::asio::io_service::work work(mInputService);
+	mInputService.run();
+}
+
+
+void SC_TerminalClient::pushCmdLine( const char *newData, size_t size)
 {
-	lockInput();
-
 	bool signal = false;
-
 	while (size--) {
 		char c = *newData++;
 		switch (c) {
 		case kRecompileLibrary:
 		case kInterpretCmdLine:
 		case kInterpretPrintCmdLine:
-			mInputBuf.append( buf.getData(), buf.getSize() );
+			mInputBuf.append( mInputThrdBuf.getData(), mInputThrdBuf.getSize() );
 			mInputBuf.append(c);
 			signal = true;
-			buf.reset();
+			mInputThrdBuf.reset();
 			break;
 
 		default:
-			buf.append(c);
+			mInputThrdBuf.append(c);
 		}
 	}
 
-	if(signal) sendSignal(sig_input);
-
-	unlockInput();
+	if (signal)
+		sendSignal(sig_input);
+	else
+		startInputRead();
 }
-
-
 
 
 void SC_TerminalClient::initInput()
 {
-
-#ifndef _WIN32
-	if( pipe( mInputCtlPipe ) == -1 ) {
-		postfl("Error creating pipe for input thread control:\n%s\n", strerror(errno));
-		quit(1);
-	}
-#else
-	mQuitInputEvent = CreateEvent( NULL, false, false, NULL );
-	if( mQuitInputEvent == NULL ) {
-		postfl("Error creating event for input thread control.\n");
-		quit(1);
-	}
-#endif
-
 #ifdef HAVE_READLINE
 	if (strcmp(gIdeName, "none") == 0) {
 		// Other clients (emacs, vim, ...) won't want to interact through rl
@@ -758,64 +581,20 @@ void SC_TerminalClient::initInput()
 		return;
 	}
 #endif
-
-#ifndef _WIN32
-	if( fcntl( STDIN_FD, F_SETFL, O_NONBLOCK ) == -1 ) {
-		postfl("Error setting up non-blocking pipe reading:\n%s\n", strerror(errno));
-		quit(1);
-	}
-#endif // !_WIN32
 }
 
 
 void SC_TerminalClient::startInput()
 {
-	mInputShouldBeRunning = true;
-#ifdef HAVE_READLINE
-	if( mUseReadline ) {
-		thread thread(thread_namespace::bind(readlineFunc, this));
-		mInputThread = thread_namespace::move(thread);
-	}
-	else
-#endif
-	{
-		thread thread(thread_namespace::bind(pipeFunc, this));
-		mInputThread = thread_namespace::move(thread);
-	}
+	thread thread(thread_namespace::bind(&SC_TerminalClient::inputThreadFn, this));
+	mInputThread = thread_namespace::move(thread);
 }
 
 void SC_TerminalClient::endInput()
 {
-	// NOTE: On Windows, there is no way to safely interrupt
-	// the pipe-reading thread. So just quit and let it die.
-
-#ifdef _WIN32
-	if (mUseReadline) {
-#endif
-	// wake up the input thread in case it is waiting
-	// for input to be processed
-	{
-		unique_lock<SC_Lock> lock(mInputMutex);
-
-		mInputShouldBeRunning = false;
-		mInputCond.notify_one();
-	}
-
-#ifndef _WIN32
-	char c = 'q';
-	ssize_t bytes = write( mInputCtlPipe[1], &c, 1 );
-	if( bytes < 1 )
-		postfl("WARNING: could not send quit command to input thread.\n");
-#else
-	SetEvent( mQuitInputEvent );
-#endif
-
+	mInputService.stop();
 	postfl("main: waiting for input thread to join...\n");
 	mInputThread.join();
-
-#ifdef _WIN32
-	} // if (mUseReadline)
-#endif
 	postfl("main: quitting...\n");
 }
 
@@ -886,6 +665,3 @@ SC_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient * languageClient
 {
 	delete languageClient;
 }
-
-
-// EOF
