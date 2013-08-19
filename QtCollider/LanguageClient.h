@@ -46,10 +46,8 @@ class LangClient : public QObject, public SC_TerminalClient
   Q_OBJECT
 public:
   LangClient( const char* name );
-  virtual ~LangClient() {};
+  virtual ~LangClient() {}
   virtual void sendSignal( Signal );
-private Q_SLOTS:
-  void doSchedule();
 protected:
   virtual void commandLoop();
   virtual void daemonLoop();
@@ -58,11 +56,6 @@ protected:
   virtual void onLibraryShutdown();
 
   virtual void customEvent( QEvent * );
-  virtual void timerEvent( QTimerEvent * );
-private:
-  void doInput();
-
-  QBasicTimer appClockTimer;
 };
 
 } // namespace QtCollider
