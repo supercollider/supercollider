@@ -60,4 +60,6 @@ namespace thread_namespace = std;
 
 #endif
 
+typedef SC_Lock mutex;
+
 #endif
