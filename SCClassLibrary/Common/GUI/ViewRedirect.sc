@@ -156,3 +156,5 @@ HLayout : GuiRedirect { *key { ^\hLayout }}
 VLayout : GuiRedirect { *key { ^\vLayout }}
 GridLayout : GuiRedirect { *key { ^\gridLayout }}
 StackLayout : GuiRedirect { *key { ^\stackLayout } }
+
+QuartzComposerView : ViewRedirect { *key { ^\qcView }}

@@ -63,6 +63,9 @@ static void doLoadFactories ()
   QC_ADD_FACTORY( QcGridLayout );
   QC_ADD_FACTORY( QcStackLayout );
   QC_ADD_FACTORY( QtDownload );
+#ifdef SC_DARWIN
+  QC_ADD_FACTORY( QcQuartzComposerView );
+#endif
 }
 
 namespace QtCollider {
