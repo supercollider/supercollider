@@ -39,44 +39,8 @@ LangClient::LangClient( const char* name )
 {
 }
 
-void LangClient::doInput()
-{
-  qcDebugMsg(2, "input");
-  lockInput();
-  interpretInput();
-  QApplication::removePostedEvents( this, Event_SCRequest_Input );
-  unlockInput();
-}
-
-void LangClient::doSchedule()
-{
-  qcDebugMsg(2, "tick");
-
-  double t;
-  bool next;
-
-  lock();
-  next = tickLocked( &t );
-  QApplication::removePostedEvents( this, Event_SCRequest_Sched );
-  unlock();
-
-  flush();
-
-  if( next ) {
-    t -= elapsedTime();
-    t *= 1000;
-    int ti = qMax(0,qCeil(t));
-    qcDebugMsg(2, QString("next at %1").arg(ti) );
-    appClockTimer.start( ti, this );
-  }
-  else {
-    appClockTimer.stop();
-  }
-}
-
 void LangClient::commandLoop()
 {
-  doSchedule();
   int exit_code = QcApplication::instance()->exec();
   SC_TerminalClient::quit(exit_code);
 }
@@ -88,28 +52,17 @@ void LangClient::daemonLoop()
 
 void LangClient::sendSignal( Signal sig )
 {
-  QtCollider::EventType type;
-  switch( sig )
-  {
-    case sig_input:
-      type = Event_SCRequest_Input; break;
-    case sig_sched:
-      type = Event_SCRequest_Sched; break;
-    case sig_recompile:
-      type = Event_SCRequest_Recompile; break;
-    case sig_stop:
-      type = Event_SCRequest_Stop; break;
-    default:
-      return;
+  if (sig == sig_sched) {
+    QApplication::postEvent( this, new SCRequestEvent(Event_SCRequest_Tick) );
+  } else {
+    SC_TerminalClient::sendSignal( sig );
+    QApplication::postEvent( this, new SCRequestEvent(Event_SCRequest_Work) );
   }
-
-  QApplication::postEvent( this, new SCRequestEvent(type) );
 }
 
 void LangClient::onQuit( int exitCode )
 {
-  QApplication::postEvent( this,
-    new SCRequestEvent( Event_SCRequest_Quit, exitCode ) );
+  QApplication::postEvent( this, new SCRequestEvent( Event_SCRequest_Quit, exitCode ) );
 }
 
 void LangClient::onLibraryShutdown()
@@ -123,30 +76,45 @@ void LangClient::customEvent( QEvent *e )
 {
   int type = e->type();
   switch( type ) {
-    case Event_SCRequest_Input:
-      doInput();
-      break;
-    case Event_SCRequest_Sched:
-      doSchedule();
-      break;
-    case Event_SCRequest_Stop:
-      stopMain();
-      break;
-    case Event_SCRequest_Quit:
-    {
-      int code = static_cast<SCRequestEvent*>(e)->data.toInt();
-      qcDebugMsg( 1, QString("Quit requested with code %1").arg(code) );
-      qApp->exit( code );
-      break;
-    }
-    case Event_SCRequest_Recompile:
-      recompileLibrary();
-      break;
-    default: ;
+  case Event_SCRequest_Tick:
+    tick();
+
+  case Event_SCRequest_Work:
+    QApplication::removePostedEvents( this, Event_SCRequest_Work );
+    mIoService.poll();
+    break;
+  case Event_SCRequest_Quit:
+  {
+    int code = static_cast<SCRequestEvent*>(e)->data.toInt();
+    qcDebugMsg( 1, QString("Quit requested with code %1").arg(code) );
+    qApp->exit( code );
+    break;
+  }
+  default: ;
   }
 }
 
-void LangClient::timerEvent( QTimerEvent *e )
+void LangClient::tick()
 {
-  if( e->timerId() == appClockTimer.timerId() ) doSchedule();
+  double secs;
+  lock();
+  bool haveNext = tickLocked( &secs );
+  unlock();
+
+  flush();
+
+  if( haveNext ) {
+    secs -= elapsedTime();
+    secs *= 1000;
+    int ti = qMax(0, qCeil(secs));
+    qcDebugMsg(2, QString("next at %1").arg(ti) );
+    appClockTimer.start( ti, this );
+  } else
+	  appClockTimer.stop();
+}
+
+void LangClient::timerEvent(QTimerEvent * e)
+{
+  if( e->timerId() == appClockTimer.timerId() )
+    tick();
 }
