@@ -262,7 +262,7 @@ public:
 #ifdef USE_RENDEZVOUS
 		if (world->mRendezvous) {
 			thread thread( boost::bind( PublishPortToRendezvous, kSCRendezvous_UDP, sc_htons(mPortNum) ) );
-			mRendezvousThread = thread_namespace::move(thread);
+			mRendezvousThread = std::move(thread);
 		}
 #endif
 
@@ -406,7 +406,7 @@ public:
 #ifdef USE_RENDEZVOUS
 		if (world->mRendezvous) {
 			thread thread( boost::bind( PublishPortToRendezvous, kSCRendezvous_TCP, sc_htons(inPortNum) ) );
-			mRendezvousThread = thread_namespace::move(thread);
+			mRendezvousThread = std::move(thread);
 		}
 #endif
 
@@ -467,7 +467,7 @@ static void asioFunction()
 void startAsioThread()
 {
 	thread asioThread (&asioFunction);
-	gAsioThread = thread_namespace::move(asioThread);
+	gAsioThread = std::move(asioThread);
 }
 
 void stopAsioThread()

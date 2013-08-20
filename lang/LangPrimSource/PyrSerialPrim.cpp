@@ -337,8 +337,8 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 	m_rxErrors[0] = m_rxErrors[1] = 0;
 
 	try {
-		thread thread(thread_namespace::bind(&SerialPort::threadLoop, this));
-		m_thread = thread_namespace::move(thread);
+		thread thread(std::bind(&SerialPort::threadLoop, this));
+		m_thread = std::move(thread);
 	} catch(std::exception & e) {
 		close(m_fd);
 		throw e;
