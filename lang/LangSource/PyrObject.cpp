@@ -1187,7 +1187,7 @@ void buildBigMethodMatrix()
 	ColumnDescriptor *sels = (ColumnDescriptor*)pyr_pool_compile->Alloc(numSelectors * sizeof(ColumnDescriptor));
 	MEMFAIL(sels);
 	if (helperThreadCount)
-		compileThreadPool.schedule(boost::bind(&prepareColumnTable, sels, numSelectors));
+		compileThreadPool.schedule(std::bind(&prepareColumnTable, sels, numSelectors));
 	else
 		prepareColumnTable(sels, numSelectors);
 
@@ -1212,14 +1212,14 @@ void buildBigMethodMatrix()
 	const int classesPerThread = numClasses/cpuCount;
 	const int selectorsPerThread = numSelectors/cpuCount;
 	for (i = 0; i != helperThreadCount; ++i)
-		compileThreadPool.schedule(boost::bind(&calcRowStats, bigTable, sels, numClasses, numSelectors,
+		compileThreadPool.schedule(std::bind(&calcRowStats, bigTable, sels, numClasses, numSelectors,
 											   selectorsPerThread * i, selectorsPerThread * (i+1)));
 
 	calcRowStats(bigTable, sels, numClasses, numSelectors, helperThreadCount*selectorsPerThread, numSelectors);
 	if (helperThreadCount) compileThreadPool.wait();
 
 	for (i = 0; i != helperThreadCount; ++i)
-		compileThreadPool.schedule(boost::bind(&updateSelectorRowWidth, sels,
+		compileThreadPool.schedule(std::bind(&updateSelectorRowWidth, sels,
 											   selectorsPerThread * i, selectorsPerThread * (i+1)));
 
 	updateSelectorRowWidth(sels, helperThreadCount*selectorsPerThread, numSelectors);
@@ -1233,7 +1233,7 @@ void buildBigMethodMatrix()
 	// bin sort the class rows to the new ordering
 	//post("reorder rows\n");
 	for (i = 0; i != helperThreadCount; ++i)
-		compileThreadPool.schedule(boost::bind(&binsortClassRows, bigTable, sels, numSelectors,
+		compileThreadPool.schedule(std::bind(&binsortClassRows, bigTable, sels, numSelectors,
 											   classesPerThread * i, classesPerThread * (i+1)));
 
 	binsortClassRows(bigTable, sels, numSelectors, helperThreadCount*classesPerThread, numClasses);
@@ -1358,7 +1358,7 @@ static void fillClassRow(PyrClass *classobj, PyrMethod** bigTable, boost::atomic
 		if (numSubclasses > 4*cpuCount) {
 			int subclassesPerThread = numSubclasses / cpuCount;
 			for (int i = 0; i != helperThreadCount; ++i)
-				compileThreadPool.schedule(boost::bind(&fillClassRowSubClasses, subclasses,
+				compileThreadPool.schedule(std::bind(&fillClassRowSubClasses, subclasses,
 													   subclassesPerThread * i, subclassesPerThread * (i+1),
 													   bigTable, rCount));
 			fillClassRowSubClasses(subclasses, subclassesPerThread * helperThreadCount, numSubclasses, bigTable, rCount);
