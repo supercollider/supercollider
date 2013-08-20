@@ -8,7 +8,7 @@
 #error please define endianness
 #endif
 
-#include "oscpack/osc/OscOutboundPacketStream.cpp"
-#include "oscpack/osc/OscPrintReceivedElements.cpp"
-#include "oscpack/osc/OscReceivedElements.cpp"
-#include "oscpack/osc/OscTypes.cpp"
+#include "oscpack_1_1_0/osc/OscOutboundPacketStream.cpp"
+#include "oscpack_1_1_0/osc/OscPrintReceivedElements.cpp"
+#include "oscpack_1_1_0/osc/OscReceivedElements.cpp"
+#include "oscpack_1_1_0/osc/OscTypes.cpp"
