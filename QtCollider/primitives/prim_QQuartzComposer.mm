@@ -43,7 +43,7 @@ extern PyrClass *class_identdict;
 namespace QtCollider {
     
 // conversion functions
-static id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr) {
+static id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr, VMGlobals *g) {
     
     int err;
     // find the value type and set appropriately
@@ -104,7 +104,7 @@ static id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr) {
                 if (err) {returnErr = &err; return NULL;}
                 NSString *key = [NSString  stringWithCString: keysymbol->name encoding: NSUTF8StringEncoding];
                 int innerErr;
-                id innerSCObject = getNSObjectForSCObject(element + 1, &innerErr);
+                id innerSCObject = getNSObjectForSCObject(element + 1, &innerErr, g);
                 if(!innerSCObject) { returnErr = &innerErr; return NULL;}
                 [structure setObject: innerSCObject forKey: key];
             }
@@ -120,7 +120,7 @@ static id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr) {
         for(int i =0; i<len; i++){
             PyrSlot *element = slotRawObject(array)->slots+i;
             int innerErr;
-            id innerSCObject = getNSObjectForSCObject(element, &innerErr);
+            id innerSCObject = getNSObjectForSCObject(element, &innerErr, g);
             if(!innerSCObject) { returnErr = &innerErr; return NULL;}
             [structure addObject: innerSCObject];
         }
@@ -153,7 +153,7 @@ static id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr) {
     
 extern void initialize_image_object( struct VMGlobals *g, struct PyrObject *obj, Image *image );
 
-static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type)
+static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type, VMGlobals *g)
 {
     if([type isEqualToString:QCPortTypeBoolean]) {
         SetBool(slot, [nsObject boolValue]);
@@ -166,13 +166,10 @@ static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type)
         return errNone;
     } else if([type isEqualToString:QCPortTypeString]) {
         const char * cstr = [nsObject UTF8String];
-        VMGlobals *g = gMainVMGlobals;
         PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(slot, string);
         return errNone;
     } else if([type isEqualToString:QCPortTypeColor]) {
-        
-        VMGlobals *g = gMainVMGlobals;
         PyrObject* colorObj = instantiateObject(g->gc, s_color->u.classobj, 0, false, true);
         
         PyrSlot *slots = colorObj->slots;
@@ -188,9 +185,7 @@ static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type)
         // for the moment QC seems to deal with all internal structures as NSCFDictionary
         // but check here to be safe
         if([nsObject isKindOfClass: [NSDictionary class]]){
-            NSLog(@"it's a dict");
             PyrObject *dict, *array;
-            VMGlobals *g = gMainVMGlobals;
             
             dict = instantiateObject(g->gc, class_identdict, 5, true, false);
             array = newPyrArray(g->gc, 4, 0, false);
@@ -222,7 +217,7 @@ static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type)
                     innerType = QCPortTypeStructure;
                 } else return errWrongType; // it's something else
                 
-                int err = getSCObjectForNSObject(&innerSlot, innerNSObject, innerType);
+                int err = getSCObjectForNSObject(&innerSlot, innerNSObject, innerType, g);
                 if(err) return err;
                 
                 PyrSlot outKey;
@@ -240,7 +235,6 @@ static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type)
         
     }
     else if([type isEqualToString:QCPortTypeImage]) { // QImage
-        VMGlobals *g = gMainVMGlobals;
         NSImage *nsimage = (NSImage*)nsObject;
         CGImageRef cgImage = [nsimage CGImageForProposedRect:NULL context:NULL hints:NULL];
         QPixmap pixmap = QPixmap::fromMacCGImageRef (cgImage);
@@ -277,7 +271,7 @@ QC_LANG_PRIMITIVE( QQuartzComposer_SetInputPort, 2, PyrSlot *r, PyrSlot *a, VMGl
     if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
     
     int err = errNone;
-    id val = getNSObjectForSCObject(a+1, &err);
+    id val = getNSObjectForSCObject(a+1, &err, g);
     if(err) return err;
     
     view->setInputPort(key, val);
@@ -306,7 +300,7 @@ QC_LANG_PRIMITIVE( QQuartzComposer_GetInputPort, 1, PyrSlot *r, PyrSlot *a, VMGl
     NSString *type = view->getTypeForKey(key);
     
     id nsObject = view->getInputPort(key);
-    int err = getSCObjectForNSObject(r, nsObject, type);
+    int err = getSCObjectForNSObject(r, nsObject, type, g);
     if (err) {
         SetNil(r);
         return err;
@@ -335,7 +329,7 @@ QC_LANG_PRIMITIVE( QQuartzComposer_GetOutputPort, 1, PyrSlot *r, PyrSlot *a, VMG
     NSString *type = view->getTypeForKey(key);
     
     id nsObject = view->getOutputPort(key);
-    int err = getSCObjectForNSObject(r, nsObject, type);
+    int err = getSCObjectForNSObject(r, nsObject, type, g);
     if (err) {
         SetNil(r);
         return err;
