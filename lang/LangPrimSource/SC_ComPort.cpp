@@ -56,7 +56,7 @@ static void asioFunction()
 void startAsioThread()
 {
 	thread asioThread (&asioFunction);
-	gAsioThread = thread_namespace::move(asioThread);
+	gAsioThread = std::move(asioThread);
 }
 
 void stopAsioThread()
