@@ -43,8 +43,7 @@ extern PyrClass *class_identdict;
 namespace QtCollider {
     
 // conversion functions
-id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr);
-id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr) {
+static id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr) {
     
     int err;
     // find the value type and set appropriately
@@ -153,9 +152,8 @@ id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr) {
 }
     
 extern void initialize_image_object( struct VMGlobals *g, struct PyrObject *obj, Image *image );
-    
-int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type);
-int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type)
+
+static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type)
 {
     if([type isEqualToString:QCPortTypeBoolean]) {
         SetBool(slot, [nsObject boolValue]);
