@@ -8,27 +8,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=i686 -msse -msse2 -mfpmath=sse")
     endif()
 
-    if(NOT SC_CPP11)
-      message(FATAL_ERROR "supernova/osx requires c++11 support. please configure the build with -DSC_CPP11=ON")
-    endif()
-  endif()
-
   if(${_gcc_version} VERSION_LESS 4.7)
     message(FATAL_ERROR "supernova requires at least gcc-4.7. please configure the build with -DSUPERNOVA=OFF")
   endif()
 
 endif(CMAKE_COMPILER_IS_GNUCXX)
-
-
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_INTEL OR CMAKE_COMPILER_IS_CLANG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-    message(FATAL_ERROR "unknown compiler. supernova cannot be compiled")
-endif()
-
-if(APPLE AND CMAKE_COMPILER_IS_CLANG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-endif()
 
 
 if(SN_MEMORY_DEBUGGING)
