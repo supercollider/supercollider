@@ -245,7 +245,7 @@ SC_DLLEXPORT_C void schedInit()
 #ifdef SC_DARWIN
 	syncOSCOffsetWithTimeOfDay();
 	thread thread(resyncThread);
-	gResyncThread = thread_namespace::move(thread);
+	gResyncThread = std::move(thread);
 
 	gHostStartNanos = AudioConvertHostTimeToNanos(AudioGetCurrentHostTime());
 	gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
@@ -288,7 +288,7 @@ double OSCToElapsedTime(int64 oscTime)
 	return (double)(oscTime - gElapsedOSCoffset) * kOSCtoSecs;
 }
 
-void ElapsedTimeToChrono(double elapsed, mutex_chrono::system_clock::time_point & out_time_point)
+void ElapsedTimeToChrono(double elapsed, chrono::system_clock::time_point & out_time_point)
 {
 	int64 oscTime = ElapsedTimeToOSC(elapsed);
 
@@ -296,7 +296,7 @@ void ElapsedTimeToChrono(double elapsed, mutex_chrono::system_clock::time_point 
 	int32 nano_secs = (int32)((oscTime & 0xFFFFFFFF) * kOSCtoNanos);
 
 
-	using namespace mutex_chrono;
+	using namespace chrono;
 #if 0 // TODO: check system_clock precision
 	system_clock::time_point time_point = system_clock::time_point(seconds(secs) + nanoseconds(nano_secs));
 #else
@@ -445,7 +445,7 @@ static void schedRunFunc()
 		do {
 			elapsed = elapsedTime();
 			if (elapsed >= slotRawFloat(inQueue->slots + 1)) break;
-			mutex_chrono::system_clock::time_point absTime;
+			chrono::system_clock::time_point absTime;
 
 			ElapsedTimeToChrono(slotRawFloat(inQueue->slots + 1), absTime);
 
@@ -609,7 +609,7 @@ static void SC_LinuxSetRealtimePriority(pthread_t thread, int priority)
 SC_DLLEXPORT_C void schedRun()
 {
 	thread thread(schedRunFunc);
-	gSchedThread = thread_namespace::move(thread);
+	gSchedThread = std::move(thread);
 
 #ifdef SC_DARWIN
         int policy;
@@ -749,8 +749,8 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	mQueue->size = 1;
 	SetInt(&mQueue->count, 0);
 
-	thread thread(thread_namespace::bind(&TempoClock::Run, this));
-	mThread = thread_namespace::move(thread);
+	thread thread(std::bind(&TempoClock::Run, this));
+	mThread = std::move(thread);
 
 #ifdef SC_DARWIN
 	int machprio;
@@ -777,7 +777,7 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 void TempoClock::StopReq()
 {
 	//printf("->TempoClock::StopReq\n");
-	thread stopThread(thread_namespace::bind(&TempoClock::StopAndDelete, this));
+	thread stopThread(std::bind(&TempoClock::StopAndDelete, this));
 	stopThread.detach();
 
 	//printf("<-TempoClock::StopReq\n");
@@ -862,7 +862,7 @@ void* TempoClock::Run()
 			elapsedBeats = ElapsedBeats();
 			if (elapsedBeats >= slotRawFloat(mQueue->slots)) break;
 
-			mutex_chrono::system_clock::time_point absTime;
+			chrono::system_clock::time_point absTime;
 
 			//printf("event ready at %g . elapsed beats %g\n", mQueue->slots->uf, elapsedBeats);
 			double wakeTime = BeatsToSecs(slotRawFloat(mQueue->slots));

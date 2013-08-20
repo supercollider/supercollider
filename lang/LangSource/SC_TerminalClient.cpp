@@ -374,7 +374,7 @@ void SC_TerminalClient::onQuit( int exitCode )
 	stop();
 }
 
-extern void ElapsedTimeToChrono(double elapsed, mutex_chrono::system_clock::time_point & out_time_point);
+extern void ElapsedTimeToChrono(double elapsed, chrono::system_clock::time_point & out_time_point);
 
 void SC_TerminalClient::tick( const boost::system::error_code& error )
 {
@@ -387,7 +387,7 @@ void SC_TerminalClient::tick( const boost::system::error_code& error )
 
 	flush();
 
-	mutex_chrono::system_clock::time_point nextAbsTime;
+	chrono::system_clock::time_point nextAbsTime;
 	ElapsedTimeToChrono( secs, nextAbsTime );
 
 	if (haveNext) {
@@ -588,8 +588,8 @@ void SC_TerminalClient::initInput()
 
 void SC_TerminalClient::startInput()
 {
-	thread thread(thread_namespace::bind(&SC_TerminalClient::inputThreadFn, this));
-	mInputThread = thread_namespace::move(thread);
+	thread thread(std::bind(&SC_TerminalClient::inputThreadFn, this));
+	mInputThread = std::move(thread);
 }
 
 void SC_TerminalClient::endInput()

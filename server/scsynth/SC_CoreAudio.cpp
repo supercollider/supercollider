@@ -448,8 +448,8 @@ void SC_ScheduledEvent::Perform()
 bool SC_AudioDriver::Setup()
 {
 	mRunThreadFlag = true;
-	thread thread(thread_namespace::bind(&SC_AudioDriver::RunThread, this));
-	mThread = thread_namespace::move(thread);
+	thread thread(std::bind(&SC_AudioDriver::RunThread, this));
+	mThread = std::move(thread);
 
 	int numSamples;
 	double sampleRate;
