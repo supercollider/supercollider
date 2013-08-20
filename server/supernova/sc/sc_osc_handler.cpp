@@ -1119,9 +1119,9 @@ static void apply_control_bus_mapping(server_node & node, slot_type slot, int bu
 template <typename control_id_type>
 void set_control_array(server_node * node, control_id_type control, osc::ReceivedMessageArgumentIterator & it)
 {
-    size_t array_size = it->ArraySize(); ++it;
+    size_t array_size = it->ComputeArrayItemCount(); ++it;
 
-    if (it->IsArrayStart()) {
+    if (it->IsArrayBegin()) {
         // nested arrays are basically user errors, but we handle them like normal arrays
         log("Warning in /s_new handler: nested array argument detected");
         set_control_array<control_id_type>(node, control, it);
@@ -1161,7 +1161,7 @@ void set_control_array(server_node * node, control_id_type control, osc::Receive
 template <typename ControlSpecifier>
 void set_control(server_node * node, ControlSpecifier const & control, osc::ReceivedMessageArgumentIterator & it)
 {
-    if (it->IsArrayStart())
+    if (it->IsArrayBegin())
         set_control_array(node, control, it);
     else if (it->IsString() || it->IsSymbol()) {
         char const * name = it->AsStringUnchecked(); ++it;
@@ -2037,7 +2037,7 @@ completion_message extract_completion_message(osc::ReceivedMessageArgumentStream
 completion_message extract_completion_message(osc::ReceivedMessageArgumentIterator & it)
 {
     const void * data = 0;
-    unsigned long length = 0;
+    osc::osc_bundle_element_size_t length = 0;
 
     if (it->IsBlob())
         it->AsBlobUnchecked(data, length);
@@ -3017,7 +3017,7 @@ void handle_d_recv(received_message const & msg,
                    endpoint_ptr endpoint)
 {
     const void * synthdef_data;
-    unsigned long synthdef_size;
+    osc::osc_bundle_element_size_t synthdef_size;
 
     osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin();
 
