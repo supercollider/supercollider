@@ -156,14 +156,14 @@ Color {
 	storeArgs { ^[red,green,blue,alpha] }
 
 	// FIXME The following GUI redirections are rather ugly.
-	// Shall we make GUI.color instead, and then CocoaColor, SwingColor, QColor etc. ?
+	// Shall we make GUI.color instead, and then SwingColor, QColor etc. ?
 
 	setStroke {
-		if( GUI.id === \cocoa ) { ^this.cocoaPrSetStroke } { Pen.strokeColor = this; }
+		 Pen.strokeColor = this;
 	}
 
 	setFill {
-		if( GUI.id === \cocoa ) { ^this.cocoaPrSetFill } { Pen.fillColor = this; }
+		Pen.fillColor = this;
 	}
 
 	set {

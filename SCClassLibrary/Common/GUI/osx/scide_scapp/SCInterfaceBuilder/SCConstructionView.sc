@@ -1,5 +1,0 @@
-SCConstructionView : SCUserView{
-	*viewClass { ^SCUserView }
-
-
-}
