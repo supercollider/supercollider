@@ -122,13 +122,8 @@ PageLayout  {
 		var fs, b,wb,wbw,wbh;
 
 		b = this.view.resizeToFit(reflow);
-		if(GUI.scheme.id == \cocoa,{
-			wbw = b.width + 4;
-			wbh = b.height + 17;
-		},{
-			wbw = b.width + 11;
-			wbh = b.height + 15;
-		});
+		wbw = b.width + 11;
+		wbh = b.height + 15;
 		window.setInnerExtent(wbw,wbh);
 
 		if(center and: {window.respondsTo(\setTopLeftBounds)}) {
