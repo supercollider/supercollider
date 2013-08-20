@@ -7,6 +7,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
       # cmpxchg8b is available on all intel apples
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=i686 -msse -msse2 -mfpmath=sse")
     endif()
+  endif()
 
   if(${_gcc_version} VERSION_LESS 4.7)
     message(FATAL_ERROR "supernova requires at least gcc-4.7. please configure the build with -DSUPERNOVA=OFF")
@@ -143,7 +144,7 @@ target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES})
 if (Boost_FOUND)
     target_link_libraries(libsupernova ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
 else()
-    target_link_libraries(libsupernova boost_thread boost_system boost_filesystem boost_program_options)
+    target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options)
 endif()
 
 target_link_libraries(supernova libsupernova)
