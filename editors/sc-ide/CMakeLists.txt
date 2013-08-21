@@ -242,9 +242,9 @@ if(APPLE)
     endif()
 
     # set how it shows up in the Info.plist file
-    SET(MACOSX_BUNDLE_ICON_FILE ../../platform/mac/SCcube.icns)
-
-    install(DIRECTORY ../../platform/mac/Resources/ DESTINATION ${scappauxresourcesdir})
+    SET(MACOSX_BUNDLE_ICON_FILE ../../icons/SCcube.icns)
+    
+    install(FILES ${MACOSX_BUNDLE_ICON_FILE} DESTINATION ${scappauxresourcesdir}/) 
 
     install(FILES ${translations}
             DESTINATION ${scappauxresourcesdir}/translations)
