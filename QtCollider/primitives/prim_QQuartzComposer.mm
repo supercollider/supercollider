@@ -19,6 +19,7 @@
 
 #import <Quartz/Quartz.h>
 #include "primitives.h"
+#include "image_primitive_helper_funcs.h"
 #include "../QObjectProxy.h"
 #include "../QcObjectFactory.h"
 #include "../QcApplication.h"
@@ -150,8 +151,6 @@ static id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr, VMGlobals *g
     }
     
 }
-    
-extern void initialize_image_object( struct VMGlobals *g, struct PyrObject *obj, Image *image );
 
 static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type, VMGlobals *g)
 {
