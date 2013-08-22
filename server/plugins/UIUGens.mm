@@ -349,7 +349,8 @@ PluginLoad(UIUGens)
 	ft = inTable;
 
 	thread thread( gstate_update_func );
-	uiListenThread = thread_namespace::move(thread);
+	uiListenThread = std::move(thread);
+	uiListenThread.detach();
 
 	DefineSimpleUnit(KeyState);
 

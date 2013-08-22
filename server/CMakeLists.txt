@@ -16,9 +16,7 @@ else()
         set(Boost_THREAD_LIBRARY boost_thread)
 endif()
 
-if (SC_CPP11)
-  set(Boost_THREAD_LIBRARY "")
-endif()
+set(Boost_THREAD_LIBRARY "")
 
 # here we choose who provides us with the FFT lib
 if (APPLE)

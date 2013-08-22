@@ -43,11 +43,9 @@ Q_DECLARE_METATYPE( QVector<int> );
 namespace QtCollider {
 
   enum EventType {
-    Event_SCRequest_Input = QEvent::User,
-    Event_SCRequest_Sched,
+    Event_SCRequest_Work = QEvent::User,
+    Event_SCRequest_Tick,
     Event_SCRequest_Quit,
-    Event_SCRequest_Recompile,
-    Event_SCRequest_Stop,
     Event_ScMethodCall,
     Event_Refresh,
     Event_Proxy_SetProperty,

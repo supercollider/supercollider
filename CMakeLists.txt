@@ -55,12 +55,6 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 #		add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
 #	endif()
 
-	option(DSO_VISIBILITY "DSO visibility support for gcc" OFF)
-
-	if (DSO_VISIBILITY)
-		add_definitions(-fvisibility=hidden)
-	endif()
-
 	if(APPLE)
 		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
 		if ("${_gcc_version_info}" MATCHES "Apple")
@@ -81,14 +75,6 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 
 else()
 
-endif()
-
-if(CMAKE_COMPILER_IS_CLANG)
-    option(DSO_VISIBILITY "DSO visibility support for clang" OFF)
-
-    if(DSO_VISIBILITY)
-        add_definitions(-fvisibility=hidden)
-    endif()
 endif()
 
 if(APPLE)
@@ -177,10 +163,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
-option(SC_CPP11 "Compile in C++11 mode" OFF)
 
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
 option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
+
+option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 
 #############################################
 # some default libraries
@@ -223,7 +210,7 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 	if (SSE)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   -msse")
 		set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -msse")
-		if(NOT APPLE)
+		if(NOT APPLE AND NOT CMAKE_COMPILER_IS_CLANG)
 			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpmath=sse")
 			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpmath=sse")
 		endif()
@@ -237,21 +224,25 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 	endif()
 
-	if (SC_CPP11)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-		if(CMAKE_COMPILER_IS_CLANG)
-			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-		endif()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+	set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -std=c++11")
+	if(CMAKE_COMPILER_IS_CLANG)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+		set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
 	endif()
+
+	if(FORTIFY)
+		add_definitions( -D_FORTIFY_SOURCE=2 )
+	endif()
+
+	add_definitions(-fvisibility=hidden)
 endif()
 
 if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	if (SSE)
 		add_definitions(-mia32)
 	endif()
-	if (SC_CPP11)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	endif()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 	# disable warnings
 	add_definitions(-diag-disable 170) # pointer points outside of underlying object ... used heavily in sclang
@@ -307,7 +298,7 @@ if(APPLE)
 	set(auxresourcesdir ${scappauxresourcesdir})
 
 	# Some aux files which go in the app's folder
-	install(FILES README.txt ChangeLog COPYING AUTHORS platform/mac/MOVED_STUFF.txt
+    install(FILES README.txt ChangeLog COPYING AUTHORS MOVED_STUFF.txt
 		DESTINATION ${scappbundlename}
 	)
 elseif (WIN32)
@@ -479,7 +470,7 @@ if(APPLE)
 #	set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${PROJECT_VERSION}")
 	set(CPACK_DMG_DS_STORE "${CMAKE_SOURCE_DIR}/package/ds_store")
 	set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/package/background.png")
-	set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/platform/mac/Resources/SCcube.icns")
+    set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/icons/SCcube.icns")
 endif()
 
 if(NOT WIN32) # We define a custom 'package' target in platform/windows/CMakeLists.txt

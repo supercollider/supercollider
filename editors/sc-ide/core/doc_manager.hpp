@@ -47,14 +47,14 @@ class Document : public QObject
     friend class DocumentManager;
 
 public:
-    Document( bool isPlainText );
-	Document( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string );
+    Document( bool isPlainText, const QByteArray & id = QByteArray(),
+              const QString & title = QString(),
+              const QString & text = QString() );
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
     const QString & filePath() { return mFilePath; }
     const QString & title() { return mTitle; }
-    void setTitle(const QString & title) { mTitle = title; }
 
     QFont defaultFont() const { return mDoc->defaultFont(); }
     void setDefaultFont( const QFont & font );
@@ -105,21 +105,19 @@ public:
     }
 
     void create();
-    void create(const QByteArray & quuid, const QString & title, const QString & string);
     void close( Document * );
     bool save( Document * );
     bool saveAs( Document *, const QString & path );
     bool reload( Document * );
     const QStringList & recents() const { return mRecent; }
-    Document * getDocByID(const QByteArray docID);
-    void showDocument(Document * doc) { Q_EMIT( showRequest(doc, 0, -1) ); }
-    void changeDocumentTitle(Document * doc, const QString &);
+    Document * documentForId(const QByteArray id);
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
     Document * open( const QString & path, int initialCursorPosition = -1, int selectionLength = 0, bool addToRecent = true );
     void clearRecents();
     void storeSettings( Settings::Manager * );
+    void handleScLangMessage( const QString &selector, const QString &data );
 
 Q_SIGNALS:
     void opened( Document *, int cursorPosition, int selectionLength );
@@ -134,14 +132,23 @@ private slots:
     void onFileChanged( const QString & path );
 
 private:
-    Document * createDocument( bool isPlainText );
-    Document * createDocument( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string  );
+    Document * createDocument( bool isPlainText = false,
+                               const QByteArray & id = QByteArray(),
+                               const QString & title = QString(),
+                               const QString & text = QString()  );
     bool doSaveAs( Document *, const QString & path );
     void addToRecent( Document * );
     void loadRecentDocuments( Settings::Manager * );
     void closeSingleUntitledIfUnmodified();
     QString decodeDocument(QByteArray const &);
-
+    void handleDocListScRequest();
+    void handleNewDocScRequest( const QString & data );
+    void handleGetDocTextScRequest( const QString & data );
+    void handleSetDocTextScRequest( const QString & data );
+    void handleSetCurrentDocScRequest( const QString & data );
+    void handleCloseDocScRequest( const QString & data );
+    void handleSetDocTitleScRequest( const QString & data );
+    void syncLangDocument( Document * );
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
 

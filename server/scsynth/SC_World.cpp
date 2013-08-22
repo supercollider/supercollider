@@ -986,6 +986,8 @@ SC_DLLEXPORT_C void World_Cleanup(World *world)
 {
 	if (!world) return;
 
+	scsynth::stopAsioThread();
+
 	HiddenWorld *hw = world->hw;
 
 	if (hw && world->mRealTime) hw->mAudioDriver->Stop();
@@ -994,15 +996,14 @@ SC_DLLEXPORT_C void World_Cleanup(World *world)
 
 	if (world->mTopGroup) Group_DeleteAll(world->mTopGroup);
 
-	scsynth::stopAsioThread();
-
-	reinterpret_cast<SC_Lock*>(world->mDriverLock)->lock(); // never unlock..
+	reinterpret_cast<SC_Lock*>(world->mDriverLock)->lock();
 	if (hw) {
 		sc_free(hw->mWireBufSpace);
 		delete hw->mAudioDriver;
 		hw->mAudioDriver = 0;
 	}
 	delete reinterpret_cast<SC_Lock*>(world->mNRTLock);
+	reinterpret_cast<SC_Lock*>(world->mDriverLock)->unlock();
 	delete reinterpret_cast<SC_Lock*>(world->mDriverLock);
 	World_Free(world, world->mTopGroup);
 

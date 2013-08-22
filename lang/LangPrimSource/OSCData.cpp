@@ -290,20 +290,32 @@ static int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sen
 		// send TCP
 		ip::tcp::socket & socket = comPort->Socket();
 
+		boost::system::error_code errc;
+
 		if (sendMsgLen) {
 			// send length of message in network byte-order
 			int32 sizebuf = sc_htonl(msglen);
-			write( socket, buffer(&sizebuf, sizeof(int32)) );
+			write( socket, buffer(&sizebuf, sizeof(int32)), errc );
 		}
 
-		write( socket, buffer(bufptr, msglen) );
+		if (!errc)
+			write( socket, buffer(bufptr, msglen), errc );
+
+		if (errc)
+		{
+			::error("Error in netAddrSend: %s\n", errc.message().c_str());
+			return errFailed;
+		}
+
+		return errNone;
+
 	} else {
 		if (gUDPport == 0) return errFailed;
 
-		int err, port, addr;
 
 		// send UDP
-		err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
+		int addr;
+		int err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
 		if (err) return err;
 
 		if (addr == 0) {
@@ -315,11 +327,14 @@ static int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sen
 			return errNone;
 		}
 
+		int port;
 		err = slotIntVal(netAddrObj->slots + ivxNetAddr_PortID, &port);
 		if (err) return err;
 
+		unsigned long ulAddress = (unsigned int)addr;
+
 		using namespace boost::asio;
-		ip::udp::endpoint address(ip::address_v4(addr), port);
+		ip::udp::endpoint address(ip::address_v4(ulAddress), port);
 
 		gUDPport->Socket().send_to( buffer(bufptr, msglen), address );
 	}
@@ -400,8 +415,6 @@ static int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
 	int error = makeSynthMsgWithTags(&packet, args, numargs);
 	if (error != errNone)
 		return error;
-
-	//for (int i=0; i<packet.size()/4; i++) post("%d %p\n", i, packet.buf[i]);
 
 	return netAddrSend(slotRawObject(netAddrSlot), packet.size(), (char*)packet.buf);
 }
@@ -805,6 +818,22 @@ static int prGetHostByName(VMGlobals *g, int numArgsPushed)
 	int err = slotStrVal(a, hostname, 255);
 	if (err) return err;
 
+#if 1
+	struct hostent *he = gethostbyname(hostname);
+	if (!he) {
+#ifdef _WIN32
+		int err = WSAGetLastError();
+		error("gethostbyname(\"%s\") failed with error code %i.\n",
+			hostname, err);
+#endif
+		return errFailed;
+	}
+
+	SetInt(a, sc_ntohl(*(int*)he->h_addr));
+
+	return errNone;
+
+#else
 	boost::asio::ip::address address;
 	boost::system::error_code err_c;
 	using boost::asio::ip::udp;
@@ -820,6 +849,7 @@ static int prGetHostByName(VMGlobals *g, int numArgsPushed)
 		SetInt(a, iterator->endpoint().address().to_v4().to_ulong() );
 
 	return errNone;
+#endif
 }
 
 int prGetLangPort(VMGlobals *g, int numArgsPushed);
@@ -958,7 +988,7 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 		World *world = gInternalSynthServer.mWorld;
 		gInternalSynthServer.mWorld = 0;
 
-		thread thread(thread_namespace::bind(World_WaitForQuit, world));
+		thread thread(std::bind(World_WaitForQuit, world));
 
 		thread.detach();
 	}
