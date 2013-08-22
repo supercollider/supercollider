@@ -44,39 +44,30 @@ extern PyrClass *class_identdict;
 namespace QtCollider {
     
 // conversion functions
-static id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr, VMGlobals *g) {
+static int getNSObjectForSCObject(PyrSlot *scobject, id *returnID, VMGlobals *g) {
     
-    int err;
+    int err = errNone;
+    id returnObject;
     // find the value type and set appropriately
     if(IsFloat(scobject)) { // it's a float
         float val;
         err = slotFloatVal(scobject, &val);
-        if (err) {returnErr = &err; return NULL;}
-        NSNumber *returnObject = [NSNumber numberWithFloat: val];
-        if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
-        return returnObject;
+        if (err) { *returnID = NULL; return err; }
+        returnObject = [NSNumber numberWithFloat: val];
     } else if(IsInt(scobject)) { // it's an int
         int val;
         err = slotIntVal(scobject, &val);
-        if (err) {returnErr = &err; return NULL;}
-        NSNumber *returnObject = [NSNumber numberWithInt: val];
-        if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
-        return returnObject;
+        if (err) { *returnID = NULL; return err; }
+        returnObject = [NSNumber numberWithInt: val];
     } else if(IsTrue(scobject)) { // it's bool true
-        NSNumber *returnObject = [NSNumber numberWithBool: YES];
-        if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
-        return returnObject;
+        returnObject = [NSNumber numberWithBool: YES];
     } else if(IsFalse(scobject)) { // it's bool false
-        NSNumber *returnObject = [NSNumber numberWithBool: NO];
-        if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
-        return returnObject;
+        returnObject = [NSNumber numberWithBool: NO];
     } else if(isKindOfSlot(scobject, s_string->u.classobj)) { // it's a string
         PyrString *string = slotRawString(scobject);
-        if(string->size == 0) { err = errFailed; returnErr = &err; return NULL;}
-        NSString *returnObject = [NSString stringWithCString: string->s encoding:NSUTF8StringEncoding];
-        returnObject = [returnObject substringToIndex: string->size];
-        if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
-        return returnObject;
+        if(string->size == 0) { *returnID = NULL; return errFailed; }
+        NSString *returnString = [NSString stringWithCString: string->s encoding:NSUTF8StringEncoding];
+        returnObject = [returnString substringToIndex: string->size];
     } else if(isKindOfSlot(scobject, s_color->u.classobj)) { // it's a color
         PyrSlot *slots = slotRawObject(scobject)->slots;
         
@@ -86,14 +77,12 @@ static id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr, VMGlobals *g
         if (!err) err = slotFloatVal(slots+2, &blue);
         if (!err) err = slotFloatVal(slots+3, &alpha);
         
-        if (err) {returnErr = &err; return NULL;}
-        NSColor *returnObject = [NSColor colorWithCalibratedRed: red green: green blue: blue alpha: alpha];
-        if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
-        return returnObject;
+        if (err) { *returnID = NULL; return err; }
+        returnObject = [NSColor colorWithCalibratedRed: red green: green blue: blue alpha: alpha];
     } else if(isKindOfSlot(scobject, s_identitydictionary->u.classobj)) { // it's a structure (dict)
         PyrObject *array;
         array = slotRawObject(&(slotRawObject(scobject)->slots[ivxIdentDict_array]));
-        if (!isKindOf((PyrObject*)array, class_array)) { err = errFailed; returnErr = &err; return NULL;}
+        if (!isKindOf((PyrObject*)array, class_array)) { *returnID = NULL; return errFailed; }
         NSMutableDictionary *structure = [NSMutableDictionary dictionary];
         int len = array->size;
         
@@ -102,17 +91,15 @@ static id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr, VMGlobals *g
             if(!IsNil(element)) {
                 PyrSymbol *keysymbol;
                 err = slotSymbolVal(element, &keysymbol);
-                if (err) {returnErr = &err; return NULL;}
+                if (err) { *returnID = NULL; return err; }
                 NSString *key = [NSString  stringWithCString: keysymbol->name encoding: NSUTF8StringEncoding];
-                int innerErr;
-                id innerSCObject = getNSObjectForSCObject(element + 1, &innerErr, g);
-                if(!innerSCObject) { returnErr = &innerErr; return NULL;}
+                id innerSCObject;
+                int innerErr = getNSObjectForSCObject(element + 1, &innerSCObject, g);
+                if(!innerSCObject) { *returnID = NULL; return innerErr;}
                 [structure setObject: innerSCObject forKey: key];
             }
         }
-        err = errNone;
-        returnErr = &err;
-        return structure;
+        returnObject = structure;
     } else if(isKindOfSlot(scobject, class_array)) { // it's a structure (array)
         PyrSlot *array = scobject;
         int len = slotRawObject(array)->size;
@@ -120,36 +107,31 @@ static id getNSObjectForSCObject(PyrSlot *scobject, int *returnErr, VMGlobals *g
         
         for(int i =0; i<len; i++){
             PyrSlot *element = slotRawObject(array)->slots+i;
-            int innerErr;
-            id innerSCObject = getNSObjectForSCObject(element, &innerErr, g);
-            if(!innerSCObject) { returnErr = &innerErr; return NULL;}
+            id innerSCObject;
+            int innerErr = getNSObjectForSCObject(element, &innerSCObject, g);
+            if(!innerSCObject) { *returnID = NULL; return innerErr; }
             [structure addObject: innerSCObject];
         }
-        
-        err = errNone;
-        returnErr = &err;
-        return structure;
+        returnObject = structure;
     } else if(isKindOfSlot(scobject, SC_CLASS(QImage))) { // it's an image
         SharedImage *img = reinterpret_cast<SharedImage*>( slotRawPtr( slotRawObject(scobject)->slots+0 ) );
-        if((*img)->isPainting()) {
-            err = errFailed;
-            returnErr = &err;
-            return NULL;
-        }
+        if((*img)->isPainting()) { *returnID = NULL; return errFailed; }
         QPixmap pixmap = (*img)->pixmap();
         CGImageRef cgImage = pixmap.toMacCGImageRef();
-        NSImage *image = [[NSImage alloc] initWithCGImage:cgImage size:NSZeroSize];
+        returnObject = [[NSImage alloc] initWithCGImage:cgImage size:NSZeroSize];
         CGImageRelease(cgImage);
-    
-        err = errNone;
-        returnErr = &err;
-        return image;
     } else {
-        err = errWrongType; // it's something else...
-        returnErr = &err;
-        return NULL;
+        // it's something else...
+        *returnID = NULL;
+        return errWrongType;
     }
     
+    if(!returnObject) {
+        *returnID = NULL; err = errFailed;
+    } else {
+        *returnID = returnObject;
+    }
+    return err;
 }
 
 static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type, VMGlobals *g)
@@ -254,6 +236,7 @@ static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type, VM
 QC_LANG_PRIMITIVE( QQuartzComposer_SetInputPort, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
     QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+    if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
     QcQuartzComposerView* view = static_cast<QcQuartzComposerView*>(proxy->object());
     
     if( NotSym( a ) ) return errWrongType;
@@ -267,10 +250,8 @@ QC_LANG_PRIMITIVE( QQuartzComposer_SetInputPort, 2, PyrSlot *r, PyrSlot *a, VMGl
         return errFailed;
     }
     
-    if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
-    
-    int err = errNone;
-    id val = getNSObjectForSCObject(a+1, &err, g);
+    id val;
+    int err = getNSObjectForSCObject(a+1, &val, g);
     if(err) return err;
     
     view->setInputPort(key, val);
@@ -281,6 +262,7 @@ QC_LANG_PRIMITIVE( QQuartzComposer_SetInputPort, 2, PyrSlot *r, PyrSlot *a, VMGl
 QC_LANG_PRIMITIVE( QQuartzComposer_GetInputPort, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
     QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+    if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
     QcQuartzComposerView* view = static_cast<QcQuartzComposerView*>(proxy->object());
     
     if( NotSym(a) ) return errWrongType;
@@ -293,23 +275,19 @@ QC_LANG_PRIMITIVE( QQuartzComposer_GetInputPort, 1, PyrSlot *r, PyrSlot *a, VMGl
         post("There is no port with key \"%s\".\n\n", [key UTF8String]);
         return errFailed;
     }
-    
-    if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
     NSString *type = view->getTypeForKey(key);
     
     id nsObject = view->getInputPort(key);
     int err = getSCObjectForNSObject(r, nsObject, type, g);
-    if (err) {
-        SetNil(r);
-        return err;
-    }
+    if (err) return err;
     return errNone;
 }
 
 QC_LANG_PRIMITIVE( QQuartzComposer_GetOutputPort, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
     QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+    if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
     QcQuartzComposerView* view = static_cast<QcQuartzComposerView*>(proxy->object());
     
     if( NotSym(a) ) return errWrongType;
@@ -323,16 +301,11 @@ QC_LANG_PRIMITIVE( QQuartzComposer_GetOutputPort, 1, PyrSlot *r, PyrSlot *a, VMG
         return errFailed;
     }
     
-    if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
-    
     NSString *type = view->getTypeForKey(key);
     
     id nsObject = view->getOutputPort(key);
     int err = getSCObjectForNSObject(r, nsObject, type, g);
-    if (err) {
-        SetNil(r);
-        return err;
-    }
+    if (err) return err;
     return errNone;
 }
 
