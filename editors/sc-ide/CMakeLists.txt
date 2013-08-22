@@ -184,7 +184,8 @@ set(ide_sources ${ide_src} ${all_hdr} )
 
 set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations})
 
-if(FINAL_BUILD)
+# final builds of the IDE seem to be broken atm
+if(0 AND FINAL_BUILD)
   CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
   add_executable( ${ide_name} MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} )
 else()
@@ -241,9 +242,9 @@ if(APPLE)
     endif()
 
     # set how it shows up in the Info.plist file
-    SET(MACOSX_BUNDLE_ICON_FILE ../../platform/mac/SCcube.icns)
-
-    install(DIRECTORY ../../platform/mac/Resources/ DESTINATION ${scappauxresourcesdir})
+    SET(MACOSX_BUNDLE_ICON_FILE ../../icons/SCcube.icns)
+    
+    install(FILES ${MACOSX_BUNDLE_ICON_FILE} DESTINATION ${scappauxresourcesdir}/) 
 
     install(FILES ${translations}
             DESTINATION ${scappauxresourcesdir}/translations)

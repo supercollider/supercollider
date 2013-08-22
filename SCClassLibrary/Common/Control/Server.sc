@@ -757,7 +757,9 @@ Server {
 			if(notified) {
 				serverReallyQuitWatcher = OSCFunc({ |msg|
 					if(msg[1] == '/quit') {
-						statusWatcher.enable;
+						if (statusWatcher.notNil) {
+							statusWatcher.enable;
+						};
 						serverReallyQuit = true;
 						serverReallyQuitWatcher.free;
 					};
@@ -772,6 +774,7 @@ Server {
 			};
 		};
 		addr.sendMsg("/quit");
+		this.stopAliveThread;
 		if (inProcess, {
 			this.quitInProcess;
 			"quit done\n".inform;

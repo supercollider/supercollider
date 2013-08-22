@@ -46,6 +46,7 @@ void ProcessOSCPacket(OSC_Packet *inPacket, int inPortNum);
 thread gAsioThread;
 boost::asio::io_service ioService;
 
+
 static void asioFunction()
 {
 	boost::asio::io_service::work work(ioService);
@@ -55,7 +56,7 @@ static void asioFunction()
 void startAsioThread()
 {
 	thread asioThread (&asioFunction);
-	gAsioThread = thread_namespace::move(asioThread);
+	gAsioThread = std::move(asioThread);
 }
 
 void stopAsioThread()
@@ -288,6 +289,7 @@ void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code &error,
 
 	packet->mReplyAddr.mProtocol = kTCP;
 	packet->mReplyAddr.mSocket   = socket.native_handle();
+	packet->mReplyAddr.mAddress  = socket.remote_endpoint().address();
 
 	packet->mSize                 = OSCMsgLength;
 	packet->mData                 = data;

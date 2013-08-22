@@ -33,15 +33,24 @@
 #include <QTextBlock>
 #include <QApplication>
 
+#include <yaml-cpp/node.h>
+#include <yaml-cpp/parser.h>
+
 using namespace ScIDE;
 
-Document::Document( bool isPlainText ):
-    mId( QUuid::createUuid().toString().toLatin1() ),
-    mDoc( new QTextDocument(this) ),
-    mTitle( tr("Untitled") ),
+Document::Document(bool isPlainText, const QByteArray & id,
+                    const QString & title, const QString & text ):
+    mId(id),
+    mDoc(new QTextDocument(text, this)),
+    mTitle(title),
     mIndentWidth(4),
-    mHighlighter(NULL)
+    mHighlighter(0)
 {
+    if (mId.isEmpty())
+        mId = QUuid::createUuid().toString().toLatin1();
+    if (mTitle.isEmpty())
+        mTitle = tr("Untitled");
+
     mDoc->setDocumentLayout( new QPlainTextDocumentLayout(mDoc) );
 
     if (!isPlainText)
@@ -50,25 +59,6 @@ Document::Document( bool isPlainText ):
     connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
              this, SLOT(applySettings(Settings::Manager*)) );
 
-    applySettings( Main::settings() );
-}
-
-// alternate constructor for lang created Doc
-Document::Document( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string ):
-mIndentWidth(4),
-mHighlighter(NULL)
-{
-    mDoc = new QTextDocument(string, this);
-    mId = quuid;
-    mTitle = title;
-    mDoc->setDocumentLayout( new QPlainTextDocumentLayout(mDoc) );
-	
-    if (!isPlainText)
-        mHighlighter = new SyntaxHighlighter(mDoc);
-	
-    connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
-			this, SLOT(applySettings(Settings::Manager*)) );
-	
     applySettings( Main::settings() );
 }
 
@@ -179,33 +169,19 @@ DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
     loadRecentDocuments( settings );
 }
 
-Document * DocumentManager::createDocument( bool isPlainText )
+Document * DocumentManager::createDocument(bool isPlainText, const QByteArray & id,
+                                           const QString & title, const QString & text  )
 {
-    Document *doc = new Document( isPlainText );
-    mDocHash.insert( doc->id(), doc );
-    return doc;
-}
-
-// alternate method for lang created Doc
-Document * DocumentManager::createDocument( bool isPlainText, const QByteArray & quuid, const QString & title, const QString & string  )
-{
-    Document *doc = new Document( isPlainText, quuid, title, string );
+    Document *doc = new Document( isPlainText, id, title, text );
     mDocHash.insert( doc->id(), doc );
     return doc;
 }
 
 void DocumentManager::create()
 {
-    Document *doc = createDocument( false );
+    Document *doc = createDocument();
 
-    Q_EMIT( opened(doc, 0, 0) );
-}
-
-// alternate method for lang created Doc
-void DocumentManager::create(const QByteArray & quuid, const QString & title, const QString & string)
-{
-    Document *doc = createDocument( false, quuid, title, string );
-    
+    syncLangDocument(doc);
     Q_EMIT( opened(doc, 0, 0) );
 }
 
@@ -269,6 +245,7 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     if (!isRTF)
         mFsWatcher.addPath(cpath);
 
+    syncLangDocument(doc);
     Q_EMIT( opened(doc, initialCursorPosition, selectionLength) );
 
     if (toRecent) this->addToRecent(doc);
@@ -305,17 +282,11 @@ bool DocumentManager::reload( Document *doc )
     return true;
 }
 
-Document * DocumentManager::getDocByID(const QByteArray docID)
+Document * DocumentManager::documentForId(const QByteArray docID)
 {
     Document * doc = mDocHash[docID];
     if(!doc) MainWindow::instance()->showStatusMessage(QString("Lookup failed for Document %1").arg(docID.constData()));
     return doc;
-}
-
-void DocumentManager::changeDocumentTitle(Document * doc, const QString & title)
-{
-    doc->setTitle(title);
-    Q_EMIT(titleChanged(doc));
 }
 
 QString DocumentManager::decodeDocument(const QByteArray & bytes)
@@ -339,6 +310,12 @@ void DocumentManager::close( Document *doc )
         mFsWatcher.removePath(doc->mFilePath);
 
     Q_EMIT( closed(doc) );
+
+    QString command =
+            QString("ScIDEDocument.findByQUuid(\'%1\').closed")
+            .arg(doc->id().constData());
+    Main::scProcess()->evaluateCode ( command, true );
+
     delete doc;
 }
 
@@ -475,4 +452,262 @@ void DocumentManager::closeSingleUntitledIfUnmodified()
         if (document->filePath().isEmpty() && !document->isModified())
             close(document);
     }
+}
+
+void DocumentManager::handleScLangMessage( const QString &selector, const QString &data )
+{
+    static QString requestDocListSelector("requestDocumentList");
+    static QString newDocSelector("newDocument");
+    static QString getDocTextSelector("getDocumentText");
+    static QString setDocTextSelector("setDocumentText");
+    static QString setCurrentDocSelector("setCurrentDocument");
+    static QString closeDocSelector("closeDocument");
+    static QString setDocTitleSelector("setDocumentTitle");
+
+    if (selector == requestDocListSelector)
+        handleDocListScRequest();
+
+    if (selector == newDocSelector)
+        handleNewDocScRequest(data);
+
+    if (selector == getDocTextSelector)
+        handleGetDocTextScRequest(data);
+
+    if (selector == setDocTextSelector)
+        handleSetDocTextScRequest(data);
+
+    if (selector == setCurrentDocSelector)
+        handleSetCurrentDocScRequest(data);
+
+    if (selector == closeDocSelector)
+        handleCloseDocScRequest(data);
+
+    if (selector == setDocTitleSelector)
+        handleSetDocTitleScRequest(data);
+}
+
+void DocumentManager::handleDocListScRequest()
+{
+    QList<Document*> docs = documents();
+    QList<Document*>::Iterator it;
+    QString command = QString("ScIDEDocument.syncDocs([");
+    for (it = docs.begin(); it != docs.end(); ++it) {
+        Document * doc = *it;
+        QString docData = QString("[\'%1\', \'%2\', %3, %4],").arg(doc->id().constData()).arg(doc->title()).arg(doc->textAsSCArrayOfCharCodes(0, -1)).arg(doc->isModified());
+        command = command.append(docData);
+    }
+    command = command.append("]);");
+    Main::scProcess()->evaluateCode ( command, true );
+}
+
+void DocumentManager::handleNewDocScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string title;
+        bool success = doc[0].Read(title);
+        if (!success)
+            return;
+
+        std::string text;
+        success = doc[1].Read(text);
+        if (!success)
+            return;
+
+        std::string id;
+        success = doc[2].Read(id);
+        if (!success)
+            return;
+
+        Document *document = createDocument( false, id.c_str(),
+                                             QString::fromUtf8(title.c_str()),
+                                             QString::fromUtf8(text.c_str()) );
+        syncLangDocument(document);
+        Q_EMIT( opened(document, 0, 0) );
+    }
+}
+
+void DocumentManager::handleGetDocTextScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+
+        std::string funcID;
+        success = doc[1].Read(funcID);
+        if (!success)
+            return;
+
+        int start;
+        success = doc[2].Read(start);
+        if (!success)
+            return;
+
+        int range;
+        success = doc[3].Read(range);
+        if (!success)
+            return;
+
+        Document *document = documentForId(id.c_str());
+        if(document){
+            QString docText = document->textAsSCArrayOfCharCodes(start, range);
+
+            QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\', %2.asAscii)").arg(funcID.c_str(), docText);
+            Main::scProcess()->evaluateCode ( command, true );
+        }
+
+    }
+}
+
+void DocumentManager::handleSetDocTextScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+
+        std::string funcID;
+        success = doc[1].Read(funcID);
+        if (!success)
+            return;
+
+        std::string text;
+        success = doc[2].Read(text);
+        if (!success)
+            return;
+
+        int start;
+        success = doc[3].Read(start);
+        if (!success)
+            return;
+
+        int range;
+        success = doc[4].Read(range);
+        if (!success)
+            return;
+
+        Document *document = documentForId(id.c_str());
+        if(document){
+            document->setTextInRange(QString::fromUtf8(text.c_str()), start, range);
+
+            QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\')").arg(funcID.c_str());
+            Main::scProcess()->evaluateCode ( command, true );
+        }
+
+    }
+}
+
+void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+
+        Document *document = documentForId(id.c_str());
+        if(document)
+            Q_EMIT( showRequest(document) );
+    }
+
+}
+
+void DocumentManager::handleCloseDocScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+
+        Document *document = documentForId(id.c_str());
+        if(document){
+            close(document);
+        }
+    }
+}
+
+void DocumentManager::handleSetDocTitleScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+
+        std::string title;
+        success = doc[1].Read(title);
+        if (!success)
+            return;
+
+        Document *document = documentForId(id.c_str());
+        if(document)
+        {
+            document->mTitle = QString::fromUtf8(title.c_str());
+            Q_EMIT(titleChanged(document));
+        }
+
+    }
+
+}
+
+void DocumentManager::syncLangDocument(Document *doc)
+{
+    QString command =
+            QString("ScIDEDocument.syncFromIDE(\'%1\', \'%2\', %3, %4)")
+            .arg(doc->id().constData())
+            .arg(doc->title())
+            .arg(doc->textAsSCArrayOfCharCodes(0, -1))
+            .arg(doc->isModified());
+    Main::scProcess()->evaluateCode ( command, true );
 }

@@ -2,15 +2,6 @@
  *	Factory abstraction for all GUI related core classes.
  *	Each GUI kit is described by a scheme that maps class names
  *	to actual classes.
- *
- *	See the help file for details. The default
- *	scheme is cocoa.
- *
- *	Changelog:
- *		- jrh added makeGUI
- *		- sciss added add, set, get, use, useID
- *
- *	@version	0.16, 10-Apr-07
  */
 GUI {
 	classvar <scheme, <schemes, <skin, <skins;
@@ -48,17 +39,6 @@ GUI {
 
 		skin		= skins.default;
 		schemes	= IdentityDictionary.new;
-	}
-
-	/**
-	 *	Makes Cocoa (Mac OS X GUI) the current scheme
-	 *	and returns it. Subsequent GUI object calls
-	 *	to GUI are delegated to cocoa.
-	 *
-	 *	@return	the current (cocoa) scheme
-	 */
-	*cocoa {
-		^this.fromID( \cocoa );
 	}
 
 	/**

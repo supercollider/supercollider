@@ -7,10 +7,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
       # cmpxchg8b is available on all intel apples
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=i686 -msse -msse2 -mfpmath=sse")
     endif()
-
-    if(NOT SC_CPP11)
-      message(FATAL_ERROR "supernova/osx requires c++11 support. please configure the build with -DSC_CPP11=ON")
-    endif()
   endif()
 
   if(${_gcc_version} VERSION_LESS 4.7)
@@ -18,17 +14,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   endif()
 
 endif(CMAKE_COMPILER_IS_GNUCXX)
-
-
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_INTEL OR CMAKE_COMPILER_IS_CLANG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-    message(FATAL_ERROR "unknown compiler. supernova cannot be compiled")
-endif()
-
-if(APPLE AND CMAKE_COMPILER_IS_CLANG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-endif()
 
 
 if(SN_MEMORY_DEBUGGING)
@@ -43,7 +28,7 @@ endif()
 
 
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
-                    ${CMAKE_SOURCE_DIR}/external_libraries/oscpack
+                    ${CMAKE_SOURCE_DIR}/external_libraries/oscpack_1_1_0
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
                     )
 
@@ -159,7 +144,7 @@ target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES})
 if (Boost_FOUND)
     target_link_libraries(libsupernova ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
 else()
-    target_link_libraries(libsupernova boost_thread boost_system boost_filesystem boost_program_options)
+    target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options)
 endif()
 
 target_link_libraries(supernova libsupernova)

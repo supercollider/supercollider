@@ -128,7 +128,9 @@ Object  {
 		^this.primitiveFailed
 	}
 	dup { arg n = 2;
-		^Array.fill(n, { this.copy });
+		var array = Array(n);
+		n.do {|i| array.add(this.copy) };
+		^array
 	}
 	! { arg n;
 		^this.dup(n)
