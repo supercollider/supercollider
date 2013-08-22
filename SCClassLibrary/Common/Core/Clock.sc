@@ -187,7 +187,9 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 
 	*cmdPeriod {
 		all.do({ arg item; item.clear(false) });
-		all.do({ arg item; if (item.permanent.not, { item.stop })  })
+		// copy is important: You must never iterate over the same
+		// collection from which you're removing items
+		all.copy.do({ arg item; if (item.permanent.not, { item.stop })  })
 	}
 
 	init { arg tempo, beats, seconds, queueSize;
