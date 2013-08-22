@@ -57,7 +57,6 @@ QcQuartzComposerView::QcQuartzComposerView(QWidget *parent)
 QcQuartzComposerView::~QcQuartzComposerView()
 {
     [mQCView release];
-    delete containerView;
 }
 
 QSize QcQuartzComposerView::sizeHint() const
