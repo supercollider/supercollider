@@ -614,8 +614,18 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
 
         Document *document = documentForId(id.c_str());
         if(document){
+            Document * currentDocument = Main::scProcess()->activeDocument();
+            // avoid a loop
+            if(document == currentDocument){
+                disconnect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), Main::scProcess(), SLOT(updateCurrentDocContents(int, int, int)));
+            }
+            
             document->setTextInRange(QString::fromUtf8(text.c_str()), start, range);
-
+            
+            if(document == currentDocument){
+                connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), Main::scProcess(), SLOT(updateCurrentDocContents(int, int, int)));
+            }
+            
             QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\')").arg(funcID.c_str());
             Main::scProcess()->evaluateCode ( command, true );
         }
