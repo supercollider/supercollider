@@ -42,9 +42,13 @@ SclangPage::SclangPage(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->sclang_add_configfile->setIcon( QIcon::fromTheme("list-add") );
+    ui->sclang_remove_configfile->setIcon( QIcon::fromTheme("list-remove") );
+
     ui->sclang_add_include->setIcon( QIcon::fromTheme("list-add") );
-    ui->sclang_add_exclude->setIcon( QIcon::fromTheme("list-add") );
     ui->sclang_remove_include->setIcon( QIcon::fromTheme("list-remove") );
+
+    ui->sclang_add_exclude->setIcon( QIcon::fromTheme("list-add") );
     ui->sclang_remove_exclude->setIcon( QIcon::fromTheme("list-remove") );
 
     ui->runtimeDir->setFileMode(QFileDialog::Directory);
