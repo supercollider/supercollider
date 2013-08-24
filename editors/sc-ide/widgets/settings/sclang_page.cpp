@@ -274,16 +274,22 @@ QStringList SclangPage::availableLanguageConfigFiles()
 void SclangPage::dialogCreateNewConfigFile()
 {
     bool ok;
-    QString text = QInputDialog::getText(this, tr("Create new config file on disk"),
-                                          tr("Filename will be 'sclang_conf_*.yaml' with '*' replaced by:"), QLineEdit::Normal,
-                                          QDir::home().dirName(), &ok);
+    QString text = QInputDialog::getText
+        (this, tr("New Configuration File"),
+         tr("Create configuration file 'sclang_conf_*.yaml' with '*' replaced by:"), QLineEdit::Normal,
+         QDir::home().dirName(), &ok);
+
    if (ok && !text.isEmpty()){
         char configDir[PATH_MAX];
         sc_GetUserConfigDirectory(configDir, PATH_MAX);
 
         QString proposedLanguageConfigFile = QString(configDir) + "/sclang_conf_" + text + ".yaml";
         if(QFile(proposedLanguageConfigFile).exists()){
-            QMessageBox::information(this, tr("File exists"), proposedLanguageConfigFile + "\nalready exists; will not create.");
+            QMessageBox::information
+                (this,
+                 tr("File Already Exists"),
+                 tr("Configuration file already exists:\n%1")
+                 .arg(proposedLanguageConfigFile));
         }else{
             selectedLanguageConfigFile = proposedLanguageConfigFile;
             sclangConfigDirty = true;
@@ -298,17 +304,20 @@ void SclangPage::dialogCreateNewConfigFile()
 
 void SclangPage::dialogDeleteCurrentConfigFile()
 {
-    int ret = QMessageBox::warning(this, tr("Delete config file from disk?"),
-                                selectedLanguageConfigFile + "\n"
-                       + tr("Really DELETE this file? This action is immediate and cannot be undone."),
-                                QMessageBox::Ok | QMessageBox::Cancel,
-                                QMessageBox::Cancel);
+    int ret = QMessageBox::warning
+        (this,
+         tr("Delete Configuration File"),
+         tr("Are you sure you want to delete the following configuration file?\n")
+         + selectedLanguageConfigFile,
+         QMessageBox::Ok | QMessageBox::Cancel,
+         QMessageBox::Cancel);
+
     if(ret == QMessageBox::Ok){
         QString pathBeingRemoved = selectedLanguageConfigFile;
         QFile::remove(pathBeingRemoved);
-            ui->activeConfigFileComboBox->removeItem(ui->activeConfigFileComboBox->findText(pathBeingRemoved));
-            if(ui->activeConfigFileComboBox->count() != 0){
-                ui->activeConfigFileComboBox->setCurrentIndex(0);
+        ui->activeConfigFileComboBox->removeItem(ui->activeConfigFileComboBox->findText(pathBeingRemoved));
+        if(ui->activeConfigFileComboBox->count() != 0){
+          ui->activeConfigFileComboBox->setCurrentIndex(0);
         }
     }
 }
