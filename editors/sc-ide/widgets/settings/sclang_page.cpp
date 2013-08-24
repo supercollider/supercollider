@@ -28,8 +28,7 @@
 #include "sclang_page.hpp"
 #include "ui_settings_sclang.h"
 #include "../../core/settings/manager.hpp"
-
-#include "common/SC_DirUtils.h"
+#include "../../core/util/standard_dirs.hpp"
 
 #include "yaml-cpp/yaml.h"
 
@@ -247,20 +246,18 @@ void SclangPage::writeLanguageConfig()
 
 QString SclangPage::languageConfigFile()
 {
-    if (selectedLanguageConfigFile.isEmpty()){
-        char configDir[PATH_MAX];
-        sc_GetUserConfigDirectory(configDir, PATH_MAX);
-        selectedLanguageConfigFile = QString(configDir) + "/" + QString("sclang_conf.yaml");
+    if (selectedLanguageConfigFile.isEmpty())
+    {
+        selectedLanguageConfigFile =
+                standardDirectory(ScConfigUserDir)
+                + "/" + QString("sclang_conf.yaml");
     }
     return selectedLanguageConfigFile;
 }
 
 QStringList SclangPage::availableLanguageConfigFiles()
 {
-    char configDir[PATH_MAX];
-    sc_GetUserConfigDirectory(configDir, PATH_MAX);
-
-    QDir qdir = QDir(QString(configDir));
+    QDir qdir = QDir(standardDirectory(ScConfigUserDir));
     QStringList fileFilters;
     fileFilters << "sclang_conf*.yaml";
     QFileInfoList configFileList = qdir.entryInfoList(fileFilters);
@@ -279,11 +276,11 @@ void SclangPage::dialogCreateNewConfigFile()
          tr("Create configuration file 'sclang_conf_*.yaml' with '*' replaced by:"), QLineEdit::Normal,
          QDir::home().dirName(), &ok);
 
-   if (ok && !text.isEmpty()){
-        char configDir[PATH_MAX];
-        sc_GetUserConfigDirectory(configDir, PATH_MAX);
-
-        QString proposedLanguageConfigFile = QString(configDir) + "/sclang_conf_" + text + ".yaml";
+   if (ok && !text.isEmpty())
+   {
+        QString proposedLanguageConfigFile =
+                standardDirectory(ScConfigUserDir)
+                + "/sclang_conf_" + text + ".yaml";
         if(QFile(proposedLanguageConfigFile).exists()){
             QMessageBox::information
                 (this,

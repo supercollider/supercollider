@@ -73,6 +73,7 @@ set ( ide_src
     core/settings/serialization.cpp
     core/settings/manager.cpp
     core/session_manager.cpp
+    core/util/standard_dirs.cpp
     widgets/cmd_line.cpp
     widgets/doc_list.cpp
     widgets/documents_dialog.cpp

@@ -21,14 +21,13 @@
 #include <QCoreApplication>
 #include <QBuffer>
 
-#include "SC_DirUtils.h"
-
 #include "main.hpp"
 #include "main_window.hpp"
 #include "sc_introspection.hpp"
 #include "sc_process.hpp"
 #include "sc_server.hpp"
 #include "settings/manager.hpp"
+#include "util/standard_dirs.hpp"
 
 #include "../widgets/help_browser.hpp"
 
@@ -141,10 +140,7 @@ void ScProcess::startLanguage (void)
 
     QString sclangCommand;
 #ifdef Q_OS_MAC
-    char resourcePath[PATH_MAX];
-    sc_GetResourceDirectory(resourcePath, PATH_MAX);
-
-    sclangCommand = QString(resourcePath) + "/sclang";
+    sclangCommand = standardDirectory(ScResourceDir) + "/sclang";
 #else
     sclangCommand = "sclang";
 #endif

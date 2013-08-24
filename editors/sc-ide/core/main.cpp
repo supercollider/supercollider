@@ -21,13 +21,12 @@
 #include "main.hpp"
 #include "settings/manager.hpp"
 #include "session_manager.hpp"
+#include "util/standard_dirs.hpp"
 #include "../widgets/main_window.hpp"
 #include "../widgets/help_browser.hpp"
 #include "../widgets/lookup_dialog.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
 #include "../widgets/style/style.hpp"
-
-#include "SC_DirUtils.h"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -63,9 +62,7 @@ int main( int argc, char *argv[] )
     qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(&qtTranslator);
 
-    char resourcePath[PATH_MAX];
-    sc_GetResourceDirectory(resourcePath, PATH_MAX);
-    QString ideTranslationPath = QString(resourcePath) + "/translations";
+    QString ideTranslationPath = standardDirectory(ScResourceDir) + "/translations";
 
     bool translationLoaded;
 
@@ -197,11 +194,9 @@ void SingleInstanceGuard::onIpcData()
 }
 
 
-static QString getSettingsFile()
+static inline QString getSettingsFile()
 {
-    char config_dir[PATH_MAX];
-    sc_GetUserConfigDirectory(config_dir, PATH_MAX);
-    return QString(config_dir) + SC_PATH_DELIMITER + "sc_ide_conf.yaml";
+    return standardDirectory(ScConfigUserDir) + "/sc_ide_conf.yaml";
 }
 
 // NOTE: mSettings must be the first to initialize,
