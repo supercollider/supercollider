@@ -50,7 +50,8 @@ SclangPage::SclangPage(QWidget *parent) :
     ui->runtimeDir->setFileMode(QFileDialog::Directory);
 
     connect(ui->activeConfigFileComboBox, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(changeSelectedLanguageConfig(const QString &)));
-    connect(ui->sclang_new_configfile, SIGNAL(clicked()), this, SLOT(dialogCreateNewConfigFile()));
+    connect(ui->sclang_add_configfile, SIGNAL(clicked()), this, SLOT(dialogCreateNewConfigFile()));
+    connect(ui->sclang_remove_configfile, SIGNAL(clicked()), this, SLOT(dialogDeleteCurrentConfigFile()));
 
     connect(ui->sclang_add_include, SIGNAL(clicked()), this, SLOT(addIncludePath()));
     connect(ui->sclang_add_exclude, SIGNAL(clicked()), this, SLOT(addExcludePath()));
@@ -269,7 +270,7 @@ QStringList SclangPage::availableLanguageConfigFiles()
 void SclangPage::dialogCreateNewConfigFile()
 {
     bool ok;
-    QString text = QInputDialog::getText(this, tr("Enter postfix for new file"),
+    QString text = QInputDialog::getText(this, tr("Create new config file on disk"),
                                           tr("Filename will be 'sclang_conf_*.yaml' with '*' replaced by:"), QLineEdit::Normal,
                                           QDir::home().dirName(), &ok);
    if (ok && !text.isEmpty()){
@@ -291,4 +292,20 @@ void SclangPage::dialogCreateNewConfigFile()
    }
 }
 
+void SclangPage::dialogDeleteCurrentConfigFile()
+{
+    int ret = QMessageBox::warning(this, tr("Delete config file from disk?"),
+                                selectedLanguageConfigFile + "\n"
+                       + tr("Really DELETE this file? This action is immediate and cannot be undone."),
+                                QMessageBox::Ok | QMessageBox::Cancel,
+                                QMessageBox::Cancel);
+    if(ret == QMessageBox::Ok){
+        QString pathBeingRemoved = selectedLanguageConfigFile;
+        QFile::remove(pathBeingRemoved);
+            ui->activeConfigFileComboBox->removeItem(ui->activeConfigFileComboBox->findText(pathBeingRemoved));
+            if(ui->activeConfigFileComboBox->count() != 0){
+                ui->activeConfigFileComboBox->setCurrentIndex(0);
+        }
+    }
+}
 }} // namespace ScIDE::Settings
