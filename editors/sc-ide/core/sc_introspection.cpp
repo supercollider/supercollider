@@ -19,8 +19,7 @@
 */
 
 #include "sc_introspection.hpp"
-
-#include "../common/SC_DirUtils.h"
+#include "util/standard_dirs.hpp"
 #include "../widgets/main_window.hpp"
 
 #include "yaml-cpp/node.h"
@@ -50,13 +49,8 @@ Introspection::Introspection( QString const & yamlString )
 
 void Introspection::initPaths()
 {
-    char userExtensionDir[PATH_MAX];
-    sc_GetUserExtensionDirectory(userExtensionDir, PATH_MAX);
-    mUserExtensionDir = QString(userExtensionDir) + QString("/");
-
-    char systemExtensionDir[PATH_MAX];
-    sc_GetSystemExtensionDirectory(systemExtensionDir, PATH_MAX);
-    mSystemExtensionDir = QString(systemExtensionDir) + QString("/");
+    mUserExtensionDir = standardDirectory(ScExtensionUserDir) + QString("/");
+    mSystemExtensionDir = standardDirectory(ScExtensionSystemDir) + QString("/");
 }
 
 Introspection::~Introspection()

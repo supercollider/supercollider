@@ -21,10 +21,9 @@
 #include "doc_manager.hpp"
 #include "session_manager.hpp"
 #include "settings/manager.hpp"
+#include "util/standard_dirs.hpp"
 
 #include "../widgets/main_window.hpp"
-
-#include "SC_DirUtils.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -33,10 +32,7 @@ namespace ScIDE {
 
 static QString sessionFilePath( const QString & name )
 {
-    char config_dir[PATH_MAX];
-    sc_GetUserConfigDirectory(config_dir, PATH_MAX);
-
-    QDir dir(config_dir);
+    QDir dir(standardDirectory(ScConfigUserDir));
 
     if (!dir.mkpath("sessions")) {
         qWarning("The path to sessions does not exist and could not be created!");
@@ -56,10 +52,7 @@ SessionManager::SessionManager( DocumentManager *docMng, QObject * parent ) :
 
 QDir SessionManager::sessionsDir()
 {
-    char config_dir[PATH_MAX];
-    sc_GetUserConfigDirectory(config_dir, PATH_MAX);
-
-    QDir dir(config_dir);
+    QDir dir(standardDirectory(ScConfigUserDir));
 
     if (dir.mkpath("sessions"))
         dir.cd("sessions");
