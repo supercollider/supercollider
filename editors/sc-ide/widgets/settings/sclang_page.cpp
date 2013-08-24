@@ -21,6 +21,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QInputDialog>
+#include <QFile>
 
 #include <fstream>
 
@@ -274,13 +275,19 @@ void SclangPage::dialogCreateNewConfigFile()
    if (ok && !text.isEmpty()){
         char configDir[PATH_MAX];
         sc_GetUserConfigDirectory(configDir, PATH_MAX);
-        selectedLanguageConfigFile = QString(configDir) + "/sclang_conf_" + text + ".yaml";
-        sclangConfigDirty = true;
-        writeLanguageConfig();
 
-        int index = ui->activeConfigFileComboBox->count();
-        ui->activeConfigFileComboBox->addItem(selectedLanguageConfigFile);
-        ui->activeConfigFileComboBox->setCurrentIndex(index);
+        QString proposedLanguageConfigFile = QString(configDir) + "/sclang_conf_" + text + ".yaml";
+        if(QFile(proposedLanguageConfigFile).exists()){
+            QMessageBox::information(this, tr("File exists"), proposedLanguageConfigFile + "\nalready exists; will not create.");
+        }else{
+            selectedLanguageConfigFile = proposedLanguageConfigFile;
+            sclangConfigDirty = true;
+            writeLanguageConfig();
+
+            int index = ui->activeConfigFileComboBox->count();
+            ui->activeConfigFileComboBox->addItem(selectedLanguageConfigFile);
+            ui->activeConfigFileComboBox->setCurrentIndex(index);
+       }
    }
 }
 
