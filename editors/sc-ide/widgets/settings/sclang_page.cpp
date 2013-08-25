@@ -304,7 +304,7 @@ void SclangPage::dialogDeleteCurrentConfigFile()
     int ret = QMessageBox::warning
         (this,
          tr("Delete Configuration File"),
-         tr("Are you sure you want to delete the following configuration file?\n")
+         tr("Are you sure you want to delete the following configuration file?\nThis action is immediate and cannot be undone.\n")
          + selectedLanguageConfigFile,
          QMessageBox::Ok | QMessageBox::Cancel,
          QMessageBox::Cancel);
