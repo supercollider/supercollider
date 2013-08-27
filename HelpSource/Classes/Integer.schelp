@@ -5,6 +5,11 @@ categories:: Math
 description::
 A 32 bit integer. Integer inherits most of its behaviour from its superclass.
 
+note::
+A 32 bit signed integer can represent values in the range +/- 2147483647. Adding up further returns in a wrapped result, so that 2147483647 + 1 = - 2147483647. For a larger range, one can use link::Classes/Float::, which is 64 bit and supports many (but not all) numerical methods that int does.
+::
+
+
 instancemethods::
 
 subsection:: Iteration
