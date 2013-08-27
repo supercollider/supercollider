@@ -69,7 +69,7 @@ SynthDef(\sin_grain_test, {arg gate = 1, amp = 1, envbuf;
 		doneAction: 2);
 	Out.ar(0,
 		GrainSin.ar(2, Impulse.kr(10), 0.1, 440 + freqdev, pan, envbuf) * env)
-	}).send(s);
+	}).add;
 
 )
 s.scope
