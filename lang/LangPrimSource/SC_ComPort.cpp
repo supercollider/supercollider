@@ -79,6 +79,7 @@ SC_UdpInPort::SC_UdpInPort(int inPortNum, int portsToCheck):
 	for (int offset = 0; offset != portsToCheck; ++offset) {
 		try {
 			udpSocket.bind(ip::udp::endpoint(protocol, inPortNum + offset));
+			mPortNum = inPortNum + offset;
 			break;
 		} catch (std::exception const & ) {
 			if (offset == (portsToCheck - 1))
