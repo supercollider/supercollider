@@ -230,10 +230,11 @@ NodeProxy : BusPlug {
 	}
 
 	bus_ { | inBus |
+		var oldBus = bus;
 		if(server != inBus.server) { Error("can't change the server").throw };
 		super.bus_(inBus);
 		this.linkNodeMap;
-		this.rebuild;
+		if(oldBus.notNil) { this.rebuild };
 	}
 
 	group_ { | inGroup |
