@@ -174,11 +174,22 @@ set(ide_sources ${ide_src} ${all_hdr} )
 
 set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations})
 
+# This sets up the exe icon for windows under mingw.
+set(RES_FILES "")
+if(MINGW)
+ set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
+ set(CMAKE_RC_COMPILER_INIT windres)
+ ENABLE_LANGUAGE(RC)
+ SET(CMAKE_RC_COMPILE_OBJECT
+ "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
+endif(MINGW)
+
+
 if(FINAL_BUILD)
   CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
-  add_executable( ${ide_name} MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} )
+  add_executable( ${ide_name} MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} ${RES_FILES})
 else()
-  add_executable( ${ide_name} MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} )
+  add_executable( ${ide_name} MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} ${RES_FILES} )
 endif()
 
 

@@ -155,6 +155,17 @@ if(WIN32)
 	endif()
 endif()
 
+# This sets up the exe icon for windows under mingw.
+set(RES_FILES "")
+if(MINGW)
+ set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
+ set(CMAKE_RC_COMPILER_INIT windres)
+ ENABLE_LANGUAGE(RC)
+ SET(CMAKE_RC_COMPILE_OBJECT
+ "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
+endif(MINGW)
+
+
 if (SC_WII OR APPLE)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 		find_package(CWiid)
@@ -290,7 +301,7 @@ if(SC_IDE)
 	target_link_libraries( libsclang ${QT_LIBRARIES} )
 endif()
 
-add_executable(sclang LangSource/cmdLineFuncs.cpp)
+add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
 
 if (Boost_FOUND)
 	target_link_libraries(sclang libsclang ${Boost_THREAD_LIBRARY})
