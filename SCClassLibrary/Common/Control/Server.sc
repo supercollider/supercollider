@@ -30,6 +30,7 @@ ServerOptions
 	var <>zeroConf = false; // Whether server publishes port to Bonjour, etc.
 
 	var <>restrictedPath = nil;
+	var <>ugenPluginsPath = nil;
 
 	var <>initialNodeID = 1000;
 	var <>remoteControlVolume = false;
@@ -140,6 +141,13 @@ ServerOptions
 		});
 		if (restrictedPath.notNil, {
 			o = o ++ " -P " ++ restrictedPath;
+		});
+		if (ugenPluginsPath.notNil, {
+			o = o ++ " -U " ++ if(ugenPluginsPath.isString) {
+				ugenPluginsPath
+			} {
+				ugenPluginsPath.join("; ");
+			};
 		});
 		if (memoryLocking, {
 			o = o ++ " -L";
