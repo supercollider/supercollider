@@ -32,7 +32,7 @@ PlusFreqScope {
 		// dbFactor -> 2/dbRange
 
 		// linear
-		SynthDef("freqScope0", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02;
+		SynthDef("system_freqScope0", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
 			var signal, chain, result, phasor, numSamples, mul, add;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
@@ -46,7 +46,7 @@ PlusFreqScope {
 			phasor = phasor.round(2); // the evens are magnitude
 			ScopeOut.ar( ((BufRd.ar(1, fftbufnum, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum);
 		}, [\kr, \ir, \ir, \ir, \kr]).add;
-		SynthDef("freqScope0_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02;
+		SynthDef("system_freqScope0_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
 			var signal, chain, result, phasor, numSamples, mul, add;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
@@ -62,7 +62,7 @@ PlusFreqScope {
 		}, [\kr, \ir, \ir, \ir, \kr]).add;
 
 		// logarithmic
-		SynthDef("freqScope1", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02;
+		SynthDef("system_freqScope1", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
 			var signal, chain, result, phasor, halfSamples, mul, add;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
@@ -76,7 +76,7 @@ PlusFreqScope {
 			ScopeOut.ar( ((BufRd.ar(1, fftbufnum, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum);
 		}, [\kr, \ir, \ir, \ir, \kr]).add;
 
-		SynthDef("freqScope1_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02;
+		SynthDef("system_freqScope1_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
 			var signal, chain, result, phasor, halfSamples, mul, add;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
@@ -92,7 +92,7 @@ PlusFreqScope {
 
 		// These next two are based on the original two, but adapted by Dan Stowell
 		// to calculate the frequency response between two channels
-		SynthDef("freqScope0_magresponse", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02, in2=1;
+		SynthDef("system_freqScope0_magresponse", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02, in2=1;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
 			var signal, chain, result, phasor, numSamples, mul, add;
 			var signal2, chain2, divisionbuf;
@@ -113,7 +113,7 @@ PlusFreqScope {
 			ScopeOut.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum);
 		}, [\kr, \ir, \ir, \ir, \kr, \ir]).add;
 
-		SynthDef("freqScope0_magresponse_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02, in2=1;
+		SynthDef("system_freqScope0_magresponse_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02, in2=1;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
 			var signal, chain, result, phasor, numSamples, mul, add;
 			var signal2, chain2, divisionbuf;
@@ -134,7 +134,7 @@ PlusFreqScope {
 			ScopeOut2.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize/rate);
 		}, [\kr, \ir, \ir, \ir, \kr, \ir]).add;
 
-		SynthDef("freqScope1_magresponse", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02, in2=1;
+		SynthDef("system_freqScope1_magresponse", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02, in2=1;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
 			var signal, chain, result, phasor, halfSamples, mul, add;
 			var signal2, chain2, divisionbuf;
@@ -154,7 +154,7 @@ PlusFreqScope {
 			ScopeOut.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum);
 		}, [\kr, \ir, \ir, \ir, \kr, \ir]).add;
 
-		SynthDef("freqScope1_magresponse_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02, in2=1;
+		SynthDef("system_freqScope1_magresponse_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02, in2=1;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
 			var signal, chain, result, phasor, halfSamples, mul, add;
 			var signal2, chain2, divisionbuf;
@@ -219,7 +219,7 @@ PlusFreqScope {
 		if (scopebuf.isNil) { this.allocBuffers };
 
 		defname = specialSynthDef ?? {
-			"freqScope" ++ freqMode.asString ++ if (this.shmScopeAvailable) {"_shm"} {""}
+			"system_freqScope" ++ freqMode.asString ++ if (this.shmScopeAvailable) {"_shm"} {""}
 		};
 		args = [\in, inBus, \dbFactor, dbFactor, \rate, 4, \fftBufSize, bufSize,
 			\scopebufnum, scopebuf.bufnum] ++ specialSynthArgs;
@@ -306,7 +306,7 @@ PlusFreqScope {
 
 	*response{ |parent, bounds, bus1, bus2, freqMode=1|
 		var scope = this.new(parent, bounds).inBus_(bus1.index);
-		var synthDefName = "freqScope%_magresponse%".format(freqMode, if (scope.shmScopeAvailable) {"_shm"} {""});
+		var synthDefName = "system_freqScope%_magresponse%".format(freqMode, if (scope.shmScopeAvailable) {"_shm"} {""});
 
 		^scope.special(synthDefName, [\in2, bus2])
 	}
