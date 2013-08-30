@@ -2195,6 +2195,11 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 
 #define D_GET_BUF \
 	float fbufnum  = DEMANDINPUT_A(0, inNumSamples);; \
+	if (sc_isnan(fbufnum)) { \
+		OUT0(0) = NAN; \
+		return; \
+	} \
+	fbufnum = sc_max(0.f, fbufnum); \
 	if (fbufnum != unit->m_fbufnum) { \
 		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
@@ -2224,6 +2229,11 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 
 #define D_GET_BUF_SHARED \
 	float fbufnum  = DEMANDINPUT_A(0, inNumSamples);; \
+	if (sc_isnan(fbufnum)) { \
+		OUT0(0) = NAN; \
+		return; \
+	} \
+	fbufnum = sc_max(0.f, fbufnum); \
 	if (fbufnum != unit->m_fbufnum) { \
 		uint32 bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
