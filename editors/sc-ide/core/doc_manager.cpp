@@ -44,7 +44,12 @@ Document::Document(bool isPlainText, const QByteArray & id,
     mDoc(new QTextDocument(text, this)),
     mTitle(title),
     mIndentWidth(4),
-    mHighlighter(0)
+    mHighlighter(0),
+    mKeyDownActionEnabled(false),
+    mKeyUpActionEnabled(false),
+    mMouseDownActionEnabled(false),
+    mMouseUpActionEnabled(false),
+    mTextChangedActionEnabled(false)
 {
     if (mId.isEmpty())
         mId = QUuid::createUuid().toString().toLatin1();
@@ -468,6 +473,11 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     static QString setCurrentDocSelector("setCurrentDocument");
     static QString closeDocSelector("closeDocument");
     static QString setDocTitleSelector("setDocumentTitle");
+    static QString enableKeyDownSelector("enableDocumentKeyDownAction");
+    static QString enableKeyUpSelector("enableDocumentKeyUpAction");
+    static QString enableMouseDownSelector("enableDocumentMouseDownAction");
+    static QString enableMouseUpSelector("enableDocumentMouseUpAction");
+    static QString enableTextChangedSelector("enableDocumentTextChangedAction");
 
     if (selector == requestDocListSelector)
         handleDocListScRequest();
@@ -489,6 +499,21 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
 
     if (selector == setDocTitleSelector)
         handleSetDocTitleScRequest(data);
+    
+    if (selector == enableKeyDownSelector)
+        handleEnableKeyDownScRequest( data );
+    
+    if (selector == enableKeyUpSelector)
+        handleEnableKeyUpScRequest( data );
+  
+    if (selector == enableMouseDownSelector)
+        handleEnableMouseDownScRequest( data );
+    
+    if (selector == enableMouseUpSelector)
+        handleEnableMouseUpScRequest( data );
+    
+    if (selector == enableTextChangedSelector)
+        handleEnableTextChangedScRequest( data );
 }
 
 void DocumentManager::handleDocListScRequest()
@@ -714,6 +739,161 @@ void DocumentManager::handleSetDocTitleScRequest( const QString & data )
 
     }
 
+}
+
+void DocumentManager::handleEnableKeyDownScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        bool enabled;
+        success = doc[1].Read(enabled);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document)
+        {
+            document->setKeyDownActionEnabled(enabled);
+        }
+        
+    }
+    
+}
+
+void DocumentManager::handleEnableKeyUpScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        bool enabled;
+        success = doc[1].Read(enabled);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document)
+        {
+            document->setKeyUpActionEnabled(enabled);
+        }
+        
+    }
+    
+}
+
+void DocumentManager::handleEnableMouseDownScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        bool enabled;
+        success = doc[1].Read(enabled);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document)
+        {
+            document->setMouseDownActionEnabled(enabled);
+        }
+        
+    }
+    
+}
+
+void DocumentManager::handleEnableMouseUpScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        bool enabled;
+        success = doc[1].Read(enabled);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document)
+        {
+            document->setMouseUpActionEnabled(enabled);
+        }
+        
+    }
+    
+}
+
+void DocumentManager::handleEnableTextChangedScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        bool enabled;
+        success = doc[1].Read(enabled);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document)
+        {
+            document->setTextChangedActionEnabled(enabled);
+        }
+        
+    }
+    
 }
 
 void DocumentManager::syncLangDocument(Document *doc)
