@@ -79,6 +79,8 @@ public:
     }
     
     bool compiled() { return mCompiled; }
+    
+    void post(QString & text) { scPost(text); }
 
 public slots:
     void toggleRunning();
