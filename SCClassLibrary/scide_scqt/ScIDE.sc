@@ -471,6 +471,7 @@ ScIDEDocument : Document {
 
 	prGetTextFromMirror {|id, start=0, range = -1|
 		_ScIDE_GetDocTextMirror
+		this.primitiveFailed
 	}
 
 	// asynchronous set
@@ -487,6 +488,7 @@ ScIDEDocument : Document {
 	// set the backend mirror
 	prSetTextMirror {|quuid, text, start, range|
 		_ScIDE_SetDocTextMirror
+		this.primitiveFailed
 	}
 
 	text_ {|string|
