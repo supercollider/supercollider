@@ -81,6 +81,7 @@ public:
     bool compiled() { return mCompiled; }
     
     void post(QString & text) { scPost(text); }
+    void updateTextMirrorForDocument ( class Document * doc, int position, int charsRemoved, int charsAdded );
 
 public slots:
     void toggleRunning();

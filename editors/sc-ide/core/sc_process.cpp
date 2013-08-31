@@ -396,13 +396,25 @@ void ScProcess::sendActiveDocument()
     
 void ScProcess::updateCurrentDocContents ( int position, int charsRemoved, int charsAdded )
 {
+    if (Main::documentManager()->textMirrorEnabled()) {
+        updateTextMirrorForDocument(mCurrentDocument, position, charsRemoved, charsAdded);
+    }
+    
+    if (mCurrentDocument->textChangedActionEnabled()) {
+        QString addedChars = mCurrentDocument->textAsSCArrayOfCharCodes(position, charsAdded);
+        evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').textChanged(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
+    }
+}
+    
+void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int charsRemoved, int charsAdded )
+{
     QVariantList argList;
     
-    argList.append(QVariant(mCurrentDocument->id()));
+    argList.append(QVariant(doc->id()));
     argList.append(QVariant(position));
     argList.append(QVariant(charsRemoved));
     
-    QTextCursor cursor = QTextCursor(mCurrentDocument->textDocument());
+    QTextCursor cursor = QTextCursor(doc->textDocument());
     cursor.setPosition(position, QTextCursor::MoveAnchor);
     cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, charsAdded);
     
@@ -415,11 +427,6 @@ void ScProcess::updateCurrentDocContents ( int position, int charsRemoved, int c
         stream << argList;
     } catch (std::exception const & e) {
         scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
-    }
-    
-    if (mCurrentDocument->textChangedActionEnabled()) {
-        QString addedChars = mCurrentDocument->textAsSCArrayOfCharCodes(position, charsAdded);
-        evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').textChanged(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
     }
 }
 

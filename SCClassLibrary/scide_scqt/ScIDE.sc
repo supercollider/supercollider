@@ -376,6 +376,10 @@ ScIDE {
 		this.prSend(\enableDocumentTextChangedAction, [quuid, bool]);
 	}
 
+	*setDocumentTextMirrorEnabled {|bool|
+		this.prSend(\enableDocumentTextMirror, [bool]);
+	}
+
 
 
 	// PRIVATE ///////////////////////////////////////////////////////////
