@@ -148,6 +148,11 @@ QString Document::textAsSCArrayOfCharCodes(int start = 0, int range = -1)
 void Document::setTextInRange(const QString text, int start, int range)
 {
     QTextCursor cursor = QTextCursor(mDoc);
+    int size = mDoc->characterCount();
+    if (start > (size - 1)) {
+        start = size - 1;
+        range = 0;
+    }
     cursor.setPosition(start, QTextCursor::MoveAnchor);
     if(range == -1){
         cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor, 1);

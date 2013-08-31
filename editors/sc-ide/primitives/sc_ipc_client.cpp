@@ -130,6 +130,8 @@ void SCIpcClient::setTextMirrorForDocument(QByteArray & id, const QString & text
         if (mDocumentTextMirrors.contains(id)) {
             mTextMirrorHashMutex.lock();
             QString existingText = mDocumentTextMirrors[id];
+            int size = existingText.size();
+            if (pos > size) pos = size;
             if (range == -1) range = existingText.size() - pos;
             mDocumentTextMirrors[id] = existingText.replace(pos, range, text);
             mTextMirrorHashMutex.unlock();
