@@ -490,7 +490,7 @@ ScIDEDocument : Document {
 	}
 
 	text_ {|string|
-		this.prSetText(text);
+		this.prSetText(string);
 	}
 
 	text { ^this.prGetTextFromMirror(quuid, 0, -1); }
