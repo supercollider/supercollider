@@ -169,7 +169,7 @@ void Document::setTextInRange(const QString text, int start, int range)
 
 
 DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
-    QObject(main)
+QObject(main), mTextMirrorEnabled(true)
 {
     connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 
@@ -478,6 +478,7 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     static QString enableMouseDownSelector("enableDocumentMouseDownAction");
     static QString enableMouseUpSelector("enableDocumentMouseUpAction");
     static QString enableTextChangedSelector("enableDocumentTextChangedAction");
+    static QString enableTextMirrorSelector("enableDocumentTextMirror");
 
     if (selector == requestDocListSelector)
         handleDocListScRequest();
@@ -514,6 +515,9 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     
     if (selector == enableTextChangedSelector)
         handleEnableTextChangedScRequest( data );
+    
+    if (selector == enableTextMirrorSelector)
+        handleEnableTextMirrorScRequest( data );
 }
 
 void DocumentManager::handleDocListScRequest()
@@ -892,6 +896,44 @@ void DocumentManager::handleEnableTextChangedScRequest( const QString & data )
             document->setTextChangedActionEnabled(enabled);
         }
         
+    }
+    
+}
+
+void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        bool enabled;
+        bool success = doc[0].Read(enabled);
+        if (!success)
+            return;
+        
+        mTextMirrorEnabled = enabled;
+        
+        QList<Document*> docs = documents();
+        QList<Document*>::Iterator it;
+        if(enabled) {
+            for (it = docs.begin(); it != docs.end(); ++it) {
+                Document * doc = *it;
+                Main::scProcess()->updateTextMirrorForDocument(doc, 0, -1, doc->textDocument()->characterCount());
+            }
+        } else {
+            // this sets the mirror to empty strings
+            for (it = docs.begin(); it != docs.end(); ++it) {
+                Document * doc = *it;
+                Main::scProcess()->updateTextMirrorForDocument(doc, 0, -1, 0);
+            }
+            QString warning = QString("Document Text Mirror Disabled\n");
+            Main::scProcess()->post(warning);
+        }
     }
     
 }
