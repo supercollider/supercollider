@@ -371,7 +371,7 @@ ScIDE {
 
 ScIDEDocument : Document {
 	classvar <asyncActions;
-	var <quuid, <title, text, <isEdited = false, <path;
+	var <quuid, <title, <isEdited = false, <path;
 	var <>textChangedAction;
 
 	*initClass{
@@ -498,20 +498,18 @@ ScIDEDocument : Document {
 	text { ^this.prGetTextFromMirror(quuid, 0, -1); }
 
 	rangeText { | rangestart=0, rangesize=1 |
-		^text.copy(rangestart, rangestart + rangesize);
+		^this.prGetTextFromMirror(rangestart, rangesize);
 	}
 
 	insertText {|string, index = 0|
-		text = text.insert(index, string);
 		this.prSetText(string, nil, index, 0);
 	}
 
 	getChar {|index = 0|
-		^text[index];
+		^this.prGetTextFromMirror(quuid, index, 1);
 	}
 
 	setChar {|char, index = 0|
-		text = text.keep(index) ++ char ++ text.drop(index + 1);
 		this.prSetText(char.asString, nil, index, 1);
 	}
 
@@ -566,7 +564,7 @@ ScIDEDocument : Document {
 		if (file.isNil, {
 			error("Document open failed\n");
 		});
-		text = file.readAllString;
+		this.text = file.readAllString;
 		file.close;
 	}
 
