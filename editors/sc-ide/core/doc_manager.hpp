@@ -69,6 +69,18 @@ public:
     
     QString textAsSCArrayOfCharCodes(int start, int range);
     void setTextInRange(const QString text, int start, int range);
+    
+    bool keyDownActionEnabled() { return mKeyDownActionEnabled; }
+    bool keyUpActionEnabled() { return mKeyUpActionEnabled; }
+    bool mouseDownActionEnabled() { return mMouseDownActionEnabled; }
+    bool mouseUpActionEnabled() { return mMouseUpActionEnabled; }
+    bool textChangedActionEnabled() { return mTextChangedActionEnabled; }
+    
+    void setKeyDownActionEnabled(bool enabled) { mKeyDownActionEnabled = enabled; }
+    void setKeyUpActionEnabled(bool enabled) {  mKeyUpActionEnabled = enabled; }
+    void setMouseDownActionEnabled(bool enabled) {  mMouseDownActionEnabled = enabled; }
+    void setMouseUpActionEnabled(bool enabled) {  mMouseUpActionEnabled = enabled; }
+    void setTextChangedActionEnabled(bool enabled) {  mTextChangedActionEnabled = enabled; }
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -87,6 +99,11 @@ private:
     QDateTime mSaveTime;
     int mIndentWidth;
     SyntaxHighlighter * mHighlighter;
+    bool mKeyDownActionEnabled;
+    bool mKeyUpActionEnabled;
+    bool mMouseDownActionEnabled;
+    bool mMouseUpActionEnabled;
+    bool mTextChangedActionEnabled;
 };
 
 class DocumentManager : public QObject
@@ -148,6 +165,13 @@ private:
     void handleSetCurrentDocScRequest( const QString & data );
     void handleCloseDocScRequest( const QString & data );
     void handleSetDocTitleScRequest( const QString & data );
+    void handleEnableKeyDownScRequest( const QString & data );
+    void handleEnableKeyUpScRequest( const QString & data );
+    void handleEnableMouseDownScRequest( const QString & data );
+    void handleEnableMouseUpScRequest( const QString & data );
+    void handleEnableFrontScRequest( const QString & data );
+    void handleEnableEndFrontScRequest( const QString & data );
+    void handleEnableTextChangedScRequest( const QString & data );
     void syncLangDocument( Document * );
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;

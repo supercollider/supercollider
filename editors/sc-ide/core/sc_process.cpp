@@ -396,9 +396,6 @@ void ScProcess::sendActiveDocument()
     
 void ScProcess::updateCurrentDocContents ( int position, int charsRemoved, int charsAdded )
 {
-    //QString addedChars = mCurrentDocument->textAsSCArrayOfCharCodes(position, charsAdded);
-//    evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').updateText(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
-    
     QVariantList argList;
     
     argList.append(QVariant(mCurrentDocument->id()));
@@ -418,6 +415,11 @@ void ScProcess::updateCurrentDocContents ( int position, int charsRemoved, int c
         stream << argList;
     } catch (std::exception const & e) {
         scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
+    }
+    
+    if (mCurrentDocument->textChangedActionEnabled()) {
+        QString addedChars = mCurrentDocument->textAsSCArrayOfCharCodes(position, charsAdded);
+        evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').textChanged(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
     }
 }
 

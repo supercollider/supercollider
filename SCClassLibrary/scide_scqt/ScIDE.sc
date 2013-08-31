@@ -356,6 +356,28 @@ ScIDE {
 		this.prSend(\setDocumentTitle, [quuid, newTitle]);
 	}
 
+	*setDocumentKeyDownEnabled {|quuid, bool|
+		this.prSend(\enableDocumentKeyDownAction, [quuid, bool]);
+	}
+
+	*setDocumentKeyUpEnabled {|quuid, bool|
+		this.prSend(\enableDocumentKeyUpAction, [quuid, bool]);
+	}
+
+	*setDocumentMouseDownEnabled {|quuid, bool|
+		this.prSend(\enableDocumentMouseDownAction, [quuid, bool]);
+	}
+
+	*setDocumentMouseUpEnabled {|quuid, bool|
+		this.prSend(\enableDocumentMouseUpAction, [quuid, bool]);
+	}
+
+	*setDocumentTextChangedEnabled {|quuid, bool|
+		this.prSend(\enableDocumentTextChangedAction, [quuid, bool]);
+	}
+
+
+
 	// PRIVATE ///////////////////////////////////////////////////////////
 
 	*prSend {|id, data|
@@ -372,7 +394,7 @@ ScIDE {
 ScIDEDocument : Document {
 	classvar <asyncActions;
 	var <quuid, <title, <isEdited = false, <path;
-	var <>textChangedAction;
+	var <textChangedAction;
 
 	*initClass{
 		Document.implementationClass = this;
@@ -444,9 +466,8 @@ ScIDEDocument : Document {
 		isEdited = argisEdited;
 	}
 
-	updateText {|index, numCharsRemoved, addedChars|
-		/*addedChars = String.fill(addedChars.size, {|i| addedChars[i].asAscii});
-		text = text.keep(index) ++ addedChars ++ text.drop(index + numCharsRemoved);*/
+	textChanged {|index, numCharsRemoved, addedChars|
+		addedChars = String.fill(addedChars.size, {|i| addedChars[i].asAscii});
 		textChangedAction.value(this, index, numCharsRemoved, addedChars);
 	}
 
@@ -527,12 +548,49 @@ ScIDEDocument : Document {
 		keyUpAction.value(this,character, modifiers, unicode, keycode, key);
 	}
 
-	mouseDown{ | x, y, modifiers, buttonNumber, clickCount |
+	mouseDown { | x, y, modifiers, buttonNumber, clickCount |
 		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount)
 	}
 
-	mouseUp{ | x, y, modifiers, buttonNumber |
+	mouseUp { | x, y, modifiers, buttonNumber |
 		mouseUpAction.value(this, x, y, modifiers, buttonNumber)
+	}
+
+	keyDownAction_ {|action|
+		keyDownAction = action;
+		ScIDE.setDocumentKeyDownEnabled(quuid, action.notNil || globalKeyDownAction.notNil);
+	}
+
+	keyUpAction_ {|action|
+		keyUpAction = action;
+		ScIDE.setDocumentKeyUpEnabled(quuid, action.notNil  || globalKeyUpAction.notNil);
+	}
+
+	mouseDownAction_ {|action|
+		mouseDownAction = action;
+		ScIDE.setDocumentMouseDownEnabled(quuid, action.notNil);
+	}
+
+	mouseUpAction_ {|action|
+		mouseUpAction = action;
+		ScIDE.setDocumentMouseUpEnabled(quuid, action.notNil);
+	}
+
+	textChangedAction_ {|action|
+		textChangedAction = action;
+		ScIDE.setDocumentTextChangedEnabled(quuid, action.notNil);
+	}
+
+	*prGlobalKeyDownAction_ {|action|
+		allDocuments.do({|doc|
+			ScIDE.setDocumentKeyDownEnabled(doc.quuid, action.notNil || doc.keyDownAction.notNil);
+		});
+	}
+
+	*prGlobalKeyUpAction_ {|action|
+		allDocuments.do({|doc|
+			ScIDE.setDocumentKeyUpEnabled(doc.quuid, action.notNil || doc.keyUpAction.notNil);
+		});
 	}
 
 	prSetTitle {|newTitle|
