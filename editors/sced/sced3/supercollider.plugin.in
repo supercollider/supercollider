@@ -1,5 +1,5 @@
 [Plugin]
-Loader=python
+Loader=python3
 Module=supercollider
 IAge=3
 Name=SuperCollider

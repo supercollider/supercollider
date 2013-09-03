@@ -202,11 +202,11 @@ class ScLang:
 
     # FIXME: use sclang.communicate()
     def evaluate(self, code, silent=False):
-        self.stdin.write(bytes(code))
+        self.stdin.write(bytes(code, "utf-8"))
         if silent:
-            self.stdin.write(bytes("\x1b"))
+            self.stdin.write(bytes("\x1b", "utf-8"))
         else:
-            self.stdin.write(bytes("\x0c"))
+            self.stdin.write(bytes("\x0c", "utf-8"))
         self.stdin.flush()
 
     def toggle_recording(self, record):
@@ -255,21 +255,21 @@ class Logger:
             self.__on_output)
 
     def __on_output(self, source, condition):
-        s = source.readline()
+        s = source.readline().decode("utf-8")
         if s == '':
             self.__append_to_buffer("EOF")
             return False
 
         # FIXME: A workaround for a mac character
-        self.__append_to_buffer(bytes(s))
+        self.__append_to_buffer(s)
 
         if condition & GObject.IO_ERR:
             s = source.read() # can safely read until EOF here
-            self.__append_to_buffer(bytes(s))
+            self.__append_to_buffer(s)
             return False
         elif condition & GObject.IO_HUP:
             s = source.read() # can safely read until EOF here
-            self.__append_to_buffer(bytes(s))
+            self.__append_to_buffer(s)
             return False
         elif condition != 1:
             return False
@@ -559,7 +559,7 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             self.__lang.evaluate("thisProcess.platform.devLoc(\""+location.get_path()+"\").openTextFile", silent=True)
 
     def on_recompile(self, action):
-        self.__lang.stdin.write(bytes("\x18"))
+        self.__lang.stdin.write(bytes("\x18", "utf-8"))
 
     def on_restart(self, action, data=None):
         if self.__lang.running():
