@@ -93,7 +93,7 @@ T2A : K2A { // control rate to audio rate trigger converter.
 	}
 }
 
-DC : MultiOutUGen {
+DC : PureMultiOutUGen {
 	*ar { arg in=0.0;
 		^this.multiNew('audio', in)
 	}
