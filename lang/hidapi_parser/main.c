@@ -103,6 +103,7 @@ int main(int argc, char* argv[]){
     descriptor = (struct hid_device_descriptor *) malloc( sizeof( struct hid_device_descriptor) );
     hid_parse_report_descriptor( descr_buf, res, descriptor );
   }
+
   // Set the hid_read() function to be non-blocking.
   hid_set_nonblocking(handle, 1);
 
@@ -113,5 +114,32 @@ int main(int argc, char* argv[]){
 //   if (res < 0)
 // 	  printf("Unable to write() (2)\n");
 
-  
+ 	// Read requested state. hid_read() has been set to be
+	// non-blocking by the call to hid_set_nonblocking() above.
+	// This loop demonstrates the non-blocking nature of hid_read().
+	res = 0;
+	while (1) {
+		res = hid_read(handle, buf, sizeof(buf));
+		if ( res > 0 ) {
+		  hid_parse_input_report( buf, res, descriptor );
+		}
+		#ifdef WIN32
+		Sleep(500);
+		#else
+		usleep(500*100);
+		#endif
+	}
+
+
+	hid_close(handle);
+
+	/* Free static HIDAPI objects. */
+	hid_exit();
+
+#ifdef WIN32
+	system("pause");
+#endif
+
+	return 0;
+ 
 }

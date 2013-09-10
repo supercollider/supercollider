@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+// #include <math.h>
 
 #include "hidapi_parser.h"
 
@@ -111,13 +112,15 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
   int current_usage_index = 0;
   int current_usage_min = -1;
   int current_usage_max = -1;
-  int current_logical_min;
-  int current_logical_max;
-  int current_physical_min;
-  int current_physical_max;
+  int current_logical_min = 0;
+  int current_logical_max = 0;
+  int current_physical_min = 0;
+  int current_physical_max = 0;
   int current_report_count;
   int current_report_id;
   int current_report_size;
+  int current_unit = 0;
+  int current_unit_exponent = 0;
   char current_input;
   char current_output;
   int collection_nesting = 0;
@@ -127,7 +130,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
   int next_byte_type = 0;
   int next_val = 0;
   
-  int toadd = 0;
+  unsigned char toadd = 0;
   int byte_count = 0;
   
   int i,j;
@@ -139,11 +142,12 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 	  printf("\tbyte_type %i, %i, %i \t", next_byte_tag, next_byte_size, next_val);
 #endif
 	  if ( next_byte_tag != -1 ){
-	      toadd = descr_buf[i];
-	      for ( j=0; j<byte_count; j++ ){
-		  toadd = toadd << 8;
-	      }
-	      next_val += toadd;
+// 	      toadd = (unsigned char) descr_buf[i];
+	      int shift = byte_count*8;
+	      next_val |= (int)(((unsigned char)(descr_buf[i])) << shift);
+#ifdef DEBUG_PARSER
+	      printf("\t nextval shift: %i", next_val);
+#endif
 	      byte_count++;
 	      if ( byte_count == next_byte_size ){
 		switch( next_byte_tag ){
@@ -235,13 +239,13 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 #endif
 		    break;
 		  case HID_UNIT:
-		    // TODO: something useful with unit information
+		    current_unit = next_val;
 #ifdef DEBUG_PARSER
 		    printf("unit: %i", next_val );
 #endif
 		    break;
 		  case HID_UNIT_EXPONENT:
-		    // TODO: something useful with unit exponent information
+		    current_unit_exponent = next_val;
 #ifdef DEBUG_PARSER
 		    printf("unit exponent: %i", next_val );
 #endif
@@ -265,8 +269,16 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 			}
 			new_element->logical_min = current_logical_min;
 			new_element->logical_max = current_logical_max;
-			new_element->phys_min = current_physical_min;
-			new_element->phys_max = current_physical_max;
+			if ( (current_physical_min == 0) && (current_physical_max == 0) ){
+			  new_element->phys_min = current_logical_min;
+			  new_element->phys_max = current_logical_max;
+			
+			} else {
+			  new_element->phys_min = current_physical_min;
+			  new_element->phys_max = current_physical_max;
+			}
+			new_element->unit = current_unit;
+			new_element->unit_exponent = current_unit_exponent;
 			
 			new_element->report_size = current_report_size;
 			new_element->report_id = current_report_id;
@@ -284,6 +296,9 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 		    current_usage_min = -1;
 		    current_usage_max = -1;
 		    current_usage_index = 0;
+		    current_physical_min = 0;
+		    current_physical_max = 0;
+		    current_unit_exponent = 0;
 		    break;
 		  case HID_OUTPUT:
 #ifdef DEBUG_PARSER
@@ -304,8 +319,16 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 			}
 			new_element->logical_min = current_logical_min;
 			new_element->logical_max = current_logical_max;
-			new_element->phys_min = current_physical_min;
-			new_element->phys_max = current_physical_max;
+			if ( (current_physical_min == 0) && (current_physical_max == 0) ){
+			  new_element->phys_min = current_logical_min;
+			  new_element->phys_max = current_logical_max;
+			
+			} else {
+			  new_element->phys_min = current_physical_min;
+			  new_element->phys_max = current_physical_max;
+			}
+			new_element->unit = current_unit;
+			new_element->unit_exponent = current_unit_exponent;
 			
 			new_element->report_size = current_report_size;
 			new_element->report_id = current_report_id;
@@ -323,6 +346,9 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 		    current_usage_min = -1;
 		    current_usage_max = -1;
 		    current_usage_index = 0;
+		    current_physical_min = 0;
+		    current_physical_max = 0;
+		    current_unit_exponent = 0;
 		    break;
 		  case HID_FEATURE:
 #ifdef DEBUG_PARSER
@@ -343,8 +369,16 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 			}
 			new_element->logical_min = current_logical_min;
 			new_element->logical_max = current_logical_max;
-			new_element->phys_min = current_physical_min;
-			new_element->phys_max = current_physical_max;
+			if ( (current_physical_min == 0) && (current_physical_max == 0) ){
+			  new_element->phys_min = current_logical_min;
+			  new_element->phys_max = current_logical_max;
+			
+			} else {
+			  new_element->phys_min = current_physical_min;
+			  new_element->phys_max = current_physical_max;
+			}
+			new_element->unit = current_unit;
+			new_element->unit_exponent = current_unit_exponent;
 			
 			new_element->report_size = current_report_size;
 			new_element->report_id = current_report_id;
@@ -362,6 +396,9 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 		    current_usage_min = -1;
 		    current_usage_max = -1;
 		    current_usage_index = 0;
+		    current_physical_min = 0;
+		    current_physical_max = 0;
+		    current_unit_exponent = 0;
 		    break;
 #ifdef DEBUG_PARSER
 		  default:
@@ -402,14 +439,46 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 }
 
 float hid_element_map_logical( struct hid_device_element * element ){
-    return 0.;
+  float result = element->logical_min + ( element->value/( element->logical_max - element->logical_min ) );
+  return result;
+}
+
+float hid_element_resolution( struct hid_device_element * element ){
+    float result = 0;
+//     ( element->logical_max - element->logical_min) / ( ( element->phys_max - element->phys_min) * pow(10, element->unit_exponent) );
+    return result;
 }
 
 float hid_element_map_physical( struct hid_device_element * element ){
-    return 0.;
+  float result = 0;
+  return result;
 }
 
 int hid_parse_input_report( char* buf, int size, struct hid_device_descriptor * descriptor ){
+  // Print out the returned buffer.
+  struct hid_device_element * cur_element = descriptor->first;
+  int i;
   
+  printf("-----------------------\n", buf[i]);
+  for ( i = 0; i < size; i++){
+    unsigned char curbyte = buf[i];
+    printf("byte %02hhx \t", buf[i]);
+    // read byte:
+    if ( cur_element->report_size < 8 ){
+      int bitindex = 0;
+      while ( bitindex < 8 ){
+	// read bit
+	cur_element->value = (curbyte >> bitindex) & BITMASK1( cur_element->report_size );
+	printf("element page %i, usage %i, type %i, index %i, value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index, cur_element->value );
+	bitindex += cur_element->report_size;
+	cur_element = cur_element->next;
+      }
+    } else if ( cur_element->report_size == 8 ){
+	cur_element->value = curbyte;
+	printf("element page %i, usage %i, type %i,  index %i, value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index,cur_element->value );
+	cur_element = cur_element->next;
+    } // else: larger than 8 bits
+  }
+  printf("\n");
   return 0;
 }

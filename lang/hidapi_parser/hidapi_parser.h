@@ -4,15 +4,6 @@
 
 #define HIDAPI_MAX_DESCRIPTOR_SIZE  4096
 
-
-struct hid_device_descriptor {
-	int num_elements;
-// 	int usage_page;
-// 	int usage;
-	/** Pointer to the first element */
-	struct hid_device_element *first;
-};
-
 struct hid_device_element {
 	int index;
 	
@@ -28,6 +19,9 @@ struct hid_device_element {
 	int phys_min;
 	int phys_max;
 	
+	int unit_exponent;
+	int unit;
+	
 	int report_size;
 	int report_id;
 	int report_index; // index into the report
@@ -38,10 +32,19 @@ struct hid_device_element {
 	struct hid_device_element *next;
 };
 
+struct hid_device_descriptor {
+	int num_elements;
+// 	int usage_page;
+// 	int usage;
+	/** Pointer to the first element */
+	struct hid_device_element *first;
+};
+
 int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_descriptor * descriptor );
 
 int hid_parse_input_report( char* buf, int size, struct hid_device_descriptor * descriptor );
 
+float hid_element_resolution( struct hid_device_element * element );
 float hid_element_map_logical( struct hid_device_element * element );
 float hid_element_map_physical( struct hid_device_element * element );
 
