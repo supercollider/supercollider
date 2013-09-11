@@ -97,7 +97,7 @@ public:
 
     std::size_t memory_requirement(void) const
     {
-        return alloc_size;
+        return alloc_size + 16; // overallocate to allow alignment
     }
 
     bool add_command(const char * cmd_name, UnitCmdFunc func);
