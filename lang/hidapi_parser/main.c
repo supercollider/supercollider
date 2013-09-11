@@ -38,6 +38,20 @@ void list_devices( void ){
 
 #define MAX_STR 255
 
+void print_element_info( hid_device_element *element ){
+  
+  printf( "index: %i, usage_page: %i, usage: %i, iotype: %i, type: %i, \n \
+	  \tlogical_min: %i, logical_max: %i, \n \
+	  \tphys_min: %i, phys_max: %i, unit_exponent: %i, unit: %i, \n \
+	  \treport_size: %i, report_id: %i, report_index: %i \n",
+	  element->index, element->usage_page, element->usage, element->io_type, element->type,
+	  element->logical_min, element->logical_max,
+	  element->phys_min, element->phys_max, 
+	  element->unit_exponent, element->unit,
+	  element->report_size, element->report_id, element->report_index );
+  
+}
+
 void print_device_info( hid_device *handle ){
   wchar_t wstr[MAX_STR];  
   int res;
@@ -105,30 +119,42 @@ int main(int argc, char* argv[]){
 
   handle = hid_open( 0x044f, 0xd003, NULL);
   if (!handle) {
-		printf("unable to open device\n");
- 		return 1;
+	printf("unable to open device\n");
+ 	return 1;
   }
   print_device_info( handle );
   
   char my_custom_data[40] = "Hello!";
   
-  res = hid_get_report_descriptor( handle, descr_buf, HIDAPI_MAX_DESCRIPTOR_SIZE );
-  if (res < 0){
-    printf("Unable to read report descriptor\n");
+  descriptor = hid_read_descriptor( handle );
+  if ( descriptor == NULL ){
+    printf("unable to read descriptor\n");
     return 1;
-  } else {
-    descriptor = (hid_device_descriptor *) malloc( sizeof( hid_device_descriptor) );
-    hid_descriptor_init( descriptor );
-    hid_parse_report_descriptor( descr_buf, res, descriptor );
-
-    
-    hid_set_descriptor_callback( descriptor, (hid_descriptor_callback) my_descriptor_cb, my_custom_data );
-    hid_set_element_callback( descriptor, (hid_element_callback) my_element_cb, my_custom_data );  
   }
+//   res = hid_get_report_descriptor( handle, descr_buf, HIDAPI_MAX_DESCRIPTOR_SIZE );
+//   if (res < 0){
+//     printf("Unable to read report descriptor\n");
+//     return 1;
+//   } else {
+//     descriptor = (hid_device_descriptor *) malloc( sizeof( hid_device_descriptor) );
+//     hid_descriptor_init( descriptor );
+//     hid_parse_report_descriptor( descr_buf, res, descriptor );
+// 
+//   }
+
+  hid_set_descriptor_callback( descriptor, (hid_descriptor_callback) my_descriptor_cb, my_custom_data );
+  hid_set_element_callback( descriptor, (hid_element_callback) my_element_cb, my_custom_data );  
 
   // Set the hid_read() function to be non-blocking.
   hid_set_nonblocking(handle, 1);
 
+  hid_device_element * cur_element = descriptor->first;
+  
+  while (cur_element) {
+    print_element_info( cur_element );
+    cur_element = cur_element->next;
+  }
+  
 //   Request state (cmd 0x81). The first byte is the report number (0x1).
 //   buf[0] = 0x1;
 //   buf[1] = 0x81;
