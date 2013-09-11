@@ -10,11 +10,13 @@
 #include <wchar.h>
 #include <string.h>
 
-
-#include "../hidapi/hidapi.h"
-#include "../hidapi_parser/hidapi_parser.h"
-
 #include <lo/lo.h>
+
+// #include "../hidapi/hidapi.h"
+// #include "../hidapi_parser/hidapi_parser.h"
+
+#include "hidapi.h"
+#include "hidapi_parser.h"
 
 // Headers needed for sleeping.
 #ifdef _WIN32
@@ -26,18 +28,21 @@
 
 #include <map>
 
-typedef std::map<int,hid_dev_desc*> hid_map_t;
+typedef std::map<int, hid_dev_desc* > hid_map_t;
 
 hid_map_t hiddevices;    // declares a vector of integers
 int number_of_hids = 0;
 
 int done = 0;
 
+#define MAX_STR 255
+
+
 lo_address t;
 lo_server s;
 lo_server_thread st;
 
-static void osc_element_cb(const hid_device_element *el, void *data)
+static void osc_element_cb( hid_device_element *el, void *data)
 {
   lo_message m1 = lo_message_new();
   lo_message_add_int32( m1, *((int*) data) );
@@ -50,7 +55,7 @@ static void osc_element_cb(const hid_device_element *el, void *data)
   lo_message_free(m1);
 }
 
-static void osc_descriptor_cb(const hid_device_descriptor *dd, void *data)
+static void osc_descriptor_cb( hid_device_descriptor *dd, void *data)
 {
   lo_message m1 = lo_message_new();
   lo_message_add_int32( m1, *((int*) data) );
@@ -124,7 +129,7 @@ int hid_close_handler(const char *path, const char *types, lo_arg **argv,
 int hid_info_handler(const char *path, const char *types, lo_arg **argv,
 			 int argc, void *data, void *user_data);
 
-int element_hid_info_handler(const char *path, const char *types, lo_arg **argv,
+int hid_element_info_handler(const char *path, const char *types, lo_arg **argv,
 			 int argc, void *data, void *user_data);
 
 int generic_handler(const char *path, const char *types, lo_arg **argv,
@@ -138,8 +143,8 @@ int init_osc( char * ip, char *outport, char * port ){
 
     lo_server_thread st = lo_server_thread_new(port, error);
 
-    lo_server_thread_add_method(st, "/hid/open", "i", hid_open_handler, NULL);
-    lo_server_thread_add_method(st, "/hid/elements/info", "i", hid_element_info_handler, NULL);
+    lo_server_thread_add_method(st, "/hid/open", "ii", hid_open_handler, NULL);
+//     lo_server_thread_add_method(st, "/hid/elements/info", "i", hid_element_info_handler, NULL);
     lo_server_thread_add_method(st, "/hid/info", "i", hid_info_handler, NULL);
     lo_server_thread_add_method(st, "/hid/close", "i", hid_close_handler, NULL);
 
@@ -160,15 +165,35 @@ lo_message get_hid_info_msg( struct hid_device_info * info )
   lo_message_add_int32( m1, info->vendor_id );
   lo_message_add_int32( m1, info->product_id );
   lo_message_add_string( m1, info->path );
-  lo_message_add_string( m1, info->serial_number );
-  lo_message_add_string( m1, info->manufacturer_string );
-  lo_message_add_string( m1, info->product_string );
+  
+  wchar_t* wstr = info->serial_number;
+  char* ascii = new char[wcslen(wstr) + 1];
+  wcstombs( ascii, wstr, wcslen(wstr) );
+  lo_message_add_string( m1, ascii );
+  delete ascii;
+
+  wstr = info->manufacturer_string;
+  ascii = new char[wcslen(wstr) + 1];
+  wcstombs( ascii, wstr, wcslen(wstr) );
+  lo_message_add_string( m1, ascii );
+  delete ascii;
+
+  wstr = info->product_string;
+  ascii = new char[wcslen(wstr) + 1];
+  wcstombs( ascii, wstr, wcslen(wstr) );
+  lo_message_add_string( m1, ascii );
+  delete ascii;
+  
+//   lo_message_add_string( m1, info->serial_number );
+//   lo_message_add_string( m1, info->manufacturer_string );
+//   lo_message_add_string( m1, info->product_string );
+  
   lo_message_add_int32( m1, info->release_number );
   lo_message_add_int32( m1, info->interface_number );    
   return m1;
 }
 
-lo_message get_hid_element_info_msg( struct hid_device_descriptor * desc )
+lo_message get_hid_element_info_msg( hid_device_element * el )
 {    
   lo_message m1 = lo_message_new();
   lo_message_add_int32( m1, el->index );
@@ -222,7 +247,7 @@ int info_handler(const char *path, const char *types, lo_arg **argv, int argc,
   devs = hid_enumerate(0x0, 0x0);
 
   cur_dev = devs;
-  count = 0;
+  int count = 0;
   while (cur_dev) {
     count++;
     cur_dev = cur_dev->next;
@@ -274,7 +299,7 @@ void send_elements_hid_info(int joy_idx)
   lo_message_add_int32( m1, hid->descriptor->num_elements );
   lo_bundle_add_message( b, "/hid/element/number", m1 );
 
-  hid_device_element * cur_element = descriptor->first;
+  hid_device_element * cur_element = hid->descriptor->first;
   
   while (cur_element) {
     lo_message m2 = get_hid_element_info_msg( cur_element );
@@ -316,7 +341,7 @@ int hid_open_handler(const char *path, const char *types, lo_arg **argv, int arg
 		 void *data, void *user_data)
 {
   printf("hidapi2osc: joystick open handler\n");
-  open_device( argv[0]->i );
+  open_device( argv[0]->i, argv[1]->i, NULL );
 }
 
 int hid_close_handler(const char *path, const char *types, lo_arg **argv, int argc,
@@ -433,14 +458,14 @@ int main(int argc, char** argv)
   
   // FIXME: We don't need video, but without it SDL will fail to work in SDL_WaitEvent()
 //   if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
-  if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_EVENT | SDL_INIT_JOYSTICK) < 0)
-  {
-    fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
-    exit(1);
-  }
-  else
-  {
-    atexit(SDL_Quit);
+//   if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_EVENT | SDL_INIT_JOYSTICK) < 0)
+//   {
+//     fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
+//     exit(1);
+//   }
+//   else
+//   {
+//     atexit(SDL_Quit);
 
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 ||
                       strcmp(argv[1], "-h") == 0))
@@ -500,10 +525,14 @@ int main(int argc, char** argv)
 
       int res = 0;
 
+      hid_map_t::const_iterator it;
+      unsigned char buf[256];
       while(!done){
-	res = hid_read(handle, buf, sizeof(buf));
-	if ( res > 0 ) {
-	  hid_parse_input_report( buf, res, descriptor );
+	for(it=hiddevices.begin(); it!=hiddevices.end(); ++it){
+	  res = hid_read( it->second->device, buf, sizeof(buf));
+	  if ( res > 0 ) {
+	    hid_parse_input_report( buf, res, it->second->descriptor );
+	  }
 	}
 	#ifdef WIN32
 	Sleep(50);
@@ -511,18 +540,17 @@ int main(int argc, char** argv)
 	usleep(500*10);
 	#endif
       }
-	close_all_hids();
+      close_all_devices();
 	  
-	lo_send_from( t, s, LO_TT_IMMEDIATE, "/hidapi2osc/quit", "s", "nothing more to do, quitting" );
-	lo_server_thread_free( st );
-	lo_address_free( t );
+      lo_send_from( t, s, LO_TT_IMMEDIATE, "/hidapi2osc/quit", "s", "nothing more to do, quitting" );
+      lo_server_thread_free( st );
+      lo_address_free( t );
     }
     else
     {
       fprintf(stderr, "%s: unknown arguments\n", argv[0]);
       fprintf(stderr, "Try '%s --help' for more informations\n", argv[0]);
     }
-  }
 }
 
 /* EOF */

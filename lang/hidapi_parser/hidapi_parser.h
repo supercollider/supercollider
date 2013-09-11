@@ -8,6 +8,7 @@
 
 typedef struct _hid_device_element hid_device_element;
 typedef struct _hid_device_descriptor hid_device_descriptor;
+typedef struct _hid_dev_desc hid_dev_desc;
 
 // struct hid_element_cb;
 // struct hid_descriptor_cb;
@@ -25,14 +26,14 @@ typedef void (*hid_descriptor_callback) ( hid_device_descriptor *descriptor, voi
 //     void *data;
 // } hid_descriptor_cb;
 
-typedef struct _hid_dev_desc {
+struct _hid_dev_desc {
     int index;
     hid_device *device;
     hid_device_descriptor *descriptor;
     struct hid_device_info *info;    
-} hid_dev_desc;
+};
 
-typedef struct _hid_device_element {
+struct _hid_device_element {
 	int index;
 	
 	int io_type; // input(1), output(2), feature(3)
@@ -58,9 +59,9 @@ typedef struct _hid_device_element {
 
 	/** Pointer to the next element */
 	hid_device_element *next;
-} hid_device_element;
+};
 
-typedef struct _hid_device_descriptor {
+struct _hid_device_descriptor {
 	int num_elements;
 
 	/** Pointer to the first element */
@@ -71,7 +72,7 @@ typedef struct _hid_device_descriptor {
 	void *_element_data;
 	hid_descriptor_callback _descriptor_callback;
 	void *_descriptor_data;
-} hid_device_descriptor;
+};
 
 // typedef void (*event_cb_t)(const struct hid_device_element *element, void *user_data);
 
@@ -85,7 +86,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, hid_device_descripto
 
 hid_device_element * hid_get_next_input_element( hid_device_element * curel );
 
-int hid_parse_input_report( char* buf, int size, hid_device_descriptor * descriptor );
+int hid_parse_input_report( unsigned char* buf, int size, hid_device_descriptor * descriptor );
 
 float hid_element_resolution( hid_device_element * element );
 float hid_element_map_logical( hid_device_element * element );

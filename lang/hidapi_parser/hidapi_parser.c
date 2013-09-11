@@ -490,7 +490,7 @@ hid_device_element * hid_get_next_input_element( hid_device_element * curel ){
   // is NULL
 }
 
-int hid_parse_input_report( char* buf, int size, hid_device_descriptor * descriptor ){
+int hid_parse_input_report( unsigned char* buf, int size, hid_device_descriptor * descriptor ){
   ///TODO: parse input from descriptors with report size like 12 correctly
   
   // Print out the returned buffer.
