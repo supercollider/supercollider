@@ -3,7 +3,8 @@
 
 
 #define HIDAPI_MAX_DESCRIPTOR_SIZE  4096
-#include <lo/lo_osc_types.h>
+
+#include <hidapi.h>
 
 typedef struct _hid_device_element hid_device_element;
 typedef struct _hid_device_descriptor hid_device_descriptor;
@@ -24,6 +25,12 @@ typedef void (*hid_descriptor_callback) ( hid_device_descriptor *descriptor, voi
 //     void *data;
 // } hid_descriptor_cb;
 
+typedef struct _hid_dev_desc {
+    int index;
+    hid_device *device;
+    hid_device_descriptor *descriptor;
+    struct hid_device_info *info;    
+} hid_dev_desc;
 
 typedef struct _hid_device_element {
 	int index;
@@ -55,8 +62,7 @@ typedef struct _hid_device_element {
 
 typedef struct _hid_device_descriptor {
 	int num_elements;
-// 	int usage_page;
-// 	int usage;
+
 	/** Pointer to the first element */
 	hid_device_element *first;
 
@@ -70,12 +76,14 @@ typedef struct _hid_device_descriptor {
 // typedef void (*event_cb_t)(const struct hid_device_element *element, void *user_data);
 
 void hid_descriptor_init( hid_device_descriptor * devd);
+void hid_free_descriptor( hid_device_descriptor * devd);
 
 void hid_set_descriptor_callback(  hid_device_descriptor * devd, hid_descriptor_callback cb, void *user_data );
 void hid_set_element_callback(  hid_device_descriptor * devd, hid_element_callback cb, void *user_data );
 
-
 int hid_parse_report_descriptor( char* descr_buf, int size, hid_device_descriptor * descriptor );
+
+hid_device_element * hid_get_next_input_element( hid_device_element * curel );
 
 int hid_parse_input_report( char* buf, int size, hid_device_descriptor * descriptor );
 
@@ -84,5 +92,10 @@ float hid_element_map_logical( hid_device_element * element );
 float hid_element_map_physical( hid_device_element * element );
 
 // int hid_parse_feature_report( char* buf, int size, hid_device_descriptor * descriptor );
+
+// higher level functions:
+hid_device_descriptor * hid_read_descriptor( hid_device * devd );
+hid_dev_desc * hid_open_device(  unsigned short vendor, unsigned short product, const wchar_t *serial_number );
+void hid_close_device( hid_dev_desc * devdesc );
 
 #endif

@@ -110,6 +110,12 @@ void hid_descriptor_init( hid_device_descriptor * devd){
   hid_set_element_callback(devd, NULL, NULL);
 }
 
+void hid_free_descriptor( hid_device_descriptor * devd){
+  free( devd );
+//   hid_set_descriptor_callback(devd, NULL, NULL);
+//   hid_set_element_callback(devd, NULL, NULL);
+}
+
 void hid_set_descriptor_callback( hid_device_descriptor * devd, hid_descriptor_callback cb, void *user_data ){
     devd->_descriptor_callback = cb;
     devd->_descriptor_data = user_data;
@@ -119,7 +125,6 @@ void hid_set_element_callback( hid_device_descriptor * devd, hid_element_callbac
     devd->_element_callback = cb;
     devd->_element_data = user_data;
 }
-
 
 int hid_parse_report_descriptor( char* descr_buf, int size, hid_device_descriptor * descriptor ){
   hid_device_element * prev_element;
@@ -310,12 +315,12 @@ int hid_parse_report_descriptor( char* descr_buf, int size, hid_device_descripto
 			descriptor->num_elements++;
 			prev_element = new_element;
 		    }
-		    current_usage_min = -1;
-		    current_usage_max = -1;
-		    current_usage_index = 0;
-		    current_physical_min = 0;
-		    current_physical_max = 0;
-		    current_unit_exponent = 0;
+// 		    current_usage_min = -1;
+// 		    current_usage_max = -1;
+// 		    current_usage_index = 0;
+// 		    current_physical_min = 0;
+// 		    current_physical_max = 0;
+// 		    current_unit_exponent = 0;
 		    break;
 		  case HID_OUTPUT:
 #ifdef DEBUG_PARSER
@@ -360,12 +365,12 @@ int hid_parse_report_descriptor( char* descr_buf, int size, hid_device_descripto
 			descriptor->num_elements++;
 			prev_element = new_element;
 		    }
-		    current_usage_min = -1;
-		    current_usage_max = -1;
-		    current_usage_index = 0;
-		    current_physical_min = 0;
-		    current_physical_max = 0;
-		    current_unit_exponent = 0;
+// 		    current_usage_min = -1;
+// 		    current_usage_max = -1;
+// 		    current_usage_index = 0;
+// 		    current_physical_min = 0;
+// 		    current_physical_max = 0;
+// 		    current_unit_exponent = 0;
 		    break;
 		  case HID_FEATURE:
 #ifdef DEBUG_PARSER
@@ -410,12 +415,12 @@ int hid_parse_report_descriptor( char* descr_buf, int size, hid_device_descripto
 			descriptor->num_elements++;
 			prev_element = new_element;
 		    }
-		    current_usage_min = -1;
-		    current_usage_max = -1;
-		    current_usage_index = 0;
-		    current_physical_min = 0;
-		    current_physical_max = 0;
-		    current_unit_exponent = 0;
+// 		    current_usage_min = -1;
+// 		    current_usage_max = -1;
+// 		    current_usage_index = 0;
+// 		    current_physical_min = 0;
+// 		    current_physical_max = 0;
+// 		    current_unit_exponent = 0;
 		    break;
 #ifdef DEBUG_PARSER
 		  default:
@@ -471,10 +476,42 @@ float hid_element_map_physical( hid_device_element * element ){
   return result;
 }
 
+hid_device_element * hid_get_next_input_element( hid_device_element * curel ){
+
+  hid_device_element * nextel = curel->next;
+  while ( nextel != NULL ){
+      if ( nextel->io_type == 1 ){
+	  return nextel;
+      } else {
+	  nextel = nextel->next;
+      }
+  }
+  return curel; // return the previous element
+  // is NULL
+}
+
 int hid_parse_input_report( char* buf, int size, hid_device_descriptor * descriptor ){
+  ///TODO: parse input from descriptors with report size like 12 correctly
+  
   // Print out the returned buffer.
   hid_device_element * cur_element = descriptor->first;
   int i;
+  int next_byte_size;
+  int next_mod_bit_size;
+  int byte_count = 0;
+  int next_val = 0;
+
+//   cur_element = hid_get_next_input_element( cur_element );
+//   if ( cur_element == NULL ){ return 0; }
+  if ( cur_element->io_type != 1 ){
+      cur_element = hid_get_next_input_element(cur_element);
+  }
+  next_byte_size = cur_element->report_size/8;
+  next_mod_bit_size = cur_element->report_size%8;
+
+#ifdef DEBUG_PARSER
+    printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
+#endif    
   
 #ifdef DEBUG_PARSER
   printf("-----------------------\n");
@@ -484,7 +521,7 @@ int hid_parse_input_report( char* buf, int size, hid_device_descriptor * descrip
 #ifdef DEBUG_PARSER    
     printf("byte %02hhx \t", buf[i]);
 #endif
-    // read byte:
+    // read byte:    
     if ( cur_element->report_size < 8 ){
       int bitindex = 0;
       while ( bitindex < 8 ){
@@ -497,7 +534,14 @@ int hid_parse_input_report( char* buf, int size, hid_device_descriptor * descrip
 	if ( descriptor->_element_callback != NULL ){
 	  descriptor->_element_callback( cur_element, descriptor->_element_data );
 	}
-	cur_element = cur_element->next;
+	cur_element = hid_get_next_input_element( cur_element );
+// 	if ( cur_element == NULL ){ return 0; }
+	next_byte_size = cur_element->report_size/8;
+	next_mod_bit_size = cur_element->report_size%8;
+
+#ifdef DEBUG_PARSER
+    printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
+#endif    
       }
     } else if ( cur_element->report_size == 8 ){
 	cur_element->value = curbyte;
@@ -507,9 +551,44 @@ int hid_parse_input_report( char* buf, int size, hid_device_descriptor * descrip
 	if ( descriptor->_element_callback != NULL ){
 	  descriptor->_element_callback( cur_element, descriptor->_element_data );
 	}
-	cur_element = cur_element->next;
-    } // else: larger than 8 bits
+	cur_element = hid_get_next_input_element( cur_element );
+// 	if ( cur_element == NULL ){ return 0; }
+	next_byte_size = cur_element->report_size/8;
+	next_mod_bit_size = cur_element->report_size%8;
+	
+#ifdef DEBUG_PARSER
+    printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
+#endif    
+    } else if ( cur_element->report_size == 16 ){
+      int shift = byte_count*8;
+      next_val |= (int)(((unsigned char)(curbyte)) << shift);
+#ifdef DEBUG_PARSER
+      printf("\t nextval shift: %i", next_val);
+#endif
+     byte_count++;
+      if ( byte_count == next_byte_size ){
+	  cur_element->value = next_val;
+	  
+#ifdef DEBUG_PARSER
+	  printf("element page %i, usage %i, type %i,  index %i, value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index,cur_element->value );
+#endif
+	  if ( descriptor->_element_callback != NULL ){
+	    descriptor->_element_callback( cur_element, descriptor->_element_data );
+	  }
+	  cur_element = hid_get_next_input_element( cur_element );
+// 	  if ( cur_element == NULL ){ break; }
+	  next_byte_size = cur_element->report_size/8;
+	  next_mod_bit_size = cur_element->report_size%8;
+	 
+#ifdef DEBUG_PARSER
+    printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
+#endif    
+	  byte_count = 0;
+	  next_val = 0;
+      }
+    }
   }
+  
 #ifdef DEBUG_PARSER  
   printf("\n");
 #endif
@@ -517,4 +596,52 @@ int hid_parse_input_report( char* buf, int size, hid_device_descriptor * descrip
     descriptor->_descriptor_callback( descriptor, descriptor->_descriptor_data );
   }
   return 0;
+}
+
+
+
+hid_device_descriptor * hid_read_descriptor( hid_device * devd ){
+  hid_device_descriptor * descriptor;
+  unsigned char descr_buf[HIDAPI_MAX_DESCRIPTOR_SIZE];
+  int res;
+  res = hid_get_report_descriptor( devd, descr_buf, HIDAPI_MAX_DESCRIPTOR_SIZE );
+  if (res < 0){
+    printf("Unable to read report descriptor\n");
+    return NULL;
+  } else {
+    descriptor = (hid_device_descriptor *) malloc( sizeof( hid_device_descriptor) );
+    hid_descriptor_init( descriptor );
+    hid_parse_report_descriptor( descr_buf, res, descriptor );
+    return descriptor;
+  }
+}
+
+hid_dev_desc * hid_open_device(  unsigned short vendor, unsigned short product, const wchar_t *serial_number ){
+  hid_device * handle = hid_open( vendor, product, serial_number );
+  if (!handle){
+      return NULL;
+  }  
+  hid_device_descriptor * newdesc = hid_read_descriptor( handle );
+  if ( newdesc == NULL ){
+    hid_close( handle );
+    return NULL;
+  }
+  hid_dev_desc * newdevdesc = (hid_dev_desc *) malloc( sizeof( hid_dev_desc ) );
+  struct hid_device_info * newinfo = hid_enumerate(vendor,product);
+  newdevdesc->device = handle;
+  //TODO: if serial_number is given, the info descriptor should also point to that one!
+  newdevdesc->info = newinfo;
+  newdevdesc->descriptor = newdesc;
+
+  // Set the hid_read() function to be non-blocking.
+  hid_set_nonblocking( handle, 1);
+
+  return newdevdesc;
+}
+
+void hid_close_device( hid_dev_desc * devdesc ){
+  hid_close( devdesc->device );
+  hid_free_enumeration( devdesc->info );
+  hid_free_descriptor( devdesc->descriptor );
+  //TODO: more memory freeing?  
 }
