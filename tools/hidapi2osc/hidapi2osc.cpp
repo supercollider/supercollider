@@ -15,8 +15,8 @@
 // #include "../hidapi/hidapi.h"
 // #include "../hidapi_parser/hidapi_parser.h"
 
-#include "hidapi.h"
-#include "hidapi_parser.h"
+#include <hidapi.h>
+#include <hidapi_parser.h>
 
 // Headers needed for sleeping.
 #ifdef _WIN32
@@ -103,13 +103,14 @@ void open_device( unsigned short vendor, unsigned short product, const wchar_t *
 }
 
 void close_device( int joy_idx ){
+//   hid_map_t::const_iterator it = ;
   struct hid_dev_desc * hidtoclose = hiddevices.find( joy_idx )->second;
-  if ( !hidtoclose ){
+  if ( hidtoclose == NULL ){    
     lo_send_from( t, s, LO_TT_IMMEDIATE, "/hid/close/error", "i", joy_idx );
   } else {
     lo_send_from( t, s, LO_TT_IMMEDIATE, "/hid/closed", "iii", joy_idx, hidtoclose->info->vendor_id, hidtoclose->info->product_id );
     hid_close_device( hidtoclose );
-    hiddevices.erase( hiddevices.find( joy_idx ) );
+    hiddevices.erase( joy_idx );
   }
 }
 
@@ -145,7 +146,7 @@ int init_osc( char * ip, char *outport, char * port ){
     lo_server_thread st = lo_server_thread_new(port, error);
 
     lo_server_thread_add_method(st, "/hid/open", "ii", hid_open_handler, NULL);
-//     lo_server_thread_add_method(st, "/hid/elements/info", "i", hid_element_info_handler, NULL);
+    lo_server_thread_add_method(st, "/hid/elements/info", "i", hid_element_info_handler, NULL);
     lo_server_thread_add_method(st, "/hid/info", "i", hid_info_handler, NULL);
     lo_server_thread_add_method(st, "/hid/close", "i", hid_close_handler, NULL);
 
@@ -167,23 +168,38 @@ lo_message get_hid_info_msg( struct hid_device_info * info )
   lo_message_add_int32( m1, info->product_id );
   lo_message_add_string( m1, info->path );
   
+  //TODO: fix for proper conversion of unicode to ascii
   wchar_t* wstr = info->serial_number;
-  char* ascii = new char[wcslen(wstr) + 1];
-  wcstombs( ascii, wstr, wcslen(wstr) );
-  lo_message_add_string( m1, ascii );
-  delete ascii;
+  char* ascii;
+  if ( wstr != NULL ){
+    ascii = new char[wcslen(wstr) + 1];
+    wcstombs( ascii, wstr, wcslen(wstr) );
+    lo_message_add_string( m1, ascii );
+    delete ascii;
+  } else {
+    lo_message_add_string( m1, "" );
+  }
 
   wstr = info->manufacturer_string;
-  ascii = new char[wcslen(wstr) + 1];
-  wcstombs( ascii, wstr, wcslen(wstr) );
-  lo_message_add_string( m1, ascii );
-  delete ascii;
+  if ( wstr != NULL ){
+    ascii = new char[wcslen(wstr) + 1];
+    wcstombs( ascii, wstr, wcslen(wstr) );
+    lo_message_add_string( m1, ascii );
+    delete ascii;
+  } else {
+    lo_message_add_string( m1, "" );
+  }
+  
 
   wstr = info->product_string;
-  ascii = new char[wcslen(wstr) + 1];
-  wcstombs( ascii, wstr, wcslen(wstr) );
-  lo_message_add_string( m1, ascii );
-  delete ascii;
+  if ( wstr != NULL ){
+    ascii = new char[wcslen(wstr) + 1];
+    wcstombs( ascii, wstr, wcslen(wstr) );
+    lo_message_add_string( m1, ascii );
+    delete ascii;
+  } else {
+    lo_message_add_string( m1, "" );
+  }
   
 //   lo_message_add_string( m1, info->serial_number );
 //   lo_message_add_string( m1, info->manufacturer_string );
@@ -242,8 +258,7 @@ int generic_handler(const char *path, const char *types, lo_arg **argv,
 
 int info_handler(const char *path, const char *types, lo_arg **argv, int argc,
 		 void *data, void *user_data)
-{
-
+{  
   struct hid_device_info *devs, *cur_dev;
   devs = hid_enumerate(0x0, 0x0);
 
@@ -253,11 +268,11 @@ int info_handler(const char *path, const char *types, lo_arg **argv, int argc,
     count++;
     cur_dev = cur_dev->next;
   }
-  
+ 
   lo_bundle b = lo_bundle_new( LO_TT_IMMEDIATE );
 
   lo_message m1 = lo_message_new();
-  lo_message_add_int32( m1,count );
+  lo_message_add_int32( m1, count );
   lo_bundle_add_message( b, "/hid/number", m1 );
   
   cur_dev = devs;
@@ -291,6 +306,7 @@ void send_elements_hid_info(int joy_idx)
 {
   hid_dev_desc * hid = hiddevices.find( joy_idx )->second;
   if ( hid == NULL ){
+      lo_send_from( t, s, LO_TT_IMMEDIATE, "/hid/elements/info/error", "i", joy_idx );
       return;
   }
   lo_bundle b = lo_bundle_new( LO_TT_IMMEDIATE );
@@ -316,10 +332,14 @@ void send_elements_hid_info(int joy_idx)
 
 void send_hid_info(int joy_idx)
 {
-  hid_dev_desc * hid = hiddevices.find( joy_idx )->second;  
-  lo_message m1 = get_hid_info_msg( hid->info );   
-  lo_send_message_from( t, s, "/hid/info", m1 );
-  lo_message_free(m1);
+  hid_dev_desc * hid = hiddevices.find( joy_idx )->second;
+  if ( hid != NULL ){
+    lo_message m1 = get_hid_info_msg( hid->info );   
+    lo_send_message_from( t, s, "/hid/info", m1 );
+    lo_message_free(m1);
+  } else {
+    lo_send_from( t, s, LO_TT_IMMEDIATE, "/hid/info/error", "i", joy_idx );
+  }
 }
 
 int hid_info_handler(const char *path, const char *types, lo_arg **argv, int argc,
@@ -328,28 +348,32 @@ int hid_info_handler(const char *path, const char *types, lo_arg **argv, int arg
   printf("hidapi2osc: joystick info handler\n");
 
   send_hid_info( argv[0]->i );
+  return 0;
 }
 
-int hid_elements_info_handler(const char *path, const char *types, lo_arg **argv, int argc,
+int hid_element_info_handler(const char *path, const char *types, lo_arg **argv, int argc,
 		 void *data, void *user_data)
 {
   printf("hidapi2osc: joystick elements info handler\n");
 
   send_elements_hid_info( argv[0]->i );
+  return 0;
 }
 
 int hid_open_handler(const char *path, const char *types, lo_arg **argv, int argc,
 		 void *data, void *user_data)
 {
-  printf("hidapi2osc: joystick open handler\n");
+//   printf("hidapi2osc: joystick open handler\n");
   open_device( argv[0]->i, argv[1]->i, NULL );
+  return 0;
 }
 
 int hid_close_handler(const char *path, const char *types, lo_arg **argv, int argc,
 		 void *data, void *user_data)
 {
-  printf("hidapi2osc: joystick close handler\n");
+  printf("hidapi2osc: joystick close handler, %i\n", argv[0]->i );
   close_device( argv[0]->i );
+  return 0;
 }
 
 

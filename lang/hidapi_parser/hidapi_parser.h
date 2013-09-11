@@ -4,17 +4,25 @@
 
 #define HIDAPI_MAX_DESCRIPTOR_SIZE  4096
 
-#include <hidapi.h>
+#ifdef __cplusplus /* If this is a C++ compiler, use C linkage */
+extern "C" {
+#endif
 
-typedef struct _hid_device_element hid_device_element;
-typedef struct _hid_device_descriptor hid_device_descriptor;
-typedef struct _hid_dev_desc hid_dev_desc;
+#include <hidapi.h>
+  
+// typedef struct _hid_device_element hid_device_element;
+// typedef struct _hid_device_descriptor hid_device_descriptor;
+// typedef struct _hid_dev_desc hid_dev_desc;
+
+struct hid_device_element;
+struct hid_device_descriptor;
+struct hid_dev_desc;
 
 // struct hid_element_cb;
 // struct hid_descriptor_cb;
 
-typedef void (*hid_element_callback) ( hid_device_element *element, void *user_data);
-typedef void (*hid_descriptor_callback) ( hid_device_descriptor *descriptor, void *user_data);
+typedef void (*hid_element_callback) ( struct hid_device_element *element, void *user_data);
+typedef void (*hid_descriptor_callback) ( struct hid_device_descriptor *descriptor, void *user_data);
 
 // typedef struct _hid_element_cb {
 //     hid_element_callback cb;    
@@ -26,14 +34,14 @@ typedef void (*hid_descriptor_callback) ( hid_device_descriptor *descriptor, voi
 //     void *data;
 // } hid_descriptor_cb;
 
-struct _hid_dev_desc {
+struct hid_dev_desc {
     int index;
     hid_device *device;
-    hid_device_descriptor *descriptor;
-    struct hid_device_info *info;    
+    struct hid_device_descriptor *descriptor;
+    struct hid_device_info *info;
 };
 
-struct _hid_device_element {
+struct hid_device_element {
 	int index;
 	
 	int io_type; // input(1), output(2), feature(3)
@@ -58,14 +66,14 @@ struct _hid_device_element {
 	int value;
 
 	/** Pointer to the next element */
-	hid_device_element *next;
+	struct hid_device_element *next;
 };
 
-struct _hid_device_descriptor {
+struct hid_device_descriptor {
 	int num_elements;
 
 	/** Pointer to the first element */
-	hid_device_element *first;
+	struct hid_device_element *first;
 
 	/** pointers to callback function */
 	hid_element_callback _element_callback;
@@ -74,29 +82,35 @@ struct _hid_device_descriptor {
 	void *_descriptor_data;
 };
 
+// higher level functions:
+struct hid_device_descriptor * hid_read_descriptor( hid_device *devd );
+struct hid_dev_desc * hid_open_device(  unsigned short vendor, unsigned short product, const wchar_t *serial_number );
+extern void hid_close_device( struct hid_dev_desc * devdesc );
+
+
 // typedef void (*event_cb_t)(const struct hid_device_element *element, void *user_data);
 
-void hid_descriptor_init( hid_device_descriptor * devd);
-void hid_free_descriptor( hid_device_descriptor * devd);
+void hid_descriptor_init( struct hid_device_descriptor * devd);
+void hid_free_descriptor( struct hid_device_descriptor * devd);
 
-void hid_set_descriptor_callback(  hid_device_descriptor * devd, hid_descriptor_callback cb, void *user_data );
-void hid_set_element_callback(  hid_device_descriptor * devd, hid_element_callback cb, void *user_data );
+void hid_set_descriptor_callback(  struct hid_device_descriptor * devd, hid_descriptor_callback cb, void *user_data );
+void hid_set_element_callback(  struct hid_device_descriptor * devd, hid_element_callback cb, void *user_data );
 
-int hid_parse_report_descriptor( char* descr_buf, int size, hid_device_descriptor * descriptor );
+int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_descriptor * descriptor );
 
-hid_device_element * hid_get_next_input_element( hid_device_element * curel );
+struct hid_device_element * hid_get_next_input_element( struct hid_device_element * curel );
 
-int hid_parse_input_report( unsigned char* buf, int size, hid_device_descriptor * descriptor );
+int hid_parse_input_report( unsigned char* buf, int size, struct hid_device_descriptor * descriptor );
 
-float hid_element_resolution( hid_device_element * element );
-float hid_element_map_logical( hid_device_element * element );
-float hid_element_map_physical( hid_device_element * element );
+float hid_element_resolution( struct hid_device_element * element );
+float hid_element_map_logical( struct hid_device_element * element );
+float hid_element_map_physical( struct hid_device_element * element );
 
 // int hid_parse_feature_report( char* buf, int size, hid_device_descriptor * descriptor );
 
-// higher level functions:
-hid_device_descriptor * hid_read_descriptor( hid_device * devd );
-hid_dev_desc * hid_open_device(  unsigned short vendor, unsigned short product, const wchar_t *serial_number );
-void hid_close_device( hid_dev_desc * devdesc );
+#ifdef __cplusplus /* If this is a C++ compiler, end C linkage */
+}
+#endif
 
 #endif
+
