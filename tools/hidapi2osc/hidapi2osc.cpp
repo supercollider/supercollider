@@ -42,7 +42,7 @@ lo_address t;
 lo_server s;
 lo_server_thread st;
 
-static void osc_element_cb( hid_device_element *el, void *data)
+static void osc_element_cb( struct hid_device_element *el, void *data)
 {
   lo_message m1 = lo_message_new();
   lo_message_add_int32( m1, *((int*) data) );
@@ -50,12 +50,12 @@ static void osc_element_cb( hid_device_element *el, void *data)
   lo_message_add_int32( m1, el->usage_page );
   lo_message_add_int32( m1, el->usage );
   lo_message_add_int32( m1, el->value );
-  lo_message_add_float( m1, hid_element_map_logical( el ) );
+//   lo_message_add_float( m1, hid_element_map_logical( el ) ); // TODO: this one is not found???
   lo_send_message_from( t, s, "/hid/element/data", m1 );
   lo_message_free(m1);
 }
 
-static void osc_descriptor_cb( hid_device_descriptor *dd, void *data)
+static void osc_descriptor_cb( struct hid_device_descriptor *dd, void *data)
 {
   lo_message m1 = lo_message_new();
   lo_message_add_int32( m1, *((int*) data) );
@@ -67,14 +67,15 @@ static void osc_descriptor_cb( hid_device_descriptor *dd, void *data)
 void close_all_devices(){
   hid_map_t::const_iterator it;
   for(it=hiddevices.begin(); it!=hiddevices.end(); ++it){
-    hid_close_device( it->second );
+    struct hid_dev_desc * devdesc = it->second;
+    hid_close_device( devdesc );
   }
   hiddevices.clear();
 }
 
 void open_device( unsigned short vendor, unsigned short product, const wchar_t *serial_number=NULL  ){
   
-  hid_dev_desc * newdevdesc = hid_open_device( vendor, product, serial_number );
+  struct hid_dev_desc * newdevdesc = hid_open_device( vendor, product, serial_number );
   
   if (!newdevdesc){
     fprintf(stderr, "Unable to open device %d, %d\n", vendor, product );
@@ -102,7 +103,7 @@ void open_device( unsigned short vendor, unsigned short product, const wchar_t *
 }
 
 void close_device( int joy_idx ){
-  hid_dev_desc * hidtoclose = hiddevices.find( joy_idx )->second;
+  struct hid_dev_desc * hidtoclose = hiddevices.find( joy_idx )->second;
   if ( !hidtoclose ){
     lo_send_from( t, s, LO_TT_IMMEDIATE, "/hid/close/error", "i", joy_idx );
   } else {
