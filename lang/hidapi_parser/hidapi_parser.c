@@ -4,7 +4,7 @@
 
 #include "hidapi_parser.h"
 
-#define DEBUG_PARSER
+// #define DEBUG_PARSER
 
 //// ---------- HID descriptor parser
 
@@ -103,6 +103,23 @@
 
 
 #define BITMASK1(n) ((1ULL << (n)) - 1ULL)
+
+
+void hid_descriptor_init(struct hid_device_descriptor * devd){
+  hid_set_descriptor_callback(devd, NULL, NULL);
+  hid_set_element_callback(devd, NULL, NULL);
+}
+
+void hid_set_descriptor_callback( struct hid_device_descriptor * devd, hid_descriptor_callback cb, void *user_data ){
+    devd->_descriptor_callback = cb;
+    devd->_descriptor_data = user_data;
+}
+
+void hid_set_element_callback( struct hid_device_descriptor * devd, hid_element_callback cb, void *user_data ){
+    devd->_element_callback = cb;
+    devd->_element_data = user_data;
+}
+
 
 int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_descriptor * descriptor ){
   struct hid_device_element * prev_element;
@@ -459,26 +476,45 @@ int hid_parse_input_report( char* buf, int size, struct hid_device_descriptor * 
   struct hid_device_element * cur_element = descriptor->first;
   int i;
   
-  printf("-----------------------\n", buf[i]);
+#ifdef DEBUG_PARSER
+  printf("-----------------------\n");
+#endif
   for ( i = 0; i < size; i++){
     unsigned char curbyte = buf[i];
+#ifdef DEBUG_PARSER    
     printf("byte %02hhx \t", buf[i]);
+#endif
     // read byte:
     if ( cur_element->report_size < 8 ){
       int bitindex = 0;
       while ( bitindex < 8 ){
 	// read bit
 	cur_element->value = (curbyte >> bitindex) & BITMASK1( cur_element->report_size );
+#ifdef DEBUG_PARSER
 	printf("element page %i, usage %i, type %i, index %i, value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index, cur_element->value );
+#endif
 	bitindex += cur_element->report_size;
+	if ( descriptor->_element_callback != NULL ){
+	  descriptor->_element_callback( cur_element, descriptor->_element_data );
+	}
 	cur_element = cur_element->next;
       }
     } else if ( cur_element->report_size == 8 ){
 	cur_element->value = curbyte;
+#ifdef DEBUG_PARSER
 	printf("element page %i, usage %i, type %i,  index %i, value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index,cur_element->value );
+#endif
+	if ( descriptor->_element_callback != NULL ){
+	  descriptor->_element_callback( cur_element, descriptor->_element_data );
+	}
 	cur_element = cur_element->next;
     } // else: larger than 8 bits
   }
+#ifdef DEBUG_PARSER  
   printf("\n");
+#endif
+  if ( descriptor->_descriptor_callback != NULL ){
+    descriptor->_descriptor_callback( descriptor, descriptor->_descriptor_data );
+  }
   return 0;
 }

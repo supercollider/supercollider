@@ -3,6 +3,27 @@
 
 
 #define HIDAPI_MAX_DESCRIPTOR_SIZE  4096
+#include <lo/lo_osc_types.h>
+
+struct hid_device_element;
+struct hid_device_descriptor;
+
+// struct hid_element_cb;
+// struct hid_descriptor_cb;
+
+typedef void (*hid_element_callback) ( struct hid_device_element *element, void *user_data);
+typedef void (*hid_descriptor_callback) ( struct hid_device_descriptor *descriptor, void *user_data);
+
+// typedef struct _hid_element_cb {
+//     hid_element_callback cb;    
+//     void *data;
+// } hid_element_cb;
+// 
+// typedef struct _hid_descriptor_cb {
+//     hid_descriptor_callback cb;    
+//     void *data;
+// } hid_descriptor_cb;
+
 
 struct hid_device_element {
 	int index;
@@ -30,6 +51,7 @@ struct hid_device_element {
 
 	/** Pointer to the next element */
 	struct hid_device_element *next;
+	
 };
 
 struct hid_device_descriptor {
@@ -38,7 +60,21 @@ struct hid_device_descriptor {
 // 	int usage;
 	/** Pointer to the first element */
 	struct hid_device_element *first;
+
+	/** pointers to callback function */
+	hid_element_callback _element_callback;
+	void *_element_data;
+	hid_descriptor_callback _descriptor_callback;
+	void *_descriptor_data;
 };
+
+// typedef void (*event_cb_t)(const struct hid_device_element *element, void *user_data);
+
+void hid_descriptor_init(struct hid_device_descriptor * devd);
+
+void hid_set_descriptor_callback( struct hid_device_descriptor * devd, hid_descriptor_callback cb, void *user_data );
+void hid_set_element_callback( struct hid_device_descriptor * devd, hid_element_callback cb, void *user_data );
+
 
 int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_descriptor * descriptor );
 

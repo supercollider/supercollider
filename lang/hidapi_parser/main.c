@@ -71,7 +71,22 @@ void print_device_info( hid_device *handle ){
 	printf("Indexed String 1: %ls\n", wstr);
 }
 
+static void my_element_cb(const struct hid_device_element *el, void *data)
+{
+    printf("in %s\t", __func__);
+    printf("element: usage %i, value %i, index %i\t", el->usage, el->value, el->index );
+    printf("user_data: %s\n", (const char *)data);
+}
+
+static void my_descriptor_cb(const struct hid_device_descriptor *dd, void *data)
+{
+    printf("in %s\t", __func__);
+//     printf("element: usage %i, value %i, index %i\n", el->usage, el->value, el->index );
+    printf("user_data: %s\n", (const char *)data);
+}
+
 int main(int argc, char* argv[]){
+
   int res;
   unsigned char buf[256];
   unsigned char descr_buf[HIDAPI_MAX_DESCRIPTOR_SIZE];
@@ -95,13 +110,20 @@ int main(int argc, char* argv[]){
   }
   print_device_info( handle );
   
+  char my_custom_data[40] = "Hello!";
+  
   res = hid_get_report_descriptor( handle, descr_buf, HIDAPI_MAX_DESCRIPTOR_SIZE );
   if (res < 0){
     printf("Unable to read report descriptor\n");
     return 1;
   } else {
     descriptor = (struct hid_device_descriptor *) malloc( sizeof( struct hid_device_descriptor) );
+    hid_descriptor_init( descriptor );
     hid_parse_report_descriptor( descr_buf, res, descriptor );
+
+    
+    hid_set_descriptor_callback( descriptor, (hid_descriptor_callback) my_descriptor_cb, my_custom_data );
+    hid_set_element_callback( descriptor, (hid_element_callback) my_element_cb, my_custom_data );  
   }
 
   // Set the hid_read() function to be non-blocking.
@@ -129,7 +151,6 @@ int main(int argc, char* argv[]){
 		usleep(500*100);
 		#endif
 	}
-
 
 	hid_close(handle);
 
