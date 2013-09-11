@@ -1,7 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <wchar.h>
 #include <string.h>
-#include <stdlib.h>
 
 #include <hidapi.h>
 #include "hidapi_parser.h"
@@ -71,14 +71,14 @@ void print_device_info( hid_device *handle ){
 	printf("Indexed String 1: %ls\n", wstr);
 }
 
-static void my_element_cb(const struct hid_device_element *el, void *data)
+static void my_element_cb(const hid_device_element *el, void *data)
 {
     printf("in %s\t", __func__);
     printf("element: usage %i, value %i, index %i\t", el->usage, el->value, el->index );
     printf("user_data: %s\n", (const char *)data);
 }
 
-static void my_descriptor_cb(const struct hid_device_descriptor *dd, void *data)
+static void my_descriptor_cb(const hid_device_descriptor *dd, void *data)
 {
     printf("in %s\t", __func__);
 //     printf("element: usage %i, value %i, index %i\n", el->usage, el->value, el->index );
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]){
   unsigned char buf[256];
   unsigned char descr_buf[HIDAPI_MAX_DESCRIPTOR_SIZE];
   
-  struct hid_device_descriptor *descriptor;
+  hid_device_descriptor *descriptor;
   hid_device *handle;
   
 #ifdef WIN32
@@ -117,7 +117,7 @@ int main(int argc, char* argv[]){
     printf("Unable to read report descriptor\n");
     return 1;
   } else {
-    descriptor = (struct hid_device_descriptor *) malloc( sizeof( struct hid_device_descriptor) );
+    descriptor = (hid_device_descriptor *) malloc( sizeof( hid_device_descriptor) );
     hid_descriptor_init( descriptor );
     hid_parse_report_descriptor( descr_buf, res, descriptor );
 
