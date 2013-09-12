@@ -844,13 +844,6 @@ void initLIDPrimitives()
 	SC_LIDInit();
 }
 
-#else // !HAVE_LID
-
-void initLIDPrimitives()
-{
-	//other platforms?
-}
-
 #endif // HAVE_LID
 
 // EOF
