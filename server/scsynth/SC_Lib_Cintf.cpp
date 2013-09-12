@@ -274,8 +274,8 @@ static bool PlugIn_Load(const char *filename)
 	if (!hinstance) {
 		char *s;
 		DWORD lastErr = GetLastError();
-		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-				0, lastErr , 0, (char*)&s, 1, 0 );
+		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       NULL, lastErr , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
 		scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename, s);
 		LocalFree( s );
 		return false;
@@ -296,8 +296,8 @@ static bool PlugIn_Load(const char *filename)
 	void *ptr = (void *)GetProcAddress( hinstance, "load" );
 	if (!ptr) {
 		char *s;
-		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-				0, GetLastError(), 0, (char*)&s, 1, 0 );
+		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       NULL, GetLastError() , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
 		scprintf("*** ERROR: GetProcAddress err '%s'\n", s);
 		LocalFree( s );
 
