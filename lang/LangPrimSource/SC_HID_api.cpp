@@ -528,7 +528,7 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
   struct hid_dev_desc * devdesc = SC_HID_APIManager::instance().get_device( joyid );
   struct hid_device_info * cur_dev = devdesc->info;
   
-  if ( curdev != NULL ){
+  if ( cur_dev != NULL ){
     PyrObject* devInfo = newPyrArray(g->gc, 9 * sizeof(PyrObject), 0 , true);
     
     SetInt(devInfo->slots+devInfo->size++, cur_dev->vendor_id);
@@ -560,6 +560,27 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
   return errNone;  
 }
 
+int prHID_API_GetNumberOfElements( VMGlobals* g, int numArgsPushed ){
+  PyrSlot *args = g->sp - numArgsPushed + 1;
+  PyrSlot* self = args + 0;
+  PyrSlot* arg  = args + 1;
+    
+  int err;
+  int joyid;
+    
+  err = slotIntVal( arg, &joyid );
+  if ( err != errNone ) return err;
+  
+  struct hid_dev_desc * devdesc = SC_HID_APIManager::instance().get_device( joyid );
+  struct hid_device_descriptor * cur_dev = devdesc->descriptor;
+  
+  if ( cur_dev != NULL ){
+    SetInt( self, cur_dev->num_elements );
+  } else {
+    SetInt( self, 0 );
+  }
+  return errNone;  
+}
 
 int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
   PyrSlot *args = g->sp - numArgsPushed + 1;
@@ -635,18 +656,17 @@ void initHIDAPIPrimitives()
   definePrimitive(base, index++, "_HID_API_Start", prHID_API_Start, 1, 0); // this starts the eventloop
   definePrimitive(base, index++, "_HID_API_Stop", prHID_API_Stop, 1, 0);   // this also cleans up and closes devices
 
-  definePrimitive(base, index++, "_HID_API_BuildDeviceList", prHID_API_BuildDeviceList, 1, 0); // this gets name info about the various devices that are attached
+  definePrimitive(base, index++, "_HID_API_BuildDeviceList", prHID_API_BuildDeviceList, 1, 0); // this gets device info about the various devices that are attached
 
-  definePrimitive(base, index++, "_HID_API_OpenDevice", prHID_API_Open, 2, 0); // opens a specific device
+  definePrimitive(base, index++, "_HID_API_OpenDevice", prHID_API_Open, 3, 0); // opens a specific device
   definePrimitive(base, index++, "_HID_API_CloseDevice", prHID_API_Close, 2, 0); // closes a specific device
   
   definePrimitive(base, index++, "_HID_API_GetInfo", prHID_API_GetInfo, 2, 0); // gets info about a specific device
-  definePrimitive(base, index++, "_HID_API_GetElementInfo", prHID_API_GetElementInfo, 2, 0); // gets info about a specific device
-//  definePrimitive(base, index++, "_HID_API_GetDeviceMap", prHID_API_GetDeviceMap, 2, 0); // this gets info about the specific device
+  definePrimitive(base, index++, "_HID_API_GetNumberOfElements", prHID_API_GetNumberOfElements, 2, 0); // gets number of elements of a device
+  definePrimitive(base, index++, "_HID_API_GetElementInfo", prHID_API_GetElementInfo, 3, 0); // gets info about a specific device element
   
   SC_HID_APIManager::s_hidElementData = getsym("prHIDElementData"); // send back element data
   SC_HID_APIManager::s_hidDeviceData = getsym("prHIDDeviceData"); // send back device data
-  
   SC_HID_APIManager::s_hidClosed = getsym("prHIDDeviceClosed"); // send back that device was closed
 }
 
