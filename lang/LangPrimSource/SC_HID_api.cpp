@@ -49,6 +49,10 @@ extern bool compiledOK;
 
 #if HAVE_HIDAPI
 
+// needed for string conversions
+#include <wchar.h>
+#include <cstdlib>
+
 #include <hidapi.h>
 #include <hidapi_parser.h>
 
@@ -72,7 +76,7 @@ public:
 	int build_devicelist();
 	int free_devicelist();
 	
-	int open_device(  int vendor, int product, const char* serial_number=NULL );
+	int open_device(  int vendor, int product ); // const char* serial_number=NULL
 	int close_device( int joy_idx );
 	void close_all_devices();
 
@@ -89,6 +93,7 @@ public:
 	static void hid_element_cb( struct hid_device_element *el, void *data);
 	static void hid_descriptor_cb( struct hid_device_descriptor *dd, void *data);
 
+	struct hid_device_info *devinfos;
 public:
 	SC_HID_APIManager();
 	~SC_HID_APIManager();
@@ -97,7 +102,7 @@ public:
 
 protected:	
 	void threadLoop();
-	void handleDevice( struct hid_device_descriptor *, boost::atomic<bool> const & shouldBeRunning);
+	void handleDevice( int, struct hid_device_descriptor *, boost::atomic<bool> const & shouldBeRunning);
 	void handleElement( int, struct hid_device_element *, boost::atomic<bool> const & shouldBeRunning);
 	void deviceClosed(int, boost::atomic<bool> const & shouldBeRunning);
 // 	void hidInfo( int, struct hid_device_info *, boost::atomic<bool> const & shouldBeRunning );
@@ -105,8 +110,6 @@ protected:
 private:
 	hid_map_t hiddevices;    // declares a vector of hiddevices
 	int number_of_hids;
-	
-	struct hid_device_info *devinfos;
 
 	// language interface
 	PyrObject*		m_obj;
@@ -123,19 +126,19 @@ PyrSymbol* SC_HID_APIManager::s_hidClosed = 0;
 // PyrSymbol* SC_HID_APIManager::s_hidElementInfo = 0;
 // PyrSymbol* SC_HID_APIManager::s_hidInfo = 0;
 
-//TODO: check if this works like this
-static void SC_HID_APIManager::hid_element_cb( struct hid_device_element *el, void *data)
-{
-  SC_HID_APIManager * hidapimanager = SC_HID_APIManager::instance();
-  hidapimanager->handleDevice( *((int*) data), dd, hidapimanager->mShouldBeRunning );
-}
-
-//TODO: check if this works like this
-static void SC_HID_APIManager::hid_descriptor_cb( struct hid_device_descriptor *dd, void *data)
-{
-  SC_HID_APIManager * hidapimanager = SC_HID_APIManager::instance();
-  hidapimanager->handleDevice( *((int*) data), dd, hidapimanager->mShouldBeRunning );
-}
+// //TODO: check if this works like this
+// static void SC_HID_APIManager::hid_element_cb( struct hid_device_element *el, void *data)
+// {
+//   SC_HID_APIManager hidapimanager = SC_HID_APIManager::instance();
+//   hidapimanager.handleDevice( *((int*) data), dd, hidapimanager->mShouldBeRunning );
+// }
+// 
+// //TODO: check if this works like this
+// static void SC_HID_APIManager::hid_descriptor_cb( struct hid_device_descriptor *dd, void *data)
+// {
+//   SC_HID_APIManager hidapimanager = SC_HID_APIManager::instance();
+//   hidapimanager.handleDevice( *((int*) data), dd, hidapimanager->mShouldBeRunning );
+// }
 
 void SC_HID_APIManager::setPyrObject( PyrObject * obj ){
     m_obj = obj;
@@ -150,8 +153,8 @@ void SC_HID_APIManager::close_all_devices(){
   hiddevices.clear();
 }
 
-int SC_HID_APIManager::open_device( int vendor, int product, const char* serial_number ){
-  struct hid_dev_desc * newdevdesc = hid_open_device( vendor, product, serial_number );
+int SC_HID_APIManager::open_device( int vendor, int product ){ // , const char* serial_number
+  struct hid_dev_desc * newdevdesc = hid_open_device( vendor, product, NULL );
   
   if (!newdevdesc){
     fprintf(stderr, "HIDAPI : Unable to open device %d, %d\n", vendor, product );
@@ -188,7 +191,6 @@ struct hid_dev_desc * SC_HID_APIManager::get_device( int joy_idx ){
   if ( hiddevices.count( joy_idx ) >= 0 ){
     struct hid_dev_desc * hidget = hiddevices.find( joy_idx )->second;
     return hidget;
-    }
   } else {
     fprintf(stderr, "HIDAPI : device was not open %d\n", joy_idx);
     return NULL;
@@ -217,7 +219,7 @@ int SC_HID_APIManager::start()
   int result;
   mShouldBeRunning = true;
   if ( !m_running ){
-    result = initialize_SDL();
+    result = initialize_hidapi();
   }
   if ( !m_running ){
     return errFailed;
@@ -278,6 +280,7 @@ int SC_HID_APIManager::build_devicelist(){
 int SC_HID_APIManager::free_devicelist(){  
   hid_free_enumeration(devinfos);
   devinfos = NULL;
+  return errNone;
 }
 
 // void SC_HID_APIManager::hidInfo( int joy_idx, struct hid_device_info * cur_dev, boost::atomic<bool> const & shouldBeRunning ){
@@ -379,6 +382,10 @@ void SC_HID_APIManager::handleDevice( int joy_idx, struct hid_device_descriptor 
 }
 
 void SC_HID_APIManager::threadLoop(){
+  int res = 0;
+  hid_map_t::const_iterator it;
+  unsigned char buf[256];
+
   while(m_running ){
     for(it=hiddevices.begin(); it!=hiddevices.end(); ++it){
       res = hid_read( it->second->device, buf, sizeof(buf));
@@ -396,7 +403,7 @@ void SC_HID_APIManager::threadLoop(){
 
 // ----------  primitive calls: ---------------
 
-int prHID__Start(VMGlobals* g, int numArgsPushed)
+int prHID_API_Start(VMGlobals* g, int numArgsPushed)
 {
   PyrSlot *args = g->sp - numArgsPushed + 1;
   PyrSlot *self = args + 0;
@@ -411,6 +418,13 @@ int prHID_API_Stop(VMGlobals* g, int numArgsPushed)
 {
     // stop event loop, close all joysticks, and cleanup HID_SDLManager
   return SC_HID_APIManager::instance().stop();
+}
+
+char * wchar_to_char( wchar_t * wchs ){
+    int len = wcslen( wchs ) + 1;
+    char * chs = (char*) malloc( sizeof(char) * len );
+    std::wcstombs( chs, wchs, len );
+    return chs;
 }
 
 int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
@@ -436,19 +450,29 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 	  SetInt(devInfo->slots+devInfo->size++, cur_dev->vendor_id);
 	  SetInt(devInfo->slots+devInfo->size++, cur_dev->product_id);
 
-	  PyrString *dev_path_name = newPyrString(g->gc, cur_dev->path ); 
+// 	  char * string = wchar_to_char( cur_dev->path );
+	  PyrString *dev_path_name = newPyrString(g->gc, cur_dev->path, 0, true ); 
 	  SetObject(devInfo->slots+devInfo->size++, dev_path_name);
 	  g->gc->GCWrite(devInfo, (PyrObject*) dev_path_name);
 
-  	  PyrString *dev_serial = newPyrString(g->gc, cur_dev->serial_number ); 
+//   	  wchar_t * p;
+// 	  char mystring[256];
+// 	  p = cur_dev->serial_number;
+// 	  std::wcstombs( mystring, p, 255 );
+	  
+	  char * mystring = wchar_to_char( cur_dev->serial_number );
+
+  	  PyrString *dev_serial = newPyrString(g->gc, mystring, 0, true ); 
 	  SetObject(devInfo->slots+devInfo->size++, dev_serial);
 	  g->gc->GCWrite(devInfo, (PyrObject*) dev_serial);
 
-	  PyrString *dev_man_name = newPyrString(g->gc, cur_dev->manufacturer_string ); 
+	  mystring = wchar_to_char( cur_dev->manufacturer_string );
+	  PyrString *dev_man_name = newPyrString(g->gc, mystring, 0, true ); 
 	  SetObject(devInfo->slots+devInfo->size++, dev_man_name);
 	  g->gc->GCWrite(devInfo, (PyrObject*) dev_man_name);
 	  
-	  PyrString *dev_prod_name = newPyrString(g->gc, cur_dev->product_string );
+	  mystring = wchar_to_char( cur_dev->product_string );
+	  PyrString *dev_prod_name = newPyrString(g->gc, mystring, 0, true );
 	  SetObject(devInfo->slots+devInfo->size++, dev_prod_name);
 	  g->gc->GCWrite(devInfo, (PyrObject*) dev_prod_name);
 	  
@@ -489,7 +513,7 @@ int prHID_API_Open( VMGlobals* g, int numArgsPushed ){
   // TODO add optional string for serial number
   
   // open device
-  int result = SC_HID_APIManager::instance().open_device( vendorid, productid, NULL );
+  int result = SC_HID_APIManager::instance().open_device( vendorid, productid );
   
   SetInt( self, result );
   
@@ -534,19 +558,23 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
     SetInt(devInfo->slots+devInfo->size++, cur_dev->vendor_id);
     SetInt(devInfo->slots+devInfo->size++, cur_dev->product_id);
 
-    PyrString *dev_path_name = newPyrString(g->gc, cur_dev->path ); 
+    PyrString *dev_path_name = newPyrString(g->gc, cur_dev->path, 0, true ); 
     SetObject(devInfo->slots+devInfo->size++, dev_path_name);
     g->gc->GCWrite(devInfo, (PyrObject*) dev_path_name);
 
-    PyrString *dev_serial = newPyrString(g->gc, cur_dev->serial_number ); 
+    char * mystring;
+    mystring = wchar_to_char( cur_dev->serial_number );
+    PyrString *dev_serial = newPyrString(g->gc, mystring, 0, true ); 
     SetObject(devInfo->slots+devInfo->size++, dev_serial);
     g->gc->GCWrite(devInfo, (PyrObject*) dev_serial);
 
-    PyrString *dev_man_name = newPyrString(g->gc, cur_dev->manufacturer_string ); 
+    mystring = wchar_to_char( cur_dev->manufacturer_string );
+    PyrString *dev_man_name = newPyrString(g->gc, mystring, 0, true ); 
     SetObject(devInfo->slots+devInfo->size++, dev_man_name);
     g->gc->GCWrite(devInfo, (PyrObject*) dev_man_name);
     
-    PyrString *dev_prod_name = newPyrString(g->gc, cur_dev->product_string );
+    mystring = wchar_to_char( cur_dev->product_string );
+    PyrString *dev_prod_name = newPyrString(g->gc, mystring, 0, true );
     SetObject(devInfo->slots+devInfo->size++, dev_prod_name);
     g->gc->GCWrite(devInfo, (PyrObject*) dev_prod_name);
     
@@ -592,10 +620,10 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
   int joyid;
   int elementid;
     
-  err = slotIntVal( arg, &joyid );
+  err = slotIntVal( arg1, &joyid );
   if ( err != errNone ) return err;
   
-  err = slotIntVal( arg, &elementid );
+  err = slotIntVal( arg2, &elementid );
   if ( err != errNone ) return err;
   
   struct hid_dev_desc * devdesc = SC_HID_APIManager::instance().get_device( joyid );
@@ -648,7 +676,7 @@ void initHIDAPIPrimitives()
  
   close_HID_API_Devices();
 
-  s_sdlhid = getsym("HID_API");
+  s_hidapi = getsym("HID_API");
 
   base = nextPrimitiveIndex();
   index = 0;
