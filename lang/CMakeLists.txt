@@ -118,13 +118,6 @@ add_definitions(-DYYSTACK_USE_ALLOCA)
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
-			LangPrimSource/SC_HID.cpp
-			LangPrimSource/HID_Utilities/HID_Utilities.c
-			LangPrimSource/HID_Utilities/HID_Name_Lookup.c
-			LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
-			LangPrimSource/HID_Utilities/HID_Error_Handler.c
-			LangPrimSource/HID_Utilities/IOHIDElement_.c
-			LangPrimSource/HID_Utilities/IOHIDDevice_.c
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
 			LangPrimSource/SC_Speech.mm
