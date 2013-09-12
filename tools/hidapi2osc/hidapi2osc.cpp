@@ -230,9 +230,10 @@ lo_message get_hid_info_msg( struct hid_device_info * info )
   return m1;
 }
 
-lo_message get_hid_element_info_msg( hid_device_element * el )
+lo_message get_hid_element_info_msg( hid_device_element * el, int devid )
 {    
   lo_message m1 = lo_message_new();
+  lo_message_add_int32( m1, devid );
   lo_message_add_int32( m1, el->index );
   lo_message_add_int32( m1, el->usage_page );
   lo_message_add_int32( m1, el->usage );
@@ -339,7 +340,7 @@ void send_elements_hid_info(int joy_idx)
   hid_device_element * cur_element = hid->descriptor->first;
   
   while (cur_element) {
-    lo_message m2 = get_hid_element_info_msg( cur_element );
+    lo_message m2 = get_hid_element_info_msg( cur_element, joy_idx );
     lo_bundle_add_message( b, "/hid/element/info", m2 );
     cur_element = cur_element->next;
   }
