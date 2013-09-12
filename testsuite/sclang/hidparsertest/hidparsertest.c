@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <wchar.h>
 #include <string.h>
+// #include <conio.h>
 
 #include <hidapi.h>
 #include "hidapi_parser.h"
@@ -19,7 +20,7 @@ void list_devices( void ){
 	devs = hid_enumerate(0x0, 0x0);
 	cur_dev = devs;	
 	while (cur_dev) {
-		printf("Device Found\n  type: %04hx %04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
+		printf("Device Found\n  type: 0x%04hx 0x%04hx\n  path: %s\n  serial_number: %ls", cur_dev->vendor_id, cur_dev->product_id, cur_dev->path, cur_dev->serial_number);
 		printf("\n");
 		printf("  Manufacturer: %ls\n", cur_dev->manufacturer_string);
 		printf("  Product:      %ls\n", cur_dev->product_string);
@@ -49,7 +50,6 @@ void print_element_info( struct hid_device_element *element ){
 	  element->phys_min, element->phys_max, 
 	  element->unit_exponent, element->unit,
 	  element->report_size, element->report_id, element->report_index );
-  
 }
 
 void print_device_info( hid_device *handle ){
@@ -104,7 +104,7 @@ int main(int argc, char* argv[]){
   int res;
   unsigned char buf[256];
   unsigned char descr_buf[HIDAPI_MAX_DESCRIPTOR_SIZE];
-  
+    
   struct hid_dev_desc *devdesc;
 //   struct hid_device_descriptor *descriptor;
 //   hid_device *handle;
@@ -117,6 +117,19 @@ int main(int argc, char* argv[]){
   if (hid_init())
     return -1;
   list_devices();
+  
+  int vendor_id;
+  int product_id;
+  
+  if (argc == 3 ){          
+    vendor_id = atoi( argv[1] );
+    product_id = atoi( argv[1] );
+  } else {
+    printf( "please run again with vendor and product id to open specified device, e.g. hidparsertest 0x044f 0xd003\n" );
+      return 0;
+  }
+  printf( "vendor %i, product %i", vendor_id, product_id );
+  
 
   devdesc = hid_open_device( 0x044f, 0xd003, NULL );
   if (!devdesc){
@@ -131,9 +144,7 @@ int main(int argc, char* argv[]){
 //   print_device_info( handle );
   
   print_device_info( devdesc->device );
-  
-  char my_custom_data[40] = "Hello!";
-  
+    
 //   descriptor = hid_read_descriptor( handle );
 //   if ( descriptor == NULL ){
 //     printf("unable to read descriptor\n");
@@ -151,18 +162,26 @@ int main(int argc, char* argv[]){
 // 
 //   }
 
-  hid_set_descriptor_callback( devdesc->descriptor, (hid_descriptor_callback) my_descriptor_cb, my_custom_data );
-  hid_set_element_callback( devdesc->descriptor, (hid_element_callback) my_element_cb, my_custom_data );  
-
   // Set the hid_read() function to be non-blocking.
 //   hid_set_nonblocking(handle, 1);
 
   struct hid_device_element * cur_element = devdesc->descriptor->first;
   
-  while (cur_element) {
+  printf( "number of elements in device: %i\n", devdesc->descriptor->num_elements );
+  while (cur_element != NULL ) {
+    printf("cur_element %i\n", cur_element );
     print_element_info( cur_element );
+//     printf("press key to continue\n" );
+//     getchar();
     cur_element = cur_element->next;
   }
+  
+  printf("press key to continue\n" );
+  getchar();
+
+  char my_custom_data[40] = "Hello!";
+  hid_set_descriptor_callback( devdesc->descriptor, (hid_descriptor_callback) my_descriptor_cb, my_custom_data );
+  hid_set_element_callback( devdesc->descriptor, (hid_element_callback) my_element_cb, my_custom_data );  
   
 //   Request state (cmd 0x81). The first byte is the report number (0x1).
 //   buf[0] = 0x1;

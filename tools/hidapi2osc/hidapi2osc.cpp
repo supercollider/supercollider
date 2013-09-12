@@ -1,4 +1,4 @@
-
+//TODO: add copyright notice
 
 #include <assert.h>
 // #include <curses.h>
@@ -12,8 +12,6 @@
 
 #include <lo/lo.h>
 
-// #include "../hidapi/hidapi.h"
-// #include "../hidapi_parser/hidapi_parser.h"
 
 #include <hidapi.h>
 #include <hidapi_parser.h>
@@ -50,7 +48,7 @@ static void osc_element_cb( struct hid_device_element *el, void *data)
   lo_message_add_int32( m1, el->usage_page );
   lo_message_add_int32( m1, el->usage );
   lo_message_add_int32( m1, el->value );
-//   lo_message_add_float( m1, hid_element_map_logical( el ) ); // TODO: this one is not found???
+  lo_message_add_float( m1, hid_element_map_logical( el ) ); // TODO: this one is not found???
   lo_send_message_from( t, s, "/hid/element/data", m1 );
   lo_message_free(m1);
 }
@@ -481,17 +479,6 @@ int main(int argc, char** argv)
     exit(1);
   }
   
-  // FIXME: We don't need video, but without it SDL will fail to work in SDL_WaitEvent()
-//   if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
-//   if(SDL_Init(SDL_INIT_TIMER | SDL_INIT_EVENT | SDL_INIT_JOYSTICK) < 0)
-//   {
-//     fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
-//     exit(1);
-//   }
-//   else
-//   {
-//     atexit(SDL_Quit);
-
     if (argc == 2 && (strcmp(argv[1], "--help") == 0 ||
                       strcmp(argv[1], "-h") == 0))
     {

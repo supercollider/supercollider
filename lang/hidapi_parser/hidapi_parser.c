@@ -1,9 +1,12 @@
+//TODO: add copyright notice
+
 #include <stdio.h>
 #include <stdlib.h>
 // #include <math.h>
 
 #include "hidapi_parser.h"
 
+// SET IN CMAKE
 // #define DEBUG_PARSER
 
 //// ---------- HID descriptor parser
@@ -105,12 +108,41 @@
 #define BITMASK1(n) ((1ULL << (n)) - 1ULL)
 
 
-void hid_descriptor_init( struct hid_device_descriptor * devd){
-  hid_set_descriptor_callback(devd, NULL, NULL);
-  hid_set_element_callback(devd, NULL, NULL);
+struct hid_device_descriptor * hid_new_descriptor(){
+  struct hid_device_descriptor * descriptor;
+  descriptor = (struct hid_device_descriptor *) malloc( sizeof( struct hid_device_descriptor) );
+//     hid_descriptor_init( descriptor );
+
+  descriptor->first = NULL;
+  hid_set_descriptor_callback(descriptor, NULL, NULL);
+  hid_set_element_callback(descriptor, NULL, NULL);
+  return descriptor;
 }
 
+struct hid_device_element * hid_new_element(){
+  struct hid_device_element * element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
+  element->next = NULL;
+  return element;
+}
+
+void hid_free_element( struct hid_device_element * ele ){
+  free( ele );
+}
+
+// void hid_descriptor_init( struct hid_device_descriptor * devd){
+//   devd->first = NULL;
+//   hid_set_descriptor_callback(devd, NULL, NULL);
+//   hid_set_element_callback(devd, NULL, NULL);
+// }
+
 void hid_free_descriptor( struct hid_device_descriptor * devd){
+  struct hid_device_element * cur_element = devd->first;
+  struct hid_device_element * next_element;
+  while (cur_element != NULL ) {
+    next_element = cur_element->next;
+    free( cur_element );
+    cur_element = next_element;
+  }
   free( devd );
 //   hid_set_descriptor_callback(devd, NULL, NULL);
 //   hid_set_element_callback(devd, NULL, NULL);
@@ -278,7 +310,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 #endif
 		    // add the elements for this report
 		    for ( j=0; j<current_report_count; j++ ){
-			struct hid_device_element * new_element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
+			struct hid_device_element * new_element = hid_new_element();
+// 			= (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
 			new_element->index = descriptor->num_elements;
 			new_element->io_type = 1;
 			new_element->type = next_val; //TODO: parse this for more detailed info
@@ -328,7 +361,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 #endif
 		    		    // add the elements for this report
 		    for ( j=0; j<current_report_count; j++ ){
-			struct hid_device_element * new_element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
+			struct hid_device_element * new_element = hid_new_element();
+// 			struct hid_device_element * new_element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
 			new_element->index = descriptor->num_elements;
 			new_element->io_type = 2;
 			new_element->type = next_val; //TODO: parse this for more detailed info
@@ -378,7 +412,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 #endif
 		    // add the elements for this report
 		    for ( j=0; j<current_report_count; j++ ){
-			struct hid_device_element * new_element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
+			struct hid_device_element * new_element = hid_new_element();
+// 			struct hid_device_element * new_element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
 			new_element->index = descriptor->num_elements;
 			new_element->io_type = 3;
 			new_element->type = next_val; //TODO: parse this for more detailed info
@@ -461,7 +496,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 }
 
 float hid_element_map_logical( struct hid_device_element * element ){
-  float result = element->logical_min + ( element->value/( element->logical_max - element->logical_min ) );
+  float result = (float) element->logical_min + ( (float) element->value/( (float) element->logical_max - (float) element->logical_min ) );
   return result;
 }
 
@@ -609,8 +644,9 @@ struct hid_device_descriptor * hid_read_descriptor( hid_device * devd ){
     printf("Unable to read report descriptor\n");
     return NULL;
   } else {
-    descriptor = (struct hid_device_descriptor *) malloc( sizeof( struct hid_device_descriptor) );
-    hid_descriptor_init( descriptor );
+    descriptor = hid_new_descriptor();
+//     descriptor = (struct hid_device_descriptor *) malloc( sizeof( struct hid_device_descriptor) );
+//     hid_descriptor_init( descriptor );
     hid_parse_report_descriptor( descr_buf, res, descriptor );
     return descriptor;
   }

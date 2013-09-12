@@ -1,3 +1,5 @@
+//TODO: add copyright notice
+
 #ifndef HIDAPI_PARSER_H__
 #define HIDAPI_PARSER_H__
 
@@ -87,11 +89,12 @@ struct hid_device_descriptor * hid_read_descriptor( hid_device *devd );
 struct hid_dev_desc * hid_open_device(  unsigned short vendor, unsigned short product, const wchar_t *serial_number );
 extern void hid_close_device( struct hid_dev_desc * devdesc );
 
-
-// typedef void (*event_cb_t)(const struct hid_device_element *element, void *user_data);
-
-void hid_descriptor_init( struct hid_device_descriptor * devd);
+struct hid_device_descriptor * hid_new_descriptor();
 void hid_free_descriptor( struct hid_device_descriptor * devd);
+struct hid_device_element * hid_new_element();
+void hid_free_element( struct hid_device_element * ele);
+
+// void hid_descriptor_init( struct hid_device_descriptor * devd);
 
 void hid_set_descriptor_callback(  struct hid_device_descriptor * devd, hid_descriptor_callback cb, void *user_data );
 void hid_set_element_callback(  struct hid_device_descriptor * devd, hid_element_callback cb, void *user_data );
