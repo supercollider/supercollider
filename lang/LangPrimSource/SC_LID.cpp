@@ -817,7 +817,6 @@ void SC_LIDInit()
 	definePrimitive(base, index++, "_LID_SetLedState", prLID_SetLedState, 3, 0); // added by Marije Baalman
 	definePrimitive(base, index++, "_LID_SetMscState", prLID_SetMscState, 3, 0);
 }
-
 #else // !HAVE_LID
 int prLID_Start(VMGlobals* g, int numArgsPushed)
 {
@@ -840,11 +839,18 @@ void SC_LIDInit()
 	definePrimitive(base, index++, "_LID_Stop", prLID_Stop, 1, 0);
 }
 
-#endif // HAVE_LID
-
-void initLIDPrimitives()
+void initHIDPrimitives()
 {
 	SC_LIDInit();
 }
+
+#else // !HAVE_LID
+
+void initHIDPrimitives()
+{
+	//other platforms?
+}
+
+#endif // HAVE_LID
 
 // EOF
