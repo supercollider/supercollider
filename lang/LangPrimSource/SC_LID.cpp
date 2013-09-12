@@ -838,11 +838,19 @@ void SC_LIDInit()
 	definePrimitive(base, index++, "_LID_Start", prLID_Start, 1, 0);
 	definePrimitive(base, index++, "_LID_Stop", prLID_Stop, 1, 0);
 }
-#endif // HAVE_LID
 
 void initHIDPrimitives()
 {
 	SC_LIDInit();
 }
+
+#else // !HAVE_LID
+
+void initHIDPrimitives()
+{
+	//other platforms?
+}
+
+#endif // HAVE_LID
 
 // EOF
