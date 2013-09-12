@@ -11,6 +11,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     LangSource
                     LangPrimSource
 
+                    ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi
+                    ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi_parser
+
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     LangSource/Bison)
 
@@ -31,6 +34,7 @@ find_package(Readline 5.0)
 find_package(Sndfile)
 
 set(sclang_sources
+	LangPrimSource/SC_HID_api.cpp
 	LangPrimSource/SC_Wii.cpp
 	LangPrimSource/PyrSignalPrim.cpp
 	LangPrimSource/PyrSched.cpp
@@ -114,7 +118,6 @@ set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 add_definitions(-DYYSTACK_USE_ALLOCA)
 
-
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
@@ -153,7 +156,6 @@ if(MINGW)
  SET(CMAKE_RC_COMPILE_OBJECT
  "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
 endif(MINGW)
-
 
 if(SC_WII)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -202,6 +204,9 @@ endif()
 set_property(TARGET libsclang
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS BUILDING_SUPERCOLLIDER)
+
+add_definitions(-DHAVE_HIDAPI)
+target_link_libraries( libsclang hidapi hidapi_parser )
 
 if (SC_WII OR APPLE)
 	if (BLUETOOTH_FOUND AND CWIID_FOUND)
