@@ -166,7 +166,7 @@ int init_osc( char * ip, char *outport, char * port ){
     lo_server_thread st = lo_server_thread_new(port, error);
 
     lo_server_thread_add_method(st, "/hid/open", "ii", hid_open_handler, NULL);
-    lo_server_thread_add_method(st, "/hid/elements/info", "i", hid_element_info_handler, NULL);
+    lo_server_thread_add_method(st, "/hid/element/info", "i", hid_element_info_handler, NULL);
     lo_server_thread_add_method(st, "/hid/info", "i", hid_info_handler, NULL);
     lo_server_thread_add_method(st, "/hid/close", "i", hid_close_handler, NULL);
 
@@ -327,7 +327,7 @@ void send_elements_hid_info(int joy_idx)
 {
   hid_dev_desc * hid = hiddevices.find( joy_idx )->second;
   if ( hid == NULL ){
-      lo_send_from( t, s, LO_TT_IMMEDIATE, "/hid/elements/info/error", "i", joy_idx );
+      lo_send_from( t, s, LO_TT_IMMEDIATE, "/hid/element/info/error", "i", joy_idx );
       return;
   }
   lo_bundle b = lo_bundle_new( LO_TT_IMMEDIATE );
