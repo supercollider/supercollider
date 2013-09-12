@@ -4228,8 +4228,8 @@ void initMIDIPrimitives();
 #endif
 
 #if !defined(SC_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__)
-void initHIDPrimitives();
-	initHIDPrimitives();
+void initLIDPrimitives();
+	initLIDPrimitives();
 
 void initSerialPrimitives();
 	initSerialPrimitives();
