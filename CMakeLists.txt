@@ -153,7 +153,19 @@ option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)"
 
 option(SCLANG_SERVER "Build with internal server." ON)
 
-option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    option(HID_LIBUSB "use libusb backend for HID support (linux/freebsd)" OFF)
+    option(HID_HIDRAW "use hidraw backend (linux)" ON)
+elseif(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+    option(HID_LIBUSB "use libusb backend for HID support (linux/freebsd)" ON)
+endif()
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    option(SC_WII "Build sclang with WII support" ON)
+elseif(APPLE)
+    option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
+endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
     option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines).")
