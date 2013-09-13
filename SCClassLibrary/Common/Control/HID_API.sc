@@ -102,6 +102,7 @@ HID_API {
 	}
 
 	*stop{
+        openDevices.do{ |it| it.close };
 		this.prStop;
 		running = false;
 	}
@@ -150,7 +151,8 @@ HID_API {
 	}
 
 // coming from the primitives:
-	*prHIDDeviceClosed{ |devid|
+/*
+    *prHIDDeviceClosed{ |devid|
 		prAction.value( \closed, devid );
 		openDevices.at( devid ).closeAction.value;
 		if ( debug ){
@@ -158,6 +160,7 @@ HID_API {
 		};
         openDevices.removeAt( devid );
 	}
+*/
 
     *prHIDElementData { | devid, element, page, usage, value, mappedvalue |
         prAction.value( devid, element, page, usage, value, mappedvalue );
