@@ -83,7 +83,7 @@ public:
 	static PyrSymbol* s_hidapi;
 	static PyrSymbol* s_hidElementData;
 	static PyrSymbol* s_hidDeviceData;
-	static PyrSymbol* s_hidClosed;
+// 	static PyrSymbol* s_hidClosed;
 
 	SC_HID_APIManager();
 	~SC_HID_APIManager();
@@ -99,7 +99,7 @@ protected:
 	void threadLoop();
 	void handleDevice( int, struct hid_device_descriptor *, boost::atomic<bool> const & shouldBeRunning);
 	void handleElement( int, struct hid_device_element *, boost::atomic<bool> const & shouldBeRunning);
-	void deviceClosed(int, boost::atomic<bool> const & shouldBeRunning);
+// 	void deviceClosed(int, boost::atomic<bool> const & shouldBeRunning);
 
 private:
 	hid_map_t hiddevices;    // declares a vector of hiddevices
@@ -116,25 +116,19 @@ private:
 PyrSymbol* SC_HID_APIManager::s_hidapi = 0;
 PyrSymbol* SC_HID_APIManager::s_hidDeviceData = 0;
 PyrSymbol* SC_HID_APIManager::s_hidElementData = 0;
-PyrSymbol* SC_HID_APIManager::s_hidClosed = 0;
+// PyrSymbol* SC_HID_APIManager::s_hidClosed = 0;
 
 static void hid_element_cb( struct hid_device_element *el, void *data);
 static void hid_descriptor_cb( struct hid_device_descriptor *dd, void *data);
 
-//TODO: check if this works like this
 void hid_element_cb( struct hid_device_element *el, void *data)
 {
   SC_HID_APIManager::instance().elementData( *((int*) data), el );
-//   SC_HID_APIManager hidapimanager = SC_HID_APIManager::instance();
-//   hidapimanager.handleElement( *((int*) data), el, hidapimanager.mShouldBeRunning );
 }
 
-//TODO: check if this works like this
 void hid_descriptor_cb( struct hid_device_descriptor *dd, void *data)
 {
   SC_HID_APIManager::instance().deviceData( *((int*) data), dd );
-//   SC_HID_APIManager hidapimanager = SC_HID_APIManager::instance();
-//   hidapimanager.handleDevice( *((int*) data), dd, hidapimanager.mShouldBeRunning );
 }
 
 void SC_HID_APIManager::deviceData( int id, struct hid_device_descriptor * dd ){
@@ -187,7 +181,7 @@ int SC_HID_APIManager::close_device( int joy_idx ){
     fprintf(stderr, "HIDAPI : could not find device to close %d\n", joy_idx);
     return 1; // not a fatal error
   } else {
-    deviceClosed( joy_idx, mShouldBeRunning );
+//     deviceClosed( joy_idx, mShouldBeRunning );
     hid_close_device( hidtoclose );
     hiddevices.erase( joy_idx );
   }
@@ -321,6 +315,7 @@ int SC_HID_APIManager::free_devicelist(){
 //   gLangMutex.unlock();
 // }
 
+/*
 void SC_HID_APIManager::deviceClosed( int joy_idx, boost::atomic<bool> const & shouldBeRunning ){
   int status = lockLanguageOrQuit(shouldBeRunning);
   if (status == EINTR)
@@ -340,6 +335,7 @@ void SC_HID_APIManager::deviceClosed( int joy_idx, boost::atomic<bool> const & s
   }
   gLangMutex.unlock();  
 }
+*/
 
 void SC_HID_APIManager::handleElement( int joy_idx, struct hid_device_element * ele, boost::atomic<bool> const & shouldBeRunning ){
   int status = lockLanguageOrQuit(shouldBeRunning);
@@ -396,9 +392,11 @@ void SC_HID_APIManager::threadLoop(){
 
   while(m_running ){
     for(it=hiddevices.begin(); it!=hiddevices.end(); ++it){
-      res = hid_read( it->second->device, buf, sizeof(buf));
-      if ( res > 0 ) {
-	hid_parse_input_report( buf, res, it->second->descriptor );
+      if ( it->second != NULL ){
+	res = hid_read( it->second->device, buf, sizeof(buf));
+	if ( res > 0 ) {
+	  hid_parse_input_report( buf, res, it->second->descriptor );
+	}
       }
       #ifdef WIN32
 	Sleep(5);
@@ -703,7 +701,7 @@ void initHIDAPIPrimitives()
   
   SC_HID_APIManager::s_hidElementData = getsym("prHIDElementData"); // send back element data
   SC_HID_APIManager::s_hidDeviceData = getsym("prHIDDeviceData"); // send back device data
-  SC_HID_APIManager::s_hidClosed = getsym("prHIDDeviceClosed"); // send back that device was closed
+//   SC_HID_APIManager::s_hidClosed = getsym("prHIDDeviceClosed"); // send back that device was closed
 }
 
 #else // no SDL HID
