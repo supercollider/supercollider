@@ -4222,6 +4222,9 @@ void initCocoaBridgePrimitives();
 void initSchedPrimitives();
 	initSchedPrimitives();
 
+void initHIDAPIPrimitives();
+	initHIDAPIPrimitives();
+	
 #if defined(__APPLE__) || defined(HAVE_ALSA) || defined(HAVE_PORTMIDI)
 void initMIDIPrimitives();
 	initMIDIPrimitives();
