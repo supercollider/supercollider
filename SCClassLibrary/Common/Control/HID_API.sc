@@ -8,23 +8,49 @@ HID_API {
     classvar <openDevices;
 
 	classvar <action;
+    classvar <deviceAction;
 
 	classvar <>debug = false;
 
-    classvar prAction; // this is where HIDFunc should hook into
-
-    // classvar <joyAxisSpec;
+    classvar prAction;
+    classvar prDeviceAction;
 
     *addRecvFunc{ |function|
-        prAction.addFunc( function );
+        if ( prAction.isNil ){
+            prAction = FunctionList.new;
+        };
+        prAction = prAction.addFunc( function );
     }
 
     *removeRecvFunc{ |function|
         prAction.removeFunc( function );
     }
 
+    *addDevFunc{ |function|
+        if ( prDeviceAction.isNil ){
+            prDeviceAction = FunctionList.new;
+        };
+        prDeviceAction = prDeviceAction.addFunc( function );
+    }
+
+    *removeDevFunc{ |function|
+        prDeviceAction.removeFunc( function );
+    }
+
     *action_{ |function|
+        if ( action.notNil ){
+            this.removeRecvFunc( action );
+        };
+        action = function;
         this.addRecvFunc( function );
+    }
+
+    *deviceAction_{ |function|
+        if ( deviceAction.notNil ){
+            this.removeDevFunc( deviceAction );
+        };
+        deviceAction = function;
+        this.addDevFunc( function );
     }
 
 	*initClass{
@@ -134,16 +160,20 @@ HID_API {
 	}
 
     *prHIDElementData { | devid, element, page, usage, value, mappedvalue |
-		prAction.value( \hidelement, devid, element, page, usage, value, mappedvalue );
-		openDevices.at( devid ).valueAction( \element, element, page, usage, value, mappedvalue );
+        prAction.value( devid, element, page, usage, value, mappedvalue );
+        openDevices.at( devid ).valueAction( element, page, usage, value, mappedvalue );
+        // prAction.value( \hidelement, devid, element, page, usage, value, mappedvalue );
+        // openDevices.at( devid ).valueAction( \element, element, page, usage, value, mappedvalue );
 		if ( debug ){
 			[ devid, "element data", devid, element, page, usage, value, mappedvalue ].postln; // debugging
 		}
 	}
 
     *prHIDDeviceData { | devid, numelements |
-		prAction.value( \hidupdate, devid, numelements );
-		openDevices.at( devid ).valueAction( \update, numelements );
+        prDeviceAction.value( devid, numelements );
+        openDevices.at( devid ).devAction( numelements );
+        // prAction.value( \hidupdate, devid, numelements );
+        // openDevices.at( devid ).valueAction( \update, numelements );
 		if ( debug ){
 			[ devid, "device data", devid, numelements ].postln; // debugging
 		}
@@ -188,6 +218,7 @@ HID_API_Device {
     var <elements;
 
 	var <>action;
+    var <>deviceAction;
 	var <>closeAction;
 	var <>debug = false;
 
@@ -202,14 +233,19 @@ HID_API_Device {
         // elementDictionary = MultiLevelIdentityDictionary.new;
 	}
 
+    devAction{ arg ...args;
+        if ( debug ){
+            ( [ "device", id ] ++ args).postln;
+		};
+        deviceAction.value( *args );
+    }
+
 	valueAction{ arg ...args;
 		if ( debug ){
-			([ id ] ++ args).postln;
+            ([ "element", id ] ++ args).postln;
 		};
-        if ( args[0] == \element ){
-            if ( elements.at( args[1] ).notNil ){
-                elements.at( args[1] ).setValue( args[4], args[5] );
-            };
+        if ( elements.at( args[0] ).notNil ){
+                elements.at( args[0] ).setValue( args[3], args[4] );
         };
 		action.value( *args );
 	}
@@ -271,6 +307,7 @@ HID_API_Element{
         logicalValue = logic;
         // for now:
         value = logic;
+        action.value( value );
     }
 
     // valueAction{ arg ...args;
