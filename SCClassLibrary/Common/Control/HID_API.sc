@@ -40,7 +40,7 @@ HID_API {
             newdevid = deviceList.at( id1 ).open;
             newdev = HID_API_Device.new( newdevid );
             newdev.info = deviceList.at( id1 );
-        } else {
+        }{
             newdevid = HID_API.prOpenDevice( id1,id2 );
             newdev = HID_API_Device.new( newdevid );
             newdev.getInfo;
@@ -119,7 +119,7 @@ HID_API {
 		}
 	}
 
-    *prHIDElementData { | devid, numelements |
+    *prHIDDeviceData { | devid, numelements |
 		globalAction.value( \hidupdate, devid, numelements );
 		deviceList.at( devid ).valueAction( \update, numelements );
 		if ( debug ){
@@ -138,18 +138,18 @@ HID_API_DeviceInfo{
     var <releaseNumber;
     var <interfaceNumber;
 
-    *new{ |..args|
+    *new{ |...args|
         ^super.newCopyArgs( *args );
     }
 
     printOn { | stream |
 		super.printOn(stream);
-		stream << $( << name << ", ";
+		stream << $( << vendorName << ", " << productName << ", ";
 		[
 			vendorID,
 			productID
 		].collect({ | x | "0x" ++ x.asHexString(4) }).printItemsOn(stream);
-		stream << ", " << path << ", " << serialNumber << ", " << vendorName << ", " << productName << ", " << releaseNumber << ", " << interfaceNumber;
+		stream << ", " << path << ", " << serialNumber << ", " << ", " << releaseNumber << ", " << interfaceNumber;
 		stream.put($));
 	}
 
@@ -170,10 +170,10 @@ HID_API_Device {
 	var <>debug = false;
 
 	*new{ |id|
-		^super.new.init( id, n );
+		^super.new.init( id );
 	}
 
-	init{ |i,n|
+	init{ |i|
 		id = i;
         //info = HID_API_DeviceInfo.new( n );
         elements = IdentityDictionary.new;
@@ -182,11 +182,11 @@ HID_API_Device {
 
 	valueAction{ arg ...args;
 		if ( debug ){
-			([ id, name ] ++ args).postln;
+			([ id ] ++ args).postln;
 		};
         if ( args[0] == \element ){
             elements.at( args[1] ).setValue( args[4], args[5] );
-        }
+        };
 		action.value( *args );
 	}
 
@@ -253,4 +253,19 @@ HID_API_Element{
     //     action.value( *args );
     //     value = args;
     // }
+
+    printOn { | stream |
+		super.printOn(stream);
+        stream << $( << "hid element: " << index << ": " ;
+		[
+            "type and usage: ", io_type, type, usage_page, usage
+		].printItemsOn(stream);
+        [
+            "min and max: ", logicalMin, logicalMax, physicalMin, physicalMax, unitExponent, unit
+		].printItemsOn(stream);
+        [
+            "report: ", reportSize, reportID, reportIndex
+		].printItemsOn(stream);
+		stream.put($));
+	}
 }
