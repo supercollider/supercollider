@@ -61,8 +61,6 @@ extern bool compiledOK;
 
 typedef std::map<int, hid_dev_desc* > hid_map_t;
 
-PyrSymbol * s_hidapi;
-
 struct SC_HID_APIManager
 {
 public:
@@ -82,6 +80,7 @@ public:
 
 	void setPyrObject( PyrObject * obj );
 
+	static PyrSymbol* s_hidapi;
 	static PyrSymbol* s_hidElementData;
 	static PyrSymbol* s_hidDeviceData;
 	static PyrSymbol* s_hidClosed;
@@ -114,6 +113,7 @@ private:
 	boost::atomic<bool>	mShouldBeRunning;
 };
 
+PyrSymbol* SC_HID_APIManager::s_hidapi = 0;
 PyrSymbol* SC_HID_APIManager::s_hidDeviceData = 0;
 PyrSymbol* SC_HID_APIManager::s_hidElementData = 0;
 PyrSymbol* SC_HID_APIManager::s_hidClosed = 0;
@@ -164,9 +164,9 @@ int SC_HID_APIManager::open_device( int vendor, int product ){ // , const char* 
   if (!newdevdesc){
     fprintf(stderr, "HIDAPI : Unable to open device %d, %d\n", vendor, product );
     return 0;
-  } else {      
-    hiddevices[ number_of_hids ] = newdevdesc;    
-    
+  } else {   
+    hiddevices.insert( std::pair<int,hid_dev_desc*>(number_of_hids, newdevdesc) );
+//     hiddevices[ number_of_hids ] = newdevdesc;
     newdevdesc->index = number_of_hids;
     
     // TODO something useful for the callback functions - test if this works
@@ -177,7 +177,7 @@ int SC_HID_APIManager::open_device( int vendor, int product ){ // , const char* 
 
     number_of_hids++;
 
-    return 1;
+    return newdevdesc->index;
   }
 }
 
@@ -224,6 +224,7 @@ SC_HID_APIManager::~SC_HID_APIManager()
 int SC_HID_APIManager::start()
 {
   int result;
+  number_of_hids = 0;
   mShouldBeRunning = true;
   if ( !m_running ){
     result = initialize_hidapi();
@@ -272,14 +273,13 @@ int SC_HID_APIManager::build_devicelist(){
     count++;
     cur_dev = cur_dev->next;
   }
-  number_of_hids = count;
-  
+//   number_of_hids = count;
 //   cur_dev = devs;	
 //   while (cur_dev) {
 // 	hidInfo( joy_idx, cur_dev, mShouldBeRunning );
 // 	cur_dev = cur_dev->next;
 //   }
-  return number_of_hids;
+  return count;
 }
   
 int SC_HID_APIManager::free_devicelist(){  
@@ -332,9 +332,10 @@ void SC_HID_APIManager::deviceClosed( int joy_idx, boost::atomic<bool> const & s
   if (compiledOK) {
     VMGlobals* g = gMainVMGlobals;
     g->canCallOS = false;
-    ++g->sp; SetObject(g->sp, m_obj);
+//     ++g->sp; SetObject(g->sp, m_obj);
+    ++g->sp; SetObject(g->sp, s_hidapi->u.classobj ); // set the class HID_API
     ++g->sp; SetInt(g->sp, joy_idx );
-    runInterpreter(g, s_hidClosed, 1);
+    runInterpreter(g, s_hidClosed, 2);
     g->canCallOS = false;    
   }
   gLangMutex.unlock();  
@@ -352,14 +353,15 @@ void SC_HID_APIManager::handleElement( int joy_idx, struct hid_device_element * 
   if (compiledOK) {
     VMGlobals* g = gMainVMGlobals;
     g->canCallOS = false;
-    ++g->sp; SetObject(g->sp, m_obj);
+//     ++g->sp; SetObject(g->sp, m_obj);
+    ++g->sp; SetObject(g->sp, s_hidapi->u.classobj ); // set the class HID_API
     ++g->sp; SetInt(g->sp, joy_idx );
     ++g->sp; SetInt(g->sp, ele->index );
     ++g->sp; SetInt(g->sp, ele->usage_page );
     ++g->sp; SetInt(g->sp, ele->usage );
     ++g->sp; SetInt(g->sp, ele->value );
     ++g->sp; SetFloat(g->sp, hid_element_map_logical( ele ) );
-    runInterpreter(g, s_hidElementData, 6 );
+    runInterpreter(g, s_hidElementData, 7 );
     g->canCallOS = false;    
   }
   gLangMutex.unlock();
@@ -377,10 +379,11 @@ void SC_HID_APIManager::handleDevice( int joy_idx, struct hid_device_descriptor 
   if (compiledOK) {
     VMGlobals* g = gMainVMGlobals;
     g->canCallOS = false;
-    ++g->sp; SetObject(g->sp, m_obj);
+//     ++g->sp; SetObject(g->sp, m_obj);
+    ++g->sp; SetObject(g->sp, s_hidapi->u.classobj ); // set the class HID_API
     ++g->sp; SetInt(g->sp, joy_idx );
     ++g->sp; SetInt(g->sp, devd->num_elements );
-    runInterpreter(g, s_hidDeviceData, 2);
+    runInterpreter(g, s_hidDeviceData, 3);
     g->canCallOS = false;    
   }
   gLangMutex.unlock();
@@ -398,9 +401,9 @@ void SC_HID_APIManager::threadLoop(){
 	hid_parse_input_report( buf, res, it->second->descriptor );
       }
       #ifdef WIN32
-	Sleep(1);
+	Sleep(5);
       #else
-	usleep(1000);
+	usleep(5000);
       #endif
     }
   }
@@ -463,12 +466,20 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 	  SetObject(devInfo->slots+devInfo->size++, dev_serial);
 	  g->gc->GCWrite(devInfo, (PyrObject*) dev_serial);
 
-	  mystring = wchar_to_char( cur_dev->manufacturer_string );
+	  if ( cur_dev->manufacturer_string != NULL ){
+	    mystring = wchar_to_char( cur_dev->manufacturer_string );
+	  } else {
+	    mystring = "";
+	  }
 	  PyrString *dev_man_name = newPyrString(g->gc, mystring, 0, true ); 
 	  SetObject(devInfo->slots+devInfo->size++, dev_man_name);
 	  g->gc->GCWrite(devInfo, (PyrObject*) dev_man_name);
 	  
-	  mystring = wchar_to_char( cur_dev->product_string );
+	  if ( cur_dev->product_string != NULL ){
+	    mystring = wchar_to_char( cur_dev->product_string );
+	  } else {
+	    mystring = "";
+	  }  
 	  PyrString *dev_prod_name = newPyrString(g->gc, mystring, 0, true );
 	  SetObject(devInfo->slots+devInfo->size++, dev_prod_name);
 	  g->gc->GCWrite(devInfo, (PyrObject*) dev_prod_name);
@@ -504,7 +515,7 @@ int prHID_API_Open( VMGlobals* g, int numArgsPushed ){
   err = slotIntVal( arg1, &vendorid );
   if ( err != errNone ) return err;
 
-  err = slotIntVal( arg2, &vendorid );
+  err = slotIntVal( arg2, &productid );
   if ( err != errNone ) return err;
   
   // TODO add optional string for serial number
@@ -673,7 +684,7 @@ void initHIDAPIPrimitives()
  
   close_HID_API_Devices();
 
-  s_hidapi = getsym("HID_API");
+  SC_HID_APIManager::s_hidapi = getsym("HID_API");
 
   base = nextPrimitiveIndex();
   index = 0;
