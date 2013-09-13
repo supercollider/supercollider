@@ -5,15 +5,32 @@ HID_API {
 	classvar <deviceList;
 	classvar <deviceNames;
 
-	classvar <>globalAction; // this is where HIDFunc should hook into
+    classvar <openDevices;
+
+	classvar <action;
 
 	classvar <>debug = false;
 
+    classvar prAction; // this is where HIDFunc should hook into
+
     // classvar <joyAxisSpec;
+
+    *addRecvFunc{ |function|
+        prAction.addFunc( function );
+    }
+
+    *removeRecvFunc{ |function|
+        prAction.removeFunc( function );
+    }
+
+    *action_{ |function|
+        this.addRecvFunc( function );
+    }
 
 	*initClass{
 		//Spec.initClass; ControlSpec.initClass;
 		deviceList = IdentityDictionary.new;
+        openDevices = IdentityDictionary.new;
 	}
 
 	*buildDeviceList{
@@ -25,7 +42,7 @@ HID_API {
 		if ( devlist.isKindOf( Array ) ){
 			deviceNames = devlist;
 			devlist.do{ |it,i|
-                deviceList.put( i, HID_API_DeviceInfo.new( it ) );
+                deviceList.put( i, HID_API_DeviceInfo.new( *it ) );
                 // deviceList.put( i, HID_API_Device.new( i, it ) );
 			}{ // no devices found
 				"no HID devices found".postln;
@@ -40,10 +57,14 @@ HID_API {
             newdevid = deviceList.at( id1 ).open;
             newdev = HID_API_Device.new( newdevid );
             newdev.info = deviceList.at( id1 );
+            newdev.getElements;
+            openDevices.put( newdevid, newdev );
         }{
             newdevid = HID_API.prOpenDevice( id1,id2 );
             newdev = HID_API_Device.new( newdevid );
             newdev.getInfo;
+            newdev.getElements;
+            openDevices.put( newdevid, newdev );
         }
         ^newdev;
     }
@@ -104,24 +125,25 @@ HID_API {
 
 // coming from the primitives:
 	*prHIDDeviceClosed{ |devid|
-		globalAction.value( \closed, devid );
-		deviceList.at( devid ).closeAction.value;
+		prAction.value( \closed, devid );
+		openDevices.at( devid ).closeAction.value;
 		if ( debug ){
 			[ devid, "closed" ].postln; // debugging
-		}
+		};
+        openDevices.removeAt( devid );
 	}
 
     *prHIDElementData { | devid, element, page, usage, value, mappedvalue |
-		globalAction.value( \hidelement, devid, element, page, usage, value, mappedvalue );
-		deviceList.at( devid ).valueAction( \element, element, page, usage, value, mappedvalue );
+		prAction.value( \hidelement, devid, element, page, usage, value, mappedvalue );
+		openDevices.at( devid ).valueAction( \element, element, page, usage, value, mappedvalue );
 		if ( debug ){
 			[ devid, "element data", devid, element, page, usage, value, mappedvalue ].postln; // debugging
 		}
 	}
 
     *prHIDDeviceData { | devid, numelements |
-		globalAction.value( \hidupdate, devid, numelements );
-		deviceList.at( devid ).valueAction( \update, numelements );
+		prAction.value( \hidupdate, devid, numelements );
+		openDevices.at( devid ).valueAction( \update, numelements );
 		if ( debug ){
 			[ devid, "device data", devid, numelements ].postln; // debugging
 		}
@@ -185,7 +207,9 @@ HID_API_Device {
 			([ id ] ++ args).postln;
 		};
         if ( args[0] == \element ){
-            elements.at( args[1] ).setValue( args[4], args[5] );
+            if ( elements.at( args[1] ).notNil ){
+                elements.at( args[1] ).setValue( args[4], args[5] );
+            };
         };
 		action.value( *args );
 	}
@@ -194,7 +218,7 @@ HID_API_Device {
         var numberOfElements = HID_API.prGetNumberOfElements( id );
         numberOfElements.do{ |i|
             var elInfo = this.getElementInfo( i );
-            elements.put( i, HID_API_Element.new( elInfo ) );
+            elements.put( i, HID_API_Element.new( *elInfo ) );
         }
     }
 
@@ -205,7 +229,7 @@ HID_API_Device {
 	getInfo{
 		var result = HID_API.prGetDeviceInfo( id );
 		if ( result.isKindOf( Array ) ){
-            info = HID_API_DeviceInfo.new( result );
+            info = HID_API_DeviceInfo.new( *result );
             // this.prettyPrint;
 		}{
 			"could not get info on hid device; maybe it is not open?".postln;
@@ -261,10 +285,10 @@ HID_API_Element{
             "type and usage: ", io_type, type, usage_page, usage
 		].printItemsOn(stream);
         [
-            "min and max: ", logicalMin, logicalMax, physicalMin, physicalMax, unitExponent, unit
+            ": min and max: ", logicalMin, logicalMax, physicalMin, physicalMax, unitExponent, unit
 		].printItemsOn(stream);
         [
-            "report: ", reportSize, reportID, reportIndex
+            ": report: ", reportSize, reportID, reportIndex
 		].printItemsOn(stream);
 		stream.put($));
 	}
