@@ -515,6 +515,8 @@ int main(int argc, char** argv)
     else if (argc == 2 && (strcmp(argv[1], "--list") == 0 ||
                            (strcmp(argv[1], "-l") == 0)))
     {
+      if (hid_init())
+	return -1;
       list_devices();
     }
 //     else if (argc == 3 && (strcmp(argv[1], "--event") == 0 ||
@@ -556,10 +558,12 @@ int main(int argc, char** argv)
   
       init_osc( ip, outport, port );
 
+      if (hid_init())
+	return -1;
+    
       printf("Entering hid read loop, press Ctrl-c to exit\n");
 
       int res = 0;
-
       hid_map_t::const_iterator it;
       unsigned char buf[256];
       while(!done){
