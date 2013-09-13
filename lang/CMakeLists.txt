@@ -207,6 +207,15 @@ set_property(TARGET libsclang
 
 add_definitions(-DHAVE_HIDAPI)
 target_link_libraries( libsclang hidapi hidapi_parser )
+# target_link_libraries( sclang hidapi hidapi_parser )
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
+  target_link_libraries( libsclang ${UDEV_LIBRARIES} )
+#   target_link_libraries( sclang ${UDEV_LIBRARIES} )
+endif()
+if(HID_LIBUSB)
+  target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES} ${PTHREADS_LIBRARIES} )
+endif()
+  
 
 if (SC_WII OR APPLE)
 	if (BLUETOOTH_FOUND AND CWIID_FOUND)
@@ -248,8 +257,9 @@ if (APPLE)
 	target_link_libraries(libsclang "-framework Carbon")
 	target_link_libraries(libsclang "-framework CoreAudio")
 	target_link_libraries(libsclang "-framework CoreMIDI")
-	target_link_libraries(libsclang "-framework IOKit")
 	target_link_libraries(libsclang "-framework CoreServices")
+	target_link_libraries(libsclang "-framework IOKit")
+	target_link_libraries(libsclang "-framework CoreFoundation")	
 endif()
 
 if(ALSA_FOUND)
