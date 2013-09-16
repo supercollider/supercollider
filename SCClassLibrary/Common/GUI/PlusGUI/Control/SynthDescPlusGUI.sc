@@ -89,7 +89,7 @@
 				spec = ctlname.asSpec;
 			};
 
-			if (spec.notNil) {
+			if (spec.isKindOf(ControlSpec)) {
 				slider = EZSlider(w, 400 @ 24, capname, spec,
 					{ |ez|
 						if(synth.isPlaying) { synth.set(ctlname, ez.value) }
