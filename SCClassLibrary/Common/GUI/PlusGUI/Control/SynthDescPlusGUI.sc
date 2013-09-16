@@ -60,16 +60,24 @@
 		};
 
 
-		startButton.action = {|view|
+		startButton.action = { |view|
+			var synthEndWatcher;
 			if (view.value == 1) {
 				Server.default.bind {
 					synth = Synth(name, getSliderValues.value.postln).register;
+					synthEndWatcher = SimpleController(synth).put(\n_end, {
+						synthEndWatcher.remove;
+						synth = nil;
+						defer { view.value = 0 };
+					});
 				};
 			} {
-				if (this.hasGate) {
-					synth.release;
-				} {
-					synth.free
+				if(synth.isPlaying) {
+					if (this.hasGate) {
+						synth.release;
+					} {
+						synth.free
+					};
 				};
 				synth = nil;
 			};
