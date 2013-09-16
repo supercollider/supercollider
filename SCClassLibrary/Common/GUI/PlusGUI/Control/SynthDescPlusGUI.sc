@@ -43,7 +43,7 @@
 			envir = ();
 			usefulControls.do {|controlName, i|
 				var ctlname = controlName.name.asString;
-				var sliderEntry;
+				var sliderEntry = sliders[controlName.name];
 				if(ctlname[1] == $_ and: { "ti".includes(ctlname[0]) }) {
 					ctlname = ctlname[2..];
 				};
@@ -64,7 +64,7 @@
 			var synthEndWatcher;
 			if (view.value == 1) {
 				Server.default.bind {
-					synth = Synth(name, getSliderValues.value.postln).register;
+					synth = Synth(name, getSliderValues.value).register;
 					synthEndWatcher = SimpleController(synth).put(\n_end, {
 						synthEndWatcher.remove;
 						synth = nil;
