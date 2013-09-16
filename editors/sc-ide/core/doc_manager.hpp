@@ -129,6 +129,9 @@ public:
     const QStringList & recents() const { return mRecent; }
     Document * documentForId(const QByteArray id);
     bool textMirrorEnabled() { return mTextMirrorEnabled; }
+    void setActiveDocument(class Document *);
+    void sendActiveDocument();
+    Document * activeDocument() { return mCurrentDocument; }
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
@@ -175,6 +178,7 @@ private:
     void handleEnableTextChangedScRequest( const QString & data );
     void handleEnableTextMirrorScRequest( const QString & data );
     void syncLangDocument( Document * );
+    void updateCurrentDocContents ( int position, int charsRemoved, int charsAdded );
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
 
@@ -185,6 +189,8 @@ private:
     static const int mMaxRecent = 10;
     
     bool mTextMirrorEnabled;
+    QString mCurrentDocumentPath;
+    class Document * mCurrentDocument;
 };
 
 } // namespace ScIDE

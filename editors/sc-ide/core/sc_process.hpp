@@ -69,10 +69,6 @@ public:
         evaluateCode(cmd, true);
     }
 
-    void setActiveDocument(class Document *);
-    void sendActiveDocument();
-    Document * activeDocument() { return mCurrentDocument; }
-
     QAction *action(ActionRole role)
     {
         return mActions[role];
@@ -113,7 +109,6 @@ private slots:
     void onProcessStateChanged( QProcess::ProcessState state);
     void onReadyRead(void);
     void updateToggleRunningAction();
-    void updateCurrentDocContents ( int position, int charsRemoved, int charsAdded );
 
 private:
     void onStart();
@@ -132,8 +127,6 @@ private:
     QString mIpcServerName;
     QByteArray mIpcData;
 
-    QString mCurrentDocumentPath;
-    class Document * mCurrentDocument;
     bool mTerminationRequested;
     QDateTime mTerminationRequestTime;
     bool mCompiled;

@@ -42,7 +42,6 @@ ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
     mIpcServer( new QLocalServer(this) ),
     mIpcSocket(NULL),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid())),
-    mCurrentDocument(NULL),
     mTerminationRequested(false),
     mCompiled(false)
 {
@@ -352,7 +351,7 @@ void ScProcess::onResponse( const QString & selector, const QString & data )
     }
 
     else if (selector == requestCurrentPathSelector)
-        sendActiveDocument();
+        Main::documentManager()->sendActiveDocument();
 }
 
 void ScProcess::onStart()
@@ -362,48 +361,7 @@ void ScProcess::onStart()
 
     QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
     evaluateCode ( command, true );
-    sendActiveDocument();
-}
-
-void ScProcess::setActiveDocument(Document * document)
-{
-    if(mCurrentDocument)
-        disconnect(mCurrentDocument->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
-    if (document){
-        mCurrentDocumentPath = document->filePath();
-        connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
-        mCurrentDocument = document;
-    } else {
-        mCurrentDocumentPath.clear();
-        mCurrentDocument = NULL;
-    }
-
-    sendActiveDocument();
-}
-
-void ScProcess::sendActiveDocument()
-{
-    if (state() != QProcess::Running)
-        return;
-    if(mCurrentDocument){
-        QString command = QString("ScIDEDocument.setActiveDocByQUuid(\'%1\');").arg(mCurrentDocument->id().constData());
-        if (!mCurrentDocumentPath.isEmpty())
-            command = command.append(QString("ScIDE.currentPath_(\"%1\");").arg(mCurrentDocumentPath));
-        evaluateCode(command, true);
-    } else
-        evaluateCode(QString("ScIDE.currentPath_(nil); ScIDEDocument.current = nil;"), true);
-}
-    
-void ScProcess::updateCurrentDocContents ( int position, int charsRemoved, int charsAdded )
-{
-    if (Main::documentManager()->textMirrorEnabled()) {
-        updateTextMirrorForDocument(mCurrentDocument, position, charsRemoved, charsAdded);
-    }
-    
-    if (mCurrentDocument->textChangedActionEnabled()) {
-        QString addedChars = mCurrentDocument->textAsSCArrayOfCharCodes(position, charsAdded);
-        evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').textChanged(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
-    }
+    Main::documentManager()->sendActiveDocument();
 }
     
 void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int charsRemoved, int charsAdded )
