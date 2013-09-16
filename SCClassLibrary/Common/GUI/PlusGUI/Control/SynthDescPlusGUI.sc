@@ -112,7 +112,7 @@
 				} {
 					slider = Array(controlName.defaultValue.size);
 					controlName.defaultValue.do {|value, i|
-						slider.add(EZNumber(w, 400 @ 24, "%[%]".format(capname, i), spec,
+						slider.add(EZNumber(w, 96 @ 24, "%[%]".format(capname, i), spec,
 							{ |ez|
 								if(synth.isPlaying) { synth.set(controlName.index + i, ez.value) }
 							}, value))
