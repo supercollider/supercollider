@@ -43,7 +43,7 @@
 			envir = ();
 			usefulControls.do {|controlName, i|
 				var ctlname = controlName.name.asString;
-				var sliderEntry;
+				var sliderEntry = sliders[controlName.name];
 				if(ctlname[1] == $_ and: { "ti".includes(ctlname[0]) }) {
 					ctlname = ctlname[2..];
 				};
@@ -60,16 +60,24 @@
 		};
 
 
-		startButton.action = {|view|
+		startButton.action = { |view|
+			var synthEndWatcher;
 			if (view.value == 1) {
 				Server.default.bind {
-					synth = Synth(name, getSliderValues.value.postln).register;
+					synth = Synth(name, getSliderValues.value).register;
+					synthEndWatcher = SimpleController(synth).put(\n_end, {
+						synthEndWatcher.remove;
+						synth = nil;
+						defer { view.value = 0 };
+					});
 				};
 			} {
-				if (this.hasGate) {
-					synth.release;
-				} {
-					synth.free
+				if(synth.isPlaying) {
+					if (this.hasGate) {
+						synth.release;
+					} {
+						synth.free
+					};
 				};
 				synth = nil;
 			};
@@ -89,7 +97,7 @@
 				spec = ctlname.asSpec;
 			};
 
-			if (spec.notNil) {
+			if (spec.isKindOf(ControlSpec)) {
 				slider = EZSlider(w, 400 @ 24, capname, spec,
 					{ |ez|
 						if(synth.isPlaying) { synth.set(ctlname, ez.value) }
@@ -104,7 +112,7 @@
 				} {
 					slider = Array(controlName.defaultValue.size);
 					controlName.defaultValue.do {|value, i|
-						slider.add(EZNumber(w, 400 @ 24, "%[%]".format(capname, i), spec,
+						slider.add(EZNumber(w, 96 @ 24, "%[%]".format(capname, i), spec,
 							{ |ez|
 								if(synth.isPlaying) { synth.set(controlName.index + i, ez.value) }
 							}, value))
