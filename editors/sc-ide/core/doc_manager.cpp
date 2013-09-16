@@ -169,7 +169,7 @@ void Document::setTextInRange(const QString text, int start, int range)
 
 
 DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
-QObject(main), mTextMirrorEnabled(true)
+QObject(main), mTextMirrorEnabled(true), mCurrentDocument(NULL)
 {
     connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 
@@ -324,7 +324,7 @@ void DocumentManager::close( Document *doc )
     QString command =
             QString("ScIDEDocument.findByQUuid(\'%1\').closed")
             .arg(doc->id().constData());
-    Main::scProcess()->evaluateCode ( command, true );
+    Main::evaluateCode ( command, true );
 
     delete doc;
 }
@@ -531,7 +531,7 @@ void DocumentManager::handleDocListScRequest()
         command = command.append(docData);
     }
     command = command.append("]);");
-    Main::scProcess()->evaluateCode ( command, true );
+    Main::evaluateCode ( command, true );
 }
 
 void DocumentManager::handleNewDocScRequest( const QString & data )
@@ -604,7 +604,7 @@ void DocumentManager::handleGetDocTextScRequest( const QString & data )
             QString docText = document->textAsSCArrayOfCharCodes(start, range);
 
             QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\', %2.asAscii)").arg(funcID.c_str(), docText);
-            Main::scProcess()->evaluateCode ( command, true );
+            Main::evaluateCode ( command, true );
         }
 
     }
@@ -648,20 +648,19 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
 
         Document *document = documentForId(id.c_str());
         if(document){
-            Document * currentDocument = Main::scProcess()->activeDocument();
             // avoid a loop
-            if(document == currentDocument){
-                disconnect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), Main::scProcess(), SLOT(updateCurrentDocContents(int, int, int)));
+            if(document == mCurrentDocument){
+                disconnect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
             }
             
             document->setTextInRange(QString::fromUtf8(text.c_str()), start, range);
             
-            if(document == currentDocument){
-                connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), Main::scProcess(), SLOT(updateCurrentDocContents(int, int, int)));
+            if(document == mCurrentDocument){
+                connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
             }
             
             QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\')").arg(funcID.c_str());
-            Main::scProcess()->evaluateCode ( command, true );
+            Main::evaluateCode ( command, true );
         }
 
     }
@@ -946,5 +945,47 @@ void DocumentManager::syncLangDocument(Document *doc)
             .arg(doc->title())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
             .arg(doc->isModified());
-    Main::scProcess()->evaluateCode ( command, true );
+    Main::evaluateCode ( command, true );
 }
+
+void DocumentManager::setActiveDocument(Document * document)
+{
+    if(mCurrentDocument)
+        disconnect(mCurrentDocument->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
+    if (document){
+        mCurrentDocumentPath = document->filePath();
+        connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
+        mCurrentDocument = document;
+    } else {
+        mCurrentDocumentPath.clear();
+        mCurrentDocument = NULL;
+    }
+    
+    sendActiveDocument();
+}
+
+void DocumentManager::sendActiveDocument()
+{
+    if (Main::scProcess()->state() != QProcess::Running)
+        return;
+    if(mCurrentDocument){
+        QString command = QString("ScIDEDocument.setActiveDocByQUuid(\'%1\');").arg(mCurrentDocument->id().constData());
+        if (!mCurrentDocumentPath.isEmpty())
+            command = command.append(QString("ScIDE.currentPath_(\"%1\");").arg(mCurrentDocumentPath));
+        Main::evaluateCode(command, true);
+    } else
+        Main::evaluateCode(QString("ScIDE.currentPath_(nil); ScIDEDocument.current = nil;"), true);
+}
+
+void DocumentManager::updateCurrentDocContents ( int position, int charsRemoved, int charsAdded )
+{
+    if (mTextMirrorEnabled) {
+        Main::scProcess()->updateTextMirrorForDocument(mCurrentDocument, position, charsRemoved, charsAdded);
+    }
+    
+    if (mCurrentDocument->textChangedActionEnabled()) {
+        QString addedChars = mCurrentDocument->textAsSCArrayOfCharCodes(position, charsAdded);
+        Main::evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').textChanged(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
+    }
+}
+
