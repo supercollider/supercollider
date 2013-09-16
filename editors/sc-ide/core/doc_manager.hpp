@@ -169,12 +169,12 @@ private:
     void handleSetCurrentDocScRequest( const QString & data );
     void handleCloseDocScRequest( const QString & data );
     void handleSetDocTitleScRequest( const QString & data );
+    
+    bool parseActionEnabledRequest( const QString & data, std::string *idString, bool *en);
     void handleEnableKeyDownScRequest( const QString & data );
     void handleEnableKeyUpScRequest( const QString & data );
     void handleEnableMouseDownScRequest( const QString & data );
     void handleEnableMouseUpScRequest( const QString & data );
-    void handleEnableFrontScRequest( const QString & data );
-    void handleEnableEndFrontScRequest( const QString & data );
     void handleEnableTextChangedScRequest( const QString & data );
     void handleEnableTextMirrorScRequest( const QString & data );
     void syncLangDocument( Document * );

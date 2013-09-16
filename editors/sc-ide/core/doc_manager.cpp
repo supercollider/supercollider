@@ -744,7 +744,7 @@ void DocumentManager::handleSetDocTitleScRequest( const QString & data )
 
 }
 
-void DocumentManager::handleEnableKeyDownScRequest( const QString & data )
+bool DocumentManager::parseActionEnabledRequest( const QString & data, std::string *idString, bool *en)
 {
     QByteArray utf8_bytes = data.toUtf8();
     std::stringstream stream(utf8_bytes.constData());
@@ -753,18 +753,32 @@ void DocumentManager::handleEnableKeyDownScRequest( const QString & data )
     YAML::Node doc;
     if (parser.GetNextDocument(doc)) {
         if (doc.Type() != YAML::NodeType::Sequence)
-            return;
+            return false;
         
         std::string id;
         bool success = doc[0].Read(id);
         if (!success)
-            return;
+            return false;
         
         bool enabled;
         success = doc[1].Read(enabled);
         if (!success)
-            return;
+            return false;
         
+        *idString = id;
+        
+        *en = enabled;
+        
+        return true;
+    }
+    return false;
+}
+
+void DocumentManager::handleEnableKeyDownScRequest( const QString & data )
+{
+    std::string id;
+    bool enabled;
+    if (parseActionEnabledRequest(data, &id, &enabled)) {
         Document *document = documentForId(id.c_str());
         if(document)
         {
@@ -777,25 +791,9 @@ void DocumentManager::handleEnableKeyDownScRequest( const QString & data )
 
 void DocumentManager::handleEnableKeyUpScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-        
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
-        
-        bool enabled;
-        success = doc[1].Read(enabled);
-        if (!success)
-            return;
-        
+    std::string id;
+    bool enabled;
+    if (parseActionEnabledRequest(data, &id, &enabled)) {
         Document *document = documentForId(id.c_str());
         if(document)
         {
@@ -808,25 +806,9 @@ void DocumentManager::handleEnableKeyUpScRequest( const QString & data )
 
 void DocumentManager::handleEnableMouseDownScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-        
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
-        
-        bool enabled;
-        success = doc[1].Read(enabled);
-        if (!success)
-            return;
-        
+    std::string id;
+    bool enabled;
+    if (parseActionEnabledRequest(data, &id, &enabled)) {
         Document *document = documentForId(id.c_str());
         if(document)
         {
@@ -839,25 +821,9 @@ void DocumentManager::handleEnableMouseDownScRequest( const QString & data )
 
 void DocumentManager::handleEnableMouseUpScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-        
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
-        
-        bool enabled;
-        success = doc[1].Read(enabled);
-        if (!success)
-            return;
-        
+    std::string id;
+    bool enabled;
+    if (parseActionEnabledRequest(data, &id, &enabled)) {
         Document *document = documentForId(id.c_str());
         if(document)
         {
@@ -870,25 +836,9 @@ void DocumentManager::handleEnableMouseUpScRequest( const QString & data )
 
 void DocumentManager::handleEnableTextChangedScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-        
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
-        
-        bool enabled;
-        success = doc[1].Read(enabled);
-        if (!success)
-            return;
-        
+    std::string id;
+    bool enabled;
+    if (parseActionEnabledRequest(data, &id, &enabled)) {
         Document *document = documentForId(id.c_str());
         if(document)
         {
