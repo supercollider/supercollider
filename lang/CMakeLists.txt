@@ -187,7 +187,12 @@ include(../SCDoc/CMakeLists.txt)
 list(APPEND sclang_sources ${SCDOC_SRCS})
 
 if(SC_IDE)
+	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
+	find_package( Qt4 4.7 REQUIRED QtCore QtNetwork QtGui)
+	include( ${QT_USE_FILE} )
+	qt4_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
 	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
+	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
 endif()
 
 if(SC_QT)
@@ -293,9 +298,6 @@ if(SC_QT)
 endif()
 
 if(SC_IDE)
-	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
-	find_package( Qt4 4.7 REQUIRED QtCore QtNetwork )
-	include( ${QT_USE_FILE} )
 	target_link_libraries( libsclang ${QT_LIBRARIES} )
 endif()
 
