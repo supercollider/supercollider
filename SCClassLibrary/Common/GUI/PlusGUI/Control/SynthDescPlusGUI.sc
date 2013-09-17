@@ -61,16 +61,19 @@
 
 
 		startButton.action = { |view|
-			var synthEndWatcher;
+			var synthEndWatcher, localSynth;
 			if (view.value == 1) {
-				Server.default.bind {
-					synth = Synth(name, getSliderValues.value).register;
-					synthEndWatcher = SimpleController(synth).put(\n_end, {
-						synthEndWatcher.remove;
+				synth = Synth(name, getSliderValues.value).register;
+				localSynth = synth;
+				synthEndWatcher = SimpleController(synth).put(\n_end, {
+					synthEndWatcher.remove;
+					// 'synth' may have changed in the interim --
+					// clear 'synth' only if n_end is for the current synth
+					if(localSynth === synth) {
 						synth = nil;
 						defer { view.value = 0 };
-					});
-				};
+					};
+				});
 			} {
 				if(synth.isPlaying) {
 					if (this.hasGate) {
@@ -79,7 +82,6 @@
 						synth.free
 					};
 				};
-				synth = nil;
 			};
 		};
 
