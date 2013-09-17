@@ -5,7 +5,7 @@
 Document {
 
 	classvar <dir="", <allDocuments, >current;
-	classvar <>globalKeyDownAction, <> globalKeyUpAction, <>initAction;
+	classvar <globalKeyDownAction, <globalKeyUpAction, <>initAction;
 
 	classvar <>autoRun = true;
 
@@ -124,6 +124,20 @@ Document {
 			listenerWindow.close;
 		})
 	}
+
+	*globalKeyDownAction_ {|action|
+		globalKeyDownAction = action;
+		this.implementationClass.prGlobalKeyDownAction_(action);
+	}
+
+	*prGlobalKeyDownAction_ { }
+
+	*globalKeyUpAction_ {|action|
+		globalKeyUpAction = action;
+		this.implementationClass.prGlobalKeyUpAction_(action);
+	}
+
+	*prGlobalKeyUpAction_ { }
 
 	*current {
 		if ( thisProcess.platform.hasFeature( \emacs ), {
