@@ -46,7 +46,7 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
     uint8_t * chunk  = allocator.alloc<uint8_t>(memory_requirement());
     memset(chunk, 0, memory_requirement());
 
-    Unit * unit   = (Unit*) (std::uintptr_t(chunk + 15) & (~15)); // align on 16 byte boundary
+    Unit * unit   = (Unit*) (std::uintptr_t(chunk + 63) & (~63)); // align on 64 byte boundary
 
     unit->mInBuf  = allocator.alloc<float*>(unit_spec.input_specs.size());
     unit->mOutBuf = allocator.alloc<float*>(unit_spec.output_specs.size());
