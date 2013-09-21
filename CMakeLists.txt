@@ -159,7 +159,17 @@ endif()
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
+option(SC_QT "Build SuperCollider with Qt GUI features" ON)
 option(SC_IDE "Build Qt IDE." ON)
+if (SC_QT)
+  message( STATUS "Compiling with Qt GUI" )
+else()
+  if (SC_IDE)
+	  message( STATUS "Not compiling SC IDE, because it requires Qt but SC_QT is False" )
+    set(SC_IDE False)
+  endif()
+endif (SC_QT)
+
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
