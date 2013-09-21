@@ -549,6 +549,12 @@ MultiOutUGen : UGen {
 
 }
 
+PureMultiOutUGen : MultiOutUGen {
+	optimizeGraph {
+		super.performDeadCodeElimination
+	}
+}
+
 OutputProxy : UGen {
 	var <>source, <>outputIndex, <>name;
 	*new { arg rate, itsSourceUGen, index;
