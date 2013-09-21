@@ -65,50 +65,17 @@ public:
             const size_t count = calc_unit_count;
             Unit ** units = calc_units;
 
-#if 1
             const size_t preroll = count & 7;
 
-            const size_t unroll4  = preroll & 4;
-            const size_t unroll2  = preroll & 2;
-            const size_t unroll1 = preroll & 1;
-
-            if (unroll4) {
-                for (size_t i = 0; i != 4; ++i) {
-                    Unit * unit = units[0];
-                    prefetch(units[1]);
-                    (unit->mCalcFunc)(unit, unit->mBufLength);
-                    unit = units[1];
-                    prefetch(units[2]);
-                    (unit->mCalcFunc)(unit, unit->mBufLength);
-                    unit = units[2];
-                    prefetch(units[3]);
-                    (unit->mCalcFunc)(unit, unit->mBufLength);
-                    unit = units[3];
-                    prefetch(units[4]);
-                    (unit->mCalcFunc)(unit, unit->mBufLength);
-                }
-                units += 4;
-            }
-
-            if (unroll2) {
-                for (size_t i = 0; i != 2; ++i) {
-                    Unit * unit = units[0];
-                    prefetch(units[1]);
-                    (unit->mCalcFunc)(unit, unit->mBufLength);
-                    unit = units[1];
-                    (unit->mCalcFunc)(unit, unit->mBufLength);
-                }
-                units += 2;
-            }
-
-            if (unroll1) {
-                Unit * unit = units[0];
+            for (size_t i = 0; i != preroll; ++i) {
+                Unit * unit = units[i];
+                prefetch(units[i+1]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                units += 1;
             }
 
-            const size_t unroll = count >> 3;
+            units += preroll;
+
+            const size_t unroll = count / 8;
             if (unroll == 0)
                 return;
 
@@ -142,15 +109,10 @@ public:
                 (unit->mCalcFunc)(unit, unit->mBufLength);
 
                 unit = units[7];
+                prefetch(units[8]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
                 units += 8;
             }
-#else
-            for (size_t i = 0; i != count; ++i) {
-                Unit * unit = units[i];
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-            }
-#endif
         }
         else
             run_traced();
