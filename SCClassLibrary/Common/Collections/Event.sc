@@ -742,9 +742,10 @@ Event : Environment {
 							~uid ?? { ~uid = midiout.uid };  // mainly for sysex cmd
 							hasGate = ~hasGate ? true;
 							midicmd = ~midicmd;
-							bndl = ~midiEventFunctions[midicmd].valueEnvir.asCollection;
-
-							bndl = bndl.asControlInput.flop;
+							bndl = ~midiEventFunctions[midicmd].valueEnvir;
+							if(midicmd != \sysex, {
+								bndl = bndl.asCollection.asControlInput.flop;
+							});
 
 							bndl.do {|msgArgs, i|
 									var latency;
