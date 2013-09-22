@@ -265,11 +265,12 @@ SynthDefControl : SynthControl {
 	readyForPlay { ^synthDef.notNil }
 
 	build { | proxy, orderIndex = 0 |
-		var ok, rate, numChannels;
+		var ok, rate, numChannels, outerDefControl;
 
+		outerDefControl = NodeProxy.buildProxyControl;
 		NodeProxy.buildProxyControl = this;
 		synthDef = source.buildForProxy(proxy, channelOffset, orderIndex);
-		NodeProxy.buildProxyControl = nil;
+		NodeProxy.buildProxyControl = outerDefControl;
 
 		rate = synthDef.rate ?? { if(proxy.rate !== \control) { \audio } { \control } };
 		numChannels = synthDef.numChannels ? proxy.numChannels ? 2;
