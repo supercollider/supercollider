@@ -9,6 +9,7 @@ ProxySynthDef : SynthDef {
 			chanConstraint, rateConstraint;
 		var def, rate, numChannels, output, isScalar, envgen, canFree, hasOwnGate;
 		var hasGateArg=false, hasOutArg=false;
+		var outerBuildSynthDef = UGen.buildSynthDef;
 		def = super.new(name, {
 			var  out, outCtl;
 
@@ -101,6 +102,8 @@ ProxySynthDef : SynthDef {
 					if(rate === \audio and: { sampleAccurate }) { OffsetOut } { Out } 						.multiNewList([rate, outCtl]++output)
 			})
 		});
+
+		UGen.buildSynthDef = outerBuildSynthDef;
 
 		// set the synthDefs instvars, so they can be used later
 
