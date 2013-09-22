@@ -34,10 +34,7 @@ BusPlug : AbstractFunction {
 	}
 
 
-
-
 	//  playing and access
-
 
 	rate {  ^if(bus.isNil) { \scalar } { bus.rate } }
 	numChannels {  ^if(bus.isNil) { nil } { bus.numChannels } }
@@ -91,8 +88,6 @@ BusPlug : AbstractFunction {
 	}
 
 
-
-
 	//  math support
 
 	value { | something |
@@ -115,8 +110,6 @@ BusPlug : AbstractFunction {
 		^thisMethod.notYetImplemented
 		//^NAryOpPlug.new(aSelector, [this]++anArgList) // nary op ugens are not yet implemented
 	}
-
-
 
 
 	// bus initialization
@@ -143,9 +136,10 @@ BusPlug : AbstractFunction {
 	defineBus { | rate = \audio, numChannels |
 		if(numChannels.isNil) {
 			numChannels = if(rate === \audio) {
-								this.class.defaultNumAudio
-							} {
-								this.class.defaultNumControl							}
+				this.class.defaultNumAudio
+			} {
+				this.class.defaultNumControl
+			}
 		};
 		this.bus = Bus.alloc(rate, server, numChannels);
 	}
@@ -176,7 +170,7 @@ BusPlug : AbstractFunction {
 	}
 
 	asMap {
-		 ^this.busArg
+		^this.busArg
 	}
 
 	wakeUpToBundle {}
@@ -245,7 +239,7 @@ BusPlug : AbstractFunction {
 	// bundling messages
 
 	playToBundle { | bundle, out, numChannels,
-				group, multi=false, vol, fadeTime, addAction |
+		group, multi=false, vol, fadeTime, addAction |
 		this.newMonitorToBundle(bundle, numChannels);
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
 		monitor.usedPlayN = false;
@@ -278,6 +272,6 @@ BusPlug : AbstractFunction {
 
 	printOn { | stream |
 		stream 	<< this.class.name << "." << bus.rate << "("
-				<< server << ", " << bus.numChannels <<")";
+		<< server << ", " << bus.numChannels <<")";
 	}
 }

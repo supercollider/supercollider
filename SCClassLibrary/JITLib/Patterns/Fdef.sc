@@ -19,7 +19,7 @@ Maybe : Ref {
 		^this.reduceFuncProxy(args)
 	}
 	valueArray { arg args;
-			^this.reduceFuncProxy(args)
+		^this.reduceFuncProxy(args)
 	}
 	valueEnvir { arg ... args;
 		^this.notYetImplemented(thisMethod)
@@ -140,8 +140,8 @@ Maybe : Ref {
 				if(verbose and: { exception.isKindOf(Exception)} ) {
 					("Error or incomplete specification" + exception.errorString).postln;
 				};
-			/*	if(exception.isKindOf(this.class).not) {
-					Exception.throw;
+				/*	if(exception.isKindOf(this.class).not) {
+				Exception.throw;
 				}*/
 				// remove again
 				callers.pop;
@@ -178,8 +178,8 @@ Maybe : Ref {
 	}
 
 	storeOn { arg stream;
-	// maybe should try to catch a recursion here:
-	stream << this.class.name << "(" <<< value << ")" }
+		// maybe should try to catch a recursion here:
+		stream << this.class.name << "(" <<< value << ")" }
 
 }
 

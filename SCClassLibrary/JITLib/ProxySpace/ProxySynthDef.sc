@@ -6,7 +6,7 @@ ProxySynthDef : SynthDef {
 
 
 	*new { arg name, func, rates, prependArgs, makeFadeEnv=true, channelOffset=0,
-			chanConstraint, rateConstraint;
+		chanConstraint, rateConstraint;
 		var def, rate, numChannels, output, isScalar, envgen, canFree, hasOwnGate;
 		var hasGateArg=false, hasOutArg=false;
 		var outerBuildSynthDef = UGen.buildSynthDef;
@@ -37,10 +37,10 @@ ProxySynthDef : SynthDef {
 			canFree = UGen.buildSynthDef.children.canFreeSynth;
 			hasOwnGate = UGen.buildSynthDef.hasGateControl;
 			makeFadeEnv = if(hasOwnGate && canFree.not) {
-							"warning: gate does not free synth!".inform; false
-						} {
-							makeFadeEnv and: { (isScalar || canFree).not };
-						};
+				"warning: gate does not free synth!".inform; false
+			} {
+				makeFadeEnv and: { (isScalar || canFree).not };
+			};
 
 			hasOwnGate = canFree && hasOwnGate; //only counts when it can actually free synth.
 			if(hasOwnGate.not && hasGateArg) {
@@ -56,8 +56,8 @@ ProxySynthDef : SynthDef {
 			// if control rate, no channel wrapping is applied
 			// and wrap it in a fade envelope
 			envgen = if(makeFadeEnv) {
-						EnvGate(1, nil, nil, 2, if(rate === 'audio') { 'sin' } { 'lin' })
-			 		} { 1.0 };
+				EnvGate(1, nil, nil, 2, if(rate === 'audio') { 'sin' } { 'lin' })
+			} { 1.0 };
 
 			if(chanConstraint.notNil
 				and: { chanConstraint < numChannels }
@@ -65,41 +65,41 @@ ProxySynthDef : SynthDef {
 				{
 					if(rate === 'audio') {
 						postln(
-						"wrapped channels from" + numChannels
-						+ "to" + chanConstraint + "channels");
+							"wrapped channels from" + numChannels
+							+ "to" + chanConstraint + "channels");
 						output = NumChannels.ar(output, chanConstraint, true);
 						numChannels = chanConstraint;
 					} {
 						postln("kept first" + chanConstraint + "channels from"
-						+ numChannels + "channel input");
+							+ numChannels + "channel input");
 						output = output.keep(chanConstraint);
 						numChannels = chanConstraint;
 					}
 
-				});
+			});
 			output = output * envgen;
 
 			//"passed in rate: % output rate: %\n".postf(rateConstraint, rate);
 
 			if(isScalar, {
-					output
-				}, {
-					// rate adaption. \scalar proxy means neutral
-					if(rateConstraint != \scalar and: { rateConstraint !== rate }) {
-						if(rate === 'audio') {
-							output = A2K.kr(output);
-							rate = 'control';
-							"adopted proxy input to control rate".postln;
-						} {
-							if(rateConstraint === 'audio') {
-								output = K2A.ar(output);
-								rate = 'audio';
-								"adopted proxy input to audio rate".postln;
-							}
+				output
+			}, {
+				// rate adaption. \scalar proxy means neutral
+				if(rateConstraint != \scalar and: { rateConstraint !== rate }) {
+					if(rate === 'audio') {
+						output = A2K.kr(output);
+						rate = 'control';
+						"adopted proxy input to control rate".postln;
+					} {
+						if(rateConstraint === 'audio') {
+							output = K2A.ar(output);
+							rate = 'audio';
+							"adopted proxy input to audio rate".postln;
 						}
-					};
-					outCtl = Control.names(\out).ir(0) + channelOffset;
-					if(rate === \audio and: { sampleAccurate }) { OffsetOut } { Out } 						.multiNewList([rate, outCtl]++output)
+					}
+				};
+				outCtl = Control.names(\out).ir(0) + channelOffset;
+				(if(rate === \audio and: { sampleAccurate }) { OffsetOut } { Out }).multiNewList([rate, outCtl] ++ output)
 			})
 		});
 
