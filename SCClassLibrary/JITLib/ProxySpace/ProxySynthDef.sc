@@ -17,6 +17,9 @@ ProxySynthDef : SynthDef {
 			output = SynthDef.wrap(func, rates, prependArgs);
 			output = output.asUGenInput;
 
+			// protect from user error
+			if(output.isKindOf(UGen) and: { output.synthDef != UGen.buildSynthDef }) { Error("Cannot share UGens between NodeProxies:" + output).throw };
+
 			// determine rate and numChannels of ugen func
 			rate = output.rate;
 			isScalar = rate === 'scalar';
