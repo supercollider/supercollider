@@ -235,6 +235,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 		    break;
 		  case HID_USAGE:
 		    current_usage = next_val;
+		    current_usage_min = -1;
+		    current_usage_max = -1;
 		    current_usages[ current_usage_index ] = next_val;
 #ifdef DEBUG_PARSER
 		    printf("usage: 0x%02hhx, %i", current_usages[ current_usage_index ], current_usage_index );
@@ -371,8 +373,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 			descriptor->num_elements++;
 			prev_element = new_element;
 		    }
-		    current_usage_min = -1;
-		    current_usage_max = -1;
+// 		    current_usage_min = -1;
+// 		    current_usage_max = -1;
 		    current_usage_index = 0;
 // 		    current_physical_min = 0;
 // 		    current_physical_max = 0;
@@ -423,8 +425,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 			descriptor->num_elements++;
 			prev_element = new_element;
 		    }
-		    current_usage_min = -1;
-		    current_usage_max = -1;
+// 		    current_usage_min = -1;
+// 		    current_usage_max = -1;
 		    current_usage_index = 0;
 // 		    current_physical_min = 0;
 // 		    current_physical_max = 0;
@@ -475,8 +477,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 			descriptor->num_elements++;
 			prev_element = new_element;
 		    }
-		    current_usage_min = -1;
-		    current_usage_max = -1;
+// 		    current_usage_min = -1;
+// 		    current_usage_max = -1;
 		    current_usage_index = 0;
 // 		    current_physical_min = 0;
 // 		    current_physical_max = 0;
