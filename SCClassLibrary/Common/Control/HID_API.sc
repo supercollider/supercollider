@@ -304,7 +304,7 @@ HID_API_Element{
 
 	var <value, <>action;
 
-    var pageName, usageName, iotypeName, typeName;
+    var pageName, usageName, iotypeName, typeSpec;
 
     *initClass{
         hutDirectory = Platform.systemAppSupportDir +/+ "hid";
@@ -339,7 +339,7 @@ HID_API_Element{
         stream << ": report: ";
         [ reportSize, reportID, reportIndex	].printItemsOn(stream);
         stream << ": description: ";
-        [ this.pageName, this.usageName, this.iotypeName ].printItemsOn(stream);
+        [ this.pageName, this.usageName, this.iotypeName, this.typeSpec ].printItemsOn(stream);
 		stream.put($));
 	}
 
@@ -366,6 +366,25 @@ HID_API_Element{
             );
         };
         ^iotypeName;
+    }
+
+    typeSpec{
+        if ( typeSpec.isNil ){
+            typeSpec = [
+                ["Data","Constant"],
+                ["Array","Variable"],
+                ["Absolute","Relative"],
+                ["NoWrap","Wrap"],
+                ["Linear","NonLinear"],
+                ["PreferredState","NoPreferred"],
+                ["NoNullPosition", "NullState"],
+                ["NonVolatile","Volatile"],
+                ["BitField", "BufferedBytes"]
+            ].collect{ |it,i|
+                it.at( type.bitTest(i).binaryValue )
+            };
+        };
+        ^typeSpec;
     }
 
     getUsageDescription{
