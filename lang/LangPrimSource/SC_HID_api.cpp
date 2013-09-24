@@ -638,6 +638,9 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
   struct hid_device_element * thiselement = NULL;
   
   bool found = curelement->index == elementid;
+  if ( found ){
+    thiselement = curelement;
+  }
   while( curelement != NULL && !found ){
       found = curelement->index == elementid;
       if ( found ){
@@ -647,18 +650,20 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
   }
   
   if ( thiselement != NULL ){
-    PyrObject* elInfo = newPyrArray(g->gc, 9 * sizeof(PyrObject), 0 , true);
+    PyrObject* elInfo = newPyrArray(g->gc, 15 * sizeof(PyrObject), 0 , true);
     
     SetInt(elInfo->slots+elInfo->size++, thiselement->index );
     SetInt(elInfo->slots+elInfo->size++, thiselement->io_type );
     SetInt(elInfo->slots+elInfo->size++, thiselement->type );
     SetInt(elInfo->slots+elInfo->size++, thiselement->usage_page );
     SetInt(elInfo->slots+elInfo->size++, thiselement->usage );
+    
     SetInt(elInfo->slots+elInfo->size++, thiselement->logical_min );
     SetInt(elInfo->slots+elInfo->size++, thiselement->logical_max );
     SetInt(elInfo->slots+elInfo->size++, thiselement->phys_min );
     SetInt(elInfo->slots+elInfo->size++, thiselement->phys_max );
     SetInt(elInfo->slots+elInfo->size++, thiselement->unit_exponent );
+    
     SetInt(elInfo->slots+elInfo->size++, thiselement->unit );
     SetInt(elInfo->slots+elInfo->size++, thiselement->report_size );
     SetInt(elInfo->slots+elInfo->size++, thiselement->report_id );
