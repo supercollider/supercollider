@@ -329,6 +329,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 		  case HID_INPUT:
 #ifdef DEBUG_PARSER
 		    printf("input: %i", next_val);
+		    printf("\tcurrent_usage_index: %i", current_usage_index);
 #endif
 		    // add the elements for this report
 		    for ( j=0; j<current_report_count; j++ ){
@@ -370,9 +371,9 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 			descriptor->num_elements++;
 			prev_element = new_element;
 		    }
-// 		    current_usage_min = -1;
-// 		    current_usage_max = -1;
-// 		    current_usage_index = 0;
+		    current_usage_min = -1;
+		    current_usage_max = -1;
+		    current_usage_index = 0;
 // 		    current_physical_min = 0;
 // 		    current_physical_max = 0;
 // 		    current_unit_exponent = 0;
@@ -380,6 +381,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 		  case HID_OUTPUT:
 #ifdef DEBUG_PARSER
 		    printf("output: %i", next_val);
+		    printf("\tcurrent_usage_index: %i", current_usage_index);
 #endif
 		    		    // add the elements for this report
 		    for ( j=0; j<current_report_count; j++ ){
@@ -421,9 +423,9 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 			descriptor->num_elements++;
 			prev_element = new_element;
 		    }
-// 		    current_usage_min = -1;
-// 		    current_usage_max = -1;
-// 		    current_usage_index = 0;
+		    current_usage_min = -1;
+		    current_usage_max = -1;
+		    current_usage_index = 0;
 // 		    current_physical_min = 0;
 // 		    current_physical_max = 0;
 // 		    current_unit_exponent = 0;
@@ -431,6 +433,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 		  case HID_FEATURE:
 #ifdef DEBUG_PARSER
 		    printf("feature: %i", next_val);
+		    printf("\tcurrent_usage_index: %i", current_usage_index);
 #endif
 		    // add the elements for this report
 		    for ( j=0; j<current_report_count; j++ ){
@@ -472,9 +475,9 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_de
 			descriptor->num_elements++;
 			prev_element = new_element;
 		    }
-// 		    current_usage_min = -1;
-// 		    current_usage_max = -1;
-// 		    current_usage_index = 0;
+		    current_usage_min = -1;
+		    current_usage_max = -1;
+		    current_usage_index = 0;
 // 		    current_physical_min = 0;
 // 		    current_physical_max = 0;
 // 		    current_unit_exponent = 0;
