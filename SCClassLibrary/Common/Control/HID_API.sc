@@ -288,6 +288,9 @@ HID_API_Device {
 }
 
 HID_API_Element{
+
+    classvar <>hutDirectory;
+
     var <index;
     var <io_type, <type;
     var <usage_page, <usage;
@@ -300,6 +303,12 @@ HID_API_Element{
     var <logicalValue;
 
 	var <value, <>action;
+
+    var pageName, usageName, iotypeName, typeName;
+
+    *initClass{
+        hutDirectory = Platform.systemAppSupportDir +/+ "hid";
+    }
 
 	*new{ arg ...args;
         ^super.newCopyArgs( *args );
@@ -321,15 +330,102 @@ HID_API_Element{
     printOn { | stream |
 		super.printOn(stream);
         stream << $( << "hid element: " << index << ": " ;
-		[
-            "type and usage: ", io_type, type, usage_page, usage
-		].printItemsOn(stream);
-        [
-            ": min and max: ", logicalMin, logicalMax, physicalMin, physicalMax, unitExponent, unit
-		].printItemsOn(stream);
-        [
-            ": report: ", reportSize, reportID, reportIndex
-		].printItemsOn(stream);
+        stream << "type and usage: ";
+		[ io_type, type, usage_page, usage ].printItemsOn(stream);
+        stream << ": min and max: ";
+        [ logicalMin, logicalMax, physicalMin, physicalMax ].printItemsOn(stream);
+        stream << ": unit, exponent: ";
+        [ unitExponent, unit ].printItemsOn(stream);
+        stream << ": report: ";
+        [ reportSize, reportID, reportIndex	].printItemsOn(stream);
+        stream << ": description: ";
+        [ this.pageName, this.usageName, this.iotypeName ].printItemsOn(stream);
 		stream.put($));
 	}
+
+    pageName{
+        if ( pageName.isNil ){
+            this.getUsageDescription;
+        };
+        ^pageName;
+    }
+
+    usageName{
+        if ( usageName.isNil ){
+            this.getUsageDescription;
+        };
+        ^usageName;
+    }
+
+    iotypeName{
+        if ( iotypeName.isNil ){
+            switch( io_type,
+                1, { iotypeName = \input },
+                2, { iotypeName = \output },
+                3, { iotypeName = \feature }
+            );
+        };
+        ^iotypeName;
+    }
+
+    getUsageDescription{
+        var yamlfile;
+        var huttable;
+        switch( usage_page,
+            1, { yamlfile = "hut_1_generic_desktop.yaml"; pageName = \GenericDesktop },
+            2, { yamlfile = "hut_2_simulation_controls.yaml"; pageName = \Simulation },
+            3, { yamlfile = "hut_3_vr_controls.yaml"; pageName = \VR },
+            4, { yamlfile = "hut_4_sport_controls.yaml"; pageName = \Sport },
+            5, { yamlfile = "hut_5_game_controls.yaml"; pageName = \Game },
+            6, { yamlfile = "hut_6_generic_device.yaml"; pageName = \GenericDevice },
+            7, { yamlfile = "hut_7_keyboard_keypad.yaml"; pageName = \Keyboard },
+            8, { yamlfile = "hut_8_ledpage.yaml"; pageName = \Led },
+            9, { yamlfile = \button; pageName = \Button },
+            10, { yamlfile = \ordinal; pageName = \Ordinal },
+            11, { yamlfile = "hut_11_telephony.yaml"; pageName = \Telephony },
+            12, { yamlfile = "hut_12_consumer.yaml"; pageName = \Consumer },
+            13, { yamlfile = "hut_13_digitizer.yaml"; pageName = \Digitizer },
+            16, { yamlfile = "hut_16_unicode.yaml"; pageName = \Unicode },
+            20, { yamlfile = "hut_20_alphanumeric_display.yaml"; pageName = \AlphaNumericDisplay },
+            64, { yamlfile = "hut_64_medical_instrument.yaml"; pageName = \MedicalInstrument },
+            { nil; pageName = \undefined }
+        );
+
+        switch( yamlfile,
+            \ordinal, { usageName = ("o"++usage).asSymbol; },
+            \button, { usageName = ("b"++usage).asSymbol; },
+            {
+                if ( yamlfile.isNil ){
+                    usageName = \undefined;
+                }{
+                    huttable = this.readHUTFile( yamlfile );
+                    if ( huttable.at( usage ).notNil ){
+                        usageName = huttable.at( usage ).at( \name );
+                    }{
+                        usageName = \undefined;
+                    }
+                }
+            }
+        );
+
+    }
+
+    readHUTFile{ |yamlfile|
+        var huttable = (hutDirectory +/+ yamlfile).parseYAMLFile;
+        var hutIdtable = IdentityDictionary.new;
+        if ( huttable.isNil ){
+            ^huttable;
+        };
+        huttable.keysValuesDo{ |k,v|
+            var newkey = k.interpret;
+            hutIdtable.put( newkey, IdentityDictionary.new );
+            v.keysValuesDo{ |k2,v2|
+                hutIdtable.at( newkey ).put(
+                    k2.asSymbol, v2.asSymbol
+                );
+            };
+        };
+        ^hutIdtable;
+    }
 }
+    
