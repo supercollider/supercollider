@@ -41,6 +41,25 @@ Store the pattern in a global dictionary under key, replacing its pattern with t
 
 Using strong::*new(key):: you can access the pattern at that key (if none is given, a default silent event is created)
 
+code::
+
+// pattern as an argument
+Pdefn(\x, Pseq([1, 2, 5, 6, 7], inf));
+Pdefn(\x); // omitting the second argument, we can access the proxy
+Pdefn(\x).asStream.nextN(20); // ... play one event stream
+Pdefn(\x).source.postcs; // ... and inspect the event pattern itself.
+
+
+// function as an argument, create a new pattern each time it is called
+Pdefn(\x, { Pseq({ 10.rand } ! 8) });
+Pn(Pdefn(\x)).asStream.nextN(16);
+
+// the function is called in the incoming event as current environment, so parameters can be passed:
+Pdef(\stut, { Pstutter(~stutter ? 1, ~pattern) }); // we use here a Pdef (not a Pdefn!)
+Pdefn(\y, Pdef(\stut) <> (pattern: Pdefn(\x), stutter: Pseq([2, 2, 4, 3], inf))).asStream.nextN(16);
+
+::
+
 method::default
 Default source, if none is given. The default is a Pattern that returns 1.0 (This is 1 and not 0 to avoid deadlocks when used as a duration pattern. In a sense, 1 is just as generic as 0).
 
