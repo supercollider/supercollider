@@ -580,29 +580,43 @@ code::
 Post << "Help/*".pathMatch;
 ::
 
-method::loadPaths
-Perform link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::.
-code::
-//first prepare a file with some code...
-(
-var f = File("/tmp/loadPaths_example.scd", "w");
-if(f.isOpen, {
-	f.putString("\"This text is the result of a postln command which was loaded and executed by loadPaths\".postln");
-}, {
-	"test file could not be created - please edit the file's path above".warn;
-});
-f.close;
-)
-
-//then load the file...
-"/tmp/loadPaths_example.scd".loadPaths; //This file posts some text
-::
-
 method::load
 Load and execute the file at the path represented by the receiver.
 
+method::loadPaths
+Perform link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::.
+
+
+code::
+//first prepare a file with some code...
+(
+File.use("/tmp/loadPaths_example.scd", "w", { |file|
+	file << "\"This text is the result of a postln command which was loaded and executed by loadPaths\".postln;";
+	file <<	"\"I will now throw a dice for you: \".post; 7.rand;"
+})
+)
+
+// then load the file...
+ // ... it posts some text, and the return value pf loadPaths is an array of the return values of each file
+"/tmp/loadPaths_example.scd".loadPaths;
+::
+
+argument::warn
+Post a warning if path doesn't point to any file.
+
+argument::action
+If a function is passed, it is called with each path as argument.
+
+
+
 method::loadRelative
-Load and execute the file at the path represented by the receiver, interpreting the path as relative to the current document or text file. Requires that the file has been saved.
+Load and execute the file at the path represented by the receiver, interpreting the path as relative to the current document or text file. Requires that the file has been saved. This can be used e.g. to load initialization code from files in the same folder.
+
+argument::warn
+Warn if a file is not found.
+
+argument::action
+A function that is called for each file path that is found.
 
 method::resolveRelative
 Convert the receiver from a relative path to an absolute path, relative to the current document or text file. Requires that the current text file has been saved. Absolute paths are left untransformed.
