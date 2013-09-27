@@ -43,6 +43,35 @@ Store the pattern in a global dictionary under key, replacing its pattern with t
 
 Using strong::*new(key):: you can access the pattern at that key (if none is given, a default silent event is created)
 
+code::
+
+(
+SynthDef(\Pdefhelp, { arg out, freq, sustain=1, amp=1, pan;
+    var env = EnvGen.kr(Env.perc(0.01, sustain), 1, doneAction:2);
+    Out.ar(out, Pan2.ar(SinOsc.ar(freq, 0.5pi, amp * env), pan));
+}).add;
+)
+
+// event pattern as an argument
+Pdef(\x, Pbind(\instrument, \Pdefhelp, \note, Pbrown(0, 6, 0.1, inf), \dur, 0.2));
+Pdef(\x); // omitting the second argument, we can access the proxy
+Pdef(\x).play; // ... play one event stream
+Pdef(\x).source.postcs; // ... and inspect the event pattern itself.
+
+
+// function as an argument, create a new pattern each time it is called
+Pdef(\x, { Pbind(\note, Pseries(10.rand, 5.rand, 8.rand + 1), \dur, 1 / (8.rand + 1)) });
+Pn(Pdef(\x)).play;
+
+// the function is called in the incoming event as current environment, so parameters can be passed:
+Pdef(\stut, { Pstutter(~stutter ? 1, ~pattern) });
+Pdef(\x, Pbind(\instrument, \Pdefhelp, \note, Pseq([0, 4, 7, 3, 0, 1, 0], inf)));
+Pdef(\y, Pdef(\stut) <> (pattern: Pdef(\x), stutter: Pseq([2, 2, 4, 3], inf)) <> (dur: 0.1, legato: 0.2)).play;
+
+::
+
+
+
 method::default
 Default source, if none is given. The default is an Event.silent of 1.0 beat duration.
 
