@@ -64,7 +64,11 @@ Pcollect : FuncFilterPattern {
 		loop {
 			outval = stream.next(inval);
 			if (outval.isNil) { ^inval };
-			inval = yield(func.value(outval, inval));
+			// NOTE: Normally we would expect 'stream' to do processRest.
+			// But the 'collect' func is not under control of the stream,
+			// so that's not a safe assumption here. The func may return
+			// a rest, so we have to 'processRest' the collect value.
+			inval = yield(func.value(outval, inval).processRest(inval));
 		}
 	}
 	asStream {
