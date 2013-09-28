@@ -324,7 +324,7 @@ void DocumentManager::close( Document *doc )
     QString command =
             QString("ScIDEDocument.findByQUuid(\'%1\').closed")
             .arg(doc->id().constData());
-    Main::evaluateCode ( command, true );
+    Main::evaluateCodeIfCompiled( command, true );
 
     delete doc;
 }
