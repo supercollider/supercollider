@@ -376,7 +376,7 @@ void sc_synthdef::prepare(void)
         }
     }
 
-    memory_requirement_ += (graph.size() + calc_unit_indices.size()) * sizeof(Unit*); // reserves space for units
+    memory_requirement_ += (graph.size() + calc_unit_indices.size() + 1) * sizeof(Unit*); // reserves space for units (one more to allor prefetching)
 
     // memory that is required to fill the sc_synth data structure
     const size_t ctor_alloc_size = parameter_count() * (sizeof(float) + sizeof(int) + sizeof(float*))
