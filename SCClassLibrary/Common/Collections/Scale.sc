@@ -171,6 +171,7 @@ Scale {
 }
 
 Tuning {
+
 	var <tuning, <octaveRatio, <>name;
 	classvar <all;
 
@@ -253,7 +254,7 @@ Tuning {
 	}
 
 	stepsPerOctave {
-		^this.size
+		^octaveRatio.log2 * 12.0
 	}
 
 	asTuning {
