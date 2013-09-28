@@ -87,7 +87,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
     unit_count = prototype->unit_count();
     calc_unit_count = prototype->calc_unit_count();
     units        = allocator.alloc<Unit*>(unit_count);
-    calc_units   = allocator.alloc<Unit*>(calc_unit_count);
+    calc_units   = allocator.alloc<Unit*>(calc_unit_count + 1); // over-allocate to allow prefetching
     unit_buffers = allocator.alloc<sample>(sample_alloc_size);
 
     const int alignment_mask = wire_buffer_alignment - 1;
