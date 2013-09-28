@@ -356,6 +356,32 @@ ScIDE {
 		this.prSend(\setDocumentTitle, [quuid, newTitle]);
 	}
 
+	*setDocumentKeyDownEnabled {|quuid, bool|
+		this.prSend(\enableDocumentKeyDownAction, [quuid, bool]);
+	}
+
+	*setDocumentKeyUpEnabled {|quuid, bool|
+		this.prSend(\enableDocumentKeyUpAction, [quuid, bool]);
+	}
+
+	*setDocumentMouseDownEnabled {|quuid, bool|
+		this.prSend(\enableDocumentMouseDownAction, [quuid, bool]);
+	}
+
+	*setDocumentMouseUpEnabled {|quuid, bool|
+		this.prSend(\enableDocumentMouseUpAction, [quuid, bool]);
+	}
+
+	*setDocumentTextChangedEnabled {|quuid, bool|
+		this.prSend(\enableDocumentTextChangedAction, [quuid, bool]);
+	}
+
+	*setDocumentTextMirrorEnabled {|bool|
+		this.prSend(\enableDocumentTextMirror, [bool]);
+	}
+
+
+
 	// PRIVATE ///////////////////////////////////////////////////////////
 
 	*prSend {|id, data|
@@ -371,8 +397,8 @@ ScIDE {
 
 ScIDEDocument : Document {
 	classvar <asyncActions;
-	var <quuid, <title, <text, <isEdited = false, <path;
-	var <>textChangedAction;
+	var <quuid, <title, <isEdited = false, <path;
+	var <textChangedAction;
 
 	*initClass{
 		Document.implementationClass = this;
@@ -391,9 +417,9 @@ ScIDEDocument : Document {
 		isEdited = isEdited.booleanValue;
 		chars = String.fill(chars.size, {|i| chars[i].asAscii});
 		if((doc = this.findByQUuid(quuid)).isNil, {
-			doc = super.prBasicNew.init(quuid, title, chars, isEdited);
+			doc = super.prBasicNew.initFromIDE(quuid, title, chars, isEdited);
 			allDocuments = allDocuments.add(doc);
-		}, {doc.init(quuid, title, chars, isEdited)});
+		}, {doc.initFromIDE(quuid, title, chars, isEdited)});
 	}
 
 	*syncDocs {|docInfo| // [quuid, title, string, isEdited]
@@ -433,15 +459,19 @@ ScIDEDocument : Document {
 	init {|id, argtitle, argstring, argisEdited|
 		quuid = id;
 		title = argtitle;
-		text = argstring;
+		this.text = argstring;
 		isEdited = argisEdited;
 	}
 
-	initText {|string| text = string }
+	initFromIDE {|id, argtitle, argstring, argisEdited|
+		quuid = id;
+		title = argtitle;
+		this.prSetTextMirror(id, argstring, 0, -1);
+		isEdited = argisEdited;
+	}
 
-	updateText {|index, numCharsRemoved, addedChars|
+	textChanged {|index, numCharsRemoved, addedChars|
 		addedChars = String.fill(addedChars.size, {|i| addedChars[i].asAscii});
-		text = text.keep(index) ++ addedChars ++ text.drop(index + numCharsRemoved);
 		textChangedAction.value(this, index, numCharsRemoved, addedChars);
 	}
 
@@ -451,43 +481,60 @@ ScIDEDocument : Document {
 
 	prclose { ScIDE.close(quuid); }
 
-	// asynchronous get
+/*	// asynchronous get
 	// range -1 means to the end of the Document
 	getText {|action, start = 0, range -1|
 		var funcID;
 		funcID = ScIDE.getQUuid; // a unique id for this function
 		asyncActions[funcID] = action; // pass the text
 		ScIDE.getTextByQUuid(quuid, funcID, start, range);
+	}*/
+
+	getText {|action, start = 0, range -1|
+		^prGetTextFromMirror(quuid, start, range);
+	}
+
+	prGetTextFromMirror {|id, start=0, range = -1|
+		_ScIDE_GetDocTextMirror
+		this.primitiveFailed
 	}
 
 	// asynchronous set
 	prSetText {|text, action, start = 0, range -1|
 		var funcID;
+		// first set the back end mirror
+		this.prSetTextMirror(quuid, text, start, range);
 		funcID = ScIDE.getQUuid; // a unique id for this function
 		asyncActions[funcID] = action; // pass the text
+		// set the SCIDE Document
 		ScIDE.setTextByQUuid(quuid, funcID, text, start, range);
 	}
 
-	text_ {|string|
-		text = string;
-		this.prSetText(text);
+	// set the backend mirror
+	prSetTextMirror {|quuid, text, start, range|
+		_ScIDE_SetDocTextMirror
+		this.primitiveFailed
 	}
 
+	text_ {|string|
+		this.prSetText(string);
+	}
+
+	text { ^this.prGetTextFromMirror(quuid, 0, -1); }
+
 	rangeText { | rangestart=0, rangesize=1 |
-		^text.copy(rangestart, rangestart + rangesize);
+		^this.prGetTextFromMirror(rangestart, rangesize);
 	}
 
 	insertText {|string, index = 0|
-		text = text.insert(index, string);
 		this.prSetText(string, nil, index, 0);
 	}
 
 	getChar {|index = 0|
-		^text[index];
+		^this.prGetTextFromMirror(quuid, index, 1);
 	}
 
 	setChar {|char, index = 0|
-		text = text.keep(index) ++ char ++ text.drop(index + 1);
 		this.prSetText(char.asString, nil, index, 1);
 	}
 
@@ -505,12 +552,49 @@ ScIDEDocument : Document {
 		keyUpAction.value(this,character, modifiers, unicode, keycode, key);
 	}
 
-	mouseDown{ | x, y, modifiers, buttonNumber, clickCount |
+	mouseDown { | x, y, modifiers, buttonNumber, clickCount |
 		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount)
 	}
 
-	mouseUp{ | x, y, modifiers, buttonNumber |
+	mouseUp { | x, y, modifiers, buttonNumber |
 		mouseUpAction.value(this, x, y, modifiers, buttonNumber)
+	}
+
+	keyDownAction_ {|action|
+		keyDownAction = action;
+		ScIDE.setDocumentKeyDownEnabled(quuid, action.notNil || globalKeyDownAction.notNil);
+	}
+
+	keyUpAction_ {|action|
+		keyUpAction = action;
+		ScIDE.setDocumentKeyUpEnabled(quuid, action.notNil  || globalKeyUpAction.notNil);
+	}
+
+	mouseDownAction_ {|action|
+		mouseDownAction = action;
+		ScIDE.setDocumentMouseDownEnabled(quuid, action.notNil);
+	}
+
+	mouseUpAction_ {|action|
+		mouseUpAction = action;
+		ScIDE.setDocumentMouseUpEnabled(quuid, action.notNil);
+	}
+
+	textChangedAction_ {|action|
+		textChangedAction = action;
+		ScIDE.setDocumentTextChangedEnabled(quuid, action.notNil);
+	}
+
+	*prGlobalKeyDownAction_ {|action|
+		allDocuments.do({|doc|
+			ScIDE.setDocumentKeyDownEnabled(doc.quuid, action.notNil || doc.keyDownAction.notNil);
+		});
+	}
+
+	*prGlobalKeyUpAction_ {|action|
+		allDocuments.do({|doc|
+			ScIDE.setDocumentKeyUpEnabled(doc.quuid, action.notNil || doc.keyUpAction.notNil);
+		});
 	}
 
 	prSetTitle {|newTitle|
@@ -542,7 +626,7 @@ ScIDEDocument : Document {
 		if (file.isNil, {
 			error("Document open failed\n");
 		});
-		text = file.readAllString;
+		this.text = file.readAllString;
 		file.close;
 	}
 

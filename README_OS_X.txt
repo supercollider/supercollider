@@ -30,9 +30,9 @@ Compiling SuperCollider from the source code
 
 Requirements:
  * Mac OS X 10.6 or greater
- * Cmake 2.8.10 or greater
+ * Cmake 2.8.11 or greater
  * clang-3.3 or apple clang
- * Qt libraries 4.7 or greater: http://qt-project.org/downloads
+ * Qt libraries 4.8.5 or greater: http://qt-project.org/downloads
 
 To build SuperCollider with Cmake, it is recommended to create a "build"
 folder (to keep the built files neatly all together) in the root of the 
