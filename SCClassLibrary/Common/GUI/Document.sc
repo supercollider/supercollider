@@ -33,28 +33,14 @@ Document {
 	}
 
 	*open { | path, selectionStart=0, selectionLength=0, envir |
-		var doc, env;
-		env = currentEnvironment;
-		if(this.current.notNil) { this.current.restoreCurrentEnvironment };
-		doc = Document.implementationClass.prBasicNew.initFromPath(path, selectionStart, selectionLength);
-		if (doc.notNil) {
-			doc.envir_(envir)
-		} {
-			currentEnvironment = env
-		};
+		var doc = Document.implementationClass.prBasicNew.initFromPath(path, selectionStart, selectionLength);
+		if (envir.notNil and: { doc.notNil }) { doc.envir_(envir) };
 		^doc
 	}
 
 	*new { | title="Untitled", string="", makeListener=false, envir |
-		var doc, env;
-		env = currentEnvironment;
-		if(this.current.notNil) { this.current.restoreCurrentEnvironment };
-		doc = Document.implementationClass.new(title, string, makeListener);
-		if (doc.notNil) {
-			doc.envir_(envir)
-		} {
-			currentEnvironment = env
-		};
+		var doc = Document.implementationClass.new(title, string, makeListener);
+		if (envir.notNil and: { doc.notNil }) { doc.envir_(envir) };
 		^doc
 	}
 
@@ -571,14 +557,21 @@ Document {
 	envir_ { | ev |
 		envir = ev;
 		if (this.class.current == this) {
-			if (savedEnvir.isNil) {
-				this.saveCurrentEnvironment
+			if(envir.isNil) {
+				this.restoreCurrentEnvironment
+			} {
+				if (savedEnvir.isNil) {
+					this.saveCurrentEnvironment
+				}
 			}
 		}
 	}
 
 	restoreCurrentEnvironment {
-		if (envir.notNil) { currentEnvironment = savedEnvir };
+		if (savedEnvir.notNil) {
+			currentEnvironment = savedEnvir;
+			savedEnvir = nil;
+		}
 	}
 
 	saveCurrentEnvironment {
