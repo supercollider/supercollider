@@ -103,7 +103,7 @@ MethodError : Error {
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;
 		// this.adviceLink.postln;
-		"^^ The preceding error dump is for %\nRECEIVER: %\n".postf(this.errorString, receiver);
+		"^^ The preceding error dump is for %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
 	}
 	adviceLinkPage {
 		^this.class.name
@@ -164,7 +164,7 @@ DoesNotUnderstandError : MethodError {
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;
 		// this.adviceLink.postln;
-		"^^ The preceding error dump is for %\nRECEIVER: %\n".postf(this.errorString, receiver);
+		"^^ The preceding error dump is for %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
 	}
 	adviceLinkPage {
 		^"%#%".format(this.class.name, selector)
@@ -267,6 +267,7 @@ DeprecatedError : MethodError {
 		this.errorString.postln;
 		this.errorPathString.post;
 		// this.adviceLink.postln;
+		"\n\n".post;
 	}
 
 	throw {
