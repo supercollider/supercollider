@@ -266,10 +266,10 @@ SimpleNumber : Number {
 		if (abs(curve) < 0.001) { ^this.linlin(inMin, inMax, outMin, outMax) };
 
 		grow = exp(curve);
-		a = outMax - outMin / (1.0 - grow);
-		b = outMin + a;
+		a = inMax - inMin / (1.0 - grow);
+		b = inMin + a;
 
-		^(log( (b - this)) / a ) * (inMax - inMin) / curve + inMin
+		^log((b - this) / a) * (outMax - outMin) / curve + outMin
 	}
 
 	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
