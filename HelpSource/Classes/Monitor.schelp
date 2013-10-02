@@ -1,44 +1,66 @@
 class:: Monitor
 summary:: link between busses
 categories:: Libraries>JITLib>NodeProxy
-related:: Classes/NodeProxy
+related:: Classes/NodeProxy, Reference/playN, Classes/Bus
 
 description::
-For playing contiguous channels to other contiguous busses, one uses strong::play::; for more complex routings, such as splitting, spreading etc to multiple channels, strong::playN::.
+A general purpose class for monitoring or crosslinking between busses. It supports multichannel expansion and crossfading between settings. It provides optimizations for playing contiguous channels to other contiguous busses (link::#play::) and for more complex routings, such as splitting, spreading etc to multiple channels (link::#playN::). Monitor uses the existing set of  link::Classes/SystemSynthDefs:: to do this.
+
+code::
+{ Out.ar(87, SinOsc.ar(MouseX.kr(240, 1000, 1) * [1, 2, 3], 0, 0.2)) }.play; // play three sine tone on channels 87, 88, and 89
+x = Monitor.new; // create a new monitor
+x.play(fromIndex: 87, fromNumChannels: 3, toIndex:0, toNumChannels:2); // play them back to the stereo hardware channels
+::
+
+ClassMethods::
+
+method::warnPlayN
+A Monitor can switch between different multichannel modes (play and playN). Currently, such a switch may result in wrong defaults, so if this variable is set to true (default: true), it will post an informative warning.
 
 InstanceMethods::
 
 method::play
-plays from a bus index with a number of channels to another index with a number of channels, within a target group, or a server.
+Plays from a bus index with a number of channels to another index with a number of channels, within a target group, or a server.
 
 argument::fromIndex
+bus index from which to read
 
 argument::fromNumChannels
+number of channels to read from.
 
 argument::toIndex
+bus index to which to write.
 
 argument::toNumChannels
+number of channels to write. If this number is larger or smaller than fromNumChannels, wrap around. If nothing is given, uses fromNumChannels.
 
 argument::target
-where to play (default: server default group)
+where to send the synths to (default: server default group)
 
 argument::multi
-keep old links and add new one
+keep old links and add new one: this allows you to add layer after layer, otherwise free ther previous mapping (false by default).
 
 argument::volume
 volume at which to monitor
 
 argument::fadeTime
-fade in fade out time
+specifies the fade in and fade out time
 
 argument::addAction
+where, relative to the target to place the monitor group.
 
 method::playN
+Plays from an array of bus indices to another array of bus indices with an array of amplitudes, within a target group, or a server.
 
-the arguments strong::out::, strong::amp:: and strong::in:: can be nested arrays. see also link::Reference/playN::
+note::
+The arguments strong::out::, strong::amp:: and strong::in:: can be nested arrays. see also link::Reference/playN::
+
+The three arguments out, amp, and in will wrap if they do not have the same size, like this:
+code::  [[0, 1], [0.1], [3, 4, 5]].flop ::
+::
 
 argument::out
-array of destination channels
+array of destination channels.
 
 argument::amp
 array of amplitudes for each channel
@@ -47,35 +69,68 @@ argument::in
 array of source channels
 
 argument::vol
-global scaling for amplitudes
+global scaling value for amplitudes
 
 argument::fadeTime
-fade in and out
+specifies the fade in and fade out time
 
 argument::target
 where to play (default: server default group)
 
 argument::addAction
+where, relative to the target to place the monitor group.
 
-method::isPlaying
-returns true if the group is still playing
+
 
 method::stop
-stops within the fadeTime
+Stops within the fadeTime.
+code::
+{ Out.ar(87, SinOsc.ar(MouseX.kr(340, 1000, 1) * [1, 2, 3], 0, 0.2)) }.play;
+x = Monitor.new.play(87, 3, 0, fadeTime: 3);
+x.stop;
+::
 
 method::vol
-set the volume
+Set the volume.
+code::
+{ Out.ar(87, SinOsc.ar(MouseX.kr(340, 1000, 1) * [1, 2, 3], 0, 0.2)) }.play;
+x = Monitor.new.play(87, 3, 0, fadeTime: 3);
+x.vol = 0.3;
+x.stop;
+::
+
 
 method::out
-set the output index. doesn't work right now.
+Set or get the first output index.
+
+method::outs
+Set or get the array of output bus indices.
+
+method::ins
+Set or get the array of input bus indices.
+
+method::amps
+Set the array of amplitudes.
+
+method::fadeTime
+Set the fadeTime for the next transition (may be a stop or a new play).
+
+method::isPlaying
+Returns true if the group is still playing.
+
+method::group
+Return the group in which all mapping synths are running.
+
+method::numChannels
+Return the number of input channels.
+
 
 method::playToBundle
-adds all playing osc messages to the bundle. the bundle should support the message strong::.add::
+Adds all playing osc messages to a bundle, passed as an argument. The bundle should support the message strong::.add::
 
 Examples::
 
 code::
-Server.default = s = Server.internal;
 s.boot;
 s.scope(16);
 
@@ -95,11 +150,13 @@ x.play(89, 1, 0, 2, multi:true);
 x.stop;
 ::
 
-subsection::multichannel playing
+subsection::Multichannel playing
 
 code::
 // examples: args are // outs, amps, ins, vol, fadeTime
 
+{ Out.ar(87, SinOsc.ar(MouseX.kr(40, 10000, 1) * [1, 2, 3], 0, 0.2)) }.play;
+x = Monitor.new;
 
 (	x.playN(
 		[0, 1, 4], 		// to these outs

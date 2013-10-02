@@ -1,7 +1,7 @@
 title:: playN
 summary:: distribute audio over multiple non-adjacent channels
 categories:: Libraries>JITLib>NodeProxy
-related:: Classes/Monitor, Classes/NodeProxy, Classes/Ndef, Classes/ProxySpace
+related:: Classes/Monitor, Classes/Bus, Classes/NodeProxy, Classes/Ndef, Classes/ProxySpace
 
 method:: playN
 
@@ -71,7 +71,7 @@ s.scope(8);
 ~test3.monitor.amps_(1/[1, 2, [3,2,1]]);
 ~test3.playN;
 
-		// most comfortable way to edit - only tested on osx.
+		// the most comfortable way to edit those parameters is using a text file:
 ~test3.playNDialog;
 
 
