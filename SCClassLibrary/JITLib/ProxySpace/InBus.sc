@@ -276,14 +276,14 @@ Monitor {
 	// optimizes ranges of channels
 
 	playToBundle { | bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels,
-		inGroup, multi = false, volume, inFadeTime, addAction |
+		inGroup, multi = false, volume, argFadeTime, addAction |
 
 		var server, numChannels, defname, chanRange, n;
 
 		toIndex = toIndex ?? { if(outs.notNil, { outs[0] }, 0) };
 
 		vol = volume ? vol;
-		fadeTime = inFadeTime ? fadeTime ? 0.02; 	// remembers monitor fadeTime.
+		fadeTime = argFadeTime ? fadeTime ? 0.02; 	// remembers monitor fadeTime.
 
 		toNumChannels = toNumChannels ? fromNumChannels;
 		inGroup = inGroup.asGroup;
@@ -312,9 +312,9 @@ Monitor {
 			outs = outs.add(out);
 			ins = ins.add(in);
 			amps = amps.add(1.0);
-			bundle.add([9, defname, id, 1, group.nodeID, "out", out, "in", in]);
+			bundle.add([9, defname, id, 1, group.nodeID, "out", out, "in", in, "vol", vol]);
 		};
-		bundle.add([15, group.nodeID, "fadeTime", fadeTime, "vol", vol]);
+		bundle.add([15, group.nodeID, "fadeTime", fadeTime]);
 	}
 
 
