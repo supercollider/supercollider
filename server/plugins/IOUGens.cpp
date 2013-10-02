@@ -1670,7 +1670,7 @@ FLATTEN void LocalOut_next_a_nova(IOUnit *unit, int inNumSamples)
 	}
 }
 
-void LocalOut_next_a_nova_64(IOUnit *unit, int inNumSamples)
+FLATTEN void LocalOut_next_a_nova_64(IOUnit *unit, int inNumSamples)
 {
 	//Print("LocalOut_next_a %d\n", unit->mNumInputs);
 	World *world = unit->mWorld;
