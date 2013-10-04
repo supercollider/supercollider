@@ -80,6 +80,7 @@ protected:
     virtual void wheelEvent( QWheelEvent * );
     virtual void focusOutEvent (QFocusEvent *e);
     virtual void mouseDoubleClickEvent(QMouseEvent *e);
+    virtual void paintEvent( QPaintEvent *e );
     virtual QMimeData *createMimeDataFromSelection() const;
 
 private slots:

@@ -35,6 +35,7 @@
 #include <QKeyEvent>
 #include <QTextDocumentFragment>
 #include <QMimeData>
+#include <QPainter>
 
 namespace ScIDE {
 
@@ -298,6 +299,19 @@ void PostWindow::mouseDoubleClickEvent(QMouseEvent *e)
     extendSelectionForEnvVar(this, textCursor());
 
     cursor.endEditBlock();
+}
+    
+void PostWindow::paintEvent( QPaintEvent *e )
+{
+    if(hasFocus()){
+        QColor rectColor = palette().color(QPalette::Text);
+        rectColor.setAlpha(80);
+        QPainter painter(viewport());
+        painter.setPen(rectColor);
+        painter.drawRect(viewport()->rect().adjusted(0,0,-1,-1));
+        painter.end();
+    }
+    QPlainTextEdit::paintEvent(e);
 }
 
 QMimeData *PostWindow::createMimeDataFromSelection() const
