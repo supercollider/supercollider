@@ -191,7 +191,7 @@ BusPlug : AbstractFunction {
 			("server not running:" + this.homeServer).warn;
 			^this
 		};
-		this.playToBundle(bundle, out.asControlInput, numChannels, group, multi, vol, fadeTime, addAction);
+		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime, addAction);
 		// homeServer: multi client support: monitor only locally
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
 		this.changed(\play, [out, numChannels, group, multi, vol, fadeTime, addAction]);
@@ -203,7 +203,7 @@ BusPlug : AbstractFunction {
 			("server not running:" + this.homeServer).warn;
 			^this
 		};
-		this.playNToBundle(bundle, outs.asControlInput, amps, ins, vol, fadeTime, group, addAction);
+		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction);
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
 		this.changed(\playN, [outs, amps, ins, vol, fadeTime, group, addAction]);
 	}
@@ -250,13 +250,11 @@ BusPlug : AbstractFunction {
 		this.newMonitorToBundle(bundle); // todo: numChannels
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
 		monitor.playNBusToBundle(bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction);
-
 	}
 
 	newMonitorToBundle { | bundle, numChannels |
 		this.initBus(\audio, numChannels);
 		this.initMonitor;
-
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
 	}
 
