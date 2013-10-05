@@ -136,11 +136,7 @@ MonitorGui : JITGui {
 				["-<", skin.fontColor, skin.onColor]
 			])
 			.action_({ |box, mod|
-				if (object.notNil) {
-					object.playNDialog(usePlayN:
-						try { object.monitor.usedPlayN } { config.playN }
-					)
-				};
+				if (object.notNil) { object.playNDialog(usePlayN:true) };
 				box.value_(1 - box.value);
 			});
 	}
@@ -187,7 +183,7 @@ MonitorGui : JITGui {
 			isAudio: false,
 			monPlaying: 	0,
 			vol: 		1,
-			usedPlayN: 	false,
+			usedPlayN: 	false, // todo: remove this
 			playsSpread: 	false,
 			out: 		0,
 			monFade:		0.02
