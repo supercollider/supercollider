@@ -144,6 +144,7 @@
 struct hid_device_element * hid_new_element(){
   struct hid_device_element * element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
   element->next = NULL;
+  element->report_id = 0;
   return element;
 }
 
