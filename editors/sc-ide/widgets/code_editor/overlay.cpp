@@ -19,6 +19,7 @@
 */
 
 #include "overlay.hpp"
+#include "editor.hpp"
 #include "sc_editor.hpp"
 #include "../../core/main.hpp"
 
@@ -31,6 +32,51 @@
 #include <QDebug>
 
 namespace ScIDE {
+
+OverlayAnimator::OverlayAnimator(GenericCodeEditor *editor, QObject *parent):
+    QObject(parent),
+    mEditor(editor),
+    mBackgroundAnimation(this, "backgroundColor")
+{}
+
+QColor OverlayAnimator::backgroundColor() const
+{
+    return mEditor->mOverlay->backgroundBrush().color();
+}
+
+void OverlayAnimator::setBackgroundColor( const QColor & color )
+{
+    mEditor->mOverlay->setBackgroundBrush( color );
+}
+
+void OverlayAnimator::setActiveAppearance( bool active )
+{
+    QColor color = mEditor->palette().color(QPalette::Base);
+    if(color.lightness() >= 128)
+        color = color.darker(60);
+    else
+        color = color.lighter(50);
+    
+    if (active)
+        color.setAlpha(0);
+    else
+        color.setAlpha(mEditor->inactiveFadeAlpha());
+
+    mBackgroundAnimation.stop();
+
+    if (mEditor->isVisible())
+    {
+        mBackgroundAnimation.setDuration(500);
+        mBackgroundAnimation.setEasingCurve( QEasingCurve::OutCubic );
+        mBackgroundAnimation.setStartValue( backgroundColor() );
+        mBackgroundAnimation.setEndValue( color );
+        mBackgroundAnimation.start();
+    }
+    else
+    {
+        setBackgroundColor(color);
+    }
+}
 
 void ScCodeEditor::blinkCode( const QTextCursor & c )
 {
