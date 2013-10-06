@@ -593,6 +593,98 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
   return errNone;  
 }
 
+int prHID_API_GetNumberOfCollections( VMGlobals* g, int numArgsPushed ){
+  PyrSlot *args = g->sp - numArgsPushed + 1;
+  PyrSlot* self = args + 0;
+  PyrSlot* arg  = args + 1;
+    
+  int err;
+  int joyid;
+    
+  err = slotIntVal( arg, &joyid );
+  if ( err != errNone ) return err;
+  
+  struct hid_dev_desc * devdesc = SC_HID_APIManager::instance().get_device( joyid );
+  struct hid_device_collection * cur_dev = devdesc->device_collection;
+  
+  if ( cur_dev != NULL ){
+    SetInt( self, cur_dev->num_collections );
+  } else {
+    SetInt( self, 0 );
+  }
+  return errNone;  
+}
+
+int prHID_API_GetCollectionInfo( VMGlobals* g, int numArgsPushed ){
+  PyrSlot *args = g->sp - numArgsPushed + 1;
+  PyrSlot* self = args + 0;
+  PyrSlot* arg1  = args + 1;
+  PyrSlot* arg2  = args + 2;
+    
+  int err;
+  int joyid;
+  int collectionid;
+    
+  err = slotIntVal( arg1, &joyid );
+  if ( err != errNone ) return err;
+  
+  err = slotIntVal( arg2, &collectionid );
+  if ( err != errNone ) return err;
+  
+  struct hid_dev_desc * devdesc = SC_HID_APIManager::instance().get_device( joyid );
+  struct hid_device_collection * curdev = devdesc->device_collection;
+  struct hid_device_collection * curcollection = curdev->first_collection;
+  struct hid_device_collection * thiscollection = NULL;
+  
+  bool found = curcollection->index == collectionid;
+  if ( found ){
+    thiscollection = curcollection;
+  }
+  while( curcollection != NULL && !found ){
+      found = curcollection->index == collectionid;
+      if ( found ){
+	thiscollection = curcollection;
+      }
+      curcollection = curcollection->next_collection;
+  }
+  
+  if ( thiscollection != NULL ){
+    PyrObject* elInfo = newPyrArray(g->gc, 9 * sizeof(PyrObject), 0 , true);
+    
+    SetInt(elInfo->slots+elInfo->size++, thiscollection->index );
+    SetInt(elInfo->slots+elInfo->size++, thiscollection->type );
+    SetInt(elInfo->slots+elInfo->size++, thiscollection->usage_page );
+    SetInt(elInfo->slots+elInfo->size++, thiscollection->usage_index );
+
+    if ( thiscollection->parent_collection != NULL ){
+      SetInt(elInfo->slots+elInfo->size++, thiscollection->parent_collection->index );
+    } else {
+      SetInt(elInfo->slots+elInfo->size++, -2 );      
+    }
+
+    SetInt(elInfo->slots+elInfo->size++, thiscollection->num_collections );
+
+    if ( thiscollection->first_collection != NULL ){
+      SetInt(elInfo->slots+elInfo->size++, thiscollection->first_collection->index );
+    } else {
+      SetInt(elInfo->slots+elInfo->size++, -1 );      
+    }
+
+    SetInt(elInfo->slots+elInfo->size++, thiscollection->num_elements );
+
+    if ( thiscollection->first_element != NULL ){
+      SetInt(elInfo->slots+elInfo->size++, thiscollection->first_element->index );
+    } else {
+      SetInt(elInfo->slots+elInfo->size++, -1 );      
+    }
+    
+    SetObject( self, elInfo );
+  } else {
+    SetInt( self, 0 );
+  }
+  return errNone;  
+}
+
 int prHID_API_GetNumberOfElements( VMGlobals* g, int numArgsPushed ){
   PyrSlot *args = g->sp - numArgsPushed + 1;
   PyrSlot* self = args + 0;
@@ -649,7 +741,7 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
   }
   
   if ( thiselement != NULL ){
-    PyrObject* elInfo = newPyrArray(g->gc, 15 * sizeof(PyrObject), 0 , true);
+    PyrObject* elInfo = newPyrArray(g->gc, 16 * sizeof(PyrObject), 0 , true);
     
     SetInt(elInfo->slots+elInfo->size++, thiselement->index );
     SetInt(elInfo->slots+elInfo->size++, thiselement->io_type );
@@ -668,7 +760,9 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
     SetInt(elInfo->slots+elInfo->size++, thiselement->report_id );
     SetInt(elInfo->slots+elInfo->size++, thiselement->report_index );
     SetInt(elInfo->slots+elInfo->size++, thiselement->value );
-      
+
+    SetInt(elInfo->slots+elInfo->size++, thiselement->parent_collection->index );
+
     SetObject( self, elInfo );
   } else {
     SetInt( self, 0 );
@@ -700,6 +794,8 @@ void initHIDAPIPrimitives()
   definePrimitive(base, index++, "_HID_API_CloseDevice", prHID_API_Close, 2, 0); // closes a specific device
   
   definePrimitive(base, index++, "_HID_API_GetInfo", prHID_API_GetInfo, 2, 0); // gets info about a specific device
+  definePrimitive(base, index++, "_HID_API_GetNumberOfCollections", prHID_API_GetNumberOfCollections, 2, 0); // gets number of elements of a device
+  definePrimitive(base, index++, "_HID_API_GetCollectionInfo", prHID_API_GetCollectionInfo, 3, 0); // gets info about a specific device element
   definePrimitive(base, index++, "_HID_API_GetNumberOfElements", prHID_API_GetNumberOfElements, 2, 0); // gets number of elements of a device
   definePrimitive(base, index++, "_HID_API_GetElementInfo", prHID_API_GetElementInfo, 3, 0); // gets info about a specific device element
   
