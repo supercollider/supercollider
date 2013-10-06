@@ -286,6 +286,9 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_co
 		    struct hid_device_collection * new_collection = hid_new_collection();
 		    if ( parent_collection->num_collections == 0 ){
 		      parent_collection->first_collection = new_collection;
+		    }
+		    if ( device_collection->num_collections == 0 ){
+		      device_collection->first_collection = new_collection;
 		    } else {
 		      prev_collection->next_collection = new_collection;
 		    }
@@ -293,8 +296,11 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_co
 		    new_collection->type = next_val;
 		    new_collection->usage_page = current_usage_page;
 		    new_collection->usage_index = current_usage;
-		    new_collection->index = parent_collection->num_collections;
-		    parent_collection->num_collections++;
+		    new_collection->index = device_collection->num_collections;
+		    device_collection->num_collections++;
+		    if ( device_collection != parent_collection ){
+		      parent_collection->num_collections++;
+		    }
 		    parent_collection = new_collection;
 		    collection_nesting++;
 #ifdef DEBUG_PARSER
