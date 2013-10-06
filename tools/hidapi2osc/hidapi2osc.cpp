@@ -75,11 +75,11 @@ static void osc_element_cb( struct hid_device_element *el, void *data)
   lo_message_free(m1);
 }
 
-static void osc_descriptor_cb( struct hid_device_descriptor *dd, void *data)
+static void osc_descriptor_cb( struct hid_dev_desc *dd, void *data)
 {
   lo_message m1 = lo_message_new();
   lo_message_add_int32( m1, *((int*) data) );
-  lo_message_add_int32( m1, dd->num_elements );
+  lo_message_add_int32( m1, dd->device_collection->num_elements );
   lo_send_message_from( t, s, "/hid/device/data", m1 );
   lo_message_free(m1);
 }
@@ -115,8 +115,8 @@ void open_device( unsigned short vendor, unsigned short product, const wchar_t *
     
     newdevdesc->index = number_of_hids;
     
-    hid_set_descriptor_callback( newdevdesc->descriptor, (hid_descriptor_callback) osc_descriptor_cb, &newdevdesc->index );
-    hid_set_element_callback( newdevdesc->descriptor, (hid_element_callback) osc_element_cb, &newdevdesc->index );  
+    hid_set_descriptor_callback( newdevdesc, (hid_descriptor_callback) osc_descriptor_cb, &newdevdesc->index );
+    hid_set_element_callback( newdevdesc, (hid_element_callback) osc_element_cb, &newdevdesc->index );  
 
     number_of_hids++;
   }
@@ -334,10 +334,10 @@ void send_elements_hid_info(int joy_idx)
 
   lo_message m1 = lo_message_new();
   lo_message_add_int32( m1, joy_idx );
-  lo_message_add_int32( m1, hid->descriptor->num_elements );
+  lo_message_add_int32( m1, hid->device_collection->num_elements );
   lo_bundle_add_message( b, "/hid/element/number", m1 );
 
-  hid_device_element * cur_element = hid->descriptor->first;
+  hid_device_element * cur_element = hid->device_collection->first_element;
   
   while (cur_element) {
     lo_message m2 = get_hid_element_info_msg( cur_element, joy_idx );
@@ -570,7 +570,7 @@ int main(int argc, char** argv)
 	for(it=hiddevices.begin(); it!=hiddevices.end(); ++it){
 	  res = hid_read( it->second->device, buf, sizeof(buf));
 	  if ( res > 0 ) {
-	    hid_parse_input_report( buf, res, it->second->descriptor );
+	    hid_parse_input_report( buf, res, it->second );
 	  }
 	}
 	#ifdef WIN32

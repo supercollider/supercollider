@@ -76,6 +76,36 @@ void print_element_info( struct hid_device_element *element ){
 	  element->report_size, element->report_id, element->report_index );
 }
 
+void print_collection_info( struct hid_device_collection *collection ){
+  int i;
+  printf( "COLLECTION index: %i, usage_page: %i, usage: %i, num_elements: %i, num_collections: %i \n",
+	  collection->index, collection->usage_page, collection->usage_index, 
+	  collection->num_elements, collection->num_collections );
+ 
+  struct hid_device_collection * cur_collection = collection->first_collection;
+  
+  printf( "number of collections in collection: %i\n", collection->num_collections );
+  for ( i=0; i<collection->num_collections; i++ ){
+    if ( cur_collection != NULL ){
+      printf("cur_collection %i\n", cur_collection );
+      print_collection_info( cur_collection );
+      cur_collection = cur_collection->next_collection;
+    }
+  }
+
+  
+  struct hid_device_element * cur_element = collection->first_element;
+  
+  printf( "number of elements in collection: %i\n", collection->num_elements );
+  for ( i=0; i<collection->num_elements; i++ ){
+    if ( cur_element != NULL ){
+      printf("cur_element %i\n", cur_element );
+      print_element_info( cur_element );
+      cur_element = cur_element->next;
+    }
+  }
+}
+
 void print_device_info( hid_device *handle ){
   wchar_t wstr[MAX_STR];  
   int res;
@@ -116,7 +146,7 @@ static void my_element_cb(const struct hid_device_element *el, void *data)
     printf("user_data: %s\n", (const char *)data);
 }
 
-static void my_descriptor_cb(const struct hid_device_descriptor *dd, void *data)
+static void my_descriptor_cb(const struct hid_dev_desc *dd, void *data)
 {
     printf("in %s\t", __func__);
 //     printf("element: usage %i, value %i, index %i\n", el->usage, el->value, el->index );
@@ -189,9 +219,14 @@ int main(int argc, char* argv[]){
   // Set the hid_read() function to be non-blocking.
 //   hid_set_nonblocking(handle, 1);
 
-  struct hid_device_element * cur_element = devdesc->descriptor->first;
+  print_collection_info( devdesc->device_collection );
   
-  printf( "number of elements in device: %i\n", devdesc->descriptor->num_elements );
+  printf("press key to continue\n" );
+  getchar();
+
+  struct hid_device_element * cur_element = devdesc->device_collection->first_element;
+  
+  printf( "number of elements in device: %i\n", devdesc->device_collection->num_elements );
   while (cur_element != NULL ) {
     printf("cur_element %i\n", cur_element );
     print_element_info( cur_element );
@@ -204,8 +239,8 @@ int main(int argc, char* argv[]){
   getchar();
 
   char my_custom_data[40] = "Hello!";
-  hid_set_descriptor_callback( devdesc->descriptor, (hid_descriptor_callback) my_descriptor_cb, my_custom_data );
-  hid_set_element_callback( devdesc->descriptor, (hid_element_callback) my_element_cb, my_custom_data );  
+  hid_set_descriptor_callback( devdesc, (hid_descriptor_callback) my_descriptor_cb, my_custom_data );
+  hid_set_element_callback( devdesc, (hid_element_callback) my_element_cb, my_custom_data );  
   
 //   Request state (cmd 0x81). The first byte is the report number (0x1).
 //   buf[0] = 0x1;
@@ -221,7 +256,7 @@ int main(int argc, char* argv[]){
 	while (1) {
 		res = hid_read(devdesc->device, buf, sizeof(buf));
 		if ( res > 0 ) {
-		  hid_parse_input_report( buf, res, devdesc->descriptor );
+		  hid_parse_input_report( buf, res, devdesc );
 		}
 		#ifdef WIN32
 		Sleep(500);
