@@ -728,16 +728,21 @@ void GenericCodeEditor::wheelEvent( QWheelEvent * e )
     
 void GenericCodeEditor::focusInEvent( QFocusEvent *e )
 {
-    QColor rectColor = palette().color(QPalette::Text);
-    rectColor.setAlpha(80);
-    mFocusRect = mOverlay->addRect(viewport()->rect().adjusted(0, 0, -1, -1), rectColor);
-    QPlainTextEdit::focusInEvent(e);
+    if(mFocusRect){
+        mFocusRect->setRect(viewport()->rect().adjusted(0, 0, -1, -1));
+        mFocusRect->setVisible(true);
+    } else {
+        QColor rectColor = palette().color(QPalette::Text);
+        rectColor.setAlpha(80);
+        mFocusRect = mOverlay->addRect(viewport()->rect().adjusted(0, 0, -1, -1), rectColor);
+        QPlainTextEdit::focusInEvent(e);
+    }
 }
     
 void GenericCodeEditor::focusOutEvent( QFocusEvent *e )
 {
     if (mFocusRect) {
-        mOverlay->removeItem(mFocusRect);
+        mFocusRect->setVisible(false);
     }
     QPlainTextEdit::focusOutEvent(e);
 }
@@ -871,11 +876,8 @@ void GenericCodeEditor::resizeEvent( QResizeEvent *e )
     
     if (hasFocus()) {
         if (mFocusRect) {
-            mOverlay->removeItem(mFocusRect);
+            mFocusRect->setRect(viewport()->rect().adjusted(0, 0, -1, -1));
         }
-        QColor rectColor = palette().color(QPalette::Text);
-        rectColor.setAlpha(80);
-        mFocusRect = mOverlay->addRect(viewport()->rect().adjusted(0, 0, -1, -1), rectColor);
     }
     
     QRect cr = contentsRect();
