@@ -229,7 +229,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_co
   int current_physical_min = 0;
   int current_physical_max = 0;
   int current_report_count;
-  int current_report_id;
+  int current_report_id = 0;
   int current_report_size;
   int current_unit = 0;
   int current_unit_exponent = 0;
