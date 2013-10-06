@@ -77,7 +77,10 @@ public:
 
         update();
 
+        if (lastActiveBox)
+          emit lastActiveBox->activeChanged(false);
         emit activated(this);
+        emit activeChanged(true);
     }
 
     bool isActive() { return gActiveBox == this; }
@@ -88,6 +91,7 @@ public:
 signals:
     void currentChanged(GenericCodeEditor*);
     void activated( CodeEditorBox *me );
+    void activeChanged(bool active);
 
 private slots:
     void onDocumentClosed(Document*);

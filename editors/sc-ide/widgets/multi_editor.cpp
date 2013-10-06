@@ -197,7 +197,11 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
     mEditorSigMux(new SignalMultiplexer(this)),
     mBoxSigMux(new SignalMultiplexer(this)),
-    mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) )
+#ifdef SC_DARWIN
+    mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DriveHDIcon) )
+#else
+    mDocModifiedIcon( QIcon::fromTheme("document-save") )
+#endif
 {
     mTabs = new QTabBar;
     mTabs->setDocumentMode(true);
@@ -502,7 +506,7 @@ void MultiEditor::createActions()
 #ifndef Q_OS_MAC
     action->setShortcut( tr("Ctrl+Tab", "Switch Document"));
 #else
-    action->setShortcut( tr("Meta+Tab", "Switch Document"));
+    action->setShortcut( tr("Alt+Tab", "Switch Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(switchDocument()));
     settings->addAction( action, "editor-document-switch", editorCategory);

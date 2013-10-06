@@ -22,8 +22,27 @@
 #define SCIDE_WIDGETS_CODE_EDITOR_OVERLAY_HPP_INCLUDED
 
 #include <QGraphicsPixmapItem>
+#include <QPropertyAnimation>
 
 namespace ScIDE {
+
+class GenericCodeEditor;
+
+class OverlayAnimator : public QObject
+{
+    Q_OBJECT
+    Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor );
+    QColor backgroundColor() const;
+    void setBackgroundColor( const QColor & color );
+
+public:
+    OverlayAnimator(GenericCodeEditor *editor, QObject *parent = 0);
+    void setActiveAppearance(bool active);
+
+private:
+    GenericCodeEditor *mEditor;
+    QPropertyAnimation mBackgroundAnimation;
+};
 
 class CodeFragmentOverlay : public QObject, public QGraphicsPixmapItem
 {
