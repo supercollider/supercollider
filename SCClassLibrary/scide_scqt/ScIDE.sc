@@ -77,9 +77,6 @@ ScIDE {
 		_ScIDE_Connected
 	}
 
-	*open { |path, charPos = 0, selectionLength = 0|
-		this.prSend(\openFile, [path, charPos, selectionLength])
-	}
 
 	*setServerVolume { arg volume;
 		var suppressed = suppressAmpResponse;
@@ -331,6 +328,11 @@ ScIDE {
 		this.prSend(\newDocument, [title, string, id]);
 	}
 
+
+	*open { |path, charPos = 0, selectionLength = 0, id|
+		this.prSend(\openFile, [path, charPos, selectionLength, id])
+	}
+
 	*getQUuid {
 		_ScIDE_GetQUuid
 		this.primitiveFailed
@@ -412,17 +414,17 @@ ScIDEDocument : Document {
 		^doc
 	}
 
-	*syncFromIDE {|quuid, title, chars, isEdited|
+	*syncFromIDE {|quuid, title, chars, isEdited, path|
 		var doc;
 		isEdited = isEdited.booleanValue;
 		chars = String.fill(chars.size, {|i| chars[i].asAscii});
 		if((doc = this.findByQUuid(quuid)).isNil, {
-			doc = super.prBasicNew.initFromIDE(quuid, title, chars, isEdited);
+			doc = super.prBasicNew.initFromIDE(quuid, title, chars, isEdited, path);
 			allDocuments = allDocuments.add(doc);
-		}, {doc.initFromIDE(quuid, title, chars, isEdited)});
+		}, {doc.initFromIDE(quuid, title, chars, isEdited, path)});
 	}
 
-	*syncDocs {|docInfo| // [quuid, title, string, isEdited]
+	*syncDocs {|docInfo| // [quuid, title, string, isEdited, path]
 		docInfo.do({|info| this.syncFromIDE(*info) });
 	}
 
@@ -463,11 +465,12 @@ ScIDEDocument : Document {
 		isEdited = argisEdited;
 	}
 
-	initFromIDE {|id, argtitle, argstring, argisEdited|
+	initFromIDE {|id, argtitle, argstring, argisEdited, argPath|
 		quuid = id;
 		title = argtitle;
 		this.prSetTextMirror(id, argstring, 0, -1);
 		isEdited = argisEdited;
+		path = argPath;
 	}
 
 	textChanged {|index, numCharsRemoved, addedChars|
@@ -476,7 +479,7 @@ ScIDEDocument : Document {
 	}
 
 	propen {|path, selectionStart, selectionLength, envir|
-		^ScIDE.open(path, selectionStart, selectionLength)
+		^ScIDE.open(path, selectionStart, selectionLength, quuid)
 	}
 
 	prclose { ScIDE.close(quuid); }
@@ -504,8 +507,6 @@ ScIDEDocument : Document {
 		var funcID;
 		// first set the back end mirror
 		this.prSetTextMirror(quuid, text, start, range);
-		funcID = ScIDE.getQUuid; // a unique id for this function
-		asyncActions[funcID] = action; // pass the text
 		// set the SCIDE Document
 		ScIDE.setTextByQUuid(quuid, funcID, text, start, range);
 	}
@@ -523,7 +524,7 @@ ScIDEDocument : Document {
 	text { ^this.prGetTextFromMirror(quuid, 0, -1); }
 
 	rangeText { | rangestart=0, rangesize=1 |
-		^this.prGetTextFromMirror(rangestart, rangesize);
+		^this.prGetTextFromMirror(quuid, rangestart, rangesize);
 	}
 
 	insertText {|string, index = 0|
@@ -609,15 +610,18 @@ ScIDEDocument : Document {
 	initFromPath { | path, selectionStart, selectionLength |
 		var doc;
 		path = this.class.standardizePath(path);
-		this.propen(path, selectionStart, selectionLength);
 		this.class.allDocuments.do{ |d|
 			if(d.path == path.absolutePath){
 				doc = d
 			};
 		};
 		if(doc.notNil, { ^doc });
+		quuid = ScIDE.getQUuid;
 		this.prReadTextFromFile(path);
-		^this.prAdd;
+		this.propen(path, selectionStart, selectionLength);
+		title = path.basename;
+		isEdited = false;
+		this.prAdd;
 	}
 
 	prReadTextFromFile {|path|
@@ -626,7 +630,7 @@ ScIDEDocument : Document {
 		if (file.isNil, {
 			error("Document open failed\n");
 		});
-		this.text = file.readAllString;
+		this.prSetTextMirror(quuid, file.readAllString, 0, -1);
 		file.close;
 	}
 

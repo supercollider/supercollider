@@ -28,15 +28,6 @@
 			Document.open(this, selectionStart, selectionLength);
 			^this
 		};
-
-		ideClass = \ScIDE.asClass;
-		if ( ideClass.notNil ) {
-			if ( this.endsWith(".sc") || this.endsWith(".scd") ) {
-				ideClass.open(this, selectionStart, selectionLength);
-				^this
-			}
-		};
-
 		this.openOS
 	}
 

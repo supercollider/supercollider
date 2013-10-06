@@ -195,7 +195,7 @@ void DocumentManager::create()
     Q_EMIT( opened(doc, 0, 0) );
 }
 
-Document *DocumentManager::open( const QString & path, int initialCursorPosition, int selectionLength, bool toRecent )
+Document *DocumentManager::open( const QString & path, int initialCursorPosition, int selectionLength, bool toRecent, const QByteArray & id, bool syncLang )
 {
     QFileInfo info(path);
     QString cpath = info.canonicalFilePath();
@@ -245,7 +245,7 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     const bool fileIsPlainText = !(info.suffix() == QString("sc") ||
                                    (info.suffix() == QString("scd")));
 
-    Document *doc = createDocument( fileIsPlainText );
+    Document *doc = createDocument( fileIsPlainText, id );
     doc->mDoc->setPlainText( decodeDocument(bytes) );
     doc->mDoc->setModified(false);
     doc->mFilePath = filePath;
@@ -255,7 +255,8 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     if (!isRTF)
         mFsWatcher.addPath(cpath);
 
-    syncLangDocument(doc);
+    // if this was opened from the lang we don't need to sync
+    if(syncLang) syncLangDocument(doc);
     Q_EMIT( opened(doc, initialCursorPosition, selectionLength) );
 
     if (toRecent) this->addToRecent(doc);
@@ -468,6 +469,7 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
 {
     static QString requestDocListSelector("requestDocumentList");
     static QString newDocSelector("newDocument");
+    static QString openFileSelector("openFile");
     static QString getDocTextSelector("getDocumentText");
     static QString setDocTextSelector("setDocumentText");
     static QString setCurrentDocSelector("setCurrentDocument");
@@ -485,6 +487,9 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
 
     if (selector == newDocSelector)
         handleNewDocScRequest(data);
+    
+    if (selector == openFileSelector)
+        handleOpenFileScRequest(data);
 
     if (selector == getDocTextSelector)
         handleGetDocTextScRequest(data);
@@ -527,7 +532,18 @@ void DocumentManager::handleDocListScRequest()
     QString command = QString("ScIDEDocument.syncDocs([");
     for (it = docs.begin(); it != docs.end(); ++it) {
         Document * doc = *it;
-        QString docData = QString("[\'%1\', \'%2\', %3, %4],").arg(doc->id().constData()).arg(doc->title()).arg(doc->textAsSCArrayOfCharCodes(0, -1)).arg(doc->isModified());
+        QString path;
+        if(doc->mFilePath.isEmpty()) {
+            path = QString("nil");
+        } else {
+            path = doc->mFilePath;
+        }
+        QString docData = QString("[\'%1\', \'%2\', %3, %4, \'%5\'],")
+            .arg(doc->id().constData())
+            .arg(doc->title())
+            .arg(doc->textAsSCArrayOfCharCodes(0, -1))
+            .arg(doc->isModified())
+            .arg(path);
         command = command.append(docData);
     }
     command = command.append("]);");
@@ -565,6 +581,42 @@ void DocumentManager::handleNewDocScRequest( const QString & data )
                                              QString::fromUtf8(text.c_str()) );
         syncLangDocument(document);
         Q_EMIT( opened(document, 0, 0) );
+    }
+}
+
+void DocumentManager::handleOpenFileScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string path;
+        bool success = doc[0].Read(path);
+        if (!success)
+            return;
+        
+        int position = 0;
+        success = doc[1].Read(position);
+        if (!success)
+            return;
+        
+        int selectionLength = 0;
+        success = doc[2].Read(selectionLength);
+        if (!success)
+            return;
+        
+        std::string id;
+        success = doc[3].Read(id);
+        if (!success)
+            return;
+        
+        // we don't need to sync with lang in this case
+        open(QString(path.c_str()), position, selectionLength, true, id.c_str(), false);
     }
 }
 
@@ -889,12 +941,19 @@ void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
 
 void DocumentManager::syncLangDocument(Document *doc)
 {
+    QString path;
+    if(doc->mFilePath.isEmpty()) {
+        path = QString("nil");
+    } else {
+        path = doc->mFilePath;
+    }
     QString command =
-            QString("ScIDEDocument.syncFromIDE(\'%1\', \'%2\', %3, %4)")
+            QString("ScIDEDocument.syncFromIDE(\'%1\', \'%2\', %3, %4, \'%5\')")
             .arg(doc->id().constData())
             .arg(doc->title())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
-            .arg(doc->isModified());
+            .arg(doc->isModified())
+            .arg(path);
     Main::evaluateCode ( command, true );
 }
 
