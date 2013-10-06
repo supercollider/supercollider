@@ -403,8 +403,8 @@ HID_API_Element{
             10, { yamlfile = \ordinal; pageName = \Ordinal },
             11, { yamlfile = "hut_11_telephony.yaml"; pageName = \Telephony },
             12, { yamlfile = "hut_12_consumer.yaml"; pageName = \Consumer },
-            13, { yamlfile = "hut_13_digitizer.yaml"; pageName = \Digitizer },
-            16, { yamlfile = "hut_16_unicode.yaml"; pageName = \Unicode },
+            13, { yamlfile = "hut_13_digitizers.yaml"; pageName = \Digitizer },
+            16, { yamlfile = \unicode; pageName = \Unicode },
             20, { yamlfile = "hut_20_alphanumeric_display.yaml"; pageName = \AlphaNumericDisplay },
             64, { yamlfile = "hut_64_medical_instrument.yaml"; pageName = \MedicalInstrument },
             { nil; pageName = \undefined }
@@ -413,6 +413,7 @@ HID_API_Element{
         switch( yamlfile,
             \ordinal, { usageName = ("o"++usage).asSymbol; },
             \button, { usageName = ("b"++usage).asSymbol; },
+            \unicode, { usageName = ("uc"++usage).asSymbol; },
             {
                 if ( yamlfile.isNil ){
                     usageName = \undefined;
