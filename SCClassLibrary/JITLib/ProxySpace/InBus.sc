@@ -135,6 +135,7 @@ Monitor {
 		this.amps = amps;
 	}
 
+	// backward compatibility
 	// assuming that "out" refers to the first channel, like the Out UGen's out argument.
 
 	out_ { | index |
@@ -144,6 +145,14 @@ Monitor {
 
 	out {
 		^outs !? { outs[0] }
+	}
+
+	fadeTime_ { | val |
+		this.fadeTimes = val.asArray
+	}
+
+	fadeTime { | val |
+		^fadeTimes !? { fadeTimes.unbubble }
 	}
 
 	// multi channel interface
@@ -174,6 +183,7 @@ Monitor {
 			);
 		};
 	}
+
 
 	// bundling
 
