@@ -4241,9 +4241,11 @@ void initLIDPrimitives();
 void initSerialPrimitives();
 	initSerialPrimitives();
 
+#ifdef HAVE_WII
 void initWiiPrimitives();
 	initWiiPrimitives();
-
+#endif
+	
 #endif
 #ifdef SC_DARWIN
 void initCoreAudioPrimitives();
