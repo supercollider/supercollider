@@ -91,13 +91,13 @@ public:
 	int initialize_hidapi();
 	
 	void elementData( int, struct hid_device_element * );
-	void deviceData( int, struct hid_device_descriptor * );
+	void deviceData( int, struct hid_dev_desc * );
 
 	struct hid_device_info *devinfos;
 
 protected:	
 	void threadLoop();
-	void handleDevice( int, struct hid_device_descriptor *, boost::atomic<bool> const & shouldBeRunning);
+	void handleDevice( int, struct hid_dev_desc *, boost::atomic<bool> const & shouldBeRunning);
 	void handleElement( int, struct hid_device_element *, boost::atomic<bool> const & shouldBeRunning);
 // 	void deviceClosed(int, boost::atomic<bool> const & shouldBeRunning);
 
@@ -119,19 +119,19 @@ PyrSymbol* SC_HID_APIManager::s_hidElementData = 0;
 // PyrSymbol* SC_HID_APIManager::s_hidClosed = 0;
 
 static void hid_element_cb( struct hid_device_element *el, void *data);
-static void hid_descriptor_cb( struct hid_device_descriptor *dd, void *data);
+static void hid_descriptor_cb( struct hid_dev_desc *dd, void *data);
 
 void hid_element_cb( struct hid_device_element *el, void *data)
 {
   SC_HID_APIManager::instance().elementData( *((int*) data), el );
 }
 
-void hid_descriptor_cb( struct hid_device_descriptor *dd, void *data)
+void hid_descriptor_cb( struct hid_dev_desc *dd, void *data)
 {
   SC_HID_APIManager::instance().deviceData( *((int*) data), dd );
 }
 
-void SC_HID_APIManager::deviceData( int id, struct hid_device_descriptor * dd ){
+void SC_HID_APIManager::deviceData( int id, struct hid_dev_desc * dd ){
   handleDevice( id, dd, mShouldBeRunning );
 }
 
@@ -166,8 +166,8 @@ int SC_HID_APIManager::open_device( int vendor, int product ){ // , const char* 
     // TODO something useful for the callback functions - test if this works
 //     hid_set_descriptor_callback( newdevdesc->descriptor, (hid_descriptor_callback) SC_HID_APIManager::hid_descriptor_cb, &newdevdesc->index );
 //     hid_set_element_callback( newdevdesc->descriptor, (hid_element_callback) SC_HID_APIManager::hid_element_cb, &newdevdesc->index );
-    hid_set_descriptor_callback( newdevdesc->descriptor, (hid_descriptor_callback) hid_descriptor_cb, &newdevdesc->index );
-    hid_set_element_callback( newdevdesc->descriptor, (hid_element_callback) hid_element_cb, &newdevdesc->index );
+    hid_set_descriptor_callback( newdevdesc, (hid_descriptor_callback) hid_descriptor_cb, &newdevdesc->index );
+    hid_set_element_callback( newdevdesc, (hid_element_callback) hid_element_cb, &newdevdesc->index );
 
     number_of_hids++;
 
@@ -363,7 +363,7 @@ void SC_HID_APIManager::handleElement( int joy_idx, struct hid_device_element * 
   gLangMutex.unlock();
 }
 
-void SC_HID_APIManager::handleDevice( int joy_idx, struct hid_device_descriptor * devd, boost::atomic<bool> const & shouldBeRunning ){
+void SC_HID_APIManager::handleDevice( int joy_idx, struct hid_dev_desc * devd, boost::atomic<bool> const & shouldBeRunning ){
   int status = lockLanguageOrQuit(shouldBeRunning);
   if (status == EINTR)
     return;
@@ -378,7 +378,7 @@ void SC_HID_APIManager::handleDevice( int joy_idx, struct hid_device_descriptor 
 //     ++g->sp; SetObject(g->sp, m_obj);
     ++g->sp; SetObject(g->sp, s_hidapi->u.classobj ); // set the class HID_API
     ++g->sp; SetInt(g->sp, joy_idx );
-    ++g->sp; SetInt(g->sp, devd->num_elements );
+    ++g->sp; SetInt(g->sp, devd->device_collection->num_elements );
     runInterpreter(g, s_hidDeviceData, 3);
     g->canCallOS = false;    
   }
@@ -395,7 +395,7 @@ void SC_HID_APIManager::threadLoop(){
       if ( it->second != NULL ){
 	res = hid_read( it->second->device, buf, sizeof(buf));
 	if ( res > 0 ) {
-	  hid_parse_input_report( buf, res, it->second->descriptor );
+	  hid_parse_input_report( buf, res, it->second );
 	}
       }
       #ifdef WIN32
@@ -606,7 +606,7 @@ int prHID_API_GetNumberOfElements( VMGlobals* g, int numArgsPushed ){
   if ( err != errNone ) return err;
   
   struct hid_dev_desc * devdesc = SC_HID_APIManager::instance().get_device( joyid );
-  struct hid_device_descriptor * cur_dev = devdesc->descriptor;
+  struct hid_device_collection * cur_dev = devdesc->device_collection;
   
   if ( cur_dev != NULL ){
     SetInt( self, cur_dev->num_elements );
@@ -633,8 +633,8 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
   if ( err != errNone ) return err;
   
   struct hid_dev_desc * devdesc = SC_HID_APIManager::instance().get_device( joyid );
-  struct hid_device_descriptor * curdev = devdesc->descriptor;
-  struct hid_device_element * curelement = curdev->first;
+  struct hid_device_collection * curdev = devdesc->device_collection;
+  struct hid_device_element * curelement = curdev->first_element;
   struct hid_device_element * thiselement = NULL;
   
   bool found = curelement->index == elementid;
