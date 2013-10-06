@@ -84,12 +84,14 @@ HID_API {
             newdev = HID_API_Device.new( newdevid );
             newdev.info = deviceList.at( id1 );
             newdev.getElements;
+            newdev.getCollections;
             openDevices.put( newdevid, newdev );
         }{
             newdevid = HID_API.prOpenDevice( id1,id2 );
             newdev = HID_API_Device.new( newdevid );
             newdev.getInfo;
             newdev.getElements;
+            newdev.getCollections;
             openDevices.put( newdevid, newdev );
         }
         ^newdev;
@@ -132,6 +134,16 @@ HID_API {
 
 	*prGetDeviceInfo{ |joyid|
 		_HID_API_GetInfo
+		^this.primitiveFailed
+	}
+
+    *prGetNumberOfCollections{ |joyid|
+		_HID_API_GetNumberOfCollections
+		^this.primitiveFailed
+	}
+
+   	*prGetCollectionInfo{ |joyid,colid|
+		_HID_API_GetCollectionInfo
 		^this.primitiveFailed
 	}
 
@@ -219,6 +231,7 @@ HID_API_Device {
     var <>info;
 
     var <elements;
+    var <collections;
 
 	var <>action;
     var <>deviceAction;
@@ -233,6 +246,7 @@ HID_API_Device {
 		id = i;
         //info = HID_API_DeviceInfo.new( n );
         elements = IdentityDictionary.new;
+        collections = IdentityDictionary.new;
         // elementDictionary = MultiLevelIdentityDictionary.new;
 	}
 
@@ -251,6 +265,18 @@ HID_API_Device {
                 elements.at( args[0] ).setValue( args[3], args[4] );
         };
 		action.value( *args );
+	}
+
+    getCollections{
+        var numberOfCollections = HID_API.prGetNumberOfCollections( id );
+        numberOfCollections.do{ |i|
+            var colInfo = this.getCollectionInfo( i );
+            collections.put( i, HID_API_Collection.new( *colInfo ) );
+        }
+    }
+
+	getCollectionInfo{ |colid|
+		^HID_API.prGetCollectionInfo( id, colid );
 	}
 
     getElements{
@@ -287,9 +313,55 @@ HID_API_Device {
 	}
 }
 
-HID_API_Element{
+HID_API_Collection{
+    var <index;
+    var <type;
+    var <usage_page, <usage;
 
-    classvar <>hutDirectory;
+    var <parent;
+    var <num_collections;
+    var <first_collection;
+
+    var <num_elements;
+    var <first_element;
+
+    var pageName, usageName;
+
+    *new{ arg ...args;
+        ^super.newCopyArgs( *args );
+	}
+
+    pageName{
+        if ( pageName.isNil ){
+            #pageName, usageName = HIDUsage.getUsageDescription( usage_page, usage );
+        };
+        ^pageName;
+    }
+
+    usageName{
+        if ( usageName.isNil ){
+            #pageName, usageName = HIDUsage.getUsageDescription( usage_page, usage );
+        };
+        ^usageName;
+    }
+
+    printOn { | stream |
+		super.printOn(stream);
+        stream << $( << "hid collection: " << index << ": " ;
+        stream << "type and usage: ";
+		[ type, usage_page, usage ].printItemsOn(stream);
+        stream << ": description: ";
+        [ this.pageName, this.usageName ].printItemsOn(stream);
+        stream << ": parent,: " << parent;
+        stream << ": collections,: ";
+        [ num_collections, first_collection ].printItemsOn( stream );
+        stream << ": elements,: ";
+        [ num_elements, first_element ].printItemsOn( stream );
+		stream.put($));
+	}
+}
+
+HID_API_Element{
 
     var <index;
     var <io_type, <type;
@@ -298,6 +370,7 @@ HID_API_Element{
     var <physicalMin, <physicalMax;
     var <unitExponent, <unit;
     var <reportSize, <reportID, <reportIndex;
+    var <collection;
 
     var <rawValue;
     var <logicalValue;
@@ -305,10 +378,6 @@ HID_API_Element{
 	var <value, <>action;
 
     var pageName, usageName, iotypeName, typeSpec;
-
-    *initClass{
-        hutDirectory = Platform.systemAppSupportDir +/+ "hid";
-    }
 
 	*new{ arg ...args;
         ^super.newCopyArgs( *args );
@@ -329,7 +398,7 @@ HID_API_Element{
 
     printOn { | stream |
 		super.printOn(stream);
-        stream << $( << "hid element: " << index << ": " ;
+        stream << $( << "hid element: " << index << ": collection " << collection << " : " ;
         stream << "type and usage: ";
 		[ io_type, type, usage_page, usage ].printItemsOn(stream);
         stream << ": min and max: ";
@@ -345,14 +414,14 @@ HID_API_Element{
 
     pageName{
         if ( pageName.isNil ){
-            this.getUsageDescription;
+            #pageName, usageName = HIDUsage.getUsageDescription( usage_page, usage );
         };
         ^pageName;
     }
 
     usageName{
         if ( usageName.isNil ){
-            this.getUsageDescription;
+            #pageName, usageName = HIDUsage.getUsageDescription( usage_page, usage );
         };
         ^usageName;
     }
@@ -387,7 +456,18 @@ HID_API_Element{
         ^typeSpec;
     }
 
-    getUsageDescription{
+}
+
+HIDUsage {
+
+    classvar <>hutDirectory;
+
+    *initClass{
+        hutDirectory = Platform.systemAppSupportDir +/+ "hid";
+    }
+
+    *getUsageDescription{ |usage_page,usage|
+        var pageName, usageName;
         var yamlfile;
         var huttable;
         switch( usage_page,
@@ -427,10 +507,10 @@ HID_API_Element{
                 }
             }
         );
-
+        ^[ pageName, usageName ];
     }
 
-    readHUTFile{ |yamlfile|
+    *readHUTFile{ |yamlfile|
         var huttable = (hutDirectory +/+ yamlfile).parseYAMLFile;
         var hutIdtable = IdentityDictionary.new;
         if ( huttable.isNil ){
@@ -447,5 +527,5 @@ HID_API_Element{
         };
         ^hutIdtable;
     }
+
 }
-    
