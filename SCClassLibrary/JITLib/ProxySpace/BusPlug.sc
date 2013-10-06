@@ -224,7 +224,7 @@ BusPlug : AbstractFunction {
 		^monitor
 	}
 
-	stop { | fadeTime = 0.1, reset = false |
+	stop { | fadeTime, reset = false |
 		monitor.stop(fadeTime);
 		if(reset) { monitor = nil };
 		this.changed(\stop, [fadeTime, reset]);
