@@ -38,7 +38,8 @@ namespace QtCollider {
 
 WebView::WebView( QWidget *parent ) :
   QWebView( parent ),
-  _interpretSelection(false)
+  _interpretSelection(false),
+  _editable(false)
 {
   QtCollider::WebPage *page = new WebPage(this);
   page->setDelegateReload(true);
@@ -61,6 +62,8 @@ WebView::WebView( QWidget *parent ) :
 
   connect( page, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)),
            this, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)) );
+    
+  connect( this, SIGNAL(loadFinished(bool)), this, SLOT(updateEditable(bool)) );
 }
 
 QString WebView::url() const
