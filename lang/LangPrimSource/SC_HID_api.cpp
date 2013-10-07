@@ -770,6 +770,49 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
   return errNone;  
 }
 
+int prHID_API_SetElementOutput( VMGlobals* g, int numArgsPushed ){
+  PyrSlot *args = g->sp - numArgsPushed + 1;
+  PyrSlot* self = args + 0;
+  PyrSlot* arg1  = args + 1;
+  PyrSlot* arg2  = args + 2;
+  PyrSlot* arg3  = args + 3;
+    
+  int err;
+  int joyid;
+  int elementid;
+  int value;
+    
+  err = slotIntVal( arg1, &joyid );
+  if ( err != errNone ) return err;
+  
+  err = slotIntVal( arg2, &elementid );
+  if ( err != errNone ) return err;
+
+  err = slotIntVal( arg3, &value );
+  if ( err != errNone ) return err;
+  
+  struct hid_dev_desc * devdesc = SC_HID_APIManager::instance().get_device( joyid );
+  struct hid_device_collection * curdev = devdesc->device_collection;
+  struct hid_device_element * curelement = curdev->first_element;
+  struct hid_device_element * thiselement = NULL;
+  
+  if ( devdesc != NULL ){  
+    bool found = false;
+    while( curelement != NULL && !found ){
+	found = (curelement->index == elementid) && ( curelement->io_type == 2 );
+	if ( found ){
+	    thiselement = curelement;
+	}
+	curelement = hid_get_next_output_element( curelement );
+    }
+    if ( thiselement != NULL ){
+      thiselement->value = value;
+      hid_send_output_report( devdesc, thiselement->report_id );
+    }
+  }
+  return errNone;  
+}
+
 void close_HID_API_Devices(){
   SC_HID_APIManager::instance().stop();
 }
@@ -797,7 +840,9 @@ void initHIDAPIPrimitives()
   definePrimitive(base, index++, "_HID_API_GetNumberOfCollections", prHID_API_GetNumberOfCollections, 2, 0); // gets number of elements of a device
   definePrimitive(base, index++, "_HID_API_GetCollectionInfo", prHID_API_GetCollectionInfo, 3, 0); // gets info about a specific device element
   definePrimitive(base, index++, "_HID_API_GetNumberOfElements", prHID_API_GetNumberOfElements, 2, 0); // gets number of elements of a device
-  definePrimitive(base, index++, "_HID_API_GetElementInfo", prHID_API_GetElementInfo, 3, 0); // gets info about a specific device element
+  definePrimitive(base, index++, "_HID_API_GetElementInfo", prHID_API_GetElementInfo, 4, 0); // gets info about a specific device element
+
+  definePrimitive(base, index++, "_HID_API_SetElementOutput", prHID_API_SetElementOutput, 3, 0); // sets the output value of a specific device element, and sends the report
   
   SC_HID_APIManager::s_hidElementData = getsym("prHIDElementData"); // send back element data
   SC_HID_APIManager::s_hidDeviceData = getsym("prHIDDeviceData"); // send back device data
