@@ -126,6 +126,12 @@ Monitor {
 		};
 	}
 
+	clear { | argFadeTime |
+		this.stop(argFadeTime);
+		ins = outs = amps = fadeTimes = nil;
+		vol = 1.0;
+	}
+
 	isPlaying { ^group.isPlaying }
 	numChannels { ^outs.size }
 
@@ -139,7 +145,9 @@ Monitor {
 	// assuming that "out" refers to the first channel, like the Out UGen's out argument.
 
 	out_ { | index |
-		var offset = index - outs[0];
+		var offset;
+		if(outs.isNil) { this.outs = index.asArray };
+		offset = index - outs[0];
 		this.outs = outs + offset
 	}
 
