@@ -1,4 +1,4 @@
-HID_API {
+HID {
 
 	classvar <running = false;
 
@@ -68,8 +68,7 @@ HID_API {
 		if ( devlist.isKindOf( Array ) ){
 			deviceNames = devlist;
 			devlist.do{ |it,i|
-                deviceList.put( i, HID_API_DeviceInfo.new( *it ) );
-                // deviceList.put( i, HID_API_Device.new( i, it ) );
+                deviceList.put( i, HIDDeviceInfo.new( *it ) );
 			}{ // no devices found
 				"no HID devices found".postln;
 			}
@@ -81,14 +80,14 @@ HID_API {
         var newdev;
         if ( id2.isNil ){
             newdevid = deviceList.at( id1 ).open;
-            newdev = HID_API_Device.new( newdevid );
+            newdev = HIDDevice.new( newdevid );
             newdev.info = deviceList.at( id1 );
             newdev.getElements;
             newdev.getCollections;
             openDevices.put( newdevid, newdev );
         }{
-            newdevid = HID_API.prOpenDevice( id1,id2 );
-            newdev = HID_API_Device.new( newdevid );
+            newdevid = HID.prOpenDevice( id1,id2 );
+            newdev = HIDDevice.new( newdevid );
             newdev.getInfo;
             newdev.getElements;
             newdev.getCollections;
@@ -201,7 +200,7 @@ HID_API {
 
 }
 
-HID_API_DeviceInfo{
+HIDDeviceInfo{
 
     var <vendorID, <productID;
     var <path;
@@ -226,11 +225,11 @@ HID_API_DeviceInfo{
 	}
 
     open{
-        ^HID_API.prOpenDevice( vendorID, productID );
+        ^HID.prOpenDevice( vendorID, productID );
     }
 }
 
-HID_API_Device {
+HIDDevice {
 
 	var <id;
     var <>info;
@@ -273,33 +272,33 @@ HID_API_Device {
 	}
 
     getCollections{
-        var numberOfCollections = HID_API.prGetNumberOfCollections( id );
+        var numberOfCollections = HID.prGetNumberOfCollections( id );
         numberOfCollections.do{ |i|
             var colInfo = this.getCollectionInfo( i );
-            collections.put( i, HID_API_Collection.new( *colInfo ).device_( this ) );
+            collections.put( i, HIDCollection.new( *colInfo ).device_( this ) );
         }
     }
 
 	getCollectionInfo{ |colid|
-		^HID_API.prGetCollectionInfo( id, colid );
+		^HID.prGetCollectionInfo( id, colid );
 	}
 
     getElements{
-        var numberOfElements = HID_API.prGetNumberOfElements( id );
+        var numberOfElements = HID.prGetNumberOfElements( id );
         numberOfElements.do{ |i|
             var elInfo = this.getElementInfo( i );
-            elements.put( i, HID_API_Element.new( *elInfo ).device_( this ) );
+            elements.put( i, HIDElement.new( *elInfo ).device_( this ) );
         }
     }
 
 	getElementInfo{ |elid|
-		^HID_API.prGetElementInfo( id, elid );
+		^HID.prGetElementInfo( id, elid );
 	}
 
 	getInfo{
-		var result = HID_API.prGetDeviceInfo( id );
+		var result = HID.prGetDeviceInfo( id );
 		if ( result.isKindOf( Array ) ){
-            info = HID_API_DeviceInfo.new( *result );
+            info = HIDDeviceInfo.new( *result );
             // this.prettyPrint;
 		}{
 			"could not get info on hid device; maybe it is not open?".postln;
@@ -314,11 +313,11 @@ HID_API_Device {
     // }
 
 	close{
-		^HID_API.prCloseDevice( id );
+		^HID.prCloseDevice( id );
 	}
 }
 
-HID_API_Collection{
+HIDCollection{
     var <index;
     var <type;
     var <usage_page, <usage;
@@ -368,7 +367,7 @@ HID_API_Collection{
 	}
 }
 
-HID_API_Element{
+HIDElement{
 
     var <index;
     var <io_type, <type;
@@ -397,7 +396,7 @@ HID_API_Element{
         //TODO: could remap this accordingly
         rawValue = val;
         value = val;
-        HID_API.prSetElementOutput( device.id, index, rawValue );
+        HID.prSetElementOutput( device.id, index, rawValue );
     }
 
     // called from input report
