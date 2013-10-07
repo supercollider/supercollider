@@ -42,7 +42,7 @@ OSXPlatform : UnixPlatform
 	}
 
 	defaultGUIScheme { ^\qt }
-	defaultHIDScheme { ^\osx_hid }
+	defaultHIDScheme { ^nil }
 
 	setDeferredTaskInterval { |interval| _SetDeferredTaskInterval }
 
