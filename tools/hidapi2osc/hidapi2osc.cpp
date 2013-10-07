@@ -135,6 +135,29 @@ void close_device( int joy_idx ){
 }
 
 
+void send_output_to_hid( int joy_idx, int reportid ){ 
+  struct hid_dev_desc * hidtosendoutput = hiddevices.find( joy_idx )->second;
+  hid_send_output_report( hidtosendoutput, reportid );
+}
+
+void set_element_output( int joy_idx, int elementid, int value ){ 
+  struct hid_dev_desc * devd = hiddevices.find( joy_idx )->second;
+  
+  if ( devd != NULL ){
+    // find the right output element
+    struct hid_device_collection * device_collection = devd->device_collection;
+    struct hid_device_element * cur_element = device_collection->first_element;
+    
+    while ( (cur_element->io_type != 2 || (cur_element->index != elementid)) && cur_element != NULL ){
+	cur_element = hid_get_next_output_element(cur_element);
+    }
+    if ( cur_element != NULL ){
+	cur_element->value = value;
+    }
+  }  
+}
+
+
 /// OSC bits
 
 void error(int num, const char *m, const char *path);
@@ -154,6 +177,13 @@ int hid_info_handler(const char *path, const char *types, lo_arg **argv,
 int hid_element_info_handler(const char *path, const char *types, lo_arg **argv,
 			 int argc, void *data, void *user_data);
 
+int hid_element_output_handler(const char *path, const char *types, lo_arg **argv,
+			 int argc, void *data, void *user_data);
+
+int hid_output_handler(const char *path, const char *types, lo_arg **argv,
+			 int argc, void *data, void *user_data);
+
+
 int generic_handler(const char *path, const char *types, lo_arg **argv,
 		    int argc, void *data, void *user_data);
 int quit_handler(const char *path, const char *types, lo_arg **argv, int argc,
@@ -169,6 +199,9 @@ int init_osc( char * ip, char *outport, char * port ){
     lo_server_thread_add_method(st, "/hid/element/info", "i", hid_element_info_handler, NULL);
     lo_server_thread_add_method(st, "/hid/info", "i", hid_info_handler, NULL);
     lo_server_thread_add_method(st, "/hid/close", "i", hid_close_handler, NULL);
+
+    lo_server_thread_add_method(st, "/hid/element/output", "iii", hid_element_output_handler, NULL);
+    lo_server_thread_add_method(st, "/hid/output", "ii", hid_output_handler, NULL);
 
     lo_server_thread_add_method(st, "/hidapi2osc/info", "", info_handler, NULL);
     lo_server_thread_add_method(st, "/hidapi2osc/quit", "", quit_handler, NULL);
@@ -378,6 +411,22 @@ int hid_element_info_handler(const char *path, const char *types, lo_arg **argv,
   printf("hidapi2osc: joystick elements info handler\n");
 
   send_elements_hid_info( argv[0]->i );
+  return 0;
+}
+
+int hid_element_output_handler(const char *path, const char *types, lo_arg **argv, int argc,
+		 void *data, void *user_data)
+{
+  printf("hidapi2osc: joystick elements output handler\n");
+  set_element_output( argv[0]->i, argv[1]->i, argv[2]->i );
+  return 0;
+}
+
+int hid_output_handler(const char *path, const char *types, lo_arg **argv, int argc,
+		 void *data, void *user_data)
+{
+  printf("hidapi2osc: joystick output handler\n");
+  send_output_to_hid( argv[0]->i, argv[1]->i );
   return 0;
 }
 
