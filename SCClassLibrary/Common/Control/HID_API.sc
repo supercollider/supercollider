@@ -157,6 +157,11 @@ HID_API {
 		^this.primitiveFailed
 	}
 
+    *prSetElementOutput{ |joyid,elid,value|
+		_HID_API_SetElementOutput
+		^this.primitiveFailed
+	}
+
 	*prbuildDeviceList{
 		_HID_API_BuildDeviceList
 		^this.primitiveFailed
@@ -262,7 +267,7 @@ HID_API_Device {
             ([ "element", id ] ++ args).postln;
 		};
         if ( elements.at( args[0] ).notNil ){
-                elements.at( args[0] ).setValue( args[3], args[4] );
+                elements.at( args[0] ).setValueFromInput( args[3], args[4] );
         };
 		action.value( *args );
 	}
@@ -271,7 +276,7 @@ HID_API_Device {
         var numberOfCollections = HID_API.prGetNumberOfCollections( id );
         numberOfCollections.do{ |i|
             var colInfo = this.getCollectionInfo( i );
-            collections.put( i, HID_API_Collection.new( *colInfo ) );
+            collections.put( i, HID_API_Collection.new( *colInfo ).device_( this ) );
         }
     }
 
@@ -283,7 +288,7 @@ HID_API_Device {
         var numberOfElements = HID_API.prGetNumberOfElements( id );
         numberOfElements.do{ |i|
             var elInfo = this.getElementInfo( i );
-            elements.put( i, HID_API_Element.new( *elInfo ) );
+            elements.put( i, HID_API_Element.new( *elInfo ).device_( this ) );
         }
     }
 
@@ -324,6 +329,8 @@ HID_API_Collection{
 
     var <num_elements;
     var <first_element;
+
+    var <>device;
 
     var pageName, usageName;
 
@@ -377,13 +384,24 @@ HID_API_Element{
 
 	var <value, <>action;
 
+    var <>device;
+
     var pageName, usageName, iotypeName, typeSpec;
 
 	*new{ arg ...args;
         ^super.newCopyArgs( *args );
 	}
 
-    setValue{ |raw,logic|
+    // use for sending output
+    value_{ |val|
+        //TODO: could remap this accordingly
+        rawValue = val;
+        value = val;
+        HID_API.prSetElementOutput( device.id, index, rawValue );
+    }
+
+    // called from input report
+    setValueFromInput{ |raw,logic|
         rawValue = raw;
         logicalValue = logic;
         // for now:
