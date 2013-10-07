@@ -175,7 +175,8 @@ int SC_HID_APIManager::open_device( int vendor, int product ){ // , const char* 
 }
 
 int SC_HID_APIManager::close_device( int joy_idx ){  
-  struct hid_dev_desc * hidtoclose = hiddevices.find( joy_idx )->second;
+  struct hid_dev_desc * hidtoclose = get_device( joy_idx );
+//   hiddevices.find( joy_idx )->second;
   if ( hidtoclose == NULL ){
     fprintf(stderr, "HIDAPI : could not find device to close %d\n", joy_idx);
     return 1; // not a fatal error
@@ -188,7 +189,8 @@ int SC_HID_APIManager::close_device( int joy_idx ){
 }
 
 struct hid_dev_desc * SC_HID_APIManager::get_device( int joy_idx ){  
-  if ( hiddevices.count( joy_idx ) >= 0 ){
+//   int count = hiddevices.count( joy_idx );
+  if ( hiddevices.count( joy_idx ) > 0 ){
     struct hid_dev_desc * hidget = hiddevices.find( joy_idx )->second;
     return hidget;
   } else {
@@ -823,7 +825,7 @@ void initHIDAPIPrimitives()
  
   close_HID_API_Devices();
 
-  SC_HID_APIManager::s_hidapi = getsym("HID_API");
+  SC_HID_APIManager::s_hidapi = getsym("HID");
 
   base = nextPrimitiveIndex();
   index = 0;
