@@ -87,6 +87,10 @@ METHOD:: setFontFamily
     Argument:: specific
         A font family name to be assigned to the generic family; a String.
 
+METHOD:: editable
+    Get or set whether the entire web page is editable.
+    Argument::
+        A Boolean.
 
 SUBSECTION:: Actions
 
