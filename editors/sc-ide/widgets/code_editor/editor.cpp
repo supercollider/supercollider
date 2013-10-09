@@ -735,8 +735,8 @@ void GenericCodeEditor::focusInEvent( QFocusEvent *e )
         QColor rectColor = palette().color(QPalette::Text);
         rectColor.setAlpha(80);
         mFocusRect = mOverlay->addRect(viewport()->rect().adjusted(0, 0, -1, -1), rectColor);
-        QPlainTextEdit::focusInEvent(e);
     }
+    QPlainTextEdit::focusInEvent(e);
 }
     
 void GenericCodeEditor::focusOutEvent( QFocusEvent *e )
