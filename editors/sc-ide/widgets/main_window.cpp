@@ -1551,8 +1551,6 @@ void MainWindow::openHelpAboutIDE()
 {
     mHelpBrowserDocklet->browser()->gotoHelpFor("Guides/SCIde");
 
-    mHelpBrowserDocklet->setDetached(true);
-
     QRect availableGeometry = QApplication::desktop()->availableGeometry(mHelpBrowserDocklet->window());
     QRect geometry;
     geometry.setWidth( qMin(700, availableGeometry.width()) );
