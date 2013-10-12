@@ -2728,6 +2728,7 @@ enum {
 	shape_Curve,
 	shape_Squared,
 	shape_Cubed,
+	shape_Step2,
 	shape_Sustain = 9999
 };
 
@@ -2834,6 +2835,10 @@ initSegment:
 		case shape_Step : {
 			level = endLevel;
 		} break;
+		case shape_Step2 : {
+			level = unit->m_y1;
+			unit->m_y1 = endLevel;
+		} break;
 		case shape_Linear : {
 			unit->m_grow = (endLevel - level) / counter;
 			//Print("grow %g\n", unit->m_grow);
@@ -2897,7 +2902,9 @@ template <bool CheckGateOnSustain, typename GateCheck>
 static inline void EnvGen_perform(EnvGen * unit, float *& out, double & level, int nsmps, GateCheck const & gateCheck)
 {
 	switch (unit->m_shape) {
-	case shape_Step : {
+	case shape_Step :
+	case shape_Step2 :
+	{
 		for (int i=0; i<nsmps; ++i) {
 			if (!gateCheck( i ) )
 				break;
@@ -3087,6 +3094,7 @@ FLATTEN void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
 	{
 		switch (unit->m_shape) {
 		case shape_Step :
+		case shape_Step2 :
 		case shape_Sustain :
 			nova::setvec_simd(OUT(0), (float)level, inNumSamples);
 			remain = 0;
@@ -3264,104 +3272,110 @@ void EnvFill(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 		nsmps = sc_min(nsmps, remain);
 
 		switch (shape) {
-			case shape_Step : {
-				level = endLevel;
-				for (int i=0; i<nsmps; ++i) {
-					data[index++] = level;
-				}
-			} break;
-			case shape_Linear : {
+		case shape_Step : {
+			level = endLevel;
+			for (int i=0; i<nsmps; ++i) {
+				data[index++] = level;
+			}
+		} break;
+		case shape_Step2 : {
+			for (int i=0; i<nsmps; ++i) {
+				data[index++] = level;
+			}
+			level = endLevel;
+		} break;
+		case shape_Linear : {
+			double grow = (endLevel - level) / nsmps;
+			for (int i=0; i<nsmps; ++i) {
+				data[index++] = level;
+				level += grow;
+			}
+		} break;
+		case shape_Exponential : {
+			double grow = pow(endLevel / level, 1.0 / nsmps);
+			for (int i=0; i<nsmps; ++i) {
+				data[index++] = level;
+				level *= grow;
+			}
+		} break;
+		case shape_Sine : {
+			double w = pi / nsmps;
+
+			double a2 = (endLevel + level) * 0.5;
+			double b1 = 2. * cos(w);
+			double y1 = (endLevel - level) * 0.5;
+			double y2 = y1 * sin(pi * 0.5 - w);
+			level = a2 - y1;
+			for (int i=0; i<nsmps; ++i) {
+				data[index++] = level;
+				double y0 = b1 * y1 - y2;
+				level = a2 - y0;
+				y2 = y1;
+				y1 = y0;
+			}
+		} break;
+		case shape_Welch : {
+			double w = (pi * 0.5) / nsmps;
+
+			double b1 = 2. * cos(w);
+			double a2, y1, y2;
+			if (endLevel >= level) {
+				a2 = level;
+				y1 = 0.;
+				y2 = -sin(w) * (endLevel - level);
+			} else {
+				a2 = endLevel;
+				y1 = level - endLevel;
+				y2 = cos(w) * (level - endLevel);
+			}
+			level = a2 + y1;
+			for (int i=0; i<nsmps; ++i) {
+				data[index++] = level;
+				double y0 = b1 * y1 - y2;
+				level = a2 - y0;
+				y2 = y1;
+				y1 = y0;
+			}
+		} break;
+		case shape_Curve : {
+			if (fabs(curve) < 0.001) {
 				double grow = (endLevel - level) / nsmps;
 				for (int i=0; i<nsmps; ++i) {
 					data[index++] = level;
 					level += grow;
 				}
-			} break;
-			case shape_Exponential : {
-				double grow = pow(endLevel / level, 1.0 / nsmps);
+			} else {
+				double a1 = (endLevel - level) / (1.0 - exp(curve));
+				double a2 = level + a1;
+				double b1 = a1;
+				double grow = exp(curve / nsmps);
 				for (int i=0; i<nsmps; ++i) {
 					data[index++] = level;
-					level *= grow;
+					b1 *= grow;
+					level = a2 - b1;
 				}
-			} break;
-			case shape_Sine : {
-				double w = pi / nsmps;
-
-				double a2 = (endLevel + level) * 0.5;
-				double b1 = 2. * cos(w);
-				double y1 = (endLevel - level) * 0.5;
-				double y2 = y1 * sin(pi * 0.5 - w);
-				level = a2 - y1;
-				for (int i=0; i<nsmps; ++i) {
-					data[index++] = level;
-					double y0 = b1 * y1 - y2;
-					level = a2 - y0;
-					y2 = y1;
-					y1 = y0;
-				}
-			} break;
-			case shape_Welch : {
-				double w = (pi * 0.5) / nsmps;
-
-				double b1 = 2. * cos(w);
-				double a2, y1, y2;
-				if (endLevel >= level) {
-					a2 = level;
-					y1 = 0.;
-					y2 = -sin(w) * (endLevel - level);
-				} else {
-					a2 = endLevel;
-					y1 = level - endLevel;
-					y2 = cos(w) * (level - endLevel);
-				}
-				level = a2 + y1;
-				for (int i=0; i<nsmps; ++i) {
-					data[index++] = level;
-					double y0 = b1 * y1 - y2;
-					level = a2 - y0;
-					y2 = y1;
-					y1 = y0;
-				}
-			} break;
-			case shape_Curve : {
-				if (fabs(curve) < 0.001) {
-					double grow = (endLevel - level) / nsmps;
-					for (int i=0; i<nsmps; ++i) {
-						data[index++] = level;
-						level += grow;
-					}
-				} else {
-					double a1 = (endLevel - level) / (1.0 - exp(curve));
-					double a2 = level + a1;
-					double b1 = a1;
-					double grow = exp(curve / nsmps);
-					for (int i=0; i<nsmps; ++i) {
-						data[index++] = level;
-						b1 *= grow;
-						level = a2 - b1;
-					}
-				}
-			} break;
-			case shape_Squared : {
-				double y1 = sqrt(level);
-				double y2 = sqrt(endLevel);
-				double grow = (y2 - y1) / nsmps;
-				for (int i=0; i<nsmps; ++i) {
-					data[index++] = level;
-					y1 += grow;
-					level = y1*y1;
-				}
-			} break;
-			case shape_Cubed : {
-				double y1 = pow(level, 0.33333333);
-				double y2 = pow(endLevel, 0.33333333);
-				double grow = (y2 - y1) / nsmps;
-				for (int i=0; i<nsmps; ++i) {
-					data[index++] = level;
-					y1 += grow;
-					level = y1*y1*y1;
-				}
-			} break;
+			}
+		} break;
+		case shape_Squared : {
+			double y1 = sqrt(level);
+			double y2 = sqrt(endLevel);
+			double grow = (y2 - y1) / nsmps;
+			for (int i=0; i<nsmps; ++i) {
+				data[index++] = level;
+				y1 += grow;
+				level = y1*y1;
+			}
+		} break;
+		case shape_Cubed : {
+			double y1 = pow(level, 0.33333333);
+			double y2 = pow(endLevel, 0.33333333);
+			double grow = (y2 - y1) / nsmps;
+			for (int i=0; i<nsmps; ++i) {
+				data[index++] = level;
+				y1 += grow;
+				level = y1*y1*y1;
+			}
+		} break;
 		}
 
 		pos += smpdur;
@@ -3397,7 +3411,11 @@ extern "C"
 	    case shape_Step : \
 		    level = unit->m_level = endLevel; \
 		    break; \
-	    case shape_Linear : \
+	case shape_Step2 : \
+	  level = unit->m_level; \
+	  unit->m_level = endLevel; \
+	  break; \
+	case shape_Linear : \
 	    default: \
 		    level = unit->m_level = pos * (endLevel - begLevel) + begLevel; \
 		    break; \
