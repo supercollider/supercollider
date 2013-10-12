@@ -1550,14 +1550,6 @@ void MainWindow::openHelp()
 void MainWindow::openHelpAboutIDE()
 {
     mHelpBrowserDocklet->browser()->gotoHelpFor("Guides/SCIde");
-
-    QRect availableGeometry = QApplication::desktop()->availableGeometry(mHelpBrowserDocklet->window());
-    QRect geometry;
-    geometry.setWidth( qMin(700, availableGeometry.width()) );
-    geometry.setHeight( availableGeometry.height() - 150 );
-    geometry.moveCenter( availableGeometry.center() );
-
-    mHelpBrowserDocklet->window()->setGeometry( geometry );
     mHelpBrowserDocklet->focus();
 }
 
