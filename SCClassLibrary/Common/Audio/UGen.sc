@@ -214,10 +214,10 @@ UGen : AbstractFunction {
 			^this.linlin(inMin, inMax, outMin, outMax, clip)
 		};
 		grow = exp(curve);
-		a = outMax - outMin / (1.0 - grow);
-		b = outMin + a;
+		a = inMax - inMin / (1.0 - grow);
+		b = inMin + a;
 
-		^(log( (b - this.prune(inMin, inMax, clip)) / a ) * (inMax - inMin) / curve + inMin)
+		^(log( (b - this.prune(inMin, inMax, clip)) / a ) * (outMax - outMin) / curve + outMin)
 	}
 
 	signalRange { ^\bipolar }
