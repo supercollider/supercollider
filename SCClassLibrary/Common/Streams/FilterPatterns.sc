@@ -507,12 +507,12 @@ Pconst : FilterPattern {
 		loop ({
 			delta = str.next(inval);
 			if(delta.isNil) {
-				(localSum - elapsed).yield;
+				inval = (localSum - elapsed).yield;
 				^inval
 			};
 			nextElapsed = elapsed + delta;
 			if (nextElapsed.round(tolerance) >= localSum) {
-				(localSum - elapsed).yield;
+				inval = (localSum - elapsed).yield;
 				^inval
 			}{
 				elapsed = nextElapsed;
