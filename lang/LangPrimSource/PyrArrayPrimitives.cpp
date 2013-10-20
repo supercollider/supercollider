@@ -2154,7 +2154,7 @@ enum {
 	shape_Curve,
 	shape_Squared,
 	shape_Cubed,
-	shape_Step2
+	shape_Hold
 };
 
 enum {
@@ -2220,7 +2220,7 @@ int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
 			case shape_Step :
 				level = endLevel;
 				break;
-			case shape_Step2 :
+			case shape_Hold :
 				level = begLevel;
 				break;
 			case shape_Linear :

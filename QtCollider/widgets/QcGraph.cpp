@@ -647,6 +647,7 @@ void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *
     path.lineTo( pt1.x(), pt2.y() );
     path.lineTo( pt2 );
     break;
+  case QcGraphElement::Hold:
     path.moveTo( pt1 );
     path.lineTo( pt1.y(), pt2.y() );
     path.lineTo( pt2 );
