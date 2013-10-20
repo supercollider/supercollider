@@ -41,7 +41,7 @@ struct QcGraphElement {
     Quadratic,
     Cubic,
     Curvature,
-    Step2
+    Hold
   };
 
   QcGraphElement( const QSize & sz ) :

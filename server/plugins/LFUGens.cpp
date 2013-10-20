@@ -2728,7 +2728,7 @@ enum {
 	shape_Curve,
 	shape_Squared,
 	shape_Cubed,
-	shape_Step2,
+	shape_Hold,
 	shape_Sustain = 9999
 };
 
@@ -2835,7 +2835,7 @@ initSegment:
 		case shape_Step : {
 			level = endLevel;
 		} break;
-		case shape_Step2 : {
+		case shape_Hold : {
 			level = unit->m_y1;
 			unit->m_y1 = endLevel;
 		} break;
@@ -2903,7 +2903,7 @@ static inline void EnvGen_perform(EnvGen * unit, float *& out, double & level, i
 {
 	switch (unit->m_shape) {
 	case shape_Step :
-	case shape_Step2 :
+	case shape_Hold :
 	{
 		for (int i=0; i<nsmps; ++i) {
 			if (!gateCheck( i ) )
@@ -3094,7 +3094,7 @@ FLATTEN void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
 	{
 		switch (unit->m_shape) {
 		case shape_Step :
-		case shape_Step2 :
+		case shape_Hold :
 		case shape_Sustain :
 			nova::setvec_simd(OUT(0), (float)level, inNumSamples);
 			remain = 0;
@@ -3278,7 +3278,7 @@ void EnvFill(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 				data[index++] = level;
 			}
 		} break;
-		case shape_Step2 : {
+		case shape_Hold : {
 			for (int i=0; i<nsmps; ++i) {
 				data[index++] = level;
 			}
@@ -3391,9 +3391,9 @@ void EnvFill(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 
 struct IEnvGen : public Unit
 {
-    float m_level, m_offset;
-    float m_startpoint, m_numvals, m_pointin;
-    float* m_envvals;
+	float m_level, m_offset;
+	float m_startpoint, m_numvals, m_pointin;
+	float* m_envvals;
 };
 
 
@@ -3405,60 +3405,60 @@ extern "C"
 	void IEnvGen_Dtor(IEnvGen* unit);
 }
 
-#define GET_ENV_VAL \
-	switch (shape) \
-	    { \
-	    case shape_Step : \
-		    level = unit->m_level = endLevel; \
-		    break; \
-	case shape_Step2 : \
-	  level = unit->m_level; \
-	  unit->m_level = endLevel; \
-	  break; \
-	case shape_Linear : \
-	    default: \
-		    level = unit->m_level = pos * (endLevel - begLevel) + begLevel; \
-		    break; \
-	    case shape_Exponential : \
+#define GET_ENV_VAL														\
+	switch (shape)														\
+		{																\
+		case shape_Step :												\
+			level = unit->m_level = endLevel;							\
+			break;														\
+	case shape_Hold :													\
+	  level = unit->m_level;											\
+	  unit->m_level = endLevel;											\
+	  break;															\
+	case shape_Linear :													\
+		default:														\
+			level = unit->m_level = pos * (endLevel - begLevel) + begLevel; \
+			break;														\
+		case shape_Exponential :										\
 			level = unit->m_level = begLevel * pow(endLevel / begLevel, pos); \
-		    break; \
-	    case shape_Sine : \
-		    level = unit->m_level = begLevel + (endLevel - begLevel) * (-cos(pi * pos) * 0.5 + 0.5); \
-		    break; \
-	    case shape_Welch : \
-	    { \
-		    if (begLevel < endLevel) \
-			    level = unit->m_level = begLevel + (endLevel - begLevel) * sin(pi2 * pos); \
-		    else \
-			    level = unit->m_level = endLevel - (endLevel - begLevel) * sin(pi2 - pi2 * pos); \
-		    break; \
-	    } \
-	    case shape_Curve : \
-		    if (fabs((float)curve) < 0.0001) { \
-			    level = unit->m_level = pos * (endLevel - begLevel) + begLevel; \
-		    } else { \
-				double denom = 1. - exp((float)curve); \
-				double numer = 1. - exp((float)(pos * curve)); \
-			    level = unit->m_level = begLevel + (endLevel - begLevel) * (numer/denom); \
-		    } \
-		    break; \
-	    case shape_Squared : \
-	    { \
-		    double sqrtBegLevel = sqrt(begLevel); \
-		    double sqrtEndLevel = sqrt(endLevel); \
-		    double sqrtLevel = pos * (sqrtEndLevel - sqrtBegLevel) + sqrtBegLevel; \
-		    level = unit->m_level = sqrtLevel * sqrtLevel; \
-		    break; \
-	    } \
-	    case shape_Cubed : \
-	    { \
-			double cbrtBegLevel = pow(begLevel, 0.3333333f); \
-			double cbrtEndLevel = pow(endLevel, 0.3333333f); \
-		    double cbrtLevel = pos * (cbrtEndLevel - cbrtBegLevel) + cbrtBegLevel; \
-		    level = unit->m_level = cbrtLevel * cbrtLevel * cbrtLevel; \
-		    break; \
-	    } \
-	} \
+			break;														\
+		case shape_Sine :												\
+			level = unit->m_level = begLevel + (endLevel - begLevel) * (-cos(pi * pos) * 0.5 + 0.5); \
+			break;														\
+		case shape_Welch :												\
+		{																\
+			if (begLevel < endLevel)									\
+				level = unit->m_level = begLevel + (endLevel - begLevel) * sin(pi2 * pos); \
+			else														\
+				level = unit->m_level = endLevel - (endLevel - begLevel) * sin(pi2 - pi2 * pos); \
+			break;														\
+		}																\
+		case shape_Curve :												\
+			if (fabs((float)curve) < 0.0001) {							\
+				level = unit->m_level = pos * (endLevel - begLevel) + begLevel; \
+			} else {													\
+				double denom = 1. - exp((float)curve);					\
+				double numer = 1. - exp((float)(pos * curve));			\
+				level = unit->m_level = begLevel + (endLevel - begLevel) * (numer/denom); \
+			}															\
+			break;														\
+		case shape_Squared :											\
+		{																\
+			double sqrtBegLevel = sqrt(begLevel);						\
+			double sqrtEndLevel = sqrt(endLevel);						\
+			double sqrtLevel = pos * (sqrtEndLevel - sqrtBegLevel) + sqrtBegLevel; \
+			level = unit->m_level = sqrtLevel * sqrtLevel;				\
+			break;														\
+		}																\
+		case shape_Cubed :												\
+		{																\
+			double cbrtBegLevel = pow(begLevel, 0.3333333f);			\
+			double cbrtEndLevel = pow(endLevel, 0.3333333f);			\
+			double cbrtLevel = pos * (cbrtEndLevel - cbrtBegLevel) + cbrtBegLevel; \
+			level = unit->m_level = cbrtLevel * cbrtLevel * cbrtLevel;	\
+			break;														\
+		}																\
+	}
 
 
 void IEnvGen_Ctor(IEnvGen *unit)
@@ -3494,30 +3494,30 @@ void IEnvGen_Ctor(IEnvGen *unit)
 	int stage = 0;
 	float seglen = 0.f;
 	if (point >= totalDur) {
-	    unit->m_level = level = unit->m_envvals[numStages * 4]; // grab the last value
-	    } else {
-	    if (point <= 0.0) {
-		unit->m_level = level = unit->m_envvals[0];
+		unit->m_level = level = unit->m_envvals[numStages * 4]; // grab the last value
+	} else {
+		if (point <= 0.0) {
+			unit->m_level = level = unit->m_envvals[0];
 		} else {
-		float segpos = point;
-		// determine which segment the current time pointer needs calculated
-		for(int j = 0; point >= newtime; j++) {
-			seglen = unit->m_envvals[(j * 4) + 1];
-			newtime += seglen;
-			segpos -= seglen;
-			stage = j;
-		    }
+			float segpos = point;
+			// determine which segment the current time pointer needs calculated
+			for(int j = 0; point >= newtime; j++) {
+				seglen = unit->m_envvals[(j * 4) + 1];
+				newtime += seglen;
+				segpos -= seglen;
+				stage = j;
+			}
 
-		segpos = segpos + seglen;
-		float begLevel = unit->m_envvals[(stage * 4)];
-		int shape = (int)unit->m_envvals[(stage * 4) + 2];
-		int curve = (int)unit->m_envvals[(stage * 4) + 3];
-		float endLevel = unit->m_envvals[(stage * 4) + 4];
-		float pos = (segpos / seglen);
+			segpos = segpos + seglen;
+			float begLevel = unit->m_envvals[(stage * 4)];
+			int shape = (int)unit->m_envvals[(stage * 4) + 2];
+			int curve = (int)unit->m_envvals[(stage * 4) + 3];
+			float endLevel = unit->m_envvals[(stage * 4) + 4];
+			float pos = (segpos / seglen);
 
-		GET_ENV_VAL
-		}
-	    }
+			GET_ENV_VAL
+				}
+	}
 	OUT0(0) = level;
 }
 
@@ -3589,14 +3589,14 @@ void IEnvGen_next_k(IEnvGen *unit, int inNumSamples)
 	float offset = unit->m_offset;
 	int numStages = (int)IN0(3);
 	float point; // = unit->m_pointin;
-	
+
 	float totalDur = IN0(4);
-	
+
 	int stagemul;
 	// pointer, offset
 	// level0, numstages, totaldur,
 	// [initval, [dur, shape, curve, level] * N ]
-	
+
 	for( int i = 0; i < inNumSamples; i++) {
 		if (pointin == unit->m_pointin){
 			out[i] = level;
@@ -3626,7 +3626,7 @@ void IEnvGen_next_k(IEnvGen *unit, int inNumSamples)
 					int curve = (int)unit->m_envvals[stagemul + 3];
 					float endLevel = unit->m_envvals[stagemul + 4];
 					float pos = (segpos / seglen);
-					
+
 					GET_ENV_VAL
 				}
 			}
