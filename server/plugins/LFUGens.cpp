@@ -3014,7 +3014,7 @@ static inline void EnvGen_perform(EnvGen * unit, float *& out, double & level, i
 
 static inline void EnvGen_perform(EnvGen * unit, float *& out, double & level, int nsmps)
 {
-	EnvGen_perform<false>( unit, out, level, nsmps, [](int i) { return false;});
+	EnvGen_perform<false>( unit, out, level, nsmps, [](int i) { return true;});
 }
 
 
