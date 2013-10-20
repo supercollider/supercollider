@@ -2825,6 +2825,7 @@ initSegment:
 			return false;
 		}
 
+		float previousEndLevel = unit->m_endLevel;
 		float** envPtr  = unit->mInBuf + stageOffset;
 		double endLevel = *envPtr[0] * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias); // scale levels
 		double dur      = *envPtr[1] * ZIN0(kEnvGen_timeScale);
@@ -2844,8 +2845,7 @@ initSegment:
 			level = endLevel;
 		} break;
 		case shape_Hold : {
-			level = unit->m_y1;
-			unit->m_y1 = endLevel;
+			level = previousEndLevel;
 		} break;
 		case shape_Linear : {
 			unit->m_grow = (endLevel - level) / counter;
