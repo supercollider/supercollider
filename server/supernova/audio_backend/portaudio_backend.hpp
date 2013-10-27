@@ -108,9 +108,14 @@ public:
 
     bool match_device (std::string const & device, int & r_device_index)
     {
+        if (device.empty())
+            return true;
+
         int device_number = Pa_GetDeviceCount();
-        if (device_number < 0)
+        if (device_number < 0) {
             report_error(device_number);
+            return false;
+        }
 
         for (int i = 0; i != device_number; ++i) {
             if (device_name(i) == device) {
