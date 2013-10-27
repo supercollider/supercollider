@@ -153,11 +153,7 @@ option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)"
 
 option(SCLANG_SERVER "Build with internal server." ON)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    option(SC_WII "Build sclang with WII support" ON)
-elseif(APPLE)
-    option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
-endif()
+option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
     option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines).")
