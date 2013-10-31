@@ -247,7 +247,7 @@ BusPlug : AbstractFunction {
 	}
 
 	playNToBundle { | bundle, outs, amps, ins, vol, fadeTime, group, addAction |
-		this.newMonitorToBundle(bundle); // todo: numChannels
+		this.newMonitorToBundle(bundle, ins !? { ins.asArray.maxItem + 1 });
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
 		monitor.playNBusToBundle(bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction);
 	}
