@@ -2222,6 +2222,18 @@ int SCQuartzComposerView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if(!success) return errFailed;
 		return errNone;
 	}
+    
+// pause and resume rendering added:
+    if (strcmp(name, "pause")==0) {
+		[mQCView pauseRendering];
+		return errNone;
+	}
+    
+    if (strcmp(name, "resume")==0) {
+		[mQCView resumeRendering];
+		return errNone;
+	}
+    
 
 	//// doesn't seem to work ; fix later
 	//	if (strcmp(name, "erase")==0) {
@@ -2307,6 +2319,15 @@ id SCQuartzComposerView::getNSObjectForSCObject(PyrSlot *scobject, int *returnEr
 		NSString *returnObject =  [NSString stringWithCString: string->s length: string->size];
 		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
 		return returnObject;
+        
+//need to convert symbol to string        
+    } else if(IsSym(scobject)) { // it's a S Y M B O L
+        PyrSymbol *sym = slotRawSymbol(scobject);
+		NSString *returnObject =  [[NSString alloc] initWithCString: sym->name encoding: NSASCIIStringEncoding];
+		if(!returnObject) { err = errFailed; returnErr = &err; return NULL;}
+        //post("fixed it \"%s\".\n\n", sym->name);
+		return returnObject;
+        
 	} else if(isKindOfSlot(scobject, s_color->u.classobj)) { // it's a color
 		SCColor rgb;
 		err = slotColorVal(scobject, &rgb);
@@ -2492,21 +2513,47 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 		// but check here to be safe
 		if([nsObject isKindOfClass: [NSDictionary class]]){
 			//NSLog(@"it's a dict");
-			PyrObject *dict, *array;
-			VMGlobals *g = gMainVMGlobals;
+            
+//check, if it shall better become an array
+            bool isArray = true;
+            NSArray *theKeys = [nsObject allKeys];
+            for (id key in theKeys) {
+                if (isArray) { isArray = [key isKindOfClass: [NSNumber class]]; } else {break;}
+            }
+            
+            PyrObject *dict, *array;
+            VMGlobals *g = gMainVMGlobals;
+                        
+            if (isArray) {
+//case array            
+                int arraySize = (int) [theKeys count];
+                //NSLog(@"Yes, but shall become an array of size: %i", arraySize);
+                
+                array = newPyrArray(g->gc, arraySize, 0, true);
+                array->size = arraySize;
+                nilSlots(array->slots, array->size);
+                
+                SetObject(slot, array);
+            
+            }
+            else {
 
-			dict = instantiateObject(g->gc, class_identdict, 5, true, false);
-			array = newPyrArray(g->gc, 4, 0, false);
-			array->size = 4;
-			nilSlots(array->slots, array->size);
-			SetObject(dict->slots + ivxIdentDict_array, array);
-			g->gc->GCWrite(dict, array);
-			SetObject(slot, dict);
+                dict = instantiateObject(g->gc, class_identdict, 5, true, false);
+                array = newPyrArray(g->gc, 4, 0, false);
+                array->size = 4;
+                nilSlots(array->slots, array->size);
+                SetObject(dict->slots + ivxIdentDict_array, array);
+                g->gc->GCWrite(dict, array);
+                SetObject(slot, dict);
+            }
 
-			NSEnumerator *enumerator = [nsObject keyEnumerator];
-			id key;
+//adopting Fast Enumeration
+			//NSEnumerator *enumerator = [nsObject keyEnumerator];
+			//id key;
 
-			while ((key = [enumerator nextObject])) {
+			//while ((key = [enumerator nextObject])) {
+            for (id key in nsObject){ 
+            
 				//NSLog(@"key class: %@", [key class]);
 				id innerNSObject = [nsObject objectForKey: key];
 				//NSLog(@"innerNSObject: %@", innerNSObject);
@@ -2536,10 +2583,31 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 				int err = getSCObjectForNSObject(&innerSlot, innerNSObject, innerType);
 				if(err) return err;
 
-				PyrSlot outKey;
-				SetSymbol(&outKey, getsym([key cString]));
-				err = identDictPut(g, dict, &outKey, &innerSlot);
-				if(err) return err;
+                
+                if (isArray) {
+//case array            
+                    //NSLog(@"the true index is: %i", [[key stringValue] intValue]);
+                    
+                    err = putIndexedSlot(g, array, &innerSlot, [[key stringValue] intValue]);
+                }    
+                else {
+                    PyrSlot outKey;
+//fix key issue: 
+                    // NSLog(@"the bloody key: %@ is of class: %@", key, [key class]);
+                    if([key isKindOfClass: [NSNumber class]]){
+                        //NSLog(@"converted Key: %@", [NSString stringWithFormat:@"%d", key]);
+                        //SetSymbol(&outKey, getsym([[NSString stringWithFormat:@"%d", key] cString]));
+
+                        //NSLog(@"stringValue Key: %@", [key stringValue]);
+                        SetSymbol(&outKey, getsym([[key stringValue] cString]));
+                    }
+                    else {
+                        SetSymbol(&outKey, getsym([key cString]));
+                    }
+                    
+                    err = identDictPut(g, dict, &outKey, &innerSlot);
+                }
+                if(err) return err;
 			}
 
 

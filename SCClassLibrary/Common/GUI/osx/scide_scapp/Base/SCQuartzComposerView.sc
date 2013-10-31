@@ -8,6 +8,15 @@ SCQuartzComposerView : SCView{
 	stop{
 		this.setProperty(\stop);
 	}
+	
+// pause and resume rendering added:
+	pause{
+		this.setProperty(\pause);
+	}
+
+	resume{
+		this.setProperty(\resume);
+	}
 
 	path_{|argpath|
 		path = argpath;
