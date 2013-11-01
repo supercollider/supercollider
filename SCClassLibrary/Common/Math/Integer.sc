@@ -11,8 +11,8 @@ Integer : SimpleNumber {
 	wrap { arg lo, hi; _WrapInt; ^this.primitiveFailed }
 	fold { arg lo, hi; _FoldInt; ^this.primitiveFailed }
 
-	even { ^(this & 1) == 0 }
-	odd { ^(this & 1) == 1 }
+	even { ^this.bitAnd(1) == 0 }
+	odd { ^this.bitAnd(1) == 1 }
 
 	xrand { arg exclude=0;
 		^(exclude + (this - 1).rand + 1) % this;
@@ -88,7 +88,7 @@ Integer : SimpleNumber {
 		var array;
 		array = Array.new(numDigits);
 		numDigits.do({ arg i;
-			array.addFirst(this >> i & 1)
+			array.addFirst(this.rightShift(i).bitAnd(1))
 		});
 		^array
 	}
@@ -148,8 +148,8 @@ Integer : SimpleNumber {
 			mask = base - 1;
 			base = base.trailingZeroes;
 			width.do { | i |
-				string.put(width-i-1, (rest & mask).asDigit);
-				rest = rest >> base;
+				string.put(width-i-1, rest.bitAnd(mask).asDigit);
+				rest = rest.rightShift(base);
 			};
 		} {
 			width.do { | i |
@@ -169,10 +169,10 @@ Integer : SimpleNumber {
 	}
 
 	asIPString {
-	    ^((this >> 24) & 255).asString ++ "." ++
-		((this >> 16) & 255).asString ++ "." ++
-		((this >> 8) & 255).asString ++ "." ++
-		(this & 255).asString
+	    ^this.rightShift(24).bitAnd(255).asString ++ "." ++
+		this.rightShift(16).bitAnd(255).asString ++ "." ++
+		this.rightShift(8).bitAnd(255).asString ++ "." ++
+		this.bitAnd(255).asString
 	}
 
 	archiveAsCompileString { ^true }
@@ -221,12 +221,12 @@ Integer : SimpleNumber {
 	}
 
 		// support for modifiers keys
-	isCaps { ^this & 65536 == 65536}
-	isShift { ^this & 131072 == 131072 }
-	isCtrl { ^this & 262144 == 262144 }
-	isAlt { ^this & 524288 == 524288 }
-	isCmd { ^this & 1048576 == 1048576 }
-	isNumPad { ^this & 2097152 == 2097152 }
-	isHelp { ^this & 4194304 == 4194304 }
-	isFun { ^this & 8388608 == 8388608 }
+	isCaps { ^this.bitAnd(65536) == 65536}
+	isShift { ^this.bitAnd(131072) == 131072 }
+	isCtrl { ^this.bitAnd(262144) == 262144 }
+	isAlt { ^this.bitAnd(524288) == 524288 }
+	isCmd { ^this.bitAnd(1048576) == 1048576 }
+	isNumPad { ^this.bitAnd(2097152) == 2097152 }
+	isHelp { ^this.bitAnd(4194304) == 4194304 }
+	isFun { ^this.bitAnd(8388608) == 8388608 }
 }
