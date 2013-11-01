@@ -41,6 +41,8 @@ class WebView : public QWebView
   Q_PROPERTY( bool delegateReload READ delegateReload WRITE setDelegateReload );
   Q_PROPERTY( bool enterInterpretsSelection
               READ interpretSelection WRITE setInterpretSelection );
+  Q_PROPERTY( bool editable
+               READ editable WRITE setEditable );
 
 public:
   Q_INVOKABLE void setHtml ( const QString &html, const QString &baseUrl = QString() );
@@ -71,6 +73,8 @@ public:
   void setDelegateReload( bool );
   bool interpretSelection() const { return _interpretSelection; }
   void setInterpretSelection( bool b ) { _interpretSelection = b; }
+    bool editable() const { return _editable; }
+  void setEditable( bool b ) { _editable = b; page()->setContentEditable(b); }
 
   inline static QUrl urlFromString( const QString & str ) {
       return QUrl::fromUserInput(str);
@@ -83,9 +87,11 @@ protected:
 private Q_SLOTS:
   void onLinkClicked( const QUrl & );
   void onPageReload();
+  void updateEditable(bool ok) { if(ok) page()->setContentEditable(_editable); }
 
 private:
   bool _interpretSelection;
+  bool _editable;
 };
 
 } // namespace QtCollider

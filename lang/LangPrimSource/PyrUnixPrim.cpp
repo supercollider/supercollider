@@ -179,7 +179,7 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	thread thread(thread_namespace::bind(string_popen_thread_func, process));
+	thread thread(std::bind(string_popen_thread_func, process));
 	thread.detach();
 
 	SetInt(a, process->pid);

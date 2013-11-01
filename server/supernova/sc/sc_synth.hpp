@@ -65,77 +65,70 @@ public:
             const size_t count = calc_unit_count;
             Unit ** units = calc_units;
 
-            // FIXME: do some more benchmarking. unrolling seems to harm performance
-#if 0
             const size_t preroll = count & 7;
 
-            const size_t unroll4  = preroll & 4;
-            const size_t unroll2  = preroll & 2;
-            const size_t unroll1 = preroll & 1;
-
-            if (unroll4) {
-                for (size_t i = 0; i != 4; ++i) {
-                    Unit * unit = units[0];
-                    (unit->mCalcFunc)(unit, unit->mBufLength);
-                    unit = units[1];
-                    (unit->mCalcFunc)(unit, unit->mBufLength);
-                    unit = units[2];
-                    (unit->mCalcFunc)(unit, unit->mBufLength);
-                    unit = units[3];
-                    (unit->mCalcFunc)(unit, unit->mBufLength);
-                }
-                units += 4;
-            }
-
-            if (unroll2) {
-                for (size_t i = 0; i != 2; ++i) {
-                    Unit * unit = units[0];
-                    (unit->mCalcFunc)(unit, unit->mBufLength);
-                    unit = units[1];
-                    (unit->mCalcFunc)(unit, unit->mBufLength);
-                }
-                units += 2;
-            }
-
-            if (unroll1) {
-                Unit * unit = units[0];
+            for (size_t i = 0; i != preroll; ++i) {
+                Unit * unit = units[i];
+                prefetch(units[i+1]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
-
-                units += 1;
             }
 
-            const size_t unroll = count >> 3;
+            units += preroll;
+
+            const size_t unroll = count / 8;
             if (unroll == 0)
                 return;
 
             for (size_t i = 0; i != unroll; ++i) {
                 Unit * unit = units[0];
+                prefetch(units[1]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
+
                 unit = units[1];
+                prefetch(units[2]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
+
                 unit = units[2];
+                prefetch(units[3]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
+
                 unit = units[3];
+                prefetch(units[4]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
+
                 unit = units[4];
+                prefetch(units[5]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
+
                 unit = units[5];
+                prefetch(units[6]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
+
                 unit = units[6];
+                prefetch(units[7]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
+
                 unit = units[7];
+                prefetch(units[8]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
                 units += 8;
             }
-#else
-            for (size_t i = 0; i != count; ++i) {
-                Unit * unit = units[i];
-                (unit->mCalcFunc)(unit, unit->mBufLength);
-            }
-#endif
         }
         else
             run_traced();
+    }
+
+    void prefetch(Unit * unit)
+    {
+        char * ptr = (char*) unit;
+        char * end = (char*) unit + sizeof(Unit) + 2 * sizeof(Wire)/* + 4 * sizeof(void*)*/;
+
+        static const size_t cacheline_size = 64;
+
+        for ( ; ptr < end; ptr += cacheline_size)
+#ifdef __GNUC__
+            __builtin_prefetch(ptr, 0, 0);
+#endif
     }
 
     void run(void);
@@ -180,6 +173,8 @@ public:
     void map_control_bus(const char * slot_name, int bus_index)
     {
         int slot_index = resolve_slot(slot_name);
+        if (slot_index == -1)
+            return;
         map_control_bus<ControlBusIsAudio>(slot_index, bus_index);
     }
 
@@ -187,6 +182,8 @@ public:
     void map_control_buses(const char * slot_name, int bus_index, int count)
     {
         int slot_index = resolve_slot(slot_name);
+        if (slot_index == -1)
+            return;
         map_control_buses<ControlBusIsAudio>(slot_index, bus_index, count);
     }
 
@@ -199,7 +196,10 @@ public:
     template <bool ControlBusIsAudio>
     void map_control_bus(const char * slot_name, size_t arrayed_slot_index, int bus_index)
     {
-        size_t slot_index = resolve_slot(slot_name) + arrayed_slot_index;
+        int slot_base_index = resolve_slot(slot_name);
+        if (slot_base_index == -1)
+            return;
+        size_t slot_index = slot_base_index + arrayed_slot_index;
         map_control_bus<ControlBusIsAudio>(slot_index, bus_index);
     }
     /* @} */

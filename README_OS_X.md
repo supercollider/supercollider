@@ -19,7 +19,8 @@ http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
 Special characters on mac
 -------------------------
 
-Please do not use non-ASCII characters (above code point 127) in your SuperCollider program path (i.e. the names of the folders containing SuperCollider).
+Please do not use non-ASCII characters (above code point 127) in your
+SuperCollider program path (i.e. the names of the folders containing SuperCollider).
 Doing so will break options to open class or method files automatically.
 
 
@@ -27,14 +28,15 @@ Compiling SuperCollider from the source code
 --------------------------------------------
 
 Requirements:
- * Mac OS X 10.4.9 or greater
- * Cmake 2.7 or greater
- * Xcode Tools 2.4.1 or greater
- * Qt libraries 4.7 or greater: http://qt-project.org/downloads
+ * Mac OS X 10.6 or greater
+ * Cmake 2.8.11 or greater
+ * clang-3.3 or apple clang
+ * Qt libraries 4.8.5 or greater: http://qt-project.org/downloads
 
 To build SuperCollider with Cmake, it is recommended to create a "build"
 folder (to keep the built files neatly all together) in the root of the
-SuperCollider source, then run "cmake" from within that folder. Like this:
+SuperCollider source, then run "cmake" from within that folder. Like this (to
+build using make):
 
 ```
 $> cd ~/SuperCollider3
@@ -49,10 +51,20 @@ Then to run the build process run:
 $> make install
 ```
 
-This will build the software, then "install" it to a folder "SuperCollider" under CMAKE_INSTALL_PREFIX, which defaults to "<build-directory>/Install",
+This will build the software, then "install" it to a folder "SuperCollider"
+under CMAKE_INSTALL_PREFIX, which defaults to "<build-directory>/Install",
 with the finished products in. You might like to move the "SuperCollider"
 folder into your /Applications folder or install it there directly by
 passing `-DCMAKE_INSTALL_PREFIX=/Applications` to cmake.
+
+Alternatively, to build using Xcode:
+
+```
+$> cmake .. -GXcode
+```
+
+will generate an Xcode project within the build directory. Within Xcode, select
+the `install` target and build.
 
 The build process can be configured using the cmake program, cmake
 frontends like "ccmake" or "cmake-gui", or by simply editing the
@@ -84,10 +96,6 @@ For the BIG universal binary (on 10.6), use:
 
 ```
 $> cmake -DCMAKE_OSX_ARCHITECTURES='i386;x86_64' ..
-```
-
-```
-$> cmake -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/ -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -GXcode
 ```
 
 

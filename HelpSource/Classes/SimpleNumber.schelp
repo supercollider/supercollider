@@ -252,6 +252,12 @@ method:: sqrsum
 method:: absdif
 (a - b).abs
 
+method:: moddif
+On a circle, there are two distances between two points. This operator returns the smaller value of the two.
+code::
+moddif(0.75, 0, 1)
+::
+
 method:: amclip
 0  when  b <= 0,  a*b  when  b > 0
 

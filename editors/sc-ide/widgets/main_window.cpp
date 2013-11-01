@@ -40,12 +40,12 @@
 #include "../core/doc_manager.hpp"
 #include "../core/session_manager.hpp"
 #include "../core/sc_server.hpp"
+#include "../core/util/standard_dirs.hpp"
 #include "code_editor/sc_editor.hpp"
 #include "settings/dialog.hpp"
 
 #include "QtCollider/hacks/hacks_qt.hpp"
 
-#include "SC_DirUtils.h"
 #include "SC_Version.hpp"
 
 #include <QAction>
@@ -201,6 +201,7 @@ MainWindow::MainWindow(Main * main) :
     connect(docMng, SIGNAL(recentsChanged()),
             this, SLOT(updateRecentDocsMenu()));
     connect(docMng, SIGNAL(saved(Document*)), this, SLOT(updateWindowTitle()) );
+    connect(docMng, SIGNAL(titleChanged(Document*)), this, SLOT(updateWindowTitle()) );
 
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
             this, SLOT(applySettings(Settings::Manager*)));
@@ -619,6 +620,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::NextDocument) );
     menu->addAction( mEditors->action(MultiEditor::PreviousDocument) );
+    menu->addAction( mEditors->action(MultiEditor::SwitchDocument) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::SplitHorizontally) );
     menu->addAction( mEditors->action(MultiEditor::SplitVertically) );
@@ -1150,8 +1152,7 @@ void MainWindow::openDocument()
 
 void MainWindow::openStartupFile()
 {
-    char configDir[PATH_MAX];
-    sc_GetUserConfigDirectory(configDir, PATH_MAX);
+    QString configDir = standardDirectory(ScConfigUserDir);
 
     QDir dir;
     // Create the config dir if non existent:
@@ -1178,10 +1179,7 @@ void MainWindow::openStartupFile()
 
 void MainWindow::openUserSupportDirectory()
 {
-    char appSupportDir[PATH_MAX];
-    sc_GetUserAppSupportDirectory(appSupportDir, PATH_MAX);
-
-    QUrl dirUrl = QUrl::fromLocalFile(QString(appSupportDir));
+    QUrl dirUrl = QUrl::fromLocalFile( standardDirectory(ScAppDataUserDir) );
     QDesktopServices::openUrl(dirUrl);
 }
 
@@ -1552,16 +1550,6 @@ void MainWindow::openHelp()
 void MainWindow::openHelpAboutIDE()
 {
     mHelpBrowserDocklet->browser()->gotoHelpFor("Guides/SCIde");
-
-    mHelpBrowserDocklet->setDetached(true);
-
-    QRect availableGeometry = QApplication::desktop()->availableGeometry(mHelpBrowserDocklet->window());
-    QRect geometry;
-    geometry.setWidth( qMin(700, availableGeometry.width()) );
-    geometry.setHeight( availableGeometry.height() - 150 );
-    geometry.moveCenter( availableGeometry.center() );
-
-    mHelpBrowserDocklet->window()->setGeometry( geometry );
     mHelpBrowserDocklet->focus();
 }
 

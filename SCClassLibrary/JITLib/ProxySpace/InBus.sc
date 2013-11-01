@@ -22,14 +22,18 @@ InBus {
 		};
 
 		out = if(offset.isInteger) {
-					if(rate === 'audio')
-						{ InFeedback.ar(index, numChannels) }
-						{ In.kr(index, numChannels) }
+			if(rate === 'audio') {
+				InFeedback.ar(index, numChannels)
 			} {
-					if(rate === 'audio')
-						{ XInFeedback.ar(index, numChannels) }
-						{ XIn.kr(index, numChannels) }
-			};
+				In.kr(index, numChannels)
+			}
+		} {
+			if(rate === 'audio') {
+				XInFeedback.ar(index, numChannels)
+			} {
+				XIn.kr(index, numChannels)
+			}
+		};
 
 		^if(argRate === rate) { out } { // if not the same rate, convert rates
 			if(argRate === 'audio') { K2A.ar(out) } { A2K.kr(out) }
@@ -74,24 +78,21 @@ XInFeedback {
 }
 
 
-// listens on a fixed index (or several)
-// plays out to various other indices.
+// listens on a number of busses and plays out to various other busses
+// it optimizes this connection by using existing system synth defs
 
 Monitor {
 	classvar <>warnPlayN = true;
 
 	var <ins, <outs, <amps = #[1.0], <vol = 1.0;
 	var <group, synthIDs, synthAmps, <>fadeTime = 0.02;
-
-	var <usedPlayN;  // default case
+	var <usedPlayN;
 
 	usedPlayN_ { |flag|
 		var old, new, states;
 
-	//	[\noWarn, warnPlayN.not, \noInit, usedPlayN.isNil, \stays, usedPlayN == flag, \noOuts, outs.isNil].postln;
-
-			// normal case: init or stay the same
-		if (warnPlayN.not or: { usedPlayN.isNil or: { usedPlayN == flag } } /*or: { outs.isNil }*/) {
+		// normal case: init or stay the same
+		if (warnPlayN.not or: { usedPlayN.isNil or: { usedPlayN == flag } }) {
 			usedPlayN = flag;
 			^nil
 		};
@@ -105,7 +106,7 @@ Monitor {
 	}
 
 	play { | fromIndex, fromNumChannels=2, toIndex, toNumChannels,
-			target, multi=false, volume, fadeTime=0.02, addAction |
+		target, multi=false, volume, fadeTime=0.02, addAction |
 
 		var server, inGroup, numChannels, bundle, divider;
 
@@ -136,7 +137,7 @@ Monitor {
 	isPlaying { ^group.isPlaying }
 	numChannels { ^outs.size }
 
-	// multichannel support
+	// mapping between multiple channels
 
 	playN { | out, amp, in, vol, fadeTime, target, addAction |
 		var bundle = List.new;
@@ -218,15 +219,15 @@ Monitor {
 
 	// bundling
 
-	playNToBundle { | 	bundle,
-					argOuts = (outs ?? {(0..ins.size-1)}),
-					argAmps = (amps),
-					argIns = (ins),
-					argVol = (vol),
-					argFadeTime = (fadeTime),
-					inGroup,
-					addAction,
-					defName = "system_link_audio_1" |
+	playNToBundle { | bundle,
+		argOuts = (outs ?? {(0..ins.size-1)}),
+		argAmps = (amps),
+		argIns = (ins),
+		argVol = (vol),
+		argFadeTime = (fadeTime),
+		inGroup,
+		addAction,
+		defName = "system_link_audio_1" |
 
 		var triplets, server;
 
@@ -234,7 +235,7 @@ Monitor {
 
 
 		if (ins.size != outs.size)
-			{ Error("wrong size of outs and ins" ++ [outs, amps, ins]).throw };
+		{ Error("wrong size of outs and ins" ++ [outs, amps, ins]).throw };
 
 		triplets = [ins, outs, amps].flop;
 
@@ -272,15 +273,14 @@ Monitor {
 	// optimizes ranges of channels
 
 	playToBundle { | bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels,
-			inGroup, multi = false, volume, inFadeTime, addAction |
+		inGroup, multi = false, volume, argFadeTime, addAction |
 
 		var server, numChannels, defname, chanRange, n;
 
 		toIndex = toIndex ?? { if(outs.notNil, { outs[0] }, 0) };
 
 		vol = volume ? vol;
-		fadeTime = inFadeTime ? fadeTime ? 0.02; 	// remembers monitor fadeTime.
-
+		fadeTime = argFadeTime ? fadeTime ? 0.02; 	// remembers monitor fadeTime.
 		toNumChannels = toNumChannels ? fromNumChannels;
 		inGroup = inGroup.asGroup;
 		server = inGroup.server;
@@ -308,21 +308,22 @@ Monitor {
 			outs = outs.add(out);
 			ins = ins.add(in);
 			amps = amps.add(1.0);
-			bundle.add([9, defname, id, 1, group.nodeID, "out", out, "in", in]);
+			bundle.add([9, defname, id, 1, group.nodeID, "out", out, "in", in, "vol", vol]);
 		};
-		bundle.add([15, group.nodeID, "fadeTime", fadeTime, "vol", vol]);
+		bundle.add([15, group.nodeID, "fadeTime", fadeTime]);
 	}
 
 
 	playNBusToBundle { | bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction |
 		var size;
-		outs = outs ?? {this.outs.unbubble} ? 0;	// remember old ones if none given
+		outs = outs ?? { this.outs.unbubble } ? 0;	// remember old ones if none given
 		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
 		size = outs.size;
-		ins = if(ins.notNil)
-				{ ins.wrap(0, bus.numChannels - 1).asArray }
-			 	{(0..(bus.numChannels - 1)) }
-			 	+ bus.index;
+		ins = if(ins.notNil) {
+			ins.wrap(0, bus.numChannels - 1).asArray
+		} {
+			(0..(bus.numChannels - 1))
+		} + bus.index;
 
 		ins = ins.wrapExtend(outs.size); // should maybe be done in playNToBundle, in flop?
 		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction: addAction)
@@ -330,11 +331,11 @@ Monitor {
 
 
 	newGroupToBundle { | bundle, target, addAction=(\addToTail) |
-				target = target.asGroup;
-				group = Group.basicNew(target.server);
-				group.isPlaying = true;
-				bundle.add(group.newMsg(target, addAction));
-				NodeWatcher.register(group);
+		target = target.asGroup;
+		group = Group.basicNew(target.server);
+		group.isPlaying = true;
+		bundle.add(group.newMsg(target, addAction));
+		NodeWatcher.register(group);
 	}
 
 

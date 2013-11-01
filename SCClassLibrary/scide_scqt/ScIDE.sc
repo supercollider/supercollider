@@ -27,6 +27,7 @@ ScIDE {
 
 	*handshake {
 		this.prSend(\classLibraryRecompiled);
+		this.prSend(\requestDocumentList);
 		this.prSend(\requestCurrentPath);
 
 		this.defaultServer = Server.default;
@@ -324,6 +325,63 @@ ScIDE {
 		CmdPeriod.add(this);
 	}
 
+	// Document Support //////////////////////////////////////////////////
+
+	*newDocument {|title="Untitled", string="", id|
+		this.prSend(\newDocument, [title, string, id]);
+	}
+
+	*getQUuid {
+		_ScIDE_GetQUuid
+		this.primitiveFailed
+	}
+
+	*getTextByQUuid {|quuid, funcID, start = 0, range = -1|
+		this.prSend(\getDocumentText, [quuid, funcID, start, range]);
+	}
+
+	*setTextByQUuid {|quuid, funcID, text, start = 0, range = -1|
+		this.prSend(\setDocumentText, [quuid, funcID, text, start, range]);
+	}
+
+	*setCurrentDocumentByQUuid {|quuid|
+		this.prSend(\setCurrentDocument, [quuid]);
+	}
+
+	*close {|quuid|
+		this.prSend(\closeDocument, [quuid]);
+	}
+
+	*setDocumentTitle {|quuid, newTitle|
+		this.prSend(\setDocumentTitle, [quuid, newTitle]);
+	}
+
+	*setDocumentKeyDownEnabled {|quuid, bool|
+		this.prSend(\enableDocumentKeyDownAction, [quuid, bool]);
+	}
+
+	*setDocumentKeyUpEnabled {|quuid, bool|
+		this.prSend(\enableDocumentKeyUpAction, [quuid, bool]);
+	}
+
+	*setDocumentMouseDownEnabled {|quuid, bool|
+		this.prSend(\enableDocumentMouseDownAction, [quuid, bool]);
+	}
+
+	*setDocumentMouseUpEnabled {|quuid, bool|
+		this.prSend(\enableDocumentMouseUpAction, [quuid, bool]);
+	}
+
+	*setDocumentTextChangedEnabled {|quuid, bool|
+		this.prSend(\enableDocumentTextChangedAction, [quuid, bool]);
+	}
+
+	*setDocumentTextMirrorEnabled {|bool|
+		this.prSend(\enableDocumentTextMirror, [bool]);
+	}
+
+
+
 	// PRIVATE ///////////////////////////////////////////////////////////
 
 	*prSend {|id, data|
@@ -337,17 +395,251 @@ ScIDE {
 	}
 }
 
-// This is just a stub to provide oft-used functionality such as Document.open()
 ScIDEDocument : Document {
-        *initClass{
-                Document.implementationClass = this;
-        }
-	*new {|title, string, makeListener, envir|
-		^this.notImplemented("Document.new")
+	classvar <asyncActions;
+	var <quuid, <title, <isEdited = false, <path;
+	var <textChangedAction;
+
+	*initClass{
+		Document.implementationClass = this;
+		asyncActions = IdentityDictionary.new;
 	}
+	*new {|title = "untitled", string = "", makeListener, envir|
+		var quuid = ScIDE.getQUuid, doc;
+		ScIDE.newDocument(title, string, quuid);
+		doc = super.prBasicNew.init(quuid, title, string);
+		allDocuments = allDocuments.add(doc);
+		^doc
+	}
+
+	*syncFromIDE {|quuid, title, chars, isEdited|
+		var doc;
+		isEdited = isEdited.booleanValue;
+		chars = String.fill(chars.size, {|i| chars[i].asAscii});
+		if((doc = this.findByQUuid(quuid)).isNil, {
+			doc = super.prBasicNew.initFromIDE(quuid, title, chars, isEdited);
+			allDocuments = allDocuments.add(doc);
+		}, {doc.initFromIDE(quuid, title, chars, isEdited)});
+	}
+
+	*syncDocs {|docInfo| // [quuid, title, string, isEdited]
+		docInfo.do({|info| this.syncFromIDE(*info) });
+	}
+
+	*executeAsyncResponse {|funcID ...args|
+		var func;
+		func = asyncActions[funcID];
+		asyncActions[funcID] = nil;
+		func.value(*args);
+	}
+
+	*findByQUuid {|quuid|
+		^allDocuments.detect({|doc| doc.quuid == quuid });
+	}
+
+	*setActiveDocByQUuid {|quuid|
+		var newCurrent;
+		newCurrent = this.findByQUuid(quuid);
+		this.prCurrent_(newCurrent);
+	}
+
+	*prCurrent_ {|newCurrent|
+		current = this.current;
+		if((newCurrent === current).not, {
+			if(current.notNil, {current.didResignKey});
+			newCurrent.didBecomeKey;
+		});
+	}
+
+	front {
+		this.class.prCurrent_(this);
+		ScIDE.setCurrentDocumentByQUuid(quuid);
+	}
+
+	init {|id, argtitle, argstring, argisEdited|
+		quuid = id;
+		title = argtitle;
+		this.text = argstring;
+		isEdited = argisEdited;
+	}
+
+	initFromIDE {|id, argtitle, argstring, argisEdited|
+		quuid = id;
+		title = argtitle;
+		this.prSetTextMirror(id, argstring, 0, -1);
+		isEdited = argisEdited;
+	}
+
+	textChanged {|index, numCharsRemoved, addedChars|
+		addedChars = String.fill(addedChars.size, {|i| addedChars[i].asAscii});
+		textChangedAction.value(this, index, numCharsRemoved, addedChars);
+	}
+
 	propen {|path, selectionStart, selectionLength, envir|
-		if(envir != nil){"ScIDE does not set an environment per document".warn};
 		^ScIDE.open(path, selectionStart, selectionLength)
+	}
+
+	prclose { ScIDE.close(quuid); }
+
+/*	// asynchronous get
+	// range -1 means to the end of the Document
+	getText {|action, start = 0, range -1|
+		var funcID;
+		funcID = ScIDE.getQUuid; // a unique id for this function
+		asyncActions[funcID] = action; // pass the text
+		ScIDE.getTextByQUuid(quuid, funcID, start, range);
+	}*/
+
+	getText {|action, start = 0, range -1|
+		^prGetTextFromMirror(quuid, start, range);
+	}
+
+	prGetTextFromMirror {|id, start=0, range = -1|
+		_ScIDE_GetDocTextMirror
+		this.primitiveFailed
+	}
+
+	// asynchronous set
+	prSetText {|text, action, start = 0, range -1|
+		var funcID;
+		// first set the back end mirror
+		this.prSetTextMirror(quuid, text, start, range);
+		funcID = ScIDE.getQUuid; // a unique id for this function
+		asyncActions[funcID] = action; // pass the text
+		// set the SCIDE Document
+		ScIDE.setTextByQUuid(quuid, funcID, text, start, range);
+	}
+
+	// set the backend mirror
+	prSetTextMirror {|quuid, text, start, range|
+		_ScIDE_SetDocTextMirror
+		this.primitiveFailed
+	}
+
+	text_ {|string|
+		this.prSetText(string);
+	}
+
+	text { ^this.prGetTextFromMirror(quuid, 0, -1); }
+
+	rangeText { | rangestart=0, rangesize=1 |
+		^this.prGetTextFromMirror(rangestart, rangesize);
+	}
+
+	insertText {|string, index = 0|
+		this.prSetText(string, nil, index, 0);
+	}
+
+	getChar {|index = 0|
+		^this.prGetTextFromMirror(quuid, index, 1);
+	}
+
+	setChar {|char, index = 0|
+		this.prSetText(char.asString, nil, index, 1);
+	}
+
+	== { |that| ^(this.quuid === that.quuid);}
+
+	keyDown { | modifiers, unicode, keycode, key |
+		var character = unicode.asAscii;
+		this.class.globalKeyDownAction.value(this,character, modifiers, unicode, keycode);
+		keyDownAction.value(this,character, modifiers, unicode, keycode, key);
+	}
+
+	keyUp { | modifiers, unicode, keycode, key |
+		var character = unicode.asAscii;
+		this.class.globalKeyUpAction.value(this,character, modifiers, unicode, keycode);
+		keyUpAction.value(this,character, modifiers, unicode, keycode, key);
+	}
+
+	mouseDown { | x, y, modifiers, buttonNumber, clickCount |
+		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount)
+	}
+
+	mouseUp { | x, y, modifiers, buttonNumber |
+		mouseUpAction.value(this, x, y, modifiers, buttonNumber)
+	}
+
+	keyDownAction_ {|action|
+		keyDownAction = action;
+		ScIDE.setDocumentKeyDownEnabled(quuid, action.notNil || globalKeyDownAction.notNil);
+	}
+
+	keyUpAction_ {|action|
+		keyUpAction = action;
+		ScIDE.setDocumentKeyUpEnabled(quuid, action.notNil  || globalKeyUpAction.notNil);
+	}
+
+	mouseDownAction_ {|action|
+		mouseDownAction = action;
+		ScIDE.setDocumentMouseDownEnabled(quuid, action.notNil);
+	}
+
+	mouseUpAction_ {|action|
+		mouseUpAction = action;
+		ScIDE.setDocumentMouseUpEnabled(quuid, action.notNil);
+	}
+
+	textChangedAction_ {|action|
+		textChangedAction = action;
+		ScIDE.setDocumentTextChangedEnabled(quuid, action.notNil);
+	}
+
+	*prGlobalKeyDownAction_ {|action|
+		allDocuments.do({|doc|
+			ScIDE.setDocumentKeyDownEnabled(doc.quuid, action.notNil || doc.keyDownAction.notNil);
+		});
+	}
+
+	*prGlobalKeyUpAction_ {|action|
+		allDocuments.do({|doc|
+			ScIDE.setDocumentKeyUpEnabled(doc.quuid, action.notNil || doc.keyUpAction.notNil);
+		});
+	}
+
+	prSetTitle {|newTitle|
+		title = newTitle;
+		ScIDE.setDocumentTitle(quuid, newTitle);
+	}
+
+	prSetEdited {|flag|
+		isEdited = flag.booleanValue;
+	}
+
+	initFromPath { | path, selectionStart, selectionLength |
+		var doc;
+		path = this.class.standardizePath(path);
+		this.propen(path, selectionStart, selectionLength);
+		this.class.allDocuments.do{ |d|
+			if(d.path == path.absolutePath){
+				doc = d
+			};
+		};
+		if(doc.notNil, { ^doc });
+		this.prReadTextFromFile(path);
+		^this.prAdd;
+	}
+
+	prReadTextFromFile {|path|
+		var file;
+		file = File.new(path, "r");
+		if (file.isNil, {
+			error("Document open failed\n");
+		});
+		this.text = file.readAllString;
+		file.close;
+	}
+
+	prAdd {
+		allDocuments = allDocuments.add(this);
+		if (autoRun) {
+			if (this.rangeText(0,7) == "/*RUN*/")
+			{
+				this.text.interpret;
+			}
+		};
+		current = this;
+		initAction.value(this);
 	}
 }
 

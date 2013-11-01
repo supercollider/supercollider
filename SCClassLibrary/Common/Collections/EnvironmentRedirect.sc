@@ -174,7 +174,8 @@ EnvironmentRedirect {
 
 	// networking
 	dispatch_ { arg disp;
-		dispatch = disp.envir_(this);
+		dispatch = disp;
+		if(disp.respondsTo(\envir_)) { disp.envir_(this) };
 	}
 	envir_ { arg argEnvir;
 		envir = argEnvir;

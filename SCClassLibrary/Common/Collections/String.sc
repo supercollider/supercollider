@@ -350,18 +350,20 @@ String[char] : RawArray {
 	load {
 		^thisProcess.interpreter.executeFile(this);
 	}
-	loadPaths { |warn=true|
+	loadPaths { arg warn = true, action;
 		var paths = this.pathMatch;
 		if(warn and:{paths.isEmpty}) { ("no files found for this path:" + this.quote).warn };
 		^paths.collect({ arg path;
-			thisProcess.interpreter.executeFile(path);
+			var result = thisProcess.interpreter.executeFile(path);
+			action.value(path, result);
+			result
 		});
 	}
-	loadRelative {
+	loadRelative { arg warn = true, action;
 		var path = thisProcess.nowExecutingPath;
 		if(path.isNil) { Error("can't load relative to an unsaved file").throw};
 		if(path.basename == this) { Error("should not load a file from itself").throw };
-		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this).loadPaths
+		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this).loadPaths(warn, action)
 	}
 	resolveRelative {
 		var path, caller;

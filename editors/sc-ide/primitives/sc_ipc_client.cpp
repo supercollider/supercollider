@@ -18,12 +18,16 @@
  *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-#include <QLocalSocket>
 #include <QDataStream>
+#include <QUuid>
+#include <QBuffer>
+#include <QMutex>
 
 #include <cstdlib>
 
 #include <yaml-cpp/emitter.h>
+#include "yaml-cpp/node.h"
+#include "yaml-cpp/parser.h"
 
 #include "PyrPrimitive.h"
 #include "SCBase.h"
@@ -31,27 +35,111 @@
 #include "PyrKernel.h"
 #include "PyrSymbol.h"
 
-class SCIpcClient
-{
-public:
-    QLocalSocket * mSocket;
-    SCIpcClient( const char * ideName ):
+#include "sc_ipc_client.hpp"
+
+SCIpcClient::SCIpcClient( const char * ideName ):
         mSocket(NULL)
-    {
-        mSocket = new QLocalSocket();
-        mSocket->connectToServer(QString(ideName));
-    }
+{
+    mSocket = new QLocalSocket();
+    mSocket->connectToServer(QString(ideName));
+    connect(mSocket, SIGNAL(readyRead()), this, SLOT(readIDEData()));
+}
 
-    void send(const char * data, size_t length)
-    {
-        mSocket->write(data, length);
-    }
+void SCIpcClient::send(const char * data, size_t length)
+{
+    mSocket->write(data, length);
+}
 
-    ~SCIpcClient()
-    {
-        mSocket->disconnectFromServer();
+SCIpcClient::~SCIpcClient()
+{
+    mSocket->disconnectFromServer();
+}
+
+void SCIpcClient::readIDEData() {
+    mIpcData.append(mSocket->readAll());
+    
+    while (mIpcData.size()) {
+        QBuffer receivedData ( &mIpcData );
+        receivedData.open ( QIODevice::ReadOnly );
+        
+        QDataStream in ( &receivedData );
+        in.setVersion ( QDataStream::Qt_4_6 );
+        QString selector;
+        QVariantList argList;
+        in >> selector;
+        if ( in.status() != QDataStream::Ok )
+            return;
+
+        in >> argList;
+        
+        if ( in.status() != QDataStream::Ok )
+            return;
+        
+        mIpcData.remove ( 0, receivedData.pos() );
+        
+        onResponse(selector, argList);
     }
-};
+}
+    
+void SCIpcClient::onResponse( const QString & selector, const QVariantList & argList )
+{
+    static QString upDateDocTextSelector("updateDocText");
+    
+    if (selector == upDateDocTextSelector)
+        updateDocText(argList);
+}
+
+void SCIpcClient::updateDocText( const QVariantList & argList )
+{
+    QByteArray quuid = argList[0].toByteArray();
+    int pos = argList[1].toInt();
+    int charsRemoved = argList[2].toInt();
+    QString newChars = argList[3].toString();
+    setTextMirrorForDocument(quuid, newChars, pos, charsRemoved);
+}
+
+QString SCIpcClient::getTextMirrorForDocument(QByteArray & id, int pos, int range)
+{
+    QString returnText;
+    if (mDocumentTextMirrors.contains(id)) {
+        if((pos == 0) && range == -1){
+            mTextMirrorHashMutex.lock();
+            returnText = mDocumentTextMirrors[id];
+            mTextMirrorHashMutex.unlock();
+        } else {
+            mTextMirrorHashMutex.lock();
+            QString existingText = mDocumentTextMirrors[id];
+            if (range == -1) range = existingText.size() - pos;
+            QStringRef returnTextRef = QStringRef(&existingText, pos, range);
+            returnText = returnTextRef.toString();
+            mTextMirrorHashMutex.unlock();
+        }
+    } else {
+        post("WARNING: Attempted to access missing Text Mirror for Document %s\n", id.constData());
+    }
+    return returnText;
+}
+
+void SCIpcClient::setTextMirrorForDocument(QByteArray & id, const QString & text, int pos, int range)
+{
+    if((pos == 0) && range == -1){
+        mTextMirrorHashMutex.lock();
+        mDocumentTextMirrors[id] = text;
+        mTextMirrorHashMutex.unlock();
+    } else {
+        if (mDocumentTextMirrors.contains(id)) {
+            mTextMirrorHashMutex.lock();
+            QString existingText = mDocumentTextMirrors[id];
+            int size = existingText.size();
+            if (pos > size) pos = size;
+            if (range == -1) range = existingText.size() - pos;
+            mDocumentTextMirrors[id] = existingText.replace(pos, range, text);
+            mTextMirrorHashMutex.unlock();
+        } else {
+            post("WARNING: Attempted to modify missing Text Mirror for Document %s\n", id.constData());
+        }
+    }
+}
 
 static SCIpcClient * gIpcClient = NULL;
 
@@ -199,6 +287,87 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int ScIDE_GetQUuid(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot * returnSlot = g->sp - numArgsPushed + 1;
+	
+    SetSymbol(returnSlot, getsym(QUuid::createUuid().toString().toLatin1().constData()));
+	
+    return errNone;
+}
+
+int ScIDE_GetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!gIpcClient) {
+        error("ScIDE not connected\n");
+        return errFailed;
+    }
+    
+    PyrSlot * returnSlot = g->sp - numArgsPushed + 1;
+    
+    PyrSlot * docIDSlot = g->sp - 2;
+    char id[255];
+    if (slotStrVal( docIDSlot, id, 255 ))
+        return errWrongType;
+    
+    int pos, range, err = errNone;
+    PyrSlot * posSlot = g->sp-1;
+    err = slotIntVal(posSlot, &pos);
+    if (err) return err;
+    
+    PyrSlot * rangeSlot = g->sp;
+    err = slotIntVal(rangeSlot, &range);
+    if (err) return err;
+    
+    QByteArray key = QByteArray(id);
+    
+    QString docText = gIpcClient->getTextMirrorForDocument(key, pos, range);
+    
+    PyrString* pyrString = newPyrString(g->gc, docText.toLatin1().constData(), 0, true);
+	SetObject(returnSlot, pyrString);
+
+    return errNone;
+}
+
+int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!gIpcClient) {
+        error("ScIDE not connected\n");
+        return errFailed;
+    }
+    
+    PyrSlot * docIDSlot = g->sp - 3;
+    char id[255];
+    if (slotStrVal( docIDSlot, id, 255 ))
+        return errWrongType;
+    
+    PyrSlot * textSlot = g->sp - 2;
+    
+    int length = slotStrLen(textSlot);
+    
+    if(length == -1) return errWrongType;
+    
+    char text[length + 1];
+    if (slotStrVal( textSlot, text, length + 1))
+        return errWrongType;
+    
+    int pos, range, err = errNone;
+    PyrSlot * posSlot = g->sp-1;
+    err = slotIntVal(posSlot, &pos);
+    if (err) return err;
+    
+    PyrSlot * rangeSlot = g->sp;
+    err = slotIntVal(rangeSlot, &range);
+    if (err) return err;
+    
+    QByteArray key = QByteArray(id);
+    QString docText = QString(text);
+    
+    gIpcClient->setTextMirrorForDocument(key, docText, pos, range);
+	
+    return errNone;
+}
+
 
 void initScIDEPrimitives()
 {
@@ -207,4 +376,7 @@ void initScIDEPrimitives()
     definePrimitive(base, index++, "_ScIDE_Connect",   ScIDE_Connect, 2, 0);
     definePrimitive(base, index++, "_ScIDE_Connected", ScIDE_Connected, 1, 0);
     definePrimitive(base, index++, "_ScIDE_Send",      ScIDE_Send, 3, 0);
+	definePrimitive(base, index++, "_ScIDE_GetQUuid", ScIDE_GetQUuid, 0, 0);
+    definePrimitive(base, index++, "_ScIDE_GetDocTextMirror", ScIDE_GetDocTextMirror, 4, 0);
+    definePrimitive(base, index++, "_ScIDE_SetDocTextMirror", ScIDE_SetDocTextMirror, 5, 0);
 }

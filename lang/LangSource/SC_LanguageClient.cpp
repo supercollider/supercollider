@@ -142,7 +142,9 @@ extern thread gResyncThread;
 void SC_LanguageClient::shutdownRuntime()
 {
 	cleanup_OSC();
+#if __APPLE__
 	gResyncThread.detach(); // leak!
+#endif
 }
 
 void SC_LanguageClient::compileLibrary()
@@ -211,7 +213,16 @@ void SC_LanguageClient::runLibrary(const char* methodName)
 
 void SC_LanguageClient::executeFile(const char* fileName)
 {
-	setCmdLinef("thisProcess.interpreter.executeFile(\"%s\")", fileName);
+	std::string escaped_file_name(fileName);
+	int i = 0;
+	while (i < escaped_file_name.size())
+	{
+		if (escaped_file_name[i] == '\\')
+			escaped_file_name.insert(++i, 1, '\\');
+		++i;
+	}
+
+	setCmdLinef("thisProcess.interpreter.executeFile(\"%s\")", escaped_file_name.c_str());
 	runLibrary(s_interpretCmdLine);
 }
 

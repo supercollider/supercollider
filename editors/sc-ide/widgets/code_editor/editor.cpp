@@ -20,6 +20,7 @@
 
 #include "editor.hpp"
 #include "line_indicator.hpp"
+#include "overlay.hpp"
 #include "../util/gui_utilities.hpp"
 #include "../../core/main.hpp"
 #include "../../core/doc_manager.hpp"
@@ -37,16 +38,25 @@
 #include <QMimeData>
 #include <QScrollBar>
 
+#ifdef Q_WS_X11
+# include <QX11Info>
+# include <X11/Xlib.h>
+// X11 defines the following, clashing with QEvent::Type enum
+# undef KeyPress
+# undef KeyRelease
+#endif
+
 namespace ScIDE {
 
 GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
     QPlainTextEdit( parent ),
     mDoc(doc),
+    mEditorBoxIsActive(false),
     mLastCursorBlock(-1)
 {
     Q_ASSERT(mDoc != 0);
 
-    setFrameShape( QFrame::NoFrame );
+    setFrameShape(QFrame::NoFrame);
 
     viewport()->setAttribute( Qt::WA_MacNoClickThrough, true );
 
@@ -55,16 +65,20 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
 
     mOverlay = new QGraphicsScene(this);
 
+    QPalette overlayPalette;
+    overlayPalette.setBrush(QPalette::Base, Qt::NoBrush);
+
     QGraphicsView *overlayView = new QGraphicsView(mOverlay, this);
     overlayView->setFrameShape( QFrame::NoFrame );
-    overlayView->setBackgroundBrush( Qt::NoBrush );
-    overlayView->setStyleSheet("background: transparent");
+    overlayView->setPalette(overlayPalette);
     overlayView->setFocusPolicy( Qt::NoFocus );
     overlayView->setAttribute(Qt::WA_TransparentForMouseEvents, true);
     overlayView->setSceneRect(QRectF(0,0,1,1));
     overlayView->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
     mOverlayWidget = overlayView;
+
+    mOverlayAnimator = new OverlayAnimator(this, mOverlay);
 
     connect( mDoc, SIGNAL(defaultFontChanged()), this, SLOT(onDocumentFontChanged()) );
 
@@ -99,6 +113,7 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
 
     bool lineWrap = settings->value("lineWrap").toBool();
     bool showWhitespace = settings->value("showWhitespace").toBool();
+    mInactiveFadeAlpha = settings->value("inactiveEditorFadeAlpha").toInt();
 
     QPalette palette;
 
@@ -148,6 +163,8 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
     setLineWrapMode( lineWrap ? QPlainTextEdit::WidgetWidth : QPlainTextEdit::NoWrap );
     setShowWhitespace( showWhitespace );
     setPalette(palette);
+    
+    setActiveAppearance(hasFocus());
 }
 
 bool GenericCodeEditor::showWhitespace()
@@ -559,6 +576,126 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
         setTextCursor( cursor );
         ensureCursorVisible();
     }
+    if (mDoc->keyDownActionEnabled()) doKeyAction(e);
+}
+    
+void GenericCodeEditor::keyReleaseEvent(QKeyEvent * e)
+{
+    if(mDoc->keyUpActionEnabled()) doKeyAction(e);
+}
+    
+void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
+{
+    int key = ke->key();
+    
+    int mods = ke->modifiers();
+    
+    QChar character;
+    
+#ifdef Q_WS_MAC
+    bool isLetter = key >= Qt::Key_A && key <= Qt::Key_Z;
+    if (mods & Qt::MetaModifier && isLetter)
+    {
+        character = QChar(key - Qt::Key_A + 1);
+    }
+    else if(mods & Qt::AltModifier && isLetter)
+    {
+        character = (mods & Qt::ShiftModifier) ? QChar(key) : QChar(key - Qt::Key_A + 97 );
+    }
+    else
+#endif
+    {
+        QString text( ke->text() );
+        if (text.count()){
+            character = text[0];
+        } else {
+            character = QChar(QChar::ReplacementCharacter);
+        }
+    }
+    
+    int unicode = character.unicode();
+    
+#ifdef Q_WS_X11
+    KeySym sym = ke->nativeVirtualKey();
+    int keycode = XKeysymToKeycode( QX11Info::display(), sym );
+#else
+    // FIXME: On Mac OS X, this does not work for modifier keys
+    int keycode = ke->nativeVirtualKey();
+#endif
+    QString type;
+    
+    if(ke->type() == QEvent::KeyPress)
+    {
+        type = QString("keyDown");
+    } else {
+        type = QString("keyUp");
+    }
+
+    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').%2(%3, %4, %5, %6)").arg(mDoc->id().constData()).arg(type).arg(mods).arg(unicode).arg(keycode).arg(key), true);
+    
+}
+    
+void GenericCodeEditor::mousePressEvent(QMouseEvent * e)
+{
+    if (mDoc->mouseDownActionEnabled()) {
+        int button;
+        switch( e->button() ) {
+            case Qt::LeftButton:
+                button = 0; break;
+            case Qt::RightButton:
+                button = 1; break;
+            case Qt::MidButton:
+                button = 2; break;
+            default:
+                button = -1;
+        }
+    
+        Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+    }
+    
+    QPlainTextEdit::mousePressEvent(e);
+}
+    
+void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent * e)
+{
+    if (mDoc->mouseDownActionEnabled()) {
+        int button;
+        switch( e->button() ) {
+            case Qt::LeftButton:
+                button = 0; break;
+            case Qt::RightButton:
+                button = 1; break;
+            case Qt::MidButton:
+                button = 2; break;
+            default:
+                button = -1;
+        }
+        
+        Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+    }
+    
+    QPlainTextEdit::mouseDoubleClickEvent(e);
+}
+    
+void GenericCodeEditor::mouseReleaseEvent(QMouseEvent * e)
+{
+    if (mDoc->mouseUpActionEnabled()) {
+        int button;
+        switch( e->button() ) {
+            case Qt::LeftButton:
+                button = 0; break;
+            case Qt::RightButton:
+                button = 1; break;
+            case Qt::MidButton:
+                button = 2; break;
+            default:
+                button = -1;
+        }
+        
+        Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+        
+    }
+    QPlainTextEdit::mouseReleaseEvent(e);
 }
 
 void GenericCodeEditor::wheelEvent( QWheelEvent * e )
@@ -587,6 +724,27 @@ void GenericCodeEditor::wheelEvent( QWheelEvent * e )
 
     QPlainTextEdit::wheelEvent(e);
 #endif
+}
+    
+void GenericCodeEditor::focusInEvent( QFocusEvent *e )
+{
+    if(mFocusRect){
+        mFocusRect->setRect(viewport()->rect().adjusted(0, 0, -1, -1));
+        mFocusRect->setVisible(true);
+    } else {
+        QColor rectColor = palette().color(QPalette::Text);
+        rectColor.setAlpha(80);
+        mFocusRect = mOverlay->addRect(viewport()->rect().adjusted(0, 0, -1, -1), rectColor);
+    }
+    QPlainTextEdit::focusInEvent(e);
+}
+    
+void GenericCodeEditor::focusOutEvent( QFocusEvent *e )
+{
+    if (mFocusRect) {
+        mFocusRect->setVisible(false);
+    }
+    QPlainTextEdit::focusOutEvent(e);
 }
 
 void GenericCodeEditor::dragEnterEvent( QDragEnterEvent * event )
@@ -715,7 +873,13 @@ void GenericCodeEditor::updateExtraSelections()
 void GenericCodeEditor::resizeEvent( QResizeEvent *e )
 {
     QPlainTextEdit::resizeEvent( e );
-
+    
+    if (hasFocus()) {
+        if (mFocusRect) {
+            mFocusRect->setRect(viewport()->rect().adjusted(0, 0, -1, -1));
+        }
+    }
+    
     QRect cr = contentsRect();
     mLineIndicator->resize( mLineIndicator->width(), cr.height() );
 
@@ -775,6 +939,17 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
         top = bottom;
         bottom = top + blockBoundingRect(block).height();
         ++blockNumber;
+    }
+    
+    if(!mEditorBoxIsActive) {
+        QColor color = plt.color(QPalette::Mid);
+        if(color.lightness() >= 128)
+            color = color.darker(60);
+        else
+            color = color.lighter(50);
+        
+        color.setAlpha(inactiveFadeAlpha());
+        p.fillRect( r, color );
     }
 }
 
@@ -1006,6 +1181,12 @@ void GenericCodeEditor::hideMouseCursor()
     QCursor * overrideCursor = QApplication::overrideCursor();
     if (!overrideCursor || overrideCursor->shape() != Qt::BlankCursor)
         QApplication::setOverrideCursor( Qt::BlankCursor );
+}
+
+void GenericCodeEditor::setActiveAppearance(bool active)
+{
+    mOverlayAnimator->setActiveAppearance(active);
+    mEditorBoxIsActive = active;
 }
 
 QMimeData *GenericCodeEditor::createMimeDataFromSelection() const

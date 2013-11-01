@@ -21,46 +21,31 @@
 
 #include "InitAlloc.h"
 
+#include "../../server/supernova/utilities/malloc_aligned.hpp"
+
 AllocPool *pyr_pool_compile = 0;
 AllocPool *pyr_pool_runtime = 0;
 
-#define HOST_ALLOC(size)	malloc(size)
-#define HOST_FREE(ptr)		free((void*)(ptr))
-
 #define AREASIZE 65536L
 
-void* pyr_new_area(size_t size);
-void* pyr_new_area(size_t size)
+static void* pyr_new_area(size_t size)
 {
-#ifdef SC_WIN32
-  size += kAlign;
-  char* ptr = (char*)malloc(size);
-  return (ptr + kAlign);
-#else
-	return (char*)HOST_ALLOC(size);
-#endif
+	return nova::malloc_aligned(size);
 }
 
-void pyr_free_area(void *ptr);
-void pyr_free_area(void *ptr)
+static void pyr_free_area(void *ptr)
 {
-#ifdef SC_WIN32
-  free((void*)((char*)ptr - kAlign));
-#else
-	HOST_FREE(ptr);
-#endif
+	nova::free_aligned(ptr);
 }
 
-void* pyr_new_area_from_runtime(size_t size);
-void* pyr_new_area_from_runtime(size_t size)
+static void* pyr_new_area_from_runtime(size_t size)
 {
 	void *ptr = pyr_pool_runtime->Alloc(size);
 	MEMFAIL(ptr);
 	return ptr;
 }
 
-void pyr_free_area_from_runtime(void *ptr);
-void pyr_free_area_from_runtime(void *ptr)
+static void pyr_free_area_from_runtime(void *ptr)
 {
 	pyr_pool_runtime->Free(ptr);
 }

@@ -197,7 +197,11 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
     mEditorSigMux(new SignalMultiplexer(this)),
     mBoxSigMux(new SignalMultiplexer(this)),
-    mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton) )
+#ifdef SC_DARWIN
+    mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DriveHDIcon) )
+#else
+    mDocModifiedIcon( QIcon::fromTheme("document-save") )
+#endif
 {
     mTabs = new QTabBar;
     mTabs->setDocumentMode(true);
@@ -248,6 +252,8 @@ void MultiEditor::makeSignalConnections()
             this, SLOT(update(Document*)));
     connect(docManager, SIGNAL(showRequest(Document*, int, int)),
             this, SLOT(show(Document*, int, int)));
+    connect(docManager, SIGNAL(titleChanged(Document*)),
+            this, SLOT(update(Document*)) );
 
     connect(mTabs, SIGNAL(currentChanged(int)),
             this, SLOT(onCurrentTabChanged(int)));
@@ -500,7 +506,7 @@ void MultiEditor::createActions()
 #ifndef Q_OS_MAC
     action->setShortcut( tr("Ctrl+Tab", "Switch Document"));
 #else
-    action->setShortcut( tr("Meta+Tab", "Switch Document"));
+    action->setShortcut( tr("Alt+Tab", "Switch Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(switchDocument()));
     settings->addAction( action, "editor-document-switch", editorCategory);
@@ -903,10 +909,13 @@ void MultiEditor::onDocModified( QObject *object )
     int tabIdx = tabForDocument(doc);
     if (tabIdx == -1) return;
 
+    bool isModified = doc->textDocument()->isModified();
     QIcon icon;
-    if(doc->textDocument()->isModified())
+    if(isModified)
         icon = mDocModifiedIcon;
 
+    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').prSetEdited(%2)").arg(doc->id().constData()).arg(isModified), true);
+    
     mTabs->setTabIcon( tabIdx, icon );
 }
 
@@ -925,7 +934,7 @@ void MultiEditor::update( Document *doc )
     // update thisProcess.nowExecutingPath
     GenericCodeEditor *editor = currentEditor();
     if (editor->document() == doc)
-        Main::scProcess()->setActiveDocument(doc);
+        Main::documentManager()->setActiveDocument(doc);
 }
 
 void MultiEditor::onCloseRequest( int index )
@@ -1009,7 +1018,7 @@ void MultiEditor::setCurrentEditor( GenericCodeEditor * editor )
     updateActions();
 
     Document *currentDocument = editor ? editor->document() : 0;
-    Main::scProcess()->setActiveDocument(currentDocument);
+    Main::documentManager()->setActiveDocument(currentDocument);
     emit currentDocumentChanged(currentDocument);
 }
 

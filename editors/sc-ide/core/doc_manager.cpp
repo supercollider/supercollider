@@ -33,15 +33,29 @@
 #include <QTextBlock>
 #include <QApplication>
 
+#include <yaml-cpp/node.h>
+#include <yaml-cpp/parser.h>
+
 using namespace ScIDE;
 
-Document::Document( bool isPlainText ):
-    mId( QUuid::createUuid().toString().toLatin1() ),
-    mDoc( new QTextDocument(this) ),
-    mTitle( tr("Untitled") ),
+Document::Document(bool isPlainText, const QByteArray & id,
+                    const QString & title, const QString & text ):
+    mId(id),
+    mDoc(new QTextDocument(text, this)),
+    mTitle(title),
     mIndentWidth(4),
-    mHighlighter(NULL)
+    mHighlighter(0),
+    mKeyDownActionEnabled(false),
+    mKeyUpActionEnabled(false),
+    mMouseDownActionEnabled(false),
+    mMouseUpActionEnabled(false),
+    mTextChangedActionEnabled(false)
 {
+    if (mId.isEmpty())
+        mId = QUuid::createUuid().toString().toLatin1();
+    if (mTitle.isEmpty())
+        mTitle = tr("Untitled");
+
     mDoc->setDocumentLayout( new QPlainTextDocumentLayout(mDoc) );
 
     if (!isPlainText)
@@ -117,9 +131,45 @@ void Document::setIndentWidth( int numSpaces )
     mDoc->setDefaultTextOption(options);
 }
 
+QString Document::textAsSCArrayOfCharCodes(int start = 0, int range = -1)
+{
+    QTextCursor cursor = QTextCursor(mDoc);
+    cursor.setPosition(start, QTextCursor::MoveAnchor);
+    if(range == -1){
+        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor, 1);
+    } else {
+        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, range);
+    }
+    
+    QByteArray stringBytes = cursor.selectedText().replace(QChar(0x2029), QChar('\n')).toUtf8();
+    QString returnString = QString("[");
+    for (int i = 0; i < stringBytes.size(); ++i) {
+        returnString = returnString.append(QString::number(static_cast<int>(stringBytes.at(i)))).append(',');
+    }
+    returnString = returnString.append(QString("]"));
+    return returnString;
+}
+
+void Document::setTextInRange(const QString text, int start, int range)
+{
+    QTextCursor cursor = QTextCursor(mDoc);
+    int size = mDoc->characterCount();
+    if (start > (size - 1)) {
+        start = size - 1;
+        range = 0;
+    }
+    cursor.setPosition(start, QTextCursor::MoveAnchor);
+    if(range == -1){
+        cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor, 1);
+    } else {
+        cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, range);
+    }
+    cursor.insertText(text);
+}
+
 
 DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
-    QObject(main)
+QObject(main), mTextMirrorEnabled(true), mCurrentDocument(NULL)
 {
     connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 
@@ -129,17 +179,19 @@ DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
     loadRecentDocuments( settings );
 }
 
-Document * DocumentManager::createDocument( bool isPlainText )
+Document * DocumentManager::createDocument(bool isPlainText, const QByteArray & id,
+                                           const QString & title, const QString & text  )
 {
-    Document *doc = new Document( isPlainText );
+    Document *doc = new Document( isPlainText, id, title, text );
     mDocHash.insert( doc->id(), doc );
     return doc;
 }
 
 void DocumentManager::create()
 {
-    Document *doc = createDocument( false );
+    Document *doc = createDocument();
 
+    syncLangDocument(doc);
     Q_EMIT( opened(doc, 0, 0) );
 }
 
@@ -203,6 +255,7 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     if (!isRTF)
         mFsWatcher.addPath(cpath);
 
+    syncLangDocument(doc);
     Q_EMIT( opened(doc, initialCursorPosition, selectionLength) );
 
     if (toRecent) this->addToRecent(doc);
@@ -239,6 +292,13 @@ bool DocumentManager::reload( Document *doc )
     return true;
 }
 
+Document * DocumentManager::documentForId(const QByteArray docID)
+{
+    Document * doc = mDocHash[docID];
+    if(!doc) MainWindow::instance()->showStatusMessage(QString("Lookup failed for Document %1").arg(docID.constData()));
+    return doc;
+}
+
 QString DocumentManager::decodeDocument(const QByteArray & bytes)
 {
     QTextStream stream(bytes);
@@ -260,6 +320,12 @@ void DocumentManager::close( Document *doc )
         mFsWatcher.removePath(doc->mFilePath);
 
     Q_EMIT( closed(doc) );
+
+    QString command =
+            QString("ScIDEDocument.findByQUuid(\'%1\').closed")
+            .arg(doc->id().constData());
+    Main::evaluateCodeIfCompiled( command, true );
+
     delete doc;
 }
 
@@ -397,3 +463,479 @@ void DocumentManager::closeSingleUntitledIfUnmodified()
             close(document);
     }
 }
+
+void DocumentManager::handleScLangMessage( const QString &selector, const QString &data )
+{
+    static QString requestDocListSelector("requestDocumentList");
+    static QString newDocSelector("newDocument");
+    static QString getDocTextSelector("getDocumentText");
+    static QString setDocTextSelector("setDocumentText");
+    static QString setCurrentDocSelector("setCurrentDocument");
+    static QString closeDocSelector("closeDocument");
+    static QString setDocTitleSelector("setDocumentTitle");
+    static QString enableKeyDownSelector("enableDocumentKeyDownAction");
+    static QString enableKeyUpSelector("enableDocumentKeyUpAction");
+    static QString enableMouseDownSelector("enableDocumentMouseDownAction");
+    static QString enableMouseUpSelector("enableDocumentMouseUpAction");
+    static QString enableTextChangedSelector("enableDocumentTextChangedAction");
+    static QString enableTextMirrorSelector("enableDocumentTextMirror");
+
+    if (selector == requestDocListSelector)
+        handleDocListScRequest();
+
+    if (selector == newDocSelector)
+        handleNewDocScRequest(data);
+
+    if (selector == getDocTextSelector)
+        handleGetDocTextScRequest(data);
+
+    if (selector == setDocTextSelector)
+        handleSetDocTextScRequest(data);
+
+    if (selector == setCurrentDocSelector)
+        handleSetCurrentDocScRequest(data);
+
+    if (selector == closeDocSelector)
+        handleCloseDocScRequest(data);
+
+    if (selector == setDocTitleSelector)
+        handleSetDocTitleScRequest(data);
+    
+    if (selector == enableKeyDownSelector)
+        handleEnableKeyDownScRequest( data );
+    
+    if (selector == enableKeyUpSelector)
+        handleEnableKeyUpScRequest( data );
+  
+    if (selector == enableMouseDownSelector)
+        handleEnableMouseDownScRequest( data );
+    
+    if (selector == enableMouseUpSelector)
+        handleEnableMouseUpScRequest( data );
+    
+    if (selector == enableTextChangedSelector)
+        handleEnableTextChangedScRequest( data );
+    
+    if (selector == enableTextMirrorSelector)
+        handleEnableTextMirrorScRequest( data );
+}
+
+void DocumentManager::handleDocListScRequest()
+{
+    QList<Document*> docs = documents();
+    QList<Document*>::Iterator it;
+    QString command = QString("ScIDEDocument.syncDocs([");
+    for (it = docs.begin(); it != docs.end(); ++it) {
+        Document * doc = *it;
+        QString docData = QString("[\'%1\', \'%2\', %3, %4],").arg(doc->id().constData()).arg(doc->title()).arg(doc->textAsSCArrayOfCharCodes(0, -1)).arg(doc->isModified());
+        command = command.append(docData);
+    }
+    command = command.append("]);");
+    Main::evaluateCode ( command, true );
+}
+
+void DocumentManager::handleNewDocScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string title;
+        bool success = doc[0].Read(title);
+        if (!success)
+            return;
+
+        std::string text;
+        success = doc[1].Read(text);
+        if (!success)
+            return;
+
+        std::string id;
+        success = doc[2].Read(id);
+        if (!success)
+            return;
+
+        Document *document = createDocument( false, id.c_str(),
+                                             QString::fromUtf8(title.c_str()),
+                                             QString::fromUtf8(text.c_str()) );
+        syncLangDocument(document);
+        Q_EMIT( opened(document, 0, 0) );
+    }
+}
+
+void DocumentManager::handleGetDocTextScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+
+        std::string funcID;
+        success = doc[1].Read(funcID);
+        if (!success)
+            return;
+
+        int start;
+        success = doc[2].Read(start);
+        if (!success)
+            return;
+
+        int range;
+        success = doc[3].Read(range);
+        if (!success)
+            return;
+
+        Document *document = documentForId(id.c_str());
+        if(document){
+            QString docText = document->textAsSCArrayOfCharCodes(start, range);
+
+            QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\', %2.asAscii)").arg(funcID.c_str(), docText);
+            Main::evaluateCode ( command, true );
+        }
+
+    }
+}
+
+void DocumentManager::handleSetDocTextScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+
+        std::string funcID;
+        success = doc[1].Read(funcID);
+        if (!success)
+            return;
+
+        std::string text;
+        success = doc[2].Read(text);
+        if (!success)
+            return;
+
+        int start;
+        success = doc[3].Read(start);
+        if (!success)
+            return;
+
+        int range;
+        success = doc[4].Read(range);
+        if (!success)
+            return;
+
+        Document *document = documentForId(id.c_str());
+        if(document){
+            // avoid a loop
+            if(document == mCurrentDocument){
+                disconnect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
+            }
+            
+            document->setTextInRange(QString::fromUtf8(text.c_str()), start, range);
+            
+            if(document == mCurrentDocument){
+                connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
+            }
+            
+            QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\')").arg(funcID.c_str());
+            Main::evaluateCode ( command, true );
+        }
+
+    }
+}
+
+void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+
+        Document *document = documentForId(id.c_str());
+        if(document)
+            Q_EMIT( showRequest(document) );
+    }
+
+}
+
+void DocumentManager::handleCloseDocScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+
+        Document *document = documentForId(id.c_str());
+        if(document){
+            close(document);
+        }
+    }
+}
+
+void DocumentManager::handleSetDocTitleScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+
+        std::string title;
+        success = doc[1].Read(title);
+        if (!success)
+            return;
+
+        Document *document = documentForId(id.c_str());
+        if(document)
+        {
+            document->mTitle = QString::fromUtf8(title.c_str());
+            Q_EMIT(titleChanged(document));
+        }
+
+    }
+
+}
+
+bool DocumentManager::parseActionEnabledRequest( const QString & data, std::string *idString, bool *en)
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return false;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return false;
+        
+        bool enabled;
+        success = doc[1].Read(enabled);
+        if (!success)
+            return false;
+        
+        *idString = id;
+        
+        *en = enabled;
+        
+        return true;
+    }
+    return false;
+}
+
+void DocumentManager::handleEnableKeyDownScRequest( const QString & data )
+{
+    std::string id;
+    bool enabled;
+    if (parseActionEnabledRequest(data, &id, &enabled)) {
+        Document *document = documentForId(id.c_str());
+        if(document)
+        {
+            document->setKeyDownActionEnabled(enabled);
+        }
+        
+    }
+    
+}
+
+void DocumentManager::handleEnableKeyUpScRequest( const QString & data )
+{
+    std::string id;
+    bool enabled;
+    if (parseActionEnabledRequest(data, &id, &enabled)) {
+        Document *document = documentForId(id.c_str());
+        if(document)
+        {
+            document->setKeyUpActionEnabled(enabled);
+        }
+        
+    }
+    
+}
+
+void DocumentManager::handleEnableMouseDownScRequest( const QString & data )
+{
+    std::string id;
+    bool enabled;
+    if (parseActionEnabledRequest(data, &id, &enabled)) {
+        Document *document = documentForId(id.c_str());
+        if(document)
+        {
+            document->setMouseDownActionEnabled(enabled);
+        }
+        
+    }
+    
+}
+
+void DocumentManager::handleEnableMouseUpScRequest( const QString & data )
+{
+    std::string id;
+    bool enabled;
+    if (parseActionEnabledRequest(data, &id, &enabled)) {
+        Document *document = documentForId(id.c_str());
+        if(document)
+        {
+            document->setMouseUpActionEnabled(enabled);
+        }
+        
+    }
+    
+}
+
+void DocumentManager::handleEnableTextChangedScRequest( const QString & data )
+{
+    std::string id;
+    bool enabled;
+    if (parseActionEnabledRequest(data, &id, &enabled)) {
+        Document *document = documentForId(id.c_str());
+        if(document)
+        {
+            document->setTextChangedActionEnabled(enabled);
+        }
+        
+    }
+    
+}
+
+void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        bool enabled;
+        bool success = doc[0].Read(enabled);
+        if (!success)
+            return;
+        
+        mTextMirrorEnabled = enabled;
+        
+        QList<Document*> docs = documents();
+        QList<Document*>::Iterator it;
+        if(enabled) {
+            for (it = docs.begin(); it != docs.end(); ++it) {
+                Document * doc = *it;
+                Main::scProcess()->updateTextMirrorForDocument(doc, 0, -1, doc->textDocument()->characterCount());
+            }
+        } else {
+            // this sets the mirror to empty strings
+            for (it = docs.begin(); it != docs.end(); ++it) {
+                Document * doc = *it;
+                Main::scProcess()->updateTextMirrorForDocument(doc, 0, -1, 0);
+            }
+            QString warning = QString("Document Text Mirror Disabled\n");
+            Main::scProcess()->post(warning);
+        }
+    }
+    
+}
+
+void DocumentManager::syncLangDocument(Document *doc)
+{
+    QString command =
+            QString("ScIDEDocument.syncFromIDE(\'%1\', \'%2\', %3, %4)")
+            .arg(doc->id().constData())
+            .arg(doc->title())
+            .arg(doc->textAsSCArrayOfCharCodes(0, -1))
+            .arg(doc->isModified());
+    Main::evaluateCode ( command, true );
+}
+
+void DocumentManager::setActiveDocument(Document * document)
+{
+    if(mCurrentDocument)
+        disconnect(mCurrentDocument->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
+    if (document){
+        mCurrentDocumentPath = document->filePath();
+        connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
+        mCurrentDocument = document;
+    } else {
+        mCurrentDocumentPath.clear();
+        mCurrentDocument = NULL;
+    }
+    
+    sendActiveDocument();
+}
+
+void DocumentManager::sendActiveDocument()
+{
+    if (Main::scProcess()->state() != QProcess::Running)
+        return;
+    if(mCurrentDocument){
+        QString command = QString("ScIDEDocument.setActiveDocByQUuid(\'%1\');").arg(mCurrentDocument->id().constData());
+        if (!mCurrentDocumentPath.isEmpty())
+            command = command.append(QString("ScIDE.currentPath_(\"%1\");").arg(mCurrentDocumentPath));
+        Main::evaluateCode(command, true);
+    } else
+        Main::evaluateCode(QString("ScIDE.currentPath_(nil); ScIDEDocument.current = nil;"), true);
+}
+
+void DocumentManager::updateCurrentDocContents ( int position, int charsRemoved, int charsAdded )
+{
+    if (mTextMirrorEnabled) {
+        Main::scProcess()->updateTextMirrorForDocument(mCurrentDocument, position, charsRemoved, charsAdded);
+    }
+    
+    if (mCurrentDocument->textChangedActionEnabled()) {
+        QString addedChars = mCurrentDocument->textAsSCArrayOfCharCodes(position, charsAdded);
+        Main::evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').textChanged(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
+    }
+}
+

@@ -79,10 +79,13 @@ code::
 Executing the code above results in a 'Parse Error'. With an error of this kind, the dot in the error message shows you where SC ran into trouble. Here it happens just after code::"Ishmael."::.
 
 code::
-ERROR: Parse error
-   in file 'selected text'
-   line 3 char 11 :
-  	"Ishmael.".postln;
+ERROR: syntax error, unexpected STRING, expecting DOTDOT or ':' or ',' or ')'
+in file 'selected text'
+line 3 char 10:
+
+"Ishmael.".postln;
+^^^^^^^^^
+)
 ::
 
 Usually the problem actually occurs a little before that, so that's where you should look. In this case of course, it's the lack of a semi-colon at the end of the previous line.

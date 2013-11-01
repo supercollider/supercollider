@@ -174,6 +174,9 @@ ArrayedCollection : SequenceableCollection {
 		_ArrayInsert
 		^this.primitiveFailed;
 	}
+	move { arg fromIndex, toIndex;
+		^this.insert(toIndex, this.removeAt(fromIndex))
+	}
 	addFirst { arg item; ^this.insert(0, item) }
 	addIfNotNil { arg item; if(item.notNil,{ ^this.add(item) }) }
 	pop {

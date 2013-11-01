@@ -13,9 +13,9 @@ SkipJack {
 		defaultClock = AppClock;
 	}
 
-	*stop { |name| all.do { |skip| if (skip.name == name) { skip.stop } }; }
+	*stop { |name| all.copy.do { |skip| if (skip.name == name) { skip.stop } } }
 
-	*stopAll { all.do(_.stop).clear; }
+	*stopAll { all.copy.do(_.stop).clear }
 
 	init { |autostart=true|
 		task = Routine {

@@ -101,6 +101,7 @@ bool ScCodeEditor::event( QEvent *e )
 void ScCodeEditor::keyPressEvent( QKeyEvent *e )
 {
     hideMouseCursor(e);
+    bool actionInSuper = false;
 
     QTextCursor cursor( textCursor() );
     bool cursorMoved = true;
@@ -118,6 +119,7 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
 
     if (cursorMoved) {
         setTextCursor( cursor );
+        doKeyAction(e);
         return;
     }
 
@@ -145,7 +147,7 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
             c.setPosition(pos, mode);
 
         setTextCursor(c);
-
+        doKeyAction(e);
         return;
     }
 
@@ -154,6 +156,7 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         QTextCursor cursor = textCursor();
         insertSpaceToNextTabStop( cursor );
         ensureCursorVisible();
+        doKeyAction(e);
         return;
     }
     case Qt::Key_Backspace:
@@ -161,6 +164,7 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
             if (removeMatchingTokens())
                 break;
         GenericCodeEditor::keyPressEvent(e);
+        actionInSuper = true;
         break;
     case Qt::Key_Enter:
     case Qt::Key_Return:
@@ -192,9 +196,11 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         if (!overwriteMode() && insertMatchingTokens(e->text()))
             break;
         GenericCodeEditor::keyPressEvent(e);
+        actionInSuper = true;
     }
 
     mAutoCompleter->keyPress(e);
+    if(!actionInSuper) doKeyAction(e);
 }
 
 void ScCodeEditor::mouseReleaseEvent ( QMouseEvent *e )
@@ -1179,18 +1185,6 @@ static bool bracketPairDefinesRegion( const BracketPair & bracketPair )
     if (!tokenMaybeRegionStart(bracketPair.first) || !tokenMaybeRegionEnd(bracketPair.second))
         return false;
 
-    // check whether this is an Event
-    TokenIterator it = bracketPair.first.next();
-    if (it.isValid()) {
-        if (it->type == Token::SymbolArg)
-            return false;
-        else {
-            ++it;
-            if (it.isValid() && it->character == ':')
-                return false;
-        }
-    }
-
     return true;
 }
 
@@ -1208,8 +1202,8 @@ QTextCursor ScCodeEditor::regionAroundCursor(const QTextCursor & cursor)
                  && bracketPairDefinesRegion(bracketPair) )
             {
                 QTextCursor regionCursor(QPlainTextEdit::document());
-                regionCursor.setPosition(bracketPair.first.position() + 1);
-                regionCursor.setPosition(bracketPair.second.position(), QTextCursor::KeepAnchor);
+                regionCursor.setPosition(bracketPair.first.position());
+                regionCursor.setPosition(bracketPair.second.position() + 1, QTextCursor::KeepAnchor);
                 return regionCursor;
             }
         } else {

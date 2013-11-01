@@ -39,7 +39,7 @@ class SessionManager;
 // scide instances have a LocalServer. when called with an argument, it will try to reconnect
 // to the instance with the lowest number.
 class SingleInstanceGuard:
-    public QObject
+        public QObject
 {
     Q_OBJECT
 
@@ -62,7 +62,7 @@ private:
 };
 
 class Main:
-    public QObject
+        public QObject
 {
     Q_OBJECT
 
@@ -82,6 +82,12 @@ public:
     static void evaluateCode(QString const & text, bool silent = false)
     {
         instance()->scProcess()->evaluateCode(text, silent);
+    }
+    
+    static void evaluateCodeIfCompiled(QString const & text, bool silent = false)
+    {
+        if(instance()->scProcess()->compiled())
+            evaluateCode(text, silent);
     }
 
     static bool openDocumentation(const QString & string);

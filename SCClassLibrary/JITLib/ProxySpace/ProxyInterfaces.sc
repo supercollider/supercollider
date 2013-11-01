@@ -147,8 +147,8 @@ PatternControl : StreamControl {
 		{
 			str = source.buildForProxy(proxy, channelOffset);
 			if(args.notNil) {
-					event = str.event;
-					args.pairsDo { arg key, val; event[key] = val }
+				event = str.event;
+				args.pairsDo { arg key, val; event[key] = val }
 			};
 			array = array.add(str);
 			// no latency (latency is in stream already)
@@ -208,12 +208,12 @@ SynthControl : AbstractPlayControl {
 	stopToBundle { | bundle, fadeTime |
 		if(nodeID.notNil) {
 			if(canReleaseSynth) {
-					bundle.addAll([['/error', -1], [15, nodeID, \gate, 0.0, \fadeTime, fadeTime], ['/error', -2]]);
+				bundle.addAll([['/error', -1], [15, nodeID, \gate, 0.0, \fadeTime, fadeTime], ['/error', -2]]);
 			} {
-					if(canFreeSynth.not) { //"/n_free"
-						bundle.addAll([['/error', -1], [11, nodeID], ['/error', -2]]);
-					};
-					// otherwise it is self freeing by some inner mechanism.
+				if(canFreeSynth.not) { //"/n_free"
+					bundle.addAll([['/error', -1], [11, nodeID], ['/error', -2]]);
+				};
+				// otherwise it is self freeing by some inner mechanism.
 			};
 			nodeID = nil;
 		}
@@ -265,11 +265,12 @@ SynthDefControl : SynthControl {
 	readyForPlay { ^synthDef.notNil }
 
 	build { | proxy, orderIndex = 0 |
-		var ok, rate, numChannels;
+		var ok, rate, numChannels, outerDefControl;
 
+		outerDefControl = NodeProxy.buildProxyControl;
 		NodeProxy.buildProxyControl = this;
 		synthDef = source.buildForProxy(proxy, channelOffset, orderIndex);
-		NodeProxy.buildProxyControl = nil;
+		NodeProxy.buildProxyControl = outerDefControl;
 
 		rate = synthDef.rate ?? { if(proxy.rate !== \control) { \audio } { \control } };
 		numChannels = synthDef.numChannels ? proxy.numChannels ? 2;
@@ -297,7 +298,7 @@ SynthDefControl : SynthControl {
 			// bridge exceeding bundle size by writing to disk
 			if(server.isLocal.not) {
 				Error("SynthDef too large (" ++ size
-				++ " bytes) to be sent to remote server via udp").throw;
+					++ " bytes) to be sent to remote server via udp").throw;
 			};
 			path = this.synthDefPath;
 			this.writeSynthDefFile(path, bytes);

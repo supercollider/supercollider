@@ -1,11 +1,11 @@
-+Pattern {
++ Pattern {
 	lock { arg n=1;
 		^Pfin(n.asStream, this.asStream)
 	}
 }
 
 
-+Stream {
++ Stream {
 
 	fastForward { arg by, tolerance=0, inevent;
 		var t = 0, delta = 0, event;
@@ -29,7 +29,6 @@
 
 }
 
-
 + EventStreamPlayer {
 
 	xplay { arg fadeTime, argClock, doReset = false, quant=1.0;
@@ -44,7 +43,8 @@
 
 
 }
-+PauseStream {
+
++ PauseStream {
 
 	xplay { arg fadeTime, argClock, doReset = false, quant=1.0;
 		this.play(argClock, doReset, quant);

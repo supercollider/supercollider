@@ -50,13 +50,6 @@ Primitives for File i/o.
 # include <unistd.h>
 #else
 # include <direct.h>
-# include <malloc.h>
-#endif
-
-#ifdef _WIN32
-#include <stdio.h>
-#include "SC_Win32Utils.h"
-#include "SC_DirUtils.h"
 #endif
 
 #include <fcntl.h>
@@ -86,8 +79,13 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	int err = unlink(filename);
-	SetBool(a, err == 0);
+	boost::system::error_code error_code;
+	boost::filesystem::remove(filename, error_code);
+
+	if (error_code)
+		SetFalse(a);
+	else
+		SetTrue(a);
 
 	return errNone;
 }

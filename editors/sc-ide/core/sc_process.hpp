@@ -69,13 +69,15 @@ public:
         evaluateCode(cmd, true);
     }
 
-    void setActiveDocument(class Document *);
-    void sendActiveDocument();
-
     QAction *action(ActionRole role)
     {
         return mActions[role];
     }
+    
+    bool compiled() { return mCompiled; }
+    
+    void post(QString & text) { scPost(text); }
+    void updateTextMirrorForDocument ( class Document * doc, int position, int charsRemoved, int charsAdded );
 
 public slots:
     void toggleRunning();
@@ -125,9 +127,9 @@ private:
     QString mIpcServerName;
     QByteArray mIpcData;
 
-    QString mCurrentDocumentPath;
     bool mTerminationRequested;
     QDateTime mTerminationRequestTime;
+    bool mCompiled;
 };
 
 class ScRequest : public QObject

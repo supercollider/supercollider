@@ -87,6 +87,8 @@ QtGUI {
 
   *speech { ^'Speech'.asClass }
 
+  *qcView {^QQuartzComposerView }
+
   *notImplemented { arg class;
     //("QtGUI: " ++ class.asString ++ " is not implemented yet").postln;
     ^nil;

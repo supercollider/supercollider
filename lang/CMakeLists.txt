@@ -21,7 +21,7 @@ else()
 endif()
 
 if(APPLE)
-	include_directories("LangPrimSource/${HID_UTIL_DIR}")
+	include_directories("LangPrimSource/HID_Utilities")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
 elseif(WIN32)
@@ -81,9 +81,12 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
 
-	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
+
+if(APPLE)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+endif()
 
 if (NOT Boost_FOUND)
 	file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
@@ -113,30 +116,22 @@ set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 add_definitions(-DYYSTACK_USE_ALLOCA)
 
+
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
 			LangPrimSource/SC_HID.cpp
-			LangPrimSource/${HID_UTIL_DIR}/HID_Utilities.c
-			LangPrimSource/${HID_UTIL_DIR}/HID_Name_Lookup.c
-			LangPrimSource/${HID_UTIL_DIR}/HID_Queue_Utilities.c
-			LangPrimSource/${HID_UTIL_DIR}/HID_Error_Handler.c
+			LangPrimSource/HID_Utilities/HID_Utilities.c
+			LangPrimSource/HID_Utilities/HID_Name_Lookup.c
+			LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
+			LangPrimSource/HID_Utilities/HID_Error_Handler.c
+			LangPrimSource/HID_Utilities/IOHIDElement_.c
+			LangPrimSource/HID_Utilities/IOHIDDevice_.c
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
-			LangPrimSource/SC_Speech.M
+			LangPrimSource/SC_Speech.mm
 			)
 		add_definitions(-DHAVE_SPEECH)
-		if (CMAKE_COMPILER_IS_GNUCXX)
-			set_source_files_properties(LangPrimSource/SC_Speech.M
-										PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
-		endif()
-		if(NOT (HID_UTIL_DIR MATCHES "HID_Utilities_10_4"))
-			list(APPEND sclang_sources
-				LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c
-				LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c
-			)
-		endif()
-
 	else(APPLE)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
@@ -158,6 +153,16 @@ if(WIN32)
 		list(APPEND sclang_sources LangPrimSource/SC_PortMidi.cpp)
 	endif()
 endif()
+
+# This sets up the exe icon for windows under mingw.
+if(MINGW)
+ set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
+ set(CMAKE_RC_COMPILER_INIT windres)
+ ENABLE_LANGUAGE(RC)
+ SET(CMAKE_RC_COMPILE_OBJECT
+ "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
+endif(MINGW)
+
 
 if(SC_WII)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -182,7 +187,12 @@ include(../SCDoc/CMakeLists.txt)
 list(APPEND sclang_sources ${SCDOC_SRCS})
 
 if(SC_IDE)
+	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
+	find_package( Qt4 4.7 REQUIRED QtCore QtNetwork QtGui)
+	include( ${QT_USE_FILE} )
+	qt4_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
 	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
+	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
 endif()
 
 if(SC_QT)
@@ -288,13 +298,10 @@ if(SC_QT)
 endif()
 
 if(SC_IDE)
-	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
-	find_package( Qt4 4.7 REQUIRED QtCore QtNetwork )
-	include( ${QT_USE_FILE} )
 	target_link_libraries( libsclang ${QT_LIBRARIES} )
 endif()
 
-add_executable(sclang LangSource/cmdLineFuncs.cpp)
+add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
 
 if (Boost_FOUND)
 	target_link_libraries(sclang libsclang ${Boost_THREAD_LIBRARY})

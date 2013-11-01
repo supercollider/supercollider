@@ -30,6 +30,7 @@ ServerOptions
 	var <>zeroConf = false; // Whether server publishes port to Bonjour, etc.
 
 	var <>restrictedPath = nil;
+	var <>ugenPluginsPath = nil;
 
 	var <>initialNodeID = 1000;
 	var <>remoteControlVolume = false;
@@ -140,6 +141,13 @@ ServerOptions
 		});
 		if (restrictedPath.notNil, {
 			o = o ++ " -P " ++ restrictedPath;
+		});
+		if (ugenPluginsPath.notNil, {
+			o = o ++ " -U " ++ if(ugenPluginsPath.isString) {
+				ugenPluginsPath
+			} {
+				ugenPluginsPath.join("; ");
+			};
 		});
 		if (memoryLocking, {
 			o = o ++ " -L";
@@ -757,7 +765,9 @@ Server {
 			if(notified) {
 				serverReallyQuitWatcher = OSCFunc({ |msg|
 					if(msg[1] == '/quit') {
-						statusWatcher.enable;
+						if (statusWatcher.notNil) {
+							statusWatcher.enable;
+						};
 						serverReallyQuit = true;
 						serverReallyQuitWatcher.free;
 					};
@@ -772,6 +782,7 @@ Server {
 			};
 		};
 		addr.sendMsg("/quit");
+		this.stopAliveThread;
 		if (inProcess, {
 			this.quitInProcess;
 			"quit done\n".inform;
@@ -955,7 +966,7 @@ Server {
 				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ recHeaderFormat;
 			};
 		};
-		recordBuf = Buffer.alloc(this, 65536, recChannels,
+		recordBuf = Buffer.alloc(this, 65536 * 16, recChannels,
 			{arg buf; buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true);},
 			this.options.numBuffers + 1); // prevent buffer conflicts by using reserved bufnum
 		recordBuf.path = path;
