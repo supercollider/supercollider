@@ -10,7 +10,7 @@ Rest {
 	}
 	processRest { |inval|
 		inval.put(\isRest, true);
-		^dur.value(inval)
+		^dur
 	}
 	// for use e.g. in ListPatterns
 	*embedInStream { |inval|

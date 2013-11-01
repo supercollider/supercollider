@@ -69,15 +69,15 @@ public:
         evaluateCode(cmd, true);
     }
 
+    void setActiveDocument(class Document *);
+    void sendActiveDocument();
+
     QAction *action(ActionRole role)
     {
         return mActions[role];
     }
     
     bool compiled() { return mCompiled; }
-    
-    void post(QString & text) { scPost(text); }
-    void updateTextMirrorForDocument ( class Document * doc, int position, int charsRemoved, int charsAdded );
 
 public slots:
     void toggleRunning();
@@ -109,6 +109,7 @@ private slots:
     void onProcessStateChanged( QProcess::ProcessState state);
     void onReadyRead(void);
     void updateToggleRunningAction();
+    void updateCurrentDocContents ( int position, int charsRemoved, int charsAdded );
 
 private:
     void onStart();
@@ -127,6 +128,8 @@ private:
     QString mIpcServerName;
     QByteArray mIpcData;
 
+    QString mCurrentDocumentPath;
+    class Document * mCurrentDocument;
     bool mTerminationRequested;
     QDateTime mTerminationRequestTime;
     bool mCompiled;

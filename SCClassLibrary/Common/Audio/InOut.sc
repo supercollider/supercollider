@@ -230,7 +230,7 @@ AbstractOut : UGen {
 
 Out : AbstractOut {
 	*ar { arg bus, channelsArray;
-		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
+		channelsArray = this.replaceZeroesWithSilence(channelsArray.asArray);
 		this.multiNewList(['audio', bus] ++ channelsArray)
 		^0.0		// Out has no output
 	}
@@ -249,7 +249,7 @@ OffsetOut : Out {
 
 LocalOut : AbstractOut {
 	*ar { arg channelsArray;
-		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
+		channelsArray = this.replaceZeroesWithSilence(channelsArray.asArray);
 		this.multiNewList(['audio'] ++ channelsArray)
 		^0.0		// LocalOut has no output
 	}
@@ -264,7 +264,7 @@ LocalOut : AbstractOut {
 
 XOut : AbstractOut {
 	*ar { arg bus, xfade, channelsArray;
-		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
+		channelsArray = this.replaceZeroesWithSilence(channelsArray.asArray);
 		this.multiNewList(['audio', bus, xfade] ++ channelsArray)
 		^0.0		// Out has no output
 	}

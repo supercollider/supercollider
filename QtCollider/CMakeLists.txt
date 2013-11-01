@@ -1,8 +1,4 @@
-if(APPLE)
-    set(required_qt_version 4.8.5)
-else()
-    set(required_qt_version 4.7)
-endif()
+set(required_qt_version 4.7)
 
 find_package (Qt4 ${required_qt_version} COMPONENTS QtCore QtGui QtWebKit)
 

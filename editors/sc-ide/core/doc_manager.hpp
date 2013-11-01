@@ -69,18 +69,6 @@ public:
     
     QString textAsSCArrayOfCharCodes(int start, int range);
     void setTextInRange(const QString text, int start, int range);
-    
-    bool keyDownActionEnabled() { return mKeyDownActionEnabled; }
-    bool keyUpActionEnabled() { return mKeyUpActionEnabled; }
-    bool mouseDownActionEnabled() { return mMouseDownActionEnabled; }
-    bool mouseUpActionEnabled() { return mMouseUpActionEnabled; }
-    bool textChangedActionEnabled() { return mTextChangedActionEnabled; }
-    
-    void setKeyDownActionEnabled(bool enabled) { mKeyDownActionEnabled = enabled; }
-    void setKeyUpActionEnabled(bool enabled) {  mKeyUpActionEnabled = enabled; }
-    void setMouseDownActionEnabled(bool enabled) {  mMouseDownActionEnabled = enabled; }
-    void setMouseUpActionEnabled(bool enabled) {  mMouseUpActionEnabled = enabled; }
-    void setTextChangedActionEnabled(bool enabled) {  mTextChangedActionEnabled = enabled; }
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -99,11 +87,6 @@ private:
     QDateTime mSaveTime;
     int mIndentWidth;
     SyntaxHighlighter * mHighlighter;
-    bool mKeyDownActionEnabled;
-    bool mKeyUpActionEnabled;
-    bool mMouseDownActionEnabled;
-    bool mMouseUpActionEnabled;
-    bool mTextChangedActionEnabled;
 };
 
 class DocumentManager : public QObject
@@ -128,10 +111,6 @@ public:
     bool reload( Document * );
     const QStringList & recents() const { return mRecent; }
     Document * documentForId(const QByteArray id);
-    bool textMirrorEnabled() { return mTextMirrorEnabled; }
-    void setActiveDocument(class Document *);
-    void sendActiveDocument();
-    Document * activeDocument() { return mCurrentDocument; }
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
@@ -169,16 +148,7 @@ private:
     void handleSetCurrentDocScRequest( const QString & data );
     void handleCloseDocScRequest( const QString & data );
     void handleSetDocTitleScRequest( const QString & data );
-    
-    bool parseActionEnabledRequest( const QString & data, std::string *idString, bool *en);
-    void handleEnableKeyDownScRequest( const QString & data );
-    void handleEnableKeyUpScRequest( const QString & data );
-    void handleEnableMouseDownScRequest( const QString & data );
-    void handleEnableMouseUpScRequest( const QString & data );
-    void handleEnableTextChangedScRequest( const QString & data );
-    void handleEnableTextMirrorScRequest( const QString & data );
     void syncLangDocument( Document * );
-    void updateCurrentDocContents ( int position, int charsRemoved, int charsAdded );
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
 
@@ -187,10 +157,6 @@ private:
 
     QStringList mRecent;
     static const int mMaxRecent = 10;
-    
-    bool mTextMirrorEnabled;
-    QString mCurrentDocumentPath;
-    class Document * mCurrentDocument;
 };
 
 } // namespace ScIDE

@@ -7,11 +7,12 @@ UnaryOpFunctionProxy : UnaryOpFunction {
 		^a.reduceFuncProxy(args).perform(selector)
 	}
 	value { arg ... args;
-		^this.reduceFuncProxy(args)
+			^this.reduceFuncProxy(args)
 	}
 	valueArray { arg args;
-		^this.reduceFuncProxy(args)
+			^this.reduceFuncProxy(args)
 	}
+
 
 	composeUnaryOp { arg aSelector;
 		^UnaryOpFunctionProxy.new(aSelector, this)
@@ -31,8 +32,9 @@ UnaryOpFunctionProxy : UnaryOpFunction {
 		^this.value.embedInStream(inval)
 	}
 
-}
 
+
+}
 BinaryOpFunctionProxy : BinaryOpFunction {
 
 	valueFuncProxy { arg args;
@@ -40,14 +42,15 @@ BinaryOpFunctionProxy : BinaryOpFunction {
 	}
 	reduceFuncProxy { arg args;
 		^a.reduceFuncProxy(args)
-		.perform(selector, b.reduceFuncProxy(args), adverb)
+			.perform(selector, b.reduceFuncProxy(args), adverb)
 	}
 	value { arg ... args;
-		^this.reduceFuncProxy(args)
+			^this.reduceFuncProxy(args)
 	}
 	valueArray { arg args;
-		^this.reduceFuncProxy(args)
+			^this.reduceFuncProxy(args)
 	}
+
 
 	composeUnaryOp { arg aSelector;
 		^UnaryOpFunctionProxy.new(aSelector, this)
@@ -68,7 +71,6 @@ BinaryOpFunctionProxy : BinaryOpFunction {
 	}
 
 }
-
 NAryOpFunctionProxy : NAryOpFunction {
 
 	reduceFuncProxy { arg args;
@@ -78,11 +80,12 @@ NAryOpFunctionProxy : NAryOpFunction {
 		^this.reduceFuncProxy(args)
 	}
 	value { arg ... args;
-		^this.reduceFuncProxy(args)
+			^this.reduceFuncProxy(args)
 	}
 	valueArray { arg args;
-		^this.reduceFuncProxy(args)
+			^this.reduceFuncProxy(args)
 	}
+
 
 	composeUnaryOp { arg aSelector;
 		^UnaryOpFunctionProxy.new(aSelector, this)
@@ -106,7 +109,6 @@ NAryOpFunctionProxy : NAryOpFunction {
 
 // maybe make it an abstract function object.
 NAryValueProxy : NAryOpFunctionProxy {
-
 	*new { arg receiver, args;
 		^super.new(nil, receiver, args ? [])
 	}

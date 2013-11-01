@@ -57,14 +57,15 @@ Pbind(\instrument, \test, \freq, Prand([1, 1.2, 2, 2.5, 3, 4], inf) * 200, \dur,
 (
 Pbind(
 	\instrument,		\test,
-	\nharms,	     	Pseq([4, 10, 40], inf),
-	\dur,			    Pseq([1, 1, 2, 1]/10, inf),
+	\nharms,		Pseq([4, 10, 40], inf),
+	\dur,			Pseq([1, 1, 2, 1]/10, inf),
 	#[freq, sustain],	Ptuple([ // assignment to multiple keys
-					        Pseq( (1..16) * 50, 4),
-				     	    Pseq([1/10, 0.5, 1, 2], inf)
-				        ])
+					Pseq( (1..16) * 50, 4),
+					Pseq([1/10, 0.5, 1, 2], inf)
+				])
 ).play;
-)::
+)
+::
 
 It is possible to specify a Pbind with an link::Classes/Array:: preceded by *. Arrays treat identifiers ending with a colon as link::Classes/Symbol::s, making the syntax of the Pbind specification a bit more concise:
 
@@ -72,13 +73,13 @@ code::
 (
 // Alternative syntax, using a key/pattern array:
 Pbind(*[
-	instrument:			\test,
-	nharms:				Pseq([4, 10, 40], inf),
-	dur:				Pseq([1, 1, 2, 1]/10, inf),
+	instrument:		\test,
+	nharms:			Pseq([4, 10, 40], inf),
+	dur:			Pseq([1, 1, 2, 1]/10, inf),
 	#[freq, sustain],	Ptuple([
-							Pseq( (1..16) * 50, 4),
-							Pseq([1/10, 0.5, 1, 2], inf)
-						])
+					Pseq( (1..16) * 50, 4),
+					Pseq([1/10, 0.5, 1, 2], inf)
+				])
 ]).play;
 )
 ::

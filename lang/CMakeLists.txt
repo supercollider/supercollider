@@ -154,16 +154,6 @@ if(WIN32)
 	endif()
 endif()
 
-# This sets up the exe icon for windows under mingw.
-if(MINGW)
- set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
- set(CMAKE_RC_COMPILER_INIT windres)
- ENABLE_LANGUAGE(RC)
- SET(CMAKE_RC_COMPILE_OBJECT
- "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
-endif(MINGW)
-
-
 if(SC_WII)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 		find_package(CWiid)
@@ -187,12 +177,7 @@ include(../SCDoc/CMakeLists.txt)
 list(APPEND sclang_sources ${SCDOC_SRCS})
 
 if(SC_IDE)
-	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
-	find_package( Qt4 4.7 REQUIRED QtCore QtNetwork QtGui)
-	include( ${QT_USE_FILE} )
-	qt4_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
 	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
-	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
 endif()
 
 if(SC_QT)
@@ -298,10 +283,13 @@ if(SC_QT)
 endif()
 
 if(SC_IDE)
+	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
+	find_package( Qt4 4.7 REQUIRED QtCore QtNetwork )
+	include( ${QT_USE_FILE} )
 	target_link_libraries( libsclang ${QT_LIBRARIES} )
 endif()
 
-add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
+add_executable(sclang LangSource/cmdLineFuncs.cpp)
 
 if (Boost_FOUND)
 	target_link_libraries(sclang libsclang ${Boost_THREAD_LIBRARY})

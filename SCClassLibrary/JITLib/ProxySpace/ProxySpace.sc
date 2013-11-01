@@ -12,9 +12,8 @@ ProxySpace : LazyEnvir {
 	}
 
 	*push { arg server, name, clock;
-		if(name.isNil and: { currentEnvironment.isKindOf(this) }) {
-			currentEnvironment.clear.pop  // avoid nesting
-		};
+		if(name.isNil and: { currentEnvironment.isKindOf(this) })
+			{ currentEnvironment.clear.pop }; // avoid nesting
 		^this.new(server, name, clock).push;
 	}
 
@@ -28,9 +27,9 @@ ProxySpace : LazyEnvir {
 
 
 	makeProxy {
-		var proxy = NodeProxy.new;
-		this.initProxy(proxy);
-		^proxy
+			var proxy = NodeProxy.new;
+			this.initProxy(proxy);
+			^proxy
 	}
 
 	initProxy { arg proxy;
@@ -260,8 +259,8 @@ ProxySpace : LazyEnvir {
 		this.keysValuesDo { arg key, item, i;
 			stream << "~" << key << " - ";
 			stream << if(item.rate === 'audio') { "ar" } {
-				if(item.rate === 'control', { "kr" }, { "ir" })
-			}
+					if(item.rate === 'control', { "kr" }, { "ir" })
+					}
 			<< "(" << item.numChannels << ")   " << if(i.even) { "\t\t" } { "\n" };
 		};
 		stream << "\n)\n"
@@ -274,7 +273,7 @@ ProxySpace : LazyEnvir {
 
 	*findSpace { |proxy, getCode = false|
 		var space = [ currentEnvironment, thisProcess.interpreter.p ]
-		.detect { |cand|  cand.isKindOf(this) and: { cand.includes(proxy) } };
+			.detect { |cand|  cand.isKindOf(this) and: { cand.includes(proxy) } };
 		if (space.notNil) { ^space };
 
 		space = ProxySpace.all.detect(_.includes(proxy));
@@ -282,7 +281,7 @@ ProxySpace : LazyEnvir {
 
 		space = Ndef.all.detect(_.includes(proxy));
 		if (space.notNil) { ^space };
-		// none found
+			// none found
 		^nil
 	}
 }

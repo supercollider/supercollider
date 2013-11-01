@@ -567,12 +567,12 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
         setTextCursor( cursor );
         ensureCursorVisible();
     }
-    if (mDoc->keyDownActionEnabled()) doKeyAction(e);
+    doKeyAction(e);
 }
     
 void GenericCodeEditor::keyReleaseEvent(QKeyEvent * e)
 {
-    if(mDoc->keyUpActionEnabled()) doKeyAction(e);
+    doKeyAction(e);
 }
     
 void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
@@ -628,64 +628,58 @@ void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
     
 void GenericCodeEditor::mousePressEvent(QMouseEvent * e)
 {
-    if (mDoc->mouseDownActionEnabled()) {
-        int button;
-        switch( e->button() ) {
-            case Qt::LeftButton:
-                button = 0; break;
-            case Qt::RightButton:
-                button = 1; break;
-            case Qt::MidButton:
-                button = 2; break;
-            default:
-                button = -1;
-        }
+    int button;
     
-        Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+    switch( e->button() ) {
+        case Qt::LeftButton:
+            button = 0; break;
+        case Qt::RightButton:
+            button = 1; break;
+        case Qt::MidButton:
+            button = 2; break;
+        default:
+            button = -1;
     }
     
+    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
     QPlainTextEdit::mousePressEvent(e);
 }
     
 void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent * e)
 {
-    if (mDoc->mouseDownActionEnabled()) {
-        int button;
-        switch( e->button() ) {
-            case Qt::LeftButton:
-                button = 0; break;
-            case Qt::RightButton:
-                button = 1; break;
-            case Qt::MidButton:
-                button = 2; break;
-            default:
-                button = -1;
-        }
-        
-        Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+    int button;
+    
+    switch( e->button() ) {
+        case Qt::LeftButton:
+            button = 0; break;
+        case Qt::RightButton:
+            button = 1; break;
+        case Qt::MidButton:
+            button = 2; break;
+        default:
+            button = -1;
     }
     
+    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
     QPlainTextEdit::mouseDoubleClickEvent(e);
 }
     
 void GenericCodeEditor::mouseReleaseEvent(QMouseEvent * e)
 {
-    if (mDoc->mouseUpActionEnabled()) {
-        int button;
-        switch( e->button() ) {
-            case Qt::LeftButton:
-                button = 0; break;
-            case Qt::RightButton:
-                button = 1; break;
-            case Qt::MidButton:
-                button = 2; break;
-            default:
-                button = -1;
-        }
-        
-        Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
-        
+    int button;
+    
+    switch( e->button() ) {
+        case Qt::LeftButton:
+            button = 0; break;
+        case Qt::RightButton:
+            button = 1; break;
+        case Qt::MidButton:
+            button = 2; break;
+        default:
+            button = -1;
     }
+    
+    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
     QPlainTextEdit::mouseReleaseEvent(e);
 }
 

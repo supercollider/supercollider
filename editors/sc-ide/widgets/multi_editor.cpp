@@ -930,7 +930,7 @@ void MultiEditor::update( Document *doc )
     // update thisProcess.nowExecutingPath
     GenericCodeEditor *editor = currentEditor();
     if (editor->document() == doc)
-        Main::documentManager()->setActiveDocument(doc);
+        Main::scProcess()->setActiveDocument(doc);
 }
 
 void MultiEditor::onCloseRequest( int index )
@@ -1014,7 +1014,7 @@ void MultiEditor::setCurrentEditor( GenericCodeEditor * editor )
     updateActions();
 
     Document *currentDocument = editor ? editor->document() : 0;
-    Main::documentManager()->setActiveDocument(currentDocument);
+    Main::scProcess()->setActiveDocument(currentDocument);
     emit currentDocumentChanged(currentDocument);
 }
 

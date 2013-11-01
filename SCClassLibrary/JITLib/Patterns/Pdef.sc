@@ -1,12 +1,11 @@
 // contains numerical / value patterns
 
 PatternProxy : Pattern {
-
 	var <source, <pattern, <>envir;
 	var >clock, quant, <>condition=true, reset;
 
-	// quant value for new pattern insertio can be an array, like [quant, phase, timingOffset]
-	// in EventPatternProxy it can be [quant, phase, timingOffset, onset]
+				// quant new pattern insertion. can be [quant, phase, timingOffset]
+				// in EventPatternProxy it can be [quant, phase, timingOffset, onset]
 
 	classvar <>defaultQuant, defaultEnvir;
 
@@ -111,11 +110,11 @@ PatternProxy : Pattern {
 				(reset !== resetTest)
 				or: { pat !== pattern and: { test.value(outval, count) } }
 			) {
-				pat = pattern;
-				test = condition;
-				resetTest = reset;
-				count = 0;
-				stream = this.constrainStream(stream);
+						pat = pattern;
+						test = condition;
+						resetTest = reset;
+						count = 0;
+						stream = this.constrainStream(stream);
 			};
 			outval = stream.next(inval);
 			count = count + 1;
@@ -144,11 +143,11 @@ PatternProxy : Pattern {
 					(reset !== resetTest)
 					or: { pat !== pattern and: { test.value(outval, count) } }
 				) {
-					pat = pattern;
-					test = condition;
-					resetTest = reset;
-					count = 0;
-					stream = this.constrainStream(stream);
+							pat = pattern;
+							test = condition;
+							resetTest = reset;
+							count = 0;
+							stream = this.constrainStream(stream);
 				};
 				outval = stream.next(inval) ? default;
 				count = count + 1;
@@ -166,14 +165,16 @@ PatternProxy : Pattern {
 
 	sched { arg func;
 		if(quant.isNil)
-		{ func.value }
-		{ this.clock.schedAbs(quant.nextTimeOnGrid(this.clock), { func.value; nil }) }
+			{ func.value }
+			{ this.clock.schedAbs(quant.nextTimeOnGrid(this.clock), { func.value; nil }) }
 	}
 
 	storeArgs { ^[pattern] }
 
+
 	// these following methods are factored out for the benefit of subclasses
 	// they only work for Pdef/Tdef/Pdefn.
+
 
 	*removeAll {
 		this.clear;
@@ -232,23 +233,23 @@ PatternProxy : Pattern {
 			defaultEnvir = Event.default;
 			defaultEnvir.parent = defaultEnvir.parent.copy.putAll(
 				(
-					forward: #{ 1 },
-					proxyClass: proxyClass,
-					get: {|e, key|
-						var x = e.at(key);
-						if(x.isKindOf(e.proxyClass).not) { x = e.proxyClass.new; e.put(key, x); };
-						x
-					},
-					place: { |e, key, val|
-						var x = e.at(key);
-						if(x.isKindOf(e.proxyClass).not) { x = e.proxyClass.new; e.put(key, x) };
-						x.source_(val)
-					}
+				forward: #{ 1 },
+				proxyClass: proxyClass,
+				get: {|e, key|
+					var x = e.at(key);
+					if(x.isKindOf(e.proxyClass).not) { x = e.proxyClass.new; e.put(key, x); };
+					x
+				},
+				place: { |e, key, val|
+					var x = e.at(key);
+					if(x.isKindOf(e.proxyClass).not) { x = e.proxyClass.new; e.put(key, x) };
+					x.source_(val)
+				}
 				)
 			);
 		};
 		event = defaultEnvir.copy;
-		//	event[\self] = event; // this risks a crash on storeOn.
+	//	event[\self] = event; // this risks a crash on storeOn.
 		^event
 	}
 
@@ -352,7 +353,7 @@ TaskProxy : PatternProxy {
 		if(player.isNil) {
 			player = this.playOnce(argClock, doReset, playQuant);
 		} {
-			// resets  when stream has ended or after pause/cmd-period:
+				// resets  when stream has ended or after pause/cmd-period:
 			if (player.streamHasEnded or: { player.wasStopped }) { doReset = true };
 
 			if(player.isPlaying.not) {
@@ -395,6 +396,7 @@ Tdef : TaskProxy {
 	var <key;
 	classvar <>all;
 
+
 	*initClass {
 		all = IdentityDictionary.new;
 	}
@@ -419,7 +421,10 @@ Tdef : TaskProxy {
 
 	*hasGlobalDictionary { ^true }
 
+
 }
+
+
 
 // contains event patterns
 
@@ -431,11 +436,11 @@ EventPatternProxy : TaskProxy {
 
 	source_ { arg obj;
 		if(obj.isKindOf(Function)) // allow functions to be passed in
-		{ pattern = PlazyEnvirN(obj) }
-		{ if (obj.isNil)
-			{ pattern = this.class.default }
-			{ pattern = obj }
-		};
+			{ pattern = PlazyEnvirN(obj) }
+			{ if (obj.isNil)
+				{ pattern = this.class.default }
+				{ pattern = obj }
+			};
 		envir !? { pattern = pattern <> envir };
 		this.wakeUp;
 		source = obj;
@@ -465,14 +470,14 @@ EventPatternProxy : TaskProxy {
 				(reset !== resetTest)
 				or: { pat !== pattern and: { test.value(outval, count) } }
 			) {
-				pat = pattern;
-				test = condition;
-				resetTest = reset;
-				count = 0;
-				// inval is the next event that will be yielded
-				// constrainStream may add some values to it so *it must be yielded*
-				stream = this.constrainStream(stream, inval, cleanup);
-				cleanup = EventStreamCleanup.new;
+						pat = pattern;
+						test = condition;
+						resetTest = reset;
+						count = 0;
+						// inval is the next event that will be yielded
+						// constrainStream may add some values to it so IT MUST BE YIELDED
+						stream = this.constrainStream(stream, inval, cleanup);
+						cleanup = EventStreamCleanup.new;
 			};
 			outval = stream.next(inval);
 			count = count + 1;
@@ -505,14 +510,14 @@ EventPatternProxy : TaskProxy {
 					(reset !== resetTest)
 					or: { pat !== pattern and: { test.value(outval, count) } }
 				) {
-					pat = pattern;
-					test = condition;
-					resetTest = reset;
-					count = 0;
-					// inval is the next event that will be yielded
-					// constrainStream may add some values to it so *it must be yielded*
-					stream = this.constrainStream(stream, inval, cleanup);
-					cleanup = EventStreamCleanup.new;
+							pat = pattern;
+							test = condition;
+							resetTest = reset;
+							count = 0;
+							// inval is the next event that will be yielded
+							// constrainStream may add some values to it so IT MUST BE YIELDED
+							stream = this.constrainStream(stream, inval, cleanup);
+							cleanup = EventStreamCleanup.new;
 				};
 				outval = stream.next(inval) ? default;
 				count = count + 1;
@@ -593,7 +598,7 @@ EventPatternProxy : TaskProxy {
 			player = EventStreamPlayer(this.asProtected.asStream, protoEvent);
 			player.play(argClock, doReset, playQuant);
 		} {
-			// resets  when stream has ended or after pause/cmd-period:
+				// resets  when stream has ended or after pause/cmd-period:
 			if(player.streamHasEnded or: { player.wasStopped }) { doReset = true };
 			protoEvent !? { player.event = protoEvent };
 			if(player.isPlaying.not) {
@@ -646,61 +651,61 @@ Pdef : EventPatternProxy {
 		phraseEventFunc = {
 			var pat, event, outerEvent, recursionLevel, instrument, embeddingLevel, freq, rest;
 
-			embeddingLevel = ~embeddingLevel ? 0; // infinite recursion catch
-			freq = ~freq.value;
-			rest = freq.isKindOf(Symbol); // check for outer rests
-			if(rest) { ~freq = freq };
-			pat = (~repository ? all).at(~instrument);
+				embeddingLevel = ~embeddingLevel ? 0; // infinite recursion catch
+				freq = ~freq.value;
+				rest = freq.isKindOf(Symbol); // check for outer rests
+				if(rest) { ~freq = freq };
+				pat = (~repository ? all).at(~instrument);
 
-			if(pat.notNil and: { embeddingLevel < 8 })
-			{
-				pat = pat.pattern; // optimization. outer pattern takes care for replacement
-				// preserve information from outer pattern, but not delta.
+				if(pat.notNil and: { embeddingLevel < 8 })
+				{
+					pat = pat.pattern; // optimization. outer pattern takes care for replacement
+					// preserve information from outer pattern, but not delta.
 
-				recursionLevel = ~recursionLevel;
-				if(~transparency.isNil or:
-					{ ~transparency > (recursionLevel ? 0) }
-				) {
-					outerEvent = currentEnvironment.copy
-				} {
-					outerEvent = Event.default;
-					outerEvent.use {
-						~type = \phrase;
-						~recursionLevel = recursionLevel;
-					}
-				};
-
-				if(recursionLevel.notNil) {
-					if(recursionLevel > 0) {
-						// in recursion, some inner values have to be overridden
-						instrument = ~instrument;
-						pat = pat.collect { |inval|
-							inval.use {
-								~instrument = instrument;
-								~parent = outerEvent;
-								~recursionLevel = recursionLevel - 1;
-							};
-							inval
-						};
+					recursionLevel = ~recursionLevel;
+					if(~transparency.isNil or:
+						{ ~transparency > (recursionLevel ? 0) }
+					) {
+						outerEvent = currentEnvironment.copy
 					} {
-						// play pattern in the ordinary way
-						~type = \note;
+						outerEvent = Event.default;
+						outerEvent.use {
+							~type = \phrase;
+							~recursionLevel = recursionLevel;
+						}
 					};
-				} {	// avoid recursion, if instrument not set.
-					outerEvent.put(\embeddingLevel, embeddingLevel + 1);
-					outerEvent.parent_(Event.parentEvents.default);
-				};
-				// maybe add a Pprotect here.
-				// pat.asProtected
-				pat = Pfindur(~sustain.value, pat);
-				outerEvent.put(\delta, nil); // block delta modification by Ppar
-				outerEvent.put(\instrument, ~synthDef ? \default);
 
-				pat.play(thisThread.clock, outerEvent, 0.0);
-			} {
-				~type = \note;
-				~play.value;
-			}
+					if(recursionLevel.notNil) {
+						if(recursionLevel > 0) {
+							// in recursion, some inner values have to be overridden
+							instrument = ~instrument;
+							pat = pat.collect { |inval|
+									inval.use {
+											~instrument = instrument;
+											~parent = outerEvent;
+											~recursionLevel = recursionLevel - 1;
+										};
+										inval
+							};
+						} {
+							// play pattern in the ordinary way
+							~type = \note;
+						};
+					} {	// avoid recursion, if instrument not set.
+						outerEvent.put(\embeddingLevel, embeddingLevel + 1);
+						outerEvent.parent_(Event.parentEvents.default);
+					};
+					// maybe add a Pprotect here.
+					// pat.asProtected
+					pat = Pfindur(~sustain.value, pat);
+					outerEvent.put(\delta, nil); // block delta modification by Ppar
+					outerEvent.put(\instrument, ~synthDef ? \default);
+
+					pat.play(thisThread.clock, outerEvent, 0.0);
+				} {
+					~type = \note;
+					~play.value;
+				}
 
 		};
 
@@ -811,7 +816,10 @@ Pbindef : Pdef {
 
 	*hasGlobalDictionary { ^true }
 
+
 }
+
+
 
 
 // general purpose lookup stream

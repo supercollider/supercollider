@@ -123,17 +123,7 @@ endif()
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
-option(SC_QT "Build SuperCollider with Qt GUI features" ON)
 option(SC_IDE "Build Qt IDE." ON)
-if (SC_QT)
-  message( STATUS "Compiling with Qt GUI" )
-else()
-  if (SC_IDE)
-	  message( STATUS "Not compiling SC IDE, because it requires Qt but SC_QT is False" )
-    set(SC_IDE False)
-  endif()
-endif (SC_QT)
-
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
@@ -158,6 +148,11 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 elseif(APPLE)
     option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
 endif()
+
+option(SC_QT "Build SuperCollider with Qt GUI" ON)
+if (SC_QT)
+  message( STATUS "Compiling with Qt GUI" )
+endif (SC_QT)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
     option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines).")

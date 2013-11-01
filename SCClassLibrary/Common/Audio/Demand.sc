@@ -191,40 +191,21 @@ Dpoll : DUGen {
 // behave as identical in multiple uses
 
 Dunique : UGen {
-	var <protected, buffer, writer, iwr;
+	var <>source, stutter, numUses;
 
-	*new { arg source, maxBufferSize = 1024, protected = true;
-		^super.new.init(source, maxBufferSize, protected)
+	*new { arg source;
+		^super.new.source_(source).init
 	}
 
-	init { arg source, maxBufferSize, argProtected;
-		protected = argProtected.asBoolean;
-		buffer = LocalBuf(maxBufferSize).clear;
-		if(protected) {
-			iwr = LocalBuf(1).clear;
-			// here we also limit to the largest integer a 32bit float can correctly address
-			writer = Dbufwr(source, buffer, Dbufwr(Dseries(0, 1, 16777216), iwr), 1);
-		} {
-			// here we can simply loop
-			writer = Dbufwr(source, buffer, Dseq([Dseries(0, 1, maxBufferSize)], inf), 0);
-		}
+	init {
+		numUses = 0;
+		stutter = Dstutter(1, source);
 	}
 
 	asUGenInput {
-		var index, ird, overrun;
-		var brd = buffer <! writer; // we call the writer from each reader
-
-		if(protected) {
-			ird = LocalBuf(1).clear;
-			index = Dbufwr(Dseries(0, 1, inf), ird);
-			overrun = Dbufrd(iwr) - Dbufrd(ird) > buffer.numFrames;
-			 // catch buffer overrun by switching to a zero length series
-			brd = Dswitch1([brd, Dseries(length:0)], overrun);
-		} {
-			index = Dseq([Dseries(0, 1, buffer.numFrames)], inf)
-		};
-
-		^Dbufrd(brd, index, 1);
+		numUses = numUses + 1;
+		stutter.inputs[0] = numUses;
+		^stutter
 	}
 
 }

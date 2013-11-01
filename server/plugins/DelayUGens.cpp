@@ -496,11 +496,6 @@ void RadiansPerSample_Ctor(Unit *unit, int inNumSamples)
 	ZOUT0(0) = unit->mWorld->mFullRate.mRadiansPerSample;
 }
 
-void Blocksize_Ctor(Unit *unit, int inNumSamples)
-{
-	ZOUT0(0) = unit->mWorld->mFullRate.mBufLength;
-}
-
 void SubsampleOffset_Ctor(Unit *unit, int inNumSamples)
 {
 	ZOUT0(0) = unit->mParent->mSubsampleOffset;
@@ -7645,7 +7640,6 @@ PluginLoad(Delay)
 	DefineInfoUnit(ControlDur);
 	DefineInfoUnit(SubsampleOffset);
 	DefineInfoUnit(RadiansPerSample);
-	DefineInfoUnit(Blocksize);
 	DefineInfoUnit(NumInputBuses);
 	DefineInfoUnit(NumOutputBuses);
 	DefineInfoUnit(NumAudioBuses);

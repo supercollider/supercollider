@@ -1,4 +1,4 @@
-+ Object {
++Object {
 	valueFuncProxy {
 		^this
 	}
@@ -12,26 +12,24 @@
 	}
 }
 
-+ AbstractFunction {
++AbstractFunction {
 	reduceFuncProxy { arg args;
 		^this.valueArray(args).valueFuncProxy(args)
 	}
 
 }
 
-+ Function {
++Function {
 	postString {
 		^this.asCompileString
 	}
 }
-
-+ UnaryOpFunctionProxy {
++UnaryOpFunctionProxy {
 	postString {
 		^a.postString ++ "." ++ selector
 	}
 }
-
-+ BinaryOpFunctionProxy {
++BinaryOpFunctionProxy {
 	postString {
 		^a.postString + selector.asBinOpString + b.postString
 	}

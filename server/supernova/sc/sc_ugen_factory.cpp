@@ -43,11 +43,8 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
     const size_t output_count = unit_spec.output_specs.size();
 
     /* size for wires and buffers */
-    uint8_t * chunk  = allocator.alloc<uint8_t>(memory_requirement());
-    memset(chunk, 0, memory_requirement());
-
-    Unit * unit   = (Unit*) (std::uintptr_t(chunk + 63) & (~63)); // align on 64 byte boundary
-
+    Unit * unit   = (Unit*)allocator.alloc<uint8_t>(alloc_size);
+    memset(unit, 0, alloc_size);
     unit->mInBuf  = allocator.alloc<float*>(unit_spec.input_specs.size());
     unit->mOutBuf = allocator.alloc<float*>(unit_spec.output_specs.size());
     unit->mInput  = allocator.alloc<Wire*>(unit_spec.input_specs.size());
@@ -297,8 +294,8 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     if (!hinstance) {
         char *s;
         DWORD lastErr = GetLastError();
-        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       NULL, lastErr , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
+        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                       0, lastErr , 0, (char*)&s, 1, 0 );
 
         std::cout << "Cannot open plugin: " << path << s << std::endl;
         LocalFree( s );
@@ -329,8 +326,8 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     void *ptr = (void *)GetProcAddress( hinstance, "load" );
     if (!ptr) {
         char *s;
-        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       NULL, GetLastError() , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
+        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+                       0, GetLastError(), 0, (char*)&s, 1, 0 );
 
         std::cout << "*** ERROR: GetProcAddress err " << s << std::endl;
         LocalFree( s );

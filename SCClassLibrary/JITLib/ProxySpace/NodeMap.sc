@@ -14,11 +14,13 @@ NodeMap {
 		^NodeMapSetting
 	}
 
+
 	clear {
 		settings = IdentityDictionary.new;
 		upToDate = false;
 		this.changed(\clear);
 	}
+
 
 	map { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
@@ -58,9 +60,8 @@ NodeMap {
 		this.changed(\set, args);
 	}
 
-	setn { arg ... args;
-		this.set(*args)
-	}
+	setn { arg ... args; this.set(*args)  }
+
 
 	unset { arg ... keys;
 		keys.do { arg key;
@@ -134,12 +135,12 @@ NodeMap {
 	}
 
 	updateBundle {
-		if(upToDate.not) {
-			upToDate = true;
-			setArgs = setnArgs = mapArgs = mapnArgs = mapaArgs = mapanArgs = nil;
-			settings.do { arg item; item.updateNodeMap(this) };
-			controlNames = settings.values.collect(_.asControlName);
-		}
+			if(upToDate.not) {
+				upToDate = true;
+				setArgs = setnArgs = mapArgs = mapnArgs = mapaArgs = mapanArgs = nil;
+				settings.do { arg item; item.updateNodeMap(this) };
+				controlNames = settings.values.collect(_.asControlName);
+			}
 	}
 
 	addToEvent { arg event;
@@ -147,15 +148,15 @@ NodeMap {
 	}
 
 	addToBundle { arg bundle, target;
-		var msgs;
-		target = target.asNodeID;
-		this.updateBundle;
-		if(setArgs.notNil) { bundle.add([15, target] ++ setArgs) };
-		if(setnArgs.notNil) { bundle.add([16, target] ++ setnArgs) };
-		if(mapArgs.notNil) { bundle.add([14, target] ++ mapArgs) };
-		if(mapnArgs.notNil) { bundle.add([48, target] ++ mapnArgs) };
-		if(mapaArgs.notNil) { bundle.add([60, target] ++ mapaArgs) };
-		if(mapanArgs.notNil) { bundle.add([61, target] ++ mapanArgs) };
+			var msgs;
+			target = target.asNodeID;
+			this.updateBundle;
+			if(setArgs.notNil) { bundle.add([15, target] ++ setArgs) };
+			if(setnArgs.notNil) { bundle.add([16, target] ++ setnArgs) };
+			if(mapArgs.notNil) { bundle.add([14, target] ++ mapArgs) };
+			if(mapnArgs.notNil) { bundle.add([48, target] ++ mapnArgs) };
+			if(mapaArgs.notNil) { bundle.add([60, target] ++ mapaArgs) };
+			if(mapanArgs.notNil) { bundle.add([61, target] ++ mapanArgs) };
 	}
 
 	unsetArgsToBundle { arg bundle, target, keys;
@@ -176,7 +177,7 @@ NodeMap {
 			var item;
 			item = settings[key];
 			if(item.notNil and: { item.isMapped }) {
-				args = args ++ [key, -1, item.busNumChannels];
+					args = args ++ [key, -1, item.busNumChannels];
 			};
 		};
 		if(args.notNil) { bundle.add([48, target.asNodeID] ++ args) };
@@ -208,94 +209,95 @@ NodeMap {
 		stream << ")"
 	}
 
+
 }
 
 
 ProxyNodeMap : NodeMap {
 
-	var <>parents, <>proxy;
-	var hasRates=false;
+		var <>parents, <>proxy;
+		var hasRates=false;
 
-	clear {
-		super.clear;
-		parents = IdentityDictionary.new;
-	}
+		clear {
+			super.clear;
+			parents = IdentityDictionary.new;
+		}
 
-	settingClass {
-		^ProxyNodeMapSetting
-	}
+		settingClass {
+			^ProxyNodeMapSetting
+		}
 
-	wakeUpParentsToBundle { arg bundle, checkedAlready;
-		parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
-	}
+		wakeUpParentsToBundle { arg bundle, checkedAlready;
+			parents.do({ arg item; item.wakeUpToBundle(bundle, checkedAlready) });
+		}
 
-	setRates { arg args;
-		forBy(0, args.size-1, 2, { arg i;
-			var key, rate, setting;
-			key = args[i];
-			setting = this.get(key);
-			rate = args[i+1];
-			if(rate.isNil and: { setting.notNil } and: { setting.isEmpty })
-			{ settings.removeAt(key) }
-			{ setting.rate_(rate) };
-		});
-		hasRates = settings.any { arg item; item.rate.notNil };
-	}
-
-	ratesFor { arg keys;
-		^if(hasRates) {
-			keys.collect({ arg key;
-				var res;
-				res = settings.at(key);
-				if(res.notNil, { res.rate }, { nil })
-			})
-		} { nil }
-	}
-
-	mapn { arg ... args;
-		this.map(args) // for now, avoid errors.
-	}
-
-	map { arg ... args;
-		var playing;
-		playing = proxy.isPlaying;
-		args.pairsDo { arg key, mapProxy;
-			var setting, numChannels;
-			if(mapProxy.isKindOf(BusPlug).not) { Error("map: not a node proxy").throw };
-			if(playing) { mapProxy.wakeUp };
-			setting = this.get(key);
-			setting.map(mapProxy);
-			parents = parents.put(key, mapProxy);
-		};
-		upToDate = false;
-		this.changed(\map, args);
-	}
-
-	mapEnvir { arg ... keys;
-		var args;
-		keys = keys ? settings.keys;
-		args = Array.new(keys.size*2);
-		keys.do({ arg key; args.add(key); args.add(currentEnvironment.at(key)) });
-		this.map(*args);
-	}
-
-	unmap { arg ... keys;
-		var setting;
-		if(keys.at(0).isNil, { keys = this.mappingKeys });
-		keys.do({ arg key;
-			setting = settings.at(key);
-			if(setting.notNil, {
-				setting.map(nil, nil);
-				parents.removeAt(key);
-				if(setting.isEmpty, { settings.removeAt(key) })
+		setRates { arg args;
+			forBy(0, args.size-1, 2, { arg i;
+				var key, rate, setting;
+				key = args[i];
+				setting = this.get(key);
+				rate = args[i+1];
+				if(rate.isNil and: { setting.notNil } and: { setting.isEmpty })
+				{ settings.removeAt(key) }
+				{ setting.rate_(rate) };
 			});
-		});
-		upToDate = false;
-		this.changed(\unmap, keys);
-	}
+			hasRates = settings.any { arg item; item.rate.notNil };
+		}
 
-	changed { arg ... args;
-		proxy.changed(*args)
-	}
+		ratesFor { arg keys;
+			^if(hasRates) {
+				keys.collect({ arg key;
+					var res;
+					res = settings.at(key);
+					if(res.notNil, { res.rate }, { nil })
+				})
+			} { nil }
+		}
+
+		mapn { arg ... args;
+			this.map(args) // for now, avoid errors.
+		}
+
+		map { arg ... args;
+			var playing;
+			playing = proxy.isPlaying;
+			args.pairsDo { arg key, mapProxy;
+				var setting, numChannels;
+				if(mapProxy.isKindOf(BusPlug).not) { Error("map: not a node proxy").throw };
+				if(playing) { mapProxy.wakeUp };
+				setting = this.get(key);
+				setting.map(mapProxy);
+				parents = parents.put(key, mapProxy);
+			};
+			upToDate = false;
+			this.changed(\map, args);
+		}
+
+		mapEnvir { arg ... keys;
+			var args;
+			keys = keys ? settings.keys;
+			args = Array.new(keys.size*2);
+			keys.do({ arg key; args.add(key); args.add(currentEnvironment.at(key)) });
+			this.map(*args);
+		}
+
+		unmap { arg ... keys;
+			var setting;
+			if(keys.at(0).isNil, { keys = this.mappingKeys });
+			keys.do({ arg key;
+				setting = settings.at(key);
+				if(setting.notNil, {
+					setting.map(nil, nil);
+					parents.removeAt(key);
+					if(setting.isEmpty, { settings.removeAt(key) })
+				});
+			});
+			upToDate = false;
+			this.changed(\unmap, keys);
+		}
+
+		changed { arg ... args;
+			proxy.changed(*args)
+		}
 
 }

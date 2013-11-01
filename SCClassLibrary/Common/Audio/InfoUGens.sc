@@ -19,7 +19,6 @@ BufInfoUGenBase : UGen {
 SampleRate : InfoUGenBase {}
 SampleDur : InfoUGenBase {}
 RadiansPerSample : InfoUGenBase {}
-BlockSize : InfoUGenBase {}
 ControlRate : InfoUGenBase {}
 ControlDur : InfoUGenBase {}
 SubsampleOffset : InfoUGenBase {}

@@ -65,7 +65,8 @@ public:
             const size_t count = calc_unit_count;
             Unit ** units = calc_units;
 
-#if 1
+            // FIXME: do some more benchmarking. unrolling seems to harm performance
+#if 0
             const size_t preroll = count & 7;
 
             const size_t unroll4  = preroll & 4;
@@ -75,16 +76,12 @@ public:
             if (unroll4) {
                 for (size_t i = 0; i != 4; ++i) {
                     Unit * unit = units[0];
-                    prefetch(units[1]);
                     (unit->mCalcFunc)(unit, unit->mBufLength);
                     unit = units[1];
-                    prefetch(units[2]);
                     (unit->mCalcFunc)(unit, unit->mBufLength);
                     unit = units[2];
-                    prefetch(units[3]);
                     (unit->mCalcFunc)(unit, unit->mBufLength);
                     unit = units[3];
-                    prefetch(units[4]);
                     (unit->mCalcFunc)(unit, unit->mBufLength);
                 }
                 units += 4;
@@ -93,7 +90,6 @@ public:
             if (unroll2) {
                 for (size_t i = 0; i != 2; ++i) {
                     Unit * unit = units[0];
-                    prefetch(units[1]);
                     (unit->mCalcFunc)(unit, unit->mBufLength);
                     unit = units[1];
                     (unit->mCalcFunc)(unit, unit->mBufLength);
@@ -114,33 +110,19 @@ public:
 
             for (size_t i = 0; i != unroll; ++i) {
                 Unit * unit = units[0];
-                prefetch(units[1]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
-
                 unit = units[1];
-                prefetch(units[2]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
-
                 unit = units[2];
-                prefetch(units[3]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
-
                 unit = units[3];
-                prefetch(units[4]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
-
                 unit = units[4];
-                prefetch(units[5]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
-
                 unit = units[5];
-                prefetch(units[6]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
-
                 unit = units[6];
-                prefetch(units[7]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
-
                 unit = units[7];
                 (unit->mCalcFunc)(unit, unit->mBufLength);
                 units += 8;
@@ -154,19 +136,6 @@ public:
         }
         else
             run_traced();
-    }
-
-    void prefetch(Unit * unit)
-    {
-        char * ptr = (char*) unit;
-        char * end = (char*) unit + sizeof(Unit) + 2 * sizeof(Wire)/* + 4 * sizeof(void*)*/;
-
-        static const size_t cacheline_size = 64;
-
-        for ( ; ptr < end; ptr += cacheline_size)
-#ifdef __GNUC__
-            __builtin_prefetch(ptr, 0, 0);
-#endif
     }
 
     void run(void);

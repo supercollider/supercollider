@@ -5,15 +5,16 @@
 	}
 }
 
-+ Symbol {
++Symbol {
 
 	isBasicOperator {
-		^#['+', '-', '*', '/', '%', '==', '!=', '<', '<=', '>', '>=', '&&', '||', '@' ].includes(this);
+		^#['+', '-', '*', '/', '%', '==', '!=', '<', '<=', '>', '>=', '&&', '||', '@' ]
+			.includes(this);
 	}
 
 }
 
-+ Object {
++Object {
 
 	// might need correction for literals.
 	envirKey { | envir |
@@ -27,14 +28,14 @@
 }
 
 
-+ NodeProxy {
++NodeProxy {
 
 	key { | envir |
 		^super.envirKey(envir);
 	}
 
 	servStr {
-		^if(server != Server.default) { "(" ++ server.asCompileString ++")" } { "" }
+		^if (server != Server.default) { "(" ++ server.asCompileString ++")" } { "" }
 	}
 
 	// not ideal, but usable for now.
@@ -164,7 +165,7 @@
 		isInCurrent = envir.includes(this);
 		isOnDefault = server === Server.default;
 
-		//	[\isAnon, isAnon, \isSingle, isSingle, \isInCurrent, isInCurrent, \isOnDefault, isOnDefault].postln;
+	//	[\isAnon, isAnon, \isSingle, isSingle, \isInCurrent, isInCurrent, \isOnDefault, isOnDefault].postln;
 
 		space = ProxySpace.findSpace(this);
 		spaceCS = try { space.asCode } {
@@ -209,13 +210,13 @@
 
 			stream << str << if (str.keep(-2).includes($;)) { "\n" } { ";\n" };
 
-			// add settings to compile string
+				// add settings to compile string
 			if(includeSettings) {
-				this.nodeMap.storeOn(stream, indexStr, true);
+					this.nodeMap.storeOn(stream, indexStr, true);
 			};
-			// include play settings if playing ...
-			// hmmm - also keep them if not playing,
-			// but inited to something non-default?
+				// include play settings if playing ...
+				// hmmm - also keep them if not playing,
+				// but inited to something non-default?
 			if (this.rate == \audio and: includeMonitor) {
 				if (this.monitor.notNil) {
 					if (this.isMonitoring) {
@@ -238,7 +239,7 @@
 }
 
 
-+ BinaryOpPlug {
++BinaryOpPlug {
 
 	envirCompileString {
 		var astr, bstr, opstr, str = "";
@@ -254,7 +255,7 @@
 	}
 }
 
-+ UnaryOpPlug {
++UnaryOpPlug {
 
 	envirCompileString {
 		^(a.envirCompileString ? "") ++  " "  ++ operator
@@ -266,7 +267,7 @@
 
 + ProxySpace {
 
-	// where am I globally accessible?
+			// where am I globally accessible?
 	asCode {
 		var key;
 		if (this == thisProcess.interpreter.p) { ^"p" };
@@ -288,7 +289,7 @@
 
 		hasGlobalClock = clock.isKindOf(TempoBusClock);
 
-		stream << "\n(\n";
+		stream << "\n(\n"; // )
 		if(hasGlobalClock) { stream <<< this.asCode << ".makeTempoClock(" << clock.tempo << ");\n\n"; };
 		// find keys for all parents
 		if(keys.notNil) {
@@ -305,7 +306,7 @@
 			stream << proxy.asCode(includeSettings, includeMonitors, this.envir) << "\n";
 		};
 
-		stream << ");\n";
+		stream << /*(*/ ");\n";
 	}
 
 	documentOutput {
@@ -320,10 +321,10 @@
 		str = String.streamContents { arg stream;
 			stream << "// ( p = ProxySpace.new(s).push; ) \n\n";
 			this.storeOn(stream, keys, includeSettings);
-			//			this.do { arg px; if(px.monitorGroup.isPlaying) {
-			//				stream << px.playEditString << ".play; \n"
-			//				}
-			//			};
+//			this.do { arg px; if(px.monitorGroup.isPlaying) {
+//				stream << px.playEditString << ".play; \n"
+//				}
+//			};
 		};
 		^str.newTextWindow((name ? "proxyspace").asString)
 	}
