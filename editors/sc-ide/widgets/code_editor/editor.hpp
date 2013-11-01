@@ -30,12 +30,14 @@ namespace ScIDE {
 namespace Settings { class Manager; }
 
 class Document;
+class OverlayAnimator;
 
 class GenericCodeEditor : public QPlainTextEdit
 {
     Q_OBJECT
 
     friend class LineIndicator;
+    friend class OverlayAnimator;
 
 public:
     GenericCodeEditor (Document *, QWidget * parent = NULL);
@@ -52,12 +54,20 @@ public:
 
     void showPosition( int charPosition, int selectionLength = 0 );
     QString symbolUnderCursor();
+    int inactiveFadeAlpha() { return mInactiveFadeAlpha; }
 
 protected:
     virtual bool event( QEvent * );
     virtual void keyPressEvent( QKeyEvent * );
+    virtual void keyReleaseEvent( QKeyEvent * );
+    void doKeyAction( QKeyEvent * );
+    virtual void mousePressEvent( QMouseEvent * );
+    virtual void mouseDoubleClickEvent( QMouseEvent * );
+    virtual void mouseReleaseEvent( QMouseEvent * );
     virtual void wheelEvent( QWheelEvent * );
     virtual void dragEnterEvent( QDragEnterEvent * );
+    virtual void focusInEvent( QFocusEvent * );
+    virtual void focusOutEvent( QFocusEvent * );
     void hideMouseCursor(QKeyEvent *);
     virtual QMimeData *createMimeDataFromSelection() const;
 
@@ -75,6 +85,7 @@ public slots:
     void moveLineDown();
     void gotoPreviousEmptyLine();
     void gotoNextEmptyLine();
+    void setActiveAppearance(bool active);
 
 protected slots:
     void updateLayout();
@@ -101,16 +112,22 @@ protected:
     class LineIndicator *mLineIndicator;
     QGraphicsScene *mOverlay;
     QWidget *mOverlayWidget;
+    OverlayAnimator *mOverlayAnimator;
 
     Document *mDoc;
 
     bool mHighlightCurrentLine;
+    bool mEditorBoxIsActive;
     int mLastCursorBlock;
     QTextCharFormat mCurrentLineTextFormat;
 
     QTextCharFormat mSearchResultTextFormat;
 
     QList<QTextEdit::ExtraSelection> mSearchSelections;
+    
+    QGraphicsRectItem *mFocusRect = 0;
+    
+    int mInactiveFadeAlpha = 0;
 };
 
 } // namespace ScIDE

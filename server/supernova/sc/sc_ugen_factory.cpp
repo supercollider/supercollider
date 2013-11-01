@@ -1,5 +1,5 @@
 //  prototype of a supercollider-synthdef-based synth prototype
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2009-2013 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -43,8 +43,11 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
     const size_t output_count = unit_spec.output_specs.size();
 
     /* size for wires and buffers */
-    Unit * unit   = (Unit*)allocator.alloc<uint8_t>(alloc_size);
-    memset(unit, 0, alloc_size);
+    uint8_t * chunk  = allocator.alloc<uint8_t>(memory_requirement());
+    memset(chunk, 0, memory_requirement());
+
+    Unit * unit   = (Unit*) (std::uintptr_t(chunk + 63) & (~63)); // align on 64 byte boundary
+
     unit->mInBuf  = allocator.alloc<float*>(unit_spec.input_specs.size());
     unit->mOutBuf = allocator.alloc<float*>(unit_spec.output_specs.size());
     unit->mInput  = allocator.alloc<Wire*>(unit_spec.input_specs.size());
@@ -161,10 +164,9 @@ void sc_plugin_container::register_bufgen(const char * name, BufGenFunc func)
 sc_ugen_def * sc_plugin_container::find_ugen(symbol const & name)
 {
     ugen_set_type::iterator it = ugen_set.find(name, named_hash_hash(), named_hash_equal());
-    if (it == ugen_set.end()) {
-        std::cerr << "ugen not registered: " << name.c_str() << std::endl;
+    if (it == ugen_set.end())
         return 0;
-    }
+
     return &*it;
 }
 
@@ -181,7 +183,7 @@ bool sc_plugin_container::register_cmd_plugin(const char * cmd_name, PlugInCmdFu
 {
     cmdplugin_set_type::iterator it = cmdplugin_set.find(cmd_name, named_hash_hash(), named_hash_equal());
     if (it != cmdplugin_set.end()) {
-        std::cerr << "cmd plugin already registered: " << cmd_name << std::endl;
+        std::cout << "cmd plugin already registered: " << cmd_name << std::endl;
         return false;
     }
 
@@ -195,7 +197,7 @@ sample * sc_plugin_container::run_bufgen(World * world, const char * name, uint3
 {
     bufgen_set_type::iterator it = bufgen_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == bufgen_set.end()) {
-        std::cerr << "unable to find buffer generator: " << name << std::endl;
+        std::cout << "unable to find buffer generator: " << name << std::endl;
         return NULL;
     }
 
@@ -207,7 +209,7 @@ bool sc_plugin_container::run_cmd_plugin(World * world, const char * name, struc
 {
     cmdplugin_set_type::iterator it = cmdplugin_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == cmdplugin_set.end()) {
-        std::cerr << "unable to find cmd plugin: " << name << std::endl;
+        std::cout << "unable to find cmd plugin: " << name << std::endl;
         return false;
     }
 
@@ -249,7 +251,7 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
         plugin_api_version = (*api_version)();
 
     if (plugin_api_version != sc_api_version) {
-        cerr << "API Version Mismatch: " << path << endl;
+        cout << "API Version Mismatch: " << path << endl;
         dlclose(handle);
         return;
     }
@@ -263,7 +265,7 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 
     void * load_symbol = dlsym(handle, "load");
     if (!load_symbol) {
-        cerr << "Problem when loading plugin: \"load\" function undefined" << path << endl;
+        cout << "Problem when loading plugin: \"load\" function undefined" << path << endl;
         dlclose(handle);
         return;
     }
@@ -295,10 +297,10 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     if (!hinstance) {
         char *s;
         DWORD lastErr = GetLastError();
-        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                       0, lastErr , 0, (char*)&s, 1, 0 );
+        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       NULL, lastErr , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
 
-        std::cerr << "Cannot open plugin: " << path << s << std::endl;
+        std::cout << "Cannot open plugin: " << path << s << std::endl;
         LocalFree( s );
         return;
     }
@@ -307,7 +309,7 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     info_function api_version = reinterpret_cast<info_function>(GetProcAddress( hinstance, "api_version" ));
 
     if ((*api_version)() != sc_api_version) {
-        std::cerr << "API Version Mismatch: " << filename << std::endl;
+        std::cout << "API Version Mismatch: " << filename << std::endl;
         FreeLibrary(hinstance);
         return;
     }
@@ -327,10 +329,10 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     void *ptr = (void *)GetProcAddress( hinstance, "load" );
     if (!ptr) {
         char *s;
-        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                       0, GetLastError(), 0, (char*)&s, 1, 0 );
+        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       NULL, GetLastError() , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
 
-        std::cerr << "*** ERROR: GetProcAddress err " << s << std::endl;
+        std::cout << "*** ERROR: GetProcAddress err " << s << std::endl;
         LocalFree( s );
 
         FreeLibrary(hinstance);

@@ -60,16 +60,23 @@ PmonoStream : Stream {
 				~type = \monoSet;
 				id = ~id;
 			} {
-				~type = \monoNote;
-				~instrument = pattern.synthName;
-				cleanup.addFunction(event, currentCleanupFunc = { | flag |
-					if (flag) { (id: id, server: server, type: \off,
-						hasGate: hasGate,
-						schedBundleArray: schedBundleArray,
-						schedBundle: schedBundle).play
-					};
-					currentCleanupFunc = nil;
-				});
+				// If the event is a rest, no node would be created
+				// so there is no need to add a cleanup function
+				// (for a node that will never exist). If a later
+				// event is not a rest, ~id will be nil and the
+				// cleanup will be set at that time.
+				if(event.isRest.not) {
+					~type = \monoNote;
+					~instrument = pattern.synthName;
+					cleanup.addFunction(event, currentCleanupFunc = { | flag |
+						if (flag) { (id: id, server: server, type: \off,
+							hasGate: hasGate,
+							schedBundleArray: schedBundleArray,
+							schedBundle: schedBundle).play
+						};
+						currentCleanupFunc = nil;
+					});
+				};
 			};
 			// this should happen whether or not ~id is nil
 			~updatePmono = { | argID, argServer |

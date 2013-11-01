@@ -79,7 +79,7 @@ SimpleNumber : Number {
 	bitOr { arg aNumber, adverb; _BitOr; ^aNumber.performBinaryOpOnSimpleNumber('bitOr', this, adverb) }
 	bitXor { arg aNumber, adverb; _BitXor; ^aNumber.performBinaryOpOnSimpleNumber('bitXor', this, adverb) }
 	bitHammingDistance { arg aNumber, adverb; _HammingDistance  ^aNumber.performBinaryOpOnSimpleNumber('hammingDistance', this, adverb) }
-	bitTest { arg bit; ^( (this & 1.leftShift(bit)) != 0) }
+	bitTest { arg bit; ^( (this.bitAnd(1.leftShift(bit))) != 0) }
 	lcm { arg aNumber, adverb; _LCM; ^aNumber.performBinaryOpOnSimpleNumber('lcm', this, adverb) }
 	gcd { arg aNumber, adverb; _GCD; ^aNumber.performBinaryOpOnSimpleNumber('gcd', this, adverb) }
 	round { arg aNumber=1.0, adverb; _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this, adverb) }
@@ -266,11 +266,10 @@ SimpleNumber : Number {
 		if (abs(curve) < 0.001) { ^this.linlin(inMin, inMax, outMin, outMax) };
 
 		grow = exp(curve);
-		a = outMax - outMin / (1.0 - grow);
-		b = outMin + a;
-		scaled = (this - inMin) / (inMax - inMin);
+		a = inMax - inMin / (1.0 - grow);
+		b = inMin + a;
 
-		^log((b - scaled) / a) / curve
+		^log((b - this) / a) * (outMax - outMin) / curve + outMin
 	}
 
 	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
@@ -314,6 +313,13 @@ SimpleNumber : Number {
 			this.explin(inMin, inCenter, outMin, outCenter, \none);
 		}
 	}
+
+	moddif { arg aNumber = 0.0, mod = 1.0;
+		var diff = absdif(this, aNumber) % mod;
+		var modhalf = mod * 0.5;
+		^modhalf - absdif(diff, modhalf)
+	}
+
 	lcurve { arg a = 1.0, m = 0.0, n = 1.0, tau = 1.0;
 		var rTau, x = this.neg;
 		^if(tau == 1.0) {

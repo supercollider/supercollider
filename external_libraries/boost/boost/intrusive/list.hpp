@@ -645,7 +645,7 @@ class list_impl
       }
       else{
          if(constant_time_size){
-            this->priv_size_traits().set_size(this->priv_size_traits().get_size() - n);
+            this->priv_size_traits().decrease(n);
          }
          node_algorithms::unlink(b.pointed_node(), e.pointed_node());
          return e.unconst();
@@ -886,11 +886,11 @@ class list_impl
    void splice(const_iterator p, list_impl& x)
    {
       if(!x.empty()){
-         size_traits &thist = this->priv_size_traits();
-         size_traits &xt = x.priv_size_traits();
          node_algorithms::transfer
             (p.pointed_node(), x.begin().pointed_node(), x.end().pointed_node());
-         thist.set_size(thist.get_size() + xt.get_size());
+         size_traits &thist = this->priv_size_traits();
+         size_traits &xt = x.priv_size_traits();
+         thist.increase(xt.get_size());
          xt.set_size(size_type(0));
       }
    }
@@ -953,12 +953,12 @@ class list_impl
    {
       if(n){
          if(constant_time_size){
-            size_traits &thist = this->priv_size_traits();
-            size_traits &xt = x.priv_size_traits();
             BOOST_INTRUSIVE_INVARIANT_ASSERT(n == std::distance(f, e));
             node_algorithms::transfer(p.pointed_node(), f.pointed_node(), e.pointed_node());
-            thist.set_size(thist.get_size() + n);
-            xt.set_size(xt.get_size() - n);
+            size_traits &thist = this->priv_size_traits();
+            size_traits &xt = x.priv_size_traits();
+            thist.increase(n);
+            xt.decrease(n);
          }
          else{
             node_algorithms::transfer(p.pointed_node(), f.pointed_node(), e.pointed_node());

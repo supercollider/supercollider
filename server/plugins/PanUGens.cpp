@@ -1178,7 +1178,7 @@ void PanB2_next(PanB2 *unit, int inNumSamples)
 
 #ifdef NOVA_SIMD
 
-void PanB2_next_nova(PanB2 *unit, int inNumSamples)
+FLATTEN void PanB2_next_nova(PanB2 *unit, int inNumSamples)
 {
 	float *Wout = OUT(0);
 	float *Xout = OUT(1);

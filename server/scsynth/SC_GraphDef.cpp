@@ -19,6 +19,10 @@
 */
 
 
+#ifdef _WIN32
+#include "SC_Win32Utils.h"
+#endif
+
 #include "clz.h"
 #include "SC_Graph.h"
 #include "SC_GraphDef.h"
@@ -28,17 +32,11 @@
 #include "SC_UnitDef.h"
 #include "SC_HiddenWorld.h"
 #include "SC_WorldOptions.h"
-#ifndef _MSC_VER
-#include <dirent.h>
-#endif //_MSC_VER
 #include "ReadWriteMacros.h"
 #include "SC_Prototypes.h"
 #include "SC_CoreAudio.h"
 #include "SC_DirUtils.h"
 
-#ifdef _WIN32
-#include "SC_Win32Utils.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>

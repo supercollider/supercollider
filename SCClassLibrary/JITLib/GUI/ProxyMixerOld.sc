@@ -18,6 +18,7 @@ ProxyMixerOld {
 	var <scrollyKr, <keysRotationKr=0;
 
 	*initClass {
+		Class.initClassTree(GUI);
 		GUI.skins.put(\jitSmall, (
 				fontSpecs: 	["Helvetica", 10],
 				fontColor: 	Color.black,

@@ -233,6 +233,21 @@ y.postln;
 )
 ::
 
+method::move
+Moves an item from one position to another.
+
+code::
+[10, 20, 1000, 40, 50].move(2, 0) // move 1000 to index 0
+::
+
+argument::fromIndex
+The position in the array from which the element is removed.
+argument::toIndex
+The position in the array before which the element is inserted again.
+
+
+
+
 method::addFirst
 Inserts the item before the contents of the receiver, possibly returning a new collection.
 code::

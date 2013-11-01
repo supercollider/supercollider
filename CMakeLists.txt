@@ -1,5 +1,14 @@
-cmake_minimum_required (VERSION 2.8)
 project (SuperCollider)
+
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+	set(LINUX 1)
+endif()
+
+if (LINUX)
+	cmake_minimum_required (VERSION 2.8)
+else()
+	cmake_minimum_required (VERSION 2.8.10)
+endif()
 
 include("SCVersion.txt")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
@@ -31,29 +40,6 @@ CONFIGURE_FILE(
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
-if(APPLE)
-	STRING(REGEX REPLACE "^.*MacOSX10.([0-9]+).*$" "\\1" MAC_OSX_SDK_VERSION  "${CMAKE_OSX_SYSROOT}")
-
-	if(CMAKE_OSX_DEPLOYMENT_TARGET)
-		if (CMAKE_OSX_DEPLOYMENT_TARGET GREATER 10.4)
-			set(HID_UTIL_DIR "HID_Utilities")
-		else()
-			set(HID_UTIL_DIR "HID_Utilities_10_4")
-		endif()
-	else()
-		if (${MAC_OSX_SDK_VERSION} GREATER 4)
-			set(HID_UTIL_DIR "HID_Utilities")
-		else()
-			set(HID_UTIL_DIR "HID_Utilities_10_4")
-		endif()
-	endif()
-	MESSAGE( STATUS "Using HID Utilities from folder '${HID_UTIL_DIR}'")
-endif()
-
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-	set(LINUX 1)
-endif()
-
 #############################################
 # Compiler flags etc
 
@@ -68,12 +54,6 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 #	if (${_gcc_version} VERSION_GREATER 4.0.99)
 #		add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
 #	endif()
-
-	option(DSO_VISIBILITY "DSO visibility support for gcc" OFF)
-
-	if (DSO_VISIBILITY)
-		add_definitions(-fvisibility=hidden)
-	endif()
 
 	if(APPLE)
 		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
@@ -95,14 +75,6 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 
 else()
 
-endif()
-
-if(CMAKE_COMPILER_IS_CLANG)
-    option(DSO_VISIBILITY "DSO visibility support for clang" OFF)
-
-    if(DSO_VISIBILITY)
-        add_definitions(-fvisibility=hidden)
-    endif()
 endif()
 
 if(APPLE)
@@ -151,7 +123,17 @@ endif()
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
+option(SC_QT "Build SuperCollider with Qt GUI features" ON)
 option(SC_IDE "Build Qt IDE." ON)
+if (SC_QT)
+  message( STATUS "Compiling with Qt GUI" )
+else()
+  if (SC_IDE)
+	  message( STATUS "Not compiling SC IDE, because it requires Qt but SC_QT is False" )
+    set(SC_IDE False)
+  endif()
+endif (SC_QT)
+
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
@@ -171,16 +153,7 @@ option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)"
 
 option(SCLANG_SERVER "Build with internal server." ON)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    option(SC_WII "Build sclang with WII support" ON)
-elseif(APPLE)
-    option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
-endif()
-
-option(SC_QT "Build SuperCollider with Qt GUI" ON)
-if (SC_QT)
-  message( STATUS "Compiling with Qt GUI" )
-endif (SC_QT)
+option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
     option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines).")
@@ -191,10 +164,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
-option(SC_CPP11 "Compile in C++11 mode" OFF)
 
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
 option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
+
+option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 
 #############################################
 # some default libraries
@@ -237,7 +211,7 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 	if (SSE)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   -msse")
 		set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -msse")
-		if(NOT APPLE)
+		if(NOT APPLE AND NOT CMAKE_COMPILER_IS_CLANG)
 			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpmath=sse")
 			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpmath=sse")
 		endif()
@@ -251,21 +225,25 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 	endif()
 
-	if (SC_CPP11)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-		if(CMAKE_COMPILER_IS_CLANG)
-			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-		endif()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+	set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -std=c++11")
+	if(CMAKE_COMPILER_IS_CLANG)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+		set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
 	endif()
+
+	if(FORTIFY)
+		add_definitions( -D_FORTIFY_SOURCE=2 )
+	endif()
+
+	add_definitions(-fvisibility=hidden)
 endif()
 
 if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	if (SSE)
 		add_definitions(-mia32)
 	endif()
-	if (SC_CPP11)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	endif()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 	# disable warnings
 	add_definitions(-diag-disable 170) # pointer points outside of underlying object ... used heavily in sclang
@@ -321,7 +299,7 @@ if(APPLE)
 	set(auxresourcesdir ${scappauxresourcesdir})
 
 	# Some aux files which go in the app's folder
-	install(FILES README.txt ChangeLog COPYING AUTHORS platform/mac/MOVED_STUFF.txt
+    install(FILES README.txt ChangeLog COPYING AUTHORS MOVED_STUFF.txt
 		DESTINATION ${scappbundlename}
 	)
 elseif (WIN32)
@@ -493,7 +471,7 @@ if(APPLE)
 #	set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${PROJECT_VERSION}")
 	set(CPACK_DMG_DS_STORE "${CMAKE_SOURCE_DIR}/package/ds_store")
 	set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/package/background.png")
-	set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/platform/mac/Resources/SCcube.icns")
+    set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/icons/SCcube.icns")
 endif()
 
 if(NOT WIN32) # We define a custom 'package' target in platform/windows/CMakeLists.txt

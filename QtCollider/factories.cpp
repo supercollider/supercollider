@@ -26,9 +26,8 @@
 
 QC_DECLARE_QWIDGET_FACTORY( QLabel );
 
-namespace QtCollider {
-
-void loadFactories () {
+static void doLoadFactories ()
+{
   QC_ADD_FACTORY( QcDefaultWidget );
   QC_ADD_FACTORY( QcHLayoutWidget );
   QC_ADD_FACTORY( QcVLayoutWidget );
@@ -63,6 +62,17 @@ void loadFactories () {
   QC_ADD_FACTORY( QcVBoxLayout );
   QC_ADD_FACTORY( QcGridLayout );
   QC_ADD_FACTORY( QcStackLayout );
+  QC_ADD_FACTORY( QtDownload );
+#ifdef SC_DARWIN
+  QC_ADD_FACTORY( QcQuartzComposerView );
+#endif
+}
+
+namespace QtCollider {
+
+void loadFactories()
+{
+  doLoadFactories();
 }
 
 } // namespace QtCollider

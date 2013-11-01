@@ -144,7 +144,8 @@ static int FFTBase_Ctor(FFTBase *unit, int frmsizinput)
 
 void FFT_Ctor(FFT *unit)
 {
-	unit->m_wintype = (int)ZIN0(3); // wintype may be used by the base ctor
+	int winType = sc_clip((int)ZIN0(3), -1, 1); // wintype may be used by the base ctor
+	unit->m_wintype = winType;
 	if(!FFTBase_Ctor(unit, 5)){
 		SETCALC(FFT_ClearUnitOutputs);
 		// These zeroes are to prevent the dtor freeing things that don't exist:
@@ -212,7 +213,6 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 	float *in = IN(1);
 	float *out = unit->m_inbuf + unit->m_pos + unit->m_shuntsize;
 
-// 	int numSamples = unit->mWorld->mFullRate.mBufLength;
 	int numSamples = unit->m_numSamples;
 
 	// copy input
@@ -237,14 +237,16 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 			ZOUT0(0) = -1;
 		}
 		// Shunt input buf down
-		memcpy(unit->m_inbuf, unit->m_inbuf + unit->m_hopsize, unit->m_shuntsize * sizeof(float));
+		memmove(unit->m_inbuf, unit->m_inbuf + unit->m_hopsize, unit->m_shuntsize * sizeof(float));
 	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 void IFFT_Ctor(IFFT* unit){
-	unit->m_wintype = (int)ZIN0(1); // wintype may be used by the base ctor
+	int winType = sc_clip((int)ZIN0(1), -1, 1); // wintype may be used by the base ctor
+	unit->m_wintype = winType;
+
 	if(!FFTBase_Ctor(unit, 2)){
 		SETCALC(*ClearUnitOutputs);
 		// These zeroes are to prevent the dtor freeing things that don't exist:
@@ -295,7 +297,7 @@ void IFFT_next(IFFT *unit, int wrongNumSamples)
 	// Load state from struct into local scope
 	int pos     = unit->m_pos;
 	int audiosize = unit->m_audiosize;
-// 	int numSamples = unit->mWorld->mFullRate.mBufLength;
+
 	int numSamples = unit->m_numSamples;
 	float *olabuf = unit->m_olabuf;
 	float fbufnum = ZIN0(0);
@@ -313,7 +315,7 @@ void IFFT_next(IFFT *unit, int wrongNumSamples)
 		int hopsamps = pos;
 		int shuntsamps = audiosize - hopsamps;
 		if(hopsamps != audiosize)  // There's only copying to be done if the position isn't all the way to the end of the buffer
-			memcpy(olabuf, olabuf+hopsamps, shuntsamps * sizeof(float));
+			memmove(olabuf, olabuf+hopsamps, shuntsamps * sizeof(float));
 
 		// Then mix the "new" time-domain data in - adding at first, then just setting (copying) where the "old" is supposed to be zero.
 		#if defined(__APPLE__) && !defined(SC_IPHONE)

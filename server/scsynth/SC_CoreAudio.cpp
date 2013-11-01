@@ -215,6 +215,8 @@ bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 		fifoMsg.Set(inWorld, Perform_ToEngine_Msg, FreeOSCPacket, (void*)inPacket);
 		result = driver->SendOscPacketMsgToEngine(fifoMsg);
 	static_cast<SC_Lock*>(inWorld->mDriverLock)->unlock();
+	if (!result)
+		scprintf("command FIFO full\n");
 	return result;
 }
 
@@ -446,8 +448,8 @@ void SC_ScheduledEvent::Perform()
 bool SC_AudioDriver::Setup()
 {
 	mRunThreadFlag = true;
-	thread thread(thread_namespace::bind(&SC_AudioDriver::RunThread, this));
-	mThread = thread_namespace::move(thread);
+	thread thread(std::bind(&SC_AudioDriver::RunThread, this));
+	mThread = std::move(thread);
 
 	int numSamples;
 	double sampleRate;
@@ -1565,13 +1567,13 @@ bool SC_CoreAudioDriver::DriverStart()
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeInput;
 
-			err = AudioObjectGetPropertyDataSize(mInputDevice, 0, NULL, &propertyAddress, &propertySize);
+			err = AudioObjectGetPropertyDataSize(mInputDevice, 0, 0, &propertyAddress, &propertySize);
 			err = AudioObjectIsPropertySettable(mInputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProcSeparateIn;
 			// err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			err = AudioObjectGetPropertyData(mInputDevice, 0, NULL, &propertyAddress, &propertySize, su);
+			err = AudioObjectGetPropertyData(mInputDevice, 0, 0, &propertyAddress, &propertySize, su);
 
 			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mInputStreamsEnabled));
 			for (int i=0; i<len; ++i) {
@@ -1588,13 +1590,13 @@ bool SC_CoreAudioDriver::DriverStart()
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
 
-			err = AudioObjectGetPropertyDataSize(mInputDevice, 0, NULL, &propertyAddress, &propertySize);
+			err = AudioObjectGetPropertyDataSize(mInputDevice, 0, 0, &propertyAddress, &propertySize);
 			err = AudioObjectIsPropertySettable(mInputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
 			// err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			err = AudioObjectGetPropertyData(mOutputDevice, 0, NULL, &propertyAddress, &propertySize, su);
+			err = AudioObjectGetPropertyData(mOutputDevice, 0, 0, &propertyAddress, &propertySize, su);
 
 			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mOutputStreamsEnabled));
 			for (int i=0; i<len; ++i) {
@@ -1631,13 +1633,13 @@ bool SC_CoreAudioDriver::DriverStart()
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
 
-			err = AudioObjectGetPropertyDataSize(mOutputDevice, 0, NULL, &propertyAddress, &propertySize);
+			err = AudioObjectGetPropertyDataSize(mOutputDevice, 0, 0, &propertyAddress, &propertySize);
 			err = AudioObjectIsPropertySettable(mOutputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
 			//err = AudioDeviceGetProperty(mOutputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			err = AudioObjectGetPropertyData(mOutputDevice, 0, NULL, &propertyAddress, &propertySize, su);
+			err = AudioObjectGetPropertyData(mOutputDevice, 0, 0, &propertyAddress, &propertySize, su);
 
 			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mInputStreamsEnabled));
 			for (int i=0; i<len; ++i) {
@@ -1653,13 +1655,13 @@ bool SC_CoreAudioDriver::DriverStart()
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
 
-			err = AudioObjectGetPropertyDataSize(mOutputDevice, 0, NULL, &propertyAddress, &propertySize);
+			err = AudioObjectGetPropertyDataSize(mOutputDevice, 0, 0, &propertyAddress, &propertySize);
 			err = AudioObjectIsPropertySettable(mOutputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
 			//err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			err = AudioObjectGetPropertyData(mOutputDevice, 0, NULL, &propertyAddress, &propertySize, su);
+			err = AudioObjectGetPropertyData(mOutputDevice, 0, 0, &propertyAddress, &propertySize, su);
 
 			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mOutputStreamsEnabled));
 			for (int i=0; i<len; ++i) {

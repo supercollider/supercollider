@@ -18,6 +18,9 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#ifdef _WIN32
+#include "SC_Win32Utils.h"
+#endif
 
 #include "SC_World.h"
 #include "SC_WorldOptions.h"
@@ -286,6 +289,12 @@ void World_LoadGraphDefs(World* world)
 
 }
 
+namespace scsynth {
+void startAsioThread();
+void stopAsioThread();
+}
+
+
 SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 {
 #if (_POSIX_MEMLOCK - 0) >=  200112L
@@ -448,6 +457,8 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 		} else {
 			hw->mAudioDriver = 0;
 		}
+
+		scsynth::startAsioThread();
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_New: %s\n", exc.what());
 		World_Cleanup(world);
@@ -975,6 +986,8 @@ SC_DLLEXPORT_C void World_Cleanup(World *world)
 {
 	if (!world) return;
 
+	scsynth::stopAsioThread();
+
 	HiddenWorld *hw = world->hw;
 
 	if (hw && world->mRealTime) hw->mAudioDriver->Stop();
@@ -983,13 +996,14 @@ SC_DLLEXPORT_C void World_Cleanup(World *world)
 
 	if (world->mTopGroup) Group_DeleteAll(world->mTopGroup);
 
-	reinterpret_cast<SC_Lock*>(world->mDriverLock)->lock(); // never unlock..
+	reinterpret_cast<SC_Lock*>(world->mDriverLock)->lock();
 	if (hw) {
 		sc_free(hw->mWireBufSpace);
 		delete hw->mAudioDriver;
 		hw->mAudioDriver = 0;
 	}
 	delete reinterpret_cast<SC_Lock*>(world->mNRTLock);
+	reinterpret_cast<SC_Lock*>(world->mDriverLock)->unlock();
 	delete reinterpret_cast<SC_Lock*>(world->mDriverLock);
 	World_Free(world, world->mTopGroup);
 

@@ -579,11 +579,25 @@ method:: absdif
 Absolute value of the difference. code:: abs(a - b) ::
 discussion::
 code::
+(
 { // creates a rhythm
-var mul;
-mul = 0.2 absdif: FSinOsc.ar(2, 0, 0.5);
+var mul = 0.2 absdif: FSinOsc.ar(2, 0, 0.5);
 FSinOsc.ar(440, 0, mul);
 }.play;
+)
+::
+
+method:: moddif
+On a circle, there are two distances between two points. This operator returns the smaller value of the two.
+discussion::
+code::
+{ Line.ar(0, 4, 0.01).moddif(0) }.plot;
+(
+{
+var mul = 0.2 moddif: FSinOsc.ar(2, 0, 0.5);
+FSinOsc.ar(440, 0, mul);
+}.play;
+)
 ::
 
 method:: thresh

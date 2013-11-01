@@ -22,9 +22,8 @@ Build requirements
 
 (most of these will be available in your linux distribution as packages )
 
- * gcc >= 3.0
-   * http://www.gnu.org/software/gcc
-   * gcc versions < 3.0 are missing some required c++ features
+ * gcc >= 4.6
+   http://www.gnu.org/software/gcc
 
  * jack and libjack
    * http://jackit.sourceforge.net
@@ -33,10 +32,6 @@ Build requirements
  * libsndfile >= 1.0
    * http://www.mega-nerd.com/libsndfile
    * _the_ soundfile i/o library
-
- * pkg-config >= 0.14.0
-   * http://www.freedesktop.org/software/pkgconfig
-   * facilitates checking for installed packages when compiling from source
 
  * cmake >= 2.8
    * http://www.cmake.org
@@ -271,20 +266,6 @@ names are separated by ':' as in the unix PATH variable:
    ```
    $> export SC_SYNTHDEF_PATH="./synthdefs:/home/sk/SuperCollider/synthdefs"
    ```
-
-
-Documentation
--------------
-
-Apart from the sites listed above, some more documentation links...
-
- - a wiki for supercollider, set up by julian rohrhuber, is at
-
-    http://swiki.hfbk-hamburg.de/MusicTechnology/6
-
- - linux specific information can be found at
-
-    http://swiki.hfbk-hamburg.de/MusicTechnology/478
 
 
 Reporting bugs

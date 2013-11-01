@@ -3,7 +3,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
 
   if(APPLE)
-    if (CMAKE_SIZEOF_VOID_P MATCHES "4")
+    if(CMAKE_SIZEOF_VOID_P MATCHES "4")
       # cmpxchg8b is available on all intel apples
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=i686 -msse -msse2 -mfpmath=sse")
     endif()
@@ -14,17 +14,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   endif()
 
 endif(CMAKE_COMPILER_IS_GNUCXX)
-
-
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_INTEL OR CMAKE_COMPILER_IS_CLANG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-else()
-    message(FATAL_ERROR "unknown compiler. supernova cannot be compiled")
-endif()
-
-if(APPLE AND CMAKE_COMPILER_IS_CLANG)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-endif()
 
 
 if(SN_MEMORY_DEBUGGING)
@@ -39,7 +28,7 @@ endif()
 
 
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
-                    ${CMAKE_SOURCE_DIR}/external_libraries/oscpack
+                    ${CMAKE_SOURCE_DIR}/external_libraries/oscpack_1_1_0
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
                     )
 
@@ -75,6 +64,10 @@ set(libsupernova_src
     server/server_args.cpp
 )
 
+if(APPLE)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+endif()
+
 
 if (FFT_GREEN)
 	list(APPEND libsupernova_src ../../common/fftlib.c)
@@ -82,11 +75,6 @@ endif()
 
 if(WIN32)
     list(APPEND libsupernova_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
-endif()
-
-
-if(FFT_GREEN)
-    list(APPEND libsupernova_src ../../common/fftlib.c)
 endif()
 
 file(GLOB_RECURSE supernova_headers *hpp)
@@ -154,7 +142,7 @@ endif()
 target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES})
 
 if (Boost_FOUND)
-    target_link_libraries(libsupernova   ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
+    target_link_libraries(libsupernova ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
 else()
     target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options)
 endif()
@@ -172,6 +160,12 @@ if(APPLE)
 	install(TARGETS supernova
 			DESTINATION ${scappauxresourcesdir}
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
+
+elseif(WIN32)
+	install(TARGETS supernova
+        DESTINATION "SuperCollider"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
 else()
 
 install(TARGETS supernova
@@ -189,5 +183,5 @@ endif()
 
 if (APPLE)
     target_link_libraries(libsupernova "-framework vecLib")
-    target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices")
+    target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices -framework Foundation")
 endif()

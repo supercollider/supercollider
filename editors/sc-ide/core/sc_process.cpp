@@ -21,14 +21,13 @@
 #include <QCoreApplication>
 #include <QBuffer>
 
-#include "SC_DirUtils.h"
-
 #include "main.hpp"
 #include "main_window.hpp"
 #include "sc_introspection.hpp"
 #include "sc_process.hpp"
 #include "sc_server.hpp"
 #include "settings/manager.hpp"
+#include "util/standard_dirs.hpp"
 
 #include "../widgets/help_browser.hpp"
 
@@ -42,7 +41,8 @@ ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
     mIpcServer( new QLocalServer(this) ),
     mIpcSocket(NULL),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid())),
-    mTerminationRequested(false)
+    mTerminationRequested(false),
+    mCompiled(false)
 {
     mIntrospectionParser = new ScIntrospectionParser( this );
     mIntrospectionParser->start();
@@ -139,10 +139,7 @@ void ScProcess::startLanguage (void)
 
     QString sclangCommand;
 #ifdef Q_OS_MAC
-    char resourcePath[PATH_MAX];
-    sc_GetResourceDirectory(resourcePath, PATH_MAX);
-
-    sclangCommand = QString(resourcePath) + "/sclang";
+    sclangCommand = standardDirectory(ScResourceDir) + "/sclang";
 #else
     sclangCommand = "sclang";
 #endif
@@ -167,7 +164,7 @@ void ScProcess::recompileClassLibrary (void)
         emit statusMessage(tr("Interpreter is not running!"));
         return;
     }
-
+    mCompiled = false;
     write("\x18");
 }
 
@@ -181,7 +178,8 @@ void ScProcess::stopLanguage (void)
 
     evaluateCode("0.exit", true);
     closeWriteChannel();
-
+    
+    mCompiled = false;
     mTerminationRequested   = true;
     mTerminationRequestTime = QDateTime::currentDateTimeUtc();
 
@@ -201,6 +199,7 @@ void ScProcess::stopLanguage (void)
 
 void ScProcess::restartLanguage()
 {
+    mCompiled = false;
     stopLanguage();
     startLanguage();
 }
@@ -288,7 +287,7 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
         mActions[RecompileClassLibrary]->setEnabled(false);
         updateToggleRunningAction();
         postQuitNotification();
-
+        mCompiled = false;
         break;
     }
 }
@@ -342,11 +341,13 @@ void ScProcess::onResponse( const QString & selector, const QString & data )
     if (selector == introspectionSelector)
         mIntrospectionParser->process(data);
 
-    else if (selector == classLibraryRecompiledSelector)
+    else if (selector == classLibraryRecompiledSelector){
+        mCompiled = true;
         emit classLibraryRecompiled();
+    }
 
     else if (selector == requestCurrentPathSelector)
-        sendActiveDocument();
+        Main::documentManager()->sendActiveDocument();
 }
 
 void ScProcess::onStart()
@@ -356,28 +357,31 @@ void ScProcess::onStart()
 
     QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
     evaluateCode ( command, true );
-    sendActiveDocument();
+    Main::documentManager()->sendActiveDocument();
 }
-
-void ScProcess::setActiveDocument(Document * document)
+    
+void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int charsRemoved, int charsAdded )
 {
-    if (document)
-        mCurrentDocumentPath = document->filePath();
-    else
-        mCurrentDocumentPath.clear();
-
-    sendActiveDocument();
-}
-
-void ScProcess::sendActiveDocument()
-{
-    if (state() != QProcess::Running)
-        return;
-
-    if (!mCurrentDocumentPath.isEmpty())
-        evaluateCode(QString("ScIDE.currentPath_(\"%1\")").arg(mCurrentDocumentPath), true);
-    else
-        evaluateCode(QString("ScIDE.currentPath_(nil)"), true);
+    QVariantList argList;
+    
+    argList.append(QVariant(doc->id()));
+    argList.append(QVariant(position));
+    argList.append(QVariant(charsRemoved));
+    
+    QTextCursor cursor = QTextCursor(doc->textDocument());
+    cursor.setPosition(position, QTextCursor::MoveAnchor);
+    cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, charsAdded);
+    
+    argList.append(QVariant(cursor.selectedText()));
+    
+    try {
+        QDataStream stream(mIpcSocket);
+        stream.setVersion(QDataStream::Qt_4_6);
+        stream << QString("updateDocText");
+        stream << argList;
+    } catch (std::exception const & e) {
+        scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
+    }
 }
 
 void ScIntrospectionParserWorker::process(const QString &input)

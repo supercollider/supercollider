@@ -1,26 +1,27 @@
 /*  -*- c++ -*-
 	Commandline interpreter interface.
 	Copyright (c) 2003 2004 stefan kersten.
+	Copyright (c) 2013 tim blechmann.
 
 	====================================================================
 
 	SuperCollider real time audio synthesis system
-    Copyright (c) 2002 James McCartney. All rights reserved.
+	Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
 #ifndef SC_TERMINALCLIENT_H_INCLUDED
@@ -29,6 +30,11 @@
 #include "SC_LanguageClient.h"
 #include "SC_StringBuffer.h"
 #include "SC_Lock.h"
+#include "nova-tt/semaphore.hpp"
+
+#include <boost/array.hpp>
+#include <boost/asio.hpp>
+#include <boost/asio/system_timer.hpp>
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
@@ -75,7 +81,6 @@ public:
 	virtual ~SC_TerminalClient();
 
 	const Options& options() const { return mOptions; }
-	bool shouldBeRunning() const { return mShouldBeRunning; }
 
 	int run(int argc, char** argv);
 	void quit(int code);
@@ -89,6 +94,11 @@ public:
 	// NOTE: It may be called from any thread, and with interpreter locked.
 	virtual void sendSignal( Signal code );
 
+	void stop()
+	{
+		mIoService.stop();
+	}
+
 protected:
 	bool parseOptions(int& argc, char**& argv, Options& opt);
 	void printUsage();
@@ -96,13 +106,10 @@ protected:
 	void interpretCmdLine(const char* cmdLine, bool silent);
 	void interpretCmdLine(const char *buf, size_t size, bool silent);
 
-	void lockInput() { mInputMutex.lock(); }
-	void unlockInput() { mInputMutex.unlock(); }
-
 	// --------------------------------------------------------------
 
 	// NOTE: Subclasses should call from main thread
-	// after receiving sig_input, and with input locked:
+	// after receiving sig_input
 	void interpretInput();
 
 	// --------------------------------------------------------------
@@ -127,47 +134,54 @@ protected:
 	static int prScheduleChanged( struct VMGlobals *, int);
 	static int prRecompile(struct VMGlobals *, int);
 
+	void tick(const boost::system::error_code& error);
+
 private:
 	// NOTE: called from input thread:
 #ifdef HAVE_READLINE
 	static void readlineInit();
-	static void *readlineFunc(void *);
+	static void readlineFunc(SC_TerminalClient *);
 	static int readlineRecompile(int, int);
 	static void readlineCmdLine(char *cmdLine);
 #endif
 	static void *pipeFunc( void * );
-	void pushCmdLine( SC_StringBuffer &buf, const char *newData, size_t size );
+	void pushCmdLine( const char *newData, size_t size );
 
 	void initInput();
 	void startInput();
 	void endInput();
 	void cleanupInput();
 
-	// helpers
-	void lockSignal() { mSignalMutex.lock(); }
-	void unlockSignal() { mSignalMutex.unlock(); }
-
-	bool				mShouldBeRunning;
 	int					mReturnCode;
 	Options				mOptions;
 
-	// signals to main thread
-	SC_Lock mSignalMutex;
-	condition_variable_any mCond;
-	int mSignals;
+	// app-clock io service
+protected:
+	boost::asio::io_service mIoService;
+private:
+	boost::asio::io_service::work mWork;
+	boost::asio::basic_waitable_timer<chrono::system_clock> mTimer;
+
+	// input io service
+	boost::asio::io_service mInputService;
+	thread mInputThread;
+	void inputThreadFn();
+
+	static const size_t inputBufferSize = 256;
+	boost::array<char, inputBufferSize> inputBuffer;
+	SC_StringBuffer mInputThrdBuf;
+	SC_StringBuffer mInputBuf;
+#ifndef _WIN32
+	boost::asio::posix::stream_descriptor   mStdIn;
+#else
+	boost::asio::windows::stream_descriptor mStdIn;
+#endif
+	void startInputRead();
+	void onInputRead(const boost::system::error_code& error, std::size_t bytes_transferred);
 
 	// command input
 	bool mUseReadline;
-	bool mInputShouldBeRunning;
-	SC_StringBuffer mInputBuf;
-#ifndef _WIN32
-	int mInputCtlPipe[2];
-#else
-	void * mQuitInputEvent;
-#endif
-	thread mInputThread;
-	SC_Lock mInputMutex;
-	condition_variable_any mInputCond;
+	nova::semaphore mReadlineSem;
 };
 
 #endif // SC_TERMINALCLIENT_H_INCLUDED

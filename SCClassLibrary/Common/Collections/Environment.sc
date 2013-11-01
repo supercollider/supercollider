@@ -49,18 +49,14 @@ Environment : IdentityDictionary {
 	pop { ^this.class.pop }
 	push { this.class.push(this) }
 
-	linkDoc { arg doc, pushNow = true;
-		if(Platform.ideName == "scqt") { Error("Current platform doesn't support linking environments to documents.").throw };
-     	doc = doc ? Document.current;
-     	doc.envir_(this);
-     	if(pushNow and: { currentEnvironment !== this }) { this.push };
-     }
+	linkDoc { arg doc;
+		doc = doc ? Document.current;
+		doc.envir_(this);
+	}
 
-     unlinkDoc { arg doc, popNow = false;
-		if(Platform.ideName == "scqt") { Error("Current platform doesn't support linking environments to documents.").throw };
-     	doc = doc ? Document.current;
-     	if(doc.envir === this) { doc.envir_(nil) };
-     	if(popNow and:  { currentEnvironment === this }) { this.pop };
-     }
+	unlinkDoc { arg doc;
+		doc = doc ? Document.current;
+		if(doc.envir === this) { doc.envir_(nil) };
+	}
 
 }

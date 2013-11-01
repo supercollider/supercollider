@@ -341,7 +341,7 @@ struct gamma_p_inverse_func
       // flag is set, then Q(x) - q and it's derivatives.
       //
       typedef typename policies::evaluation<T, Policy>::type value_type;
-      typedef typename lanczos::lanczos<T, Policy>::type evaluation_type;
+      // typedef typename lanczos::lanczos<T, Policy>::type evaluation_type;
       typedef typename policies::normalise<
          Policy, 
          policies::promote_float<false>, 

@@ -47,7 +47,9 @@ class Document : public QObject
     friend class DocumentManager;
 
 public:
-    Document( bool isPlainText );
+    Document( bool isPlainText, const QByteArray & id = QByteArray(),
+              const QString & title = QString(),
+              const QString & text = QString() );
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
@@ -64,6 +66,21 @@ public:
 
     bool isPlainText() const { return mHighlighter == NULL; }
     bool isModified() const  { return mDoc->isModified(); }
+    
+    QString textAsSCArrayOfCharCodes(int start, int range);
+    void setTextInRange(const QString text, int start, int range);
+    
+    bool keyDownActionEnabled() { return mKeyDownActionEnabled; }
+    bool keyUpActionEnabled() { return mKeyUpActionEnabled; }
+    bool mouseDownActionEnabled() { return mMouseDownActionEnabled; }
+    bool mouseUpActionEnabled() { return mMouseUpActionEnabled; }
+    bool textChangedActionEnabled() { return mTextChangedActionEnabled; }
+    
+    void setKeyDownActionEnabled(bool enabled) { mKeyDownActionEnabled = enabled; }
+    void setKeyUpActionEnabled(bool enabled) {  mKeyUpActionEnabled = enabled; }
+    void setMouseDownActionEnabled(bool enabled) {  mMouseDownActionEnabled = enabled; }
+    void setMouseUpActionEnabled(bool enabled) {  mMouseUpActionEnabled = enabled; }
+    void setTextChangedActionEnabled(bool enabled) {  mTextChangedActionEnabled = enabled; }
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -82,6 +99,11 @@ private:
     QDateTime mSaveTime;
     int mIndentWidth;
     SyntaxHighlighter * mHighlighter;
+    bool mKeyDownActionEnabled;
+    bool mKeyUpActionEnabled;
+    bool mMouseDownActionEnabled;
+    bool mMouseUpActionEnabled;
+    bool mTextChangedActionEnabled;
 };
 
 class DocumentManager : public QObject
@@ -95,6 +117,9 @@ public:
     QList<Document*> documents() {
         return mDocHash.values();
     }
+    QList<QByteArray> documentIDs() {
+        return mDocHash.uniqueKeys();
+    }
 
     void create();
     void close( Document * );
@@ -102,12 +127,18 @@ public:
     bool saveAs( Document *, const QString & path );
     bool reload( Document * );
     const QStringList & recents() const { return mRecent; }
+    Document * documentForId(const QByteArray id);
+    bool textMirrorEnabled() { return mTextMirrorEnabled; }
+    void setActiveDocument(class Document *);
+    void sendActiveDocument();
+    Document * activeDocument() { return mCurrentDocument; }
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
     Document * open( const QString & path, int initialCursorPosition = -1, int selectionLength = 0, bool addToRecent = true );
     void clearRecents();
     void storeSettings( Settings::Manager * );
+    void handleScLangMessage( const QString &selector, const QString &data );
 
 Q_SIGNALS:
     void opened( Document *, int cursorPosition, int selectionLength );
@@ -116,18 +147,38 @@ Q_SIGNALS:
     void showRequest( Document *, int pos = -1, int selectionLength = 0 );
     void changedExternally( Document * );
     void recentsChanged();
+    void titleChanged( Document * );
 
 private slots:
     void onFileChanged( const QString & path );
+    void updateCurrentDocContents ( int position, int charsRemoved, int charsAdded );
 
 private:
-    Document * createDocument( bool isPlainText );
+    Document * createDocument( bool isPlainText = false,
+                               const QByteArray & id = QByteArray(),
+                               const QString & title = QString(),
+                               const QString & text = QString()  );
     bool doSaveAs( Document *, const QString & path );
     void addToRecent( Document * );
     void loadRecentDocuments( Settings::Manager * );
     void closeSingleUntitledIfUnmodified();
     QString decodeDocument(QByteArray const &);
-
+    void handleDocListScRequest();
+    void handleNewDocScRequest( const QString & data );
+    void handleGetDocTextScRequest( const QString & data );
+    void handleSetDocTextScRequest( const QString & data );
+    void handleSetCurrentDocScRequest( const QString & data );
+    void handleCloseDocScRequest( const QString & data );
+    void handleSetDocTitleScRequest( const QString & data );
+    
+    bool parseActionEnabledRequest( const QString & data, std::string *idString, bool *en);
+    void handleEnableKeyDownScRequest( const QString & data );
+    void handleEnableKeyUpScRequest( const QString & data );
+    void handleEnableMouseDownScRequest( const QString & data );
+    void handleEnableMouseUpScRequest( const QString & data );
+    void handleEnableTextChangedScRequest( const QString & data );
+    void handleEnableTextMirrorScRequest( const QString & data );
+    void syncLangDocument( Document * );
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
 
@@ -136,6 +187,10 @@ private:
 
     QStringList mRecent;
     static const int mMaxRecent = 10;
+    
+    bool mTextMirrorEnabled;
+    QString mCurrentDocumentPath;
+    class Document * mCurrentDocument;
 };
 
 } // namespace ScIDE

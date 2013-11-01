@@ -21,10 +21,9 @@
 #include "doc_manager.hpp"
 #include "session_manager.hpp"
 #include "settings/manager.hpp"
+#include "util/standard_dirs.hpp"
 
 #include "../widgets/main_window.hpp"
-
-#include "SC_DirUtils.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -33,10 +32,7 @@ namespace ScIDE {
 
 static QString sessionFilePath( const QString & name )
 {
-    char config_dir[PATH_MAX];
-    sc_GetUserConfigDirectory(config_dir, PATH_MAX);
-
-    QDir dir(config_dir);
+    QDir dir(standardDirectory(ScConfigUserDir));
 
     if (!dir.mkpath("sessions")) {
         qWarning("The path to sessions does not exist and could not be created!");
@@ -56,10 +52,7 @@ SessionManager::SessionManager( DocumentManager *docMng, QObject * parent ) :
 
 QDir SessionManager::sessionsDir()
 {
-    char config_dir[PATH_MAX];
-    sc_GetUserConfigDirectory(config_dir, PATH_MAX);
-
-    QDir dir(config_dir);
+    QDir dir(standardDirectory(ScConfigUserDir));
 
     if (dir.mkpath("sessions"))
         dir.cd("sessions");
@@ -96,7 +89,8 @@ QString SessionManager::lastSession()
 
 void SessionManager::newSession()
 {
-    closeSession();
+    if (!closeSession())
+      return;
 
     QDir dir = sessionsDir();
     if (!dir.path().isEmpty())
@@ -109,7 +103,8 @@ Session *SessionManager::openSession( const QString & name )
 {
     // NOTE: This will create a session if it doesn't exists
 
-    closeSession();
+    if (!closeSession())
+      return 0;
 
     QDir dir = sessionsDir();
     if (dir.path().isEmpty())
@@ -164,15 +159,17 @@ Session * SessionManager::saveSessionAs( const QString & name )
     return mCurrentSession;
 }
 
-void SessionManager::closeSession()
+bool SessionManager::closeSession()
 {
-    MainWindow::instance()->promptSaveDocs();
+    if (!MainWindow::instance()->promptSaveDocs())
+      return false;
 
     if (mCurrentSession)
         emit saveSessionRequest(mCurrentSession);
 
     delete mCurrentSession;
     mCurrentSession = 0;
+    return true;
 }
 
 void SessionManager::removeSession( const QString & name )
@@ -182,7 +179,8 @@ void SessionManager::removeSession( const QString & name )
         return;
 
     if (mCurrentSession && mCurrentSession->name() == name) {
-        closeSession();
+        if (!closeSession())
+          return;
         saveLastSession(dir, QString());
         emit switchSessionRequest(0);
     }

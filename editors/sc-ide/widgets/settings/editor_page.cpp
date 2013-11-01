@@ -85,6 +85,7 @@ void EditorPage::load( Manager *s )
     ui->blinkDuration->setValue( s->value("blinkDuration").toInt() );
     ui->highlightCurrentLine->setChecked( s->value("highlightCurrentLine").toBool() );
     ui->highlightBracketContents->setChecked( s->value("highlightBracketContents").toBool() );
+    ui->inactiveEditorFadeAlpha->setValue( s->value("inactiveEditorFadeAlpha").toInt() );
 
     s->beginGroup("font");
     QString fontFamily = s->value("family").toString();
@@ -228,6 +229,7 @@ void EditorPage::store( Manager *s )
     s->setValue("insertMatchingTokens", ui->insertMatchingTokens->isChecked());
     s->setValue("highlightCurrentLine", ui->highlightCurrentLine->isChecked());
     s->setValue("highlightBracketContents", ui->highlightBracketContents->isChecked());
+    s->setValue("inactiveEditorFadeAlpha", ui->inactiveEditorFadeAlpha->value());
 
     s->setValue("blinkDuration", ui->blinkDuration->value());
 

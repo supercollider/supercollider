@@ -188,6 +188,9 @@ AbstractFunction {
 	biexp { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
 		^this.composeNAryOp('biexp', [inCenter, inMin, inMax, outCenter, outMin, outMax, clip])
 	}
+	moddif { arg function = 0.0, mod = 1.0;
+		^this.composeNAryOp('moddif', [function, mod])
+	}
 
 	degreeToKey { arg scale, stepsPerOctave=12;
 		^this.composeNAryOp('degreeToKey', [scale, stepsPerOctave])

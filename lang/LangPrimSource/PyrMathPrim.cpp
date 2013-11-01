@@ -830,7 +830,12 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 			size = 1;
 		else
 			size = ((last - first) / step) + 1;
-		if(size<1 || size > INT_MAX_BY_PyrSlot){
+
+		if ((size < 1) || ((step >= 0) && (last < first)) || ((step <= 0) && (last > first))) {
+			post("prSimpleNumberSeries: arguments do not form an arithmetic progression: first: %i, step: %i, last %i\n", first, step, last);
+			return errFailed;
+		}
+		if(size > INT_MAX_BY_PyrSlot){
 			post("prSimpleNumberSeries: array size %i exceeds limit (%i)\n", size, INT_MAX_BY_PyrSlot);
 			return errFailed;
 		}
@@ -871,7 +876,12 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 
 		step = second - first;
 		size = (int)floor((last - first) / step + 0.001) + 1;
-		if(size<1 || size > INT_MAX_BY_PyrSlot){
+
+		if ((size < 1) || ((step >= 0) && (last < first)) || ((step <= 0) && (last > first))) {
+			post("prSimpleNumberSeries: arguments do not form an arithmetic progression: first: %f, step: %f, last %f\n", first, step, last);
+			return errFailed;
+		}
+		if(size > INT_MAX_BY_PyrSlot){
 			post("prSimpleNumberSeries: array size %i exceeds limit (%i)\n", size, INT_MAX_BY_PyrSlot);
 			return errFailed;
 		}

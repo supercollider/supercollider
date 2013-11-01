@@ -69,8 +69,8 @@ static inline bool stringEqual(const char * a, const char * b)
 // nestable range tags with no text, with children
 %token LIST TREE NUMBEREDLIST DEFINITIONLIST TABLE FOOTNOTE NOTE WARNING
 // modal range tags that take multi-line text
-%token CODE LINK ANCHOR SOFT IMAGE TELETYPE MATH STRONG EMPHASIS
-%token CODEBLOCK "CODE block" TELETYPEBLOCK "TELETYPE block" MATHBLOCK "MATH block"
+%token CODE LINK ANCHOR SOFT IMAGE TELETYPE STRONG EMPHASIS
+%token CODEBLOCK "CODE block" TELETYPEBLOCK "TELETYPE block"
 // symbols
 %token TAGSYM "::" BARS "||" HASHES "##"
 // text and whitespace
@@ -311,13 +311,11 @@ inlinetag: LINK { $$ = "LINK"; }
          | EMPHASIS { $$ = "EMPHASIS"; }
          | CODE { $$ = "CODE"; }
          | TELETYPE { $$ = "TELETYPE"; }
-         | MATH { $$ = "MATH"; }
          | ANCHOR { $$ = "ANCHOR"; }
 ;
 
 blocktag: CODEBLOCK { $$ = "CODEBLOCK"; }
         | TELETYPEBLOCK { $$ = "TELETYPEBLOCK"; }
-        | MATHBLOCK { $$ = "MATHBLOCK"; }
 ;
 
 listtag: LIST { $$ = "LIST"; }

@@ -36,6 +36,16 @@ Saves the receiver on the stack.
 method::pop
 Restores link::#.currentEnvironment:: from the stack.
 
+method::linkDoc
+Links the environment to the current document, so that it is the currentEnvironment only when one document is in focus. See:link::Classes/Document#envir::
+argument::doc
+The document to link to, defaults to the current document (link::Classes/Document#current::). If the document has focus or no document is given, the environment is pushed immediately.
+
+method::unlinkDoc
+Uninks the environment to the current document, so that it is the currentEnvironment only when one document is in focus. See:link::Classes/Document#envir::
+argument::doc
+The document to unlink from, defaults to the current document (link::Classes/Document#current::). If the document has focus or no document is given, the environment is popped immediately.
+
 
 SECTION::PseudoVariables (global variables)
 These are not methods, but global variables.

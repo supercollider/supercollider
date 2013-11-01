@@ -18,7 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#pragma once // the value on here causes MSVC8 not to compile, is it needed elsewhere?
+#ifndef PYR_SIGNAL_H
+#define PYR_SIGNAL_H
 
 #include "PyrObject.h"
 #include "GC.h"
@@ -368,3 +369,5 @@ PyrObject* signal_cubed_range(PyrObject* ina, long start, long end);
 PyrObject* signal_distort_range(PyrObject* ina, long start, long end);
 
 PyrObject* signal_fade_range(PyrObject* ina, long start, long end, float lvl0, float lvl1);
+
+#endif // PYR_SIGNAL_H

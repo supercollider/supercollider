@@ -292,11 +292,7 @@ HelpBrowser {
 		toolbar[\Back].action = { this.goBack };
 		toolbar[\Forward].action = { this.goForward };
 		toolbar[\Reload].action = { this.goTo( webView.url ) };
-		if(GUI.id === \cocoa) {
-			txtFind.action = { |x| webView.focus; AppClock.sched(0, {webView.findText( x.string );}) };
-		} {
-			txtFind.action = { |x| webView.findText( x.string ) };
-		};
+		txtFind.action = { |x| webView.findText( x.string ) };
 	}
 
 	redirectTextFile {|url|

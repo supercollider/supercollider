@@ -73,6 +73,7 @@ set ( ide_src
     core/settings/serialization.cpp
     core/settings/manager.cpp
     core/session_manager.cpp
+    core/util/standard_dirs.cpp
     widgets/cmd_line.cpp
     widgets/doc_list.cpp
     widgets/documents_dialog.cpp
@@ -127,6 +128,9 @@ list(APPEND ide_src
 )
 
 list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp)
+if(APPLE)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+endif()
 
 if(APPLE)
 	list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp)
@@ -181,11 +185,22 @@ set(ide_sources ${ide_src} ${all_hdr} )
 
 set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations})
 
-if(FINAL_BUILD)
+# This sets up the exe icon for windows under mingw.
+if(MINGW)
+ set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
+ set(CMAKE_RC_COMPILER_INIT windres)
+ ENABLE_LANGUAGE(RC)
+ SET(CMAKE_RC_COMPILE_OBJECT
+ "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
+endif(MINGW)
+
+
+# final builds of the IDE seem to be broken atm
+if(0 AND FINAL_BUILD)
   CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
-  add_executable( ${ide_name} MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} )
+  add_executable( ${ide_name} MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} ${RES_FILES})
 else()
-  add_executable( ${ide_name} MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} )
+  add_executable( ${ide_name} MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} ${RES_FILES} )
 endif()
 
 
@@ -199,7 +214,7 @@ else()
 endif()
 
 if(APPLE)
-    target_link_libraries( ${ide_name} "-framework CoreServices")
+    target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F/Library/Frameworks")
 elseif(WIN32)
     target_link_libraries( ${ide_name} wsock32 )
@@ -210,6 +225,11 @@ endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     target_link_libraries(${ide_name} rt)
+
+    find_package(X11 REQUIRED)
+
+    include_directories(${X11_INCLUDE_DIR})
+    target_link_libraries(${ide_name} ${X11_X11_LIB})
 endif()
 
 if(PTHREADS_FOUND)
@@ -233,9 +253,9 @@ if(APPLE)
     endif()
 
     # set how it shows up in the Info.plist file
-    SET(MACOSX_BUNDLE_ICON_FILE ../../platform/mac/SCcube.icns)
-
-    install(DIRECTORY ../../platform/mac/Resources/ DESTINATION ${scappauxresourcesdir})
+    SET(MACOSX_BUNDLE_ICON_FILE ../../icons/SCcube.icns)
+    
+    install(FILES ${MACOSX_BUNDLE_ICON_FILE} DESTINATION ${scappauxresourcesdir}/) 
 
     install(FILES ${translations}
             DESTINATION ${scappauxresourcesdir}/translations)
