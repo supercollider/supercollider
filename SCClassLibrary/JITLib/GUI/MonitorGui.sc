@@ -5,14 +5,14 @@ MonitorGui : JITGui {
 	classvar <>lastOutBus = 99;
 
 	var <config;
-	var <ampSl, <playBut, <setOutBox, <playNDialogBut, <fadeBox;
+	var <ampSl, <playBut, <setOutBox, <fadeBox;
 
 	*initClass {
 			Class.initClassTree(Spec);
 			Spec.add(\ampx4, [0, 4, \amp]);
 			Spec.add(\fadePx, [0, 100, \amp, 0, 0.02]);
 	}
-		// options can be: \playN, \level, \name, \fade
+		// options can be: \level, \name, \fade
 	*new { |object, parent, bounds, makeSkip=true, options = #[]|
 		^super.newCopyArgs(object, 0, parent, bounds).init(makeSkip, options)
 	}
@@ -21,7 +21,6 @@ MonitorGui : JITGui {
 		var minWidth = 0;
 		config = (
 			level: options.includes(\level),
-			playN: options.includes(\playN),
 			name: options.includes(\name),
 			fade: options.includes(\fade)
 		);
@@ -35,7 +34,6 @@ MonitorGui : JITGui {
 
 		if (config.level) { minWidth = minWidth + 60 };
 		if (config.name) { minWidth = minWidth + 60 };
-		if (config.playN) { minWidth = minWidth + 20 };
 		if (config.fade) { minWidth = minWidth + 60 };
 		minSize = minWidth @ (skin.buttonHeight + (skin.margin.y * 2));
 	///	"MonitorGui-minSize: %\n".postf(minSize);
@@ -50,9 +48,7 @@ MonitorGui : JITGui {
 		var nameWid = if (config.name, 60, 0);
 		var fadeWid = if (config.fade, 60, 0);
 		var playWid = 40, outWid = 30;
-		var playNWid = if (config.playN, 20, 0);
-
-		var sliderWidth = fullWid - (levelWid + playWid + outWid + playNWid + nameWid + fadeWid) - 4;
+		var sliderWidth = fullWid - (levelWid + playWid + outWid + nameWid + fadeWid) - 4;
 
 		zone.decorator.margin_(0@0);
 		zone.visible_(false);
@@ -61,7 +57,6 @@ MonitorGui : JITGui {
 		this.makeVol(sliderWidth + levelWid, height);
 		this.makePlayOut(playWid, outWid, height);
 
-		if(config.playN) { this.makePlayNDialogBut(playNWid, height) };
 		if (config.name) { this.makeNameView(nameWid, height) };
 		if (config.fade) { this.makeFade(fadeWid, height) };
 	}
@@ -72,7 +67,7 @@ MonitorGui : JITGui {
 
 	makeNameView { |width, height|
 		nameView = DragSource(zone, Rect(0,0, width, height))
-			.font_(font).align_(0).resize_(3)
+		.font_(font).align_(0).resize_(3)
 	}
 
 	makeFade { |width = 60, height = 18|
@@ -104,13 +99,28 @@ MonitorGui : JITGui {
 	makePlayOut { |playWid, outWid, height|
 
 		playBut = Button(zone, Rect(0,0, playWid, height))
-			.font_(font).resize_(3)
-			.states_([
-				[ if (config.playN, \playN, \play), skin.fontColor, skin.offColor],
-				[ \stop, skin.fontColor, skin.onColor ]
-			]);
 
-		this.playNMode_(config.playN);
+		.font_(font).resize_(3)
+		.states_([
+			[ \play, skin.fontColor, skin.offColor],
+			[ \stop, skin.fontColor, skin.onColor ]
+		])
+		.action_({ arg btn, modif;
+			var func;
+			var alt = modif.notNil and: { modif.isAlt };
+			var shift = modif.notNil and: { modif.isShift };
+			if(object.notNil) {
+				[ 	{ 	if(shift) { object.playNDialog(usePlayN:true) } { if (alt) { object.end } { object.stop } }; },
+					{ 	if(shift) { object.playNDialog(usePlayN:true) } { if (alt) { object.vol_(0) } }; // play silently
+						object.play;
+					}
+				].at(btn.value).value;
+				btn.value_((try { object.monitor.isPlaying } ? false).binaryValue);
+			} {
+				"MonitorGui - no proxy to play!".warn;
+				btn.value_(0);
+			}
+		});
 
 		setOutBox = EZNumber(zone, outWid@height, "", [0, lastOutBus, \lin, 1],
 			{ |box, mod|
@@ -127,50 +137,6 @@ MonitorGui : JITGui {
 		setOutBox.numberView.font_(font).align_(\center);
 	}
 
-	makePlayNDialogBut { |playNDWid, height|
-
-		playNDialogBut = GUI.button.new(zone, Rect(0,0, playNDWid, height))
-			.font_(font).resize_(3)
-			.states_([
-				["-=", skin.fontColor, skin.offColor],
-				["-<", skin.fontColor, skin.onColor]
-			])
-			.action_({ |box, mod|
-				if (object.notNil) { object.playNDialog(usePlayN:true) };
-				box.value_(1 - box.value);
-			});
-	}
-
-	playNMode_ { |flag = true|
-		var playName, stopName, func;
-		if (flag.isNil) { "MonitorGui.playNMode_ : flag is nil? should not happen.".postln; flag = false };
-
-		if (flag) {
-			playName = \playN; stopName = \stopN; func = { object.playN };
-		} {
-			playName = \play; stopName = \stop;   func = { object.play };
-		};
-
-		playBut.states_(
-			[(playBut.states[0][0] = playName),
-			(playBut.states[1][0] = stopName) ]);
-		playBut.refresh;
-
-		playBut.action_({ arg btn, modif;
-			var alt = modif.notNil and: { modif.isAlt };
-			if(object.notNil) {
-				[ 	{ 	if (alt) { object.end } { object.stop }; },
-					{ 	if (alt) { object.vol_(0) };
-						func.value;
-					}
-				].at(btn.value).value;
-				btn.value_((try { object.monitor.isPlaying } ? false).binaryValue);
-			} {
-				"MonitorGui - no proxy to play!".warn;
-				btn.value_(0);
-			}
-		})
-	}
 
 	getState {
 		var isAudio, newState;
@@ -183,7 +149,6 @@ MonitorGui : JITGui {
 			isAudio: false,
 			monPlaying: 	0,
 			vol: 		1,
-			usedPlayN: 	false, // todo: remove this
 			playsSpread: 	false,
 			out: 		0,
 			monFade:		0.02
@@ -206,7 +171,6 @@ MonitorGui : JITGui {
 		newState.putPairs([
 			\monPlaying,	monitor.isPlaying.binaryValue,
 			\vol, 		monitor.vol,
-			\usedPlayN, 	monitor.usedPlayN,
 			\out, 		monitor.out ? 0,
 			\playsSpread,	monitor.hasSeriesOuts.not,
 			\monFade,		monitor.fadeTime
@@ -243,20 +207,9 @@ MonitorGui : JITGui {
 		if (newState[\monPlaying] != prevState[\monPlaying]) {
 			playBut.value_(newState[\monPlaying]);
 		};
-		if (newState[\usedPlayN] != prevState[\usedPlayN]) {
-			this.playNMode_ (newState[\usedPlayN]);
-		};
 		if (newState[\out] != prevState[\out]) {
 			setOutBox.value_(newState[\out]);
 		};
-
-		if (playNDialogBut.notNil) {
-			if (newState[\playsSpread] != prevState[\playsSpread]) {
-			//	"playsSpread: %\n".postf(newState[\playsSpread].binaryValue);
-				playNDialogBut.value_(newState[\playsSpread].binaryValue)
-			}
-		};
-
 		if (fadeBox.notNil) {
 			if (newState[\monFade] != prevState[\monFade]) {
 				fadeBox.value_(newState[\monFade] ? 0.02);

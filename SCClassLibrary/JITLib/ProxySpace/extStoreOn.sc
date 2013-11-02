@@ -99,11 +99,13 @@
 		var defAmps = 1 ! numCh;
 		var defIns = { |i| i + this.index } ! numCh;
 		var defVol = 1;
+		var defFadeTime = 0.02 ! numCh;
 
 		var outs = try { this.monitor.outs } ? defOuts;
 		var amps = try { this.monitor.amps } ? defAmps;
 		var ins  = try { this.monitor.ins }  ? defIns;
 		var vol  = try { this.monitor.vol }  ? defVol;
+		var fadeTime = try { this.monitor.fadeTime }  ? defFadeTime;
 
 		var setStr = "";
 
@@ -122,7 +124,11 @@
 		};
 		if (dropDefaults.not or: { vol != defVol }) {
 			if (setStr.size > 0) { setStr = setStr ++ ", \n" };
-			setStr = setStr ++ "\tvol:" + vol ++ "\n";
+			setStr = setStr ++ "\tvol:" + vol;
+		};
+		if (dropDefaults.not or: { fadeTime != defFadeTime }) {
+			if (setStr.size > 0) { setStr = setStr ++ ", \n" };
+			setStr = setStr ++ "\tfadeTime:" + fadeTime;
 		};
 		if (setStr.size > 0) {
 			setStr = "(\n" ++ setStr ++ "\n)";

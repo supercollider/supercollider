@@ -15,7 +15,7 @@ Ndef(\a).ar;
 Ndef(\k).kr;
 
 	// make a MonitorGui with all bells and whistles
-m = MonitorGui.new(bounds: 500@40, options: [\playN, \name, \level, \fade]);
+m = MonitorGui.new(bounds: 500@40, options: [\name, \level, \fade]);
 
 	// when it has a kr proxy, it is visible, but disabled
 m.object_(Ndef(\k));
