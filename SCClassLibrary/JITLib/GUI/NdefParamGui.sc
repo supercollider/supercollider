@@ -144,11 +144,11 @@ NdefParamGui : EnvirGui {
 
 			oldKey = prevState[\editKeys][i];
 			if (oldKey.notNil) {
-				oldVal = prevSettings.detect(_[0] == oldKey);
+			oldVal = prevSettings.detect { |pair| pair[0] == oldKey };
 				if (oldVal.notNil) { oldVal = oldVal[1] };
 			};
 			if (oldKey != newKey or: { oldVal != newVal }) {
-			//	"val for % has changed: %\n".postf(key, newval);
+			//	"val for % has changed: %\n".postf(newKey, newval);
 				this.setField(i, newKey, newVal, newKey == oldKey);
 			};
 		};

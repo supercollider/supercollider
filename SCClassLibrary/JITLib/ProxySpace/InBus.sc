@@ -205,7 +205,7 @@ Monitor {
 		outs = argOuts ? outs ?? { (0..ins.size-1) };
 		amps = argAmps ? amps ? #[1.0];
 		fadeTimes = argFadeTime ? fadeTimes ? #[0.02];
-		vol = argVol ? 1.0;
+		vol = argVol ? vol ? 1.0;
 
 		synthArgs = [ins, outs, amps, fadeTimes].asControlInput.postln.flop.postln;
 
@@ -290,9 +290,6 @@ Monitor {
 		^(outs.size < 1) or: { ^outs.differentiate.drop(1).every(_ == 1) };
 	}
 
-	usedPlayN_ { |flag|
-		this.deprecated(thisMethod);
-	}
 	*warnPlayN {
 		this.deprecated(thisMethod);
 	}
