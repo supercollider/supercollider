@@ -26,11 +26,7 @@ m.object_(Ndef(\a));
 Ndef(\a).play		//
 	// and volume
 Ndef(\a).vol_(0.25);
-Ndef(\a).stop
 
-	// switch to playN mode - spread outputs should show
-Ndef(\a).playN([0, 2]);
-	// switch back to play - spread outbox goes back
 Ndef(\a).stop;
 Ndef(\a).play(0);
 ::
@@ -50,22 +46,19 @@ w = Window.new.front;
 w.addFlowLayout;
 g = MonitorGui(Ndef(\a), w, 300@40);
 )
-	// different options:
-	// a playN dialog button
-g = MonitorGui.new(Ndef(\a), options: [\playN])
 
 	// bounds
-MonitorGui.new(Ndef(\a), bounds: Rect(100, 100, 400, 30), options: [\playN])
-MonitorGui.new(Ndef(\a), bounds: 400@24, options: [\playN])
+MonitorGui.new(Ndef(\a), bounds: Rect(100, 100, 400, 30))
+MonitorGui.new(Ndef(\a), bounds: 400@24)
 
 	// level name and numerical value
-MonitorGui.new(Ndef(\a), options: [\playN, \level])
+MonitorGui.new(Ndef(\a), options: [\level])
 
 	// a nameView and a fadeTime setter box
-MonitorGui.new(Ndef(\a), options: [\playN, \name, \fade])
+MonitorGui.new(Ndef(\a), options: [\name, \fade])
 
 	// all of 'em
-MonitorGui.new(Ndef(\a), options: [\playN, \level, \name, \fade])
+MonitorGui.new(Ndef(\a), options: [\level, \name, \fade])
 ::
 
 argument::object
@@ -99,21 +92,15 @@ method::ampSl
 an link::Classes/EZSlider:: for link::Classes/Monitor:: volume
 
 method::playBut
-a play button - shows play or playN
+a play button. Shift-click opens a dialog window for playN output routing by code
 
 method::setOutBox
 a numberbox to set output routing
-
-method::playNDialogBut
-opens a dialog window for playN output routing by code
 
 method::fadeBox
 a numberbox for setting monitor fadeTime.
 
 subsection::Some Methods
-
-method::playNMode
-switches between playN mode (true) and play mode (false)
 
 method::checkUpdate
 compare previous state with current state, and update gui elements.
