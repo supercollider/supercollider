@@ -168,7 +168,7 @@ NdefGui : JITGui {
 	makeNameView { |nameWid, height|
 		try { // QT temp fix
 			nameView = DragBoth(zone, Rect(0,0, nameWid, height))
-			.font_(font).align_(0)
+			.font_(font)//.align_(0)
 			.receiveDragHandler_({
 				var drag = View.currentDrag;
 				if (drag.isKindOf(String)) { drag = drag.interpret };

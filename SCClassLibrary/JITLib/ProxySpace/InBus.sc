@@ -290,6 +290,11 @@ Monitor {
 		^(outs.size < 1) or: { ^outs.differentiate.drop(1).every(_ == 1) };
 	}
 
+	// this method is used to find the best representation for compileStrings.
+	usedPlayN {
+		^fadeTimes.isArray and:{ fadeTimes.size > 1 } or: { this.hasSeriesOuts.not }
+	}
+
 	*warnPlayN {
 		this.deprecated(thisMethod);
 	}
