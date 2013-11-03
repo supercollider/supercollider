@@ -86,11 +86,14 @@ MonitorGui : JITGui {
 	makeVol { |width, height|
 		var showLev = config.level.binaryValue;
 
-		ampSl = EZSlider(zone, (width @ height), \vol, \amp,
+		ampSl = EZSlider(zone, (width @ height), "", \amp, // for now, leave "vol" out
 			{ arg sl; if(object.notNil) { object.vol_(sl.value) } },
 			0, false,
-			labelWidth: showLev * 20,
-			numberWidth: showLev * 40);
+			labelWidth: 0,
+			//labelWidth: showLev * 20, // for now, leave "vol" out
+			numberWidth: showLev * 40,
+			gap: 1@1
+		);
 
 		ampSl.labelView.font_(font).align_(0);
 		ampSl.view.resize_(2);
