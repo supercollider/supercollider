@@ -31,6 +31,6 @@ set(hidapi2osc_SRCS
 
 add_executable( hidapi2osc ${hidapi2osc_SRCS} )
 
-target_link_libraries(hidapi2osc ${liblo_LIBRARIES} hidapi hidapi_parser )
+target_link_libraries(hidapi2osc ${liblo_LIBRARIES} ${EXTRA_LIBS} hidapi hidapi_parser )
 
 install(TARGETS hidapi2osc DESTINATION bin)

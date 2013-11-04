@@ -8,6 +8,6 @@ include_directories(
 
 add_executable( hidparsertest hidparsertest.c )
 
-target_link_libraries(hidparsertest hidapi hidapi_parser )
+target_link_libraries(hidparsertest hidapi hidapi_parser ${EXTRA_LIBS})
 
 install(TARGETS hidparsertest DESTINATION bin)
