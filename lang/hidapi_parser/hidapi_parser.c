@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 // #include <math.h>
 
 #include "hidapi_parser.h"
@@ -870,7 +871,7 @@ int hid_send_output_report( struct hid_dev_desc * devd, int reportid ){
       buflength++; // one more byte if report id is not 0
   }
   buf = (char *) malloc( sizeof( char ) * buflength );
-  memset(buf, 0x0, sizeof(buf));
+  memset(buf, 0x0, sizeof(char) * buflength);
 
   // iterate over elements, find which ones are output elements with the right report id,
   // and set their output values to the buffer
