@@ -177,7 +177,7 @@ int main(int argc, char* argv[]){
   
   if (argc == 3 ){          
     vendor_id = atoi( argv[1] );
-    product_id = atoi( argv[1] );
+    product_id = atoi( argv[2] );
   } else {
     printf( "please run again with vendor and product id to open specified device, e.g. hidparsertest 0x044f 0xd003\n" );
       return 0;
