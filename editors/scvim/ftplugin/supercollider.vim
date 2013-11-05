@@ -43,9 +43,9 @@ else
 endif
 
 "source the scvimrc file if it exists
-"if filereadable($HOME . "/.scvimrc")
-"	source $HOME/.scvimrc
-"end
+if filereadable($HOME . "/.scvimrc")
+	source $HOME/.scvimrc
+end
 
 "add the cache dir to 
 set runtimepath+=$SCVIM_CACHE_DIR
@@ -201,21 +201,18 @@ endfunction
 
 function SClangStart()
 	if !filewritable(s:sclangPipeAppPidLoc)
-                if $TERM[0:5] == "screen"
-                        call system("screen -D -R -X split; screen -D -R -X focus; screen -D -R -X screen " . s:sclangPipeApp . "; screen -D -R -X focus")
-                else
-                        call system(s:sclangTerm . " " . s:sclangPipeApp . "&")
-                endif
-	else
+    call system("tmux splitw -h -p 25; tmux send-keys " . s:sclangPipeApp . " C-m; tmux selectp -L; sleep 1; tmux renamew scvim")
+  else
 		throw s:sclangPipeAppPidLoc . " exists, is " . s:sclangPipeApp . " running?  If not try deleting " . s:sclangPipeAppPidLoc
 	endif
 endfunction
 
 function SClangKill()
 	if filewritable(s:sclangPipeAppPidLoc)
+		call system("tmux selectp -R; tmux send-keys C-c; tmux killp -t scvim.1")
 		call SendToSC("Server.quitAll;")
 		:sleep 10m
-		call system("kill `cat " . s:sclangPipeAppPidLoc . "` && rm " . s:sclangPipeAppPidLoc . " && rm " . s:sclangPipeLoc)
+    call system("kill `cat " . s:sclangPipeAppPidLoc . "` && rm " . s:sclangPipeAppPidLoc . " && rm " . s:sclangPipeLoc)
 	end
 endfunction
 
