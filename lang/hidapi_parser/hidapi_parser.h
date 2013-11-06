@@ -187,6 +187,10 @@ int hid_send_output_report( struct hid_dev_desc * devd, int reportid );
 
 // int hid_parse_feature_report( char* buf, int size, hid_device_descriptor * descriptor );
 
+#ifdef APPLE
+void hid_parse_element_info( struct hid_dev_desc * devdesc );
+#endif
+
 #ifdef __cplusplus /* If this is a C++ compiler, end C linkage */
 }
 #endif

@@ -950,6 +950,11 @@ int hid_send_output_report( struct hid_dev_desc * devd, int reportid ){
 
 struct hid_dev_desc * hid_read_descriptor( hid_device * devd ){
   struct hid_dev_desc * desc;
+#ifdef APPLE
+  desc = (struct hid_dev_desc *) malloc( sizeof( struct hid_dev_desc ) );
+  hid_parse_element_info( struct hid_dev_desc * devdesc );
+  return desc;
+#else  
   unsigned char descr_buf[HIDAPI_MAX_DESCRIPTOR_SIZE];
   int res;
   res = hid_get_report_descriptor( devd, descr_buf, HIDAPI_MAX_DESCRIPTOR_SIZE );
@@ -961,6 +966,7 @@ struct hid_dev_desc * hid_read_descriptor( hid_device * devd ){
     hid_parse_report_descriptor( descr_buf, res, desc );
     return desc;
   }
+#endif
 }
 
 struct hid_dev_desc * hid_open_device(  unsigned short vendor, unsigned short product, const wchar_t *serial_number ){
@@ -993,3 +999,179 @@ void hid_close_device( struct hid_dev_desc * devdesc ){
 //   hid_free_descriptor( devdesc->descriptor );
   //TODO: more memory freeing?  
 }
+
+#ifdef APPLE
+
+#include <IOKit/hid/IOHIDManager.h>
+#include <IOKit/hid/IOHIDKeys.h>
+#include <CoreFoundation/CoreFoundation.h>
+
+
+void hid_parse_element_info( struct hid_dev_desc * devdesc )
+{
+  hid_device * dev = devdesc->device;
+
+  struct hid_device_collection * device_collection = hid_new_collection();
+  device_desc->device_collection = device_collection;
+
+  struct hid_device_collection * parent_collection = device_desc->device_collection;
+  struct hid_device_collection * prev_collection;
+  struct hid_device_element * prev_element;
+
+  device_collection->num_collections = 0;
+  device_collection->num_elements = 0;
+
+  
+  CFArrayRef elementCFArrayRef = IOHIDDeviceCopyMatchingElements(dev->device_handle,
+      NULL /* matchingCFDictRef */,  kIOHIDOptionsTypeNone);
+  if (elementCFArrayRef) {
+    // iterate over all the elements
+    CFIndex elementIndex, elementCount = CFArrayGetCount(elementCFArrayRef);
+    for (elementIndex = 0; elementIndex < elementCount; elementIndex++) {
+      IOHIDElementRef tIOHIDElementRef = (IOHIDElementRef)CFArrayGetValueAtIndex(elementCFArrayRef,elementIndex);
+	if (tIOHIDElementRef) {
+	  IOHIDElementType tIOHIDElementType = IOHIDElementGetType(inIOHIDElementRef);
+	  uint32_t usagePage = IOHIDElementGetUsagePage(inIOHIDElementRef);
+	  uint32_t usage     = IOHIDElementGetUsage(inIOHIDElementRef);
+	  
+	  if ( tIOHIDElementType == kIOHIDElementTypeCollection ){
+	      //TODO: COULD ALSO READ WHICH KIND OF COLLECTION
+	      struct hid_device_collection * new_collection = hid_new_collection();
+	      if ( parent_collection->num_collections == 0 ){
+		parent_collection->first_collection = new_collection;
+	      }
+	      if ( device_collection->num_collections == 0 ){
+		device_collection->first_collection = new_collection;
+	      } else {
+		prev_collection->next_collection = new_collection;
+	      }
+	      new_collection->parent_collection = parent_collection;
+	      IOHIDElementCollectionType tIOHIDElementCollectionType = IOHIDElementGetCollectionType(inIOHIDElementRef);
+	      new_collection->type = (int) tIOHIDElementCollectionType;
+	      new_collection->usage_page = usagePage;
+	      new_collection->usage_index = usage;
+	      new_collection->index = device_collection->num_collections;
+	      device_collection->num_collections++;
+	      if ( device_collection != parent_collection ){
+		parent_collection->num_collections++;
+	      }
+	      parent_collection = new_collection;
+	      prev_collection = new_collection;
+//  	      collection_nesting++;
+	  } else {
+	      struct hid_device_element * new_element = hid_new_element();
+	      new_element->index = device_collection->num_elements;
+	      // check input (1), output (2), or feature (3)
+	      // type - this we parse later on again, so perhaps would be good to bittest this rightaway in general
+// 		["Data","Constant"],
+                Boolean isVirtual = IOHIDElementIsVirtual(inIOHIDElementRef);
+//                 ["Array","Variable"]
+                Boolean isArray = IOHIDElementIsArray(inIOHIDElementRef);
+//                 ["Absolute","Relative"]
+                Boolean isRelative = IOHIDElementIsRelative(inIOHIDElementRef);
+//                 ["NoWrap","Wrap"],
+		Boolean isWrapping = IOHIDElementIsWrapping(inIOHIDElementRef);
+//                 ["Linear","NonLinear"],
+                Boolean isNonLinear = IOHIDElementIsNonLinear(inIOHIDElementRef);
+//                 ["PreferredState","NoPreferred"],
+                Boolean hasPreferredState = IOHIDElementHasPreferredState(inIOHIDElementRef);
+//                 ["NoNullPosition", "NullState"],
+		Boolean hasNullState = IOHIDElementHasNullState(inIOHIDElementRef);
+	      int type = 0;     
+	      new_element->type = 0;
+	      type = (int) isVirtual;
+	      new_element->type += type;
+	      type = ((int) isArray) << 1;
+	      new_element->type += type;
+	      type = ((int) isRelative) << 2;
+	      new_element->type += type;
+	      type = ((int) isWrapping) << 3;
+	      new_element->type += type;
+	      type = ((int) isNonLinear) << 4;
+	      new_element->type += type;
+	      type = ((int) hasPreferredState) << 5;
+	      new_element->type += type;
+	      type = ((int) hasNullState) << 6;
+	      new_element->type += type;
+	      switch (tIOHIDElementType) {
+		case kIOHIDElementTypeInput_Misc:
+		{
+		  new_element->io_type = 1;
+// 		  printf("type: Misc, ");
+		  break;
+		}
+		case kIOHIDElementTypeInput_Button:
+		{
+		  new_element->io_type = 1;
+// 		  printf("type: Button, ");
+		  break;
+		}
+		case kIOHIDElementTypeInput_Axis:
+		{
+		  new_element->io_type = 1;
+// 		  printf("type: Axis, ");
+		  break;
+		}
+		case kIOHIDElementTypeInput_ScanCodes:
+		{
+		  new_element->io_type = 1;
+// 		  printf("type: ScanCodes, ");
+		  break;
+		}
+		case kIOHIDElementTypeOutput:
+		{
+		  new_element->io_type = 2;
+// 		  printf("type: Output, ");
+		  break;
+		}
+		case kIOHIDElementTypeFeature:
+		{
+		  new_element->io_type = 3;
+// 		  printf("type: Feature, ");
+		  break;
+		}
+	      }
+	      new_element->parent_collection = parent_collection;
+	      new_element->usage_page = usagePage;
+	      new_element->usage = usage;
+	      CFIndex logicalMin = IOHIDElementGetLogicalMin(inIOHIDElementRef);
+	      CFIndex logicalMax = IOHIDElementGetLogicalMax(inIOHIDElementRef);
+	      new_element->logical_min = logicalMin;
+	      new_element->logical_max = logicalMax;
+	      CFIndex physicalMin = IOHIDElementGetPhysicalMin(inIOHIDElementRef);
+	      CFIndex physicalMax = IOHIDElementGetPhysicalMax(inIOHIDElementRef);
+	      new_element->phys_min = physicalMin;
+	      new_element->phys_max = physicalMax;
+	      uint32_t unit    = IOHIDElementGetUnit(inIOHIDElementRef);
+	      uint32_t unitExp = IOHIDElementGetUnitExponent(inIOHIDElementRef);
+	      new_element->unit = unit;
+	      new_element->unit_exponent = unitExp;
+	      uint32_t reportID    = IOHIDElementGetReportID(inIOHIDElementRef);
+	      uint32_t reportSize  = IOHIDElementGetReportSize(inIOHIDElementRef);
+	      uint32_t reportCount = IOHIDElementGetReportCount(inIOHIDElementRef);
+	      new_element->report_size = reportSize;
+	      new_element->report_id = reportID;
+	      new_element->report_index = reportCount; // ?? - was j... index
+	      new_element->value = 0;
+	      if ( parent_collection->num_elements == 0 ){
+		parent_collection->first_element = new_element;
+	      }
+	      if ( device_collection->num_elements == 0 ){
+		device_collection->first_element = new_element;
+	      } else {
+		prev_element->next = new_element;
+	      }
+	      device_collection->num_elements++;
+	      if ( parent_collection != device_collection ) {
+		parent_collection->num_elements++;
+	      }
+	      prev_element = new_element;
+	  }
+	}
+    }
+    CFRelease(elementCFArrayRef);
+  }
+  return 0;
+}
+
+#endif
