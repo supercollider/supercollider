@@ -20,7 +20,7 @@ EZKnob : EZGui {
 			labelHeight, argLayout, argGap, argMargin;
 
 		var labelBounds, numBounds, unitBounds,knobBounds;
-		var numberStep;
+		var numberStep, decimalPlaces;
 
 		// Set Margin and Gap
 		this.prMakeMarginGap(parentView, argMargin, argGap);
@@ -71,6 +71,8 @@ EZKnob : EZGui {
 		numberView.step = numberStep;
 		numberView.scroll_step = numberStep;
 
+		decimalPlaces = numberStep.guessDecimalPlaces;
+		numberView.maxDecimals_( decimalPlaces );
 
 		if((controlSpec.minval + controlSpec.maxval)==0){knobView.centered=true};
 

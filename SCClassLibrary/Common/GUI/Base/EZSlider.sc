@@ -18,7 +18,7 @@ EZSlider : EZGui {
 			labelHeight, argLayout, argGap, argMargin;
 
 		var labelBounds, numBounds, unitBounds,sliderBounds;
-		var numberStep;
+		var numberStep, decimalPlaces;
 
 		// Set Margin and Gap
 		this.prMakeMarginGap(parentView, argMargin, argGap);
@@ -88,6 +88,9 @@ EZSlider : EZGui {
 		numberView.step = numberStep;
 		numberView.scroll_step = numberStep;
 		//numberView.scroll=true;
+
+		decimalPlaces = numberStep.guessDecimalPlaces;
+		numberView.maxDecimals_( decimalPlaces );
 
 		if (initAction) {
 			this.valueAction_(initVal);

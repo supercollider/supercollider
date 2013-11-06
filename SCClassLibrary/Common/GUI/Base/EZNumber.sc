@@ -18,7 +18,7 @@ EZNumber : EZGui{
 			labelHeight, argLayout, argGap, argMargin;
 
 		var labelBounds, numBounds, unitBounds;
-		var numberStep;
+		var numberStep, decimalPlaces;
 
 		// Set Margin and Gap
 		this.prMakeMarginGap(parentView, argMargin, argGap);
@@ -77,6 +77,10 @@ EZNumber : EZGui{
 		numberView.step = numberStep;
 		numberView.scroll_step = numberStep;
 		numberView.scroll=true;
+
+		decimalPlaces = numberStep.guessDecimalPlaces;
+		numberView.maxDecimals_( decimalPlaces );
+
 
 		numberView.action = {
 			this.valueAction_(numberView.value);
