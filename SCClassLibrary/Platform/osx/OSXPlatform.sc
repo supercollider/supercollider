@@ -35,14 +35,13 @@ OSXPlatform : UnixPlatform
 		};
 	}
 	shutdown {
-		HIDDeviceService.releaseDeviceList;
 		if(Platform.ideName == "scapp"){
 			CocoaMenuItem.clearCustomItems;
 		};
 	}
 
 	defaultGUIScheme { ^\qt }
-	defaultHIDScheme { ^nil }
+    defaultHIDScheme { ^nil }
 
 	setDeferredTaskInterval { |interval| _SetDeferredTaskInterval }
 
