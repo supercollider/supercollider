@@ -151,6 +151,7 @@ Q_SIGNALS:
 
 private slots:
     void onFileChanged( const QString & path );
+    void updateCurrentDocContents ( int position, int charsRemoved, int charsAdded );
 
 private:
     Document * createDocument( bool isPlainText = false,
@@ -178,7 +179,6 @@ private:
     void handleEnableTextChangedScRequest( const QString & data );
     void handleEnableTextMirrorScRequest( const QString & data );
     void syncLangDocument( Document * );
-    void updateCurrentDocContents ( int position, int charsRemoved, int charsAdded );
 
     typedef QHash<QByteArray, Document*>::iterator DocIterator;
 

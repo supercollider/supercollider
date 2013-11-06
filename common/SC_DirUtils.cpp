@@ -188,6 +188,7 @@ int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int len
 {
 	isAlias = false;
 #if defined(__APPLE__) && !defined(SC_IPHONE)
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *nsstringPath = [NSString stringWithCString: path encoding: NSUTF8StringEncoding];
 	BOOL isDirectory;
 	// does the file exist? If not just copy and bail
@@ -215,6 +216,7 @@ int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int len
 			return 0;
 		}
 	}
+    [pool release];
 
 #endif
 	strcpy(returnPath, path);

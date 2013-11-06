@@ -27,5 +27,8 @@ void null_reply_func(struct ReplyAddress *addr, char* msg, int size)
 
 bool operator==(const ReplyAddress& a, const ReplyAddress& b)
 {
-	return a == b;
+	return     a.mAddress  == b.mAddress
+		&& a.mProtocol == b.mProtocol
+		&& a.mPort     == b.mPort
+		&& a.mSocket   == b.mSocket;
 }
