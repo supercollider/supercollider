@@ -305,6 +305,22 @@ HIDDevice {
 		}
 	}
 
+    usagePage{ |col=0|
+        collections.at( col ).usagePage;
+    }
+
+    usage{ |col=0|
+        collections.at( col ).usage;
+    }
+
+    pageName{ |col=0|
+        collections.at( col ).pageName;
+    }
+
+    usageName{ |col=0|
+        collections.at( col ).usageName;
+    }
+
     // prettyPrint{
     //     "Device [%] : [%] has the following properties:\n".postf(id, name);
     //     [ ["number of axes",numAxes], ["number of buttons", numButtons ], [ "number of hats", numHats ], [ "number of balls", numBalls ], [ "unique identifier", guid ] ].do{ |it|
@@ -320,14 +336,14 @@ HIDDevice {
 HIDCollection{
     var <index;
     var <type;
-    var <usage_page, <usage;
+    var <usagePage, <usage;
 
     var <parent;
-    var <num_collections;
-    var <first_collection;
+    var <numCollections;
+    var <firstCollection;
 
-    var <num_elements;
-    var <first_element;
+    var <numElements;
+    var <firstElement;
 
     var <>device;
 
@@ -339,14 +355,14 @@ HIDCollection{
 
     pageName{
         if ( pageName.isNil ){
-            #pageName, usageName = HIDUsage.getUsageDescription( usage_page, usage );
+            #pageName, usageName = HIDUsage.getUsageDescription( usagePage, usage );
         };
         ^pageName;
     }
 
     usageName{
         if ( usageName.isNil ){
-            #pageName, usageName = HIDUsage.getUsageDescription( usage_page, usage );
+            #pageName, usageName = HIDUsage.getUsageDescription( usagePage, usage );
         };
         ^usageName;
     }
@@ -355,14 +371,14 @@ HIDCollection{
 		super.printOn(stream);
         stream << $( << "hid collection: " << index << ": " ;
         stream << "type and usage: ";
-		[ type, usage_page, usage ].printItemsOn(stream);
+		[ type, usagePage, usage ].printItemsOn(stream);
         stream << ": description: ";
         [ this.pageName, this.usageName ].printItemsOn(stream);
         stream << ": parent,: " << parent;
         stream << ": collections,: ";
-        [ num_collections, first_collection ].printItemsOn( stream );
+        [ numCollections, firstCollection ].printItemsOn( stream );
         stream << ": elements,: ";
-        [ num_elements, first_element ].printItemsOn( stream );
+        [ numElements, firstElement ].printItemsOn( stream );
 		stream.put($));
 	}
 }
@@ -370,8 +386,8 @@ HIDCollection{
 HIDElement{
 
     var <index;
-    var <io_type, <type;
-    var <usage_page, <usage;
+    var <ioType, <type;
+    var <usagePage, <usage;
     var <logicalMin, <logicalMax;
     var <physicalMin, <physicalMax;
     var <unitExponent, <unit;
@@ -417,7 +433,7 @@ HIDElement{
 		super.printOn(stream);
         stream << $( << "hid element: " << index << ": collection " << collection << " : " ;
         stream << "type and usage: ";
-		[ io_type, type, usage_page, usage ].printItemsOn(stream);
+		[ ioType, type, usagePage, usage ].printItemsOn(stream);
         stream << ": min and max: ";
         [ logicalMin, logicalMax, physicalMin, physicalMax ].printItemsOn(stream);
         stream << ": unit, exponent: ";
@@ -431,21 +447,21 @@ HIDElement{
 
     pageName{
         if ( pageName.isNil ){
-            #pageName, usageName = HIDUsage.getUsageDescription( usage_page, usage );
+            #pageName, usageName = HIDUsage.getUsageDescription( usagePage, usage );
         };
         ^pageName;
     }
 
     usageName{
         if ( usageName.isNil ){
-            #pageName, usageName = HIDUsage.getUsageDescription( usage_page, usage );
+            #pageName, usageName = HIDUsage.getUsageDescription( usagePage, usage );
         };
         ^usageName;
     }
 
     iotypeName{
         if ( iotypeName.isNil ){
-            switch( io_type,
+            switch( ioType,
                 1, { iotypeName = \input },
                 2, { iotypeName = \output },
                 3, { iotypeName = \feature }
@@ -483,11 +499,11 @@ HIDUsage {
         hutDirectory = Platform.systemAppSupportDir +/+ "hid";
     }
 
-    *getUsageDescription{ |usage_page,usage|
+    *getUsageDescription{ |usagePage,usage|
         var pageName, usageName;
         var yamlfile;
         var huttable;
-        switch( usage_page,
+        switch( usagePage,
             1, { yamlfile = "hut_1_generic_desktop.yaml"; pageName = \GenericDesktop },
             2, { yamlfile = "hut_2_simulation_controls.yaml"; pageName = \Simulation },
             3, { yamlfile = "hut_3_vr_controls.yaml"; pageName = \VR },
