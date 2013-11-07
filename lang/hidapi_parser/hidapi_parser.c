@@ -1091,7 +1091,7 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
 	      new_element->type = 0;
 	      type = (int) isVirtual;
 	      new_element->type += type;
-	      type = ((int) isArray) << 1;
+	      type = ((int) !isArray) << 1;
 	      new_element->type += type;
 	      type = ((int) isRelative) << 2;
 	      new_element->type += type;
@@ -1099,7 +1099,7 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
 	      new_element->type += type;
 	      type = ((int) isNonLinear) << 4;
 	      new_element->type += type;
-	      type = ((int) hasPreferredState) << 5;
+	      type = ((int) !hasPreferredState) << 5;
 	      new_element->type += type;
 	      type = ((int) hasNullState) << 6;
 	      new_element->type += type;
@@ -1184,16 +1184,16 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
 	      report_lengths[index] += reportSize;
 
 	      if ( parent_collection->num_elements == 0 ){
-		parent_collection->first_element = new_element;
+	    	  parent_collection->first_element = new_element;
 	      }
 	      if ( device_collection->num_elements == 0 ){
-		device_collection->first_element = new_element;
+	    	  device_collection->first_element = new_element;
 	      } else {
-		prev_element->next = new_element;
+	    	  prev_element->next = new_element;
 	      }
 	      device_collection->num_elements++;
 	      if ( parent_collection != device_collection ) {
-		parent_collection->num_elements++;
+	    	  parent_collection->num_elements++;
 	      }
 	      prev_element = new_element;
 	  }
