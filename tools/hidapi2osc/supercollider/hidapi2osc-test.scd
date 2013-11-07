@@ -28,10 +28,12 @@ n.sendMsg( "/hidapi2osc/info" );
 
 n.sendMsg( "/hid/open", 1103, 53251 );
 
-n.sendMsg( "/hid/info", 0);
+n.sendMsg( "/hid/open", 1452, 539 );
 
-n.sendMsg( "/hid/element/info", 0);
+n.sendMsg( "/hid/info", 1);
 
-n.sendMsg( "/hid/close", 0);
+n.sendMsg( "/hid/element/info", 1);
+
+n.sendMsg( "/hid/close", 1);
 
 n.sendMsg( "/hidapi2osc/quit" );
