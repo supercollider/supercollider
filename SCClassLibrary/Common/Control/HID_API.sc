@@ -124,7 +124,7 @@ HID {
         // var vendor = thisdevice.vendor;
         // var product = thisdevice.product;
         /// add a unique usb address id - check which one this should be
-        prAction.value( devid, thisdevice, elid, page, usage, mappedvalue, value );
+        prAction.value( devid, thisdevice, elid, page, usage, value, mappedvalue );
     }
 
 /// primitives called:
