@@ -51,8 +51,11 @@ HIDFunc : AbstractResponderFunc {
 	*initClass {
 		defaultDispatcher = HIDMessageDispatcher.new;
 		// not sure what this should look like, but a trace func would be nice
-        traceFunc = { |devid, elid, page, usage, rawValue, value|
-            "HID Element Data:\n\tdevid: %, elid: %\tpage: %\tusage: %\n\traw value: %,\tvalue: %\n\n".postf( devid, elid, page, usage, rawValue, value );
+        traceFunc = { |devid, elid, dpage, dusage, vendor, product, page, usage, rawValue, value|
+            "HID Element Data:\n\tdevid: %, elid: % \
+                 \n\tdevice: \t page: %\tusage: % \t vendor: %\t product: %\
+                 \n\telement: \t page: %\tusage: % \
+                 \n\traw value: %,\tvalue: %\n\n".postf( devid, elid, dpage, dusage, vendor, product, page, usage, rawValue, value );
 		}
 	}
 
@@ -60,6 +63,18 @@ HIDFunc : AbstractResponderFunc {
 		^super.new.init(func, elkey, hidkey, elpage, elusage, argTemplate, dispatcher ? defaultDispatcher);
 	}
 
+    /// different types:
+
+    // element/types:
+    // filter by element usage + page
+    // filter by element id (in case the usages are doubled  - in case of badly designed device firmware)
+
+    // device/types:
+    // filter by vendor, product
+    // filter by page, usage
+
+    // -> main:  devType, elType - determines the filtering
+    // -> usage: pass in:
 
 	*trace {|bool = true|
 		if(bool, {
