@@ -60,6 +60,20 @@ extern bool compiledOK;
 
 typedef std::map<int, hid_dev_desc* > hid_map_t;
 
+// helper function to convert from unicode to ansi
+char * wchar_to_char( wchar_t * wchs ){
+    int len = wcslen( wchs ) + 1;
+    char * chs = (char*) malloc( sizeof(char) * len );
+    std::wcstombs( chs, wchs, len );
+    return chs;
+}
+
+wchar_t * char_to_wchar( char * chs ){
+  int len = strlen( chs ) + 1;
+  wchar_t * wchs = (wchar_t*) malloc( sizeof( wchar_t ) * len );
+    std::mbstowcs( wchs, chs, len );
+    return wchs;
+}
 
 
 template<typename T, size_t Size>
@@ -106,7 +120,7 @@ public:
 	int build_devicelist();
 	int free_devicelist();
 	
-	int open_device(  int vendor, int product ); // const char* serial_number=NULL
+	int open_device(  int vendor, int product, char * serial_number=NULL ); // const char* serial_number=NULL
 	int queue_to_close_device( int joy_idx );
 	int close_device( int joy_idx );
 	void close_all_devices();
@@ -189,11 +203,16 @@ void SC_HID_APIManager::close_all_devices(){
   hiddevices.clear();
 }
 
-int SC_HID_APIManager::open_device( int vendor, int product ){ // , const char* serial_number
-  struct hid_dev_desc * newdevdesc = hid_open_device( vendor, product, NULL );
-  
+int SC_HID_APIManager::open_device( int vendor, int product, char* serial_number ){ // 
+  struct hid_dev_desc * newdevdesc;
+  if ( serial_number != NULL ){
+    wchar_t * serialW = char_to_wchar( serial_number );
+    newdevdesc = hid_open_device( vendor, product, serialW );
+  } else {
+    newdevdesc = hid_open_device( vendor, product, NULL );
+  }
   if (!newdevdesc){
-    fprintf(stderr, "HIDAPI : Unable to open device %d, %d\n", vendor, product );
+    fprintf(stderr, "HIDAPI : Unable to open device %d, %d\n", vendor, product, serial_number );
     return 0;
   } else {   
     hiddevices.insert( std::pair<int,hid_dev_desc*>(number_of_hids, newdevdesc) );
@@ -478,14 +497,6 @@ int prHID_API_Stop(VMGlobals* g, int numArgsPushed)
   return SC_HID_APIManager::instance().stop();
 }
 
-// helper function to convert from unicode to ansi
-char * wchar_to_char( wchar_t * wchs ){
-    int len = wcslen( wchs ) + 1;
-    char * chs = (char*) malloc( sizeof(char) * len );
-    std::wcstombs( chs, wchs, len );
-    return chs;
-}
-
 int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
   PyrSlot *args = g->sp - numArgsPushed + 1;
   PyrSlot *self = args + 0;
@@ -558,21 +569,30 @@ int prHID_API_Open( VMGlobals* g, int numArgsPushed ){
   PyrSlot* self = args + 0;
   PyrSlot* arg1  = args + 1;
   PyrSlot* arg2  = args + 2;
+  PyrSlot* arg3  = args + 3;
     
   int err;
   int vendorid;
   int productid;
+  char serial_number[256];
   
   err = slotIntVal( arg1, &vendorid );
   if ( err != errNone ) return err;
 
   err = slotIntVal( arg2, &productid );
   if ( err != errNone ) return err;
+    
+  int result;
   
-  // TODO add optional string for serial number
-  
-  // open device
-  int result = SC_HID_APIManager::instance().open_device( vendorid, productid );
+  if ( NotNil( arg3 ) ){
+    err = slotStrVal(arg3, serial_number, sizeof(serial_number));
+    if (err) return err;    
+    // open device
+    result = SC_HID_APIManager::instance().open_device( vendorid, productid, serial_number );
+  } else {
+      // open device
+    result = SC_HID_APIManager::instance().open_device( vendorid, productid, NULL );
+  }
   
   SetInt( self, result );
   
@@ -622,17 +642,29 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
     g->gc->GCWrite(devInfo, (PyrObject*) dev_path_name);
 
     char * mystring;
-    mystring = wchar_to_char( cur_dev->serial_number );
+    if ( cur_dev->serial_number != NULL ){
+      mystring = wchar_to_char( cur_dev->serial_number );
+    } else {
+      mystring = "";
+    }
     PyrString *dev_serial = newPyrString(g->gc, mystring, 0, true ); 
     SetObject(devInfo->slots+devInfo->size++, dev_serial);
     g->gc->GCWrite(devInfo, (PyrObject*) dev_serial);
 
-    mystring = wchar_to_char( cur_dev->manufacturer_string );
+    if ( cur_dev->manufacturer_string != NULL ){
+      mystring = wchar_to_char( cur_dev->manufacturer_string );
+    } else {
+      mystring = "";
+    }
     PyrString *dev_man_name = newPyrString(g->gc, mystring, 0, true ); 
     SetObject(devInfo->slots+devInfo->size++, dev_man_name);
     g->gc->GCWrite(devInfo, (PyrObject*) dev_man_name);
     
-    mystring = wchar_to_char( cur_dev->product_string );
+    if ( cur_dev->product_string != NULL ){
+      mystring = wchar_to_char( cur_dev->product_string );
+    } else {
+      mystring = "";
+    }
     PyrString *dev_prod_name = newPyrString(g->gc, mystring, 0, true );
     SetObject(devInfo->slots+devInfo->size++, dev_prod_name);
     g->gc->GCWrite(devInfo, (PyrObject*) dev_prod_name);
