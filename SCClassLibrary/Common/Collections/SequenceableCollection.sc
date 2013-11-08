@@ -242,6 +242,17 @@ SequenceableCollection : Collection {
 		^((val - a) / div) + i - 1
 	}
 
+	isSeries { arg step;
+		if(this.size <= 1) { ^true };
+		this.doAdjacentPairs { |a, b|
+			var diff = b - a;
+			if(step.isNil) { step = diff } {
+				if(step != diff) { ^false }
+			}
+		};
+		^true
+	}
+
 	resamp0 { arg newSize;
 		var factor = this.size - 1 / (newSize - 1);
 		^this.species.fill(newSize, { |i| this.at((i * factor).round(1.0).asInteger) })
