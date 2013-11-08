@@ -958,9 +958,11 @@ int hid_send_output_report( struct hid_dev_desc * devd, int reportid ){
 
 struct hid_dev_desc * hid_read_descriptor( hid_device * devd ){
   struct hid_dev_desc * desc;
+
 #ifdef APPLE
   desc = (struct hid_dev_desc *) malloc( sizeof( struct hid_dev_desc ) );
-  hid_parse_element_info( struct hid_dev_desc * devdesc );
+  desc->device = devd;
+  hid_parse_element_info( desc );
   return desc;
 #else  
   unsigned char descr_buf[HIDAPI_MAX_DESCRIPTOR_SIZE];
@@ -971,6 +973,7 @@ struct hid_dev_desc * hid_read_descriptor( hid_device * devd ){
     return NULL;
   } else {
     desc = (struct hid_dev_desc *) malloc( sizeof( struct hid_dev_desc ) );
+    desc->device = devd;
     hid_parse_report_descriptor( descr_buf, res, desc );
     return desc;
   }
@@ -988,7 +991,7 @@ struct hid_dev_desc * hid_open_device(  unsigned short vendor, unsigned short pr
     return NULL;
   }
   struct hid_device_info * newinfo = hid_enumerate(vendor,product);
-  newdesc->device = handle;
+  //newdesc->device = handle;
   //TODO: if serial_number is given, the info descriptor should also point to that one!
   newdesc->info = newinfo;
 
@@ -1020,48 +1023,55 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
   hid_device * dev = devdesc->device;
 
   struct hid_device_collection * device_collection = hid_new_collection();
-  device_desc->device_collection = device_collection;
+  devdesc->device_collection = device_collection;
 
-  struct hid_device_collection * parent_collection = device_desc->device_collection;
+  struct hid_device_collection * parent_collection = devdesc->device_collection;
   struct hid_device_collection * prev_collection;
   struct hid_device_element * prev_element;
 
   device_collection->num_collections = 0;
   device_collection->num_elements = 0;
 
-  
-  CFArrayRef elementCFArrayRef = IOHIDDeviceCopyMatchingElements(dev->device_handle,
-      NULL /* matchingCFDictRef */,  kIOHIDOptionsTypeNone);
+  int numreports = 1;
+    int report_lengths[256];
+    int report_ids[256];
+    report_ids[0] = 0;
+    report_lengths[0] = 0;
+
+  IOHIDDeviceRef device_handle = get_device_handle( dev );
+  CFArrayRef elementCFArrayRef = IOHIDDeviceCopyMatchingElements(device_handle,
+      NULL /* matchingCFDictRef */
+      ,  kIOHIDOptionsTypeNone);
   if (elementCFArrayRef) {
     // iterate over all the elements
     CFIndex elementIndex, elementCount = CFArrayGetCount(elementCFArrayRef);
     for (elementIndex = 0; elementIndex < elementCount; elementIndex++) {
       IOHIDElementRef tIOHIDElementRef = (IOHIDElementRef)CFArrayGetValueAtIndex(elementCFArrayRef,elementIndex);
-	if (tIOHIDElementRef) {
-	  IOHIDElementType tIOHIDElementType = IOHIDElementGetType(inIOHIDElementRef);
-	  uint32_t usagePage = IOHIDElementGetUsagePage(inIOHIDElementRef);
-	  uint32_t usage     = IOHIDElementGetUsage(inIOHIDElementRef);
+      if (tIOHIDElementRef) {
+	  IOHIDElementType tIOHIDElementType = IOHIDElementGetType(tIOHIDElementRef);
+	  uint32_t usagePage = IOHIDElementGetUsagePage(tIOHIDElementRef);
+	  uint32_t usage     = IOHIDElementGetUsage(tIOHIDElementRef);
 	  
 	  if ( tIOHIDElementType == kIOHIDElementTypeCollection ){
 	      //TODO: COULD ALSO READ WHICH KIND OF COLLECTION
 	      struct hid_device_collection * new_collection = hid_new_collection();
 	      if ( parent_collection->num_collections == 0 ){
-		parent_collection->first_collection = new_collection;
+	    	  parent_collection->first_collection = new_collection;
 	      }
 	      if ( device_collection->num_collections == 0 ){
-		device_collection->first_collection = new_collection;
+	    	  device_collection->first_collection = new_collection;
 	      } else {
-		prev_collection->next_collection = new_collection;
+	    	  prev_collection->next_collection = new_collection;
 	      }
 	      new_collection->parent_collection = parent_collection;
-	      IOHIDElementCollectionType tIOHIDElementCollectionType = IOHIDElementGetCollectionType(inIOHIDElementRef);
+	      IOHIDElementCollectionType tIOHIDElementCollectionType = IOHIDElementGetCollectionType(tIOHIDElementRef);
 	      new_collection->type = (int) tIOHIDElementCollectionType;
 	      new_collection->usage_page = usagePage;
 	      new_collection->usage_index = usage;
 	      new_collection->index = device_collection->num_collections;
 	      device_collection->num_collections++;
 	      if ( device_collection != parent_collection ){
-		parent_collection->num_collections++;
+	    	  parent_collection->num_collections++;
 	      }
 	      parent_collection = new_collection;
 	      prev_collection = new_collection;
@@ -1072,24 +1082,24 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
 	      // check input (1), output (2), or feature (3)
 	      // type - this we parse later on again, so perhaps would be good to bittest this rightaway in general
 // 		["Data","Constant"],
-                Boolean isVirtual = IOHIDElementIsVirtual(inIOHIDElementRef);
+          Boolean isVirtual = IOHIDElementIsVirtual(tIOHIDElementRef);
 //                 ["Array","Variable"]
-                Boolean isArray = IOHIDElementIsArray(inIOHIDElementRef);
+          Boolean isArray = IOHIDElementIsArray(tIOHIDElementRef);
 //                 ["Absolute","Relative"]
-                Boolean isRelative = IOHIDElementIsRelative(inIOHIDElementRef);
+          Boolean isRelative = IOHIDElementIsRelative(tIOHIDElementRef);
 //                 ["NoWrap","Wrap"],
-		Boolean isWrapping = IOHIDElementIsWrapping(inIOHIDElementRef);
+          Boolean isWrapping = IOHIDElementIsWrapping(tIOHIDElementRef);
 //                 ["Linear","NonLinear"],
-                Boolean isNonLinear = IOHIDElementIsNonLinear(inIOHIDElementRef);
+          Boolean isNonLinear = IOHIDElementIsNonLinear(tIOHIDElementRef);
 //                 ["PreferredState","NoPreferred"],
-                Boolean hasPreferredState = IOHIDElementHasPreferredState(inIOHIDElementRef);
+          Boolean hasPreferredState = IOHIDElementHasPreferredState(tIOHIDElementRef);
 //                 ["NoNullPosition", "NullState"],
-		Boolean hasNullState = IOHIDElementHasNullState(inIOHIDElementRef);
+          Boolean hasNullState = IOHIDElementHasNullState(tIOHIDElementRef);
 	      int type = 0;     
 	      new_element->type = 0;
 	      type = (int) isVirtual;
 	      new_element->type += type;
-	      type = ((int) isArray) << 1;
+	      type = ((int) !isArray) << 1;
 	      new_element->type += type;
 	      type = ((int) isRelative) << 2;
 	      new_element->type += type;
@@ -1097,7 +1107,7 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
 	      new_element->type += type;
 	      type = ((int) isNonLinear) << 4;
 	      new_element->type += type;
-	      type = ((int) hasPreferredState) << 5;
+	      type = ((int) !hasPreferredState) << 5;
 	      new_element->type += type;
 	      type = ((int) hasNullState) << 6;
 	      new_element->type += type;
@@ -1142,36 +1152,56 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
 	      new_element->parent_collection = parent_collection;
 	      new_element->usage_page = usagePage;
 	      new_element->usage = usage;
-	      CFIndex logicalMin = IOHIDElementGetLogicalMin(inIOHIDElementRef);
-	      CFIndex logicalMax = IOHIDElementGetLogicalMax(inIOHIDElementRef);
+	      CFIndex logicalMin = IOHIDElementGetLogicalMin(tIOHIDElementRef);
+	      CFIndex logicalMax = IOHIDElementGetLogicalMax(tIOHIDElementRef);
 	      new_element->logical_min = logicalMin;
 	      new_element->logical_max = logicalMax;
-	      CFIndex physicalMin = IOHIDElementGetPhysicalMin(inIOHIDElementRef);
-	      CFIndex physicalMax = IOHIDElementGetPhysicalMax(inIOHIDElementRef);
+	      CFIndex physicalMin = IOHIDElementGetPhysicalMin(tIOHIDElementRef);
+	      CFIndex physicalMax = IOHIDElementGetPhysicalMax(tIOHIDElementRef);
 	      new_element->phys_min = physicalMin;
 	      new_element->phys_max = physicalMax;
-	      uint32_t unit    = IOHIDElementGetUnit(inIOHIDElementRef);
-	      uint32_t unitExp = IOHIDElementGetUnitExponent(inIOHIDElementRef);
+	      uint32_t unit    = IOHIDElementGetUnit(tIOHIDElementRef);
+	      uint32_t unitExp = IOHIDElementGetUnitExponent(tIOHIDElementRef);
 	      new_element->unit = unit;
 	      new_element->unit_exponent = unitExp;
-	      uint32_t reportID    = IOHIDElementGetReportID(inIOHIDElementRef);
-	      uint32_t reportSize  = IOHIDElementGetReportSize(inIOHIDElementRef);
-	      uint32_t reportCount = IOHIDElementGetReportCount(inIOHIDElementRef);
+	      uint32_t reportID    = IOHIDElementGetReportID(tIOHIDElementRef);
+	      uint32_t reportSize  = IOHIDElementGetReportSize(tIOHIDElementRef);
+	      uint32_t reportCount = IOHIDElementGetReportCount(tIOHIDElementRef);
 	      new_element->report_size = reportSize;
 	      new_element->report_id = reportID;
 	      new_element->report_index = reportCount; // ?? - was j... index
 	      new_element->value = 0;
+
+	      int reportexists = 0;
+	      for ( int j = 0; j < numreports; j++ ){
+	    	  reportexists = (report_ids[j] == reportID);
+	      }
+	      if ( !reportexists ){
+	      	report_ids[ numreports ] = reportID;
+	      	report_lengths[ numreports ] = 0;
+	      	numreports++;
+	      }
+	      int k = 0;
+	      int index = 0;
+	      for ( k=0; k<numreports; k++ ){
+	      	if ( reportID == report_ids[k] ){
+	      		index = k;
+	      		break;
+	      	}
+	      }
+	      report_lengths[index] += reportSize;
+
 	      if ( parent_collection->num_elements == 0 ){
-		parent_collection->first_element = new_element;
+	    	  parent_collection->first_element = new_element;
 	      }
 	      if ( device_collection->num_elements == 0 ){
-		device_collection->first_element = new_element;
+	    	  device_collection->first_element = new_element;
 	      } else {
-		prev_element->next = new_element;
+	    	  prev_element->next = new_element;
 	      }
 	      device_collection->num_elements++;
 	      if ( parent_collection != device_collection ) {
-		parent_collection->num_elements++;
+	    	  parent_collection->num_elements++;
 	      }
 	      prev_element = new_element;
 	  }
@@ -1179,7 +1209,14 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
     }
     CFRelease(elementCFArrayRef);
   }
-  return 0;
+  devdesc->number_of_reports = numreports;
+  devdesc->report_lengths = (int*) malloc( sizeof( int ) * numreports );
+  devdesc->report_ids = (int*) malloc( sizeof( int ) * numreports );
+  for ( int j = 0; j<numreports; j++ ){
+	  devdesc->report_lengths[j] = report_lengths[j];
+	  devdesc->report_ids[j] = report_ids[j];
+  }
+  //return 0;
 }
 
 #endif
