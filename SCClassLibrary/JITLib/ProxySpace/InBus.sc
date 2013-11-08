@@ -286,13 +286,14 @@ Monitor {
 	}
 
 	hasSeriesOuts {
-		if (outs.isNil) { ^true };
-		^(outs.size < 1) or: { ^outs.differentiate.drop(1).every(_ == 1) };
+		^outs.asArray.isSeries(1)
 	}
 
 	// this method is used to find the best representation for compileStrings.
 	usedPlayN {
-		^fadeTimes.isArray and:{ fadeTimes.size > 1 } or: { this.hasSeriesOuts.not }
+		^fadeTimes.isArray and: { fadeTimes.size > 1 }
+		or: { outs.asArray.isSeries(1).not }
+		or: { ins.asArray.isSeries(1).not }
 	}
 
 	*warnPlayN {

@@ -337,6 +337,22 @@ code::
 [[1, 2, 3], [[41, 52], 5, 6], 1, 2, 3].maxDepth
 ::
 
+method::isSeries
+Returns true if the collection is an arithmetic series.
+
+argument::step
+Step size to look for. If none is given, any step size will match.
+
+code::
+[ 0, 1, 2, 3, 4, 5 ].isSeries; // true
+[ 1.5, 2.5, 3.5, 4.5, 5.5, 6.5 ].isSeries; // true
+[ 0, 1, 4, 5 ].isSeries; // false
+[ 0, 3, 6, 9, 12, 15 ].isSeries; // true
+[ 0, 3, 6, 9, 12, 15 ].isSeries(1); // false
+[ 2 ] // true
+[ ] // true (empty sequence)
+::
+
 method::resamp0
 Returns a new Collection of the desired length, with values resampled evenly-spaced from the receiver without interpolation.
 code::
