@@ -15,6 +15,18 @@ HID {
     classvar prAction;
     classvar prDeviceAction;
 
+    var <id;
+    var <>info;
+
+    var <elements;
+    var <collections;
+
+	var <>action;
+    var <>deviceAction;
+	var <>closeAction;
+	var <>debug = false;
+
+
     *addRecvFunc{ |function|
         if ( prAction.isNil ){
             prAction = FunctionList.new;
@@ -68,7 +80,7 @@ HID {
 		if ( devlist.isKindOf( Array ) ){
 			deviceNames = devlist;
 			devlist.do{ |it,i|
-                deviceList.put( i, HIDDeviceInfo.new( *it ) );
+                deviceList.put( i, HIDInfo.new( *it ) );
 			}{ // no devices found
 				"no HID devices found".postln;
 			}
@@ -80,14 +92,14 @@ HID {
         var newdev;
         if ( id2.isNil ){
             newdevid = deviceList.at( id1 ).open;
-            newdev = HIDDevice.new( newdevid );
+            newdev = HID.new( newdevid );
             newdev.info = deviceList.at( id1 );
             newdev.getElements;
             newdev.getCollections;
             openDevices.put( newdevid, newdev );
         }{
             newdevid = HID.prOpenDevice( id1,id2 );
-            newdev = HIDDevice.new( newdevid );
+            newdev = HID.new( newdevid );
             newdev.getInfo;
             newdev.getElements;
             newdev.getCollections;
@@ -109,6 +121,15 @@ HID {
 	}
 
   /// private
+
+    *doPrAction{ | devid, elid, page, usage, value, mappedvalue |
+        var thisdevice = openDevices.at( devid );
+        var dpage = thisdevice.usagePage;
+        var dusage = thisdevice.usage;
+        var vendor = thisdevice.vendor;
+        var product = thisdevice.product;
+        prAction.value( devid, elid, dpage, dusage, vendor, product, page, usage, mappedvalue, value );
+    }
 
 /// primitives called:
 	*prStart{
@@ -168,7 +189,7 @@ HID {
 
 // coming from the primitives:
     *prHIDDeviceClosed{ |devid|
-		prAction.value( \closed, devid );
+        // prAction.value( \closed, devid );
 		openDevices.at( devid ).closeAction.value;
 		if ( debug ){
             "HID device % closed\n".postf( devid ); // debugging
@@ -176,12 +197,9 @@ HID {
         openDevices.removeAt( devid );
 	}
 
-
     *prHIDElementData { | devid, element, page, usage, value, mappedvalue |
-        prAction.value( devid, element, page, usage, value, mappedvalue );
+        HID.doPrAction( devid, element, page, usage, value, mappedvalue );
         openDevices.at( devid ).valueAction( element, page, usage, value, mappedvalue );
-        // prAction.value( \hidelement, devid, element, page, usage, value, mappedvalue );
-        // openDevices.at( devid ).valueAction( \element, element, page, usage, value, mappedvalue );
 		if ( debug ){
 			[ devid, "element data", devid, element, page, usage, value, mappedvalue ].postln; // debugging
 		}
@@ -190,46 +208,14 @@ HID {
     *prHIDDeviceData { | devid, numelements |
         prDeviceAction.value( devid, numelements );
         openDevices.at( devid ).devAction( numelements );
-        // prAction.value( \hidupdate, devid, numelements );
-        // openDevices.at( devid ).valueAction( \update, numelements );
 		if ( debug ){
 			[ devid, "device data", devid, numelements ].postln; // debugging
 		}
 	}
 
-}
-
-HIDDeviceInfo{
-
-    var <vendorID, <productID;
-    var <path;
-    var <serialNumber;
-    var <vendorName, <productName;
-    var <releaseNumber;
-    var <interfaceNumber;
-
-    *new{ |...args|
-        ^super.newCopyArgs( *args );
-    }
-
-    printOn { | stream |
-		super.printOn(stream);
-		stream << $( << vendorName << ", " << productName << ", ";
-		[
-			vendorID,
-			productID
-		].collect({ | x | "0x" ++ x.asHexString(4) }).printItemsOn(stream);
-		stream << ", " << path << ", " << serialNumber << ", " << ", " << releaseNumber << ", " << interfaceNumber;
-		stream.put($));
-	}
-
-    open{
-        ^HID.prOpenDevice( vendorID, productID );
-    }
-}
-
-HIDDevice {
-
+// }
+    // HIDDevice {
+/*
 	var <id;
     var <>info;
 
@@ -240,7 +226,7 @@ HIDDevice {
     var <>deviceAction;
 	var <>closeAction;
 	var <>debug = false;
-
+*/
 	*new{ |id|
 		^super.new.init( id );
 	}
@@ -297,7 +283,7 @@ HIDDevice {
 	getInfo{
 		var result = HID.prGetDeviceInfo( id );
 		if ( result.isKindOf( Array ) ){
-            info = HIDDeviceInfo.new( *result );
+            info = HIDInfo.new( *result );
             // this.prettyPrint;
 		}{
 			"could not get info on hid device; maybe it is not open?".postln;
@@ -320,6 +306,14 @@ HIDDevice {
         collections.at( col ).usageName;
     }
 
+    vendor{
+        info.vendorID;
+    }
+
+    product{
+        info.productID;
+    }
+
     // prettyPrint{
     //     "Device [%] : [%] has the following properties:\n".postf(id, name);
     //     [ ["number of axes",numAxes], ["number of buttons", numButtons ], [ "number of hats", numHats ], [ "number of balls", numBalls ], [ "unique identifier", guid ] ].do{ |it|
@@ -330,6 +324,35 @@ HIDDevice {
 	close{
 		HID.prCloseDevice( id );
 	}
+}
+
+HIDInfo{
+
+    var <vendorID, <productID;
+    var <path;
+    var <serialNumber;
+    var <vendorName, <productName;
+    var <releaseNumber;
+    var <interfaceNumber;
+
+    *new{ |...args|
+        ^super.newCopyArgs( *args );
+    }
+
+    printOn { | stream |
+		super.printOn(stream);
+		stream << $( << vendorName << ", " << productName << ", ";
+		[
+			vendorID,
+			productID
+		].collect({ | x | "0x" ++ x.asHexString(4) }).printItemsOn(stream);
+		stream << ", " << path << ", " << serialNumber << ", " << ", " << releaseNumber << ", " << interfaceNumber;
+		stream.put($));
+	}
+
+    open{
+        ^HID.prOpenDevice( vendorID, productID );
+    }
 }
 
 HIDCollection{
@@ -559,5 +582,4 @@ HIDUsage {
         };
         ^hutIdtable;
     }
-
 }
