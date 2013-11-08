@@ -52,6 +52,10 @@ SynthDef(\wah, { arg out=0, gate=1;
 }, [\ir, 0]).add;
 )
 
+ // watch the node structure as it changes
+s.waitForBoot { s.plotTree };
+
+
 (
 var p, q, r, o;
 p = Pbind(\degree, Prand((0..7),12), \dur, 0.3, \legato, 0.2);
