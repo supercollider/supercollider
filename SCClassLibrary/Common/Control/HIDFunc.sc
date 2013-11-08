@@ -51,11 +51,11 @@ HIDFunc : AbstractResponderFunc {
 	*initClass {
 		defaultDispatcher = HIDMessageDispatcher.new;
 		// not sure what this should look like, but a trace func would be nice
-        traceFunc = { |devid, elid, dpage, dusage, vendor, product, page, usage, rawValue, value|
+        traceFunc = { |devid, dev, elid, page, usage, rawValue, value|
             "HID Element Data:\n\tdevid: %, elid: % \
-                 \n\tdevice: \t page: %\tusage: % \t vendor: %\t product: %\
-                 \n\telement: \t page: %\tusage: % \
-                 \n\traw value: %,\tvalue: %\n\n".postf( devid, elid, dpage, dusage, vendor, product, page, usage, rawValue, value );
+             \tdevice: \t %\
+             \telement: \t page: %\tusage: % \
+             \traw value: %,\tvalue: %\n".postf( devid, elid, dev.info, page, usage, rawValue, value );
 		}
 	}
 
@@ -70,7 +70,7 @@ HIDFunc : AbstractResponderFunc {
     // filter by element id (in case the usages are doubled  - in case of badly designed device firmware)
 
     // device/types:
-    // filter by vendor, product
+    // filter by vendor, product, -> path
     // filter by page, usage
 
     // -> main:  devType, elType - determines the filtering
