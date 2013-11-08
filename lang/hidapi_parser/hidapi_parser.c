@@ -778,13 +778,16 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
       int bitindex = 0;
       while ( bitindex < 8 ){
 	// read bit
-	cur_element->value = (curbyte >> bitindex) & BITMASK1( cur_element->report_size );
+	int newvalue = (curbyte >> bitindex) & BITMASK1( cur_element->report_size );
 #ifdef DEBUG_PARSER
-	printf("element page %i, usage %i, type %i, index %i, value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index, cur_element->value );
+	printf("element page %i, usage %i, type %i, index %i, old value %i, new value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index, cur_element->value, newvalue );
 #endif
 	bitindex += cur_element->report_size;
 	if ( devdesc->_element_callback != NULL ){
-	  devdesc->_element_callback( cur_element, devdesc->_element_data );
+	  if ( newvalue != cur_element->value ){
+	    cur_element->value = newvalue;
+	    devdesc->_element_callback( cur_element, devdesc->_element_data );
+	  }
 	}
 	cur_element = hid_get_next_input_element( cur_element );
 // 	if ( cur_element == NULL ){ return 0; }
@@ -796,12 +799,15 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
 #endif    
       }
     } else if ( cur_element->report_size == 8 ){
-	cur_element->value = curbyte;
+	int newvalue = curbyte;
 #ifdef DEBUG_PARSER
 	printf("element page %i, usage %i, type %i,  index %i, value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index,cur_element->value );
 #endif
 	if ( devdesc->_element_callback != NULL ){
-	  devdesc->_element_callback( cur_element, devdesc->_element_data );
+	  if ( newvalue != cur_element->value ){
+	    cur_element->value = newvalue;
+	    devdesc->_element_callback( cur_element, devdesc->_element_data );
+	  }
 	}
 	cur_element = hid_get_next_input_element( cur_element );
 // 	if ( cur_element == NULL ){ return 0; }
@@ -819,13 +825,15 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
 #endif
      byte_count++;
       if ( byte_count == next_byte_size ){
-	  cur_element->value = next_val;
-	  
+	  int newvalue = next_val;
 #ifdef DEBUG_PARSER
 	  printf("element page %i, usage %i, type %i,  index %i, value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index,cur_element->value );
 #endif
 	  if ( devdesc->_element_callback != NULL ){
-	    devdesc->_element_callback( cur_element, devdesc->_element_data );
+	    if ( newvalue != cur_element->value ){
+	      cur_element->value = newvalue;
+	      devdesc->_element_callback( cur_element, devdesc->_element_data );
+	    }
 	  }
 	  cur_element = hid_get_next_input_element( cur_element );
 // 	  if ( cur_element == NULL ){ break; }
