@@ -167,16 +167,15 @@ HID {
 	}
 
 // coming from the primitives:
-/*
     *prHIDDeviceClosed{ |devid|
 		prAction.value( \closed, devid );
 		openDevices.at( devid ).closeAction.value;
 		if ( debug ){
-			[ devid, "closed" ].postln; // debugging
+            "HID device % closed\n".postf( devid ); // debugging
 		};
         openDevices.removeAt( devid );
 	}
-*/
+
 
     *prHIDElementData { | devid, element, page, usage, value, mappedvalue |
         prAction.value( devid, element, page, usage, value, mappedvalue );
@@ -329,7 +328,7 @@ HIDDevice {
     // }
 
 	close{
-		^HID.prCloseDevice( id );
+		HID.prCloseDevice( id );
 	}
 }
 
