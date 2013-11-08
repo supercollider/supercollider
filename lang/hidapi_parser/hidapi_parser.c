@@ -1039,7 +1039,7 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
     CFIndex elementIndex, elementCount = CFArrayGetCount(elementCFArrayRef);
     for (elementIndex = 0; elementIndex < elementCount; elementIndex++) {
       IOHIDElementRef tIOHIDElementRef = (IOHIDElementRef)CFArrayGetValueAtIndex(elementCFArrayRef,elementIndex);
-	if (tIOHIDElementRef) {
+      if (tIOHIDElementRef) {
 	  IOHIDElementType tIOHIDElementType = IOHIDElementGetType(tIOHIDElementRef);
 	  uint32_t usagePage = IOHIDElementGetUsagePage(tIOHIDElementRef);
 	  uint32_t usage     = IOHIDElementGetUsage(tIOHIDElementRef);
@@ -1048,12 +1048,12 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
 	      //TODO: COULD ALSO READ WHICH KIND OF COLLECTION
 	      struct hid_device_collection * new_collection = hid_new_collection();
 	      if ( parent_collection->num_collections == 0 ){
-		parent_collection->first_collection = new_collection;
+	    	  parent_collection->first_collection = new_collection;
 	      }
 	      if ( device_collection->num_collections == 0 ){
-		device_collection->first_collection = new_collection;
+	    	  device_collection->first_collection = new_collection;
 	      } else {
-		prev_collection->next_collection = new_collection;
+	    	  prev_collection->next_collection = new_collection;
 	      }
 	      new_collection->parent_collection = parent_collection;
 	      IOHIDElementCollectionType tIOHIDElementCollectionType = IOHIDElementGetCollectionType(tIOHIDElementRef);
@@ -1063,7 +1063,7 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
 	      new_collection->index = device_collection->num_collections;
 	      device_collection->num_collections++;
 	      if ( device_collection != parent_collection ){
-		parent_collection->num_collections++;
+	    	  parent_collection->num_collections++;
 	      }
 	      parent_collection = new_collection;
 	      prev_collection = new_collection;
@@ -1074,19 +1074,19 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
 	      // check input (1), output (2), or feature (3)
 	      // type - this we parse later on again, so perhaps would be good to bittest this rightaway in general
 // 		["Data","Constant"],
-                Boolean isVirtual = IOHIDElementIsVirtual(tIOHIDElementRef);
+          Boolean isVirtual = IOHIDElementIsVirtual(tIOHIDElementRef);
 //                 ["Array","Variable"]
-                Boolean isArray = IOHIDElementIsArray(tIOHIDElementRef);
+          Boolean isArray = IOHIDElementIsArray(tIOHIDElementRef);
 //                 ["Absolute","Relative"]
-                Boolean isRelative = IOHIDElementIsRelative(tIOHIDElementRef);
+          Boolean isRelative = IOHIDElementIsRelative(tIOHIDElementRef);
 //                 ["NoWrap","Wrap"],
-		Boolean isWrapping = IOHIDElementIsWrapping(tIOHIDElementRef);
+          Boolean isWrapping = IOHIDElementIsWrapping(tIOHIDElementRef);
 //                 ["Linear","NonLinear"],
-                Boolean isNonLinear = IOHIDElementIsNonLinear(tIOHIDElementRef);
+          Boolean isNonLinear = IOHIDElementIsNonLinear(tIOHIDElementRef);
 //                 ["PreferredState","NoPreferred"],
-                Boolean hasPreferredState = IOHIDElementHasPreferredState(tIOHIDElementRef);
+          Boolean hasPreferredState = IOHIDElementHasPreferredState(tIOHIDElementRef);
 //                 ["NoNullPosition", "NullState"],
-		Boolean hasNullState = IOHIDElementHasNullState(tIOHIDElementRef);
+          Boolean hasNullState = IOHIDElementHasNullState(tIOHIDElementRef);
 	      int type = 0;     
 	      new_element->type = 0;
 	      type = (int) isVirtual;
