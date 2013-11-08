@@ -52,10 +52,11 @@ HIDFunc : AbstractResponderFunc {
 		defaultDispatcher = HIDMessageDispatcher.new;
 		// not sure what this should look like, but a trace func would be nice
         traceFunc = { |devid, dev, elid, page, usage, rawValue, value|
-            "HID Element Data:\n\tdevid: %, elid: % \
-             \tdevice: \t %\
-             \telement: \t page: %\tusage: % \
-             \traw value: %,\tvalue: %\n".postf( devid, elid, dev.info, page, usage, rawValue, value );
+            "HID Element Data:\n\tdevid: %, elid: %\n\t%
+             \tdevice: \t page: % \tusage: %
+             \telement: \t page: %\tusage: %
+             \traw value: %,\tvalue: %\n"
+            .postf( devid, elid, dev.info, dev.usagePage, dev.usage, page, usage, rawValue, value );
 		}
 	}
 
