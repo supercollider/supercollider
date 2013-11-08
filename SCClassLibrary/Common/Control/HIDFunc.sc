@@ -64,12 +64,12 @@ HIDFunc : AbstractResponderFunc {
 	*trace {|bool = true|
 		if(bool, {
 			if(traceRunning.not, {
-                HID_API.addRecvFunc( traceFunc );
+                HID.addRecvFunc( traceFunc );
 				CmdPeriod.add(this);
 				traceRunning = true;
 			});
 		}, {
-            HID_API.removeRecvFunc( traceFunc );
+            HID.removeRecvFunc( traceFunc );
 			CmdPeriod.remove(this);
 			traceRunning = false;
 		});
