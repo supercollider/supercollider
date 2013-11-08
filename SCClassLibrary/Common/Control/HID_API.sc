@@ -91,10 +91,10 @@ HID {
         ^available.at( index ).open;
     }
 
-    *open{ |vendorID,productID, path,serialNumber|
+    *open{ |vendorID, productID, serialNumber, path|
         var newdevid;
         var newdev;
-        newdevid = HID.prOpenDevice( vendorID, productID ); // FIXME: add path and serialNumber
+        newdevid = HID.prOpenDevice( vendorID, productID, serialNumber ); // FIXME: add path and serialNumber
         newdev = HID.new( newdevid );
         newdev.getInfo;
         newdev.getElements;
@@ -138,7 +138,7 @@ HID {
 		^this.primitiveFailed
 	}
 
-	*prOpenDevice{ |vendorID,productID|  // FIXME: add path and serialNumber
+	*prOpenDevice{ |vendorID, productID, serialNumber|  // FIXME: add path
 		_HID_API_OpenDevice
 		^this.primitiveFailed
 	}
@@ -381,7 +381,7 @@ HIDInfo{
 	}
 
     open{
-        ^HID.open( vendorID, productID );
+        ^HID.open( vendorID, productID, serialNumber );
     }
 }
 
