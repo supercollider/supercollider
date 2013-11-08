@@ -2,7 +2,7 @@ HID {
 
 	classvar <running = false;
 
-	classvar <deviceList;
+	classvar <available;
 	classvar <deviceNames;
 
     classvar <openDevices;
@@ -67,11 +67,11 @@ HID {
 
 	*initClass{
 		//Spec.initClass; ControlSpec.initClass;
-		deviceList = IdentityDictionary.new;
+		available = IdentityDictionary.new;
         openDevices = IdentityDictionary.new;
 	}
 
-	*buildDeviceList{
+	*findAvailable{
 		var devlist;
         // joyAxisSpec = Spec.add( \sdlJoyAxis, [ -32768, 32767, \linear, 1].asSpec );
 		if ( running.not ){ this.start }; // start eventloop if not yet running
@@ -80,31 +80,26 @@ HID {
 		if ( devlist.isKindOf( Array ) ){
 			deviceNames = devlist;
 			devlist.do{ |it,i|
-                deviceList.put( i, HIDInfo.new( *it ) );
+                available.put( i, HIDInfo.new( *it ) );
 			}{ // no devices found
 				"no HID devices found".postln;
 			}
 		}
 	}
 
-    *open{ |id1,id2|
+    *openAt{ |index|
+        ^available.at( index ).open;
+    }
+
+    *open{ |vendorID,productID, path,serialNumber|
         var newdevid;
         var newdev;
-        if ( id2.isNil ){
-            newdevid = deviceList.at( id1 ).open;
-            newdev = HID.new( newdevid );
-            newdev.info = deviceList.at( id1 );
-            newdev.getElements;
-            newdev.getCollections;
-            openDevices.put( newdevid, newdev );
-        }{
-            newdevid = HID.prOpenDevice( id1,id2 );
-            newdev = HID.new( newdevid );
-            newdev.getInfo;
-            newdev.getElements;
-            newdev.getCollections;
-            openDevices.put( newdevid, newdev );
-        }
+        newdevid = HID.prOpenDevice( vendorID, productID ); // FIXME: add path and serialNumber
+        newdev = HID.new( newdevid );
+        newdev.getInfo;
+        newdev.getElements;
+        newdev.getCollections;
+        openDevices.put( newdevid, newdev );
         ^newdev;
     }
 
@@ -124,11 +119,12 @@ HID {
 
     *doPrAction{ | devid, elid, page, usage, value, mappedvalue |
         var thisdevice = openDevices.at( devid );
-        var dpage = thisdevice.usagePage;
-        var dusage = thisdevice.usage;
-        var vendor = thisdevice.vendor;
-        var product = thisdevice.product;
-        prAction.value( devid, elid, dpage, dusage, vendor, product, page, usage, mappedvalue, value );
+        // var dpage = thisdevice.usagePage;
+        // var dusage = thisdevice.usage;
+        // var vendor = thisdevice.vendor;
+        // var product = thisdevice.product;
+        /// add a unique usb address id - check which one this should be
+        prAction.value( devid, thisdevice, elid, page, usage, mappedvalue, value );
     }
 
 /// primitives called:
@@ -142,7 +138,7 @@ HID {
 		^this.primitiveFailed
 	}
 
-	*prOpenDevice{ |joyid|
+	*prOpenDevice{ |vendorID,productID|  // FIXME: add path and serialNumber
 		_HID_API_OpenDevice
 		^this.primitiveFailed
 	}
@@ -213,6 +209,19 @@ HID {
 		}
 	}
 
+    *findBy { |vendorID, productID, path, serial, versionID|
+        if ( [vendorID, productID, path, serial, versionID].every( _.isNil ) ){
+			^nil;
+		};
+        ^HID.available.select { |info|
+            vendorID.isNil or: { info.vendorID == vendorID }
+            and: { productID.isNil or: { info.productID == productID } }
+            and: { path.isNil or: { info.path == path } }
+            and: { serial.isNil or: { info.serialNumber == serial } }
+            and: { versionID.isNil or: { info.releaseNumber == versionID } }
+        };
+    }
+
 // }
     // HIDDevice {
 /*
@@ -244,6 +253,7 @@ HID {
             ( [ "device", id ] ++ args).postln;
 		};
         deviceAction.value( *args );
+        this.changed( \elementdata );
     }
 
 	valueAction{ arg ...args;
@@ -291,27 +301,27 @@ HID {
 	}
 
     usagePage{ |col=0|
-        collections.at( col ).usagePage;
+        ^collections.at( col ).usagePage;
     }
 
     usage{ |col=0|
-        collections.at( col ).usage;
+        ^collections.at( col ).usage;
     }
 
     pageName{ |col=0|
-        collections.at( col ).pageName;
+        ^collections.at( col ).pageName;
     }
 
     usageName{ |col=0|
-        collections.at( col ).usageName;
+        ^collections.at( col ).usageName;
     }
 
     vendor{
-        info.vendorID;
+        ^info.vendorID;
     }
 
     product{
-        info.productID;
+        ^info.productID;
     }
 
     // prettyPrint{
@@ -324,6 +334,26 @@ HID {
 	close{
 		HID.prCloseDevice( id );
 	}
+
+    postCollections{
+        this.collections.sortedKeysValuesDo{ |k,v| v.postln; };
+    }
+
+    postElements{
+        this.elements.sortedKeysValuesDo{ |k,v| v.postln; "".postln; };
+    }
+
+    postInputElements{
+        this.elements.sortedKeysValuesDo{ |k,v| if( v.ioType == 1 ) { v.postln; "".postln; } };
+    }
+
+    postOutputElements{
+        this.elements.sortedKeysValuesDo{ |k,v| if( v.ioType == 2 ) { v.postln; "".postln; } };
+    }
+
+    postFeatureElements{
+        this.elements.sortedKeysValuesDo{ |k,v| if( v.ioType == 3 ) { v.postln; "".postln; } };
+    }
 }
 
 HIDInfo{
@@ -351,7 +381,7 @@ HIDInfo{
 	}
 
     open{
-        ^HID.prOpenDevice( vendorID, productID );
+        ^HID.open( vendorID, productID );
     }
 }
 
