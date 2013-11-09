@@ -101,6 +101,8 @@ struct hid_device_element {
 	int report_index; // index into the report
 
 	int value;
+	
+	int repeat;
 
 	/** Pointer to the next element */
 	struct hid_device_element *next;
@@ -175,6 +177,7 @@ struct hid_device_element * hid_get_next_output_element_with_reportid( struct hi
 struct hid_device_element * hid_get_next_feature_element( struct hid_device_element * curel );
 
 int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * devdesc );
+int hid_parse_input_report_new( unsigned char* buf, int size, struct hid_dev_desc * devdesc );
 
 float hid_element_resolution( struct hid_device_element * element );
 float hid_element_map_logical( struct hid_device_element * element );

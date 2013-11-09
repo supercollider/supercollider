@@ -185,9 +185,9 @@ int main(int argc, char* argv[]){
   printf( "vendor %i, product %i", vendor_id, product_id );
   
 
-  devdesc = hid_open_device( 0x044f, 0xd003, NULL );
+  devdesc = hid_open_device( vendor_id, product_id, NULL );
   if (!devdesc){
-    fprintf(stderr, "Unable to open device %d, %d\n", 0x044f, 0xd003 );
+    fprintf(stderr, "Unable to open device %d, %d\n", vendor_id, product_id );
     return 1;
   }
 //   handle = hid_open( 0x044f, 0xd003, NULL);
@@ -221,8 +221,8 @@ int main(int argc, char* argv[]){
 
   print_collection_info( devdesc->device_collection );
   
-  printf("press key to continue\n" );
-  getchar();
+//   printf("press key to continue\n" );
+//   getchar();
 
   struct hid_device_element * cur_element = devdesc->device_collection->first_element;
   
@@ -235,8 +235,8 @@ int main(int argc, char* argv[]){
     cur_element = cur_element->next;
   }
   
-  printf("press key to continue\n" );
-  getchar();
+//   printf("press key to continue\n" );
+//   getchar();
 
   char my_custom_data[40] = "Hello!";
   hid_set_descriptor_callback( devdesc, (hid_descriptor_callback) my_descriptor_cb, my_custom_data );
@@ -256,7 +256,7 @@ int main(int argc, char* argv[]){
 	while (1) {
 		res = hid_read(devdesc->device, buf, sizeof(buf));
 		if ( res > 0 ) {
-		  hid_parse_input_report( buf, res, devdesc );
+		  hid_parse_input_report_new( buf, res, devdesc );
 		}
 		#ifdef WIN32
 		Sleep(500);

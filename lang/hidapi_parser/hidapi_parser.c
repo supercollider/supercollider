@@ -129,6 +129,7 @@
 
 
 #define BITMASK1(n) ((1ULL << (n)) - 1ULL)
+#define INVERTBITMASK1(n) ( 255 -(n))
 
 
 // struct hid_device_descriptor * hid_new_descriptor(){
@@ -146,6 +147,7 @@ struct hid_device_element * hid_new_element(){
   struct hid_device_element * element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
   element->next = NULL;
   element->report_id = 0;
+  element->repeat = 0;
   return element;
 }
 
@@ -740,6 +742,83 @@ struct hid_device_element * hid_get_next_feature_element( struct hid_device_elem
   // is NULL
 }
 
+struct hid_parsing_byte {
+    int nextVal;
+    int currentSize;
+    int bitIndex;
+    int remainingBits;
+    int shiftedByte;
+};
+
+int hid_parse_single_byte( unsigned char current_byte, struct hid_parsing_byte * pbyte ){
+  int nextVal;
+  int bitMask;
+  int currentBitsize = pbyte->currentSize - pbyte->bitIndex;
+  if ( currentBitsize >= pbyte->remainingBits ){
+      // using the full byte
+      nextVal = ( current_byte << pbyte->bitIndex );
+      pbyte->bitIndex += pbyte->remainingBits;
+      pbyte->remainingBits = 0;
+  } else { 
+      // use a partial byte:
+      bitMask = BITMASK1( currentBitsize );
+      nextVal = bitMask && current_byte;
+      nextVal = nextVal << pbyte->bitIndex;
+      pbyte->remainingBits -= currentBitsize;
+      // shift the remaining value
+      pbyte->shiftedByte = ( current_byte && INVERTBITMASK1( bitMask ) ) >> currentBitsize;
+      pbyte->bitIndex = pbyte->currentSize; // is this always true?
+  };
+  pbyte->nextVal += nextVal;
+  if ( (pbyte->currentSize - pbyte->bitIndex) == 0 ){
+    pbyte->bitIndex = 0;
+    nextVal = pbyte->nextVal;
+    pbyte->nextVal = 0;
+    return nextVal;
+  }
+  return -1;
+}
+
+// int hid_parse_input_report( unsigned char* buf, int size, struct hid_device_descriptor * descriptor ){
+int hid_parse_input_report_new( unsigned char* buf, int size, struct hid_dev_desc * devdesc ){  
+  struct hid_parsing_byte pbyte; 
+  pbyte.nextVal = 0;
+  pbyte.currentSize = 10;
+  pbyte.bitIndex = 0;
+  pbyte.remainingBits = 0;
+  pbyte.shiftedByte = 0;
+//    desc = (struct hid_dev_desc *) malloc( sizeof( struct hid_dev_desc ) );
+
+  struct hid_device_collection * device_collection = devdesc->device_collection;
+  struct hid_device_element * cur_element = device_collection->first_element;
+  int newvalue;
+  int i;
+
+  if ( cur_element->io_type != 1 ){
+      cur_element = hid_get_next_input_element(cur_element);
+  }
+
+  for ( i = 0; i < size; i++){
+    unsigned char curbyte = buf[i];
+    pbyte.remainingBits = 8;
+    pbyte.shiftedByte = curbyte;
+    while( pbyte.remainingBits > 0 ) {
+      // get next element
+      pbyte.currentSize = cur_element->report_size;
+      newvalue = hid_parse_single_byte( pbyte.shiftedByte, &pbyte );
+      if ( newvalue != -1 ){
+	if ( devdesc->_element_callback != NULL ){
+	  if ( newvalue != cur_element->value || cur_element->repeat ){
+	    cur_element->value = newvalue;
+	    devdesc->_element_callback( cur_element, devdesc->_element_data );
+	  }
+	}
+	cur_element = hid_get_next_input_element( cur_element );      
+      }
+    }
+  }
+}
+
 // int hid_parse_input_report( unsigned char* buf, int size, struct hid_device_descriptor * descriptor ){
 int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * devdesc ){  
   ///TODO: parse input from descriptors with report size like 12 correctly
@@ -751,6 +830,7 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
   int next_byte_size;
   int next_mod_bit_size;
   int byte_count = 0;
+  int bit_count = 0;
   int next_val = 0;
 
 //   cur_element = hid_get_next_input_element( cur_element );
@@ -773,7 +853,7 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
 #ifdef DEBUG_PARSER    
     printf("byte %02hhx \t", buf[i]);
 #endif
-    // read byte:    
+    // read byte:
     if ( cur_element->report_size < 8 ){
       int bitindex = 0;
       while ( bitindex < 8 ){
@@ -817,7 +897,52 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
 #ifdef DEBUG_PARSER
     printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
 #endif    
-    } else if ( cur_element->report_size == 16 ){
+    } 
+    /*else if ( (cur_element->report_size > 8) && (cur_element->report_size < 16) ){
+      int shift = bit_count;
+#ifdef DEBUG_PARSER
+      printf("\t nextval before shift: %i", next_val);
+#endif      
+      if ( cur_element->report_size - bit_count >= 8 ){
+	next_val |= (int)(((unsigned char)(curbyte)) << shift);
+	bit_count += 8; // just update the bit_count and move on to the next byte
+      } else {
+	// partial shift in, so we need to mask the value we shift in, and then move onto the next element
+	unsigned char bitmask = BITMASK1( cur_element->report_size - bit_count );
+	unsigned char shiftIn = ( (unsigned char) curbyte & bitmask );
+	next_val |= (int)( (shiftIn << shift );
+	// go to next element;
+
+	int newvalue = next_val;
+#ifdef DEBUG_PARSER
+	  printf("element page %i, usage %i, type %i,  index %i, value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index,cur_element->value );
+#endif
+	if ( devdesc->_element_callback != NULL ){
+	   if ( newvalue != cur_element->value ){
+	      cur_element->value = newvalue;
+	      devdesc->_element_callback( cur_element, devdesc->_element_data );
+	   }
+	}
+	cur_element = hid_get_next_input_element( cur_element );
+// 	if ( cur_element == NULL ){ break; }
+	// FIXME: this doesn't handle the case yet, where you have e.g. a 12 bit value followed by 4 bits of button data
+	bitmask = !bitmask;
+	next_val = (int) ( ( (unsigned char) curbyte & bitmask ) >>  (bit_count%8) );
+#ifdef DEBUG_PARSER
+	  printf("newVal %i, bit_count %i, curbyte %i, bitmask %i\n", newVal, bit_count, curbyte, bitmask );
+#endif
+	bit_count = bit_count%8;  
+	next_byte_size = cur_element->report_size/8;
+	next_mod_bit_size = cur_element->report_size%8;
+#ifdef DEBUG_PARSER
+    printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
+#endif    
+	 byte_count = 0;
+	 next_val = 0;	  
+      }      
+    }
+    */
+    else if ( cur_element->report_size == 16 ){
       int shift = byte_count*8;
       next_val |= (int)(((unsigned char)(curbyte)) << shift);
 #ifdef DEBUG_PARSER
@@ -843,6 +968,7 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
 #ifdef DEBUG_PARSER
     printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
 #endif    
+	  bit_count = 0;
 	  byte_count = 0;
 	  next_val = 0;
       }
