@@ -178,6 +178,11 @@ HID {
 		^this.primitiveFailed
 	}
 
+    *prSetElementRepeat{ |joyid,elid,value|
+		_HID_API_SetElementRepeat
+		^this.primitiveFailed
+	}
+
 	*prbuildDeviceList{
 		_HID_API_BuildDeviceList
 		^this.primitiveFailed
@@ -442,7 +447,7 @@ HIDCollection{
 }
 
 HIDElement{
-
+//------- do not change the order of these variables: <-------
     var <index;
     var <ioType, <type;
     var <usagePage, <usage;
@@ -450,20 +455,34 @@ HIDElement{
     var <physicalMin, <physicalMax;
     var <unitExponent, <unit;
     var <reportSize, <reportID, <reportIndex;
-    var <collection;
-
     var <rawValue;
+    var <collection;
+//-------> do not change the order of these variables -------
+
     var <logicalValue;
 
 	var <value, <>action;
 
     var <>device;
 
+    var <repeat = false;
+
     var pageName, usageName, iotypeName, typeSpec;
 
 	*new{ arg ...args;
-        ^super.newCopyArgs( *args );
+        ^super.newCopyArgs( *args ).mapValueFromRaw;
 	}
+
+    mapValueFromRaw{
+        logicalValue = logicalMin + ( (logicalMax - logicalMin) * rawValue );
+        // for now:
+        value = logicalValue;
+    }
+
+    repeat_{ |rp|
+        repeat = rp;
+        HID.prSetElementRepeat( device.id, index, repeat.binaryValue );
+    }
 
     // use for sending output
     value_{ |val|
