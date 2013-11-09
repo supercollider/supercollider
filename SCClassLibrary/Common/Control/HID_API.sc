@@ -286,6 +286,12 @@ HID {
         }
     }
 
+    findElementWithUsage{ |elUsage, elUsagePage|
+        ^elements.select{ |el|
+            ( el.usage == elUsage ) and: ( el.usagePage == elUsagePage )
+        }.asArray;
+    }
+
 	getElementInfo{ |elid|
 		^HID.prGetElementInfo( id, elid );
 	}
