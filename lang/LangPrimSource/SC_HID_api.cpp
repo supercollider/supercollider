@@ -460,7 +460,7 @@ void SC_HID_APIManager::threadLoop(){
       if ( it->second != NULL ){
 	res = hid_read( it->second->device, buf, sizeof(buf));
 	if ( res > 0 ) {
-	  hid_parse_input_report( buf, res, it->second );
+	  hid_parse_input_report_new( buf, res, it->second );
 	}
       }
     }
@@ -899,6 +899,48 @@ int prHID_API_SetElementOutput( VMGlobals* g, int numArgsPushed ){
   return errNone;  
 }
 
+int prHID_API_SetElementRepeat( VMGlobals* g, int numArgsPushed ){
+  PyrSlot *args = g->sp - numArgsPushed + 1;
+  PyrSlot* self = args + 0;
+  PyrSlot* arg1  = args + 1;
+  PyrSlot* arg2  = args + 2;
+  PyrSlot* arg3  = args + 3;
+    
+  int err;
+  int joyid;
+  int elementid;
+  int value;
+    
+  err = slotIntVal( arg1, &joyid );
+  if ( err != errNone ) return err;
+  
+  err = slotIntVal( arg2, &elementid );
+  if ( err != errNone ) return err;
+
+  err = slotIntVal( arg3, &value );
+  if ( err != errNone ) return err;
+  
+  struct hid_dev_desc * devdesc = SC_HID_APIManager::instance().get_device( joyid );
+  struct hid_device_collection * curdev = devdesc->device_collection;
+  struct hid_device_element * curelement = curdev->first_element;
+  struct hid_device_element * thiselement = NULL;
+  
+  if ( devdesc != NULL ){  
+    bool found = false;
+    while( curelement != NULL && !found ){
+	found = (curelement->index == elementid) && ( curelement->io_type == 1 );
+	if ( found ){
+	    thiselement = curelement;
+	}
+	curelement = hid_get_next_input_element( curelement );
+    }
+    if ( thiselement != NULL ){
+      thiselement->repeat = value;
+    }
+  }
+  return errNone;  
+}
+
 void close_HID_API_Devices(){
   SC_HID_APIManager::instance().stop();
 }
@@ -929,6 +971,7 @@ void initHIDAPIPrimitives()
   definePrimitive(base, index++, "_HID_API_GetElementInfo", prHID_API_GetElementInfo, 4, 0); // gets info about a specific device element
 
   definePrimitive(base, index++, "_HID_API_SetElementOutput", prHID_API_SetElementOutput, 3, 0); // sets the output value of a specific device element, and sends the report
+  definePrimitive(base, index++, "_HID_API_SetElementRepeat", prHID_API_SetElementRepeat, 3, 0); // sets the repeat property of a specific device element
   
   SC_HID_APIManager::s_hidElementData = getsym("prHIDElementData"); // send back element data
   SC_HID_APIManager::s_hidDeviceData = getsym("prHIDDeviceData"); // send back device data
