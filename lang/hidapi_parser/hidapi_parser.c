@@ -272,7 +272,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 	  if ( next_byte_tag != -1 ){
 // 	      toadd = (unsigned char) descr_buf[i];
 	      int shift = byte_count*8;
-	      next_val |= (int)(((unsigned char)(descr_buf[i])) << shift);
+	      next_val |= (int)( ((int)descr_buf[i]) << shift);
 #ifdef DEBUG_PARSER
 	      printf("\t nextval shift: %i", next_val);
 #endif
@@ -818,6 +818,9 @@ int hid_parse_input_report_new( unsigned char* buf, int size, struct hid_dev_des
     }
   }
 }
+
+
+///TODO: deprecate and remove this version:
 
 // int hid_parse_input_report( unsigned char* buf, int size, struct hid_device_descriptor * descriptor ){
 int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * devdesc ){  
