@@ -91,16 +91,29 @@ HID {
         ^available.at( index ).open;
     }
 
-    *open{ |vendorID, productID, serialNumber, path|
+    *open{ |vendorID, productID, path|
         var newdevid;
         var newdev;
-        newdevid = HID.prOpenDevice( vendorID, productID, serialNumber ); // FIXME: add path and serialNumber
+        var thisone;
+        if ( path.isNil ){
+            thisone = HID.findBy( vendorID, productID ).asArray.first;
+            path = thisone.path;
+            "HID: path was not set specified yet, chosen the one with path: %\n".postf( path );
+        };
+        newdevid = HID.prOpenDevice( vendorID, productID, path );
         newdev = HID.new( newdevid );
         newdev.getInfo;
+        ("Opened HID device: %\n".postf( newdev.info ) );
         newdev.getElements;
         newdev.getCollections;
         openDevices.put( newdevid, newdev );
         ^newdev;
+    }
+
+    *openPath{ |path|
+        var thisone = HID.findBy( path: path ).asArray.first;
+        thisone.postln;
+        ^thisone.open;
     }
 
 	*start{
@@ -365,6 +378,14 @@ HID {
     postFeatureElements{
         this.elements.sortedKeysValuesDo{ |k,v| if( v.ioType == 3 ) { v.postln; "".postln; } };
     }
+
+    *postAvailable{
+        this.available.sortedKeysValuesDo{ |k,v| "%: ".postf( k ); v.postInfo; };
+    }
+
+    postInfo{
+        info.postInfo;
+    }
 }
 
 HIDInfo{
@@ -380,19 +401,30 @@ HIDInfo{
         ^super.newCopyArgs( *args );
     }
 
+    postInfo{
+        "\tVendor name: \t%\n".postf( vendorName );
+        "\tProduct name: \t%\n".postf( productName );
+        "\tVendor and product ID: \t%, %\n".postf( vendorID, productID );
+        "\tPath: \t%\n".postf( path );
+        "\tSerial Number: \t%\n".postf( serialNumber );
+        "\tReleasenumber and interfaceNumber: \t%,%\n".postf( releaseNumber, interfaceNumber );
+    }
+
     printOn { | stream |
 		super.printOn(stream);
-		stream << $( << vendorName << ", " << productName << ", ";
+		stream << $( << vendorName << ", " << productName << ", IDs:";
 		[
 			vendorID,
 			productID
-		].collect({ | x | "0x" ++ x.asHexString(4) }).printItemsOn(stream);
-		stream << ", " << path << ", " << serialNumber << ", " << ", " << releaseNumber << ", " << interfaceNumber;
+		]//.collect({ | x | "0x" ++ x.asHexString(4) })
+        .printItemsOn(stream);
+		stream << ", " << path << ", " << serialNumber << ", " << releaseNumber << ", " << interfaceNumber;
 		stream.put($));
 	}
 
     open{
-        ^HID.open( vendorID, productID, serialNumber );
+        ^HID.open( vendorID, productID, path );
+//        ^HID.open( vendorID, productID, serialNumber );
     }
 }
 
