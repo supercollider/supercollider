@@ -534,7 +534,7 @@ Plotter {
 		.focusColor_(Color.clear)
 		.font_(font)
 		.resize_(3)
-		.action_ { this.class.help };
+		.action_ { this.class.openHelpFile };
 
 		^bounds;
 	}
@@ -815,13 +815,13 @@ Plotter {
 			server.sendMsgSync(c, *buffer.allocMsg);
 			server.sendMsgSync(c, "/d_recv", def.asBytes);
 			synth = Synth(name, [\bufnum, buffer], server);
-			OSCpathResponder(server.addr, ['/n_end', synth.nodeID], {
+			OSCFunc({
 				buffer.loadToFloatArray(action: { |array, buf|
 					action.value(array, buf);
 					buffer.free;
 					server.sendMsg("/d_free", name);
 				});
-			}).add.removeWhenDone;
+			}, '/n_end', server.addr, nil, [synth.nodeID]).oneShot;
 		});
 	}
 
@@ -834,18 +834,18 @@ Plotter {
 			this.loadToFloatArray(duration, server, { |array, buf|
 				var numChan = buf.numChannels;
 				{
-					plotter.domainSpecs = ControlSpec(0, duration, units: "s");
 					plotter.setValue(
 						array.unlace(numChan).collect(_.drop(-1)),
 						findSpecs: true,
 						refresh: false
 					);
-					if(minval.isNumber && maxval.isNumber,{
+					if(minval.isNumber && maxval.isNumber) {
 						plotter.specs = [minval, maxval].asSpec
-					},{
+					} {
 						minval !? { plotter.minval = minval };
 						maxval !? { plotter.maxval = maxval };
-					});
+					};
+					plotter.domainSpecs = ControlSpec(0, duration, units: "s");
 					plotter.refresh;
 				}.defer
 			})
@@ -871,18 +871,18 @@ Plotter {
 		);
 		this.loadToFloatArray(action: { |array, buf|
 			{
-				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units:"frames");
 				plotter.setValue(
 					array.unlace(buf.numChannels),
 					findSpecs: true,
 					refresh: false
 				);
-				if(minval.isNumber && maxval.isNumber,{
+				if(minval.isNumber && maxval.isNumber) {
 					plotter.specs = [minval, maxval].asSpec
-				},{
+				} {
 					minval !? { plotter.minval = minval };
 					maxval !? { plotter.maxval = maxval };
-				});
+				};
+				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units:"frames");
 				plotter.refresh;
 			}.defer
 		});
