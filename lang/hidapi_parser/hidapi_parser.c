@@ -273,6 +273,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
   int next_byte_size = 0;
   int next_byte_type = 0;
   int next_val = 0;
+//   unsigned int u_next_val = 0;
+//   int u_next_val = 0;
   
   unsigned char toadd = 0;
   int byte_count = 0;
@@ -296,10 +298,11 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 	  printf("\tbyte_type %i, %i, %i \t", next_byte_tag, next_byte_size, next_val);
 #endif
 	  if ( next_byte_tag != -1 ){
-	      unsigned char ubyte = (unsigned char) descr_buf[i];
-	      char sbyte = (char) descr_buf[i];
+// 	      unsigned char ubyte = (unsigned char) descr_buf[i];
+	      char sbyte = descr_buf[i]; // descr_buf is signed already
 	      int shift = byte_count*8;
-	      next_val |= (int)( ((int)descr_buf[i]) << shift);
+	      next_val |= (int)(((unsigned char)(descr_buf[i])) << shift);
+// 	      u_next_val |= (int)(((unsigned char)(descr_buf[i])) << shift);
 #ifdef DEBUG_PARSER
 	      printf("\t nextval shift: %i", next_val);
 #endif
@@ -364,17 +367,21 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
 		    break;
 		  case HID_LOGICAL_MIN:
-		    making_element->logical_min = next_val;
+		    if ( byte_count == 1 ){
+		      making_element->logical_min = sbyte;
+		    } else {
+		      making_element->logical_min = next_val;
+		    }
 #ifdef DEBUG_PARSER
 		    printf("\n\tlogical min: %i", making_element->logical_min);
 #endif
 		    break;
 		  case HID_LOGICAL_MAX:
-		    if ( byte_count == 1 ){ // one byte, then max should be positive
-		      making_element->logical_max = ubyte;
-		    } else {
+// 		    if ( making_element->logical_min >= 0 ){
+// 		      making_element->logical_max = u_next_val;
+// 		    } else {
 		      making_element->logical_max = next_val;
-		    }
+// 		    }
 #ifdef DEBUG_PARSER
 		    printf("\n\tlogical max: %i", making_element->logical_max);
 #endif
@@ -386,7 +393,11 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
 		    break;
 		  case HID_PHYSICAL_MAX:
-		    making_element->phys_max = next_val;
+// 		    if ( making_element->phys_min >= 0 ){
+// 		      making_element->phys_max = u_next_val;
+// 		    } else {
+		      making_element->phys_max = next_val;
+// 		    }
 #ifdef DEBUG_PARSER
 		    printf("\n\tphysical max: %i", making_element->phys_min);
 #endif
@@ -588,6 +599,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 	    } else {
 	      byte_count = 0;
 	      next_val = 0;
+// 	      u_next_val = 0;
 	      next_byte_tag = descr_buf[i] & 0xFC;
 	      next_byte_type = descr_buf[i] & 0x0C;
 	      next_byte_size = descr_buf[i] & 0x03;
