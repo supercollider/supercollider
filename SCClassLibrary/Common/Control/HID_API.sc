@@ -609,11 +609,15 @@ HIDUsage {
                     usageName = \undefined;
                 }{
                     huttable = this.readHUTFile( yamlfile );
-                    if ( huttable.at( usage ).notNil ){
-                        usageName = huttable.at( usage ).at( \name );
-                    }{
-                        usageName = \undefined;
-                    }
+					if ( huttable.notNil ){
+						if ( huttable.at( usage ).notNil ){
+							usageName = huttable.at( usage ).at( \name );
+						}{
+							usageName = \undefined;
+						}
+					}{
+						usageName = \undefined;
+					}
                 }
             }
         );
