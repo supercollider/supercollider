@@ -777,6 +777,7 @@ int hid_parse_input_report_new( unsigned char* buf, int size, struct hid_dev_des
       }
     }
   }
+  return 0;
 }
 
 
