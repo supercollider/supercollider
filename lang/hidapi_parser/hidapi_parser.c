@@ -369,7 +369,11 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
 		    break;
 		  case HID_LOGICAL_MAX:
-		    making_element->logical_max = next_val;
+		    if ( byte_count == 1 ){ // one byte, then max should be positive
+		      making_element->logical_max = (unsigned char) next_val;
+		    } else {
+		      making_element->logical_max = next_val;
+		    }
 #ifdef DEBUG_PARSER
 		    printf("\n\tlogical max: %i", making_element->logical_max);
 #endif
