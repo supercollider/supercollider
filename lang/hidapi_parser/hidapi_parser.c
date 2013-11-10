@@ -296,7 +296,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 	  printf("\tbyte_type %i, %i, %i \t", next_byte_tag, next_byte_size, next_val);
 #endif
 	  if ( next_byte_tag != -1 ){
-// 	      toadd = (unsigned char) descr_buf[i];
+	      unsigned char ubyte = (unsigned char) descr_buf[i];
+	      char sbyte = (char) descr_buf[i];
 	      int shift = byte_count*8;
 	      next_val |= (int)( ((int)descr_buf[i]) << shift);
 #ifdef DEBUG_PARSER
@@ -370,7 +371,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 		    break;
 		  case HID_LOGICAL_MAX:
 		    if ( byte_count == 1 ){ // one byte, then max should be positive
-		      making_element->logical_max = (unsigned char) next_val;
+		      making_element->logical_max = ubyte;
 		    } else {
 		      making_element->logical_max = next_val;
 		    }
