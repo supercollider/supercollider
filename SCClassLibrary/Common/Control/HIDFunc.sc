@@ -60,8 +60,8 @@ HIDFunc : AbstractResponderFunc {
 		}
 	}
 
-	*new { arg func, elkey, hidkey, elpage, elusage, argTemplate, dispatcher;
-		^super.new.init(func, elkey, hidkey, elpage, elusage, argTemplate, dispatcher ? defaultDispatcher);
+	*new { arg func, elType, elPage, deviceInfo, argTemplate, dispatcher;
+		^super.new.init(func, elType, elPage, deviceInfo, argTemplate, dispatcher ? defaultDispatcher);
 	}
 
     /// different types:
