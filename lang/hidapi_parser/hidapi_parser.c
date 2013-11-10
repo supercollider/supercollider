@@ -146,8 +146,16 @@
 struct hid_device_element * hid_new_element(){
   struct hid_device_element * element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
   element->next = NULL;
-  element->report_id = 0;
   element->repeat = 0;
+    
+  element->logical_min = 0;
+  element->logical_max = 0;
+  element->phys_min = 0;
+  element->phys_max = 0;
+  element->report_id = 0;
+  element->unit = 0;
+  element->unit_exponent = 0;
+
   return element;
 }
 
@@ -216,6 +224,27 @@ void hid_set_element_callback( struct hid_dev_desc * devd, hid_element_callback 
     devd->_element_data = user_data;
 }
 
+void hid_set_from_making_element( struct hid_device_element * making, struct hid_device_element * new_element ){
+	
+	new_element->type = making->type;
+	new_element->usage_page = making->usage_page;
+	new_element->logical_min = making->logical_min;
+	new_element->logical_max = making->logical_max;
+	if ( (making->phys_min == 0) && (making->phys_max == 0) ){
+	  new_element->phys_min = making->logical_min;
+	  new_element->phys_max = making->logical_max;
+	
+	} else {
+	  new_element->phys_min = making->phys_min;
+	  new_element->phys_max = making->phys_max;
+	}
+	new_element->unit = making->unit;
+	new_element->unit_exponent = making->unit_exponent;
+	
+	new_element->report_size = making->report_size;
+	new_element->report_id = making->report_id;
+}
+
 // int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_descriptor * descriptor ){
 int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc * device_desc ){
   struct hid_device_collection * device_collection = hid_new_collection();
@@ -224,21 +253,18 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
   struct hid_device_collection * parent_collection = device_desc->device_collection;
   struct hid_device_collection * prev_collection;
   struct hid_device_element * prev_element;
-  int current_usage_page;
-  int current_usage;
+  
+  struct hid_device_element * making_element = hid_new_element();
+  
   int current_usages[256];
   int current_usage_index = 0;
+  int current_report_size;
+
   int current_usage_min = -1;
   int current_usage_max = -1;
-  int current_logical_min = 0;
-  int current_logical_max = 0;
-  int current_physical_min = 0;
-  int current_physical_max = 0;
-  int current_report_count;
-  int current_report_id = 0;
-  int current_report_size;
-  int current_unit = 0;
-  int current_unit_exponent = 0;
+  
+  int current_report_count = 0;
+
   char current_input;
   char current_output;
   int collection_nesting = 0;
@@ -280,13 +306,13 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 	      if ( byte_count == next_byte_size ){
 		switch( next_byte_tag ){
 		  case HID_USAGE_PAGE:
-		    current_usage_page = next_val;
+		    making_element->usage_page = next_val;
 #ifdef DEBUG_PARSER
-		    printf("\n\tusage page: 0x%02hhx", current_usage_page);
+		    printf("\n\tusage page: 0x%02hhx", making_element->usage_page);
 #endif
 		    break;
 		  case HID_USAGE:
-		    current_usage = next_val;
+		    making_element->usage = next_val;
 		    current_usage_min = -1;
 		    current_usage_max = -1;
 		    current_usages[ current_usage_index ] = next_val;
@@ -309,8 +335,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 		    }
 		    new_collection->parent_collection = parent_collection;
 		    new_collection->type = next_val;
-		    new_collection->usage_page = current_usage_page;
-		    new_collection->usage_index = current_usage;
+		    new_collection->usage_page = making_element->usage_page;
+		    new_collection->usage_index = making_element->usage;
 		    new_collection->index = device_collection->num_collections;
 		    device_collection->num_collections++;
 		    if ( device_collection != parent_collection ){
@@ -337,27 +363,27 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
 		    break;
 		  case HID_LOGICAL_MIN:
-		    current_logical_min = next_val;
+		    making_element->logical_min = next_val;
 #ifdef DEBUG_PARSER
-		    printf("\n\tlogical min: %i", current_logical_min);
+		    printf("\n\tlogical min: %i", making_element->logical_min);
 #endif
 		    break;
 		  case HID_LOGICAL_MAX:
-		    current_logical_max = next_val;
+		    making_element->logical_max = next_val;
 #ifdef DEBUG_PARSER
-		    printf("\n\tlogical max: %i", current_logical_max);
+		    printf("\n\tlogical max: %i", making_element->logical_max);
 #endif
 		    break;
 		  case HID_PHYSICAL_MIN:
-		    current_physical_min = next_val;
+		    making_element->phys_min = next_val;
 #ifdef DEBUG_PARSER
-		    printf("\n\tphysical min: %i", current_physical_min);
+		    printf("\n\tphysical min: %i", making_element->phys_min);
 #endif
 		    break;
 		  case HID_PHYSICAL_MAX:
-		    current_physical_max = next_val;
+		    making_element->phys_max = next_val;
 #ifdef DEBUG_PARSER
-		    printf("\n\tphysical max: %i", current_physical_min);
+		    printf("\n\tphysical max: %i", making_element->phys_min);
 #endif
 		    break;
 		  case HID_REPORT_COUNT:
@@ -367,25 +393,25 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
 		    break;
 		  case HID_REPORT_SIZE:
-		    current_report_size = next_val;
+		    making_element->report_size = next_val;
 #ifdef DEBUG_PARSER
-		    printf("\n\treport size: %i", current_report_size);
+		    printf("\n\treport size: %i", making_element->report_size);
 #endif
 		    break;
 		  case HID_REPORT_ID:
-		    current_report_id = next_val;
+		    making_element->report_id = next_val;
 		    // check if report id already exists
 		    int reportexists = 0;
 		    for ( j = 0; j < numreports; j++ ){
-		      reportexists = (report_ids[j] == current_report_id);
+		      reportexists = (report_ids[j] == making_element->report_id);
 		    }
 		    if ( !reportexists ){
-		      report_ids[ numreports ] = current_report_id;
+		      report_ids[ numreports ] = making_element->report_id;
 		      report_lengths[ numreports ] = 0;
 		      numreports++;
 		    }
 #ifdef DEBUG_PARSER
-		    printf("\n\treport id: %i", current_report_id);
+		    printf("\n\treport id: %i", making_element->report_id);
 #endif
 		    break;
 		  case HID_POP:
@@ -401,13 +427,13 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
 		    break;
 		  case HID_UNIT:
-		    current_unit = next_val;
+		    making_element->unit = next_val;
 #ifdef DEBUG_PARSER
 		    printf("\n\tunit: %i", next_val );
 #endif
 		    break;
 		  case HID_UNIT_EXPONENT:
-		    current_unit_exponent = next_val;
+		    making_element->unit_exponent = next_val;
 #ifdef DEBUG_PARSER
 		    printf("\n\tunit exponent: %i", next_val );
 #endif
@@ -415,37 +441,22 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 		  case HID_INPUT:
 #ifdef DEBUG_PARSER
 		    printf("\n\tinput: %i", next_val);
-		    printf("\tcurrent_usage_index: %i", current_usage_index);
+		    printf("\tmaking_element->usage: %i", making_element->usage);
 #endif
+		    making_element->type = next_val;
 		    // add the elements for this report
 		    for ( j=0; j<current_report_count; j++ ){
 			struct hid_device_element * new_element = hid_new_element();
 // 			= (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
-			new_element->index = device_collection->num_elements;
 			new_element->io_type = 1;
-			new_element->type = next_val; //TODO: parse this for more detailed info
+			new_element->index = device_collection->num_elements;
 			new_element->parent_collection = parent_collection;
-			new_element->usage_page = current_usage_page;
-			if ( current_usage_min != -1 ){
+			hid_set_from_making_element( making_element, new_element );
+			if ( current_usage_min == -1 ){
+			  new_element->usage = current_usages[j]; /// FIXME
+			} else {
 			  new_element->usage = current_usage_min + j;
-			} else {
-			  new_element->usage = current_usages[j];
 			}
-			new_element->logical_min = current_logical_min;
-			new_element->logical_max = current_logical_max;
-			if ( (current_physical_min == 0) && (current_physical_max == 0) ){
-			  new_element->phys_min = current_logical_min;
-			  new_element->phys_max = current_logical_max;
-			
-			} else {
-			  new_element->phys_min = current_physical_min;
-			  new_element->phys_max = current_physical_max;
-			}
-			new_element->unit = current_unit;
-			new_element->unit_exponent = current_unit_exponent;
-			
-			new_element->report_size = current_report_size;
-			new_element->report_id = current_report_id;
 			new_element->report_index = j;
 			
 			new_element->value = 0;
@@ -454,70 +465,39 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			}
 			if ( device_collection->num_elements == 0 ){
 			    device_collection->first_element = new_element;
-			} else {
-			    prev_element->next = new_element;
 			}
 			device_collection->num_elements++;
 			if ( parent_collection != device_collection ) {
 			  parent_collection->num_elements++;
 			}
+			if ( prev_element != NULL ){
+			    prev_element->next = new_element;
+			}
 			prev_element = new_element;
 		    }
-// 		    current_usage_min = -1;
-// 		    current_usage_max = -1;
-		    current_usage_index = 0;
-// 		    current_physical_min = 0;
-// 		    current_physical_max = 0;
-// 		    current_unit_exponent = 0;
+		    making_element->usage = 0;
 		    break;
 		  case HID_OUTPUT:
 #ifdef DEBUG_PARSER
 		    printf("\n\toutput: %i", next_val);
-		    printf("\tcurrent_usage_index: %i", current_usage_index);
+		    printf("\tmaking_element->usage: %i", making_element->usage);
 #endif
-		    		    // add the elements for this report
+		    making_element->type = next_val;
+		    // add the elements for this report
 		    for ( j=0; j<current_report_count; j++ ){
+		  		      
 			struct hid_device_element * new_element = hid_new_element();
 // 			struct hid_device_element * new_element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
-			new_element->index = device_collection->num_elements;
 			new_element->io_type = 2;
+			new_element->index = device_collection->num_elements;
 			new_element->type = next_val; //TODO: parse this for more detailed info
 			new_element->parent_collection = parent_collection;
-			new_element->usage_page = current_usage_page;
-			if ( current_usage_min != -1 ){
+			hid_set_from_making_element( making_element, new_element );
+			if ( current_usage_min == -1 ){
+			  new_element->usage = current_usages[j]; /// FIXME
+			} else {
 			  new_element->usage = current_usage_min + j;
-			} else {
-			  new_element->usage = current_usages[j];
 			}
-			new_element->logical_min = current_logical_min;
-			new_element->logical_max = current_logical_max;
-			if ( (current_physical_min == 0) && (current_physical_max == 0) ){
-			  new_element->phys_min = current_logical_min;
-			  new_element->phys_max = current_logical_max;
-			
-			} else {
-			  new_element->phys_min = current_physical_min;
-			  new_element->phys_max = current_physical_max;
-			}
-			new_element->unit = current_unit;
-			new_element->unit_exponent = current_unit_exponent;
-			
-			new_element->report_size = current_report_size;
-			new_element->report_id = current_report_id;
-			// check which id this is in the array, then add to report length
-			int k = 0;
-			int index = 0;
-			for ( k=0; i<numreports; k++ ){
-			  if ( current_report_id == report_ids[k] ){
-			    index = k;
-			    break;
-			  }
-			}
-// 			while ( test ){
-// 			    test = (k >= (numreports-1)) || (current_report_id != report_ids[k]);
-// 			    k++;
-// 			}
-			report_lengths[index] += current_report_size;
 			new_element->report_index = j;
 			
 			new_element->value = 0;
@@ -526,56 +506,36 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			}
 			if ( device_collection->num_elements == 0 ){
 			    device_collection->first_element = new_element;
-			} else {
-			    prev_element->next = new_element;
 			}
 			device_collection->num_elements++;
 			if ( parent_collection != device_collection ) {
 			  parent_collection->num_elements++;
 			}
+			if ( prev_element != NULL ){
+			    prev_element->next = new_element;
+			}
 			prev_element = new_element;
 		    }
-// 		    current_usage_min = -1;
-// 		    current_usage_max = -1;
-		    current_usage_index = 0;
-// 		    current_physical_min = 0;
-// 		    current_physical_max = 0;
-// 		    current_unit_exponent = 0;
+		    making_element->usage = 0;
 		    break;
 		  case HID_FEATURE:
 #ifdef DEBUG_PARSER
 		    printf("\n\tfeature: %i", next_val);
-		    printf("\tcurrent_usage_index: %i", current_usage_index);
+		    printf("\tcurrent_usage: %i", making_element->usage);
 #endif
+		    making_element->type = next_val;
 		    // add the elements for this report
 		    for ( j=0; j<current_report_count; j++ ){
 			struct hid_device_element * new_element = hid_new_element(); 
-// 			struct hid_device_element * new_element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
-			new_element->index = device_collection->num_elements;
 			new_element->io_type = 3;
-			new_element->type = next_val; //TODO: parse this for more detailed info
+			new_element->index = device_collection->num_elements;
 			new_element->parent_collection = parent_collection;
-			new_element->usage_page = current_usage_page;
-			if ( current_usage_min != -1 ){
+			hid_set_from_making_element( making_element, new_element );
+			if ( current_usage_min == -1 ){
+			  new_element->usage = current_usages[j]; /// FIXME
+			} else {
 			  new_element->usage = current_usage_min + j;
-			} else {
-			  new_element->usage = current_usages[j];
 			}
-			new_element->logical_min = current_logical_min;
-			new_element->logical_max = current_logical_max;
-			if ( (current_physical_min == 0) && (current_physical_max == 0) ){
-			  new_element->phys_min = current_logical_min;
-			  new_element->phys_max = current_logical_max;
-			
-			} else {
-			  new_element->phys_min = current_physical_min;
-			  new_element->phys_max = current_physical_max;
-			}
-			new_element->unit = current_unit;
-			new_element->unit_exponent = current_unit_exponent;
-			
-			new_element->report_size = current_report_size;
-			new_element->report_id = current_report_id;
 			new_element->report_index = j;
 			
 			new_element->value = 0;
@@ -584,21 +544,17 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			}
 			if ( device_collection->num_elements == 0 ){
 			    device_collection->first_element = new_element;
-			} else {
-			    prev_element->next = new_element;
 			}
 			device_collection->num_elements++;
 			if ( parent_collection != device_collection ) {
 			  parent_collection->num_elements++;
 			}
+			if ( prev_element != NULL ){
+			    prev_element->next = new_element;
+			}
 			prev_element = new_element;
 		    }
-// 		    current_usage_min = -1;
-// 		    current_usage_max = -1;
-		    current_usage_index = 0;
-// 		    current_physical_min = 0;
-// 		    current_physical_max = 0;
-// 		    current_unit_exponent = 0;
+		    making_element->usage = 0;
 		    break;
 #ifdef DEBUG_PARSER
 		  default:
@@ -617,8 +573,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
 	    if ( descr_buf[i] == HID_END_COLLECTION ){ // JUST one byte
 // 	      prev_collection = parent_collection;
-	      current_usage_page = parent_collection->usage_page;
-	      current_usage_index = parent_collection->usage_index;
+	      making_element->usage_page = parent_collection->usage_page;
+	      making_element->usage = parent_collection->usage_index;
 	      parent_collection = parent_collection->parent_collection;
 	      collection_nesting--;
 #ifdef DEBUG_PARSER
@@ -1109,6 +1065,28 @@ struct hid_dev_desc * hid_read_descriptor( hid_device * devd ){
 #endif
 }
 
+struct hid_dev_desc * hid_open_device_path( const char *path, unsigned short vendor, unsigned short product ){
+  hid_device * handle = hid_open_path( path );
+  if (!handle){
+      return NULL;
+  }  
+  struct hid_dev_desc * newdesc = hid_read_descriptor( handle );
+  if ( newdesc == NULL ){
+    hid_close( handle );
+    return NULL;
+  }
+  struct hid_device_info * newinfo = hid_enumerate(vendor,product);
+  //newdesc->device = handle;
+  //TODO: if serial_number is given, the info descriptor should also point to that one!
+  newdesc->info = newinfo;
+
+  // Set the hid_read() function to be non-blocking.
+  hid_set_nonblocking( handle, 1);
+
+  return newdesc;
+}
+
+// this one is actually not secure when vendor and product have double entries, so you do not actually know which one you are opening
 struct hid_dev_desc * hid_open_device(  unsigned short vendor, unsigned short product, const wchar_t *serial_number ){
   hid_device * handle = hid_open( vendor, product, serial_number );
   if (!handle){

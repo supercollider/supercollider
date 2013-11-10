@@ -153,6 +153,7 @@ struct hid_device_collection {
 
 // higher level functions:
 struct hid_dev_desc * hid_read_descriptor( hid_device *devd );
+struct hid_dev_desc * hid_open_device_path( const char *path, unsigned short vendor, unsigned short product );
 struct hid_dev_desc * hid_open_device(  unsigned short vendor, unsigned short product, const wchar_t *serial_number );
 extern void hid_close_device( struct hid_dev_desc * devdesc );
 
