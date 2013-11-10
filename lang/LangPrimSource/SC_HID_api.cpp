@@ -120,6 +120,7 @@ public:
 	int build_devicelist();
 	int free_devicelist();
 	
+	int open_device_path( const char * path,  int vendor, int product );
 	int open_device(  int vendor, int product, char * serial_number=NULL ); // const char* serial_number=NULL
 	int queue_to_close_device( int joy_idx );
 	int close_device( int joy_idx );
@@ -201,6 +202,29 @@ void SC_HID_APIManager::close_all_devices(){
     hid_close_device( devdesc );
   }
   hiddevices.clear();
+}
+
+int SC_HID_APIManager::open_device_path( const char * path, int vendor, int product ){ // 
+  struct hid_dev_desc * newdevdesc;
+  newdevdesc = hid_open_device_path( path, vendor, product );
+  if (!newdevdesc){
+    fprintf(stderr, "HIDAPI : Unable to open device %s: %d, %d\n", path, vendor, product );
+    return 0;
+  } else {   
+    hiddevices.insert( std::pair<int,hid_dev_desc*>(number_of_hids, newdevdesc) );
+//     hiddevices[ number_of_hids ] = newdevdesc;
+    newdevdesc->index = number_of_hids;
+    
+    // TODO something useful for the callback functions - test if this works
+//     hid_set_descriptor_callback( newdevdesc->descriptor, (hid_descriptor_callback) SC_HID_APIManager::hid_descriptor_cb, &newdevdesc->index );
+//     hid_set_element_callback( newdevdesc->descriptor, (hid_element_callback) SC_HID_APIManager::hid_element_cb, &newdevdesc->index );
+    hid_set_descriptor_callback( newdevdesc, (hid_descriptor_callback) hid_descriptor_cb, &newdevdesc->index );
+    hid_set_element_callback( newdevdesc, (hid_element_callback) hid_element_cb, &newdevdesc->index );
+
+    number_of_hids++;
+
+    return newdevdesc->index;
+  }
 }
 
 int SC_HID_APIManager::open_device( int vendor, int product, char* serial_number ){ // 
@@ -572,9 +596,10 @@ int prHID_API_Open( VMGlobals* g, int numArgsPushed ){
   PyrSlot* arg3  = args + 3;
     
   int err;
+  char path[256];
   int vendorid;
   int productid;
-  char serial_number[256];
+//   char serial_number[256];
   
   err = slotIntVal( arg1, &vendorid );
   if ( err != errNone ) return err;
@@ -583,7 +608,12 @@ int prHID_API_Open( VMGlobals* g, int numArgsPushed ){
   if ( err != errNone ) return err;
     
   int result;
-  
+
+  err = slotStrVal(arg3, path, sizeof(path));
+  if (err) return err;
+  result = SC_HID_APIManager::instance().open_device_path( path, vendorid, productid );
+
+/*  
   if ( NotNil( arg3 ) ){
     err = slotStrVal(arg3, serial_number, sizeof(serial_number));
     if (err) return err;    
@@ -593,7 +623,7 @@ int prHID_API_Open( VMGlobals* g, int numArgsPushed ){
       // open device
     result = SC_HID_APIManager::instance().open_device( vendorid, productid, NULL );
   }
-  
+*/
   SetInt( self, result );
   
   return errNone;
