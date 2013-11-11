@@ -91,7 +91,7 @@ to SC. The most common way of doing this is:
 
 1. Download Quarks with your preferred svn-client by running:
 
-svn co https://quarks.svn.sourceforge.net/svnroot/quarks
+svn co https://svn.code.sf.net/p/quarks/code quarks
 
 You can later use svn to update your quarks:
 
