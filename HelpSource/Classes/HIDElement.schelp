@@ -1,0 +1,154 @@
+TITLE:: HIDElement
+summary:: A class describing an element of an HID device
+categories::  External control>HID
+related:: Classes/HID, Reference/Working_with_HID, Classes/HIDCollection, Classes/HIDUsage
+
+DESCRIPTION::
+An HIDElement describes an element, or a control, of an HID device.
+
+
+CLASSMETHODS::
+
+PRIVATE:: new
+
+
+INSTANCEMETHODS::
+
+PRIVATE:: setValueFromInput, mapValueFromRaw
+
+
+METHOD:: action
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+
+METHOD:: value
+(describe method here)
+
+ARGUMENT:: val
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+METHOD:: repeat
+(describe method here)
+
+ARGUMENT:: rp
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+METHOD:: rawValue
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: logicalValue
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+
+SUBSECTION:: Properties of the element
+
+METHOD:: postElement
+Post a human readable description of the element to the post window.
+
+
+METHOD:: index
+The index of this element. This index may vary between operating systems.
+
+METHOD:: device
+Get the device to which this element belongs.
+NOTE:: do not set this as a user!::
+
+returns:: an instance of HID
+
+METHOD:: collection
+Get the collection index to which this element belongs.
+
+
+METHOD:: usage
+Retrieve the usage index of this collection.
+
+returns:: a Number - the usage index of this element
+
+
+METHOD:: usagePage
+Retrieve the usage page index of this element.
+
+returns:: a Number- the usage page index
+
+
+METHOD:: usageName
+Retrieve the usage name of this element. The name is looked up from the standardized HID usage tables using the usage page index.
+
+returns:: a String - the usage name
+
+METHOD:: pageName
+Retrieve the page name of this element. The name is looked up from the standardized HID usage tables using the usage page index.
+
+returns:: a String - the usage page name
+
+
+METHOD:: type
+A byte describing the type of element.
+
+returns:: a number describing the type of element.
+
+METHOD:: typeSpec
+The type of element, decoded from the type byte.
+
+returns:: an Array with Strings describing the type of element.
+
+METHOD:: ioType
+Type of the element, input (1), output (2) or feature (3)
+
+returns:: a Number indicating the ioType
+
+METHOD:: iotypeName
+Type of the element, one of code::\input::, code::\output::, or code::\feature::
+
+returns:: a Symbol indicating the type
+
+
+METHOD:: logicalMin
+Minimum value of the range that is to be expected. This is reported by the device. The element's raw value is mapped between the logical minimum and maximum to obtain the element's value.
+
+
+METHOD:: logicalMax
+Maximum value of the range that is to be expected. This is reported by the device. The element's raw value is mapped between the logical minimum and maximum to obtain the element's value.
+
+
+METHOD:: physicalMin
+Minimum value of the range that is to be expected in a physical sense. This is reported by the device. For example, for a hat switch the physical range may be the direction in degrees in which the hat switch is pointing.
+
+METHOD:: physicalMax
+Maximum value of the range that is to be expected in a physical sense. This is reported by the device. For example, for a hat switch the physical range may be the direction in degrees in which the hat switch is pointing.
+
+METHOD:: unit
+Index for the unit of the physical range.
+
+METHOD:: unitExponent
+The exponent for the physical range.
+
+
+METHOD:: reportID
+The report ID with which this element receives the data. This is a low level device specific identifier
+
+
+METHOD:: reportSize
+The report size in bits with which this element receives the data. This is a low level device specific identifier
+
+METHOD:: reportIndex
+The report index with which this element receives the data. This is a low level device specific identifier
+
+
+EXAMPLES::
+
+code::
+(some example code)
+::
