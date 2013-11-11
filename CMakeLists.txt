@@ -264,6 +264,12 @@ if (NO_GPL3)
 	add_definitions(-DNO_GPL3)
 endif()
 
+if (APPLE AND (${CMAKE_OSX_SYSROOT} MATCHES "MacOSX10.9.sdk"))
+	message(STATUS "Building for Mac OS X 10.9")
+	set(MACOS_10_9 ON)
+	add_definitions(-DMACOS_10_9)
+endif()
+
 #############################################
 # subdirectories
 add_subdirectory(external_libraries)
