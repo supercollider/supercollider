@@ -56,7 +56,10 @@ namespace unicast {
 typedef implementation_defined hops;
 #else
 typedef boost::asio::ip::detail::socket_option::unicast_hops<
-  IPPROTO_IP, IP_TTL, IPPROTO_IPV6, IPV6_UNICAST_HOPS> hops;
+  BOOST_ASIO_OS_DEF(IPPROTO_IP),
+  BOOST_ASIO_OS_DEF(IP_TTL),
+  BOOST_ASIO_OS_DEF(IPPROTO_IPV6),
+  BOOST_ASIO_OS_DEF(IPV6_UNICAST_HOPS)> hops;
 #endif
 
 } // namespace unicast

@@ -30,6 +30,11 @@
 #include <boost/asio/detail/wait_handler.hpp>
 #include <boost/asio/detail/wait_op.hpp>
 
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+# include <chrono>
+# include <thread>
+#endif // defined(BOOST_ASIO_WINDOWS_RUNTIME)
+
 #include <boost/asio/detail/push_options.hpp>
 
 namespace boost {
@@ -195,10 +200,17 @@ private:
   template <typename Duration>
   void do_wait(const Duration& timeout, boost::system::error_code& ec)
   {
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+    std::this_thread::sleep_for(
+        std::chrono::seconds(timeout.total_seconds())
+        + std::chrono::microseconds(timeout.total_microseconds()));
+    ec = boost::system::error_code();
+#else // defined(BOOST_ASIO_WINDOWS_RUNTIME)
     ::timeval tv;
     tv.tv_sec = timeout.total_seconds();
     tv.tv_usec = timeout.total_microseconds() % 1000000;
     socket_ops::select(0, 0, 0, 0, &tv, ec);
+#endif // defined(BOOST_ASIO_WINDOWS_RUNTIME)
   }
 
   // The queue of timers.

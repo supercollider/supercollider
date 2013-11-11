@@ -77,7 +77,7 @@ public:
   /// Obtain an identifier for the type of the protocol.
   int type() const
   {
-    return SOCK_STREAM;
+    return BOOST_ASIO_OS_DEF(SOCK_STREAM);
   }
 
   /// Obtain an identifier for the protocol.

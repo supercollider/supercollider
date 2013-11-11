@@ -249,7 +249,7 @@ T lgamma_imp(T z, const Policy& pol, const Lanczos& l, int* sign = 0)
           >::type tag_type;
       result = lgamma_small_imp<T>(z, T(z - 1), T(z - 2), tag_type(), pol, l);
    }
-   else if((z >= 3) && (z < 100))
+   else if((z >= 3) && (z < 100) && (std::numeric_limits<T>::max_exponent >= 1024))
    {
       // taking the log of tgamma reduces the error, no danger of overflow here:
       result = log(gamma_imp(z, pol, l));

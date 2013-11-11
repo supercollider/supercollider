@@ -64,7 +64,6 @@ private:
   // Thread-specific storage to allow unlocked access to determine whether a
   // thread is a member of the pool.
   pthread_key_t tss_key_;
-
 };
 
 } // namespace detail

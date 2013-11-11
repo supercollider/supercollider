@@ -75,7 +75,8 @@ win_iocp_io_service::win_iocp_io_service(
   BOOST_ASIO_HANDLER_TRACKING_INIT;
 
   iocp_.handle = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0,
-      static_cast<DWORD>((std::min<size_t>)(concurrency_hint, DWORD(~0))));
+      static_cast<DWORD>(concurrency_hint < DWORD(~0)
+        ? concurrency_hint : DWORD(~0)));
   if (!iocp_.handle)
   {
     DWORD last_error = ::GetLastError();
@@ -283,7 +284,8 @@ void win_iocp_io_service::on_pending(win_iocp_operation* op)
   if (::InterlockedCompareExchange(&op->ready_, 1, 0) == 1)
   {
     // Enqueue the operation on the I/O completion port.
-    if (!::PostQueuedCompletionStatus(iocp_.handle, 0, 0, op))
+    if (!::PostQueuedCompletionStatus(iocp_.handle,
+          0, overlapped_contains_result, op))
     {
       // Out of resources. Put on completed queue instead.
       mutex::scoped_lock lock(dispatch_mutex_);
