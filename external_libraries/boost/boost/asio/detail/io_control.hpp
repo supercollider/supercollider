@@ -45,7 +45,7 @@ public:
   // Get the name of the IO control command.
   int name() const
   {
-    return static_cast<int>(FIONBIO);
+    return static_cast<int>(BOOST_ASIO_OS_DEF(FIONBIO));
   }
 
   // Set the value of the I/O control command.
@@ -95,7 +95,7 @@ public:
   // Get the name of the IO control command.
   int name() const
   {
-    return static_cast<int>(FIONREAD);
+    return static_cast<int>(BOOST_ASIO_OS_DEF(FIONREAD));
   }
 
   // Set the value of the I/O control command.

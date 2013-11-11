@@ -73,7 +73,7 @@ public:
 
   void operator()()
   {
-    dispatcher_.dispatch(handler_);
+    dispatcher_.dispatch(BOOST_ASIO_MOVE_CAST(Handler)(handler_));
   }
 
   void operator()() const

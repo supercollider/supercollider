@@ -234,6 +234,7 @@ int CF2_ik(T v, T x, T* Kv, T* Kv1, const Policy& pol)
     BOOST_MATH_INSTRUMENT_VARIABLE(b);
     BOOST_MATH_INSTRUMENT_VARIABLE(D);
     BOOST_MATH_INSTRUMENT_VARIABLE(f);
+
     for (k = 2; k < policies::get_max_series_iterations<Policy>(); k++)     // starting from 2
     {
         // continued fraction f = z1 / z0
@@ -250,6 +251,22 @@ int CF2_ik(T v, T x, T* Kv, T* Kv1, const Policy& pol)
         C *= -a / k;
         Q += C * q;
         S += Q * delta;
+        //
+        // Under some circumstances q can grow very small and C very
+        // large, leading to under/overflow.  This is particularly an
+        // issue for types which have many digits precision but a narrow
+        // exponent range.  A typical example being a "double double" type.
+        // To avoid this situation we can normalise q (and related prev/current)
+        // and C.  All other variables remain unchanged in value.  A typical
+        // test case occurs when x is close to 2, for example cyl_bessel_k(9.125, 2.125).
+        //
+        if(q < tools::epsilon<T>())
+        {
+           C *= q;
+           prev /= q;
+           current /= q;
+           q = 1;
+        }
 
         // S converges slower than f
         BOOST_MATH_INSTRUMENT_VARIABLE(Q * delta);

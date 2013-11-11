@@ -17,7 +17,8 @@
 
 #include <boost/asio/detail/config.hpp>
 
-#if !defined(BOOST_ASIO_HAS_IOCP)
+#if !defined(BOOST_ASIO_HAS_IOCP) \
+  && !defined(BOOST_ASIO_WINDOWS_RUNTIME)
 
 #include <boost/asio/detail/reactive_socket_service_base.hpp>
 
@@ -263,5 +264,6 @@ void reactive_socket_service_base::start_connect_op(
 #include <boost/asio/detail/pop_options.hpp>
 
 #endif // !defined(BOOST_ASIO_HAS_IOCP)
+       //   && !defined(BOOST_ASIO_WINDOWS_RUNTIME)
 
 #endif // BOOST_ASIO_DETAIL_IMPL_REACTIVE_SOCKET_SERVICE_BASE_IPP

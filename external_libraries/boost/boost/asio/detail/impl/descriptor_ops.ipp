@@ -20,7 +20,9 @@
 #include <boost/asio/detail/descriptor_ops.hpp>
 #include <boost/asio/error.hpp>
 
-#if !defined(BOOST_ASIO_WINDOWS) && !defined(__CYGWIN__)
+#if !defined(BOOST_ASIO_WINDOWS) \
+  && !defined(BOOST_ASIO_WINDOWS_RUNTIME) \
+  && !defined(__CYGWIN__)
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -444,6 +446,8 @@ int poll_write(int d, state_type state, boost::system::error_code& ec)
 
 #include <boost/asio/detail/pop_options.hpp>
 
-#endif // !defined(BOOST_ASIO_WINDOWS) && !defined(__CYGWIN__)
+#endif // !defined(BOOST_ASIO_WINDOWS)
+       //   && !defined(BOOST_ASIO_WINDOWS_RUNTIME)
+       //   && !defined(__CYGWIN__)
 
 #endif // BOOST_ASIO_DETAIL_IMPL_DESCRIPTOR_OPS_IPP

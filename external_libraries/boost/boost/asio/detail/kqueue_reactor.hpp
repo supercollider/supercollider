@@ -24,7 +24,6 @@
 #include <sys/types.h>
 #include <sys/event.h>
 #include <sys/time.h>
-#include <boost/asio/detail/kqueue_reactor_fwd.hpp>
 #include <boost/asio/detail/limits.hpp>
 #include <boost/asio/detail/mutex.hpp>
 #include <boost/asio/detail/object_pool.hpp>
@@ -33,7 +32,6 @@
 #include <boost/asio/detail/select_interrupter.hpp>
 #include <boost/asio/detail/socket_types.hpp>
 #include <boost/asio/detail/timer_queue_base.hpp>
-#include <boost/asio/detail/timer_queue_fwd.hpp>
 #include <boost/asio/detail/timer_queue_set.hpp>
 #include <boost/asio/detail/wait_op.hpp>
 #include <boost/asio/error.hpp>

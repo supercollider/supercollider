@@ -70,7 +70,7 @@ namespace boost { namespace fusion { namespace detail
     //  switch (size(stack_begin))
     //  {
     //  case 1:
-    //    return nil;
+    //    return nil_;
     //  case 2:
     //    // car(cdr(stack_begin)) is a range over values.
     //    assert(end(front(car(stack_begin))) == end(car(cdr(stack_begin))));
@@ -205,7 +205,7 @@ namespace boost { namespace fusion { namespace detail
     template <typename Stack>
     struct make_segment_sequence_front<Stack, 1>
     {
-        typedef typename Stack::cdr_type type; // nil
+        typedef typename Stack::cdr_type type; // nil_
 
         static type call(Stack const &stack)
         {
@@ -218,7 +218,7 @@ namespace boost { namespace fusion { namespace detail
     //  switch (size(stack_end))
     //  {
     //  case 1:
-    //    return nil;
+    //    return nil_;
     //  case 2:
     //    // car(cdr(stack_back)) is a range over values.
     //    assert(end(front(car(stack_end))) == end(car(cdr(stack_end))));
@@ -348,7 +348,7 @@ namespace boost { namespace fusion { namespace detail
     template <typename Stack>
     struct make_segment_sequence_back<Stack, 1>
     {
-        typedef typename Stack::cdr_type type; // nil
+        typedef typename Stack::cdr_type type; // nil_
 
         static type call(Stack const& stack)
         {
