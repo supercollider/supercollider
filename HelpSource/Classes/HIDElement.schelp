@@ -18,7 +18,8 @@ PRIVATE:: setValueFromInput, mapValueFromRaw
 
 
 METHOD:: action
-(describe method here)
+Set or get the action to be performed upon receiving element data. The function will be passed the following arguments: the value (mapped between 0 and 1) and the raw value.
+
 
 returns:: (describe returnvalue here)
 
