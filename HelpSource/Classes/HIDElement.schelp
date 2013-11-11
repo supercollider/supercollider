@@ -21,36 +21,24 @@ METHOD:: action
 Set or get the action to be performed upon receiving element data. The function will be passed the following arguments: the value (mapped between 0 and 1) and the raw value.
 
 
-returns:: (describe returnvalue here)
-
-
 METHOD:: value
-(describe method here)
+set or get the value of the element. Setting only makes sense for an output element.
 
 ARGUMENT:: val
-(describe argument here)
-
-returns:: (describe returnvalue here)
+The raw value to send to the device
 
 
 METHOD:: repeat
-(describe method here)
+By default element's data from the device is not updated unless the data is changing. For certain elements however, you may want to receive updates even if the data is not changing, e.g. for scrollwheel of mice.
 
-ARGUMENT:: rp
-(describe argument here)
-
-returns:: (describe returnvalue here)
+ARGUMENT:: a Boolean to turn repeat on or off
 
 
 METHOD:: rawValue
-(describe method here)
-
-returns:: (describe returnvalue here)
+The raw value of the element.
 
 METHOD:: logicalValue
-(describe method here)
-
-returns:: (describe returnvalue here)
+The logical value of the element. In principal the same of value.
 
 
 SUBSECTION:: Properties of the element
