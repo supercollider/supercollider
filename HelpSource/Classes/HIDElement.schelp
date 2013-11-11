@@ -31,7 +31,8 @@ The raw value to send to the device
 METHOD:: repeat
 By default element's data from the device is not updated unless the data is changing. For certain elements however, you may want to receive updates even if the data is not changing, e.g. for scrollwheel of mice.
 
-ARGUMENT:: a Boolean to turn repeat on or off
+ARGUMENT:: rp
+a Boolean to turn repeat on or off
 
 
 METHOD:: rawValue
