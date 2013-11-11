@@ -3,7 +3,6 @@ HID {
 	classvar <running = false;
 
 	classvar <available;
-	classvar <deviceNames;
 
     classvar <openDevices;
 
@@ -16,7 +15,7 @@ HID {
     classvar prDeviceAction;
 
     var <id;
-    var <>info;
+    var <info;
 
     var <elements;
     var <collections;
@@ -78,13 +77,13 @@ HID {
 		devlist = this.prbuildDeviceList;
 		devlist.postln;
 		if ( devlist.isKindOf( Array ) ){
-			deviceNames = devlist;
 			devlist.do{ |it,i|
                 available.put( i, HIDInfo.new( *it ) );
 			}{ // no devices found
 				"no HID devices found".postln;
 			}
 		}
+        ^available
 	}
 
     *openAt{ |index|
@@ -101,7 +100,7 @@ HID {
             "HID: path was not set specified yet, chosen the one with path: %\n".postf( path );
         };
         newdevid = HID.prOpenDevice( vendorID, productID, path );
-        newdev = HID.new( newdevid );
+        newdev = HID.basicNew( newdevid );
         newdev.getInfo;
         ("Opened HID device: %\n".postf( newdev.info ) );
         newdev.getElements;
@@ -128,16 +127,25 @@ HID {
 		running = false;
 	}
 
+    *findBy { |vendorID, productID, path, serial, releaseNumber|
+        if ( [vendorID, productID, path, serial, releaseNumber].every( _.isNil ) ){
+			^nil;
+		};
+        ^HID.available.select { |info|
+            vendorID.isNil or: { info.vendorID == vendorID }
+            and: { productID.isNil or: { info.productID == productID } }
+            and: { path.isNil or: { info.path == path } }
+            and: { serial.isNil or: { info.serialNumber == serial } }
+            and: { releaseNumber.isNil or: { info.releaseNumber == releaseNumber } }
+        };
+    }
+
   /// private
 
-    *doPrAction{ | devid, elid, page, usage, value, mappedvalue |
+    *doPrAction{ | value, rawValue, usage, page, elid, devid |
         var thisdevice = openDevices.at( devid );
-        // var dpage = thisdevice.usagePage;
-        // var dusage = thisdevice.usage;
-        // var vendor = thisdevice.vendor;
-        // var product = thisdevice.product;
-        /// add a unique usb address id - check which one this should be
-        prAction.value( devid, thisdevice, elid, page, usage, value, mappedvalue );
+        // prAction.value( devid, thisdevice, elid, page, usage, value, mappedvalue );
+        prAction.value( value, rawValue, usage, page, elid, devid, thisdevice );
     }
 
 /// primitives called:
@@ -203,42 +211,29 @@ HID {
 
 // coming from the primitives:
     *prHIDDeviceClosed{ |devid|
-        // prAction.value( \closed, devid );
 		openDevices.at( devid ).closeAction.value;
 		if ( debug ){
-            "HID device % closed\n".postf( devid ); // debugging
+            "HID device % closed\n".postf( devid );
 		};
         openDevices.removeAt( devid );
 	}
 
-    *prHIDElementData { | devid, element, page, usage, value, mappedvalue |
-        HID.doPrAction( devid, element, page, usage, value, mappedvalue );
-        openDevices.at( devid ).valueAction( element, page, usage, value, mappedvalue );
+    *prHIDElementData { | devid, elid, page, usage, rawValue, value |
+        HID.doPrAction( value, rawValue, usage, page, elid, devid );
+        openDevices.at( devid ).valueAction( value, rawValue, usage, page, elid );
 		if ( debug ){
-			[ devid, "element data", devid, element, page, usage, value, mappedvalue ].postln; // debugging
+            "HID Element Data:\n\tdevid: %, elid: %\n\t%\n\telement: \t page: %\tusage: %\traw value: %,\tvalue: %\n".postf( devid, elid, page, usage, rawValue, value );
+            // [ devid, "element data", devid, element, page, usage, value, mappedvalue ].postln;
 		}
 	}
 
     *prHIDDeviceData { | devid, numelements |
         prDeviceAction.value( devid, numelements );
-        openDevices.at( devid ).devAction( numelements );
+        openDevices.at( devid ).valueDeviceAction( numelements );
 		if ( debug ){
 			[ devid, "device data", devid, numelements ].postln; // debugging
 		}
 	}
-
-    *findBy { |vendorID, productID, path, serial, versionID|
-        if ( [vendorID, productID, path, serial, versionID].every( _.isNil ) ){
-			^nil;
-		};
-        ^HID.available.select { |info|
-            vendorID.isNil or: { info.vendorID == vendorID }
-            and: { productID.isNil or: { info.productID == productID } }
-            and: { path.isNil or: { info.path == path } }
-            and: { serial.isNil or: { info.serialNumber == serial } }
-            and: { versionID.isNil or: { info.releaseNumber == versionID } }
-        };
-    }
 
 // }
     // HIDDevice {
@@ -254,19 +249,22 @@ HID {
 	var <>closeAction;
 	var <>debug = false;
 */
-	*new{ |id|
+    *new{ arg ...args;
+        ^HID.open( *args );
+    }
+
+	*basicNew{ |id|
 		^super.new.init( id );
 	}
 
 	init{ |i|
 		id = i;
-        //info = HID_API_DeviceInfo.new( n );
         elements = IdentityDictionary.new;
         collections = IdentityDictionary.new;
         // elementDictionary = MultiLevelIdentityDictionary.new;
 	}
 
-    devAction{ arg ...args;
+    valueDeviceAction{ arg ...args;
         if ( debug ){
             ( [ "device", id ] ++ args).postln;
 		};
@@ -275,11 +273,12 @@ HID {
     }
 
 	valueAction{ arg ...args;
+        //     mappedvalue, value, usage, page, elid
 		if ( debug ){
             ([ "element", id ] ++ args).postln;
 		};
-        if ( elements.at( args[0] ).notNil ){
-                elements.at( args[0] ).setValueFromInput( args[3], args[4] );
+        if ( elements.at( args[4] ).notNil ){
+                elements.at( args[4] ).setValueFromInput( args[0], args[1] );
         };
 		action.value( *args );
 	}
@@ -324,20 +323,20 @@ HID {
 		}
 	}
 
-    usagePage{ |col=0|
-        ^collections.at( col ).usagePage;
+    usagePage{ |collectionID=0|
+        ^collections.at( collectionID ).usagePage;
     }
 
-    usage{ |col=0|
-        ^collections.at( col ).usage;
+    usage{ |collectionID=0|
+        ^collections.at( collectionID ).usage;
     }
 
-    pageName{ |col=0|
-        ^collections.at( col ).pageName;
+    pageName{ |collectionID=0|
+        ^collections.at( collectionID ).pageName;
     }
 
-    usageName{ |col=0|
-        ^collections.at( col ).usageName;
+    usageName{ |collectionID=0|
+        ^collections.at( collectionID ).usageName;
     }
 
     vendor{
@@ -360,23 +359,23 @@ HID {
 	}
 
     postCollections{
-        this.collections.sortedKeysValuesDo{ |k,v| v.postln; };
+        this.collections.sortedKeysValuesDo{ |k,v| v.postCollection; };
     }
 
     postElements{
-        this.elements.sortedKeysValuesDo{ |k,v| v.postln; "".postln; };
+        this.elements.sortedKeysValuesDo{ |k,v| v.postElement; "".postln; };
     }
 
     postInputElements{
-        this.elements.sortedKeysValuesDo{ |k,v| if( v.ioType == 1 ) { v.postln; "".postln; } };
+        this.elements.sortedKeysValuesDo{ |k,v| if( v.ioType == 1 ) { v.postElement; "".postln; } };
     }
 
     postOutputElements{
-        this.elements.sortedKeysValuesDo{ |k,v| if( v.ioType == 2 ) { v.postln; "".postln; } };
+        this.elements.sortedKeysValuesDo{ |k,v| if( v.ioType == 2 ) { v.postElement; "".postln; } };
     }
 
     postFeatureElements{
-        this.elements.sortedKeysValuesDo{ |k,v| if( v.ioType == 3 ) { v.postln; "".postln; } };
+        this.elements.sortedKeysValuesDo{ |k,v| if( v.ioType == 3 ) { v.postElement; "".postln; } };
     }
 
     *postAvailable{
@@ -462,18 +461,23 @@ HIDCollection{
         ^usageName;
     }
 
+    postCollection{
+        "HID Collection: %, type: %, usage page: %, usage index: %\n\tDescription: %, %\n\tParent collection: %, number of collections contained: %, first collection: %\n\tnumber of elements contained: %, first element %\n"
+        .postf( index, type, usagePage, usage, this.pageName, this.usageName, parent, numCollections, firstCollection, numElements, firstElement );
+    }
+
     printOn { | stream |
 		super.printOn(stream);
-        stream << $( << "hid collection: " << index << ": " ;
-        stream << "type and usage: ";
-		[ type, usagePage, usage ].printItemsOn(stream);
-        stream << ": description: ";
-        [ this.pageName, this.usageName ].printItemsOn(stream);
-        stream << ": parent,: " << parent;
-        stream << ": collections,: ";
-        [ numCollections, firstCollection ].printItemsOn( stream );
-        stream << ": elements,: ";
-        [ numElements, firstElement ].printItemsOn( stream );
+        stream << $( << index << ": " ;
+        stream << "type: " << type << "usage: " << usagePage << usage;
+        // [ type, usagePage, usage ].printItemsOn(stream);
+        // stream << ": description: ";
+        // [ this.pageName, this.usageName ].printItemsOn(stream);
+        // stream << ": parent,: " << parent;
+        // stream << ": collections,: ";
+        // [ numCollections, firstCollection ].printItemsOn( stream );
+        // stream << ": elements,: ";
+        // [ numElements, firstElement ].printItemsOn( stream );
 		stream.put($));
 	}
 }
@@ -525,7 +529,7 @@ HIDElement{
     }
 
     // called from input report
-    setValueFromInput{ |raw,logic|
+    setValueFromInput{ |logic,raw|
         rawValue = raw;
         logicalValue = logic;
         // for now:
@@ -538,19 +542,28 @@ HIDElement{
     //     value = args;
     // }
 
+    postElement{
+            "HID Element: %, type: %, %, usage page: %, usage index: %\n\tDescription: %, %, %, \n\t% \n\tLogical range: [ %, % ]\n\tPhysical range: [ %, % ], Unit: %, Exponent: % \n\tReport ID: %, size %, index %\n"
+        .postf( index, ioType, type, usagePage, usage, this.pageName, this.usageName, this.iotypeName, this.typeSpec,
+            logicalMin, logicalMax, physicalMin, physicalMax, unit, unitExponent, reportID, reportSize, reportIndex);
+    }
+
     printOn { | stream |
 		super.printOn(stream);
-        stream << $( << "hid element: " << index << ": collection " << collection << " : " ;
-        stream << "type and usage: ";
-		[ ioType, type, usagePage, usage ].printItemsOn(stream);
-        stream << ": min and max: ";
-        [ logicalMin, logicalMax, physicalMin, physicalMax ].printItemsOn(stream);
-        stream << ": unit, exponent: ";
-        [ unitExponent, unit ].printItemsOn(stream);
-        stream << ": report: ";
-        [ reportSize, reportID, reportIndex	].printItemsOn(stream);
-        stream << ": description: ";
-        [ this.pageName, this.usageName, this.iotypeName, this.typeSpec ].printItemsOn(stream);
+        stream << $( << index << ": " ;
+        stream << "type: " << type << "usage: " << usagePage << usage;
+
+        // stream << $( << "hid element: " << index << ": collection " << collection << " : " ;
+        // stream << "type and usage: ";
+        // [ ioType, type, usagePage, usage ].printItemsOn(stream);
+        // stream << ": min and max: ";
+        // [ logicalMin, logicalMax, physicalMin, physicalMax ].printItemsOn(stream);
+        // stream << ": unit, exponent: ";
+        // [ unitExponent, unit ].printItemsOn(stream);
+        // stream << ": report: ";
+        // [ reportSize, reportID, reportIndex	].printItemsOn(stream);
+        // stream << ": description: ";
+        // [ this.pageName, this.usageName, this.iotypeName, this.typeSpec ].printItemsOn(stream);
 		stream.put($));
 	}
 
