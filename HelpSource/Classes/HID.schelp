@@ -131,7 +131,7 @@ When set to true, the incoming data from any opened HID device will be printed t
 
 
 METHOD:: action
-Set or get the action to be performed upon receiving element data from the device. The function will be passed the following arguments: the device id, the device (an instance of HID), the element id, the element usage, the element usage page, the raw value and the value (mapped between 0 and 1).
+Set or get the action to be performed upon receiving element data from the device. The function will be passed the following arguments: the value (mapped between 0 and 1), the raw value, element usage page, the element usage, the element id, the device id, the device (an instance of HID).
 
 ARGUMENT:: function
 The function to be performed upon receiving element data from the device
@@ -235,7 +235,7 @@ Function to be performed when device is closed.
 
 
 METHOD:: action
-Set or get the action to be performed upon receiving element data from the device. The function will be passed the following arguments: the element id, the element usage, the element usage page, the raw value and the value (mapped between 0 and 1).
+Set or get the action to be performed upon receiving element data from the device. The function will be passed the following arguments: the value (mapped between 0 and 1), the raw value, element usage page, the element usage, the element id
 
 ARGUMENT:: function
 The function to be performed upon receiving element data from the device
