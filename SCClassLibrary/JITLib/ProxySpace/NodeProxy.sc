@@ -364,10 +364,6 @@ NodeProxy : BusPlug {
 		nodeMap.unmap(*keys);
 	}
 
-	nodeMap_ { | map |
-		this.setNodeMap(map, false)
-	}
-
 	setNodeMap { | map, xfade = true |
 		var bundle, old, fadeTime;
 		map.set(\fadeTime, this.fadeTime); // keep old fadeTime
