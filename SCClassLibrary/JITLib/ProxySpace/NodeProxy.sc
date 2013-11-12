@@ -364,12 +364,14 @@ NodeProxy : BusPlug {
 		nodeMap.unmap(*keys);
 	}
 
-	nodeMap_ { | map |
-		this.setNodeMap(map, false)
-	}
-
 	setNodeMap { | map, xfade = true |
 		var bundle, old, fadeTime;
+
+		map.isKindOf(ProxyNodeMap).not.if {
+			"'map' should be an instance of ProxyNodeMap".warn;
+			^nil
+		};
+
 		map.set(\fadeTime, this.fadeTime); // keep old fadeTime
 		bundle = MixedBundle.new;
 		old = nodeMap;
