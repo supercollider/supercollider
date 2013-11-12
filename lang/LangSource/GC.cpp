@@ -797,10 +797,10 @@ bool PyrGC::SanityCheck2()
 	return mNumGrey == numgrey;
 }
 
-#if defined(SC_DARWIN) && defined(MACOS_10_9)
-	#include <MacTypes.h>	
-#elif defined(SC_DARWIN)
+#if defined(SC_DARWIN) && defined(MACOS_SDK_PRE_10_7)
 	#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
+#elif defined(SC_DARWIN)
+	#include <MacTypes.h>	
 #endif
 
 bool PyrGC::SanityCheck()

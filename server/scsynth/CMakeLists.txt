@@ -197,10 +197,10 @@ if (FFTW3F_FOUND)
 	target_link_libraries(libscsynth ${FFTW3F_LIBRARY})
 endif()
 
-if (APPLE AND MACOS_10_9)
-	target_link_libraries(libscsynth "-framework Accelerate -framework CoreServices -framework Foundation")
-elseif(APPLE)
+if (APPLE AND MACOS_SDK_PRE_10_7)
 	target_link_libraries(libscsynth "-framework vecLib -framework CoreServices -framework Foundation")
+elseif(APPLE)
+	target_link_libraries(libscsynth "-framework Accelerate -framework CoreServices -framework Foundation")
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")

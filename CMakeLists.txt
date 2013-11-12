@@ -170,6 +170,15 @@ option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
 
 option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 
+if(APPLE)
+    option(MACOS_SDK_PRE_10_7 "Build for Mac OS SDK's pre-10.7" OFF)
+
+	if(MACOS_SDK_PRE_10_7)
+	  	add_definitions(-DMACOS_SDK_PRE_10_7)
+		message(STATUS "Building for a pre-10.7 Mac OS SDK")
+	endif()
+endif()
+
 #############################################
 # some default libraries
 
@@ -264,11 +273,6 @@ if (NO_GPL3)
 	add_definitions(-DNO_GPL3)
 endif()
 
-if (APPLE AND (${CMAKE_OSX_SYSROOT} MATCHES "MacOSX10.9.sdk"))
-	message(STATUS "Building for Mac OS X 10.9")
-	set(MACOS_10_9 ON)
-	add_definitions(-DMACOS_10_9)
-endif()
 
 #############################################
 # subdirectories
