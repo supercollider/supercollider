@@ -212,10 +212,10 @@ endif(SUPERNOVA)
 foreach(ugen ${fft_ugens})
 	target_link_libraries(${ugen} ${MATH_LIBRARY})
 
-	if (APPLE AND MACOS_10_9)
-		target_link_libraries(${ugen} "-framework Accelerate")
-	elseif (APPLE)
+	if (APPLE AND MACOS_SDK_PRE_10_7)
 		target_link_libraries(${ugen} "-framework vecLib")
+	elseif (APPLE)
+		target_link_libraries(${ugen} "-framework Accelerate")
 	endif()
 endforeach()
 
