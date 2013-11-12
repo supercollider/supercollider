@@ -397,20 +397,42 @@ ScIDE {
 	}
 }
 
-ScIDEDocument : Document {
+Document {
+	classvar <dir="", <allDocuments, <>current;
+	classvar <globalKeyDownAction, <globalKeyUpAction, <>initAction;
+	classvar <>autoRun = true;
 	classvar <asyncActions;
 	var <quuid, <title, <isEdited = false, <path;
-	var <textChangedAction;
+	var <keyDownAction, <keyUpAction, <mouseUpAction, <mouseDownAction;
+	var <>toFrontAction, <>endFrontAction, <>onClose, <textChangedAction;
+
+	var <envir, savedEnvir;
+	var <editable;
 
 	*initClass{
-		Document.implementationClass = this;
 		asyncActions = IdentityDictionary.new;
 	}
-	*new {|title = "untitled", string = "", makeListener, envir|
+
+	*new {|title = "untitled", string = "", envir|
 		var quuid = ScIDE.getQUuid, doc;
 		ScIDE.newDocument(title, string, quuid);
-		doc = super.prBasicNew.init(quuid, title, string);
-		allDocuments = allDocuments.add(doc);
+		doc = super.new.init(quuid, title, string);
+		if (envir.notNil and: { doc.notNil }) { doc.envir_(envir) };
+		doc.prAdd;
+		^doc
+	}
+
+	*open { | path, selectionStart=0, selectionLength=0, envir |
+		var doc;
+		path = this.standardizePath(path);
+		allDocuments.do{ |d|
+			if(d.path == path.absolutePath){
+				doc = d
+			};
+		};
+		if(doc.notNil, { ^doc.front });
+		doc = super.new.initFromPath(path, selectionStart, selectionLength);
+		if (envir.notNil and: { doc.notNil }) { doc.envir_(envir) };
 		^doc
 	}
 
@@ -419,7 +441,7 @@ ScIDEDocument : Document {
 		isEdited = isEdited.booleanValue;
 		chars = String.fill(chars.size, {|i| chars[i].asAscii});
 		if((doc = this.findByQUuid(quuid)).isNil, {
-			doc = super.prBasicNew.initFromIDE(quuid, title, chars, isEdited, path);
+			doc = super.new.initFromIDE(quuid, title, chars, isEdited, path);
 			allDocuments = allDocuments.add(doc);
 		}, {doc.initFromIDE(quuid, title, chars, isEdited, path)});
 	}
@@ -453,6 +475,65 @@ ScIDEDocument : Document {
 		});
 	}
 
+	*dir_ { | path |
+		path = path.standardizePath;
+		if(path == "") { dir = path } {
+			if(pathMatch(path).isEmpty) { ("there is no such path:" + path).postln } {
+				dir = path ++ "/"
+			}
+		}
+	}
+
+	*standardizePath { | p |
+		var pathName;
+		pathName = PathName(p.standardizePath);
+		^if(pathName.isRelativePath) {
+			dir  ++ pathName.fullPath
+		} {
+			pathName.fullPath
+		}
+	}
+
+	*abrevPath { | path |
+		if(path.size < dir.size) { ^path };
+		if(path.copyRange(0,dir.size - 1) == dir) {
+			^path.copyRange(dir.size, path.size - 1)
+		};
+		^path
+	}
+
+	*openDocuments {
+		^allDocuments
+	}
+
+	*hasEditedDocuments {
+		allDocuments.do { | doc |
+			if(doc.isEdited) {
+				^true;
+			}
+		}
+		^false
+	}
+
+	*closeAll {
+		allDocuments.do { | doc | doc.close }
+	}
+
+	*closeAllUnedited {
+		var listenerWindow;
+		allDocuments.do({ | doc |
+			if(doc.isEdited.not, {
+				doc.close;
+			});
+		});
+	}
+
+	closed {
+		onClose.value(this); // call user function
+		this.restoreCurrentEnvironment;
+		allDocuments.remove(this);
+	}
+
 	front {
 		this.class.prCurrent_(this);
 		ScIDE.setCurrentDocumentByQUuid(quuid);
@@ -473,6 +554,16 @@ ScIDEDocument : Document {
 		path = argPath;
 	}
 
+	initFromPath { | argpath, selectionStart, selectionLength |
+		quuid = ScIDE.getQUuid;
+		this.prReadTextFromFile(argpath);
+		this.propen(argpath, selectionStart, selectionLength);
+		path = argpath;
+		title = path.basename;
+		isEdited = false;
+		this.prAdd;
+	}
+
 	textChanged {|index, numCharsRemoved, addedChars|
 		addedChars = String.fill(addedChars.size, {|i| addedChars[i].asAscii});
 		textChangedAction.value(this, index, numCharsRemoved, addedChars);
@@ -482,7 +573,7 @@ ScIDEDocument : Document {
 		^ScIDE.open(path, selectionStart, selectionLength, quuid)
 	}
 
-	prclose { ScIDE.close(quuid); }
+	close { ScIDE.close(quuid); }
 
 /*	// asynchronous get
 	// range -1 means to the end of the Document
@@ -541,6 +632,21 @@ ScIDEDocument : Document {
 
 	== { |that| ^(this.quuid === that.quuid);}
 
+	hash {
+		^quuid.hash
+	}
+
+	didBecomeKey {
+		this.class.current = this;
+		this.saveCurrentEnvironment;
+		toFrontAction.value(this);
+	}
+
+	didResignKey {
+		endFrontAction.value(this);
+		this.restoreCurrentEnvironment;
+	}
+
 	keyDown { | modifiers, unicode, keycode, key |
 		var character = unicode.asAscii;
 		this.class.globalKeyDownAction.value(this,character, modifiers, unicode, keycode);
@@ -586,19 +692,21 @@ ScIDEDocument : Document {
 		ScIDE.setDocumentTextChangedEnabled(quuid, action.notNil);
 	}
 
-	*prGlobalKeyDownAction_ {|action|
+	*globalKeyDownAction_ {|action|
+		globalKeyDownAction = action;
 		allDocuments.do({|doc|
 			ScIDE.setDocumentKeyDownEnabled(doc.quuid, action.notNil || doc.keyDownAction.notNil);
 		});
 	}
 
-	*prGlobalKeyUpAction_ {|action|
+	*globalKeyUpAction_ {|action|
+		globalKeyUpAction = action;
 		allDocuments.do({|doc|
 			ScIDE.setDocumentKeyUpEnabled(doc.quuid, action.notNil || doc.keyUpAction.notNil);
 		});
 	}
 
-	prSetTitle {|newTitle|
+	title_ {|newTitle|
 		title = newTitle;
 		ScIDE.setDocumentTitle(quuid, newTitle);
 	}
@@ -607,23 +715,7 @@ ScIDEDocument : Document {
 		isEdited = flag.booleanValue;
 	}
 
-	initFromPath { | path, selectionStart, selectionLength |
-		var doc;
-		path = this.class.standardizePath(path);
-		this.class.allDocuments.do{ |d|
-			if(d.path == path.absolutePath){
-				doc = d
-			};
-		};
-		if(doc.notNil, { ^doc });
-		quuid = ScIDE.getQUuid;
-		this.prReadTextFromFile(path);
-		this.propen(path, selectionStart, selectionLength);
-		title = path.basename;
-		isEdited = false;
-		this.prAdd;
-	}
-
+	// this initialises the lang side text mirror
 	prReadTextFromFile {|path|
 		var file;
 		file = File.new(path, "r");
@@ -645,5 +737,143 @@ ScIDEDocument : Document {
 		current = this;
 		initAction.value(this);
 	}
+
+	isFront {
+		^Document.current === this
+	}
+
+	selectionStart {
+		^this.selectedRangeLocation
+	}
+
+	selectionSize {
+		^this.selectedRangeSize
+	}
+
+	string { | rangestart, rangesize = 1 |
+		if(rangestart.isNil,{
+		^this.text;
+		});
+		^this.rangeText(rangestart, rangesize);
+	}
+
+	string_ { | string, rangestart = -1, rangesize = 1 |
+		this.insertTextRange(string, rangestart, rangesize);
+	}
+
+	selectedString {
+		^this.selectedText
+	}
+
+	selectedString_ { | txt |
+		this.prinsertText(txt)
+	}
+
+	currentLine {
+		^this.getSelectedLines(this.selectionStart, 0);
+	}
+
+	getSelectedLines { | rangestart = -1, rangesize = 0 |
+		var start, end, str, max;
+		str = this.string;
+		max = str.size;
+		start = rangestart;
+		end = start + rangesize;
+		while {
+			str[start] !== Char.nl and: { start >= 0 }
+		} { start = start - 1 };
+		while {
+			str[end] !== Char.nl and: { end < max }
+		} { end = end + 1 };
+		^str.copyRange(start + 1, end);
+	}
+
+	// document setup
+
+	path_ { |apath|
+		this.notYetImplemented
+	}
+
+	dir {
+		var path = this.path;
+		^path !? { path.dirname }
+	}
+
+	name {
+		this.deprecated(thisMethod, Document.findMethod(\title));
+		^this.title
+	}
+
+	name_ { |aname|
+		this.deprecated(thisMethod, Document.findMethod(\title_));
+		this.title_(aname)
+	}
+
+	// envir stuff
+
+	envir_ { | ev |
+		envir = ev;
+		if (this.class.current == this) {
+			if(envir.isNil) {
+				this.restoreCurrentEnvironment
+			} {
+				if (savedEnvir.isNil) {
+					this.saveCurrentEnvironment
+				}
+			}
+		}
+	}
+
+	restoreCurrentEnvironment {
+		if (savedEnvir.notNil) {
+			currentEnvironment = savedEnvir;
+			savedEnvir = nil;
+		}
+	}
+
+	saveCurrentEnvironment {
+		if (envir.notNil) {
+			savedEnvir = currentEnvironment;
+			currentEnvironment = envir;
+		}
+	}
+
+	// not yet implemented
+
+	selectLine { | line |
+		this.notYetImplemented
+	}
+
+	selectRange { | start=0, length=0 |
+		^this.notYetImplemented
+	}
+
+	editable_ { | abool=true |
+		editable = abool;
+		this.notYetImplemented
+	}
+
+	removeUndo {
+		^this.notYetImplemented
+	}
+
+	promptToSave_ { | bool |
+		^this.notYetImplemented
+	}
+
+	promptToSave {
+		^this.notYetImplemented
+	}
+
+	prinsertText { | dataPtr, txt |
+		^this.notYetImplemented
+	}
+
+	insertTextRange { | string, rangestart, rangesize |
+		^this.notYetImplemented
+	}
+
+	// probably still needed for compatibility
+	*implementationClass { ^this }
 }
 

@@ -323,7 +323,7 @@ void DocumentManager::close( Document *doc )
     Q_EMIT( closed(doc) );
 
     QString command =
-            QString("ScIDEDocument.findByQUuid(\'%1\').closed")
+            QString("Document.findByQUuid(\'%1\').closed")
             .arg(doc->id().constData());
     Main::evaluateCodeIfCompiled( command, true );
 
@@ -529,7 +529,7 @@ void DocumentManager::handleDocListScRequest()
 {
     QList<Document*> docs = documents();
     QList<Document*>::Iterator it;
-    QString command = QString("ScIDEDocument.syncDocs([");
+    QString command = QString("Document.syncDocs([");
     for (it = docs.begin(); it != docs.end(); ++it) {
         Document * doc = *it;
         QString path;
@@ -655,7 +655,7 @@ void DocumentManager::handleGetDocTextScRequest( const QString & data )
         if(document){
             QString docText = document->textAsSCArrayOfCharCodes(start, range);
 
-            QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\', %2.asAscii)").arg(funcID.c_str(), docText);
+            QString command = QString("Document.executeAsyncResponse(\'%1\', %2.asAscii)").arg(funcID.c_str(), docText);
             Main::evaluateCode ( command, true );
         }
 
@@ -711,7 +711,7 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
                 connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
             }
             
-            QString command = QString("ScIDEDocument.executeAsyncResponse(\'%1\')").arg(funcID.c_str());
+            QString command = QString("Document.executeAsyncResponse(\'%1\')").arg(funcID.c_str());
             Main::evaluateCode ( command, true );
         }
 
@@ -948,7 +948,7 @@ void DocumentManager::syncLangDocument(Document *doc)
         path = doc->mFilePath;
     }
     QString command =
-            QString("ScIDEDocument.syncFromIDE(\'%1\', \'%2\', %3, %4, \'%5\')")
+            QString("Document.syncFromIDE(\'%1\', \'%2\', %3, %4, \'%5\')")
             .arg(doc->id().constData())
             .arg(doc->title())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
@@ -978,12 +978,12 @@ void DocumentManager::sendActiveDocument()
     if (Main::scProcess()->state() != QProcess::Running)
         return;
     if(mCurrentDocument){
-        QString command = QString("ScIDEDocument.setActiveDocByQUuid(\'%1\');").arg(mCurrentDocument->id().constData());
+        QString command = QString("Document.setActiveDocByQUuid(\'%1\');").arg(mCurrentDocument->id().constData());
         if (!mCurrentDocumentPath.isEmpty())
             command = command.append(QString("ScIDE.currentPath_(\"%1\");").arg(mCurrentDocumentPath));
         Main::evaluateCode(command, true);
     } else
-        Main::evaluateCode(QString("ScIDE.currentPath_(nil); ScIDEDocument.current = nil;"), true);
+        Main::evaluateCode(QString("ScIDE.currentPath_(nil); Document.current = nil;"), true);
 }
 
 void DocumentManager::updateCurrentDocContents ( int position, int charsRemoved, int charsAdded )
@@ -994,7 +994,7 @@ void DocumentManager::updateCurrentDocContents ( int position, int charsRemoved,
     
     if (mCurrentDocument->textChangedActionEnabled()) {
         QString addedChars = mCurrentDocument->textAsSCArrayOfCharCodes(position, charsAdded);
-        Main::evaluateCode(QString("ScIDEDocument.findByQUuid(\'%1\').textChanged(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
+        Main::evaluateCode(QString("Document.findByQUuid(\'%1\').textChanged(%2, %3, %4);").arg(mCurrentDocument->id().constData()).arg(position).arg(charsRemoved).arg(addedChars), true);
     }
 }
 
