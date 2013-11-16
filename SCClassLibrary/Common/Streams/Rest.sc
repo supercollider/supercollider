@@ -33,6 +33,8 @@ Rest {
 			}
 		})
 	}
+
+	storeOn { |stream| stream << "Rest(" << dur << ")" }
 }
 
 + Object {
