@@ -128,7 +128,7 @@ struct SC_ScheduledEvent
 	struct World *mWorld;
 };
 
-typedef MsgFifo<FifoMsg, 1024> EngineFifo;
+typedef MsgFifo<FifoMsg, 65536> EngineFifo;
 
 // Functions to be implemented by the driver backend
 extern "C" {
