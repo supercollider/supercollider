@@ -212,8 +212,6 @@ Main::Main(void) :
     new SyntaxHighlighterGlobals(this, mSettings);
 
     connect(mScProcess, SIGNAL(response(QString,QString)),
-            this, SLOT(onScLangResponse(QString,QString)));
-    connect(mScProcess, SIGNAL(response(QString,QString)),
             mDocManager, SLOT(handleScLangMessage(QString,QString)));
 
     qApp->installEventFilter(this);
@@ -292,36 +290,3 @@ void Main::findReferences(const QString &string, QWidget * parent)
     dialog.exec();
 }
 
-void Main::onScLangResponse( const QString & selector, const QString & data )
-{
-    static QString openFileSelector("openFile");
-
-    if (selector == openFileSelector)
-        handleOpenFileScRequest(data);
-}
-
-void Main::handleOpenFileScRequest( const QString & data )
-{
-    std::stringstream stream;
-    stream << data.toStdString();
-    YAML::Parser parser(stream);
-
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-
-        std::string path;
-        bool success = doc[0].Read(path);
-        if (!success)
-            return;
-
-        int position = 0;
-        doc[1].Read(position);
-
-        int selectionLength = 0;
-        doc[2].Read(selectionLength);
-
-        mDocManager->open(QString(path.c_str()), position, selectionLength);
-    }
-}

@@ -914,7 +914,7 @@ void MultiEditor::onDocModified( QObject *object )
     if(isModified)
         icon = mDocModifiedIcon;
 
-    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').prSetEdited(%2)").arg(doc->id().constData()).arg(isModified), true);
+    Main::evaluateCodeIfCompiled(QString("Document.findByQUuid(\'%1\').prSetEdited(%2)").arg(doc->id().constData()).arg(isModified), true);
     
     mTabs->setTabIcon( tabIdx, icon );
 }
