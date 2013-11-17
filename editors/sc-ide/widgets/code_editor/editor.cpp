@@ -631,7 +631,7 @@ void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
         type = QString("keyUp");
     }
 
-    Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').%2(%3, %4, %5, %6)").arg(mDoc->id().constData()).arg(type).arg(mods).arg(unicode).arg(keycode).arg(key), true);
+    Main::evaluateCodeIfCompiled(QString("Document.findByQUuid(\'%1\').%2(%3, %4, %5, %6)").arg(mDoc->id().constData()).arg(type).arg(mods).arg(unicode).arg(keycode).arg(key), true);
     
 }
     
@@ -650,7 +650,7 @@ void GenericCodeEditor::mousePressEvent(QMouseEvent * e)
                 button = -1;
         }
     
-        Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+        Main::evaluateCodeIfCompiled(QString("Document.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
     }
     
     QPlainTextEdit::mousePressEvent(e);
@@ -671,7 +671,7 @@ void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent * e)
                 button = -1;
         }
         
-        Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+        Main::evaluateCodeIfCompiled(QString("Document.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
     }
     
     QPlainTextEdit::mouseDoubleClickEvent(e);
@@ -692,7 +692,7 @@ void GenericCodeEditor::mouseReleaseEvent(QMouseEvent * e)
                 button = -1;
         }
         
-        Main::evaluateCodeIfCompiled(QString("ScIDEDocument.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+        Main::evaluateCodeIfCompiled(QString("Document.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
         
     }
     QPlainTextEdit::mouseReleaseEvent(e);

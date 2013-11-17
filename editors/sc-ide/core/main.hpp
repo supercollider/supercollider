@@ -112,14 +112,10 @@ Q_SIGNALS:
     void storeSettingsRequest(Settings::Manager *);
     void applySettingsRequest(Settings::Manager *);
 
-private slots:
-    void onScLangResponse( const QString &, const QString & );
-
 private:
     Main(void);
     bool eventFilter(QObject *obj, QEvent *event);
-    void handleOpenFileScRequest( const QString & data );
-
+    
     Settings::Manager *mSettings;
     ScProcess * mScProcess;
     ScServer * mScServer;
