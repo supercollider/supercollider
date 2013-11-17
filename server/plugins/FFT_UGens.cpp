@@ -23,10 +23,8 @@
 #include "FFT_UGens.h"
 
 // We include vDSP even if not using for FFT, since we want to use some vectorised add/mul tricks
-#if defined(__APPLE__) && !defined(SC_IPHONE) && defined(MACOS_SDK_PRE_10_7)
-	#include "vecLib/vDSP.h"
-#elif defined(__APPLE__) && !defined(SC_IPHONE) && !defined(MACOS_SDK_PRE_10_7)
-	#include <Accelerate/Accelerate.h>
+#if defined(__APPLE__) && !defined(SC_IPHONE)
+#include <Accelerate/Accelerate.h>
 #endif
 
 struct FFTBase : public Unit
