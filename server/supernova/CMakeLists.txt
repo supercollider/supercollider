@@ -181,12 +181,7 @@ if(LTO)
                  APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
-if (APPLE AND MACOS_SDK_PRE_10_7)
-    target_link_libraries(libsupernova "-framework vecLib")
-elseif(APPLE)
-    target_link_libraries(libsupernova "-framework Accelerate")
-endif()
-
 if (APPLE)
+    target_link_libraries(libsupernova "-framework Accelerate")
     target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices -framework Foundation")
 endif()
