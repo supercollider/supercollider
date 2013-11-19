@@ -207,7 +207,7 @@ Monitor {
 		fadeTimes = argFadeTime ? fadeTimes ? #[0.02];
 		vol = argVol ? vol ? 1.0;
 
-		synthArgs = [ins, outs, amps, fadeTimes].asControlInput.postln.flop.postln;
+		synthArgs = [ins, outs, amps, fadeTimes].asControlInput.flop;
 
 		if(this.isPlaying) {
 			if(multi.not) { this.stopToBundle(bundle) }
