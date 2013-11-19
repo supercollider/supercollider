@@ -156,6 +156,8 @@ NetAddr {
 		}
 	}
 
+	isLocal { ^this.class.matchLangIP(this.ip) }
+
 	ip {
 		^addr.asIPString
 	}
