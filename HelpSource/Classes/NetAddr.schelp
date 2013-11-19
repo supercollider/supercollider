@@ -38,7 +38,7 @@ Test an IP address to see if it matches that of one of the NICs on this computer
 argument::ipstring
 A link::Classes/String:: to test containing an IP number in dot decimal notation (e.g. "192.168.34.56").
 
-returns:: A link::Classes/Boolean:: indicating whether a match was found.
+returns::A link::Classes/Boolean:: indicating whether a match was found.
 
 InstanceMethods::
 
@@ -68,6 +68,10 @@ code::
 n = NetAddr("localhost", 57110);
 n.ip;
 ::
+
+method::isLocal
+Test if this NetAddr ip number matches that of one of this hosts NICs, or the loopback address.
+returns::A link::Classes/Boolean::.
 
 Examples::
 
