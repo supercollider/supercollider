@@ -18,6 +18,14 @@ NetAddr {
 	*langPort {
 		_GetLangPort
 	}
+
+	*matchLangIP {|ipstring|
+		_MatchLangIP
+	}
+	*localEndPoint {
+		^this.new(this.langIP, this.langPort)
+	}
+
 	*localAddr {
 		^this.new("127.0.0.1", this.langPort)
 	}

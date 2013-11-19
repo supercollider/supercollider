@@ -32,6 +32,14 @@ close all TCP connections.
 method::broadcastFlag
 Get or set the broadcast flag (whether or not broadcast messages can be sent).
 
+method::matchLangIP
+Test an IP address to see if it matches that of one of the NICs on this computer.
+
+argument::ipstring
+A link::Classes/String:: to test containing an IP number in dot decimal notation (e.g. "192.168.34.56").
+
+returns:: A link::Classes/Boolean:: indicating whether a match was found.
+
 InstanceMethods::
 
 private::prConnect, prDisconnect, prConnectionClosed, recover
