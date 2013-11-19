@@ -248,6 +248,7 @@
 		proxyControlClasses = (
 			filter: SynthDefControl,
 			xset: StreamControl,
+			pset: StreamControl,
 			set: StreamControl,
 			stream: PatternControl,
 			setbus: StreamControl,
@@ -284,10 +285,16 @@
 					\args, args
 				).buildForProxy( proxy, channelOffset, index )
 			},
+			pset: #{ arg pattern, proxy, channelOffset=0, index;
+				Pbindf(
+					pattern,
+					\play, { proxy.set(*proxy.controlNames.collect(_.name).envirPairs.asOSCArgArray) }
+				).buildForProxy( proxy, channelOffset, index )
+			},
 			xset: #{ arg pattern, proxy, channelOffset=0, index;
 				Pbindf(
 					pattern,
-					\play, { proxy.xset(*proxy.controlNames.collect(_.name).envirPairs) }
+					\play, { proxy.xset(*proxy.controlNames.collect(_.name).envirPairs.asOSCArgArray) }
 				).buildForProxy( proxy, channelOffset, index )
 			},
 			setbus: #{ arg pattern, proxy, channelOffset=0, index;
