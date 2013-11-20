@@ -17,6 +17,17 @@ should subscribe to the mailing lists:
    http://swiki.hfbk-hamburg.de/MusicTechnology/880
 
 
+NOTE: OS X Mavericks (10.9)
+
+This version of SC has not been adjusted to Mavericks yet. Please expect some rough
+edges. Most importantly: "App Nap", a new energy saving feature for background applications,
+causes the SC language interpreter to slow down dramatically after a while, if no sc-gui
+window is in the foreground. It is therefore strongly recommended to switch off App Nap
+for SuperCollider. The easiest way to do this, is to right-click SuperCollider.app and
+select `Get Info` from the popup-Menu. Then choose `Prevent App Nap` in the list of start
+options.
+
+
 SPECIAL CHARACTERS ON MAC:
 
 Please do not use non-ASCII characters (above code point 127) in your SuperCollider 
