@@ -342,7 +342,7 @@ if(APPLE)
 	set(auxresourcesdir ${scappauxresourcesdir})
 
 	# Some aux files which go in the app's folder
-	install(FILES README.txt ChangeLog COPYING AUTHORS platform/mac/MOVED_STUFF.txt
+	install(FILES README.txt README_OS_X.txt ChangeLog COPYING AUTHORS platform/mac/MOVED_STUFF.txt
 		DESTINATION ${scappbundlename}
 	)
 elseif (WIN32)
