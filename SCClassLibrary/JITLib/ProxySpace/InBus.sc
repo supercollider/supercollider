@@ -210,7 +210,16 @@ Monitor {
 		synthArgs = [ins, outs, amps, fadeTimes].asControlInput.flop;
 
 		if(this.isPlaying) {
-			if(multi.not) { this.stopToBundle(bundle) }
+			if(multi.not) {
+				if(argFadeTime.notNil) {
+					argFadeTime = argFadeTime.asArray;
+					synthIDs.do { |id, i|
+						bundle.add([15, id, "gate", argFadeTime.wrapAt(i).neg])
+					}
+				} {
+					bundle.add([15, group.nodeID, "gate", 0]);
+				}
+			}
 		} {
 			this.newGroupToBundle(bundle, inGroup, addAction)
 		};
