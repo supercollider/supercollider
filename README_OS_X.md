@@ -25,11 +25,7 @@ Introduction
 ------------
 
 This is the Mac OS X version of James McCartney's SuperCollider synthesis engine 
-(scsynth) and programming language (sclang).
-
-Supercollider's main homepage is at:
-
-http://supercollider.github.com
+(scsynth) and programming language (sclang). http://supercollider.github.io/
 
 The help files contain a lot of useful information and tutorials for getting
 started. If a help-window is not visible when you open SC, try to access if from
@@ -59,15 +55,13 @@ options.
 Obtaining the SC source
 -----------------------
 
-SC is on Github:
+SC is on Github: https://github.com/supercollider/supercollider
 
-https://github.com/supercollider/supercollider
-
-Get it with:
+Get a copy of the source code with:
 
 `git clone --recursive git@github.com:supercollider/supercollider.git`
 
-sSnapshots of release-versions are available from Sourceforge:
+Snapshots of release-versions are available from Sourceforge:
 
 http://sourceforge.net/projects/supercollider/files/Source/
 
@@ -110,7 +104,7 @@ This should create a universal build running on any intel based 32- and 64-bit A
 hardware using OSX 10.6 and later (see remarks on Mavericks above). 
 
 In order to reproduce this build exactly you either have to use the source snapshot
-distributed through SourceForge or checkout the tag 3.6.6 from the SC Github repo.
+distributed through SourceForge or checkout the tag `Version-3.6.6` from the SC Github repo.
 Make sure the dependencies (Qt and Readline) are universal builds.
 
 
@@ -123,46 +117,49 @@ source into a folder `supercollider`, do this:
 
 For SC 3.6:
 
-`$>	cd supercollider`  
-`$>	git submodule init`  
-`$>	git checkout -b 3.6 origin/3.6`  
-`$>	git submodule update`  
-`$>	mkdir build`  
-`$>	cd build`  
-`$>	cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DREADLINE_INCLUDE_DIR=/opt/local/include 
-	-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..`  
-`$>	make install`
-
+	$>	cd supercollider
+	$>	git submodule init
+	$>	git checkout -b 3.6 origin/3.6
+	$>	git submodule update
+	$>	mkdir build
+	$>	cd build
+	$>	cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DREADLINE_INCLUDE_DIR=/opt/local/include
+			-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
+	$>	make install
 
 For SC 3.7:
 
-`$>	cd supercollider`  
-`$>	git submodule init`  
-`$>	git checkout master`  
-`$>	mkdir build`  
-`$>	cd build`  
-`$>	cmake -DREADLINE_INCLUDE_DIR=/opt/local/include 
-	-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..`
-`$>	make install`
+	$>	cd supercollider
+	$>	git submodule init
+	$>	git checkout master
+	$>	mkdir build
+	$>	cd build
+	$>	cmake -DREADLINE_INCLUDE_DIR=/opt/local/include	
+			-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
+	$>	make install
 
 At the end, in each case you should find a folder "Install/SuperCollider" containing the
 SC application bundle and a few more files.
 
 For building with Xcode, configure the build adding -GXcode to the cmake command-line:
 
-`$>	cmake -GXcode -DREADLINE_INCLUDE_DIR=/opt/local/include 
-	-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..`
+	`$>	cmake -GXcode -DREADLINE_INCLUDE_DIR=/opt/local/include
+			-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
 
 This will generate a Xcode project file in the build folder. Open it in Xcode, select
 the `install` target, and build.
+
+*Note:* The `/opt/local` paths used in the commands above are pointing to the macports
+version of readline. You will need to adjust those paths if not using macports.
 
 
 Generic build instructions
 --------------------------
 
 To build SuperCollider with Cmake, it is recommended to create a "build"
-folder in the root folder of the SuperCollider source. This is the folder
-created when you cloned SC from git. By default it is called `supercollider`.
+folder in the root folder of the SuperCollider source (i.e. inside the folder
+created when you cloned SC from git).
+
 A dedicated build folder is created to separate build files from the source. 
 This will leave the source alone (git monitors all activities in the source 
 tree) and makes it easy to delete all build files without touching the 
@@ -170,18 +167,18 @@ source if you require a guaranteed clean build.
 
 So after cloning the SC source into the folder supercollider (default), do:
 
-`$>	cd supercollider`  
-`$>	mkdir build`  
-`$>	cd build`
+	$>	cd supercollider
+	$>	mkdir build
+	$>	cd build
 
 Then run the following command to to configure the build (`cmake`) and to point
 to the root folder of the SC source (`..`):
 
-`$>	cmake ..`
+	$>	cmake ..
 
 After the build configuration finished, and if no errors were returned, do:
 
-`$>	make install`
+	$>	make install
 
 This will build the software and "install" it to a folder "SuperCollider" in 
 `<build-directory>/Install`. You would usually move this folder into the folder 
@@ -190,7 +187,7 @@ This will build the software and "install" it to a folder "SuperCollider" in
 If you would like to create a disk image for distribution, run the following command 
 and find the .dmg file in your build folder:
 
-`$>	make package`
+	$>	make package
 
 While this would ideally be sufficient to build SC on OSX, currently the following
 cmake arguments are required:
@@ -201,11 +198,11 @@ If building SC 3.6 for Snow Leopard:
 
 Which results in this build command:
 
-`$>	cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 ..`
+	$>	cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 ..
 
 In all SC-versions, in order to enable *building* the Readline interface, you will need 
 to install it on your build system first (this is *not* required for running SC). It 
-is advisable to use a packet manager like Homebrew or MacPorts. Then you need to tell 
+is advisable to use a package manager like Homebrew or MacPorts. Then you need to tell 
 the build system where to find the required headers and libraries. 
 
 When using MacPorts, this is likely to be:
@@ -221,8 +218,8 @@ For Homebrew the default locations are (end 2013):
 So a full cmake configure command specifying a build target and including readline
 (from MacPorts) would look like this:
 
-`cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DREADLINE_INCLUDE_DIR=/opt/local/include 
--DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..`
+	`cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DREADLINE_INCLUDE_DIR=/opt/local/include 
+		-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
 
 The Qt libraries also need to be installed in your system at build time, but usually 
 cmake finds them automatically. It does so by looking for the file `qmake` in your system 
@@ -235,14 +232,14 @@ so:
 There are more settings in the build configuration you are likely to want to adjust. 
 In order to see a useful list of your options, you can run: 
 
-`$>	cmake -L ..`
+	$>	cmake -L ..
 
 This configure the build using default settings or settings stored in the file 
 build/CMakeCache.txt, print explanatory return statements and produce a list of 
 variables the value of which you might want to change. In order to see all the command
 line options `cmake` offers, type:
 
-`$>	cmake --help`
+	$>	cmake --help
 
 It is not necessary to pass in all required arguments each time you run cmake, as cmake 
 caches previously set arguments in the file CMakeCache.txt. This is helpful, but
@@ -251,8 +248,8 @@ with the command line, you might want to try cmake frontends like  `ccmake` or
 `cmake-gui`. You can also configure your build by manually editing build/CMakeCache.txt. 
 
 
-Frequently used build-configuration settings
---------------------------------------------
+Frequently used cmake settings
+------------------------------
 
   * the location "install"-folder, i.e. the location of the SuperCollider folder including
     the application bundle. The following line moves it to the Applications folder 
@@ -260,7 +257,7 @@ Frequently used build-configuration settings
 
     `-DCMAKE_INSTALL_PREFIX=/Applications`
 
-  * you can choose three build types (Release (otimised), Debug and RelWithDebInfo):
+  * you can choose three build types (Release (optimised), Debug and RelWithDebInfo):
 
     `-DCMAKE_BUILD_TYPE=Debug`
 
