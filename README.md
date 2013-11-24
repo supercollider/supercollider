@@ -1,5 +1,5 @@
-Welcome to SuperCollider 3!
-===========================
+Welcome to SuperCollider!
+=========================
 
 **SuperCollider** is an environment and programming language for real time audio
 synthesis and algorithmic composition. It provides an interpreted
@@ -11,7 +11,7 @@ many years. It is now an open source GPL'd project maintained and developed by
 James and various others. It is used by musicians, scientists, and artists
 working with sound.
 
-http://supercollider.github.com
+http://supercollider.github.io/
 
 This README is a first help for anyone new to SuperCollider. There are many
 good resources available for learning SuperCollider, with up to date links from
@@ -22,9 +22,10 @@ Usage
 -----
 
 Since version 3.6 SuperCollider consists of three separate components:
-- sound synthesiser (audio server)
-- programming language (and language interpreter)
-- code editor (integrated development environment, or shortly, IDE)
+
+1. sound synthesiser (audio server)
+2. programming language (and language interpreter)
+3. code editor (integrated development environment, or shortly, IDE)
 
 To begin using SuperCollider, you usually first start up the IDE:
 - on Mac OS simply start up the `SuperCollider.app` application
