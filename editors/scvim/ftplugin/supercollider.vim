@@ -201,24 +201,34 @@ endfunction
 
 function SClangStart()
 	if !filewritable(s:sclangPipeAppPidLoc)
-    call system("tmux splitw -h -p 25; tmux send-keys " . s:sclangPipeApp . " C-m; tmux selectp -L; sleep 1; tmux renamew scvim")
-  else
+    if $TERM[0:5] == "screen"
+    	call system("tmux splitw -h -p 25; tmux send-keys " . s:sclangPipeApp . " C-m; tmux selectp -L; sleep 1; tmux renamew scvim")
+    else
+      call system(s:sclangTerm . " " . s:sclangPipeApp . "&")
+    endif
+	else
 		throw s:sclangPipeAppPidLoc . " exists, is " . s:sclangPipeApp . " running?  If not try deleting " . s:sclangPipeAppPidLoc
 	endif
 endfunction
 
 function SClangKill()
 	if filewritable(s:sclangPipeAppPidLoc)
-		call system("tmux selectp -R; tmux send-keys C-c; tmux killp -t scvim.1")
 		call SendToSC("Server.quitAll;")
 		:sleep 10m
-    call system("kill `cat " . s:sclangPipeAppPidLoc . "` && rm " . s:sclangPipeAppPidLoc . " && rm " . s:sclangPipeLoc)
+    call system("kill $(pidof cat " . s:sclangPipeAppPidLoc . "); for i in $(pidof ruby $(which sclangpipe_app)); do kill $i; done; kill $(pidof cat " . s:sclangPipeLoc . "); rm " . s:sclangPipeAppPidLoc . "; rm " . s:sclangPipeLoc )
+    if $TERM[0:5] == "screen"
+      call system("tmux killp -t 1")
+    endif
 	end
 endfunction
 
 function SClangRestart()
 	if filewritable(s:sclangPipeAppPidLoc)
-		call system("kill -HUP `cat " . s:sclangPipeAppPidLoc . "`")
+    call system("kill $(pidof cat " . s:sclangPipeAppPidLoc . "); for i in $(pidof ruby $(which sclangpipe_app)); do kill $i; done; kill $(pidof cat " . s:sclangPipeLoc . "); rm " . s:sclangPipeAppPidLoc . "; rm " . s:sclangPipeLoc )
+    if $TERM[0:5] == "screen"
+      call system("tmux killp -t 1")
+    endif
+    call SClangStart()
 	else
 		call SClangStart()
 	end
