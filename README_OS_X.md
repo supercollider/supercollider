@@ -11,13 +11,14 @@ Table of contents
  * The SC 3.6.6 release
  * Quick steps (Read this if nothing else!)
  * Generic build instructions
- * Frequently used build-configuration settings
+ * Frequently used cmake settings
  * Using cmake with Xcode or QtCreator
  * Remarks on different SC versions
  * Qt vs. Cocoa, IDE vs. Editor "classic"
  * Standalones
  * On libsndfile
  * Special characters on mac
+ * Problem getting Quarks?
  * Outro
 
 
@@ -59,7 +60,7 @@ SC is on Github: https://github.com/supercollider/supercollider
 
 Get a copy of the source code with:
 
-`git clone --recursive git@github.com:supercollider/supercollider.git`
+`git clone --recursive https://github.com/supercollider/supercollider.git`
 
 Snapshots of release-versions are available from Sourceforge:
 
@@ -90,7 +91,7 @@ in release/commit history:
   * Qt libraries 4.7 or greater: http://qt-project.org/downloads
 
 Since at least SC 3.6.5 it has not been possible any more to use the OSX supplied 
-Readline to build sclang with Readline interface. Therefore GNU Readline >= 5.0 needs
+readline to build sclang with readline interface. Therefore GNU Readline >= 5.0 needs
 to be intalled on the build system.
 
 SC 3.6.6 was built using the following cmake arguments:
@@ -123,8 +124,8 @@ For SC 3.6:
 	$>	git submodule update
 	$>	mkdir build
 	$>	cd build
-	$>	cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DREADLINE_INCLUDE_DIR=/opt/local/include
-			-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
+	$>	cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DREADLINE_INCLUDE_DIR=/opt/local/include  
+	        -DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
 	$>	make install
 
 For SC 3.7:
@@ -134,8 +135,8 @@ For SC 3.7:
 	$>	git checkout master
 	$>	mkdir build
 	$>	cd build
-	$>	cmake -DREADLINE_INCLUDE_DIR=/opt/local/include	
-			-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
+	$>	cmake -DREADLINE_INCLUDE_DIR=/opt/local/include	 
+	        -DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
 	$>	make install
 
 At the end, in each case you should find a folder "Install/SuperCollider" containing the
@@ -143,14 +144,14 @@ SC application bundle and a few more files.
 
 For building with Xcode, configure the build adding -GXcode to the cmake command-line:
 
-	`$>	cmake -GXcode -DREADLINE_INCLUDE_DIR=/opt/local/include
+	$>	cmake -GXcode -DREADLINE_INCLUDE_DIR=/opt/local/include
 			-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
 
 This will generate a Xcode project file in the build folder. Open it in Xcode, select
 the `install` target, and build.
 
 *Note:* The `/opt/local` paths used in the commands above are pointing to the macports
-version of readline. You will need to adjust those paths if not using macports.
+version of Readline. You will need to adjust those paths if not using macports.
 
 
 Generic build instructions
@@ -200,12 +201,18 @@ Which results in this build command:
 
 	$>	cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 ..
 
-In all SC-versions, in order to enable *building* the Readline interface, you will need 
+In all SC-versions, in order to enable *building* the readline interface, you will need 
 to install it on your build system first (this is *not* required for running SC). It 
-is advisable to use a package manager like Homebrew or MacPorts. Then you need to tell 
-the build system where to find the required headers and libraries. 
+is advisable to use a package manager like Homebrew or MacPorts. Homebrew is a comparatively
+recent, very flexible and modern package manager with broad community support. MacPorts is
+the old (Apple backed) workhorse that might still be a bit more reliable, especially on
+elder systems. Both are reported to work for the relatively slim requirements of building
+SC on a OSX system (required: Qt, readline, optional: libsndfile, portaudio, possible: 
+fftw3). If you run into problems with one of the packages it is more likely a problem with 
+your local system than with one of the packages.
 
-When using MacPorts, this is likely to be:
+After you installed readline you need to tell the build system where to find the required 
+headers and libraries. When using MacPorts, the paths are likely to be:
 
 `-DREADLINE_INCLUDE_DIR=/opt/local/include` 
 `-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib`
@@ -215,11 +222,10 @@ For Homebrew the default locations are (end 2013):
 `-DREADLINE_INCLUDE_DIR=/usr/local/Cellar/readline/6.2.4/include` 
 `-DREADLINE_LIBRARY=/usr/local/Ceallar/readline/6.2.4/lib/libreadline.dylib`
 
-So a full cmake configure command specifying a build target and including readline
+So a full cmake configure command, specifying a build target and including readline
 (from MacPorts) would look like this:
 
-	`cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DREADLINE_INCLUDE_DIR=/opt/local/include 
-		-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
+	$>	cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DREADLINE_INCLUDE_DIR=/opt/local/include -DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
 
 The Qt libraries also need to be installed in your system at build time, but usually 
 cmake finds them automatically. It does so by looking for the file `qmake` in your system 
@@ -265,13 +271,31 @@ Frequently used cmake settings
  
     `-DNATIVE=ON`
 
+  * build the *supernova* server:
+    
+    `-DSUPERNOVA=ON`
+    
+    Using supernova requires the `portaudio` audio backend, so you need to install it
+    (Homebrew and MacPorts both provide packages).
+    
+    *Note*: When you build with supernova, an alternative server executable and a supernova 
+    version of each plugin is built. If you also use the sc3-plugins package, make sure to 
+    compile them with supernova support too.
+    
+    Within SC you will be able to switch between scsynth and supernova by evaluating one of:
+    
+    `Server.supernova`  
+    `Server.scsynth`
+    
+    Check sc help for `ParGroup` to see how to make use of multi-core hardware.
+    
   * build a 32-bit version:
 
     `-DCMAKE_OSX_ARCHITECTURES='i386'`
 
   * or combine a 32- and 64-bit version into a bundle (i.e. build a universal binary). 
     This is only possible up until OSX 10.6 and requires the dependencies (Qtlibs & 
-    Readline) to be universal builds too:
+    readline) to be universal builds too:
 
     `-DCMAKE_OSX_ARCHITECTURES='i386;x86_64'`
  
@@ -283,7 +307,7 @@ Frequently used cmake settings
 
     `-DSC_SYMLINK_CLASSLIB=ON`
 
-  * If you run into trouble on a 10.8 system using a older version of the master branch, 
+  * If you run into trouble on a 10.8 system using an older version of the master branch, 
     you might want to try passing in the root folder of to 10.7 SDK as compiler flag `isysroot`. 
     This was reported to have helped complete building successfully in the past, but is not 
     required in recent builds:
@@ -330,7 +354,7 @@ Give it a try...
 
 
 Remarks on different SC versions
---------------------------------------------
+--------------------------------
 
 At the time of this writing (Nov 2013) only the 3.6 branch of SC is considered release
 quality, while most developers use the 3.7 master-branch in daily practice. Another, 
@@ -342,7 +366,7 @@ with the release of version 3.7.
 
 The SC 3.6-branch introduced an all new Qt based IDE, which among many other achievements
 featured first time ever, close to identical support of the three platforms OSX, Windows 
-and Linux, both in featured and appearance/user-interface. At the same time is the last 
+and Linux, both in featureset and appearance/user-interface. At the same time is the last 
 branch to support:
 
   * compiling in and for Snow Leopard and 32 as well as 64 bit.
@@ -353,47 +377,52 @@ branch to support:
 
 Starting from SC 3.5 also a new, highly structured and dynamic help-system was introduced.
 Structured help text is written using a superset of the Markdown-language and converted 
-to html for display.
+to html for display. The help system also provides a efficient way to generate sc class 
+documentation templates.
 
 Among the OSX-versions, Snow Leopard (SL, 10.6) sticks out in that it is the last to 
 support 32-bit hardware and ship with Rosetta, a virtual machine for Power PC software. 
 Therefore the 3.6-branch of the SC source will remain SL compatible and support both 
 64&32 bit hardware, although it will become more difficult to support later OSX-versions 
 at the same time. It is therefore generally expected that from 2014 onwards SC 3.7 will
-become the release version of SC, and the only actively maintained branch. This makes
-it likely that it will become difficult to run SC 3.6 on OSX versions after Mavericks. 
-Even compiling SC 3.6 will become more and more difficult, as a Snow Leopard System 
-is required to create a universal build, and Apple makes accessing development ressources 
-for SL more and more difficult.
+become the release version of SC, and the only actively maintained branch. On the downside
+expect it to become more difficult to run SC 3.6 on OSX versions after Mavericks and
+find working 3.6 build systems. Apple makes accessing development ressources for Snow 
+Leopard increasingly difficult.
 
-If you need to build for older OSX-versions (10.4 or 10.5) or hardware (pre intel), you 
-are on your own and need to experiment. Members of the SC-dev mailing list might be able
-to help. Note though that all Apple hardware with intel processors should be supported 
-by SL - you might be better off updating your OS.
+On the 3.7-branch SL support was given up around August 2013 alongside with raising 
+compiler requirements to current clang. These decisions were taken to enhance code 
+maintainability as part of an major effort to streamline the SC codebase.
+On the upside expect the reintroduction of HID support, a new backend for the document 
+class, and support for SuperNova, an alternative synthesis engine with multicore-support 
+written by Tim Blechmann, also on OSX.
 
-Snow Leopard support has been given up on the 3.7-branch since about August 2013. At the 
-same time compiler requirements were risen to support C++11 better. While creating a
-universal build on 10.6 required the gcc4.2 compiler, now the use of clang is required 
-(and set as default). 
 In general it is strongly recommended to always use the most recent build tools available 
 for your OSX-environment and update regularly. Fortunately the OSX-tools update 
-automatically and Readline is uncritical as to version requirements. But keep looking out 
-updates to Cmake (currently v2.8.12) and *minor version* updates to Qt (currently 4.8.5).
-SC cannot currently be compiled using any version of Qt5.
+automatically on recent systems and Readline is uncritical as to version requirements. 
+But keep looking out for updates to Cmake (currently v2.8.12) and *minor version* updates 
+to Qt (currently 4.8.5). SC cannot currently be compiled using any version of Qt5.
 
-Git allows you to easily reconstruct and build from every stage of the SC release/commit 
-history. Usually though it is only advisable to build version snapshots marked 
-by git tags, or at the endpoint or actively maintained branches. If you run into errors
-building from such points, chances are that a SC developer can help if you enquire on the
-mailing list (quicker response) or file a bug on Github (formally correct procedure).
+Git allows you to easily go back in history and build from every stage of the SC commit 
+history. Usually though it is only advisable to build release version snapshots (marked by 
+git tags), or the endpoints of actively maintained branches. Other states are likely
+to be provisional, or incompatible with current toolchains. Installing multiple versions of
+build tools is not always trivial, and on top of that Apple strongly enforces a "the latest 
+only" policy in its maintenance culture. Building for 10.5 and 10.4 is going to be a major 
+effort. Note though that all Apple hardware with intel processors should be supported by 
+SL - you might be better off updating your OS. If you really need to build for older OSX 
+versions and also Power PC hardware, expect some it-archeological work. If you run into 
+trouble, chances are that oldhand SC developers on the mailing lists can help. SC bugs, 
+btw, are officially managed on the Github issue tracker, but often a preliminary enquiry 
+on the mailing lists is useful.
 
 
 Qt vs. Cocoa, IDE vs. Editor "classic"
 --------------------------------------
 
-Qtlibs are used for the SC-IDE, and to provide a graphical toolkit for SC. While this is
-default in both SC 3.6 and 3.7, in SC 3.6 it is still possible to use Cocoa and build the 
-old SC editor. This is controlled by switching building the IDE on or off, which 
+Qtlibs are used for the SC-IDE, and to provide a graphical toolkit for SC. While Qtlibs 
+is the default toolkit for both SC 3.6 and 3.7, it is still possible to build SC 3.6 using 
+Cocoa and the old SC editor. This is controlled by a cmake switch for the IDE, which 
 implicitly toggles building the old editor:
 
 `-DSC_IDE=OFF`    -> old mac editor is built (by default using Qt)
@@ -405,7 +434,7 @@ turn triggers building the old editor, now using Cocoa:
 `-DSC_QT=OFF`     -> no Qt toolkit -> mac editor is built -> Cocoa is used/provided
 
 While Qt and Cocoa are mutually exclusive, SwingOSC can still be used as an alternative
-and switchable toolkit to either of them.
+and switchable toolkit to either of them in 3.6.
 
 
 Standalones
@@ -453,7 +482,7 @@ file, although the currently built universal does not contain Power PC versions 
 and intel universal binaries of libsndfile are readily available via package managers.
 
 If you would like to build using the latest version of libsndfile, you need to intall it
-and point cmake to it very much the same way it was demonstrated above for Readline. 
+and point cmake to it very much the same way it was demonstrated above for readline. 
 The cmake variables, alongside with the likely path if you install libsndfile using 
 MacPorts, are:
 
@@ -467,6 +496,20 @@ Special characters on mac
 Please do not use non-ASCII characters (above code point 127) in your
 SuperCollider program path (i.e. the names of the folders containing SuperCollider).
 Doing so will break options to open class or method files.
+
+Problem getting Quarks?
+-----------------------
+
+If you can't download Quarks via `Quarks.gui`, the reason might be that you need to 
+install a subversion client. If that doesn't help, check where SC believes svn is 
+located on your system by evaluating:
+
+`QuarkSVNRepository.svnpath`
+
+If it is pointing to the wrong file (or none at all), one cure would be to assign the 
+correct value and add it to your sc startup file, for example:
+
+`QuarksSVNRepository.svnpath = "/opt/local/bin/svn"`
 
 
 Outro
