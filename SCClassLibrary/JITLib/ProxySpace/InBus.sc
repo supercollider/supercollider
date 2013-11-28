@@ -275,7 +275,6 @@ Monitor {
 			(0..(bus.numChannels - 1))
 		} + bus.index;
 
-		ins = ins.wrapExtend(outs.size); // should maybe be done in playNToBundle, in flop?
 		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction, multi: multi)
 	}
 
