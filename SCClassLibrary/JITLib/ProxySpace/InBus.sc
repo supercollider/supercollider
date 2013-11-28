@@ -266,7 +266,7 @@ Monitor {
 	playNBusToBundle { | bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction, multi = false |
 
 		var size;
-		outs = outs ?? { this.outs.unbubble } ? 0;	// remember old ones if none given
+		outs = outs ?? { this.outs.unbubble } ? 0;	// remember old ones if none are given
 		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
 		size = outs.size;
 		ins = if(ins.notNil) {
@@ -288,7 +288,7 @@ Monitor {
 	}
 
 
-	stopToBundle { | bundle | // maybe with fade later.
+	stopToBundle { | bundle |
 		bundle.add([15, group.nodeID, "gate", 0]);
 		synthIDs = [];
 	}
