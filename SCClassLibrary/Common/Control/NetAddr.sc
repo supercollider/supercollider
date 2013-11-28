@@ -153,7 +153,7 @@ NetAddr {
 			that.isNil or: {
 				this.addr == that.addr and: { that.port.isNil }
 			}
-		}
+		} or: { this.isLocal and: { that.isLocal } and: { this.port == that.port or: { that.port.isNil } } }
 	}
 
 	isLocal { ^this.class.matchLangIP(this.ip) }
