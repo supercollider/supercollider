@@ -212,7 +212,7 @@ Monitor {
 		if(this.isPlaying) {
 			if(multi.not) {
 				if(argFadeTime.notNil) {
-					argFadeTime = argFadeTime.asArray;
+					argFadeTime = argFadeTime.asControlInput.asArray;
 					synthIDs.do { |id, i|
 						bundle.add([15, id, "gate", argFadeTime.wrapAt(i).neg])
 					}
