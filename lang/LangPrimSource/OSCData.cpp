@@ -861,6 +861,48 @@ int prGetLangPort(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prMatchLangIP(VMGlobals *g, int numArgsPushed);
+int prMatchLangIP(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *argString = g->sp;
+    char ipstring[40];
+    int err = slotStrVal(argString, ipstring, 39);
+	if (err) return err;
+    try
+    {
+        boost::asio::io_service io_service;
+        
+        boost::asio::ip::udp::resolver resolver(io_service);
+        boost::asio::ip::udp::resolver::query query(boost::asio::ip::host_name(),"");
+        boost::asio::ip::udp::resolver::iterator it=resolver.resolve(query);
+        
+        while(it!=boost::asio::ip::udp::resolver::iterator())
+        {
+            boost::asio::ip::address addr=(it++)->endpoint().address();
+            std::string candidate = addr.to_string();
+            if (!candidate.compare(ipstring)) {
+                SetTrue(g->sp - 1);
+                return errNone;
+            }
+            
+        }
+        
+        std::string loopback ("127.0.0.1");
+        // check for loopback address
+        if (!loopback.compare(ipstring)) {
+            SetTrue(g->sp - 1);
+            return errNone;
+        }
+    }
+    catch(std::exception &e)
+    {
+        std::cout<<e.what()<<std::endl;
+        return errFailed;
+    }
+    SetFalse(g->sp - 1);
+	return errNone;
+}
+
 int prExit(VMGlobals *g, int numArgsPushed);
 int prExit(VMGlobals *g, int numArgsPushed)
 {
@@ -1288,6 +1330,7 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);
 	definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);
 	definePrimitive(base, index++, "_GetLangPort", prGetLangPort, 1, 0);
+    definePrimitive(base, index++, "_MatchLangIP", prMatchLangIP, 2, 0);
 	definePrimitive(base, index++, "_Exit", prExit, 1, 0);
 #ifndef NO_INTERNAL_SERVER
 	definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);
