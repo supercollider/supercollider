@@ -61,8 +61,9 @@ if [ $package_type == "source" ]; then
     find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" -or -name scide_scapp -or -iname "iPhone*" \
 		| grep -v "external_libraries/boost/boost/asio/windows" > LinuxExclusions.txt
 	echo 'SuperCollider-Source/README_OS_X.md
-SuperCollider-Source/README_WINDOWS.txt
-SuperCollider-Source/README_IPHONE.txt
+SuperCollider-Source/README_WINDOWS.md
+SuperCollider-Source/README_IPHONE.md
+SuperCollider-Source/README_JAILBROKEN_IPHONE.md
 SuperCollider-Source/external_libraries/libsndfile
 SuperCollider-Source/external_libraries/curl
 SuperCollider-Source/external_libraries/icu
@@ -70,9 +71,7 @@ SuperCollider-Source/platform/mac
 SuperCollider-Source/platform/iphone
 SuperCollider-Source/platform/windows
 SuperCollider-Source/lang/LangPrimSource/HID_Utilities
-SuperCollider-Source/lang/LangPrimSource/HID_Utilities_10_4
-SuperCollider-Source/lang/LangPrimSource/WiiMote_OSX
-SuperCollider-Source/editors/scapp' >> LinuxExclusions.txt
+SuperCollider-Source/lang/LangPrimSource/WiiMote_OSX' >> LinuxExclusions.txt
 
     tar cfj "$filename" SuperCollider-Source
     tar cfjX "$filenamelinux" LinuxExclusions.txt SuperCollider-Source
