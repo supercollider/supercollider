@@ -29,6 +29,7 @@
 #include <stdexcept>
 #include <new>
 #include <vector>
+#include <iostream>
 
 #include "scsynthsend.h"
 #include "sc_msg_iter.h"
