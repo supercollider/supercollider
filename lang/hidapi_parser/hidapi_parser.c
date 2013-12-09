@@ -294,7 +294,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
   for ( i = 0; i < size; i++){
 #ifdef DEBUG_PARSER
-	  printf("\n%02hhx ", descr_buf[i]);
+	  printf("\nbuffer value: %02hhx ", descr_buf[i]);
 	  printf("\tbyte_type %i, %i, %i \t", next_byte_tag, next_byte_size, next_val);
 #endif
 	  if ( next_byte_tag != -1 ){
@@ -491,6 +491,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			}
 			prev_element = new_element;
 		    }
+		    current_usage_index = 0;
 		    making_element->usage = 0;
 		    break;
 		  case HID_OUTPUT:
@@ -532,6 +533,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			}
 			prev_element = new_element;
 		    }
+		    current_usage_index = 0;
 		    making_element->usage = 0;
 		    break;
 		  case HID_FEATURE:
@@ -570,6 +572,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			}
 			prev_element = new_element;
 		    }
+		    current_usage_index = 0;
 		    making_element->usage = 0;
 		    break;
 #ifdef DEBUG_PARSER
@@ -725,7 +728,9 @@ struct hid_parsing_byte {
 
 int hid_parse_single_byte( unsigned char current_byte, struct hid_parsing_byte * pbyte ){
   int nextVal;
-  int bitMask;
+  unsigned char bitMask;
+  unsigned char invBitMask;
+  unsigned char maskedByte;
   int currentBitsize = pbyte->currentSize - pbyte->bitIndex;
   if ( currentBitsize >= pbyte->remainingBits ){
       // using the full byte
@@ -735,11 +740,13 @@ int hid_parse_single_byte( unsigned char current_byte, struct hid_parsing_byte *
   } else { 
       // use a partial byte:
       bitMask = BITMASK1( currentBitsize );
-      nextVal = bitMask && current_byte;
+      nextVal = bitMask & current_byte;
       nextVal = nextVal << pbyte->bitIndex;
       pbyte->remainingBits -= currentBitsize;
       // shift the remaining value
-      pbyte->shiftedByte = ( current_byte && INVERTBITMASK1( bitMask ) ) >> currentBitsize;
+      invBitMask = INVERTBITMASK1( bitMask );
+      maskedByte = current_byte & invBitMask;
+      pbyte->shiftedByte = maskedByte >> currentBitsize;
       pbyte->bitIndex = pbyte->currentSize; // is this always true?
   };
   pbyte->nextVal += nextVal;
