@@ -53,7 +53,7 @@ HIDFunc : AbstractResponderFunc {
 		// not sure what this should look like, but a trace func would be nice
         traceFunc = { |value, rawValue, usage, page, elid, devid, dev|
             // devid, dev, elid, page, usage, rawValue, value|
-            "HID Element Data:\n\tdevid: %, elid: %\n\t%\tdevice: \t page: % \tusage: %\n\telement: \t page: %\tusage: %\traw value: %,\tvalue: %\n"
+            "HID Element Data:\n\tdevid: %, elid: %\n\t%\n\tdevice: \t page: % \tusage: %\n\telement: \t page: %\tusage: %\traw value: %,\tvalue: %\n"
             .postf( devid, elid, dev.info, dev.usagePage, dev.usage, page, usage, rawValue, value );
 		}
 	}
