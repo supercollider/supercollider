@@ -245,6 +245,23 @@ void hid_set_from_making_element( struct hid_device_element * making, struct hid
 	new_element->report_id = making->report_id;
 }
 
+int hid_element_get_signed_value( int inputvalue, int bytesize ){
+  int outputvalue;
+  int bitSignIndex = bytesize*8 - 1;
+  int signBit = 0x1 << bitSignIndex; 
+  if ( signBit & inputvalue ){
+    unsigned int bitMask = BITMASK1( bytesize*8 );
+    unsigned int uvalue = (unsigned int) inputvalue;
+    unsigned int negvalue = ~(uvalue);
+    negvalue = ~(uvalue) & bitMask;
+    negvalue = negvalue + 1;
+    outputvalue = -1 * negvalue;
+  } else {
+    outputvalue = inputvalue;
+  }
+  return outputvalue;
+}
+
 // int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_descriptor * descriptor ){
 int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc * device_desc ){
   struct hid_device_collection * device_collection = hid_new_collection();
@@ -367,21 +384,22 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
 		    break;
 		  case HID_LOGICAL_MIN:
-		    if ( byte_count == 1 ){
-		      making_element->logical_min = sbyte;
-		    } else {
-		      making_element->logical_min = next_val;
-		    }
+		    making_element->logical_min = hid_element_get_signed_value( next_val, byte_count );
+// 		    if ( byte_count == 1 ){
+// 		      making_element->logical_min = sbyte;
+// 		    } else {
+// 		      making_element->logical_min = next_val;
+// 		    }
 #ifdef DEBUG_PARSER
 		    printf("\n\tlogical min: %i", making_element->logical_min);
 #endif
 		    break;
 		  case HID_LOGICAL_MAX:
-// 		    if ( making_element->logical_min >= 0 ){
-// 		      making_element->logical_max = u_next_val;
-// 		    } else {
-		      making_element->logical_max = next_val;
-// 		    }
+ 		    if ( making_element->logical_min >= 0 ){
+ 		      making_element->logical_max = next_val;
+ 		    } else {
+		      making_element->logical_max = hid_element_get_signed_value( next_val, byte_count );
+		    }
 #ifdef DEBUG_PARSER
 		    printf("\n\tlogical max: %i", making_element->logical_max);
 #endif
