@@ -142,10 +142,10 @@ HID {
 
   /// private
 
-    *doPrAction{ | value, rawValue, usage, page, elid, devid |
+    *doPrAction{ | value, physValue, rawValue, usage, page, elid, devid |
         var thisdevice = openDevices.at( devid );
         // prAction.value( devid, thisdevice, elid, page, usage, value, mappedvalue );
-        prAction.value( value, rawValue, usage, page, elid, devid, thisdevice );
+        prAction.value( value, physValue, rawValue, usage, page, elid, devid, thisdevice );
     }
 
 /// primitives called:
@@ -218,11 +218,11 @@ HID {
         openDevices.removeAt( devid );
 	}
 
-    *prHIDElementData { | devid, elid, page, usage, rawValue, value |
-        HID.doPrAction( value, rawValue, usage, page, elid, devid );
-        openDevices.at( devid ).valueAction( value, rawValue, usage, page, elid );
+    *prHIDElementData { | devid, elid, page, usage, rawValue, value, physValue |
+        HID.doPrAction( value, physValue, rawValue, usage, page, elid, devid );
+        openDevices.at( devid ).valueAction( value, physValue, rawValue, usage, page, elid );
 		if ( debug ){
-            "HID Element Data:\n\tdevid: %, elid: %\n\t%\n\telement: \t page: %\tusage: %\traw value: %,\tvalue: %\n".postf( devid, elid, page, usage, rawValue, value );
+            "HID Element Data:\n\tdevid: %, elid: %\n\t%\n\telement: \t page: %\tusage: %\traw value: %,\tphysical value: %,\tvalue: %\n".postf( devid, elid, page, usage, rawValue, physValue, value );
             // [ devid, "element data", devid, element, page, usage, value, mappedvalue ].postln;
 		}
 	}
@@ -277,8 +277,8 @@ HID {
 		if ( debug ){
             ([ "element", id ] ++ args).postln;
 		};
-        if ( elements.at( args[4] ).notNil ){
-                elements.at( args[4] ).setValueFromInput( args[0], args[1] );
+        if ( elements.at( args[5] ).notNil ){
+            elements.at( args[5] ).setValueFromInput( args[0], args[1], args[2] );
         };
 		action.value( *args );
 	}
@@ -496,6 +496,7 @@ HIDElement{
 //-------> do not change the order of these variables -------
 
     var <logicalValue;
+    var <physicalValue;
 
 	var <value, <>action;
 
@@ -529,8 +530,9 @@ HIDElement{
     }
 
     // called from input report
-    setValueFromInput{ |logic,raw|
+    setValueFromInput{ |logic,phys,raw|
         rawValue = raw;
+        physicalValue = phys;
         logicalValue = logic;
         // for now:
         value = logic;
