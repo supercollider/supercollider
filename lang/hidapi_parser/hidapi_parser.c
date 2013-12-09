@@ -658,7 +658,7 @@ float hid_element_set_value_from_input( struct hid_device_element * element, int
 }
 
 float hid_element_map_logical( struct hid_device_element * element ){  
-  float result = (float) element->logical_min + ( (float) element->value/( (float) element->logical_max - (float) element->logical_min ) );
+  float result = ( (float) element->value - (float) element->logical_min)/( (float) element->logical_max - (float) element->logical_min );
   return result;
 }
 
@@ -675,10 +675,12 @@ float hid_element_map_physical( struct hid_device_element * element ){
   return result;
 }
 
+/** is this used anywhere? */
 void hid_element_set_rawvalue( struct hid_device_element * element, int value ){
   element->value = value;
 }
 
+/** is this used anywhere? */
 void hid_element_set_logicalvalue( struct hid_device_element * element, float value ){
   int mapvalue;
   mapvalue = (int) ( value * ( (float) element->logical_max - (float) element->logical_min ) ) - element->logical_min;
