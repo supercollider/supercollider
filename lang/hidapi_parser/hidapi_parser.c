@@ -405,17 +405,18 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
 		    break;
 		  case HID_PHYSICAL_MIN:
-		    making_element->phys_min = next_val;
+		    making_element->phys_min = hid_element_get_signed_value( next_val, byte_count );
+// 		    making_element->phys_min = next_val;
 #ifdef DEBUG_PARSER
 		    printf("\n\tphysical min: %i", making_element->phys_min);
 #endif
 		    break;
 		  case HID_PHYSICAL_MAX:
-// 		    if ( making_element->phys_min >= 0 ){
-// 		      making_element->phys_max = u_next_val;
-// 		    } else {
-		      making_element->phys_max = next_val;
-// 		    }
+ 		    if ( making_element->phys_min >= 0 ){
+ 		      making_element->phys_max = next_val;
+ 		    } else {
+		      making_element->phys_max = hid_element_get_signed_value( next_val, byte_count );
+		    }
 #ifdef DEBUG_PARSER
 		    printf("\n\tphysical max: %i", making_element->phys_min);
 #endif
@@ -467,7 +468,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
 		    break;
 		  case HID_UNIT_EXPONENT:
-		    making_element->unit_exponent = next_val;
+		    making_element->unit_exponent = hid_element_get_signed_value( next_val, byte_count );
 #ifdef DEBUG_PARSER
 		    printf("\n\tunit exponent: %i", next_val );
 #endif
@@ -680,16 +681,17 @@ float hid_element_map_logical( struct hid_device_element * element ){
   return result;
 }
 
-/** TODO: implement */
+/** TODO: this needs a linking with the math library */
 float hid_element_resolution( struct hid_device_element * element ){
     float result = 0;
-//     ( element->logical_max - element->logical_min) / ( ( element->phys_max - element->phys_min) * pow(10, element->unit_exponent) );
+//     result = ( element->logical_max - element->logical_min) / ( ( element->phys_max - element->phys_min) * pow(10, element->unit_exponent) );
     return result;
 }
 
-/** TODO: implement */
 float hid_element_map_physical( struct hid_device_element * element ){
-  float result = 0;
+  float result;
+  float logicalvalue = hid_element_map_logical(element);
+  result = logicalvalue * ( element->phys_max - element->phys_min ) + element->phys_min;
   return result;
 }
 
