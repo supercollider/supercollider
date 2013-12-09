@@ -184,6 +184,7 @@ float hid_element_resolution( struct hid_device_element * element );
 float hid_element_map_logical( struct hid_device_element * element );
 float hid_element_map_physical( struct hid_device_element * element );
 
+void hid_element_set_value_from_input( struct hid_device_element * element, int value );
 void hid_element_set_rawvalue( struct hid_device_element * element, int value );
 void hid_element_set_logicalvalue( struct hid_device_element * element, float value );
 

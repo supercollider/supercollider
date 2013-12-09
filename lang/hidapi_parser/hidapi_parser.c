@@ -634,7 +634,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
   return 0;
 }
 
-float hid_element_set_value_from_input( struct hid_device_element * element, int value ){
+void hid_element_set_value_from_input( struct hid_device_element * element, int value ){
   if ( element->logical_min < 0 ){
     // value should be interpreted as signed value
     // so: check report size, test the highest bit, if one, invert and add one, otherwise keep value
