@@ -551,7 +551,7 @@ HIDElement{
     printOn { | stream |
 		super.printOn(stream);
         stream << $( << index << ": " ;
-        stream << "type: " << type << "usage: " << usagePage << usage;
+        stream << "type: " << type << ", usage: " << usagePage << usage;
 
         // stream << $( << "hid element: " << index << ": collection " << collection << " : " ;
         // stream << "type and usage: ";
