@@ -446,7 +446,8 @@ void SC_HID_APIManager::handleElement( int joy_idx, struct hid_device_element * 
     ++g->sp; SetInt(g->sp, ele->usage );
     ++g->sp; SetInt(g->sp, ele->value );
     ++g->sp; SetFloat(g->sp, hid_element_map_logical( ele ) );
-    runInterpreter(g, s_hidElementData, 7 );
+    ++g->sp; SetFloat(g->sp, hid_element_map_physical( ele ) );    
+    runInterpreter(g, s_hidElementData, 8 );
     g->canCallOS = false;    
   }
   gLangMutex.unlock();
