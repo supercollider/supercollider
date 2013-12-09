@@ -634,7 +634,30 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
   return 0;
 }
 
-float hid_element_map_logical( struct hid_device_element * element ){
+float hid_element_set_value_from_input( struct hid_device_element * element, int value ){
+  if ( element->logical_min < 0 ){
+    // value should be interpreted as signed value
+    // so: check report size, test the highest bit, if one, invert and add one, otherwise keep value
+    int bitSignIndex = element->report_size - 1;
+    int signBit = 0x1 << bitSignIndex; 
+    if ( signBit & value ){
+      unsigned int bitMask = BITMASK1( element->report_size );
+      unsigned int uvalue = (unsigned int) value;
+      unsigned int negvalue = ~(uvalue);
+      negvalue = ~(uvalue) & bitMask;
+      negvalue = negvalue + 1;
+      element->value = -1 * negvalue;
+    } else {
+	element->value = value;
+    }    
+  } else {
+    // value should be interpreted as unsigned value
+    // so: keep value as is
+    element->value = value;
+  }  
+}
+
+float hid_element_map_logical( struct hid_device_element * element ){  
   float result = (float) element->logical_min + ( (float) element->value/( (float) element->logical_max - (float) element->logical_min ) );
   return result;
 }
@@ -789,7 +812,8 @@ int hid_parse_input_report_new( unsigned char* buf, int size, struct hid_dev_des
       if ( newvalue != -1 ){
 	if ( devdesc->_element_callback != NULL ){
 	  if ( newvalue != cur_element->value || cur_element->repeat ){
-	    cur_element->value = newvalue;
+// 	    cur_element->value = newvalue;
+	    hid_element_set_value_from_input( cur_element, newvalue );
 	    devdesc->_element_callback( cur_element, devdesc->_element_data );
 	  }
 	}
