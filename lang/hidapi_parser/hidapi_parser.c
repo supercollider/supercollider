@@ -1033,8 +1033,17 @@ struct hid_dev_desc * hid_open_device_path( const char *path, unsigned short ven
     return NULL;
   }
   struct hid_device_info * newinfo = hid_enumerate(vendor,product);
-  //newdesc->device = handle;
-  //TODO: if serial_number is given, the info descriptor should also point to that one!
+  //newdesc->device = handle;  
+  int havenotfound = strcmp(path, newinfo->path) == 0;
+  while (havenotfound && (newinfo != NULL) ){
+    newinfo = newinfo->next;
+    havenotfound = strcmp(path, newinfo->path) == 0;
+  }
+  if ( newinfo == NULL ){
+    hid_close( handle );
+    return NULL;    
+  }
+
   newdesc->info = newinfo;
 
   // Set the hid_read() function to be non-blocking.
@@ -1057,6 +1066,16 @@ struct hid_dev_desc * hid_open_device(  unsigned short vendor, unsigned short pr
   struct hid_device_info * newinfo = hid_enumerate(vendor,product);
   //newdesc->device = handle;
   //TODO: if serial_number is given, the info descriptor should also point to that one!
+//   int havenotfound = wcscmp(serial_number, newinfo->serial_number) == 0;
+//   while (havenotfound && (newinfo != NULL) ){
+//     newinfo = newinfo->next;
+//     havenotfound = wcscmp(serial_number, newinfo->serial_number) == 0;    
+//   }
+  if ( newinfo == NULL ){
+    hid_close( handle );
+    return NULL;    
+  }
+
   newdesc->info = newinfo;
 
   // Set the hid_read() function to be non-blocking.
