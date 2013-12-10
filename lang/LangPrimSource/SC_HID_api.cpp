@@ -447,7 +447,8 @@ void SC_HID_APIManager::handleElement( int joy_idx, struct hid_device_element * 
     ++g->sp; SetInt(g->sp, ele->value );
     ++g->sp; SetFloat(g->sp, hid_element_map_logical( ele ) );
     ++g->sp; SetFloat(g->sp, hid_element_map_physical( ele ) );    
-    runInterpreter(g, s_hidElementData, 8 );
+    ++g->sp; SetInt(g->sp, ele->array_value );
+    runInterpreter(g, s_hidElementData, 9 );
     g->canCallOS = false;    
   }
   gLangMutex.unlock();
@@ -485,7 +486,7 @@ void SC_HID_APIManager::threadLoop(){
       if ( it->second != NULL ){
 	res = hid_read( it->second->device, buf, sizeof(buf));
 	if ( res > 0 ) {
-	  hid_parse_input_report_new( buf, res, it->second );
+	  hid_parse_input_report( buf, res, it->second );
 	}
       }
     }
@@ -858,13 +859,16 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
   }
   
   if ( thiselement != NULL ){
-    PyrObject* elInfo = newPyrArray(g->gc, 16 * sizeof(PyrObject), 0 , true);
+    PyrObject* elInfo = newPyrArray(g->gc, 18 * sizeof(PyrObject), 0 , true);
     
     SetInt(elInfo->slots+elInfo->size++, thiselement->index );
     SetInt(elInfo->slots+elInfo->size++, thiselement->io_type );
     SetInt(elInfo->slots+elInfo->size++, thiselement->type );
     SetInt(elInfo->slots+elInfo->size++, thiselement->usage_page );
     SetInt(elInfo->slots+elInfo->size++, thiselement->usage );
+
+    SetInt(elInfo->slots+elInfo->size++, thiselement->usage_min );
+    SetInt(elInfo->slots+elInfo->size++, thiselement->usage_max );
     
     SetInt(elInfo->slots+elInfo->size++, thiselement->logical_min );
     SetInt(elInfo->slots+elInfo->size++, thiselement->logical_max );
