@@ -70,7 +70,9 @@ static void osc_element_cb( struct hid_device_element *el, void *data)
   lo_message_add_int32( m1, el->usage_page );
   lo_message_add_int32( m1, el->usage );
   lo_message_add_int32( m1, el->value );
-  lo_message_add_float( m1, hid_element_map_logical( el ) ); // TODO: this one is not found???
+  lo_message_add_float( m1, hid_element_map_logical( el ) );
+  lo_message_add_float( m1, hid_element_map_physical( el ) );
+  lo_message_add_int32( m1, el->array_value );
   lo_send_message_from( t, s, "/hid/element/data", m1 );
   lo_message_free(m1);
 }
@@ -281,6 +283,8 @@ lo_message get_hid_element_info_msg( hid_device_element * el, int devid )
   lo_message_add_int32( m1, el->report_size );
   lo_message_add_int32( m1, el->report_id );
   lo_message_add_int32( m1, el->report_index );
+  lo_message_add_int32( m1, el->usage_min );
+  lo_message_add_int32( m1, el->usage_max );
   return m1;
 }
 
