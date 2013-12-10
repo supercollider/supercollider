@@ -619,7 +619,7 @@ int main(int argc, char** argv)
 	for(it=hiddevices.begin(); it!=hiddevices.end(); ++it){
 	  res = hid_read( it->second->device, buf, sizeof(buf));
 	  if ( res > 0 ) {
-	    hid_parse_input_report_new( buf, res, it->second );
+	    hid_parse_input_report( buf, res, it->second );
 	  }
 	}
 	#ifdef WIN32

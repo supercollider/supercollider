@@ -66,10 +66,12 @@ void list_devices( void ){
 void print_element_info( struct hid_device_element *element ){
   
   printf( "index: %i, usage_page: %i, usage: %i, iotype: %i, type: %i, \n \
+	  \tusage_min: %i, usage_max: %i, \n \
 	  \tlogical_min: %i, logical_max: %i, \n \
 	  \tphys_min: %i, phys_max: %i, unit_exponent: %i, unit: %i, \n \
 	  \treport_size: %i, report_id: %i, report_index: %i \n",
 	  element->index, element->usage_page, element->usage, element->io_type, element->type,
+	  element->usage_min, element->usage_max,
 	  element->logical_min, element->logical_max,
 	  element->phys_min, element->phys_max, 
 	  element->unit_exponent, element->unit,
@@ -256,7 +258,7 @@ int main(int argc, char* argv[]){
 	while (1) {
 		res = hid_read(devdesc->device, buf, sizeof(buf));
 		if ( res > 0 ) {
-		  hid_parse_input_report_new( buf, res, devdesc );
+		  hid_parse_input_report( buf, res, devdesc );
 		}
 		#ifdef WIN32
 		Sleep(500);
