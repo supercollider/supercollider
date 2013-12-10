@@ -728,7 +728,12 @@ void hid_element_set_value_from_input( struct hid_device_element * element, int 
 }
 
 float hid_element_map_logical( struct hid_device_element * element ){  
-  float result = ( (float) element->value - (float) element->logical_min)/( (float) element->logical_max - (float) element->logical_min );
+  float result;
+  if ( element->isarray ){
+    result = (float) element->value;
+  } else {
+    result = ( (float) element->value - (float) element->logical_min)/( (float) element->logical_max - (float) element->logical_min );
+  }
   return result;
 }
 
