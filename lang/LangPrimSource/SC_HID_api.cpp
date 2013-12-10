@@ -209,15 +209,11 @@ int SC_HID_APIManager::open_device_path( const char * path, int vendor, int prod
   newdevdesc = hid_open_device_path( path, vendor, product );
   if (!newdevdesc){
     fprintf(stderr, "HIDAPI : Unable to open device %s: %d, %d\n", path, vendor, product );
-    return 0;
+    return -1;
   } else {   
     hiddevices.insert( std::pair<int,hid_dev_desc*>(number_of_hids, newdevdesc) );
-//     hiddevices[ number_of_hids ] = newdevdesc;
     newdevdesc->index = number_of_hids;
     
-    // TODO something useful for the callback functions - test if this works
-//     hid_set_descriptor_callback( newdevdesc->descriptor, (hid_descriptor_callback) SC_HID_APIManager::hid_descriptor_cb, &newdevdesc->index );
-//     hid_set_element_callback( newdevdesc->descriptor, (hid_element_callback) SC_HID_APIManager::hid_element_cb, &newdevdesc->index );
     hid_set_descriptor_callback( newdevdesc, (hid_descriptor_callback) hid_descriptor_cb, &newdevdesc->index );
     hid_set_element_callback( newdevdesc, (hid_element_callback) hid_element_cb, &newdevdesc->index );
 
@@ -237,7 +233,7 @@ int SC_HID_APIManager::open_device( int vendor, int product, char* serial_number
   }
   if (!newdevdesc){
     fprintf(stderr, "HIDAPI : Unable to open device %d, %d\n", vendor, product, serial_number );
-    return 0;
+    return -1;
   } else {   
     hiddevices.insert( std::pair<int,hid_dev_desc*>(number_of_hids, newdevdesc) );
 //     hiddevices[ number_of_hids ] = newdevdesc;
