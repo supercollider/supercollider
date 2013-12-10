@@ -100,9 +100,13 @@ HID {
             "HID: path was not set specified yet, chosen the one with path: %\n".postf( path );
         };
         newdevid = HID.prOpenDevice( vendorID, productID, path );
+        if ( newdevid == -1 ){
+            "HID: Could not open device".error;
+            ^nil;
+        };
         newdev = HID.basicNew( newdevid );
         newdev.getInfo;
-        ("Opened HID device: %\n".postf( newdev.info ) );
+        ("HID: Opened device: %\n".postf( newdev.info ) );
         newdev.getElements;
         newdev.getCollections;
         openDevices.put( newdevid, newdev );
@@ -111,7 +115,7 @@ HID {
 
     *openPath{ |path|
         var thisone = HID.findBy( path: path ).asArray.first;
-        thisone.postln;
+        "HID: Opening device %\n".postf( thisone );
         ^thisone.open;
     }
 
@@ -159,7 +163,7 @@ HID {
 		^this.primitiveFailed
 	}
 
-	*prOpenDevice{ |vendorID, productID, serialNumber|  // FIXME: add path
+	*prOpenDevice{ |vendorID, productID, path|
 		_HID_API_OpenDevice
 		^this.primitiveFailed
 	}
@@ -548,8 +552,9 @@ HIDElement{
     // }
 
     postElement{
-            "HID Element: %, type: %, %, usage page: %, usage index: %\n\tDescription: %, %, %, \n\t% \n\tLogical range: [ %, % ]\n\tPhysical range: [ %, % ], Unit: %, Exponent: % \n\tReport ID: %, size %, index %\n"
+            "HID Element: %, type: %, %, usage page: %, usage index: %\n\tDescription: %, %, %, \n\t% \n\tUsage range: [ %, % ]\n\tLogical range: [ %, % ]\n\tPhysical range: [ %, % ], Unit: %, Exponent: % \n\tReport ID: %, size %, index %\n"
         .postf( index, ioType, type, usagePage, usage, this.pageName, this.usageName, this.iotypeName, this.typeSpec,
+            usageMin, usageMax,
             logicalMin, logicalMax, physicalMin, physicalMax, unit, unitExponent, reportID, reportSize, reportIndex);
     }
 
