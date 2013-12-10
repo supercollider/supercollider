@@ -86,7 +86,13 @@ struct hid_device_element {
 // 	int vartype; // abs/relative
 	int usage_page; // usage page
 	int usage;   // some kind of index (as from descriptor)
-
+	int usage_min;
+	int usage_max;
+	
+	int isvariable;
+	int isarray;
+	int isrelative;
+	
 	int logical_min;
 	int logical_max;
 	
@@ -101,7 +107,8 @@ struct hid_device_element {
 	int report_index; // index into the report
 
 	int value;
-	
+	int array_value;
+
 	int repeat;
 
 	/** Pointer to the next element */
@@ -117,6 +124,8 @@ struct hid_device_collection {
 	int type;
 	int usage_page; // usage page
 	int usage_index;   // some kind of index (as from descriptor)
+	int usage_min;
+	int usage_max;
 
 	int num_elements;
 	int num_collections;
@@ -177,8 +186,8 @@ struct hid_device_element * hid_get_next_output_element( struct hid_device_eleme
 struct hid_device_element * hid_get_next_output_element_with_reportid( struct hid_device_element * curel, int reportid );
 struct hid_device_element * hid_get_next_feature_element( struct hid_device_element * curel );
 
+// int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * devdesc );
 int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * devdesc );
-int hid_parse_input_report_new( unsigned char* buf, int size, struct hid_dev_desc * devdesc );
 
 float hid_element_resolution( struct hid_device_element * element );
 float hid_element_map_logical( struct hid_device_element * element );

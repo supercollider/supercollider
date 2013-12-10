@@ -227,9 +227,15 @@ void hid_set_element_callback( struct hid_dev_desc * devd, hid_element_callback 
 void hid_set_from_making_element( struct hid_device_element * making, struct hid_device_element * new_element ){
 	
 	new_element->type = making->type;
+	new_element->isrelative = (making->type & BITMASK1( 2 ) ) > 0;
+	new_element->isarray = (making->type & BITMASK1( 1 ) ) == 0;
+	new_element->isvariable = (making->type & BITMASK1( 0 ) ) == 0;
+
 	new_element->usage_page = making->usage_page;
 	new_element->logical_min = making->logical_min;
 	new_element->logical_max = making->logical_max;
+	new_element->usage_min = making->usage_min;
+	new_element->usage_max = making->usage_max;
 	if ( (making->phys_min == 0) && (making->phys_max == 0) ){
 	  new_element->phys_min = making->logical_min;
 	  new_element->phys_max = making->logical_max;
@@ -358,6 +364,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 		    new_collection->type = next_val;
 		    new_collection->usage_page = making_element->usage_page;
 		    new_collection->usage_index = making_element->usage;
+		    new_collection->usage_min = making_element->usage_min;
+		    new_collection->usage_max = making_element->usage_max;
 		    new_collection->index = device_collection->num_collections;
 		    device_collection->num_collections++;
 		    if ( device_collection != parent_collection ){
@@ -373,12 +381,14 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 		  }
 		  case HID_USAGE_MIN:
 		    current_usage_min = next_val;
+		    making_element->usage_min = next_val;
 #ifdef DEBUG_PARSER
 		    printf("\n\tusage min: %i", current_usage_min);
 #endif
 		    break;
 		  case HID_USAGE_MAX:
 		    current_usage_max = next_val;
+		    making_element->usage_max = next_val;
 #ifdef DEBUG_PARSER
 		    printf("\n\tusage max: %i", current_usage_max);
 #endif
@@ -510,7 +520,14 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			}
 			prev_element = new_element;
 		    }
+		    for ( j=0; j < current_usage_index; j++ ){
+			current_usages[j] = 0;
+		    }
 		    current_usage_index = 0;
+		    current_usage_min = -1;
+		    current_usage_max = -1;
+		    making_element->usage_min = -1;
+		    making_element->usage_max = -1;
 		    making_element->usage = 0;
 		    break;
 		  case HID_OUTPUT:
@@ -552,7 +569,14 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			}
 			prev_element = new_element;
 		    }
+		    for ( j=0; j < current_usage_index; j++ ){
+			current_usages[j] = 0;
+		    }
 		    current_usage_index = 0;
+		    current_usage_min = -1;
+		    current_usage_max = -1;
+		    making_element->usage_min = -1;
+		    making_element->usage_max = -1;
 		    making_element->usage = 0;
 		    break;
 		  case HID_FEATURE:
@@ -576,6 +600,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			new_element->report_index = j;
 			
 			new_element->value = 0;
+			new_element->array_value = 0;
 			if ( parent_collection->num_elements == 0 ){
 			    parent_collection->first_element = new_element;
 			}
@@ -591,7 +616,14 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			}
 			prev_element = new_element;
 		    }
+		    for ( j=0; j < current_usage_index; j++ ){
+			current_usages[j] = 0;
+		    }
 		    current_usage_index = 0;
+		    current_usage_min = -1;
+		    current_usage_max = -1;		    
+		    making_element->usage_min = -1;
+		    making_element->usage_max = -1;
 		    making_element->usage = 0;
 		    break;
 #ifdef DEBUG_PARSER
@@ -614,6 +646,14 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 	      making_element->usage_page = parent_collection->usage_page;
 	      making_element->usage = parent_collection->usage_index;
 	      parent_collection = parent_collection->parent_collection;
+	      for ( j=0; j < current_usage_index; j++ ){
+		current_usages[j] = 0;
+	      }
+	      making_element->usage_min = -1;
+	      making_element->usage_max = -1;
+	      current_usage_index = 0;
+	      current_usage_min = -1;
+	      current_usage_max = -1;      
 	      collection_nesting--;
 #ifdef DEBUG_PARSER
 	      printf("\n\tend collection: %i, %i\n", collection_nesting, descr_buf[i] );
@@ -672,7 +712,18 @@ void hid_element_set_value_from_input( struct hid_device_element * element, int 
   } else {
     // value should be interpreted as unsigned value
     // so: keep value as is
-    element->value = value;
+    if ( element->isarray ){ // array elements should be parsed differently
+      if ( value == 0 ){ // previous key was pressed, so keep previous usage
+	element->value = 0;
+	element->array_value = 0;
+      } else { // new key, so value + usage min is the current usage
+	element->usage = element->usage_min + value;
+	element->value = 1;
+	element->array_value = value;
+      }
+    } else {
+      element->value = value;
+    }
   }  
 }
 
@@ -804,8 +855,7 @@ int hid_parse_single_byte( unsigned char current_byte, struct hid_parsing_byte *
   return -1;
 }
 
-// int hid_parse_input_report( unsigned char* buf, int size, struct hid_device_descriptor * descriptor ){
-int hid_parse_input_report_new( unsigned char* buf, int size, struct hid_dev_desc * devdesc ){  
+int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * devdesc ){  
   struct hid_parsing_byte pbyte; 
   pbyte.nextVal = 0;
   pbyte.currentSize = 10;
@@ -834,7 +884,6 @@ int hid_parse_input_report_new( unsigned char* buf, int size, struct hid_dev_des
       if ( newvalue != -1 ){
 	if ( devdesc->_element_callback != NULL ){
 	  if ( newvalue != cur_element->value || cur_element->repeat ){
-// 	    cur_element->value = newvalue;
 	    hid_element_set_value_from_input( cur_element, newvalue );
 	    devdesc->_element_callback( cur_element, devdesc->_element_data );
 	  }
@@ -842,174 +891,6 @@ int hid_parse_input_report_new( unsigned char* buf, int size, struct hid_dev_des
 	cur_element = hid_get_next_input_element( cur_element );      
       }
     }
-  }
-  return 0;
-}
-
-
-///TODO: deprecate and remove this version:
-
-// int hid_parse_input_report( unsigned char* buf, int size, struct hid_device_descriptor * descriptor ){
-int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * devdesc ){  
-  ///TODO: parse input from descriptors with report size like 12 correctly
-  struct hid_device_collection * device_collection = devdesc->device_collection;
-  // Print out the returned buffer.
-//   struct hid_device_collection * cur_collection = device_collection->first_collection;
-  struct hid_device_element * cur_element = device_collection->first_element;
-  int i;
-  int next_byte_size;
-  int next_mod_bit_size;
-  int byte_count = 0;
-  int bit_count = 0;
-  int next_val = 0;
-
-//   cur_element = hid_get_next_input_element( cur_element );
-//   if ( cur_element == NULL ){ return 0; }
-  if ( cur_element->io_type != 1 ){
-      cur_element = hid_get_next_input_element(cur_element);
-  }
-  next_byte_size = cur_element->report_size/8;
-  next_mod_bit_size = cur_element->report_size%8;
-
-#ifdef DEBUG_PARSER
-    printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
-#endif    
-  
-#ifdef DEBUG_PARSER
-  printf("-----------------------\n");
-#endif
-  for ( i = 0; i < size; i++){
-    unsigned char curbyte = buf[i];
-#ifdef DEBUG_PARSER    
-    printf("byte %02hhx \t", buf[i]);
-#endif
-    // read byte:
-    if ( cur_element->report_size < 8 ){
-      int bitindex = 0;
-      while ( bitindex < 8 ){
-	// read bit
-	int newvalue = (curbyte >> bitindex) & BITMASK1( cur_element->report_size );
-#ifdef DEBUG_PARSER
-	printf("element page %i, usage %i, type %i, index %i, old value %i, new value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index, cur_element->value, newvalue );
-#endif
-	bitindex += cur_element->report_size;
-	if ( devdesc->_element_callback != NULL ){
-	  if ( newvalue != cur_element->value ){
-	    cur_element->value = newvalue;
-	    devdesc->_element_callback( cur_element, devdesc->_element_data );
-	  }
-	}
-	cur_element = hid_get_next_input_element( cur_element );
-// 	if ( cur_element == NULL ){ return 0; }
-	next_byte_size = cur_element->report_size/8;
-	next_mod_bit_size = cur_element->report_size%8;
-
-#ifdef DEBUG_PARSER
-    printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
-#endif    
-      }
-    } else if ( cur_element->report_size == 8 ){
-	int newvalue = curbyte;
-#ifdef DEBUG_PARSER
-	printf("element page %i, usage %i, type %i,  index %i, value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index,cur_element->value );
-#endif
-	if ( devdesc->_element_callback != NULL ){
-	  if ( newvalue != cur_element->value ){
-	    cur_element->value = newvalue;
-	    devdesc->_element_callback( cur_element, devdesc->_element_data );
-	  }
-	}
-	cur_element = hid_get_next_input_element( cur_element );
-// 	if ( cur_element == NULL ){ return 0; }
-	next_byte_size = cur_element->report_size/8;
-	next_mod_bit_size = cur_element->report_size%8;
-	
-#ifdef DEBUG_PARSER
-    printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
-#endif    
-    } 
-    /*else if ( (cur_element->report_size > 8) && (cur_element->report_size < 16) ){
-      int shift = bit_count;
-#ifdef DEBUG_PARSER
-      printf("\t nextval before shift: %i", next_val);
-#endif      
-      if ( cur_element->report_size - bit_count >= 8 ){
-	next_val |= (int)(((unsigned char)(curbyte)) << shift);
-	bit_count += 8; // just update the bit_count and move on to the next byte
-      } else {
-	// partial shift in, so we need to mask the value we shift in, and then move onto the next element
-	unsigned char bitmask = BITMASK1( cur_element->report_size - bit_count );
-	unsigned char shiftIn = ( (unsigned char) curbyte & bitmask );
-	next_val |= (int)( (shiftIn << shift );
-	// go to next element;
-
-	int newvalue = next_val;
-#ifdef DEBUG_PARSER
-	  printf("element page %i, usage %i, type %i,  index %i, value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index,cur_element->value );
-#endif
-	if ( devdesc->_element_callback != NULL ){
-	   if ( newvalue != cur_element->value ){
-	      cur_element->value = newvalue;
-	      devdesc->_element_callback( cur_element, devdesc->_element_data );
-	   }
-	}
-	cur_element = hid_get_next_input_element( cur_element );
-// 	if ( cur_element == NULL ){ break; }
-	// FIXME: this doesn't handle the case yet, where you have e.g. a 12 bit value followed by 4 bits of button data
-	bitmask = !bitmask;
-	next_val = (int) ( ( (unsigned char) curbyte & bitmask ) >>  (bit_count%8) );
-#ifdef DEBUG_PARSER
-	  printf("newVal %i, bit_count %i, curbyte %i, bitmask %i\n", newVal, bit_count, curbyte, bitmask );
-#endif
-	bit_count = bit_count%8;  
-	next_byte_size = cur_element->report_size/8;
-	next_mod_bit_size = cur_element->report_size%8;
-#ifdef DEBUG_PARSER
-    printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
-#endif    
-	 byte_count = 0;
-	 next_val = 0;	  
-      }      
-    }
-    */
-    else if ( cur_element->report_size == 16 ){
-      int shift = byte_count*8;
-      next_val |= (int)(((unsigned char)(curbyte)) << shift);
-#ifdef DEBUG_PARSER
-      printf("\t nextval shift: %i", next_val);
-#endif
-     byte_count++;
-      if ( byte_count == next_byte_size ){
-	  int newvalue = next_val;
-#ifdef DEBUG_PARSER
-	  printf("element page %i, usage %i, type %i,  index %i, value %i\n", cur_element->usage_page, cur_element->usage, cur_element->type, cur_element->index,cur_element->value );
-#endif
-	  if ( devdesc->_element_callback != NULL ){
-	    if ( newvalue != cur_element->value ){
-	      cur_element->value = newvalue;
-	      devdesc->_element_callback( cur_element, devdesc->_element_data );
-	    }
-	  }
-	  cur_element = hid_get_next_input_element( cur_element );
-// 	  if ( cur_element == NULL ){ break; }
-	  next_byte_size = cur_element->report_size/8;
-	  next_mod_bit_size = cur_element->report_size%8;
-	 
-#ifdef DEBUG_PARSER
-    printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
-#endif    
-	  bit_count = 0;
-	  byte_count = 0;
-	  next_val = 0;
-      }
-    }
-  }
-  
-#ifdef DEBUG_PARSER  
-  printf("\n");
-#endif
-  if ( devdesc->_descriptor_callback != NULL ){
-    devdesc->_descriptor_callback( devdesc, devdesc->_descriptor_data );
   }
   return 0;
 }
