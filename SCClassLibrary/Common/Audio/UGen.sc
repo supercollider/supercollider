@@ -457,8 +457,6 @@ UGen : AbstractFunction {
 		this.writeOutputSpecs(file);
 	}
 
-///////////////////////////////////////////////////////////////
-
 	initTopoSort {
 		inputs.do({ arg input;
 			if (input.isKindOf(UGen), {
@@ -512,8 +510,9 @@ UGen : AbstractFunction {
 	}
 }
 
-// ugen, which has no side effect and can therefore be considered for a dead code elimination
+// ugen which has no side effect and can therefore be considered for a dead code elimination
 // read access to buffers/busses are allowed
+
 PureUGen : UGen {
 	optimizeGraph {
 		super.performDeadCodeElimination

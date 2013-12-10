@@ -219,6 +219,8 @@ class SC_UdpInPort
 			return;
 		}
 
+		if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, bytes_transferred, recvBuffer.data());
+
 		OSC_Packet * packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 
 		packet->mReplyAddr.mProtocol = kUDP;
@@ -367,6 +369,8 @@ private:
 		}
 
 		assert(bytes_transferred == OSCMsgLength);
+
+		if (mWorld->mDumpOSC) dumpOSC(mWorld->mDumpOSC, bytes_transferred, data);
 
 		OSC_Packet * packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 

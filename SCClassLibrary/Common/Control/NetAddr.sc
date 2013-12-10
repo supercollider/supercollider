@@ -18,6 +18,14 @@ NetAddr {
 	*langPort {
 		_GetLangPort
 	}
+
+	*matchLangIP {|ipstring|
+		_MatchLangIP
+	}
+	*localEndPoint {
+		^this.new(this.langIP, this.langPort)
+	}
+
 	*localAddr {
 		^this.new("127.0.0.1", this.langPort)
 	}
@@ -141,12 +149,13 @@ NetAddr {
 
 	// Asymmetric: "that" may be nil or have nil port (wildcards)
 	matches { arg that;
-		^this==that or:{
-			that.isNil or: {
-				this.addr == that.addr and: { that.port.isNil }
-			}
-		}
+		^that.isNil
+		or: { this.isLocal and: { that.isLocal } and: { that.port.isNil or: { this.port == that.port } } }
+		or: { this == that }
+		or: { that.port.isNil and: { this.addr == that.addr } }
 	}
+
+	isLocal { ^this.class.matchLangIP(this.ip) }
 
 	ip {
 		^addr.asIPString

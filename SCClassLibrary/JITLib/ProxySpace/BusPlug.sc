@@ -191,7 +191,7 @@ BusPlug : AbstractFunction {
 			("server not running:" + this.homeServer).warn;
 			^this
 		};
-		this.playToBundle(bundle, out.asControlInput, numChannels, group, multi, vol, fadeTime, addAction);
+		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime, addAction);
 		// homeServer: multi client support: monitor only locally
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
 		this.changed(\play, [out, numChannels, group, multi, vol, fadeTime, addAction]);
@@ -203,7 +203,7 @@ BusPlug : AbstractFunction {
 			("server not running:" + this.homeServer).warn;
 			^this
 		};
-		this.playNToBundle(bundle, outs.asControlInput, amps, ins, vol, fadeTime, group, addAction);
+		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction);
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
 		this.changed(\playN, [outs, amps, ins, vol, fadeTime, group, addAction]);
 	}
@@ -224,7 +224,7 @@ BusPlug : AbstractFunction {
 		^monitor
 	}
 
-	stop { | fadeTime = 0.1, reset = false |
+	stop { | fadeTime, reset = false |
 		monitor.stop(fadeTime);
 		if(reset) { monitor = nil };
 		this.changed(\stop, [fadeTime, reset]);
@@ -242,23 +242,19 @@ BusPlug : AbstractFunction {
 		group, multi=false, vol, fadeTime, addAction |
 		this.newMonitorToBundle(bundle, numChannels);
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
-		monitor.usedPlayN = false;
 		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, group,
 			multi, vol, fadeTime, addAction);
 	}
 
 	playNToBundle { | bundle, outs, amps, ins, vol, fadeTime, group, addAction |
-		this.newMonitorToBundle(bundle); // todo: numChannels
-		monitor.usedPlayN = true;
+		this.newMonitorToBundle(bundle, ins !? { ins.asArray.maxItem + 1 });
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
 		monitor.playNBusToBundle(bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction);
-
 	}
 
 	newMonitorToBundle { | bundle, numChannels |
 		this.initBus(\audio, numChannels);
 		this.initMonitor;
-
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
 	}
 

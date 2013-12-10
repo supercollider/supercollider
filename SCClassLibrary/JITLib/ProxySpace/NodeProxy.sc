@@ -370,6 +370,7 @@ NodeProxy : BusPlug {
 
 	setNodeMap { | map, xfade = true |
 		var bundle, old, fadeTime;
+		if(map.isNil) { ^this.unmap };
 		map.set(\fadeTime, this.fadeTime); // keep old fadeTime
 		bundle = MixedBundle.new;
 		old = nodeMap;

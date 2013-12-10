@@ -79,39 +79,21 @@ XInFeedback {
 
 
 // listens on a number of busses and plays out to various other busses
-// it optimizes this connection by using existing system synth defs
 
 Monitor {
-	classvar <>warnPlayN = true;
 
-	var <ins, <outs, <amps = #[1.0], <vol = 1.0;
-	var <group, synthIDs, synthAmps, <>fadeTime = 0.02;
-	var <usedPlayN;
+	var <ins, <outs, <amps, <fadeTimes;
+	var <vol = 1.0;
+	var <group, synthIDs;
 
-	usedPlayN_ { |flag|
-		var old, new, states;
+	// mapping between multiple contiguous channels
 
-		// normal case: init or stay the same
-		if (warnPlayN.not or: { usedPlayN.isNil or: { usedPlayN == flag } }) {
-			usedPlayN = flag;
-			^nil
-		};
+	play { | fromIndex, fromNumChannels = 2, toIndex, toNumChannels,
+		target, multi = false, volume, fadeTime, addAction |
 
-		states = [\playN, \play];
-		#old, new = if (usedPlayN, states, { states.reverse });
-		warn("monitor switched from % to % - channels may be wrong! \n"
-			"\t Settings were: outs: % amps: % ins: % vol: %!".format(old, new, outs, amps, ins, vol)
-		);
-		usedPlayN = flag;
-	}
-
-	play { | fromIndex, fromNumChannels=2, toIndex, toNumChannels,
-		target, multi=false, volume, fadeTime=0.02, addAction |
-
-		var server, inGroup, numChannels, bundle, divider;
-
-		inGroup = target.asGroup;
-		server = inGroup.server;
+		var bundle = List.new;
+		var inGroup = target.asGroup;
+		var server = inGroup.server;
 
 		bundle = List.new;
 		this.playToBundle(
@@ -119,39 +101,39 @@ Monitor {
 			toNumChannels, inGroup, multi, volume, fadeTime, addAction
 		);
 		server.listSendBundle(server.latency, bundle);
-		this.usedPlayN_(false);
+	}
+
+	// mapping between multiple channels individually
+
+	playN { | out, amp, in, vol, fadeTime, target, addAction, multi = false |
+
+		var bundle = List.new;
+		var inGroup = target.asGroup;
+		var server = inGroup.server;
+
+		this.playNToBundle(bundle, out, amp, in, vol, fadeTime, inGroup, addAction, multi: multi);
+		server.listSendBundle(server.latency, bundle);
 	}
 
 	stop { | argFadeTime |
-		var oldGroup = group;
+		var oldGroup = group, groupFreeTime;
 		group = nil;
-		fadeTime = argFadeTime ? fadeTime;
 		synthIDs = [];
-		synthAmps = [];
 		if(oldGroup.isPlaying) {
-			oldGroup.release(fadeTime);
-			SystemClock.sched(fadeTime, { oldGroup.server.bind { oldGroup.free } })
+			groupFreeTime = if(argFadeTime.notNil) { argFadeTime } { fadeTimes.maxItem };
+			oldGroup.release(argFadeTime);
+			SystemClock.sched(groupFreeTime, { oldGroup.server.bind { oldGroup.free } })
 		};
+	}
+
+	clear { | argFadeTime |
+		this.stop(argFadeTime);
+		ins = outs = amps = fadeTimes = nil;
+		vol = 1.0;
 	}
 
 	isPlaying { ^group.isPlaying }
 	numChannels { ^outs.size }
-
-	// mapping between multiple channels
-
-	playN { | out, amp, in, vol, fadeTime, target, addAction |
-		var bundle = List.new;
-		var server, inGroup;
-		inGroup = target.asGroup;
-		server = inGroup.server;
-
-		this.playNToBundle(bundle, out, amp, in, vol, fadeTime, inGroup, addAction);
-		server.listSendBundle(server.latency, bundle);
-		this.usedPlayN_(true);
-	}
-
-	// setting volume and output offset.
-	// lists are only flat lists for now.
 
 	vol_ { | val |
 		if(val == vol) { ^this };
@@ -159,10 +141,13 @@ Monitor {
 		this.amps = amps;
 	}
 
-	// first channel interface
+	// backward compatibility
+	// assuming that "out" refers to the first channel, like the Out UGen's out argument.
 
 	out_ { | index |
-		var offset = index - outs[0];
+		var offset;
+		if(outs.isNil) { this.outs = index.asArray };
+		offset = index - outs[0];
 		this.outs = outs + offset
 	}
 
@@ -170,153 +155,118 @@ Monitor {
 		^outs !? { outs[0] }
 	}
 
+	fadeTime_ { | val |
+		this.fadeTimes = val.asArray
+	}
+
+	fadeTime { | val |
+		^fadeTimes !? { fadeTimes.unbubble }
+	}
+
 	// multi channel interface
 
 	outs_ { | indices |
-		if (outs.isNil) {
-			"Monitor - initialising  outs: %\n".postf(indices);
-			outs = indices;
-			^this
-		};
-		if (outs.collect(_.size) != indices.collect(_.size)) {
-			"new outs do not match old outs shape:".warn;
-			("old:" + outs).postln;
-			("new:" + indices).postln;
-			" use playN to change topology!".postln;
-			^this;
-		};
-
 		outs = indices;
 		if(this.isPlaying) {
 			group.server.listSendBundle(group.server.latency,
-				[15, synthIDs, "out", outs.flat].flop
+				[15, synthIDs, "out", outs.flat.keep(synthIDs.size)].flop
 			)
 		}
 	}
 
 	amps_ { | values |
-		if (amps.isNil) {
-			"Monitor - initialising  amps: %\n".postf(values);
-			amps = values;
-			^this
-		};
-		if (values.collect(_.size) != amps.collect(_.size)) {
-			"new amps do not match old amps shape:".warn;
-			("old:" + amps).postln;
-			("new:" + values).postln;
-			" use playN to change topology!".postln;
-			^this;
-		};
-
-		synthAmps = values.flat * vol;
 		amps = values;
 		if (this.isPlaying) {
 			group.server.listSendBundle(group.server.latency,
-				[15, synthIDs, "vol", synthAmps].flop
+				[15, synthIDs, "vol", values.flat.keep(synthIDs.size) * vol].flop
 			);
 		};
 	}
 
+	fadeTimes_ { | values |
+		fadeTimes = values;
+		if (this.isPlaying) {
+			group.server.listSendBundle(group.server.latency,
+				[15, synthIDs, "fadeTime", values.flat.keep(synthIDs.size)].flop
+			);
+		};
+	}
+
+
 	// bundling
 
-	playNToBundle { | bundle,
-		argOuts = (outs ?? {(0..ins.size-1)}),
-		argAmps = (amps),
-		argIns = (ins),
-		argVol = (vol),
-		argFadeTime = (fadeTime),
-		inGroup,
-		addAction,
-		defName = "system_link_audio_1" |
+	playNToBundle {
+		| bundle, argOuts, argAmps, argIns, argVol, argFadeTime, inGroup, addAction,
+		defName = "system_link_audio_1", multi = false |
 
-		var triplets, server;
+		var synthArgs, server;
 
-		outs = argOuts; ins = argIns; amps = argAmps; vol = argVol; fadeTime = argFadeTime;
+		ins = argIns;
+		outs = argOuts ? outs ?? { (0..ins.size-1) };
+		amps = argAmps ? amps ? #[1.0];
+		fadeTimes = argFadeTime ? fadeTimes ? #[0.02];
+		vol = argVol ? vol ? 1.0;
 
-
-		if (ins.size != outs.size)
-		{ Error("wrong size of outs and ins" ++ [outs, amps, ins]).throw };
-
-		triplets = [ins, outs, amps].flop;
+		synthArgs = [ins, outs, amps, fadeTimes].asControlInput.flop;
 
 		if(this.isPlaying) {
-			this.stopToBundle(bundle)
+			if(multi.not) {
+				if(argFadeTime.notNil) {
+					argFadeTime = argFadeTime.asControlInput.asArray;
+					synthIDs.do { |id, i|
+						bundle.add([15, id, "gate", argFadeTime.wrapAt(i).neg])
+					}
+				} {
+					bundle.add([15, group.nodeID, "gate", 0]);
+				}
+			}
 		} {
 			this.newGroupToBundle(bundle, inGroup, addAction)
 		};
-		synthIDs = [];
-		synthAmps = [];
 
+		synthIDs = [];
 		inGroup = inGroup.asGroup;
 		server = group.server;
 
-		triplets.do { | trip, i |
-			var in, out, amp;
-			#in, out, amp = trip;
+		synthArgs.do { | array, i |
+			var in, out, amp, fadeTime;
+			#in, out, amp, fadeTime = array;
 			out = out.asArray;
 			amp = amp.asArray;
+			fadeTime = fadeTime.asArray;
 			out.do { | item, j |
 				var id = server.nextNodeID;
 				synthIDs = synthIDs.add(id);
-				synthAmps = synthAmps.add(amp[j]);
 				bundle.add([9, defName,
 					id, 1, group.nodeID,
 					"out", item,
 					"in", in,
-					"vol", amp.clipAt(j) * vol
+					"vol", amp.clipAt(j) * vol,
+					"fadeTime", fadeTime.clipAt(j)
 				])
 			}
 		};
-		bundle.add([15, group.nodeID, "fadeTime", fadeTime])
 	}
-
-	// optimizes ranges of channels
 
 	playToBundle { | bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels,
 		inGroup, multi = false, volume, argFadeTime, addAction |
 
-		var server, numChannels, defname, chanRange, n;
+		var outArray, inArray, ampArray;
 
-		toIndex = toIndex ?? { if(outs.notNil, { outs[0] }, 0) };
-
-		vol = volume ? vol;
-		fadeTime = argFadeTime ? fadeTime ? 0.02; 	// remembers monitor fadeTime.
+		toIndex = toIndex ?? { this.out ? 0 };
 		toNumChannels = toNumChannels ? fromNumChannels;
-		inGroup = inGroup.asGroup;
-		server = inGroup.server;
+		fromNumChannels = min(fromNumChannels, toNumChannels);
 
-		if(this.isPlaying) {
-			if(multi.not) {
-				this.stopToBundle(bundle);
-				outs = [];
-			}
-		} {
-			this.newGroupToBundle(bundle, inGroup, addAction);
-			if (multi.not) { outs = [] }
-		};
-
-		amps = [];
-
-		numChannels = max(fromNumChannels, toNumChannels);
-		chanRange = if(toNumChannels.even and: { fromNumChannels.even }, 2, 1);
-		defname = "system_link_audio_" ++ chanRange;
-		(numChannels div: chanRange).do { arg i;
-			var id = server.nextNodeID;
-			var out = toIndex + (i * chanRange % toNumChannels);
-			var in = fromIndex + (i * chanRange % fromNumChannels);
-			synthIDs = synthIDs.add(id);
-			outs = outs.add(out);
-			ins = ins.add(in);
-			amps = amps.add(1.0);
-			bundle.add([9, defname, id, 1, group.nodeID, "out", out, "in", in, "vol", vol]);
-		};
-		bundle.add([15, group.nodeID, "fadeTime", fadeTime]);
+		inArray = fromIndex + (0..fromNumChannels-1);
+		outArray = toIndex + (0..toNumChannels-1);
+		this.playNToBundle(bundle, outArray, ampArray, inArray, volume, argFadeTime, inGroup, addAction, multi: multi)
 	}
 
 
-	playNBusToBundle { | bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction |
+	playNBusToBundle { | bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction, multi = false |
+
 		var size;
-		outs = outs ?? { this.outs.unbubble } ? 0;	// remember old ones if none given
+		outs = outs ?? { this.outs.unbubble } ? 0;	// remember old ones if none are given
 		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
 		size = outs.size;
 		ins = if(ins.notNil) {
@@ -325,8 +275,7 @@ Monitor {
 			(0..(bus.numChannels - 1))
 		} + bus.index;
 
-		ins = ins.wrapExtend(outs.size); // should maybe be done in playNToBundle, in flop?
-		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction: addAction)
+		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction, multi: multi)
 	}
 
 
@@ -339,14 +288,26 @@ Monitor {
 	}
 
 
-	stopToBundle { | bundle | // maybe with fade later.
+	stopToBundle { | bundle |
 		bundle.add([15, group.nodeID, "gate", 0]);
 		synthIDs = [];
-		synthAmps = [];
 	}
 
 	hasSeriesOuts {
-		if (outs.isNil) { ^true };
-		^(outs.size < 1) or: { ^outs.differentiate.drop(1).every(_ == 1) };
+		^outs.asArray.isSeries(1)
+	}
+
+	// this method is used to find the best representation for compileStrings.
+	usedPlayN {
+		^fadeTimes.isArray and: { fadeTimes.size > 1 }
+		or: { outs.asArray.isSeries(1).not }
+		or: { ins.asArray.isSeries(1).not }
+	}
+
+	*warnPlayN {
+		this.deprecated(thisMethod);
+	}
+	*warnPlayN_ { |flag|
+		this.deprecated(thisMethod);
 	}
 }

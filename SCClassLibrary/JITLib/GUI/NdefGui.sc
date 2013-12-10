@@ -16,7 +16,7 @@ NdefGui : JITGui {
 
 		buttonSizes = (
 			name: 70, type: 30, CLR: 30, reset: 40, scope: 40, doc: 30, end: 30, fade: 70,
-			monitor: 200, monitorM: 250, monitorL: 300, playN: 20, pausR: 40, sendR: 40,
+			monitor: 200, monitorM: 250, monitorL: 300, play: 20, pausR: 40, sendR: 40,
 			ed: 20, rip: 20, poll: 35, wake: 50
 		);
 	}
@@ -48,18 +48,18 @@ NdefGui : JITGui {
 	*big {
 			// two lines - for big editor
 		^[\name, \type, \CLR, \reset, \scope, \doc, \end, \fade, \poll,
-			\monitorL, \playN, \pausR, \sendR  ]
+			\monitorL, \play, \pausR, \sendR  ]
 	}
 
 	*full {
 			// two lines - for big editor
 		^[\name, \type, \CLR, \reset, \scope, \doc, \end, \fade, \poll, \rip,
-			\monitorL, \playN, \pausR, \sendR, ]
+			\monitorL, \play, \pausR, \sendR, ]
 	}
 
 	*audio {
 			// one line, for ProxyMixer, ar
-		^[\monitorM, \playN, \name, \pausR, \sendR, \ed]
+		^[\monitorM, \play, \name, \pausR, \sendR, \ed]
 	}
 
 	*control {
@@ -168,7 +168,7 @@ NdefGui : JITGui {
 	makeNameView { |nameWid, height|
 		try { // QT temp fix
 			nameView = DragBoth(zone, Rect(0,0, nameWid, height))
-			.font_(font).align_(0)
+			.font_(font)//.align_(0)
 			.receiveDragHandler_({
 				var drag = View.currentDrag;
 				if (drag.isKindOf(String)) { drag = drag.interpret };
@@ -227,12 +227,14 @@ NdefGui : JITGui {
 		Button(zone, width@height).font_(font)
 			.states_([[\doc, skin.fontColor, Color.clear]])
 			.action_({ |but, mod|
+				var alt = mod.notNil and: { mod.isAlt };
 				if (object.notNil) {
-				if (mod.isAlt) {
-					try { ProxySpace.findSpace(object).document(object.key) };
-				} {
-					object.document;
-				} }
+						if (alt) {
+							try { ProxySpace.findSpace(object).document(object.key) };
+						} {
+							object.document;
+						}
+				}
 			})
 	}
 
@@ -255,7 +257,7 @@ NdefGui : JITGui {
 	}
 
 	makeMonitor { |width, height, npOptions|
-		var monOptions = npOptions.sect([\level, \playN]);
+		var monOptions = npOptions.sect([\level, \play]);
 		monitorGui = MonitorGui(object, zone, width@height, false, monOptions);
 	}
 
