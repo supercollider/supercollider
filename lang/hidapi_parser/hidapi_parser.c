@@ -274,8 +274,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
   device_desc->device_collection = device_collection;
   
   struct hid_device_collection * parent_collection = device_desc->device_collection;
-  struct hid_device_collection * prev_collection;
-  struct hid_device_element * prev_element;
+  struct hid_device_collection * prev_collection = 0;
+  struct hid_device_element * prev_element = 0;
   
   struct hid_device_element * making_element = hid_new_element();
   
@@ -1034,10 +1034,10 @@ struct hid_dev_desc * hid_open_device_path( const char *path, unsigned short ven
   }
   struct hid_device_info * newinfo = hid_enumerate(vendor,product);
   //newdesc->device = handle;  
-  int havenotfound = strcmp(path, newinfo->path) == 0;
+  int havenotfound = strcmp(path, newinfo->path) != 0;
   while (havenotfound && (newinfo != NULL) ){
     newinfo = newinfo->next;
-    havenotfound = strcmp(path, newinfo->path) == 0;
+    havenotfound = strcmp(path, newinfo->path) != 0;
   }
   if ( newinfo == NULL ){
     hid_close( handle );
