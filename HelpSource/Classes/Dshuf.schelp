@@ -6,7 +6,7 @@ classmethods::
 method:: new
 argument:: list
 array of values or other ugens
-argument:: length
+argument:: repeats
 number of repeats
 discussion::
 structurally related: link::Classes/Pshuf::

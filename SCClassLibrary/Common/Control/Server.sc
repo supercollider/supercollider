@@ -309,7 +309,7 @@ Server {
 		options = argOptions ? ServerOptions.new;
 		if (addr.isNil, { addr = NetAddr("127.0.0.1", 57110) });
 		inProcess = addr.addr == 0;
-		isLocal = inProcess || { addr.addr == 2130706433 };
+		isLocal = inProcess || { addr.isLocal };
 		remoteControlled = isLocal;
 		serverRunning = false;
 		named.put(name, this);

@@ -553,13 +553,13 @@ Interpreter {
 	}
 
 	interpretPrintCmdLine {
-		var res, func, code = cmdLine, doc = Document.current, ideClass = \ScIDE.asClass;
+		var res, func, code = cmdLine, doc, ideClass = \ScIDE.asClass;
 		preProcessor !? { cmdLine = preProcessor.value(cmdLine, this) };
 		func = this.compile(cmdLine);
 		if (ideClass.notNil) {
 			thisProcess.nowExecutingPath = ideClass.currentPath
 		} {
-			if(doc.tryPerform(\dataptr).notNil) {
+			if(\Document.asClass.notNil and: {(doc = Document.current).tryPerform(\dataptr).notNil}) {
 				thisProcess.nowExecutingPath = doc.tryPerform(\path);
 			}
 		};

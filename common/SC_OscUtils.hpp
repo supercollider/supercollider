@@ -161,7 +161,7 @@ static bool dumpOSCbndl(int indent, int size, char *inData)
 		if (!strcmp(data, "#bundle"))
 			contentPrinted = dumpOSCbndl(indent+1, msgSize, data);
 		else
-			contentPrinted = dumpOSCmsg(msgSize, data);
+			contentPrinted = dumpOSCmsg(msgSize, data, true);
 		data += msgSize;
 		if ( (data < dataEnd) && contentPrinted) scprintf(",");
 	}
@@ -182,7 +182,7 @@ static void dumpOSC(int mode, int size, char* inData)
 		if (strcmp(inData, "#bundle") == 0)
 			contentPrinted = dumpOSCbndl(indent, size, inData);
 		else
-			contentPrinted = dumpOSCmsg(size, inData);
+			contentPrinted = dumpOSCmsg(size, inData, true);
 
 		if (contentPrinted)
 			scprintf("\n");
