@@ -142,10 +142,10 @@ HID {
 
   /// private
 
-    *doPrAction{ | value, physValue, rawValue, usage, page, elid, devid |
+    *doPrAction{ | value, physValue, rawValue, arrayValue, usage, page, elid, devid |
         var thisdevice = openDevices.at( devid );
         // prAction.value( devid, thisdevice, elid, page, usage, value, mappedvalue );
-        prAction.value( value, physValue, rawValue, usage, page, elid, devid, thisdevice );
+        prAction.value( value, physValue, rawValue, arrayValue, usage, page, elid, devid, thisdevice );
     }
 
 /// primitives called:
@@ -218,11 +218,11 @@ HID {
         openDevices.removeAt( devid );
 	}
 
-    *prHIDElementData { | devid, elid, page, usage, rawValue, value, physValue |
-        HID.doPrAction( value, physValue, rawValue, usage, page, elid, devid );
-        openDevices.at( devid ).valueAction( value, physValue, rawValue, usage, page, elid );
+    *prHIDElementData { | devid, elid, page, usage, rawValue, value, physValue, arrayValue |
+        HID.doPrAction( value, physValue, rawValue, arrayValue, usage, page, elid, devid );
+        openDevices.at( devid ).valueAction( value, physValue, rawValue,  arrayValue, usage, page, arrayValue, elid );
 		if ( debug ){
-            "HID Element Data:\n\tdevid: %, elid: %\n\t%\n\telement: \t page: %\tusage: %\traw value: %,\tphysical value: %,\tvalue: %\n".postf( devid, elid, page, usage, rawValue, physValue, value );
+            "HID Element Data:\n\tdevid: %, elid: %\n\t%\n\telement: \t page: %\tusage: %\tarray value: %, \traw value: %,\tphysical value: %,\tvalue: %\n".postf( devid, elid, page, usage, arrayValue, rawValue, physValue, value );
             // [ devid, "element data", devid, element, page, usage, value, mappedvalue ].postln;
 		}
 	}
@@ -277,8 +277,8 @@ HID {
 		if ( debug ){
             ([ "element", id ] ++ args).postln;
 		};
-        if ( elements.at( args[5] ).notNil ){
-            elements.at( args[5] ).setValueFromInput( args[0], args[1], args[2] );
+        if ( elements.at( args[6] ).notNil ){
+            elements.at( args[6] ).setValueFromInput( args[0], args[1], args[2], args[3] );
         };
 		action.value( *args );
 	}
@@ -483,10 +483,11 @@ HIDCollection{
 }
 
 HIDElement{
-//------- do not change the order of these variables: <-------
+//------- do not change the order of these variables, they correspond to the primitive data order: <-------
     var <index;
     var <ioType, <type;
     var <usagePage, <usage;
+    var <usageMin, <usageMax;
     var <logicalMin, <logicalMax;
     var <physicalMin, <physicalMax;
     var <unitExponent, <unit;
@@ -497,6 +498,7 @@ HIDElement{
 
     var <logicalValue;
     var <physicalValue;
+    var <arrayValue;
 
 	var <value, <>action;
 
@@ -530,13 +532,14 @@ HIDElement{
     }
 
     // called from input report
-    setValueFromInput{ |logic,phys,raw|
+    setValueFromInput{ |logic,phys,raw, array|
         rawValue = raw;
         physicalValue = phys;
         logicalValue = logic;
+        arrayValue = array;
         // for now:
         value = logic;
-        action.value( value );
+        action.value( value, this );
     }
 
     // valueAction{ arg ...args;
