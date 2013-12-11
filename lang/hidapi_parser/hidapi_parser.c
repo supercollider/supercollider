@@ -1183,9 +1183,12 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
 	      int type = 0;     
 	      new_element->type = 0;
 	      type = (int) isVirtual;
+	      new_element->isvariable = (int) !isVirtual;
 	      new_element->type += type;
+	      new_element->isarray = (int) isArray;
 	      type = ((int) !isArray) << 1;
 	      new_element->type += type;
+	      new_element->isrelative = (int) isRelative;
 	      type = ((int) isRelative) << 2;
 	      new_element->type += type;
 	      type = ((int) isWrapping) << 3;
@@ -1256,6 +1259,7 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
 	      new_element->report_id = reportID;
 	      new_element->report_index = reportCount; // ?? - was j... index
 	      new_element->value = 0;
+	      new_element->array_value = 0;
 
 	      int reportexists = 0;
 	      for ( int j = 0; j < numreports; j++ ){
