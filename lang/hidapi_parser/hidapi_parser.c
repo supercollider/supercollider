@@ -130,7 +130,7 @@
 
 #define BITMASK1(n) ((1ULL << (n)) - 1ULL)
 #define INVERTBITMASK1(n) ( 255 -(n))
-
+#define BITTESTMASK1(n) (1ULL << (n))
 
 // struct hid_device_descriptor * hid_new_descriptor(){
 //   struct hid_device_descriptor * descriptor;
@@ -227,9 +227,9 @@ void hid_set_element_callback( struct hid_dev_desc * devd, hid_element_callback 
 void hid_set_from_making_element( struct hid_device_element * making, struct hid_device_element * new_element ){
 	
 	new_element->type = making->type;
-	new_element->isrelative = (making->type & BITMASK1( 2 ) ) > 0;
-	new_element->isarray = (making->type & BITMASK1( 1 ) ) == 0;
-	new_element->isvariable = (making->type & BITMASK1( 0 ) ) == 0;
+	new_element->isrelative = (making->type & BITTESTMASK1( 2 ) ) > 0;
+	new_element->isarray = ( (making->type & BITTESTMASK1( 1 ) ) == 0 );
+	new_element->isvariable = (making->type & BITTESTMASK1( 0 ) ) == 0;
 
 	new_element->usage_page = making->usage_page;
 	new_element->logical_min = making->logical_min;
