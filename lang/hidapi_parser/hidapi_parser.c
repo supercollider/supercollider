@@ -505,6 +505,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			new_element->report_index = j;
 			
 			new_element->value = 0;
+			new_element->array_value = 0;
 			if ( parent_collection->num_elements == 0 ){
 			    parent_collection->first_element = new_element;
 			}
@@ -554,6 +555,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			new_element->report_index = j;
 			
 			new_element->value = 0;
+			new_element->array_value = 0;
 			if ( parent_collection->num_elements == 0 ){
 			    parent_collection->first_element = new_element;
 			}
