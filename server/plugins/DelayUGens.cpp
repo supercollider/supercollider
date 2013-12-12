@@ -845,6 +845,18 @@ handle_failure:
 	return false;
 }
 
+static inline bool checkBufferData(Unit * unit, const float * bufData, int inNumSamples)
+{
+	if (!bufData) {
+		unit->mDone = true;
+		ClearUnitOutputs(unit, inNumSamples);
+		return false;
+	} else {
+		return true;
+	}
+}
+
+
 #define SETUP_IN(offset) \
 	uint32 numInputs = unit->mNumInputs - (uint32)offset; \
 	if (numInputs != bufChannels) { \
@@ -872,6 +884,21 @@ handle_failure:
 	if(unit->mIn){ \
 		RTFree(unit->mWorld, unit->mIn); \
 	}
+
+#define LOOP_INNER_BODY_1(SAMPLE_INDEX) \
+	OUT(channel)[SAMPLE_INDEX] = table1[index]; \
+
+#define LOOP_INNER_BODY_2(SAMPLE_INDEX) \
+	float b = table1[index]; \
+	float c = table2[index]; \
+	OUT(channel)[SAMPLE_INDEX] = b + fracphase * (c - b); \
+
+#define LOOP_INNER_BODY_4(SAMPLE_INDEX) \
+	float a = table0[index]; \
+	float b = table1[index]; \
+	float c = table2[index]; \
+	float d = table3[index]; \
+	OUT(channel)[SAMPLE_INDEX] = cubicinterp(fracphase, a, b, c, d); \
 
 
 #define LOOP_BODY_4(SAMPLE_INDEX) \
@@ -906,14 +933,28 @@ handle_failure:
 		} \
 		int32 index = 0; \
 		float fracphase = phase - (double)iphase; \
-		for (uint32 channel=0; channel<numOutputs; ++channel) { \
-			float a = table0[index]; \
-			float b = table1[index]; \
-			float c = table2[index]; \
-			float d = table3[index]; \
-			OUT(channel)[SAMPLE_INDEX] = cubicinterp(fracphase, a, b, c, d); \
-			index++; \
-		}
+		if(numOutputs == bufChannels) { \
+			for (uint32 channel=0; channel<numOutputs; ++channel) { \
+				LOOP_INNER_BODY_4(SAMPLE_INDEX) \
+				index++; \
+			} \
+		} else if (numOutputs < bufChannels) { \
+			for (uint32 channel=0; channel<numOutputs; ++channel) { \
+				LOOP_INNER_BODY_4(SAMPLE_INDEX) \
+				index++; \
+			} \
+			index += (bufChannels - numOutputs); \
+		} else { \
+			for (uint32 channel=0; channel<bufChannels; ++channel) { \
+				LOOP_INNER_BODY_4(SAMPLE_INDEX) \
+				index++; \
+			} \
+			for (uint32 channel=bufChannels; channel<numOutputs; ++channel) { \
+				OUT(channel)[SAMPLE_INDEX] = 0.f; \
+				index++; \
+			} \
+		} \
+
 
 #define LOOP_BODY_2(SAMPLE_INDEX) \
 		phase = sc_loop((Unit*)unit, phase, loopMax, loop); \
@@ -929,21 +970,59 @@ handle_failure:
 		} \
 		int32 index = 0; \
 		float fracphase = phase - (double)iphase; \
-		for (uint32 channel=0; channel<numOutputs; ++channel) { \
-			float b = table1[index]; \
-			float c = table2[index]; \
-			OUT(channel)[SAMPLE_INDEX] = b + fracphase * (c - b); \
-			index++; \
-		}
+		if(numOutputs == bufChannels) { \
+			for (uint32 channel=0; channel<numOutputs; ++channel) { \
+				LOOP_INNER_BODY_2(SAMPLE_INDEX) \
+				index++; \
+			} \
+		} else if (numOutputs < bufChannels) { \
+			for (uint32 channel=0; channel<numOutputs; ++channel) { \
+				LOOP_INNER_BODY_2(SAMPLE_INDEX) \
+				index++; \
+			} \
+			index += (bufChannels - numOutputs); \
+		} else { \
+			for (uint32 channel=0; channel<bufChannels; ++channel) { \
+				LOOP_INNER_BODY_2(SAMPLE_INDEX) \
+				index++; \
+			} \
+			for (uint32 channel=bufChannels; channel<numOutputs; ++channel) { \
+				OUT(channel)[SAMPLE_INDEX] = 0.f; \
+				index++; \
+			} \
+		} \
+
 
 #define LOOP_BODY_1(SAMPLE_INDEX) \
 		phase = sc_loop((Unit*)unit, phase, loopMax, loop); \
 		int32 iphase = (int32)phase; \
 		const float* table1 = bufData + iphase * bufChannels; \
 		int32 index = 0; \
-		for (uint32 channel=0; channel<numOutputs; ++channel) { \
-			OUT(channel)[SAMPLE_INDEX] = table1[index++]; \
-		}
+		if(numOutputs == bufChannels) { \
+			for (uint32 channel=0; channel<numOutputs; ++channel) { \
+				LOOP_INNER_BODY_1(SAMPLE_INDEX) \
+				index++; \
+			} \
+		} else if (numOutputs < bufChannels) { \
+			for (uint32 channel=0; channel<numOutputs; ++channel) { \
+				LOOP_INNER_BODY_1(SAMPLE_INDEX) \
+				index++; \
+			} \
+			index += (bufChannels - numOutputs); \
+		} else { \
+			for (uint32 channel=0; channel<bufChannels; ++channel) { \
+				LOOP_INNER_BODY_1(SAMPLE_INDEX) \
+				index++; \
+			} \
+			for (uint32 channel=bufChannels; channel<numOutputs; ++channel) { \
+				OUT(channel)[SAMPLE_INDEX] = 0.f; \
+				index++; \
+			} \
+		} \
+
+
+
+
 
 
 void PlayBuf_Ctor(PlayBuf *unit)
@@ -993,7 +1072,7 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 	int guardFrame __attribute__((__unused__)) = bufFrames - 2;
 
 	int numOutputs = unit->mNumOutputs;
-	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+	if (!checkBufferData(unit, bufData, inNumSamples))
 		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
@@ -1044,7 +1123,7 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 	int guardFrame __attribute__((__unused__)) = bufFrames - 2;
 
 	int numOutputs = unit->mNumOutputs;
-	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+	if (!checkBufferData(unit, bufData, inNumSamples))
 		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
@@ -1075,7 +1154,7 @@ void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples)
 
 	GET_BUF_SHARED
 	int numOutputs = unit->mNumOutputs;
-	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+	if (!checkBufferData(unit, bufData, inNumSamples))
 		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
@@ -1103,7 +1182,7 @@ void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples)
 
 	GET_BUF_SHARED
 	int numOutputs = unit->mNumOutputs;
-	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+	if (!checkBufferData(unit, bufData, inNumSamples))
 		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
@@ -1170,7 +1249,7 @@ void BufRd_next_2(BufRd *unit, int inNumSamples)
 
 	GET_BUF_SHARED
 	uint32 numOutputs = unit->mNumOutputs;
-	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+	if (!checkBufferData(unit, bufData, inNumSamples))
 		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
@@ -1188,7 +1267,7 @@ void BufRd_next_1(BufRd *unit, int inNumSamples)
 
 	GET_BUF_SHARED
 	uint32 numOutputs = unit->mNumOutputs;
-	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+	if (!checkBufferData(unit, bufData, inNumSamples))
 		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
