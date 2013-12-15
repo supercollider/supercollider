@@ -46,6 +46,7 @@ struct PlayBuf : public Unit
 	double m_phase;
 	float m_prevtrig;
 	float m_fbufnum;
+	float m_failedBufNum;
 	SndBuf *m_buf;
 };
 
@@ -84,6 +85,7 @@ struct SimpleLoopBuf : public Unit
 struct BufRd : public Unit
 {
 	float m_fbufnum;
+	float m_failedBufNum;
 	SndBuf *m_buf;
 };
 
@@ -845,17 +847,6 @@ handle_failure:
 	return false;
 }
 
-static inline bool checkBufferData(Unit * unit, const float * bufData, int inNumSamples)
-{
-	if (!bufData) {
-		unit->mDone = true;
-		ClearUnitOutputs(unit, inNumSamples);
-		return false;
-	} else {
-		return true;
-	}
-}
-
 
 #define SETUP_IN(offset) \
 	uint32 numInputs = unit->mNumInputs - (uint32)offset; \
@@ -1022,6 +1013,20 @@ static inline bool checkBufferData(Unit * unit, const float * bufData, int inNum
 
 
 
+#define CHECK_BUFFER_DATA \
+if (!bufData) { \
+	Print("Buffer UGen: no buffer data\n"); \
+	unit->mDone = true; \
+	ClearUnitOutputs(unit, inNumSamples); \
+	return; \
+} else { \
+	if (bufChannels != numOutputs) { \
+		if(unit->mWorld->mVerbosity > -1 && !unit->mDone && (unit->m_failedBufNum != fbufnum)) \
+			Print("Buffer UGen channel mismatch: expected %i, yet buffer has %i channels\n", \
+				  numOutputs, bufChannels); \
+			unit->m_failedBufNum = fbufnum; \
+			} \
+} \
 
 
 
@@ -1042,11 +1047,13 @@ void PlayBuf_Ctor(PlayBuf *unit)
 	}
 
 	unit->m_fbufnum = -1e9f;
+	unit->m_failedBufNum = -1e9f;
 	unit->m_prevtrig = 0.;
 	unit->m_phase = ZIN0(3);
 
 	ClearUnitOutputs(unit, 1);
 }
+
 
 void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 {
@@ -1072,8 +1079,8 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 	int guardFrame __attribute__((__unused__)) = bufFrames - 2;
 
 	int numOutputs = unit->mNumOutputs;
-	if (!checkBufferData(unit, bufData, inNumSamples))
-		return;
+
+	CHECK_BUFFER_DATA;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 	double phase = unit->m_phase;
@@ -1123,12 +1130,12 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 	int guardFrame __attribute__((__unused__)) = bufFrames - 2;
 
 	int numOutputs = unit->mNumOutputs;
-	if (!checkBufferData(unit, bufData, inNumSamples))
-		return;
+
+	CHECK_BUFFER_DATA
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 	double phase = unit->m_phase;
-    if(phase == -1.) phase = bufFrames;
+	if(phase == -1.) phase = bufFrames;
 	if (trig > 0.f && unit->m_prevtrig <= 0.f) {
 		unit->mDone = false;
 		phase = ZIN0(3);
@@ -1154,8 +1161,8 @@ void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples)
 
 	GET_BUF_SHARED
 	int numOutputs = unit->mNumOutputs;
-	if (!checkBufferData(unit, bufData, inNumSamples))
-		return;
+
+	CHECK_BUFFER_DATA
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 	double phase = unit->m_phase;
@@ -1182,8 +1189,8 @@ void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples)
 
 	GET_BUF_SHARED
 	int numOutputs = unit->mNumOutputs;
-	if (!checkBufferData(unit, bufData, inNumSamples))
-		return;
+
+	CHECK_BUFFER_DATA
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 	double phase = unit->m_phase;
@@ -1220,6 +1227,7 @@ void BufRd_Ctor(BufRd *unit)
 	}
 
 	unit->m_fbufnum = -1e9f;
+	unit->m_failedBufNum = -1e9f;
 
 	BufRd_next_1(unit, 1);
 }
@@ -1231,8 +1239,8 @@ void BufRd_next_4(BufRd *unit, int inNumSamples)
 
 	GET_BUF_SHARED
 	uint32 numOutputs = unit->mNumOutputs;
-	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
-		return;
+
+	CHECK_BUFFER_DATA
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 
@@ -1249,8 +1257,8 @@ void BufRd_next_2(BufRd *unit, int inNumSamples)
 
 	GET_BUF_SHARED
 	uint32 numOutputs = unit->mNumOutputs;
-	if (!checkBufferData(unit, bufData, inNumSamples))
-		return;
+
+	CHECK_BUFFER_DATA
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 
@@ -1267,8 +1275,8 @@ void BufRd_next_1(BufRd *unit, int inNumSamples)
 
 	GET_BUF_SHARED
 	uint32 numOutputs = unit->mNumOutputs;
-	if (!checkBufferData(unit, bufData, inNumSamples))
-		return;
+
+	CHECK_BUFFER_DATA
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 
