@@ -124,6 +124,8 @@ Event : Environment {
 			});
 		});
 		stream << " )";
+		if(proto.notNil) { stream << "\n.proto_(" <<< proto << ")" };
+		if(parent.notNil) { stream << "\n.parent_(" <<< parent << ")" };
 	}
 
 	*initClass {
