@@ -1,40 +1,99 @@
 ///////////////////// HID
 
 /* There's a question here of how to construct the dispatchers. The general idea is to use the 'most significant' parameter as an initial filter for speed reasons, and then use wrappers to test other matches. In this case I'd suggest dispatching via a single key (perhaps constructed), but it depends on the lower level implementation if that makes sense. */
+/*
+HIDUsageIDDispatcher : AbstractWrappingDispatcher {
 
-HIDMessageDispatcher : AbstractWrappingDispatcher {
+}
+
+HIDDeviceDispatcher : AbstractWrappingDispatcher {
+
+}
+
+HIDElementDispatcher : AbstractWrappingDispatcher {
+
+}
+*/
+
+HIDUsageDispatcher : AbstractWrappingDispatcher {
 
 	*new { ^super.new; }
 
-	getKeysForFuncProxy {|funcProxy| ^funcProxy.key;} // here's the top level dispatch key
+	getKeysForFuncProxy {|funcProxy|
+        var keyArray;
+        var keys;
+        if ( funcProxy.elUsage.isKindOf( Array ) ){
+            keys = funcProxy.elUsage.collect{ |fpu|
+                keyArray = HIDUsage.getUsageIds( fpu );
+                "%_%".format( *keyArray ).asSymbol;
+            };
+        }{
+            keyArray = HIDUsage.getUsageIds( funcProxy.elUsage );
+            keys = "%_%".format( *keyArray ).asSymbol;
+        };
+        if ( funcProxy.elUsage.isNil ){
+            keys = \anyUsage;
+        };
+        ^keys;
+    } // here's the top level dispatch key - in our case an array of page, usage
 
-	value {|key, vals, src| active[key].value(vals, src, key);} // vals are the arguments, src is the device
+    // these arguments are different from HID:
+    // value, physValue, rawValue, arrayValue, usage, page, elid, devid
+	value { |value, physValue, rawValue, arrayValue, usage, page, elid, devid|
+        var key = "%_%".format( page, usage ).asSymbol;
+        active[key].value(
+            [value, physValue, rawValue, arrayValue],
+            [usage, page],
+            elid, devid,
+            key
+        );
+        // this seems kind of ugly!
+        active[\anyUsage].value(
+            [value, physValue, rawValue, arrayValue],
+            [usage, page],
+            elid, devid,
+            key
+        );
+    }
 
 	register {
-		// add here to the low level hooks, here's how it works for MIDI
-		//MIDIIn.perform(messageType.asSetter, MIDIIn.perform(messageType.asGetter).addFunc(this));
+		// add here to the low level hooks
+        HID.addRecvFunc( this );
 		registered = true;
 	}
 
 	unregister {
-		// remove here from the low level hooks, here's how it works for MIDI
-		//MIDIIn.perform(messageType.asSetter, MIDIIn.perform(messageType.asGetter).removeFunc(this));
+		// remove here from the low level hooks
+        HID.removeRecvFunc( this );
 		registered = false;
 	}
+
+    /* not sure if I need to override
+    add {|funcProxy|
+		var func, keys;
+		funcProxy.addDependant(this);
+		func = this.wrapFunc(funcProxy); // here we wrap the responder object's func(s) in matchers if needed
+		wrappedFuncs[funcProxy] = func;
+		keys = this.getKeysForFuncProxy(funcProxy); // this method figures out what top level keys will match
+		keys.do({|key| active[key] = active[key].addFunc(func) }); // support multiple keys
+		if(registered.not, {this.register});
+	}
+    */
 
 	// wrapper objects based on arg type and testing requirements
 	wrapFunc {|funcProxy|
 		var func, srcID, argTemplate;
 		func = funcProxy.func;
-		srcID = funcProxy.srcID;
+		srcID = funcProxy.devUsage;
 		argTemplate = funcProxy.argTemplate;
 		// here test for various matching possibilities
 		// for HID should probably look something like this.
-		if(argTemplate.notNil, { func = HIDValueMatcher(argTemplate, func)});
+        //if(argTemplate.notNil, { func = HIDValueMatcher(argTemplate, func)} );
 		^case(
-			{ srcID.notNil }, {HIDFuncSrcMessageMatcher(srcID, func)},
+			{ srcID.notNil }, { HIDFuncSrcUsageMatcher(srcID, func) },
 			{ func }
-		);
+        );
+        //^func;
 	}
 
 	typeKey { ^'HID' }
@@ -45,11 +104,12 @@ HIDMessageDispatcher : AbstractWrappingDispatcher {
 // the dispatcher could possible construct this if needed
 HIDFunc : AbstractResponderFunc {
 	classvar <>defaultDispatcher, traceFunc, traceRunning = false;
-	var <hidelkey, <hiddev, <elpage, <elusage;
+    var <type;
+    var <elUsage, <devUsage, <deviceTemplate, <argTemplate;
     var <argTemplate;
 
 	*initClass {
-		defaultDispatcher = HIDMessageDispatcher.new;
+		defaultDispatcher = HIDUsageDispatcher.new;
 		// not sure what this should look like, but a trace func would be nice
         traceFunc = { |value, physValue, rawValue, arrayValue, usage, page, elid, devid, dev|
             // devid, dev, elid, page, usage, rawValue, value|
@@ -58,22 +118,28 @@ HIDFunc : AbstractResponderFunc {
 		}
 	}
 
-	*new { arg func, elType, elPage, deviceInfo, argTemplate, dispatcher;
-		^super.new.init(func, elType, elPage, deviceInfo, argTemplate, dispatcher ? defaultDispatcher);
+	*new { arg func, elUsageName, devUsageName, deviceInfo, argTemplate, dispatcher;
+		^super.new.init(func, elUsageName, devUsageName, deviceInfo, argTemplate, dispatcher ? defaultDispatcher);
 	}
 
-    /// different types:
+    /// this is the same as *new
+    *usage { arg func, elUsageName, devUsageName, deviceInfo, argTemplate, dispatcher;
+		^super.new.init(func, elUsageName, devUsageName, deviceInfo, argTemplate, dispatcher ? defaultDispatcher);
+	}
 
-    // element/types:
-    // filter by element usage + page
-    // filter by element id (in case the usages are doubled  - in case of badly designed device firmware)
+    /*
+    *usageID { arg func, elUsageID, elPageID, devUsageID, devPageID, deviceInfo, argTemplate, dispatcher;
+		^super.new.initUsageID(func, elUsageID, elPageID, devUsageID, devPageID, deviceInfo, argTemplate, dispatcher ? defaultDispatcher);
+	}
 
-    // device/types:
-    // filter by vendor, product, -> path
-    // filter by page, usage
+    *device { arg func, elUsageName, deviceName, deviceInfo, argTemplate, dispatcher;
+		^super.new.initDevice(func, elUsageName, devUsageName, deviceInfo, argTemplate, dispatcher ? defaultDispatcher);
+	}
 
-    // -> main:  devType, elType - determines the filtering
-    // -> usage: pass in:
+    *element { arg func, elID, deviceName, deviceInfo, argTemplate, dispatcher;
+		^super.new.initElement(func, elID, devUsageName, deviceInfo, argTemplate, dispatcher ? defaultDispatcher);
+	}
+    */
 
 	*trace {|bool = true|
 		if(bool, {
@@ -91,19 +157,19 @@ HIDFunc : AbstractResponderFunc {
 
 	*cmdPeriod { this.trace(false) }
 
-	init {|argfunc, argel, argdevID, argpage, argusage, argtemplate, argdisp|
-		hidelkey = argel.asSymbol;
-		hiddev = argdevID ? hiddev;
-        elpage = argpage ? elpage;
-        elusage = argusage ? elusage;
-		argTemplate = argtemplate ? argTemplate;
-		func = argfunc ? func;
+	init { | argFunc, elUsageName, devUsageName, deviceInfo, argtemplate, argdisp |
+		type = \usage;
+        elUsage = elUsageName ? elUsage;
+        devUsage = devUsageName ? devUsage;
+        deviceTemplate = deviceInfo ? deviceTemplate;
+        argTemplate = argtemplate ? argTemplate;
+		func = argFunc ? func;
 		dispatcher = argdisp ? dispatcher;
 		this.enable;
 		allFuncProxies.add(this);
 	}
 
-	printOn { arg stream; stream << this.class.name << "(" <<* [ hidelkey, hiddev, elpage, elusage, argTemplate] << ")" }
+    printOn { arg stream; stream << this.class.name << "." << type << "("<<* [ elUsage, devUsage, deviceTemplate, argTemplate] << ")" }
 
 }
 
@@ -139,7 +205,7 @@ HIDdef : HIDFunc {
 
 	free { all[key] = nil; super.free; }
 
-    printOn { arg stream; stream << this.class.name << "(" <<* [key, hidelkey, hiddev, elpage, elusage, argTemplate] << ")" }
+    printOn { arg stream; stream << this.class.name << "." << type << "("<<* [ elUsage, devUsage, deviceTemplate, argTemplate] << ")" }
 
 	*freeAll {
 		var objs = all.copy;
@@ -149,15 +215,56 @@ HIDdef : HIDFunc {
 
 // matching wrappers
 // if you need to test for srcID func gets wrapped in this
-HIDFuncSrcMessageMatcher : AbstractMessageMatcher {
-	var srcID;
+HIDFuncSrcUsageMatcher : AbstractMessageMatcher {
+	var devUsage;
+    var matchingDevs;
+    var notMatchingDevs;
 
 	*new {|srcID, func| ^super.new.init(srcID, func);}
 
-	init {|argsrcID, argfunc| srcID = argsrcID; func = argfunc; }
+	init {|argsrcID, argfunc|
+        devUsage = argsrcID;
+        func = argfunc;
+        matchingDevs = [];
+        notMatchingDevs = [];
+        devUsage.do{ |it| this.addDevUsage( it ) };
+    }
 
-	value {|vals, testSrc, key|
-		if(srcID == testSrc, {func.value(vals, testSrc, key)})
+    addDevUsage{ |du|
+        // find ids of already open devices that match:
+        matchingDevs = matchingDevs ++
+        HID.openDevices.asArray.select{ |hid|
+            du == hid.usage.asSymbol
+        };
+        notMatchingDevs = notMatchingDevs ++
+        HID.openDevices.asArray.select{ |hid|
+            du != hid.usage.asSymbol
+        };
+    }
+
+    checkDevUsage{ |du,devid|
+        if ( HID.openDevices.at( devid ).usageName == du ){
+            matchingDevs = matchingDevs.add( devid );
+            ^true;
+        }{
+            notMatchingDevs = notMatchingDevs.add( devid );
+            ^false;
+        };
+    }
+
+    // question whether this is faster than direct lookup of device usage
+	value { |vals, usageIDs, elid, devid, key|
+        if ( matchingDevs.includes( devid ) ){
+            func.value( vals, usageIDs, elid, devid, key );
+        }{
+            if ( notMatchingDevs.includes( devid ).not ){ // perhaps devices was opened after HIDFunc was created
+                devUsage.do{ |it|
+                    if ( this.checkDevUsage( it, devid ) ){
+                        func.value( vals, usageIDs, elid, devid, key );
+                    };
+                };
+            };
+        };
 	}
 }
 
