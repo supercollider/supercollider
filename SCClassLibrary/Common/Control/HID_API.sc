@@ -712,11 +712,13 @@ HIDUsage {
 
     classvar <>hutDirectory;
 
-    classvar <>usageNameToIDs;
+    classvar <usageNameToIDs;
+    classvar <usageIDsToName;
 
     *initClass{
         hutDirectory = Platform.systemAppSupportDir +/+ "hid";
         usageNameToIDs = IdentityDictionary.new;
+        usageIDsToName = MultiLevelIdentityDictionary.new;
     }
 
     *getUsageDescription{ |usagePage,usage|
@@ -765,7 +767,12 @@ HIDUsage {
             }
         );
         usageNameToIDs.put( usageName.asSymbol, [ usagePage, usage ] );
+        usageIDsToName.put( usagePage, usage, usageName.asSymbol );
         ^[ pageName, usageName ];
+    }
+
+    *idsToName{ |page, usage|
+        ^usageIDsToName.at( page, usage );
     }
 
     *getUsageIds{ |usageName|
