@@ -20,6 +20,7 @@ HIDUsageDispatcher : AbstractWrappingDispatcher {
 	*new { ^super.new; }
 
 	getKeysForFuncProxy {|funcProxy|
+        /*
         var keyArray;
         var keys;
         if ( funcProxy.elUsage.isKindOf( Array ) ){
@@ -34,13 +35,15 @@ HIDUsageDispatcher : AbstractWrappingDispatcher {
         if ( funcProxy.elUsage.isNil ){
             keys = \anyUsage;
         };
-        ^keys;
+        ^keys
+        */
+        ^(funcProxy.elUsage ? \anyUsage); // how does this deal with nil?
     } // here's the top level dispatch key - in our case an array of page, usage
 
     // these arguments are different from HID:
     // value, physValue, rawValue, arrayValue, usage, page, elid, devid
 	value { |value, physValue, rawValue, arrayValue, usage, page, elid, devid|
-        var key = "%_%".format( page, usage ).asSymbol;
+        var key = HIDUsage.idsToName( page, usage );
         active[key].value(
             [value, physValue, rawValue, arrayValue],
             [usage, page],
