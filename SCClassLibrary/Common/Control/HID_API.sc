@@ -11,6 +11,8 @@ HID {
 
 	classvar <>debug = false;
 
+    classvar <availableUsages;
+
     classvar prAction;
     classvar prDeviceAction;
 
@@ -19,6 +21,7 @@ HID {
 
     var <elements;
     var <collections;
+    var <usages;
 
 	var <>action;
     var <>deviceAction;
@@ -68,6 +71,7 @@ HID {
 		//Spec.initClass; ControlSpec.initClass;
 		available = IdentityDictionary.new;
         openDevices = IdentityDictionary.new;
+        availableUsages = IdentityDictionary.new;
 	}
 
 	*findAvailable{
@@ -109,8 +113,25 @@ HID {
         ("HID: Opened device: %\n".postf( newdev.info ) );
         newdev.getElements;
         newdev.getCollections;
+        newdev.getUsages;
+        HID.mergeUsageDict( newdev );
         openDevices.put( newdevid, newdev );
         ^newdev;
+    }
+
+    *mergeUsageDict{ |dev|
+        dev.usages.keysValuesDo{ |key,val|
+            if ( availableUsages.at( key ).isNil ){
+                availableUsages.put( key, IdentityDictionary.new );
+            };
+            availableUsages.at( key ).put( dev.id, val );
+        };
+    }
+
+    *removeUsageDict{ |dev| // when device is closed
+        availableUsages.do{ |val|
+            val.removeAt( dev.id );
+        };
     }
 
     *openPath{ |path|
@@ -265,6 +286,7 @@ HID {
 		id = i;
         elements = IdentityDictionary.new;
         collections = IdentityDictionary.new;
+        usages = IdentityDictionary.new;
         // elementDictionary = MultiLevelIdentityDictionary.new;
 	}
 
@@ -292,7 +314,10 @@ HID {
         numberOfCollections.do{ |i|
             var colInfo = this.getCollectionInfo( i );
             collections.put( i, HIDCollection.new( *colInfo ).device_( this ) );
-        }
+        };
+        if ( thisProcess.platform.name == \linux ){
+            info.setUsageAndPage( collections.at(0).usagePage, collections.at(0).usage );
+        };
     }
 
 	getCollectionInfo{ |colid|
@@ -304,6 +329,12 @@ HID {
         numberOfElements.do{ |i|
             var elInfo = this.getElementInfo( i );
             elements.put( i, HIDElement.new( *elInfo ).device_( this ) );
+        }
+    }
+
+    getUsages{
+        elements.do{ |it|
+            it.getUsages( usages );
         }
     }
 
@@ -359,11 +390,19 @@ HID {
     // }
 
 	close{
+        HID.removeUsageDict( this );
 		HID.prCloseDevice( id );
 	}
 
     postCollections{
         this.collections.sortedKeysValuesDo{ |k,v| v.postCollection; };
+    }
+
+    postUsages{
+        this.usages.sortedKeysValuesDo{ |k,v|
+            "Usage: %\n".postf(k);
+            v.do{ |it| it.postElement("\t"); };
+        };
     }
 
     postElements{
@@ -392,25 +431,48 @@ HID {
 }
 
 HIDInfo{
-
+//------- do not change the order of these variables, they correspond to the primitive data order: <-------
     var <vendorID, <productID;
     var <path;
     var <serialNumber;
     var <vendorName, <productName;
     var <releaseNumber;
     var <interfaceNumber;
+    var <usagePage, <usage;
+//-------> do not change the order of these variables, they correspond to the primitive data order ------------
+    var pageName, usageName;
 
     *new{ |...args|
         ^super.newCopyArgs( *args );
     }
 
+    setUsageAndPage{ |page,us|
+        usage = us;
+        usagePage = page;
+    }
+
     postInfo{
+        "\tUsage name and page: \t%, \t%\n".postf( this.usageName, this.pageName );
         "\tVendor name: \t%\n".postf( vendorName );
         "\tProduct name: \t%\n".postf( productName );
         "\tVendor and product ID: \t%, %\n".postf( vendorID, productID );
         "\tPath: \t%\n".postf( path );
         "\tSerial Number: \t%\n".postf( serialNumber );
         "\tReleasenumber and interfaceNumber: \t%,%\n".postf( releaseNumber, interfaceNumber );
+    }
+
+    pageName{
+        if ( pageName.isNil ){
+            #pageName, usageName = HIDUsage.getUsageDescription( usagePage, usage );
+        };
+        ^pageName;
+    }
+
+    usageName{
+        if ( usageName.isNil ){
+            #pageName, usageName = HIDUsage.getUsageDescription( usagePage, usage );
+        };
+        ^usageName;
     }
 
     printOn { | stream |
@@ -551,11 +613,14 @@ HIDElement{
     //     value = args;
     // }
 
-    postElement{
-            "HID Element: %, type: %, %, usage page: %, usage index: %\n\tDescription: %, %, %, \n\t% \n\tUsage range: [ %, % ]\n\tLogical range: [ %, % ]\n\tPhysical range: [ %, % ], Unit: %, Exponent: % \n\tReport ID: %, size %, index %\n"
-        .postf( index, ioType, type, usagePage, usage, this.pageName, this.usageName, this.iotypeName, this.typeSpec,
-            usageMin, usageMax,
-            logicalMin, logicalMax, physicalMin, physicalMax, unit, unitExponent, reportID, reportSize, reportIndex);
+    postElement{ |prefix=""|
+            "%HID Element: %, type: %, %, usage page: %, usage index: %\n%\tDescription: %, %, %, \n\t% \n%\tUsage range: [ %, % ]\n%\tLogical range: [ %, % ]\n%\tPhysical range: [ %, % ], Unit: %, Exponent: % \n%\tReport ID: %, size %, index %\n"
+        .postf( prefix, index, ioType, type, usagePage, usage,
+            prefix, this.pageName, this.usageName, this.iotypeName, this.typeSpec,
+            prefix, usageMin, usageMax,
+            prefix, logicalMin, logicalMax,
+            prefix, physicalMin, physicalMax, unit, unitExponent,
+            prefix, reportID, reportSize, reportIndex);
     }
 
     printOn { | stream |
@@ -589,6 +654,26 @@ HIDElement{
             #pageName, usageName = HIDUsage.getUsageDescription( usagePage, usage );
         };
         ^usageName;
+    }
+
+    getUsages{ |usageDict|
+        var uName = this.usageName;
+        var pName;
+        if ( type.bitTest(1).binaryValue == 0 ){ // array element
+            // get min and max usages:
+            (usageMin..usageMax).do{ |us|
+                #pName, uName = HIDUsage.getUsageDescription( usagePage, us );
+                if ( usageDict.at( uName.asSymbol ).isNil ){
+                    usageDict.put( uName.asSymbol, List.new );
+                };
+                usageDict.at( uName.asSymbol ).add( this );
+            };
+        }{ // regular element
+            if ( usageDict.at( uName.asSymbol ).isNil ){
+                usageDict.put( uName.asSymbol, List.new );
+            };
+            usageDict.at( uName.asSymbol ).add( this );
+        };
     }
 
     iotypeName{
@@ -627,8 +712,11 @@ HIDUsage {
 
     classvar <>hutDirectory;
 
+    classvar <>usageNameToIDs;
+
     *initClass{
         hutDirectory = Platform.systemAppSupportDir +/+ "hid";
+        usageNameToIDs = IdentityDictionary.new;
     }
 
     *getUsageDescription{ |usagePage,usage|
@@ -676,7 +764,12 @@ HIDUsage {
                 }
             }
         );
+        usageNameToIDs.put( usageName.asSymbol, [ usagePage, usage ] );
         ^[ pageName, usageName ];
+    }
+
+    *getUsageIds{ |usageName|
+        ^usageNameToIDs.at( usageName );
     }
 
     *readHUTFile{ |yamlfile|
