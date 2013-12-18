@@ -303,13 +303,12 @@ Pstretchp : Pstretch {
 		var evtStream, val, inevent, delta;
 		var valStream = value.asStream;
 		while {
-			val = valStream.next(event).asEvent;
+			val = valStream.next(event);
 			val.notNil
 		} {
 			evtStream = pattern.asStream;
 			while {
 				inevent = evtStream.next(event);
-				// if(event.isNil) { ^nil.yield };
 				inevent.notNil
 			} {
 				delta = inevent[\delta];
