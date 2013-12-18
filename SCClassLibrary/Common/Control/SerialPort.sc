@@ -53,6 +53,8 @@ SerialPort
 			xonxoff
 		)
 	}
+	// if port should be able to reopen, this method should be called "open"
+	// but as close doesn't currently work and crashes sclang, we just don't ever use it for reopening.
 	initSerialPort { | ... args |
 		semaphore = Semaphore(0);
 		if ( dataptr.isNil ){
@@ -124,7 +126,8 @@ SerialPort
 		^this.primitiveFailed
 	}
 	prClose {
-		_SerialPort_Close
+		//_SerialPort_Close
+		_SerialPort_Cleanup // for now: just cleanup. close crashes sclang
 		^this.primitiveFailed
 	}
 	primCleanup {
