@@ -198,6 +198,7 @@ void hid_element_set_rawvalue( struct hid_device_element * element, int value );
 void hid_element_set_logicalvalue( struct hid_device_element * element, float value );
 
 int hid_send_output_report( struct hid_dev_desc * devd, int reportid );
+int hid_send_output_report_old( struct hid_dev_desc * devd, int reportid );
 
 // int hid_parse_feature_report( char* buf, int size, hid_device_descriptor * descriptor );
 

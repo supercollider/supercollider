@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <math.h>
+#include <math.h>
 
 #include "hidapi_parser.h"
 
@@ -309,6 +309,9 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
   int report_ids[256];
   report_ids[0] = 0;
   report_lengths[0] = 0;
+
+  int k;
+  int index;
   
   device_collection->num_collections = 0;
   device_collection->num_elements = 0;
@@ -538,8 +541,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
 		    making_element->type = next_val;
 		    // add the elements for this report
-		    for ( j=0; j<current_report_count; j++ ){
-		  		      
+		    for ( j=0; j<current_report_count; j++ ){     
 			struct hid_device_element * new_element = hid_new_element();
 // 			struct hid_device_element * new_element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
 			new_element->io_type = 2;
@@ -552,6 +554,15 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 			  new_element->usage = current_usage_min + j;
 			}
 			new_element->report_index = j;
+			
+			index = 0;
+			for ( k=0; k<numreports; k++ ){
+			  if ( making_element->report_id == report_ids[k] ){
+			    index = k;
+			    break;
+			  }
+			}
+			report_lengths[index] += making_element->report_size;
 			
 			new_element->value = 0;
 			new_element->array_value = 0;
@@ -802,7 +813,8 @@ struct hid_device_element * hid_get_next_output_element_with_reportid( struct hi
 	  nextel = nextel->next;
       }
   }
-  return curel; // return the previous element
+  return NULL;
+//   return curel; // return the previous element
   // is NULL
 }
 
@@ -901,7 +913,93 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
   return 0;
 }
 
+
 int hid_send_output_report( struct hid_dev_desc * devd, int reportid ){
+  char * buf;
+  // find the right report id
+  int index = 0;
+  int i;
+  for ( i=0; i<devd->number_of_reports; i++ ){
+    if ( reportid == devd->report_ids[i] ){
+      index = i;
+      break;
+    }
+  }
+  
+  size_t buflength = devd->report_lengths[ index ] / 8;
+  #ifdef DEBUG_PARSER
+    printf("report id %i, buflength %i\t", reportid, buflength );
+#endif    
+
+//   if ( reportid != 0 ){
+  buflength++; // one more byte if report id is not 0
+//   }
+  buf = (char *) malloc( sizeof( char ) * buflength );
+  memset(buf, 0x0, sizeof(char) * buflength);
+
+  
+  // iterate over elements, find which ones are output elements with the right report id,
+  // and set their output values to the buffer
+  
+
+  struct hid_device_collection * device_collection = devd->device_collection;
+  struct hid_device_element * cur_element = device_collection->first_element;
+  if ( cur_element->io_type != 2 || ( cur_element->report_id != reportid ) ){
+      cur_element = hid_get_next_output_element_with_reportid(cur_element, reportid);
+  }
+  
+#ifdef DEBUG_PARSER
+  printf("-----------------------\n");
+#endif
+
+  buf[0] = reportid;
+  int byte_index = 1;
+  int bit_offset = 0;
+  int next_val = 0;
+  
+
+  while ( cur_element != NULL && (byte_index < buflength) ){
+    int current_output = 0;
+    unsigned char current_byte = 0;
+    int current_bit_size = cur_element->report_size;
+    int current_byte_size = (int) ceil( (float) current_bit_size / 8);
+#ifdef DEBUG_PARSER
+    printf("report_size %i, bytesize %i, bitsize %i, bitoffset %i, byte_index %i \n", cur_element->report_size, current_byte_size, current_bit_size, bit_offset, byte_index );
+    printf("current_output %i \t", current_output );
+#endif
+    current_output = cur_element->value << bit_offset;
+#ifdef DEBUG_PARSER
+    printf("current_output shift %i \t", current_output );
+#endif
+    int i;
+    for ( i=0; i<current_byte_size; i++ ){
+	current_byte = current_output % 256;
+	current_output = current_output >> 8;
+	buf[ byte_index + i ] += current_byte;
+#ifdef DEBUG_PARSER
+    printf("current_output %i, current_byte %i, buf %i\t", current_output, current_byte, buf[ byte_index + i ] );
+#endif
+    }
+    bit_offset += current_bit_size;
+    byte_index += (int) floor( (float) current_bit_size / 8 );
+    bit_offset = bit_offset%256;
+#ifdef DEBUG_PARSER
+    printf("bit_offset %i, byte_index %i\n", bit_offset, byte_index );
+#endif
+    cur_element = hid_get_next_output_element_with_reportid(cur_element, reportid);
+  }
+#ifdef DEBUG_PARSER
+  printf("-----------------------\n");
+#endif
+  
+
+  int res = hid_write(devd->device, (const unsigned char*)buf, buflength);
+
+  free( buf );
+  return res;
+}
+
+int hid_send_output_report_old( struct hid_dev_desc * devd, int reportid ){
   char * buf;
   // find the right report id
   int index = 0;
