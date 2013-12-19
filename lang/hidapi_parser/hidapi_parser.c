@@ -544,7 +544,6 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 // 			struct hid_device_element * new_element = (struct hid_device_element *) malloc( sizeof( struct hid_device_element ) );
 			new_element->io_type = 2;
 			new_element->index = device_collection->num_elements;
-			new_element->type = next_val; //TODO: parse this for more detailed info
 			new_element->parent_collection = parent_collection;
 			hid_set_from_making_element( making_element, new_element );
 			if ( current_usage_min == -1 ){
