@@ -227,9 +227,9 @@ void hid_set_element_callback( struct hid_dev_desc * devd, hid_element_callback 
 void hid_set_from_making_element( struct hid_device_element * making, struct hid_device_element * new_element ){
 	
 	new_element->type = making->type;
-	new_element->isrelative = (making->type & BITTESTMASK1( 2 ) ) > 0;
-	new_element->isarray = ( (making->type & BITTESTMASK1( 1 ) ) == 0 );
-	new_element->isvariable = (making->type & BITTESTMASK1( 0 ) ) == 0;
+	new_element->isrelative = (making->type & HID_ITEM_RELATIVE ) > 0;
+	new_element->isarray = ( (making->type & HID_ITEM_VARIABLE ) == 0 );
+	new_element->isvariable = (making->type & HID_ITEM_CONSTANT ) == 0;
 
 	new_element->usage_page = making->usage_page;
 	new_element->logical_min = making->logical_min;
