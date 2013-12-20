@@ -795,8 +795,15 @@ a = (0..3).iter.loop;
 a.nextN(9)
 ::
 
-subsection::FunctionList
+method::addFunc
+method::addFuncTo
+method::removeFunc
+method::removeFuncFrom
 
-The messages addFunc, addFuncTo, removeFunc, removeFuncFrom are supported by Object. See link::Classes/Function::.
 
+The messages link::Classes/Function#-addFunc::  link::Classes/Function#-addFuncTo::, link::Classes/Function#-removeFunc::, link::Classes/Function#-removeFuncFrom:: are supported by Object.
+
+method::instill
+method::obtain
+The messages link::Classes/SequenceableCollection#-instill:: and link::Classes/SequenceableCollection#-obtain::, are supported by Object.
 
