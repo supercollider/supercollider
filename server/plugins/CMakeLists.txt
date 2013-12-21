@@ -183,7 +183,7 @@ if (SUPERNOVA)
 				APPEND PROPERTY COMPILE_DEFINITIONS  "SUPERNOVA")
 
 	list(APPEND fft_ugens FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova)
-	list(APPEND supernova_plugins FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova)
+	list(APPEND supernova_plugins FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova UIUGens_supernova)
 	
 	if (APPLE)
 		add_library(UIUGens_supernova MODULE UIUGens.mm)
