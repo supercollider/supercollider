@@ -461,7 +461,6 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 			}
 			
 #ifdef __APPLE__
-			printf("Calling disableAppNap...\n");
 			SC::Apple::disableAppNap();
 #endif
 			
