@@ -661,7 +661,6 @@ SC_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
 		return NULL;
 
 #ifdef __APPLE__
-	printf("Calling disableAppNap for sclang...\n");
 	SC::Apple::disableAppNap();
 #endif
 

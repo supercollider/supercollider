@@ -26,11 +26,9 @@ namespace Apple {
 
 void disableAppNap ( )
 {
-	printf("In disableAppNap()\n");
 	// Does the App Nap API even exist on this Mac?
 	if ([[NSProcessInfo processInfo] respondsToSelector:@selector(beginActivityWithOptions:reason:)]) {
 		// If the API exists, then disable App Nap...
-		printf("Disabling!!!\n");
 		
 		// From NSProcessInfo.h:
 		// NSActivityIdleSystemSleepDisabled = (1ULL << 20),
