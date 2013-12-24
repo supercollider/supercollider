@@ -213,7 +213,7 @@ foreach(ugen ${fft_ugens})
 	target_link_libraries(${ugen} ${MATH_LIBRARY})
 
 	if (APPLE)
-		target_link_libraries(${ugen} "-framework vecLib")
+		target_link_libraries(${ugen} "-framework Accelerate")
 	endif()
 endforeach()
 
