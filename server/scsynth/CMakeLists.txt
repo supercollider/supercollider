@@ -198,7 +198,7 @@ if (FFTW3F_FOUND)
 endif()
 
 if (APPLE)
-	target_link_libraries(libscsynth "-framework vecLib -framework CoreServices -framework Foundation")
+	target_link_libraries(libscsynth "-framework Accelerate -framework CoreServices -framework Foundation")
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
