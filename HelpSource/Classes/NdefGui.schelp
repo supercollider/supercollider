@@ -1,7 +1,7 @@
 class:: NdefGui
 summary:: a gui for a NodeProxy or Ndef
 categories:: Libraries>JITLib>GUI
-related:: Classes/MonitorGui, Classes/NdefParamGui, Classes/NdefMixer, Classes/ProxyMixer
+related:: Classes/JITGui, Classes/MonitorGui, Classes/NdefParamGui, Classes/NdefMixer, Classes/ProxyMixer
 
 description::
 
@@ -41,7 +41,7 @@ a flag whether to create and start a link::Classes/SkipJack:: for auto-updating.
 argument::options
 an array of symbols for options of what to display. See list below.
 
-subsection:: Making options lists which can be used in *new:
+strong:: Preset options lists which can be used in *new: ::
 
 method::big
 two lines of controls for a big NdefGui, usually in its own window
@@ -67,16 +67,55 @@ a dict for the sizes of the different gui elements.
 method::buttonFuncs
 a lookup dict for making the different buttons.
 
+method::makeButFuncs
+not a class var, but the method that inits buttonFuncs.
+
+
 
 InstanceMethods::
 
 subsection::Instance Variables
-As in all JITGuis:
-	... object, numItems, parent, bounds ...
-	... zone, minSize, defPos, skin, font, skipjack ...
 
-method::nameView, typeView, monitorGui, paramGui, fadeBox, pauseBut, sendBut, edBut
-Views if they were present in the options.
+As in all JITGuis:
+
+... object, numItems, parent, bounds; zone, minSize, defPos, skin, font, skipjack ...
+
+method::nameView, typeView, monitorGui, paramGui, fadeBox, pauseBut, sendBut, edBut, wakeBut
+Various views the NdefGui has if they were present in the options.
+
+subsection::Instance Methods
+
+method::edits
+the paramGui's widgets (usually, EZSliders)
+method::editKeys
+the currently used param names
+
+method::highlight, unhighlight
+highlight and unhighlight a single slider by index
+
+method::highlightName, unhighlightName
+highlight and unhighlight the nameView
+
+method::highlightParams
+highlight a contiguous group of sliders;
+used for showing assigned MIDI faderboxes etc.
+
+method::addReplaceKey, removeReplaceKey
+editKeys with technical names can be replaced with
+more user-friendly ones.
+
+method::proxy
+an alias to method object, object_
+
+
+strong::Standard JITGui methods: ::
+
+method:: setDefaults, accepts, getState, checkUpdate
+
+strong:: Methods that make the various gui elements: ::
+
+method:: makeViews, makeNameView, makeTypeView, makeClrBut, makeWakeBut, makeResetBut, makeScopeBut, makeDocBut, makeEndBut, makeFadeBox, makeMonitor, makePauseBut, makeSendBut, makeEdBut, makeRipBut, makePollBut
+
 
 Examples::
 
@@ -90,12 +129,34 @@ Ndef(\a, { |freq=300, dens=20, amp=0.1, pan|
 });
 )
 
-	// make an NdefGui. By default, this has a lot of the options on.
+    // make an NdefGui. By default, this has a lot of the options on.
 n = NdefGui.new;
 n.object_(Ndef(\lfo));
-n.object_(Ndef(\a));
+Ndef(\lfo).set(\lofreq, 12);
 
-Ndef(\a).set(\lofreq, 12);
+n.object_(Ndef(\a));
+Ndef(\a).set(\freq, 120);
+::
+
+subsection::Some configuration options
+
+code::
+	// some preparation - make an ar and a kr nodeproxy.
+s.boot;
+(
+Ndef(\lfo, { |lofreq| SinOsc.kr(lofreq) });
+Ndef(\a, { |freq=300, dens=20, amp=0.1, pan|
+	Pan2.ar(Ringz.ar(Dust.ar(dens, amp / (dens.max(1).sqrt)), freq, 0.2), pan)
+});
+)
+
+    // make an NdefGui. By default, this has a lot of the options on.
+n = NdefGui.new;
+n.object_(Ndef(\lfo));
+Ndef(\lfo).set(\lofreq, 12);
+
+n.object_(Ndef(\a));
+Ndef(\a).set(\freq, 120);
 ::
 
 subsection::Some configuration options
@@ -111,13 +172,13 @@ n = NdefGui(Ndef(\a), 0, options: NdefGui.big);
 n = NdefGui(Ndef(\a), 0, options: NdefGui.full);
 
 
-NdefGui.control;	// used for control proxies in PxMix
+NdefGui.control;	// used for control proxies in ProxyMixer/NdefMixer
 ->	[ \name, \pausR, \sendR, \poll, \ed ]
 
-NdefGui.audio;		// used for audio proxies in PxMix
+NdefGui.audio;		// used for audio proxies in ProxyMixer/NdefMixer
 ->	[ \monitor, \playN, \name, \pausR, \sendR, \ed ]
 
-NdefGui.big;		// used for the big NdefGui in PxMix
+NdefGui.big;		// used for the big NdefGui in ProxyMixer/NdefMixer
 ->	[ \name, \type, \CLR, \reset, \scope, \doc, \end, \fade,
 		\monitor, \playN, \pausR, \sendR, \poll ]
 
@@ -125,8 +186,8 @@ NdefGui.big;		// used for the big NdefGui in PxMix
 NdefGui.full;
 ->	[ 	name, \type, \CLR, \reset, \scope, \doc, \end, \fade, \rip,
 		monitor, \playN, \pausR, \sendR, \poll, \ed ]
-
-	// the choice of elements is
+/*
+	// the choice of elements is:
 	\name		a dragboth for the proxy's name
 	\type		a view for the proxy's type (ir, ar + numChans, kr + numChans)
 	\CLR 		button to clear proxy
@@ -139,18 +200,21 @@ NdefGui.full;
 	\monitor		MonitorGui for audio proxies
 	\playN		a button for editing playN settings (within the MonitorGui)
 
-	\rip		(^)	button to open a new editor on the proxy (used in PxMix)
+	\rip		(^)	button to open a new editor on the proxy (used in ProxyMixer/NdefMixer)
 
 	\pausR		a button to toggle proxy pause/resume
 	\sendR		a button to re-send; alt-click tells the proxy to rebuild
 	\poll		poll the proxy
 
-	//	Planned options - not done yet:
-	\morph		add a PxPreset / morph control
+    * preset storage in JITLibExtensions, see ProxyPreset / NdefPreset
 
-		// 	pass in functions to add your own elements, such as:
-	\zoink -> { |ndgui| Button(ndgui.zone, 60@20).states_([["zoink"]]).action_({ ndgui.object.zoink }) };
+*/
 
+// 	add your own functions to add your own elements, such as:
+NdefGui.buttonSizes.put(\zoink, 60);
+NdefGui.buttonFuncs.put(\zoink, { |ndgui| Button(ndgui.zone, 60@20).states_([["zoink"]]).action_({ ndgui.object.zoink }) });
+
+n = NdefGui(Ndef(\a), 4, options: NdefGui.big ++ [\zoink]);
 
 
 	// make one and watch how the elements change
@@ -161,15 +225,20 @@ Ndef(\a).play;
 Ndef(\a).vol_(0.3);
 Ndef(\a).stop;
 
-Ndef(\a).playN([2, 5]);
+Ndef(\a).playN([2, 5]);   // does not display fully on outNumberBox
 Ndef(\a).playN([2, 5], vol: 0.34);
 
 
 	// as in ProxyMixer, left side
 n = NdefGui(Ndef(\a), options: NdefGui.audio);
-n = NdefGui(Ndef(\a), 4, options: NdefGui.control); // control zone
+
+// as in ProxyMixer control zone
+n = NdefGui(Ndef(\a), 4, options: NdefGui.control);
+
+    // NdefGui default
 n = NdefGui(options: NdefGui.big);
 
+    // and a few more
 n = NdefGui(bounds: 400@20, options: NdefGui.full);
 
 	// put in a window - then no margin is added
@@ -187,58 +256,13 @@ Ndef(\a).set(\harm, 20)
 Ndef(\a, { |freq = 10, amp = 0.1, harm = 20| Blip.ar(freq, harm) * amp })
 ::
 
-subsection::Works with ProxySpace as well
+subsection::Test - drag and drop proxies between NdefGuis
 
-code::
-p = ProxySpace.push;
-n = NdefGui(~test, 4);
-
-~test.ar;
-~test.play;
-
-	// too many controls: an EZScroller helps.
-(
-~test = { |freq=300, dens=20, amp=0.1, pan, ping=12, tok=13, crak|
-	Pan2.ar(Ringz.ar(Dust.ar(dens, amp / (dens.max(1).sqrt)), freq, 0.2), pan)
-};
-	// gets specs for slider ranges from global lookup in Spec.specs:
-Spec.add(\dens, [0.1, 100, \exp, 0.01, 10]);
-)
-
-(	// keys go away if not needed
-~test = { |freq=300, dens=20, amp=0.1|
-	Pan2.ar(Ringz.ar(Dust.ar(dens, amp / (dens.max(1).sqrt)), freq, 0.2))
-};
-)
-
-(	// and are added in order if needed
-~test = { |freq=300, intv=0, dens=20, amp=0.1, pan, pok, ting|
-	Pan2.ar(
-		Ringz.ar(
-			Dust.ar(dens ! 2, amp / (dens.max(1).sqrt)),
-			freq * [intv, intv.neg].midiratio, 0.2))
-};
-)
-
-	// changes in settings are shown:
-~test.set(\freq, exprand(100.0, 2000.0));
-~test.playN([0, 2]);
-
-	// mapping kr proxies to controls is shown
-~lfo = { LFNoise0.kr(8, 4) };
-~test.map(\intv, ~lfo);
-~test.unmap(\intv);
-
-Spec.add(\intv, ControlSpec(0, 24, \lin, 0.01, 0));
-	// setting a param value unmaps a previous control source
-~test.set(\freq, rrand(200, 500), \intv, rrand(-5.5, 5.5));
-::
-
-subsection::You can drag and drop proxies between NodeProxyEditors
+This seems broken in 3.7.0 - drags are sticky and can't be dropped.
 
 code::
 (
-//	p = ProxySpace.push(s.boot);
+	p = ProxySpace.push(s.boot);
 
 l = NdefGui(nil, 3).moveTo(10, 120);
 m = NdefGui(nil, 3).moveTo(10, 240);
@@ -257,11 +281,14 @@ l.object_(~spacy);
 m.object_(Ndef(\ndeffy));
 n.object_(c);
 )
-	// one can also drag and drop text into the drag:
+	// One should also be able to drag and drop text into the drag,
+    // but this is also not working yet.
 (	Ndef(\a)	)
 ::
 
-subsection::test replacing keys - needed for ProxyChain
+subsection::Test - replacing keys
+
+This is used in ProxyChain (JITLibExtensions).
 
 code::
 (

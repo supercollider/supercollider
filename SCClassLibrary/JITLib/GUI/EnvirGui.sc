@@ -155,7 +155,7 @@ EnvirGui : JITGui {
 			widget.labelView.background_(color ? skin.onColor2);
 			parName = this.editKeys[index];
 			if (prefix.notNil and: parName.notNil) {
-				parName = prefix ++ "_" ++parName;
+				parName = prefix ++ parName;
 			};
 			widget.labelView.string_(parName);
 		};

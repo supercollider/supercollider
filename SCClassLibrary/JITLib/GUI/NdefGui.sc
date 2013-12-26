@@ -7,8 +7,6 @@ NdefGui : JITGui {
 	var <monitorGui, <pauseBut, <sendBut, <edBut, <wakeBut;
 	var <paramGui;
 
-	var <config;
-
 	*initClass {
 		Class.initClassTree(Spec);
 		Spec.add(\ampx4, [0, 4, \amp]);
@@ -30,6 +28,16 @@ NdefGui : JITGui {
 	editKeys {
 		if (paramGui.isNil) { ^[] };
 		^paramGui.editKeys;
+	}
+
+	highlightName { |prefix = "", color|
+		nameView.string = prefix ++ try { this.object.key } ;
+		nameView.background_(color ? skin.onColor2);
+	}
+
+	unhighlightName {
+		nameView.string = try { this.object.key } ? "";
+		nameView.background_(skin.foreground);
 	}
 
 	highlight { |index, prefix, color|
@@ -79,7 +87,7 @@ NdefGui : JITGui {
 			// smaller fader for small screen proxymixer
 	*audioSm {
 			// one line, for small ProxyMixer arZone
-		^[\monitor, \playN, \name, \pausR, \sendR, \ed]
+		^[\monitor, \play, \name, \pausR, \sendR, \ed]
 	}
 
 	*control {
