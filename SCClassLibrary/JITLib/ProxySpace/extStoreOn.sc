@@ -331,7 +331,8 @@
 			//				}
 			//			};
 		};
-		^str.newTextWindow((name ? "proxyspace").asString)
+		// ^str.newTextWindow((name ? "proxyspace").asString)
+		^Document((name ? "proxyspace").asString, str);
 	}
 
 }
