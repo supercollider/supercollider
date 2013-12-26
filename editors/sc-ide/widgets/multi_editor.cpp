@@ -485,19 +485,19 @@ void MultiEditor::createActions()
     settings->addAction( action, "editor-toggle-space-indent", editorCategory );
 
     mActions[NextDocument] = action = new QAction(tr("Next Document"), this);
-#ifndef Q_OS_MAC
-    action->setShortcut( tr("Alt+Right", "Next Document"));
+#ifdef Q_OS_MAC
+    action->setShortcut( tr("Ctrl+Shift+]", "Next Document"));
 #else
-    action->setShortcut( tr("Ctrl+Alt+Right", "Next Document"));
+    action->setShortcut( tr("Alt+Right", "Next Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(showNextDocument()));
     settings->addAction( action, "editor-document-next", editorCategory);
 
     mActions[PreviousDocument] = action = new QAction(tr("Previous Document"), this);
-#ifndef Q_OS_MAC
-    action->setShortcut( tr("Alt+Left", "Previous Document"));
+#ifdef Q_OS_MAC
+    action->setShortcut( tr("Ctrl+Shift+[", "Previous Document"));
 #else
-    action->setShortcut( tr("Ctrl+Alt+Left", "Previous Document"));
+    action->setShortcut( tr("Alt+Left", "Previous Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
     settings->addAction( action, "editor-document-previous", editorCategory);
