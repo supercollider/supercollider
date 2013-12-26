@@ -5,7 +5,7 @@ TaskProxyGui : JITGui {
 
 	setDefaults { |options|
 		defPos = 10@260;
-		minSize = 250 @ (skin.buttonHeight * (numItems + 1) + (numItems.sign * 4));
+		minSize = 260 @ (skin.buttonHeight * (numItems + 1) + (numItems.sign * 4));
 		if (parent.notNil) { skin = skin.copy.put(\margin, 0@0) };
 	//	"% - minSize: %\n".postf(this.class, minSize);
 	}
@@ -330,31 +330,31 @@ TaskProxyAllGui :JITGui {
 }
 
 PdefnGui : JITGui {
-	
+
 	*observedClass { ^Pdefn }
-	
+
 	accepts { |obj| ^obj.isNil or: { obj.isKindOf(this.class.observedClass) } }
 
 	getState {
 		// get all the state I need to know of the object I am watching
 		^(object: object, source: try { object.source })
 	}
-	
+
 	checkUpdate {
 		var newState = this.getState;
-		zone.visible_(newState[\object].notNil);
-		
+
+		var show = newState[\object].notNil;
+		zone.visible_(show);
+		if (show.not) { ^this };
+
 		if (newState[\object] != prevState[\object]) {
-		//	zone.visible_(newState[\object].notNil);
 			this.name_(this.getName);
 		};
+		// works with a little delay, but works
 		if (newState[\source] != prevState[\source]) {
-			if (csView.textField.hasFocus.not) {
-				csView.value_(object);
-					// ugly
-				try { csView.textField.string_(object.asCode) };
-			};
+			defer { csView.textField.string_(object.asCode); };
 		};
+		prevState = newState;
 	}
 }
 
@@ -384,6 +384,6 @@ PdefnAllGui : TaskProxyAllGui {
 
 	setDefaults {
 		defPos = 540@660;
-		minSize = 260 @ (numItems + 1 * 20);		
+		minSize = 260 @ (numItems + 1 * 20);
 	}
 }
