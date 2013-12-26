@@ -148,6 +148,29 @@ EnvirGui : JITGui {
 
 	envir { ^object }
 
+	highlight { |index, prefix, color|
+		var widget = widgets[index];
+		var parName;
+		if (widget.notNil) {
+			widget.labelView.background_(color ? skin.onColor2);
+			parName = this.editKeys[index];
+			if (prefix.notNil and: parName.notNil) {
+				parName = prefix ++ "_" ++parName;
+			};
+			widget.labelView.string_(parName);
+		};
+	}
+
+	unhighlight { |index, prefix, color|
+		var widget = widgets[index];
+		var parName;
+		if (widget.notNil) {
+			widget.labelView.background_(skin.offColor);
+			parName = this.editKeys[index] ? "";
+			widget.labelView.string_(parName);
+		};
+	}
+
 	getState {
 		var newKeys, overflow;
 
