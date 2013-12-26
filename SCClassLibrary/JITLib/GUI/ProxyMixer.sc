@@ -23,8 +23,8 @@ ProxyMixer : JITGui {
 	pxMons { ^arGuis }		// should work in some cases
 
 	highlightSlots { |parOffset, num|
-		var onCol = Color(1, 0.5, 0.5);
-		var offCol = Color.clear;
+		var onCol = skin.onColor2;
+		var offCol = skin.offColor;
 		{ arGuis.do { |argui, i|
 			var col = if (i >= parOffset and: (i < (parOffset + num).max(0)), onCol, offCol);
 			argui.nameView.background_(col.green_([0.5, 0.7].wrapAt(i - parOffset div: 2)));
@@ -97,15 +97,15 @@ ProxyMixer : JITGui {
 
 		Button(arZone, Rect(10, 10, 50, skin.headHeight))
 				.states_(
-					[["reduce", skin.fontcolor, Color.clear]]				)
+					[["reduce", skin.fontcolor, skin.offColor]]				)
 				.action_({ object !? { object.reduce } }).font_(font);
 		Button(arZone, Rect(10, 10, 30, skin.headHeight))
 				.states_(
-					[["doc", skin.fontcolor, Color.clear]]				)
+					[["doc", skin.fontcolor, skin.offColor]]				)
 				.action_({ object !? { object.document } }).font_(font);
 		Button(arZone, Rect(10, 10, 45, skin.headHeight))
 				.states_(
-					[["docSel", skin.fontcolor, Color.clear]]				)
+					[["docSel", skin.fontcolor, skin.offColor]]				)
 				.action_({
 					object !? { object.document(this.selectedKeys) }
 				}).font_(font);
@@ -113,9 +113,9 @@ ProxyMixer : JITGui {
 		Button(arZone, Rect(10, 10, 60, skin.headHeight))
 				.font_(font)
 				.states_([
-						["openKr", skin.fontcolor, Color.clear],
-						["openEdit", skin.fontcolor, Color.clear],
-						["closeEdit", skin.fontcolor, Color.clear]
+						["openKr", skin.fontcolor, skin.offColor],
+						["openEdit", skin.fontcolor, skin.offColor],
+						["closeEdit", skin.fontcolor, skin.offColor]
 					])
 				.value_(1)
 				.action_({ |b| this.switchSize(b.value) });
@@ -123,7 +123,7 @@ ProxyMixer : JITGui {
 		Button(arZone, Rect(10, 10, 50, skin.headHeight))
 				.font_(font)
 				.states_(
-					[	["Record", Color.red, Color.clear]					])
+					[	["Record", Color.red, skin.offColor]					])
 				.action_({ RecordProxyMixer(this, parent.bounds.resizeTo(472, 100)) });
 
 	}

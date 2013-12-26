@@ -41,10 +41,32 @@ a flag whether to create and start a link::Classes/SkipJack:: for auto-updating.
 argument::options
 an array of symbols for options of what to display. See list below.
 
+subsection:: Making options lists which can be used in *new:
+
+method::big
+two lines of controls for a big NdefGui, usually in its own window
+
+method::full
+two lines of controls for a very big NdefGui
+
+method::audio
+for ar proxies, used in ProxyMixer left hand side
+
+method::audioSm
+for ar proxies, used in ProxyMixer.small on left hand side
+
+method::control
+for kr proxies, used in ProxyMixer mid section
+
+
 subsection::Class Variables
 
 method::buttonSizes
 a dict for the sizes of the different gui elements.
+
+method::buttonFuncs
+a lookup dict for making the different buttons.
+
 
 InstanceMethods::
 
