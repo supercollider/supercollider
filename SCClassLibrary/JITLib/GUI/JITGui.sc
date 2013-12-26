@@ -180,7 +180,7 @@ JITGui {
 			Rect(0,0, bounds.width - 65, lineheight),
 			nil, { |ez| object = ez.value; })
 			.font_(font);
-		csView.bounds.postln;
+		csView.bounds;
 	}
 
 	getState {

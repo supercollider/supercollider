@@ -1,7 +1,7 @@
 class:: PdefGui
 summary:: a line of editing controls for a Pdef, and optionally its envir
 categories:: Libraries>JITLib>GUI
-related:: Classes/PdefAllGui, Classes/TdefGui, Classes/TdefAllGui
+related:: Classes/PdefAllGui, Classes/TdefGui, Classes/TdefAllGui, Classes/EnvirGui
 
 description::
 
