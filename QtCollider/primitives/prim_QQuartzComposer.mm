@@ -66,8 +66,9 @@ static int getNSObjectForSCObject(PyrSlot *scobject, id *returnID, VMGlobals *g)
     } else if(isKindOfSlot(scobject, s_string->u.classobj)) { // it's a string
         PyrString *string = slotRawString(scobject);
         if(string->size == 0) { *returnID = NULL; return errFailed; }
-        NSString *returnString = [NSString stringWithCString: string->s encoding:NSUTF8StringEncoding];
-        returnObject = [returnString substringToIndex: string->size];
+        char cstring[string->size + 1];
+        slotStrVal(scobject, cstring, string->size + 1);
+        returnObject = [NSString stringWithCString:cstring encoding:NSUTF8StringEncoding];
     } else if(isKindOfSlot(scobject, s_color->u.classobj)) { // it's a color
         PyrSlot *slots = slotRawObject(scobject)->slots;
         
