@@ -42,6 +42,8 @@ ServerOptions
 
 	var <>pingsBeforeConsideredDead = 5;
 
+	var <>maxLogins;
+
 	device {
 		^if(inDevice == outDevice)
 		{
@@ -156,6 +158,9 @@ ServerOptions
 			if (Server.program.asString.endsWith("supernova")) {
 				o = o ++ " -T " ++ threads;
 			}
+		});
+		if (maxLogins.notNil, {
+			o = o ++ " -l " ++ maxLogins;
 		});
 		^o
 	}
@@ -338,13 +343,48 @@ Server {
 	}
 
 	newBusAllocators {
-		controlBusAllocator = ContiguousBlockAllocator.new(options.numControlBusChannels);
-		audioBusAllocator = ContiguousBlockAllocator.new(options.numAudioBusChannels,
-			options.firstPrivateBus);
+		var numControl, numAudio;
+		var controlBusOffset, audioBusOffset;
+		var offset = this.calcOffset;
+		var n = options.maxLogins ? 1;
+
+		numControl = options.numControlBusChannels div: n;
+		numAudio = options.numAudioBusChannels div: n;
+
+		controlBusOffset = numControl * offset;
+		audioBusOffset = options.firstPrivateBus + (numAudio * offset);
+
+		controlBusAllocator =
+				ContiguousBlockAllocator.new(
+					numControl + controlBusOffset,
+					controlBusOffset
+				);
+		audioBusAllocator =
+				ContiguousBlockAllocator.new(
+					numAudio + audioBusOffset,
+					audioBusOffset
+				);
 	}
 
 	newBufferAllocators {
-		bufferAllocator = ContiguousBlockAllocator.new(options.numBuffers);
+		var bufferOffset;
+		var offset = this.calcOffset;
+		var n = options.maxLogins ? 1;
+		var numBuffers = options.numBuffers div: n;
+		bufferOffset = numBuffers * offset;
+		bufferAllocator =
+				ContiguousBlockAllocator.new(
+					numBuffers + bufferOffset,
+					bufferOffset
+				);
+	}
+
+	calcOffset {
+			if(options.maxLogins.isNil) { ^0 };
+		if(clientID > (options.maxLogins - 1)) {
+					"Client ID exceeds maxLogins. Some buses and buffers may overlap for remote server: %".format(this).warn;
+			};
+			^clientID % options.maxLogins;
 	}
 
 	newScopeBufferAllocators {
