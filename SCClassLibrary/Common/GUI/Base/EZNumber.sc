@@ -1,9 +1,8 @@
 EZNumber : EZGui{
 	var <numberView, <unitView, <>controlSpec,
-		 numSize,numberWidth,unitWidth, gap, gap2;
+		 numSize,numberWidth,unitWidth, gap2;
 	var <>round = 0.001;
 
-	var scaler=1;  //for swing compatibility
 	*new { arg parent, bounds, label, controlSpec, action, initVal,
 			initAction=false, labelWidth=60, numberWidth,
 			unitWidth=0, labelHeight=20,  layout=\horz, gap, margin;

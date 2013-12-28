@@ -4,7 +4,6 @@ MonitorGui : JITGui {
 
 	classvar <>lastOutBus = 99;
 
-	var <config;
 	var <ampSl, <playBut, <setOutBox, <fadeBox;
 
 	*initClass {

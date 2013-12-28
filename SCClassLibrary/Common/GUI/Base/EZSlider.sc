@@ -1,7 +1,7 @@
 EZSlider : EZGui {
 
-	var <sliderView, <numberView, <unitView, <>controlSpec,
-		  popUp=false, numSize,numberWidth,unitWidth, gap;
+	var <sliderView, <numberView, <unitView, <>controlSpec;
+	var numSize,numberWidth,unitWidth;
 	var <>round = 0.001;
 
 	*new { arg parent, bounds, label, controlSpec, action, initVal,

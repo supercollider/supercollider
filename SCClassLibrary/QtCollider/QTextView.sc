@@ -1,5 +1,5 @@
 QTextView : QAbstractScroll {
-  var <stringColor, <font, <editable=true;
+  var <stringColor, <editable=true;
 
   *qtClass { ^'QcTextEdit' }
 

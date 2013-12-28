@@ -2,8 +2,7 @@ EZKnob : EZGui {
 
 	classvar <>compactRatio=0.87;
 
-	var <knobView, <numberView, <unitView, <>controlSpec,
-		  popUp=false, knobSize,unitWidth, gap;
+	var <knobView, <numberView, <unitView, <>controlSpec, knobSize, unitWidth;
 	var <>round = 0.001;
 
 	*new { arg parent, bounds, label, controlSpec, action, initVal,
