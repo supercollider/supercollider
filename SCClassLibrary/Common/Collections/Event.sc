@@ -51,8 +51,7 @@ Event : Environment {
 			or: {
 				this.use {
 					parent ?? { parent = defaultParentEvent };
-					// save detunedFreq so that it won't be re-calculated later
-					(~detunedFreq = ~detunedFreq.value).isRest
+					~detunedFreq.value.isRest
 				}
 			}
 		}
