@@ -3,7 +3,7 @@ HistoryGui {
 	classvar <w, <>docTitle = "History repeats", <>docHeight=120;
 
 	var <history, <w, <textV;
-	var <startBut, <filtBut, <filTextV, <filtBut, <keyPop, <topBut;
+	var <startBut, <filtBut, <filTextV, <keyPop, <topBut;
 	var <doc, <oldDocs, <docFlag = \sameDoc, <>stickMode=0;
 
 	var <filters, <filteredIndices, <filteredShorts, <filtering = false;

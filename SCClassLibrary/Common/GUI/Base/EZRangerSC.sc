@@ -1,7 +1,7 @@
 EZRanger : EZGui {
 
-	var <rangeSlider, <hiBox,<loBox, <unitView, <>controlSpec,
-		 <>action,<lo, <hi, popUp=false, numSize,numberWidth,unitWidth;
+	var <rangeSlider, <hiBox,<loBox, <unitView, <>controlSpec, <lo, <hi;
+	var numSize, numberWidth, unitWidth;
 	var <>round = 0.001;
 
 	*new { arg parent, bounds, label, controlSpec, action, initVal,
