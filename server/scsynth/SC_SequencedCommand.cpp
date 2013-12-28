@@ -540,7 +540,7 @@ bool BufAllocReadCmd::Stage2()
 	if (!sf) {
 		char str[512];
 		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
-		SendFailureWithBufnum(&mReplyAddress, "/b_allocRead", str, mBufIndex);	//SendFailure(&mReplyAddress, "/b_allocRead", str);
+		SendFailureWithIntValue(&mReplyAddress, "/b_allocRead", str, mBufIndex);	//SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
 		return false;
 	}
@@ -640,7 +640,7 @@ bool BufReadCmd::Stage2()
 	if (!sf) {
 		char str[512];
 		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
-		SendFailureWithBufnum(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
+		SendFailureWithIntValue(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
 	}
@@ -648,7 +648,7 @@ bool BufReadCmd::Stage2()
 		char str[512];
 		sf_close(sf);
 		sprintf(str, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n", mFilename, fileinfo.channels, buf->channels);
-		SendFailureWithBufnum(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
+		SendFailureWithIntValue(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
 	}
@@ -803,7 +803,7 @@ bool BufAllocReadChannelCmd::Stage2()
 	if (!sf) {
 		char str[512];
 		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
-		SendFailureWithBufnum(&mReplyAddress, "/b_allocReadChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
+		SendFailureWithIntValue(&mReplyAddress, "/b_allocReadChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
 		return false;
 	}
@@ -823,7 +823,7 @@ bool BufAllocReadChannelCmd::Stage2()
 		// verify channel indexes
 		if (!CheckChannels(fileinfo.channels)) {
             const char* str = "Channel index out of range.\n";
-			SendFailureWithBufnum(&mReplyAddress, "/b_allocReadChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
+			SendFailureWithIntValue(&mReplyAddress, "/b_allocReadChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
 			sf_close(sf);
 			return false;
@@ -929,7 +929,7 @@ bool BufReadChannelCmd::Stage2()
 	if (!sf) {
 		char str[512];
 		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
-		SendFailureWithBufnum(&mReplyAddress, "/b_readChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
+		SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
 	}
@@ -938,7 +938,7 @@ bool BufReadChannelCmd::Stage2()
 		// verify channel indexes
 		if (!( CheckChannels(fileinfo.channels)) ) { // nescivi:  && CheckChannels(buf->channels) (should not check here for buf->channels)
             const char* str = "Channel index out of range.\n";
-			SendFailureWithBufnum(&mReplyAddress, "/b_readChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
+			SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
 			sf_close(sf);
 			return false;
@@ -1080,7 +1080,7 @@ bool BufWriteCmd::Stage2()
 	if (!sf) {
 		char str[512];
 		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
-		SendFailureWithBufnum(&mReplyAddress, "/b_write", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_write", str);
+		SendFailureWithIntValue(&mReplyAddress, "/b_write", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_write", str);
 		scprintf(str);
 		return false;
 	}
@@ -1283,7 +1283,7 @@ bool NotifyCmd::Stage2()
 		for (uint32 i=0; i<hw->mNumUsers; ++i) {
 			if (mReplyAddress == hw->mUsers[i]) {
 				// already in table - don't fail though..
-				SendFailure(&mReplyAddress, "/notify", "notify: already registered\n");
+				SendFailureWithIntValue(&mReplyAddress, "/notify", "notify: already registered\n", hw->mClientIDdict->at(mReplyAddress));
 				scprintf("/notify : already registered\n");
 				return false;
 			}
@@ -1296,13 +1296,17 @@ bool NotifyCmd::Stage2()
 			return false;
 		}
 
+        uint32 clientID = hw->mClientIDs[hw->mClientIDTop++]; // pop an ID
+        hw->mClientIDdict->insert(std::pair<ReplyAddress, uint32>(mReplyAddress,clientID));
 		hw->mUsers[hw->mNumUsers++] = mReplyAddress;
 
-		SendDone("/notify");
+		SendDoneWithIntValue("/notify", clientID);
 	} else {
 		for (uint32 i=0; i<hw->mNumUsers; ++i) {
 			if (mReplyAddress == hw->mUsers[i]) {
 				// remove from list
+                hw->mClientIDs[--hw->mClientIDTop] = hw->mClientIDdict->at(mReplyAddress); // push the freed ID
+                hw->mClientIDdict->erase(mReplyAddress);
 				hw->mUsers[i] = hw->mUsers[--hw->mNumUsers];
 				SendDone("/notify");
 				return false;
