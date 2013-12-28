@@ -349,6 +349,12 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 		hw->mUsers = (ReplyAddress*)zalloc(inOptions->mMaxLogins, sizeof(ReplyAddress));
 		hw->mNumUsers = 0;
 		hw->mMaxUsers = inOptions->mMaxLogins;
+        hw->mClientIDs = (uint32*)zalloc(inOptions->mMaxLogins, sizeof(uint32));
+        for (int i = 0; i<hw->mMaxUsers; i++) {
+            hw->mClientIDs[i] = i;
+        }
+        hw->mClientIDTop = 0;
+        hw->mClientIDdict = new ClientIDDict();
 		hw->mHiddenID = -8;
 		hw->mRecentID = -8;
 
@@ -1039,6 +1045,8 @@ SC_DLLEXPORT_C void World_Cleanup(World *world)
 		if (hw->mNRTCmdFile) fclose(hw->mNRTCmdFile);
 #endif
 		free(hw->mUsers);
+        free(hw->mClientIDs);
+        delete hw->mClientIDdict;
 		delete hw->mNodeLib;
 		delete hw->mGraphDefLib;
 		delete hw->mQuitProgram;

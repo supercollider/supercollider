@@ -32,3 +32,16 @@ bool operator==(const ReplyAddress& a, const ReplyAddress& b)
 		&& a.mPort     == b.mPort
 		&& a.mSocket   == b.mSocket;
 }
+
+bool operator<(const ReplyAddress& a, const ReplyAddress& b)
+{
+	if(a.mAddress  != b.mAddress) {
+        return a.mAddress  < b.mAddress;
+    } else if (a.mPort  != b.mPort){
+        return a.mPort < b.mPort;
+    }  else if (a.mSocket  != b.mSocket){
+        return a.mSocket < b.mSocket;
+    } else {
+        return a.mProtocol < b.mProtocol;
+    }
+}

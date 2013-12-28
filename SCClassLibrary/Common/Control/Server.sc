@@ -42,7 +42,7 @@ ServerOptions
 
 	var <>pingsBeforeConsideredDead = 5;
 
-	var <>maxLogins;
+	var <>maxLogins = 1;
 
 	device {
 		^if(inDevice == outDevice)
@@ -264,7 +264,7 @@ ServerShmInterface {
 Server {
 	classvar <>local, <>internal, <default, <>named, <>set, <>program, <>sync_s = true;
 
-	var <name, <>addr, <clientID=0;
+	var <name, <>addr, <clientID, userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
 	var <serverRunning = false, <serverBooting = false, bootNotifyFirst = false;
 	var <>options, <>latency = 0.2, <dumpMode = 0, <notify = true, <notified=false;
@@ -300,7 +300,7 @@ Server {
 		this.all.do(_.changed(\default, server));
 	}
 
-	*new { arg name, addr, options, clientID=0;
+	*new { arg name, addr, options, clientID;
 		^super.new.init(name, addr, options, clientID)
 	}
 
@@ -310,7 +310,8 @@ Server {
 	init { arg argName, argAddr, argOptions, argClientID;
 		name = argName.asSymbol;
 		addr = argAddr;
-		clientID = argClientID;
+		if(argClientID.notNil, { userSpecifiedClientID = true;});
+		clientID = argClientID ? 0;
 		options = argOptions ? ServerOptions.new;
 		if (addr.isNil, { addr = NetAddr("127.0.0.1", 57110) });
 		inProcess = addr.addr == 0;
@@ -414,7 +415,7 @@ Server {
 
 	*fromName { arg name;
 		^Server.named[name] ?? {
-			Server(name, NetAddr.new("127.0.0.1", 57110), ServerOptions.new, 0)
+			Server(name, NetAddr.new("127.0.0.1", 57110), ServerOptions.new)
 		}
 	}
 
@@ -783,7 +784,24 @@ Server {
 	}
 
 	sendNotifyRequest { arg flag=true;
+		var doneOSCFunc, failOSCFunc;
 		notified = flag;
+		if(userSpecifiedClientID.not , {
+			doneOSCFunc = OSCFunc({|msg|
+				if(flag && { msg[2] != clientID }, {
+					clientID = msg[2];
+					this.newAllocators;
+				});
+				failOSCFunc.free;
+			}, '/done', addr, argTemplate:['/notify', nil]).oneShot;
+			failOSCFunc = OSCFunc({|msg|
+				if(msg[3].notNil && { msg[3] != clientID }, {
+					clientID = msg[3];
+					this.newAllocators;
+				});
+				doneOSCFunc.free;
+			}, '/fail', addr, argTemplate:['/notify', nil, nil]).oneShot;
+		});
 		addr.sendMsg("/notify", flag.binaryValue);
 	}
 
