@@ -70,24 +70,24 @@ NdefGui : JITGui {
 	*big {
 			// two lines - for big editor
 		^[\name, \type, \CLR, \reset, \scope, \doc, \end, \fade, \poll,
-			\monitorL, \play, \pausR, \sendR  ]
+			\monitorL, /*\play,*/ \pausR, \sendR  ]
 	}
 
 	*full {
 			// two lines - for big editor
 		^[\name, \type, \CLR, \reset, \scope, \doc, \end, \fade, \poll, \rip,
-			\monitorL, \play, \pausR, \sendR, ]
+			\monitorL, /*\play,*/ \pausR, \sendR, ]
 	}
 
 	*audio {
 			// one line, for ProxyMixer, ar
-		^[\monitorM, \play, \name, \pausR, \sendR, \ed]
+		^[\monitorM, /*\play,*/ \name, \pausR, \sendR, \ed]
 	}
 
 			// smaller fader for small screen proxymixer
 	*audioSm {
 			// one line, for small ProxyMixer arZone
-		^[\monitor, \play, \name, \pausR, \sendR, \ed]
+		^[\monitor, /*\play,*/ \name, \pausR, \sendR, \ed]
 	}
 
 	*control {
@@ -198,7 +198,7 @@ NdefGui : JITGui {
 	makeNameView { |nameWid, height|
 		try { // QT temp fix
 			nameView = DragBoth(zone, Rect(0,0, nameWid, height))
-			.font_(font)//.align_(0)
+			.font_(font).align_(\center)
 			.receiveDragHandler_({
 				var drag = View.currentDrag;
 				if (drag.isKindOf(String)) { drag = drag.interpret };
@@ -212,7 +212,7 @@ NdefGui : JITGui {
 
 	makeTypeView { |width, height|
 		typeView = StaticText(zone, width@height).string_("-").align_(0)
-			.font_(font).align_(0);
+			.font_(font).align_(\center);
 	}
 
 	makeClrBut { |width, height|
