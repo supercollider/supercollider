@@ -129,7 +129,7 @@ MonitorGui : JITGui {
 				if (object.notNil) {
 					if (object.monitor.isNil) {
 						"MonitorGui - monitor is nil, cannot set outs yet.".postln;
-						box.string = "-"
+						box.numberView.string = "-"
 					} {
 						object.monitor.out_(box.value.asInteger);
 					};

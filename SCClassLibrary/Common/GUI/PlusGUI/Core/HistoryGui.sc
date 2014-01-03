@@ -26,9 +26,14 @@ HistoryGui : JITGui {
 	var <filters, <filteredIndices, <filteredShorts, <filtering = false;
 	var lastLineSelected = 0, lastLinesShown;
 
+	*new { |object, numItems = 8, parent, bounds, makeSkip = true, options = #[]|
+		^super.newCopyArgs(nil, numItems, parent, bounds)
+			.init(makeSkip, options)
+			.object_(object);
+	}
+
 	accepts { |obj| ^obj.isNil or: { obj.isKindOf(History) } }
 
-		// these methods should be overridden in subclasses:
 	setDefaults { |options|
 		if (parent.isNil) {
 			defPos = 10@260
@@ -36,14 +41,24 @@ HistoryGui : JITGui {
 			defPos = skin.margin;
 		};
 		minSize = 300 @ 400;	// calculate later
-	//	"minSize: %\n".postf(minSize);
+		minSize = 300 @ (
+			(numItems * skin.buttonHeight) // textView
+			+ (skin.buttonHeight + (skin.margin.y * 2)) // buttonline
+			+ (numItems * skin.buttonHeight * 1.62).round(1)
+			);
+		//	"minSize: %\n".postf(minSize);
+		"minSize: %\n".postf(minSize); GUI.skins.jit.margin
 	}
 
 	makeViews { |options|
-		var font, flow, listViewHeight = 230;
+		var font, flow;
+		var textViewHeight = numItems * skin.buttonHeight;
+		var listViewHeight = textViewHeight * 1.6;
 
 		font = Font("Osaka", 9);
 		flow = zone.addFlowLayout(2@2, 1@1);
+
+		zone.resize_(5);
 
 		// this should move to JITGui,
 		// as it is useful for many JITGuis.
@@ -59,7 +74,7 @@ HistoryGui : JITGui {
 
 		filters = [\all, ""];
 
-		textV = TextView(zone, Rect(0, 0, (zone.bounds.width - 4), 148))
+		textV = TextView(zone, Rect(0, 0, (zone.bounds.width - 4), textViewHeight))
 			.string_("")
 			.enterInterpretsSelection_(false)
 			.keyDownAction_({ |txvw, char, mod, uni, keycode|
@@ -69,7 +84,6 @@ HistoryGui : JITGui {
 				};
 			})
 			.resize_(2);
-		textV.bounds.postln;
 
 			// to do: disable if history is not current!
 		startBut = Button(zone, Rect(0, 0, 40, 20)) ////
@@ -103,7 +117,7 @@ HistoryGui : JITGui {
 			.items_([\all]).value_(0)
 			.action_({ |pop| this.setKeyFilter(pop.items[pop.value]) });
 
-		filTextV = TextView(zone, Rect(0,0, 88, 20)).string_("")
+		filTextV = TextView(zone, Rect(0,0, 88 + 12, 20)).string_("")
 			.enterInterpretsSelection_(false)
 			.resize_(2)
 			.keyDownAction_({ |txvw, char, mod, uni, keycode|
@@ -127,20 +141,20 @@ HistoryGui : JITGui {
 			.canFocus_(false)
 			.action_({ |btn| this.rip(textV.string) });
 
-		// not sure that this still works in Qt as intended
-		Button(zone, Rect(0,0, 16, 20))
-			.states_([["v"], ["^"]])
-			.resize_(3)
-			.action_ { |btn|
-				var views = zone.children;
-				var resizes = [
-					[2, 1, 1, 1, 2, 3, 3, 3, 5],
-					[5, 7, 7, 7, 8, 9, 9, 9, 8]
-				][btn.value.asInteger];
-
-				views.postln.do { |v, i| v.resize_(resizes[i]) };
-
-			};
+		// // not sure that this still works in Qt as intended
+		// Button(zone, Rect(0,0, 16, 20))
+		// .states_([["v"], ["^"]])
+		// .resize_(3)
+		// .action_ { |btn|
+		// 	var views = zone.children;
+		// 	var resizes = [
+		// 		[2, 1, 1, 1, 2, 3, 3, 3, 5],
+		// 		[5, 7, 7, 7, 8, 9, 9, 9, 8]
+		// 	][btn.value.asInteger];
+		//
+		// 	views.postln.do { |v, i| v.resize_(resizes[i]) };
+		//
+		// };
 
 		listV = ListView(zone, bounds.copy.insetBy(2).height_(listViewHeight))
 			.font_(font)
@@ -184,7 +198,8 @@ HistoryGui : JITGui {
 			started: History.started,
 
 			filtStr: filTextV.string,
-			numLines: object.lines.size
+			numLines: object.lines.size,
+			filtering: filtering
 		);
 		^newState
 	}
@@ -198,19 +213,19 @@ HistoryGui : JITGui {
 
 		// these three should move to JITGui in general,
 		// to simplify the checkUpdate methods
-	updateFunc { |newState, key, func|
+	updateFunc { |newState, key, func, post = false|
 		var val = newState[key];
 		if (val != prevState[key]) { func.value(val) }
 	}
 
-	updateVal { |newState, key, guiThing|
+	updateVal { |newState, key, guiThing, post = false|
 		var val = newState[key];
-		if (val != prevState[key]) { guiThing.value_(val) }
+		if (val != prevState[key]) { guiThing.value_(val).refresh }
 	}
 
-	updateBinVal { |newState, key, guiThing|
+	updateBinVal { |newState, key, guiThing, post = false|
 		var val = newState[key];
-		if (val != prevState[key]) { guiThing.value_(val.binaryValue) }
+		if (val != prevState[key]) { guiThing.value_(val.binaryValue).refresh }
 	}
 
 	updateLines {
@@ -244,7 +259,7 @@ HistoryGui : JITGui {
 		var newState = this.getState;
 		var keys;
 
-		if (newState == prevState) { ^this };
+	///	if (newState == prevState) { ^this };
 
 		this.updateFunc(newState, \object, { |obj| zone.enabled_(obj.notNil) });
 
@@ -264,7 +279,8 @@ HistoryGui : JITGui {
 		// };
 
 			// could be factored a bit more
-		if (newState[\hasMovedOn] or: { newState[\numLines] != prevState[\numLines]}) {
+		if (newState[\hasMovedOn] or: {
+			newState[\numLines] != prevState[\numLines] }) {
 
 			keys = [\all] ++ object.keys.asArray.sort;
 			keyPop.items_(keys);
@@ -278,12 +294,21 @@ HistoryGui : JITGui {
 		prevState = newState;
 	}
 
-	setKeyFilter { |key| filters.put(0, key); this.filterLines; }
-	setStrFilter { |str| filters.put(1, str); this.filterLines; }
+	setKeyFilter { |key|
+		filters.put(0, key);
+		object.hasMovedOn_(true);
+		if (filtering) { this.filterLines; };
+	}
+	setStrFilter { |str|
+		filters.put(1, str);
+		object.hasMovedOn_(true);
+		if (filtering) { this.filterLines; };
+	}
 
 	filtering_ { |flag=true|
 		filtering = flag;
 		object.hasMovedOn_(true);
+		if (filtering) { this.filterLines; };
 		this.updateLines;
 	}
 	filterOn { this.filtering_(true) }

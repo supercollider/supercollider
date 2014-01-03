@@ -10,7 +10,9 @@ History keeps track of all code lines that are being executed, in order to forwa
 
 ClassMethods::
 
-private::initClass
+private::initClass, timeStamp, dateString, hasMovedOn, lineShorts
+private:: addToLog, date, time0, saveFolder, logFolder, logFile, logPath, makeLogFolder, checkLogStarted, startLog, endLog, showLogFile.
+private:: maxShortLength, getTimeFromString, asLines, cmdPeriod
 
 method::start
 start adding interpreted code to (current) history.
@@ -26,6 +28,15 @@ add an entry by hand.
 
 method::document
 post the history in a new document (as story).
+
+method:: makeWin
+make a HistoryGui for History.current, at the point given, with the given textHeight.
+
+method:: keepsLog
+get and set flag whether to log History to a file.
+
+method:: verbose
+get and set flag whether to post debug messages from History operations.
 
 method::drop
 drop the newest n lines from history. if n is negative, drop the oldest n lines.
@@ -60,6 +71,19 @@ The filename is the original name with "_rewritten." appended.
 argument::open
 If open is true (default: true), open a text window with the string.
 
+subsection::More internal methods:
+
+method:: current
+the current History instance
+
+method:: lines, lineShorts
+the curently recorded lines in History.current.
+
+lineShorts is a copy with shortened strings for display.
+
+method:: new
+create a new instance.
+
 Examples::
 
 code::
@@ -73,12 +97,11 @@ p = ProxySpace.push(s.boot);
 ~a.play;
 ~a.end;
 
-History.end;		// NOTE: change of interface! History.end ends logging now.
+History.end;		// History.end ends logging as well.
 
 
 History.document; // create a document with all the changes
-
-History.showLogFile; //
+History.showLogFile; // open the log file as it was written.
 
 g = History.makeWin(0@20); // make a gui window, put it where you like
 g = History.makeWin(0@20, 5); // lines to see in textview
