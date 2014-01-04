@@ -2153,7 +2153,8 @@ enum {
 	shape_Welch,
 	shape_Curve,
 	shape_Squared,
-	shape_Cubed
+	shape_Cubed,
+	shape_Hold
 };
 
 enum {
@@ -2216,55 +2217,58 @@ int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
 			//post("    shape %d   pos %g\n", shape, pos);
 			switch (shape)
 			{
-				case shape_Step :
-					level = endLevel;
-					break;
-				case shape_Linear :
-				default:
-					level = pos * (endLevel - begLevel) + begLevel;
-					break;
-				case shape_Exponential :
-					level = begLevel * pow(endLevel / begLevel, pos);
-					break;
-				case shape_Sine :
-					level = begLevel + (endLevel - begLevel) * (-cos(pi * pos) * 0.5 + 0.5);
-					break;
-				case shape_Welch :
-				{
-					if (begLevel < endLevel)
-						level = begLevel + (endLevel - begLevel) * sin(pi2 * pos);
-					else
-						level = endLevel - (endLevel - begLevel) * sin(pi2 - pi2 * pos);
-					break;
-				}
-				case shape_Curve :
-					err = slotDoubleVal(slots + 3, &curve);
-					if (err) return err;
+			case shape_Step :
+				level = endLevel;
+				break;
+			case shape_Hold :
+				level = begLevel;
+				break;
+			case shape_Linear :
+			default:
+				level = pos * (endLevel - begLevel) + begLevel;
+				break;
+			case shape_Exponential :
+				level = begLevel * pow(endLevel / begLevel, pos);
+				break;
+			case shape_Sine :
+				level = begLevel + (endLevel - begLevel) * (-cos(pi * pos) * 0.5 + 0.5);
+				break;
+			case shape_Welch :
+			{
+				if (begLevel < endLevel)
+					level = begLevel + (endLevel - begLevel) * sin(pi2 * pos);
+				else
+					level = endLevel - (endLevel - begLevel) * sin(pi2 - pi2 * pos);
+				break;
+			}
+			case shape_Curve :
+				err = slotDoubleVal(slots + 3, &curve);
+				if (err) return err;
 
-					if (fabs(curve) < 0.0001) {
-						level = pos * (endLevel - begLevel) + begLevel;
-					} else {
-						double denom = 1. - exp(curve);
-						double numer = 1. - exp(pos * curve);
-						level = begLevel + (endLevel - begLevel) * (numer/denom);
-					}
-					break;
-				case shape_Squared :
-				{
-					double sqrtBegLevel = sqrt(begLevel);
-					double sqrtEndLevel = sqrt(endLevel);
-					double sqrtLevel = pos * (sqrtEndLevel - sqrtBegLevel) + sqrtBegLevel;
-					level = sqrtLevel * sqrtLevel;
-					break;
+				if (fabs(curve) < 0.0001) {
+					level = pos * (endLevel - begLevel) + begLevel;
+				} else {
+					double denom = 1. - exp(curve);
+					double numer = 1. - exp(pos * curve);
+					level = begLevel + (endLevel - begLevel) * (numer/denom);
 				}
-				case shape_Cubed :
-				{
-					double cbrtBegLevel = pow(begLevel, 0.3333333);
-					double cbrtEndLevel = pow(endLevel, 0.3333333);
-					double cbrtLevel = pos * (cbrtEndLevel - cbrtBegLevel) + cbrtBegLevel;
-					level = cbrtLevel * cbrtLevel * cbrtLevel;
-					break;
-				}
+				break;
+			case shape_Squared :
+			{
+				double sqrtBegLevel = sqrt(begLevel);
+				double sqrtEndLevel = sqrt(endLevel);
+				double sqrtLevel = pos * (sqrtEndLevel - sqrtBegLevel) + sqrtBegLevel;
+				level = sqrtLevel * sqrtLevel;
+				break;
+			}
+			case shape_Cubed :
+			{
+				double cbrtBegLevel = pow(begLevel, 0.3333333);
+				double cbrtEndLevel = pow(endLevel, 0.3333333);
+				double cbrtLevel = pos * (cbrtEndLevel - cbrtBegLevel) + cbrtBegLevel;
+				level = cbrtLevel * cbrtLevel * cbrtLevel;
+				break;
+			}
 			}
 			SetFloat(a, level);
 			return errNone;

@@ -40,7 +40,8 @@ struct QcGraphElement {
     Exponential,
     Quadratic,
     Cubic,
-    Curvature
+    Curvature,
+    Hold
   };
 
   QcGraphElement( const QSize & sz ) :
@@ -51,7 +52,7 @@ struct QcGraphElement {
     selected( false ),
     _prev(0),
     _next(0)
-  {};
+  {}
 
   void setCurveType( CurveType type, double curve = 0.0 ) {
     curveType = type;
