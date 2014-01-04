@@ -104,6 +104,14 @@ EventTypesWithCleanup {
 				~schedBundle.value(~lag, ~timingOffset, server, [\b_allocRead, bufNum, ~path, ~firstFileFrame, ~numFrames]);
 			},
 
+			allocWrite: #{|server|
+				var bufNum;
+				if ( (bufNum = ~bufNum).isNil ) { bufNum = ~bufNum = server.bufferAllocator.alloc; ~type = \allocWriteID };
+				~schedBundle.value(~lag, ~timingOffset, server,
+					[\b_alloc, bufNum, ~numFrames, ~numChannels],
+					[\b_write, bufNum, ~path, ~headerFormat, ~sampleFormat, 0, 0, 1]);
+			},
+
 			cue: #{ | server |
 				var  bufNum, bndl, completion;
 				if ( (bufNum = ~bufNum).isNil ) { bufNum = ~bufNum = server.bufferAllocator.alloc; ~type = \cueID };
@@ -115,6 +123,15 @@ EventTypesWithCleanup {
 
 			freeAllocRead: #{|server|
 				~schedBundle.value(~lag, ~timingOffset, server, [\b_free, ~bufNum]);
+			},
+
+			freeAllocWrite: #{|server|
+				~schedBundle.value(~lag, ~timingOffset, server, [\b_close, ~bufNum], [\b_free, ~bufNum]);
+			},
+
+			freeAllocWriteID: #{|server|
+				~schedBundle.value(~lag, ~timingOffset, server, [\b_close, ~bufNum], [\b_free, ~bufNum]);
+				server.bufferAllocator.free(~bufNum);
 			},
 
 			freeCue: #{ | server |
@@ -166,6 +183,8 @@ EventTypesWithCleanup {
 			table:		\freeBuffer,			// free buffer and deallocate bufNum
 			buffer:		\freeBuffer,			// free buffer and deallocate bufNum
 			allocRead:	\freeAllocRead,		// free buffer
+			allocWrite: \freeAllocWrite,    // close file and free buffer
+			allocWriteID:	\freeAllocWriteID,		// close file, free buffer and deallocate bufNum
 			cue:			\freeCue,				// free buffer, close file
 			allocReadID:	\freeBuffer,			// free buffer and deallocate bufNum
 			cueID:		\freeCueID,			// free buffer, close file, and deallocate bufNum
@@ -188,6 +207,8 @@ EventTypesWithCleanup {
 			buffer: 		\bufNum,
 			allocRead: 	\bufNum,
 			allocReadID: 	\bufNum,
+			allocWrite: 	\bufNum,
+			allocWriteID: 	\bufNum,
 			audioBus:		\out,
 			controlBus:	\out,
 			on:			\id,
