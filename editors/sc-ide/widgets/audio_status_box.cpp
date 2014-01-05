@@ -56,6 +56,7 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     server->action(ScServer::Record)->setProperty("keep_menu_open", true);
     server->action(ScServer::VolumeRestore)->setProperty("keep_menu_open", true);
     server->action(ScServer::Mute)->setProperty("keep_menu_open", true);
+    server->action(ScServer::DumpOSC)->setProperty("keep_menu_open", true);
 
     QAction *separator;
     addAction( server->action(ScServer::ToggleRunning) );
