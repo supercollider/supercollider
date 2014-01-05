@@ -13,7 +13,7 @@ QStethoscope {
   *implementsClass {^'Stethoscope'}
 
   *new { arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
-    if(server.inProcess.not, { "scope works only with internal server".error; ^nil });
+	if(server.inProcess.not, { "Failure: internal scope works only with internal server.\nMaybe shared memory interface was lost while computer was asleep.".error; ^nil });
     ^super.newCopyArgs(server, numChannels, rate ? \audio).makeWindow(view)
     .index_(index ? 0).zoom_(zoom).allocBuffer(bufsize, bufnum).run;
   }
