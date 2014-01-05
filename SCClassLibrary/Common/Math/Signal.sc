@@ -276,6 +276,9 @@ Signal[float] : FloatArray {
 	clip { arg lo, hi; _ClipSignal; ^this.primitiveFailed }
 	wrap { arg lo, hi; _WrapSignal; ^this.primitiveFailed }
 	fold { arg lo, hi; _FoldSignal; ^this.primitiveFailed }
+	blend { arg that, blendFrac = 0.5;
+		^this + (blendFrac * (that - this));
+	}
 
 	asInteger { _AsInt; ^this.primitiveFailed }
 	asFloat { _AsFloat; ^this.primitiveFailed }
