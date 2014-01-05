@@ -68,9 +68,9 @@ QImage {
 			if (multiple.beginsWith("http://").not
 				and:{ multiple.beginsWith("file://").not }
 				and:{ multiple.beginsWith("ftp://").not  }, {
-				ret = this.open(multiple);
-			}, {
-				ret = this.openURL(multiple);
+					ret = this.open(multiple);
+				}, {
+					ret = this.openURL(multiple);
 			});
 		}
 
@@ -311,8 +311,8 @@ QImage {
 		window.acceptsMouseOver = true;
 
 		uview = UserView(window, window.view.bounds)
-			.resize_(5)
-			.focusColor_(Color.clear);
+		.resize_(5)
+		.focusColor_(Color.clear);
 
 		window.onClose_({
 			allPlotWindows.remove(window);
@@ -340,8 +340,8 @@ QImage {
 			if(showInfo, {
 				if(this.isValid, {
 					info = format("X: %, Y: %",
-					((x / window.view.bounds.width) * this.width).floor.min(this.width-1),
-					((y / window.view.bounds.height) * this.height).floor.min(this.height-1) );
+						((x / window.view.bounds.width) * this.width).floor.min(this.width-1),
+						((y / window.view.bounds.height) * this.height).floor.min(this.height-1) );
 				}, {
 					info = "invalid image";
 				});

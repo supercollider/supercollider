@@ -9,7 +9,7 @@
 
 
 + QView {
-	
+
 	asPageLayout { arg title,bounds;
 		^FlowView(this,bounds ?? {this.bounds})
 	}
