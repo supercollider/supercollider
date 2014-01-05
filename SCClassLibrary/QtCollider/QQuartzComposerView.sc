@@ -44,11 +44,11 @@ QQuartzComposerView : QView {
 	doesNotUnderstand { arg selector ... args;
 		if(selector.isSetter && inputKeys.includes(selector.asGetter), {
 			this.setInputValue(selector.asGetter, *args); ^this;},
-			{
-				if(outputKeys.includes(selector), {^this.getOutputValue(selector)}, {
-					if(inputKeys.includes(selector), {^this.getInputValue(selector)})
-				})
-			}
+		{
+			if(outputKeys.includes(selector), {^this.getOutputValue(selector)}, {
+				if(inputKeys.includes(selector), {^this.getInputValue(selector)})
+			})
+		}
 		);
 		super.doesNotUnderstand(selector, *args);
 	}
