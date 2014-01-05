@@ -68,6 +68,7 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     addAction( server->action(ScServer::DumpNodeTree) );
     addAction( server->action(ScServer::DumpNodeTreeWithControls) );
     addAction( server->action(ScServer::PlotTree) );
+	addAction( server->action(ScServer::DumpOSC) );
     addActionSeparator();
     addAction( server->action(ScServer::Record) );
     addActionSeparator();
@@ -82,6 +83,7 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     connect(server, SIGNAL(volumeChanged(float)), this, SLOT(updateVolumeLabel(float)));
     connect(server, SIGNAL(mutedChanged(bool)), this, SLOT(updateMuteLabel(bool)));
     connect(server, SIGNAL(recordingChanged(bool)), this, SLOT(updateRecordLabel(bool)));
+    connect(server, SIGNAL(dumpOSCChanged(bool)), this, SLOT(updateDumpOSCLabel(bool)));
 
     onServerRunningChanged(false, "", 0);
     updateVolumeLabel( mServer->volume() );

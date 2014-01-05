@@ -127,6 +127,11 @@ void ScServer::createActions(Settings::Manager * settings)
     connect(action, SIGNAL(triggered()), this, SLOT(plotTree()));
     settings->addAction( action, "synth-server-plot-tree", synthServerCategory);
 
+    mActions[DumpOSC] = action = new QAction(tr("Server Dump OSC"), this);
+    action->setCheckable(true);
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(sendDumpingOSC(bool)));
+    settings->addAction( action, "synth-server-dumpOSC", synthServerCategory);
+
     mActions[Mute] = action = new QAction(tr("Mute"), this);
     action->setShortcut(tr("Ctrl+Alt+End", "Mute sound output."));
     action->setCheckable(true);
@@ -256,6 +261,14 @@ void ScServer::setMuted( bool muted )
     sendMuted(muted);
 }
 
+bool ScServer::isDumpingOSC() const { return mActions[DumpOSC]->isChecked(); }
+
+void ScServer::setDumpingOSC( bool dumping )
+{
+    mActions[DumpOSC]->setChecked(dumping);
+    sendDumpingOSC(dumping);
+}
+
 float ScServer::volume() const { return mVolumeWidget->volume(); }
 
 void ScServer::setVolume( float volume )
@@ -290,6 +303,14 @@ void ScServer::sendMuted(bool muted)
     static const QString unmuteCommand("ScIDE.defaultServer.unmute");
 
     mLang->evaluateCode( muted ? muteCommand : unmuteCommand, true );
+}
+
+void ScServer::sendDumpingOSC(bool dumping)
+{
+    static const QString dumpCommand("ScIDE.defaultServer.dumpOSC(true)");
+    static const QString stopDumpCommand("ScIDE.defaultServer.dumpOSC(false)");
+
+    mLang->evaluateCode( dumping ? dumpCommand : stopDumpCommand, true );
 }
 
 void ScServer::sendVolume( float volume )
@@ -508,6 +529,7 @@ void ScServer::updateEnabledActions()
     mActions[Volume]->setEnabled(langAndServerRunning);
     mActions[VolumeRestore]->setEnabled(langAndServerRunning);
     mActions[Record]->setEnabled(langAndServerRunning);
+    mActions[DumpOSC]->setEnabled(langAndServerRunning);
 }
 
 }
