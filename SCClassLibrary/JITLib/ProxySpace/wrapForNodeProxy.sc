@@ -14,8 +14,8 @@
 		^SynthDefControl
 	}
 
-	makeProxyControl { arg channelOffset=0;
-		^this.proxyControlClass.new(this, channelOffset);
+	makeProxyControl { arg channelOffset = 0, proxy;
+		^this.proxyControlClass.new(this, channelOffset, proxy);
 	}
 
 
@@ -62,10 +62,11 @@
 }
 
 + SimpleNumber {
+	proxyControlClass { ^ScalarSynthControl }
 
 	prepareForProxySynthDef { arg proxy;
 		proxy.initBus(\control, 1);
-		^{DC.multiNewList([proxy.rate] ++ this) };
+		^{ NamedControl(\value, this, proxy.rate, 0.05) }
 	}
 }
 
@@ -80,9 +81,11 @@
 }
 
 + RawArray {
+	proxyControlClass { ^ScalarSynthControl }
+
 	prepareForProxySynthDef { arg proxy;
 		proxy.initBus(\control, this.size);
-		^{DC.multiNewList([proxy.rate] ++ this) };
+		^{ NamedControl(\value, this, proxy.rate, 0.05) }
 	}
 }
 
