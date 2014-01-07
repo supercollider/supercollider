@@ -331,3 +331,20 @@ SynthDefControl : SynthControl {
 	controlNames { ^synthDef.allControlNames }
 
 }
+
+ScalarSynthControl : SynthDefControl {
+	*new { |source, channelOffset = 0, proxy|
+		var existing = proxy.objects[channelOffset];
+		if(existing.class !== this) {
+			proxy.nodeMap.set(\value, source);
+			^super.new(source, channelOffset, proxy)
+		} {
+			proxy.set(\value, source);
+			existing.source = source;
+			^existing
+		}
+	}
+	source_ { |newSource|
+		source = newSource
+	}
+}
