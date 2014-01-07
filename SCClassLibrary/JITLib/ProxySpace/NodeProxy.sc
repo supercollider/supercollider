@@ -130,7 +130,7 @@ NodeProxy : BusPlug {
 		};
 
 		orderIndex = index ? 0;
-		container = obj.makeProxyControl(channelOffset, this);
+		container = obj.makeProxyControl(channelOffset, this, orderIndex);
 		if(container !== objects[orderIndex]) {
 			container.build(this, orderIndex); // bus allocation happens here
 
