@@ -1015,17 +1015,20 @@ handle_failure:
 
 #define CHECK_BUFFER_DATA \
 if (!bufData) { \
-	Print("Buffer UGen: no buffer data\n"); \
-	unit->mDone = true; \
+	if(unit->mWorld->mVerbosity > -1 && !unit->mDone && (unit->m_failedBufNum != fbufnum)) { \
+		Print("Buffer UGen: no buffer data\n"); \
+		unit->m_failedBufNum = fbufnum; \
+	} \
 	ClearUnitOutputs(unit, inNumSamples); \
 	return; \
 } else { \
 	if (bufChannels != numOutputs) { \
-		if(unit->mWorld->mVerbosity > -1 && !unit->mDone && (unit->m_failedBufNum != fbufnum)) \
+		if(unit->mWorld->mVerbosity > -1 && !unit->mDone && (unit->m_failedBufNum != fbufnum)) { \
 			Print("Buffer UGen channel mismatch: expected %i, yet buffer has %i channels\n", \
 				  numOutputs, bufChannels); \
 			unit->m_failedBufNum = fbufnum; \
 			} \
+		} \
 } \
 
 
