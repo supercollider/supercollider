@@ -304,6 +304,13 @@ Server {
 		^super.new.init(name, addr, options, clientID)
 	}
 
+	*remote { arg name, addr, options, clientID;
+		var result;
+		result = this.new(name, addr, options, clientID);
+		result.startAliveThread;
+		^result;
+	}
+
 	*all { ^set }
 	*all_ { arg dict; set = dict }
 
