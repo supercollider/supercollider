@@ -42,16 +42,16 @@ EZKnob : EZGui {
 
 		// instert the views
 		label.notNil.if{ //only add a label if desired
-			labelView = GUI.staticText.new(view, labelBounds);
+			labelView = StaticText.new(view, labelBounds);
 			labelView.string = label;
 		};
 
 		(unitWidth>0).if{ //only add a unitLabel if desired
-			unitView = GUI.staticText.new(view, unitBounds);
+			unitView = StaticText.new(view, unitBounds);
 		};
 
-		knobView = GUI.knob.new(view, knobBounds);
-		numberView = GUI.numberBox.new(view, numBounds);
+		knobView = Knob.new(view, knobBounds);
+		numberView = NumberBox.new(view, numBounds);
 
 		// set view parameters and actions
 		controlSpec = argControlSpec.asSpec;
@@ -82,7 +82,7 @@ EZKnob : EZGui {
 		};
 
 		knobView.receiveDragHandler = { arg slider;
-			slider.valueAction = controlSpec.unmap(GUI.view.currentDrag);
+			slider.valueAction = controlSpec.unmap(View.currentDrag);
 		};
 
 		knobView.beginDragAction = { arg slider;

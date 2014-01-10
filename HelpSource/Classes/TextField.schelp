@@ -1,5 +1,4 @@
 CLASS:: TextField
-redirect:: implClass
 summary:: A view displaying editable text
 categories:: GUI>Views
 

@@ -1,4 +1,4 @@
-QLevelIndicator : QView {
+LevelIndicator : View {
 
 	*qtClass {^'QcLevelIndicator'}
 

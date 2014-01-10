@@ -1,6 +1,6 @@
 /////////////////////// ABSTRACT CLASSES ////////////////////////////
 
-QTextViewBase : QView {
+TextViewBase : View {
 	var <object, <>setBoth = true;
 	var <align;
 
@@ -15,7 +15,7 @@ QTextViewBase : QView {
 	}
 }
 
-QItemViewBase : QView
+ItemViewBase : View
 {
 	var <items;
 
@@ -38,7 +38,7 @@ QItemViewBase : QView
 	}
 }
 
-QAbstractScroll : QView {
+AbstractScroll : View {
 	var <hasHorizontalScroller = true, <hasVerticalScroller = true;
 	var <autohidesScrollers = true;
 
@@ -84,7 +84,7 @@ QAbstractScroll : QView {
 	}
 }
 
-QAbstractStepValue : QView {
+AbstractStepValue : View {
 	var <step = 0.1, <shift_scale = 100.0, <ctrl_scale = 10.0, <alt_scale = 0.1;
 
 	step_ { arg aFloat;
@@ -121,33 +121,33 @@ QAbstractStepValue : QView {
 
 /////////////////////// CONTAINERS ////////////////////////////////
 
-QHLayoutView : QView {
+HLayoutView : View {
 	*qtClass { ^'QcHLayoutWidget' }
 }
 
-QVLayoutView : QView {
+VLayoutView : View {
 	*qtClass { ^'QcVLayoutWidget' }
 }
 
-QScrollCanvas : QObject {
+ScrollCanvas : QObject {
 	*qtClass { ^'QcScrollWidget' }
 
 	background { ^this.getProperty(\background); }
 	background_ { arg color; this.setProperty(\background, color); }
 }
 
-QScrollView : QAbstractScroll {
+ScrollView : AbstractScroll {
 	var <canvas;
 	var <hasBorder=true;
 	var actionConnected=false;
 
 	*new { arg parent, bounds;
-		^super.new( parent, bounds ).initQScrollView;
+		^super.new( parent, bounds ).initScrollView;
 	}
 
 	*qtClass { ^'QcScrollArea' }
 
-	children { arg class = QView;
+	children { arg class = View;
 		^canvas.children( class );
 	}
 
@@ -183,16 +183,16 @@ QScrollView : QAbstractScroll {
 		actionConnected = true;
 	}
 
-	initQScrollView {
-		// NOTE: The canvas widget must not be a QView, so that asking its
+	initScrollView {
+		// NOTE: The canvas widget may not be a View, so that asking its
 		// children for parent will skip it and hit this view instead.
-		this.canvas = QScrollCanvas();
+		this.canvas = ScrollCanvas();
 	}
 }
 
 /////////////////////////// WIDGETS ///////////////////////////////
 
-QStaticText : QTextViewBase {
+StaticText : TextViewBase {
 	*qtClass { ^'QLabel' }
 
 	*new { arg aParent, aBounds;
@@ -225,7 +225,7 @@ QStaticText : QTextViewBase {
 	}
 }
 
-QTextField : QTextViewBase {
+TextField : TextViewBase {
 	*qtClass { ^'QcTextField' }
 
 	string {
@@ -268,11 +268,11 @@ QTextField : QTextViewBase {
 	defaultGetDrag { ^this.string; }
 	defaultCanReceiveDrag { ^true; }
 	defaultReceiveDrag {
-		this.valueAction = QView.currentDrag;
+		this.valueAction = View.currentDrag;
 	}
 }
 
-QButton : QView {
+Button : View {
 	var <states;
 
 	*qtClass { ^'QcButton' }
@@ -317,7 +317,7 @@ QButton : QView {
 	}
 }
 
-QCheckBox : QView {
+CheckBox : View {
 
 	*qtClass { ^'QcCheckBox' }
 
@@ -357,7 +357,7 @@ QCheckBox : QView {
 	}
 }
 
-QPopUpMenu : QItemViewBase {
+PopUpMenu : ItemViewBase {
 
 	*qtClass { ^'QcPopUpMenu' }
 

@@ -1,5 +1,4 @@
 CLASS:: MovieView
-redirect:: implClass
 summary:: A view responding to Wacom tablet
 categories:: GUI>Views
 related:: Classes/Image

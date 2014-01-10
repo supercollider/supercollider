@@ -5,7 +5,7 @@ TODO:
 - accelerated (control over QImage/QPixmap conversion; necessary?)
 */
 
-QImage {
+Image {
 	classvar <compositingOperations, <allPlotWindows, <resizeModes;
 	var dataptr, finalizer;
 	var <>name, <url, <>scalesWhenResized=false;
@@ -75,7 +75,7 @@ QImage {
 		}
 
 		{
-			Error("QImage: wrong arguments to constructor").throw
+			Error("Image: wrong arguments to constructor").throw
 		};
 
 		^ret;
@@ -109,7 +109,7 @@ QImage {
 		if(image.isKindOf(this), {
 			^image.copy;
 		});
-		"QImage: invalid instance to copy from.".error;
+		"Image: invalid instance to copy from.".error;
 		^nil
 	}
 
@@ -126,7 +126,7 @@ QImage {
 			{ rw.asSymbol == \r }, { rw = 0 },
 			{ rw.asSymbol == \w }, { rw = 1 },
 			{ true },
-			{ Error("QImage.formats(rw) must be either 'r' or 'w'").throw }
+			{ Error("Image.formats(rw) must be either 'r' or 'w'").throw }
 		);
 		^this.prFormats(rw);
 	}
@@ -158,7 +158,7 @@ QImage {
 		switch (mode,
 			\smooth, { this.smooth = true },
 			\fast, { this.smooth = false },
-			{ Error("QImage: Interpolation mode invalid").throw }
+			{ Error("Image: Interpolation mode invalid").throw }
 		);
 	}
 
@@ -199,7 +199,7 @@ QImage {
 		};
 		resizeMode = resizeModes.indexOf(resizeMode);
 		if (resizeMode.isNil) {
-			Error("QImage: invalid resize mode.").throw;
+			Error("Image: invalid resize mode.").throw;
 		};
 		this.prSetSize(width, height, resizeMode);
 	}

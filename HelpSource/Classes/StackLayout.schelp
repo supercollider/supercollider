@@ -2,7 +2,6 @@ CLASS:: StackLayout
 summary:: A layout that stacks views on top of each other
 categories:: GUI>Layout
 related:: Classes/HLayout, Classes/VLayout, Classes/GridLayout, Guides/GUI-Layout-Management
-redirect:: implClass
 
 DESCRIPTION::
 

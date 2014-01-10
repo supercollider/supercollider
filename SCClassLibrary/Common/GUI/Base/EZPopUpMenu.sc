@@ -19,16 +19,16 @@ EZPopUpMenu : EZLists{
 
 		label.notNil.if{ //only add a label if desired
 			if (layout==\vert){
-				labelView = GUI.staticText.new(view, labelBounds).resize_(2);
+				labelView = StaticText.new(view, labelBounds).resize_(2);
 				labelView.align = \left;
 				}{
-				labelView = GUI.staticText.new(view, labelBounds);
+				labelView = StaticText.new(view, labelBounds);
 				labelView.align = \right;
 				};
 			labelView.string = label;
 		};
 
-		widget = GUI.popUpMenu.new(view, listBounds).resize_(5);
+		widget = PopUpMenu.new(view, listBounds).resize_(5);
 	}
 
 	menu {^ widget}

@@ -1,5 +1,4 @@
 CLASS:: TextView
-redirect:: implClass
 summary:: A view displaying editable formatted text
 categories:: GUI>Views
 

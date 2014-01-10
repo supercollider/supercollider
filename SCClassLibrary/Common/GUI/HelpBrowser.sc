@@ -16,11 +16,7 @@ HelpBrowser {
 		defaultHomeUrl = SCDoc.helpTargetUrl ++ "/Help.html";
 
 		StartUp.add {
-			NotificationCenter.register(SCDoc, \didIndexAllDocs, this) {
-				if(WebView.implClass.respondsTo(\clearCache)) {
-					WebView.clearCache;
-				}
-			}
+			NotificationCenter.register(SCDoc, \didIndexAllDocs, this) { WebView.clearCache }
 		}
 	}
 
@@ -249,9 +245,7 @@ HelpBrowser {
 		};
 		if(webView.respondsTo(\onReload_)) {
 			webView.onReload = {|wv, url|
-				if(WebView.implClass.respondsTo(\clearCache)) {
-					WebView.clearCache;
-				};
+				WebView.clearCache;
 				this.goTo(url);
 			};
 		};

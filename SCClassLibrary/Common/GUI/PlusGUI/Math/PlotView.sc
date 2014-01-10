@@ -35,18 +35,12 @@ Plot {
 		var fontName;
 		var gui = plotter.gui;
 		var skin = GUI.skin.at(\plot);
-		pen = gui.pen;
 
 		drawGrid = DrawGrid(bounds ? Rect(0,0,1,1),nil,nil);
 		drawGrid.x.labelOffset = Point(0,4);
 		drawGrid.y.labelOffset = Point(-10,0);
 		skin.use {
-			font = ~gridFont ?? { gui.font.default };
-			if(font.class != gui.font) {
-				fontName = font.name;
-				if( gui.font.availableFonts.detect(_ == fontName).isNil, { fontName = gui.font.defaultSansFace });
-				font = gui.font.new(fontName, font.size)
-			};
+			font = ~gridFont ?? { Font.default };
 			this.gridColorX = ~gridColorX;
 			this.gridColorY = ~gridColorY;
 			plotColor = ~plotColor;
@@ -384,9 +378,8 @@ Plotter {
 		var btnBounds;
 		parent = argParent ? parent;
 		bounds = argBounds ? bounds;
-		gui = GUI.current;
 		if(parent.isNil) {
-			parent = gui.window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
+			parent = Window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
 			if(GUI.skin.at(\plot).at(\expertMode).not) {
 				btnBounds = this.makeButtons;
 				bounds = parent.view.bounds.insetAll(8,8,btnBounds.width + 4,8);
@@ -394,7 +387,7 @@ Plotter {
 				bounds = parent.view.bounds.insetBy(8);
 			};
 
-			interactionView = gui.userView.new(parent, bounds);
+			interactionView = UserView.new(parent, bounds);
 
 			interactionView.drawFunc = { this.draw };
 			parent.front;
@@ -402,7 +395,7 @@ Plotter {
 
 		} {
 			bounds = bounds ?? { parent.bounds.moveTo(0, 0) };
-			interactionView = gui.userView.new(parent, bounds);
+			interactionView = UserView.new(parent, bounds);
 			interactionView.drawFunc = { this.draw };
 		};
 		modes = [\points, \levels, \linear, \plines, \steps].iter.loop;
@@ -521,7 +514,7 @@ Plotter {
 
 	makeButtons {
 		var string = "?";
-		var font = gui.font.sansSerif( 9 );
+		var font = Font.sansSerif( 9 );
 		var bounds = string.bounds(font);
 		var padding = 8; // ensure that string is not clipped by round corners
 
@@ -529,7 +522,7 @@ Plotter {
 		bounds.height = bounds.height + padding;
 		bounds = bounds.moveTo( parent.view.bounds.right - bounds.width - 2, 8 );
 
-		gui.button.new(parent, bounds)
+		Button.new(parent, bounds)
 		.states_([["?"]])
 		.focusColor_(Color.clear)
 		.font_(font)
@@ -579,7 +572,7 @@ Plotter {
 			bounds = b;
 			this.updatePlotBounds;
 		};
-		gui.pen.use {
+		Pen.use {
 			plots.do { |plot| plot.draw };
 		}
 	}

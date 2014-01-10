@@ -1,8 +1,6 @@
 + UGen {
 	scope { arg name = "UGen Scope", bufsize = 4096, zoom = 1.0;
-		var gui, server;
-		gui = GUI.current;
-		server = gui.stethoscope.defaultServer;
+		var server = Stethoscope.defaultServer;
 		^SynthDef.wrap({ var bus, numChannels, rate, scope;
 			numChannels = this.numChannels;
 			rate = this.rate;
@@ -13,11 +11,11 @@
 			);
 
 			{
-				scope = gui.stethoscope.new( server, numChannels, bus.index, bufsize, zoom, rate );
-				scope.window.name_(name.asString).bounds_( gui.stethoscope.tileBounds);
-				gui.stethoscope.ugenScopes.add(scope);
+				scope = Stethoscope.new( server, numChannels, bus.index, bufsize, zoom, rate );
+				scope.window.name_(name.asString).bounds_( Stethoscope.tileBounds);
+				Stethoscope.ugenScopes.add(scope);
 				scope.window.onClose = { scope.free; bus.free;
-					gui.stethoscope.ugenScopes.remove(scope) };
+					Stethoscope.ugenScopes.remove(scope) };
 				CmdPeriod.doOnce({ {scope.window.close}.defer });
 			}.defer(0.001);
 			this;
@@ -28,9 +26,7 @@
 
 + Array {
 	scope { arg name = "UGen Scope", bufsize = 4096, zoom = 1.0;
-		var gui, server;
-		gui = GUI.current;
-		server = gui.stethoscope.defaultServer;
+		var server = Server.default;
 		^SynthDef.wrap({ var bus, numChannels, rate, scope;
 			numChannels = this.numChannels;
 			rate = this.rate;
@@ -41,11 +37,11 @@
 			);
 
 			{
-				scope = gui.stethoscope.new( server, numChannels, bus.index, bufsize, zoom, rate );
-				scope.window.name_(name.asString).bounds_( gui.stethoscope.tileBounds);
-				gui.stethoscope.ugenScopes.add(scope);
+				scope = Stethoscope.new( server, numChannels, bus.index, bufsize, zoom, rate );
+				scope.window.name_(name.asString).bounds_( Stethoscope.tileBounds);
+				Stethoscope.ugenScopes.add(scope);
 				scope.window.onClose = { scope.free; bus.free;
-					gui.stethoscope.ugenScopes.remove(scope) };
+					Stethoscope.ugenScopes.remove(scope) };
 				CmdPeriod.doOnce({ {scope.window.close}.defer });
 			}.defer(0.001);
 			this;

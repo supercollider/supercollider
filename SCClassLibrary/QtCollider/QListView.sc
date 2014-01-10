@@ -1,4 +1,4 @@
-QListView : QItemViewBase {
+ListView : ItemViewBase {
 	var <colors;
 	var <enterKeyAction, <selectionAction;
 

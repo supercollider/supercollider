@@ -78,18 +78,18 @@ EZGui{ // an abstract class
 					}{// window minimum height;
 					winBounds = bounds.height_(max(bounds.height,bounds.height+extraHeight))
 					};
-				w = GUI.window.new("",winBounds).alwaysOnTop_(alwaysOnTop);
+				w = Window.new("",winBounds).alwaysOnTop_(alwaysOnTop);
 				parentView=w.asView;
 				w.front;
 				bounds=bounds.asRect;
 				// inset the bounds to make a nice margin
 				bounds=Rect(4,4,bounds.width-8,bounds.height-extraHeight);
-				view=GUI.compositeView.new(parentView,bounds).resize_(2);
+				view=CompositeView.new(parentView,bounds).resize_(2);
 				w.bounds=w.bounds; // swing needs this for some reason, or bounds are too high
 
 		}{// normal parent view
 			bounds=bounds.asRect;
-			view=GUI.compositeView.new(parentView,bounds);
+			view=CompositeView.new(parentView,bounds);
 		};
 
 		innerBounds=view.bounds.insetBy(margin.x,margin.y);

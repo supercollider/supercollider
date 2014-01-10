@@ -7,7 +7,7 @@ EZScroller {
 			.init(w, bounds, initVal);
 	}
 	init { |w, bounds, initVal|
-		slider = GUI.slider.new(w, bounds);
+		slider = Slider.new(w, bounds);
 		slider.action = { |sl|
 			this.valueAction_(spec.map(sl.value));
 		};

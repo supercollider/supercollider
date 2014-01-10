@@ -1,6 +1,6 @@
 
 
-+ QWindow {
++ Window {
 
 	asFlowView { arg bounds;
 		^FlowView(this,bounds)
@@ -14,14 +14,14 @@
 	}
 	comp { arg func,bounds;
 		var f;
-		f = QView(this,bounds ?? { this.bounds.moveTo(0,0) });
+		f = View(this,bounds ?? { this.bounds.moveTo(0,0) });
 		func.value(f);
 		^f
 	}
 }
 
 
-+ QView {
++ View {
 
 	asFlowView { arg bounds;
 		^FlowView(this,bounds ?? {this.bounds})
@@ -49,26 +49,26 @@
 	}
 	horz { arg func,bounds;
 		var comp;
-		comp = QHLayoutView(this,bounds ?? { this.bounds });
+		comp = HLayoutView(this,bounds ?? { this.bounds });
 		func.value(comp);
 		^comp
 	}
 	vert { arg func,bounds;
 		var comp;
-		comp = QVLayoutView(this,bounds ?? { this.bounds });
+		comp = VLayoutView(this,bounds ?? { this.bounds });
 		func.value(comp);
 		^comp
 	}
 	comp { arg func,bounds;
 		var comp;
-		comp = QView(this,bounds ?? { this.bounds });
+		comp = View(this,bounds ?? { this.bounds });
 		func.value(comp);
 		^comp
 	}
 	scroll { arg func,bounds,autohidesScrollers=true,autoScrolls=true,
 					hasHorizontalScroller=true,hasVerticalScroller=true;
 		var comp;
-		comp = QScrollView(this,bounds ?? { this.bounds });
+		comp = ScrollView(this,bounds ?? { this.bounds });
 		comp.autohidesScrollers = autohidesScrollers;
 		comp.hasHorizontalScroller = hasHorizontalScroller;
 		comp.hasVerticalScroller = hasVerticalScroller;

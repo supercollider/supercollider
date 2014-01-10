@@ -1,4 +1,4 @@
-QScope2 : QView {
+Scope2 : View {
 	var <bufnum;
 	var <xZoom=1.0, <yZoom=1.0, <x=0.0, <y=0.0;
 	var <waveColors;
@@ -13,7 +13,7 @@ QScope2 : QView {
 	server_ { arg server;
 		var port = if(server.inProcess){ thisProcess.pid }{ if(server.isLocal){server.addr.port} };
 		if(port.isNil) {
-			"QScope2: Can not scope on the desired server.".warn
+			"Scope2: Can not scope on the desired server.".warn
 		} {
 			this.setProperty(\serverPort, port);
 		};

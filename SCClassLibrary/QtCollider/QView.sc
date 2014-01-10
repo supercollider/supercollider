@@ -1,4 +1,4 @@
-QView : QObject {
+View : QObject {
 	classvar <globalKeyDownAction, <globalKeyUpAction;
 	classvar <hSizePolicy;
 	classvar <vSizePolicy;
@@ -28,7 +28,6 @@ QView : QObject {
 	// hooks
 	var <onClose, <onResize, <onMove;
 
-	*implementsClass { ^this.name.asString[1..].asSymbol }
 
 	*initClass {
 		hSizePolicy = [1,2,3,1,2,3,1,2,3];
@@ -37,11 +36,11 @@ QView : QObject {
 
 	*new { arg parent, bounds;
 		var p = parent.asView;
-		^super.new( [p, bounds.asRect] ).initQView( p );
+		^super.new( [p, bounds.asRect] ).initView( p );
 	}
 
 	*newCustom { arg customArgs;
-		^super.new( customArgs ).initQView( nil );
+		^super.new( customArgs ).initView( nil );
 	}
 
 	*qtClass { ^'QcDefaultWidget' }
@@ -231,12 +230,12 @@ QView : QObject {
 
 	// ------------------ container stuff ----------------------------
 
-	children { arg class = QView;
+	children { arg class = View;
 		var ch = super.children( class );
 		^ch.select { |v| (v.tryPerform(\isClosed) ? false).not };
 	}
 
-	parent { arg class = QView;
+	parent { arg class = View;
 		if (wasRemoved) { ^nil } { ^super.parent(class) };
 	}
 
@@ -258,7 +257,7 @@ QView : QObject {
 	}
 
 	removeAll {
-		var childWidgets = this.children( QView );
+		var childWidgets = this.children( View );
 		childWidgets.do { |child| child.remove };
 	}
 
@@ -405,7 +404,7 @@ QView : QObject {
 
 	// mouseOverAction responds to same Qt event as mouseMoveAction,
 	// but on different conditions.
-	// See QView:-mouseMoveEvent method.
+	// See View:-mouseMoveEvent method.
 	mouseOverAction_ { arg aFunction;
 		mouseOverAction = aFunction;
 		this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true );
@@ -545,7 +544,7 @@ QView : QObject {
 		_QWidget_SetGlobalEventEnabled
 	}
 
-	initQView { arg parent;
+	initView { arg parent;
 
 		var handleKeyDown, handleKeyUp, overridesMouseDown, handleDrag;
 
@@ -616,7 +615,7 @@ QView : QObject {
 
 		if( spontaneous ) {
 			// this event has never been propagated to parent yet
-			QView.globalKeyDownAction.value( this, char, modifiers, unicode, keycode, key );
+			View.globalKeyDownAction.value( this, char, modifiers, unicode, keycode, key );
 		};
 
 		if( (key == 16r1000020) || (key == 16r1000021) ||
@@ -631,7 +630,7 @@ QView : QObject {
 
 		if( spontaneous ) {
 			// this event has never been propagated to parent yet
-			QView.globalKeyUpAction.value( this, char, modifiers, unicode, keycode, key );
+			View.globalKeyUpAction.value( this, char, modifiers, unicode, keycode, key );
 		};
 
 		if( (key == 16r1000020) || (key == 16r1000021) ||
@@ -642,7 +641,7 @@ QView : QObject {
 	}
 
 	mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
-		// WARNING: QDragView and QListView override this method!
+		// WARNING: DragView and ListView override this method!
 
 		if( (modifiers & QKeyModifiers.control) > 0 ) { // if Ctrl / Cmd mod
 			// Try to get drag obj and start a drag.
@@ -661,7 +660,7 @@ QView : QObject {
 	}
 
 	mouseMoveEvent { arg x, y, modifiers, buttons;
-		// WARNING: Overridden in QListView!
+		// WARNING: Overridden in ListView!
 		if( buttons != 0 ) {
 			modifiers = QKeyModifiers.toCocoa(modifiers);
 			^this.mouseMove( x, y, modifiers );
@@ -691,7 +690,7 @@ QView : QObject {
 		{ obj = beginDragAction.value( this, x, y ) }
 		{ obj = this.tryPerform( \defaultGetDrag, x, y ) };
 		if( obj.notNil ) {
-			QView.prSetCurrentDrag( obj );
+			View.prSetCurrentDrag( obj );
 			str = obj.asString;
 			this.prStartDrag( dragLabel ?? str, obj, str );
 			^true;
@@ -719,7 +718,7 @@ QView : QObject {
 	dragEnterEvent { arg internal, data;
 		if(internal.not) {
 			// dnd incoming from outside SC
-			QView.prSetCurrentDrag(data);
+			View.prSetCurrentDrag(data);
 		};
 		// always accept the event
 		^true;
@@ -767,7 +766,7 @@ QView : QObject {
 		};
 	}
 
-	overrides { arg method; ^this.prOverrides(QView, method) }
+	overrides { arg method; ^this.prOverrides(View, method) }
 
 	prOverrides { arg superclass, method;
 		_Qt_IsMethodOverridden
@@ -786,3 +785,4 @@ QView : QObject {
 		if( QtGUI.debugLevel >= level ) { ("Qt: " ++ this.asString ++ ": " ++ msg).postln }
 	}
 }
+

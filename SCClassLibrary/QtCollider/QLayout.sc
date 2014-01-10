@@ -1,4 +1,4 @@
-QLayout : QObject {
+Layout : QObject {
 	spacing_ { arg spacing;
 		this.setProperty( \spacing, spacing );
 	}
@@ -10,7 +10,7 @@ QLayout : QObject {
 
 // LINE LAYOUTS ///////////////////////////////////////////////////
 
-QLineLayout : QLayout {
+LineLayout : Layout {
 	*new { arg ...items;
 		var serializedItems = items.collect( { |x| this.parse(x) } );
 		^super.new( [serializedItems] );
@@ -54,20 +54,17 @@ QLineLayout : QLayout {
 	}
 }
 
-QHLayout : QLineLayout {
-	*implementsClass {^'HLayout'}
+HLayout : LineLayout {
 	*qtClass { ^'QcHBoxLayout' }
 }
 
-QVLayout : QLineLayout {
-	*implementsClass {^'VLayout'}
+VLayout : LineLayout {
 	*qtClass { ^'QcVBoxLayout' }
 }
 
 // GRID LAYOUT ///////////////////////////////////////////////////
 
-QGridLayout : QLayout {
-	*implementsClass {^'GridLayout'}
+GridLayout : Layout {
 
 	*new {
 		// get rid of QObject's arguments
@@ -181,9 +178,8 @@ QGridLayout : QLayout {
 	}
 }
 
-QStackLayout : QLayout
+StackLayout : Layout
 {
-	*implementsClass {^'StackLayout'}
 
 	*qtClass { ^'QcStackLayout' }
 

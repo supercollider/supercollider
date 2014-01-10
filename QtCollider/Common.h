@@ -95,13 +95,13 @@ namespace QtCollider {
   QC_DO_SYMBOL(Color); \
   QC_DO_SYMBOL(Size); \
   QC_DO_SYMBOL(QPalette); \
-  QC_DO_SYMBOL(QFont); \
+  QC_DO_SYMBOL(Font); \
   QC_DO_SYMBOL(QObject); \
-  QC_DO_SYMBOL(QLayout); \
-  QC_DO_SYMBOL(QTreeViewItem); \
+  QC_DO_SYMBOL(Layout); \
+  QC_DO_SYMBOL(TreeViewItem); \
   QC_DO_SYMBOL(Gradient); \
   QC_DO_SYMBOL(HiliteGradient); \
-  QC_DO_SYMBOL(QImage);
+  QC_DO_SYMBOL(Image);
 
 #define QC_DO_SYMBOL(SYM) extern PyrSymbol * sym_##SYM
 QC_DO_SYMBOLS

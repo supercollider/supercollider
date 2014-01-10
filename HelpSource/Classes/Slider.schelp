@@ -1,5 +1,4 @@
 CLASS:: Slider
-redirect:: implClass
 summary:: A view consisting of a sliding handle.
 categories:: GUI>Views
 
@@ -204,7 +203,7 @@ d = PopUpMenu(w, Rect(20, 60, 100, 20))
 	.action_({
 		b.step_((a.at(d.value)).asFloat);
 		});
-StaticText(w, Rect(130, 60, 100, 20)).string_("change step");	
+StaticText(w, Rect(130, 60, 100, 20)).string_("change step");
 c = NumberBox(w, Rect(20, 20, 100, 20));
 )
 ::
@@ -258,7 +257,7 @@ s.waitForBoot({
 		coef:0.1)
 		);
 	}).send(s);
-	
+
 
 	w = Window.new("Hold arrow keys to trigger sound",Rect(300,Window.screenBounds.height-300,400,100)).front;
 	a = Slider(w, Rect(50, 20, 300, 40))

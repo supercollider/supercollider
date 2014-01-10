@@ -37,7 +37,7 @@
 
 	horz { arg func,bounds,spacing;
 		var comp;
-		comp = GUI.hLayoutView.new(this,bounds ?? { this.indentedRemaining });
+		comp = HLayoutView.new(this,bounds ?? { this.indentedRemaining });
 		try { // not on Qt
 			comp.spacing = spacing ? GUI.skin.gap.x;
 		};
@@ -46,7 +46,7 @@
 	}
 	vert { arg func,bounds,spacing;
 		var comp;
-		comp = GUI.vLayoutView.new(this,bounds ?? { this.indentedRemaining });
+		comp = VLayoutView.new(this,bounds ?? { this.indentedRemaining });
 		try { // not on Qt
 			comp.spacing = spacing ? GUI.skin.gap.y;
 		};
@@ -55,7 +55,7 @@
 	}
 	comp { arg func,bounds;
 		var comp;
-		comp = GUI.compositeView.new(this,bounds ?? { this.indentedRemaining });
+		comp = CompositeView.new(this,bounds ?? { this.indentedRemaining });
 		func.value(comp);
 		^comp
 	}
@@ -63,7 +63,7 @@
 				autohidesScrollers=true,autoScrolls=true,
 				hasHorizontalScroller=true,hasVerticalScroller=true;
 		var comp;
-		comp = GUI.scrollView.new(this,bounds ?? { this.bounds });
+		comp = ScrollView.new(this,bounds ?? { this.bounds });
 		comp.autohidesScrollers = autohidesScrollers;
 		try { // not on Qt
 			comp.autoScrolls = autoScrolls;

@@ -1,4 +1,4 @@
-QNumberBox : QAbstractStepValue {
+NumberBox : QAbstractStepValue {
 	var <scroll, <scroll_step;
 	var <align, <buttonsVisible = false;
 	var <normalColor, <typingColor;
@@ -8,11 +8,11 @@ QNumberBox : QAbstractStepValue {
 
 	*new { arg aParent, aBounds;
 		var obj = super.new( aParent, aBounds );
-		obj.initQNumberBox;
+		obj.initNumberBox;
 		^obj;
 	}
 
-	initQNumberBox {
+	initNumberBox {
 		scroll = true;
 		scroll_step = 1;
 		normalColor = Color.black;
@@ -119,8 +119,8 @@ QNumberBox : QAbstractStepValue {
 	}
 
 	defaultGetDrag { ^this.value; }
-	defaultCanReceiveDrag { ^QView.currentDrag.isNumber; }
+	defaultCanReceiveDrag { ^View.currentDrag.isNumber; }
 	defaultReceiveDrag {
-		this.valueAction = QView.currentDrag;
+		this.valueAction = View.currentDrag;
 	}
 }

@@ -1,5 +1,4 @@
 CLASS:: PopUpMenu
-redirect:: implClass
 summary:: A view displaying a text item selectable from a drop-down menu.
 categories:: GUI>Views
 

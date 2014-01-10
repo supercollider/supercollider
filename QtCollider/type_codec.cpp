@@ -247,7 +247,7 @@ QFont TypeCodec<QFont>::read( PyrSlot *slot )
 
 QFont TypeCodec<QFont>::safeRead( PyrSlot *slot )
 {
-  if ( isKindOfSlot( slot, SC_CLASS(QFont) ) )
+  if ( isKindOfSlot( slot, SC_CLASS(Font) ) )
     return TypeCodec<QFont>::read( slot );
   else
     return QFont();
@@ -456,7 +456,7 @@ QcTreeWidget::ItemPtr TypeCodec<QcTreeWidget::ItemPtr>::read( PyrSlot *slot )
 
 void TypeCodec<QcTreeWidget::ItemPtr>::write( PyrSlot *slot, const QcTreeWidget::ItemPtr & item )
 {
-  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, SC_CLASS(QTreeViewItem), 0, true, true );
+  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, SC_CLASS(TreeViewItem), 0, true, true );
   QcTreeWidget::Item::initialize( gMainVMGlobals, obj, item );
   SetObject( slot, obj );
 }
@@ -469,7 +469,7 @@ SharedImage TypeCodec<SharedImage>::read( PyrSlot * slot )
 
 SharedImage TypeCodec<SharedImage>::safeRead( PyrSlot * slot )
 {
-    if (!isKindOfSlot(slot, SC_CLASS(QImage)))
+    if (!isKindOfSlot(slot, SC_CLASS(Image)))
         return SharedImage();
     else
         return read(slot);

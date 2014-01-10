@@ -1,6 +1,5 @@
-QPen {
+Pen {
 	classvar <font;
-	*implementsClass {^'Pen'}
 	//-------------------------- Global state control ------------------------------
 
 	*push {
@@ -287,12 +286,12 @@ QPen {
 	}
 
 	*drawImage { arg target, image, source, operation = 'sourceOver', opacity = 1.0;
-		operation = QImage.compositingOperations.indexOf(operation) ? 0;
+		operation = Image.compositingOperations.indexOf(operation) ? 0;
 		this.prDrawImage(target, image, source, operation, opacity);
 	}
 
 	*tileImage { arg target, image, source, operation = 'sourceOver', opacity = 1.0;
-		operation = QImage.compositingOperations.indexOf(operation) ? 0;
+		operation = Image.compositingOperations.indexOf(operation) ? 0;
 		this.prTileImage(target, image, source, operation, opacity);
 	}
 

@@ -1,25 +1,23 @@
-/*
-[22.sep.2010]
-QStethoscope created by copying SCStethoscope and adjusting code for Qt GUI.
-*/
 
-QStethoscope {
+Stethoscope {
 	classvar ugenScopes;
 	var <server, <numChannels, <rate,  <index;
 	var <bufsize, buffer, <window, synth;
 	var scopeView, indexView, nChanView, xZoomSlider, yZoomSlider;
 	var style=0, sizeToggle=0, zx, zy, ai=0, ki=0, audiospec, controlspec, zoomspec;
 
-	*implementsClass {^'Stethoscope'}
 
 	*new { arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
-		if(server.inProcess.not, { "Failure: internal scope works only with internal server.\nMaybe shared memory interface was lost while computer was asleep.".error; ^nil });
+		server = server ? Server.default;
+		if(server.inProcess.not) {
+			^Stethoscope2.new(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
+		};
 		^super.newCopyArgs(server, numChannels, rate ? \audio).makeWindow(view)
 		.index_(index ? 0).zoom_(zoom).allocBuffer(bufsize, bufnum).run;
 	}
 
 	*tileBounds {
-		var screenBounds = QWindow.screenBounds;
+		var screenBounds = Window.screenBounds;
 		var x = 520 + (ugenScopes.size * (223 + 5)) + 5;
 		var right = x + 223;
 		var y = floor(right / screenBounds.width) * 297 + 10;
@@ -32,7 +30,7 @@ QStethoscope {
 	makeWindow { arg view;
 		if(view.isNil)
 		{
-			window = QWindow("stethoscope", this.makeBounds);
+			window = Window("stethoscope", this.makeBounds);
 			view = window.view;
 			view.decorator = FlowLayout(window.view.bounds);
 			window.front;
@@ -40,11 +38,11 @@ QStethoscope {
 
 		} {
 			if(view.decorator.isNil, {
-				"QStethoscope: makeWindow added a decorator to view".warn;
+				"Stethoscope: makeWindow added a decorator to view".warn;
 				view.decorator = FlowLayout(view.bounds);
 			});
 		};
-		scopeView = QScope(view,
+		scopeView = Scope(view,
 			Rect(0,0, view.bounds.width - 10 - 20 - 4, view.bounds.height - 40)
 		);
 		scopeView.background = Color.black;
@@ -58,7 +56,7 @@ QStethoscope {
 		controlspec = ControlSpec(0, server.options.numControlBusChannels, step:1);
 		zoomspec = ControlSpec(0.125, 16, \exp);
 
-		xZoomSlider = QSlider(view, Rect(10, 10, view.bounds.width - 80, 20));
+		xZoomSlider = Slider(view, Rect(10, 10, view.bounds.width - 80, 20));
 		xZoomSlider.action = { arg x;
 			/*var i;
 			i = this.spec.map(x.value);
@@ -70,24 +68,24 @@ QStethoscope {
 		xZoomSlider.background = Color.grey(0.6);
 		xZoomSlider.focusColor = Color.clear;
 
-		indexView = QNumberBox(view, Rect(10, 10, 30, 20))
+		indexView = NumberBox(view, Rect(10, 10, 30, 20))
 		.value_(0).decimals_(0).step_(1).scroll_step_(1);
 		indexView.action = { this.index = indexView.value;  };
 		indexView.resize = 9;
-		indexView.font = QFont("Monaco", 9);
-		nChanView = QNumberBox(view, Rect(10, 10, 25, 20))
+		indexView.font = Font("Monaco", 9);
+		nChanView = NumberBox(view, Rect(10, 10, 25, 20))
 		.value_(numChannels).decimals_(0).step_(1).scroll_step_(1);
 		nChanView.action = { this.numChannels = nChanView.value.asInteger  };
 		nChanView.resize = 9;
-		nChanView.font = QFont("Monaco", 9);
-		QStaticText(view, Rect(10, 10, 20, 20)).visible_(false);
+		nChanView.font = Font("Monaco", 9);
+		StaticText(view, Rect(10, 10, 20, 20)).visible_(false);
 		this.updateColors;
 
 
 		view.decorator.reset;
 		view.decorator.shift(scopeView.bounds.right, 0);
 
-		yZoomSlider = QSlider(view, Rect(scopeView.bounds.right, 0, 20, scopeView.bounds.height));
+		yZoomSlider = Slider(view, Rect(scopeView.bounds.right, 0, 20, scopeView.bounds.height));
 		yZoomSlider.action = { arg x;
 			this.yZoom = zoomspec.map(x.value)
 		};
@@ -230,7 +228,7 @@ QStethoscope {
 
 	style_ { arg val;
 		if(numChannels < 2 and: { val == 2 }) {
-			"QStethoscope: can't do x/y scoping with one channel".warn;
+			"Stethoscope: can't do x/y scoping with one channel".warn;
 			^this;
 		};
 		scopeView.style = style = val
@@ -265,13 +263,6 @@ QStethoscope {
 	*ugenScopes {
 		if(ugenScopes.isNil, { ugenScopes = Set.new; });
 		^ugenScopes
-	}
-
-	/**
-	*  @return (Server) the default server to scope on
-	*/
-	*defaultServer {
-		^Server.internal;
 	}
 
 	/**

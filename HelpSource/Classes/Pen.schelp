@@ -1,6 +1,5 @@
 class:: Pen
 summary:: Draw custom graphics
-redirect:: implClass
 categories:: GUI>Accessories
 related:: Classes/QPenPrinter
 
@@ -33,7 +32,7 @@ argument:: p2
 An instance of link::Classes/Point::
 
 method:: curveTo
-Draws a cubic bezier curve from the current position to point. 
+Draws a cubic bezier curve from the current position to point.
 strong::cpoint1:: and strong::cpoint2:: are control points determining the curve's curvature.
 argument:: endPoint
 An instance of link::Classes/Point::
@@ -43,7 +42,7 @@ argument:: cPoint2
 An instance of link::Classes/Point::
 
 method:: quadCurveTo
-Draws a quad bezier curve from the current position to point. 
+Draws a quad bezier curve from the current position to point.
 strong::cpoint1:: is a control point determining the curve's curvature.
 argument:: endPoint
 An instance of link::Classes/Point::
@@ -202,7 +201,7 @@ w.refresh;
 ::
 
 method:: fill
-Fill the previous defined path. 
+Fill the previous defined path.
 discussion::
 example:
 code::
@@ -495,7 +494,7 @@ w.refresh
 method:: path
 Make a path, consisting of the drawing made in function.
 note::
-Unfortunately not working for now... 
+Unfortunately not working for now...
 (there's no Pen.endPath which currently is used in this method)
 ::
 
@@ -626,7 +625,7 @@ Set the blending mode to use.
 See link::#Blending modes:: for more information.
 
 method:: lineDash
-Set the line dash pattern. 
+Set the line dash pattern.
 pattern should be a link::Classes/FloatArray:: of values that specify the lengths of the painted segments and not painted segments.
 
 examples::
@@ -752,7 +751,7 @@ w.drawFunc = {
 		rrand(6,24).do {
 			Pen.color = Color.rand(0.0,1.0).alpha_(rrand(0.1,0.7));
 			Pen.beginPath;
-			Pen.addAnnularWedge(Point(0,0), a = rrand(60,300), a + 50.rand2, 2pi.rand 
+			Pen.addAnnularWedge(Point(0,0), a = rrand(60,300), a + 50.rand2, 2pi.rand
 				+ (phase * 2.0.rand2), 2pi.rand);
 			if (0.5.coin) {Pen.stroke}{Pen.fill};
 		};
@@ -873,7 +872,7 @@ var sliders, spex, name;
 w = Window.new.front;
 w.view.background_(Color.white);
 
-// create a controller-window 
+// create a controller-window
 controlWindow = Window("matrix controls", Rect(400,200,350,120));
 controlWindow.front;
 
@@ -1063,7 +1062,7 @@ OS 10.5 and > Only
 		"14 - Color",
 		"15 - Luminosity"
 	];
-	
+
 	m.action_({|view|
 		blendMode = view.value;
 		blendString = view.items.at(blendMode);

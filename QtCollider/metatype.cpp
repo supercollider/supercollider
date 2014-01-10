@@ -118,7 +118,7 @@ MetaType *MetaType::find( PyrSlot *slot )
       {
         return metaType<QColor>();
       }
-      else if( isKindOfSlot( slot, SC_CLASS(QFont) ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(Font) ) ) {
         return metaType<QFont>();
       }
       else if( isKindOfSlot( slot, SC_CLASS(QPalette) ) ) {
@@ -130,10 +130,10 @@ MetaType *MetaType::find( PyrSlot *slot )
       else if( isKindOfSlot( slot, class_array ) || isKindOfSlot( slot, class_symbolarray ) ) {
         return metaType<QVariantList>();
       }
-      else if( isKindOfSlot( slot, SC_CLASS(QTreeViewItem) ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(TreeViewItem) ) ) {
         return metaType<QcTreeWidget::ItemPtr>();
       }
-      else if( isKindOfSlot( slot, SC_CLASS(QImage) ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(Image) ) ) {
           return metaType<SharedImage>();
       }
       else {

@@ -1,4 +1,4 @@
-QStethoscope2 {
+Stethoscope2 {
 	classvar ugenScopes;
 
 	// internal functions
@@ -21,10 +21,6 @@ QStethoscope2 {
 	var  <cycle, <yZoom;
 	var sizeToggle=false;
 
-	*implementsClass {^'Stethoscope'}
-
-	*defaultServer { ^if( Server.default.isLocal, Server.default, Server.local ) }
-
 	*isValidServer { arg aServer; ^aServer.isLocal }
 
 	*ugenScopes {
@@ -33,7 +29,7 @@ QStethoscope2 {
 	}
 
 	*tileBounds {
-		var screenBounds = QWindow.availableBounds;
+		var screenBounds = Window.availableBounds;
 		var w = 250, h = 250;
 		var x = (ugenScopes.size * (w + 10)) + 10;
 		var right = x + w;
@@ -54,10 +50,10 @@ QStethoscope2 {
 
 		bus = Bus(rate, index, numChannels, server);
 
-		^super.new.initQStethoscope( server, view, bus, bufsize, 1024 * zoom.asFloat.reciprocal );
+		^super.new.initStethoscope( server, view, bus, bufsize, 1024 * zoom.asFloat.reciprocal );
 	}
 
-	initQStethoscope { arg server_, parent, bus_, bufsize_, cycle_;
+	initStethoscope { arg server_, parent, bus_, bufsize_, cycle_;
 		var singleBus;
 
 		server = server_;
@@ -90,26 +86,26 @@ QStethoscope2 {
 			if( window.notNil ) {window.close};
 
 			if( parent.isNil ) {
-				view = window = QWindow(
-					bounds: (smallSize).asRect.center_(QWindow.availableBounds.center)
+				view = window = Window(
+					bounds: (smallSize).asRect.center_(Window.availableBounds.center)
 				).name_("Stethoscope");
 			}{
-				view = QView( parent, Rect(0,0,250,250) );
+				view = View( parent, Rect(0,0,250,250) );
 				window = nil;
 			};
 
 			// WIDGETS
 
-			scopeView = QScope2();
+			scopeView = Scope2();
 			scopeView.server = server;
 			scopeView.canFocus = true;
 
-			cycleSlider = QSlider().orientation_(\horizontal).value_(cycleSpec.unmap(cycle));
-			yZoomSlider = QSlider().orientation_(\vertical).value_(yZoomSpec.unmap(yZoom));
+			cycleSlider = Slider().orientation_(\horizontal).value_(cycleSpec.unmap(cycle));
+			yZoomSlider = Slider().orientation_(\vertical).value_(yZoomSpec.unmap(yZoom));
 
-			rateMenu = QPopUpMenu().items_(["Audio","Control"]).enabled_(singleBus);
-			idxNumBox = QNumberBox().decimals_(0).step_(1).scroll_step_(1).enabled_(singleBus);
-			chNumBox = QNumberBox().decimals_(0).step_(1).scroll_step_(1)
+			rateMenu = PopUpMenu().items_(["Audio","Control"]).enabled_(singleBus);
+			idxNumBox = NumberBox().decimals_(0).step_(1).scroll_step_(1).enabled_(singleBus);
+			chNumBox = NumberBox().decimals_(0).step_(1).scroll_step_(1)
 			.clipLo_(1).clipHi_(128).enabled_(singleBus);
 
 			if( singleBus ) {
@@ -118,7 +114,7 @@ QStethoscope2 {
 				chNumBox.value_(bus.numChannels);
 			};
 
-			styleMenu = QPopUpMenu().items_(["Tracks","Overlay","X/Y"]);
+			styleMenu = PopUpMenu().items_(["Tracks","Overlay","X/Y"]);
 
 			// LAYOUT
 
@@ -129,9 +125,9 @@ QStethoscope2 {
 			chNumBox.align = \center;
 
 			view.layout =
-			QGridLayout()
+			GridLayout()
 			.add(
-				QHLayout(
+				HLayout(
 					rateMenu,
 					idxNumBox,
 					chNumBox,
@@ -205,7 +201,7 @@ QStethoscope2 {
 
 		setStyle = { arg val;
 			if(this.numChannels < 2 and: { val == 2 }) {
-				"QStethoscope: x/y scoping with one channel only; y will be a constant 0".warn;
+				"Stethoscope: x/y scoping with one channel only; y will be a constant 0".warn;
 			};
 			scopeView.style = val;
 		};

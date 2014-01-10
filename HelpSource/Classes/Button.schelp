@@ -1,5 +1,4 @@
 class:: Button
-redirect:: implClass
 summary:: A multi-state button
 categories:: GUI>Views
 

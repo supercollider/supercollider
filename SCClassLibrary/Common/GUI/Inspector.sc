@@ -1,7 +1,7 @@
 Inspector {
 	classvar <allInspectors;
 
-	var <object, <window, vpos=0, gui;
+	var <object, <window, vpos=0;
 
 	*new { arg object;
 		var inspector;
@@ -19,7 +19,6 @@ Inspector {
 	}
 	init {
 		allInspectors = allInspectors.add(this);
-		gui = GUI.current;
 		this.makeWindow;
 		vpos = 4;
 		this.makeHead;
@@ -36,7 +35,7 @@ Inspector {
 		var bounds;
 		bounds = Rect(80, 80, 376, this.lineHeight * (this.numLines + 1) + 16);
 
-		window = gui.window.new(object.class.name.asString ++ " inspector", bounds);
+		window = Window.new(object.class.name.asString ++ " inspector", bounds);
 		window.onClose = Message(this, \didClose);
 	}
 	//numLines{^0}
@@ -55,17 +54,17 @@ ObjectInspector : Inspector {
 
 	makeHead {
 		var view;
-		view = gui.button.new(window, Rect(8, vpos, 128, this.buttonHeight));
+		view = Button.new(window, Rect(8, vpos, 128, this.buttonHeight));
 		view.states = [[object.class.name]];
-		view.action = { GUI.use( gui, { object.class.inspect })};
+		view.action = { object.class.inspect };
 
 		if (object.mutable, {
-			view = gui.button.new(window, Rect(140, vpos, 50, this.buttonHeight));
+			view = Button.new(window, Rect(140, vpos, 50, this.buttonHeight));
 			view.states = [["update"]];
 			view.action = Message(this, \update);
 		});
 
-		view = gui.dragSource.new(window, Rect(194, vpos, 174, this.buttonHeight));
+		view = DragSource.new(window, Rect(194, vpos, 174, this.buttonHeight));
 		view.object = object;
 		view.resize = 2;
 		stringView = view;
@@ -99,21 +98,21 @@ StringInspector : ObjectInspector {
 ClassInspector : ObjectInspector {
 	makeHead {
 		var view;
-		view = gui.button.new(window, Rect(8, vpos, 128, this.buttonHeight));
+		view = Button.new(window, Rect(8, vpos, 128, this.buttonHeight));
 		view.states = [[object.class.name]];
-		view.action = { GUI.use( gui, { object.class.inspect })};
+		view.action = { object.class.inspect };
 
-		view = gui.button.new(window, Rect(140, vpos, 50, this.buttonHeight));
+		view = Button.new(window, Rect(140, vpos, 50, this.buttonHeight));
 		view.states = [["edit"]];
 		view.action = Message(object, \openCodeFile);
 
 		if (object.superclass.notNil, {
-			view = gui.button.new(window, Rect(194, vpos, 70, this.buttonHeight));
+			view = Button.new(window, Rect(194, vpos, 70, this.buttonHeight));
 			view.states = [["superclass"]];
-			view.action = { GUI.use( gui, { object.superclass.inspect })};
+			view.action = { object.superclass.inspect };
 		});
 
-		view = gui.dragSource.new(window, Rect(268, vpos, 96, this.buttonHeight));
+		view = DragSource.new(window, Rect(268, vpos, 96, this.buttonHeight));
 		view.object = object;
 		view.resize = 2;
 		stringView = view;
@@ -125,21 +124,21 @@ ClassInspector : ObjectInspector {
 
 FunctionDefInspector : ObjectInspector {
 	openSuper {
-		GUI.use( gui, { object.superclass.inspect });
+		object.superclass.inspect
 	}
 	makeHead {
 		var view;
-		view = gui.button.new(window, Rect(8, vpos, 128, this.buttonHeight));
+		view = Button.new(window, Rect(8, vpos, 128, this.buttonHeight));
 		view.states = [[object.class.name]];
-		view.action = { GUI.use( gui, { object.class.inspect })};
+		view.action = { object.class.inspect };
 
 		if (object.code.notNil, {
-			view = gui.button.new(window, Rect(194, vpos, 70, this.buttonHeight));
+			view = Button.new(window, Rect(194, vpos, 70, this.buttonHeight));
 			view.states = [["dump code"]];
 			view.action = Message(object, \dumpByteCodes);
 		});
 
-		view = gui.dragSource.new(window, Rect(268, vpos, 96, this.buttonHeight));
+		view = DragSource.new(window, Rect(268, vpos, 96, this.buttonHeight));
 		view.object = object;
 		view.resize = 2;
 		stringView = view;
@@ -150,25 +149,25 @@ FunctionDefInspector : ObjectInspector {
 
 MethodInspector : ObjectInspector {
 	openSuper {
-		GUI.use( gui, { object.superclass.inspect });
+		object.superclass.inspect
 	}
 	makeHead {
 		var view;
-		view = gui.button.new(window, Rect(8, vpos, 128, this.buttonHeight));
+		view = Button.new(window, Rect(8, vpos, 128, this.buttonHeight));
 		view.states = [[object.class.name]];
-		view.action = { GUI.use( gui, { object.class.inspect })};
+		view.action = { object.class.inspect };
 
-		view = gui.button.new(window, Rect(140, vpos, 50, this.buttonHeight));
+		view = Button.new(window, Rect(140, vpos, 50, this.buttonHeight));
 		view.states = [["edit"]];
 		view.action = Message(object, \openCodeFile);
 
 		if (object.code.notNil, {
-			view = gui.button.new(window, Rect(194, vpos, 70, this.buttonHeight));
+			view = Button.new(window, Rect(194, vpos, 70, this.buttonHeight));
 			view.states = [["dump code"]];
 			view.action = Message(object, \dumpByteCodes);
 		});
 
-		view = gui.dragSource.new(window, Rect(268, vpos, 96, this.buttonHeight));
+		view = DragSource.new(window, Rect(268, vpos, 96, this.buttonHeight));
 		view.object = object;
 		view.resize = 2;
 		stringView = view;
@@ -180,23 +179,19 @@ MethodInspector : ObjectInspector {
 SlotInspector {
 	var <object, <>index, <key, <slotKeyView, <slotValueView, <inspectButton;
 
-	var gui;
-
 	*new { arg inspector, index, vpos;
 		^super.newCopyArgs(inspector.object, index).init(inspector, vpos)
 	}
 	init { arg inspector, vpos;
 		var w, class, hasGetter, hasSetter, vbounds, value;
 
-		gui	= GUI.current;
-
 		w = inspector.window;
 		key = object.slotKey(index);
 		class = object.class;
 
-		slotKeyView = gui.staticText.new(w, Rect(8, vpos, 110, this.buttonHeight));
+		slotKeyView = StaticText.new(w, Rect(8, vpos, 110, this.buttonHeight));
 		slotKeyView.align = \right;
-//		slotKeyView.font = gui.font.default ?? { gui.font.new("Helvetica", 12) };
+//		slotKeyView.font = Font.default ?? { Font.new("Helvetica", 12) };
 
 		if (key.isKindOf(Symbol), {
 			hasGetter = class.findRespondingMethodFor(key).notNil;
@@ -210,23 +205,23 @@ SlotInspector {
 		vbounds = Rect(122, vpos, 218, this.buttonHeight);
 		if (hasSetter, {
 			if (hasGetter, {
-				slotValueView = gui.dragBoth.new(w, vbounds);
+				slotValueView = DragBoth.new(w, vbounds);
 			},{
-				slotValueView =  gui.dragSink.new(w, vbounds);
+				slotValueView =  DragSink.new(w, vbounds);
 			});
 			slotValueView.action = Message(this, \setSlot);
 		},{
 			if (hasGetter, {
-				slotValueView = gui.dragSource.new(w, vbounds);
+				slotValueView = DragSource.new(w, vbounds);
 			},{
-				slotValueView = gui.staticText.new(w, vbounds);
+				slotValueView = StaticText.new(w, vbounds);
 			});
 		});
 		slotValueView.resize = 2;
-//		slotValueView.font = gui.font.default ?? { gui.font.new("Helvetica", 12) };
+//		slotValueView.font = Dont.default ?? { Font.new("Helvetica", 12) };
 		//slotValueView.background = Color.grey(if(hasSetter,0.95,0.85));
 
-		inspectButton = gui.button.new(w, Rect(344, vpos, this.buttonHeight, this.buttonHeight));
+		inspectButton = Button.new(w, Rect(344, vpos, this.buttonHeight, this.buttonHeight));
 		inspectButton.states = [["I"]];
 		inspectButton.action = Message(this, \inspectSlot);
 		inspectButton.resize = 3;
@@ -240,13 +235,13 @@ SlotInspector {
 		//inspectButton.visible = true; //object.slotAt(index).canInspect;
 	}
 	inspectSlot {
-		GUI.use( gui, { object.slotAt(index).inspect });
+		object.slotAt(index).inspect
 	}
 	setSlot {
 		if (key.isKindOf(Symbol), {
-			object.perform(key.asSetter, gui.view.currentDrag);
+			object.perform(key.asSetter, View.currentDrag);
 		},{
-			object.put(key, gui.view.currentDrag);
+			object.put(key, View.currentDrag);
 		});
 		this.update;
 	}
@@ -259,9 +254,9 @@ FrameInspector : Inspector {
 	numLines{^0}
 	makeHead {
 		var view;
-		view = gui.button.new(window, Rect(8, vpos, 128, this.buttonHeight));
+		view = Button.new(window, Rect(8, vpos, 128, this.buttonHeight));
 		view.states = [[object.class.name]];
-		view.action = { GUI.use( gui, { object.class.inspect })};
+		view.action = { object.class.inspect };
 
 		vpos = vpos + this.lineHeight;
 	}

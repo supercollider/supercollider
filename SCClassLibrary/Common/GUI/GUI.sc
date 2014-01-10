@@ -73,6 +73,7 @@ GUI {
 	 */
 	*fromID { arg id;
 		var newScheme = schemes[ id.asSymbol ];
+		"GUI schemes are not supported any more. You may continue to use GUI for skins though".warn;
 		if( newScheme.notNil, {
 			scheme = newScheme;
 		}, {

@@ -1,11 +1,11 @@
-QSlider : QAbstractStepValue {
+Slider : QAbstractStepValue {
 	//compatibility stuff:
 	var <orientation;
 
 	*qtClass { ^'QcSlider' }
 
 	*new { arg parent, bounds;
-		^super.new( parent, bounds ).initQSlider( bounds );
+		^super.new( parent, bounds ).initSlider( bounds );
 	}
 
 	value {
@@ -32,7 +32,7 @@ QSlider : QAbstractStepValue {
 	background { ^this.getProperty(\grooveColor) }
 	background_ { arg color; this.setProperty(\grooveColor, color) }
 
-	initQSlider { arg bounds;
+	initSlider { arg bounds;
 		var r;
 		if( bounds.notNil ) {
 			r = bounds.asRect;
@@ -75,8 +75,8 @@ QSlider : QAbstractStepValue {
 	}
 
 	defaultGetDrag { ^this.value; }
-	defaultCanReceiveDrag { ^QView.currentDrag.isNumber; }
+	defaultCanReceiveDrag { ^View.currentDrag.isNumber; }
 	defaultReceiveDrag {
-		this.valueAction = QView.currentDrag;
+		this.valueAction = View.currentDrag;
 	}
 }
