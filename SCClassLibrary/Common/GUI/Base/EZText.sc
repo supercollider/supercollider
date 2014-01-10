@@ -44,7 +44,7 @@ EZText : EZGui {
 		// insert the views
 
 		label.notNil.if{ //only add a label if desired
-				labelView = GUI.staticText.new(view, labelBounds);
+				labelView = StaticText.new(view, labelBounds);
 			if (layout==\line2)
 				{labelView.align = \left;}
 				{labelView.align = \right;};

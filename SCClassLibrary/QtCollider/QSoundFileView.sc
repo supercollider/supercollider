@@ -1,4 +1,4 @@
-QSoundFileView : QView {
+SoundFileView : View {
 
 	var <>soundfile;
 	var <metaAction;

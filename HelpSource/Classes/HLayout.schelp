@@ -2,7 +2,6 @@ CLASS:: HLayout
 summary:: A layout that distributes views in a horizontal line
 categories:: GUI>Layout
 related:: Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
-redirect:: implClass
 
 DESCRIPTION::
 See documentation of superclass link::Classes/QLineLayout:: for details.

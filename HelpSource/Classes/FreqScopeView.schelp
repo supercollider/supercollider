@@ -1,5 +1,4 @@
 class:: FreqScopeView
-redirect:: implClass
 summary:: Frequency analysis view
 categories:: GUI>Views
 related:: Classes/FreqScope

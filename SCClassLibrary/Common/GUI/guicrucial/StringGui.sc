@@ -7,7 +7,7 @@ StringGui : ObjectGui {
 		var layout,string,font;
 		var width,height;
 		layout=this.guify(parent,bounds);
-		font = GUI.font.new(*GUI.skin.fontSpecs);
+		font = Font.new(*GUI.skin.fontSpecs);
 		if(model.isString,{
 			string = " "++model;
 		},{
@@ -24,7 +24,7 @@ StringGui : ObjectGui {
 						string.bounds.width(font).max(30),
 						GUI.skin.buttonHeight);
 		});
-		this.view = GUI.staticText.new(layout,bounds)
+		this.view = StaticText.new(layout,bounds)
 			.stringColor_(GUI.skin.fontColor)
 			.font_(font)
 			.background_(GUI.skin.background)

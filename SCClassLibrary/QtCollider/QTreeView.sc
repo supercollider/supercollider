@@ -1,4 +1,4 @@
-QTreeView : QView {
+TreeView : View {
 	var <itemPressedAction;
 	var <onItemChanged;
 
@@ -9,11 +9,11 @@ QTreeView : QView {
 	numColumns { ^this.getProperty( \columnCount ); }
 
 	addItem { arg strings;
-		^this.invokeMethod( \addItem, [QTreeViewItem(),strings] ).prValidItem(this);
+		^this.invokeMethod( \addItem, [TreeViewItem(),strings] ).prValidItem(this);
 	}
 
 	insertItem { arg index, strings;
-		^this.invokeMethod( \insertItem, [QTreeViewItem(),index, strings] ).prValidItem(this);
+		^this.invokeMethod( \insertItem, [TreeViewItem(),index, strings] ).prValidItem(this);
 	}
 
 	removeItem { arg item; this.invokeMethod( \removeItem, item ); }
@@ -27,11 +27,11 @@ QTreeView : QView {
 	}
 
 	currentItem_ { arg item;
-		this.setProperty( \currentItem, item ? QTreeViewItem() );
+		this.setProperty( \currentItem, item ? TreeViewItem() );
 	}
 
 	itemAt { arg index;
-		^this.invokeMethod( \item, [QTreeViewItem(), index] ).prValidItem(this);
+		^this.invokeMethod( \item, [TreeViewItem(), index] ).prValidItem(this);
 	}
 
 	canSort { ^this.getProperty( \sortingEnabled ) }
@@ -107,14 +107,14 @@ QTreeView : QView {
 	}
 }
 
-QTreeViewItem {
+TreeViewItem {
 	var qtObject;
 	var <id;
 	var finalizer;
 	var <treeView;
 
 	== { arg other;
-		^ other.class == QTreeViewItem and: {id == other.id}
+		^ other.class == TreeViewItem and: {id == other.id}
 	}
 
 	isNull { ^ id.isNil }

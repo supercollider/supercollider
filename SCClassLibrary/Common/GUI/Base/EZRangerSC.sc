@@ -40,18 +40,18 @@ EZRanger : EZGui {
 				= this.prSubViewBounds(innerBounds, label.notNil, unitWidth>0);
 
 		label.notNil.if{ //only add a label if desired
-			labelView = GUI.staticText.new(view, labelBounds);
+			labelView = StaticText.new(view, labelBounds);
 			labelView.string = label;
 		};
 
 		(unitWidth>0).if{ //only add a unitLabel if desired
-			unitView = GUI.staticText.new(view, unitBounds);
+			unitView = StaticText.new(view, unitBounds);
 		};
 
 
-		loBox = GUI.numberBox.new(view, loBounds);
-		rangeSlider = GUI.rangeSlider.new(view, rangerBounds);
-		hiBox = GUI.numberBox.new(view, hiBounds);
+		loBox = NumberBox.new(view, loBounds);
+		rangeSlider = RangeSlider.new(view, rangerBounds);
+		hiBox = NumberBox.new(view, hiBounds);
 
 		controlSpec = argControlSpec.asSpec;
 		(unitWidth>0).if{unitView.string = " "++controlSpec.units.asString};
@@ -89,7 +89,7 @@ EZRanger : EZGui {
 		loBox.scroll_step=numberStep;
 
 		rangeSlider.receiveDragHandler = { arg slider;
-			slider.valueAction = controlSpec.unmap(GUI.view.currentDrag);
+			slider.valueAction = controlSpec.unmap(View.currentDrag);
 		};
 
 		rangeSlider.beginDragAction = { arg slider;

@@ -1,5 +1,4 @@
 CLASS:: MultiSliderView
-redirect:: implClass
 summary:: A view displaying an array of sliders
 categories:: GUI>Views
 
@@ -281,7 +280,7 @@ var size;
 size = 350 / 6;
 w = Window.new;
 w.view.decorator = FlowLayout(w.view.bounds);
-m = MultiSliderView(w, Rect(0, 0, 350, 100));   
+m = MultiSliderView(w, Rect(0, 0, 350, 100));
 m.value_(Array.fill(size, {0.01}));
 m.isFilled_(true); // width in pixels of each stick
 m.indexThumbSize_(2.0); // spacing on the value axis
@@ -306,7 +305,7 @@ code::
 n=40;
 
 w = Window("MultiSlider Options", Rect(200, Window.screenBounds.height-550, 600, 450));
-f={ 
+f={
     w.view.decorator = FlowLayout( w.view.bounds, 10@10, 10@2 );
     m = MultiSliderView(w,Rect(0,0,580,200)); // default thumbWidth is 13
     m.value=Array.fill(n, {|v| 0.5+((0.3*v).sin*0.25)});

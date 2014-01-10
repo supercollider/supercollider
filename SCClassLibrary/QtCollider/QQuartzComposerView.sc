@@ -1,4 +1,4 @@
-QQuartzComposerView : QView {
+QuartzComposerView : View {
 	var <path, <inputKeys, <outputKeys;
 
 	*qtClass { ^'QcQuartzComposerView' }

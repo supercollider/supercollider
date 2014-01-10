@@ -20,9 +20,9 @@ PageLayout  {
 			boundsWereExplicit = true;
 			bounds = bounds.asRect
 		},{
-			bounds = GUI.window.screenBounds.insetAll(10,20,0,25)
+			bounds = Window.screenBounds.insetAll(10,20,0,25)
 		});
-		window = GUI.window.new("< " ++ title.asString ++ " >",bounds, border: true, scroll: argScroll );
+		window = Window.new("< " ++ title.asString ++ " >",bounds, border: true, scroll: argScroll );
 		window.onClose_({ this.close });
 		if(background.isKindOf(Boolean),{  // bwcompat : metal=true/false
 			background = background.if(nil,{Color(0.88, 0.94, 0.87, 1)})
@@ -168,6 +168,6 @@ PageLayout  {
 	}
 	scroll { arg ... args;
 		^this.view.performList(\scroll,args)
-	}	
+	}
 }
 

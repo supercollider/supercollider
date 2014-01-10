@@ -46,7 +46,7 @@ EZNumber : EZGui{
 		// insert the views
 
 		label.notNil.if{ //only add a label if desired
-				labelView = GUI.staticText.new(view, labelBounds);
+				labelView = StaticText.new(view, labelBounds);
 			if (layout==\line2)
 				{labelView.align = \left;}
 				{labelView.align = \right;};
@@ -54,7 +54,7 @@ EZNumber : EZGui{
 		};
 
 		(unitWidth>0).if{ //only add a unitLabel if desired
-			unitView = GUI.staticText.new(view, unitBounds);
+			unitView = StaticText.new(view, unitBounds);
 		};
 
 		// set view parameters and actions
@@ -63,7 +63,7 @@ EZNumber : EZGui{
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 
-		numberView = GUI.numberBox.new(view, numBounds).resize_(2);
+		numberView = NumberBox.new(view, numBounds).resize_(2);
 
 		numberStep = controlSpec.step;
 		if (numberStep == 0) {

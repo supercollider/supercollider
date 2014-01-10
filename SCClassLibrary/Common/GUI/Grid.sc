@@ -4,7 +4,6 @@ DrawGrid {
 
 	var <bounds,<>x,<>y;
 	var <>opacity=0.7,<>smoothing=false,<>linePattern;
-	var pen;
 
 	*new { |bounds,horzGrid,vertGrid|
 		^super.new.init(bounds, horzGrid, vertGrid)
@@ -26,7 +25,6 @@ DrawGrid {
 
 	init { arg bounds,h,v;
 		var w;
-		pen = GUI.pen;
 		x = DrawGridX(h);
 		y = DrawGridY(v);
 		this.bounds = bounds;
@@ -40,13 +38,13 @@ DrawGrid {
 		y.bounds = b;
 	}
 	draw {
-		pen.push;
-			pen.alpha = opacity;
-			pen.smoothing = smoothing;
+		Pen.push;
+			Pen.alpha = opacity;
+			Pen.smoothing = smoothing;
 			if(linePattern.notNil) {Pen.lineDash_(linePattern)};
-			x.commands.do({ arg cmd; pen.perform(cmd) });
-			y.commands.do({ arg cmd; pen.perform(cmd) });
-		pen.pop;
+			x.commands.do({ arg cmd; Pen.perform(cmd) });
+			y.commands.do({ arg cmd; Pen.perform(cmd) });
+		Pen.pop;
 	}
 	font_ { arg f;
 		x.font = f;

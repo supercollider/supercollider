@@ -1,5 +1,4 @@
 CLASS:: Stethoscope
-redirect:: implClass
 summary:: An oscilloscope
 categories:: GUI>Interfaces
 related:: Classes/ScopeView, Classes/FreqScope

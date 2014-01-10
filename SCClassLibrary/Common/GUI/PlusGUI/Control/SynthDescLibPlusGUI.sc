@@ -15,12 +15,10 @@
 		var btn, testFn;
 		var fntMono, gui;
 
-		gui = GUI.current;
-
 		hvBold12 = Font.sansSerif( 12 ).boldVariant;
 		fntMono	= Font.monospace( 10 );
 
-		w = gui.window.new("SynthDef browser", Rect(128, (gui.window.screenBounds.height - 638).clip(0, 320),
+		w = Window.new("SynthDef browser", Rect(128, (Window.screenBounds.height - 638).clip(0, 320),
 			700, 608));
 		w.view.decorator = FlowLayout(w.view.bounds);
 
@@ -41,61 +39,49 @@
 			};
 		};
 
-		btn = gui.button.new(w, 48 @ 20);
+		btn = Button.new(w, 48 @ 20);
 		btn.states = [["test"]];
 		btn.action = testFn;
 
-		btn = gui.button.new(w, 48 @ 20);
+		btn = Button.new(w, 48 @ 20);
 		btn.states = [["window"]];
 		btn.action = {
 			var item;
 			item = this[synthDescListView.item.asSymbol];
-			if (item.notNil) {
-				GUI.use( gui, { item.makeWindow });
-			}
+			if (item.notNil) { item.makeWindow };
 		};
 
 		w.view.decorator.nextLine;
-		gui.staticText.new(w, Rect(0,0,220,24)).string_("SynthDescLibs").font_(hvBold12);
-		gui.staticText.new(w, Rect(0,0,220,24)).string_("SynthDefs").font_(hvBold12);
-		gui.staticText.new(w, Rect(0,0,220,24)).string_("UGens").font_(hvBold12);
+		StaticText.new(w, Rect(0,0,220,24)).string_("SynthDescLibs").font_(hvBold12);
+		StaticText.new(w, Rect(0,0,220,24)).string_("SynthDefs").font_(hvBold12);
+		StaticText.new(w, Rect(0,0,220,24)).string_("UGens").font_(hvBold12);
 		w.view.decorator.nextLine;
 
-		synthDescLibListView = gui.listView.new(w, Rect(0,0, 220, 320)).focus;
-		synthDescListView = gui.listView.new(w, Rect(0,0, 220, 320));
+		synthDescLibListView = ListView.new(w, Rect(0,0, 220, 320)).focus;
+		synthDescListView = ListView.new(w, Rect(0,0, 220, 320));
 		synthDescListView.beginDragAction_({arg v;
 			v.items[v.value].asSymbol;
 		});
-		ugensListView = gui.listView.new(w, Rect(0,0, 220, 320));
+		ugensListView = ListView.new(w, Rect(0,0, 220, 320));
 
 		w.view.decorator.nextLine;
-		gui.staticText.new(w, Rect(0,0,240,24)).string_("SynthDef Controls")
+		StaticText.new(w, Rect(0,0,240,24)).string_("SynthDef Controls")
 			.font_(hvBold12).align_(\center);
-		gui.staticText.new(w, Rect(0,0,200,24)).string_("SynthDef Inputs")
+		StaticText.new(w, Rect(0,0,200,24)).string_("SynthDef Inputs")
 			.font_(hvBold12).align_(\center);
-		gui.staticText.new(w, Rect(0,0,200,24)).string_("SynthDef Outputs")
+		StaticText.new(w, Rect(0,0,200,24)).string_("SynthDef Outputs")
 			.font_(hvBold12).align_(\center);
 		w.view.decorator.nextLine;
 
-		controlsListView = gui.listView.new(w, Rect(0,0, 240, 160));
-		inputsListView = gui.listView.new(w, Rect(0,0, 200, 160));
-		outputsListView = gui.listView.new(w, Rect(0,0, 200, 160));
+		controlsListView = ListView.new(w, Rect(0,0, 240, 160));
+		inputsListView = ListView.new(w, Rect(0,0, 200, 160));
+		outputsListView = ListView.new(w, Rect(0,0, 200, 160));
 		controlsListView.resize = 4;
 		inputsListView.resize = 4;
 		outputsListView.resize = 4;
 
-		if (GUI.id == \qt) {
-			[controlsListView, inputsListView, outputsListView].do {
+		[controlsListView, inputsListView, outputsListView].do {
 				|listview| listview.selectionMode = \none
-			};
-		} {
-			// this is a trick to not show hilighting.
-			controlsListView.hiliteColor = Color.clear;
-			inputsListView.hiliteColor = Color.clear;
-			outputsListView.hiliteColor = Color.clear;
-			controlsListView.selectedStringColor = Color.black;
-			inputsListView.selectedStringColor = Color.black;
-			outputsListView.selectedStringColor = Color.black;
 		};
 
 		controlsListView.font	= fntMono;

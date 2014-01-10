@@ -1,5 +1,4 @@
 CLASS:: StaticText
-redirect:: implClass
 summary:: A view displaying non-editable text
 categories:: GUI>Views
 

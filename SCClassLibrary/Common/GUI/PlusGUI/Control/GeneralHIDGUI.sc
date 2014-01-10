@@ -13,7 +13,7 @@ GeneralHIDDeviceGUI{
 
 	init{ |dev|
 		device = dev;
-		win = GUI.window.new( device.info.name, Rect( 0, 0, 400, 400 ));
+		win = Window.new( device.info.name, Rect( 0, 0, 400, 400 ));
 		win.view.decorator = FlowLayout( win.bounds );
 
 		EZText.new( win, 390@20 , "name", initVal: device.info.name );

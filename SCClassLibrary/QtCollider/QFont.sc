@@ -1,10 +1,9 @@
-QFont {
+Font {
 	classvar <defaultSansFace, <defaultSerifFace, <defaultMonoFace;
 
 	var <>name, <size, <>bold, <>italic, <hasPointSize=false;
 	/* ----------------- class -------------------*/
 
-	*implementsClass {^'Font'}
 
 	*initClass {
 		defaultSansFace = this.prDefaultFamilyForStyle(0);

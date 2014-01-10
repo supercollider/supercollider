@@ -1,5 +1,4 @@
 class:: HLayoutView
-redirect:: implClass
 summary:: A container view that arranges its children horizontally
 categories:: GUI>Views
 related:: Classes/VLayoutView, Classes/CompositeView

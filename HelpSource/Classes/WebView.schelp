@@ -1,5 +1,4 @@
 class:: WebView
-redirect:: implClass
 summary:: Web page display and browser
 categories:: GUI>Views
 

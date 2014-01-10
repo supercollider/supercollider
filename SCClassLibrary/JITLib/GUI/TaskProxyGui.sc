@@ -21,7 +21,7 @@ TaskProxyGui : JITGui {
 		var lineWidth = zone.bounds.width - (skin.margin.y * 2);
 		var width = lineWidth * 0.62 / 4;
 		var nameWidth = lineWidth * 0.38;
-		var zoneMargin = if ( (numItems > 0) or: { parent.isKindOf(Window.implClass) }) { skin.margin } { 0@0 };
+		var zoneMargin = if ( (numItems > 0) or: { parent.isKindOf(Window) }) { skin.margin } { 0@0 };
 
 		zone.decorator = FlowLayout(zone.bounds, zoneMargin, skin.gap);
 
@@ -273,7 +273,7 @@ TaskProxyAllGui :JITGui {
 	// options could include a TdefGui with EnvirGui ...
 	makeViews { |options|
 
-		if (parent.isKindOf(Window.implClass)) {
+		if (parent.isKindOf(Window)) {
 			parent.name = this.class.observedClass.name ++ ".all";
 		};
 

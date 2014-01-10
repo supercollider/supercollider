@@ -1,4 +1,4 @@
-QSlider2D : QAbstractStepValue {
+Slider2D : QAbstractStepValue {
 	*qtClass { ^'QcSlider2D' }
 
 	*new { arg parent, bounds;
@@ -69,9 +69,9 @@ QSlider2D : QAbstractStepValue {
 	background_ { arg color; this.setProperty(\grooveColor, color) }
 
 	defaultGetDrag { ^Point(this.x,this.y); }
-	defaultCanReceiveDrag { ^(QView.currentDrag.class === Point); }
+	defaultCanReceiveDrag { ^(View.currentDrag.class === Point); }
 	defaultReceiveDrag {
-		var pt = QView.currentDrag;
+		var pt = View.currentDrag;
 		this.setXYActive( pt.x, pt.y );
 	}
 }

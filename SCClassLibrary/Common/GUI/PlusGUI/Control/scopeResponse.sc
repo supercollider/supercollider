@@ -25,11 +25,11 @@ Slew.scopeResponse
 		var bus1, bus2, synth, win, fs;
 
 		if (server.isNil) {
-			server = GUI.freqScopeView.server;
+			server = FreqScopeView.server;
 		} {
-			if (server != GUI.freqScopeView.server) {
-				"Function-scopeReponse: resetting GUI.freqScopeView.server".warn;
-				GUI.freqScopeView.server = server;
+			if (server != FreqScopeView.server) {
+				"Function-scopeReponse: resetting FreqScopeView.server".warn;
+				FreqScopeView.server = server;
 			};
 		};
 
@@ -44,8 +44,8 @@ Slew.scopeResponse
 		// Create the SCFreqScope.response using the same simple window as in the helpfile
 		// Also, onClose must free the synth and the busses
 
-		win = GUI.window.new(label, Rect(100, 100, 511, 300));
-		fs = GUI.freqScopeView.response(win, win.view.bounds, bus1, bus2, freqMode);
+		win = Window.new(label, Rect(100, 100, 511, 300));
+		fs = FreqScopeView.response(win, win.view.bounds, bus1, bus2, freqMode);
 
 		win.onClose_ {
 			fs.kill;

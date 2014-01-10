@@ -1,4 +1,4 @@
-QRangeSlider : QAbstractStepValue {
+RangeSlider : QAbstractStepValue {
 	*qtClass { ^'QcRangeSlider' }
 
 	*new { arg parent, bounds;
@@ -87,9 +87,9 @@ QRangeSlider : QAbstractStepValue {
 	background_ { arg color; this.setProperty(\grooveColor, color) }
 
 	defaultGetDrag { ^Point(this.lo,this.hi); }
-	defaultCanReceiveDrag { ^(QView.currentDrag.class === Point); }
+	defaultCanReceiveDrag { ^(View.currentDrag.class === Point); }
 	defaultReceiveDrag {
-		var pt = QView.currentDrag;
+		var pt = View.currentDrag;
 		this.setSpanActive( pt.x, pt.y );
 	}
 }

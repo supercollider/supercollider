@@ -1,5 +1,4 @@
 CLASS:: LevelIndicator
-redirect:: implClass
 summary:: a level indicator GUI widget
 categories:: GUI>Views
 related:: Classes/RangeSlider

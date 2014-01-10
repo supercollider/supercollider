@@ -17,9 +17,7 @@
 	}
 
 	freqscope {
-		GUI.current.freqScopeView.tryPerform('server_', this);
-		// FIXME: Can not change server in SwingOSC GUI.
-		^GUI.freqScope.new;
+		^PlusFreqScopeWindow.new(server: this);
 	}
 }
 
@@ -34,7 +32,7 @@
 	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom;
 		var synth, synthDef, bytes, synthMsg, outUGen, server;
 
-		server = GUI.stethoscope.defaultServer;
+		server = Server.default;
 		if(server.serverRunning.not) {
 			(server.name.asString ++ " server not running!").postln;
 			^nil
@@ -53,9 +51,8 @@
 	}
 
 	freqscope {
-		var server = if (GUI.id === \swing)
-			{ GUI.freqScopeView.audioServer } { GUI.freqScopeView.server };
+		var server = Server.default;
 		this.play(server);
-		^GUI.freqScope.new
+		^PlusFreqScopeWindow.new(server: server)
 	}
 }

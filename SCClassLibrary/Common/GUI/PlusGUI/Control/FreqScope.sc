@@ -1,31 +1,20 @@
 PlusFreqScope {
-	classvar <server;
 
 	var <scope;
 	var <scopebuf;
+	var <server;
 	var <active, <synth, <inBus, <dbRange, dbFactor, rate, <freqMode;
 	var <bufSize;	// size of FFT
 	var <>specialSynthDef, <specialSynthArgs; // Allows to override the analysis synth
 
 	*initClass {
 		StartUp.add {
-			server = GUI.current.stethoscope.defaultServer;
-
 			this.initSynthDefs;
 		}
 	}
 
-	*server_ {|aServer|
-		if(GUI.current.stethoscope.isValidServer(aServer).not) {
-			Error("PlusFreqScope: can not use server '%' with current GUI scheme (%)"
-				.format(aServer.name, GUI.current.id)).throw;
-		};
-
-		server = aServer;
-	}
-
-	*new { arg parent, bounds;
-		^super.new.initFreqScope (parent, bounds)
+	*new { arg parent, bounds, server;
+		^super.new.initFreqScope (parent, bounds, server)
 	}
 
 	*initSynthDefs {
@@ -175,12 +164,13 @@ PlusFreqScope {
 		}, [\kr, \ir, \ir, \ir, \kr, \ir]).add;
 	}
 
-	initFreqScope { arg parent, bounds;
+	initFreqScope { arg parent, bounds, argServer;
+		server = argServer ? Server.default;
 		if (this.shmScopeAvailable) {
-			scope = \QScope2.asClass.new(parent, bounds);
+			scope = Scope2.new(parent, bounds);
 			scope.server = server;
 		} {
-			scope = ScopeView(parent, bounds);
+			scope = Scope(parent, bounds);
 		};
 
 		active = false;
@@ -224,7 +214,7 @@ PlusFreqScope {
 		args = [\in, inBus, \dbFactor, dbFactor, \rate, 4, \fftBufSize, bufSize,
 			\scopebufnum, scopebuf.bufnum] ++ specialSynthArgs;
 		synth = Synth.tail(RootNode(server), defname, args);
-		if (scope.class.name === \QScope2) { scope.start };
+		if (scope.class === Scope2) { scope.start };
 	}
 
 	kill {
@@ -244,7 +234,7 @@ PlusFreqScope {
 		} {
 			ServerTree.remove(this, server);
 			if (server.serverRunning and: active) {
-				if (scope.class.name === \QScope2) { scope.stop };
+				if (scope.class === Scope2) { scope.stop };
 				synth.free;
 				synth = nil;
 			};
@@ -316,8 +306,7 @@ PlusFreqScope {
 	}
 
 	shmScopeAvailable {
-		if (GUI.id != \qt) { ^false };
-		^(server.isLocal and: (server.inProcess.not))
+		^server.isLocal and: { server.inProcess.not }
 	}
 }
 
@@ -326,7 +315,7 @@ PlusFreqScopeWindow {
 
 	var <scope, <window;
 
-	*new { arg width=522, height=300, busNum=0, scopeColor, bgColor;
+	*new { arg width=522, height=300, busNum=0, scopeColor, bgColor, server;
 		var rect, scope, window, pad, font, freqLabel, freqLabelDist, dbLabel, dbLabelDist;
 		var setFreqLabelVals, setDBLabelVals;
 		var nyquistKHz;
@@ -337,6 +326,8 @@ PlusFreqScopeWindow {
 
 			scopeOpen = true;
 
+			server = server ? Server.default;
+
 			rect = Rect(0, 0, width, height);
 			pad = [30, 48, 14, 10]; // l,r,t,b
 			font = Font.monospace(9);
@@ -345,7 +336,7 @@ PlusFreqScopeWindow {
 			dbLabel = Array.newClear(17);
 			dbLabelDist = rect.height/(dbLabel.size-1);
 
-			nyquistKHz = PlusFreqScope.server.sampleRate;
+			nyquistKHz = server.sampleRate;
 			if( (nyquistKHz == 0) || nyquistKHz.isNil, {
 				nyquistKHz = 22.05 // best guess?
 			},{
@@ -401,7 +392,7 @@ PlusFreqScopeWindow {
 				;
 			});
 
-			scope = PlusFreqScope(window, rect.moveBy(pad[0], pad[2]));
+			scope = PlusFreqScope(window, rect.moveBy(pad[0], pad[2]), server);
 			scope.xZoom_((scope.bufSize*0.25) / width);
 
 			setFreqLabelVals.value(scope.freqMode, 2048);
@@ -427,7 +418,7 @@ PlusFreqScopeWindow {
 
 			NumberBox(window, Rect(pad[0] + rect.width, pad[2]+30, pad[1], 14))
 				.action_({ arg view;
-					view.value_(view.value.asInteger.clip(0, Server.internal.options.numAudioBusChannels));
+					view.value_(view.value.asInteger.clip(0, server.options.numAudioBusChannels));
 					scope.inBus_(view.value);
 				})
 				.value_(busNum)
@@ -482,12 +473,5 @@ PlusFreqScopeWindow {
 			}).front;
 			^super.newCopyArgs(scope, window)
 		});
-	}
-
-	*server {
-		^PlusFreqScope.server
-	}
-	*server_ {|aServer|
-		^PlusFreqScope.server_(aServer)
 	}
 }

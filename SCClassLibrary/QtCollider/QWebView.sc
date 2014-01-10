@@ -1,4 +1,4 @@
-QWebView : QView {
+WebView : View {
 
 	var <onLoadFinished, <onLoadFailed, <onLinkActivated, <onReload, <onJavaScriptMsg;
 
@@ -43,7 +43,7 @@ QWebView : QView {
 	}
 
 	// The given function will be evaluated when a page has loaded successfully.
-	// The calling QWebView object is passed to the function.
+	// The calling WebView object is passed to the function.
 
 	onLoadFinished_ { arg func;
 		case
@@ -56,7 +56,7 @@ QWebView : QView {
 	}
 
 	// The given function will be evaluated when a page has failed to load.
-	// The calling QWebView object is passed to the function.
+	// The calling WebView object is passed to the function.
 
 	onLoadFailed_ { arg func;
 		case
@@ -68,13 +68,13 @@ QWebView : QView {
 		onLoadFailed = func;
 	}
 
-	// After this method is called with a function as an argument, QWebView will not
+	// After this method is called with a function as an argument, WebView will not
 	// handle links in any way. Instead, the given function will be evaluated whenever
 	// the user activates (clicks) a link.
 
-	// The argument passed to the function is the calling QWebView object.
+	// The argument passed to the function is the calling WebView object.
 
-	// If this method is called with nil argument, QWebView link handling will be
+	// If this method is called with nil argument, WebView link handling will be
 	// restored again.
 
 	onLinkActivated_ { arg func;
@@ -85,14 +85,14 @@ QWebView : QView {
 		onLinkActivated = func;
 	}
 
-	// After this method is called with an object as an argument, QWebView will do
+	// After this method is called with an object as an argument, WebView will do
 	// nothing when page reload is requested. Instead, the given object's 'value' method
 	// will be called on such event.
 
-	// The arguments passed to the 'value' method are this QWebView instance and
+	// The arguments passed to the 'value' method are this WebView instance and
 	// a String for the requested URL to be reloaded.
 
-	// If this method is called with nil argument, QWebView's page reload handling will
+	// If this method is called with nil argument, WebView's page reload handling will
 	// be restored again.
 
 	onReload_ { arg func;

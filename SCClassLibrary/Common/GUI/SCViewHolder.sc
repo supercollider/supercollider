@@ -1,4 +1,4 @@
-// SCViewHolder makes it possible to add more capabilities by holding an SCView, not subclassing it
+// SCViewHolder makes it possible to add more capabilities by holding a View, not subclassing it
 SCViewHolder {
 
 	classvar <>consumeKeyDowns = false;// should the view by default consume keydowns
@@ -59,7 +59,7 @@ SCViewHolder {
 
 
 FlowViewLayout : FlowLayout {
-	
+
 	var rows;
 	var fOnViewClose;
 
@@ -140,7 +140,7 @@ FlowView : SCViewHolder {
 		f.value(v);
 		^v
 	}
-	*viewClass { ^GUI.compositeView }
+	*viewClass { ^CompositeView }
 	*new { arg parent, bounds,margin,gap,windowTitle="";
 		^super.new.init(parent, bounds,margin,gap,windowTitle);
 	}
@@ -148,7 +148,7 @@ FlowView : SCViewHolder {
 		var w, parentView, iMadeParent = false;
 		parent = argParent ?? {
 			iMadeParent = true;
-			GUI.window.new(windowTitle,bounds).front
+			Window.new(windowTitle,bounds).front
 		};
 		parentView = parent.asView;
 		if(bounds.notNil,{

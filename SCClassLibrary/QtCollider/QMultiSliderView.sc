@@ -1,4 +1,4 @@
-QMultiSliderView : QView {
+MultiSliderView : View {
 	var <editable=true;
 	var <elasticMode=false;
 	var <indexThumbSize=12, <valueThumbSize=12, <gap=1;

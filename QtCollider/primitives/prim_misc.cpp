@@ -104,7 +104,7 @@ QC_LANG_PRIMITIVE( QFont_SetDefaultFont, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g
 {
     if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
-    if ( !isKindOfSlot( a+0, SC_CLASS(QFont) ) )
+    if ( !isKindOfSlot( a+0, SC_CLASS(Font) ) )
         return errWrongType;
 
     QFont font( QtCollider::read<QFont>(a+0) );

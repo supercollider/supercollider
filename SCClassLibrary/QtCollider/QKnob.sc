@@ -13,7 +13,7 @@
 //
 //  08.03.2010 - QKnob = SCKnob adjusted for GUI.qt scheme (by Jakob Leben)
 
-QKnob : QAbstractStepValue {
+Knob : QAbstractStepValue {
 	classvar <>defaultMode = \round;
 
 	var <>keystep = 0.01;

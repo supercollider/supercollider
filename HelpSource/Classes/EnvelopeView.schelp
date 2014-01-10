@@ -1,5 +1,4 @@
 class:: EnvelopeView
-redirect:: implClass
 summary:: A configurable view with nodes and connections
 categories:: GUI>Views
 related:: Classes/MultiSliderView, Classes/SCEnvelopeEdit

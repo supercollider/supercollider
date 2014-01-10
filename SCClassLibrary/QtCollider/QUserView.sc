@@ -1,4 +1,4 @@
-QUserView : QView {
+UserView : View {
 	var <drawFunc, <drawingEnabled=true, <animate=false;
 
 	*qtClass { ^'QcCustomPainted' }

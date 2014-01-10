@@ -1,24 +1,24 @@
-QTopScrollWidget : QScrollCanvas {
+TopScrollWidget : ScrollCanvas {
 	var <>win;
 	doDrawFunc { win.drawFunc.value(win); }
 }
 
-QScrollTopView : QScrollView {
+ScrollTopView : ScrollView {
 	var >window;
 
 	*qtClass {^'QcScrollWindow'}
 
 	*new { arg win, name, bounds, resizable, border;
 		^super.newCustom([name, bounds, resizable, border])
-		.initQScrollTopView(win);
+		.initScrollTopView(win);
 	}
 
-	initQScrollTopView { arg win;
+	initScrollTopView { arg win;
 		var cnv;
 		window = win;
-		// NOTE: The canvas widget must not be a QView, so that asking its
+		// NOTE: The canvas widget must not be a View, so that asking its
 		// children for parent will skip it and hit this view instead.
-		cnv = QTopScrollWidget.new;
+		cnv = TopScrollWidget.new;
 		cnv.win = win;
 		this.canvas = cnv;
 	}
@@ -40,17 +40,17 @@ QScrollTopView : QScrollView {
 	findWindow { ^window; }
 }
 
-QTopView : QView {
+TopView : View {
 	var >window;
 
 	*qtClass {^'QcWindow'}
 
 	*new { arg win, name, bounds, resizable, border;
 		^super.newCustom([name, bounds, resizable, border])
-		.initQTopView(win);
+		.initTopView(win);
 	}
 
-	initQTopView { arg win; window = win; }
+	initTopView { arg win; window = win; }
 
 	bounds {
 		var r;
@@ -71,7 +71,7 @@ QTopView : QView {
 	doDrawFunc { window.drawFunc.value(window) }
 }
 
-QWindow
+Window
 {
 	classvar <allWindows, <>initAction;
 
@@ -81,8 +81,6 @@ QWindow
 	//TODO
 	var <>acceptsClickThrough=false;
 	var <currentSheet;
-
-	*implementsClass {^'Window'}
 
 	*screenBounds {
 		_QWindow_ScreenBounds
@@ -98,7 +96,7 @@ QWindow
 
 	/* NOTE:
 	- 'server' is only for compatibility with SwingOSC
-	- all args have to be of correct type for QWidget constructor to match!
+	- all args have to be of correct type for Widget constructor to match!
 	*/
 	*new { arg name="",
 		bounds,
@@ -108,29 +106,29 @@ QWindow
 		scroll = false;
 
 		if( bounds.isNil ) {
-			bounds = Rect(0,0,400,400).center_( QWindow.availableBounds.center );
+			bounds = Rect(0,0,400,400).center_( Window.availableBounds.center );
 		}{
-			bounds = QWindow.flipY( bounds.asRect );
+			bounds = Window.flipY( bounds.asRect );
 		};
-		^super.new.initQWindow( name, bounds, resizable, border, scroll );
+		^super.new.initWindow( name, bounds, resizable, border, scroll );
 	}
 
-	//------------------------ QWindow specific  -----------------------//
+	//------------------------ Window specific  -----------------------//
 
-	initQWindow { arg name, bounds, resize, border, scroll;
+	initWindow { arg name, bounds, resize, border, scroll;
 		if( scroll )
-		{ view = QScrollTopView.new(this,name,bounds,resize,border); }
-		{ view = QTopView.new(this,name,bounds,resize,border); };
+		{ view = ScrollTopView.new(this,name,bounds,resize,border); }
+		{ view = TopView.new(this,name,bounds,resize,border); };
 
 		// set some necessary object vars
 		resizable = resize == true;
 
 		// allWindows array management
-		QWindow.addWindow( this );
-		view.connectFunction( 'destroyed()', { QWindow.removeWindow(this); }, false );
+		Window.addWindow( this );
+		view.connectFunction( 'destroyed()', { Window.removeWindow(this); }, false );
 
 		// action to call whenever a window is created
-		QWindow.initAction.value( this );
+		Window.initAction.value( this );
 	}
 
 	asView {
@@ -138,17 +136,17 @@ QWindow
 	}
 
 	bounds_ { arg aRect;
-		var r = QWindow.flipY( aRect.asRect );
+		var r = Window.flipY( aRect.asRect );
 		view.setProperty( \geometry, r );
 		if( resizable.not ) { view.fixedSize = r.size }
 	}
 
 	bounds {
-		^QWindow.flipY( view.getProperty( \geometry ) );
+		^Window.flipY( view.getProperty( \geometry ) );
 	}
 
 	setInnerExtent { arg w, h;
-		// bypass this.bounds, to avoid QWindow flipping the y coordinate
+		// bypass this.bounds, to avoid Window flipping the y coordinate
 		var r = view.getProperty(\geometry );
 		view.setProperty(\geometry, r.resizeTo( w, h ); )
 	}
@@ -173,7 +171,7 @@ QWindow
 	addToOnClose{ arg function; }
 	removeFromOnClose{ arg function; }
 
-	//------------------- simply redirected to QView ---------------------//
+	//------------------- simply redirected to View ---------------------//
 
 	sizeHint { ^view.sizeHint }
 	minSizeHint { ^view.minSizeHint }
@@ -207,7 +205,7 @@ QWindow
 	// ---------------------- private ------------------------------------
 
 	*flipY { arg aRect;
-		var flippedTop = QWindow.screenBounds.height - aRect.top - aRect.height;
+		var flippedTop = Window.screenBounds.height - aRect.top - aRect.height;
 		^Rect( aRect.left, flippedTop, aRect.width, aRect.height );
 	}
 

@@ -1,5 +1,4 @@
 CLASS:: UserView
-redirect:: implClass
 summary:: A custom drawn view using Pen
 categories:: GUI>Views
 related:: Classes/Pen

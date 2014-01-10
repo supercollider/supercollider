@@ -1,5 +1,4 @@
 CLASS:: ListView
-redirect:: implClass
 summary:: A view displaying a list of text items.
 categories:: GUI>Views
 
