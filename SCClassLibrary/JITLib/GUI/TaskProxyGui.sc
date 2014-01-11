@@ -3,6 +3,10 @@ TaskProxyGui : JITGui {
 	var <nameBut, <playBut, <pauseBut, <srcBut, <envBut;
 	var <envirGui, <usedKeys;
 
+	*observedClass { ^TaskProxy }
+
+	key { ^'anon' }
+
 	setDefaults { |options|
 		defPos = 10@260;
 		minSize = 260 @ (skin.buttonHeight * (numItems + 1) + (numItems.sign * 4));
@@ -163,7 +167,9 @@ TaskProxyGui : JITGui {
 
 		if (newState[\name] != prevState[\name]) {  // name
 			zone.visible_(true);
-			nameBut.states_(nameBut.states.collect(_.put(0, object.key.asString))).refresh;
+			nameBut.states_(
+				nameBut.states.collect(_.put(0, newState[\name].asString))
+			).refresh;
 		};
 
 		playState = newState[\isPlaying] * 2 - newState[\isActive];
