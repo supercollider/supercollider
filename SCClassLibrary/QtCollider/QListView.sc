@@ -10,13 +10,13 @@ ListView : ItemViewBase {
 	}
 
 	mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
-		// Override QView:mouseDownEvent: postpone drag start to move event
+		// Override View:mouseDownEvent: postpone drag start to move event
 		modifiers = QKeyModifiers.toCocoa(modifiers);
 		^this.mouseDown( x, y, modifiers, buttonNumber, clickCount );
 	}
 
 	mouseMoveEvent { arg x, y, modifiers, buttons;
-		// Override QView:mouseMoveEvent: start drag
+		// Override View:mouseMoveEvent: start drag
 		if( buttons != 0 and: ((modifiers & QKeyModifiers.control) > 0) ) {
 			if( this.beginDrag( x, y ) ) { ^true };
 		};
@@ -111,8 +111,8 @@ ListView : ItemViewBase {
 	}
 
 	defaultGetDrag { ^this.value; }
-	defaultCanReceiveDrag { ^QView.currentDrag.isNumber; }
+	defaultCanReceiveDrag { ^View.currentDrag.isNumber; }
 	defaultReceiveDrag {
-		this.valueAction = QView.currentDrag;
+		this.valueAction = View.currentDrag;
 	}
 }

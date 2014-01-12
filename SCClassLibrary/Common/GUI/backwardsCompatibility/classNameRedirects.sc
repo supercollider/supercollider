@@ -54,12 +54,11 @@ QView : View {}
 
 CompositeView : View {}
 
+FreqScopeView : PlusFreqScope {}
+FreqScope : PlusFreqScopeWindow {}
+
 // avoid breaking code
 + Object {
 	*implClass { ^this }
 
 }
-
-
-
-

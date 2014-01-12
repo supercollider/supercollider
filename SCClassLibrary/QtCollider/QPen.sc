@@ -297,7 +297,7 @@ Pen {
 
 	//---------------------- PRIVATE! -- Painter on/off-----------------------------
 
-	*prBegin { arg aQView;
+	*prBegin { arg aView;
 		_QPen_Begin
 		^this.primitiveFailed;
 	}

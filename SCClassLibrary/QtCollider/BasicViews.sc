@@ -307,9 +307,9 @@ Button : View {
 	defaultGetDrag { ^this.value; }
 	defaultCanReceiveDrag { ^true; }
 	defaultReceiveDrag {
-		if( QView.currentDrag.isNumber )
-		{ this.valueAction = QView.currentDrag; }
-		{ this.action = QView.currentDrag; };
+		if( View.currentDrag.isNumber )
+		{ this.valueAction = View.currentDrag; }
+		{ this.action = View.currentDrag; };
 	}
 
 	prDoAction { arg mods;
@@ -351,9 +351,9 @@ CheckBox : View {
 	}
 
 	defaultGetDrag { ^this.value; }
-	defaultCanReceiveDrag { ^((QView.currentDrag == true) || (QView.currentDrag == false)); }
+	defaultCanReceiveDrag { ^((View.currentDrag == true) || (View.currentDrag == false)); }
 	defaultReceiveDrag {
-		this.valueAction = QView.currentDrag;
+		this.valueAction = View.currentDrag;
 	}
 }
 
@@ -387,8 +387,8 @@ PopUpMenu : ItemViewBase {
 	}
 
 	defaultGetDrag { ^this.value; }
-	defaultCanReceiveDrag { ^QView.currentDrag.isNumber; }
+	defaultCanReceiveDrag { ^View.currentDrag.isNumber; }
 	defaultReceiveDrag {
-		this.valueAction = QView.currentDrag;
+		this.valueAction = View.currentDrag;
 	}
 }

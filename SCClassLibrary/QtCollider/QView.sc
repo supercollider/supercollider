@@ -1,4 +1,4 @@
-QView : QObject {
+View : QObject {
 	classvar <globalKeyDownAction, <globalKeyUpAction;
 	classvar <hSizePolicy;
 	classvar <vSizePolicy;
