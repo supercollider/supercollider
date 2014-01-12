@@ -1,5 +1,5 @@
 /*
-Server.default = s = Server.internal.boot;
+Server.default.boot;
 
 {|in| MoogFF.ar(in, freq: LFCub.kr(0.2).exprange(10, 10000))}.scopeResponse
 {|in| MoogFF.ar(in)}.scopeResponse
