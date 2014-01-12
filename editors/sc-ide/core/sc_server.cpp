@@ -122,8 +122,8 @@ void ScServer::createActions(Settings::Manager * settings)
     connect(action, SIGNAL(triggered()), this, SLOT(dumpNodeTreeWithControls()));
     settings->addAction( action, "synth-server-dump-nodes-with-controls", synthServerCategory);
 
-    mActions[PlotTree] = action = new QAction(tr("Plot Node Tree"), this);
-    action->setShortcut(tr("Ctrl+Alt+T", "Plot node tree"));
+    mActions[PlotTree] = action = new QAction(tr("Show Node Tree"), this);
+    action->setShortcut(tr("Ctrl+Alt+T", "Show node tree"));
     connect(action, SIGNAL(triggered()), this, SLOT(plotTree()));
     settings->addAction( action, "synth-server-plot-tree", synthServerCategory);
 
