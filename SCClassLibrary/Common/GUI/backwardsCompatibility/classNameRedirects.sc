@@ -54,8 +54,8 @@ QView : View {}
 
 CompositeView : View {}
 
-FreqScopeView : PlusFreqScope {}
-FreqScope : PlusFreqScopeWindow {}
+PlusFreqScopeView : FreqScopeView {}
+FreqScopeWindow : FreqScope {}
 
 // avoid breaking code
 + Object {

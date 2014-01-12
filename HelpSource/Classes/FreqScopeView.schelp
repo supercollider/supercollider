@@ -85,10 +85,6 @@ subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: viewClass
-Returns link::Classes/SCScope::. See also Subclassing and Internal Methods in link::Classes/SCView::.
-warning::Cocoa specific::
-
 method:: initClass
 Sets the classvar, code::server = Server.default::.
 
