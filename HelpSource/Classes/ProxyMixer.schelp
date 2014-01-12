@@ -155,7 +155,8 @@ l.switchSize(0, true);    // ar zone only
 l.switchSize(1, true);    // ar + kr
 l.switchSize(2, true);    // ar + edit zone
 
-        // R opens a Record utility, see below.
+        // Record opens a utility window, RecordProxyMixer.
+        // this requires the JITLibExtensions quark.
 
     // the line of controls for one proxy and its monitor is
     // a ProxyMonitorGui, so for full details see ProxyMonitorGui.help.
@@ -176,6 +177,12 @@ l.switchSize(2, true);    // ar + edit zone
 s.scope(8);
 ~test.playN(4);    // set proxy's first output channel:
 ~test.playN(0);
+
+// One can move the border between sliders and nameView: 
+
+n.enableNameResize(true);	// try click and dragging that border now
+
+n.setNameLeftBorder(200);   // or set by code
 
     //    paus/rsum toggles pause and resume:
 ~test.pause;
