@@ -1,4 +1,4 @@
-PlusFreqScope {
+FreqScopeView {
 
 	var <scope;
 	var <scopebuf;
@@ -295,7 +295,7 @@ PlusFreqScope {
 	}
 
 	*response{ |parent, bounds, bus1, bus2, freqMode=1|
-		var scope = this.new(parent, bounds).inBus_(bus1.index);
+		var scope = this.new(parent, bounds, bus1.server).inBus_(bus1.index);
 		var synthDefName = "system_freqScope%_magresponse%".format(freqMode, if (scope.shmScopeAvailable) {"_shm"} {""});
 
 		^scope.special(synthDefName, [\in2, bus2])
@@ -310,7 +310,7 @@ PlusFreqScope {
 	}
 }
 
-PlusFreqScopeWindow {
+FreqScope {
 	classvar <scopeOpen;
 
 	var <scope, <window;
@@ -393,7 +393,7 @@ PlusFreqScopeWindow {
 				;
 			});
 
-			scope = PlusFreqScope(window, rect.moveBy(pad[0], pad[2]), server);
+			scope = FreqScopeView(window, rect.moveBy(pad[0], pad[2]), server);
 			scope.xZoom_((scope.bufSize*0.25) / width);
 
 			setFreqLabelVals.value(scope.freqMode, 2048);

@@ -24,15 +24,7 @@ Slew.scopeResponse
 
 		var bus1, bus2, synth, win, fs;
 
-		if (server.isNil) {
-			server = FreqScopeView.server;
-		} {
-			if (server != FreqScopeView.server) {
-				"Function-scopeReponse: resetting FreqScopeView.server".warn;
-				FreqScopeView.server = server;
-			};
-		};
-
+		server = server ? Server.default;
 		if (server.serverRunning.not) {
 			Error("Function-scopeResponse: server not running").throw
 		};
