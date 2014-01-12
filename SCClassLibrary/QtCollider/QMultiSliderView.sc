@@ -173,7 +173,7 @@ MultiSliderView : View {
 	}
 	defaultCanReceiveDrag { ^true; }
 	defaultReceiveDrag {
-		arg data = QView.currentDrag;
+		arg data = View.currentDrag;
 		if( data.size > 0 ) {
 			if( data[0].size > 0 ) {
 				this.value = data[0];

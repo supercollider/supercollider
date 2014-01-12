@@ -219,6 +219,6 @@ EnvelopeView : View
 	}
 	defaultCanReceiveDrag { ^true; }
 	defaultReceiveDrag {
-		this.value = QView.currentDrag;
+		this.value = View.currentDrag;
 	}
 }

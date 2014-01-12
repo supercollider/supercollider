@@ -319,6 +319,7 @@ PlusFreqScopeWindow {
 		var rect, scope, window, pad, font, freqLabel, freqLabelDist, dbLabel, dbLabelDist;
 		var setFreqLabelVals, setDBLabelVals;
 		var nyquistKHz;
+		busNum = busNum.asControlInput;
 		if(scopeOpen != true, { // block the stacking up of scope windows
 			//make scope
 

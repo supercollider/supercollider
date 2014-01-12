@@ -43,7 +43,7 @@ UserView : View {
 
 	frame { ^this.getProperty( \frameCount ); }
 
-	// override QView's action_ to not connect to 'action()' signal
+	// override View's action_ to not connect to 'action()' signal
 	action_ { arg func;
 		action = func;
 	}

@@ -108,6 +108,6 @@ Knob : QAbstractStepValue {
 	decrement { |zoom=1| ^this.valueAction = (this.value - (keystep * zoom)) }
 
 	defaultGetDrag { ^this.value }
-	defaultCanReceiveDrag { ^QView.currentDrag.isNumber }
-	defaultReceiveDrag { this.valueAction = QView.currentDrag }
+	defaultCanReceiveDrag { ^View.currentDrag.isNumber }
+	defaultReceiveDrag { this.valueAction = View.currentDrag }
 }

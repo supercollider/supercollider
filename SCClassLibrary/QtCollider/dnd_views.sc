@@ -9,7 +9,7 @@ DragView : TextField
 		this.setProperty(\readOnly, true);
 	}
 
-	// override QView.mouseDownEvent to initiate drag without keyboard modifier
+	// override View.mouseDownEvent to initiate drag without keyboard modifier
 	mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
 		// Try to get drag obj and start a drag.
 		// If successful, block further processing of this event.
