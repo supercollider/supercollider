@@ -62,3 +62,18 @@ FreqScopeWindow : FreqScope {}
 	*implClass { ^this }
 
 }
+
++ Window {
+	drawHook_ { |func|
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor('drawFunc_'));
+		this.drawFunc_(func);
+	}
+}
+
+
++ UserView {
+	drawHook_ { |func|
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor('drawFunc_'));
+		this.drawFunc_(func);
+	}
+}
