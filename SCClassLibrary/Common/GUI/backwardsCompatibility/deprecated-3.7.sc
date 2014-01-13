@@ -1,4 +1,4 @@
-+ QDialog {
++ Dialog {
 	*getPaths { arg okFunc, cancelFunc, allowsMultiple=true;
 		var fileMode;
 		this.deprecated(thisMethod, this.class.findMethod(\openPanel));
