@@ -133,7 +133,7 @@ TaskProxyGui : JITGui {
 		);
 	}
 
-	accepts { |obj| ^obj.isNil or: { obj.isKindOf(this.class.observedClass) } }
+	accepts { |obj| ^obj.isNil or: { obj.isKindOf(PatternProxy) } }
 
 
 
