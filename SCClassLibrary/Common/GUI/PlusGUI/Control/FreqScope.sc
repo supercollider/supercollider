@@ -400,7 +400,7 @@ FreqScope {
 			setDBLabelVals.value(scope.dbRange);
 
 			Button(window, Rect(pad[0] + rect.width, pad[2], pad[1], 16))
-				.states_([["Power", Color.white, Color.green(0.5)], ["Power", Color.white, Color.red(0.5)]])
+				.states_([["stop", Color.white, Color.green(0.5)], ["start", Color.white, Color.red(0.5)]])
 				.action_({ arg view;
 					if(view.value == 0, {
 						scope.active_(true);
