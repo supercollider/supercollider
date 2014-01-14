@@ -7,7 +7,7 @@ Plot {
 	var <font, <fontColor, <gridColorX, <gridColorY, <>plotColor, <>backgroundColor;
 	var <gridOnX = true, <gridOnY = true, <>labelX, <>labelY;
 
-	var valueCache,pen;
+	var valueCache;
 
 	*initClass {
 		StartUp.add {
@@ -121,26 +121,26 @@ Plot {
 	}
 
 	drawBackground {
-		pen.addRect(bounds);
-		pen.fillColor = backgroundColor;
-		pen.fill;
+		Pen.addRect(bounds);
+		Pen.fillColor = backgroundColor;
+		Pen.fill;
 	}
 
 	drawLabels {
 		var sbounds;
 		if(gridOnX and: { labelX.notNil }) {
 			sbounds = try { labelX.bounds(font) } ? 0;
-			pen.font = font;
-			pen.strokeColor = fontColor;
-			pen.stringAtPoint(labelX,
+			Pen.font = font;
+			Pen.strokeColor = fontColor;
+			Pen.stringAtPoint(labelX,
 				plotBounds.right - sbounds.width @ plotBounds.bottom
 			)
 		};
 		if(gridOnY and: { labelY.notNil }) {
 			sbounds = try { labelY.bounds(font) } ? 0;
-			pen.font = font;
-			pen.strokeColor = fontColor;
-			pen.stringAtPoint(labelY,
+			Pen.font = font;
+			Pen.strokeColor = fontColor;
+			Pen.stringAtPoint(labelY,
 				plotBounds.left - sbounds.width - 3 @ plotBounds.top
 			)
 		};
@@ -170,69 +170,69 @@ Plot {
 		var ycoord = this.dataCoordinates;
 		var xcoord = this.domainCoordinates(ycoord.size);
 
-		pen.width = 1.0;
-		pen.joinStyle = 1;
+		Pen.width = 1.0;
+		Pen.joinStyle = 1;
 		plotColor = plotColor.as(Array);
 
 		if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion
 			ycoord.flop.do { |y, i|
-				pen.beginPath;
+				Pen.beginPath;
 				this.perform(mode, xcoord, y);
-				pen.strokeColor = plotColor.wrapAt(i);
-				pen.stroke;
+				Pen.strokeColor = plotColor.wrapAt(i);
+				Pen.stroke;
 			}
 		} {
-			pen.beginPath;
-			pen.strokeColor = plotColor.at(0);
+			Pen.beginPath;
+			Pen.strokeColor = plotColor.at(0);
 			this.perform(mode, xcoord, ycoord);
-			pen.stroke;
+			Pen.stroke;
 		};
-		pen.joinStyle = 0;
+		Pen.joinStyle = 0;
 
 	}
 
 	// modes
 
 	linear { |x, y|
-		pen.moveTo(x.first @ y.first);
+		Pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
-			pen.lineTo(x[i] @ y[i]);
+			Pen.lineTo(x[i] @ y[i]);
 		}
 	}
 
 	points { |x, y|
 		var size = min(bounds.width / value.size * 0.25, 4);
 		y.size.do { |i|
-			pen.addArc(x[i] @ y[i], 0.5, 0, 2pi);
-			if(size > 2) { pen.addArc(x[i] @ y[i], size, 0, 2pi); };
+			Pen.addArc(x[i] @ y[i], 0.5, 0, 2pi);
+			if(size > 2) { Pen.addArc(x[i] @ y[i], size, 0, 2pi); };
 		}
 	}
 
 	plines { |x, y|
 		var size = min(bounds.width / value.size * 0.25, 3);
-		pen.moveTo(x.first @ y.first);
+		Pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
 			var p = x[i] @ y[i];
-			pen.lineTo(p);
-			pen.addArc(p, size, 0, 2pi);
-			pen.moveTo(p);
+			Pen.lineTo(p);
+			Pen.addArc(p, size, 0, 2pi);
+			Pen.moveTo(p);
 		}
 	}
 
 	levels { |x, y|
-		pen.smoothing_(false);
+		Pen.smoothing_(false);
 		y.size.do { |i|
-			pen.moveTo(x[i] @ y[i]);
-			pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+			Pen.moveTo(x[i] @ y[i]);
+			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
 		}
 	}
 
 	steps { |x, y|
-		pen.smoothing_(false);
-		pen.moveTo(x.first @ y.first);
+		Pen.smoothing_(false);
+		Pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
-			pen.lineTo(x[i] @ y[i]);
-			pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+			Pen.lineTo(x[i] @ y[i]);
+			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
 		}
 	}
 
