@@ -30,6 +30,7 @@
 #include "SC_World.h"
 #include "SC_Reply.h"
 #include "MsgFifo.h"
+#include <map>
 
 #include "nova-tt/semaphore.hpp"
 
@@ -88,6 +89,8 @@ typedef MsgFifoNoFree<NodeEndMsg, 1024> NodeEndsFifo;
 typedef MsgFifoNoFree<DeleteGraphDefMsg, 512> DeleteGraphDefsFifo;
 typedef HashTable<struct GraphDef, Malloc> GrafDefTable;
 
+typedef std::map<struct ReplyAddress, uint32> ClientIDDict;
+
 struct HiddenWorld
 {
 	class AllocPool *mAllocPool;
@@ -95,6 +98,8 @@ struct HiddenWorld
 	GrafDefTable *mGraphDefLib;
 	uint32 mNumUsers, mMaxUsers;
 	ReplyAddress *mUsers;
+    uint32 *mClientIDs, mClientIDTop;
+    ClientIDDict *mClientIDdict;
 
 	class SC_AudioDriver *mAudioDriver;
 	char mPassword[32];
