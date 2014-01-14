@@ -268,12 +268,12 @@ examples::
 code::
 // embedding in another GUI
 (
-w = Window("plot panel", Rect(20, 30, 520, 250));
+w = Window("plot panel", Rect(20, 30, 520, 450));
 Slider.new(w, Rect(10, 10, 490, 20)).resize_(2).action_ { |v|
-	a.value = (0..(v.value * 80).asInteger).scramble;
-	w.refresh;
+    a.value = (0..(v.value.linexp(0, 1, 5, 8000)).asInteger).scramble;
+    w.refresh;
 };
-z = CompositeView(w, Rect(10, 35, 490, 200)).background_(Color.rand(0.7)).resize_(5);
+z = CompositeView(w, Rect(10, 35, 490, 400)).background_(Color.rand(0.7)).resize_(5);
 a = Plotter("plot", parent: z).value_([0, 1, 2, 3, 4].scramble * 100);
 w.front;
 )
