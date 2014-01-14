@@ -26,7 +26,7 @@ Font {
 	}
 
 	*default {
-		^QFont();
+		^Font();
 	}
 
 	*default_ { arg font;
@@ -52,7 +52,7 @@ Font {
 	/* ------------------instance------------------*/
 
 	setDefault { arg class;
-		QFont.setDefault(this, class);
+		Font.setDefault(this, class);
 	}
 
 	boldVariant {
