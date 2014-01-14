@@ -174,6 +174,9 @@ Plot {
 		Pen.joinStyle = 1;
 		plotColor = plotColor.as(Array);
 
+		Pen.addRect(plotBounds.insetBy(1.0, 1.0));
+		Pen.clip; // clip curve to bounds
+
 		if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion
 			ycoord.flop.do { |y, i|
 				Pen.beginPath;

@@ -63,10 +63,12 @@ PlusFreqScopeWindow : FreqScope {}
 
 // avoid breaking code
 + Object {
+	// this isn't really needed, but some third party may be relying on it.
 	*implClass { ^this }
 
 }
 
+// these were already removed, but it is better to deprecate them
 + Window {
 	drawHook_ { |func|
 		this.deprecated(thisMethod, this.class.findRespondingMethodFor('drawFunc_'));
