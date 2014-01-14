@@ -17,7 +17,7 @@
 	}
 
 	freqscope {
-		^FreqScopeWindow.new(server: this);
+		^FreqScope.new(server: this);
 	}
 }
 
@@ -53,6 +53,6 @@
 	freqscope {
 		var server = Server.default;
 		this.play(server);
-		^FreqScopeWindow.new(server: server)
+		^FreqScope.new(server: server)
 	}
 }
