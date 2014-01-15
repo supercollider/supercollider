@@ -18,6 +18,7 @@ table::
 ## e || toggle editing (see: link::Classes/Plotter#editMode::)
 ## g || toggle horizontal (domain) grid
 ## G || toggle vertical (codomain) grid
+## p || print curve
 ## ctrl-+ / - || zoom font
 ## alt-click || post value
 ::

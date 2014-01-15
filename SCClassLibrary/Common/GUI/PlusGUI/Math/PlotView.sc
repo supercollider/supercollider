@@ -170,27 +170,29 @@ Plot {
 		var ycoord = this.dataCoordinates;
 		var xcoord = this.domainCoordinates(ycoord.size);
 
-		Pen.width = 1.0;
-		Pen.joinStyle = 1;
-		plotColor = plotColor.as(Array);
+		Pen.use {
+			Pen.width = 1.0;
+			Pen.joinStyle = 1;
+			plotColor = plotColor.as(Array);
 
-		Pen.addRect(plotBounds.insetBy(1.0, 1.0));
-		Pen.clip; // clip curve to bounds
+			Pen.addRect(plotBounds.insetBy(0, 1));
+			Pen.clip; // clip curve to bounds
 
-		if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion
-			ycoord.flop.do { |y, i|
+			if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion
+				ycoord.flop.do { |y, i|
+					Pen.beginPath;
+					this.perform(mode, xcoord, y);
+					Pen.strokeColor = plotColor.wrapAt(i);
+					Pen.stroke;
+				}
+			} {
 				Pen.beginPath;
-				this.perform(mode, xcoord, y);
-				Pen.strokeColor = plotColor.wrapAt(i);
+				Pen.strokeColor = plotColor.at(0);
+				this.perform(mode, xcoord, ycoord);
 				Pen.stroke;
-			}
-		} {
-			Pen.beginPath;
-			Pen.strokeColor = plotColor.at(0);
-			this.perform(mode, xcoord, ycoord);
-			Pen.stroke;
+			};
+			Pen.joinStyle = 0;
 		};
-		Pen.joinStyle = 0;
 
 	}
 
@@ -508,6 +510,10 @@ Plotter {
 						// toggle superposition
 						$s, {
 							this.superpose = this.superpose.not;
+						},
+						// print
+						$p, {
+							this.print
 						}
 					);
 					parent.refresh;
@@ -569,8 +575,7 @@ Plotter {
 	}
 
 	draw {
-		var b;
-		b = this.interactionView.bounds;
+		var b = this.interactionView.bounds;
 		if(b != bounds) {
 			bounds = b;
 			this.updatePlotBounds;
@@ -582,6 +587,13 @@ Plotter {
 
 	drawBounds {
 		^bounds.moveTo(0, 0);
+	}
+
+	print {
+		var printer = QPenPrinter.new;
+		printer.showDialog {
+			printer.print { this.draw }
+		} { "printing canceled".postln }
 	}
 
 	// subviews
