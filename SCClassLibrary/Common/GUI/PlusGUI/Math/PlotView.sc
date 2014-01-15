@@ -152,8 +152,8 @@ Plot {
 	}
 
 	dataCoordinates {
-		 var val = spec.unmap(this.prResampValues);
-		 ^plotBounds.bottom - (val * plotBounds.height); // measures from top left (may be arrays)
+		var val = spec.unmap(this.prResampValues);
+		^plotBounds.bottom - (val * plotBounds.height); // measures from top left (may be arrays)
 	}
 
 	resampledSize {
@@ -406,119 +406,119 @@ Plotter {
 		modes = [\points, \levels, \linear, \plines, \steps].iter.loop;
 
 		interactionView
-			.background_(Color.clear)
-			.focusColor_(Color.clear)
-			.resize_(5)
-			.focus(true)
-			.mouseDownAction_({ |v, x, y, modifiers|
-				cursorPos = x @ y;
-				if(superpose.not) {
-					editPlotIndex = this.pointIsInWhichPlot(cursorPos);
-					editPlotIndex !? {
-						editPos = x @ y; // new Point instead of cursorPos!
-						if(editMode) {
-							plots.at(editPlotIndex).editData(x, y, editPlotIndex);
-							if(this.numFrames < 200) { this.refresh };
-						};
-					}
-				};
-				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
-			})
-			.mouseMoveAction_({ |v, x, y, modifiers|
-				cursorPos = x @ y;
-				if(superpose.not && editPlotIndex.notNil) {
+		.background_(Color.clear)
+		.focusColor_(Color.clear)
+		.resize_(5)
+		.focus(true)
+		.mouseDownAction_({ |v, x, y, modifiers|
+			cursorPos = x @ y;
+			if(superpose.not) {
+				editPlotIndex = this.pointIsInWhichPlot(cursorPos);
+				editPlotIndex !? {
+					editPos = x @ y; // new Point instead of cursorPos!
 					if(editMode) {
-						plots.at(editPlotIndex).editDataLine(editPos, cursorPos, editPlotIndex);
+						plots.at(editPlotIndex).editData(x, y, editPlotIndex);
 						if(this.numFrames < 200) { this.refresh };
 					};
-					editPos = x @ y;  // new Point instead of cursorPos!
-
+				}
+			};
+			if(modifiers.isAlt) { this.postCurrentValue(x, y) };
+		})
+		.mouseMoveAction_({ |v, x, y, modifiers|
+			cursorPos = x @ y;
+			if(superpose.not && editPlotIndex.notNil) {
+				if(editMode) {
+					plots.at(editPlotIndex).editDataLine(editPos, cursorPos, editPlotIndex);
+					if(this.numFrames < 200) { this.refresh };
 				};
-				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
-			})
-			.mouseUpAction_({
-				cursorPos = nil;
-				editPlotIndex = nil;
-				if(editMode && superpose.not) { this.refresh };
-			})
-			.keyDownAction_({ |view, char, modifiers, unicode, keycode|
-				if(modifiers.isCmd.not) {
-					switch(char,
-						// y zoom out / font zoom
-						$-, {
-							if(modifiers.isCtrl) {
-								plots.do(_.zoomFont(-2));
-							} {
-								this.specs = specs.collect(_.zoom(3/2));
-								normalized = false;
-							}
-						},
-						// y zoom in / font zoom
-						$+, {
-							if(modifiers.isCtrl) {
-								plots.do(_.zoomFont(2));
-							} {
-								this.specs = specs.collect(_.zoom(2/3));
-								normalized = false;
-							}
-						},
-						// compare plots
-						$=, {
-							this.calcSpecs(separately: false);
-							this.updatePlotSpecs;
+				editPos = x @ y;  // new Point instead of cursorPos!
+
+			};
+			if(modifiers.isAlt) { this.postCurrentValue(x, y) };
+		})
+		.mouseUpAction_({
+			cursorPos = nil;
+			editPlotIndex = nil;
+			if(editMode && superpose.not) { this.refresh };
+		})
+		.keyDownAction_({ |view, char, modifiers, unicode, keycode|
+			if(modifiers.isCmd.not) {
+				switch(char,
+					// y zoom out / font zoom
+					$-, {
+						if(modifiers.isCtrl) {
+							plots.do(_.zoomFont(-2));
+						} {
+							this.specs = specs.collect(_.zoom(3/2));
 							normalized = false;
-						},
-
-						/*// x zoom out (doesn't work yet)
-						$*, {
-							this.domainSpecs = domainSpecs.collect(_.zoom(3/2));
-						},
-						// x zoom in (doesn't work yet)
-						$_, {
-							this.domainSpecs = domainSpecs.collect(_.zoom(2/3))
-						},*/
-
-						// normalize
-
-						$n, {
-							if(normalized) {
-								this.specs = specs.collect(_.normalize)
-							} {
-								this.calcSpecs;
-								this.updatePlotSpecs;
-							};
-							normalized = normalized.not;
-						},
-
-						// toggle grid
-						$g, {
-							plots.do { |x| x.gridOnY = x.gridOnY.not }
-						},
-						// toggle domain grid
-						$G, {
-							plots.do { |x| x.gridOnX = x.gridOnX.not };
-						},
-						// toggle plot mode
-						$m, {
-							this.plotMode = modes.next;
-						},
-						// toggle editing
-						$e, {
-							editMode = editMode.not;
-							"plot edit mode %\n".postf(if(editMode) { "on" } { "off" });
-						},
-						// toggle superposition
-						$s, {
-							this.superpose = this.superpose.not;
-						},
-						// print
-						$p, {
-							this.print
 						}
-					);
-					parent.refresh;
-				};
-			});
+					},
+					// y zoom in / font zoom
+					$+, {
+						if(modifiers.isCtrl) {
+							plots.do(_.zoomFont(2));
+						} {
+							this.specs = specs.collect(_.zoom(2/3));
+							normalized = false;
+						}
+					},
+					// compare plots
+					$=, {
+						this.calcSpecs(separately: false);
+						this.updatePlotSpecs;
+						normalized = false;
+					},
+
+					/*// x zoom out (doesn't work yet)
+					$*, {
+					this.domainSpecs = domainSpecs.collect(_.zoom(3/2));
+					},
+					// x zoom in (doesn't work yet)
+					$_, {
+					this.domainSpecs = domainSpecs.collect(_.zoom(2/3))
+					},*/
+
+					// normalize
+
+					$n, {
+						if(normalized) {
+							this.specs = specs.collect(_.normalize)
+						} {
+							this.calcSpecs;
+							this.updatePlotSpecs;
+						};
+						normalized = normalized.not;
+					},
+
+					// toggle grid
+					$g, {
+						plots.do { |x| x.gridOnY = x.gridOnY.not }
+					},
+					// toggle domain grid
+					$G, {
+						plots.do { |x| x.gridOnX = x.gridOnX.not };
+					},
+					// toggle plot mode
+					$m, {
+						this.plotMode = modes.next;
+					},
+					// toggle editing
+					$e, {
+						editMode = editMode.not;
+						"plot edit mode %\n".postf(if(editMode) { "on" } { "off" });
+					},
+					// toggle superposition
+					$s, {
+						this.superpose = this.superpose.not;
+					},
+					// print
+					$p, {
+						this.print
+					}
+				);
+				parent.refresh;
+			};
+		});
 	}
 
 	makeButtons {
@@ -709,7 +709,7 @@ Plotter {
 	getDataPoint { |x, y|
 		var plotIndex = this.pointIsInWhichPlot(x @ y);
 		^plotIndex !? {
-				plots.at(plotIndex).getDataPoint(x)
+			plots.at(plotIndex).getDataPoint(x)
 		}
 	}
 
@@ -720,7 +720,7 @@ Plotter {
 	editData { |x, y|
 		var plotIndex = this.pointIsInWhichPlot(x @ y);
 		plotIndex !? {
-				plots.at(plotIndex).editData(x, y, plotIndex);
+			plots.at(plotIndex).editData(x, y, plotIndex);
 		};
 	}
 
@@ -902,7 +902,7 @@ Plotter {
 	plot { |size = 400, bounds, minval, maxval, name|
 		var plotLabel = if (name.isNil) { "envelope plot" } { name };
 		var plotter = [this.asMultichannelSignal(size).flop]
-			.plot(name, bounds, minval: minval, maxval: maxval);
+		.plot(name, bounds, minval: minval, maxval: maxval);
 
 		var duration     = this.duration.asArray;
 		var channelCount = duration.size;
@@ -918,7 +918,7 @@ Plotter {
 
 + AbstractFunction {
 	plotGraph { arg n=500, from = 0.0, to = 1.0, name, bounds, discrete = false,
-				numChannels, minval, maxval, parent, labels = true;
+		numChannels, minval, maxval, parent, labels = true;
 		var array = Array.interpolation(n, from, to);
 		var res = array.collect { |x| this.value(x) };
 		res.plot(name, bounds, discrete, numChannels, minval, maxval, parent, labels)
