@@ -449,7 +449,7 @@ Plotter {
 						if(modifiers.isCtrl) {
 							plots.do(_.zoomFont(-2));
 						} {
-							this.specs = specs.collect(_.zoom(3/2));
+							this.specs = specs.collect(_.zoom(7/5));
 							normalized = false;
 						}
 					},
@@ -458,7 +458,7 @@ Plotter {
 						if(modifiers.isCtrl) {
 							plots.do(_.zoomFont(2));
 						} {
-							this.specs = specs.collect(_.zoom(2/3));
+							this.specs = specs.collect(_.zoom(5/7));
 							normalized = false;
 						}
 					},
