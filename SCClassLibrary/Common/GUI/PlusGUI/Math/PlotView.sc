@@ -152,7 +152,7 @@ Plot {
 	}
 
 	dataCoordinates {
-		var val = spec.unmap(this.prResampValues);
+		var val = spec.warp.unmap(this.prResampValues);
 		^plotBounds.bottom - (val * plotBounds.height); // measures from top left (may be arrays)
 	}
 
@@ -175,8 +175,8 @@ Plot {
 			Pen.joinStyle = 1;
 			plotColor = plotColor.as(Array);
 
-			Pen.addRect(plotBounds.insetBy(0, 1));
-			Pen.clip; // clip curve to bounds
+			Pen.addRect(plotBounds);
+			Pen.clip; // clip curve to bounds.
 
 			if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion
 				ycoord.flop.do { |y, i|
