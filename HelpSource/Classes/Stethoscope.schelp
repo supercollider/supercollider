@@ -41,7 +41,7 @@ METHOD:: new
     Create a Stethoscope, either as a window, or placed on a given parent view.
 
     argument:: server
-        A valid Server (see link::#*isValidServer::), or code::nil::, in which case the link::#*defaultServer:: is used.
+        A valid Server (either a local or the internal server), or code::nil::, in which case the code::Server.default:: is used.
     argument:: numChannels
         An integer. Default value is 2.
     argument:: index
@@ -60,27 +60,15 @@ METHOD:: new
     discussion:
     Example:
 code::
-Server.default = s = Server.internal
 s.boot
 {SinOsc.ar([330,440], 0, 0.4)}.play;
-SCStethoscope(s,2);
+Stethoscope(s,2);
 ::
-
-METHOD:: defaultServer
-
-    The default server used if no server is passed to the link::#*new#constructor::.
 
 
 METHOD:: isValidServer
 
-    Tests whether Stethoscope can operate on the given server.
-
-    This is the current state of server support:
-    list::
-    ## strong::Qt::: any local server (see link::Classes/Server#-isLocal::).
-    ## strong::Cocoa::: only the in-process (internal) server (see link::Classes/Server#*internal:: and link::Classes/Server#-inProcess::).
-    ## strong::SwingOSC::: any out-of-process server, even remote (see link::Classes/Server#-inProcess::).
-    ::
+    Tests whether Stethoscope can operate on the given server (any local server. See link::Classes/Server#-isLocal::).
 
     argument::
         A link::Classes/Server::.
