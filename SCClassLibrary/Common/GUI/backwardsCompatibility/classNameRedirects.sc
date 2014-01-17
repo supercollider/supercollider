@@ -1,3 +1,6 @@
+// these were the QT implementation classes.
+// These subclasses should be removed after a while
+
 QWindow : Window {}
 QTopScrollWidget : TopScrollWidget {}
 QScrollTopView : ScrollTopView {}
@@ -49,6 +52,7 @@ QTreeViewItem : TreeViewItem {}
 QImage : Image {}
 QView : View {}
 
+// keeping the names of older versions to avoid breaking too much code
 
 CompositeView : View {}
 
@@ -63,7 +67,6 @@ QScope : SCScope {}
 QScope2 : ScopeView {}
 
 
-// avoid breaking code
 + Object {
 	// this isn't really needed, but some third party may be relying on it.
 	*implClass { ^this }
