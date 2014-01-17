@@ -1,4 +1,4 @@
-Stethoscope2 {
+Stethoscope {
 	classvar ugenScopes;
 
 	// internal functions
@@ -96,7 +96,7 @@ Stethoscope2 {
 
 			// WIDGETS
 
-			scopeView = Scope2();
+			scopeView = ScopeView();
 			scopeView.server = server;
 			scopeView.canFocus = true;
 

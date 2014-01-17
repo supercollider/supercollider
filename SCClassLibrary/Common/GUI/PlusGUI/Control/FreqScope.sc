@@ -167,7 +167,7 @@ FreqScopeView {
 	initFreqScope { arg parent, bounds, argServer;
 		server = argServer ? Server.default;
 		if (this.shmScopeAvailable) {
-			scope = Scope2.new(parent, bounds);
+			scope = ScopeView.new(parent, bounds);
 			scope.server = server;
 		} {
 			scope = Scope(parent, bounds);
@@ -214,7 +214,7 @@ FreqScopeView {
 		args = [\in, inBus, \dbFactor, dbFactor, \rate, 4, \fftBufSize, bufSize,
 			\scopebufnum, scopebuf.bufnum] ++ specialSynthArgs;
 		synth = Synth.tail(RootNode(server), defname, args);
-		if (scope.class === Scope2) { scope.start };
+		if (scope.isKindOf(ScopeView)) { scope.start };
 	}
 
 	kill {
@@ -234,7 +234,7 @@ FreqScopeView {
 		} {
 			ServerTree.remove(this, server);
 			if (server.serverRunning and: active) {
-				if (scope.class === Scope2) { scope.stop };
+				if (scope.isKindOf(ScopeView)) { scope.stop };
 				synth.free;
 				synth = nil;
 			};
