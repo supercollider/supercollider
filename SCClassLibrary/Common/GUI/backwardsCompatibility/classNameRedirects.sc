@@ -39,8 +39,6 @@ QMultiSliderView : MultiSliderView {}
 QPen : Pen {}
 QQuartzComposerView : QuartzComposerView {}
 QRangeSlider : RangeSlider {}
-QScope : Scope {}
-QScope2 : Scope2 {}
 QSlider : Slider {}
 QSlider2D : Slider2D {}
 QSoundFileView : SoundFileView {}
@@ -59,6 +57,10 @@ PlusFreqScope : FreqScopeView {}
 
 FreqScopeWindow : FreqScope {}
 PlusFreqScopeWindow : FreqScope {}
+
+Scope2 : ScopeView {}
+QScope : SCScope {}
+QScope2 : ScopeView {}
 
 
 // avoid breaking code

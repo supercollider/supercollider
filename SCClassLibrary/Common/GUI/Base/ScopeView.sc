@@ -1,19 +1,19 @@
-Scope2 : View {
+ScopeView : View {
 	var <bufnum;
 	var <xZoom=1.0, <yZoom=1.0, <x=0.0, <y=0.0;
 	var <waveColors;
 
 	*qtClass { ^'QcScopeShm' }
 
-	bufnum_ { arg anInt;
-		bufnum = anInt;
-		this.setProperty( \bufferNumber, anInt );
+	bufnum_ { arg buf;
+		bufnum = buf.asControlInput;
+		this.setProperty( \bufferNumber, bufnum );
 	}
 
 	server_ { arg server;
 		var port = if(server.inProcess){ thisProcess.pid }{ if(server.isLocal){server.addr.port} };
 		if(port.isNil) {
-			"Scope2: Can not scope on the desired server.".warn
+			"ScopeView: Can not scope on the desired server: %".format(server).warn
 		} {
 			this.setProperty(\serverPort, port);
 		};
