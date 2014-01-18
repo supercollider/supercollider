@@ -499,7 +499,10 @@ BusScopeSynth {
 
 	stop {
 		if (playThread.notNil) { playThread.stop; playThread = nil };
-		if (synth.notNil) { synth.free; synth = nil };
+		if (synth.notNil) { // avoid node not found if stoppedby cmd-period already
+			server.sendBundle(nil, ['/error', -1], [11, synth.nodeID], ['/error', -2]);
+			synth = nil
+		};
 	}
 
 	isRunning { ^playThread.notNil }
