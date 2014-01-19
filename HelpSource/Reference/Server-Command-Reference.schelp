@@ -31,7 +31,7 @@ table::
 If argument is one, server will remember your return address and send you notifications. if argument is zero, server will stop sending you notifications.
 
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/done /notify clientID:: when complete. If this client has registered for notifications before, this may be the same ID. Otherwise it will be a new one. Clients can use this ID in multi-client situations to avoid conflicts in node IDs, bus indices, buffer numbers, etc.
 ::
 
 subsection:: /status
@@ -539,7 +539,7 @@ table::
 ::
 Allocates zero filled buffer to number of channels and samples.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/done /b_alloc bufNum:: when complete.
 ::
 
 subsection:: /b_allocRead
@@ -553,7 +553,7 @@ table::
 ::
 Allocates buffer to number of channels of file and number of samples requested, or fewer if sound file is smaller than requested. Reads sound file data from the given starting frame in the file. If the number of frames argument is less than or equal to zero, the entire file is read.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/done /b_allocRead bufNum:: when complete.
 ::
 
 subsection:: /b_allocReadChannel
@@ -572,7 +572,7 @@ table::
 
 As b_allocRead, but reads individual channels into the allocated buffer in the order specified.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/done /b_allocReadChannel bufNum:: when complete.
 ::
 
 
@@ -590,7 +590,7 @@ table::
 Reads sound file data from the given starting frame in the file and writes it to the given starting frame in the buffer. If number of frames is less than zero, the entire file is read.
 If reading a file to be used by link::Classes/DiskIn:: ugen then you will want to set "leave file open" to one, otherwise set it to zero.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/done /b_read bufNum:: when complete.
 ::
 
 
@@ -612,7 +612,7 @@ table::
 
 As strong::b_read::, but reads individual channels in the order specified. The number of channels requested must match the number of channels in the buffer.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/done /b_readChannel bufNum:: when complete.
 ::
 
 
@@ -638,7 +638,7 @@ Not all combinations of header format and sample format are possible.
 If number of frames is less than zero, all samples from the starting frame to the end of the buffer are written.
 If opening a file to be used by DiskOut ugen then you will want to set "leave file open" to one, otherwise set it to zero. If "leave file open" is set to one then the file is created, but no frames are written until the DiskOut ugen does so.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/done /b_write bufNum:: when complete.
 ::
 
 
@@ -650,7 +650,7 @@ table::
 ::
 Frees buffer space allocated for this buffer.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/done /b_free bufNum:: when complete.
 ::
 
 
@@ -662,7 +662,7 @@ table::
 ::
 Sets all samples in the buffer to zero.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/done /b_zero bufNum:: when complete.
 ::
 
 
@@ -711,7 +711,7 @@ table::
 ::
 Plug-ins can define commands that operate on buffers. The arguments after the command name are defined by the command. The currently defined buffer fill commands are listed below in a separate section.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/done /b_gen bufNum:: when complete.
 ::
 
 
@@ -722,7 +722,7 @@ table::
 ::
 After using a buffer with link::Classes/DiskOut::, close the soundfile and write header information.
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done:: when complete.
+## Asynchronous. || Replies to sender with strong::/done /b_close bufNum:: when complete.
 ::
 
 
@@ -837,6 +837,7 @@ subsection:: /done
 An asynchronous message has completed.
 table::
 ## strong::string:: || the name of the command
+## strong::other:: || (optional) some commands provide other information, for example a buffer index.
 ::
 Sent in response to all asynchronous commands. Sent only to the sender of the original message.
 
@@ -845,6 +846,7 @@ An error occurred.
 table::
 ## strong::string:: || the name of the command
 ## strong::string:: || the error message.
+## strong::other:: || (optional) some commands provide other information, for example a buffer index.
 ::
 There was a problem. Sent only to the sender of the original message.
 
