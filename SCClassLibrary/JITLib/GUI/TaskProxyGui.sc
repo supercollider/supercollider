@@ -18,7 +18,7 @@ TaskProxyGui : JITGui {
 
 	makeViews { |options|
 		var height = skin.buttonHeight;
-		var lineWidth = zone.bounds.width - (skin.margin.y * 2);
+		var lineWidth = zone.bounds.width - (skin.margin.y * 3);
 		var width = lineWidth * 0.62 / 4;
 		var nameWidth = lineWidth * 0.38;
 		var zoneMargin = if ( (numItems > 0) or: { parent.isKindOf(Window) }) { skin.margin } { 0@0 };
@@ -196,9 +196,11 @@ TaskProxyGui : JITGui {
 			pauseBut.value_(newState[\isPaused]).refresh;
 		};
 
-		// object_ does checkUpdate!
 		if (envirGui.notNil) {
-			envirGui.object_(if (object.isNil) { nil } { object.envir });
+			if (envirGui.object != object.envir) {
+				envirGui.object_(object.envir);
+			};
+			envirGui.checkUpdate;
 		};
 		prevState = newState
 	}

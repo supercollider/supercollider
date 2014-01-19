@@ -1,5 +1,8 @@
 + Spec {
 	*guess { |key, value|
+
+		if (value.isKindOf(SimpleNumber).not) { ^nil };
+
 		^if (value.abs > 0) {
 			[value/20, value*20, \exp].asSpec
 		} {
@@ -8,7 +11,7 @@
 	}
 
 	*suggestString { |key, value|
-		^"Spec.add(" + this.guess.storeArgs + ");"
+		^"Spec.add(" + this.guess(key, value).storeArgs + ");"
 	}
 }
 

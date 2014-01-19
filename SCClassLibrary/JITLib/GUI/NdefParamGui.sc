@@ -81,7 +81,7 @@ NdefParamGui : EnvirGui {
 	}
 
 	getState {
-		var settings, newKeys, overflow;
+		var settings, newKeys, overflow, currSpecs;
 
 		if (object.isNil) {
 			^(name: 'anon', settings: [], editKeys: [], overflow: 0, keysRotation: 0)
@@ -93,9 +93,15 @@ NdefParamGui : EnvirGui {
 		overflow = (newKeys.size - numItems).max(0);
 		keysRotation = keysRotation.clip(0, overflow);
 		newKeys = newKeys.drop(keysRotation).keep(numItems);
+		currSpecs = newKeys.collect { |key|
+			var pair = settings.detect { |pair| pair[0] == key };
+			this.getSpec(key, pair[1]);
+		};
 
 		^(object: object, editKeys: newKeys, settings: settings,
-			overflow: overflow, keysRotation: keysRotation)
+			overflow: overflow, keysRotation: keysRotation,
+			specs: currSpecs
+		)
 	}
 
 	checkUpdate {
@@ -125,6 +131,8 @@ NdefParamGui : EnvirGui {
 			this.setByKeys(newState[\editKeys], newState[\settings]);
 			if (newState[\overflow] == 0) { this.clearFields(newState[\editKeys].size) };
 		};
+
+		this.updateSliderSpecs(newState[\editKeys]);
 
 		prevState = newState;
 	}
