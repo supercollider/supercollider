@@ -181,7 +181,8 @@ EnvirGui : JITGui {
 		overflow = (newKeys.size - numItems).max(0);
 		keysRotation = keysRotation.clip(0, overflow);
 		newKeys = newKeys.drop(keysRotation).keep(numItems);
-		currSpecs = newKeys.collect{ |key| [key, this.getSpec(key)] };
+		currSpecs = newKeys.collect{ |key|
+			[key, this.getSpec(key, object[key])] };
 
 		^(  object: object,
 			editKeys: newKeys,
