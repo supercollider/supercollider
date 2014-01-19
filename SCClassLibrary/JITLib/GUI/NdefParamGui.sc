@@ -196,4 +196,27 @@ NdefParamGui : EnvirGui {
 
 		this.setToText(index, key, value, sameKey);
 	}
+
+	updateSliderSpecs { |editKeys|
+		var currState;
+
+		if (object.isNil) { specs.clear; ^this };
+
+		currState = object.getKeysValues;
+
+		editKeys.do { |key, i|
+			var currValue = currState.detect { |pair| pair[0] == key }[1];
+			var newSpec = this.getSpec(key, currValue);
+			var widge = widgets[i];
+			if (newSpec != widge.controlSpec) {
+				specs.put(key, newSpec);
+				if (widge.isKindOf(EZSlider) or:
+					{ widge.isKindOf(EZRanger) }) {
+					widge.controlSpec = newSpec;
+					widge.value_(currValue);
+				};
+			};
+		}
+	}
+
 }
