@@ -796,8 +796,12 @@ Server {
 		if(userSpecifiedClientID.not , {
 			doneOSCFunc = OSCFunc({|msg|
 				if(flag && { msg[2] != clientID }, {
-					clientID = msg[2];
-					this.newAllocators;
+					var newID;
+					newID = msg[2];
+					if(newID.notNil, {
+						clientID = newID;
+						this.newAllocators;
+					})
 				});
 				failOSCFunc.free;
 			}, '/done', addr, argTemplate:['/notify', nil]).oneShot;
