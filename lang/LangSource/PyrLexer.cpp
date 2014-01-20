@@ -2108,7 +2108,7 @@ void shutdownLibrary()
 	SC_LanguageConfig::freeLibraryConfig();
 }
 
-SC_DLLEXPORT_C bool compileLibrary()
+SC_DLLEXPORT_C bool compileLibrary(bool standalone)
 {
 	//printf("->compileLibrary\n");
 	shutdownLibrary();
@@ -2117,7 +2117,7 @@ SC_DLLEXPORT_C bool compileLibrary()
 	gNumCompiledFiles = 0;
 	compiledOK = false;
 
-	SC_LanguageConfig::readLibraryConfig();
+	SC_LanguageConfig::readLibraryConfig(standalone);
 
 	compileStartTime = elapsedRealTime();
 
