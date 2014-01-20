@@ -66,6 +66,7 @@ public:
 			  mDaemon(false),
 			  mCallRun(false),
 			  mCallStop(false),
+			  mStandalone(false),
 			  mArgc(0), mArgv(0)
 		{ }
 
@@ -75,6 +76,7 @@ public:
 		bool			mCallStop;
 		int				mArgc;
 		char**			mArgv;
+		bool			mStandalone;
 	};
 
 	SC_TerminalClient(const char* name);
@@ -84,6 +86,7 @@ public:
 
 	int run(int argc, char** argv);
 	void quit(int code);
+	void recompileLibrary();
 
 	virtual void postText(const char* str, size_t len);
 	virtual void postFlush(const char* str, size_t len);

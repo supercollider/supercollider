@@ -31,7 +31,7 @@ class SC_LanguageConfig
 {
 public:
 	typedef std::vector<std::string> DirVector;
-	SC_LanguageConfig();
+	SC_LanguageConfig(bool standalone);
 
 	const DirVector& includedDirectories() { return mIncludedDirectories; }
 	const DirVector& excludedDirectories() { return mExcludedDirectories; }
@@ -52,11 +52,11 @@ public:
 		gConfigFile = fileName;
 	}
 
-	static bool readLibraryConfigYAML(const char* fileName);
+	static bool readLibraryConfigYAML(const char* fileName, bool standalone);
 	static bool writeLibraryConfigYAML(const char* fileName);
 	static void freeLibraryConfig();
-	static bool defaultLibraryConfig(void);
-	static bool readLibraryConfig();
+	static bool defaultLibraryConfig(   bool standalone);
+	static bool readLibraryConfig(bool standalone);
 
 private:
 	DirVector mIncludedDirectories;
