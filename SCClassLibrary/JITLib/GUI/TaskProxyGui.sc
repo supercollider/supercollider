@@ -135,7 +135,10 @@ TaskProxyGui : JITGui {
 
 	accepts { |obj| ^obj.isNil or: { obj.isKindOf(PatternProxy) } }
 
-
+	name_ { |name|
+		super.name_(name);
+		nameBut.states_(nameBut.states.collect(_.put(0, name.asString))).refresh;
+	}		
 
 	getState {
 		if (object.isNil) {
@@ -167,11 +170,10 @@ TaskProxyGui : JITGui {
 			^this;
 		};
 
+		zone.visible_(true);
+
 		if (newState[\name] != prevState[\name]) {  // name
-			zone.visible_(true);
-			nameBut.states_(
-				nameBut.states.collect(_.put(0, newState[\name].asString))
-			).refresh;
+			this.name_(newState[\name]);
 		};
 
 		playState = newState[\isPlaying] * 2 - newState[\isActive];
