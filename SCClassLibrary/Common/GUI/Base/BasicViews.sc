@@ -367,7 +367,7 @@ PopUpMenu : ItemViewBase {
 
 	value {
 		var v = this.getProperty( \currentIndex );
-		if( v < 0 ) { ^nil } { ^v };
+		if( v.isNil or: { v < 0 }) { ^nil } { ^v };
 	}
 
 	value_ { arg val;
