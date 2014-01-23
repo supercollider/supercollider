@@ -11,8 +11,8 @@ Size {
 
 	asPoint { ^Point(width, height) }
 
-	== { arg aBus;
-		^this.compareObject(aBus, #[\width, \height])
+	== { arg size;
+		^this.compareObject(size, #[\width, \height])
 	}
 
 	hash {
