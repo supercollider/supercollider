@@ -1,6 +1,6 @@
 TITLE:: Dunique
 summary:: Return the same unique series of values for several demand streams
-categories:: Demand
+categories:: UGens>Demand
 related:: Classes/Demand, Classes/Drand, Classes/Dser, Classes/Duty, Classes/Dxrand, Classes/TDuty
 
 DESCRIPTION::

@@ -1,6 +1,6 @@
 class:: ProxyMixer
 summary:: mix control for a proxyspace or Ndef.all
-categories:: Libraries>JITLib>GUI
+categories:: Libraries>JITLib>GUI, Live Coding
 related:: Classes/ProxySpace, Classes/Ndef, Classes/JITGui, Classes/NdefGui, Classes/MonitorGui, Classes/NdefParamGui
 
 description::
@@ -11,7 +11,7 @@ Overview: link::Overviews/JITLib::
 
 code::
 
-// First examples: 
+// First examples:
 (
 p = ProxySpace.push(s.boot, p);
 "abcde".do { |k| p[k.asSymbol].ar };
@@ -71,7 +71,7 @@ subsection::Instance methods
 
 method:: highlight, unhighlight
 highlight and unhighlight an arGui slot in the arZone (left)
-method:: highlightSlots 
+method:: highlightSlots
 highlight a block of the arGuis in the arZone/
 
 method::sizes, switchSize
@@ -80,7 +80,7 @@ switch between display modes 0: ar, 1: ar+kr, 2: ar+kr+ed
 method::arKeysRotation, krKeysRotation
 if too many proxies are present, by how much to rotate arKeys or krKeys to display.
 
-method:: title 
+method:: title
 get the proxymixer window title.
 
 strong::standard JITGui methods: ::
@@ -178,7 +178,7 @@ s.scope(8);
 ~test.playN(4);    // set proxy's first output channel:
 ~test.playN(0);
 
-// One can move the border between sliders and nameView: 
+// One can move the border between sliders and nameView:
 
 n.enableNameResize(true);	// try click and dragging that border now
 
