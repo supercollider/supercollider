@@ -2899,7 +2899,7 @@ initSegment:
 }
 
 template <bool CheckGateOnSustain, typename GateCheck>
-static inline void EnvGen_perform(EnvGen * unit, float *& out, double & level, int nsmps, GateCheck const & gateCheck)
+static inline void EnvGen_perform(EnvGen * unit, float *& out, double & level, int & nsmps, GateCheck const & gateCheck)
 {
 	switch (unit->m_shape) {
 	case shape_Step :
