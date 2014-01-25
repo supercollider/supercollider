@@ -1,6 +1,6 @@
 class:: BusPlug
 summary:: a listener on a bus
-categories:: Libraries>JITLib>NodeProxy
+categories:: Libraries>JITLib>NodeProxy, Live Coding
 related:: Classes/Bus
 
 description::

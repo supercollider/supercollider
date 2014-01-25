@@ -1,6 +1,6 @@
 class:: MonitorGui
 summary:: display and control a Monitor
-categories:: Libraries>JITLib>GUI
+categories:: Libraries>JITLib>GUI, Live Coding
 related:: Classes/NodeProxy, Classes/Ndef, Classes/JITGui, Classes/NdefGui
 
 description::
@@ -116,7 +116,7 @@ method::makeFade
 strong::Standard JITGui methods: ::
 
 method::setDefaults
-create default layout sizes 
+create default layout sizes
 
 method::accepts
 accepts nil or NodeProxy

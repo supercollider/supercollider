@@ -1,6 +1,6 @@
 TITLE:: PdefnGui
 summary:: a simple gui for Pdefns
-categories:: JITLib>GUI
+categories:: Libraries>JITLib>GUI, Live Coding
 related:: Classes/Pdefn, Classes/PdefnAllGui, Classes/TdefAllGui
 
 DESCRIPTION::
@@ -28,7 +28,7 @@ Pdefn(\abc, [1, 2, 3]);
 g.object_(Pdefn(\abc));
 Pdefn(\abc, 345);
 
-// Note: When editing code in the csView and evaluating,  
+// Note: When editing code in the csView and evaluating,
 // there is a short dely before displaying. this is intended.
 
 ::
