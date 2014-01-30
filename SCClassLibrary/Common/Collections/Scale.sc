@@ -501,7 +501,7 @@ ScaleStream {
 			\zanjaran -> Scale.new(#[0,2,8,10,14,18,20], 24, name: "Zanjaran"),
 
 			// maqam hijazKar
-			\zanjaran -> Scale.new(#[0,2,8,10,14,16,22], 24, name: "Zanjaran"),
+			\hijazKar -> Scale.new(#[0,2,8,10,14,16,22], 24, name: "hijazKar"),
 
 			// maqam saba
 			\saba -> Scale.new(#[0,3,6,8,12,16,20], 24, name: "Saba"),
