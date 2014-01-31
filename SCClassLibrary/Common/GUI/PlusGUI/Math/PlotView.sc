@@ -385,13 +385,7 @@ Plotter {
 		bounds = argBounds ? bounds;
 		if(parent.isNil) {
 			parent = Window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
-			if(GUI.skin.at(\plot).at(\expertMode).not) {
-				btnBounds = this.makeButtons;
-				bounds = parent.view.bounds.insetAll(8,8,btnBounds.width + 4,8);
-			}{
-				bounds = parent.view.bounds.insetBy(8);
-			};
-
+			bounds = parent.view.bounds.insetBy(8);
 			interactionView = UserView.new(parent, bounds);
 
 			interactionView.drawFunc = { this.draw };
@@ -520,27 +514,6 @@ Plotter {
 			};
 		});
 	}
-
-	makeButtons {
-		var string = "?";
-		var font = Font.sansSerif( 9 );
-		var bounds = string.bounds(font);
-		var padding = 8; // ensure that string is not clipped by round corners
-
-		bounds.width = bounds.width + padding;
-		bounds.height = bounds.height + padding;
-		bounds = bounds.moveTo( parent.view.bounds.right - bounds.width - 2, 8 );
-
-		Button.new(parent, bounds)
-		.states_([["?"]])
-		.focusColor_(Color.clear)
-		.font_(font)
-		.resize_(3)
-		.action_ { this.class.openHelpFile };
-
-		^bounds;
-	}
-
 
 	value_ { |arrays|
 		this.setValue(arrays, findSpecs, true)
