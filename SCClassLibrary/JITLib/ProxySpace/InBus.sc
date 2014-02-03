@@ -201,7 +201,7 @@ Monitor {
 
 		var synthArgs, server;
 
-		ins = argIns;
+		ins = argIns ? ins;
 		outs = argOuts ? outs ?? { (0..ins.size-1) };
 		amps = argAmps ? amps ? #[1.0];
 		fadeTimes = argFadeTime ? fadeTimes ? #[0.02];
