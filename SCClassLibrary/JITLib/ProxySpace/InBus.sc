@@ -232,7 +232,7 @@ Monitor {
 			var in, out, amp, fadeTime;
 			#in, out, amp, fadeTime = array;
 			out = out.asArray;
-			amp = amp.asArray;
+			amp = (amp * vol).asArray;
 			fadeTime = fadeTime.asArray;
 			out.do { | item, j |
 				var id = server.nextNodeID;
@@ -241,7 +241,7 @@ Monitor {
 					id, 1, group.nodeID,
 					"out", item,
 					"in", in,
-					"vol", amp.clipAt(j) * vol,
+					"vol", amp.clipAt(j),
 					"fadeTime", fadeTime.clipAt(j)
 				])
 			}
