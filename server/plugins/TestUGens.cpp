@@ -31,9 +31,9 @@
 // FIXME: once we completely move to c++11, we should get rid of sc_fpclassify
 
 // Visual C++ doesn't have fpclassify (C99), so define it here if needed
-#ifdef _MSC_VER
+#ifdef _MSC_VER_NOOP
 #include <float.h>
-enum { FP_NORMAL, FP_NAN, FP_INFINITE, FP_SUBNORMAL };
+enum _FP_CLASSES_ { FP_NORMAL, FP_NAN, FP_INFINITE, FP_SUBNORMAL };
 
 static int sc_fpclassify(float x)
 {
