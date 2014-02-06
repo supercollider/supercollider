@@ -179,7 +179,7 @@ SynthControl : AbstractPlayControl {
 
 	distributable { ^canReleaseSynth } // n_free not implemented in shared node proxy
 
-	build { | proxy | 	// assumes audio rate proxy if not initialized
+	build { | proxy, orderIndex | 	// assumes audio rate proxy if not initialized
 		var rate, desc;
 		desc = this.synthDesc;
 		if(desc.notNil) {
@@ -187,12 +187,12 @@ SynthControl : AbstractPlayControl {
 			canReleaseSynth = desc.hasGate && canFreeSynth;
 		};
 		if(proxy.isNeutral) { rate = \audio };
-		^proxy.initBus(rate, proxy.numChannels ? 2)
+		^proxy.initBus(rate)
 	}
 
 	spawnToBundle { | bundle, extraArgs, target, addAction = 0 | // assumes self freeing
 		var targetID = target.asTarget.nodeID;
-		bundle.add([9, this.asDefName, -1, addAction, targetID]++extraArgs.asOSCArgArray);
+		bundle.add([9, this.asDefName, -1, addAction, targetID] ++ extraArgs.asOSCArgArray);
 	}
 
 	playToBundle { | bundle, extraArgs, target, addAction = 1 |
@@ -265,18 +265,21 @@ SynthDefControl : SynthControl {
 	readyForPlay { ^synthDef.notNil }
 
 	build { | proxy, orderIndex = 0 |
-		var ok, rate, numChannels, outerDefControl;
+		var ok, rate, numChannels, outerDefControl, outerBuildProxy;
 
 		outerDefControl = NodeProxy.buildProxyControl;
+		outerBuildProxy = NodeProxy.buildProxy;
 		NodeProxy.buildProxyControl = this;
+		NodeProxy.buildProxy = proxy;
 		synthDef = source.buildForProxy(proxy, channelOffset, orderIndex);
 		NodeProxy.buildProxyControl = outerDefControl;
+		outerBuildProxy = outerBuildProxy;
 
-		rate = synthDef.rate ?? { if(proxy.rate !== \control) { \audio } { \control } };
-		numChannels = synthDef.numChannels ? proxy.numChannels ? 2;
+		rate = synthDef.rate;
+		numChannels = synthDef.numChannels;
 		ok = proxy.initBus(rate, numChannels);
 
-		if(ok and: { synthDef.notNil}) {
+		if(ok) {
 			paused = proxy.paused;
 			canReleaseSynth = synthDef.canReleaseSynth;
 			canFreeSynth = synthDef.canFreeSynth;
@@ -306,8 +309,10 @@ SynthDefControl : SynthControl {
 		}
 	}
 
-	freeToBundle { | bundle |
-		if(synthDef.notNil) { bundle.addPrepare([53, synthDef.name]) } // "/d_free"
+	freeToBundle { | bundle, proxy |
+		if(synthDef.notNil) { bundle.addPrepare([53, synthDef.name]) }; // "/d_free"
+		parents.do { |x| x.removeChild(proxy) };
+		parents = nil;
 	}
 
 	writeSynthDefFile { | path, bytes |
@@ -325,7 +330,10 @@ SynthDefControl : SynthControl {
 
 	addParent { | proxy |
 		if(parents.isNil) { parents = IdentitySet.new };
-		parents.add(proxy);
+		if(parents.includes(proxy).not) {
+			parents.add(proxy);
+			proxy.addChild(NodeProxy.buildProxy);
+		}
 	}
 
 	controlNames { ^synthDef.allControlNames }

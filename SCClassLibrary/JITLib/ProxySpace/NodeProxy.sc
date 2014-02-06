@@ -1,27 +1,30 @@
 NodeProxy : BusPlug {
 
-	var <group, <objects, <nodeMap;
+	var <group, <objects, <nodeMap, <children;
 	var <loaded=false, <>awake=true, <paused=false;
 	var <>clock, <>quant;
-	classvar <>buildProxyControl;
+	classvar <>buildProxyControl, <>buildProxy;
+	classvar <>verbose = true; // this is temporary for debugging
 
 
 	*new { | server, rate, numChannels, inputs |
 		var res = super.new(server).init;
-		res.initBus(rate, numChannels);
+		if(rate.notNil or: { numChannels.notNil }) { res.initBus(rate, numChannels) };
 		inputs.do { |o| res.add(o) };
 		^res
 	}
 
 	init {
-		nodeMap = ProxyNodeMap.new;
+		nodeMap = ProxyNodeMap2.new;
 		objects = Order.new;
 		loaded = false;
+		this.linkNodeMap;
 	}
 
 	clear { | fadeTime = 0 |
 		this.free(fadeTime, true); 	// free group and objects
 		this.removeAll; 			// take out all objects
+		children = nil;             // for now: also remove children
 		this.stop(fadeTime, true);		// stop any monitor
 		monitor = nil;
 		this.freeBus;	 // free the bus from the server allocator
@@ -122,47 +125,62 @@ NodeProxy : BusPlug {
 	}
 
 	put { | index, obj, channelOffset = 0, extraArgs, now = true |
-		var container, bundle, orderIndex;
+		var container, bundle, oldBus = bus;
 
 		if(obj.isNil) { this.removeAt(index); ^this };
 		if(index.isSequenceableCollection) {
 			^this.putAll(obj.asArray, index, channelOffset)
 		};
 
-		orderIndex = index ? 0;
+		bundle = MixedBundle.new;
 		container = obj.makeProxyControl(channelOffset, this);
-		container.build(this, orderIndex); // bus allocation happens here
+		container.build(this, index ? 0); // bus allocation happens here
 
 		if(this.shouldAddObject(container, index)) {
-			bundle = MixedBundle.new;
-			if(index.isNil)
-			{ this.removeAllToBundle(bundle) }
-			{ this.removeToBundle(bundle, index) };
-			objects = objects.put(orderIndex, container);
-			this.changed(\source, [obj, index, channelOffset, extraArgs, now]);
+			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus != bus });
 		} {
 			format("failed to add % to node proxy: %", obj, this).inform;
 			^this
 		};
 
+		this.putNewObject(bundle, index, container, extraArgs, now);
+		this.changed(\source, [obj, index, channelOffset, extraArgs, now]);
+
+	}
+
+	prepareOtherObjects { |bundle, index, busChanged|
+		var tempReshaping;
+		if(index.isNil) {
+			this.removeAllToBundle(bundle);
+		} {
+			this.removeToBundle(bundle, index);
+		};
+		if(busChanged) {
+			tempReshaping = reshaping; reshaping = nil;
+			this.rebuildDeepToBundle(bundle, true);
+			reshaping = tempReshaping;
+		};
+	}
+
+	putNewObject { |bundle, index, container, extraArgs, now|
+		loaded = false;
+		objects = objects.put(index ? 0, container);
 		if(server.serverRunning) {
 			now = awake && now;
 			if(now) {
 				this.prepareToBundle(nil, bundle);
 			};
-			container.loadToBundle(bundle, server);
-			loaded = true;
+			container.loadToBundle(bundle, server); // server sync happens here if necessary
 			if(now) {
 				container.wakeUpParentsToBundle(bundle);
-				this.sendObjectToBundle(bundle, container, extraArgs, index);
+				this.sendObjectToBundle(bundle, container, extraArgs, index)
 			};
 			nodeMap.wakeUpParentsToBundle(bundle);
 			bundle.schedSend(server, clock ? TempoClock.default, quant);
-		} {
-			loaded = false;
 		}
-
 	}
+
+
 
 	putAll { | list, index = (0), channelOffset = 0 |
 		channelOffset = channelOffset.asArray;
@@ -192,24 +210,35 @@ NodeProxy : BusPlug {
 		{ this.removeAllToBundle(bundle, fadeTime) }
 		{ this.removeToBundle(bundle, index, fadeTime) };
 		this.changed(\source, [nil, index, fadeTime]);
-		bundle.schedSend(server);
+		if(server.serverRunning) { bundle.schedSend(server) };
 	}
 
 	rebuild {
-		var bundle;
-		if(this.isPlaying) {
-			bundle = MixedBundle.new;
-			this.stopAllToBundle(bundle);
-			bundle.schedSend(server, clock ? TempoClock.default, quant);
-			bundle = MixedBundle.new;
-			loaded = false;
-			this.loadToBundle(bundle);
-			this.sendAllToBundle(bundle);
-			bundle.schedSend(server, clock ? TempoClock.default, quant);
-		} {
-			loaded = false;
-		};
+		var bundle = MixedBundle.new;
+		this.rebuildToBundle(bundle);
+		bundle.schedSend(server, clock ? TempoClock.default, quant);
+	}
 
+	mold { |numChannels, rate|
+		var bundle, oldBus = bus, prevReshaping;
+		bundle = MixedBundle.new;
+		prevReshaping = reshaping;
+		if(numChannels.isNil and: { rate.isNil }) {
+			// adjust to the source objects
+			reshaping = \max;
+			this.rebuildDeepToBundle(bundle, false)
+		} {
+			// adjust to given shape
+			reshaping = \minmax;
+			this.initBus(rate, numChannels);
+			//  if necessary, rebuild without adjustment
+			if(bus != oldBus) {
+				reshaping = nil;
+				this.rebuildDeepToBundle(bundle, true)
+			}
+		};
+		reshaping = prevReshaping;
+		if(server.serverRunning) { bundle.schedSend(server, clock, quant) };
 	}
 
 	lag { | ... args |
@@ -222,7 +251,13 @@ NodeProxy : BusPlug {
 		this.rebuild;
 	}
 
+	setBus { | argBus |
+		super.setBus(argBus);
+		this.linkNodeMap;
+	}
+
 	server_ { | inServer |
+		this.deprecated(thisMethod);
 		if(this.isNeutral.not) {
 			this.end;
 			loaded = false;
@@ -230,17 +265,9 @@ NodeProxy : BusPlug {
 		server = inServer;
 	}
 
-	bus_ { | inBus |
-		var oldBus = bus;
-		if(server != inBus.server) { Error("can't change the server").throw };
-		super.bus_(inBus);
-		this.linkNodeMap;
-		if(oldBus.notNil) { this.rebuild };
-	}
-
 	group_ { | inGroup |
 		var bundle;
-		if(inGroup.server !== server, { Error("cannot move to another server").throw });
+		if(inGroup.server !== server) { Error("cannot move to another server").throw };
 		NodeWatcher.register(inGroup.isPlaying_(true)); // assume it is playing
 		if(this.isPlaying)
 		{ 	bundle = MixedBundle.new;
@@ -251,11 +278,8 @@ NodeProxy : BusPlug {
 		} { group = inGroup };
 	}
 
-
 	read { | proxies |
-		proxies = proxies.asCollection;
-		proxies.do { arg item; item.wakeUp };
-		this.readFromBus(proxies)
+		this.putAll(proxies)
 	}
 
 	readFromBus { | busses |
@@ -278,7 +302,7 @@ NodeProxy : BusPlug {
 	set { | ... args | // pairs of keys or indices and value
 		nodeMap.set(*args);
 		if(this.isPlaying) {
-			server.sendBundle(server.latency, group.setnMsg(*args.asControlInput));
+			server.sendBundle(server.latency, nodeMap.setMsg(group.nodeID));
 		}
 	}
 
@@ -289,35 +313,28 @@ NodeProxy : BusPlug {
 	setGroup { | args, useLatency = false |
 		if(this.isPlaying) {
 			server.sendBundle(if(useLatency) { server.latency },
-				[15, group.nodeID] ++ args.asControlInput
+				[15, group.nodeID] ++ args.asOSCArgArray
 			);
 		}
 	}
 
 	map { | ... args | // key(s), proxy, key(s), proxy ...
-		var bundle;
-		if(this.isPlaying) {
-			bundle = List.new;
-			nodeMap.unmapArgsToBundle(bundle, group.nodeID, args[0,2..args.size-2]);
-			nodeMap.map(*args).updateBundle;
-			nodeMap.addToBundle(bundle, group.nodeID);
-			server.listSendBundle(server.latency, bundle);
-		} { nodeMap.map(*args) };
+		this.set(*args)
 	}
 
 	mapn { | ... args |
 		"NodeProxy: mapn is deprecated, please use map instead".postln;
-		^this.map(*args)
+		this.map(*args)
 	}
 
 	xset { | ... args |
-		this.xFadePerform(\set, args.asControlInput)
+		this.xFadePerform(\set, args)
 	}
 	xmap { | ... args |
 		this.xFadePerform(\map, args)
 	}
 	xsetn { | ... args |
-		this.xFadePerform(\set, args.asControlInput)
+		this.xFadePerform(\set, args)
 	}
 	xmapn { | ... args |
 		"NodeProxy: xmapn is decrepated, please use xmap instead".postln;
@@ -329,8 +346,7 @@ NodeProxy : BusPlug {
 
 	xFadePerform { | selector, args |
 		var bundle;
-		if(this.isPlaying)
-		{
+		if(this.isPlaying) {
 			nodeMap.performList(selector, args);
 			this.sendEach(nil, true)
 		} {
@@ -377,7 +393,7 @@ NodeProxy : BusPlug {
 		nodeMap = map;
 		old.clear;
 		this.linkNodeMap;
-		this.nodeMapChanged;
+		//this.nodeMapChanged;
 		if(this.isPlaying) {
 			if(xfade) { this.sendEach(nil,true) }
 			{
@@ -388,9 +404,11 @@ NodeProxy : BusPlug {
 		};
 	}
 
+
 	nodeMapChanged {
+		/*
 		var set, map;
-		nodeMap.settings.do { |setting|
+		nodeMap.do { |setting|
 			if(setting.isMapped) {
 				map = map.add(setting.key).add(setting.value)
 			} {
@@ -399,6 +417,7 @@ NodeProxy : BusPlug {
 		};
 		if(set.notNil) { this.changed(\set, set) };
 		if(map.notNil) { this.changed(\map, map) };
+		*/
 	}
 
 
@@ -437,7 +456,8 @@ NodeProxy : BusPlug {
 				proxy.rate
 			}
 		};
-		numChannels = ctl !? { ctl.defaultValue.asArray.size };		canBeMapped = proxy.initBus(rate, numChannels);
+		numChannels = ctl !? { ctl.defaultValue.asArray.size };
+		canBeMapped = proxy.initBus(rate, numChannels); // warning: proxy should still have a fixed bus
 		if(canBeMapped) {
 			if(this.isNeutral) { this.defineBus(rate, numChannels) };
 			this.xmap(key, proxy);
@@ -629,6 +649,7 @@ NodeProxy : BusPlug {
 
 	resetNodeMap {
 		this.nodeMap = ProxyNodeMap.new;
+		this.linkNodeMap;
 	}
 
 	cleanNodeMap {
@@ -656,16 +677,15 @@ NodeProxy : BusPlug {
 	}
 
 	getKeysValues { | keys, except, withDefaults = true, noInternalKeys = true |
-		var pairs, result = [], myKeys, defaults, mapSettings;
+		var pairs, result = [], myKeys, defaults;
 		if (noInternalKeys) { except = except ++ this.internalKeys; };
 
 		pairs = this.controlKeysValues(keys, except).clump(2);
 		#myKeys, defaults = pairs.flop;
 
-		mapSettings = nodeMap.settings;
 		myKeys.collect { |key, i|
 			var val, doAdd;
-			val = mapSettings[key];
+			val = nodeMap[key];
 			doAdd = withDefaults or: val.notNil;
 			if (doAdd) {
 				result = result.add([ key, (val ? defaults[i]).value ]);
@@ -717,6 +737,7 @@ NodeProxy : BusPlug {
 	}
 
 	prepareToBundle { | argGroup, bundle, addAction = \addToTail |
+		if(loaded.not) { this.loadToBundle(bundle) };
 		if(this.isPlaying.not) {
 			group = Group.basicNew(server, this.defaultGroupID);
 			NodeWatcher.register(group);
@@ -769,7 +790,7 @@ NodeProxy : BusPlug {
 		if(obj.notNil) {
 			dt = fadeTime ? this.fadeTime;
 			if(playing) { obj.stopToBundle(bundle, dt) };
-			obj.freeToBundle(bundle, dt);
+			obj.freeToBundle(bundle, this);
 		}
 	}
 	// bundle: remove all objects
@@ -779,7 +800,7 @@ NodeProxy : BusPlug {
 		playing = this.isPlaying;
 		objects.do { arg obj;
 			if(playing) { obj.stopToBundle(bundle, dt) };
-			obj.freeToBundle(bundle, dt);
+			obj.freeToBundle(bundle, this);
 		};
 		objects.makeEmpty;
 	}
@@ -797,9 +818,10 @@ NodeProxy : BusPlug {
 	loadToBundle { | bundle |
 		this.reallocBusIfNeeded;
 		objects.do { arg item, i;
-			item.build(this, i);
+			//item.build(this, i);
 			item.loadToBundle(bundle, server);
 		};
+		nodeMap.upToDate = false;
 		loaded = true;
 	}
 
@@ -832,14 +854,47 @@ NodeProxy : BusPlug {
 		objects.do { arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
 	}
 
+	// maybe there should be only rebuildToDeepBundle, as this one is not reliable if children not empty.
+	// TODO: alt least rebuild should call rebuildDeepToBundle.
+	rebuildToBundle { |bundle|
+		loaded = false;
+		if(verbose) { "rebuilding proxy: % (% channels, % rate)\n".postf(this, this.numChannels, this.rate) };
+		if(this.isPlaying) {
+			this.stopAllToBundle(bundle);
+			objects.do { |item| item.freeToBundle(bundle, this) };
+			objects.do { |item, i| item.build(this, i) };
+			this.loadToBundle(bundle);
+			this.sendAllToBundle(bundle);
+		} {
+			objects.do { |item| item.freeToBundle(bundle, this) };
+			objects.do { |item, i| item.build(this, i) };
+		};
+
+	}
+
+	rebuildDeepToBundle { |bundle, busWasChangedExternally = true, checkedAlready|
+		var oldBus = bus;
+		if(checkedAlready.isNil or: { checkedAlready.includes(this).not }) {
+			this.rebuildToBundle(bundle);
+			if(busWasChangedExternally or: { bus != oldBus }) {
+				if(verbose) { "%: rebuilding children\n".postf(this) };
+				if(checkedAlready.isNil) { checkedAlready = IdentitySet.new };
+				checkedAlready.add(this);
+				children.do { |item|
+					item.rebuildDeepToBundle(bundle, false, checkedAlready)
+				};
+				if(monitor.isPlaying) {
+					if(verbose) { postf("in % restarting monitor\n", this) };
+					monitor.stopToBundle(bundle, this.fadeTime, true);
+					monitor.playNBusToBundle(bundle, bus: bus);
+				};
+			};
+		}
+	}
+
 
 
 	// allocation
-
-	defineBus { | rate = \audio, numChannels |
-		super.defineBus(rate, numChannels);
-		this.linkNodeMap;
-	}
 
 	reallocBusIfNeeded { // bus is reallocated only if the server was not booted on creation.
 		if(busLoaded.not and: { bus.notNil }) {
@@ -862,8 +917,7 @@ NodeProxy : BusPlug {
 	// private implementation
 
 	linkNodeMap {
-		var index;
-		index = this.index;
+		var index = this.index;
 		if(index.notNil) { nodeMap.set(\out, index, \i_out, index) };
 		nodeMap.proxy = this;
 	}
@@ -882,10 +936,21 @@ NodeProxy : BusPlug {
 	}
 
 	addToChild {
-		var child;
-		child = buildProxyControl;
-		if(child.notNil) { child.addParent(this) };
-		^child.isPlaying;
+		var childProxyControl = buildProxyControl;
+		if(childProxyControl.notNil) {
+			childProxyControl.addParent(this);
+		};
+		^childProxyControl.isPlaying;
+	}
+
+	addChild { |proxy|
+		children = children.add(proxy);
+		if(verbose) { "%: added child: % in %\n".postf(this, proxy, children) };
+	}
+
+	removeChild { |proxy|
+		children.remove(proxy);
+		if(verbose) { "%: removed child: % in %\n".postf(this, proxy, children) };
 	}
 
 	// renames synthdef so one can use it in patterns

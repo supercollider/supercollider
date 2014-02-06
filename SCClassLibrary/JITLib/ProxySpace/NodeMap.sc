@@ -22,7 +22,7 @@ NodeMap {
 
 	map { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			this.get(args.at(i)).map(args.at(i+1));
+			this.get(args.at(i)).map(args.at(i+1), this);
 		});
 		upToDate = false;
 		this.changed(\map, args);
@@ -41,7 +41,7 @@ NodeMap {
 			var setting;
 			setting = settings.at(key);
 			if(setting.notNil and: { setting.isMapped }) {
-				setting.map(nil, nil);
+				setting.set(nil, this);
 				if(setting.isEmpty) { settings.removeAt(key) }
 			};
 		};
@@ -52,7 +52,7 @@ NodeMap {
 
 	set { arg ... args;
 		forBy(0, args.size-1, 2, { arg i;
-			this.get(args.at(i)).set(args.at(i+1));
+			this.get(args.at(i)).set(args.at(i+1), this);
 		});
 		upToDate = false;
 		this.changed(\set, args);
@@ -67,7 +67,7 @@ NodeMap {
 			var setting;
 			setting = settings.at(key);
 			if(setting.notNil and: { setting.isMapped.not }) {
-				setting.map(nil, nil);
+				setting.set(nil, this);
 				if(setting.isEmpty) { settings.removeAt(key) }
 			};
 		};
@@ -89,6 +89,14 @@ NodeMap {
 		});
 		upToDate = false;
 		this.changed(\mapan, args);
+	}
+
+	mapEnvir { arg ... keys;
+		var args;
+		keys = keys ? settings.keys;
+		args = Array.new(keys.size*2);
+		keys.do({ arg key; args.add(key); args.add(currentEnvironment.at(key)) });
+		this.map(*args);
 	}
 
 	send { arg server, nodeID, latency;
@@ -230,6 +238,7 @@ ProxyNodeMap : NodeMap {
 	}
 
 	setRates { arg args;
+		this.deprecated(thisMethod);
 		forBy(0, args.size-1, 2, { arg i;
 			var key, rate, setting;
 			key = args[i];
@@ -252,46 +261,9 @@ ProxyNodeMap : NodeMap {
 		} { nil }
 	}
 
+
 	mapn { arg ... args;
 		this.map(args) // for now, avoid errors.
-	}
-
-	map { arg ... args;
-		var playing;
-		playing = proxy.isPlaying;
-		args.pairsDo { arg key, mapProxy;
-			var setting, numChannels;
-			if(mapProxy.isKindOf(BusPlug).not) { Error("map: not a node proxy").throw };
-			if(playing) { mapProxy.wakeUp };
-			setting = this.get(key);
-			setting.map(mapProxy);
-			parents = parents.put(key, mapProxy);
-		};
-		upToDate = false;
-		this.changed(\map, args);
-	}
-
-	mapEnvir { arg ... keys;
-		var args;
-		keys = keys ? settings.keys;
-		args = Array.new(keys.size*2);
-		keys.do({ arg key; args.add(key); args.add(currentEnvironment.at(key)) });
-		this.map(*args);
-	}
-
-	unmap { arg ... keys;
-		var setting;
-		if(keys.at(0).isNil, { keys = this.mappingKeys });
-		keys.do({ arg key;
-			setting = settings.at(key);
-			if(setting.notNil, {
-				setting.map(nil, nil);
-				parents.removeAt(key);
-				if(setting.isEmpty, { settings.removeAt(key) })
-			});
-		});
-		upToDate = false;
-		this.changed(\unmap, keys);
 	}
 
 	changed { arg ... args;
