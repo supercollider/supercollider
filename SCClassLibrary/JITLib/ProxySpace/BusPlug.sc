@@ -4,8 +4,10 @@ BusPlug : AbstractFunction {
 	var <>monitor, <>parentGroup; // if nil, uses default group
 	var busArg; // cache for "/s_new" bus arg
 	var busLoaded = false;
+	var <>reshaping; // \minmax, \max
 
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
+	classvar <>verbose = true; // this is temporary for debugging
 
 
 	*new { | server |
@@ -114,26 +116,76 @@ BusPlug : AbstractFunction {
 
 	// bus initialization
 
+
 	bus_ { | inBus |
-		this.freeBus;
-		bus = inBus;
-		this.makeBusArg;
-		busLoaded = bus.server.serverRunning;
+		var bundle;
+		if(bus != inBus) {
+			this.setBus(inBus);
+			if(monitor.isPlaying) {
+				bundle = OSCBundle.new;
+				if(verbose) { postf("in % restarting monitor\n", this) };
+				monitor.stopToBundle(bundle);
+				monitor.playNBusToBundle(bundle, bus: inBus);
+				bundle.schedSend(server);
+			}
+		};
 	}
 
-	// returns false if failed
-	initBus { | rate, numChannels |
-		if(rate.isNil or: { rate === 'scalar' }) { ^true }; // this is no problem
-		if(this.isNeutral) {
-			this.defineBus(rate, numChannels);
-			^true
-		} {
-			numChannels = numChannels ? this.numChannels;
-			^(bus.rate === rate) and: { numChannels <= bus.numChannels }
+
+	// you have to stop and play explicitly
+	setBus { | inBus |
+		if(bus != inBus) {
+			if(verbose) { postf("% has new bus: % \nold bus was: %\n", this, inBus, bus) };
+			this.freeBus;
+			bus = inBus;
+			this.makeBusArg;
+			busLoaded = bus.server.serverRunning;
 		}
 	}
 
+
+	fixedBus {
+		^reshaping.isNil
+	}
+
+	// returns false if failed
+
+	initBus { | rate, numChannels |
+		if(rate == \scalar) { ^true }; // no bus output
+
+		if(this.isNeutral) {
+			this.defineBus(rate, numChannels);
+			^true
+		};
+
+		numChannels = numChannels ? this.numChannels;
+		rate = rate ? this.rate;
+
+		if(numChannels == bus.numChannels and: { rate == bus.rate }) {
+			^true // already there
+		};
+		if(reshaping.notNil and: { this.rate != rate }) {
+			this.defineBus(rate, numChannels);
+			^true
+		};
+		if(reshaping == \max and: { numChannels > bus.numChannels  }) {
+			this.defineBus(rate, numChannels);
+			^true
+		};
+		if(reshaping == \minmax and: { numChannels != bus.numChannels  }) {
+			this.defineBus(rate, numChannels);
+			^true
+		};
+		if(reshaping == \min and: { numChannels < bus.numChannels  }) {
+			this.defineBus(rate, numChannels);
+			^true
+		};
+		^(this.rate === rate) and: { numChannels <= bus.numChannels }
+	}
+
 	defineBus { | rate = \audio, numChannels |
+		numChannels = numChannels ? this.numChannels;
+		if(rate != \audio) { rate = \control };
 		if(numChannels.isNil) {
 			numChannels = if(rate === \audio) {
 				this.class.defaultNumAudio
@@ -141,15 +193,12 @@ BusPlug : AbstractFunction {
 				this.class.defaultNumControl
 			}
 		};
-		this.bus = Bus.alloc(rate, server, numChannels);
+		this.setBus(Bus.alloc(rate, server, numChannels));
 	}
 
 	freeBus {
-		if(bus.notNil) {
-			if(bus.rate === \control) { bus.setAll(0) }; // clean up
-			bus.free;
-			monitor.stop;
-		};
+		var oldBus = bus;
+		oldBus.free(true); // todo: avoid glitch in kr, maybe do this after fade time?
 		busArg = bus = nil;
 		busLoaded = false;
 	}

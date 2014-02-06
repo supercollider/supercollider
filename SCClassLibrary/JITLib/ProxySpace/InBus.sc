@@ -210,21 +210,11 @@ Monitor {
 		synthArgs = [ins, outs, amps, fadeTimes].asControlInput.flop;
 
 		if(this.isPlaying) {
-			if(multi.not) {
-				if(argFadeTime.notNil) {
-					argFadeTime = argFadeTime.asControlInput.asArray;
-					synthIDs.do { |id, i|
-						bundle.add([15, id, "gate", argFadeTime.wrapAt(i).neg])
-					}
-				} {
-					bundle.add([15, group.nodeID, "gate", 0]);
-				}
-			}
+			if(multi.not) { this.stopToBundle(bundle, argFadeTime) }
 		} {
 			this.newGroupToBundle(bundle, inGroup, addAction)
 		};
 
-		synthIDs = [];
 		inGroup = inGroup.asGroup;
 		server = group.server;
 
@@ -255,7 +245,6 @@ Monitor {
 
 		toIndex = toIndex ?? { this.out ? 0 };
 		toNumChannels = toNumChannels ? fromNumChannels;
-		fromNumChannels = min(fromNumChannels, toNumChannels);
 
 		inArray = fromIndex + (0..fromNumChannels-1);
 		outArray = toIndex + (0..toNumChannels-1);
@@ -266,6 +255,7 @@ Monitor {
 	playNBusToBundle { | bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction, multi = false |
 
 		var size;
+		if(bus.rate !== \audio) { "Can't monitor a control rate bus.".warn; ^this };
 		outs = outs ?? { this.outs.unbubble } ? 0;	// remember old ones if none are given
 		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
 		size = outs.size;
@@ -288,9 +278,23 @@ Monitor {
 	}
 
 
-	stopToBundle { | bundle |
-		bundle.add([15, group.nodeID, "gate", 0]);
-		synthIDs = [];
+	stopToBundle { | bundle, argFadeTime, clearMappings = false |
+		if(synthIDs.notEmpty) {
+			bundle.add(['/error', -1]);
+			if(argFadeTime.notNil) {
+				argFadeTime = argFadeTime.asControlInput.asArray;
+				synthIDs.do { |id, i|
+					bundle.add([15, id, "gate", 0, "fadeTime", argFadeTime.wrapAt(i)])
+				}
+			} {
+				bundle.add([15, group.nodeID, "gate", 0]);
+			};
+			bundle.add(['/error', -2]);
+			synthIDs = [];
+		};
+		if(clearMappings) {
+			ins = outs = amps = fadeTimes = nil;
+		};
 	}
 
 	hasSeriesOuts {

@@ -25,17 +25,21 @@
 
 	// this method is called from within the Control
 	buildForProxy { arg proxy, channelOffset=0, index;
-		var argNames;
-		argNames = this.argNames;
+		var channelConstraint, rateConstraint;
+		var argNames = this.argNames;
+		if(proxy.fixedBus) {
+			channelConstraint = proxy.numChannels;
+			rateConstraint = proxy.rate;
+		};
 		^ProxySynthDef(
 			SystemSynthDefs.tempNamePrefix ++ proxy.generateUniqueName ++ index,
-			this.prepareForProxySynthDef(proxy),
+			this.prepareForProxySynthDef(proxy, channelOffset),
 			proxy.nodeMap.ratesFor(argNames),
 			nil,
 			true,
 			channelOffset,
-			proxy.numChannels,
-			proxy.rate
+			channelConstraint,
+			rateConstraint
 		);
 	}
 	prepareForProxySynthDef { ^this.subclassResponsibility(thisMethod) }
@@ -64,8 +68,8 @@
 + SimpleNumber {
 
 	prepareForProxySynthDef { arg proxy;
-		proxy.initBus(\control, 1);
-		^{DC.multiNewList([proxy.rate] ++ this) };
+		var rate = if(proxy.isNeutral) {\control } { proxy.rate };
+		^{ DC.multiNewList([rate] ++ this) };
 	}
 }
 
@@ -81,14 +85,13 @@
 
 + RawArray {
 	prepareForProxySynthDef { arg proxy;
-		proxy.initBus(\control, this.size);
-		^{DC.multiNewList([proxy.rate] ++ this) };
+		var rate = if(proxy.isNeutral) {\control } { proxy.rate };
+		^{ DC.multiNewList([rate] ++ this) };
 	}
 }
 
 + SequenceableCollection {
 	prepareForProxySynthDef { arg proxy;
-		proxy.initBus(\control, this.size);
 		^{ this.collect({ |el| el.prepareForProxySynthDef(proxy).value }) }
 		// could use SynthDef.wrap, but needs type check for function.
 	}
@@ -175,6 +178,7 @@
 	proxyControlClass { ^PatternControl }
 
 	buildForProxy {  arg proxy, channelOffset=0;
+		proxy.initBus(\audio);
 		^this.endless.buildForProxy(proxy, channelOffset)
 	}
 }
@@ -186,6 +190,7 @@
 	buildForProxy { arg proxy, channelOffset=0;
 		var player = this.asEventStreamPlayer;
 		var event = player.event.buildForProxy(proxy, channelOffset);
+		proxy.initBus(\audio);
 		^event !? { player };
 	}
 }
@@ -196,7 +201,8 @@
 		var ok, index, server, numChannels, rate, finish;
 		ok = if(proxy.isNeutral) {
 			rate = this.at(\rate) ? 'audio';
-			numChannels = this.at(\numChannels) ? NodeProxy.defaultNumAudio;
+			numChannels = this.at(\numChannels);
+			numChannels !? { numChannels = numChannels + channelOffset };
 			proxy.initBus(rate, numChannels);
 		} {
 			rate = proxy.rate; // if proxy is initialized, it is user's responsibility
@@ -258,11 +264,11 @@
 
 		buildMethods = (
 
-			filter: #{ arg func, proxy, channelOffset=0, index;
+			filter: #{ arg func, proxy, channelOffset = 0, index;
 				var ok, ugen;
 				if(proxy.isNeutral) {
 					ugen = func.value(Silent.ar);
-					ok = proxy.initBus(ugen.rate, ugen.numChannels);
+					ok = proxy.initBus(ugen.rate, ugen.numChannels + channelOffset);
 					if(ok.not) { Error("NodeProxy input: wrong rate/numChannels").throw }
 				};
 
@@ -323,7 +329,7 @@
 				var ok, ugen;
 				if(proxy.isNeutral) {
 					ugen = func.value(Silent.ar);
-					ok = proxy.initBus(ugen.rate, ugen.numChannels);
+					ok = proxy.initBus(ugen.rate, ugen.numChannels + channelOffset);
 					if(ok.not) { Error("NodeProxy input: wrong rate/numChannels").throw }
 				};
 

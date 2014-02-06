@@ -6,7 +6,7 @@ NodeMapSetting {
 		^super.newCopyArgs(key, value, busNumChannels)
 	}
 
-	map { arg index;
+	map { arg index, nodeMap;
 		value = index;
 		isMultiChannel = false;
 		isMapped = true;
@@ -18,15 +18,15 @@ NodeMapSetting {
 		isMultiChannel = true;
 		isMapped = true;
 	}
-	mapa { arg index;
-		this.map(index);
+	mapa { arg index, nodeMap;
+		this.map(index, nodeMap);
 		mappedRate = \audio;
 	}
 	mapan { arg index, numChannels;
 		this.map(index, numChannels);
 		mappedRate = \audio;
 	}
-	set { arg val;
+	set { arg val, nodeMap;
 		value = val;
 		isMapped = false;
 		isMultiChannel = val.isSequenceableCollection;
@@ -110,7 +110,22 @@ ProxyNodeMapSetting : NodeMapSetting {
 		^value.isNil and: { rate.isNil }
 	}
 
-	map { arg proxy;
+	set { arg val, nodeMap;
+		if(value.isKindOf(NodeProxy)) { value.removeChild(nodeMap.proxy) };
+		value = val;
+		isMapped = false;
+		isMultiChannel = val.isSequenceableCollection;
+	}
+
+	map { arg proxy, nodeMap;
+		var thisProxy;
+		if(proxy.isKindOf(BusPlug).not) { Error("map: not a node proxy").throw };
+		thisProxy = nodeMap.proxy;
+		if(value.isKindOf(NodeProxy)) { value.removeChild(thisProxy) };
+		if(thisProxy.isPlaying) { proxy.wakeUp };
+		nodeMap.parents.put(key, proxy);
+		proxy.addChild(thisProxy);
+
 		value = proxy;
 		isMapped = true;
 		// stays neutral if both mappedRate, busNumChannels are nil
@@ -118,6 +133,10 @@ ProxyNodeMapSetting : NodeMapSetting {
 		busNumChannels = proxy.numChannels;
 		busNumChannels !? { isMultiChannel = busNumChannels > 1 };
 		mappedRate = proxy.rate; // here we determine the rate simply from the input proxy
+	}
+
+	mapn {
+		^this.shouldNotImplement(thisMethod)
 	}
 
 	isNeutral { ^value.isNeutral }
