@@ -26,6 +26,7 @@
 #include <stdarg.h>
 #include "SCBase.h"
 #include <cerrno>
+#include "PyrSched.h"
 
 #include "SC_Lock.h"
 #include "SC_Msg.h"
@@ -39,7 +40,7 @@
 #include "SC_OscUtils.hpp"
 #undef scprintf
 
-void ProcessOSCPacket(OSC_Packet *inPacket, int inPortNum);
+void ProcessOSCPacket(OSC_Packet *inPacket, int inPortNum, double time);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -108,6 +109,7 @@ void SC_UdpInPort::startReceiveUDP()
 void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error,
 									 std::size_t bytesTransferred)
 {
+    double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
 	if (error == boost::asio::error::operation_aborted)
 		return;    /* we're done */
 
@@ -135,7 +137,7 @@ void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error,
 	packet->mData = data;
 	memcpy(data, recvBuffer.data(), bytesTransferred);
 
-	ProcessOSCPacket(packet, mPortNum);
+	ProcessOSCPacket(packet, mPortNum, timeReceived);
 	startReceiveUDP();
 }
 
@@ -204,7 +206,8 @@ void SC_TcpConnection::handleLengthReceived(const boost::system::error_code &err
 
 void SC_TcpConnection::handleMsgReceived(const boost::system::error_code &error, size_t bytes_transferred)
 {
-	if (error) {
+	double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
+    if (error) {
 		free(data);
 		return;
 	}
@@ -218,7 +221,7 @@ void SC_TcpConnection::handleMsgReceived(const boost::system::error_code &error,
 	packet->mSize = OSCMsgLength;
 	packet->mData = data;
 
-	ProcessOSCPacket(packet, mParent->mPortNum);
+	ProcessOSCPacket(packet, mParent->mPortNum, timeReceived);
 
 	start();
 }
@@ -274,7 +277,8 @@ void SC_TcpClientPort::handleLengthReceived(const boost::system::error_code &err
 
 void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code &error, size_t bytes_transferred)
 {
-	if (error == boost::asio::error::connection_aborted) {
+	double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
+    if (error == boost::asio::error::connection_aborted) {
 		if (mClientNotifyFunc)
 			(*mClientNotifyFunc)(mClientData);
 	}
@@ -295,7 +299,7 @@ void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code &error,
 	packet->mSize                 = OSCMsgLength;
 	packet->mData                 = data;
 
-	ProcessOSCPacket(packet, endpoint.port());
+	ProcessOSCPacket(packet, endpoint.port(), timeReceived);
 
 	startReceive();
 }
