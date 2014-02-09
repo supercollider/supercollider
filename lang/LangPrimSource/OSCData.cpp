@@ -236,6 +236,7 @@ static PyrObject* ConvertReplyAddress(ReplyAddress *inReply);
 
 static void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
 {
+    double timeReceived = elapsedTime();
 	bool isBundle = IsBundle(inBuf);
 
 	gLangMutex.lock();
@@ -244,7 +245,7 @@ static void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, 
 		if (isBundle) {
 			PerformOSCBundle(inSize, inBuf, replyObj, gUDPport->RealPortNum());
 		} else {
-			PerformOSCMessage(inSize, inBuf, replyObj, gUDPport->RealPortNum(), elapsedTime());
+			PerformOSCMessage(inSize, inBuf, replyObj, gUDPport->RealPortNum(), timeReceived);
 		}
 	}
 	gLangMutex.unlock();
