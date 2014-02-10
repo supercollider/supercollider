@@ -163,7 +163,7 @@ METHOD:: elUsage
 The usage name, usage id, or element id of the element/control to match, depending on the type of HIDFunc
 
 METHOD:: elPage
-The usage page of the control to match (only used for HIDFuncs of type code::\usageID::
+The usage page of the control to match (only used for HIDFuncs of type code::\usageID::)
 
 METHOD:: devUsage
 The device usage or device name of the element/control to match, depending on the type of HIDFunc
