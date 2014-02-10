@@ -26,21 +26,24 @@ HIDUsageDispatcher : AbstractWrappingDispatcher {
 
     // these arguments are different from HID:
     // value, physValue, rawValue, arrayValue, usage, page, elid, devid
-	value { |value, physValue, rawValue, arrayValue, usage, page, elid, devid|
+	value { |value, rawValue, usage, page, elid, ele, devid, device|
+        // |value, physValue, rawValue, arrayValue, usage, page, elid, devid|
         var key = HIDUsage.idsToName( page, usage );
         // ["usage", key, value, physValue, rawValue, arrayValue, usage, page, elid, devid].postln;
         active[key].value(
-            [value, physValue, rawValue, arrayValue],
-            [usage, page],
-            elid, devid,
+            value, rawValue,
+            usage, page,
+            elid, ele,
+            devid, device,
             key
         );
         // this seems kind of ugly!
         active[\anyUsage].value(
-            [value, physValue, rawValue, arrayValue],
-            [usage, page],
-            elid, devid,
-            key
+            value, rawValue,
+            usage, page,
+            elid, ele,
+            devid, device,
+            \anyUsage
         );
     }
 
@@ -87,7 +90,8 @@ HIDUsageIDDispatcher : HIDUsageDispatcher {
 
     // these arguments are from HID:
     // value, physValue, rawValue, arrayValue, usage, page, elid, devid
-	value { |value, physValue, rawValue, arrayValue, usage, page, elid, devid|
+	value { |value, rawValue, usage, page, elid, ele, devid, device|
+        // |value, physValue, rawValue, arrayValue, usage, page, elid, devid|
         var keys = [
             "%_%".format( page, usage ).asSymbol,
             "nil_%".format( usage ).asSymbol,
@@ -97,9 +101,10 @@ HIDUsageIDDispatcher : HIDUsageDispatcher {
         // ["usageIDs", keys, value, physValue, rawValue, arrayValue, usage, page, elid, devid].postln;
         keys.do{ |key|
             active[key].value(
-                [value, physValue, rawValue, arrayValue],
-                [usage, page],
-                elid, devid,
+                value, rawValue,
+                usage, page,
+                elid, ele,
+                devid, device,
                 key
             );
         };
@@ -107,11 +112,10 @@ HIDUsageIDDispatcher : HIDUsageDispatcher {
 
     // wrapper objects based on arg type and testing requirements
 	wrapFunc {|funcProxy|
-		var func, devUsageID, devPageID, argTemplate;
+		var func, srcID, argTemplate;
 		func = funcProxy.func;
-		devUsageID = funcProxy.devUsage;
-        devPageID = funcProxy.devPage;
-		argTemplate = funcProxy.argTemplate;
+		srcID = funcProxy.devUsage;
+        argTemplate = funcProxy.argTemplate;
         // TODO: filter on deviceInfo!
 
 		// here test for various matching possibilities
@@ -120,7 +124,7 @@ HIDUsageIDDispatcher : HIDUsageDispatcher {
         // TODO: if(argTemplate.notNil, { func = HIDValueMatcher(argTemplate, func)} );
 
 		^case(
-			{ devUsageID.notNil or: devPageID.notNil }, { HIDFuncSrcUsageIDMatcher(devUsageID, devPageID, func) },
+			{ srcID.notNil }, { HIDFuncSrcNameMatcher(srcID, func) },
 			{ func }
         );
         //^func;
@@ -164,20 +168,23 @@ HIDElementDispatcher : HIDUsageDispatcher {
 
     // these arguments are from HID:
     // value, physValue, rawValue, arrayValue, usage, page, elid, devid
-	value { |value, physValue, rawValue, arrayValue, usage, page, elid, devid|
+	value { |value, rawValue, usage, page, elid, ele, devid, device|
+        // |value, physValue, rawValue, arrayValue, usage, page, elid, devid|
         // active.postcs;
         // ["element", value, physValue, rawValue, arrayValue, usage, page, elid, devid].postln;
         active[ elid ].value(
-            [value, physValue, rawValue, arrayValue],
-            [usage, page],
-            elid, devid,
+            value, rawValue,
+            usage, page,
+            elid, ele,
+            devid, device,
             elid
         );
         // this seems kind of ugly!
         active[\anyElement].value(
-            [value, physValue, rawValue, arrayValue],
-            [usage, page],
-            elid, devid,
+            value, rawValue,
+            usage, page,
+            elid, ele,
+            devid, device,
             \anyElement
         );
     }
@@ -220,10 +227,11 @@ HIDFunc : AbstractResponderFunc {
         defaultDispatchers[\device] = HIDDeviceDispatcher.new;
         defaultDispatchers[\element] = HIDElementDispatcher.new;
 		// not sure what this should look like, but a trace func would be nice
-        traceFunc = { |value, physValue, rawValue, arrayValue, usage, page, elid, devid, dev|
-            // devid, dev, elid, page, usage, rawValue, value|
-            "HID Element Data:\n\tdevid: %, elid: %\n\t%\n\tdevice: \t page: % \tusage: %\n\telement: \t page: %\tusage: %\tarray value: %,\traw value: %,\tphysical value: %,\tvalue: %\n"
-            .postf( devid, elid, dev.info, dev.usagePage, dev.usage, page, usage, arrayValue, rawValue, physValue, value );
+        traceFunc = {
+            |value, rawValue, usage, page, elid, ele, devid, dev|
+            // |value, physValue, rawValue, arrayValue, usage, page, elid, devid, dev|
+            "HID Element Data:\n\tdevid: %, elid: %\n\t%\n\tdevice: \t page: % \tusage: %\n\telement: \t page: %\tusage: %\traw value: %,\t,\tvalue: %\n"
+            .postf( devid, elid, dev.info, dev.usagePage, dev.usage, page, usage, rawValue, value );
 		}
 	}
 
@@ -237,9 +245,8 @@ HIDFunc : AbstractResponderFunc {
         ^super.new.initUsage( func, elUsageName, devUsageName, deviceInfo, argTemplate, dispatcher ? defaultDispatchers[\usage] );
 	}
 
-    // FIXME: this should just filter by devicename, rather than IDs
-    *usageID { arg func, elUsageID, elPageID, devUsageID, devPageID, deviceInfo, argTemplate, dispatcher;
-        ^super.new.initUsageID(func, elUsageID, elPageID, devUsageID, devPageID, deviceInfo, argTemplate, dispatcher ? defaultDispatchers[ \usageID ]);
+    *usageID { arg func, elUsageID, elPageID, deviceName, deviceInfo, argTemplate, dispatcher;
+        ^super.new.initUsageID(func, elUsageID, elPageID, deviceName, deviceInfo, argTemplate, dispatcher ? defaultDispatchers[ \usageID ]);
 	}
 
     *device { arg func, elUsageName, deviceName, deviceInfo, argTemplate, dispatcher;
@@ -290,12 +297,11 @@ HIDFunc : AbstractResponderFunc {
 		allFuncProxies.add(this);
 	}
 
-    initUsageID { | argFunc, elUsageID, elPageID, devUsageID, devPageID, deviceInfo, argtemplate, argdisp |
+    initUsageID { | argFunc, elUsageID, elPageID, devName, deviceInfo, argtemplate, argdisp |
 		type = \usageID;
         elUsage = elUsageID ? elUsage;
         elPage = elPageID ? elPage;
-        devUsage = devUsageID ? devUsage;
-        devPage = devPageID ? devPage;
+        devUsage = devName ? devUsage;
         deviceTemplate = deviceInfo ? deviceTemplate;
         argTemplate = argtemplate ? argTemplate;
 		func = argFunc ? func;
@@ -418,14 +424,16 @@ HIDFuncSrcUsageMatcher : AbstractMessageMatcher {
     }
 
     // question whether this is faster than direct lookup of device usage
-	value { |vals, usageIDs, elid, devid, key|
+	value { |value,rawValue,usage,page, elid, ele, devid, device, key|
+        // |vals, usageIDs, elid, devid, key|
         if ( matchingDevs.includes( devid ) ){
-            func.value( vals, usageIDs, elid, devid, key );
+            func.value( value,rawValue,usage,page, elid, ele, devid, device, key );
+                // vals, usageIDs, elid, devid, key );
         }{
-            if ( notMatchingDevs.includes( devid ).not ){ // perhaps devices was opened after HIDFunc was created
+            if ( notMatchingDevs.includes( devid ).not ){ // perhaps device was opened after HIDFunc was created
                 devUsage.do{ |it|
                     if ( this.checkDevUsage( it, devid ) ){
-                        func.value( vals, usageIDs, elid, devid, key );
+                        func.value( value,rawValue,usage,page, elid, ele, devid, device, key );
                     };
                 };
             };
@@ -480,16 +488,17 @@ HIDFuncSrcNameMatcher : AbstractMessageMatcher {
     }
 
     // question whether this is faster than direct lookup of device usage
-	value { |vals, usageIDs, elid, devid, key|
+	value { |value,rawValue,usage,page, elid, ele, devid, device, key|
+        // |vals, usageIDs, elid, devid, key|
         // [ "srcName matcher", vals, usageIDs, elid, devid, key ].postln;
         if ( matchingDevs.includes( devid ) ){
             // "-->evaluating".postln;
-            func.value( vals, usageIDs, elid, devid, key );
+            func.value( value,rawValue,usage,page, elid, ele, devid, device, key );
         }{
             if ( notMatchingDevs.includes( devid ).not ){ // perhaps devices was opened after HIDFunc was created
                 devName.do{ |it|
                     if ( this.checkDevName( it, devid ) ){
-                        func.value( vals, usageIDs, elid, devid, key );
+                        func.value( value,rawValue,usage,page, elid, ele, devid, device, key );
                     };
                 };
             };
@@ -580,14 +589,14 @@ HIDFuncSrcUsageIDMatcher : AbstractMessageMatcher {
     }
 
     // question whether this is faster than direct lookup of device usage
-	value { |vals, usageIDs, elid, devid, key|
+	value { |value,rawValue,usage,page, elid, ele, devid, device, key|
         if ( matchingDevs.includes( devid ) ){
-            func.value( vals, usageIDs, elid, devid, key );
+            func.value( value,rawValue,usage,page, elid, ele, devid, device, key );
         }{
             if ( notMatchingDevs.includes( devid ).not ){ // perhaps device was opened after HIDFunc was created
                 [ devUsage, devPage ].flop.do{ |it|
                     if ( this.checkDevUsage( it, devid ) ){
-                        func.value( vals, usageIDs, elid, devid, key );
+                        func.value( value,rawValue,usage,page, elid, ele, devid, device, key );
                     };
                 };
             };

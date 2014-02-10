@@ -169,8 +169,9 @@ HID {
 
     *doPrAction{ | value, physValue, rawValue, arrayValue, usage, page, elid, devid |
         var thisdevice = openDevices.at( devid );
-        // prAction.value( devid, thisdevice, elid, page, usage, value, mappedvalue );
-        prAction.value( value, physValue, rawValue, arrayValue, usage, page, elid, devid, thisdevice );
+        var ele = thisdevice.getElementWithID( elid );
+        prAction.value( value, rawValue, usage, page, elid, ele, devid, thisdevice );
+        // prAction.value( value, physValue, rawValue, arrayValue, usage, page, elid, devid, thisdevice );
     }
 
 /// primitives called:
@@ -338,6 +339,10 @@ HID {
         }
     }
 
+    getElementWithID{ |elid|
+        ^elements.at( elid );
+    }
+
     findElementWithUsage{ |elUsage, elUsagePage|
         ^elements.select{ |el|
             ( el.usage == elUsage ) and: ( el.usagePage == elUsagePage )
@@ -494,7 +499,7 @@ HIDInfo{
 }
 
 HIDCollection{
-    var <index;
+    var <id;
     var <type;
     var <usagePage, <usage;
 
@@ -529,12 +534,12 @@ HIDCollection{
 
     postCollection{
         "HID Collection: %, type: %, usage page: %, usage index: %\n\tDescription: %, %\n\tParent collection: %, number of collections contained: %, first collection: %\n\tnumber of elements contained: %, first element %\n"
-        .postf( index, type, usagePage, usage, this.pageName, this.usageName, parent, numCollections, firstCollection, numElements, firstElement );
+        .postf( id, type, usagePage, usage, this.pageName, this.usageName, parent, numCollections, firstCollection, numElements, firstElement );
     }
 
     printOn { | stream |
 		super.printOn(stream);
-        stream << $( << index << ": " ;
+        stream << $( << id << ": " ;
         stream << "type: " << type << "usage: " << usagePage << usage;
         // [ type, usagePage, usage ].printItemsOn(stream);
         // stream << ": description: ";
@@ -550,7 +555,7 @@ HIDCollection{
 
 HIDElement{
 //------- do not change the order of these variables, they correspond to the primitive data order: <-------
-    var <index;
+    var <id;
     var <ioType, <type;
     var <usagePage, <usage;
     var <usageMin, <usageMax;
@@ -586,7 +591,7 @@ HIDElement{
 
     repeat_{ |rp|
         repeat = rp;
-        HID.prSetElementRepeat( device.id, index, repeat.binaryValue );
+        HID.prSetElementRepeat( device.id, id, repeat.binaryValue );
     }
 
     // use for sending output
@@ -594,7 +599,7 @@ HIDElement{
         //TODO: could remap this accordingly
         rawValue = val;
         value = val;
-        HID.prSetElementOutput( device.id, index, rawValue );
+        HID.prSetElementOutput( device.id, id, rawValue );
     }
 
     // called from input report
@@ -615,7 +620,7 @@ HIDElement{
 
     postElement{ |prefix=""|
             "%HID Element: %, type: %, %, usage page: %, usage index: %\n%\tDescription: %, %, %, \n\t% \n%\tUsage range: [ %, % ]\n%\tLogical range: [ %, % ]\n%\tPhysical range: [ %, % ], Unit: %, Exponent: % \n%\tReport ID: %, size %, index %\n"
-        .postf( prefix, index, ioType, type, usagePage, usage,
+        .postf( prefix, id, ioType, type, usagePage, usage,
             prefix, this.pageName, this.usageName, this.iotypeName, this.typeSpec,
             prefix, usageMin, usageMax,
             prefix, logicalMin, logicalMax,
@@ -625,7 +630,7 @@ HIDElement{
 
     printOn { | stream |
 		super.printOn(stream);
-        stream << $( << index << ": " ;
+        stream << $( << id << ": " ;
         stream << "type: " << type << ", usage: " << usagePage << usage;
 
         // stream << $( << "hid element: " << index << ": collection " << collection << " : " ;
