@@ -272,6 +272,8 @@ ProxySpace : LazyEnvir {
 
 	includes { |proxy| ^envir.includes(proxy) }
 
+	size { ^envir.size }
+
 	*findSpace { |proxy, getCode = false|
 		var space = [ currentEnvironment, thisProcess.interpreter.p ]
 		.detect { |cand|  cand.isKindOf(this) and: { cand.includes(proxy) } };

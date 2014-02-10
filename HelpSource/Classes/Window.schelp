@@ -1,5 +1,4 @@
 CLASS:: Window
-redirect:: implClass
 summary:: Top-level container of views
 categories:: GUI>Views
 

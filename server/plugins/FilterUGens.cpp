@@ -896,7 +896,6 @@ static void Lag3_next_1_i(Lag3 *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	float lag = ZIN0(1);
 
 	double y1a = unit->m_y1a;
 	double y1b = unit->m_y1b;
@@ -5495,7 +5494,6 @@ void BHiPass_next_ii(BHiPass *unit, int inNumSamples)
 	float *in = ZIN(0);
 
 	double a0, a1, a2, b1, b2;
-	double y0;
 	double y1 = unit->m_y1;
 	double y2 = unit->m_y2;
 

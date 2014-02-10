@@ -81,7 +81,7 @@ NdefParamGui : EnvirGui {
 	}
 
 	getState {
-		var settings, newKeys, overflow;
+		var settings, newKeys, overflow, currSpecs;
 
 		if (object.isNil) {
 			^(name: 'anon', settings: [], editKeys: [], overflow: 0, keysRotation: 0)
@@ -93,9 +93,15 @@ NdefParamGui : EnvirGui {
 		overflow = (newKeys.size - numItems).max(0);
 		keysRotation = keysRotation.clip(0, overflow);
 		newKeys = newKeys.drop(keysRotation).keep(numItems);
+		currSpecs = newKeys.collect { |key|
+			var pair = settings.detect { |pair| pair[0] == key };
+			this.getSpec(key, pair[1]);
+		};
 
 		^(object: object, editKeys: newKeys, settings: settings,
-			overflow: overflow, keysRotation: keysRotation)
+			overflow: overflow, keysRotation: keysRotation,
+			specs: currSpecs
+		)
 	}
 
 	checkUpdate {
@@ -125,6 +131,8 @@ NdefParamGui : EnvirGui {
 			this.setByKeys(newState[\editKeys], newState[\settings]);
 			if (newState[\overflow] == 0) { this.clearFields(newState[\editKeys].size) };
 		};
+
+		this.updateSliderSpecs(newState[\editKeys]);
 
 		prevState = newState;
 	}
@@ -196,4 +204,27 @@ NdefParamGui : EnvirGui {
 
 		this.setToText(index, key, value, sameKey);
 	}
+
+	updateSliderSpecs { |editKeys|
+		var currState;
+
+		if (object.isNil) { specs.clear; ^this };
+
+		currState = object.getKeysValues;
+
+		editKeys.do { |key, i|
+			var currValue = currState.detect { |pair| pair[0] == key }[1];
+			var newSpec = this.getSpec(key, currValue);
+			var widge = widgets[i];
+			if (newSpec != widge.controlSpec) {
+				specs.put(key, newSpec);
+				if (widge.isKindOf(EZSlider) or:
+					{ widge.isKindOf(EZRanger) }) {
+					widge.controlSpec = newSpec;
+					widge.value_(currValue);
+				};
+			};
+		}
+	}
+
 }

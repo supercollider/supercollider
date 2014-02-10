@@ -37,19 +37,20 @@ JITGui {
 		Class.initClassTree(GUI);
 
 		GUI.skins.put(\jit, (
-				fontSpecs: 	["Helvetica", 12],
-				fontColor: 	Color.black,
-				background: 	Color(0.8, 0.85, 0.7, 0.5),
-				foreground:	Color.grey(0.95),
-				onColor:		Color(0.5, 1, 0.5),
-				offColor:		Color.clear,
-				hiliteColor:	Color.green(1.0, 0.5),
-				gap:			0 @ 0,
-				margin: 		2@2,
-				buttonHeight:	18,
-				headHeight: 	24
+			fontSpecs: 		["Helvetica", 12],
+			fontColor: 		Color.black,
+			background: 	Color(0.8, 0.85, 0.7, 0.5),
+			foreground:		Color.grey(0.95),
+			onColor:		Color(0.5, 1, 0.5),
+			onColor2:   	Color(1.0, 0.5, 0.5),
+			offColor:		Color.grey(0.8, 0.5),
+			hiliteColor:	Color.green(1.0, 0.5),
+			gap:			0 @ 0,
+			margin: 		2@2,
+			buttonHeight:	18,
+			headHeight: 	24
 
-			)
+		)
 		);
 	}
 
@@ -96,7 +97,7 @@ JITGui {
 			nameView.string_(name);
 		};
 	}
-	
+
 	hasName {
 		^nameView.notNil and: { nameView.string.notNil }
 	}
@@ -145,15 +146,11 @@ JITGui {
 
 	makeSkip {
 		skipjack = SkipJack({
-		//	try {
-				this.checkUpdate
-		//	} {
-		//		(this.getName  + "checkUpdate failed.").postln;
-		//		}
-			},
-			0.5,
-			{ parent.isNil or: { parent.isClosed } },
-			this.getName
+			this.checkUpdate
+		},
+		0.5,
+		{ parent.isNil or: { parent.isClosed } },
+		this.getName
 		);
 	}
 
@@ -166,7 +163,7 @@ JITGui {
 			defPos = skin.margin;
 		};
 		minSize = 250 @ (numItems * skin.buttonHeight + skin.headHeight);
-	//	"minSize: %\n".postf(minSize);
+		//	"minSize: %\n".postf(minSize);
 	}
 
 	makeViews {
@@ -183,7 +180,7 @@ JITGui {
 			Rect(0,0, bounds.width - 65, lineheight),
 			nil, { |ez| object = ez.value; })
 			.font_(font);
-		csView.bounds.postln;
+		csView.bounds;
 	}
 
 	getState {

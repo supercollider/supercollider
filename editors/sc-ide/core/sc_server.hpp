@@ -51,6 +51,7 @@ public:
         DumpNodeTree,
         DumpNodeTreeWithControls,
         PlotTree,
+        DumpOSC,
         Mute,
         Volume,
         VolumeUp,
@@ -72,6 +73,9 @@ public:
 
     bool isMuted() const;
     void setMuted( bool muted );
+
+    bool isDumpingOSC() const;
+    void setDumpingOSC( bool dumping );
 
     bool isRecording() const;
     boost::chrono::seconds recordingTime() const;
@@ -112,6 +116,7 @@ private slots:
     void updateEnabledActions();
     void sendMuted( bool muted );
     void sendVolume( float volume );
+    void sendDumpingOSC( bool dumping );
 
 protected:
     virtual void timerEvent(QTimerEvent * event);

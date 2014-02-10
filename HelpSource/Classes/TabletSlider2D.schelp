@@ -1,5 +1,4 @@
 CLASS:: TabletSlider2D
-redirect:: implClass
 summary:: An extended Slider2D responding to Wacom tablet
 categories:: GUI>Views
 related:: Classes/TabletView

@@ -42,6 +42,8 @@ ServerOptions
 
 	var <>pingsBeforeConsideredDead = 5;
 
+	var <>maxLogins = 1;
+
 	device {
 		^if(inDevice == outDevice)
 		{
@@ -157,6 +159,9 @@ ServerOptions
 				o = o ++ " -T " ++ threads;
 			}
 		});
+		if (maxLogins.notNil, {
+			o = o ++ " -l " ++ maxLogins;
+		});
 		^o
 	}
 
@@ -259,7 +264,7 @@ ServerShmInterface {
 Server {
 	classvar <>local, <>internal, <default, <>named, <>set, <>program, <>sync_s = true;
 
-	var <name, <>addr, <clientID=0;
+	var <name, <>addr, <clientID, userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
 	var <serverRunning = false, <serverBooting = false, bootNotifyFirst = false;
 	var <>options, <>latency = 0.2, <dumpMode = 0, <notify = true, <notified=false;
@@ -295,8 +300,15 @@ Server {
 		this.all.do(_.changed(\default, server));
 	}
 
-	*new { arg name, addr, options, clientID=0;
+	*new { arg name, addr, options, clientID;
 		^super.new.init(name, addr, options, clientID)
+	}
+
+	*remote { arg name, addr, options, clientID;
+		var result;
+		result = this.new(name, addr, options, clientID);
+		result.startAliveThread;
+		^result;
 	}
 
 	*all { ^set }
@@ -305,7 +317,8 @@ Server {
 	init { arg argName, argAddr, argOptions, argClientID;
 		name = argName.asSymbol;
 		addr = argAddr;
-		clientID = argClientID;
+		if(argClientID.notNil, { userSpecifiedClientID = true;});
+		clientID = argClientID ? 0;
 		options = argOptions ? ServerOptions.new;
 		if (addr.isNil, { addr = NetAddr("127.0.0.1", 57110) });
 		inProcess = addr.addr == 0;
@@ -338,13 +351,48 @@ Server {
 	}
 
 	newBusAllocators {
-		controlBusAllocator = ContiguousBlockAllocator.new(options.numControlBusChannels);
-		audioBusAllocator = ContiguousBlockAllocator.new(options.numAudioBusChannels,
-			options.firstPrivateBus);
+		var numControl, numAudio;
+		var controlBusOffset, audioBusOffset;
+		var offset = this.calcOffset;
+		var n = options.maxLogins ? 1;
+
+		numControl = options.numControlBusChannels div: n;
+		numAudio = options.numAudioBusChannels div: n;
+
+		controlBusOffset = numControl * offset;
+		audioBusOffset = options.firstPrivateBus + (numAudio * offset);
+
+		controlBusAllocator =
+				ContiguousBlockAllocator.new(
+					numControl + controlBusOffset,
+					controlBusOffset
+				);
+		audioBusAllocator =
+				ContiguousBlockAllocator.new(
+					numAudio + audioBusOffset,
+					audioBusOffset
+				);
 	}
 
 	newBufferAllocators {
-		bufferAllocator = ContiguousBlockAllocator.new(options.numBuffers);
+		var bufferOffset;
+		var offset = this.calcOffset;
+		var n = options.maxLogins ? 1;
+		var numBuffers = options.numBuffers div: n;
+		bufferOffset = numBuffers * offset;
+		bufferAllocator =
+				ContiguousBlockAllocator.new(
+					numBuffers + bufferOffset,
+					bufferOffset
+				);
+	}
+
+	calcOffset {
+			if(options.maxLogins.isNil) { ^0 };
+		if(clientID > (options.maxLogins - 1)) {
+					"Client ID exceeds maxLogins. Some buses and buffers may overlap for remote server: %".format(this).warn;
+			};
+			^clientID % options.maxLogins;
 	}
 
 	newScopeBufferAllocators {
@@ -374,7 +422,7 @@ Server {
 
 	*fromName { arg name;
 		^Server.named[name] ?? {
-			Server(name, NetAddr.new("127.0.0.1", 57110), ServerOptions.new, 0)
+			Server(name, NetAddr.new("127.0.0.1", 57110), ServerOptions.new)
 		}
 	}
 
@@ -743,7 +791,28 @@ Server {
 	}
 
 	sendNotifyRequest { arg flag=true;
+		var doneOSCFunc, failOSCFunc;
 		notified = flag;
+		if(userSpecifiedClientID.not , {
+			doneOSCFunc = OSCFunc({|msg|
+				if(flag && { msg[2] != clientID }, {
+					var newID;
+					newID = msg[2];
+					if(newID.notNil, {
+						clientID = newID;
+						this.newAllocators;
+					})
+				});
+				failOSCFunc.free;
+			}, '/done', addr, argTemplate:['/notify', nil]).oneShot;
+			failOSCFunc = OSCFunc({|msg|
+				if(msg[3].notNil && { msg[3] != clientID }, {
+					clientID = msg[3];
+					this.newAllocators;
+				});
+				doneOSCFunc.free;
+			}, '/fail', addr, argTemplate:['/notify', nil, nil]).oneShot;
+		});
 		addr.sendMsg("/notify", flag.binaryValue);
 	}
 

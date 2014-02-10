@@ -1,5 +1,4 @@
 class:: Knob
-redirect:: implClass
 summary:: A rotary controller view
 categories:: GUI>Views
 related:: Classes/Slider, Classes/Slider2D

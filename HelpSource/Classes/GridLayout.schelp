@@ -2,7 +2,6 @@ CLASS:: GridLayout
 summary:: A layout that organizes views in a grid
 categories:: GUI>Layout
 related:: Classes/HLayout, Classes/VLayout, Classes/StackLayout, Guides/GUI-Layout-Management
-redirect:: implClass
 
 DESCRIPTION::
 
@@ -24,7 +23,7 @@ Each row or column can be assigned a strong::stretch factor:: using link::#-setR
 
 Each row or column can also be assigned a strong::minimum:: size using link::#-setMinRowHeight:: and link::#-setMinColumnWidth::, to override the size contraints imposed by the contained views.
 
-In addition to adjusting the spacing between cells using link::Classes/QLayout#-spacing:: you can control the spacing between rows and between columns separately using link::#-hSpacing:: and link::#-vSpacing::.
+In addition to adjusting the spacing between cells using link::Classes/Layout#-spacing:: you can control the spacing between rows and between columns separately using link::#-hSpacing:: and link::#-vSpacing::.
 
 subsection:: Leaving empty space
 

@@ -1,5 +1,4 @@
 class:: Button
-redirect:: implClass
 summary:: A multi-state button
 categories:: GUI>Views
 
@@ -47,6 +46,27 @@ method:: states
 An array of labels and colors defining the states of the button.
 argument:: stateArray
 An link::Classes/Array:: of arrays of the form code:: [ [String, strColor, bgColor] , .... ] ::
+
+code::
+
+
+(
+w = Window.new;
+a = Button(w, Rect(130, 130, 100, 100));
+w.front;
+)
+
+// change the states:
+a.states = [["yes", Color.grey, Color.white], ["no", Color.white, Color.grey]];
+a.states = [["yes", Color.grey, Color.white], ["no", Color.white, Color.grey], ["perhaps", Color.black, Color.green(0.8)], []];
+
+// change the states on action:
+(
+a.action = { |view|
+	if(view.value == 3) { a.states =  [[["yes", "no"].choose, Color.grey, Color.white]] }
+}
+);
+::
 
 method:: value
 Sets or returns the index of the current state. This will strong::not:: evaluate the function assigned to strong::action:: (see link::Classes/View::).

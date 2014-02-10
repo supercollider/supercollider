@@ -128,7 +128,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	init { |inLines|
 		keys = IdentitySet.new;
-		this.clear.lines_(inLines);
+		this.clear.lines_(inLines ? []);
 
 		player = TaskProxy.new.source_({ |e|
 			var linesSize, lineIndices, lastTimePlayed;
@@ -460,9 +460,13 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		^indicesFound
 	}
 
-	*makeWin { |where, textHeight=12| ^current.makeWin(where, textHeight) }
+	*makeWin { |where, numItems=8| ^current.makeWin(where, numItems) }
 
-	makeWin { |where, textHeight=12| ^HistoryGui(this, where, textHeight) }
+	makeWin { |where, numItems=8|
+		var gui = HistoryGui(this, numItems);
+		if (where.notNil) { gui.moveTo(where.x, where.y); };
+		^gui
+	}
 
 	*document { current.document }
 
@@ -470,12 +474,15 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		var docTitle;
 		Platform.case(
 			\windows, {
+				// not sure this works in 3.7.0?
 				this.storyString.newTextWindow("History_documented");
 			},
 			{
+				//
 				docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
 				Document.new(docTitle, this.storyString)
-					.path_(docTitle); // don't lose title.
+				// path not working yet
+				//	.path_(docTitle); // don't lose title.
 			}
 		)
 	}

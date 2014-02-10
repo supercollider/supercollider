@@ -1,5 +1,4 @@
 class:: SoundFileView
-redirect:: implClass
 summary:: Sound file display
 categories:: GUI>Views
 related:: Classes/SoundFile

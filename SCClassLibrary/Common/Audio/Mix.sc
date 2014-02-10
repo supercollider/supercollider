@@ -79,7 +79,7 @@ NumChannels {
 
 		if(input.size > 1) { // collection
 		   ^input
-			.clump(input.size / numChannels)
+			.clump(roundUp(input.size / numChannels))
 			.collect { arg chan, i;
 				if(chan.size == 1) {
 					chan.at(0)

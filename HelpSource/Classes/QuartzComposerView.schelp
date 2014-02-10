@@ -1,5 +1,4 @@
 TITLE:: QuartzComposerView
-redirect:: implClass
 summary:: view for rendering Quartz Composer Compositions
 categories:: GUI>Views
 
@@ -18,23 +17,23 @@ INSTANCEMETHODS::
 
 METHOD::path
 Get or set the path of the currently composition as a link::Classes/String::.
-		
+
 METHOD::inputKeys
 Get the keys of the current composition's input ports.
-	
+
 returns:: An link::Classes/Array:: of link::Classes/Symbol::s.
-				
+
 METHOD::outputKeys
 Get the keys of the current composition's output ports.
-	
-returns:: An link::Classes/Array:: of link::Classes/Symbol::s.	
-		
+
+returns:: An link::Classes/Array:: of link::Classes/Symbol::s.
+
 METHOD::start
 Start rendering the loaded composition.
-		
+
 METHOD::stop
 Stop rendering the loaded composition.
-		
+
 METHOD::setInputValue
 Set the value of the input port specified by key.
 
@@ -46,21 +45,21 @@ The type of value must correspond to the type of the port, but Floats, Integers,
 
 METHOD::getInputValue
 Get the current value of an input port. The type of object returned will correspond to the port's type.
-	
+
 argument::key
 A link::Classes/String:: or link::Classes/Symbol:: matching the port's key.
-		
+
 METHOD::getOutputValue
 Get the current value of an output port. The type of object returned will correspond to the port's type.
-		
+
 argument::key
 A link::Classes/String:: or link::Classes/Symbol:: matching the port's key.
-		
+
 METHOD::maxFPS
 Set the maximum frames per second at which the composition will render.
 argument::rate
 A link::Classes/Float:: or link::Classes/Integer:: specifying the desired max frame rate. A value of 0 indicates no limit.
-		
+
 METHOD::openInQC
 Open the currently loaded composition in Quartz Composer. You will need to reload the composition into the view before any saved changes take effect.
 
@@ -294,7 +293,7 @@ s.boot;
 o = OSCresponder(s.addr, '/tr', {arg time, resp, msg;
 	{~meters[msg[2]].level = (msg[3] + 0.01).explin(0.01,1.01, 0, 1);}.defer;
 }).add;
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");	
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 a = { var colum, noise, imp, delimp;
 	imp = Impulse.kr(20);
 	delimp = Delay1.kr(imp);

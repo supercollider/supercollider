@@ -16,8 +16,6 @@
 		var btn, testFn;
 		var fntMono, gui;
 
-		gui = GUI.current;
-
 		hvBold12 = Font.sansSerif( 12 ).boldVariant;
 		fntMono	= Font.monospace( 10 );
 
@@ -56,9 +54,7 @@
 		btn.action = {
 			var item;
 			item = this[synthDescListView.item.asSymbol];
-			if (item.notNil) {
-				GUI.use( gui, { item.makeWindow });
-			}
+			if (item.notNil) { item.makeWindow };
 		};
 
 		wleft.decorator.nextLine;
@@ -90,18 +86,8 @@
 		inputsListView.resize = 4;
 		outputsListView.resize = 4;
 
-		if (GUI.id == \qt) {
-			[controlsListView, inputsListView, outputsListView].do {
+		[controlsListView, inputsListView, outputsListView].do {
 				|listview| listview.selectionMode = \none
-			};
-		} {
-			// this is a trick to not show hilighting.
-			controlsListView.hiliteColor = Color.clear;
-			inputsListView.hiliteColor = Color.clear;
-			outputsListView.hiliteColor = Color.clear;
-			controlsListView.selectedStringColor = Color.black;
-			inputsListView.selectedStringColor = Color.black;
-			outputsListView.selectedStringColor = Color.black;
 		};
 
 		controlsListView.font	= fntMono;

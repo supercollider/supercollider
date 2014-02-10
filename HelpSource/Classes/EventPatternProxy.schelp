@@ -1,6 +1,6 @@
 class:: EventPatternProxy
 summary:: event stream reference
-categories:: Libraries>JITLib>Patterns
+categories:: Libraries>JITLib>Patterns, Live Coding
 related:: Classes/Pdef
 
 description::

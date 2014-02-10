@@ -182,8 +182,8 @@ sc_synthdef::unit_spec_t::unit_spec_t(const char *& buffer, const char * buffer_
     special_index = read_int16(buffer, buffer_end);
 
     for (int i = 0; i != input_count; ++i) {
-        int16_t source = read_int(buffer, buffer_end, short_int_size);
-        int16_t index = read_int(buffer, buffer_end, short_int_size);
+        int32_t source = read_int(buffer, buffer_end, short_int_size);
+        int32_t index = read_int(buffer, buffer_end, short_int_size);
         input_spec spec(source, index);
         input_specs.push_back(spec);
     }

@@ -85,7 +85,7 @@ QC_LANG_PRIMITIVE( QWidget_MapToGlobal, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 }
 
 QC_LANG_PRIMITIVE( QWidget_SetLayout, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
-  if( !isKindOfSlot( a, SC_CLASS(QLayout) ) ) return errWrongType;
+  if( !isKindOfSlot( a, SC_CLASS(Layout) ) ) return errWrongType;
 
   QWidgetProxy *wProxy = QWIDGET_PROXY_RECEIVER(r);
 

@@ -1,6 +1,6 @@
 class:: EnvirGui
 summary:: display the contents of an environment for editing
-categories:: Libraries>JITLib>GUI
+categories:: Libraries>JITLib>GUI, Live Coding
 related:: Classes/EZText, Classes/TdefGui, Classes/PdefGui
 
 description::
@@ -79,8 +79,14 @@ list::
 method::specs
 EZSlider and EZRanger needs specs for their display ranges; if there is a global spec for that key (key.asSpec), it will be used. If not, a spec is generated (see the link::#-getSpec:: method) and kept in these (local) specs.
 
+method::editKeys
+the keys of the currently displayed items in the dict.
+
 method::keysRotation
 if the size of envir exceeds numItems, the keys displayed can be rotated: e.g. with 10 keys displayed on 5 valFields, keysRotation 0 means show keys (0..4), keysRotation 2 means show keys (2..6), etc.
+
+strong::gui elements present if requested in options::
+method:: widgets, docBut, knowBut, parentBut, protoBut
 
 subsection::Some Methods
 
@@ -135,6 +141,13 @@ g.putSpec(\freq, [100, 1000, \exp]);
 g.object_((freq: 200, iFrek: 20));
 ::
 
+method::replaceKeys, addReplaceKey, removeReplaceKey, showKeyFor
+keys with technical names can be replaced in the display with clearer names.
+
+method::highlight, unhighlight, colorizeArea
+methods for visually emphasizing areas.
+
+
 subsection::Some internal methods
 
 method::setField
@@ -160,6 +173,19 @@ remove the link::Classes/EZGui:: at this index
 
 method::clearFields
 remove all unused EZGuis
+
+method::useRanger
+set and get whether arrays of 2 number values should be displayed with EZRangers.
+
+
+strong::methods that update and replace gui elements based current envir content: ::
+method::findWidget,  setFunc, setToRanger, setToSlider, setToText
+
+strong::methods that make gui elements: ::
+method::makeViews, makeNameView, makeOptionalViews, makeKnowBut, makeDocBut, makeClrBut, makeProtoBut, makeParentBut
+
+strong::standard JITGui methods: ::
+method::accepts, getState, checkUpdate, updateButtons
 
 Examples::
 

@@ -219,6 +219,7 @@ int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *va
 		}
 	}
 	array = slotRawObject(&dict->slots[ivxIdentDict_array]);
+	if (array->IsImmutable()) return errImmutableObject;
 	if (!isKindOf((PyrObject*)array, class_array)) return errFailed;
 
 	index = arrayAtIdentityHashInPairs(array, key);

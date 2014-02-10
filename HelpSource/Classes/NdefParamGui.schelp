@@ -1,11 +1,13 @@
 class:: NdefParamGui
 summary:: display the settings of a nodeproxy
-categories:: Libraries>JITLib>GUI
-related:: Classes/EZText, Classes/NdefGui
+categories:: Libraries>JITLib>GUI, Live Coding
+related:: Classes/EZText, Classes/NdefGui, Classes/EnvirGui
 
 description::
 
 NdefParamGui displays all settings and mappings of a nodeproxy, so one can change them flexibly. Single number get displayed with an link::Classes/EZSlider::, and anything else is shown as an link::Classes/EZText:: (a text field). Its main use is within link::Classes/NdefGui::.
+
+It inherits some useful methods from link::Classes/EnvirGui::.
 
 ClassMethods::
 
@@ -15,13 +17,14 @@ method::new
 create a new NdefParamGui
 
 code::
-// simple example
+// simple example - see also NdefGui!
+
 g = NdefParamGui.new(nil, 5);	// empty with 5 slots
 g.object_(Ndef(\a));		// put in a nodeproxy
 Ndef(\a, { |freq = 300, amp = 0.2| SinOsc.ar(freq) * amp });
 Ndef(\a).set(\freq, 2000);	// add a setting
 
-g.object_(nil);			// put in a nodeproxy
+g.object_(nil);			// put in nothing
 
 g.object_(Ndef(\a)); 		// put in a nodeproxy
 Ndef(\a).set(\amp, 0.125);	// add a setting

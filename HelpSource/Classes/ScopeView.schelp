@@ -1,5 +1,4 @@
 CLASS:: ScopeView
-redirect:: implClass
 summary:: A buffer plotting view.
 categories:: GUI>Views
 related:: Classes/Stethoscope, Classes/FreqScopeView, Classes/FreqScope
@@ -128,7 +127,7 @@ code::
 (
 
 
-s.waitForBoot({ 
+s.waitForBoot({
 
     var func, sdef1, sdef2, syn1, syn2,startButton ;
     f = Buffer.alloc(s,1024,2);

@@ -1,10 +1,10 @@
 CLASS:: QPenPrinter
 summary:: QPen PDF export and printing of vector graphics
 categories:: GUI>Accessories
-related:: Classes/QPen, Classes/Pen
+related:: Classes/Pen
 
 DESCRIPTION::
-QPenPrinter allows QPen to operate on a printer device. The graphics can be exported to PDF by using "print to file" as printer device.
+QPenPrinter allows Pen to operate on a printer device. The graphics can be exported to PDF by using "print to file" as printer device.
 
 CLASSMETHODS::
 private:: qtClass
@@ -19,7 +19,7 @@ METHOD:: print
 Convenience function to show a print dialog and print.
 
 argument:: printFunc
-A link::Classes/Function:: to be evaluated when the user presses "Print", with the printer object as QPen painter target.
+A link::Classes/Function:: to be evaluated when the user presses "Print", with the printer object as Pen painter target.
 See strong::aPrintFunc:: in link::#-print:: below.
 
 argument:: cancelFunc
@@ -43,9 +43,9 @@ An optional link::Classes/Function:: to be evaluated if the user presses "Cancel
 
 
 METHOD:: print
-This method does the actual printing or PDF export. It evaluates strong::aPrintFunc:: with the printer object as QPen painter target. This QPenPrinter object is passed as the argument.
+This method does the actual printing or PDF export. It evaluates strong::aPrintFunc:: with the printer object as Pen painter target. This QPenPrinter object is passed as the argument.
 
-All the ordinary link::Classes/QPen:: commands can be used inside the function.
+All the ordinary link::Classes/Pen:: commands can be used inside the function.
 
 argument:: aPrintFunc
 A link::Classes/Function:: to be evaluated to draw the graphics.

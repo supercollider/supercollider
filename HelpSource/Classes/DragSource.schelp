@@ -1,5 +1,4 @@
 class:: DragSource
-redirect:: implClass
 summary:: A simple drag-and-drop source.
 categories:: GUI>Views
 related:: Classes/DragSink, Classes/DragBoth

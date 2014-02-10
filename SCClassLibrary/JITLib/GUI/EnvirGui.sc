@@ -148,8 +148,32 @@ EnvirGui : JITGui {
 
 	envir { ^object }
 
+	highlight { |index, prefix, color|
+		var widget = widgets[index];
+		var parName;
+		if (widget.notNil) {
+			widget.labelView.background_(color ? skin.onColor2);
+			parName = this.editKeys[index];
+			if (prefix.notNil and: parName.notNil) {
+				parName = prefix ++ parName;
+			};
+			widget.labelView.string_(parName);
+		};
+	}
+
+	unhighlight { |index, prefix, color|
+		var widget = widgets[index];
+		var parName;
+		if (widget.notNil) {
+			widget.labelView.background_(skin.offColor);
+			parName = this.editKeys[index] ? "";
+			widget.labelView.string_(parName);
+		};
+	}
+
+	// also get specs as state that may have changed
 	getState {
-		var newKeys, overflow;
+		var newKeys, overflow, currSpecs;
 
 		if (object.isNil) { ^(editKeys: [], overflow: 0, keysRotation: 0) };
 
@@ -157,8 +181,15 @@ EnvirGui : JITGui {
 		overflow = (newKeys.size - numItems).max(0);
 		keysRotation = keysRotation.clip(0, overflow);
 		newKeys = newKeys.drop(keysRotation).keep(numItems);
+		currSpecs = newKeys.collect{ |key|
+			[key, this.getSpec(key, object[key])] };
 
-		^(object: object, editKeys: newKeys, overflow: overflow, keysRotation: keysRotation)
+		^(  object: object,
+			editKeys: newKeys,
+			overflow: overflow,
+			keysRotation: keysRotation,
+			specs: currSpecs
+		)
 	}
 
 	checkUpdate { |doFull = false|
@@ -218,7 +249,7 @@ EnvirGui : JITGui {
 			oldVal = prevEnvir[newKey];
 			if (isSameKey.not or: { oldVal != newVal }) {
 			//	"val for % has changed: %\n".postf(key, newval);
-				this.setField(i, newKey, newVal, isSameKey);
+				this.setField(i, newKey, newVal, false);
 			};
 		};
 	}
@@ -390,6 +421,24 @@ EnvirGui : JITGui {
 		^widgets.reject(_.isNil).detect { |ez| ez.labelView.string.asSymbol == key };
 	}
 
+	updateSliderSpecs { |editKeys|
+
+		if (object.isNil) { specs.clear; ^this };
+
+		editKeys.do { |key, i|
+			var currValue = object[key];
+			var newSpec = this.getSpec(key, currValue);
+			var widge = widgets[i];
+			if (newSpec != widge.controlSpec) {
+				specs.put(key, newSpec);
+				if (widge.isKindOf(EZSlider) or: { widge.isKindOf(EZRanger) }) {
+					widge.controlSpec = newSpec;
+					widge.value_(currValue);
+				};
+			};
+		}
+	}
+
 	putSpec { |key, obj|
 		var widge, spec;
 		spec = obj.asSpec;
@@ -399,8 +448,10 @@ EnvirGui : JITGui {
 		if (widge.notNil) { widge.controlSpec_(spec).value_(widge.value) }
 	}
 
+	// this is for global specs only - use JITLibExtensions
+	//  for local specs attached to proxies.
 	getSpec { |key, value|
-		var spec = specs[key] ? Spec.specs[key];
+		var spec = Spec.specs[key] ? specs[key];
 		spec = spec ?? { Spec.guess(key, value) };
 		specs.put(key, spec);
 		^spec

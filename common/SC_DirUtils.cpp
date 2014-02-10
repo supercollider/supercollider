@@ -203,7 +203,7 @@ int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int len
 			BOOL isStale;
 			NSURL *resolvedURL = [NSURL URLByResolvingBookmarkData: bookmark options: NSURLBookmarkResolutionWithoutUI relativeToURL: nil bookmarkDataIsStale: &isStale error: &resolvedURLError];
 			// does it actually lead to something?
-			if(isStale) {
+			if(isStale || (resolvedURL == NULL) ) {
 				printf("Error: Target missing for alias at %s\n", path);
 				return -1;
 			}

@@ -871,10 +871,17 @@ int prMatchLangIP(VMGlobals *g, int numArgsPushed)
 	if (err) return err;
     try
     {
+        std::string loopback ("127.0.0.1");
+        // check for loopback address
+        if (!loopback.compare(ipstring)) {
+            SetTrue(g->sp - 1);
+            return errNone;
+        }
+        
         boost::asio::io_service io_service;
         
         boost::asio::ip::udp::resolver resolver(io_service);
-        boost::asio::ip::udp::resolver::query query(boost::asio::ip::host_name(),"");
+        boost::asio::ip::udp::resolver::query query(boost::asio::ip::host_name(),"",boost::asio::ip::resolver_query_base::numeric_service);
         boost::asio::ip::udp::resolver::iterator it=resolver.resolve(query);
         
         while(it!=boost::asio::ip::udp::resolver::iterator())
@@ -886,13 +893,6 @@ int prMatchLangIP(VMGlobals *g, int numArgsPushed)
                 return errNone;
             }
             
-        }
-        
-        std::string loopback ("127.0.0.1");
-        // check for loopback address
-        if (!loopback.compare(ipstring)) {
-            SetTrue(g->sp - 1);
-            return errNone;
         }
     }
     catch(std::exception &e)

@@ -1,5 +1,4 @@
 CLASS:: NumberBox
-redirect:: implClass
 summary:: A view displaying a modifiable numerical value.
 categories:: GUI>Views
 
