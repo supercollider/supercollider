@@ -237,6 +237,7 @@ HIDFunc : AbstractResponderFunc {
         ^super.new.initUsage( func, elUsageName, devUsageName, deviceInfo, argTemplate, dispatcher ? defaultDispatchers[\usage] );
 	}
 
+    // FIXME: this should just filter by devicename, rather than IDs
     *usageID { arg func, elUsageID, elPageID, devUsageID, devPageID, deviceInfo, argTemplate, dispatcher;
         ^super.new.initUsageID(func, elUsageID, elPageID, devUsageID, devPageID, deviceInfo, argTemplate, dispatcher ? defaultDispatchers[ \usageID ]);
 	}
