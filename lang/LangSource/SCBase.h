@@ -57,7 +57,7 @@ SC_DLLEXPORT_C void schedRun();
 SC_DLLEXPORT_C void schedStop();
 SC_DLLEXPORT_C void schedClear();
 
-SC_DLLEXPORT_C bool compileLibrary();
+SC_DLLEXPORT_C bool compileLibrary(bool standalone);
 SC_DLLEXPORT_C void runLibrary(struct PyrSymbol* selector);
 SC_DLLEXPORT_C void runInterpreter(struct VMGlobals *g, struct PyrSymbol *selector, int numArgsPushed);
 
