@@ -149,7 +149,7 @@ private:
     parameter_index_map_t parameter_map;
 
     graph_t graph;
-    std::uint16_t buffer_count;
+    unsigned int buffer_count;
     calc_units_t calc_unit_indices; /**< indices of the units, that need to be calculated */
     std::size_t memory_requirement_;
 };

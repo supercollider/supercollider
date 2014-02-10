@@ -135,7 +135,7 @@ ProxyMonitorGui {
 			nameView = DragBoth(zone, Rect(0,0, nameWid, height));
 			nameView.font_(font).align_(0).resize_(3)
 				.setBoth_(false)
-				.receiveDragHandler = { this.proxy_(View.implClass.currentDrag) };
+				.receiveDragHandler = { this.proxy_(View.currentDrag) };
 		};
 
 		if (usesPausSend) {
@@ -171,7 +171,15 @@ ProxyMonitorGui {
 	makeWatcher {
 		skipjack.stop;
 		skipjack = SkipJack({ this.updateAll },
-			0.5, 			{ win.isClosed },			("ProxyMon" + try { proxy.key }).asSymbol		);		skipjack.start;	}		updateAll {		var monitor, outs, amps, newHasSeriesOut;
+			0.5,
+			{ win.isClosed },
+			("ProxyMon" + try { proxy.key }).asSymbol
+		);
+		skipjack.start;
+	}
+
+	updateAll {
+		var monitor, outs, amps, newHasSeriesOut;
 
 		var currState;
 		var currVol=0, pxname='<no proxy>', isAudio=false, plays=0, playsSpread=false, pauses=0, canSend=0;

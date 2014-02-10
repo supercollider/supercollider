@@ -19,16 +19,29 @@ ProxyMixer : JITGui {
 		// backwards compatibility
 	proxyspace { ^object }
 	proxyspace_ { |obj| this.object_(obj) }
-	editor { ^editGui }
-	pxMons { ^arGuis }		// should work in some cases
 
-	highlightSlots { |parOffset, num|
-		var onCol = Color(1, 0.5, 0.5);
-		var offCol = Color.clear;
-		{ arGuis.do { |argui, i|
-			var col = if (i >= parOffset and: (i < (parOffset + num).max(0)), onCol, offCol);
-			argui.nameView.background_(col.green_([0.5, 0.7].wrapAt(i - parOffset div: 2)));
-		} }.defer;
+	highlight { |index, prefix|
+		arGuis[index].highlightName(prefix);
+	}
+
+	unhighlight {|index|
+		arGuis[index].unhighlightName;
+	}
+
+	highlightSlots { |parOffset, num, highNames=#[], clearOthers = true|
+		var onCol = skin.onColor2;
+		var offCol = skin.offColor;
+		var highIndices = (0..num-1) + parOffset;
+
+		{
+			arGuis.do { |argui, i|
+				if (highIndices.includes(i)) {
+					argui.highlightName(highNames[i - parOffset] ? "");
+				} {
+					if (clearOthers) { argui.unhighlightName; };
+				};
+			};
+		}.defer;
 	}
 
 	title { ^this.parent.name }
@@ -42,29 +55,46 @@ ProxyMixer : JITGui {
 		^super.new(obj, numItems, parent, bounds, makeSkip, options);
 	}
 
-	setDefaults {
+	* small { |obj, numItems = 16, parent, bounds, makeSkip = true|
+		^this.new(obj, numItems, parent, bounds, makeSkip, [\small]);
+	}
+
+	setDefaults { |options|
 		var width = 600;
-		var height = numItems * skin.buttonHeight + skin.headHeight + 20;
+		var height = numItems * skin.buttonHeight + skin.headHeight + 25;
 
 		skin = GUI.skins.jit;
 		font = Font(*skin.fontSpecs);
 
 		defPos = 10@260;
 
-		sizes = (
-			small: (446 @ height),
-			mid: (676 @ height),
-			big: (1090 @ height)
-		);
+		if (options.notNil and: { options.includes(\small) }) {
+			sizes = (
+				small: (396 @ height),
+				mid: (626 @ height),
+				big: (800 @ height)
+			);
+		} {
+			sizes = (
+				small: (446 @ height),
+				mid: (676 @ height),
+				big: (1080 @ height)
+			);
+		};
+
 		minSize = sizes[\big];
 	}
 
-	makeViews {
+	makeViews { |options|
+		var isSmall = options.notNil and: { options.includes(\small) };
+		var openEditBut;
+		var arZoneWidth = if (isSmall, 444 - 50, 444);
+
 		parent.bounds_(parent.bounds.extent_(sizes[\mid] + (8@8)));
 
-		zone.decorator.gap_(6@6);
+		zone.decorator.gap_(4@4);
 		zone.resize_(1).background_(Color.grey(0.7));
-		arZone = CompositeView(zone, Rect(0, 0, 444, sizes[\mid].y ))
+		arZone = CompositeView(zone, Rect(0, 0, arZoneWidth, sizes[\mid].y ))
 			.background_(skin.foreground);
 		arZone.addFlowLayout(skin.margin, skin.gap);
 
@@ -72,20 +102,30 @@ ProxyMixer : JITGui {
 			.background_(skin.foreground);
 		krZone.addFlowLayout(skin.margin, skin.gap);
 
-		editZone = CompositeView(zone, Rect(0, 0, 400, sizes[\mid].y ))
-			.background_(skin.foreground);
-		editZone.addFlowLayout(skin.margin, skin.gap);
-
 		this.makeTopLine;
+		openEditBut = arZone.children[4];
+
 		arZone.decorator.nextLine.shift(0, 10);
-		this.makeArZone;
+		this.makeArZone(isSmall);
 
 		this.makeKrZone;
-		this.setEdButs;
+		this.setEdButs(isSmall);
+
+		if (isSmall) {
+			// put editGui in the same place as krZone
+			zone.decorator.left_(krZone.bounds.left).top_(krZone.bounds.top);
+				// change openEditButton action:
+			openEditBut.action = { |but| this.switchSize(but.value, true) };
+		};
+
+		editZone = CompositeView(zone, Rect(0, 0, 400, sizes[\mid].y ))
+			.background_(skin.foreground);
+		editZone.addFlowLayout(0@0, 0@0);
+
+		if (isSmall) { editZone.visible_(false) };
 
 		this.makeEditZone;
 
-		this.switchSize(1); // show kr proxies, but not editor
 	}
 
 	makeTopLine {
@@ -97,15 +137,15 @@ ProxyMixer : JITGui {
 
 		Button(arZone, Rect(10, 10, 50, skin.headHeight))
 				.states_(
-					[["reduce", skin.fontcolor, Color.clear]]				)
+					[["reduce", skin.fontcolor, skin.offColor]]				)
 				.action_({ object !? { object.reduce } }).font_(font);
 		Button(arZone, Rect(10, 10, 30, skin.headHeight))
 				.states_(
-					[["doc", skin.fontcolor, Color.clear]]				)
+					[["doc", skin.fontcolor, skin.offColor]]				)
 				.action_({ object !? { object.document } }).font_(font);
 		Button(arZone, Rect(10, 10, 45, skin.headHeight))
 				.states_(
-					[["docSel", skin.fontcolor, Color.clear]]				)
+					[["docSel", skin.fontcolor, skin.offColor]]				)
 				.action_({
 					object !? { object.document(this.selectedKeys) }
 				}).font_(font);
@@ -113,9 +153,9 @@ ProxyMixer : JITGui {
 		Button(arZone, Rect(10, 10, 60, skin.headHeight))
 				.font_(font)
 				.states_([
-						["openKr", skin.fontcolor, Color.clear],
-						["openEdit", skin.fontcolor, Color.clear],
-						["closeEdit", skin.fontcolor, Color.clear]
+						["openKr", skin.fontcolor, skin.offColor],
+						["openEdit", skin.fontcolor, skin.offColor],
+						["closeEdit", skin.fontcolor, skin.offColor]
 					])
 				.value_(1)
 				.action_({ |b| this.switchSize(b.value) });
@@ -123,16 +163,23 @@ ProxyMixer : JITGui {
 		Button(arZone, Rect(10, 10, 50, skin.headHeight))
 				.font_(font)
 				.states_(
-					[	["Record", Color.red, Color.clear]					])
+					[	["Record", Color.red, skin.offColor]					])
 				.action_({ RecordProxyMixer(this, parent.bounds.resizeTo(472, 100)) });
 
 	}
 
-	switchSize { |index|
-		parent.bounds_(parent.bounds.extent_(sizes[[\small, \mid, \big][index]] + (8@12)));
+	switchSize { |index, hideZones = false|
+		parent.bounds_(parent.bounds.extent_(sizes[[\small, \mid, \big][index]] + (6@10)));
+		if (hideZones) {
+			index.asInteger.switch(
+				0, { krZone.visible_(false); editZone.visible_(false) },
+				1, { krZone.visible_(true);  editZone.visible_(false) },
+				2, { krZone.visible_(false); editZone.visible_(true)  }
+			);
+		};
 	}
 
-	setEdButs {
+	setEdButs { |isSmall = false|
 		(arGuis ++ krGuis).do { |pxgui|
 			pxgui.edBut.states_([
 					["ed", Color.black, Color.grey(0.75)],
@@ -142,7 +189,7 @@ ProxyMixer : JITGui {
 					if (mod.notNil and: { mod.isAlt }) {
 						NdefGui(pxgui.object);
 					} {
-						this.switchSize(2);
+						this.switchSize(2, isSmall);
 						editGui.object_(pxgui.object);
 						arGuis.do { |gui| gui.edBut.value_(0) };
 						krGuis.do { |gui| gui.edBut.value_(0) };
@@ -152,7 +199,8 @@ ProxyMixer : JITGui {
 		};
 	}
 
-	makeArZone {
+	makeArZone { |isSmall = false|
+		var ndefOptions = if (isSmall) { NdefGui.audioSm } { NdefGui.audio };
 		var arLayout = arZone.decorator;
 
 		var dim = ((arZone.bounds.width - 20)@skin.buttonHeight);
@@ -160,7 +208,9 @@ ProxyMixer : JITGui {
 		arLayout.nextLine;
 		arLayout.shift(0,4);
 
-		arGuis = numItems.collect { NdefGui(nil, 0, arZone, dim, makeSkip: false, options: NdefGui.audio) };
+		arGuis = numItems.collect {
+			NdefGui(nil, 0, arZone, dim, makeSkip: false, options: ndefOptions)
+		};
 
 		arLayout.top_(40).left_(arZone.bounds.width - 15);
 		arScroller = EZScroller.new(arZone,

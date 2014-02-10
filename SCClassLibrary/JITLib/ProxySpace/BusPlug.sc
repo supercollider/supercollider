@@ -231,7 +231,7 @@ BusPlug : AbstractFunction {
 	}
 
 	scope { | bufsize = 4096, zoom |
-		if(this.isNeutral.not) { ^bus.scope(bufsize, zoom) }
+		if(this.isNeutral.not) { ^bus.scope(bufsize, zoom) } { "Can't scope unintitialized bus".warn }
 	}
 
 

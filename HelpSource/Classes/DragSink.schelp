@@ -1,5 +1,4 @@
 class:: DragSink
-redirect:: implClass
 summary:: A simple drag-and-drop receiver.
 categories:: GUI>Views
 related:: Classes/DragBoth, Classes/DragSource

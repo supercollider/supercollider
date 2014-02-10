@@ -20,10 +20,10 @@ argument::numChannels
 Number of channels that the buffer will be. This must be a fixed
 integer. The architechture of the SynthDef cannot change after it
 is compiled.
-warning::
+note::
 If you supply a  code::bufnum::  of a buffer that has a
 different  code::numChannels::  then you have specified to
-the BufRd, it will fail silently.
+the BufRd, it will post a warning and output the channels it can.
 ::
 
 argument::bufnum

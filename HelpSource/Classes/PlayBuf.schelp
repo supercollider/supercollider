@@ -18,9 +18,9 @@ is compiled.
 
 argument::bufnum
 The index of the buffer to use.
-warning::
+note::
 If you supply a bufnum of a buffer with a differing number of channels
-than the one specified in this PlayBuf, it will fail silently.
+than the one specified in this PlayBuf, it will post a warning and output the channels it can.
 ::
 
 argument::rate

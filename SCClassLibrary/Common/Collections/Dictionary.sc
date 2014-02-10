@@ -426,6 +426,19 @@ IdentityDictionary : Dictionary {
 		^this.class.new(this.size, nil, frozenParent, know)
 	}
 
+	insertParent { arg newParent, insertionDepth = 0, reverseInsertionDepth = inf;
+		if(parent.isNil) { parent = newParent; ^this };
+		if(insertionDepth > 0) { parent.insertParent(newParent, insertionDepth - 1, reverseInsertionDepth); ^this };
+		newParent.insertParent(parent, reverseInsertionDepth, inf); // insert current parent back into new parent
+		parent = newParent;
+	}
+
+	storeItemsOn { arg stream, itemsPerLine = 5;
+		super.storeItemsOn(stream, itemsPerLine);
+		if(proto.notNil) { stream << "\n.proto_(" <<< proto << ")" };
+		if(parent.notNil) { stream << "\n.parent_(" <<< parent << ")" };
+	}
+
 	doesNotUnderstand { arg selector ... args;
 		var func;
 		if (know) {

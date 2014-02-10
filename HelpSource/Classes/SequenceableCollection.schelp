@@ -206,6 +206,54 @@ a.take(12);
 a;
 ::
 
+method::obtain
+Retrieve an element from a given index (like link::Classes/SequenceableCollection#-at::). This method is also implemented in link::Classes/Object::, so that you can use it in situations where you don't want to know if the receiver is a collection or not. See also: link::Classes/SequenceableCollection#-instill::
+
+argument::index
+The index at which to look for an element
+
+argument::default
+If index exceeds collection size, or receiver is nil, return this instead
+
+code::
+(
+a = [10, 20, 30];
+b = [10, 20];
+c = 7;
+);
+
+ // obtain third element, if outside bounds return 1
+a.obtain(2, 1);
+b.obtain(2, 1);
+c.obtain(2, 1);
+::
+
+method::instill
+Put an element at a given index (like link::Classes/SequenceableCollection#-put::). This method is also implemented in link::Classes/Object::, so that you can use it in situations where you don't want to know if the receiver is a collection or not. It will always return a new collection. See also: link::Classes/SequenceableCollection#-obtain::
+
+argument::index
+The index at which to put the item
+
+argument::item
+The object to put into the new collection
+
+argument::default
+If the index exceeds the current collection's size, extend the collection with this element
+
+code::
+(
+a = [10, 20, 30, 40];
+b = [10, 20];
+c = 7;
+);
+
+a.instill(2, -1);
+b.instill(2, -1);
+c.instill(2, -1);
+// providing a default value
+c.instill(2, -1, 0);
+::
+
 method::keep
 Keep the first strong::n:: items of the array. If strong::n:: is negative, keep the last -strong::n:: items.
 code::

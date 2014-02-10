@@ -797,10 +797,6 @@ bool PyrGC::SanityCheck2()
 	return mNumGrey == numgrey;
 }
 
-#ifdef SC_DARWIN
-	#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
 bool PyrGC::SanityCheck()
 {
 	if (!mRunning) return true;

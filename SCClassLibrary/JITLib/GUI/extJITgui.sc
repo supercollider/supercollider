@@ -1,35 +1,45 @@
 + NodeProxy {
 	gui { | numItems, bounds, preset|
 		// which options to support?
+		numItems = numItems ?? { max(8, this.controlKeys.size) };
 		^NdefGui(this, numItems, nil, bounds, options: preset);
 	}
 }
 
 + ProxySpace {
 	gui { | numItems, bounds, preset|
+		numItems = numItems ?? { max(12, this.envir.size) };
 		^ProxyMixer(this, numItems, nil, bounds, options: preset);
 	}
 }
 
 + Ndef {
-	*gui { |numItems, bounds, preset|
-		^NdefMixer(numItems, nil, bounds, options: preset);
+	*gui { |server, numItems, bounds, preset|
+		var space;
+		server = server ? Server.default;
+		space = all[server.name];
+		numItems = numItems ?? { max(12, try { space.envir.size } ? 0) };
+		^NdefMixer(space, numItems, nil, bounds, options: preset);
 	}
 }
 
 + Tdef {
 	*gui { | numItems, bounds, preset|
+		numItems = numItems ?? { max(12, all.size) };
 		^TdefAllGui(numItems, nil, bounds, options: preset);
 	}
 	gui { | numItems, bounds, preset|
+		numItems = numItems ?? { max(8, this.envir.size) };
 		^TdefGui(this, numItems, nil, bounds, options: preset);
 	}
 }
 + Pdef {
 	*gui { | numItems, bounds, preset|
+		numItems = numItems ?? { max(12, all.size) };
 		^PdefAllGui(numItems, nil, bounds, options: preset);
 	}
 	gui { | numItems, bounds, preset|
+		numItems = numItems ?? { max(8, this.envir.size) };
 		^PdefGui(this, numItems, nil, bounds, options: preset);
 	}
 }
@@ -49,6 +59,7 @@
 		var  numItems, bounds, preset;
 		if(args[0].isNumber,{
 			# numItems, bounds, preset = args;
+			numItems = numItems ?? { max(12, this.size) };
 			^EnvirGui(this, numItems, nil, bounds, options: preset);
 		},{
 			^super.gui(*args)

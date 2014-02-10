@@ -7,7 +7,7 @@ Plot {
 	var <font, <fontColor, <gridColorX, <gridColorY, <>plotColor, <>backgroundColor;
 	var <gridOnX = true, <gridOnY = true, <>labelX, <>labelY;
 
-	var valueCache,pen;
+	var valueCache;
 
 	*initClass {
 		StartUp.add {
@@ -35,18 +35,12 @@ Plot {
 		var fontName;
 		var gui = plotter.gui;
 		var skin = GUI.skin.at(\plot);
-		pen = gui.pen;
 
 		drawGrid = DrawGrid(bounds ? Rect(0,0,1,1),nil,nil);
 		drawGrid.x.labelOffset = Point(0,4);
 		drawGrid.y.labelOffset = Point(-10,0);
 		skin.use {
-			font = ~gridFont ?? { gui.font.default };
-			if(font.class != gui.font) {
-				fontName = font.name;
-				if( gui.font.availableFonts.detect(_ == fontName).isNil, { fontName = gui.font.defaultSansFace });
-				font = gui.font.new(fontName, font.size)
-			};
+			font = ~gridFont ?? { Font.default };
 			this.gridColorX = ~gridColorX;
 			this.gridColorY = ~gridColorY;
 			plotColor = ~plotColor;
@@ -127,26 +121,26 @@ Plot {
 	}
 
 	drawBackground {
-		pen.addRect(bounds);
-		pen.fillColor = backgroundColor;
-		pen.fill;
+		Pen.addRect(bounds);
+		Pen.fillColor = backgroundColor;
+		Pen.fill;
 	}
 
 	drawLabels {
 		var sbounds;
 		if(gridOnX and: { labelX.notNil }) {
 			sbounds = try { labelX.bounds(font) } ? 0;
-			pen.font = font;
-			pen.strokeColor = fontColor;
-			pen.stringAtPoint(labelX,
+			Pen.font = font;
+			Pen.strokeColor = fontColor;
+			Pen.stringAtPoint(labelX,
 				plotBounds.right - sbounds.width @ plotBounds.bottom
 			)
 		};
 		if(gridOnY and: { labelY.notNil }) {
 			sbounds = try { labelY.bounds(font) } ? 0;
-			pen.font = font;
-			pen.strokeColor = fontColor;
-			pen.stringAtPoint(labelY,
+			Pen.font = font;
+			Pen.strokeColor = fontColor;
+			Pen.stringAtPoint(labelY,
 				plotBounds.left - sbounds.width - 3 @ plotBounds.top
 			)
 		};
@@ -158,8 +152,8 @@ Plot {
 	}
 
 	dataCoordinates {
-		 var val = spec.unmap(this.prResampValues);
-		 ^plotBounds.bottom - (val * plotBounds.height); // measures from top left (may be arrays)
+		var val = spec.warp.unmap(this.prResampValues);
+		^plotBounds.bottom - (val * plotBounds.height); // measures from top left (may be arrays)
 	}
 
 	resampledSize {
@@ -176,69 +170,74 @@ Plot {
 		var ycoord = this.dataCoordinates;
 		var xcoord = this.domainCoordinates(ycoord.size);
 
-		pen.width = 1.0;
-		pen.joinStyle = 1;
-		plotColor = plotColor.as(Array);
+		Pen.use {
+			Pen.width = 1.0;
+			Pen.joinStyle = 1;
+			plotColor = plotColor.as(Array);
 
-		if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion
-			ycoord.flop.do { |y, i|
-				pen.beginPath;
-				this.perform(mode, xcoord, y);
-				pen.strokeColor = plotColor.wrapAt(i);
-				pen.stroke;
-			}
-		} {
-			pen.beginPath;
-			pen.strokeColor = plotColor.at(0);
-			this.perform(mode, xcoord, ycoord);
-			pen.stroke;
+			Pen.addRect(plotBounds);
+			Pen.clip; // clip curve to bounds.
+
+			if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion
+				ycoord.flop.do { |y, i|
+					Pen.beginPath;
+					this.perform(mode, xcoord, y);
+					Pen.strokeColor = plotColor.wrapAt(i);
+					Pen.stroke;
+				}
+			} {
+				Pen.beginPath;
+				Pen.strokeColor = plotColor.at(0);
+				this.perform(mode, xcoord, ycoord);
+				Pen.stroke;
+			};
+			Pen.joinStyle = 0;
 		};
-		pen.joinStyle = 0;
 
 	}
 
 	// modes
 
 	linear { |x, y|
-		pen.moveTo(x.first @ y.first);
+		Pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
-			pen.lineTo(x[i] @ y[i]);
+			Pen.lineTo(x[i] @ y[i]);
 		}
 	}
 
 	points { |x, y|
 		var size = min(bounds.width / value.size * 0.25, 4);
 		y.size.do { |i|
-			pen.addArc(x[i] @ y[i], 0.5, 0, 2pi);
-			if(size > 2) { pen.addArc(x[i] @ y[i], size, 0, 2pi); };
+			Pen.addArc(x[i] @ y[i], 0.5, 0, 2pi);
+			if(size > 2) { Pen.addArc(x[i] @ y[i], size, 0, 2pi); };
 		}
 	}
 
 	plines { |x, y|
 		var size = min(bounds.width / value.size * 0.25, 3);
-		pen.moveTo(x.first @ y.first);
+		Pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
 			var p = x[i] @ y[i];
-			pen.lineTo(p);
-			pen.addArc(p, size, 0, 2pi);
-			pen.moveTo(p);
+			Pen.lineTo(p);
+			Pen.addArc(p, size, 0, 2pi);
+			Pen.moveTo(p);
 		}
 	}
 
 	levels { |x, y|
-		pen.smoothing_(false);
+		Pen.smoothing_(false);
 		y.size.do { |i|
-			pen.moveTo(x[i] @ y[i]);
-			pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+			Pen.moveTo(x[i] @ y[i]);
+			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
 		}
 	}
 
 	steps { |x, y|
-		pen.smoothing_(false);
-		pen.moveTo(x.first @ y.first);
+		Pen.smoothing_(false);
+		Pen.moveTo(x.first @ y.first);
 		y.size.do { |i|
-			pen.lineTo(x[i] @ y[i]);
-			pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+			Pen.lineTo(x[i] @ y[i]);
+			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
 		}
 	}
 
@@ -384,17 +383,10 @@ Plotter {
 		var btnBounds;
 		parent = argParent ? parent;
 		bounds = argBounds ? bounds;
-		gui = GUI.current;
 		if(parent.isNil) {
-			parent = gui.window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
-			if(GUI.skin.at(\plot).at(\expertMode).not) {
-				btnBounds = this.makeButtons;
-				bounds = parent.view.bounds.insetAll(8,8,btnBounds.width + 4,8);
-			}{
-				bounds = parent.view.bounds.insetBy(8);
-			};
-
-			interactionView = gui.userView.new(parent, bounds);
+			parent = Window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
+			bounds = parent.view.bounds.insetBy(8);
+			interactionView = UserView.new(parent, bounds);
 
 			interactionView.drawFunc = { this.draw };
 			parent.front;
@@ -402,143 +394,126 @@ Plotter {
 
 		} {
 			bounds = bounds ?? { parent.bounds.moveTo(0, 0) };
-			interactionView = gui.userView.new(parent, bounds);
+			interactionView = UserView.new(parent, bounds);
 			interactionView.drawFunc = { this.draw };
 		};
 		modes = [\points, \levels, \linear, \plines, \steps].iter.loop;
 
 		interactionView
-			.background_(Color.clear)
-			.focusColor_(Color.clear)
-			.resize_(5)
-			.focus(true)
-			.mouseDownAction_({ |v, x, y, modifiers|
-				cursorPos = x @ y;
-				if(superpose.not) {
-					editPlotIndex = this.pointIsInWhichPlot(cursorPos);
-					editPlotIndex !? {
-						editPos = x @ y; // new Point instead of cursorPos!
-						if(editMode) {
-							plots.at(editPlotIndex).editData(x, y, editPlotIndex);
-							if(this.numFrames < 200) { this.refresh };
-						};
-					}
-				};
-				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
-			})
-			.mouseMoveAction_({ |v, x, y, modifiers|
-				cursorPos = x @ y;
-				if(superpose.not && editPlotIndex.notNil) {
+		.background_(Color.clear)
+		.focusColor_(Color.clear)
+		.resize_(5)
+		.focus(true)
+		.mouseDownAction_({ |v, x, y, modifiers|
+			cursorPos = x @ y;
+			if(superpose.not) {
+				editPlotIndex = this.pointIsInWhichPlot(cursorPos);
+				editPlotIndex !? {
+					editPos = x @ y; // new Point instead of cursorPos!
 					if(editMode) {
-						plots.at(editPlotIndex).editDataLine(editPos, cursorPos, editPlotIndex);
+						plots.at(editPlotIndex).editData(x, y, editPlotIndex);
 						if(this.numFrames < 200) { this.refresh };
 					};
-					editPos = x @ y;  // new Point instead of cursorPos!
-
+				}
+			};
+			if(modifiers.isAlt) { this.postCurrentValue(x, y) };
+		})
+		.mouseMoveAction_({ |v, x, y, modifiers|
+			cursorPos = x @ y;
+			if(superpose.not && editPlotIndex.notNil) {
+				if(editMode) {
+					plots.at(editPlotIndex).editDataLine(editPos, cursorPos, editPlotIndex);
+					if(this.numFrames < 200) { this.refresh };
 				};
-				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
-			})
-			.mouseUpAction_({
-				cursorPos = nil;
-				editPlotIndex = nil;
-				if(editMode && superpose.not) { this.refresh };
-			})
-			.keyDownAction_({ |view, char, modifiers, unicode, keycode|
-				if(modifiers.isCmd.not) {
-					switch(char,
-						// y zoom out / font zoom
-						$-, {
-							if(modifiers.isCtrl) {
-								plots.do(_.zoomFont(-2));
-							} {
-								this.specs = specs.collect(_.zoom(3/2));
-								normalized = false;
-							}
-						},
-						// y zoom in / font zoom
-						$+, {
-							if(modifiers.isCtrl) {
-								plots.do(_.zoomFont(2));
-							} {
-								this.specs = specs.collect(_.zoom(2/3));
-								normalized = false;
-							}
-						},
-						// compare plots
-						$=, {
-							this.calcSpecs(separately: false);
-							this.updatePlotSpecs;
+				editPos = x @ y;  // new Point instead of cursorPos!
+
+			};
+			if(modifiers.isAlt) { this.postCurrentValue(x, y) };
+		})
+		.mouseUpAction_({
+			cursorPos = nil;
+			editPlotIndex = nil;
+			if(editMode && superpose.not) { this.refresh };
+		})
+		.keyDownAction_({ |view, char, modifiers, unicode, keycode|
+			if(modifiers.isCmd.not) {
+				switch(char,
+					// y zoom out / font zoom
+					$-, {
+						if(modifiers.isCtrl) {
+							plots.do(_.zoomFont(-2));
+						} {
+							this.specs = specs.collect(_.zoom(7/5));
 							normalized = false;
-						},
-
-						/*// x zoom out (doesn't work yet)
-						$*, {
-							this.domainSpecs = domainSpecs.collect(_.zoom(3/2));
-						},
-						// x zoom in (doesn't work yet)
-						$_, {
-							this.domainSpecs = domainSpecs.collect(_.zoom(2/3))
-						},*/
-
-						// normalize
-
-						$n, {
-							if(normalized) {
-								this.specs = specs.collect(_.normalize)
-							} {
-								this.calcSpecs;
-								this.updatePlotSpecs;
-							};
-							normalized = normalized.not;
-						},
-
-						// toggle grid
-						$g, {
-							plots.do { |x| x.gridOnY = x.gridOnY.not }
-						},
-						// toggle domain grid
-						$G, {
-							plots.do { |x| x.gridOnX = x.gridOnX.not };
-						},
-						// toggle plot mode
-						$m, {
-							this.plotMode = modes.next;
-						},
-						// toggle editing
-						$e, {
-							editMode = editMode.not;
-							"plot edit mode %\n".postf(if(editMode) { "on" } { "off" });
-						},
-						// toggle superposition
-						$s, {
-							this.superpose = this.superpose.not;
 						}
-					);
-					parent.refresh;
-				};
-			});
+					},
+					// y zoom in / font zoom
+					$+, {
+						if(modifiers.isCtrl) {
+							plots.do(_.zoomFont(2));
+						} {
+							this.specs = specs.collect(_.zoom(5/7));
+							normalized = false;
+						}
+					},
+					// compare plots
+					$=, {
+						this.calcSpecs(separately: false);
+						this.updatePlotSpecs;
+						normalized = false;
+					},
+
+					/*// x zoom out (doesn't work yet)
+					$*, {
+					this.domainSpecs = domainSpecs.collect(_.zoom(3/2));
+					},
+					// x zoom in (doesn't work yet)
+					$_, {
+					this.domainSpecs = domainSpecs.collect(_.zoom(2/3))
+					},*/
+
+					// normalize
+
+					$n, {
+						if(normalized) {
+							this.specs = specs.collect(_.normalize)
+						} {
+							this.calcSpecs;
+							this.updatePlotSpecs;
+						};
+						normalized = normalized.not;
+					},
+
+					// toggle grid
+					$g, {
+						plots.do { |x| x.gridOnY = x.gridOnY.not }
+					},
+					// toggle domain grid
+					$G, {
+						plots.do { |x| x.gridOnX = x.gridOnX.not };
+					},
+					// toggle plot mode
+					$m, {
+						this.plotMode = modes.next;
+					},
+					// toggle editing
+					$e, {
+						editMode = editMode.not;
+						"plot edit mode %\n".postf(if(editMode) { "on" } { "off" });
+					},
+					// toggle superposition
+					$s, {
+						this.superpose = this.superpose.not;
+					},
+					// print
+					$p, {
+						this.print
+					}
+				);
+				parent.refresh;
+			};
+		});
 	}
-
-	makeButtons {
-		var string = "?";
-		var font = gui.font.sansSerif( 9 );
-		var bounds = string.bounds(font);
-		var padding = 8; // ensure that string is not clipped by round corners
-
-		bounds.width = bounds.width + padding;
-		bounds.height = bounds.height + padding;
-		bounds = bounds.moveTo( parent.view.bounds.right - bounds.width - 2, 8 );
-
-		gui.button.new(parent, bounds)
-		.states_([["?"]])
-		.focusColor_(Color.clear)
-		.font_(font)
-		.resize_(3)
-		.action_ { this.class.openHelpFile };
-
-		^bounds;
-	}
-
 
 	value_ { |arrays|
 		this.setValue(arrays, findSpecs, true)
@@ -573,19 +548,25 @@ Plotter {
 	}
 
 	draw {
-		var b;
-		b = this.interactionView.bounds;
+		var b = this.interactionView.bounds;
 		if(b != bounds) {
 			bounds = b;
 			this.updatePlotBounds;
 		};
-		gui.pen.use {
+		Pen.use {
 			plots.do { |plot| plot.draw };
 		}
 	}
 
 	drawBounds {
 		^bounds.moveTo(0, 0);
+	}
+
+	print {
+		var printer = QPenPrinter.new;
+		printer.showDialog {
+			printer.print { this.draw }
+		} { "printing canceled".postln }
 	}
 
 	// subviews
@@ -701,7 +682,7 @@ Plotter {
 	getDataPoint { |x, y|
 		var plotIndex = this.pointIsInWhichPlot(x @ y);
 		^plotIndex !? {
-				plots.at(plotIndex).getDataPoint(x)
+			plots.at(plotIndex).getDataPoint(x)
 		}
 	}
 
@@ -712,7 +693,7 @@ Plotter {
 	editData { |x, y|
 		var plotIndex = this.pointIsInWhichPlot(x @ y);
 		plotIndex !? {
-				plots.at(plotIndex).editData(x, y, plotIndex);
+			plots.at(plotIndex).editData(x, y, plotIndex);
 		};
 	}
 
@@ -894,7 +875,7 @@ Plotter {
 	plot { |size = 400, bounds, minval, maxval, name|
 		var plotLabel = if (name.isNil) { "envelope plot" } { name };
 		var plotter = [this.asMultichannelSignal(size).flop]
-			.plot(name, bounds, minval: minval, maxval: maxval);
+		.plot(name, bounds, minval: minval, maxval: maxval);
 
 		var duration     = this.duration.asArray;
 		var channelCount = duration.size;
@@ -910,7 +891,7 @@ Plotter {
 
 + AbstractFunction {
 	plotGraph { arg n=500, from = 0.0, to = 1.0, name, bounds, discrete = false,
-				numChannels, minval, maxval, parent, labels = true;
+		numChannels, minval, maxval, parent, labels = true;
 		var array = Array.interpolation(n, from, to);
 		var res = array.collect { |x| this.value(x) };
 		res.plot(name, bounds, discrete, numChannels, minval, maxval, parent, labels)

@@ -66,8 +66,9 @@ static int getNSObjectForSCObject(PyrSlot *scobject, id *returnID, VMGlobals *g)
     } else if(isKindOfSlot(scobject, s_string->u.classobj)) { // it's a string
         PyrString *string = slotRawString(scobject);
         if(string->size == 0) { *returnID = NULL; return errFailed; }
-        NSString *returnString = [NSString stringWithCString: string->s encoding:NSUTF8StringEncoding];
-        returnObject = [returnString substringToIndex: string->size];
+        char cstring[string->size + 1];
+        slotStrVal(scobject, cstring, string->size + 1);
+        returnObject = [NSString stringWithCString:cstring encoding:NSUTF8StringEncoding];
     } else if(isKindOfSlot(scobject, s_color->u.classobj)) { // it's a color
         PyrSlot *slots = slotRawObject(scobject)->slots;
         
@@ -113,7 +114,7 @@ static int getNSObjectForSCObject(PyrSlot *scobject, id *returnID, VMGlobals *g)
             [structure addObject: innerSCObject];
         }
         returnObject = structure;
-    } else if(isKindOfSlot(scobject, SC_CLASS(QImage))) { // it's an image
+    } else if(isKindOfSlot(scobject, SC_CLASS(Image))) { // it's an image
         SharedImage *img = reinterpret_cast<SharedImage*>( slotRawPtr( slotRawObject(scobject)->slots+0 ) );
         if((*img)->isPainting()) { *returnID = NULL; return errFailed; }
         QPixmap pixmap = (*img)->pixmap();
@@ -220,7 +221,7 @@ static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type, VM
         CGImageRef cgImage = [nsimage CGImageForProposedRect:NULL context:NULL hints:NULL];
         QPixmap pixmap = QPixmap::fromMacCGImageRef (cgImage);
         
-        PyrObject* imageObj = instantiateObject(g->gc, SC_CLASS(QImage), 0, false, true);
+        PyrObject* imageObj = instantiateObject(g->gc, SC_CLASS(Image), 0, false, true);
         
         Image *image = new Image;
         image->setPixmap(pixmap);

@@ -67,7 +67,7 @@ void SendFailure(ReplyAddress *inReply, const char *inCommandName, const char *e
 	SendReply(inReply, packet.data(), packet.size());
 }
 
-void SendFailureWithBufnum(ReplyAddress *inReply, const char *inCommandName, const char *errString, uint32 index)
+void SendFailureWithIntValue(ReplyAddress *inReply, const char *inCommandName, const char *errString, uint32 index)
 {
 	small_scpacket packet;
 	packet.adds("/fail");

@@ -46,6 +46,8 @@ void null_reply_func(struct ReplyAddress* addr, char* msg, int size);
 
 bool operator==(const ReplyAddress& a, const ReplyAddress& b);
 
+bool operator<(const ReplyAddress& a, const ReplyAddress& b);
+
 inline void SendReply(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
 {
 	(inReplyAddr->mReplyFunc)(inReplyAddr, inBuf, inSize);

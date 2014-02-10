@@ -1,5 +1,4 @@
 class:: Font
-redirect:: implClass
 summary:: A font object
 categories:: GUI>Accessories
 
@@ -78,7 +77,7 @@ argument:: font
 An instance of Font.
 
 argument:: class
-A Class (either QView or one of its subclasses), or code::nil::.
+A Class (either View or one of its subclasses), or code::nil::.
 
 method:: sansSerif
 Create a new sans serif face Font.

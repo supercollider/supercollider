@@ -1,7 +1,7 @@
 EZSlider : EZGui {
 
-	var <sliderView, <numberView, <unitView, <>controlSpec,
-		  popUp=false, numSize,numberWidth,unitWidth, gap;
+	var <sliderView, <numberView, <unitView, <>controlSpec;
+	var numSize,numberWidth,unitWidth;
 	var <>round = 0.001;
 
 	*new { arg parent, bounds, label, controlSpec, action, initVal,
@@ -42,16 +42,16 @@ EZSlider : EZGui {
 
 		// instert the views
 		label.notNil.if{ //only add a label if desired
-			labelView = GUI.staticText.new(view, labelBounds);
+			labelView = StaticText.new(view, labelBounds);
 			labelView.string = label;
 		};
 
 		(unitWidth>0).if{ //only add a unitLabel if desired
-			unitView = GUI.staticText.new(view, unitBounds);
+			unitView = StaticText.new(view, unitBounds);
 		};
 
-		sliderView = GUI.slider.new(view, sliderBounds);
-		numberView = GUI.numberBox.new(view, numBounds);
+		sliderView = Slider.new(view, sliderBounds);
+		numberView = NumberBox.new(view, numBounds);
 
 		// set view parameters and actions
 
@@ -67,7 +67,7 @@ EZSlider : EZGui {
 		};
 
 		sliderView.receiveDragHandler = { arg slider;
-			slider.valueAction = controlSpec.unmap(GUI.view.currentDrag);
+			slider.valueAction = controlSpec.unmap(View.currentDrag);
 		};
 
 		sliderView.beginDragAction = { arg slider;

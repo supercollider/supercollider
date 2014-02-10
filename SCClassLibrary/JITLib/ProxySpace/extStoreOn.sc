@@ -238,7 +238,9 @@
 	}
 
 	document { | includeSettings = true, includeMonitor = true |
-		^this.asCode(includeSettings, includeMonitor).newTextWindow("document :" + this.asCompileString)
+		var nameStr = this.class.asString ++"_" ++ this.key;
+		^this.asCode(includeSettings, includeMonitor)
+			.newTextWindow("document-" ++ nameStr)
 	}
 
 }
@@ -331,7 +333,8 @@
 			//				}
 			//			};
 		};
-		^str.newTextWindow((name ? "proxyspace").asString)
+		// ^str.newTextWindow((name ? "proxyspace").asString)
+		^Document((name ? "proxyspace").asString, str);
 	}
 
 }

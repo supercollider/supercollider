@@ -1,5 +1,5 @@
 /*
-Server.default = s = Server.internal.boot;
+Server.default.boot;
 
 {|in| MoogFF.ar(in, freq: LFCub.kr(0.2).exprange(10, 10000))}.scopeResponse
 {|in| MoogFF.ar(in)}.scopeResponse
@@ -24,15 +24,7 @@ Slew.scopeResponse
 
 		var bus1, bus2, synth, win, fs;
 
-		if (server.isNil) {
-			server = GUI.freqScopeView.server;
-		} {
-			if (server != GUI.freqScopeView.server) {
-				"Function-scopeReponse: resetting GUI.freqScopeView.server".warn;
-				GUI.freqScopeView.server = server;
-			};
-		};
-
+		server = server ? Server.default;
 		if (server.serverRunning.not) {
 			Error("Function-scopeResponse: server not running").throw
 		};
@@ -44,8 +36,8 @@ Slew.scopeResponse
 		// Create the SCFreqScope.response using the same simple window as in the helpfile
 		// Also, onClose must free the synth and the busses
 
-		win = GUI.window.new(label, Rect(100, 100, 511, 300));
-		fs = GUI.freqScopeView.response(win, win.view.bounds, bus1, bus2, freqMode);
+		win = Window.new(label, Rect(100, 100, 511, 300));
+		fs = FreqScopeView.response(win, win.view.bounds, bus1, bus2, freqMode);
 
 		win.onClose_ {
 			fs.kill;

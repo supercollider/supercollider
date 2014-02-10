@@ -1,5 +1,4 @@
 CLASS:: CheckBox
-redirect:: implClass
 summary:: A view that toggles between two states.
 categories:: GUI>Views
 

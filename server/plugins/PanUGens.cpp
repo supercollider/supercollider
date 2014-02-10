@@ -636,18 +636,18 @@ void XFade2_next_aa(XFade2 *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void LinXFade2_Ctor(LinXFade2 *unit)
+void LinXFade2_next_i(LinXFade2 *unit, int inNumSamples)
 {
-	if (INRATE(2) == calc_FullRate) {
-		SETCALC(LinXFade2_next_a);
-	} else {
-		SETCALC(LinXFade2_next_k);
-	}
-	unit->m_pos = ZIN0(2);
-	unit->m_pos = sc_clip(unit->m_pos, -1.f, 1.f);
-	unit->m_amp = unit->m_pos * 0.5f + 0.5f;
+	float *out = ZOUT(0);
+	float *leftin = ZIN(0);
+	float *rightin = ZIN(1);
+	float amp = unit->m_amp;
 
-	LinXFade2_next_a(unit, 1);
+	LOOP1(inNumSamples,
+		float l = ZXP(leftin);
+		float r = ZXP(rightin);
+		ZXP(out) = l + amp * (r - l);
+	);
 }
 
 void LinXFade2_next_k(LinXFade2 *unit, int inNumSamples)
@@ -697,6 +697,72 @@ void LinXFade2_next_a(LinXFade2 *unit, int inNumSamples)
 		ZXP(out) = l + amp * (r - l);
 	);
 }
+
+#ifdef NOVA_SIMD
+
+FLATTEN void LinXFade2_next_i_nova(LinXFade2 *unit, int inNumSamples)
+{
+	float amp = unit->m_amp;
+	nova::mix_vec_simd(OUT(0), IN(0), amp, IN(1), 1.f - amp, inNumSamples);
+}
+
+FLATTEN void LinXFade2_next_k_nova(LinXFade2 *unit, int inNumSamples)
+{
+	float pos = ZIN0(2);
+	float amp = unit->m_amp;
+
+	if (pos != unit->m_pos) {
+		float oldAmpLeft  = amp;
+		float oldAmpRight = 1.f  - amp;
+
+		pos = sc_clip(pos, -1.f, 1.f);
+
+		float nextAmpLeft  = pos * 0.5f + 0.5f;
+		float nextAmpRight = 1.f - nextAmpLeft;
+
+		float leftSlope = CALCSLOPE(nextAmpLeft, oldAmpLeft);
+		float rightSlope = CALCSLOPE(nextAmpRight, oldAmpRight);
+
+		unit->m_amp = nextAmpLeft;
+		unit->m_pos = pos;
+		nova::mix_vec_simd(OUT(0), IN(0), nova::slope_argument(oldAmpLeft, leftSlope),
+						   IN(1), nova::slope_argument(oldAmpRight, rightSlope),
+						   inNumSamples);
+	} else
+		nova::mix_vec_simd(OUT(0), IN(0), amp, IN(1), 1.f - amp, inNumSamples);
+}
+
+#endif
+
+void LinXFade2_Ctor(LinXFade2 *unit)
+{
+	switch (INRATE(2)) {
+	case calc_FullRate:
+		SETCALC(LinXFade2_next_a);
+		break;
+
+	case calc_BufRate:
+		if (!(BUFLENGTH & 15))
+			SETCALC(LinXFade2_next_k_nova);
+		else
+			SETCALC(LinXFade2_next_k);
+		break;
+
+	case calc_ScalarRate:
+		if (!(BUFLENGTH & 15))
+			SETCALC(LinXFade2_next_i_nova);
+		else
+			SETCALC(LinXFade2_next_i);
+		break;
+	}
+
+	unit->m_pos = ZIN0(2);
+	unit->m_pos = sc_clip(unit->m_pos, -1.f, 1.f);
+	unit->m_amp = unit->m_pos * 0.5f + 0.5f;
+
+	LinXFade2_next_a(unit, 1);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 

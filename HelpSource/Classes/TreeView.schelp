@@ -1,5 +1,4 @@
 CLASS:: TreeView
-redirect:: implClass
 summary:: A view displaying a tree of items with columns
 categories:: GUI>Views
 
@@ -7,11 +6,11 @@ DESCRIPTION::
 
 A view that displays a hierarchy of items. It is divided into rows and column: each row represents an item, and each column represents a different data field of the items.
 
-The items are represented in code by instances of link::Classes/QTreeViewItem::, returned by the various TreeView methods. Top level items are added via the TreeView interface, while child items are added via the QTreeViewItem interface, which also allows to manipulate items in more detail after their creation.
+The items are represented in code by instances of link::Classes/TreeViewItem::, returned by the various TreeView methods. Top level items are added via the TreeView interface, while child items are added via the TreeViewItem interface, which also allows to manipulate items in more detail after their creation.
 
 Items can be visually sorted with link::#-sort::, or by clicking on one of the column headers, if link::#-canSort:: is enabled.
 
-Each item can hold other views in each of its data fields, which allows for rich graphical interaction. See link::Classes/QTreeViewItem#-setView::.
+Each item can hold other views in each of its data fields, which allows for rich graphical interaction. See link::Classes/TreeViewItem#-setView::.
 
 
 CLASSMETHODS::
@@ -41,7 +40,7 @@ METHOD:: addItem
 	ARGUMENT:: strings
 		An array of Strings (or nil), each for the text of one data field.
 	RETURNS::
-		An instance of QTreeViewItem representing the new item.
+		An instance of TreeViewItem representing the new item.
 
 METHOD:: insertItem
 	Insert a new top-level item at code::index::.
@@ -51,13 +50,13 @@ METHOD:: insertItem
 	ARGUMENT:: strings
 		An array of Strings (or nil), each for the text of one data field.
 	RETURNS::
-		An instance of QTreeViewItem representing the new item.
+		An instance of TreeViewItem representing the new item.
 
 METHOD:: removeItem
-	Remove the given code::item::. After the item is removed, any usage of the related QTreeViewItems will have no effect.
+	Remove the given code::item::. After the item is removed, any usage of the related TreeViewItems will have no effect.
 
 	ARGUMENT::
-		An instance of QTreeViewItem.
+		An instance of TreeViewItem.
 
 METHOD:: numItems
 	The total number of items.
@@ -69,9 +68,9 @@ METHOD:: currentItem
 	Gets or sets the currently selected item.
 
 	ARGUMENT::
-		An instance of QTreeViewItem.
+		An instance of TreeViewItem.
 	RETURNS::
-		An instance of QTreeViewItem or nil, if no current item.
+		An instance of TreeViewItem or nil, if no current item.
 
 METHOD:: itemAt
 	The item at code::index::.

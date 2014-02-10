@@ -1,5 +1,4 @@
 CLASS:: View
-redirect:: implClass
 summary:: The basic visible element of GUI
 categories:: GUI>Views
 
@@ -22,7 +21,7 @@ note::
 
 strong::Qt GUI: ::
 
-The 'parent' argument may be omitted, in which case the view will be displayed as a window on its own, when link::Classes/QView#-front#shown::.
+The 'parent' argument may be omitted, in which case the view will be displayed as a window on its own, when link::Classes/View#-front#shown::.
 
 The 'bounds' argument may be omitted, in which case the view will be created with its preferred size at position (0,0).
 
@@ -306,7 +305,7 @@ METHOD:: layout
 	Get or set the layout object, that automatically manages the position and the size of the children of the view dynamically, in relation to the view's size. See link::Guides/GUI-Introduction#layouts:: for further explanation.
 
 	argument::
-		An instance of a subclass of QLayout.
+		An instance of a subclass of Layout.
 
 
 

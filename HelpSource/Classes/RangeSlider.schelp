@@ -1,5 +1,4 @@
 CLASS:: RangeSlider
-redirect:: implClass
 summary:: A view consisting of a sliding extendable handle
 categories:: GUI>Views
 

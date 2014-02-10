@@ -1,5 +1,4 @@
 class:: VLayoutView
-redirect:: implClass
 summary:: A container view that arranges its children vertically
 categories:: GUI>Views
 related:: Classes/HLayoutView, Classes/CompositeView

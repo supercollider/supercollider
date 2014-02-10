@@ -1,6 +1,6 @@
 class:: MonitorGui
 summary:: display and control a Monitor
-categories:: Libraries>JITLib>GUI
+categories:: Libraries>JITLib>GUI, Live Coding
 related:: Classes/NodeProxy, Classes/Ndef, Classes/JITGui, Classes/NdefGui
 
 description::
@@ -22,10 +22,13 @@ m.object_(Ndef(\k));
 	// with an ar proxy, it is enabled
 m.object_(Ndef(\a));
 
+
 	// show its play state
-Ndef(\a).play		//
+Ndef(\a).play
 	// and volume
 Ndef(\a).vol_(0.25);
+
+	// NOTE: shift-clicking the play button opens a playN dialog!
 
 Ndef(\a).stop;
 Ndef(\a).play(0);
@@ -102,5 +105,25 @@ a numberbox for setting monitor fadeTime.
 
 subsection::Some Methods
 
+strong::Making various gui elements: ::
+
+method::makeViews
+method::makeVol
+method::makeNameView
+method::makePlayOut
+method::makeFade
+
+strong::Standard JITGui methods: ::
+
+method::setDefaults
+create default layout sizes
+
+method::accepts
+accepts nil or NodeProxy
+
+method::getState
+get the object's current state
+
 method::checkUpdate
 compare previous state with current state, and update gui elements.
+

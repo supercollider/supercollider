@@ -36,7 +36,8 @@ Env {
 			\sqr -> 6,
 			\squared -> 6,
 			\cub -> 7,
-			\cubed -> 7
+			\cubed -> 7,
+			\hold -> 8,
 		];
 		shapeNames.freeze;
 	}

@@ -4,16 +4,17 @@ categories:: GUI>Interfaces
 related:: Classes/History
 
 DESCRIPTION::
+
+HistoryGui allows easy access to History as it happens: one can read recent lines, when they were written and by whom; one can search for text strings and by author names; and one can quickly grab lines of code for rewriting. Apart from documenting just in time programming sessions, all of this can be useful in live coding performances. See e.g. the system developed by powerbooks_unplugged: link::Republic:: 
+
 The gui elements in detail:
 DEFINITIONLIST::
-## button start || stops and starts History emphasis::if:: code::gui.history:: is current.
-## popUp sameDoc/newDoc || switches whether the code::postDoc:: method posts to old post-doc window or new.
-## button closeAll || closes all documents called "History repeats".
-## button closeOld || closes only those created from this gui, except the latest.
+## button start/end || starts and ends History emphasis::if:: code::gui.history:: is current.
 
-## button X/- || turns filtering on/off.
-## popup \all || selects which key to search for (only useful if networked)
-## textview || allows for typing in search string.
+## button all/filt || turns filtering on/off.
+## popup all/... || selects which name key to search for (useful if networked)
+## textview || allows for typing in a search string.
+## button top/keep || sets mode whether listview stays on top line, or keeps sticking to the selected line.
 
 ## listview || shows either all code::lineShorts::, or the filtered code::lineShorts::; selecting them in listview makes them come appear in post-doc window.
 ::

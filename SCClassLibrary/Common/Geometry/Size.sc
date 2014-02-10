@@ -7,19 +7,24 @@ Size {
 
 	asSize { ^this }
 
-	asRect { ^Rect(0,0,width,height); }
+	asRect { ^Rect(0, 0, width, height) }
 
-	asPoint { ^Point(width,height); }
+	asPoint { ^Point(width, height) }
 
-	asString {
-		^("Size(" ++ width ++ ", " ++ height ++ ")");
+	== { arg size;
+		^this.compareObject(size, #[\width, \height])
 	}
 
-	== { arg other;
-		^ other respondsTo: #[\width, \height] and: {
-			(other.width == width) && (other.height == height)
-		}
+	hash {
+		^this.instVarHash(#[\width, \height])
 	}
+
+	printOn { |stream|
+		this.storeOn(stream)
+	}
+
+	storeArgs { ^[width, height] }
+
 }
 
 + SimpleNumber {
