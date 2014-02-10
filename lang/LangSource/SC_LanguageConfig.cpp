@@ -70,17 +70,19 @@ static bool findPath( SC_LanguageConfig::DirVector & vec, const char * path, boo
 	return false;
 }
 
-SC_LanguageConfig::SC_LanguageConfig()
+SC_LanguageConfig::SC_LanguageConfig(bool optStandalone)
 {
 	char classLibraryDir[MAXPATHLEN];
 	char systemExtensionDir[MAXPATHLEN];
 	char userExtensionDir[MAXPATHLEN];
 
-	sc_GetResourceDirectory(classLibraryDir, MAXPATHLEN-32);
-	sc_AppendToPath(classLibraryDir, MAXPATHLEN, "SCClassLibrary");
-	findPath(mDefaultClassLibraryDirectories, classLibraryDir, true);
+	if( !optStandalone ) {
+		sc_GetResourceDirectory(classLibraryDir, MAXPATHLEN-32);
+		sc_AppendToPath(classLibraryDir, MAXPATHLEN, "SCClassLibrary");
+		findPath(mDefaultClassLibraryDirectories, classLibraryDir, true);
+	}
 
-	if (!sc_IsStandAlone()) {
+	if ( !( sc_IsStandAlone() || optStandalone ) ) {
 		sc_GetSystemExtensionDirectory(systemExtensionDir, MAXPATHLEN);
 		findPath(mDefaultClassLibraryDirectories, systemExtensionDir, true);
 
@@ -151,10 +153,10 @@ void SC_LanguageConfig::removeExcludedDirectory(const char *path)
 }
 
 extern bool gPostInlineWarnings;
-bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName)
+bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName, bool standalone)
 {
 	freeLibraryConfig();
-	gLanguageConfig = new SC_LanguageConfig();
+	gLanguageConfig = new SC_LanguageConfig(standalone);
 
 	using namespace YAML;
 	try {
@@ -239,10 +241,10 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const char* fileName)
 	return true;
 }
 
-bool SC_LanguageConfig::defaultLibraryConfig(void)
+bool SC_LanguageConfig::defaultLibraryConfig(bool standalone)
 {
 	freeLibraryConfig();
-	gLanguageConfig = new SC_LanguageConfig();
+	gLanguageConfig = new SC_LanguageConfig(standalone);
 
 	return true;
 }
@@ -260,33 +262,35 @@ static bool file_exists(std::string const & fileName)
 	return file_exists(fileName.c_str());
 }
 
-bool SC_LanguageConfig::readLibraryConfig()
+bool SC_LanguageConfig::readLibraryConfig(bool standalone)
 {
 	bool configured = false;
 
 	if (!gConfigFile.empty() && file_exists(gConfigFile)) {
-		configured = readLibraryConfigYAML(gConfigFile.c_str());
+		configured = readLibraryConfigYAML(gConfigFile.c_str(), standalone);
 		if (configured)
 			return true;
 	}
 
-	char config_dir[PATH_MAX];
-	sc_GetUserConfigDirectory(config_dir, PATH_MAX);
+	if( !standalone ) {
+		char config_dir[PATH_MAX];
+		sc_GetUserConfigDirectory(config_dir, PATH_MAX);
 
-	std::string user_yaml_config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang_conf.yaml";
-	if (file_exists(user_yaml_config_file))
-		configured = readLibraryConfigYAML(user_yaml_config_file.c_str());
+		std::string user_yaml_config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang_conf.yaml";
+		if (file_exists(user_yaml_config_file))
+			configured = readLibraryConfigYAML(user_yaml_config_file.c_str(), standalone);
 
-	if (!configured) {
-		char global_yaml_config_file[] = "/etc/sclang_conf.yaml";
-		if (file_exists(global_yaml_config_file))
-			configured = readLibraryConfigYAML(global_yaml_config_file);
+		if (!configured) {
+			char global_yaml_config_file[] = "/etc/sclang_conf.yaml";
+			if (file_exists(global_yaml_config_file))
+				configured = readLibraryConfigYAML(global_yaml_config_file, standalone);
+		}
+
+		if (configured)
+			return true;
 	}
 
-	if (configured)
-		return true;
-
-	SC_LanguageConfig::defaultLibraryConfig();
+	SC_LanguageConfig::defaultLibraryConfig(standalone);
 	return false;
 }
 
