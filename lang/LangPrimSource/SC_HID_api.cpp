@@ -553,7 +553,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 	  if ( cur_dev->manufacturer_string != NULL ){
 	    mystring = wchar_to_char( cur_dev->manufacturer_string );
 	  } else {
-	    mystring = "";
+	    mystring = (char *)"";
 	  }
 	  PyrString *dev_man_name = newPyrString(g->gc, mystring, 0, true ); 
 	  SetObject(devInfo->slots+devInfo->size++, dev_man_name);
@@ -562,7 +562,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 	  if ( cur_dev->product_string != NULL ){
 	    mystring = wchar_to_char( cur_dev->product_string );
 	  } else {
-	    mystring = "";
+	    mystring = (char *)"";
 	  }  
 	  PyrString *dev_prod_name = newPyrString(g->gc, mystring, 0, true );
 	  SetObject(devInfo->slots+devInfo->size++, dev_prod_name);
