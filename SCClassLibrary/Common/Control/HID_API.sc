@@ -489,6 +489,7 @@ HIDInfo{
 		]//.collect({ | x | "0x" ++ x.asHexString(4) })
         .printItemsOn(stream);
 		stream << ", " << path << ", " << serialNumber << ", " << releaseNumber << ", " << interfaceNumber;
+        // stream << this.usageName << "(" << this.usage << "), " << this.pageName << "(" << this.usagePage << ")";
 		stream.put($));
 	}
 
@@ -540,7 +541,7 @@ HIDCollection{
     printOn { | stream |
 		super.printOn(stream);
         stream << $( << id << ": " ;
-        stream << "type: " << type << "usage: " << usagePage << usage;
+        stream << "type: " << type << "usage: " << usagePage << ", " << usage;
         // [ type, usagePage, usage ].printItemsOn(stream);
         // stream << ": description: ";
         // [ this.pageName, this.usageName ].printItemsOn(stream);
@@ -631,7 +632,7 @@ HIDElement{
     printOn { | stream |
 		super.printOn(stream);
         stream << $( << id << ": " ;
-        stream << "type: " << type << ", usage: " << usagePage << usage;
+        stream << "type: " << type << ", usage: " << usagePage << ", " << usage;
 
         // stream << $( << "hid element: " << index << ": collection " << collection << " : " ;
         // stream << "type and usage: ";
