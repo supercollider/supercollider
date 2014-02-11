@@ -227,8 +227,8 @@ HIDFunc : AbstractResponderFunc {
         traceFunc = {
             |value, rawValue, usage, page, elid, ele, devid, dev|
             // |value, physValue, rawValue, arrayValue, usage, page, elid, devid, dev|
-            "HID Element Data:\n\tdevid: %, elid: %\n\t%\n\tdevice: \t page: % \tusage: %\n\telement: \t page: %\tusage: %\traw value: %,\t,\tvalue: %\n"
-            .postf( devid, elid, dev.info, dev.usagePage, dev.usage, page, usage, rawValue, value );
+            "HID Element Data:\tdevid: %, elid: %\n\tdevice: \t%, \tpage: % \tusage: %\n\telement:\t%\n\t\t\t\tpage: %\tusage: %\traw value: %,\tvalue: %\n"
+            .postf( devid, elid, dev.info, dev.usagePage, dev.usage, ele, page, usage, rawValue, value );
 		}
 	}
 
