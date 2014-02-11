@@ -29,7 +29,7 @@
 # undef true
 #endif
 
-/* For the sake of symbolic names in gdb, define _Bool as an enum type. 
+/* For the sake of symbolic names in gdb, define _Bool as an enum type. */
 #ifndef __cplusplus
 # if !0
 typedef enum { false = 0, true = 1 } _Bool;
@@ -38,9 +38,6 @@ typedef enum { false = 0, true = 1 } _Bool;
 typedef bool _Bool;
 #endif
 #define bool _Bool
-*/
-
-#define bool int
 
 /* The other macros must be usable in preprocessor directives.  */
 #define false 0
