@@ -29,7 +29,7 @@
 # undef true
 #endif
 
-/* For the sake of symbolic names in gdb, define _Bool as an enum type. */
+/* For the sake of symbolic names in gdb, define _Bool as an enum type.  */
 #ifndef __cplusplus
 # if !0
 typedef enum { false = 0, true = 1 } _Bool;
