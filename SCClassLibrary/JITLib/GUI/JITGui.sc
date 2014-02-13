@@ -102,7 +102,7 @@ JITGui {
 		^nameView.notNil and: { nameView.string.notNil }
 	}
 
-	getName {	^try { object.key } ? "_anon_" }
+	getName { ^if (object.respondsTo(\key)) { object.key } { 'anon' } }
 	winName { |name| ^this.class.name ++ $_ ++ (name ?? { this.getName }) }
 
 	calcBounds {
