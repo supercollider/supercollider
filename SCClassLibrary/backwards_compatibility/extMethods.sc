@@ -22,8 +22,7 @@
 	asOSCArgEmbeddedArray { | array|
 		array = array.add($[);
 		this.do{ | e | array = e.asOSCArgEmbeddedArray(array) };
-		array.add($]);
-		^array;
+		^array.add($])
 	}
 
 }
