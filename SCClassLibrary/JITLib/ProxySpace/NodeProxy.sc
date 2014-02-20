@@ -15,7 +15,7 @@ NodeProxy : BusPlug {
 	}
 
 	init {
-		nodeMap = ProxyNodeMap2.new;
+		nodeMap = ProxyNodeMap.new;
 		objects = Order.new;
 		loaded = false;
 		this.linkNodeMap;

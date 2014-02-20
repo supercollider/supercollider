@@ -339,6 +339,8 @@
 
 }
 
+/*
+//TODO: implement special args.
 + ProxyNodeMap {
 
 	storeOn { | stream, namestring = "", dropOut = false |
@@ -402,4 +404,6 @@
 
 	}
 
+
 }
+*/
