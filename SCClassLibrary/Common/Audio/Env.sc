@@ -157,6 +157,13 @@ Env {
 		^this.xyc(pairs +++ curve);
 	}
 
+	*step { |levels = #[0,1], times = #[1,1], releaseNode, loopNode, offset = 0|
+		if( levels.size != times.size ) {
+			Error("Env#*step : levels and times must have same size").throw
+		};
+		^Env([levels[0]]++levels, times, \step, releaseNode, loopNode, offset)
+	}
+
 	// envelopes with sustain
 
 	*cutoff { arg releaseTime = 0.1, level = 1.0, curve = \lin;
