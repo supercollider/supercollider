@@ -152,7 +152,6 @@ BusPlug : AbstractFunction {
 
 	initBus { | rate, numChannels |
 		if(rate == \scalar) { ^true }; // no bus output
-
 		if(this.isNeutral) {
 			this.defineBus(rate, numChannels);
 			^true
@@ -198,7 +197,7 @@ BusPlug : AbstractFunction {
 
 	freeBus {
 		var oldBus = bus;
-		oldBus.free(true); // todo: avoid glitch in kr, maybe do this after fade time?
+		oldBus.free(true);
 		busArg = bus = nil;
 		busLoaded = false;
 	}
@@ -240,6 +239,7 @@ BusPlug : AbstractFunction {
 			("server not running:" + this.homeServer).warn;
 			^this
 		};
+		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; ^this };
 		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime, addAction);
 		// homeServer: multi client support: monitor only locally
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
@@ -307,10 +307,14 @@ BusPlug : AbstractFunction {
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
 	}
 
+	// server state
+
+	serverQuit {
+		busLoaded = false;
+	}
 
 
-
-	// netwrk node proxy support
+	// network node proxy support
 
 	shared { ^false }
 	homeServer { ^server }
