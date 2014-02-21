@@ -217,7 +217,7 @@
 
 			// add settings to compile string
 			if(includeSettings) {
-				this.nodeMap.storeOn(stream, indexStr, true);
+				stream << this.nodeMap.asCode(indexStr, true);
 			};
 			// include play settings if playing ...
 			// hmmm - also keep them if not playing,
@@ -240,7 +240,7 @@
 	document { | includeSettings = true, includeMonitor = true |
 		var nameStr = this.class.asString ++"_" ++ this.key;
 		^this.asCode(includeSettings, includeMonitor)
-			.newTextWindow("document-" ++ nameStr)
+		.newTextWindow("document-" ++ nameStr)
 	}
 
 }
@@ -339,71 +339,28 @@
 
 }
 
-/*
-//TODO: implement special args.
+
 + ProxyNodeMap {
 
-	storeOn { | stream, namestring = "", dropOut = false |
-		var strippedSetArgs, storedSetNArgs, rates, proxyMapKeys, proxyMapNKeys;
-		this.updateBundle;
-		if(dropOut) {
-			forBy(0, setArgs.size - 1, 2, { arg i;
-				var item;
-				item = setArgs[i];
-				if(item !== 'out' and: { item !== 'i_out' })
-				{
-					strippedSetArgs = strippedSetArgs.add(item);
-					strippedSetArgs = strippedSetArgs.add(setArgs[i+1]);
-				}
-			})
-		} { strippedSetArgs = setArgs };
-		if(strippedSetArgs.notNil) {
-			stream << namestring << ".set(" <<<* strippedSetArgs << ");" << Char.nl;
-		};
+	asCode { | namestring = "", dropOut = false |
+		^String.streamContents({ arg stream;
+			var map;
+			if(dropOut) {
+				map = this.copy;
+				map.removeAt(\out);
+				map.removeAt(\i_out);
+			} { map = this };
 
-		if(mapArgs.notNil or: { mapnArgs.notNil }) {
-			settings.keysValuesDo { arg key, setting;
-				var proxy;
-				if(setting.isMapped) {
-					proxy = setting.value;
-					if(proxy.notNil) {
-						if(setting.isMultiChannel) {
-							proxyMapNKeys = proxyMapNKeys.add(key);
-							proxyMapNKeys = proxyMapNKeys.add(proxy);
-						}{
-							proxyMapKeys = proxyMapKeys.add(key);
-							proxyMapKeys = proxyMapKeys.add(proxy);
-						}
-					};
-				};
+			if(map.notEmpty) {
+				stream << namestring << ".set(" <<<* map.asKeyValuePairs << ");" << Char.nl;
 			};
-			if(proxyMapKeys.notNil) {
-				stream << namestring << ".map(" <<<* proxyMapKeys << ");" << Char.nl;
-			};
-			if(proxyMapNKeys.notNil) {
-				stream << namestring << ".mapn(" <<<* proxyMapNKeys << ");" << Char.nl;
-			};
-		};
-
-		if(setnArgs.notNil) {
-			storedSetNArgs = Array.new;
-			settings.keysValuesDo { arg key, setting;
-				if(setting.isMapped.not and: setting.isMultiChannel) {
-					storedSetNArgs = storedSetNArgs.add(key);
-					storedSetNArgs = storedSetNArgs.add(setting.value);
-				}
-			};
-			stream << namestring << ".setn(" <<<* storedSetNArgs << ");" << Char.nl;
-		};
-		settings.keysValuesDo { arg key, setting;
-			if(setting.rate.notNil) { rates = rates.add(key); rates = rates.add(setting.rate) };
-		};
-		if(rates.notNil) {
-			stream << namestring << ".setRates(" <<<* rates << ");" << Char.nl;
-		}
+			if(rates.notNil) {
+				stream << namestring << ".setRates(" <<<* rates << ");" << Char.nl;
+			}
+		});
 
 	}
-
-
 }
-*/
+
+
+
