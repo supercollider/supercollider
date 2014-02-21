@@ -120,7 +120,7 @@ ProxySpace : LazyEnvir {
 	clear { arg fadeTime=0.0;
 		this.do({ arg proxy; proxy.clear(fadeTime) });
 		tempoProxy !? { tempoProxy.clear };
-		this.unregisterServer;
+		//this.unregisterServer;
 		super.clear;
 	}
 
@@ -142,7 +142,8 @@ ProxySpace : LazyEnvir {
 		});
 	}
 
-	// maintaining state
+	// maintaining bus state
+
 
 	registerServer {
 		ServerQuit.add(this, server);
@@ -155,12 +156,13 @@ ProxySpace : LazyEnvir {
 	}
 
 	doOnServerBoot { arg server;
-		this.do(_.freeBus);
+		this.do(_.serverQuit);
 	}
 
 	doOnServerQuit { arg server;
-		this.do(_.freeBus);
+		this.do(_.serverQuit);
 	}
+
 
 	// garbage collector
 

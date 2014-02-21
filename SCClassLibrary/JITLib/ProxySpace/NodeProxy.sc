@@ -27,7 +27,7 @@ NodeProxy : BusPlug {
 		children = nil;             // for now: also remove children
 		this.stop(fadeTime, true);		// stop any monitor
 		monitor = nil;
-		this.freeBus;	 // free the bus from the server allocator
+		this.freeBus(fadeTime);	 // free the bus from the server allocator
 		this.init;	// reset the environment
 		this.changed(\clear, [fadeTime]);
 	}
@@ -82,7 +82,7 @@ NodeProxy : BusPlug {
 	}
 
 	fadeTime {
-		^nodeMap.at(\fadeTime).value ? 0.02;
+		^nodeMap.at(\fadeTime) ? 0.02;
 	}
 
 	prFadeTime { ^nodeMap.at(\fadeTime).value }
@@ -135,6 +135,7 @@ NodeProxy : BusPlug {
 		bundle = MixedBundle.new;
 		container = obj.makeProxyControl(channelOffset, this);
 		container.build(this, index ? 0); // bus allocation happens here
+		if(server.serverRunning) { container.loadToBundle(bundle, server) } { loaded = false; }; // server sync happens here if necessary
 
 		if(this.shouldAddObject(container, index)) {
 			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus != bus });
@@ -163,19 +164,14 @@ NodeProxy : BusPlug {
 	}
 
 	putNewObject { |bundle, index, container, extraArgs, now|
-		loaded = false;
 		objects = objects.put(index ? 0, container);
 		if(server.serverRunning) {
-			now = awake && now;
-			if(now) {
+			if(awake && now) {
 				this.prepareToBundle(nil, bundle);
-			};
-			container.loadToBundle(bundle, server); // server sync happens here if necessary
-			if(now) {
 				container.wakeUpParentsToBundle(bundle);
+				nodeMap.wakeUpParentsToBundle(bundle);
 				this.sendObjectToBundle(bundle, container, extraArgs, index)
 			};
-			nodeMap.wakeUpParentsToBundle(bundle);
 			bundle.schedSend(server, clock ? TempoClock.default, quant);
 		}
 	}
@@ -215,7 +211,7 @@ NodeProxy : BusPlug {
 
 	rebuild {
 		var bundle = MixedBundle.new;
-		this.rebuildToBundle(bundle);
+		this.rebuildDeepToBundle(bundle, false);
 		bundle.schedSend(server, clock ? TempoClock.default, quant);
 	}
 
@@ -404,36 +400,19 @@ NodeProxy : BusPlug {
 		};
 	}
 
-
-	nodeMapChanged {
-		/*
-		var set, map;
-		nodeMap.do { |setting|
-			if(setting.isMapped) {
-				map = map.add(setting.key).add(setting.value)
-			} {
-				set = set.add(setting.key).add(setting.value)
-			}
-		};
-		if(set.notNil) { this.changed(\set, set) };
-		if(map.notNil) { this.changed(\map, map) };
-		*/
-	}
-
-
 	// play proxy as source of receiver
 	<-- { | proxy |
-		var bundle = MixedBundle.new;
+		var bundle = MixedBundle.new, dt = 0.1;
 		this.source = proxy;
 
-		if(proxy.monitorGroup.isPlaying) {
-			proxy.stop(fadeTime: 0.5);
-			if(this.monitorGroup.isPlaying.not) {
-				this.playToBundle(bundle, fadeTime:0.1)
+		if(proxy.monitor.isPlaying) {
+			proxy.stop(fadeTime: dt);
+			if(monitor.isPlaying.not) {
+				this.playToBundle(bundle, fadeTime: dt)
 			}
 		};
 		bundle.add(proxy.moveBeforeMsg(this));
-		bundle.send(server, server.latency);
+		bundle.schedSend(server, server.latency);
 	}
 
 	// map receiver to proxy input
@@ -476,6 +455,7 @@ NodeProxy : BusPlug {
 		if(obj.notNil) {
 			i = this.index;
 			bundle = this.getBundle;
+			if(loaded.not) { this.loadToBundle(bundle) };
 			obj.spawnToBundle(bundle, extraArgs, this);
 			nodeMap.addToBundle(bundle, -1);
 			bundle.schedSend(server);
@@ -489,6 +469,7 @@ NodeProxy : BusPlug {
 		if(index.isNil) {
 			bundle = this.getBundle;
 			if(freeLast) { this.stopAllToBundle(bundle) };
+			if(loaded.not) { this.loadToBundle(bundle) };
 			this.sendAllToBundle(bundle, extraArgs);
 			bundle.schedSend(server);
 
@@ -497,7 +478,7 @@ NodeProxy : BusPlug {
 			if(obj.notNil) {
 				bundle = this.getBundle;
 				if(freeLast) { obj.stopToBundle(bundle) };
-
+				if(loaded.not) { this.loadToBundle(bundle) };
 				this.sendObjectToBundle(bundle, obj, extraArgs, index);
 				bundle.schedSend(server);
 			}
@@ -512,6 +493,7 @@ NodeProxy : BusPlug {
 		var bundle;
 		bundle = this.getBundle;
 		if(freeLast, { this.stopAllToBundle(bundle) });
+		if(loaded.not) { this.loadToBundle(bundle) };
 		this.sendEachToBundle(bundle, extraArgs);
 		bundle.schedSend(server);
 
@@ -736,8 +718,8 @@ NodeProxy : BusPlug {
 		^bundle
 	}
 
+	// start group if necessary
 	prepareToBundle { | argGroup, bundle, addAction = \addToTail |
-		if(loaded.not) { this.loadToBundle(bundle) };
 		if(this.isPlaying.not) {
 			group = Group.basicNew(server, this.defaultGroupID);
 			NodeWatcher.register(group);
@@ -896,6 +878,29 @@ NodeProxy : BusPlug {
 
 	// allocation
 
+	freeBus { |fadeTime|
+		var oldBus = bus, bundle;
+		// the fully correct way would be to add it to the synth bundle
+		// but this would require a lot of argument passing.
+		// we just do it independently and add a bit of leeway if the synthDef loads slowly.
+		if(this.isPlaying) {
+			fadeTime = fadeTime ? this.fadeTime;
+			bundle = MixedBundle.new;
+			bundle.addFunction {
+				fork {
+					(fadeTime + 0.5).wait;
+					oldBus.free(true);
+				}
+			};
+			bundle.schedSend(server, clock, quant);
+			CmdPeriod.doOnce { if(oldBus.index.notNil) { oldBus.free(true) } };
+		} {
+			oldBus.free(true)
+		};
+		busArg = bus = nil;
+		busLoaded = false;
+	}
+
 	reallocBusIfNeeded { // bus is reallocated only if the server was not booted on creation.
 		if(busLoaded.not and: { bus.notNil }) {
 			bus.realloc;
@@ -903,6 +908,10 @@ NodeProxy : BusPlug {
 		}
 	}
 
+	serverQuit {
+		busLoaded = false;
+		loaded = false;
+	}
 
 
 	// network support
