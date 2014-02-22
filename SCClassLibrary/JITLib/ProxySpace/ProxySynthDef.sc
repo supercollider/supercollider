@@ -22,6 +22,8 @@ ProxySynthDef : SynthDef {
 				Error("Cannot share UGens between NodeProxies:" + output).throw
 			};
 
+			output = output ? 0.0;
+
 			// determine rate and numChannels of ugen func
 			rate = output.rate;
 			isScalar = rate === 'scalar';

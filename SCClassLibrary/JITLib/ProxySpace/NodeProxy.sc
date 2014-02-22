@@ -732,9 +732,8 @@ NodeProxy : BusPlug {
 	// bundle: apply the node map settings to the entire group
 	sendAllToBundle { | bundle, extraArgs |
 		objects.do { arg item;
-			item.playToBundle(bundle, extraArgs.value, this);
-		};
-		if(objects.notEmpty) { nodeMap.addToBundle(bundle, group) };
+			item.playToBundle(bundle, nodeMap.asOSCArgArray ++ extraArgs.value, this);
+		}
 	}
 
 	// bundle: apply the node map settings to each synth separately
@@ -747,7 +746,7 @@ NodeProxy : BusPlug {
 	// bundle: send single object
 	sendObjectToBundle { | bundle, object, extraArgs, index |
 		var target, nodes;
-		var synthID = object.playToBundle(bundle, extraArgs.value, this);
+		var synthID = object.playToBundle(bundle, nodeMap.asOSCArgArray ++ extraArgs.value, this);
 		if(synthID.notNil) {
 			if(index.notNil and: { objects.size > 1 }) { // if nil, all are sent anyway
 				// make list of nodeIDs following the index
@@ -759,7 +758,6 @@ NodeProxy : BusPlug {
 				}, index + 1);
 				if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes.reverse) };
 			};
-			nodeMap.addToBundle(bundle, synthID)
 		}
 	}
 
