@@ -1,17 +1,17 @@
 NetAddr {
-	var <addr=0, <>port=0, <hostname, <socket;
+	var <addr=0, <>port, <hostname, <socket;
 	classvar connections;
 
 	*initClass {
 		connections = IdentityDictionary.new;
 	}
 
-	*new { arg hostname, port=0;
+	*new { arg hostname, port;
 		var addr;
 		addr = if (hostname.notNil,{ hostname.gethostbyname },{ 0 });
 		^super.newCopyArgs(addr, port, hostname);
 	}
-	*fromIP { arg addr, port=0;
+	*fromIP { arg addr, port;
 		^super.newCopyArgs(addr, port, addr.asIPString)
 	}
 
