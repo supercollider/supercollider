@@ -85,8 +85,6 @@ NodeProxy : BusPlug {
 		^nodeMap.at(\fadeTime) ? 0.02;
 	}
 
-	prFadeTime { ^nodeMap.at(\fadeTime).value }
-
 	asGroup { ^group.asGroup }
 	asTarget { ^group.asGroup }
 	asNodeID { ^group.asNodeID }
@@ -773,6 +771,7 @@ NodeProxy : BusPlug {
 			obj.freeToBundle(bundle, this);
 		}
 	}
+
 	// bundle: remove all objects
 	removeAllToBundle { | bundle, fadeTime |
 		var dt, playing;
@@ -794,14 +793,11 @@ NodeProxy : BusPlug {
 		}
 	}
 
-
 	loadToBundle { | bundle |
 		this.reallocBusIfNeeded;
 		objects.do { arg item, i;
-			//item.build(this, i);
 			item.loadToBundle(bundle, server);
 		};
-		nodeMap.upToDate = false;
 		loaded = true;
 	}
 
@@ -809,10 +805,10 @@ NodeProxy : BusPlug {
 		var pairs = this.controlKeysValues(keys);
 		if(this.isPlaying) {
 			if(pairs.notEmpty) {
-				bundle.add([15, group.nodeID] ++ pairs);
-			};
+				bundle.add([15, group.nodeID] ++ pairs)
+			}
 		};
-		nodeMap.unset(*pairs[0,2..]);
+		nodeMap.unset(*pairs[0,2..])
 	}
 
 	wakeUpToBundle { | bundle, checkedAlready |
@@ -834,24 +830,6 @@ NodeProxy : BusPlug {
 		objects.do { arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
 	}
 
-	// maybe there should be only rebuildToDeepBundle, as this one is not reliable if children not empty.
-	// TODO: alt least rebuild should call rebuildDeepToBundle.
-	rebuildToBundle { |bundle|
-		loaded = false;
-		if(verbose) { "rebuilding proxy: % (% channels, % rate)\n".postf(this, this.numChannels, this.rate) };
-		if(this.isPlaying) {
-			this.stopAllToBundle(bundle);
-			objects.do { |item| item.freeToBundle(bundle, this) };
-			objects.do { |item, i| item.build(this, i) };
-			this.loadToBundle(bundle);
-			this.sendAllToBundle(bundle);
-		} {
-			objects.do { |item| item.freeToBundle(bundle, this) };
-			objects.do { |item, i| item.build(this, i) };
-		};
-
-	}
-
 	rebuildDeepToBundle { |bundle, busWasChangedExternally = true, checkedAlready|
 		var oldBus = bus;
 		if(checkedAlready.isNil or: { checkedAlready.includes(this).not }) {
@@ -867,11 +845,26 @@ NodeProxy : BusPlug {
 					if(verbose) { postf("in % restarting monitor\n", this) };
 					monitor.stopToBundle(bundle, this.fadeTime, true);
 					monitor.playNBusToBundle(bundle, bus: bus);
-				};
-			};
+				}
+			}
 		}
 	}
 
+	rebuildToBundle { |bundle|
+		loaded = false;
+		nodeMap.upToDate = false; // if mapped to itself
+		if(verbose) { "rebuilding proxy: % (% channels, % rate)\n".postf(this, this.numChannels, this.rate) };
+		if(this.isPlaying) {
+			this.stopAllToBundle(bundle);
+			objects.do { |item| item.freeToBundle(bundle, this) };
+			objects.do { |item, i| item.build(this, i) };
+			this.loadToBundle(bundle);
+			this.sendAllToBundle(bundle);
+		} {
+			objects.do { |item| item.freeToBundle(bundle, this) };
+			objects.do { |item, i| item.build(this, i) };
+		}
+	}
 
 
 	// allocation
