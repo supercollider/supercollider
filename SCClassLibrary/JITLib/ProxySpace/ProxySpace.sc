@@ -2,7 +2,7 @@ ProxySpace : LazyEnvir {
 
 	classvar <>all;
 
-	var <name, <server, <clock, <fadeTime, <quant;
+	var <name, <server, <clock, <fadeTime, <quant, <reshaping;
 	var <awake=true, tempoProxy, <group;
 
 	*initClass { all = IdentityDictionary.new }
@@ -40,6 +40,7 @@ ProxySpace : LazyEnvir {
 		if(fadeTime.notNil) { proxy.fadeTime = fadeTime };
 		if(group.isPlaying) { proxy.parentGroup = group };
 		if(quant.notNil) { proxy.quant = quant };
+		if(reshaping.notNil) { proxy.reshaping = reshaping };
 	}
 
 
@@ -55,22 +56,27 @@ ProxySpace : LazyEnvir {
 		this.do { arg item; item.fadeTime = dt };
 	}
 
-	group_ { arg node;
-		node = node.asGroup;
-		NodeWatcher.register(node, true);
-		if(node.isPlaying.not) { "group % not playing!".postf(node); ^this };
-		group = node;
-		this.do { arg item; item.parentGroup = node };
-	}
-
 	quant_ { arg val;
 		quant = val;
 		this.do { arg item; item.quant = val };
 	}
 
 	awake_ { arg flag;
-		this.do(_.awake_(flag));
 		awake = flag;
+		this.do { arg item; item.awake = flag };
+	}
+
+	reshaping_ { arg val;
+		reshaping = val;
+		this.do { arg item; item.reshaping = val };
+	}
+
+	group_ { arg node;
+		node = node.asGroup;
+		NodeWatcher.register(node, true);
+		if(node.isPlaying.not) { "group % not playing!".postf(node); ^this };
+		group = node;
+		this.do { arg item; item.parentGroup = node };
 	}
 
 	makeTempoClock { arg tempo=1.0, beats, seconds;
