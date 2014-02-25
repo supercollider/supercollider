@@ -4,9 +4,9 @@ BusPlug : AbstractFunction {
 	var <>monitor, <>parentGroup; // if nil, uses default group
 	var busArg; // cache for "/s_new" bus arg
 	var busLoaded = false;
-	var <>reshaping; // \minmax, \max
+	var >reshaping; // \minmax, \max
 
-	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
+	classvar <>defaultNumAudio=2, <>defaultNumControl=1, <>defaultReshaping;
 	classvar <>verbose = true; // this is temporary for debugging
 
 
@@ -41,6 +41,11 @@ BusPlug : AbstractFunction {
 	rate {  ^if(bus.isNil) { \scalar } { bus.rate } }
 	numChannels {  ^if(bus.isNil) { nil } { bus.numChannels } }
 	index { ^if(bus.isNil) { nil } { bus.index } }
+	reshaping { ^reshaping ? defaultReshaping }
+
+	fixedBus {
+		^reshaping.isNil and: { defaultReshaping.isNil }
+	}
 
 	isNeutral {
 		^bus.isNil or: { bus.index.isNil and: { bus.numChannels.isNil } }
@@ -143,14 +148,10 @@ BusPlug : AbstractFunction {
 		}
 	}
 
-
-	fixedBus {
-		^reshaping.isNil
-	}
-
 	// returns false if failed
 
 	initBus { | rate, numChannels |
+		var reshaping;
 		if(rate == \scalar) { ^true }; // no bus output
 		if(this.isNeutral) {
 			this.defineBus(rate, numChannels);
@@ -160,14 +161,17 @@ BusPlug : AbstractFunction {
 		numChannels = numChannels ? this.numChannels;
 		rate = rate ? this.rate;
 
+
 		if(numChannels == bus.numChannels and: { rate == bus.rate }) {
 			^true // already there
 		};
-		if(reshaping.notNil and: { this.rate != rate }) {
-			this.defineBus(rate, numChannels);
-			^true
+
+		reshaping = this.reshaping;
+		if(reshaping.isNil) {
+			^(this.rate === rate) and: { numChannels <= bus.numChannels }
 		};
-		if(reshaping == \max and: { numChannels > bus.numChannels  }) {
+		// for now: always reshape on rate change, because rate adaption happens earlier.
+		if(this.rate != rate) {
 			this.defineBus(rate, numChannels);
 			^true
 		};
@@ -175,10 +179,15 @@ BusPlug : AbstractFunction {
 			this.defineBus(rate, numChannels);
 			^true
 		};
-		if(reshaping == \min and: { numChannels < bus.numChannels  }) {
+		if(reshaping == \max and: { numChannels > bus.numChannels  }) {
 			this.defineBus(rate, numChannels);
 			^true
 		};
+		if(reshaping == \min) { "reshaping min not implemented".warn; ^false };
+		/*if(reshaping == \min and: { numChannels < bus.numChannels  }) {
+			this.defineBus(rate, numChannels);
+			^true
+		};*/
 		^(this.rate === rate) and: { numChannels <= bus.numChannels }
 	}
 
