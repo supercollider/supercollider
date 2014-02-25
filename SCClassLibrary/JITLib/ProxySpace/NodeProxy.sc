@@ -247,6 +247,7 @@ NodeProxy : BusPlug {
 
 	setBus { | argBus |
 		super.setBus(argBus);
+		this.changed(\setBus, argBus);
 		this.linkNodeMap;
 	}
 
@@ -854,6 +855,7 @@ NodeProxy : BusPlug {
 		loaded = false;
 		nodeMap.upToDate = false; // if mapped to itself
 		if(verbose) { "rebuilding proxy: % (% channels, % rate)\n".postf(this, this.numChannels, this.rate) };
+		this.changed(\rebuild);
 		if(this.isPlaying) {
 			this.stopAllToBundle(bundle);
 			objects.do { |item| item.freeToBundle(bundle, this) };

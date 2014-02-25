@@ -161,6 +161,10 @@ ProxyNodeMap : NodeMap {
 		^res
 	}
 
+	changed { |...args|
+		proxy.changed(*args)
+	}
+
 	// deprecate, but keep for now
 	hasRates { ^rates.notNil and: { rates.notEmpty } }
 	setRates { |args|
