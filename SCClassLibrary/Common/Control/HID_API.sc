@@ -112,8 +112,8 @@ HID {
         newdev = HID.basicNew( newdevid );
         newdev.getInfo;
         ("HID: Opened device: %\n".postf( newdev.info ) );
-        newdev.getElements;
         newdev.getCollections;
+        newdev.getElements;
         newdev.getUsages;
         HID.mergeUsageDict( newdev );
         openDevices.put( newdevid, newdev );
@@ -317,9 +317,7 @@ HID {
             var colInfo = this.getCollectionInfo( i );
             collections.put( i, HIDCollection.new( *colInfo ).device_( this ) );
         };
-        if ( thisProcess.platform.name == \linux ){
-            info.setUsageAndPage( collections.at(0).usagePage, collections.at(0).usage );
-        };
+		info.setUsageAndPage( collections.at(0).usagePage, collections.at(0).usage );
     }
 
 	getCollectionInfo{ |colid|
@@ -575,7 +573,7 @@ HIDElement{
 
 	var <value, <>action;
 
-    var <>device;
+    var <device;
 
     var <repeat = false;
 
@@ -583,6 +581,19 @@ HIDElement{
 
 	*new{ arg ...args;
         ^super.newCopyArgs( *args ).mapValueFromRaw;
+	}
+
+	device_{ |dev|
+		device = dev;
+		this.initElementRepeat;
+	}
+
+	initElementRepeat{
+		if ( device.info.usagePage == 1 and: (device.info.usage == 2) ){ // mouse
+			if ( usagePage == 1 and: (usage == 56) ){ // mouse wheel
+				this.repeat_( true );
+			}
+		}
 	}
 
     mapValueFromRaw{
