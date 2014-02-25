@@ -794,6 +794,20 @@ struct hid_device_element * hid_get_next_input_element( struct hid_device_elemen
   // is NULL
 }
 
+struct hid_device_element * hid_get_next_input_element_with_reportid( struct hid_device_element * curel, int reportid ){
+
+  struct hid_device_element * nextel = curel->next;
+  while ( nextel != NULL ){
+      if ( nextel->io_type == 1 && ( nextel->report_id == reportid ) ){
+	  return nextel;
+      } else {
+	  nextel = nextel->next;
+      }
+  }
+  return curel; // return the previous element
+  // is NULL
+}
+
 struct hid_device_element * hid_get_next_output_element( struct hid_device_element * curel ){
 
   struct hid_device_element * nextel = curel->next;
@@ -891,12 +905,19 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
   struct hid_device_element * cur_element = device_collection->first_element;
   int newvalue;
   int i;
-
-  if ( cur_element->io_type != 1 ){
-      cur_element = hid_get_next_input_element(cur_element);
+  int starti = 0;
+  int reportid = 0;
+  
+  if ( devdesc->number_of_reports > 1 ){
+      reportid = (int) buf[i];
+      starti = 1;
   }
 
-  for ( i = 0; i < size; i++){
+  if ( cur_element->io_type != 1 || ( cur_element->report_id != reportid ) ){
+      cur_element = hid_get_next_input_element_with_reportid(cur_element, reportid );
+  }
+
+  for ( i = starti; i < size; i++){
     unsigned char curbyte = buf[i];
     pbyte.remainingBits = 8;
     pbyte.shiftedByte = curbyte;
@@ -911,7 +932,7 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
 	    devdesc->_element_callback( cur_element, devdesc->_element_data );
 	  }
 	}
-	cur_element = hid_get_next_input_element( cur_element );      
+	cur_element = hid_get_next_input_element_with_reportid( cur_element, reportid );
       }
     }
   }
@@ -1220,10 +1241,10 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
   device_collection->num_elements = 0;
 
   int numreports = 1;
-    int report_lengths[256];
-    int report_ids[256];
-    report_ids[0] = 0;
-    report_lengths[0] = 0;
+  int report_lengths[256];
+  int report_ids[256];
+  report_ids[0] = 0;
+  report_lengths[0] = 0;
 
   IOHIDDeviceRef device_handle = get_device_handle( dev );
   CFArrayRef elementCFArrayRef = IOHIDDeviceCopyMatchingElements(device_handle,
