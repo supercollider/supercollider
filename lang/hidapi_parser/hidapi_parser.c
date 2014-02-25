@@ -1008,7 +1008,7 @@ int hid_send_output_report( struct hid_dev_desc * devd, int reportid ){
     }
     bit_offset += current_bit_size;
     byte_index += (int) floor( (float) current_bit_size / 8 );
-    bit_offset = bit_offset%256;
+    bit_offset = bit_offset%8;
 #ifdef DEBUG_PARSER
     printf("bit_offset %i, byte_index %i\n", bit_offset, byte_index );
 #endif
