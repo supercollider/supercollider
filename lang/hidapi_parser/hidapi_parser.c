@@ -157,6 +157,8 @@ struct hid_device_element * hid_new_element(){
   element->report_id = 0;
   element->unit = 0;
   element->unit_exponent = 0;
+  
+  element->rawvalue = 0;
 
   return element;
 }
@@ -708,6 +710,7 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 }
 
 void hid_element_set_value_from_input( struct hid_device_element * element, int value ){
+  element->rawvalue = value;
   if ( element->logical_min < 0 ){
     // value should be interpreted as signed value
     // so: check report size, test the highest bit, if one, invert and add one, otherwise keep value
@@ -903,7 +906,7 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
       newvalue = hid_parse_single_byte( pbyte.shiftedByte, &pbyte );
       if ( newvalue != -1 ){
 	if ( devdesc->_element_callback != NULL ){
-	  if ( newvalue != cur_element->value || cur_element->repeat ){
+	  if ( newvalue != cur_element->rawvalue || cur_element->repeat ){
 	    hid_element_set_value_from_input( cur_element, newvalue );
 	    devdesc->_element_callback( cur_element, devdesc->_element_data );
 	  }

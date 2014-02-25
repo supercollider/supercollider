@@ -106,6 +106,7 @@ struct hid_device_element {
 	int report_id;
 	int report_index; // index into the report
 
+	int rawvalue;
 	int value;
 	int array_value;
 
