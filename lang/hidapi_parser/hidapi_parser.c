@@ -148,6 +148,8 @@ struct hid_device_element * hid_new_element(){
   element->next = NULL;
   element->repeat = 0;
     
+  element->usage_min = 0;
+  element->usage_max = 0;
   element->logical_min = 0;
   element->logical_max = 0;
   element->phys_min = 0;
