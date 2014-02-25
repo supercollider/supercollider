@@ -81,6 +81,7 @@ HID {
 		devlist = this.prbuildDeviceList;
 		devlist.postln;
 		if ( devlist.isKindOf( Array ) ){
+			available = IdentityDictionary.new;
 			devlist.do{ |it,i|
                 available.put( i, HIDInfo.new( *it ) );
 			}{ // no devices found
@@ -773,7 +774,9 @@ HIDUsage {
             }
         );
         usageNameToIDs.put( usageName.asSymbol, [ usagePage, usage ] );
-        usageIDsToName.put( usagePage, usage, usageName.asSymbol );
+		if ( usagePage.notNil and: usage.notNil ){
+			usageIDsToName.put( usagePage, usage, usageName.asSymbol );
+		};
         ^[ pageName, usageName ];
     }
 
@@ -803,3 +806,4 @@ HIDUsage {
         ^hutIdtable;
     }
 }
+	
