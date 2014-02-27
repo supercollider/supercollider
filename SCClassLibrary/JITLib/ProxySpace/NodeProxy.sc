@@ -213,17 +213,17 @@ NodeProxy : BusPlug {
 		bundle.schedSend(server, clock ? TempoClock.default, quant);
 	}
 
-	mold { |numChannels, rate|
+	mold { |numChannels, rate, argReshaping|
 		var bundle, oldBus = bus, prevReshaping;
 		bundle = MixedBundle.new;
 		prevReshaping = reshaping;
 		if(numChannels.isNil and: { rate.isNil }) {
 			// adjust to the source objects
-			reshaping = \max;
+			reshaping = argReshaping ? \max;
 			this.rebuildDeepToBundle(bundle, false)
 		} {
 			// adjust to given shape
-			reshaping = \minmax;
+			reshaping = argReshaping ? \minmax;
 			this.initBus(rate, numChannels);
 			//  if necessary, rebuild without adjustment
 			if(bus != oldBus) {
