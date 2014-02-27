@@ -28,6 +28,7 @@ ProxySynthDef : SynthDef {
 			rate = output.rate;
 			isScalar = rate === 'scalar';
 			numChannels = output.numChannels;
+
 			// check for out key. this is used by internal control.
 			func.def.argNames.do { arg name;
 				if(name === \out) { hasOutArg = true };
