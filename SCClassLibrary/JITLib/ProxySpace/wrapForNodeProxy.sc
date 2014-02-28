@@ -207,6 +207,7 @@
 			index = proxy.index;
 			server = proxy.server;
 			this.use({
+				~proxy = proxy;
 				~channelOffset = channelOffset; // default value
 				~out = { ~channelOffset % numChannels + index };
 				~server = server; // not safe for server changes yet

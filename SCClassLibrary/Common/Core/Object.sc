@@ -230,6 +230,13 @@ Object  {
 	loop { ^this.repeat(inf) }
 
 	asStream { ^this }
+	streamArg { arg embed = true;
+		^if(embed) {
+			Routine { arg inval; this.embedInStream(inval) }
+		} {
+			Routine { loop { this.yield } }
+		}
+	}
 
 	eventAt { ^nil }
 	composeEvents { arg event; ^event.copy }

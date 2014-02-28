@@ -103,12 +103,12 @@ Pnsym1 : Pnsym {
 
 Psym1 : Psym {
 
-	embedInStream { arg inval, cleanup;
+	embedInStream { arg inval;
 
 		var which, outval, pat, currentStream;
 		var str = pattern.asStream;
 		var streams = IdentityDictionary.new;
-		cleanup ?? { cleanup = EventStreamCleanup.new };
+		var cleanup = EventStreamCleanup.new;
 
 		while {
 			which = str.next(inval);
