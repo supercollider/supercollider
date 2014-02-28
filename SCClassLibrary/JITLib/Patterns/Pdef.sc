@@ -23,8 +23,8 @@ PatternProxy : Pattern {
 	quant_ { arg val; quant = val }
 
 	constrainStream { arg stream;
-		if(quant.isNil or: { stream.isNil }) { ^pattern.asStream };
-		^Pseq([PfinQuant(EmbedOnce(stream), quant, clock), pattern]).asStream
+		if(this.quant.isNil or: { stream.isNil }) { ^pattern.asStream };
+		^Pseq([PfinQuant(EmbedOnce(stream), this.quant, clock), pattern]).asStream
 	}
 
 	source_ { arg obj;
