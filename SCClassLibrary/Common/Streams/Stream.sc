@@ -5,6 +5,7 @@ Stream : AbstractFunction {
 	parent { ^nil }
 	next { ^this.subclassResponsibility(thisMethod) }
 	iter { ^this }
+	streamArg { ^this }
 
 	value { arg inval; ^this.next(inval) }
 	valueArray { ^this.next }
