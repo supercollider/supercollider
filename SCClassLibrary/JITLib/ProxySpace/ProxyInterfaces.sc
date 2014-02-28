@@ -286,6 +286,7 @@ SynthDefControl : SynthControl {
 			canFreeSynth = synthDef.canFreeSynth;
 		} {
 			synthDef = nil;
+			"synth def couldn't be built".warn;
 		}
 	}
 

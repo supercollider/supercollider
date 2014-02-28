@@ -4,7 +4,7 @@ BusPlug : AbstractFunction {
 	var <>monitor, <>parentGroup; // if nil, uses default group
 	var busArg; // cache for "/s_new" bus arg
 	var busLoaded = false;
-	var >reshaping; // \minmax, \max
+	var <>reshaping; // \minmax, \max
 
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1, <>defaultReshaping;
 	classvar <>verbose = true; // this is temporary for debugging
@@ -41,10 +41,9 @@ BusPlug : AbstractFunction {
 	rate {  ^if(bus.isNil) { \scalar } { bus.rate } }
 	numChannels {  ^if(bus.isNil) { nil } { bus.numChannels } }
 	index { ^if(bus.isNil) { nil } { bus.index } }
-	reshaping { ^reshaping ? defaultReshaping }
 
 	fixedBus {
-		^reshaping.isNil and: { defaultReshaping.isNil }
+		^reshaping.isNil
 	}
 
 	isNeutral {
@@ -100,8 +99,13 @@ BusPlug : AbstractFunction {
 	value { | something |
 		var n;
 		if(UGen.buildSynthDef.isNil) { ^this }; // only return when in ugen graph.
-		something !? {  n = something.numChannels };
-		^if(something.respondsTo(\rate) and: { something.rate == 'audio'}) { this.ar(n) } { this.kr(n) }
+		something !? { n = something.numChannels };
+		^if(something.respondsTo(\rate) and: { something.rate == 'audio'} or: { this.rate == \audio }) {
+			this.ar(n)
+		} {
+			this.kr(n)
+		}
+
 	}
 
 	composeUnaryOp { | aSelector |
@@ -151,7 +155,6 @@ BusPlug : AbstractFunction {
 	// returns false if failed
 
 	initBus { | rate, numChannels |
-		var reshaping;
 		if(rate == \scalar) { ^true }; // no bus output
 		if(this.isNeutral) {
 			this.defineBus(rate, numChannels);
@@ -161,12 +164,10 @@ BusPlug : AbstractFunction {
 		numChannels = numChannels ? this.numChannels;
 		rate = rate ? this.rate;
 
-
 		if(numChannels == bus.numChannels and: { rate == bus.rate }) {
 			^true // already there
 		};
 
-		reshaping = this.reshaping;
 		if(reshaping.isNil) {
 			^(this.rate === rate) and: { numChannels <= bus.numChannels }
 		};

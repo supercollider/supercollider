@@ -18,6 +18,7 @@ NodeProxy : BusPlug {
 		nodeMap = ProxyNodeMap.new;
 		objects = Order.new;
 		loaded = false;
+		reshaping = defaultReshaping;
 		this.linkNodeMap;
 	}
 
@@ -133,9 +134,11 @@ NodeProxy : BusPlug {
 		bundle = MixedBundle.new;
 		container = obj.makeProxyControl(channelOffset, this);
 		container.build(this, index ? 0); // bus allocation happens here
-		if(server.serverRunning) { container.loadToBundle(bundle, server) } { loaded = false; }; // server sync happens here if necessary
+
 
 		if(this.shouldAddObject(container, index)) {
+			 // server sync happens here if necessary
+			if(server.serverRunning) { container.loadToBundle(bundle, server) } { loaded = false; };
 			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus != bus });
 		} {
 			format("failed to add % to node proxy: %", obj, this).inform;
@@ -156,7 +159,7 @@ NodeProxy : BusPlug {
 		};
 		if(busChanged) {
 			tempReshaping = reshaping; reshaping = nil;
-			this.rebuildDeepToBundle(bundle, true);
+			this.rebuildDeepToBundle(bundle, true, nil, this.fadeTime);
 			reshaping = tempReshaping;
 		};
 	}
@@ -209,18 +212,18 @@ NodeProxy : BusPlug {
 
 	rebuild {
 		var bundle = MixedBundle.new;
-		this.rebuildDeepToBundle(bundle, false);
+		this.rebuildDeepToBundle(bundle, false, nil, this.fadeTime);
 		bundle.schedSend(server, clock ? TempoClock.default, quant);
 	}
 
 	mold { |numChannels, rate, argReshaping|
-		var bundle, oldBus = bus, prevReshaping;
+		var bundle, oldBus = bus, tempReshaping;
 		bundle = MixedBundle.new;
-		prevReshaping = reshaping;
+		tempReshaping = reshaping;
 		if(numChannels.isNil and: { rate.isNil }) {
 			// adjust to the source objects
 			reshaping = argReshaping ? \max;
-			this.rebuildDeepToBundle(bundle, false)
+			this.rebuildDeepToBundle(bundle, false, nil, this.fadeTime)
 		} {
 			// adjust to given shape
 			reshaping = argReshaping ? \minmax;
@@ -228,10 +231,10 @@ NodeProxy : BusPlug {
 			//  if necessary, rebuild without adjustment
 			if(bus != oldBus) {
 				reshaping = nil;
-				this.rebuildDeepToBundle(bundle, true)
+				this.rebuildDeepToBundle(bundle, true, nil, this.fadeTime)
 			}
 		};
-		reshaping = prevReshaping;
+		reshaping = tempReshaping;
 		if(server.serverRunning) { bundle.schedSend(server, clock, quant) };
 	}
 
@@ -831,37 +834,41 @@ NodeProxy : BusPlug {
 		objects.do { arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
 	}
 
-	rebuildDeepToBundle { |bundle, busWasChangedExternally = true, checkedAlready|
+	rebuildDeepToBundle { |bundle, busWasChangedExternally = true, checkedAlready, fadeTime|
 		var oldBus = bus;
 		if(checkedAlready.isNil or: { checkedAlready.includes(this).not }) {
-			this.rebuildToBundle(bundle);
+			this.rebuildToBundle(bundle, fadeTime);
 			if(busWasChangedExternally or: { bus != oldBus }) {
 				if(verbose) { "%: rebuilding children\n".postf(this) };
 				if(checkedAlready.isNil) { checkedAlready = IdentitySet.new };
 				checkedAlready.add(this);
 				children.do { |item|
-					item.rebuildDeepToBundle(bundle, false, checkedAlready)
+					item.rebuildDeepToBundle(bundle, false, checkedAlready, fadeTime)
 				};
 				if(monitor.isPlaying) {
 					if(verbose) { postf("in % restarting monitor\n", this) };
-					monitor.stopToBundle(bundle, this.fadeTime, true);
+					monitor.stopToBundle(bundle, this.fadeTime, true); // fadeTime of monitor should be the one given.
 					monitor.playNBusToBundle(bundle, bus: bus);
 				}
 			}
 		}
 	}
 
-	rebuildToBundle { |bundle|
+	rebuildToBundle { |bundle, fadeTime|
 		loaded = false;
 		nodeMap.upToDate = false; // if mapped to itself
 		if(verbose) { "rebuilding proxy: % (% channels, % rate)\n".postf(this, this.numChannels, this.rate) };
 		this.changed(\rebuild);
 		if(this.isPlaying) {
-			this.stopAllToBundle(bundle);
+			this.stopAllToBundle(bundle, fadeTime ? this.fadeTime);
 			objects.do { |item| item.freeToBundle(bundle, this) };
 			objects.do { |item, i| item.build(this, i) };
 			this.loadToBundle(bundle);
-			this.sendAllToBundle(bundle);
+			if(fadeTime.isNil) {
+				this.sendAllToBundle(bundle)
+			} {
+				this.sendAllToBundle(bundle, [\fadeTime, fadeTime])
+			}
 		} {
 			objects.do { |item| item.freeToBundle(bundle, this) };
 			objects.do { |item, i| item.build(this, i) };
