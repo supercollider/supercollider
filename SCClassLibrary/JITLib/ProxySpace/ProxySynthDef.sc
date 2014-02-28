@@ -25,9 +25,9 @@ ProxySynthDef : SynthDef {
 			output = output ? 0.0;
 
 			// determine rate and numChannels of ugen func
+			numChannels = output.numChannels;
 			rate = output.rate;
 			isScalar = rate === 'scalar';
-			numChannels = output.numChannels;
 
 			// check for out key. this is used by internal control.
 			func.def.argNames.do { arg name;
@@ -39,6 +39,15 @@ ProxySynthDef : SynthDef {
 			{
 				"out argument is provided internally!".error; // avoid overriding generated out
 				^nil
+			};
+
+			// rate is only scalar if output was nil or if it was directly produced by an out ugen
+			// this allows us to conveniently write constant numbers to a bus from the synth
+			// if you want the synth to write nothing, return nil from the UGen function.
+
+			if(isScalar and: { output.notNil } and: { UGen.buildSynthDef.children.last.isKindOf(AbstractOut).not }) {
+				rate = 'control';
+				isScalar = false;
 			};
 
 			//detect inner gates
