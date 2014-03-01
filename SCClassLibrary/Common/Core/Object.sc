@@ -128,7 +128,9 @@ Object  {
 		^this.primitiveFailed
 	}
 	dup { arg n = 2;
-		var array = Array(n);
+		var array;
+		if(n.isSequenceableCollection) { ^Array.fillND(n, { this.copy }) };
+		array = Array(n);
 		n.do {|i| array.add(this.copy) };
 		^array
 	}
