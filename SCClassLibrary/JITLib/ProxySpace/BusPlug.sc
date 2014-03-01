@@ -66,7 +66,8 @@ BusPlug : AbstractFunction {
 			this.defineBus(\audio, numChannels)
 		};
 		this.prepareOutput;
-		^InBus.ar(bus, numChannels ? bus.numChannels, offset)
+		 // always return an array
+		^InBus.ar(bus, numChannels ? bus.numChannels, offset).asArray
 	}
 
 	kr { | numChannels, offset = 0 |
@@ -74,7 +75,8 @@ BusPlug : AbstractFunction {
 			this.defineBus(\control, numChannels)
 		};
 		this.prepareOutput;
-		^InBus.kr(bus, numChannels ? bus.numChannels, offset)
+		 // always return an array
+		^InBus.kr(bus, numChannels ? bus.numChannels, offset).asArray
 	}
 
 
