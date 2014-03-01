@@ -536,12 +536,15 @@ bool nextOSCPacket(FILE *file, OSC_Packet *packet, int64& outTime)
 		return true;
 	// msglen is in network byte order
 	msglen = OSCint((char*)&msglen);
-	if (msglen > 8192)
-		throw std::runtime_error("OSC packet too long. > 8192 bytes\n");
+	if (msglen > 1073741824){
+		throw std::runtime_error("OSC packet too long. > 2^30 bytes\n");
+	}
+        packet->mData = (char *)realloc((void *)packet->mData, (size_t)msglen);
+        if(!packet->mData) throw std::runtime_error("nextOSCPacket: realloc failed...\n");
 
 	size_t read = fread(packet->mData, 1, msglen, file);
 	if (read != msglen)
-		throw std::runtime_error("nextOSCPacket: invalid read of OSC packaet\n");
+		throw std::runtime_error("nextOSCPacket: invalid read of OSC packet\n");
 
 	if (strcmp(packet->mData, "#bundle")!=0)
 		throw std::runtime_error("OSC packet not a bundle\n");
@@ -619,10 +622,9 @@ SC_DLLEXPORT_C void World_NonRealTimeSynthesis(struct World *world, WorldOptions
 	if (!cmdFile)
 		throw std::runtime_error("Couldn't open non real time command file.\n");
 
-	char msgbuf[8192];
 	OSC_Packet packet;
 	memset(&packet, 0, sizeof(packet));
-	packet.mData = msgbuf;
+	packet.mData = (char *)malloc(8192);
 	packet.mIsBundle = true;
 	packet.mReplyAddr.mReplyFunc = null_reply_func;
 
@@ -744,6 +746,7 @@ Bail:
 		world->hw->mNRTInputFile = 0;
 	}
 
+	free(packet.mData);
 	World_Cleanup(world);
 }
 #endif   // !NO_LIBSNDFILE
