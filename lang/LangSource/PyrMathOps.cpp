@@ -365,7 +365,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opRing1 :		SetRaw(a, sc_ring1(slotRawInt(a), slotRawInt(b))); break;
 						case opRing2 :		SetRaw(a, sc_ring2(slotRawInt(a), slotRawInt(b))); break;
 						case opRing3 :		SetRaw(a, sc_ring3(slotRawInt(a), slotRawInt(b))); break;
-						case opRing4 :		SetRaw(a, sc_ring4(slotRawInt(a), slotRawInt(a))); break;
+						case opRing4 :		SetRaw(a, sc_ring4(slotRawInt(a), slotRawInt(b))); break;
 						case opDifSqr :		SetRaw(a, sc_difsqr(slotRawInt(a), slotRawInt(b))); break;
 						case opSumSqr :		SetRaw(a, sc_sumsqr(slotRawInt(a), slotRawInt(b))); break;
 						case opSqrSum :		SetRaw(a, sc_sqrsum(slotRawInt(a), slotRawInt(b))); break;
