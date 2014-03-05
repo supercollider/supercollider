@@ -303,8 +303,8 @@ BusPlug : AbstractFunction {
 		group, multi=false, vol, fadeTime, addAction |
 		this.newMonitorToBundle(bundle, numChannels);
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
-		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, group,
-			multi, vol, fadeTime, addAction);
+		if(numChannels.notNil) { out = (0..numChannels-1) + out };
+		monitor.playNBusToBundle(bundle, out, nil, nil, bus, vol, fadeTime, group, addAction, multi);
 	}
 
 	playNToBundle { | bundle, outs, amps, ins, vol, fadeTime, group, addAction |

@@ -85,6 +85,7 @@ Monitor {
 	var <ins, <outs, <amps, <fadeTimes;
 	var <vol = 1.0;
 	var <group, synthIDs;
+	var defaults;
 
 	// mapping between multiple contiguous channels
 
@@ -163,15 +164,28 @@ Monitor {
 		^fadeTimes !? { fadeTimes.unbubble }
 	}
 
+	// keeping default arguments
+
+	updateDefault { |argName, value|
+		defaults = defaults ? ();
+		^if(value.isNil) {
+			defaults.at(argName)
+		} {
+			defaults.put(argName, value);
+			value
+		}
+	}
+
 	// multi channel interface
 
 	outs_ { | indices |
 		outs = indices;
+		this.updateDefault(\outs, indices);
 		if(this.isPlaying) {
 			group.server.listSendBundle(group.server.latency,
 				[15, synthIDs, "out", outs.flat.keep(synthIDs.size)].flop
 			)
-		}
+		};
 	}
 
 	amps_ { | values |
@@ -202,12 +216,17 @@ Monitor {
 		var synthArgs, server;
 
 		ins = argIns ? ins;
-		outs = argOuts ? outs ?? { (0..ins.size-1) };
-		amps = argAmps ? amps ? #[1.0];
-		fadeTimes = argFadeTime ? fadeTimes ? #[0.02];
-		vol = argVol ? vol ? 1.0;
+		outs = argOuts ? outs;
+		amps = argAmps ? amps;
+		fadeTimes = argFadeTime ? fadeTimes;
+		vol = argVol ? vol;
 
-		synthArgs = [ins, outs, amps, fadeTimes].asControlInput.flop;
+		synthArgs = [
+			ins,
+			outs ?? { (0..ins.size-1) },
+			amps ? #[1.0],
+			fadeTimes ? #[0.02]
+		].asControlInput.flop;
 
 		if(this.isPlaying) {
 			if(multi.not) { this.stopToBundle(bundle, argFadeTime) }
@@ -238,27 +257,30 @@ Monitor {
 		};
 	}
 
-	playToBundle { | bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels,
+
+	playToBundle { | bundle, fromIndex, fromNumChannels, toIndex, toNumChannels,
 		inGroup, multi = false, volume, argFadeTime, addAction |
 
-		var outArray, inArray, ampArray;
+		var outArray, inArray;
 
-		toIndex = toIndex ?? { this.out ? 0 };
-		toNumChannels = toNumChannels ? fromNumChannels;
+		toIndex = this.updateDefault(\toIndex, toIndex) ? 0;
+		fromNumChannels = this.updateDefault(\fromNumChannels, fromNumChannels) ? 2;
+		toNumChannels = this.updateDefault(\toNumChannels, toNumChannels) ? fromNumChannels;
 
 		inArray = fromIndex + (0..fromNumChannels-1);
 		outArray = toIndex + (0..toNumChannels-1);
-		this.playNToBundle(bundle, outArray, ampArray, inArray, volume, argFadeTime, inGroup, addAction, multi: multi)
+		this.playNToBundle(bundle, outArray, nil, inArray, volume, argFadeTime, inGroup, addAction, multi: multi)
 	}
 
 
 	playNBusToBundle { | bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction, multi = false |
 
-		var size;
 		if(bus.rate !== \audio) { "Can't monitor a control rate bus.".warn; ^this };
-		outs = outs ?? { this.outs.unbubble } ? 0;	// remember old ones if none are given
-		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
-		size = outs.size;
+		ins = this.updateDefault(\offsetIns, ins);
+		outs = this.updateDefault(\outs, outs) ? 0;
+
+		if (outs.unbubble.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
+
 		ins = if(ins.notNil) {
 			ins.wrap(0, bus.numChannels - 1).asArray
 		} {
@@ -267,7 +289,6 @@ Monitor {
 
 		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction, multi: multi)
 	}
-
 
 	newGroupToBundle { | bundle, target, addAction=(\addToTail) |
 		target = target.asGroup;
@@ -294,6 +315,7 @@ Monitor {
 		};
 		if(clearMappings) {
 			ins = outs = amps = fadeTimes = nil;
+			defaults.clear;
 		};
 	}
 

@@ -847,7 +847,6 @@ NodeProxy : BusPlug {
 				};
 				if(monitor.isPlaying) {
 					if(verbose) { postf("in % restarting monitor\n", this) };
-					monitor.stopToBundle(bundle, this.fadeTime, true); // fadeTime of monitor should be the one given.
 					monitor.playNBusToBundle(bundle, bus: bus);
 				}
 			}
