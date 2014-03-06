@@ -209,7 +209,6 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 		int minOutputs = std::min<size_t>(numOutputs, mWorld->mNumOutputs);
 
 		int bufFramePos = 0;
-
 #ifdef SC_PA_USE_DLL
 		int64 oscTime = mOSCbuftime = (uint64)((mDLL.PeriodTime() - mMaxOutputLatency) * kSecondsToOSCunits + .5);
 // 		int64 oscInc = mOSCincrement = (int64)(mOSCincrementNumerator / mDLL.SampleRate());
@@ -357,41 +356,66 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 		*outSampleRate = 44100.;
 
 
-	if (mDeviceInOut[0]!=paNoDevice && mDeviceInOut[1]!=paNoDevice) {
+	if (mDeviceInOut[0]!=paNoDevice || mDeviceInOut[1]!=paNoDevice) {
 
 		if (mPreferredHardwareBufferFrameSize)
 			// controls the suggested latency by hardwareBufferSize switch -Z
 			suggestedLatencyIn = suggestedLatencyOut = mPreferredHardwareBufferFrameSize / (*outSampleRate);
 		else {
-			suggestedLatencyIn = Pa_GetDeviceInfo( mDeviceInOut[0] )->defaultLowInputLatency;
-			suggestedLatencyOut = Pa_GetDeviceInfo( mDeviceInOut[1] )->defaultLowOutputLatency;
+			if (mDeviceInOut[0]!=paNoDevice)
+				suggestedLatencyIn = Pa_GetDeviceInfo( mDeviceInOut[0] )->defaultLowInputLatency;
+			if (mDeviceInOut[1]!=paNoDevice)
+				suggestedLatencyOut = Pa_GetDeviceInfo( mDeviceInOut[1] )->defaultLowOutputLatency;
 		}
 
+		fprintf(stdout, "\nBooting with:\n");
 		PaSampleFormat fmt = paFloat32 | paNonInterleaved;
-		mInputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[0] )->maxInputChannels;
-		mOutputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[1] )->maxOutputChannels;
-		fprintf(stdout, "\nBooting with:\n  In: %s : %s \n",
+		if (mDeviceInOut[0]!=paNoDevice){
+			mInputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[0] )->maxInputChannels;
+			fprintf(stdout, "  In: %s : %s \n",
 			Pa_GetHostApiInfo(Pa_GetDeviceInfo( mDeviceInOut[0] )->hostApi)->name,
 			Pa_GetDeviceInfo( mDeviceInOut[0] )->name);
-		fprintf(stdout, "  Out: %s : %s \n",
+		}else{
+			mInputChannelCount = 0;
+		}
+
+		if (mDeviceInOut[1]!=paNoDevice){
+			mOutputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[1] )->maxOutputChannels;
+			fprintf(stdout, "  Out: %s : %s \n",
 			Pa_GetHostApiInfo(Pa_GetDeviceInfo( mDeviceInOut[1] )->hostApi)->name,
 			Pa_GetDeviceInfo( mDeviceInOut[1] )->name);
+		}else{
+			mOutputChannelCount = 0;
+		}
 
+		PaStreamParameters *inStreamParams_p;
 		PaStreamParameters inStreamParams;
-		inStreamParams.device = mDeviceInOut[0];
-		inStreamParams.channelCount = mInputChannelCount;
-		inStreamParams.sampleFormat = fmt;
-		inStreamParams.suggestedLatency = suggestedLatencyIn;
-		inStreamParams.hostApiSpecificStreamInfo = NULL;
+		if (mDeviceInOut[0]!=paNoDevice){
+			inStreamParams.device = mDeviceInOut[0];
+			inStreamParams.channelCount = mInputChannelCount;
+			inStreamParams.sampleFormat = fmt;
+			inStreamParams.suggestedLatency = suggestedLatencyIn;
+			inStreamParams.hostApiSpecificStreamInfo = NULL;
+			inStreamParams_p = &inStreamParams;
+		}else{
+			inStreamParams_p = NULL;
+		}
 
+		PaStreamParameters *outStreamParams_p;
 		PaStreamParameters outStreamParams;
-		outStreamParams.device = mDeviceInOut[1];
-		outStreamParams.channelCount = mOutputChannelCount;
-		outStreamParams.sampleFormat = fmt;
-		outStreamParams.suggestedLatency = suggestedLatencyOut;
-		outStreamParams.hostApiSpecificStreamInfo = NULL;
+		if (mDeviceInOut[1]!=paNoDevice){
+			outStreamParams.device = mDeviceInOut[1];
+			outStreamParams.channelCount = mOutputChannelCount;
+			outStreamParams.sampleFormat = fmt;
+			outStreamParams.suggestedLatency = suggestedLatencyOut;
+			outStreamParams.hostApiSpecificStreamInfo = NULL;
+			outStreamParams_p = &outStreamParams;
+		}else{
+			outStreamParams_p = NULL;
+		}
 
-		paerror = Pa_OpenStream(&mStream, &inStreamParams, &outStreamParams, *outSampleRate, *outNumSamples, paNoFlag, SC_PortAudioStreamCallback, this );
+		paerror = Pa_OpenStream(&mStream, inStreamParams_p, outStreamParams_p, *outSampleRate, *outNumSamples, paNoFlag, SC_PortAudioStreamCallback, this );
+
 		if( paerror != paNoError )
 			PRINT_PORTAUDIO_ERROR( Pa_OpenStream, paerror );
 		else {
@@ -410,8 +434,10 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	}
 
 	// should not be necessary, but a last try with OpenDefaultStream...
-	paerror = Pa_OpenDefaultStream( &mStream, 2, 2,
+	paerror = Pa_OpenDefaultStream( &mStream, mWorld->mNumInputs, mWorld->mNumOutputs,
 		paFloat32 | paNonInterleaved, *outSampleRate, *outNumSamples, SC_PortAudioStreamCallback, this );
+	mInputChannelCount = mWorld->mNumInputs;
+	mOutputChannelCount = mWorld->mNumOutputs;
 	if( paerror != paNoError )
 		PRINT_PORTAUDIO_ERROR( Pa_OpenDefaultStream, paerror );
 	return paerror == paNoError;
