@@ -243,7 +243,8 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     closeSingleUntitledIfUnmodified();
 
     const bool fileIsPlainText = !(info.suffix() == QString("sc") ||
-                                   (info.suffix() == QString("scd")));
+                                  (info.suffix() == QString("scd")) ||
+                                  (info.suffix() == QString("schelp")));
 
     Document *doc = createDocument( fileIsPlainText, id );
     doc->mDoc->setPlainText( decodeDocument(bytes) );
@@ -379,7 +380,8 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
     info.refresh();
 
     const bool fileIsPlainText = !(info.suffix() == QString("sc") ||
-                                   (info.suffix() == QString("scd")));
+                                  (info.suffix() == QString("scd")) ||
+                                  (info.suffix() == QString("schelp")));
 
     doc->mFilePath = cpath;
     doc->mTitle = info.fileName();
