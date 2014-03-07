@@ -5,7 +5,7 @@
 
 + Object {
 
-	// objects can define their own wrapper classes dependant on
+	// objects can define their own wrapper classes dependent on
 	// how they play, stop, build, etc. see SynthDefControl for example
 	// the original (wrapped) object can be reached by the .source message
 	// for objects that only create ugen graphs, define prepareForProxySynthDef(proxy)
@@ -14,7 +14,7 @@
 		^SynthDefControl
 	}
 
-	makeProxyControl { arg channelOffset=0;
+	makeProxyControl { | channelOffset = 0 |
 		^this.proxyControlClass.new(this, channelOffset);
 	}
 
@@ -24,7 +24,7 @@
 
 
 	// this method is called from within the Control
-	buildForProxy { arg proxy, channelOffset=0, index;
+	buildForProxy { | proxy, channelOffset = 0, index |
 		var channelConstraint, rateConstraint;
 		var argNames = this.argNames;
 		if(proxy.fixedBus) {
@@ -67,14 +67,14 @@
 
 + SimpleNumber {
 
-	prepareForProxySynthDef { arg proxy;
+	prepareForProxySynthDef { | proxy |
 		var rate = if(proxy.isNeutral) {\control } { proxy.rate };
 		^{ DC.multiNewList([rate] ++ this) };
 	}
 }
 
 + Synth { // better information about common error
-	prepareForProxySynthDef { arg proxy;
+	prepareForProxySynthDef { | proxy |
 		Error(
 			"A synth is no valid source for a proxy.\n"
 			"For instance, ~out = { ... }.play would cause this and should be:\n"
@@ -84,21 +84,21 @@
 }
 
 + RawArray {
-	prepareForProxySynthDef { arg proxy;
+	prepareForProxySynthDef { | proxy |
 		var rate = if(proxy.isNeutral) {\control } { proxy.rate };
 		^{ DC.multiNewList([rate] ++ this) };
 	}
 }
 
 + SequenceableCollection {
-	prepareForProxySynthDef { arg proxy;
+	prepareForProxySynthDef { | proxy |
 		^{ this.collect({ |el| el.prepareForProxySynthDef(proxy).value }) }
 		// could use SynthDef.wrap, but needs type check for function.
 	}
 }
 
 + BusPlug {
-	prepareForProxySynthDef { arg proxy;
+	prepareForProxySynthDef { | proxy |
 		proxy.initBus(this.rate, this.numChannels);
 		^{ this.value(proxy) }
 	}
@@ -106,7 +106,7 @@
 }
 
 + AbstractOpPlug {
-	prepareForProxySynthDef { arg proxy;
+	prepareForProxySynthDef { | proxy |
 		proxy.initBus(this.rate, this.numChannels);
 		^{ this.value(proxy) }
 	}
@@ -115,7 +115,7 @@
 // needs a visit: lazy init + channelOffset
 
 + Bus {
-	prepareForProxySynthDef { arg proxy;
+	prepareForProxySynthDef { | proxy |
 		^BusPlug.for(this).prepareForProxySynthDef(proxy);
 	}
 }
@@ -161,7 +161,7 @@
 + TaskProxy {
 	proxyControlClass { ^StreamControl }
 
-	buildForProxy {  arg proxy, channelOffset=0;
+	buildForProxy { | proxy, channelOffset = 0 |
 		^PauseStream(this.endless.asStream
 			<> (
 				nodeProxy: proxy,
@@ -177,7 +177,7 @@
 + EventPatternProxy {
 	proxyControlClass { ^PatternControl }
 
-	buildForProxy {  arg proxy, channelOffset=0;
+	buildForProxy {  | proxy, channelOffset = 0 |
 		proxy.initBus(\audio);
 		^this.endless.buildForProxy(proxy, channelOffset)
 	}
@@ -187,7 +187,7 @@
 + Pattern {
 	proxyControlClass { ^PatternControl }
 
-	buildForProxy { arg proxy, channelOffset=0;
+	buildForProxy { | proxy, channelOffset = 0 |
 		var player = this.asEventStreamPlayer;
 		var event = player.event.buildForProxy(proxy, channelOffset);
 		proxy.initBus(\audio);
@@ -197,7 +197,7 @@
 
 + Event {
 	proxyControlClass { ^StreamControl }
-	buildForProxy { arg proxy, channelOffset=0;
+	buildForProxy { | proxy, channelOffset = 0 |
 		var ok, index, server, numChannels, rate, finish;
 		ok = if(proxy.isNeutral) {
 			rate = this.at(\rate) ? 'audio';
@@ -237,7 +237,7 @@
 
 
 + Association {
-	buildForProxy { arg proxy, channelOffset=0, index;
+	buildForProxy { | proxy, channelOffset = 0, index |
 		^AbstractPlayControl.buildMethods[key].value(value, proxy, channelOffset, index)
 	}
 	proxyControlClass {
@@ -264,7 +264,7 @@
 
 		buildMethods = (
 
-			filter: #{ arg func, proxy, channelOffset = 0, index;
+			filter: #{ | func, proxy, channelOffset = 0, index |
 				var ok, ugen;
 				if(proxy.isNeutral) {
 					ugen = func.value(Silent.ar);
@@ -272,7 +272,7 @@
 					if(ok.not) { Error("NodeProxy input: wrong rate/numChannels").throw }
 				};
 
-				{ arg out;
+				{ | out |
 					var e;
 					e = EnvGate.new * Control.names(["wet"++(index ? 0)]).kr(1.0);
 					if(proxy.rate === 'audio') {
@@ -282,7 +282,7 @@
 				}.buildForProxy( proxy, channelOffset, index )
 
 			},
-			set: #{ arg pattern, proxy, channelOffset=0, index;
+			set: #{ | pattern, proxy, channelOffset = 0, index |
 				var args;
 				args = proxy.controlNames.collect(_.name);
 				Pbindf(
@@ -292,19 +292,19 @@
 					\args, args
 				).buildForProxy( proxy, channelOffset, index )
 			},
-			pset: #{ arg pattern, proxy, channelOffset=0, index;
+			pset: #{ | pattern, proxy, channelOffset = 0, index |
 				Pbindf(
 					pattern,
 					\play, { proxy.set(*proxy.controlNames.collect(_.name).envirPairs.asOSCArgArray) }
 				).buildForProxy( proxy, channelOffset, index )
 			},
-			xset: #{ arg pattern, proxy, channelOffset=0, index;
+			xset: #{ | pattern, proxy, channelOffset = 0, index |
 				Pbindf(
 					pattern,
 					\play, { proxy.xset(*proxy.controlNames.collect(_.name).envirPairs.asOSCArgArray) }
 				).buildForProxy( proxy, channelOffset, index )
 			},
-			setbus: #{ arg pattern, proxy, channelOffset=0, index;
+			setbus: #{ | pattern, proxy, channelOffset = 0, index |
 				var ok = proxy.initBus(\control);
 				if(ok.not) { Error("NodeProxy input: wrong rate").throw };
 				Pbindf(
@@ -315,17 +315,17 @@
 					\out, Pfunc { proxy.index }
 				).buildForProxy( proxy, channelOffset, index )
 			},
-			setsrc: #{ arg pattern, proxy, channelOffset=0, index=0;
+			setsrc: #{ | pattern, proxy, channelOffset = 0, index = 0 |
 				pattern.collect { |event|
 					event[\type] = \rest;
 					proxy.put(index + 1, event[\source]);
 					event
 				}.buildForProxy( proxy, channelOffset, index );
 			},
-			control: #{ arg values, proxy, channelOffset=0, index;
+			control: #{ | values, proxy, channelOffset = 0, index |
 				{ Control.kr(values) }.buildForProxy( proxy, channelOffset, index );
 			},
-			filterIn: #{ arg func, proxy, channelOffset=0, index;
+			filterIn: #{ | func, proxy, channelOffset = 0, index |
 				var ok, ugen;
 				if(proxy.isNeutral) {
 					ugen = func.value(Silent.ar);
@@ -333,7 +333,7 @@
 					if(ok.not) { Error("NodeProxy input: wrong rate/numChannels").throw }
 				};
 
-				{ arg out;
+				{ | out |
 					var in;
 					var egate = EnvGate.new;
 					var wetamp = Control.names(["wet"++(index ? 0)]).kr(1.0);
@@ -350,7 +350,7 @@
 				}.buildForProxy( proxy, channelOffset, index )
 			},
 
-			mix: #{ arg func, proxy, channelOffset=0, index;
+			mix: #{ | func, proxy, channelOffset = 0, index |
 
 				{ var e = EnvGate.new * Control.names(["mix"++(index ? 0)]).kr(1.0);
 					e * SynthDef.wrap(func);

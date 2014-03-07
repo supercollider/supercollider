@@ -7,18 +7,18 @@ ProxySpace : LazyEnvir {
 
 	*initClass { all = IdentityDictionary.new }
 
-	*new { arg server, name, clock;
+	*new { | server, name, clock |
 		^super.new.init(server ? Server.default, name, clock)
 	}
 
-	*push { arg server, name, clock;
+	*push { | server, name, clock |
 		if(name.isNil and: { currentEnvironment.isKindOf(this) }) {
 			currentEnvironment.clear.pop  // avoid nesting
 		};
 		^this.new(server, name, clock).push;
 	}
 
-	init { arg argServer, argName, argClock;
+	init { | argServer, argName, argClock |
 		server = argServer;
 		clock = argClock;
 		name = argName;
@@ -33,7 +33,7 @@ ProxySpace : LazyEnvir {
 		^proxy
 	}
 
-	initProxy { arg proxy;
+	initProxy { |proxy|
 		proxy.server = server;
 		proxy.clock = clock;
 		proxy.awake = awake;
@@ -46,32 +46,32 @@ ProxySpace : LazyEnvir {
 
 	// access and control
 
-	clock_ { arg aClock;
+	clock_ { |aClock|
 		clock = aClock;
 		this.do { arg item; item.clock = aClock };
 	}
 
-	fadeTime_ { arg dt;
+	fadeTime_ { |dt|
 		fadeTime = dt;
 		this.do { arg item; item.fadeTime = dt };
 	}
 
-	quant_ { arg val;
+	quant_ { |val|
 		quant = val;
 		this.do { arg item; item.quant = val };
 	}
 
-	awake_ { arg flag;
+	awake_ { |flag|
 		awake = flag;
 		this.do { arg item; item.awake = flag };
 	}
 
-	reshaping_ { arg val;
+	reshaping_ { |val|
 		reshaping = val;
 		this.do { arg item; item.reshaping = val };
 	}
 
-	group_ { arg node;
+	group_ { |node|
 		node = node.asGroup;
 		NodeWatcher.register(node, true);
 		if(node.isPlaying.not) { "group % not playing!".postf(node); ^this };
@@ -79,7 +79,7 @@ ProxySpace : LazyEnvir {
 		this.do { arg item; item.parentGroup = node };
 	}
 
-	makeTempoClock { arg tempo=1.0, beats, seconds;
+	makeTempoClock { | tempo = 1.0, beats, seconds |
 		var clock, proxy;
 		proxy = envir[\tempo];
 		if(proxy.isNil) { proxy = NodeProxy.control(server, 1); envir.put(\tempo, proxy); };
@@ -90,52 +90,52 @@ ProxySpace : LazyEnvir {
 	}
 
 
-	play { arg key=\out, out=0, numChannels=2;
+	play { | key = \out, out = 0, numChannels = 2 |
 		^this.use({ arg envir;
 			this.at(key).play(out, numChannels);
 		});
 	}
 
-	stop { arg fadeTime;
+	stop { |fadeTime|
 		this.do({ arg proxy; proxy.stop(fadeTime) })
 	}
 
-	record { arg key, path, headerFormat="aiff", sampleFormat="int16";
+	record { | key, path, headerFormat = "aiff", sampleFormat = "int16" |
 		^this.use({ arg envir;
 			this.at(key).record(path, headerFormat="aiff", sampleFormat);
 		});
 	}
 
-	ar { arg key=\out, numChannels, offset=0;
+	ar { | key = \out, numChannels, offset = 0 |
 		^this.use({ arg envir;
 			this.at(key).ar(numChannels, offset)
 		})
 	}
 
-	kr { arg key=\out, numChannels, offset=0;
+	kr { | key = \out, numChannels, offset = 0 |
 		^this.use({ arg envir;
 			this.at(key).kr(numChannels, offset)
 		})
 	}
 
-	free { arg fadeTime;
+	free { |fadeTime|
 		this.do { arg proxy; proxy.free(fadeTime) };
 		tempoProxy.free;
 	}
 
-	clear { arg fadeTime=0.0;
+	clear { |fadeTime|
 		this.do({ arg proxy; proxy.clear(fadeTime) });
 		tempoProxy !? { tempoProxy.clear };
 		//this.unregisterServer;
 		super.clear;
 	}
 
-	end { arg fadeTime;
+	end { |fadeTime|
 		this.do({ arg proxy; proxy.end(fadeTime) });
 		tempoProxy.free;
 	}
 
-	release { arg fadeTime;
+	release { |fadeTime|
 		this.do({ arg proxy; proxy.release(fadeTime) });
 		tempoProxy.free;
 	}
@@ -161,11 +161,11 @@ ProxySpace : LazyEnvir {
 		ServerBoot.remove(this, server);
 	}
 
-	doOnServerBoot { arg server;
+	doOnServerBoot { |server|
 		this.do(_.serverQuit);
 	}
 
-	doOnServerQuit { arg server;
+	doOnServerQuit { |server|
 		this.do(_.serverQuit);
 	}
 
@@ -173,22 +173,24 @@ ProxySpace : LazyEnvir {
 	// garbage collector
 
 	// ends all proxies that are not needed
-	reduce { arg excluding, method=\end;
+	reduce { | excluding, method = \end |
 		this.gcList(excluding).do { arg proxy; proxy.perform(method) };
 	}
 
 	// removes all proxies that are not needed
-	clean { arg excluding;
+	clean { |excluding|
 		this.reduce(nil, \clear);
 		this.removeNeutral;
 	}
 
 	removeNeutral {
-		envir.copy.keysValuesDo { arg key, val; if(val.isNeutral) { envir.removeAt(key) } };
+		envir.copy.keysValuesDo { |key, val| if(val.isNeutral) { envir.removeAt(key) } };
 	}
+
 	// get a list of all proxies that are not reached either by the list passed in
 	// or (if nil) by the monitoring proxies
-	gcList { arg excluding;
+
+	gcList { |excluding|
 		var monitors, all, toBeKept, res;
 		monitors = excluding ?? { this.monitors };
 		toBeKept = IdentitySet.new;
@@ -206,7 +208,7 @@ ProxySpace : LazyEnvir {
 		^monitors
 	}
 
-	getStructure { arg keys, excluding;
+	getStructure { |keys, excluding|
 		^keys.collect { |key|
 			var proxy = envir.at(key);
 			var structure;
@@ -225,8 +227,8 @@ ProxySpace : LazyEnvir {
 
 	existingProxies { ^this.arProxyNames }
 
-	arProxyNames { |func=true| ^this.proxyNames(\audio, func) }
-	krProxyNames { |func=true| ^this.proxyNames(\control, func) }
+	arProxyNames { |func = true| ^this.proxyNames(\audio, func) }
+	krProxyNames { |func = true| ^this.proxyNames(\control, func) }
 
 	proxyNames { |rate, func=true|
 		var pxs;
@@ -239,7 +241,7 @@ ProxySpace : LazyEnvir {
 		^pxs;
 	}
 
-	doFunctionPerform { arg selector; ^this[selector] }
+	doFunctionPerform { |selector| ^this[selector] }
 
 	// global access
 
@@ -261,7 +263,7 @@ ProxySpace : LazyEnvir {
 	}
 
 
-	printOn { arg stream;
+	printOn { |stream|
 		stream << this.class.name;
 		if(envir.isEmpty) { stream << " ()\n"; ^this };
 		stream << " ( " << (name ? "") << Char.nl;
