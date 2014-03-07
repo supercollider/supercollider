@@ -178,7 +178,7 @@
 			""
 		};
 
-		docStr = String.streamContents { arg stream;
+		docStr = String.streamContents { |stream|
 			if(isSingle) {
 				str = nameStr;
 				srcStr = if (this.source.notNil) { this.source.envirCompileString } { "" };
@@ -203,7 +203,7 @@
 					indexStr = "a";
 				};
 
-				this.objects.keysValuesDo { arg index, item;
+				this.objects.keysValuesDo { |index, item|
 
 					srcStr = item.source.envirCompileString ? "";
 					isMultiline = srcStr.includes(Char.nl);
@@ -301,14 +301,14 @@
 		// find keys for all parents
 		if(keys.notNil) {
 			proxies = IdentitySet.new;
-			keys.do { arg key; var p = envir[key]; p !? { p.getFamily(proxies) } };
-			keys = proxies.collect { arg item; item.key(envir) };
+			keys.do { |key| var p = envir[key]; p !? { p.getFamily(proxies) } };
+			keys = proxies.collect { |item| item.key(envir) };
 		} { keys = envir.keys };
 
 		if(hasGlobalClock) { keys.remove(\tempo) };
 
 		// add all objects to compilestring
-		keys.do { arg key;
+		keys.do { |key|
 			var proxy = envir.at(key);
 			stream << proxy.asCode(includeSettings, includeMonitors, this.envir) << "\n";
 		};
@@ -323,12 +323,12 @@
 	document { | keys, onlyAudibleOutput = false, includeSettings = true |
 		var str;
 		if(onlyAudibleOutput) {
-			keys = this.monitors.collect { arg item; item.key(envir) };
+			keys = this.monitors.collect { |item| item.key(envir) };
 		};
-		str = String.streamContents { arg stream;
+		str = String.streamContents { |stream|
 			stream << "// ( p = ProxySpace.new(s).push; ) \n\n";
 			this.storeOn(stream, keys, includeSettings);
-			//			this.do { arg px; if(px.monitorGroup.isPlaying) {
+			//			this.do { |px| if(px.monitorGroup.isPlaying) {
 			//				stream << px.playEditString << ".play; \n"
 			//				}
 			//			};
@@ -343,7 +343,7 @@
 + ProxyNodeMap {
 
 	asCode { | namestring = "", dropOut = false |
-		^String.streamContents({ arg stream;
+		^String.streamContents({ |stream|
 			var map;
 			if(dropOut) {
 				map = this.copy;

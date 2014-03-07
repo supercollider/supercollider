@@ -1,15 +1,15 @@
 AbstractOpPlug : AbstractFunction {
 
-	composeUnaryOp { arg aSelector;
+	composeUnaryOp { |aSelector|
 		^UnaryOpPlug.new(aSelector, this)
 	}
-	composeBinaryOp { arg aSelector, something;
+	composeBinaryOp { | aSelector, something |
 		^BinaryOpPlug.new(aSelector, this, something)
 	}
-	reverseComposeBinaryOp { arg aSelector, something;
+	reverseComposeBinaryOp { | aSelector, something |
 		^BinaryOpPlug.new(aSelector, something, this)
 	}
-	composeNAryOp { arg aSelector, anArgList;
+	composeNAryOp { | aSelector, anArgList |
 		^{ this.value(anArgList).performList(aSelector, anArgList) }
 	}
 	writeInputSpec {
@@ -21,7 +21,8 @@ AbstractOpPlug : AbstractFunction {
 
 UnaryOpPlug : AbstractOpPlug {
 	var >operator, >a;
-	*new { arg operator, a;
+
+	*new { | operator, a |
 		^super.newCopyArgs(operator, a)
 	}
 
@@ -29,17 +30,17 @@ UnaryOpPlug : AbstractOpPlug {
 
 	rate { ^a.rate }
 
-	numChannels { arg max;
+	numChannels { |max|
 		var n, res;
 		max = max ? 0;
 		n = a.numChannels(max);
 		^if(n.isNil, { nil }, { max(n, max) });
 	}
 
-	value { arg proxy;
+	value { |proxy|
 		var rate, numChannels;
 		rate = this.rate;
-		if(rate === 'stream') { rate = nil };  // cx defines rate of func as \stream
+		if(rate === 'stream') { rate = nil };  // crucial library defines rate of func as \stream
 		numChannels = this.numChannels;
 		if(rate.notNil and: { numChannels.notNil } and: { proxy.notNil }, {
 			proxy.initBus(rate, numChannels)
@@ -48,14 +49,14 @@ UnaryOpPlug : AbstractOpPlug {
 		^a.value(proxy).perform(operator)
 	}
 
-	initBus { arg rate, numChannels;
+	initBus { |rate, numChannels|
 		^a.initBus(rate, numChannels)
 	}
 	wakeUp  {
 		a.wakeUp;
 	}
 
-	prepareForProxySynthDef { arg proxy;
+	prepareForProxySynthDef { |proxy|
 		^{ this.value(proxy) }
 	}
 
@@ -68,11 +69,12 @@ UnaryOpPlug : AbstractOpPlug {
 
 BinaryOpPlug : AbstractOpPlug  {
 	var >operator, <>a, <>b;
-	*new { arg operator, a, b;
+
+	*new { | operator, a, b |
 		^super.newCopyArgs(operator, a, b)
 	}
 
-	value { arg proxy;
+	value { |proxy|
 		var vala, valb, rate, numChannels;
 		rate = this.rate;
 		if(rate === 'stream') { rate = nil };  // cx defines rate of func as \stream
@@ -85,7 +87,7 @@ BinaryOpPlug : AbstractOpPlug  {
 		valb = b.value(proxy);
 		^vala.perform(operator, valb)
 	}
-	initBus { arg rate, numChannels;
+	initBus { | rate, numChannels |
 		^a.initBus(rate, numChannels) and: { b.initBus(rate, numChannels) };
 	}
 
@@ -97,7 +99,7 @@ BinaryOpPlug : AbstractOpPlug  {
 		^if(a.rate !== \control) { a.rate } { b.rate } // as function.rate is defined as \stream
 	}
 
-	numChannels { arg max;
+	numChannels { |max|
 		var n1, n2, res;
 		max = max ? 0;
 		n1 = a.numChannels(max);

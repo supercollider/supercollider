@@ -273,7 +273,7 @@ BusPlug : AbstractFunction {
 	quant { ^nil }
 
 	vol { ^if(monitor.isNil) { 1.0 } { monitor.vol } }
-	vol_ { arg val; this.initMonitor(val) }
+	vol_ { |val| this.initMonitor(val) }
 
 	monitorIndex { ^if(monitor.isNil) { nil } { monitor.out } }
 	monitorGroup { ^if(monitor.isNil) { nil } { monitor.group } }

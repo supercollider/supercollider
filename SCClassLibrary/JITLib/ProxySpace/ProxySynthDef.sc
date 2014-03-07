@@ -5,8 +5,8 @@ ProxySynthDef : SynthDef {
 	classvar <>sampleAccurate=false;
 
 
-	*new { arg name, func, rates, prependArgs, makeFadeEnv=true, channelOffset=0,
-		chanConstraint, rateConstraint;
+	*new { | name, func, rates, prependArgs, makeFadeEnv = true, channelOffset = 0,
+		chanConstraint, rateConstraint |
 		var def, rate, numChannels, output, isScalar, envgen, canFree, hasOwnGate;
 		var hasGateArg=false, hasOutArg=false;
 		var outerBuildSynthDef = UGen.buildSynthDef;
