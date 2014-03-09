@@ -121,7 +121,7 @@ Monitor {
 		group = nil;
 		synthIDs = [];
 		if(oldGroup.isPlaying) {
-			groupFreeTime = if(argFadeTime.notNil) { argFadeTime } { fadeTimes.maxItem };
+			groupFreeTime = if(argFadeTime.notNil) { argFadeTime } { fadeTimes.asArray.maxItem ? 0.02 };
 			oldGroup.release(argFadeTime);
 			SystemClock.sched(groupFreeTime, { oldGroup.server.bind { oldGroup.free } })
 		};

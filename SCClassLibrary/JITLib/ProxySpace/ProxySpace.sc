@@ -28,13 +28,12 @@ ProxySpace : LazyEnvir {
 
 
 	makeProxy {
-		var proxy = NodeProxy.new;
+		var proxy = NodeProxy.new(server);
 		this.initProxy(proxy);
 		^proxy
 	}
 
 	initProxy { |proxy|
-		proxy.server = server;
 		proxy.clock = clock;
 		proxy.awake = awake;
 		if(fadeTime.notNil) { proxy.fadeTime = fadeTime };
