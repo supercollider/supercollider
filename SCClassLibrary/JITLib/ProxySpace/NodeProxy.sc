@@ -4,7 +4,6 @@ NodeProxy : BusPlug {
 	var <loaded=false, <>awake=true, <paused=false;
 	var <>clock, <>quant;
 	classvar <>buildProxyControl, <>buildProxy;
-	classvar <>verbose = true; // this is temporary for debugging
 
 
 	*new { | server, rate, numChannels, inputs |
@@ -839,14 +838,14 @@ NodeProxy : BusPlug {
 		if(checkedAlready.isNil or: { checkedAlready.includes(this).not }) {
 			this.rebuildToBundle(bundle, fadeTime);
 			if(busWasChangedExternally or: { bus != oldBus }) {
-				if(verbose) { "%: rebuilding children\n".postf(this) };
+				//if(verbose) { "%: rebuilding children\n".postf(this) };
 				if(checkedAlready.isNil) { checkedAlready = IdentitySet.new };
 				checkedAlready.add(this);
 				children.do { |item|
 					item.rebuildDeepToBundle(bundle, false, checkedAlready, fadeTime)
 				};
 				if(monitor.isPlaying) {
-					if(verbose) { postf("in % restarting monitor\n", this) };
+					//if(verbose) { postf("in % restarting monitor\n", this) };
 					monitor.playNBusToBundle(bundle, bus: bus);
 				}
 			}
@@ -856,7 +855,7 @@ NodeProxy : BusPlug {
 	rebuildToBundle { |bundle, fadeTime|
 		loaded = false;
 		nodeMap.upToDate = false; // if mapped to itself
-		if(verbose) { "rebuilding proxy: % (% channels, % rate)\n".postf(this, this.numChannels, this.rate) };
+		//if(verbose) { "rebuilding proxy: % (% channels, % rate)\n".postf(this, this.numChannels, this.rate) };
 		this.changed(\rebuild);
 		if(this.isPlaying) {
 			this.stopAllToBundle(bundle, fadeTime ? this.fadeTime);
@@ -953,12 +952,12 @@ NodeProxy : BusPlug {
 
 	addChild { |proxy|
 		children = children.add(proxy);
-		if(verbose) { "%: added child: % in %\n".postf(this, proxy, children) };
+		//if(verbose) { "%: added child: % in %\n".postf(this, proxy, children) };
 	}
 
 	removeChild { |proxy|
 		children.remove(proxy);
-		if(verbose) { "%: removed child: % in %\n".postf(this, proxy, children) };
+		//if(verbose) { "%: removed child: % in %\n".postf(this, proxy, children) };
 	}
 
 	// renames synthdef so one can use it in patterns

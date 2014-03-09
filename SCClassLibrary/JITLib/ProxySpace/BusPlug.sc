@@ -7,7 +7,7 @@ BusPlug : AbstractFunction {
 	var <>reshaping; // \minmax, \max
 
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1, <>defaultReshaping;
-	classvar <>verbose = true; // this is temporary for debugging
+	//classvar <>verbose = true; // this is temporary for debugging
 
 
 	*new { | server |
@@ -134,7 +134,7 @@ BusPlug : AbstractFunction {
 			this.setBus(inBus);
 			if(monitor.isPlaying) {
 				bundle = OSCBundle.new;
-				if(verbose) { postf("in % restarting monitor\n", this) };
+				//if(verbose) { postf("in % restarting monitor\n", this) };
 				monitor.stopToBundle(bundle);
 				monitor.playNBusToBundle(bundle, bus: inBus);
 				bundle.schedSend(server);
@@ -146,7 +146,7 @@ BusPlug : AbstractFunction {
 	// you have to stop and play explicitly
 	setBus { | inBus |
 		if(bus != inBus) {
-			if(verbose) { postf("% has new bus: % \nold bus was: %\n", this, inBus, bus) };
+			//if(verbose) { postf("% has new bus: % \nold bus was: %\n", this, inBus, bus) };
 			this.freeBus;
 			bus = inBus;
 			this.makeBusArg;

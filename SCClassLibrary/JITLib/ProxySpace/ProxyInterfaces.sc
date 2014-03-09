@@ -266,7 +266,6 @@ SynthDefControl : SynthControl {
 
 	build { | proxy, orderIndex = 0 |
 		var ok, rate, numChannels, outerDefControl, outerBuildProxy;
-		"building new SynthDefControl synthDef".postln;
 
 		outerDefControl = NodeProxy.buildProxyControl;
 		outerBuildProxy = NodeProxy.buildProxy;
