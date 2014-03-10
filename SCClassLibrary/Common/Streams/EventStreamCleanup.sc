@@ -3,7 +3,9 @@
 // This caused a minor change to TempoClock:clear and TempoClock:cmdPeriod
 
 EventStreamCleanup {
+
 	var <>functions;		// cleanup functions from child streams and parent stream
+
 	*new { ^super.new.clear }
 
 	clear {
@@ -12,23 +14,23 @@ EventStreamCleanup {
 
 	addFunction { |event, function |
 		if(event.isKindOf(Dictionary)) {
-			functions = functions.add(function);
+			functions.add(function);
 			event[\addToCleanup] = event[\addToCleanup].add(function);
 		};
 	}
 
 	addNodeCleanup { |event, function |
 		if(event.isKindOf(Dictionary)) {
-			functions = functions.add(function);
+			functions.add(function);
 			event[\addToNodeCleanup] = event[\addToNodeCleanup].add(function);
 		};
 	}
 
 	update { | event |
 		if(event.isKindOf(Dictionary)) {
-			functions = functions.addAll(event[\addToNodeCleanup]);
-			functions = functions.addAll(event[\addToCleanup]);
-			functions = functions.removeAll(event[\removeFromCleanup]);
+			functions.addAll(event[\addToNodeCleanup]);
+			functions.addAll(event[\addToCleanup]);
+			functions.removeAll(event[\removeFromCleanup]);
 		};
 		^event
 	}
