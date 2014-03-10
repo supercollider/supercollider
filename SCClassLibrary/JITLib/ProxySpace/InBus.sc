@@ -129,7 +129,7 @@ Monitor {
 
 	clear { | argFadeTime |
 		this.stop(argFadeTime);
-		ins = outs = amps = fadeTimes = nil;
+		ins = outs = amps = fadeTimes = defaults = nil;
 		vol = 1.0;
 	}
 

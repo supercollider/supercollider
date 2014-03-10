@@ -314,7 +314,7 @@ BusPlug : AbstractFunction {
 	}
 
 	newMonitorToBundle { | bundle, numChannels |
-		this.initBus(\audio, numChannels);
+		if(this.isNeutral) { this.initBus(\audio, numChannels) };
 		this.initMonitor;
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
 	}
