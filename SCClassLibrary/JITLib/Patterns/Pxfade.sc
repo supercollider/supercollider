@@ -35,14 +35,10 @@ PfadeIn : FilterPattern {
 
 PfadeOut : PfadeIn {
 
-	asStream { arg cleanup;
-		^Routine({ arg inval; this.embedInStream(inval, cleanup) })
-	}
-
-	embedInStream { arg inval, cleanup;
-		var outval, elapsed=0, stream, c;
+	embedInStream { arg inval;
+		var outval, elapsed=0, cleanup, stream, c;
 		stream = pattern.asStream;
-		cleanup ?? { cleanup = EventStreamCleanup.new };
+		cleanup = EventStreamCleanup.new;
 		loop {
 			inval = stream.next(inval) ?? { ^cleanup.exit(inval) };
 			cleanup.update(inval);
