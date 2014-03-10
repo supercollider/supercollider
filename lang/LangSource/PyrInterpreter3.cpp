@@ -927,7 +927,7 @@ HOT void Interpret(VMGlobals *g)
 			op2 = ip[1]; // get temp var level
 			op3 = ip[2]; // get temp var index
 			ip += 2;
-			for (tframe = g->frame; --op2; tframe = slotRawFrame(&tframe->context)) { /* noop */ }
+			for (tframe = g->frame; op2--; tframe = slotRawFrame(&tframe->context)) { /* noop */ }
 			slotCopy(++sp, &tframe->vars[op3]);
 			dispatch_opcode;
 		case 3 : // opExtended, opPushTempZeroVar
