@@ -145,7 +145,7 @@ BusPlug : AbstractFunction {
 
 	// you have to stop and play explicitly
 	setBus { | inBus |
-		if(bus != inBus) {
+		if(bus != inBus and: { inBus.notNil }) {
 			//if(verbose) { postf("% has new bus: % \nold bus was: %\n", this, inBus, bus) };
 			this.freeBus;
 			bus = inBus;
