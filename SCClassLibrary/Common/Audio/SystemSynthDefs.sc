@@ -13,25 +13,26 @@ SystemSynthDefs {
 	}
 
 	*initClass {
-		// clean up any written synthdefs starting with "temp__"
-		StartUp.add {
-			var path = SynthDef.synthDefDir ++ tempNamePrefix ++ "*";
-			if(pathMatch(path).notEmpty) { unixCmd("rm -f" + path.quote) };
 
+		StartUp.add {
+
+			// clean up any written synthdefs starting with "temp__"
+			var path = SynthDef.synthDefDir ++ tempNamePrefix ++ "*";
+			if(pathMatch(path).notEmpty) { unixCmd(("rm -f" + "'" ++ path ++ "'").postln )};
+
+			// add system synth defs
 			(1..numChannels).do { arg i;
 				SynthDef("system_link_audio_" ++ i,
-					{ arg out=0, in=16, vol=1, doneAction=2;
-						var env;
-						env = EnvGate( doneAction:doneAction, curve:'sin') * Lag.kr(vol, 0.05);
+					{ arg out=0, in=16, vol=1, level=1, lag=0.05, doneAction=2;
+						var env = EnvGate(doneAction:doneAction, curve:'sin') * Lag.kr(vol * level, lag);
 						Out.ar(out, InFeedback.ar(in, i) * env)
-					}, [\kr, \ir, \kr, \ir]).add;
+					}, [\kr, \kr, \kr, \kr, \kr, \ir]).add;
 
 				SynthDef("system_link_control_" ++ i,
 					{ arg out=0, in=16, doneAction=2;
-						var env;
-						env = EnvGate( doneAction:doneAction, curve:'lin');
+						var env = EnvGate(doneAction:doneAction, curve:'lin');
 						Out.kr(out, In.kr(in, i) * env)
-					}, [\kr, \ir, \kr, \ir]).add;
+					}, [\kr, \kr, \ir]).add;
 
 				SynthDef("system_diskout_" ++ i, { arg i_in, i_bufNum=0;
 					DiskOut.ar(i_bufNum, InFeedback.ar(i_in, i));
