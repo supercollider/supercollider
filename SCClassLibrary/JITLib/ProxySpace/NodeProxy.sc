@@ -891,7 +891,7 @@ NodeProxy : BusPlug {
 				}
 			};
 			bundle.schedSend(server, clock, quant);
-			CmdPeriod.doOnce { if(oldBus.index.notNil) { oldBus.free(true) } };
+			oldBus !? { CmdPeriod.doOnce { if(oldBus.index.notNil) { oldBus.free(true) } } };
 		} {
 			oldBus.free(true)
 		};
