@@ -15,6 +15,9 @@ AbstractOpPlug : AbstractFunction {
 	writeInputSpec {
 		Error("use .ar or .kr to use within a synth.").throw;
 	}
+	asUGenInput {
+		^this.value(nil)
+	}
 
 
 }
@@ -31,29 +34,22 @@ UnaryOpPlug : AbstractOpPlug {
 	rate { ^a.rate }
 
 	numChannels { |max|
-		var n, res;
+		var n;
 		max = max ? 0;
 		n = a.numChannels(max);
-		^if(n.isNil, { nil }, { max(n, max) });
+		^n !? { max(n, max) }
 	}
 
-	value { |proxy|
-		var rate, numChannels;
-		rate = this.rate;
-		if(rate === 'stream') { rate = nil };  // crucial library defines rate of func as \stream
-		numChannels = this.numChannels;
-		if(rate.notNil and: { numChannels.notNil } and: { proxy.notNil }, {
-			proxy.initBus(rate, numChannels)
-		});
-		a.initBus(rate, numChannels);
-		^a.value(proxy).perform(operator)
+	value { |obj|
+		^a.value(obj).perform(operator)
 	}
 
 	initBus { |rate, numChannels|
 		^a.initBus(rate, numChannels)
 	}
+
 	wakeUp  {
-		a.wakeUp;
+		a.wakeUp
 	}
 
 	prepareForProxySynthDef { |proxy|
@@ -75,38 +71,32 @@ BinaryOpPlug : AbstractOpPlug  {
 	}
 
 	value { |proxy|
-		var vala, valb, rate, numChannels;
-		rate = this.rate;
-		if(rate === 'stream') { rate = nil };  // cx defines rate of func as \stream
-		numChannels = this.numChannels;
-		if(rate.notNil and: { numChannels.notNil } and: { proxy.notNil }, {
-			proxy.initBus(rate, numChannels)
-		});
-		this.initBus(rate, numChannels);
-		vala = a.value(proxy);
-		valb = b.value(proxy);
-		^vala.perform(operator, valb)
+		^a.value(proxy).perform(operator, b.value(proxy))
 	}
+
 	initBus { | rate, numChannels |
 		^a.initBus(rate, numChannels) and: { b.initBus(rate, numChannels) };
 	}
 
-	isNeutral { ^a.isNeutral && b.isNeutral }
+	isNeutral { ^a.isNeutral and: { b.isNeutral } }
 
 	rate {
-		if(a.isNeutral) { ^b.rate };
-		if(b.isNeutral) { ^a.rate };
-		^if(a.rate !== \control) { a.rate } { b.rate } // as function.rate is defined as \stream
+		// \audio < \control < \scalar
+		// note that function.rate is defined as \stream
+		var arate = \scalar, brate = \scalar;
+		if(a.respondsTo(\rate)) { arate = a.rate };
+		if(b.respondsTo(\rate)) { brate = b.rate };
+		^if(arate < brate) { arate } { brate }
 	}
 
 	numChannels { |max|
 		var n1, n2, res;
 		max = max ? 0;
 		n1 = a.numChannels(max);
-		if(n1.notNil, { max = n1 });
+		if(n1.notNil) { max = n1 };
 		n2 = b.numChannels(max);
-		res = if(n1.isNil, { n2 }, { if(n2.isNil, { n1 }, { max(n1, n2) }) });
-		^if(res.notNil, { max(max,res) }, { nil })
+		res = if(n1.isNil) { n2 } { if(n2.isNil) { n1 } { max(n1, n2) } };
+		^res !? { max(max, res) }
 	}
 	wakeUp  {
 		a.wakeUp;
