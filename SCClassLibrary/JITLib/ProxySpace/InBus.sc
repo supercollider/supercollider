@@ -129,7 +129,7 @@ Monitor {
 
 	clear { | argFadeTime |
 		this.stop(argFadeTime);
-		ins = outs = amps = fadeTimes = defaults = nil;
+		ins = outs = amps = fadeTimes = nil;
 		vol = 1.0;
 	}
 
@@ -138,8 +138,8 @@ Monitor {
 
 	vol_ { | val |
 		if(val == vol) { ^this };
-		vol = val;
-		this.amps = amps;
+		vol = val; // todo: what to do if vol is a bus? is there a generalisation?
+		if(this.isPlaying) { group.set(\vol, val) };
 	}
 
 	// backward compatibility
@@ -192,7 +192,7 @@ Monitor {
 		amps = values;
 		if (this.isPlaying) {
 			group.server.listSendBundle(group.server.latency,
-				[15, synthIDs, "vol", values.flat.keep(synthIDs.size) * vol].flop
+				[15, synthIDs, "level", values.flat.keep(synthIDs.size)].flop
 			);
 		};
 	}
@@ -219,7 +219,7 @@ Monitor {
 		outs = argOuts ? outs;
 		amps = argAmps ? amps;
 		fadeTimes = argFadeTime ? fadeTimes;
-		vol = argVol ? vol;
+		vol = (argVol ? vol).asControlInput;
 
 		synthArgs = [
 			ins,
@@ -241,7 +241,7 @@ Monitor {
 			var in, out, amp, fadeTime;
 			#in, out, amp, fadeTime = array;
 			out = out.asArray;
-			amp = (amp * vol).asArray;
+			amp = amp.asArray;
 			fadeTime = fadeTime.asArray;
 			out.do { | item, j |
 				var id = server.nextNodeID;
@@ -250,8 +250,9 @@ Monitor {
 					id, 1, group.nodeID,
 					"out", item,
 					"in", in,
-					"vol", amp.clipAt(j),
-					"fadeTime", fadeTime.clipAt(j)
+					"level", amp.clipAt(j),
+					"fadeTime", fadeTime.clipAt(j),
+					"vol", vol
 				])
 			}
 		};
