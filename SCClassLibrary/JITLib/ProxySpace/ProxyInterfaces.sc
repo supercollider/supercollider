@@ -200,8 +200,8 @@ SynthControl : AbstractPlayControl {
 		server = target.server;
 		group = target.asTarget;
 		nodeID = server.nextNodeID;
-		bundle.add([9, this.asDefName, nodeID, addAction, group.nodeID]++extraArgs.asOSCArgArray);
-		if(paused) { bundle.add(["/n_run", nodeID, 0]) };
+		bundle.addCancel([9, this.asDefName, nodeID, addAction, group.nodeID]++extraArgs.asOSCArgArray);
+		if(paused) { bundle.addCancel(["/n_run", nodeID, 0]) };
 		^nodeID
 	}
 
@@ -261,6 +261,7 @@ SynthControl : AbstractPlayControl {
 SynthDefControl : SynthControl {
 
 	var <synthDef, <parents;
+	var prevBundle;
 
 	readyForPlay { ^synthDef.notNil }
 
@@ -307,13 +308,15 @@ SynthDefControl : SynthControl {
 			path = this.synthDefPath;
 			this.writeSynthDefFile(path, bytes);
 			bundle.addPrepare([6, path]); // "/d_load"
-		}
+		};
+		prevBundle = bundle;
 	}
 
 	freeToBundle { | bundle, proxy |
 		if(synthDef.notNil) { bundle.addPrepare([53, synthDef.name]) }; // "/d_free"
 		parents.do { |x| x.removeChild(proxy) };
 		parents = nil;
+		prevBundle !? { prevBundle.cancel };
 	}
 
 	writeSynthDefFile { | path, bytes |
