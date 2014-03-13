@@ -860,7 +860,7 @@ NodeProxy : BusPlug {
 		if(this.isPlaying) {
 			this.stopAllToBundle(bundle, fadeTime ? this.fadeTime);
 			objects.do { |item| item.freeToBundle(bundle, this) };
-			objects.do { |item, i| item.build(this, i) };
+			objects.do { |item, i| item.build(this, i) }; // TODO: strictly speaking, this should happen on beat.
 			this.loadToBundle(bundle);
 			if(fadeTime.isNil) {
 				this.sendAllToBundle(bundle)
