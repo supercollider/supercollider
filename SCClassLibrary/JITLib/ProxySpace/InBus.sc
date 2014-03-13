@@ -276,7 +276,11 @@ Monitor {
 
 	playNBusToBundle { | bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction, multi = false |
 
-		if(bus.rate !== \audio) { "Can't monitor a control rate bus.".warn; ^this };
+		if(bus.rate == \control) {
+			"Can't monitor a control rate bus.".warn;
+			this.stopToBundle(bundle);
+			^this
+		};
 		ins = this.updateDefault(\offsetIns, ins);
 		outs = this.updateDefault(\outs, outs) ? 0;
 

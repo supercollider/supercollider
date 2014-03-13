@@ -151,6 +151,7 @@ BusPlug : AbstractFunction {
 			bus = inBus;
 			this.makeBusArg;
 			busLoaded = bus.server.serverRunning;
+			this.changed(\setBus, bus);
 		}
 	}
 
@@ -251,7 +252,7 @@ BusPlug : AbstractFunction {
 			("server not running:" + this.homeServer).warn;
 			^this
 		};
-		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; ^this };
+		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
 		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime, addAction);
 		// homeServer: multi client support: monitor only locally
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
@@ -264,6 +265,7 @@ BusPlug : AbstractFunction {
 			("server not running:" + this.homeServer).warn;
 			^this
 		};
+		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
 		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction);
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
 		this.changed(\playN, [outs, amps, ins, vol, fadeTime, group, addAction]);
@@ -279,7 +281,6 @@ BusPlug : AbstractFunction {
 	monitorGroup { ^if(monitor.isNil) { nil } { monitor.group } }
 
 	initMonitor { | vol |
-		if(this.rate !== 'audio') { Error("can only monitor audio proxy").throw };
 		if(monitor.isNil) { monitor = Monitor.new };
 		if (vol.notNil) { monitor.vol_(vol) };
 		^monitor
@@ -301,6 +302,11 @@ BusPlug : AbstractFunction {
 
 	playToBundle { | bundle, out, numChannels,
 		group, multi=false, vol, fadeTime, addAction |
+		if(bus.rate == \control) {
+			"Can't monitor a control rate bus.".warn;
+			monitor !? { monitor.stopToBundle(bundle) };
+			^this
+		};
 		this.newMonitorToBundle(bundle, numChannels);
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
 		if(numChannels.notNil) { out = (0..numChannels-1) + out };
@@ -308,6 +314,11 @@ BusPlug : AbstractFunction {
 	}
 
 	playNToBundle { | bundle, outs, amps, ins, vol, fadeTime, group, addAction |
+		if(bus.rate == \control) {
+			"Can't monitor a control rate bus.".warn;
+			monitor !? { monitor.stopToBundle(bundle) };
+			^this
+		};
 		this.newMonitorToBundle(bundle, ins !? { ins.asArray.maxItem + 1 });
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
 		monitor.playNBusToBundle(bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction);
