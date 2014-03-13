@@ -198,7 +198,7 @@
 + Event {
 	proxyControlClass { ^StreamControl }
 	buildForProxy { | proxy, channelOffset = 0 |
-		var ok, index, server, numChannels, rate, finish;
+		var ok, index, server, numChannels, rate, finish, out, group;
 		ok = if(proxy.isNeutral) {
 			rate = this.at(\rate) ? 'audio';
 			numChannels = this.at(\numChannels);
@@ -212,18 +212,22 @@
 		^if(ok) {
 			index = proxy.index;
 			server = proxy.server;
+			out = {
+				var n = proxy.numChannels;
+				if(n.isNil) { -1 } {
+					(~channelOffset ? channelOffset) % n + index
+				}
+			};
+			group = { proxy.group.asNodeID };
 			this.use({
 				~proxy = proxy;
-				~channelOffset = channelOffset; // default value
-				~out = { ~channelOffset % numChannels + index };
-				~server = server; // not safe for server changes yet
+				~server = server;
 				finish = ~finish;
-				~group = { proxy.group.asNodeID };
 				~finish = {
 					finish.value;
 					proxy.nodeMap.addToEvent(currentEnvironment);
-					~group = ~group.value;
-					~out = ~out.value;
+					~group = group.value;
+					~out = out.value;
 				}
 			});
 			this
