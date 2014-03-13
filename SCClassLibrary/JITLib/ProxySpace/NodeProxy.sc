@@ -881,6 +881,7 @@ NodeProxy : BusPlug {
 		// the fully correct way would be to add it to the synth bundle
 		// but this would require a lot of argument passing.
 		// we just do it independently and add a bit of leeway if the synthDef loads slowly.
+		if(bus.isNil) { ^this };
 		if(this.isPlaying) {
 			fadeTime = fadeTime ? this.fadeTime;
 			bundle = MixedBundle.new;
@@ -891,7 +892,7 @@ NodeProxy : BusPlug {
 				}
 			};
 			bundle.schedSend(server, clock, quant);
-			oldBus !? { CmdPeriod.doOnce { if(oldBus.index.notNil) { oldBus.free(true) } } };
+			CmdPeriod.doOnce { if(oldBus.index.notNil) { oldBus.free(true) } };
 		} {
 			oldBus.free(true)
 		};
