@@ -249,7 +249,6 @@ NodeProxy : BusPlug {
 
 	setBus { | argBus |
 		super.setBus(argBus);
-		this.changed(\setBus, argBus);
 		this.linkNodeMap;
 	}
 
@@ -860,7 +859,7 @@ NodeProxy : BusPlug {
 		if(this.isPlaying) {
 			this.stopAllToBundle(bundle, fadeTime ? this.fadeTime);
 			objects.do { |item| item.freeToBundle(bundle, this) };
-			objects.do { |item, i| item.build(this, i) }; // TODO: strictly speaking, this should happen on beat.
+			objects.do { |item, i| item.build(this, i) };
 			this.loadToBundle(bundle);
 			if(fadeTime.isNil) {
 				this.sendAllToBundle(bundle)
