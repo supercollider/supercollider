@@ -41,7 +41,7 @@ SplayAz : UGen {
 		var n = max(1, inArray.size);
 		var pos = if(n == 1) { center } { [ center - spread, center + spread ].resamp1(n) };
 		if (levelComp) { level = level * n.reciprocal.sqrt };
-		^PanAz.kr(numChans, inArray, pos, level, width, orientation).flop.collect(Mix(_))
+		^PanAz.kr(numChans, inArray.asArray, pos, level, width, orientation).flop.collect(Mix(_))
 	}
 
 	*ar { arg numChans = 4, inArray, spread = 1, level = 1, width = 2, center = 0.0, orientation = 0.5, levelComp = true;
@@ -49,7 +49,7 @@ SplayAz : UGen {
 		var n = max(1, inArray.size);
 		var pos = if(n == 1) { center } { [ center - spread, center + spread ].resamp1(n) };
 		if (levelComp) { level = level * n.reciprocal.sqrt };
-		^PanAz.ar(numChans, inArray, pos, level, width, orientation).flop.collect(Mix(_))
+		^PanAz.ar(numChans, inArray.asArray, pos, level, width, orientation).flop.collect(Mix(_))
 	}
 
 	*arFill { arg numChans = 4, n, function, spread = 1, level = 1, width = 2, center = 0.0, orientation = 0.5, levelComp = true;
