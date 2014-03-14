@@ -27,7 +27,8 @@ NodeProxy : BusPlug {
 		children = nil;             // for now: also remove children
 		this.stop(fadeTime, true);		// stop any monitor
 		monitor = nil;
-		this.freeBus(fadeTime);	 // free the bus from the server allocator
+		this.fadeTime = fadeTime; // set the fadeTime one last time for freeBus
+		this.freeBus;	 // free the bus from the server allocator
 		this.init;	// reset the environment
 		this.changed(\clear, [fadeTime]);
 	}
@@ -138,7 +139,7 @@ NodeProxy : BusPlug {
 		if(this.shouldAddObject(container, index)) {
 			 // server sync happens here if necessary
 			if(server.serverRunning) { container.loadToBundle(bundle, server) } { loaded = false; };
-			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus != bus });
+			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus !== bus });
 		} {
 			format("failed to add % to node proxy: %", obj, this).inform;
 			^this
@@ -158,7 +159,7 @@ NodeProxy : BusPlug {
 		};
 		if(busChanged) {
 			tempReshaping = reshaping; reshaping = nil;
-			this.rebuildDeepToBundle(bundle, true, nil, this.fadeTime);
+			this.rebuildDeepToBundle(bundle, true, nil, [this.fadeTime, quant, clock]);
 			reshaping = tempReshaping;
 		};
 	}
@@ -211,7 +212,7 @@ NodeProxy : BusPlug {
 
 	rebuild {
 		var bundle = MixedBundle.new;
-		this.rebuildDeepToBundle(bundle, false, nil, this.fadeTime);
+		this.rebuildDeepToBundle(bundle, false, nil, [this.fadeTime, quant, clock]);
 		bundle.schedSend(server, clock ? TempoClock.default, quant);
 	}
 
@@ -222,19 +223,19 @@ NodeProxy : BusPlug {
 		if(numChannels.isNil and: { rate.isNil }) {
 			// adjust to the source objects
 			reshaping = argReshaping ? \max;
-			this.rebuildDeepToBundle(bundle, false, nil, this.fadeTime)
+			this.rebuildDeepToBundle(bundle, false, nil, [this.fadeTime, quant, clock])
 		} {
 			// adjust to given shape
 			reshaping = argReshaping ? \minmax;
 			this.initBus(rate, numChannels);
 			//  if necessary, rebuild without adjustment
-			if(bus != oldBus) {
+			if(bus !== oldBus) {
 				reshaping = nil;
-				this.rebuildDeepToBundle(bundle, true, nil, this.fadeTime)
+				this.rebuildDeepToBundle(bundle, true, nil, [this.fadeTime, quant, clock])
 			}
 		};
 		reshaping = tempReshaping;
-		if(server.serverRunning) { bundle.schedSend(server, clock, quant) };
+		if(server.serverRunning) { bundle.schedSend(server, clock ? TempoClock.default, quant) };
 	}
 
 	lag { | ... args |
@@ -412,7 +413,7 @@ NodeProxy : BusPlug {
 			}
 		};
 		bundle.add(proxy.moveBeforeMsg(this));
-		bundle.schedSend(server, server.latency);
+		bundle.schedSend(server);
 	}
 
 	// map receiver to proxy input
@@ -832,16 +833,16 @@ NodeProxy : BusPlug {
 		objects.do { arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
 	}
 
-	rebuildDeepToBundle { |bundle, busWasChangedExternally = true, checkedAlready, fadeTime|
+	rebuildDeepToBundle { |bundle, busWasChangedExternally = true, checkedAlready, timeArgs|
 		var oldBus = bus;
 		if(checkedAlready.isNil or: { checkedAlready.includes(this).not }) {
-			this.rebuildToBundle(bundle, fadeTime);
-			if(busWasChangedExternally or: { bus != oldBus }) {
+			this.rebuildToBundle(bundle, timeArgs);
+			if(busWasChangedExternally or: { bus !== oldBus }) {
 				//if(verbose) { "%: rebuilding children\n".postf(this) };
 				if(checkedAlready.isNil) { checkedAlready = IdentitySet.new };
 				checkedAlready.add(this);
 				children.do { |item|
-					item.rebuildDeepToBundle(bundle, false, checkedAlready, fadeTime)
+					item.rebuildDeepToBundle(bundle, false, checkedAlready, timeArgs)
 				};
 				if(monitor.isPlaying) {
 					//if(verbose) { postf("in % restarting monitor\n", this) };
@@ -851,46 +852,41 @@ NodeProxy : BusPlug {
 		}
 	}
 
-	rebuildToBundle { |bundle, fadeTime|
+	rebuildToBundle { |bundle, timeArgs|
+		// we need to pass and temporarily set the timing information
+		// so that freeBus has the correct fadeTime.
+		var prevTimeArgs = [this.fadeTime, quant, clock];
+		timeArgs !? { this.fadeTime = timeArgs[0]; quant = timeArgs[1]; clock = timeArgs[2] };
 		loaded = false;
 		nodeMap.upToDate = false; // if mapped to itself
 		//if(verbose) { "rebuilding proxy: % (% channels, % rate)\n".postf(this, this.numChannels, this.rate) };
-		this.changed(\rebuild);
 		if(this.isPlaying) {
-			this.stopAllToBundle(bundle, fadeTime ? this.fadeTime);
+			this.stopAllToBundle(bundle);
 			objects.do { |item| item.freeToBundle(bundle, this) };
 			objects.do { |item, i| item.build(this, i) };
 			this.loadToBundle(bundle);
-			if(fadeTime.isNil) {
-				this.sendAllToBundle(bundle)
-			} {
-				this.sendAllToBundle(bundle, [\fadeTime, fadeTime])
-			}
+			this.sendAllToBundle(bundle);
 		} {
 			objects.do { |item| item.freeToBundle(bundle, this) };
 			objects.do { |item, i| item.build(this, i) };
-		}
+		};
+		timeArgs !? { this.fadeTime = prevTimeArgs[0]; quant = prevTimeArgs[1]; clock = prevTimeArgs[2] };
+		this.changed(\rebuild);
 	}
 
 
 	// allocation
 
-	freeBus { |fadeTime|
-		var oldBus = bus, bundle;
-		// the fully correct way would be to add it to the synth bundle
-		// but this would require a lot of argument passing.
-		// we just do it independently and add a bit of leeway if the synthDef loads slowly.
-		if(bus.isNil) { ^this };
+	freeBus {
+		var oldBus = bus, bundle, fadeTime;
+		if(oldBus.isNil) { ^this };
 		if(this.isPlaying) {
-			fadeTime = fadeTime ? this.fadeTime;
+			fadeTime = this.fadeTime;
 			bundle = MixedBundle.new;
 			bundle.addFunction {
-				fork {
-					(fadeTime + 0.5).wait;
-					oldBus.free(true);
-				}
+				SystemClock.sched(fadeTime, { oldBus.free(true); nil });
 			};
-			bundle.schedSend(server, clock, quant);
+			bundle.schedSend(server, clock ? TempoClock.default, quant);
 			CmdPeriod.doOnce { if(oldBus.index.notNil) { oldBus.free(true) } };
 		} {
 			oldBus.free(true)
