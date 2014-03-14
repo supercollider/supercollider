@@ -254,12 +254,12 @@ SequenceableCollection : Collection {
 	}
 
 	resamp0 { arg newSize;
-		var factor = this.size - 1 / (newSize - 1);
+		var factor = this.size - 1 / (newSize - 1).max(1);
 		^this.species.fill(newSize, { |i| this.at((i * factor).round(1.0).asInteger) })
 	}
 
 	resamp1 { arg newSize;
-		var factor = this.size - 1 / (newSize - 1);
+		var factor = this.size - 1 / (newSize - 1).max(1);
 		^this.species.fill(newSize, { |i| this.blendAt(i * factor) })
 	}
 
