@@ -820,7 +820,7 @@ NodeProxy : BusPlug {
 			this.wakeUpParentsToBundle(bundle, checkedAlready);
 			if(loaded.not) { this.loadToBundle(bundle) };
 			if(awake and: { this.isPlaying.not }) {
-				this.prepareToBundle(nil, bundle, \addToHead);
+				this.prepareToBundle(nil, bundle);
 				this.sendAllToBundle(bundle);
 			};
 		};
