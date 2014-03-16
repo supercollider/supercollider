@@ -98,6 +98,9 @@ Score {
 
 	recordNRT { arg oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, headerFormat =
 		"AIFF", sampleFormat = "int16", options, completionString="", duration = nil, action = nil;
+		if(oscFilePath.isNil) {
+			oscFilePath = PathName.tmp +/+ "temp_oscscore%" ++ UniqueID.next;
+		};
 		this.writeOSCFile(oscFilePath, 0, duration);
 		unixCmd(program + " -N" + oscFilePath.quote
 			+ if(inputFilePath.notNil, { inputFilePath.quote }, { "_" })
