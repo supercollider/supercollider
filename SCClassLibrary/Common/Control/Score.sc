@@ -128,6 +128,9 @@ Score {
 	*write { arg list, oscFilePath, clock;
 		var osccmd, f, tempoFactor;
 		f = File(oscFilePath, "w");
+		if(f.isOpen.not) {
+			Error("Failed to write OSC score file: Could not open % for writing".format(oscFilePath)).throw;
+		};
 		tempoFactor = (clock ? TempoClock.default).tempo.reciprocal;
 		protect {
 			list.size.do { |i|
@@ -149,6 +152,9 @@ Score {
 	saveToFile { arg path;
 		var f;
 		f = File.new(path, "w");
+		if(f.isOpen.not) {
+			Error("Failed to write Score to text: Could not open % for writing".format(path)).throw;
+		};
 		f.putString("[ // SuperCollider Score output " ++ Date.getDate ++ "\n");
 		score.do{ arg me;
 			f.putString((me).asCompileString ++ ",\n");
