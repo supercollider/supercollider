@@ -61,22 +61,22 @@ BusPlug : AbstractFunction {
 	prepareOutput { } // see subclass
 	clock { ^nil  }
 
-	ar { | numChannels, offset = 0 |
+	ar { | numChannels, offset = 0, clip = \wrap |
 		if(this.isNeutral) {
 			this.defineBus(\audio, numChannels)
 		};
 		this.prepareOutput;
 		 // always return an array
-		^InBus.ar(bus, numChannels ? bus.numChannels, offset).asArray
+		^InBus.ar(bus, numChannels ? bus.numChannels, offset, clip).asArray
 	}
 
-	kr { | numChannels, offset = 0 |
+	kr { | numChannels, offset = 0, clip = \wrap |
 		if(this.isNeutral) {
 			this.defineBus(\control, numChannels)
 		};
 		this.prepareOutput;
 		 // always return an array
-		^InBus.kr(bus, numChannels ? bus.numChannels, offset).asArray
+		^InBus.kr(bus, numChannels ? bus.numChannels, offset, clip).asArray
 	}
 
 
