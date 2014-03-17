@@ -1,42 +1,44 @@
-InBus {
+InBus : UGen {
 
-	*ar { | bus, numChannels = 2, offset = 0 |
-		^this.getOutput(bus.asBus, 'audio', numChannels, offset);
+	*ar { | bus, numChannels = 2, offset = 0, clip |
+		^this.multiNew('audio', Ref(bus), numChannels, offset, clip);
 	}
 
-	*kr { | bus, numChannels=1, offset = 0 |
-		^this.getOutput(bus.asBus, 'control', numChannels, offset);
+	*kr { | bus, numChannels=1, offset = 0, clip |
+		^this.multiNew('control', Ref(bus), numChannels, offset, clip);
 	}
 
-	*getOutput { | bus, argRate, numChannels, offset = 0 |
-
-		var out, index;
-		var rate = bus.rate;
-		var startIndex = bus.index + offset;
-		var n = bus.numChannels;
-		if(n >= numChannels) {
-			index = startIndex.min(n + bus.index);
+	*new1 { |rate, bus, numChannels, offset, clip|
+		var out, index, n, busRate;
+		bus = bus.value.asBus;
+		busRate = bus.rate;
+		n = bus.numChannels;
+		if(offset.isNumber and: { offset + numChannels <= n }) {
+			index = bus.index + offset;  // then we can optimize
 		} {
-			index = Array.fill(numChannels, { arg i; startIndex + (i % n) });
+			offset = offset + (0 .. numChannels-1);
+			offset = if(clip === \wrap) { offset % n } { min(offset, n - 1) };
+			index = (bus.index + offset).unbubble;
 			numChannels = 1;
 		};
 
-		out = if(offset.isInteger) {
-			if(rate === 'audio') {
+
+		out = if(index.isInteger) {
+			if(busRate === 'audio') {
 				InFeedback.ar(index, numChannels)
 			} {
 				In.kr(index, numChannels)
 			}
 		} {
-			if(rate === 'audio') {
+			if(busRate === 'audio') {
 				XInFeedback.ar(index, numChannels)
 			} {
 				XIn.kr(index, numChannels)
 			}
 		};
 
-		^if(argRate === rate) { out } { // if not the same rate, convert rates
-			if(argRate === 'audio') { K2A.ar(out) } { A2K.kr(out) }
+		^if(rate === busRate) { out } { // if not the same rate, convert rates
+			if(rate === 'audio') { K2A.ar(out) } { A2K.kr(out) }
 		};
 
 	}
