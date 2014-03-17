@@ -222,12 +222,12 @@
 			this.use({
 				~proxy = proxy;
 				~server = server;
+				~group = group;
+				~out = out;
 				finish = ~finish;
 				~finish = {
 					finish.value;
 					proxy.nodeMap.addToEvent(currentEnvironment);
-					~group = group.value;
-					~out = out.value;
 				}
 			});
 			this
