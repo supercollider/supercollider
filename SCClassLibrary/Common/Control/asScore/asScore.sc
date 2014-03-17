@@ -14,7 +14,7 @@
 			headerFormat = "AIFF", sampleFormat = "int16", options, inputFilePath, action;
 
 		var file, oscFilePath, score;
-		oscFilePath = "temp_oscscore" ++ UniqueID.next;
+		oscFilePath = PathName.tmp +/+ "temp_oscscore" ++ UniqueID.next;
 		score = this.asScore(maxTime);
 		score.recordNRT(
 			oscFilePath, path, inputFilePath, sampleRate, headerFormat, sampleFormat,
