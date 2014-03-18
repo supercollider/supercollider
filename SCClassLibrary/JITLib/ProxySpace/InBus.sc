@@ -1,10 +1,10 @@
 InBus : UGen {
 
-	*ar { | bus, numChannels = 2, offset = 0, clip |
+	*ar { | bus, numChannels, offset = 0, clip |
 		^this.multiNew('audio', Ref(bus), numChannels, offset, clip);
 	}
 
-	*kr { | bus, numChannels=1, offset = 0, clip |
+	*kr { | bus, numChannels, offset = 0, clip |
 		^this.multiNew('control', Ref(bus), numChannels, offset, clip);
 	}
 
@@ -13,6 +13,8 @@ InBus : UGen {
 		bus = bus.value.asBus;
 		busRate = bus.rate;
 		n = bus.numChannels;
+		numChannels = numChannels ? n;
+
 		if(offset.isNumber and: { offset + numChannels <= n }) {
 			index = bus.index + offset;  // then we can optimize
 		} {
