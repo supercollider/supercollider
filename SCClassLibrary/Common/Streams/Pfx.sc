@@ -22,13 +22,12 @@ Pfx : FilterPattern {
 		event[\id] = id;
 		event[\delta] = 0;
 
-		cleanupEvent = (type: \off, parent: event);
+		inevent = event.yield;
 
+		cleanupEvent = (type: \off, parent: event);
 		cleanup.addFunction(event, { |flag|
 			if (flag) { cleanupEvent.play }
 		});
-
-		inevent = event.yield;
 
 		stream = pattern.asStream;
 
