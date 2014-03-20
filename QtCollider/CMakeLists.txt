@@ -1,28 +1,8 @@
-if(APPLE)
-    set(required_qt_version 4.8.5)
-else()
-    set(required_qt_version 4.7)
-endif()
+set(required_qt_version 5.2)
 
-find_package (Qt4 ${required_qt_version} COMPONENTS QtCore QtGui QtWebKit)
-
-if (NOT QT4_FOUND)
-    set(FIND_QT_ERROR_MSG "You are trying to compile with Qt GUI support, but a suitable version of Qt or one of its components could not be found:")
-
-    if(NOT QT_QTCORE_FOUND)
-      set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\n-- Missing component: QtCore")
-    endif()
-    if(NOT QT_QTGUI_FOUND)
-      set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\n-- Missing component: QtGui")
-    endif()
-    if(NOT QT_QTWEBKIT_FOUND)
-      set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\n-- Missing component: QtWebKit")
-    endif()
-
-    set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\nPlease either install Qt (version ${required_qt_version} or greater), or compile without Qt GUI support (add -DSC_QT=OFF to the cmake command line).")
-
-    message(FATAL_ERROR ${FIND_QT_ERROR_MSG})
-endif()
+find_package(Qt5Core)
+find_package(Qt5Gui) 
+find_package(Qt5WebKit)
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -DQC_DEBUG")
@@ -130,14 +110,11 @@ endif()
 
 set( QT_USE_QTWEBKIT TRUE )
 
-
-include(${QT_USE_FILE})
-
-qt4_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
-qt4_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )
+qt5_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
+qt5_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )
 
 if(APPLE)
-	qt4_wrap_cpp( QT_COLLIDER_OBJ_MOC_SRCS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
+	qt5_wrap_cpp( QT_COLLIDER_OBJ_MOC_SRCS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
 	list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
   	set( QT_COLLIDER_OBJCPP_SRCS
   		${QT_COLLIDER_OBJ_MOC_SRCS}

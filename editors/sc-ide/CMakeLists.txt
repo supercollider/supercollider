@@ -1,6 +1,11 @@
 cmake_minimum_required( VERSION 2.8 )
 
-find_package(Qt4 4.7 REQUIRED QtCore QtGui QtWebKit QtNetwork)
+find_package(Qt5Core)
+find_package(Qt5Gui) 
+find_package(Qt5WebKit)
+find_package(Qt5Network)
+find_package(Qt5Widgets)
+find_package(Qt5LinguistTools)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
@@ -174,12 +179,6 @@ add_custom_target( update_ide_translations
             -no-obsolete -pluralonly
 )
 
-include( ${QT_USE_FILE} )
-
-qt4_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
-qt4_wrap_ui( ide_forms_src ${ide_forms} )
-qt4_add_resources( ide_rcc resources.qrc )
-qt4_add_translation( translations ${translation_src} ${native_translation_src} )
 
 set(ide_sources ${ide_src} ${all_hdr} )
 
@@ -203,6 +202,12 @@ else()
   add_executable( ${ide_name} MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} ${RES_FILES} )
 endif()
 
+qt5_use_modules( ${ide_name} Core Network Gui WebKit WebKitWidgets Widgets)
+
+qt5_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
+qt5_wrap_ui( ide_forms_src ${ide_forms} )
+qt5_add_resources( ide_rcc resources.qrc )
+qt5_add_translation( translations ${translation_src} ${native_translation_src} )
 
 target_link_libraries( ${ide_name} ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${YAMLCPP_LIBRARY} )
 
@@ -272,8 +277,8 @@ if(APPLE)
 
     include(InstallRequiredSystemLibraries)
 
-    include(DeployQt4)
-    install_qt4_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
+    include(DeployQt5)
+    install_qt5_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
 
 elseif(WIN32)
 	install(TARGETS ${ide_name}
