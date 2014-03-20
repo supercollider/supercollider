@@ -72,7 +72,7 @@ Pcollect : FuncFilterPattern {
 		}
 	}
 	asStream {
-		^pattern.asStream.collect(func);
+		^pattern.streamArg.collect(func);
 	}
 }
 
@@ -90,7 +90,7 @@ Pselect : FuncFilterPattern {
 		}
 	}
 	asStream {
-		^pattern.asStream.select(func);
+		^pattern.streamArg.select(func);
 	}
 }
 
@@ -108,7 +108,7 @@ Preject : FuncFilterPattern {
 		}
 	}
 	asStream {
-		^pattern.asStream.reject(func);
+		^pattern.streamArg.reject(func);
 	}
 }
 

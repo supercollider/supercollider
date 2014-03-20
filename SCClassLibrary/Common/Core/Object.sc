@@ -230,7 +230,7 @@ Object  {
 	loop { ^this.repeat(inf) }
 
 	asStream { ^this }
-	streamArg { arg embed = true;
+	streamArg { arg embed = false;
 		^if(embed) {
 			Routine { arg inval; this.embedInStream(inval) }
 		} {
