@@ -183,14 +183,13 @@ if(SC_WII)
 	endif()
 endif()
 
-include(../SCDoc/CMakeLists.txt)
-list(APPEND sclang_sources ${SCDOC_SRCS})
-
 if(SC_IDE)
 	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
-	find_package( Qt4 4.7 REQUIRED QtCore QtNetwork QtGui)
-	include( ${QT_USE_FILE} )
-	qt4_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
+	find_package(Qt5Core REQUIRED)
+	find_package(Qt5Network REQUIRED)
+	find_package(Qt5Gui REQUIRED)
+
+	qt5_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
 	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
 	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
 endif()
@@ -201,11 +200,18 @@ if(SC_QT)
 	list(APPEND sclang_sources ${QT_COLLIDER_SRCS})
 endif()
 
+include(../SCDoc/CMakeLists.txt)
+list(APPEND sclang_sources ${SCDOC_SRCS})
+
 if(0 AND FINAL_BUILD) # sclang final-builds are broken
 	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
 	add_library(libsclang STATIC libsclang_final.cpp ${sclang_parser_source})
 else()
 	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+endif()
+
+if(SC_IDE OR SC_QT)
+	qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets)
 endif()
 
 set_property(TARGET libsclang
