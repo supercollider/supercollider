@@ -64,9 +64,9 @@ void DocumentsDialog::init( Mode mode, const QList<Document*> &docs )
     mDocTree->setHeaderLabels(headerLabels);
 
     mDocTree->header()->setStretchLastSection(false);
-    mDocTree->header()->setResizeMode(1, QHeaderView::Stretch);
+    mDocTree->header()->setSectionResizeMode(1, QHeaderView::Stretch);
     if (mode == ExternalChange)
-        mDocTree->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+        mDocTree->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
 
     switch (mode)
     {
