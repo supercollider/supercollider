@@ -795,6 +795,31 @@ a = (0..3).iter.loop;
 a.nextN(9)
 ::
 
+method::streamArg
+	Dependent on whether an object that is passed to a stream the object will behave differently: it may be embedded in the stream or used as stream directly.
+
+	This method allows to switch between the two behaviors. For efficiency, the subclasses link::Classes/Pattern:: and link::Classes/Stream:: implement this method simply as "asStream".
+	argument::embed
+	If set to true, the object embeds itself into the stream (and thus return only once). If set to false, it returns itself forever. For simplicity, subclasses implement this method without this switch.
+
+
+code::
+// embedding an event
+a = (z: 77);
+b = Pset(\y, 8, a.streamArg(true)).asStream;
+c = Pset(\y, 8, a.streamArg(false)).asStream;
+b.nextN(3, ()); // this ends
+c.nextN(3, ()); // this loops
+
+// embedding a pattern
+a = Pbind(\note, Pseq([1, 2]));
+b = Pset(\y, 8, a.streamArg(true)).asStream;
+c = Pset(\y, 8, a.streamArg(false)).asStream;
+b.nextN(3, ()); // this ends
+c.nextN(3, ()); // this ends, too
+::
+
+
 method::addFunc
 method::addFuncTo
 method::removeFunc
