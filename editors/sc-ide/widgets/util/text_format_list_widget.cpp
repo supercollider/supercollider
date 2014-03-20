@@ -95,7 +95,7 @@ TextFormatListWidget::TextFormatListWidget( QWidget * parent ):
     setItemDelegate( new ItemDelegate(this) );
     delete old_d;
 
-    header()->setResizeMode( QHeaderView::ResizeToContents );
+    header()->setSectionResizeMode( QHeaderView::ResizeToContents );
 
     setContextMenuPolicy(Qt::CustomContextMenu);
 
