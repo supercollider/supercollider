@@ -26,7 +26,6 @@
 #include "style/style.hpp"
 #include "metatype.hpp"
 
-#include <QPlastiqueStyle>
 #include <QTimer>
 #include <QEventLoop>
 #include <QDir>
