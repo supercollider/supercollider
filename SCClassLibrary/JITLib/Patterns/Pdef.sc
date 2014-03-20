@@ -455,7 +455,6 @@ EventPatternProxy : TaskProxy {
 				// inval is the next event that will be yielded
 				// constrainStream may add some values to it so *it must be yielded*
 				stream = this.constrainStream(stream, pattern.streamArg(embed), inval, cleanup);
-				cleanup = EventStreamCleanup.new;
 			};
 			outval = stream.next(inval) ? default;
 			count = count + 1;
@@ -494,11 +493,21 @@ EventPatternProxy : TaskProxy {
 					cleanup !? { cleanup.exit(inval) };
 					newStream
 				} {
-					Pseq([EmbedOnce(Pfindur(delta, stream, tolerance).asStream), newStream]).asStream
+					// test CleanupStream here
+					Pseq([
+						EmbedOnce(
+							Pfindur(delta, stream, tolerance).asStream,
+							cleanup
+						),
+						newStream
+					]).asStream
 				}
 			}{
 				Ppar([
-					EmbedOnce(PfadeOut(stream, fadeTime, delta, tolerance).asStream),
+					EmbedOnce(
+						PfadeOut(stream, fadeTime, delta, tolerance),
+						cleanup
+					),
 					PfadeIn(newStream, fadeTime, delta, tolerance)
 				]).asStream
 			}
