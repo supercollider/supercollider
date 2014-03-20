@@ -493,7 +493,6 @@ EventPatternProxy : TaskProxy {
 					cleanup !? { cleanup.exit(inval) };
 					newStream
 				} {
-					// test CleanupStream here
 					Pseq([
 						EmbedOnce(
 							Pfindur(delta, stream, tolerance).asStream,
