@@ -63,6 +63,14 @@ static bool dumpOSCmsg(int inSize, char* inData, bool skipStatus = false)
 		case 's' :
 			scprintf(" \"%s\"", msg.gets());
 			break;
+		case '[' :
+			scprintf(" [");
+			msg.count ++;
+			break;
+		case ']' :
+			scprintf(" ]");
+			msg.count ++;
+			break;
 		case 'b' :
 			scprintf(" DATA[%zu]", msg.getbsize());
 			msg.skipb();
