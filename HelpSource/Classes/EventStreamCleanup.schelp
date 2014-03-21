@@ -1,0 +1,129 @@
+TITLE:: EventStreamCleanup
+summary:: Helper class that collects information about internal state of streams that needs to be released
+categories::Streams-Patterns-Events
+
+DESCRIPTION::
+Event streams created by objects like link::Classes/Pmono:: or link::Classes/Pfx:: are special: when they start, they create some state (like a new synth) that is present over the whole period of the stream, or at least over several events. When such a stream ends, it releases this state. There are other streams, however, strong::that may stop their input stream at any time:: (e.g.  link::Classes/Pfindur:: or link::Classes/Pdef::). Them the state of any stream buried in the hierarchy of input streams must be released by them. EventStreamCleanup collects the cleanup functions and can run them when the stream is cut.
+
+Note::So all event patterns that can end a subpattern (and streams respectively) have to use an EventStreamCleanup.::
+
+Some examples of patterns that may stop an input stream:
+list::
+## link::Classes/Pbindf::
+## link::Classes/Pfin::
+## link::Classes/Pfindur::
+## link::Classes/Pdef::
+## link::Classes/Pset::
+## link::Classes/Psetpre::
+## link::Classes/Pswitch1:: (but not link::Classes/Pswitch::)
+::
+
+Some examples of patterns that create state that lasts over several events:
+list::
+## link::Classes/Pmono::
+## link::Classes/Pfx::
+## link::Classes/Pproto::
+## link::Classes/Pfpar::
+## link::Classes/Pspawner::
+::
+
+code::
+
+// wrap a pattern in a stop condition
+(
+f = { |pat, condition|
+	Prout { |inval|
+		var stream = pat.asStream;
+		var cleanup = EventStreamCleanup.new;
+		var outval;
+		while {
+			outval = stream.next(inval);
+			outval.notNil and: { condition.value(outval) }
+		} {
+			cleanup.update(outval);
+			inval = outval.yield;
+		};
+		cleanup.exit(inval);
+	}
+
+};
+p = Plazy { Pmono(\default, \note, Pseries(rrand(-10, 0), rrand(1, 5), 10), \dur, 1/rrand(4, 7)) };
+x = f.(p, { |outval| outval[\note] < 20 }); // always stop at 10
+Pn(x).play; // loop it.
+);
+::
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Create a new instance.
+
+INSTANCEMETHODS::
+
+METHOD:: addFunction
+Add a new cleanup function which will be called when the stream is made to end somewhere downstreams.
+
+ARGUMENT:: event
+The outevent that is passed on downstreams.
+
+ARGUMENT:: function
+The function that is called for cleanup. E.g. code::{ group.free }::.
+
+METHOD:: update
+For every new event, the cleanup must be updated to receive information from any input stream further up.
+
+ARGUMENT:: event
+The outevent from the input stream.
+
+METHOD:: exit
+Run all functions that have been collected over time, adding appropriate infoematon to the event.
+
+ARGUMENT:: event
+The inevent that is passed through to the outer stream
+
+ARGUMENT:: freeNodes
+Used internally.
+
+returns:: An event. In embedInStream, this event must be returned.
+
+METHOD:: functions
+A collections of cleanup functions.
+
+METHOD:: clear
+Empty the cleanup functions, without evaluating them.
+
+METHOD:: terminate
+Run all functions that have been collected over time without adding information to an event.
+
+ARGUMENT:: freeNodes
+Used internally.
+
+
+
+
+EXAMPLES::
+code::
+// some code from the class library:
+Pfin : FilterPattern {
+	var <>count;
+	*new { arg count, pattern;
+		^super.new(pattern).count_(count)
+	}
+	storeArgs { ^[count,pattern] }
+
+	embedInStream { arg event;
+		var inevent;
+		var stream = pattern.asStream;
+		var cleanup = EventStreamCleanup.new;
+		count.value(event).do({
+			inevent = stream.next(event) ?? { ^event };
+			cleanup.update(inevent);
+			event = inevent.yield;
+		});
+		^cleanup.exit(event)
+	}
+}
+
+::
+
