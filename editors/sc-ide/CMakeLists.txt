@@ -179,6 +179,10 @@ add_custom_target( update_ide_translations
             -no-obsolete -pluralonly
 )
 
+qt5_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
+qt5_wrap_ui( ide_forms_src ${ide_forms} )
+qt5_add_resources( ide_rcc resources.qrc )
+qt5_add_translation( translations ${translation_src} ${native_translation_src} )
 
 set(ide_sources ${ide_src} ${all_hdr} )
 
@@ -203,11 +207,6 @@ else()
 endif()
 
 qt5_use_modules( ${ide_name} Core Network Gui WebKit WebKitWidgets Widgets)
-
-qt5_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
-qt5_wrap_ui( ide_forms_src ${ide_forms} )
-qt5_add_resources( ide_rcc resources.qrc )
-qt5_add_translation( translations ${translation_src} ${native_translation_src} )
 
 target_link_libraries( ${ide_name} ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${YAMLCPP_LIBRARY} )
 
