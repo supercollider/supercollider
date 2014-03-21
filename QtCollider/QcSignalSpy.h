@@ -139,7 +139,7 @@ protected:
 
     qcDebugMsg( 1, QString("SIGNAL: '%1' handled by method '%2'")
                   .arg( _proxy->object() ?
-                        _proxy->object()->metaObject()->method( _sigId ).signature() :
+                        QString(_proxy->object()->metaObject()->method( _sigId ).methodSignature()) :
                         "unknown" )
                   .arg(_handler->name)
               );
@@ -166,7 +166,7 @@ protected:
 
     qcDebugMsg( 1, QString("SIGNAL: '%1' handled by a Function")
                   .arg( _proxy->object() ?
-                        _proxy->object()->metaObject()->method( _sigId ).signature() :
+                        QString(_proxy->object()->metaObject()->method( _sigId ).methodSignature()) :
                         "unknown" )
               );
 
