@@ -247,8 +247,13 @@ EmbedOnce : Stream  {
 	}
 	next { arg inval;
 		var val = stream.next(inval);
-		if(val.isNil) { cleanup.exit(inval); stream = nil }; // embed once, then release memory
-		cleanup.update(val);
+		if(val.isNil) { // embed once, then release memory
+			cleanup.exit(inval);
+			stream = nil;
+			cleanup = nil;
+		} {
+			cleanup.update(val)
+		};
 		^val
 	}
 	reset {
@@ -319,6 +324,18 @@ CleanupStream : Stream {
 	}
 	reset {
 		stream.reset
+	}
+}
+
+EventCleanupStream : CleanupStream {
+	next { arg inval;
+		var val = stream.next(inval);
+		if(val.isNil) {
+			cleanup.exit(inval)
+		} {
+			cleanup.update(val)
+		};
+		^val
 	}
 }
 

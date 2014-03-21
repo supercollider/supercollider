@@ -86,7 +86,7 @@ Pproto  : Pattern {
 		cleanupFunc = eventCleanupFunc ?? { { | flag | eventCleanupFunc.value(proto, flag) } };
 		cleanup.addFunction(event, cleanupFunc);
 
-		stream = Pfpar(pattern.asArray).asStream(cleanup);
+		stream = EventCleanupStream(Pfpar(pattern.asArray).asStream, cleanup);
 		loop {
 			ev = event.copy.putAll(protoEvent);
 			ev = stream.next(ev) ?? { ^cleanup.exit(event) };
