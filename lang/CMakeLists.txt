@@ -183,11 +183,14 @@ if(SC_WII)
 	endif()
 endif()
 
-if(SC_IDE)
-	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
+if(SC_IDE OR SC_QT)
 	find_package(Qt5Core REQUIRED)
 	find_package(Qt5Network REQUIRED)
 	find_package(Qt5Gui REQUIRED)
+endif()
+
+if(SC_IDE)
+	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
 
 	qt5_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
 	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
@@ -211,7 +214,7 @@ else()
 endif()
 
 if(SC_IDE OR SC_QT)
-	qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets)
+	qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets MacExtras)
 endif()
 
 set_property(TARGET libsclang
