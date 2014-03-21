@@ -33,6 +33,8 @@
 #include <GC.h>
 #include <SCBase.h>
 
+#include <QtMacExtras>
+
 #define QOBJECT_FROM_SLOT( s ) \
   ((QObjectProxy*) slotRawPtr( slotRawObject( s )->slots ))
 
@@ -118,7 +120,7 @@ static int getNSObjectForSCObject(PyrSlot *scobject, id *returnID, VMGlobals *g)
         SharedImage *img = reinterpret_cast<SharedImage*>( slotRawPtr( slotRawObject(scobject)->slots+0 ) );
         if((*img)->isPainting()) { *returnID = NULL; return errFailed; }
         QPixmap pixmap = (*img)->pixmap();
-        CGImageRef cgImage = pixmap.toMacCGImageRef();
+        CGImageRef cgImage = QtMac::toCGImageRef(pixmap);
         returnObject = [[NSImage alloc] initWithCGImage:cgImage size:NSZeroSize];
         CGImageRelease(cgImage);
     } else {
@@ -219,7 +221,7 @@ static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type, VM
     else if([type isEqualToString:QCPortTypeImage]) { // QImage
         NSImage *nsimage = (NSImage*)nsObject;
         CGImageRef cgImage = [nsimage CGImageForProposedRect:NULL context:NULL hints:NULL];
-        QPixmap pixmap = QPixmap::fromMacCGImageRef (cgImage);
+        QPixmap pixmap = QtMac::fromCGImageRef(cgImage);
         
         PyrObject* imageObj = instantiateObject(g->gc, SC_CLASS(Image), 0, false, true);
         

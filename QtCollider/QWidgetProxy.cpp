@@ -251,15 +251,16 @@ bool QWidgetProxy::preProcessEvent( QObject *o, QEvent *e, EventHandlerData &eh,
 {
   // NOTE We assume that qObject need not be checked here, as we wouldn't get events if
   // it wasn't existing
+  int acquired_globalEventMask = _globalEventMask.load();
 
   switch( eh.type ) {
 
     case QEvent::KeyPress:
-      return ((_globalEventMask & KeyPress) || eh.enabled)
+      return ((acquired_globalEventMask & KeyPress) || eh.enabled)
         && interpretKeyEvent( o, e, args );
 
     case QEvent::KeyRelease:
-      return ((_globalEventMask & KeyRelease) || eh.enabled)
+      return ((acquired_globalEventMask & KeyRelease) || eh.enabled)
         && interpretKeyEvent( o, e, args );
 
     case QEvent::MouseButtonPress:

@@ -74,7 +74,7 @@ void QtCollider::init() {
 
     qcApp->setQuitOnLastWindowClosed( false );
 
-    qcApp->setStyle( new QtCollider::Style::StyleImpl( new QPlastiqueStyle ) );
+    //qcApp->setStyle( new QtCollider::Style::StyleImpl( new QPlastiqueStyle ) );
 
     gSystemPalette = qcApp->palette();
 

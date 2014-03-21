@@ -196,7 +196,7 @@ static void qcGetMethods (
       default:
         continue;
     }
-    QtCollider::set( s, QString::fromLatin1( method.signature() ) );
+    QtCollider::set( s, QString::fromLatin1( method.methodSignature() ) );
     array->size++;
     g->gc->GCWrite( array, s );
     ++s;
