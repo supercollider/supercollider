@@ -327,18 +327,6 @@ CleanupStream : Stream {
 	}
 }
 
-EventCleanupStream : CleanupStream {
-	next { arg inval;
-		var val = stream.next(inval);
-		if(val.isNil) {
-			cleanup.exit(inval)
-		} {
-			cleanup.update(val)
-		};
-		^val
-	}
-}
-
 // PauseStream is a stream wrapper that can be started and stopped.
 
 PauseStream : Stream
