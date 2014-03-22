@@ -78,6 +78,11 @@ NodeMap : IdentityDictionary {
 		if(args.notNil) { bundle.add([48, target.asNodeID] ++ args) };
 	}
 
+	get { |key|
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\at));
+		^this.at(key)
+	}
+
 }
 
 ProxyNodeMap : NodeMap {
@@ -120,14 +125,9 @@ ProxyNodeMap : NodeMap {
 		this.map(currentEnvironment.getPairs(keys));
 	}
 
-	// maybe not needed
-	isMapped { |key|
-		var val = this.at(key);
-		^val.isNumber.not and: { val.isSequenceableCollection.not }
-	}
+
 
 	// unoptimized
-	// check again for standard nil return.
 	parents {
 		var res = Array.new;
 		this.do { |item|
@@ -166,6 +166,7 @@ ProxyNodeMap : NodeMap {
 	}
 
 	// deprecate, but keep for now
+
 	hasRates { ^rates.notNil and: { rates.notEmpty } }
 	setRates { |args|
 		this.deprecated(thisMethod);
@@ -174,6 +175,12 @@ ProxyNodeMap : NodeMap {
 	}
 	ratesFor { arg keys;
 		^rates !? { rates.atAll(keys) }
+	}
+	// maybe not needed at all
+	isMapped { |key|
+		var val = this.at(key);
+		this.deprecated(thisMethod);
+		^val.isNumber.not and: { val.isSequenceableCollection.not }
 	}
 }
 
