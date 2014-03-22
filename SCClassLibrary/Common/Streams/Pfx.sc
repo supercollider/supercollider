@@ -22,18 +22,16 @@ Pfx : FilterPattern {
 		event[\id] = id;
 		event[\delta] = 0;
 
-		inevent = event.yield;
-
 		cleanupEvent = (type: \off, parent: event);
 		cleanup.addFunction(event, { |flag|
 			if (flag) { cleanupEvent.play }
 		});
 
+		inevent = event.yield;
 		stream = pattern.asStream;
 
 		loop {
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
-			cleanup.update(event);
 			inevent = event.yield;
 		};
 	}
@@ -183,6 +181,9 @@ Pbus : FilterPattern {
 		event[\fadeTime] = fadeTime;
 		event[\instrument] = format("system_link_%_%", rate, numChannels);
 		event[\in] = bus;
+		// doneAction = 3;
+		// remove and deallocate both this synth and the preceeding node
+		// (which is the group).
 		event[\msgFunc] = #{ |out, in, fadeTime, gate=1|
 			[\out, out, \in, in, \fadeTime, fadeTime, \gate, gate, \doneAction, 3]
 		};
@@ -194,17 +195,12 @@ Pbus : FilterPattern {
 		});
 
 		cleanup.addFunction(event, { defer({ freeBus.value;}, fadeTime.abs + dur) });
-
-		// doneAction = 3;
-		// remove and deallocate both this synth and the preceeding node
-		// (which is the group).
 		inevent = event.yield;
 
 		// now embed the pattern
 		stream = Pchain(pattern, (group: groupID, out: bus)).asStream;
 		loop {
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
-			cleanup.update(event);
 			inevent = event.yield;
 		}
 	}
