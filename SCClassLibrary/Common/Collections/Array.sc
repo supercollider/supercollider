@@ -208,6 +208,7 @@ Array[slot] : ArrayedCollection {
 		});
 	}
 	asUGenInput { arg for; ^this.collect(_.asUGenInput(for)) }
+	asAudioRateInput { arg for; ^this.collect(_.asAudioRateInput(for)) }
 	asControlInput { ^this.collect(_.asControlInput) }
 
 	isValidUGenInput { ^true }
