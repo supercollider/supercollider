@@ -5,7 +5,7 @@ QtGUI {
 	*initClass {
 		Class.initClassTree( GUI );
 		GUI.add( this );
-		this.style = "Plastique";
+		this.style = "Fusion";
 		this.palette = QPalette.light;
 	}
 
