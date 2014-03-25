@@ -276,7 +276,7 @@ if(APPLE)
     include(InstallRequiredSystemLibraries)
 
     include(DeployQt5)
-    install_qt5_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
+    install_qt5_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/lang/sclang;${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
 
     # install Qt plugins (adapted from kvirc)
     set(plugin_dest_dir ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Plugins)
