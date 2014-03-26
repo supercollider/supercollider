@@ -2719,6 +2719,12 @@ void compileSwitchMsg(PyrCallNode* node)
 		PyrParseNode *argnode = node->mArglist;
 		numArgs = nodeListLength(argnode);
 
+		if (numArgs <= 2) {
+			error("Missing argument in switch statement");
+			nodePostErrorLine(node);
+			compileErrors++;
+		};
+
 		argnode = argnode->mNext; // skip first arg.
 
 		PyrParseNode* nextargnode = 0;
