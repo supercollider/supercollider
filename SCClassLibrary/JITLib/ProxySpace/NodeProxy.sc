@@ -879,15 +879,11 @@ NodeProxy : BusPlug {
 	// allocation
 
 	freeBus {
-		var oldBus = bus, bundle, fadeTime;
+		var oldBus = bus, c;
 		if(oldBus.isNil) { ^this };
 		if(this.isPlaying) {
-			fadeTime = this.fadeTime;
-			bundle = MixedBundle.new;
-			bundle.addFunction {
-				SystemClock.sched(fadeTime, { oldBus.free(true); nil });
-			};
-			bundle.schedSend(server, clock ? TempoClock.default, quant);
+			c = (clock ? TempoClock.default);
+			c.sched(server.latency ? 0.01 + quant.nextTimeOnGrid(c) + this.fadeTime, { oldBus.free(true); nil });
 			CmdPeriod.doOnce { if(oldBus.index.notNil) { oldBus.free(true) } };
 		} {
 			oldBus.free(true)
