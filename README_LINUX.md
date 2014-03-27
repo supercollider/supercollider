@@ -173,6 +173,8 @@ which can speed up re-compilation. Here is how to configure cmake to use it:
 $> cmake -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc ..
 ```
 
+This assumes your ccache executables are installed into `/usr/lib/ccache` - you may need to change the path to reflect your installation.
+
 Building a Debian package
 -------------------------
 
