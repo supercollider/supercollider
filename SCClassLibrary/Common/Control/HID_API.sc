@@ -249,8 +249,8 @@ HID {
         HID.doPrAction( value, physValue, rawValue, arrayValue, usage, page, elid, devid );
         openDevices.at( devid ).valueAction( value, physValue, rawValue,  arrayValue, usage, page, elid );
 		if ( debug ){
-            "HID Element Data:\n\tdevid: %, elid: %\n\telement: \t page: %\tusage: %\n\tarray value: %, \traw value: %,\tphysical value: %,\tvalue: %\n".postf( devid, elid, page, usage, arrayValue, rawValue, physValue, value );
-            // [ devid, "element data", devid, element, page, usage, value, mappedvalue ].postln;
+            "HID Element Data:\n\tdevid: %, elid: %\n\telement: \t page: %\tusage: %\n\tarray value: %, \traw value: %,\tvalue: %\n".postf( devid, elid, page, usage, arrayValue, rawValue, value );
+            // not printing physValue as it is not correctly scaled yet in the source code
 		}
 	}
 
