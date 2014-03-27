@@ -157,13 +157,21 @@ builds in a specific build directory:
 
 ### Qt GUI
 
-By default the experimental Qt GUI support will be built into sclang.
+By default the Qt GUI support will be built into sclang.
 If you want to build without it configure cmake like this:
 
 ```
 $> cmake -DSC_QT=OFF ..
 ```
 
+### Speeding up repeated builds
+
+If you build SuperCollider repeatedly, we recommend installing `ccache`
+which can speed up re-compilation. Here is how to configure cmake to use it:
+
+```
+$> cmake -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc ..
+```
 
 Building a Debian package
 -------------------------
