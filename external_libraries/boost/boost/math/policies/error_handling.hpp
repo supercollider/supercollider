@@ -24,7 +24,7 @@
 #  pragma warning(disable: 4996) // _SCL_SECURE_NO_DEPRECATE
 #  pragma warning(disable: 4512) // assignment operator could not be generated.
 // And warnings in error handling:
-#  pragma warning(disable: 4702) // unreachable code
+#  pragma warning(disable: 4702) // unreachable code.
 // Note that this only occurs when the compiler can deduce code is unreachable,
 // for example when policy macros are used to ignore errors rather than throw.
 #endif
@@ -70,7 +70,7 @@ namespace detail
 {
 //
 // Helper function to avoid binding rvalue to non-const-reference,
-// in other words a warning suppression mechansim:
+// in other words a warning suppression mechanism:
 //
 template <class Formatter, class Group>
 inline std::string do_format(Formatter f, const Group& g)
@@ -202,6 +202,7 @@ inline T raise_pole_error(
    return user_pole_error(function, message, val);
 }
 
+
 template <class T>
 inline T raise_overflow_error(
            const char* function,
@@ -209,7 +210,19 @@ inline T raise_overflow_error(
            const  ::boost::math::policies::overflow_error< ::boost::math::policies::throw_on_error>&)
 {
    raise_error<std::overflow_error, T>(function, message ? message : "numeric overflow");
-   // we never get here:
+   // We should never get here:
+   return std::numeric_limits<T>::has_infinity ? std::numeric_limits<T>::infinity() : boost::math::tools::max_value<T>();
+}
+
+template <class T>
+inline T raise_overflow_error(
+           const char* function,
+           const char* message,
+           const T& val,
+           const ::boost::math::policies::overflow_error< ::boost::math::policies::throw_on_error>&)
+{
+   raise_error<std::overflow_error, T>(function, message ? message : "numeric overflow", val);
+   // We should never get here:
    return std::numeric_limits<T>::has_infinity ? std::numeric_limits<T>::infinity() : boost::math::tools::max_value<T>();
 }
 
@@ -245,6 +258,7 @@ inline T raise_overflow_error(
    return user_overflow_error(function, message, std::numeric_limits<T>::infinity());
 }
 
+
 template <class T>
 inline T raise_underflow_error(
            const char* function,
@@ -252,7 +266,7 @@ inline T raise_underflow_error(
            const  ::boost::math::policies::underflow_error< ::boost::math::policies::throw_on_error>&)
 {
    raise_error<std::underflow_error, T>(function, message ? message : "numeric underflow");
-   // we never get here:
+   // We should never get here:
    return 0;
 }
 
@@ -513,6 +527,15 @@ inline T raise_overflow_error(const char* function, const char* message, const P
    return detail::raise_overflow_error<T>(
       function, message ? message : "Overflow Error",
       policy_type());
+}
+
+template <class T, class Policy>
+inline T raise_overflow_error(const char* function, const char* message, const T& val, const Policy&)
+{
+   typedef typename Policy::overflow_error_type policy_type;
+   return detail::raise_overflow_error(
+      function, message ? message : "Overflow evaluating function at %1%",
+      val, policy_type());
 }
 
 template <class T, class Policy>

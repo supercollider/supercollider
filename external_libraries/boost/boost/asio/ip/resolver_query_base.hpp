@@ -63,31 +63,13 @@ public:
 #else
   enum flags
   {
-    canonical_name = AI_CANONNAME,
-    passive = AI_PASSIVE,
-    numeric_host = AI_NUMERICHOST,
-# if defined(AI_NUMERICSERV)
-    numeric_service = AI_NUMERICSERV,
-# else
-    numeric_service = 0,
-# endif
-    // Note: QNX Neutrino 6.3 defines AI_V4MAPPED, AI_ALL and AI_ADDRCONFIG but
-    // does not implement them. Therefore they are specifically excluded here.
-# if defined(AI_V4MAPPED) && !defined(__QNXNTO__)
-    v4_mapped = AI_V4MAPPED,
-# else
-    v4_mapped = 0,
-# endif
-# if defined(AI_ALL) && !defined(__QNXNTO__)
-    all_matching = AI_ALL,
-# else
-    all_matching = 0,
-# endif
-# if defined(AI_ADDRCONFIG) && !defined(__QNXNTO__)
-    address_configured = AI_ADDRCONFIG
-# else
-    address_configured = 0
-# endif
+    canonical_name = BOOST_ASIO_OS_DEF(AI_CANONNAME),
+    passive = BOOST_ASIO_OS_DEF(AI_PASSIVE),
+    numeric_host = BOOST_ASIO_OS_DEF(AI_NUMERICHOST),
+    numeric_service = BOOST_ASIO_OS_DEF(AI_NUMERICSERV),
+    v4_mapped = BOOST_ASIO_OS_DEF(AI_V4MAPPED),
+    all_matching = BOOST_ASIO_OS_DEF(AI_ALL),
+    address_configured = BOOST_ASIO_OS_DEF(AI_ADDRCONFIG)
   };
 
   // Implement bitmask operations as shown in C++ Std [lib.bitmask.types].

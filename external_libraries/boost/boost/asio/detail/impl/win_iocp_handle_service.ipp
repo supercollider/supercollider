@@ -440,14 +440,17 @@ size_t win_iocp_handle_service::do_read(
   if (!ok)
   {
     DWORD last_error = ::GetLastError();
-    if (last_error == ERROR_HANDLE_EOF)
+    if (last_error != ERROR_MORE_DATA)
     {
-      ec = boost::asio::error::eof;
-    }
-    else
-    {
-      ec = boost::system::error_code(last_error,
-          boost::asio::error::get_system_category());
+      if (last_error == ERROR_HANDLE_EOF)
+      {
+        ec = boost::asio::error::eof;
+      }
+      else
+      {
+        ec = boost::system::error_code(last_error,
+            boost::asio::error::get_system_category());
+      }
     }
     return 0;
   }

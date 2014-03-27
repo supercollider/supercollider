@@ -34,7 +34,7 @@ namespace boost { namespace fusion
     struct forward_traversal_tag;
     struct fusion_sequence_tag;
 
-    struct nil : sequence_base<nil>
+    struct nil_ : sequence_base<nil_>
     {
         typedef mpl::int_<0> size;
         typedef cons_tag fusion_tag;
@@ -44,10 +44,10 @@ namespace boost { namespace fusion
         typedef void_ car_type;
         typedef void_ cdr_type;
 
-        nil() {}
+        nil_() {}
 
         template <typename Iterator>
-        nil(Iterator const& /*iter*/, mpl::true_ /*this_is_an_iterator*/)
+        nil_(Iterator const& /*iter*/, mpl::true_ /*this_is_an_iterator*/)
         {}
 
         template <typename Iterator>
@@ -56,7 +56,7 @@ namespace boost { namespace fusion
         }
     };
 
-    template <typename Car, typename Cdr /*= nil*/>
+    template <typename Car, typename Cdr /*= nil_*/>
     struct cons : sequence_base<cons<Car, Cdr> >
     {
         typedef mpl::int_<Cdr::size::value+1> size;

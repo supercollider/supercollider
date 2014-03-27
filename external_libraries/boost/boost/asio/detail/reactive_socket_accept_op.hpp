@@ -58,7 +58,7 @@ public:
           o->peer_endpoint_ ? &addrlen : 0, o->ec_, new_socket);
 
     // On success, assign new connection to peer socket object.
-    if (new_socket >= 0)
+    if (new_socket != invalid_socket)
     {
       socket_holder new_socket_holder(new_socket);
       if (o->peer_endpoint_)

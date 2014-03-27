@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2012
+// (C) Copyright Ion Gaztanaga  2006-2013
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -65,41 +65,41 @@ struct list_node_traits
 
 // list_iterator provides some basic functions for a
 // node oriented bidirectional iterator:
-template<class Container, bool IsConst>
+template<class RealValueTraits, bool IsConst>
 class list_iterator
-   :  public std::iterator
-         < std::bidirectional_iterator_tag
-         , typename Container::value_type
-         , typename Container::difference_type
-         , typename detail::if_c<IsConst,typename Container::const_pointer,typename Container::pointer>::type
-         , typename detail::if_c<IsConst,typename Container::const_reference,typename Container::reference>::type
-         >
+   :  public iiterator<RealValueTraits, IsConst, std::bidirectional_iterator_tag>::iterator_base
 {
    protected:
-   typedef typename Container::real_value_traits   real_value_traits;
-   typedef typename real_value_traits::node_traits node_traits;
-   typedef typename node_traits::node              node;
-   typedef typename node_traits::node_ptr          node_ptr;
-   typedef typename pointer_traits<node_ptr>::
-      template rebind_pointer<void>::type          void_pointer;
-   static const bool store_container_ptr =
-      detail::store_cont_ptr_on_it<Container>::value;
+   typedef iiterator
+      <RealValueTraits, IsConst, std::bidirectional_iterator_tag> types_t;
+
+   static const bool stateful_value_traits =                types_t::stateful_value_traits;
+
+   typedef RealValueTraits                                  real_value_traits;
+   typedef typename types_t::node_traits                    node_traits;
+
+   typedef typename types_t::node                           node;
+   typedef typename types_t::node_ptr                       node_ptr;
+   typedef typename types_t::void_pointer                   void_pointer;
 
    public:
-   typedef typename Container::value_type    value_type;
-   typedef typename detail::if_c<IsConst,typename Container::const_pointer,typename Container::pointer>::type pointer;
-   typedef typename detail::if_c<IsConst,typename Container::const_reference,typename Container::reference>::type reference;
+   typedef typename types_t::value_type      value_type;
+   typedef typename types_t::pointer         pointer;
+   typedef typename types_t::reference       reference;
+
+   typedef typename pointer_traits
+      <void_pointer>::template rebind_pointer
+         <const real_value_traits>::type   const_real_value_traits_ptr;
 
    list_iterator()
-      : members_ (node_ptr(), 0)
    {}
 
-   explicit list_iterator(const node_ptr & node, const Container *cont_ptr)
-      : members_ (node, cont_ptr)
+   explicit list_iterator(const node_ptr & nodeptr, const const_real_value_traits_ptr &traits_ptr)
+      : members_(nodeptr, traits_ptr)
    {}
 
-   list_iterator(list_iterator<Container, false> const& other)
-      :  members_(other.pointed_node(), other.get_container())
+   list_iterator(list_iterator<RealValueTraits, false> const& other)
+      :  members_(other.pointed_node(), other.get_real_value_traits())
    {}
 
    const node_ptr &pointed_node() const
@@ -108,12 +108,14 @@ class list_iterator
    list_iterator &operator=(const node_ptr &node)
    {  members_.nodeptr_ = node;  return static_cast<list_iterator&>(*this);  }
 
+   const_real_value_traits_ptr get_real_value_traits() const
+   {  return pointer_traits<const_real_value_traits_ptr>::static_cast_from(members_.get_ptr()); }
+
    public:
    list_iterator& operator++()
    {
       node_ptr p = node_traits::get_next(members_.nodeptr_);
       members_.nodeptr_ = p;
-      //members_.nodeptr_ = node_traits::get_next(members_.nodeptr_);
       return static_cast<list_iterator&> (*this);
    }
 
@@ -149,43 +151,11 @@ class list_iterator
    pointer operator->() const
    { return this->get_real_value_traits()->to_value_ptr(members_.nodeptr_); }
 
-   const Container *get_container() const
-   {
-      if(store_container_ptr){
-         const Container* c = static_cast<const Container*>(members_.get_ptr());
-         BOOST_INTRUSIVE_INVARIANT_ASSERT(c != 0);
-         return c;
-      }
-      else{
-         return 0;
-      }
-   }
-
-   const real_value_traits *get_real_value_traits() const
-   {
-      if(store_container_ptr)
-         return &this->get_container()->get_real_value_traits();
-      else
-         return 0;
-   }
-
-   list_iterator<Container, false> unconst() const
-   {  return list_iterator<Container, false>(this->pointed_node(), this->get_container());   }
+   list_iterator<RealValueTraits, false> unconst() const
+   {  return list_iterator<RealValueTraits, false>(this->pointed_node(), this->get_real_value_traits());   }
 
    private:
-   struct members
-      :  public detail::select_constptr
-         <void_pointer, store_container_ptr>::type
-   {
-      typedef typename detail::select_constptr
-         <void_pointer, store_container_ptr>::type Base;
-
-      members(const node_ptr &n_ptr, const void *cont)
-         :  Base(cont), nodeptr_(n_ptr)
-      {}
-
-      node_ptr nodeptr_;
-   } members_;
+   iiterator_members<node_ptr, stateful_value_traits> members_;
 };
 
 } //namespace intrusive

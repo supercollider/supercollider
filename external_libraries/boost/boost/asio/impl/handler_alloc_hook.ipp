@@ -21,7 +21,6 @@
 
 #if !defined(BOOST_ASIO_DISABLE_SMALL_BLOCK_RECYCLING)
 # if defined(BOOST_ASIO_HAS_IOCP)
-#  include <boost/asio/detail/win_iocp_io_service_fwd.hpp>
 #  include <boost/asio/detail/win_iocp_thread_info.hpp>
 # else // defined(BOOST_ASIO_HAS_IOCP)
 #  include <boost/asio/detail/task_io_service_thread_info.hpp>
@@ -32,6 +31,10 @@
 
 namespace boost {
 namespace asio {
+
+#if defined(BOOST_ASIO_HAS_IOCP)
+namespace detail { class win_iocp_io_service; }
+#endif // defined(BOOST_ASIO_HAS_IOCP)
 
 void* asio_handler_allocate(std::size_t size, ...)
 {

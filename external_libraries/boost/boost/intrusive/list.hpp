@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2012
+// (C) Copyright Ion Gaztanaga  2006-2013
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -38,24 +38,12 @@ namespace intrusive {
 
 /// @cond
 
-template <class ValueTraits, class SizeType, bool ConstantTimeSize>
-struct listopt
-{
-   typedef ValueTraits  value_traits;
-   typedef SizeType     size_type;
-   static const bool constant_time_size = ConstantTimeSize;
-};
-
-
-template <class T>
 struct list_defaults
-   :  pack_options
-      < none
-      , base_hook<detail::default_list_hook>
-      , constant_time_size<true>
-      , size_type<std::size_t>
-      >::type
-{};
+{
+   typedef detail::default_list_hook proto_value_traits;
+   static const bool constant_time_size = true;
+   typedef std::size_t size_type;
+};
 
 /// @endcond
 
@@ -72,23 +60,22 @@ struct list_defaults
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 template<class T, class ...Options>
 #else
-template<class Config>
+template <class ValueTraits, class SizeType, bool ConstantTimeSize>
 #endif
 class list_impl
-   :  private detail::clear_on_destructor_base< list_impl<Config> >
+   :  private detail::clear_on_destructor_base
+         < list_impl<ValueTraits, SizeType, ConstantTimeSize>
+         , is_safe_autounlink<detail::get_real_value_traits<ValueTraits>::type::link_mode>::value
+         >
 {
-   template<class C> friend class detail::clear_on_destructor_base;
+   template<class C, bool> friend class detail::clear_on_destructor_base;
    //Public typedefs
    public:
-   typedef typename Config::value_traits                             value_traits;
+   typedef ValueTraits value_traits;
    /// @cond
    static const bool external_value_traits =
       detail::external_value_traits_bool_is_true<value_traits>::value;
-   typedef typename detail::eval_if_c
-      < external_value_traits
-      , detail::eval_value_traits<value_traits>
-      , detail::identity<value_traits>
-      >::type                                                        real_value_traits;
+   typedef typename detail::get_real_value_traits<ValueTraits>::type real_value_traits;
    /// @endcond
    typedef typename real_value_traits::pointer                       pointer;
    typedef typename real_value_traits::const_pointer                 const_pointer;
@@ -96,9 +83,9 @@ class list_impl
    typedef typename pointer_traits<pointer>::reference               reference;
    typedef typename pointer_traits<const_pointer>::reference         const_reference;
    typedef typename pointer_traits<pointer>::difference_type         difference_type;
-   typedef typename Config::size_type                                size_type;
-   typedef list_iterator<list_impl, false>                           iterator;
-   typedef list_iterator<list_impl, true>                            const_iterator;
+   typedef SizeType                                                  size_type;
+   typedef list_iterator<real_value_traits, false>                   iterator;
+   typedef list_iterator<real_value_traits, true>                    const_iterator;
    typedef boost::intrusive::detail::reverse_iterator<iterator>      reverse_iterator;
    typedef boost::intrusive::detail::reverse_iterator<const_iterator>const_reverse_iterator;
    typedef typename real_value_traits::node_traits                   node_traits;
@@ -107,7 +94,7 @@ class list_impl
    typedef typename node_traits::const_node_ptr                      const_node_ptr;
    typedef circular_list_algorithms<node_traits>                     node_algorithms;
 
-   static const bool constant_time_size = Config::constant_time_size;
+   static const bool constant_time_size = ConstantTimeSize;
    static const bool stateful_value_traits = detail::is_stateful_value_traits<real_value_traits>::value;
 
    /// @cond
@@ -118,18 +105,12 @@ class list_impl
    //noncopyable
    BOOST_MOVABLE_BUT_NOT_COPYABLE(list_impl)
 
-   enum { safemode_or_autounlink  =
-            (int)real_value_traits::link_mode == (int)auto_unlink   ||
-            (int)real_value_traits::link_mode == (int)safe_link     };
+   static const bool safemode_or_autounlink = is_safe_autounlink<real_value_traits::link_mode>::value;
 
    //Constant-time size is incompatible with auto-unlink hooks!
    BOOST_STATIC_ASSERT(!(constant_time_size &&
                         ((int)real_value_traits::link_mode == (int)auto_unlink)
                       ));
-
-   //Const cast emulation for smart pointers
-   static node_ptr uncast(const const_node_ptr & ptr)
-   {  return pointer_traits<node_ptr>::const_cast_from(ptr);  }
 
    node_ptr get_root_node()
    {  return pointer_traits<node_ptr>::pointer_to(data_.root_plus_size_.root_);  }
@@ -145,7 +126,7 @@ class list_impl
    struct data_t : public value_traits
    {
       typedef typename list_impl::value_traits value_traits;
-      data_t(const value_traits &val_traits)
+      explicit data_t(const value_traits &val_traits)
          :  value_traits(val_traits)
       {}
 
@@ -196,6 +177,11 @@ class list_impl
    real_value_traits &get_real_value_traits()
    {  return this->get_real_value_traits(detail::bool_<external_value_traits>());  }
 
+   typedef typename pointer_traits<node_ptr>::template rebind_pointer<real_value_traits const>::type const_real_value_traits_ptr;
+
+   const_real_value_traits_ptr real_value_traits_ptr() const
+   {  return pointer_traits<const_real_value_traits_ptr>::pointer_to(this->get_real_value_traits());  }
+
    //! <b>Effects</b>: constructs an empty list.
    //!
    //! <b>Complexity</b>: Constant
@@ -241,6 +227,7 @@ class list_impl
    list_impl& operator=(BOOST_RV_REF(list_impl) x)
    {  this->swap(x); return *this;  }
 
+   #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
    //! <b>Effects</b>: If it's not a safe-mode or an auto-unlink value_type
    //!   the destructor does nothing
    //!   (ie. no code is generated). Otherwise it detaches all elements from this.
@@ -252,6 +239,7 @@ class list_impl
    //!   it's a safe-mode or auto-unlink value . Otherwise constant.
    ~list_impl()
    {}
+   #endif
 
    //! <b>Requires</b>: value must be an lvalue.
    //!
@@ -371,7 +359,7 @@ class list_impl
    //!
    //! <b>Complexity</b>: Constant.
    const_reference front() const
-   { return *get_real_value_traits().to_value_ptr(uncast(node_traits::get_next(this->get_root_node()))); }
+   { return *get_real_value_traits().to_value_ptr(detail::uncast(node_traits::get_next(this->get_root_node()))); }
 
    //! <b>Effects</b>: Returns a reference to the last element of the list.
    //!
@@ -387,7 +375,7 @@ class list_impl
    //!
    //! <b>Complexity</b>: Constant.
    const_reference back() const
-   { return *get_real_value_traits().to_value_ptr(uncast(node_traits::get_previous(this->get_root_node()))); }
+   { return *get_real_value_traits().to_value_ptr(detail::uncast(node_traits::get_previous(this->get_root_node()))); }
 
    //! <b>Effects</b>: Returns an iterator to the first element contained in the list.
    //!
@@ -395,7 +383,7 @@ class list_impl
    //!
    //! <b>Complexity</b>: Constant.
    iterator begin()
-   { return iterator(node_traits::get_next(this->get_root_node()), this); }
+   { return iterator(node_traits::get_next(this->get_root_node()), real_value_traits_ptr()); }
 
    //! <b>Effects</b>: Returns a const_iterator to the first element contained in the list.
    //!
@@ -411,7 +399,7 @@ class list_impl
    //!
    //! <b>Complexity</b>: Constant.
    const_iterator cbegin() const
-   { return const_iterator(node_traits::get_next(this->get_root_node()), this); }
+   { return const_iterator(node_traits::get_next(this->get_root_node()), real_value_traits_ptr()); }
 
    //! <b>Effects</b>: Returns an iterator to the end of the list.
    //!
@@ -419,7 +407,7 @@ class list_impl
    //!
    //! <b>Complexity</b>: Constant.
    iterator end()
-   { return iterator(this->get_root_node(), this); }
+   { return iterator(this->get_root_node(), real_value_traits_ptr()); }
 
    //! <b>Effects</b>: Returns a const_iterator to the end of the list.
    //!
@@ -435,7 +423,7 @@ class list_impl
    //!
    //! <b>Complexity</b>: Constant.
    const_iterator cend() const
-   { return const_iterator(uncast(this->get_root_node()), this); }
+   { return const_iterator(detail::uncast(this->get_root_node()), real_value_traits_ptr()); }
 
    //! <b>Effects</b>: Returns a reverse_iterator pointing to the beginning
    //! of the reversed list.
@@ -806,7 +794,7 @@ class list_impl
          BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(node_algorithms::inited(to_insert));
       node_algorithms::link_before(p.pointed_node(), to_insert);
       this->priv_size_traits().increment();
-      return iterator(to_insert, this);
+      return iterator(to_insert, real_value_traits_ptr());
    }
 
    //! <b>Requires</b>: Dereferencing iterator must yield
@@ -1240,7 +1228,7 @@ class list_impl
    {
       BOOST_STATIC_ASSERT((!stateful_value_traits));
       BOOST_INTRUSIVE_INVARIANT_ASSERT(!node_algorithms::inited(real_value_traits::to_node_ptr(value)));
-      return iterator(real_value_traits::to_node_ptr(value), 0);
+      return iterator(real_value_traits::to_node_ptr(value), const_real_value_traits_ptr());
    }
 
    //! <b>Requires</b>: value must be a const reference to a value inserted in a list.
@@ -1258,7 +1246,7 @@ class list_impl
    {
       BOOST_STATIC_ASSERT((!stateful_value_traits));
       BOOST_INTRUSIVE_INVARIANT_ASSERT(!node_algorithms::inited(real_value_traits::to_node_ptr(const_cast<reference> (value))));
-      return const_iterator(real_value_traits::to_node_ptr(const_cast<reference> (value)), 0);
+      return const_iterator(real_value_traits::to_node_ptr(const_cast<reference> (value)), const_real_value_traits_ptr());
    }
 
    //! <b>Requires</b>: value must be a reference to a value inserted in a list.
@@ -1273,7 +1261,7 @@ class list_impl
    iterator iterator_to(reference value)
    {
       BOOST_INTRUSIVE_INVARIANT_ASSERT(!node_algorithms::inited(real_value_traits::to_node_ptr(value)));
-      return iterator(real_value_traits::to_node_ptr(value), this);
+      return iterator(real_value_traits::to_node_ptr(value), real_value_traits_ptr());
    }
 
    //! <b>Requires</b>: value must be a const reference to a value inserted in a list.
@@ -1288,7 +1276,7 @@ class list_impl
    const_iterator iterator_to(const_reference value) const
    {
       BOOST_INTRUSIVE_INVARIANT_ASSERT(!node_algorithms::inited(real_value_traits::to_node_ptr(const_cast<reference> (value))));
-      return const_iterator(real_value_traits::to_node_ptr(const_cast<reference> (value)), this);
+      return const_iterator(real_value_traits::to_node_ptr(const_cast<reference> (value)), real_value_traits_ptr());
    }
 
    /// @cond
@@ -1309,29 +1297,29 @@ class list_impl
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 template<class T, class ...Options>
 #else
-template<class Config>
+template <class ValueTraits, class SizeType, bool ConstantTimeSize>
 #endif
 inline bool operator<
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 (const list_impl<T, Options...> &x, const list_impl<T, Options...> &y)
 #else
-(const list_impl<Config> &x, const list_impl<Config> &y)
+(const list_impl<ValueTraits, SizeType, ConstantTimeSize> &x, const list_impl<ValueTraits, SizeType, ConstantTimeSize> &y)
 #endif
 {  return std::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());  }
 
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 template<class T, class ...Options>
 #else
-template<class Config>
+template <class ValueTraits, class SizeType, bool ConstantTimeSize>
 #endif
 bool operator==
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 (const list_impl<T, Options...> &x, const list_impl<T, Options...> &y)
 #else
-(const list_impl<Config> &x, const list_impl<Config> &y)
+(const list_impl<ValueTraits, SizeType, ConstantTimeSize> &x, const list_impl<ValueTraits, SizeType, ConstantTimeSize> &y)
 #endif
 {
-   typedef list_impl<Config> list_type;
+   typedef list_impl<ValueTraits, SizeType, ConstantTimeSize> list_type;
    typedef typename list_type::const_iterator const_iterator;
    const bool C = list_type::constant_time_size;
    if(C && x.size() != y.size()){
@@ -1361,65 +1349,65 @@ bool operator==
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 template<class T, class ...Options>
 #else
-template<class Config>
+template <class ValueTraits, class SizeType, bool ConstantTimeSize>
 #endif
 inline bool operator!=
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 (const list_impl<T, Options...> &x, const list_impl<T, Options...> &y)
 #else
-(const list_impl<Config> &x, const list_impl<Config> &y)
+(const list_impl<ValueTraits, SizeType, ConstantTimeSize> &x, const list_impl<ValueTraits, SizeType, ConstantTimeSize> &y)
 #endif
 {  return !(x == y); }
 
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 template<class T, class ...Options>
 #else
-template<class Config>
+template <class ValueTraits, class SizeType, bool ConstantTimeSize>
 #endif
 inline bool operator>
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 (const list_impl<T, Options...> &x, const list_impl<T, Options...> &y)
 #else
-(const list_impl<Config> &x, const list_impl<Config> &y)
+(const list_impl<ValueTraits, SizeType, ConstantTimeSize> &x, const list_impl<ValueTraits, SizeType, ConstantTimeSize> &y)
 #endif
 {  return y < x;  }
 
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 template<class T, class ...Options>
 #else
-template<class Config>
+template <class ValueTraits, class SizeType, bool ConstantTimeSize>
 #endif
 inline bool operator<=
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 (const list_impl<T, Options...> &x, const list_impl<T, Options...> &y)
 #else
-(const list_impl<Config> &x, const list_impl<Config> &y)
+(const list_impl<ValueTraits, SizeType, ConstantTimeSize> &x, const list_impl<ValueTraits, SizeType, ConstantTimeSize> &y)
 #endif
 {  return !(y < x);  }
 
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 template<class T, class ...Options>
 #else
-template<class Config>
+template <class ValueTraits, class SizeType, bool ConstantTimeSize>
 #endif
 inline bool operator>=
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 (const list_impl<T, Options...> &x, const list_impl<T, Options...> &y)
 #else
-(const list_impl<Config> &x, const list_impl<Config> &y)
+(const list_impl<ValueTraits, SizeType, ConstantTimeSize> &x, const list_impl<ValueTraits, SizeType, ConstantTimeSize> &y)
 #endif
 {  return !(x < y);  }
 
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 template<class T, class ...Options>
 #else
-template<class Config>
+template <class ValueTraits, class SizeType, bool ConstantTimeSize>
 #endif
 inline void swap
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 (list_impl<T, Options...> &x, list_impl<T, Options...> &y)
 #else
-(list_impl<Config> &x, list_impl<Config> &y)
+(list_impl<ValueTraits, SizeType, ConstantTimeSize> &x, list_impl<ValueTraits, SizeType, ConstantTimeSize> &y)
 #endif
 {  x.swap(y);  }
 
@@ -1428,13 +1416,13 @@ inline void swap
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED) || defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
 template<class T, class ...Options>
 #else
-template<class T, class O1 = none, class O2 = none, class O3 = none>
+template<class T, class O1 = void, class O2 = void, class O3 = void>
 #endif
 struct make_list
 {
    /// @cond
    typedef typename pack_options
-      < list_defaults<T>,
+      < list_defaults,
          #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
          O1, O2, O3
          #else
@@ -1443,15 +1431,13 @@ struct make_list
       >::type packed_options;
 
    typedef typename detail::get_value_traits
-      <T, typename packed_options::value_traits>::type value_traits;
+      <T, typename packed_options::proto_value_traits>::type value_traits;
 
    typedef list_impl
       <
-         listopt
-         < value_traits
-         , typename packed_options::size_type
-         , packed_options::constant_time_size
-         >
+         value_traits,
+         typename packed_options::size_type,
+         packed_options::constant_time_size
       > implementation_defined;
    /// @endcond
    typedef implementation_defined type;
@@ -1492,7 +1478,7 @@ class list
    typedef typename Base::iterator              iterator;
    typedef typename Base::const_iterator        const_iterator;
 
-   list(const value_traits &v_traits = value_traits())
+   explicit list(const value_traits &v_traits = value_traits())
       :  Base(v_traits)
    {}
 
@@ -1506,7 +1492,7 @@ class list
    {}
 
    list& operator=(BOOST_RV_REF(list) x)
-   {  this->Base::operator=(::boost::move(static_cast<Base&>(x))); return *this;  }
+   {  return static_cast<list &>(this->Base::operator=(::boost::move(static_cast<Base&>(x))));  }
 
    static list &container_from_end_iterator(iterator end_iterator)
    {  return static_cast<list &>(Base::container_from_end_iterator(end_iterator));   }

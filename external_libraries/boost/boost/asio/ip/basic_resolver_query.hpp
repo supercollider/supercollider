@@ -153,7 +153,7 @@ public:
   {
     typename InternetProtocol::endpoint endpoint;
     hints_.ai_flags = static_cast<int>(resolve_flags);
-    hints_.ai_family = PF_UNSPEC;
+    hints_.ai_family = BOOST_ASIO_OS_DEF(AF_UNSPEC);
     hints_.ai_socktype = endpoint.protocol().type();
     hints_.ai_protocol = endpoint.protocol().protocol();
     hints_.ai_addrlen = 0;
