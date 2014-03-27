@@ -181,9 +181,6 @@ Debian Multimedia team. Repository (with debian/ folder):
 
 http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
 
-At time of writing they support 3.4.x, but we expect updates once 3.5
-is available.
-
 
 Running scsynth (standalone)
 ----------------------------
