@@ -17,6 +17,8 @@
 
 #include <boost/asio/detail/config.hpp>
 
+#if !defined(BOOST_ASIO_WINDOWS_RUNTIME)
+
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__) || defined(__SYMBIAN32__)
 # include <boost/asio/detail/socket_select_interrupter.hpp>
 #elif defined(BOOST_ASIO_HAS_EVENTFD)
@@ -40,5 +42,7 @@ typedef pipe_select_interrupter select_interrupter;
 } // namespace detail
 } // namespace asio
 } // namespace boost
+
+#endif // !defined(BOOST_ASIO_WINDOWS_RUNTIME)
 
 #endif // BOOST_ASIO_DETAIL_SELECT_INTERRUPTER_HPP

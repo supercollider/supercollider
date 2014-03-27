@@ -18,7 +18,9 @@
 #include <boost/asio/detail/config.hpp>
 #include <boost/asio/detail/timer_scheduler_fwd.hpp>
 
-#if defined(BOOST_ASIO_HAS_IOCP)
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+# include <boost/asio/detail/winrt_timer_scheduler.hpp>
+#elif defined(BOOST_ASIO_HAS_IOCP)
 # include <boost/asio/detail/win_iocp_io_service.hpp>
 #elif defined(BOOST_ASIO_HAS_EPOLL)
 # include <boost/asio/detail/epoll_reactor.hpp>

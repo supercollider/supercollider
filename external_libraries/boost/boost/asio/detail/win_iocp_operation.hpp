@@ -22,7 +22,6 @@
 #include <boost/asio/detail/handler_tracking.hpp>
 #include <boost/asio/detail/op_queue.hpp>
 #include <boost/asio/detail/socket_types.hpp>
-#include <boost/asio/detail/win_iocp_io_service_fwd.hpp>
 #include <boost/system/error_code.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
@@ -30,6 +29,8 @@
 namespace boost {
 namespace asio {
 namespace detail {
+
+class win_iocp_io_service;
 
 // Base class for all operations. A function pointer is used instead of virtual
 // functions to avoid the associated overhead.

@@ -73,6 +73,9 @@ namespace asio {
  * happens-before the other. Therefore none of the above conditions are met and
  * no ordering guarantee is made.
  *
+ * @note The implementation makes no guarantee that handlers posted or
+ * dispatched through different @c strand objects will be invoked concurrently.
+ *
  * @par Thread Safety
  * @e Distinct @e objects: Safe.@n
  * @e Shared @e objects: Safe.

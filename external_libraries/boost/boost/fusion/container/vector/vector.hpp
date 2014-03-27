@@ -106,7 +106,7 @@ namespace boost { namespace fusion
         vector(vector const& rhs)
             : vec(rhs.vec) {}
 
-#if !defined(BOOST_NO_RVALUE_REFERENCES)
+#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
         vector(vector&& rhs)
             : vec(std::forward<vector_n>(rhs.vec)) {}
 #endif
@@ -140,7 +140,14 @@ namespace boost { namespace fusion
             return *this;
         }
 
-#if !defined(BOOST_NO_RVALUE_REFERENCES)
+        vector&
+        operator=(vector const& rhs)
+        {
+            vec = rhs.vec;
+            return *this;
+        }
+
+#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
         vector&
         operator=(vector&& rhs)
         {
