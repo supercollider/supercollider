@@ -78,6 +78,12 @@ Spawner : Pattern {
 
 Pspawner : Prout {
 
+	asStream {
+		^Routine({ | inval |
+			this.embedInStream(inval)
+		})
+	}
+
 	embedInStream { | inevent |
 		^Spawner(routineFunc).embedInStream(inevent)
 	}
