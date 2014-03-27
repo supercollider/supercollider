@@ -34,7 +34,6 @@
 
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
-#include <boost/asio/system_timer.hpp>
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
