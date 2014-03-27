@@ -1,7 +1,7 @@
 TITLE:: HID
 summary:: This class provides access to human input devices, or in short HID, such as joysticks, gamepads, mice, keyboard, and so on.
 categories:: External control>HID
-related:: Classes/HIDFunc, Reference/Working_with_HID, Classes/HIDElement, Classes/HIDCollection, Classes/HIDUsage, Classes/HIDInfo
+related:: Classes/HIDFunc, Guides/Working_with_HID, Classes/HIDElement, Classes/HIDCollection, Classes/HIDUsage, Classes/HIDInfo
 
 DESCRIPTION::
 Human input devices can be used as controllers for making music. This class provides you with access to them in a simple and transparent way.
@@ -14,13 +14,15 @@ In general using an Human Input Device follows this scheme:
 DEFINITIONLIST::
 	## Find available devices:
 	|| code:: HID.findAvailable; ::
+	## Print a readable list of available devices:
+	|| code:: HID.postAvailable; ::
 	## Open a specific device:
 	|| code:: ~myhid = HID.open( 1103, 53251 ); ::
 	## Set actions for specific elements:
 	|| code:: ~myhid.elements[1].action = { |...args| args.postln; };
 ::
 
-See LINK::Reference/Working_with_HID:: for a full introduction.
+See LINK::Guides/Working_with_HID:: for a full introduction.
 
 ::
 
