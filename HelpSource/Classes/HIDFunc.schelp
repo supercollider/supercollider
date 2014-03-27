@@ -1,7 +1,7 @@
 TITLE:: HIDFunc
 summary:: Fast responder for incoming data from human input devices (HID)
-categories:: Undocumented classes
-related:: Classes/HID, Classes/HIDdef, Classes/OSCFunc, Classes/MIDIFunc, Reference/Working_with_HID
+categories:: External control>HID
+related:: Classes/HID, Classes/HIDdef, Classes/OSCFunc, Classes/MIDIFunc, Guides/Working_with_HID
 
 DESCRIPTION::
 Human input devices can be used as controllers for making music. This class provides you with access to them in a way similar to OSCFunc and MIDIFunc.
