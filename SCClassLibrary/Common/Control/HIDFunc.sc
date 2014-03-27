@@ -428,6 +428,7 @@ HIDdef : HIDFunc {
 		all = IdentityDictionary.new;
 	}
 
+    /*
 	*new { arg key, func, hidkey, srcID, argTemplate, dispatcher;
 		var res = all.at(key), wasDisabled;
 		if(res.isNil) {
@@ -447,12 +448,116 @@ HIDdef : HIDFunc {
 		}
 		^res
 	}
+    */
+
+    *usage { arg key, func, elUsageName, devUsageName, deviceInfo, argTemplate, argTemplateType,  dispatcher;
+        var res = all.at(key), wasDisabled;
+		if(res.isNil) {
+			^super.usage( func, elUsageName, devUsageName, deviceInfo, argTemplate, argTemplateType, dispatcher).addToAll(key);
+		} {
+			if(func.notNil) {
+				wasDisabled = res.enabled.not;
+				res.disable;
+				try {
+					res.initUsage(func, elUsageName, devUsageName, deviceInfo, argTemplate, argTemplateType ? \rawValue, dispatcher ? defaultDispatchers[\usage]);
+					if(wasDisabled, { res.disable; });
+				} {|err|
+					res.free;
+					err.throw;
+				}
+			}
+		}
+		^res
+	}
+
+    *usageID { arg key, func, elUsageID, elPageID, deviceName, deviceInfo, argTemplate, argTemplateType, dispatcher;
+        var res = all.at(key), wasDisabled;
+		if(res.isNil) {
+			^super.usageID( func, elUsageID, elPageID, deviceName, deviceInfo, argTemplate, argTemplateType, dispatcher).addToAll(key);
+		} {
+			if(func.notNil) {
+				wasDisabled = res.enabled.not;
+				res.disable;
+				try {
+					res.initUsageID(func, elUsageID, elPageID, deviceName, deviceInfo, argTemplate, argTemplateType ? \rawValue, dispatcher ? defaultDispatchers[ \usageID ]);
+					if(wasDisabled, { res.disable; });
+				} {|err|
+					res.free;
+					err.throw;
+				}
+			}
+		}
+		^res
+	}
+
+
+    *device { arg key, func, elUsageName, deviceName, deviceInfo, argTemplate, argTemplateType, dispatcher;
+        var res = all.at(key), wasDisabled;
+		if(res.isNil) {
+			^super.device( func, elUsageName, deviceName, deviceInfo, argTemplate, argTemplateType, dispatcher).addToAll(key);
+		} {
+			if(func.notNil) {
+				wasDisabled = res.enabled.not;
+				res.disable;
+				try {
+					res.initDevice(func, elUsageName, deviceName, deviceInfo, argTemplate, argTemplateType ? \rawValue, dispatcher ? defaultDispatchers[ \device ]);
+					if(wasDisabled, { res.disable; });
+				} {|err|
+					res.free;
+					err.throw;
+				}
+			}
+		}
+		^res
+	}
+
+    *proto { arg key, func, protoElement, deviceInfo, argTemplate, argTemplateType, dispatcher;
+        var res = all.at(key), wasDisabled;
+		if(res.isNil) {
+			^super.proto( func, protoElement, deviceInfo, argTemplate, argTemplateType, dispatcher ).addToAll(key);
+		} {
+			if(func.notNil) {
+				wasDisabled = res.enabled.not;
+				res.disable;
+				try {
+					res.initProtoElement(func, protoElement, deviceInfo, argTemplate, argTemplateType ? \rawValue, dispatcher ? defaultDispatchers[ \proto ]);
+					if(wasDisabled, { res.disable; });
+				} {|err|
+					res.free;
+					err.throw;
+				}
+			}
+		}
+		^res
+	}
+
+    *element { arg key, func, elID, deviceName, deviceInfo, argTemplate, argTemplateType, dispatcher;
+        var res = all.at(key), wasDisabled;
+		if(res.isNil) {
+			^super.element( key, func, elID, deviceName, deviceInfo, argTemplate, argTemplateType, dispatcher ).addToAll(key);
+		} {
+			if(func.notNil) {
+				wasDisabled = res.enabled.not;
+				res.disable;
+				try {
+					res.initElement(func, elID, deviceName, deviceInfo, argTemplate, argTemplateType ? \rawValue, dispatcher ? defaultDispatchers[ \element ]);
+					if(wasDisabled, { res.disable; });
+				} {|err|
+					res.free;
+					err.throw;
+				}
+			}
+		}
+		^res
+	}
 
 	addToAll {|argkey| key = argkey; all.put(key, this) }
 
 	free { all[key] = nil; super.free; }
 
-    printOn { arg stream; stream << this.class.name << "." << type << "("<<* [ elUsage, devUsage, deviceTemplate, argTemplate] << ")" }
+    printOn { arg stream;
+        stream << this.class.name << "." << type << "("<<* [ elUsage, devUsage, deviceTemplate, argTemplate] << ")"
+    }
 
 	*freeAll {
 		var objs = all.copy;
