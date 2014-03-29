@@ -246,6 +246,11 @@ void GraphDef_ReadVariant(World *inWorld, char*& buffer, GraphDef* inGraphDef, G
 	}
 }
 
+bool sortParamSpec(ParamSpec paramSpec1, ParamSpec paramSpec2)
+{
+	return paramSpec1.mIndex < paramSpec2.mIndex;
+}
+
 // ver 2
 GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 inVersion)
 {
@@ -276,15 +281,31 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 	}
 
 	graphDef->mNumParamSpecs = readInt32_be(buffer);
+	//printf("\n\n**************\n");
 	if (graphDef->mNumParamSpecs) {
 		int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
 		graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, hashTableSize, false);
 		graphDef->mParamSpecs = (ParamSpec*)malloc(graphDef->mNumParamSpecs * sizeof(ParamSpec));
-		for (uint32 i=0; i<graphDef->mNumParamSpecs; ++i) {
+		ParamSpec *prevParamSpec;
+		uint32 nSpecs = graphDef->mNumParamSpecs;
+		for (uint32 i=0; i<nSpecs; ++i) {
 			ParamSpec *paramSpec = graphDef->mParamSpecs + i;
 			ParamSpec_Read(paramSpec, buffer);
 			graphDef->mParamSpecTable->Add(paramSpec);
+			prevParamSpec = paramSpec;
 		}
+		// calculate numChannels for each spec
+		std::sort(graphDef->mParamSpecs, graphDef->mParamSpecs + nSpecs, sortParamSpec);
+		for (uint32 i=0; i<(nSpecs - 1); ++i) {
+			ParamSpec *paramSpec = graphDef->mParamSpecs + i;
+			ParamSpec *nextParamSpec = paramSpec + 1;
+			paramSpec->mNumChannels = nextParamSpec->mIndex - paramSpec->mIndex;
+			//printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels);
+		}
+		ParamSpec *paramSpec = graphDef->mParamSpecs + nSpecs - 1;
+		paramSpec->mNumChannels = graphDef->mNumControls - paramSpec->mIndex;
+		//printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels, paramSpec->mIndex);
+
 	} else {
 		// empty table to eliminate test in Graph_SetControl
 		graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, 4, false);
@@ -388,11 +409,24 @@ GraphDef* GraphDef_ReadVer1(World *inWorld, char*& buffer, GraphDef* inList, int
 		int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
 		graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, hashTableSize, false);
 		graphDef->mParamSpecs = (ParamSpec*)malloc(graphDef->mNumParamSpecs * sizeof(ParamSpec));
-		for (uint32 i=0; i<graphDef->mNumParamSpecs; ++i) {
+		uint32 nSpecs = graphDef->mNumParamSpecs;
+		for (uint32 i=0; i<nSpecs; ++i) {
 			ParamSpec *paramSpec = graphDef->mParamSpecs + i;
 			ParamSpec_ReadVer1(paramSpec, buffer);
 			graphDef->mParamSpecTable->Add(paramSpec);
 		}
+		// calculate numChannels for each spec
+		std::sort(graphDef->mParamSpecs, graphDef->mParamSpecs + nSpecs, sortParamSpec);
+		for (uint32 i=0; i<(nSpecs - 1); ++i) {
+			ParamSpec *paramSpec = graphDef->mParamSpecs + i;
+			ParamSpec *nextParamSpec = paramSpec + 1;
+			paramSpec->mNumChannels = nextParamSpec->mIndex - paramSpec->mIndex;
+			//printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels);
+		}
+		ParamSpec *paramSpec = graphDef->mParamSpecs + nSpecs - 1;
+		paramSpec->mNumChannels = graphDef->mNumControls - paramSpec->mIndex;
+		//printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels, paramSpec->mIndex);
+
 	} else {
 		// empty table to eliminate test in Graph_SetControl
 		graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, 4, false);
