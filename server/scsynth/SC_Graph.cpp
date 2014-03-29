@@ -596,7 +596,9 @@ void Graph_SetControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inInde
 {
 	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
 	ParamSpec *spec = table->Get(inHash, inName);
-	if (spec) Graph_SetControl(inGraph, spec->mIndex + inIndex, inValue);
+	if (!spec || inIndex >= spec->mNumChannels) return;
+	//printf("setting: %s: to value %f\n", spec->mName, inValue);
+	Graph_SetControl(inGraph, spec->mIndex + inIndex, inValue);
 }
 
 
@@ -605,7 +607,9 @@ void Graph_MapControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inInde
 {
 	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
 	ParamSpec *spec = table->Get(inHash, inName);
-	if (spec) Graph_MapControl(inGraph, spec->mIndex + inIndex, inBus);
+	if (!spec || inIndex >= spec->mNumChannels) return;
+	//printf("mapping: %s: to bus index %i\n", spec->mName, inBus);
+	Graph_MapControl(inGraph, spec->mIndex + inIndex, inBus);
 }
 
 void Graph_MapControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
@@ -625,6 +629,8 @@ void Graph_MapAudioControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 i
 {
     ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
     ParamSpec *spec = table->Get(inHash, inName);
+	if (!spec || inIndex >= spec->mNumChannels) return;
+	//printf("mapping: %s: to bus index %i\n", spec->mName, inBus);
     if (spec) Graph_MapAudioControl(inGraph, spec->mIndex + inIndex, inBus);
 }
 
