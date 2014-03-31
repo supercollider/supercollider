@@ -579,7 +579,7 @@ int Graph_GetControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex
 {
 	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
 	ParamSpec *spec = table->Get(inHash, inName);
-	if (!spec) return kSCErr_IndexOutOfRange;
+	if (!spec || inIndex >= spec->mNumChannels) return kSCErr_IndexOutOfRange;
 	return Graph_GetControl(inGraph, spec->mIndex + inIndex, outValue);
 }
 
