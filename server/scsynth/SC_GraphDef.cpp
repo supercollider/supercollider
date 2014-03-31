@@ -286,13 +286,11 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 		int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
 		graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, hashTableSize, false);
 		graphDef->mParamSpecs = (ParamSpec*)malloc(graphDef->mNumParamSpecs * sizeof(ParamSpec));
-		ParamSpec *prevParamSpec;
 		uint32 nSpecs = graphDef->mNumParamSpecs;
 		for (uint32 i=0; i<nSpecs; ++i) {
 			ParamSpec *paramSpec = graphDef->mParamSpecs + i;
 			ParamSpec_Read(paramSpec, buffer);
 			graphDef->mParamSpecTable->Add(paramSpec);
-			prevParamSpec = paramSpec;
 		}
 		// calculate numChannels for each spec
 		std::sort(graphDef->mParamSpecs, graphDef->mParamSpecs + nSpecs, sortParamSpec);
