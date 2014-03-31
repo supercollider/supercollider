@@ -3,12 +3,13 @@
 // tests //
 
 History.start;
+h = HistoryGui(History.current);
+
 1 + 2;
 3 + 4;
 12 + 14;
 
-h = HistoryGui(History.current);
-History.current.lines
+1 + 2; History.current.lines
 h.postDoc(1);
 h.alignDoc;
 h.docFlag = \newDoc; // not working yet.
@@ -250,7 +251,9 @@ HistoryGui : JITGui {
 		newIndex = if (selectedLine.isNil) { 0 }
 		{ linesToShow.indexOf(selectedLine) };
 		listV.value_(newIndex ? 0);
-		// if(stickMode == 0) { listV.action.value(listV) };
+		if(stickMode == 0) { listV.action.value(listV) };
+
+		this.postInlined(newIndex);
 	}
 
 	checkUpdate {
