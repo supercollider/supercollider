@@ -244,10 +244,8 @@ HistoryGui : JITGui {
 			filteredShorts;
 		} ? [];
 
-		if (linesToShow != lastLinesShown) {
-			listV.items_(linesToShow);
-			lastLinesShown = linesToShow;
-		};
+		listV.items_(linesToShow);
+		lastLinesShown = linesToShow;
 
 		newIndex = if (selectedLine.isNil) { 0 }
 		{ linesToShow.indexOf(selectedLine) };
