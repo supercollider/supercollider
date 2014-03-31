@@ -28,10 +28,8 @@
 #include <boost/asio/detail/socket_types.hpp>
 #include <boost/asio/detail/thread.hpp>
 #include <boost/asio/detail/timer_queue_base.hpp>
-#include <boost/asio/detail/timer_queue_fwd.hpp>
 #include <boost/asio/detail/timer_queue_set.hpp>
 #include <boost/asio/detail/wait_op.hpp>
-#include <boost/asio/detail/win_iocp_io_service_fwd.hpp>
 #include <boost/asio/detail/win_iocp_operation.hpp>
 #include <boost/asio/detail/win_iocp_thread_info.hpp>
 

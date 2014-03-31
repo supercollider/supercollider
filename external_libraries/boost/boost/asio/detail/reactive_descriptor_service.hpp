@@ -17,7 +17,9 @@
 
 #include <boost/asio/detail/config.hpp>
 
-#if !defined(BOOST_ASIO_WINDOWS) && !defined(__CYGWIN__)
+#if !defined(BOOST_ASIO_WINDOWS) \
+  && !defined(BOOST_ASIO_WINDOWS_RUNTIME) \
+  && !defined(__CYGWIN__)
 
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/io_service.hpp>
@@ -315,6 +317,8 @@ private:
 # include <boost/asio/detail/impl/reactive_descriptor_service.ipp>
 #endif // defined(BOOST_ASIO_HEADER_ONLY)
 
-#endif // !defined(BOOST_ASIO_WINDOWS) && !defined(__CYGWIN__)
+#endif // !defined(BOOST_ASIO_WINDOWS)
+       //   && !defined(BOOST_ASIO_WINDOWS_RUNTIME)
+       //   && !defined(__CYGWIN__)
 
 #endif // BOOST_ASIO_DETAIL_REACTIVE_DESCRIPTOR_SERVICE_HPP

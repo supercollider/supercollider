@@ -5,6 +5,7 @@ Stream : AbstractFunction {
 	parent { ^nil }
 	next { ^this.subclassResponsibility(thisMethod) }
 	iter { ^this }
+	streamArg { ^this }
 
 	value { arg inval; ^this.next(inval) }
 	valueArray { ^this.next }
@@ -240,17 +241,27 @@ OneShotStream : Stream {
 }
 
 EmbedOnce : Stream  {
-	var <stream;
-	*new { arg stream;
-		^super.newCopyArgs(stream.asStream)
+	var <stream, <cleanup;
+	*new { arg stream, cleanup;
+		^super.newCopyArgs(stream.asStream, cleanup)
 	}
 	next { arg inval;
 		var val = stream.next(inval);
-		if(val.isNil) { stream = nil }; // embed once, then release memory
+		if(val.isNil) { // embed once, then release memory
+			cleanup.exit(inval);
+			stream = nil;
+			cleanup = nil;
+		} {
+			cleanup.update(val)
+		};
 		^val
+	}
+	reset {
+		stream.reset
 	}
 	storeArgs { ^[stream] }
 }
+
 
 FuncStream : Stream {
 	var <>nextFunc; // Func is evaluated for each next state

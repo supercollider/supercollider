@@ -72,7 +72,7 @@ Pcollect : FuncFilterPattern {
 		}
 	}
 	asStream {
-		^pattern.asStream.collect(func);
+		^pattern.streamArg.collect(func);
 	}
 }
 
@@ -90,7 +90,7 @@ Pselect : FuncFilterPattern {
 		}
 	}
 	asStream {
-		^pattern.asStream.select(func);
+		^pattern.streamArg.select(func);
 	}
 }
 
@@ -108,7 +108,7 @@ Preject : FuncFilterPattern {
 		}
 	}
 	asStream {
-		^pattern.asStream.reject(func);
+		^pattern.streamArg.reject(func);
 	}
 }
 
@@ -383,12 +383,11 @@ Pfin : FilterPattern {
 		^super.new(pattern).count_(count)
 	}
 	storeArgs { ^[count,pattern] }
-	asStream { | cleanup| ^Routine({ arg inval; this.embedInStream(inval, cleanup) }) }
 
-	embedInStream { arg event, cleanup;
+	embedInStream { arg event;
 		var inevent;
 		var stream = pattern.asStream;
-		cleanup ?? { cleanup = EventStreamCleanup.new };
+		var cleanup = EventStreamCleanup.new;
 		count.value(event).do({
 			inevent = stream.next(event) ?? { ^event };
 			cleanup.update(inevent);
@@ -424,14 +423,12 @@ Pfindur : FilterPattern {
 		^super.new(pattern).dur_(dur).tolerance_(tolerance)
 	}
 	storeArgs { ^[dur,pattern,tolerance] }
-	asStream { | cleanup| ^Routine({ arg inval; this.embedInStream(inval, cleanup) }) }
 
-	embedInStream { arg event, cleanup;
-		var item, delta, elapsed = 0.0, nextElapsed, inevent,
-		localdur = dur.value(event);
+	embedInStream { arg event;
+		var item, delta, elapsed = 0.0, nextElapsed, inevent;
+		var localdur = dur.value(event);
 		var stream = pattern.asStream;
-
-		cleanup ?? { cleanup = EventStreamCleanup.new };
+		var cleanup = EventStreamCleanup.new;
 		loop {
 			inevent = stream.next(event).asEvent ?? { ^event };
 			cleanup.update(inevent);

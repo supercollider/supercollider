@@ -16,6 +16,7 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <boost/asio/detail/config.hpp>
+
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
@@ -25,6 +26,12 @@
 #include <boost/asio/detail/assert.hpp>
 #include <boost/asio/detail/socket_ops.hpp>
 #include <boost/asio/error.hpp>
+
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+# include <codecvt>
+# include <locale>
+# include <string>
+#endif // defined(BOOST_ASIO_WINDOWS_RUNTIME)
 
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__) \
   || defined(__MACH__) && defined(__APPLE__)
@@ -41,6 +48,8 @@ namespace asio {
 namespace detail {
 namespace socket_ops {
 
+#if !defined(BOOST_ASIO_WINDOWS_RUNTIME)
+
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
 struct msghdr { int msg_namelen; };
 #endif // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
@@ -52,6 +61,8 @@ extern "C" char* if_indextoname(unsigned int, char*);
 extern "C" unsigned int if_nametoindex(const char*);
 #endif // defined(__hpux)
 
+#endif // !defined(BOOST_ASIO_WINDOWS_RUNTIME)
+
 inline void clear_last_error()
 {
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
@@ -60,6 +71,8 @@ inline void clear_last_error()
   errno = 0;
 #endif
 }
+
+#if !defined(BOOST_ASIO_WINDOWS_RUNTIME)
 
 template <typename ReturnType>
 inline ReturnType error_wrapper(ReturnType return_value,
@@ -508,14 +521,35 @@ void sync_connect(socket_type s, const socket_addr_type* addr,
       boost::asio::error::get_system_category());
 }
 
-bool non_blocking_connect(socket_type s,
-    const socket_addr_type* addr, std::size_t addrlen,
-    boost::system::error_code& ec)
+bool non_blocking_connect(socket_type s, boost::system::error_code& ec)
 {
   // Check if the connect operation has finished. This is required since we may
   // get spurious readiness notifications from the reactor.
-  socket_ops::connect(s, addr, addrlen, ec);
-  if (ec == boost::asio::error::already_started)
+#if defined(BOOST_ASIO_WINDOWS) \
+  || defined(__CYGWIN__) \
+  || defined(__SYMBIAN32__)
+  fd_set write_fds;
+  FD_ZERO(&write_fds);
+  FD_SET(s, &write_fds);
+  fd_set except_fds;
+  FD_ZERO(&except_fds);
+  FD_SET(s, &except_fds);
+  timeval zero_timeout;
+  zero_timeout.tv_sec = 0;
+  zero_timeout.tv_usec = 0;
+  int ready = ::select(s + 1, 0, &write_fds, &except_fds, &zero_timeout);
+#else // defined(BOOST_ASIO_WINDOWS)
+      // || defined(__CYGWIN__)
+      // || defined(__SYMBIAN32__)
+  pollfd fds;
+  fds.fd = s;
+  fds.events = POLLOUT;
+  fds.revents = 0;
+  int ready = ::poll(&fds, 1, 0);
+#endif // defined(BOOST_ASIO_WINDOWS)
+       // || defined(__CYGWIN__)
+       // || defined(__SYMBIAN32__)
+  if (ready == 0)
   {
     // The asynchronous connect operation is still in progress.
     return false;
@@ -1313,7 +1347,7 @@ socket_type socket(int af, int type, int protocol,
   if (s == invalid_socket)
     return s;
 
-  if (af == AF_INET6)
+  if (af == BOOST_ASIO_OS_DEF(AF_INET6))
   {
     // Try to enable the POSIX default behaviour of having IPV6_V6ONLY set to
     // false. This will only succeed on Windows Vista and later versions of
@@ -1731,7 +1765,7 @@ int poll_read(socket_type s, state_type state, boost::system::error_code& ec)
   zero_timeout.tv_usec = 0;
   timeval* timeout = (state & user_set_non_blocking) ? &zero_timeout : 0;
   clear_last_error();
-  int result = error_wrapper(::select(s, &fds, 0, 0, timeout), ec);
+  int result = error_wrapper(::select(s + 1, &fds, 0, 0, timeout), ec);
 #else // defined(BOOST_ASIO_WINDOWS)
       // || defined(__CYGWIN__)
       // || defined(__SYMBIAN32__)
@@ -1772,7 +1806,7 @@ int poll_write(socket_type s, state_type state, boost::system::error_code& ec)
   zero_timeout.tv_usec = 0;
   timeval* timeout = (state & user_set_non_blocking) ? &zero_timeout : 0;
   clear_last_error();
-  int result = error_wrapper(::select(s, 0, &fds, 0, timeout), ec);
+  int result = error_wrapper(::select(s + 1, 0, &fds, 0, timeout), ec);
 #else // defined(BOOST_ASIO_WINDOWS)
       // || defined(__CYGWIN__)
       // || defined(__SYMBIAN32__)
@@ -1812,7 +1846,8 @@ int poll_connect(socket_type s, boost::system::error_code& ec)
   FD_ZERO(&except_fds);
   FD_SET(s, &except_fds);
   clear_last_error();
-  int result = error_wrapper(::select(s, 0, &write_fds, &except_fds, 0), ec);
+  int result = error_wrapper(::select(
+        s + 1, 0, &write_fds, &except_fds, 0), ec);
   if (result >= 0)
     ec = boost::system::error_code();
   return result;
@@ -1833,14 +1868,51 @@ int poll_connect(socket_type s, boost::system::error_code& ec)
        // || defined(__SYMBIAN32__)
 }
 
+#endif // !defined(BOOST_ASIO_WINDOWS_RUNTIME)
+
 const char* inet_ntop(int af, const void* src, char* dest, size_t length,
     unsigned long scope_id, boost::system::error_code& ec)
 {
   clear_last_error();
-#if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+  using namespace std; // For sprintf.
+  const unsigned char* bytes = static_cast<const unsigned char*>(src);
+  if (af == BOOST_ASIO_OS_DEF(AF_INET))
+  {
+    sprintf_s(dest, length, "%u.%u.%u.%u",
+        bytes[0], bytes[1], bytes[2], bytes[3]);
+    return dest;
+  }
+  else if (af == BOOST_ASIO_OS_DEF(AF_INET6))
+  {
+    size_t n = 0, b = 0, z = 0;
+    while (n < length && b < 16)
+    {
+      if (bytes[b] == 0 && bytes[b + 1] == 0 && z == 0)
+      {
+        do b += 2; while (b < 16 && bytes[b] == 0 && bytes[b + 1] == 0);
+        n += sprintf_s(dest + n, length - n, ":%s", b < 16 ? "" : ":"), ++z;
+      }
+      else
+      {
+        n += sprintf_s(dest + n, length - n, "%s%x", b ? ":" : "",
+            (static_cast<u_long_type>(bytes[b]) << 8) | bytes[b + 1]);
+        b += 2;
+      }
+    }
+    if (scope_id)
+      n += sprintf_s(dest + n, length - n, "%%%lu", scope_id);
+    return dest;
+  }
+  else
+  {
+    ec = boost::asio::error::address_family_not_supported;
+    return 0;
+  }
+#elif defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   using namespace std; // For memcpy.
 
-  if (af != AF_INET && af != AF_INET6)
+  if (af != BOOST_ASIO_OS_DEF(AF_INET) && af != BOOST_ASIO_OS_DEF(AF_INET6))
   {
     ec = boost::asio::error::address_family_not_supported;
     return 0;
@@ -1854,17 +1926,17 @@ const char* inet_ntop(int af, const void* src, char* dest, size_t length,
     sockaddr_in6_type v6;
   } address;
   DWORD address_length;
-  if (af == AF_INET)
+  if (af == BOOST_ASIO_OS_DEF(AF_INET))
   {
     address_length = sizeof(sockaddr_in4_type);
-    address.v4.sin_family = AF_INET;
+    address.v4.sin_family = BOOST_ASIO_OS_DEF(AF_INET);
     address.v4.sin_port = 0;
     memcpy(&address.v4.sin_addr, src, sizeof(in4_addr_type));
   }
   else // AF_INET6
   {
     address_length = sizeof(sockaddr_in6_type);
-    address.v6.sin6_family = AF_INET6;
+    address.v6.sin6_family = BOOST_ASIO_OS_DEF(AF_INET6);
     address.v6.sin6_port = 0;
     address.v6.sin6_flowinfo = 0;
     address.v6.sin6_scope_id = scope_id;
@@ -1896,7 +1968,7 @@ const char* inet_ntop(int af, const void* src, char* dest, size_t length,
         af, src, dest, static_cast<int>(length)), ec);
   if (result == 0 && !ec)
     ec = boost::asio::error::invalid_argument;
-  if (result != 0 && af == AF_INET6 && scope_id != 0)
+  if (result != 0 && af == BOOST_ASIO_OS_DEF(AF_INET6) && scope_id != 0)
   {
     using namespace std; // For strcat and sprintf.
     char if_name[IF_NAMESIZE + 1] = "%";
@@ -1916,10 +1988,154 @@ int inet_pton(int af, const char* src, void* dest,
     unsigned long* scope_id, boost::system::error_code& ec)
 {
   clear_last_error();
-#if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+  using namespace std; // For sscanf.
+  unsigned char* bytes = static_cast<unsigned char*>(dest);
+  if (af == BOOST_ASIO_OS_DEF(AF_INET))
+  {
+    unsigned int b0, b1, b2, b3;
+    if (sscanf_s(src, "%u.%u.%u.%u", &b0, &b1, &b2, &b3) != 4)
+    {
+      ec = boost::asio::error::invalid_argument;
+      return -1;
+    }
+    if (b0 > 255 || b1 > 255 || b2 > 255 || b3 > 255)
+    {
+      ec = boost::asio::error::invalid_argument;
+      return -1;
+    }
+    bytes[0] = static_cast<unsigned char>(b0);
+    bytes[1] = static_cast<unsigned char>(b1);
+    bytes[2] = static_cast<unsigned char>(b2);
+    bytes[3] = static_cast<unsigned char>(b3);
+    ec = boost::system::error_code();
+    return 1;
+  }
+  else if (af == BOOST_ASIO_OS_DEF(AF_INET6))
+  {
+    unsigned char* bytes = static_cast<unsigned char*>(dest);
+    std::memset(bytes, 0, 16);
+    unsigned char back_bytes[16] = { 0 };
+    int num_front_bytes = 0, num_back_bytes = 0;
+    const char* p = src;
+
+    enum { fword, fcolon, bword, scope, done } state = fword;
+    unsigned long current_word = 0;
+    while (state != done)
+    {
+      if (current_word > 0xFFFF)
+      {
+        ec = boost::asio::error::invalid_argument;
+        return -1;
+      }
+
+      switch (state)
+      {
+      case fword:
+        if (*p >= '0' && *p <= '9')
+          current_word = current_word * 16 + *p++ - '0';
+        else if (*p >= 'a' && *p <= 'f')
+          current_word = current_word * 16 + *p++ - 'a' + 10;
+        else if (*p >= 'A' && *p <= 'F')
+          current_word = current_word * 16 + *p++ - 'A' + 10;
+        else
+        {
+          if (num_front_bytes == 16)
+          {
+            ec = boost::asio::error::invalid_argument;
+            return -1;
+          }
+
+          bytes[num_front_bytes++] = (current_word >> 8) & 0xFF;
+          bytes[num_front_bytes++] = current_word & 0xFF;
+          current_word = 0;
+
+          if (*p == ':')
+            state = fcolon, ++p;
+          else if (*p == '%')
+            state = scope, ++p;
+          else if (*p == 0)
+            state = done;
+          else
+          {
+            ec = boost::asio::error::invalid_argument;
+            return -1;
+          }
+        }
+        break;
+
+      case fcolon:
+        if (*p == ':')
+          state = bword, ++p;
+        else
+          state = fword;
+        break;
+
+      case bword:
+        if (*p >= '0' && *p <= '9')
+          current_word = current_word * 16 + *p++ - '0';
+        else if (*p >= 'a' && *p <= 'f')
+          current_word = current_word * 16 + *p++ - 'a' + 10;
+        else if (*p >= 'A' && *p <= 'F')
+          current_word = current_word * 16 + *p++ - 'A' + 10;
+        else
+        {
+          if (num_front_bytes + num_back_bytes == 16)
+          {
+            ec = boost::asio::error::invalid_argument;
+            return -1;
+          }
+
+          back_bytes[num_back_bytes++] = (current_word >> 8) & 0xFF;
+          back_bytes[num_back_bytes++] = current_word & 0xFF;
+          current_word = 0;
+
+          if (*p == ':')
+            state = bword, ++p;
+          else if (*p == '%')
+            state = scope, ++p;
+          else if (*p == 0)
+            state = done;
+          else
+          {
+            ec = boost::asio::error::invalid_argument;
+            return -1;
+          }
+        }
+        break;
+
+      case scope:
+        if (*p >= '0' && *p <= '9')
+          current_word = current_word * 10 + *p++ - '0';
+        else if (*p == 0)
+          *scope_id = current_word, state = done;
+        else
+        {
+          ec = boost::asio::error::invalid_argument;
+          return -1;
+        }
+        break;
+
+      default:
+        break;
+      }
+    }
+
+    for (int i = 0; i < num_back_bytes; ++i)
+      bytes[16 - num_back_bytes + i] = back_bytes[i];
+
+    ec = boost::system::error_code();
+    return 1;
+  }
+  else
+  {
+    ec = boost::asio::error::address_family_not_supported;
+    return -1;
+  }
+#elif defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   using namespace std; // For memcpy and strcmp.
 
-  if (af != AF_INET && af != AF_INET6)
+  if (af != BOOST_ASIO_OS_DEF(AF_INET) && af != BOOST_ASIO_OS_DEF(AF_INET6))
   {
     ec = boost::asio::error::address_family_not_supported;
     return -1;
@@ -1944,7 +2160,7 @@ int inet_pton(int af, const char* src, void* dest,
         const_cast<char*>(src), af, 0, &address.base, &address_length), ec);
 #endif
 
-  if (af == AF_INET)
+  if (af == BOOST_ASIO_OS_DEF(AF_INET))
   {
     if (result != socket_error_retval)
     {
@@ -1980,7 +2196,7 @@ int inet_pton(int af, const char* src, void* dest,
   int result = error_wrapper(::inet_pton(af, src, dest), ec);
   if (result <= 0 && !ec)
     ec = boost::asio::error::invalid_argument;
-  if (result > 0 && af == AF_INET6 && scope_id)
+  if (result > 0 && af == BOOST_ASIO_OS_DEF(AF_INET6) && scope_id)
   {
     using namespace std; // For strchr and atoi.
     *scope_id = 0;
@@ -2002,13 +2218,46 @@ int inet_pton(int af, const char* src, void* dest,
 int gethostname(char* name, int namelen, boost::system::error_code& ec)
 {
   clear_last_error();
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+  try
+  {
+    using namespace Windows::Foundation::Collections;
+    using namespace Windows::Networking;
+    using namespace Windows::Networking::Connectivity;
+    IVectorView<HostName^>^ hostnames = NetworkInformation::GetHostNames();
+    for (unsigned i = 0; i < hostnames->Size; ++i)
+    {
+      HostName^ hostname = hostnames->GetAt(i);
+      if (hostname->Type == HostNameType::DomainName)
+      {
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        std::string raw_name = converter.to_bytes(hostname->RawName->Data());
+        if (namelen > 0 && raw_name.size() < static_cast<std::size_t>(namelen))
+        {
+          strcpy_s(name, namelen, raw_name.c_str());
+          return 0;
+        }
+      }
+    }
+    return -1;
+  }
+  catch (Platform::Exception^ e)
+  {
+    ec = boost::system::error_code(e->HResult,
+        boost::system::system_category());
+    return -1;
+  }
+#else // defined(BOOST_ASIO_WINDOWS_RUNTIME)
   int result = error_wrapper(::gethostname(name, namelen), ec);
-#if defined(BOOST_ASIO_WINDOWS)
+# if defined(BOOST_ASIO_WINDOWS)
   if (result == 0)
     ec = boost::system::error_code();
-#endif
+# endif // defined(BOOST_ASIO_WINDOWS)
   return result;
+#endif // defined(BOOST_ASIO_WINDOWS_RUNTIME)
 }
+
+#if !defined(BOOST_ASIO_WINDOWS_RUNTIME)
 
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__) \
   || defined(__MACH__) && defined(__APPLE__)
@@ -2087,7 +2336,7 @@ inline hostent* gethostbyname(const char* name, int af, struct hostent* result,
   (void)(buffer);
   (void)(buflength);
   (void)(ai_flags);
-  if (af != AF_INET)
+  if (af != BOOST_ASIO_OS_DEF(AF_INET))
   {
     ec = boost::asio::error::address_family_not_supported;
     return 0;
@@ -2100,7 +2349,7 @@ inline hostent* gethostbyname(const char* name, int af, struct hostent* result,
   return result;
 #elif defined(__sun) || defined(__QNX__)
   (void)(ai_flags);
-  if (af != AF_INET)
+  if (af != BOOST_ASIO_OS_DEF(AF_INET))
   {
     ec = boost::asio::error::address_family_not_supported;
     return 0;
@@ -2125,7 +2374,7 @@ inline hostent* gethostbyname(const char* name, int af, struct hostent* result,
   return retval;
 #else
   (void)(ai_flags);
-  if (af != AF_INET)
+  if (af != BOOST_ASIO_OS_DEF(AF_INET))
   {
     ec = boost::asio::error::address_family_not_supported;
     return 0;
@@ -2170,22 +2419,22 @@ inline int gai_nsearch(const char* host,
       // No host and AI_PASSIVE implies wildcard bind.
       switch (hints->ai_family)
       {
-      case AF_INET:
+      case BOOST_ASIO_OS_DEF(AF_INET):
         search[search_count].host = "0.0.0.0";
-        search[search_count].family = AF_INET;
+        search[search_count].family = BOOST_ASIO_OS_DEF(AF_INET);
         ++search_count;
         break;
-      case AF_INET6:
+      case BOOST_ASIO_OS_DEF(AF_INET6):
         search[search_count].host = "0::0";
-        search[search_count].family = AF_INET6;
+        search[search_count].family = BOOST_ASIO_OS_DEF(AF_INET6);
         ++search_count;
         break;
-      case AF_UNSPEC:
+      case BOOST_ASIO_OS_DEF(AF_UNSPEC):
         search[search_count].host = "0::0";
-        search[search_count].family = AF_INET6;
+        search[search_count].family = BOOST_ASIO_OS_DEF(AF_INET6);
         ++search_count;
         search[search_count].host = "0.0.0.0";
-        search[search_count].family = AF_INET;
+        search[search_count].family = BOOST_ASIO_OS_DEF(AF_INET);
         ++search_count;
         break;
       default:
@@ -2197,22 +2446,22 @@ inline int gai_nsearch(const char* host,
       // No host and not AI_PASSIVE means connect to local host.
       switch (hints->ai_family)
       {
-      case AF_INET:
+      case BOOST_ASIO_OS_DEF(AF_INET):
         search[search_count].host = "localhost";
-        search[search_count].family = AF_INET;
+        search[search_count].family = BOOST_ASIO_OS_DEF(AF_INET);
         ++search_count;
         break;
-      case AF_INET6:
+      case BOOST_ASIO_OS_DEF(AF_INET6):
         search[search_count].host = "localhost";
-        search[search_count].family = AF_INET6;
+        search[search_count].family = BOOST_ASIO_OS_DEF(AF_INET6);
         ++search_count;
         break;
-      case AF_UNSPEC:
+      case BOOST_ASIO_OS_DEF(AF_UNSPEC):
         search[search_count].host = "localhost";
-        search[search_count].family = AF_INET6;
+        search[search_count].family = BOOST_ASIO_OS_DEF(AF_INET6);
         ++search_count;
         search[search_count].host = "localhost";
-        search[search_count].family = AF_INET;
+        search[search_count].family = BOOST_ASIO_OS_DEF(AF_INET);
         ++search_count;
         break;
       default:
@@ -2225,22 +2474,22 @@ inline int gai_nsearch(const char* host,
     // Host is specified.
     switch (hints->ai_family)
     {
-    case AF_INET:
+    case BOOST_ASIO_OS_DEF(AF_INET):
       search[search_count].host = host;
-      search[search_count].family = AF_INET;
+      search[search_count].family = BOOST_ASIO_OS_DEF(AF_INET);
       ++search_count;
       break;
-    case AF_INET6:
+    case BOOST_ASIO_OS_DEF(AF_INET6):
       search[search_count].host = host;
-      search[search_count].family = AF_INET6;
+      search[search_count].family = BOOST_ASIO_OS_DEF(AF_INET6);
       ++search_count;
       break;
-    case AF_UNSPEC:
+    case BOOST_ASIO_OS_DEF(AF_UNSPEC):
       search[search_count].host = host;
-      search[search_count].family = AF_INET6;
+      search[search_count].family = BOOST_ASIO_OS_DEF(AF_INET6);
       ++search_count;
       search[search_count].host = host;
-      search[search_count].family = AF_INET;
+      search[search_count].family = BOOST_ASIO_OS_DEF(AF_INET);
       ++search_count;
       break;
     default:
@@ -2300,23 +2549,23 @@ inline int gai_aistruct(addrinfo_type*** next, const addrinfo_type* hints,
 
   switch (ai->ai_family)
   {
-  case AF_INET:
+  case BOOST_ASIO_OS_DEF(AF_INET):
     {
       sockaddr_in4_type* sinptr = gai_alloc<sockaddr_in4_type>();
       if (sinptr == 0)
         return EAI_MEMORY;
-      sinptr->sin_family = AF_INET;
+      sinptr->sin_family = BOOST_ASIO_OS_DEF(AF_INET);
       memcpy(&sinptr->sin_addr, addr, sizeof(in4_addr_type));
       ai->ai_addr = reinterpret_cast<sockaddr*>(sinptr);
       ai->ai_addrlen = sizeof(sockaddr_in4_type);
       break;
     }
-  case AF_INET6:
+  case BOOST_ASIO_OS_DEF(AF_INET6):
     {
       sockaddr_in6_type* sin6ptr = gai_alloc<sockaddr_in6_type>();
       if (sin6ptr == 0)
         return EAI_MEMORY;
-      sin6ptr->sin6_family = AF_INET6;
+      sin6ptr->sin6_family = BOOST_ASIO_OS_DEF(AF_INET6);
       memcpy(&sin6ptr->sin6_addr, addr, sizeof(in6_addr_type));
       ai->ai_addr = reinterpret_cast<sockaddr*>(sin6ptr);
       ai->ai_addrlen = sizeof(sockaddr_in6_type);
@@ -2378,7 +2627,7 @@ inline int gai_port(addrinfo_type* aihead, int port, int socktype)
 
     switch (ai->ai_family)
     {
-    case AF_INET:
+    case BOOST_ASIO_OS_DEF(AF_INET):
       {
         sockaddr_in4_type* sinptr =
           reinterpret_cast<sockaddr_in4_type*>(ai->ai_addr);
@@ -2386,7 +2635,7 @@ inline int gai_port(addrinfo_type* aihead, int port, int socktype)
         ++num_found;
         break;
       }
-    case AF_INET6:
+    case BOOST_ASIO_OS_DEF(AF_INET6):
       {
         sockaddr_in6_type* sin6ptr =
           reinterpret_cast<sockaddr_in6_type*>(ai->ai_addr);
@@ -2495,10 +2744,10 @@ inline int gai_echeck(const char* host, const char* service,
   // Check combination of family and socket type.
   switch (family)
   {
-  case AF_UNSPEC:
+  case BOOST_ASIO_OS_DEF(AF_UNSPEC):
     break;
-  case AF_INET:
-  case AF_INET6:
+  case BOOST_ASIO_OS_DEF(AF_INET):
+  case BOOST_ASIO_OS_DEF(AF_INET6):
     if (service != 0 && service[0] != '\0')
       if (socktype != 0 && socktype != SOCK_STREAM && socktype != SOCK_DGRAM)
         return EAI_SOCKTYPE;
@@ -2533,18 +2782,18 @@ inline int getaddrinfo_emulation(const char* host, const char* service,
 
   // Supply default hints if not specified by caller.
   addrinfo_type hints = addrinfo_type();
-  hints.ai_family = AF_UNSPEC;
+  hints.ai_family = BOOST_ASIO_OS_DEF(AF_UNSPEC);
   if (hintsp)
     hints = *hintsp;
 
   // If the resolution is not specifically for AF_INET6, remove the AI_V4MAPPED
   // and AI_ALL flags.
 #if defined(AI_V4MAPPED)
-  if (hints.ai_family != AF_INET6)
+  if (hints.ai_family != BOOST_ASIO_OS_DEF(AF_INET6))
     hints.ai_flags &= ~AI_V4MAPPED;
 #endif
 #if defined(AI_ALL)
-  if (hints.ai_family != AF_INET6)
+  if (hints.ai_family != BOOST_ASIO_OS_DEF(AF_INET6))
     hints.ai_flags &= ~AI_ALL;
 #endif
 
@@ -2564,17 +2813,19 @@ inline int getaddrinfo_emulation(const char* host, const char* service,
     // Check for IPv4 dotted decimal string.
     in4_addr_type inaddr;
     boost::system::error_code ec;
-    if (socket_ops::inet_pton(AF_INET, sptr->host, &inaddr, 0, ec) == 1)
+    if (socket_ops::inet_pton(BOOST_ASIO_OS_DEF(AF_INET),
+          sptr->host, &inaddr, 0, ec) == 1)
     {
-      if (hints.ai_family != AF_UNSPEC && hints.ai_family != AF_INET)
+      if (hints.ai_family != BOOST_ASIO_OS_DEF(AF_UNSPEC)
+          && hints.ai_family != BOOST_ASIO_OS_DEF(AF_INET))
       {
         freeaddrinfo_emulation(aihead);
         gai_free(canon);
         return EAI_FAMILY;
       }
-      if (sptr->family == AF_INET)
+      if (sptr->family == BOOST_ASIO_OS_DEF(AF_INET))
       {
-        rc = gai_aistruct(&ainext, &hints, &inaddr, AF_INET);
+        rc = gai_aistruct(&ainext, &hints, &inaddr, BOOST_ASIO_OS_DEF(AF_INET));
         if (rc != 0)
         {
           freeaddrinfo_emulation(aihead);
@@ -2587,17 +2838,20 @@ inline int getaddrinfo_emulation(const char* host, const char* service,
 
     // Check for IPv6 hex string.
     in6_addr_type in6addr;
-    if (socket_ops::inet_pton(AF_INET6, sptr->host, &in6addr, 0, ec) == 1)
+    if (socket_ops::inet_pton(BOOST_ASIO_OS_DEF(AF_INET6),
+          sptr->host, &in6addr, 0, ec) == 1)
     {
-      if (hints.ai_family != AF_UNSPEC && hints.ai_family != AF_INET6)
+      if (hints.ai_family != BOOST_ASIO_OS_DEF(AF_UNSPEC)
+          && hints.ai_family != BOOST_ASIO_OS_DEF(AF_INET6))
       {
         freeaddrinfo_emulation(aihead);
         gai_free(canon);
         return EAI_FAMILY;
       }
-      if (sptr->family == AF_INET6)
+      if (sptr->family == BOOST_ASIO_OS_DEF(AF_INET6))
       {
-        rc = gai_aistruct(&ainext, &hints, &in6addr, AF_INET6);
+        rc = gai_aistruct(&ainext, &hints, &in6addr,
+            BOOST_ASIO_OS_DEF(AF_INET6));
         if (rc != 0)
         {
           freeaddrinfo_emulation(aihead);
@@ -2634,7 +2888,8 @@ inline int getaddrinfo_emulation(const char* host, const char* service,
     }
 
     // Check for address family mismatch if one was specified.
-    if (hints.ai_family != AF_UNSPEC && hints.ai_family != hptr->h_addrtype)
+    if (hints.ai_family != BOOST_ASIO_OS_DEF(AF_UNSPEC)
+        && hints.ai_family != hptr->h_addrtype)
     {
       freeaddrinfo_emulation(aihead);
       gai_free(canon);
@@ -2730,7 +2985,7 @@ inline boost::system::error_code getnameinfo_emulation(
   unsigned short port;
   switch (sa->sa_family)
   {
-  case AF_INET:
+  case BOOST_ASIO_OS_DEF(AF_INET):
     if (salen != sizeof(sockaddr_in4_type))
     {
       return ec = boost::asio::error::invalid_argument;
@@ -2740,7 +2995,7 @@ inline boost::system::error_code getnameinfo_emulation(
     addr_len = sizeof(in4_addr_type);
     port = reinterpret_cast<const sockaddr_in4_type*>(sa)->sin_port;
     break;
-  case AF_INET6:
+  case BOOST_ASIO_OS_DEF(AF_INET6):
     if (salen != sizeof(sockaddr_in6_type))
     {
       return ec = boost::asio::error::invalid_argument;
@@ -3055,24 +3310,60 @@ boost::system::error_code background_getnameinfo(
   return ec;
 }
 
+#endif // !defined(BOOST_ASIO_WINDOWS_RUNTIME)
+
 u_long_type network_to_host_long(u_long_type value)
 {
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+  unsigned char* value_p = reinterpret_cast<unsigned char*>(&value);
+  u_long_type result = (static_cast<u_long_type>(value_p[0]) << 24)
+    | (static_cast<u_long_type>(value_p[1]) << 16)
+    | (static_cast<u_long_type>(value_p[2]) << 8)
+    | static_cast<u_long_type>(value_p[3]);
+  return result;
+#else // defined(BOOST_ASIO_WINDOWS_RUNTIME)
   return ntohl(value);
+#endif // defined(BOOST_ASIO_WINDOWS_RUNTIME)
 }
 
 u_long_type host_to_network_long(u_long_type value)
 {
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+  u_long_type result;
+  unsigned char* result_p = reinterpret_cast<unsigned char*>(&result);
+  result_p[0] = static_cast<unsigned char>((value >> 24) & 0xFF);
+  result_p[1] = static_cast<unsigned char>((value >> 16) & 0xFF);
+  result_p[2] = static_cast<unsigned char>((value >> 8) & 0xFF);
+  result_p[3] = static_cast<unsigned char>(value & 0xFF);
+  return result;
+#else // defined(BOOST_ASIO_WINDOWS_RUNTIME)
   return htonl(value);
+#endif // defined(BOOST_ASIO_WINDOWS_RUNTIME)
 }
 
 u_short_type network_to_host_short(u_short_type value)
 {
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+  unsigned char* value_p = reinterpret_cast<unsigned char*>(&value);
+  u_short_type result = (static_cast<u_long_type>(value_p[0]) << 8)
+    | static_cast<u_long_type>(value_p[1]);
+  return result;
+#else // defined(BOOST_ASIO_WINDOWS_RUNTIME)
   return ntohs(value);
+#endif // defined(BOOST_ASIO_WINDOWS_RUNTIME)
 }
 
 u_short_type host_to_network_short(u_short_type value)
 {
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+  u_long_type result;
+  unsigned char* result_p = reinterpret_cast<unsigned char*>(&result);
+  result_p[0] = static_cast<unsigned char>((value >> 8) & 0xFF);
+  result_p[1] = static_cast<unsigned char>(value & 0xFF);
+  return result;
+#else // defined(BOOST_ASIO_WINDOWS_RUNTIME)
   return htons(value);
+#endif // defined(BOOST_ASIO_WINDOWS_RUNTIME)
 }
 
 } // namespace socket_ops

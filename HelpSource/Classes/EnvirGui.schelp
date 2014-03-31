@@ -77,7 +77,7 @@ list::
 ::
 
 method::specs
-EZSlider and EZRanger needs specs for their display ranges; if there is a global spec for that key (key.asSpec), it will be used. If not, a spec is generated (see the link::#-getSpec:: method) and kept in these (local) specs.
+EZSlider and EZRanger needs specs for their display ranges; if there is a global spec for that key (key.asSpec), it will be used. If not, a spec is generated (see the link::#-getSpec:: method) and kept in these (local) specs. (With the JITLibExtensions quark, one can also use the Halo class to attach specs to objects, and use those.)
 
 method::editKeys
 the keys of the currently displayed items in the dict.
@@ -112,7 +112,7 @@ g.name_("Yoohoo");
 ::
 
 method::getSpec
-For editing, specs for the parameter ranges are needed. These can be set locally in the EnvirGui, or global specs will be looked up. If no local or global specs exist for that parameter name, getSpec makes a usable guess for them.
+For editing, numerical parameters need control specs for the ranges on the gui. These can be set locally in the EnvirGui, or global specs will be looked up. If no local or global specs exist for that parameter name, getSpec makes a usable guess for them. (With JITLibExtensions, one can also look up specs attached to an object such as a proxy.)
 
 code::
 // inline example
@@ -178,7 +178,7 @@ method::useRanger
 set and get whether arrays of 2 number values should be displayed with EZRangers.
 
 
-strong::methods that update and replace gui elements based current envir content: ::
+strong::methods that update and replace gui elements based on current envir content: ::
 method::findWidget,  setFunc, setToRanger, setToSlider, setToText
 
 strong::methods that make gui elements: ::

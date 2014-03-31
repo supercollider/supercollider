@@ -157,13 +157,23 @@ builds in a specific build directory:
 
 ### Qt GUI
 
-By default the experimental Qt GUI support will be built into sclang.
+By default the Qt GUI support will be built into sclang.
 If you want to build without it configure cmake like this:
 
 ```
 $> cmake -DSC_QT=OFF ..
 ```
 
+### Speeding up repeated builds
+
+If you build SuperCollider repeatedly, we recommend installing `ccache`
+which can speed up re-compilation. Here is how to configure cmake to use it:
+
+```
+$> cmake -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc ..
+```
+
+This assumes your ccache executables are installed into `/usr/lib/ccache` - you may need to change the path to reflect your installation.
 
 Building a Debian package
 -------------------------
@@ -172,9 +182,6 @@ The most up-to-date debian packaging rules are maintained by the
 Debian Multimedia team. Repository (with debian/ folder):
 
 http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
-
-At time of writing they support 3.4.x, but we expect updates once 3.5
-is available.
 
 
 Running scsynth (standalone)

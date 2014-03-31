@@ -31,6 +31,23 @@ struct priority_compare
    }
 };
 
+/// @cond
+
+template<class Less, class T>
+struct get_prio
+{
+   typedef Less type;
+};
+
+
+template<class T>
+struct get_prio<void, T>
+{
+   typedef ::boost::intrusive::priority_compare<T> type;
+};
+
+/// @endcond
+
 } //namespace intrusive 
 } //namespace boost 
 

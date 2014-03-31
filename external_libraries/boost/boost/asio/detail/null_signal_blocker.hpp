@@ -19,6 +19,7 @@
 
 #if !defined(BOOST_ASIO_HAS_THREADS) \
   || defined(BOOST_ASIO_WINDOWS) \
+  || defined(BOOST_ASIO_WINDOWS_RUNTIME) \
   || defined(__CYGWIN__) \
   || defined(__SYMBIAN32__)
 
@@ -63,6 +64,7 @@ public:
 
 #endif // !defined(BOOST_ASIO_HAS_THREADS)
        // || defined(BOOST_ASIO_WINDOWS)
+       // || defined(BOOST_ASIO_WINDOWS_RUNTIME)
        // || defined(__CYGWIN__)
        // || defined(__SYMBIAN32__)
 

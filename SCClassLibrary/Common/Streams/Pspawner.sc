@@ -37,11 +37,11 @@ Spawner : Pattern {
 		Event.silent(dur, event).yield
 	}
 
-	embedInStream { | inevent, cleanup|
+	embedInStream { | inevent|
 
-		var outevent, stream, nexttime;
+		var outevent, stream, nexttime, cleanup;
 		event = inevent;					// gives genStream access to the event
-		cleanup ?? { cleanup = EventStreamCleanup.new };
+		cleanup = EventStreamCleanup.new;
 
 		while({
 			priorityQ.notEmpty
@@ -77,12 +77,17 @@ Spawner : Pattern {
 }
 
 Pspawner : Prout {
+
 	asStream {
-		^Routine({ | ev | this.embedInStream(ev) })
+		^Routine({ | inval |
+			this.embedInStream(inval)
+		})
 	}
-	embedInStream { | inevent, cleanup |
-		^Spawner(routineFunc).embedInStream(inevent, cleanup ?? { EventStreamCleanup.new });
+
+	embedInStream { | inevent |
+		^Spawner(routineFunc).embedInStream(inevent)
 	}
+
 }
 
 Pspawn : FilterPattern {
@@ -93,10 +98,9 @@ Pspawn : FilterPattern {
 			.spawnProtoEvent_(spawnProtoEvent ?? { Event.default });
 	}
 
-	embedInStream { |inevent, cleanup|
+	embedInStream { |inevent|
 		^Spawner({ |sp|
-			var	event, stream = pattern.asStream,
-				child;
+			var	event, stream = pattern.asStream, child;
 			while { (event = stream.next(spawnProtoEvent.copy.put(\spawner, sp))).notNil } {
 				case
 					{ event.method == \wait } {
@@ -121,7 +125,7 @@ Pspawn : FilterPattern {
 						.format(event.method.asCompileString).warn;
 					}
 			};
-		}).embedInStream(inevent, cleanup ?? { EventStreamCleanup.new })
+		}).embedInStream(inevent)
 	}
 }
 
@@ -147,19 +151,22 @@ Pspawn : FilterPattern {
 			sp.suspendAll
 		}),
 
-	]).play
+	]).play;
+)
 
-	a = Spawner({ |sp | 100.do{ sp.wait(1) } });
-	a.play;
-	b = a.par(Pbind(*[degree: Pwhite(0, 10), dur: 0.2]));
-	a.suspend(b)
-	a.par(b)
 
+a = Spawner({ |sp | 100.do{ sp.wait(1) } });
+a.play;
+b = a.par(Pbind(*[degree: Pwhite(0, 10), dur: 0.2]));
+a.suspend(b)
+a.par(b)
+
+(
 	Pspawner({ | sp |
 		5.do {
 			sp.par(Pbind(*[
 				octave: (5.rand + 3).postln,
-				 degree:	Pwhite(0,12), dur: 0.1, db: -30
+				 degree: Pwhite(0,12), dur: 0.1, db: -30
 			]) );
 			sp.wait(1);
 			sp.clear;

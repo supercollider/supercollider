@@ -597,10 +597,10 @@ bool SC_JackDriver::GraphOrderChanged()
 	jack_nframes_t lat = 0;
 
 	for (int i=0; i < outputs->mSize; ++i) {
-	  jack_latency_range_t range;
-	  jack_port_get_latency_range( outputs->mPorts[i], JackPlaybackLatency, &range );
-	  jack_nframes_t portLat = range.max;
-	  if (portLat > lat) lat = portLat;
+		jack_latency_range_t range;
+		jack_port_get_latency_range( outputs->mPorts[i], JackPlaybackLatency, &range );
+		jack_nframes_t portLat = range.max;
+		if (portLat > lat) lat = portLat;
 	}
 
 	double maxLat = (double)lat / mSampleRate;

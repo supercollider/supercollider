@@ -6,7 +6,7 @@ TaskProxyGui : JITGui {
 	*observedClass { ^TaskProxy }
 
 	getObjectKey {
-		^if (object.respondsTo(\key)) { object.key } { "" };
+		^if (object.respondsTo(\key)) { object.key } { 'anon' };
 	}
 
 	setDefaults { |options|
@@ -138,7 +138,7 @@ TaskProxyGui : JITGui {
 	name_ { |name|
 		super.name_(name);
 		nameBut.states_(nameBut.states.collect(_.put(0, name.asString))).refresh;
-	}		
+	}
 
 	getState {
 		if (object.isNil) {
@@ -377,7 +377,9 @@ PdefnGui : JITGui {
 
 	getState {
 		// get all the state I need to know of the object I am watching
-		^(object: object, source: try { object.source })
+		var state = (object: object);
+		object !? { state.put(\source, object.source) };
+		^state
 	}
 
 	checkUpdate {
@@ -385,7 +387,10 @@ PdefnGui : JITGui {
 
 		var show = newState[\object].notNil;
 		zone.visible_(show);
-		if (show.not) { ^this };
+		if (show.not) {
+			prevState = newState;
+			^this
+		};
 
 		if (newState[\object] != prevState[\object]) {
 			this.name_(this.getName);

@@ -23,18 +23,15 @@ Pfx : FilterPattern {
 		event[\delta] = 0;
 
 		cleanupEvent = (type: \off, parent: event);
-
 		cleanup.addFunction(event, { |flag|
 			if (flag) { cleanupEvent.play }
 		});
 
 		inevent = event.yield;
-
 		stream = pattern.asStream;
 
 		loop {
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
-			cleanup.update(event);
 			inevent = event.yield;
 		};
 	}
@@ -137,7 +134,7 @@ PparGroup : PAbstractGroup {
 }
 
 Pbus : FilterPattern {
-	var <>numChannels, <>rate, <>dur=2.0, <>fadeTime;
+	var <>numChannels, <>rate, <>dur, <>fadeTime;
 
 	*new { arg pattern, dur=2.0, fadeTime=0.02, numChannels=2, rate=\audio;
 		^super.new(pattern).dur_(dur).numChannels_(numChannels).rate_(rate).fadeTime_(fadeTime)
@@ -154,7 +151,9 @@ Pbus : FilterPattern {
 		groupID = server.nextNodeID;
 		linkID = server.nextNodeID;
 		ingroup = inevent[\group];
+		dur = dur ?? { server.latency };
 
+		// allocate a new bus number and make a type group event
 		// could use a special event type for this:
 		if(rate == \audio) {
 			bus = server.audioBusAllocator.alloc(numChannels);
@@ -164,7 +163,7 @@ Pbus : FilterPattern {
 			freeBus = { server.controlBusAllocator.free(bus) };
 		};
 
-		CmdPeriod.doOnce(freeBus);
+		CmdPeriod.doOnce(freeBus); // also free the bus when cmd-period is run
 
 		event = inevent.copy;
 		event[\addAction] = 0; // \addToHead
@@ -172,8 +171,14 @@ Pbus : FilterPattern {
 		event[\delta] = 0;
 		event[\id] = groupID;
 		event[\group] = ingroup;
+
+		// when stream ends, the bus number has to be released
+		// so add a function to the cleanup that does this after the link synth has faded out
+		cleanup.addFunction(event, { defer(freeBus, fadeTime.abs + dur) });
+		// return the group event
 		event.yield;
 
+		// allocate a synth that links from the inner bus to the outer bus
 		inevent = event = inevent.copy;
 
 		event[\type] = \on;
@@ -184,28 +189,25 @@ Pbus : FilterPattern {
 		event[\fadeTime] = fadeTime;
 		event[\instrument] = format("system_link_%_%", rate, numChannels);
 		event[\in] = bus;
+		// doneAction = 3; remove and deallocate both this synth and the preceeding node
+		// (which is the group).
 		event[\msgFunc] = #{ |out, in, fadeTime, gate=1|
 			[\out, out, \in, in, \fadeTime, fadeTime, \gate, gate, \doneAction, 3]
 		};
 
+		// when stream ends, the synth has to fade out.
+		// so add a type-off event to the cleanup
 		cleanupEvent = (type: \off, parent: event, fadeTime: fadeTime.abs, hasGate: true, gate: 0);
+		cleanup.addFunction(event, { | flag | if(flag) { defer({ cleanupEvent.play }, dur) } });
 
-		cleanup.addFunction(event, { | flag |
-			if(flag) { defer ( {cleanupEvent.play}, dur) };
-		});
-
-		cleanup.addFunction(event, { defer({ freeBus.value;}, fadeTime.abs + dur) });
-
-		// doneAction = 3;
-		// remove and deallocate both this synth and the preceeding node
-		// (which is the group).
+		// return the link synth event
 		inevent = event.yield;
 
-		// now embed the pattern
+		// now embed the event stream
 		stream = Pchain(pattern, (group: groupID, out: bus)).asStream;
 		loop {
+			// if stream ends, run cleanup
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
-			cleanup.update(event);
 			inevent = event.yield;
 		}
 	}

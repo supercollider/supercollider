@@ -231,11 +231,12 @@ static int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size)
 }
 
 void PerformOSCBundle(int inSize, char *inData, PyrObject *inReply, int inPortNum);
-void PerformOSCMessage(int inSize, char *inData, PyrObject *inReply, int inPortNum);
+void PerformOSCMessage(int inSize, char *inData, PyrObject *inReply, int inPortNum, double time);
 static PyrObject* ConvertReplyAddress(ReplyAddress *inReply);
 
 static void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
 {
+    double timeReceived = elapsedTime();
 	bool isBundle = IsBundle(inBuf);
 
 	gLangMutex.lock();
@@ -244,7 +245,7 @@ static void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, 
 		if (isBundle) {
 			PerformOSCBundle(inSize, inBuf, replyObj, gUDPport->RealPortNum());
 		} else {
-			PerformOSCMessage(inSize, inBuf, replyObj, gUDPport->RealPortNum());
+			PerformOSCMessage(inSize, inBuf, replyObj, gUDPport->RealPortNum(), timeReceived);
 		}
 	}
 	gLangMutex.unlock();
@@ -693,7 +694,7 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj, int inPortN
 	}
 }
 
-void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj, int inPortNum)
+void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj, int inPortNum, double time)
 {
 
 	PyrObject *arrayObj = ConvertOSCMessage(inSize, inData);
@@ -701,7 +702,7 @@ void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj, int inPort
 	// call virtual machine to handle message
 	VMGlobals *g = gMainVMGlobals;
 	++g->sp; SetObject(g->sp, g->process);
-	++g->sp; SetFloat(g->sp, elapsedTime());	// time
+	++g->sp; SetFloat(g->sp, time);	// time
 	++g->sp; SetObject(g->sp, replyObj);
 	++g->sp; SetInt(g->sp, inPortNum);
 	++g->sp; SetObject(g->sp, arrayObj);
@@ -719,7 +720,7 @@ void FreeOSCPacket(OSC_Packet *inPacket)
 }
 
 // takes ownership of inPacket
-void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
+void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum, double time)
 {
 	//post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
 	inPacket->mIsBundle = IsBundle(inPacket->mData);
@@ -731,7 +732,7 @@ void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
 			if (inPacket->mIsBundle) {
 				PerformOSCBundle(inPacket->mSize, inPacket->mData, replyObj, inPortNum);
 			} else {
-				PerformOSCMessage(inPacket->mSize, inPacket->mData, replyObj, inPortNum);
+				PerformOSCMessage(inPacket->mSize, inPacket->mData, replyObj, inPortNum, time);
 			}
 		}
 	}

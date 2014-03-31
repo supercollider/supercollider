@@ -130,7 +130,7 @@ public:
 
   /// Start an asynchronous wait.
   template <typename Handler>
-  void async_wait(implementation_type& impl, Handler handler)
+  void async_wait(implementation_type& impl, Handler& handler)
   {
     // Allocate and construct an operation to wrap the handler.
     typedef wait_handler<Handler> op;

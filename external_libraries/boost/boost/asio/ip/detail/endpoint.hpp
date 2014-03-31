@@ -109,7 +109,7 @@ public:
   // Determine whether the endpoint is IPv4.
   bool is_v4() const
   {
-    return data_.base.sa_family == AF_INET;
+    return data_.base.sa_family == BOOST_ASIO_OS_DEF(AF_INET);
   }
 
 #if !defined(BOOST_ASIO_NO_IOSTREAM)

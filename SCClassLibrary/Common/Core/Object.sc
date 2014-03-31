@@ -128,7 +128,9 @@ Object  {
 		^this.primitiveFailed
 	}
 	dup { arg n = 2;
-		var array = Array(n);
+		var array;
+		if(n.isSequenceableCollection) { ^Array.fillND(n, { this.copy }) };
+		array = Array(n);
 		n.do {|i| array.add(this.copy) };
 		^array
 	}
@@ -228,6 +230,13 @@ Object  {
 	loop { ^this.repeat(inf) }
 
 	asStream { ^this }
+	streamArg { arg embed = false;
+		^if(embed) {
+			Routine { arg inval; this.embedInStream(inval) }
+		} {
+			Routine { loop { this.yield } }
+		}
+	}
 
 	eventAt { ^nil }
 	composeEvents { arg event; ^event.copy }

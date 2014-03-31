@@ -11,7 +11,7 @@
 #ifndef BOOST_CONTAINER_ADVANCED_INSERT_INT_HPP
 #define BOOST_CONTAINER_ADVANCED_INSERT_INT_HPP
 
-#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 #  pragma once
 #endif
 
@@ -99,19 +99,43 @@ struct insert_n_copies_proxy
 };
 
 template<class A, class Iterator>
-struct insert_default_constructed_n_proxy
+struct insert_value_initialized_n_proxy
 {
    typedef ::boost::container::allocator_traits<A> alloc_traits;
    typedef typename allocator_traits<A>::size_type size_type;
    typedef typename allocator_traits<A>::value_type value_type;
 
 
-   explicit insert_default_constructed_n_proxy(A &a)
+   explicit insert_value_initialized_n_proxy(A &a)
       :  a_(a)
    {}
 
    void uninitialized_copy_n_and_update(Iterator p, size_type n) const
-   {  boost::container::uninitialized_default_alloc_n(this->a_, n, p);  }
+   {  boost::container::uninitialized_value_init_alloc_n(this->a_, n, p);  }
+
+   void copy_n_and_update(Iterator, size_type) const
+   {
+      BOOST_ASSERT(false);
+   }
+
+   private:
+   A &a_;
+};
+
+template<class A, class Iterator>
+struct insert_default_initialized_n_proxy
+{
+   typedef ::boost::container::allocator_traits<A> alloc_traits;
+   typedef typename allocator_traits<A>::size_type size_type;
+   typedef typename allocator_traits<A>::value_type value_type;
+
+
+   explicit insert_default_initialized_n_proxy(A &a)
+      :  a_(a)
+   {}
+
+   void uninitialized_copy_n_and_update(Iterator p, size_type n) const
+   {  boost::container::uninitialized_default_init_alloc_n(this->a_, n, p);  }
 
    void copy_n_and_update(Iterator, size_type) const
    {

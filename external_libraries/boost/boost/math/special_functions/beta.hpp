@@ -935,6 +935,49 @@ T ibeta_imp(T a, T b, T x, const Policy& pol, bool inv, bool normalised, T* p_de
       }
       return (invert == 0 ? (normalised ? 1 : boost::math::beta(a, b, pol)) : 0);
    }
+   if((a == 0.5f) && (b == 0.5f))
+   {
+      // We have an arcsine distribution:
+      if(p_derivative)
+      {
+         *p_derivative = (invert ? -1 : 1) / constants::pi<T>() * sqrt(y * x);
+      }
+      T p = invert ? asin(sqrt(y)) / constants::half_pi<T>() : asin(sqrt(x)) / constants::half_pi<T>();
+      if(!normalised)
+         p *= constants::pi<T>();
+      return p;
+   }
+   if(a == 1)
+   {
+      std::swap(a, b);
+      std::swap(x, y);
+      invert = !invert;
+   }
+   if(b == 1)
+   {
+      //
+      // Special case see: http://functions.wolfram.com/GammaBetaErf/BetaRegularized/03/01/01/
+      //
+      if(a == 1)
+      {
+         if(p_derivative)
+            *p_derivative = invert ? -1 : 1;
+         return invert ? y : x;
+      }
+      
+      if(p_derivative)
+      {
+         *p_derivative = (invert ? -1 : 1) * a * pow(x, a - 1);
+      }
+      T p;
+      if(y < 0.5)
+         p = invert ? T(-expm1(a * log1p(-y))) : T(exp(a * log1p(-y)));
+      else
+         p = invert ? T(-powm1(x, a)) : T(pow(x, a));
+      if(!normalised)
+         p /= a;
+      return p;
+   }
 
    if((std::min)(a, b) <= 1)
    {
@@ -1331,7 +1374,6 @@ inline typename tools::promote_args<RT1, RT2, RT3>::type
    BOOST_FPU_EXCEPTION_GUARD
    typedef typename tools::promote_args<RT1, RT2, RT3>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
-   typedef typename lanczos::lanczos<value_type, Policy>::type evaluation_type;
    typedef typename policies::normalise<
       Policy, 
       policies::promote_float<false>, 
@@ -1349,7 +1391,6 @@ inline typename tools::promote_args<RT1, RT2, RT3>::type
    BOOST_FPU_EXCEPTION_GUARD
    typedef typename tools::promote_args<RT1, RT2, RT3>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
-   typedef typename lanczos::lanczos<value_type, Policy>::type evaluation_type;
    typedef typename policies::normalise<
       Policy, 
       policies::promote_float<false>, 

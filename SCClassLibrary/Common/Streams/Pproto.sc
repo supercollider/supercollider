@@ -4,12 +4,11 @@ Pfpar : ListPattern {
 			priorityQ.put(0.0, pattern.asStream);
 		});
 	}
-	asStream { | cleanup| ^Routine({ arg inval; this.embedInStream(inval, cleanup) }) }
 
-	embedInStream { arg inval, cleanup;
+	embedInStream { arg inval;
 		var assn;
 		var priorityQ = PriorityQueue.new;
-		cleanup ?? { cleanup = EventStreamCleanup.new };
+		var cleanup = EventStreamCleanup.new;
 
 		repeats.value(inval).do({ arg j;
 			var outval, stream, nexttime, now = 0.0;
@@ -87,7 +86,7 @@ Pproto  : Pattern {
 		cleanupFunc = eventCleanupFunc ?? { { | flag | eventCleanupFunc.value(proto, flag) } };
 		cleanup.addFunction(event, cleanupFunc);
 
-		stream = Pfpar(pattern.asArray).asStream(cleanup);
+		stream = Pfpar(pattern.asArray).asStream;
 		loop {
 			ev = event.copy.putAll(protoEvent);
 			ev = stream.next(ev) ?? { ^cleanup.exit(event) };

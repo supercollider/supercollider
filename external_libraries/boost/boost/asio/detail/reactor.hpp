@@ -23,6 +23,8 @@
 # include <boost/asio/detail/kqueue_reactor.hpp>
 #elif defined(BOOST_ASIO_HAS_DEV_POLL)
 # include <boost/asio/detail/dev_poll_reactor.hpp>
+#elif defined(BOOST_ASIO_WINDOWS_RUNTIME)
+# include <boost/asio/detail/null_reactor.hpp>
 #else
 # include <boost/asio/detail/select_reactor.hpp>
 #endif

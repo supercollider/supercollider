@@ -1,0 +1,206 @@
+TITLE:: EventStreamCleanup
+summary:: Helper class that collects information about internal state of streams that needs to be released
+categories::Streams-Patterns-Events
+
+DESCRIPTION::
+Event streams created by objects like link::Classes/Pmono:: or link::Classes/Pfx:: are special: when they start, they create some state (like a new synth) that is present over the whole period of the stream, or at least over several events. When such a stream ends, it releases this state. There are other streams, however, strong::that may stop their input stream at any time:: (e.g.  link::Classes/Pfindur:: or link::Classes/Pdef::). Them the state of any stream buried in the hierarchy of input streams must be released by them. EventStreamCleanup collects the cleanup functions and can run them when the stream is cut.
+
+Note::So all event patterns that can end a subpattern (and streams respectively) have to use an EventStreamCleanup.::
+
+Some examples of patterns that may stop an input stream and update an EventStreamCleanup:
+list::
+## link::Classes/Pbindf:: (stops its event stream if one of its parameter streams ends)
+## link::Classes/Pfin:: (stops stream after a number of events)
+## link::Classes/Pfindur:: (stops stream after a certain elapsed time)
+## link::Classes/Pdef::  (stops stream when replaced by a new one)
+## link::Classes/Pset::  (stops its event stream when its parameter streams ends)
+## link::Classes/Pswitch1:: (stops all input streams after fixed number of items or when one of them ends. Not link::Classes/Pswitch::, which completely embeds every input stream)
+::
+
+Some examples of patterns that create state that lasts over several events. They also release the state via EventStreamCleanup:
+list::
+## link::Classes/Pmono:: (starts one synth that it controls over time)
+## link::Classes/Pfx:: (starts an effect synth that it feeds through the signals of the substreams)
+## link::Classes/Pproto:: (initializes resources and keeps them available)
+## link::Classes/Pspawner:: (schedules streams and releases them after some time)
+::
+
+code::
+
+// wrap a pattern in a stop condition
+(
+f = { |pat, condition|
+	Prout { |inval|
+		var stream = pat.asStream;
+		var cleanup = EventStreamCleanup.new;
+		var outval;
+		while {
+			outval = stream.next(inval);
+			outval.notNil and: { condition.value(outval) }
+		} {
+			cleanup.update(outval);
+			inval = outval.yield;
+		};
+		cleanup.exit(inval);
+	}
+
+};
+p = Plazy { Pmono(\default, \note, Pgeom(rrand(1, 1.5), rrand(1.05, 2), inf), \harmonic, [0.78, 1, 1.2], \dur, 1/rrand(4, 7), \amp, 0.4) };
+x = f.(p, { |outval| outval[\note] < 20 }); // always stop at 20
+Pn(x).play; // loop it.
+);
+::
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Create a new instance.
+
+INSTANCEMETHODS::
+
+METHOD:: addFunction
+Add a new cleanup function which will be called when the stream is made to end somewhere downstreams. This is called only in patterns that create resources that need to be released (e.g. link::Classes/Pmono:: or link::Classes/Pfx::).
+
+ARGUMENT:: event
+The outevent that is passed on downstreams and which communicates to any stream-ending pattern what needs to be done to release the resources. strong::It must be yielded after update!::
+
+ARGUMENT:: function
+The function that is called for cleanup. E.g. code::{ group.free }::.
+
+METHOD:: update
+For every new event, the cleanup must be updated to receive information from any input stream further up. This method is called from all streams that may stop early (e.g. link::Classes/Pmono:: or link::Classes/Pfindur::).
+
+ARGUMENT:: event
+The outevent from the input stream. strong::It must be yielded after update!::
+
+METHOD:: exit
+Run all functions that have been collected over time, adding appropriate information to the event, in case it is passed on as an inevent.
+
+ARGUMENT:: event
+The inevent that is passed through to the outer stream
+
+ARGUMENT:: freeNodes
+Used internally.
+
+returns:: An event. In embedInStream, this event must be returned (code:: ^cleanup.exit(inevent) ::)
+
+METHOD:: functions
+A collections of cleanup functions.
+
+METHOD:: clear
+Empty the cleanup functions, without evaluating them.
+
+METHOD:: terminate
+Run all functions that have been collected over time without adding information to an event.
+
+ARGUMENT:: freeNodes
+Used internally.
+
+
+
+
+EXAMPLES::
+code::
+// some code from the class library
+
+// here is a pattern that can end the stream externally after a number of steps
+Pfin : FilterPattern {
+	var <>count;
+	*new { arg count, pattern;
+		^super.new(pattern).count_(count)
+	}
+	storeArgs { ^[count,pattern] }
+
+	embedInStream { arg event;
+		var inevent;
+		var stream = pattern.asStream;
+		var cleanup = EventStreamCleanup.new;
+		count.value(event).do({
+			inevent = stream.next(event) ?? { ^event };
+			cleanup.update(inevent);
+			event = inevent.yield;
+		});
+		^cleanup.exit(event)
+	}
+}
+
+// and here is a pattern that adds a resource: a bus in which the events play
+
+Pbus : FilterPattern {
+	var <>numChannels, <>rate, <>dur=2.0, <>fadeTime;
+
+	*new { arg pattern, dur=2.0, fadeTime=0.02, numChannels=2, rate=\audio;
+		^super.new(pattern).dur_(dur).numChannels_(numChannels).rate_(rate).fadeTime_(fadeTime)
+	}
+
+	storeArgs { ^[ pattern, dur, fadeTime, numChannels, rate ] }
+
+	embedInStream { arg inevent;
+		var server, groupID, linkID, bus, ingroup, cleanup;
+		var patterns, event, freeBus, stream, cleanupEvent;
+
+		cleanup = EventStreamCleanup.new;
+		server = inevent[\server] ?? { Server.default };
+		groupID = server.nextNodeID;
+		linkID = server.nextNodeID;
+		ingroup = inevent[\group];
+
+		// could use a special event type for this:
+		if(rate == \audio) {
+			bus = server.audioBusAllocator.alloc(numChannels);
+			freeBus = { server.audioBusAllocator.free(bus) };
+		} {
+			bus = server.controlBusAllocator.alloc(numChannels);
+			freeBus = { server.controlBusAllocator.free(bus) };
+		};
+
+		CmdPeriod.doOnce(freeBus);
+
+		event = inevent.copy;
+		event[\addAction] = 0; // \addToHead
+		event[\type] = \group;
+		event[\delta] = 0;
+		event[\id] = groupID;
+		event[\group] = ingroup;
+		event.yield;
+
+		inevent = event = inevent.copy;
+
+		event[\type] = \on;
+		event[\group] = groupID;
+		event[\addAction] = 3; // \addBefore
+		event[\delta] = 0;
+		event[\id] = linkID;
+		event[\fadeTime] = fadeTime;
+		event[\instrument] = format("system_link_%_%", rate, numChannels);
+		event[\in] = bus;
+		event[\msgFunc] = #{ |out, in, fadeTime, gate=1|
+			[\out, out, \in, in, \fadeTime, fadeTime, \gate, gate, \doneAction, 3]
+		};
+
+		cleanupEvent = (type: \off, parent: event, fadeTime: fadeTime.abs, hasGate: true, gate: 0);
+
+		cleanup.addFunction(event, { | flag |
+			if(flag) { defer ( {cleanupEvent.play}, dur) };
+		});
+
+		cleanup.addFunction(event, { defer({ freeBus.value;}, fadeTime.abs + dur) });
+
+		// doneAction = 3;
+		// remove and deallocate both this synth and the preceeding node
+		// (which is the group).
+		inevent = event.yield;
+
+		// now embed the pattern
+		stream = Pchain(pattern, (group: groupID, out: bus)).asStream;
+		loop {
+			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
+			cleanup.update(event);
+			inevent = event.yield;
+		}
+	}
+}
+
+::
+
