@@ -138,7 +138,10 @@ private:
 	{
 		//post("->constructObjectArray %s %08X\n", obj->classptr->name.us->name, obj);
 		if (!obj->IsMarked()) {
-			if (isKindOf(obj, class_class)) {
+			if (obj->obj_flags & (obj_immutable) &&
+				obj->obj_flags & (obj_permanent)) {
+				putSelf(obj);
+			} else if (isKindOf(obj, class_class)) {
 				putSelf(obj);
 			} else if (isKindOf(obj, class_process)) {
 				putSelf(obj);
