@@ -40,8 +40,6 @@
 #include "GC.h"
 
 #include <atomic>
-#include <chrono>
-
 
 #include "SC_LanguageClient.h"
 
@@ -56,7 +54,7 @@ extern bool compiledOK;
 #include <hidapi.h>
 #include <hidapi_parser.h>
 
-#include <boost/thread.hpp>
+#include <boost/thread/thread.hpp>
 #include <map>
 
 typedef std::map<int, hid_dev_desc* > hid_map_t;
@@ -77,37 +75,61 @@ wchar_t * char_to_wchar( char * chs ){
 }
 
 
-template<typename T, size_t Size>
-class ringbuffer {
-public:
-	ringbuffer() : head_(0), tail_(0) {}
+class SC_HID_API_Threadpool
+{
+	typedef std::map<hid_dev_desc *, boost::thread*> ThreadMap;
 
-	bool push(const T & value)
+public:
+	void openDevice(hid_dev_desc * desc)
 	{
-		size_t head = head_.load(std::memory_order_relaxed);
-		size_t next_head = next(head);
-		if (next_head == tail_.load(std::memory_order_acquire))
-			return false;
-		ring_[head] = value;
-		head_.store(next_head, std::memory_order_release);
-		return true;
+		std::lock_guard<std::mutex> lock(guard);
+		if (map.find(desc) != map.end())
+			// thread already polling device
+			return;
+
+		boost::thread * deviceThread = threads.create_thread( [=] {
+			while( true ) {
+				const bool interrupted = boost::this_thread::interruption_requested();
+
+				unsigned char buf[256];
+
+				const int pollTime = interrupted ? 0
+												 : 250;
+
+				int res = hid_read_timeout( desc->device, buf, sizeof(buf), pollTime);
+				if ( res > 0 )
+					hid_parse_input_report( buf, res, desc );
+
+				if (interrupted)
+					break;
+			}
+		});
+
+		map.insert( std::make_pair(desc, deviceThread) );
 	}
-	bool pop(T & value)
+
+	void closeDevice(hid_dev_desc * desc)
 	{
-		size_t tail = tail_.load(std::memory_order_relaxed);
-		if (tail == head_.load(std::memory_order_acquire))
-			return false;
-		value = ring_[tail];
-		tail_.store(next(tail), std::memory_order_release);
-		return true;
+		boost::thread * thread;
+		{
+			std::lock_guard<std::mutex> lock(guard);
+			auto it = map.find(desc);
+			if (it == map.end()) {
+				std::printf("device already closed %p\n", desc->device);
+				return;
+			}
+			map.erase(it);
+
+			thread = it->second;
+		}
+		thread->interrupt();
+		thread->join();
 	}
+
 private:
-	size_t next(size_t current)
-	{
-		return (current + 1) % Size;
-	}
-	T ring_[Size];
-	std::atomic<size_t> head_, tail_;
+	boost::thread_group threads;
+	ThreadMap map;
+	std::mutex guard;
 };
 
 struct SC_HID_APIManager
@@ -147,7 +169,6 @@ public:
 	struct hid_device_info *devinfos;
 
 protected:
-	void threadLoop();
 	void handleDevice( int, struct hid_dev_desc *, std::atomic<bool> const & shouldBeRunning);
 	void handleElement( int, struct hid_device_element *, std::atomic<bool> const & shouldBeRunning);
 	void deviceClosed(int, std::atomic<bool> const & shouldBeRunning);
@@ -156,14 +177,12 @@ private:
 	hid_map_t hiddevices;    // declares a vector of hiddevices
 	int number_of_hids;
 
-	ringbuffer<int, 32> devices_to_close;
-
 	// language interface
 	PyrObject*		m_obj;
 
-	boost::thread		m_thread;
 	std::atomic<bool>	m_running;
 	std::atomic<bool>	mShouldBeRunning;
+	SC_HID_API_Threadpool mThreads;
 };
 
 PyrSymbol* SC_HID_APIManager::s_hidapi = 0;
@@ -200,6 +219,7 @@ void SC_HID_APIManager::close_all_devices(){
 	hid_map_t::const_iterator it;
 	for(it=hiddevices.begin(); it!=hiddevices.end(); ++it){
 		struct hid_dev_desc * devdesc = it->second;
+		mThreads.closeDevice( devdesc );
 		hid_close_device( devdesc );
 	}
 	hiddevices.clear();
@@ -220,6 +240,8 @@ int SC_HID_APIManager::open_device_path( const char * path, int vendor, int prod
 
 		number_of_hids++;
 
+		mThreads.openDevice(newdevdesc);
+
 		return newdevdesc->index;
 	}
 }
@@ -229,6 +251,7 @@ int SC_HID_APIManager::open_device( int vendor, int product, char* serial_number
 	if ( serial_number != NULL ){
 		wchar_t * serialW = char_to_wchar( serial_number );
 		newdevdesc = hid_open_device( vendor, product, serialW );
+		free(serialW);
 	} else {
 		newdevdesc = hid_open_device( vendor, product, NULL );
 	}
@@ -248,15 +271,15 @@ int SC_HID_APIManager::open_device( int vendor, int product, char* serial_number
 
 		number_of_hids++;
 
+		mThreads.openDevice(newdevdesc);
+
 		return newdevdesc->index;
 	}
 }
 
-int SC_HID_APIManager::queue_to_close_device( int joy_idx ){
-	// try to insert an element
-	bool res = devices_to_close.push( joy_idx );
-	//   if (r.push(joy_idx)) { /* succeeded */ }
-	//   else { /* buffer full */ }
+int SC_HID_APIManager::queue_to_close_device( int joy_idx )
+{
+	close_device(joy_idx);
 	return 1;
 }
 
@@ -267,6 +290,7 @@ int SC_HID_APIManager::close_device( int joy_idx ){
 		fprintf(stderr, "HIDAPI : could not find device to close %d\n", joy_idx);
 		return 1; // not a fatal error
 	} else {
+		mThreads.closeDevice(hidtoclose);
 		deviceClosed( joy_idx, mShouldBeRunning );
 		hid_close_device( hidtoclose );
 		hiddevices.erase( joy_idx );
@@ -276,13 +300,14 @@ int SC_HID_APIManager::close_device( int joy_idx ){
 
 struct hid_dev_desc * SC_HID_APIManager::get_device( int joy_idx ){
 	//   int count = hiddevices.count( joy_idx );
-	if ( hiddevices.count( joy_idx ) > 0 ){
-		struct hid_dev_desc * hidget = hiddevices.find( joy_idx )->second;
-		return hidget;
-	} else {
+
+	auto iterator = hiddevices.find( joy_idx );
+	if (iterator == hiddevices.end()) {
 		fprintf(stderr, "HIDAPI : device was not open %d\n", joy_idx);
 		return NULL;
 	}
+
+	return hiddevices.find( joy_idx )->second;
 }
 
 SC_HID_APIManager& SC_HID_APIManager::instance()
@@ -320,8 +345,6 @@ int SC_HID_APIManager::stop()
 {
 	m_running = false;
 	mShouldBeRunning = false;
-	// clean up thread:
-	m_thread.join();
 	close_all_devices();
 	return errNone;
 }
@@ -333,14 +356,8 @@ int SC_HID_APIManager::initialize_hidapi(){
 		fprintf(stderr, "Unable to initialize hidapi\n");
 		return errFailed;
 	}
-	// setup eventloop, or start it
-	try {
-		m_running = true;
-		boost::thread thread(boost::bind(&SC_HID_APIManager::threadLoop, this));
-		m_thread = boost::move(thread);
-	} catch(std::exception & e) {
-		throw e;
-	}
+
+	m_running = true;
 	return errNone;
 }
 
@@ -471,37 +488,6 @@ void SC_HID_APIManager::handleDevice( int joy_idx, struct hid_dev_desc * devd, s
 		g->canCallOS = false;
 	}
 	gLangMutex.unlock();
-}
-
-void SC_HID_APIManager::threadLoop(){
-	int res = 0;
-	hid_map_t::const_iterator it;
-	unsigned char buf[256];
-
-	while(m_running ){
-		bool didSomeWork = false;
-		for(it=hiddevices.begin(); it!=hiddevices.end(); ++it){
-			if ( it->second != NULL ){
-				res = hid_read( it->second->device, buf, sizeof(buf));
-				if ( res > 0 ) {
-					hid_parse_input_report( buf, res, it->second );
-					didSomeWork = true;
-				}
-			}
-		}
-
-		if (didSomeWork)
-			continue;
-
-		// try to retrieve an element
-		int value;
-		if (devices_to_close.pop(value)) {
-			/* succeeded */
-			close_device( value );
-		}
-		//     else { /* buffer empty */ }
-		std::this_thread::sleep_for(std::chrono::seconds(5));
-	}
 }
 
 // ----------  primitive calls: ---------------
