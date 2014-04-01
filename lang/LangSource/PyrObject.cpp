@@ -1852,7 +1852,9 @@ PyrObject* copyObject(class PyrGC *gc, PyrObject *inobj, bool collect)
 {
 	PyrObject *newobj;
 
+	// copies are neither immutable not permanent
 	int flags = ~(obj_immutable) & inobj->obj_flags;
+		flags = ~(obj_permanent) & flags;
 
 	int elemsize = gFormatElemSize[inobj->obj_format];
 	int numbytes = inobj->size * elemsize;
@@ -1878,7 +1880,9 @@ PyrObject* copyObjectRange(class PyrGC *gc, PyrObject *inobj, int start, int end
 	int elemsize = gFormatElemSize[inobj->obj_format];
 	int numbytes = length * elemsize;
 
+	// copies are neither immutable not permanent
 	int flags = ~(obj_immutable) & inobj->obj_flags;
+		flags = ~(obj_permanent) & flags;
 
 	newobj = gc->New(numbytes, flags, inobj->obj_format, collect);
 	newobj->size = length;
