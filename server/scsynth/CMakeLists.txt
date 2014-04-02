@@ -236,7 +236,7 @@ if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
 	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 	install(TARGETS ${INSTALL_TARGETS}
-			RUNTIME DESTINATION "${scappauxresourcesdir}"
+			RUNTIME DESTINATION "${scappbindir}"
 			LIBRARY DESTINATION "${scappauxresourcesdir}"
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
 elseif(WIN32)
