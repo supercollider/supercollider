@@ -75,6 +75,7 @@ void initPrimitiveTable();
 void growPrimitiveTable(int newsize);
 
 void initPrimitives();
+void deinitPrimitives();
 void doPrimitive(VMGlobals* g, struct PyrMethod* meth, int numArgsPushed);
 void doPrimitiveWithKeys(VMGlobals* g, struct PyrMethod* meth, int allArgsPushed, int numKeysPushed);
 

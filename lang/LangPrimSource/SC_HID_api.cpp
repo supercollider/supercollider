@@ -1026,6 +1026,9 @@ void initHIDAPIPrimitives()
 	s_hidClosed = getsym("prHIDDeviceClosed"); // send back that device was closed
 }
 
+void deinitHIDAPIPrimitives()
+{
+	SC_HID_APIManager::instance().stop();
 }
 
 #else // no SDL HID
@@ -1033,6 +1036,10 @@ void initHIDAPIPrimitives()
 void initHIDAPIPrimitives()
 {
 	//other platforms?
+}
+
+void deinitHIDAPIPrimitives()
+{
 }
 
 #endif /// HAVE_API_HID

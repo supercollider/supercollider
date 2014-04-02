@@ -4277,6 +4277,13 @@ void initOpenGLPrimitives();
 	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
 }
 
+void deinitPrimitives()
+{
+	void deinitHIDAPIPrimitives();
+	deinitHIDAPIPrimitives();
+
+}
+
 
 void initThreads();
 void initThreads()
