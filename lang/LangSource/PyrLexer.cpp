@@ -2104,6 +2104,7 @@ void shutdownLibrary()
 	compiledOK = false;
 
 	gLangMutex.unlock();
+	deinitPrimitives();
 
 	SC_LanguageConfig::freeLibraryConfig();
 }
