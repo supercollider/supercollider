@@ -16,6 +16,10 @@ NodeMap : IdentityDictionary {
 		upToDate = true;
 	}
 
+	get { |key|
+		^this.at(key)
+	}
+
 	set { |...args|
 		this.putPairs(args);
 		upToDate = false;
@@ -76,11 +80,6 @@ NodeMap : IdentityDictionary {
 			}
 		};
 		if(args.notNil) { bundle.add([48, target.asNodeID] ++ args) };
-	}
-
-	get { |key|
-		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\at));
-		^this.at(key)
 	}
 
 }
