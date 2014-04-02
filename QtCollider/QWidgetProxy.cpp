@@ -43,6 +43,10 @@
 # undef KeyRelease
 #endif
 
+#ifdef Q_OS_MAC
+# include <Cocoa/Cocoa.h>
+#endif
+
 using namespace QtCollider;
 
 QAtomicInt QWidgetProxy::_globalEventMask = 0;
@@ -185,6 +189,10 @@ void QWidgetProxy::bringFrontEvent() {
 
 #ifdef Q_WS_X11
   raise_window(QX11Info::display(), w);
+#endif
+    
+#ifdef Q_OS_MAC
+    [NSApp activateIgnoringOtherApps:YES];
 #endif
 }
 
@@ -396,7 +404,7 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
 
   QChar character;
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   bool isLetter = key >= Qt::Key_A && key <= Qt::Key_Z;
   if (mods & Qt::MetaModifier && isLetter)
   {
