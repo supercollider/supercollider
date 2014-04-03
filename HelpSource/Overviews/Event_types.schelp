@@ -35,8 +35,8 @@ fork { 10.do { (type: \set, id: a[\id], \degree: [0, 5, 8, 11].choose).play; 0.3
 The collection of eventTypes can be readily extended using link::Classes/Event#*addEventType#*addEventType:::
 
 code::
-Event.addEventType(\test, { ~word.scramble.postln });
-(type: test, word: "embabaln").play;
+Event.addEventType(\test, { "Your word is: ".post; ~word.scramble.postln });
+(type: \test, word: "annahme").play;
 ::
 
 section::Currently existing event types:
