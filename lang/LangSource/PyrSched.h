@@ -24,6 +24,7 @@
 #include "VMGlobals.h"
 #include "SC_Export.h"
 #include "SC_Lock.h"
+#include <cerrno>
 
 extern timed_mutex gLangMutex;
 
