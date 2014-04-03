@@ -252,7 +252,7 @@ EmbedOnce : Stream  {
 			stream = nil;
 			cleanup = nil;
 		} {
-			cleanup !? { cleanup.update(val) }
+			cleanup.update(val)
 		};
 		^val
 	}
