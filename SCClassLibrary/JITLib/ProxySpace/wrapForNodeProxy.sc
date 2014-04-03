@@ -66,10 +66,19 @@
 }
 
 + SimpleNumber {
+	proxyControlClass { ^StreamControl }
 
-	prepareForProxySynthDef { | proxy |
-		var rate = if(proxy.isNeutral) {\control } { proxy.rate };
-		^{ DC.multiNewList([rate] ++ this) };
+	buildForProxy { | proxy, channelOffset = 0 |
+		proxy.initBus(\control, 1);
+		^(
+			type: \fadeBus,
+			array: this,
+			bus: { proxy.bus },
+			fadeTime: { proxy.fadeTime },
+			curve: { proxy.nodeMap.at(\curve) },
+			channelOffset: channelOffset,
+			group: { proxy.group }
+		)
 	}
 }
 
@@ -83,10 +92,21 @@
 	}
 }
 
-+ RawArray {
-	prepareForProxySynthDef { | proxy |
-		var rate = if(proxy.isNeutral) {\control } { proxy.rate };
-		^{ DC.multiNewList([rate] ++ this) };
++ Array {
+
+	proxyControlClass { ^StreamControl }
+
+	buildForProxy { | proxy, channelOffset = 0 |
+		proxy.initBus(\control, this.size);
+		^(
+			type: \fadeBus,
+			array: this,
+			bus: { proxy.bus },
+			fadeTime: { proxy.fadeTime },
+			curve: { proxy.nodeMap.at(\curve) },
+			channelOffset: channelOffset,
+			group: { proxy.group }
+		)
 	}
 }
 
