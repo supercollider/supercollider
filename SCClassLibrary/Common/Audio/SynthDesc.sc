@@ -377,7 +377,6 @@ SynthDesc {
 		var	string, comma=false;
 		var	names = IdentitySet.new,
 			suffix = this.hash.asHexString(8);
-		if(controls.size > 255) { Error("A synthDef cannot have more than 255 control names.").throw };
 			// if a control name is duplicated, the msgFunc will be invalid
 			// that "shouldn't" happen but it might; better to check for it
 			// and throw a proper error
@@ -394,6 +393,7 @@ SynthDesc {
 				};
 			};
 		});
+		if(names.size > 255) { Error("A synthDef cannot have more than 255 control names.").throw };
 			// reusing variable to know if I should continue or not
 		if(comma) {
 "\nYour synthdef has been saved in the library and loaded on the server, if running.
