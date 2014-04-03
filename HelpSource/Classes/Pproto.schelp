@@ -7,7 +7,7 @@ description::
 
 Pproto uses the strong::makeFunction:: to allocate resources (buffers, buses, groups) and create a protoEvent that makes those resources available to a pattern. It is fully compatible with non-realtime synthesis using strong::render::.
 
-The strong::makeFunction:: "makes" the protoEvent (i.e. protoEvent is code::currentEnvironment::). Typically, it defines and yields a sequence of events that create the needed resources using the following eventTypes:
+The strong::makeFunction:: "makes" the protoEvent (i.e. protoEvent is code::currentEnvironment::). Typically, it defines and yields a sequence of events that create the needed resources using the following link::Overviews/Event_types:::
 
 definitionList::
 ## \allocRead || load a file from ~path, starting at ~firstFileFrame, reading ~numFrames sample frames
