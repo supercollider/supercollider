@@ -44,7 +44,7 @@
 #endif
 
 #ifdef Q_OS_MAC
-# include <Cocoa/Cocoa.h>
+# include "./hacks/hacks_mac.hpp"
 #endif
 
 using namespace QtCollider;
@@ -190,9 +190,9 @@ void QWidgetProxy::bringFrontEvent() {
 #ifdef Q_WS_X11
   raise_window(QX11Info::display(), w);
 #endif
-    
+
 #ifdef Q_OS_MAC
-    [NSApp activateIgnoringOtherApps:YES];
+    QtCollider::Mac::activateApp();
 #endif
 }
 

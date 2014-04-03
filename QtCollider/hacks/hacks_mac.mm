@@ -30,6 +30,10 @@ bool isKeyWindow ( QWidget *w )
 {
   return [[reinterpret_cast<NSView *>(w->winId()) window] isKeyWindow];
 }
+    
+void activateApp() {
+    [NSApp activateIgnoringOtherApps:YES];
+}
 
 } // namespace Mac
 } // namespace QtCollider
