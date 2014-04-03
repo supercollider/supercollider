@@ -72,7 +72,7 @@
 		proxy.initBus(\control, 1);
 		^(
 			type: \fadeBus,
-			array: this,
+			array: [this],
 			bus: { proxy.bus },
 			fadeTime: { proxy.fadeTime },
 			curve: { proxy.nodeMap.at(\curve) },
