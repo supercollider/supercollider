@@ -69,16 +69,7 @@
 	proxyControlClass { ^StreamControl }
 
 	buildForProxy { | proxy, channelOffset = 0 |
-		proxy.initBus(\control, 1);
-		^(
-			type: \fadeBus,
-			array: [this],
-			bus: { proxy.bus },
-			fadeTime: { proxy.fadeTime },
-			curve: { proxy.nodeMap.at(\curve) },
-			channelOffset: channelOffset,
-			group: { proxy.group }
-		)
+		^[this].buildForProxy(proxy, channelOffset)
 	}
 }
 
@@ -101,10 +92,10 @@
 		^(
 			type: \fadeBus,
 			array: this,
-			bus: { proxy.bus },
+			out: { proxy.index + channelOffset },
+			numChannels: { proxy.numChannels },
 			fadeTime: { proxy.fadeTime },
 			curve: { proxy.nodeMap.at(\curve) },
-			channelOffset: channelOffset,
 			group: { proxy.group }
 		)
 	}
