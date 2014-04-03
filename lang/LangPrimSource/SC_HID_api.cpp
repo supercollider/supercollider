@@ -111,11 +111,12 @@ public:
 			trace("start polling thread for %d\n", desc);
 
 			while( true ) {
-				const bool interrupted = boost::this_thread::interruption_requested();
-				if (interrupted) {
-					trace("device thread interrupting, polling a last time! \n");
-					hid_close_device( desc );
+				unsigned char buf[256];
 
+				int res = hid_read_timeout( desc->device, buf, sizeof(buf), 250);
+				if ( res > 0 ) {
+					hid_parse_input_report( buf, res, desc );
+				} else if (res == -1) {
 					trace("device thread interrupted \n");
 
 					int status = lockLanguageOrQuit(shouldBeRunning);
@@ -139,16 +140,6 @@ public:
 					trace("device thread closed device \n");
 					return;
 				}
-
-				unsigned char buf[256];
-
-				const int pollTime = interrupted ? 0
-												 : 250;
-
-				int res = hid_read_timeout( desc->device, buf, sizeof(buf), pollTime);
-				if ( res > 0 ) {
-					hid_parse_input_report( buf, res, desc );
-				}
 			}
 		});
 
@@ -167,8 +158,8 @@ public:
 		map.erase(it);
 
 		boost::thread * thread = it->second;
-		thread->interrupt();
 		thread->detach();
+		hid_close_device( desc );
 		trace("close device: interrupted \n");
 	}
 
