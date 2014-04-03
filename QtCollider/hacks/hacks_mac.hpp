@@ -28,7 +28,8 @@ namespace QtCollider {
 namespace Mac {
 
 bool isKeyWindow ( QWidget *w );
-
+void activateApp ();
+    
 } // namespace Mac
 } // namespace QtCollider
 
