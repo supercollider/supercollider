@@ -151,7 +151,7 @@ BusPlug : AbstractFunction {
 			bus = inBus;
 			this.makeBusArg;
 			busLoaded = bus.server.serverRunning;
-			this.changed(\setBus, bus);
+			this.changed(\bus, bus);
 		}
 	}
 
