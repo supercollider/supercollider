@@ -146,6 +146,14 @@ void Manager::initHighlightingDefaults()
     setDefault( "char", makeHlFormat( QColor(0,115,0).lighter(shade) ) );
     setDefault( "comment", makeHlFormat( QColor(191,0,0).lighter(shade) ) );
     setDefault( "primitive", makeHlFormat( QColor(51,51,191).lighter(shade) ) );
+    
+    setDefault("postwindowerror", makeHlFormat(QColor(209, 28, 36)));
+    setDefault("postwindowwarning", makeHlFormat(QColor(165, 119, 6)));
+    setDefault("postwindowsuccess", makeHlFormat(QColor(115, 138, 5)));
+    
+    QTextCharFormat emphasisFormat;
+    emphasisFormat.setFontWeight(QFont::Bold);
+    setDefault("postwindowemphasis", QVariant::fromValue(emphasisFormat));
 }
 
 bool Manager::contains ( const QString & key ) const
