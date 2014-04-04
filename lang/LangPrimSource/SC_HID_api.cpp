@@ -74,14 +74,22 @@ static inline void trace(...)
 typedef std::map<int, hid_dev_desc* > hid_map_t;
 
 // helper function to convert from unicode to ansi
-char * wchar_to_char( wchar_t * wchs ){
+char * wchar_to_char( wchar_t * wchs )
+{
+	if (wchs == nullptr)
+		return nullptr;
+
 	int len = wcslen( wchs ) + 1;
 	char * chs = (char*) malloc( sizeof(char) * len );
 	std::wcstombs( chs, wchs, len );
 	return chs;
 }
 
-wchar_t * char_to_wchar( char * chs ){
+wchar_t * char_to_wchar( char * chs )
+{
+	if (chs == nullptr)
+		return nullptr;
+
 	int len = strlen( chs ) + 1;
 	wchar_t * wchs = (wchar_t*) malloc( sizeof( wchar_t ) * len );
 	std::mbstowcs( wchs, chs, len );
@@ -532,29 +540,33 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 			SetObject(devInfo->slots+devInfo->size++, dev_path_name);
 			g->gc->GCWrite(devInfo, (PyrObject*) dev_path_name);
 
-			const char * mystring = wchar_to_char( cur_dev->serial_number );
+			const char * mystring;
+			if ( cur_dev->serial_number != NULL )
+				mystring = wchar_to_char( cur_dev->serial_number );
+			else
+				mystring = emptyString;
 
 			PyrString *dev_serial = newPyrString(g->gc, mystring, 0, true );
 			SetObject(devInfo->slots+devInfo->size++, dev_serial);
 			g->gc->GCWrite(devInfo, (PyrObject*) dev_serial);
 
-			if ( cur_dev->manufacturer_string != NULL ){
+			if (mystring != emptyString) free((void*)mystring);
+			if ( cur_dev->manufacturer_string != NULL )
 				mystring = wchar_to_char( cur_dev->manufacturer_string );
-			} else {
+			else
 				mystring = emptyString;
-			}
+
 			PyrString *dev_man_name = newPyrString(g->gc, mystring, 0, true );
 			SetObject(devInfo->slots+devInfo->size++, dev_man_name);
 			g->gc->GCWrite(devInfo, (PyrObject*) dev_man_name);
 
-			if (mystring != emptyString)
-				free((void*)mystring);
+			if (mystring != emptyString) free((void*)mystring);
 
-			if ( cur_dev->product_string != NULL ){
+			if ( cur_dev->product_string != NULL )
 				mystring = wchar_to_char( cur_dev->product_string );
-			} else {
+			else
 				mystring = emptyString;
-			}
+
 			PyrString *dev_prod_name = newPyrString(g->gc, mystring, 0, true );
 			SetObject(devInfo->slots+devInfo->size++, dev_prod_name);
 			g->gc->GCWrite(devInfo, (PyrObject*) dev_prod_name);
