@@ -2,7 +2,7 @@
 + Object {
 
 	gui { arg parent,bounds ... args;
-		^ObjectGui.new(this, parent, bounds, *args);
+		^this.guiClass.new(this).performList(\gui,[parent,bounds] ++ args);
 	}
 	guiClass { ^ObjectGui }
 }
