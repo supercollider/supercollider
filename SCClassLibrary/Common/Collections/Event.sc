@@ -808,7 +808,7 @@ Event : Environment {
 
 					monoNote:	#{ |server|
 						var bndl, id, ids, addAction, f;
-						addAction = ~addAction;
+						addAction = Node.actionNumberFor(~addAction);
 						~freq = ~detunedFreq.value;
 						f = ~freq;
 						~amp = ~amp.value;
