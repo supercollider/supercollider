@@ -143,7 +143,7 @@ bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
 
             if (socket->waitForConnected(200)) {
                 QDataStream stream(socket.data());
-                stream.setVersion(QDataStream::Qt_4_6);
+                stream.setVersion(QDataStream::Qt_5_2);
 
                 stream << QString("open");
                 stream << canonicalArguments;
@@ -176,7 +176,7 @@ void SingleInstanceGuard::onIpcData()
     receivedData.open ( QIODevice::ReadOnly );
 
     QDataStream in ( &receivedData );
-    in.setVersion ( QDataStream::Qt_4_6 );
+    in.setVersion ( QDataStream::Qt_5_2 );
     QString id;
     in >> id;
     if ( in.status() != QDataStream::Ok )
