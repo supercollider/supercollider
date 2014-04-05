@@ -1,29 +1,58 @@
 class:: SplayAz
 summary:: Spreads an array of channels across a ring of channels
 categories:: UGens>Multichannel>Panners
-related:: Classes/Splay, Classes/SplayZ
+related:: Classes/Splay, Classes/PanAz, Classes/SelectXFocus
 
 description::
 SplayAz spreads an array of channels across a ring of channels.
-Optional spread and center controls, and levelComp(ensation) (equal power).
+Optional spread and center controls, and equal power levelCompensation.
 numChans and orientation are as in link::Classes/PanAz::.
+
+code::
+{ SplayAz.ar(5, [SinOsc.ar, Saw.ar], 0, 1) }.plot;
+::
 
 classmethods::
 
-method:: ar
+method:: ar, kr
+
+Each of the inputs is evenly spaced over a cyclic period of
+2.0 in pos with 0.0 equal to channel zero and 2.0/numChans equal
+to channel 1, 4.0/numChans equal to channel 2, etc.
+
+The distance between the input signals in the output range is determned by the spread argument.
+
 argument:: numChans
+Number of output channels of the UGen
 argument:: inArray
+Input signals (can be a single UGen or an array)
 argument:: spread
+How far the input signals  are apart in the output. If zero, everything is mixed on center position (see below).
+code::
+{ SplayAz.ar(6, [SinOsc.ar, Saw.ar(800)], spread: MouseX.kr(0, 1).poll) * 0.3 }.scope;
+::
+
 argument:: level
+Scaling for all signals
 argument:: width
+Over how much of the channels each signal is distributed.
 argument:: center
+Which of the channels will be the first channel
 argument:: orientation
+Should be zero if the front is a vertex of the polygon. The first
+speaker will be directly in front. Should be 0.5 if the front
+bisects a side of the polygon. Then the first speaker will be the
+one left of center.
 argument:: levelComp
+If true, the signal level is adjusted to maintain overall loudness the same (n.reciprocal.sqrt).
 
 method:: arFill
 argument:: numChans
+Number of output channels
 argument:: n
+Number of input channels
 argument:: function
+A function that returns a UGen (the channel index is passed as an argument)
 argument:: spread
 argument:: level
 argument:: width
