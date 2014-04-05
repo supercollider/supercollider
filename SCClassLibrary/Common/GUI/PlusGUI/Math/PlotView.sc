@@ -519,14 +519,13 @@ Plotter {
 		this.setValue(arrays, findSpecs, true)
 	}
 
-	setValue { |arrays, findSpecs = true, refresh = true|
+	setValue { |arrays, findSpecs = true, refresh = true, separately = true, minval, maxval|
 		value = arrays;
 		data = this.prReshape(arrays);
 		if(findSpecs) {
-			this.calcSpecs;
+			this.calcSpecs(separately, minval, maxval);
 			this.calcDomainSpecs;
 		};
-		this.updatePlotSpecs;
 		this.updatePlots;
 		if(refresh) { this.refresh };
 	}
@@ -649,16 +648,24 @@ Plotter {
 	}
 
 
-	calcSpecs { |separately = true|
-		specs = (specs ? [\unipolar.asSpec]).clipExtend(data.size);
-		if(separately) {
-			this.specs = specs.collect { |spec, i|
-				var list = data.at(i);
-				list !? { spec = spec.looseRange(list.flat) };
-			}
+	calcSpecs { |separately = true, minval, maxval|
+		var newSpecs;
+		if(minval.notNil and: { maxval.notNil }) {
+			newSpecs = [[minval, maxval]];
 		} {
-			this.specs = specs.first.looseRange(data.flat);
-		}
+			newSpecs = (specs ? [\unipolar.asSpec]).clipExtend(data.size);
+			if(separately) {
+				newSpecs = newSpecs.collect { |spec, i|
+					var list = data.at(i);
+					list !? { spec = spec.looseRange(list.flat) };
+				}
+			} {
+				newSpecs = newSpecs.first.looseRange(data.flat);
+			};
+			minval !? { newSpecs.do { |spec| spec.minval = minval } };
+			maxval !? { newSpecs.do { |spec| spec.maxval = maxval } };
+		};
+		this.specs = newSpecs;
 	}
 
 	calcDomainSpecs {
@@ -739,15 +746,12 @@ Plotter {
 		plotter.setValue(
 			array,
 			findSpecs: true,
-			refresh: false
+			separately: true,
+			refresh: true,
+			minval: minval,
+			maxval: maxval
 		);
-		if(minval.isNumber && maxval.isNumber) {
-			plotter.specs = [minval, maxval].asSpec
-		} {
-			minval !? { plotter.minval = minval };
-			maxval !? { plotter.maxval = maxval };
-		};
-		plotter.refresh;
+
 		^plotter
 	}
 }
@@ -818,14 +822,11 @@ Plotter {
 					plotter.setValue(
 						array.unlace(numChan).collect(_.drop(-1)),
 						findSpecs: true,
-						refresh: false
+						separately: false,
+						refresh: false,
+						minval: minval,
+						maxval: maxval
 					);
-					if(minval.isNumber && maxval.isNumber) {
-						plotter.specs = [minval, maxval].asSpec
-					} {
-						minval !? { plotter.minval = minval };
-						maxval !? { plotter.maxval = maxval };
-					};
 					plotter.domainSpecs = ControlSpec(0, duration, units: "s");
 					plotter.refresh;
 				}.defer
@@ -855,14 +856,11 @@ Plotter {
 				plotter.setValue(
 					array.unlace(buf.numChannels),
 					findSpecs: true,
-					refresh: false
+					separately: false,
+					refresh: false,
+					minval: minval,
+					maxval: maxval
 				);
-				if(minval.isNumber && maxval.isNumber) {
-					plotter.specs = [minval, maxval].asSpec
-				} {
-					minval !? { plotter.minval = minval };
-					maxval !? { plotter.maxval = maxval };
-				};
 				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units:"frames");
 				plotter.refresh;
 			}.defer
