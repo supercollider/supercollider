@@ -20,7 +20,7 @@ OSXPlatform : UnixPlatform
 	}
 
 	startup {
-		Server.program = "exec %/scsynth".format(String.scDir.shellQuote);
+		Server.program = "exec %/scsynth".format((String.scDir +/+ "../MacOS").shellQuote);
 
 		Score.program = Server.program;
 
