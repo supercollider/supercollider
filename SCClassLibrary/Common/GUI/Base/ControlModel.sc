@@ -38,10 +38,8 @@ ControlSpec : Spec {
 	var <minval, <maxval, <warp, <step, <>default, <>units, >grid;
 	var <clipLo, <clipHi;
 
-	*new { arg minval=0.0, maxval=1.0, warp='lin', step=0.0, default, units, grid;
-		^super.newCopyArgs(minval, maxval, warp, step,
-				default ? minval, units ? "", grid
-			).init
+	*new { arg minval = (0.0), maxval = (1.0), warp = ('lin'), step = (0.0), default, units, grid;
+		^super.newCopyArgs(minval, maxval, warp, step, default ? minval, units ? "", grid).init
 	}
 
 	*newFrom { arg similar;
@@ -104,16 +102,17 @@ ControlSpec : Spec {
 
 	grid { ^grid ?? {GridLines(this)} }
 
-	looseRange { |data, defaultRange = 1.0|
+	looseRange { |data, defaultRange, minval, maxval|
 		var newMin, newMax;
 		data = data.flat;
-		newMin = data.minItem;
-		newMax = data.maxItem;
+		newMin = minval ?? { data.minItem };
+		newMax = maxval ?? { data.maxItem };
 		if(newMin == newMax) {
-			newMin = newMin - (defaultRange / 2);
-			newMax = newMax + (defaultRange / 2);
+			defaultRange = defaultRange ? 1.0;
+			newMin = newMin - (defaultRange * 0.5);
+			newMax = newMax + (defaultRange * 0.5);
 		};
-		# newMin, newMax = this.grid.looseRange(newMin,newMax);
+		# newMin, newMax = this.grid.looseRange(newMin, newMax);
 		^this.copy.minval_(newMin).maxval_(newMax);
 	}
 	// can deprec
@@ -130,7 +129,8 @@ ControlSpec : Spec {
 	}
 
 	normalize { |min, max|
-		if(min.isNil) { min = if(this.hasZeroCrossing) { -1.0 } { 0.0 } };		if(max.isNil) { max = 1.0 };
+		if(min.isNil) { min = if(this.hasZeroCrossing) { -1.0 } { 0.0 } };
+		if(max.isNil) { max = 1.0 };
 		^this.copy.minval_(min).maxval_(max)
 	}
 
