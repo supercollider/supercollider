@@ -1,15 +1,17 @@
 title:: jitlib_basic_concepts_01
 summary:: some placeholders in supercollider
-categories:: Libraries>JITLib>Tutorials
+categories:: Libraries>JITLib>Tutorials, Tutorials>JITLib
 related:: Overviews/JITLib, Tutorials/JITLib/jitlib_basic_concepts_02
 
-this helpfile explains some basic concepts of interactive programming with supercollider and proxy space.
+This helpfile explains some basic concepts of interactive programming with supercollider and proxy space.
 
-section::a) What is a proxy?
+section::What is a proxy?
 
 A proxy is a place holder that is often used to operate on something that does not yet exist. For example, an emphasis::OutputProxy:: is used to represent multiple outputs of a ugen, even if only one ugen is created eventually. Any object can have proxy behaviour (it may delegate function calls to different objects for example) but specially functions and references can be used as operands while they keep their referential quality.
 
-see also: link::Classes/OutputProxy::, link::Classes/Function::, link::Classes/Ref::
+See also: link::Classes/OutputProxy::, link::Classes/Function::, link::Classes/Ref::
+
+Further reading: link::Classes/NodeProxy::, link::Classes/ProxySpace::, link::Classes/Ndef::
 
 subsection::using a Ref as a proxy
 
@@ -72,11 +74,9 @@ z.value;
 
 see also client side proxies like link::Classes/Tdef::, link::Classes/Pdefn::, link::Classes/Pdef::, link::Classes/Fdef::
 
-section::b) NodeProxy
+section::NodeProxy, ProxySpace, Ndef
 
-For interactive programming it can be useful to be able to use something before it is there - it makes evaluation order more flexible and allows to postpone decisions to a later moment. Some preparations have to be done usually - like above, a reference has to be created. In other situations this sort of preparation is not enough, for example if one wants to do maths with running processes on the server.
-
-Audio output on the server has mainly two properties - a emphasis::calculation rate:: (audio or control) and a certain emphasis::number of channels::. These are the main static properties of a node proxy, which cannot be changed while it is in use.
+For interactive programming it can be useful to be able to use something before it is there - it makes evaluation order more flexible and allows to postpone decisions to a later moment. Some preparations have to be done usually - like above, a reference has to be created. In other situations this sort of preparation is not enough, for example if one wants to apply mathematical operations on signals of running processes on the server.
 
 code::
 // boot the server
@@ -126,6 +126,21 @@ p.clear;
 p.pop;
 ::
 
-further readings: link::Classes/NodeProxy::, link::Classes/ProxySpace::, link::Classes/Ndef::
+Another, quite common way to access node proxies is Ndef (this is the same as the above, just written with Ndef):
+code::
+Ndef(\z).play;
+
+
+Ndef(\z, Ndef(\y).sin * 0.2);
+
+
+Ndef(\y, { Saw.ar([300, 301], 4 * pi) });
+
+
+Ndef.clear;
+
+::
+
+Further reading: link::Classes/NodeProxy::, link::Classes/ProxySpace::, link::Classes/Ndef::
 
 next: link::Tutorials/JITLib/jitlib_basic_concepts_02::

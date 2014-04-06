@@ -1,13 +1,11 @@
 title:: JITLib
 summary:: An overview of the Just In Time library
-categories:: Libraries>JITLib
+categories:: Libraries>JITLib, Tutorials>JITLib
 
 section::Introduction
 
 emphasis::"Passenger to taxtidriver: take me to number 37. I'll give you the street name when we are there."::
-footnote::
-an austrian math teacher's joke
-::
+footnote::An austrian math teacher's joke::
 
 Disclaimer: there is no time, really; punctuality is your personal responsibility though.
 
@@ -106,7 +104,13 @@ definitionList::
 section::Networking
 
 list::
-## in remote and local networks thanks to sc-architecture node proxies can be strong::used on any server::, as long as it notifies the client and has a correctly initialized default node. strong::note that the client id should be set::.
+## in remote and local networks thanks to sc-architecture node proxies can be strong::used on any server::, as long as it notifies the client and has a correctly initialized default node.
+
+	strong::Note that the number of logins or the client id should be set::.
+
+	code::
+	s.options.maxLogins = 16; // an ensemble with up to 16 servers
+	::
 ::
 
 section::Internal classes / abstract classes
