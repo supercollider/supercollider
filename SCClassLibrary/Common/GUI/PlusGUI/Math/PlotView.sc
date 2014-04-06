@@ -519,11 +519,11 @@ Plotter {
 		this.setValue(arrays, findSpecs, true)
 	}
 
-	setValue { |arrays, findSpecs = true, refresh = true, separately = true, minval, maxval|
+	setValue { |arrays, findSpecs = true, refresh = true, separately = true, minval, maxval, defaultRange|
 		value = arrays;
 		data = this.prReshape(arrays);
 		if(findSpecs) {
-			this.calcSpecs(separately, minval, maxval);
+			this.calcSpecs(separately, minval, maxval, defaultRange);
 			this.calcDomainSpecs;
 		};
 		this.updatePlots;
@@ -648,22 +648,21 @@ Plotter {
 	}
 
 
-	calcSpecs { |separately = true, minval, maxval|
-		var newSpecs;
-		if(minval.notNil and: { maxval.notNil }) {
-			newSpecs = [[minval, maxval]];
+	calcSpecs { |separately = true, minval, maxval, defaultRange|
+		var ranges = [minval, maxval].flop;
+		var newSpecs = ranges.collect(_.asSpec).clipExtend(data.size);
+		if(separately) {
+			newSpecs = newSpecs.collect { |spec, i|
+				var list = data.at(i);
+				if(list.notNil) {
+					spec = spec.looseRange(list, defaultRange, *ranges.wrapAt(i));
+					spec.postcs;
+				} {
+					spec
+				};
+			}
 		} {
-			newSpecs = (specs ? [\unipolar.asSpec]).clipExtend(data.size);
-			if(separately) {
-				newSpecs = newSpecs.collect { |spec, i|
-					var list = data.at(i);
-					list !? { spec = spec.looseRange(list.flat) };
-				}
-			} {
-				newSpecs = newSpecs.first.looseRange(data.flat);
-			};
-			minval !? { newSpecs.do { |spec| spec.minval = minval } };
-			maxval !? { newSpecs.do { |spec| spec.maxval = maxval } };
+			newSpecs = newSpecs.first.looseRange(data.flat, defaultRange, *ranges.at(0));
 		};
 		this.specs = newSpecs;
 	}
