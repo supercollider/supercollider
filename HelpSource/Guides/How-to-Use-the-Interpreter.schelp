@@ -1,6 +1,6 @@
 title:: How-to-Use-the-Interpreter
 summary:: Basic tutorial on how to run code
-categories:: Frontends
+categories:: Frontends, Tutorials
 
 This document is OSX (SCapp) specific in key commands, though the principles extend to all platforms. See the helpfile link::Reference/KeyboardShortcuts:: for key commands in other editors. For the emacs sclang interface please also see link::Reference/EmacsEditor:: specific documentation.
 
