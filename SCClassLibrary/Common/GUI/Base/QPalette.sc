@@ -24,10 +24,13 @@ QPalette {
 
 	*dark {
 		var p;
-		p = QPalette.auto( Color.grey(0.43), Color.grey(0.3) );
-		p.base = Color.grey(0.18);
+		p = QPalette.auto( Color.grey(0.43), Color.grey(0.15) );
+		p.base = Color.grey(0.12);
 		p.setColor(Color.grey(0.08), \shadow);
 		p.highlight = Color(0.25, 0.37, 0.57);
+		p.setColor(Color.grey(0.66), \baseText);
+		p.setColor(Color.grey(0.66), \windowText);
+		p.setColor(Color.grey(0.08), \buttonText);
 		^p;
 	}
 
