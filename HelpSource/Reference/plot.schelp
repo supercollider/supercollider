@@ -6,8 +6,11 @@ categories:: Common methods, GUI
 section:: Description
 The link::Overviews/Methods#plot#plot method:: provides the ability to plot data in a GUI window. The method is implemented in the link::Classes/ArrayedCollection:: class but is also available for other classes for convenience, including link::Classes/Function::, link::Classes/Env::, link::Classes/Buffer::, link::Classes/SoundFile::, link::Classes/Wavetable::.
 
-method:: plot (name, bounds, discrete, numChannels, minval, maxval, parent, labels)
-All arguments are optional
+method:: plot
+All arguments are optional.
+note::The arguments avaliable vary from object to object. The below list is only for explanation of possible arguments.::
+
+
 argument:: name
 The name to be used as the GUI window title.
 
@@ -26,11 +29,15 @@ Minimum value(s) for the display range. For a Buffer this defaults to code::-1::
 argument:: maxval
 Maximum value(s) for the display range. For a Buffer this defaults to code::+1:: but can be changed.
 
+argument:: separately
+When finding the right display range in multi channel plots, do this together for all or keep them separate.
+
 argument:: parent
 By default the plot is placed in a new GUI window. This argument can be used to specify an existing GUI container to send the plot to.
 
 argument:: labels
 By default labels appear at the top left of the plot giving a data readout based on mouse position. Set this argument to code::false:: to prevent them appearing.
+
 
 discussion::
 If code::minval:: and/or code::maxval:: are set to code::nil:: (this is default, except for link::Classes/Buffer::s), they will be automatically calculated from the dataset minimum and/or maximum. For multi-channel data, code::minval:: and code::maxval:: may be arrays, specifying the range independently for each channel (including use of code::nil::, in which case the min/max will be calculated for the specific channel rather than for the overall dataset).
@@ -47,12 +54,13 @@ code::
 [5, 6, 7, 6.5, 4.5, 3.5].plot("Some data, in stereo", numChannels:2)
 [5, 6, 7, 6.5, 4.5, 3.5].plot("Some data, in stereo", numChannels:2, discrete: true)
 
-{ |i| { |j| j + 1 * i % 6 }.dup(5) }.dup(200).plot("Some 2-d data");
+{ |i| { |j| j + 1 * (i + 1) % 6 }.dup(100) }.dup(5).plot("Some 2-d data");
 
 // 3-channel interlaced data
 b = [{1.0.rand}.dup(50), { 20.0.rand - 30 }.dup(50),{ 10.0.rand }.dup(50)].lace(150);
-b.plot(numChannels:3, minval: nil, maxval: nil); // Common rescaling
-b.plot(numChannels:3, minval: [nil, nil, nil], maxval: [nil, nil, nil]); // Separate rescaling
+b.plot(numChannels:3); // Common rescaling
+b.plot(numChannels:3, separately: false);
+b.plot(numChannels:3, minval: [nil, -100, nil], maxval: [nil, nil, 10]); // multichannel range parameters
 
 // Envelopes
 Env.adsr(0.4, 0.4, 0.8, 0.9).plot
@@ -63,4 +71,7 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 b.plot; // +-1 range
 b.plot(minval: nil, maxval: nil); // auto range
 b.plot(minval: 0, maxval: nil); // semi-auto range
+
+// UGen functions
+{ LFDNoise3.ar(XLine.ar(1000, 100, 0.1) ! 3) }.plot(0.1);
 ::
