@@ -723,7 +723,7 @@ Plotter {
 
 
 + ArrayedCollection {
-	plot { |name, bounds, discrete=false, numChannels, minval, maxval|
+	plot { |name, bounds, discrete=false, numChannels, minval, maxval, separately = true|
 		var array, plotter;
 		array = this.as(Array);
 
@@ -745,7 +745,7 @@ Plotter {
 		plotter.setValue(
 			array,
 			findSpecs: true,
-			separately: true,
+			separately: separately,
 			refresh: true,
 			minval: minval,
 			maxval: maxval
@@ -809,7 +809,7 @@ Plotter {
 		});
 	}
 
-	plot { |duration = 0.01, server, bounds, minval, maxval|
+	plot { |duration = 0.01, server, bounds, minval, maxval, separately = false|
 		var name = this.asCompileString, plotter;
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = Plotter(name, bounds);
@@ -821,7 +821,7 @@ Plotter {
 					plotter.setValue(
 						array.unlace(numChan).collect(_.drop(-1)),
 						findSpecs: true,
-						separately: false,
+						separately: separately,
 						refresh: false,
 						minval: minval,
 						maxval: maxval
@@ -836,13 +836,13 @@ Plotter {
 }
 
 + Wavetable {
-	plot { |name, bounds, minval, maxval|
-		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval)
+	plot { |name, bounds, minval, maxval, separately = false|
+		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval, separately: separately)
 	}
 }
 
 + Buffer {
-	plot { |name, bounds, minval, maxval|
+	plot { |name, bounds, minval, maxval, separately = false|
 		var plotter;
 		if(server.serverRunning.not) { "Server % not running".format(server).warn; ^nil };
 		if(numFrames.isNil) { "Buffer not allocated, can't plot data".warn; ^nil };
@@ -855,7 +855,7 @@ Plotter {
 				plotter.setValue(
 					array.unlace(buf.numChannels),
 					findSpecs: true,
-					separately: false,
+					separately: separately,
 					refresh: false,
 					minval: minval,
 					maxval: maxval
@@ -888,9 +888,9 @@ Plotter {
 
 + AbstractFunction {
 	plotGraph { arg n=500, from = 0.0, to = 1.0, name, bounds, discrete = false,
-		numChannels, minval, maxval, parent, labels = true;
+		numChannels, minval, maxval, separately = true;
 		var array = Array.interpolation(n, from, to);
 		var res = array.collect { |x| this.value(x) };
-		res.plot(name, bounds, discrete, numChannels, minval, maxval, parent, labels)
+		res.plot(name, bounds, discrete, numChannels, minval, maxval, separately)
 	}
 }
