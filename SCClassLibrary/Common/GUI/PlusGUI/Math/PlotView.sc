@@ -12,11 +12,11 @@ Plot {
 	*initClass {
 		StartUp.add {
 			GUI.skin.put(\plot, (
-				gridColorX: Color.grey(0.7),
-				gridColorY: Color.grey(0.7),
-				fontColor: Color.grey(0.3),
-				plotColor: [Color.black, Color.blue, Color.red, Color.green(0.7)],
-				background: Color.new255(235, 235, 235),
+				gridColorX: QtGUI.palette.highlight,
+				gridColorY: QtGUI.palette.highlight,
+				fontColor: QtGUI.palette.windowText,
+				plotColor: [QtGUI.palette.windowText, Color.blue.valueBlend(QtGUI.palette.windowText), Color.red.valueBlend(QtGUI.palette.windowText), Color.green(0.7).valueBlend(QtGUI.palette.windowText)],
+				background: QtGUI.palette.base,
 				gridLinePattern: nil,
 				gridLineSmoothing: false,
 				labelX: "",
