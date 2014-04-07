@@ -214,7 +214,10 @@ else()
 endif()
 
 if(SC_IDE OR SC_QT)
-	qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets MacExtras)
+	qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets)
+	if (APPLE)
+		qt5_use_modules(MacExtras)
+	endif()
 endif()
 
 set_property(TARGET libsclang
