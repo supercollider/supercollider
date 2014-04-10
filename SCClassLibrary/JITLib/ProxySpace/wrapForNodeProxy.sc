@@ -92,11 +92,14 @@
 		^(
 			type: \fadeBus,
 			array: this,
-			out: { proxy.index + channelOffset },
-			numChannels: { proxy.numChannels },
-			fadeTime: { proxy.fadeTime },
-			curve: { proxy.nodeMap.at(\curve) },
-			group: { proxy.group }
+			finish: {
+				~out = proxy.index + channelOffset;
+				~group = proxy.group;
+				~rate = proxy.rate;
+				~numChannels = proxy.numChannels;
+				~fadeTime = proxy.fadeTime;
+				~curve = proxy.nodeMap.at(\curve);
+			}
 		)
 	}
 }
