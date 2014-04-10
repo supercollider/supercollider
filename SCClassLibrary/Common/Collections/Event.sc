@@ -697,9 +697,9 @@ Event : Environment {
 					},
 
 					fadeBus: #{ |server|
-						var bundle, instrument, rate, bus, numChannels;
+						var bundle, instrument, rate, bus;
 						var array = ~array.as(Array);
-						numChannels = min(~numChannels.value, array.size);
+						var numChannels = min(~numChannels.value ? 1, array.size);
 						if(numChannels > SystemSynthDefs.numChannels) {
 							Error(
 								"Can't set more than % channels with current setup in SystemSynthDefs."
@@ -716,6 +716,9 @@ Event : Environment {
 							"curve", ~curve
 						].asOSCArgArray;
 						~schedBundle.value(~lag, ~timingOffset, server, bundle);
+						if(~rate == \audio) { // control rate synth frees by itself, because bus holds the value
+							~stopServerNode = { server.sendBundle(server.latency, [\n_set, ~id, \gate, 0]) }
+						};
 					},
 
 					gen: #{|server|
