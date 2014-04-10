@@ -31,7 +31,7 @@ code::
 
 This is a common convention in documentation of computer languages, and one that is followed throughout SC's doc. The different colours you'll see in code are just to make things clearer, and have no effect on what the code does.
 
-You are encouraged to copy the code examples to another window and play around with modifying them. This is a time honoured way of learning a new computer language! SC will allow you to mofify the original tutorial documents, but if you do so you should be careful not to save them (for instance if prompted when closing them). It's safest to copy things to a new document before changing them.
+You are encouraged to copy the code examples to another window and play around with modifying them. This is a time honoured way of learning a new computer language! SC will allow you to modify the original tutorial documents, but if you do so you should be careful not to save them (for instance if prompted when closing them). It's safest to copy things to a new document before changing them.
 
 ____________________
 
