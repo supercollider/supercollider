@@ -733,7 +733,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			propertyAddress.mSelector = kAudioDevicePropertyBufferFrameSize;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
 
-			err = AudioObjectSetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, count, &mPreferredHardwareBufferFrameSize);
+			err = AudioObjectSetPropertyData(mInputDevice, &propertyAddress, 0, NULL, count, &mPreferredHardwareBufferFrameSize);
 
 			if (err != kAudioHardwareNoError) {
 				scprintf("set kAudioDevicePropertyNominalSampleRate error %4.4s\n", (char*)&err);
@@ -1590,8 +1590,8 @@ bool SC_CoreAudioDriver::DriverStart()
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
 
-			err = AudioObjectGetPropertyDataSize(mInputDevice, 0, 0, &propertyAddress, &propertySize);
-			err = AudioObjectIsPropertySettable(mInputDevice, &propertyAddress, &writable);
+			err = AudioObjectGetPropertyDataSize(mOutputDevice, 0, 0, &propertyAddress, &propertySize);
+			err = AudioObjectIsPropertySettable(mOutputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
