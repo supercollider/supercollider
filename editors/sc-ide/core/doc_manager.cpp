@@ -296,7 +296,7 @@ bool DocumentManager::reload( Document *doc )
 
 Document * DocumentManager::documentForId(const QByteArray docID)
 {
-    Document * doc = mDocHash[docID];
+    Document * doc = mDocHash.value(docID);
     if(!doc) MainWindow::instance()->showStatusMessage(QString("Lookup failed for Document %1").arg(docID.constData()));
     return doc;
 }
