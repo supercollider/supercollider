@@ -1,0 +1,21 @@
+language: objective-c
+
+compiler: 
+ - clang
+
+before_install:
+ - brew update
+ - brew install qt5 
+
+before_script:
+ - mkdir BUILD
+ - cd BUILD
+ - cmake -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt5/5.2.1 -DSC_QT=1 .. --debug-output
+
+script: make
+
+notifications:
+ email:
+   - scott@artificia.org
+ on_success: always
+ on_failure: always
