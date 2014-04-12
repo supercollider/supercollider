@@ -734,7 +734,8 @@ HIDUsage {
     classvar <usageIDsToName;
 
     *initClass{
-        hutDirectory = Platform.systemAppSupportDir +/+ "hid";
+        Class.initClass(PathName);
+        hutDirectory = PathName( HID.class.filenameSymbol.asString ).pathOnly +/+ "HID_support/hut/";
         usageNameToIDs = IdentityDictionary.new;
         usageIDsToName = MultiLevelIdentityDictionary.new;
     }
