@@ -39,12 +39,12 @@ queries the operating system which HID devices are attached to the system and ca
 returns:: an IdentityDictionary of available devices
 
 METHOD:: available
-A dictionary of available devices, or rather info about them in an instance of LINK::HIDInfo::, populated by the method findAvailable
+A dictionary of available devices, or rather info about them in an instance of LINK::Classes/HIDInfo::, populated by the method findAvailable
 
 returns:: an IdentityDictionary
 
 METHOD:: postAvailable
-posts a human readable list of available HID devices and their properties (see also LINK::HIDInfo::)
+posts a human readable list of available HID devices and their properties (see also LINK::Classes/HIDInfo::)
 
 
 METHOD:: findBy
@@ -123,7 +123,7 @@ LIST::
 	## at the element level - called for the specific element of the specific device
 ::
 
-Alternately, you can also use the LINK::HIDFunc:: interface.
+Alternately, you can also use the LINK::Classes/HIDFunc:: interface.
 
 
 
