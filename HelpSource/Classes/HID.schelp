@@ -29,7 +29,7 @@ See LINK::Guides/Working_with_HID:: for a full introduction.
 
 CLASSMETHODS::
 
-PRIVATE:: doPrAction, prStart, prStop, prOpenDevice, prCloseDevice, prGetDeviceInfo, prGetNumberOfCollections, prGetCollectionInfo, prGetNumberOfElements, prGetElementInfo, prSetElementOutput, prSetElementRepeat, prbuildDeviceList, prHIDDeviceClosed, prHIDElementData, prHIDDeviceData, basicNew
+PRIVATE:: doPrAction, prStart, prStop, prOpenDevice, prCloseDevice, prGetDeviceInfo, prGetNumberOfCollections, prGetCollectionInfo, prGetNumberOfElements, prGetElementInfo, prSetElementOutput, prSetElementRepeat, prbuildDeviceList, deviceClosed, prHIDElementData, prHIDDeviceData, basicNew, mergeUsageDict, removeUsageDict
 
 SUBSECTION:: Finding devices
 
@@ -66,6 +66,16 @@ ARGUMENT:: releaseNumber
 The release number of the device, this is a number encoded by the device itself, and the same across platforms.
 
 returns:: an IdentityDictionary of devices the match the search query, or nil if no arguments are given
+
+
+METHOD:: availableUsages
+A dictionary of available usages from all HIDs, populated automatically when devices are opened and closed.
+
+returns:: an IdentityDictionary
+
+
+METHOD:: postAvailableUsages
+posts a human readable list of available HID usages and their properties (see also LINK::Classes/HIDElement:: and LINK::Classes/HIDUsage::)
 
 
 SUBSECTION:: Opening devices
@@ -179,27 +189,26 @@ The function to remove from the list, this must be a reference to the Function t
 
 
 
-SUBSECTION:: Managing the HID eventloop
+SUBSECTION:: Managing the HID subsystem
 
-In the background there is a thread that handles the interaction with the HID devices. The following methods are mostly used internally to manage this thread, but in certain cases you may wish to manage these methods manually.
+The following methods are used internally to initialize and finalize the HID subsystem, but in rare cases you may wish to manage these methods manually.
 
 METHOD:: start
-Start the HID thread or eventloop, this method is called automatically when calling the method findAvailable
+Initialize the HID subsystem, this method is called automatically when calling the method findAvailable.
 
 
 METHOD:: running
-Indicates whether or not the HID eventloop is running.
+Indicates whether or not the HID subsystem is running.
 
 
 METHOD:: stop
-Stops the HID thread or eventloop, this method is called automatically upon Shutdown, if the eventloop was started. It can be stopped manually, in order to save system resources.
-NOTE:: Stopping the eventloop will close all opened HID devices.
+This method is called automatically upon Shutdown, if the HID subsystem was initialized. It can be stopped manually, in order to save system resources. This method will close all opened HID devices.
 
 ::
 
 INSTANCEMETHODS::
 
-PRIVATE::init, getInfo, getElements, getElementInfo, getCollections, getCollectionInfo, id, valueAction, valueDeviceAction, info_
+PRIVATE::init, getInfo, getElements, getElementInfo, getCollections, getCollectionInfo, getUsages, id, valueAction, valueDeviceAction, info_
 
 
 METHOD:: elements
@@ -216,6 +225,15 @@ ARGUMENT:: elUsagePage
 The usage page of the element
 
 returns:: an Array with the found elements
+
+
+METHOD:: getElementWithID
+Get the element with the given index
+
+ARGUMENT:: elid
+The index of the element
+
+returns:: the HIDElement
 
 METHOD:: close
 Close the HID device, closing a device is asynchronous. You can set a closeAction (see below), which will be performed when the device closes.
@@ -270,6 +288,10 @@ Post information about all the output elements of this device in a human readabl
 
 METHOD:: postFeatureElements
 Post information about all the feature elements of this device in a human readable format
+
+
+METHOD:: postUsages
+Post information about all the usages of this device in a human readable format
 
 
 SUBSECTION:: Properties of the device
@@ -328,10 +350,26 @@ Retrieve the product id of this device
 returns:: the product id
 
 
+METHOD:: usages
+Retrieve the usages of the elements of this device.
+
+returns:: an IdentityDictionary with usages as keys and lists of elements as corresponding elements
+
 
 
 EXAMPLES::
 
 code::
-(some example code)
+HID.findAvailable; // check which devices are attached
+~myhid = HID.open( 1103, 53251 ); // open the Run'N' Drive game controller
+
+s.boot; // boot the server
+
+Ndef( \sinewave, { |freq=500, amp=0.1| SinOsc.ar( freq, 0, amp * 0.2 ) } );
+Ndef( \sinewave ).play;
+
+~freqRange = [500, 5000, \exponential].asSpec; // create a frequency range
+
+HIDdef.usage( \freq, { |value| Ndef( \sinewave ).set( \freq, ~freqRange.map( value ) ); }, \X );
+HIDdef.usage( \amp, { |value| Ndef( \sinewave ).set( \amp, value ); }, \Y );
 ::
