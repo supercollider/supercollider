@@ -223,11 +223,11 @@ NodeProxy : BusPlug {
 		tempReshaping = reshaping;
 		if(numChannels.isNil and: { rate.isNil }) {
 			// adjust to the source objects
-			reshaping = argReshaping ? \max;
+			reshaping = argReshaping ? \expanding;
 			this.rebuildDeepToBundle(bundle, false, nil, [fadeTime, quant, clock])
 		} {
 			// adjust to given shape
-			reshaping = argReshaping ? \minmax;
+			reshaping = argReshaping ? \elastic;
 			this.initBus(rate, numChannels);
 			//  if necessary, rebuild without adjustment
 			if(bus !== oldBus) {
