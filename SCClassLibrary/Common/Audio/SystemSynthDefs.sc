@@ -41,7 +41,7 @@ SystemSynthDefs {
 				SynthDef("system_setbus_audio_" ++ i, { arg out = 0, fadeTime = 0, curve = 0, gate = 1;
 					var values = NamedControl.ir(\values, 0 ! i);
 					var env = Env([In.ar(out, i), values, values], [1, 0], curve, 1);
-					var sig = EnvGen.ar(env, gate, timeScale: fadeTime, doneAction: 2);
+					var sig = EnvGen.ar(env, gate + Impulse.kr(0), timeScale: fadeTime, doneAction: 2);
 					ReplaceOut.ar(out, sig);
 				}, [\ir, \kr, \ir, \kr]).add;
 
