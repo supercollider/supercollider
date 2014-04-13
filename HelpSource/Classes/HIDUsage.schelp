@@ -37,6 +37,33 @@ the filename of the yamlfile with a particular usage table, relative to the hutD
 
 returns:: an IdentityDictionary representing the table
 
+METHOD:: getUsageIds
+Retrieve usage id and page id from the usageName.
+
+ARGUMENT:: usageName
+the usage name
+
+returns:: an Array with the page id and the usage id
+
+
+METHOD:: idsToName
+Retrieve the standard usage name and pagename of an HID usage element or collection.
+
+ARGUMENT:: page
+the usage page id
+
+ARGUMENT:: usage
+the usage id
+
+returns:: the usage name
+
+METHOD:: usageIDsToName
+MultiLevelIdentityDictionary containing a map of page ids, usage ids to usage names.
+
+METHOD:: usageNameToIDs
+IdentityDictionary containing a map of usageNames to page ids and usage ids.
+
+
 
 EXAMPLES::
 
