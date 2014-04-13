@@ -79,6 +79,9 @@ BusPlug : AbstractFunction {
 		^InBus.kr(bus, numChannels ? bus.numChannels, offset, clip).asArray
 	}
 
+	asStream {
+		^Routine { loop { this.asControlInput.yield } }
+	}
 
 	embedInStream { | inval | // for now, force multichannel expansion in streams early.
 		^this.asControlInput.embedInStream(inval);
@@ -91,6 +94,7 @@ BusPlug : AbstractFunction {
 		};
 		^this.busArg;
 	}
+
 	asUGenInput {
 		^this.value(nil)
 	}
