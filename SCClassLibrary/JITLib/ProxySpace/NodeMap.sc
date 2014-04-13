@@ -82,6 +82,18 @@ NodeMap : IdentityDictionary {
 		if(args.notNil) { bundle.add([48, target.asNodeID] ++ args) };
 	}
 
+	setn {
+		^this.deprecated(thisMethod, this.class.findRespondingMethodFor(\set))
+	}
+
+	mapn {
+		^this.deprecated(thisMethod, this.class.findRespondingMethodFor(\set))
+	}
+
+	map {
+		^this.deprecated(thisMethod, this.class.findRespondingMethodFor(\set))
+	}
+
 }
 
 ProxyNodeMap : NodeMap {
