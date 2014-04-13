@@ -190,7 +190,8 @@ public:
 
 	int open_device_path( const char * path,  int vendor, int product );
 	int open_device(  int vendor, int product, char * serial_number=NULL ); // const char* serial_number=NULL
-	int queue_to_close_device( int joy_idx );
+	//int queue_to_close_device( int joy_idx );
+	int close_device( int joy_idx );
 	void close_all_devices();
 
 	struct hid_dev_desc * get_device( int joy_idx );
@@ -210,6 +211,7 @@ public:
 protected:
 	void handleDevice( int, struct hid_dev_desc *, std::atomic<bool> const & shouldBeRunning);
 	void handleElement( int, struct hid_device_element *, std::atomic<bool> const & shouldBeRunning);
+	//void deviceClosed(int, std::atomic<bool> const & shouldBeRunning);
 
 private:
 	hid_map_t hiddevices;    // declares a vector of hiddevices
@@ -308,13 +310,25 @@ int SC_HID_APIManager::open_device( int vendor, int product, char* serial_number
 	}
 }
 
+/*
 int SC_HID_APIManager::queue_to_close_device( int joy_idx )
 {
+	close_device(joy_idx);
+	return 1;
+}
+*/
+
+int SC_HID_APIManager::close_device( int joy_idx ){
 	struct hid_dev_desc * hidtoclose = get_device( joy_idx );
 	//   hiddevices.find( joy_idx )->second;
 	if ( hidtoclose == NULL ){
 		post( "HIDAPI: could not find device to close %d\n", joy_idx);
 		return 1; // not a fatal error
+	} else {
+		mThreads.closeDevice(hidtoclose);
+		// deviceClosed( joy_idx, mShouldBeRunning ); // do not call from here, as this call comes from the language
+		hid_close_device( hidtoclose );
+		hiddevices.erase( joy_idx );
 	}
 
 	hiddevices.erase( joy_idx );
@@ -411,7 +425,7 @@ int SC_HID_APIManager::free_devicelist(){
 	return errNone;
 }
 
-// void SC_HID_APIManager::hidInfo( int joy_idx, struct hid_device_info * cur_dev, std::atomic3<bool> const & shouldBeRunning ){
+// void SC_HID_APIManager::hidInfo( int joy_idx, struct hid_device_info * cur_dev, std::atomic<bool> const & shouldBeRunning ){
 //   int status = lockLanguageOrQuit(shouldBeRunning);
 //   if (status == EINTR)
 //     return;
@@ -444,6 +458,27 @@ int SC_HID_APIManager::free_devicelist(){
 //   gLangMutex.unlock();
 // }
 
+/*
+void SC_HID_APIManager::deviceClosed( int joy_idx, std::atomic<bool> const & shouldBeRunning ){
+	int status = lockLanguageOrQuit(shouldBeRunning);
+	if (status == EINTR)
+		return;
+	if (status) {
+		postfl("error when locking language (%d)\n", status);
+		return;
+	}
+	if (compiledOK) {
+		VMGlobals* g = gMainVMGlobals;
+		g->canCallOS = false;
+		//     ++g->sp; SetObject(g->sp, m_obj);
+		++g->sp; SetObject(g->sp, s_hidapi->u.classobj ); // set the class HID_API
+		++g->sp; SetInt(g->sp, joy_idx );
+		runInterpreter(g, s_hidClosed, 2);
+		g->canCallOS = false;
+	}
+	gLangMutex.unlock();
+}
+*/
 
 void SC_HID_APIManager::handleElement( int joy_idx, struct hid_device_element * ele, std::atomic<bool> const & shouldBeRunning ){
 	int status = lockLanguageOrQuit(shouldBeRunning);
@@ -647,7 +682,7 @@ int prHID_API_Close( VMGlobals* g, int numArgsPushed ){
 	err = slotIntVal( arg, &joyid );
 	if ( err != errNone ) return err;
 
-	int result = SC_HID_APIManager::instance().queue_to_close_device( joyid );
+	int result = SC_HID_APIManager::instance().close_device( joyid );
 
 	SetInt( self, result );
 
