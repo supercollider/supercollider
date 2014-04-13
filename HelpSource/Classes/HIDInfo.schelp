@@ -1,11 +1,13 @@
 TITLE:: HIDInfo
 summary:: This class contains the basic information about an HID device to access and open it.
 categories:: External control>HID
-related:: Classes/HID, Reference/Working_With_HID
+related:: Classes/HID, Guides/Working_with_HID
 
 DESCRIPTION::
 This class contains the basic information about an HID device to access and open it.
 The class is mostly used internally and rarely accessed directly by the user.
+
+This class is populated with information read from the device, and represents some of the internal information of the device.
 
 CLASSMETHODS::
 
@@ -13,7 +15,7 @@ PRIVATE:: new
 
 INSTANCEMETHODS::
 
-PRIVATE::printOn
+PRIVATE::printOn, setUsageAndPage
 
 METHOD:: open
 Open the device that is described by this HIDInfo
@@ -47,3 +49,25 @@ The release number of the device, this is a number encoded by the device itself,
 
 METHOD:: interfaceNumber
 Type of interface of the device, can be an index standing for USB, Bluetooth, etc.
+
+
+METHOD:: usage
+Retrieve the usage index of this collection.
+
+returns:: a Number - the usage index of this collection
+
+METHOD:: usagePage
+Retrieve the usage page index of this collection.
+
+returns:: a Number- the usage page index
+
+METHOD:: usageName
+Retrieve the usage name of this collection. The name is looked up from the standardized HID usage tables using the usage page index.
+
+returns:: a String - the usage name
+
+
+METHOD:: pageName
+Retrieve the page name of this collection. The name is looked up from the standardized HID usage tables using the usage page index.
+
+returns:: a String - the usage page name
