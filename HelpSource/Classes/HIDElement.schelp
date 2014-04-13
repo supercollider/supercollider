@@ -1,11 +1,11 @@
 TITLE:: HIDElement
 summary:: A class describing an element of an HID device
 categories::  External control>HID
-related:: Classes/HID, Reference/Working_with_HID, Classes/HIDCollection, Classes/HIDUsage
+related:: Classes/HID, Guides/Working_with_HID, Classes/HIDCollection, Classes/HIDUsage
 
 DESCRIPTION::
 An HIDElement describes an element, or a control, of an HID device.
-
+These are created for the device automatically when you open a device. The only interaction a user will have with elements are to query the properties of the element (with CODE::.postElement::), query the CODE::value:: or CODE::rawValue::, or set the value, set the CODE::repeat:: property or set an CODE::action:: to be performed when new data comes in.
 
 CLASSMETHODS::
 
@@ -14,7 +14,7 @@ PRIVATE:: new
 
 INSTANCEMETHODS::
 
-PRIVATE:: setValueFromInput, mapValueFromRaw
+PRIVATE:: setValueFromInput, mapValueFromRaw, initElementRepeat
 
 
 METHOD:: action
@@ -39,7 +39,15 @@ METHOD:: rawValue
 The raw value of the element.
 
 METHOD:: logicalValue
-The logical value of the element. In principal the same of value.
+The logical value of the element. In principal the same as value.
+
+METHOD:: physicalValue
+The physical value of the element. This can be calculated from the raw value and the device's specification for conversion: the physical minimum, the physical maximum, the unit and unit exponent. How the conversion works is described in the USB HID standard documentation. NOTE::The conversion is not yet implemented in the backend.::
+
+METHOD:: arrayValue
+The array value of the element. This value is only of importance for those elements which can represent multiple usages, such as from keyboards. In that case it indicates the key that is pressed, and by adding this number to the usage of the element you know which function the key has.
+
+NOTE:: values from a keyboard are parsed in two ways: first as the element how they come in, second just with the usage and the value (on or off) as the data comes in. ::
 
 
 SUBSECTION:: Properties of the element
@@ -48,7 +56,7 @@ METHOD:: postElement
 Post a human readable description of the element to the post window.
 
 
-METHOD:: index
+METHOD:: id
 The index of this element. This index may vary between operating systems.
 
 METHOD:: device
@@ -126,6 +134,16 @@ METHOD:: unitExponent
 The exponent for the physical range.
 
 
+METHOD:: usageMin
+Minimum value of the usage range that is to be expected. This is reported by the device. This is only relevant for elements that report array values.
+
+
+METHOD:: usageMax
+Maximum value of the usage range that is to be expected. This is reported by the device. This is only relevant for elements that report array values.
+
+METHOD:: getUsages
+This method is used to get a dictionary of all the usages that this element produces. In most cases an element has only one usage, but in the case of an array-element it will have several uses (for a keyboard, an element represents one keypress, but they can be various different keys).
+
 METHOD:: reportID
 The report ID with which this element receives the data. This is a low level device specific identifier
 
@@ -140,5 +158,10 @@ The report index with which this element receives the data. This is a low level 
 EXAMPLES::
 
 code::
-(some example code)
+HID.findAvailable; // find available devices
+HID.postAvailable; // post available devices
+~myhid = HID.open( 1103, 53251 ); // open a device
+~myhid.postElements; // post available elements
+//Set actions for the second element:
+~myhid.elements[1].action = { |...args| args.postln; };
 ::
