@@ -4,7 +4,7 @@ BusPlug : AbstractFunction {
 	var <>monitor, <>parentGroup; // if nil, uses default group
 	var busArg; // cache for "/s_new" bus arg
 	var busLoaded = false;
-	var <>reshaping; // \minmax, \max
+	var <>reshaping; // \elastic, \expanding
 
 	classvar <>defaultNumAudio=2, <>defaultNumControl=1, <>defaultReshaping;
 	//classvar <>verbose = true; // this is temporary for debugging
@@ -183,20 +183,15 @@ BusPlug : AbstractFunction {
 			this.defineBus(rate, numChannels);
 			^true
 		};
-		if(reshaping == \minmax and: { numChannels != bus.numChannels  }) {
+		if(reshaping == \elastic and: { numChannels != bus.numChannels  }) {
 			this.defineBus(rate, numChannels);
 			^true
 		};
-		if(reshaping == \max and: { numChannels > bus.numChannels  }) {
+		if(reshaping == \expanding and: { numChannels > bus.numChannels  }) {
 			this.defineBus(rate, numChannels);
 			^true
 		};
-		if(reshaping == \min) { "reshaping min not implemented".warn; ^false };
-		/*if(reshaping == \min and: { numChannels < bus.numChannels  }) {
-			this.defineBus(rate, numChannels);
-			^true
-		};*/
-		^(this.rate === rate) and: { numChannels <= bus.numChannels }
+		Error("reshaping '%' not implemented".format(reshaping)).throw;
 	}
 
 	defineBus { | rate = \audio, numChannels |
