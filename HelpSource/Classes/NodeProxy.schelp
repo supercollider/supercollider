@@ -71,31 +71,16 @@ If given, proxy is initialized to this number of channels
 argument::inputs
 If given, proxy is initialized with the given inputs as objects on subsequent slots.
 
-method::audio
-Return a new audio rate NodeProxy of a given number of channels.
-
-argument::server
-The server on which to run and where the bus is allocated (default: code::Server.default::)
-
-argument::numChannels
-If given, proxy is initialized to this number of channels (default: 2)
-
-method::control
-Return a new control rate NodeProxy of a given number of channels.
-
-argument::server
-The server on which to run and where the bus is allocated (default: code::Server.default::)
-
-argument::numChannels
-If given, proxy is initialized to this number of channels (default: 1)
-
-method::for
-Return a new instance of NodeProxy using a given link::Classes/Bus::.
+copymethod:: BusPlug *audio
+copymethod:: BusPlug *control
+copymethod:: BusPlug *for
 
 subsection::Accessing Class Variables
 
-method::defaultNumAudio, defaultNumControl
-set the default channel number for audio/control busses
+copymethod:: BusPlug *defaultNumAudio
+copymethod:: BusPlug *defaultNumControl
+
+private::buildProxy, buildProxyControl
 
 InstanceMethods::
 
@@ -103,47 +88,23 @@ private::prFadeTime, linkNodeMap, generateUniqueName, prepareOutput, addToChild
 
 subsection::Listening to the output
 
-method::play
-plays to a bus index ( strong::out:: ) with a number of channels ( strong::numChannels:: ) within a target strong::group:: ( link::Classes/Group:: or link::Classes/Server:: ).
+copymethod:: BusPlug -play
 
-argument::multi
-keep old links and add new one
+copymethod:: BusPlug -playN
 
-argument::vol
-volume at which to monitor
+copymethod:: BusPlug -stop
 
-argument::fadeTime
-fade in fade out time
-
-method::playN
-see link::Reference/playN::.
-
-argument::outs
-array of destination channels
-
-argument::amps
-array of amplitudes for each channel
-
-argument::ins
-array of source channels
-
-method::stop
-stop to play out public channels (private channels keep playing as others might listen still) this stops the monitoring. To stop the objects playing, use link::#-free::, link::#-release::.
-
-argument::fadeTime
-decay time for this action
+copymethod:: BusPlug -ar, kr
 
 method::end
 releases the synths and stops playback.
 
 argument::fadeTime
-decay time for this action
+cross fade time for this action.
 
 argument::reset
-a boolean
+if set to true, reset all monitor state. Otherwise, the previous play arguments are kept.
 
-method::ar, kr
-return a link to my output, which is limited by [numChannels]. causes an uninitialized proxy to create a matching bus. normally strong::ar:: defaults to stereo, strong::kr:: to mono. this can be set in the classvars: link::#*defaultNumAudio::, link::#*defaultNumControl::.
 
 subsection::Setting the source
 
@@ -153,9 +114,26 @@ See the list under section link::#Supported sources::
 
 method::source
 Play a new synth through proxy and release/remove any old ones.
+code::
+a = NodeProxy(s);
+a.play;
+a.source = { Pulse.ar(130, Saw.kr(0.3)) * 0.1 }; // change this line while running
+::
 
 argument::obj
 can be one of the supported inputs (see link::#Supported sources::)
+
+
+method::reshaping
+Determines how to behave when a new source is added.
+Current options:
+
+table::
+## nil || Once initialized, keep the same bus - this is the default
+## \elastic || On a change, shrink and grow according to need, replace bus. The monitor and child proxies are adjusted.
+## \expanding || On a change, only grow according to need, replace bus. The monitor and child proxies are adjusted.
+::
+
 
 method::prime
 Set source without starting the synth. To start it, link::#-send:: can be used later. Running synths are released and proxy is initialized if still neutral.
@@ -316,23 +294,41 @@ set the crossfade time. See: link::Tutorials/JITLib/jitlib_fading:: .
 
 subsection::Setting synth controls
 
-method::set, unset, unmap
-NodeProxy behaves like its nodeMap ( link::Classes/NodeMap:: )
+method::set, map, setn, mapn
+NodeProxy behaves like its link::Classes/NodeMap:: and very similar to a link::Classes/Synth::.
 
-method::map
-Map the arguments in keys to the subsequent channels of another proxy (keys can be a symbol or a number). If the proxy has strong::multiple channels::, subsequent channels of the control, if present, are mapped. Note that you should not map to more channels than the control has.
+note::Now the methods map, setn, mapn are there just for compatibility reasons. Everything is done by set.::
 
-method::setn
-set ranges of controls
+code::
+a = NodeProxy(s); a.play;
+a.source = { Splay.ar(Blip.ar(\freq.kr(18 ! 4))) * 0.2 };
+a.set(\freq, [1, 3, 56, 13]);
+a.source = { Splay.ar(SinOsc.ar(LFSaw.ar(\freq.kr(18 ! 4)) * 250 + 400)) * 0.2 };
+b = NodeProxy(s); b.source = { MouseX.kr(0, 3) *  [1, 3, 56, 13] };
+a.set(\freq, b);
+a.clear; b.clear;
+::
 
-method::xset
-set with crossfade into new setting
+argument::... args
 
-method::xmap
-map with crossfade into new setting
+An array of pairs: strong::key, value, key, value, ...::
 
-method::xsetn
-untested
+The unique key (a link::Classes/Symbol::) specifies the control name to be set.
+
+For value anything can be specified that responds to "asControlInput", in particular:
+definitionList::
+## number || set the control to that number
+## array of numbers || set the subsequent control channels to the correspoding value
+## node proxy || map subsequent control channels to the corrseponding proxy output channel
+::
+
+
+
+method::unset, unmap
+Remove specified settings and unmap or unset the synths.
+
+method::xset, xmap
+set/map with crossfade into new setting
 
 method::lag
 set the lag values of these args (identical to link::#-setRates::). To remove these settings, use: code::lag(\key1, nil, key2, nil, ...)::
@@ -364,7 +360,7 @@ method::send
 Send a new synth without releasing the old one. If the source is a stream or a pattern, it starts a new one.
 
 argument::extraArgs
-Arguments used to set the synth. the argument list is applied to the synth only.
+Arguments used to set the synth. The argument list is applied to the synth only. Arguments specified here override settings in the node map, but leave them untouched.
 
 argument::index
 What slot to send a new synth with. If nil, uses all. (default: nil)
@@ -406,9 +402,10 @@ a.source = { |freq = 440, rate = 2|
 section::Supported sources
 
 definitionList::
-## link::Classes/NodeProxy:: || played by reading from the other node proxie's bus.
+## link::Classes/NodeProxy:: || played by reading from the other NodeProxy bus.
 ## link::Classes/Function:: || interpreted as ugen function, and plays a link::Classes/Synth::, similar to Function.play.
-## link::Classes/SimpleNumber:: || write this value to the bus continuously
+## link::Classes/SimpleNumber:: || write this value to the bus continuously, overwriting previous bus value.
+## link::Classes/Array:: of numbers || write the values to the bus continuously overwriting previous bus value.
 ## link::Classes/Bus:: || reads from the bus
 ## link::Classes/SynthDef:: || plays a link::Classes/Synth:: using the SynthDef. This is useful for triggering.
 ## link::Classes/Symbol:: || plays a link::Classes/Synth:: from the SynthDef with this name. This is useful for triggering.
