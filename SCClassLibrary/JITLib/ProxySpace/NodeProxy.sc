@@ -840,14 +840,14 @@ NodeProxy : BusPlug {
 		if(checkedAlready.isNil or: { checkedAlready.includes(this).not }) {
 			this.rebuildToBundle(bundle, timeArgs);
 			if(busWasChangedExternally or: { bus !== oldBus }) {
-				//if(verbose) { "%: rebuilding children\n".postf(this) };
+				//"%: rebuilding children\n".postf(this);
 				if(checkedAlready.isNil) { checkedAlready = IdentitySet.new };
 				checkedAlready.add(this);
 				children.do { |item|
 					item.rebuildDeepToBundle(bundle, false, checkedAlready, timeArgs)
 				};
 				if(monitor.isPlaying) {
-					//if(verbose) { postf("in % restarting monitor\n", this) };
+					//postf("in % restarting monitor\n", this);
 					monitor.playNBusToBundle(bundle, bus: bus);
 				}
 			}
@@ -861,7 +861,7 @@ NodeProxy : BusPlug {
 		timeArgs !? { this.fadeTime = timeArgs[0]; quant = timeArgs[1]; clock = timeArgs[2] };
 		loaded = false;
 		nodeMap.upToDate = false; // if mapped to itself
-		//if(verbose) { "rebuilding proxy: % (% channels, % rate)\n".postf(this, this.numChannels, this.rate) };
+		//"rebuilding proxy: % (% channels, % rate)\n".postf(this, this.numChannels, this.rate);
 		if(this.isPlaying) {
 			this.stopAllToBundle(bundle);
 			objects.do { |item| item.freeToBundle(bundle, this) };
@@ -946,12 +946,12 @@ NodeProxy : BusPlug {
 
 	addChild { |proxy|
 		children = children.add(proxy);
-		//if(verbose) { "%: added child: % in %\n".postf(this, proxy, children) };
+		//"%: added child: % in %\n".postf(this, proxy, children);
 	}
 
 	removeChild { |proxy|
 		children.remove(proxy);
-		//if(verbose) { "%: removed child: % in %\n".postf(this, proxy, children) };
+		//"%: removed child: % in %\n".postf(this, proxy, children);
 	}
 
 	// renames synthdef so one can use it in patterns
