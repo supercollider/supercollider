@@ -236,7 +236,17 @@ HID {
 		^this.primitiveFailed
 	}
 
+    *deviceClosed{ |devid|
+		openDevices.at( devid ).closeAction.value;
+		if ( debug ){
+            "HID device % closed\n".postf( devid );
+		};
+        openDevices.removeAt( devid );
+	}
+
+
 // coming from the primitives:
+    /*
     *prHIDDeviceClosed{ |devid|
 		openDevices.at( devid ).closeAction.value;
 		if ( debug ){
@@ -244,6 +254,7 @@ HID {
 		};
         openDevices.removeAt( devid );
 	}
+    */
 
     *prHIDElementData { | devid, elid, page, usage, rawValue, value, physValue, arrayValue |
         HID.doPrAction( value, physValue, rawValue, arrayValue, usage, page, elid, devid );
@@ -394,8 +405,11 @@ HID {
     // }
 
 	close{
+        "closing device".postln;
         HID.removeUsageDict( this );
-		HID.prCloseDevice( id );
+        if ( HID.prCloseDevice( id ).asBoolean ){
+            HID.deviceClosed( id ); // call callback function
+        }
 	}
 
     postCollections{
@@ -427,6 +441,16 @@ HID {
 
     *postAvailable{
         this.available.sortedKeysValuesDo{ |k,v| "%: ".postf( k ); v.postInfo; };
+    }
+
+    *postAvailableUsages{
+        this.availableUsages.sortedKeysValuesDo{ |k,v|
+            "Usage: %\n".postf(k);
+            v.sortedKeysValuesDo{ |k2,v2|
+                "\tDevice id: %".postf( k2 );
+                v2.do{ |it| it.postElement("\t"); };
+            };
+        };
     }
 
     postInfo{
