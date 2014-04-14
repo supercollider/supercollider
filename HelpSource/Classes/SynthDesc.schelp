@@ -158,6 +158,7 @@ returns:: an array of Strings with the names of controls
 
 method:: outputs
 returns:: an array of link::Classes/IODesc:: that describes the available outputs.
+
 method:: inputs
 returns:: an array of link::Classes/IODesc:: that describes the available inputs.
 
@@ -170,6 +171,17 @@ discussion::
 This can be used to decide if to remove a Synth directly via free-message.
 code::
 SynthDescLib.global.at(\default).canFreeSynth;
+::
+
+method:: outputData
+
+Returns an array of events with information about any UGens that write to a bus (such as link::Classes/Out:: etc.). This includes the rate and number of channels of the UGen. If its first input is a control, also the corresponding control name is provided.
+
+code::
+a = SynthDef(\x, { |out, freq = 440| Out.ar(out, SinOsc.ar(freq)) }).add;
+a.desc.outputData;
+a = SynthDef(\x, { |out, freq = 440| Out.ar(out + 7, SinOsc.ar(freq)) }).add; // no controlName in this case
+a.desc.outputData;
 ::
 
 method:: msgFunc
