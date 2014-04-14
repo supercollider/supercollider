@@ -142,6 +142,30 @@ QString Document::textAsSCArrayOfCharCodes(int start = 0, int range = -1)
     }
     
     QByteArray stringBytes = cursor.selectedText().replace(QChar(0x2029), QChar('\n')).toUtf8();
+    return bytesToSCArrayOfCharCodes(stringBytes);
+}
+
+QString Document::titleAsSCArrayOfCharCodes()
+{
+    QByteArray stringBytes = mTitle.toUtf8();
+    return bytesToSCArrayOfCharCodes(stringBytes);
+}
+
+QString Document::pathAsSCArrayOfCharCodes()
+{
+    QString path;
+    if(mFilePath.isEmpty()) {
+        path = QString("nil");
+    } else {
+        path = mFilePath;
+    }
+    QByteArray stringBytes = path.toUtf8();
+    return bytesToSCArrayOfCharCodes(stringBytes);
+;
+}
+
+QString Document::bytesToSCArrayOfCharCodes(QByteArray stringBytes)
+{
     QString returnString = QString("[");
     for (int i = 0; i < stringBytes.size(); ++i) {
         returnString = returnString.append(QString::number(static_cast<int>(stringBytes.at(i)))).append(',');
@@ -534,18 +558,12 @@ void DocumentManager::handleDocListScRequest()
     QString command = QString("Document.syncDocs([");
     for (it = docs.begin(); it != docs.end(); ++it) {
         Document * doc = *it;
-        QString path;
-        if(doc->mFilePath.isEmpty()) {
-            path = QString("nil");
-        } else {
-            path = doc->mFilePath;
-        }
-        QString docData = QString("[\'%1\', \'%2\', %3, %4, \'%5\'],")
+        QString docData = QString("[\'%1\', %2, %3, %4, %5],")
             .arg(doc->id().constData())
-            .arg(doc->title())
+            .arg(doc->titleAsSCArrayOfCharCodes())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
             .arg(doc->isModified())
-            .arg(path);
+            .arg(doc->pathAsSCArrayOfCharCodes());
         command = command.append(docData);
     }
     command = command.append("]);");
@@ -943,19 +961,13 @@ void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
 
 void DocumentManager::syncLangDocument(Document *doc)
 {
-    QString path;
-    if(doc->mFilePath.isEmpty()) {
-        path = QString("nil");
-    } else {
-        path = doc->mFilePath;
-    }
     QString command =
-            QString("Document.syncFromIDE(\'%1\', \'%2\', %3, %4, \'%5\')")
+            QString("Document.syncFromIDE(\'%1\', %2, %3, %4, \'%5\')")
             .arg(doc->id().constData())
-            .arg(doc->title())
+            .arg(doc->titleAsSCArrayOfCharCodes())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
             .arg(doc->isModified())
-            .arg(path);
+            .arg(doc->pathAsSCArrayOfCharCodes());
     Main::evaluateCode ( command, true );
 }
 

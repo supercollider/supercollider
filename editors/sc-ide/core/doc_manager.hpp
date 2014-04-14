@@ -68,6 +68,10 @@ public:
     bool isModified() const  { return mDoc->isModified(); }
     
     QString textAsSCArrayOfCharCodes(int start, int range);
+    QString titleAsSCArrayOfCharCodes();
+    QString pathAsSCArrayOfCharCodes();
+    QString bytesToSCArrayOfCharCodes(QByteArray stringBytes);
+
     void setTextInRange(const QString text, int start, int range);
     
     bool keyDownActionEnabled() { return mKeyDownActionEnabled; }

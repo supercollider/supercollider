@@ -440,6 +440,8 @@ Document {
 		var doc;
 		isEdited = isEdited.booleanValue;
 		chars = String.fill(chars.size, {|i| chars[i].asAscii});
+		title = String.fill(title.size, {|i| title[i].asAscii});
+		path = String.fill(path.size, {|i| path[i].asAscii});
 		if((doc = this.findByQUuid(quuid)).isNil, {
 			doc = super.new.initFromIDE(quuid, title, chars, isEdited, path);
 			allDocuments = allDocuments.add(doc);
