@@ -73,6 +73,7 @@ protected:
 
 public slots:
     void applySettings( Settings::Manager * );
+    void closeDocument();
     void zoomIn(int steps = 1);
     void zoomOut(int steps = 1);
     void resetFontSize();

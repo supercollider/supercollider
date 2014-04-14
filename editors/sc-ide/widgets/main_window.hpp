@@ -46,6 +46,7 @@ struct Session;
 class ClockStatusBox;
 class ScServer;
 class ScProcess;
+class GenericCodeEditor;
 
 namespace Settings { class Manager; }
 
@@ -65,7 +66,6 @@ public:
         DocSave,
         DocSaveAs,
         DocSaveAll,
-        DocClose,
         DocCloseAll,
         DocReload,
         ClearRecentDocs,
@@ -120,8 +120,10 @@ public:
     bool promptSaveDocs();
 
     HelpBrowserDocklet * helpBrowserDocklet() { return mHelpBrowserDocklet; }
+    PostDocklet * postDocklet() { return mPostDocklet; }
 
     static MainWindow *instance() { return mInstance; }
+    Settings::Manager *setting();
 
     static bool close( Document * );
     static bool save( Document *, bool forceChoose = false );

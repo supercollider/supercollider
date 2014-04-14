@@ -82,6 +82,7 @@ class HelpBrowser : public QWidget
 public:
     enum ActionRole {
         GoHome,
+        DocClose,
         ZoomIn,
         ZoomOut,
         ResetZoom,
@@ -104,6 +105,7 @@ public:
 public slots:
     void applySettings( Settings::Manager * );
     void goHome();
+    void closeDocument();
     void zoomIn();
     void zoomOut();
     void resetZoom();

@@ -447,6 +447,14 @@ void MultiEditor::createActions()
 
     // View
 
+    mActions[DocClose] = action = new QAction(
+        QIcon::fromTheme("window-close"), tr("&Close"), this);
+    action->setShortcut(tr("Ctrl+W", "Close document"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    action->setStatusTip(tr("Close the current document"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(closeDocument()));
+    settings->addAction( action, "ide-document-close", editorCategory);
+
     mActions[EnlargeFont] = action = new QAction(
         QIcon::fromTheme("zoom-in"), tr("&Enlarge Font"), this);
     action->setShortcut(tr("Ctrl++", "Enlarge font"));
@@ -570,6 +578,7 @@ void MultiEditor::createActions()
     addAction(mActions[Cut]);
     addAction(mActions[Copy]);
     addAction(mActions[Paste]);
+    addAction(mActions[DocClose]);
     addAction(mActions[EnlargeFont]);
     addAction(mActions[ShrinkFont]);
     addAction(mActions[ShowWhitespace]);
@@ -611,6 +620,7 @@ void MultiEditor::updateActions()
     mActions[MoveLineDown]->setEnabled( editor );
     mActions[GotoPreviousEmptyLine]->setEnabled( editor );
     mActions[GotoNextEmptyLine]->setEnabled( editor );
+    mActions[DocClose]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
     mActions[ShrinkFont]->setEnabled( editor );
     mActions[ResetFontSize]->setEnabled( editor );
