@@ -485,12 +485,8 @@ Use of this synth in Patterns will not detect argument names automatically becau
 
 		^outs.collect { |outUgen|
 			var data = (rate: outUgen.rate, numChannels: outUgen.numAudioChannels);
-			var cn, index, ctrl = outUgen.inputs.at(0).source;
-			if(ctrl.isKindOf(Control)) {
-				index = ctrl.specialIndex;
-				cn = def.allControlNames.select { |cn| cn.argNum == index };
-				data.put('controlName', cn.collect(_.name).unbubble)
-			};
+			var ctrl = outUgen.inputs.at(0).source;
+			if(ctrl.isKindOf(Control)) { data.put('controlName', ctrl.names.unbubble) };
 			data
 		}
 	}
