@@ -195,7 +195,7 @@ HIDFunc : AbstractResponderFunc {
     var <type;
 
     var <elUsage, <devUsage;
-    var <elPage, <devPage;
+    //var <elPage, <devPage;
 
     var <elementTemplate;
     var <deviceTemplate;
@@ -346,9 +346,6 @@ HIDFunc : AbstractResponderFunc {
 
         elementTemplate = protoElement;
 
-        if ( devUsage.notNil ){
-            deviceTemplate = HIDProto.newProduct( devUsage );
-        };
         if ( deviceInfo.notNil ){
             deviceTemplate = HIDProto.newFromDict( deviceInfo );
         };
@@ -601,9 +598,9 @@ HIDValueMatcher : AbstractMessageMatcher {
 
 	init {|argArgTemplate, argFunc| argTemplate = argArgTemplate; func = argFunc; }
 
-        value {|...testMsg|
-            if(argTemplate.matchItem(testMsg[0]), {func.value(*testMsg)});
-	}
+    value {|...testMsg|
+        if(argTemplate.matchItem(testMsg[0]), {func.value(*testMsg)});
+    }
 }
 
 HIDRawValueMatcher : AbstractMessageMatcher {
