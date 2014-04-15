@@ -204,7 +204,6 @@ Indicates whether or not the HID subsystem is running.
 METHOD:: stop
 This method is called automatically upon Shutdown, if the HID subsystem was initialized. It can be stopped manually, in order to save system resources. This method will close all opened HID devices.
 
-::
 
 INSTANCEMETHODS::
 
