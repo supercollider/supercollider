@@ -484,10 +484,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 		var outs = ugens.select(_.writesToBus);
 
 		^outs.collect { |outUgen|
-			var data = (rate: outUgen.rate, numChannels: outUgen.numAudioChannels);
-			var ctrl = outUgen.inputs.at(0).source;
-			if(ctrl.isKindOf(Control)) { data.put('controlName', ctrl.names.unbubble) };
-			data
+			(rate: outUgen.rate, numChannels: outUgen.numAudioChannels)
 		}
 	}
 

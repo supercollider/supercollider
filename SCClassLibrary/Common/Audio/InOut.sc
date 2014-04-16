@@ -63,13 +63,6 @@ Control : MultiOutUGen {
 		};
 		^this.initOutputs(values.size, rate)
 	}
-	names {
-		var res;
-		synthDef.allControlNames.do { |cn|
-			if(cn.argNum == specialIndex) { res = res.add(cn.name) }
-		};
-		^res
-	}
 	*isControlUGen { ^true }
 
 }
