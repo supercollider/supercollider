@@ -88,6 +88,7 @@ public:
 			return;
 
 		boost::thread * deviceThread = threads.create_thread( [=] {
+			int missedCount = 0;
 			while( true ) {
 				const bool interrupted = boost::this_thread::interruption_requested();
 
@@ -97,8 +98,19 @@ public:
 												 : 250;
 
 				int res = hid_read_timeout( desc->device, buf, sizeof(buf), pollTime);
-				if ( res > 0 )
-					hid_parse_input_report( buf, res, desc );
+				if ( res > 0 ){
+				  hid_parse_input_report( buf, res, desc );
+				  missedCount = 0;
+				} else {
+				  missedCount++;
+				  if ( missedCount > 10000 ){
+				    std::printf("THROWING READ ERROR device %p, %i, %i\n", desc->device, res, missedCount );
+				    hid_throw_readerror( desc );
+				    break;
+				  } else {
+				    std::printf("not being able to read from device %p, %i, %i\n", desc->device, res, missedCount );
+				  }
+				}
 
 				if (interrupted)
 					break;
@@ -137,8 +149,8 @@ struct SC_HID_APIManager
 public:
 	static SC_HID_APIManager& instance();
 
-	int start();
-	int stop();
+	int init();
+	int closeAll();
 
 	int build_devicelist();
 	int free_devicelist();
@@ -165,13 +177,14 @@ public:
 
 	void elementData( int, struct hid_device_element * );
 	void deviceData( int, struct hid_dev_desc * );
+	void deviceRepetitiveReadError( int, struct hid_dev_desc * );
 
 	struct hid_device_info *devinfos;
 
 protected:
 	void handleDevice( int, struct hid_dev_desc *, std::atomic<bool> const & shouldBeRunning);
 	void handleElement( int, struct hid_device_element *, std::atomic<bool> const & shouldBeRunning);
-	//void deviceClosed(int, std::atomic<bool> const & shouldBeRunning);
+	void deviceClosed( int, struct hid_dev_desc *, std::atomic<bool> const & shouldBeRunning);
 
 private:
 	hid_map_t hiddevices;    // declares a vector of hiddevices
@@ -188,10 +201,11 @@ private:
 PyrSymbol* SC_HID_APIManager::s_hidapi = 0;
 PyrSymbol* SC_HID_APIManager::s_hidDeviceData = 0;
 PyrSymbol* SC_HID_APIManager::s_hidElementData = 0;
-//PyrSymbol* SC_HID_APIManager::s_hidClosed = 0;
+PyrSymbol* SC_HID_APIManager::s_hidClosed = 0;
 
 static void hid_element_cb( struct hid_device_element *el, void *data);
 static void hid_descriptor_cb( struct hid_dev_desc *dd, void *data);
+static void hid_readerror_cb( struct hid_dev_desc *dd, void *data);
 
 void hid_element_cb( struct hid_device_element *el, void *data)
 {
@@ -203,6 +217,12 @@ void hid_descriptor_cb( struct hid_dev_desc *dd, void *data)
 	SC_HID_APIManager::instance().deviceData( *((int*) data), dd );
 }
 
+void hid_readerror_cb(hid_dev_desc* dd, void* data)
+{
+	SC_HID_APIManager::instance().deviceRepetitiveReadError( *((int*) data), dd );
+}
+
+
 void SC_HID_APIManager::deviceData( int id, struct hid_dev_desc * dd ){
 	handleDevice( id, dd, mShouldBeRunning );
 }
@@ -210,6 +230,13 @@ void SC_HID_APIManager::deviceData( int id, struct hid_dev_desc * dd ){
 void SC_HID_APIManager::elementData( int id, struct hid_device_element * ele ){
 	handleElement( id, ele, mShouldBeRunning );
 }
+
+void SC_HID_APIManager::deviceRepetitiveReadError( int id, struct hid_dev_desc * dd ){
+	deviceClosed( id, dd, mShouldBeRunning );
+//	mThreads.closeDevice( dd );
+	hid_close_device( dd );
+}
+
 
 void SC_HID_APIManager::setPyrObject( PyrObject * obj ){
 	m_obj = obj;
@@ -236,6 +263,7 @@ int SC_HID_APIManager::open_device_path( const char * path, int vendor, int prod
 		newdevdesc->index = number_of_hids;
 
 		hid_set_descriptor_callback( newdevdesc, (hid_descriptor_callback) hid_descriptor_cb, &newdevdesc->index );
+		hid_set_readerror_callback( newdevdesc, (hid_device_readerror_callback) hid_readerror_cb, &newdevdesc->index );
 		hid_set_element_callback( newdevdesc, (hid_element_callback) hid_element_cb, &newdevdesc->index );
 
 		number_of_hids++;
@@ -329,7 +357,7 @@ SC_HID_APIManager::~SC_HID_APIManager()
 	close_all_devices();
 }
 
-int SC_HID_APIManager::start()
+int SC_HID_APIManager::init()
 {
 	int result;
 	number_of_hids = 0;
@@ -343,7 +371,7 @@ int SC_HID_APIManager::start()
 	return result;
 }
 
-int SC_HID_APIManager::stop()
+int SC_HID_APIManager::closeAll()
 {
 	m_running = false;
 	mShouldBeRunning = false;
@@ -421,8 +449,8 @@ int SC_HID_APIManager::free_devicelist(){
 //   gLangMutex.unlock();
 // }
 
-/*
-void SC_HID_APIManager::deviceClosed( int joy_idx, std::atomic<bool> const & shouldBeRunning ){
+
+void SC_HID_APIManager::deviceClosed( int joy_idx, struct hid_dev_desc * dd, std::atomic<bool> const & shouldBeRunning ){
 	int status = lockLanguageOrQuit(shouldBeRunning);
 	if (status == EINTR)
 		return;
@@ -441,7 +469,6 @@ void SC_HID_APIManager::deviceClosed( int joy_idx, std::atomic<bool> const & sho
 	}
 	gLangMutex.unlock();
 }
-*/
 
 void SC_HID_APIManager::handleElement( int joy_idx, struct hid_device_element * ele, std::atomic<bool> const & shouldBeRunning ){
 	int status = lockLanguageOrQuit(shouldBeRunning);
@@ -495,20 +522,20 @@ void SC_HID_APIManager::handleDevice( int joy_idx, struct hid_dev_desc * devd, s
 
 // ----------  primitive calls: ---------------
 
-int prHID_API_Start(VMGlobals* g, int numArgsPushed)
+int prHID_API_Initialize(VMGlobals* g, int numArgsPushed)
 {
 	PyrSlot *args = g->sp - numArgsPushed + 1;
 	PyrSlot *self = args + 0;
 
 	SC_HID_APIManager::instance().setPyrObject( slotRawObject(self) );
 	// initialize HID_SDLManager, and start event loop
-	return SC_HID_APIManager::instance().start();
+	return SC_HID_APIManager::instance().init();
 }
 
-int prHID_API_Stop(VMGlobals* g, int numArgsPushed)
+int prHID_API_CloseAll(VMGlobals* g, int numArgsPushed)
 {
-	// stop event loop, close all devices, and cleanup manager
-	return SC_HID_APIManager::instance().stop();
+	// close all devices, and cleanup manager
+	return SC_HID_APIManager::instance().closeAll();
 }
 
 int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
@@ -986,7 +1013,7 @@ int prHID_API_SetElementRepeat( VMGlobals* g, int numArgsPushed ){
 }
 
 void close_HID_API_Devices(){
-	SC_HID_APIManager::instance().stop();
+	SC_HID_APIManager::instance().closeAll();
 }
 
 void initHIDAPIPrimitives()
@@ -1000,8 +1027,8 @@ void initHIDAPIPrimitives()
 	base = nextPrimitiveIndex();
 	index = 0;
 
-	definePrimitive(base, index++, "_HID_API_Start", prHID_API_Start, 1, 0); // this starts the eventloop
-	definePrimitive(base, index++, "_HID_API_Stop", prHID_API_Stop, 1, 0);   // this also cleans up and closes devices
+	definePrimitive(base, index++, "_HID_API_Initialize", prHID_API_Initialize, 1, 0); // this initializes the hid subsystem
+	definePrimitive(base, index++, "_HID_API_CloseAll", prHID_API_CloseAll, 1, 0);   // this also cleans up and closes devices
 
 	definePrimitive(base, index++, "_HID_API_BuildDeviceList", prHID_API_BuildDeviceList, 1, 0); // this gets device info about the various devices that are attached
 
@@ -1019,10 +1046,10 @@ void initHIDAPIPrimitives()
 
 	SC_HID_APIManager::s_hidElementData = getsym("prHIDElementData"); // send back element data
 	SC_HID_APIManager::s_hidDeviceData = getsym("prHIDDeviceData"); // send back device data
-	//SC_HID_APIManager::s_hidClosed = getsym("prHIDDeviceClosed"); // send back that device was closed
+	SC_HID_APIManager::s_hidClosed = getsym("prHIDDeviceClosed"); // send back that device was closed
 }
 
-#else // no SDL HID
+#else // no HID API
 
 void initHIDAPIPrimitives()
 {
