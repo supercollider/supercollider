@@ -49,6 +49,7 @@ struct hid_dev_desc;
 typedef void (*hid_element_callback) ( struct hid_device_element *element, void *user_data);
 // typedef void (*hid_descriptor_callback) ( struct hid_device_descriptor *descriptor, void *user_data);
 typedef void (*hid_descriptor_callback) ( struct hid_dev_desc *descriptor, void *user_data);
+typedef void (*hid_device_readerror_callback) ( struct hid_dev_desc *descriptor, void *user_data);
 
 // typedef struct _hid_element_cb {
 //     hid_element_callback cb;    
@@ -76,6 +77,8 @@ struct hid_dev_desc {
     void *_element_data;
     hid_descriptor_callback _descriptor_callback;
     void *_descriptor_data;
+    hid_device_readerror_callback _readerror_callback;
+    void *_readerror_data;
 };
 
 struct hid_device_element {
@@ -175,9 +178,13 @@ void hid_free_collection( struct hid_device_collection * coll );
 struct hid_device_element * hid_new_element();
 void hid_free_element( struct hid_device_element * ele);
 
+
 // void hid_descriptor_init( struct hid_device_descriptor * devd);
 
+void hid_throw_readerror( struct hid_dev_desc * devd );
+
 void hid_set_descriptor_callback(  struct hid_dev_desc * devd, hid_descriptor_callback cb, void *user_data );
+void hid_set_readerror_callback(  struct hid_dev_desc * devd, hid_device_readerror_callback cb, void *user_data );
 void hid_set_element_callback(  struct hid_dev_desc * devd, hid_element_callback cb, void *user_data );
 
 int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc * device_desc );

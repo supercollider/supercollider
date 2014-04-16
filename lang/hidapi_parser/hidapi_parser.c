@@ -223,6 +223,11 @@ void hid_set_descriptor_callback( struct hid_dev_desc * devd, hid_descriptor_cal
     devd->_descriptor_data = user_data;
 }
 
+void hid_set_readerror_callback( struct hid_dev_desc * devd, hid_descriptor_callback cb, void *user_data ){
+    devd->_readerror_callback = cb;
+    devd->_readerror_data = user_data;
+}
+
 void hid_set_element_callback( struct hid_dev_desc * devd, hid_element_callback cb, void *user_data ){
     devd->_element_callback = cb;
     devd->_element_data = user_data;
@@ -939,6 +944,9 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
   return 0;
 }
 
+void hid_throw_readerror( struct hid_dev_desc * devd ){
+  devd->_readerror_callback( devd, devd->_readerror_data );
+}
 
 int hid_send_output_report( struct hid_dev_desc * devd, int reportid ){
   char * buf;
