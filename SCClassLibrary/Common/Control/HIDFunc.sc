@@ -283,7 +283,11 @@ HIDFunc : AbstractResponderFunc {
         };
 
         if ( deviceInfo.notNil ){
-            deviceTemplate = HIDProto.newFromDict( deviceInfo );
+            if ( deviceInfo.isKindOf( HIDProto ) ){
+                deviceTemplate = deviceInfo;
+            }{
+                deviceTemplate = HIDProto.newFromDict( deviceInfo );
+            }
         };
 
         argTemplate = argtemplate ? argTemplate;
@@ -308,7 +312,11 @@ HIDFunc : AbstractResponderFunc {
             deviceTemplate = HIDProto.newProduct( devUsage );
         };
         if ( deviceInfo.notNil ){
-            deviceTemplate = HIDProto.newFromDict( deviceInfo );
+            if ( deviceInfo.isKindOf( HIDProto ) ){
+                deviceTemplate = deviceInfo;
+            }{
+                deviceTemplate = HIDProto.newFromDict( deviceInfo );
+            }
         };
 
         argTemplate = argtemplate ? argTemplate;
@@ -329,7 +337,11 @@ HIDFunc : AbstractResponderFunc {
             deviceTemplate = HIDProto.newProduct( devUsage );
         };
         if ( deviceInfo.notNil ){
-            deviceTemplate = HIDProto.newFromDict( deviceInfo );
+                        if ( deviceInfo.isKindOf( HIDProto ) ){
+                deviceTemplate = deviceInfo;
+            }{
+                deviceTemplate = HIDProto.newFromDict( deviceInfo );
+            }
         };
         dispatcher = argdisp ? dispatcher;
 
@@ -347,7 +359,11 @@ HIDFunc : AbstractResponderFunc {
         elementTemplate = protoElement;
 
         if ( deviceInfo.notNil ){
-            deviceTemplate = HIDProto.newFromDict( deviceInfo );
+            if ( deviceInfo.isKindOf( HIDProto ) ){
+                deviceTemplate = deviceInfo;
+            }{
+                deviceTemplate = HIDProto.newFromDict( deviceInfo );
+            }
         };
 
         argTemplate = argtemplate ? argTemplate;
@@ -376,7 +392,11 @@ HIDFunc : AbstractResponderFunc {
         };
 
         if ( deviceInfo.notNil ){
-            deviceTemplate = HIDProto.newFromDict( deviceInfo );
+            if ( deviceInfo.isKindOf( HIDProto ) ){
+                deviceTemplate = deviceInfo;
+            }{
+                deviceTemplate = HIDProto.newFromDict( deviceInfo );
+            }
         };
 
 		dispatcher = argdisp ? dispatcher;
@@ -398,6 +418,43 @@ HIDdef : HIDFunc {
 	*initClass {
 		all = IdentityDictionary.new;
 	}
+
+    *new{ arg key, func;
+        var res = all.at(key), wasDisabled;
+		if(res.isNil) {
+            ^nil;
+		} {
+			if(func.notNil) {
+				wasDisabled = res.enabled.not;
+				res.disable;
+				try {
+                    switch( res.type,
+                        \usage,
+                        {
+                            res.initUsage(func, res.elUsage, res.devUsage, res.deviceTemplate, res.argTemplate, res.argTemplateType ? \rawValue, res.dispatcher ? defaultDispatchers[\usage]);
+                        },
+                        \usageID, {
+                            res.initUsageID(func, res.elUsage, res.elementTemplate.usagePage, res.deviceUsage, res.deviceTemplate, res.argTemplate, res.argTemplateType ? \rawValue, res.dispatcher ? defaultDispatchers[ \usageID ])
+                        },
+                        \device, {
+                            res.initDevice(func, res.elUsage, res.devUsage, res.deviceTemplate, res.argTemplate, res.argTemplateType ? \rawValue, res.dispatcher ? defaultDispatchers[ \device ])
+                        },
+                        \proto, {
+                            res.initProtoElement(func, res.elementTemplate, res.deviceTemplate, res.argTemplate, res.argTemplateType ? \rawValue, res.dispatcher ? defaultDispatchers[ \proto ]);
+                        },
+                        \element, {
+                            res.initElement(func, res.elUsage, res.devUsage, res.deviceTemplate, res.argTemplate, res.argTemplateType ? \rawValue, res.dispatcher ? defaultDispatchers[ \element ]);
+                        }
+                    );
+					if(wasDisabled, { res.disable; });
+				} {|err|
+					res.free;
+					err.throw;
+				}
+			}
+		}
+		^res
+    }
 
     *usage { arg key, func, elUsageName, devUsageName, deviceInfo, argTemplate, argTemplateType,  dispatcher;
         var res = all.at(key), wasDisabled;
