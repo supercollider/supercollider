@@ -77,7 +77,7 @@ HID {
 	*findAvailable{
 		var devlist;
         // joyAxisSpec = Spec.add( \sdlJoyAxis, [ -32768, 32767, \linear, 1].asSpec );
-		if ( running.not ){ this.start }; // start eventloop if not yet running
+		if ( running.not ){ this.initializeHID }; // start eventloop if not yet running
 		devlist = this.prbuildDeviceList;
 		devlist.postln;
 		if ( devlist.isKindOf( Array ) ){
@@ -141,15 +141,15 @@ HID {
         ^thisone.open;
     }
 
-	*start{
-		this.prStart;
+	*initializeHID{
+		this.prInitHID;
 		running = true;
-		ShutDown.add( {this.stop} );
+		ShutDown.add( {this.closeAll} );
 	}
 
-	*stop{
+	*closeAll{
         openDevices.do{ |it| it.close };
-		this.prStop;
+		this.prCloseAll;
 		running = false;
 	}
 
@@ -176,13 +176,13 @@ HID {
     }
 
 /// primitives called:
-	*prStart{
-		_HID_API_Start;
+	*prInitHID{
+		_HID_API_Initialize;
 		^this.primitiveFailed
 	}
 
-	*prStop{
-		_HID_API_Stop;
+	*prCloseAll{
+		_HID_API_CloseAll;
 		^this.primitiveFailed
 	}
 
@@ -246,7 +246,6 @@ HID {
 
 
 // coming from the primitives:
-    /*
     *prHIDDeviceClosed{ |devid|
 		openDevices.at( devid ).closeAction.value;
 		if ( debug ){
@@ -254,7 +253,7 @@ HID {
 		};
         openDevices.removeAt( devid );
 	}
-    */
+
 
     *prHIDElementData { | devid, elid, page, usage, rawValue, value, physValue, arrayValue |
         HID.doPrAction( value, physValue, rawValue, arrayValue, usage, page, elid, devid );
