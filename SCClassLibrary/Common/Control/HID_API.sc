@@ -28,6 +28,8 @@ HID {
 	var <>closeAction;
 	var <>debug = false;
 
+    var <isOpen = false;
+
 
     *addRecvFunc{ |function|
         if ( prAction.isNil ){
@@ -76,18 +78,17 @@ HID {
 
 	*findAvailable{
 		var devlist;
-        // joyAxisSpec = Spec.add( \sdlJoyAxis, [ -32768, 32767, \linear, 1].asSpec );
 		if ( running.not ){ this.initializeHID }; // start eventloop if not yet running
 		devlist = this.prbuildDeviceList;
-		devlist.postln;
 		if ( devlist.isKindOf( Array ) ){
 			available = IdentityDictionary.new;
 			devlist.do{ |it,i|
                 available.put( i, HIDInfo.new( *it ) );
 			}{ // no devices found
-				"no HID devices found".postln;
+				"HID: no devices found".postln;
 			}
-		}
+		};
+        "HID: found % devices\n".postf( devlist.size );
         ^available
 	}
 
@@ -237,17 +238,16 @@ HID {
 	}
 
     *deviceClosed{ |devid|
-		openDevices.at( devid ).closeAction.value;
+		openDevices.at( devid ).prDeviceClosed;
 		if ( debug ){
             "HID device % closed\n".postf( devid );
 		};
         openDevices.removeAt( devid );
 	}
 
-
 // coming from the primitives:
     *prHIDDeviceClosed{ |devid|
-		openDevices.at( devid ).closeAction.value;
+		openDevices.at( devid ).prDeviceClosed;
 		if ( debug ){
             "HID device % closed\n".postf( devid );
 		};
@@ -295,6 +295,7 @@ HID {
 	}
 
 	init{ |i|
+        isOpen = true;
 		id = i;
         elements = IdentityDictionary.new;
         collections = IdentityDictionary.new;
@@ -410,6 +411,11 @@ HID {
             HID.deviceClosed( id ); // call callback function
         }
 	}
+
+    prDeviceClosed{
+        closeAction.value;
+        isOpen = false;
+    }
 
     postCollections{
         this.collections.sortedKeysValuesDo{ |k,v| v.postCollection; };
