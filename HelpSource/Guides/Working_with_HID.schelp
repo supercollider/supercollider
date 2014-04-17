@@ -61,6 +61,8 @@ If you are using multiple of the same devices, you may want to adjust your setup
 
 NOTE:: if you have trouble opening a device, e.g. when you get the message code:: ERROR: HID: Could not open device::, please check the LINK::Guides/HID_permissions:: ::
 
+NOTE:: on OSX the internal devices of laptops are somewhat messed up - they show up multiple times and do not have unique paths, this makes it hard to open a specific one of them.::
+
 You can always check which devices have already been opened by SuperCollider with
 
 code:: HID.openDevices; ::
@@ -183,3 +185,33 @@ HIDdef.usage( \freq, { |value| Ndef( \sinewave ).set( \freq, ~freqRange.map( val
 HIDdef.usage( \amp, { |value| Ndef( \sinewave ).set( \amp, value ); }, \Y );
 ::
 
+section:: Finding a device automatically again after it is detached
+
+code::
+(
+Tdef( 'tryOpenHID' , {
+   var keepLooking = true;
+   while ( { keepLooking } ){
+      if ( ~hid.notNil ){
+         if ( ~hid.isOpen ){
+            keepLooking = false;
+         }
+      };
+      if ( keepLooking ){
+         HID.findAvailable;
+         if ( HID.findBy(1103, 53251).size > 0 ){
+            ~hid = HID.open( 1103, 53251 );
+            ~hid.closeAction = {
+                "device closed".postln;
+                Tdef( \tryOpenHID ).reset.play;
+            };
+            keepLooking = false;
+         }{
+            3.0.wait;
+         }
+      }
+   }
+} );
+);
+Tdef( 'tryOpenHID' ).play;
+::
