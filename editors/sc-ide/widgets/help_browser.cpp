@@ -404,6 +404,11 @@ bool HelpBrowserFindBox::event( QEvent * event )
             event->accept();
             return true;
         }
+        if (kevent->key() == Qt::Key_W && (kevent->modifiers() & Qt::CTRL)) {
+            MainWindow::instance()->helpBrowserDocklet()->close();
+            event->accept();
+            return true;
+        }
     }
     case QEvent::KeyPress:
     {
