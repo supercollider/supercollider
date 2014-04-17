@@ -29,7 +29,7 @@ See LINK::Guides/Working_with_HID:: for a full introduction.
 
 CLASSMETHODS::
 
-PRIVATE:: doPrAction, prStart, prStop, prOpenDevice, prCloseDevice, prGetDeviceInfo, prGetNumberOfCollections, prGetCollectionInfo, prGetNumberOfElements, prGetElementInfo, prSetElementOutput, prSetElementRepeat, prbuildDeviceList, deviceClosed, prHIDElementData, prHIDDeviceData, basicNew, mergeUsageDict, removeUsageDict
+PRIVATE:: doPrAction, prInitHID, prCloseAll, prOpenDevice, prCloseDevice, prHIDDeviceClosed, prGetDeviceInfo, prGetNumberOfCollections, prGetCollectionInfo, prGetNumberOfElements, prGetElementInfo, prSetElementOutput, prSetElementRepeat, prbuildDeviceList, deviceClosed, prHIDElementData, prHIDDeviceData, basicNew, mergeUsageDict, removeUsageDict
 
 SUBSECTION:: Finding devices
 
@@ -193,7 +193,7 @@ SUBSECTION:: Managing the HID subsystem
 
 The following methods are used internally to initialize and finalize the HID subsystem, but in rare cases you may wish to manage these methods manually.
 
-METHOD:: start
+METHOD:: initializeHID
 Initialize the HID subsystem, this method is called automatically when calling the method findAvailable.
 
 
@@ -201,13 +201,13 @@ METHOD:: running
 Indicates whether or not the HID subsystem is running.
 
 
-METHOD:: stop
+METHOD:: closeAll
 This method is called automatically upon Shutdown, if the HID subsystem was initialized. It can be stopped manually, in order to save system resources. This method will close all opened HID devices.
 
 
 INSTANCEMETHODS::
 
-PRIVATE::init, getInfo, getElements, getElementInfo, getCollections, getCollectionInfo, getUsages, id, valueAction, valueDeviceAction, info_
+PRIVATE::init, getInfo, getElements, getElementInfo, getCollections, getCollectionInfo, getUsages, id, valueAction, valueDeviceAction, info_, prDeviceClosed
 
 
 METHOD:: elements
@@ -236,6 +236,11 @@ returns:: the HIDElement
 
 METHOD:: close
 Close the HID device, closing a device is asynchronous. You can set a closeAction (see below), which will be performed when the device closes.
+
+METHOD:: isOpen
+Returns true if the device is open, false if the device was closed.
+
+returns: a Boolean
 
 
 METHOD:: collections
