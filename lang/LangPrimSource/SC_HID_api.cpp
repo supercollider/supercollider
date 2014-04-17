@@ -88,7 +88,6 @@ public:
 			return;
 
 		boost::thread * deviceThread = threads.create_thread( [=] {
-			int missedCount = 0;
 			while( true ) {
 				const bool interrupted = boost::this_thread::interruption_requested();
 
@@ -100,16 +99,9 @@ public:
 				int res = hid_read_timeout( desc->device, buf, sizeof(buf), pollTime);
 				if ( res > 0 ){
 				  hid_parse_input_report( buf, res, desc );
-				  missedCount = 0;
-				} else {
-				  missedCount++;
-				  if ( missedCount > 10000 ){
-				    std::printf("THROWING READ ERROR device %p, %i, %i\n", desc->device, res, missedCount );
-				    hid_throw_readerror( desc );
+				} else if ( res < 0 ){
+				      hid_throw_readerror( desc );
 				    break;
-				  } else {
-				    std::printf("not being able to read from device %p, %i, %i\n", desc->device, res, missedCount );
-				  }
 				}
 
 				if (interrupted)
@@ -235,6 +227,7 @@ void SC_HID_APIManager::deviceRepetitiveReadError( int id, struct hid_dev_desc *
 	deviceClosed( id, dd, mShouldBeRunning );
 //	mThreads.closeDevice( dd );
 	hid_close_device( dd );
+	hiddevices.erase( id );
 }
 
 
@@ -295,6 +288,7 @@ int SC_HID_APIManager::open_device( int vendor, int product, char* serial_number
 		//     hid_set_descriptor_callback( newdevdesc->descriptor, (hid_descriptor_callback) SC_HID_APIManager::hid_descriptor_cb, &newdevdesc->index );
 		//     hid_set_element_callback( newdevdesc->descriptor, (hid_element_callback) SC_HID_APIManager::hid_element_cb, &newdevdesc->index );
 		hid_set_descriptor_callback( newdevdesc, (hid_descriptor_callback) hid_descriptor_cb, &newdevdesc->index );
+		hid_set_readerror_callback( newdevdesc, (hid_device_readerror_callback) hid_readerror_cb, &newdevdesc->index );
 		hid_set_element_callback( newdevdesc, (hid_element_callback) hid_element_cb, &newdevdesc->index );
 
 		number_of_hids++;
