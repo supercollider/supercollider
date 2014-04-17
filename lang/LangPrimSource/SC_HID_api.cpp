@@ -257,6 +257,7 @@ void SC_HID_APIManager::deviceRepetitiveReadError( int id, struct hid_dev_desc *
 	deviceClosed( id, dd, mShouldBeRunning );
 //	mThreads.closeDevice( dd );
 	hid_close_device( dd );
+	hiddevices.erase( id );
 }
 
 
@@ -315,6 +316,7 @@ int SC_HID_APIManager::open_device( int vendor, int product, char* serial_number
 		//     hid_set_descriptor_callback( newdevdesc->descriptor, (hid_descriptor_callback) SC_HID_APIManager::hid_descriptor_cb, &newdevdesc->index );
 		//     hid_set_element_callback( newdevdesc->descriptor, (hid_element_callback) SC_HID_APIManager::hid_element_cb, &newdevdesc->index );
 		hid_set_descriptor_callback( newdevdesc, (hid_descriptor_callback) hid_descriptor_cb, &newdevdesc->index );
+		hid_set_readerror_callback( newdevdesc, (hid_device_readerror_callback) hid_readerror_cb, &newdevdesc->index );
 		hid_set_element_callback( newdevdesc, (hid_element_callback) hid_element_cb, &newdevdesc->index );
 
 		number_of_hids++;
