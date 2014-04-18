@@ -248,7 +248,7 @@ EmbedOnce : Stream  {
 	next { arg inval;
 		var val = stream.next(inval);
 		if(val.isNil) { // embed once, then release memory
-			cleanup.exit(inval);
+			cleanup !? { cleanup.exit(inval) };
 			stream = nil;
 			cleanup = nil;
 		} {

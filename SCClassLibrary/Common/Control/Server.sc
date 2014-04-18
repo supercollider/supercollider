@@ -796,10 +796,8 @@ Server {
 		if(userSpecifiedClientID.not , {
 			doneOSCFunc = OSCFunc({|msg|
 				if(flag && { msg[2] != clientID }, {
-					var newID;
-					newID = msg[2];
-					if(newID.notNil, {
-						clientID = newID;
+					if(msg[2].notNil, {
+						clientID = msg[2];
 						this.newAllocators;
 					})
 				});

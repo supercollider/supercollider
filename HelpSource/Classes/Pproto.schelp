@@ -7,7 +7,7 @@ description::
 
 Pproto uses the strong::makeFunction:: to allocate resources (buffers, buses, groups) and create a protoEvent that makes those resources available to a pattern. It is fully compatible with non-realtime synthesis using strong::render::.
 
-The strong::makeFunction:: "makes" the protoEvent (i.e. protoEvent is code::currentEnvironment::). Typically, it defines and yields a sequence of events that create the needed resources using the following eventTypes:
+The strong::makeFunction:: "makes" the protoEvent (i.e. protoEvent is code::currentEnvironment::). Typically, it defines and yields a sequence of events that create the needed resources using the following link::Overviews/Event_types:::
 
 definitionList::
 ## \allocRead || load a file from ~path, starting at ~firstFileFrame, reading ~numFrames sample frames
@@ -20,6 +20,7 @@ definitionList::
 ## \audioBus || allocate ~channels consecutive audio buses
 ## \controlBus || allocate ~channels consecutive control buses
 ## \on || create a synth
+
 ::
 
 note::
@@ -37,56 +38,9 @@ A strong::cleanupFunction:: that deallocates resources when the pattern ends or 
 
 Examples::
 
-subsection::Example 0, using an effect with parallel control.
-
-code::
-(
-SynthDef(\echo, { arg out=0, maxdtime=0.2, dtime=0.2, decay=2, gate=1;
-	var env, in;
-	env = Linen.kr(gate, 0.05, 1, 5, 2);
-	in = In.ar(out, 2);
-	XOut.ar(out, env, CombL.ar(in * env, maxdtime, Lag.kr(dtime, 4), decay, 1, in));
-}, [\ir, \ir, 0.1, 0.1, 0]).add;
-
-SynthDef(\fm, { arg out=0, freq, index, decay=2, gate=1;
-	var env, in;
-	env = Linen.kr(gate, 0.05, 1, 5, 2);
-	in = In.ar(out, 2);
-	XOut.ar(out, env, SinOsc.ar(freq, in * index));
-}).add;
-
-Pproto({
-	~fsynth = ( type: \on, instrument: \fm, freq: 4, index: 1, addAction: 1, db: -30).yield;
-	~fControl = [\set, ~fsynth[\id], ~fsynth[\msgFunc] ];
-
-	~synth = ( type: \on, instrument: \echo, addAction: 1).yield;
-	~sControl = [\set, ~synth[\id], ~synth[\msgFunc] ];
-
-	}, [
-	Pbind(*[
-		#[type, id, msgFunc],	Pkey(\fControl),
-
-		freq:	Pseg([0,1], 10).linexp(0,1, 0.1, 1000),
-		index:	Pseg([0,1], 10).linexp(0,1, 0.1, 100),
-		dur:	0.1
-	]),
-	Pbind(*[
-		#[type, id, msgFunc],	Pkey(\sControl),
-
-		dtime:	Pwhite(0,0.2),
-		decay:	Pwhite(0.1,2),
-		dur:	1
-	]),
-	Pbind(*[
-		instrument: \default,
-		freq: Pwhite(1,16) * 100,
-		dur: 0.2,
-		db:	0
-	])
-	]
-).play
-)
+note::The syntax used for patterns like Pbind and Pmono is a little bit different for making the code more readable. The difference has nothing to do with Pproto. This is the same: code::Pbind(\freq, 700, \amp, 0.1):: and code::Pbind(*[freq: 700, amp: 0.1])::
 ::
+
 
 subsection::Example 1, loading and granulating a sound file.
 
@@ -106,7 +60,6 @@ SynthDef(\help_playbuf, { | out=0, bufnum = 0, rate = 1, startPos = 0, amp = 0.1
 a = Pproto({
 	~newgroup = (type: \group).yield;
 	~sf1 = SoundFile(Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff").asEvent.yield;
-//	(type: \on).yield
 },
 	Pbind(*[
 		instrument:	\help_playbuf,
@@ -204,4 +157,56 @@ c.play
 //c.render("sounds/test.aif", 40)
 //SoundFile("sounds/test.aif").play
 //
+::
+
+subsection::Example 4, using an effect with parallel control.
+
+code::
+(
+SynthDef(\echo, { arg out=0, maxdtime=0.2, dtime=0.2, decay=2, gate=1;
+	var env, in;
+	env = Linen.kr(gate, 0.05, 1, 5, 2);
+	in = In.ar(out, 2);
+	XOut.ar(out, env, CombL.ar(in * env, maxdtime, Lag.kr(dtime, 4), decay, 1, in));
+}, [\ir, \ir, 0.1, 0.1, 0]).add;
+
+SynthDef(\fm, { arg out=0, freq, index, decay=2, gate=1;
+	var env, in;
+	env = Linen.kr(gate, 0.05, 1, 5, 2);
+	in = In.ar(out, 2);
+	XOut.ar(out, env, SinOsc.ar(freq, in * index));
+}).add;
+
+Pproto({
+	// start two effect synths (just switching them on) and store the parameters in the environment
+	~fsynth = (type: \on, instrument: \fm, freq: 4, index: 1, addAction: 1, db: -30).yield;
+	~fControl = [\set, ~fsynth[\id], ~fsynth[\msgFunc] ];
+
+	~synth = (type: \on, instrument: \echo, addAction: 1).yield;
+	~sControl = [\set, ~synth[\id], ~synth[\msgFunc] ];
+
+	}, [
+	Pbind(*[
+		#[type, id, msgFunc],	Pkey(\fControl), // fetch the parameters from the environment
+
+		freq:	Pseg([0,1], 10).linexp(0,1, 0.1, 1000),
+		index:	Pseg([0,1], 10).linexp(0,1, 0.1, 100),
+		dur:	0.1
+	]),
+	Pbind(*[
+		#[type, id, msgFunc],	Pkey(\sControl), // fetch the parameters from the environment
+
+		dtime:	Pwhite(0,0.2),
+		decay:	Pwhite(0.1,2),
+		dur:	1
+	]),
+	Pbind(*[
+		instrument: \default,
+		freq: Pwhite(1,16) * 100,
+		dur: 0.2,
+		db:	0
+	])
+	]
+).play
+)
 ::

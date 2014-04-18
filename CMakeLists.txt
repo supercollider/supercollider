@@ -250,6 +250,21 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	add_definitions(-diag-disable 279) # controlling expression is constant
 endif()
 
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+  foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+    set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
+    set(${flag} "${${flag}} /wd4102") # unreferenced label
+    set(${flag} "${${flag}} /wd4267") # conversion from 'size_t' to 'int', possible loss of data
+    set(${flag} "${${flag}} /wd4244") # conversion from '__int64' to 'int', possible loss of data
+    set(${flag} "${${flag}} /wd4305") # '=' : truncation from 'double' to 'float'
+    set(${flag} "${${flag}} /wd4309") # '=' : truncation of constant value
+    set(${flag} "${${flag}} /wd4800") # forcing value to bool 'true' or 'false' (performance warning)
+    set(${flag} "${${flag}} /wd4996") # The POSIX name for this item is deprecated.
+  endforeach()
+
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
+endif()
+
 if (SC_MEMORY_DEBUGGING)
 	add_definitions(-DDISABLE_MEMORY_POOLS)
 	add_definitions(-DENABLE_MEMORY_CHECKS)
