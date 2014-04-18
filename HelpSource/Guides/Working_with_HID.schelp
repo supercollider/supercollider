@@ -201,11 +201,15 @@ Tdef( 'tryOpenHID' , {
          HID.findAvailable;
          if ( HID.findBy(1103, 53251).size > 0 ){
             ~hid = HID.open( 1103, 53251 );
-            ~hid.closeAction = {
-                "device closed".postln;
-                Tdef( \tryOpenHID ).reset.play;
+            if ( ~hid.notNil ){
+               ~hid.closeAction = {
+                    "device closed".postln;
+                    Tdef( \tryOpenHID ).reset.play;
+               };
+               keepLooking = false;
+            }{
+               3.0.wait;
             };
-            keepLooking = false;
          }{
             3.0.wait;
          }
