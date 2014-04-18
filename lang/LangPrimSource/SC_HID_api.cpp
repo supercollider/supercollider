@@ -150,6 +150,10 @@ public:
 					return;
 				}
 			}
+			std::lock_guard<std::mutex> lock_(guard);
+                        auto it = map.find(desc);
+                        threads.remove_thread(it->second);
+                        map.erase(it);
 		});
 
 		map.insert( std::make_pair(desc, deviceThread) );
@@ -157,12 +161,15 @@ public:
 
 	void closeDevice(hid_dev_desc * desc)
 	{
-		trace("close device \n");
-		std::lock_guard<std::mutex> lock(guard);
-		auto it = map.find(desc);
-		if (it == map.end()) {
-			trace("device already closed %p\n", desc->device);
-			return;
+		boost::thread * thread;
+		{
+			std::lock_guard<std::mutex> lock(guard);
+			auto it = map.find(desc);
+			if (it == map.end()) {
+				std::printf("device already closed %p\n", desc->device);
+				return;
+			}
+			thread = it->second;
 		}
 		map.erase(it);
 
