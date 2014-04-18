@@ -15,6 +15,10 @@ HIDProto{
 
     var <shouldMatch;
 
+    *new{
+        ^super.new.init;
+    }
+
     *newType{ |uName,pName| // from HIDFunc.usage
         ^super.new.init.addTypeMatch(uName,pName);
     }
@@ -63,17 +67,22 @@ HIDProto{
     matches{ |hid|
         var matches = true; // check all until a match is false
         var keysToMatch, keyMatches;
-        shouldMatch.do{ |key|
+        var newShouldMatch;
+        shouldMatch.copy.do{ |key|
             if ( key != \id ){
                 keysToMatch = this.perform( key );
-                if ( keysToMatch.isKindOf( Array ) ){
-                    keyMatches = false;
-                    keysToMatch.do{ |it|
-                        keyMatches = keyMatches or: ( it == hid.info.perform( key ) );
-                    };
-                    matches = matches and: keyMatches;
-                }{ // not an array
-                    matches = matches and: ( keysToMatch == hid.info.perform( key ) );
+                if ( keysToMatch.isNil ){
+                    shouldMatch = shouldMatch.reject{ |it| it == key };
+                }{
+                    if ( keysToMatch.isKindOf( Array ) ){
+                        keyMatches = false;
+                        keysToMatch.do{ |it|
+                            keyMatches = keyMatches or: ( it == hid.info.perform( key ) );
+                        };
+                        matches = matches and: keyMatches;
+                    }{ // not an array
+                        matches = matches and: ( keysToMatch == hid.info.perform( key ) );
+                    }
                 }
             }{
                 matches = matches and: ( this.id.matchItem( hid.id ) );
@@ -190,21 +199,24 @@ HIDElementProto{
 
     addDictionaryMatch{ |dict|
         dict.keysValuesArrayDo{ |key,val|
-            // shouldMatch.add( key );
             this.performList( (key ++ "_").asSymbol, [ val ] );
         }
     }
 
     matches{ |ele|
         var matches = true; // check all until a match is false
-        shouldMatch.do{ |key|
-            switch( key,
-                \usageMin, { matches = matches and: ( ele.usage >= this.usageMin ) },
-                \usageMax, { matches = matches and: ( ele.usage <= this.usageMax ) },
-                { // default
-                    matches = matches and: ( this.perform( key ).matchItem( ele.perform( key ) ) )
-                }
-            );
+        shouldMatch.copy.do{ |key|
+            this.perform( key ).isNil{
+                shouldMatch = shouldMatch.reject{ |it| it == key };
+            }{
+                switch( key,
+                    \usageMin, { matches = matches and: ( ele.usage >= this.usageMin ) },
+                    \usageMax, { matches = matches and: ( ele.usage <= this.usageMax ) },
+                    { // default
+                        matches = matches and: ( this.perform( key ).matchItem( ele.perform( key ) ) )
+                    }
+                );
+            };
         };
         ^matches;
     }
