@@ -107,6 +107,10 @@ public:
 				if (interrupted)
 					break;
 			}
+			std::lock_guard<std::mutex> lock_(guard);
+                        auto it = map.find(desc);
+                        threads.remove_thread(it->second);
+                        map.erase(it);
 		});
 
 		map.insert( std::make_pair(desc, deviceThread) );
@@ -122,8 +126,6 @@ public:
 				std::printf("device already closed %p\n", desc->device);
 				return;
 			}
-			map.erase(it);
-
 			thread = it->second;
 		}
 		thread->interrupt();
