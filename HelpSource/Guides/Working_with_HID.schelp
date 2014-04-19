@@ -192,17 +192,17 @@ code::
 Tdef( 'tryOpenHID' , {
    var keepLooking = true;
    while ( { keepLooking } ){
-      if ( ~hid.notNil ){
-         if ( ~hid.isOpen ){
+      if ( ~myhid.notNil ){
+         if ( ~myhid.isOpen ){
             keepLooking = false;
          }
       };
       if ( keepLooking ){
          HID.findAvailable;
          if ( HID.findBy(1103, 53251).size > 0 ){
-            ~hid = HID.open( 1103, 53251 );
-            if ( ~hid.notNil ){
-               ~hid.closeAction = {
+            ~myhid = HID.open( 1103, 53251 );
+            if ( ~myhid.notNil ){
+               ~myhid.closeAction = {
                     "device closed".postln;
                     Tdef( \tryOpenHID ).reset.play;
                };
