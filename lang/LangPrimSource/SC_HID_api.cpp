@@ -683,12 +683,12 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
 			mystring = emptyString;
 		}
 
-		if (mystring != emptyString)
-			free((void*)mystring);
-
 		PyrString *dev_serial = newPyrString(g->gc, mystring, 0, true );
 		SetObject(devInfo->slots+devInfo->size++, dev_serial);
 		g->gc->GCWrite(devInfo, (PyrObject*) dev_serial);
+
+		if (mystring != emptyString)
+			free((void*)mystring);
 
 		if ( cur_dev->manufacturer_string != NULL ){
 			mystring = wchar_to_char( cur_dev->manufacturer_string );
