@@ -3,6 +3,6 @@ if(WIN32)
 endif()
 
 # NB freebsd currently OK to ride on linux for this subdir. eventually may need separating.
-if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR CMAKE_SYSTEM_NAME MATCHES "NetBSD")
 	add_subdirectory(linux)
 endif()
