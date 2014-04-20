@@ -184,8 +184,10 @@ BusPlug : AbstractFunction {
 			this.defineBus(rate, numChannels);
 			^true
 		};
-		if(reshaping == \expanding and: { numChannels > bus.numChannels  }) {
-			this.defineBus(rate, numChannels);
+		if(reshaping == \expanding) {
+			if(numChannels > bus.numChannels) {
+				this.defineBus(rate, numChannels);
+			};
 			^true
 		};
 		Error("reshaping '%' not implemented".format(reshaping)).throw;
