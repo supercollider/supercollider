@@ -6,9 +6,13 @@ Font {
 
 
 	*initClass {
-		defaultSansFace = this.prDefaultFamilyForStyle(0);
-		defaultSerifFace = this.prDefaultFamilyForStyle(1);
-		defaultMonoFace = this.prDefaultFamilyForStyle(2);
+		try{
+			defaultSansFace = this.prDefaultFamilyForStyle(0);
+			defaultSerifFace = this.prDefaultFamilyForStyle(1);
+			defaultMonoFace = this.prDefaultFamilyForStyle(2);
+		}{
+			"WARNING: Qt font initialisation failed".postln;
+		}
 	}
 
 	*new { arg name, size, bold = false, italic = false, usePointSize = false;
