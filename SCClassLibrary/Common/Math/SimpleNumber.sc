@@ -307,7 +307,7 @@ SimpleNumber : Number {
 				if (this >= inMax, { ^outMax });
 			}
 		);
-		if (this >= inCenter) {
+		^if (this >= inCenter) {
 			this.explin(inCenter, inMax, outCenter, outMax, \none);
 		} {
 			this.explin(inMin, inCenter, outMin, outCenter, \none);
