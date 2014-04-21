@@ -5,8 +5,13 @@ QtGUI {
 	*initClass {
 		Class.initClassTree( GUI );
 		GUI.add( this );
-		this.style = "Plastique";
-		this.palette = QPalette.light;
+		try{
+			this.style = "Plastique";
+			this.palette = QPalette.light;
+                }{
+                        "WARNING: Qt style initialisation failed".postln;
+                }
+
 	}
 
 	*id { ^\qt }
