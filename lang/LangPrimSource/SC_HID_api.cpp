@@ -126,26 +126,7 @@ public:
 					hid_parse_input_report( buf, res, desc );
 				} else if (res == -1) {
 					trace("device thread interrupted \n");
-					//hid_throw_readerror( desc ); // TODO: review whether to take this approach rather than calling lang from thread here
-
-					int status = lockLanguageOrQuit(shouldBeRunning);
-					if (status == EINTR)
-						return;
-					if (status) {
-						trace("error when locking language (%d)\n", status);
-						return;
-					}
-					if (compiledOK) {
-						VMGlobals* g = gMainVMGlobals;
-						g->canCallOS = false;
-						//     ++g->sp; SetObject(g->sp, m_obj);
-						++g->sp; SetObject(g->sp, s_hidapi->u.classobj ); // set the class HID_API
-						++g->sp; SetInt(g->sp, desc->index );
-						runInterpreter(g, s_hidClosed, 2);
-						g->canCallOS = false;
-					}
-					gLangMutex.unlock();
-
+					hid_throw_readerror( desc );
 					trace("device thread closed device \n");
 					return;
 				}
@@ -171,9 +152,7 @@ public:
 			}
 			thread = it->second;
 		}
-		map.erase(it);
 
-		boost::thread * thread = it->second;
 		thread->detach();
 		hid_close_device( desc );
 		trace("close device: interrupted \n");
@@ -261,8 +240,7 @@ void SC_HID_APIManager::elementData( int id, struct hid_device_element * ele )
 
 void SC_HID_APIManager::deviceRepetitiveReadError( int id, struct hid_dev_desc * dd ){
 	deviceClosed( id, dd, mShouldBeRunning );
-	hid_close_device( dd );
-	hiddevices.erase( id );
+// 	hiddevices.erase( id );
 }
 
 
@@ -335,13 +313,8 @@ int SC_HID_APIManager::close_device( int joy_idx ){
 		return 1; // not a fatal error
 	} else {
 		mThreads.closeDevice(hidtoclose);
-		// deviceClosed( joy_idx, mShouldBeRunning ); // do not call from here, as this call comes from the language
-		hid_close_device( hidtoclose );
 		hiddevices.erase( joy_idx );
 	}
-
-	hiddevices.erase( joy_idx );
-	mThreads.closeDevice(hidtoclose);
 
 	return 1;
 }
@@ -431,7 +404,7 @@ void SC_HID_APIManager::deviceClosed( int joy_idx, struct hid_dev_desc * dd, std
 	if (status == EINTR)
 		return;
 	if (status) {
-		postfl("error when locking language (%d)\n", status);
+		trace("error when locking language (%d)\n", status);
 		return;
 	}
 	if (compiledOK) {
