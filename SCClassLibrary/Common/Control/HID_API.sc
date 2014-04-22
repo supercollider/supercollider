@@ -149,7 +149,6 @@ HID {
 	}
 
 	*closeAll{
-        openDevices.do{ |it| it.close };
 		this.prCloseAll;
 		running = false;
 	}
@@ -237,21 +236,15 @@ HID {
 		^this.primitiveFailed
 	}
 
-    *deviceClosed{ |devid|
-		openDevices.at( devid ).prDeviceClosed;
-		if ( debug ){
-            "HID device % closed\n".postf( devid );
-		};
-        openDevices.removeAt( devid );
-	}
-
 // coming from the primitives:
     *prHIDDeviceClosed{ |devid|
-		openDevices.at( devid ).prDeviceClosed;
-		if ( debug ){
-            "HID device % closed\n".postf( devid );
-		};
-        openDevices.removeAt( devid );
+        if ( openDevices.at( devid ).notNil ){
+            openDevices.at( devid ).prDeviceClosed;
+            if ( debug ){
+                "HID device % closed\n".postf( devid );
+            };
+            openDevices.removeAt( devid );
+        };
 	}
 
 
@@ -405,15 +398,17 @@ HID {
     // }
 
 	close{
-        "closing device".postln;
-        HID.removeUsageDict( this );
-        if ( HID.prCloseDevice( id ).asBoolean ){
-            HID.deviceClosed( id ); // call callback function
-        }
+        "HID: closing device %\n".postf( id );
+        isOpen = false;
+        HID.prCloseDevice( id );
 	}
 
     prDeviceClosed{
+        HID.removeUsageDict( this );
         closeAction.value;
+        if ( isOpen ){
+            this.close;
+        };
         isOpen = false;
     }
 
