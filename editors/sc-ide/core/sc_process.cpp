@@ -20,6 +20,7 @@
 
 #include <QCoreApplication>
 #include <QBuffer>
+#include <QTextDocumentFragment>
 
 #include "main.hpp"
 #include "main_window.hpp"
@@ -372,7 +373,7 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
     cursor.setPosition(position, QTextCursor::MoveAnchor);
     cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, charsAdded);
     
-    argList.append(QVariant(cursor.selectedText()));
+    argList.append(QVariant(cursor.selection().toPlainText()));
     
     try {
         QDataStream stream(mIpcSocket);
