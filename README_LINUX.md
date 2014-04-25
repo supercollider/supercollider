@@ -101,6 +101,7 @@ for building supercollider:
  - libreadline6-dev
  - libfftw3-dev
  - libxt-dev
+ - libudev-dev
  - libcwiid-dev (for wiimote support)
  - pkg-config
  - cmake
