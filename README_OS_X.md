@@ -217,10 +217,10 @@ headers and libraries. When using MacPorts, the paths are likely to be:
 `-DREADLINE_INCLUDE_DIR=/opt/local/include` 
 `-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib`
 
-For Homebrew the default locations are (end 2013):
+For Homebrew the default locations are (Apr 2014):
 
-`-DREADLINE_INCLUDE_DIR=/usr/local/Cellar/readline/6.2.4/include` 
-`-DREADLINE_LIBRARY=/usr/local/Cellar/readline/6.2.4/lib/libreadline.dylib`
+`-DREADLINE_INCLUDE_DIR=/usr/local/Cellar/readline/6.3.3/include` 
+`-DREADLINE_LIBRARY=/usr/local/Cellar/readline/6.3.3/lib/libreadline.dylib`
 
 So a full cmake configure command, specifying a build target and including readline
 (from MacPorts) would look like this:
