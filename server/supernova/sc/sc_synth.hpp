@@ -181,9 +181,11 @@ public:
     template <bool ControlBusIsAudio>
     void map_control_buses(const char * slot_name, int bus_index, int count)
     {
-        int slot_index = resolve_slot(slot_name);
+        int controls_per_slot;
+        int slot_index = resolve_slot_with_size(slot_name, controls_per_slot);
         if (slot_index == -1)
             return;
+        count = std::min(count, controls_per_slot);
         map_control_buses<ControlBusIsAudio>(slot_index, bus_index, count);
     }
 

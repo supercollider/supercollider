@@ -87,10 +87,25 @@ std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
 sc_synth_definition::sc_synth_definition(sc_synthdef const & sd):
     synth_definition(sd.name()), sc_synthdef(sd)
 {
-    typedef sc_synthdef::parameter_index_map_t::const_iterator iterator;
+    std::map<int, symbol> reversed_parameter_map;
+    for( auto const & elem : parameter_map)
+        reversed_parameter_map.insert( std::make_pair(elem.second, elem.first));
 
-    for (iterator it = parameter_map.begin(); it != parameter_map.end(); ++it)
-        slot_resolver::register_slot(it->first, it->second);
+    for (auto const & entry : parameter_map)
+    {
+        const symbol name           = entry.first;
+        const int32_t current_index = entry.second;
+
+        int controls_per_parameter = 1;
+
+        for(int32_t next_index = current_index + 1; next_index != parameter_count(); ++next_index) {
+            if (reversed_parameter_map.find(next_index) != reversed_parameter_map.end())
+                break;
+            controls_per_parameter += 1;
+        }
+
+        slot_resolver::register_slot(name, current_index, controls_per_parameter);
+    }
 }
 
 
