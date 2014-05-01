@@ -121,14 +121,14 @@ private slots:
 
 protected:
     virtual bool eventFilter(QObject *object, QEvent * event);
+    
+    QWidget *currentContainer() { return mToolBar->parentWidget(); }
 
 private:
     enum ContainerType {
         DockableContainer,
         WindowContainer
     };
-
-    QWidget *currentContainer() { return mToolBar->parentWidget(); }
 
     void setCurrentContainer( ContainerType );
 

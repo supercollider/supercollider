@@ -44,6 +44,7 @@ PostWindow::PostWindow(QWidget* parent):
     setReadOnly(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setFrameShape( QFrame::NoFrame );
+    autohide = true;
 
     viewport()->setAttribute( Qt::WA_MacNoClickThrough, true );
 
@@ -206,6 +207,7 @@ void PostWindow::post(const QString &text)
         }
     }
 
+    emit(textUpdated());
     if (scroll)
         emit(scrollToBottomRequest());
 }
@@ -321,6 +323,12 @@ void PostWindow::wheelEvent( QWheelEvent * e )
     QPlainTextEdit::wheelEvent(e);
 #endif
 }
+    
+void PostWindow::focusInEvent( QFocusEvent * event )
+{
+    QPlainTextEdit::focusInEvent(event);
+    emit postWindowFocusChanged(event->gotFocus());
+}
 
 void PostWindow::focusOutEvent( QFocusEvent * event )
 {
@@ -328,6 +336,8 @@ void PostWindow::focusOutEvent( QFocusEvent * event )
         MainWindow::instance()->focusCodeEditor();
     else
         QPlainTextEdit::focusOutEvent(event);
+    
+    emit postWindowFocusChanged(event->gotFocus());
 }
 
 void PostWindow::mouseDoubleClickEvent(QMouseEvent *e)
@@ -378,6 +388,7 @@ void PostWindow::setLineWrap(bool lineWrapOn)
 }
 
 PostDocklet::PostDocklet(QWidget* parent):
+    mAnimation(NULL),
     Docklet(tr("Post window"), parent)
 {
     setAllowedAreas(Qt::BottomDockWidgetArea | Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
@@ -388,6 +399,8 @@ PostDocklet::PostDocklet(QWidget* parent):
     toolBar()->addAction( mPostWindow->mActions[PostWindow::AutoScroll] );
 
     //connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(onFloatingChanged(bool)));
+    connect(mPostWindow, SIGNAL(textUpdated()), this, SLOT(onTextUpdated()));
+    connect(mPostWindow, SIGNAL(postWindowFocusChanged(bool)), this, SLOT(onFocusChanged(bool)));
 }
 
 void PostDocklet::onFloatingChanged(bool floating)
@@ -398,6 +411,56 @@ void PostDocklet::onFloatingChanged(bool floating)
     // The issue is avoided by slightly shrinking the dock widget.
     if (floating)
         dockWidget()->resize(dockWidget()->size() - QSize(1,1));
+}
+    
+void PostDocklet::cancelFadeout() {
+    if (mAnimation) {
+        mAnimation->stop();
+        mAnimation->deleteLater();
+        mAnimation = NULL;
+    }
+    
+    QWidget* container = dockWidget();
+    if (container) {
+        container->setWindowOpacity(1.0);
+    }
+}
+    
+void PostDocklet::startFadeout() {
+    QWidget* container = dockWidget();
+    if (container && container == currentContainer()) {
+        
+        if (mAnimation) {
+            mAnimation->setCurrentTime(0);
+            mAnimation->start();
+        } else {
+            mAnimation = new QPropertyAnimation(container, "windowOpacity");
+            mAnimation->setEasingCurve(QEasingCurve::InBack);
+            mAnimation->setDuration(2500);
+            mAnimation->setStartValue(1.0);
+            mAnimation->setEndValue(0.0);
+            mAnimation->start();
+        }
+    }
+}
+    
+void PostDocklet::onTextUpdated() {
+    QWidget* focused = QApplication::focusWidget();
+    if (focused) {
+        if (focused == dockWidget() || focused == window() || focused == widget() || focused == toolBar()) {
+            return;
+        }
+    }
+    
+    startFadeout();
+}
+    
+void PostDocklet::onFocusChanged(bool focused) {
+    if (focused) {
+        cancelFadeout();
+    } else {
+        startFadeout();
+    }
 }
 
 } // namespace ScIDE
