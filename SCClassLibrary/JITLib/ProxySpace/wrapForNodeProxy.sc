@@ -291,8 +291,7 @@
 				};
 
 				{ | out |
-					var e;
-					e = EnvGate.new * Control.names(["wet"++(index ? 0)]).kr(1.0);
+					var e = EnvGate.new * Control.names(["wet"++(index ? 0)]).kr(1.0);
 					if(proxy.rate === 'audio') {
 						XOut.ar(out, e, SynthDef.wrap(func, nil, [In.ar(out, proxy.numChannels)]))
 					} {
@@ -301,13 +300,11 @@
 
 			},
 			set: #{ | pattern, proxy, channelOffset = 0, index |
-				var args;
-				args = proxy.controlNames.collect(_.name);
-				Pbindf(
+				var args = proxy.controlNames.collect(_.name);
+				Pchain(
+					(type: \set, \id: { proxy.group.nodeID }),
 					pattern,
-					\type, \set,
-					\id, Pfunc { proxy.group.nodeID },
-					\args, args
+					(args: args)
 				).buildForProxy( proxy, channelOffset, index )
 			},
 			pset: #{ | pattern, proxy, channelOffset = 0, index |
