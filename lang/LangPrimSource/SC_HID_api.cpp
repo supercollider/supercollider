@@ -107,7 +107,7 @@ class SC_HID_API_Threadpool
 	typedef std::map<hid_dev_desc *, boost::thread*> ThreadMap;
 
 public:
-	void openDevice(hid_dev_desc * desc, std::atomic_bool & shouldBeRunning)
+	void openDevice(hid_dev_desc * desc, std::atomic<bool> &shouldBeRunning)
 	{
 		trace("open device %p\n");
 		std::lock_guard<std::mutex> lock(guard);
