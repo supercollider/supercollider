@@ -731,7 +731,7 @@ HIDElement{
 
     typeSpec{
         if ( typeSpec.isNil ){
-            typeSpec = [
+            typeSpec = #[
                 ["Data","Constant"],
                 ["Array","Variable"],
                 ["Absolute","Relative"],
