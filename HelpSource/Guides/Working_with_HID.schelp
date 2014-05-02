@@ -44,7 +44,7 @@ DEFINITIONLIST::
 	## Print all HID output:
 	|| code:: HID.debug = true; ::
 	## Alternatively (see below for the difference),
-	|| code:: HIDFunc.trace = true; ::
+    || code:: HIDFunc.trace( true ); ::
 ::
 
 The method code:: findAvailable :: will check which devices are connected to the computer, and retrieve basic information about them. With the method code:: postAvailable :: the list of devices is then printed to the post window in a readable list, in the first column the index into the devicelist is given, in the second column various properties of the device are listed. These properties can be used to open a specific device.
