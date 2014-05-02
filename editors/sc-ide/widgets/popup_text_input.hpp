@@ -38,14 +38,14 @@ public:
         setOption(QInputDialog::NoButtons);
         setInputMode(QInputDialog::TextInput);
         setLabelText(labelText);
-        setModal(true);
-
+        
         if (parent) {
             QRect position = rect();
             position.moveCenter(parent->rect().center());
             resize(position.size());
             move(parent->mapToGlobal(position.topLeft()));
         }
+        this->show();
     }
 
 private:
