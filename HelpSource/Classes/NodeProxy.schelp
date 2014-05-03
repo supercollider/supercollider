@@ -94,8 +94,6 @@ copymethod:: BusPlug -playN
 
 copymethod:: BusPlug -stop
 
-copymethod:: BusPlug -ar, kr
-
 method::end
 releases the synths and stops playback.
 
@@ -104,6 +102,38 @@ cross fade time for this action.
 
 argument::reset
 if set to true, reset all monitor state. Otherwise, the previous play arguments are kept.
+
+
+subsection::Embedding and Combining the proxy
+
+copymethod:: BusPlug -ar, kr
+
+
+method::<--
+Usage: strong::proxyA <-- proxyB::.  Set proxyA source to proxyB and play proxyA. If proxyB was playing, fade it out. This is convenient in the following situation:
+
+code::
+b = NodeProxy.new.play;
+b.source = { PinkNoise.ar(0.2.dup) };
+// now I want to filter b through a new proxy.
+a = NodeProxy.new;
+a <-- b; a.source = { HPF.ar(b.ar, 7000) };
+a.source = { HPF.ar(b.ar, 3000) };// changing the source
+a.clear; b.clear;
+::
+
+method::<<>
+Chaining. Usage: strong::proxyA <<> proxyB	<<> proxyC <<> ...:: . Map proxyC source to proxyB code::\in:: argument, and proxyB to proxyA's in argument.
+
+code::
+a = NodeProxy.new.play;
+a.source = { RLPF.ar(\in.ar(0!2), [4600, 7000], 0.1) };
+b = NodeProxy.new.source_ { Impulse.ar([5, 7] / 2) };
+a <<> b;
+::
+
+method::<>>
+Inverse of the above. Usage: strong::proxyA <>> proxyB	<>> proxyC <>> ...:: .
 
 
 subsection::Setting the source
@@ -134,6 +164,7 @@ table::
 ## \expanding || On a change, only grow according to need, replace bus. The monitor and child proxies are adjusted.
 ::
 
+subsection::Other ways to set or change the sources
 
 method::prime
 Set source without starting the synth. To start it, link::#-send:: can be used later. Running synths are released and proxy is initialized if still neutral.
@@ -146,6 +177,7 @@ Remove the object at index i and its synths, if they exist. If no index is suppl
 
 method::removeLast
 Remove the last object and its synths, if they exist.
+
 
 method::put
 Set the source by index. Objects can be inserted at any index, only the order of indices is relevant. Internally, NodeProxy uses an link::Classes/Order:: to access the sources.
@@ -178,6 +210,8 @@ a.send; // exchange synths, using the sources as definitions
 a.clear;
 ::
 
+subsection::Controlling the running processes
+
 method::pause
 Pause all objects and set proxy to paused
 
@@ -190,31 +224,6 @@ Rebuild all SynthDefs from sources.
 method::orderNodes
 Arrange the order of groups from this to the last. This can be important when external input is filtered in order to strong::minimize latency::. Note that if a link::#-parentGroup:: was provided, the nodes must be in the same parentGroup.
 
-method::<--
-Usage: strong::proxyA <-- proxyB::.  Set proxyA source to proxyB and play proxyA. If proxyB was playing, fade it out. This is convenient in the following situation:
-
-code::
-b = NodeProxy.new.play;
-b.source = { PinkNoise.ar(0.2.dup) };
-// now I want to filter b through a new proxy.
-a = NodeProxy.new;
-a <-- b; a.source = { HPF.ar(b.ar, 7000) };
-a.source = { HPF.ar(b.ar, 3000) };// changing the source
-a.clear; b.clear;
-::
-
-method::<<>
-Chaining. Usage: strong::proxyA <<> proxyB	<<> proxyC <<> ...:: . Map proxyC source to proxyB code::\in:: argument, and proxyB to proxyA's in argument.
-
-code::
-a = NodeProxy.new.play;
-a.source = { RLPF.ar(\in.ar(0!2), [4600, 7000], 0.1) };
-b = NodeProxy.new.source_ { Impulse.ar([5, 7] / 2) };
-a <<> b;
-::
-
-method::<>>
-Inverse of the above. Usage: strong::proxyA <>> proxyB	<>> proxyC <>> ...:: .
 
 subsection::Release and cleaning up
 
@@ -297,7 +306,7 @@ subsection::Setting synth controls
 method::set, map, setn, mapn
 NodeProxy behaves like its link::Classes/NodeMap:: and very similar to a link::Classes/Synth::.
 
-note::Now the methods map, setn, mapn are there just for compatibility reasons. Everything is done by set.::
+note::Now the methods map, setn, mapn, and xmap are there just for backward compatibility reasons. Everything is done by set.::
 
 code::
 a = NodeProxy(s); a.play;
@@ -327,8 +336,8 @@ definitionList::
 method::unset, unmap
 Remove specified settings and unmap or unset the synths.
 
-method::xset, xmap
-set/map with crossfade into new setting
+method::xset
+set/map with a crossfade into the new setting. The crossfadeT time is the NodeProxy link::#-fadeTime::.
 
 method::lag
 set the lag values of these args (identical to link::#-setRates::). To remove these settings, use: code::lag(\key1, nil, key2, nil, ...)::
@@ -354,7 +363,9 @@ Get all key value pairs from both link::Classes/NodeMap:: (the settings) and def
 method::controlKeysValues
 Get all key value pairs from default arguments.
 
-subsection::Sending synths to server
+subsection::Sending synths to server explicitly
+
+Normally, processes (usually synths) are started when their respective source is added to the proxy. The processes can also be restarted, however, or the proxy can be used while asleep and the processes can then be started explicitly.
 
 method::send
 Send a new synth without releasing the old one. If the source is a stream or a pattern, it starts a new one.
