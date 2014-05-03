@@ -25,3 +25,36 @@
    ignore OSC messages if the user makes an inappropriate connection.
 */
 #define JACKEY_EVENT_TYPE "http://jackaudio.org/metadata/event-type"
+
+/**
+   The type of an audio signal.
+
+   This property allows audio ports to be tagged with a "meaning".  The value
+   is a simple string.  Currently, the only type is "CV", for "control voltage"
+   ports.  Hosts SHOULD be take care to not treat CV ports as audibile and send
+   their output directly to speakers.  In particular, CV ports are not
+   necessarily periodic at all and may have very high DC.
+*/
+#define JACKEY_SIGNAL_TYPE "http://jackaudio.org/metadata/signal-type"
+
+/**
+   The name of the icon for the subject (typically client).
+
+   This is used for looking up icons on the system, possibly with many sizes or
+   themes.  Icons should be searched for according to the freedesktop Icon
+   Theme Specification:
+
+   http://standards.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html
+*/
+#define JACKEY_ICON_NAME "http://jackaudio.org/metadata/icon-name"
+
+/**
+   Channel designation for a port.
+
+   This allows ports to be tagged with a meaningful designation like "left",
+   "right", "lfe", etc.
+
+   The value MUST be a URI.  An extensive set of URIs for designating audio
+   channels can be found at http://lv2plug.in/ns/ext/port-groups
+*/
+#define JACKEY_DESIGNATION "http://lv2plug.in/ns/lv2core#designation"
