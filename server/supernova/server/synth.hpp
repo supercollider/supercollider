@@ -44,9 +44,19 @@ public:
         return class_ptr->resolve_slot(str);
     }
 
+    slot_index_t resolve_slot_with_size(const char * str, int & size_of_slot)
+    {
+        return class_ptr->resolve_slot_with_size(str, size_of_slot);
+    }
+
     slot_index_t resolve_slot(const char * str, std::size_t hashed_str)
     {
         return class_ptr->resolve_slot(str, hashed_str);
+    }
+
+    slot_index_t resolve_slot_with_size(const char * str, std::size_t hashed_str, int & size_of_slot)
+    {
+        return class_ptr->resolve_slot_with_size(str, hashed_str, size_of_slot);
     }
 
     const char * definition_name(void) const
@@ -113,7 +123,9 @@ public:
 
     void set_control_array(const char * slot_str, size_t hashed_str, size_t count, sample * val)
     {
-        slot_index_t slot_id = definition_instance::resolve_slot(slot_str, hashed_str);
+        int size_of_parameter;
+        slot_index_t slot_id = definition_instance::resolve_slot_with_size(slot_str, hashed_str, size_of_parameter);
+        count = std::min(size_t(size_of_parameter), count);
         if (likely(slot_id >= 0))
             for (size_t i = 0; i != count; ++i)
                 this->set(slot_id+i, val[i]);
@@ -133,8 +145,9 @@ public:
 
     void set_control_array_element(const char * slot_str, size_t hashed_str, size_t index, sample val)
     {
-        slot_index_t slot_id = definition_instance::resolve_slot(slot_str, hashed_str);
-        if (likely(slot_id >= 0))
+        int size_of_parameter;
+        slot_index_t slot_id = definition_instance::resolve_slot_with_size(slot_str, hashed_str, size_of_parameter);
+        if (likely( (slot_id >= 0) && (index < size_of_parameter) ))
             this->set(slot_id + index, val);
     }
     /* @} */
