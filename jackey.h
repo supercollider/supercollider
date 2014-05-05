@@ -15,16 +15,17 @@
 */
 
 /**
-   The type of an event port.
+   The supported event types of an event port.
 
    This is a kludge around Jack only supporting MIDI, particularly for OSC.
-   This property should be set to "OSC" for OSC ports, in which case the event
-   port contains OSC bundles or messages.  Note that OSC bundles begin with "#"
-   and OSC messages begin with "/" so there is no clash with MIDI status bytes,
-   and MIDI clients that check the status byte should be able to gracefully
-   ignore OSC messages if the user makes an inappropriate connection.
+   This property is a comma-separated list of event types, currently "MIDI" or
+   "OSC".  If this contains "OSC", the port may carry OSC bundles (first byte
+   '#') or OSC messages (first byte '/').  Note that the "status byte" of both
+   OSC events is not a valid MIDI status byte, so MIDI clients that check the
+   status byte will gracefully ignore OSC messages if the user makes an
+   inappropriate connection.
 */
-#define JACKEY_EVENT_TYPE "http://jackaudio.org/metadata/event-type"
+#define JACKEY_EVENT_TYPES "http://jackaudio.org/metadata/event-types"
 
 /**
    The type of an audio signal.
