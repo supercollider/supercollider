@@ -3,22 +3,18 @@ summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
 related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
-Before we can make any sound, we need to start or 'boot' a server application. The easiest way to do this is to use one of the server windows which is automatically created by the client app. These can be found in the bottom left-hand corner of your screen. Look for the one that says 'localhost server'. It should look like this:
+Before we can make any sound, we need to start or 'boot' a server application. The easiest way to do this is to use the shortcut Ctrl-B (Cmd-B on the mac). There is also a Menu entry for "Boot Server".
 
-image::Start-Your-Engines00.png::
-
-'localhost' just means on your local computer, as opposed to running on a different computer connected by a network. To start the server click on the 'Boot' button, or click on the window and press the space bar. After a second or two it should look something like this:
-
-image::Start-Your-Engines01.png::
-
-Notice that the white status box has changed from 'inactive' to 'running', and that the 'Boot' button has changed to 'Quit'. This indicates that the server is running. As well the window provides you with some information about CPU usage, and some other things which probably aren't too clear yet. More about them soon.
+Notice that the white font on the black view on the bottom of the window has changed to green. This indicates that the server is running. As well the view provides you with some information about CPU usage, and some other things which probably aren't too clear yet. More about them soon.
 
 Also take a look at the post window, where SC has given you some info, and let you know that it booted okay:
 
 code::
 booting 57110
 <list-of-devices>
-SC_AudioDriver: sample rate = 44100.000000, driver's block size = 512SuperCollider 3 server ready.Receiving notification messages from server localhost
+SC_AudioDriver: sample rate = 44100.000000, driver's block size = 512
+SuperCollider 3 server ready.
+Receiving notification messages from server localhost
 ::
 
 If for some reason it had failed to boot, there would be some information indicating that.

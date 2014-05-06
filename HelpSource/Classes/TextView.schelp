@@ -10,7 +10,6 @@ Using the view's methods, the text can be formatted: different strong::font:: an
 
 The view can strong::open text documents:: and load from them both strong::plain text::, as well as formatted text in strong::HTML::, although it can not save the text back to files. However, you can get the contents of the view using the link::#-string:: method and then implement saving on your own, but the -string method will only return plain text, regardless of how the contents of the view are formatted.
 
-note:: strong::Cocoa GUI:: can also load files in the strong::Rich Text Format::. ::
 
 CLASSMETHODS::
 
@@ -51,8 +50,35 @@ METHOD:: setString
 		An Integer amount of characters.
 
 METHOD:: currentLine
-	NOTE::Only in Qt GUI::
 	The plain text of the line at text cursor.
+
+
+SUBSECTION:: Formatting
+
+TextView supports text font and color, and can syntax colorize sclang code.
+
+note::The formatting is reset when the string changes.::
+
+
+code::
+(
+var text = "Tous ces nombres paraissent bien concrets";
+t = TextView(bounds: Rect(300, 400));
+t.string = text;
+t.front;
+fork {
+	loop {
+		2.0.rand.wait;
+		defer {
+			t.setFont(Font("Times", rrand(12, 48)), rand(text.size - 1), rrand(3, 17));
+			t.setStringColor(Color.rand, rand(text.size - 1), rrand(3, 17));
+
+		}
+	}
+};
+)
+::
+
 
 METHOD:: setFont
 	Applies the code::font:: to code::rangeSize:: amount of characters following the code::rangeStart:: position.
@@ -74,9 +100,19 @@ METHOD:: setStringColor
 	argument:: rangeSize
 		An Integer amount of characters.
 
+
+
 METHOD:: syntaxColorize
 	Applies colors to text throughout the entire contents of the view, according to the SuperCollider language syntax highlighting scheme.
 
+code::
+(
+t = TextView(bounds: Rect(300, 400));
+t.string = this.cmdLine;
+t.syntaxColorize;
+t.front;
+)
+::
 
 
 
@@ -203,7 +239,6 @@ Dragging from TextView will give the selected text in a String as drag data, whi
 You can also drag files from outside SuperCollider onto a TextView, and it will insert their URLs at the drop location.
 
 METHOD:: defaultGetDrag
-	note:: Only present in strong::Qt GUI:: ::
 
 	returns::
 		The link::#-selectedString::.
