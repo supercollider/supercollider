@@ -34,7 +34,7 @@ code::
 "Hello World!".postln;
 ::
 
-To execute it, simply click to place the cursor on the same line as the code and then press the enter key. Note that the 'enter' key is not the same as the 'return' key. The 'enter' key is the one that is on the number pad. On Mac laptops there is usually a separate enter key down at bottom of the keyboard towards the right, or you can hold down the 'fn' or function key, and press 'return'. If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return( on Some Macs), or Shift-Return. Try this now.
+To execute it, simply click to place the cursor somewhere on the same line as the code and then press Ctrl-Enter (Cmd-Enter on the Mac) or Shift-Enter. Try this now.
 
 If all went well, you should see this in the post window.
 
@@ -65,7 +65,7 @@ code::
 )
 ::
 
-When code is not surrounded by parentheses it is generally intended to be executed one line at a time.
+When code is not surrounded by parentheses it is generally intended to be executed one line at a time. You can have your cursor anywhere in this region and press Ctrl-Enter (Cmd-Enter on the Mac) - this selects the whole region and executes it.
 
 Note that each of the lines within the block of code ends with a semi-colon. This is very important when executing multiple lines of code, as it's how SC knows where to separate commands. Without a semi-colon above, you would get an error posted.
 
