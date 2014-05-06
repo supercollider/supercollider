@@ -2,14 +2,15 @@
 
 MonitorGui : JITGui {
 
-	classvar <>lastOutBus = 99;
-
 	var <ampSl, <playBut, <setOutBox, <fadeBox;
+	classvar <>lastOutBus;
 
 	*initClass {
-			Class.initClassTree(Spec);
-			Spec.add(\ampx4, [0, 4, \amp]);
-			Spec.add(\fadePx, [0, 100, \amp, 0, 0.02]);
+		Class.initClassTree(Spec);
+		Class.initClassTree(Server);
+		Spec.add(\ampx4, [0, 4, \amp]);
+		Spec.add(\fadePx, [0, 100, \amp, 0, 0.02]);
+		lastOutBus = Server.default.options.numAudioBusChannels;
 	}
 		// options can be: \level, \name, \fade
 	*new { |object, parent, bounds, makeSkip=true, options = #[]|
