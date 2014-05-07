@@ -417,18 +417,18 @@ definitionList::
 ## link::Classes/Function:: || interpreted as ugen function, and plays a link::Classes/Synth::, similar to Function.play.
 ## link::Classes/SimpleNumber:: || write this value to the bus continuously, overwriting previous bus value.
 ## link::Classes/Array:: of numbers || write the values to the bus continuously overwriting previous bus value.
-## link::Classes/Bus:: || reads from the bus
-## link::Classes/SynthDef:: || plays a link::Classes/Synth:: using the SynthDef. This is useful for triggering.
-## link::Classes/Symbol:: || plays a link::Classes/Synth:: from the SynthDef with this name. This is useful for triggering.
-## link::Classes/Pattern:: || played as event pattern (using link::Classes/Pbind:: or other event patterns)
-## link::Classes/Stream:: || played as event stream (a stream returning events)
+## link::Classes/Bus:: || read the signal on the bus.
+## link::Classes/SynthDef:: || plays a link::Classes/Synth:: using the SynthDef.
+## link::Classes/Symbol:: || plays a link::Classes/Synth:: from the SynthDef with this name.
+## link::Classes/Pattern:: || played as event pattern (using link::Classes/Pbind:: or other event patterns).
+## link::Classes/Stream:: || played as event stream (a stream returning events).
 ## nil || link::Classes/Nil:: removes all objects.
-## link::Classes/Pdef::, link::Classes/EventPatternProxy:: || played like a stream
+## link::Classes/Pdef::, link::Classes/EventPatternProxy:: || played like a stream.
 ## link::Classes/Task:: || played, no output is assigned.
 ## link::Classes/Tdef:: || played like Task
 ## link::Classes/Event:: || played like in a pattern.
 
-## Associations: ||
+## Associations (link::NodeProxy_roles::): ||
 definitionList::
 ## (\filter -> func) || filter previous input (with post control)
 ## (\filterIn -> func) || filter previous input (with pre control)
@@ -446,7 +446,7 @@ definitionList::
 ::
 ::
 
-Definitions for other sources can be added easily.
+Definitions for other sources can be added - see: link::NodeProxy_roles::
 
 Examples::
 
