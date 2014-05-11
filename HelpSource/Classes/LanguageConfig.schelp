@@ -22,7 +22,7 @@ METHOD:: store
 Store the current configuration to file.
 
 argument:: file
-Configuration file to store. If the value is code::nil:: it defaults to code::Platform.userConfigDir +/+ "sclang_conf.yaml"::
+Path to the configuration file to store. If the value is code::nil:: it defaults to code::Platform.userConfigDir +/+ "sclang_conf.yaml"::
 
 subsection:: Library Path Handling
 
