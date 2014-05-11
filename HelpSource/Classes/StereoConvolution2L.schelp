@@ -10,7 +10,7 @@ Like link::Classes/Convolution2L::, but convolves with two buffers and outputs a
 
 Useful applications could include stereo reverberation or HRTF convolution.
 
-See Steven W Smith, The Scientist and Engineer's Guide to Digital Signal Processing: chapter 18: http:// www.dspguide.com/ch18.htm
+See Steven W Smith, The Scientist and Engineer's Guide to Digital Signal Processing, chapter 18: link::http://www.dspguide.com/ch18.htm::
 
 classmethods::
 method:: ar
@@ -24,7 +24,12 @@ buffer index for the fixed kernel of the right channel, may be modulated in comb
 argument:: trigger
 update the kernel on a change from <= 0 to > 0.
 argument:: framesize
-size of FFT frame, must be a power of two. Convolution uses twice this number internally, maximum value you can give this argument is 2^16=65536. Note that it gets progressively more expensive to run for higher powers! 512, 1024, 2048, 4096 standard.
+size of FFT frame, must be a power of two (512, 1024, 2048, 4096 are standard choices).
+Convolution uses twice this number internally.
+Note that the convolution gets progressively more expensive to run for higher powers!
+The maximum value you can use is 2^16=16384.
+(This upper limit is half of "SC_FFT_MAXSIZE" defined in the SC source code.)
+Larger convolutions than this can be done using link::Classes/PartConv::.
 argument:: crossfade
 The number of periods over which a crossfade is made. The default is 1. This must be an integer.
 argument:: mul
@@ -32,7 +37,8 @@ argument:: add
 
 examples::
 code::
-(//allocate three buffers
+(
+//allocate three buffers
 b = Buffer.alloc(s, 2048);
 c = Buffer.alloc(s, 2048);
 d = Buffer.alloc(s, 2048);
