@@ -35,13 +35,30 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
     setFocusPolicy(Qt::StrongFocus);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+    mTopLayout = new QBoxLayout(QBoxLayout::TopToBottom);
     mLayout = new QStackedLayout();
-    setLayout(mLayout);
-
+    setLayout(mTopLayout);
+    mDocComboBox = new QComboBox();
+    mDocComboBox->setFocusPolicy(Qt::NoFocus);
+    mTopLayout->setSpacing(1);
+    mTopLayout->setContentsMargins(0, 0, 0, 0);
+    mTopLayout->addWidget(mDocComboBox);
+    mTopLayout->addLayout(mLayout);
+    
+    mDocComboBox->setModel(Main::documentManager()->docModel());
+    
+    connect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)));
     connect(Main::documentManager(), SIGNAL(closed(Document*)),
             this, SLOT(onDocumentClosed(Document*)));
     connect(Main::documentManager(), SIGNAL(saved(Document*)),
             this, SLOT(onDocumentSaved(Document*)));
+}
+    
+void CodeEditorBox::onComboSelectionChanged(int index)
+{
+    if(index >=0) {
+        setDocument(Main::documentManager()->docModel()->item(index)->data().value<Document *>(), -1, 0);
+    }
 }
 
 void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
@@ -70,6 +87,8 @@ void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
         editor->setActiveAppearance(this->isActive());
         mLayout->setCurrentWidget(editor);
         setFocusProxy(editor);
+        int modelIndex = doc->modelItem()->index().row();
+        mDocComboBox->setCurrentIndex(modelIndex);
     }
 
     if (pos != -1)

@@ -31,6 +31,9 @@
 #include <QTextDocument>
 #include <QPlainTextDocumentLayout>
 #include <QUuid>
+#include <QStandardItemModel>
+#include <QApplication>
+#include <QStyle>
 
 namespace ScIDE {
 
@@ -54,7 +57,9 @@ public:
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
     const QString & filePath() { return mFilePath; }
+    
     const QString & title() { return mTitle; }
+    void setTitle(QString & newTitle) { mTitle = newTitle; mModelItem->setText(mTitle); }
 
     QFont defaultFont() const { return mDoc->defaultFont(); }
     void setDefaultFont( const QFont & font );
@@ -66,6 +71,8 @@ public:
 
     bool isPlainText() const { return mHighlighter == NULL; }
     bool isModified() const  { return mDoc->isModified(); }
+    
+    QStandardItem * modelItem() { return mModelItem; }
     
     QString textAsSCArrayOfCharCodes(int start, int range);
     QString titleAsSCArrayOfCharCodes();
@@ -89,6 +96,13 @@ public:
 public slots:
     void applySettings( Settings::Manager * );
     void resetDefaultFont();
+    void onModificationChanged(bool changed) {
+        if(changed){
+            mModelItem->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton));
+        } else {
+            mModelItem->setIcon(QIcon());
+        }
+    }
 
 signals:
     void defaultFontChanged();
@@ -108,6 +122,7 @@ private:
     bool mMouseDownActionEnabled;
     bool mMouseUpActionEnabled;
     bool mTextChangedActionEnabled;
+    QStandardItem * mModelItem;
 };
 
 class DocumentManager : public QObject
@@ -136,6 +151,7 @@ public:
     void setActiveDocument(class Document *);
     void sendActiveDocument();
     Document * activeDocument() { return mCurrentDocument; }
+    QStandardItemModel * docModel() { return mDocumentModel; }
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
@@ -196,6 +212,8 @@ private:
     bool mTextMirrorEnabled;
     QString mCurrentDocumentPath;
     class Document * mCurrentDocument;
+    
+    QStandardItemModel * mDocumentModel;
 };
 
 } // namespace ScIDE

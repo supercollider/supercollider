@@ -25,6 +25,12 @@
 #include <QWidget>
 #include <QStackedLayout>
 #include <QPointer>
+#include <QComboBox>
+#include <QBoxLayout>
+#include <QStandardItemModel>
+
+#include "../core/doc_manager.hpp"
+#include "../core/main.hpp"
 
 namespace ScIDE {
 
@@ -96,6 +102,7 @@ signals:
 private slots:
     void onDocumentClosed(Document*);
     void onDocumentSaved(Document*);
+    void onComboSelectionChanged(int index);
 
 private:
     int historyIndexOf(Document*);
@@ -107,6 +114,9 @@ private:
     QStackedLayout *mLayout;
     History mHistory;
     static QPointer<CodeEditorBox> gActiveBox;
+    QBoxLayout *mTopLayout;
+    QComboBox *mDocComboBox;
+    
 };
 
 } // namespace ScIDE
