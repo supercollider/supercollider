@@ -106,6 +106,10 @@ void HelpBrowser::createActions()
     mActions[GoHome] = action = new QAction(tr("Home"), this);
     connect( action, SIGNAL(triggered()), this, SLOT(goHome()) );
 
+    mActions[DocClose] = ovrAction = new OverridingAction(tr("Close"), this);
+    connect( ovrAction, SIGNAL(triggered()), this, SLOT(closeDocument()) );
+    ovrAction->addToWidget(mWebView);
+
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Zoom In"), this);
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomIn()));
     ovrAction->addToWidget(mWebView);
@@ -131,6 +135,8 @@ void HelpBrowser::applySettings( Settings::Manager *settings )
 {
     settings->beginGroup("IDE/shortcuts");
 
+    mActions[DocClose]->setShortcut( settings->shortcut("ide-document-close") );
+
     mActions[ZoomIn]->setShortcut( settings->shortcut("editor-enlarge-font") );
 
     mActions[ZoomOut]->setShortcut( settings->shortcut("editor-shrink-font") );
@@ -153,6 +159,11 @@ void HelpBrowser::goHome()
 {
     static QString code( "HelpBrowser.goHome" );
     sendRequest(code);
+}
+
+void HelpBrowser::closeDocument()
+{
+    MainWindow::instance()->helpBrowserDocklet()->close();
 }
 
 void HelpBrowser::gotoHelpFor( const QString & symbol )
@@ -345,6 +356,8 @@ void HelpBrowser::onContextMenuRequest( const QPoint & pos )
     menu.addAction( mActions[ZoomOut] );
     menu.addAction( mActions[ResetZoom] );
 
+    menu.addAction( mActions[DocClose] );
+
     menu.exec( mWebView->mapToGlobal(pos) );
 }
 
@@ -388,6 +401,11 @@ bool HelpBrowserFindBox::event( QEvent * event )
     {
         QKeyEvent *kevent = static_cast<QKeyEvent*>(event);
         if (kevent->key() == Qt::Key_Escape) {
+            event->accept();
+            return true;
+        }
+        if (kevent->key() == Qt::Key_W && (kevent->modifiers() & Qt::CTRL)) {
+            MainWindow::instance()->helpBrowserDocklet()->close();
             event->accept();
             return true;
         }

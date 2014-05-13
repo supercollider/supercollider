@@ -25,6 +25,7 @@
 #include "../../core/main.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
+#include "../main_window.hpp"
 
 #include <QApplication>
 #include <QDebug>
@@ -777,6 +778,11 @@ void GenericCodeEditor::hideMouseCursor(QKeyEvent * event)
     default:
         hideMouseCursor();
     }
+}
+
+void GenericCodeEditor::closeDocument()
+{
+    MainWindow::instance()->closeDocument();
 }
 
 void GenericCodeEditor::clearSearchHighlighting()
