@@ -1075,7 +1075,7 @@ int processfloatradix(char *s, int n, int radix)
 	SetFloat(&slot, sc_strtof(s, n, radix));
 	node = newPyrSlotNode(&slot);
 	zzval = (long)node;
-	return INTEGER;
+	return SC_FLOAT;
 }
 
 int processint(char *s)
