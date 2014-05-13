@@ -84,6 +84,7 @@ public:
         SelectRegion,
 
         // View
+        DocClose,
         EnlargeFont,
         ShrinkFont,
         ResetFontSize,
