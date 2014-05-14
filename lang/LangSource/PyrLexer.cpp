@@ -1187,6 +1187,7 @@ int processaccidental2(char *s)
 	}
 
 	if (semitones > 4.) semitones = 4.;
+	else if (semitones < -4.) semitones = -4.;
 
 	SetFloat(&slot, degree + semitones/10.);
 	node = newPyrSlotNode(&slot);
