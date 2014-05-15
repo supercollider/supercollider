@@ -55,6 +55,7 @@ public:
     void showPosition( int charPosition, int selectionLength = 0 );
     QString symbolUnderCursor();
     int inactiveFadeAlpha() { return mInactiveFadeAlpha; }
+    int lineNumber();
 
 protected:
     virtual bool event( QEvent * );

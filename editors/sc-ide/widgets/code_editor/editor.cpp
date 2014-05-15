@@ -26,6 +26,7 @@
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
 #include "../main_window.hpp"
+#include "../multi_editor.hpp"
 
 #include <QApplication>
 #include <QDebug>
@@ -782,7 +783,7 @@ void GenericCodeEditor::hideMouseCursor(QKeyEvent * event)
 
 void GenericCodeEditor::closeDocument()
 {
-    MainWindow::instance()->closeDocument();
+    MainWindow::instance()->editor()->closeDocument();
 }
 
 void GenericCodeEditor::clearSearchHighlighting()
@@ -834,6 +835,17 @@ void GenericCodeEditor::updateLineIndicator( QRect r, int dy )
         mLineIndicator->scroll(0, dy);
     else
         mLineIndicator->update(0, r.y(), mLineIndicator->width(), r.height() );
+}
+
+int GenericCodeEditor::lineNumber()
+{
+    int pos = textCursor().position();
+    if (pos < 0) return -1;
+    QTextDocument *doc = QPlainTextEdit::document();
+    if (!doc) return -1;
+
+    int lineNumber = doc->findBlock(pos).firstLineNumber();
+    return lineNumber;
 }
 
 void GenericCodeEditor::onCursorPositionChanged()

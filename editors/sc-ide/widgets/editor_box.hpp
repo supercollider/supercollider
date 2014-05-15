@@ -28,14 +28,21 @@
 #include <QComboBox>
 #include <QBoxLayout>
 #include <QStandardItemModel>
+#include <QKeyEvent>
+#include <QEvent>
+#include <QAbstractItemView>
+#include <QMetaType>
+
 
 #include "../core/doc_manager.hpp"
 #include "../core/main.hpp"
+#include "util/multi_splitter.hpp"
 
 namespace ScIDE {
 
 class Document;
 class GenericCodeEditor;
+class MultiSplitter;
 
 /*
 A CodeEditorBox represents an IDE document split view: it contains a stack
@@ -55,6 +62,77 @@ actions to it: e.g. it is the one where newly created and opened documents will
 be displayed.
 */
 
+class BoxPopupMenu : public QComboBox
+{
+
+public:
+    BoxPopupMenu(QWidget *parent = 0) :
+        QComboBox(parent)
+    {
+        view()->installEventFilter(this);
+    };
+
+private:
+    bool eventFilter(QObject *t, QEvent *e)
+    {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(e);
+        int key = keyEvent->key();
+
+        if(e->type() == QEvent::KeyPress)
+        {
+            switch(key)
+            {
+                case Qt::Key_Backtab:
+                //case Qt::Key_Up:
+                {
+                    int curIndex = this->currentIndex();
+                    int nextIndex;
+
+                    if (this->currentIndex() == 0)
+                        nextIndex = this->count() -1;
+                    else {
+                        nextIndex = curIndex - 1;
+                    }
+
+                    this->setCurrentIndex(nextIndex);
+
+                    QComboBox::keyPressEvent(keyEvent);
+
+                    break;
+                }
+                case Qt::Key_Tab:
+                //case Qt::Key_Down:
+                {
+                    int curIndex = this->currentIndex();
+                    int nextIndex;
+
+                    if (this->currentIndex() == this->count() -1 )
+                        nextIndex = 0;
+                    else {
+                        nextIndex = curIndex + 1;
+                    }
+
+                    this->setCurrentIndex(nextIndex);
+
+                    QComboBox::keyPressEvent(keyEvent);
+
+                    break;
+                }
+            }
+        }
+
+        if(e->type() == QEvent::KeyRelease)
+        {
+            switch(key)
+            {
+                case Qt::Key_Control:
+                    this->hidePopup();
+            }
+        }
+        return false;
+    }
+};
+
 class CodeEditorBox : public QWidget
 {
     Q_OBJECT
@@ -62,7 +140,7 @@ class CodeEditorBox : public QWidget
 public:
     typedef QList< GenericCodeEditor * > History;
 
-    CodeEditorBox(QWidget *parent = 0);
+    CodeEditorBox(MultiSplitter *splitter, QWidget *parent = 0);
 
     void setDocument(Document *, int pos = -1, int selectionLength = 0);
 
@@ -94,6 +172,10 @@ public:
     QSize minimumSizeHint() const { return QSize(100, 100); }
     QSize sizeHint() const { return QSize(100, 100); }
 
+    MultiSplitter *multiSplitter() { return mSplitter; }
+
+    BoxPopupMenu *comboBox() { return mDocComboBox; }
+
 signals:
     void currentChanged(GenericCodeEditor*);
     void activated( CodeEditorBox *me );
@@ -115,10 +197,13 @@ private:
     History mHistory;
     static QPointer<CodeEditorBox> gActiveBox;
     QBoxLayout *mTopLayout;
-    QComboBox *mDocComboBox;
+    BoxPopupMenu *mDocComboBox;
+    MultiSplitter *mSplitter;
     
 };
 
 } // namespace ScIDE
+
+Q_DECLARE_METATYPE( ScIDE::CodeEditorBox* )
 
 #endif // SCIDE_WIDGET_CODE_EDITOR_EDITOR_BOX_HPP

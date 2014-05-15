@@ -22,6 +22,7 @@
 
 #include "help_browser.hpp"
 #include "main_window.hpp"
+#include "multi_editor.hpp"
 #include "../core/sc_process.hpp"
 #include "../core/main.hpp"
 #include "../core/util/overriding_action.hpp"
@@ -106,8 +107,8 @@ void HelpBrowser::createActions()
     mActions[GoHome] = action = new QAction(tr("Home"), this);
     connect( action, SIGNAL(triggered()), this, SLOT(goHome()) );
 
-    mActions[DocClose] = ovrAction = new OverridingAction(tr("Close"), this);
-    connect( ovrAction, SIGNAL(triggered()), this, SLOT(closeDocument()) );
+    mActions[DocClose] = ovrAction = new OverridingAction(tr("Close Window"), this);
+    connect( ovrAction, SIGNAL(triggered()), this, SLOT(removeWindow()) );
     ovrAction->addToWidget(mWebView);
 
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Zoom In"), this);
@@ -126,6 +127,10 @@ void HelpBrowser::createActions()
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
     ovrAction->addToWidget(mWebView);
 
+    mActions[SwitchSplit] = ovrAction = new OverridingAction(tr("Switch Editor"), this);
+    connect(ovrAction, SIGNAL(triggered()), this, SLOT(switchSplit()));
+    ovrAction->addToWidget(mWebView);
+
     // For the sake of display:
     mWebView->pageAction(QWebPage::Copy)->setShortcut( QKeySequence::Copy );
     mWebView->pageAction(QWebPage::Paste)->setShortcut( QKeySequence::Paste );
@@ -135,7 +140,9 @@ void HelpBrowser::applySettings( Settings::Manager *settings )
 {
     settings->beginGroup("IDE/shortcuts");
 
-    mActions[DocClose]->setShortcut( settings->shortcut("ide-document-close") );
+    mActions[SwitchSplit]->setShortcut( settings->shortcut("editor-split-switch") );
+
+    mActions[DocClose]->setShortcut( settings->shortcut("window-remove") );
 
     mActions[ZoomIn]->setShortcut( settings->shortcut("editor-enlarge-font") );
 
@@ -161,9 +168,14 @@ void HelpBrowser::goHome()
     sendRequest(code);
 }
 
-void HelpBrowser::closeDocument()
+void HelpBrowser::removeWindow()
 {
     MainWindow::instance()->helpBrowserDocklet()->close();
+}
+
+void HelpBrowser::switchSplit()
+{
+    MainWindow::instance()->editor()->switchSplit();
 }
 
 void HelpBrowser::gotoHelpFor( const QString & symbol )
@@ -355,6 +367,8 @@ void HelpBrowser::onContextMenuRequest( const QPoint & pos )
     menu.addAction( mActions[ZoomIn] );
     menu.addAction( mActions[ZoomOut] );
     menu.addAction( mActions[ResetZoom] );
+
+    menu.addAction( mActions[SwitchSplit] );
 
     menu.addAction( mActions[DocClose] );
 

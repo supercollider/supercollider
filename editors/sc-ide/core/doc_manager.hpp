@@ -141,6 +141,7 @@ public:
     }
 
     void create();
+    Document *docReplace();
     void close( Document * );
     bool save( Document * );
     bool saveAs( Document *, const QString & path );

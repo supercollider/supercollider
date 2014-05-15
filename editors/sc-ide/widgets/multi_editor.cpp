@@ -18,6 +18,11 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+/*
+    Every Window is set with a Multisplitter, which contains various Boxes, which contain various Editors.
+    Every Editor has one document.
+*/
+
 #include "multi_editor.hpp"
 #include "editor_box.hpp"
 #include "main_window.hpp"
@@ -29,169 +34,37 @@
 #include "../core/main.hpp"
 #include "../core/sc_process.hpp"
 #include "../core/session_manager.hpp"
+#include "post_window.hpp"
+#include "cmd_line.hpp"
+#include "find_replace_tool.hpp"
+#include "goto_line_tool.hpp"
+#include "tool_box.hpp"
+#include "../core/util/standard_dirs.hpp"
+#include "session_switch_dialog.hpp"
+#include "sessions_dialog.hpp"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
 
 #include <QApplication>
 #include <QDebug>
-#include <QDialog>
 #include <QFileInfo>
 #include <QHBoxLayout>
 #include <QHeaderView>
-#include <QListView>
 #include <QMenu>
-#include <QPainter>
-#include <QStandardItemModel>
 #include <QShortcut>
 #include <QStyle>
 #include <QTreeWidget>
 #include <QVBoxLayout>
+#include <QMenuBar>
+#include <QMetaType>
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QUrl>
+#include <QDesktopServices>
 
 
 namespace ScIDE {
-
-class DocumentSelectPopUp : public QDialog
-{
-public:
-    DocumentSelectPopUp(const CodeEditorBox::History & history, QWidget * parent):
-        QDialog(parent, Qt::Popup)
-    {
-        mModel = new QStandardItemModel(this);
-        populateModel(history);
-
-        mListView = new QListView();
-        mListView->setModel(mModel);
-        mListView->setFrameShape(QFrame::NoFrame);
-
-        QHBoxLayout *layout = new QHBoxLayout(this);
-        layout->addWidget(mListView);
-        layout->setContentsMargins(1,1,1,1);
-
-        connect(mListView, SIGNAL(activated(QModelIndex)), this, SLOT(accept()));
-
-        mListView->setFocus(Qt::OtherFocusReason);
-
-        QModelIndex nextIndex = mModel->index(1, 0);
-        mListView->setCurrentIndex(nextIndex);
-
-        mListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    }
-
-    Document * exec( const QPoint & pos )
-    {
-        move(pos);
-        if (QDialog::exec())
-            return currentDocument();
-        else
-            return 0;
-    }
-
-private:
-    bool event(QEvent * event)
-    {
-        if (event->type() == QEvent::ShortcutOverride) {
-            event->accept();
-            return true;
-        }
-        return QWidget::event(event);
-    }
-
-    void keyReleaseEvent (QKeyEvent * ke)
-    {
-        // adapted from qtcreator
-        if (ke->modifiers() == 0
-            /*HACK this is to overcome some event inconsistencies between platforms*/
-            || (ke->modifiers() == Qt::AltModifier
-                && (ke->key() == Qt::Key_Alt || ke->key() == -1))) {
-            ke->accept();
-            accept();
-        }
-        QDialog::keyReleaseEvent(ke);
-    }
-
-    void keyPressEvent(QKeyEvent * ke)
-    {
-        switch (ke->key()) {
-        case Qt::Key_Down:
-        case Qt::Key_Tab:
-            cycleDown();
-            ke->accept();
-            return;
-
-        case Qt::Key_Up:
-        case Qt::Key_Backtab:
-            cycleUp();
-            ke->accept();
-            return;
-
-        case Qt::Key_Escape:
-            reject();
-            return;
-
-        default:
-            ;
-        }
-
-        QDialog::keyPressEvent(ke);
-    }
-
-    void paintEvent( QPaintEvent * )
-    {
-        QPainter painter(this);
-        painter.setBrush(Qt::NoBrush);
-        painter.setPen(palette().color(QPalette::Dark));
-        painter.drawRect(rect().adjusted(0,0,-1,-1));
-    }
-
-    void cycleDown()
-    {
-        int row = mListView->currentIndex().row() + 1;
-        if (!mModel->hasIndex(row, 0))
-            row = 0;
-
-        QModelIndex nextIndex = mModel->index(row, 0);
-        mListView->setCurrentIndex(nextIndex);
-    }
-
-    void cycleUp()
-    {
-        int row = mListView->currentIndex().row() - 1;
-        if (!mModel->hasIndex(row, 0))
-            row = mModel->rowCount() - 1;
-
-        QModelIndex nextIndex = mModel->index(row, 0);
-        mListView->setCurrentIndex(nextIndex);
-    }
-
-    Document * currentDocument()
-    {
-        QStandardItem * currentItem = mModel->itemFromIndex(mListView->currentIndex());
-        return currentItem ? currentItem->data().value<Document*>()
-                           : NULL;
-    }
-
-    void populateModel( const CodeEditorBox::History & history )
-    {
-        QList<Document*> displayDocuments;
-        foreach(GenericCodeEditor *editor, history)
-            displayDocuments << editor->document();
-
-        QList<Document*> managerDocuments =  Main::documentManager()->documents();
-        foreach(Document *document, managerDocuments)
-            if (!displayDocuments.contains(document))
-                displayDocuments << document;
-
-        foreach (Document * document, displayDocuments) {
-            QStandardItem * item = new QStandardItem(document->title());
-            item->setData(QVariant::fromValue(document));
-            mModel->appendRow(item);
-        }
-    }
-
-    QListView *mListView;
-    QStandardItemModel *mModel;
-};
 
 MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
@@ -203,27 +76,28 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mDocModifiedIcon( QIcon::fromTheme("document-save") )
 #endif
 {
-    mTabs = new QTabBar;
-    mTabs->setDocumentMode(true);
-    mTabs->setTabsClosable(true);
-    mTabs->setMovable(true);
-    mTabs->setUsesScrollButtons(true);
-    mTabs->setDrawBase(true);
-    mTabs->setElideMode(Qt::ElideNone);
+    mMain = main;
+    tempMode = false;
+    sessionChanged = false;
+    mCurrentEditorBox = 0;
 
-    CodeEditorBox *defaultBox = newBox();
+    mDocs.clear();
 
-    mSplitter = new MultiSplitter();
+    mSplitter = new MultiSplitter(0);
+    editorList << mSplitter;
+    defaultBox = newBox(mSplitter);
     mSplitter->addWidget(defaultBox);
 
     QVBoxLayout *l = new QVBoxLayout;
     l->setContentsMargins(0,0,0,0);
     l->setSpacing(0);
-    l->addWidget(mTabs);
     l->addWidget(mSplitter);
+    l->addWidget(mSplitter->toolBox());
     setLayout(l);
 
     makeSignalConnections();
+
+    connect(mSplitter->toolBox()->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
 
     mBoxSigMux->connect(SIGNAL(currentChanged(GenericCodeEditor*)),
                         this, SLOT(onCurrentEditorChanged(GenericCodeEditor*)));
@@ -254,18 +128,12 @@ void MultiEditor::makeSignalConnections()
             this, SLOT(show(Document*, int, int)));
     connect(docManager, SIGNAL(titleChanged(Document*)),
             this, SLOT(update(Document*)) );
-
-    connect(mTabs, SIGNAL(currentChanged(int)),
-            this, SLOT(onCurrentTabChanged(int)));
-    connect(mTabs, SIGNAL(tabCloseRequested(int)),
-            this, SLOT(onCloseRequest(int)));
 }
 
 void MultiEditor::breakSignalConnections()
 {
     DocumentManager *docManager = Main::documentManager();
     docManager->disconnect(this);
-    mTabs->disconnect(this);
 }
 
 void MultiEditor::createActions()
@@ -273,7 +141,9 @@ void MultiEditor::createActions()
     Settings::Manager *settings = Main::settings();
 
     QAction * action;
+    const QString ideCategory("IDE");
     const QString editorCategory(tr("Text Editor"));
+    const QString helpCategory(tr("Help"));
 
     // Edit
 
@@ -447,18 +317,9 @@ void MultiEditor::createActions()
 
     // View
 
-    mActions[DocClose] = action = new QAction(
-        QIcon::fromTheme("window-close"), tr("&Close"), this);
-    action->setShortcut(tr("Ctrl+W", "Close document"));
-    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    action->setStatusTip(tr("Close the current document"));
-    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(closeDocument()));
-    settings->addAction( action, "ide-document-close", editorCategory);
-
     mActions[EnlargeFont] = action = new QAction(
         QIcon::fromTheme("zoom-in"), tr("&Enlarge Font"), this);
     action->setShortcut(tr("Ctrl++", "Enlarge font"));
-    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     action->setStatusTip(tr("Increase displayed font size"));
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(zoomIn()));
     settings->addAction( action, "editor-enlarge-font", editorCategory);
@@ -466,7 +327,6 @@ void MultiEditor::createActions()
     mActions[ShrinkFont] = action = new QAction(
         QIcon::fromTheme("zoom-out"), tr("&Shrink Font"), this);
     action->setShortcut( tr("Ctrl+-", "Shrink font"));
-    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     action->setStatusTip(tr("Decrease displayed font size"));
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(zoomOut()));
     settings->addAction( action, "editor-shrink-font", editorCategory);
@@ -478,7 +338,7 @@ void MultiEditor::createActions()
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(resetFontSize()));
     settings->addAction( action, "editor-reset-font-size", editorCategory);
 
-    mActions[ShowWhitespace] = action = new QAction(tr("Show Spaces and Tabs"), this);
+    mActions[ShowWhitespace] = action = new QAction(tr("Show Spaces and Docs"), this);
     action->setCheckable(true);
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowWhitespace(bool)));
@@ -486,7 +346,7 @@ void MultiEditor::createActions()
 
     mActions[IndentWithSpaces] = action = new QAction(tr("Use Spaces for Indentation"), this);
     action->setCheckable(true);
-    action->setStatusTip( tr("Indent with spaces instead of tabs") );
+    action->setStatusTip( tr("Indent with spaces instead of docs") );
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered(bool)), SLOT(setSpaceIndent(bool)),
                            SignalMultiplexer::ConnectionOptional );
@@ -496,7 +356,7 @@ void MultiEditor::createActions()
 #ifndef Q_OS_MAC
     action->setShortcut( tr("Alt+Right", "Next Document"));
 #else
-    action->setShortcut( tr("Ctrl+Alt+Right", "Next Document"));
+    action->setShortcut( tr("Ctrl+Right", "Next Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(showNextDocument()));
     settings->addAction( action, "editor-document-next", editorCategory);
@@ -505,7 +365,7 @@ void MultiEditor::createActions()
 #ifndef Q_OS_MAC
     action->setShortcut( tr("Alt+Left", "Previous Document"));
 #else
-    action->setShortcut( tr("Ctrl+Alt+Left", "Previous Document"));
+    action->setShortcut( tr("Ctrl+Left", "Previous Document"));
 #endif
     connect(action, SIGNAL(triggered()), this, SLOT(showPreviousDocument()));
     settings->addAction( action, "editor-document-previous", editorCategory);
@@ -519,23 +379,37 @@ void MultiEditor::createActions()
     connect(action, SIGNAL(triggered()), this, SLOT(switchDocument()));
     settings->addAction( action, "editor-document-switch", editorCategory);
 
+    mActions[SwitchSplit] = action = new QAction(tr("&Switch Editor"), this);
+    action->setShortcut( tr("Ctrl+Alt+E", "Switch Editor"));
+    action->setStatusTip(tr("Show editors popup menu"));
+    connect(action, SIGNAL(triggered()), this, SLOT(switchSplit()));
+    settings->addAction( action, "editor-split-switch", editorCategory);
+
     mActions[SplitHorizontally] = action = new QAction(tr("Split To Right"), this);
-    //action->setShortcut( tr("Ctrl+P, 3", "Split To Right"));
     connect(action, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
     settings->addAction( action, "editor-split-right", editorCategory);
 
     mActions[SplitVertically] = action = new QAction(tr("Split To Bottom"), this);
-    //action->setShortcut( tr("Ctrl+P, 2", "Split To Bottom"));
     connect(action, SIGNAL(triggered()), this, SLOT(splitVertically()));
     settings->addAction( action, "editor-split-bottom", editorCategory);
 
+    mActions[SplitNewWindow] = action = new QAction(tr("Split To New Window"), this);
+    action->setStatusTip(tr("Open split in a new window"));
+    action->setShortcut( tr("Ctrl+Alt+N", "Split To New Window"));
+    connect(action, SIGNAL(triggered()), this, SLOT(splitNewWindow()));
+    settings->addAction( action, "editor-split-new", editorCategory);
+
     mActions[RemoveCurrentSplit] = action = new QAction(tr("Remove Current Split"), this);
-    //action->setShortcut( tr("Ctrl+P, 1", "Remove Current Split"));
     connect(action, SIGNAL(triggered()), this, SLOT(removeCurrentSplit()));
     settings->addAction( action, "editor-split-remove", editorCategory);
 
+    mActions[RemoveCurrentWindow] = action = new QAction(tr("&Close Window"), this);
+    action->setStatusTip(tr("Close the active window"));
+    action->setShortcut( tr("Ctrl+Alt+W", "Close Window"));
+    connect(action, SIGNAL(triggered()), this, SLOT(removeWindow()));
+    settings->addAction( action, "window-remove", editorCategory);
+
     mActions[RemoveAllSplits] = action = new QAction(tr("Remove All Splits"), this);
-    //action->setShortcut( tr("Ctrl+P, 0", "Remove All Splits"));
     connect(action, SIGNAL(triggered()), this, SLOT(removeAllSplits()));
     settings->addAction( action, "editor-split-remove-all", editorCategory);
 
@@ -553,7 +427,7 @@ void MultiEditor::createActions()
     QIcon::fromTheme("media-playback-start"), tr("&Evaluate Selection, Line or Region"), this);
     action->setShortcut(tr("Ctrl+Return", "Evaluate region"));
     action->setStatusTip(tr("Evaluate current region"));
-    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    //action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(evaluateRegion()),
                            SignalMultiplexer::ConnectionOptional);
     settings->addAction( action, "editor-eval-smart", editorCategory);
@@ -562,10 +436,238 @@ void MultiEditor::createActions()
     QIcon::fromTheme("media-playback-start"), tr("&Evaluate Selection or Line"), this);
     action->setShortcut(tr("Shift+Return", "Evaluate selection/line"));
     action->setStatusTip(tr("Evaluate current selection/line"));
-    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    //action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(evaluateLine()),
                            SignalMultiplexer::ConnectionOptional);
     settings->addAction( action, "editor-eval-line", editorCategory);
+
+    //  Reimplementation of main_window actions:
+    //  Actions have been moved to this class to allow shortcuts to work on the MainWindow when other windows are opened.
+
+    // File
+    mActions[Quit] = action = new QAction(
+        QIcon::fromTheme("application-exit"), tr("&Quit..."), this);
+    action->setShortcut(tr("Ctrl+Q", "Quit application"));
+    action->setStatusTip(tr("Quit SuperCollider IDE"));
+    QObject::connect( action, SIGNAL(triggered()), MainWindow::instance(), SLOT(onQuit()) );
+    settings->addAction( action, "ide-quit", ideCategory);
+
+    mActions[DocNew] = action = new QAction(
+        QIcon::fromTheme("document-new"), tr("&New"), this);
+    action->setShortcut(tr("Ctrl+N", "New document"));
+    action->setStatusTip(tr("Create a new document"));
+    connect(action, SIGNAL(triggered()), this, SLOT(newDocument()));
+    settings->addAction( action, "ide-document-new", ideCategory);
+
+    mActions[DocOpen] = action = new QAction(
+        QIcon::fromTheme("document-open"), tr("&Open..."), this);
+    action->setShortcut(tr("Ctrl+O", "Open document"));
+    action->setStatusTip(tr("Open an existing file"));
+    connect(action, SIGNAL(triggered()), this, SLOT(openDocument()));
+    settings->addAction( action, "ide-document-open", ideCategory);
+
+    mActions[DocOpenStartup] = action = new QAction(
+        QIcon::fromTheme("document-open"), tr("Open startup file"), this);
+    action->setStatusTip(tr("Open startup file"));
+    connect(action, SIGNAL(triggered()), this, SLOT(openStartupFile()));
+    settings->addAction( action, "ide-document-open-startup", ideCategory);
+
+    mActions[DocOpenSupportDir] = action = new QAction(
+        QIcon::fromTheme("document-open"), tr("Open user support directory"), this);
+    action->setStatusTip(tr("Open user support directory"));
+    connect(action, SIGNAL(triggered()), this, SLOT(openUserSupportDirectory()));
+    settings->addAction( action, "ide-document-open-support-directory", ideCategory);
+
+    mActions[DocSave] = action = new QAction(
+        QIcon::fromTheme("document-save"), tr("&Save"), this);
+    action->setShortcut(tr("Ctrl+S", "Save document"));
+    action->setStatusTip(tr("Save the current document"));
+    connect(action, SIGNAL(triggered()), this, SLOT(saveDocument()));
+    settings->addAction( action, "ide-document-save", ideCategory);
+
+    mActions[DocSaveAs] = action = new QAction(
+        QIcon::fromTheme("document-save-as"), tr("Save &As..."), this);
+    action->setShortcut(tr("Ctrl+Shift+S", "Save &As..."));
+    action->setStatusTip(tr("Save the current document into a different file"));
+    connect(action, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
+    settings->addAction( action, "ide-document-save-as", ideCategory);
+
+    mActions[DocSaveAll] = action = new QAction(
+        QIcon::fromTheme("document-save"), tr("Save All..."), this);
+    action->setShortcut(tr("Ctrl+Alt+S", "Save all documents"));
+    action->setStatusTip(tr("Save all open documents"));
+    connect(action, SIGNAL(triggered()), this, SLOT(saveAllDocuments()));
+    settings->addAction( action, "ide-document-save-all", ideCategory);
+
+    mActions[DocClose] = action = new QAction(
+        QIcon::fromTheme("window-close"), tr("&Close"), this);
+    action->setShortcut(tr("Ctrl+W", "Close document"));
+    action->setStatusTip(tr("Close the current document"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(closeDocument()));
+    settings->addAction( action, "ide-document-close", ideCategory);
+
+    mActions[DocCloseAll] = action = new QAction(
+        QIcon::fromTheme("window-close"), tr("Close All..."), this);
+    action->setShortcut(tr("Ctrl+Shift+W", "Close all documents"));
+    action->setStatusTip(tr("Close all documents"));
+    connect(action, SIGNAL(triggered()), this, SLOT(closeAllDocuments()));
+    settings->addAction( action, "ide-document-close-all", ideCategory);
+
+    mActions[DocReload] = action = new QAction(
+        QIcon::fromTheme("view-refresh"), tr("&Reload"), this);
+    action->setShortcut(tr("F5", "Reload document"));
+    action->setStatusTip(tr("Reload the current document"));
+    connect(action, SIGNAL(triggered()), this, SLOT(reloadDocument()));
+    settings->addAction( action, "ide-document-reload", ideCategory);
+
+    // Sessions
+
+    mActions[NewSession] = action = new QAction(
+        QIcon::fromTheme("document-new"), tr("&New Session"), this);
+    action->setStatusTip(tr("Open a new session"));
+    connect(action, SIGNAL(triggered()), this, SLOT(newSession()));
+    settings->addAction( action, "ide-session-new", ideCategory);
+
+    mActions[SaveSessionAs] = action = new QAction(
+        QIcon::fromTheme("document-save-as"), tr("Save Session &As..."), this);
+    action->setStatusTip(tr("Save the current session with a different name"));
+    connect(action, SIGNAL(triggered()), this, SLOT(saveCurrentSessionAs()));
+    settings->addAction( action, "ide-session-save-as", ideCategory);
+
+    mActions[ManageSessions] = action = new QAction(
+        tr("&Manage Sessions..."), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(openSessionsDialog()));
+    settings->addAction( action, "ide-session-manage", ideCategory);
+
+    mActions[OpenSessionSwitchDialog] = action = new QAction(
+        tr("&Switch Session..."), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(showSwitchSessionDialog()));
+    action->setShortcut(tr("Ctrl+Shift+Q", "Switch Session"));
+    settings->addAction( action, "ide-session-switch", ideCategory);
+
+    //edit
+
+    mActions[Find] = action = new QAction(
+        QIcon::fromTheme("edit-find"), tr("&Find..."), this);
+    action->setShortcut(tr("Ctrl+F", "Find"));
+    action->setStatusTip(tr("Find text in document"));
+    connect(action, SIGNAL(triggered()), this, SLOT(showFindTool()));
+    settings->addAction( action, "editor-find", editorCategory);
+
+    action = mActions[FindNext] = new QAction(tr("Find Next"), this);
+    action->setShortcut(tr("Ctrl+G", "Find Next"));
+    connect( action, SIGNAL(triggered()), this, SLOT(findNext()) );
+    settings->addAction( action, "editor-find-next", tr("Text Editor") );
+
+    action = mActions[FindPrevious] = new QAction(tr("Find Previous"), this);
+    action->setShortcut(tr("Ctrl+Shift+G", "Find Previous"));
+    connect( action, SIGNAL(triggered()), this, SLOT(findPrevious()) );
+    settings->addAction( action, "editor-find-previous", tr("Text Editor") );
+
+    mActions[Replace] = action = new QAction(
+        QIcon::fromTheme("edit-replace"), tr("&Replace..."), this);
+    action->setShortcut(tr("Ctrl+R", "Replace"));
+    action->setStatusTip(tr("Find and replace text in document"));
+    connect(action, SIGNAL(triggered()), this, SLOT(showReplaceTool()));
+    settings->addAction( action, "editor-replace", editorCategory);
+
+    //View
+
+    mActions[ShowCmdLine] = action = new QAction(tr("&Command Line"), this);
+    action->setStatusTip(tr("Command line for quick code evaluation"));
+    action->setShortcut(tr("Ctrl+E", "Show command line"));
+    connect(action, SIGNAL(triggered()), this, SLOT(showCmdLine()));
+    settings->addAction( action, "ide-command-line-show", ideCategory);
+
+    mActions[CmdLineForCursor] = action = new QAction(tr("&Command Line from selection"), this);
+    action->setShortcut(tr("Ctrl+Shift+E", "Fill command line with current selection"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(cmdLineForCursor()));
+    settings->addAction( action, "ide-command-line-fill", ideCategory);
+
+    mActions[ShowGoToLineTool] = action = new QAction(tr("&Go To Line"), this);
+    action->setStatusTip(tr("Tool to jump to a line by number"));
+    action->setShortcut(tr("Ctrl+L", "Show go-to-line tool"));
+    connect(action, SIGNAL(triggered()), this, SLOT(showGoToLineTool()));
+    settings->addAction( action, "editor-go-to-line", editorCategory);
+
+    mActions[CloseToolBox] = action = new QAction(
+        QIcon::fromTheme("window-close"), tr("&Close Tool Panel"), this);
+    action->setStatusTip(tr("Close any open tool panel"));
+    action->setShortcut(tr("Esc", "Close tool box"));
+    connect(action, SIGNAL(triggered()), this, SLOT(hideToolBox()));
+    settings->addAction( action, "ide-tool-panel-hide", ideCategory);
+
+    mActions[ShowFullScreen] = action = new QAction(tr("&Full Screen"), this);
+    action->setCheckable(false);
+    action->setShortcut(tr("Ctrl+Shift+F", "Show ScIDE in Full Screen"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(toggleFullScreen()));
+    settings->addAction( action, "ide-show-fullscreen", ideCategory);
+
+    mActions[FocusPostWindow] = action = new QAction( tr("Focus Post Window"), this);
+    action->setStatusTip(tr("Focus post window"));
+    action->setShortcut(tr("Ctrl+Alt+P", "Focus post window"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(postFocus()));
+    settings->addAction( action, "post-focus", ideCategory);
+
+    // Language
+
+    mActions[LookupImplementation] = action = new QAction(
+        QIcon::fromTheme("window-lookupdefinition"), tr("Look Up Implementations..."), this);
+    action->setShortcut(tr("Ctrl+Shift+I", "Look Up Implementations"));
+    action->setStatusTip(tr("Open dialog to look up implementations of a class or a method"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(lookupImplementation()));
+    settings->addAction( action, "ide-lookup-implementation", ideCategory);
+
+    mActions[LookupImplementationForCursor] = action = new QAction(tr("Look Up Implementations for Cursor"), this);
+    action->setShortcut(tr("Ctrl+I", "Look Up Implementations for Cursor"));
+    action->setStatusTip(tr("Look up implementations of class or method under cursor"));
+    connect(action, SIGNAL(triggered(bool)), MainWindow::instance(), SLOT(lookupImplementationForCursor()));
+    settings->addAction( action, "ide-lookup-implementation-for-cursor", ideCategory);
+
+    mActions[LookupReferences] = action = new QAction(
+        QIcon::fromTheme("window-lookupreferences"), tr("Look Up References..."), this);
+    action->setShortcut(tr("Ctrl+Shift+U", "Look Up References"));
+    action->setStatusTip(tr("Open dialog to look up references to a class or a method"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(lookupReferences()));
+    settings->addAction( action, "ide-lookup-references", ideCategory);
+
+    mActions[LookupReferencesForCursor] = action = new QAction(tr("Look Up References for Cursor"), this);
+    action->setShortcut(tr("Ctrl+U", "Look Up References For Selection"));
+    action->setStatusTip(tr("Look up references to class or method under cursor"));
+    connect(action, SIGNAL(triggered(bool)), MainWindow::instance(), SLOT(lookupReferencesForCursor()));
+    settings->addAction( action, "ide-lookup-references-for-cursor", ideCategory);
+
+    // Settings
+
+    mActions[ShowSettings] = action = new QAction(tr("&Preferences"), this);
+#ifdef Q_OS_MAC
+    action->setShortcut(tr("Ctrl+,", "Show configuration dialog"));
+#endif
+    action->setStatusTip(tr("Show configuration dialog"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(showSettings()));
+    settings->addAction( action, "ide-settings-dialog", ideCategory);
+
+    // Help
+
+    mActions[Help] = action = new QAction(tr("Show &Help Browser"), this);
+    action->setStatusTip(tr("Show and focus the Help Browser"));
+    action->setShortcut(tr("Ctrl+Alt+D", "Focus post window"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(openHelp()));
+    settings->addAction( action, "help-browser", helpCategory);
+
+    mActions[LookupDocumentationForCursor] = action =
+            new QAction(tr("Look Up Documentation for Cursor"), this);
+    action->setShortcut(tr("Ctrl+D", "Look Up Documentation for Cursor"));
+    action->setStatusTip(tr("Look up documentation for text under cursor"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(lookupDocumentationForCursor()));
+    settings->addAction( action, "help-lookup-for-cursor", helpCategory);
+
+    mActions[LookupDocumentation] = action =
+            new QAction(tr("Look Up Documentation..."), this);
+    action->setShortcut(tr("Ctrl+Shift+D", "Look Up Documentation"));
+    action->setStatusTip(tr("Enter text to look up in documentation"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(lookupDocumentation()));
+    settings->addAction( action, "help-lookup", helpCategory);
 
     // These actions are not added to any menu, so they have to be added
     // at least to this widget, in order for the shortcuts to always respond:
@@ -578,9 +680,6 @@ void MultiEditor::createActions()
     addAction(mActions[Cut]);
     addAction(mActions[Copy]);
     addAction(mActions[Paste]);
-    addAction(mActions[DocClose]);
-    addAction(mActions[EnlargeFont]);
-    addAction(mActions[ShrinkFont]);
     addAction(mActions[ShowWhitespace]);
     addAction(mActions[IndentWithSpaces]);
     addAction(mActions[EvaluateCurrentDocument]);
@@ -600,6 +699,45 @@ void MultiEditor::createActions()
     addAction(mActions[GotoPreviousEmptyLine]);
     addAction(mActions[GotoNextEmptyLine]);
     addAction(mActions[SelectRegion]);
+    addAction(mActions[EnlargeFont]);
+    addAction(mActions[ShrinkFont]);
+    addAction(mActions[ResetFontSize]);
+
+    addAction(mActions[Quit]);
+    addAction(mActions[DocNew]);
+    addAction(mActions[DocOpen]);
+    addAction(mActions[DocOpenStartup]);
+    addAction(mActions[DocOpenSupportDir]);
+    addAction(mActions[DocSave]);
+    addAction(mActions[DocSaveAs]);
+    addAction(mActions[DocSaveAll]);
+    addAction(mActions[DocClose]);
+    addAction(mActions[DocCloseAll]);
+    addAction(mActions[DocReload]);
+    addAction(mActions[NewSession]);
+    addAction(mActions[SaveSessionAs]);
+    addAction(mActions[ManageSessions]);
+    addAction(mActions[OpenSessionSwitchDialog]);
+    addAction(mActions[Find]);
+    addAction(mActions[FindNext]);
+    addAction(mActions[FindPrevious]);
+    addAction(mActions[Replace]);
+    addAction(mActions[ShowCmdLine]);
+    addAction(mActions[CmdLineForCursor]);
+    addAction(mActions[ShowGoToLineTool]);
+    addAction(mActions[CloseToolBox]);
+    addAction(mActions[ShowFullScreen]);
+    addAction(mActions[FocusPostWindow]);
+    addAction(mActions[LookupImplementation]);
+    addAction(mActions[LookupImplementationForCursor]);
+    addAction(mActions[LookupReferences]);
+    addAction(mActions[LookupReferencesForCursor]);
+    addAction(mActions[ShowSettings]);
+    addAction(mActions[Help]);
+    addAction(mActions[LookupDocumentationForCursor]);
+    addAction(mActions[LookupDocumentation]);
+    addAction(mActions[SplitNewWindow]);
+    addAction(mActions[SwitchSplit]);
 }
 
 void MultiEditor::updateActions()
@@ -621,6 +759,7 @@ void MultiEditor::updateActions()
     mActions[GotoPreviousEmptyLine]->setEnabled( editor );
     mActions[GotoNextEmptyLine]->setEnabled( editor );
     mActions[DocClose]->setEnabled( editor );
+    mActions[DocNew]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
     mActions[ShrinkFont]->setEnabled( editor );
     mActions[ResetFontSize]->setEnabled( editor );
@@ -656,13 +795,24 @@ static QVariantList saveBoxState( CodeEditorBox *box, const QList<Document*> & d
     int idx = box->history().count();
     while(idx--) {
         GenericCodeEditor *editor = box->history()[idx];
+        int documentIndex = documentList.indexOf( editor->document() );
         if (!editor->document()->filePath().isEmpty()) {
-            int documentIndex = documentList.indexOf( editor->document() );
+            // if the session was new or currently restored, save current documents.
             Q_ASSERT(documentIndex >= 0);
             QVariantMap editorData;
             editorData.insert("documentIndex", documentIndex);
             editorData.insert("position", editor->textCursor().position());
             boxData.append( editorData );
+        }
+        else if (MainWindow::instance()->editor()->tempModeIsOn() && editor->document()->filePath().isEmpty() && documentIndex<MainWindow::instance()->editor()->originalDocumentList().count()) {
+            // if some default documents are replacing missing files, save their index to mantain the right association with the split index.
+            if ( (!(MainWindow::instance()->editor()->originalDocumentList().at(documentIndex).toString().isEmpty()))) {
+                Q_ASSERT(documentIndex >= 0);
+                QVariantMap editorData;
+                editorData.insert("documentIndex", documentIndex);
+                editorData.insert("position", editor->textCursor().position());
+                boxData.append( editorData );
+            }
         }
     }
     return boxData;
@@ -684,7 +834,7 @@ static QVariantMap saveSplitterState( QSplitter *splitter, const QList<Document*
         if (box) {
             QVariantList boxData = saveBoxState(box, documentList);
             childrenData.append( QVariant(boxData) );
-            continue;
+            continue;           
         }
 
         QSplitter *childSplitter = qobject_cast<QSplitter*>(child);
@@ -703,52 +853,132 @@ void MultiEditor::saveSession( Session *session )
 {
     QList<Document*> documentList;
 
-    QVariantList tabsData;
-    int tabCount = mTabs->count();
-    for (int tabIdx = 0; tabIdx < tabCount; ++tabIdx) {
-        Document *doc = documentForTab(tabIdx);
-        documentList << doc;
-        tabsData << doc->filePath();
+    QVariantList docsData;
+    int docCount = mDocs.count();
+    if (tempMode) {
+        QString string = QString("Session saved in temporary-mode: untitled documents replaced with original paths. \n");
+            Main::scProcess()->post(string);
+    }
+    for (int docIdx = 0; docIdx < docCount; ++docIdx) {
+        Document *doc = documentForIndex(docIdx);
+        // if the session has opened in temporary-mode
+        if (tempMode) {
+            // every new document is appended. So the docCount is bigger than originalDocumentsList: this statement makes sure not to crash the program.
+            if (docIdx+1 <= originalDocumentsList.count()) {
+                // there are 2 cases: the doc path is available or it isn't.
+                if ( doc->filePath().isEmpty() ) {
+                    // if the doc path is not available, save the original path.
+                    docsData << originalDocumentsList.at(docIdx).toString();
+                    documentList << doc;
+
+                    if (originalDocumentsList.at(docIdx).toString().isEmpty())
+                        return;
+                    else {
+                        QString string = QString("File path still missing: " + originalDocumentsList.at(docIdx).toString() + " \n");
+                            Main::scProcess()->post(string);
+                    }
+                }
+                if ( !(doc->filePath().isEmpty()) ) {
+                    // if the doc path is available, save the path.
+                    docsData << doc->filePath();
+                    documentList << doc;
+                }
+            }
+            else {
+                if (doc->filePath().isEmpty()) {
+                    documentList << doc;
+                }
+                else {
+                    // for each new document save the filePath.
+                    docsData << doc->filePath();
+                    documentList << doc;
+
+                    QString string = QString("New document added: " + doc->filePath() + " \n");
+                        Main::scProcess()->post(string);
+                }
+            }
+        }
+        else {
+            // any new document with no path is discharged
+            if (doc->filePath().isEmpty()) {
+                //docsData << doc->filePath();
+                documentList << doc;
+            }
+            else {
+                // the session had been opened with all the right doc paths. It works normally.
+                docsData << doc->filePath();
+                documentList << doc;
+            }
+        }
     }
 
-    session->setValue( "documents", QVariant::fromValue(tabsData) );
+    session->setValue( "documents", QVariant::fromValue(docsData) );
 
     session->remove( "editors" );
-    session->setValue( "editors", saveSplitterState(mSplitter, documentList) );
+
+    QVariantList splitterState;
+    foreach(MultiSplitter *editor, editorList) {
+        // If the window has got one only editor and the document is untitled, discharge it.
+        // If the window has more than one split (editor), save it. Particularly, save the Splitter if:
+        if ( editor==editorList.at(0) /* it is the main Editor */
+             || editor->splits().count() > 1  /* there is more than 1 spit in the window */
+             || !editor->splits().at(0)->currentEditor()->document()->filePath().isEmpty() /* the document is saved */
+             || indexForDocument(editor->splits().at(0)->currentEditor()->document())<originalDocumentList().count() /* the document is protected */ )
+            splitterState << saveSplitterState(editor, documentList);
+    }
+
+    session->setValue( "editors", QVariant::fromValue(splitterState) );
 }
 
 void MultiEditor::loadBoxState( CodeEditorBox *box,
                                 const QVariantList & data, const QList<Document*> & documentList )
 {
     int docCount = documentList.count();
-    foreach( QVariant docVar, data )
-    {
-        QVariantMap docData = docVar.value<QVariantMap>();
-        int docIndex = docData.value("documentIndex").toInt();
-        int docPos = docData.value("position").toInt();
-        if (docIndex >= 0 && docIndex < docCount)
-            box->setDocument( documentList[docIndex], docPos );
+     // ensure working if the session has saved with one only untitled document
+    if (docCount == 1 && documentForIndex(0)->filePath().isEmpty() ) {
+        box->setDocument( documentList[0]);
+    }
+    else {
+        foreach( QVariant docVar, data )
+        {
+            QVariantMap docData = docVar.value<QVariantMap>();
+            int docIndex = docData.value("documentIndex").toInt();
+            if (docIndex >= 0 && docIndex < docCount) {
+                if (!(documentList[docIndex]->filePath().isEmpty())) {
+                    int docPos = docData.value("position").toInt();
+                    box->setDocument( documentList[docIndex], docPos );
+                }
+                // ensure working if the filePath is broken or lost or unsaved
+                else {
+                    box->setDocument( documentList[0] );
+                }
+            }
+            // ensure working if there are more indexes than documents
+            else {
+                box->setDocument( documentList[0] );
+            }
+        }
     }
 }
 
-void MultiEditor::loadSplitterState( QSplitter *splitter,
-                                     const QVariantMap & data, const QList<Document*> & documentList )
+void MultiEditor::loadSplitterState( MultiSplitter *splitter,
+                                     const QVariantMap & data, const QList<Document*> & documentList, MultiSplitter *splitterContainer )
 {
     QByteArray state = QByteArray::fromBase64( data.value("state").value<QByteArray>() );
 
     QVariantList childrenData = data.value("elements").value<QVariantList>();
     foreach (const QVariant & childVar, childrenData) {
         if (childVar.type() == QVariant::List) {
-            CodeEditorBox *childBox = newBox();
+            CodeEditorBox *childBox = newBox(splitterContainer);
             splitter->addWidget(childBox);
             QVariantList childBoxData = childVar.value<QVariantList>();
             loadBoxState( childBox, childBoxData, documentList );
         }
         else if (childVar.type() == QVariant::Map) {
-            QSplitter *childSplitter = new QSplitter;
+            MultiSplitter *childSplitter = new MultiSplitter(splitter->returnWindow());
             splitter->addWidget(childSplitter);
             QVariantMap childSplitterData = childVar.value<QVariantMap>();
-            loadSplitterState( childSplitter, childSplitterData, documentList );
+            loadSplitterState( childSplitter, childSplitterData, documentList, splitterContainer );
         }
     }
 
@@ -770,79 +1000,271 @@ void MultiEditor::switchSession( Session *session )
     foreach (Document *doc, documentList)
         docManager->close(doc);
 
-    // remove all tabs
-    while (mTabs->count())
-        mTabs->removeTab(0);
-
     // remove all editors
-    delete mSplitter;
+    foreach (MultiSplitter *splitter, editorList) {
+        if (splitter->returnWindow()) {
+            delete splitter->returnWindow();
+        } else {
+            delete splitter;
+        }
+    }
 
     documentList.clear();
+    editorList.clear();
+    mDocs.clear();
+    tempMode = false;
+    originalDocumentsList.clear();
+    sessionChanged = false;
+    mCurrentEditorBox = 0;
 
-    mSplitter = new MultiSplitter();
+    mSplitter = new MultiSplitter(0);
+    editorList << mSplitter;
 
-    CodeEditorBox *firstBox = 0;
+    defaultBox = 0;
+    mEditorHistory.clear();
 
     if (session)
     {
         // open documents saved in the session
         QVariantList docDataList = session->value("documents").value<QVariantList>();
-        foreach( const QVariant & docData, docDataList ) {
-            QString filePath = docData.toString();
-            Document * doc = docManager->open(filePath, -1, 0, false);
+
+        if (docDataList.isEmpty()) {
+            // If, for some reason, the session has been saved without document
+            // Ensure working when a session has been saved without valid files
+            Document * doc = Main::documentManager()->docReplace();
             documentList << doc;
+
+            QString string = QString("No files have been saved in the last session! New Session! \n");
+            Main::scProcess()->post(string);
+        }
+        else {
+            foreach( const QVariant & docData, docDataList ) {
+
+                QString filePath = docData.toString();
+                // Ensure working if, for some reason, a file path has not been
+                if (filePath.isEmpty()) {
+                    originalDocumentsList << filePath;
+                    Document * doc = Main::documentManager()->docReplace();
+                    documentList << doc;
+                }
+                else {
+                    Document * doc = docManager->open(filePath, -1, 0, false);
+                    // If the file is available, open it.
+                    if (doc) {
+                        originalDocumentsList << filePath;
+                        documentList << doc;
+                    }
+                    else {
+                        // if a file is not found, warn the user about the prob
+                        // 3 choices: replace the missing file with a new one (
+                        // forget the file and delete it; ignore the warning. I
+                        // make a copy of all the path, and replace the missing
+                        // These blank documents will be protected and the orig
+
+                        QString warnMissingFile = QString("file missing: " + filePath + "; ");
+                        Main::scProcess()->post(warnMissingFile);
+
+                        QMessageBox missingFile( QMessageBox::Warning,
+                            tr("SuperCollider IDE"),
+                            tr("The document '%1' has not been found. Do you want to replace it? \n\n"
+                               "If you discharge it, the document will be removed. \n"
+                               "If you ignore it, the document will be temporarily replaced by a blank window. "
+                               "(Supercollider will try to re-open the file next time.)").arg(filePath),
+                            QMessageBox::Open | QMessageBox::Close | QMessageBox::Cancel,
+                            this
+                        );
+
+                        missingFile.setButtonText(QMessageBox::Open, "Replace");
+                        missingFile.setButtonText(QMessageBox::Close, "Discharge");
+                        missingFile.setButtonText(QMessageBox::Cancel, "Ignore");
+
+                        switch (missingFile.exec()) {
+                            case QMessageBox::Open:
+                            {
+                                QFileDialog dialog (this, Qt::Dialog);
+                                dialog.setModal(true);
+                                dialog.setWindowModality(Qt::ApplicationModal);
+
+                                dialog.setFileMode( QFileDialog::ExistingFile );
+
+                                QStringList filters;
+                                filters
+                                    << tr("All Files (*)")
+                                    << tr("SuperCollider (*.scd *.sc)")
+                                    << tr("SuperCollider Help Source (*.schelp)");
+                                dialog.setNameFilters(filters);
+
+                                #ifdef Q_OS_MAC
+                                    QWidget *last_active_window = QApplication::activeWindow();
+                                #endif
+
+                                    if (dialog.exec())
+                                    {
+                                        QStringList filename = dialog.selectedFiles();
+                                        originalDocumentsList << filename[0];
+                                        Document * doc = docManager->open(filename[0], -1, 0, false);
+                                        documentList << doc;
+
+                                        QString replaceMissingFile = QString( " replaced with: " + filename[0] + " \n");
+                                        Main::scProcess()->post(replaceMissingFile);
+                                    }
+
+                                    // FIXME: workaround for Qt bug 25295
+                                    // See SC issue #678
+                                #ifdef Q_OS_MAC
+                                    if (last_active_window)
+                                        last_active_window->activateWindow();
+                                #endif
+
+                                sessionChanged = true;
+
+                                break;
+                            }
+                            case QMessageBox::Cancel:
+                            {
+                                tempMode = true;
+                                originalDocumentsList << filePath;
+                                Document * doc = Main::documentManager()->docReplace();
+                                documentList << doc;
+
+                                QString replaceMissingFile = QString(" replaced with a protected blank window. \n");
+                                Main::scProcess()->post(replaceMissingFile);
+
+                                break;
+                            }
+                            case QMessageBox::Close:
+                                sessionChanged = true;
+                                QString deleteMissingFile = QString(" deleted. \n");
+                                Main::scProcess()->post(deleteMissingFile);
+                                break;
+                            //default:;
+                        }
+                    }
+                }
+            }
         }
 
-        // restore tabs
+        if (tempMode) {
+            QString warning = QString("ide: Session running in temporary-mode:  some file paths have not been found. Please replace files or re-save session. \n");
+                Main::scProcess()->post(warning);
+        }
+
+        // restore docs
         foreach ( Document * doc, documentList )
-            addTab(doc);
+            addDoc(doc);
 
         // restore editors
         if (session->contains("editors")) {
-            QVariantMap splitterData = session->value("editors").value<QVariantMap>();
-            loadSplitterState( mSplitter, splitterData, documentList );
+            // restore session of previous versions of Supercollider
+            QVariant variantType = session->value("editors");
+            if (variantType.type() == QVariant::Map) {
+                QVariantMap splitterData = variantType.value<QVariantMap>();
+                loadSplitterState( mSplitter, splitterData, documentList, mSplitter );
 
-            if (mSplitter->count()) {
-                firstBox = mSplitter->findChild<CodeEditorBox>();
-                if (!firstBox) {
-                    qWarning("Session seems to contain invalid editor split data!");
-                    delete mSplitter;
-                    mSplitter = new MultiSplitter();
+                if (mSplitter->count()) {
+                    defaultBox = mSplitter->findChild<CodeEditorBox>();
+                    if (!defaultBox) {
+                        qWarning("Session seems to contain invalid editor split data!");
+                        delete mSplitter;
+                        editorList.clear();
+                        mSplitter = new MultiSplitter(0);
+                        editorList << mSplitter;
+                    }
+                }
+            }
+            if (variantType.type() == QVariant::List) {
+                QVariantList splitterStateList = session->value("editors").value<QVariantList>();
+
+                QVariant splitterState;
+                for (int indexSplit = 0; indexSplit < splitterStateList.size(); indexSplit++)
+                {
+                    splitterState = splitterStateList.at(indexSplit);
+                    QVariantMap splitterData = splitterState.toMap();
+                    if (indexSplit == 0) {
+                        loadSplitterState( mSplitter, splitterData, documentList, mSplitter );
+
+                        if (mSplitter->count()) {
+                            defaultBox = mSplitter->splits().first();
+                            if (!defaultBox) {
+                                qWarning("Session seems to contain invalid editor split data!");
+                                delete mSplitter;
+                                editorList.clear();
+                                mSplitter = new MultiSplitter(0);
+                                editorList << mSplitter;
+                            }
+                        }
+                    }
+                    else {
+                        EditorWindow *window = makeNewWindow();
+
+                        MultiSplitter *newSplitter = new MultiSplitter(window);
+                        editorList << newSplitter;
+
+                        loadSplitterState( newSplitter, splitterData, documentList, newSplitter );
+
+                        if (newSplitter->count()) {
+                            CodeEditorBox *newBox = newSplitter->findChild<CodeEditorBox>();
+                            if (!newBox) {
+                                qWarning("Session seems to contain invalid editor split data!");
+                                delete newSplitter;
+                                newSplitter = new MultiSplitter(window);
+                            }
+                        }
+
+                        QVBoxLayout *l = setNewLayout(newSplitter);
+
+                        window->setLayout(l);
+                    }
                 }
             }
         }
     }
 
-    if (!firstBox) {
+    if (!defaultBox) {
         // Restoring the session didn't result in any editor box, so create one:
-        firstBox = newBox();
-        mSplitter->addWidget( firstBox );
+        defaultBox = newBox(mSplitter);
+        mSplitter->addWidget( defaultBox );
+
+        if (!mDocs.isEmpty())
+            defaultBox->setDocument(mDocs.at(0));
+
+        QString string = QString("New session \n");
+        Main::scProcess()->post(string);
     }
 
     layout()->addWidget(mSplitter);
+    layout()->addWidget(mSplitter->toolBox());
+
+    connect(mSplitter->toolBox()->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
 
     makeSignalConnections();
 
     ///// Back online.
 
     mCurrentEditorBox = 0; // ensure complete update
-    setCurrentBox( firstBox );
+    setCurrentBox( defaultBox );
 
-    if (!session)
+    if (!session) {
         // create a document on new session
         docManager->create();
+        docManager->sendActiveDocument();
+    }
 
-    firstBox->setFocus(Qt::OtherFocusReason); // ensure focus
+    defaultBox->setFocus(Qt::OtherFocusReason); // ensure focus
+
+    if (sessionChanged) {
+        MainWindow::instance()->saveSessionChanged();
+    }
 }
 
-int MultiEditor::addTab( Document * doc )
+int MultiEditor::addDoc( Document * doc )
 {
     if (!doc)
         return -1;
 
-    int tabIdx = tabForDocument(doc);
-    if (tabIdx != -1)
-        return tabIdx;
+    int docIdx = indexForDocument(doc);
+    if (docIdx != -1)
+        return docIdx;
 
     QTextDocument *tdoc = doc->textDocument();
 
@@ -850,54 +1272,95 @@ int MultiEditor::addTab( Document * doc )
     if(tdoc->isModified())
         icon = mDocModifiedIcon;
 
-    tabIdx = mTabs->addTab( icon, doc->title() );
-    mTabs->setTabData( tabIdx, QVariant::fromValue<Document*>(doc) );
+    mDocs << doc;
 
     mDocModifiedSigMap.setMapping(tdoc, doc);
     connect( tdoc, SIGNAL(modificationChanged(bool)), &mDocModifiedSigMap, SLOT(map()) );
 
-    return tabIdx;
+    return docIdx;
 }
 
 void MultiEditor::setCurrent( Document *doc )
 {
-    int tabIdx = tabForDocument(doc);
-    if (tabIdx != -1)
-        mTabs->setCurrentIndex(tabIdx);
+    CodeEditorBox *curBox = currentBox();
+    curBox->setDocument(doc);
+    curBox->setFocus(Qt::OtherFocusReason);
 }
 
 void MultiEditor::showNextDocument()
 {
-    int currentIndex = mTabs->currentIndex();
-    mTabs->setCurrentIndex( qMin(currentIndex + 1, mTabs->count() - 1) );
+    CodeEditorBox *curBox = currentBox();
+    int currentIndex = mDocs.indexOf(curBox->currentDocument());
+    if (currentIndex < mDocs.count()-1) {
+        Document *doc = documentForIndex(currentIndex +1);
+        if (!doc)
+            return;
+
+        curBox->setDocument(doc);
+        curBox->setFocus(Qt::OtherFocusReason);
+    }
+    else {
+        return;
+    }
 }
 
 void MultiEditor::showPreviousDocument()
 {
-    int currentIndex = mTabs->currentIndex();
-    mTabs->setCurrentIndex( qMax(0, currentIndex - 1) );
+    CodeEditorBox *curBox = currentBox();
+    int currentIndex = mDocs.indexOf(curBox->currentDocument());
+    if (currentIndex > 0) {
+        Document *doc = documentForIndex(currentIndex -1);
+        if (!doc)
+            return;
+
+        curBox->setDocument(doc);
+        curBox->setFocus(Qt::OtherFocusReason);
+    }
+    else {
+        return;
+    }
 }
 
 void MultiEditor::switchDocument()
 {
-    CodeEditorBox *box = currentBox();
+    currentBox()->comboBox()->showPopup();
+}
 
-    DocumentSelectPopUp * popup = new DocumentSelectPopUp(box->history(), this);
+void MultiEditor::addSplitToHistory(CodeEditorBox *box) {
+    mEditorHistory.prepend(box);
+}
+
+void MultiEditor::removeSplitFromHistory(CodeEditorBox *box) {
+    mEditorHistory.removeOne(box);
+}
+
+void MultiEditor::setCurrentSplitInHistory(CodeEditorBox *box) {
+    mEditorHistory.removeOne(box);
+    mEditorHistory.prepend(box);
+}
+
+void MultiEditor::switchSplit()
+{
+    EditorSelectPopUp * popup = new EditorSelectPopUp(splitHistory(), this);
 
     QRect popupRect(0,0,300,200);
     popupRect.moveCenter(rect().center());
     popup->resize(popupRect.size());
     QPoint globalPosition = mapToGlobal(popupRect.topLeft());
 
-    Document * selectedDocument = popup->exec(globalPosition);
+    CodeEditorBox * selectedSplit = popup->exec(globalPosition);
 
-    if (selectedDocument)
-        box->setDocument(selectedDocument);
+    if (selectedSplit) {
+        setCurrentBox(selectedSplit);
+        currentBox()->raise();
+        currentBox()->show();
+        currentBox()->activateWindow();
+    }
 }
 
 void MultiEditor::onOpen( Document *doc, int initialCursorPosition, int selectionLength )
 {
-    addTab(doc);
+    addDoc(doc);
 
     currentBox()->setDocument(doc, initialCursorPosition, selectionLength);
     currentBox()->setFocus(Qt::OtherFocusReason);
@@ -905,10 +1368,13 @@ void MultiEditor::onOpen( Document *doc, int initialCursorPosition, int selectio
 
 void MultiEditor::onClose( Document *doc )
 {
-    int tabIdx = tabForDocument(doc);
-    if (tabIdx != -1)
-        mTabs->removeTab(tabIdx);
-    // TODO: each box should switch document according to their own history
+    int docIdx = indexForDocument(doc);
+    if (docIdx != -1) {
+        mDocs.removeAt(docIdx);
+        if (tempMode) {
+            originalDocumentsList.removeAt(docIdx);
+        }
+    }
 }
 
 void MultiEditor::onDocModified( QObject *object )
@@ -916,8 +1382,8 @@ void MultiEditor::onDocModified( QObject *object )
     Document *doc = qobject_cast<Document*>(object);
     if (!doc) return;
 
-    int tabIdx = tabForDocument(doc);
-    if (tabIdx == -1) return;
+    int docIdx = indexForDocument(doc);
+    if (docIdx == -1) return;
 
     bool isModified = doc->textDocument()->isModified();
     QIcon icon;
@@ -925,8 +1391,6 @@ void MultiEditor::onDocModified( QObject *object )
         icon = mDocModifiedIcon;
 
     Main::evaluateCodeIfCompiled(QString("Document.findByQUuid(\'%1\').prSetEdited(%2)").arg(doc->id().constData()).arg(isModified), true);
-    
-    mTabs->setTabIcon( tabIdx, icon );
 }
 
 void MultiEditor::show( Document *doc, int pos, int selectionLength )
@@ -937,40 +1401,16 @@ void MultiEditor::show( Document *doc, int pos, int selectionLength )
 
 void MultiEditor::update( Document *doc )
 {
-    int tabIdx = tabForDocument(doc);
-    if (tabIdx != -1)
-        mTabs->setTabText(tabIdx, doc->title());
-
     // update thisProcess.nowExecutingPath
     GenericCodeEditor *editor = currentEditor();
     if (editor->document() == doc)
         Main::documentManager()->setActiveDocument(doc);
 }
 
-void MultiEditor::onCloseRequest( int index )
-{
-    Document *doc = documentForTab(index);
-    if (doc)
-        MainWindow::close(doc);
-}
-
-void MultiEditor::onCurrentTabChanged( int index )
-{
-    if (index == -1)
-        return;
-
-    Document *doc = documentForTab(index);
-    if (!doc)
-        return;
-
-    CodeEditorBox *curBox = currentBox();
-    curBox->setDocument(doc);
-    curBox->setFocus(Qt::OtherFocusReason);
-}
-
 void MultiEditor::onCurrentEditorChanged(GenericCodeEditor *editor)
 {
     setCurrentEditor(editor);
+//    currentFindReplacePanel()->setEditor( editor );
 }
 
 void MultiEditor::onBoxActivated(CodeEditorBox *box)
@@ -978,28 +1418,31 @@ void MultiEditor::onBoxActivated(CodeEditorBox *box)
     setCurrentBox(box);
 }
 
-Document * MultiEditor::documentForTab( int index )
+Document * MultiEditor::documentForIndex( int index )
 {
-    return mTabs->tabData(index).value<Document*>();
+    return mDocs.at(index);
 }
 
-int MultiEditor::tabForDocument( Document * doc )
+int MultiEditor::indexForDocument( Document * doc )
 {
-    int tabCount = mTabs->count();
-    for (int idx = 0; idx < tabCount; ++idx) {
-        Document *tabDoc = documentForTab(idx);
-        if (tabDoc && tabDoc == doc)
+    int docCount = mDocs.count();
+    for (int idx = 0; idx < docCount; ++idx) {
+        Document *currentDoc = documentForIndex(idx);
+        if (currentDoc && currentDoc == doc)
             return idx;
     }
     return -1;
 }
 
-CodeEditorBox *MultiEditor::newBox()
+CodeEditorBox *MultiEditor::newBox( MultiSplitter * splitter)
 {
-    CodeEditorBox *box = new CodeEditorBox();
+    CodeEditorBox *box = new CodeEditorBox( splitter );
 
     connect(box, SIGNAL(activated(CodeEditorBox*)),
             this, SLOT(onBoxActivated(CodeEditorBox*)));
+
+    addSplitToHistory(box);
+    splitter->addSplit(box);
 
     return box;
 }
@@ -1009,21 +1452,23 @@ void MultiEditor::setCurrentBox( CodeEditorBox * box )
     if (mCurrentEditorBox == box)
         return;
 
+    // if a Window has been deleted, do not act over it because it would crash.
+    if (mCurrentEditorBox && !checkIfWindowWasClosed())
+        hideToolBox();
+
     mCurrentEditorBox = box;
+    setCurrentSplitInHistory(box);
     mBoxSigMux->setCurrentObject(box);
     setCurrentEditor( box->currentEditor() );
+    box->setFocus(Qt::OtherFocusReason);
 
     mCurrentEditorBox->setActive();
+    // currentBox has been reset, so clear the gate.
+    windowIsDeleted = false;
 }
 
 void MultiEditor::setCurrentEditor( GenericCodeEditor * editor )
 {
-    if (editor) {
-        int tabIndex = tabForDocument(editor->document());
-        if (tabIndex != -1)
-            mTabs->setCurrentIndex(tabIndex);
-    }
-
     mEditorSigMux->setCurrentObject(editor);
     updateActions();
 
@@ -1039,57 +1484,470 @@ GenericCodeEditor *MultiEditor::currentEditor()
 
 void MultiEditor::split( Qt::Orientation splitDirection )
 {
-    CodeEditorBox *box = newBox();
+    CodeEditorBox *box = newBox(currentBox()->multiSplitter());
     CodeEditorBox *curBox = currentBox();
     GenericCodeEditor *curEditor = curBox->currentEditor();
 
     if (curEditor)
         box->setDocument(curEditor->document(), curEditor->textCursor().position());
 
-    mSplitter->insertWidget(box, curBox, splitDirection);
+    currentBox()->multiSplitter()->insertWidget(box, curBox, splitDirection);
     box->setFocus( Qt::OtherFocusReason );
 }
 
 void MultiEditor::removeCurrentSplit()
 {
-    int boxCount = mSplitter->findChildren<CodeEditorBox*>().count();
+    CodeEditorBox *box = currentBox();
+    MultiSplitter *curSplit = box->multiSplitter();
+
+    int boxCount = curSplit->findChildren<CodeEditorBox*>().count();
+
     if (boxCount < 2)
         // Do not allow removing the one and only box.
         return;
 
-    CodeEditorBox *box = currentBox();
-    mSplitter->removeWidget(box);
-
     // switch current box to first box found:
-    box = mSplitter->findChild<CodeEditorBox>();
-    Q_ASSERT(box);
-    setCurrentBox(box);
-    box->setFocus( Qt::OtherFocusReason );
+    CodeEditorBox *newbox = curSplit->findChild<CodeEditorBox>();
+    Q_ASSERT(newbox);
+
+    if (currentBox() == curSplit->splits().first()) {
+        newbox = curSplit->splits().at(1);
+        if (curSplit == mSplitter)
+            defaultBox = curSplit->splits().at(1);
+    }
+
+    setCurrentBox(newbox);
+    newbox->setFocus( Qt::OtherFocusReason );
+
+    removeSplitFromHistory(box);
+    curSplit->removeSplit(box);
+    // delete box;
+    curSplit->removeWidget(box);
 }
 
 void MultiEditor::removeAllSplits()
 {
     CodeEditorBox *box = currentBox();
     Q_ASSERT(box);
-    Q_ASSERT(mSplitter->count());
-    if (mSplitter->count() == 1 && mSplitter->widget(0) == box)
-        // Nothing to do.
-        return;
+    Q_ASSERT(currentBox()->multiSplitter()->count());
 
-    MultiSplitter *newSplitter = new MultiSplitter;
-    newSplitter->addWidget(box);
+    if (currentBox()->multiSplitter() == mSplitter) {
+        if (currentBox()->multiSplitter()->count() == 1 && currentBox()->multiSplitter()->widget(0) == box) {
+            // Nothing to do.
+            return;
+        }
+        else {
+            MultiSplitter *newSplitter = new MultiSplitter(0);
+            newSplitter->addWidget(box);
 
-    delete mSplitter;
-    mSplitter = newSplitter;
-    layout()->addWidget(newSplitter);
+            delete mSplitter;
+            mSplitter = newSplitter;
+            layout()->addWidget(newSplitter);
+            box->setFocus( Qt::OtherFocusReason );
+        }
+    }
+    else {
+        delete currentBox()->multiSplitter()->returnWindow();
+    }
 
-    box->setFocus( Qt::OtherFocusReason );
+    mEditorHistory.clear();
+    mEditorHistory.prepend(defaultBox);
 }
 
 void MultiEditor::setShowWhitespace(bool showWhitespace)
 {
     Main::settings()->setValue("IDE/editor/showWhitespace", showWhitespace);
     Main::instance()->applySettings();
+}
+
+void MultiEditor::splitNewWindow()
+{
+    EditorWindow *window = makeNewWindow();
+
+    MultiSplitter *newSplitter = new MultiSplitter(window);
+    editorList << newSplitter;
+
+    CodeEditorBox *box = newBox(newSplitter);
+    CodeEditorBox *curBox = currentBox();
+    GenericCodeEditor *curEditor = curBox->currentEditor();
+
+    hideToolBox();
+
+    if (curEditor)
+        box->setDocument(curEditor->document(), curEditor->textCursor().position());
+
+    newSplitter->addWidget(box);
+    box->setFocus( Qt::OtherFocusReason );
+
+    QVBoxLayout *l = setNewLayout(newSplitter);
+
+    setCurrentBox( box ); // will updateActions();
+
+    window->setLayout(l);
+}
+
+void MultiEditor::removeWindow() {
+    // when closing a window, a signal is emitted and the function setCurrentBox() is called.
+    // windowIsDeleted is done to remember not to act on the deleted window, to avoid crashing.
+    windowIsDeleted = true;
+    // removeWindow() does not work on the mainWindow.
+    if (currentBox()->multiSplitter()->returnWindow() == 0)
+        return;
+    else {
+        int index = editorList.indexOf(currentBox()->multiSplitter());
+        editorList.removeAt(index);
+        // Every Window can contain many Splits. When closing a window we have to remove all the
+        // splits from the EditorSelectionPopUp.
+        foreach (CodeEditorBox * box, currentBox()->multiSplitter()->splits()) {
+            removeSplitFromHistory(box);
+        }
+        delete currentBox()->multiSplitter()->returnWindow();
+    }
+}
+
+bool MultiEditor::checkIfWindowWasClosed() {
+    return windowIsDeleted;
+}
+
+EditorWindow * MultiEditor::makeNewWindow() {
+    EditorWindow *window = new EditorWindow();
+    window->resize(640, 480);
+    window->show();
+    window->setWindowTitle(
+        QApplication::translate("toplevel", "Code Editor")
+    );
+    return window;
+}
+
+QVBoxLayout * MultiEditor::setNewLayout(MultiSplitter *newSplitter) {
+    QVBoxLayout *l = new QVBoxLayout;
+    l->setContentsMargins(0,0,0,0);
+    l->setSpacing(0);
+#ifndef Q_OS_MAC
+    QMenuBar *newMenu = MainWindow::instance()->createMenus();
+    l->setMenuBar(newMenu);
+#endif
+    l->addWidget(newSplitter);
+    l->addWidget(newSplitter->toolBox());
+    connect(newSplitter->toolBox()->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
+    return l;
+}
+
+void MultiEditor::showCmdLine()
+{
+    MultiSplitter *curWindow = currentBox()->multiSplitter();
+    curWindow->toolBox()->setCurrentWidget( curWindow->cmdLine() );
+    curWindow->toolBox()->show();
+
+    curWindow->cmdLine()->setFocus(Qt::OtherFocusReason);
+}
+
+void MultiEditor::showCmdLine( const QString & cmd)
+{
+    MultiSplitter *curWindow = currentBox()->multiSplitter();
+    curWindow->cmdLine()->setText(cmd);
+    showCmdLine();
+}
+
+void MultiEditor::showGoToLineTool()
+{
+    MultiSplitter *curWindow = currentBox()->multiSplitter();
+    GenericCodeEditor *editor = currentEditor();
+    curWindow->goToLineTool()->setValue( editor ? editor->textCursor().blockNumber() + 1 : 0 );
+
+    curWindow->toolBox()->setCurrentWidget( curWindow->goToLineTool() );
+    curWindow->toolBox()->show();
+
+    curWindow->goToLineTool()->setFocus();
+}
+
+void MultiEditor::showFindTool()
+{
+    MultiSplitter *curWindow = currentBox()->multiSplitter();
+    curWindow->findReplaceTool()->setEditor( currentEditor() );
+    curWindow->findReplaceTool()->setMode( TextFindReplacePanel::Find );
+    curWindow->findReplaceTool()->initiate();
+
+    curWindow->toolBox()->setCurrentWidget( curWindow->findReplaceTool() );
+    curWindow->toolBox()->show();
+
+    curWindow->findReplaceTool()->setFocus(Qt::OtherFocusReason);
+}
+
+void MultiEditor::showReplaceTool()
+{
+    MultiSplitter *curWindow = currentBox()->multiSplitter();
+    curWindow->findReplaceTool()->setEditor( currentEditor() );
+    curWindow->findReplaceTool()->setMode( TextFindReplacePanel::Replace );
+    curWindow->findReplaceTool()->initiate();
+
+    curWindow->toolBox()->setCurrentWidget( curWindow->findReplaceTool() );
+    curWindow->toolBox()->show();
+
+    curWindow->findReplaceTool()->setFocus(Qt::OtherFocusReason);
+}
+
+void MultiEditor::hideToolBox()
+{
+    MultiSplitter *curWindow = currentBox()->multiSplitter();
+    curWindow->toolBox()->hide();
+    GenericCodeEditor *editor = currentEditor();
+    if (editor) {
+        // This slot is mapped to Escape, so also clear highlighting
+        // whenever invoked:
+        editor->clearSearchHighlighting();
+        if (!editor->hasFocus())
+            editor->setFocus(Qt::OtherFocusReason);
+    }
+}
+
+void MultiEditor::newDocument()
+{
+    mMain->documentManager()->create();
+}
+
+void MultiEditor::openDocument()
+{
+    QFileDialog dialog (this, Qt::Dialog);
+    dialog.setModal(true);
+    dialog.setWindowModality(Qt::ApplicationModal);
+
+    dialog.setFileMode( QFileDialog::ExistingFiles );
+
+    QString path = MainWindow::instance()->documentOpenPath();
+    QFileInfo path_info(path);
+    if (path_info.isDir())
+        dialog.setDirectory(path);
+    else
+        dialog.setDirectory(path_info.dir());
+
+    QStringList filters;
+    filters
+        << tr("All Files (*)")
+        << tr("SuperCollider (*.scd *.sc)")
+        << tr("SuperCollider Help Source (*.schelp)");
+    dialog.setNameFilters(filters);
+
+#ifdef Q_OS_MAC
+    QWidget *last_active_window = QApplication::activeWindow();
+#endif
+
+    if (dialog.exec())
+    {
+        QStringList filenames = dialog.selectedFiles();
+        foreach(QString filename, filenames)
+            mMain->documentManager()->open(filename);
+    }
+
+    // FIXME: workaround for Qt bug 25295
+    // See SC issue #678
+#ifdef Q_OS_MAC
+    if (last_active_window)
+        last_active_window->activateWindow();
+#endif
+}
+
+void MultiEditor::closeDocument()
+{
+    GenericCodeEditor *editor = currentEditor();
+    if(!editor) return;
+
+    if (Main::documentManager()->documents().size() == 1 && !tempModeIsOn())
+        newDocument();
+
+    Q_ASSERT(editor->document());
+    MainWindow::close( editor->document() );
+}
+
+void MultiEditor::openStartupFile()
+{
+    QString configDir = standardDirectory(ScConfigUserDir);
+
+    QDir dir;
+    // Create the config dir if non existent:
+    dir.mkpath(configDir);
+    if (!dir.cd(configDir)) {
+        qWarning() << "Could not access config dir:" << configDir;
+        return;
+    }
+
+    QString filePath = dir.filePath("startup.scd");
+    // Try creating the file if non-existent:
+    if (!QFile::exists(filePath)) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::WriteOnly)) {
+            file.close();
+            qWarning() << "Could not create startup file:" << filePath;
+            return;
+        }
+        file.close();
+    }
+
+    mMain->documentManager()->open( filePath );
+}
+
+void MultiEditor::openUserSupportDirectory()
+{
+    QUrl dirUrl = QUrl::fromLocalFile( standardDirectory(ScAppDataUserDir) );
+    QDesktopServices::openUrl(dirUrl);
+}
+
+void MultiEditor::saveDocument()
+{
+    GenericCodeEditor *editor = currentEditor();
+    if(!editor) return;
+
+    Document *doc = editor->document();
+    Q_ASSERT(doc);
+
+    // when saving, check if the file exists. If it does not exist (its path is empty), it means that the file you are saving
+    // is a temporary document, and its path is associated with a document that has not been found when opening the session.
+    // To prevent damage to your session, warn the user that his action will modify the current session.
+    int docIndex = indexForDocument( doc );
+    if (tempModeIsOn() && docIndex<originalDocumentList().count()) {
+        if (doc->filePath().isEmpty()) {
+            QMessageBox::StandardButton sessionMessage;
+            sessionMessage = QMessageBox::warning(
+                currentBox()->multiSplitter()->returnWindow(),
+                tr("SuperCollider IDE"),
+                tr("This document is a temporary replacement, as the original file has not been found. \n"
+                   "If you save it, the original file will be replaced."),
+                QMessageBox::Save | QMessageBox::Cancel,
+                QMessageBox::Cancel // the default
+            );
+
+            switch (sessionMessage) {
+            case QMessageBox::Cancel:
+                return;
+            case QMessageBox::Save:
+                if (!MainWindow::instance()->save(doc))
+                    return;
+            default:;
+            }
+        }
+    }
+    else {
+        MainWindow::instance()->save(doc);
+    }
+}
+
+void MultiEditor::saveDocumentAs()
+{
+    GenericCodeEditor *editor = currentEditor();
+    if(!editor) return;
+
+    Document *doc = editor->document();
+    Q_ASSERT(doc);
+
+    int docIndex = indexForDocument( doc );
+    if (tempModeIsOn() && docIndex<originalDocumentList().count()) {
+        if (doc->filePath().isEmpty()) {
+            QMessageBox::StandardButton sessionMessage;
+            sessionMessage = QMessageBox::warning(
+                currentBox()->multiSplitter()->returnWindow(),
+                tr("SuperCollider IDE"),
+                tr("This document is a temporary replacement, as the original file has not been found. \n"
+                   "If you save it, the original file will be replaced."),
+                QMessageBox::Save | QMessageBox::Cancel,
+                QMessageBox::Cancel // the default
+            );
+
+            switch (sessionMessage) {
+            case QMessageBox::Cancel:
+                return;
+            default:;
+            }
+        }
+    }
+
+    MainWindow::instance()->save(doc, true);
+}
+
+void MultiEditor::saveAllDocuments()
+{
+    QList<Document*> docs = mMain->documentManager()->documents();
+    foreach (Document *doc, docs)
+        if (!MainWindow::instance()->save(doc))
+            return;
+}
+
+void MultiEditor::reloadDocument()
+{
+    GenericCodeEditor *editor = currentEditor();
+    if(!editor) return;
+
+    Q_ASSERT(editor->document());
+    MainWindow::instance()->reload(editor->document());
+}
+
+void MultiEditor::closeAllDocuments()
+{
+    if (MainWindow::instance()->promptSaveDocs()) {
+        QList<Document*> docs = mMain->documentManager()->documents();
+        foreach (Document *doc, docs)
+            mMain->documentManager()->close(doc);
+    }
+}
+
+void MultiEditor::newSession()
+{
+    mMain->sessionManager()->newSession();
+}
+
+void MultiEditor::saveCurrentSessionAs()
+{
+    QString name = QInputDialog::getText( this,
+                                          tr("Save Current Session"),
+                                          tr("Enter a name for the session:") );
+
+    if (name.isEmpty()) return;
+
+    mMain->sessionManager()->saveSessionAs(name);
+
+    MainWindow::instance()->updateSessionsMenu();
+}
+
+void MultiEditor::openSessionsDialog()
+{
+    QPointer<MainWindow> mainwin(MainWindow::instance());
+    SessionsDialog dialog(mMain->sessionManager(), this);
+    dialog.exec();
+    if (mainwin)
+        mainwin->updateSessionsMenu();
+}
+
+void MultiEditor::showSwitchSessionDialog()
+{
+    SessionSwitchDialog * dialog = new SessionSwitchDialog(MainWindow::instance());
+    int result = dialog->exec();
+
+    if (result == QDialog::Accepted)
+        MainWindow::instance()->openSession(dialog->activeElement());
+
+    delete dialog;
+}
+
+void MultiEditor::findNext()
+{
+    MultiSplitter *curWindow = currentBox()->multiSplitter();
+    curWindow->findReplaceTool()->findNext();
+}
+
+void MultiEditor::findPrevious()
+{
+    MultiSplitter *curWindow = currentBox()->multiSplitter();
+    curWindow->findReplaceTool()->findPrevious();
+}
+    
+void EditorSelectPopUp::populateModel( MultiEditor::History & history )
+{
+    foreach (CodeEditorBox * split, history) {
+        QString setLine;
+        setLine.setNum(split->currentEditor()->lineNumber() + 1);
+        QStandardItem * item = new QStandardItem(QString(split->currentEditor()->document()->title() + ": " + setLine  ));
+        item->setData(QVariant::fromValue(split));
+        mModel->appendRow(item);
+    }
 }
 
 } // namespace ScIDE

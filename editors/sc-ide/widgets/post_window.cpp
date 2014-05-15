@@ -20,6 +20,7 @@
 
 #include "main_window.hpp"
 #include "post_window.hpp"
+#include "multi_editor.hpp"
 #include "util/gui_utilities.hpp"
 #include "../core/main.hpp"
 #include "../core/settings/manager.hpp"
@@ -89,7 +90,7 @@ void PostWindow::createActions( Settings::Manager * settings )
 
     mActions[DocClose] = ovrAction = new OverridingAction(tr("Close"), this);
     action->setStatusTip(tr("Close the current document"));
-    connect( ovrAction, SIGNAL(triggered()), this, SLOT(closeDocument()) );
+    connect( ovrAction, SIGNAL(triggered()), this, SLOT(removeWindow()) );
     ovrAction->addToWidget(this);
 
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Enlarge Font"), this);
@@ -106,6 +107,11 @@ void PostWindow::createActions( Settings::Manager * settings )
 
     mActions[ResetZoom] = ovrAction = new OverridingAction(tr("Reset Font Size"), this);
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(resetZoom()));
+    ovrAction->addToWidget(this);
+
+    mActions[SwitchSplit] = ovrAction = new OverridingAction(tr("Switch Editor"), this);
+    action->setStatusTip(tr("Switch between editors"));
+    connect( ovrAction, SIGNAL(triggered()), this, SLOT(switchSplit()) );
     ovrAction->addToWidget(this);
 
     action = new QAction(this);
@@ -131,16 +137,22 @@ void PostWindow::createActions( Settings::Manager * settings )
 void PostWindow::updateActionShortcuts( Settings::Manager * settings )
 {
     settings->beginGroup("IDE/shortcuts");
-    mActions[DocClose]->setShortcut( settings->shortcut("ide-document-close") );
+    mActions[DocClose]->setShortcut( settings->shortcut("window-remove") );
     mActions[ZoomIn]->setShortcut( settings->shortcut("editor-enlarge-font") );
     mActions[ZoomOut]->setShortcut( settings->shortcut("editor-shrink-font") );
     mActions[ResetZoom]->setShortcut( settings->shortcut("editor-reset-font-size") );
+    mActions[SwitchSplit]->setShortcut( settings->shortcut("editor-split-switch") );
     settings->endGroup();
 }
 
-void PostWindow::closeDocument()
+void PostWindow::removeWindow()
 {
     MainWindow::instance()->postDocklet()->close();
+}
+
+void PostWindow::switchSplit()
+{
+    MainWindow::instance()->editor()->switchSplit();
 }
 
 void PostWindow::applySettings(Settings::Manager * settings)

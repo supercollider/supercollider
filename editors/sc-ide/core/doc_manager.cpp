@@ -20,7 +20,8 @@
 
 #include "doc_manager.hpp"
 #include "main.hpp"
-#include "main_window.hpp"
+#include "../widgets/main_window.hpp"
+#include "../widgets/multi_editor.hpp"
 #include "settings/manager.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
 #include "../../common/SC_TextUtils.hpp"
@@ -226,6 +227,15 @@ void DocumentManager::create()
     Q_EMIT( opened(doc, 0, 0) );
 }
 
+Document *DocumentManager::docReplace()
+{
+    Document *doc = createDocument();
+
+    syncLangDocument(doc);
+
+    return doc;
+}
+
 Document *DocumentManager::open( const QString & path, int initialCursorPosition, int selectionLength, bool toRecent, const QByteArray & id, bool syncLang )
 {
     QFileInfo info(path);
@@ -271,8 +281,6 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
                              QString(tr("Warning: RTF file will be converted to plain-text scd file.")));
     }
 
-    closeSingleUntitledIfUnmodified();
-
     const bool fileIsPlainText = !(info.suffix() == QString("sc") ||
                                   (info.suffix() == QString("scd")) ||
                                   (info.suffix() == QString("schelp")));
@@ -291,6 +299,8 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     // if this was opened from the lang we don't need to sync
     if(syncLang) syncLangDocument(doc);
     Q_EMIT( opened(doc, initialCursorPosition, selectionLength) );
+
+    closeSingleUntitledIfUnmodified();
 
     if (toRecent) this->addToRecent(doc);
 
@@ -495,10 +505,11 @@ void DocumentManager::closeSingleUntitledIfUnmodified()
 {
     QList<Document*> openDocuments = documents();
 
-    if (openDocuments.size() == 1) {
-        Document * document = openDocuments.front();
-        if (document->filePath().isEmpty() && !document->isModified())
-            close(document);
+    if (openDocuments.size() == 2 && !MainWindow::instance()->editor()->tempModeIsOn()) {
+        foreach (Document *document, openDocuments) {
+            if (document->filePath().isEmpty() && !document->isModified())
+                close(document);
+        }
     }
 }
 

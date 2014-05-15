@@ -22,6 +22,7 @@
 #include "main_window.hpp"
 #include "../core/sc_introspection.hpp"
 #include "../core/main.hpp"
+#include "multi_editor.hpp"
 
 #include <QVBoxLayout>
 #include <QHeaderView>
@@ -38,7 +39,7 @@ namespace ScIDE {
 GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     QDialog(parent)
 {
-    addAction(MainWindow::instance()->action(MainWindow::LookupDocumentationForCursor));
+    addAction(MainWindow::instance()->editor()->action(MultiEditor::LookupDocumentationForCursor));
 
     mQueryEdit = new QLineEdit(this);
 

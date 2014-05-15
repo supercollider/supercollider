@@ -23,6 +23,7 @@
 #include "session_manager.hpp"
 #include "util/standard_dirs.hpp"
 #include "../widgets/main_window.hpp"
+#include "../widgets/multi_editor.hpp"
 #include "../widgets/help_browser.hpp"
 #include "../widgets/lookup_dialog.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
@@ -277,7 +278,7 @@ void Main::openDefinition(const QString &string, QWidget * parent)
 
 void Main::openCommandLine(const QString &string)
 {
-    MainWindow::instance()->showCmdLine(string);
+    MainWindow::instance()->editor()->showCmdLine(string);
 }
 
 void Main::findReferences(const QString &string, QWidget * parent)

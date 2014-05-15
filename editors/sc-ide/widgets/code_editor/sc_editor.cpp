@@ -94,7 +94,6 @@ bool ScCodeEditor::event( QEvent *e )
     default:
         break;
     }
-
     return GenericCodeEditor::event(e);
 }
 
@@ -150,7 +149,6 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         doKeyAction(e);
         return;
     }
-
     case Qt::Key_Backtab:
     {
         QTextCursor cursor = textCursor();

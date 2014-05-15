@@ -44,6 +44,7 @@ public:
         ZoomIn,
         ZoomOut,
         ResetZoom,
+        SwitchSplit,
         LineWrap,
         AutoScroll,
 
@@ -71,7 +72,8 @@ public slots:
     void zoomOut(int steps = 1);
     void resetZoom();
 
-    void closeDocument();
+    void removeWindow();
+    void switchSplit();
     bool openDocumentation();
     void openDefinition();
     void openCommandLine();

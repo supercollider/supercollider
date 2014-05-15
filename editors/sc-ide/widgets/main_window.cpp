@@ -31,8 +31,6 @@
 #include "popup_text_input.hpp"
 #include "post_window.hpp"
 #include "help_browser.hpp"
-#include "session_switch_dialog.hpp"
-#include "sessions_dialog.hpp"
 #include "tool_box.hpp"
 #include "audio_status_box.hpp"
 #include "lang_status_box.hpp"
@@ -43,6 +41,8 @@
 #include "../core/util/standard_dirs.hpp"
 #include "code_editor/sc_editor.hpp"
 #include "settings/dialog.hpp"
+#include "code_editor/editor.hpp"
+#include "editor_box.hpp"
 
 #include "QtCollider/hacks/hacks_qt.hpp"
 
@@ -66,6 +66,7 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QMetaMethod>
+#include <QString>
 
 namespace ScIDE {
 
@@ -119,23 +120,6 @@ MainWindow::MainWindow(Main * main) :
     // Code editor
     mEditors = new MultiEditor(main);
 
-    // Tools
-
-    mCmdLine = new CmdLine(tr("Command Line:"));
-    connect(mCmdLine, SIGNAL(invoked(QString, bool)),
-            main->scProcess(), SLOT(evaluateCode(QString, bool)));
-
-    mFindReplaceTool = new TextFindReplacePanel;
-
-    mGoToLineTool = new GoToLineTool();
-    connect(mGoToLineTool, SIGNAL(activated(int)), this, SLOT(hideToolBox()));
-
-    mToolBox = new ToolBox;
-    mToolBox->addWidget(mCmdLine);
-    mToolBox->addWidget(mFindReplaceTool);
-    mToolBox->addWidget(mGoToLineTool);
-    mToolBox->hide();
-
     // Docks
     mDocumentsDocklet = new DocumentsDocklet(main->documentManager(), this);
     mDocumentsDocklet->setObjectName("documents-dock");
@@ -156,7 +140,6 @@ MainWindow::MainWindow(Main * main) :
     center_box->setContentsMargins(0,0,0,0);
     center_box->setSpacing(0);
     center_box->addWidget(mEditors);
-    center_box->addWidget(mToolBox);
 
     QWidget *central = new QWidget;
     central->setLayout(center_box);
@@ -208,11 +191,9 @@ MainWindow::MainWindow(Main * main) :
     connect(main, SIGNAL(storeSettingsRequest(Settings::Manager*)),
             this, SLOT(storeSettings(Settings::Manager*)));
 
-    // ToolBox
-    connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
-
     createActions();
-    createMenus();
+    mainMenu = createMenus();
+//    center_box->setMenuBar(mainMenu);
 
     // Must be called after createAtions(), because it accesses an action:
     toggleInterpreterActions(false);
@@ -251,217 +232,17 @@ void MainWindow::createActions()
     const QString helpCategory(tr("Help"));
 
     // File
-    mActions[Quit] = action = new QAction(
-        QIcon::fromTheme("application-exit"), tr("&Quit..."), this);
-    action->setShortcut(tr("Ctrl+Q", "Quit application"));
-    action->setStatusTip(tr("Quit SuperCollider IDE"));
-    QObject::connect( action, SIGNAL(triggered()), this, SLOT(onQuit()) );
-    settings->addAction( action, "ide-quit", ideCategory);
-
-    mActions[DocNew] = action = new QAction(
-        QIcon::fromTheme("document-new"), tr("&New"), this);
-    action->setShortcut(tr("Ctrl+N", "New document"));
-    action->setStatusTip(tr("Create a new document"));
-    connect(action, SIGNAL(triggered()), this, SLOT(newDocument()));
-    settings->addAction( action, "ide-document-new", ideCategory);
-
-    mActions[DocOpen] = action = new QAction(
-        QIcon::fromTheme("document-open"), tr("&Open..."), this);
-    action->setShortcut(tr("Ctrl+O", "Open document"));
-    action->setStatusTip(tr("Open an existing file"));
-    connect(action, SIGNAL(triggered()), this, SLOT(openDocument()));
-    settings->addAction( action, "ide-document-open", ideCategory);
-
-    mActions[DocOpenStartup] = action = new QAction(
-        QIcon::fromTheme("document-open"), tr("Open startup file"), this);
-    action->setStatusTip(tr("Open startup file"));
-    connect(action, SIGNAL(triggered()), this, SLOT(openStartupFile()));
-    settings->addAction( action, "ide-document-open-startup", ideCategory);
-
-    mActions[DocOpenSupportDir] = action = new QAction(
-        QIcon::fromTheme("document-open"), tr("Open user support directory"), this);
-    action->setStatusTip(tr("Open user support directory"));
-    connect(action, SIGNAL(triggered()), this, SLOT(openUserSupportDirectory()));
-    settings->addAction( action, "ide-document-open-support-directory", ideCategory);
-
-    mActions[DocSave] = action = new QAction(
-        QIcon::fromTheme("document-save"), tr("&Save"), this);
-    action->setShortcut(tr("Ctrl+S", "Save document"));
-    action->setStatusTip(tr("Save the current document"));
-    connect(action, SIGNAL(triggered()), this, SLOT(saveDocument()));
-    settings->addAction( action, "ide-document-save", ideCategory);
-
-    mActions[DocSaveAs] = action = new QAction(
-        QIcon::fromTheme("document-save-as"), tr("Save &As..."), this);
-    action->setShortcut(tr("Ctrl+Shift+S", "Save &As..."));
-    action->setStatusTip(tr("Save the current document into a different file"));
-    connect(action, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
-    settings->addAction( action, "ide-document-save-as", ideCategory);
-
-    mActions[DocSaveAll] = action = new QAction(
-        QIcon::fromTheme("document-save"), tr("Save All..."), this);
-    action->setShortcut(tr("Ctrl+Alt+S", "Save all documents"));
-    action->setStatusTip(tr("Save all open documents"));
-    connect(action, SIGNAL(triggered()), this, SLOT(saveAllDocuments()));
-    settings->addAction( action, "ide-document-save-all", ideCategory);
-
-    mActions[DocCloseAll] = action = new QAction(
-        QIcon::fromTheme("window-close"), tr("Close All..."), this);
-    action->setShortcut(tr("Ctrl+Shift+W", "Close all documents"));
-    action->setStatusTip(tr("Close all documents"));
-    connect(action, SIGNAL(triggered()), this, SLOT(closeAllDocuments()));
-    settings->addAction( action, "ide-document-close-all", ideCategory);
-
-    mActions[DocReload] = action = new QAction(
-        QIcon::fromTheme("view-refresh"), tr("&Reload"), this);
-    action->setShortcut(tr("F5", "Reload document"));
-    action->setStatusTip(tr("Reload the current document"));
-    connect(action, SIGNAL(triggered()), this, SLOT(reloadDocument()));
-    settings->addAction( action, "ide-document-reload", ideCategory);
-
     mActions[ClearRecentDocs] = action = new QAction(tr("Clear", "Clear recent documents"), this);
     action->setStatusTip(tr("Clear list of recent documents"));
     connect(action, SIGNAL(triggered()),
             Main::instance()->documentManager(), SLOT(clearRecents()));
     settings->addAction( action, "ide-clear-recent-documents", ideCategory);
 
-    // Sessions
-    mActions[NewSession] = action = new QAction(
-        QIcon::fromTheme("document-new"), tr("&New Session"), this);
-    action->setStatusTip(tr("Open a new session"));
-    connect(action, SIGNAL(triggered()), this, SLOT(newSession()));
-    settings->addAction( action, "ide-session-new", ideCategory);
-
-    mActions[SaveSessionAs] = action = new QAction(
-        QIcon::fromTheme("document-save-as"), tr("Save Session &As..."), this);
-    action->setStatusTip(tr("Save the current session with a different name"));
-    connect(action, SIGNAL(triggered()), this, SLOT(saveCurrentSessionAs()));
-    settings->addAction( action, "ide-session-save-as", ideCategory);
-
-    mActions[ManageSessions] = action = new QAction(
-        tr("&Manage Sessions..."), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(openSessionsDialog()));
-    settings->addAction( action, "ide-session-manage", ideCategory);
-
-    mActions[OpenSessionSwitchDialog] = action = new QAction(
-        tr("&Switch Session..."), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(showSwitchSessionDialog()));
-    action->setShortcut(tr("Ctrl+Shift+Q", "Switch Session"));
-    settings->addAction( action, "ide-session-switch", ideCategory);
-
-    // Edit
-    mActions[Find] = action = new QAction(
-        QIcon::fromTheme("edit-find"), tr("&Find..."), this);
-    action->setShortcut(tr("Ctrl+F", "Find"));
-    action->setStatusTip(tr("Find text in document"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showFindTool()));
-    settings->addAction( action, "editor-find", editorCategory);
-
-    mActions[Replace] = action = new QAction(
-        QIcon::fromTheme("edit-replace"), tr("&Replace..."), this);
-    action->setShortcut(tr("Ctrl+R", "Replace"));
-    action->setStatusTip(tr("Find and replace text in document"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showReplaceTool()));
-    settings->addAction( action, "editor-replace", editorCategory);
-
-    // View
-    mActions[ShowCmdLine] = action = new QAction(tr("&Command Line"), this);
-    action->setStatusTip(tr("Command line for quick code evaluation"));
-    action->setShortcut(tr("Ctrl+E", "Show command line"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showCmdLine()));
-    settings->addAction( action, "ide-command-line-show", ideCategory);
-
-    mActions[CmdLineForCursor] = action = new QAction(tr("&Command Line from selection"), this);
-    action->setShortcut(tr("Ctrl+Shift+E", "Fill command line with current selection"));
-    connect(action, SIGNAL(triggered()), this, SLOT(cmdLineForCursor()));
-    settings->addAction( action, "ide-command-line-fill", ideCategory);
-
-
-    mActions[ShowGoToLineTool] = action = new QAction(tr("&Go To Line"), this);
-    action->setStatusTip(tr("Tool to jump to a line by number"));
-    action->setShortcut(tr("Ctrl+L", "Show go-to-line tool"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showGoToLineTool()));
-    settings->addAction( action, "editor-go-to-line", editorCategory);
-
-    mActions[CloseToolBox] = action = new QAction(
-        QIcon::fromTheme("window-close"), tr("&Close Tool Panel"), this);
-    action->setStatusTip(tr("Close any open tool panel"));
-    action->setShortcut(tr("Esc", "Close tool box"));
-    connect(action, SIGNAL(triggered()), this, SLOT(hideToolBox()));
-    settings->addAction( action, "ide-tool-panel-hide", ideCategory);
-
-    mActions[ShowFullScreen] = action = new QAction(tr("&Full Screen"), this);
-    action->setCheckable(false);
-    action->setShortcut(tr("Ctrl+Shift+F", "Show ScIDE in Full Screen"));
-    connect(action, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
-    settings->addAction( action, "ide-show-fullscreen", ideCategory);
-
-    mActions[FocusPostWindow] = action = new QAction( tr("Focus Post Window"), this);
-    action->setStatusTip(tr("Focus post window"));
-    action->setShortcut(tr("Ctrl+P", "Focus post window"));
-    connect(action, SIGNAL(triggered()), mPostDocklet, SLOT(focus()));
-    settings->addAction( action, "post-focus", ideCategory);
-
-    // Language
-    mActions[LookupImplementation] = action = new QAction(
-        QIcon::fromTheme("window-lookupdefinition"), tr("Look Up Implementations..."), this);
-    action->setShortcut(tr("Ctrl+Shift+I", "Look Up Implementations"));
-    action->setStatusTip(tr("Open dialog to look up implementations of a class or a method"));
-    connect(action, SIGNAL(triggered()), this, SLOT(lookupImplementation()));
-    settings->addAction( action, "ide-lookup-implementation", ideCategory);
-
-    mActions[LookupImplementationForCursor] = action = new QAction(tr("Look Up Implementations for Cursor"), this);
-    action->setShortcut(tr("Ctrl+I", "Look Up Implementations for Cursor"));
-    action->setStatusTip(tr("Look up implementations of class or method under cursor"));
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(lookupImplementationForCursor()));
-    settings->addAction( action, "ide-lookup-implementation-for-cursor", ideCategory);
-
-    mActions[LookupReferences] = action = new QAction(
-        QIcon::fromTheme("window-lookupreferences"), tr("Look Up References..."), this);
-    action->setShortcut(tr("Ctrl+Shift+U", "Look Up References"));
-    action->setStatusTip(tr("Open dialog to look up references to a class or a method"));
-    connect(action, SIGNAL(triggered()), this, SLOT(lookupReferences()));
-    settings->addAction( action, "ide-lookup-references", ideCategory);
-
-    mActions[LookupReferencesForCursor] = action = new QAction(tr("Look Up References for Cursor"), this);
-    action->setShortcut(tr("Ctrl+U", "Look Up References For Selection"));
-    action->setStatusTip(tr("Look up references to class or method under cursor"));
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(lookupReferencesForCursor()));
-    settings->addAction( action, "ide-lookup-references-for-cursor", ideCategory);
-
-    // Settings
-    mActions[ShowSettings] = action = new QAction(tr("&Preferences"), this);
-#ifdef Q_OS_MAC
-    action->setShortcut(tr("Ctrl+,", "Show configuration dialog"));
-#endif
-    action->setStatusTip(tr("Show configuration dialog"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showSettings()));
-    settings->addAction( action, "ide-settings-dialog", ideCategory);
-
     // Help
-    mActions[Help] = action = new QAction(tr("Show &Help Browser"), this);
-    action->setStatusTip(tr("Show and focus the Help Browser"));
-    connect(action, SIGNAL(triggered()), this, SLOT(openHelp()));
-    settings->addAction( action, "help-browser", helpCategory);
-
     mActions[HelpAboutIDE]  = action =
             new QAction(QIcon::fromTheme("system-help"), tr("How to Use SuperCollider IDE"), this);
     action->setStatusTip(tr("Open the SuperCollider IDE guide"));
     connect(action, SIGNAL(triggered()), this, SLOT(openHelpAboutIDE()));
-
-    mActions[LookupDocumentationForCursor] = action =
-            new QAction(tr("Look Up Documentation for Cursor"), this);
-    action->setShortcut(tr("Ctrl+D", "Look Up Documentation for Cursor"));
-    action->setStatusTip(tr("Look up documentation for text under cursor"));
-    connect(action, SIGNAL(triggered()), this, SLOT(lookupDocumentationForCursor()));
-    settings->addAction( action, "help-lookup-for-cursor", helpCategory);
-
-    mActions[LookupDocumentation] = action =
-            new QAction(tr("Look Up Documentation..."), this);
-    action->setShortcut(tr("Ctrl+Shift+D", "Look Up Documentation"));
-    action->setStatusTip(tr("Enter text to look up in documentation"));
-    connect(action, SIGNAL(triggered()), this, SLOT(lookupDocumentation()));
-    settings->addAction( action, "help-lookup", helpCategory);
 
     mActions[ShowAbout] = action = new QAction(
         QIcon::fromTheme("help-about"), tr("&About SuperCollider"), this);
@@ -496,28 +277,30 @@ void MainWindow::createActions()
     // the "Escape" default shortcut to the main window widget.
     // FIXME: This is not perfect, as any other action customized to "Escape" will
     // still not work.
-    addAction( mActions[CloseToolBox] );
+    //addAction( mActions[CloseToolBox] );
 
     // Add actions to docklets, so shortcuts work when docklets detached:
 
-    mPostDocklet->widget()->addAction(mActions[LookupDocumentation]);
-    mPostDocklet->widget()->addAction(mActions[LookupDocumentationForCursor]);
-    mPostDocklet->widget()->addAction(mActions[LookupImplementation]);
-    mPostDocklet->widget()->addAction(mActions[LookupImplementationForCursor]);
-    mPostDocklet->widget()->addAction(mActions[LookupReferences]);
-    mPostDocklet->widget()->addAction(mActions[LookupReferencesForCursor]);
+    mPostDocklet->widget()->addAction(mEditors->action(MultiEditor::LookupDocumentation));
+    mPostDocklet->widget()->addAction(mEditors->action(MultiEditor::LookupDocumentationForCursor));
+    mPostDocklet->widget()->addAction(mEditors->action(MultiEditor::LookupImplementation));
+    mPostDocklet->widget()->addAction(mEditors->action(MultiEditor::LookupImplementationForCursor));
+    mPostDocklet->widget()->addAction(mEditors->action(MultiEditor::LookupReferences));
+    mPostDocklet->widget()->addAction(mEditors->action(MultiEditor::LookupReferencesForCursor));
 
-    mHelpBrowserDocklet->widget()->addAction(mActions[LookupDocumentation]);
-    mHelpBrowserDocklet->widget()->addAction(mActions[LookupDocumentationForCursor]);
-    mHelpBrowserDocklet->widget()->addAction(mActions[LookupImplementation]);
-    mHelpBrowserDocklet->widget()->addAction(mActions[LookupImplementationForCursor]);
-    mHelpBrowserDocklet->widget()->addAction(mActions[LookupReferences]);
-    mHelpBrowserDocklet->widget()->addAction(mActions[LookupReferencesForCursor]);
+    mHelpBrowserDocklet->widget()->addAction(mEditors->action(MultiEditor::LookupDocumentation));
+    mHelpBrowserDocklet->widget()->addAction(mEditors->action(MultiEditor::LookupDocumentationForCursor));
+    mHelpBrowserDocklet->widget()->addAction(mEditors->action(MultiEditor::LookupImplementation));
+    mHelpBrowserDocklet->widget()->addAction(mEditors->action(MultiEditor::LookupImplementationForCursor));
+    mHelpBrowserDocklet->widget()->addAction(mEditors->action(MultiEditor::LookupReferences));
+    mHelpBrowserDocklet->widget()->addAction(mEditors->action(MultiEditor::LookupReferencesForCursor));
 
 }
 
-void MainWindow::createMenus()
+QMenuBar *MainWindow::createMenus()
 {
+    MultiSplitter *curWindow = mEditors->currentBox()->multiSplitter();
+
     QMenuBar *menuBar;
     QMenu *menu;
     QMenu *submenu;
@@ -527,40 +310,41 @@ void MainWindow::createMenus()
     menuBar = new QMenuBar(0);
 #else
     menuBar = this->menuBar();
+    this->setMenuBar(menuBar);
 #endif
 
     menu = new QMenu(tr("&File"), this);
-    menu->addAction( mActions[DocNew] );
-    menu->addAction( mActions[DocOpen] );
+    menu->addAction( mEditors->action(MultiEditor::DocNew));
+    menu->addAction( mEditors->action(MultiEditor::DocOpen) );
     mRecentDocsMenu = menu->addMenu(tr("Open Recent", "Open a recent document"));
     connect(mRecentDocsMenu, SIGNAL(triggered(QAction*)),
             this, SLOT(onRecentDocAction(QAction*)));
-    menu->addAction( mActions[DocOpenStartup] );
-    menu->addAction( mActions[DocOpenSupportDir] );
-    menu->addAction( mActions[DocSave] );
-    menu->addAction( mActions[DocSaveAs] );
-    menu->addAction( mActions[DocSaveAll] );
+    menu->addAction( mEditors->action(MultiEditor::DocOpenStartup) );
+    menu->addAction( mEditors->action(MultiEditor::DocOpenSupportDir) );
+    menu->addAction( mEditors->action(MultiEditor::DocSave) );
+    menu->addAction( mEditors->action(MultiEditor::DocSaveAs) );
+    menu->addAction( mEditors->action(MultiEditor::DocSaveAll) );
     menu->addSeparator();
-    menu->addAction( mActions[DocReload] );
+    menu->addAction( mEditors->action(MultiEditor::DocReload) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::DocClose) );
-    menu->addAction( mActions[DocCloseAll] );
+    menu->addAction( mEditors->action(MultiEditor::DocCloseAll) );
     menu->addSeparator();
-    menu->addAction( mActions[Quit] );
+    menu->addAction( mEditors->action(MultiEditor::Quit) );
 
     menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Session"), this);
-    menu->addAction( mActions[NewSession] );
-    menu->addAction( mActions[SaveSessionAs] );
+    menu->addAction( mEditors->action(MultiEditor::NewSession) );
+    menu->addAction( mEditors->action(MultiEditor::SaveSessionAs) );
     submenu = menu->addMenu(tr("&Open Session"));
     connect(submenu, SIGNAL(triggered(QAction*)),
             this, SLOT(onOpenSessionAction(QAction*)));
     mSessionsMenu = submenu;
     updateSessionsMenu();
     menu->addSeparator();
-    menu->addAction( mActions[ManageSessions] );
-    menu->addAction( mActions[OpenSessionSwitchDialog] );
+    menu->addAction( mEditors->action(MultiEditor::ManageSessions) );
+    menu->addAction( mEditors->action(MultiEditor::OpenSessionSwitchDialog) );
 
     menuBar->addMenu(menu);
 
@@ -572,10 +356,10 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::Copy) );
     menu->addAction( mEditors->action(MultiEditor::Paste) );
     menu->addSeparator();
-    menu->addAction( mActions[Find] );
-    menu->addAction( mFindReplaceTool->action(TextFindReplacePanel::FindNext) );
-    menu->addAction( mFindReplaceTool->action(TextFindReplacePanel::FindPrevious) );
-    menu->addAction( mActions[Replace] );
+    menu->addAction( mEditors->action(MultiEditor::Find) );
+    menu->addAction( mEditors->action(MultiEditor::FindNext) );
+    menu->addAction( mEditors->action(MultiEditor::FindPrevious) );
+    menu->addAction( mEditors->action(MultiEditor::Replace) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::IndentWithSpaces) );
     menu->addAction( mEditors->action(MultiEditor::IndentLineOrRegion) );
@@ -585,7 +369,7 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::SelectEnclosingBlock) );
 
     menu->addSeparator();
-    menu->addAction( mActions[ShowSettings] );
+    menu->addAction( mEditors->action(MultiEditor::ShowSettings) );
 
     menuBar->addMenu(menu);
 
@@ -597,13 +381,13 @@ void MainWindow::createMenus()
     menu->addMenu(submenu);
     menu->addSeparator();
     submenu = menu->addMenu(tr("&Tool Panels"));
-    submenu->addAction( mActions[Find] );
-    submenu->addAction( mActions[Replace] );
-    submenu->addAction( mActions[ShowCmdLine] );
-    submenu->addAction( mActions[CmdLineForCursor] );
-    submenu->addAction( mActions[ShowGoToLineTool] );
+    submenu->addAction( mEditors->action(MultiEditor::Find) );
+    submenu->addAction( mEditors->action(MultiEditor::Replace) );
+    submenu->addAction( mEditors->action(MultiEditor::ShowCmdLine) );
+    submenu->addAction( mEditors->action(MultiEditor::CmdLineForCursor) );
+    submenu->addAction( mEditors->action(MultiEditor::ShowGoToLineTool) );
     submenu->addSeparator();
-    submenu->addAction( mActions[CloseToolBox] );
+    submenu->addAction( mEditors->action(MultiEditor::CloseToolBox) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::EnlargeFont) );
     menu->addAction( mEditors->action(MultiEditor::ShrinkFont) );
@@ -617,12 +401,16 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::SplitHorizontally) );
     menu->addAction( mEditors->action(MultiEditor::SplitVertically) );
+    menu->addAction( mEditors->action(MultiEditor::SplitNewWindow) );
     menu->addAction( mEditors->action(MultiEditor::RemoveCurrentSplit) );
+    menu->addAction( mEditors->action(MultiEditor::RemoveCurrentWindow) );
     menu->addAction( mEditors->action(MultiEditor::RemoveAllSplits) );
     menu->addSeparator();
-    menu->addAction( mActions[FocusPostWindow] );
+    menu->addAction( mEditors->action(MultiEditor::SwitchSplit) );
     menu->addSeparator();
-    menu->addAction( mActions[ShowFullScreen] );
+    menu->addAction( mEditors->action(MultiEditor::FocusPostWindow) );
+    menu->addSeparator();
+    menu->addAction( mEditors->action(MultiEditor::ShowFullScreen) );
 
     menuBar->addMenu(menu);
 
@@ -652,24 +440,25 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::EvaluateLine) );
     menu->addAction( mMain->scProcess()->action(ScIDE::ScProcess::StopMain) );
     menu->addSeparator();
-    menu->addAction( mActions[LookupImplementationForCursor] );
-    menu->addAction( mActions[LookupImplementation] );
-    menu->addAction( mActions[LookupReferencesForCursor] );
-    menu->addAction( mActions[LookupReferences] );
+    menu->addAction( mEditors->action(MultiEditor::LookupImplementationForCursor) );
+    menu->addAction( mEditors->action(MultiEditor::LookupImplementation) );
+    menu->addAction( mEditors->action(MultiEditor::LookupReferencesForCursor) );
+    menu->addAction( mEditors->action(MultiEditor::LookupReferences) );
 
     menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Help"), this);
     menu->addAction( mActions[HelpAboutIDE] );
     menu->addSeparator();
-    menu->addAction( mActions[Help] );
-    menu->addAction( mActions[LookupDocumentationForCursor] );
-    menu->addAction( mActions[LookupDocumentation] );
+    menu->addAction( mEditors->action(MultiEditor::Help) );
+    menu->addAction( mEditors->action(MultiEditor::LookupDocumentationForCursor) );
+    menu->addAction( mEditors->action(MultiEditor::LookupDocumentation) );
     menu->addSeparator();
     menu->addAction( mActions[ShowAbout] );
     menu->addAction( mActions[ShowAboutQT] );
 
     menuBar->addMenu(menu);
+    return menuBar;
 }
 
 static void saveDetachedState( Docklet *docklet,  QVariantMap & data )
@@ -766,12 +555,7 @@ void MainWindow::focusCodeEditor()
         mEditors->setFocus();
 }
 
-void MainWindow::newSession()
-{
-    mMain->sessionManager()->newSession();
-}
-
-void MainWindow::saveCurrentSessionAs()
+void MainWindow::saveSessionChanged()
 {
     QString name = QInputDialog::getText( this,
                                           tr("Save Current Session"),
@@ -806,15 +590,6 @@ void MainWindow::saveSession( Session *session )
     mEditors->saveSession(session);
 }
 
-void MainWindow::openSessionsDialog()
-{
-    QPointer<MainWindow> mainwin(this);
-    SessionsDialog dialog(mMain->sessionManager(), this);
-    dialog.exec();
-    if (mainwin)
-        mainwin->updateSessionsMenu();
-}
-
 QAction *MainWindow::action( ActionRole role )
 {
     Q_ASSERT( role < ActionCount );
@@ -842,14 +617,15 @@ void MainWindow::onCurrentDocumentChanged( Document * doc )
 {
     updateWindowTitle();
 
-    mActions[DocCloseAll]->setEnabled(doc);
-    mActions[DocReload]->setEnabled(doc);
-    mActions[DocSave]->setEnabled(doc);
-    mActions[DocSaveAs]->setEnabled(doc);
+    mEditors->action(MultiEditor::DocCloseAll)->setEnabled(doc);
+    mEditors->action(MultiEditor::DocReload)->setEnabled(doc);
+    mEditors->action(MultiEditor::DocSave)->setEnabled(doc);
+    mEditors->action(MultiEditor::DocSaveAs)->setEnabled(doc);
 
     GenericCodeEditor *editor = mEditors->currentEditor();
-    mFindReplaceTool->setEditor( editor );
-    mGoToLineTool->setEditor( editor );
+//    mEditors->currentFindReplacePanel()->setEditor( editor );
+    MultiSplitter *curWindow = mEditors->currentBox()->multiSplitter();
+    curWindow->goToLineTool()->setEditor( editor );
 }
 
 void MainWindow::onDocumentChangedExternally( Document *doc )
@@ -911,8 +687,33 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 bool MainWindow::close( Document *doc )
 {
+    // when closing, check if the file exists. If it does not exist (its path is empty), it means that the file you are closing
+    // is a temporary document, and its path is associated with a document that has not been found when opening the session.
+    // To prevent damage to your session, warn the user that his action will modify the current session.
+    int docIndex = mInstance->editor()->indexForDocument( doc );
+    if (mInstance->editor()->tempModeIsOn() && docIndex<mInstance->editor()->originalDocumentList().count()) {
+        if (doc->filePath().isEmpty()) {
+            QMessageBox::StandardButton sessionMessage;
+            sessionMessage = QMessageBox::warning(
+                mInstance,
+                tr("SuperCollider IDE"),
+                tr("This document is a temporary replacement, as the original file has not been found. \n"
+                   "If you close it, you'll lose it."),
+                QMessageBox::Discard | QMessageBox::Cancel,
+                QMessageBox::Cancel // the default
+            );
+
+            switch (sessionMessage) {
+            case QMessageBox::Cancel:
+                return false;
+            default:;
+            }
+        }
+    }
+
     if (doc->textDocument()->isModified())
     {
+
         QMessageBox::StandardButton ret;
         ret = QMessageBox::warning(
             mInstance,
@@ -1076,11 +877,6 @@ bool MainWindow::save( Document *doc, bool forceChoose )
         return documentManager->save(doc);
 }
 
-void MainWindow::newDocument()
-{
-    mMain->documentManager()->create();
-}
-
 QString MainWindow::documentOpenPath() const
 {
     GenericCodeEditor * currentEditor = mEditors->currentEditor();
@@ -1100,137 +896,6 @@ QString MainWindow::documentOpenPath() const
         return interpreterWorkingDir;
 
     return QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
-}
-
-void MainWindow::openDocument()
-{
-    QFileDialog dialog (this, Qt::Dialog);
-    dialog.setModal(true);
-    dialog.setWindowModality(Qt::ApplicationModal);
-
-    dialog.setFileMode( QFileDialog::ExistingFiles );
-
-    QString path = documentOpenPath();
-    QFileInfo path_info(path);
-    if (path_info.isDir())
-        dialog.setDirectory(path);
-    else
-        dialog.setDirectory(path_info.dir());
-
-    QStringList filters;
-    filters
-        << tr("All Files (*)")
-        << tr("SuperCollider (*.scd *.sc)")
-        << tr("SuperCollider Help Source (*.schelp)");
-    dialog.setNameFilters(filters);
-
-#ifdef Q_OS_MAC
-    QWidget *last_active_window = QApplication::activeWindow();
-#endif
-
-    if (dialog.exec())
-    {
-        QStringList filenames = dialog.selectedFiles();
-        foreach(QString filename, filenames)
-            mMain->documentManager()->open(filename);
-    }
-
-    // FIXME: workaround for Qt bug 25295
-    // See SC issue #678
-#ifdef Q_OS_MAC
-    if (last_active_window)
-        last_active_window->activateWindow();
-#endif
-}
-
-void MainWindow::openStartupFile()
-{
-    QString configDir = standardDirectory(ScConfigUserDir);
-
-    QDir dir;
-    // Create the config dir if non existent:
-    dir.mkpath(configDir);
-    if (!dir.cd(configDir)) {
-        qWarning() << "Could not access config dir:" << configDir;
-        return;
-    }
-
-    QString filePath = dir.filePath("startup.scd");
-    // Try creating the file if non-existent:
-    if (!QFile::exists(filePath)) {
-        QFile file(filePath);
-        if (!file.open(QIODevice::WriteOnly)) {
-            file.close();
-            qWarning() << "Could not create startup file:" << filePath;
-            return;
-        }
-        file.close();
-    }
-
-    mMain->documentManager()->open( filePath );
-}
-
-void MainWindow::openUserSupportDirectory()
-{
-    QUrl dirUrl = QUrl::fromLocalFile( standardDirectory(ScAppDataUserDir) );
-    QDesktopServices::openUrl(dirUrl);
-}
-
-void MainWindow::saveDocument()
-{
-    GenericCodeEditor *editor = mEditors->currentEditor();
-    if(!editor) return;
-
-    Document *doc = editor->document();
-    Q_ASSERT(doc);
-
-    MainWindow::save(doc);
-}
-
-void MainWindow::saveDocumentAs()
-{
-    GenericCodeEditor *editor = mEditors->currentEditor();
-    if(!editor) return;
-
-    Document *doc = editor->document();
-    Q_ASSERT(doc);
-
-    MainWindow::save(doc, true);
-}
-
-void MainWindow::saveAllDocuments()
-{
-    QList<Document*> docs = mMain->documentManager()->documents();
-    foreach (Document *doc, docs)
-        if (!MainWindow::save(doc))
-            return;
-}
-
-void MainWindow::reloadDocument()
-{
-    GenericCodeEditor *editor = mEditors->currentEditor();
-    if(!editor) return;
-
-    Q_ASSERT(editor->document());
-    MainWindow::reload(editor->document());
-}
-
-void MainWindow::closeDocument()
-{
-    GenericCodeEditor *editor = mEditors->currentEditor();
-    if(!editor) return;
-
-    Q_ASSERT(editor->document());
-    MainWindow::close( editor->document() );
-}
-
-void MainWindow::closeAllDocuments()
-{
-    if (promptSaveDocs()) {
-        QList<Document*> docs = mMain->documentManager()->documents();
-        foreach (Document *doc, docs)
-            mMain->documentManager()->close(doc);
-    }
 }
 
 bool MainWindow::promptSaveDocs()
@@ -1364,7 +1029,8 @@ void MainWindow::applySettings( Settings::Manager * settings )
 
     mPostDocklet->mPostWindow->applySettings(settings);
     mHelpBrowserDocklet->browser()->applySettings(settings);
-    mCmdLine->applySettings(settings);
+    MultiSplitter *curWindow = mEditors->currentBox()->multiSplitter();
+    curWindow->cmdLine()->applySettings(settings);
 }
 
 void MainWindow::applyCursorBlinkingSettings( Settings::Manager * settings )
@@ -1385,17 +1051,6 @@ void MainWindow::updateSessionsMenu()
     QStringList sessions = mMain->sessionManager()->availableSessions();
     foreach (const QString & session, sessions)
         mSessionsMenu->addAction( session );
-}
-
-void MainWindow::showSwitchSessionDialog()
-{
-    SessionSwitchDialog * dialog = new SessionSwitchDialog(this);
-    int result = dialog->exec();
-
-    if (result == QDialog::Accepted)
-        openSession(dialog->activeElement());
-
-    delete dialog;
 }
 
 void MainWindow::showAbout()
@@ -1423,72 +1078,11 @@ void MainWindow::toggleInterpreterActions(bool enabled)
     mEditors->action(MultiEditor::EvaluateRegion)->setEnabled(enabled);
 }
 
-
-void MainWindow::showCmdLine()
-{
-    mToolBox->setCurrentWidget( mCmdLine );
-    mToolBox->show();
-
-    mCmdLine->setFocus(Qt::OtherFocusReason);
-}
-
-void MainWindow::showCmdLine( const QString & cmd)
-{
-    mCmdLine->setText(cmd);
-    showCmdLine();
-}
-
 void MainWindow::cmdLineForCursor()
 {
     static const QByteArray signature = QMetaObject::normalizedSignature("openCommandLine()");
 
     invokeMethodOnFirstResponder(signature);
-}
-
-void MainWindow::showGoToLineTool()
-{
-    GenericCodeEditor *editor = mEditors->currentEditor();
-    mGoToLineTool->setValue( editor ? editor->textCursor().blockNumber() + 1 : 0 );
-
-    mToolBox->setCurrentWidget( mGoToLineTool );
-    mToolBox->show();
-
-    mGoToLineTool->setFocus();
-}
-
-void MainWindow::showFindTool()
-{
-    mFindReplaceTool->setMode( TextFindReplacePanel::Find );
-    mFindReplaceTool->initiate();
-
-    mToolBox->setCurrentWidget( mFindReplaceTool );
-    mToolBox->show();
-
-    mFindReplaceTool->setFocus(Qt::OtherFocusReason);
-}
-
-void MainWindow::showReplaceTool()
-{
-    mFindReplaceTool->setMode( TextFindReplacePanel::Replace );
-    mFindReplaceTool->initiate();
-
-    mToolBox->setCurrentWidget( mFindReplaceTool );
-    mToolBox->show();
-
-    mFindReplaceTool->setFocus(Qt::OtherFocusReason);
-}
-
-void MainWindow::hideToolBox()
-{
-    mToolBox->hide();
-    GenericCodeEditor *editor = mEditors->currentEditor();
-    if (editor) {
-        // This slot is mapped to Escape, so also clear highlighting
-        // whenever invoked:
-        editor->clearSearchHighlighting();
-        if (!editor->hasFocus())
-            editor->setFocus(Qt::OtherFocusReason);
-    }
 }
 
 void MainWindow::showSettings()
@@ -1609,6 +1203,10 @@ bool MainWindow::eventFilter( QObject *object, QEvent *event )
     }
 
     return QMainWindow::eventFilter(object, event);
+}
+
+void MainWindow::postFocus() {
+    mPostDocklet->focus();
 }
 
 //////////////////////////// ClockStatusBox ////////////////////////////

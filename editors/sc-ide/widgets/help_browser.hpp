@@ -87,6 +87,7 @@ public:
         ZoomOut,
         ResetZoom,
         Evaluate,
+        SwitchSplit,
 
         ActionCount
     };
@@ -105,7 +106,8 @@ public:
 public slots:
     void applySettings( Settings::Manager * );
     void goHome();
-    void closeDocument();
+    void removeWindow();
+    void switchSplit();
     void zoomIn();
     void zoomOut();
     void resetZoom();

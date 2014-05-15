@@ -56,6 +56,7 @@ set ( ide_moc_hdr
     widgets/util/color_widget.hpp
     widgets/util/docklet.hpp
     widgets/util/volume_widget.hpp
+    widgets/util/multi_splitter.hpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
 )
@@ -104,6 +105,7 @@ set ( ide_src
     widgets/util/docklet.cpp
     widgets/util/volume_widget.cpp
     widgets/util/status_box.cpp
+    widgets/util/multi_splitter.cpp
     widgets/style/style.cpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp

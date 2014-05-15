@@ -28,6 +28,7 @@
 #include <QStatusBar>
 
 #include "util/status_box.hpp"
+#include "../../sc-ide/core/sig_mux.hpp"
 
 namespace ScIDE {
 
@@ -58,50 +59,10 @@ public:
 
     enum ActionRole {
         // File
-        Quit = 0,
-        DocNew,
-        DocOpen,
-        DocOpenStartup,
-        DocOpenSupportDir,
-        DocSave,
-        DocSaveAs,
-        DocSaveAll,
-        DocCloseAll,
-        DocReload,
         ClearRecentDocs,
 
-        // Sessions
-        NewSession,
-        SaveSessionAs,
-        ManageSessions,
-        OpenSessionSwitchDialog,
-
-        // Edit
-        Find,
-        Replace,
-
-        // View
-        ShowCmdLine,
-        CmdLineForCursor,
-        ShowGoToLineTool,
-        CloseToolBox,
-        ShowFullScreen,
-        FocusPostWindow,
-
-        // Settings
-        ShowSettings,
-
-        // Language
-        LookupImplementation,
-        LookupImplementationForCursor,
-        LookupReferences,
-        LookupReferencesForCursor,
-
         // Help
-        Help,
         HelpAboutIDE,
-        LookupDocumentationForCursor,
-        LookupDocumentation,
         ShowAbout,
         ShowAboutQT,
 
@@ -123,32 +84,24 @@ public:
     PostDocklet * postDocklet() { return mPostDocklet; }
 
     static MainWindow *instance() { return mInstance; }
+    MultiEditor *editor() { return mEditors; }
+    QMenuBar *menu() { return mainMenu; }
+
     Settings::Manager *setting();
 
     static bool close( Document * );
     static bool save( Document *, bool forceChoose = false );
     static bool reload( Document * );
+    void saveSessionChanged();
+
+    QMenuBar *createMenus();
+
+    QString documentOpenPath() const;
+    void openSession( QString const & sessionName );
+    void updateSessionsMenu();
 
 public Q_SLOTS:
-    void newSession();
-    void saveCurrentSessionAs();
-    void openSessionsDialog();
-
-    void newDocument();
-    void openDocument();
-    void saveDocument();
-    void saveDocumentAs();
-    void saveAllDocuments();
-    void reloadDocument();
-    void closeDocument();
-    void closeAllDocuments();
-
-    void showCmdLine();
-    void showCmdLine( const QString & );
-    void showFindTool();
-    void showReplaceTool();
-    void showGoToLineTool();
-    void hideToolBox();
+    void postFocus();
 
     void showSettings();
 
@@ -159,9 +112,6 @@ public Q_SLOTS:
     void showStatusMessage( QString const & string );
 
 private Q_SLOTS:
-    void openStartupFile();
-    void openUserSupportDirectory();
-
     void switchSession( Session *session );
     void saveSession( Session *session );
     void onInterpreterStateChanged( QProcess::ProcessState );
@@ -184,7 +134,6 @@ private Q_SLOTS:
     void lookupDocumentation();
     void applySettings( Settings::Manager * );
     void storeSettings( Settings::Manager * );
-    void showSwitchSessionDialog();
     void showAbout();
     void showAboutQT();
     void cmdLineForCursor();
@@ -197,16 +146,12 @@ protected:
 
 private:
     void createActions();
-    void createMenus();
     template <class T> void saveWindowState(T * settings);
     template <class T> void restoreWindowState(T * settings);
-    void updateSessionsMenu();
     void updateClockWidget( bool isFullScreen );
-    void openSession( QString const & sessionName );
     bool checkFileExtension( const QString & fpath );
     void toggleInterpreterActions( bool enabled);
     void applyCursorBlinkingSettings( Settings::Manager * );
-    QString documentOpenPath() const;
     QString documentSavePath( Document * ) const;
 
     Main *mMain;
@@ -217,14 +162,9 @@ private:
 
     MultiEditor *mEditors;
 
-    // Tools
-    ToolBox *mToolBox;
-    CmdLine *mCmdLine;
-    GoToLineTool *mGoToLineTool;
-    TextFindReplacePanel *mFindReplaceTool;
-
     // Status bar
     QStatusBar  *mStatusBar;
+    QMenuBar *mainMenu;
     StatusBox *mLangStatus;
     StatusBox *mServerStatus;
     ClockStatusBox *mClockLabel;

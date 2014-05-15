@@ -24,13 +24,14 @@
 
 #include <QPainter>
 #include <QScrollBar>
+#include <QPalette>
 
 namespace ScIDE {
 
 QPointer<CodeEditorBox> CodeEditorBox::gActiveBox;
 
-CodeEditorBox::CodeEditorBox(QWidget *parent) :
-    QWidget(parent)
+CodeEditorBox::CodeEditorBox(MultiSplitter *splitter, QWidget *parent) :
+    QWidget(parent), mSplitter(splitter)
 {
     setFocusPolicy(Qt::StrongFocus);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -38,8 +39,9 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
     mTopLayout = new QBoxLayout(QBoxLayout::TopToBottom);
     mLayout = new QStackedLayout();
     setLayout(mTopLayout);
-    mDocComboBox = new QComboBox();
+    mDocComboBox = new BoxPopupMenu();
     mDocComboBox->setFocusPolicy(Qt::NoFocus);
+
     mTopLayout->setSpacing(1);
     mTopLayout->setContentsMargins(0, 0, 0, 0);
     mTopLayout->addWidget(mDocComboBox);
@@ -161,7 +163,7 @@ void CodeEditorBox::onDocumentSaved(Document *doc)
 
 GenericCodeEditor *CodeEditorBox::currentEditor()
 {
-    if (mHistory.count())
+    if (!mHistory.isEmpty())
         return mHistory.first();
     else
         return 0;
