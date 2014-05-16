@@ -38,8 +38,10 @@ EventStreamCleanup {
 	exit { | event, freeNodes = true |
 		if(event.isKindOf(Dictionary)) {
 			this.update(event);
-			functions.do(_.value(freeNodes) );
-			event[\removeFromCleanup] = event[\removeFromCleanup].addAll(functions);
+			if(functions.notEmpty) {
+				functions.do(_.value(freeNodes) );
+				event[\removeFromCleanup] = event[\removeFromCleanup].addAll(functions);
+			};
 			this.clear;
 		};
 		^event
