@@ -15,33 +15,43 @@ let g:sclangTerm = ""     "Leave it blank like this for the autodetect (just bel
 
 "if setting is blank, this code checks for popular terminals:
 if g:sclangTerm == ""
-	if has('mac') || has('macunix')
-		"the following has worked with osx
-		let g:sclangTerm = "open -a /Applications/Utilities/Terminal.app"
-		let g:sclangPipeApp = "/usr/local/bin/sclangpipe_app"
-		" on debians (inc ubuntu) this 'alternatives' entry should point to the user's preferred term
-	else
-		for termcmd in ["/etc/alternatives/x-terminal-emulator", "xterm", "urxvtcd", "rxvt"]
-			if executable(termcmd)
-				let g:sclangTerm = termcmd . " -e"
-				break
-			endif
-		endfor
-	endif
-	if g:sclangTerm == ""
-		echo "scvimrc warning: unable to detect terminal program, hoping xterm exists"
-		let g:sclangTerm = "xterm -e"
-	endif
+  if has('mac') || has('macunix')
+    "the following has worked with osx
+    let g:sclangTerm = "open -a /Applications/Utilities/Terminal.app"
+    let g:sclangPipeApp = "/usr/local/bin/sclangpipe_app"
+    " on debians (inc ubuntu) this 'alternatives' entry should point to the user's preferred term
+  else
+    for termcmd in ["/etc/alternatives/x-terminal-emulator", "xterm", "urxvtcd", "rxvt"]
+      if executable(termcmd)
+        let g:sclangTerm = termcmd . " -e"
+        break
+      endif
+    endfor
+  endif
+  if g:sclangTerm == ""
+    echo "scvimrc warning: unable to detect terminal program, hoping xterm exists"
+    let g:sclangTerm = "xterm -e"
+  endif
 endif
 
 "this indicates the location to create a pipe for vim to communicate with
-"sclang 
+"sclang
 "defaults /tmp/sclang-pipe
 "let g:sclangPipeLoc = "/tmp/sclang-pipe"
 
 "this indicates a file where the process id for sclangpipe_app is stored
 "default /tmp/sclangpipe_app-pid
 "let g:sclangPipeAppPidLoc = "/tmp/sclangpipe_app-pid"
+
+" Set to 1 to split scvim and sclang output when running in tmux or
+" screen vertically, 0 for horizontally
+let g:scvimSplitVertical = 1
+
+" Set the size of the sclang output split in lines or blocks (applies only to
+" scvim opened in screen or tmux). Applies vertically or horizontally, depending on
+" g:scvimSplitVertical
+let g:scvimSplitSize = 25
+
 
 au BufWinEnter,BufNewFile,BufRead *.sc set filetype=supercollider
 au BufWinEnter,BufNewFile,BufRead *.sc let &iskeyword="@,48-57,_,192-255" | runtime ftplugin/supercollider.vim
