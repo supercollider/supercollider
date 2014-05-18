@@ -11,20 +11,11 @@ InstanceMethods::
 method::set
 set arguments of a node
 
-method::map
-set bus mappings of a node
-
 method::unset
 remove settings
 
 method::unmap
 remove mappings
-
-method::setn
-set ranges of controls
-
-method::mapn
-map num busses mappings to node
 
 method::at
 return setting at that key.

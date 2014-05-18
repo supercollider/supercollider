@@ -78,7 +78,7 @@ ServerOptions
 		o = if (protocol == \tcp, " -t ", " -u ");
 		o = o ++ port;
 
-	    o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
+		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
 
 		if (numControlBusChannels != 4096, {
 			o = o ++ " -c " ++ numControlBusChannels;

@@ -696,6 +696,31 @@ Event : Environment {
 							[\c_setn, ~out.asControlInput, array.size] ++ array);
 					},
 
+					fadeBus: #{ |server|
+						var bundle, instrument, rate, bus;
+						var array = ~array.as(Array);
+						var numChannels = min(~numChannels.value ? 1, array.size);
+						if(numChannels > SystemSynthDefs.numChannels) {
+							Error(
+								"Can't set more than % channels with current setup in SystemSynthDefs."
+								.format(SystemSynthDefs.numChannels)
+							).throw;
+						};
+						if (~id.isNil) { ~id = server.nextNodeID };
+						instrument = "system_setbus_%_%".format(~rate.value ? \control, numChannels);
+						// addToTail, so that old bus value can be overridden:
+						bundle = [9, instrument, ~id, 1, ~group.asControlInput,
+							"values", array,
+							"out", ~out.value,
+							"fadeTime", ~fadeTime,
+							"curve", ~curve
+						].asOSCArgArray;
+						~schedBundle.value(~lag, ~timingOffset, server, bundle);
+						if(~rate == \audio) { // control rate synth frees by itself, because bus holds the value
+							~stopServerNode = { server.sendBundle(server.latency, [\n_set, ~id, \gate, 0]) }
+						};
+					},
+
 					gen: #{|server|
 						~schedBundle.value(~lag, ~timingOffset, server,
 							[\b_gen, ~bufnum.asControlInput, ~gencmd, ~genflags] ++ ~genarray);
