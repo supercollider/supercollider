@@ -674,25 +674,13 @@ void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error,
     if (unlikely(error == error::operation_aborted))
         return;    /* we're done */
 
-    if (error == error::message_size) {
-        overflow_vector.insert(overflow_vector.end(),
-                                recv_buffer_.begin(), recv_buffer_.end());
-        return;
-    }
-
     if (error) {
         std::cout << "sc_osc_handler received error code " << error << std::endl;
         start_receive_udp();
         return;
     }
 
-    if (overflow_vector.empty())
-        handle_packet_async(recv_buffer_.begin(), bytes_transferred, make_shared<udp_endpoint>(udp_remote_endpoint_));
-    else {
-        overflow_vector.insert(overflow_vector.end(), recv_buffer_.begin(), recv_buffer_.end());
-        handle_packet_async(overflow_vector.data(), overflow_vector.size(), make_shared<udp_endpoint>(udp_remote_endpoint_));
-        overflow_vector.clear();
-    }
+    handle_packet_async(recv_buffer_.begin(), bytes_transferred, make_shared<udp_endpoint>(udp_remote_endpoint_));
 
     start_receive_udp();
     return;
