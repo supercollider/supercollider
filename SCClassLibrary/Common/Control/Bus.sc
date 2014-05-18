@@ -154,12 +154,13 @@ Bus {
 	}
 
 
-	free {
+	free { arg clear = false;
 		if(index.isNil,{ (this.asString + " has already been freed").warn; ^this });
 		if(rate == \audio,{
 			server.audioBusAllocator.free(index);
 		},{
 			server.controlBusAllocator.free(index);
+			if(clear) { this.setAll(0) };
 		});
 		index = nil;
 		numChannels = nil;
