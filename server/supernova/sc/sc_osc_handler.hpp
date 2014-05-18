@@ -408,7 +408,6 @@ private:
     const char * tcp_password_; /* we are not owning this! */
 
     std::array<char, 1<<15 > recv_buffer_;
-    std::vector<char> overflow_vector;
     /* @} */
 };
 
