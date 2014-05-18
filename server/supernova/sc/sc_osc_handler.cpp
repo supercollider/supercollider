@@ -731,7 +731,7 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
 
     osc_handler = self;
 
-    read_more();
+    async_read_msg_size();
 }
 
 
@@ -744,64 +744,54 @@ void sc_osc_handler::tcp_connection::send(const char *data, size_t length)
     assert(length == written);
 }
 
-void sc_osc_handler::tcp_connection::read_more()
+
+void sc_osc_handler::tcp_connection::async_read_msg_size()
 {
-    using namespace boost;
-    socket_.async_read_some(asio::buffer(recv_buffer_),
-                            bind(&sc_osc_handler::tcp_connection::handle_read, this,
-                                 asio::placeholders::error,
-                                 asio::placeholders::bytes_transferred));
+    namespace asio = boost::asio;
+    pointer ptr = std::static_pointer_cast<sc_osc_handler::tcp_connection>(shared_from_this());
+
+    asio::async_read(socket_, asio::buffer(&msg_size_, 4), [=] (const boost::system::error_code& error, std::size_t bytes_transferred) {
+        if (error == boost::asio::error::eof)
+            return; // connection closed
+
+        if (error) {
+            cout << "tcp_connection received error: " << error.message() << endl;
+            return;
+        }
+
+        ptr->handle_message_size();
+    });
+}
+
+void sc_osc_handler::tcp_connection::handle_message_size()
+{
+    msg_buffer_.resize(msg_size_);
+
+    namespace asio = boost::asio;
+    pointer ptr = std::static_pointer_cast<sc_osc_handler::tcp_connection>(shared_from_this());
+    asio::async_read(socket_, asio::buffer(msg_buffer_), [=] (const boost::system::error_code& error, std::size_t bytes_transferred) {
+        if (error == boost::asio::error::eof)
+            return; // connection closed
+
+        if (error) {
+            cout << "tcp_connection received error: " << error.message() << endl;
+            return;
+        }
+        assert(bytes_transferred == ptr->msg_size_);
+
+        ptr->handle_message();
+    });
+}
+
+void sc_osc_handler::tcp_connection::handle_message()
+{
+    assert(msg_size_ == msg_buffer_.size());
+
+    osc_handler->handle_packet_async( msg_buffer_.data(), msg_buffer_.size(), shared_from_this() );
+    async_read_msg_size();
 }
 
 
-void sc_osc_handler::tcp_connection::handle_read(const boost::system::error_code& error, size_t bytes_transferred)
-{
-    typedef boost::integer::big32_t big32_t;
-    if (error) {
-        cout << "tcp_connection received error code " << error << endl;
-        return;
-    }
-
-    if (pending_size == 0 && bytes_transferred >= sizeof(big32_t)) {
-        read_message_start(recv_buffer_.data(), bytes_transferred);
-        read_more();
-        return;
-    }
-
-    if (overflow_vector.size() + bytes_transferred < pending_size) {
-        overflow_vector.insert(overflow_vector.end(), recv_buffer_.data(), recv_buffer_.data() + bytes_transferred);
-    } else {
-        const size_t remaining_msg_bytes = pending_size - overflow_vector.size();
-        const size_t overflow_bytes = bytes_transferred - remaining_msg_bytes;
-
-        overflow_vector.insert(overflow_vector.end(), recv_buffer_.data(), recv_buffer_.data() + remaining_msg_bytes);
-        assert(overflow_vector.size() == pending_size);
-
-        osc_handler->handle_packet_async(overflow_vector.data(), pending_size, shared_from_this());
-        overflow_vector.clear();
-
-        read_message_start(recv_buffer_.data() + remaining_msg_bytes, overflow_bytes);
-    }
-    read_more();
-}
-
-void sc_osc_handler::tcp_connection::read_message_start(const char * buffer, size_t length)
-{
-    assert(pending_size == 0);
-    typedef boost::integer::big32_t big32_t;
-
-    big32_t msglen;
-    memcpy(&msglen, buffer, sizeof(big32_t));
-
-    if (length == msglen + sizeof(big32_t)) {
-        osc_handler->handle_packet_async(buffer + sizeof(big32_t),
-                                         length - sizeof(big32_t), shared_from_this());
-    } else {
-        pending_size = msglen;
-        overflow_vector.insert(overflow_vector.end(),
-                               buffer + sizeof(big32_t), buffer + length);
-    }
-}
 
 
 void sc_osc_handler::start_tcp_accept(void)
