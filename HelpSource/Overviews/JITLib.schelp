@@ -1,6 +1,6 @@
 title:: JITLib
 summary:: An overview of the Just In Time library
-categories:: Libraries>JITLib, Tutorials>JITLib
+categories:: Libraries>JITLib, Tutorials>JITLib, Live Coding
 
 section::Introduction
 
@@ -28,6 +28,7 @@ code::
 "JITLib extensions".include;
 ::
 
+For some recent changes, see: link::Other/JITLibChanges3.7::
 
 section::Tutorial: Interactive Programming with SuperCollider and jitlib
 
