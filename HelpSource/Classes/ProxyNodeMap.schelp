@@ -1,0 +1,8 @@
+class:: ProxyNodeMap
+summary:: store control values and bus mappings for NodeProxy
+categories:: Libraries>JITLib>NodeProxy
+related:: Classes/Bus
+
+description::
+Object to store control values and bus mappings independantly of a specific NodeProxy.
+

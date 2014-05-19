@@ -16,8 +16,9 @@ This added a little complexity, but for various reasons, other aspects could be 
 As many parts of the code have been touched, it is possible that there are still bugs in it. Below, you find a long series of (manual) tests that should also reveal a little bit about what you should be able to expect from the system.
 
 Classes that have changed:
+
 list::
-## link::Classes/NodeProxy::, link::Classes/BusPlug::
+## link::Classes/NodeProxy::, link::Classes/BusPlug::, link::Classes/Ndef::
 ## link::Classes/PatternProxy::, link::Classes/Pdefn::, link::Classes/EventPatternProxy::, link::Classes/Pdef::, link::Classes/ProxySpace::
 ## link::Classes/Monitor::, link::Classes/NodeMap::
 ::
@@ -31,7 +32,7 @@ subsection:: Changes in pattern proxies (Pdef/Pdefn/Tdef and respective parent c
 
 list::
 ## When a none-stream/non-pattern object is the source of the proxy, return the object only once per stream (do not loop by default)
-## In the pattern system, the role of a non-pattern object is ambiguous: in some cases, when used as an input of a pattern, it will return itself endlessly (e.g. in a Pbind value). In other cases (e.g. as an element of a Pseq list), they are used only once and give way to the next element. Pattern proxies should actually behave the same dependent on their input. This means that asStream and embedInStream have to be implemented slightly differently: all pattern proxies now behave to asStream and embedInStream like their respective source objects. E.g. Pdefn(\x, 800); Pbindef(\freq, Pdefn(\x)) will loop 800, while Pseq([Pdefn(\x), 900]) will return first 800, then 900.
+## In the pattern system, the role of a non-pattern object is ambiguous: in some cases, when used as an input of a pattern, it will return itself endlessly (e.g. in a Pbind value). In other cases (e.g. as an element of a Pseq list), they are used only once and give way to the next element. Pattern proxies should actually behave the same dependent on their input. This means that asStream and embedInStream have to be implemented slightly differently: all pattern proxies now behave to asStream and embedInStream like their respective source objects. E.g. code::Pdefn(\x, 800); Pbindef(\freq, Pdefn(\x)):: will loop 800, while code::Pseq([Pdefn(\x), 900]):: will return first 800, then 900.
 
 ::
 
@@ -41,20 +42,20 @@ list::
 ## controls are now set at synth creation time, not in an extra set message. This means that i-rate controls can be set in the nodemap.
 ## send and spawn extraArgs now override any existing nodeMap settings for each synth
 ## when setting the source of a node proxy to a number or an array of numbers, the bus is set by a precompiled synth def, which is much more efficient and consistent than build ing one. This means the source can be now set to a number/array librally at higher rates (e.g. Ndef(\x, [100, 200])).
-## For implementation reasons, it is now not possible anymore to add up numbers in a single node proxy. One slot will overwrite the next. E.g. Ndef(\x)[0] = 100; Ndef(\x)[1] = 200; the output will be 200 and not (as ist used to be) 300.
+## For implementation reasons, it is now not possible anymore to add up numbers in a single node proxy. One slot will overwrite the next. E.g. code::Ndef(\x)[0] = 100; Ndef(\x)[1] = 200;:: the output will be 200 and not (as ist used to be) 300.
 ## play (Monitor) can now map from any number of channels to any number of channels
 ## play and playN  (Monitor) previously passed arguments are kept and can be partially overridden by new ones (the message clear removes them).
-## nodeProxy.value(n) (e.g. SinOsc.ar(Ndef(\x)) will keep the rate the proxy already has).
-## using x.ar(n) / x.kr(n) will automatically expand when n is nil. It remains fixed if n is given.
-## unlike it was before, x.ar(n, offset) will now wrap around the avaliable proxy bus channels. There is a third argument (wrap), when set to false, it will clip instead
-## a third argument, clip, was added to ar/kr: x.ar(n, offset, clip). When set to \wrap it will extend the output size of the existing channels by wrapping (the default is \wrap). Set it to \clip if you want to keep it in range by repeating the last value.
+## nodeProxy.value(n) (e.g. code::SinOsc.ar(Ndef(\x)::) will keep the rate the proxy already has).
+## using code::x.ar(n):: and code::x.kr(n):: will automatically expand when code::n:: is nil. It remains fixed if n is given.
+## unlike it was before, code::x.ar(n, offset):: will now wrap around the avaliable proxy bus channels. There is a third argument (wrap), when set to false, it will clip instead
+## a third argument, clip, was added to ar/kr: code::x.ar(n, offset, clip)::. When set to \wrap it will extend the output size of the existing channels by wrapping (the default is \wrap). Set it to \clip if you want to keep it in range by repeating the last value.
 ## InBus is more flexible and logical in terms of multichannel expansion now and has a helpfile
 ::
 
 subsection:: New functionality
 
 list::
-## the message "mold" allows you to change the number of channels and rate of the proxy at runtime. The proxy's children are automatically remapped, both source and monitor will crossfade between the respective states.
+## the message link::Classes/NodeProxy#-mold:: allows you to change the number of channels and rate of the proxy at runtime. The proxy's children are automatically remapped, both source and monitor will crossfade between the respective states.
 ## Note that when rebuilding children, the timing (clock, quant and fadeTime) of the parent is used for all others. If you need different time bases of related proxies, mold dosn't keep their timing. Set the molded proxy's quant to a smallest common multiple of the two quants in this case.
 ## You can now use NodeMap directly as arguments in Synth objects.
 ## NodeProxy can be used as argument in a Synth directly, it will either return its bus index or by asMap its bus mapping argument. Note that when reshaping is allowed, the synth won't update automatically. You can register a dependency on \bus.
@@ -73,7 +74,7 @@ subsection:: a few minor changes:
 list::
 ## An empty function / or a function returning nil to a node proxy will not fail, but simply play a synth without output
 ## when trying to play control rate proxy, just warn and don't throw an error
-## nodeProxy.ar(n) / nodeProxy.kr(n) / nodeProxy.value(n) will now always return an array (for general consistency: a few ugens expect an array as an input)
+## code::nodeProxy.ar(n):: / code::nodeProxy.kr(n):: / code::nodeProxy.value(n):: will now always return an array (for general consistency: a few ugens expect an array as an input)
 ## the source of a proxy is built when it is inserted, not only when the server is running. This allows to know its number of channels independently of the server running.
 ## bus is freed after fadeTime as to avoid a too early reuse.
 ## proxy is passed into events produced by event streams (~proxy).
