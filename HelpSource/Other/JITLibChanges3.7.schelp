@@ -101,6 +101,43 @@ list::
 ::
 
 
+section:: Example: Elastic NodeProxy
+
+code::
+
+s.boot;
+Ndef.clear;
+Ndef.defaultReshaping = \elastic;
+Ndef(\x).play(0, 2);
+Ndef(\x).fadeTime = 1.3;
+Ndef(\y, { Dust.ar(115, 0.1) });
+Ndef(\x, { Resonz.ar(Ndef.ar(\y), [700, 720], 0.001, 300) });
+Ndef(\y, { Dust2.ar([3, 115], [1, 0.1]) });
+Ndef(\x, { Resonz.ar(Ndef.ar(\y), [600, 1720], 0.01, 100) });
+Ndef(\x, { Splay.ar(Resonz.ar(Ndef(\y), [600, 1720, 820, 1000] * 1.5, 0.01, 100)) });
+Ndef(\y, { Dust.ar([3, 115, 5, 101] * 0.1, [1, 0.1]) });
+Ndef(\y, { Dust.ar([3, 115, 5, 101] * 10, [1, 0.1]/2) });
+Ndef(\y, { Dust.ar([1013, 415, 1115, 101] * (Ndef.kr(\aa) + 1), [0.1, 0.1]/2) });
+
+Ndef(\aa, { Blip.ar([0.03, 0.05, 0.1], 3).exprange(0.1, 100) });
+Ndef(\y, { Dust.ar([1013, 415, 1115, 101] * (Ndef.ar(\aa) + 1), [0.1, 0.1]/2) });
+
+Ndef(\x, { Splay.ar(Resonz.ar(Ndef(\y), [600, 720, 320, 780] * (Ndef.ar(\aa).lag(0.01) * 0.3 + 1), 0.01, 100)).distort });
+Ndef(\aa, { Blip.ar([1, 0.5, 0.4], 30).exprange(0.1, 10) });
+
+
+Ndef(\y, { Impulse.ar([1, 2/3, 4/6, 2] * 100 * DelayC.ar(Ndef(\aa) + 1, 0.5, 0.5, 1, Ndef(\aa)), [0.1, 0.1]/2) });
+Ndef(\y, { Impulse.ar([1, 2/3, 4/6, 2] * 4 * DelayC.ar(Ndef(\aa) + 1, 0.5, 0.5, 1, Ndef(\aa)), [0.1, 0.1]/2) });
+
+
+Ndef(\y, { Impulse.ar([1, 2/3, 4/6, 2, 3] * 100 * DelayC.ar(Ndef.ar(\aa) + 1, 0.5, LFNoise1.kr(0.1 ! 4).range(0, 0.5), 1, Ndef.ar(\aa)), [0.1, 0.1]/2) });
+
+Ndef(\y, { Impulse.ar([1, 2/3, 4/6, 2, 9/8] * 100 * DelayC.ar(Ndef.ar(\aa) + 1, 0.5, LFNoise1.kr(3 ! 2).range(0, 0.5), 1, Ndef(\aa)), [0.1, 0.1]/2) });
+
+Ndef(\x, { Splay.ar(Resonz.ar(SplayAz.ar(4, Ndef.ar(\y)), [600, 720, 320, 780] * (Ndef.ar(\aa).lag(0.01) * 0.3 + 1), 0.01, 100)).distort });
+
+::
+
 section:: Tests for NodeProxy and Monitor
 
 code::

@@ -154,6 +154,8 @@ argument::obj
 can be one of the supported inputs (see link::#Supported sources::)
 
 
+subsection::Reshaping
+
 method::reshaping
 Determines how to behave when a new source is added.
 Current options:
@@ -162,6 +164,26 @@ table::
 ## nil || Once initialized, keep the same bus - this is the default
 ## \elastic || On a change, shrink and grow according to need, replace bus. The monitor and child proxies are adjusted.
 ## \expanding || On a change, only grow according to need, replace bus. The monitor and child proxies are adjusted.
+::
+
+code::
+a = NodeProxy(s);
+a.reshaping = \elastic;
+a.play(0, 2); // play stereo
+a.source = { BPF.ar(Dust.ar(8 ! 8), (0..5).nthPrime * 300, 0.01) * 20 };
+a.numChannels; // 8
+::
+
+method::mold
+Adjust the proxy to a given rate / numChannels. If there are any child proxies that have elastic link::#-reshaping::, they are adjusted accordigly.
+
+code::
+a = NodeProxy(s);
+a.play;
+a.source = { BPF.ar(Impulse.ar({ rrand(1.0, 2.0) } ! a.numChannels), (0..5).nthPrime * 300, 0.01) * 20 };
+a.numChannels; // 2
+a.mold(8);
+a.numChannels; // 8
 ::
 
 subsection::Other ways to set or change the sources
@@ -428,7 +450,7 @@ definitionList::
 ## link::Classes/Tdef:: || played like Task
 ## link::Classes/Event:: || played like in a pattern.
 
-## Associations (link::NodeProxy_roles::): ||
+## Associations (link::Reference/NodeProxy_roles::): ||
 definitionList::
 ## (\filter -> func) || filter previous input (with post control)
 ## (\filterIn -> func) || filter previous input (with pre control)
@@ -446,7 +468,7 @@ definitionList::
 ::
 ::
 
-Definitions for other sources can be added - see: link::NodeProxy_roles::
+Definitions for other sources can be added - see: link::Reference/NodeProxy_roles::
 
 Examples::
 
