@@ -1,6 +1,11 @@
 cmake_minimum_required( VERSION 2.8 )
 
-find_package(Qt4 4.7 REQUIRED QtCore QtGui QtWebKit QtNetwork)
+find_package(Qt5Core)
+find_package(Qt5Gui) 
+find_package(Qt5WebKit)
+find_package(Qt5Network)
+find_package(Qt5Widgets)
+find_package(Qt5LinguistTools)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
@@ -174,12 +179,10 @@ add_custom_target( update_ide_translations
             -no-obsolete -pluralonly
 )
 
-include( ${QT_USE_FILE} )
-
-qt4_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
-qt4_wrap_ui( ide_forms_src ${ide_forms} )
-qt4_add_resources( ide_rcc resources.qrc )
-qt4_add_translation( translations ${translation_src} ${native_translation_src} )
+qt5_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
+qt5_wrap_ui( ide_forms_src ${ide_forms} )
+qt5_add_resources( ide_rcc resources.qrc )
+qt5_add_translation( translations ${translation_src} ${native_translation_src} )
 
 set(ide_sources ${ide_src} ${all_hdr} )
 
@@ -203,6 +206,7 @@ else()
   add_executable( ${ide_name} MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} ${RES_FILES} )
 endif()
 
+qt5_use_modules( ${ide_name} Core Network Gui WebKit WebKitWidgets Widgets)
 
 target_link_libraries( ${ide_name} ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${YAMLCPP_LIBRARY} )
 
@@ -215,7 +219,6 @@ endif()
 
 if(APPLE)
     target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F/Library/Frameworks")
 elseif(WIN32)
     target_link_libraries( ${ide_name} wsock32 )
     # The following prevents a Windows console from showing up
@@ -272,8 +275,22 @@ if(APPLE)
 
     include(InstallRequiredSystemLibraries)
 
-    include(DeployQt4)
-    install_qt4_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
+    include(DeployQt5)
+    install_qt5_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/lang/sclang;${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
+
+    # install Qt plugins (adapted from kvirc)
+    set(plugin_dest_dir ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Plugins)
+    set(QT_PLUGINS_DIR "${Qt5Widgets_DIR}/../../../plugins")
+    install(DIRECTORY "${QT_PLUGINS_DIR}/" DESTINATION ${plugin_dest_dir} COMPONENT Runtime
+                       FILES_MATCHING REGEX "(platforms)/[^_]*\\.dylib")
+
+    install(CODE "
+           file(GLOB_RECURSE QTPLUGINS
+                  \"${plugin_dest_dir}/*.dylib\")
+                include(BundleUtilities)
+                fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\" \"\${QTPLUGINS}\" \"${QT_LIBRARY_DIR}\")
+                " COMPONENT Runtime)
+
 
 elseif(WIN32)
 	install(TARGETS ${ide_name}
