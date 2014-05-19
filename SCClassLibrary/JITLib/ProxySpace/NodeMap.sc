@@ -176,11 +176,11 @@ ProxyNodeMap : NodeMap {
 		proxy.changed(*args)
 	}
 
-	// deprecate, but keep for now
+
 
 	hasRates { ^rates.notNil and: { rates.notEmpty } }
 	setRates { |args|
-		this.deprecated(thisMethod);
+		//this.deprecated(thisMethod); // maybe deprecate later
 		rates = rates ?? { IdentityDictionary.new };
 		rates.putPairs(args);
 	}
