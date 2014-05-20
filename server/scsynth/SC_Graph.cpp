@@ -579,7 +579,7 @@ int Graph_GetControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex
 {
 	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
 	ParamSpec *spec = table->Get(inHash, inName);
-	if (!spec || inIndex >= spec->mNumChannels) return kSCErr_IndexOutOfRange;
+	if (!spec) return kSCErr_IndexOutOfRange;
 	return Graph_GetControl(inGraph, spec->mIndex + inIndex, outValue);
 }
 
@@ -596,9 +596,7 @@ void Graph_SetControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inInde
 {
 	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
 	ParamSpec *spec = table->Get(inHash, inName);
-	if (!spec || inIndex >= spec->mNumChannels) return;
-	//printf("setting: %s: to value %f\n", spec->mName, inValue);
-	Graph_SetControl(inGraph, spec->mIndex + inIndex, inValue);
+	if (spec) Graph_SetControl(inGraph, spec->mIndex + inIndex, inValue);
 }
 
 
@@ -607,9 +605,7 @@ void Graph_MapControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inInde
 {
 	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
 	ParamSpec *spec = table->Get(inHash, inName);
-	if (!spec || inIndex >= spec->mNumChannels) return;
-	//printf("mapping: %s: to bus index %i\n", spec->mName, inBus);
-	Graph_MapControl(inGraph, spec->mIndex + inIndex, inBus);
+	if (spec) Graph_MapControl(inGraph, spec->mIndex + inIndex, inBus);
 }
 
 void Graph_MapControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
@@ -629,8 +625,6 @@ void Graph_MapAudioControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 i
 {
     ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
     ParamSpec *spec = table->Get(inHash, inName);
-	if (!spec || inIndex >= spec->mNumChannels) return;
-	//printf("mapping: %s: to bus index %i\n", spec->mName, inBus);
     if (spec) Graph_MapAudioControl(inGraph, spec->mIndex + inIndex, inBus);
 }
 
@@ -638,12 +632,13 @@ void Graph_MapAudioControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
 {
     if (inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
     World *world = inGraph->mNode.mWorld;
+//    inGraph->mControlRates[inIndex] = 2;
     /* what is the below doing??? it is unmapping by looking for negative ints */
     if (inBus >= 0x80000000) {
-		inGraph->mControlRates[inIndex] = 0;
-		inGraph->mMapControls[inIndex] = inGraph->mControls + inIndex;
+	inGraph->mControlRates[inIndex] = 0;
+	inGraph->mMapControls[inIndex] = inGraph->mControls + inIndex;
 	} else if (inBus < world->mNumAudioBusChannels) {
         inGraph->mControlRates[inIndex] = 2;
-		inGraph->mMapControls[inIndex] = world->mAudioBus + (inBus * world->mBufLength);
+	inGraph->mMapControls[inIndex] = world->mAudioBus + (inBus * world->mBufLength);
     }
 }
