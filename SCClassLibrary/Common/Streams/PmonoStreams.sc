@@ -94,7 +94,7 @@ PmonoStream : Stream {
 			streamout = streampairs[i+1].next(event);
 			streamout ?? { ^false };
 			if (name.isSequenceableCollection) {
-				name.do { | n, i | event[n] = streamout[i] };
+				name.do { | n, i | event[n] = streamout[i].processRest(event) };
 			}{
 				event[name] = streamout;
 			};

@@ -369,7 +369,7 @@ Pbind : Pattern {
 						^inevent
 					};
 					name.do { arg key, i;
-						event.put(key, streamout[i]);
+						event.put(key, streamout[i].processRest(event));
 					};
 				}{
 					event.put(name, streamout);
