@@ -39,21 +39,16 @@ void Unit_ChooseMulAddFunc(Unit* unit);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void Graph_FirstCalc(Graph *inGraph);
-
 void Graph_Dtor(Graph *inGraph)
 {
 	//scprintf("->Graph_Dtor %d\n", inGraph->mNode.mID);
 	World *world = inGraph->mNode.mWorld;
 	uint32 numUnits = inGraph->mNumUnits;
 	Unit** graphUnits = inGraph->mUnits;
-	if (inGraph->mNode.mCalcFunc != (NodeCalcFunc)Graph_FirstCalc) {
-		// the above test insures that dtors are not called if ctors have not been called.
-		for (uint32 i = 0; i<numUnits; ++i) {
-			Unit *unit = graphUnits[i];
-			UnitDtorFunc dtor = unit->mUnitDef->mUnitDtorFunc;
-			if (dtor) (dtor)(unit);
-		}
+	for (uint32 i = 0; i<numUnits; ++i) {
+		Unit *unit = graphUnits[i];
+		UnitDtorFunc dtor = unit->mUnitDef->mUnitDtorFunc;
+		if (dtor) (dtor)(unit);
 	}
 	world->mNumUnits -= numUnits;
 	world->mNumGraphs --;
@@ -90,7 +85,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	char *memory = (char*)graph + sizeof(Graph);
 
 	// allocate space for children
-	uint32 numUnits = inGraphDef->mNumUnitSpecs;
+	const uint32 numUnits = inGraphDef->mNumUnitSpecs;
 	graph->mNumUnits = numUnits;
 	inWorld->mNumUnits += numUnits;
 	inWorld->mNumGraphs ++;
@@ -99,7 +94,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	memory += inGraphDef->mUnitsAllocSize;
 
 	// set calc func
-	graph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_FirstCalc;
+	graph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_Calc;
 
 	// allocate wires
 	graph->mNumWires = inGraphDef->mNumWires;
@@ -111,7 +106,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	memory += inGraphDef->mCalcUnitsAllocSize;
 
 	// initialize controls
-	uint32 numControls = inGraphDef->mNumControls;
+	const uint32 numControls = inGraphDef->mNumControls;
 	graph->mNumControls = numControls;
 	graph->mControls = (float*)memory;
 	memory += inGraphDef->mControlAllocSize;
@@ -428,6 +423,12 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 		}
 	}
 
+	// Call unit constructors
+	for (uint32 i=0; i<numUnits; ++i) {
+		Unit *unit = graphUnits[i];
+		(*unit->mUnitDef->mUnitCtorFunc)(unit);
+	}
+
 	inGraphDef->mRefCount ++ ;
 }
 
@@ -451,40 +452,6 @@ void Graph_RemoveID(World* inWorld, Graph *inGraph)
     }
 
 	//inWorld->hw->mRecentID = id;
-}
-
-void Graph_FirstCalc(Graph *inGraph)
-{
-	//scprintf("->Graph_FirstCalc\n");
-	uint32 numUnits = inGraph->mNumUnits;
-	Unit **units = inGraph->mUnits;
-	for (uint32 i=0; i<numUnits; ++i) {
-		Unit *unit = units[i];
-		// call constructor
-		(*unit->mUnitDef->mUnitCtorFunc)(unit);
-	}
-	//scprintf("<-Graph_FirstCalc\n");
-
-	inGraph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_Calc;
-	// now do actual graph calculation
-	Graph_Calc(inGraph);
-}
-
-void Node_NullCalc(struct Node* /*inNode*/);
-
-void Graph_NullFirstCalc(Graph *inGraph)
-{
-	//scprintf("->Graph_FirstCalc\n");
-	uint32 numUnits = inGraph->mNumUnits;
-	Unit **units = inGraph->mUnits;
-	for (uint32 i=0; i<numUnits; ++i) {
-		Unit *unit = units[i];
-		// call constructor
-		(*unit->mUnitDef->mUnitCtorFunc)(unit);
-	}
-	//scprintf("<-Graph_FirstCalc\n");
-
-	inGraph->mNode.mCalcFunc = &Node_NullCalc;
 }
 
 inline void Graph_Calc_unit(Unit * unit)
