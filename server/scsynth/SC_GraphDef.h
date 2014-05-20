@@ -30,7 +30,6 @@ struct ParamSpec
 	int32 mName[kSCNameLen];
 	int32 mIndex;
 	int32 mHash;
-	int32 mNumChannels;
 };
 
 typedef HashTable<ParamSpec, Malloc> ParamSpecTable;
@@ -55,9 +54,6 @@ struct GraphDef
 
 	size_t mWiresAllocSize, mUnitsAllocSize, mCalcUnitsAllocSize;
 	size_t mControlAllocSize, mMapControlsAllocSize, mMapControlRatesAllocSize;
-
-	// you shouldn't rely on the order of mParamSpecs, it may change.
-	// the index of the spec is paramSpec->mIndex
 
 	uint32 mNumParamSpecs;
 	ParamSpec *mParamSpecs;
