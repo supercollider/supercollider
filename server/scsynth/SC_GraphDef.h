@@ -56,9 +56,6 @@ struct GraphDef
 	size_t mWiresAllocSize, mUnitsAllocSize, mCalcUnitsAllocSize;
 	size_t mControlAllocSize, mMapControlsAllocSize, mMapControlRatesAllocSize;
 
-	// you shouldn't rely on the order of mParamSpecs, it may change.
-	// the index of the spec is paramSpec->mIndex
-
 	uint32 mNumParamSpecs;
 	ParamSpec *mParamSpecs;
 	ParamSpecTable *mParamSpecTable;
