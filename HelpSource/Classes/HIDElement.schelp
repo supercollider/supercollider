@@ -1,0 +1,167 @@
+TITLE:: HIDElement
+summary:: A class describing an element of an HID device
+categories::  External control>HID
+related:: Classes/HID, Guides/Working_with_HID, Classes/HIDCollection, Classes/HIDUsage
+
+DESCRIPTION::
+An HIDElement describes an element, or a control, of an HID device.
+These are created for the device automatically when you open a device. The only interaction a user will have with elements are to query the properties of the element (with CODE::.postElement::), query the CODE::value:: or CODE::rawValue::, or set the value, set the CODE::repeat:: property or set an CODE::action:: to be performed when new data comes in.
+
+CLASSMETHODS::
+
+PRIVATE:: new
+
+
+INSTANCEMETHODS::
+
+PRIVATE:: setValueFromInput, mapValueFromRaw, initElementRepeat
+
+
+METHOD:: action
+Set or get the action to be performed upon receiving element data. The function will be passed the following arguments: the value (mapped between 0 and 1) and the raw value.
+
+
+METHOD:: value
+set or get the value of the element. Setting only makes sense for an output element.
+
+ARGUMENT:: val
+The raw value to send to the device
+
+
+METHOD:: repeat
+By default element's data from the device is not updated unless the data is changing. For certain elements however, you may want to receive updates even if the data is not changing, e.g. for scrollwheel of mice.
+
+ARGUMENT:: rp
+a Boolean to turn repeat on or off
+
+
+METHOD:: rawValue
+The raw value of the element.
+
+METHOD:: logicalValue
+The logical value of the element. In principal the same as value.
+
+METHOD:: physicalValue
+The physical value of the element. This can be calculated from the raw value and the device's specification for conversion: the physical minimum, the physical maximum, the unit and unit exponent. How the conversion works is described in the USB HID standard documentation. NOTE::The conversion is not yet implemented in the backend.::
+
+METHOD:: arrayValue
+The array value of the element. This value is only of importance for those elements which can represent multiple usages, such as from keyboards. In that case it indicates the key that is pressed, and by adding this number to the usage of the element you know which function the key has.
+
+NOTE:: values from a keyboard are parsed in two ways: first as the element how they come in, second just with the usage and the value (on or off) as the data comes in. ::
+
+
+SUBSECTION:: Properties of the element
+
+METHOD:: postElement
+Post a human readable description of the element to the post window.
+
+
+METHOD:: id
+The index of this element. This index may vary between operating systems.
+
+METHOD:: device
+Get the device to which this element belongs.
+NOTE:: do not set this as a user!::
+
+returns:: an instance of HID
+
+METHOD:: collection
+Get the collection index to which this element belongs.
+
+
+METHOD:: usage
+Retrieve the usage index of this collection.
+
+returns:: a Number - the usage index of this element
+
+
+METHOD:: usagePage
+Retrieve the usage page index of this element.
+
+returns:: a Number- the usage page index
+
+
+METHOD:: usageName
+Retrieve the usage name of this element. The name is looked up from the standardized HID usage tables using the usage page index.
+
+returns:: a String - the usage name
+
+METHOD:: pageName
+Retrieve the page name of this element. The name is looked up from the standardized HID usage tables using the usage page index.
+
+returns:: a String - the usage page name
+
+
+METHOD:: type
+A byte describing the type of element.
+
+returns:: a number describing the type of element.
+
+METHOD:: typeSpec
+The type of element, decoded from the type byte.
+
+returns:: an Array with Strings describing the type of element.
+
+METHOD:: ioType
+Type of the element, input (1), output (2) or feature (3)
+
+returns:: a Number indicating the ioType
+
+METHOD:: iotypeName
+Type of the element, one of code::\input::, code::\output::, or code::\feature::
+
+returns:: a Symbol indicating the type
+
+
+METHOD:: logicalMin
+Minimum value of the range that is to be expected. This is reported by the device. The element's raw value is mapped between the logical minimum and maximum to obtain the element's value.
+
+
+METHOD:: logicalMax
+Maximum value of the range that is to be expected. This is reported by the device. The element's raw value is mapped between the logical minimum and maximum to obtain the element's value.
+
+
+METHOD:: physicalMin
+Minimum value of the range that is to be expected in a physical sense. This is reported by the device. For example, for a hat switch the physical range may be the direction in degrees in which the hat switch is pointing.
+
+METHOD:: physicalMax
+Maximum value of the range that is to be expected in a physical sense. This is reported by the device. For example, for a hat switch the physical range may be the direction in degrees in which the hat switch is pointing.
+
+METHOD:: unit
+Index for the unit of the physical range.
+
+METHOD:: unitExponent
+The exponent for the physical range.
+
+
+METHOD:: usageMin
+Minimum value of the usage range that is to be expected. This is reported by the device. This is only relevant for elements that report array values.
+
+
+METHOD:: usageMax
+Maximum value of the usage range that is to be expected. This is reported by the device. This is only relevant for elements that report array values.
+
+METHOD:: getUsages
+This method is used to get a dictionary of all the usages that this element produces. In most cases an element has only one usage, but in the case of an array-element it will have several uses (for a keyboard, an element represents one keypress, but they can be various different keys).
+
+METHOD:: reportID
+The report ID with which this element receives the data. This is a low level device specific identifier
+
+
+METHOD:: reportSize
+The report size in bits with which this element receives the data. This is a low level device specific identifier
+
+METHOD:: reportIndex
+The report index with which this element receives the data. This is a low level device specific identifier
+
+
+EXAMPLES::
+
+code::
+HID.findAvailable; // find available devices
+HID.postAvailable; // post available devices
+~myhid = HID.open( 1103, 53251 ); // open a device
+~myhid.postElements; // post available elements
+//Set actions for the second element:
+~myhid.elements[1].action = { |...args| args.postln; };
+::

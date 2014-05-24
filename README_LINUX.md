@@ -45,7 +45,6 @@ Build requirements
    * http://www.X.org
    * X toolkit intrinsics
 
-
 Build requirements (optional features)
 --------------------------------------
 (most of these will be available in your linux distribution as packages)
@@ -57,6 +56,10 @@ Build requirements (optional features)
  * alsa
    * http://www.alsa-project.org
    * advanced linux sound architecture drivers and library, for sclang's MIDI interface
+
+ * libudev
+   * http://www.freedesktop.org/software/systemd/libudev/
+   * interaction with the device manager of linux (used for HID support)
 
  * libreadline >= 5
    * http://savannah.gnu.org/projects/readline
@@ -98,6 +101,7 @@ for building supercollider:
  - libreadline6-dev
  - libfftw3-dev
  - libxt-dev
+ - libudev-dev
  - libcwiid-dev (for wiimote support)
  - pkg-config
  - cmake

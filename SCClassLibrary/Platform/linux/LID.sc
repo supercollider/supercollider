@@ -72,16 +72,6 @@ LID {
 		this.prStartEventLoop;
 	}
 
-	*buildDeviceTable{ |name|
-		"WARNING: buildDeviceTable is obsolete, please use buildDeviceList".postln;
-		^LID.buildDeviceList( name );
-	}
-
-	*deviceTable{
-		"WARNING: deviceTable is obsolete, please use deviceList".postln;
-		^deviceList;
-	}
-
 	*deviceList{
 		^deviceList;
 	}

@@ -430,6 +430,15 @@ if(INSTALL_HELP)
 	endif()
 endif()
 
+
+#hid resources directory:
+set(HID_HUT_PATH ${auxresourcesdir}/SCClassLibrary/Common/Control/HID_support)
+
+install(DIRECTORY external_libraries/hidapi/hut
+        DESTINATION ${HID_HUT_PATH}
+	FILES_MATCHING PATTERN "*.yaml"
+)
+
 #############################################
 #
 # build scdoc help files
