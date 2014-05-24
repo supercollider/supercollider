@@ -280,13 +280,13 @@ inline static void calcParamSpecs(GraphDef* graphDef, char*& buffer)
 		for (uint32 i=0; i<(nSpecs - 1); ++i) {
 			IndexMap *tempMap = tempMaps + i;
 			IndexMap *nextTempMap = tempMap + 1;
-			ParamSpec *paramSpec = graphDef->mParamSpecs + i;
+			ParamSpec *paramSpec = graphDef->mParamSpecs + tempMap->index;
 			paramSpec->mNumChannels = nextTempMap->mIndex - tempMap->mIndex;
 			// printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels);
 		}
 
 		IndexMap *tempMap = tempMaps + nSpecs - 1;
-		ParamSpec *paramSpec = graphDef->mParamSpecs + nSpecs - 1;
+		ParamSpec *paramSpec = graphDef->mParamSpecs + tempMap->index;
 		paramSpec->mNumChannels = graphDef->mNumControls - tempMap->mIndex;
 
 		// printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels, paramSpec->mIndex);
