@@ -163,7 +163,11 @@ NdefParamGui : EnvirGui {
 	}
 
 	setFunc { |key|
-		^{ |sl| object.set(key, sl.value) }
+		if(object.objects.notEmpty and: { object.objects.array.first.isKindOf(SynthControl) }) {
+			^{ |sl| object.set(key, sl.value) }
+		} {
+			^{ |sl| object.source = sl.value }
+		};
 	}
 
 	clearField { |index|
