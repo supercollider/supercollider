@@ -47,6 +47,7 @@ list::
 ## play and playN  (Monitor) previously passed arguments are kept and can be partially overridden by new ones (the message clear removes them).
 ## nodeProxy.value(n) (e.g. code::SinOsc.ar(Ndef(\x)::) will keep the rate the proxy already has).
 ## using code::x.ar(n):: and code::x.kr(n):: will automatically expand when code::n:: is nil. It remains fixed if n is given.
+## code::nodeProxy.ar(n):: / code::nodeProxy.kr(n):: if no code::n:: is given, they will now always return an array, code::nodeProxy.value(x):: returns an array, if no input is given. This is for general consistency: a few ugens expect an array as an input, and as the numChannels of a proxy can change now, this has to be specified. In order to have a UGen and not an array, use code::nodeProxy.ar(1)::, or code::nodeProxy.kr(1)::, respectively.
 ## unlike it was before, code::x.ar(n, offset):: will now wrap around the avaliable proxy bus channels. There is a third argument (wrap), when set to false, it will clip instead
 ## a third argument, clip, was added to ar/kr: code::x.ar(n, offset, clip)::. When set to \wrap it will extend the output size of the existing channels by wrapping (the default is \wrap). Set it to \clip if you want to keep it in range by repeating the last value.
 ## InBus is more flexible and logical in terms of multichannel expansion now and has a helpfile
@@ -74,7 +75,6 @@ subsection:: a few minor changes:
 list::
 ## An empty function / or a function returning nil to a node proxy will not fail, but simply play a synth without output
 ## when trying to play control rate proxy, just warn and don't throw an error
-## code::nodeProxy.ar(n):: / code::nodeProxy.kr(n):: / code::nodeProxy.value(n):: will now always return an array (for general consistency: a few ugens expect an array as an input)
 ## the source of a proxy is built when it is inserted, not only when the server is running. This allows to know its number of channels independently of the server running.
 ## bus is freed after fadeTime as to avoid a too early reuse.
 ## proxy is passed into events produced by event streams (~proxy).

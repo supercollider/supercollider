@@ -60,21 +60,25 @@ BusPlug : AbstractFunction {
 	clock { ^nil  }
 
 	ar { | numChannels, offset = 0, clip = \wrap |
+		var output;
 		if(this.isNeutral) {
 			this.defineBus(\audio, numChannels)
 		};
 		this.prepareOutput;
-		 // always return an array
-		^InBus.ar(bus, numChannels ? bus.numChannels, offset, clip).asArray
+		output = InBus.ar(bus, numChannels, offset, clip);
+		 // always return an array if no channel size is specified
+		^if(numChannels.isNil) { output.asArray } { output }
 	}
 
 	kr { | numChannels, offset = 0, clip = \wrap |
+		var output;
 		if(this.isNeutral) {
 			this.defineBus(\control, numChannels)
 		};
 		this.prepareOutput;
-		 // always return an array
-		^InBus.kr(bus, numChannels ? bus.numChannels, offset, clip).asArray
+		output = InBus.kr(bus, numChannels, offset, clip);
+		 // always return an array if no channel size is specified
+		^if(numChannels.isNil) { output.asArray } { output }
 	}
 
 	asStream {
