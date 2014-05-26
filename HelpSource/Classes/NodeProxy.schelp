@@ -4,11 +4,11 @@ categories:: Libraries>JITLib>NodeProxy, Live Coding
 related:: Classes/ProxySpace
 
 description::
-Generally a strong::proxy:: is a placeholder for something. A node proxy is a placeholder for something strong::playing on a server:: that writes to a limited number of busses (e.g. a synth or an event stream). NodeProxy objects can be replaced and recombined while they play. Also they can be used to build a larger structure which is used and modified later on. Overview: link::Overviews/JITLib::.
+Generally a strong::proxy:: is a placeholder for something. A node proxy is a placeholder strong::for something playing on a server:: and writes to a limited number of busses (usually a synth, but also an event stream that makes synths). NodeProxy objects can be replaced and recombined while they play. Also they can be used to build a larger structure which is used and modified later on. Overview: link::Overviews/JITLib::.
 
 NodeProxy is used internally in link::Classes/ProxySpace:: and it is a superclass of link::Classes/Ndef::, allowing to easily access and combine a large number of placeholders.
 
-Graphical editor for a node proxy: link::Classes/NodeProxyEditor::.
+Graphical editor for a node proxy: link::Classes/NdefGui::.
 
 note::
 NodeProxy plays on a emphasis::private bus::. If you want to strong::hear:: the output, use link::#-play:: and link::#-stop::. To free inner players and stop listen: link::#-end::. Entirely removing all inner settings: link::#-clear::
@@ -80,7 +80,7 @@ subsection::Accessing Class Variables
 copymethod:: BusPlug *defaultNumAudio
 copymethod:: BusPlug *defaultNumControl
 
-private::buildProxy, buildProxyControl
+private::buildProxy, buildProxyControl, addChild, addNodeMapControlNames, asCode, cleanNodeMap, getBundle, getFamily, getStructure, internalKeys, loadToBundle, moveBeforeMsg, prepareOtherObjects, prepareToBundle, putNewObject, reallocBusIfNeeded, rebuildDeepToBundle, rebuildToBundle, removeToBundle, sendAllToBundle, sendEachToBundle, sendObjectToBundle, serverQuit, shouldAddObject, stopAllToBundle, supplementNodeMap, typeStr, unsetToBundle, wakeUpParentsToBundle, wakeUpToBundle
 
 InstanceMethods::
 
