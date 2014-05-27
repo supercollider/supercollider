@@ -92,8 +92,11 @@
 		^(
 			type: \fadeBus,
 			array: this,
-			finish: {
-				~out = proxy.index + channelOffset;
+			proxy: proxy,
+			channelOffset: channelOffset,
+			finish: #{
+				var proxy = ~proxy;
+				~out = proxy.index + ~channelOffset;
 				~group = proxy.group;
 				~rate = proxy.rate;
 				~numChannels = proxy.numChannels;
