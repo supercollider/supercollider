@@ -1534,46 +1534,45 @@ bool SC_CoreAudioDriver::DriverStart()
 
 
 		if (mWorld->hw->mInputStreamsEnabled) {
-			//err = AudioDeviceGetPropertyInfo(mInputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, &writable);
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeInput;
+			propertyAddress.mElement = 0;
 
-			err = AudioObjectGetPropertyDataSize(mInputDevice, 0, 0, &propertyAddress, &propertySize);
+			err = AudioObjectGetPropertyDataSize(mInputDevice, &propertyAddress, 0, NULL, &propertySize);
 			err = AudioObjectIsPropertySettable(mInputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProcSeparateIn;
-			// err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			err = AudioObjectGetPropertyData(mInputDevice, 0, 0, &propertyAddress, &propertySize, su);
+
+			err = AudioObjectGetPropertyData(mInputDevice, &propertyAddress, 0, NULL, &propertySize, su);
 
 			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mInputStreamsEnabled));
+
 			for (int i=0; i<len; ++i) {
 				su->mStreamIsOn[i] = mWorld->hw->mInputStreamsEnabled[i] == '1';
 			}
-			// err = AudioDeviceSetProperty(mInputDevice, &now, 0, true, kAudioDevicePropertyIOProcStreamUsage, propertySize, su);
 
 			err = AudioObjectSetPropertyData(mInputDevice, &propertyAddress, 0, NULL, propertySize, su);
 		}
 
 		if (mWorld->hw->mOutputStreamsEnabled) {
-			//err = AudioDeviceGetPropertyInfo(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, &writable);
-
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
+			propertyAddress.mElement = 0;
 
-			err = AudioObjectGetPropertyDataSize(mOutputDevice, 0, 0, &propertyAddress, &propertySize);
+			err = AudioObjectGetPropertyDataSize(mOutputDevice, &propertyAddress, 0, NULL, &propertySize);
 			err = AudioObjectIsPropertySettable(mOutputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
-			// err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			err = AudioObjectGetPropertyData(mOutputDevice, 0, 0, &propertyAddress, &propertySize, su);
+
+			err = AudioObjectGetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, &propertySize, su);
 
 			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mOutputStreamsEnabled));
+
 			for (int i=0; i<len; ++i) {
 				su->mStreamIsOn[i] = mWorld->hw->mOutputStreamsEnabled[i] == '1';
 			}
-			// err = AudioDeviceSetProperty(mOutputDevice, &now, 0, false, kAudioDevicePropertyIOProcStreamUsage, propertySize, su);
 
 			err = AudioObjectSetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, propertySize, su);
 		}
@@ -1600,45 +1599,45 @@ bool SC_CoreAudioDriver::DriverStart()
 		}
 
 		if (mWorld->hw->mInputStreamsEnabled) {
-			//err = AudioDeviceGetPropertyInfo(mOutputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, &writable);
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
+			propertyAddress.mElement = 0;
 
-			err = AudioObjectGetPropertyDataSize(mOutputDevice, 0, 0, &propertyAddress, &propertySize);
+			err = AudioObjectGetPropertyDataSize(mOutputDevice, &propertyAddress, 0, NULL, &propertySize);
 			err = AudioObjectIsPropertySettable(mOutputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
-			//err = AudioDeviceGetProperty(mOutputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			err = AudioObjectGetPropertyData(mOutputDevice, 0, 0, &propertyAddress, &propertySize, su);
+
+			err = AudioObjectGetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, &propertySize, su);
 
 			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mInputStreamsEnabled));
+
 			for (int i=0; i<len; ++i) {
 				su->mStreamIsOn[i] = mWorld->hw->mInputStreamsEnabled[i] == '1';
 			}
-			//err = AudioDeviceSetProperty(mOutputDevice, &now, 0, true, kAudioDevicePropertyIOProcStreamUsage, propertySize, su);
 
 			err = AudioObjectSetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, propertySize, su);
 		}
 
 		if (mWorld->hw->mOutputStreamsEnabled) {
-			// err = AudioDeviceGetPropertyInfo(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, &writable);
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
+			propertyAddress.mElement = 0;
 
-			err = AudioObjectGetPropertyDataSize(mOutputDevice, 0, 0, &propertyAddress, &propertySize);
+			err = AudioObjectGetPropertyDataSize(mOutputDevice, &propertyAddress, 0, NULL, &propertySize);
 			err = AudioObjectIsPropertySettable(mOutputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
-			//err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			err = AudioObjectGetPropertyData(mOutputDevice, 0, 0, &propertyAddress, &propertySize, su);
+
+			err = AudioObjectGetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, &propertySize, su);
 
 			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mOutputStreamsEnabled));
+
 			for (int i=0; i<len; ++i) {
 				su->mStreamIsOn[i] = mWorld->hw->mOutputStreamsEnabled[i] == '1';
 			}
-			//err = AudioDeviceSetProperty(mOutputDevice, &now, 0, false, kAudioDevicePropertyIOProcStreamUsage, propertySize, su);
 
 			err = AudioObjectSetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, propertySize, su);
 		}
