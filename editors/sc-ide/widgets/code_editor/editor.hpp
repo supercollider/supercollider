@@ -46,6 +46,8 @@ public:
     QTextDocument *textDocument() { return QPlainTextEdit::document(); }
     void setDocument( Document * );
     bool showWhitespace();
+    bool showLinenumber();
+    void setShowLinenumber(bool);
     bool find( const QRegExp &expr, QTextDocument::FindFlags options = 0);
     bool replace( const QRegExp &expr, const QString &replacement, QTextDocument::FindFlags options = 0);
     int findAll( const QRegExp &expr, QTextDocument::FindFlags options = 0 );

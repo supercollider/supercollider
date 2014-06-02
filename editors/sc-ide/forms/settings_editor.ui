@@ -233,6 +233,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QCheckBox" name="showLinenumber">
+          <property name="text">
+           <string>Show line number</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QLabel" name="label_12">
