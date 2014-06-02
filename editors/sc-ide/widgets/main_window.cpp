@@ -610,6 +610,7 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::ResetFontSize) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::ShowWhitespace) );
+    menu->addAction( mEditors->action(MultiEditor::ShowLinenumber) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::NextDocument) );
     menu->addAction( mEditors->action(MultiEditor::PreviousDocument) );
