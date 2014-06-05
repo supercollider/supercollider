@@ -89,6 +89,7 @@ public:
         ShrinkFont,
         ResetFontSize,
         ShowWhitespace,
+	ShowLinenumber,
         IndentWithSpaces,
 
         NextDocument,
@@ -141,6 +142,7 @@ public slots:
     void removeAllSplits();
 
     void setShowWhitespace(bool on);
+    void setShowLinenumber(bool on);
 
 private slots:
     void applySettings( Settings::Manager * );

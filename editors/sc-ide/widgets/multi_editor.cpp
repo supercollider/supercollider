@@ -484,6 +484,12 @@ void MultiEditor::createActions()
     connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowWhitespace(bool)));
     settings->addAction( action, "editor-toggle-show-whitespace", editorCategory);
 
+    mActions[ShowLinenumber] = action = new QAction(tr("Show Line Number"), this);
+    action->setCheckable(true);
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowLinenumber(bool)));
+    settings->addAction( action, "editor-toggle-show-line-number", editorCategory);
+
     mActions[IndentWithSpaces] = action = new QAction(tr("Use Spaces for Indentation"), this);
     action->setCheckable(true);
     action->setStatusTip( tr("Indent with spaces instead of tabs") );
@@ -582,6 +588,7 @@ void MultiEditor::createActions()
     addAction(mActions[EnlargeFont]);
     addAction(mActions[ShrinkFont]);
     addAction(mActions[ShowWhitespace]);
+    addAction(mActions[ShowLinenumber]);
     addAction(mActions[IndentWithSpaces]);
     addAction(mActions[EvaluateCurrentDocument]);
     addAction(mActions[EvaluateRegion]);
@@ -646,7 +653,9 @@ void MultiEditor::updateActions()
 void MultiEditor::applySettings( Settings::Manager * settings )
 {
     bool show_whitespace = settings->value("IDE/editor/showWhitespace").toBool();
+    bool show_linenumber = settings->value("IDE/editor/showLinenumber").toBool();
     mActions[ShowWhitespace]->setChecked( show_whitespace );
+    mActions[ShowLinenumber]->setChecked( show_linenumber );
 }
 
 static QVariantList saveBoxState( CodeEditorBox *box, const QList<Document*> & documentList )
@@ -1089,6 +1098,12 @@ void MultiEditor::removeAllSplits()
 void MultiEditor::setShowWhitespace(bool showWhitespace)
 {
     Main::settings()->setValue("IDE/editor/showWhitespace", showWhitespace);
+    Main::instance()->applySettings();
+}
+
+void MultiEditor::setShowLinenumber(bool showLinenumber)
+{
+    Main::settings()->setValue("IDE/editor/showLinenumber", showLinenumber);
     Main::instance()->applySettings();
 }
 

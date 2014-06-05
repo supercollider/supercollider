@@ -46,6 +46,7 @@ public:
     QTextDocument *textDocument() { return QPlainTextEdit::document(); }
     void setDocument( Document * );
     bool showWhitespace();
+    bool showLinenumber();
     bool find( const QRegExp &expr, QTextDocument::FindFlags options = 0);
     bool replace( const QRegExp &expr, const QString &replacement, QTextDocument::FindFlags options = 0);
     int findAll( const QRegExp &expr, QTextDocument::FindFlags options = 0 );
@@ -78,6 +79,7 @@ public slots:
     void zoomOut(int steps = 1);
     void resetFontSize();
     void setShowWhitespace(bool);
+    void setShowLinenumber(bool);
     void clearSearchHighlighting();
     void toggleOverwriteMode();
     void copyLineUp();
