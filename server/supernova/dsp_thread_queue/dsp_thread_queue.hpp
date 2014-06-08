@@ -506,6 +506,9 @@ private:
     template <bool YieldBackoff>
     void run_item(thread_count_t index)
     {
+        // note: in future we can avoid the watchdog on osx and linux, as they provide proper
+        //       deadline scheduling policies
+
         typedef typename select_backoff<YieldBackoff>::type backoff_t;
 
         backoff_t b(8, 32768);
