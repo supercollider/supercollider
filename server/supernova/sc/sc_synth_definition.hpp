@@ -16,8 +16,8 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SC_synth_definition_HPP
-#define SC_synth_definition_HPP
+#ifndef SC_SYNTH_DEFINITION_HPP
+#define SC_SYNTH_DEFINITION_HPP
 
 #include <boost/filesystem/path.hpp>
 
@@ -53,4 +53,4 @@ void register_synthdefs(class synth_factory & factory, std::vector<sc_synthdef> 
 
 } /* namespace nova */
 
-#endif /* SC_synth_definition_HPP */
+#endif /* SC_SYNTH_DEFINITION_HPP */
