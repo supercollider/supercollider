@@ -82,12 +82,6 @@ void nova_server::prepare_backend(void)
 
     audio_backend::output_mapping(outputs.begin(), outputs.end());
 
-#ifdef __SSE__
-    /* denormal handling */
-    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
-    _mm_setcsr(_mm_getcsr() | 0x40);
-#endif
-
     time_per_tick = time_tag::from_samples(blocksize, get_samplerate());
 }
 
@@ -228,6 +222,14 @@ static void name_current_thread(int thread_index)
     name_thread(buf);
 }
 
+static void set_daz_ftz(void)
+{
+#ifdef __SSE__
+    /* denormal handling */
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+    _mm_setcsr(_mm_getcsr() | 0x40);
+#endif
+}
 
 static bool set_realtime_priority(int thread_index)
 {
@@ -289,6 +291,7 @@ static bool set_realtime_priority(int thread_index)
 
 void thread_init_functor::operator()(int thread_index)
 {
+    set_daz_ftz();
     name_current_thread(thread_index);
 
     if (rt)
@@ -321,6 +324,8 @@ void synth_definition_deleter::dispose(synth_definition * ptr)
 
 void realtime_engine_functor::init_thread(void)
 {
+    set_daz_ftz();
+
     if (!thread_set_affinity(0))
         std::cerr << "Warning: cannot set thread affinity of main audio thread" << std::endl;
 
