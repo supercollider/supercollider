@@ -61,6 +61,7 @@ void Manager::initDefaults()
     setDefault("highlightBracketContents", true);
     setDefault("inactiveEditorFadeAlpha", 64);
     setDefault("insertMatchingTokens", false);
+    setDefault("showLinenumber", true);
 
     setDefault("blinkDuration", 600);
 
