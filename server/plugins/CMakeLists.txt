@@ -115,6 +115,11 @@ add_library(ML_UGens MODULE
 			MFCC.cpp
 			BeatTrack2.cpp
 			ML_SpecStats.cpp
+			BeatTrack.h
+			BeatTrack2.h
+			ML.h
+			Onsets.h
+			onsetsds.h
 			${scplugin_common_sources}
 			)
 

@@ -133,11 +133,13 @@ else()
 	set (LIBSCSYNTH_TYPE STATIC)
 endif()
 
+file(GLOB_RECURSE all_headers ./*.h*)
+
 if (FINAL_BUILD)
-	CREATE_FINAL_FILE(libscsynth_final.cpp ${scsynth_sources})
+	CREATE_FINAL_FILE(libscsynth_final.cpp ${scsynth_sources} ${all_headers})
 	add_library(libscsynth ${LIBSCSYNTH_TYPE} libscsynth_final.cpp)
 else()
-	add_library(libscsynth ${LIBSCSYNTH_TYPE} ${scsynth_sources})
+	add_library(libscsynth ${LIBSCSYNTH_TYPE} ${scsynth_sources} ${all_headers})
 endif()
 
 set_property(TARGET libscsynth
@@ -205,9 +207,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libscsynth rt)
 endif()
 
-file(GLOB_RECURSE all_headers ../../*hpp)
-
-add_executable(scsynth scsynth_main.cpp ${all_headers})
+add_executable(scsynth scsynth_main.cpp)
 target_link_libraries(scsynth libscsynth)
 
 if (PTHREADS_FOUND)
