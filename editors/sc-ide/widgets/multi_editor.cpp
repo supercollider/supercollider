@@ -486,6 +486,7 @@ void MultiEditor::createActions()
 
     mActions[ShowLinenumber] = action = new QAction(tr("Show Line Number"), this);
     action->setCheckable(true);
+    action->setShortcut( tr("Ctrl+Alt+#", "Show Line Number"));
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowLinenumber(bool)));
     settings->addAction( action, "editor-toggle-show-line-number", editorCategory);
