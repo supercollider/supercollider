@@ -11,7 +11,7 @@ GraphBuilder {
 				result
 			} {
 				if(fadeTime.notNil) {
-						result = this.makeFadeEnv(fadeTime) * result;
+					result = this.makeFadeEnv(fadeTime) * result;
 				};
 				outClass = outClass.asClass;
 				outClass.replaceZeroesWithSilence(result.asArray);
@@ -96,11 +96,11 @@ NamedControl {
 			values = (values ? res.values).asArray;
 			if(res.values != values) {
 				Error("NamedControl: cannot have more than one set of "
-						"default values in the same control.").throw;
+					"default values in the same control.").throw;
 			};
 			if(rate.notNil and: { res.rate != rate }) {
 				Error("NamedControl: cannot have  more than one set of "
-						"rates in the same control.").throw;
+					"rates in the same control.").throw;
 			};
 
 		};
