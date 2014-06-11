@@ -1,5 +1,6 @@
 //human device interface pattern. pulls values from devices like gamepads etc.
 // based on GeneralHID
+/*
 
 PhidSlot : Pattern {
 	var <>slot,<>type,<>device;
@@ -109,3 +110,4 @@ PhidKey : Pattern {
 		^inval;
 	}
 }
+*/

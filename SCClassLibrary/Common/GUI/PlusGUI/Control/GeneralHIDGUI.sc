@@ -1,3 +1,4 @@
+/*
 GeneralHIDDeviceGUI{
 	var <win, <updater;
 	var <device;
@@ -64,3 +65,4 @@ GeneralHIDDeviceGUI{
 		}, 0.2, win.isClosed, name: "GeneralHIDGUI" );
 	}
 }
+*/
