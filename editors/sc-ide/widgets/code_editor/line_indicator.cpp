@@ -86,7 +86,7 @@ int LineIndicator::widthForLineCount( int lineCount )
     int digits = 2;
 
     if (hideLineIndicator)
-	return 0;
+        return 0;
 
     while( lineCount >= 100 ) {
         lineCount /= 10;
@@ -98,6 +98,6 @@ int LineIndicator::widthForLineCount( int lineCount )
 
 void LineIndicator::setHideLineIndicator( bool hide )
 {
-	hideLineIndicator = hide;
+        hideLineIndicator = hide;
 }
 

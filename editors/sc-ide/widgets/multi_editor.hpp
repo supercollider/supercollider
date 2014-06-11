@@ -89,7 +89,7 @@ public:
         ShrinkFont,
         ResetFontSize,
         ShowWhitespace,
-	ShowLinenumber,
+        ShowLinenumber,
         IndentWithSpaces,
 
         NextDocument,
