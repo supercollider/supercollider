@@ -1,5 +1,5 @@
 Font {
-	classvar <defaultSansFace, <defaultSerifFace, <defaultMonoFace;
+	classvar <>defaultSansFace, <>defaultSerifFace, <>defaultMonoFace;
 
 	var <>name, <size, <>bold, <>italic, <hasPointSize=false;
 	/* ----------------- class -------------------*/
