@@ -833,7 +833,7 @@ SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 		case 4 : {
 			Node *replaceThisNode = Msg_GetNode(inWorld, msg);
 			if (!replaceThisNode) return kSCErr_NodeNotFound;
-      Node_RemoveID(replaceThisNode);
+			Node_RemoveID(replaceThisNode);
 
 			err = Graph_New(inWorld, def, nodeID, &msg, &graph,true);
 			if (err) return err;
