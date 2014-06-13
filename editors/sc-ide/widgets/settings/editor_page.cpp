@@ -163,6 +163,14 @@ void EditorPage::loadGeneralTextFormats( Manager *settings )
     addTextFormat( mGeneralFormatsItem, tr("Selected Text"), "selection",
                    settings->value( "selection" ).value<QTextCharFormat>(),
                    selectionDefaultFormat );
+    
+    QTextCharFormat postWindowDefaultFormat;
+    postWindowDefaultFormat.setBackground( palette.brush(QPalette::Mid) );
+    postWindowDefaultFormat.setForeground( palette.brush(QPalette::ButtonText) );
+    
+    addTextFormat( mGeneralFormatsItem, tr("Post Window Text"), "postwindowtext",
+                  settings->value( "postwindowtext" ).value<QTextCharFormat>(),
+                  postWindowDefaultFormat );
 
     static char const * const keys[] = {
         "currentLine", "searchResult", "matchingBrackets", "mismatchedBrackets", "evaluatedCode"
@@ -170,7 +178,8 @@ void EditorPage::loadGeneralTextFormats( Manager *settings )
 
     static QStringList strings = QStringList()
             << tr("Current Line") << tr("Search Result") << tr("Matching Brackets")
-            << tr("Mismatched Brackets") << tr("Evaluated Code");
+            << tr("Mismatched Brackets") << tr("Evaluated Code")
+    ;
 
     static int count = strings.count();
 
@@ -187,14 +196,17 @@ void EditorPage::loadSyntaxTextFormats( Manager *settings )
 
     static char const * const keys[] = {
         "whitespace", "keyword", "built-in", "env-var", "class", "number",
-        "symbol", "string", "char", "comment", "primitive"
+        "symbol", "string", "char", "comment", "primitive",
+        "postwindowerror", "postwindowwarning", "postwindowsuccess", "postwindowemphasis"
     };
 
     static QStringList strings = QStringList()
             << tr("Whitespace")
             << tr("Keyword") << tr("Built-in Value") << tr("Environment Variable")
             << tr("Class") << tr("Number") << tr("Symbol") << tr("String") << tr("Char")
-            << tr("Comment") << tr("Primitive");
+            << tr("Comment") << tr("Primitive")
+            << tr("Post Window Error") << tr("Post Window Warning") << ("Post Window Success") << ("Post Window Emphasis")
+    ;
 
     static int count = strings.count();
 
