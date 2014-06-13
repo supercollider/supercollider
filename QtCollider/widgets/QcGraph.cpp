@@ -913,9 +913,11 @@ void QcGraph::paintEvent( QPaintEvent * )
   int c = elems.count();
   if( !c ) return;
 
-  const QColor & strokeClr = strokeColor();
-
-  p.setPen( strokeClr );
+  const QColor& strokeClr = strokeColor();
+  QPen pen;
+  pen.setColor(strokeClr);
+  pen.setWidth(0);
+  p.setPen(pen);
 
   // draw lines;
   if( _drawLines ) {
