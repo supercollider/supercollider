@@ -258,7 +258,9 @@ Dictionary : Set {
 		^event.putAll(this);
 	}
 	embedInStream { arg event;
-		^yield(event !? { event.copy.putAll(this) })
+		var func = this.at(\embedInStream);
+		if(func.notNil) { ^func.value(this, event) };
+		^if(event.isNil) { this } { event.copy.putAll(this) }.yield
 	}
 
 	asSortedArray {

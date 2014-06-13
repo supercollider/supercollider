@@ -82,12 +82,6 @@ void nova_server::prepare_backend(void)
 
     audio_backend::output_mapping(outputs.begin(), outputs.end());
 
-#ifdef __SSE__
-    /* denormal handling */
-    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
-    _mm_setcsr(_mm_getcsr() | 0x40);
-#endif
-
     time_per_tick = time_tag::from_samples(blocksize, get_samplerate());
 }
 
@@ -228,18 +222,52 @@ static void name_current_thread(int thread_index)
     name_thread(buf);
 }
 
-void thread_init_functor::operator()(int thread_index)
+static void set_daz_ftz(void)
 {
-    name_current_thread(thread_index);
+#ifdef __SSE__
+    /* denormal handling */
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+    _mm_setcsr(_mm_getcsr() | 0x40);
+#endif
+}
 
-    if (rt) {
-        bool success = true;
+static bool set_realtime_priority(int thread_index)
+{
+    bool success = false;
+
+#ifdef NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT
+    double blocksize = server_arguments::instance().blocksize;
+    double samplerate = server_arguments::instance().samplerate;
+
+    double ns_per_block = 1e9 / samplerate * blocksize;
+
+#ifdef __APPLE__
+
+    success = thread_set_priority_rt(AudioConvertNanosToHostTime(ns_per_block),
+                                     AudioConvertNanosToHostTime(ns_per_block - 2),
+                                     AudioConvertNanosToHostTime(ns_per_block - 1),
+                                     false);
+
+#else
+
+    success = thread_set_priority_rt(ns_per_block, ns_per_block - 2, ns_per_block - 1, false);
+
+#endif
+
+    if (!success)
+        std::cout << "Warning: initialize deadline scheduling" << std::endl;
+
+#endif
+
+    if (!success) {
+
 #ifdef NOVA_TT_PRIORITY_RT
 
 #ifdef JACK_BACKEND
         int priority = instance->realtime_priority();
-        if (priority < 0)
-            success = false;
+        if (priority >= 0)
+            success = true;
+
 #elif _WIN32
         int priority = thread_priority_interval_rt().second;
 #else
@@ -252,22 +280,22 @@ void thread_init_functor::operator()(int thread_index)
         if (success)
             success = thread_set_priority_rt(priority);
 #endif
-
-#if defined(NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT) && defined (__APPLE__)
-        double blocksize = server_arguments::instance().blocksize;
-        double samplerate = server_arguments::instance().samplerate;
-
-        double ns_per_block = 1e9 / samplerate * blocksize;
-
-        success = thread_set_priority_rt(AudioConvertNanosToHostTime(ns_per_block),
-                                         AudioConvertNanosToHostTime(ns_per_block - 2),
-                                         AudioConvertNanosToHostTime(ns_per_block - 1),
-                                         false);
-#endif
-
-        if (!success)
-            std::cout << "Warning: cannot raise thread priority" << std::endl;
     }
+
+    if (!success)
+        std::cout << "Warning: cannot raise thread priority" << std::endl;
+
+    return success;
+}
+
+
+void thread_init_functor::operator()(int thread_index)
+{
+    set_daz_ftz();
+    name_current_thread(thread_index);
+
+    if (rt)
+        set_realtime_priority(thread_index);
 
     if (!thread_set_affinity(thread_index))
         std::cout << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
@@ -296,8 +324,14 @@ void synth_definition_deleter::dispose(synth_definition * ptr)
 
 void realtime_engine_functor::init_thread(void)
 {
+    set_daz_ftz();
+
     if (!thread_set_affinity(0))
         std::cerr << "Warning: cannot set thread affinity of main audio thread" << std::endl;
+
+#ifdef JACK_BACKEND
+    set_realtime_priority(0);
+#endif
 
     name_current_thread(0);
 }

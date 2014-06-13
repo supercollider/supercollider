@@ -717,8 +717,8 @@ FLATTEN void LinXFade2_next_k_nova(LinXFade2 *unit, int inNumSamples)
 
 		pos = sc_clip(pos, -1.f, 1.f);
 
-		float nextAmpLeft  = pos * 0.5f + 0.5f;
-		float nextAmpRight = 1.f - nextAmpLeft;
+		float nextAmpRight  = pos * 0.5f + 0.5f;
+		float nextAmpLeft = 1.f - nextAmpRight;
 
 		float leftSlope = CALCSLOPE(nextAmpLeft, oldAmpLeft);
 		float rightSlope = CALCSLOPE(nextAmpRight, oldAmpRight);
@@ -758,7 +758,7 @@ void LinXFade2_Ctor(LinXFade2 *unit)
 
 	unit->m_pos = ZIN0(2);
 	unit->m_pos = sc_clip(unit->m_pos, -1.f, 1.f);
-	unit->m_amp = unit->m_pos * 0.5f + 0.5f;
+	unit->m_amp = 1.f - (unit->m_pos * 0.5f + 0.5f);
 
 	LinXFade2_next_a(unit, 1);
 }

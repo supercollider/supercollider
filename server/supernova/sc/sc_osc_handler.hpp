@@ -295,19 +295,19 @@ public:
 
     private:
         tcp_connection(boost::asio::io_service& io_service)
-            : socket_(io_service), pending_size(0)
+            : socket_(io_service)
         {}
 
         void send(const char *data, size_t length);
-        void read_more();
-        void handle_read(const boost::system::error_code& error, size_t bytes_transferred);
-        void read_message_start(const char * buffer, size_t length);
+
+        void async_read_msg_size();
+        void handle_message_size();
+        void handle_message();
 
         tcp::socket socket_;
-        size_t pending_size;
         sc_osc_handler * osc_handler;
-        std::array<char, 1<<15 > recv_buffer_;
-        std::vector<char> overflow_vector;
+        boost::integer::big32_t msg_size_;
+        std::vector<char> msg_buffer_;
     };
 
 private:
@@ -408,7 +408,6 @@ private:
     const char * tcp_password_; /* we are not owning this! */
 
     std::array<char, 1<<15 > recv_buffer_;
-    std::vector<char> overflow_vector;
     /* @} */
 };
 

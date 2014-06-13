@@ -107,6 +107,7 @@ signals:
     void volumeChanged( float volume );
     void mutedChanged( bool muted );
     void recordingChanged( bool recording );
+    void dumpOSCChanged( bool dumping );
 
 private slots:
     void onScLangStateChanged( QProcess::ProcessState );

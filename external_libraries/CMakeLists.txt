@@ -82,3 +82,20 @@ if(NOT YAMLCPP_FOUND)
 
   add_library(yaml STATIC ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
 endif()
+
+
+
+
+##### HID_API #######
+
+if (HID_LIBUSB)
+  set( LIBUSB ON )
+  set( HIDRAW OFF )
+endif()
+if (HID_HIDRAW)
+  set( HIDRAW ON )
+  set( LIBUSB OFF )
+endif()
+set( EXAMPLE_TEST OFF )
+set( EXAMPLE_OSC OFF )
+add_subdirectory(hidapi)

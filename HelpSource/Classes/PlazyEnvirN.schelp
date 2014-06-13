@@ -1,11 +1,15 @@
 class:: PlazyEnvirN
-summary:: instantiate new patterns from a function
+summary:: instantiate new patterns from a function and multichannel expand them
 related:: Classes/Plazy, Classes/PlazyEnvir, Classes/Pfunc
 categories:: Streams-Patterns-Events>Patterns>Function
 
 description::
 
-Evaluates a function that returns a pattern and embeds it in a stream. In difference to link::Classes/Plazy::, the function is evaluated using the environment passed in by the stream. In difference to link::Classes/PlazyEnvir::, PlayzEnvirN expands to strong::multiple parallel patterns:: if the function arguments receive multiple channels. In difference to link::Classes/PlazyEnvir::, this works only with event streams.
+Evaluates a function that returns a pattern and embeds it in a stream.
+list::
+## In difference to link::Classes/Plazy::, the function is evaluated using the environment passed in by the stream.
+## In difference to link::Classes/PlazyEnvir::, PlayzEnvirN expands to strong::multiple parallel patterns:: if the function arguments receive multiple channels. This works only with event streams.
+::
 
 ClassMethods::
 
@@ -13,6 +17,21 @@ method::new
 
 argument::func
 A link::Classes/Function:: that returns a pattern or any other valid pattern input.
+
+code::
+(
+f = { arg g=0, h=0, dur=1;
+	Pbind(\degree, Pseq([g, g, h, g, h], 2), \dur, Pseries(dur, 0.1))
+};
+// compare:
+a = Pchain(PlazyEnvirN(f), (g: [1, 2], h: 3, dur:0.2)).trace(\degree).asStream;
+c = Pchain(Plazy(f), (g: [1, 2], h: 3, dur:0.2)).asStream;
+)
+
+a.nextN(4);
+c.nextN(4); // no degrees, because stream ends
+::
+
 
 Examples::
 

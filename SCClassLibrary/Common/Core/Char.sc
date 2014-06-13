@@ -87,7 +87,7 @@ Char : Magnitude {
 
 	++ { |that| ^this.asString ++ that }
 
-	*bullet { ^if(Platform.ideName=="scapp",165.asAscii,$*) }
+	*bullet { ^$* }
 
 	printOn { arg stream;
 		stream.put(this);

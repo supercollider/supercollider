@@ -87,6 +87,11 @@ void PostWindow::createActions( Settings::Manager * settings )
     action->setSeparator(true);
     addAction(action);
 
+    mActions[DocClose] = ovrAction = new OverridingAction(tr("Close"), this);
+    action->setStatusTip(tr("Close the current document"));
+    connect( ovrAction, SIGNAL(triggered()), this, SLOT(closeDocument()) );
+    ovrAction->addToWidget(this);
+
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Enlarge Font"), this);
     ovrAction->setIconText("+");
     ovrAction->setStatusTip(tr("Enlarge post window font"));
@@ -126,10 +131,16 @@ void PostWindow::createActions( Settings::Manager * settings )
 void PostWindow::updateActionShortcuts( Settings::Manager * settings )
 {
     settings->beginGroup("IDE/shortcuts");
+    mActions[DocClose]->setShortcut( settings->shortcut("ide-document-close") );
     mActions[ZoomIn]->setShortcut( settings->shortcut("editor-enlarge-font") );
     mActions[ZoomOut]->setShortcut( settings->shortcut("editor-shrink-font") );
     mActions[ResetZoom]->setShortcut( settings->shortcut("editor-reset-font-size") );
     settings->endGroup();
+}
+
+void PostWindow::closeDocument()
+{
+    MainWindow::instance()->postDocklet()->close();
 }
 
 void PostWindow::applySettings(Settings::Manager * settings)

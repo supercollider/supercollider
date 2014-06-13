@@ -304,7 +304,14 @@ code::
 ::
 
 method::findAllRegexp
-Like link::#-findAll::, but use regular expressions.
+Like link::#-findAll::, but use regular expressions. So unlike findRegexp, it will just return the indices of the
+
+code::
+"foobar".findAllRegexp("o*bar");
+"32424 334 /**aaaaaa*/".findAllRegexp("/\\*\\*a*\\*/");
+"foobar".findAllRegexp("(o*)(bar)");
+"aaaabaaa".findAllRegexp("a+");
+::
 
 subsection:: Searching strings
 

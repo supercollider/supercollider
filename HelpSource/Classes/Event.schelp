@@ -92,6 +92,8 @@ code::
 (a: 6, b: 7).next((c: 100));
 ::
 
+copymethod:: Dictionary -embedInStream
+
 method::playAndDelta
 Used by link::Classes/EventStreamPlayer:: to play Events and obtain a time increment.
 

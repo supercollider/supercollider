@@ -78,7 +78,7 @@ ServerOptions
 		o = if (protocol == \tcp, " -t ", " -u ");
 		o = o ++ port;
 
-	    o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
+		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
 
 		if (numControlBusChannels != 4096, {
 			o = o ++ " -c " ++ numControlBusChannels;
@@ -729,7 +729,7 @@ Server {
 					serverInterface = ServerShmInterface(addr.port);
 				}
 			};
-
+			if(dumpMode != 0) { this.sendMsg(\dumpOSC, dumpMode) };
 			this.initTree;
 		}, onFailure: onFailure ? false);
 		if (remoteControlled.not, {
@@ -822,7 +822,7 @@ Server {
 			3 - print both the parsed and hexadecimal representations of the contents.
 		*/
 		dumpMode = code;
-		this.sendMsg(\dumpOSC,code);
+		this.sendMsg(\dumpOSC, code);
 	}
 
 	quit {
@@ -858,7 +858,6 @@ Server {
 		});
 		alive = false;
 		notified = false;
-		dumpMode = 0;
 		pid = nil;
 		serverBooting = false;
 		sendQuit = nil;
