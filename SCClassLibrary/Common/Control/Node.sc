@@ -423,6 +423,21 @@ Synth : Node {
 			args.asOSCArgArray, [12, synth.nodeID, 0]); // "s_new" + "/n_run"
 		^synth
 	}
+	*replace { arg nodeToReplace, defName, args, sameID=false;
+		var synth, server, addNum, inTarget, newNodeID;
+		if (sameID) { newNodeID = nodeToReplace.nodeID };
+		server = nodeToReplace.server;
+		synth = this.basicNew(defName, server, newNodeID);
+
+		server.sendMsg(9, //"s_new"
+			defName,
+			synth.nodeID,
+			4, // addReplace
+			nodeToReplace.nodeID,
+			*(args.asOSCArgArray)
+		);
+		^synth
+	}
 		/** does not send	(used for bundling) **/
 	*basicNew { arg defName, server, nodeID;
 		^super.basicNew(server, nodeID).defName_(defName.asDefName)
@@ -448,8 +463,8 @@ Synth : Node {
 	*tail { arg aGroup, defName, args;
 		^this.new(defName, args, aGroup, \addToTail);
 	}
-	*replace { arg nodeToReplace, defName, args;
-		^this.new(defName, args, nodeToReplace, \addReplace)
+	replace { arg defName, args, sameID;
+		^this.class.replace(this, defName, args, sameID);
 	}
 	// for bundling
 	addToHeadMsg { arg aGroup, args;

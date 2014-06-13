@@ -431,28 +431,6 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	inGraphDef->mRefCount ++ ;
 }
 
-void Graph_RemoveID(World* inWorld, Graph *inGraph)
-{
-	if (!World_RemoveNode(inWorld, &inGraph->mNode)) {
-		int err = kSCErr_Failed; // shouldn't happen..
-		throw err;
-	}
-
-	HiddenWorld* hw = inWorld->hw;
-	int id = hw->mHiddenID = (hw->mHiddenID - 8) | 0x80000000;
-	inGraph->mNode.mID = id;
-	inGraph->mNode.mHash = Hash(id);
-    if (!World_AddNode(inWorld, &inGraph->mNode)) {
-		scprintf("mysterious failure in Graph_RemoveID\n");
-		Node_Delete(&inGraph->mNode);
-		// enums are uncatchable. must throw an int.
-		int err = kSCErr_Failed; // shouldn't happen..
-		throw err;
-    }
-
-	//inWorld->hw->mRecentID = id;
-}
-
 void Graph_FirstCalc(Graph *inGraph)
 {
 	//scprintf("->Graph_FirstCalc\n");

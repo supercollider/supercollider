@@ -45,6 +45,7 @@ enum {
 	kSCErr_TooManyNodes,
 	kSCErr_DuplicateNodeID,
 	kSCErr_ReservedNodeID,
+	kSCErr_ReplaceRootGroup,
 	kSCErr_OutOfRealTimeMemory,
 
 	kSCErr_UnsupportedHeaderFormat,
