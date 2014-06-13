@@ -355,7 +355,10 @@ void QcMultiSlider::paintEvent( QPaintEvent *e )
     }
   }
 
-  p.setPen( strokeColor() );
+  QPen pen;
+  pen.setColor(strokeColor());
+  pen.setWidth(0);
+  p.setPen(pen);
 
   // lines
 
