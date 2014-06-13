@@ -50,6 +50,10 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
 	add_definitions("-Wreturn-type")
 
+	if(${_gcc_version} VERSION_LESS 4.7)
+		message(FATAL_ERROR "SuperCollider requires at least gcc-4.7 when compiled with gcc.")
+	endif()
+
 #	disabled for now: -ffast-math breaks avx intrinsics and -fsigned-zeros/-fno-associative-math are not available in some versions
 #	if (${_gcc_version} VERSION_GREATER 4.0.99)
 #		add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
@@ -425,6 +429,15 @@ if(INSTALL_HELP)
 		)
 	endif()
 endif()
+
+
+#hid resources directory:
+set(HID_HUT_PATH ${auxresourcesdir}/SCClassLibrary/Common/Control/HID_support)
+
+install(DIRECTORY external_libraries/hidapi/hut
+        DESTINATION ${HID_HUT_PATH}
+	FILES_MATCHING PATTERN "*.yaml"
+)
 
 #############################################
 #

@@ -31,6 +31,7 @@ class LineIndicator : public QWidget
 
 public:
     LineIndicator( class GenericCodeEditor *editor );
+    void setHideLineIndicator( bool hide);
 Q_SIGNALS:
     void widthChanged();
 public Q_SLOTS:
@@ -47,6 +48,7 @@ private:
     class GenericCodeEditor *mEditor;
     int mLineCount;
     int mLastCursorPos;
+    bool hideLineIndicator;
 };
 
 }

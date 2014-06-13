@@ -69,7 +69,7 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     addAction( server->action(ScServer::DumpNodeTree) );
     addAction( server->action(ScServer::DumpNodeTreeWithControls) );
     addAction( server->action(ScServer::PlotTree) );
-	addAction( server->action(ScServer::DumpOSC) );
+    addAction( server->action(ScServer::DumpOSC) );
     addActionSeparator();
     addAction( server->action(ScServer::Record) );
     addActionSeparator();

@@ -290,9 +290,9 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
 int ScIDE_GetQUuid(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot * returnSlot = g->sp - numArgsPushed + 1;
-	
+
     SetSymbol(returnSlot, getsym(QUuid::createUuid().toString().toLatin1().constData()));
-	
+
     return errNone;
 }
 
@@ -324,7 +324,7 @@ int ScIDE_GetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
     QString docText = gIpcClient->getTextMirrorForDocument(key, pos, range);
     
     PyrString* pyrString = newPyrString(g->gc, docText.toLatin1().constData(), 0, true);
-	SetObject(returnSlot, pyrString);
+    SetObject(returnSlot, pyrString);
 
     return errNone;
 }
@@ -364,7 +364,7 @@ int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
     QString docText = QString(text);
     
     gIpcClient->setTextMirrorForDocument(key, docText, pos, range);
-	
+
     return errNone;
 }
 
@@ -376,7 +376,7 @@ void initScIDEPrimitives()
     definePrimitive(base, index++, "_ScIDE_Connect",   ScIDE_Connect, 2, 0);
     definePrimitive(base, index++, "_ScIDE_Connected", ScIDE_Connected, 1, 0);
     definePrimitive(base, index++, "_ScIDE_Send",      ScIDE_Send, 3, 0);
-	definePrimitive(base, index++, "_ScIDE_GetQUuid", ScIDE_GetQUuid, 0, 0);
+    definePrimitive(base, index++, "_ScIDE_GetQUuid", ScIDE_GetQUuid, 0, 0);
     definePrimitive(base, index++, "_ScIDE_GetDocTextMirror", ScIDE_GetDocTextMirror, 4, 0);
     definePrimitive(base, index++, "_ScIDE_SetDocTextMirror", ScIDE_SetDocTextMirror, 5, 0);
 }

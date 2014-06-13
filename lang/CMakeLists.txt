@@ -11,6 +11,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     LangSource
                     LangPrimSource
 
+                    ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi
+                    ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi_parser
+
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     LangSource/Bison)
 
@@ -20,9 +23,7 @@ else()
     include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 endif()
 
-if(APPLE)
-	include_directories("LangPrimSource/HID_Utilities")
-elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
 elseif(WIN32)
 	find_package(Portmidi)
@@ -33,6 +34,7 @@ find_package(Readline 5.0)
 find_package(Sndfile)
 
 set(sclang_sources
+	LangPrimSource/SC_HID_api.cpp
 	LangPrimSource/SC_Wii.cpp
 	LangPrimSource/PyrSignalPrim.cpp
 	LangPrimSource/PyrSched.cpp
@@ -116,17 +118,9 @@ set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 add_definitions(-DYYSTACK_USE_ALLOCA)
 
-
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
-			LangPrimSource/SC_HID.cpp
-			LangPrimSource/HID_Utilities/HID_Utilities.c
-			LangPrimSource/HID_Utilities/HID_Name_Lookup.c
-			LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
-			LangPrimSource/HID_Utilities/HID_Error_Handler.c
-			LangPrimSource/HID_Utilities/IOHIDElement_.c
-			LangPrimSource/HID_Utilities/IOHIDDevice_.c
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
 			LangPrimSource/SC_Speech.mm
@@ -162,7 +156,6 @@ if(MINGW)
  SET(CMAKE_RC_COMPILE_OBJECT
  "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
 endif(MINGW)
-
 
 if(SC_WII)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -224,6 +217,27 @@ set_property(TARGET libsclang
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS BUILDING_SUPERCOLLIDER)
 
+add_definitions(-DHAVE_HIDAPI)
+target_link_libraries( libsclang hidapi hidapi_parser )
+# target_link_libraries( sclang hidapi hidapi_parser )
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
+  target_link_libraries( libsclang ${UDEV_LIBRARIES} )
+#   target_link_libraries( sclang ${UDEV_LIBRARIES} )
+endif()
+if(HID_LIBUSB)
+  target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES} ${PTHREADS_LIBRARIES} )
+endif()
+  
+
+# target_link_libraries( sclang hidapi hidapi_parser )
+if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
+  target_link_libraries( libsclang ${UDEV_LIBRARIES} )
+endif()
+if(HID_LIBUSB)
+  target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES} ${PTHREADS_LIBRARIES} )
+endif()
+  
+
 if (SC_WII OR APPLE)
 	if (BLUETOOTH_FOUND AND CWIID_FOUND)
 		target_link_libraries(libsclang ${BLUETOOTH_LIBRARIES} ${CWIID_LIBRARIES})
@@ -264,8 +278,9 @@ if (APPLE)
 	target_link_libraries(libsclang "-framework Carbon")
 	target_link_libraries(libsclang "-framework CoreAudio")
 	target_link_libraries(libsclang "-framework CoreMIDI")
-	target_link_libraries(libsclang "-framework IOKit")
 	target_link_libraries(libsclang "-framework CoreServices")
+	target_link_libraries(libsclang "-framework IOKit")
+	target_link_libraries(libsclang "-framework CoreFoundation")	
 endif()
 
 if(ALSA_FOUND)

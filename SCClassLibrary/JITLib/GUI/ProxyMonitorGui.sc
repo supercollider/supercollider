@@ -1,10 +1,11 @@
 ProxyMonitorGui {
-	classvar <>lastOutBus = 99;
 
 	var <proxy, <usesPlayN = false, <usesName, <usesPausSend;
 	var <win, <zone, <flow;
 	var <ampSl, <playBut, <nameView, <setOutBox, <playNDialogBut, <pauseBut, <sendBut;
 	var <skipjack, <oldState = #[];
+
+	classvar <>lastOutBus;
 
 	*new { |proxy, w, bounds, showLevel=false, showPlayN=true, showName=true, showPauseSend = true,
 		makeWatcher=true, skin|
@@ -12,6 +13,12 @@ ProxyMonitorGui {
 		^super.new.init(w, bounds, showLevel, showPlayN, showName, showPauseSend, makeWatcher, skin)
 			.proxy_(proxy);
 	}
+
+	*initClass {
+		Class.initClassTree(Server);
+		lastOutBus = Server.default.options.numAudioBusChannels;
+	}
+
 	proxy_ { |inproxy|
 		if (proxy.isNil or: proxy.isKindOf(NodeProxy)) {
 			proxy = inproxy;

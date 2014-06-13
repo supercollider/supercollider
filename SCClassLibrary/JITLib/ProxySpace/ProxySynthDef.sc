@@ -5,8 +5,8 @@ ProxySynthDef : SynthDef {
 	classvar <>sampleAccurate=false;
 
 
-	*new { arg name, func, rates, prependArgs, makeFadeEnv=true, channelOffset=0,
-		chanConstraint, rateConstraint;
+	*new { | name, func, rates, prependArgs, makeFadeEnv = true, channelOffset = 0,
+		chanConstraint, rateConstraint |
 		var def, rate, numChannels, output, isScalar, envgen, canFree, hasOwnGate;
 		var hasGateArg=false, hasOutArg=false;
 		var outerBuildSynthDef = UGen.buildSynthDef;
@@ -18,12 +18,17 @@ ProxySynthDef : SynthDef {
 			output = output.asUGenInput;
 
 			// protect from user error
-			if(output.isKindOf(UGen) and: { output.synthDef != UGen.buildSynthDef }) { Error("Cannot share UGens between NodeProxies:" + output).throw };
+			if(output.isKindOf(UGen) and: { output.synthDef != UGen.buildSynthDef }) {
+				Error("Cannot share UGens between NodeProxies:" + output).throw
+			};
+
+			output = output ? 0.0;
 
 			// determine rate and numChannels of ugen func
+			numChannels = output.numChannels;
 			rate = output.rate;
 			isScalar = rate === 'scalar';
-			numChannels = output.numChannels;
+
 			// check for out key. this is used by internal control.
 			func.def.argNames.do { arg name;
 				if(name === \out) { hasOutArg = true };
@@ -36,10 +41,19 @@ ProxySynthDef : SynthDef {
 				^nil
 			};
 
+			// rate is only scalar if output was nil or if it was directly produced by an out ugen
+			// this allows us to conveniently write constant numbers to a bus from the synth
+			// if you want the synth to write nothing, return nil from the UGen function.
+
+			if(isScalar and: { output.notNil } and: { UGen.buildSynthDef.children.last.isKindOf(AbstractOut).not }) {
+				rate = 'control';
+				isScalar = false;
+			};
+
 			//detect inner gates
 			canFree = UGen.buildSynthDef.children.canFreeSynth;
 			hasOwnGate = UGen.buildSynthDef.hasGateControl;
-			makeFadeEnv = if(hasOwnGate && canFree.not) {
+			makeFadeEnv = if(hasOwnGate and: { canFree.not }) {
 				"warning: gate does not free synth!".inform; false
 			} {
 				makeFadeEnv and: { (isScalar || canFree).not };
@@ -67,14 +81,11 @@ ProxySynthDef : SynthDef {
 				and: { isScalar.not },
 				{
 					if(rate === 'audio') {
-						postln(
-							"wrapped channels from" + numChannels
-							+ "to" + chanConstraint + "channels");
+						postf("%: wrapped channels from % to % channels\n", NodeProxy.buildProxy, numChannels, chanConstraint);
 						output = NumChannels.ar(output, chanConstraint, true);
 						numChannels = chanConstraint;
 					} {
-						postln("kept first" + chanConstraint + "channels from"
-							+ numChannels + "channel input");
+						postf("%: kept first % channels from % channel input\n", NodeProxy.buildProxy, chanConstraint, numChannels);
 						output = output.keep(chanConstraint);
 						numChannels = chanConstraint;
 					}
@@ -88,16 +99,16 @@ ProxySynthDef : SynthDef {
 				output
 			}, {
 				// rate adaption. \scalar proxy means neutral
-				if(rateConstraint != \scalar and: { rateConstraint !== rate }) {
+				if(rateConstraint.notNil and: { rateConstraint != \scalar and: { rateConstraint !== rate }}) {
 					if(rate === 'audio') {
 						output = A2K.kr(output);
 						rate = 'control';
-						"adopted proxy input to control rate".postln;
+						postf("%: adopted proxy input to control rate\n", NodeProxy.buildProxy);
 					} {
 						if(rateConstraint === 'audio') {
 							output = K2A.ar(output);
 							rate = 'audio';
-							"adopted proxy input to audio rate".postln;
+							postf("%: adopted proxy input to audio rate\n", NodeProxy.buildProxy);
 						}
 					}
 				};

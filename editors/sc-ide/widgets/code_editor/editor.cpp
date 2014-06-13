@@ -25,6 +25,7 @@
 #include "../../core/main.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
+#include "../main_window.hpp"
 
 #include <QApplication>
 #include <QDebug>
@@ -102,7 +103,6 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
     QTextDocument *tdoc = doc->textDocument();
     QPlainTextEdit::setDocument(tdoc);
     onDocumentFontChanged();
-    mLineIndicator->setLineCount(blockCount());
 
     applySettings( Main::settings() );
 }
@@ -113,6 +113,7 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
 
     bool lineWrap = settings->value("lineWrap").toBool();
     bool showWhitespace = settings->value("showWhitespace").toBool();
+    bool showLinenumber = settings->value("showLinenumber").toBool();
     mInactiveFadeAlpha = settings->value("inactiveEditorFadeAlpha").toInt();
 
     QPalette palette;
@@ -162,6 +163,8 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
 
     setLineWrapMode( lineWrap ? QPlainTextEdit::WidgetWidth : QPlainTextEdit::NoWrap );
     setShowWhitespace( showWhitespace );
+    setShowLinenumber( showLinenumber );
+    mLineIndicator->setLineCount(blockCount());
     setPalette(palette);
     
     setActiveAppearance(hasFocus());
@@ -182,6 +185,11 @@ void GenericCodeEditor::setShowWhitespace(bool show)
     else
         opt.setFlags( opt.flags() & ~QTextOption::ShowTabsAndSpaces );
     doc->setDefaultTextOption(opt);
+}
+
+void GenericCodeEditor::setShowLinenumber(bool show)
+{
+    mLineIndicator->setHideLineIndicator( !show );
 }
 
 static bool findInBlock(QTextDocument *doc, const QTextBlock &block, const QRegExp &expr, int offset,
@@ -777,6 +785,11 @@ void GenericCodeEditor::hideMouseCursor(QKeyEvent * event)
     default:
         hideMouseCursor();
     }
+}
+
+void GenericCodeEditor::closeDocument()
+{
+    MainWindow::instance()->closeDocument();
 }
 
 void GenericCodeEditor::clearSearchHighlighting()

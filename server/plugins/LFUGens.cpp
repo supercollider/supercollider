@@ -2684,6 +2684,21 @@ enum {
 	kEnvGen_nodeOffset
 };
 
+
+enum {
+	shape_Step,
+	shape_Linear,
+	shape_Exponential,
+	shape_Sine,
+	shape_Welch,
+	shape_Curve,
+	shape_Squared,
+	shape_Cubed,
+	shape_Hold,
+	shape_Sustain = 9999
+};
+
+
 #ifdef NOVA_SIMD
 void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples);
 #endif
@@ -2716,21 +2731,14 @@ void EnvGen_Ctor(EnvGen *unit)
 	unit->m_prevGate = 0.f;
 	unit->m_released = false;
 	unit->m_releaseNode = (int)ZIN0(kEnvGen_releaseNode);
+
+	float** envPtr  = unit->mInBuf + kEnvGen_nodeOffset;
+	const int initialShape = (int32)*envPtr[2];
+	if (initialShape == shape_Hold)
+		unit->m_level = *envPtr[0]; // we start at the end level;
+
 	EnvGen_next_k(unit, 1);
 }
-
-enum {
-	shape_Step,
-	shape_Linear,
-	shape_Exponential,
-	shape_Sine,
-	shape_Welch,
-	shape_Curve,
-	shape_Squared,
-	shape_Cubed,
-	shape_Hold,
-	shape_Sustain = 9999
-};
 
 static inline bool check_gate(EnvGen * unit, float prevGate, float gate, int & counter, double level, int counterOffset = 0)
 {

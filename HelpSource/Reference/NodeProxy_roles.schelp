@@ -22,8 +22,9 @@ Ndef(\a, ...)
 section::Existing roles
 
 definitionList::
+
 ## \set -> event pattern
-|| Set the proxy controls with an event pattern of type code::\set::
+|| Set the proxy controls with an event pattern of type code::\set::. Old values are kept, only those explicitly provided are overridden.
 
 code::
 a = NodeProxy(s);
@@ -31,17 +32,63 @@ a[0] = { |freq = 440, dt=0.1, rate=2| Ringz.ar(Impulse.ar(rate * [1, 1.2]), freq
 a.play;
 (
 a[1] = \set -> Pbind(
-		\dur, Prand([1, 0.5], inf),
-		\freq, Pwhite(200.0, 1000, inf),
-		\rate, Pstutter(4, Prand([1, 3, 6, 10], inf)),
-		\dt, Pwhite(0.01, 0.1, inf)
-	)
+	\dur, Prand([1, 0.5], inf),
+	\freq, Pwhite(200.0, 1000, inf),
+	\rate, Pstutter(4, Prand([1, 3, 6, 10], inf)),
+	\dt, Pwhite(0.01, 0.1, inf)
+)
 );
+// modify the source in the meanwhile:
+a[0] = { |freq = 440, dt=0.1, rate=2| Ringz.ar(Dust.ar(rate * 10.dup), freq, dt)*0.1 };
+
+a.nodeMap.postln; // the values are not set in the node map.
+a.clear(3);
+::
+
+## \pset -> event pattern
+|| set all proxy controls to event data
+
+code::
+a = NodeProxy(s);
+a[0] = { |freq = 440, dt=0.1, rate=2| Ringz.ar(Impulse.ar(rate * [1, 1.2]), freq, dt)*0.1 };
+a.play;
+
+(
+a[1] = \xset -> Pbind(
+	\dur, Prand([1, 0.5], inf),
+	\freq, Pwhite(200.0, 1000, inf).round(30),
+	\rate, Pstutter(4, Prand([1, 3, 6, 10], inf)),
+	\dt, Pwhite(0.01, 0.1, inf) + 1
+)
+);
+
+a.nodeMap.postln; // the values are set in the node map.
+::
+
+## \xset -> event pattern
+|| set all proxy controls to event data, using synth crossfade (see link::#-xset::).
+code::
+
+a = NodeProxy(s);
+a[0] = { |freq = 440, dt=0.1, rate=2| Ringz.ar(Impulse.ar(rate * [1, 1.2]), freq, dt)*0.1 };
+a.play;
+
+(
+a[1] = \xset -> Pbind(
+	\dur, Prand([1, 0.5], inf),
+	\freq, Pwhite(200.0, 1000, inf).round(30),
+	\rate, Pstutter(4, Prand([1, 3, 6, 10], inf)),
+	\dt, Pwhite(0.01, 0.1, inf) + 1
+)
+);
+
+a.fadeTime = 2;
 // modify the source in the meanwhile:
 a[0] = { |freq = 440, dt=0.1, rate=2| Ringz.ar(Dust.ar(rate * 10.dup), freq, dt)*0.1 };
 
 a.clear(3);
 ::
+
 
 ## \setbus -> event pattern
 || Set the proxy bus with an event pattern of type code::\c_set::
@@ -52,9 +99,9 @@ b = NodeProxy(s).play;
 b[0] = { SinOsc.ar(a.kr(4)).sum * 0.2 };
 (
 a[0] = \setbus -> Pbind(
-		\dur, Prand([1, 0.5], inf),
-		\value, Pfunc { var z = rrand(300, 4000); [300, 400, z, z + 30.rand2] }
-	)
+	\dur, Prand([1, 0.5], inf),
+	\value, Pfunc { var z = rrand(300, 4000); [300, 400, z, z + 30.rand2] }
+)
 );
 // modify the other source in the meanwhile:
 b[0] = { Pulse.ar(a.ar(4)).sum * 0.2 };
@@ -70,14 +117,14 @@ a = NodeProxy(s);
 a.play;
 (
 a[0] = \setsrc -> Pbind(
-		\dur, Prand([1, 0.5, 2], inf),
-		\source, Prand ([
-			{ SinOsc.ar(SinOsc.ar({5.rand}.dup + 4) * 50 + 400 + 50.rand) * 0.1 },
-			{ SinOsc.ar(LFSaw.ar({5.rand}.dup + 4) * 50 + 400 + 50.rand) * 0.1},
-			{ LFSaw.ar(SinOsc.ar({5.rand}.dup + 4) * 50 + 400 + 50.rand) * 0.1 },
-			{ LFSaw.ar(LFSaw.ar({5.rand}.dup + 4) * 50 + 400 + 50.rand) * 0.1 }
-		], inf)
-	)
+	\dur, Prand([1, 0.5, 2], inf),
+	\source, Prand ([
+		{ SinOsc.ar(SinOsc.ar({5.rand}.dup + 4) * 50 + 400 + 50.rand) * 0.1 },
+		{ SinOsc.ar(LFSaw.ar({5.rand}.dup + 4) * 50 + 400 + 50.rand) * 0.1},
+		{ LFSaw.ar(SinOsc.ar({5.rand}.dup + 4) * 50 + 400 + 50.rand) * 0.1 },
+		{ LFSaw.ar(LFSaw.ar({5.rand}.dup + 4) * 50 + 400 + 50.rand) * 0.1 }
+	], inf)
+)
 );
 
 a.clear(3);
@@ -140,7 +187,7 @@ AbstractPlayControl.buildMethods.put(\stream,
 			\array, Pkey(\value),
 			\out, Pfunc { proxy.index }
 		).buildForProxy( proxy, channelOffset, index )
-	});
+});
 )
 
 

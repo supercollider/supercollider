@@ -1,0 +1,221 @@
+title:: Working with HID
+summary:: A guide to using HID devices for control input
+categories:: External control>HID
+related:: Classes/HID, Classes/HIDFunc
+
+section:: Introduction
+
+Human input devices can be used as controllers for making music. The HID and HIDFunc classes provides you with access to them in a simple and transparent way.
+
+The development of this SuperCollider implementation of HID access was funded by the SuperCollider community and BEK, Bergen Elektronisk Kunst, Bergen, Norway, http://www.bek.no
+
+subsection:: What are HID devices?
+
+HID stands for Human Input Device, so in a sense saying HID device is saying Human Input Device device. Another confusion is that HID's are not merely input devices, they can also have outputs, e.g. the leds which indicate whether you have turned CapsLock or NumLock on, or force feedback (or vibration) in game devices.
+
+Nowadays most HID's use USB to connect to computers, although there are some HID's that use BlueTooth instead (but not all BlueTooth HID's adhere to the standard protocols, most notably the WiiMote does not). SuperCollider provides the means to access HID's in as far as they adhere to the standard protocols that have been created for them. In the implementation we have tried to make the use of HID's as much crossplatform compatible as possible, so that you do not have to change code when transfering to another platform (e.g. from OSX to Linux and vice versa). However, it may be that some HID's use special driver software, that make this impossible. Other incompatibilities may arise from the fact that although there is a standardisation on the device level, the different operating systems then provide software interfaces which vary, so in a way we have had to reverse engineer the differences that the operating systems introduce.
+
+NOTE:: the backend for Windows has not been completed yet, so HID is not working yet on Windows.::
+
+
+section:: General workflow
+
+The general workflow to work with HID devices is to:
+
+LIST::
+## Find the devices that are attached to the computer
+## Open the device that you want to work with
+## And assign functions to the different controls that the device has
+::
+
+When you want to use an HID, you will initially want to explore the device and check out its capabilities, and then write some code that you can reuse every time you want to start using your instrument.
+
+section:: Exploring HID
+
+Here is a short example of how to explore which HID's are attached, and what input they generate:
+
+DEFINITIONLIST::
+	## Find available devices:
+	|| code:: HID.findAvailable; ::
+	## Print a readable list of available devices:
+	|| code:: HID.postAvailable; ::
+	## Open a specific device:
+	|| code:: ~myhid = HID.open( 1103, 53251 ); ::
+	## Print all HID output:
+	|| code:: HID.debug = true; ::
+	## Alternatively (see below for the difference),
+    || code:: HIDFunc.trace( true ); ::
+::
+
+The method code:: findAvailable :: will check which devices are connected to the computer, and retrieve basic information about them. With the method code:: postAvailable :: the list of devices is then printed to the post window in a readable list, in the first column the index into the devicelist is given, in the second column various properties of the device are listed. These properties can be used to open a specific device.
+
+To open the device, there are various methods available:
+LIST::
+## using the index into the device list, e.g.: code:: HID.openAt( 0 ); ::
+## using the path in the operation system, e.g.: code:: HID.openPath( "/dev/hidraw4" ); ::
+## using the vendor id and product id of the device, and optionally the path, e.g.: code:: HID.open( 1103, 53251 ); ::
+::
+
+The last one (if the path is not given) is cross platform compatible. The vendor and product id are reported by the device to the operating system, and will thus always be the same. These numbers are unique for the type of device (e.g. the Thrustmaster Run'N'Drive gamepad has the same number).
+If you are using multiple of the same devices, you may want to adjust your setup to use the path as well in order to be able to identify which device you open.
+
+NOTE:: if you have trouble opening a device, e.g. when you get the message code:: ERROR: HID: Could not open device::, please check the LINK::Guides/HID_permissions:: ::
+
+NOTE:: on OSX the internal devices of laptops are somewhat messed up - they show up multiple times and do not have unique paths, this makes it hard to open a specific one of them.::
+
+You can always check which devices have already been opened by SuperCollider with
+
+code:: HID.openDevices; ::
+
+subsection:: Exploring HID control data
+
+If you have enabled debugging of the HID input data, and you move one of the controls on your device, you will get an output similar to this:
+
+code::
+HID Element Data:
+	devid: 0, elid: 18
+	element: 	 page: 1	usage: 53
+	array value: 0, 	raw value: 128,	physical value: 128,	value: 0.50196081399918
+::
+
+An EMPHASIS::element:: is the name for an element of the HID, it can represent for example the x-axis of a joystick, or the first key that is pressed on a keyboard.
+
+The EMPHASIS::devid:: is the index into the dictionary of open devices (code:: HID.openDevices; ::), the element id (EMPHASIS::elid::) is the index into the array of elements of the device. This index can vary between operating systems, so it is mostly just used internally.
+
+The EMPHASIS::page:: and EMPHASIS::usage:: of the element are lookup indices for the functionality of the element. These lookup indices are standardized and tables are available to look up the names of the controls.
+
+The EMPHASIS::raw value:: is the value as it comes in - it is not scaled in anyway. The EMPHASIS::value:: is scaled between 0 and 1 according to the logical minimum and maximum that is reported by the device.
+
+The EMPHASIS::array value:: is only of importance for those elements which can represent multiple usages, such as from keyboards. In that case it indicates the key that is pressed, and by adding this number to the usage of the element you know which function the key has.
+
+With the debugging method code::HIDFunc.trace( true ):: the data will be printed in a different way:
+
+code::
+HID Element Data:	devid: 0, elid: 18
+	device: 	a HIDInfo(Thrustmaster, Run'N' Drive, IDs:1103, 53251, /dev/hidraw4, , 258, 0), 	page: 1 	usage: 5
+	element:	a HIDElement(18: type: 2, usage: 1, 53)
+				page: 1	usage: 53	raw value: 128,	value: 0.50196081399918
+::
+
+Turn debugging off again with:
+
+LIST::
+## code:: HIDFunc.trace( false )::
+## code:: HID.debug_( false )::
+::
+
+Rather than looking at the data as it comes in, we can also check which elements the device has with
+
+LIST::
+## code::~myhid.postElements::
+## code::~myhid.postInputElements::
+## code::~myhid.postOutputElements::
+::
+
+Or check which usages are available:
+code::~myhid.postUsages::
+
+These will post detailed information on each element:
+
+code::
+HID Element: 18, type: 1, 2, usage page: 1, usage index: 53
+	Description: GenericDesktop, Rz, input,
+	[ Data, Variable, Absolute, NoWrap, Linear, PreferredState, NoNullPosition, NonVolatile, BitField ]
+	Usage range: [ -1, -1 ]
+	Logical range: [ 0, 255 ]
+	Physical range: [ 0, 255 ], Unit: 0, Exponent: 0
+	Report ID: 0, size 8, index 5
+::
+
+The EMPHASIS::type:: is a numerical index of whether it is an input, output or feature element, the second one indicates other properties. In the description the page and usage are translated using the table lookup, and the type indication is also translated to something understandable.
+
+The usage range is again of importance for keyboards, the logical and physical range give ranges within which values will vary.
+The report ID, size and index give lowlevel information on how the data comes in.
+
+
+subsection:: Assigning actions to HID control data
+
+Whenever data comes in from an opened HID device, there are two types of actions fired. An action for the incoming element data and an action for the device, indicating that there has been a change in one of the elements. In most cases you will want to use the first action; only in cases where the order of parsing the element data is important, you may want to use the second type - e.g. when dealing with very accurately timed button press combinations.
+
+There are three levels where you can set actions:
+LIST::
+	## at the global level - called for any HID device, for any element
+	## at the device level - called for the specific device, for any element
+	## at the element level - called for the specific element of the specific device
+::
+
+Alternately, you can also use the LINK::Classes/HIDFunc:: interface, which allows filtering of events for multiple devices based on their usage.
+
+DEFINITIONLIST::
+## the global level
+|| code:: HID.action = { |value, rawValue, usage, page, elid, element, devid, device | "HID global action: ".post; [value, rawValue, usage, page, elid, element, devid, device].postln; }; ::
+## the device level
+|| code:: ~myhid.action = { | value, physValue, rawValue,  arrayValue, usage, page, elid | "HID device action: ".post; [value, physValue, rawValue,  arrayValue, usage, page, elid].postln; }; ::
+## the element level
+|| code:: ~myhid.elements.at(18).action = { |value,element| "HID element action: ".post; [value,element].postln; }; ::
+## using HIDFunc
+|| code:: HIDFunc.usage( { |value, rawValue, usage, page, elid, ele, devid, device, key| "HIDFunc.usage action: ".post; [value, rawValue, usage, page, elid, ele, devid, device, key].postln; }, \Rz ); ::
+## using HIDdef
+|| code:: HIDdef.usage( \myRz, { |value, rawValue, usage, page, elid, ele, devid, device, key| "HIDdef.usage action: ".post; [value, rawValue, usage, page, elid, ele, devid, device, key].postln; }, \Rz ); ::
+::
+
+The LINK::Classes/HIDFunc:: and LINK::Classes/HIDdef:: options allow for the most flexible control and are similar to the use of LINK::Classes/MIDIFunc:: and LINK::Classes/MIDIdef:: and LINK::Classes/OSCFunc:: and LINK::Classes/OSCdef::.
+
+The advantages are that you can filter for just the type of control, so you can easily replace your game controller with a game controller of a similar type.
+
+Let's close the device again:
+code::
+~myhid.close;
+::
+
+section:: A simple example
+
+code::
+HID.findAvailable; // check which devices are attached
+~myhid = HID.open( 1103, 53251 ); // open the Run'N' Drive game controller
+
+s.boot; // boot the server
+
+Ndef( \sinewave, { |freq=500, amp=0.1| SinOsc.ar( freq, 0, amp * 0.2 ) } );
+Ndef( \sinewave ).play;
+
+~freqRange = [500, 5000, \exponential].asSpec; // create a frequency range
+
+HIDdef.usage( \freq, { |value| Ndef( \sinewave ).set( \freq, ~freqRange.map( value ) ); }, \X );
+HIDdef.usage( \amp, { |value| Ndef( \sinewave ).set( \amp, value ); }, \Y );
+::
+
+section:: Finding a device automatically again after it is detached
+
+code::
+(
+Tdef( 'tryOpenHID' , {
+   var keepLooking = true;
+   while ( { keepLooking } ){
+      if ( ~myhid.notNil ){
+         if ( ~myhid.isOpen ){
+            keepLooking = false;
+         }
+      };
+      if ( keepLooking ){
+         HID.findAvailable;
+         if ( HID.findBy(1103, 53251).size > 0 ){
+            ~myhid = HID.open( 1103, 53251 );
+            if ( ~myhid.notNil ){
+               ~myhid.closeAction = {
+                    "device closed".postln;
+                    Tdef( \tryOpenHID ).reset.play;
+               };
+               keepLooking = false;
+            }{
+               3.0.wait;
+            };
+         }{
+            3.0.wait;
+         }
+      }
+   }
+} );
+);
+Tdef( 'tryOpenHID' ).play;
+::

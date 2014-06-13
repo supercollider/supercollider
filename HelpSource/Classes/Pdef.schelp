@@ -133,8 +133,17 @@ A single Pdef may serve as a definition for multiple streams. These methods show
 method::fork
 Play an independent stream in parallel.
 
+argument::argClock
+The clock to run the substream on.
+
 argument::quant
 can be an array of [quant, phase, offset], or a link::Classes/Quant:: value.
+
+argument::protoEvent
+An link::Classes/Event:: to pass in that is used by the substream
+
+returns:: an link::Classes/EventStreamPlayer::.
+
 
 method::embed
 Pass a value (typically an link::Classes/Event::) into the pattern inval, and embed the Pdef in the stream.

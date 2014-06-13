@@ -13,7 +13,7 @@ Internally, this unit uses FFT to accelerate the calculation, which means that
 (a) you must specify a "framesize", and
 (b) if the kernel is longer than this framesize, the end of it will be ignored.
 
-See also  link::http://www.dspguide.com/ch18.htm::  by Steven W.
+See also link::http://www.dspguide.com/ch18.htm:: by Steven W.
 Smith.
 
 
@@ -40,11 +40,10 @@ value.
 
 argument::framesize
 
-Size of FFT frame, must be a power of two. Convolution uses twice
-this number internally:
-512, 1024, 2048, 4096 are standard choices.
-Note that it gets progressively more expensive to run for higher powers! 
-The maximum value you can use is 16384.
+Size of FFT frame, must be a power of two (512, 1024, 2048, 4096 are standard choices).
+Convolution uses twice this number internally.
+Note that the convolution gets progressively more expensive to run for higher powers!
+The maximum value you can use is 2^16=16384.
 (This upper limit is half of "SC_FFT_MAXSIZE" defined in the SC source code.)
 Larger convolutions than this can be done using link::Classes/PartConv::.
 
