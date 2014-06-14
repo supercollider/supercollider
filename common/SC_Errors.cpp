@@ -47,6 +47,7 @@ void SC_ErrorString(SCErr err, char returnString[])
     case kSCErr_TooManyNodes : sprintf(returnString, "too many nodes"); break;
     case kSCErr_DuplicateNodeID : sprintf(returnString, "duplicate node ID"); break;
     case kSCErr_ReservedNodeID : sprintf(returnString, "negative node IDs are reserved"); break;
+    case kSCErr_ReplaceRootGroup : sprintf(returnString, "can't replace group 0"); break;
     case kSCErr_OutOfRealTimeMemory : sprintf(returnString, "out of real time memory"); break;
 
     case kSCErr_UnsupportedHeaderFormat : sprintf(returnString, "unsupported header format"); break;
