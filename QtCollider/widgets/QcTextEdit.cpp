@@ -112,7 +112,7 @@ void QcTextEdit::setTextFont( const QFont &f )
 
   QTextCursor cursor( document() );
   cursor.select( QTextCursor::Document );
-  cursor.setCharFormat( format );
+  cursor.mergeCharFormat( format );
 
   QTextEdit::setFont(f);
 }
@@ -124,7 +124,7 @@ void QcTextEdit::setTextColor( const QColor &color )
 
   QTextCursor cursor( document() );
   cursor.select( QTextCursor::Document );
-  cursor.setCharFormat( format );
+  cursor.mergeCharFormat( format );
 }
 
 void QcTextEdit::setRangeColor( const QVariantList &list )
@@ -140,7 +140,7 @@ void QcTextEdit::setRangeColor( const QVariantList &list )
   QTextCursor cursor( document() );
   cursor.movePosition( QTextCursor::NextCharacter, QTextCursor::MoveAnchor, start );
   cursor.movePosition( QTextCursor::NextCharacter, QTextCursor::KeepAnchor, size );
-  cursor.setCharFormat( format );
+  cursor.mergeCharFormat( format );
 }
 
 void QcTextEdit::setRangeFont( const QVariantList & list )
@@ -156,7 +156,7 @@ void QcTextEdit::setRangeFont( const QVariantList & list )
   QTextCursor cursor( document() );
   cursor.movePosition( QTextCursor::NextCharacter, QTextCursor::MoveAnchor, start );
   cursor.movePosition( QTextCursor::NextCharacter, QTextCursor::KeepAnchor, size );
-  cursor.setCharFormat( format );
+  cursor.mergeCharFormat( format );
 }
 
 void QcTextEdit::setRangeText( const QVariantList & list )
