@@ -4222,21 +4222,30 @@ void initCocoaBridgePrimitives();
 void initSchedPrimitives();
 	initSchedPrimitives();
 
+void initHIDAPIPrimitives();
+	initHIDAPIPrimitives();
+	
 #if defined(__APPLE__) || defined(HAVE_ALSA) || defined(HAVE_PORTMIDI)
 void initMIDIPrimitives();
 	initMIDIPrimitives();
 #endif
 
+
+#if !defined(SC_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__APPLE__)
+void initLIDPrimitives();
+	initLIDPrimitives();
+#endif
+
 #if !defined(SC_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__)
-void initHIDPrimitives();
-	initHIDPrimitives();
 
 void initSerialPrimitives();
 	initSerialPrimitives();
 
+#ifdef HAVE_WII
 void initWiiPrimitives();
 	initWiiPrimitives();
-
+#endif
+	
 #endif
 #ifdef SC_DARWIN
 void initCoreAudioPrimitives();
@@ -4266,6 +4275,13 @@ void initOpenGLPrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
 	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
+}
+
+void deinitPrimitives()
+{
+	void deinitHIDAPIPrimitives();
+	deinitHIDAPIPrimitives();
+
 }
 
 

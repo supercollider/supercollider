@@ -362,7 +362,7 @@ QSize Style::sizeFromContents
     }
 }
 
-int	Style::pixelMetric
+int Style::pixelMetric
 ( PixelMetric metric, const QStyleOption * option, const QWidget * widget ) const
 {
     if (shouldNotHandle(widget)) {

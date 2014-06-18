@@ -204,15 +204,7 @@ String[char] : RawArray {
 	}
 
 	findAllRegexp { arg string, offset = 0;
-		var indices = [], i=[];
-		while {
-			i = this.findRegexp(string, offset);
-			i.notNil and: {i.size != 0}
-		}{
-			indices = indices.add(i);
-			offset = i[0][0] + 1;
-		}
-		^indices
+		^this.findRegexp(string, offset).collect { |pair| pair[0] }
 	}
 
 	find { arg string, ignoreCase = false, offset = 0;

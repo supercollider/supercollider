@@ -20,8 +20,8 @@ Main : Process {
 		interpreter.s = Server.default;
 
 		GeneralHID.fromID( this.platform.defaultHIDScheme );
-		this.platform.startup;
 		openPorts = Set[NetAddr.langPort];
+		this.platform.startup;
 		StartUp.run;
 
 		Main.overwriteMsg.split(Char.nl).drop(-1).collect(_.split(Char.tab)).do {|x|

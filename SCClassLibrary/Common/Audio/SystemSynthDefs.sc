@@ -38,6 +38,20 @@ SystemSynthDefs {
 				SynthDef("system_diskout_" ++ i, { arg i_in, i_bufNum=0;
 					DiskOut.ar(i_bufNum, InFeedback.ar(i_in, i));
 				}).add;
+
+				SynthDef("system_setbus_audio_" ++ i, { arg out = 0, fadeTime = 0, curve = 0, gate = 1;
+					var values = NamedControl.ir(\values, 0 ! i);
+					var env = Env([In.ar(out, i), values, values], [1, 0], curve, 1);
+					var sig = EnvGen.ar(env, gate + Impulse.kr(0), timeScale: fadeTime, doneAction: 2);
+					ReplaceOut.ar(out, sig);
+				}, [\ir, \kr, \ir, \kr]).add;
+
+				SynthDef("system_setbus_control_" ++ i, { arg out = 0, fadeTime = 0, curve = 0;
+					var values = NamedControl.ir(\values, 0 ! i);
+					var env = Env([In.kr(out, i), values], [1], curve);
+					var sig = EnvGen.kr(env, timeScale: fadeTime, doneAction: 2);
+					ReplaceOut.kr(out, sig);
+				}, [\ir, \kr, \ir]).add;
 			};
 		};
 	}

@@ -7,6 +7,9 @@ Description::
 Starts a linear raise by rate/sec from zero when trig input crosses from
 non-positive to positive.
 
+When rate == 1, Sweep may be used to get a continually-updating measurement
+of the time (in seconds) since the last trigger.
+
 
 classmethods::
 private:: categories

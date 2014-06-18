@@ -443,7 +443,7 @@ Standalones
 To create a "standalone" app using cmake, you need to use the "standalone" flag. For 
 example, to create a standalone whose name is MyFabApp:
 
-`cmake -Dstandalone="MyFabApp" ..`
+`cmake -D standalone="MyFabApp" ..`
 
 If you want to include special resources, put them in a folder called 
 

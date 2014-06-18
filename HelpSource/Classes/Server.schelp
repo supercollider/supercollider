@@ -78,7 +78,7 @@ argument:: options
 an optional instance of link::Classes/ServerOptions::. If code::nil::, an instance of ServerOptions will be created, using the default values.
 
 argument:: clientID
-an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage the server will supply an ID automatically when a client registers for link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client. 
+an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage the server will supply an ID automatically when a client registers for link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client.
 
 method:: remote
 Create a new Server instance corresponding to a server app running on a separate machine. This method assumes the remote app has been booted, and starts listening immediately. You should not call link::#-boot:: on an instance created using this method.
@@ -93,7 +93,7 @@ argument:: options
 an optional instance of link::Classes/ServerOptions::. If code::nil::, an instance of ServerOptions will be created, using the default values.
 
 argument:: clientID
-an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage the server will supply an ID automatically when a client registers for link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client. 
+an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage the server will supply an ID automatically when a client registers for link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client.
 
 
 method:: local
@@ -543,7 +543,7 @@ SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
 
 x = Synth.new("bubbles");
 
-s.prepareForRecord; // you have to call this first
+s.prepareForRecord; // if you want to start recording on a precise moment in time, you have to call this first.
 
 s.record;
 
@@ -655,14 +655,4 @@ Routine.run {
 )
 ::
 
-section:: Keyboard Shortcuts
-
-when a server window is in focus, these shortcuts can be used:
-table::
-## space || start the server
-## d || toggle dumpOSC
-## n || post a representation of the node tree
-## N || post a representation of the node tree and the current control values of any synths
-## s || scope
-::
 

@@ -78,6 +78,8 @@ section::NodeProxy, ProxySpace, Ndef
 
 For interactive programming it can be useful to be able to use something before it is there - it makes evaluation order more flexible and allows to postpone decisions to a later moment. Some preparations have to be done usually - like above, a reference has to be created. In other situations this sort of preparation is not enough, for example if one wants to apply mathematical operations on signals of running processes on the server.
 
+note:: Wherever examples are given with Ndef, they apply to ProxySpace and NodeProxy: code::Ndef(\x, 5);:: is the same as:  code:: ~x = 5;:: in ProxySpace, and code::a = NodeProxy.new; a.source = 5;::::
+
 code::
 // boot the server
 s.boot;
@@ -126,20 +128,20 @@ p.clear;
 p.pop;
 ::
 
-Another, quite common way to access node proxies is Ndef (this is the same as the above, just written with Ndef):
+Another, very common way to access node proxies is link::Classes/Ndef:: (this is the same as the above, just written with Ndef):
+
 code::
 Ndef(\z).play;
 
-
 Ndef(\z, Ndef(\y).sin * 0.2);
-
 
 Ndef(\y, { Saw.ar([300, 301], 4 * pi) });
 
-
 Ndef.clear;
-
 ::
+
+The class Ndef uses link::Classes/ProxySpace:: internally to store its place holders.
+
 
 Further reading: link::Classes/NodeProxy::, link::Classes/ProxySpace::, link::Classes/Ndef::
 

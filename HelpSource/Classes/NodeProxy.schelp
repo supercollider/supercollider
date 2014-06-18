@@ -4,11 +4,11 @@ categories:: Libraries>JITLib>NodeProxy, Live Coding
 related:: Classes/ProxySpace
 
 description::
-Generally a strong::proxy:: is a placeholder for something. A node proxy is a placeholder for something strong::playing on a server:: that writes to a limited number of busses (e.g. a synth or an event stream). NodeProxy objects can be replaced and recombined while they play. Also they can be used to build a larger structure which is used and modified later on. Overview: link::Overviews/JITLib::.
+Generally a strong::proxy:: is a placeholder for something. A node proxy is a placeholder strong::for something playing on a server:: and writes to a limited number of busses (usually a synth, but also an event stream that makes synths). NodeProxy objects can be replaced and recombined while they play. Also they can be used to build a larger structure which is used and modified later on. Overview: link::Overviews/JITLib::.
 
 NodeProxy is used internally in link::Classes/ProxySpace:: and it is a superclass of link::Classes/Ndef::, allowing to easily access and combine a large number of placeholders.
 
-Graphical editor for a node proxy: link::Classes/NodeProxyEditor::.
+Graphical editor for a node proxy: link::Classes/NdefGui::.
 
 note::
 NodeProxy plays on a emphasis::private bus::. If you want to strong::hear:: the output, use link::#-play:: and link::#-stop::. To free inner players and stop listen: link::#-end::. Entirely removing all inner settings: link::#-clear::
@@ -71,31 +71,16 @@ If given, proxy is initialized to this number of channels
 argument::inputs
 If given, proxy is initialized with the given inputs as objects on subsequent slots.
 
-method::audio
-Return a new audio rate NodeProxy of a given number of channels.
-
-argument::server
-The server on which to run and where the bus is allocated (default: code::Server.default::)
-
-argument::numChannels
-If given, proxy is initialized to this number of channels (default: 2)
-
-method::control
-Return a new control rate NodeProxy of a given number of channels.
-
-argument::server
-The server on which to run and where the bus is allocated (default: code::Server.default::)
-
-argument::numChannels
-If given, proxy is initialized to this number of channels (default: 1)
-
-method::for
-Return a new instance of NodeProxy using a given link::Classes/Bus::.
+copymethod:: BusPlug *audio
+copymethod:: BusPlug *control
+copymethod:: BusPlug *for
 
 subsection::Accessing Class Variables
 
-method::defaultNumAudio, defaultNumControl
-set the default channel number for audio/control busses
+copymethod:: BusPlug *defaultNumAudio
+copymethod:: BusPlug *defaultNumControl
+
+private::buildProxy, buildProxyControl, addChild, addNodeMapControlNames, asCode, cleanNodeMap, getBundle, getFamily, getStructure, internalKeys, loadToBundle, moveBeforeMsg, prepareOtherObjects, prepareToBundle, putNewObject, reallocBusIfNeeded, rebuildDeepToBundle, rebuildToBundle, removeToBundle, sendAllToBundle, sendEachToBundle, sendObjectToBundle, serverQuit, shouldAddObject, stopAllToBundle, supplementNodeMap, typeStr, unsetToBundle, wakeUpParentsToBundle, wakeUpToBundle
 
 InstanceMethods::
 
@@ -103,47 +88,53 @@ private::prFadeTime, linkNodeMap, generateUniqueName, prepareOutput, addToChild
 
 subsection::Listening to the output
 
-method::play
-plays to a bus index ( strong::out:: ) with a number of channels ( strong::numChannels:: ) within a target strong::group:: ( link::Classes/Group:: or link::Classes/Server:: ).
+copymethod:: BusPlug -play
 
-argument::multi
-keep old links and add new one
+copymethod:: BusPlug -playN
 
-argument::vol
-volume at which to monitor
-
-argument::fadeTime
-fade in fade out time
-
-method::playN
-see link::Reference/playN::.
-
-argument::outs
-array of destination channels
-
-argument::amps
-array of amplitudes for each channel
-
-argument::ins
-array of source channels
-
-method::stop
-stop to play out public channels (private channels keep playing as others might listen still) this stops the monitoring. To stop the objects playing, use link::#-free::, link::#-release::.
-
-argument::fadeTime
-decay time for this action
+copymethod:: BusPlug -stop
 
 method::end
 releases the synths and stops playback.
 
 argument::fadeTime
-decay time for this action
+cross fade time for this action.
 
 argument::reset
-a boolean
+if set to true, reset all monitor state. Otherwise, the previous play arguments are kept.
 
-method::ar, kr
-return a link to my output, which is limited by [numChannels]. causes an uninitialized proxy to create a matching bus. normally strong::ar:: defaults to stereo, strong::kr:: to mono. this can be set in the classvars: link::#*defaultNumAudio::, link::#*defaultNumControl::.
+
+subsection::Embedding and Combining the proxy
+
+copymethod:: BusPlug -ar, kr
+
+
+method::<--
+Usage: strong::proxyA <-- proxyB::.  Set proxyA source to proxyB and play proxyA. If proxyB was playing, fade it out. This is convenient in the following situation:
+
+code::
+b = NodeProxy.new.play;
+b.source = { PinkNoise.ar(0.2.dup) };
+// now I want to filter b through a new proxy.
+a = NodeProxy.new;
+a <-- b; a.source = { HPF.ar(b.ar, 7000) };
+a.source = { HPF.ar(b.ar, 3000) };// changing the source
+a.clear; b.clear;
+::
+
+method::<<>
+Chaining. Usage: strong::proxyA <<> proxyB	<<> proxyC <<> ...:: . Map proxyC source to proxyB code::\in:: argument, and proxyB to proxyA's in argument.
+
+code::
+a = NodeProxy.new.play;
+a.source = { RLPF.ar(\in.ar(0!2), [4600, 7000], 0.1) };
+b = NodeProxy.new.source_ { Impulse.ar([5, 7] / 2) };
+a <<> b;
+::
+
+method::<>>
+Inverse of the above. Usage: strong::proxyA <>> proxyB	<>> proxyC <>> ...:: .
+
 
 subsection::Setting the source
 
@@ -153,9 +144,49 @@ See the list under section link::#Supported sources::
 
 method::source
 Play a new synth through proxy and release/remove any old ones.
+code::
+a = NodeProxy(s);
+a.play;
+a.source = { Pulse.ar(130, Saw.kr(0.3)) * 0.1 }; // change this line while running
+::
 
 argument::obj
 can be one of the supported inputs (see link::#Supported sources::)
+
+
+subsection::Reshaping
+
+method::reshaping
+Determines how to behave when a new source is added.
+Current options:
+
+table::
+## nil || Once initialized, keep the same bus - this is the default
+## \elastic || On a change, shrink and grow according to need, replace bus. The monitor and child proxies are adjusted.
+## \expanding || On a change, only grow according to need, replace bus. The monitor and child proxies are adjusted.
+::
+
+code::
+a = NodeProxy(s);
+a.reshaping = \elastic;
+a.play(0, 2); // play stereo
+a.source = { BPF.ar(Dust.ar(8 ! 8), (0..5).nthPrime * 300, 0.01) * 20 };
+a.numChannels; // 8
+::
+
+method::mold
+Adjust the proxy to a given rate / numChannels. If there are any child proxies that have elastic link::#-reshaping::, they are adjusted accordigly.
+
+code::
+a = NodeProxy(s);
+a.play;
+a.source = { BPF.ar(Impulse.ar({ rrand(1.0, 2.0) } ! a.numChannels), (0..5).nthPrime * 300, 0.01) * 20 };
+a.numChannels; // 2
+a.mold(8);
+a.numChannels; // 8
+::
+
+subsection::Other ways to set or change the sources
 
 method::prime
 Set source without starting the synth. To start it, link::#-send:: can be used later. Running synths are released and proxy is initialized if still neutral.
@@ -168,6 +199,7 @@ Remove the object at index i and its synths, if they exist. If no index is suppl
 
 method::removeLast
 Remove the last object and its synths, if they exist.
+
 
 method::put
 Set the source by index. Objects can be inserted at any index, only the order of indices is relevant. Internally, NodeProxy uses an link::Classes/Order:: to access the sources.
@@ -200,6 +232,8 @@ a.send; // exchange synths, using the sources as definitions
 a.clear;
 ::
 
+subsection::Controlling the running processes
+
 method::pause
 Pause all objects and set proxy to paused
 
@@ -212,31 +246,6 @@ Rebuild all SynthDefs from sources.
 method::orderNodes
 Arrange the order of groups from this to the last. This can be important when external input is filtered in order to strong::minimize latency::. Note that if a link::#-parentGroup:: was provided, the nodes must be in the same parentGroup.
 
-method::<--
-Usage: strong::proxyA <-- proxyB::.  Set proxyA source to proxyB and play proxyA. If proxyB was playing, fade it out. This is convenient in the following situation:
-
-code::
-b = NodeProxy.new.play;
-b.source = { PinkNoise.ar(0.2.dup) };
-// now I want to filter b through a new proxy.
-a = NodeProxy.new;
-a <-- b; a.source = { HPF.ar(b.ar, 7000) };
-a.source = { HPF.ar(b.ar, 3000) };// changing the source
-a.clear; b.clear;
-::
-
-method::<<>
-Chaining. Usage: strong::proxyA <<> proxyB	<<> proxyC <<> ...:: . Map proxyC source to proxyB code::\in:: argument, and proxyB to proxyA's in argument.
-
-code::
-a = NodeProxy.new.play;
-a.source = { RLPF.ar(\in.ar(0!2), [4600, 7000], 0.1) };
-b = NodeProxy.new.source_ { Impulse.ar([5, 7] / 2) };
-a <<> b;
-::
-
-method::<>>
-Inverse of the above. Usage: strong::proxyA <>> proxyB	<>> proxyC <>> ...:: .
 
 subsection::Release and cleaning up
 
@@ -316,23 +325,41 @@ set the crossfade time. See: link::Tutorials/JITLib/jitlib_fading:: .
 
 subsection::Setting synth controls
 
-method::set, unset, unmap
-NodeProxy behaves like its nodeMap ( link::Classes/NodeMap:: )
+method::set, map, setn, mapn
+NodeProxy behaves like its link::Classes/NodeMap:: and very similar to a link::Classes/Synth::.
 
-method::map
-Map the arguments in keys to the subsequent channels of another proxy (keys can be a symbol or a number). If the proxy has strong::multiple channels::, subsequent channels of the control, if present, are mapped. Note that you should not map to more channels than the control has.
+note::Now the methods map, setn, mapn, and xmap are there just for backward compatibility reasons. Everything is done by set.::
 
-method::setn
-set ranges of controls
+code::
+a = NodeProxy(s); a.play;
+a.source = { Splay.ar(Blip.ar(\freq.kr(18 ! 4))) * 0.2 };
+a.set(\freq, [1, 3, 56, 13]);
+a.source = { Splay.ar(SinOsc.ar(LFSaw.ar(\freq.kr(18 ! 4)) * 250 + 400)) * 0.2 };
+b = NodeProxy(s); b.source = { MouseX.kr(0, 3) *  [1, 3, 56, 13] };
+a.set(\freq, b);
+a.clear; b.clear;
+::
+
+argument::... args
+
+An array of pairs: strong::key, value, key, value, ...::
+
+The unique key (a link::Classes/Symbol::) specifies the control name to be set.
+
+For value anything can be specified that responds to "asControlInput", in particular:
+definitionList::
+## number || set the control to that number
+## array of numbers || set the subsequent control channels to the correspoding value
+## node proxy || map subsequent control channels to the corrseponding proxy output channel
+::
+
+
+
+method::unset, unmap
+Remove specified settings and unmap or unset the synths.
 
 method::xset
-set with crossfade into new setting
-
-method::xmap
-map with crossfade into new setting
-
-method::xsetn
-untested
+set/map with a crossfade into the new setting. The crossfadeT time is the NodeProxy link::#-fadeTime::.
 
 method::lag
 set the lag values of these args (identical to link::#-setRates::). To remove these settings, use: code::lag(\key1, nil, key2, nil, ...)::
@@ -358,13 +385,15 @@ Get all key value pairs from both link::Classes/NodeMap:: (the settings) and def
 method::controlKeysValues
 Get all key value pairs from default arguments.
 
-subsection::Sending synths to server
+subsection::Sending synths to server explicitly
+
+Normally, processes (usually synths) are started when their respective source is added to the proxy. The processes can also be restarted, however, or the proxy can be used while asleep and the processes can then be started explicitly.
 
 method::send
 Send a new synth without releasing the old one. If the source is a stream or a pattern, it starts a new one.
 
 argument::extraArgs
-Arguments used to set the synth. the argument list is applied to the synth only.
+Arguments used to set the synth. The argument list is applied to the synth only. Arguments specified here override settings in the node map, but leave them untouched.
 
 argument::index
 What slot to send a new synth with. If nil, uses all. (default: nil)
@@ -406,21 +435,22 @@ a.source = { |freq = 440, rate = 2|
 section::Supported sources
 
 definitionList::
-## link::Classes/NodeProxy:: || played by reading from the other node proxie's bus.
+## link::Classes/NodeProxy:: || played by reading from the other NodeProxy bus.
 ## link::Classes/Function:: || interpreted as ugen function, and plays a link::Classes/Synth::, similar to Function.play.
-## link::Classes/SimpleNumber:: || write this value to the bus continuously
-## link::Classes/Bus:: || reads from the bus
-## link::Classes/SynthDef:: || plays a link::Classes/Synth:: using the SynthDef. This is useful for triggering.
-## link::Classes/Symbol:: || plays a link::Classes/Synth:: from the SynthDef with this name. This is useful for triggering.
-## link::Classes/Pattern:: || played as event pattern (using link::Classes/Pbind:: or other event patterns)
-## link::Classes/Stream:: || played as event stream (a stream returning events)
+## link::Classes/SimpleNumber:: || write this value to the bus continuously, overwriting previous bus value.
+## link::Classes/Array:: of numbers || write the values to the bus continuously overwriting previous bus value.
+## link::Classes/Bus:: || read the signal on the bus.
+## link::Classes/SynthDef:: || plays a link::Classes/Synth:: using the SynthDef.
+## link::Classes/Symbol:: || plays a link::Classes/Synth:: from the SynthDef with this name.
+## link::Classes/Pattern:: || played as event pattern (using link::Classes/Pbind:: or other event patterns).
+## link::Classes/Stream:: || played as event stream (a stream returning events).
 ## nil || link::Classes/Nil:: removes all objects.
-## link::Classes/Pdef::, link::Classes/EventPatternProxy:: || played like a stream
+## link::Classes/Pdef::, link::Classes/EventPatternProxy:: || played like a stream.
 ## link::Classes/Task:: || played, no output is assigned.
 ## link::Classes/Tdef:: || played like Task
 ## link::Classes/Event:: || played like in a pattern.
 
-## Associations: ||
+## Associations (link::Reference/NodeProxy_roles::): ||
 definitionList::
 ## (\filter -> func) || filter previous input (with post control)
 ## (\filterIn -> func) || filter previous input (with pre control)
@@ -438,7 +468,7 @@ definitionList::
 ::
 ::
 
-Definitions for other sources can be added easily.
+Definitions for other sources can be added - see: link::Reference/NodeProxy_roles::
 
 Examples::
 

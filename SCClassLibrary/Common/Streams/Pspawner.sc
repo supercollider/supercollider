@@ -95,7 +95,7 @@ Pspawn : FilterPattern {
 
 	*new { |pattern, spawnProtoEvent|
 		^super.new(pattern)
-			.spawnProtoEvent_(spawnProtoEvent ?? { Event.default });
+		.spawnProtoEvent_(spawnProtoEvent ?? { Event.default });
 	}
 
 	embedInStream { |inevent|
@@ -103,55 +103,58 @@ Pspawn : FilterPattern {
 			var	event, stream = pattern.asStream, child;
 			while { (event = stream.next(spawnProtoEvent.copy.put(\spawner, sp))).notNil } {
 				case
-					{ event.method == \wait } {
+				{ event.method == \wait } {
+					event.spawner.wait(event.delta)
+				}
+				{ #[seq, par].includes(event.method) } {
+					child = event[\pattern];
+					if(child.isKindOf(Symbol)) {
+						child = (event[\dict] ? Pdef).at(child);
+					};
+					event.spawner.perform(event.method, child.value(event));
+					if(event.delta > 0) {
 						event.spawner.wait(event.delta)
 					}
-					{ #[seq, par].includes(event.method) } {
-						child = event[\pattern];
-						if(child.isKindOf(Symbol)) {
-							child = (event[\dict] ? Pdef).at(child);
-						};
-						event.spawner.perform(event.method, child.value(event));
-						if(event.delta > 0) {
-							event.spawner.wait(event.delta)
-						}
-					}
-						// suspend requires access to the specific stream
-						// don't know how to get it... maybe implement later
-					{ event.method == \suspendAll } {
-						event.spawner.suspendAll
-					}
-					{ "Unrecognized method % in spawner event."
-						.format(event.method.asCompileString).warn;
-					}
+				}
+				// suspend requires access to the specific stream
+				// don't know how to get it... maybe implement later
+				{ event.method == \suspendAll } {
+					event.spawner.suspendAll
+				}
+				{ "Unrecognized method % in spawner event."
+					.format(event.method.asCompileString).warn;
+				}
 			};
 		}).embedInStream(inevent)
 	}
 }
 
+
+
+
 /*
 (
-	Pseq([
-		Pspawner({ | sp |
-			sp.postln;
-			sp.par(Pbind(*[degree:	Pwhite(0,12), dur: 0.1, db: -30]) );
-			sp.seq(Pbind(*[degree:	Pseq((0..4).mirror.mirror, 1) + [-3, 0,2], ctranspose: -12, dur: 0.2 ]) );
-			"hi".postln;
-			sp.wait(1);
-			"bye".postln;
-			sp.suspendAll;
-		}),
+Pseq([
+Pspawner({ | sp |
+sp.postln;
+sp.par(Pbind(*[degree:	Pwhite(0,12), dur: 0.1, db: -30]) );
+sp.seq(Pbind(*[degree:	Pseq((0..4).mirror.mirror, 1) + [-3, 0,2], ctranspose: -12, dur: 0.2 ]) );
+"hi".postln;
+sp.wait(1);
+"bye".postln;
+sp.suspendAll;
+}),
 
-		Pspawner({ | sp |
-			sp.postln;
-			sp.par(Pbind(*[degree:	Pwhite(0,12), dur: 0.2, ctranspose: -12]) );
-			"hi".postln;
-			sp.wait(4);
-			"bye".postln;
-			sp.suspendAll
-		}),
+Pspawner({ | sp |
+sp.postln;
+sp.par(Pbind(*[degree:	Pwhite(0,12), dur: 0.2, ctranspose: -12]) );
+"hi".postln;
+sp.wait(4);
+"bye".postln;
+sp.suspendAll
+}),
 
-	]).play;
+]).play;
 )
 
 
@@ -162,16 +165,16 @@ a.suspend(b)
 a.par(b)
 
 (
-	Pspawner({ | sp |
-		5.do {
-			sp.par(Pbind(*[
-				octave: (5.rand + 3).postln,
-				 degree: Pwhite(0,12), dur: 0.1, db: -30
-			]) );
-			sp.wait(1);
-			sp.clear;
-		}
-	}).play
+Pspawner({ | sp |
+5.do {
+sp.par(Pbind(*[
+octave: (5.rand + 3).postln,
+degree: Pwhite(0,12), dur: 0.1, db: -30
+]) );
+sp.wait(1);
+sp.clear;
+}
+}).play
 
 )
 */

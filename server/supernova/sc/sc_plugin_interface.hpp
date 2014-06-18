@@ -158,6 +158,11 @@ public:
         return async_buffer_guards[index];
     }
 
+    bool is_realtime_synthesis() const
+    {
+        return world.mRealTime;
+    }
+
 private:
     boost::scoped_array<std::mutex> async_buffer_guards;
     /* @} */

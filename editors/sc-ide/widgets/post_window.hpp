@@ -41,6 +41,7 @@ public:
     enum ActionRole {
         Copy,
         Clear,
+        DocClose,
         ZoomIn,
         ZoomOut,
         ResetZoom,
@@ -73,6 +74,7 @@ public slots:
     void zoomOut(int steps = 1);
     void resetZoom();
 
+    void closeDocument();
     bool openDocumentation();
     void openDefinition();
     void openCommandLine();

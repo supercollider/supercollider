@@ -447,6 +447,14 @@ void MultiEditor::createActions()
 
     // View
 
+    mActions[DocClose] = action = new QAction(
+        QIcon::fromTheme("window-close"), tr("&Close"), this);
+    action->setShortcut(tr("Ctrl+W", "Close document"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    action->setStatusTip(tr("Close the current document"));
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(closeDocument()));
+    settings->addAction( action, "ide-document-close", editorCategory);
+
     mActions[EnlargeFont] = action = new QAction(
         QIcon::fromTheme("zoom-in"), tr("&Enlarge Font"), this);
     action->setShortcut(tr("Ctrl++", "Enlarge font"));
@@ -475,6 +483,13 @@ void MultiEditor::createActions()
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowWhitespace(bool)));
     settings->addAction( action, "editor-toggle-show-whitespace", editorCategory);
+
+    mActions[ShowLinenumber] = action = new QAction(tr("Show Line Number"), this);
+    action->setCheckable(true);
+    action->setShortcut( tr("Ctrl+Alt+#", "Show Line Number"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowLinenumber(bool)));
+    settings->addAction( action, "editor-toggle-show-line-number", editorCategory);
 
     mActions[IndentWithSpaces] = action = new QAction(tr("Use Spaces for Indentation"), this);
     action->setCheckable(true);
@@ -570,9 +585,11 @@ void MultiEditor::createActions()
     addAction(mActions[Cut]);
     addAction(mActions[Copy]);
     addAction(mActions[Paste]);
+    addAction(mActions[DocClose]);
     addAction(mActions[EnlargeFont]);
     addAction(mActions[ShrinkFont]);
     addAction(mActions[ShowWhitespace]);
+    addAction(mActions[ShowLinenumber]);
     addAction(mActions[IndentWithSpaces]);
     addAction(mActions[EvaluateCurrentDocument]);
     addAction(mActions[EvaluateRegion]);
@@ -611,6 +628,7 @@ void MultiEditor::updateActions()
     mActions[MoveLineDown]->setEnabled( editor );
     mActions[GotoPreviousEmptyLine]->setEnabled( editor );
     mActions[GotoNextEmptyLine]->setEnabled( editor );
+    mActions[DocClose]->setEnabled( editor );
     mActions[EnlargeFont]->setEnabled( editor );
     mActions[ShrinkFont]->setEnabled( editor );
     mActions[ResetFontSize]->setEnabled( editor );
@@ -636,7 +654,9 @@ void MultiEditor::updateActions()
 void MultiEditor::applySettings( Settings::Manager * settings )
 {
     bool show_whitespace = settings->value("IDE/editor/showWhitespace").toBool();
+    bool show_linenumber = settings->value("IDE/editor/showLinenumber").toBool();
     mActions[ShowWhitespace]->setChecked( show_whitespace );
+    mActions[ShowLinenumber]->setChecked( show_linenumber );
 }
 
 static QVariantList saveBoxState( CodeEditorBox *box, const QList<Document*> & documentList )
@@ -1079,6 +1099,12 @@ void MultiEditor::removeAllSplits()
 void MultiEditor::setShowWhitespace(bool showWhitespace)
 {
     Main::settings()->setValue("IDE/editor/showWhitespace", showWhitespace);
+    Main::instance()->applySettings();
+}
+
+void MultiEditor::setShowLinenumber(bool showLinenumber)
+{
+    Main::settings()->setValue("IDE/editor/showLinenumber", showLinenumber);
     Main::instance()->applySettings();
 }
 

@@ -1,5 +1,8 @@
 //human device interface pattern. pulls values from devices like gamepads etc.
 
+/*
+// FIX ME: this is a stub, and should be replaced with a version that uses the new HID interface
+
 Phid : Pattern {
 	var <>element, <>locID, <>repeats;
 
@@ -39,3 +42,4 @@ Phid : Pattern {
 		})
 	}
 }
+*/

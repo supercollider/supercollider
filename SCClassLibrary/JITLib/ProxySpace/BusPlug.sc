@@ -4,9 +4,9 @@ BusPlug : AbstractFunction {
 	var <>monitor, <>parentGroup; // if nil, uses default group
 	var busArg; // cache for "/s_new" bus arg
 	var busLoaded = false;
+	var <>reshaping; // \elastic, \expanding
 
-	classvar <>defaultNumAudio=2, <>defaultNumControl=1;
-
+	classvar <>defaultNumAudio=2, <>defaultNumControl=1, <>defaultReshaping;
 
 	*new { | server |
 		^super.newCopyArgs(server ? Server.default);
@@ -40,6 +40,10 @@ BusPlug : AbstractFunction {
 	numChannels {  ^if(bus.isNil) { nil } { bus.numChannels } }
 	index { ^if(bus.isNil) { nil } { bus.index } }
 
+	fixedBus {
+		^reshaping.isNil
+	}
+
 	isNeutral {
 		^bus.isNil or: { bus.index.isNil and: { bus.numChannels.isNil } }
 	}
@@ -55,22 +59,31 @@ BusPlug : AbstractFunction {
 	prepareOutput { } // see subclass
 	clock { ^nil  }
 
-	ar { | numChannels, offset = 0 |
+	ar { | numChannels, offset = 0, clip = \wrap |
+		var output;
 		if(this.isNeutral) {
 			this.defineBus(\audio, numChannels)
 		};
 		this.prepareOutput;
-		^InBus.ar(bus, numChannels ? bus.numChannels, offset)
+		output = InBus.ar(bus, numChannels, offset, clip);
+		 // always return an array if no channel size is specified
+		^if(numChannels.isNil) { output.asArray } { output }
 	}
 
-	kr { | numChannels, offset = 0 |
+	kr { | numChannels, offset = 0, clip = \wrap |
+		var output;
 		if(this.isNeutral) {
 			this.defineBus(\control, numChannels)
 		};
 		this.prepareOutput;
-		^InBus.kr(bus, numChannels ? bus.numChannels, offset)
+		output = InBus.kr(bus, numChannels, offset, clip);
+		 // always return an array if no channel size is specified
+		^if(numChannels.isNil) { output.asArray } { output }
 	}
 
+	asStream {
+		^Routine { loop { this.asControlInput.yield } }
+	}
 
 	embedInStream { | inval | // for now, force multichannel expansion in streams early.
 		^this.asControlInput.embedInStream(inval);
@@ -83,8 +96,9 @@ BusPlug : AbstractFunction {
 		};
 		^this.busArg;
 	}
+
 	asUGenInput {
-		^this.value(nil);
+		^this.value(nil)
 	}
 
 
@@ -93,8 +107,13 @@ BusPlug : AbstractFunction {
 	value { | something |
 		var n;
 		if(UGen.buildSynthDef.isNil) { ^this }; // only return when in ugen graph.
-		something !? {  n = something.numChannels };
-		^if(something.respondsTo(\rate) and: { something.rate == 'audio'}) { this.ar(n) } { this.kr(n) }
+		something !? { n = something.numChannels };
+		^if(something.respondsTo(\rate) and: { something.rate == 'audio'} or: { this.rate == \audio }) {
+			this.ar(n)
+		} {
+			this.kr(n)
+		}
+
 	}
 
 	composeUnaryOp { | aSelector |
@@ -114,26 +133,73 @@ BusPlug : AbstractFunction {
 
 	// bus initialization
 
+
 	bus_ { | inBus |
-		this.freeBus;
-		bus = inBus;
-		this.makeBusArg;
-		busLoaded = bus.server.serverRunning;
+		var bundle;
+		if(bus != inBus) {
+			this.setBus(inBus);
+			if(monitor.isPlaying) {
+				bundle = OSCBundle.new;
+				monitor.stopToBundle(bundle);
+				monitor.playNBusToBundle(bundle, bus: inBus);
+				bundle.schedSend(server);
+			}
+		};
 	}
 
-	// returns false if failed
-	initBus { | rate, numChannels |
-		if(rate.isNil or: { rate === 'scalar' }) { ^true }; // this is no problem
-		if(this.isNeutral) {
-			this.defineBus(rate, numChannels);
-			^true
-		} {
-			numChannels = numChannels ? this.numChannels;
-			^(bus.rate === rate) and: { numChannels <= bus.numChannels }
+
+	// you have to stop and play explicitly
+	setBus { | inBus |
+		if(bus != inBus and: { inBus.notNil }) {
+			//postf("% has new bus: % \nold bus was: %\n", this, inBus, bus);
+			this.freeBus;
+			bus = inBus;
+			this.makeBusArg;
+			busLoaded = bus.server.serverRunning;
+			this.changed(\bus, bus);
 		}
 	}
 
+	// returns false if failed
+
+	initBus { | rate, numChannels |
+		if(rate == \scalar) { ^true }; // no bus output
+		if(this.isNeutral) {
+			this.defineBus(rate, numChannels);
+			^true
+		};
+
+		numChannels = numChannels ? this.numChannels;
+		rate = rate ? this.rate;
+
+		if(numChannels == bus.numChannels and: { rate == bus.rate }) {
+			^true // already there
+		};
+
+		if(reshaping.isNil) {
+			^(this.rate === rate) and: { numChannels <= bus.numChannels }
+		};
+		// for now: always reshape on rate change, because rate adaption happens earlier.
+		if(this.rate != rate) {
+			this.defineBus(rate, numChannels);
+			^true
+		};
+		if(reshaping == \elastic and: { numChannels != bus.numChannels  }) {
+			this.defineBus(rate, numChannels);
+			^true
+		};
+		if(reshaping == \expanding) {
+			if(numChannels > bus.numChannels) {
+				this.defineBus(rate, numChannels);
+			};
+			^true
+		};
+		Error("reshaping '%' not implemented".format(reshaping)).throw;
+	}
+
 	defineBus { | rate = \audio, numChannels |
+		numChannels = numChannels ? this.numChannels;
+		if(rate != \audio) { rate = \control };
 		if(numChannels.isNil) {
 			numChannels = if(rate === \audio) {
 				this.class.defaultNumAudio
@@ -141,15 +207,12 @@ BusPlug : AbstractFunction {
 				this.class.defaultNumControl
 			}
 		};
-		this.bus = Bus.alloc(rate, server, numChannels);
+		this.setBus(Bus.alloc(rate, server, numChannels));
 	}
 
 	freeBus {
-		if(bus.notNil) {
-			if(bus.rate === \control) { bus.setAll(0) }; // clean up
-			bus.free;
-			monitor.stop;
-		};
+		var oldBus = bus;
+		oldBus.free(true);
 		busArg = bus = nil;
 		busLoaded = false;
 	}
@@ -191,6 +254,7 @@ BusPlug : AbstractFunction {
 			("server not running:" + this.homeServer).warn;
 			^this
 		};
+		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
 		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime, addAction);
 		// homeServer: multi client support: monitor only locally
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
@@ -203,6 +267,7 @@ BusPlug : AbstractFunction {
 			("server not running:" + this.homeServer).warn;
 			^this
 		};
+		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
 		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction);
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
 		this.changed(\playN, [outs, amps, ins, vol, fadeTime, group, addAction]);
@@ -212,13 +277,12 @@ BusPlug : AbstractFunction {
 	quant { ^nil }
 
 	vol { ^if(monitor.isNil) { 1.0 } { monitor.vol } }
-	vol_ { arg val; this.initMonitor(val) }
+	vol_ { |val| this.initMonitor(val) }
 
 	monitorIndex { ^if(monitor.isNil) { nil } { monitor.out } }
 	monitorGroup { ^if(monitor.isNil) { nil } { monitor.group } }
 
 	initMonitor { | vol |
-		if(this.rate !== 'audio') { Error("can only monitor audio proxy").throw };
 		if(monitor.isNil) { monitor = Monitor.new };
 		if (vol.notNil) { monitor.vol_(vol) };
 		^monitor
@@ -240,28 +304,42 @@ BusPlug : AbstractFunction {
 
 	playToBundle { | bundle, out, numChannels,
 		group, multi=false, vol, fadeTime, addAction |
+		if(bus.rate == \control) {
+			"Can't monitor a control rate bus.".warn;
+			monitor !? { monitor.stopToBundle(bundle) };
+			^this
+		};
 		this.newMonitorToBundle(bundle, numChannels);
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
-		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, group,
-			multi, vol, fadeTime, addAction);
+		if(numChannels.notNil) { out = (0..numChannels-1) + (out ? 0) };
+		monitor.playNBusToBundle(bundle, out, nil, nil, bus, vol, fadeTime, group, addAction, multi);
 	}
 
 	playNToBundle { | bundle, outs, amps, ins, vol, fadeTime, group, addAction |
+		if(bus.rate == \control) {
+			"Can't monitor a control rate bus.".warn;
+			monitor !? { monitor.stopToBundle(bundle) };
+			^this
+		};
 		this.newMonitorToBundle(bundle, ins !? { ins.asArray.maxItem + 1 });
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
 		monitor.playNBusToBundle(bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction);
 	}
 
 	newMonitorToBundle { | bundle, numChannels |
-		this.initBus(\audio, numChannels);
+		if(this.isNeutral) { this.initBus(\audio, numChannels) };
 		this.initMonitor;
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
 	}
 
+	// server state
+
+	serverQuit {
+		busLoaded = false;
+	}
 
 
-
-	// netwrk node proxy support
+	// network node proxy support
 
 	shared { ^false }
 	homeServer { ^server }
