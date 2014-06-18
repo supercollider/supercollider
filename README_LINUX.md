@@ -104,7 +104,7 @@ for building supercollider:
  - libcwiid-dev (for wiimote support)
  - pkg-config
  - subversion (required by the Quarks class at run-time)
- - cmake
+ - cmake (on some platforms, cmake >= 2.9 may require manual build)
  - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev
  
 
