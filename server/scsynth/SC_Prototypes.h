@@ -118,13 +118,13 @@ void Graph_MapControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inInde
 void Graph_MapAudioControl(Graph* inGraph, uint32 inIndex, uint32 inBus);
 void Graph_MapAudioControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus);
 void Graph_Trace(Graph *inGraph);
-void Graph_RemoveID(World* inWorld, Graph *inGraph);
 
 ////////////////////////////////////////////////////////////////////////
 
 int Node_New(struct World *inWorld, struct NodeDef *def, int32 inID, struct Node **outNode);
 void Node_Dtor(struct Node *inNode);
 void Node_Remove(struct Node* s);
+void Node_RemoveID(Node *inNode);
 void Node_Delete(struct Node* inNode);
 void Node_AddAfter(struct Node* s, struct Node *afterThisOne);
 void Node_AddBefore(struct Node* s, struct Node *beforeThisOne);

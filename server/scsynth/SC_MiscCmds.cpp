@@ -833,6 +833,8 @@ SCErr meth_s_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 		case 4 : {
 			Node *replaceThisNode = Msg_GetNode(inWorld, msg);
 			if (!replaceThisNode) return kSCErr_NodeNotFound;
+			Node_RemoveID(replaceThisNode);
+
 			err = Graph_New(inWorld, def, nodeID, &msg, &graph,true);
 			if (err) return err;
 			Node_Replace(&graph->mNode, replaceThisNode);
@@ -975,6 +977,9 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 			case 4 : {
 				Node *replaceThisNode = Msg_GetNode(inWorld, msg);
 				if (!replaceThisNode) return kSCErr_TargetNodeNotFound;
+        if (replaceThisNode->mID == 0) return kSCErr_ReplaceRootGroup;
+        Node_RemoveID(replaceThisNode);
+
 				err = Group_New(inWorld, newGroupID, &newGroup);
 				if (err) return err;
 				Node_Replace(&newGroup->mNode, replaceThisNode);
@@ -1806,7 +1811,7 @@ SCErr meth_s_noid(World *inWorld, int inSize, char *inData, ReplyAddress* inRepl
 		Graph *graph = Msg_GetGraph(inWorld, msg);
 		if (!graph) continue;
 
-		Graph_RemoveID(inWorld, graph);
+		Node_RemoveID(&graph->mNode);
 	}
 
 	return kSCErr_None;
