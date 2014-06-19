@@ -4,11 +4,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
 endif()
 
-if (LINUX)
-	cmake_minimum_required (VERSION 2.8)
-else()
-	cmake_minimum_required (VERSION 2.8.10)
-endif()
+cmake_minimum_required (VERSION 2.9)
 
 include("SCVersion.txt")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
