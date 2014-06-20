@@ -33,7 +33,7 @@ Build requirements
    * http://www.mega-nerd.com/libsndfile
    * _the_ soundfile i/o library
 
- * cmake >= 2.9
+ * cmake >= 2.8.11
    * http://www.cmake.org
    * cross-platform build system
 
