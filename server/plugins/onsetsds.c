@@ -429,7 +429,8 @@ void onsetsds_odf(OnsetsDS* ods){
 				if(ods_abs(curr->bin[i].mag) > ods->odfparam) {
 
 					// Deviation is the *second difference* of the phase, which is calc'ed as curval - yesterval - yesterfirstdiff
-					deviation = curr->bin[i].phase - ods->other[tbpointer++] - ods->other[tbpointer++];
+					deviation = curr->bin[i].phase - ods->other[tbpointer] - ods->other[tbpointer+1];
+					tbpointer += 2;
 					// Wrap onto +-PI range
 					deviation = onsetsds_phase_rewrap(deviation);
 
