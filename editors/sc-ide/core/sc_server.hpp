@@ -118,6 +118,7 @@ private slots:
     void sendMuted( bool muted );
     void sendVolume( float volume );
     void sendDumpingOSC( bool dumping );
+    void onReadyRead();
 
 protected:
     virtual void timerEvent(QTimerEvent * event);
