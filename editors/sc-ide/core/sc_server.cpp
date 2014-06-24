@@ -50,11 +50,6 @@ ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *pare
     createActions(settings);
 
     mUdpSocket = new QUdpSocket(this);
-    for (int port = 57140; port != 57150; ++port) {
-        bool success = mUdpSocket->bind(port);
-        if (success)
-            break;
-    }
     startTimer(333);
 
     mRecordTimer.setInterval(1000);
@@ -64,6 +59,7 @@ ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *pare
             this, SLOT(onScLangStateChanged(QProcess::ProcessState)));
     connect(scLang, SIGNAL(response(QString,QString)),
             this, SLOT(onScLangReponse(QString,QString)));
+    connect(mUdpSocket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
 }
 
 void ScServer::createActions(Settings::Manager * settings)
@@ -449,38 +445,42 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
     emit runningStateChange( serverRunningState, qstrHostName, port );
 }
 
-void ScServer::timerEvent(QTimerEvent * event)
+void ScServer::onReadyRead()
 {
-    if (mUdpSocket->hasPendingDatagrams()) {
-        size_t datagramSize = mUdpSocket->pendingDatagramSize();
-        QByteArray array(datagramSize, 0);
-        mUdpSocket->readDatagram(array.data(), datagramSize);
+    if (mUdpSocket->isValid()) {
+        if (mUdpSocket->hasPendingDatagrams()) {
+            size_t datagramSize = mUdpSocket->pendingDatagramSize();
+            QByteArray array(datagramSize, 0);
+            mUdpSocket->readDatagram(array.data(), datagramSize);
 
-        if (!mPort)
-            return;
+            if (!mPort)
+                return;
 
-        if (array[0]) {
-            char *addr = array.data();
-            const char * data = OSCstrskip(array.data());
-            int size = datagramSize - (data - addr);
+            if (array[0]) {
+                char *addr = array.data();
+                const char * data = OSCstrskip(array.data());
+                int size = datagramSize - (data - addr);
 
-            if (strcmp(addr, "/status.reply") == 0) {
-                sc_msg_iter reply(size, data);
-                int	unused     = reply.geti();
-                int	ugenCount  = reply.geti();
-                int	synthCount = reply.geti();
-                int	groupCount = reply.geti();
-                int	defCount   = reply.geti();
-                float avgCPU   = reply.getf();
-                float peakCPU  = reply.getf();
-                double srNom   = reply.getd();
-                double srAct   = reply.getd();
-
-                emit updateServerStatus(ugenCount, synthCount, groupCount, defCount, avgCPU, peakCPU);
+                if (strcmp(addr, "/status.reply") == 0) {
+                    sc_msg_iter reply(size, data);
+                    int	unused     = reply.geti();
+                    int	ugenCount  = reply.geti();
+                    int	synthCount = reply.geti();
+                    int	groupCount = reply.geti();
+                    int	defCount   = reply.geti();
+                    float avgCPU   = reply.getf();
+                    float peakCPU  = reply.getf();
+                    double srNom   = reply.getd();
+                    double srAct   = reply.getd();
+                    
+                    emit updateServerStatus(ugenCount, synthCount, groupCount, defCount, avgCPU, peakCPU);
+                }
             }
         }
     }
+}
 
+void ScServer::timerEvent(QTimerEvent * event) {
     if (mPort) {
         small_scpacket packet;
         packet.BeginMsg();
@@ -489,7 +489,7 @@ void ScServer::timerEvent(QTimerEvent * event)
         packet.addtag(',');
         packet.EndMsg();
 
-        mUdpSocket->writeDatagram(packet.data(), packet.size(), mServerAddress, mPort);
+        mUdpSocket->write(packet.data(), packet.size());
     }
 }
 
@@ -498,11 +498,13 @@ void ScServer::onRunningStateChanged( bool running, QString const & hostName, in
     if (running) {
         mServerAddress = QHostAddress(hostName);
         mPort = port;
+        mUdpSocket->connectToHost(mServerAddress, mPort);
     } else {
         mServerAddress.clear();
         mPort = 0;
         mIsRecording = false;
         mRecordTimer.stop();
+        mUdpSocket->disconnectFromHost();
     }
 
     updateToggleRunningAction();
