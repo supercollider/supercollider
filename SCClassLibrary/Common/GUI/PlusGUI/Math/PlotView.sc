@@ -656,7 +656,6 @@ Plotter {
 				var list = data.at(i);
 				if(list.notNil) {
 					spec = spec.looseRange(list, defaultRange, *ranges.wrapAt(i));
-					spec.postcs;
 				} {
 					spec
 				};
