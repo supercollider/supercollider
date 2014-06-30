@@ -44,6 +44,9 @@ ScIDE {
 		.put(\default, { | server, what, newServer |
 			("changed default server to:" + newServer.name).postln;
 			this.defaultServer = newServer;
+		})
+		.put(\dumpOSC, { | volume, what, code |
+			this.prSend( if(code.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
 		});
 
 		volumeController.remove;
