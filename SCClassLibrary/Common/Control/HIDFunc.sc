@@ -14,11 +14,11 @@ HIDUsageDispatcher : AbstractWrappingDispatcher {
 		registered = false;
 	}
 
-	getKeysForFuncProxy {|funcProxy|
+	getKeysForFuncProxy { | funcProxy|
 		^(funcProxy.elUsage ? \anyUsage);
 	} // here's the top level dispatch key - in our case an array of page, usage
 
-	value { |value, rawValue, usage, page, elid, ele, devid, device|
+	value { | value, rawValue, usage, page, elid, ele, devid, device|
 		var key = HIDUsage.idsToName( page, usage );
 		active[key].value(
 			value, rawValue,
@@ -37,22 +37,22 @@ HIDUsageDispatcher : AbstractWrappingDispatcher {
 	}
 
 	// wrapper objects based on arg type and testing requirements
-	wrapFunc {|funcProxy|
+	wrapFunc { | funcProxy|
 		var func, srcID, srcTemplate, argTemplate;
 		func = funcProxy.func;
 		srcTemplate = funcProxy.deviceTemplate;
 		argTemplate = funcProxy.argTemplate;
 
-		if ( argTemplate.notNil ){
-			if ( funcProxy.argTemplateType == \rawValue ){
+		if ( argTemplate.notNil ) {
+			if ( funcProxy.argTemplateType == \rawValue ) {
 				func = HIDRawValueMatcher(argTemplate, func);
-			}{
+			} {
 				func = HIDValueMatcher(argTemplate, func);
 			}
 		};
 
 		^case(
-			{ srcTemplate.notNil } , { HIDFuncDeviceProtoMatcher( srcTemplate, func ) },
+			{ srcTemplate.notNil }, { HIDFuncDeviceProtoMatcher( srcTemplate, func ) },
 			{ func }
 		);
 	}
@@ -61,22 +61,22 @@ HIDUsageDispatcher : AbstractWrappingDispatcher {
 HIDDeviceDispatcher : HIDUsageDispatcher {
 
 	// wrapper objects based on arg type and testing requirements
-	wrapFunc {|funcProxy|
+	wrapFunc { | funcProxy|
 		var func, srcTemplate, argTemplate;
 		func = funcProxy.func;
 		srcTemplate = funcProxy.deviceTemplate;
 		argTemplate = funcProxy.argTemplate;
 
-		if ( argTemplate.notNil ){
-			if ( funcProxy.argTemplateType == \rawValue ){
+		if ( argTemplate.notNil ) {
+			if ( funcProxy.argTemplateType == \rawValue ) {
 				func = HIDRawValueMatcher(argTemplate, func);
-			}{
+			} {
 				func = HIDValueMatcher(argTemplate, func);
 			}
 		};
 
 		^case(
-			{ srcTemplate.notNil } , { HIDFuncDeviceProtoMatcher( srcTemplate, func ) },
+			{ srcTemplate.notNil }, { HIDFuncDeviceProtoMatcher( srcTemplate, func ) },
 			{ func }
 		);
 	}
@@ -98,12 +98,12 @@ HIDElementProtoDispatcher : AbstractWrappingDispatcher {
 		registered = false;
 	}
 
-	getKeysForFuncProxy {|funcProxy|
+	getKeysForFuncProxy { | funcProxy|
 		^\proto;
 	} // here's the top level dispatch key - in our case an array of page, usage
 
 	// these arguments are from HID:
-	value { |value, rawValue, usage, page, elid, ele, devid, device|
+	value { | value, rawValue, usage, page, elid, ele, devid, device|
 		active[ \proto ].value(
 			value, rawValue,
 			usage, page,
@@ -114,27 +114,27 @@ HIDElementProtoDispatcher : AbstractWrappingDispatcher {
 	}
 
 	// wrapper objects based on arg type and testing requirements
-	wrapFunc {|funcProxy|
+	wrapFunc { | funcProxy|
 		var func, srcID, eleTemplate, srcTemplate, argTemplate;
 		func = funcProxy.func;
 		eleTemplate = funcProxy.elementTemplate;
 		srcTemplate = funcProxy.deviceTemplate;
 		argTemplate = funcProxy.argTemplate;
 
-		if ( argTemplate.notNil ){
-			if ( funcProxy.argTemplateType == \rawValue ){
+		if ( argTemplate.notNil ) {
+			if ( funcProxy.argTemplateType == \rawValue ) {
 				func = HIDRawValueMatcher(argTemplate, func);
-			}{
+			} {
 				func = HIDValueMatcher(argTemplate, func);
 			}
 		};
 
-		if ( eleTemplate.notNil ){
+		if ( eleTemplate.notNil ) {
 			func = HIDFuncElementProtoMatcher( eleTemplate, func );
 		};
 
 		^case(
-			{ srcTemplate.notNil } , { HIDFuncDeviceProtoMatcher( srcTemplate, func ) },
+			{ srcTemplate.notNil }, { HIDFuncDeviceProtoMatcher( srcTemplate, func ) },
 			{ func }
 		);
 	}
@@ -142,17 +142,17 @@ HIDElementProtoDispatcher : AbstractWrappingDispatcher {
 
 HIDElementDispatcher : HIDUsageDispatcher {
 
-	getKeysForFuncProxy {|funcProxy|
+	getKeysForFuncProxy { | funcProxy|
 		var keys = funcProxy.elUsage ? \anyElement;
-		if ( keys.isKindOf( Array ) ){
+		if ( keys.isKindOf( Array ) ) {
 			^keys;
-		}{
+		} {
 			^keys.bubble; // how does this deal with nil?
 		};
 	} // here's the top level dispatch key - in our case an array of page, usage
 
 	// these arguments are from HID:
-	value { |value, rawValue, usage, page, elid, ele, devid, device|
+	value { | value, rawValue, usage, page, elid, ele, devid, device|
 		active[ elid ].value(
 			value, rawValue,
 			usage, page,
@@ -169,22 +169,22 @@ HIDElementDispatcher : HIDUsageDispatcher {
 		);
 	}
 
-	wrapFunc {|funcProxy|
+	wrapFunc { | funcProxy|
 		var func, srcID, srcTemplate, argTemplate;
 		func = funcProxy.func;
 		srcTemplate = funcProxy.deviceTemplate;
 		argTemplate = funcProxy.argTemplate;
 
-		if ( argTemplate.notNil ){
-			if ( funcProxy.argTemplateType == \rawValue ){
+		if ( argTemplate.notNil ) {
+			if ( funcProxy.argTemplateType == \rawValue ) {
 				func = HIDRawValueMatcher(argTemplate, func);
-			}{
+			} {
 				func = HIDValueMatcher(argTemplate, func);
 			}
 		};
 
 		^case(
-			{ srcTemplate.notNil } , { HIDFuncDeviceProtoMatcher( srcTemplate, func ) },
+			{ srcTemplate.notNil }, { HIDFuncDeviceProtoMatcher( srcTemplate, func ) },
 			{ func }
 		);
 	}
@@ -211,7 +211,7 @@ HIDFunc : AbstractResponderFunc {
 		defaultDispatchers[\element] = HIDElementDispatcher.new;
 
 		traceFunc = {
-			|value, rawValue, usage, page, elid, ele, devid, dev|
+			| value, rawValue, usage, page, elid, ele, devid, dev|
 			"HID Element Data:\tdevid: %, elid: %\n\tdevice: \t%, \tpage: % \tusage: %\n\telement:\t%\n\t\t\t\tpage: %\tusage: %\traw value: %,\tvalue: %\n"
 			.postf( devid, elid, dev.info, dev.usagePage, dev.usage, ele, page, usage, rawValue, value );
 		}
@@ -223,8 +223,8 @@ HIDFunc : AbstractResponderFunc {
 	}
 	*/
 
-	*usage { arg func, elUsageName, devUsageName, deviceInfo, argTemplate, argTemplateType,  dispatcher;
-		^super.new.initUsage( func, elUsageName, devUsageName, deviceInfo, argTemplate,argTemplateType ? \rawValue,  dispatcher ? defaultDispatchers[\usage]);
+	*usage { arg func, elUsageName, devUsageName, deviceInfo, argTemplate, argTemplateType, dispatcher;
+		^super.new.initUsage( func, elUsageName, devUsageName, deviceInfo, argTemplate,argTemplateType ? \rawValue, dispatcher ? defaultDispatchers[\usage]);
 	}
 
 	*usageID { arg func, elUsageID, elPageID, deviceName, deviceInfo, argTemplate, argTemplateType, dispatcher;
@@ -243,7 +243,7 @@ HIDFunc : AbstractResponderFunc {
 		^super.new.initElement(func, elID, deviceName, deviceInfo, argTemplate, argTemplateType ? \rawValue, dispatcher ? defaultDispatchers[ \element ]);
 	}
 
-	*trace {|bool = true|
+	*trace { | bool = true|
 		if(bool, {
 			if(traceRunning.not, {
 				HID.addRecvFunc( traceFunc );
@@ -278,14 +278,14 @@ HIDFunc : AbstractResponderFunc {
 		elUsage = elUsageName ? elUsage;
 		devUsage = devUsageName ? devUsage;
 
-		if ( devUsage.notNil ){
+		if ( devUsage.notNil ) {
 			deviceTemplate = HIDProto.newType( devUsage );
 		};
 
-		if ( deviceInfo.notNil ){
-			if ( deviceInfo.isKindOf( HIDProto ) ){
+		if ( deviceInfo.notNil ) {
+			if ( deviceInfo.isKindOf( HIDProto ) ) {
 				deviceTemplate = deviceInfo;
-			}{
+			} {
 				deviceTemplate = HIDProto.newFromDict( deviceInfo );
 			}
 		};
@@ -308,13 +308,13 @@ HIDFunc : AbstractResponderFunc {
 
 		elementTemplate = HIDElementProto.newTypeID( elUsageID, elPageID );
 
-		if ( devUsage.notNil ){
+		if ( devUsage.notNil ) {
 			deviceTemplate = HIDProto.newProduct( devUsage );
 		};
-		if ( deviceInfo.notNil ){
-			if ( deviceInfo.isKindOf( HIDProto ) ){
+		if ( deviceInfo.notNil ) {
+			if ( deviceInfo.isKindOf( HIDProto ) ) {
 				deviceTemplate = deviceInfo;
-			}{
+			} {
 				deviceTemplate = HIDProto.newFromDict( deviceInfo );
 			}
 		};
@@ -328,18 +328,18 @@ HIDFunc : AbstractResponderFunc {
 		allFuncProxies.add(this);
 	}
 
-	initDevice{ |argFunc, elUsageName, devName, deviceInfo, argtemplate, argtemplatetype, argdisp |
+	initDevice { | argFunc, elUsageName, devName, deviceInfo, argtemplate, argtemplatetype, argdisp |
 		type = \device;
 		elUsage = elUsageName ? elUsage;
 		devUsage = devName ? devUsage;
 
-		if ( devUsage.notNil ){
+		if ( devUsage.notNil ) {
 			deviceTemplate = HIDProto.newProduct( devUsage );
 		};
-		if ( deviceInfo.notNil ){
-			if ( deviceInfo.isKindOf( HIDProto ) ){
+		if ( deviceInfo.notNil ) {
+			if ( deviceInfo.isKindOf( HIDProto ) ) {
 				deviceTemplate = deviceInfo;
-			}{
+			} {
 				deviceTemplate = HIDProto.newFromDict( deviceInfo );
 			}
 		};
@@ -353,15 +353,15 @@ HIDFunc : AbstractResponderFunc {
 		allFuncProxies.add(this);
 	}
 
-	initProtoElement{ | argFunc, protoElement, deviceInfo, argtemplate, argtemplatetype, argdisp |
+	initProtoElement { | argFunc, protoElement, deviceInfo, argtemplate, argtemplatetype, argdisp |
 		type = \proto;
 
 		elementTemplate = protoElement;
 
-		if ( deviceInfo.notNil ){
-			if ( deviceInfo.isKindOf( HIDProto ) ){
+		if ( deviceInfo.notNil ) {
+			if ( deviceInfo.isKindOf( HIDProto ) ) {
 				deviceTemplate = deviceInfo;
-			}{
+			} {
 				deviceTemplate = HIDProto.newFromDict( deviceInfo );
 			}
 		};
@@ -376,7 +376,7 @@ HIDFunc : AbstractResponderFunc {
 		allFuncProxies.add(this);
 	}
 
-	initElement{ |argFunc, elID, devName, deviceInfo, argtemplate, argtemplatetype, argdisp |
+	initElement { | argFunc, elID, devName, deviceInfo, argtemplate, argtemplatetype, argdisp |
 		type = \element;
 		elUsage = elID ? elUsage;
 		devUsage = devName ? devUsage;
@@ -387,14 +387,14 @@ HIDFunc : AbstractResponderFunc {
 
 		dispatcher = argdisp ? dispatcher;
 
-		if ( devUsage.notNil ){
+		if ( devUsage.notNil ) {
 			deviceTemplate = HIDProto.newProduct( devUsage );
 		};
 
-		if ( deviceInfo.notNil ){
-			if ( deviceInfo.isKindOf( HIDProto ) ){
+		if ( deviceInfo.notNil ) {
+			if ( deviceInfo.isKindOf( HIDProto ) ) {
 				deviceTemplate = deviceInfo;
-			}{
+			} {
 				deviceTemplate = HIDProto.newFromDict( deviceInfo );
 			}
 		};
@@ -419,7 +419,7 @@ HIDdef : HIDFunc {
 		all = IdentityDictionary.new;
 	}
 
-	*new{ arg key, func;
+	*new { arg key, func;
 		var res = all.at(key), wasDisabled;
 		if(res.isNil) {
 			^nil;
@@ -447,7 +447,7 @@ HIDdef : HIDFunc {
 						}
 					);
 					if(wasDisabled, { res.disable; });
-				} {|err|
+				} { | err|
 					res.free;
 					err.throw;
 				}
@@ -456,7 +456,7 @@ HIDdef : HIDFunc {
 		^res
 	}
 
-	*usage { arg key, func, elUsageName, devUsageName, deviceInfo, argTemplate, argTemplateType,  dispatcher;
+	*usage { arg key, func, elUsageName, devUsageName, deviceInfo, argTemplate, argTemplateType, dispatcher;
 		var res = all.at(key), wasDisabled;
 		if(res.isNil) {
 			^super.usage( func, elUsageName, devUsageName, deviceInfo, argTemplate, argTemplateType, dispatcher).addToAll(key);
@@ -467,7 +467,7 @@ HIDdef : HIDFunc {
 				try {
 					res.initUsage(func, elUsageName, devUsageName, deviceInfo, argTemplate, argTemplateType ? \rawValue, dispatcher ? defaultDispatchers[\usage]);
 					if(wasDisabled, { res.disable; });
-				} {|err|
+				} { | err|
 					res.free;
 					err.throw;
 				}
@@ -487,7 +487,7 @@ HIDdef : HIDFunc {
 				try {
 					res.initUsageID(func, elUsageID, elPageID, deviceName, deviceInfo, argTemplate, argTemplateType ? \rawValue, dispatcher ? defaultDispatchers[ \usageID ]);
 					if(wasDisabled, { res.disable; });
-				} {|err|
+				} { | err|
 					res.free;
 					err.throw;
 				}
@@ -508,7 +508,7 @@ HIDdef : HIDFunc {
 				try {
 					res.initDevice(func, elUsageName, deviceName, deviceInfo, argTemplate, argTemplateType ? \rawValue, dispatcher ? defaultDispatchers[ \device ]);
 					if(wasDisabled, { res.disable; });
-				} {|err|
+				} { | err|
 					res.free;
 					err.throw;
 				}
@@ -528,7 +528,7 @@ HIDdef : HIDFunc {
 				try {
 					res.initProtoElement(func, protoElement, deviceInfo, argTemplate, argTemplateType ? \rawValue, dispatcher ? defaultDispatchers[ \proto ]);
 					if(wasDisabled, { res.disable; });
-				} {|err|
+				} { | err|
 					res.free;
 					err.throw;
 				}
@@ -548,7 +548,7 @@ HIDdef : HIDFunc {
 				try {
 					res.initElement(func, elID, deviceName, deviceInfo, argTemplate, argTemplateType ? \rawValue, dispatcher ? defaultDispatchers[ \element ]);
 					if(wasDisabled, { res.disable; });
-				} {|err|
+				} { | err|
 					res.free;
 					err.throw;
 				}
@@ -557,7 +557,7 @@ HIDdef : HIDFunc {
 		^res
 	}
 
-	addToAll {|argkey| key = argkey; all.put(key, this) }
+	addToAll { | argkey| key = argkey; all.put(key, this) }
 
 	free { all[key] = nil; super.free; }
 
@@ -580,50 +580,50 @@ HIDFuncDeviceProtoMatcher : AbstractMessageMatcher {
 	var <matchingDevs;
 	var <notMatchingDevs;
 
-	initMatching{ |argfunc|
+	initMatching { | argfunc|
 		func = argfunc;
 		matchingDevs = [];
 		notMatchingDevs = [];
 	}
 
-	*new {|srcID, func| ^super.new.init(srcID, func);}
+	*new { | srcID, func| ^super.new.init(srcID, func);}
 
-	init {|argsrcID, argfunc|
+	init { | argsrcID, argfunc|
 		devProto = argsrcID;
 		this.initMatching( argfunc );
 		this.checkMatchingDevs;
 	}
 
-	checkMatchingDevs{
+	checkMatchingDevs {
 		// find ids of already open devices that match:
 		matchingDevs = matchingDevs ++
-		HID.openDevices.select{ |hid|
+		HID.openDevices.select { | hid|
 			devProto.matches( hid );
 		}.keys.asArray;
 		notMatchingDevs = notMatchingDevs ++
-		HID.openDevices.select{ |hid|
+		HID.openDevices.select { | hid|
 			devProto.matches( hid ).not;
 		}.keys.asArray;
 	}
 
-	checkMatchingDev{ |devid|
+	checkMatchingDev { | devid|
 		var hid = HID.openDevices.at( devid );
-		if ( devProto.matches( hid ) ){
+		if ( devProto.matches( hid ) ) {
 			matchingDevs = matchingDevs.add( devid );
 			^true;
-		}{
+		} {
 			notMatchingDevs = notMatchingDevs.add( devid );
 			^false;
 		};
 	}
 
-	value { |value, rawValue, usage, page, elid, ele, devid, device, key|
-		if ( matchingDevs.includes( devid ) ){
+	value { | value, rawValue, usage, page, elid, ele, devid, device, key|
+		if ( matchingDevs.includes( devid ) ) {
 			func.value( value, rawValue, usage, page, elid, ele, devid, device, key );
-		}{
-			if ( notMatchingDevs.includes( devid ).not ){
+		} {
+			if ( notMatchingDevs.includes( devid ).not ) {
 				// perhaps device was opened after HIDFunc was created
-				if ( this.checkMatchingDev( devid ) ){
+				if ( this.checkMatchingDev( devid ) ) {
 					func.value( value, rawValue, usage, page, elid, ele, devid, device, key );
 				};
 			};
@@ -634,15 +634,15 @@ HIDFuncDeviceProtoMatcher : AbstractMessageMatcher {
 HIDFuncElementProtoMatcher : AbstractMessageMatcher {
 	var elementProto;
 
-	*new {|elProto, func| ^super.new.init(elProto, func);}
+	*new { | elProto, func| ^super.new.init(elProto, func);}
 
-	init {|elProto, argfunc|
+	init { | elProto, argfunc|
 		elementProto = elProto;
 		func = argfunc;
 	}
 
-	value { |value, rawValue, usage, page, elid, ele, devid, device, key|
-		if ( elementProto.matches( ele ) ){
+	value { | value, rawValue, usage, page, elid, ele, devid, device, key|
+		if ( elementProto.matches( ele ) ) {
 			func.value( value, rawValue, usage, page, elid, ele, devid, device, key );
 		}
 	}
@@ -651,23 +651,23 @@ HIDFuncElementProtoMatcher : AbstractMessageMatcher {
 HIDValueMatcher : AbstractMessageMatcher {
 	var argTemplate;
 
-	*new{|argTemplate, func| ^super.new.init(argTemplate, func) }
+	*new { | argTemplate, func| ^super.new.init(argTemplate, func) }
 
-	init {|argArgTemplate, argFunc| argTemplate = argArgTemplate; func = argFunc; }
+	init { | argArgTemplate, argFunc| argTemplate = argArgTemplate; func = argFunc; }
 
-	value {|...testMsg|
-		if(argTemplate.matchItem(testMsg[0]), {func.value(*testMsg)});
+	value { | ...testMsg|
+		if(argTemplate.matchItem(testMsg[0]), { func.value(*testMsg)});
 	}
 }
 
 HIDRawValueMatcher : AbstractMessageMatcher {
 	var argTemplate;
 
-	*new{|argTemplate, func| ^super.new.init(argTemplate, func) }
+	*new { | argTemplate, func| ^super.new.init(argTemplate, func) }
 
-	init {|argArgTemplate, argFunc| argTemplate = argArgTemplate; func = argFunc; }
+	init { | argArgTemplate, argFunc| argTemplate = argArgTemplate; func = argFunc; }
 
-	value {|...testMsg|
-		if(argTemplate.matchItem(testMsg[1]), {func.value(*testMsg)});
+	value { | ...testMsg|
+		if(argTemplate.matchItem(testMsg[1]), { func.value(*testMsg)});
 	}
 }
