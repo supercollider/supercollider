@@ -23,7 +23,7 @@ GeneralHID {
 	*use { arg aScheme, func;
 		var recent	= scheme;
 		scheme		= aScheme;
-		^func.protect( { scheme = recent });
+		^func.protect({ scheme = recent });
 	}
 
 	*useID { arg id, func;
@@ -100,7 +100,7 @@ GeneralHIDInfo {
 			vendor,
 			product,
 			version
-		].collect( { | x | "0x" ++ x.asHexString(4) }).printItemsOn(stream);
+		].collect({ | x | "0x" ++ x.asHexString(4) }).printItemsOn(stream);
 		stream << ", " << physical << ", " << unique;
 		stream.put($));
 	}
@@ -119,13 +119,13 @@ GeneralHIDDevice {
 		^all.copy
 	}
 	*closeAll {
-		all.copy.do( { | dev | dev.close });
+		all.copy.do({ | dev | dev.close });
 	}
 	/*	*register { | name, spec |
 		specs[name] = spec;
 		}*/
 	*new { |newDevice|
-		^all.detect( { | dev | dev.device == newDevice }) ?? { super.new.init(newDevice) }
+		^all.detect({ | dev | dev.device == newDevice }) ?? { super.new.init(newDevice) }
 	}
 	init { |newDevice|
 		device = newDevice;
@@ -299,11 +299,11 @@ GeneralHIDSlot {
 
 	debug_ { |onoff|
 		if ( onoff, {
-			//	this.action_( { |slot| [ slot.type, slot.code, slot.value, key ].postln; });
-			this.debugAction_( { |slot| [ slot.type, slot.code, slot.value, key ].postln; });
+			//	this.action_({ |slot| [ slot.type, slot.code, slot.value, key ].postln; });
+			this.debugAction_({ |slot| [ slot.type, slot.code, slot.value, key ].postln; });
 		}, {
-			//	this.action_( {});
-			this.debugAction_( {});
+			//	this.action_({});
+			this.debugAction_({});
 		});
 	}
 
