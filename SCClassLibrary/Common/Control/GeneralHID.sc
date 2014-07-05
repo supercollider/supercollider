@@ -57,9 +57,9 @@ GeneralHID{
 		if( newScheme.notNil, {
 			scheme = newScheme;
 		}, {
-			if(thisProcess.platform.name != \windows){ // on win we know it's not yet supported
-				("GeneralHID.fromID : The HID scheme '" ++ id ++ "' is not installed\n" ++
-				"The current scheme is still '" ++ if( scheme.notNil, { scheme.id }) ++ "'!").warn;
+			if(thisProcess.platform.name == \linux){ // only supported on linux right now
+				"GeneralHID.fromID : The HID scheme '%' is not installed\n"
+				"The current scheme is still '%'.\n".format(id, scheme !? { scheme.id }).warn
 			}
 		});
 		^scheme;
