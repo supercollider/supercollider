@@ -28,6 +28,8 @@
 #include <QWidget>
 #include <QTimer>
 
+static const double PI = 3.14159265358979323846264338327950288419717;
+
 class QcLevelIndicator : public QWidget, QcHelper, QtCollider::Style::Client
 {
   Q_OBJECT
@@ -38,6 +40,8 @@ class QcLevelIndicator : public QWidget, QcHelper, QtCollider::Style::Client
   Q_PROPERTY( bool drawPeak READ dummyBool WRITE setDrawPeak );
   Q_PROPERTY( int ticks READ dummyInt WRITE setTicks );
   Q_PROPERTY( int majorTicks READ dummyInt WRITE setMajorTicks );
+  Q_PROPERTY( int stepWidth READ dummyInt WRITE setStepWidth );
+  Q_PROPERTY( int style READ dummyInt WRITE setStyle );
   Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
 
 public:
@@ -49,6 +53,8 @@ public:
   void setDrawPeak( bool b ) { _drawPeak = b; update(); }
   void setTicks( int i ) { _ticks = qMax(i,0); update(); }
   void setMajorTicks( int i ) { _majorTicks = qMax(i,0); update(); }
+  void setStepWidth( int i ) { _stepWidth = qMax(i,0); update(); }
+  void setStyle( int i ) { _style = qMin(qMax(i,0), 3); update(); }
   virtual QSize sizeHint() const { return QSize( 25, 150 ); }
 private Q_SLOTS:
   void clipTimeout();
@@ -61,6 +67,8 @@ private:
   bool _drawPeak;
   int _ticks;
   int _majorTicks;
+	float _stepWidth;
+	int _style;
   bool _clipped;
   QTimer *_clipTimer;
 };
