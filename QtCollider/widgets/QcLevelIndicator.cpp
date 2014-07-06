@@ -30,7 +30,7 @@ QcLevelIndicator::QcLevelIndicator() :
   QtCollider::Style::Client(this),
   _value( 0.f ), _warning(0.6), _critical(0.8),
   _peak( 0.f ), _drawPeak( false ),
-  _ticks(0), _majorTicks(0),
+  _ticks(0), _majorTicks(0), _stepWidth(10), _style(0),
   _clipped(false)
 {
   _clipTimer = new QTimer( this );
@@ -50,14 +50,19 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
 {
   QPainter p(this);
 
+  bool vertical = height() >= width();
+  float groove = vertical ? width() : height();
+  float length = vertical ? height() : width();
+
+  if (!vertical) {
+    p.rotate(90);
+    p.translate(0, -width());
+  }
+
   QPalette plt = palette();
 
-  bool vertical = height() >= width();
-
-  float groove = vertical ? width() : height();
+  
   if( _ticks || _majorTicks ) groove -= 6;
-
-  float length = vertical ? height() : width();
 
   float colorValue = _drawPeak ? _peak : _value;
 
@@ -77,22 +82,48 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
   else
     c = QColor( 0, 255, 0 );
 
-  p.fillRect( vertical ? QRectF(0,0,groove,height()) : QRectF(0,0,width(),groove),
-              grooveColor() );
+  p.fillRect( QRectF(0, 0, groove, length), grooveColor());
 
   QRectF r;
 
-  if( vertical ) {
-    r.setWidth( groove );
-    r.setY( (1.f - _value) * length );
-    r.setBottom( height() );
-  }
-  else {
-    r.setHeight( groove );
-    r.setRight( _value * length );
-  }
+  r.setWidth( groove );
+  r.setY( (1.f - _value) * length );
 
-  p.fillRect( r, c );
+  p.setRenderHint(QPainter::Antialiasing, true);
+
+  switch (_style) {
+    case 0: {
+      p.fillRect( r, c );
+      break;
+    }
+    case 1: {
+      float ledBaseline = length;
+      float spaceWidth = _stepWidth <= 3 ? 1 : 2;
+      float cornerWidth = _stepWidth <= 3 ? 0 : 1.2;
+
+      r.setHeight(_stepWidth);
+      r.moveBottom(ledBaseline);
+      QPainterPath path;
+      path.addRoundedRect(r, cornerWidth, cornerWidth);
+      
+      while (ledBaseline > length * (1 - _value)) {
+        float normValue = (1 - (ledBaseline / length));
+        if(normValue > _critical)
+          c = QColor(255,100,0);
+        else if(normValue > _warning)
+          c = QColor( 255, 255, 0 );
+        else
+          c = QColor( 0, 255, 0 );
+
+        p.fillPath(path, QBrush(c));
+        ledBaseline -= (_stepWidth + spaceWidth);
+        path.translate(0, -(_stepWidth + spaceWidth));
+      }
+      break;
+    }
+  }
+  
+  p.setRenderHint(QPainter::Antialiasing, false);
 
 #if 0
 
@@ -154,10 +185,7 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
     float t = 0;
     while( t < _ticks ) {
       float v = t * dVal;
-      if( vertical )
-        p.drawLine( groove, v, width(), v );
-      else
-        p.drawLine( v, groove, v, height() );
+      p.drawLine( groove, v, width(), v );
       t++;
     }
   }

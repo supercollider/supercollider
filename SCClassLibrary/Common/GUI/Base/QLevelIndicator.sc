@@ -21,9 +21,12 @@ LevelIndicator : View {
 		this.setProperty(\critical, val);
 	}
 
-	// NOT IMPLEMENTED
 	style_ {arg val;
-		this.nonimpl("style");
+		this.setProperty(\style, val);
+	}
+
+	stepWidth_{arg val;
+		this.setProperty(\stepWidth, val);
 	}
 
 	background { ^this.getProperty(\grooveColor) }
