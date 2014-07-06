@@ -321,24 +321,24 @@ int midiCleanUp();
 
 int initMIDI(int numIn, int numOut)
 {
-  OSStatus err;
-  CFAllocatorRef alloc = CFAllocatorGetDefault();
-  int enc = kCFStringEncodingMacRoman;
+	OSStatus err;
+	CFAllocatorRef alloc = CFAllocatorGetDefault();
+	int enc = kCFStringEncodingMacRoman;
 
 	midiCleanUp();
 	numIn = sc_clip(numIn, 1, kMaxMidiPorts);
 	numOut = sc_clip(numOut, 1, kMaxMidiPorts);
-  
-	if (!gMIDIClient) {
-    CFStringRef clientName = CFStringCreateWithCString(alloc, "SuperCollider", enc);
 
-    err = MIDIClientCreate(clientName, midiNotifyProc, nil, &gMIDIClient);
-    if (err) {
-      post("Could not create MIDI client. error: ");
-      return errFailed;
-    }
-    CFRelease(clientName);
-  }
+	if (!gMIDIClient) {
+		CFStringRef clientName = CFStringCreateWithCString(alloc, "SuperCollider", enc);
+
+		err = MIDIClientCreate(clientName, midiNotifyProc, nil, &gMIDIClient);
+		if (err) {
+			post("Could not create MIDI client. error: ");
+			return errFailed;
+		}
+		CFRelease(clientName);
+	}
 
 	for (int i=0; i<numIn; ++i) {
 		char str[32];
