@@ -6,11 +6,10 @@ related:: Classes/GbmanN
 description::
 A linear-interpolating sound generator based on the difference equations:
 
-code::
-	x[n+1] = 1 - y[n] + abs(x[n])
-	y[n+1] = x[n]
+teletype::
+	x(n+1) = 1 - y(n) + |x(n)|
+	y(n+1) = x(n)
 ::
-warning:: reviser formulae converted to c like code ::
 
 The behavior of the system is dependent only on its initial conditions and cannot be changed once it's started.
 

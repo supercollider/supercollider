@@ -5,12 +5,11 @@ categories:: UGens>Generators>Chaotic
 description::
 A strange attractor discovered by Edward N. Lorenz while studying mathematical models of the atmosphere. The system is composed of three ordinary differential equations:
 
-code::
+teletype::
 	x' = s * (y - x)
 	y' = x * (r - z) - y
 	z' = x * y - b * z
 ::
-warning:: revise formulae converted to c like code (x', y', z'!!!) ::
 
 The time step amount code::h:: determines the rate at which the ODE is evaluated. Higher values will increase the rate, but cause more instability. A safe choice is the default amount of 0.05.
 
