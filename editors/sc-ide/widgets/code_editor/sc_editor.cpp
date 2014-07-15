@@ -25,6 +25,7 @@
 #include "../../core/main.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
+#include "../../core/settings/theme.hpp"
 
 #include "QtCollider/hacks/hacks_qt.hpp"
 
@@ -63,8 +64,8 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
 
     mSpaceIndent = settings->value("spaceIndent").toBool();
     mBlinkDuration = settings->value("blinkDuration").toInt();
-    mBracketHighlight = settings->value("colors/matchingBrackets").value<QTextCharFormat>();
-    mBracketMismatchFormat = settings->value("colors/mismatchedBrackets").value<QTextCharFormat>();
+    mBracketHighlight = settings->getThemeVal("matchingBrackets");
+    mBracketMismatchFormat = settings->getThemeVal("mismatchedBrackets");
     mStepForwardEvaluation = settings->value("stepForwardEvaluation").toBool();
     mInsertMatchingTokens = settings->value("insertMatchingTokens").toBool();
     mHighlightBracketContents = settings->value("highlightBracketContents").toBool();

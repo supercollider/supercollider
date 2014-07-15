@@ -23,6 +23,7 @@
 #include "util/gui_utilities.hpp"
 #include "../core/main.hpp"
 #include "../core/settings/manager.hpp"
+#include "../core/settings/theme.hpp"
 #include "../core/util/overriding_action.hpp"
 
 #include <QApplication>
@@ -151,14 +152,8 @@ void PostWindow::applySettings(Settings::Manager * settings)
 
     QPalette palette;
     QTextCharFormat format;
-    settings->beginGroup("IDE/editor/colors");
-    if (settings->contains("text")) {
-        format.merge(settings->value("text").value<QTextCharFormat>());
-    }
-    if (settings->contains("postwindowtext")) {
-        format.merge(settings->value("postwindowtext").value<QTextCharFormat>());
-    }
-    settings->endGroup(); // colors
+    format.merge(settings->getThemeVal("text"));
+    format.merge(settings->getThemeVal("postwindowtext"));
 
     QBrush bg = format.background();
     QBrush fg = format.foreground();
@@ -224,12 +219,10 @@ void PostWindow::post(const QString &text)
 QTextCharFormat PostWindow::formatForPostLine(QStringRef line)
 {
     Settings::Manager *settings = Main::settings();
-    settings->beginGroup("IDE/editor/highlighting");
-    QTextCharFormat postWindowError = settings->value("postwindowerror").value<QTextCharFormat>();
-    QTextCharFormat postWindowWarning = settings->value("postwindowwarning").value<QTextCharFormat>();
-    QTextCharFormat postWindowSuccess = settings->value("postwindowsuccess").value<QTextCharFormat>();
-    QTextCharFormat postWindowEmphasis = settings->value("postwindowemphasis").value<QTextCharFormat>();
-    settings->endGroup();
+    QTextCharFormat postWindowError = settings->getThemeVal("postwindowerror");
+    QTextCharFormat postWindowWarning = settings->getThemeVal("postwindowwarning");
+    QTextCharFormat postWindowSuccess = settings->getThemeVal("postwindowsuccess");
+    QTextCharFormat postWindowEmphasis = settings->getThemeVal("postwindowemphasis");
     
     QTextCharFormat format;
     

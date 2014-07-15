@@ -26,6 +26,8 @@
 #include <QTreeWidgetItem>
 #include <QTextCharFormat>
 
+#include "../../core/settings/theme.hpp"
+
 class QFontDatabase;
 
 namespace Ui {
@@ -57,6 +59,10 @@ private Q_SLOTS:
     void updateTextFormatEdit();
     void updateTextFormatDisplay();
     void updateTextFormatDisplayCommons();
+    void updateTheme(QString name);
+
+    void dialogCopyTheme();
+    void deleteTheme();
 
 private:
     enum TextFormatListRole {
@@ -65,10 +71,11 @@ private:
         DefaultTextFormatRole
     };
 
-    void loadGeneralTextFormats( Manager * );
-    void loadSyntaxTextFormats( Manager * );
+    void loadGeneralFormats(Theme & theme);
+    void loadSyntaxFormats(Theme & theme);
 
     void populateFontList( bool onlyMonospaced = false );
+    void populateThemeList(const QString & sel = "");
 
     QFont constructFont();
     QTextCharFormat constructTextFormat();
@@ -87,6 +94,7 @@ private:
     QTreeWidgetItem *mGeneralFormatsItem;
     QTreeWidgetItem *mSyntaxFormatsItem;
     QTreeWidgetItem *mCommonTextFormatItem;
+    QMap<QString, Theme *> mThemes;
 };
 
 }} // namespace ScIDE::Settings
