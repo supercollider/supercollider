@@ -20,6 +20,7 @@
 
 #include "manager.hpp"
 #include "serialization.hpp"
+#include "theme.hpp"
 
 #include <QApplication>
 #include <QPalette>
@@ -35,12 +36,11 @@ Manager::Manager( const QString & filename, QObject * parent ):
     mDefaultCursorFlashTime(QApplication::cursorFlashTime())
 {
     initDefaults();
+    mTheme = new Theme(value("IDE/editor/theme").toString(), this);
 }
 
 void Manager::initDefaults()
 {
-    QPalette appPlt( QApplication::palette() );
-
     beginGroup("IDE");
 
     setDefault("startWithSession", "last");
@@ -68,93 +68,11 @@ void Manager::initDefaults()
     setDefault("font/family", "monospace");
     setDefault("font/antialias", true);
 
-    beginGroup("colors");
-
-    QTextCharFormat matchingBracketsFormat;
-    matchingBracketsFormat.setForeground(Qt::red);
-    matchingBracketsFormat.setBackground(QColor("#ffff7f"));
-    matchingBracketsFormat.setFontWeight(QFont::Bold);
-    setDefault("matchingBrackets", QVariant::fromValue(matchingBracketsFormat));
-
-    QTextCharFormat bracketMismatchFormat;
-    bracketMismatchFormat.setBackground(QColor(150,0,0));
-    bracketMismatchFormat.setForeground(Qt::white);
-    setDefault("mismatchedBrackets", QVariant::fromValue(bracketMismatchFormat));
-
-    QTextCharFormat evaluatedCodeFormat;
-    evaluatedCodeFormat.setBackground(QColor("#F8A200"));
-    evaluatedCodeFormat.setForeground(Qt::black);
-    setDefault("evaluatedCode", QVariant::fromValue(evaluatedCodeFormat));
-
-    QTextCharFormat currentLineFormat;
-    {
-        QColor bkg = appPlt.color(QPalette::Base);
-        int value = bkg.value();
-        if (value > 40)
-            bkg.setHsv( bkg.hue(), bkg.saturation(), value - 11);
-        else
-            bkg.setHsv( bkg.hue(), bkg.saturation(), value + 20 );
-        currentLineFormat.setBackground(bkg.toRgb());
-    }
-    setDefault("currentLine", QVariant::fromValue(currentLineFormat));
-
-    QTextCharFormat searchResultFormat;
-    searchResultFormat.setBackground(appPlt.color(QPalette::Highlight).darker(200));
-    searchResultFormat.setForeground(appPlt.color(QPalette::HighlightedText).darker(200));
-    setDefault("searchResult", QVariant::fromValue(searchResultFormat));
-
-    endGroup(); // colors
-
-    beginGroup("highlighting");
-    initHighlightingDefaults();
-    endGroup(); // highlighting
+    setDefault("theme", "default");
 
     endGroup(); // editor
 
     endGroup(); // IDE
-}
-
-inline static QVariant makeHlFormat
-    ( const QBrush &fg, QFont::Weight w = QFont::Normal )
-{
-    QTextCharFormat f;
-    f.setForeground(fg);
-    if(w != QFont::Normal)
-        f.setFontWeight(w);
-    return QVariant::fromValue<QTextCharFormat>(f);
-}
-
-void Manager::initHighlightingDefaults()
-{
-    QPalette plt( QApplication::palette() );
-    QColor base = plt.color(QPalette::Base);
-    QColor text = plt.color(QPalette::Text);
-    int shade = (base.red() + base.green() + base.blue() < 380) ? 160 : 100;
-
-    QColor whitespace_color(
-                (base.red() + text.red()) / 2,
-                (base.green() + text.green()) / 2,
-                (base.blue() + text.blue()) / 2 );
-
-    setDefault( "whitespace", makeHlFormat( whitespace_color ) );
-    setDefault( "keyword", makeHlFormat( QColor(0,0,230).lighter(shade), QFont::Bold ) );
-    setDefault( "built-in", makeHlFormat( QColor(51,51,191).lighter(shade) ) );
-    setDefault( "env-var", makeHlFormat( QColor(140,70,20).lighter(shade) ) );
-    setDefault( "class", makeHlFormat( QColor(0,0,210).lighter(shade) ) );
-    setDefault( "number", makeHlFormat( QColor(152,0,153).lighter(shade) ) );
-    setDefault( "symbol", makeHlFormat( QColor(0,115,0).lighter(shade) ) );
-    setDefault( "string", makeHlFormat( QColor(95,95,95).lighter(shade) ) );
-    setDefault( "char", makeHlFormat( QColor(0,115,0).lighter(shade) ) );
-    setDefault( "comment", makeHlFormat( QColor(191,0,0).lighter(shade) ) );
-    setDefault( "primitive", makeHlFormat( QColor(51,51,191).lighter(shade) ) );
-    
-    setDefault("postwindowerror", makeHlFormat(QColor(209, 28, 36)));
-    setDefault("postwindowwarning", makeHlFormat(QColor(165, 119, 6)));
-    setDefault("postwindowsuccess", makeHlFormat(QColor(115, 138, 5)));
-    
-    QTextCharFormat emphasisFormat;
-    emphasisFormat.setFontWeight(QFont::Bold);
-    setDefault("postwindowemphasis", QVariant::fromValue(emphasisFormat));
 }
 
 bool Manager::contains ( const QString & key ) const
@@ -230,6 +148,24 @@ QFont Manager::codeFont()
         font.setStyleStrategy(QFont::StyleStrategy(font.styleStrategy() | QFont::NoAntialias));
 
     return font;
+}
+
+void Manager::setThemeVal(QString key, const QTextCharFormat &val)
+{
+    mTheme->setFormat(key, val);
+}
+
+const QTextCharFormat & Manager::getThemeVal(QString key)
+{
+    return mTheme->format(key);
+}
+
+void Manager::updateTheme()
+{
+    QString theme = value("IDE/editor/theme").toString();
+
+    delete(mTheme);
+    mTheme = new Theme(theme);
 }
 
 }} // namespace ScIDE::Settings

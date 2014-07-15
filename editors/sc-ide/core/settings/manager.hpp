@@ -27,8 +27,11 @@
 #include <QKeySequence>
 #include <QList>
 #include <QAction>
+#include <QTextCharFormat>
 
 namespace ScIDE { namespace Settings {
+
+class Theme;
 
 class Manager : public QObject
 {
@@ -74,6 +77,10 @@ public:
 
     int defaultCursorFlashTime() const { return mDefaultCursorFlashTime; }
 
+    void setThemeVal(QString key, const QTextCharFormat &val);
+    const QTextCharFormat & getThemeVal(QString key);
+    void updateTheme();
+
 private:
     void setDefault ( const QString & key, const QVariant & value )
     {
@@ -97,6 +104,7 @@ private:
     SettingsMap mDefaults;
     QList<QAction*> mActions;
     const int mDefaultCursorFlashTime;
+    Theme *mTheme;
 };
 
 struct ActionData {

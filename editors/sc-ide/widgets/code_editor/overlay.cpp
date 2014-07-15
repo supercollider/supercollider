@@ -22,6 +22,7 @@
 #include "editor.hpp"
 #include "sc_editor.hpp"
 #include "../../core/main.hpp"
+#include "../../core/settings/theme.hpp"
 
 #include <QTextDocument>
 #include <QTextLayout>
@@ -83,9 +84,7 @@ void ScCodeEditor::blinkCode( const QTextCursor & c )
     if( !c.document() || !c.hasSelection() ) return;
 
     Settings::Manager *settings = Main::settings();
-    settings->beginGroup("IDE/editor/colors");
-    QTextCharFormat evalCodeTextFormat = settings->value("evaluatedCode").value<QTextCharFormat>();
-    settings->endGroup();
+    QTextCharFormat evalCodeTextFormat = settings->getThemeVal("evaluatedCode");
 
     QTextDocument *doc = c.document();
 
