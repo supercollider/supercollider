@@ -33,7 +33,7 @@
 namespace ScIDE { namespace Settings {
 
 static void addToTheme(QMap<QString, QTextCharFormat *> & map, const char *key,
-                  const QColor & bg, const QColor & fg,
+                  const QColor & fg, const QColor & bg = Qt::transparent,
                   bool bold = false, bool italic = false)
 {
     QTextCharFormat *format = new QTextCharFormat();
@@ -50,7 +50,7 @@ static void addToTheme(QMap<QString, QTextCharFormat *> & map, const char *key,
 
 void Theme::fillDefault()
 {
-    addToTheme(mFormats, "text", QColor(Qt::white), QColor(Qt::black));
+    addToTheme(mFormats, "text", QColor(Qt::black), QColor(Qt::white));
 
     QPalette appPlt(QApplication::palette());
     QColor bkg = appPlt.color(QPalette::Base);
@@ -59,44 +59,43 @@ void Theme::fillDefault()
         bkg.setHsv(bkg.hue(), bkg.saturation(), value - 11);
     else
         bkg.setHsv(bkg.hue(), bkg.saturation(), value + 20);
-    addToTheme(mFormats, "currentLine", QColor(Qt::white), bkg.toRgb());
+    addToTheme(mFormats, "currentLine", bkg.toRgb());
     addToTheme(mFormats, "searchResult",
-               appPlt.color(QPalette::Highlight).darker(200),
-               appPlt.color(QPalette::HighlightedText).darker(200));
-    addToTheme(mFormats, "matchingBrackets", Qt::red, QColor("#ffff7f"), true);
-    addToTheme(mFormats, "mismatchedBrackets", QColor(150,0,0), Qt::white);
-    addToTheme(mFormats, "evaluatedCode", QColor("#F8A200"), Qt::black);
+               appPlt.color(QPalette::HighlightedText).darker(200),
+               appPlt.color(QPalette::Highlight).darker(200));
+    addToTheme(mFormats, "matchingBrackets", QColor("#ffff7f"), Qt::red, true);
+    addToTheme(mFormats, "mismatchedBrackets", Qt::white, QColor(150,0,0));
+    addToTheme(mFormats, "evaluatedCode", Qt::black, QColor("#F8A200"));
 
     QPalette plt(QApplication::palette());
     QColor base = plt.color(QPalette::Base);
     QColor text = plt.color(QPalette::Text);
-    int shade =(base.red() + base.green() + base.blue() < 380) ? 160 : 100;
+    int shade = (base.red() + base.green() + base.blue() < 380) ? 160 : 100;
 
-    QColor whitespace_color(
-               (base.red() + text.red()) / 2,
-               (base.green() + text.green()) / 2,
-               (base.blue() + text.blue()) / 2);
+    QColor whitespace_color((base.red() + text.red()) / 2,
+                            (base.green() + text.green()) / 2,
+                            (base.blue() + text.blue()) / 2);
 
-    addToTheme(mFormats, "whitespace", Qt::white, whitespace_color);
-    addToTheme(mFormats, "keyword", Qt::white, QColor(0,0,230).lighter(shade), true);
-    addToTheme(mFormats, "built-in", Qt::white, QColor(51,51,191).lighter(shade));
-    addToTheme(mFormats, "env-var", Qt::white, QColor(140,70,20).lighter(shade));
-    addToTheme(mFormats, "class", Qt::white, QColor(0,0,210).lighter(shade));
-    addToTheme(mFormats, "number", Qt::white, QColor(152,0,153).lighter(shade));
-    addToTheme(mFormats, "symbol", Qt::white, QColor(0,115,0).lighter(shade));
-    addToTheme(mFormats, "string", Qt::white, QColor(95,95,95).lighter(shade));
-    addToTheme(mFormats, "char", Qt::white, QColor(0,115,0).lighter(shade));
-    addToTheme(mFormats, "comment", Qt::white, QColor(191,0,0).lighter(shade));
-    addToTheme(mFormats, "primitive", Qt::white, QColor(51,51,191).lighter(shade));
-    addToTheme(mFormats, "lineNumbers", plt.color(QPalette::Mid),
-                                       plt.color(QPalette::ButtonText));
-    addToTheme(mFormats, "selection", plt.color(QPalette::Highlight),
-                                       plt.color(QPalette::HighlightedText));
-    addToTheme(mFormats, "postwindowtext", Qt::white, Qt::black);
-    addToTheme(mFormats, "postwindowerror", Qt::white, QColor(209, 28, 36));
-    addToTheme(mFormats, "postwindowwarning", Qt::white, QColor(165, 119, 6));
-    addToTheme(mFormats, "postwindowsuccess", Qt::white, QColor(115, 138, 5));
-    addToTheme(mFormats, "postwindowemphasis", Qt::white, Qt::black, true);
+    addToTheme(mFormats, "whitespace", whitespace_color);
+    addToTheme(mFormats, "keyword", QColor(0,0,230).lighter(shade), Qt::transparent, true);
+    addToTheme(mFormats, "built-in", QColor(51,51,191).lighter(shade));
+    addToTheme(mFormats, "env-var", QColor(140,70,20).lighter(shade));
+    addToTheme(mFormats, "class", QColor(0,0,210).lighter(shade));
+    addToTheme(mFormats, "number", QColor(152,0,153).lighter(shade));
+    addToTheme(mFormats, "symbol", QColor(0,115,0).lighter(shade));
+    addToTheme(mFormats, "string", QColor(95,95,95).lighter(shade));
+    addToTheme(mFormats, "char", QColor(0,115,0).lighter(shade));
+    addToTheme(mFormats, "comment", QColor(191,0,0).lighter(shade));
+    addToTheme(mFormats, "primitive", QColor(51,51,191).lighter(shade));
+    addToTheme(mFormats, "lineNumbers", plt.color(QPalette::ButtonText), 
+                                        plt.color(QPalette::Mid));
+    addToTheme(mFormats, "selection", plt.color(QPalette::HighlightedText),
+                                      plt.color(QPalette::Highlight));
+    addToTheme(mFormats, "postwindowtext", Qt::black);
+    addToTheme(mFormats, "postwindowerror", QColor(209, 28, 36));
+    addToTheme(mFormats, "postwindowwarning", QColor(165, 119, 6));
+    addToTheme(mFormats, "postwindowsuccess", QColor(115, 138, 5));
+    addToTheme(mFormats, "postwindowemphasis", Qt::black, Qt::transparent, true);
 }
 
 void Theme::fillUser(const QString & name, const Manager *settings)
