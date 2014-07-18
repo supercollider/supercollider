@@ -11,7 +11,7 @@ before_install:
  - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
  - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
  - ifmac brew update
- - ifmac brew install cmake qt4
+ - ifmac brew install cmake qt4 || true
  - iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
  - iflin sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
  - iflin sudo apt-get update
