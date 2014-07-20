@@ -130,7 +130,6 @@ void ScServer::createActions(Settings::Manager * settings)
     mActions[DumpOSC] = action = new QAction(tr("Server Dump OSC"), this);
     action->setCheckable(true);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(sendDumpingOSC(bool)));
-    connect(action, SIGNAL(toggled(bool)), this, SIGNAL(sendDumpingOSC(bool)));
     settings->addAction( action, "synth-server-dumpOSC", synthServerCategory);
 
     mActions[Mute] = action = new QAction(tr("Mute"), this);
