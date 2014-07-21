@@ -676,7 +676,9 @@ Plotter {
 
 	// interaction
 	pointIsInWhichPlot { |point|
-		var res = plots.detectIndex { |plot|
+		var res;
+		if(plots.isNil) { ^nil };
+		res = plots.detectIndex { |plot|
 			point.y.exclusivelyBetween(plot.bounds.top, plot.bounds.bottom)
 		};
 		^res ?? {
