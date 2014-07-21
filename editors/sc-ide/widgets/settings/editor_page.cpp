@@ -452,10 +452,19 @@ void EditorPage::updateTextFormatEdit()
     }
     else {
         QTextCharFormat format = item->data( 0, TextFormatRole).value<QTextCharFormat>();
+        int enable = true;
+
         ui->fgPicker->setBrush( format.foreground() );
         ui->bgPicker->setBrush( format.background() );
         ui->italicOption->setChecked( format.fontItalic() );
         ui->boldOption->setChecked( format.fontWeight() == QFont::Bold );
+
+        if (item->data(0, TextFormatConfigKeyRole).toString() == "currentLine")
+            enable = false;
+
+        ui->fgPicker->setEnabled(enable);
+        ui->italicOption->setEnabled(enable);
+        ui->boldOption->setEnabled(enable);
     }
 }
 
