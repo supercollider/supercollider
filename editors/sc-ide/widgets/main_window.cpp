@@ -298,6 +298,12 @@ void MainWindow::createActions()
     connect(action, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
     settings->addAction( action, "ide-document-save-as", ideCategory);
 
+    mActions[DocSaveAsExtension] = action = new QAction(
+        QIcon::fromTheme("document-save-as"), tr("Save As Extension..."), this);
+    action->setStatusTip(tr("Save the current document into a different file in the extensions folder"));
+    connect(action, SIGNAL(triggered()), this, SLOT(saveDocumentAsExtension()));
+    settings->addAction( action, "ide-document-save-as-extension", ideCategory);
+
     mActions[DocSaveAll] = action = new QAction(
         QIcon::fromTheme("document-save"), tr("Save All..."), this);
     action->setShortcut(tr("Ctrl+Alt+S", "Save all documents"));
@@ -539,6 +545,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[DocOpenSupportDir] );
     menu->addAction( mActions[DocSave] );
     menu->addAction( mActions[DocSaveAs] );
+    menu->addAction( mActions[DocSaveAsExtension] );
     menu->addAction( mActions[DocSaveAll] );
     menu->addSeparator();
     menu->addAction( mActions[DocReload] );
@@ -847,6 +854,7 @@ void MainWindow::onCurrentDocumentChanged( Document * doc )
     mActions[DocReload]->setEnabled(doc);
     mActions[DocSave]->setEnabled(doc);
     mActions[DocSaveAs]->setEnabled(doc);
+    mActions[DocSaveAsExtension]->setEnabled(doc);
 
     GenericCodeEditor *editor = mEditors->currentEditor();
     mFindReplaceTool->setEditor( editor );
@@ -978,7 +986,7 @@ QString MainWindow::documentSavePath( Document *document ) const
     return QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
 }
 
-bool MainWindow::save( Document *doc, bool forceChoose )
+bool MainWindow::save( Document *doc, bool forceChoose, bool saveInExtensionFolder )
 {
     const bool documentHasPath = !doc->filePath().isEmpty();
 
@@ -1014,19 +1022,23 @@ bool MainWindow::save( Document *doc, bool forceChoose )
 
         dialog.setNameFilters(filters);
 
-        QString path = mInstance->documentSavePath(doc);
-        QFileInfo path_info(path);
+        if (saveInExtensionFolder) {
+            dialog.setDirectory( standardDirectory(ScExtensionUserDir) );
+        } else {
+            QString path = mInstance->documentSavePath(doc);
+            QFileInfo path_info(path);
 
-        if (path_info.isDir())
-            // FIXME:
-            // KDE native file dialog shows parent directory instead (KDE bug 229375)
-            dialog.setDirectory(path);
-        else
-            dialog.selectFile(path);
+            if (path_info.isDir())
+                // FIXME:
+                // KDE native file dialog shows parent directory instead (KDE bug 229375)
+                dialog.setDirectory(path);
+            else
+                dialog.selectFile(path);
 
-        // NOTE: do not use QFileDialog::setDefaultSuffix(), because it only adds
-        // the suffix after the dialog is closed, without showing a warning if the
-        // filepath with added suffix already exists!
+            // NOTE: do not use QFileDialog::setDefaultSuffix(), because it only adds
+            // the suffix after the dialog is closed, without showing a warning if the
+            // filepath with added suffix already exists!
+        }
 
 #ifdef Q_OS_MAC
         QWidget *last_active_window = QApplication::activeWindow();
@@ -1068,7 +1080,8 @@ bool MainWindow::save( Document *doc, bool forceChoose )
         }
 
         if (!save_path.isEmpty()) {
-            mInstance->mLastDocumentSavePath = save_path;
+            if( !saveInExtensionFolder )
+                mInstance->mLastDocumentSavePath = save_path;
             return documentManager->saveAs(doc, save_path);
         } else {
             return false;
@@ -1197,6 +1210,17 @@ void MainWindow::saveDocumentAs()
     Q_ASSERT(doc);
 
     MainWindow::save(doc, true);
+}
+
+void MainWindow::saveDocumentAsExtension()
+{
+    GenericCodeEditor *editor = mEditors->currentEditor();
+    if(!editor) return;
+
+    Document *doc = editor->document();
+    Q_ASSERT(doc);
+
+    MainWindow::save(doc, true, true);
 }
 
 void MainWindow::saveAllDocuments()
