@@ -71,8 +71,7 @@ private:
         DefaultTextFormatRole
     };
 
-    void loadGeneralFormats(Theme & theme);
-    void loadSyntaxFormats(Theme & theme);
+    void loadThemeFormats(Theme & theme);
 
     void populateFontList( bool onlyMonospaced = false );
     void populateThemeList(const QString & sel = "");
@@ -81,7 +80,7 @@ private:
     QTextCharFormat constructTextFormat();
 
     QTreeWidgetItem * addTextFormat
-    ( QTreeWidgetItem * parent, const QString & name, const QString &key,
+    ( const QString & name, const QString &key,
       const QTextCharFormat & format, const QTextCharFormat & defaultFormat = QTextCharFormat() );
 
     void updateTextFormatDisplay( QTreeWidgetItem * );
@@ -91,8 +90,6 @@ private:
     Ui::EditorConfigPage *ui;
 
     QStringList mFormatKeys;
-    QTreeWidgetItem *mGeneralFormatsItem;
-    QTreeWidgetItem *mSyntaxFormatsItem;
     QTreeWidgetItem *mCommonTextFormatItem;
     QMap<QString, Theme *> mThemes;
 };
