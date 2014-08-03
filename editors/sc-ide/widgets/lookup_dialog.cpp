@@ -29,6 +29,7 @@
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QPainter>
+#include <QFileInfo>
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -47,12 +48,19 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     mResult->setAllColumnsShowFocus(true);
     mResult->setHeaderHidden(true);
     mResult->header()->setStretchLastSection(false);
-
+  
+    mPreviewDocument = new Document(false);
+    mPreviewEditor = new ScCodeEditor(mPreviewDocument);
+  
+    QHBoxLayout *hlayout = new QHBoxLayout;
+    hlayout->setMargin(0);
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(1);
-    layout->addWidget(mQueryEdit);
-    layout->addWidget(mResult);
+    layout->addWidget(mQueryEdit, 0);
+    layout->addWidget(mResult, 2);
+    layout->addWidget(mPreviewEditor, 1);
+  
     setLayout(layout);
 
     connect(mQueryEdit, SIGNAL(returnPressed()), this, SLOT(performQuery()));
@@ -73,6 +81,61 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     setGeometry(bounds);
 
     mQueryEdit->setFocus( Qt::OtherFocusReason );
+}
+  
+void GenericLookupDialog::setModel(QStandardItemModel* model) {
+    if (mResult->selectionModel()) {
+      disconnect(mResult->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
+              this, SLOT(currentChanged(const QModelIndex &, const QModelIndex &)));
+    }
+  
+    mResult->setModel(model);
+  
+    if (mResult->selectionModel()) {
+      mPreviewEditor->setActiveAppearance(true);
+      connect(mResult->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
+            this, SLOT(currentChanged(const QModelIndex &, const QModelIndex &)));
+    } else {
+      mPreviewEditor->setActiveAppearance(false);
+    }
+}
+  
+void GenericLookupDialog::currentChanged(const QModelIndex &item, const QModelIndex &oldItem)
+{
+    QString path = item.data( PathRole ).toString();
+    int pos      = item.data( CharPosRole ).toInt();
+    
+    QFileInfo info(path);
+    QString cpath = info.canonicalFilePath();
+    info.setFile(cpath);
+    
+    if (cpath.isEmpty()) {
+      MainWindow::instance()->showStatusMessage (
+                                                 tr("Cannot open file: %1 (file does not exist)").arg(path) );
+      return 0;
+    }
+    
+    // Open the file
+    QFile file(cpath);
+    if(!file.open(QIODevice::ReadOnly)) {
+      MainWindow::instance()->showStatusMessage(
+                                                tr("Cannot open file for reading: %1").arg(cpath));
+      return 0;
+    }
+    QByteArray bytes( file.readAll() );
+    file.close();
+  
+    QTextStream stream(bytes);
+    stream.setCodec("UTF-8");
+    stream.setAutoDetectUnicode(true);
+
+    mPreviewDocument->setTextInRange( stream.readAll(), 0, -1 );
+//    mPreviewDocument->setModified(false);
+//    mPreviewDocument->mFilePath = filePath;
+//    mPreviewDocument->setTitle("");
+  
+    mPreviewEditor->showPosition(pos, 0);
+    mPreviewEditor->selectCurrentRegion();
 }
 
 bool GenericLookupDialog::openDocumentation()
@@ -187,7 +250,7 @@ void LookupDialog::performQuery()
     QString queryString = mQueryEdit->text();
 
     if (queryString.isEmpty()) {
-        mResult->setModel(NULL);
+        setModel(NULL);
         return;
     }
 
@@ -395,21 +458,21 @@ QStandardItemModel * LookupDialog::modelForPartialQuery(const QString & queryStr
 bool LookupDialog::performClassQuery(const QString & className)
 {
     QStandardItemModel * model = modelForClass(className);
-    mResult->setModel(model);
+    setModel(model);
     return model;
 }
 
 bool LookupDialog::performMethodQuery(const QString & methodName)
 {
     QStandardItemModel * model = modelForMethod(methodName);
-    mResult->setModel(model);
+    setModel(model);
     return model;
 }
 
 bool LookupDialog::performPartialQuery(const QString & queryString)
 {
     QStandardItemModel * model = modelForPartialQuery(queryString);
-    mResult->setModel(model);
+    setModel(model);
     return model;
 }
 
@@ -432,7 +495,7 @@ void ReferencesDialog::performQuery()
     QString queryString = mQueryEdit->text();
 
     if (queryString.isEmpty()) {
-        mResult->setModel(NULL);
+        setModel(NULL);
         return;
     }
 
@@ -441,13 +504,13 @@ void ReferencesDialog::performQuery()
 
 void ReferencesDialog::requestCancelled()
 {
-    mResult->setModel(NULL);
+    setModel(NULL);
 }
 
 void ReferencesDialog::onResposeFromLanguage(const QString &, const QString &responseData)
 {
     QStandardItemModel * model = parse(responseData);
-    mResult->setModel(model);
+    setModel(model);
 
     if (model)
         focusResults();
