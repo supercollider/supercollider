@@ -70,9 +70,6 @@ EditorPage::EditorPage(QWidget *parent) :
     connect( ui->bgClearBtn, SIGNAL(clicked()),
              this, SLOT(updateTextFormatDisplay()) );
 
-    mGeneralFormatsItem = NULL;
-    mSyntaxFormatsItem = NULL;
-
     updateTextFormatEdit();
 }
 
@@ -81,12 +78,6 @@ EditorPage::~EditorPage()
     delete ui;
     delete fontDatabase;
     qDeleteAll(mThemes);
-    QList<QTreeWidgetItem *> children = mGeneralFormatsItem->takeChildren();
-    children.clear();
-    children = mSyntaxFormatsItem->takeChildren();
-    children.clear();
-    delete mGeneralFormatsItem;
-    delete mSyntaxFormatsItem;
 }
 
 void EditorPage::load( Manager *s )
@@ -159,8 +150,7 @@ void EditorPage::updateTheme(QString  name)
         theme = i.value();
     }
 
-    loadGeneralFormats(*theme);
-    loadSyntaxFormats(*theme);
+    loadThemeFormats(*theme);
 
     ui->bgPicker->setDisabled(theme->locked());
     ui->fgPicker->setDisabled(theme->locked());
@@ -171,62 +161,27 @@ void EditorPage::updateTheme(QString  name)
     ui->boldOption->setDisabled(theme->locked());
 }
 
-void EditorPage::loadGeneralFormats(Theme & theme)
+void EditorPage::loadThemeFormats(Theme & theme)
 {
-    if (!mGeneralFormatsItem) {
-        mGeneralFormatsItem = new QTreeWidgetItem(ui->textFormats);
-        mGeneralFormatsItem->setText(0, tr("General"));
-    } else {
-        QList<QTreeWidgetItem *> children = mGeneralFormatsItem->takeChildren();
-        qDeleteAll(children);
-    }
-
     // common text format item is special - don't set foreground and background on the item!
-    mCommonTextFormatItem = new QTreeWidgetItem();
+    mCommonTextFormatItem = new QTreeWidgetItem(ui->textFormats);
     mCommonTextFormatItem->setText( 0, tr("Text") );
     mCommonTextFormatItem->setData( 0, TextFormatConfigKeyRole, "text" );
     mCommonTextFormatItem->setData( 0, TextFormatRole, QVariant::fromValue(theme.format("text")) );
-    mGeneralFormatsItem->addChild(mCommonTextFormatItem);
     updateTextFormatDisplayCommons();
 
     static char const * const keys[] = {
         "currentLine", "searchResult", "matchingBrackets", "mismatchedBrackets",
-        "evaluatedCode", "lineNumbers", "selection", "postwindowtext"
-    };
-
-    static QStringList strings = QStringList()
-            << tr("Current Line") << tr("Search Result") << tr("Matching Brackets")
-            << tr("Mismatched Brackets") << tr("Evaluated Code")
-            << tr("Line Numbers") << tr("Selected Text") << tr("Post Window Text");
-    ;
-
-    static int count = strings.count();
-
-
-    for (int idx = 0; idx < count; ++idx) {
-        QTextCharFormat format = theme.format(keys[idx]);
-        addTextFormat( mGeneralFormatsItem, strings[idx], keys[idx], format );
-    }
-}
-
-void EditorPage::loadSyntaxFormats(Theme & theme)
-{
-    if (!mSyntaxFormatsItem) {
-        mSyntaxFormatsItem = new QTreeWidgetItem(ui->textFormats);
-        mSyntaxFormatsItem->setText(0, tr("Syntax Highlighting"));
-        mSyntaxFormatsItem->addChild(mCommonTextFormatItem);
-    } else {
-        QList<QTreeWidgetItem *> children = mSyntaxFormatsItem->takeChildren();
-        qDeleteAll(children);
-    }
-
-    static char const * const keys[] = {
+        "evaluatedCode", "lineNumbers", "selection", "postwindowtext",
         "whitespace", "keyword", "built-in", "env-var", "class", "number",
         "symbol", "string", "char", "comment", "primitive",
         "postwindowerror", "postwindowwarning", "postwindowsuccess", "postwindowemphasis"
     };
 
     static QStringList strings = QStringList()
+            << tr("Current Line") << tr("Search Result") << tr("Matching Brackets")
+            << tr("Mismatched Brackets") << tr("Evaluated Code")
+            << tr("Line Numbers") << tr("Selected Text") << tr("Post Window Text")
             << tr("Whitespace")
             << tr("Keyword") << tr("Built-in Value") << tr("Environment Variable")
             << tr("Class") << tr("Number") << tr("Symbol") << tr("String") << tr("Char")
@@ -238,7 +193,7 @@ void EditorPage::loadSyntaxFormats(Theme & theme)
 
     for (int idx = 0; idx < count; ++idx) {
         QTextCharFormat format = theme.format(keys[idx]);
-        addTextFormat( mSyntaxFormatsItem, strings[idx], keys[idx], format );
+        addTextFormat(strings[idx], keys[idx], format);
     }
 }
 
@@ -373,20 +328,15 @@ QFont EditorPage::constructFont()
 }
 
 QTreeWidgetItem * EditorPage::addTextFormat
-( QTreeWidgetItem * parent, const QString & name, const QString &key,
+( const QString & name, const QString &key,
   const QTextCharFormat & format, const QTextCharFormat &defaultFormat )
 {
-    QTreeWidgetItem *item = new QTreeWidgetItem();
+    QTreeWidgetItem *item = new QTreeWidgetItem(ui->textFormats);
     item->setText( 0, name );
     item->setData( 0, TextFormatConfigKeyRole, key );
     item->setData( 0, TextFormatRole, QVariant::fromValue(format) );
     item->setData( 0, DefaultTextFormatRole, QVariant::fromValue(defaultFormat) );
     updateTextFormatDisplay( item );
-
-    if (!parent)
-        parent = ui->textFormats->invisibleRootItem();
-
-    parent->addChild(item);
 
     return item;
 }
