@@ -455,9 +455,9 @@ void GenericCodeEditor::showPosition( int pos, int selectionLength )
     setTextCursor(cursor);
 }
 
-QString GenericCodeEditor::symbolUnderCursor()
+QString GenericCodeEditor::symbolUnderCursor(QTextCursor* inCursor)
 {
-    QTextCursor cursor = textCursor();
+    QTextCursor cursor = inCursor ? *inCursor : textCursor();
     if (cursor.hasSelection())
         return cursor.selectedText();
     else

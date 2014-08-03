@@ -54,7 +54,7 @@ public:
                     QTextDocument::FindFlags options = 0 );
 
     void showPosition( int charPosition, int selectionLength = 0 );
-    QString symbolUnderCursor();
+    QString symbolUnderCursor(QTextCursor* cursor = 0);
     int inactiveFadeAlpha() { return mInactiveFadeAlpha; }
 
 protected:

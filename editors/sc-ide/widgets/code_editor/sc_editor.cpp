@@ -206,13 +206,21 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
 
 void ScCodeEditor::mouseReleaseEvent ( QMouseEvent *e )
 {
-    // Prevent deselection of bracket match:
-    if(!mMouseBracketMatch)
-        GenericCodeEditor::mouseReleaseEvent(e);
-
-    mMouseBracketMatch = false;
+    if (e->modifiers() == Qt::AltModifier) {
+        QTextCursor cursor = cursorForPosition(e->pos());
+        Main::findReferences(symbolUnderCursor(&cursor), this);
+    } else if (e->modifiers() == Qt::ControlModifier) {
+        QTextCursor cursor = cursorForPosition(e->pos());
+        Main::openDefinition(symbolUnderCursor(&cursor), this);
+    } else {
+        // Prevent deselection of bracket match:
+        if(!mMouseBracketMatch)
+          GenericCodeEditor::mouseReleaseEvent(e);
+        
+        mMouseBracketMatch = false;
+    }
 }
-
+  
 void ScCodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
 {
     // Always pass to superclass so as to handle line selection on triple click
@@ -1399,3 +1407,5 @@ QTextCursor ScCodeEditor::cursorAt(const TokenIterator it, int offset)
 }
 
 } // namespace ScIDE
+
+
