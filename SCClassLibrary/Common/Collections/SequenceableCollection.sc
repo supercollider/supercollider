@@ -602,9 +602,9 @@ SequenceableCollection : Collection {
 		key = key % stepsPerOctave;
 
         // find the closest degree in scale for all keys in octave
-        closestScale = (0..stepsPerOctave).collect { |k| 
+        closestScale = Array.fill(stepsPerOctave, { |k| 
             this.indexInBetween(k).floor 
-        };
+        });
 
         // find the closest degree in the scale for the key
 		nearestDegree = this.indexInBetween(key).floor;
