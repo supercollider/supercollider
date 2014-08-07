@@ -2,7 +2,7 @@
 // detail/impl/signal_set_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2013 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -243,7 +243,7 @@ boost::system::error_code signal_set_service::add(
     int signal_number, boost::system::error_code& ec)
 {
   // Check that the signal number is valid.
-  if (signal_number < 0 || signal_number > max_signal_number)
+  if (signal_number < 0 || signal_number >= max_signal_number)
   {
     ec = boost::asio::error::invalid_argument;
     return ec;
@@ -317,7 +317,7 @@ boost::system::error_code signal_set_service::remove(
     int signal_number, boost::system::error_code& ec)
 {
   // Check that the signal number is valid.
-  if (signal_number < 0 || signal_number > max_signal_number)
+  if (signal_number < 0 || signal_number >= max_signal_number)
   {
     ec = boost::asio::error::invalid_argument;
     return ec;

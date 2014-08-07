@@ -230,7 +230,7 @@ namespace boost {
     
                 \post eof()==true
             */
-            split_iterator() {}
+            split_iterator() { m_bEof = true; }
             //! Copy constructor
             /*!
                 Construct a copy of the split_iterator

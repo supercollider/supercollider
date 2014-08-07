@@ -538,7 +538,7 @@ T ibeta_inv_imp(T a, T b, T p, T q, const Policy& pol, T* py)
          if(a > 1)
          {
             x = pow(p, 1 / a);
-            y = -expm1(log(p) / a);
+            y = -boost::math::expm1(log(p) / a, pol);
          }
          else
          {
@@ -548,8 +548,8 @@ T ibeta_inv_imp(T a, T b, T p, T q, const Policy& pol, T* py)
       }
       else
       {
-         x = exp(log1p(-q) / a);
-         y = -expm1(log1p(-q) / a);
+         x = exp(boost::math::log1p(-q, pol) / a);
+         y = -boost::math::expm1(boost::math::log1p(-q, pol) / a, pol);
       }
       if(invert)
          std::swap(x, y);
@@ -941,11 +941,11 @@ inline typename tools::promote_args<T1, T2, T3, T4>::type
       policies::assert_undefined<> >::type forwarding_policy;
 
    if(a <= 0)
-      policies::raise_domain_error<result_type>(function, "The argument a to the incomplete beta function inverse must be greater than zero (got a=%1%).", a, pol);
+      return policies::raise_domain_error<result_type>(function, "The argument a to the incomplete beta function inverse must be greater than zero (got a=%1%).", a, pol);
    if(b <= 0)
-      policies::raise_domain_error<result_type>(function, "The argument b to the incomplete beta function inverse must be greater than zero (got b=%1%).", b, pol);
+      return policies::raise_domain_error<result_type>(function, "The argument b to the incomplete beta function inverse must be greater than zero (got b=%1%).", b, pol);
    if((q < 0) || (q > 1))
-      policies::raise_domain_error<result_type>(function, "Argument q outside the range [0,1] in the incomplete beta function inverse (got q=%1%).", q, pol);
+      return policies::raise_domain_error<result_type>(function, "Argument q outside the range [0,1] in the incomplete beta function inverse (got q=%1%).", q, pol);
 
    value_type rx, ry;
 

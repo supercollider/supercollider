@@ -13,7 +13,7 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_ASSERT_HPP
 #define BOOST_INTRUSIVE_DETAIL_ASSERT_HPP
 
-#if defined(_MSC_VER)&&(_MSC_VER>=1200)
+#if defined(_MSC_VER)
 #pragma once
 #endif
 

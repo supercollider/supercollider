@@ -48,16 +48,16 @@ template <typename T>
 struct consume_via_copy
 {
     consume_via_copy(T & out):
-        out(out)
+        out_(out)
     {}
 
     template <typename U>
     void operator()(U & element)
     {
-        copy_payload(element, out);
+        copy_payload(element, out_);
     }
 
-    T &  out;
+    T & out_;
 };
 
 

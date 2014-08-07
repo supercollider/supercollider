@@ -16,12 +16,10 @@
 
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
-#include <boost/pointer_cast.hpp>
 #include <boost/intrusive/detail/utilities.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/slist_hook.hpp>
 #include <boost/intrusive/options.hpp>
-#include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/detail/generic_hook.hpp>
 
 namespace boost {
@@ -81,9 +79,7 @@ struct unordered_node_traits
    static const bool optimize_multikey = OptimizeMultiKey;
 
    static node_ptr get_next(const const_node_ptr & n)
-   {
-      return pointer_traits<node_ptr>::pointer_to(static_cast<node&>(*n->next_));
-   }
+   {  return pointer_traits<node_ptr>::static_cast_from(n->next_);  }
 
    static void set_next(const node_ptr & n, const node_ptr & next)
    {  n->next_ = next;  }
@@ -207,7 +203,7 @@ struct make_unordered_set_base_hook
 //! unique tag.
 //!
 //! \c void_pointer<> is the pointer type that will be used internally in the hook
-//! and the the container configured to use this hook.
+//! and the container configured to use this hook.
 //!
 //! \c link_mode<> will specify the linking mode of the hook (\c normal_link,
 //! \c auto_unlink or \c safe_link).
@@ -341,7 +337,7 @@ struct make_unordered_set_member_hook
 //! \c link_mode<> and \c store_hash<>.
 //!
 //! \c void_pointer<> is the pointer type that will be used internally in the hook
-//! and the the container configured to use this hook.
+//! and the container configured to use this hook.
 //!
 //! \c link_mode<> will specify the linking mode of the hook (\c normal_link,
 //! \c auto_unlink or \c safe_link).
