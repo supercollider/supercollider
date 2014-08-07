@@ -2,7 +2,7 @@
 // detail/impl/select_reactor.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2013 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -182,7 +182,7 @@ void select_reactor::run(bool block, op_queue<operation>& ops)
   for (int i = 0; i < max_select_ops; ++i)
   {
     have_work_to_do = have_work_to_do || !op_queue_[i].empty();
-    op_queue_[i].get_descriptors(fd_sets_[i], ops);
+    fd_sets_[i].set(op_queue_[i], ops);
     if (fd_sets_[i].max_descriptor() > max_fd)
       max_fd = fd_sets_[i].max_descriptor();
   }
@@ -190,10 +190,10 @@ void select_reactor::run(bool block, op_queue<operation>& ops)
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
   // Connection operations on Windows use both except and write fd_sets.
   have_work_to_do = have_work_to_do || !op_queue_[connect_op].empty();
-  op_queue_[connect_op].get_descriptors(fd_sets_[write_op], ops);
+  fd_sets_[write_op].set(op_queue_[connect_op], ops);
   if (fd_sets_[write_op].max_descriptor() > max_fd)
     max_fd = fd_sets_[write_op].max_descriptor();
-  op_queue_[connect_op].get_descriptors(fd_sets_[except_op], ops);
+  fd_sets_[except_op].set(op_queue_[connect_op], ops);
   if (fd_sets_[except_op].max_descriptor() > max_fd)
     max_fd = fd_sets_[except_op].max_descriptor();
 #endif // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
@@ -228,16 +228,14 @@ void select_reactor::run(bool block, op_queue<operation>& ops)
   {
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
     // Connection operations on Windows use both except and write fd_sets.
-    op_queue_[connect_op].perform_operations_for_descriptors(
-        fd_sets_[except_op], ops);
-    op_queue_[connect_op].perform_operations_for_descriptors(
-        fd_sets_[write_op], ops);
+    fd_sets_[except_op].perform(op_queue_[connect_op], ops);
+    fd_sets_[write_op].perform(op_queue_[connect_op], ops);
 #endif // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
 
     // Exception operations must be processed first to ensure that any
     // out-of-band data is read before normal data.
     for (int i = max_select_ops - 1; i >= 0; --i)
-      op_queue_[i].perform_operations_for_descriptors(fd_sets_[i], ops);
+      fd_sets_[i].perform(op_queue_[i], ops);
   }
   timer_queues_.get_ready_timers(ops);
 }
