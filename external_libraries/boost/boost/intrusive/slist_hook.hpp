@@ -80,7 +80,7 @@ struct make_slist_base_hook
 //! \c auto_unlink or \c safe_link).
 //!
 //! \c void_pointer<> is the pointer type that will be used internally in the hook
-//! and the the container configured to use this hook.
+//! and the container configured to use this hook.
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED) || defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
 template<class ...Options>
 #else
@@ -203,7 +203,7 @@ struct make_slist_member_hook
 //! \c auto_unlink or \c safe_link).
 //!
 //! \c void_pointer<> is the pointer type that will be used internally in the hook
-//! and the the container configured to use this hook.
+//! and the container configured to use this hook.
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED) || defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
 template<class ...Options>
 #else

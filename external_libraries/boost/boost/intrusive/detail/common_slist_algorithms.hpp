@@ -43,9 +43,6 @@ class common_slist_algorithms
       return p;
    }
 
-   static void init_header(const node_ptr & this_node)
-   {  NodeTraits::set_next(this_node, this_node);  }
-
    static void init(const node_ptr & this_node)
    {  NodeTraits::set_next(this_node, node_ptr());  }
 

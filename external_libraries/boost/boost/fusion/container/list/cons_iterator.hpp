@@ -8,6 +8,7 @@
 #if !defined(FUSION_CONS_ITERATOR_07172005_0849)
 #define FUSION_CONS_ITERATOR_07172005_0849
 
+#include <boost/fusion/support/config.hpp>
 #include <boost/type_traits/add_const.hpp>
 #include <boost/fusion/support/iterator_base.hpp>
 #include <boost/fusion/container/list/detail/deref_impl.hpp>
@@ -35,6 +36,7 @@ namespace boost { namespace fusion
             typename add_const<Cons>::type> 
         identity;
 
+        BOOST_FUSION_GPU_ENABLED
         explicit cons_iterator(cons_type& in_cons)
             : cons(in_cons) {}
 
@@ -53,35 +55,45 @@ namespace boost { namespace fusion
         typedef cons_iterator_identity<
             add_const<nil_>::type> 
         identity;
+        BOOST_FUSION_GPU_ENABLED
         nil_iterator() {}
+        BOOST_FUSION_GPU_ENABLED
         explicit nil_iterator(nil_ const&) {}
     };
 
     template <>
     struct cons_iterator<nil_> : nil_iterator 
     {
+        BOOST_FUSION_GPU_ENABLED
         cons_iterator() {}
+        BOOST_FUSION_GPU_ENABLED
         explicit cons_iterator(nil_ const&) {}
     };
 
     template <>
     struct cons_iterator<nil_ const> : nil_iterator 
     {
+        BOOST_FUSION_GPU_ENABLED
         cons_iterator() {}
+        BOOST_FUSION_GPU_ENABLED
         explicit cons_iterator(nil_ const&) {}
     };
 
     template <>
     struct cons_iterator<list<> > : nil_iterator 
     {
+        BOOST_FUSION_GPU_ENABLED
         cons_iterator() {}
+        BOOST_FUSION_GPU_ENABLED
         explicit cons_iterator(nil_ const&) {}
     };
 
     template <>
     struct cons_iterator<list<> const> : nil_iterator 
     {
+        BOOST_FUSION_GPU_ENABLED
         cons_iterator() {}
+        BOOST_FUSION_GPU_ENABLED
         explicit cons_iterator(nil_ const&) {}
     };
 }}
