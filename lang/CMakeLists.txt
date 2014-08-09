@@ -253,7 +253,7 @@ if (APPLE)
 	target_link_libraries(libsclang "-framework CoreMIDI")
 	target_link_libraries(libsclang "-framework CoreServices")
 	target_link_libraries(libsclang "-framework IOKit")
-	target_link_libraries(libsclang "-framework CoreFoundation")	
+	target_link_libraries(libsclang "-framework CoreFoundation")
 endif()
 
 if(ALSA_FOUND)
@@ -311,14 +311,7 @@ if(LTO)
 					APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
-if(APPLE)
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-
-	install(TARGETS sclang
-			DESTINATION "${scappauxresourcesdir}"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-elseif(WIN32)
+if(WIN32)
 	install(TARGETS sclang
 			DESTINATION "SuperCollider"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

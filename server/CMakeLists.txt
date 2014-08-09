@@ -30,3 +30,6 @@ add_subdirectory(scsynth)
 if (SUPERNOVA)
 	add_subdirectory(supernova)
 endif()
+
+set(plugins "${plugins}" PARENT_SCOPE)
+set(supernova_plugins "${supernova_plugins}" PARENT_SCOPE)
