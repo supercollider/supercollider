@@ -39,6 +39,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/server/supernova
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include
                     ${CMAKE_SOURCE_DIR}/external_libraries/oscpack_1_1_0
                     ${CMAKE_SOURCE_DIR}/external_libraries/
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt

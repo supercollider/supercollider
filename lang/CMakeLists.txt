@@ -8,6 +8,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
                     ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include
+
                     LangSource
                     LangPrimSource
 

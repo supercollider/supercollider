@@ -58,6 +58,7 @@ set(scsynth_sources
 	SC_Graph.cpp
 	SC_GraphDef.cpp
 	SC_Group.cpp
+	SC_HiddenWorld.h
 	SC_Lib_Cintf.cpp
 	SC_Lib.cpp
 	SC_MiscCmds.cpp
@@ -109,7 +110,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     .
 )
 
-include_directories (${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src)
+include_directories (${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
+                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include)
 
 set_property(DIRECTORY
              APPEND
