@@ -77,7 +77,8 @@ endif()
 
 #oscpack
 add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
-target_include_directories( tlsf INTERFACE oscpack_1_1_0 )
+target_include_directories(oscpack PRIVATE boost)
+target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
 
 if(NOT YAMLCPP_FOUND)
   message(STATUS "using bundled libyaml-cpp")
