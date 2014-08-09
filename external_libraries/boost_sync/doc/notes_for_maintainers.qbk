@@ -1,0 +1,38 @@
+[/
+            Copyright Vicente J. Botet Escriba 2013.
+                 Copyright Andrey Semashev 2013.
+                  Copyright Tim Blechmann 2013.
+     Distributed under the Boost Software License, Version 1.0.
+        (See accompanying file LICENSE_1_0.txt or copy at
+              http://www.boost.org/LICENSE_1_0.txt)
+
+    This document is a part of Boost.Sync library documentation.
+/]
+
+[section:notes_for_maintainers Notes for maintainers]
+
+This library is maintained by several developers, and in order it to have a consistent design, look and feel, a few guidelines need to be followed:
+
+[heading Code formatting and indentation]
+
+* The code is indented with spaces, 4 spaces per tab.
+* Namespace braces on the same line, all other braces - on the next line, with the same indent. At the closing brace for a namespace, there is a comment with the namespace name.
+* Namespaces don't increase the level of indentation. In all other cases braces increase the level of indentation.
+* Member/base initialization list for constructors on the same line, if it's small (1-2 members) or 1 member/base per line. Colon is left on the signature line.
+* No leading commas (i.e. if on multiple lines, initialization list and arguments have commas at the end of line, not at the beginning).
+
+[heading Naming conventions]
+
+* Data member names start with m_, unless the enclosing struct only has public data members (i.e. the intention of the struct is to enclose some data with no further logic).
+* Template parameters are named in CamelCase, other symbol names follow C++ style (lower-case, with underscores).
+* All non-public headers should be placed into `sync/detail` directory. All non-public names should reside in the `sync::detail` namespace. All non-public macro names should start with `BOOST_SYNC_DETAIL_`.
+* All public names should reside in the `sync` namespace. Nested namespaces are also possible. All public macro names should start with `BOOST_SYNC_`. User-definable config macros should start with `BOOST_SYNC_WITH_`, `BOOST_SYNC_WITHOUT_` (for component selection, if any), `BOOST_SYNC_USE_` or `BOOST_SYNC_NO_`. This does not include macros the library defines itself as a result of various compatibility checks (these count as non-public ones).
+
+[heading Code structure]
+
+* Every header includes `boost/sync/detail/config.hpp`. The config header contains all configuration macros, but no auto-linking code. If the built library appears, the auto-linking machinery and macros will be in a separate header, which will be included only by those components that need it.
+* Every header includes `boost/sync/detail/header.hpp` before any code (as the last include) and `boost/sync/detail/footer.hpp` after all code. These two files are for warning and ABI management.
+* All move semantics is implemented through __boost_move__.
+* All platform-specific code that depends on library configuration and can have different ABIs should be enclosed in a nested inline namespace that corresponds to the configuration. This gives a basic protection from the library misconfiguration in the user's application.
+
+[endsect]
