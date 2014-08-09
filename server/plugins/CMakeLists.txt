@@ -120,7 +120,7 @@ if(NOT NO_LIBSNDFILE)
 
 	if(SNDFILE_FOUND)
 		target_include_directories(DiskIO_UGens PUBLIC ${SNDFILE_INCLUDE_DIR})
-		target_link_libraries(DiskIO_UGens PUBLIC ${SNDFILE_LIBRARIES})
+		target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES})
 		list(APPEND plugins DiskIO_UGens)
 	else()
 		message(SEND_ERROR "Cannot find libsndfile")
@@ -251,14 +251,7 @@ elseif (APPLE)
 	add_definitions("-DSC_DARWIN")
 endif()
 
-if (APPLE)
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-
-	install(TARGETS ${plugins} ${supernova_plugins}
-			DESTINATION "${scappauxresourcesdir}/plugins"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-elseif (WIN32)
+if (WIN32)
 	install(TARGETS ${plugins} ${supernova_plugins}
 			DESTINATION "SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
@@ -267,3 +260,6 @@ else()
 			DESTINATION "lib/SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
+
+set(plugins "${plugins}" PARENT_SCOPE)
+set(supernova_plugins "${supernova_plugins}" PARENT_SCOPE)
