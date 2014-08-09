@@ -248,8 +248,9 @@ else()
 endif()
 
 if(APPLE)
-    set_target_properties(SuperCollider PROPERTIES
-        OUTPUT_NAME "${ide_name}")
+    set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "${ide_name}")
+else()
+    set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
 
 target_link_libraries( SuperCollider ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${YAMLCPP_LIBRARY} )
@@ -348,7 +349,7 @@ else()
 	install(TARGETS SuperCollider
 			RUNTIME DESTINATION "bin"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-    install(FILES SuperCollider
+    install(FILES ${translations}
             DESTINATION "share/SuperCollider/translations")
 endif()
 
