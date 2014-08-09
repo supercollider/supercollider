@@ -79,7 +79,7 @@ public:
         client = server_name.empty() ? jack_client_open(name.c_str(), JackNoStartServer, &status)
                                      : jack_client_open(name.c_str(), jack_options_t(JackNoStartServer | JackServerName),
                                                         &status, server_name.c_str());
-        boost::atomic_thread_fence(boost::memory_order_release); // ensure visibility on other threads
+        std::atomic_thread_fence(std::memory_order_release); // ensure visibility on other threads
 
         if (status & JackServerFailed)
             throw std::runtime_error("Unable to connect to JACK server");
@@ -233,7 +233,7 @@ public:
 private:
     static void jack_thread_init_callback(void * arg)
     {
-        boost::atomic_thread_fence(boost::memory_order_acquire);
+        std::atomic_thread_fence(std::memory_order_acquire);
         jack_backend * self = static_cast<jack_backend*>(arg);
         if (jack_client_thread_id(self->client) == pthread_self())
             engine_functor::init_thread();

@@ -26,8 +26,8 @@
 
 #include <sndfile.h>
 
+#include <atomic>
 #include <new>
-#include <boost/atomic.hpp>
 #include <SC_Lock.h>
 
 #include <boost/lockfree/queue.hpp>
@@ -166,7 +166,7 @@ struct DiskIOThread
 	boost::lockfree::spsc_queue<DiskIOMsg, boost::lockfree::capacity<256> > mDiskFifo;
 #endif
 
-	boost::atomic_bool mRunning;
+	std::atomic_bool mRunning;
 	thread mThread;
 
 	DiskIOThread():
