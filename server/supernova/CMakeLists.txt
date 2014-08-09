@@ -129,6 +129,7 @@ if(Boost_FOUND)
     target_link_libraries(libsupernova ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
 	target_include_directories(libsupernova PUBLIC ${Boost_INCLUDE_DIRS})
 else()
+    target_include_directories(libsupernova PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
     target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options boost_thread)
 endif()
 
