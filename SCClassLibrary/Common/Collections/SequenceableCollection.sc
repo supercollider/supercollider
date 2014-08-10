@@ -594,7 +594,7 @@ SequenceableCollection : Collection {
 		^if(accidental == 0) { baseKey } { baseKey + (accidental * (stepsPerOctave / 12.0)) }
 	}
 
-	performKeyToDegree { | degree, stepsPerOctave = 12 |
+	performKeyToDegree { |key stepsPerOctave = 12|
         var nearestDegree, closestScale, sharpening, octave;
 
         // store away octave and wrap key inside a single one
