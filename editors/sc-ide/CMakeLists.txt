@@ -22,25 +22,10 @@ if(APPLE)
         endforeach()
     endif()
 
-    foreach(file ${Examples} ${Sounds})
+    foreach(file ${Sounds})
         string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
         get_filename_component(PathInBundle "${PathInBundle}" DIRECTORY)
         set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
-    endforeach()
-
-    set( BundleResources
-        ${CMAKE_SOURCE_DIR}/README.md
-        ${CMAKE_SOURCE_DIR}/README_OS_X.md
-        ${CMAKE_SOURCE_DIR}/ChangeLog
-        ${CMAKE_SOURCE_DIR}/COPYING
-        ${CMAKE_SOURCE_DIR}/AUTHORS
-        ${CMAKE_SOURCE_DIR}/MOVED_STUFF.txt
-        )
-
-    foreach(file ${BundleResources})
-        string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
-        get_filename_component(PathInBundle "${PathInBundle}" DIRECTORY)
-        set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION ${PathInBundle})
     endforeach()
 
     set( Icons ../../icons/SCcube.icns)
