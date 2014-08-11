@@ -319,6 +319,9 @@ endif()
 
 if (WIN32)
 	set(auxresourcesdir "SuperCollider")
+elseif(APPLE)
+	include(cmake_modules/MacAppFolder.cmake)
+	set(auxresourcesdir ${scappbundlename})
 else()
 	set(auxresourcesdir "share/SuperCollider")
 endif()
@@ -367,17 +370,20 @@ else()
 endif()
 
 if(NOT APPLE)
-  install(DIRECTORY sounds DESTINATION ${auxresourcesdir})
+	install(DIRECTORY sounds DESTINATION ${auxresourcesdir})
 endif()
 
-if(NOT APPLE)
-    install(DIRECTORY examples
-        DESTINATION ${auxresourcesdir}
-        PATTERN "*~" EXCLUDE
-        PATTERN "*#" EXCLUDE
+set( AdditionalInstallFiles
+     README.md
+     README_OS_X.md
+     ChangeLog
+     COPYING
+     AUTHORS
+     MOVED_STUFF.txt
     )
-endif()
 
+install(DIRECTORY examples              DESTINATION ${auxresourcesdir})
+install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
 
 if(INSTALL_HELP)
 	if(SC_SYMLINK_CLASSLIB AND APPLE)
