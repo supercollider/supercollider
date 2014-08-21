@@ -32,6 +32,49 @@
 
 namespace ScIDE { namespace Settings {
 
+int legacyTheme(Manager * settings)
+{
+    QString group = QString("IDE/editor/colors/");
+    QString newGroup = QString("IDE/editor/themes/My old theme/");
+
+    if (!settings->contains(group + "evaluatedCode"))
+        return 0;
+
+    /* import default values */
+    Theme theme("My old theme", "default", settings);
+    theme.save();
+
+    QList<QString> keys;
+    keys << "evaluatedCode" << "lineNumbers" << "matchingBrackets"
+         << "searchResult" << "selection" << "text";
+
+    foreach(QString key, keys) {
+        if (settings->contains(group + key)) {
+            QTextCharFormat fm = settings->value(group + key).value<QTextCharFormat>();
+            settings->setValue(newGroup + key, QVariant::fromValue<QTextCharFormat>(fm));
+            settings->remove(group + key);
+        }
+    }
+
+    group = QString("IDE/editor/highlighting");
+    keys.clear();
+
+    keys << "keyword" << "built-in" << "env-var" << "class" << "number"
+         << "symbol" << "string" << "char" << "comment" << "primitive";
+
+    foreach(QString key, keys) {
+        if (settings->contains(group + key)) {
+            QTextCharFormat fm = settings->value(group + key).value<QTextCharFormat>();
+            settings->setValue(newGroup + key, QVariant::fromValue<QTextCharFormat>(fm));
+            settings->remove(group + key);
+        }
+    }
+
+    settings->setValue("IDE/editor/theme", "My old theme");
+
+    return 1;
+}
+
 static void addToTheme(QMap<QString, QTextCharFormat *> & map, const char *key,
                   const QColor & fg, const QColor & bg = Qt::transparent,
                   bool bold = false, bool italic = false)
@@ -122,10 +165,11 @@ void Theme::fillUser(const QString & name, const Manager *settings)
     }
 }
 
-Theme::Theme(const QString & _name, const Manager * settings)
+Theme::Theme(const QString & _name, Manager * settings)
 {
     if (!settings)
         settings = Main::settings();
+    mSettings = settings;
     mName = _name;
 
     if (mName == "default") {
@@ -137,10 +181,12 @@ Theme::Theme(const QString & _name, const Manager * settings)
     }
 }
 
-Theme::Theme(const QString & _name, const QString & _source):
+Theme::Theme(const QString & _name, const QString & _source, Manager * settings):
     mName(_name)
 {
-    Manager *settings = Main::settings();
+    if (!settings)
+        settings = Main::settings();
+    mSettings = settings;
 
     if (_source == "default") {
         fillDefault();
@@ -189,14 +235,13 @@ bool Theme::locked()
 
 QList<QString> Theme::availableThemes()
 {
-    Manager *settings = Main::settings();
     QList<QString> themes;
 
     themes.append("default");
 
-    settings->beginGroup("IDE/editor/themes");
-    themes.append(settings->childGroups());
-    settings->endGroup();
+    mSettings->beginGroup("IDE/editor/themes");
+    themes.append(mSettings->childGroups());
+    mSettings->endGroup();
 
     return themes;
 }
@@ -206,17 +251,16 @@ void Theme::save()
     if (mLocked)
         return;
 
-    Manager *settings = Main::settings();
     QMap<QString, QTextCharFormat *>::const_iterator i = mFormats.begin();
     QString group = QString("IDE/editor/themes/").append(mName);
 
-    settings->beginGroup(group);
+    mSettings->beginGroup(group);
     while (i != mFormats.end()) {
         QTextCharFormat fm = *i.value();
-        settings->setValue(i.key(), QVariant::fromValue<QTextCharFormat>(fm));
+        mSettings->setValue(i.key(), QVariant::fromValue<QTextCharFormat>(fm));
         i++;
     }
-    settings->endGroup();
+    mSettings->endGroup();
 }
 
 void Theme::remove()
@@ -224,11 +268,10 @@ void Theme::remove()
     if (mLocked)
         return;
 
-    Manager *settings = Main::settings();
     QMap<QString, QTextCharFormat *>::const_iterator i = mFormats.begin();
     QString key = QString("IDE/editor/themes/").append(mName);
 
-    settings->remove(key);
+    mSettings->remove(key);
 }
 
 QString & Theme::name()

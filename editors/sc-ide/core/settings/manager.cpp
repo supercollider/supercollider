@@ -35,8 +35,16 @@ Manager::Manager( const QString & filename, QObject * parent ):
     mSettings( new QSettings(filename, serializationFormat(), this) ),
     mDefaultCursorFlashTime(QApplication::cursorFlashTime())
 {
+    QString th;
+
     initDefaults();
-    mTheme = new Theme(value("IDE/editor/theme").toString(), this);
+
+    if (legacyTheme(this))
+        th = "My old theme";
+    else
+        th = value("IDE/editor/theme").toString();
+
+    mTheme = new Theme(th, this);
 }
 
 void Manager::initDefaults()
