@@ -61,6 +61,8 @@ private slots:
 
 private:
     void mousePressEvent(QMouseEvent * event) override final;
+    void mouseDoubleClickEvent(QMouseEvent * event) override final;
+
     void showContextMenu(QMouseEvent * event);
 
     int mTabUnderCursor;

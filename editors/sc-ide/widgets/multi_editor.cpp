@@ -215,6 +215,20 @@ void EditorTabBar::mousePressEvent(QMouseEvent *event)
     QTabBar::mousePressEvent(event);
 }
 
+
+void EditorTabBar::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        if (tabAt(event->pos()) == -1) { // no tab under cursor
+            MainWindow::instance()->newDocument();
+            event->accept();
+            return;
+        }
+    }
+
+    QTabBar::mouseDoubleClickEvent(event);
+}
+
 void EditorTabBar::showContextMenu(QMouseEvent * event)
 {
     mTabUnderCursor = tabAt(event->pos());
