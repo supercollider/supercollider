@@ -163,6 +163,8 @@ void EditorPage::updateTheme(QString  name)
 
 void EditorPage::loadThemeFormats(Theme & theme)
 {
+    ui->textFormats->clear();
+
     // common text format item is special - don't set foreground and background on the item!
     mCommonTextFormatItem = new QTreeWidgetItem(ui->textFormats);
     mCommonTextFormatItem->setText( 0, tr("Text") );
