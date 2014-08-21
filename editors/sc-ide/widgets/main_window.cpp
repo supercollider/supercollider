@@ -534,7 +534,7 @@ void MainWindow::createMenus()
     menu->addAction( mActions[DocOpen] );
     mRecentDocsMenu = menu->addMenu(tr("Open Recent", "Open a recent document"));
     connect(mRecentDocsMenu, SIGNAL(triggered(QAction*)),
-            this, SLOT(onRecentDocAction(QAction*)));
+            this, SLOT(onOpenRecentDocument(QAction*)));
     menu->addAction( mActions[DocOpenStartup] );
     menu->addAction( mActions[DocOpenSupportDir] );
     menu->addAction( mActions[DocSave] );
@@ -885,7 +885,7 @@ void MainWindow::updateRecentDocsMenu()
     }
 }
 
-void MainWindow::onRecentDocAction( QAction *action )
+void MainWindow::onOpenRecentDocument( QAction *action )
 {
     mMain->documentManager()->open(action->text());
 }
