@@ -111,7 +111,7 @@ void GenericLookupDialog::onAccepted(QModelIndex currentIndex)
     QString path = currentItem->data( PathRole ).toString();
     int pos      = currentItem->data( CharPosRole ).toInt();
 
-    Main::documentManager()->open(path, pos);
+    Main::documentManager()->open(path, pos, 0, false);
     accept();
 }
 
