@@ -30,13 +30,14 @@ namespace ScIDE { namespace Settings {
 
 class Manager;
 
+int legacyTheme(Manager * settings);
+
 class Theme
 {
 
 public:
-    Theme(const QString & _name, const Manager *settings = NULL);
-    Theme(const QString & _name, const QString & _source);
-
+    Theme(const QString & _name, Manager *settings = NULL);
+    Theme(const QString & _name, const QString & _source, Manager *settings = NULL);
     ~Theme();
 
     void setFormat(const QString & key, const QTextCharFormat & format);
@@ -55,6 +56,7 @@ private:
     bool mLocked;
     QMap<QString, QTextCharFormat *> mFormats;
     QString mName;
+    Manager *mSettings;
 };
 
 }} // namespace ScIDE:Settings
