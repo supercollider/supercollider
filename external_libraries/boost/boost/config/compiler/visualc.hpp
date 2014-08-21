@@ -57,11 +57,6 @@
 #  define BOOST_NO_CXX11_VARIADIC_MACROS
 #endif
 
-#if defined(UNDER_CE)
-// Windows CE does not have a conforming signature for swprintf
-#  define BOOST_NO_SWPRINTF
-#endif
-
 #if _MSC_VER < 1500  // 140X == VC++ 8.0
 #  define BOOST_NO_MEMBER_TEMPLATE_FRIENDS
 #endif
@@ -91,16 +86,6 @@
 #  define BOOST_NO_INTRINSIC_WCHAR_T
 #endif
 
-#if defined(_WIN32_WCE) || defined(UNDER_CE)
-#  define BOOST_NO_SWPRINTF
-#endif
-
-// we have ThreadEx or GetSystemTimeAsFileTime unless we're running WindowsCE
-#if !defined(_WIN32_WCE) && !defined(UNDER_CE)
-#  define BOOST_HAS_THREADEX
-#  define BOOST_HAS_GETSYSTEMTIMEASFILETIME
-#endif
-
 //
 // check for exception handling support:
 #if !defined(_CPPUNWIND) && !defined(BOOST_NO_EXCEPTIONS)
@@ -120,7 +105,7 @@
 #   define BOOST_HAS_NRVO
 #endif
 //
-// disable Win32 API's if compiler extentions are
+// disable Win32 API's if compiler extensions are
 // turned off:
 //
 #if !defined(_MSC_EXTENSIONS) && !defined(BOOST_DISABLE_WIN32)
@@ -180,14 +165,15 @@
 #  define BOOST_NO_CXX11_TRAILING_RESULT_TYPES
 #  define BOOST_NO_CXX11_VARIADIC_TEMPLATES
 #  define BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX
+#  define BOOST_NO_CXX11_DECLTYPE_N3276
 #endif
 
 // C++11 features not supported by any versions
 #define BOOST_NO_CXX11_CHAR16_T
 #define BOOST_NO_CXX11_CHAR32_T
 #define BOOST_NO_CXX11_CONSTEXPR
-#define BOOST_NO_CXX11_DECLTYPE_N3276
 #define BOOST_NO_CXX11_NOEXCEPT
+#define BOOST_NO_CXX11_REF_QUALIFIERS
 #define BOOST_NO_CXX11_UNICODE_LITERALS
 #define BOOST_NO_SFINAE_EXPR
 #define BOOST_NO_TWO_PHASE_NAME_LOOKUP

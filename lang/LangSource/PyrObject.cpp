@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include <atomic>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -1315,9 +1316,9 @@ void buildBigMethodMatrix()
 
 #include <boost/atomic.hpp>
 
-static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, boost::atomic<size_t> * rCount);
+static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, std::atomic<size_t> * rCount);
 
-static void fillClassRow(PyrClass *classobj, PyrMethod** bigTable, boost::atomic<size_t> * rCount)
+static void fillClassRow(PyrClass *classobj, PyrMethod** bigTable, std::atomic<size_t> * rCount)
 {
 	size_t count = 0;
 
@@ -1368,7 +1369,7 @@ static void fillClassRow(PyrClass *classobj, PyrMethod** bigTable, boost::atomic
 	}
 }
 
-static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, boost::atomic<size_t> * rCount)
+static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, std::atomic<size_t> * rCount)
 {
 	for (int i = begin; i != end; ++i)
 		fillClassRow(slotRawClass(&subclasses->slots[i]), bigTable, rCount);
@@ -1377,11 +1378,11 @@ static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, P
 
 static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
 {
-	boost::atomic<size_t> ret (0);
+	std::atomic<size_t> ret (0);
 
 	fillClassRow(classobj, bigTable, &ret);
 	if (helperThreadCount) compileThreadPool.wait();
-	return ret.load(boost::memory_order_acquire);
+	return ret.load(std::memory_order_acquire);
 }
 
 

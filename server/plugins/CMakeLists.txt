@@ -8,11 +8,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/common
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface)
 
-if (NOVA_SIMD)
-	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/nova-simd)
-	add_definitions("-DNOVA_SIMD")
-endif()
-
 # large file support
 if (CMAKE_SIZEOF_VOID_P MATCHES "4")
 	execute_process(COMMAND getconf LFS_CFLAGS
@@ -124,9 +119,8 @@ if(NOT NO_LIBSNDFILE)
 	add_library(DiskIO_UGens MODULE ${diskio_sources})
 
 	if(SNDFILE_FOUND)
-		include_directories(${SNDFILE_INCLUDE_DIR})
-                target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
-
+		target_include_directories(DiskIO_UGens PUBLIC ${SNDFILE_INCLUDE_DIR})
+		target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES})
 		list(APPEND plugins DiskIO_UGens)
 	else()
 		message(SEND_ERROR "Cannot find libsndfile")
@@ -145,10 +139,7 @@ if (SUPERNOVA)
 		string(REPLACE .cpp "_supernova" plugin_name ${plugin} )
 		add_library(${plugin_name} MODULE ${plugin})
 		list(APPEND supernova_plugins ${plugin_name})
-		set_property(TARGET ${plugin_name}
-                    APPEND PROPERTY COMPILE_DEFINITIONS  "SUPERNOVA")
 	endforeach(plugin)
-
 
 	add_library(FFT_UGens_supernova MODULE
 				FFTInterfaceTable.cpp
@@ -179,29 +170,22 @@ if (SUPERNOVA)
 				${scplugin_common_sources}
 				)
 
-	set_property(TARGET FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova
-				APPEND PROPERTY COMPILE_DEFINITIONS  "SUPERNOVA")
-
 	list(APPEND fft_ugens FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova)
 	list(APPEND supernova_plugins FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova UIUGens_supernova)
-	
+
 	if (APPLE)
 		add_library(UIUGens_supernova MODULE UIUGens.mm)
 	else()
 		add_library(UIUGens_supernova MODULE UIUGens.cpp)
 	endif()
-	set_property(TARGET UIUGens_supernova APPEND PROPERTY COMPILE_DEFINITIONS "SUPERNOVA")
 	list(APPEND uiugens UIUGens_supernova)
 
 	if(NOT NO_LIBSNDFILE)
-		add_library(DiskIO_UGens_supernova MODULE
-				DiskIO_UGens.cpp)
-		set_property(TARGET DiskIO_UGens_supernova
-					APPEND PROPERTY COMPILE_DEFINITIONS  "SUPERNOVA")
+		add_library(DiskIO_UGens_supernova MODULE DiskIO_UGens.cpp)
 
 		if(SNDFILE_FOUND)
-			include_directories(${SNDFILE_INCLUDE_DIR})
-                        target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
+			target_include_directories(DiskIO_UGens_supernova PUBLIC ${SNDFILE_INCLUDE_DIR})
+            target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
 			list(APPEND supernova_plugins DiskIO_UGens_supernova)
 		else()
 			message(SEND_ERROR "Cannot find libsndfile")
@@ -212,22 +196,32 @@ endif(SUPERNOVA)
 foreach(ugen ${fft_ugens})
 	target_link_libraries(${ugen} ${MATH_LIBRARY})
 
-	if (APPLE)
+	if(APPLE)
 		target_link_libraries(${ugen} "-framework Accelerate")
 	endif()
 endforeach()
 
-foreach (ugen ${uiugens})
+foreach(ugen ${uiugens})
     target_link_libraries(${ugen} ${Boost_THREAD_LIBRARY})
 endforeach()
 
-foreach (plugin ${plugins})
-    if (WIN32)
+foreach(plugin ${plugins})
+    if(WIN32)
         target_link_libraries(${plugin} wsock32 ws2_32)
     endif()
 endforeach()
 
-foreach (plugin ${supernova_plugins})
+
+if(NOVA_SIMD)
+    foreach(plugin ${plugins} ${supernova_plugins})
+        target_include_directories(${plugin} PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/nova-simd)
+        target_compile_definitions(${plugin} PUBLIC NOVA_SIMD)
+    endforeach()
+endif()
+
+foreach(plugin ${supernova_plugins})
+    target_compile_definitions(${plugin} PUBLIC SUPERNOVA)
+
     if (WIN32)
         target_link_libraries(${plugin} ws2_32)
     endif()
@@ -257,19 +251,15 @@ elseif (APPLE)
 	add_definitions("-DSC_DARWIN")
 endif()
 
-if (APPLE)
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-
-	install(TARGETS ${plugins} ${supernova_plugins}
-			DESTINATION "${scappauxresourcesdir}/plugins"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-elseif (WIN32)
+if (WIN32)
 	install(TARGETS ${plugins} ${supernova_plugins}
 			DESTINATION "SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-else()
+elseif(NOT APPLE)
 	install(TARGETS ${plugins} ${supernova_plugins}
 			DESTINATION "lib/SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
+
+set(plugins "${plugins}" PARENT_SCOPE)
+set(supernova_plugins "${supernova_plugins}" PARENT_SCOPE)

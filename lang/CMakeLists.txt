@@ -7,7 +7,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${YAMLCPP_INCLUDE_DIR}
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
-                    ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include
+
                     LangSource
                     LangPrimSource
 
@@ -17,11 +18,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     LangSource/Bison)
 
-if (Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-else()
-    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
-endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
@@ -116,8 +112,6 @@ endif()
 
 set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
-add_definitions(-DYYSTACK_USE_ALLOCA)
-
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
@@ -201,30 +195,20 @@ else()
 	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
 endif()
 
-set_property(TARGET libsclang
-	APPEND
-	PROPERTY COMPILE_DEFINITIONS BUILDING_SUPERCOLLIDER)
+target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC BUILDING_SUPERCOLLIDER)
+target_link_libraries(libsclang  ${PTHREADS_LIBRARIES})
 
-add_definitions(-DHAVE_HIDAPI)
+target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
+
 target_link_libraries( libsclang hidapi hidapi_parser )
-# target_link_libraries( sclang hidapi hidapi_parser )
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
-  target_link_libraries( libsclang ${UDEV_LIBRARIES} )
-#   target_link_libraries( sclang ${UDEV_LIBRARIES} )
+  target_link_libraries( libsclang ${UDEV_LIBRARIES})
 endif()
 if(HID_LIBUSB)
-  target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES} ${PTHREADS_LIBRARIES} )
+  target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES})
 endif()
-  
 
-# target_link_libraries( sclang hidapi hidapi_parser )
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
-  target_link_libraries( libsclang ${UDEV_LIBRARIES} )
-endif()
-if(HID_LIBUSB)
-  target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES} ${PTHREADS_LIBRARIES} )
-endif()
-  
+
 
 if (SC_WII OR APPLE)
 	if (BLUETOOTH_FOUND AND CWIID_FOUND)
@@ -234,17 +218,20 @@ if (SC_WII OR APPLE)
 	endif()
 endif()
 
+
 if (Boost_FOUND)
+	target_include_directories(libsclang PUBLIC ${Boost_INCLUDE_DIRS})
 	target_link_libraries(libsclang ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
+else()
+	target_include_directories(libsclang PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
+	target_link_libraries(libsclang boost_thread)
 endif()
+
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
 else()
-	set_property(TARGET libsclang
-		APPEND
-		PROPERTY COMPILE_DEFINITIONS NO_INTERNAL_SERVER
-		)
+	target_compile_definitions(libsclang PUBLIC NO_INTERNAL_SERVER)
 endif()
 
 if (NOT WIN32)
@@ -255,10 +242,8 @@ endif()
 ## external libraries
 if(READLINE_FOUND)
 	message(STATUS "Compiling with Readline support")
-	set_property(TARGET libsclang
-		APPEND
-		PROPERTY COMPILE_DEFINITIONS HAVE_READLINE)
-	include_directories(${READLINE_INCLUDE_DIR})
+	target_compile_definitions(libsclang PUBLIC HAVE_READLINE)
+	target_include_directories(libsclang PUBLIC ${READLINE_INCLUDE_DIR})
 	target_link_libraries(libsclang ${READLINE_LIBRARY})
 endif(READLINE_FOUND)
 
@@ -268,26 +253,24 @@ if (APPLE)
 	target_link_libraries(libsclang "-framework CoreMIDI")
 	target_link_libraries(libsclang "-framework CoreServices")
 	target_link_libraries(libsclang "-framework IOKit")
-	target_link_libraries(libsclang "-framework CoreFoundation")	
+	target_link_libraries(libsclang "-framework CoreFoundation")
 endif()
 
 if(ALSA_FOUND)
 	message(STATUS "Compiling with ALSA midi support")
-	set_property(TARGET libsclang
-		APPEND
-		PROPERTY COMPILE_DEFINITIONS HAVE_ALSA=1)
+	target_compile_definitions(libsclang PUBLIC HAVE_ALSA=1)
 	target_link_libraries(libsclang ${ALSA_LIBRARY})
 endif(ALSA_FOUND)
 
 if(SNDFILE_FOUND)
-	include_directories(${SNDFILE_INCLUDE_DIR})
+	target_include_directories(libsclang PUBLIC ${SNDFILE_INCLUDE_DIR})
 	target_link_libraries(libsclang ${SNDFILE_LIBRARIES})
 elseif(NOT NO_LIBSNDFILE)
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
 if (FFTW3F_FOUND)
-	include_directories (${FFTW3F_INCLUDE_DIR})
+	target_include_directories (libsclang ${FFTW3F_INCLUDE_DIR})
 	target_link_libraries(libsclang ${FFTW3F_LIBRARY})
 endif()
 
@@ -299,7 +282,7 @@ if (WIN32)
 endif()
 
 if (GC_SANITYCHECK)
-	add_definitions(-DGC_SANITYCHECK)
+	target_compile_definitions(libsclang PUBLIC GC_SANITYCHECK)
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -317,41 +300,22 @@ if(SC_IDE)
 endif()
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
+target_link_libraries(sclang libsclang)
 
-if (Boost_FOUND)
-	target_link_libraries(sclang libsclang ${Boost_THREAD_LIBRARY})
-else()
-        target_link_libraries(sclang libsclang boost_thread)
-endif()
-
-set_property(TARGET sclang
-	APPEND
-	PROPERTY COMPILE_DEFINITIONS USE_SC_TERMINAL_CLIENT BUILDING_SUPERCOLLIDER)
-
-if (PTHREADS_FOUND)
-	target_link_libraries(sclang ${PTHREADS_LIBRARIES})
-endif()
+target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
 
 if(LTO)
-	set_property(TARGET sclang libsclang
-					APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+	target_compile_definitions(libsclang PUBLIC -flto -flto-report)
 
 	set_property(TARGET sclang libsclang
 					APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
-if(APPLE)
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-
-	install(TARGETS sclang
-			DESTINATION "${scappauxresourcesdir}"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-elseif(WIN32)
+if(WIN32)
 	install(TARGETS sclang
 			DESTINATION "SuperCollider"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-else()
+elseif(NOT APPLE)
 	install(TARGETS sclang
 			RUNTIME DESTINATION "bin"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

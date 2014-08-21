@@ -21,7 +21,7 @@
 #include <boost/intrusive/detail/mpl.hpp>
 #include <boost/intrusive/detail/assert.hpp>
 #include <boost/intrusive/detail/is_stateful_value_traits.hpp>
-#include <boost/intrusive/pointer_traits.hpp>
+#include <boost/intrusive/detail/memory_util.hpp>
 #include <boost/cstdint.hpp>
 #include <cstddef>
 #include <climits>
@@ -31,6 +31,7 @@
 #include <boost/detail/no_exceptions_support.hpp>
 #include <functional>
 #include <boost/functional/hash.hpp>
+#include <boost/tti/tti.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -89,8 +90,6 @@ struct TRAITS_PREFIX##_bool_is_true\
 
 BOOST_INTRUSIVE_INTERNAL_STATIC_BOOL_IS_TRUE(internal_base_hook, hooktags::is_base_hook)
 BOOST_INTRUSIVE_INTERNAL_STATIC_BOOL_IS_TRUE(internal_any_hook, is_any_hook)
-BOOST_INTRUSIVE_INTERNAL_STATIC_BOOL_IS_TRUE(external_value_traits, external_value_traits)
-BOOST_INTRUSIVE_INTERNAL_STATIC_BOOL_IS_TRUE(external_bucket_traits, external_bucket_traits)
 BOOST_INTRUSIVE_INTERNAL_STATIC_BOOL_IS_TRUE(resizable, resizable)
 
 template <class T>
@@ -163,8 +162,8 @@ struct size_holder
    SizeType size_;
 };
 
-template<class SizeType>
-struct size_holder<false, SizeType>
+template<class SizeType, class Tag>
+struct size_holder<false, SizeType, Tag>
 {
    static const bool constant_time_size = false;
    typedef SizeType  size_type;
@@ -188,16 +187,16 @@ struct size_holder<false, SizeType>
    {}
 };
 
-template<class KeyValueCompare, class RealValueTraits>
+template<class KeyValueCompare, class ValueTraits>
 struct key_nodeptr_comp
    :  private detail::ebo_functor_holder<KeyValueCompare>
 {
-   typedef RealValueTraits                               real_value_traits;
-   typedef typename real_value_traits::value_type        value_type;
-   typedef typename real_value_traits::node_ptr          node_ptr;
-   typedef typename real_value_traits::const_node_ptr    const_node_ptr;
+   typedef ValueTraits                              value_traits;
+   typedef typename value_traits::value_type        value_type;
+   typedef typename value_traits::node_ptr          node_ptr;
+   typedef typename value_traits::const_node_ptr    const_node_ptr;
    typedef detail::ebo_functor_holder<KeyValueCompare>   base_t;
-   key_nodeptr_comp(KeyValueCompare kcomp, const RealValueTraits *traits)
+   key_nodeptr_comp(KeyValueCompare kcomp, const ValueTraits *traits)
       :  base_t(kcomp), traits_(traits)
    {}
 
@@ -221,33 +220,44 @@ struct key_nodeptr_comp
    bool operator()(const KeyType &key1, const KeyType2 &key2) const
    {  return base_t::get()(this->key_forward(key1), this->key_forward(key2));  }
 
-   const RealValueTraits *traits_;
+   const ValueTraits *const traits_;
 };
 
-template<class F, class RealValueTraits, algo_types AlgoType>
+template<class F, class ValueTraits, algo_types AlgoType>
 struct node_cloner
    :  private detail::ebo_functor_holder<F>
 {
-   typedef RealValueTraits                         real_value_traits;
-   typedef typename real_value_traits::node_traits node_traits;
+   typedef ValueTraits                         value_traits;
+   typedef typename value_traits::node_traits node_traits;
    typedef typename node_traits::node_ptr          node_ptr;
    typedef detail::ebo_functor_holder<F>           base_t;
    typedef typename get_algo< AlgoType
                             , node_traits>::type   node_algorithms;
    static const bool safemode_or_autounlink =
-      is_safe_autounlink<real_value_traits::link_mode>::value;
-   typedef typename real_value_traits::value_type  value_type;
-   typedef typename real_value_traits::pointer     pointer;
+      is_safe_autounlink<value_traits::link_mode>::value;
+   typedef typename value_traits::value_type  value_type;
+   typedef typename value_traits::pointer     pointer;
    typedef typename node_traits::node              node;
-   typedef typename real_value_traits::const_node_ptr    const_node_ptr;
+   typedef typename value_traits::const_node_ptr    const_node_ptr;
+   typedef typename value_traits::reference   reference;
+   typedef typename value_traits::const_reference const_reference;
 
-   node_cloner(F f, const RealValueTraits *traits)
+   node_cloner(F f, const ValueTraits *traits)
       :  base_t(f), traits_(traits)
    {}
 
+   // tree-based containers use this method, which is proxy-reference friendly
    node_ptr operator()(const node_ptr & p)
-   {  return this->operator()(*p); }
+   {
+      const_reference v = *traits_->to_value_ptr(p);
+      node_ptr n = traits_->to_node_ptr(*base_t::get()(v));
+      //Cloned node must be in default mode if the linking mode requires it
+      if(safemode_or_autounlink)
+         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(node_algorithms::unique(n));
+      return n;
+   }
 
+   // hashtables use this method, which is proxy-reference unfriendly
    node_ptr operator()(const node &to_clone)
    {
       const value_type &v =
@@ -260,23 +270,23 @@ struct node_cloner
       return n;
    }
 
-   const RealValueTraits *traits_;
+   const ValueTraits * const traits_;
 };
 
-template<class F, class RealValueTraits, algo_types AlgoType>
+template<class F, class ValueTraits, algo_types AlgoType>
 struct node_disposer
    :  private detail::ebo_functor_holder<F>
 {
-   typedef RealValueTraits                         real_value_traits;
-   typedef typename real_value_traits::node_traits node_traits;
+   typedef ValueTraits                         value_traits;
+   typedef typename value_traits::node_traits node_traits;
    typedef typename node_traits::node_ptr          node_ptr;
    typedef detail::ebo_functor_holder<F>           base_t;
    typedef typename get_algo< AlgoType
                             , node_traits>::type   node_algorithms;
    static const bool safemode_or_autounlink =
-      is_safe_autounlink<real_value_traits::link_mode>::value;
+      is_safe_autounlink<value_traits::link_mode>::value;
 
-   node_disposer(F f, const RealValueTraits *cont)
+   node_disposer(F f, const ValueTraits *cont)
       :  base_t(f), traits_(cont)
    {}
 
@@ -286,7 +296,7 @@ struct node_disposer
          node_algorithms::init(p);
       base_t::get()(traits_->to_value_ptr(p));
    }
-   const RealValueTraits *traits_;
+   const ValueTraits * const traits_;
 };
 
 template<class VoidPointer>
@@ -364,25 +374,180 @@ template<class Hook>
 void destructor_impl(Hook &, detail::link_dispatch<normal_link>)
 {}
 
-//This function uses binary search to discover the
-//highest set bit of the integer
-inline std::size_t floor_log2 (std::size_t x)
-{
-   const std::size_t Bits = sizeof(std::size_t)*CHAR_BIT;
-   const bool Size_t_Bits_Power_2= !(Bits & (Bits-1));
-   BOOST_STATIC_ASSERT(Size_t_Bits_Power_2);
+///////////////////////////
+// floor_log2  Dispatcher
+////////////////////////////
 
-   std::size_t n = x;
-   std::size_t log2 = 0;
+#if defined(_MSC_VER) && (_MSC_VER >= 1300)
 
-   for(std::size_t shift = Bits >> 1; shift; shift >>= 1){
-      std::size_t tmp = n >> shift;
-      if (tmp)
-         log2 += shift, n = tmp;
+   }}} //namespace boost::intrusive::detail
+
+   //Use _BitScanReverseXX intrinsics
+
+   #if defined(_M_X64) || defined(_M_AMD64) || defined(_M_IA64)   //64 bit target
+      #define BOOST_INTRUSIVE_BSR_INTRINSIC_64_BIT
+   #endif
+
+   #ifndef __INTRIN_H_	// Avoid including any windows system header
+      #ifdef __cplusplus
+      extern "C" {
+      #endif // __cplusplus
+
+      #if defined(BOOST_INTRUSIVE_BSR_INTRINSIC_64_BIT)   //64 bit target
+         unsigned char _BitScanReverse64(unsigned long *index, unsigned __int64 mask);
+         #pragma intrinsic(_BitScanReverse64)
+      #else //32 bit target
+         unsigned char _BitScanReverse(unsigned long *index, unsigned long mask);
+         #pragma intrinsic(_BitScanReverse)
+      #endif
+
+      #ifdef __cplusplus
+      }
+      #endif // __cplusplus
+   #endif // __INTRIN_H_
+
+   #ifdef BOOST_INTRUSIVE_BSR_INTRINSIC_64_BIT
+      #define BOOST_INTRUSIVE_BSR_INTRINSIC _BitScanReverse64
+      #undef BOOST_INTRUSIVE_BSR_INTRINSIC_64_BIT
+   #else
+      #define BOOST_INTRUSIVE_BSR_INTRINSIC _BitScanReverse
+   #endif
+
+   namespace boost {
+   namespace intrusive {
+   namespace detail {
+
+   inline std::size_t floor_log2 (std::size_t x)
+   {
+      unsigned long log2;
+      BOOST_INTRUSIVE_BSR_INTRINSIC( &log2, (unsigned long)x );
+      return log2;
    }
 
-   return log2;
-}
+   #undef BOOST_INTRUSIVE_BSR_INTRINSIC
+
+#elif defined(__GNUC__) && ((__GNUC__ >= 4) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)) //GCC >=3.4
+
+   //Compile-time error in case of missing specialization
+   template<class Uint>
+   struct builtin_clz_dispatch;
+
+   #if defined(BOOST_HAS_LONG_LONG)
+   template<>
+   struct builtin_clz_dispatch<unsigned long long>
+   {
+      static unsigned long long call(unsigned long long n)
+      {  return __builtin_clzll(n); }
+   };
+   #endif
+
+   template<>
+   struct builtin_clz_dispatch<unsigned long>
+   {
+      static unsigned long call(unsigned long n)
+      {  return __builtin_clzl(n); }
+   };
+
+   template<>
+   struct builtin_clz_dispatch<unsigned int>
+   {
+      static unsigned int call(unsigned int n)
+      {  return __builtin_clz(n); }
+   };
+
+   inline std::size_t floor_log2(std::size_t n)
+   {
+      return sizeof(std::size_t)*CHAR_BIT - std::size_t(1) - builtin_clz_dispatch<std::size_t>::call(n);
+   }
+
+#else //Portable methods
+
+////////////////////////////
+// Generic method
+////////////////////////////
+
+   inline std::size_t floor_log2_get_shift(std::size_t n, true_ )//power of two size_t
+   {  return n >> 1;  }
+
+   inline std::size_t floor_log2_get_shift(std::size_t n, false_ )//non-power of two size_t
+   {  return (n >> 1) + ((n & 1u) & (n != 1)); }
+
+   template<std::size_t N>
+   inline std::size_t floor_log2 (std::size_t x, integer<std::size_t, N>)
+   {
+      const std::size_t Bits = N;
+      const bool Size_t_Bits_Power_2= !(Bits & (Bits-1));
+
+      std::size_t n = x;
+      std::size_t log2 = 0;
+
+      std::size_t remaining_bits = Bits;
+      std::size_t shift = floor_log2_get_shift(remaining_bits, bool_<Size_t_Bits_Power_2>());
+      while(shift){
+         std::size_t tmp = n >> shift;
+         if (tmp){
+            log2 += shift, n = tmp;
+         }
+         shift = floor_log2_get_shift(shift, bool_<Size_t_Bits_Power_2>());
+      }
+
+      return log2;
+   }
+
+   ////////////////////////////
+   // DeBruijn method
+   ////////////////////////////
+
+   //Taken from:
+   //http://stackoverflow.com/questions/11376288/fast-computing-of-log2-for-64-bit-integers
+   //Thanks to Desmond Hume
+
+   inline std::size_t floor_log2 (std::size_t v, integer<std::size_t, 32>)
+   {
+      static const int MultiplyDeBruijnBitPosition[32] = 
+      {
+         0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
+         8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
+      };
+
+      v |= v >> 1;
+      v |= v >> 2;
+      v |= v >> 4;
+      v |= v >> 8;
+      v |= v >> 16;
+
+      return MultiplyDeBruijnBitPosition[(std::size_t)(v * 0x07C4ACDDU) >> 27];
+   }
+
+   inline std::size_t floor_log2 (std::size_t v, integer<std::size_t, 64>)
+   {
+      static const std::size_t MultiplyDeBruijnBitPosition[64] = {
+      63,  0, 58,  1, 59, 47, 53,  2,
+      60, 39, 48, 27, 54, 33, 42,  3,
+      61, 51, 37, 40, 49, 18, 28, 20,
+      55, 30, 34, 11, 43, 14, 22,  4,
+      62, 57, 46, 52, 38, 26, 32, 41,
+      50, 36, 17, 19, 29, 10, 13, 21,
+      56, 45, 25, 31, 35, 16,  9, 12,
+      44, 24, 15,  8, 23,  7,  6,  5};
+
+      v |= v >> 1;
+      v |= v >> 2;
+      v |= v >> 4;
+      v |= v >> 8;
+      v |= v >> 16;
+      v |= v >> 32;
+      return MultiplyDeBruijnBitPosition[((std::size_t)((v - (v >> 1))*0x07EDD5E59A4E28C2ULL)) >> 58];
+   }
+
+
+   inline std::size_t floor_log2 (std::size_t x)
+   {
+      const std::size_t Bits = sizeof(std::size_t)*CHAR_BIT;
+      return floor_log2(x, integer<std::size_t, Bits>());
+   }
+
+#endif
 
 //Thanks to Laurent de Soras in
 //http://www.flipcode.com/archives/Fast_log_Function.shtml
@@ -404,13 +569,13 @@ inline float fast_log2 (float val)
    //1+log2(m), m ranging from 1 to 2
    //3rd degree polynomial keeping first derivate continuity.
    //For less precision the line can be commented out
-   val = ((-1.0f/3.f) * val + 2.f) * val - (2.0f/3.f);
+   val = ((-1.f/3.f) * val + 2.f) * val - (2.f/3.f);
    return (val + log_2);
 }
 
 inline std::size_t ceil_log2 (std::size_t x)
 {
-   return ((x & (x-1))!= 0) + floor_log2(x);
+   return static_cast<std::size_t>((x & (x-1)) != 0) + floor_log2(x);
 }
 
 template<class SizeType, std::size_t N>
@@ -505,54 +670,52 @@ class exception_array_disposer
    }
 };
 
-template<class RealValueTraits, bool IsConst>
+template<class ValueTraits, bool IsConst>
 struct node_to_value
    :  public detail::select_constptr
       < typename pointer_traits
-            <typename RealValueTraits::pointer>::template rebind_pointer<void>::type
-      , is_stateful_value_traits<RealValueTraits>::value
+            <typename ValueTraits::pointer>::template rebind_pointer<void>::type
+      , is_stateful_value_traits<ValueTraits>::value
       >::type
 {
-   static const bool stateful_value_traits = is_stateful_value_traits<RealValueTraits>::value;
+   static const bool stateful_value_traits = is_stateful_value_traits<ValueTraits>::value;
    typedef typename detail::select_constptr
       < typename pointer_traits
-            <typename RealValueTraits::pointer>::
+            <typename ValueTraits::pointer>::
                template rebind_pointer<void>::type
       , stateful_value_traits >::type                 Base;
 
-   typedef RealValueTraits                                  real_value_traits;
-   typedef typename real_value_traits::value_type           value_type;
-   typedef typename real_value_traits::node_traits::node    node;
+   typedef ValueTraits                                 value_traits;
+   typedef typename value_traits::value_type           value_type;
+   typedef typename value_traits::node_traits::node    node;
    typedef typename detail::add_const_if_c
-         <value_type, IsConst>::type                        vtype;
+         <value_type, IsConst>::type                   vtype;
    typedef typename detail::add_const_if_c
-         <node, IsConst>::type                              ntype;
+         <node, IsConst>::type                         ntype;
    typedef typename pointer_traits
-      <typename RealValueTraits::pointer>::
-         template rebind_pointer<ntype>::type               npointer;
+      <typename ValueTraits::pointer>::
+         template rebind_pointer<ntype>::type          npointer;
    typedef typename pointer_traits<npointer>::
-      template rebind_pointer<const RealValueTraits>::type  const_real_value_traits_ptr;
+      template rebind_pointer<const ValueTraits>::type const_value_traits_ptr;
 
-   node_to_value(const const_real_value_traits_ptr &ptr)
+   node_to_value(const const_value_traits_ptr &ptr)
       :  Base(ptr)
    {}
 
    typedef vtype &                                 result_type;
    typedef ntype &                                 first_argument_type;
 
-   const_real_value_traits_ptr get_real_value_traits() const
-   {
-      if(stateful_value_traits)
-         return pointer_traits<const_real_value_traits_ptr>::static_cast_from(Base::get_ptr());
-      else
-         return const_real_value_traits_ptr();
-   }
+   const_value_traits_ptr get_value_traits() const
+   {  return pointer_traits<const_value_traits_ptr>::static_cast_from(Base::get_ptr());  }
+
+   result_type to_value(first_argument_type arg, false_) const
+   {  return *(value_traits::to_value_ptr(pointer_traits<npointer>::pointer_to(arg)));  }
+
+   result_type to_value(first_argument_type arg, true_) const
+   {  return *(this->get_value_traits()->to_value_ptr(pointer_traits<npointer>::pointer_to(arg))); }
 
    result_type operator()(first_argument_type arg) const
-   {
-      return *(this->get_real_value_traits()->to_value_ptr
-         (pointer_traits<npointer>::pointer_to(arg)));
-   }
+   {  return this->to_value(arg, bool_<stateful_value_traits>()); }
 };
 
 //This is not standard, but should work with all compilers
@@ -740,6 +903,40 @@ static typename uncast_types<ConstNodePtr>::non_const_pointer
 {
    return uncast_types<ConstNodePtr>::non_const_traits::const_cast_from(ptr);
 }
+
+// trivial header node holder
+template < typename NodeTraits >
+struct default_header_holder : public NodeTraits::node
+{
+    typedef NodeTraits node_traits;
+    typedef typename node_traits::node node;
+    typedef typename node_traits::node_ptr node_ptr;
+    typedef typename node_traits::const_node_ptr const_node_ptr;
+
+    default_header_holder() : node() {}
+
+    const_node_ptr get_node() const
+    { return pointer_traits< const_node_ptr >::pointer_to(*static_cast< const node* >(this)); }
+
+    node_ptr get_node()
+    { return pointer_traits< node_ptr >::pointer_to(*static_cast< node* >(this)); }
+
+    // (unsafe) downcast used to implement container-from-iterator
+    static default_header_holder* get_holder(const node_ptr &p)
+    { return static_cast< default_header_holder* >(boost::intrusive::detail::to_raw_pointer(p)); }
+};
+
+// type function producing the header node holder
+template < typename Value_Traits, typename HeaderHolder >
+struct get_header_holder_type
+{
+    typedef HeaderHolder type;
+};
+template < typename Value_Traits >
+struct get_header_holder_type< Value_Traits, void >
+{
+    typedef default_header_holder< typename Value_Traits::node_traits > type;
+};
 
 } //namespace detail
 
@@ -952,19 +1149,32 @@ struct fhtraits
    {  return const_hook_ptr(&*static_cast<const hook_type*>(&*n));  }
 };
 
-template<class RealValueTraits, bool IsConst, class Category>
+template<class ValueTraits>
+struct value_traits_pointers
+{
+   typedef BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_DEFAULT
+      (boost::intrusive::detail::
+      , ValueTraits, value_traits_ptr
+      , typename pointer_traits<typename ValueTraits::node_traits::node_ptr>::template
+         rebind_pointer<ValueTraits>::type)   value_traits_ptr;
+
+   typedef typename pointer_traits<value_traits_ptr>::template
+      rebind_pointer<ValueTraits const>::type const_value_traits_ptr;
+};
+
+template<class ValueTraits, bool IsConst, class Category>
 struct iiterator
 {
-   typedef RealValueTraits                                     real_value_traits;
-   typedef typename real_value_traits::node_traits             node_traits;
+   typedef ValueTraits                                         value_traits;
+   typedef typename value_traits::node_traits                  node_traits;
    typedef typename node_traits::node                          node;
    typedef typename node_traits::node_ptr                      node_ptr;
    typedef ::boost::intrusive::pointer_traits<node_ptr>        nodepointer_traits_t;
    typedef typename nodepointer_traits_t::template
       rebind_pointer<void>::type                               void_pointer;
-   typedef typename RealValueTraits::value_type                value_type;
-   typedef typename RealValueTraits::pointer                   nonconst_pointer;
-   typedef typename RealValueTraits::const_pointer             yesconst_pointer;
+   typedef typename ValueTraits::value_type                    value_type;
+   typedef typename ValueTraits::pointer                       nonconst_pointer;
+   typedef typename ValueTraits::const_pointer                 yesconst_pointer;
    typedef typename ::boost::intrusive::pointer_traits
       <nonconst_pointer>::reference                            nonconst_reference;
    typedef typename ::boost::intrusive::pointer_traits
@@ -980,48 +1190,45 @@ struct iiterator
          , difference_type
          , pointer
          , reference
-         > iterator_base;
+         > iterator_traits;
+   typedef typename value_traits_pointers
+      <ValueTraits>::value_traits_ptr                          value_traits_ptr;
+   typedef typename value_traits_pointers
+      <ValueTraits>::const_value_traits_ptr                    const_value_traits_ptr;
    static const bool stateful_value_traits =
-      detail::is_stateful_value_traits<real_value_traits>::value;
+      detail::is_stateful_value_traits<value_traits>::value;
 };
 
-template<class NodePtr, bool StatefulValueTraits = true>
+template<class NodePtr, class StoredPointer, bool StatefulValueTraits = true>
 struct iiterator_members
 {
-   typedef ::boost::intrusive::pointer_traits<NodePtr>   pointer_traits_t;
-   typedef typename pointer_traits_t::template
-      rebind_pointer<const void>::type                   const_void_pointer;
 
    iiterator_members()
    {}
 
-   iiterator_members(const NodePtr &n_ptr, const const_void_pointer &data)
+   iiterator_members(const NodePtr &n_ptr, const StoredPointer &data)
       :  nodeptr_(n_ptr), ptr_(data)
    {}
 
-   const_void_pointer get_ptr() const
+   StoredPointer get_ptr() const
    {  return ptr_;  }
 
    NodePtr nodeptr_;
-   const_void_pointer ptr_;
+   StoredPointer ptr_;
 };
 
-template<class NodePtr>
-struct iiterator_members<NodePtr, false>
+template<class NodePtr, class StoredPointer>
+struct iiterator_members<NodePtr, StoredPointer, false>
 {
-   typedef ::boost::intrusive::pointer_traits<NodePtr>   pointer_traits_t;
-   typedef typename pointer_traits_t::template
-      rebind_pointer<const void>::type                   const_void_pointer;
-
    iiterator_members()
    {}
 
-   iiterator_members(const NodePtr &n_ptr, const const_void_pointer &)
+   iiterator_members(const NodePtr &n_ptr, const StoredPointer &)
       : nodeptr_(n_ptr)
    {}
 
-   const_void_pointer get_ptr() const
-   {  return const_void_pointer();  }
+   StoredPointer get_ptr() const
+   {  return StoredPointer();  }
 
    NodePtr nodeptr_;
 };
