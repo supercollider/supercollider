@@ -8,15 +8,11 @@ include_directories(${CMAKE_SOURCE_DIR}/external_libraries
 					${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
 					)
 
-
 if (Boost_FOUND)
 	include_directories(${Boost_INCLUDE_DIRS})
 else()
 	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
-        set(Boost_THREAD_LIBRARY boost_thread)
 endif()
-
-set(Boost_THREAD_LIBRARY "")
 
 # here we choose who provides us with the FFT lib
 if (APPLE)
@@ -40,3 +36,6 @@ add_subdirectory(scsynth)
 if (SUPERNOVA)
 	add_subdirectory(supernova)
 endif()
+
+set(plugins "${plugins}" PARENT_SCOPE)
+set(supernova_plugins "${supernova_plugins}" PARENT_SCOPE)

@@ -23,6 +23,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include <atomic>
+
 #include <errno.h>
 #include <fcntl.h>
 #include <stdint.h>
@@ -126,12 +128,12 @@ private:
 	// language interface
 	PyrObject*		m_obj;
 
-	boost::atomic<bool>	m_dodone;
+	std::atomic<bool>	m_dodone;
 
 	// serial interface
 	Options			m_options;
 	int			m_fd;
-	boost::atomic<bool>	m_open;
+	std::atomic<bool>	m_open;
 	struct termios		m_termio;
 	struct termios		m_oldtermio;
 
@@ -141,7 +143,7 @@ private:
 	uint8_t			m_rxbuffer[kBufferSize];
 
 	// rx thread
-	boost::atomic<bool>	m_running;
+	std::atomic<bool>	m_running;
 	thread				m_thread;
 };
 
