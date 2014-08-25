@@ -196,7 +196,7 @@ else()
 endif()
 
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC BUILDING_SUPERCOLLIDER)
-target_link_libraries(libsclang  ${PTHREADS_LIBRARIES})
+target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
 target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
 
