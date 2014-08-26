@@ -140,7 +140,7 @@ elseif(NOT NO_LIBSNDFILE)
 endif(SNDFILE_FOUND)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR CMAKE_SYSTEM_NAME MATCHES "OpenBSD")
-	target_compile_definitions(libscsynth PUBLIC "DSC_PLUGIN_DIR=${CMAKE_INSTALL_PREFIX}/lib/SuperCollider/plugins")
+	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${CMAKE_INSTALL_PREFIX}/lib/SuperCollider/plugins\"")
 endif()
 
 
