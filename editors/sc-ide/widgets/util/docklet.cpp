@@ -39,13 +39,33 @@
 
 namespace ScIDE {
 
+DocketToolButton::DocketToolButton(QWidget *parent):
+    QToolButton(parent)
+{}
+
+
+void DocketToolButton::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    event->accept();
+}
+
+void DocketToolButton::mousePressEvent(QMouseEvent *event)
+{
+    if( event->button() == Qt::RightButton )
+        event->accept();
+    else
+        QToolButton::mousePressEvent(event);
+}
+
+
+
 DockletToolBar::DockletToolBar(const QString &title)
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     mOptionsMenu = new QMenu(this);
 
-    QToolButton *optionsBtn = new QToolButton;
+    QToolButton *optionsBtn = new DocketToolButton;
     optionsBtn->setIcon( optionsBtn->style()->standardIcon(QStyle::SP_TitleBarNormalButton) );
     optionsBtn->setIconSize( QSize(16,16) );
     optionsBtn->setMenu( mOptionsMenu );
@@ -67,7 +87,7 @@ DockletToolBar::DockletToolBar(const QString &title)
 
 void DockletToolBar::addAction (QAction *action)
 {
-    QToolButton *btn = new QToolButton;
+    QToolButton *btn = new DocketToolButton;
     btn->setIconSize( QSize(16,16) );
     btn->setDefaultAction( action );
     if (!btn->icon().isNull())
