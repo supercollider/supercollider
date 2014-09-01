@@ -92,8 +92,8 @@ SoundFile {
 	}
 
 	openWrite{ arg pathName;
-		pathName = pathName ? path;
-		^this.prOpenWrite(pathName)
+		path = pathName ? path;
+		^this.prOpenWrite(path)
 	}
 
 	prOpenWrite { arg pathName;
