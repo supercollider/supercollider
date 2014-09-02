@@ -111,6 +111,7 @@ signals:
 private slots:
     void onScLangStateChanged( QProcess::ProcessState );
     void onScLangReponse( const QString & selector, const QString & data );
+    void onServerStatusResponse();
     void updateToggleRunningAction();
     void updateRecordingAction();
     void updateEnabledActions();
