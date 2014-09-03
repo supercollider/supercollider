@@ -104,6 +104,10 @@ struct hid_device_element {
 	/** Pointer to the parent collection */
 	struct hid_device_collection *parent_collection;
 	
+#ifdef APPLE
+	IOHIDElementRef appleIOHIDElementRef;
+#endif
+	
 };
 
 struct hid_device_collection {
@@ -165,12 +169,16 @@ void hid_element_set_value_from_input( struct hid_device_element * element, int 
 void hid_element_set_rawvalue( struct hid_device_element * element, int value );
 void hid_element_set_logicalvalue( struct hid_device_element * element, float value );
 
+void hid_element_set_output_value( struct hid_dev_desc * devdesc, struct hid_device_element * element, int value );
+
 int hid_send_output_report( struct hid_dev_desc * devd, int reportid );
 int hid_send_output_report_old( struct hid_dev_desc * devd, int reportid );
 
 // int hid_parse_feature_report( char* buf, int size, hid_device_descriptor * descriptor );
 
 #ifdef APPLE
+int hid_send_element_output( struct hid_dev_desc * devdesc, struct hid_device_element * element );
+int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * devdesc );
 void hid_parse_element_info( struct hid_dev_desc * devdesc );
 #endif
 

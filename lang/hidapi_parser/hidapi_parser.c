@@ -199,25 +199,6 @@ void hid_free_collection( struct hid_device_collection * coll ){
   free( coll );
 }
 
-// void hid_descriptor_init( struct hid_device_descriptor * devd){
-//   devd->first = NULL;
-//   hid_set_descriptor_callback(devd, NULL, NULL);
-//   hid_set_element_callback(devd, NULL, NULL);
-// }
-
-// void hid_free_descriptor( struct hid_device_descriptor * devd){
-//   struct hid_device_element * cur_element = devd->first;
-//   struct hid_device_element * next_element;
-//   while (cur_element != NULL ) {
-//     next_element = cur_element->next;
-//     free( cur_element );
-//     cur_element = next_element;
-//   }
-//   free( devd );
-// //   hid_set_descriptor_callback(devd, NULL, NULL);
-// //   hid_set_element_callback(devd, NULL, NULL);
-// }
-
 void hid_set_descriptor_callback( struct hid_dev_desc * devd, hid_descriptor_callback cb, void *user_data ){
     devd->_descriptor_callback = cb;
     devd->_descriptor_data = user_data;
@@ -305,8 +286,6 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
   int next_byte_size = 0;
   int next_byte_type = 0;
   int next_val = 0;
-//   unsigned int u_next_val = 0;
-//   int u_next_val = 0;
   
   unsigned char toadd = 0;
   int byte_count = 0;
@@ -337,7 +316,6 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 	      char sbyte = descr_buf[i]; // descr_buf is signed already
 	      int shift = byte_count*8;
 	      next_val |= (int)(((unsigned char)(descr_buf[i])) << shift);
-// 	      u_next_val |= (int)(((unsigned char)(descr_buf[i])) << shift);
 #ifdef DEBUG_PARSER
 	      printf("\t nextval shift: %i", next_val);
 #endif
@@ -407,11 +385,6 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 		    break;
 		  case HID_LOGICAL_MIN:
 		    making_element->logical_min = hid_element_get_signed_value( next_val, byte_count );
-// 		    if ( byte_count == 1 ){
-// 		      making_element->logical_min = sbyte;
-// 		    } else {
-// 		      making_element->logical_min = next_val;
-// 		    }
 #ifdef DEBUG_PARSER
 		    printf("\n\tlogical min: %i", making_element->logical_min);
 #endif
@@ -428,7 +401,6 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 		    break;
 		  case HID_PHYSICAL_MIN:
 		    making_element->phys_min = hid_element_get_signed_value( next_val, byte_count );
-// 		    making_element->phys_min = next_val;
 #ifdef DEBUG_PARSER
 		    printf("\n\tphysical min: %i", making_element->phys_min);
 #endif
@@ -898,13 +870,16 @@ int hid_parse_single_byte( unsigned char current_byte, struct hid_parsing_byte *
 }
 
 int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * devdesc ){  
+
+#ifdef APPLE  
+  return hid_parse_input_elements_values( buf, devdesc );
+#else
   struct hid_parsing_byte pbyte; 
   pbyte.nextVal = 0;
   pbyte.currentSize = 10;
   pbyte.bitIndex = 0;
   pbyte.remainingBits = 0;
   pbyte.shiftedByte = 0;
-//    desc = (struct hid_dev_desc *) malloc( sizeof( struct hid_dev_desc ) );
 
   struct hid_device_collection * device_collection = devdesc->device_collection;
   struct hid_device_element * cur_element = device_collection->first_element;
@@ -942,6 +917,7 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
     }
   }
   return 0;
+#endif
 }
 
 void hid_throw_readerror( struct hid_dev_desc * devd ){
@@ -1070,7 +1046,6 @@ int hid_send_output_report_old( struct hid_dev_desc * devd, int reportid ){
       cur_element = hid_get_next_output_element_with_reportid(cur_element, reportid);
   }
   next_byte_size = cur_element->report_size/8;
-//   next_mod_bit_size = cur_element->report_size%8;
 
 #ifdef DEBUG_PARSER
     printf("report_size %i, bytesize %i, bitsize %i \t", cur_element->report_size, next_byte_size, next_mod_bit_size );
@@ -1114,7 +1089,6 @@ int hid_send_output_report_old( struct hid_dev_desc * devd, int reportid ){
 #endif      
 	cur_element = hid_get_next_output_element_with_reportid( cur_element, reportid );
 	next_byte_size = cur_element->report_size/8;
-// 	next_mod_bit_size = cur_element->report_size%8;	
       }      
     }
     buf[ i ] = curbyte;
@@ -1227,12 +1201,91 @@ void hid_close_device( struct hid_dev_desc * devdesc ){
   //TODO: more memory freeing?  
 }
 
+void hid_element_set_output_value( struct hid_dev_desc * devdesc, struct hid_device_element * element, int value ){
+    element->value = value;
+#ifdef APPLE    
+    hid_send_element_output( devdesc, element );
+#else
+    hid_send_output_report( devdesc, element->report_id );
+#endif
+}
+
 #ifdef APPLE
 
 #include <IOKit/hid/IOHIDManager.h>
 #include <IOKit/hid/IOHIDKeys.h>
 #include <CoreFoundation/CoreFoundation.h>
 
+// from: https://developer.apple.com/library/mac/documentation/devicedrivers/conceptual/HID/new_api_10_5/tn2187.html#//apple_ref/doc/uid/TP40000970-CH214-SW2
+
+int hid_send_element_output( struct hid_dev_desc * devdesc, struct hid_device_element * element ){
+  IOReturn  tIOReturn;
+  IOHIDDeviceRef device_handle = get_device_handle( devdesc->device );
+  IOHIDElementRef tIOHIDElementRef = element->appleIOHIDElementRef;
+
+  // get the logical mix/max for this LED element
+  CFIndex minCFIndex = IOHIDElementGetLogicalMin( tIOHIDElementRef );
+  CFIndex maxCFIndex = IOHIDElementGetLogicalMax( tIOHIDElementRef );                
+  // calculate the range
+  CFIndex modCFIndex = maxCFIndex - minCFIndex + 1;
+  // compute the value for this LED element
+  CFIndex tCFIndex = minCFIndex + ( element->value % modCFIndex );
+
+  uint64_t timestamp = 0; // create the IO HID Value to be sent
+  
+  IOHIDValueRef tIOHIDValueRef = IOHIDValueCreateWithIntegerValue( kCFAllocatorDefault, tIOHIDElementRef, timestamp, tCFIndex );
+  
+  if ( tIOHIDValueRef ) {
+    tIOReturn = IOHIDDeviceSetValue( device_handle, tIOHIDElementRef, tIOHIDValueRef );
+    CFRelease( tIOHIDValueRef );
+    if ( tIOReturn == kIOReturnSuccess ){
+      return 0;
+    }
+  }
+  return -1;
+}
+
+// int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * devdesc ){  
+int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * devdesc ){
+  struct hid_device_collection * device_collection = devdesc->device_collection;
+  struct hid_device_element * cur_element = device_collection->first_element;
+  int newvalue;
+  int reportid = 0;
+  
+  IOHIDDeviceRef device_handle = get_device_handle( devdesc->device );
+  IOHIDValueRef newValueRef;
+  IOReturn  tIOReturn;
+  
+  if ( devdesc->number_of_reports > 1 ){
+      reportid = (int) buf[i];
+  }
+  
+  if ( cur_element->io_type != 1 || ( cur_element->report_id != reportid ) ){
+      cur_element = hid_get_next_input_element_with_reportid(cur_element, reportid );
+  }
+  
+  while( cur_element != NULL ){
+	if ( devdesc->_element_callback != NULL ){
+	  tIOReturn = IOHIDDeviceGetValue( device_handle, cur_element->appleIOHIDElementRef, newValueRef );
+	  if ( tIOReturn == kIOReturnSuccess ){
+	    newvalue = IOHIDValueGetIntegerValue( newValueRef );
+	    if ( newvalue != cur_element->rawvalue || cur_element->repeat ){
+	      hid_element_set_value_from_input( cur_element, newvalue );
+	      devdesc->_element_callback( cur_element, devdesc->_element_data );
+	    }
+	  }
+	}
+	cur_element = hid_get_next_input_element_with_reportid( cur_element, reportid ); 
+  }
+  return 0;  
+}
+
+/*
+IOReturn  tIOReturn = IOHIDDeviceGetValue(
+                            deviceRef,  // IOHIDDeviceRef for the HID device
+                            elementRef, // IOHIDElementRef for the HID element
+                            valueRef);  // IOHIDValueRef for the HID element's new value
+*/
 
 void hid_parse_element_info( struct hid_dev_desc * devdesc )
 {
@@ -1294,6 +1347,7 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc )
 //  	      collection_nesting++;
 	  } else {
 	      struct hid_device_element * new_element = hid_new_element();
+	      new_element->appleIOHIDElementRef = tIOHIDElementRef; // set the element ref
 	      new_element->index = device_collection->num_elements;
 	      // check input (1), output (2), or feature (3)
 	      // type - this we parse later on again, so perhaps would be good to bittest this rightaway in general
