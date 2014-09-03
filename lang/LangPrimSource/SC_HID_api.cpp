@@ -912,8 +912,9 @@ int prHID_API_SetElementOutput( VMGlobals* g, int numArgsPushed ){
 			curelement = hid_get_next_output_element( curelement );
 		}
 		if ( thiselement != NULL ){
-			thiselement->value = value;
-			hid_send_output_report( devdesc, thiselement->report_id );
+			hid_element_set_output_value( devdesc, this_element, value );
+// 			thiselement->value = value;
+// 			hid_send_output_report( devdesc, thiselement->report_id );
 		}
 	}
 	return errNone;
