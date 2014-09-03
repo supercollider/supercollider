@@ -1249,6 +1249,7 @@ int hid_send_element_output( struct hid_dev_desc * devdesc, struct hid_device_el
 int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * devdesc ){
   struct hid_device_collection * device_collection = devdesc->device_collection;
   struct hid_device_element * cur_element = device_collection->first_element;
+  int i=0;
   int newvalue;
   int reportid = 0;
   
@@ -1266,7 +1267,7 @@ int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * d
   
   while( cur_element != NULL ){
 	if ( devdesc->_element_callback != NULL ){
-	  tIOReturn = IOHIDDeviceGetValue( device_handle, cur_element->appleIOHIDElementRef, newValueRef );
+	  tIOReturn = IOHIDDeviceGetValue( device_handle, cur_element->appleIOHIDElementRef, &newValueRef );
 	  if ( tIOReturn == kIOReturnSuccess ){
 	    newvalue = IOHIDValueGetIntegerValue( newValueRef );
 	    if ( newvalue != cur_element->rawvalue || cur_element->repeat ){
