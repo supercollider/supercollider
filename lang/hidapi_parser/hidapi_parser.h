@@ -33,33 +33,16 @@ extern "C" {
 #endif
 
 #include <hidapi.h>
-  
-// typedef struct _hid_device_element hid_device_element;
-// typedef struct _hid_device_descriptor hid_device_descriptor;
-// typedef struct _hid_dev_desc hid_dev_desc;
 
 struct hid_device_element;
 struct hid_device_collection;
 // struct hid_device_descriptor;
 struct hid_dev_desc;
 
-// struct hid_element_cb;
-// struct hid_descriptor_cb;
-
 typedef void (*hid_element_callback) ( struct hid_device_element *element, void *user_data);
 // typedef void (*hid_descriptor_callback) ( struct hid_device_descriptor *descriptor, void *user_data);
 typedef void (*hid_descriptor_callback) ( struct hid_dev_desc *descriptor, void *user_data);
 typedef void (*hid_device_readerror_callback) ( struct hid_dev_desc *descriptor, void *user_data);
-
-// typedef struct _hid_element_cb {
-//     hid_element_callback cb;    
-//     void *data;
-// } hid_element_cb;
-// 
-// typedef struct _hid_descriptor_cb {
-//     hid_descriptor_callback cb;    
-//     void *data;
-// } hid_descriptor_cb;
 
 struct hid_dev_desc {
     int index;
@@ -147,39 +130,16 @@ struct hid_device_collection {
 	struct hid_device_element *first_element;  
 };
 
-// struct hid_device_descriptor {
-// 	int num_elements;
-// 	int num_collections;
-// 
-// 
-// 	/** Pointer to the first collection */
-// 	struct hid_device_collection *first_collection;
-// 	/** Pointer to the first element */
-// 	struct hid_device_element *first;
-// 
-// 		/** pointers to callback function */
-// 	hid_element_callback _element_callback;
-// 	void *_element_data;
-// 	hid_descriptor_callback _descriptor_callback;
-// 	void *_descriptor_data;
-// };
-
 // higher level functions:
 struct hid_dev_desc * hid_read_descriptor( hid_device *devd );
 struct hid_dev_desc * hid_open_device_path( const char *path, unsigned short vendor, unsigned short product );
 struct hid_dev_desc * hid_open_device(  unsigned short vendor, unsigned short product, const wchar_t *serial_number );
 extern void hid_close_device( struct hid_dev_desc * devdesc );
 
-// struct hid_device_descriptor * hid_new_descriptor();
-// void hid_free_descriptor( struct hid_device_descriptor * devd);
-// void hid_free_device_descriptor( struct hid_dev_desc * devd);
 struct hid_device_collection * hid_new_collection();
 void hid_free_collection( struct hid_device_collection * coll );
 struct hid_device_element * hid_new_element();
 void hid_free_element( struct hid_device_element * ele);
-
-
-// void hid_descriptor_init( struct hid_device_descriptor * devd);
 
 void hid_throw_readerror( struct hid_dev_desc * devd );
 
@@ -195,7 +155,6 @@ struct hid_device_element * hid_get_next_output_element( struct hid_device_eleme
 struct hid_device_element * hid_get_next_output_element_with_reportid( struct hid_device_element * curel, int reportid );
 struct hid_device_element * hid_get_next_feature_element( struct hid_device_element * curel );
 
-// int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * devdesc );
 int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * devdesc );
 
 float hid_element_resolution( struct hid_device_element * element );
