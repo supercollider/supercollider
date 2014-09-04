@@ -44,7 +44,7 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		target_include_directories(boost_thread PUBLIC ${PTHREADS_INCLUDE_DIR})
 	endif()
 	if(WIN32)
-		target_add_definitions( boost_thread PRIVATE BOOST_THREAD_BUILD_LIB)
+		target_compile_definitions( boost_thread PRIVATE BOOST_THREAD_BUILD_LIB)
 	endif()
 
 
