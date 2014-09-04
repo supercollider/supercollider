@@ -56,7 +56,8 @@ public:
 
     void lock() BOOST_NOEXCEPT
     {
-        for(;;) {
+        for(;;)
+        {
             while( state.load(detail::atomic_ns::memory_order_relaxed) != (bool)unlocked_state )
                 detail::pause();
 
@@ -98,7 +99,8 @@ public:
 
     void lock() BOOST_NOEXCEPT
     {
-        for(;;) {
+        for(;;)
+        {
             if (try_lock())
                 break;
             detail::pause();
