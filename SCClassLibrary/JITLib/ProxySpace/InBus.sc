@@ -1,42 +1,46 @@
-InBus {
+InBus : UGen {
 
-	*ar { | bus, numChannels = 2, offset = 0 |
-		^this.getOutput(bus.asBus, 'audio', numChannels, offset);
+	*ar { | bus, numChannels, offset = 0, clip |
+		^this.multiNew('audio', Ref(bus), numChannels, offset, clip);
 	}
 
-	*kr { | bus, numChannels=1, offset = 0 |
-		^this.getOutput(bus.asBus, 'control', numChannels, offset);
+	*kr { | bus, numChannels, offset = 0, clip |
+		^this.multiNew('control', Ref(bus), numChannels, offset, clip);
 	}
 
-	*getOutput { | bus, argRate, numChannels, offset = 0 |
+	*new1 { |rate, bus, numChannels, offset, clip|
+		var out, index, n, busRate;
+		bus = bus.value.asBus;
+		busRate = bus.rate;
+		n = bus.numChannels;
+		numChannels = numChannels ? n;
 
-		var out, index;
-		var rate = bus.rate;
-		var startIndex = bus.index + offset;
-		var n = bus.numChannels;
-		if(n >= numChannels) {
-			index = startIndex.min(n + bus.index);
+		if(offset.isNumber and: { offset + numChannels <= n }) {
+			index = bus.index + offset;  // then we can optimize
 		} {
-			index = Array.fill(numChannels, { arg i; startIndex + (i % n) });
+			offset = offset + (0 .. numChannels-1);
+			offset = if(clip === \wrap) { offset % n } { min(offset, n - 1) };
+			index = (bus.index + offset).unbubble;
 			numChannels = 1;
 		};
 
-		out = if(offset.isInteger) {
-			if(rate === 'audio') {
+
+		out = if(index.isInteger) {
+			if(busRate === 'audio') {
 				InFeedback.ar(index, numChannels)
 			} {
 				In.kr(index, numChannels)
 			}
 		} {
-			if(rate === 'audio') {
+			if(busRate === 'audio') {
 				XInFeedback.ar(index, numChannels)
 			} {
 				XIn.kr(index, numChannels)
 			}
 		};
 
-		^if(argRate === rate) { out } { // if not the same rate, convert rates
-			if(argRate === 'audio') { K2A.ar(out) } { A2K.kr(out) }
+		^if(rate === busRate) { out } { // if not the same rate, convert rates
+			if(rate === 'audio') { K2A.ar(out) } { A2K.kr(out) }
 		};
 
 	}
@@ -85,6 +89,7 @@ Monitor {
 	var <ins, <outs, <amps, <fadeTimes;
 	var <vol = 1.0;
 	var <group, synthIDs;
+	var defaults;
 
 	// mapping between multiple contiguous channels
 
@@ -120,7 +125,7 @@ Monitor {
 		group = nil;
 		synthIDs = [];
 		if(oldGroup.isPlaying) {
-			groupFreeTime = if(argFadeTime.notNil) { argFadeTime } { fadeTimes.maxItem };
+			groupFreeTime = if(argFadeTime.notNil) { argFadeTime } { fadeTimes.asArray.maxItem ? 0.02 };
 			oldGroup.release(argFadeTime);
 			SystemClock.sched(groupFreeTime, { oldGroup.server.bind { oldGroup.free } })
 		};
@@ -137,8 +142,8 @@ Monitor {
 
 	vol_ { | val |
 		if(val == vol) { ^this };
-		vol = val;
-		this.amps = amps;
+		vol = val; // todo: what to do if vol is a bus? is there a generalisation?
+		if(this.isPlaying) { group.set(\vol, val) };
 	}
 
 	// backward compatibility
@@ -163,22 +168,35 @@ Monitor {
 		^fadeTimes !? { fadeTimes.unbubble }
 	}
 
+	// keeping default arguments
+
+	updateDefault { |argName, value|
+		defaults = defaults ? ();
+		^if(value.isNil) {
+			defaults.at(argName)
+		} {
+			defaults.put(argName, value);
+			value
+		}
+	}
+
 	// multi channel interface
 
 	outs_ { | indices |
 		outs = indices;
+		this.updateDefault(\outs, indices);
 		if(this.isPlaying) {
 			group.server.listSendBundle(group.server.latency,
 				[15, synthIDs, "out", outs.flat.keep(synthIDs.size)].flop
 			)
-		}
+		};
 	}
 
 	amps_ { | values |
 		amps = values;
 		if (this.isPlaying) {
 			group.server.listSendBundle(group.server.latency,
-				[15, synthIDs, "vol", values.flat.keep(synthIDs.size) * vol].flop
+				[15, synthIDs, "level", values.flat.keep(synthIDs.size)].flop
 			);
 		};
 	}
@@ -201,30 +219,25 @@ Monitor {
 
 		var synthArgs, server;
 
-		ins = argIns;
-		outs = argOuts ? outs ?? { (0..ins.size-1) };
-		amps = argAmps ? amps ? #[1.0];
-		fadeTimes = argFadeTime ? fadeTimes ? #[0.02];
-		vol = argVol ? vol ? 1.0;
+		ins = argIns ? ins;
+		outs = argOuts ? outs;
+		amps = argAmps ? amps;
+		fadeTimes = argFadeTime ? fadeTimes;
+		vol = (argVol ? vol).asControlInput;
 
-		synthArgs = [ins, outs, amps, fadeTimes].asControlInput.flop;
+		synthArgs = [
+			ins,
+			outs ?? { (0..ins.size-1) },
+			amps ? #[1.0],
+			fadeTimes ? #[0.02]
+		].asControlInput.flop;
 
 		if(this.isPlaying) {
-			if(multi.not) {
-				if(argFadeTime.notNil) {
-					argFadeTime = argFadeTime.asControlInput.asArray;
-					synthIDs.do { |id, i|
-						bundle.add([15, id, "gate", argFadeTime.wrapAt(i).neg])
-					}
-				} {
-					bundle.add([15, group.nodeID, "gate", 0]);
-				}
-			}
+			if(multi.not) { this.stopToBundle(bundle, argFadeTime) }
 		} {
 			this.newGroupToBundle(bundle, inGroup, addAction)
 		};
 
-		synthIDs = [];
 		inGroup = inGroup.asGroup;
 		server = group.server;
 
@@ -241,34 +254,42 @@ Monitor {
 					id, 1, group.nodeID,
 					"out", item,
 					"in", in,
-					"vol", amp.clipAt(j) * vol,
-					"fadeTime", fadeTime.clipAt(j)
+					"level", amp.clipAt(j),
+					"fadeTime", fadeTime.clipAt(j),
+					"vol", vol
 				])
 			}
 		};
 	}
 
-	playToBundle { | bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels,
+
+	playToBundle { | bundle, fromIndex, fromNumChannels, toIndex, toNumChannels,
 		inGroup, multi = false, volume, argFadeTime, addAction |
 
-		var outArray, inArray, ampArray;
+		var outArray, inArray;
 
-		toIndex = toIndex ?? { this.out ? 0 };
-		toNumChannels = toNumChannels ? fromNumChannels;
-		fromNumChannels = min(fromNumChannels, toNumChannels);
+		toIndex = this.updateDefault(\toIndex, toIndex) ? 0;
+		fromNumChannels = this.updateDefault(\fromNumChannels, fromNumChannels) ? 2;
+		toNumChannels = this.updateDefault(\toNumChannels, toNumChannels) ? fromNumChannels;
 
 		inArray = fromIndex + (0..fromNumChannels-1);
 		outArray = toIndex + (0..toNumChannels-1);
-		this.playNToBundle(bundle, outArray, ampArray, inArray, volume, argFadeTime, inGroup, addAction, multi: multi)
+		this.playNToBundle(bundle, outArray, nil, inArray, volume, argFadeTime, inGroup, addAction, multi: multi)
 	}
 
 
 	playNBusToBundle { | bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction, multi = false |
 
-		var size;
-		outs = outs ?? { this.outs.unbubble } ? 0;	// remember old ones if none are given
-		if (outs.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
-		size = outs.size;
+		if(bus.rate == \control) {
+			"Can't monitor a control rate bus.".warn;
+			this.stopToBundle(bundle);
+			^this
+		};
+		ins = this.updateDefault(\offsetIns, ins);
+		outs = this.updateDefault(\outs, outs) ? 0;
+
+		if (outs.unbubble.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
+
 		ins = if(ins.notNil) {
 			ins.wrap(0, bus.numChannels - 1).asArray
 		} {
@@ -277,7 +298,6 @@ Monitor {
 
 		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction, multi: multi)
 	}
-
 
 	newGroupToBundle { | bundle, target, addAction=(\addToTail) |
 		target = target.asGroup;
@@ -288,9 +308,24 @@ Monitor {
 	}
 
 
-	stopToBundle { | bundle |
-		bundle.add([15, group.nodeID, "gate", 0]);
-		synthIDs = [];
+	stopToBundle { | bundle, argFadeTime, clearMappings = false |
+		if(synthIDs.notEmpty) {
+			bundle.add(['/error', -1]);
+			if(argFadeTime.notNil) {
+				argFadeTime = argFadeTime.asControlInput.asArray;
+				synthIDs.do { |id, i|
+					bundle.add([15, id, "gate", 0, "fadeTime", argFadeTime.wrapAt(i)])
+				}
+			} {
+				bundle.add([15, group.nodeID, "gate", 0]);
+			};
+			bundle.add(['/error', -2]);
+			synthIDs = [];
+		};
+		if(clearMappings) {
+			ins = outs = amps = fadeTimes = nil;
+			defaults.clear;
+		};
 	}
 
 	hasSeriesOuts {

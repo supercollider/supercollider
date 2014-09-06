@@ -34,7 +34,7 @@ code::
 "Hello World!".postln;
 ::
 
-To execute it, simply click to place the cursor on the same line as the code and then press the enter key. Note that the 'enter' key is not the same as the 'return' key. The 'enter' key is the one that is on the number pad. On Mac laptops there is usually a separate enter key down at bottom of the keyboard towards the right, or you can hold down the 'fn' or function key, and press 'return'. If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return( on Some Macs), or Shift-Return. Try this now.
+To execute it, simply click to place the cursor somewhere on the same line as the code and then press Ctrl-Enter (Cmd-Enter on the Mac) or Shift-Enter. Try this now.
 
 If all went well, you should see this in the post window.
 
@@ -47,7 +47,9 @@ Now let's take a closer look at the code. The first bit, code::"Hello World!"::,
 
 The second bit, code::.postln;::, says 'print me (or a meaningful description of me) to the post window.' Remember postln, it's your friend. You can apply it to almost anything in SC and get something meaningful back. This can be very handy when tracking down bugs in your code.
 
-Why did it print twice? Well, when you execute code in SC, it always posts the last thing executed. So in this case we didn't really need the code::postln:: bit. But in the following example we would. Select both lines of text by clicking and dragging over them, and then press enter.
+Why did it print twice? Well, when you execute code in SC, it always posts the result of the last bit of code (the last statement). So it first prints because we explicitly told it to print, and then it prints the result of this operation, which happens to be the same in this case.
+
+So in this case we didn't really need the code::postln:: bit. But in the following example we would. Select both lines of text by clicking and dragging over them, and then press enter.
 
 code::
 "Hello World!".postln;
@@ -65,7 +67,7 @@ code::
 )
 ::
 
-When code is not surrounded by parentheses it is generally intended to be executed one line at a time.
+When code is not surrounded by parentheses it is generally intended to be executed one line at a time. You can have your cursor anywhere in this region and press Ctrl-Enter (Cmd-Enter on the Mac) - this selects the whole region and executes it.
 
 Note that each of the lines within the block of code ends with a semi-colon. This is very important when executing multiple lines of code, as it's how SC knows where to separate commands. Without a semi-colon above, you would get an error posted.
 
@@ -104,9 +106,15 @@ As well, sometimes the post window becomes full of stuff and hard to read. You c
 
 section::The World According to SuperCollider
 
-SuperCollider is actually two programs: The language or 'client' app, which is what you're looking at now, and the server, which does the actual synthesis and calculation of audio. The former is a graphical application with menus, document windows, nice GUI features and a sophisticated programming language; and the latter is a mean, lean, efficient UNIX command line application (meaning it runs without a nice modern GUI).
+SuperCollider is actually three programs:
+list::
+##The text editor (or IDE) which you are looking at,
+##the language (sclang, or 'client' app),
+##and the server, which does the actual synthesis and calculation of audio.
+::
+The sclang part is a sophisticated programming language with nice GUI features; and the server part is a mean, lean, efficient UNIX command line application (meaning it runs without any GUI representation).
 
-The two communicate by a protocol called Open Sound Control (OSC), over either UDP or TCP, which are network protocols also used on the internet. Don't think from this that the two applications must run on different computers (they can, which can have definite performance advantages), or that they need to be connected to the internet (although it is possible to have clients and servers in diffferent parts of the world communicating!!). Most of the time they will be running on the same machine, and the 'networking' aspect of things will be relatively transparent for you.
+They communicate by a protocol called Open Sound Control (OSC), over either UDP or TCP, which are network protocols also used on the internet. Don't think from this that the two applications must run on different computers (they can, which can have definite performance advantages), or that they need to be connected to the internet (although it is possible to have clients and servers in diffferent parts of the world communicating!!). Most of the time they will be running on the same machine, and the 'networking' aspect of things will be relatively transparent for you.
 
 You can only communicate with the server using OSC messages over the network, but luckily the language app has lots of powerful objects which represent things on the server and allow you to control them easily and elegantly. Understanding how exactly that works is crucial to mastering SC, so we'll be talking about that in some depth.
 

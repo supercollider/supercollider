@@ -19,8 +19,6 @@ Creates a new instance of View and makes it a child of another View or Window, e
 
 note::
 
-strong::Qt GUI: ::
-
 The 'parent' argument may be omitted, in which case the view will be displayed as a window on its own, when link::Classes/View#-front#shown::.
 
 The 'bounds' argument may be omitted, in which case the view will be created with its preferred size at position (0,0).
@@ -34,10 +32,6 @@ The instance of View or Window that the new View will become a child of.
 argument:: bounds
 A Rect or a Point describing size and position of the new View. If a Point is given, its coordinates will denote the view's size, while the view's position will be (0,0). Position is measured relative to the parent's top-left corner.
 
-returns::
-note::
-SuperCollider has different GUI kits implementing the same functionality on different platforms. The View's constructor will return an instance of the equivalent class of the currently active GUI kit. See link::Guides/GUI-Introduction:: for detailed explanation.
-::
 
 
 METHOD:: globalKeyDownAction
@@ -88,7 +82,6 @@ METHOD:: removeAll
 	Removes all the children of the view and destroys them. After this method is called, the former child views are not usable anymore.
 
 METHOD:: close
-	note:: only in Qt GUI ::
 
 	If link::#-deleteOnClose:: is true, this method has the same effect as link::#-remove::, otherwise makes the view invisible.
 
@@ -108,8 +101,6 @@ SUBSECTION:: Visibility
 METHOD:: visible
 	Gets or sets wether the view is visible.
 
-	In Qt:
-
 	Making a child view invisible means it does not occupy any space from the standpoint of the layout that contains it, so the layout will distribute the space the view occupied when visible among other views. When the view becomes visible again it is given back the same space.
 
 	If the view has no parent, setting this to true has the same effect as link::#-front::, and setting it to false closes the window without destroying it.
@@ -118,27 +109,27 @@ METHOD:: visible
 		A Boolean stating the visibility of the view.
 
 METHOD:: front
-	note:: only in Qt GUI ::
+
 	If the view does not have a parent, displays it on the screen as a window (it has the same effect as setting link::#-visible:: to true), otherwise it has no effect.
 
 METHOD:: minimize
-	note:: only in Qt GUI ::
+
 	If the view is a window, hides it (only keep it present in the dock/taskbar/etc.).
 
 METHOD:: unminimize
-	note:: only in Qt GUI ::
+
 	If the view is a window, restores the its previous state after being minimized.
 
 METHOD:: fullScreen
-	note:: only in Qt GUI ::
+
 	If the view is a window, displays it full-screen.
 
 METHOD:: endFullScreen
-	note:: only in Qt GUI ::
+
 	If the view is a window, restores its previous state after being displayed full-screen.
 
 METHOD:: alwaysOnTop
-	note:: only in Qt GUI ::
+
 
 	If the view is a window, gets or sets whether it should always stay on top of other windows.
 
@@ -161,23 +152,23 @@ METHOD:: absoluteBounds
 	returns:: A Rect describing the absolute position and the size of the view on the screen.
 
 METHOD:: sizeHint
-	note:: only in Qt GUI ::
+
 	returns:: A Size describing the preferred size of the view to comfortably display its contents and allow useful interaction.
 
 METHOD:: minSizeHint
-	note:: only in Qt GUI ::
+
 
 	returns:: A Size describing the minimum size of the view to be able to display its contents and allow any interaction.
 
 METHOD:: maxSize
-	note:: only in Qt GUI ::
+
 	Set maximum allowed size of the view. The view will not be able to grow larger than this size, neither by user interaction nor programmatically.
 
 	argument:: size
 		A Size.
 
 METHOD:: minSize
-	note:: only in Qt GUI ::
+
 	Set minimum allowed size of the view. The view will not be able to shrink smaller than this size, neither by user interaction nor programmatically.
 
 	argument:: size
@@ -185,28 +176,28 @@ METHOD:: minSize
 
 
 METHOD:: fixedSize
-	note:: only in Qt GUI ::
+
 	Set both minimum and maximum allowed size of the view, thus making it non-resizable.
 
 	argument:: size
 		A Size.
 
 METHOD:: fixedWidth
-	note:: only in Qt GUI ::
+
 	Set both minimum and maximum allowed width of the view, thus making it non-resizable.
 
 	argument:: width
 		An Int.
 
 METHOD:: fixedHeight
-	note:: only in Qt GUI ::
+
 	Set both minimum and maximum allowed height of the view, thus making it non-resizable.
 
 	argument:: height
 		An Int.
 
 METHOD:: maxWidth
-	note:: only in Qt GUI ::
+
 	Set maximum allowed width of the view, the view will not be able to grow larger in width, neither by user interaction nor programmatically.
 
 	argument:: width
@@ -214,7 +205,7 @@ METHOD:: maxWidth
 
 
 METHOD:: minWidth
-	note:: only in Qt GUI ::
+
 	Set minimum allowed width of the view, the view will not be able to shrink smaller in width, neither by user interaction nor programmatically.
 
 	argument:: width
@@ -222,7 +213,7 @@ METHOD:: minWidth
 
 
 METHOD:: maxHeight
-	note:: only in Qt GUI ::
+
 	Set maximum allowed height of the view, the view will not be able to grow larger in height, neither by user interaction nor programmatically.
 
 	argument:: height
@@ -231,14 +222,14 @@ METHOD:: maxHeight
 
 
 METHOD:: minHeight
-	note:: only in Qt GUI ::
+
 	Set minimum allowed height of the view, the view will not be able to shrink smaller in height, neither by user interaction nor programmatically.
 
 	argument:: height
 		An Int.
 
 METHOD:: moveTo
-	note:: only in Qt GUI ::
+
 	Move the view to new position, preserving its size.
 
 	argument:: x
@@ -248,7 +239,7 @@ METHOD:: moveTo
 			An Int: the vertical position of the new position.
 
 METHOD:: resizeTo
-	note:: only in Qt GUI ::
+
 	Resize the view, preserving its position.
 
 	argument:: width
@@ -264,7 +255,7 @@ METHOD:: resize
 		An Int (1 to 9) defining the auto-resize behavior. See link::Reference/Resize:: for a list of valid resize modes.
 
 METHOD:: decorator
-	note:: only in Qt GUI ::
+
 
 	Get or set the decorator object, that automatically manages the positioning of new children of the view when they are created. See link::Guides/GUI-Introduction#decorators:: for further explanation.
 
@@ -272,7 +263,7 @@ METHOD:: decorator
 		An instance of a decorator class (e.g. FlowLayout).
 
 METHOD:: addFlowLayout
-	note:: only in Qt GUI ::
+
 
 	A convenience method which sets decorator to a new instance of FlowLayout. See link::Classes/FlowLayout:: for examples.
 
@@ -285,7 +276,7 @@ METHOD:: addFlowLayout
 	returns:: The new FlowLayout instance.
 
 METHOD:: flow
-	note:: only in Qt GUI ::
+
 
 	Creates a FlowView as a child of the view, and then evalutes the object given in the 'func' argument. It is most common to pass a Function for 'func' in which the FlowView is filled with other child views.
 
@@ -300,7 +291,7 @@ METHOD:: flow
 	returns:: The new FlowView instance.
 
 METHOD:: layout
-	note:: only in Qt GUI ::
+
 
 	Get or set the layout object, that automatically manages the position and the size of the children of the view dynamically, in relation to the view's size. See link::Guides/GUI-Introduction#layouts:: for further explanation.
 
@@ -311,7 +302,7 @@ METHOD:: layout
 
 
 METHOD:: mapToGlobal
-	note:: only in Qt GUI ::
+
 
 	Map a point relative to this view's top-left to absolute position on screen.
 
@@ -325,7 +316,7 @@ METHOD:: mapToGlobal
 SUBSECTION:: Appearance
 
 METHOD:: name
-	note:: only in Qt GUI ::
+
 
 	If the view is a window, sets its title
 
@@ -334,7 +325,7 @@ METHOD:: name
 
 
 METHOD:: alpha
-	note:: only in Qt GUI ::
+
 
 	If the view is a window, this controls its transparency.
 
@@ -342,7 +333,7 @@ METHOD:: alpha
 		A Float between 0.0 (invisible) and 1.0 (opaque).
 
 METHOD:: font
-	note:: Only in Qt every view has this method. In other GUI kits, only some views have it. ::
+	note:: Every view has this method.::
 	The font used by the view to display text (if any).
 
 	argument::
@@ -363,11 +354,10 @@ METHOD:: focusColor
 		A Color.
 
 METHOD:: palette
-	note:: Only available in Qt GUI ::
 
 	Get or set the palette to be used by the view.
 
-	When setting a palette, only those colors that have been set on the palette will take effect, other colors will be inherited from the parent view's palette, or QtGUI. See also link::Classes/QPalette#-hasColor::.
+	When setting a palette, only those colors that have been set on the palette will take effect, other colors will be inherited from the parent view's palette. See also link::Classes/QPalette#-hasColor::.
 
 	When getting a palette, it will return everytime a new copy of the view's palette. Therefore, if you wish to change the view's palette, you have to set the changed palette back on the view:
 
@@ -403,7 +393,7 @@ SUBSECTION:: Common behavior
 
 
 METHOD:: userCanClose
-	note:: only in Qt GUI ::
+
 
 	If the view is a window, sets or gets whether the user can close it via mouse or key actions.
 
@@ -412,7 +402,7 @@ METHOD:: userCanClose
 
 
 METHOD:: deleteOnClose
-	note:: only in Qt GUI ::
+
 
 	Sets or gets whether the view should be destroyed when closed.
 
@@ -443,7 +433,7 @@ METHOD:: hasFocus
 	returns:: A Boolean, stating whether the view currently has the keyboard focus.
 
 METHOD:: acceptsMouse
-    note:: Only in Qt GUI ::
+
 
     Sets or gets whether the view responds to mouse interaction. If code::false::, the view will be completely transparent for mouse and interaction will be possible with any view under.
 
@@ -489,9 +479,7 @@ METHOD:: removeAction
 
 SUBSECTION:: Key and mouse event processing
 
-In strong::Cocoa and SwingOSC:: GUI kits, a key event occurring on a view can propagate to the parent view, and trigger the parent's key action, if either the child's action returns code::nil::, or the child has no action assigned for that key event. This has also been referred to as "key event bubbling".
-
-In strong::Qt:: GUI, however, both mouse and key events can propagate to the parent view. Event processing works differently: by default, after a mouse or key action is evaluated, the control returns to the C++ implementation of the view, and if no response to the particular mouse or key event is implemented there, it propagates to the parent.
+Both mouse and key events can propagate to the parent view. Event processing works differently: by default, after a mouse or key action is evaluated, the control returns to the C++ implementation of the view, and if no response to the particular mouse or key event is implemented there, it propagates to the parent.
 
 If you wish to control whether the event will be propagated or not, return code::true:: or code::false:: from the action. True means you have responded to the event, and the propagation will be stopped; false means you are not interested in the event, and the event will propagate. However, returning either code::true:: or code::false:: will completely bypass the view's C++ implementation, so it will not get a chance at responding to the event with its standard behavior. Use this feature with care.
 
@@ -500,7 +488,7 @@ SUBSECTION:: Mouse actions
 Use the methods below to set or get the view's actions in response to mouse interaction with the view. A view must be enabled for the mouse actions to work.
 
 note::
-In Qt GUI, Mouse actions are subject to emphasis::event propagation::. See link::#Key and mouse event processing:: for details.
+Mouse actions are subject to emphasis::event propagation::. See link::#Key and mouse event processing:: for details.
 ::
 
 When the mouse action object is evaluated, it is passed one or more arguments from the following list (in that order):
@@ -540,12 +528,11 @@ METHOD:: mouseOverAction
 
     The following arguments are passed at evaluation: strong::view, x, y::. See link::#Mouse actions:: for explanation of arguments.
 
-    The object is evaluated only when link::Classes/Window#-acceptsMouseOver:: of the containing Window (or, in Qt, link::#-acceptsMouseOver:: of the top View) is code::true::.
+    The object is evaluated only when link::Classes/Window#-acceptsMouseOver:: of the containing Window (or link::#-acceptsMouseOver:: of the top View) is code::true::.
 
     The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
 
 METHOD:: mouseWheelAction
-    note:: strong:: Only in Qt GUI :: ::
 
     The object to be evaluated when the mouse wheel is used while the mouse is pointing onto the view.
 
@@ -556,14 +543,12 @@ METHOD:: mouseWheelAction
     The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
 
 METHOD:: mouseEnterAction
-    note:: strong:: Only in Qt GUI :: ::
 
     The object to be evaluated when the mouse pointer enters the view.
 
     The following arguments are passed at evaluation: strong::view, x, y::. See link::#Mouse actions:: for explanation of arguments.
 
 METHOD:: mouseLeaveAction
-    note:: strong:: Only in Qt GUI :: ::
 
     The object to be evaluated when the mouse pointer leaves the view.
 
@@ -583,7 +568,7 @@ When the key action object is evaluated, it is passed one or more arguments from
 list::
 ## strong::view:: - The view.
 
-## strong::char:: - The character associated with the key, possibly unprintable. Character sequences (for example é) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e). This will also vary depending on the nationality the keyboard is set to. note:: In Qt GUI only printable characters are passed. If a key is not associated with any printable character, nil will be passed instead.::
+## strong::char:: - The character associated with the key, possibly unprintable. Character sequences (for example é) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e). This will also vary depending on the nationality the keyboard is set to. note:: Only printable characters are passed. If a key is not associated with any printable character, nil will be passed instead.::
 
 ## strong::modifiers:: - A bitwise or of integers indicating the modifier keys in effect. You can examine individual flag settings using the C bitwise AND operator. For a list of these, see link::Reference/Modifiers::.
 
@@ -591,33 +576,31 @@ list::
 
 ## strong::keycode:: - The hardware dependent keycode indicating the physical key. This will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard. warning::Function key modifier in combination with another key may change the latter's keycode.::
 
-## strong::key:: - In Qt GUI, an Integer denoting a key, corresponding to the "Key" enum of the Qt C++ API. Comparing this value is the most reliable way to check which key was pressed. For a list of possible values, see: link::http://qt-project.org/doc/qt-4.8/qt.html#Key-enum::.
+## strong::key:: - An Integer denoting a key, corresponding to the "Key" enum of the Qt C++ API. Comparing this value is the most reliable way to check which key was pressed. For a list of possible values, see: link::http://qt-project.org/doc/qt-4.8/qt.html#Key-enum::.
 ::
-
-note::
-In Cocoa GUI, for various reasons the following key events don't make it through to SuperCollider:
-list::
-## most command modifiers
-## ctl-tab
-## ctl-escape
-## tab and shift tab are currently trapped by SC itself for cycling the focus through the views.
-::
-::
-
 
 METHOD:: keyDownAction
     The object to be evaluated when a key is pressed.
 
-    The following arguments are passed at evaluation: strong::view, char, modifiers, unicode, keycode, key::. See link::#Key actions:: for explanation of arguments. Note that they 'key' argument is only passed in Qt GUI.
+    The following arguments are passed at evaluation: strong::view, char, modifiers, unicode, keycode, key::. See link::#Key actions:: for explanation of arguments.
 
     The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
 
     If no code::keyDownAction:: is set, link::#-defaultKeyDownAction:: is called instead, and its return value controls the event propagation.
 
+CODE::
+// open a new document that posts the parameters passed into the keydownAction function.
+(
+Document("test arguments").keyDownAction = { |doc, char, mod, unicode, keycode, key|
+	[doc, char, mod, unicode, keycode, key].postln
+};
+)
+::
+
 METHOD:: keyUpAction
     The object to be evaluated when a key is released.
 
-    The following arguments are passed at evaluation: strong::view, char, modifiers, unicode, keycode, key::. See link::#Key actions:: for explanation of arguments. Note that they 'key' argument is only passed in Qt GUI.
+    The following arguments are passed at evaluation: strong::view, char, modifiers, unicode, keycode, key::. See link::#Key actions:: for explanation of arguments.
 
     The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
 
@@ -667,32 +650,31 @@ METHOD:: dragLabel
 SUBSECTION:: Other actions and hooks
 
 METHOD:: focusGainedAction
-	note:: only in Qt and SwingOSC GUI::
 
 	Sets or gets the object to be evaluated when the view gains the keyboard focus. It is passed the view as an argument.
 
 METHOD:: focusLostAction
-	note:: only in Qt and SwingOSC GUI::
+
 
 	Sets or gets the object to be evaluated when the view looses the keyboard focus. It is passed the view as an argument.
 
 METHOD:: toFrontAction
-	note:: only in Qt GUI ::
+
 
 	Sets or gets the object to be evaluated when the view becomes the active window. It is passed the view as an argument.
 
 METHOD:: endFrontAction
-	note:: only in Qt GUI ::
+
 
 	Sets or gets the object to be evaluated when the view becomes the active window. It is passed the view as an argument.
 
 METHOD:: onResize
-	note:: only in Qt GUI ::
+
 
 	Sets or gets the object to be evaluated when the view changes its size. It is passed the view as an argument.
 
 METHOD:: onMove
-	note:: only in Qt GUI ::
+
 
 	Sets or gets the object to be evaluated when the view changes position relatively to its parent. It is passed the view as an argument.
 
@@ -725,48 +707,36 @@ METHOD:: defaultKeyUpAction
 
 
 METHOD:: keyDown
-	Handles response to a key press event. First evaluates link::#*globalKeyDownAction::, then calls link::#-handleKeyDownBubbling::.
+	Handles response to a key press event. First evaluates link::#*globalKeyDownAction::.
 
 	note::
-	In Qt GUI, instead of calling link::#-handleKeyDownBubbling::, this method directly triggers the action and returns, forwarding the action's return value. See link::#Key actions:: for detailed explanation.
+	This method directly triggers the action and returns, forwarding the action's return value. See link::#Key actions:: for detailed explanation.
 	::
 
 	See link::#Key actions:: for explanation of arguments.
 
-	returns:: strong:: Only in Qt GUI: :: A Boolean, stating whether the event was handled or not (and will not or will propagate to the parent view, respectively), or the view, in which case it lets the Qt view implementation handle the event.
+	returns:: A Boolean, stating whether the event was handled or not (and will not or will propagate to the parent view, respectively), or the view, in which case it lets the Qt view implementation handle the event.
 
 METHOD:: keyUp
 
 	Handles response to a key release event. Sets link::#-keyTyped:: to 'char', evaluates link::#*globalKeyUpAction::, and then calls link::#-handleKeyUpBubbling::.
 
 	note::
-	In Qt GUI, instead of calling link::#-handleKeyUpBubbling::, this method directly triggers the action and returns, forwarding the action's return value. See link::#Key actions:: for detailed explanation.
+	This method directly triggers the action and returns, forwarding the action's return value. See link::#Key actions:: for detailed explanation.
 	::
 
 	See link::#Key actions:: for explanation of arguments.
 
-	returns:: strong:: Only in Qt GUI: :: A Boolean, stating whether the event was handled or not (and will not or will propagate to the parent view, respectively), or the view, in which case it lets the Qt view implementation handle the event.
+	returns:: A Boolean, stating whether the event was handled or not (and will not or will propagate to the parent view, respectively), or the view, in which case it lets the Qt view implementation handle the event.
 
 METHOD:: keyModifiersChanged
 	Handles response to a modifier key press or release event. Calls link::#-handleKeyModifiersChangedBubbling::.
 
 	note::
-	In Qt GUI, instead of calling link::#-handleKeyModifiersChangedBubbling::, a modifier key press or release event also produces a normal key press or release event, and it is the handling of those events that will determine propagation to the parent.
+	Instead of calling link::#-handleKeyModifiersChangedBubbling::, a modifier key press or release event also produces a normal key press or release event, and it is the handling of those events that will determine propagation to the parent.
 	::
 
 	See link::#Key actions:: for explanation of arguments.
-
-METHOD:: handleKeyDownBubbling
-	note:: Only in Cocoa and SwingOSC GUI ::
-	Triggers key-down action and propagates the key event to the parent view, if the action returns nil.
-
-METHOD:: handleKeyUpBubbling
-	note:: Only in Cocoa and SwingOSC GUI ::
-	Triggers key-up action and propagates the key event to the parent view, if the action returns nil.
-
-METHOD:: handleKeyModifiersChangedBubbling
-	note:: Only in Cocoa and SwingOSC GUI ::
-	Triggers key-modifiers-changed action and propagates the key event to the parent view, if the action returns nil.
 
 METHOD:: keyTyped
 
@@ -792,17 +762,15 @@ METHOD:: mouseMove
 METHOD:: mouseOver
 	Handles response to mouse pointer moving over the view with no mouse buttons pressed. Evaluates link::#-mouseOverAction::.
 
-	This method is called only if link::Classes/Window#-acceptsMouseOver:: of the containing Window (or, in Qt, link::#-acceptsMouseOver:: of the top View) is code::true::.
+	This method is called only if link::Classes/Window#-acceptsMouseOver:: of the containing Window (or, link::#-acceptsMouseOver:: of the top View) is code::true::.
 
 	See link::#Mouse actions:: for explanation of arguments.
 
 METHOD:: mouseEnter
-	note:: strong:: Only in Qt GUI :: ::
 
 	Handles response to mouse pointer entering the view. Evaluates link::#-mouseEnterAction::.
 
 METHOD:: mouseLeave
-	note:: strong:: Only in Qt GUI :: ::
 
 	Handles response to mouse pointer leaving the view. Evaluates link::#-mouseLeaveAction::.
 
@@ -827,7 +795,6 @@ METHOD:: defaultReceiveDrag
 METHOD:: beginDrag
 	Handles initiation of a drag&drop operation. Evaluates link::#-beginDragAction:: or calls link::#-defaultGetDrag:: if the former is nil, then stores the object returned into link::#*currentDrag::, and the object interpreted as link::Classes/Object#-asCompileString#"compile string":: into link::#*currentDragString::. Returns whether link::#*currentDrag:: is not nil.
 
-	note:: The description of arguments and return value is valid strong:: only for Qt GUI: ::. In other GUI kits this method has no arguments and its return value is insignificant. ::
 
 	argument:: x
 		Current horizontal position of the mouse pointer.
@@ -839,8 +806,6 @@ METHOD:: beginDrag
 
 METHOD:: canReceiveDrag
 	Handles evaluation whether the view can accept the current drag&drop data. Evaluates link::#-canReceiveDragHandler:: or calls link::#-defaultCanReceiveDrag:: if the former is nil, then forwards the return value.
-
-	note:: The description of arguments is valid strong:: only for Qt GUI: ::. In other GUI kits this method has no arguments. ::
 
 	argument:: x
 		Current horizontal position of the mouse pointer.

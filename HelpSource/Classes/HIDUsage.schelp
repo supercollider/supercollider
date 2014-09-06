@@ -1,0 +1,74 @@
+TITLE:: HIDUsage
+summary:: Helper class to read usage information from HID usage tables
+categories:: External control>HID
+related:: Classes/HID, Classes/HIDElement, Classes/HIDCollection, Guides/Working_with_HID
+
+DESCRIPTION::
+HID functionality is described by the USB HID standard usage tables. Each element and collection has a usage page and index, describing the type of control that it provides. This class allows to query the name of a usage and page based on the indices read from the device. This class is primarily used internally by other HID classes.
+
+
+CLASSMETHODS::
+
+PRIVATE:: initClass
+
+
+METHOD:: getUsageDescription
+Retrieve the standard usage name and pagename of an HID usage element or collection.
+
+ARGUMENT:: usagePage
+usage page number
+
+ARGUMENT:: usage
+usage index
+
+returns:: an Array with the pageName and usageName
+
+
+
+METHOD:: hutDirectory
+Directory where the yaml files with the HID usage tables are stored.
+
+
+METHOD:: readHUTFile
+Reads and parses the HID usage table file. Called from getUsageDescription to read in the usage table.
+
+ARGUMENT:: yamlfile
+the filename of the yamlfile with a particular usage table, relative to the hutDirectory.
+
+returns:: an IdentityDictionary representing the table
+
+METHOD:: getUsageIds
+Retrieve usage id and page id from the usageName.
+
+ARGUMENT:: usageName
+the usage name
+
+returns:: an Array with the page id and the usage id
+
+
+METHOD:: idsToName
+Retrieve the standard usage name and pagename of an HID usage element or collection.
+
+ARGUMENT:: page
+the usage page id
+
+ARGUMENT:: usage
+the usage id
+
+returns:: the usage name
+
+METHOD:: usageIDsToName
+MultiLevelIdentityDictionary containing a map of page ids, usage ids to usage names.
+
+METHOD:: usageNameToIDs
+IdentityDictionary containing a map of usageNames to page ids and usage ids.
+
+
+
+EXAMPLES::
+
+Get the usage description for a collection or element with usage page 1 and usage index 5
+
+code::
+HIDUsage.getUsageDescription( 1, 5 );
+::

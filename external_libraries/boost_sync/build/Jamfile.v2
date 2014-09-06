@@ -1,0 +1,179 @@
+# Copyright 2006-2007 Roland Schwarz.
+# Copyright 2007 Anthony Williams
+# Copyright 2011-2012 Vicente J.Botet Escriba.
+# Copyright 2013 Andrey Semashev
+# Distributed under the Boost Software License, Version 1.0. (See
+# accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+#########################################################################
+# The Boost.Sync library can be built on top of different API's on Windows.
+# Currently this is the win32 API and the pthreads API.
+# Pthread is native on unix variants.
+# To get pthread on windows you need the pthread win32 library
+# http://sourceware.org/pthreads-win32 which is available under LGPL.
+#
+# You need to provide the include path and lib path in the variables
+# PTW32_INCLUDE and PTW32_LIB respectively. You can specify these
+# paths in site-config.jam, user-config.jam or in the environment.
+# Boost.Sync also makes use of the threadapi feature defined by Boost.Thread:
+# <threadapi>win32 and <threadapi>pthread.
+#
+# To request the pthread variant on windows, from boost root you would
+# say e.g:
+# bjam msvc-8.0 --with-sync install threadapi=pthread
+#########################################################################
+
+import os ;
+import feature ;
+import indirect ;
+import path ;
+import configure ;
+
+project boost/sync
+    : source-location ../src
+    : requirements
+      <threading>multi
+      <link>static:<define>BOOST_SYNC_STATIC_LINK=1
+      <link>shared:<define>BOOST_SYNC_DYN_LINK=1
+      <define>BOOST_SYNC_BUILDING=1
+      <target-os>windows:<define>BOOST_USE_WINDOWS_H=1
+      <target-os>windows:<define>WIN32_LEAN_AND_MEAN=1
+      <library>/boost/system//boost_system
+
+    : usage-requirements  # pass these requirement to dependents (i.e. users)
+      <link>static:<define>BOOST_SYNC_STATIC_LINK=1
+      <link>shared:<define>BOOST_SYNC_DYN_LINK=1
+      <library>/boost/system//boost_system
+    ;
+
+rule win32_pthread_paths ( properties * )
+{
+    local result ;
+    local PTW32_INCLUDE ;
+    local PTW32_LIB ;
+    PTW32_INCLUDE  = [ modules.peek             : PTW32_INCLUDE ] ;
+    PTW32_LIB      = [ modules.peek             : PTW32_LIB     ] ;
+    PTW32_INCLUDE ?= [ modules.peek user-config : PTW32_INCLUDE ] ;
+    PTW32_LIB     ?= [ modules.peek user-config : PTW32_LIB     ] ;
+    PTW32_INCLUDE ?= [ modules.peek site-config : PTW32_INCLUDE ] ;
+    PTW32_LIB     ?= [ modules.peek site-config : PTW32_LIB     ] ;
+
+    if ! ( $(PTW32_INCLUDE) && $(PTW32_LIB) )
+    {
+        if  ! $(.notified)
+        {
+            echo "************************************************************" ;
+            echo "Trying to build Boost.Sync with pthread support."             ;
+            echo "If you need pthread you should specify the paths."            ;
+            echo "You can specify them in site-config.jam, user-config.jam"     ;
+            echo "or in the environment."                                       ;
+            echo "For example:"                                                 ;
+            echo "PTW32_INCLUDE=C:\\Program Files\\ptw32\\Pre-built2\\include"  ;
+            echo "PTW32_LIB=C:\\Program Files\\ptw32\\Pre-built2\\lib"          ;
+            echo "************************************************************" ;
+            .notified = true ;
+        }
+    }
+    else
+    {
+        local include_path = [ path.make $(PTW32_INCLUDE) ] ;
+        local lib_path = [ path.make $(PTW32_LIB) ] ;
+        local libname = pthread ;
+        if <toolset>msvc in $(properties)
+        {
+            libname = $(libname)VC2.lib ;
+        }
+        if <toolset>gcc in $(properties)
+        {
+            libname = lib$(libname)GC2.a ;
+        }
+        lib_path = [ path.glob $(lib_path) : $(libname) ] ;
+        if ! $(lib_path)
+        {
+            if  ! $(.notified)
+            {
+                echo "************************************************************" ;
+                echo "Trying to build Boost.Sync with pthread support."             ;
+                echo "But the library" $(libname) "could not be found in path"      ;
+                echo $(PTW32_LIB)                                                   ;
+                echo "************************************************************" ;
+                .notified = true ;
+            }
+        }
+        else
+        {
+            result += <include>$(include_path) ;
+            result += <library>$(lib_path) ;
+        }
+    }
+    return $(result) ;
+}
+
+rule usage-requirements ( properties * )
+{
+    local result ;
+    if <threadapi>pthread in $(properties)
+    {
+        if <target-os>windows in $(properties)
+        {
+            result += <define>BOOST_SYNC_USE_PTHREAD ;
+            result += [ win32_pthread_paths $(properties) ] ;
+            # TODO: What is for static linking? Is the <library> also needed
+            # in that case?
+        }
+    }
+
+    return $(result) ;
+}
+
+rule requirements ( properties * )
+{
+    local result ;
+
+    if <threadapi>pthread in $(properties)
+    {
+        result += <define>BOOST_SYNC_USE_PTHREAD ;
+        if <target-os>windows in $(properties)
+        {
+            local paths = [ win32_pthread_paths $(properties) ] ;
+            if $(paths)
+            {
+                result += $(paths) ;
+            }
+            else
+            {
+                result = <build>no ;
+            }
+        }
+    }
+
+    return $(result) ;
+}
+
+alias sync_platform_sources
+    :
+      tss_windows_dll.cpp
+      tss_windows_pe.cpp
+      tss_windows.cpp
+      tss_pthread.cpp
+    :
+      <target-os>windows
+    ;
+
+alias sync_platform_sources
+    :
+      tss_pthread.cpp
+    ;
+
+explicit sync_platform_sources ;
+
+lib boost_sync
+    :
+      sync_platform_sources
+    :
+      <conditional>@requirements
+    :
+    :
+      <conditional>@usage-requirements
+    ;

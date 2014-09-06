@@ -3491,7 +3491,7 @@ void BufCombC_Ctor(BufCombC *unit)
 template <bool checked>
 inline void BufCombC_perform(BufCombC *unit, int inNumSamples)
 {
-	BufFilterX_perform<CombN_helper<checked> >(unit, inNumSamples, (UnitCalcFunc)BufCombC_next);
+	BufFilterX_perform<CombC_helper<checked> >(unit, inNumSamples, (UnitCalcFunc)BufCombC_next);
 }
 
 void BufCombC_next(BufCombC *unit, int inNumSamples)

@@ -87,6 +87,11 @@ void PostWindow::createActions( Settings::Manager * settings )
     action->setSeparator(true);
     addAction(action);
 
+    mActions[DocClose] = ovrAction = new OverridingAction(tr("Close"), this);
+    action->setStatusTip(tr("Close the current document"));
+    connect( ovrAction, SIGNAL(triggered()), this, SLOT(closeDocument()) );
+    ovrAction->addToWidget(this);
+
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Enlarge Font"), this);
     ovrAction->setIconText("+");
     ovrAction->setStatusTip(tr("Enlarge post window font"));
@@ -126,10 +131,16 @@ void PostWindow::createActions( Settings::Manager * settings )
 void PostWindow::updateActionShortcuts( Settings::Manager * settings )
 {
     settings->beginGroup("IDE/shortcuts");
+    mActions[DocClose]->setShortcut( settings->shortcut("ide-document-close") );
     mActions[ZoomIn]->setShortcut( settings->shortcut("editor-enlarge-font") );
     mActions[ZoomOut]->setShortcut( settings->shortcut("editor-shrink-font") );
     mActions[ResetZoom]->setShortcut( settings->shortcut("editor-reset-font-size") );
     settings->endGroup();
+}
+
+void PostWindow::closeDocument()
+{
+    MainWindow::instance()->postDocklet()->close();
 }
 
 void PostWindow::applySettings(Settings::Manager * settings)
@@ -139,17 +150,22 @@ void PostWindow::applySettings(Settings::Manager * settings)
     QFont font = settings->codeFont();
 
     QPalette palette;
+    QTextCharFormat format;
     settings->beginGroup("IDE/editor/colors");
     if (settings->contains("text")) {
-        QTextCharFormat format = settings->value("text").value<QTextCharFormat>();
-        QBrush bg = format.background();
-        QBrush fg = format.foreground();
-        if (bg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::Base, bg);
-        if (fg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::Text, fg);
+        format.merge(settings->value("text").value<QTextCharFormat>());
+    }
+    if (settings->contains("postwindowtext")) {
+        format.merge(settings->value("postwindowtext").value<QTextCharFormat>());
     }
     settings->endGroup(); // colors
+
+    QBrush bg = format.background();
+    QBrush fg = format.foreground();
+    if (bg.style() != Qt::NoBrush)
+        palette.setBrush(QPalette::Base, bg);
+    if (fg.style() != Qt::NoBrush)
+        palette.setBrush(QPalette::Text, fg);
 
     bool lineWrap = settings->value("IDE/postWindow/lineWrap").toBool();
 
@@ -185,15 +201,51 @@ QString PostWindow::symbolUnderCursor()
 
 void PostWindow::post(const QString &text)
 {
-    QScrollBar *scrollBar = verticalScrollBar();
     bool scroll = mActions[AutoScroll]->isChecked();
-
     QTextCursor c(document());
-    c.movePosition(QTextCursor::End);
-    c.insertText(text);
+    
+    int startPos = 0, length = 0;
+    QChar linebreak = QChar('\n');
+    foreach(const QChar chr, text) {
+        ++length;
+        if (chr == linebreak && length > 0) {
+            QStringRef newLine(&text, startPos, length);
+            c.movePosition(QTextCursor::End);
+            c.insertText(newLine.toString(), formatForPostLine(newLine));
+            startPos += length;
+            length = 0;
+        }
+    }
 
     if (scroll)
         emit(scrollToBottomRequest());
+}
+    
+QTextCharFormat PostWindow::formatForPostLine(QStringRef line)
+{
+    Settings::Manager *settings = Main::settings();
+    settings->beginGroup("IDE/editor/highlighting");
+    QTextCharFormat postWindowError = settings->value("postwindowerror").value<QTextCharFormat>();
+    QTextCharFormat postWindowWarning = settings->value("postwindowwarning").value<QTextCharFormat>();
+    QTextCharFormat postWindowSuccess = settings->value("postwindowsuccess").value<QTextCharFormat>();
+    QTextCharFormat postWindowEmphasis = settings->value("postwindowemphasis").value<QTextCharFormat>();
+    settings->endGroup();
+    
+    QTextCharFormat format;
+    
+    if (line.startsWith("ERROR:", Qt::CaseInsensitive) || line.startsWith("!"))
+        format.merge(postWindowError);
+    
+    if (line.startsWith("WARNING:", Qt::CaseInsensitive) || line.startsWith("?"))
+        format.merge(postWindowWarning);
+    
+    if (line.startsWith("->"))
+        format.merge(postWindowSuccess);
+    
+    if (line.startsWith("***"))
+        format.merge(postWindowEmphasis);
+    
+    return format;
 }
 
 void PostWindow::scrollToBottom()

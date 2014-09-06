@@ -18,13 +18,24 @@ Main : Process {
 
 		// set the 's' interpreter variable to the default server.
 		interpreter.s = Server.default;
-		GUI.fromID( this.platform.defaultGUIScheme );
+
 		GeneralHID.fromID( this.platform.defaultHIDScheme );
-		this.platform.startup;
 		openPorts = Set[NetAddr.langPort];
+		this.platform.startup;
 		StartUp.run;
 
-		("Welcome to SuperCollider %.".format(Main.version)
+		Main.overwriteMsg.split(Char.nl).drop(-1).collect(_.split(Char.tab)).do {|x|
+			if(x[2].beginsWith(Platform.classLibraryDir) and: {x[1].contains(""+/+"SystemOverwrites"+/+"").not}
+			) {
+				warn("Extension in '%' overwrites % in main class library.".format(x[1],x[0]));
+				didWarnOverwrite = true;
+			}
+		};
+		if(didWarnOverwrite) {
+			inform("Intentional overwrites must be put in a 'SystemOverwrites' subfolder.")
+		};
+
+		("\n\n*** Welcome to SuperCollider %. ***".format(Main.version)
 			+ (Platform.ideName.switch(
 				"scvim", {"For help type :SChelp."},
 				"scel",  {"For help type C-c C-y."},
@@ -41,17 +52,6 @@ Main : Process {
 
 			})
 		).postln;
-
-		Main.overwriteMsg.split(Char.nl).drop(-1).collect(_.split(Char.tab)).do {|x|
-			if(x[2].beginsWith(Platform.classLibraryDir) and: {x[1].contains(""+/+"SystemOverwrites"+/+"").not}
-			) {
-				warn("Extension in '%' overwrites % in main class library.".format(x[1],x[0]));
-				didWarnOverwrite = true;
-			}
-		};
-		if(didWarnOverwrite) {
-			inform("\nIntentional overwrites must be put in a 'SystemOverwrites' subfolder.")
-		}
 	}
 
 	shutdown { // at recompile, quit

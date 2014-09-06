@@ -1,9 +1,12 @@
 OSCBundle {
 	var <messages, <preparationMessages;
+	var removeOnCancel;
+
 
 	add { arg msg; messages = messages.add(msg) }
 	addAll { arg mgs; messages = messages.addAll(mgs) }
 	addPrepare { arg msg; preparationMessages = preparationMessages.add(msg) }
+	addCancel { arg msg; messages = messages.add(msg); removeOnCancel = removeOnCancel.add(msg) }
 
 	// the sound starts at: (next beat + latency) when the preparation is finished
 	// the client side task starts at: preparationTime + next beat
@@ -43,6 +46,11 @@ OSCBundle {
 		};
 	}
 
+	cancel {
+		if(removeOnCancel.notNil) {
+			messages.removeAll(removeOnCancel);
+		}
+	}
 
 	// private //
 
@@ -85,6 +93,7 @@ MixedBundle : OSCBundle {
 	doSendFunctions {
 		sendFunctions.do({ arg item; item.value });
 	}
+
 
 	// private //
 

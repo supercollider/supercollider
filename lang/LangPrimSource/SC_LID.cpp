@@ -26,6 +26,8 @@
 	Linux Input Device interface, 2004 <sk>
 */
 
+#include <atomic>
+
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
@@ -40,7 +42,6 @@
 #include "SC_InlineBinaryOp.h"
 #include "PyrSched.h"
 #include "GC.h"
-#include <boost/atomic.hpp>
 #include "SC_LanguageClient.h"
 
 #if HAVE_LID
@@ -90,8 +91,8 @@ struct SC_LID
 	int setLedState( int evtCode, int evtValue, int evtType );
 
 	int grab(int flag);
-	void handleEvent(struct input_event& evt, boost::atomic<bool> const & shouldBeRunning);
-	void readError(boost::atomic<bool> const & shouldBeRunning);
+	void handleEvent(struct input_event& evt, std::atomic<bool> const & shouldBeRunning);
+	void readError(std::atomic<bool> const & shouldBeRunning);
 
 	static PyrObject* getObject(PyrSlot* slot)
 	{
@@ -156,8 +157,8 @@ private:
 
 	pthread_t		m_thread;
 	pthread_mutex_t		m_mutex;
-	boost::atomic<bool>	m_running;
-	boost::atomic<bool>	mShouldBeRunning;
+	std::atomic<bool>	m_running;
+	std::atomic<bool>	mShouldBeRunning;
 	int			m_cmdFifo[2];
 	int			m_nfds;
 	fd_set			m_fds;
@@ -298,7 +299,7 @@ int SC_LID::grab(int flag)
 	return errNone;
 }
 
-void SC_LID::handleEvent(struct input_event& evt, boost::atomic<bool> const & shouldBeRunning)
+void SC_LID::handleEvent(struct input_event& evt, std::atomic<bool> const & shouldBeRunning)
 {
 	if (evt.type != EV_SYN) {
 		int status = lockLanguageOrQuit(shouldBeRunning);
@@ -323,7 +324,7 @@ void SC_LID::handleEvent(struct input_event& evt, boost::atomic<bool> const & sh
 	}
 }
 
-void SC_LID::readError(boost::atomic<bool> const & shouldBeRunning)
+void SC_LID::readError(std::atomic<bool> const & shouldBeRunning)
 {
 	int status = lockLanguageOrQuit(shouldBeRunning);
 	if (status == EINTR)
@@ -817,6 +818,7 @@ void SC_LIDInit()
 	definePrimitive(base, index++, "_LID_SetLedState", prLID_SetLedState, 3, 0); // added by Marije Baalman
 	definePrimitive(base, index++, "_LID_SetMscState", prLID_SetMscState, 3, 0);
 }
+
 #else // !HAVE_LID
 int prLID_Start(VMGlobals* g, int numArgsPushed)
 {
@@ -838,9 +840,10 @@ void SC_LIDInit()
 	definePrimitive(base, index++, "_LID_Start", prLID_Start, 1, 0);
 	definePrimitive(base, index++, "_LID_Stop", prLID_Stop, 1, 0);
 }
+
 #endif // HAVE_LID
 
-void initHIDPrimitives()
+void initLIDPrimitives()
 {
 	SC_LIDInit();
 }

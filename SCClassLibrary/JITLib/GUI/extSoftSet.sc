@@ -77,7 +77,7 @@
 + NodeProxy {
 
 	get { |param|
-		^this.nodeMap.get(param).value ?? { this.getDefaultVal(param) };
+		^this.nodeMap.at(param).value ?? { this.getDefaultVal(param) };
 	}
 
 	getDefaultVal { |key|

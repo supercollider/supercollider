@@ -28,6 +28,8 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
     abstract_synth(node_id, prototype), initialized(false), trace(0), unit_buffers(0)
 {
     World const & world = sc_factory->world;
+    const bool rt_synthesis = world.mRealTime;
+
     mNode.mWorld = &sc_factory->world;
     rgen.init((uint32_t)(uint64_t)this);
 
@@ -55,7 +57,11 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
     const size_t sample_alloc_size = world.mBufLength * synthdef.buffer_count
         + wire_buffer_alignment /* for alignment */;
 
-    char * raw_chunk = (char*)rt_pool.malloc(alloc_size + sample_alloc_size*sizeof(sample));
+    const size_t total_alloc_size = alloc_size + sample_alloc_size*sizeof(sample);
+
+    char * raw_chunk = rt_synthesis ? (char*)rt_pool.malloc(total_alloc_size)
+                                    : (char*)malloc(total_alloc_size);
+
     if (raw_chunk == NULL)
         throw std::bad_alloc();
 
@@ -141,7 +147,10 @@ void sc_synth::finalize()
     }
 
     sc_factory->free_ugens(unit_count);
-    rt_pool.free(mControls);
+    if (sc_factory->is_realtime_synthesis())
+        rt_pool.free(mControls);
+    else
+        free(mControls);
     initialized = false;
 }
 

@@ -62,12 +62,12 @@ void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
             mLayout->addWidget(editor);
             connect(this, SIGNAL(activeChanged(bool)),
                     editor, SLOT(setActiveAppearance(bool)));
-            editor->setActiveAppearance(this->isActive());
         }
         else {
             mHistory.removeOne(editor);
             mHistory.prepend(editor);
         }
+        editor->setActiveAppearance(this->isActive());
         mLayout->setCurrentWidget(editor);
         setFocusProxy(editor);
     }

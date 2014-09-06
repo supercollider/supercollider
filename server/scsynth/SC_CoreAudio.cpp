@@ -1493,37 +1493,8 @@ OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
     fflush(stdout);
     return (noErr);
 }
-
-
-
-
+ 
 OSStatus AddDeviceListeners(AudioDeviceID inDevice, void *inClientData);
-
-OSStatus AddHardwareListeners(void* inClientData);
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-OSStatus AddHardwareListeners(void* inClientData)
-{
-    OSStatus			err = noErr;
-
-	//non deprecated but requires AudiObject, bleargh
-	//err= AudioObjectAddPropertyListener(AudioObject, kAudioHardwarePropertyDefaultOutputDevice, hardwareListenerProc, inClientData);
-
-	err = AudioHardwareAddPropertyListener(kAudioHardwarePropertyDefaultOutputDevice, hardwareListenerProc, inClientData);
-
-    if (err) return err;
-
-    err = AudioHardwareAddPropertyListener(kAudioHardwarePropertyDefaultInputDevice, hardwareListenerProc, inClientData);
-    if (err) return err;
-
-	//doesn't matter? Only default looked at by SC?
-	err = AudioHardwareAddPropertyListener(kAudioHardwarePropertyDefaultSystemOutputDevice, hardwareListenerProc, inClientData);
-    if (err) return err;
-
-    err = AudioHardwareAddPropertyListener(kAudioHardwarePropertyDevices, hardwareListenerProc, inClientData);
-    if (err) return err;
-
-    return (err);
-}
 
 bool SC_CoreAudioDriver::DriverStart()
 {
@@ -1563,46 +1534,45 @@ bool SC_CoreAudioDriver::DriverStart()
 
 
 		if (mWorld->hw->mInputStreamsEnabled) {
-			//err = AudioDeviceGetPropertyInfo(mInputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, &writable);
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeInput;
+			propertyAddress.mElement = 0;
 
-			err = AudioObjectGetPropertyDataSize(mInputDevice, 0, 0, &propertyAddress, &propertySize);
+			err = AudioObjectGetPropertyDataSize(mInputDevice, &propertyAddress, 0, NULL, &propertySize);
 			err = AudioObjectIsPropertySettable(mInputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProcSeparateIn;
-			// err = AudioDeviceGetProperty(mInputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			err = AudioObjectGetPropertyData(mInputDevice, 0, 0, &propertyAddress, &propertySize, su);
+
+			err = AudioObjectGetPropertyData(mInputDevice, &propertyAddress, 0, NULL, &propertySize, su);
 
 			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mInputStreamsEnabled));
+
 			for (int i=0; i<len; ++i) {
 				su->mStreamIsOn[i] = mWorld->hw->mInputStreamsEnabled[i] == '1';
 			}
-			// err = AudioDeviceSetProperty(mInputDevice, &now, 0, true, kAudioDevicePropertyIOProcStreamUsage, propertySize, su);
 
 			err = AudioObjectSetPropertyData(mInputDevice, &propertyAddress, 0, NULL, propertySize, su);
 		}
 
 		if (mWorld->hw->mOutputStreamsEnabled) {
-			//err = AudioDeviceGetPropertyInfo(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, &writable);
-
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
+			propertyAddress.mElement = 0;
 
-			err = AudioObjectGetPropertyDataSize(mOutputDevice, 0, 0, &propertyAddress, &propertySize);
+			err = AudioObjectGetPropertyDataSize(mOutputDevice, &propertyAddress, 0, NULL, &propertySize);
 			err = AudioObjectIsPropertySettable(mOutputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
-			// err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			err = AudioObjectGetPropertyData(mOutputDevice, 0, 0, &propertyAddress, &propertySize, su);
+
+			err = AudioObjectGetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, &propertySize, su);
 
 			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mOutputStreamsEnabled));
+
 			for (int i=0; i<len; ++i) {
 				su->mStreamIsOn[i] = mWorld->hw->mOutputStreamsEnabled[i] == '1';
 			}
-			// err = AudioDeviceSetProperty(mOutputDevice, &now, 0, false, kAudioDevicePropertyIOProcStreamUsage, propertySize, su);
 
 			err = AudioObjectSetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, propertySize, su);
 		}
@@ -1629,45 +1599,45 @@ bool SC_CoreAudioDriver::DriverStart()
 		}
 
 		if (mWorld->hw->mInputStreamsEnabled) {
-			//err = AudioDeviceGetPropertyInfo(mOutputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, &writable);
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
+			propertyAddress.mElement = 0;
 
-			err = AudioObjectGetPropertyDataSize(mOutputDevice, 0, 0, &propertyAddress, &propertySize);
+			err = AudioObjectGetPropertyDataSize(mOutputDevice, &propertyAddress, 0, NULL, &propertySize);
 			err = AudioObjectIsPropertySettable(mOutputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
-			//err = AudioDeviceGetProperty(mOutputDevice, 0, true, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			err = AudioObjectGetPropertyData(mOutputDevice, 0, 0, &propertyAddress, &propertySize, su);
+
+			err = AudioObjectGetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, &propertySize, su);
 
 			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mInputStreamsEnabled));
+
 			for (int i=0; i<len; ++i) {
 				su->mStreamIsOn[i] = mWorld->hw->mInputStreamsEnabled[i] == '1';
 			}
-			//err = AudioDeviceSetProperty(mOutputDevice, &now, 0, true, kAudioDevicePropertyIOProcStreamUsage, propertySize, su);
 
 			err = AudioObjectSetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, propertySize, su);
 		}
 
 		if (mWorld->hw->mOutputStreamsEnabled) {
-			// err = AudioDeviceGetPropertyInfo(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, &writable);
 			propertyAddress.mSelector = kAudioDevicePropertyIOProcStreamUsage;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
+			propertyAddress.mElement = 0;
 
-			err = AudioObjectGetPropertyDataSize(mOutputDevice, 0, 0, &propertyAddress, &propertySize);
+			err = AudioObjectGetPropertyDataSize(mOutputDevice, &propertyAddress, 0, NULL, &propertySize);
 			err = AudioObjectIsPropertySettable(mOutputDevice, &propertyAddress, &writable);
 
 			AudioHardwareIOProcStreamUsage *su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
 			su->mIOProc = (void*)appIOProc;
-			//err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyIOProcStreamUsage, &propertySize, su);
-			err = AudioObjectGetPropertyData(mOutputDevice, 0, 0, &propertyAddress, &propertySize, su);
+
+			err = AudioObjectGetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, &propertySize, su);
 
 			int len = std::min(su->mNumberStreams, (UInt32)strlen(mWorld->hw->mOutputStreamsEnabled));
+
 			for (int i=0; i<len; ++i) {
 				su->mStreamIsOn[i] = mWorld->hw->mOutputStreamsEnabled[i] == '1';
 			}
-			//err = AudioDeviceSetProperty(mOutputDevice, &now, 0, false, kAudioDevicePropertyIOProcStreamUsage, propertySize, su);
 
 			err = AudioObjectSetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, propertySize, su);
 		}
@@ -1693,7 +1663,6 @@ bool SC_CoreAudioDriver::DriverStart()
 
 	//for now no spotting of hardware changes, assumption is that ServerOptions inviolate. However, if a device was unplugged, could react to loss of that device
 	//by switching to system default?
-	//AddHardwareListeners(NULL);
 	//note that the number of listeners is stripped down to only one for now, to react to headphone swaps in the case of Built-in Output
 	AddDeviceListeners(mOutputDevice, this);
 
@@ -1763,270 +1732,46 @@ bool SC_CoreAudioDriver::DriverStop()
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Listen for Device Properties and update interface and globals
-OSStatus	deviceListenerProc (	AudioDeviceID			inDevice,
-									UInt32					inLine,
-									Boolean					isInput,
-									AudioDevicePropertyID	inPropertyID,
-									void*					inClientData)
+OSStatus deviceListenerProc (AudioObjectID inObjectID,
+                             UInt32 inNumberAddresses,
+                             const AudioObjectPropertyAddress inAddresses[],
+                             void* inClientData)
 {
-    OSStatus			err = noErr;
+    OSStatus err = noErr;
 
 	SC_CoreAudioDriver* coredriver = (SC_CoreAudioDriver*) inClientData;
 
-    switch(inPropertyID)
+    for (int i=0; i<inNumberAddresses; i++)
     {
- //       case kAudioDevicePropertyBufferSize:
-//            scprintf("%s\n", "***** DEVICE NOTIFICATION - kAudioDevicePropertyBufferSize\r");
-//            outSize = sizeof(UInt32);
-//            err = AudioDeviceGetProperty(inDevice, 0, 0, kAudioDevicePropertyBufferSize, &outSize, &theUIntData);
-//
-//            break;
-//
-//        case kAudioDevicePropertyBufferFrameSize:
-//            scprintf("%s\n", "***** DEVICE NOTIFICATION - kAudioDevicePropertyBufferFrameSize\r");
-//            outSize = sizeof(UInt32);
-//            err = AudioDeviceGetProperty(inDevice, 0, 0, kAudioDevicePropertyBufferFrameSize, &outSize, &theUIntData);
-//
-//            break;
-//
-//       case kAudioDevicePropertyBufferSizeRange:
-//        {
-//            AudioValueRange		range;
-//
-//            scprintf("%s\n", "***** DEVICE NOTIFICATION - kAudioDevicePropertyBufferSizeRange\r");
-//            outSize = sizeof(AudioValueRange);
-//            err = AudioDeviceGetProperty(inDevice, 0, isInput, kAudioDevicePropertyBufferSizeRange, &outSize, &range);
-//		}
-//			break;
-//
-//        case kAudioDevicePropertyStreamFormat:
-//            scprintf("%s\n", "***** DEVICE NOTIFICATION - kAudioDevicePropertyStreamFormat\r");
-//            break;
-//
-//        case kAudioDevicePropertyDeviceIsRunning:
-//            scprintf("%s\n", "***** DEVICE NOTIFICATION - kAudioDevicePropertyDeviceIsRunning\r");
-//            outSize = sizeof(UInt32);
-//            err = AudioDeviceGetProperty(inDevice, inLine, isInput, kAudioDevicePropertyDeviceIsRunning, &outSize, &theUIntData);
-//
-//			//when change device get up to four messages:
-//			//isInput ==NO or YES  theUIntData= 0 or 1 from old and possibly new device (ieheadphone swap)
-//
-//
-//
-//             break;
-//
-//        case kAudioDevicePropertyVolumeScalar:
-//            scprintf("%s\n", "***** DEVICE NOTIFICATION - kAudioDevicePropertyVolumeScalar\r");
-//            outSize = sizeof(Float32);
-//            err = AudioDeviceGetProperty(inDevice, inLine, isInput, kAudioDevicePropertyVolumeScalar, &outSize, &vol);
-//            break;
-//
-//        case kAudioDevicePropertyMute:
-//            scprintf("%s\n", "***** DEVICE NOTIFICATION - kAudioDevicePropertyMute\r");
-//            outSize = sizeof(UInt32);
-//            err = AudioDeviceGetProperty(inDevice, inLine, isInput, kAudioDevicePropertyMute, &outSize, &mute);
-//            break;
-//
-//        case kAudioDevicePropertyPlayThru:
-//            scprintf("%s\n", "***** DEVICE NOTIFICATION - kAudioDevicePropertyPlayThru\r");
-//            outSize = sizeof(UInt32);
-//            err = AudioDeviceGetProperty(inDevice, inLine, isInput, kAudioDevicePropertyPlayThru, &outSize, &playThru);
-//
-//            break;
-//
-//        case kAudioDevicePropertyDeviceIsAlive:
-//            scprintf("%s\n", "***** DEVICE NOTIFICATION - kAudioDevicePropertyDeviceIsAlive\r");
-//            outSize = sizeof(UInt32);
-//            err = AudioDeviceGetProperty(inDevice, 0, false, kAudioDevicePropertyDeviceIsAlive, &outSize, &tLong);
-//
-//            break;
-
-        case kAudioDevicePropertyDataSource:
-			//Don't print anything
-            //scprintf("%s\n", "***** DEVICE NOTIFICATION - kAudioDevicePropertyDataSource\r");
-            // get the source
-            // match the source to one of the available sources and return the index of that source
-            //SetControlValue(control, (chan->vol) * 100);
-
-			//will get this message anyway even if don't have built-in output seleected.
-			//so need to react based on whether current output IS built-in output. Annoyingly, headphone unplugging/plugging also sends default and system output + default input change hardware messages
-			//swapping to new driver
-			if (coredriver->builtinoutputflag_==1)
-				coredriver->StopStart();
-
-
-            break;
-
-		//default:
-           //  scprintf("%s\n", "***** DEVICE NOTIFICATION - %4.4s\r", &inPropertyID);
+        AudioObjectPropertyAddress propAddress = inAddresses[i];
+        if (inObjectID == kAudioObjectSystemObject &&
+            propAddress.mSelector == kAudioHardwarePropertyDefaultOutputDevice)
+        {
+            coredriver->StopStart();
+        }
     }
-
-	//fflush(stdout);
-    return (err);
-}
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-OSStatus	streamListenerProc (	AudioStreamID			inStream,
-									UInt32					inChannel,
-									AudioDevicePropertyID	inPropertyID,
-									void*					inClientData)
-{
-    OSStatus				err = noErr;
-
-    switch(inPropertyID)
-    {
-        case kAudioStreamPropertyPhysicalFormat:
-            scprintf("%s\n", "***** STREAM NOTIFICATION - kAudioStreamPropertyPhysicalFormat\r");
-            break;
-
-        case kAudioDevicePropertyStreamFormat:
-            scprintf("%s\n", "***** STREAM NOTIFICATION - kAudioDevicePropertyStreamFormat\r");
-            break;
-
-        default:
-            break;
-    }
-
-    fflush(stdout);
 
     return (err);
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-OSStatus	AddStreamListeners (AudioDeviceID inDevice, AudioDevicePropertyID	inPropertyID, Boolean isInput, void *inClientData);
-
-OSStatus    AddDeviceListeners(AudioDeviceID inDevice, void *inClientData)
+OSStatus AddDeviceListeners(AudioDeviceID inDevice, void *inClientData)
 {
-    OSStatus		err = noErr;
+    OSStatus err = noErr;
+    AudioObjectPropertyAddress propertyAddress;
+    
+    // ONLY REACTING TO HEADPHONE SWAPS FOR NOW - see version control history for removed dead code
+    propertyAddress.mSelector = kAudioHardwarePropertyDevices;
+    propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
+    propertyAddress.mElement = kAudioObjectPropertyElementMaster;
 
-//ONLY REACTING TO HEADPHONE SWAPS FOR NOW
-//
-//
-//
-//    // kAudioDevicePropertyBufferSize
-//    err = AudioDeviceAddPropertyListener(inDevice, 0, false, kAudioDevicePropertyBufferSize, deviceListenerProc, inClientData);
-//    if (err) return err;
-//
-//    err = AudioDeviceAddPropertyListener(inDevice, 0, true, kAudioDevicePropertyBufferSize, deviceListenerProc, inClientData);
-//    if (err) return err;
-//
-//
-//    // kAudioDevicePropertyBufferFrameSize
-//    err = AudioDeviceAddPropertyListener(inDevice, 0, false, kAudioDevicePropertyBufferFrameSize, deviceListenerProc, inClientData);
-//    if (err) return err;
-//
-//    err = AudioDeviceAddPropertyListener(inDevice, 0, true, kAudioDevicePropertyBufferFrameSize, deviceListenerProc, inClientData);
-//    if (err) return err;
-//
-//    // kAudioDevicePropertyDeviceIsRunning
-//    err = AudioDeviceAddPropertyListener(inDevice, 0, false, kAudioDevicePropertyDeviceIsRunning, deviceListenerProc, inClientData);
-//    if (err) return err;
-//
-//    err = AudioDeviceAddPropertyListener(inDevice, 0, true, kAudioDevicePropertyDeviceIsRunning, deviceListenerProc, inClientData);
-//    if (err) return err;
-//
-///*
-//    for (i = 0; i <= deviceInfo->totalOutputChannels; i++)
-//    {
-//        // kAudioDevicePropertyVolumeScalar output
-//        err = AudioDeviceAddPropertyListener(inDevice, i, false, kAudioDevicePropertyVolumeScalar, deviceListenerProc, inClientData);
-//        if (err) return err;
-//
-//        // kAudioDevicePropertyVolumeMute output
-//        err = AudioDeviceAddPropertyListener(inDevice, i, false, kAudioDevicePropertyMute, deviceListenerProc, inClientData);
-//        if (err) return err;
-//    }
-//
-//    for (i = 0; i <= deviceInfo->totalInputChannels; i++)
-//    {
-//        // kAudioDevicePropertyVolumeScalar input
-//        err = AudioDeviceAddPropertyListener(inDevice, i, true, kAudioDevicePropertyVolumeScalar, deviceListenerProc, inClientData);
-//        if (err) return err;
-//
-//        // kAudioDevicePropertyVolumeMute input
-//        err = AudioDeviceAddPropertyListener(inDevice, i, true, kAudioDevicePropertyMute, deviceListenerProc, inClientData);
-//        if (err) return err;
-//
-//        // kAudioDevicePropertyPlayThru input
-//        err = AudioDeviceAddPropertyListener(inDevice, i, true, kAudioDevicePropertyPlayThru, deviceListenerProc, inClientData);
-//        if (err) return err;
-//    }
-//*/
-//
-//    // kAudioDevicePropertyDeviceIsAlive
-//    err = AudioDeviceAddPropertyListener(inDevice, 0, false, kAudioDevicePropertyDeviceIsAlive, deviceListenerProc, inClientData);
-//    if (err) return err;
-//
-//    err = AudioDeviceAddPropertyListener(inDevice, 0, true, kAudioDevicePropertyDeviceIsAlive, deviceListenerProc, inClientData);
-//    if (err) return err;
-//
-//
-//    // kAudioDevicePropertyStreamFormat
-//    err = AudioDeviceAddPropertyListener(inDevice, 0, false, kAudioDevicePropertyStreamFormat, deviceListenerProc, inClientData);
-//    if (err) return err;
-//
-//    err = AudioDeviceAddPropertyListener(inDevice, 0, true, kAudioDevicePropertyStreamFormat, deviceListenerProc, inClientData);
-//    if (err) return err;
-//
-//    // kAudioDevicePropertyBufferSizeRange
-//    err = AudioDeviceAddPropertyListener(inDevice, 0, false, kAudioDevicePropertyBufferSizeRange, deviceListenerProc, inClientData);
-//    if (err) return err;
-//
-//    err = AudioDeviceAddPropertyListener(inDevice, 0, true, kAudioDevicePropertyBufferSizeRange, deviceListenerProc, inClientData);
-//    if (err) return err;
-
-    //kAudioDevicePropertyDataSource
-    err = AudioDeviceAddPropertyListener(inDevice, 0, false, kAudioDevicePropertyDataSource, deviceListenerProc, inClientData);
+    err = AudioObjectAddPropertyListener(inDevice, &propertyAddress, deviceListenerProc, inClientData);
     if (err) return err;
-
-  //  err = AudioDeviceAddPropertyListener(inDevice, 0, true, kAudioDevicePropertyDataSource, deviceListenerProc, inClientData);
-   // if (err) return err;
-
-
-    //AddStreamListeners (inDevice, kAudioStreamPropertyPhysicalFormat, false, inClientData);
-
-    //AddStreamListeners (inDevice, kAudioStreamPropertyPhysicalFormat, true, inClientData);
 
     return (err);
 }
 
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-OSStatus	AddStreamListeners (AudioDeviceID inDevice, AudioDevicePropertyID	inPropertyID, Boolean isInput, void *inClientData)
-{
-    OSStatus			err = noErr;
-    UInt32				count;
-    UInt32				outSize;
-    Boolean				outWritable;
-    AudioStreamID		*streamList = nil;
-
-    err =  AudioDeviceGetPropertyInfo(inDevice, 0, isInput, kAudioDevicePropertyStreams,  &outSize, &outWritable);
-    if (err == noErr)
-    {
-        streamList = (AudioStreamID*)malloc(outSize);
-        err = AudioDeviceGetProperty(inDevice, 0, isInput, kAudioDevicePropertyStreams, &outSize, streamList);
-        if (err == noErr)
-        {
-            for (count = 0; count < (outSize / sizeof(AudioStreamID)); count++)
-            {
-                err = AudioStreamAddPropertyListener(streamList[count], 0, inPropertyID, streamListenerProc, inClientData);
-                if (err) return err;
-            }
-        }
-        if (streamList != nil)
-        {
-            free(streamList);
-            streamList = nil;
-        }
-    }
-
-
-    return (noErr);
-}
 #endif // SC_AUDIO_API_COREAUDIO
-
-
 
 
 // =====================================================================
