@@ -265,6 +265,7 @@ template<> struct assert_intrinsic_wchar_t<unsigned short> {};
 #  undef BOOST_NO_CXX11_HDR_THREAD 
 #  undef BOOST_NO_CXX11_CHAR32_T 
 #  undef BOOST_NO_CXX11_CHAR16_T
+#  undef BOOST_NO_CXX11_REF_QUALIFIERS
 #endif
 
 #if defined(BOOST_INTEL_STDCXX0X) && (BOOST_INTEL_CXX_VERSION <= 1310)

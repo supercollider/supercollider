@@ -6,43 +6,50 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 	# boost thread
 	aux_source_directory(boost/libs/thread/src/ boost_thread_src )
 
-	include_directories(boost)
-
 	if(WIN32)
 		aux_source_directory(boost/libs/thread/src/win32/ boost_thread_platform )
-		add_definitions(-DBOOST_THREAD_BUILD_LIB)
 	elseif(PTHREADS_FOUND)
-		include_directories(${PTHREADS_INCLUDE_DIR})
 		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
 	else()
 		message(SEND_ERROR "we need to implement boost_thread")
 	endif()
 
 	aux_source_directory(boost/libs/system/src/ boost_system )
-	add_library(boost_system STATIC ${boost_system})
+	add_library(boost_system STATIC EXCLUDE_FROM_ALL ${boost_system})
+	target_include_directories(boost_system PUBLIC boost)
 
-	if (SUPERNOVA)
-		aux_source_directory(boost/libs/program_options/src/ boost_program_options )
-		add_library(boost_program_options STATIC ${boost_program_options})
+	aux_source_directory(boost/libs/program_options/src/ boost_program_options )
+	add_library(boost_program_options STATIC EXCLUDE_FROM_ALL ${boost_program_options})
+	target_include_directories(boost_program_options PUBLIC boost)
 
-		aux_source_directory(boost/libs/filesystem/src boost_filesystem_src)
-		add_library(boost_filesystem STATIC ${boost_filesystem_src})
+	aux_source_directory(boost/libs/filesystem/src boost_filesystem_src)
+	add_library(boost_filesystem STATIC EXCLUDE_FROM_ALL ${boost_filesystem_src})
+	target_include_directories(boost_filesystem PUBLIC boost)
 
-		if(LTO)
-			set_property(TARGET boost_program_options boost_system boost_filesystem
-						 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+	if(LTO)
+		set_property(TARGET boost_program_options boost_system boost_filesystem
+					 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-			set_property(TARGET boost_program_options boost_system boost_filesystem
-						 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
-		endif()
+		set_property(TARGET boost_program_options boost_system boost_filesystem
+					 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
 	# still required by threadpool
-	add_library(boost_thread STATIC ${boost_thread_src} ${boost_thread_platform})
+	add_library(boost_thread STATIC EXCLUDE_FROM_ALL ${boost_thread_src} ${boost_thread_platform})
 	target_link_libraries(boost_thread boost_system)
+#	target_compile_definitions(boost_thread PUBLIC BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS)
+	target_include_directories(boost_thread PUBLIC boost)
+
+	if(PTHREADS_FOUND)
+		target_include_directories(boost_thread PUBLIC ${PTHREADS_INCLUDE_DIR})
+	endif()
+	if(WIN32)
+		target_add_definitions( boost_thread PRIVATE BOOST_THREAD_BUILD_LIB)
+	endif()
+
 
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-		add_definitions(-fPIC)
+		target_compile_options(boost_thread PRIVATE -fPIC)
 		target_link_libraries(boost_thread rt)
 	endif()
 
@@ -51,34 +58,52 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 			APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
 		set_property(TARGET boost_thread
-			  APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
+			APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 endif()
 
-if (SUPERNOVA)
-	#oscpack
-	add_library(oscpack STATIC "oscpack_build.cpp")
+# tlsf
+add_library(tlsf STATIC "TLSF-2.4.6/src/tlsf.c")
+target_compile_definitions( tlsf PRIVATE TLSF_STATISTIC=1 )
+target_include_directories( tlsf INTERFACE TLSF-2.4.6/src )
 
-	#tlsf
-	add_library(tlsf STATIC "TLSF-2.4.6/src/tlsf.c")
-	set_target_properties(tlsf
-						 PROPERTIES COMPILE_DEFINITIONS TLSF_STATISTIC=1)
-	if(LTO)
-		set_property(TARGET oscpack tlsf
-					 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+if(LTO)
+	set_property(TARGET oscpack tlsf
+				 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-		set_property(TARGET oscpack tlsf
-					 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
-	endif()
+	set_property(TARGET oscpack tlsf
+				 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
+
+#oscpack
+add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
+target_include_directories(oscpack PRIVATE boost)
+target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
 
 if(NOT YAMLCPP_FOUND)
   message(STATUS "using bundled libyaml-cpp")
 
   # yaml-cpp
-  include_directories(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
   aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/src yaml_src)
   CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
 
   add_library(yaml STATIC ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
+  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
 endif()
+
+
+
+
+##### HID_API #######
+
+if (HID_LIBUSB)
+  set( LIBUSB ON )
+  set( HIDRAW OFF )
+endif()
+if (HID_HIDRAW)
+  set( HIDRAW ON )
+  set( LIBUSB OFF )
+endif()
+set( EXAMPLE_TEST OFF )
+set( EXAMPLE_OSC OFF )
+add_subdirectory(hidapi)

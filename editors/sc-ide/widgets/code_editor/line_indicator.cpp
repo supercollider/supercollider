@@ -84,11 +84,20 @@ void LineIndicator::mouseDoubleClickEvent( QMouseEvent *e )
 int LineIndicator::widthForLineCount( int lineCount )
 {
     int digits = 2;
+
+    if (hideLineIndicator)
+        return 0;
+
     while( lineCount >= 100 ) {
         lineCount /= 10;
         ++digits;
     }
 
     return 6 + fontMetrics().width('9') * digits;
+}
+
+void LineIndicator::setHideLineIndicator( bool hide )
+{
+        hideLineIndicator = hide;
 }
 

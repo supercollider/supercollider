@@ -1,7 +1,7 @@
 class:: Monitor
 summary:: link between busses
 categories:: Libraries>JITLib>NodeProxy, Live Coding
-related:: Classes/NodeProxy, Reference/playN, Classes/Bus
+related:: Reference/playN, Classes/NodeProxy, Classes/Bus
 
 description::
 A general purpose class for monitoring or crosslinking between busses. It supports multichannel expansion and crossfading between settings. It provides optimizations for playing contiguous channels to other contiguous busses (link::#play::) and for more complex routings, such as splitting, spreading etc to multiple channels (link::#playN::). Monitor uses the existing set of  link::Classes/SystemSynthDefs:: to do this.
@@ -14,8 +14,8 @@ x.play(fromIndex: 87, fromNumChannels: 3, toIndex:0, toNumChannels:2); // play t
 
 ClassMethods::
 
-method::warnPlayN
-A Monitor can switch between different multichannel modes (play and playN). Currently, such a switch may result in wrong defaults, so if this variable is set to true (default: true), it will post an informative warning.
+private::warnPlayN
+
 
 InstanceMethods::
 
@@ -49,6 +49,28 @@ specifies the fade in and fade out time
 argument::addAction
 where, relative to the target to place the monitor group.
 
+code::
+s.boot;
+s.scope(16);
+
+{ Out.ar(87, SinOsc.ar(MouseX.kr(40, 10000, 1) * [1, 2, 3], 0, 0.2)) }.play;
+x = Monitor.new;
+x.play(87, 3, 1, 2);
+x.out = 0;
+x.stop(3.0);
+x.play(87, 1, 0, 1); // in > out : now mixes down (wrapping)
+x.play(89, 1, 0, 2); // in < out : now distributes to 2 channels
+x.stop;
+
+// multiple play
+x.play(87, 1, 0, 2, multi:true);
+x.play(88, 1, 0, 2, multi:true);
+x.play(89, 1, 0, 2, multi:true);
+x.stop;
+::
+
+
+
 method::playN
 Plays from an array of bus indices to another array of bus indices with an array of amplitudes, within a target group, or a server.
 
@@ -80,15 +102,50 @@ where to play (default: server default group)
 argument::addAction
 where, relative to the target to place the monitor group.
 
+argument::multi
+keep old links and add new one: this allows you to add layer after layer, otherwise free ther previous mapping (false by default).
+
+code::
+// examples: args are // outs, amps, ins, vol, fadeTime
+
+{ Out.ar(87, SinOsc.ar(MouseX.kr(40, 10000, 1) * [1, 2, 3], 0, 0.2)) }.play;
+x = Monitor.new;
+
+(
+x.playN(
+	[0, 1, 4], 			// to these outs
+	[0.1, 0.4, 0.3], 	// with these volumes
+	[87, 88, 89]		// from these ins
+);
+)
+(
+x.playN(
+	[0, [1, 3, 2], 4], 		// outs can be nested: 87 -> 0, 88 -> [1, 3, 2], 89 -> 4
+	[0.1, [0.4, 0.2, 0.1], 0.3],	// with nested volumes 0.1, [0.4, 0.2, 0.1], and 0.3
+	[87, 88, 89]); 			// reading from these ins
+)
+// can also set global volume and fadetime
+x.playN(vol: 0.0, fadeTime:4);
+::
 
 
 method::stop
 Stops within the fadeTime.
+note::this keeps all the settings, so when using code::play:: next time, it will play in the same configuration, overriding only values provided.::
 code::
 { Out.ar(87, SinOsc.ar(MouseX.kr(340, 1000, 1) * [1, 2, 3], 0, 0.2)) }.play;
 x = Monitor.new.play(87, 3, 0, fadeTime: 3);
 x.stop;
+x.play;
 ::
+
+argument::fadeTime
+The time for fading out all routing synths.
+
+method::clear
+Stops within the fadeTime.
+note::unlike code::stop::, this removes all the settings.::
+
 
 method::vol
 Set the volume.
@@ -112,8 +169,11 @@ Set or get the array of input bus indices.
 method::amps
 Set the array of amplitudes.
 
+method::fadeTimes
+Set or get the array of fadeTimes.
+
 method::fadeTime
-Set the fadeTime for the next transition (may be a stop or a new play).
+Set one single fadeTime for the next transition (may be a stop or a new play).
 
 method::isPlaying
 Returns true if the group is still playing.
@@ -126,50 +186,6 @@ Return the number of input channels.
 
 
 method::playToBundle
-Adds all playing osc messages to a bundle, passed as an argument. The bundle should support the message strong::.add::
+Adds all playing osc messages to a bundle, passed as an argument. The bundle object should implement the method strong::.add::
 
-Examples::
-
-code::
-s.boot;
-s.scope(16);
-
-{ Out.ar(87, SinOsc.ar(MouseX.kr(40, 10000, 1) * [1, 2, 3], 0, 0.2)) }.play;
-x = Monitor.new;
-x.play(87, 3, 1, 2);
-x.out = 0;
-x.stop(3.0);
-x.play(87, 1, 0, 1); // in > out : now mixes down (wrapping)
-x.play(89, 1, 0, 2); // in < out : now distributes to 2 channels
-x.stop;
-
-// multiple play
-x.play(87, 1, 0, 2, multi:true);
-x.play(88, 1, 0, 2, multi:true);
-x.play(89, 1, 0, 2, multi:true);
-x.stop;
-::
-
-subsection::Multichannel playing
-
-code::
-// examples: args are // outs, amps, ins, vol, fadeTime
-
-{ Out.ar(87, SinOsc.ar(MouseX.kr(40, 10000, 1) * [1, 2, 3], 0, 0.2)) }.play;
-x = Monitor.new;
-
-(	x.playN(
-		[0, 1, 4], 		// to these outs
-		[0.1, 0.4, 0.3], 	// with these volumes
-		[87, 88, 89]		// from these ins
-	);
-)
-(
-	x.playN(
-		[0, [1, 3, 2], 4], 		// outs can be nested: 87 -> 0, 88 -> [1, 3, 2], 89 -> 4
-		[0.1, [0.4, 0.2, 0.1], 0.3],	// with nested volumes 0.1, [0.4, 0.2, 0.1], and 0.3
-		[87, 88, 89]); 			// reading from these ins
-)
-		// can also set global volume and fadetime
-	x.playN(vol: 0.0, fadeTime:4);
-::
+private::hasSeriesOuts, newGroupToBundle, playNBusToBundle, playNToBundle, stopToBundle, updateDefault, usedPlayN

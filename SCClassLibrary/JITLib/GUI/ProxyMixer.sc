@@ -4,7 +4,7 @@ ProxyMixer : JITGui {
 	var <arZone, <krZone, <editZone;
 	var <arGuis, <krGuis, <editGui;
 	var <arScroller, <krScroller;
-	var 	<arKeysRotation = 0, <krKeysRotation = 0;
+	var <arKeysRotation = 0, <krKeysRotation = 0;
 
 	var selectMethod = \existingProxies;
 

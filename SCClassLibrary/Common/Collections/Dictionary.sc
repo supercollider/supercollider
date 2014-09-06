@@ -178,7 +178,7 @@ Dictionary : Set {
 
 	merge {|that, func, fill = true|
 		var commonKeys, myKeys = this.keys, otherKeys = that.keys;
-		var res = ();
+		var res = this.species.new;
 
 		if (myKeys == otherKeys) {
 			commonKeys = myKeys
@@ -258,7 +258,9 @@ Dictionary : Set {
 		^event.putAll(this);
 	}
 	embedInStream { arg event;
-		^yield(event !? { event.copy.putAll(this) })
+		var func = this.at(\embedInStream);
+		if(func.notNil) { ^func.value(this, event) };
+		^if(event.isNil) { this } { event.copy.putAll(this) }.yield
 	}
 
 	asSortedArray {

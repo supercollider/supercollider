@@ -1,0 +1,160 @@
+TITLE:: HIDProto
+summary:: Prototype HID device to match with HIDFunc
+categories:: External control>HID
+related::  Classes/HIDFunc, Classes/HIDdef, Classes/HIDElementProto, Classes/HID, Classes/HIDInfo, Guides/Working_with_HID
+
+DESCRIPTION::
+Human input devices can be used as controllers for making music. This class can be used in conjunction with link::Classes/HIDFunc:: or link::Classes/HIDdef:: to match incoming messages with a particular link::Classes/HID:: device.
+
+HIDProto has all the variables that specify an HID device. The more of these variables you specify, the more need to be matched when filtering the incoming HID data.
+
+CLASSMETHODS::
+
+METHOD:: new
+Create a new instance of HIDProto.
+
+
+METHOD:: newType
+Create a new instance of HIDProto based on usage and usagePage of the device.
+
+ARGUMENT:: uName
+Name of the usage id
+
+ARGUMENT:: pName
+Name of the usage page id
+
+returns::  an HIDProto
+
+METHOD:: newProduct
+Create a new instance of HIDProto based on the product information.
+
+ARGUMENT:: pName
+The product name to match.
+
+ARGUMENT:: vName
+The vendor name to match.
+
+returns:: an HIDProto
+
+
+METHOD:: newFromDict
+Create a new instance of HIDProto based on an IdentityDictionary with a set of parameters to match.
+
+ARGUMENT:: dict
+An IdentityDictionary with a set of parameters to match. The keys in the dictionary should be one of the instance variables of HIDProto.
+
+returns:: an HIDProto
+
+
+INSTANCEMETHODS::
+
+PRIVATE:: init
+
+SUBSECTION:: Instance variables that can be used to match a device
+
+METHOD:: id
+The device id that should be matched. This is dependent on the order of opening HID devices.
+
+METHOD:: productName
+The product name to match (see also link::Classes/HIDInfo::).
+
+METHOD:: vendorName
+The vendor name to match (see also link::Classes/HIDInfo::).
+
+METHOD:: productID
+The product id to match (see also link::Classes/HIDInfo::).
+
+METHOD:: vendorID
+The vendor id to match (see also link::Classes/HIDInfo::).
+
+METHOD:: interfaceNumber
+The interface number to match (see also link::Classes/HIDInfo::).
+
+METHOD:: releaseNumber
+The release number to match (see also link::Classes/HIDInfo::).
+
+
+METHOD:: serialNumber
+The serial number to match (see also link::Classes/HIDInfo::).
+
+METHOD:: path
+The path to match (see also link::Classes/HIDInfo::).
+
+
+
+METHOD:: usage
+The usage ID of the device to match (see also link::Classes/HIDInfo::).
+
+METHOD:: usagePage
+The usage page ID of the device to match (see also link::Classes/HIDInfo::).
+
+METHOD:: usageName
+The usage name of the device to match (see also link::Classes/HIDInfo::).
+
+METHOD:: pageName
+The page name of the device to match (see also link::Classes/HIDInfo::).
+
+
+SUBSECTION:: Methods to match
+
+METHOD:: matches
+Match the argument with the template.
+
+ARGUMENT:: hid
+An instance of HID.
+
+returns:: a Boolean indicating whether the incoming HID matches the template
+
+METHOD:: shouldMatch
+The variables that should be matched when filtering
+
+returns:: a Set with variable names.
+
+SUBSECTION:: Methods to add matching parameters
+
+
+METHOD:: addTypeMatch
+Add a match for usage name and usage page name of the device.
+
+ARGUMENT:: uName
+The usage name to match
+
+ARGUMENT:: pName
+The page name to match
+
+METHOD:: addProductMatch
+Add a match for product name and vendor name of the device.
+
+ARGUMENT:: pName
+The product name to match
+
+ARGUMENT:: vName
+The vendor name to match
+
+
+METHOD:: addDictionaryMatch
+Add an IdentityDictionary with a set of parameters to match. The keys in the dictionary should be one of the instance variables of HIDProto.
+
+
+ARGUMENT:: dict
+An IdentityDictionary with a set of parameters to match.
+
+
+EXAMPLES::
+
+code::
+b = HIDProto.newFromDict( ( path: "/dev/hidraw2" ) );
+
+a = HIDFunc.usage( { |...args| args.postln; }, \X, deviceInfo: b );
+a.free
+
+b = HIDProto.newType( \Mouse, \GenericDesktop );
+
+a = HIDFunc.usage( { |...args| args.postln; }, \X, deviceInfo: b );
+a.free;
+
+b = HIDProto.newProduct( "USB Mouse", "Logitech" );
+
+a = HIDFunc.usage( { |...args| args.postln; }, \X, deviceInfo: b );
+a.free;
+::

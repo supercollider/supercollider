@@ -176,6 +176,7 @@ EventTypesWithCleanup {
 			note:	false,
 			on:		false,
 			group:	false,
+			fadeBus: false,
 			tree:	false
 		);
 

@@ -92,7 +92,7 @@ in release/commit history:
 
 Since at least SC 3.6.5 it has not been possible any more to use the OSX supplied 
 readline to build sclang with readline interface. Therefore GNU Readline >= 5.0 needs
-to be intalled on the build system.
+to be installed on the build system.
 
 SC 3.6.6 was built using the following cmake arguments:
 
@@ -217,10 +217,10 @@ headers and libraries. When using MacPorts, the paths are likely to be:
 `-DREADLINE_INCLUDE_DIR=/opt/local/include` 
 `-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib`
 
-For Homebrew the default locations are (end 2013):
+For Homebrew the default locations are (Apr 2014):
 
-`-DREADLINE_INCLUDE_DIR=/usr/local/Cellar/readline/6.2.4/include` 
-`-DREADLINE_LIBRARY=/usr/local/Cellar/readline/6.2.4/lib/libreadline.dylib`
+`-DREADLINE_INCLUDE_DIR=/usr/local/Cellar/readline/6.3.3/include` 
+`-DREADLINE_LIBRARY=/usr/local/Cellar/readline/6.3.3/lib/libreadline.dylib`
 
 So a full cmake configure command, specifying a build target and including readline
 (from MacPorts) would look like this:
@@ -443,7 +443,7 @@ Standalones
 To create a "standalone" app using cmake, you need to use the "standalone" flag. For 
 example, to create a standalone whose name is MyFabApp:
 
-`cmake -Dstandalone="MyFabApp" ..`
+`cmake -D standalone="MyFabApp" ..`
 
 If you want to include special resources, put them in a folder called 
 

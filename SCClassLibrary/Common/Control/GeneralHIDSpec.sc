@@ -1,23 +1,23 @@
-GeneralHIDSpec{
-	classvar <>all,<folder;
+GeneralHIDSpec {
+	classvar <>all, <folder;
 
 	var <map, <device, <info;
 
 	*initClass {
 		folder = (Platform.userAppSupportDir +/+ "GeneralHIDSpecs").standardizePath;
-		if ( this.checkSaveFolder ){ this.loadSavedInfo; };
+		if ( this.checkSaveFolder ) { this.loadSavedInfo; };
 		all	= all ? IdentityDictionary.new;
 	}
 
-	*loadSavedInfo{
+	*loadSavedInfo {
 		var filename;
 		filename = (folder+/+"allspecs.info");
-		if ( File.exists(filename) ){
+		if ( File.exists(filename) ) {
 			all = filename.load;
 		}
 	}
 
-	*checkSaveFolder{
+	*checkSaveFolder {
 		^File.exists( folder );
 	}
 
@@ -27,15 +27,15 @@ GeneralHIDSpec{
 		testfile = File(folder +/+ testname, "w");
 
 		if (testfile.isOpen.not)
-			{ folder.mkdir }
-			{ testfile.close;  unixCmd("rm" + folder.escapeChar($ ) +/+ testname) }
+		{ folder.mkdir }
+		{ testfile.close; unixCmd("rm" + folder.escapeChar($ ) +/+ testname) }
 	}
 
 	*new { |dev|
 		^super.new.init(dev);
 	}
 
-	init{ |dev|
+	init { |dev|
 		device = dev;
 		map = IdentityDictionary.new;
 		info = IdentityDictionary.new;
@@ -46,8 +46,8 @@ GeneralHIDSpec{
 		info.put( \scheme, GeneralHID.scheme );
 	}
 
-	find{
-		^all.select{ |thisspec,key|
+	find {
+		^all.select { |thisspec, key|
 			( thisspec[\vendor] == device.info.vendor ) and:
 			( thisspec[\name] == device.info.name ) and:
 			( thisspec[\product] == device.info.product ) and:
@@ -56,95 +56,95 @@ GeneralHIDSpec{
 		}.keys.asArray;
 	}
 
-	add{ |key, slot|
+	add { |key, slot|
 		map.put( key, slot );
 		this.at( key ).key = key;
 	}
 
 	// returns the slot
-	at{ |key|
-		var id1,id2;
+	at { |key|
+		var id1, id2;
 		id1 = map.at(key)[0];
 		id2 = map.at(key)[1];
-      if ( device.hasSlot( [id1, id2] ) ){
-         ^device.slots[id1][id2];
-      };
-      ^nil
+		if ( device.hasSlot( [id1, id2] ) ) {
+			^device.slots[id1][id2];
+		};
+		^nil
 		// map.at(key)
 	}
 
-	value{ |key|
+	value { |key|
 		^this.at(key).value;
 	}
 
-	value_{ |key,value|
+	value_ { |key, value|
 		var slot;
 		slot = this.at(key);
 		slot.value_(value);
 		^slot;
 	}
 
-	action_{ |key,action|
+	action_ { |key, action|
 		var slot;
 		slot = this.at(key);
 		slot.action_(action);
 		^slot;
 	}
 
-	bus{ |key|
+	bus { |key|
 		^this.at(key).bus;
 	}
 
-	createBus{ |name,server|
+	createBus { |name, server|
 		this.at( name ).createBus( server );
 	}
 
-	freeBus{ |name|
+	freeBus { |name|
 		this.at( name ).freeBus;
 	}
 
-	/*	setAllActions{ |action|
-		map.do{ |it|
-			device.slots.at( it[0] ).at( it[1] ).action_( action );
-		};
-		}*/
+	/*	setAllActions { |action|
+	map.do { |it|
+	device.slots.at( it[0] ).at( it[1] ).action_( action );
+	};
+	}*/
 
-	createAllBuses{ |server|
-		map.do{ |it|
+	createAllBuses { |server|
+		map.do { |it|
 			device.slots.at( it[0] ).at( it[1] ).createBus( server );
-		};
+		}
 	}
 
-	freeAllBuses{
-		map.do{ |it|
+	freeAllBuses {
+		map.do { |it|
 			device.slots.at( it[0] ).at( it[1] ).freeBus;
-		};
+		}
 	}
 
-	save{ |name|
+	save { |name|
 		var file, res = false;
 		var filename;
-      if ( map.notNil ){
-         all.put( name.asSymbol, info );
-         if (  GeneralHIDSpec.checkSaveFolder.not ) {  GeneralHIDSpec.makeSaveFolder };
-         filename = folder +/+ name ++ ".spec";
-         file = File(filename, "w");
-         if (file.isOpen) {
-            res = file.write(map.asCompileString);
-            file.close;
-         };
-         this.class.saveAll;
-      }{
-         "the spec for this device is nil; something went wrong; resetting it to an empty dictionary".warn;
-         map = IdentityDictionary.new;
-      };
+		if ( map.notNil ) {
+			all.put( name.asSymbol, info );
+			if ( GeneralHIDSpec.checkSaveFolder.not ) { GeneralHIDSpec.makeSaveFolder };
+			filename = folder +/+ name ++ ".spec";
+			file = File(filename, "w");
+			if (file.isOpen) {
+				res = file.write(map.asCompileString);
+				file.close;
+			};
+			this.class.saveAll;
+		} {
+			"the spec for this device is nil; something went wrong; resetting it to an empty dictionary".warn;
+			map = IdentityDictionary.new;
+		};
 		^res;
 	}
 
-	*saveAll{
+	*saveAll {
 		var file, res = false;
 		var filename;
-		if ( GeneralHIDSpec.checkSaveFolder.not ) {  GeneralHIDSpec.makeSaveFolder };
+		if ( GeneralHIDSpec.checkSaveFolder.not ) { GeneralHIDSpec.makeSaveFolder };
 		filename = folder +/+ "allspecs.info";
 		file = File(filename, "w");
 		if (file.isOpen) {
@@ -155,19 +155,19 @@ GeneralHIDSpec{
 	}
 
 	fromFile { |name|
-      var tempmap;
-		if (  GeneralHIDSpec.checkSaveFolder.not ) {  GeneralHIDSpec.makeSaveFolder };
+		var tempmap;
+		if ( GeneralHIDSpec.checkSaveFolder.not ) { GeneralHIDSpec.makeSaveFolder };
 		tempmap = (folder +/+ name++".spec").load;
-      if ( tempmap.notNil ){
-         map = tempmap;
-         map.keysValuesDo{ |key,it|
-            if ( this.at( key ).notNil ){
-               this.at( key ).key = key;
-            }
-         }
-		}{
-         "file contained an empty mapping; not changing the previous mapping".warn;
-      }
+		if ( tempmap.notNil ) {
+			map = tempmap;
+			map.keysValuesDo { |key, it|
+				if ( this.at( key ).notNil ) {
+					this.at( key ).key = key;
+				}
+			}
+		} {
+			"file contained an empty mapping; not changing the previous mapping".warn;
+		}
 	}
 
 }

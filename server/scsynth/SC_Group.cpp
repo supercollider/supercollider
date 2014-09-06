@@ -340,10 +340,17 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
 				// the ptr in nMapControls should be the same as the control itself, if not, it's mapped.
 				if((childGraph->mMapControls[i]) != ptr){
 					// it's mapped
-					int bus = (childGraph->mMapControls[i]) - (child->mWorld->mControlBus);
-					//scprintf("bus: %d\n", bus);
+					int bus;
 					char buf[10]; //should be long enough
-					sprintf(buf, "%c%d", 'c', bus);
+					if (childGraph->mControlRates[i] == 2) {
+					bus = (childGraph->mMapControls[i]) - (child->mWorld->mAudioBus);
+					bus = (int)((float)bus / child->mWorld->mBufLength);
+					sprintf(buf, "%c%d", 'a', bus);
+					} else {
+						bus = (childGraph->mMapControls[i]) - (child->mWorld->mControlBus);
+						sprintf(buf, "%c%d", 'c', bus);
+					}
+					//scprintf("bus: %d\n", bus);
 					packet->addtag('s');
 					packet->adds(buf);
 				} else {

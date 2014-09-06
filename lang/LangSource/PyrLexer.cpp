@@ -1075,7 +1075,7 @@ int processfloatradix(char *s, int n, int radix)
 	SetFloat(&slot, sc_strtof(s, n, radix));
 	node = newPyrSlotNode(&slot);
 	zzval = (long)node;
-	return INTEGER;
+	return SC_FLOAT;
 }
 
 int processint(char *s)
@@ -1187,6 +1187,7 @@ int processaccidental2(char *s)
 	}
 
 	if (semitones > 4.) semitones = 4.;
+	else if (semitones < -4.) semitones = -4.;
 
 	SetFloat(&slot, degree + semitones/10.);
 	node = newPyrSlotNode(&slot);
@@ -2104,6 +2105,7 @@ void shutdownLibrary()
 	compiledOK = false;
 
 	gLangMutex.unlock();
+	deinitPrimitives();
 
 	SC_LanguageConfig::freeLibraryConfig();
 }

@@ -292,9 +292,43 @@ d.asKeyValuePairs;
 ::
 
 method::embedInStream
-If the event is not nil, yields a copy, with all the elements of the receiver. See also link::Classes/Event::.
+
+argument::event
+The inval, usually in an event stream. See also link::Classes/Event::.
+
+If the event is not nil, yields a copy, adding all the elements of the receiver event (this leaves the receiver unchanged). If it is nil, return the receiver.
+
 code::
-// write a generator for dictionaries
+a = (note: 2);
+b = (note: [3, 5]);
+Pseq([a, b]).play;
+::
+
+If a key "embedInStream" is given, use this function instead. The behaviour of the event can be configured easily this way.
+
+The arguments event (the reciever) and inevent (the inevent) are passed to the function. note::In infinite patterns, you strong::must:: call yield or embedInStream in the function, otherwise it will loop forever.::
+
+
+code::
+(
+a = (
+	pattern: Pbind(\note, Pgeom(1, 1.1, { 20.rand }), \dur, 0.05),
+	embedInStream: { |event, inevent| event[\pattern].embedInStream(inevent) }
+);
+b = (note: [3, 5]);
+c = (freq: 402, dur: 0.3);
+Prand([a, b, c], inf).trace.play;
+)
+
+// change the events while playing
+c[\freq] = [900, 1002, 1102];
+c[\freq] = [200, 101, 1102];
+::
+
+
+A generator for dictionaries:
+
+code::
 (
 d = (
 	a: 5, b: 7, c: 1,
@@ -311,23 +345,6 @@ d = (
 d.rout.((z:999));
 d.rout.((z:1, a:0));
 d.rout.(());
-
-// sound example
-// this also allows to use events or dictionaries in patterns directly:
-(
-d = (freq: 402, dur: 0.3);
-	Pseq([
-		d,
-		(freq: 300, dur: 0.3),
-		d,
-		(freq: [400, 770, 800], dur: 1),
-		d,
-		(freq: 451, dur: 0.33)
-	], inf).play;
-);
-
-d[\freq] = [900, 1002, 1102];
-d[\freq] = [200, 101, 1102];
 ::
 
 SECTION::Overview

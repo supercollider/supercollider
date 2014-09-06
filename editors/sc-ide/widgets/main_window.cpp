@@ -305,13 +305,6 @@ void MainWindow::createActions()
     connect(action, SIGNAL(triggered()), this, SLOT(saveAllDocuments()));
     settings->addAction( action, "ide-document-save-all", ideCategory);
 
-    mActions[DocClose] = action = new QAction(
-        QIcon::fromTheme("window-close"), tr("&Close"), this);
-    action->setShortcut(tr("Ctrl+W", "Close document"));
-    action->setStatusTip(tr("Close the current document"));
-    connect(action, SIGNAL(triggered()), this, SLOT(closeDocument()));
-    settings->addAction( action, "ide-document-close", ideCategory);
-
     mActions[DocCloseAll] = action = new QAction(
         QIcon::fromTheme("window-close"), tr("Close All..."), this);
     action->setShortcut(tr("Ctrl+Shift+W", "Close all documents"));
@@ -550,7 +543,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[DocReload] );
     menu->addSeparator();
-    menu->addAction( mActions[DocClose] );
+    menu->addAction( mEditors->action(MultiEditor::DocClose) );
     menu->addAction( mActions[DocCloseAll] );
     menu->addSeparator();
     menu->addAction( mActions[Quit] );
@@ -617,6 +610,7 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::ResetFontSize) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::ShowWhitespace) );
+    menu->addAction( mEditors->action(MultiEditor::ShowLinenumber) );
     menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::NextDocument) );
     menu->addAction( mEditors->action(MultiEditor::PreviousDocument) );
@@ -849,7 +843,6 @@ void MainWindow::onCurrentDocumentChanged( Document * doc )
 {
     updateWindowTitle();
 
-    mActions[DocClose]->setEnabled(doc);
     mActions[DocCloseAll]->setEnabled(doc);
     mActions[DocReload]->setEnabled(doc);
     mActions[DocSave]->setEnabled(doc);

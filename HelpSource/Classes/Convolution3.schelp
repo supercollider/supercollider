@@ -4,9 +4,13 @@ related:: Classes/Convolution, Classes/Convolution2, Classes/Convolution2L
 categories::  UGens>Convolution
 
 Description::
-Strict convolution with fixed kernel which can be updated using a trigger signal. The convolution is performed in the time domain, which is highly inefficient, and probably only useful for either very short kernel sizes, or for control rate signals.
+Strict convolution with fixed kernel which can be updated using a trigger signal. The convolution is performed in the time domain.
 
+
+note::
+Doing conmvolution in time domain is highly inefficient, and probably only useful for either very short kernel sizes, or for control rate signals.
 See link::Classes/Convolution2:: and link::Classes/Convolution2L:: for more efficient convolution UGens.
+::
 
 classmethods::
 private:: categories

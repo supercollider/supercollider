@@ -80,42 +80,38 @@ struct tree_node_traits
 
 // tree_iterator provides some basic functions for a
 // node oriented bidirectional iterator:
-template<class RealValueTraits, bool IsConst>
+template<class ValueTraits, bool IsConst>
 class tree_iterator
-   :  public iiterator<RealValueTraits, IsConst, std::bidirectional_iterator_tag>::iterator_base
 {
    protected:
-   typedef iiterator< RealValueTraits, IsConst
+   typedef iiterator< ValueTraits, IsConst
                     , std::bidirectional_iterator_tag>   types_t;
 
-   typedef RealValueTraits                               real_value_traits;
+   typedef ValueTraits                                   value_traits;
    typedef typename types_t::node_traits                 node_traits;
 
    typedef typename types_t::node                        node;
    typedef typename types_t::node_ptr                    node_ptr;
-   typedef typename types_t::void_pointer                void_pointer;
+   typedef typename types_t::const_value_traits_ptr      const_value_traits_ptr;
    static const bool stateful_value_traits = types_t::stateful_value_traits;
-
-   typedef typename pointer_traits
-      <void_pointer>::template rebind_pointer
-         <const real_value_traits>::type   const_real_value_traits_ptr;
+   typedef bstree_algorithms<node_traits>                node_algorithms;
 
    public:
-   typedef typename types_t::value_type      value_type;
-   typedef typename types_t::pointer         pointer;
-   typedef typename types_t::reference       reference;
-
-   typedef bstree_algorithms<node_traits> node_algorithms;
+   typedef typename types_t::iterator_traits::difference_type    difference_type;
+   typedef typename types_t::iterator_traits::value_type         value_type;
+   typedef typename types_t::iterator_traits::pointer            pointer;
+   typedef typename types_t::iterator_traits::reference          reference;
+   typedef typename types_t::iterator_traits::iterator_category  iterator_category;
 
    tree_iterator()
    {}
 
-   explicit tree_iterator(const node_ptr & nodeptr, const const_real_value_traits_ptr &traits_ptr)
+   explicit tree_iterator(const node_ptr & nodeptr, const const_value_traits_ptr &traits_ptr)
       : members_(nodeptr, traits_ptr)
    {}
 
-   tree_iterator(tree_iterator<real_value_traits, false> const& other)
-      :  members_(other.pointed_node(), other.get_real_value_traits())
+   tree_iterator(tree_iterator<value_traits, false> const& other)
+      :  members_(other.pointed_node(), other.get_value_traits())
    {}
 
    const node_ptr &pointed_node() const
@@ -161,23 +157,27 @@ class tree_iterator
    {  return *operator->();   }
 
    pointer operator->() const
-   { return this->get_real_value_traits()->to_value_ptr(members_.nodeptr_); }
+   { return this->operator_arrow(detail::bool_<stateful_value_traits>()); }
 
-   const_real_value_traits_ptr get_real_value_traits() const
-   {
-      return pointer_traits<const_real_value_traits_ptr>::static_cast_from(members_.get_ptr());
-   }
+   const_value_traits_ptr get_value_traits() const
+   {  return members_.get_ptr();  }
 
    tree_iterator end_iterator_from_it() const
    {
-      return tree_iterator(node_algorithms::get_header(this->pointed_node()), this->get_real_value_traits());
+      return tree_iterator(node_algorithms::get_header(this->pointed_node()), this->get_value_traits());
    }
 
-   tree_iterator<real_value_traits, false> unconst() const
-   {  return tree_iterator<real_value_traits, false>(this->pointed_node(), this->get_real_value_traits());   }
+   tree_iterator<value_traits, false> unconst() const
+   {  return tree_iterator<value_traits, false>(this->pointed_node(), this->get_value_traits());   }
 
    private:
-   iiterator_members<node_ptr, stateful_value_traits> members_;
+   pointer operator_arrow(detail::false_) const
+   { return ValueTraits::to_value_ptr(members_.nodeptr_); }
+
+   pointer operator_arrow(detail::true_) const
+   { return this->get_value_traits()->to_value_ptr(members_.nodeptr_); }
+
+   iiterator_members<node_ptr, const_value_traits_ptr, stateful_value_traits> members_;
 };
 
 } //namespace intrusive
