@@ -767,7 +767,8 @@ struct hid_device_element * hid_get_next_input_element( struct hid_device_elemen
 	  nextel = nextel->next;
       }
   }
-  return curel; // return the previous element
+  return nextel; // is NULL
+//  return curel; // return the previous element
   // is NULL
 }
 
@@ -781,7 +782,8 @@ struct hid_device_element * hid_get_next_input_element_with_reportid( struct hid
 	  nextel = nextel->next;
       }
   }
-  return curel; // return the previous element
+  return nextel;
+ // return curel; // return the previous element
   // is NULL
 }
 
@@ -795,7 +797,8 @@ struct hid_device_element * hid_get_next_output_element( struct hid_device_eleme
 	  nextel = nextel->next;
       }
   }
-  return curel; // return the previous element
+  return nextel;
+//  return curel; // return the previous element
   // is NULL
 }
 
@@ -824,7 +827,8 @@ struct hid_device_element * hid_get_next_feature_element( struct hid_device_elem
 	  nextel = nextel->next;
       }
   }
-  return curel; // return the previous element
+  return nextel;
+  //return curel; // return the previous element
   // is NULL
 }
 
@@ -1257,6 +1261,7 @@ int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * d
   IOHIDValueRef newValueRef;
   IOReturn  tIOReturn;
   
+  /*
   if ( devdesc->number_of_reports > 1 ){
       reportid = (int) buf[i];
   }
@@ -1264,20 +1269,33 @@ int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * d
   if ( cur_element->io_type != 1 || ( cur_element->report_id != reportid ) ){
       cur_element = hid_get_next_input_element_with_reportid(cur_element, reportid );
   }
-  
+  */
+//  printf( "======== start of report: cur_element %i\n", cur_element );
+  if ( cur_element->io_type != 1 ){
+        cur_element = hid_get_next_input_element(cur_element);
+  }
+  //printf( "cur_element %i", cur_element );
+
   while( cur_element != NULL ){
 	if ( devdesc->_element_callback != NULL ){
 	  tIOReturn = IOHIDDeviceGetValue( device_handle, cur_element->appleIOHIDElementRef, &newValueRef );
+	 // printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalueref %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, newValueRef );
 	  if ( tIOReturn == kIOReturnSuccess ){
 	    newvalue = IOHIDValueGetIntegerValue( newValueRef );
 	    if ( newvalue != cur_element->rawvalue || cur_element->repeat ){
+#ifdef DEBUG_PARSER
+	printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalue %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, newvalue );
+#endif
 	      hid_element_set_value_from_input( cur_element, newvalue );
 	      devdesc->_element_callback( cur_element, devdesc->_element_data );
 	    }
 	  }
 	}
-	cur_element = hid_get_next_input_element_with_reportid( cur_element, reportid ); 
+//	cur_element = hid_get_next_input_element_with_reportid( cur_element, reportid );
+	cur_element = hid_get_next_input_element( cur_element );
+//	printf( "cur_element %i\n", cur_element );
   }
+//  printf( "======== end of report\n");
   return 0;  
 }
 
