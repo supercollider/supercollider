@@ -52,11 +52,11 @@ int legacyTheme(Manager * settings)
         if (settings->contains(group + key)) {
             QTextCharFormat fm = settings->value(group + key).value<QTextCharFormat>();
             settings->setValue(newGroup + key, QVariant::fromValue<QTextCharFormat>(fm));
-            settings->remove(group + key);
         }
     }
+    settings->remove(group);
 
-    group = QString("IDE/editor/highlighting");
+    group = QString("IDE/editor/highlighting/");
     keys.clear();
 
     keys << "keyword" << "built-in" << "env-var" << "class" << "number"
@@ -67,9 +67,9 @@ int legacyTheme(Manager * settings)
             QTextCharFormat fm = theme.format(key);
             fm.merge(settings->value(group + key).value<QTextCharFormat>());
             settings->setValue(newGroup + key, QVariant::fromValue<QTextCharFormat>(fm));
-            settings->remove(group + key);
         }
     }
+    settings->remove(group);
 
     settings->setValue("IDE/editor/theme", "My old theme");
 
