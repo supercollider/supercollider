@@ -77,12 +77,13 @@ int legacyTheme(Manager * settings)
 }
 
 static void addToTheme(QMap<QString, QTextCharFormat *> & map, const char *key,
-                  const QColor & fg, const QColor & bg = Qt::transparent,
+                  const QColor & fg, const QColor & bg = QColor(Qt::transparent),
                   bool bold = false, bool italic = false)
 {
     QTextCharFormat *format = new QTextCharFormat();
 
-    format->setBackground(bg);
+    if (bg != QColor(Qt::transparent))
+        format->setBackground(bg);
     format->setForeground(fg);
 
     if (bold)
@@ -121,7 +122,8 @@ void Theme::fillDefault()
                             (base.blue() + text.blue()) / 2);
 
     addToTheme(mFormats, "whitespace", whitespace_color);
-    addToTheme(mFormats, "keyword", QColor(0,0,230).lighter(shade), Qt::transparent, true);
+    addToTheme(mFormats, "keyword", QColor(0,0,230).lighter(shade),
+                                    QColor(Qt::transparent), true);
     addToTheme(mFormats, "built-in", QColor(51,51,191).lighter(shade));
     addToTheme(mFormats, "env-var", QColor(140,70,20).lighter(shade));
     addToTheme(mFormats, "class", QColor(0,0,210).lighter(shade));
