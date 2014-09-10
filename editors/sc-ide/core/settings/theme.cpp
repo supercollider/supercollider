@@ -64,7 +64,8 @@ int legacyTheme(Manager * settings)
 
     foreach(QString key, keys) {
         if (settings->contains(group + key)) {
-            QTextCharFormat fm = settings->value(group + key).value<QTextCharFormat>();
+            QTextCharFormat fm = theme.format(key);
+            fm.merge(settings->value(group + key).value<QTextCharFormat>());
             settings->setValue(newGroup + key, QVariant::fromValue<QTextCharFormat>(fm));
             settings->remove(group + key);
         }
