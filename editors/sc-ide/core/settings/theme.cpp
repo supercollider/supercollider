@@ -103,7 +103,7 @@ void Theme::fillDefault()
         bkg.setHsv(bkg.hue(), bkg.saturation(), value - 11);
     else
         bkg.setHsv(bkg.hue(), bkg.saturation(), value + 20);
-    addToTheme(mFormats, "currentLine", bkg.toRgb());
+    addToTheme(mFormats, "currentLine", QColor(Qt::black), bkg.toRgb());
     addToTheme(mFormats, "searchResult",
                appPlt.color(QPalette::HighlightedText).darker(200),
                appPlt.color(QPalette::Highlight).darker(200));
@@ -135,7 +135,8 @@ void Theme::fillDefault()
                                         plt.color(QPalette::Mid));
     addToTheme(mFormats, "selection", plt.color(QPalette::HighlightedText),
                                       plt.color(QPalette::Highlight));
-    addToTheme(mFormats, "postwindowtext", Qt::black);
+    addToTheme(mFormats, "postwindowtext", plt.color(QPalette::ButtonText),
+                                           plt.color(QPalette::Mid));
     addToTheme(mFormats, "postwindowerror", QColor(209, 28, 36));
     addToTheme(mFormats, "postwindowwarning", QColor(165, 119, 6));
     addToTheme(mFormats, "postwindowsuccess", QColor(115, 138, 5));
