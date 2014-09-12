@@ -216,10 +216,11 @@ NdefParamGui : EnvirGui {
 			var currValue = currState.detect { |pair| pair[0] == key }[1];
 			var newSpec = this.getSpec(key, currValue);
 			var widge = widgets[i];
-			if (newSpec != widge.controlSpec) {
-				specs.put(key, newSpec);
+
+			if (widge.notNil and: { newSpec != widge.controlSpec }) {
 				if (widge.isKindOf(EZSlider) or:
 					{ widge.isKindOf(EZRanger) }) {
+					specs.put(key, newSpec);
 					widge.controlSpec = newSpec;
 					widge.value_(currValue);
 				};
